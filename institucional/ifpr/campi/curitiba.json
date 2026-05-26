@@ -371,7 +371,7 @@
     },
     {
       "id": "tecnico-em-administracao-integrado-ao-ensino-medio",
-      "nome": "Técnico em Administração Integrado ao Ensino Médio",
+      "nome": "Técnico em Administração",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/administracao-3/",
@@ -462,7 +462,7 @@
     },
     {
       "id": "tecnico-em-contabilidade-integrado-ao-ensino-medio",
-      "nome": "Técnico em Contabilidade Integrado ao Ensino Médio",
+      "nome": "Técnico em Contabilidade",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/contabilidade/",
@@ -602,7 +602,7 @@
     },
     {
       "id": "tecnico-em-eletronica-integrado-ao-ensino-medio",
-      "nome": "Técnico em Eletrônica Integrado ao Ensino Médio",
+      "nome": "Técnico em Eletrônica",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/eletronica/",
@@ -740,7 +740,7 @@
     },
     {
       "id": "tecnico-em-informatica-integrado-ao-ensino-medio",
-      "nome": "Técnico em Informática Integrado ao Ensino Médio",
+      "nome": "Técnico em Informática",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/informatica-2/",
@@ -865,7 +865,7 @@
     },
     {
       "id": "tecnico-em-mecanica-integrado-ao-ensino-medio",
-      "nome": "Técnico em Mecânica Integrado ao Ensino Médio",
+      "nome": "Técnico em Mecânica",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/mecanica-2/",
@@ -904,7 +904,7 @@
     },
     {
       "id": "tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio",
-      "nome": "Técnico em Petróleo e Gás Integrado ao Ensino Médio",
+      "nome": "Técnico em Petróleo e Gás",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/tecnico-integrado-petroleo-e-gas/",
@@ -982,7 +982,7 @@
     },
     {
       "id": "tecnico-em-processos-fotograficos-integrado-ao-ensino-medio",
-      "nome": "Técnico em Processos Fotográficos Integrado ao Ensino Médio",
+      "nome": "Técnico em Processos Fotográficos",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/processosfotograficos/",
@@ -1060,7 +1060,7 @@
     },
     {
       "id": "tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio",
-      "nome": "Técnico em Programação de Jogos Digitais Integrado ao Ensino Médio",
+      "nome": "Técnico em Programação de Jogos Digitais",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/jogosdigitais-2/",
@@ -1217,7 +1217,7 @@
     },
     {
       "id": "tecnico-em-soldagem-subsequente",
-      "nome": "Técnico em Soldagem Subsequente",
+      "nome": "Técnico em Soldagem",
       "nivel": "médio",
       "tipo_oferta": "técnico subsequente",
       "url": "https://curitiba.ifpr.edu.br/",

@@ -114,7 +114,7 @@
     },
     {
       "id": "tecnico-em-agroecologia-integrado",
-      "nome": "Técnico em Agroecologia Integrado",
+      "nome": "Técnico em Agroecologia",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/ivaipora/nossos-cursos/cursos-tecnicos/tecnico-em-agroecologia-integrado/",
@@ -151,7 +151,7 @@
     },
     {
       "id": "tecnico-em-agropecuaria-integrado-ao-ensino-medio",
-      "nome": "Técnico em Agropecuária Integrado ao Ensino Médio",
+      "nome": "Técnico em Agropecuária",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/ivaipora/nossos-cursos/cursos-tecnicos/tecnico-em-agropecuaria-integrado-ao-ensino-medio/",
@@ -188,7 +188,7 @@
     },
     {
       "id": "tecnico-em-eletrotecnica-integrado",
-      "nome": "Técnico em Eletrotécnica Integrado",
+      "nome": "Técnico em Eletrotécnica",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/ivaipora/nossos-cursos/cursos-tecnicos/eletrotecnica-integrado-ao-ensino-medio/",
@@ -225,7 +225,7 @@
     },
     {
       "id": "tecnico-em-eletrotecnica-subsequente",
-      "nome": "Técnico em Eletrotécnica Subsequente",
+      "nome": "Técnico em Eletrotécnica",
       "nivel": "médio",
       "tipo_oferta": "técnico subsequente",
       "url": "https://ifpr.edu.br/ivaipora/",
@@ -258,7 +258,7 @@
     },
     {
       "id": "tecnico-em-informatica-integrado-ao-ensino-medio",
-      "nome": "Técnico em Informática Integrado ao Ensino Médio",
+      "nome": "Técnico em Informática",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/ivaipora/nossos-cursos/cursos-tecnicos/tecnico-em-informatica/",

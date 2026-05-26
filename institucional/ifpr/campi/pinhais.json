@@ -75,7 +75,7 @@
     },
     {
       "id": "tecnico-em-administracao-integrado-ao-ensino-medio",
-      "nome": "Curso Técnico em Administração Integrado ao Ensino Médio",
+      "nome": "Técnico em Administração",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/pinhais/institucional/nossos-cursos/tecnicos-integrados/administracao/",
@@ -119,7 +119,7 @@
     },
     {
       "id": "tecnico-em-informatica-integrado-ao-ensino-medio",
-      "nome": "Curso Técnico em Informática Integrado ao Ensino Médio",
+      "nome": "Técnico em Informática",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/pinhais/institucional/nossos-cursos/tecnicos-integrados/informatica/",

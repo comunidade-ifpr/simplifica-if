@@ -20,7 +20,7 @@
   "cursos": [
     {
       "id": "curso-tecnico-de-informatica-integrado-ao-ensino-medio",
-      "nome": "Técnico de Informática Integrado ao Ensino Médio",
+      "nome": "Técnico em Informática",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/astorga/menu-principal/nossos-cursos/tecnicos-integrados/tinfem/",

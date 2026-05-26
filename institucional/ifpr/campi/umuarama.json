@@ -116,7 +116,7 @@
     },
     {
       "id": "tecnico-em-edificacoes-integrado-ao-ensino-medio",
-      "nome": "Técnico em Edificações Integrado ao Ensino Médio",
+      "nome": "Técnico em Edificações",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/umuarama/cursos/cursos-tecnicos/edificacoes-integrado/",
@@ -166,7 +166,7 @@
     },
     {
       "id": "tecnico-em-informatica-integrado-ao-ensino-medio",
-      "nome": "Técnico em Informática Integrado ao Ensino Médio",
+      "nome": "Técnico em Informática",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/umuarama/cursos/cursos-tecnicos/informatica-integrado/",
@@ -216,7 +216,7 @@
     },
     {
       "id": "tecnico-em-quimica-integrado-ao-ensino-medio",
-      "nome": "Técnico em Química Integrado ao Ensino Médio",
+      "nome": "Técnico em Química",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/umuarama/cursos/cursos-tecnicos/quimica-integrado/",

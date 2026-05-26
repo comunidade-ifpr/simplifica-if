@@ -150,7 +150,7 @@
     },
     {
       "id": "tecnico-em-aquicultura",
-      "nome": "Tecnico em Aquicultura",
+      "nome": "Técnico em Aquicultura",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/foz-do-iguacu/tecnicos-integrados-3/tecnico-em-aquicultura/",
@@ -200,7 +200,7 @@
     },
     {
       "id": "tecnico-em-desenvolvimento-de-sistemas",
-      "nome": "Tecnico em Desenvolvimento de Sistemas",
+      "nome": "Técnico em Desenvolvimento de Sistemas",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/foz-do-iguacu/tecnicos-integrados-3/tecnico-em-desenvolvimento-de-sistemas/",
@@ -250,7 +250,7 @@
     },
     {
       "id": "tecnico-em-edificacoes-3",
-      "nome": "Tecnico em Edificacoes 3",
+      "nome": "Técnico em Edificações",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/foz-do-iguacu/tecnicos-integrados-3/tecnico-em-edificacoes-3/",
@@ -337,7 +337,7 @@
     },
     {
       "id": "tecnico-em-meio-ambiente",
-      "nome": "Tecnico em Meio Ambiente",
+      "nome": "Técnico em Meio Ambiente",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/foz-do-iguacu/tecnicos-integrados-3/tecnico-em-meio-ambiente/",

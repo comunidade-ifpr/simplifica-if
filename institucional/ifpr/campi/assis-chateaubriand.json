@@ -66,7 +66,7 @@
     },
     {
       "id": "tecnico-em-agropecuaria-integrado-ao-ensino-medio",
-      "nome": "Técnico em Agropecuária Integrado ao Ensino Médio",
+      "nome": "Técnico em Agropecuária",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/",
@@ -213,7 +213,7 @@
     },
     {
       "id": "tecnico-em-eletromecanica-integrado-ao-ensino-medio",
-      "nome": "Técnico em Eletromecânica Integrado ao Ensino Médio",
+      "nome": "Técnico em Eletromecânica",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-tecnicos/eletromecanica-integradoensino-medio/informacoes/",
@@ -259,7 +259,7 @@
     },
     {
       "id": "tecnico-em-eletromecanica-subsequente",
-      "nome": "Técnico em Eletromecânica Subsequente",
+      "nome": "Técnico em Eletromecânica",
       "nivel": "médio",
       "tipo_oferta": "técnico subsequente",
       "url": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-subsequentes/eletromecanica/informacoes/",
@@ -289,7 +289,7 @@
     },
     {
       "id": "tecnico-em-eletrotecnica-subsequente",
-      "nome": "Técnico em Eletrotécnica Subsequente",
+      "nome": "Técnico em Eletrotécnica",
       "nivel": "médio",
       "tipo_oferta": "técnico subsequente",
       "url": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-subsequentes/eletrotecnica/informacoes/",
@@ -330,7 +330,7 @@
     },
     {
       "id": "tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
-      "nome": "Técnico em Informática para Internet Integrado ao Ensino Médio",
+      "nome": "Técnico em Informática para Internet",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-tecnicos/curso-tecnico-em-informatica-para-a-internet/",
@@ -377,7 +377,7 @@
     },
     {
       "id": "tecnico-em-mecatronica-integrado-ao-ensino-medio",
-      "nome": "Técnico em Mecatrônica Integrado ao Ensino Médio",
+      "nome": "Técnico em Mecatrônica",
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-tecnicos/tecnico-em-mecatronica-integrado-ao-ensino-medio/",
