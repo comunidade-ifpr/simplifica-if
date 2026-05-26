@@ -1220,16 +1220,38 @@
       "nome": "Técnico em Soldagem",
       "nivel": "médio",
       "tipo_oferta": "técnico subsequente",
-      "url": "https://curitiba.ifpr.edu.br/",
+      "url": "https://ifpr.edu.br/curitiba/",
       "modalidade": "presencial",
-      "situacao": "incerto",
+      "situacao": "ativo",
       "escopo": "campus",
+      "ppc": {
+        "url": "https://sei.ifpr.edu.br/sei/controlador.php?acao=documento_download_anexo&acao_origem=procedimento_visualizar&id_anexo=1853224&arvore=1",
+        "conversao": {
+          "status": "convertido"
+        },
+        "markdown_path": "institucional/ifpr/ppcs/curitiba/tecnico-em-soldagem-subsequente.md",
+        "metadados": {
+          "ano_documento": {
+            "ano": 2025,
+            "trecho_fonte": "Ano do documento registrado no Notion: 2025",
+            "status_curadoria": "revisado",
+            "revisado_em": "2026-05-26"
+          },
+          "vagas": {
+            "quantidade": 36,
+            "trecho_fonte": "Vagas totais (anuais). Número de vagas por ingresso: 36 vagas.",
+            "status_curadoria": "revisado",
+            "periodicidade": "por ingresso",
+            "forma_oferta": "Subsequente",
+            "revisado_em": "2026-05-26"
+          }
+        }
+      },
       "sei": {
         "processos": [
           {
             "numero": "23411.007447/2025-30",
-            "tipo": "abertura",
-            "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 40. Enviado à SOC (04/08/25)"
+            "tipo": "abertura"
           }
         ]
       }

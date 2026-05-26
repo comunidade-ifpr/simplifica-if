@@ -3,7 +3,7 @@
   "tipo": "indice_ppcs",
   "versao": 1,
   "atualizado_em": "2026-05-26",
-  "total_itens": 200,
+  "total_itens": 201,
   "secoes_path": "institucional/ifpr/ppcs/secoes.jsonl",
   "items": [
     {
@@ -73,6 +73,8 @@
       "curso_url": "https://ifpr.edu.br/arapongas/nossos-cursos/tecnico-subsequente/tecnico-em-melhoria-de-processos/",
       "fonte_pdf": "https://ifpr.edu.br/arapongas/wp-content/uploads/sites/2/2022/09/PPC___CURSO_TECNICO_EM_MELHORIA_DE_PROCESSOS___VERSAO_FINAL.pdf",
       "path": "institucional/ifpr/ppcs/arapongas/tecnico-em-melhoria-de-processos.md",
+      "modalidade": "ead",
+      "situacao": "suspenso",
       "ano_documento": 2021,
       "vagas": 40
     },
@@ -87,6 +89,8 @@
       "curso_url": "https://ifpr.edu.br/arapongas/nossos-cursos/curso-tecnico-integrado-ao-ensino-medio/tecnico-integrado-ao-ensino-medio-tecnico-em-sistemas-de-energia-renovavel/",
       "fonte_pdf": "https://ifpr.edu.br/arapongas/wp-content/uploads/sites/2/2025/12/PPC_Tecnico_em_Sistemas_de_Energia_Renovavel___Arapongas-2.pdf",
       "path": "institucional/ifpr/ppcs/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio.md",
+      "modalidade": "presencial",
+      "situacao": "ativo",
       "ano_documento": 2025,
       "vagas": 40
     },
@@ -1493,6 +1497,23 @@
       "escopo": "campus",
       "ano_documento": 2025,
       "vagas": 25
+    },
+    {
+      "id": "curitiba/tecnico-em-soldagem-subsequente",
+      "campus_id": "curitiba",
+      "campus_nome": "Curitiba",
+      "curso_id": "tecnico-em-soldagem-subsequente",
+      "curso_nome": "Técnico em Soldagem",
+      "nivel": "médio",
+      "tipo_oferta": "técnico subsequente",
+      "curso_url": "https://ifpr.edu.br/curitiba/",
+      "fonte_pdf": "https://sei.ifpr.edu.br/sei/controlador.php?acao=documento_download_anexo&acao_origem=procedimento_visualizar&id_anexo=1853224&arvore=1",
+      "path": "institucional/ifpr/ppcs/curitiba/tecnico-em-soldagem-subsequente.md",
+      "modalidade": "presencial",
+      "situacao": "ativo",
+      "escopo": "campus",
+      "ano_documento": 2025,
+      "vagas": 36
     },
     {
       "id": "foz-do-iguacu/engenharia-de-aquicultura",

@@ -57,13 +57,6 @@
       "url": "https://ifpr.edu.br/arapongas/nossos-cursos/cursos-fic/gestao-de-competencias-para-exames-de-larga-escala/"
     },
     {
-      "id": "partiu-if",
-      "nome": "Partiu IF",
-      "nivel": "médio",
-      "tipo_oferta": "programa institucional",
-      "url": "https://ifpr.edu.br/arapongas/nossos-cursos/partiu-if/"
-    },
-    {
       "id": "portugues-como-lingua-de-acolhimento-plac",
       "nome": "Português como Língua de Acolhimento - PLAc",
       "nivel": "formação inicial e continuada",
@@ -137,21 +130,27 @@
       "nome": "Técnico em Agente Comunitário de Saúde",
       "nivel": "médio",
       "tipo_oferta": "técnico subsequente",
-      "url": "https://ifpr.edu.br/arapongas/nossos-cursos/ead/tecnico-em-agente-comunitario-de-saude/"
+      "url": "https://ifpr.edu.br/arapongas/nossos-cursos/ead/tecnico-em-agente-comunitario-de-saude/",
+      "modalidade": "ead",
+      "situacao": "incerto"
     },
     {
       "id": "tecnico-em-logistica",
       "nome": "Técnico em Logística",
       "nivel": "médio",
       "tipo_oferta": "técnico subsequente",
-      "url": "https://ifpr.edu.br/arapongas/nossos-cursos/ead/tecnico-em-logistica/"
+      "url": "https://ifpr.edu.br/arapongas/nossos-cursos/ead/tecnico-em-logistica/",
+      "modalidade": "ead",
+      "situacao": "incerto"
     },
     {
       "id": "tecnico-em-meio-ambiente",
       "nome": "Técnico em Meio Ambiente",
       "nivel": "médio",
       "tipo_oferta": "técnico subsequente",
-      "url": "https://ifpr.edu.br/arapongas/nossos-cursos/ead/tecnico-em-meio-ambiente/"
+      "url": "https://ifpr.edu.br/arapongas/nossos-cursos/ead/tecnico-em-meio-ambiente/",
+      "modalidade": "ead",
+      "situacao": "incerto"
     },
     {
       "id": "tecnico-em-melhoria-de-processos",
@@ -159,6 +158,8 @@
       "nivel": "médio",
       "tipo_oferta": "técnico subsequente",
       "url": "https://ifpr.edu.br/arapongas/nossos-cursos/tecnico-subsequente/tecnico-em-melhoria-de-processos/",
+      "modalidade": "ead",
+      "situacao": "suspenso",
       "suap": {
         "id": 1,
         "codigo": "AR001",
@@ -198,8 +199,7 @@
           },
           {
             "numero": "23411.011730/2025-66",
-            "tipo": "suspensão",
-            "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 64. Enviada ao campus em 21/8/25"
+            "tipo": "suspensão"
           }
         ]
       }
@@ -210,6 +210,8 @@
       "nivel": "médio",
       "tipo_oferta": "técnico integrado",
       "url": "https://ifpr.edu.br/arapongas/nossos-cursos/curso-tecnico-integrado-ao-ensino-medio/tecnico-integrado-ao-ensino-medio-tecnico-em-sistemas-de-energia-renovavel/",
+      "modalidade": "presencial",
+      "situacao": "ativo",
       "suap": {
         "id": 615,
         "codigo": "AR002",
