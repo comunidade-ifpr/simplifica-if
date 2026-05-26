@@ -1,14 +1,9 @@
 {
   "id": "jacarezinho",
   "nome": "Jacarezinho",
-  "tipo_unidade": "campus",
   "links": {
     "site": "https://jacarezinho.ifpr.edu.br/",
     "calendario_academico": "https://ifpr.edu.br/jacarezinho/calendario-academico/"
-  },
-  "curadoria": {
-    "status_cursos": "dados_parciais",
-    "verificado_em": "2026-05-11"
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",

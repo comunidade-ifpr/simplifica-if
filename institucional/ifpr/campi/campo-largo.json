@@ -1,14 +1,9 @@
 {
   "id": "campo-largo",
   "nome": "Campo Largo",
-  "tipo_unidade": "campus",
   "links": {
     "site": "https://campolargo.ifpr.edu.br/",
     "calendario_academico": "https://ifpr.edu.br/campo-largo/espaco-do-aluno/calendario-academico-2/"
-  },
-  "curadoria": {
-    "status_cursos": "dados_parciais",
-    "verificado_em": "2026-05-11"
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",

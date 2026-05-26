@@ -1,14 +1,9 @@
 {
   "id": "arapongas",
   "nome": "Arapongas",
-  "tipo_unidade": "campus",
   "links": {
     "site": "https://arapongas.ifpr.edu.br/",
     "calendario_academico": "https://ifpr.edu.br/arapongas/calendarios-academicos-administrativos/"
-  },
-  "curadoria": {
-    "status_cursos": "dados_curados",
-    "verificado_em": "2026-05-11"
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",

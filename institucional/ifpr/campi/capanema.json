@@ -1,14 +1,9 @@
 {
   "id": "capanema",
   "nome": "Capanema",
-  "tipo_unidade": "campus",
   "links": {
     "site": "https://capanema.ifpr.edu.br/",
     "calendario_academico": "https://ifpr.edu.br/capanema/?page_id=644"
-  },
-  "curadoria": {
-    "status_cursos": "dados_parciais",
-    "verificado_em": "2026-05-11"
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",

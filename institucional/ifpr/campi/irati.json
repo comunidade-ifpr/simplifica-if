@@ -1,14 +1,9 @@
 {
   "id": "irati",
   "nome": "Irati",
-  "tipo_unidade": "campus",
   "links": {
     "site": "https://irati.ifpr.edu.br/",
     "calendario_academico": "https://ifpr.edu.br/irati/calendario-academico/"
-  },
-  "curadoria": {
-    "status_cursos": "dados_parciais",
-    "verificado_em": "2026-05-11"
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",
@@ -202,14 +197,13 @@
       "tipo_oferta": "técnico integrado",
       "url": "https://irati.ifpr.edu.br/",
       "modalidade": "presencial",
-      "situacao": "incerto",
+      "situacao": "abertura",
       "escopo": "campus",
       "sei": {
         "processos": [
           {
             "numero": "23411.021133/2025-40",
-            "tipo": "abertura",
-            "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 14. Encaminhado para SOC/CIA/Consepe em 05/05/2026"
+            "tipo": "abertura"
           }
         ]
       }

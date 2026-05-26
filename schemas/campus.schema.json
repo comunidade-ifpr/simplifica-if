@@ -6,10 +6,8 @@
   "required": [
     "id",
     "nome",
-    "tipo_unidade",
     "links",
-    "cursos",
-    "curadoria"
+    "cursos"
   ],
   "additionalProperties": false,
   "properties": {
@@ -20,12 +18,6 @@
     "nome": {
       "type": "string",
       "minLength": 1
-    },
-    "tipo_unidade": {
-      "enum": [
-        "campus",
-        "campus_avancado"
-      ]
     },
     "links": {
       "type": "object",
@@ -149,6 +141,7 @@
           },
           "situacao": {
             "enum": [
+              "abertura",
               "ativo",
               "em_oferta",
               "suspenso",
@@ -170,6 +163,8 @@
           },
           "suap": {
             "type": "object",
+            "required": [
+            ],
             "minProperties": 1,
             "additionalProperties": false,
             "properties": {
@@ -502,35 +497,6 @@
               }
             }
           }
-        }
-      }
-    },
-    "curadoria": {
-      "type": "object",
-      "required": [
-        "status_cursos",
-        "verificado_em"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "status_cursos": {
-          "enum": [
-            "dados_pendentes",
-            "dados_parciais",
-            "dados_curados"
-          ]
-        },
-        "fontes": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "uri",
-            "pattern": "^https://"
-          }
-        },
-        "verificado_em": {
-          "type": "string",
-          "format": "date"
         }
       }
     }
