@@ -38,8 +38,7 @@
             "trecho_fonte": "Vagas ofertadas a) Mínimo: 20 vagas (Resolução Consup/IFPR n.121/2023) b) Máximo: 50 vagas, conforme oferta e ingresso descrita no PPC",
             "status_curadoria": "precisa_revisao",
             "minimo": 20,
-            "maximo": 50,
-            "forma_oferta": "máximo de 50 vagas e mínimo de 20 vagas"
+            "maximo": 50
           }
         }
       }
@@ -71,8 +70,7 @@
             "status_curadoria": "precisa_revisao",
             "minimo": 20,
             "maximo": 40,
-            "periodicidade": "anual",
-            "forma_oferta": "máximo de 40 vagas e mínimo de 20 vagas"
+            "periodicidade": "anual"
           }
         }
       }
@@ -132,8 +130,7 @@
             "trecho_fonte": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 30",
             "status_curadoria": "precisa_revisao",
             "minimo": 30,
-            "maximo": 40,
-            "forma_oferta": "máximo de 40 vagas e mínimo de 30 vagas"
+            "maximo": 40
           }
         }
       },
@@ -178,8 +175,7 @@
             "trecho_fonte": "Número máximo de vagas do curso: 20 Número mínimo de vagas do curso: 15",
             "status_curadoria": "precisa_revisao",
             "minimo": 15,
-            "maximo": 20,
-            "forma_oferta": "máximo de 20 vagas e mínimo de 15 vagas"
+            "maximo": 20
           }
         }
       }
@@ -215,8 +211,7 @@
             "trecho_fonte": "Número máximo de vagas do curso: 20 Número mínimo de vagas do curso: 15",
             "status_curadoria": "precisa_revisao",
             "minimo": 15,
-            "maximo": 20,
-            "forma_oferta": "máximo de 20 vagas e mínimo de 15 vagas"
+            "maximo": 20
           }
         }
       },
@@ -261,8 +256,7 @@
             "trecho_fonte": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 15",
             "status_curadoria": "precisa_revisao",
             "minimo": 15,
-            "maximo": 40,
-            "forma_oferta": "máximo de 40 vagas e mínimo de 15 vagas"
+            "maximo": 40
           }
         }
       },
@@ -307,8 +301,7 @@
             "trecho_fonte": "Número máximo de vagas do curso: 20 Número mínimo de vagas do curso: 15",
             "status_curadoria": "precisa_revisao",
             "minimo": 15,
-            "maximo": 20,
-            "forma_oferta": "máximo de 20 vagas e mínimo de 15 vagas"
+            "maximo": 20
           }
         }
       },
@@ -353,8 +346,7 @@
             "trecho_fonte": "Número máximo de vagas do curso: 30 Número mínimo de vagas do curso: 15",
             "status_curadoria": "precisa_revisao",
             "minimo": 15,
-            "maximo": 30,
-            "forma_oferta": "máximo de 30 vagas e mínimo de 15 vagas"
+            "maximo": 30
           }
         }
       }
@@ -384,8 +376,7 @@
             "quantidade": 40,
             "trecho_fonte": "Vagas Totais (anual): 40",
             "status_curadoria": "precisa_revisao",
-            "periodicidade": "anual",
-            "forma_oferta": "40 vagas anuais"
+            "periodicidade": "anual"
           }
         }
       }

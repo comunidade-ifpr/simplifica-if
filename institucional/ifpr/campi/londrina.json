@@ -56,8 +56,7 @@
             "status_curadoria": "precisa_revisao",
             "minimo": 20,
             "maximo": 40,
-            "periodicidade": "anual",
-            "forma_oferta": "máximo de 40 vagas e mínimo de 20 vagas"
+            "periodicidade": "anual"
           }
         }
       }
@@ -93,8 +92,7 @@
             "trecho_fonte": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 20",
             "status_curadoria": "precisa_revisao",
             "minimo": 20,
-            "maximo": 40,
-            "forma_oferta": "máximo de 40 vagas e mínimo de 20 vagas"
+            "maximo": 40
           }
         }
       },
@@ -139,8 +137,7 @@
             "trecho_fonte": "Número máximo de vagas do curso: 30 vagas Número mínimo de vagas do curso: 20 vagas",
             "status_curadoria": "precisa_revisao",
             "minimo": 20,
-            "maximo": 30,
-            "forma_oferta": "máximo de 30 vagas e mínimo de 20 vagas"
+            "maximo": 30
           }
         }
       }
@@ -176,8 +173,7 @@
             "trecho_fonte": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 20",
             "status_curadoria": "precisa_revisao",
             "minimo": 20,
-            "maximo": 40,
-            "forma_oferta": "máximo de 40 vagas e mínimo de 20 vagas"
+            "maximo": 40
           }
         }
       },
@@ -222,8 +218,7 @@
             "trecho_fonte": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 20",
             "status_curadoria": "precisa_revisao",
             "minimo": 20,
-            "maximo": 40,
-            "forma_oferta": "máximo de 40 vagas e mínimo de 20 vagas"
+            "maximo": 40
           }
         }
       }
@@ -257,8 +252,7 @@
           "vagas": {
             "quantidade": 40,
             "trecho_fonte": "NÚMERO DE VAGAS: 40 ESTÁGIO SUPERVISIONADO: 0 CARGA HORÁRIA TOTAL: 1200 horas MÍNIMO MÁXIMO 20 40",
-            "status_curadoria": "precisa_revisao",
-            "forma_oferta": "máximo de 40 vagas e mínimo de 20 vagas"
+            "status_curadoria": "precisa_revisao"
           }
         }
       }
@@ -294,8 +288,7 @@
             "trecho_fonte": "Número máximo de vagas do curso: 30 Número mínimo de vagas do curso: 20",
             "status_curadoria": "precisa_revisao",
             "minimo": 20,
-            "maximo": 30,
-            "forma_oferta": "máximo de 30 vagas e mínimo de 20 vagas"
+            "maximo": 30
           }
         }
       },
@@ -338,8 +331,7 @@
             "quantidade": 40,
             "trecho_fonte": "Vagas totais (anual) Quarenta vagas",
             "status_curadoria": "precisa_revisao",
-            "periodicidade": "anual",
-            "forma_oferta": "40 vagas"
+            "periodicidade": "anual"
           }
         }
       }

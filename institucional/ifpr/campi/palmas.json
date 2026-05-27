@@ -38,8 +38,7 @@
           "vagas": {
             "quantidade": 40,
             "trecho_fonte": "Vagas totais (anuais): 40",
-            "status_curadoria": "precisa_revisao",
-            "forma_oferta": "40 vagas anuais"
+            "status_curadoria": "precisa_revisao"
           }
         }
       }
@@ -68,8 +67,7 @@
           "vagas": {
             "quantidade": 40,
             "trecho_fonte": "Vagas totais (anuais): 40",
-            "status_curadoria": "precisa_revisao",
-            "forma_oferta": "40 vagas anuais"
+            "status_curadoria": "precisa_revisao"
           }
         }
       }
@@ -98,8 +96,7 @@
           "vagas": {
             "quantidade": 30,
             "trecho_fonte": "Vagas totais (anuais): 30 12",
-            "status_curadoria": "precisa_revisao",
-            "forma_oferta": "30 vagas anuais"
+            "status_curadoria": "precisa_revisao"
           }
         }
       }
@@ -128,8 +125,7 @@
           "vagas": {
             "quantidade": 40,
             "trecho_fonte": "Vagas totais (anuais): 40",
-            "status_curadoria": "precisa_revisao",
-            "forma_oferta": "40 vagas anuais"
+            "status_curadoria": "precisa_revisao"
           }
         }
       }
@@ -159,8 +155,7 @@
             "quantidade": 50,
             "trecho_fonte": "Vagas totais (anual) 50 Vagas",
             "status_curadoria": "precisa_revisao",
-            "periodicidade": "anual",
-            "forma_oferta": "50 vagas anuais"
+            "periodicidade": "anual"
           }
         }
       }
@@ -190,8 +185,7 @@
             "quantidade": 40,
             "trecho_fonte": "Vagas totais (anual): 40 vagas",
             "status_curadoria": "precisa_revisao",
-            "periodicidade": "anual",
-            "forma_oferta": "40 vagas anuais"
+            "periodicidade": "anual"
           }
         }
       }
@@ -220,8 +214,7 @@
           "vagas": {
             "quantidade": 40,
             "trecho_fonte": "Quantidade de Vagas: 40 vagas anuais",
-            "status_curadoria": "precisa_revisao",
-            "forma_oferta": "40 vagas anuais"
+            "status_curadoria": "precisa_revisao"
           }
         }
       }
@@ -250,8 +243,7 @@
           "vagas": {
             "quantidade": 40,
             "trecho_fonte": "Vagas totais (anuais): 40",
-            "status_curadoria": "precisa_revisao",
-            "forma_oferta": "40 vagas anuais"
+            "status_curadoria": "precisa_revisao"
           }
         }
       }
@@ -286,8 +278,7 @@
             "quantidade": 40,
             "trecho_fonte": "Vagas totais (anual) 40",
             "status_curadoria": "precisa_revisao",
-            "periodicidade": "anual",
-            "forma_oferta": "40 vagas anuais"
+            "periodicidade": "anual"
           }
         }
       }
@@ -322,8 +313,7 @@
             "quantidade": 40,
             "trecho_fonte": "Vagas totais (anual) 40",
             "status_curadoria": "precisa_revisao",
-            "periodicidade": "anual",
-            "forma_oferta": "40 vagas anuais"
+            "periodicidade": "anual"
           }
         }
       }
@@ -358,8 +348,7 @@
             "quantidade": 40,
             "trecho_fonte": "Vagas totais (anual) 40 (número mínimo vagas 20)",
             "status_curadoria": "precisa_revisao",
-            "periodicidade": "anual",
-            "forma_oferta": "40 vagas anuais"
+            "periodicidade": "anual"
           }
         }
       },
