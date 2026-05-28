@@ -133,11 +133,11 @@
         "processos": [
           {
             "numero": "23411.009814/2024-59",
-            "tipo": "abertura"
+            "tipo": "Abertura PAC"
           },
           {
             "numero": "23411.011762/2025-61",
-            "tipo": "suspensão",
+            "tipo": "Suspensão",
             "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 42. Aprovado Consepe"
           }
         ]

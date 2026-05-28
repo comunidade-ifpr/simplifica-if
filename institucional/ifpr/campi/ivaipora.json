@@ -244,17 +244,17 @@
         "processos": [
           {
             "numero": "00063.007364/2010-66",
-            "tipo": "abertura"
+            "tipo": "abertura OLD"
+          },
+          {
+            "numero": "23411.004828/2021-33",
+            "tipo": "Reversão Suspensão",
+            "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 61. Enviado à Diepex em 14/7/25"
           },
           {
             "numero": "23411.008369/2025-91",
             "tipo": "reversão de suspensão",
             "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 41. Aprovado Consepe"
-          },
-          {
-            "numero": "23411.004828/2021-33",
-            "tipo": "reversão de suspensão",
-            "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 61. Enviado à Diepex em 14/7/25"
           }
         ]
       }
