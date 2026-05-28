@@ -93,6 +93,8 @@
           },
           "tipo_oferta": {
             "enum": [
+              "integrado",
+              "subsequente",
               "técnico integrado",
               "técnico subsequente",
               "graduação tecnológica",
@@ -435,6 +437,8 @@
                 },
                 "tipo_oferta": {
                   "enum": [
+                    "integrado",
+                    "subsequente",
                     "técnico integrado",
                     "técnico subsequente",
                     "graduação tecnológica",

@@ -74,7 +74,7 @@
       "id": "tecnico-em-automacao-industrial-integrado-ao-ensino-medio",
       "nome": "Técnico em Automação Industrial",
       "nivel": "médio",
-      "tipo_oferta": "técnico integrado",
+      "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/telemaco-borba/cursos-tecnicos-integrados/automacao-industrial/",
       "modalidade": "presencial",
       "situacao": "ativo",
@@ -124,7 +124,7 @@
       "id": "tecnico-em-eletromecanica-subsequente",
       "nome": "Técnico em Eletromecânica",
       "nivel": "médio",
-      "tipo_oferta": "técnico subsequente",
+      "tipo_oferta": "subsequente",
       "url": "https://ifpr.edu.br/telemaco-borba/",
       "modalidade": "presencial",
       "situacao": "suspenso",
@@ -143,7 +143,7 @@
       "id": "tecnico-em-eletrotecnica-integrado-ao-ensino-medio",
       "nome": "Técnico em Eletrotécnica",
       "nivel": "médio",
-      "tipo_oferta": "técnico integrado",
+      "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/telemaco-borba/",
       "modalidade": "presencial",
       "situacao": "abertura",
@@ -152,8 +152,11 @@
         "processos": [
           {
             "numero": "23411.007407/2026-79",
-            "tipo": "abertura",
-            "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 5. 12/05 Recebimento do processo na Dentec"
+            "tipo": "abertura"
+          },
+          {
+            "numero": "23411.011614/2025-47",
+            "tipo": "abertura"
           }
         ]
       }
@@ -162,7 +165,7 @@
       "id": "tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
       "nome": "Técnico em Informática para Internet",
       "nivel": "médio",
-      "tipo_oferta": "técnico integrado",
+      "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/telemaco-borba/cursos-tecnicos-integrados/informatica-para-internet/",
       "modalidade": "presencial",
       "situacao": "ativo",
@@ -216,13 +219,17 @@
       "id": "tecnico-em-instrumentacao-industrial-subsequente",
       "nome": "Técnico em Instrumentação Industrial",
       "nivel": "médio",
-      "tipo_oferta": "técnico subsequente",
+      "tipo_oferta": "subsequente",
       "url": "https://ifpr.edu.br/telemaco-borba/",
       "modalidade": "presencial",
       "situacao": "abertura",
       "escopo": "campus",
       "sei": {
         "processos": [
+          {
+            "numero": "23411.016828/2025-18",
+            "tipo": "abertura"
+          },
           {
             "numero": "23411.007314/2026-44",
             "tipo": "abertura"
@@ -234,7 +241,7 @@
       "id": "tecnico-em-mecanica",
       "nome": "Técnico em Mecânica",
       "nivel": "médio",
-      "tipo_oferta": "técnico integrado",
+      "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/telemaco-borba/cursos-tecnicos-integrados/tecnico-em-mecanica/",
       "modalidade": "presencial",
       "situacao": "ativo",
@@ -284,7 +291,7 @@
       "id": "tecnico-em-programacao-de-jogos-digitais",
       "nome": "Técnico em Programação de Jogos Digitais",
       "nivel": "médio",
-      "tipo_oferta": "técnico integrado",
+      "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/telemaco-borba/cursos-tecnicos-integrados/programacao-de-jogos-digitais/",
       "modalidade": "presencial",
       "situacao": "ativo",
