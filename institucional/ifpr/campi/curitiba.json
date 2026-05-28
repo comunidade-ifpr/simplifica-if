@@ -7,10 +7,7 @@
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",
-    "status_curadoria": "revisado",
-    "url": "https://ifpr.edu.br/curitiba/horarios-de-aula/",
-    "titulo_fonte": "Horários",
-    "tipo_fonte": "pagina_ifpr"
+    "url": "https://ifpr.edu.br/curitiba/horarios-de-aula/"
   },
   "cursos": [
     {
@@ -368,7 +365,9 @@
       "suap": {
         "id": 211,
         "codigo": "CTB001",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2018/11/TECNICO-EM-ADMINISTRACAO-Medio-Integrado-1.pdf",
@@ -415,7 +414,9 @@
       "suap": {
         "id": 15,
         "codigo": "CTB002",
-        "vagas": 30
+        "vagas": 30,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2021/04/PPC_Tec_Condominio_22_de_marco.pdf",
@@ -466,7 +467,9 @@
       "suap": {
         "id": 140,
         "codigo": "CTB003",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2022/11/PPC-TECNICO-EM-CONTABILIDADE-INTEGRADO_vigente.pdf",
@@ -523,7 +526,9 @@
       "suap": {
         "id": 43,
         "codigo": "CTB004",
-        "vagas": 30
+        "vagas": 30,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2010/12/TECNICO-EM-EDIFICACOES-Subsequente-1.pdf",
@@ -574,7 +579,9 @@
       "suap": {
         "id": 74,
         "codigo": "CTB005",
-        "vagas": 30
+        "vagas": 30,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2020/10/PPC-ELETROMECANICA-Valido-a-partir-de-2018.pdf",
@@ -612,7 +619,9 @@
       "suap": {
         "id": 55,
         "codigo": "CTB006",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2013/04/TECNICO-EM-ELETRONICA-Integrado.pdf",
@@ -659,7 +668,9 @@
       "suap": {
         "id": 112,
         "codigo": "CTB007",
-        "vagas": 30
+        "vagas": 30,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2022/05/PPC_ELETROTECNICA_SUBSEQUENTE_2015.pdf",
@@ -697,7 +708,9 @@
       "suap": {
         "id": 151,
         "codigo": "CTB008",
-        "vagas": 30
+        "vagas": 30,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2024/11/PPC_VERSAO_FINAL_2024.pdf",
@@ -718,7 +731,9 @@
       "suap": {
         "id": 69,
         "codigo": "CTB009",
-        "vagas": 30
+        "vagas": 30,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2022/04/PPC-Tecnico-em-Eventos-2020-1.pdf",
@@ -756,7 +771,9 @@
       "suap": {
         "id": 176,
         "codigo": "CTB010",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2020/04/PPC-Informatica_2019-Final-REVISADO.pdf",
@@ -803,7 +820,9 @@
       "suap": {
         "id": 177,
         "codigo": "CTB011",
-        "vagas": 30
+        "vagas": 30,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2022/06/PPC_Final_MASSOTERAPIA-SUBS_Valido-a-partir-de-2023.pdf",
@@ -850,7 +869,9 @@
       "suap": {
         "id": 84,
         "codigo": "CTB013",
-        "vagas": 30
+        "vagas": 30,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2025/06/PPC-Curso-Tecnico-de-Mecanica-Subsequente-Campus-Curitiba.docx.pdf",
@@ -887,7 +908,9 @@
       "suap": {
         "id": 53,
         "codigo": "CTB012",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2022/04/PPP-MECANICA_INTEGRADO-2016_03.pdf",
@@ -934,7 +957,9 @@
       "suap": {
         "id": 179,
         "codigo": "CTB014",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2023/09/tecnico_petroleo_gas-1.pdf",
@@ -981,7 +1006,9 @@
       "suap": {
         "id": 14,
         "codigo": "CTB016",
-        "vagas": 30
+        "vagas": 30,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2024/10/PPC-PF-SUB_V.2018-FINAL_pos-SEPAE-1.pdf",
@@ -1019,7 +1046,9 @@
       "suap": {
         "id": 180,
         "codigo": "CTB015",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2025/07/PPC_PF-integrado_v.2018_1.pdf",
@@ -1066,7 +1095,9 @@
       "suap": {
         "id": 146,
         "codigo": "CTB017",
-        "vagas": 30
+        "vagas": 30,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2022/06/PPC_Final_PAV-SUBS_Valido-a-partir-de-2023.pdf",
@@ -1104,7 +1135,9 @@
       "suap": {
         "id": 95,
         "codigo": "CTB018",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2025/03/PPC_Jogos_Atualizacao_09_12_2024.pdf",
@@ -1151,7 +1184,9 @@
       "suap": {
         "id": 121,
         "codigo": "CTB019",
-        "vagas": 30
+        "vagas": 30,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       }
     },
     {
@@ -1166,7 +1201,9 @@
       "suap": {
         "id": 44,
         "codigo": "CTB020",
-        "vagas": 30
+        "vagas": 30,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2022/05/PPC_RADIOLOGIA_2014-1-PDF-1.pdf",
@@ -1217,7 +1254,9 @@
       "suap": {
         "id": 210,
         "codigo": "CTB021",
-        "vagas": 35
+        "vagas": 35,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2026/04/PPC_Saude_Bucal_2025_Versao_Final.pdf",
@@ -1307,7 +1346,9 @@
       "suap": {
         "id": 39,
         "codigo": "CTB022",
-        "vagas": 30
+        "vagas": 30,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2010/12/Plano-de-Curso-Telecomunica%C3%A7%C3%B5es.pdf",

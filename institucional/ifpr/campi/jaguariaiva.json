@@ -7,10 +7,7 @@
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",
-    "status_curadoria": "revisado",
-    "url": "https://ifpr.edu.br/jaguariaiva/academico/aulas/",
-    "titulo_fonte": "Horário de Aulas",
-    "tipo_fonte": "pagina_ifpr"
+    "url": "https://ifpr.edu.br/jaguariaiva/academico/aulas/"
   },
   "cursos": [
     {
@@ -54,7 +51,9 @@
       "suap": {
         "id": 79,
         "codigo": "JAG001",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/jaguariaiva/wp-content/uploads/sites/17/2023/03/PPC_Alimentos.2024.pdf",
@@ -99,7 +98,9 @@
       "suap": {
         "id": 215,
         "codigo": "JAG002",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/jaguariaiva/wp-content/uploads/sites/17/2023/10/Projeto_Pedagogico_de_Cursos_Tecnicos_do_IFPR_formulario_BIOTECNOLOGIA.docx.pdf",

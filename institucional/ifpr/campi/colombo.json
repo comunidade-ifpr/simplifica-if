@@ -7,12 +7,7 @@
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",
-    "status_curadoria": "revisado",
-    "url": "planilha interna (link omitido)",
-    "titulo_fonte": "HORÁRIO PRIMEIRO SEMESTRE 2026.1",
-    "periodo_referencia": "2026.1",
-    "tipo_fonte": "google_sheets",
-    "observacoes": "Link externo apontado pelo item Horário das Aulas no menu oficial do campus."
+    "url": "planilha interna (link omitido)"
   },
   "cursos": [
     {
@@ -91,7 +86,9 @@
       "suap": {
         "id": 35,
         "codigo": "COL001",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/colombo/wp-content/uploads/sites/9/2022/08/PPC_Integrado_ADM_final.pdf",
@@ -173,7 +170,9 @@
       "suap": {
         "id": 76,
         "codigo": "COL002",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/colombo/wp-content/uploads/sites/9/2023/03/PPC-Alimentos-Ultima-Versao-PDF-1-1.pdf",
@@ -205,7 +204,9 @@
       "suap": {
         "id": 122,
         "codigo": "COL003",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://drive.google.com/file/d/1-CWGEpZfgRXQeT9UT3qLT5JCDpBn9biB/view?usp=sharing",

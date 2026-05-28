@@ -7,10 +7,7 @@
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",
-    "status_curadoria": "revisado",
-    "url": "https://ifpr.edu.br/telemaco-borba/estudantes/horario-de-aulas/",
-    "titulo_fonte": "Horários de Aulas",
-    "tipo_fonte": "pagina_ifpr"
+    "url": "https://ifpr.edu.br/telemaco-borba/estudantes/horario-de-aulas/"
   },
   "cursos": [
     {
@@ -85,7 +82,9 @@
       "suap": {
         "id": 25,
         "codigo": "TBOR001",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/telemaco-borba/wp-content/uploads/sites/25/2026/02/PPC-TECNICO-EM-AUTOMACAO-VERSAO-FINAL.pdf",
@@ -171,7 +170,9 @@
       "suap": {
         "id": 34,
         "codigo": "TBOR002",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/telemaco-borba/wp-content/uploads/sites/25/2026/02/PPC-CURSO-TECNICO-EM-INFORMATICA-VERSAO-FINAL.pdf",
@@ -241,7 +242,9 @@
       "suap": {
         "id": 36,
         "codigo": "TBOR003",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/telemaco-borba/wp-content/uploads/sites/25/2026/02/PPC-CURSO-TECNICO-INTEGRADO-EM-MECANICA_FINAL.pdf",
@@ -289,7 +292,9 @@
       "suap": {
         "id": 50,
         "codigo": "TBOR004",
-        "vagas": 50
+        "vagas": 50,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/telemaco-borba/wp-content/uploads/sites/25/2026/02/PPC-CURSOS-TECNICOS-EM-PROGRAMACAO-DE-JOGOS-DIGITAIS_VERSAO_FINAL.pdf",

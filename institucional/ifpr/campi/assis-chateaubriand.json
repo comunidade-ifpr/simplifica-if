@@ -7,10 +7,7 @@
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",
-    "status_curadoria": "revisado",
-    "url": "https://ifpr.edu.br/assis-chateaubriand/menu-academico/area-do-estudante/vida-academica/horarios-de-aula/",
-    "titulo_fonte": "Horários de Aula",
-    "tipo_fonte": "pagina_ifpr"
+    "url": "https://ifpr.edu.br/assis-chateaubriand/menu-academico/area-do-estudante/vida-academica/horarios-de-aula/"
   },
   "cursos": [
     {
@@ -25,7 +22,9 @@
       "suap": {
         "id": 172,
         "codigo": "AC002",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2021/09/PPC-Curso-tecnico-em-agropecuaria-subsequente-Versao-2021.pdf",
@@ -70,7 +69,9 @@
       "suap": {
         "id": 77,
         "codigo": "AC001",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2017/08/PPC-Agropecuaria.pdf",
@@ -122,7 +123,9 @@
       "suap": {
         "id": 212,
         "codigo": "AC003",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2023/07/Versao-3-do-PPC.pdf",
@@ -165,7 +168,9 @@
       "suap": {
         "id": 119,
         "codigo": "AC004",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2022/10/PPC-do-Curso-de-Tecnico-em-Comercio.pdf",
@@ -214,7 +219,9 @@
       "suap": {
         "id": 2,
         "codigo": "AC005",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2024/02/PPC-Integrado-em-Eletromecanica-11-DE-DEZEMBRO-DE-2013.pdf",
@@ -259,7 +266,9 @@
       "suap": {
         "id": 174,
         "codigo": "AC006",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2017/04/PPC-Eletromecanica_Subsequente.pdf",
@@ -288,7 +297,9 @@
       "suap": {
         "id": 175,
         "codigo": "AC007",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2017/08/PPC-Eletrotecnica.pdf",
@@ -328,7 +339,9 @@
       "suap": {
         "id": 162,
         "codigo": "AC008",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://drive.google.com/file/d/1hZ3CEJOKSC0oqwAD2EIU7YwXRraTcYba/view",
@@ -373,7 +386,9 @@
       "suap": {
         "id": 636,
         "codigo": "AC013",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2026/02/PPC_Tecnico_em_Mecatronica_Integrado_2026.pdf",

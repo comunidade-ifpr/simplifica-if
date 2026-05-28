@@ -7,10 +7,7 @@
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",
-    "status_curadoria": "revisado",
-    "url": "https://ifpr.edu.br/campo-largo/espaco-do-aluno/horarios-de-aula-calendario/",
-    "titulo_fonte": "Horários de Aula",
-    "tipo_fonte": "pagina_ifpr"
+    "url": "https://ifpr.edu.br/campo-largo/espaco-do-aluno/horarios-de-aula-calendario/"
   },
   "cursos": [
     {
@@ -25,7 +22,9 @@
       "suap": {
         "id": 75,
         "codigo": "CL001",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2023/01/PPC-EMI-ADMINISTRACAO_-Versao-Resolucao.pdf",
@@ -92,7 +91,9 @@
       "suap": {
         "id": 51,
         "codigo": "CL002",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2021/01/PPC-Tecnico-em-Agroecologia-2020_23ago-1.pdf",
@@ -137,7 +138,9 @@
       "suap": {
         "id": 38,
         "codigo": "CL003",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2023/04/PPC-EMI_Automacao-versao-para-sei-POS-PARECER-ultimo.pdf",
@@ -242,7 +245,9 @@
       "suap": {
         "id": 49,
         "codigo": "CL004",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2020/02/PPC-EMI_Mecanica_Versao_09_08_2019.pdf",
@@ -278,7 +283,9 @@
       "suap": {
         "id": 83,
         "codigo": "CL005",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2022/08/PPC-MECANICA-Sub-2016.pdf",

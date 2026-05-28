@@ -2,7 +2,7 @@
   "title": "Projetos Pedagógicos de Curso do IFPR",
   "tipo": "indice_ppcs",
   "versao": 1,
-  "atualizado_em": "2026-05-27",
+  "atualizado_em": "2026-05-28",
   "total_itens": 201,
   "secoes": {
     "preview_limite": 500,
@@ -108,6 +108,7 @@
       "path": "institucional/ifpr/ppcs/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio.md",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "escopo": "campus",
       "ano_documento": 2025,
       "vagas": 40
     },

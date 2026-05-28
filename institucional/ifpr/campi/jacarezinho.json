@@ -6,10 +6,7 @@
     "calendario_academico": "https://ifpr.edu.br/jacarezinho/calendario-academico/"
   },
   "horario_aulas": {
-    "coletado_em": "2026-05-14T11:48:00-03:00",
-    "status_curadoria": "parcial",
-    "titulo_fonte": "Páginas de horário por curso",
-    "observacoes": "Não foi localizada página agregadora de horário das aulas. Foram encontradas páginas por curso, como Licenciatura em Química e Engenharia de Controle e Automação."
+    "coletado_em": "2026-05-14T11:48:00-03:00"
   },
   "cursos": [
     {
@@ -111,7 +108,9 @@
       "suap": {
         "id": 71,
         "codigo": "JAC001",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2019/12/PPC___Alimentos_2020_A-partir-2020.pdf",
@@ -156,7 +155,9 @@
       "suap": {
         "id": 265,
         "codigo": "JAC006",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2018/07/Projeto-Pedagogico-do-Curso-Tecnico-em-Eletromecanica.pdf",
@@ -192,7 +193,9 @@
       "suap": {
         "id": 78,
         "codigo": "JAC002",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2018/06/Projeto-Pedagogico-de-Curso-Eletrotecnica.pdf",
@@ -237,7 +240,9 @@
       "suap": {
         "id": 80,
         "codigo": "JAC003",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2018/11/PPC-Informatica-1.pdf",
@@ -282,7 +287,9 @@
       "suap": {
         "id": 92,
         "codigo": "JAC004",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2018/06/Projeto-Pedagogico-do-Curso-Tecnico-em-Mecanica.pdf",
@@ -327,7 +334,9 @@
       "suap": {
         "id": 37,
         "codigo": "JAC005",
-        "vagas": 30
+        "vagas": 30,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2019/11/PPC_Tecnico_em_Teatro-1.pdf",

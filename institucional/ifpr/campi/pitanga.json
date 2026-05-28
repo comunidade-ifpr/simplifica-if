@@ -7,10 +7,7 @@
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",
-    "status_curadoria": "revisado",
-    "url": "https://ifpr.edu.br/pitanga/horario-academico/",
-    "titulo_fonte": "Horário Acadêmico",
-    "tipo_fonte": "pagina_ifpr"
+    "url": "https://ifpr.edu.br/pitanga/horario-academico/"
   },
   "cursos": [
     {
@@ -85,7 +82,9 @@
       "suap": {
         "id": 216,
         "codigo": "PIT001",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/pitanga/wp-content/uploads/sites/23/2023/11/PPC_Tecnico_em_Alimentos___Revisado_23_02_2023.pdf",
@@ -119,7 +118,9 @@
       "suap": {
         "id": 61,
         "codigo": "PIT002",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/pitanga/wp-content/uploads/sites/23/2018/04/PPC_Cooperativismo-atualizado.pdf",
@@ -164,7 +165,9 @@
       "suap": {
         "id": 621,
         "codigo": "PIT003",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/pitanga/wp-content/uploads/sites/23/2025/09/PPC_Desenvolvimento_de_Sistemas_Integrado.pdf",

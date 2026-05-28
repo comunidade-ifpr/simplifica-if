@@ -7,10 +7,7 @@
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",
-    "status_curadoria": "revisado",
-    "url": "https://ifpr.edu.br/irati/menu-institucional/ensino/quadro-de-horarios/",
-    "titulo_fonte": "Horários das aulas",
-    "tipo_fonte": "pagina_ifpr"
+    "url": "https://ifpr.edu.br/irati/menu-institucional/ensino/quadro-de-horarios/"
   },
   "cursos": [
     {
@@ -109,7 +106,9 @@
       "suap": {
         "id": 54,
         "codigo": "IRA001",
-        "vagas": 160
+        "vagas": 160,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/irati/wp-content/uploads/sites/14/2025/12/PPC-Tecnico-em-Agroecologia-Vigente.pdf",
@@ -152,7 +151,9 @@
       "suap": {
         "id": 111,
         "codigo": "IRA002",
-        "vagas": 160
+        "vagas": 160,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/irati/wp-content/uploads/sites/14/2025/12/PPC-Tecnico-em-Informatica-Vigente.pdf",

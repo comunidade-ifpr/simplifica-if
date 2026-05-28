@@ -7,10 +7,7 @@
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",
-    "status_curadoria": "revisado",
-    "url": "https://ifpr.edu.br/capanema/horarios-de-aula/",
-    "titulo_fonte": "Horários de Aula",
-    "tipo_fonte": "pagina_ifpr"
+    "url": "https://ifpr.edu.br/capanema/horarios-de-aula/"
   },
   "cursos": [
     {
@@ -55,7 +52,9 @@
       "suap": {
         "id": 68,
         "codigo": "CAP003",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/capanema/wp-content/uploads/sites/7/2018/02/PPC-Versao-Aprovada-CONSUP.pdf",
@@ -100,7 +99,9 @@
       "suap": {
         "id": 66,
         "codigo": "CAP001",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/capanema/wp-content/uploads/sites/7/2018/04/PPC-Cooperativismo-2018-Capanema.pdf",
@@ -145,7 +146,9 @@
       "suap": {
         "id": 67,
         "codigo": "CAP002",
-        "vagas": 50
+        "vagas": 50,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/capanema/wp-content/uploads/sites/7/2020/09/Projeto-Pedagogico-do-Curso-Tecnico-em-Informatica-versao-final-ingresso-2021-3-1.pdf",

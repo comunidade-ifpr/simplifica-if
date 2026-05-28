@@ -7,10 +7,7 @@
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",
-    "status_curadoria": "revisado",
-    "url": "https://ifpr.edu.br/paranavai/horario/",
-    "titulo_fonte": "Horário de Aula",
-    "tipo_fonte": "pagina_ifpr"
+    "url": "https://ifpr.edu.br/paranavai/horario/"
   },
   "cursos": [
     {
@@ -144,7 +141,9 @@
       "suap": {
         "id": 72,
         "codigo": "PVAI001",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/paranavai/wp-content/uploads/sites/21/2017/05/PPC_Integrado_Agroindustria_enviadoPROENS_12-01-2017_curso2017.pdf",
@@ -180,7 +179,9 @@
       "suap": {
         "id": 82,
         "codigo": "PVAI002",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/paranavai/wp-content/uploads/sites/21/2019/12/PPC-Eletromecanica-2020.pdf",
@@ -216,7 +217,9 @@
       "suap": {
         "id": 81,
         "codigo": "PVAI003",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/paranavai/wp-content/uploads/sites/21/2017/05/PPC-INFORMARTICA-TURMAS-INICIO-2016.pdf",
@@ -257,7 +260,9 @@
       "suap": {
         "id": 73,
         "codigo": "PVAI004",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/paranavai/wp-content/uploads/sites/21/2017/05/PPC_Mecatronica_Pvai_inicio2017.pdf",

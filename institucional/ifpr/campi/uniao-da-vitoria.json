@@ -7,10 +7,7 @@
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",
-    "status_curadoria": "revisado",
-    "url": "https://ifpr.edu.br/uniao-da-vitoria/menu-academico/horario-das-aulas/",
-    "titulo_fonte": "Horário das aulas",
-    "tipo_fonte": "pagina_ifpr"
+    "url": "https://ifpr.edu.br/uniao-da-vitoria/menu-academico/horario-das-aulas/"
   },
   "cursos": [
     {
@@ -86,7 +83,9 @@
       "suap": {
         "id": 41,
         "codigo": "UVIT001",
-        "vagas": 50
+        "vagas": 50,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/uniao-da-vitoria/wp-content/uploads/sites/27/2026/02/ppc-ti-atualizado.pdf",
@@ -161,7 +160,9 @@
       "suap": {
         "id": 40,
         "codigo": "UVIT002",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/uniao-da-vitoria/wp-content/uploads/sites/27/2023/07/MA-Projeto-Pedagogico-com-parecer.docx.pdf",

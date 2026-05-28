@@ -7,10 +7,7 @@
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",
-    "status_curadoria": "revisado",
-    "url": "https://ifpr.edu.br/paranagua/menu-do-aluno/horarios-e-salas/",
-    "titulo_fonte": "Horários e Salas",
-    "tipo_fonte": "pagina_ifpr"
+    "url": "https://ifpr.edu.br/paranagua/menu-do-aluno/horarios-e-salas/"
   },
   "cursos": [
     {
@@ -54,7 +51,9 @@
       "suap": {
         "id": 63,
         "codigo": "PGUA001",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/paranagua/wp-content/uploads/sites/20/2024/04/PPC-EMI-Informatica.pdf",
@@ -99,7 +98,9 @@
       "suap": {
         "id": 64,
         "codigo": "PGUA002",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/paranagua/wp-content/uploads/sites/20/2025/04/PPC_TEC-MECANICA_PARANAGUA_2013_-_2024.pdf",
@@ -135,7 +136,9 @@
       "suap": {
         "id": 65,
         "codigo": "PGUA003",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/paranagua/wp-content/uploads/sites/20/2024/04/PPC-EMI-Meio-Ambiente.pdf",
@@ -181,7 +184,9 @@
       "suap": {
         "id": 217,
         "codigo": "PGUA004",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/paranagua/wp-content/uploads/sites/20/2023/04/PPC_2022_Producao_Cultural-1-1.pdf",

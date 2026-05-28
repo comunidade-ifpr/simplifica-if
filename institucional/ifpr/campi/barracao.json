@@ -7,10 +7,7 @@
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",
-    "status_curadoria": "revisado",
-    "url": "https://ifpr.edu.br/barracao/academico/horarios-das-aulas/",
-    "titulo_fonte": "Horários das Aulas e do Atendimento",
-    "tipo_fonte": "pagina_ifpr"
+    "url": "https://ifpr.edu.br/barracao/academico/horarios-das-aulas/"
   },
   "cursos": [
     {
@@ -25,7 +22,9 @@
       "suap": {
         "id": 70,
         "codigo": "BA001",
-        "vagas": 80
+        "vagas": 80,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/barracao/wp-content/uploads/sites/5/2023/12/Projeto-Pedagogico-de-Curso-Tecnico-em-Administracao-Barracao-APROVADO-CONSEPE.pdf",
@@ -74,7 +73,9 @@
       "suap": {
         "id": 62,
         "codigo": "BA002",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/barracao/wp-content/uploads/sites/5/2023/12/PPC_INFO_Barracao-APROVACAO-CONSEPE.pdf",

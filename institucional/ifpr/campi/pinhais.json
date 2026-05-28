@@ -7,10 +7,7 @@
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",
-    "status_curadoria": "revisado",
-    "url": "https://ifpr.edu.br/pinhais/institucional/area-do-aluno/horario-de-aulas-e-atendimento/",
-    "titulo_fonte": "Horário de aulas e atendimento",
-    "tipo_fonte": "pagina_ifpr"
+    "url": "https://ifpr.edu.br/pinhais/institucional/area-do-aluno/horario-de-aulas-e-atendimento/"
   },
   "cursos": [
     {
@@ -79,7 +76,9 @@
       "suap": {
         "id": 195,
         "codigo": "PIN001",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/pinhais/wp-content/uploads/sites/22/2025/05/Projeto_Pedagogico_de_Curso_3530515_PPC_ADM_2025_aprovadoCONSEPE.pdf",
@@ -122,7 +121,9 @@
       "suap": {
         "id": 574,
         "codigo": "PIN003",
-        "vagas": 80
+        "vagas": 80,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/pinhais/wp-content/uploads/sites/22/2025/04/PPC_Informatica_Integrado_EnsinoMedio_2019.pdf",

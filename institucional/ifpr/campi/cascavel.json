@@ -7,10 +7,7 @@
   },
   "horario_aulas": {
     "coletado_em": "2026-05-14T11:48:00-03:00",
-    "status_curadoria": "revisado",
-    "url": "https://ifpr.edu.br/cascavel/horarios/",
-    "titulo_fonte": "Horários",
-    "tipo_fonte": "pagina_ifpr"
+    "url": "https://ifpr.edu.br/cascavel/horarios/"
   },
   "cursos": [
     {
@@ -55,7 +52,9 @@
       "suap": {
         "id": 29,
         "codigo": "CAS001",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/cascavel/wp-content/uploads/sites/8/2024/01/Edificacoes-Projeto_Pedagogico_de_Cursos_Tecnicos_do_IFPR.pdf",
@@ -98,7 +97,9 @@
       "suap": {
         "id": 30,
         "codigo": "CAS002",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/cascavel/wp-content/uploads/sites/8/2018/02/PPC-INFORMATICA-vigente_01_2018.pdf",
@@ -143,7 +144,9 @@
       "suap": {
         "id": 32,
         "codigo": "CAS003",
-        "vagas": 40
+        "vagas": 40,
+        "coletado_em": "2026-05-25T00:00:00-03:00",
+        "atualizado_em": "2026-05-25T00:00:00-03:00"
       },
       "ppc": {
         "url": "https://ifpr.edu.br/cascavel/wp-content/uploads/sites/8/2021/11/PPC-Tec.-em-Quimica-2021-2.pdf",
