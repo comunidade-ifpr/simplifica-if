@@ -396,8 +396,7 @@
         "processos": [
           {
             "numero": "23397.000333/2014-31",
-            "tipo": "revisão de PPC vigente",
-            "trecho_fonte": "Revisado em 27/05/26 via sei-cli e PPC convertido.\n\nEvidências\n- PPC: **PROCESSO NÚMERO:** 23397.000333/2014-31 **NOME DO CURSO:** Técnico em Administração Integrado ao Ensino Médio **EIXO TECNOLÓGICO:** Gestão e Negócios **COORDENAÇÃO Coordenador:** Profa. Dra. Leila Araújo de Sousa **E-mail:** leila.sousa@ifpr.edu.br **Telefone:** (41) 3535-1604 **Vice-Coordenador:** Profa. Me. Deise Leandra Fontana **E-mail:** deise.fontana@ifpr.edu.br **Telefone:** (41) 3535-1604\n- Tipo no SEI: Ensino: Projeto Pedagógico de Curso - Técnico.\n- Especificação no SEI: PPC - Curso Técnico em Administração integrado ao Ensino Médio - Campus Curitiba.\n- Data Última mov.: 26/12/25."
+            "tipo": "revisão de PPC vigente"
           }
         ]
       }
@@ -444,13 +443,13 @@
       "sei": {
         "processos": [
           {
-            "numero": "23411.020211/2019-41",
-            "tipo": "abertura OLD"
-          },
-          {
             "numero": "23411.012780/2025-61",
             "tipo": "Ajuste PPC",
             "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 67. Enviado ao campus - viabilidade favorável"
+          },
+          {
+            "numero": "23411.020211/2019-41",
+            "tipo": "abertura OLD"
           }
         ]
       }
@@ -556,13 +555,13 @@
       "sei": {
         "processos": [
           {
-            "numero": "23397.000293/2014-28",
-            "tipo": "abertura OLD"
-          },
-          {
             "numero": "23411.021515/2022-21",
             "tipo": "Ajuste PPC",
             "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 69. Enviado ao campus - viabilidade favorável"
+          },
+          {
+            "numero": "23397.000293/2014-28",
+            "tipo": "abertura OLD"
           }
         ]
       }
@@ -1195,6 +1194,19 @@
         "vagas": 30,
         "coletado_em": "2026-05-25T00:00:00-03:00",
         "atualizado_em": "2026-05-25T00:00:00-03:00"
+      },
+      "ppc": {
+        "url": "https://s3.sa-east-1.amazonaws.com/suap-prod/edu/ppp/PROJETO_PEDAGOGICO_PROTESE_DENTARIA_2014_-_02.12.14-c3f1fa76af0b439a9f70c5eb2653340b.pdf",
+        "conversao": {
+          "status": "pendente"
+        },
+        "metadados": {
+          "ano_documento": {
+            "ano": 2013,
+            "trecho_fonte": "Ano do documento registrado no Notion: 2013",
+            "status_curadoria": "precisa_revisao"
+          }
+        }
       }
     },
     {
@@ -1239,13 +1251,13 @@
       "sei": {
         "processos": [
           {
-            "numero": "00063.008113/2010-07",
-            "tipo": "abertura OLD"
-          },
-          {
             "numero": "23411.010326/2023-11",
             "tipo": "Ajuste PPC",
             "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 20. Parecer técnico-pedagógico emitido pela Dentec em 26/03"
+          },
+          {
+            "numero": "00063.008113/2010-07",
+            "tipo": "abertura OLD"
           }
         ]
       }
@@ -1291,13 +1303,13 @@
       "sei": {
         "processos": [
           {
-            "numero": "23397.000294/2014-72",
-            "tipo": "abertura OLD"
-          },
-          {
             "numero": "23411.007861/2023-87",
             "tipo": "Ajuste PPC",
             "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 38. \nAprovado pelo Consepe e solicitação de portaria de início das atividaes enviada à Proens em 29/8/25"
+          },
+          {
+            "numero": "23397.000294/2014-72",
+            "tipo": "abertura OLD"
           }
         ]
       }
@@ -1367,13 +1379,13 @@
       "sei": {
         "processos": [
           {
-            "numero": "23411.005801/2026-72",
-            "tipo": "abertura OLD"
-          },
-          {
             "numero": "23411.003654/2026-04",
             "tipo": "Ajuste PPC",
             "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 21. Viabilidade de solicitação concluída. Agora a CAJ irá encaminhar o ajuste curricular (PPC)"
+          },
+          {
+            "numero": "23411.005801/2026-72",
+            "tipo": "abertura OLD"
           }
         ]
       }
