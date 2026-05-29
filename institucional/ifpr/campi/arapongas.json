@@ -11,7 +11,7 @@
   },
   "cursos": [
     {
-      "id": "especializacao-em-docencia-e-praticas-educativas",
+      "curso_slug": "especializacao-em-docencia-e-praticas-educativas",
       "nome": "Especialização em Docência e Práticas Educativas",
       "nivel": "pós-graduação",
       "tipo_oferta": "especialização",
@@ -41,21 +41,21 @@
       }
     },
     {
-      "id": "gestao-de-competencias-para-exames-de-larga-escala",
+      "curso_slug": "gestao-de-competencias-para-exames-de-larga-escala",
       "nome": "Gestão de Competências para Exames de Larga Escala (Cursinho)",
       "nivel": "formação inicial e continuada",
       "tipo_oferta": "FIC",
       "url": "https://ifpr.edu.br/arapongas/nossos-cursos/cursos-fic/gestao-de-competencias-para-exames-de-larga-escala/"
     },
     {
-      "id": "portugues-como-lingua-de-acolhimento-plac",
+      "curso_slug": "portugues-como-lingua-de-acolhimento-plac",
       "nome": "Português como Língua de Acolhimento - PLAc",
       "nivel": "formação inicial e continuada",
       "tipo_oferta": "FIC",
       "url": "https://ifpr.edu.br/arapongas/nossos-cursos/cursos-fic/portugues-como-lingua-de-acolhimento-plac/"
     },
     {
-      "id": "programacao-com-enfase-em-analise-de-dados",
+      "curso_slug": "programacao-com-enfase-em-analise-de-dados",
       "nome": "Programação com ênfase em Análise de Dados",
       "nivel": "formação inicial e continuada",
       "tipo_oferta": "FIC",
@@ -85,7 +85,7 @@
       }
     },
     {
-      "id": "programacao-web",
+      "curso_slug": "programacao-web",
       "nome": "Programação Web",
       "nivel": "formação inicial e continuada",
       "tipo_oferta": "FIC",
@@ -115,7 +115,7 @@
       }
     },
     {
-      "id": "tecnico-em-agente-comunitario-de-saude",
+      "curso_slug": "tecnico-em-agente-comunitario-de-saude",
       "nome": "Técnico em Agente Comunitário de Saúde",
       "nivel": "médio",
       "tipo_oferta": "subsequente",
@@ -124,7 +124,7 @@
       "situacao": "incerto"
     },
     {
-      "id": "tecnico-em-logistica",
+      "curso_slug": "tecnico-em-logistica",
       "nome": "Técnico em Logística",
       "nivel": "médio",
       "tipo_oferta": "subsequente",
@@ -133,7 +133,7 @@
       "situacao": "incerto"
     },
     {
-      "id": "tecnico-em-meio-ambiente",
+      "curso_slug": "tecnico-em-meio-ambiente",
       "nome": "Técnico em Meio Ambiente",
       "nivel": "médio",
       "tipo_oferta": "subsequente",
@@ -142,7 +142,7 @@
       "situacao": "incerto"
     },
     {
-      "id": "tecnico-em-melhoria-de-processos",
+      "curso_slug": "tecnico-em-melhoria-de-processos",
       "nome": "Técnico em Melhoria de Processos",
       "nivel": "médio",
       "tipo_oferta": "subsequente",
@@ -195,14 +195,13 @@
       }
     },
     {
-      "id": "tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio",
+      "curso_slug": "tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio",
       "nome": "Técnico em Sistemas de Energia Renovável",
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/arapongas/nossos-cursos/curso-tecnico-integrado-ao-ensino-medio/tecnico-integrado-ao-ensino-medio-tecnico-em-sistemas-de-energia-renovavel/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "suap": {
         "id": 615,
         "codigo": "AR002",
@@ -244,7 +243,7 @@
       }
     },
     {
-      "id": "tecnologia-em-processos-gerenciais",
+      "curso_slug": "tecnologia-em-processos-gerenciais",
       "nome": "Tecnologia em Processos Gerenciais",
       "nivel": "superior",
       "tipo_oferta": "graduação tecnológica",

@@ -11,14 +11,13 @@
   },
   "cursos": [
     {
-      "id": "licenciatura-em-pedagogia",
+      "curso_slug": "licenciatura-em-pedagogia",
       "nome": "Licenciatura em Pedagogia",
       "nivel": "superior",
       "tipo_oferta": "licenciatura",
       "url": "https://ifpr.edu.br/pitanga/nossos-cursos/graduacao/licenciatura-em-pedagogia/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/pitanga/wp-content/uploads/sites/23/2023/09/PPC-Pedagogia-novo-2022.pdf",
         "conversao": {
@@ -41,14 +40,13 @@
       }
     },
     {
-      "id": "licenciatura-em-quimica",
+      "curso_slug": "licenciatura-em-quimica",
       "nome": "Licenciatura em Química",
       "nivel": "superior",
       "tipo_oferta": "licenciatura",
       "url": "https://ifpr.edu.br/pitanga/nossos-cursos/graduacao/licenciatura-em-quimica/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/pitanga/wp-content/uploads/sites/23/2025/04/NOVO_PPC_Quimica___APSs.pdf",
         "conversao": {
@@ -71,14 +69,13 @@
       }
     },
     {
-      "id": "tecnico-em-alimentos",
+      "curso_slug": "tecnico-em-alimentos",
       "nome": "Técnico em Alimentos",
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/pitanga/nossos-cursos/integrados-ao-ensino-medio/tecnico-em-alimentos/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "suap": {
         "id": 216,
         "codigo": "PIT001",
@@ -107,14 +104,13 @@
       }
     },
     {
-      "id": "tecnico-em-cooperativismo",
+      "curso_slug": "tecnico-em-cooperativismo",
       "nome": "Técnico em Cooperativismo",
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/pitanga/nossos-cursos/integrados-ao-ensino-medio/tecnico-em-cooperativismo/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "suap": {
         "id": 61,
         "codigo": "PIT002",
@@ -154,14 +150,13 @@
       }
     },
     {
-      "id": "tecnico-em-desenvolvimento-de-sistemas",
+      "curso_slug": "tecnico-em-desenvolvimento-de-sistemas",
       "nome": "Técnico em Desenvolvimento de Sistemas",
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/pitanga/nossos-cursos/integrados-ao-ensino-medio/tecnico-em-desenvolvimento-de-sistemas/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "suap": {
         "id": 621,
         "codigo": "PIT003",
@@ -204,14 +199,13 @@
       }
     },
     {
-      "id": "tecnologia-em-agroindustria",
+      "curso_slug": "tecnologia-em-agroindustria",
       "nome": "Tecnologia em Agroindústria",
       "nivel": "superior",
       "tipo_oferta": "graduação tecnológica",
       "url": "https://ifpr.edu.br/pitanga/nossos-cursos/graduacao/tecnologia-em-agroindustria/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/pitanga/wp-content/uploads/sites/23/2024/02/PPC-AGROINDUSTRIA-IFPR_Pitanga-_ATUALIZACAO-TROCA-DISCIPLINAS-2019-_-18-12-2018.pdf",
         "conversao": {

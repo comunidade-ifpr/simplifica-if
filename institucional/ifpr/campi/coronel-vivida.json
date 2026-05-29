@@ -11,14 +11,13 @@
   },
   "cursos": [
     {
-      "id": "tecnico-em-administracao",
+      "curso_slug": "tecnico-em-administracao",
       "nome": "Técnico em Administração",
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/coronel-vivida/nossos-cursos/tecnicos-integrados/tecnico-administracao/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "suap": {
         "id": 59,
         "codigo": "CV001",
@@ -56,14 +55,13 @@
       }
     },
     {
-      "id": "tecnico-em-cooperativismo",
+      "curso_slug": "tecnico-em-cooperativismo",
       "nome": "Técnico em Cooperativismo",
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/coronel-vivida/nossos-cursos/tecnicos-integrados/cooperativismo/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "suap": {
         "id": 120,
         "codigo": "CV002",
@@ -101,14 +99,13 @@
       }
     },
     {
-      "id": "tecnologia-em-gestao-financeira",
+      "curso_slug": "tecnologia-em-gestao-financeira",
       "nome": "Tecnologia em Gestão Financeira",
       "nivel": "superior",
       "tipo_oferta": "graduação tecnológica",
       "url": "https://ifpr.edu.br/coronel-vivida/nossos-cursos/graduacao/tecnologia-em-gestao-financeira/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/coronel-vivida/wp-content/uploads/sites/10/2025/12/PPC_TECNOLOGO_EM_GESTAO_FINANCEIRA_atualizacao_12-2025.pdf",
         "conversao": {

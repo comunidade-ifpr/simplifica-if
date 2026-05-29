@@ -11,14 +11,13 @@
   },
   "cursos": [
     {
-      "id": "bacharelado-em-arquitetura-e-urbanismo",
+      "curso_slug": "bacharelado-em-arquitetura-e-urbanismo",
       "nome": "Bacharelado em Arquitetura e Urbanismo",
       "nivel": "superior",
       "tipo_oferta": "bacharelado",
       "url": "https://ifpr.edu.br/umuarama/cursos/cursos-superiores/arquitetura-e-urbanismo/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/umuarama/wp-content/uploads/sites/26/2026/03/PPC_Arq_Urb_2023___APS.pdf",
         "conversao": {
@@ -43,14 +42,13 @@
       }
     },
     {
-      "id": "licenciatura-em-ciencias-biologicas",
+      "curso_slug": "licenciatura-em-ciencias-biologicas",
       "nome": "Licenciatura em Ciências Biológicas",
       "nivel": "superior",
       "tipo_oferta": "licenciatura",
       "url": "https://ifpr.edu.br/umuarama/cursos/cursos-superiores/licenciatura-em-ciencias-biologicas/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/umuarama/wp-content/uploads/sites/26/2026/03/PPC_CBIO_APS.pdf",
         "conversao": {
@@ -75,14 +73,13 @@
       }
     },
     {
-      "id": "licenciatura-em-quimica",
+      "curso_slug": "licenciatura-em-quimica",
       "nome": "Licenciatura em Química",
       "nivel": "superior",
       "tipo_oferta": "licenciatura",
       "url": "https://ifpr.edu.br/umuarama/cursos/cursos-superiores/licenciatura-em-quimica/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/umuarama/wp-content/uploads/sites/26/2026/03/PPC_Lic._em_Quimica___APS.pdf",
         "conversao": {
@@ -104,14 +101,13 @@
       }
     },
     {
-      "id": "tecnico-em-edificacoes-integrado-ao-ensino-medio",
+      "curso_slug": "tecnico-em-edificacoes-integrado-ao-ensino-medio",
       "nome": "Técnico em Edificações",
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/umuarama/cursos/cursos-tecnicos/edificacoes-integrado/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "suap": {
         "id": 42,
         "codigo": "UMU001",
@@ -155,14 +151,13 @@
       }
     },
     {
-      "id": "tecnico-em-informatica-integrado-ao-ensino-medio",
+      "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "nome": "Técnico em Informática",
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/umuarama/cursos/cursos-tecnicos/informatica-integrado/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "suap": {
         "id": 58,
         "codigo": "UMU002",
@@ -206,14 +201,13 @@
       }
     },
     {
-      "id": "tecnico-em-quimica-integrado-ao-ensino-medio",
+      "curso_slug": "tecnico-em-quimica-integrado-ao-ensino-medio",
       "nome": "Técnico em Química",
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/umuarama/cursos/cursos-tecnicos/quimica-integrado/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "suap": {
         "id": 57,
         "codigo": "UMU003",
@@ -257,14 +251,13 @@
       }
     },
     {
-      "id": "tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+      "curso_slug": "tecnologia-em-analise-e-desenvolvimento-de-sistemas",
       "nome": "Tecnologia em Análise e Desenvolvimento de Sistemas",
       "nivel": "superior",
       "tipo_oferta": "graduação tecnológica",
       "url": "https://ifpr.edu.br/umuarama/cursos/cursos-superiores/tecnologia-em-analise-e-desenvolvimento-de-sistemas/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/umuarama/wp-content/uploads/sites/26/2026/03/PPC_ADS_2023___APS.pdf",
         "conversao": {
@@ -289,14 +282,13 @@
       }
     },
     {
-      "id": "tecnologia-em-gestao-do-agronegocio",
+      "curso_slug": "tecnologia-em-gestao-do-agronegocio",
       "nome": "Tecnologia em Gestão do Agronegócio",
       "nivel": "superior",
       "tipo_oferta": "graduação tecnológica",
       "url": "https://ifpr.edu.br/umuarama/cursos/cursos-superiores/tecnologo-em-gestao-do-agronegocio/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/umuarama/wp-content/uploads/sites/26/2026/03/PPC_GESTAO_AGRO_APS.pdf",
         "conversao": {

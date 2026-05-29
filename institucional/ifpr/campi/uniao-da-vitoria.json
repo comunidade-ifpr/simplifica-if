@@ -11,14 +11,13 @@
   },
   "cursos": [
     {
-      "id": "bacharelado-em-agronomia",
+      "curso_slug": "bacharelado-em-agronomia",
       "nome": "Bacharelado em Agronomia",
       "nivel": "superior",
       "tipo_oferta": "bacharelado",
       "url": "https://ifpr.edu.br/uniao-da-vitoria/curso-superior/bacharelado-em-agronomia/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/uniao-da-vitoria/wp-content/uploads/sites/27/2025/03/PPC_AGRONOMIA.pdf",
         "conversao": {
@@ -41,14 +40,13 @@
       }
     },
     {
-      "id": "especializacao-em-educacao-ciencia-e-tecnologia",
+      "curso_slug": "especializacao-em-educacao-ciencia-e-tecnologia",
       "nome": "Especialização em Educação, Ciência e Tecnologia",
       "nivel": "pós-graduação",
       "tipo_oferta": "especialização",
       "url": "https://ifpr.edu.br/uniao-da-vitoria/especializacao/pos-graduacao-lato-sensu-em-educacao-ciencia-e-tecnologia/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/uniao-da-vitoria/wp-content/uploads/sites/27/2025/06/PPC_ESPECIALIZACAO__REVISADO_APOS_CONSEP-1.pdf",
         "conversao": {
@@ -72,14 +70,13 @@
       }
     },
     {
-      "id": "tecnico-em-informatica-integrado-ao-ensino-medio",
+      "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "nome": "Técnico em Informática",
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/uniao-da-vitoria/tecnico-integrado/tecnico-em-informatica-integrado-ao-ensino-medio-duracao-3-anos/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "suap": {
         "id": 41,
         "codigo": "UVIT001",
@@ -118,14 +115,13 @@
       }
     },
     {
-      "id": "tecnico-em-manutencao-e-suporte-em-informatica-proeja",
+      "curso_slug": "tecnico-em-manutencao-e-suporte-em-informatica-proeja",
       "nome": "Técnico em Manutenção e Suporte em Informática PROEJA",
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/uniao-da-vitoria/proeja/tecnico-em-manutencao-e-suporte-em-informatica-na-modalidade-proeja/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/uniao-da-vitoria/wp-content/uploads/sites/27/2018/10/PPC-PROEJA-ULTIMA-VERSAO.pdf",
         "conversao": {
@@ -149,14 +145,13 @@
       }
     },
     {
-      "id": "tecnico-em-meio-ambiente-integrado-ao-ensino-medio",
+      "curso_slug": "tecnico-em-meio-ambiente-integrado-ao-ensino-medio",
       "nome": "Técnico em Meio Ambiente",
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/uniao-da-vitoria/tecnico-integrado/tecnico-em-meio-ambiente-integrado-ao-ensino-medio-duracao-3-anos/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "suap": {
         "id": 40,
         "codigo": "UVIT002",
@@ -195,14 +190,13 @@
       }
     },
     {
-      "id": "tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+      "curso_slug": "tecnologia-em-analise-e-desenvolvimento-de-sistemas",
       "nome": "Tecnologia em Analise e Desenvolvimento de Sistemas",
       "nivel": "superior",
       "tipo_oferta": "graduação tecnológica",
       "url": "https://ifpr.edu.br/uniao-da-vitoria/curso-superior/tecnologia-em-analise-e-desenvolvimento-de-sistemas/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/uniao-da-vitoria/wp-content/uploads/sites/27/2025/03/ppc_tads_2025.pdf",
         "conversao": {

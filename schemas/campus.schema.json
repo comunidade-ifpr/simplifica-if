@@ -66,14 +66,14 @@
       "items": {
         "type": "object",
         "required": [
-          "id",
+          "curso_slug",
           "nome",
           "nivel",
           "tipo_oferta"
         ],
         "additionalProperties": false,
         "properties": {
-          "id": {
+          "curso_slug": {
             "type": "string",
             "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
           },
@@ -119,14 +119,6 @@
               "em_oferta",
               "suspenso",
               "incerto"
-            ]
-          },
-          "escopo": {
-            "enum": [
-              "campus",
-              "rede",
-              "programa",
-              "polo"
             ]
           },
           "url": {
@@ -420,7 +412,6 @@
                 "tipo_oferta",
                 "modalidade",
                 "situacao",
-                "escopo",
                 "url"
               ],
               "additionalProperties": false,
@@ -469,14 +460,6 @@
                     "em_oferta",
                     "suspenso",
                     "incerto"
-                  ]
-                },
-                "escopo": {
-                  "enum": [
-                    "campus",
-                    "rede",
-                    "programa",
-                    "polo"
                   ]
                 },
                 "url": {

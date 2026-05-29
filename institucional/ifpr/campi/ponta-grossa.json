@@ -7,14 +7,13 @@
   },
   "cursos": [
     {
-      "id": "tecnico-em-informatica-integrado-ao-ensino-medio",
+      "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "nome": "Técnico em Informática",
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/ponta-grossa/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/ponta-grossa/wp-content/uploads/sites/28/2022/07/PPC-Informatica_2019-Final-REVISADO.pdf",
         "conversao": {

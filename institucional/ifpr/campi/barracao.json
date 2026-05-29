@@ -11,14 +11,13 @@
   },
   "cursos": [
     {
-      "id": "tecnico-em-administracao",
+      "curso_slug": "tecnico-em-administracao",
       "nome": "Técnico em Administração",
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/barracao/nossos-cursos/integrados-ao-ensino-medio/tecnico-em-administracao/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "suap": {
         "id": 70,
         "codigo": "BA001",
@@ -62,14 +61,13 @@
       }
     },
     {
-      "id": "tecnico-em-informatica",
+      "curso_slug": "tecnico-em-informatica",
       "nome": "Técnico em Informática",
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/barracao/nossos-cursos/integrados-ao-ensino-medio/tecnico-em-informatica/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "suap": {
         "id": 62,
         "codigo": "BA002",
@@ -114,14 +112,13 @@
       }
     },
     {
-      "id": "tecnologia-em-comercio-exterior",
+      "curso_slug": "tecnologia-em-comercio-exterior",
       "nome": "Tecnologia em Comércio Exterior",
       "nivel": "superior",
       "tipo_oferta": "graduação tecnológica",
       "url": "https://ifpr.edu.br/barracao/nossos-cursos/graduacao/comercio-exterior/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/barracao/wp-content/uploads/sites/5/2025/02/PPC-Comercio-Exterior-Atualizada-2025.pdf",
         "conversao": {

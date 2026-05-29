@@ -11,14 +11,13 @@
   },
   "cursos": [
     {
-      "id": "licenciatura-em-historia",
+      "curso_slug": "licenciatura-em-historia",
       "nome": "Licenciatura em História",
       "nivel": "superior",
       "tipo_oferta": "licenciatura",
       "url": "https://ifpr.edu.br/colombo/licenciatura-em-historia/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/colombo/wp-content/uploads/sites/9/2024/10/PPC-HISTORIA-COLOMBO_APROVADO-FINAL.pdf",
         "conversao": {
@@ -43,14 +42,13 @@
       }
     },
     {
-      "id": "licenciatura-em-pedagogia",
+      "curso_slug": "licenciatura-em-pedagogia",
       "nome": "Licenciatura em Pedagogia",
       "nivel": "superior",
       "tipo_oferta": "licenciatura",
       "url": "https://ifpr.edu.br/colombo/licenciatura-em-pedagogia/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/colombo/wp-content/uploads/sites/9/2024/10/PPC_PEDAGOGIA_COLOMBO_2024.pdf",
         "conversao": {
@@ -75,14 +73,13 @@
       }
     },
     {
-      "id": "tecnico-em-administracao-integrado-ao-ensino-medio",
+      "curso_slug": "tecnico-em-administracao-integrado-ao-ensino-medio",
       "nome": "Técnico em Administração",
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/colombo/tecnicos-integrados/tecnico-em-administracao/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "suap": {
         "id": 35,
         "codigo": "COL001",
@@ -125,14 +122,13 @@
       }
     },
     {
-      "id": "tecnico-em-administracao-subsequente",
+      "curso_slug": "tecnico-em-administracao-subsequente",
       "nome": "Técnico em Administração",
       "nivel": "médio",
       "tipo_oferta": "subsequente",
       "url": "https://ifpr.edu.br/colombo/tecnicos-subsequentes/tecnico-em-administracao/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/colombo/wp-content/uploads/sites/9/2022/08/PPC_Subs_Adm_Versao_Final.pdf",
         "conversao": {
@@ -159,14 +155,13 @@
       }
     },
     {
-      "id": "tecnico-em-alimentos-integrado-ao-ensino-medio",
+      "curso_slug": "tecnico-em-alimentos-integrado-ao-ensino-medio",
       "nome": "Técnico em Alimentos",
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/colombo/tecnicos-integrados/tecnico-em-alimentos/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "suap": {
         "id": 76,
         "codigo": "COL002",
@@ -193,14 +188,13 @@
       }
     },
     {
-      "id": "tecnico-em-informatica-integrado-ao-ensino-medio",
+      "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "nome": "Técnico em Informática",
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "url": "https://ifpr.edu.br/colombo/tecnicos-integrados/tecnico-em-informatica/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "suap": {
         "id": 122,
         "codigo": "COL003",
@@ -241,14 +235,13 @@
       }
     },
     {
-      "id": "tecnologia-em-alimentos",
+      "curso_slug": "tecnologia-em-alimentos",
       "nome": "Tecnologia em Alimentos",
       "nivel": "superior",
       "tipo_oferta": "graduação tecnológica",
       "url": "https://ifpr.edu.br/colombo/superiores-tecnologia/tecnologia-em-alimentos/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/colombo/wp-content/uploads/sites/9/2022/08/PPCTAL_2022_Final-1.pdf",
         "conversao": {
@@ -273,14 +266,13 @@
       }
     },
     {
-      "id": "tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+      "curso_slug": "tecnologia-em-analise-e-desenvolvimento-de-sistemas",
       "nome": "Tecnologia em Análise e Desenvolvimento de Sistemas",
       "nivel": "superior",
       "tipo_oferta": "graduação tecnológica",
       "url": "https://ifpr.edu.br/colombo/superiores-tecnologia/tads/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/colombo/wp-content/uploads/sites/9/2022/12/PPC-DO-TADS-APROVADO-PELO-CONSEPE-52-2022.pdf",
         "conversao": {
@@ -305,14 +297,13 @@
       }
     },
     {
-      "id": "tecnologia-em-processos-gerenciais",
+      "curso_slug": "tecnologia-em-processos-gerenciais",
       "nome": "Tecnologia em Processos Gerenciais",
       "nivel": "superior",
       "tipo_oferta": "graduação tecnológica",
       "url": "https://ifpr.edu.br/colombo/superiores-tecnologia/tecnologia-em-processos-gerenciais/",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "escopo": "campus",
       "ppc": {
         "url": "https://ifpr.edu.br/colombo/wp-content/uploads/sites/9/2025/03/PPC_TPG_COLOMBO_FINAL_CONSEPE_REV.pdf",
         "conversao": {
