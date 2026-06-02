@@ -537,8 +537,7 @@
         "processos": [
           {
             "numero": "23411.021515/2022-21",
-            "tipo": "Ajuste PPC",
-            "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 69. Enviado ao campus - viabilidade favorável"
+            "tipo": "Ajuste PPC"
           },
           {
             "numero": "23397.000293/2014-28",
@@ -1259,6 +1258,8 @@
             "quantidade": 25,
             "trecho_fonte": "Número máximo de vagas por ingresso (anual): 25 vagas; Número mínimo de vagas por ingresso (anual): 15 vagas; Reserva de vagas por ingresso (anual): 2 vagas",
             "status_curadoria": "revisado",
+            "minimo": 15,
+            "maximo": 25,
             "periodicidade": "anual",
             "revisado_em": "2026-05-11"
           }
@@ -1311,8 +1312,12 @@
       "sei": {
         "processos": [
           {
+            "numero": "23411.017821/2024-24",
+            "tipo": "Abertura PAC"
+          },
+          {
             "numero": "23411.007447/2025-30",
-            "tipo": "abertura OLD"
+            "tipo": "Abertura PPC"
           }
         ]
       }

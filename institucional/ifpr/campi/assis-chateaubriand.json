@@ -97,14 +97,14 @@
       "sei": {
         "processos": [
           {
-            "numero": "23412.000140/2017-98",
-            "tipo": "Ajuste PPC",
-            "trecho_fonte": "Tentativa de ajuste curricular do PPC do Curso Técnico em Agropecuária Integrado ao Ensino Médio; parecer CONSEPE inconcluso e ajuste posteriormente suspenso/arquivado pela DIEPEX. Processo localizado em 25/05/26. Ajuste curricular não efetivado: parecer CONSEPE inconcluso em 12/08/2021 e despacho DIEPEX de 30/06/2022 suspende o ajuste e arquiva os autos.\nEvidências: SEI 1335974: parecer CONSEPE de 12/08/2021 sobre ajuste curricular do PPC, com parecer conclusivo inconcluso.; SEI 1338235: CONSEPE registra parecer inconcluso e retorno à DEMTEC/campus para ajustes.; SEI 0241345: continuidade eletrônica de processo físico em 27/03/2019.; SEI 1289785: Portaria 95/2021 dispõe sobre composição da Comissão de Ajuste Curricular do PPC."
-          },
-          {
             "numero": "23411.006241/2025-92",
             "tipo": "Ajuste PPC",
             "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 10. 26/03 Parecer técnico-pedagógico emitido pela Dentec\n04/05 Campus devolve PPC revisado\n08/05 Aprovação pela Dentec do PPC, devolução para o campus\n15/05 Envio do processo para CIA/Consepe"
+          },
+          {
+            "numero": "23412.000140/2017-98",
+            "tipo": "Ajuste PPC",
+            "trecho_fonte": "Tentativa de ajuste curricular do PPC do Curso Técnico em Agropecuária Integrado ao Ensino Médio; parecer CONSEPE inconcluso e ajuste posteriormente suspenso/arquivado pela DIEPEX. Processo localizado em 25/05/26. Ajuste curricular não efetivado: parecer CONSEPE inconcluso em 12/08/2021 e despacho DIEPEX de 30/06/2022 suspende o ajuste e arquiva os autos.\nEvidências: SEI 1335974: parecer CONSEPE de 12/08/2021 sobre ajuste curricular do PPC, com parecer conclusivo inconcluso.; SEI 1338235: CONSEPE registra parecer inconcluso e retorno à DEMTEC/campus para ajustes.; SEI 0241345: continuidade eletrônica de processo físico em 27/03/2019.; SEI 1289785: Portaria 95/2021 dispõe sobre composição da Comissão de Ajuste Curricular do PPC."
           }
         ]
       }

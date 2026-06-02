@@ -193,6 +193,10 @@
       "sei": {
         "processos": [
           {
+            "numero": "23411.005326/2025-53",
+            "tipo": "Abertura PAC"
+          },
+          {
             "numero": "23411.021133/2025-40",
             "tipo": "Abertura PPC"
           }

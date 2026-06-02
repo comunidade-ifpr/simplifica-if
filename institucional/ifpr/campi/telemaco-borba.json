@@ -129,8 +129,7 @@
         "processos": [
           {
             "numero": "23411.011619/2025-70",
-            "tipo": "Reversão Suspensão",
-            "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 4. 12/05 Recebimento do processo na Dentec"
+            "tipo": "Reversão Suspensão"
           }
         ]
       }

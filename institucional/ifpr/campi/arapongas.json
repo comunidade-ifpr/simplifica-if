@@ -184,11 +184,11 @@
             "tipo": "Suspensão"
           },
           {
-            "numero": "23411.005166/2020-38",
+            "numero": "23411.017355/2020-53",
             "tipo": "abertura OLD"
           },
           {
-            "numero": "23411.017355/2020-53",
+            "numero": "23411.005166/2020-38",
             "tipo": "abertura OLD"
           }
         ]
@@ -236,8 +236,7 @@
         "processos": [
           {
             "numero": "23411.012333/2025-10",
-            "tipo": "abertura OLD",
-            "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 50. Aprovado Consup"
+            "tipo": "abertura OLD"
           }
         ]
       }
