@@ -69,6 +69,59 @@ EMPLOYEE = """
 
 WRONG_EMPLOYEE = EMPLOYEE.replace("Docente Exemplo", "Usuário Autenticado")
 
+SERVER_LISTING = """
+<html><body><main id="content"><table id="result_list">
+  <tr><th>#</th><th>Foto</th><th>Nome/Matrícula</th><th>Contatos</th>
+      <th>Cargo/Função/Situação</th><th>Setor</th></tr>
+  <tr>
+    <td><a href="/rh/servidor/7000001/">Visualizar</a></td><td></td>
+    <td><h3>Pessoa Técnica Exemplo (7000001)</h3></td>
+    <td><dl><dt>E-mail institucional</dt><dd>pessoa@example.invalid</dd></dl></td>
+    <td><dl>
+      <dt>Cargo</dt><dd>ASSISTENTE EM ADMINISTRACAO</dd>
+      <dt>FG0001 - SETOR/UNI</dt><dd>CHEFE DE SECAO</dd>
+      <dt>Situação</dt><dd>ATIVO PERMANENTE - 01</dd>
+    </dl></td>
+    <td><dl>
+      <dt>SIAPE Lotação</dt><dd>UNIDADE</dd>
+      <dt>SIAPE Exercício</dt><dd>SETOR/UNI</dd>
+      <dt>SUAP</dt><dd>SETOR/UNI</dd>
+    </dl></td>
+  </tr>
+</table></main></body></html>
+"""
+
+SERVER_EMPLOYEE = """
+<html><body><main id="content">
+  <h2>Pessoa Técnica Exemplo (7000001)</h2>
+  <section id="dados-pessoais"><dl>
+    <dt>CPF</dt><dd>000.000.000-00</dd>
+    <dt>E-mail institucional</dt><dd>pessoa@example.invalid</dd>
+    <dt>Endereço</dt><dd>Rua não exportável</dd>
+  </dl></section>
+  <section id="dados-funcionais"><dl>
+    <dt>Setor SUAP</dt><dd>SETOR/UNI (campus: UNIDADE)</dd>
+    <dt>Lotação SIAPE</dt><dd>UNIDADE (Campus: UNIDADE)</dd>
+    <dt>Exercício SIAPE</dt><dd>SETOR/UNI (Campus: UNIDADE)</dd>
+    <dt>Situação</dt><dd>ATIVO PERMANENTE - 01</dd>
+    <dt>Regime</dt><dd>REGIME JURIDICO UNICO</dd>
+    <dt>Jornada Trabalho</dt><dd>40 HORAS SEMANAIS</dd>
+    <dt>Início no Serviço Público</dt><dd>01/02/2020</dd>
+    <dt>Data de Posse na Instituição</dt><dd>01/02/2020</dd>
+    <dt>Início de Exercício na Instituição</dt><dd>03/02/2020</dd>
+    <dt>Data de Posse no Cargo</dt><dd>01/02/2020</dd>
+    <dt>Início Exercício no Cargo</dt><dd>03/02/2020</dd>
+    <dt>Cargo</dt><dd>ASSISTENTE EM ADMINISTRACAO - 701200</dd>
+    <dt>Classe do Cargo</dt><dd>CLASSE D</dd>
+    <dt>Padrão</dt><dd>08</dd>
+    <dt>Grupo do Cargo</dt><dd>PLANO DE CARREIRA TAE</dd>
+    <dt>Participa do PGD (dados do SOU GOV)</dt><dd>Sim</dd>
+    <dt>Modalidade do PGD (dados do SOU GOV)</dt><dd>parcial</dd>
+  </dl></section>
+  <section id="dados-bancarios"><dl><dt>Banco</dt><dd>BANCO TESTE</dd></dl></section>
+</main></body></html>
+"""
+
 
 class FakeClient:
     def __init__(self):
@@ -97,6 +150,20 @@ class WrongEmployeeClient(FakeClient):
         if path == "/rh/servidor/321/":
             return path, WRONG_EMPLOYEE
         return super().get_text(path, params)
+
+
+class ServerClient:
+    def __init__(self, employee=SERVER_EMPLOYEE):
+        self.employee = employee
+        self.paths: list[tuple[str, object]] = []
+
+    def get_text(self, path, params=None):
+        self.paths.append((path, params))
+        if path == suap.SERVER_LIST_PATH:
+            return path, SERVER_LISTING
+        if path == "/rh/servidor/7000001/":
+            return path, self.employee
+        raise AssertionError(path)
 
 
 class ProfessorQueryTests(unittest.TestCase):
@@ -186,6 +253,49 @@ class ProfessorQueryTests(unittest.TestCase):
         self.assertIsNone(result["cargo"])
         self.assertEqual(1, len(result["disciplinas_ativas"]))
         self.assertTrue(any("descartados" in warning for warning in result["avisos"]))
+
+
+class ServerQueryTests(unittest.TestCase):
+    def test_listing_extracts_professional_fields_and_omits_contacts(self):
+        candidates = suap.parse_server_candidates(SERVER_LISTING)
+
+        self.assertEqual(1, len(candidates))
+        self.assertEqual("Pessoa Técnica Exemplo", candidates[0]["nome"])
+        self.assertEqual("CHEFE DE SECAO", candidates[0]["funcao"])
+        self.assertEqual("SETOR/UNI", candidates[0]["setor_suap"])
+        self.assertNotIn("email", candidates[0])
+
+    def test_unique_partial_name_is_accepted_but_unsafe_match_is_rejected(self):
+        candidates = suap.parse_server_candidates(SERVER_LISTING)
+
+        selected = suap.select_server_candidate(candidates, "Pessoa Exemplo")
+        self.assertEqual("Pessoa Técnica Exemplo", selected["nome"])
+
+        with self.assertRaises(suap.SkillError):
+            suap.select_server_candidate(candidates, "Pessoa Diferente")
+
+    def test_end_to_end_server_result_has_only_allowlisted_professional_data(self):
+        result = suap.consultar_servidor(
+            "Pessoa Técnica Exemplo", None, client=ServerClient()
+        )
+        serialized = json.dumps(result, ensure_ascii=False).casefold()
+
+        self.assertEqual("ASSISTENTE EM ADMINISTRACAO", result["cargo"])
+        self.assertEqual("40 HORAS SEMANAIS", result["jornada_trabalho"])
+        self.assertEqual("CLASSE D", result["classe_cargo"])
+        self.assertEqual("parcial", result["modalidade_pgd"])
+        self.assertNotIn("000.000.000-00", serialized)
+        self.assertNotIn("example.invalid", serialized)
+        self.assertNotIn("banco teste", serialized)
+        self.assertNotIn("7000001", serialized)
+
+    def test_server_profile_identity_must_match_listing(self):
+        wrong = SERVER_EMPLOYEE.replace("Pessoa Técnica Exemplo", "Outra Pessoa")
+
+        with self.assertRaises(suap.SkillError):
+            suap.consultar_servidor(
+                "Pessoa Técnica Exemplo", None, client=ServerClient(wrong)
+            )
 
 
 if __name__ == "__main__":

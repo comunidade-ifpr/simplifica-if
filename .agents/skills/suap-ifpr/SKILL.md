@@ -1,13 +1,24 @@
 ---
 name: suap-ifpr
-description: Consultar e navegar no SUAP do IFPR com base nos tutoriais oficiais, especialmente em fluxos de Ensino, Cursos, Coordenação de Curso, Registro Acadêmico, docentes e estudantes. Use quando a tarefa exigir localizar um procedimento do SUAP, acessar dados no sistema ou executar uma alteração explicitamente solicitada.
+description: Consultar e navegar no SUAP do IFPR com base nos tutoriais oficiais, incluindo fluxos de Ensino e consultas profissionais de docentes, técnicos administrativos e outros servidores. Use quando a tarefa exigir localizar um procedimento do SUAP, acessar dados no sistema ou executar uma alteração explicitamente solicitada.
 ---
 
 # SUAP IFPR
 
 Use o portal de tutoriais do IFPR para descobrir o procedimento e o SUAP como fonte do dado operacional. A cobertura mais detalhada desta versão é Ensino e Cursos; os demais módulos usam o mesmo roteamento pelo catálogo.
 
-Para instruções de configuração e manutenção, leia [README.md](README.md). Para tarefas de Ensino, leia [references/ensino-cursos.md](references/ensino-cursos.md).
+Para instruções de configuração e manutenção, leia [README.md](README.md). Para tarefas de Ensino, leia [references/ensino-cursos.md](references/ensino-cursos.md). Para consultar qualquer servidor, inclusive técnico administrativo, leia [references/servidores.md](references/servidores.md).
+
+## Consulta rápida de servidor
+
+Quando o pedido for sobre cargo, função, situação ou vínculo funcional de qualquer servidor, prefira:
+
+```bash
+python3 .agents/skills/suap-ifpr/scripts/suap.py servidor "NOME"
+python3 .agents/skills/suap-ifpr/scripts/suap.py servidor "NOME" --campus UNIDADE --json
+```
+
+O comando consulta `Gestão de Pessoas > Servidores`, funciona para docentes e técnicos administrativos e confirma a identidade na ficha individual. A correspondência parcial só é aceita quando todos os termos informados pertencem a uma única pessoa; homônimos ou resultados inseguros devem ser refinados, nunca escolhidos silenciosamente.
 
 ## Consulta rápida de docente
 
@@ -26,7 +37,7 @@ Sem período explícito, use o período mais recente oferecido pela ficha docent
 
 Se houver homônimos, refine com `--campus UNIDADE` antes de abrir qualquer ficha individual.
 
-A saída rápida não deve incluir CPF, matrícula SIAPE, e-mail, telefone, identificadores internos do professor ou diário, nem HTML autenticado. Obtenha o vínculo funcional somente dentro do conteúdo principal da ficha pesquisada e aceite os dados apenas após confirmar que o nome da página funcional corresponde ao docente. Uma falha de identidade ou permissão em Gestão de Pessoas afeta apenas o enriquecimento funcional: preserve os dados de Ensino que estiverem disponíveis e registre a limitação.
+A saída rápida não deve incluir CPF, matrícula SIAPE, e-mail, telefone, endereço, documentos, dados bancários, identificadores internos do servidor, professor ou diário, nem HTML autenticado. Obtenha o vínculo funcional somente dentro do conteúdo principal da ficha pesquisada e aceite os dados apenas após confirmar que o nome da página funcional corresponde à pessoa. Uma falha de identidade ou permissão em Gestão de Pessoas afeta apenas o enriquecimento funcional: preserve os dados profissionais ou de Ensino que estiverem disponíveis e registre a limitação.
 
 ## Fluxo
 

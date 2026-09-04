@@ -18,12 +18,14 @@ from suap_client import SkillError, SuapClient, SuapHTTPError, clean_text
 
 
 PROFESSOR_LIST_PATH = "/admin/edu/professor/"
+SERVER_LIST_PATH = "/admin/rh/servidor/"
 TUTORIAL_TITLE = "9 – Secretarias Acadêmicas: Pesquisa dados docentes"
 TUTORIAL_URL = (
     "https://ifpr.edu.br/tutoriais/base-conhecimento/"
     "9-secretarias-academicas-pesquisa-dados-docentes-dga-adilson-23-10-2024/"
 )
 MENU_PATH = "Ensino > Alunos e Professores > Professores > Visualizar > Diários e Cursos Lecionados"
+SERVER_MENU_PATH = "Gestão de Pessoas > Servidores > Visualizar"
 VOID_TAGS = {
     "area",
     "base",
@@ -166,7 +168,10 @@ def parse_professor_candidates(document: str) -> list[dict[str, str]]:
 
 
 def select_exact_candidate(
-    candidates: list[dict[str, str]], requested_name: str, campus: str | None = None
+    candidates: list[dict[str, str]],
+    requested_name: str,
+    campus: str | None = None,
+    entity_label: str = "docente",
 ) -> dict[str, str]:
     exact = [item for item in candidates if normalize(item["nome"]) == normalize(requested_name)]
     if campus and len(exact) > 1:
@@ -184,14 +189,15 @@ def select_exact_candidate(
             for item in exact[:8]
         )
         raise SkillError(
-            "Há mais de um docente com esse nome. Refine a unidade antes de consultar: " + descriptions
+            f"Há mais de um(a) {entity_label} com esse nome. "
+            "Refine a unidade antes de consultar: " + descriptions
         )
     if campus:
         raise SkillError(f"Nenhum homônimo corresponde à unidade informada: {campus}.")
     if candidates:
         names = ", ".join(item["nome"] for item in candidates[:8])
         raise SkillError(f"Nenhuma correspondência exata. Resultados próximos: {names}.")
-    raise SkillError("Nenhum docente foi localizado para o nome informado.")
+    raise SkillError(f"Nenhum(a) {entity_label} foi localizado(a) para o nome informado.")
 
 
 def available_periods(root: Node) -> list[str]:
@@ -233,6 +239,118 @@ def first_field(pairs: list[tuple[str, str]], names: Iterable[str]) -> str | Non
         if normalize(key) in normalized and value and value != "-":
             return value
     return None
+
+
+def active_function(pairs: list[tuple[str, str]]) -> str | None:
+    direct = first_field(pairs, ("Função", "Função Atual"))
+    if direct:
+        return direct
+    for key, value in pairs:
+        normalized_key = normalize(key)
+        if re.match(r"^(?:cd|fg|fuc|fcc|cce|fce)\d{1,4}\b", normalized_key):
+            return value or None
+    return None
+
+
+def parse_server_candidates(document: str) -> list[dict[str, str]]:
+    root = parse_html(document)
+    candidates: list[dict[str, str]] = []
+    for row in root.descendants("tr"):
+        profile_path = next(
+            (
+                urlparse(href).path
+                for href in links(row)
+                if re.fullmatch(r"/rh/servidor/\d+/", urlparse(href).path)
+            ),
+            None,
+        )
+        if profile_path is None:
+            continue
+        heading = next((item.text() for item in row.descendants("h3") if item.text()), None)
+        if not heading:
+            continue
+        match = re.fullmatch(r"(.+?)\s+\([^()]+\)", heading)
+        nome = clean_text(match.group(1)) if match else heading
+        pairs = field_pairs(row)
+        candidates.append(
+            {
+                "nome": nome,
+                "cargo": first_field(pairs, ("Cargo",)) or "",
+                "funcao": active_function(pairs) or "",
+                "situacao": first_field(pairs, ("Situação",)) or "",
+                "lotacao_siape": first_field(pairs, ("SIAPE Lotação", "Lotação SIAPE")) or "",
+                "exercicio_siape": first_field(pairs, ("SIAPE Exercício", "Exercício SIAPE")) or "",
+                "setor_suap": first_field(pairs, ("SUAP", "Setor SUAP")) or "",
+                "profile_path": profile_path,
+            }
+        )
+    return candidates
+
+
+def server_matches_name(candidate_name: str, requested_name: str) -> bool:
+    requested_tokens = set(normalize(requested_name).split())
+    candidate_tokens = set(normalize(candidate_name).split())
+    return bool(requested_tokens) and requested_tokens.issubset(candidate_tokens)
+
+
+def select_server_candidate(
+    candidates: list[dict[str, str]], requested_name: str, campus: str | None = None
+) -> dict[str, str]:
+    exact = [item for item in candidates if normalize(item["nome"]) == normalize(requested_name)]
+    matching = exact or [
+        item for item in candidates if server_matches_name(item["nome"], requested_name)
+    ]
+    if campus and len(matching) > 1:
+        unit = normalize(campus)
+        matching = [
+            item
+            for item in matching
+            if unit
+            in normalize(
+                f"{item['lotacao_siape']} {item['exercicio_siape']} {item['setor_suap']}"
+            )
+        ]
+    if len(matching) == 1:
+        return matching[0]
+    if len(matching) > 1:
+        descriptions = "; ".join(
+            f"{item['nome']} ({item['setor_suap'] or item['exercicio_siape'] or item['lotacao_siape'] or 'unidade não informada'})"
+            for item in matching[:8]
+        )
+        raise SkillError(
+            "Mais de um(a) servidor(a) corresponde ao nome informado. "
+            "Informe o nome completo ou refine com --campus: " + descriptions
+        )
+    if campus:
+        raise SkillError(f"Nenhum servidor corresponde à unidade informada: {campus}.")
+    if candidates:
+        names = ", ".join(item["nome"] for item in candidates[:8])
+        raise SkillError(
+            "Nenhuma correspondência segura para o nome informado. "
+            f"Resultados próximos: {names}."
+        )
+    raise SkillError("Nenhum(a) servidor(a) foi localizado(a) para o nome informado.")
+
+
+def find_server_candidate(
+    client: SuapClient, requested_name: str, campus: str | None = None
+) -> dict[str, str]:
+    _, listing = client.get_text(SERVER_LIST_PATH, {"q": requested_name})
+    candidates = parse_server_candidates(listing)
+    exact = [item for item in candidates if normalize(item["nome"]) == normalize(requested_name)]
+    if exact:
+        return select_server_candidate(exact, requested_name, campus)
+
+    tokens = requested_name.split()
+    fallback = tokens[-1] if len(tokens) > 1 and len(tokens[-1]) >= 3 else None
+    if fallback and normalize(fallback) != normalize(requested_name):
+        _, fallback_listing = client.get_text(SERVER_LIST_PATH, {"q": fallback})
+        by_path = {item["profile_path"]: item for item in candidates}
+        by_path.update(
+            {item["profile_path"]: item for item in parse_server_candidates(fallback_listing)}
+        )
+        candidates = list(by_path.values())
+    return select_server_candidate(candidates, requested_name, campus)
 
 
 def parse_courses(root: Node) -> list[str]:
@@ -332,9 +450,95 @@ def parse_employment(document: str) -> dict[str, str | None]:
         cargo = re.sub(r"\s+-\s+\d+\s*$", "", cargo)
     return {
         "cargo": cargo,
-        "funcao": first_field(pairs, ("Função", "Função Atual")),
+        "funcao": active_function(pairs),
         "lotacao": first_field(pairs, ("Lotação SIAPE", "Lotação")),
-        "setor_exercicio": first_field(pairs, ("Setor de Exercício", "Setor SUAP")),
+        "setor_exercicio": first_field(
+            pairs, ("Exercício SIAPE", "Setor de Exercício", "Setor SUAP")
+        ),
+        "setor_suap": first_field(pairs, ("Setor SUAP",)),
+        "situacao": first_field(pairs, ("Situação",)),
+        "regime": first_field(pairs, ("Regime", "Regime Jurídico")),
+        "jornada_trabalho": first_field(pairs, ("Jornada Trabalho", "Jornada de Trabalho")),
+        "inicio_servico_publico": first_field(pairs, ("Início no Serviço Público",)),
+        "data_posse_instituicao": first_field(pairs, ("Data de Posse na Instituição",)),
+        "inicio_exercicio_instituicao": first_field(
+            pairs, ("Início de Exercício na Instituição",)
+        ),
+        "data_posse_cargo": first_field(pairs, ("Data de Posse no Cargo",)),
+        "inicio_exercicio_cargo": first_field(pairs, ("Início Exercício no Cargo",)),
+        "classe_cargo": first_field(pairs, ("Classe do Cargo",)),
+        "padrao": first_field(pairs, ("Padrão",)),
+        "grupo_cargo": first_field(pairs, ("Grupo do Cargo",)),
+        "participa_pgd": first_field(
+            pairs, ("Participa do PGD (dados do SOU GOV)", "Em PGD (dados do suap)")
+        ),
+        "modalidade_pgd": first_field(pairs, ("Modalidade do PGD (dados do SOU GOV)",)),
+    }
+
+
+def consultar_servidor(
+    nome: str,
+    campus: str | None = None,
+    *,
+    client: SuapClient,
+) -> dict[str, object]:
+    candidate = find_server_candidate(client, nome, campus)
+    employment = parse_employment("")
+    warnings: list[str] = []
+    try:
+        _, employee_document = client.get_text(candidate["profile_path"])
+        employee_name = employee_profile_name(employee_document)
+        if not employee_name or normalize(employee_name) != normalize(candidate["nome"]):
+            raise SkillError(
+                "A consulta foi interrompida porque a ficha funcional não confirmou a identidade "
+                "do servidor selecionado."
+            )
+        employment = parse_employment(employee_document)
+    except SuapHTTPError as exc:
+        if exc.status not in {401, 403}:
+            raise
+        warnings.append(
+            "O perfil atual não tem permissão para abrir a ficha funcional; foram preservados "
+            "apenas os dados profissionais visíveis na listagem de servidores."
+        )
+
+    def detail_or_candidate(detail: str, candidate_key: str | None = None) -> str | None:
+        value = employment.get(detail)
+        if value:
+            return value
+        return candidate.get(candidate_key or detail) or None
+
+    return {
+        "nome": candidate["nome"],
+        "cargo": detail_or_candidate("cargo"),
+        "funcao": detail_or_candidate("funcao"),
+        "situacao": detail_or_candidate("situacao"),
+        "setor_suap": detail_or_candidate("setor_suap"),
+        "lotacao_siape": detail_or_candidate("lotacao", "lotacao_siape"),
+        "exercicio_siape": detail_or_candidate("setor_exercicio", "exercicio_siape"),
+        "regime": employment["regime"],
+        "jornada_trabalho": employment["jornada_trabalho"],
+        "inicio_servico_publico": employment["inicio_servico_publico"],
+        "data_posse_instituicao": employment["data_posse_instituicao"],
+        "inicio_exercicio_instituicao": employment["inicio_exercicio_instituicao"],
+        "data_posse_cargo": employment["data_posse_cargo"],
+        "inicio_exercicio_cargo": employment["inicio_exercicio_cargo"],
+        "classe_cargo": employment["classe_cargo"],
+        "padrao": employment["padrao"],
+        "grupo_cargo": employment["grupo_cargo"],
+        "participa_pgd": employment["participa_pgd"],
+        "modalidade_pgd": employment["modalidade_pgd"],
+        "avisos": warnings,
+        "fonte": {
+            "tutorial": None,
+            "tutorial_url": None,
+            "nota_documentacao": (
+                "Nenhum tutorial específico para consulta nominal de servidores foi localizado "
+                "no índice oficial; o caminho foi confirmado na interface autenticada."
+            ),
+            "menu": SERVER_MENU_PATH,
+            "paginas_suap": ["/admin/rh/servidor/", "/rh/servidor/<id>/"],
+        },
     }
 
 
@@ -463,6 +667,44 @@ def render_text(result: dict[str, object]) -> str:
     return "\n".join(lines)
 
 
+def render_server_text(result: dict[str, object]) -> str:
+    labels = (
+        ("Cargo", "cargo"),
+        ("Função", "funcao"),
+        ("Situação", "situacao"),
+        ("Setor SUAP", "setor_suap"),
+        ("Lotação SIAPE", "lotacao_siape"),
+        ("Exercício SIAPE", "exercicio_siape"),
+        ("Regime", "regime"),
+        ("Jornada de trabalho", "jornada_trabalho"),
+        ("Início no serviço público", "inicio_servico_publico"),
+        ("Posse na instituição", "data_posse_instituicao"),
+        ("Exercício na instituição", "inicio_exercicio_instituicao"),
+        ("Posse no cargo", "data_posse_cargo"),
+        ("Exercício no cargo", "inicio_exercicio_cargo"),
+        ("Classe do cargo", "classe_cargo"),
+        ("Padrão", "padrao"),
+        ("Grupo do cargo", "grupo_cargo"),
+        ("Participa do PGD", "participa_pgd"),
+        ("Modalidade do PGD", "modalidade_pgd"),
+    )
+    lines = [f"Servidor(a): {result['nome']}"]
+    lines.extend(f"{label}: {result[key] or 'não informado'}" for label, key in labels)
+    warnings = result["avisos"]
+    if warnings:
+        lines.extend(["", "Avisos:"])
+        lines.extend(f"- {warning}" for warning in warnings)  # type: ignore[union-attr]
+    source = result["fonte"]  # type: ignore[assignment]
+    lines.extend(
+        [
+            "",
+            f"Documentação: {source['nota_documentacao']}",
+            f"Caminho observado: {source['menu']}",
+        ]
+    )
+    return "\n".join(lines)
+
+
 def command_professor(args: argparse.Namespace) -> int:
     client = SuapClient.from_config(args.env_file)
     result = consultar_professor(
@@ -479,6 +721,16 @@ def command_professor(args: argparse.Namespace) -> int:
     return 0
 
 
+def command_server(args: argparse.Namespace) -> int:
+    client = SuapClient.from_config(args.env_file)
+    result = consultar_servidor(args.nome, args.campus, client=client)
+    if args.json:
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+    else:
+        print(render_server_text(result))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--env-file", type=Path, default=None, help="arquivo .env.local alternativo")
@@ -490,13 +742,20 @@ def build_parser() -> argparse.ArgumentParser:
     professor.add_argument("--campus", help="unidade para desambiguar docentes homônimos")
     professor.add_argument("--json", action="store_true", help="emite saída estruturada em JSON")
     professor.set_defaults(handler=command_professor)
+    server = subparsers.add_parser(
+        "servidor", help="consulta dados profissionais de docentes e técnicos administrativos"
+    )
+    server.add_argument("nome", help="nome do servidor; prefira o nome completo")
+    server.add_argument("--campus", help="unidade para desambiguar servidores homônimos")
+    server.add_argument("--json", action="store_true", help="emite saída estruturada em JSON")
+    server.set_defaults(handler=command_server)
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    if args.command == "professor" and not args.nome.strip():
+    if args.command in {"professor", "servidor"} and not args.nome.strip():
         parser.error("o nome não pode ser vazio")
     try:
         return int(args.handler(args))
