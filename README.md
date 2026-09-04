@@ -41,7 +41,7 @@ Skills disponíveis:
 - `analise-ppc/`: análise IA-first de Projetos Pedagógicos de Curso técnico do IFPR.
 - `ifpr-design/`: identidade visual do IFPR para materiais e interfaces.
 - `revisar-processo-ppc/`: revisão de processos SEI de PPC.
-- `suap-ifpr/`: consulta e navegação no SUAP do IFPR com apoio dos tutoriais oficiais, incluindo busca rápida de cargo, cursos e disciplinas de docentes.
+- `suap-ifpr/`: consulta e navegação no SUAP do IFPR com apoio dos tutoriais oficiais, incluindo dados profissionais de docentes e técnicos administrativos, cursos e disciplinas.
 - `verificar-fundamentacao-normativa/`: conferência de citações e alegações baseadas em leis, resoluções, portarias, CNCT e regulamentos.
 - `verificar-calendario/`: verificação de calendários acadêmicos do IFPR.
 
