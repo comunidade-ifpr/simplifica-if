@@ -3,7 +3,7 @@
   "title": "Campi do IFPR",
   "descricao": "Índice de campi e campi avançados do Instituto Federal do Paraná.",
   "tipo_item": "campus",
-  "atualizado_em": "2026-07-06",
+  "atualizado_em": "2026-09-17",
   "items": [
     {
       "id": "arapongas",
@@ -124,6 +124,11 @@
       "id": "quedas-do-iguacu",
       "nome": "Quedas do Iguaçu",
       "path": "institucional/ifpr/campi/quedas-do-iguacu.json"
+    },
+    {
+      "id": "reitoria",
+      "nome": "Reitoria",
+      "path": "institucional/ifpr/campi/reitoria.json"
     },
     {
       "id": "telemaco-borba",
