@@ -47,6 +47,21 @@
       }
     },
     {
+      "curso_slug": "tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
+      "nome": "Técnico em Informática para Internet",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "situacao": "abertura",
+      "sei": {
+        "processos": [
+          {
+            "numero": "23411.019117/2025-97",
+            "tipo": "Abertura - PPC"
+          }
+        ]
+      }
+    },
+    {
       "curso_slug": "tecnico-em-meio-ambiente",
       "nome": "Técnico em Meio Ambiente",
       "nivel": "médio",
