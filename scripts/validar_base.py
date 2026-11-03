@@ -36,6 +36,9 @@ from base_utils import (
     PPCS_INDEX_PATH,
     PPCS_INDEX_SCHEMA_PATH,
     PPCS_SECOES_ROOT,
+    PPCPS_INDEX_PATH,
+    PPCPS_INDEX_SCHEMA_PATH,
+    PPCPS_ROOT,
     README_PATH,
     REQUIRED_FIELDS,
     ROOT,
@@ -486,6 +489,12 @@ def validate_institucional() -> list[str]:
             ppcs_collection = next((item for item in colecoes if isinstance(item, dict) and item.get("id") == "ppcs-ifpr"), None)
             if ppcs_collection is not None and ppcs_collection.get("path") != relative(PPCS_INDEX_PATH):
                 errors.append("institucional_manifest.json: path da coleção ppcs-ifpr diverge do índice")
+            ppcps_collection = next(
+                (item for item in colecoes if isinstance(item, dict) and item.get("id") == "ppcps-rede-certifica-ifpr"),
+                None,
+            )
+            if ppcps_collection is not None and ppcps_collection.get("path") != relative(PPCPS_INDEX_PATH):
+                errors.append("institucional_manifest.json: path da coleção ppcps-rede-certifica-ifpr diverge do índice")
 
     if not isinstance(index, dict):
         errors.append(f"{relative(CAMPI_INDEX_PATH)} deve conter um objeto JSON")
@@ -541,6 +550,7 @@ def validate_institucional() -> list[str]:
         )
 
     errors.extend(validate_ppcs(manifest))
+    errors.extend(validate_ppcps(manifest))
     errors.extend(validate_processos_seletivos(manifest))
 
     return errors
@@ -746,6 +756,63 @@ def validate_ppcs(manifest: object) -> list[str]:
         )
 
     errors.extend(validate_ppc_sections(index_items_by_id))
+    return errors
+
+
+def validate_ppcps(manifest: object) -> list[str]:
+    errors: list[str] = []
+    index, index_errors = load_json(PPCPS_INDEX_PATH, "índice de PPCPs")
+    errors.extend(index_errors)
+    if not isinstance(index, dict):
+        return errors
+
+    errors.extend(validate_with_schema(index, PPCPS_INDEX_SCHEMA_PATH, relative(PPCPS_INDEX_PATH)))
+    items = index.get("items")
+    if not isinstance(items, list) or not items:
+        return errors
+    if index.get("total_itens") != len(items):
+        errors.append(f"{relative(PPCPS_INDEX_PATH)}: total_itens diverge de items")
+
+    if isinstance(manifest, dict):
+        colecoes = manifest.get("colecoes")
+        if isinstance(colecoes, list):
+            collection = next(
+                (item for item in colecoes if isinstance(item, dict) and item.get("id") == "ppcps-rede-certifica-ifpr"),
+                None,
+            )
+            if collection is None:
+                errors.append("institucional_manifest.json: coleção ppcps-rede-certifica-ifpr ausente")
+            elif collection.get("total_itens") != len(items):
+                errors.append("institucional_manifest.json: total_itens de ppcps-rede-certifica-ifpr diverge do index.json")
+
+    seen_ids: set[str] = set()
+    index_paths: set[str] = set()
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        item_id = item.get("id")
+        path_value = item.get("path")
+        if isinstance(item_id, str):
+            if item_id in seen_ids:
+                errors.append(f"{relative(PPCPS_INDEX_PATH)}: id duplicado: {item_id}")
+            seen_ids.add(item_id)
+        if not isinstance(path_value, str):
+            continue
+        if path_value in index_paths:
+            errors.append(f"{relative(PPCPS_INDEX_PATH)}: path duplicado: {path_value}")
+        index_paths.add(path_value)
+        path = ROOT / path_value
+        if not path.exists():
+            errors.append(f"{relative(PPCPS_INDEX_PATH)}: path inexistente: {path_value}")
+            continue
+        errors.extend(validate_links(path, path.read_text(encoding="utf-8")))
+
+    markdown_paths = {relative(path) for path in PPCPS_ROOT.glob("*.md")}
+    if index_paths != markdown_paths:
+        errors.append(
+            "índice de PPCPs não cobre exatamente os Markdown da coleção: "
+            f"index={sorted(index_paths)} arquivos={sorted(markdown_paths)}"
+        )
     return errors
 
 

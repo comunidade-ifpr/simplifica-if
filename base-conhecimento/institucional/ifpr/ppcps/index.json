@@ -1,0 +1,22 @@
+{
+  "collection": "ppcps-rede-certifica-ifpr",
+  "title": "Projetos Pedagógicos de Certificação Profissional da Rede Certifica",
+  "updated_at": "2026-08-24",
+  "total_itens": 2,
+  "items": [
+    {
+      "id": "pesquisa-comparada-ppcps-rede-certifica",
+      "title": "Pesquisa comparada de PPCPs da Rede Certifica",
+      "tipo": "pesquisa",
+      "status": "concluída",
+      "path": "institucional/ifpr/ppcps/pesquisa-comparada-ppcps-rede-certifica.md"
+    },
+    {
+      "id": "proposta-ppcp-rede-certifica-ifpr",
+      "title": "Proposta de Projeto Pedagógico de Certificação Profissional para o IFPR",
+      "tipo": "modelo institucional preenchível",
+      "status": "proposta para revisão institucional",
+      "path": "institucional/ifpr/ppcps/proposta-ppcp-rede-certifica-ifpr.md"
+    }
+  ]
+}

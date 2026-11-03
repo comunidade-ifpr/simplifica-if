@@ -187,12 +187,12 @@
         "processos": [
           {
             "numero": "23411.019587/2022-16",
-            "tipo": "abertura OLD",
+            "tipo": "Abertura - PAC",
             "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 77. Encaminhado à Proplan em 24/02/25"
           },
           {
             "numero": "23411.010391/2025-09",
-            "tipo": "abertura OLD",
+            "tipo": "Abertura - PAC",
             "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 48. Finalizado - Resolução Consup nº 248, de 16 de setembro de 2025.  Despachado para Proens (portaria de autorização), DGA e Diepex."
           }
         ]

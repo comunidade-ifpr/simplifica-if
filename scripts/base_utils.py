@@ -18,6 +18,8 @@ INSTITUCIONAL_ROOT = ROOT / "institucional"
 PPCS_ROOT = INSTITUCIONAL_ROOT / "ifpr" / "ppcs"
 PPCS_INDEX_PATH = PPCS_ROOT / "index.json"
 PPCS_SECOES_ROOT = PPCS_ROOT / "secoes"
+PPCPS_ROOT = INSTITUCIONAL_ROOT / "ifpr" / "ppcps"
+PPCPS_INDEX_PATH = PPCPS_ROOT / "index.json"
 CATALOGOS_ROOT = ROOT / "catalogos"
 INSTITUCIONAL_MANIFEST_PATH = ROOT / "institucional_manifest.json"
 CATALOGOS_MANIFEST_PATH = ROOT / "catalogos_manifest.json"
@@ -38,6 +40,7 @@ CNCT_MANIFEST_SCHEMA_PATH = SCHEMAS_ROOT / "cnct_manifest.schema.json"
 CNCT_INDEX_SCHEMA_PATH = SCHEMAS_ROOT / "cnct_index.schema.json"
 CNCT_CURSO_SCHEMA_PATH = SCHEMAS_ROOT / "cnct_curso.schema.json"
 PPCS_INDEX_SCHEMA_PATH = SCHEMAS_ROOT / "ppcs_index.schema.json"
+PPCPS_INDEX_SCHEMA_PATH = SCHEMAS_ROOT / "ppcps_index.schema.json"
 MANIFEST_PATH = ROOT / "manifest.json"
 README_PATH = ROOT / "README.md"
 
@@ -67,6 +70,7 @@ MANIFEST_FIELDS = [
 ]
 TIPO_DIRETORIOS = {
     ("BR", "Lei"): "normas/br/leis",
+    ("BR", "Portaria"): "normas/br/portarias",
     ("BR", "Resolução"): "normas/br/resolucoes",
     ("BR", "Compilação"): "normas/br/compilacoes",
     ("IFPR", "Resolução"): "normas/ifpr/resolucoes",

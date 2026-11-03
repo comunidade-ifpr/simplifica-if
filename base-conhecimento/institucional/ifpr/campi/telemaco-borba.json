@@ -111,7 +111,7 @@
           },
           {
             "numero": "23411.021089/2025-78",
-            "tipo": "atualização",
+            "tipo": "Atualização",
             "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 81. Ciência no processo"
           }
         ]
@@ -203,7 +203,7 @@
           },
           {
             "numero": "23411.021099/2025-11",
-            "tipo": "atualização",
+            "tipo": "Atualização",
             "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 82. Ciência no processo"
           }
         ]
@@ -273,7 +273,7 @@
           },
           {
             "numero": "23411.021076/2025-07",
-            "tipo": "atualização",
+            "tipo": "Atualização",
             "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 80. Ciência no processo"
           }
         ]
@@ -316,13 +316,13 @@
             "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 72. Enviado ao Consepe em 10/11/2025"
           },
           {
-            "numero": "23406.000268/2017-31",
-            "tipo": "abertura OLD"
+            "numero": "23411.021100/2025-08",
+            "tipo": "Atualização",
+            "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 79. Ciência no processo"
           },
           {
-            "numero": "23411.021100/2025-08",
-            "tipo": "atualização",
-            "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 79. Ciência no processo"
+            "numero": "23406.000268/2017-31",
+            "tipo": "abertura OLD"
           }
         ]
       }

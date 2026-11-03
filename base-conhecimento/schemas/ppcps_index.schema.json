@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/simplifica-if/base-conhecimento/main/schemas/ppcps_index.schema.json",
+  "title": "Índice de PPCPs da Rede Certifica",
+  "type": "object",
+  "required": [
+    "collection",
+    "title",
+    "updated_at",
+    "total_itens",
+    "items"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "collection": {
+      "const": "ppcps-rede-certifica-ifpr"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date"
+    },
+    "total_itens": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "tipo",
+          "status",
+          "path"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "tipo": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "minLength": 1
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^institucional/ifpr/ppcps/[a-z0-9]+(?:-[a-z0-9]+)*\\.md$"
+          }
+        }
+      }
+    }
+  }
+}

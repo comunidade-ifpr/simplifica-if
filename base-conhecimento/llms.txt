@@ -57,6 +57,14 @@ Exemplo:
 - Índice de PPCs: https://simplifica-if.github.io/base-conhecimento/institucional/ifpr/ppcs/index.json
 - Índices de seções dos PPCs: use o campo `secoes.paths` do índice de PPCs para abrir os arquivos JSONL por tipo de seção.
 
+## PPCPs da Rede Certifica
+
+- Índice da coleção: https://simplifica-if.github.io/base-conhecimento/institucional/ifpr/ppcps/index.json
+- Pesquisa comparada: https://simplifica-if.github.io/base-conhecimento/institucional/ifpr/ppcps/pesquisa-comparada-ppcps-rede-certifica.md
+- Proposta de PPCP para revisão institucional: https://simplifica-if.github.io/base-conhecimento/institucional/ifpr/ppcps/proposta-ppcp-rede-certifica-ifpr.md
+
+A proposta é um modelo preenchível. Não a trate como PPCP aprovado nem como autorização de oferta. Para fundamentação normativa, consulte também a Portaria MEC nº 902/2024 e a Resolução CONSUP/IFPR nº 276/2026 no `manifest.json`.
+
 ## Documentos de apoio à manutenção
 
 - Curadoria de metadados institucionais: https://simplifica-if.github.io/base-conhecimento/docs/curadoria-metadados-institucionais.md
