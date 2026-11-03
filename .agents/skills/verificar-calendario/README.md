@@ -1,6 +1,25 @@
 # Verificar Calendário
 
-Esta skill verifica calendários acadêmicos do IFPR, com foco na conformidade com a Resolução CONSUP/IFPR nº 259/2025, e gera relatório em Markdown e PDF.
+Esta skill verifica calendários acadêmicos do IFPR, com foco na conformidade com a resolução de calendário de referência do ano, e gera relatório em Markdown e PDF.
+
+## Base normativa por ano
+
+| Ano do calendário | Resolução | Arquivo de referência |
+|:---:|:---|:---|
+| 2026 | Resolução CONSUP/IFPR nº 259/2025 (alterada pela nº 263/2025) | `referencias/2026.md` |
+| 2027 | Resolução CONSUP/IFPR nº 292/2026 | `referencias/2027.md` |
+
+Os textos integrais das resoluções ficam em `base-conhecimento/normas/ifpr/resolucoes/`. Cada arquivo em `referencias/` resume, para o ano, a numeração dos artigos, as datas obrigatórias, a janela do ano letivo, os requisitos críticos dos incisos e a tabela obrigatória do relatório.
+
+## Manutenção
+
+Quando sair a resolução de calendário de referência de um novo ano:
+
+1. Incluir o texto da resolução em `base-conhecimento/normas/ifpr/resolucoes/` e rodar `python3 scripts/gerar_base.py`, `python3 scripts/validar_base.py` e `python3 scripts/gerar_site.py`.
+2. Criar `referencias/[ANO].md` com a mesma estrutura dos arquivos existentes: mapa de dispositivos, janela do ano letivo, datas do Art. 2º, requisitos críticos dos incisos e tabela obrigatória do relatório com a redação literal dos incisos.
+3. Acrescentar a linha do ano nas tabelas deste README, de `SKILL.md` e de `instrucoes.md`.
+
+Não há testes automatizados para esta skill. Depois de alterar os arquivos, conferir se as referências a artigos e incisos batem com o texto da resolução na base.
 
 ## Formatos aceitos
 
@@ -37,11 +56,11 @@ A análise confere, entre outros pontos:
 
 - mínimo de 200 dias letivos anuais;
 - mínimo de 100 dias letivos semestrais, quando aplicável;
-- janela do ano letivo de 2026;
-- datas obrigatórias do Art. 2º da Resolução CONSUP/IFPR nº 259/2025;
-- 25 incisos obrigatórios do Art. 7º;
+- janela do ano letivo e prazo máximo de início;
+- datas obrigatórias do Art. 2º da resolução do ano;
+- incisos obrigatórios do artigo de itens do calendário (25 incisos do art. 7º em 2026; 26 incisos do art. 11 em 2027);
 - coerência entre calendário principal e documentos complementares;
-- sinais de documento reaproveitado de outro ano ou com resolução antiga.
+- sinais de documento reaproveitado de outro ano, com resolução, artigo ou quantidade de incisos antigos.
 
 ## Saídas esperadas
 
@@ -60,7 +79,6 @@ relatorio_verificacao_[CAMPUS]_[ANO]_[FONTE]_[AAAAMMDDHHMMSS].pdf
 Exemplo:
 
 ```text
-relatorio_verificacao_Irati_2026_xlsx_20260401153000.md
-relatorio_verificacao_Irati_2026_xlsx_20260401153000.pdf
+relatorio_verificacao_Irati_2027_xlsx_20261201153000.md
+relatorio_verificacao_Irati_2027_xlsx_20261201153000.pdf
 ```
-

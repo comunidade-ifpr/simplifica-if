@@ -1,6 +1,17 @@
-# Instruções para Verificação de Calendário Acadêmico 2026
+# Instruções para Verificação de Calendário Acadêmico
 
-> Base normativa obrigatória: `https://raw.githubusercontent.com/simplifica-if/base-conhecimento/main/2025-11-27_RESOLUCAO_CONSUP-IFPR_259-2025_calendario-academico.md`
+> A base normativa depende do ano do calendário. Antes de qualquer verificação, identificar o ano e ler o arquivo de referência correspondente em `referencias/`, que indica a resolução vigente, o texto local da norma, a numeração dos artigos, as datas obrigatórias, a janela do ano letivo e a tabela obrigatória do relatório.
+
+## Base normativa por ano
+
+| Ano do calendário | Resolução de referência | Arquivo de referência da skill |
+|:---:|:---|:---|
+| 2026 | Resolução CONSUP/IFPR nº 259/2025 (alterada pela nº 263/2025) | `referencias/2026.md` |
+| 2027 | Resolução CONSUP/IFPR nº 292/2026 | `referencias/2027.md` |
+
+Se o calendário for de um ano sem arquivo de referência, não improvisar: localizar a resolução de calendário de referência daquele ano em `base-conhecimento/manifest.json`, criar o arquivo `referencias/[ANO].md` seguindo a estrutura dos existentes e só então verificar. Os textos das normas ficam em `base-conhecimento/normas/ifpr/resolucoes/`.
+
+A numeração dos artigos muda entre resoluções. Em 2026, o conceito de dia letivo está no art. 4º, § 2º, a janela do ano letivo no art. 5º e os itens obrigatórios no art. 7º (25 incisos). Em 2027, o conceito de dia letivo está no art. 5º, a janela no art. 8º e os itens obrigatórios no art. 11 (26 incisos). Nunca citar artigo ou inciso sem conferir no arquivo de referência do ano.
 
 ## Objetivo
 
@@ -114,18 +125,19 @@ tmp/.venv_pdf/bin/python .agents/skills/verificar-calendario/scripts/render_rela
 
 ## Procedimento comum a qualquer formato
 
-1. Ler a resolução em `https://raw.githubusercontent.com/simplifica-if/base-conhecimento/main/2025-11-27_RESOLUCAO_CONSUP-IFPR_259-2025_calendario-academico.md`.
-2. Identificar no documento:
+1. Identificar no documento:
    - campus;
    - ano;
    - tipo de curso;
    - referência de aprovação;
    - resolução citada pelo próprio documento.
-3. Confirmar se o documento está alinhado com a Resolução CONSUP/IFPR nº 259/2025.
+2. Ler o arquivo `referencias/[ANO].md` da skill e o texto local da resolução que ele indica.
+3. Confirmar se o documento está alinhado com a resolução de referência do ano.
 4. Verificar se há sinais de material reaproveitado de outro ano:
-   - menção a 2025 em calendário de 2026;
-   - resolução antiga;
-   - artigo/inciso antigo;
+   - menção ao ano anterior em datas, cabeçalhos ou tabelas;
+   - resolução antiga (por exemplo, calendário de 2027 citando a Resolução nº 259/2025);
+   - artigo/inciso com numeração da resolução anterior;
+   - quantidade de incisos diferente da resolução do ano;
    - datas incompatíveis com o próprio cabeçalho.
 5. Definir as fontes da validação:
    - fonte A: calendário mensal e quadro de dias letivos;
@@ -222,48 +234,17 @@ Quando existir quadro consolidado, usá-lo como evidência visual. Se houver dú
 
 ### 3. Janela do ano letivo
 
-Confirmar se:
-
-- o ano letivo começa até 28 de fevereiro;
-- está compreendido entre 4 de fevereiro e 18 de dezembro.
+Confirmar se o início e o término do ano letivo respeitam a janela e o prazo máximo de início definidos no arquivo de referência do ano.
 
 ### 4. Datas obrigatórias do Art. 2º
 
-Conferir a presença dos marcos obrigatórios da Resolução nº 259/2025, especialmente:
+Conferir a presença dos feriados, recessos e demais marcos listados no arquivo de referência do ano.
 
-- 01/01;
-- 02/01;
-- 16, 17 e 18/02;
-- 03/04;
-- 20 e 21/04;
-- 01/05;
-- 04 e 05/06;
-- 07/09;
-- 12/10;
-- 15/10, salvo remanejamento explícito;
-- 28/10;
-- 02/11;
-- 15/11;
-- 20/11;
-- 24/12;
-- 25/12;
-- 31/12.
+Se houver data adicional municipal, tratar como acréscimo local, não como substituição das datas obrigatórias. O feriado escolar do Dia do Professor é o único que pode ser remanejado, e o remanejamento deve estar explícito.
 
-Se houver data adicional municipal, tratar como acréscimo local, não como substituição das datas obrigatórias.
+### 5. Incisos obrigatórios
 
-### 5. Incisos obrigatórios do Art. 7º
-
-Validar os 25 incisos da resolução vigente.
-
-Requisitos críticos:
-
-- Inciso IV: férias docentes com mínimo de 45 dias.
-- Inciso XX: fase local da OBR até 31/08.
-- Inciso XXI: Mostra de Cursos até 30/09.
-- Inciso XXII: formação pedagógica com mínimo de 40 horas anuais.
-- Inciso XXIII: planejamento/replanejamento com mínimo de 20 horas anuais.
-- Inciso XXIV: evento alusivo à Semana de Valorização de Mulheres em março.
-- Inciso XXV: Semana Cultural Interescolar em outubro.
+Validar todos os incisos do artigo de itens obrigatórios da resolução do ano, na quantidade e na redação indicadas no arquivo de referência, observando os requisitos críticos ali listados (férias docentes, limites de OBR e Mostra de Cursos, cargas mínimas de formação e planejamento, semanas temáticas).
 
 ### 6. Consistência entre documentos
 
@@ -276,7 +257,7 @@ Se houver mais de um arquivo para o mesmo calendário, validar:
 
 Regra adicional:
 
-- se o documento complementar adotar outra resolução, outra quantidade de itens ou outra redação normativa, ele **não pode** ser aceito como substituto automático da tabela correspondente ao Art. 7º da Resolução nº 259/2025, ainda que contenha algumas datas úteis.
+- se o documento complementar adotar outra resolução, outra quantidade de itens ou outra redação normativa, ele **não pode** ser aceito como substituto automático da tabela correspondente ao artigo de itens obrigatórios da resolução do ano, ainda que contenha algumas datas úteis.
 
 ## Tipos de inconsistência a reportar
 
@@ -290,8 +271,8 @@ Regra adicional:
 
 1. PDF complementar herdado de ano anterior.
 2. Cabeçalho com resolução antiga, mesmo quando o calendário mensal já foi atualizado.
-3. Linha preenchida com ano incorreto, como `07/03/2025` em material de 2026.
-4. Tabela com número de itens diferente do Art. 7º vigente.
+3. Linha preenchida com ano incorreto, como `07/03/2026` em material de 2027.
+4. Tabela com número de itens ou numeração de artigo da resolução anterior (por exemplo, 25 incisos do art. 7º em calendário de 2027, que exige os 26 incisos do art. 11).
 5. Inferir horas mínimas de formação ou planejamento sem indicação explícita de carga horária.
 6. Considerar item atendido apenas porque há uma linha ou um rótulo correspondente, sem conferir se o campo está efetivamente preenchido, no ano correto e compatível com a exigência normativa.
 
@@ -315,46 +296,16 @@ Use:
 **Documento analisado:** [nome-do-arquivo]
 **Formato:** [xlsx|pdf principal|pdf eventos]
 **Método de leitura:** [estrutura do arquivo | análise visual das páginas renderizadas]
-**Base normativa:** Resolução CONSUP/IFPR nº 259/2025
+**Base normativa:** [resolução indicada no arquivo de referência do ano]
 **Data da análise:** [DD/MM/AAAA]
 
-| Item | Status | Observação/Evidência |
-|:---|:---:|:---|
-| Prevê, no mínimo, 200 (duzentos) dias letivos anuais, para cumprimento da carga horária estabelecida no projeto pedagógico de cada curso. | [STATUS] | [Informar o total encontrado e a evidência visual ou estrutural usada.] |
-| Prevê o cumprimento de 100 (cem) dias letivos semestrais para os campi que possuem cursos em regime de oferta semestral. | [STATUS] | [Informar os totais por semestre e a evidência.] |
-| Cumpre as atividades acadêmicas e administrativas do art. 2º da Resolução Consup/IFPR nº 259, de 27 de novembro de 2025 | [STATUS] | [Listar as datas confirmadas, ausentes, divergentes ou inconclusivas.] |
-| O ano letivo de 2026 deverá estar compreendido entre 4 de fevereiro e 18 de dezembro, devendo iniciar suas atividades até 28 de fevereiro. | [STATUS] | [Informar a data de início, a data de término e a evidência.] |
-| I - o início e o término de cada período letivo (bimestre/ trimestre, semestre, ano); | [STATUS] | [Informar as datas ou explicar a ausência delas.] |
-| II - os dias de feriados e os recessos acadêmicos e administrativos; | [STATUS] | [Listar os feriados e recessos identificados, ou as ausências.] |
-| III - os períodos de férias escolares; | [STATUS] | [Informar os períodos de férias escolares encontrados.] |
-| IV - os períodos de férias docentes, garantindo 45 (quarenta e cinco) dias previstos em lei, preferencialmente coincidentes com as férias escolares; | [STATUS] | [Informar os períodos, a soma dos dias e a coincidência ou não com as férias escolares.] |
-| V - os períodos destinados à matrícula e ao ajuste de matrícula dos estudantes veteranos dos cursos subsequentes e de graduação; | [STATUS] | [Informar os períodos de matrícula e de ajuste, ou apontar o que faltou.] |
-| VI - os períodos destinados para solicitação de aproveitamento de estudos, certificação de conhecimentos anteriores e equivalência de estágio, no mínimo uma vez ao ano para os cursos em regime anual, e duas vezes ao ano para os cursos em regime semestral; | [STATUS] | [Informar os períodos encontrados e a aderência ao regime do curso.] |
-| VII - os períodos destinados para solicitação de trancamento de curso e de cancelamento de matrícula de componente curricular para os cursos subsequentes e de graduação; | [STATUS] | [Informar os períodos ou a insuficiência de evidência.] |
-| VIII - as datas de publicação dos editais de ingresso por transferência interna e externa, para reingresso e para portadores de diploma, uma vez ao ano para os cursos em regime anual, e duas vezes ao ano para os cursos em regime semestral, devendo ser definida antes do início do período letivo; | [STATUS] | [Informar as datas encontradas e verificar a antecedência.] |
-| IX - o prazo para os docentes lançarem resultados (rendimento e frequência) de cada etapa no sistema acadêmico; | [STATUS] | [Informar os prazos ou explicar por que não foi possível confirmá-los.] |
-| X - o prazo de lançamento, pelos docentes, do resultado final (rendimento e frequência) no sistema acadêmico; | [STATUS] | [Informar o prazo final encontrado.] |
-| XI - as datas para fechamento e entrega dos diários de classe no sistema acadêmico; | [STATUS] | [Informar as datas encontradas.] |
-| XII - os prazos para submissão do Plano Individual de Trabalho (PIT) e do Plano de Ensino à Direção de Ensino, Pesquisa e Extensão, ou correlato, pelos docentes; | [STATUS] | [Informar os prazos de PIT e Plano de Ensino.] |
-| XIII - as datas destinadas aos conselhos de classe/coletivos pedagógicos e reuniões pedagógicas, após resultados parciais; | [STATUS] | [Informar as datas e a relação com os resultados parciais.] |
-| XIV - o prazo para a solicitação de revisão de resultados finais pelos estudantes; | [STATUS] | [Informar o prazo encontrado.] |
-| XV - as datas destinadas aos conselhos de classe/coletivos pedagógicos extraordinários para análise das solicitações de revisão dos resultados dos conselhos de classe mencionados no inciso XIV; | [STATUS] | [Informar as datas ou apontar ausência.] |
-| XVI - as datas destinadas a reuniões com familiares/responsáveis/comunidade; | [STATUS] | [Informar as datas e o público indicado.] |
-| XVII - os eventos de ensino, pesquisa, extensão e inovação a serem realizados no campus; | [STATUS] | [Informar os eventos e suas datas.] |
-| XVIII - data de encontro dos egressos; | [STATUS] | [Informar a data identificada.] |
-| XIX - data de evento sobre a temática de estágios; | [STATUS] | [Informar a data identificada ou a ausência dela.] |
-| XX - a data da fase local da Olimpíada Brasileira de Robótica no campus, até 31 de agosto de 2026; | [STATUS] | [Informar a data e verificar se está até 31/08/2026.] |
-| XXI - os dias destinados à Mostra de Cursos do campus, até 30 de setembro de 2026. | [STATUS] | [Informar a data ou os dias e verificar se estão até 30/09/2026.] |
-| XXII - dias destinados à formação pedagógica que perfazem, no mínimo, 40 horas anuais; | [STATUS] | [Informar datas, carga horária explícita ou a razão da ressalva.] |
-| XXIII - os dias destinados aos encontros de planejamento/replanejamento coletivo, perfazendo, no mínimo, 20 horas anuais; | [STATUS] | [Informar datas, carga horária explícita ou a razão da ressalva.] |
-| XXIV - o evento alusivo à Semana de Valoriação de Mulheres que Fizeram História, que deverá ser realizada em março (obrigatória nos calendários dos cursos técnicos e facultativa nos cursos de graduação) | [STATUS] | [Informar o evento, a data e se o curso é técnico ou graduação.] |
-| XXV - o evento alusivo à Semana Cultural Interescolar, que deverá ser realizada em outubro, aberta à participação de estudantes, famílias e comunidade (obrigatória nos calendários dos cursos técnicos e facultativa nos cursos de graduação). | [STATUS] | [Informar o evento, a data e o público-alvo indicado.] |
+[Tabela obrigatória copiada integralmente de `referencias/[ANO].md`]
 ```
 
 ## Regras de preenchimento da tabela
 
-1. A tabela acima é obrigatória e deve aparecer no relatório exatamente nessa ordem.
-2. A coluna `Item` deve reproduzir integralmente os textos acima.
+1. A tabela do arquivo de referência do ano é obrigatória e deve aparecer no relatório exatamente naquela ordem.
+2. A coluna `Item` deve reproduzir integralmente os textos do arquivo de referência, sem adaptar a redação ou a numeração de outro ano.
 3. A coluna `Status` deve usar apenas:
    - `ATENDE`
    - `NÃO ATENDE`
@@ -381,9 +332,9 @@ Use:
 
 Ao concluir, responder às quatro perguntas abaixo:
 
-1. O calendário está alinhado com a Resolução nº 259/2025?
+1. O calendário está alinhado com a resolução de referência do ano?
 2. As datas do ano letivo e os dias letivos atendem aos mínimos?
-3. Os 25 incisos obrigatórios aparecem com evidência suficiente?
+3. Todos os incisos obrigatórios da resolução do ano aparecem com evidência suficiente?
 4. Existe coerência entre todos os documentos apresentados?
 
 Se qualquer uma dessas respostas for “não”, isso deve ficar refletido nos status da tabela e nas respectivas observações/evidências.

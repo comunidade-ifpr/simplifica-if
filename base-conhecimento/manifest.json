@@ -556,6 +556,31 @@
     "path": "normas/br/leis/LEI_BR_14945-2024_ensino-medio.md"
   },
   {
+    "title": "Portaria MEC nº 902/2024",
+    "tipo_documento": "Portaria",
+    "numero": "902",
+    "ano": 2024,
+    "data_publicacao": "2024-09-10",
+    "orgao": "MEC",
+    "jurisdicao": "BR",
+    "ementa": "Institui a Rede Nacional de Certificação Profissional no âmbito do Ministério da Educação - Rede Certifica.",
+    "status_vigencia": "vigente",
+    "keywords": [
+      "Rede Certifica",
+      "certificação profissional",
+      "PPCP",
+      "reconhecimento de saberes",
+      "EPT"
+    ],
+    "aliases": [
+      "Portaria MEC nº 902/2024",
+      "Portaria 902/2024",
+      "Rede Nacional de Certificação Profissional"
+    ],
+    "fonte": "https://www.in.gov.br/en/web/dou/-/portaria-n-902-de-9-de-setembro-de-2024-583426362",
+    "path": "normas/br/portarias/PORTARIA_MEC_902-2024_rede-certifica.md"
+  },
+  {
     "title": "Resolução CNE/CEB nº 2/2024",
     "tipo_documento": "Resolução",
     "numero": "2",
@@ -710,20 +735,26 @@
     "data_publicacao": "2025-11-27",
     "orgao": "CONSUP/IFPR",
     "jurisdicao": "IFPR",
-    "ementa": "Define diretrizes para elaboração dos calendários acadêmicos dos campi do IFPR.",
+    "ementa": "Estabelece o Calendário Acadêmico e Administrativo de referência dos cursos técnicos de nível médio e graduação do IFPR para o ano de 2026.",
     "status_vigencia": "vigente",
     "keywords": [
       "calendário acadêmico",
+      "calendário de referência 2026",
       "dias letivos",
+      "dia letivo",
+      "recesso acadêmico",
       "férias docentes",
+      "conselho de classe",
       "campi",
       "IFPR"
     ],
     "aliases": [
       "Resolução CONSUP/IFPR nº 259/2025",
-      "Resolução IFPR 259/2025"
+      "Resolução IFPR 259/2025",
+      "Calendário de referência 2026",
+      "SEI 3972484"
     ],
-    "fonte": "Fonte oficial pendente de confirmação pública",
+    "fonte": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4138775&id_orgao_publicacao=0",
     "path": "normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_259-2025_calendario-academico.md"
   },
   {
@@ -754,6 +785,33 @@
     "path": "normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_271-2026_estatuto-ifpr.md"
   },
   {
+    "title": "Resolução CONSUP/IFPR nº 276/2026",
+    "tipo_documento": "Resolução",
+    "numero": "276",
+    "ano": 2026,
+    "data_publicacao": "2026-06-11",
+    "orgao": "CONSUP/IFPR",
+    "jurisdicao": "IFPR",
+    "ementa": "Dispõe sobre o Regulamento do Processo de Certificação Profissional da Rede Certifica no âmbito do Instituto Federal do Paraná - IFPR.",
+    "status_vigencia": "vigente",
+    "keywords": [
+      "Rede Certifica",
+      "certificação profissional",
+      "PPCP",
+      "reconhecimento de saberes",
+      "avaliação de competências",
+      "IFPR"
+    ],
+    "aliases": [
+      "Resolução CONSUP/IFPR nº 276/2026",
+      "Resolução IFPR 276/2026",
+      "Regulamento Rede Certifica IFPR",
+      "SEI 4333864"
+    ],
+    "fonte": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4513717&id_orgao_publicacao=0",
+    "path": "normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_276-2026_rede-certifica.md"
+  },
+  {
     "title": "Lei nº 15.468/2026",
     "tipo_documento": "Lei",
     "numero": "15468",
@@ -777,5 +835,36 @@
     ],
     "fonte": "https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2026/lei/l15468.htm",
     "path": "normas/br/leis/LEI_BR_15468-2026_educacao-politica-direitos-cidadania.md"
+  },
+  {
+    "title": "Resolução CONSUP/IFPR nº 292/2026",
+    "tipo_documento": "Resolução",
+    "numero": "292",
+    "ano": 2026,
+    "data_publicacao": "2026-10-05",
+    "orgao": "CONSUP/IFPR",
+    "jurisdicao": "IFPR",
+    "ementa": "Estabelece o calendário acadêmico e administrativo de referência para os cursos técnicos de nível médio e de graduação do IFPR no ano de 2027.",
+    "status_vigencia": "vigente",
+    "keywords": [
+      "calendário acadêmico",
+      "calendário de referência 2027",
+      "dias letivos",
+      "dia letivo",
+      "recesso acadêmico",
+      "férias docentes",
+      "conselho de classe",
+      "sábados letivos",
+      "campi",
+      "IFPR"
+    ],
+    "aliases": [
+      "Resolução CONSUP/IFPR nº 292/2026",
+      "Resolução IFPR 292/2026",
+      "Calendário de referência 2027",
+      "SEI 4422750"
+    ],
+    "fonte": "https://sei.ifpr.edu.br/sei/controlador_externo.php?acao=documento_conferir&id_orgao_acesso_externo=0",
+    "path": "normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_292-2026_calendario-academico-2027.md"
   }
 ]

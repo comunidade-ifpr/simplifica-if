@@ -58,6 +58,16 @@ Para consumo por agentes IA, use:
 
 Ao usar PPCs como apoio para redigir ou revisar textos, diferencie exemplos observados em PPCs de obrigações normativas. Para fundamentação regulatória, combine os PPCs com as normas da base e, quando se tratar de curso técnico, com o CNCT.
 
+## PPCPs da Rede Certifica
+
+A coleção [`institucional/ifpr/ppcps/`](institucional/ifpr/ppcps/) reúne a pesquisa comparada e a proposta de modelo institucional de Projeto Pedagógico de Certificação Profissional para o IFPR.
+
+- [Índice da coleção](institucional/ifpr/ppcps/index.json)
+- [Pesquisa comparada de PPCPs](institucional/ifpr/ppcps/pesquisa-comparada-ppcps-rede-certifica.md)
+- [Proposta de PPCP para revisão institucional](institucional/ifpr/ppcps/proposta-ppcp-rede-certifica-ifpr.md)
+
+A proposta é preenchível e não autoriza oferta. Cada perfil profissional exige PPCP específico, análise do CONSEPE, aprovação do CONSUP e cadastro no SISTEC.
+
 ## Normas publicadas
 
 | Documento | Tipo | Ano | Assunto |
@@ -84,15 +94,18 @@ Ao usar PPCs como apoio para redigir ou revisar textos, diferencie exemplos obse
 | [Resolução CONSUP/IFPR nº 190/2024](normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_190-2024_odp-cursos-tecnicos.md) | Resolução | 2024 | Dispõe sobre a Organização Didático-Pedagógica dos Cursos Técnicos de Nível Médio no âmbito do IFPR. |
 | [Portaria PROENS/IFPR nº 121/2024](normas/ifpr/portarias/PORTARIA_PROENS-IFPR_121-2024_abertura-suspensao-extincao-cursos.md) | Portaria | 2024 | Institui diretrizes e procedimentos de abertura, suspensão, reversão de suspensão, extinção e ajuste de cursos no IFPR. |
 | [Lei nº 14.945/2024](normas/br/leis/LEI_BR_14945-2024_ensino-medio.md) | Lei | 2024 | Altera a LDB para instituir a Política Nacional de Ensino Médio. |
+| [Portaria MEC nº 902/2024](normas/br/portarias/PORTARIA_MEC_902-2024_rede-certifica.md) | Portaria | 2024 | Institui a Rede Nacional de Certificação Profissional no âmbito do Ministério da Educação - Rede Certifica. |
 | [Resolução CNE/CEB nº 2/2024](normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md) | Resolução | 2024 | Institui as Diretrizes Curriculares Nacionais para o Ensino Médio. |
 | [Resolução CONSUP/IFPR nº 222/2024](normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_222-2024_altera-regimento-interno-comum-campi.md) | Resolução | 2024 | Altera dispositivo da Resolução nº 08/2014, que regulamenta o Regimento Interno Comum aos Câmpus do IFPR. |
 | [Resolução CONSUP/IFPR nº 239/2025](normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_239-2025_assistencia-estudantil.md) | Resolução | 2025 | Dispõe sobre a Política Institucional de Assistência Estudantil no IFPR. |
 | [Resolução CONSUP/IFPR nº 242/2025](normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_242-2025_altera-regimento-interno-comum-campi.md) | Resolução | 2025 | Altera dispositivos da Resolução nº 08/2014, que regulamenta o Regimento Interno Comum aos Câmpus do IFPR. |
 | [Resolução CNE/CEB nº 7/2025](normas/br/resolucoes/RESOLUCAO_CNE-CEB_7-2025_tempo-integral.md) | Resolução | 2025 | Institui as Diretrizes Operacionais Nacionais para a Educação Integral em Tempo Integral na Educação Básica. |
 | [Nota Técnica PROENS/IFPR nº 1/2025](normas/ifpr/notas-tecnicas/NOTA-TECNICA_PROENS-IFPR_1-2025_aee-nao-componente-curricular.md) | Nota Técnica | 2025 | Esclarece que processos de abertura, elaboração, ajuste e atualização de PPCs não devem incorporar o AEE como componente curricular. |
-| [Resolução CONSUP/IFPR nº 259/2025](normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_259-2025_calendario-academico.md) | Resolução | 2025 | Define diretrizes para elaboração dos calendários acadêmicos dos campi do IFPR. |
+| [Resolução CONSUP/IFPR nº 259/2025](normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_259-2025_calendario-academico.md) | Resolução | 2025 | Estabelece o Calendário Acadêmico e Administrativo de referência dos cursos técnicos de nível médio e graduação do IFPR para o ano de 2026. |
 | [Resolução CONSUP/IFPR nº 271/2026](normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_271-2026_estatuto-ifpr.md) | Resolução | 2026 | Aprova o novo Estatuto do Instituto Federal de Educação, Ciência e Tecnologia do Paraná. |
+| [Resolução CONSUP/IFPR nº 276/2026](normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_276-2026_rede-certifica.md) | Resolução | 2026 | Dispõe sobre o Regulamento do Processo de Certificação Profissional da Rede Certifica no âmbito do Instituto Federal do Paraná - IFPR. |
 | [Lei nº 15.468/2026](normas/br/leis/LEI_BR_15468-2026_educacao-politica-direitos-cidadania.md) | Lei | 2026 | Altera a LDB para incluir educação política e direitos da cidadania como componente curricular obrigatório da educação básica. |
+| [Resolução CONSUP/IFPR nº 292/2026](normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_292-2026_calendario-academico-2027.md) | Resolução | 2026 | Estabelece o calendário acadêmico e administrativo de referência para os cursos técnicos de nível médio e de graduação do IFPR no ano de 2027. |
 
 ## Manutenção
 
@@ -122,6 +135,7 @@ Esta é a raiz lógica da base. No projeto unificado ela fica em `base-conhecime
 - `normas/`: leis, resoluções, portarias, notas técnicas e compilações, organizadas por jurisdição e tipo documental.
 - `institucional/`: metadados e referências institucionais, como o cadastro de campi do IFPR e notas de referência em `institucional/ifpr/referencias/`.
 - `institucional/ifpr/ppcs/`: PPCs convertidos para Markdown e índices globais de PPCs e seções.
+- `institucional/ifpr/ppcps/`: pesquisa comparada e proposta de PPCP para a Rede Certifica.
 - `catalogos/`: catálogos estruturados para busca por agentes IA, como o CNCT.
 - `manifest.json`: índice estruturado para consumo automático.
 - `institucional_manifest.json`: índice estruturado das coleções institucionais.
