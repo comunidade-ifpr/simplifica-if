@@ -111,7 +111,16 @@
         "codigo": "IVA001",
         "vagas": 36,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "298 — TÉCNICO EM AGROECOLOGIA INTEGRADO - 2015 IVAIPORÃ — CH exibida: 3600 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/298/"
+          ],
+          "carga_horaria_comum_h": 3600,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/ivaipora/wp-content/uploads/sites/15/2017/03/PPC-Integrado-em-Agroecologia-26-04-final.pdf",
@@ -148,7 +157,16 @@
         "codigo": "IVAAGROP",
         "vagas": 35,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "714 — TÉCNICO EM AGROPECUÁRIA - 2025 IVAIPORÃ (SEMESTRAL) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/714/"
+          ],
+          "carga_horaria_comum_h": 3200,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/ivaipora/wp-content/uploads/sites/15/2024/10/PPC-Agropecuaria.aprovado-CONSUP.pdf",
@@ -185,7 +203,16 @@
         "codigo": "IVA007",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "456 — TÉCNICO EM ELETROTÉCNICA INTEGRADO - 2025 IVAIPORÃ (SEMESTRAL) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/456/"
+          ],
+          "carga_horaria_comum_h": 3200,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/ivaipora/wp-content/uploads/sites/15/2024/03/Projeto-Pedagogico-do-Curso-de-Eletrotecnica-2025.pdf",
@@ -233,7 +260,18 @@
         "codigo": "ELES1",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "612 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2013 IVAIPORÃ — CH exibida: 1333 h; estágio exigido: Não; CH mínima de estágio (separada): -\n614 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2014 IVAIPORÃ — CH exibida: 1333 h; estágio exigido: Não; CH mínima de estágio (separada): -\n615 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2015 IVAIPORÃ — CH exibida: 1333 h; estágio exigido: Não; CH mínima de estágio (separada): -\n856 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2026 - IVAIPORÃ — CH exibida: 1211 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/612/",
+            "https://suap.ifpr.edu.br/edu/matriz/614/",
+            "https://suap.ifpr.edu.br/edu/matriz/615/",
+            "https://suap.ifpr.edu.br/edu/matriz/856/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://s3.sa-east-1.amazonaws.com/suap-prod/edu/ppc/PPC_Ivaipor%C3%A3_Eletrotecnica_Subsequente_V4_0_2026-2e70c17d312a4cc8bcf3fd097b142c17.pdf",
@@ -275,7 +313,16 @@
         "codigo": "IVA003",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "300 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2016 IVAIPORÃ ANUAL — CH exibida: 3600 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/300/"
+          ],
+          "carga_horaria_comum_h": 3600,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/ivaipora/wp-content/uploads/sites/15/2024/03/PPC-Informatica-2025.pdf",

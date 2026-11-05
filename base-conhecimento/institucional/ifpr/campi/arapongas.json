@@ -154,7 +154,16 @@
         "codigo": "AR001",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "1 — TÉCNICO EM MELHORIA DE PROCESSOS SUBSEQUENTE - 2022 ARAPONGAS — CH exibida: 1200 h; estágio exigido: Não; CH mínima de estágio (separada): 0",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/1/"
+          ],
+          "carga_horaria_comum_h": 1200,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/arapongas/wp-content/uploads/sites/2/2022/09/PPC___CURSO_TECNICO_EM_MELHORIA_DE_PROCESSOS___VERSAO_FINAL.pdf",
@@ -207,7 +216,16 @@
         "codigo": "AR002",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "824 — TÉCNICO EM SISTEMAS DE ENERGIA RENOVÁVEL - INTEGRADO - 2026 CAMPUS ARAPONGAS — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/824/"
+          ],
+          "carga_horaria_comum_h": 3200,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/arapongas/wp-content/uploads/sites/2/2025/12/PPC_Tecnico_em_Sistemas_de_Energia_Renovavel___Arapongas-2.pdf",

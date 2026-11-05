@@ -81,7 +81,18 @@
         "codigo": "TBOR001",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "4 — TÉCNICO EM AUTOMAÇÃO INDUSTRIAL INTEGRADO - 2019 TELEMACO BORBA — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -\n851 — TÉCNICO EM AUTOMAÇÃO INDUSTRIAL INTEGRADO - 2019 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -\n881 — TÉCNICO EM AUTOMAÇÃO INDUSTRIAL INTEGRADO - 2026 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/4/",
+            "https://suap.ifpr.edu.br/edu/matriz/851/",
+            "https://suap.ifpr.edu.br/edu/matriz/881/"
+          ],
+          "carga_horaria_comum_h": 3200,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/telemaco-borba/wp-content/uploads/sites/25/2026/02/PPC-TECNICO-EM-AUTOMACAO-VERSAO-FINAL.pdf",
@@ -169,7 +180,18 @@
         "codigo": "TBOR002",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "21 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2019 TELEMACO BORBA — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -\n852 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2019 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -\n862 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2026 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/21/",
+            "https://suap.ifpr.edu.br/edu/matriz/852/",
+            "https://suap.ifpr.edu.br/edu/matriz/862/"
+          ],
+          "carga_horaria_comum_h": 3200,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/telemaco-borba/wp-content/uploads/sites/25/2026/02/PPC-CURSO-TECNICO-EM-INFORMATICA-VERSAO-FINAL.pdf",
@@ -243,7 +265,18 @@
         "codigo": "TBOR003",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "26 — TÉCNICO EM MECÂNICA INTEGRADO - 2019 TELEMACO BORBA — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -\n863 — TÉCNICO EM MECÂNICA INTEGRADO - 2026 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -\n853 — TÉCNICO EM MECÂNICA INTEGRADO - 2019 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/26/",
+            "https://suap.ifpr.edu.br/edu/matriz/863/",
+            "https://suap.ifpr.edu.br/edu/matriz/853/"
+          ],
+          "carga_horaria_comum_h": 3200,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/telemaco-borba/wp-content/uploads/sites/25/2026/02/PPC-CURSO-TECNICO-INTEGRADO-EM-MECANICA_FINAL.pdf",
@@ -292,7 +325,18 @@
         "codigo": "TBOR004",
         "vagas": 50,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "17 — TÉCNICO EM PROGRAMAÇÃO DE JOGOS DIGITAIS INTEGRADO - 2018 TELEMACO BORBA — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -\n854 — TÉCNICO EM PROGRAMAÇÃO DE JOGOS DIGITAIS INTEGRADO - 2018 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -\n864 — TÉCNICO EM PROGRAMAÇÃO DE JOGOS DIGITAIS INTEGRADO - 2026 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/17/",
+            "https://suap.ifpr.edu.br/edu/matriz/854/",
+            "https://suap.ifpr.edu.br/edu/matriz/864/"
+          ],
+          "carga_horaria_comum_h": 3200,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/telemaco-borba/wp-content/uploads/sites/25/2026/02/PPC-CURSOS-TECNICOS-EM-PROGRAMACAO-DE-JOGOS-DIGITAIS_VERSAO_FINAL.pdf",

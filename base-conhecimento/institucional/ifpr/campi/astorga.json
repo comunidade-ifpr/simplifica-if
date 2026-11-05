@@ -23,7 +23,16 @@
         "codigo": "AST002",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "37 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2018 ASTORGA — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/37/"
+          ],
+          "carga_horaria_comum_h": 3200,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/astorga/wp-content/uploads/sites/4/2017/11/PPC-Tecnico-em-Informatica-Integrado-ao-Ensino-Medio-Astorga-2018.pdf",
@@ -89,7 +98,16 @@
         "codigo": "AST001",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "38 — TÉCNICO EM DESENVOLVIMENTO DE SISTEMAS SUBSEQUENTE - 2023 ASTORGA — CH exibida: 1200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/38/"
+          ],
+          "carga_horaria_comum_h": 1200,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/astorga/wp-content/uploads/sites/4/2022/10/NOVO_PPC_Subsequente_1200_horas_relogio.docx__4.pdf",

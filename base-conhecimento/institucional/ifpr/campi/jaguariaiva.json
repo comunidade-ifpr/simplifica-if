@@ -51,7 +51,16 @@
         "codigo": "JAG001",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "78 — TÉCNICO EM ALIMENTOS INTEGRADO - 2019 JAGUARIAÍVA — CH exibida: 3509 h; estágio exigido: Não; CH mínima de estágio (separada): -\n391 — TÉCNICO EM ALIMENTOS INTEGRADO - 2024 JAGUARIAÍVA (Trimestral) — CH exibida: 3348 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/78/",
+            "https://suap.ifpr.edu.br/edu/matriz/391/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/jaguariaiva/wp-content/uploads/sites/17/2023/03/PPC_Alimentos.2024.pdf",
@@ -97,7 +106,16 @@
         "codigo": "JAG002",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "736 — TÉCNICO EM BIOTECNOLOGIA INTEGRADO - 2019 JAGUARIAÍVA — CH exibida: 3634 h; estágio exigido: Não; CH mínima de estágio (separada): -\n459 — TÉCNICO EM BIOTECNOLOGIA INTEGRADO - 2024 JAGUARIAÍVA (Trimestral) — CH exibida: 3348 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/736/",
+            "https://suap.ifpr.edu.br/edu/matriz/459/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/jaguariaiva/wp-content/uploads/sites/17/2023/10/Projeto_Pedagogico_de_Cursos_Tecnicos_do_IFPR_formulario_BIOTECNOLOGIA.docx.pdf",

@@ -131,6 +131,17 @@
             "minProperties": 1,
             "additionalProperties": false,
             "properties": {
+              "matrizes": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "resumo": { "type": "string" },
+                  "urls": { "type": "array", "items": { "type": "string", "format": "uri", "pattern": "^https://suap\\.ifpr\\.edu\\.br/edu/matriz/[0-9]+/$" } },
+                  "carga_horaria_comum_h": { "type": "number", "minimum": 0 },
+                  "situacao": { "enum": ["Única ativa", "Múltiplas — mesma CH", "Múltiplas — CH divergentes", "Sem matriz ativa"] },
+                  "coletado_em": { "type": "string", "format": "date-time" }
+                }
+              },
               "id": {
                 "type": "integer",
                 "minimum": 1

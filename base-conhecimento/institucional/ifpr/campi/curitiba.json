@@ -352,7 +352,18 @@
         "codigo": "CTB001",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "301 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2014 CURITIBA — CH exibida: 3288 h; estágio exigido: Não; CH mínima de estágio (separada): -\n841 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2014 CURITIBA (Trimestre) — CH exibida: 3288 h; estágio exigido: Não; CH mínima de estágio (separada): -\n882 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2014 PONTA GROSSA (Trimestre) — CH exibida: 3288 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/301/",
+            "https://suap.ifpr.edu.br/edu/matriz/841/",
+            "https://suap.ifpr.edu.br/edu/matriz/882/"
+          ],
+          "carga_horaria_comum_h": 3288,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2018/11/TECNICO-EM-ADMINISTRACAO-Medio-Integrado-1.pdf",
@@ -399,7 +410,16 @@
         "codigo": "CTB002",
         "vagas": 30,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "3 — TÉCNICO EM CONDOMÍNIO SUBSEQUENTE - 2021 CURITIBA — CH exibida: 800 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/3/"
+          ],
+          "carga_horaria_comum_h": 800,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2021/04/PPC_Tec_Condominio_22_de_marco.pdf",
@@ -451,7 +471,17 @@
         "codigo": "CTB003",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "75 — TÉCNICO EM CONTABILIDADE INTEGRADO - 2014 CURITIBA — CH exibida: 3388 h; estágio exigido: Não; CH mínima de estágio (separada): -\n842 — TÉCNICO EM CONTABILIDADE INTEGRADO - 2014 CURITIBA (Trimestre) — CH exibida: 3388 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/75/",
+            "https://suap.ifpr.edu.br/edu/matriz/842/"
+          ],
+          "carga_horaria_comum_h": 3388,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2022/11/PPC-TECNICO-EM-CONTABILIDADE-INTEGRADO_vigente.pdf",
@@ -516,7 +546,16 @@
         "codigo": "CTB004",
         "vagas": 30,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "22 — TÉCNICO EM EDIFICAÇÕES SUBSEQUENTE - 2014 CURITIBA — CH exibida: 1358 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/22/"
+          ],
+          "carga_horaria_comum_h": 1358,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2010/12/TECNICO-EM-EDIFICACOES-Subsequente-1.pdf",
@@ -567,7 +606,16 @@
         "codigo": "CTB005",
         "vagas": 30,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "678 — TÉCNICO EM ELETROMECÂNICA SUBSEQUENTE - 2014 CURITIBA — CH exibida: 1360 h; estágio exigido: Não; CH mínima de estágio (separada): -\n46 — TÉCNICO EM ELETROMECÂNICA SUBSEQUENTE - 2018 CURITIBA — CH exibida: 1338 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/678/",
+            "https://suap.ifpr.edu.br/edu/matriz/46/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2020/10/PPC-ELETROMECANICA-Valido-a-partir-de-2018.pdf",
@@ -606,7 +654,17 @@
         "codigo": "CTB006",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "41 — TÉCNICO EM ELETRÔNICA INTEGRADO - 2014 CURITIBA — CH exibida: 3673 h; estágio exigido: Não; CH mínima de estágio (separada): -\n843 — TÉCNICO EM ELETRÔNICA INTEGRADO - 2014 CURITIBA (Trimestre) — CH exibida: 3673 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/41/",
+            "https://suap.ifpr.edu.br/edu/matriz/843/"
+          ],
+          "carga_horaria_comum_h": 3673,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2013/04/TECNICO-EM-ELETRONICA-Integrado.pdf",
@@ -654,7 +712,17 @@
         "codigo": "CTB007",
         "vagas": 30,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "55 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2015 CURITIBA — CH exibida: 1203 h; estágio exigido: Não; CH mínima de estágio (separada): -\n706 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2015 CURITIBA PROGRAMA AUTONOMIA E RENDA PETROBRÁS — CH exibida: 1203 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/55/",
+            "https://suap.ifpr.edu.br/edu/matriz/706/"
+          ],
+          "carga_horaria_comum_h": 1203,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2022/05/PPC_ELETROTECNICA_SUBSEQUENTE_2015.pdf",
@@ -693,7 +761,16 @@
         "codigo": "CTB008",
         "vagas": 30,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "71 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2020 CURITIBA — CH exibida: 1820 h; estágio exigido: Não; CH mínima de estágio (separada): -\n538 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2024 CURITIBA — CH exibida: 1600 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/71/",
+            "https://suap.ifpr.edu.br/edu/matriz/538/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2024/11/PPC_VERSAO_FINAL_2024.pdf",
@@ -723,7 +800,16 @@
         "codigo": "CTB009",
         "vagas": 30,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "311 — TÉCNICO EM EVENTOS SUBSEQUENTE - 2014 CURITIBA — CH exibida: 816 h; estágio exigido: Não; CH mínima de estágio (separada): -\n878 — TÉCNICO EM EVENTOS SUBSEQUENTE - 2026 CURITIBA — CH exibida: 800 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/311/",
+            "https://suap.ifpr.edu.br/edu/matriz/878/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2022/04/PPC-Tecnico-em-Eventos-2020-1.pdf",
@@ -762,7 +848,20 @@
         "codigo": "CTB010",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "81 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2021 CURITIBA — CH exibida: 3552 h; estágio exigido: Não; CH mínima de estágio (separada): -\n738 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2021 PONTA GROSSA — CH exibida: 3552 h; estágio exigido: Não; CH mínima de estágio (separada): -\n432 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2022 CURITIBA — CH exibida: 3552 h; estágio exigido: Não; CH mínima de estágio (separada): -\n891 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2026 PONTA GROSSA (Trimestre) — CH exibida: 3347 h; estágio exigido: Não; CH mínima de estágio (separada): -\n844 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2022 CURITIBA (Trimestre) — CH exibida: 3552 h; estágio exigido: Não; CH mínima de estágio (separada): -\n883 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2021 PONTA GROSSA (Trimestre) — CH exibida: 3552 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/81/",
+            "https://suap.ifpr.edu.br/edu/matriz/738/",
+            "https://suap.ifpr.edu.br/edu/matriz/432/",
+            "https://suap.ifpr.edu.br/edu/matriz/891/",
+            "https://suap.ifpr.edu.br/edu/matriz/844/",
+            "https://suap.ifpr.edu.br/edu/matriz/883/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2020/04/PPC-Informatica_2019-Final-REVISADO.pdf",
@@ -810,7 +909,16 @@
         "codigo": "CTB011",
         "vagas": 30,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "315 — TÉCNICO EM MASSOTERAPIA SUBSEQUENTE - 2014 CURITIBA — CH exibida: 1395 h; estágio exigido: Não; CH mínima de estágio (separada): -\n83 — TÉCNICO EM MASSOTERAPIA SUBSEQUENTE - 2023 CURITIBA — CH exibida: 1374 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/315/",
+            "https://suap.ifpr.edu.br/edu/matriz/83/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2022/06/PPC_Final_MASSOTERAPIA-SUBS_Valido-a-partir-de-2023.pdf",
@@ -858,7 +966,17 @@
         "codigo": "CTB013",
         "vagas": 30,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "283 — TÉCNICO EM MECÂNICA SUBSEQUENTE - 2014 CURITIBA — CH exibida: 1342 h; estágio exigido: Não; CH mínima de estágio (separada): -\n707 — TÉCNICO EM MECÂNICA SUBSEQUENTE - 2024 CURITIBA PROGRAMA AUTONOMIA E RENDA PETROBRÁS — CH exibida: 1204 h; estágio exigido: Não; CH mínima de estágio (separada): -\n783 — TÉCNICO EM MECÂNICA SUBSEQUENTE - 2025 CURITIBA — CH exibida: 1204 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/283/",
+            "https://suap.ifpr.edu.br/edu/matriz/707/",
+            "https://suap.ifpr.edu.br/edu/matriz/783/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2025/06/PPC-Curso-Tecnico-de-Mecanica-Subsequente-Campus-Curitiba.docx.pdf",
@@ -896,7 +1014,17 @@
         "codigo": "CTB012",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "287 — TÉCNICO EM MECÂNICA INTEGRADO - 2014 CURITIBA — CH exibida: 3682 h; estágio exigido: Não; CH mínima de estágio (separada): -\n845 — TÉCNICO EM MECÂNICA INTEGRADO - 2014 CURITIBA (Trimestre) — CH exibida: 3682 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/287/",
+            "https://suap.ifpr.edu.br/edu/matriz/845/"
+          ],
+          "carga_horaria_comum_h": 3682,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2022/04/PPP-MECANICA_INTEGRADO-2016_03.pdf",
@@ -944,7 +1072,17 @@
         "codigo": "CTB014",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "85 — TÉCNICO EM PETRÓLEO E GÁS INTEGRADO - 2014 CURITIBA — CH exibida: 3607 h; estágio exigido: Não; CH mínima de estágio (separada): -\n846 — TÉCNICO EM PETRÓLEO E GÁS INTEGRADO - 2014 CURITIBA (Trimestre) — CH exibida: 3607 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/85/",
+            "https://suap.ifpr.edu.br/edu/matriz/846/"
+          ],
+          "carga_horaria_comum_h": 3607,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2023/09/tecnico_petroleo_gas-1.pdf",
@@ -992,7 +1130,16 @@
         "codigo": "CTB016",
         "vagas": 30,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "14 — TÉCNICO EM PROCESSOS FOTOGRÁFICOS SUBSEQUENTE - 2014 CURITIBA — CH exibida: 952 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/14/"
+          ],
+          "carga_horaria_comum_h": 952,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2024/10/PPC-PF-SUB_V.2018-FINAL_pos-SEPAE-1.pdf",
@@ -1031,7 +1178,17 @@
         "codigo": "CTB015",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "86 — TÉCNICO EM PROCESSOS FOTOGRÁFICOS INTEGRADO - 2014 CURITIBA — CH exibida: 3390 h; estágio exigido: Não; CH mínima de estágio (separada): -\n847 — TÉCNICO EM PROCESSOS FOTOGRÁFICOS INTEGRADO - 2014 CURITIBA (Trimestre) — CH exibida: 3390 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/86/",
+            "https://suap.ifpr.edu.br/edu/matriz/847/"
+          ],
+          "carga_horaria_comum_h": 3390,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2025/07/PPC_PF-integrado_v.2018_1.pdf",
@@ -1079,7 +1236,16 @@
         "codigo": "CTB017",
         "vagas": 30,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "588 — TÉCNICO EM PRODUÇÃO DE ÁUDIO E VÍDEO SUBSEQUENTE - 2016 CURITIBA — CH exibida: 918 h; estágio exigido: Não; CH mínima de estágio (separada): -\n68 — TÉCNICO EM PRODUÇÃO DE ÁUDIO E VÍDEO SUBSEQUENTE - 2023 CURITIBA — CH exibida: 1231 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/588/",
+            "https://suap.ifpr.edu.br/edu/matriz/68/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2022/06/PPC_Final_PAV-SUBS_Valido-a-partir-de-2023.pdf",
@@ -1118,7 +1284,18 @@
         "codigo": "CTB018",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "48 — TÉCNICO EM PROGRAMAÇÃO DE JOGOS DIGITAIS INTEGRADO - 2021 CURITIBA — CH exibida: 3449 h; estágio exigido: Não; CH mínima de estágio (separada): -\n431 — TÉCNICO EM PROGRAMAÇÃO DE JOGOS DIGITAIS INTEGRADO - 2023 CURITIBA — CH exibida: 3449 h; estágio exigido: Não; CH mínima de estágio (separada): -\n848 — TÉCNICO EM PROGRAMAÇÃO DE JOGOS DIGITAIS INTEGRADO - 2023 CURITIBA (Trimestre) — CH exibida: 3449 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/48/",
+            "https://suap.ifpr.edu.br/edu/matriz/431/",
+            "https://suap.ifpr.edu.br/edu/matriz/848/"
+          ],
+          "carga_horaria_comum_h": 3449,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2025/03/PPC_Jogos_Atualizacao_09_12_2024.pdf",
@@ -1166,7 +1343,16 @@
         "codigo": "CTB019",
         "vagas": 30,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "56 — TÉCNICO EM PRÓTESE DENTÁRIA SUBSEQUENTE - 2014 CURITIBA — CH exibida: 1360 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/56/"
+          ],
+          "carga_horaria_comum_h": 1360,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://s3.sa-east-1.amazonaws.com/suap-prod/edu/ppp/PROJETO_PEDAGOGICO_PROTESE_DENTARIA_2014_-_02.12.14-c3f1fa76af0b439a9f70c5eb2653340b.pdf",
@@ -1203,7 +1389,16 @@
         "codigo": "CTB020",
         "vagas": 30,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "324 — TÉCNICO EM RADIOLOGIA SUBSEQUENTE - 2013 CURITIBA — CH exibida: 1846 h; estágio exigido: Não; CH mínima de estágio (separada): -\n270 — TÉCNICO EM RADIOLOGIA SUBSEQUENTE - 2014 CURITIBA — CH exibida: 2008 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/324/",
+            "https://suap.ifpr.edu.br/edu/matriz/270/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2022/05/PPC_RADIOLOGIA_2014-1-PDF-1.pdf",
@@ -1255,7 +1450,16 @@
         "codigo": "CTB021",
         "vagas": 35,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "281 — TÉCNICO EM SAÚDE BUCAL SUBSEQUENTE - 2014 CURITIBA — CH exibida: 1530 h; estágio exigido: Não; CH mínima de estágio (separada): -\n835 — TÉCNICO EM SAÚDE BUCAL SUBSEQUENTE - 2026 CURITIBA — CH exibida: 1236 h; estágio exigido: Sim; CH mínima de estágio (separada): 72",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/281/",
+            "https://suap.ifpr.edu.br/edu/matriz/835/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2026/04/PPC_Saude_Bucal_2025_Versao_Final.pdf",
@@ -1351,7 +1555,16 @@
         "codigo": "CTB022",
         "vagas": 30,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "326 — TÉCNICO EM TELECOMUNICAÇÕES SUBSEQUENTE - 2013 CURITIBA — CH exibida: 1270 h; estágio exigido: Não; CH mínima de estágio (separada): -\n13 — TÉCNICO EM TELECOMUNICAÇÕES SUBSEQUENTE - 2014 CURITIBA — CH exibida: 1224 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/326/",
+            "https://suap.ifpr.edu.br/edu/matriz/13/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2010/12/Plano-de-Curso-Telecomunica%C3%A7%C3%B5es.pdf",

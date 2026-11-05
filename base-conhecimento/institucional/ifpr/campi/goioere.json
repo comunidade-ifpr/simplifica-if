@@ -22,7 +22,16 @@
         "codigo": "GOI001",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "895 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2016 GOIOERÊ (Trimestre) 2026 — CH exibida: 3538 h; estágio exigido: Não; CH mínima de estágio (separada): -\n944 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2027 GOIOERÊ (Trimestre) — CH exibida: 3120 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/895/",
+            "https://suap.ifpr.edu.br/edu/matriz/944/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/goioere/wp-content/uploads/sites/13/2017/05/PPC-informatica-integrado-2016.pdf",
@@ -73,7 +82,16 @@
         "codigo": "GOI002",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "896 — TÉCNICO EM PRODUÇÃO DE MODA INTEGRADO - 2017 GOIOERÊ (TRIMESTRE) 2026 — CH exibida: 3345 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/896/"
+          ],
+          "carga_horaria_comum_h": 3345,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/goioere/wp-content/uploads/sites/13/2017/05/PPC-TECNICO-EM-PRODUCAO-DE-MODA-REVISADO-Piveta-Final.pdf",

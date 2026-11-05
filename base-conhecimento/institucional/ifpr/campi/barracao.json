@@ -23,7 +23,16 @@
         "codigo": "BA001",
         "vagas": 80,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "53 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2019 BARRACÃO — CH exibida: 3450 h; estágio exigido: Sim; CH mínima de estágio (separada): 90\n449 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2024 BARRACÃO — CH exibida: 3200 h; estágio exigido: Sim; CH mínima de estágio (separada): 90",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/53/",
+            "https://suap.ifpr.edu.br/edu/matriz/449/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/barracao/wp-content/uploads/sites/5/2023/12/Projeto-Pedagogico-de-Curso-Tecnico-em-Administracao-Barracao-APROVADO-CONSEPE.pdf",
@@ -73,7 +82,16 @@
         "codigo": "BA002",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "54 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2019 BARRACÃO — CH exibida: 3210 h; estágio exigido: Sim; CH mínima de estágio (separada): 120\n450 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2024 BARRACÃO — CH exibida: 3200 h; estágio exigido: Sim; CH mínima de estágio (separada): 90",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/54/",
+            "https://suap.ifpr.edu.br/edu/matriz/450/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/barracao/wp-content/uploads/sites/5/2023/12/PPC_INFO_Barracao-APROVACAO-CONSEPE.pdf",

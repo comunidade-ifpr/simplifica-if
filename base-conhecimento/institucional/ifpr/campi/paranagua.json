@@ -51,7 +51,16 @@
         "codigo": "PGUA001",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "50 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2013 PARANAGUÁ — CH exibida: 3336 h; estágio exigido: Não; CH mínima de estágio (separada): -\n737 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2025 PARANAGUÁ — CH exibida: 3337 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/50/",
+            "https://suap.ifpr.edu.br/edu/matriz/737/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/paranagua/wp-content/uploads/sites/20/2024/04/PPC-EMI-Informatica.pdf",
@@ -97,7 +106,16 @@
         "codigo": "PGUA002",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "51 — TÉCNICO EM MECÂNICA INTEGRADO - 2013 PARANAGUÁ — CH exibida: 3535 h; estágio exigido: Não; CH mínima de estágio (separada): -\n454 — TÉCNICO EM MECÂNICA INTEGRADO - 2025 PARANAGUÁ — CH exibida: 3438 h; estágio exigido: Sim; CH mínima de estágio (separada): 200",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/51/",
+            "https://suap.ifpr.edu.br/edu/matriz/454/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/paranagua/wp-content/uploads/sites/20/2025/04/PPC_TEC-MECANICA_PARANAGUA_2013_-_2024.pdf",
@@ -134,7 +152,16 @@
         "codigo": "PGUA003",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "42 — TÉCNICO EM MEIO AMBIENTE INTEGRADO - 2014 PARANAGUÁ — CH exibida: 3299 h; estágio exigido: Não; CH mínima de estágio (separada): -\n455 — TÉCNICO EM MEIO AMBIENTE INTEGRADO - 2025 PARANAGUÁ — CH exibida: 3332 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/42/",
+            "https://suap.ifpr.edu.br/edu/matriz/455/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/paranagua/wp-content/uploads/sites/20/2024/04/PPC-EMI-Meio-Ambiente.pdf",
@@ -181,7 +208,16 @@
         "codigo": "PGUA004",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "394 — TÉCNICO EM PRODUÇÃO CULTURAL INTEGRADO - 2024 PARANAGUÁ — CH exibida: 3370 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/394/"
+          ],
+          "carga_horaria_comum_h": 3370,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/paranagua/wp-content/uploads/sites/20/2023/04/PPC_2022_Producao_Cultural-1-1.pdf",

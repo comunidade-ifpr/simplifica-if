@@ -144,7 +144,16 @@
         "codigo": "FOZ001",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "27 — TÉCNICO EM AQUICULTURA INTEGRADO - 2018 FOZ DO IGUAÇU — CH exibida: 3125 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/27/"
+          ],
+          "carga_horaria_comum_h": 3125,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/foz-do-iguacu/wp-content/uploads/sites/12/2020/04/PPC-Aqui-Integrado.pdf",
@@ -194,7 +203,16 @@
         "codigo": "FOZ002",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "52 — TÉCNICO EM DESENVOLVIMENTO DE SISTEMAS INTEGRADO - 2020 FOZ DO IGUAÇU — CH exibida: 3392 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/52/"
+          ],
+          "carga_horaria_comum_h": 3392,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/foz-do-iguacu/wp-content/uploads/sites/12/2023/04/PPC-TDS.pdf",
@@ -244,7 +262,16 @@
         "codigo": "FOZ003",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "74 — TÉCNICO EM EDIFICAÇÕES INTEGRADO - 2015 FOZ DO IGUAÇU — CH exibida: 3342 h; estágio exigido: Sim; CH mínima de estágio (separada): 246",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/74/"
+          ],
+          "carga_horaria_comum_h": 3342,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/foz-do-iguacu/wp-content/uploads/sites/12/2019/07/PPC-Edificacoes-FINAL-novo-2016.pdf",
@@ -294,7 +321,16 @@
         "codigo": "FOZ004",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "70 — TÉCNICO EM GASTRONOMIA SUBSEQUENTE - 2023 FOZ DO IGUAÇU — CH exibida: 800 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/70/"
+          ],
+          "carga_horaria_comum_h": 800,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/foz-do-iguacu/wp-content/uploads/sites/12/2022/10/PPC-Tecnico-em-Gastronomia.2022.10.10.22.pdf",
@@ -331,7 +367,16 @@
         "codigo": "FOZ005",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "77 — TÉCNICO EM MEIO AMBIENTE INTEGRADO - 2018 FOZ DO IGUAÇU — CH exibida: 3307 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/77/"
+          ],
+          "carga_horaria_comum_h": 3307,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/foz-do-iguacu/wp-content/uploads/sites/12/2020/02/PPC-Integrado-Meio-Ambiente-4-anos.pdf",

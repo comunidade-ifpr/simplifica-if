@@ -23,7 +23,16 @@
         "codigo": "AC002",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "76 — TÉCNICO EM AGROPECUÁRIA SUBSEQUENTE - 2020 ASSIS CHATEAUBRIAND — CH exibida: 1232 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/76/"
+          ],
+          "carga_horaria_comum_h": 1232,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2021/09/PPC-Curso-tecnico-em-agropecuaria-subsequente-Versao-2021.pdf",
@@ -69,7 +78,17 @@
         "codigo": "AC001",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "34 — TÉCNICO EM AGROPECUÁRIA INTEGRADO - 2018 ASSIS CHATEAUBRIAND — CH exibida: 3539 h; estágio exigido: Sim; CH mínima de estágio (separada): 200\n731 — TÉCNICO EM AGROPECUÁRIA INTEGRADO - 2018 ASSIS CHATEAUBRIAND (Trimestre) — CH exibida: 3539 h; estágio exigido: Sim; CH mínima de estágio (separada): 200",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/34/",
+            "https://suap.ifpr.edu.br/edu/matriz/731/"
+          ],
+          "carga_horaria_comum_h": 3539,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2017/08/PPC-Agropecuaria.pdf",
@@ -122,7 +141,16 @@
         "codigo": "AC003",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "379 — TÉCNICO EM ALIMENTOS SUBSEQUENTE - 2023 ASSIS CHATEAUBRIAND — CH exibida: 1215 h; estágio exigido: Sim; CH mínima de estágio (separada): 120",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/379/"
+          ],
+          "carga_horaria_comum_h": 1215,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2023/07/Versao-3-do-PPC.pdf",
@@ -166,7 +194,17 @@
         "codigo": "AC004",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "61 — TÉCNICO EM COMÉRCIO INTEGRADO - 2019 ASSIS CHATEAUBRIAND — CH exibida: 3109 h; estágio exigido: Não; CH mínima de estágio (separada): -\n732 — TÉCNICO EM COMÉRCIO INTEGRADO - 2019 ASSIS CHATEAUBRIAND (Trimestre) — CH exibida: 3109 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/61/",
+            "https://suap.ifpr.edu.br/edu/matriz/732/"
+          ],
+          "carga_horaria_comum_h": 3109,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2022/10/PPC-do-Curso-de-Tecnico-em-Comercio.pdf",
@@ -216,7 +254,17 @@
         "codigo": "AC005",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "2 — TÉCNICO EM ELETROMECÂNICA INTEGRADO - 2014 ASSIS CHATEAUBRIAND — CH exibida: 3331 h; estágio exigido: Não; CH mínima de estágio (separada): -\n726 — TÉCNICO EM ELETROMECÂNICA INTEGRADO - 2014 ASSIS CHATEAUBRIAND (Trimestre) — CH exibida: 3331 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/2/",
+            "https://suap.ifpr.edu.br/edu/matriz/726/"
+          ],
+          "carga_horaria_comum_h": 3331,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2024/02/PPC-Integrado-em-Eletromecanica-11-DE-DEZEMBRO-DE-2013.pdf",
@@ -262,7 +310,16 @@
         "codigo": "AC006",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "79 — TÉCNICO EM ELETROMECÂNICA SUBSEQUENTE - 2013 ASSIS CHATEAUBRIAND — CH exibida: 1360 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/79/"
+          ],
+          "carga_horaria_comum_h": 1360,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2017/04/PPC-Eletromecanica_Subsequente.pdf",
@@ -292,7 +349,16 @@
         "codigo": "AC007",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "333 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2013 ASSIS CHATEAUBRIAND — CH exibida: 1360 h; estágio exigido: Não; CH mínima de estágio (separada): -\n82 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2020 ASSIS CHATEAUBRIAND — CH exibida: 1334 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/333/",
+            "https://suap.ifpr.edu.br/edu/matriz/82/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2017/08/PPC-Eletrotecnica.pdf",
@@ -333,7 +399,18 @@
         "codigo": "AC008",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "73 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2020 ASSIS CHATEAUBRIAND — CH exibida: 3181 h; estágio exigido: Não; CH mínima de estágio (separada): -\n734 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2020 ASSIS CHATEAUBRIAND (Trimestre) — CH exibida: 3181 h; estágio exigido: Não; CH mínima de estágio (separada): -\n834 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2020 CR TOLEDO (Trimestre) — CH exibida: 3181 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/73/",
+            "https://suap.ifpr.edu.br/edu/matriz/734/",
+            "https://suap.ifpr.edu.br/edu/matriz/834/"
+          ],
+          "carga_horaria_comum_h": 3181,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://drive.google.com/file/d/1hZ3CEJOKSC0oqwAD2EIU7YwXRraTcYba/view",
@@ -380,7 +457,16 @@
         "codigo": "AC013",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "880 — TÉCNICO EM MECATRÔNICA 2026 - ASSIS CHATEAUBRIAND (Trimestre) — CH exibida: 3303 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/880/"
+          ],
+          "carga_horaria_comum_h": 3303,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2026/02/PPC_Tecnico_em_Mecatronica_Integrado_2026.pdf",

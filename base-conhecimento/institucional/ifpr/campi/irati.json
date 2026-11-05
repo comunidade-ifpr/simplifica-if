@@ -104,7 +104,17 @@
         "codigo": "IRA001",
         "vagas": 160,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "686 — TÉCNICO EM AGROECOLOGIA INTEGRADO - 2017 IRATI (T) (IRA001) — CH exibida: 3280 h; estágio exigido: Não; CH mínima de estágio (separada): -\n458 — TÉCNICO EM AGROECOLOGIA INTEGRADO - 2024 IRATI — CH exibida: 3280 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/686/",
+            "https://suap.ifpr.edu.br/edu/matriz/458/"
+          ],
+          "carga_horaria_comum_h": 3280,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/irati/wp-content/uploads/sites/14/2025/12/PPC-Tecnico-em-Agroecologia-Vigente.pdf",
@@ -148,7 +158,17 @@
         "codigo": "IRA002",
         "vagas": 160,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "59 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2017 IRATI (M) (IRA002) — CH exibida: 3212 h; estágio exigido: Não; CH mínima de estágio (separada): -\n687 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2017 IRATI (T) (IRA002) — CH exibida: 3212 h; estágio exigido: Não; CH mínima de estágio (separada): -\n457 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2024 IRATI — CH exibida: 3278 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/59/",
+            "https://suap.ifpr.edu.br/edu/matriz/687/",
+            "https://suap.ifpr.edu.br/edu/matriz/457/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/irati/wp-content/uploads/sites/14/2025/12/PPC-Tecnico-em-Informatica-Vigente.pdf",

@@ -52,7 +52,16 @@
         "codigo": "CAP003",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "67 — TÉCNICO EM AGROECOLOGIA INTEGRADO - 2022 CAPANEMA — CH exibida: 3210 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/67/"
+          ],
+          "carga_horaria_comum_h": 3210,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/capanema/wp-content/uploads/sites/7/2018/02/PPC-Versao-Aprovada-CONSUP.pdf",
@@ -98,7 +107,16 @@
         "codigo": "CAP001",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "65 — TÉCNICO EM COOPERATIVISMO INTEGRADO - 2018 CAPANEMA — CH exibida: 3150 h; estágio exigido: Sim; CH mínima de estágio (separada): 120",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/65/"
+          ],
+          "carga_horaria_comum_h": 3150,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/capanema/wp-content/uploads/sites/7/2018/04/PPC-Cooperativismo-2018-Capanema.pdf",
@@ -144,7 +162,16 @@
         "codigo": "CAP002",
         "vagas": 50,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "118 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2021 CAPANEMA — CH exibida: 3210 h; estágio exigido: Não; CH mínima de estágio (separada): -\n716 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2025 CAPANEMA — CH exibida: 3300 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/118/",
+            "https://suap.ifpr.edu.br/edu/matriz/716/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/capanema/wp-content/uploads/sites/7/2020/09/Projeto-Pedagogico-do-Curso-Tecnico-em-Informatica-versao-final-ingresso-2021-3-1.pdf",

@@ -260,7 +260,9 @@ def validate_json_schema(data: object, schema: dict[str, object], label: str, pa
     errors: list[str] = []
 
     expected_type = schema.get("type")
-    if expected_type is not None and type_name(data) != expected_type:
+    actual_type = type_name(data)
+    # JSON Schema inclui inteiros no tipo number; booleanos continuam separados.
+    if expected_type is not None and actual_type != expected_type and not (expected_type == "number" and actual_type == "integer"):
         return [f"{label}: {path} deve ser {expected_type}, recebido {type_name(data)}"]
 
     if "const" in schema and data != schema["const"]:
@@ -282,9 +284,9 @@ def validate_json_schema(data: object, schema: dict[str, object], label: str, pa
             if not parsed.scheme or not parsed.netloc or re.search(r"\s", data):
                 errors.append(f"{label}: {path} deve ser URI absoluta válida")
 
-    if isinstance(data, int) and not isinstance(data, bool):
+    if isinstance(data, (int, float)) and not isinstance(data, bool):
         minimum = schema.get("minimum")
-        if isinstance(minimum, int) and data < minimum:
+        if isinstance(minimum, (int, float)) and data < minimum:
             errors.append(f"{label}: {path} deve ser maior ou igual a {minimum}")
 
     if isinstance(data, list):

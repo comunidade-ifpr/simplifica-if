@@ -75,7 +75,16 @@
         "codigo": "PIN001",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "797 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2026 PINHAIS (Trimestre) — CH exibida: 3347 h; estágio exigido: Não; CH mínima de estágio (separada): -\n821 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2019 PINHAIS (Trimestre) — CH exibida: 3809 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/797/",
+            "https://suap.ifpr.edu.br/edu/matriz/821/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/pinhais/wp-content/uploads/sites/22/2025/05/Projeto_Pedagogico_de_Curso_3530515_PPC_ADM_2025_aprovadoCONSEPE.pdf",
@@ -119,7 +128,16 @@
         "codigo": "PIN003",
         "vagas": 80,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "798 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2026 PINHAIS (Trimestre) — CH exibida: 3347 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/798/"
+          ],
+          "carga_horaria_comum_h": 3347,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/pinhais/wp-content/uploads/sites/22/2025/04/PPC_Informatica_Integrado_EnsinoMedio_2019.pdf",

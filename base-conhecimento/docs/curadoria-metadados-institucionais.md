@@ -58,6 +58,8 @@ No JSON público, esses dados aparecem em `cursos[].suap`. `cursos[].suap.vagas`
 
 Para relatórios brutos do SUAP com coluna `DIRETORIA`, use `institucional/ifpr/referencias/suap-diretorias.json` como apoio para associar diretoria a `campus_id`. Não trate esse mapeamento como coluna obrigatória no Notion.
 
+Para matrizes e cargas horárias, consulte a seção **Matrizes e cargas horárias SUAP** em `docs/notion-gestao-cursos.md`. Preserve todas as matrizes ativas e suas URLs; preencha `SUAP CH das matrizes (h)` somente quando não houver divergência entre elas. A marcação de ativa não comprova vigência para novos ingressos, e a carga do cabeçalho não deve ser somada ao estágio sem conferir a composição curricular.
+
 ## Horários de aula
 
 Registre a fonte principal de horários diretamente na base `Campi`. Como a informação muda por período letivo, preencha sempre `Horários Coletado em`.

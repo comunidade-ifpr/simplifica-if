@@ -264,7 +264,17 @@
         "codigo": "PAL001",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "16 — TÉCNICO EM ALIMENTOS INTEGRADO - 2023 PALMAS — CH exibida: 3006 h; estágio exigido: Sim; CH mínima de estágio (separada): 67\n869 — TÉCNICO EM ALIMENTOS INTEGRADO - 2023 PALMAS (Trimestral) — CH exibida: 3006 h; estágio exigido: Sim; CH mínima de estágio (separada): 67",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/16/",
+            "https://suap.ifpr.edu.br/edu/matriz/869/"
+          ],
+          "carga_horaria_comum_h": 3006,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/palmas/wp-content/uploads/sites/31/2025/12/PPC_Alimentos_2025.pdf",
@@ -308,7 +318,17 @@
         "codigo": "PAL003",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "475 — TÉCNICO EM INFORMÁTICA PARA INTERNET - 2024 PALMAS — CH exibida: 3012 h; estágio exigido: Não; CH mínima de estágio (separada): -\n870 — TÉCNICO EM INFORMÁTICA PARA INTERNET - 2024 PALMAS (Trimestral) — CH exibida: 3012 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/475/",
+            "https://suap.ifpr.edu.br/edu/matriz/870/"
+          ],
+          "carga_horaria_comum_h": 3012,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/palmas/wp-content/uploads/sites/31/2025/12/PPC-Tecnico-em-Informatica-para-Internet-2025-1.pdf",
@@ -344,7 +364,19 @@
         "codigo": "PAL002",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "356 — TÉCNICO EM SERVIÇOS JURÍDICOS INTEGRADO - 2013 PALMAS — CH exibida: 3960 h; estágio exigido: Não; CH mínima de estágio (separada): -\n355 — TÉCNICO EM SERVIÇOS JURÍDICOS INTEGRADO - 2015 PALMAS — CH exibida: 3180 h; estágio exigido: Não; CH mínima de estágio (separada): -\n354 — TÉCNICO EM SERVIÇOS JURÍDICOS INTEGRADO - 2019 PALMAS — CH exibida: 3180 h; estágio exigido: Não; CH mínima de estágio (separada): -\n36 — TÉCNICO EM SERVIÇOS JURÍDICOS INTEGRADO - 2023 PALMAS — CH exibida: 3006 h; estágio exigido: Não; CH mínima de estágio (separada): -\n871 — TÉCNICO EM SERVIÇOS JURÍDICOS INTEGRADO - 2023 PALMAS (Trimestral) — CH exibida: 3006 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/356/",
+            "https://suap.ifpr.edu.br/edu/matriz/355/",
+            "https://suap.ifpr.edu.br/edu/matriz/354/",
+            "https://suap.ifpr.edu.br/edu/matriz/36/",
+            "https://suap.ifpr.edu.br/edu/matriz/871/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/palmas/wp-content/uploads/sites/31/2025/12/PPC_Servicos_Juridicos_Trimestral-2025.pdf",

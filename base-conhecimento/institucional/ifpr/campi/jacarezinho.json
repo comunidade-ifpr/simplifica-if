@@ -106,7 +106,16 @@
         "codigo": "JAC001",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "393 — TÉCNICO EM ALIMENTOS INTEGRADO - 2013 JACAREZINHO — CH exibida: 4402 h; estágio exigido: Não; CH mínima de estágio (separada): -\n29 — TÉCNICO EM ALIMENTOS INTEGRADO - 2020 JACAREZINHO — CH exibida: 3390 h; estágio exigido: Não; CH mínima de estágio (separada): 0",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/393/",
+            "https://suap.ifpr.edu.br/edu/matriz/29/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2019/12/PPC___Alimentos_2020_A-partir-2020.pdf",
@@ -152,7 +161,16 @@
         "codigo": "JAC006",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "629 — TÉCNICO EM ELETROMECÂNICA INTEGRADO - 2013 JACAREZINHO — CH exibida: 0 h; estágio exigido: Não; CH mínima de estágio (separada): -\n517 — TÉCNICO EM ELETROMECÂNICA INTEGRADO - 2018 JACAREZINHO — CH exibida: 1200 h; estágio exigido: Sim; CH mínima de estágio (separada): 120",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/629/",
+            "https://suap.ifpr.edu.br/edu/matriz/517/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2018/07/Projeto-Pedagogico-do-Curso-Tecnico-em-Eletromecanica.pdf",
@@ -189,7 +207,16 @@
         "codigo": "JAC002",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "35 — TÉCNICO EM ELETROTÉCNICA INTEGRADO - 2018 JACAREZINHO — CH exibida: 5460 h; estágio exigido: Sim; CH mínima de estágio (separada): 120",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/35/"
+          ],
+          "carga_horaria_comum_h": 5460,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2018/06/Projeto-Pedagogico-de-Curso-Eletrotecnica.pdf",
@@ -235,7 +262,16 @@
         "codigo": "JAC003",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "43 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2018 JACAREZINHO — CH exibida: 3390 h; estágio exigido: Sim; CH mínima de estágio (separada): 120\n390 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2013 JACAREZINHO — CH exibida: 4405 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/43/",
+            "https://suap.ifpr.edu.br/edu/matriz/390/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2018/11/PPC-Informatica-1.pdf",
@@ -281,7 +317,16 @@
         "codigo": "JAC004",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "45 — TÉCNICO EM MECÂNICA INTEGRADO - 2018 JACAREZINHO — CH exibida: 3390 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/45/"
+          ],
+          "carga_horaria_comum_h": 3390,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2018/06/Projeto-Pedagogico-do-Curso-Tecnico-em-Mecanica.pdf",
@@ -327,7 +372,16 @@
         "codigo": "JAC005",
         "vagas": 30,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "10 — TÉCNICO EM TEATRO SUBSEQUENTE - 2020 JACAREZINHO — CH exibida: 1230 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/10/"
+          ],
+          "carga_horaria_comum_h": 1230,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2019/11/PPC_Tecnico_em_Teatro-1.pdf",

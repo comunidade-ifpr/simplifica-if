@@ -81,7 +81,16 @@
         "codigo": "PIT001",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "392 — TÉCNICO EM ALIMENTOS INTEGRADO - 2024 PITANGA — CH exibida: 3600 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/392/"
+          ],
+          "carga_horaria_comum_h": 3600,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/pitanga/wp-content/uploads/sites/23/2023/11/PPC_Tecnico_em_Alimentos___Revisado_23_02_2023.pdf",
@@ -116,7 +125,16 @@
         "codigo": "PIT002",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "28 — TÉCNICO EM COOPERATIVISMO INTEGRADO - 2018 PITANGA — CH exibida: 3600 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/28/"
+          ],
+          "carga_horaria_comum_h": 3600,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/pitanga/wp-content/uploads/sites/23/2018/04/PPC_Cooperativismo-atualizado.pdf",
@@ -162,7 +180,16 @@
         "codigo": "PIT003",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "828 — TÉCNICO EM DESENVOLVIMENTO DE SISTEMAS — CH exibida: 3510 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/828/"
+          ],
+          "carga_horaria_comum_h": 3510,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/pitanga/wp-content/uploads/sites/23/2025/09/PPC_Desenvolvimento_de_Sistemas_Integrado.pdf",

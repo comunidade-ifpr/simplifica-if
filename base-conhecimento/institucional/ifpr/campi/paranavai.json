@@ -138,7 +138,17 @@
         "codigo": "PVAI001",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "60 — TÉCNICO EM AGROINDÚSTRIA INTEGRADO - 2017 PARANAVAÍ — CH exibida: 3537 h; estágio exigido: Não; CH mínima de estágio (separada): -\n897 — TÉCNICO EM AGROINDÚSTRIA INTEGRADO - 2017 PARANAVAÍ (2026) — CH exibida: 3537 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/60/",
+            "https://suap.ifpr.edu.br/edu/matriz/897/"
+          ],
+          "carga_horaria_comum_h": 3537,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/paranavai/wp-content/uploads/sites/21/2017/05/PPC_Integrado_Agroindustria_enviadoPROENS_12-01-2017_curso2017.pdf",
@@ -175,7 +185,16 @@
         "codigo": "PVAI002",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "64 — TÉCNICO EM ELETROMECÂNICA SUBSEQUENTE - 2020 PARANAVAÍ — CH exibida: 1336 h; estágio exigido: Sim; CH mínima de estágio (separada): 120",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/64/"
+          ],
+          "carga_horaria_comum_h": 1336,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/paranavai/wp-content/uploads/sites/21/2019/12/PPC-Eletromecanica-2020.pdf",
@@ -212,7 +231,17 @@
         "codigo": "PVAI003",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "62 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2016 PARANAVAÍ — CH exibida: 3536 h; estágio exigido: Não; CH mínima de estágio (separada): -\n900 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2016 PARANAVAÍ (2026) — CH exibida: 3536 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/62/",
+            "https://suap.ifpr.edu.br/edu/matriz/900/"
+          ],
+          "carga_horaria_comum_h": 3536,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/paranavai/wp-content/uploads/sites/21/2017/05/PPC-INFORMARTICA-TURMAS-INICIO-2016.pdf",
@@ -254,7 +283,17 @@
         "codigo": "PVAI004",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "63 — TÉCNICO EM MECATRÔNICA INTEGRADO - 2017 PARANAVAÍ — CH exibida: 3538 h; estágio exigido: Não; CH mínima de estágio (separada): -\n899 — TÉCNICO EM MECATRÔNICA INTEGRADO - 2017 PARANAVAÍ (2026) — CH exibida: 3538 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/63/",
+            "https://suap.ifpr.edu.br/edu/matriz/899/"
+          ],
+          "carga_horaria_comum_h": 3538,
+          "situacao": "Múltiplas — mesma CH",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/paranavai/wp-content/uploads/sites/21/2017/05/PPC_Mecatronica_Pvai_inicio2017.pdf",

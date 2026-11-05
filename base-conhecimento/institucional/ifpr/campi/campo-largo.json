@@ -23,7 +23,16 @@
         "codigo": "CL001",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "33 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2023 CAMPO LARGO — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/33/"
+          ],
+          "carga_horaria_comum_h": 3200,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2023/01/PPC-EMI-ADMINISTRACAO_-Versao-Resolucao.pdf",
@@ -90,7 +99,16 @@
         "codigo": "CL002",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "24 — TÉCNICO EM AGROECOLOGIA INTEGRADO - 2021 CAMPO LARGO — CH exibida: 3520 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/24/"
+          ],
+          "carga_horaria_comum_h": 3520,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2021/01/PPC-Tecnico-em-Agroecologia-2020_23ago-1.pdf",
@@ -136,7 +154,16 @@
         "codigo": "CL003",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "11 — TÉCNICO EM AUTOMAÇÃO INDUSTRIAL INTEGRADO - 2020 CAMPO LARGO — CH exibida: 3360 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/11/"
+          ],
+          "carga_horaria_comum_h": 3360,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2023/04/PPC-EMI_Automacao-versao-para-sei-POS-PARECER-ultimo.pdf",
@@ -240,7 +267,16 @@
         "codigo": "CL004",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "18 — TÉCNICO EM MECÂNICA INTEGRADO - 2020 CAMPO LARGO — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/18/"
+          ],
+          "carga_horaria_comum_h": 3200,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2020/02/PPC-EMI_Mecanica_Versao_09_08_2019.pdf",
@@ -277,7 +313,16 @@
         "codigo": "CL005",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "44 — TÉCNICO EM MECÂNICA SUBSEQUENTE - 2016 CAMPO LARGO — CH exibida: 1338 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/44/"
+          ],
+          "carga_horaria_comum_h": 1338,
+          "situacao": "Única ativa",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2022/08/PPC-MECANICA-Sub-2016.pdf",

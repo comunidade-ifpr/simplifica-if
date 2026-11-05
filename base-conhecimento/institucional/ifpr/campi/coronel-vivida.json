@@ -23,7 +23,18 @@
         "codigo": "CV001",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "329 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2015 CORONEL VIVIDA — CH exibida: 3008 h; estágio exigido: Não; CH mínima de estágio (separada): -\n40 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2018 CORONEL VIVIDA — CH exibida: 3109 h; estágio exigido: Não; CH mínima de estágio (separada): -\n826 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2026 CORONEL VIVIDA (Trimestre) — CH exibida: 3711 h; estágio exigido: Não; CH mínima de estágio (separada): -\n865 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2018 CORONEL VIVIDA (Trimestre) — CH exibida: 3109 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/329/",
+            "https://suap.ifpr.edu.br/edu/matriz/40/",
+            "https://suap.ifpr.edu.br/edu/matriz/826/",
+            "https://suap.ifpr.edu.br/edu/matriz/865/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/coronel-vivida/wp-content/uploads/sites/10/2026/05/PPC-ADM-VERSAO-FINAL-09.12.2025.pdf",
@@ -67,7 +78,17 @@
         "codigo": "CV002",
         "vagas": 40,
         "coletado_em": "2026-05-25T00:00:00-03:00",
-        "atualizado_em": "2026-05-25T00:00:00-03:00"
+        "atualizado_em": "2026-05-25T00:00:00-03:00",
+        "matrizes": {
+          "resumo": "69 — TÉCNICO EM COOPERATIVISMO INTEGRADO - 2018 CORONEL VIVIDA — CH exibida: 3219 h; estágio exigido: Não; CH mínima de estágio (separada): -\n827 — TÉCNICO EM COOPERATIVISMO INTEGRADO - 2026 CORONEL VIVIDA (Trimestre) — CH exibida: 3712 h; estágio exigido: Não; CH mínima de estágio (separada): -\n866 — TÉCNICO EM COOPERATIVISMO INTEGRADO - 2018 CORONEL VIVIDA (Trimestre) — CH exibida: 3219 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+          "urls": [
+            "https://suap.ifpr.edu.br/edu/matriz/69/",
+            "https://suap.ifpr.edu.br/edu/matriz/827/",
+            "https://suap.ifpr.edu.br/edu/matriz/866/"
+          ],
+          "situacao": "Múltiplas — CH divergentes",
+          "coletado_em": "2026-11-05T16:04:00-03:00"
+        }
       },
       "ppc": {
         "url": "https://ifpr.edu.br/coronel-vivida/wp-content/uploads/sites/10/2026/05/PPC-COOP-VERSAO-FINAL-09.12.2025.pdf",
