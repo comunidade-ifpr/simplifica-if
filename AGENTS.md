@@ -50,16 +50,16 @@ Por padrão, use a API do Notion com `NOTION_TOKEN` do projeto. Não presuma que
 Depois de alterar dados institucionais no Notion, rode:
 
 ```bash
-python3 scripts/notion_exportar_base_publica.py
+bun run scripts/notion_exportar_base_publica.ts
 python3 scripts/gerar_indice_ppcs.py
 python3 scripts/validar_base.py
 python3 scripts/gerar_site.py
 ```
 
-Para atualização rotineira de dados SEI em `Movimentações de Cursos`, use antes:
+Para atualização rotineira de dados SEI em `Movimentações de Cursos`, use antes (requer `bun install` na raiz):
 
 ```bash
-python3 scripts/notion_atualizar_movimentacoes_sei.py --apply
+bun run scripts/notion_atualizar_movimentacoes_sei.ts --apply
 ```
 
 Depois de alterar normas, catálogos, PPCs convertidos ou manifestos locais, rode:
@@ -67,6 +67,13 @@ Depois de alterar normas, catálogos, PPCs convertidos ou manifestos locais, rod
 ```bash
 python3 scripts/validar_base.py
 python3 scripts/gerar_site.py
+```
+
+Os scripts que falam com Notion, SEI e SUAP são TypeScript (Bun) e exigem `bun install` na raiz. Depois de alterar código TypeScript em `scripts/`, rode:
+
+```bash
+bun run typecheck
+bun test scripts
 ```
 
 Depois de alterar skills, rode os testes ou validações da skill afetada. Para a skill `analise-ppc`, use:

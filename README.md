@@ -9,7 +9,7 @@ A base em `base-conhecimento/` é a fonte de verdade para normas, legislação, 
 - `base-conhecimento/`: fonte publicável da base, com caminhos internos preservados como `normas/`, `institucional/`, `catalogos/`, `manifest.json`, `llms.txt` e `README.md`.
 - `site/`: saída gerada para publicação estática, ignorada pelo Git e reconstruída a partir de `base-conhecimento/`.
 - `.agents/skills/`: skills operacionais para agentes IA, uma pasta versionada por skill e sem symlinks internos.
-- `scripts/`: geração, validação e exportação da base.
+- `scripts/`: geração e validação da base, em Python, e integração com Notion, SEI e SUAP, em TypeScript (Bun).
 - `base-conhecimento/docs/`: documentação de apoio à curadoria da base e ao desenvolvimento das skills.
 
 ## Base de Conhecimento

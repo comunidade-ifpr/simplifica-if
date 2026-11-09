@@ -13,7 +13,7 @@ Os arquivos em `institucional/ifpr/campi/` e `institucional/ifpr/processos-selet
 Depois de alterar dados institucionais no Notion, rode:
 
 ```bash
-python3 scripts/notion_exportar_base_publica.py
+bun run scripts/notion_exportar_base_publica.ts
 python3 scripts/gerar_indice_ppcs.py
 python3 scripts/validar_base.py
 ```
@@ -116,7 +116,7 @@ Regras:
 Para atualização rotineira de movimentações em andamento no Notion, use:
 
 ```bash
-python3 scripts/notion_atualizar_movimentacoes_sei.py --apply
+bun run scripts/notion_atualizar_movimentacoes_sei.ts --apply
 ```
 
 O script roda em dry-run quando `--apply` não é informado, consulta o histórico remoto pelo `sei-cli` e preserva o valor anterior quando a coleta não retorna `Data Última mov. SEI`.

@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "skipLibCheck": true,
+    "types": ["bun"],
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "paths": {
+      "@sei-cli/*": ["../sei-cli/src/*"]
+    }
+  },
+  "include": ["scripts/**/*.ts"]
+}
