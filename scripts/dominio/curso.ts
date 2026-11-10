@@ -15,15 +15,15 @@ export interface Campus {
 export interface MatrizesSuapCurso {
   resumo: string;
   urls: string;
-  cargaHorariaComumH?: number;
+  cargaHorariaComumH?: number | undefined;
   situacao: string;
   coletadoEm: string;
 }
 
 export interface SuapCurso {
-  id?: number;
+  id?: number | undefined;
   codigo: string;
-  vagas?: number;
+  vagas?: number | undefined;
   coletadoEm: string;
   atualizadoEm: string;
   matrizes: MatrizesSuapCurso;
@@ -33,7 +33,7 @@ export interface PpcCurso {
   url: string;
   /** Caminho do Markdown convertido, se o link apontar para a coleção de PPCs. */
   markdownPath: string;
-  anoDocumento?: number;
+  anoDocumento?: number | undefined;
   vagas: string;
   trechoVagas: string;
   periodicidadeVagas: string;

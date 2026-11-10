@@ -6,7 +6,7 @@ export interface ProcessoSeletivo {
   titulo: string;
   processoSeletivoId: string;
   nome: string;
-  anoIngresso?: number;
+  anoIngresso?: number | undefined;
   instituicao: string;
   fontes: string[];
   statusCuradoria: string;
@@ -20,7 +20,7 @@ export interface EditalIngresso {
   editalId: string;
   url: string;
   numero: string;
-  ano?: number;
+  ano?: number | undefined;
   tipo: string;
   processoIds: string[];
 }
@@ -31,9 +31,9 @@ export interface OfertaIngresso {
   ofertaId: string;
   cursoNome: string;
   tipoOferta: string;
-  vagas?: number;
+  vagas?: number | undefined;
   urlFonte: string;
-  paginaFonte?: number;
+  paginaFonte?: number | undefined;
   trechoFonte: string;
   formaOferta: string;
   statusCuradoria: string;

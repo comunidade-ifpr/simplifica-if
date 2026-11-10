@@ -24,12 +24,19 @@ type ProcessoSeiJson = NonNullable<CursoJson["sei"]>["processos"][number];
 type EditalJson = ProcessoSeletivoJson["editais"][number];
 type OfertaJson = ProcessoSeletivoJson["ofertas"][number];
 
+/** `T` com os campos opcionais aceitando `undefined` explícito, que `preenchidos` remove. */
+type CamposMontados<T> = {
+  [K in keyof T as {} extends Pick<T, K> ? K : never]?: T[K] | undefined;
+} & {
+  [K in keyof T as {} extends Pick<T, K> ? never : K]: T[K];
+};
+
 /**
  * Copia só os campos preenchidos: nos JSONs públicos, dado ausente é chave
  * ausente. O tipo `T` é o do formato publicado, que confere os nomes e os
  * tipos dos campos montados.
  */
-function preenchidos<T extends object>(campos: T): T {
+function preenchidos<T extends object>(campos: CamposMontados<T>): T {
   return Object.fromEntries(
     Object.entries(campos).filter(([, valor]) => valor !== "" && valor !== undefined && valor !== null),
   ) as T;
