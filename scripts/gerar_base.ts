@@ -1,14 +1,19 @@
 #!/usr/bin/env bun
 /** Gera manifest.json e a tabela do README a partir de normas/*.md. */
 import { criarCaminhos } from "./base/caminhos.ts";
-import { interpretarArgs } from "./base/cli.ts";
 import { montarManifest } from "./base/front-matter.ts";
+import { lerArgumentos } from "./cli.ts";
 import { gravarBase, normasExistem, verificarBase } from "./base/readme.ts";
 
+const USO = `uso: bun run scripts/gerar_base.ts [--check]
+
+Gera manifest.json e a tabela do README a partir de normas/*.md.
+
+  --check     verifica se os arquivos gerados estão atualizados, sem gravar
+  -h, --help  mostra esta ajuda`;
+
 function main(): number {
-  const args = interpretarArgs(process.argv.slice(2), [
-    { nome: "check", ajuda: "verifica se os arquivos gerados estão atualizados" },
-  ]);
+  const args = lerArgumentos(process.argv.slice(2), { check: { type: "boolean" } }, { uso: USO });
   if ("codigo" in args) return args.codigo;
 
   const caminhos = criarCaminhos();
@@ -18,7 +23,7 @@ function main(): number {
   }
 
   const manifest = montarManifest(caminhos);
-  if (args.flags.check) {
+  if (args.values.check) {
     const erros = verificarBase(caminhos, manifest);
     if (erros.length) {
       for (const erro of erros) console.error(`ERRO: ${erro}`);

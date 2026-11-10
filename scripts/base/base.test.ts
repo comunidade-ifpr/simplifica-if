@@ -3,7 +3,6 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import os from "node:os";
 import path from "node:path";
 import { criarCaminhos, naBase, relativo } from "./caminhos.ts";
-import { interpretarArgs } from "./cli.ts";
 import {
   analisarFrontMatter,
   ErroFrontMatter,
@@ -342,22 +341,5 @@ describe("site", () => {
       "docs/conteúdo divergente: b.md",
     ]);
     expect(() => renderizarSite(path.join(raiz, "base"), path.join(raiz, "base"))).toThrow("não pode ser o mesmo");
-  });
-});
-
-describe("CLI", () => {
-  const opcoes = [{ nome: "check", ajuda: "verifica" }];
-  test("aceita flag e abreviação, recusa argumento desconhecido com código 2", () => {
-    expect(interpretarArgs(["--check"], opcoes)).toEqual({ flags: { check: true } });
-    expect(interpretarArgs(["--che"], opcoes)).toEqual({ flags: { check: true } });
-    expect(interpretarArgs([], opcoes)).toEqual({ flags: { check: false } });
-    const escrita = process.stderr.write;
-    process.stderr.write = (() => true) as typeof process.stderr.write;
-    try {
-      expect(interpretarArgs(["--foo"], opcoes, { programa: "x.ts" })).toEqual({ codigo: 2 });
-      expect(interpretarArgs(["--check=1"], opcoes, { programa: "x.ts" })).toEqual({ codigo: 2 });
-    } finally {
-      process.stderr.write = escrita;
-    }
   });
 });
