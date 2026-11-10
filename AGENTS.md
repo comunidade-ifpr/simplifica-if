@@ -51,9 +51,9 @@ Depois de alterar dados institucionais no Notion, rode:
 
 ```bash
 bun run scripts/notion_exportar_base_publica.ts
-python3 scripts/gerar_indice_ppcs.py
-python3 scripts/validar_base.py
-python3 scripts/gerar_site.py
+bun run scripts/gerar_indice_ppcs.ts
+bun run scripts/validar_base.ts
+bun run scripts/gerar_site.ts
 ```
 
 Para atualização rotineira de dados SEI em `Movimentações de Cursos`, use antes (requer `bun install` na raiz):
@@ -65,11 +65,11 @@ bun run scripts/notion_atualizar_movimentacoes_sei.ts --apply
 Depois de alterar normas, catálogos, PPCs convertidos ou manifestos locais, rode:
 
 ```bash
-python3 scripts/validar_base.py
-python3 scripts/gerar_site.py
+bun run scripts/validar_base.ts
+bun run scripts/gerar_site.ts
 ```
 
-Os scripts que falam com Notion, SEI e SUAP são TypeScript (Bun) e exigem `bun install` na raiz. Depois de alterar código TypeScript em `scripts/`, rode:
+Os scripts que falam com Notion, SEI e SUAP, assim como o pipeline da base (`gerar_base.ts`, `gerar_indice_ppcs.ts`, `validar_base.ts`, `gerar_site.ts`, com lógica em `scripts/base/`), são TypeScript (Bun) e exigem `bun install` na raiz. Em `scripts/`, só `converter_ppcs_markdown.py` (depende de `pymupdf4llm`) continua em Python. Depois de alterar código TypeScript em `scripts/`, rode:
 
 ```bash
 bun run typecheck

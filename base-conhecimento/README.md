@@ -112,10 +112,10 @@ A proposta é preenchível e não autoriza oferta. Cada perfil profissional exig
 A partir da raiz do projeto unificado:
 
 ```bash
-python3 scripts/gerar_base.py
-python3 scripts/gerar_indice_ppcs.py
-python3 scripts/validar_base.py
-python3 scripts/gerar_site.py
+bun run scripts/gerar_base.ts
+bun run scripts/gerar_indice_ppcs.ts
+bun run scripts/validar_base.ts
+bun run scripts/gerar_site.ts
 ```
 
 ## Documentos institucionais de referência

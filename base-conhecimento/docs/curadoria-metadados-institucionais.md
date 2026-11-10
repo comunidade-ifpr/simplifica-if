@@ -14,8 +14,8 @@ Depois de alterar dados institucionais no Notion, rode:
 
 ```bash
 bun run scripts/notion_exportar_base_publica.ts
-python3 scripts/gerar_indice_ppcs.py
-python3 scripts/validar_base.py
+bun run scripts/gerar_indice_ppcs.ts
+bun run scripts/validar_base.ts
 ```
 
 Se o Notion contiver uma propriedade ou opção operacional legítima que a validação local rejeite, ajuste o exportador, schemas ou validadores locais.
@@ -92,8 +92,8 @@ PPCs históricos, quando forem relevantes para o histórico administrativo do cu
 Para converter PDFs em Markdown, use `scripts/converter_ppcs_markdown.py`. Depois de converter ou alterar PPCs, regenere os índices:
 
 ```bash
-python3 scripts/gerar_indice_ppcs.py
-python3 scripts/validar_base.py
+bun run scripts/gerar_indice_ppcs.ts
+bun run scripts/validar_base.ts
 ```
 
 ## Movimentações e SEI

@@ -35,8 +35,8 @@ Ao criar ou revisar uma skill:
 Depois de alterar a base:
 
 ```bash
-python3 scripts/validar_base.py
-python3 scripts/gerar_site.py --check
+bun run scripts/validar_base.ts
+bun run scripts/gerar_site.ts --check
 ```
 
 Depois de alterar `analise-ppc`:

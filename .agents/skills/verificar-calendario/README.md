@@ -15,7 +15,7 @@ Os textos integrais das resoluções ficam em `base-conhecimento/normas/ifpr/res
 
 Quando sair a resolução de calendário de referência de um novo ano:
 
-1. Incluir o texto da resolução em `base-conhecimento/normas/ifpr/resolucoes/` e rodar `python3 scripts/gerar_base.py`, `python3 scripts/validar_base.py` e `python3 scripts/gerar_site.py`.
+1. Incluir o texto da resolução em `base-conhecimento/normas/ifpr/resolucoes/` e rodar `bun run scripts/gerar_base.ts`, `bun run scripts/validar_base.ts` e `bun run scripts/gerar_site.ts`.
 2. Criar `referencias/[ANO].md` com a mesma estrutura dos arquivos existentes: mapa de dispositivos, janela do ano letivo, datas do Art. 2º, requisitos críticos dos incisos e tabela obrigatória do relatório com a redação literal dos incisos.
 3. Acrescentar a linha do ano nas tabelas deste README, de `SKILL.md` e de `instrucoes.md`.
 

@@ -24,8 +24,8 @@ Use os manifestos em `base-conhecimento/` como ponto de entrada:
 Os campos `path` dos manifestos são relativos a `base-conhecimento/`. Para publicar a base preservando URLs como `normas/...` e `institucional/...`, gere `site/`:
 
 ```bash
-python3 scripts/gerar_site.py
-python3 scripts/gerar_site.py --check
+bun run scripts/gerar_site.ts
+bun run scripts/gerar_site.ts --check
 ```
 
 ## Skills
@@ -41,7 +41,7 @@ Skills disponíveis:
 - `analise-ppc/`: análise IA-first de Projetos Pedagógicos de Curso técnico do IFPR.
 - `ifpr-design/`: identidade visual do IFPR para materiais e interfaces.
 - `revisar-processo-ppc/`: revisão de processos SEI de PPC.
-- `suap-ifpr/`: consulta e navegação no SUAP do IFPR com apoio dos tutoriais oficiais, incluindo dados profissionais de docentes e técnicos administrativos, cursos e disciplinas.
+- `suap-ifpr/`: consulta e navegação no SUAP do IFPR com apoio dos tutoriais oficiais, incluindo dados profissionais de docentes e técnicos administrativos, cursos e disciplinas. Os comandos são TypeScript (Bun) na raiz: `scripts/suap_consultar.ts` e `scripts/suap_tutoriais.ts`, testados por `bun test scripts`.
 - `verificar-fundamentacao-normativa/`: conferência de citações e alegações baseadas em leis, resoluções, portarias, CNCT e regulamentos.
 - `verificar-calendario/`: verificação de calendários acadêmicos do IFPR.
 
@@ -50,10 +50,10 @@ Ao desenvolver uma skill, consulte primeiro os dados locais em `base-conheciment
 ## Manutenção
 
 ```bash
-python3 scripts/gerar_base.py --check
-python3 scripts/gerar_indice_ppcs.py --check
-python3 scripts/validar_base.py
-python3 scripts/gerar_site.py --check
+bun run scripts/gerar_base.ts --check
+bun run scripts/gerar_indice_ppcs.ts --check
+bun run scripts/validar_base.ts
+bun run scripts/gerar_site.ts --check
 python3 -m pytest .agents/skills/analise-ppc/tests
 ```
 

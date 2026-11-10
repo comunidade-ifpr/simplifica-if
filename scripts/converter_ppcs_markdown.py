@@ -17,9 +17,10 @@ from pathlib import Path
 from urllib.parse import quote, unquote, urlparse, urlsplit, urlunsplit
 from urllib.request import Request, urlopen
 
-from base_utils import INSTITUCIONAL_ROOT, ROOT
 
-
+# Raiz lógica da base pública: os markdown_path dos campi são relativos a ela.
+ROOT = Path(__file__).resolve().parents[1] / "base-conhecimento"
+INSTITUCIONAL_ROOT = ROOT / "institucional"
 USER_AGENT = "simplifica-if-ppc-converter/1.0"
 
 
