@@ -259,7 +259,9 @@ export function caminhoSecao(caminhos: CaminhosBase, tipo: string): string {
 }
 
 export function caminhosSecoes(caminhos: CaminhosBase): Record<string, string> {
-  return Object.fromEntries(TIPOS_SECAO_INDEXADOS.map((tipo) => [tipo, relativo(caminhos, caminhoSecao(caminhos, tipo))]));
+  return Object.fromEntries(
+    TIPOS_SECAO_INDEXADOS.map((tipo) => [tipo, relativo(caminhos, caminhoSecao(caminhos, tipo))]),
+  );
 }
 
 export function montarIndice(caminhos: CaminhosBase, itens: ItemPpc[], atualizadoEm: string) {
@@ -311,9 +313,7 @@ export type IndicesPpcs = {
 export function gerarIndices(caminhos: CaminhosBase, atualizadoEm: string): IndicesPpcs {
   const itensPpc = coletarItensPpc(caminhos);
   const itensSecao = montarItensSecao(caminhos, itensPpc);
-  const secoes = new Map(
-    [...agruparPorTipo(itensSecao)].map(([tipo, itens]) => [tipo, secoesJsonl(itens)] as const),
-  );
+  const secoes = new Map([...agruparPorTipo(itensSecao)].map(([tipo, itens]) => [tipo, secoesJsonl(itens)] as const));
   return { itensPpc, itensSecao, indice: jsonIndentado(montarIndice(caminhos, itensPpc, atualizadoEm)), secoes };
 }
 

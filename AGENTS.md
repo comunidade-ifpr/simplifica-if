@@ -72,9 +72,12 @@ bun run scripts/gerar_site.ts
 Os scripts que falam com Notion, SEI e SUAP, assim como o pipeline da base (`gerar_base.ts`, `gerar_indice_ppcs.ts`, `validar_base.ts`, `gerar_site.ts`, com lógica em `scripts/base/`), são TypeScript (Bun) e exigem `bun install` na raiz. Em `scripts/`, só `converter_ppcs_markdown.py` (depende de `pymupdf4llm`) continua em Python. Depois de alterar código TypeScript em `scripts/`, rode:
 
 ```bash
+bun run format
 bun run typecheck
 bun test scripts
 ```
+
+O `bun run format` aplica `bun fmt` (largura 120, configurada em `bunfig.toml`) apenas em `scripts/`. Não rode `bun fmt` na raiz: Markdown e JSON de `base-conhecimento/` são textos normativos ou saídas de geradores e não devem ser reformatados.
 
 Depois de alterar skills, rode os testes ou validações da skill afetada. Para a skill `analise-ppc`, use:
 

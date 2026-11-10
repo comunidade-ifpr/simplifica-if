@@ -1,5 +1,16 @@
 /** Validador do subconjunto de JSON Schema usado em base-conhecimento/schemas/. */
-import { ehInteiro, ehObjeto, iguais, type ObjetoJson, regexPython, repr, RE_TEM_ESPACO, str, tamanho, urlsplit } from "./python.ts";
+import {
+  ehInteiro,
+  ehObjeto,
+  iguais,
+  type ObjetoJson,
+  regexPython,
+  repr,
+  RE_TEM_ESPACO,
+  str,
+  tamanho,
+  urlsplit,
+} from "./python.ts";
 
 const RE_DATA = /^\p{Nd}{4}-\p{Nd}{2}-\p{Nd}{2}$/u;
 
@@ -71,14 +82,17 @@ export function validarJsonSchema(dados: unknown, schema: ObjetoJson, rotulo: st
     }
     if (ehObjeto(schema.items)) {
       const schemaItem = schema.items;
-      dados.forEach((item, indice) => erros.push(...validarJsonSchema(item, schemaItem, rotulo, `${caminho}[${indice}]`)));
+      dados.forEach((item, indice) =>
+        erros.push(...validarJsonSchema(item, schemaItem, rotulo, `${caminho}[${indice}]`)),
+      );
     }
   }
 
   if (ehObjeto(dados)) {
     if (Array.isArray(schema.required)) {
       for (const campo of schema.required) {
-        if (typeof campo === "string" && !Object.hasOwn(dados, campo)) erros.push(`${rotulo}: ${caminho}.${campo} é obrigatório`);
+        if (typeof campo === "string" && !Object.hasOwn(dados, campo))
+          erros.push(`${rotulo}: ${caminho}.${campo} é obrigatório`);
       }
     }
     const propriedades = ehObjeto(schema.properties) ? schema.properties : {};

@@ -1,0 +1,4 @@
+[fmt]
+# Formatação restrita a scripts/ via "bun run format": Markdown e JSON da base
+# são dados gerados ou textos normativos e não devem ser reformatados.
+printWidth = 120

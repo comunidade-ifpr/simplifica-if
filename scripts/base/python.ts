@@ -7,7 +7,8 @@ import { lstatSync, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 
 /** Caracteres para os quais `str.isspace()` (e `\s` do `re`) é verdadeiro. */
-export const ESPACOS_PY = "\\t\\n\\v\\f\\r \\x1c-\\x1f\\x85\\xa0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000";
+export const ESPACOS_PY =
+  "\\t\\n\\v\\f\\r \\x1c-\\x1f\\x85\\xa0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000";
 const RE_ESPACO_INICIAL = new RegExp(`^[${ESPACOS_PY}]+`);
 const RE_ESPACO_FINAL = new RegExp(`[${ESPACOS_PY}]+$`);
 export const RE_TEM_ESPACO = new RegExp(`[${ESPACOS_PY}]`);
@@ -267,7 +268,11 @@ export function regexPython(padrao: string): RegExp {
       };
       if (emClasse && traducaoClasse[proximo]) saida += traducaoClasse[proximo];
       else if (!emClasse && traducao[proximo]) saida += traducao[proximo];
-      else if (/^[^\p{L}\p{N}]$/u.test(proximo) && !"^$\\.*+?()[]{}|/".includes(proximo) && !(emClasse && proximo === "-")) {
+      else if (
+        /^[^\p{L}\p{N}]$/u.test(proximo) &&
+        !"^$\\.*+?()[]{}|/".includes(proximo) &&
+        !(emClasse && proximo === "-")
+      ) {
         // Com a flag `u`, o JS rejeita escapes de pontuação que o `re` aceita (ex.: `\-`, `\#`, `\ `).
         saida += `\\u{${proximo.codePointAt(0)!.toString(16)}}`;
       } else saida += `\\${proximo}`;

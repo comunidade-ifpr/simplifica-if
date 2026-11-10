@@ -33,11 +33,15 @@ describe("equivalências com Python", () => {
 
   test("ordenação por code point, não por UTF-16 nem por localidade", () => {
     expect(["｡", "😀", "b", "B", "á"].sort(compararTexto)).toEqual(["B", "b", "á", "｡", "😀"]);
-    expect(ordenarCaminhos(["/r/a-c/x.md", "/r/a/b.md", "/r/a/a.md"])).toEqual(["/r/a/a.md", "/r/a/b.md", "/r/a-c/x.md"]);
+    expect(ordenarCaminhos(["/r/a-c/x.md", "/r/a/b.md", "/r/a/a.md"])).toEqual([
+      "/r/a/a.md",
+      "/r/a/b.md",
+      "/r/a-c/x.md",
+    ]);
   });
 
   test("repr reproduz o Python para textos, listas, dicts e escalares", () => {
-    expect(repr(["a", "it's", 'x"y\'z', null, true, 3])).toBe(`['a', "it's", 'x"y\\'z', None, True, 3]`);
+    expect(repr(["a", "it's", "x\"y'z", null, true, 3])).toBe(`['a', "it's", 'x"y\\'z', None, True, 3]`);
     expect(repr({ id: "x", n: [1] })).toBe("{'id': 'x', 'n': [1]}");
     expect(repr("tab\tnl\n\x01 ")).toBe("'tab\\tnl\\n\\x01\\xa0'");
   });

@@ -99,7 +99,9 @@ function auditarProcessos(processos: ProcessoSeletivo[]): string[] {
     if (!ehSlug(processo.processoSeletivoId)) {
       erros.push(`${nome}: processo_seletivo_id ausente ou inválido`);
     } else if (ids.has(processo.processoSeletivoId)) {
-      erros.push(`${nome}: processo_seletivo_id duplicado com ${ids.get(processo.processoSeletivoId)}: ${processo.processoSeletivoId}`);
+      erros.push(
+        `${nome}: processo_seletivo_id duplicado com ${ids.get(processo.processoSeletivoId)}: ${processo.processoSeletivoId}`,
+      );
     } else {
       ids.set(processo.processoSeletivoId, nome);
     }
@@ -166,7 +168,9 @@ function auditarOfertas(base: BaseInstitucional, processoIdPorPagina: Map<string
       } else if (idValido) {
         const chave = `${processoId}\u001f${oferta.ofertaId}`;
         if (vistos.has(chave)) {
-          erros.push(`${nome}: oferta_id duplicado no processo ${processoId} com ${vistos.get(chave)}: ${oferta.ofertaId}`);
+          erros.push(
+            `${nome}: oferta_id duplicado no processo ${processoId} com ${vistos.get(chave)}: ${oferta.ofertaId}`,
+          );
         } else {
           vistos.set(chave, nome);
         }

@@ -4,7 +4,14 @@ import os from "node:os";
 import path from "node:path";
 import { criarCaminhos, naBase, relativo } from "./caminhos.ts";
 import { interpretarArgs } from "./cli.ts";
-import { analisarFrontMatter, ErroFrontMatter, itemManifest, manifestJson, montarManifest, valorYaml } from "./front-matter.ts";
+import {
+  analisarFrontMatter,
+  ErroFrontMatter,
+  itemManifest,
+  manifestJson,
+  montarManifest,
+  valorYaml,
+} from "./front-matter.ts";
 import {
   dataIndiceAtual,
   dividirSecoes,
@@ -79,7 +86,7 @@ describe("front matter", () => {
     expect(meta.keywords).toEqual(["teste"]);
     expect(meta.aliases).toEqual(["Lei 1/2020", "L1"]);
     expect(corpo.startsWith("\n## Resumo")).toBe(true);
-    expect(valorYaml("[a, , \"b\"]")).toEqual(["a", "b"]);
+    expect(valorYaml('[a, , "b"]')).toEqual(["a", "b"]);
     expect(valorYaml("2020", "numero")).toBe("2020");
   });
 
@@ -125,7 +132,10 @@ describe("manifest e README", () => {
     const manifest = montarManifest(caminhos);
     expect(manifest.map((item) => item.path)).toEqual(["normas/br/leis/lei-a.md", "normas/br/leis/lei-b.md"]);
     expect(Object.keys(manifest[0]!).at(-1)).toBe("path");
-    expect(verificarBase(caminhos, manifest)).toEqual(["manifest.json está desatualizado", "README.md está desatualizado"]);
+    expect(verificarBase(caminhos, manifest)).toEqual([
+      "manifest.json está desatualizado",
+      "README.md está desatualizado",
+    ]);
 
     gravarBase(caminhos, manifest);
     expect(verificarBase(caminhos, manifest)).toEqual([]);
@@ -194,9 +204,16 @@ describe("índice de PPCs", () => {
     const caminhos = criarCaminhos(raiz);
     const indices = gerarIndices(caminhos, "2026-01-01");
     expect(indices.itensPpc).toHaveLength(1);
-    expect(indices.itensPpc[0]).toMatchObject({ id: "campus-a/tecnico-x", modalidade: "Presencial", ano_documento: 2021 });
+    expect(indices.itensPpc[0]).toMatchObject({
+      id: "campus-a/tecnico-x",
+      modalidade: "Presencial",
+      ano_documento: 2021,
+    });
     expect(indices.itensPpc[0]).not.toHaveProperty("vagas");
-    expect(indices.itensSecao.map((item) => item.id)).toEqual(["campus-a/tecnico-x#objetivos-1", "campus-a/tecnico-x#ementas-1"]);
+    expect(indices.itensSecao.map((item) => item.id)).toEqual([
+      "campus-a/tecnico-x#objetivos-1",
+      "campus-a/tecnico-x#ementas-1",
+    ]);
     expect((indices.itensSecao[0]!.preview as string).length).toBe(500);
     expect(verificarIndices(caminhos, indices)).toContain("institucional/ifpr/ppcs/index.json está desatualizado");
 
@@ -204,11 +221,15 @@ describe("índice de PPCs", () => {
     gravarIndices(caminhos, indices);
     expect(verificarIndices(caminhos, indices)).toEqual([]);
     expect(dataIndiceAtual(caminhos, "2030-01-01")).toBe("2026-01-01");
-    expect(readFileSync(path.join(caminhos.secoesPpcs, "ementas.jsonl"), "utf-8")).toStartWith('{"id":"campus-a/tecnico-x#ementas-1",');
+    expect(readFileSync(path.join(caminhos.secoesPpcs, "ementas.jsonl"), "utf-8")).toStartWith(
+      '{"id":"campus-a/tecnico-x#ementas-1",',
+    );
     expect(readFileSync(path.join(caminhos.secoesPpcs, "avaliacao.jsonl"), "utf-8")).toBe("");
 
     escrever(raiz, "base-conhecimento/institucional/ifpr/ppcs/secoes/extra.jsonl", "");
-    expect(verificarIndices(caminhos, indices)).toEqual(["institucional/ifpr/ppcs/secoes/extra.jsonl não é mais gerado"]);
+    expect(verificarIndices(caminhos, indices)).toEqual([
+      "institucional/ifpr/ppcs/secoes/extra.jsonl não é mais gerado",
+    ]);
   });
 });
 
@@ -228,11 +249,15 @@ describe("JSON Schema", () => {
   };
 
   test("aceita documento válido (inteiro conta como number)", () => {
-    expect(validarJsonSchema({ id: "ab", data: "2026-01-01", url: "https://x", n: 2, tipo: "a", lista: [1] }, schema, "r")).toEqual([]);
+    expect(
+      validarJsonSchema({ id: "ab", data: "2026-01-01", url: "https://x", n: 2, tipo: "a", lista: [1] }, schema, "r"),
+    ).toEqual([]);
   });
 
   test("reporta erros com as mensagens do validador Python", () => {
-    expect(validarJsonSchema({ id: "A", url: "x y", n: 0, tipo: "c", lista: [1, "2"], extra: true }, schema, "r")).toEqual([
+    expect(
+      validarJsonSchema({ id: "A", url: "x y", n: 0, tipo: "c", lista: [1, "2"], extra: true }, schema, "r"),
+    ).toEqual([
       "r: $.data é obrigatório",
       "r: $.id deve ter ao menos 2 caractere(s)",
       "r: $.id não corresponde ao padrão ^[a-z]+$",
@@ -250,8 +275,16 @@ describe("JSON Schema", () => {
 describe("validação da base", () => {
   test("aponta normas, manifest e coleções ausentes", () => {
     const raiz = projetoTemporario();
-    escrever(raiz, "base-conhecimento/normas/br/leis/lei.md", NORMA.replace("## Resumo", "## Outro") + "\n[x](nao.md)\n");
-    escrever(raiz, "base-conhecimento/normas/ifpr/resolucoes/2020-01-01_res.md", NORMA.replace("keywords:\n  - \"teste\"\n", ""));
+    escrever(
+      raiz,
+      "base-conhecimento/normas/br/leis/lei.md",
+      NORMA.replace("## Resumo", "## Outro") + "\n[x](nao.md)\n",
+    );
+    escrever(
+      raiz,
+      "base-conhecimento/normas/ifpr/resolucoes/2020-01-01_res.md",
+      NORMA.replace('keywords:\n  - "teste"\n', ""),
+    );
     escrever(raiz, "base-conhecimento/README.md", `${README}\n[ok](normas/br/leis/lei.md) ${"/Us"}${"ers/"}x\n`);
     escrever(raiz, "base-conhecimento/solta.md", "x");
     const caminhos = criarCaminhos(raiz);

@@ -102,17 +102,13 @@ function ppcJson(curso: Curso): Json | undefined {
 function processosSeiJson(movimentacoes: Movimentacao[]): Json[] {
   const vistos = new Set<string>();
   const processos: Json[] = [];
-  const ordenadas = [...movimentacoes].sort(
-    (a, b) => compararTexto(a.tipo, b.tipo) || compararTexto(a.id, b.id),
-  );
+  const ordenadas = [...movimentacoes].sort((a, b) => compararTexto(a.tipo, b.tipo) || compararTexto(a.id, b.id));
   for (const movimentacao of ordenadas) {
     const tipo = movimentacao.tipo || "outro";
     const chave = `${movimentacao.numeroSei}\u001f${tipo}`;
     if (!movimentacao.numeroSei || vistos.has(chave)) continue;
     vistos.add(chave);
-    processos.push(
-      preenchidos({ numero: movimentacao.numeroSei, tipo, trecho_fonte: movimentacao.anotacoes }),
-    );
+    processos.push(preenchidos({ numero: movimentacao.numeroSei, tipo, trecho_fonte: movimentacao.anotacoes }));
   }
   return processos;
 }

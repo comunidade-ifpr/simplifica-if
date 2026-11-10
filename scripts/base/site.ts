@@ -1,5 +1,15 @@
 /** Saída publicável em site/: cópia de base-conhecimento/ sem arquivos locais. */
-import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, rmSync, statSync, utimesSync } from "node:fs";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  statSync,
+  utimesSync,
+} from "node:fs";
 import path from "node:path";
 import { compararTexto } from "./python.ts";
 

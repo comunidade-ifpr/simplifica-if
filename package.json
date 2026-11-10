@@ -10,7 +10,9 @@
     "base:site": "bun run scripts/gerar_site.ts",
     "sei:sync": "bun run scripts/notion_atualizar_movimentacoes_sei.ts",
     "test": "bun test scripts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "format": "bun fmt scripts",
+    "format:check": "bun fmt --check scripts"
   },
   "dependencies": {
     "@notionhq/client": "5.31.1",

@@ -9,7 +9,10 @@ const FIM_TABELA = "\n\n## Manutenção";
 
 export function tabelaReadme(manifest: ItemManifest[]): string {
   const linhas = manifest
-    .map((item) => `| [${str(item.title)}](${str(item.path)}) | ${str(item.tipo_documento)} | ${str(item.ano)} | ${str(item.ementa)} |`)
+    .map(
+      (item) =>
+        `| [${str(item.title)}](${str(item.path)}) | ${str(item.tipo_documento)} | ${str(item.ano)} | ${str(item.ementa)} |`,
+    )
     .join("\n");
   return [CABECALHO_TABELA, "|-----------|------|-----|---------|", linhas].join("\n");
 }

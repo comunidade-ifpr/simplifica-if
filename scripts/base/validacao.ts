@@ -43,7 +43,10 @@ const DIRETORIOS_IGNORADOS_PADROES_LOCAIS = new Set([".git", ".venv", "skills"])
 const ARTEFATOS_CONVERSAO_PPC: Array<[string, RegExp]> = [
   ["placeholder de imagem omitida", /picture \[[0-9]+ x [0-9]+\] intentionally omitted/],
   ["marcador de início/fim de texto de imagem", /Start of picture text|End of picture text/],
-  ["OCR residual isolado", /^[\t\n\v\f\r \x1c-\x1f\x85\xa0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]*eme<br>[\t\n\v\f\r \x1c-\x1f\x85\xa0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]*$/m],
+  [
+    "OCR residual isolado",
+    /^[\t\n\v\f\r \x1c-\x1f\x85\xa0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]*eme<br>[\t\n\v\f\r \x1c-\x1f\x85\xa0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]*$/m,
+  ],
   ["rodapé PROENS de conversão", /INSTITUTO FEDERAL DO PARANÁ[^\n]*Pró-Reitoria de Ensino - \*\*PROENS\*\*/],
 ];
 const RE_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -99,7 +102,8 @@ class Validador {
     try {
       texto = lerTexto(caminho);
     } catch (erro) {
-      if ((erro as NodeJS.ErrnoException).code === "ENOENT") return [null, [`${rotulo} não encontrado: ${this.rel(caminho)}`]];
+      if ((erro as NodeJS.ErrnoException).code === "ENOENT")
+        return [null, [`${rotulo} não encontrado: ${this.rel(caminho)}`]];
       return [null, [`${rotulo} inválido: ${(erro as Error).message}`]];
     }
     try {
@@ -153,9 +157,11 @@ class Validador {
     if (ausentes.length) erros.push(`${this.rel(caminho)}: campos obrigatórios ausentes: ${ausentes.join(", ")}`);
     if (!lstrip(corpo).startsWith("## Resumo")) erros.push(`${this.rel(caminho)}: corpo não começa com ## Resumo`);
     const keywords = meta.keywords;
-    if (!Array.isArray(keywords) || !keywords.length) erros.push(`${this.rel(caminho)}: keywords deve ser lista não vazia`);
+    if (!Array.isArray(keywords) || !keywords.length)
+      erros.push(`${this.rel(caminho)}: keywords deve ser lista não vazia`);
     for (const alias of iterar("aliases" in meta ? meta.aliases : [])) {
-      if (aliasPareceNomeAntigo(alias)) erros.push(`${this.rel(caminho)}: alias parece nome antigo de arquivo: ${str(alias)}`);
+      if (aliasPareceNomeAntigo(alias))
+        erros.push(`${this.rel(caminho)}: alias parece nome antigo de arquivo: ${str(alias)}`);
     }
 
     erros.push(...this.validarLinks(caminho, texto));
@@ -181,13 +187,16 @@ class Validador {
     const caminho = naBase(this.c, valorPath);
     if (!existsSync(caminho)) return [`manifest.json aponta para arquivo inexistente: ${valorPath}`];
 
-    if (RE_DATA_NO_INICIO.test(path.basename(caminho))) erros.push(`${valorPath}: nome do arquivo não deve começar com data`);
+    if (RE_DATA_NO_INICIO.test(path.basename(caminho)))
+      erros.push(`${valorPath}: nome do arquivo não deve começar com data`);
 
     const jurisdicao = str(obter(item, "jurisdicao"));
     const tipo = str(obter(item, "tipo_documento"));
     const diretorioEsperado = DIRETORIOS_POR_TIPO[`${jurisdicao}|${tipo}`];
     if (diretorioEsperado === undefined) {
-      erros.push(`manifest.json: item com jurisdição/tipo sem diretório configurado: (${repr(jurisdicao)}, ${repr(tipo)})`);
+      erros.push(
+        `manifest.json: item com jurisdição/tipo sem diretório configurado: (${repr(jurisdicao)}, ${repr(tipo)})`,
+      );
     } else if (this.rel(path.dirname(caminho)) !== diretorioEsperado) {
       erros.push(`${valorPath}: deveria estar em ${diretorioEsperado}`);
     }
@@ -265,7 +274,8 @@ class Validador {
     else if (path.basename(caminho) !== `${campusId}.json`) erros.push(`${r}: nome do arquivo diverge do id`);
 
     for (const campo of ["id", "nome"]) {
-      if (!iguais(obter(dados, campo), obter(itemIndice, campo))) erros.push(`${r}: campo ${campo} diverge do index.json`);
+      if (!iguais(obter(dados, campo), obter(itemIndice, campo)))
+        erros.push(`${r}: campo ${campo} diverge do index.json`);
     }
 
     const links = obter(dados, "links");
@@ -328,7 +338,8 @@ class Validador {
         const metadados = obter(ppc, "metadados");
         if (ehObjeto(metadados)) {
           const vagas = obter(metadados, "vagas");
-          if (vagas !== null && !ehObjeto(vagas)) erros.push(`${r}: cursos[].ppc.metadados.vagas deve ser objeto contextual`);
+          if (vagas !== null && !ehObjeto(vagas))
+            erros.push(`${r}: cursos[].ppc.metadados.vagas deve ser objeto contextual`);
         }
       }
     }
@@ -357,7 +368,8 @@ class Validador {
           if (!ehObjeto(oferta)) continue;
           const ofertaId = obter(oferta, "id");
           if (typeof ofertaId === "string") {
-            if (ofertasVistas.has(ofertaId)) erros.push(`${r}: oferta duplicada em programa ${str(programaId)}: ${ofertaId}`);
+            if (ofertasVistas.has(ofertaId))
+              erros.push(`${r}: oferta duplicada em programa ${str(programaId)}: ${ofertaId}`);
             ofertasVistas.add(ofertaId);
           }
           if (tem(oferta, "url")) erros.push(...this.validarUrlHttps(oferta.url, `${r}: programas[].ofertas[].url`));
@@ -389,7 +401,9 @@ class Validador {
     if (!ehObjeto(manifest)) {
       erros.push("institucional_manifest.json deve conter um objeto JSON");
     } else {
-      erros.push(...this.validarComSchema(manifest, this.c.schemas.manifestInstitucional, "institucional_manifest.json"));
+      erros.push(
+        ...this.validarComSchema(manifest, this.c.schemas.manifestInstitucional, "institucional_manifest.json"),
+      );
       const colecoes = obter(manifest, "colecoes");
       if (!Array.isArray(colecoes) || !colecoes.length) {
         erros.push("institucional_manifest.json: colecoes deve ser lista não vazia");
@@ -438,7 +452,8 @@ class Validador {
       }
       const campusId = obter(item, "id");
       const valorPath = obter(item, "path");
-      if (typeof campusId !== "string" || !RE_SLUG.test(campusId)) erros.push(`${rIndice}: id inválido: ${str(campusId)}`);
+      if (typeof campusId !== "string" || !RE_SLUG.test(campusId))
+        erros.push(`${rIndice}: id inválido: ${str(campusId)}`);
       else if (idsVistos.has(campusId)) erros.push(`${rIndice}: id duplicado: ${campusId}`);
       else idsVistos.add(campusId);
       const nome = obter(item, "nome");
@@ -526,7 +541,17 @@ class Validador {
     if (!ehDiretorio) return [`${rSecoes} não encontrado`];
 
     const erros: string[] = [];
-    const obrigatorios = ["id", "ppc_id", "campus_id", "curso_slug", "curso_nome", "section_kind", "heading", "path", "preview"];
+    const obrigatorios = [
+      "id",
+      "ppc_id",
+      "campus_id",
+      "curso_slug",
+      "curso_nome",
+      "section_kind",
+      "heading",
+      "path",
+      "preview",
+    ];
     const idsVistos = new Set<string>();
     const arquivosEsperados = new Set([...TIPOS_SECAO_PPC_INDEXADOS].map((tipo) => `${tipo}.jsonl`));
     const arquivos = glob(raizSecoes, "*.jsonl");
@@ -579,10 +604,12 @@ class Validador {
           return;
         }
         for (const campo of ["campus_id", "curso_slug", "curso_nome", "path"]) {
-          if (!iguais(obter(item, campo), obter(itemPpc, campo))) erros.push(`${r}:${n}: campo ${campo} diverge do índice para ${ppcId}`);
+          if (!iguais(obter(item, campo), obter(itemPpc, campo)))
+            erros.push(`${r}:${n}: campo ${campo} diverge do índice para ${ppcId}`);
         }
         const tipo = obter(item, "section_kind");
-        if (typeof tipo !== "string" || !TIPOS_SECAO_PPC_INDEXADOS.has(tipo)) erros.push(`${r}:${n}: section_kind inválido: ${str(tipo)}`);
+        if (typeof tipo !== "string" || !TIPOS_SECAO_PPC_INDEXADOS.has(tipo))
+          erros.push(`${r}:${n}: section_kind inválido: ${str(tipo)}`);
         else if (tipo !== tipoEsperado) erros.push(`${r}:${n}: section_kind diverge do arquivo: ${tipo}`);
         for (const campo of ["heading", "preview"]) {
           const valor = obter(item, campo);
@@ -620,7 +647,8 @@ class Validador {
       const esperados = Object.fromEntries(
         [...TIPOS_SECAO_PPC_INDEXADOS].map((tipo) => [tipo, this.rel(path.join(this.c.secoesPpcs, `${tipo}.jsonl`))]),
       );
-      if (!iguais(obter(secoes, "paths"), esperados)) erros.push(`${rIndice}: secoes.paths diverge dos caminhos esperados`);
+      if (!iguais(obter(secoes, "paths"), esperados))
+        erros.push(`${rIndice}: secoes.paths diverge dos caminhos esperados`);
     }
 
     const itens = obter(indice, "items");
@@ -758,7 +786,8 @@ class Validador {
       const processoId = obter(item, "id");
       const ano = obter(item, "ano_ingresso");
       const valorPath = obter(item, "path");
-      if (typeof processoId !== "string" || !RE_SLUG.test(processoId)) erros.push(`${rIndice}: id inválido: ${str(processoId)}`);
+      if (typeof processoId !== "string" || !RE_SLUG.test(processoId))
+        erros.push(`${rIndice}: id inválido: ${str(processoId)}`);
       else if (idsVistos.has(processoId)) erros.push(`${rIndice}: id duplicado: ${processoId}`);
       else idsVistos.add(processoId);
       if (ehInteiro(ano)) {
@@ -783,7 +812,8 @@ class Validador {
       if (!iguais(obter(dados, "id"), processoId)) erros.push(`${valorPath}: id diverge do index.json`);
       if (!iguais(obter(dados, "ano_ingresso"), ano)) erros.push(`${valorPath}: ano_ingresso diverge do index.json`);
       if (!iguais(obter(dados, "nome"), obter(item, "nome"))) erros.push(`${valorPath}: nome diverge do index.json`);
-      if (path.basename(caminhoProcesso) !== `${str(processoId)}.json`) erros.push(`${valorPath}: nome do arquivo diverge do id`);
+      if (path.basename(caminhoProcesso) !== `${str(processoId)}.json`)
+        erros.push(`${valorPath}: nome do arquivo diverge do id`);
       for (const fonte of iterar(obter(dados, "fontes", []))) {
         erros.push(...this.validarUrlHttps(fonte, `${valorPath}: fontes[]`));
       }
@@ -813,7 +843,8 @@ class Validador {
           erros.push(`${valorPath}: ofertas[].curso_slug informado sem campus_id textual`);
         }
         const fonte = obter(oferta, "fonte");
-        if (ehObjeto(fonte)) erros.push(...this.validarUrlHttps(obter(fonte, "url"), `${valorPath}: ofertas[].fonte.url`));
+        if (ehObjeto(fonte))
+          erros.push(...this.validarUrlHttps(obter(fonte, "url"), `${valorPath}: ofertas[].fonte.url`));
       }
     }
 
@@ -850,7 +881,8 @@ class Validador {
       "carga_horaria_minima_horas",
       "codigos_cbo",
     ]) {
-      if (!iguais(obter(dados, campo), obter(itemIndice, campo))) erros.push(`${r}: campo ${campo} diverge do index.json`);
+      if (!iguais(obter(dados, campo), obter(itemIndice, campo)))
+        erros.push(`${r}: campo ${campo} diverge do index.json`);
     }
 
     const codigosCbo = obter(dados, "codigos_cbo");
@@ -883,7 +915,9 @@ class Validador {
     if (!ehObjeto(manifestCatalogos)) {
       erros.push("catalogos_manifest.json deve conter um objeto JSON");
     } else {
-      erros.push(...this.validarComSchema(manifestCatalogos, this.c.schemas.manifestCatalogos, "catalogos_manifest.json"));
+      erros.push(
+        ...this.validarComSchema(manifestCatalogos, this.c.schemas.manifestCatalogos, "catalogos_manifest.json"),
+      );
       const catalogos = obter(manifestCatalogos, "catalogos");
       if (!Array.isArray(catalogos) || !catalogos.length) {
         erros.push("catalogos_manifest.json: catalogos deve ser lista não vazia");
@@ -900,7 +934,8 @@ class Validador {
       erros.push(`${rManifestCnct} deve conter um objeto JSON`);
     } else {
       erros.push(...this.validarComSchema(manifestCnct, this.c.schemas.manifestCnct, rManifestCnct));
-      if (!iguais(obter(manifestCnct, "index_path"), rIndiceCnct)) erros.push(`${rManifestCnct}: index_path diverge do índice CNCT`);
+      if (!iguais(obter(manifestCnct, "index_path"), rIndiceCnct))
+        erros.push(`${rManifestCnct}: index_path diverge do índice CNCT`);
       if (!iguais(obter(manifestCnct, "campos_curso"), CAMPOS_CURSO_CNCT)) {
         erros.push(`${rManifestCnct}: campos_curso diverge do contrato esperado`);
       }
@@ -928,7 +963,8 @@ class Validador {
     if (ehObjeto(manifestCnct) && !iguais(obter(manifestCnct, "total_cursos"), itens.length)) {
       erros.push(`${rManifestCnct}: total_cursos diverge do index.json`);
     }
-    if (!iguais(obter(indiceCnct, "total_cursos"), itens.length)) erros.push(`${rIndiceCnct}: total_cursos diverge de items`);
+    if (!iguais(obter(indiceCnct, "total_cursos"), itens.length))
+      erros.push(`${rIndiceCnct}: total_cursos diverge de items`);
 
     const idsVistos = new Set<string>();
     const indicesVistos = new Set<number>();
@@ -940,7 +976,8 @@ class Validador {
       }
       const cursoId = obter(item, "id");
       const valorPath = obter(item, "path");
-      if (typeof cursoId !== "string" || !RE_SLUG.test(cursoId)) erros.push(`${rIndiceCnct}: id inválido: ${str(cursoId)}`);
+      if (typeof cursoId !== "string" || !RE_SLUG.test(cursoId))
+        erros.push(`${rIndiceCnct}: id inválido: ${str(cursoId)}`);
       else if (idsVistos.has(cursoId)) erros.push(`${rIndiceCnct}: id duplicado: ${cursoId}`);
       else idsVistos.add(cursoId);
       if (typeof valorPath !== "string") {
@@ -1013,7 +1050,8 @@ export function validarBase(caminhos: CaminhosBase, opcoes: { artefatosPpc?: boo
   const markdownsNaRaiz = glob(caminhos.raiz, "*.md")
     .map((caminho) => path.basename(caminho))
     .filter((nome) => nome !== "AGENTS.md" && nome !== "README.md");
-  if (markdownsNaRaiz.length) erros.push(`normas não devem ficar na raiz do repositório: ${repr(ordenarTextos(markdownsNaRaiz))}`);
+  if (markdownsNaRaiz.length)
+    erros.push(`normas não devem ficar na raiz do repositório: ${repr(ordenarTextos(markdownsNaRaiz))}`);
 
   const pathsManifest = new Set(manifest.filter(ehObjeto).map((item) => obter(item, "path")));
   const pathsMarkdown = new Set(rglob(caminhos.normas, "*.md").map((caminho) => v.rel(caminho)));
@@ -1047,4 +1085,3 @@ export function validarBase(caminhos: CaminhosBase, opcoes: { artefatosPpc?: boo
 
   return { erros, totalNormas: manifest.length };
 }
-
