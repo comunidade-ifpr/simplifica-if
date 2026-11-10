@@ -12,7 +12,7 @@ import {
 } from "../front-matter.ts";
 import { ehObjeto, type ObjetoJson, representar, textoDe, valoresIguais } from "../json.ts";
 import { apararInicio, ErroDecodificacao, lerTexto, ordenarTextos } from "../texto.ts";
-import { type Contexto, mesmosElementos, PADROES_LOCAIS, type Resultado } from "./contexto.ts";
+import { type Contexto, listaOrdenada, mesmosElementos, PADROES_LOCAIS, type Resultado } from "./contexto.ts";
 
 const DIRETORIOS_IGNORADOS_PADROES_LOCAIS = new Set([".git", ".venv", "skills"]);
 const RE_DATA_NO_INICIO = /^\p{Nd}{4}-\p{Nd}{2}-\p{Nd}{2}_/u;
@@ -67,14 +67,14 @@ export function validarCoberturaManifest(ctx: Contexto, manifest: unknown[]): st
     .map((caminho) => path.basename(caminho))
     .filter((nome) => nome !== "AGENTS.md" && nome !== "README.md");
   if (markdownsNaRaiz.length) {
-    erros.push(`normas não devem ficar na raiz do repositório: ${representar(ordenarTextos(markdownsNaRaiz))}`);
+    erros.push(`normas não devem ficar na raiz do repositório: ${listaOrdenada(markdownsNaRaiz)}`);
   }
 
   const pathsManifest = new Set<unknown>(manifest.filter(ehObjeto).map((item) => item.path ?? null));
-  const pathsMarkdown = new Set<unknown>(listarRecursivo(ctx.c.normas, ".md").map((caminho) => ctx.rel(caminho)));
-  if (!mesmosElementos(pathsManifest, pathsMarkdown)) {
+  const markdowns = listarRecursivo(ctx.c.normas, ".md").map((caminho) => ctx.rel(caminho));
+  if (!mesmosElementos(pathsManifest, new Set<unknown>(markdowns))) {
     erros.push(
-      `manifest.json não cobre exatamente as normas publicadas: manifest=${representar(ordenarTextos([...pathsManifest].map(textoDe)))} markdown=${representar(ordenarTextos(pathsMarkdown as Set<string>))}`,
+      `manifest.json não cobre exatamente as normas publicadas: manifest=${listaOrdenada([...pathsManifest].map(textoDe))} markdown=${listaOrdenada(markdowns)}`,
     );
   }
   return erros;

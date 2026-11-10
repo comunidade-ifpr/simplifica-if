@@ -253,7 +253,7 @@ describe("JSON Schema", () => {
     ).toEqual([]);
   });
 
-  test("reporta erros com as mensagens do validador Python", () => {
+  test("reporta erros com as mensagens históricas do validador", () => {
     expect(
       validarJsonSchema({ id: "A", url: "x y", n: 0, tipo: "c", lista: [1, "2"], extra: true }, schema, "r"),
     ).toEqual([

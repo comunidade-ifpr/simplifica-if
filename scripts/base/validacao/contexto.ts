@@ -1,8 +1,9 @@
 /** Contexto e utilitários comuns aos módulos de validação da base. */
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { type CaminhosBase, listarDiretorio, relativo } from "../caminhos.ts";
+import { type CaminhosBase, relativo } from "../caminhos.ts";
 import { ehObjeto, type ObjetoJson, representar } from "../json.ts";
+import { arquivosCampi } from "../indice-ppcs.ts";
 import { ehUrlAbsoluta, validarJsonSchema } from "../schema.ts";
 import { lerTexto, ordenarTextos } from "../texto.ts";
 import type {
@@ -139,6 +140,6 @@ export class Contexto {
   }
 
   arquivosCampi(): string[] {
-    return listarDiretorio(this.c.campi, ".json").filter((caminho) => path.basename(caminho) !== "index.json");
+    return arquivosCampi(this.c);
   }
 }
