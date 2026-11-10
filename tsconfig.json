@@ -11,7 +11,12 @@
     "noEmit": true,
     "paths": {
       "@sei-cli/*": ["../sei-cli/src/*"]
-    }
+    },
+    "verbatimModuleSyntax": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
   },
   "include": ["scripts/**/*.ts"]
 }
