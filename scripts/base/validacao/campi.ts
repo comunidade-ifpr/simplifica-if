@@ -2,16 +2,28 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { naBase } from "../caminhos.ts";
-import { ehObjeto, itensDe, type ObjetoJson, textoDe, valoresIguais } from "../json.ts";
-import { type Contexto, listaOrdenada, mesmosElementos, RE_SLUG } from "./contexto.ts";
+import { itensDe, textoDe, valoresIguais } from "../json.ts";
+import type { CampusJson, IndiceCampiJson } from "../tipos-schemas.ts";
+import { type Contexto, ehRecebido, listaOrdenada, mesmosElementos, RE_SLUG, type Recebido } from "./contexto.ts";
+
+export type CursoCampus = CampusJson["cursos"][number];
+export type PpcCurso = NonNullable<CursoCampus["ppc"]>;
+type ProgramaCampus = NonNullable<CampusJson["programas"]>[number];
+type ItemIndiceCampi = IndiceCampiJson["items"][number];
 
 /** Erros do `ppc` de um curso do campus `r`. */
-function validarPpcDoCurso(ctx: Contexto, r: string, ppc: ObjetoJson, campusId: unknown, cursoSlug: unknown): string[] {
+function validarPpcDoCurso(
+  ctx: Contexto,
+  r: string,
+  ppc: Recebido<PpcCurso>,
+  campusId: unknown,
+  cursoSlug: unknown,
+): string[] {
   const erros = ctx.validarUrlHttps(ppc.url, `${r}: cursos[].ppc.url`);
 
   const caminhoMarkdown = ppc.markdown_path;
   const conversao = ppc.conversao;
-  const statusConversao = ehObjeto(conversao) ? conversao.status : "";
+  const statusConversao = ehRecebido<PpcCurso["conversao"]>(conversao) ? conversao.status : "";
   if (statusConversao === "convertido" && typeof caminhoMarkdown !== "string") {
     erros.push(`${r}: cursos[].ppc.markdown_path deve ser texto quando conversao.status=convertido`);
   } else if (
@@ -26,7 +38,7 @@ function validarPpcDoCurso(ctx: Contexto, r: string, ppc: ObjetoJson, campusId: 
     }
   }
 
-  if (!ehObjeto(conversao)) {
+  if (!ehRecebido<PpcCurso["conversao"]>(conversao)) {
     erros.push(`${r}: cursos[].ppc.conversao deve ser objeto`);
   } else if (conversao.status === "convertido") {
     if (typeof caminhoMarkdown === "string" && !existsSync(naBase(ctx.c, caminhoMarkdown))) {
@@ -35,9 +47,9 @@ function validarPpcDoCurso(ctx: Contexto, r: string, ppc: ObjetoJson, campusId: 
   }
 
   const metadados = ppc.metadados;
-  if (ehObjeto(metadados)) {
+  if (ehRecebido<NonNullable<PpcCurso["metadados"]>>(metadados)) {
     const vagas = metadados.vagas;
-    if (vagas !== undefined && vagas !== null && !ehObjeto(vagas)) {
+    if (vagas !== undefined && vagas !== null && !ehRecebido<NonNullable<PpcCurso["metadados"]>["vagas"]>(vagas)) {
       erros.push(`${r}: cursos[].ppc.metadados.vagas deve ser objeto contextual`);
     }
   }
@@ -48,7 +60,7 @@ function validarCursos(ctx: Contexto, r: string, cursos: unknown[], campusId: un
   const erros: string[] = [];
   const slugsVistos = new Set<string>();
   for (const curso of cursos) {
-    if (!ehObjeto(curso)) continue;
+    if (!ehRecebido<CursoCampus>(curso)) continue;
     const cursoSlug = curso.curso_slug;
     if (typeof cursoSlug === "string") {
       if (slugsVistos.has(cursoSlug)) erros.push(`${r}: curso duplicado: ${cursoSlug}`);
@@ -58,7 +70,7 @@ function validarCursos(ctx: Contexto, r: string, cursos: unknown[], campusId: un
     if (Object.hasOwn(curso, "ppc_url")) erros.push(`${r}: cursos[].ppc_url foi substituído por cursos[].ppc.url`);
     const ppc = curso.ppc;
     if (ppc === undefined || ppc === null) continue;
-    if (!ehObjeto(ppc)) {
+    if (!ehRecebido<PpcCurso>(ppc)) {
       erros.push(`${r}: cursos[].ppc deve ser objeto`);
       continue;
     }
@@ -71,7 +83,7 @@ function validarProgramas(ctx: Contexto, r: string, programas: unknown[]): strin
   const erros: string[] = [];
   const programasVistos = new Set<string>();
   for (const programa of programas) {
-    if (!ehObjeto(programa)) continue;
+    if (!ehRecebido<ProgramaCampus>(programa)) continue;
     const programaId = programa.id;
     if (typeof programaId === "string") {
       if (programasVistos.has(programaId)) erros.push(`${r}: programa duplicado: ${programaId}`);
@@ -86,7 +98,7 @@ function validarProgramas(ctx: Contexto, r: string, programas: unknown[]): strin
     }
     const ofertasVistas = new Set<string>();
     for (const oferta of ofertas) {
-      if (!ehObjeto(oferta)) continue;
+      if (!ehRecebido<ProgramaCampus["ofertas"][number]>(oferta)) continue;
       const ofertaId = oferta.id;
       if (typeof ofertaId === "string") {
         if (ofertasVistas.has(ofertaId)) {
@@ -103,15 +115,15 @@ function validarProgramas(ctx: Contexto, r: string, programas: unknown[]): strin
 }
 
 /** Arquivo de um campus, conferido contra o seu item em campi/index.json. */
-export function validarArquivoCampus(ctx: Contexto, caminho: string, itemIndice: ObjetoJson): string[] {
+export function validarArquivoCampus(ctx: Contexto, caminho: string, itemIndice: Recebido<ItemIndiceCampi>): string[] {
   const r = ctx.rel(caminho);
   const carregado = ctx.carregarJson(caminho, `arquivo de campus ${r}`);
   if (!carregado.ok) return carregado.erros;
   const dados = carregado.valor;
-  if (!ehObjeto(dados)) return [`${r} deve conter um objeto JSON`];
-  const erros = ctx.validarComSchema(dados, ctx.c.schemas.campus, r);
+  if (!ehRecebido<CampusJson>(dados)) return [`${r} deve conter um objeto JSON`];
+  const { erros } = ctx.conferirSchema(dados, "campus", r);
 
-  for (const campo of ["id", "nome", "links", "cursos"]) {
+  for (const campo of ["id", "nome", "links", "cursos"] satisfies Array<keyof CampusJson>) {
     if (!Object.hasOwn(dados, campo)) erros.push(`${r}: campo obrigatório ausente: ${campo}`);
   }
 
@@ -119,15 +131,15 @@ export function validarArquivoCampus(ctx: Contexto, caminho: string, itemIndice:
   if (typeof campusId !== "string" || !RE_SLUG.test(campusId)) erros.push(`${r}: id deve ser slug ASCII minúsculo`);
   else if (path.basename(caminho) !== `${campusId}.json`) erros.push(`${r}: nome do arquivo diverge do id`);
 
-  for (const campo of ["id", "nome"]) {
+  for (const campo of ["id", "nome"] as const) {
     if (!valoresIguais(dados[campo], itemIndice[campo])) erros.push(`${r}: campo ${campo} diverge do index.json`);
   }
 
   const links = dados.links;
-  if (!ehObjeto(links)) {
+  if (!ehRecebido<CampusJson["links"]>(links)) {
     erros.push(`${r}: links deve ser objeto`);
   } else {
-    for (const campo of ["site", "calendario_academico"]) {
+    for (const campo of ["site", "calendario_academico"] satisfies Array<keyof CampusJson["links"]>) {
       if (!Object.hasOwn(links, campo)) erros.push(`${r}: links.${campo} ausente`);
       else erros.push(...ctx.validarUrlHttps(links[campo], `${r}: links.${campo}`));
     }
@@ -149,7 +161,7 @@ export function validarCampi(ctx: Contexto, rIndice: string, itens: unknown[]): 
   const idsVistos = new Set<string>();
   const pathsIndice = new Set<string>();
   for (const item of itens) {
-    if (!ehObjeto(item)) {
+    if (!ehRecebido<ItemIndiceCampi>(item)) {
       erros.push(`${rIndice}: item deve ser objeto`);
       continue;
     }
@@ -184,10 +196,10 @@ function coberturaCampi(ctx: Contexto, pathsIndice: Set<string>): string[] {
 }
 
 /** Campus JSON legíveis com `id` textual, em ordem de caminho. */
-export function* campiLegiveis(ctx: Contexto): Generator<[string, ObjetoJson]> {
+export function* campiLegiveis(ctx: Contexto): Generator<[string, Recebido<CampusJson>]> {
   for (const caminho of ctx.arquivosCampi()) {
     const carregado = ctx.carregarJson(caminho, `campus ${ctx.rel(caminho)}`);
-    if (!carregado.ok || !ehObjeto(carregado.valor)) continue;
+    if (!carregado.ok || !ehRecebido<CampusJson>(carregado.valor)) continue;
     const campusId = carregado.valor.id;
     if (typeof campusId !== "string") continue;
     yield [campusId, carregado.valor];
@@ -200,7 +212,7 @@ export function cursosPorCampus(ctx: Contexto): Map<string, Set<string>> {
   for (const [campusId, dados] of campiLegiveis(ctx)) {
     const cursos = new Set<string>();
     for (const curso of itensDe(dados.cursos)) {
-      if (ehObjeto(curso) && typeof curso.curso_slug === "string") cursos.add(curso.curso_slug);
+      if (ehRecebido<CursoCampus>(curso) && typeof curso.curso_slug === "string") cursos.add(curso.curso_slug);
     }
     resultado.set(campusId, cursos);
   }

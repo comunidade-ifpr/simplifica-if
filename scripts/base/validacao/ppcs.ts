@@ -3,7 +3,8 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { ehDiretorio, listarDiretorio, naBase } from "../caminhos.ts";
 import { LIMITE_PREVIEW_SECAO, TIPOS_SECAO_INDEXADOS } from "../indice-ppcs.ts";
-import { ehObjeto, itensDe, type ObjetoJson, textoDe, valoresIguais } from "../json.ts";
+import { ehObjeto, itensDe, textoDe, valoresIguais } from "../json.ts";
+import type { IndicePpcpsJson, IndicePpcsJson } from "../tipos-schemas.ts";
 import {
   aparar,
   contarCaracteres,
@@ -13,8 +14,10 @@ import {
   ordenarCaminhos,
   ordenarTextos,
 } from "../texto.ts";
-import { campiLegiveis } from "./campi.ts";
-import { type Contexto, listaOrdenada, mesmosElementos } from "./contexto.ts";
+import { campiLegiveis, type CursoCampus, type PpcCurso } from "./campi.ts";
+import { type Contexto, ehRecebido, listaOrdenada, mesmosElementos, type Recebido } from "./contexto.ts";
+
+type ItemIndicePpcs = IndicePpcsJson["items"][number];
 
 const ARTEFATOS_CONVERSAO_PPC: Array<[string, RegExp]> = [
   ["placeholder de imagem omitida", /picture \[[0-9]+ x [0-9]+\] intentionally omitted/],
@@ -40,13 +43,13 @@ function ppcsConvertidosDosCampi(ctx: Contexto): Map<string, string> {
   const ppcs = new Map<string, string>();
   for (const [campusId, dados] of campiLegiveis(ctx)) {
     for (const curso of itensDe(dados.cursos)) {
-      if (!ehObjeto(curso)) continue;
+      if (!ehRecebido<CursoCampus>(curso)) continue;
       const cursoSlug = curso.curso_slug;
       const ppc = curso.ppc;
-      if (typeof cursoSlug !== "string" || !ehObjeto(ppc)) continue;
+      if (typeof cursoSlug !== "string" || !ehRecebido<PpcCurso>(ppc)) continue;
       const caminhoMarkdown = ppc.markdown_path;
       if (
-        ehObjeto(ppc.conversao) &&
+        ehRecebido<PpcCurso["conversao"]>(ppc.conversao) &&
         ppc.conversao.status === "convertido" &&
         typeof caminhoMarkdown === "string" &&
         existsSync(naBase(ctx.c, caminhoMarkdown))
@@ -64,7 +67,7 @@ function validarLinhaSecao(
   prefixo: string,
   tipoEsperado: string,
   idsVistos: Set<string>,
-  itensIndicePorId: Map<string, ObjetoJson>,
+  itensIndicePorId: Map<string, Recebido<ItemIndicePpcs>>,
 ): string[] {
   const linha = aparar(linhaBruta);
   if (!linha) return [`${prefixo}: linha vazia`];
@@ -90,7 +93,7 @@ function validarLinhaSecao(
     erros.push(`${prefixo}: ppc_id inexistente no índice: ${ppcId}`);
     return erros;
   }
-  for (const campo of ["campus_id", "curso_slug", "curso_nome", "path"]) {
+  for (const campo of ["campus_id", "curso_slug", "curso_nome", "path"] as const) {
     if (!valoresIguais(item[campo], itemPpc[campo])) {
       erros.push(`${prefixo}: campo ${campo} diverge do índice para ${ppcId}`);
     }
@@ -110,7 +113,7 @@ function validarLinhaSecao(
   return erros;
 }
 
-function validarSecoesPpc(ctx: Contexto, itensIndicePorId: Map<string, ObjetoJson>): string[] {
+function validarSecoesPpc(ctx: Contexto, itensIndicePorId: Map<string, Recebido<ItemIndicePpcs>>): string[] {
   const raizSecoes = ctx.c.secoesPpcs;
   const rSecoes = ctx.rel(raizSecoes);
   if (!ehDiretorio(raizSecoes)) return [`${rSecoes} não encontrado`];
@@ -148,11 +151,11 @@ export function validarPpcs(ctx: Contexto, manifest: unknown): string[] {
   const carregado = ctx.carregarJson(ctx.c.indicePpcs, "índice de PPCs");
   if (!carregado.ok) return carregado.erros;
   const indice = carregado.valor;
-  if (!ehObjeto(indice)) return [`${rIndice} deve conter um objeto JSON`];
+  if (!ehRecebido<IndicePpcsJson>(indice)) return [`${rIndice} deve conter um objeto JSON`];
 
-  const erros = ctx.validarComSchema(indice, ctx.c.schemas.indicePpcs, rIndice);
+  const { erros } = ctx.conferirSchema(indice, "indicePpcs", rIndice);
   const secoes = indice.secoes;
-  if (!ehObjeto(secoes)) {
+  if (!ehRecebido<IndicePpcsJson["secoes"]>(secoes)) {
     erros.push(`${rIndice}: secoes deve ser objeto`);
   } else {
     if (!valoresIguais(secoes.preview_limite, LIMITE_PREVIEW_SECAO)) {
@@ -179,9 +182,9 @@ export function validarPpcs(ctx: Contexto, manifest: unknown): string[] {
 
   const ppcsEsperados = ppcsConvertidosDosCampi(ctx);
   const idsVistos = new Set<string>();
-  const itensPorId = new Map<string, ObjetoJson>();
+  const itensPorId = new Map<string, Recebido<ItemIndicePpcs>>();
   for (const item of itens) {
-    if (!ehObjeto(item)) {
+    if (!ehRecebido<ItemIndicePpcs>(item)) {
       erros.push(`${rIndice}: item deve ser objeto`);
       continue;
     }
@@ -223,9 +226,9 @@ export function validarPpcps(ctx: Contexto, manifest: unknown): string[] {
   const carregado = ctx.carregarJson(ctx.c.indicePpcps, "índice de PPCPs");
   if (!carregado.ok) return carregado.erros;
   const indice = carregado.valor;
-  if (!ehObjeto(indice)) return [];
+  if (!ehRecebido<IndicePpcpsJson>(indice)) return [];
 
-  const erros = ctx.validarComSchema(indice, ctx.c.schemas.indicePpcps, rIndice);
+  const { erros } = ctx.conferirSchema(indice, "indicePpcps", rIndice);
   const itens = indice.items;
   if (!Array.isArray(itens) || !itens.length) return erros;
   if (!valoresIguais(indice.total_itens, itens.length)) erros.push(`${rIndice}: total_itens diverge de items`);
@@ -239,7 +242,7 @@ export function validarPpcps(ctx: Contexto, manifest: unknown): string[] {
   const idsVistos = new Set<string>();
   const pathsIndice = new Set<string>();
   for (const item of itens) {
-    if (!ehObjeto(item)) continue;
+    if (!ehRecebido<IndicePpcpsJson["items"][number]>(item)) continue;
     const { id: itemId, path: valorPath } = item;
     if (typeof itemId === "string") {
       if (idsVistos.has(itemId)) erros.push(`${rIndice}: id duplicado: ${itemId}`);

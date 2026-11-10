@@ -62,6 +62,13 @@ Para atualização rotineira de dados SEI em `Movimentações de Cursos`, use an
 bun run scripts/notion_atualizar_movimentacoes_sei.ts --apply
 ```
 
+Depois de alterar um JSON Schema em `base-conhecimento/schemas/`, regenere os tipos TypeScript derivados dele (`scripts/base/tipos-schemas.ts`) e confira o código que os usa:
+
+```bash
+bun run scripts/gerar_tipos_schemas.ts
+bun run typecheck
+```
+
 Depois de alterar normas, catálogos, PPCs convertidos ou manifestos locais, rode:
 
 ```bash

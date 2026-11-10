@@ -1,13 +1,15 @@
 /** Validação do institucional_manifest.json e das coleções institucionais. */
-import { ehObjeto, valoresIguais } from "../json.ts";
+import { valoresIguais } from "../json.ts";
+import type { IndiceCampiJson, ManifestInstitucionalJson } from "../tipos-schemas.ts";
 import { validarCampi } from "./campi.ts";
-import type { Contexto } from "./contexto.ts";
+import { type Contexto, ehRecebido } from "./contexto.ts";
 import { validarPpcps, validarPpcs } from "./ppcs.ts";
 import { validarProcessosSeletivos } from "./processos.ts";
 
 function validarManifestInstitucional(ctx: Contexto, manifest: unknown): string[] {
-  if (!ehObjeto(manifest)) return ["institucional_manifest.json deve conter um objeto JSON"];
-  const erros = ctx.validarComSchema(manifest, ctx.c.schemas.manifestInstitucional, "institucional_manifest.json");
+  if (!ehRecebido<ManifestInstitucionalJson>(manifest))
+    return ["institucional_manifest.json deve conter um objeto JSON"];
+  const { erros } = ctx.conferirSchema(manifest, "manifestInstitucional", "institucional_manifest.json");
   const colecoes = manifest.colecoes;
   if (!Array.isArray(colecoes) || !colecoes.length) {
     erros.push("institucional_manifest.json: colecoes deve ser lista não vazia");
@@ -46,11 +48,11 @@ export function validarInstitucional(ctx: Contexto): string[] {
   const erros = validarManifestInstitucional(ctx, manifest);
 
   const rIndice = ctx.rel(ctx.c.indiceCampi);
-  if (!ehObjeto(indice)) {
+  if (!ehRecebido<IndiceCampiJson>(indice)) {
     erros.push(`${rIndice} deve conter um objeto JSON`);
     return erros;
   }
-  erros.push(...ctx.validarComSchema(indice, ctx.c.schemas.indiceCampi, rIndice));
+  erros.push(...ctx.conferirSchema(indice, "indiceCampi", rIndice).erros);
 
   const itens = indice.items;
   if (!Array.isArray(itens) || !itens.length) {

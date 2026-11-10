@@ -5,9 +5,54 @@ import { type CaminhosBase, listarDiretorio, relativo } from "../caminhos.ts";
 import { ehObjeto, type ObjetoJson, representar } from "../json.ts";
 import { ehUrlAbsoluta, validarJsonSchema } from "../schema.ts";
 import { lerTexto, ordenarTextos } from "../texto.ts";
+import type {
+  CampusJson,
+  CursoCnctJson,
+  IndiceCampiJson,
+  IndiceCnctJson,
+  IndicePpcpsJson,
+  IndicePpcsJson,
+  IndiceProcessosSeletivosJson,
+  ManifestCatalogosJson,
+  ManifestCnctJson,
+  ManifestInstitucionalJson,
+  ProcessoSeletivoJson,
+} from "../tipos-schemas.ts";
 
 /** Resultado de uma leitura que pode falhar com mensagens de erro. */
 export type Resultado<T> = { ok: true; valor: T } | { ok: false; erros: string[] };
+
+/** Formato de cada schema de `CaminhosBase["schemas"]`, gerado do próprio schema. */
+export type FormatosSchemas = {
+  manifestInstitucional: ManifestInstitucionalJson;
+  manifestCatalogos: ManifestCatalogosJson;
+  indiceCampi: IndiceCampiJson;
+  campus: CampusJson;
+  indiceProcessosSeletivos: IndiceProcessosSeletivosJson;
+  processoSeletivo: ProcessoSeletivoJson;
+  manifestCnct: ManifestCnctJson;
+  indiceCnct: IndiceCnctJson;
+  cursoCnct: CursoCnctJson;
+  indicePpcs: IndicePpcsJson;
+  indicePpcps: IndicePpcpsJson;
+};
+export type NomeSchema = keyof CaminhosBase["schemas"] & keyof FormatosSchemas;
+
+/**
+ * Objeto JSON lido que deve seguir o formato `T`, mas ainda pode estar fora
+ * do schema: só os nomes dos campos são conferidos pelo compilador. As regras
+ * da base rodam também sobre arquivos que falham no schema, para relatar
+ * todos os problemas de uma vez, e por isso conferem os valores que usam.
+ */
+export type Recebido<T> = { readonly [K in keyof T]?: unknown };
+
+/** `ehObjeto` para um objeto que deve seguir o formato `T` (ver `Recebido`). */
+export function ehRecebido<T>(valor: unknown): valor is Recebido<T> {
+  return ehObjeto(valor);
+}
+
+/** Mensagens da conferência com o schema e, se não houver nenhuma, os dados no formato do schema. */
+export type Conferencia<T> = { erros: string[]; validos: T | null };
 
 export const PADROES_LOCAIS = ["/" + "Users/", "Down" + "loads/", "file" + "://"];
 export const RE_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -47,12 +92,15 @@ export class Contexto {
     }
   }
 
-  validarComSchema(dados: unknown, caminhoSchema: string, rotulo: string): string[] {
+  /** Confere `dados` com o schema `nome`; os dados só saem tipados quando o schema os aceita. */
+  conferirSchema<N extends NomeSchema>(dados: unknown, nome: N, rotulo: string): Conferencia<FormatosSchemas[N]> {
+    const caminhoSchema = this.c.schemas[nome];
     const rSchema = this.rel(caminhoSchema);
     const schema = this.carregarJson(caminhoSchema, `schema ${rSchema}`);
-    if (!schema.ok) return schema.erros;
-    if (!ehObjeto(schema.valor)) return [`schema ${rSchema} deve conter um objeto JSON`];
-    return validarJsonSchema(dados, schema.valor, rotulo);
+    if (!schema.ok) return { erros: schema.erros, validos: null };
+    if (!ehObjeto(schema.valor)) return { erros: [`schema ${rSchema} deve conter um objeto JSON`], validos: null };
+    const erros = validarJsonSchema(dados, schema.valor, rotulo);
+    return { erros, validos: erros.length ? null : (dados as FormatosSchemas[N]) };
   }
 
   /** Links Markdown relativos devem apontar para arquivos existentes. */

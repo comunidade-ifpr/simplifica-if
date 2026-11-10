@@ -54,8 +54,11 @@ bun run scripts/gerar_base.ts --check
 bun run scripts/gerar_indice_ppcs.ts --check
 bun run scripts/validar_base.ts
 bun run scripts/gerar_site.ts --check
+bun run scripts/gerar_tipos_schemas.ts --check
 python3 -m pytest .agents/skills/analise-ppc/tests
 ```
+
+Os JSON Schemas de `base-conhecimento/schemas/` são a fonte do formato dos JSONs institucionais e de catálogos. O validador os aplica com o ajv, e os tipos TypeScript usados pelo exportador e pelo validador ficam em `scripts/base/tipos-schemas.ts`, gerado a partir deles. Depois de alterar um schema, rode `bun run scripts/gerar_tipos_schemas.ts` e `bun run typecheck`.
 
 Para detalhes de desenvolvimento das skills, veja `base-conhecimento/docs/desenvolvimento-skills.md`.
 

@@ -269,6 +269,25 @@ describe("JSON Schema", () => {
     ]);
     expect(validarJsonSchema([], schema, "r")).toEqual(["r: $ deve ser object, recebido array"]);
   });
+
+  test("ordena as mensagens pelo documento, não pelo schema", () => {
+    const aninhado = {
+      type: "object",
+      required: ["b", "a"],
+      additionalProperties: false,
+      properties: {
+        a: { type: "object", additionalProperties: false, properties: { x: { const: 1 } } },
+        b: { type: "string", enum: ["s"] },
+      },
+    };
+    expect(validarJsonSchema({ z: 1, a: { y: 2, x: 3 }, b: 5 }, aninhado, "r")).toEqual([
+      "r: $.z não é permitido",
+      "r: $.a.y não é permitido",
+      "r: $.a.x deve ser 1",
+      "r: $.b deve ser string, recebido integer",
+    ]);
+    expect(validarJsonSchema({}, aninhado, "r")).toEqual(["r: $.b é obrigatório", "r: $.a é obrigatório"]);
+  });
 });
 
 describe("validação da base", () => {

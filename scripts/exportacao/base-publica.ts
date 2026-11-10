@@ -8,14 +8,44 @@ import {
   type ProcessoSeletivo,
 } from "../dominio/ingresso.ts";
 import type { Movimentacao } from "../dominio/movimentacao.ts";
+import type {
+  CampusJson,
+  IndiceCampiJson,
+  IndiceProcessosSeletivosJson,
+  ProcessoSeletivoJson,
+} from "../base/tipos-schemas.ts";
 
-type Json = Record<string, unknown>;
+/* Formatos publicados, derivados dos JSON Schemas (scripts/base/tipos-schemas.ts). */
+type CursoJson = CampusJson["cursos"][number];
+type SuapJson = NonNullable<CursoJson["suap"]>;
+type PpcJson = NonNullable<CursoJson["ppc"]>;
+type MetadadosPpcJson = NonNullable<PpcJson["metadados"]>;
+type ProcessoSeiJson = NonNullable<CursoJson["sei"]>["processos"][number];
+type EditalJson = ProcessoSeletivoJson["editais"][number];
+type OfertaJson = ProcessoSeletivoJson["ofertas"][number];
 
-/** Copia só os campos preenchidos: nos JSONs públicos, dado ausente é chave ausente. */
-function preenchidos(campos: Json): Json {
+/**
+ * Copia só os campos preenchidos: nos JSONs públicos, dado ausente é chave
+ * ausente. O tipo `T` é o do formato publicado, que confere os nomes e os
+ * tipos dos campos montados.
+ */
+function preenchidos<T extends object>(campos: T): T {
   return Object.fromEntries(
     Object.entries(campos).filter(([, valor]) => valor !== "" && valor !== undefined && valor !== null),
-  );
+  ) as T;
+}
+
+/**
+ * Texto livre do Notion num campo que o schema restringe (`enum`/`const`).
+ * A exportação publica o valor como está; o validador da base o confere
+ * contra o schema.
+ */
+function doNotion<T extends string>(valor: string): T {
+  return valor as T;
+}
+
+function porId<T extends { id: string }>(a: T, b: T): number {
+  return compararTexto(a.id, b.id);
 }
 
 function agrupar<T>(itens: T[], chaves: (item: T) => string[]): Map<string, T[]> {
@@ -40,17 +70,17 @@ export function dataHoraJson(valor: string): string {
   return valor.replace(/(\d{2}:\d{2}:\d{2})\.\d+/, "$1");
 }
 
-function suapJson(curso: Curso): Json | undefined {
+function suapJson(curso: Curso): SuapJson | undefined {
   const { suap } = curso;
   const urls = dividirLinhas(suap.matrizes.urls);
-  const matrizes = preenchidos({
+  const matrizes = preenchidos<NonNullable<SuapJson["matrizes"]>>({
     resumo: suap.matrizes.resumo,
     urls: urls.length ? urls : undefined,
     carga_horaria_comum_h: suap.matrizes.cargaHorariaComumH,
-    situacao: suap.matrizes.situacao,
+    situacao: doNotion(suap.matrizes.situacao),
     coletado_em: dataHoraJson(suap.matrizes.coletadoEm),
   });
-  const json = preenchidos({
+  const json = preenchidos<SuapJson>({
     id: suap.id,
     codigo: suap.codigo,
     vagas: suap.vagas,
@@ -61,7 +91,7 @@ function suapJson(curso: Curso): Json | undefined {
   return Object.keys(json).length ? json : undefined;
 }
 
-function ppcJson(curso: Curso): Json | undefined {
+function ppcJson(curso: Curso): PpcJson | undefined {
   const { ppc } = curso;
   if (!ppc.url) return undefined;
   const revisadoEm = dataJson(ppc.dataCuradoria);
@@ -70,7 +100,7 @@ function ppcJson(curso: Curso): Json | undefined {
   const anoDocumento =
     ppc.anoDocumento === undefined
       ? undefined
-      : preenchidos({
+      : preenchidos<NonNullable<MetadadosPpcJson["ano_documento"]>>({
           ano: ppc.anoDocumento,
           trecho_fonte: `Ano do documento registrado no Notion: ${ppc.anoDocumento}`,
           status_curadoria: status,
@@ -79,7 +109,7 @@ function ppcJson(curso: Curso): Json | undefined {
   const interpretadas = interpretarVagasPpc(ppc.vagas);
   const vagas =
     interpretadas && ppc.trechoVagas
-      ? preenchidos({
+      ? preenchidos<NonNullable<MetadadosPpcJson["vagas"]>>({
           quantidade: interpretadas.quantidade,
           trecho_fonte: ppc.trechoVagas,
           status_curadoria: status,
@@ -89,9 +119,9 @@ function ppcJson(curso: Curso): Json | undefined {
           revisado_em: revisadoEm,
         })
       : undefined;
-  const metadados = preenchidos({ ano_documento: anoDocumento, vagas });
+  const metadados = preenchidos<MetadadosPpcJson>({ ano_documento: anoDocumento, vagas });
 
-  return preenchidos({
+  return preenchidos<PpcJson>({
     url: ppc.url,
     conversao: { status: ppc.markdownPath ? "convertido" : "pendente" },
     markdown_path: ppc.markdownPath,
@@ -99,62 +129,70 @@ function ppcJson(curso: Curso): Json | undefined {
   });
 }
 
-function processosSeiJson(movimentacoes: Movimentacao[]): Json[] {
+function processosSeiJson(movimentacoes: Movimentacao[]): ProcessoSeiJson[] {
   const vistos = new Set<string>();
-  const processos: Json[] = [];
+  const processos: ProcessoSeiJson[] = [];
   const ordenadas = [...movimentacoes].sort((a, b) => compararTexto(a.tipo, b.tipo) || compararTexto(a.id, b.id));
   for (const movimentacao of ordenadas) {
     const tipo = movimentacao.tipo || "outro";
     const chave = `${movimentacao.numeroSei}\u001f${tipo}`;
     if (!movimentacao.numeroSei || vistos.has(chave)) continue;
     vistos.add(chave);
-    processos.push(preenchidos({ numero: movimentacao.numeroSei, tipo, trecho_fonte: movimentacao.anotacoes }));
+    processos.push(
+      preenchidos<ProcessoSeiJson>({
+        numero: movimentacao.numeroSei,
+        tipo: doNotion(tipo),
+        trecho_fonte: movimentacao.anotacoes,
+      }),
+    );
   }
   return processos;
 }
 
-function cursoJson(curso: Curso, movimentacoes: Movimentacao[]): Json {
+function cursoJson(curso: Curso, movimentacoes: Movimentacao[]): CursoJson {
   const processos = processosSeiJson(movimentacoes);
-  return preenchidos({
+  return preenchidos<CursoJson>({
     curso_slug: curso.slug,
     notion_page_id: curso.id,
     nome: curso.nome,
-    nivel: curso.nivel,
-    tipo_oferta: curso.tipoOferta,
+    nivel: doNotion(curso.nivel),
+    tipo_oferta: doNotion(curso.tipoOferta),
     url: curso.paginaOficial,
-    modalidade: curso.modalidade,
-    situacao: curso.situacao,
+    modalidade: doNotion(curso.modalidade),
+    situacao: doNotion(curso.situacao),
     suap: suapJson(curso),
     ppc: ppcJson(curso),
     sei: processos.length ? { processos } : undefined,
   });
 }
 
-function campusJson(campus: Campus, cursos: Json[]): Json {
+function campusJson(campus: Campus, cursos: CursoJson[]): CampusJson {
   const coletadoEm = dataHoraJson(campus.horariosColetadoEm);
-  return preenchidos({
+  return preenchidos<CampusJson>({
     id: campus.campusId,
     nome: campus.nome,
     links: { site: campus.site, calendario_academico: campus.calendarioAcademico },
-    horario_aulas: coletadoEm ? preenchidos({ coletado_em: coletadoEm, url: campus.horariosUrl }) : undefined,
+    horario_aulas: coletadoEm
+      ? preenchidos<NonNullable<CampusJson["horario_aulas"]>>({ coletado_em: coletadoEm, url: campus.horariosUrl })
+      : undefined,
     cursos,
   });
 }
 
-export function montarCampi(base: BaseInstitucional): Json[] {
+export function montarCampi(base: BaseInstitucional): CampusJson[] {
   const cursosPorCampus = agrupar(base.cursos, (curso) => curso.campusIds);
   const movimentacoesPorCurso = agrupar(base.movimentacoes, (item) => item.cursoIds);
   return base.campi
     .map((campus) => {
       const cursos = (cursosPorCampus.get(campus.id) ?? [])
         .map((curso) => cursoJson(curso, movimentacoesPorCurso.get(curso.id) ?? []))
-        .sort((a, b) => compararTexto(String(a.curso_slug), String(b.curso_slug)));
+        .sort((a, b) => compararTexto(a.curso_slug, b.curso_slug));
       return campusJson(campus, cursos);
     })
-    .sort((a, b) => compararTexto(String(a.id), String(b.id)));
+    .sort(porId);
 }
 
-export function montarIndiceCampi(campi: Json[], hoje: string): Json {
+export function montarIndiceCampi(campi: CampusJson[], hoje: string): IndiceCampiJson {
   return {
     id: "campi-ifpr",
     title: "Campi do IFPR",
@@ -169,14 +207,14 @@ export function montarIndiceCampi(campi: Json[], hoje: string): Json {
   };
 }
 
-function editalJson(edital: EditalIngresso): Json {
-  return preenchidos({
+function editalJson(edital: EditalIngresso): EditalJson {
+  return preenchidos<EditalJson>({
     id: edital.editalId,
     titulo: edital.titulo,
     url: edital.url,
     numero: edital.numero,
     ano: edital.ano,
-    tipo: edital.tipo,
+    tipo: doNotion(edital.tipo),
   });
 }
 
@@ -185,7 +223,7 @@ function ofertaJson(
   campi: Map<string, Campus>,
   cursos: Map<string, Curso>,
   editais: Map<string, EditalIngresso>,
-): Json {
+): OfertaJson {
   // A relação prevalece; os campos "original" guardam o valor do edital quando não há página.
   let campusId = oferta.campusIdOriginal;
   for (const id of oferta.campusIds) campusId = campi.get(id)?.campusId || campusId;
@@ -194,12 +232,12 @@ function ofertaJson(
 
   const revisadoEm = dataJson(oferta.revisadoEm);
   const editalId = oferta.editalIds.map((id) => editais.get(id)?.editalId).find(Boolean);
-  return preenchidos({
+  return preenchidos<OfertaJson>({
     id: oferta.ofertaId,
     campus_id: campusId,
     curso_nome: oferta.cursoNome,
-    tipo_oferta: oferta.tipoOferta,
-    vagas: preenchidos({
+    tipo_oferta: doNotion(oferta.tipoOferta),
+    vagas: preenchidos<OfertaJson["vagas"]>({
       quantidade: oferta.vagas ?? 0,
       trecho_fonte: oferta.trechoFonte || "Informação migrada do cadastro operacional.",
       status_curadoria: statusCuradoria(oferta.statusCuradoria, revisadoEm),
@@ -207,34 +245,36 @@ function ofertaJson(
       pagina: oferta.paginaFonte,
       revisado_em: revisadoEm,
     }),
-    fonte: { url: oferta.urlFonte, ...preenchidos({ edital_id: editalId, pagina: oferta.paginaFonte }) },
+    fonte: {
+      url: oferta.urlFonte,
+      ...preenchidos<Omit<OfertaJson["fonte"], "url">>({ edital_id: editalId, pagina: oferta.paginaFonte }),
+    },
     curso_slug: cursoSlug,
-    modalidade: oferta.modalidade,
+    modalidade: doNotion(oferta.modalidade),
     turno: oferta.turno,
   });
 }
 
-export function montarProcessos(base: BaseInstitucional, hoje: string): Json[] {
+export function montarProcessos(base: BaseInstitucional, hoje: string): ProcessoSeletivoJson[] {
   const campi = new Map(base.campi.map((item) => [item.id, item]));
   const cursos = new Map(base.cursos.map((item) => [item.id, item]));
   const editais = new Map(base.editais.map((item) => [item.id, item]));
   const editaisPorProcesso = agrupar(base.editais, (item) => item.processoIds);
   const ofertasPorProcesso = agrupar(base.ofertas, (item) => item.processoIds);
-
-  const porId = (a: Json, b: Json) => compararTexto(String(a.id), String(b.id));
   return [...base.processos]
     .sort((a, b) => (a.anoIngresso ?? 0) - (b.anoIngresso ?? 0))
-    .map((processo: ProcessoSeletivo) => ({
+    .map((processo: ProcessoSeletivo): ProcessoSeletivoJson => ({
       id: processo.processoSeletivoId,
       nome: processo.nome,
-      ano_ingresso: processo.anoIngresso,
-      instituicao: processo.instituicao || "IFPR",
+      // A auditoria do Notion barra a exportação de processo sem ano de ingresso.
+      ano_ingresso: processo.anoIngresso!,
+      instituicao: doNotion(processo.instituicao || "IFPR"),
       fontes: processo.fontes,
       editais: (editaisPorProcesso.get(processo.id) ?? []).map(editalJson).sort(porId),
       ofertas: (ofertasPorProcesso.get(processo.id) ?? [])
         .map((oferta) => ofertaJson(oferta, campi, cursos, editais))
         .sort(porId),
-      curadoria: preenchidos({
+      curadoria: preenchidos<ProcessoSeletivoJson["curadoria"]>({
         status_ofertas: statusCuradoriaOfertas(processo.statusCuradoria),
         verificado_em: dataJson(processo.verificadoEm) || hoje,
         observacoes: processo.observacoes,
@@ -242,7 +282,7 @@ export function montarProcessos(base: BaseInstitucional, hoje: string): Json[] {
     }));
 }
 
-export function montarIndiceProcessos(processos: Json[]): Json {
+export function montarIndiceProcessos(processos: ProcessoSeletivoJson[]): IndiceProcessosSeletivosJson {
   return {
     title: "Processos seletivos do IFPR",
     total_itens: processos.length,
