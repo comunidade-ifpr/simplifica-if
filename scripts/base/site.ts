@@ -11,7 +11,7 @@ import {
   utimesSync,
 } from "node:fs";
 import path from "node:path";
-import { compararTexto } from "./python.ts";
+import { compararTexto } from "./texto.ts";
 
 const NOMES_IGNORADOS = new Set([".DS_Store", "__pycache__", ".pytest_cache"]);
 /** Nomes ignorados por `filecmp.dircmp` na comparação (DEFAULT_IGNORES do Python). */

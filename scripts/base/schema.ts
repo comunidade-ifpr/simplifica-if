@@ -1,16 +1,6 @@
 /** Validador do subconjunto de JSON Schema usado em base-conhecimento/schemas/. */
-import {
-  ehInteiro,
-  ehObjeto,
-  iguais,
-  type ObjetoJson,
-  regexPython,
-  repr,
-  RE_TEM_ESPACO,
-  str,
-  tamanho,
-  urlsplit,
-} from "./python.ts";
+import { ehInteiro, ehObjeto, type ObjetoJson, representar, textoDe, valoresIguais } from "./json.ts";
+import { contarCaracteres, ESPACOS, RE_TEM_ESPACO } from "./texto.ts";
 
 const RE_DATA = /^\p{Nd}{4}-\p{Nd}{2}-\p{Nd}{2}$/u;
 
@@ -35,30 +25,30 @@ export function validarJsonSchema(dados: unknown, schema: ObjetoJson, rotulo: st
   if (
     tipoEsperado !== null &&
     tipoEsperado !== undefined &&
-    !iguais(tipoReal, tipoEsperado) &&
+    !valoresIguais(tipoReal, tipoEsperado) &&
     !(tipoEsperado === "number" && tipoReal === "integer")
   ) {
-    return [`${rotulo}: ${caminho} deve ser ${str(tipoEsperado)}, recebido ${tipoReal}`];
+    return [`${rotulo}: ${caminho} deve ser ${textoDe(tipoEsperado)}, recebido ${tipoReal}`];
   }
 
-  if (tem("const") && !iguais(dados, schema.const)) erros.push(`${rotulo}: ${caminho} deve ser ${repr(schema.const)}`);
-  if (tem("enum") && !(Array.isArray(schema.enum) && schema.enum.some((opcao) => iguais(dados, opcao)))) {
-    erros.push(`${rotulo}: ${caminho} deve ser um de ${repr(schema.enum)}`);
+  if (tem("const") && !valoresIguais(dados, schema.const))
+    erros.push(`${rotulo}: ${caminho} deve ser ${representar(schema.const)}`);
+  if (tem("enum") && !(Array.isArray(schema.enum) && schema.enum.some((opcao) => valoresIguais(dados, opcao)))) {
+    erros.push(`${rotulo}: ${caminho} deve ser um de ${representar(schema.enum)}`);
   }
 
   if (typeof dados === "string") {
     const minimo = schema.minLength;
-    if (ehInteiro(minimo) && tamanho(dados) < Number(minimo)) {
-      erros.push(`${rotulo}: ${caminho} deve ter ao menos ${str(minimo)} caractere(s)`);
+    if (ehInteiro(minimo) && contarCaracteres(dados) < Number(minimo)) {
+      erros.push(`${rotulo}: ${caminho} deve ter ao menos ${textoDe(minimo)} caractere(s)`);
     }
     const padrao = schema.pattern;
-    if (typeof padrao === "string" && !regexPython(padrao).test(dados)) {
+    if (typeof padrao === "string" && !regexDoSchema(padrao).test(dados)) {
       erros.push(`${rotulo}: ${caminho} não corresponde ao padrão ${padrao}`);
     }
     if (schema.format === "date" && !RE_DATA.test(dados)) erros.push(`${rotulo}: ${caminho} deve estar em YYYY-MM-DD`);
     if (schema.format === "uri") {
-      const partes = urlsplit(dados);
-      if (!partes.scheme || !partes.netloc || RE_TEM_ESPACO.test(dados)) {
+      if (!ehUrlAbsoluta(dados)) {
         erros.push(`${rotulo}: ${caminho} deve ser URI absoluta válida`);
       }
     }
@@ -67,18 +57,18 @@ export function validarJsonSchema(dados: unknown, schema: ObjetoJson, rotulo: st
   if (typeof dados === "number") {
     const minimo = schema.minimum;
     if ((typeof minimo === "number" || typeof minimo === "boolean") && dados < Number(minimo)) {
-      erros.push(`${rotulo}: ${caminho} deve ser maior ou igual a ${str(minimo)}`);
+      erros.push(`${rotulo}: ${caminho} deve ser maior ou igual a ${textoDe(minimo)}`);
     }
   }
 
   if (Array.isArray(dados)) {
     const minimo = schema.minItems;
     if (ehInteiro(minimo) && dados.length < Number(minimo)) {
-      erros.push(`${rotulo}: ${caminho} deve ter ao menos ${str(minimo)} item(ns)`);
+      erros.push(`${rotulo}: ${caminho} deve ter ao menos ${textoDe(minimo)} item(ns)`);
     }
     const maximo = schema.maxItems;
     if (ehInteiro(maximo) && dados.length > Number(maximo)) {
-      erros.push(`${rotulo}: ${caminho} deve ter no máximo ${str(maximo)} item(ns)`);
+      erros.push(`${rotulo}: ${caminho} deve ter no máximo ${textoDe(maximo)} item(ns)`);
     }
     if (ehObjeto(schema.items)) {
       const schemaItem = schema.items;
@@ -109,4 +99,95 @@ export function validarJsonSchema(dados: unknown, schema: ObjetoJson, rotulo: st
   }
 
   return erros;
+}
+
+/**
+ * Converte um `pattern` dos schemas da base para `RegExp` (flag `u`). Os
+ * schemas foram escritos com a semântica de regex em que `\d` e `\w` aceitam
+ * dígitos e letras Unicode, `\s` usa o conjunto `ESPACOS`, `.` não casa `\n` e
+ * `$` aceita um `\n` final. Escapes de pontuação que a flag `u` rejeita (como
+ * `\-` ou `\#`) viram o code point correspondente.
+ */
+export function regexDoSchema(padrao: string): RegExp {
+  const traducaoEmClasse: Record<string, string> = { d: "\\p{Nd}", s: ESPACOS, w: "\\p{L}\\p{N}_" };
+  const traducao: Record<string, string> = {
+    d: "\\p{Nd}",
+    D: "\\P{Nd}",
+    s: `[${ESPACOS}]`,
+    S: `[^${ESPACOS}]`,
+    w: "[\\p{L}\\p{N}_]",
+    W: "[^\\p{L}\\p{N}_]",
+    A: "^",
+    Z: "$",
+  };
+  let saida = "";
+  let emClasse = false;
+  for (let i = 0; i < padrao.length; i += 1) {
+    const caractere = padrao[i]!;
+    if (caractere === "\\") {
+      const proximo = padrao[i + 1] ?? "";
+      i += 1;
+      if (emClasse && traducaoEmClasse[proximo]) saida += traducaoEmClasse[proximo];
+      else if (!emClasse && traducao[proximo]) saida += traducao[proximo];
+      else if (
+        /^[^\p{L}\p{N}]$/u.test(proximo) &&
+        !"^$\\.*+?()[]{}|/".includes(proximo) &&
+        !(emClasse && proximo === "-")
+      ) {
+        saida += `\\u{${proximo.codePointAt(0)!.toString(16)}}`;
+      } else saida += `\\${proximo}`;
+      continue;
+    }
+    if (emClasse) {
+      if (caractere === "]") emClasse = false;
+      saida += caractere;
+      continue;
+    }
+    if (caractere === "[") {
+      emClasse = true;
+      saida += caractere;
+      if (padrao[i + 1] === "^") saida += padrao[++i];
+      if (padrao[i + 1] === "]") saida += `\\${padrao[++i]}`;
+      continue;
+    }
+    if (caractere === ".") saida += "[^\\n]";
+    else if (caractere === "$") saida += "(?=\\n?$)";
+    else saida += caractere;
+  }
+  return new RegExp(saida, "u");
+}
+
+/**
+ * Esquema (em minúsculas) e autoridade (o trecho após `//`) de uma URL, pela
+ * divisão léxica usada desde sempre pela base. `new URL` não serve aqui: ela
+ * aceita `https:host` e `https:///host` como tendo host e rejeita `https://:80`,
+ * enquanto a base exige autoridade explícita e não vazia.
+ * Colchete de IPv6 desbalanceado lança erro.
+ */
+export function partesUrl(url: string): { esquema: string; autoridade: string } {
+  let resto = url.replace(/^[\x00-\x20]+/, "").replace(/[\t\r\n]/g, "");
+  let esquema = "";
+  const indice = resto.indexOf(":");
+  if (indice > 0 && /^[A-Za-z]/.test(resto) && /^[A-Za-z0-9+\-.]+$/.test(resto.slice(0, indice))) {
+    esquema = resto.slice(0, indice).toLowerCase();
+    resto = resto.slice(indice + 1);
+  }
+  let autoridade = "";
+  if (resto.startsWith("//")) {
+    let fim = resto.length;
+    for (const delimitador of "/?#") {
+      const posicao = resto.indexOf(delimitador, 2);
+      if (posicao >= 0) fim = Math.min(fim, posicao);
+    }
+    autoridade = resto.slice(2, fim);
+    if (autoridade.includes("[") !== autoridade.includes("]")) throw new Error("Invalid IPv6 URL");
+  }
+  return { esquema, autoridade };
+}
+
+/** URL absoluta com esquema, autoridade não vazia e sem espaços. */
+export function ehUrlAbsoluta(url: string, esquemaExigido?: string): boolean {
+  const { esquema, autoridade } = partesUrl(url);
+  if (esquemaExigido === undefined ? !esquema : esquema !== esquemaExigido) return false;
+  return Boolean(autoridade) && !RE_TEM_ESPACO.test(url);
 }

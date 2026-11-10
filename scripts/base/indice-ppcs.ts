@@ -1,28 +1,19 @@
 /** Índices globais dos PPCs convertidos para Markdown (index.json e secoes/*.jsonl). */
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { type CaminhosBase, naBase, relativo } from "./caminhos.ts";
+import { type CaminhosBase, listarDiretorio, naBase, relativo } from "./caminhos.ts";
+import { ehInteiro, ehObjeto, itensDe, jsonCompacto, jsonIndentado, type ObjetoJson, textoDe } from "./json.ts";
 import {
+  aparar,
+  apararCaracteres,
   compararTexto,
-  ehInteiro,
-  ehObjeto,
-  ESPACOS_PY,
-  glob,
-  iterar,
-  jsonCompacto,
-  jsonIndentado,
+  contarCaracteres,
+  dividirLinhas,
+  ESPACOS,
   lerTexto,
-  obter,
-  type ObjetoJson,
-  ordenarCaminhos,
   ordenarTextos,
   prefixo,
-  splitlines,
-  str,
-  strip,
-  stripChars,
-  tamanho,
-} from "./python.ts";
+} from "./texto.ts";
 
 export const LIMITE_PREVIEW_SECAO = 500;
 export const TIPOS_SECAO = new Set([
@@ -43,9 +34,9 @@ export const TIPOS_SECAO = new Set([
 ]);
 export const TIPOS_SECAO_INDEXADOS = ordenarTextos([...TIPOS_SECAO].filter((tipo) => tipo !== "outros"));
 
-const RE_ESPACOS = new RegExp(`[${ESPACOS_PY}]+`, "g");
-const RE_NUMERACAO = new RegExp(`^\\p{Nd}+(?:\\.\\p{Nd}+)*[${ESPACOS_PY}]*[-–.]?[${ESPACOS_PY}]*`, "u");
-const RE_TITULO_MARKDOWN = new RegExp(`^#{2,6}[${ESPACOS_PY}]+([^\\n]+?)[${ESPACOS_PY}]*#*$`);
+const RE_ESPACOS = new RegExp(`[${ESPACOS}]+`, "g");
+const RE_NUMERACAO = new RegExp(`^\\p{Nd}+(?:\\.\\p{Nd}+)*[${ESPACOS}]*[-–.]?[${ESPACOS}]*`, "u");
+const RE_TITULO_MARKDOWN = new RegExp(`^#{2,6}[${ESPACOS}]+([^\\n]+?)[${ESPACOS}]*#*$`);
 const RE_TITULO_NEGRITO = /^\*\*([^\n]+?)\*\*$/;
 const MARCADORES_TITULO_NEGRITO = [
   "identificacao",
@@ -69,20 +60,20 @@ export function removerAcentos(texto: string): string {
 export function limparTexto(texto: string): string {
   const limpo = texto
     .replaceAll("\x00", "")
-    .replace(new RegExp(`<br[${ESPACOS_PY}]*/?>`, "g"), " ")
+    .replace(new RegExp(`<br[${ESPACOS}]*/?>`, "g"), " ")
     .replace(/[*#>`_]+/g, "")
     .replace(/\|+/g, " ");
-  return strip(limpo.replace(RE_ESPACOS, " "));
+  return aparar(limpo.replace(RE_ESPACOS, " "));
 }
 
 export function limparTitulo(texto: string): string {
-  const limpo = limparTexto(texto).replace(RE_NUMERACAO, (trecho) => `${strip(trecho)} `);
-  return stripChars(limpo.replace(RE_ESPACOS, " "), " -");
+  const limpo = limparTexto(texto).replace(RE_NUMERACAO, (trecho) => `${aparar(trecho)} `);
+  return apararCaracteres(limpo.replace(RE_ESPACOS, " "), " -");
 }
 
 /** Título de seção reconhecido numa linha do PPC, ou `null`. */
 export function tituloDaLinha(linha: string): string | null {
-  const limpa = strip(linha);
+  const limpa = aparar(linha);
   if (!limpa) return null;
 
   const markdown = RE_TITULO_MARKDOWN.exec(limpa);
@@ -92,7 +83,10 @@ export function tituloDaLinha(linha: string): string | null {
   if (negrito) {
     const candidato = limparTitulo(negrito[1]!);
     const normalizado = removerAcentos(candidato).toLowerCase();
-    if (tamanho(candidato) <= 180 && MARCADORES_TITULO_NEGRITO.some((marcador) => normalizado.includes(marcador))) {
+    if (
+      contarCaracteres(candidato) <= 180 &&
+      MARCADORES_TITULO_NEGRITO.some((marcador) => normalizado.includes(marcador))
+    ) {
       return candidato;
     }
   }
@@ -127,10 +121,10 @@ export function dividirSecoes(markdown: string): Array<[string, string]> {
   const fechar = () => {
     if (tituloAtual === null) return;
     const texto = limparTexto(linhasAtuais.join("\n"));
-    if (tamanho(texto) >= 40) secoes.push([tituloAtual, texto]);
+    if (contarCaracteres(texto) >= 40) secoes.push([tituloAtual, texto]);
   };
 
-  for (const linha of splitlines(markdown)) {
+  for (const linha of dividirLinhas(markdown)) {
     const titulo = tituloDaLinha(linha);
     if (titulo) {
       fechar();
@@ -154,16 +148,16 @@ export type ItemPpc = Record<string, unknown> & {
 export type ItemSecao = Record<string, unknown> & { section_kind: string };
 
 function valorMetadado(ppc: ObjetoJson, chave: string, chaveInterna: string): unknown {
-  const metadados = obter(ppc, "metadados");
+  const metadados = ppc.metadados;
   if (!ehObjeto(metadados)) return null;
-  const valor = obter(metadados, chave);
+  const valor = metadados[chave];
   if (!ehObjeto(valor)) return null;
-  return obter(valor, chaveInterna);
+  return valor[chaveInterna];
 }
 
 export function montarItemPpc(campus: ObjetoJson, curso: ObjetoJson, ppc: ObjetoJson): ItemPpc {
-  const campusId = str(campus.id);
-  const cursoSlug = str(curso.curso_slug);
+  const campusId = textoDe(campus.id);
+  const cursoSlug = textoDe(curso.curso_slug);
   const item: ItemPpc = {
     id: `${campusId}/${cursoSlug}`,
     campus_id: campusId,
@@ -177,7 +171,7 @@ export function montarItemPpc(campus: ObjetoJson, curso: ObjetoJson, ppc: Objeto
     path: ppc.markdown_path as string,
   };
   for (const chave of ["modalidade", "situacao"]) {
-    const valor = obter(curso, chave);
+    const valor = curso[chave];
     if (typeof valor === "string" && valor) item[chave] = valor;
   }
   const ano = valorMetadado(ppc, "ano_documento", "ano");
@@ -188,7 +182,7 @@ export function montarItemPpc(campus: ObjetoJson, curso: ObjetoJson, ppc: Objeto
 }
 
 export function arquivosCampi(caminhos: CaminhosBase): string[] {
-  return ordenarCaminhos(glob(caminhos.campi, "*.json").filter((caminho) => path.basename(caminho) !== "index.json"));
+  return listarDiretorio(caminhos.campi, ".json").filter((caminho) => path.basename(caminho) !== "index.json");
 }
 
 export function coletarItensPpc(caminhos: CaminhosBase): ItemPpc[] {
@@ -196,29 +190,27 @@ export function coletarItensPpc(caminhos: CaminhosBase): ItemPpc[] {
   for (const caminhoCampus of arquivosCampi(caminhos)) {
     const campus: unknown = JSON.parse(lerTexto(caminhoCampus));
     if (!ehObjeto(campus)) continue;
-    for (const curso of iterar(obter(campus, "cursos", []))) {
-      if (!ehObjeto(curso)) continue;
-      const ppc = obter(curso, "ppc");
-      if (!ehObjeto(ppc)) continue;
-      const conversao = obter(ppc, "conversao");
-      const caminhoMarkdown = obter(ppc, "markdown_path");
+    for (const curso of itensDe(campus.cursos)) {
+      if (!ehObjeto(curso) || !ehObjeto(curso.ppc)) continue;
+      const ppc = curso.ppc;
+      const caminhoMarkdown = ppc.markdown_path;
       if (
-        !ehObjeto(conversao) ||
-        obter(conversao, "status") !== "convertido" ||
+        !ehObjeto(ppc.conversao) ||
+        ppc.conversao.status !== "convertido" ||
         typeof caminhoMarkdown !== "string" ||
         !existsSync(naBase(caminhos, caminhoMarkdown))
       ) {
         continue;
       }
       const obrigatorios = [
-        obter(campus, "id"),
-        obter(campus, "nome"),
-        obter(curso, "curso_slug"),
-        obter(curso, "nome"),
-        obter(curso, "nivel"),
-        obter(curso, "tipo_oferta"),
-        obter(curso, "url"),
-        obter(ppc, "url"),
+        campus.id,
+        campus.nome,
+        curso.curso_slug,
+        curso.nome,
+        curso.nivel,
+        curso.tipo_oferta,
+        curso.url,
+        ppc.url,
       ];
       if (!obrigatorios.every((valor) => typeof valor === "string" && valor)) continue;
       itens.push(montarItemPpc(campus, curso, ppc));
@@ -283,7 +275,7 @@ export function secoesJsonl(itens: ItemSecao[]): string {
 export function agruparPorTipo(itens: ItemSecao[]): Map<string, ItemSecao[]> {
   const grupos = new Map<string, ItemSecao[]>(TIPOS_SECAO_INDEXADOS.map((tipo) => [tipo, []]));
   for (const item of itens) {
-    const tipo = str(item.section_kind);
+    const tipo = textoDe(item.section_kind);
     if (!grupos.has(tipo)) grupos.set(tipo, []);
     grupos.get(tipo)!.push(item);
   }
@@ -329,7 +321,7 @@ export function verificarIndices(caminhos: CaminhosBase, indices: IndicesPpcs): 
   }
   if (existsSync(caminhos.secoesPpcs)) {
     const esperados = new Set([...indices.secoes.keys()].map((tipo) => `${tipo}.jsonl`));
-    const extras = glob(caminhos.secoesPpcs, "*.jsonl")
+    const extras = listarDiretorio(caminhos.secoesPpcs, ".jsonl")
       .map((caminho) => path.basename(caminho))
       .filter((nome) => !esperados.has(nome));
     for (const nome of ordenarTextos(new Set(extras))) {
@@ -343,6 +335,6 @@ export function gravarIndices(caminhos: CaminhosBase, indices: IndicesPpcs): voi
   writeFileSync(caminhos.indicePpcs, indices.indice, "utf-8");
   rmSync(path.join(path.dirname(caminhos.secoesPpcs), "secoes.jsonl"), { force: true });
   mkdirSync(caminhos.secoesPpcs, { recursive: true });
-  for (const caminho of glob(caminhos.secoesPpcs, "*.jsonl")) rmSync(caminho);
+  for (const caminho of listarDiretorio(caminhos.secoesPpcs, ".jsonl")) rmSync(caminho);
   for (const [tipo, texto] of indices.secoes) writeFileSync(caminhoSecao(caminhos, tipo), texto, "utf-8");
 }

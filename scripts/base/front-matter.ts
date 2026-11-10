@@ -1,6 +1,7 @@
 /** Front matter das normas e geração de `manifest.json`. */
-import { type CaminhosBase, relativo } from "./caminhos.ts";
-import { compararTexto, jsonIndentado, lerTexto, ordenarCaminhos, rglob, splitlines, str, strip } from "./python.ts";
+import { type CaminhosBase, listarRecursivo, relativo } from "./caminhos.ts";
+import { jsonIndentado, textoDe } from "./json.ts";
+import { aparar, compararTexto, dividirLinhas, lerTexto, ordenarCaminhos } from "./texto.ts";
 
 export const CAMPOS_OBRIGATORIOS = [
   "title",
@@ -48,7 +49,7 @@ export class ErroFrontMatter extends Error {}
 
 /** Interpreta um valor escalar do subconjunto de YAML usado nas normas. */
 export function valorYaml(bruto: string, chave?: string): ValorFrontMatter {
-  const valor = strip(bruto);
+  const valor = aparar(bruto);
   if (!valor) return "";
   if (valor.startsWith('"') && valor.endsWith('"')) {
     try {
@@ -61,7 +62,7 @@ export function valorYaml(bruto: string, chave?: string): ValorFrontMatter {
     return valor
       .slice(1, -1)
       .split(",")
-      .map(strip)
+      .map(aparar)
       .filter(Boolean)
       .map((item) => valorYaml(item));
   }
@@ -107,8 +108,8 @@ export function analisarFrontMatter(texto: string, rotulo: string): { meta: Fron
 
   const meta: FrontMatter = Object.create(null);
   let atual: string | null = null;
-  for (const linha of splitlines(strip(texto.slice(4, fim)))) {
-    if (!strip(linha)) continue;
+  for (const linha of dividirLinhas(aparar(texto.slice(4, fim)))) {
+    if (!aparar(linha)) continue;
     if (linha.startsWith("  - ")) {
       if (atual === null) throw new ErroFrontMatter(`${rotulo}: item de lista sem campo`);
       if (!(atual in meta)) meta[atual] = [];
@@ -119,9 +120,9 @@ export function analisarFrontMatter(texto: string, rotulo: string): { meta: Fron
     }
     const separador = linha.indexOf(":");
     if (separador === -1) throw new ErroFrontMatter(`${rotulo}: linha inválida no front matter: ${linha}`);
-    atual = strip(linha.slice(0, separador));
+    atual = aparar(linha.slice(0, separador));
     const valor = linha.slice(separador + 1);
-    meta[atual] = strip(valor) ? valorComRotulo(valor, rotulo, atual) : [];
+    meta[atual] = aparar(valor) ? valorComRotulo(valor, rotulo, atual) : [];
   }
 
   const inicioCorpo = texto.indexOf("\n", fim + 4);
@@ -147,14 +148,15 @@ export function itemManifest(caminhos: CaminhosBase, caminho: string): ItemManif
 }
 
 export function arquivosNormas(caminhos: CaminhosBase): string[] {
-  return ordenarCaminhos(rglob(caminhos.normas, "*.md"));
+  return ordenarCaminhos(listarRecursivo(caminhos.normas, ".md"));
 }
 
 export function montarManifest(caminhos: CaminhosBase): ItemManifest[] {
   const manifest = arquivosNormas(caminhos).map((caminho) => itemManifest(caminhos, caminho));
   return manifest.sort(
     (a, b) =>
-      compararTexto(str(a.data_publicacao), str(b.data_publicacao)) || compararTexto(str(a.title), str(b.title)),
+      compararTexto(textoDe(a.data_publicacao), textoDe(b.data_publicacao)) ||
+      compararTexto(textoDe(a.title), textoDe(b.title)),
   );
 }
 

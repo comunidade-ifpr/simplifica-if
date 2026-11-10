@@ -1,5 +1,7 @@
+import { readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { RAIZ_PROJETO } from "../config.ts";
+import { compararTexto } from "./texto.ts";
 
 /**
  * Caminhos da base pública. Os `path` dos manifestos continuam relativos a
@@ -86,4 +88,51 @@ export function relativo(caminhos: CaminhosBase, caminho: string): string {
 export function naBase(caminhos: CaminhosBase, valor: string): string {
   const base = path.isAbsolute(valor) ? valor : `${caminhos.raiz}${path.sep}${valor}`;
   return partesLexicas(base).join(path.sep) || path.sep;
+}
+
+export function ehDiretorio(caminho: string): boolean {
+  try {
+    return statSync(caminho).isDirectory();
+  } catch {
+    return false;
+  }
+}
+
+export function ehArquivo(caminho: string): boolean {
+  try {
+    return statSync(caminho).isFile();
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Entradas de `diretorio` (arquivos, subdiretórios e ocultos) cujo nome termina
+ * em `sufixo`, ordenadas por code point. Diretório inexistente dá lista vazia.
+ */
+export function listarDiretorio(diretorio: string, sufixo = ""): string[] {
+  if (!ehDiretorio(diretorio)) return [];
+  return readdirSync(diretorio)
+    .filter((nome) => nome.endsWith(sufixo))
+    .sort(compararTexto)
+    .map((nome) => path.join(diretorio, nome));
+}
+
+/**
+ * Todas as entradas sob `diretorio` cujo nome termina em `sufixo`, em pré-ordem
+ * com irmãos ordenados por code point (a ordem de `ordenarCaminhos`). Não entra
+ * em links simbólicos para diretórios.
+ */
+export function listarRecursivo(diretorio: string, sufixo = ""): string[] {
+  const resultado: string[] = [];
+  const visitar = (atual: string) => {
+    const entradas = readdirSync(atual, { withFileTypes: true }).sort((a, b) => compararTexto(a.name, b.name));
+    for (const entrada of entradas) {
+      const caminho = path.join(atual, entrada.name);
+      if (entrada.name.endsWith(sufixo)) resultado.push(caminho);
+      if (entrada.isDirectory()) visitar(caminho);
+    }
+  };
+  if (ehDiretorio(diretorio)) visitar(diretorio);
+  return resultado;
 }

@@ -2,7 +2,8 @@
 import { existsSync, writeFileSync } from "node:fs";
 import type { CaminhosBase } from "./caminhos.ts";
 import { type ItemManifest, manifestJson } from "./front-matter.ts";
-import { lerTexto, str } from "./python.ts";
+import { textoDe } from "./json.ts";
+import { lerTexto } from "./texto.ts";
 
 const CABECALHO_TABELA = "| Documento | Tipo | Ano | Assunto |";
 const FIM_TABELA = "\n\n## Manutenção";
@@ -11,7 +12,7 @@ export function tabelaReadme(manifest: ItemManifest[]): string {
   const linhas = manifest
     .map(
       (item) =>
-        `| [${str(item.title)}](${str(item.path)}) | ${str(item.tipo_documento)} | ${str(item.ano)} | ${str(item.ementa)} |`,
+        `| [${textoDe(item.title)}](${textoDe(item.path)}) | ${textoDe(item.tipo_documento)} | ${textoDe(item.ano)} | ${textoDe(item.ementa)} |`,
     )
     .join("\n");
   return [CABECALHO_TABELA, "|-----------|------|-----|---------|", linhas].join("\n");
