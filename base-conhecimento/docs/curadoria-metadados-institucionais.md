@@ -100,7 +100,7 @@ bun run scripts/validar_base.ts
 
 Use `Movimentações de Cursos` para registrar processos administrativos associados ao histórico do curso, como abertura, ajuste, atualização, suspensão, reversão de suspensão ou extinção.
 
-Quando a curadoria depender do Sistema Eletrônico de Informações, leia `docs/sei-cli-operacao-agentes.md` e use `../sei-cli`.
+Quando a curadoria depender do Sistema Eletrônico de Informações, leia `docs/sei-cli-operacao-agentes.md` e use `packages/sei-cli`.
 
 Regras:
 

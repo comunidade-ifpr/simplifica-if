@@ -10,10 +10,11 @@
     "base:site": "bun run scripts/gerar_site.ts",
     "base:tipos": "bun run scripts/gerar_tipos_schemas.ts",
     "sei:sync": "bun run scripts/notion_atualizar_movimentacoes_sei.ts",
-    "test": "bun test scripts",
-    "typecheck": "tsc --noEmit",
-    "format": "bun fmt scripts",
-    "format:check": "bun fmt --check scripts"
+    "sei": "bun run --cwd packages/sei-cli sei",
+    "test": "bun test scripts && bun run --cwd packages/sei-cli test",
+    "typecheck": "tsc --noEmit && bun run --cwd packages/sei-cli typecheck",
+    "format": "bun fmt scripts && bun run --cwd packages/sei-cli format",
+    "format:check": "bun fmt --check scripts && bun run --cwd packages/sei-cli format:check"
   },
   "dependencies": {
     "@notionhq/client": "5.31.1",
@@ -23,11 +24,15 @@
     "dotenv": "^18.0.10",
     "entities": "^8.1.0",
     "htmlparser2": "^12.0.0",
+    "sei-cli": "workspace:*",
     "zod": "4.6.7"
   },
   "devDependencies": {
     "@types/bun": "^1.4.4",
     "json-schema-to-typescript": "16.0.0",
     "typescript": "^7.0.2"
-  }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }

@@ -10,9 +10,6 @@
     "types": ["bun"],
     "allowImportingTsExtensions": true,
     "noEmit": true,
-    "paths": {
-      "@sei-cli/*": ["../sei-cli/src/*"]
-    },
     "verbatimModuleSyntax": true,
     "noImplicitOverride": true,
     "noUnusedLocals": true,

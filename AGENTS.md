@@ -41,7 +41,7 @@ Para solicitações sobre dados operacionais no Notion, como Campi, Cursos, meta
 
 - [Operação do Notion por agentes](base-conhecimento/docs/notion-operacao-agentes.md)
 
-Para perguntas, conferências ou curadoria que dependam de dados do Sistema Eletrônico de Informações (SEI), use o repositório irmão `../sei-cli` como ferramenta operacional e leia primeiro:
+Para perguntas, conferências ou curadoria que dependam de dados do Sistema Eletrônico de Informações (SEI), use o pacote `packages/sei-cli` deste repositório como ferramenta operacional e leia primeiro:
 
 - [Uso do sei-cli por agentes](base-conhecimento/docs/sei-cli-operacao-agentes.md)
 
