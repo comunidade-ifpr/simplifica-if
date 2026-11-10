@@ -1,6 +1,5 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { config as carregarEnv } from "dotenv";
 
 export const RAIZ_PROJETO = path.resolve(import.meta.dir, "..");
 export const RAIZ_BASE = path.join(RAIZ_PROJETO, "base-conhecimento");
@@ -19,11 +18,6 @@ export const BASES_NOTION = [
 ] as const;
 export type BaseNotion = (typeof BASES_NOTION)[number];
 export type DataSources = Record<BaseNotion, string>;
-
-/** Lê `.env.local` da raiz do projeto, sem sobrescrever o que já está no ambiente. */
-export function carregarEnvLocal(): void {
-  carregarEnv({ path: path.join(RAIZ_PROJETO, ".env.local"), quiet: true });
-}
 
 export function validarConfigNotion(config: unknown): string[] {
   const dados = (config ?? {}) as { parent_page_id?: unknown; databases?: unknown };
