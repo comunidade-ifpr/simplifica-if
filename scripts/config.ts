@@ -1,5 +1,8 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { z } from "zod";
+import { ehObjeto, type ObjetoJson } from "./base/json.ts";
+import { validarJson } from "./esquema.ts";
 
 export const RAIZ_PROJETO = path.resolve(import.meta.dir, "..");
 export const RAIZ_BASE = path.join(RAIZ_PROJETO, "base-conhecimento");
@@ -20,18 +23,18 @@ export type BaseNotion = (typeof BASES_NOTION)[number];
 export type DataSources = Record<BaseNotion, string>;
 
 export function validarConfigNotion(config: unknown): string[] {
-  const dados = (config ?? {}) as { parent_page_id?: unknown; databases?: unknown };
+  const dados: ObjetoJson = ehObjeto(config) ? config : {};
   const erros: string[] = [];
   if (typeof dados.parent_page_id !== "string" || !dados.parent_page_id.trim()) {
     erros.push("config/notion.json: parent_page_id ausente");
   }
-  if (typeof dados.databases !== "object" || dados.databases === null || Array.isArray(dados.databases)) {
+  const bases = dados.databases;
+  if (!ehObjeto(bases)) {
     return ["config/notion.json: databases deve ser objeto"];
   }
-  const bases = dados.databases as Record<string, Record<string, unknown> | undefined>;
   for (const chave of BASES_NOTION) {
     const base = bases[chave];
-    if (typeof base !== "object" || base === null) {
+    if (!ehObjeto(base)) {
       erros.push(`config/notion.json: base ausente: ${chave}`);
       continue;
     }
@@ -45,15 +48,37 @@ export function validarConfigNotion(config: unknown): string[] {
   return erros;
 }
 
+/**
+ * Parte de `config/notion.json` que o código consome. A conferência campo a campo, com mensagens
+ * próprias, fica em `validarConfigNotion`; o schema só dá o tipo ao que ela já garantiu.
+ */
+const esquemaBaseNotion = z.looseObject({ data_source_id: z.string() });
+export const esquemaConfigNotion = z.looseObject({
+  databases: z.looseObject({
+    campi: esquemaBaseNotion,
+    cursos: esquemaBaseNotion,
+    editais_ingresso: esquemaBaseNotion,
+    movimentacoes_cursos: esquemaBaseNotion,
+    ofertas_ingresso: esquemaBaseNotion,
+    processos_seletivos: esquemaBaseNotion,
+    tarefas: esquemaBaseNotion,
+  }),
+});
+
 export function carregarDataSources(): DataSources {
-  const config = JSON.parse(readFileSync(CAMINHO_CONFIG_NOTION, "utf-8")) as {
-    databases: Record<BaseNotion, { data_source_id: string }>;
-  };
+  const config: unknown = JSON.parse(readFileSync(CAMINHO_CONFIG_NOTION, "utf-8"));
   const erros = validarConfigNotion(config);
   if (erros.length) {
     throw new Error(`Configuração Notion inválida:\n- ${erros.join("\n- ")}`);
   }
-  return Object.fromEntries(
-    BASES_NOTION.map((chave) => [chave, config.databases[chave].data_source_id]),
-  ) as DataSources;
+  const { databases: bases } = validarJson(esquemaConfigNotion, config, CAMINHO_CONFIG_NOTION);
+  return {
+    campi: bases.campi.data_source_id,
+    cursos: bases.cursos.data_source_id,
+    editais_ingresso: bases.editais_ingresso.data_source_id,
+    movimentacoes_cursos: bases.movimentacoes_cursos.data_source_id,
+    ofertas_ingresso: bases.ofertas_ingresso.data_source_id,
+    processos_seletivos: bases.processos_seletivos.data_source_id,
+    tarefas: bases.tarefas.data_source_id,
+  };
 }

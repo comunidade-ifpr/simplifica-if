@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export const SITUACOES_MATRIZES = [
   "Única ativa",
   "Múltiplas — mesma CH",
@@ -12,24 +14,29 @@ export const CRITERIO_COLETA =
 
 const SEM_MATRIZ_ATIVA = "Nenhuma matriz marcada Ativa=Sim.";
 
+export const esquemaSituacaoMatrizes = z.enum(SITUACOES_MATRIZES);
+
 /**
  * Matriz curricular como aparece no SUAP. Usa a mesma forma do relatório gravado em disco,
- * que `--apply-report` lê de volta, por isso os nomes seguem o JSON.
+ * que `--apply-report` lê de volta, por isso os nomes seguem o JSON. Só as matrizes ativas
+ * trazem `url`, `carga_horaria_h` e `campos`.
  */
-export interface MatrizSuap {
-  id: number;
-  ativa: boolean;
-  descricao: string;
-  url?: string;
-  carga_horaria_h?: number;
-  campos?: Record<string, string>;
-}
+export const esquemaMatrizSuap = z.strictObject({
+  id: z.number().int(),
+  ativa: z.boolean(),
+  descricao: z.string(),
+  url: z.string().exactOptional(),
+  carga_horaria_h: z.number().exactOptional(),
+  campos: z.record(z.string(), z.string()).exactOptional(),
+});
+export type MatrizSuap = z.output<typeof esquemaMatrizSuap>;
 
-export interface ConsolidacaoMatrizes {
-  situacao: SituacaoMatrizes;
+export const esquemaConsolidacaoMatrizes = z.strictObject({
+  situacao: esquemaSituacaoMatrizes,
   /** Só existe quando todas as matrizes ativas têm a mesma carga horária. */
-  carga_horaria_comum_h: number | null;
-}
+  carga_horaria_comum_h: z.number().nullable(),
+});
+export type ConsolidacaoMatrizes = z.output<typeof esquemaConsolidacaoMatrizes>;
 
 export function consolidarMatrizes(matrizes: MatrizSuap[]): ConsolidacaoMatrizes {
   const ativas = matrizes.filter((matriz) => matriz.ativa);
