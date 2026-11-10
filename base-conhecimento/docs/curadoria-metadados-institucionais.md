@@ -116,10 +116,10 @@ Regras:
 Para atualização rotineira de movimentações em andamento no Notion, use:
 
 ```bash
-bun run scripts/notion_atualizar_movimentacoes_sei.ts --apply
+bun run sei:sync --apply
 ```
 
-O script roda em dry-run quando `--apply` não é informado, consulta o histórico remoto pelo `sei-cli` e preserva o valor anterior quando a coleta não retorna `Data Última mov. SEI`.
+Sem `--apply`, roda em dry-run. Consulta o histórico remoto pelo `sei-cli` e preserva o valor anterior quando a coleta não retorna `Data Última mov. SEI`. Veja `docs/sincronizacao-sei-notion.md`.
 
 ## Processos seletivos
 

@@ -71,6 +71,8 @@ bun run sei:sync                # simula a atualização das Movimentações de 
 bun run sei:sync --apply        # grava no Notion
 ```
 
+Credenciais, escopo, avisos de chegada na DENTEC, agendamento pelo launchd e diagnóstico estão em [`base-conhecimento/docs/sincronizacao-sei-notion.md`](base-conhecimento/docs/sincronizacao-sei-notion.md).
+
 `bun run typecheck`, `bun test` e `bun run format` na raiz cobrem `scripts/` e o `sei-cli`. Os scripts importam tipos e schemas do CLI como `sei-cli/<módulo>`, por exemplo `sei-cli/esquemas`.
 
 Para detalhes de desenvolvimento das skills, veja `base-conhecimento/docs/desenvolvimento-skills.md`.

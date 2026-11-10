@@ -44,6 +44,7 @@ Para solicitações sobre dados operacionais no Notion, como Campi, Cursos, meta
 Para perguntas, conferências ou curadoria que dependam de dados do Sistema Eletrônico de Informações (SEI), use o pacote `packages/sei-cli` deste repositório como ferramenta operacional e leia primeiro:
 
 - [Uso do sei-cli por agentes](base-conhecimento/docs/sei-cli-operacao-agentes.md)
+- [Sincronização SEI → Notion](base-conhecimento/docs/sincronizacao-sei-notion.md)
 
 Por padrão, use a API do Notion com `NOTION_TOKEN` do projeto. Não presuma que o Notion MCP local do usuário acessa esta base, pois ele pode estar conectado ao Notion pessoal do usuário. Se `NOTION_TOKEN` não estiver disponível, peça ao usuário o token da integração Notion organizacional e grave em `.env.local`.
 
@@ -59,8 +60,10 @@ bun run scripts/gerar_site.ts
 Para atualização rotineira de dados SEI em `Movimentações de Cursos`, use antes (requer `bun install` na raiz):
 
 ```bash
-bun run scripts/notion_atualizar_movimentacoes_sei.ts --apply
+bun run sei:sync --apply
 ```
+
+Funcionamento, credenciais, agendamento e diagnóstico da sincronização estão em [Sincronização SEI → Notion](base-conhecimento/docs/sincronizacao-sei-notion.md).
 
 Depois de alterar um JSON Schema em `base-conhecimento/schemas/`, regenere os tipos TypeScript derivados dele (`scripts/base/tipos-schemas.ts`) e confira o código que os usa:
 
