@@ -2,7 +2,7 @@
   "name": "simplifica-if",
   "private": true,
   "type": "module",
-  "packageManager": "bun@1.4.3",
+  "packageManager": "bun@1.4.4",
   "scripts": {
     "base:gerar": "bun run scripts/gerar_base.ts",
     "base:indice-ppcs": "bun run scripts/gerar_indice_ppcs.ts",
