@@ -629,6 +629,36 @@
     "path": "normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_222-2024_altera-regimento-interno-comum-campi.md"
   },
   {
+    "title": "Resolução CNE/CEB nº 3/2025",
+    "tipo_documento": "Resolução",
+    "numero": "3",
+    "ano": 2025,
+    "data_publicacao": "2025-04-09",
+    "orgao": "CNE/CEB",
+    "jurisdicao": "BR",
+    "ementa": "Institui as Diretrizes Operacionais Nacionais para a Educação de Jovens e Adultos – EJA.",
+    "status_vigencia": "alterada",
+    "keywords": [
+      "educação de jovens e adultos",
+      "EJA",
+      "EJA/EPT",
+      "PROEJA",
+      "diretrizes operacionais",
+      "carga horária",
+      "educação a distância",
+      "pedagogia da alternância",
+      "CNE"
+    ],
+    "aliases": [
+      "Resolução CNE/CEB nº 3/2025",
+      "Resolução CNE/CEB nº 3, de 8 de abril de 2025",
+      "Diretrizes Operacionais Nacionais para a EJA",
+      "Diretrizes Operacionais da EJA"
+    ],
+    "fonte": "https://www.gov.br/mec/pt-br/cne/2025/abril/rceb003_25.pdf",
+    "path": "normas/br/resolucoes/RESOLUCAO_CNE-CEB_3-2025_diretrizes-eja.md"
+  },
+  {
     "title": "Resolução CONSUP/IFPR nº 239/2025",
     "tipo_documento": "Resolução",
     "numero": "239",
