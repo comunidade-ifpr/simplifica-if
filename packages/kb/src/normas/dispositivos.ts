@@ -21,7 +21,7 @@ export const TOKEN_DISPOSITIVO = String.raw`(?:arts?\b\.?|artigos?\b|\$\$?|parag
 const RE_INICIO_DISPOSITIVO = /\b(?:arts?\b|artigos?\b|incisos?\b|alineas?\b|itens?\b|paragrafos?\b|caput\b)|\$/g;
 const RE_SO_TOKENS = new RegExp(`^(?:${TOKEN_DISPOSITIVO})*$`);
 
-function romanoParaNumero(romano: string): number {
+export function romanoParaNumero(romano: string): number {
   const valores: Record<string, number> = { i: 1, v: 5, x: 10, l: 50, c: 100 };
   let total = 0;
   for (let i = 0; i < romano.length; i += 1) {
@@ -32,7 +32,7 @@ function romanoParaNumero(romano: string): number {
   return total;
 }
 
-function numeroParaRomano(numero: number): string {
+export function numeroParaRomano(numero: number): string {
   const tabela: [number, string][] = [
     [100, "c"],
     [90, "xc"],

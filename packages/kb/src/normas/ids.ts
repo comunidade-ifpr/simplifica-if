@@ -13,9 +13,18 @@
  * - referência fora da base: `externo:<segmentos>`, como `externo:cft/res/2019/89`,
  *   `externo:abnt/nbr/6023` e `externo:campus/regulamento-estagio`;
  * - dispositivo: sufixo `#...` do ID da norma, como `#art28-xvi`, `#art28-par1-iv`,
- *   `#art71-parunico`, `#art36A` e `#art5-al-a`.
+ *   `#art71-parunico`, `#art36A` e `#art5-al-a`;
+ * - catálogo: `cnct:catalogo` (o CNCT como um todo) e `cnct:<slug>` (um curso do CNCT, com o `id` de
+ *   `catalogos/cnct/index.json`, como `cnct:tecnico-em-enfermagem`).
  */
-import { semAcento } from "./referencias.ts";
+
+/** Reduz a ASCII sem diacríticos (NFKD, descartando o que não for ASCII) e em minúsculas. */
+export function semAcento(texto: string): string {
+  return texto
+    .normalize("NFKD")
+    .replace(/[^\x00-\x7f]/g, "")
+    .toLowerCase();
+}
 
 /** Tipos de ato da Presidência, sem segmento de órgão no ID. */
 export const TIPOS_SEM_ORGAO = ["lei", "lc", "decreto", "decreto-lei", "mp", "ec"] as const;
@@ -30,7 +39,10 @@ const SLUG = String.raw`[a-z0-9]+(?:-[a-z0-9]+)*`;
 const RE_ID_NORMA = new RegExp(
   String.raw`^(?:br/(?:${TIPOS_SEM_ORGAO.join("|")})|(?:br|ifpr)/${SLUG}/(?:${TIPOS_COM_ORGAO.join("|")}))/(\d{4})/([1-9]\d*)(?:~(${VARIANTES.join("|")}))?$`,
 );
+/** Ato sem variante de arquivo: o que uma citação (ficha, marco) referencia. */
+export const RE_ID_ATO = new RegExp(RE_ID_NORMA.source.replace(String.raw`(?:~(${VARIANTES.join("|")}))?`, ""));
 const RE_ID_EXTERNO = /^externo:[a-z0-9]+(?:[-.][a-z0-9]+)*(?:\/[a-z0-9]+(?:[-.][a-z0-9]+)*)*$/;
+const RE_ID_CNCT = /^cnct:[a-z0-9]+(?:-[a-z0-9]+)*$/;
 /** Dispositivo: artigo (com letra maiúscula colada), parágrafo, inciso, alínea; ou item de anexo. */
 const RE_DISPOSITIVO =
   /^#(?:art[1-9]\d*[A-Z]*(?:-par(?:[1-9]\d*[A-Z]*|unico))?(?:-[ivxlc]+)?(?:-al-[a-z])?|anexo\d+(?:-item\d+)?)$/;
@@ -46,6 +58,29 @@ export function ehIdExterno(id: string): boolean {
 export function ehIdDispositivo(dispositivo: string): boolean {
   return RE_DISPOSITIVO.test(dispositivo);
 }
+
+/** `cnct:catalogo` ou `cnct:<slug do curso>`. */
+export function ehIdCnct(id: string): boolean {
+  return RE_ID_CNCT.test(id);
+}
+
+/** ID de ato sem variante (`br/lei/1996/9394`, e não `br/lei/1996/9394~compilacao`). */
+export function ehIdAto(id: string): boolean {
+  return RE_ID_ATO.test(id);
+}
+
+/**
+ * Regex de uma referência citável (ato sem variante, `externo:` ou `cnct:`), para contratos que
+ * precisam do padrão como dado (zod → JSON Schema).
+ */
+export const RE_REFERENCIA = new RegExp(
+  `^(?:${[RE_ID_ATO, RE_ID_EXTERNO, RE_ID_CNCT].map((re) => re.source.slice(1, -1)).join("|")})$`,
+);
+export const RE_ID_DISPOSITIVO = RE_DISPOSITIVO;
+/** Ato com dispositivo: `br/cne-ceb/res/2025/3#art6-iii`. */
+export const RE_ID_ATO_COM_DISPOSITIVO = new RegExp(
+  `${RE_ID_ATO.source.slice(0, -1)}${RE_DISPOSITIVO.source.slice(1)}`,
+);
 
 /** ID do ato, sem a variante de arquivo (`br/lei/1996/9394~compilacao` → `br/lei/1996/9394`). */
 export function idDoAto(id: string): string {

@@ -17,6 +17,8 @@ export interface EntradaRegistro {
   situacao: Situacao;
   data_publicacao?: string | undefined;
   status_vigencia?: string | undefined;
+  /** Stub com status provado na base: ID (com dispositivo) do ato que o determina. */
+  status_fonte?: string | undefined;
   aliases: string[];
   /** Caminho do Markdown, relativo a `base-conhecimento/` (só normas da base). */
   path?: string | undefined;
@@ -199,6 +201,7 @@ export function carregarRegistro(raiz: string = raizRepositorio()): Registro {
         situacao: "stub",
         data_publicacao: stub.data_publicacao,
         status_vigencia: stub.status_vigencia,
+        status_fonte: stub.status_fonte,
         aliases: stub.aliases ?? [],
       });
     }
