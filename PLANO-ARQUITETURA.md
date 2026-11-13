@@ -529,6 +529,21 @@ Em aberto:
   - 17 PPCs citam a DCN da EPT como "CNE/CEB nº 1/2021", com o órgão trocado, e o resolvedor da fase 2 precisa tratar isso;
   - a Q08 se apoia em ofertas `sugerido` ainda não revisadas.
 
+**Fase 2a concluída em 13/11/2026** (branch `worktree-agent-ab78953406a22651e`). Falta a 2b: fichas com referências estruturadas e schema zod da ficha, depois do porte de `subagents.py`.
+
+- **IDs:** `id` no front matter das 36 normas e no `manifest.json` (diff só no campo novo), com lint de formato, unicidade e coerência com o ato em `validar_base.ts`. A LDB em trechos é `br/lei/1996/9394~compilacao`, com `variante: compilacao`; a regra está em `docs/padrao-front-matter-legislacao.md`.
+- **Front matter:** `yaml` 2.9.1 em schema `failsafe` mais zod (`packages/kb/src/normas/front-matter.ts`); paridade com o parser antigo nas 36 normas.
+- **Stubs e `externo:`:** `base-conhecimento/normas/stubs.yaml`, com 39 normas e 7 referências externas. Status só sai de "a confirmar" quando a base prova a revogação (7 casos, com `status_fonte`); o resto aguarda conferência em fonte oficial.
+- **Resolvedor:** `resolverCitacao` e `extrairCitacoes` em `packages/kb/src/normas/resolver.ts`, com 19 regras nomeadas que dão ID (cada uma com sua confiança) e 7 que explicam a falta de ID, dispositivos (`#art28-xvi`) e as 134 referências das fichas resolvidas para ID (norma, stub, `externo:` ou `cnct:catalogo`). `referencias.ts` ficou intacto para o validador da `analise-ppc`.
+- **CLI `kb`:** `resolver`, `citacoes`, `adequacao-art71` e `avaliar-resolvedor`, todos com `--json`.
+- **Medida:** 257 citações anotadas em 198 linhas de 20 PPCs (`avaliacao/resolvedor/`, rascunho). Precisão 0,98, recall 0,957, dispositivos 0,905. O conjunto serviu também para ajustar as regras, então os números são otimistas; falta revisão humana e um conjunto independente.
+- **Q02:** o gabarito vem de `kb citacoes br/cne-cp/res/2021/1`: os mesmos 59 PPCs da heurística anterior, agora com linha e regra de cada ocorrência. A heurística `gabaritos/citacoes.ts` foi removida.
+- **Art. 71:** 112 cursos técnicos ativos ou em oferta. Pela DCN mais recente que o PPC cita: 0 citam a 2/2026, 39 a CNE/CP 1/2021, 63 a CNE/CEB 6/2012, 2 só a CNE/CEB 4/1999, 4 não citam DCN e 4 não têm PPC convertido.
+- **Achados:**
+  - 17 PPCs citam a DCN de 2021 com o órgão trocado (CNE/CEB); 1 a cita como "CNE/CP nº 1, de 5 de janeiro de 2022" e cai na CNE/CP 1/2022;
+  - há duas Instruções Normativas do IFPR nº 1/2021 (26/07, curricularização da extensão, e 19/08, bibliotecas), citadas muitas vezes sem órgão;
+  - a ficha `ct-ident-15` cita uma "Resolução CNE/CP nº 2/2025" que não foi identificada.
+
 ## Histórico de revisões
 
 **v2, 13/11/2026.** Incorpora duas revisões independentes.

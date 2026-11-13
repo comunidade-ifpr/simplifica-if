@@ -29,6 +29,16 @@ Procedimento recomendado:
 6. Para PPCs, use `base-conhecimento/institucional/ifpr/ppcs/index.json`, os índices de seções em `base-conhecimento/institucional/ifpr/ppcs/secoes/` e depois abra o Markdown completo do PPC antes de redigir resposta substantiva.
 7. Use busca online apenas quando o dado necessário não existir na base local, quando a pergunta exigir atualização externa ou quando for preciso confirmar informação em fonte oficial. Ao usar fonte externa, deixe isso explícito.
 
+Cada norma tem um ID canônico derivado do ato (`id` no front matter e no `manifest.json`), como `br/cne-cp/res/2026/2`, `br/lei/1996/9394` ou `ifpr/consup/res/2024/190`. Normas citadas sem texto na base (stubs) e referências `externo:` ficam em `base-conhecimento/normas/stubs.yaml`. Para identificar uma citação ou achar quem cita uma norma, use a CLI `kb` (requer `bun install` na raiz):
+
+```bash
+bun run kb resolver "Resolução CNE/CP nº 1/2021, art. 20"   # ID canônico, dispositivo, regra e confiança
+bun run kb citacoes br/cne-cp/res/2021/1 --json              # PPCs convertidos que citam a norma, com linha, trecho e regra
+bun run kb adequacao-art71                                   # cursos técnicos em oferta e a DCN que cada PPC cita
+```
+
+Confira a `regra` e a `confianca` das citações: as regras de confiança menor (`dcnept-2021-orgao-trocado`, `orgao-ausente-registro`, `orgao-no-documento`) completam ou corrigem citações incompletas dos PPCs e devem ser conferidas no trecho antes de afirmar algo substantivo. O resultado aponta o arquivo; abra o Markdown da norma ou do PPC antes de responder.
+
 PPCs servem como exemplos institucionais observados, não como fonte normativa obrigatória. Em elaboração, revisão ou comparação de PPC, combine PPCs similares com normas vigentes da base e, para cursos técnicos, com o CNCT.
 
 ## Curadoria e operação
@@ -73,6 +83,8 @@ Depois de alterar um JSON Schema em `base-conhecimento/schemas/`, regenere os ti
 bun run scripts/gerar_tipos_schemas.ts
 bun run typecheck
 ```
+
+Ao incluir uma norma em `base-conhecimento/normas/`, preencha o `id` conforme [Padrão de front matter](base-conhecimento/docs/padrao-front-matter-legislacao.md) e retire de `normas/stubs.yaml` o stub correspondente, se houver.
 
 Depois de alterar normas, catálogos, PPCs convertidos ou manifestos locais, rode:
 
