@@ -54,8 +54,8 @@
         "markdown_path": "institucional/ifpr/ppcs/paranavai/engenharia-eletrica.md",
         "metadados": {
           "ano_documento": {
-            "ano": 2014,
-            "trecho_fonte": "Ano do documento registrado no Notion: 2014",
+            "ano": 2022,
+            "trecho_fonte": "Ano do documento registrado no Notion: 2022",
             "status_curadoria": "precisa_revisao"
           },
           "vagas": {
@@ -83,8 +83,8 @@
         "markdown_path": "institucional/ifpr/ppcs/paranavai/especializacao-em-gestao-da-qualidade-e-tecnologia-de-alimentos.md",
         "metadados": {
           "ano_documento": {
-            "ano": 2014,
-            "trecho_fonte": "Ano do documento registrado no Notion: 2014",
+            "ano": 2021,
+            "trecho_fonte": "Ano do documento registrado no Notion: 2021",
             "status_curadoria": "precisa_revisao"
           },
           "vagas": {
@@ -155,7 +155,14 @@
         "conversao": {
           "status": "convertido"
         },
-        "markdown_path": "institucional/ifpr/ppcs/paranavai/tecnico-em-agroindustria.md"
+        "markdown_path": "institucional/ifpr/ppcs/paranavai/tecnico-em-agroindustria.md",
+        "metadados": {
+          "ano_documento": {
+            "ano": 2016,
+            "trecho_fonte": "Ano do documento registrado no Notion: 2016",
+            "status_curadoria": "pendente"
+          }
+        }
       },
       "sei": {
         "processos": [
@@ -250,6 +257,12 @@
         },
         "markdown_path": "institucional/ifpr/ppcs/paranavai/tecnico-em-informatica.md",
         "metadados": {
+          "ano_documento": {
+            "ano": 2015,
+            "trecho_fonte": "Ano do documento registrado no Notion: 2015",
+            "status_curadoria": "revisado",
+            "revisado_em": "2026-05-20"
+          },
           "vagas": {
             "quantidade": 40,
             "trecho_fonte": "Quantidade de Vagas : 20 (mínimo) a 40 (máximo)",

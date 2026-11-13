@@ -419,6 +419,12 @@
         },
         "markdown_path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.md",
         "metadados": {
+          "ano_documento": {
+            "ano": 2019,
+            "trecho_fonte": "Ano do documento registrado no Notion: 2019",
+            "status_curadoria": "revisado",
+            "revisado_em": "2026-05-20"
+          },
           "vagas": {
             "quantidade": 30,
             "trecho_fonte": "Número máximo de vagas do curso: 30 Número mínimo de vagas do curso: 20",
@@ -540,8 +546,8 @@
         "markdown_path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnologia-em-gestao-comercial.md",
         "metadados": {
           "ano_documento": {
-            "ano": 2019,
-            "trecho_fonte": "Ano do documento registrado no Notion: 2019",
+            "ano": 2023,
+            "trecho_fonte": "Ano do documento registrado no Notion: 2023",
             "status_curadoria": "precisa_revisao"
           },
           "vagas": {

@@ -2,7 +2,7 @@
   "title": "Projetos Pedagógicos de Curso do IFPR",
   "tipo": "indice_ppcs",
   "versao": 1,
-  "atualizado_em": "2026-11-09",
+  "atualizado_em": "2026-11-13",
   "total_itens": 202,
   "secoes": {
     "preview_limite": 500,
@@ -139,7 +139,7 @@
       "path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnologia-em-gestao-comercial.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2019,
+      "ano_documento": 2023,
       "vagas": 40
     },
     {
@@ -265,6 +265,7 @@
       "path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.md",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "ano_documento": 2019,
       "vagas": 30
     },
     {
@@ -296,7 +297,7 @@
       "path": "institucional/ifpr/ppcs/astorga/licenciatura-em-pedagogia.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2023,
+      "ano_documento": 2025,
       "vagas": 20
     },
     {
@@ -344,7 +345,7 @@
       "path": "institucional/ifpr/ppcs/barracao/tecnologia-em-comercio-exterior.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2008,
+      "ano_documento": 2023,
       "vagas": 40
     },
     {
@@ -392,7 +393,7 @@
       "path": "institucional/ifpr/ppcs/campo-largo/administracao.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2010,
+      "ano_documento": 2022,
       "vagas": 40
     },
     {
@@ -408,7 +409,7 @@
       "path": "institucional/ifpr/ppcs/campo-largo/administracao-proeja.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2017,
+      "ano_documento": 2018,
       "vagas": 40
     },
     {
@@ -440,7 +441,7 @@
       "path": "institucional/ifpr/ppcs/campo-largo/automacao-industrial.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2010,
+      "ano_documento": 2019,
       "vagas": 40
     },
     {
@@ -456,7 +457,7 @@
       "path": "institucional/ifpr/ppcs/campo-largo/bacharelado-em-engenharia-eletrica.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2022,
+      "ano_documento": 2023,
       "vagas": 40
     },
     {
@@ -504,7 +505,7 @@
       "path": "institucional/ifpr/ppcs/campo-largo/tecnologia-em-processos-gerenciais.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2019,
+      "ano_documento": 2020,
       "vagas": 40
     },
     {
@@ -520,7 +521,7 @@
       "path": "institucional/ifpr/ppcs/campo-largo/licenciatura-em-matematica.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2018,
+      "ano_documento": 2019,
       "vagas": 40
     },
     {
@@ -712,7 +713,7 @@
       "path": "institucional/ifpr/ppcs/cascavel/tecnico-em-informatica.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2013,
+      "ano_documento": 2017,
       "vagas": 40
     },
     {
@@ -728,7 +729,7 @@
       "path": "institucional/ifpr/ppcs/cascavel/tecnico-em-quimica.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2015,
+      "ano_documento": 2021,
       "vagas": 40
     },
     {
@@ -856,6 +857,7 @@
       "path": "institucional/ifpr/ppcs/colombo/tecnico-em-alimentos-integrado-ao-ensino-medio.md",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "ano_documento": 2017,
       "vagas": 40
     },
     {
@@ -1477,7 +1479,7 @@
       "path": "institucional/ifpr/ppcs/foz-do-iguacu/engenharia-de-aquicultura.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2011,
+      "ano_documento": 2022,
       "vagas": 40
     },
     {
@@ -1493,7 +1495,7 @@
       "path": "institucional/ifpr/ppcs/foz-do-iguacu/especializacao-em-ensino-de-ciencias-e-matematica.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2023,
+      "ano_documento": 2025,
       "vagas": 30
     },
     {
@@ -1541,7 +1543,7 @@
       "path": "institucional/ifpr/ppcs/foz-do-iguacu/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2013,
+      "ano_documento": 2022,
       "vagas": 40
     },
     {
@@ -1573,7 +1575,7 @@
       "path": "institucional/ifpr/ppcs/foz-do-iguacu/tecnico-em-aquicultura.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2008,
+      "ano_documento": 2017,
       "vagas": 40
     },
     {
@@ -1605,7 +1607,7 @@
       "path": "institucional/ifpr/ppcs/foz-do-iguacu/tecnico-em-edificacoes-3.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2014,
+      "ano_documento": 2016,
       "vagas": 40
     },
     {
@@ -1685,7 +1687,7 @@
       "path": "institucional/ifpr/ppcs/irati/bacharelado-em-agronomia.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2008,
+      "ano_documento": 2023,
       "vagas": 40
     },
     {
@@ -1717,7 +1719,7 @@
       "path": "institucional/ifpr/ppcs/irati/licenciatura-em-quimica.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2017
+      "ano_documento": 2025
     },
     {
       "id": "irati/tecnologia-em-analise-e-desenvolvimento-de-sistemas",
@@ -1763,7 +1765,7 @@
       "path": "institucional/ifpr/ppcs/irati/tecnico-em-informatica.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2022,
+      "ano_documento": 2025,
       "vagas": 80
     },
     {
@@ -1779,7 +1781,7 @@
       "path": "institucional/ifpr/ppcs/ivaipora/bacharelado-em-sistemas-de-informacao.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2008,
+      "ano_documento": 2025,
       "vagas": 40
     },
     {
@@ -1795,7 +1797,7 @@
       "path": "institucional/ifpr/ppcs/ivaipora/engenharia-agronomica.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2018,
+      "ano_documento": 2022,
       "vagas": 40
     },
     {
@@ -1811,7 +1813,7 @@
       "path": "institucional/ifpr/ppcs/ivaipora/licenciatura-em-fisica.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2008,
+      "ano_documento": 2023,
       "vagas": 36
     },
     {
@@ -1827,7 +1829,7 @@
       "path": "institucional/ifpr/ppcs/ivaipora/tecnologia-em-agroecologia.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 1936,
+      "ano_documento": 2016,
       "vagas": 40
     },
     {
@@ -1843,7 +1845,7 @@
       "path": "institucional/ifpr/ppcs/ivaipora/tecnico-em-agroecologia-integrado.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2014,
+      "ano_documento": 2016,
       "vagas": 35
     },
     {
@@ -1891,7 +1893,7 @@
       "path": "institucional/ifpr/ppcs/ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2011,
+      "ano_documento": 2023,
       "vagas": 40
     },
     {
@@ -1907,7 +1909,7 @@
       "path": "institucional/ifpr/ppcs/jacarezinho/educacao-sociedade-e-tecnologia.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2020,
+      "ano_documento": 2025,
       "vagas": 50
     },
     {
@@ -1923,7 +1925,7 @@
       "path": "institucional/ifpr/ppcs/jacarezinho/engenharia-de-controle-e-automacao.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2017,
+      "ano_documento": 2022,
       "vagas": 40
     },
     {
@@ -1939,7 +1941,7 @@
       "path": "institucional/ifpr/ppcs/jacarezinho/licenciatura-em-quimica.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2018
+      "ano_documento": 2022
     },
     {
       "id": "jacarezinho/tecnologia-em-sistemas-para-internet",
@@ -1954,7 +1956,7 @@
       "path": "institucional/ifpr/ppcs/jacarezinho/tecnologia-em-sistemas-para-internet.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2014,
+      "ano_documento": 2022,
       "vagas": 40
     },
     {
@@ -1970,7 +1972,7 @@
       "path": "institucional/ifpr/ppcs/jacarezinho/tecnico-em-alimentos.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2013,
+      "ano_documento": 2019,
       "vagas": 40
     },
     {
@@ -2050,7 +2052,7 @@
       "path": "institucional/ifpr/ppcs/jacarezinho/tecnico-em-teatro.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2012,
+      "ano_documento": 2019,
       "vagas": 30
     },
     {
@@ -2066,7 +2068,7 @@
       "path": "institucional/ifpr/ppcs/jaguariaiva/especializacao-em-educacao-e-tecnologia.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2016,
+      "ano_documento": 2023,
       "vagas": 30
     },
     {
@@ -2082,7 +2084,7 @@
       "path": "institucional/ifpr/ppcs/jaguariaiva/tecnologo-em-gestao-da-qualidade.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2018,
+      "ano_documento": 2023,
       "vagas": 40
     },
     {
@@ -2098,7 +2100,7 @@
       "path": "institucional/ifpr/ppcs/jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2018,
+      "ano_documento": 2022,
       "vagas": 40
     },
     {
@@ -2114,7 +2116,7 @@
       "path": "institucional/ifpr/ppcs/jaguariaiva/tecnico-em-biotecnologia-integrado-ao-ensino-medio.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2014,
+      "ano_documento": 2022,
       "vagas": 40
     },
     {
@@ -2130,7 +2132,7 @@
       "path": "institucional/ifpr/ppcs/londrina/licenciatura-em-ciencias-biologicas-2.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2014,
+      "ano_documento": 2022,
       "vagas": 40
     },
     {
@@ -2146,7 +2148,7 @@
       "path": "institucional/ifpr/ppcs/londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2024,
+      "ano_documento": 2025,
       "vagas": 40
     },
     {
@@ -2162,7 +2164,7 @@
       "path": "institucional/ifpr/ppcs/londrina/tecnico-em-biotecnologia-integrado-ao-ensino-medio.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2001,
+      "ano_documento": 2017,
       "vagas": 40
     },
     {
@@ -2178,7 +2180,7 @@
       "path": "institucional/ifpr/ppcs/londrina/tecnico-em-enfermagem.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2011,
+      "ano_documento": 2022,
       "vagas": 30
     },
     {
@@ -2194,7 +2196,7 @@
       "path": "institucional/ifpr/ppcs/londrina/tecnico-em-informatica-integrado-ao-ensino-medio.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2001,
+      "ano_documento": 2017,
       "vagas": 40
     },
     {
@@ -2210,7 +2212,7 @@
       "path": "institucional/ifpr/ppcs/londrina/tecnico-em-massoterapia.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2011,
+      "ano_documento": 2016,
       "vagas": 40
     },
     {
@@ -2226,7 +2228,7 @@
       "path": "institucional/ifpr/ppcs/londrina/tecnico-em-protese-dentaria-2.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2009,
+      "ano_documento": 2013,
       "vagas": 40
     },
     {
@@ -2242,7 +2244,7 @@
       "path": "institucional/ifpr/ppcs/londrina/tecnico-em-saude-bucal.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2011,
+      "ano_documento": 2017,
       "vagas": 30
     },
     {
@@ -2258,7 +2260,7 @@
       "path": "institucional/ifpr/ppcs/palmas/agronomia.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2008,
+      "ano_documento": 2022,
       "vagas": 40
     },
     {
@@ -2450,7 +2452,7 @@
       "path": "institucional/ifpr/ppcs/paranagua/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2014
+      "ano_documento": 2025
     },
     {
       "id": "paranagua/tecnologia-em-gestao-ambiental",
@@ -2465,7 +2467,7 @@
       "path": "institucional/ifpr/ppcs/paranagua/tecnologia-em-gestao-ambiental.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2017,
+      "ano_documento": 2022,
       "vagas": 40
     },
     {
@@ -2561,7 +2563,7 @@
       "path": "institucional/ifpr/ppcs/paranavai/engenharia-eletrica.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2014,
+      "ano_documento": 2022,
       "vagas": 40
     },
     {
@@ -2593,7 +2595,7 @@
       "path": "institucional/ifpr/ppcs/paranavai/especializacao-em-gestao-da-qualidade-e-tecnologia-de-alimentos.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2014,
+      "ano_documento": 2021,
       "vagas": 40
     },
     {
@@ -2624,7 +2626,8 @@
       "fonte_pdf": "https://ifpr.edu.br/paranavai/wp-content/uploads/sites/21/2017/05/PPC_Integrado_Agroindustria_enviadoPROENS_12-01-2017_curso2017.pdf",
       "path": "institucional/ifpr/ppcs/paranavai/tecnico-em-agroindustria.md",
       "modalidade": "presencial",
-      "situacao": "ativo"
+      "situacao": "ativo",
+      "ano_documento": 2016
     },
     {
       "id": "paranavai/tecnico-em-eletromecanica-subsequente",
@@ -2655,6 +2658,7 @@
       "path": "institucional/ifpr/ppcs/paranavai/tecnico-em-informatica.md",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "ano_documento": 2015,
       "vagas": 40
     },
     {
@@ -2701,7 +2705,7 @@
       "path": "institucional/ifpr/ppcs/pinhais/bacharelado-em-ciencia-da-computacao.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2021,
+      "ano_documento": 2025,
       "vagas": 40
     },
     {
@@ -2749,7 +2753,7 @@
       "path": "institucional/ifpr/ppcs/pinhais/tecnico-em-informatica-integrado-ao-ensino-medio.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2014,
+      "ano_documento": 2018,
       "vagas": 40
     },
     {
@@ -2765,7 +2769,7 @@
       "path": "institucional/ifpr/ppcs/pitanga/licenciatura-em-pedagogia.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2017,
+      "ano_documento": 2022,
       "vagas": 20
     },
     {
@@ -2781,7 +2785,7 @@
       "path": "institucional/ifpr/ppcs/pitanga/licenciatura-em-quimica.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2017,
+      "ano_documento": 2022,
       "vagas": 40
     },
     {
@@ -2813,7 +2817,7 @@
       "path": "institucional/ifpr/ppcs/pitanga/tecnico-em-alimentos.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2022,
+      "ano_documento": 2023,
       "vagas": 40
     },
     {
@@ -2909,7 +2913,7 @@
       "path": "institucional/ifpr/ppcs/telemaco-borba/engenharia-eletrica.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2018,
+      "ano_documento": 2019,
       "vagas": 40
     },
     {
@@ -2925,7 +2929,7 @@
       "path": "institucional/ifpr/ppcs/telemaco-borba/licenciatura-em-fisica.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2013,
+      "ano_documento": 2022,
       "vagas": 40
     },
     {
@@ -2941,7 +2945,7 @@
       "path": "institucional/ifpr/ppcs/telemaco-borba/tecnologia-em-manutencao-industrial.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2019,
+      "ano_documento": 2025,
       "vagas": 40
     },
     {
@@ -2957,7 +2961,7 @@
       "path": "institucional/ifpr/ppcs/telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2019,
+      "ano_documento": 2025,
       "vagas": 40
     },
     {
@@ -2973,7 +2977,7 @@
       "path": "institucional/ifpr/ppcs/telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2012,
+      "ano_documento": 2025,
       "vagas": 40
     },
     {
@@ -3020,7 +3024,7 @@
       "path": "institucional/ifpr/ppcs/umuarama/bacharelado-em-arquitetura-e-urbanismo.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2008,
+      "ano_documento": 2023,
       "vagas": 40
     },
     {
@@ -3036,7 +3040,7 @@
       "path": "institucional/ifpr/ppcs/umuarama/licenciatura-em-ciencias-biologicas.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2008,
+      "ano_documento": 2022,
       "vagas": 40
     },
     {
@@ -3052,7 +3056,7 @@
       "path": "institucional/ifpr/ppcs/umuarama/licenciatura-em-quimica.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2018,
+      "ano_documento": 2023,
       "vagas": 6
     },
     {
@@ -3068,7 +3072,7 @@
       "path": "institucional/ifpr/ppcs/umuarama/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2017,
+      "ano_documento": 2022,
       "vagas": 40
     },
     {
@@ -3084,7 +3088,7 @@
       "path": "institucional/ifpr/ppcs/umuarama/tecnologia-em-gestao-do-agronegocio.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2008,
+      "ano_documento": 2023,
       "vagas": 40
     },
     {
@@ -3148,7 +3152,7 @@
       "path": "institucional/ifpr/ppcs/uniao-da-vitoria/bacharelado-em-agronomia.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2019,
+      "ano_documento": 2022,
       "vagas": 40
     },
     {
@@ -3212,7 +3216,7 @@
       "path": "institucional/ifpr/ppcs/uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja.md",
       "modalidade": "presencial",
       "situacao": "ativo",
-      "ano_documento": 2014,
+      "ano_documento": 2016,
       "vagas": 40
     },
     {

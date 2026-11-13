@@ -194,6 +194,12 @@
         },
         "markdown_path": "institucional/ifpr/ppcs/colombo/tecnico-em-alimentos-integrado-ao-ensino-medio.md",
         "metadados": {
+          "ano_documento": {
+            "ano": 2017,
+            "trecho_fonte": "Ano do documento registrado no Notion: 2017",
+            "status_curadoria": "revisado",
+            "revisado_em": "2026-05-20"
+          },
           "vagas": {
             "quantidade": 40,
             "trecho_fonte": "Número máximo de vagas do curso : 40 vagas; Número mínimo de vagas do curso: 20 vagas",
