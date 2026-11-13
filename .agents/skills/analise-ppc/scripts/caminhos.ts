@@ -20,6 +20,8 @@ export type CaminhosAnalise = {
   contratosDir: string;
   indicePath: string;
   mapaFichasPath: string;
+  promptsDir: string;
+  outputDir: string;
 };
 
 function ehDiretorio(caminho: string): boolean {
@@ -52,6 +54,8 @@ export function caminhosDaSkill(appDir: string): CaminhosAnalise {
     contratosDir: path.join(baseAnaliseDir, "contratos"),
     indicePath: path.join(baseAnaliseDir, "indice.json"),
     mapaFichasPath: path.join(baseAnaliseDir, "mapa-fichas.md"),
+    promptsDir: path.join(app, "prompts"),
+    outputDir: path.join(app, "output"),
   };
 }
 

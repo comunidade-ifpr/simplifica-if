@@ -3,6 +3,11 @@ Normalização determinística do Markdown extraído de PPCs.
 
 Responsável por limpar ruídos recorrentes da conversão bruta do DOCX
 antes da análise auditável e da geração de evidências por linha.
+
+O PPC.md canônico da rodada é normalizado pelo porte em TypeScript
+(`scripts/normalizador-markdown.ts`, trilha T1). Esta versão continua só para
+o Markdown gravado pela própria conversão DOCX (`markdown_writer.py`) até a
+trilha T3; as duas precisam continuar iguais.
 """
 
 from __future__ import annotations

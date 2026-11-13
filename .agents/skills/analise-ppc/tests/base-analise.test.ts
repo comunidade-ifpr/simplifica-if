@@ -201,12 +201,20 @@ describe("entrypoint analise_ppc.ts", () => {
     expect(executar("gerar-mapa", "--check")).toMatchObject({ codigo: 0, saida: `OK: ${caminhos.mapaFichasPath}\n` });
   });
 
-  test("subcomando ainda em Python é delegado com argumentos e código de saída", () => {
-    const ajuda = executar("montar-grupo-avulso", "--help");
+  test("gerar-relatorio-html ainda é delegado ao Python com argumentos e código de saída", () => {
+    const ajuda = executar("gerar-relatorio-html", "--help");
     expect(ajuda.codigo).toBe(0);
-    expect(ajuda.saida).toContain("analise_ppc.py montar-grupo-avulso");
-    const semArgumento = executar("validar-resultados");
+    expect(ajuda.saida).toContain("analise_ppc.py gerar-relatorio-html");
+    const semArgumento = executar("gerar-relatorio-html");
     expect(semArgumento.codigo).toBe(2);
     expect(semArgumento.erro).toContain("--rodada-dir");
+  });
+
+  test("subcomandos em TypeScript exigem as opções obrigatórias", () => {
+    for (const subcomando of ["validar-resultados", "montar-grupos-subagents", "montar-grupo-avulso"]) {
+      const resultado = executar(subcomando);
+      expect(resultado.codigo).not.toBe(0);
+      expect(resultado.erro).toContain("--rodada-dir");
+    }
   });
 });

@@ -62,3 +62,5 @@ bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts validar-base
 bun test ./.agents/skills/analise-ppc
 python3 -m pytest .agents/skills/analise-ppc/tests
 ```
+
+O `bun test` cobre a validação da base e a orquestração da análise, em TypeScript; o `pytest` cobre só o que ainda é Python (relatório HTML, publicação no Surge e conversão DOCX).

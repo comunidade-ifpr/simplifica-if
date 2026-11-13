@@ -544,6 +544,26 @@ Em aberto:
   - há duas Instruções Normativas do IFPR nº 1/2021 (26/07, curricularização da extensão, e 19/08, bibliotecas), citadas muitas vezes sem órgão;
   - a ficha `ct-ident-15` cita uma "Resolução CNE/CP nº 2/2025" que não foi identificada.
 
+**Trilha T, passo T1 concluído em 13/11/2026** (branch `worktree-agent-ac5acad58383e32fc`).
+
+- O que foi portado:
+  - `common.py`, `cnct_catalogo.py`, `subagents.py`, `preparar_documento.py` e `markdown_normalizer.py` viraram `rodada.ts`, `cnct-catalogo.ts`, `subagents.ts`, `preparar-documento.ts` e `normalizador-markdown.ts`;
+  - a validação de resultados de `gerar_relatorio_html.py` virou `resultados.ts`;
+  - o `analise_ppc.ts` executa em TypeScript `preparar-documento`, `montar-grupos-subagents`, `preparar-prompts-subagents`, `montar-grupo-avulso`, `mesclar-resultados-avulsos` e `validar-resultados`.
+- Kit de paridade novo em `packages/kb/src/python/`, testado contra o Python 3.14: `SequenceMatcher` com autojunk, JSON do Python (`1.0` como `FloatPy`, inteiros grandes, `NaN`, ordem de chaves numéricas, `sort_keys`), `repr` e `round` de float, `casefold` com tabela gerada do Unicode 16, `isdigit`, `split()` e regex com `\s`, `\d`, `\w`, `\b`, `.` e `$` do Python.
+- Relógio: `ANALISE_PPC_AGORA` fixa o nome da rodada, `criado_em` e o `data_conversao` da conversão DOCX; `ANALISE_PPC_PYTHON` escolhe o interpretador.
+- Diferencial, com Python 3.14 + `python-docx` 1.2.0, sem `rapidfuzz`:
+  - 30 cenários completos: as 2 fixtures, 7 PPCs técnicos reais, 20 Markdowns sintéticos (os casos de `test_flow.py`, CRLF, BOM, `ß`, extensão `.MD`, vazio, campus ambíguo) e 1 DOCX sintético gerado com `python-docx`;
+  - cada cenário roda a cadeia inteira, 41 chamadas de `validar-resultados` (34 negativas), 6 mesclas (3 negativas) e um grupo avulso com ficha inexistente;
+  - mais `preparar-documento` + `montar-grupos-subagents` nos 202 PPCs da base;
+  - resultado: 8.713 comparações (arquivos byte a byte, stdout e código de saída) idênticas e nenhuma diferença, em `America/Sao_Paulo`; as fixtures também em `UTC` e `Asia/Kolkata`.
+- Divergências aceitas, todas em caminhos de erro: o Python imprime traceback, e o TypeScript, uma linha `Tipo: mensagem`; o texto de arquivo ausente difere (`ENOENT` em vez de `[Errno 2]`); erros de linha de comando seguem o `commander` (código 1), e não o `argparse` (código 2). Limites conhecidos, sem ocorrência nos fluxos portados: inteiros acima de 2⁵³ são preservados na leitura e na escrita (como `bigint`), mas não em aritmética; e chaves numéricas acrescentadas por código a objetos lidos não seguem a ordem de inserção.
+- Python que continua:
+  - `gerar_relatorio_html.py`, `publicar_surge.py` e `analise_ppc.py`, reduzido ao `gerar-relatorio-html` (T2);
+  - `common.py`, reduzido ao que o relatório usa (T2);
+  - `conversao_docx/` e o novo `converter_docx.py`, chamado por subprocesso para entrada `.docx` (T3). O `markdown_normalizer.py` fica só para a conversão, igual ao porte.
+- Testes: `orquestracao.test.ts` (51 casos) porta 36 testes de `test_flow.py`; o `pytest` ficou com 28 casos (relatório, Surge e extratores DOCX), e o `test_flow.py` cria a rodada pelo entrypoint TypeScript, exercitando a cadeia mista.
+
 ## Histórico de revisões
 
 **v2, 13/11/2026.** Incorpora duas revisões independentes.
