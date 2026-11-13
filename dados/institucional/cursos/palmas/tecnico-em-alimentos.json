@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/palmas/about/nossos-cursos/curso-tecnico-presencial/tecnico-em-alimentos/",
+  "cnct_id": "cnct:tecnico-em-alimentos",
   "suap": {
     "id": 47,
     "codigo": "PAL001",
@@ -31,6 +32,7 @@
     "vagas": "40",
     "trecho_vagas": "Vagas totais (anual) 40",
     "periodicidade_vagas": "anual",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

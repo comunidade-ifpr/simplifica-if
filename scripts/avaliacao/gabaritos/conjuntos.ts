@@ -8,7 +8,7 @@ import { compararTexto, normalizarTexto } from "../normalizar.ts";
 import type { GabaritoConjunto, Universos } from "../esquema.ts";
 import { idNorma, itemCampus, itemCurso, itensNorma } from "../universos.ts";
 import { type PpcCitante, ppcsQueCitam } from "@simplifica-if/kb/ppcs/citacoes";
-import { cnctDoCurso, type Fontes } from "./fontes.ts";
+import { cnctDoCadastro, type Fontes } from "./fontes.ts";
 
 /** Situações de curso que contam como "autorizado e em oferta" (art. 71 da Res. CNE/CP nº 2/2026). */
 export const SITUACOES_EM_OFERTA = new Set(["ativo", "em_oferta"]);
@@ -48,13 +48,13 @@ function q01(fontes: Fontes): GabaritoConjunto {
     (curso) =>
       curso.forma_oferta === "integrado" &&
       SITUACOES_EM_OFERTA.has(curso.situacao ?? "") &&
-      cnctDoCurso(curso.nome, fontes.cnct)?.id === "tecnico-em-informatica",
+      curso.cnct_id === "cnct:tecnico-em-informatica",
   );
   return {
     pergunta: "Q01",
     gerado_por: ARQUIVO_GERADOR,
     criterio:
-      "Cursos de dados/institucional/ com forma_oferta=integrado, situação ativo/em_oferta e nome que casa com a habilitação 'Técnico em Informática' do CNCT (heurística provisória até o cnct_id da fase 3). Detalhes trazem o ano do PPC e a carga horária da matriz no SUAP, como referência para curadoria.",
+      "Cursos de dados/institucional/ com forma_oferta=integrado, situação ativo/em_oferta e cnct_id=cnct:tecnico-em-informatica. Detalhes trazem o ano do PPC e a carga horária da matriz no SUAP, como referência para curadoria.",
     universo: "curso",
     avaliar_precisao: true,
     esperado: ordenar(cursos.map((curso) => `curso:${chave(curso)}`)),
@@ -147,12 +147,13 @@ function q04(fontes: Fontes): GabaritoConjunto {
 
 /** Q05: PPCs de Técnico em Agropecuária e se têm seção própria de acompanhamento de egressos. */
 function q05(fontes: Fontes): GabaritoConjunto {
-  const ppcs = fontes.ppcs.filter((ppc) => cnctDoCurso(ppc.curso_nome, fontes.cnct)?.id === "tecnico-em-agropecuaria");
+  const cnctPorCurso = new Map(fontes.dados.cursos.map((curso) => [chave(curso), curso.cnct_id]));
+  const ppcs = fontes.ppcs.filter((ppc) => cnctPorCurso.get(ppc.id) === "cnct:tecnico-em-agropecuaria");
   return {
     pergunta: "Q05",
     gerado_por: ARQUIVO_GERADOR,
     criterio:
-      "PPCs do índice cujo curso casa com a habilitação 'Técnico em Agropecuária' do CNCT. Detalhes: títulos de seção que tratam de acompanhamento de egresso.",
+      "PPCs do índice cujo curso tem cnct_id=cnct:tecnico-em-agropecuaria. Detalhes: títulos de seção que tratam de acompanhamento de egresso.",
     universo: "curso",
     avaliar_precisao: true,
     esperado: ordenar(ppcs.map((ppc) => `curso:${ppc.id}`)),
@@ -172,15 +173,23 @@ function q05(fontes: Fontes): GabaritoConjunto {
 /** Q08: campi com oferta de curso técnico do eixo Informação e Comunicação no Processo Seletivo 2026. */
 function q08(fontes: Fontes): GabaritoConjunto {
   const cursoPorChave = new Map(fontes.dados.cursos.map((curso) => [chave(curso), curso]));
-  const turnos = new Map<string, Array<{ curso: string; turno: string; tipo_oferta: string }>>();
+  const turnos = new Map<
+    string,
+    Array<{ curso: string; turno: string; turno_original: string; tipo_oferta: string }>
+  >();
   for (const oferta of fontes.dados.ofertas) {
     if (!oferta.processos.includes("processo-seletivo-2026")) continue;
     for (const chaveCurso of oferta.cursos ?? []) {
       const curso = cursoPorChave.get(chaveCurso);
-      if (!curso || cnctDoCurso(curso.nome, fontes.cnct)?.eixo_tecnologico !== "Informação e Comunicação") continue;
+      if (!curso || cnctDoCadastro(curso, fontes.cnct)?.eixo_tecnologico !== "Informação e Comunicação") continue;
       const campus = `campus:${curso.campus_id}`;
       const lista = turnos.get(campus) ?? [];
-      lista.push({ curso: `curso:${chaveCurso}`, turno: oferta.turno ?? "", tipo_oferta: oferta.tipo_oferta });
+      lista.push({
+        curso: `curso:${chaveCurso}`,
+        turno: oferta.turno ?? "",
+        turno_original: oferta.turno_original ?? "",
+        tipo_oferta: oferta.tipo_oferta,
+      });
       turnos.set(campus, lista);
     }
   }
@@ -188,7 +197,7 @@ function q08(fontes: Fontes): GabaritoConjunto {
     pergunta: "Q08",
     gerado_por: ARQUIVO_GERADOR,
     criterio:
-      "Campi das ofertas de dados/institucional/ofertas/processo-seletivo-2026/ cujo curso casa, pelo nome, com habilitação do eixo 'Informação e Comunicação' do CNCT. Detalhes: curso, turno (grafia do edital) e tipo de oferta.",
+      "Campi das ofertas de dados/institucional/ofertas/processo-seletivo-2026/ cujo curso tem cnct_id de habilitação do eixo 'Informação e Comunicação' do CNCT. Detalhes: curso, turno padronizado, grafia do edital (turno_original) e tipo de oferta.",
     universo: "campus",
     avaliar_precisao: true,
     esperado: ordenar(turnos.keys()),

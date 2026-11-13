@@ -102,9 +102,18 @@ function normalizarDenominacao(nome: string): string {
     .trim();
 }
 
+/** Habilitação do CNCT registrada no curso (`cnct_id`), ou `undefined` sem vínculo. */
+export function cnctDoCadastro(
+  curso: { cnct_id?: string | undefined },
+  cnct: readonly ItemCnct[],
+): ItemCnct | undefined {
+  return curso.cnct_id ? cnct.find((item) => `cnct:${item.id}` === curso.cnct_id) : undefined;
+}
+
 /**
- * Habilitação do CNCT pelo nome do curso. Heurística provisória até existir `cnct_id` no curso
- * (fase 3): tira "PROEJA", "integrado ao ensino médio" e prefixa "técnico em" quando falta.
+ * Habilitação do CNCT proposta pelo nome do curso: tira "PROEJA", "integrado ao ensino médio" e
+ * prefixa "técnico em" quando falta. Serviu para propor o `cnct_id` dos cursos (fase 3) e serve
+ * para propor o de cursos novos; os gabaritos usam o `cnct_id` cadastrado (`cnctDoCadastro`).
  */
 export function cnctDoCurso(nome: string, cnct: readonly ItemCnct[]): ItemCnct | undefined {
   let chave = normalizarDenominacao(nome)

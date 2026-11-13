@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-tecnicos/eletromecanica-integradoensino-medio/informacoes/",
+  "cnct_id": "cnct:tecnico-em-eletromecanica",
   "suap": {
     "id": 2,
     "codigo": "AC005",
@@ -30,6 +31,7 @@
     "ano_documento": 2013,
     "vagas": "20-40",
     "trecho_vagas": "NÚMERO DE VAGAS: CARGA HORÁRIA TOTAL – HORAS RELÓGIO: 3331h/r MÍNIMO 20 MÁXIMO 40 CARGA HORÁRIA DE ESTÁGIO: Não obrigatório PARCERIA COM OUTRAS ESPECIFICAR (anex",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

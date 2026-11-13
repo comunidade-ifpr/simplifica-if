@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/colombo/tecnicos-subsequentes/tecnico-em-administracao/",
+  "cnct_id": "cnct:tecnico-em-administracao",
   "suap": {
     "matrizes": {
       "urls": []
@@ -19,7 +20,9 @@
     "vagas": "20-40",
     "trecho_vagas": "Número máximo de vagas do curso: 40 vagas; Número mínimo de vagas do curso: 20 vagas",
     "periodicidade_vagas": "não especificada",
-    "curadoria": "Revisado",
-    "data_curadoria": "2026-05-11"
+    "curadoria_ano": "Revisado",
+    "data_curadoria_ano": "2026-05-11",
+    "curadoria_vagas": "Revisado",
+    "data_curadoria_vagas": "2026-05-11"
   }
 }

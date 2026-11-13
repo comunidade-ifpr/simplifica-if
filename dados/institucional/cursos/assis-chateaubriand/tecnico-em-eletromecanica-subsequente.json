@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-subsequentes/eletromecanica/informacoes/",
+  "cnct_id": "cnct:tecnico-em-eletromecanica",
   "suap": {
     "id": 174,
     "codigo": "AC006",
@@ -28,6 +29,7 @@
     "markdown_path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-eletromecanica-subsequente.md",
     "vagas": "40",
     "trecho_vagas": "RÁRIA TOTAL: 1.360h NÚMERO DE VAGAS: MÍNIMO MÁXIMO 20 40 3. ESTRUTURA E FUNCIONAMENTO 3.1 Justificativa da oferta do Curso É inegável o",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

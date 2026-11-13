@@ -18,7 +18,9 @@
     "ano_documento": 2025,
     "vagas": "20-30",
     "trecho_vagas": "Vagas ofertadas: a) Mínimo: 20 vagas; b) Máximo: 30 vagas",
-    "curadoria": "Revisado",
-    "data_curadoria": "2026-05-11"
+    "curadoria_ano": "Revisado",
+    "data_curadoria_ano": "2026-05-11",
+    "curadoria_vagas": "Revisado",
+    "data_curadoria_vagas": "2026-05-11"
   }
 }

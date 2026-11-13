@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-subsequentes/tecnico-em-agropecuaria/",
+  "cnct_id": "cnct:tecnico-em-agropecuaria",
   "suap": {
     "id": 172,
     "codigo": "AC002",
@@ -29,6 +30,7 @@
     "ano_documento": 2023,
     "vagas": "24-40",
     "trecho_vagas": "Número máximo de vagas do curso: 40 vagas Número mínimo de vagas do curso: 24 vagas",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

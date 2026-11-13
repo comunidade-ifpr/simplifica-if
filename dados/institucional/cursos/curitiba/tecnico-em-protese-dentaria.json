@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/protesedentaria/",
+  "cnct_id": "cnct:tecnico-em-protese-dentaria",
   "suap": {
     "id": 121,
     "codigo": "CTB019",

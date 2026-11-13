@@ -108,6 +108,7 @@
       "url": "https://ifpr.edu.br/umuarama/cursos/cursos-tecnicos/edificacoes-integrado/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-edificacoes",
       "suap": {
         "id": 42,
         "codigo": "UMU001",
@@ -167,6 +168,7 @@
       "url": "https://ifpr.edu.br/umuarama/cursos/cursos-tecnicos/informatica-integrado/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica",
       "suap": {
         "id": 58,
         "codigo": "UMU002",
@@ -227,6 +229,7 @@
       "url": "https://ifpr.edu.br/umuarama/cursos/cursos-tecnicos/quimica-integrado/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-quimica",
       "suap": {
         "id": 57,
         "codigo": "UMU003",

@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/telemaco-borba/cursos-tecnicos-integrados/automacao-industrial/",
+  "cnct_id": "cnct:tecnico-em-automacao-industrial",
   "suap": {
     "id": 25,
     "codigo": "TBOR001",
@@ -31,6 +32,7 @@
     "ano_documento": 2025,
     "vagas": "40",
     "trecho_vagas": "Total de vagas anuais: Uma turma de 40 vagas por ano",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

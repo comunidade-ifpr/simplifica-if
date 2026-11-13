@@ -347,6 +347,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/administracao-3/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-administracao",
       "suap": {
         "id": 211,
         "codigo": "CTB001",
@@ -405,6 +406,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/condominio/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-condominio",
       "suap": {
         "id": 15,
         "codigo": "CTB002",
@@ -466,6 +468,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/contabilidade/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-contabilidade",
       "suap": {
         "id": 140,
         "codigo": "CTB003",
@@ -524,6 +527,7 @@
       "url": "https://ifpr.edu.br/curitiba/curso-defesacivil/",
       "modalidade": "ead",
       "situacao": "em_oferta",
+      "cnct_id": "cnct:tecnico-em-defesa-civil",
       "sei": {
         "processos": [
           {
@@ -541,6 +545,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/edificacoes/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-edificacoes",
       "suap": {
         "id": 43,
         "codigo": "CTB004",
@@ -601,6 +606,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/eletromecanica-2/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-eletromecanica",
       "suap": {
         "id": 74,
         "codigo": "CTB005",
@@ -649,6 +655,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/eletronica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-eletronica",
       "suap": {
         "id": 55,
         "codigo": "CTB006",
@@ -707,6 +714,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/eletrotecnica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-eletrotecnica",
       "suap": {
         "id": 112,
         "codigo": "CTB007",
@@ -756,6 +764,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/enfermagem-2/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-enfermagem",
       "suap": {
         "id": 151,
         "codigo": "CTB008",
@@ -795,6 +804,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/eventos-2/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-eventos",
       "suap": {
         "id": 69,
         "codigo": "CTB009",
@@ -843,6 +853,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/informatica-2/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica",
       "suap": {
         "id": 176,
         "codigo": "CTB010",
@@ -904,6 +915,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/massoterapia-2/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-massoterapia",
       "suap": {
         "id": 177,
         "codigo": "CTB011",
@@ -961,6 +973,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/mecanica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-mecanica",
       "suap": {
         "id": 84,
         "codigo": "CTB013",
@@ -1009,6 +1022,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/mecanica-2/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-mecanica",
       "suap": {
         "id": 53,
         "codigo": "CTB012",
@@ -1067,6 +1081,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/tecnico-integrado-petroleo-e-gas/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-petroleo-e-gas",
       "suap": {
         "id": 179,
         "codigo": "CTB014",
@@ -1125,6 +1140,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/processos-fotograficos/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-processos-fotograficos",
       "suap": {
         "id": 14,
         "codigo": "CTB016",
@@ -1173,6 +1189,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/processosfotograficos/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-processos-fotograficos",
       "suap": {
         "id": 180,
         "codigo": "CTB015",
@@ -1231,6 +1248,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/producaoaudioevideo/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-producao-de-audio-e-video",
       "suap": {
         "id": 146,
         "codigo": "CTB017",
@@ -1279,6 +1297,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/jogosdigitais-2/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-programacao-de-jogos-digitais",
       "suap": {
         "id": 95,
         "codigo": "CTB018",
@@ -1338,6 +1357,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/protesedentaria/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-protese-dentaria",
       "suap": {
         "id": 121,
         "codigo": "CTB019",
@@ -1384,6 +1404,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/radiologia-2/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-radiologia",
       "suap": {
         "id": 44,
         "codigo": "CTB020",
@@ -1445,6 +1466,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/saudebucal/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-saude-bucal",
       "suap": {
         "id": 210,
         "codigo": "CTB021",
@@ -1507,6 +1529,7 @@
       "url": "https://ifpr.edu.br/curitiba/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-soldagem",
       "ppc": {
         "url": "https://sei.ifpr.edu.br/sei/controlador.php?acao=documento_download_anexo&acao_origem=procedimento_visualizar&id_anexo=1853224&arvore=1",
         "conversao": {
@@ -1550,6 +1573,7 @@
       "url": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/telecomunicacoes-2/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-telecomunicacoes",
       "suap": {
         "id": 39,
         "codigo": "CTB022",
@@ -1591,6 +1615,7 @@
       "nivel": "médio",
       "tipo_oferta": "subsequente",
       "situacao": "incerto",
+      "cnct_id": "cnct:tecnico-em-transacoes-imobiliarias",
       "sei": {
         "processos": [
           {

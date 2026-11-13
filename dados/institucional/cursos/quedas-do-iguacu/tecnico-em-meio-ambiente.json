@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/quedas-do-iguacu/medio-integrado-2/tecnico-em-meio-ambiente/",
+  "cnct_id": "cnct:tecnico-em-meio-ambiente",
   "suap": {
     "id": 197,
     "codigo": "QUED002",
@@ -29,6 +30,7 @@
     "ano_documento": 2019,
     "vagas": "20-40",
     "trecho_vagas": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 20",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

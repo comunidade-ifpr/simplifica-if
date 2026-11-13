@@ -11,7 +11,8 @@
   "forma_oferta": "40 vagas; 1 turma(s); turno Vespertino; duração 4 anos",
   "status_curadoria": "sugerido",
   "modalidade": "presencial",
-  "turno": "Vespertino",
+  "turno": "vespertino",
+  "turno_original": "Vespertino",
   "campi": [],
   "cursos": [
     "colombo/tecnico-em-alimentos-integrado-ao-ensino-medio"

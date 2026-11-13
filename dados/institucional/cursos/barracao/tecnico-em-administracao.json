@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/barracao/nossos-cursos/integrados-ao-ensino-medio/tecnico-em-administracao/",
+  "cnct_id": "cnct:tecnico-em-administracao",
   "suap": {
     "id": 70,
     "codigo": "BA001",
@@ -29,6 +30,7 @@
     "ano_documento": 2023,
     "vagas": "20-40",
     "trecho_vagas": "Vagas totais Mínimo: 20. Máximo: 40",
-    "curadoria": "Revisado"
+    "curadoria_ano": "Revisado",
+    "curadoria_vagas": "Revisado"
   }
 }

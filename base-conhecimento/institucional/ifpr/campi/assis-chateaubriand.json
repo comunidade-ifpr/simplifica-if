@@ -18,6 +18,7 @@
       "url": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-subsequentes/tecnico-em-agropecuaria/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-agropecuaria",
       "suap": {
         "id": 172,
         "codigo": "AC002",
@@ -73,6 +74,7 @@
       "url": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-agropecuaria",
       "suap": {
         "id": 77,
         "codigo": "AC001",
@@ -136,6 +138,7 @@
       "url": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-subsequentes/tecnico-em-alimentos/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-alimentos",
       "suap": {
         "id": 212,
         "codigo": "AC003",
@@ -189,6 +192,7 @@
       "url": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-tecnicos/comercio-integrado-ao-ensino-medio/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-comercio",
       "suap": {
         "id": 119,
         "codigo": "AC004",
@@ -249,6 +253,7 @@
       "url": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-tecnicos/eletromecanica-integradoensino-medio/informacoes/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-eletromecanica",
       "suap": {
         "id": 2,
         "codigo": "AC005",
@@ -305,6 +310,7 @@
       "url": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-subsequentes/eletromecanica/informacoes/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-eletromecanica",
       "suap": {
         "id": 174,
         "codigo": "AC006",
@@ -344,6 +350,7 @@
       "url": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-subsequentes/eletrotecnica/informacoes/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-eletrotecnica",
       "suap": {
         "id": 175,
         "codigo": "AC007",
@@ -394,6 +401,7 @@
       "url": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-tecnicos/curso-tecnico-em-informatica-para-a-internet/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica-para-internet",
       "suap": {
         "id": 162,
         "codigo": "AC008",
@@ -458,6 +466,7 @@
       "url": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-tecnicos/tecnico-em-mecatronica-integrado-ao-ensino-medio/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-mecatronica",
       "suap": {
         "id": 636,
         "codigo": "AC013",

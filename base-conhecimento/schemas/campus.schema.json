@@ -121,6 +121,16 @@
               "incerto"
             ]
           },
+          "cnct_id": {
+            "description": "Habilitação do Catálogo Nacional de Cursos Técnicos: cnct:<id de catalogos/cnct/index.json>.",
+            "type": "string",
+            "pattern": "^cnct:[a-z0-9]+(?:-[a-z0-9]+)*$"
+          },
+          "cnct_ausencia": {
+            "description": "Motivo de um curso técnico não ter habilitação no CNCT (por exemplo, oferta experimental). Exclui cnct_id.",
+            "type": "string",
+            "minLength": 1
+          },
           "url": {
             "type": "string",
             "format": "uri",

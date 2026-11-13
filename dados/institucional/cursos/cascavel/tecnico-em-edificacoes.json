@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/cascavel/cursos/ensino-medio-integrado/tecnico-em-edificacoes/apresentacao/",
+  "cnct_id": "cnct:tecnico-em-edificacoes",
   "suap": {
     "id": 29,
     "codigo": "CAS001",
@@ -29,6 +30,7 @@
     "ano_documento": 2023,
     "vagas": "40",
     "trecho_vagas": "Número máximo e mínimo de vagas do curso respectivamente: 40 e 30.",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

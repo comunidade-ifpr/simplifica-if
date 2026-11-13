@@ -37,8 +37,12 @@ export interface PpcCurso {
   vagas: string;
   trechoVagas: string;
   periodicidadeVagas: string;
-  curadoria: string;
-  dataCuradoria: string;
+  /** Curadoria do ano do documento (`ppc.curadoria_ano`); rótulo como "Revisado" ou "Precisa de revisão". */
+  curadoriaAno: string;
+  dataCuradoriaAno: string;
+  /** Curadoria das vagas (`ppc.curadoria_vagas`), independente da do ano. */
+  curadoriaVagas: string;
+  dataCuradoriaVagas: string;
 }
 
 export interface Curso {
@@ -54,6 +58,10 @@ export interface Curso {
   paginaOficial: string;
   modalidade: string;
   situacao: string;
+  /** Habilitação do CNCT (`cnct:<slug>`), só em curso técnico. */
+  cnctId: string;
+  /** Motivo explícito de o curso técnico não ter habilitação no CNCT (ex.: oferta experimental). */
+  cnctAusencia: string;
   campusIds: string[];
   suap: SuapCurso;
   ppc: PpcCurso;

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { esquemaGabaritoConjunto, type GabaritoConjunto } from "../esquema.ts";
 import { GERADORES } from "./conjuntos.ts";
-import { cnctDoCurso, carregarFontes } from "./fontes.ts";
+import { cnctDoCadastro, cnctDoCurso, carregarFontes } from "./fontes.ts";
 import { divergencias, gerarArquivos } from "./gerar.ts";
 
 const fontes = carregarFontes();
@@ -60,15 +60,35 @@ describe("geradores de gabarito", () => {
 
   test("Q08: o campus de Curitiba entra pela oferta noturna de Telecomunicações", () => {
     const q08 = gabarito("q08-campi-eixo-informacao-comunicacao.json");
-    const curitiba = q08.detalhes["campus:curitiba"] as Array<{ curso: string; turno: string }>;
+    const curitiba = q08.detalhes["campus:curitiba"] as Array<{ curso: string; turno: string; turno_original: string }>;
     expect(curitiba).toContainEqual(
-      expect.objectContaining({ curso: "curso:curitiba/tecnico-em-telecomunicacoes", turno: "Noturno" }),
+      expect.objectContaining({
+        curso: "curso:curitiba/tecnico-em-telecomunicacoes",
+        turno: "noturno",
+        turno_original: "Noturno",
+      }),
     );
   });
 });
 
 describe("CNCT do curso", () => {
-  test("casa nomes com forma de oferta, PROEJA e prefixo ausente", () => {
+  test("todo curso técnico em oferta tem cnct_id do catálogo ou ausência com motivo", () => {
+    const tecnicos = fontes.dados.cursos.filter(
+      (curso) => curso.nivel === "médio" && ["ativo", "em_oferta"].includes(curso.situacao ?? ""),
+    );
+    expect(tecnicos.length).toBeGreaterThan(100);
+    for (const curso of tecnicos) {
+      expect(Boolean(cnctDoCadastro(curso, fontes.cnct)) || Boolean(curso.cnct_ausencia)).toBe(true);
+    }
+  });
+
+  test("a proposta pelo nome concorda com o cnct_id cadastrado", () => {
+    for (const curso of fontes.dados.cursos.filter((item) => item.cnct_id)) {
+      expect(`cnct:${cnctDoCurso(curso.nome, fontes.cnct)?.id}`).toBe(curso.cnct_id!);
+    }
+  });
+
+  test("propõe pelo nome com forma de oferta, PROEJA e prefixo ausente com forma de oferta, PROEJA e prefixo ausente", () => {
     expect(cnctDoCurso("Técnico em Informática Integrado ao Ensino Médio", fontes.cnct)?.id).toBe(
       "tecnico-em-informatica",
     );

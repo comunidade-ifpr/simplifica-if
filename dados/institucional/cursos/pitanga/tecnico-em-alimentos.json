@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/pitanga/nossos-cursos/integrados-ao-ensino-medio/tecnico-em-alimentos/",
+  "cnct_id": "cnct:tecnico-em-alimentos",
   "suap": {
     "id": 216,
     "codigo": "PIT001",
@@ -29,6 +30,7 @@
     "ano_documento": 2023,
     "vagas": "40",
     "trecho_vagas": "Vagas totais 40 (quarenta) vagas/ano",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

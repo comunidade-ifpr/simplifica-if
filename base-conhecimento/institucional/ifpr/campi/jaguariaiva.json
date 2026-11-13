@@ -46,6 +46,7 @@
       "url": "https://ifpr.edu.br/jaguariaiva/integrados-ao-ensino-medio/curso-tecnico-em-alimentos/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-alimentos",
       "suap": {
         "id": 79,
         "codigo": "JAG001",
@@ -101,6 +102,7 @@
       "url": "https://ifpr.edu.br/jaguariaiva/integrados-ao-ensino-medio/curso-tecnico/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-biotecnologia",
       "suap": {
         "id": 215,
         "codigo": "JAG002",

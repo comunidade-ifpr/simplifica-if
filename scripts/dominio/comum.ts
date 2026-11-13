@@ -38,6 +38,11 @@ export function linhasPreenchidas(texto: string): string[] {
     .filter(Boolean);
 }
 
+/** Rótulo de curadoria conhecido (como "Revisado" ou "Precisa de revisão"), sem caixa nem espaços nas pontas. */
+export function ehRotuloCuradoria(rotulo: string): boolean {
+  return Object.hasOwn(ALIASES_CURADORIA, rotulo.trim().toLowerCase());
+}
+
 /** Um status explícito vale; sem ele, a data de revisão indica se alguém já conferiu o dado. */
 export function statusCuradoria(rotulo: string, revisadoEm: string): StatusCuradoria {
   return ALIASES_CURADORIA[rotulo.trim().toLowerCase()] ?? (revisadoEm ? "revisado" : "precisa_revisao");

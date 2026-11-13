@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/jaguariaiva/integrados-ao-ensino-medio/curso-tecnico/",
+  "cnct_id": "cnct:tecnico-em-biotecnologia",
   "suap": {
     "id": 215,
     "codigo": "JAG002",
@@ -29,6 +30,7 @@
     "ano_documento": 2022,
     "vagas": "25-40",
     "trecho_vagas": "Vagas totais 40 (quarenta) vagas anuais, sendo: mínimo de 25 e máximo de 40 vagas",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

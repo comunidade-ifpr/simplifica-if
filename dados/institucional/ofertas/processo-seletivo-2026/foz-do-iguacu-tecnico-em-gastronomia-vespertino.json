@@ -11,7 +11,8 @@
   "forma_oferta": "22 vagas; 1 turma(s); turno Vespertino; duração 1 ano",
   "status_curadoria": "sugerido",
   "modalidade": "presencial",
-  "turno": "Vespertino",
+  "turno": "vespertino",
+  "turno_original": "Vespertino",
   "campi": [],
   "cursos": [
     "foz-do-iguacu/tecnico-em-gastronomia"

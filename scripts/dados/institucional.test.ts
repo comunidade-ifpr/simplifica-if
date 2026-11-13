@@ -43,6 +43,8 @@ const curso: Curso = {
   paginaOficial: "https://exemplo.ifpr.edu.br/curso",
   modalidade: "Presencial",
   situacao: "Ativo",
+  cnctId: "cnct:tecnico-em-informatica",
+  cnctAusencia: "",
   campusIds: ["pg-campus"],
   suap: {
     id: 7,
@@ -65,8 +67,10 @@ const curso: Curso = {
     vagas: "30-40",
     trechoVagas: "serão ofertadas 40 vagas",
     periodicidadeVagas: "anual",
-    curadoria: "Revisado",
-    dataCuradoria: "2026-05-20",
+    curadoriaAno: "Revisado",
+    dataCuradoriaAno: "2026-05-20",
+    curadoriaVagas: "Precisa de revisão",
+    dataCuradoriaVagas: "",
   },
 };
 
@@ -108,7 +112,9 @@ const oferta: OfertaIngresso = {
   statusCuradoria: "revisado",
   revisadoEm: "2026-01-10",
   modalidade: "Presencial",
-  turno: "Manhã",
+  turno: "matutino-com-contraturno",
+  turnoOriginal: "Diurno (Manhã + 2 tardes)¹",
+  turnoNota: "Nota ¹ do edital: aparece no Portal do Candidato como turno “Integral”.",
   campusIdOriginal: "",
   cursoSlugOriginal: "",
   processoIds: ["pg-ps"],
@@ -191,6 +197,22 @@ describe("dados/institucional", () => {
       "dados/institucional/campi/outro-nome.json: arquivo deveria estar em dados/institucional/campi/outro.json",
     );
     expect(erros.some((erro) => erro.startsWith("dados/institucional/campi/quebrado.json: nome"))).toBe(true);
+  });
+
+  test("acusa cnct_id que não existe no CNCT e turno fora do enum", () => {
+    const raiz = raizTemporaria();
+    const dados = deDominio(baseNotion);
+    dados.cursos[0] = { ...dados.cursos[0]!, cnct_id: "cnct:tecnico-em-nada" };
+    gravarDadosInstitucionais(dados, raiz);
+    expect(validarDadosInstitucionais(raiz).erros).toEqual([
+      "dados/institucional: Curso exemplo/tecnico-em-exemplo: cnct_id não existe no CNCT: cnct:tecnico-em-nada",
+    ]);
+
+    writeFileSync(
+      path.join(raiz, "ofertas", "processo-seletivo-2026", "exemplo-tecnico-em-exemplo.json"),
+      JSON.stringify({ ...dados.ofertas[0], turno: "Manhã" }),
+    );
+    expect(carregarDadosInstitucionais(raiz).erros.some((erro) => erro.includes(": turno: "))).toBe(true);
   });
 
   test("a auditoria acusa curso de campus inexistente", () => {

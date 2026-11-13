@@ -99,6 +99,7 @@
       "url": "https://ifpr.edu.br/irati/tecnico-em-agroecologia/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-agroecologia",
       "suap": {
         "id": 54,
         "codigo": "IRA001",
@@ -153,6 +154,7 @@
       "url": "https://ifpr.edu.br/irati/nossos-cursos/tecnicos-integrados/tecnico-em-informatica-integrado-ao-ensino-medio/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica",
       "suap": {
         "id": 111,
         "codigo": "IRA002",
@@ -210,6 +212,7 @@
       "url": "https://irati.ifpr.edu.br/",
       "modalidade": "presencial",
       "situacao": "abertura",
+      "cnct_id": "cnct:tecnico-em-quimica",
       "sei": {
         "processos": [
           {

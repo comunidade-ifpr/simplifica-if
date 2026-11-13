@@ -18,6 +18,7 @@
     "ano_documento": 2016,
     "vagas": "40",
     "trecho_vagas": "Número de vagas ofertadas: mínimo 30 (trinta), e máximo, 40 (quarenta) vagas",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

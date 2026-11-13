@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/paranagua/nossos-cursos/ensino-medio-integrado/mecanica-e-eletromecanica/",
+  "cnct_id": "cnct:tecnico-em-mecanica",
   "suap": {
     "id": 64,
     "codigo": "PGUA002",
@@ -29,6 +30,7 @@
     "ano_documento": 2011,
     "vagas": "20-40",
     "trecho_vagas": "Número máximo de vagas do curso: 40 (quarenta). Número mínimo de vagas do curso: 20 (vinte)",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

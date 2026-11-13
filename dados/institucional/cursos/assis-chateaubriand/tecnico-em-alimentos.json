@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-subsequentes/tecnico-em-alimentos/",
+  "cnct_id": "cnct:tecnico-em-alimentos",
   "suap": {
     "id": 212,
     "codigo": "AC003",
@@ -29,6 +30,7 @@
     "ano_documento": 2022,
     "vagas": "40",
     "trecho_vagas": "Vagas totais Serão ofertadas um total de 40 vagas anuais no processo seletivo com um número mínimo de 20 vagas. No IFPR campus As",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

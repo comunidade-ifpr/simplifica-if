@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/barracao/nossos-cursos/integrados-ao-ensino-medio/tecnico-em-informatica/",
+  "cnct_id": "cnct:tecnico-em-informatica",
   "suap": {
     "id": 62,
     "codigo": "BA002",
@@ -29,6 +30,7 @@
     "ano_documento": 2023,
     "vagas": "20-40",
     "trecho_vagas": "Vagas totais Número mínimo de vagas do curso: 20. Número máximo de vagas do curso: 40",
-    "curadoria": "Revisado"
+    "curadoria_ano": "Revisado",
+    "curadoria_vagas": "Revisado"
   }
 }

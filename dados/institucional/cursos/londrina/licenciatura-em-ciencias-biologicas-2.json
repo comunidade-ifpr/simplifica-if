@@ -19,6 +19,7 @@
     "vagas": "20-40",
     "trecho_vagas": "Vagas totais (anual) No mínimo 20 e no máximo 40 vagas",
     "periodicidade_vagas": "anual",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

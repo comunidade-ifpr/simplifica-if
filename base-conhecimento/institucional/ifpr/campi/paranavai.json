@@ -133,6 +133,7 @@
       "url": "https://ifpr.edu.br/paranavai/tecnico-em-agroindustria/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-agroindustria",
       "suap": {
         "id": 72,
         "codigo": "PVAI001",
@@ -187,6 +188,7 @@
       "url": "https://ifpr.edu.br/paranavai/cursos-tecnicos-subsequentes/tecnico-em-eletromecanica-subsequente/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-eletromecanica",
       "suap": {
         "id": 82,
         "codigo": "PVAI002",
@@ -233,6 +235,7 @@
       "url": "https://ifpr.edu.br/paranavai/tecnico-em-informatica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica",
       "suap": {
         "id": 81,
         "codigo": "PVAI003",
@@ -291,6 +294,7 @@
       "url": "https://ifpr.edu.br/paranavai/ensino-medio/tecnico-em-mecatronica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-mecatronica",
       "suap": {
         "id": 73,
         "codigo": "PVAI004",

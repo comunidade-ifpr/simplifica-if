@@ -43,7 +43,7 @@ Cada rodada grava `relatorio.json`, `resumo.md` e o stream-json bruto (`brutos/`
 
 ## Como os gabaritos são gerados
 
-`bun run scripts/avaliacao/gabaritos/gerar.ts` lê `dados/institucional/`, `base-conhecimento/manifest.json`, o CNCT e os PPCs convertidos, e grava em `gabaritos/` os conjuntos esperados (ordenados, sem data) e `universos.json`. Rode de novo depois de mudar essas fontes e revise o diff: ele é a mudança do gabarito. `--verificar` (ou `--check`) só confere. As citações de normas nos PPCs (Q02 e Q20) vêm do resolvedor de citações de `packages/kb`, o mesmo de `bun run kb citacoes <id>`. Uma heurística continua provisória: o curso casa com o CNCT pelo nome, até existir `cnct_id` (fase 3).
+`bun run scripts/avaliacao/gabaritos/gerar.ts` lê `dados/institucional/`, `base-conhecimento/manifest.json`, o CNCT e os PPCs convertidos, e grava em `gabaritos/` os conjuntos esperados (ordenados, sem data) e `universos.json`. Rode de novo depois de mudar essas fontes e revise o diff: ele é a mudança do gabarito. `--verificar` (ou `--check`) só confere. As citações de normas nos PPCs (Q02 e Q20) vêm do resolvedor de citações de `packages/kb`, o mesmo de `bun run kb citacoes <id>`. O curso chega ao CNCT pelo `cnct_id` cadastrado em `dados/institucional/cursos/` (fase 3), e o turno das ofertas é o enum padronizado.
 
 O resolvedor tem conjunto anotado próprio em `resolvedor/citacoes-anotadas.yaml` (rascunho, revisão humana pendente), medido por `bun run kb avaliar-resolvedor`.
 

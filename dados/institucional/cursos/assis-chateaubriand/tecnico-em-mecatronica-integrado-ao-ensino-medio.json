@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-tecnicos/tecnico-em-mecatronica-integrado-ao-ensino-medio/",
+  "cnct_id": "cnct:tecnico-em-mecatronica",
   "suap": {
     "id": 636,
     "codigo": "AC013",
@@ -30,6 +31,7 @@
     "vagas": "40",
     "trecho_vagas": "Vagas totais (anual) Até 40 vagas",
     "periodicidade_vagas": "anual",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

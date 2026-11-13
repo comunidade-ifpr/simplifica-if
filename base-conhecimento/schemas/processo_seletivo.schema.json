@@ -139,6 +139,24 @@
             ]
           },
           "turno": {
+            "description": "Turno padronizado. diurno: manhã e tarde sem os dias definidos; matutino-com-contraturno e vespertino-com-contraturno: um período todos os dias e o outro em alguns dias. A grafia do edital fica em turno_original.",
+            "enum": [
+              "matutino",
+              "vespertino",
+              "noturno",
+              "integral",
+              "diurno",
+              "matutino-com-contraturno",
+              "vespertino-com-contraturno"
+            ]
+          },
+          "turno_original": {
+            "description": "Grafia do turno na fonte, com as marcas de nota de rodapé (¹, ², ³).",
+            "type": "string",
+            "minLength": 1
+          },
+          "turno_nota": {
+            "description": "O que o enum não diz: texto da nota de rodapé do edital e divergências entre fontes.",
             "type": "string",
             "minLength": 1
           },

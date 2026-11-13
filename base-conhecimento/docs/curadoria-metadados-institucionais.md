@@ -54,8 +54,9 @@ Ao pesquisar cursos em páginas dos campi:
 2. Quando existir, use a origem `https://ifpr.edu.br/<campus_id>/`.
 3. Em sites WordPress do IFPR, use a REST API para localizar páginas: `https://ifpr.edu.br/<campus_id>/wp-json/wp/v2/pages?per_page=100`.
 4. Use a página oficial do curso para preencher `nome`, `nivel`, `forma_oferta`, `modalidade`, `situacao` e `pagina_oficial`.
-5. Não cadastre páginas auxiliares, notícias, páginas históricas ou ofertas temporárias como cursos ativos sem evidência clara de vigência atual.
-6. Para FIC e programas institucionais, preserve a distinção entre curso regular, oferta temporária e programa.
+5. Em curso técnico (nível `médio`), registre a habilitação do CNCT em `cnct_id`, no formato `cnct:<id>` com o `id` de `catalogos/cnct/index.json` (por exemplo, `cnct:tecnico-em-enfermagem`). O casamento é pela denominação: "Administração – PROEJA" e "Técnico em Administração" são `cnct:tecnico-em-administracao`. Se o curso não tem habilitação no CNCT, como uma oferta experimental, não invente: grave `cnct_ausencia` com o motivo e a evidência (por exemplo, a seção do PPC que declara a oferta experimental). Os dois campos são excludentes e são publicados em `cursos[]` do JSON do campus. A auditoria acusa curso técnico ativo ou em oferta sem nenhum dos dois, e `validar_base.ts` acusa `cnct_id` que não existe no catálogo.
+6. Não cadastre páginas auxiliares, notícias, páginas históricas ou ofertas temporárias como cursos ativos sem evidência clara de vigência atual.
+7. Para FIC e programas institucionais, preserve a distinção entre curso regular, oferta temporária e programa.
 
 ## SUAP
 
@@ -110,11 +111,22 @@ Regras:
 4. Quando houver mais de um PPC, registre como vigente o documento mais recente ou explicitamente marcado como vigente.
 5. Registre `ppc.url` com HTTPS absoluto.
 6. Registre `ppc.markdown_path` quando o PPC convertido existir, no formato `institucional/ifpr/ppcs/<campus_id>/<curso_slug>.md`.
-7. Registre `ppc.ano_documento` e `ppc.vagas` somente com evidência textual (`ppc.trecho_vagas`, `ppc.observacoes`) e status de curadoria (`ppc.curadoria`, `ppc.data_curadoria`).
+7. Registre `ppc.ano_documento` e `ppc.vagas` somente com evidência textual (`ppc.trecho_vagas`, `ppc.observacoes`) e com o status de curadoria de cada campo.
 
 `ppc.vagas` é texto: use número simples, como `40`, ou intervalo, como `20-40`. A publicação normaliza esses dados em `ppc.metadados.vagas`.
 
-Hoje `ppc.curadoria` e `ppc.data_curadoria` valem ao mesmo tempo para o ano do documento e para as vagas. Não marque o PPC como revisado quando só um dos dois foi conferido; registre a conferência parcial em `ppc.observacoes`.
+Ano e vagas têm curadoria própria:
+
+| Campo | Status | Data |
+|---|---|---|
+| `ppc.ano_documento` | `ppc.curadoria_ano` | `ppc.data_curadoria_ano` |
+| `ppc.vagas`, `ppc.trecho_vagas`, `ppc.periodicidade_vagas` | `ppc.curadoria_vagas` | `ppc.data_curadoria_vagas` |
+
+Os status aceitos são `Revisado`, `Precisa de revisão`, `Pendente` e `Inconsistente`. Ao conferir só um dos campos, mude só o status e a data dele e registre a evidência em `ppc.observacoes`. A auditoria recusa status desconhecido e data sem status. No JSON público, cada um vira o `status_curadoria` e o `revisado_em` do próprio campo, em `ppc.metadados.ano_documento` e `ppc.metadados.vagas`.
+
+Até 13/11/2026 havia um par único, `ppc.curadoria` e `ppc.data_curadoria`, para os dois campos. Na migração, os dois campos herdaram o status e a data do par (um "Revisado" valia para ambos), sem perda de informação. O JSON público já publicava o status por campo, copiado do par; o formato não mudou, só os valores passam a poder divergir.
+
+O ano do documento é o da capa ou folha de rosto. Quando a capa traz também um ano posterior de aprovação, ajuste ou atualização ("Atualização 17 de Janeiro de 2025", "AJUSTE PARECER CONSEPE Nº 06/2024"), a convenção ainda não foi decidida: não altere o ano registrado, descreva a divergência em `ppc.observacoes` e deixe a decisão para revisão humana.
 
 Para converter PDFs em Markdown, use `scripts/converter_ppcs_markdown.py`. Depois de converter ou alterar PPCs, regenere os índices:
 
@@ -144,6 +156,12 @@ Regras:
 3. Preserve a fonte oficial do edital ou anexo em `url_fonte`.
 4. Use `trecho_fonte` para evidenciar a quantidade de vagas.
 5. Quando houver cotas, registre total e detalhamento.
+6. Registre o turno em três campos:
+   - `turno`: o enum padronizado, `matutino`, `vespertino`, `noturno`, `integral`, `diurno` (manhã e tarde sem os dias definidos, como "Diurno (manhã e tarde)" e "Matutino/Vespertino"), `matutino-com-contraturno` (manhãs e algumas tardes, como "Diurno (Manhã + 2 tardes por semana)") ou `vespertino-com-contraturno` (tardes e algumas manhãs);
+   - `turno_original`: a grafia exata da fonte, com as marcas de nota de rodapé (`¹`, `²`, `³`);
+   - `turno_nota`: o que o enum não diz, sobretudo o texto da nota de rodapé do edital (como "aparece no Portal do Candidato do IFPR como turno Integral") e divergências entre a página e o edital.
+
+   `padronizarTurno` (`scripts/dominio/ingresso.ts`) propõe o enum a partir da grafia. A auditoria recusa turno fora do enum, `turno_original` sem `turno` e marca de rodapé sem `turno_nota`. Quando a fonte for uma página que omite o texto das notas, busque-o no Anexo I do edital correspondente e cite o número do edital na nota.
 
 ## Índices globais de PPCs
 

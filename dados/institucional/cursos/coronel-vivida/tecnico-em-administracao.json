@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/coronel-vivida/nossos-cursos/tecnicos-integrados/tecnico-administracao/",
+  "cnct_id": "cnct:tecnico-em-administracao",
   "suap": {
     "id": 59,
     "codigo": "CV001",
@@ -31,6 +32,7 @@
     "ano_documento": 2025,
     "vagas": "40",
     "trecho_vagas": "Vagas totais Quarenta vagas. 7",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

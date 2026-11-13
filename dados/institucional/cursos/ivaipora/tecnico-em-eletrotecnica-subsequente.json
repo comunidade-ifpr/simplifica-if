@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/ivaipora/",
+  "cnct_id": "cnct:tecnico-em-eletrotecnica",
   "suap": {
     "id": 341,
     "codigo": "ELES1",

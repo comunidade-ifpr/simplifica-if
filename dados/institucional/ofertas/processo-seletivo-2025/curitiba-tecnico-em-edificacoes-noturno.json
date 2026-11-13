@@ -11,7 +11,8 @@
   "forma_oferta": "40 vagas; 1 turma(s); turno Noturno; duração 2 anos",
   "status_curadoria": "sugerido",
   "modalidade": "presencial",
-  "turno": "Noturno",
+  "turno": "noturno",
+  "turno_original": "Noturno",
   "campi": [],
   "cursos": [
     "curitiba/tecnico-em-edificacoes"

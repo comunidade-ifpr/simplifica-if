@@ -18,6 +18,7 @@
       "url": "https://ifpr.edu.br/campo-largo/nossos-cursos/cursos-ensino-medio-integrado/administracao/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-administracao",
       "suap": {
         "id": 75,
         "codigo": "CL001",
@@ -64,6 +65,7 @@
       "url": "https://ifpr.edu.br/campo-largo/nossos-cursos/cursos-ensino-medio-integrado/administracao-proeja/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-administracao",
       "ppc": {
         "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2018/12/PPC-PROEJA.pdf",
         "conversao": {
@@ -94,6 +96,7 @@
       "url": "https://ifpr.edu.br/campo-largo/nossos-cursos/cursos-ensino-medio-integrado/agroecologia/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-agroecologia",
       "suap": {
         "id": 51,
         "codigo": "CL002",
@@ -149,6 +152,7 @@
       "url": "https://ifpr.edu.br/campo-largo/nossos-cursos/cursos-ensino-medio-integrado/automacao/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-automacao-industrial",
       "suap": {
         "id": 38,
         "codigo": "CL003",
@@ -262,6 +266,7 @@
       "url": "https://ifpr.edu.br/campo-largo/nossos-cursos/cursos-ensino-medio-integrado/mecanica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-mecanica",
       "suap": {
         "id": 49,
         "codigo": "CL004",
@@ -308,6 +313,7 @@
       "url": "https://ifpr.edu.br/campo-largo/nossos-cursos/cursos-tecnicos-subsequentes/mecanica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-mecanica",
       "suap": {
         "id": 83,
         "codigo": "CL005",

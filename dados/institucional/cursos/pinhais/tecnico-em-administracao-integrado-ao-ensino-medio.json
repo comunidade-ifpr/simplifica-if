@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/pinhais/institucional/nossos-cursos/tecnicos-integrados/administracao/",
+  "cnct_id": "cnct:tecnico-em-administracao",
   "suap": {
     "id": 195,
     "codigo": "PIN001",
@@ -29,6 +30,7 @@
     "ano_documento": 2025,
     "vagas": "20",
     "trecho_vagas": "Vagas totais: número mínimo de vagas por turno: 20 vagas de ingresso; número máximo de vagas por turno: 40 vagas de ingresso; número máximo de vagas: 80 vagas de ingresso",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/londrina/tecnico-em-protese-dentaria-2/",
+  "cnct_id": "cnct:tecnico-em-protese-dentaria",
   "suap": {
     "id": 202,
     "codigo": "LON005",
@@ -30,6 +31,7 @@
     "ano_documento": 2013,
     "vagas": "40",
     "trecho_vagas": "NÚMERO DE VAGAS: 40 ESTÁGIO SUPERVISIONADO: 0 CARGA HORÁRIA TOTAL: 1200 horas MÍNIMO MÁXIMO 20 40",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

@@ -19,6 +19,7 @@
     "vagas": "20-40",
     "trecho_vagas": "Vagas totais (anual) Mínimo de 20 e máximo de 40. Sendo, 90% das vagas (36) para brasileiros e 10% das vagas (4) destinadas à Ar",
     "periodicidade_vagas": "anual",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

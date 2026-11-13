@@ -80,6 +80,7 @@
       "url": "https://ifpr.edu.br/colombo/tecnicos-integrados/tecnico-em-administracao/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-administracao",
       "suap": {
         "id": 35,
         "codigo": "COL001",
@@ -138,6 +139,7 @@
       "url": "https://ifpr.edu.br/colombo/tecnicos-subsequentes/tecnico-em-administracao/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-administracao",
       "ppc": {
         "url": "https://ifpr.edu.br/colombo/wp-content/uploads/sites/9/2022/08/PPC_Subs_Adm_Versao_Final.pdf",
         "conversao": {
@@ -171,6 +173,7 @@
       "url": "https://ifpr.edu.br/colombo/tecnicos-integrados/tecnico-em-alimentos/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-alimentos",
       "suap": {
         "id": 76,
         "codigo": "COL002",
@@ -219,6 +222,7 @@
       "url": "https://ifpr.edu.br/colombo/tecnicos-integrados/tecnico-em-informatica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica",
       "suap": {
         "id": 122,
         "codigo": "COL003",

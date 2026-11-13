@@ -1,7 +1,7 @@
 {
   "pergunta": "Q05",
   "gerado_por": "scripts/avaliacao/gabaritos/conjuntos.ts",
-  "criterio": "PPCs do índice cujo curso casa com a habilitação 'Técnico em Agropecuária' do CNCT. Detalhes: títulos de seção que tratam de acompanhamento de egresso.",
+  "criterio": "PPCs do índice cujo curso tem cnct_id=cnct:tecnico-em-agropecuaria. Detalhes: títulos de seção que tratam de acompanhamento de egresso.",
   "universo": "curso",
   "avaliar_precisao": true,
   "esperado": [

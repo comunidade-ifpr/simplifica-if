@@ -18,6 +18,7 @@
     "ano_documento": 2021,
     "vagas": "20-40",
     "trecho_vagas": "Número de vagas ofertadas: mínimo 20, máximo 40 vagas",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

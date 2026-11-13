@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/foz-do-iguacu/tecnicos-subsequentes/tecnico-em-cozinha/",
+  "cnct_id": "cnct:tecnico-em-gastronomia",
   "suap": {
     "id": 126,
     "codigo": "FOZ004",
@@ -29,6 +30,7 @@
     "ano_documento": 2022,
     "vagas": "13-26",
     "trecho_vagas": "Número máximo de vagas do curso: 26 (vinte e seis), sendo 22 brasileiros e 4 estrangeiros (oriundos exclusivamente do Paraguai ou da Argentina) Número mínimo de vagas do curso: 13 (treze)",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

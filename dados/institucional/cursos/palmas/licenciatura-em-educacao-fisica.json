@@ -19,6 +19,7 @@
     "vagas": "50",
     "trecho_vagas": "Vagas totais (anual) 50 Vagas",
     "periodicidade_vagas": "anual",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

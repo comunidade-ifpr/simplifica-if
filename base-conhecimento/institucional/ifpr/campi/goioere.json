@@ -17,6 +17,7 @@
       "url": "https://ifpr.edu.br/goioere/integrados-ao-ensino-medio/curso-tecnico/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica",
       "suap": {
         "id": 214,
         "codigo": "GOI001",
@@ -77,6 +78,7 @@
       "url": "https://ifpr.edu.br/goioere/integrados-ao-ensino-medio/tecnico-em-producao-de-moda/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-producao-de-moda",
       "suap": {
         "id": 213,
         "codigo": "GOI002",

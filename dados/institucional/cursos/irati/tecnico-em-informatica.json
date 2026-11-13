@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/irati/nossos-cursos/tecnicos-integrados/tecnico-em-informatica-integrado-ao-ensino-medio/",
+  "cnct_id": "cnct:tecnico-em-informatica",
   "suap": {
     "id": 111,
     "codigo": "IRA002",
@@ -31,6 +32,7 @@
     "vagas": "20-80",
     "trecho_vagas": "Vagas totais (anual): número máximo de vagas do curso: 80 (ingresso matutino) e 80 (ingresso vespertino); número mínimo de vagas do curso: 20 (ingresso matutino) e 20 (ingresso vespertino)",
     "periodicidade_vagas": "anual",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

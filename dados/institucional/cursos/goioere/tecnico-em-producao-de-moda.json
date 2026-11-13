@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/goioere/integrados-ao-ensino-medio/tecnico-em-producao-de-moda/",
+  "cnct_id": "cnct:tecnico-em-producao-de-moda",
   "suap": {
     "id": 213,
     "codigo": "GOI002",
@@ -29,6 +30,7 @@
     "ano_documento": 2016,
     "vagas": "20-40",
     "trecho_vagas": "Número máximo de vagas do curso: 40 vagas Número mínimo de vagas do curso: 20 vagas",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

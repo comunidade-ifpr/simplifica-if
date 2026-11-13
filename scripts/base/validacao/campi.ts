@@ -68,6 +68,12 @@ function validarCursos(ctx: Contexto, r: string, cursos: unknown[], campusId: un
     }
     if (Object.hasOwn(curso, "url")) erros.push(...ctx.validarUrlHttps(curso.url, `${r}: cursos[].url`));
     if (Object.hasOwn(curso, "ppc_url")) erros.push(`${r}: cursos[].ppc_url foi substituído por cursos[].ppc.url`);
+    const cnctId = curso.cnct_id;
+    if (typeof cnctId === "string" && cnctId.startsWith("cnct:")) {
+      if (!existsSync(naBase(ctx.c, `catalogos/cnct/cursos/${cnctId.slice("cnct:".length)}.json`))) {
+        erros.push(`${r}: cursos[].cnct_id não existe no CNCT: ${cnctId}`);
+      }
+    }
     const ppc = curso.ppc;
     if (ppc === undefined || ppc === null) continue;
     if (!ehRecebido<PpcCurso>(ppc)) {

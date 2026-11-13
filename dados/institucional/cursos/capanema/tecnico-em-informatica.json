@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/capanema/nossos-cursos/tecnico-integrado-ao-ensino-medio/tecnico-integrado-informatica/",
+  "cnct_id": "cnct:tecnico-em-informatica",
   "suap": {
     "id": 67,
     "codigo": "CAP002",
@@ -29,6 +30,7 @@
     "ano_documento": 2020,
     "vagas": "20-40",
     "trecho_vagas": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 20",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

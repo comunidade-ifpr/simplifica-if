@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/jacarezinho/cursos/cursos-integrados/tecnico-em-alimentos-3/",
+  "cnct_id": "cnct:tecnico-em-alimentos",
   "suap": {
     "id": 71,
     "codigo": "JAC001",
@@ -29,6 +30,7 @@
     "ano_documento": 2019,
     "vagas": "30-40",
     "trecho_vagas": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 30",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

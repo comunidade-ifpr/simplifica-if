@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/saudebucal/",
+  "cnct_id": "cnct:tecnico-em-saude-bucal",
   "suap": {
     "id": 210,
     "codigo": "CTB021",
@@ -30,7 +31,9 @@
     "vagas": "15-25",
     "trecho_vagas": "Número máximo de vagas por ingresso (anual): 25 vagas; Número mínimo de vagas por ingresso (anual): 15 vagas; Reserva de vagas por ingresso (anual): 2 vagas",
     "periodicidade_vagas": "anual",
-    "curadoria": "Revisado",
-    "data_curadoria": "2026-05-11"
+    "curadoria_ano": "Revisado",
+    "data_curadoria_ano": "2026-05-11",
+    "curadoria_vagas": "Revisado",
+    "data_curadoria_vagas": "2026-05-11"
   }
 }

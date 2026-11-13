@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/foz-do-iguacu/tecnicos-integrados-3/tecnico-em-desenvolvimento-de-sistemas/",
+  "cnct_id": "cnct:tecnico-em-desenvolvimento-de-sistemas",
   "suap": {
     "id": 113,
     "codigo": "FOZ002",
@@ -29,6 +30,7 @@
     "ano_documento": 2019,
     "vagas": "35-40",
     "trecho_vagas": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 35",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

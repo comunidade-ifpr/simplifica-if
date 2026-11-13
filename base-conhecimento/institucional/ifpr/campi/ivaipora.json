@@ -106,6 +106,7 @@
       "url": "https://ifpr.edu.br/ivaipora/nossos-cursos/cursos-tecnicos/tecnico-em-agroecologia-integrado/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-agroecologia",
       "suap": {
         "id": 173,
         "codigo": "IVA001",
@@ -152,6 +153,7 @@
       "url": "https://ifpr.edu.br/ivaipora/nossos-cursos/cursos-tecnicos/tecnico-em-agropecuaria-integrado-ao-ensino-medio/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-agropecuaria",
       "suap": {
         "id": 452,
         "codigo": "IVAAGROP",
@@ -198,6 +200,7 @@
       "url": "https://ifpr.edu.br/ivaipora/nossos-cursos/cursos-tecnicos/eletrotecnica-integrado-ao-ensino-medio/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-eletrotecnica",
       "suap": {
         "id": 456,
         "codigo": "IVA007",
@@ -255,6 +258,7 @@
       "url": "https://ifpr.edu.br/ivaipora/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-eletrotecnica",
       "suap": {
         "id": 341,
         "codigo": "ELES1",
@@ -308,6 +312,7 @@
       "url": "https://ifpr.edu.br/ivaipora/nossos-cursos/cursos-tecnicos/tecnico-em-informatica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica",
       "suap": {
         "id": 45,
         "codigo": "IVA003",

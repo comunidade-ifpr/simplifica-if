@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/eventos-2/",
+  "cnct_id": "cnct:tecnico-em-eventos",
   "suap": {
     "id": 69,
     "codigo": "CTB009",
@@ -29,7 +30,9 @@
     "ano_documento": 2020,
     "vagas": "25-40",
     "trecho_vagas": "Número máximo de vagas do curso: 40; Número mínimo de vagas do curso: 25",
-    "curadoria": "Revisado",
-    "data_curadoria": "2026-05-11"
+    "curadoria_ano": "Revisado",
+    "data_curadoria_ano": "2026-05-11",
+    "curadoria_vagas": "Revisado",
+    "data_curadoria_vagas": "2026-05-11"
   }
 }

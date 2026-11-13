@@ -7,6 +7,7 @@
   "modalidade": "ead",
   "situacao": "suspenso",
   "pagina_oficial": "https://ifpr.edu.br/arapongas/nossos-cursos/tecnico-subsequente/tecnico-em-melhoria-de-processos/",
+  "cnct_ausencia": "Oferta experimental fora do CNCT: o PPC (seção 3.1, Da oferta experimental) declara que o curso não existe no Catálogo Nacional de Cursos Técnicos e se apoia na Resolução nº 1, de 5 de dezembro de 2014, do CNE, que admite cursos experimentais; eixo Gestão e Negócios.",
   "suap": {
     "id": 1,
     "codigo": "AR001",
@@ -29,6 +30,7 @@
     "ano_documento": 2021,
     "vagas": "20-40",
     "trecho_vagas": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 20",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

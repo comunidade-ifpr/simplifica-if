@@ -19,7 +19,9 @@
     "vagas": "20-40",
     "trecho_vagas": "1.1.10 Vagas totais (anual): Máximo 40 vagas; Mínimo 20 vagas",
     "periodicidade_vagas": "anual",
-    "curadoria": "Revisado",
-    "data_curadoria": "2026-05-11"
+    "curadoria_ano": "Revisado",
+    "data_curadoria_ano": "2026-05-11",
+    "curadoria_vagas": "Revisado",
+    "data_curadoria_vagas": "2026-05-11"
   }
 }

@@ -47,6 +47,7 @@
       "url": "https://ifpr.edu.br/capanema/nossos-cursos/tecnico-integrado-ao-ensino-medio/tecnico-em-agroecologia/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-agroecologia",
       "suap": {
         "id": 68,
         "codigo": "CAP003",
@@ -102,6 +103,7 @@
       "url": "https://ifpr.edu.br/capanema/nossos-cursos/tecnico-integrado-ao-ensino-medio/tecnico-em-cooperativismo/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-cooperativismo",
       "suap": {
         "id": 66,
         "codigo": "CAP001",
@@ -157,6 +159,7 @@
       "url": "https://ifpr.edu.br/capanema/nossos-cursos/tecnico-integrado-ao-ensino-medio/tecnico-integrado-informatica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica",
       "suap": {
         "id": 67,
         "codigo": "CAP002",

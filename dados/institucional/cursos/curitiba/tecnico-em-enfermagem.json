@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/enfermagem-2/",
+  "cnct_id": "cnct:tecnico-em-enfermagem",
   "suap": {
     "id": 151,
     "codigo": "CTB008",
@@ -27,6 +28,7 @@
     "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2024/11/PPC_VERSAO_FINAL_2024.pdf",
     "markdown_path": "institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md",
     "ano_documento": 2023,
-    "curadoria": "Pendente"
+    "curadoria_ano": "Pendente",
+    "curadoria_vagas": "Pendente"
   }
 }

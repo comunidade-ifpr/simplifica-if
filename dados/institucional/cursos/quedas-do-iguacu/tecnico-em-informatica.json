@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/quedas-do-iguacu/medio-integrado-2/tecnico-em-informatica/",
+  "cnct_id": "cnct:tecnico-em-informatica",
   "suap": {
     "id": 170,
     "codigo": "QUED001",
@@ -29,6 +30,7 @@
     "ano_documento": 2018,
     "vagas": "20-40",
     "trecho_vagas": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 20",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

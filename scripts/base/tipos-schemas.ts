@@ -57,6 +57,14 @@ export interface CampusJson {
       | "programa institucional";
     modalidade?: "presencial" | "ead" | "semipresencial";
     situacao?: "abertura" | "ativo" | "em_oferta" | "suspenso" | "incerto";
+    /**
+     * Habilitação do Catálogo Nacional de Cursos Técnicos: cnct:<id de catalogos/cnct/index.json>.
+     */
+    cnct_id?: string;
+    /**
+     * Motivo de um curso técnico não ter habilitação no CNCT (por exemplo, oferta experimental). Exclui cnct_id.
+     */
+    cnct_ausencia?: string;
     url?: string;
     suap?: {
       matrizes?: {
@@ -397,7 +405,25 @@ export interface ProcessoSeletivoJson {
       | "FIC"
       | "outro";
     modalidade?: "presencial" | "ead" | "semipresencial";
-    turno?: string;
+    /**
+     * Turno padronizado. diurno: manhã e tarde sem os dias definidos; matutino-com-contraturno e vespertino-com-contraturno: um período todos os dias e o outro em alguns dias. A grafia do edital fica em turno_original.
+     */
+    turno?:
+      | "matutino"
+      | "vespertino"
+      | "noturno"
+      | "integral"
+      | "diurno"
+      | "matutino-com-contraturno"
+      | "vespertino-com-contraturno";
+    /**
+     * Grafia do turno na fonte, com as marcas de nota de rodapé (¹, ², ³).
+     */
+    turno_original?: string;
+    /**
+     * O que o enum não diz: texto da nota de rodapé do edital e divergências entre fontes.
+     */
+    turno_nota?: string;
     vagas: {
       quantidade: number;
       forma_oferta?: string;

@@ -18,6 +18,7 @@
       "url": "https://ifpr.edu.br/coronel-vivida/nossos-cursos/tecnicos-integrados/tecnico-administracao/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-administracao",
       "suap": {
         "id": 59,
         "codigo": "CV001",
@@ -73,6 +74,7 @@
       "url": "https://ifpr.edu.br/coronel-vivida/nossos-cursos/tecnicos-integrados/cooperativismo/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-cooperativismo",
       "suap": {
         "id": 120,
         "codigo": "CV002",

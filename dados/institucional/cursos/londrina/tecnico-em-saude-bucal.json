@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/londrina/tecnico-em-saude-bucal/",
+  "cnct_id": "cnct:tecnico-em-saude-bucal",
   "suap": {
     "id": 200,
     "codigo": "LON006",
@@ -30,6 +31,7 @@
     "ano_documento": 2017,
     "vagas": "20-30",
     "trecho_vagas": "Número máximo de vagas do curso: 30 Número mínimo de vagas do curso: 20",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

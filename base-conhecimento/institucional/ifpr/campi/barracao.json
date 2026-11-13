@@ -18,6 +18,7 @@
       "url": "https://ifpr.edu.br/barracao/nossos-cursos/integrados-ao-ensino-medio/tecnico-em-administracao/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-administracao",
       "suap": {
         "id": 70,
         "codigo": "BA001",
@@ -77,6 +78,7 @@
       "url": "https://ifpr.edu.br/barracao/nossos-cursos/integrados-ao-ensino-medio/tecnico-em-informatica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica",
       "suap": {
         "id": 62,
         "codigo": "BA002",

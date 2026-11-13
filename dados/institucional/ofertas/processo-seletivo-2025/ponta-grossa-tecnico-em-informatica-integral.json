@@ -11,7 +11,8 @@
   "forma_oferta": "35 vagas; 1 turma(s); turno Integral; duração 4 anos",
   "status_curadoria": "sugerido",
   "modalidade": "presencial",
-  "turno": "Integral",
+  "turno": "integral",
+  "turno_original": "Integral",
   "campi": [],
   "cursos": [],
   "editais": [

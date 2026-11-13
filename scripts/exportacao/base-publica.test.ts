@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { auditarBase, type BaseInstitucional } from "../dominio/auditoria.ts";
 import { caminhoMarkdownPpc, interpretarVagasPpc, type Campus, type Curso } from "../dominio/curso.ts";
+import type { OfertaIngresso } from "../dominio/ingresso.ts";
 import type { Movimentacao } from "../dominio/movimentacao.ts";
 import { dataHoraJson, montarCampi, montarProcessos } from "./base-publica.ts";
 
@@ -27,6 +28,8 @@ function curso(parcial: Partial<Curso> = {}): Curso {
     paginaOficial: "",
     modalidade: "",
     situacao: "",
+    cnctId: "",
+    cnctAusencia: "",
     campusIds: ["pg-campus"],
     suap: {
       codigo: "",
@@ -40,8 +43,10 @@ function curso(parcial: Partial<Curso> = {}): Curso {
       vagas: "",
       trechoVagas: "",
       periodicidadeVagas: "",
-      curadoria: "",
-      dataCuradoria: "",
+      curadoriaAno: "",
+      dataCuradoriaAno: "",
+      curadoriaVagas: "",
+      dataCuradoriaVagas: "",
     },
     ...parcial,
   };
@@ -88,6 +93,93 @@ describe("auditarBase", () => {
     expect(auditarBase(base({ cursos: [errado] }))[0]).toContain(
       "esperado institucional/ifpr/ppcs/exemplo/tecnico-exemplo.md",
     );
+  });
+
+  test("exige cnct_id (ou ausência com motivo) em curso técnico ativo", () => {
+    const ativo = { situacao: "ativo" };
+    expect(auditarBase(base({ cursos: [curso(ativo)] }))).toEqual([
+      "Curso 'Técnico em Exemplo' (pg-curso): curso técnico ativo sem cnct_id (ou cnct_ausencia com o motivo)",
+    ]);
+    expect(auditarBase(base({ cursos: [curso({ ...ativo, cnctId: "cnct:tecnico-em-informatica" })] }))).toEqual([]);
+    expect(auditarBase(base({ cursos: [curso({ ...ativo, cnctAusencia: "oferta experimental" })] }))).toEqual([]);
+    expect(auditarBase(base({ cursos: [curso({ situacao: "suspenso" })] }))).toEqual([]);
+    expect(auditarBase(base({ cursos: [curso({ ...ativo, cnctId: "cnct:catalogo", cnctAusencia: "x" })] }))).toEqual([
+      "Curso 'Técnico em Exemplo' (pg-curso): cnct_id inválido (esperado cnct:<slug do curso no CNCT>): cnct:catalogo",
+      "Curso 'Técnico em Exemplo' (pg-curso): cnct_id e cnct_ausencia são excludentes",
+    ]);
+  });
+
+  test("confere a curadoria do PPC campo a campo", () => {
+    const ppc = {
+      ...curso().ppc,
+      curadoriaAno: "Revisado",
+      dataCuradoriaAno: "2026-11-13",
+      curadoriaVagas: "talvez",
+      dataCuradoriaVagas: "",
+    };
+    expect(auditarBase(base({ cursos: [curso({ ppc })] }))).toEqual([
+      "Curso 'Técnico em Exemplo' (pg-curso): ppc.curadoria_vagas desconhecida: talvez",
+    ]);
+    const semStatus = { ...ppc, curadoriaVagas: "", dataCuradoriaVagas: "2026-11-13" };
+    expect(auditarBase(base({ cursos: [curso({ ppc: semStatus })] }))).toEqual([
+      "Curso 'Técnico em Exemplo' (pg-curso): ppc.data_curadoria_vagas sem ppc.curadoria_vagas",
+    ]);
+  });
+
+  test("publica status e data de curadoria próprios para ano e vagas", () => {
+    const ppc = {
+      ...curso().ppc,
+      url: "https://exemplo.ifpr.edu.br/ppc.pdf",
+      anoDocumento: 2021,
+      vagas: "40",
+      trechoVagas: "40 vagas",
+      curadoriaAno: "Revisado",
+      dataCuradoriaAno: "2026-11-13",
+      curadoriaVagas: "Precisa de revisão",
+    };
+    const [campus] = montarCampi(base({ cursos: [curso({ ppc })] }));
+    expect(campus!.cursos[0]!.ppc!.metadados).toEqual({
+      ano_documento: {
+        ano: 2021,
+        trecho_fonte: "Ano do documento registrado no Notion: 2021",
+        status_curadoria: "revisado",
+        revisado_em: "2026-11-13",
+      },
+      vagas: { quantidade: 40, trecho_fonte: "40 vagas", status_curadoria: "precisa_revisao" },
+    });
+  });
+
+  test("exige turno no enum e a nota de rodapé quando a grafia tem marca", () => {
+    const oferta: OfertaIngresso = {
+      id: "ps/oferta",
+      titulo: "oferta",
+      ofertaId: "oferta",
+      cursoNome: "Técnico em Exemplo",
+      tipoOferta: "técnico integrado",
+      vagas: 40,
+      urlFonte: "https://ifpr.edu.br/edital",
+      trechoFonte: "",
+      formaOferta: "",
+      statusCuradoria: "",
+      revisadoEm: "",
+      modalidade: "",
+      turno: "matutino-com-contraturno",
+      turnoOriginal: "Diurno (Manhã + 2 tardes)¹",
+      turnoNota: "Nota ¹: aparece como Integral no Portal do Candidato.",
+      campusIdOriginal: "exemplo",
+      cursoSlugOriginal: "",
+      processoIds: [],
+      campusIds: [],
+      cursoIds: [],
+      editalIds: [],
+    };
+    const nome = "Oferta de ingresso 'oferta' (ps/oferta)";
+    const erros = (parcial: Partial<OfertaIngresso>) =>
+      auditarBase(base({ ofertas: [{ ...oferta, ...parcial }] })).filter((erro) => erro.includes("turno"));
+    expect(erros({})).toEqual([]);
+    expect(erros({ turnoNota: "" })).toEqual([`${nome}: turno_original com marca de rodapé sem turno_nota`]);
+    expect(erros({ turno: "Manhã" })).toEqual([`${nome}: turno fora do enum: Manhã`]);
+    expect(erros({ turno: "" })).toEqual([`${nome}: turno_original sem turno padronizado`]);
   });
 
   test("exige curso em movimentação com processo SEI", () => {

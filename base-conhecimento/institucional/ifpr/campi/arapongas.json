@@ -121,7 +121,8 @@
       "tipo_oferta": "subsequente",
       "url": "https://ifpr.edu.br/arapongas/nossos-cursos/ead/tecnico-em-agente-comunitario-de-saude/",
       "modalidade": "ead",
-      "situacao": "incerto"
+      "situacao": "incerto",
+      "cnct_id": "cnct:tecnico-em-agente-comunitario-de-saude"
     },
     {
       "curso_slug": "tecnico-em-logistica",
@@ -130,7 +131,8 @@
       "tipo_oferta": "subsequente",
       "url": "https://ifpr.edu.br/arapongas/nossos-cursos/ead/tecnico-em-logistica/",
       "modalidade": "ead",
-      "situacao": "incerto"
+      "situacao": "incerto",
+      "cnct_id": "cnct:tecnico-em-logistica"
     },
     {
       "curso_slug": "tecnico-em-meio-ambiente",
@@ -139,7 +141,8 @@
       "tipo_oferta": "subsequente",
       "url": "https://ifpr.edu.br/arapongas/nossos-cursos/ead/tecnico-em-meio-ambiente/",
       "modalidade": "ead",
-      "situacao": "incerto"
+      "situacao": "incerto",
+      "cnct_id": "cnct:tecnico-em-meio-ambiente"
     },
     {
       "curso_slug": "tecnico-em-melhoria-de-processos",
@@ -149,6 +152,7 @@
       "url": "https://ifpr.edu.br/arapongas/nossos-cursos/tecnico-subsequente/tecnico-em-melhoria-de-processos/",
       "modalidade": "ead",
       "situacao": "suspenso",
+      "cnct_ausencia": "Oferta experimental fora do CNCT: o PPC (seção 3.1, Da oferta experimental) declara que o curso não existe no Catálogo Nacional de Cursos Técnicos e se apoia na Resolução nº 1, de 5 de dezembro de 2014, do CNE, que admite cursos experimentais; eixo Gestão e Negócios.",
       "suap": {
         "id": 1,
         "codigo": "AR001",
@@ -211,6 +215,7 @@
       "url": "https://ifpr.edu.br/arapongas/nossos-cursos/curso-tecnico-integrado-ao-ensino-medio/tecnico-integrado-ao-ensino-medio-tecnico-em-sistemas-de-energia-renovavel/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-sistemas-de-energia-renovavel",
       "suap": {
         "id": 615,
         "codigo": "AR002",

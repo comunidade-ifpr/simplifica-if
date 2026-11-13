@@ -139,6 +139,7 @@
       "url": "https://ifpr.edu.br/foz-do-iguacu/tecnicos-integrados-3/tecnico-em-aquicultura/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-aquicultura",
       "suap": {
         "id": 52,
         "codigo": "FOZ001",
@@ -198,6 +199,7 @@
       "url": "https://ifpr.edu.br/foz-do-iguacu/tecnicos-integrados-3/tecnico-em-desenvolvimento-de-sistemas/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-desenvolvimento-de-sistemas",
       "suap": {
         "id": 113,
         "codigo": "FOZ002",
@@ -257,6 +259,7 @@
       "url": "https://ifpr.edu.br/foz-do-iguacu/tecnicos-integrados-3/tecnico-em-edificacoes-3/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-edificacoes",
       "suap": {
         "id": 133,
         "codigo": "FOZ003",
@@ -316,6 +319,7 @@
       "url": "https://ifpr.edu.br/foz-do-iguacu/tecnicos-subsequentes/tecnico-em-cozinha/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-gastronomia",
       "suap": {
         "id": 126,
         "codigo": "FOZ004",
@@ -362,6 +366,7 @@
       "url": "https://ifpr.edu.br/foz-do-iguacu/tecnicos-integrados-3/tecnico-em-meio-ambiente/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-meio-ambiente",
       "suap": {
         "id": 171,
         "codigo": "FOZ005",

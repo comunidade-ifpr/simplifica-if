@@ -101,6 +101,7 @@
       "url": "https://ifpr.edu.br/jacarezinho/cursos/cursos-integrados/tecnico-em-alimentos-3/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-alimentos",
       "suap": {
         "id": 71,
         "codigo": "JAC001",
@@ -156,6 +157,7 @@
       "url": "https://ifpr.edu.br/jacarezinho/cursos/cursos-integrados/tecnico-em-eletromecanica-2/projeto-pedagogico-do-curso/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-eletromecanica",
       "suap": {
         "id": 265,
         "codigo": "JAC006",
@@ -202,6 +204,7 @@
       "url": "https://ifpr.edu.br/jacarezinho/cursos/cursos-integrados/tecnico-em-eletrotecnica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-eletrotecnica",
       "suap": {
         "id": 78,
         "codigo": "JAC002",
@@ -257,6 +260,7 @@
       "url": "https://ifpr.edu.br/jacarezinho/cursos/cursos-integrados/tecnico-em-informatica-2/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica",
       "suap": {
         "id": 80,
         "codigo": "JAC003",
@@ -312,6 +316,7 @@
       "url": "https://ifpr.edu.br/jacarezinho/cursos/cursos-integrados/tecnico-em-mecanica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-mecanica",
       "suap": {
         "id": 92,
         "codigo": "JAC004",
@@ -367,6 +372,7 @@
       "url": "https://ifpr.edu.br/jacarezinho/cursos/cursos-subsequentes/tecnico-em-teatro/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-teatro",
       "suap": {
         "id": 37,
         "codigo": "JAC005",

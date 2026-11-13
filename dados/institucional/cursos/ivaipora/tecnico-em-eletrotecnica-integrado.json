@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/ivaipora/nossos-cursos/cursos-tecnicos/eletrotecnica-integrado-ao-ensino-medio/",
+  "cnct_id": "cnct:tecnico-em-eletrotecnica",
   "suap": {
     "id": 456,
     "codigo": "IVA007",
@@ -29,7 +30,9 @@
     "ano_documento": 2023,
     "vagas": "20-40",
     "trecho_vagas": "Número mínimo de vagas a serem ofertadas no processo seletivo: 20. Número máximo de vagas a serem ofertadas no processo seletivo: 40.",
-    "curadoria": "Revisado",
-    "data_curadoria": "2026-07-06"
+    "curadoria_ano": "Revisado",
+    "data_curadoria_ano": "2026-07-06",
+    "curadoria_vagas": "Revisado",
+    "data_curadoria_vagas": "2026-07-06"
   }
 }

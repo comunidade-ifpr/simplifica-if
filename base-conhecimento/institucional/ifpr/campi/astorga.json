@@ -18,6 +18,7 @@
       "url": "https://ifpr.edu.br/astorga/menu-principal/nossos-cursos/tecnicos-integrados/tinfem/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica",
       "suap": {
         "id": 56,
         "codigo": "AST002",
@@ -93,6 +94,7 @@
       "url": "https://ifpr.edu.br/astorga/menu-principal/nossos-cursos/tecnicos-subsequentes/tecnico-em-desenvolvimento-de-sistemas-tads/",
       "modalidade": "presencial",
       "situacao": "suspenso",
+      "cnct_id": "cnct:tecnico-em-desenvolvimento-de-sistemas",
       "suap": {
         "id": 48,
         "codigo": "AST001",

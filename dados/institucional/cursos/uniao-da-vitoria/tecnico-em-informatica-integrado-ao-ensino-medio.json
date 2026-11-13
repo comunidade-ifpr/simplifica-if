@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/uniao-da-vitoria/tecnico-integrado/tecnico-em-informatica-integrado-ao-ensino-medio-duracao-3-anos/",
+  "cnct_id": "cnct:tecnico-em-informatica",
   "suap": {
     "id": 41,
     "codigo": "UVIT001",
@@ -29,6 +30,7 @@
     "ano_documento": 2025,
     "vagas": "20-40",
     "trecho_vagas": "Vagas totais Número mínimo de vagas do curso: 20. Número máximo de vagas do curso: 40. 1 Para melhor compreensão vide SILVA, Fabiane Aparecida de Souza Soares da. Cu",
-    "curadoria": "Revisado"
+    "curadoria_ano": "Revisado",
+    "curadoria_vagas": "Revisado"
   }
 }

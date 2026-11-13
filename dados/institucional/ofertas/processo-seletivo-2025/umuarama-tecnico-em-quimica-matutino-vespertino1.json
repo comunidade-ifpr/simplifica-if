@@ -11,7 +11,9 @@
   "forma_oferta": "40 vagas; 1 turma(s); turno Matutino/Vespertino¹; duração 4 anos",
   "status_curadoria": "sugerido",
   "modalidade": "presencial",
-  "turno": "Matutino/Vespertino¹",
+  "turno": "diurno",
+  "turno_original": "Matutino/Vespertino¹",
+  "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”.",
   "campi": [],
   "cursos": [
     "umuarama/tecnico-em-quimica-integrado-ao-ensino-medio"

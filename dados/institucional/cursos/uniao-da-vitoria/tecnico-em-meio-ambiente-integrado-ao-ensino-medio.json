@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/uniao-da-vitoria/tecnico-integrado/tecnico-em-meio-ambiente-integrado-ao-ensino-medio-duracao-3-anos/",
+  "cnct_id": "cnct:tecnico-em-meio-ambiente",
   "suap": {
     "id": 40,
     "codigo": "UVIT002",
@@ -29,6 +30,7 @@
     "ano_documento": 2022,
     "vagas": "20-40",
     "trecho_vagas": "Vagas totais Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 20",
-    "curadoria": "Revisado"
+    "curadoria_ano": "Revisado",
+    "curadoria_vagas": "Revisado"
   }
 }

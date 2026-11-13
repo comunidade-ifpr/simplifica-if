@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/mecanica/",
+  "cnct_id": "cnct:tecnico-em-mecanica",
   "suap": {
     "id": 84,
     "codigo": "CTB013",
@@ -31,7 +32,9 @@
     "vagas": "40",
     "trecho_vagas": "Número máximo de vagas por ingresso (anual): 40 vagas; Número mínimo de vagas por ingresso (anual): 20 vagas",
     "periodicidade_vagas": "anual",
-    "curadoria": "Revisado",
-    "data_curadoria": "2026-05-11"
+    "curadoria_ano": "Revisado",
+    "data_curadoria_ano": "2026-05-11",
+    "curadoria_vagas": "Revisado",
+    "data_curadoria_vagas": "2026-05-11"
   }
 }

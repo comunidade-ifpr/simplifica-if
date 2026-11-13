@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/massoterapia-2/",
+  "cnct_id": "cnct:tecnico-em-massoterapia",
   "suap": {
     "id": 177,
     "codigo": "CTB011",
@@ -29,7 +30,9 @@
     "ano_documento": 2021,
     "vagas": "30-36",
     "trecho_vagas": "Número máximo de vagas do curso: 36; Número mínimo de vagas do curso: 30",
-    "curadoria": "Revisado",
-    "data_curadoria": "2026-05-11"
+    "curadoria_ano": "Revisado",
+    "data_curadoria_ano": "2026-05-11",
+    "curadoria_vagas": "Revisado",
+    "data_curadoria_vagas": "2026-05-11"
   }
 }

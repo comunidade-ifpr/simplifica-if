@@ -242,6 +242,7 @@
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "situacao": "abertura",
+      "cnct_id": "cnct:tecnico-em-agroindustria",
       "sei": {
         "processos": [
           {
@@ -259,6 +260,7 @@
       "url": "https://ifpr.edu.br/palmas/about/nossos-cursos/curso-tecnico-presencial/tecnico-em-alimentos/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-alimentos",
       "suap": {
         "id": 47,
         "codigo": "PAL001",
@@ -313,6 +315,7 @@
       "url": "https://ifpr.edu.br/palmas/about/nossos-cursos/curso-tecnico-presencial/tecnico-em-informatica-para-internet/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica-para-internet",
       "suap": {
         "id": 256,
         "codigo": "PAL003",
@@ -359,6 +362,7 @@
       "url": "https://ifpr.edu.br/palmas/about/nossos-cursos/curso-tecnico-presencial/tecnico-em-servicos-juridicos/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-servicos-juridicos",
       "suap": {
         "id": 60,
         "codigo": "PAL002",

@@ -5,13 +5,16 @@
   "nivel": "médio",
   "forma_oferta": "subsequente",
   "situacao": "incerto",
+  "cnct_id": "cnct:tecnico-em-transacoes-imobiliarias",
   "suap": {
     "matrizes": {
       "urls": []
     }
   },
   "ppc": {
-    "curadoria": "Precisa de revisão",
-    "data_curadoria": "2026-10-14"
+    "curadoria_ano": "Precisa de revisão",
+    "data_curadoria_ano": "2026-10-14",
+    "curadoria_vagas": "Precisa de revisão",
+    "data_curadoria_vagas": "2026-10-14"
   }
 }

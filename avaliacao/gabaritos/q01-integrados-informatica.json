@@ -1,7 +1,7 @@
 {
   "pergunta": "Q01",
   "gerado_por": "scripts/avaliacao/gabaritos/conjuntos.ts",
-  "criterio": "Cursos de dados/institucional/ com forma_oferta=integrado, situação ativo/em_oferta e nome que casa com a habilitação 'Técnico em Informática' do CNCT (heurística provisória até o cnct_id da fase 3). Detalhes trazem o ano do PPC e a carga horária da matriz no SUAP, como referência para curadoria.",
+  "criterio": "Cursos de dados/institucional/ com forma_oferta=integrado, situação ativo/em_oferta e cnct_id=cnct:tecnico-em-informatica. Detalhes trazem o ano do PPC e a carga horária da matriz no SUAP, como referência para curadoria.",
   "universo": "curso",
   "avaliar_precisao": true,
   "esperado": [

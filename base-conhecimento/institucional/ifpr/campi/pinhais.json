@@ -70,6 +70,7 @@
       "url": "https://ifpr.edu.br/pinhais/institucional/nossos-cursos/tecnicos-integrados/administracao/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-administracao",
       "suap": {
         "id": 195,
         "codigo": "PIN001",
@@ -123,6 +124,7 @@
       "url": "https://ifpr.edu.br/pinhais/institucional/nossos-cursos/tecnicos-integrados/informatica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica",
       "suap": {
         "id": 574,
         "codigo": "PIN003",

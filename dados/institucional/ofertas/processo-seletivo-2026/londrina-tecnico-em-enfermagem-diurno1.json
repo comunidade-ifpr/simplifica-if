@@ -11,7 +11,9 @@
   "forma_oferta": "30 vagas; 1 turma(s); turno Diurno¹; duração 2 anos",
   "status_curadoria": "sugerido",
   "modalidade": "presencial",
-  "turno": "Diurno¹",
+  "turno": "diurno",
+  "turno_original": "Diurno¹",
+  "turno_nota": "A marca ¹ vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota. No Edital nº 128/2025, Anexo I, a grafia é “Diurno ²”, e a nota ² diz que o turno “Diurno” aparece no Portal do Candidato do IFPR como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”.",
   "campi": [],
   "cursos": [
     "londrina/tecnico-em-enfermagem"

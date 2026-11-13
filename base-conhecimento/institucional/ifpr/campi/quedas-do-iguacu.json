@@ -17,6 +17,7 @@
       "url": "https://ifpr.edu.br/quedas-do-iguacu/medio-integrado-2/tecnico-em-informatica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica",
       "suap": {
         "id": 170,
         "codigo": "QUED001",
@@ -61,6 +62,7 @@
       "nivel": "médio",
       "tipo_oferta": "integrado",
       "situacao": "abertura",
+      "cnct_id": "cnct:tecnico-em-informatica-para-internet",
       "sei": {
         "processos": [
           {
@@ -78,6 +80,7 @@
       "url": "https://ifpr.edu.br/quedas-do-iguacu/medio-integrado-2/tecnico-em-meio-ambiente/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-meio-ambiente",
       "suap": {
         "id": 197,
         "codigo": "QUED002",

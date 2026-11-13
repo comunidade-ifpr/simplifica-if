@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/telemaco-borba/cursos-tecnicos-integrados/programacao-de-jogos-digitais/",
+  "cnct_id": "cnct:tecnico-em-programacao-de-jogos-digitais",
   "suap": {
     "id": 50,
     "codigo": "TBOR004",
@@ -30,6 +31,7 @@
     "markdown_path": "institucional/ifpr/ppcs/telemaco-borba/tecnico-em-programacao-de-jogos-digitais.md",
     "ano_documento": 2025,
     "vagas": "40",
-    "curadoria": "Pendente"
+    "curadoria_ano": "Pendente",
+    "curadoria_vagas": "Pendente"
   }
 }

@@ -18,6 +18,7 @@
     "ano_documento": 2010,
     "vagas": "40",
     "trecho_vagas": "Vagas totais (anuais): 40",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

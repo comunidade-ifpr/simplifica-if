@@ -1,7 +1,7 @@
 {
   "pergunta": "Q08",
   "gerado_por": "scripts/avaliacao/gabaritos/conjuntos.ts",
-  "criterio": "Campi das ofertas de dados/institucional/ofertas/processo-seletivo-2026/ cujo curso casa, pelo nome, com habilitação do eixo 'Informação e Comunicação' do CNCT. Detalhes: curso, turno (grafia do edital) e tipo de oferta.",
+  "criterio": "Campi das ofertas de dados/institucional/ofertas/processo-seletivo-2026/ cujo curso tem cnct_id de habilitação do eixo 'Informação e Comunicação' do CNCT. Detalhes: curso, turno padronizado, grafia do edital (turno_original) e tipo de oferta.",
   "universo": "campus",
   "avaliar_precisao": true,
   "esperado": [
@@ -31,172 +31,198 @@
     "campus:assis-chateaubriand": [
       {
         "curso": "curso:assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
-        "turno": "Diurno (manhã + 2 tardes por semana)¹",
+        "turno": "matutino-com-contraturno",
+        "turno_original": "Diurno (manhã + 2 tardes por semana)¹",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:astorga": [
       {
         "curso": "curso:astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio",
-        "turno": "Matutino",
+        "turno": "matutino",
+        "turno_original": "Matutino",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:barracao": [
       {
         "curso": "curso:barracao/tecnico-em-informatica",
-        "turno": "Matutino",
+        "turno": "matutino",
+        "turno_original": "Matutino",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:capanema": [
       {
         "curso": "curso:capanema/tecnico-em-informatica",
-        "turno": "Matutino",
+        "turno": "matutino",
+        "turno_original": "Matutino",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:cascavel": [
       {
         "curso": "curso:cascavel/tecnico-em-informatica",
-        "turno": "Diurno (manhã+duas tardes)¹",
+        "turno": "matutino-com-contraturno",
+        "turno_original": "Diurno (manhã+duas tardes)¹",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:colombo": [
       {
         "curso": "curso:colombo/tecnico-em-informatica-integrado-ao-ensino-medio",
-        "turno": "Matutino",
+        "turno": "matutino",
+        "turno_original": "Matutino",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:curitiba": [
       {
         "curso": "curso:curitiba/tecnico-em-informatica-integrado-ao-ensino-medio",
-        "turno": "Matutino",
+        "turno": "matutino",
+        "turno_original": "Matutino",
         "tipo_oferta": "técnico integrado"
       },
       {
         "curso": "curso:curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio",
-        "turno": "Vespertino",
+        "turno": "vespertino",
+        "turno_original": "Vespertino",
         "tipo_oferta": "técnico integrado"
       },
       {
         "curso": "curso:curitiba/tecnico-em-telecomunicacoes",
-        "turno": "Noturno",
+        "turno": "noturno",
+        "turno_original": "Noturno",
         "tipo_oferta": "técnico subsequente"
       }
     ],
     "campus:foz-do-iguacu": [
       {
         "curso": "curso:foz-do-iguacu/tecnico-em-desenvolvimento-de-sistemas",
-        "turno": "Matutino",
+        "turno": "matutino",
+        "turno_original": "Matutino",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:goioere": [
       {
         "curso": "curso:goioere/tecnico-em-informatica",
-        "turno": "Matutino",
+        "turno": "matutino",
+        "turno_original": "Matutino",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:irati": [
       {
         "curso": "curso:irati/tecnico-em-informatica",
-        "turno": "Matutino",
+        "turno": "matutino",
+        "turno_original": "Matutino",
         "tipo_oferta": "técnico integrado"
       },
       {
         "curso": "curso:irati/tecnico-em-informatica",
-        "turno": "Vespertino",
+        "turno": "vespertino",
+        "turno_original": "Vespertino",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:ivaipora": [
       {
         "curso": "curso:ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio",
-        "turno": "Diurno (manhã e tarde)²",
+        "turno": "diurno",
+        "turno_original": "Diurno (manhã e tarde)²",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:jacarezinho": [
       {
         "curso": "curso:jacarezinho/tecnico-em-informatica",
-        "turno": "Diurno",
+        "turno": "diurno",
+        "turno_original": "Diurno",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:londrina": [
       {
         "curso": "curso:londrina/tecnico-em-informatica-integrado-ao-ensino-medio",
-        "turno": "Vespertino",
+        "turno": "vespertino",
+        "turno_original": "Vespertino",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:paranagua": [
       {
         "curso": "curso:paranagua/tecnico-em-informatica",
-        "turno": "Vespertino",
+        "turno": "vespertino",
+        "turno_original": "Vespertino",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:paranavai": [
       {
         "curso": "curso:paranavai/tecnico-em-informatica",
-        "turno": "Matutino",
+        "turno": "matutino",
+        "turno_original": "Matutino",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:pinhais": [
       {
         "curso": "curso:pinhais/tecnico-em-informatica-integrado-ao-ensino-medio",
-        "turno": "Matutino",
+        "turno": "matutino",
+        "turno_original": "Matutino",
         "tipo_oferta": "técnico integrado"
       },
       {
         "curso": "curso:pinhais/tecnico-em-informatica-integrado-ao-ensino-medio",
-        "turno": "Vespertino",
+        "turno": "vespertino",
+        "turno_original": "Vespertino",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:pitanga": [
       {
         "curso": "curso:pitanga/tecnico-em-desenvolvimento-de-sistemas",
-        "turno": "Matutino",
+        "turno": "matutino",
+        "turno_original": "Matutino",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:quedas-do-iguacu": [
       {
         "curso": "curso:quedas-do-iguacu/tecnico-em-informatica",
-        "turno": "Diurno (Manhã + 2 tardes por semana)¹",
+        "turno": "matutino-com-contraturno",
+        "turno_original": "Diurno (Manhã + 2 tardes por semana)¹",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:telemaco-borba": [
       {
         "curso": "curso:telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
-        "turno": "Matutino/Vespertino¹",
+        "turno": "diurno",
+        "turno_original": "Matutino/Vespertino¹",
         "tipo_oferta": "técnico integrado"
       },
       {
         "curso": "curso:telemaco-borba/tecnico-em-programacao-de-jogos-digitais",
-        "turno": "Matutino/Vespertino¹",
+        "turno": "diurno",
+        "turno_original": "Matutino/Vespertino¹",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:umuarama": [
       {
         "curso": "curso:umuarama/tecnico-em-informatica-integrado-ao-ensino-medio",
-        "turno": "Matutino/Vespertino¹",
+        "turno": "diurno",
+        "turno_original": "Matutino/Vespertino¹",
         "tipo_oferta": "técnico integrado"
       }
     ],
     "campus:uniao-da-vitoria": [
       {
         "curso": "curso:uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio",
-        "turno": "Diurno (Manhã + 2 tardes)¹",
+        "turno": "matutino-com-contraturno",
+        "turno_original": "Diurno (Manhã + 2 tardes)¹",
         "tipo_oferta": "técnico integrado"
       }
     ]

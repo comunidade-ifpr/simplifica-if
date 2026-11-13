@@ -345,8 +345,10 @@ perguntas:
       conjunto:
         arquivo: avaliacao/gabaritos/q08-campi-eixo-informacao-comunicacao.json
       observacoes: >-
-        O eixo de cada curso vem do casamento por nome com o CNCT (heurística até o cnct_id da fase 3).
-        Os turnos têm 25 grafias nos editais; a padronização é da fase 3.
+        O eixo de cada curso vem do cnct_id do curso (fase 3), e o turno, do enum padronizado da
+        oferta, com a grafia do edital em turno_original. Pendência: a oferta de Foz do Iguaçu em
+        Desenvolvimento de Sistemas está como matutino na página de cursos do PS 2026 (url_fonte),
+        mas o Anexo I do Edital nº 130/2025 registra integral (ver turno_nota da oferta).
 
   # ------------------------------------------------------------------ uso real da base
   - id: Q09

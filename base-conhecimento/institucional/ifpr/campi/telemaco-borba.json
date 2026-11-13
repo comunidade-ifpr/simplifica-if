@@ -76,6 +76,7 @@
       "url": "https://ifpr.edu.br/telemaco-borba/cursos-tecnicos-integrados/automacao-industrial/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-automacao-industrial",
       "suap": {
         "id": 25,
         "codigo": "TBOR001",
@@ -136,6 +137,7 @@
       "url": "https://ifpr.edu.br/telemaco-borba/",
       "modalidade": "presencial",
       "situacao": "suspenso",
+      "cnct_id": "cnct:tecnico-em-eletromecanica",
       "sei": {
         "processos": [
           {
@@ -154,6 +156,7 @@
       "url": "https://ifpr.edu.br/telemaco-borba/",
       "modalidade": "presencial",
       "situacao": "abertura",
+      "cnct_id": "cnct:tecnico-em-eletrotecnica",
       "sei": {
         "processos": [
           {
@@ -175,6 +178,7 @@
       "url": "https://ifpr.edu.br/telemaco-borba/cursos-tecnicos-integrados/informatica-para-internet/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica-para-internet",
       "suap": {
         "id": 34,
         "codigo": "TBOR002",
@@ -239,6 +243,7 @@
       "url": "https://ifpr.edu.br/telemaco-borba/",
       "modalidade": "presencial",
       "situacao": "abertura",
+      "cnct_id": "cnct:tecnico-em-instrumentacao-industrial",
       "sei": {
         "processos": [
           {
@@ -260,6 +265,7 @@
       "url": "https://ifpr.edu.br/telemaco-borba/cursos-tecnicos-integrados/tecnico-em-mecanica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-mecanica",
       "suap": {
         "id": 36,
         "codigo": "TBOR003",
@@ -320,6 +326,7 @@
       "url": "https://ifpr.edu.br/telemaco-borba/cursos-tecnicos-integrados/programacao-de-jogos-digitais/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-programacao-de-jogos-digitais",
       "suap": {
         "id": 50,
         "codigo": "TBOR004",

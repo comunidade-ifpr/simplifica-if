@@ -14,6 +14,7 @@
       "url": "https://ifpr.edu.br/ponta-grossa/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica",
       "ppc": {
         "url": "https://ifpr.edu.br/ponta-grossa/wp-content/uploads/sites/28/2022/07/PPC-Informatica_2019-Final-REVISADO.pdf",
         "conversao": {

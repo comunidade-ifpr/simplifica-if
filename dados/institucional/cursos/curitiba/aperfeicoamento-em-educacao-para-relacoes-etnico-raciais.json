@@ -18,7 +18,9 @@
     "ano_documento": 2023,
     "vagas": "100-100",
     "trecho_vagas": "Vagas ofertadas: a) Mínimo: 100 vagas (Resolução Consup/IFPR n.121/2023); b) Máximo: 100 vagas",
-    "curadoria": "Revisado",
-    "data_curadoria": "2026-05-11"
+    "curadoria_ano": "Revisado",
+    "data_curadoria_ano": "2026-05-11",
+    "curadoria_vagas": "Revisado",
+    "data_curadoria_vagas": "2026-05-11"
   }
 }

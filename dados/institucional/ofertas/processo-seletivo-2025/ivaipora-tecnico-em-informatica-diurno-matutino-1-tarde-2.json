@@ -11,7 +11,9 @@
   "forma_oferta": "40 vagas; 1 turma(s); turno Diurno (Matutino + 1 tarde)²; duração 3 anos",
   "status_curadoria": "sugerido",
   "modalidade": "presencial",
-  "turno": "Diurno (Matutino + 1 tarde)²",
+  "turno": "matutino-com-contraturno",
+  "turno_original": "Diurno (Matutino + 1 tarde)²",
+  "turno_nota": "Nota ² do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Matutino”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”.",
   "campi": [],
   "cursos": [
     "ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio"

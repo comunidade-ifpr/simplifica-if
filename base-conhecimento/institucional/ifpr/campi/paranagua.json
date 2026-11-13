@@ -46,6 +46,7 @@
       "url": "https://ifpr.edu.br/paranagua/nossos-cursos/ensino-medio-integrado/tecnico-em-manutencao-e-suporte-em-informatica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica",
       "suap": {
         "id": 63,
         "codigo": "PGUA001",
@@ -101,6 +102,7 @@
       "url": "https://ifpr.edu.br/paranagua/nossos-cursos/ensino-medio-integrado/mecanica-e-eletromecanica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-mecanica",
       "suap": {
         "id": 64,
         "codigo": "PGUA002",
@@ -147,6 +149,7 @@
       "url": "https://ifpr.edu.br/paranagua/nossos-cursos/ensino-medio-integrado/tecnico-em-meio-ambiente/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-meio-ambiente",
       "suap": {
         "id": 65,
         "codigo": "PGUA003",
@@ -203,6 +206,7 @@
       "url": "https://ifpr.edu.br/paranagua/nossos-cursos/ensino-medio-integrado/tecnico-em-producao-cultural/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-producao-cultural",
       "suap": {
         "id": 217,
         "codigo": "PGUA004",

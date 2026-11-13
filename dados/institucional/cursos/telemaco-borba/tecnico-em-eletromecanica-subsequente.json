@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "suspenso",
   "pagina_oficial": "https://ifpr.edu.br/telemaco-borba/",
+  "cnct_id": "cnct:tecnico-em-eletromecanica",
   "suap": {
     "matrizes": {
       "urls": []

@@ -76,6 +76,7 @@
       "url": "https://ifpr.edu.br/pitanga/nossos-cursos/integrados-ao-ensino-medio/tecnico-em-alimentos/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-alimentos",
       "suap": {
         "id": 216,
         "codigo": "PIT001",
@@ -120,6 +121,7 @@
       "url": "https://ifpr.edu.br/pitanga/nossos-cursos/integrados-ao-ensino-medio/tecnico-em-cooperativismo/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-cooperativismo",
       "suap": {
         "id": 61,
         "codigo": "PIT002",
@@ -175,6 +177,7 @@
       "url": "https://ifpr.edu.br/pitanga/nossos-cursos/integrados-ao-ensino-medio/tecnico-em-desenvolvimento-de-sistemas/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-desenvolvimento-de-sistemas",
       "suap": {
         "id": 621,
         "codigo": "PIT003",

@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/jacarezinho/cursos/cursos-integrados/tecnico-em-mecanica/",
+  "cnct_id": "cnct:tecnico-em-mecanica",
   "suap": {
     "id": 92,
     "codigo": "JAC004",
@@ -29,6 +30,7 @@
     "ano_documento": 2017,
     "vagas": "15-20",
     "trecho_vagas": "Número máximo de vagas do curso: 20 Número mínimo de vagas do curso: 15",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

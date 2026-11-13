@@ -1,6 +1,13 @@
-import { ehHttps, ehSlug } from "./comum.ts";
+import { ehIdCnct } from "@simplifica-if/kb/normas/ids";
+import { ehHttps, ehRotuloCuradoria, ehSlug } from "./comum.ts";
 import { caminhoEsperadoPpc, type Campus, type Curso } from "./curso.ts";
-import type { EditalIngresso, OfertaIngresso, ProcessoSeletivo } from "./ingresso.ts";
+import {
+  ehTurno,
+  RE_MARCA_RODAPE,
+  type EditalIngresso,
+  type OfertaIngresso,
+  type ProcessoSeletivo,
+} from "./ingresso.ts";
 import type { Movimentacao } from "./movimentacao.ts";
 
 export interface BaseInstitucional {
@@ -35,6 +42,35 @@ function auditarCampi(campi: Campus[]): string[] {
   return erros;
 }
 
+/** Situações em que o curso técnico precisa estar ligado ao CNCT. */
+const SITUACOES_ATIVAS = new Set(["ativo", "em_oferta"]);
+
+function auditarCnct(curso: Curso, nome: string): string[] {
+  const erros: string[] = [];
+  if (curso.cnctId && (!ehIdCnct(curso.cnctId) || curso.cnctId === "cnct:catalogo")) {
+    erros.push(`${nome}: cnct_id inválido (esperado cnct:<slug do curso no CNCT>): ${curso.cnctId}`);
+  }
+  if (curso.cnctId && curso.cnctAusencia) erros.push(`${nome}: cnct_id e cnct_ausencia são excludentes`);
+  if (curso.nivel === "médio" && SITUACOES_ATIVAS.has(curso.situacao) && !curso.cnctId && !curso.cnctAusencia) {
+    erros.push(`${nome}: curso técnico ativo sem cnct_id (ou cnct_ausencia com o motivo)`);
+  }
+  return erros;
+}
+
+/** Cada campo do PPC (ano e vagas) tem status e data de curadoria próprios. */
+function auditarCuradoriaPpc(curso: Curso, nome: string): string[] {
+  const erros: string[] = [];
+  const campos = [
+    ["ano", curso.ppc.curadoriaAno, curso.ppc.dataCuradoriaAno],
+    ["vagas", curso.ppc.curadoriaVagas, curso.ppc.dataCuradoriaVagas],
+  ] as const;
+  for (const [campo, status, data] of campos) {
+    if (status && !ehRotuloCuradoria(status)) erros.push(`${nome}: ppc.curadoria_${campo} desconhecida: ${status}`);
+    if (data && !status) erros.push(`${nome}: ppc.data_curadoria_${campo} sem ppc.curadoria_${campo}`);
+  }
+  return erros;
+}
+
 function auditarCursos(cursos: Curso[], campusIdPorPagina: Map<string, string>): string[] {
   const erros: string[] = [];
   const vistos = new Map<string, string>();
@@ -45,6 +81,7 @@ function auditarCursos(cursos: Curso[], campusIdPorPagina: Map<string, string>):
     if (!curso.nome) erros.push(`${nome}: Nome ausente`);
     if (!curso.nivel) erros.push(`${nome}: Nível ausente`);
     if (!curso.tipoOferta) erros.push(`${nome}: Forma de oferta ausente`);
+    erros.push(...auditarCnct(curso, nome), ...auditarCuradoriaPpc(curso, nome));
 
     const [campusPagina] = curso.campusIds;
     if (curso.campusIds.length !== 1 || !campusPagina) {
@@ -160,6 +197,11 @@ function auditarOfertas(base: BaseInstitucional, processoIdPorPagina: Map<string
     if (!oferta.tipoOferta) erros.push(`${nome}: Tipo de oferta ausente`);
     if (oferta.vagas === undefined) erros.push(`${nome}: Vagas ausente ou inválida`);
     if (!ehHttps(oferta.urlFonte)) erros.push(`${nome}: URL fonte ausente ou não HTTPS`);
+    if (oferta.turno && !ehTurno(oferta.turno)) erros.push(`${nome}: turno fora do enum: ${oferta.turno}`);
+    if (oferta.turnoOriginal && !oferta.turno) erros.push(`${nome}: turno_original sem turno padronizado`);
+    if (RE_MARCA_RODAPE.test(oferta.turnoOriginal) && !oferta.turnoNota) {
+      erros.push(`${nome}: turno_original com marca de rodapé sem turno_nota`);
+    }
     if (!oferta.processoIds.length) erros.push(`${nome}: relação Processo Seletivo ausente`);
     for (const processoPagina of oferta.processoIds) {
       const processoId = processoIdPorPagina.get(processoPagina);

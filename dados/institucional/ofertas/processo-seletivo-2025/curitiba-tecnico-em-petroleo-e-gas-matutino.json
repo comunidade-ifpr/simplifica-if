@@ -11,7 +11,8 @@
   "forma_oferta": "30 vagas; 1 turma(s); turno Matutino; duração 3 anos",
   "status_curadoria": "sugerido",
   "modalidade": "presencial",
-  "turno": "Matutino",
+  "turno": "matutino",
+  "turno_original": "Matutino",
   "campi": [],
   "cursos": [
     "curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio"

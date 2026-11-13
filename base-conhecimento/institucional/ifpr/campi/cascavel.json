@@ -47,6 +47,7 @@
       "url": "https://ifpr.edu.br/cascavel/cursos/ensino-medio-integrado/tecnico-em-edificacoes/apresentacao/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-edificacoes",
       "suap": {
         "id": 29,
         "codigo": "CAS001",
@@ -100,6 +101,7 @@
       "url": "https://ifpr.edu.br/cascavel/cursos/ensino-medio-integrado/tecnico-em-informatica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica",
       "suap": {
         "id": 30,
         "codigo": "CAS002",
@@ -155,6 +157,7 @@
       "url": "https://ifpr.edu.br/cascavel/cursos/ensino-medio-integrado/tecnico-em-quimica/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-quimica",
       "suap": {
         "id": 32,
         "codigo": "CAS003",

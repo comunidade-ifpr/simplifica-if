@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/colombo/tecnicos-integrados/tecnico-em-informatica/",
+  "cnct_id": "cnct:tecnico-em-informatica",
   "suap": {
     "id": 122,
     "codigo": "COL003",
@@ -29,7 +30,9 @@
     "ano_documento": 2023,
     "vagas": "20-40",
     "trecho_vagas": "40 vagas (mínimo 20, máximo 40)",
-    "curadoria": "Revisado",
-    "data_curadoria": "2026-05-27"
+    "curadoria_ano": "Revisado",
+    "data_curadoria_ano": "2026-05-27",
+    "curadoria_vagas": "Revisado",
+    "data_curadoria_vagas": "2026-05-27"
   }
 }

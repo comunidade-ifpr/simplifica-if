@@ -12,8 +12,15 @@ import path from "node:path";
 import { z } from "zod";
 import { RAIZ_PROJETO } from "../config.ts";
 import { compararTexto } from "../dominio/comum.ts";
+import { ehIdCnct } from "@simplifica-if/kb/normas/ids";
 import { chaveCurso, type Campus, type Curso } from "../dominio/curso.ts";
-import type { EditalIngresso, OfertaIngresso, ProcessoSeletivo } from "../dominio/ingresso.ts";
+import {
+  ehTurno,
+  TURNOS,
+  type EditalIngresso,
+  type OfertaIngresso,
+  type ProcessoSeletivo,
+} from "../dominio/ingresso.ts";
 
 export const RAIZ_DADOS_INSTITUCIONAIS = path.join(RAIZ_PROJETO, "dados", "institucional");
 
@@ -32,6 +39,12 @@ export const esquemaCampusLocal = z.strictObject({
 });
 export type CampusLocal = z.output<typeof esquemaCampusLocal>;
 
+/** `cnct:<slug>` de um curso do CNCT; `cnct:catalogo` cita o catálogo inteiro e não serve aqui. */
+const cnctId = z
+  .string()
+  .refine((valor) => ehIdCnct(valor) && valor !== "cnct:catalogo", "deve ser cnct:<slug do curso no CNCT>")
+  .optional();
+
 export const esquemaCursoLocal = z.strictObject({
   campus_id: z.string(),
   curso_slug: z.string(),
@@ -41,6 +54,10 @@ export const esquemaCursoLocal = z.strictObject({
   modalidade: texto,
   situacao: texto,
   pagina_oficial: texto,
+  /** Habilitação do CNCT do curso técnico. */
+  cnct_id: cnctId,
+  /** Motivo de um curso técnico não ter habilitação no CNCT; exclui `cnct_id`. */
+  cnct_ausencia: texto,
   suap: z
     .strictObject({
       id: inteiro,
@@ -67,8 +84,12 @@ export const esquemaCursoLocal = z.strictObject({
       vagas: texto,
       trecho_vagas: texto,
       periodicidade_vagas: texto,
-      curadoria: texto,
-      data_curadoria: texto,
+      /** Status e data da curadoria de `ano_documento`. */
+      curadoria_ano: texto,
+      data_curadoria_ano: texto,
+      /** Status e data da curadoria de `vagas`, `trecho_vagas` e `periodicidade_vagas`. */
+      curadoria_vagas: texto,
+      data_curadoria_vagas: texto,
       observacoes: texto,
     })
     .optional(),
@@ -114,7 +135,10 @@ export const esquemaOfertaLocal = z.strictObject({
   status_curadoria: texto,
   revisado_em: texto,
   modalidade: texto,
-  turno: texto,
+  /** Turno padronizado; a grafia do edital fica em `turno_original` e a nota de rodapé em `turno_nota`. */
+  turno: z.enum(TURNOS).optional(),
+  turno_original: texto,
+  turno_nota: texto,
   /** Relações resolvidas; prevalecem sobre os campos `_original`, que guardam o texto do edital. */
   campi: listaTexto,
   cursos: listaTexto,
@@ -284,6 +308,8 @@ export function paraDominio(dados: DadosInstitucionais): {
       paginaOficial: c.pagina_oficial ?? "",
       modalidade: c.modalidade ?? "",
       situacao: c.situacao ?? "",
+      cnctId: c.cnct_id ?? "",
+      cnctAusencia: c.cnct_ausencia ?? "",
       campusIds: [c.campus_id],
       suap: {
         id: c.suap?.id,
@@ -306,8 +332,10 @@ export function paraDominio(dados: DadosInstitucionais): {
         vagas: c.ppc?.vagas ?? "",
         trechoVagas: c.ppc?.trecho_vagas ?? "",
         periodicidadeVagas: c.ppc?.periodicidade_vagas ?? "",
-        curadoria: c.ppc?.curadoria ?? "",
-        dataCuradoria: c.ppc?.data_curadoria ?? "",
+        curadoriaAno: c.ppc?.curadoria_ano ?? "",
+        dataCuradoriaAno: c.ppc?.data_curadoria_ano ?? "",
+        curadoriaVagas: c.ppc?.curadoria_vagas ?? "",
+        dataCuradoriaVagas: c.ppc?.data_curadoria_vagas ?? "",
       },
     })),
     processos: dados.processos.map((p): ProcessoSeletivo => ({
@@ -347,6 +375,8 @@ export function paraDominio(dados: DadosInstitucionais): {
       revisadoEm: o.revisado_em ?? "",
       modalidade: o.modalidade ?? "",
       turno: o.turno ?? "",
+      turnoOriginal: o.turno_original ?? "",
+      turnoNota: o.turno_nota ?? "",
       campusIdOriginal: o.campus_id_original ?? "",
       cursoSlugOriginal: o.curso_slug_original ?? "",
       processoIds: o.processos,
@@ -393,6 +423,8 @@ export function deDominio(base: {
       modalidade: c.modalidade,
       situacao: c.situacao,
       pagina_oficial: c.paginaOficial,
+      cnct_id: c.cnctId,
+      cnct_ausencia: c.cnctAusencia,
       suap: {
         id: c.suap.id,
         codigo: c.suap.codigo,
@@ -414,8 +446,10 @@ export function deDominio(base: {
         vagas: c.ppc.vagas,
         trecho_vagas: c.ppc.trechoVagas,
         periodicidade_vagas: c.ppc.periodicidadeVagas,
-        curadoria: c.ppc.curadoria,
-        data_curadoria: c.ppc.dataCuradoria,
+        curadoria_ano: c.ppc.curadoriaAno,
+        data_curadoria_ano: c.ppc.dataCuradoriaAno,
+        curadoria_vagas: c.ppc.curadoriaVagas,
+        data_curadoria_vagas: c.ppc.dataCuradoriaVagas,
       },
       notion_page_id: c.notionPageId,
     };
@@ -466,7 +500,9 @@ export function deDominio(base: {
       status_curadoria: o.statusCuradoria,
       revisado_em: o.revisadoEm,
       modalidade: o.modalidade,
-      turno: o.turno,
+      turno: ehTurno(o.turno) ? o.turno : undefined,
+      turno_original: o.turnoOriginal,
+      turno_nota: o.turnoNota,
       campi: resolver(campusPorPagina, o.campusIds, `Oferta ${o.ofertaId}`),
       cursos: resolver(cursoPorPagina, o.cursoIds, `Oferta ${o.ofertaId}`),
       editais: resolver(editalPorPagina, o.editalIds, `Oferta ${o.ofertaId}`),

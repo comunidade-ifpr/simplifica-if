@@ -11,7 +11,9 @@
   "forma_oferta": "40 vagas; 1 turma(s); turno Diurno (manhã + 2 tardes por semana)¹; duração 3 anos",
   "status_curadoria": "sugerido",
   "modalidade": "presencial",
-  "turno": "Diurno (manhã + 2 tardes por semana)¹",
+  "turno": "matutino-com-contraturno",
+  "turno_original": "Diurno (manhã + 2 tardes por semana)¹",
+  "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”.",
   "campi": [],
   "cursos": [
     "assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio"

@@ -101,8 +101,9 @@ function suapJson(curso: Curso): SuapJson | undefined {
 function ppcJson(curso: Curso): PpcJson | undefined {
   const { ppc } = curso;
   if (!ppc.url) return undefined;
-  const revisadoEm = dataJson(ppc.dataCuradoria);
-  const status = statusCuradoria(ppc.curadoria, revisadoEm);
+  // Ano e vagas têm curadoria própria (`ppc.curadoria_ano`, `ppc.curadoria_vagas`).
+  const anoRevisadoEm = dataJson(ppc.dataCuradoriaAno);
+  const vagasRevisadoEm = dataJson(ppc.dataCuradoriaVagas);
 
   const anoDocumento =
     ppc.anoDocumento === undefined
@@ -110,8 +111,8 @@ function ppcJson(curso: Curso): PpcJson | undefined {
       : preenchidos<NonNullable<MetadadosPpcJson["ano_documento"]>>({
           ano: ppc.anoDocumento,
           trecho_fonte: `Ano do documento registrado no Notion: ${ppc.anoDocumento}`,
-          status_curadoria: status,
-          revisado_em: revisadoEm,
+          status_curadoria: statusCuradoria(ppc.curadoriaAno, anoRevisadoEm),
+          revisado_em: anoRevisadoEm,
         });
   const interpretadas = interpretarVagasPpc(ppc.vagas);
   const vagas =
@@ -119,11 +120,11 @@ function ppcJson(curso: Curso): PpcJson | undefined {
       ? preenchidos<NonNullable<MetadadosPpcJson["vagas"]>>({
           quantidade: interpretadas.quantidade,
           trecho_fonte: ppc.trechoVagas,
-          status_curadoria: status,
+          status_curadoria: statusCuradoria(ppc.curadoriaVagas, vagasRevisadoEm),
           minimo: interpretadas.minimo,
           maximo: interpretadas.maximo,
           periodicidade: ppc.periodicidadeVagas,
-          revisado_em: revisadoEm,
+          revisado_em: vagasRevisadoEm,
         })
       : undefined;
   const metadados = preenchidos<MetadadosPpcJson>({ ano_documento: anoDocumento, vagas });
@@ -167,6 +168,8 @@ function cursoJson(curso: Curso, movimentacoes: Movimentacao[]): CursoJson {
     url: curso.paginaOficial,
     modalidade: doNotion(curso.modalidade),
     situacao: doNotion(curso.situacao),
+    cnct_id: curso.cnctId,
+    cnct_ausencia: curso.cnctAusencia,
     suap: suapJson(curso),
     ppc: ppcJson(curso),
     sei: processos.length ? { processos } : undefined,
@@ -258,7 +261,9 @@ function ofertaJson(
     },
     curso_slug: cursoSlug,
     modalidade: doNotion(oferta.modalidade),
-    turno: oferta.turno,
+    turno: doNotion(oferta.turno),
+    turno_original: oferta.turnoOriginal,
+    turno_nota: oferta.turnoNota,
   });
 }
 

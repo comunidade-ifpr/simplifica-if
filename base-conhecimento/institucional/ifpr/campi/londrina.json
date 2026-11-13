@@ -64,6 +64,7 @@
       "url": "https://ifpr.edu.br/londrina/ensino-medio-integrado-a-biotecnologia/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-biotecnologia",
       "suap": {
         "id": 189,
         "codigo": "LON001",
@@ -120,6 +121,7 @@
       "url": "https://ifpr.edu.br/londrina/tecnico-em-enfermagem/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-enfermagem",
       "suap": {
         "id": 178,
         "codigo": "LON002",
@@ -167,6 +169,7 @@
       "url": "https://ifpr.edu.br/londrina/tecnico-em-informatica-integrado/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica",
       "suap": {
         "id": 205,
         "codigo": "LON003",
@@ -223,6 +226,7 @@
       "url": "https://ifpr.edu.br/londrina/tecnico-em-massoterapia/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-massoterapia",
       "suap": {
         "id": 204,
         "codigo": "LON004",
@@ -270,6 +274,7 @@
       "url": "https://ifpr.edu.br/londrina/tecnico-em-protese-dentaria-2/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-protese-dentaria",
       "suap": {
         "id": 202,
         "codigo": "LON005",
@@ -315,6 +320,7 @@
       "url": "https://ifpr.edu.br/londrina/tecnico-em-saude-bucal/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-saude-bucal",
       "suap": {
         "id": 200,
         "codigo": "LON006",

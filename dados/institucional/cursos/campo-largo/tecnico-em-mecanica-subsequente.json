@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/campo-largo/nossos-cursos/cursos-tecnicos-subsequentes/mecanica/",
+  "cnct_id": "cnct:tecnico-em-mecanica",
   "suap": {
     "id": 83,
     "codigo": "CL005",
@@ -29,6 +30,7 @@
     "ano_documento": 2015,
     "vagas": "40",
     "trecho_vagas": "Numeromaximodevagasdocurso:40(quarenta) Numerominimodevagasdocurso:20(vinte)",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/ivaipora/nossos-cursos/cursos-tecnicos/tecnico-em-agropecuaria-integrado-ao-ensino-medio/",
+  "cnct_id": "cnct:tecnico-em-agropecuaria",
   "suap": {
     "id": 452,
     "codigo": "IVAAGROP",
@@ -29,6 +30,7 @@
     "ano_documento": 2024,
     "vagas": "20-35",
     "trecho_vagas": "Vagas totais Número mínimo: 20 Número máximo: 35",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }

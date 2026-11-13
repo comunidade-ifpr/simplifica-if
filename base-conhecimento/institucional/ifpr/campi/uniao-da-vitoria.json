@@ -77,6 +77,7 @@
       "url": "https://ifpr.edu.br/uniao-da-vitoria/tecnico-integrado/tecnico-em-informatica-integrado-ao-ensino-medio-duracao-3-anos/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-informatica",
       "suap": {
         "id": 41,
         "codigo": "UVIT001",
@@ -131,6 +132,7 @@
       "url": "https://ifpr.edu.br/uniao-da-vitoria/proeja/tecnico-em-manutencao-e-suporte-em-informatica-na-modalidade-proeja/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-manutencao-e-suporte-em-informatica",
       "ppc": {
         "url": "https://ifpr.edu.br/uniao-da-vitoria/wp-content/uploads/sites/27/2018/10/PPC-PROEJA-ULTIMA-VERSAO.pdf",
         "conversao": {
@@ -161,6 +163,7 @@
       "url": "https://ifpr.edu.br/uniao-da-vitoria/tecnico-integrado/tecnico-em-meio-ambiente-integrado-ao-ensino-medio-duracao-3-anos/",
       "modalidade": "presencial",
       "situacao": "ativo",
+      "cnct_id": "cnct:tecnico-em-meio-ambiente",
       "suap": {
         "id": 40,
         "codigo": "UVIT002",

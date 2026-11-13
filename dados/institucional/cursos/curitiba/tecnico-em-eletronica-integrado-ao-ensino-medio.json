@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/eletronica/",
+  "cnct_id": "cnct:tecnico-em-eletronica",
   "suap": {
     "id": 55,
     "codigo": "CTB006",
@@ -30,7 +31,9 @@
     "ano_documento": 2014,
     "vagas": "20-35",
     "trecho_vagas": "Número máximo de vagas do curso: 35; Número mínimo de vagas do curso: 20",
-    "curadoria": "Revisado",
-    "data_curadoria": "2026-05-11"
+    "curadoria_ano": "Revisado",
+    "data_curadoria_ano": "2026-05-11",
+    "curadoria_vagas": "Revisado",
+    "data_curadoria_vagas": "2026-05-11"
   }
 }

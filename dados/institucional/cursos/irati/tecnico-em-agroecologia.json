@@ -7,6 +7,7 @@
   "modalidade": "presencial",
   "situacao": "ativo",
   "pagina_oficial": "https://ifpr.edu.br/irati/tecnico-em-agroecologia/",
+  "cnct_id": "cnct:tecnico-em-agroecologia",
   "suap": {
     "id": 54,
     "codigo": "IRA001",
@@ -30,6 +31,7 @@
     "ano_documento": 2025,
     "vagas": "160",
     "trecho_vagas": "Máximo de 80 alunos para a turma da manhã e máximo de 80 alunos para a turma da tarde.",
-    "curadoria": "Precisa de revisão"
+    "curadoria_ano": "Precisa de revisão",
+    "curadoria_vagas": "Precisa de revisão"
   }
 }
