@@ -433,7 +433,7 @@ Corre em paralelo às fases 1 a 7. Cada passo troca uma implementação por baix
 | `yaml` (`schema: "failsafe"`) | Front matter e `relacoes.yaml` | 2, 5 | Nova |
 | `unified` + `remark-parse` + `remark-gfm` | Estrutura de normas e PPCs | 4, 5 | Nova |
 | `fflate` + `htmlparser2` + `domutils` | Leitura de DOCX | T3 | Já usadas |
-| `pdfmake` | PDF do calendário | T4 | Nova |
+| `pdfmake` | PDF do calendário | T4 | Usada (0.3.13, com `@types/pdfmake` 0.3.3) |
 | `unpdf` + `tesseract.js` + `@napi-rs/canvas` | PDF → Markdown | T5 | Em avaliação; exceção provável |
 | stemmer de português | Coluna auxiliar do FTS5 | 6 | Em avaliação: `snowball-stemmers` está parado desde 2022; comparar com RSLP |
 | `@modelcontextprotocol/sdk` | Servidor MCP | 7 | Condicional |
@@ -594,6 +594,27 @@ Em aberto:
 - Removidos: `gerar_relatorio_html.py`, `publicar_surge.py`, `analise_ppc.py`, `common.py` e `test_flow.py`.
 - Testes: `relatorio.test.ts` (25 casos) porta os 20 testes de relatório e Surge de `test_flow.py` (o 21º, sem CLI de modelo, já estava em `orquestracao.test.ts`) e acrescenta a paridade do `_HTMLPrettyPrinter`, dos blocos e do unescape de atributos; `paridade-t2.test.ts` (8 casos) cobre o kit novo. O `pytest` ficou com os extratores DOCX.
 - Python que continua: `conversao_docx/` e `converter_docx.py`, chamados por subprocesso para entrada `.docx` (T3); fora da skill, `scripts/converter_ppcs_markdown.py` (T5) e `verificar-calendario/scripts/render_relatorio_pdf.py` (T4).
+
+**Trilha T, passo T4 concluído em 13/11/2026** (branch `worktree-agent-ab57257c2f314c964`).
+
+- O que foi portado:
+  - `render_relatorio_pdf.py` (`reportlab`) virou `render_relatorio_pdf.ts` (`pdfmake` 0.3.13), com a mesma interface (`<relatorio.md> <relatorio.pdf>`), o mesmo subconjunto de Markdown (título e subtítulo nas duas primeiras linhas, metadados `**Chave:** valor`, tabelas `| Item |` de 3 colunas, conclusões `N. **Pergunta** resposta` renumeradas, `` `código` `` e `**negrito**` com a ordem das regex do Python) e o mesmo leiaute (A4, margens de 14 mm mais os 6 pt do `Frame`, estilos, cores, grade, fundos alternados e cabeçalho repetido);
+  - `VERIFICAR_CALENDARIO_AGORA` fixa a data de criação, e a saída fica reproduzível byte a byte;
+  - fontes: Helvetica e Courier padrão do PDF, sem arquivo embutido, como no `reportlab`.
+- O que foi preciso para chegar à paridade:
+  - kerning desligado nas métricas AFM do `pdfkit` (o `reportlab` não aplica);
+  - quebra de linhas do `reportlab` em `quebra-linhas.ts`: `breakLines` (só em espaços, com o encolhimento de 5% dos espaços) nos parágrafos e `cjkFragSplit` nas células (`wordWrap="CJK"`: o espaço que segue a palavra conta, e palavra longa é cortada no meio). O `pdfmake` recebe as linhas prontas, com folga na caixa para não quebrá-las de novo;
+  - cada linha é um nó com margem de cima `corpo − ascendente` e altura `entrelinha − margem`, para a linha de base ficar a um corpo do topo (o `pdfmake` a põe a um ascendente). As linhas vão em blocos inquebráveis, porque o `pdfmake` descarta a margem de um nó que passa de página; as duas primeiras ficam juntas (`allowOrphans=0`);
+  - espaços colapsados dentro de cada trecho, e não entre trechos, como o `Paragraph`.
+- Diferencial com Python 3.14 + `reportlab` 5.1.0 (`rl_config.invariant`) em 12 Markdowns: 2 com as tabelas de `referencias/2026.md` e `2027.md` preenchidas, um de 150 linhas (18 páginas), marcações e casos de borda, sem conclusão, sem tabela, BOM com CRLF, caracteres fora da WinAnsi, a fixture do teste e 3 relatórios reais do formato antigo (de fora do git):
+  - páginas: iguais nos 12;
+  - texto extraído (`pdftotext`, sem espaços): igual em 11; no de caracteres fora da WinAnsi, só eles diferem;
+  - posição das palavras (`pdftotext -bbox`): nos 8 casos só com caracteres WinAnsi, mesmas palavras nas mesmas páginas, com diferença máxima de 0,35 pt em y (espessura da grade) e 0 em x; nos 4 com caracteres fora dela, as mesmas palavras nas mesmas linhas, com até 0,7 pt de diferença em y e até 3,3 pt em x depois de um glifo de reserva (larguras da Roboto, e não da Symbol);
+  - visual (`pdftoppm` a 80 dpi, imagens lado a lado e diferença em `tmp/t4/saida/`): de 0 a 2,9% de pixels diferentes, só antisserrilhado e o deslocamento de 0,35 pt.
+- Divergências aceitas, todas em caracteres fora da cp1252: o `reportlab` desenhava `≥`, `→`, `✓` etc. com as fontes Symbol e ZapfDingbats, que o `pdfkit` não sabe usar (declara toda fonte padrão como WinAnsi). O porte usa a Roboto que acompanha o `pdfmake` (`≥`, `≤`, `≠`, `√`, grego), embutida só quando necessária; o que ela não tem (setas, `✓`, emoji, seletores de variação, BOM) sai como `■`, como no `reportlab`, com o mesmo avanço, mas um quadrado menor. Nas linhas com Roboto, a linha de base desce até 0,7 pt, e o `pdftotext` separa os `■` em palavras.
+- Removidos: `render_relatorio_pdf.py` e o `requirements.txt` da skill; `SKILL.md`, `instrucoes.md` e `README.md` usam `bun run .agents/skills/verificar-calendario/scripts/render_relatorio_pdf.ts`.
+- Testes: `render-relatorio-pdf.test.ts` (11 casos): leitura do Markdown, quebra de linhas, a fixture renderizada (2 páginas, cabeçalho repetido, texto em ordem), reprodutibilidade, fonte de reserva e CLI.
+- Python que continua: `conversao_docx/` e `converter_docx.py` (T3) e `scripts/converter_ppcs_markdown.py` (T5).
 
 ## Histórico de revisões
 
