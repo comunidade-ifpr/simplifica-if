@@ -28,24 +28,29 @@ class IdentificationExtractor:
         """Inicializa o extrator de identificação."""
         pass
 
-    # Padrões para extração de dados em formato "Campo: Valor"
+    # Padrões para extração de dados em formato "Campo: Valor".
+    # Os rótulos de identificação (curso, oferta, modalidade, eixo, campus) só
+    # valem no início da célula e com dois-pontos: "Base legal específica do
+    # curso: Resolução CNE/CP nº 1/2021" não é nome de curso. Mesma regra do
+    # caminho Markdown (scripts/identificacao.ts).
+    _INICIO = r'^\s*(?:\d+(?:\.\d+)*\.?\s*[-–—.)]?\s*)?'
     INLINE_PATTERNS = {
         'nome_curso': [
-            r'nome\s+do\s+curso[:\s]+(.+)',
-            r'denomina[çc][ãa]o[:\s]+(.+)',
+            _INICIO + r'nome\s+do\s+curso\s*:\s*(.+)',
+            _INICIO + r'denomina[çc][ãa]o(?:\s+do\s+curso)?\s*:\s*(.+)',
         ],
         'forma_oferta': [
-            r'forma\s+de\s+oferta[:\s]+(.+)',
+            _INICIO + r'forma\s+de\s+oferta\s*:\s*(.+)',
         ],
         'modalidade_ensino': [
-            r'modalidade[:\s]+(.+)',
+            _INICIO + r'modalidade(?:\s+de\s+(?:oferta|ensino))?\s*:\s*(.+)',
         ],
         'eixo_tecnologico': [
-            r'eixo\s+tecnol[óo]gico[:\s]+(.+)',
+            _INICIO + r'eixo\s+tecnol[óo]gico\s*:\s*(.+)',
         ],
         'campus': [
-            r'campus[:\s]+(.+)',
-            r'unidade[:\s]+(.+)',
+            _INICIO + r'(?:local\s+de\s+realiza[çc][ãa]o\s*/\s*)?c[âa]mpus\s*:\s*(.+)',
+            _INICIO + r'unidade\s*:\s*(.+)',
         ],
         'carga_horaria_total': [
             r'carga[\s-]hor[áa]ria\s+total[^:]*[:\s]+(.+)',

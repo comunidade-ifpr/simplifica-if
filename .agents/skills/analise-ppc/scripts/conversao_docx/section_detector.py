@@ -277,6 +277,9 @@ class SectionDetector:
 
         return None
 
+    CAMPOS_IDENTIFICACAO_ANCORADOS = ('nome_curso', 'modalidade', 'eixo_tecnologico', 'campus')
+    _INICIO_ROTULO = r'^\s*(?:\d+(?:\.\d+)*\.?\s*[-–—.)]?\s*)?'
+
     def extract_data_hints(self, sections: List[Section]) -> Dict[str, str]:
         """
         Extrai dicas de dados das seções (para ppc_dados.json).
@@ -354,6 +357,16 @@ class SectionDetector:
             ],
         }
 
+        # Rótulos de identificação valem só no início do parágrafo ou da
+        # célula, com dois-pontos; na tabela, o rótulo precisa abrir a célula
+        # de campo. Sem isso, "Base legal específica do curso: Resolução …"
+        # virava nome do curso e "Coordenador do curso" casava com "curso".
+        for field in self.CAMPOS_IDENTIFICACAO_ANCORADOS:
+            patterns[field] = [
+                self._INICIO_ROTULO + p.replace(r'[:\s]+(.+)', r'\s*:\s*(.+)')
+                for p in patterns[field]
+            ]
+
         for element in section.elements:
             if element.type == ElementType.TABLE:
                 # Extrair de tabela (campo | valor)
@@ -395,6 +408,10 @@ class SectionDetector:
                         for pattern in field_patterns:
                             # Simplificar padrão para match em campo de tabela
                             simple_pattern = pattern.replace(r'[:\s]+(.+)', '').replace(r'[:\s]+', '')
+                            if field in self.CAMPOS_IDENTIFICACAO_ANCORADOS:
+                                simple_pattern = (
+                                    pattern.replace(r'\s*:\s*(.+)', '') + r'(?:\s+do\s+curso)?\s*:?\s*$'
+                                )
                             if re.search(simple_pattern, field_text, re.IGNORECASE):
                                 data[field] = value_text
                                 break

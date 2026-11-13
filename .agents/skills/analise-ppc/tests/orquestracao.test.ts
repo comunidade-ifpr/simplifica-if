@@ -22,19 +22,12 @@ import { casefold } from "@simplifica-if/kb/python/texto";
 import { FloatPy, type ObjetoPy } from "@simplifica-if/kb/python/valores";
 import { caminhosPadrao } from "../scripts/caminhos.ts";
 import { compararPpcComCnct } from "../scripts/cnct-catalogo.ts";
+import { extrairIdentificacaoDaConversao, inferirIdentificacaoDoMarkdown } from "../scripts/identificacao.ts";
 import { normalizarMarkdown } from "../scripts/normalizador-markdown.ts";
 import { mesclarIdentificacaoPreferindoPreenchidos, prepararDocumento } from "../scripts/preparar-documento.ts";
 import { referenciasLegiveisDaFicha, universoOuVazio } from "../scripts/referencias-fichas.ts";
 import { ErroResultadosSubagents, validarResultadosRodada } from "../scripts/resultados.ts";
-import {
-  agoraIso,
-  caminhosRodada,
-  escreverJsonPy,
-  extrairIdentificacaoDaConversao,
-  inferirIdentificacaoDoMarkdown,
-  lerJsonPy,
-  timestampSlug,
-} from "../scripts/rodada.ts";
+import { agoraIso, caminhosRodada, escreverJsonPy, lerJsonPy, timestampSlug } from "../scripts/rodada.ts";
 import {
   agruparFichas,
   carregarFichasOrdenadas,
@@ -151,7 +144,7 @@ describe("preparar-documento", () => {
     const rodada = criarRodada();
     const c = caminhosRodada(rodada);
     expect([c.ppc, c.metadata, c.manifesto].every((arquivo) => existsSync(arquivo))).toBe(true);
-    expect((lerJsonPy(c.metadata) as ObjetoPy).curso).toBe("Curso Técnico em Informática");
+    expect((lerJsonPy(c.metadata) as ObjetoPy).curso).toBe("Técnico em Informática");
     expect((lerJsonPy(c.manifesto) as ObjetoPy).execucao).toBe("subagents-na-conversa");
     expect(Object.keys(c).sort()).toEqual(
       [

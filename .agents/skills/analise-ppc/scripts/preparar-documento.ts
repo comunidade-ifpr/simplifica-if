@@ -10,6 +10,14 @@ import { copyFileSync, existsSync, mkdirSync, statSync, utimesSync } from "node:
 import path from "node:path";
 import { type ObjetoPy, verdadeiro } from "@simplifica-if/kb/python/valores";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
+import {
+  extrairIdentificacao,
+  extrairIdentificacaoDaConversao,
+  type FontesIdentificacao,
+  type Identificacao,
+  type IdentificacaoComFontes,
+  valorIdentificacaoPreenchido,
+} from "./identificacao.ts";
 import { normalizarMarkdown } from "./normalizador-markdown.ts";
 import {
   agoraIso,
@@ -19,16 +27,12 @@ import {
   caminhosRodada,
   escreverJsonPy,
   escreverTextoPy,
-  extrairIdentificacaoDaConversao,
-  type Identificacao,
-  inferirIdentificacaoDoMarkdown,
   lerJsonPy,
   lerTexto,
   type Relogio,
   relogioDoAmbiente,
   resolverCaminho,
   timestampSlug,
-  valorIdentificacaoPreenchido,
 } from "./rodada.ts";
 
 export const SCRIPT_CONVERSAO_DOCX = path.join(import.meta.dir, "converter_docx.py");
@@ -77,10 +81,10 @@ function criarRodada(saidaBase: string, nomeBase: string, relogio: Relogio): str
 }
 
 /** Normaliza o Markdown e grava o `PPC.md` canônico. */
-function prepararMarkdown(arquivo: string, caminhos: CaminhosRodada, skill: CaminhosAnalise): Identificacao {
+function prepararMarkdown(arquivo: string, caminhos: CaminhosRodada, skill: CaminhosAnalise): IdentificacaoComFontes {
   const texto = lerTexto(arquivo);
   escreverTextoPy(caminhos.ppc, normalizarMarkdown(texto).markdownNormalizado);
-  return inferirIdentificacaoDoMarkdown(texto, radical(arquivo), skill);
+  return extrairIdentificacao(texto, radical(arquivo), skill);
 }
 
 /** Valores preenchidos de `preferencial` sobrescrevem os de `base`. */
@@ -123,7 +127,7 @@ function prepararDocx(
   caminhos: CaminhosRodada,
   skill: CaminhosAnalise,
   python: string | undefined,
-): { identificacao: Identificacao; conversao: ArtefatosDocx } {
+): { identificacao: IdentificacaoComFontes; conversao: ArtefatosDocx } {
   mkdirSync(caminhos.artefatosConversaoDir, { recursive: true });
   const artefatos = converterDocx(arquivo, caminhos.artefatosConversaoDir, python);
   if (!artefatos.markdown) throw new Error("A conversão DOCX não gerou Markdown normalizado.");
@@ -131,16 +135,27 @@ function prepararDocx(
   escreverTextoPy(artefatos.markdown, normalizado);
   escreverTextoPy(caminhos.ppc, normalizado);
   if (artefatos.markdown_bruto) copiarArquivo(artefatos.markdown_bruto, caminhos.ppcBruto);
-  let identificacao = inferirIdentificacaoDoMarkdown(lerTexto(caminhos.ppc), radical(arquivo), skill);
+  // O PPC.md da conversão traz as tabelas de identificação em Markdown, então a extração do
+  // Markdown vem primeiro; os dados da conversão (validados pelos mesmos critérios) só preenchem
+  // o que faltar, e o nome do arquivo fica por último.
+  const { fontes, ...doMarkdown } = extrairIdentificacao(lerTexto(caminhos.ppc), "", skill);
+  let identificacao = doMarkdown as Identificacao;
   if (artefatos.dados && existsSync(artefatos.dados)) {
     try {
-      identificacao = mesclarIdentificacaoPreferindoPreenchidos(
-        identificacao,
-        extrairIdentificacaoDaConversao(lerJsonPy(artefatos.dados), radical(arquivo), skill) as Record<string, string>,
-      ) as Identificacao;
+      const daConversao = extrairIdentificacaoDaConversao(lerJsonPy(artefatos.dados), "", skill);
+      for (const [chave, valor] of Object.entries(daConversao) as Array<[keyof Identificacao, string]>) {
+        if (valorIdentificacaoPreenchido(identificacao[chave]) || !valorIdentificacaoPreenchido(valor)) continue;
+        identificacao = { ...identificacao, [chave]: valor };
+        const fonte = chave === "modalidade" ? null : (chave as keyof FontesIdentificacao);
+        if (fonte) fontes[fonte] = "conversao";
+      }
     } catch {
       // Como no Python: dados de conversão ilegíveis não impedem a rodada.
     }
+  }
+  if (!valorIdentificacaoPreenchido(identificacao.curso)) {
+    identificacao = { ...identificacao, curso: radical(arquivo) };
+    fontes.curso = "nome_arquivo";
   }
   const conversao: ArtefatosDocx = {
     output_dir: artefatos.output_dir,
@@ -151,7 +166,7 @@ function prepararDocx(
     ementario: artefatos.ementario,
   };
   escreverJsonPy(caminhos.preparacaoDocx, conversao);
-  return { identificacao, conversao };
+  return { identificacao: { ...identificacao, fontes }, conversao };
 }
 
 export type ResultadoPreparacao = {
@@ -179,7 +194,7 @@ export function prepararDocumento(arquivoEntrada: string, opcoes: OpcoesPreparac
   const caminhos = caminhosRodada(rodada);
   mkdirSync(caminhos.suporteDir, { recursive: true });
 
-  let identificacao: Identificacao;
+  let identificacao: IdentificacaoComFontes;
   let conversao: ArtefatosDocx | undefined;
   if (tipo === ".md") identificacao = prepararMarkdown(arquivo, caminhos, skill);
   else ({ identificacao, conversao } = prepararDocx(arquivo, caminhos, skill, opcoes.python));
@@ -197,6 +212,7 @@ export function prepararDocumento(arquivoEntrada: string, opcoes: OpcoesPreparac
   for (const chave of ["forma_oferta", "modalidade_ensino", "eixo_tecnologico"] as const) {
     if (verdadeiro(identificacao[chave])) metadata[chave] = identificacao[chave];
   }
+  metadata.identificacao_fontes = { ...identificacao.fontes };
   if (conversao) metadata.artefatos_conversao_docx = conversao;
 
   escreverJsonPy(caminhos.metadata, metadata);

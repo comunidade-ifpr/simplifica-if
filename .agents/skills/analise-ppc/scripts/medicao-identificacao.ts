@@ -11,21 +11,30 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
-import { type Identificacao, inferirIdentificacaoDoMarkdown, normalizarBusca } from "./rodada.ts";
+import { type Identificacao, inferirIdentificacaoDoMarkdown, normalizarBusca } from "./identificacao.ts";
 
 /** Nome de reserva neutro: a medição não deve acertar pelo nome do arquivo. */
 export const NOME_RESERVA_MEDICAO = "PPC";
 
 /**
  * Amostra fixa do teste: PPCs de formatos variados (capa em caixa alta,
- * identificação em títulos numerados, em tabela, em linhas "Campo: valor",
- * subsequente, integrado, EaD e PROEJA).
+ * identificação em títulos numerados, em tabela, em grade de opções, vários
+ * rótulos em negrito na mesma linha, subsequente, integrado e PROEJA), quase
+ * todos errados antes da correção.
  */
 export const AMOSTRA_MEDICAO = [
   "institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md",
-  "institucional/ifpr/ppcs/arapongas/tecnico-em-melhoria-de-processos.md",
   "institucional/ifpr/ppcs/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio.md",
+  "institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-comercio.md",
+  "institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-eletrotecnica-subsequente.md",
+  "institucional/ifpr/ppcs/astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio.md",
+  "institucional/ifpr/ppcs/barracao/tecnico-em-informatica.md",
   "institucional/ifpr/ppcs/campo-largo/administracao-proeja.md",
+  "institucional/ifpr/ppcs/cascavel/tecnico-em-edificacoes.md",
+  "institucional/ifpr/ppcs/coronel-vivida/tecnico-em-cooperativismo.md",
+  "institucional/ifpr/ppcs/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio.md",
+  "institucional/ifpr/ppcs/goioere/tecnico-em-informatica.md",
+  "institucional/ifpr/ppcs/paranagua/tecnico-em-mecanica.md",
   "institucional/ifpr/ppcs/uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja.md",
 ] as const;
 
