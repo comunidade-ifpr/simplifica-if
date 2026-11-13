@@ -1,4 +1,5 @@
 ---
+id: br/cne-ceb/res/2025/7
 title: "Resolução CNE/CEB nº 7/2025"
 tipo_documento: "Resolução"
 numero: 7

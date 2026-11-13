@@ -1,4 +1,5 @@
 ---
+id: ifpr/consup/res/2019/11
 title: "Resolução CONSUP/IFPR nº 11/2019"
 tipo_documento: "Resolução"
 numero: 11

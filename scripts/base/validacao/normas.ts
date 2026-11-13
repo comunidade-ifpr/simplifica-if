@@ -11,6 +11,10 @@ import {
   type FrontMatter,
 } from "../front-matter.ts";
 import { ehObjeto, type ObjetoJson, representar, textoDe, valoresIguais } from "@simplifica-if/kb/json";
+import { esquemaNorma } from "@simplifica-if/kb/normas/front-matter";
+import { idDoAto, idEsperadoDaNorma } from "@simplifica-if/kb/normas/ids";
+import { caminhoStubs, lerRegistroStubs } from "@simplifica-if/kb/normas/registro";
+import { ZodError } from "zod";
 import { apararInicio, ErroDecodificacao, lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
 import { type Contexto, listaOrdenada, mesmosElementos, PADROES_LOCAIS, type Resultado } from "./contexto.ts";
 
@@ -117,8 +121,87 @@ export function validarMarkdown(ctx: Contexto, caminho: string): string[] {
     if (aliasPareceNomeAntigo(alias)) erros.push(`${r}: alias parece nome antigo de arquivo: ${textoDe(alias)}`);
   }
 
+  erros.push(...validarIdNorma(r, meta));
   erros.push(...ctx.validarLinks(caminho, texto));
   return erros;
+}
+
+/**
+ * `id` canônico da norma: formato e coerência com `variante` (zod) e igualdade com o ID derivado de
+ * tipo, órgão, jurisdição, ano e número (regras em `@simplifica-if/kb/normas/ids`).
+ */
+export function validarIdNorma(r: string, meta: FrontMatter): string[] {
+  if (!("id" in meta)) return [];
+  const erros: string[] = [];
+  const resultado = esquemaNorma.safeParse(meta);
+  if (!resultado.success) {
+    for (const problema of resultado.error.issues) {
+      if (problema.path[0] === "id" || problema.path[0] === "variante") {
+        erros.push(`${r}: ${problema.path.join(".")}: ${problema.message}`);
+      }
+    }
+  }
+  const esperado = idEsperadoDaNorma({
+    tipo_documento: textoDe(meta.tipo_documento ?? ""),
+    orgao: textoDe(meta.orgao ?? ""),
+    jurisdicao: textoDe(meta.jurisdicao ?? ""),
+    numero: textoDe(meta.numero ?? ""),
+    ano: textoDe(meta.ano ?? ""),
+    tipo_ato: typeof meta.tipo_ato === "string" ? meta.tipo_ato : undefined,
+  });
+  if (esperado === null)
+    erros.push(
+      `${r}: sem regra de id para tipo/órgão (${textoDe(meta.tipo_documento ?? "")}, ${textoDe(meta.orgao ?? "")})`,
+    );
+  else if (meta.id !== esperado) erros.push(`${r}: id ${textoDe(meta.id)} difere do derivado do ato: ${esperado}`);
+  return erros;
+}
+
+/** IDs únicos entre as normas; a variante (`~compilacao`) exige o ato publicado ou registrado como stub. */
+export function validarUnicidadeIds(ctx: Contexto, caminhos: string[], idsRegistrados: ReadonlySet<string>): string[] {
+  const erros: string[] = [];
+  const porId = new Map<string, string>();
+  const variantes: [string, string][] = [];
+  for (const caminho of caminhos) {
+    let meta: FrontMatter;
+    try {
+      ({ meta } = analisarFrontMatter(lerTexto(caminho), ctx.rel(caminho)));
+    } catch (erro) {
+      if (erro instanceof ErroFrontMatter) continue;
+      throw erro;
+    }
+    if (typeof meta.id !== "string") continue;
+    const anterior = porId.get(meta.id);
+    if (anterior !== undefined) erros.push(`${ctx.rel(caminho)}: id duplicado ${meta.id} (também em ${anterior})`);
+    if (idsRegistrados.has(meta.id))
+      erros.push(`${ctx.rel(caminho)}: id ${meta.id} também está em normas/stubs.yaml (remova o stub)`);
+    else porId.set(meta.id, ctx.rel(caminho));
+    if (idDoAto(meta.id) !== meta.id) variantes.push([ctx.rel(caminho), meta.id]);
+  }
+  for (const [r, id] of variantes) {
+    const ato = idDoAto(id);
+    if (!porId.has(ato) && !idsRegistrados.has(ato))
+      erros.push(`${r}: variante ${id} sem o ato ${ato} na base ou nos stubs`);
+  }
+  return erros;
+}
+
+/** `normas/stubs.yaml`: contrato zod. Devolve os IDs registrados (stubs e `externo:`). */
+export function validarStubs(ctx: Contexto): { erros: string[]; ids: Set<string> } {
+  const arquivo = caminhoStubs(ctx.c.raizProjeto);
+  if (!existsSync(arquivo)) return { erros: [], ids: new Set() };
+  try {
+    const registro = lerRegistroStubs(arquivo);
+    return { erros: [], ids: new Set([...registro.normas, ...registro.externos].map((item) => item.id)) };
+  } catch (erro) {
+    if (erro instanceof ZodError) {
+      return {
+        erros: erro.issues.map((problema) => `${ctx.rel(arquivo)}: ${problema.path.join(".")}: ${problema.message}`),
+        ids: new Set(),
+      };
+    }
+    return { erros: [`${ctx.rel(arquivo)}: ${(erro as Error).message.split("\n")[0]}`], ids: new Set() };
+  }
 }
 
 /** Item do manifest.json: campos obrigatórios, local do arquivo e coerência com o front matter. */

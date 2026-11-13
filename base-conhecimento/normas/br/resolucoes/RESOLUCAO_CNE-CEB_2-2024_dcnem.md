@@ -1,4 +1,5 @@
 ---
+id: br/cne-ceb/res/2024/2
 title: "Resolução CNE/CEB nº 2/2024"
 tipo_documento: "Resolução"
 numero: 2

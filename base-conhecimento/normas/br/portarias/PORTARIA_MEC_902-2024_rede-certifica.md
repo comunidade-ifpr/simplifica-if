@@ -1,4 +1,5 @@
 ---
+id: br/mec/portaria/2024/902
 title: "Portaria MEC nº 902/2024"
 tipo_documento: "Portaria"
 numero: 902

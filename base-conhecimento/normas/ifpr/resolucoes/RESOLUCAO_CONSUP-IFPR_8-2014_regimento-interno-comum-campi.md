@@ -1,4 +1,5 @@
 ---
+id: ifpr/consup/res/2014/8
 title: "Resolução CONSUP/IFPR nº 8/2014"
 tipo_documento: "Resolução"
 numero: 8

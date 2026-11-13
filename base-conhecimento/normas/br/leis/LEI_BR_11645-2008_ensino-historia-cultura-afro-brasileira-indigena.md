@@ -1,4 +1,5 @@
 ---
+id: br/lei/2008/11645
 title: "Lei nº 11.645/2008"
 tipo_documento: Lei
 numero: 11645

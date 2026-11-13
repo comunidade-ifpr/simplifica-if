@@ -1,4 +1,5 @@
 ---
+id: ifpr/proens/nt/2025/1
 title: "Nota Técnica PROENS/IFPR nº 1/2025"
 tipo_documento: "Nota Técnica"
 numero: 1

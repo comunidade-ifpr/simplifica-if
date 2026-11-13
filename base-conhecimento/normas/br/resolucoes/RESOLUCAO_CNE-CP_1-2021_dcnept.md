@@ -1,4 +1,5 @@
 ---
+id: br/cne-cp/res/2021/1
 title: "Resolução CNE/CP nº 1/2021"
 tipo_documento: "Resolução"
 numero: 1

@@ -1,4 +1,5 @@
 ---
+id: ifpr/consup/res/2023/148
 title: "Resolução CONSUP/IFPR nº 148/2023"
 tipo_documento: "Resolução"
 numero: 148

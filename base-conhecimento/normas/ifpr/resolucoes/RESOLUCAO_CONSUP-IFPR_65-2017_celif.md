@@ -1,4 +1,5 @@
 ---
+id: ifpr/consup/res/2017/65
 title: "Resolução CONSUP/IFPR nº 65/2017"
 tipo_documento: "Resolução"
 numero: 65

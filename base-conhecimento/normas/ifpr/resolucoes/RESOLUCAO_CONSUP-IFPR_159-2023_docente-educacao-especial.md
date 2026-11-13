@@ -1,4 +1,5 @@
 ---
+id: ifpr/consup/res/2023/159
 title: "Resolução CONSUP/IFPR nº 159/2023"
 tipo_documento: "Resolução"
 numero: 159

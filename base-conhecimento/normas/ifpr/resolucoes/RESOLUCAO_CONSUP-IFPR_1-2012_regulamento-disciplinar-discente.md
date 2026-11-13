@@ -1,4 +1,5 @@
 ---
+id: ifpr/consup/res/2012/1
 title: "Resolução CONSUP/IFPR nº 1/2012"
 tipo_documento: "Resolução"
 numero: 1

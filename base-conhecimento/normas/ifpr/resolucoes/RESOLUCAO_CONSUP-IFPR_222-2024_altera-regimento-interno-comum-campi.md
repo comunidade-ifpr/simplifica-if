@@ -1,4 +1,5 @@
 ---
+id: ifpr/consup/res/2024/222
 title: "Resolução CONSUP/IFPR nº 222/2024"
 tipo_documento: "Resolução"
 numero: 222

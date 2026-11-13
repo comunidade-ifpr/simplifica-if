@@ -1,4 +1,5 @@
 ---
+id: ifpr/consup/res/2011/55
 title: "Resolução CONSUP/IFPR nº 55/2011"
 tipo_documento: "Resolução"
 numero: 55

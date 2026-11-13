@@ -1,4 +1,5 @@
 ---
+id: ifpr/consup/res/2025/239
 title: "Resolução CONSUP/IFPR nº 239/2025"
 tipo_documento: "Resolução"
 numero: 239

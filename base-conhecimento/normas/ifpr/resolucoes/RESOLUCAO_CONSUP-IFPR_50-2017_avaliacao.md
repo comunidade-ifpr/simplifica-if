@@ -1,4 +1,5 @@
 ---
+id: ifpr/consup/res/2017/50
 title: "Resolução CONSUP/IFPR nº 50/2017"
 tipo_documento: "Resolução"
 numero: 50

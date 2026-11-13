@@ -1,4 +1,5 @@
 ---
+id: br/lei/2008/11788
 title: "Lei nº 11.788/2008"
 tipo_documento: Lei
 numero: 11788

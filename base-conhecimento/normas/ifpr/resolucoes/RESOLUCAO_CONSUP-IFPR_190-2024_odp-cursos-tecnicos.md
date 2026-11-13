@@ -1,4 +1,5 @@
 ---
+id: ifpr/consup/res/2024/190
 title: "Resolução CONSUP/IFPR nº 190/2024"
 tipo_documento: "Resolução"
 numero: 190

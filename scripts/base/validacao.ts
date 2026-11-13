@@ -16,6 +16,8 @@ import {
   validarMarkdown,
   validarPadroesLocais,
   validarReadme,
+  validarStubs,
+  validarUnicidadeIds,
 } from "./validacao/normas.ts";
 import { validarArtefatosConversaoPpc } from "./validacao/ppcs.ts";
 
@@ -36,6 +38,9 @@ export function validarBase(caminhos: CaminhosBase, opcoes: { artefatosPpc?: boo
   if (opcoes.artefatosPpc) erros.push(...validarArtefatosConversaoPpc(ctx));
 
   for (const caminho of arquivosNormas(caminhos)) erros.push(...validarMarkdown(ctx, caminho));
+  const stubs = validarStubs(ctx);
+  erros.push(...stubs.erros);
+  erros.push(...validarUnicidadeIds(ctx, arquivosNormas(caminhos), stubs.ids));
 
   for (const item of manifest) {
     if (ehObjeto(item)) erros.push(...validarItemManifest(ctx, item));

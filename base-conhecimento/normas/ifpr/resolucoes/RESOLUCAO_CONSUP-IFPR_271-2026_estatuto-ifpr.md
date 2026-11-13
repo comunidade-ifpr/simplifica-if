@@ -1,4 +1,5 @@
 ---
+id: ifpr/consup/res/2026/271
 title: "Resolução CONSUP/IFPR nº 271/2026"
 tipo_documento: "Resolução"
 numero: 271

@@ -1,4 +1,5 @@
 ---
+id: br/cne-cp/res/2026/2
 title: "Resolução CNE/CP nº 2/2026"
 tipo_documento: "Resolução"
 numero: 2

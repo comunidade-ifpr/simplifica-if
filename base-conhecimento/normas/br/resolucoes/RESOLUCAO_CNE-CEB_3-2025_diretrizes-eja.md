@@ -1,4 +1,5 @@
 ---
+id: br/cne-ceb/res/2025/3
 title: "Resolução CNE/CEB nº 3/2025"
 tipo_documento: "Resolução"
 numero: 3

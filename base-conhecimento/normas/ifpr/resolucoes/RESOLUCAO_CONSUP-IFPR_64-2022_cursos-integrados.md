@@ -1,4 +1,5 @@
 ---
+id: ifpr/consup/res/2022/64
 title: "Resolução CONSUP/IFPR nº 64/2022"
 tipo_documento: "Resolução"
 numero: 64

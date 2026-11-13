@@ -1,4 +1,5 @@
 ---
+id: ifpr/consup/res/2026/276
 title: "Resolução CONSUP/IFPR nº 276/2026"
 tipo_documento: "Resolução"
 numero: 276

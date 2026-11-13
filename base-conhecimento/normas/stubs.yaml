@@ -1,0 +1,309 @@
+# Normas citadas sem texto na base (stubs) e referências fora da base (externo:).
+#
+# Contrato: esquemaRegistroStubs em packages/kb/src/normas/registro.ts (zod), conferido por
+# bun run scripts/validar_base.ts. Regras de ID em base-conhecimento/docs/padrao-front-matter-legislacao.md.
+#
+# - normas: atos do domínio (CNE, MEC, Presidência, IFPR) citados por PPCs ou fichas, sem texto na
+#   base. Têm metadados, status e aliases, mas não têm dispositivos. Quando o texto entrar em
+#   normas/, a entrada sai daqui (o validador acusa ID repetido).
+# - externos: referências fora do escopo normativo da base (conselhos profissionais, ABNT,
+#   documentos institucionais não normativos, regulamentos de campus).
+#
+# status_vigencia: vigente, alterada, revogada, parcialmente revogada ou "a confirmar".
+# status_fonte: de onde veio o status. Só se marca status sem "a confirmar" quando há prova
+# na própria base (dispositivo revogador publicado em normas/). Metadados escritos sem conferência
+# em fonte oficial ficam com curadoria: rascunho.
+#
+# aliases: só nomes sem número que identificam o ato sem ambiguidade; citações com número e
+# ano são reconhecidas pelo resolvedor (packages/kb/src/normas/resolver.ts) sem alias.
+
+normas:
+  # --- DCN da educação profissional e técnica (família usada no indicador do art. 71)
+  - id: br/cne-ceb/res/1999/4
+    title: Resolução CNE/CEB nº 4/1999
+    data_publicacao: "1999-12-08"
+    ementa: Institui as Diretrizes Curriculares Nacionais para a Educação Profissional de Nível Técnico.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/cne-ceb/parecer/1999/16
+    title: Parecer CNE/CEB nº 16/1999
+    ementa: Diretrizes Curriculares Nacionais para a Educação Profissional de Nível Técnico.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/cne-ceb/res/2012/6
+    title: Resolução CNE/CEB nº 6/2012
+    data_publicacao: "2012-09-20"
+    ementa: Define Diretrizes Curriculares Nacionais para a Educação Profissional Técnica de Nível Médio.
+    status_vigencia: revogada
+    status_fonte: br/cne-cp/res/2021/1#art64
+    curadoria: rascunho
+  - id: br/cne-ceb/parecer/2012/11
+    title: Parecer CNE/CEB nº 11/2012
+    ementa: Diretrizes Curriculares Nacionais para a Educação Profissional Técnica de Nível Médio.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/cne-cp/res/2002/3
+    title: Resolução CNE/CP nº 3/2002
+    data_publicacao: "2002-12-18"
+    ementa: Institui as Diretrizes Curriculares Nacionais Gerais para a organização e o funcionamento dos cursos superiores de tecnologia.
+    status_vigencia: revogada
+    status_fonte: br/cne-cp/res/2021/1#art64
+    curadoria: rascunho
+  - id: br/cne-cp/parecer/2002/29
+    title: Parecer CNE/CP nº 29/2002
+    ementa: Diretrizes Curriculares Nacionais Gerais no Nível de Tecnólogo.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/cne-ceb/res/2014/1
+    title: Resolução CNE/CEB nº 1/2014
+    data_publicacao: "2014-12-05"
+    ementa: Atualiza e define novos critérios para a composição do Catálogo Nacional de Cursos Técnicos.
+    status_vigencia: revogada
+    status_fonte: br/cne-cp/res/2026/2#art74-i
+    curadoria: rascunho
+  - id: br/cne-cp/res/2022/1
+    title: Resolução CNE/CP nº 1/2022
+    data_publicacao: "2022-05-06"
+    ementa: Altera a Resolução CNE/CP nº 1/2021 (DCN Gerais para a Educação Profissional e Tecnológica).
+    status_vigencia: revogada
+    status_fonte: br/cne-cp/res/2026/2#art74-iii
+    curadoria: rascunho
+  - id: br/cne-cp/res/2022/3
+    title: Resolução CNE/CP nº 3/2022
+    data_publicacao: "2022-11-16"
+    ementa: Altera a Resolução CNE/CP nº 1/2021 (DCN Gerais para a Educação Profissional e Tecnológica).
+    status_vigencia: revogada
+    status_fonte: br/cne-cp/res/2026/2#art74-iv
+    curadoria: rascunho
+  - id: br/cne-cp/res/2025/2
+    title: Resolução CNE/CP nº 2/2025
+    ementa: Citada pela ficha ct-ident-15 junto ao CNCT; ato e assunto a confirmar.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+
+  # --- Ensino médio, EJA e educação básica
+  - id: br/cne-ceb/res/2012/2
+    title: Resolução CNE/CEB nº 2/2012
+    data_publicacao: "2012-01-30"
+    ementa: Define Diretrizes Curriculares Nacionais para o Ensino Médio.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/cne-ceb/res/2018/3
+    title: Resolução CNE/CEB nº 3/2018
+    data_publicacao: "2018-11-21"
+    ementa: Atualiza as Diretrizes Curriculares Nacionais para o Ensino Médio.
+    status_vigencia: revogada
+    status_fonte: br/cne-ceb/res/2024/2#art43
+    curadoria: rascunho
+  - id: br/cne-ceb/res/2021/1
+    title: Resolução CNE/CEB nº 1/2021
+    data_publicacao: "2021-05-28"
+    ementa: Institui Diretrizes Operacionais para a Educação de Jovens e Adultos (EJA).
+    status_vigencia: revogada
+    status_fonte: br/cne-ceb/res/2025/3#art19
+    curadoria: rascunho
+  - id: br/cne-ceb/res/2010/4
+    title: Resolução CNE/CEB nº 4/2010
+    data_publicacao: "2010-07-13"
+    ementa: Define Diretrizes Curriculares Nacionais Gerais para a Educação Básica.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+
+  # --- Temas transversais e educação superior
+  - id: br/cne-cp/res/2004/1
+    title: Resolução CNE/CP nº 1/2004
+    data_publicacao: "2004-06-17"
+    ementa: Institui Diretrizes Curriculares Nacionais para a Educação das Relações Étnico-Raciais e para o Ensino de História e Cultura Afro-Brasileira e Africana.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/cne-cp/res/2012/1
+    title: Resolução CNE/CP nº 1/2012
+    data_publicacao: "2012-05-30"
+    ementa: Estabelece Diretrizes Nacionais para a Educação em Direitos Humanos.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/cne-cp/res/2012/2
+    title: Resolução CNE/CP nº 2/2012
+    data_publicacao: "2012-06-15"
+    ementa: Estabelece as Diretrizes Curriculares Nacionais para a Educação Ambiental.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/cne-ces/res/2018/7
+    title: Resolução CNE/CES nº 7/2018
+    data_publicacao: "2018-12-18"
+    ementa: Estabelece as Diretrizes para a Extensão na Educação Superior Brasileira.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/cne-cp/res/2015/2
+    title: Resolução CNE/CP nº 2/2015
+    data_publicacao: "2015-07-01"
+    ementa: Define as Diretrizes Curriculares Nacionais para a formação inicial e continuada dos profissionais do magistério da educação básica.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/cne-cp/res/2019/2
+    title: Resolução CNE/CP nº 2/2019
+    data_publicacao: "2019-12-20"
+    ementa: Define as Diretrizes Curriculares Nacionais para a Formação Inicial de Professores para a Educação Básica (BNC-Formação).
+    status_vigencia: a confirmar
+    curadoria: rascunho
+
+  # --- Leis e decretos
+  - id: br/decreto/2004/5154
+    title: Decreto nº 5.154/2004
+    data_publicacao: "2004-07-23"
+    ementa: Regulamenta o § 2º do art. 36 e os arts. 39 a 41 da Lei nº 9.394/1996.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/lei/2008/11741
+    title: Lei nº 11.741/2008
+    data_publicacao: "2008-07-16"
+    ementa: Altera a LDB para redimensionar, institucionalizar e integrar as ações da educação profissional técnica de nível médio, da educação de jovens e adultos e da educação profissional e tecnológica.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/lei/2017/13415
+    title: Lei nº 13.415/2017
+    data_publicacao: "2017-02-16"
+    ementa: Altera a LDB e outras leis (reforma do ensino médio).
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/lei/1968/5524
+    title: Lei nº 5.524/1968
+    data_publicacao: "1968-11-05"
+    ementa: Dispõe sobre o exercício da profissão de Técnico Industrial de nível médio.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/decreto/1985/90922
+    title: Decreto nº 90.922/1985
+    data_publicacao: "1985-02-06"
+    ementa: Regulamenta a Lei nº 5.524/1968, que dispõe sobre o exercício da profissão de técnico industrial e técnico agrícola de nível médio ou de 2º grau.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/lei/2018/13639
+    title: Lei nº 13.639/2018
+    data_publicacao: "2018-03-26"
+    ementa: Cria o Conselho Federal dos Técnicos Industriais, o Conselho Federal dos Técnicos Agrícolas e os Conselhos Regionais.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/lei/2016/13409
+    title: Lei nº 13.409/2016
+    data_publicacao: "2016-12-28"
+    ementa: Altera a Lei nº 12.711/2012 para incluir pessoas com deficiência na reserva de vagas.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/lei/2023/14723
+    title: Lei nº 14.723/2023
+    data_publicacao: "2023-11-13"
+    ementa: Altera a Lei nº 12.711/2012 (programa especial de acesso às instituições federais de ensino).
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/lei/2024/14914
+    title: Lei nº 14.914/2024
+    data_publicacao: "2024-07-03"
+    ementa: Institui a Política Nacional de Assistência Estudantil (PNAES).
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/lei/2002/10436
+    title: Lei nº 10.436/2002
+    data_publicacao: "2002-04-24"
+    ementa: Dispõe sobre a Língua Brasileira de Sinais (Libras).
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/decreto/2005/5626
+    title: Decreto nº 5.626/2005
+    data_publicacao: "2005-12-22"
+    ementa: Regulamenta a Lei nº 10.436/2002 (Libras) e o art. 18 da Lei nº 10.098/2000.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/lei/1999/9795
+    title: Lei nº 9.795/1999
+    data_publicacao: "1999-04-27"
+    ementa: Dispõe sobre a educação ambiental e institui a Política Nacional de Educação Ambiental.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/decreto/2002/4281
+    title: Decreto nº 4.281/2002
+    data_publicacao: "2002-06-25"
+    ementa: Regulamenta a Lei nº 9.795/1999 (Política Nacional de Educação Ambiental).
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/lei/2000/10098
+    title: Lei nº 10.098/2000
+    data_publicacao: "2000-12-19"
+    ementa: Estabelece normas gerais e critérios básicos para a promoção da acessibilidade das pessoas com deficiência ou com mobilidade reduzida.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/decreto/2004/5296
+    title: Decreto nº 5.296/2004
+    data_publicacao: "2004-12-02"
+    ementa: Regulamenta as Leis nº 10.048/2000 e nº 10.098/2000 (acessibilidade).
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/lei/2012/12764
+    title: Lei nº 12.764/2012
+    data_publicacao: "2012-12-27"
+    ementa: Institui a Política Nacional de Proteção dos Direitos da Pessoa com Transtorno do Espectro Autista.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/decreto/2011/7611
+    title: Decreto nº 7.611/2011
+    data_publicacao: "2011-11-17"
+    ementa: Dispõe sobre a educação especial e o atendimento educacional especializado.
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/lei/2014/13005
+    title: Lei nº 13.005/2014
+    data_publicacao: "2014-06-25"
+    ementa: Aprova o Plano Nacional de Educação (PNE).
+    aliases:
+      - Plano Nacional de Educação 2014-2024
+    status_vigencia: a confirmar
+    curadoria: rascunho
+  - id: br/lei/2004/10861
+    title: Lei nº 10.861/2004
+    data_publicacao: "2004-04-14"
+    ementa: Institui o Sistema Nacional de Avaliação da Educação Superior (SINAES).
+    status_vigencia: a confirmar
+    curadoria: rascunho
+
+externos:
+  - id: externo:cft/res/2019/89
+    title: Resolução CFT nº 89/2019
+    descricao: Resolução do Conselho Federal dos Técnicos Industriais citada pela ficha ct-ident-19 (atribuições profissionais).
+    curadoria: rascunho
+  - id: externo:abnt/nbr/6023
+    title: ABNT NBR 6023
+    descricao: Norma técnica da ABNT para elaboração de referências.
+    curadoria: rascunho
+  - id: externo:campus/regulamento-estagio
+    title: Regulamento Geral de Estágio do campus
+    descricao: Regulamento de estágio de cada campus; o texto varia por campus e não está na base.
+    aliases:
+      - Regulamento Geral de Estágio do campus
+      - regulamento de estágio do campus
+    curadoria: rascunho
+  - id: externo:ifpr/pdi
+    title: Plano de Desenvolvimento Institucional do IFPR
+    descricao: Documento de planejamento institucional; não é norma da base.
+    aliases:
+      - Plano de Desenvolvimento Institucional do IFPR
+      - Plano de Desenvolvimento Institucional
+    curadoria: rascunho
+  - id: externo:ifpr/ppi
+    title: Projeto Pedagógico Institucional do IFPR
+    descricao: Documento institucional; não é norma da base.
+    aliases:
+      - Projeto Pedagógico Institucional do IFPR
+      - Projeto Pedagógico Institucional
+    curadoria: rascunho
+  - id: externo:ifpr/regimento-geral
+    title: Regimento Geral do IFPR
+    descricao: Regimento Geral do IFPR; o texto não está na base.
+    aliases:
+      - Regimento Geral do IFPR
+    curadoria: rascunho
+  - id: externo:ifpr/manual-competencias
+    title: Manual de Competências do IFPR
+    descricao: Manual de competências das unidades do IFPR; não é norma da base.
+    aliases:
+      - Manual de Competências do IFPR
+    curadoria: rascunho

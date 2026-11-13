@@ -1,4 +1,5 @@
 ---
+id: ifpr/consup/res/2025/242
 title: "Resolução CONSUP/IFPR nº 242/2025"
 tipo_documento: "Resolução"
 numero: 242

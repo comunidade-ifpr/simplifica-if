@@ -1,4 +1,5 @@
 ---
+id: ifpr/consup/res/2026/292
 title: "Resolução CONSUP/IFPR nº 292/2026"
 tipo_documento: "Resolução"
 numero: 292

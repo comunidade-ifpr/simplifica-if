@@ -1,4 +1,5 @@
 ---
+id: ifpr/consup/res/2022/82
 title: "Resolução CONSUP/IFPR nº 82/2022"
 tipo_documento: "Resolução"
 numero: 82

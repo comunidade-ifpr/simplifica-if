@@ -3,14 +3,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "nod
 import os from "node:os";
 import path from "node:path";
 import { criarCaminhos, naBase, relativo } from "./caminhos.ts";
-import {
-  analisarFrontMatter,
-  ErroFrontMatter,
-  itemManifest,
-  manifestJson,
-  montarManifest,
-  valorYaml,
-} from "./front-matter.ts";
+import { analisarFrontMatter, ErroFrontMatter, itemManifest, manifestJson, montarManifest } from "./front-matter.ts";
 import {
   dataIndiceAtual,
   dividirSecoes,
@@ -45,12 +38,13 @@ function escrever(raiz: string, relativo: string, conteudo: string) {
 }
 
 const NORMA = `---
+id: br/lei/2020/1
 title: "Lei nº 1/2020"
 tipo_documento: Lei
 numero: 1
 ano: 2020
 data_publicacao: "2020-01-02"
-orgao: "Congresso"
+orgao: "Presidência da República"
 jurisdicao: BR
 ementa: "Ementa de teste."
 status_vigencia: vigente
@@ -85,22 +79,30 @@ describe("front matter", () => {
     expect(meta.keywords).toEqual(["teste"]);
     expect(meta.aliases).toEqual(["Lei 1/2020", "L1"]);
     expect(corpo.startsWith("\n## Resumo")).toBe(true);
-    expect(valorYaml('[a, , "b"]')).toEqual(["a", "b"]);
-    expect(valorYaml("2020", "numero")).toBe("2020");
+  });
+
+  test("schema failsafe: número, data e booleano ficam como texto; só ano vira inteiro", () => {
+    const { meta } = analisarFrontMatter(
+      "---\nnumero: 9394\nano: 1996\ndata_publicacao: 1996-12-20\nx: true\n---\n",
+      "a.md",
+    );
+    expect(meta).toEqual({ numero: "9394", ano: 1996, data_publicacao: "1996-12-20", x: "true" });
   });
 
   test("acusa erros com o caminho do arquivo", () => {
     expect(() => analisarFrontMatter("sem", "a.md")).toThrow("a.md: arquivo sem front matter");
     expect(() => analisarFrontMatter("---\nx: 1\n", "a.md")).toThrow("a.md: front matter sem fechamento");
-    expect(() => analisarFrontMatter("---\nx: 1\n  - y\n---\n", "a.md")).toThrow("campo x mistura escalar e lista");
-    expect(() => analisarFrontMatter("---\nsem dois pontos\n---\n", "a.md")).toThrow(ErroFrontMatter);
+    expect(() => analisarFrontMatter("---\nx: [1, 2\n---\n", "a.md")).toThrow(ErroFrontMatter);
+    expect(() => analisarFrontMatter("---\nx: 1\nx: 2\n---\n", "a.md")).toThrow("a.md: YAML inválido");
+    expect(() => analisarFrontMatter("---\nx:\n  y: 1\n---\n", "a.md")).toThrow("só texto ou listas de texto");
   });
 
   test("ano com dígitos Unicode vira inteiro, como int() do Python", () => {
-    expect(valorYaml("２０２６", "ano")).toBe(2026);
-    expect(valorYaml("٢٠٢٤", "ano")).toBe(2024);
-    expect(valorYaml("𝟐𝟎𝟏𝟗", "ano")).toBe(2019);
-    expect(valorYaml("２０２６", "numero")).toBe("２０２６");
+    expect(analisarFrontMatter("---\nano: ２０２６\nnumero: ２０２６\n---\n", "a.md").meta).toEqual({
+      ano: 2026,
+      numero: "２０２６",
+    });
+    expect(analisarFrontMatter("---\nano: 𝟐𝟎𝟏𝟗\n---\n", "a.md").meta.ano).toBe(2019);
   });
 });
 
@@ -325,6 +327,7 @@ describe("validação da base", () => {
       "normas/br/leis/lei.md: link interno inexistente: nao.md",
       "normas/ifpr/resolucoes/2020-01-01_res.md: campos obrigatórios ausentes: keywords",
       "normas/ifpr/resolucoes/2020-01-01_res.md: keywords deve ser lista não vazia",
+      "normas/ifpr/resolucoes/2020-01-01_res.md: id duplicado br/lei/2020/1 (também em normas/br/leis/lei.md)",
     ]);
 
     writeFileSync(caminhos.manifest, manifestJson([{ ...manifest[0]!, jurisdicao: "XX", title: "Outro" }]));

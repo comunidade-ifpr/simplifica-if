@@ -1,4 +1,5 @@
 ---
+id: br/lei/2003/10639
 title: "Lei nº 10.639/2003"
 tipo_documento: Lei
 numero: 10639

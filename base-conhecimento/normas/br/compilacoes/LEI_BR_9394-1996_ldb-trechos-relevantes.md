@@ -1,4 +1,6 @@
 ---
+id: br/lei/1996/9394~compilacao
+variante: compilacao
 title: "Lei nº 9.394/1996 - trechos relevantes"
 tipo_documento: "Compilação"
 numero: 9394
