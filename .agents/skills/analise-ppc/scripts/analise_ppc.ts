@@ -19,6 +19,7 @@ import { caminhosPadrao } from "./caminhos.ts";
 import { escreverSchemas, schemasDesatualizados } from "./esquemas.ts";
 import { escreverIndice, indiceAtualizado } from "./indice-base.ts";
 import { escreverMapa, mapaAtualizado } from "./mapa-fichas.ts";
+import { AMOSTRA_MEDICAO, formatarMedicao, medirIdentificacao } from "./medicao-identificacao.ts";
 import { prepararDocumento } from "./preparar-documento.ts";
 import { dominioSurgePadrao, prepararSiteSurge, type PublicacaoSurge, publicarSiteSurge } from "./publicar-surge.ts";
 import { gerarRelatorioHtml } from "./relatorio-html.ts";
@@ -315,6 +316,20 @@ export function criarPrograma(): Command {
     .option("--surge-domain <dominio>", "Domínio Surge de publicação; padrão: analise-ppc-<rodada>.surge.sh.")
     .action((opcoes: { rodadaDir: string; resultados: string; semSurge?: boolean; surgeDomain?: string }) => {
       executar(() => imprimirJson(gerarRelatorio(opcoes)));
+    });
+
+  programa
+    .command("medir-identificacao")
+    .description("Medir a identificação do curso nos PPCs técnicos da base contra dados/institucional/cursos")
+    .option("--amostra", "medir só a amostra fixa usada nos testes")
+    .option("--erros", "listar os casos errados ou vazios")
+    .option("--json", "imprimir a medição completa em JSON")
+    .action((opcoes: { amostra?: boolean; erros?: boolean; json?: boolean }) => {
+      executar(() => {
+        const medicao = medirIdentificacao(opcoes.amostra ? { amostra: AMOSTRA_MEDICAO } : {});
+        if (opcoes.json) process.stdout.write(`${JSON.stringify(medicao, null, 2)}\n`);
+        else process.stdout.write(formatarMedicao(medicao, { erros: Boolean(opcoes.erros) }));
+      });
     });
 
   return programa;

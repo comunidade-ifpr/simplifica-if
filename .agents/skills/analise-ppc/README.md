@@ -66,6 +66,18 @@ bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-relatorio-html -
 
 Para reavaliar fichas específicas, use `montar-grupo-avulso`, execute um sub-agente com o grupo retornado e depois `mesclar-resultados-avulsos`.
 
+## Identificação do curso
+
+O `preparar-documento` grava em `metadata.json` o curso, o campus, a forma de oferta (`forma_oferta`, repetida em `modalidade`), a modalidade de ensino e o eixo tecnológico, com a fonte de cada um em `identificacao_fontes` (`rotulo`, `capa`, `inicio`, `conversao` ou `nome_arquivo`). A extração (`scripts/identificacao.ts`) é heurística e só lê o próprio PPC, mais as listas de campi e de eixos do CNCT da base; não consulta `dados/institucional/`, porque o PPC analisado pode não estar lá. Rótulos só valem no início de linha, célula ou trecho em negrito, ou no meio da linha com inicial maiúscula e dois-pontos, e cada valor passa por um validador do campo. Com `.docx`, a extração roda sobre o `PPC.md` da conversão, e os dados da conversão Python só preenchem o que faltar.
+
+Para medir a identificação nos PPCs técnicos da base contra `dados/institucional/cursos` (só leitura, como gabarito):
+
+```bash
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts medir-identificacao --erros
+```
+
+`--amostra` mede só a amostra fixa usada em `tests/identificacao.test.ts`, e `--json` imprime a medição completa.
+
 ## Manutenção de fichas
 
 Ao criar, atualizar ou corrigir uma ficha em `base-analise/fichas/`:
