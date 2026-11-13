@@ -16,7 +16,7 @@ keywords:
   - CNE
 aliases:
   - "Resolução CNE/CP nº 1/2021"
-  - DCNEPT
+  - "DCNEPT 2021"
 fonte: https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-297767578
 revogada_por:
   - "Resolução CNE/CP nº 2/2026"

@@ -89,3 +89,5 @@ relaciona_se_a:
 - O corpo do arquivo continua começando com `## Resumo`.
 - Os arquivos devem ficar em `normas/<jurisdicao>/<tipo-plural>/`.
 - O nome do arquivo não deve usar prefixo de data. A data oficial deve ficar em `data_publicacao`.
+- `status_vigencia` só aceita estado de vigência; a natureza do documento fica em `tipo_documento`. Uma compilação de dispositivos de outra norma usa `tipo_documento: Compilação`, fica em `normas/br/compilacoes/` e registra em `status_vigencia` a vigência do texto reproduzido (`vigente` quando traz a redação atual; `desconhecido` quando não se sabe se está atualizada). A norma de origem vai em `relaciona_se_a`.
+- Relações normativas entre normas da base são recíprocas: se A tem `altera: B`, B tem `alterada_por: A`; o mesmo vale para `revoga`/`revogada_por` e `regulamenta`/`regulamentada_por`. Norma com `alterada_por` usa `status_vigencia: alterada`, salvo se tiver sido revogada no todo ou em parte (`revogada` ou `parcialmente revogada`). Relações com normas fora da base ficam só no lado presente.

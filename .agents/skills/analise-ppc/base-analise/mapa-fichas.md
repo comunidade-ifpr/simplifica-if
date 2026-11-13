@@ -3,7 +3,7 @@
 Este mapa organiza as fichas por tópicos semânticos, sem depender da numeração das seções do PPC.
 A numeração observada em um PPC específico deve ser detectada na rodada de análise, não codificada na ficha.
 
-Gerado em: 2026-11-13T12:00:58+00:00
+Gerado em: 2026-11-13T14:39:27+00:00
 
 ## Como usar
 

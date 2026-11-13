@@ -7,7 +7,7 @@ data_publicacao: "1996-12-20"
 orgao: "Presidência da República"
 jurisdicao: BR
 ementa: "Compilação de dispositivos da Lei de Diretrizes e Bases da Educação Nacional relevantes para PPCs."
-status_vigencia: "compilação"
+status_vigencia: vigente
 keywords:
   - LDB
   - PPC
