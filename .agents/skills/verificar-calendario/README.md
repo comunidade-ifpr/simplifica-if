@@ -19,7 +19,9 @@ Quando sair a resolução de calendário de referência de um novo ano:
 2. Criar `referencias/[ANO].md` com a mesma estrutura dos arquivos existentes: mapa de dispositivos, janela do ano letivo, datas do Art. 2º, requisitos críticos dos incisos e tabela obrigatória do relatório com a redação literal dos incisos.
 3. Acrescentar a linha do ano nas tabelas deste README, de `SKILL.md` e de `instrucoes.md`.
 
-Não há testes automatizados para esta skill. Depois de alterar os arquivos, conferir se as referências a artigos e incisos batem com o texto da resolução na base.
+Depois de alterar os arquivos, conferir se as referências a artigos e incisos batem com o texto da resolução na base.
+
+O PDF é gerado por `scripts/render_relatorio_pdf.ts` (`pdfmake`; a quebra de linhas que reproduz a do antigo script `reportlab` fica em `scripts/quebra-linhas.ts`). Depois de alterar esses scripts, rodar `bun test ./.agents/skills/verificar-calendario`, `bun run format` e `bun run typecheck` na raiz.
 
 ## Formatos aceitos
 
