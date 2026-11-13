@@ -1,3 +1,15 @@
+---
+id: ppc:arapongas/especializacao-em-docencia-e-praticas-educativas
+fonte_url: https://ifpr.edu.br/arapongas/wp-content/uploads/sites/2/2023/10/PPC-Pos-em-Docencia-e-Praticas-educativas.pdf
+fonte_sha256: desconhecido
+convertido_em: 2026-05-11
+conversor: desconhecido
+proveniencia: reconstruida
+conversao_commit: 92cc42a2a66c177d254b5a0600b8656188f6daa0
+pos_processamento_commits:
+  - 096e70f6a532f0d03d4c895778960fa96e53ce9e
+nota_proveniencia: "Proveniência reconstruída em 2026-11-13 pelo histórico do git, sem baixar o PDF de novo. convertido_em é a data de autoria do commit em que o texto convertido entrou no git (conversao_commit). fonte_url é o ppc.url registrado no campus JSON nesse commit. fonte_sha256 e conversor são desconhecidos: o PDF da época não foi guardado, e o conversor não registrava versão. O texto foi pós-processado depois da conversão (limpeza de ruído, remoção de sumário)."
+---
 ## **MINISTÉRIO DA EDUCAÇÃO INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ PRÓ-REITORIA DE EXTENSÃO, PESQUISA, PÓS-GRADUAÇÃO E INOVAÇÃO DIRETORIA DE PÓS-GRADUAÇÃO RESOLUÇÃO CONSUP/IFPR N.121/2023 – CONSUP/IFPR**
 
 ## **PROJETO PEDAGÓGICO DO CURSO – PPC**

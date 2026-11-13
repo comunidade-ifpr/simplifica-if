@@ -14,6 +14,7 @@ import { idDoAto } from "../normas/ids.ts";
 import { raizRepositorio, type Registro } from "../normas/registro.ts";
 import { extrairCitacoes, registroPadrao } from "../normas/resolver.ts";
 import { carregarIndicePpcs } from "../ppcs/citacoes.ts";
+import { mascararFrontMatter } from "../ppcs/front-matter.ts";
 import { compararTexto } from "../texto.ts";
 
 const esquemaLinha = z.strictObject({
@@ -88,7 +89,7 @@ export function avaliarResolvedor(
       problemas.push(`${ppc}: PPC fora do índice`);
       continue;
     }
-    const texto = readFileSync(path.join(raiz, "base-conhecimento", relativo), "utf-8");
+    const texto = mascararFrontMatter(readFileSync(path.join(raiz, "base-conhecimento", relativo), "utf-8"));
     const citacoes = extrairCitacoes(texto, registro);
     const linhasTexto = texto.split("\n");
 

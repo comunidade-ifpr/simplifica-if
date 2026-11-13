@@ -4,6 +4,7 @@
  */
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { mascararFrontMatter } from "@simplifica-if/kb/ppcs/front-matter";
 import { z } from "zod";
 import { carregarDadosInstitucionais, type DadosInstitucionais } from "../../dados/institucional.ts";
 import { RAIZ_REPOSITORIO } from "../carregar.ts";
@@ -54,7 +55,7 @@ export interface Fontes {
   dados: DadosInstitucionais;
   cnct: ItemCnct[];
   ppcs: ItemPpc[];
-  /** Texto do PPC convertido, por id `campus_id/curso_slug`. */
+  /** Texto do PPC convertido, por id `campus_id/curso_slug`, com o front matter em branco. */
   lerPpc(id: string): string;
 }
 
@@ -86,7 +87,7 @@ export function carregarFontes(raiz: string = RAIZ_REPOSITORIO): Fontes {
       if (emCache !== undefined) return emCache;
       const caminho = caminhoPpc.get(id);
       if (!caminho || !existsSync(caminho)) throw new Error(`PPC sem arquivo: ${id}`);
-      const texto = readFileSync(caminho, "utf-8");
+      const texto = mascararFrontMatter(readFileSync(caminho, "utf-8"));
       cache.set(id, texto);
       return texto;
     },

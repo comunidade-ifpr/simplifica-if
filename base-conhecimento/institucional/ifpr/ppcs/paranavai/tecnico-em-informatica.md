@@ -1,3 +1,13 @@
+---
+id: ppc:paranavai/tecnico-em-informatica
+fonte_url: https://ifpr.edu.br/paranavai/wp-content/uploads/sites/21/2017/05/PPC-INFORMARTICA-TURMAS-INICIO-2016.pdf
+fonte_sha256: desconhecido
+convertido_em: 2026-05-20
+conversor: desconhecido
+proveniencia: reconstruida
+conversao_commit: 6bb82538ea2fcdd6949e5a3301de54e90ca0541e
+nota_proveniencia: "Proveniência reconstruída em 2026-11-13 pelo histórico do git, sem baixar o PDF de novo. convertido_em é a data de autoria do commit em que o texto convertido entrou no git (conversao_commit). fonte_url é o ppc.url registrado no campus JSON nesse commit. fonte_sha256 e conversor são desconhecidos: o PDF da época não foi guardado, e o conversor não registrava versão."
+---
 
 ## **MINISTÉRIO DA EDUCAÇÃO SECRETARIA DE EDUCAÇÃO SUPERIOR INSTITUTO FEDERAL DO PARANÁ CÂMPUS PARANAVAÍ**
 

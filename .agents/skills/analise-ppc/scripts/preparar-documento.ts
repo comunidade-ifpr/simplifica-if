@@ -8,6 +8,7 @@
  */
 import { copyFileSync, existsSync, mkdirSync, statSync, utimesSync } from "node:fs";
 import path from "node:path";
+import { corpoPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import { type ObjetoPy, verdadeiro } from "@simplifica-if/kb/python/valores";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { normalizarMarkdown } from "./normalizador-markdown.ts";
@@ -76,9 +77,12 @@ function criarRodada(saidaBase: string, nomeBase: string, relogio: Relogio): str
   return rodada;
 }
 
-/** Normaliza o Markdown e grava o `PPC.md` canônico. */
+/**
+ * Normaliza o Markdown e grava o `PPC.md` canônico. O front matter de proveniência dos PPCs da base
+ * (`---` … `---` no início) fica fora: não é texto do PPC.
+ */
 function prepararMarkdown(arquivo: string, caminhos: CaminhosRodada, skill: CaminhosAnalise): Identificacao {
-  const texto = lerTexto(arquivo);
+  const texto = corpoPpc(lerTexto(arquivo));
   escreverTextoPy(caminhos.ppc, normalizarMarkdown(texto).markdownNormalizado);
   return inferirIdentificacaoDoMarkdown(texto, radical(arquivo), skill);
 }

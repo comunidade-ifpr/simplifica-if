@@ -1,3 +1,16 @@
+---
+id: ppc:arapongas/tecnico-em-melhoria-de-processos
+fonte_url: https://ifpr.edu.br/arapongas/wp-content/uploads/sites/2/2022/09/PPC___CURSO_TECNICO_EM_MELHORIA_DE_PROCESSOS___VERSAO_FINAL.pdf
+fonte_sha256: desconhecido
+convertido_em: 2026-05-11
+conversor: desconhecido
+proveniencia: reconstruida
+conversao_commit: 9a1b0eb6a534bd8cb1bef6b931577b5ffe26a533
+pos_processamento_commits:
+  - 096e70f6a532f0d03d4c895778960fa96e53ce9e
+  - 9a5b159256e17dafe3d68a47936ef3d6cdcae6bb
+nota_proveniencia: "Proveniência reconstruída em 2026-11-13 pelo histórico do git, sem baixar o PDF de novo. convertido_em é a data de autoria do commit em que o texto convertido entrou no git (conversao_commit). fonte_url é o ppc.url registrado no campus JSON nesse commit. fonte_sha256 e conversor são desconhecidos: o PDF da época não foi guardado, e o conversor não registrava versão. O texto foi pós-processado depois da conversão (limpeza de ruído, remoção de sumário)."
+---
 ## **PRÓ REITORIA DE ENSINO DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENADORIA DE CURSOS TÉCNICOS**
 
 ## **PROJETO PEDAGÓGICO DE CURSO**

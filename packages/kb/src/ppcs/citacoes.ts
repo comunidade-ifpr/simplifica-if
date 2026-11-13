@@ -10,6 +10,7 @@ import { idDoAto } from "../normas/ids.ts";
 import { raizRepositorio, type Registro } from "../normas/registro.ts";
 import { type Citacao, extrairCitacoes, registroPadrao } from "../normas/resolver.ts";
 import { compararTexto } from "../texto.ts";
+import { mascararFrontMatter } from "./front-matter.ts";
 
 const esquemaItemPpc = z.looseObject({
   id: z.string(),
@@ -35,13 +36,17 @@ export function carregarIndicePpcs(raiz: string = raizRepositorio()): ItemPpc[] 
   return [...indice.items].sort((a, b) => compararTexto(a.id, b.id));
 }
 
-/** Citações de um PPC pelo caminho relativo a `base-conhecimento/` (como `ppc.markdown_path`). */
+/**
+ * Citações de um PPC pelo caminho relativo a `base-conhecimento/` (como `ppc.markdown_path`). O front
+ * matter de proveniência fica em branco: não gera citação, e as linhas continuam as do arquivo.
+ */
 export function citacoesDoArquivo(
   caminhoRelativo: string,
   registro: Registro = registroPadrao(),
   raiz: string = raizRepositorio(),
 ): Citacao[] {
-  const texto = readFileSync(path.join(caminhoBase(raiz), caminhoRelativo), "utf-8").replace(/\r\n?/g, "\n");
+  const bruto = readFileSync(path.join(caminhoBase(raiz), caminhoRelativo), "utf-8").replace(/\r\n?/g, "\n");
+  const texto = mascararFrontMatter(bruto);
   return extrairCitacoes(texto, registro);
 }
 

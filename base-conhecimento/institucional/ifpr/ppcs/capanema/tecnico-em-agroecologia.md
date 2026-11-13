@@ -1,3 +1,16 @@
+---
+id: ppc:capanema/tecnico-em-agroecologia
+fonte_url: https://ifpr.edu.br/capanema/wp-content/uploads/sites/7/2018/02/PPC-Versao-Aprovada-CONSUP.pdf
+fonte_sha256: desconhecido
+convertido_em: 2026-05-11
+conversor: desconhecido
+proveniencia: reconstruida
+conversao_commit: caf0b47e6081827f542e439868edf50885e2befd
+pos_processamento_commits:
+  - 3ed410a79b47bb9a3d1724ac60264c3e99fd649d
+  - 9a5b159256e17dafe3d68a47936ef3d6cdcae6bb
+nota_proveniencia: "Proveniência reconstruída em 2026-11-13 pelo histórico do git, sem baixar o PDF de novo. convertido_em é a data de autoria do commit em que o texto convertido entrou no git (conversao_commit). fonte_url é o ppc.url registrado no campus JSON nesse commit. fonte_sha256 e conversor são desconhecidos: o PDF da época não foi guardado, e o conversor não registrava versão. O texto foi pós-processado depois da conversão (limpeza de ruído, remoção de sumário)."
+---
 
 1<br>## **MINISTÉRIO DA EDUCAÇÃO SECRETARIA DE EDUCAÇÃO PROFISSIONAL E TECNOLÓGICA INSTITUTO FEDERAL DO PARANÁ**
 

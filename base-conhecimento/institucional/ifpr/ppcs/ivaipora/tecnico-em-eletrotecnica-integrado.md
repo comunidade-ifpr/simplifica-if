@@ -1,3 +1,13 @@
+---
+id: ppc:ivaipora/tecnico-em-eletrotecnica-integrado
+fonte_url: https://ifpr.edu.br/ivaipora/wp-content/uploads/sites/15/2024/03/Projeto-Pedagogico-do-Curso-de-Eletrotecnica-2025.pdf
+fonte_sha256: desconhecido
+convertido_em: 2026-07-06
+conversor: desconhecido
+proveniencia: reconstruida
+conversao_commit: 616a4e85a82b12cb6617f30db28b87b4c2d1034b
+nota_proveniencia: "Proveniência reconstruída em 2026-11-13 pelo histórico do git, sem baixar o PDF de novo. convertido_em é a data de autoria do commit em que o texto convertido entrou no git (conversao_commit). fonte_url é o ppc.url registrado no campus JSON nesse commit. fonte_sha256 e conversor são desconhecidos: o PDF da época não foi guardado, e o conversor não registrava versão."
+---
 ## **MINISTÉRIO DA EDUCAÇÃO SECRETARIA DE EDUCAÇÃO PROFISSIONAL E TECNOLÓGICA INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ PRÓ-REITORIA DE ENSINO DIRETORIA DE ENSINO**
 
 **PROJETO PEDAGÓGICO DE CURSO CURSO TÉCNICO EM ELETROTÉCNICA FORMA DE OFERTA: INTEGRADO**

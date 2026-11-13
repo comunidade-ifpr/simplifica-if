@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """Converte PPCs referenciados nos JSONs de campus para Markdown.
 
+Cada Markdown sai com o front matter de proveniência (`proveniencia: registrada`): URL de origem,
+SHA-256 dos bytes baixados, data da conversão e versão do conversor. O contrato do front matter é
+`packages/kb/src/ppcs/front-matter.ts`; a base guarda só o PPC vigente, e versões anteriores ficam
+no histórico do git.
+
 Dependência opcional:
     uv venv
     uv pip install -r requirements-ppc.txt
@@ -9,6 +14,8 @@ Dependência opcional:
 from __future__ import annotations
 
 import argparse
+import datetime
+import hashlib
 import json
 import re
 import tempfile
@@ -49,7 +56,7 @@ def suffix_for_url(url: str, content_type: str | None) -> str:
     return ".bin"
 
 
-def download_source(url: str, tmpdir: Path) -> Path:
+def download_source(url: str, tmpdir: Path) -> tuple[Path, str]:
     source_url = normalize_url(google_drive_download_url(url))
     request = Request(source_url, headers={"User-Agent": USER_AGENT})
     content = b""
@@ -68,7 +75,7 @@ def download_source(url: str, tmpdir: Path) -> Path:
             raise last_error
     source_path = tmpdir / f"ppc{suffix}"
     source_path.write_bytes(content)
-    return source_path
+    return source_path, hashlib.sha256(content).hexdigest()
 
 
 def extracted_text_is_weak(markdown: str) -> bool:
@@ -77,19 +84,51 @@ def extracted_text_is_weak(markdown: str) -> bool:
     return len(text) < 500
 
 
-def convert_file(source_path: Path, force_ocr: bool = False) -> str:
+def convert_file(source_path: Path, force_ocr: bool = False) -> tuple[str, str]:
+    """Markdown convertido e a descrição do conversor (versões e uso de OCR)."""
     try:
+        import pymupdf
         import pymupdf4llm
     except ImportError as exc:
         raise SystemExit("Instale as dependências opcionais com: uv venv && uv pip install -r requirements-ppc.txt") from exc
 
+    def conversor(ocr: str) -> str:
+        versao_llm = getattr(pymupdf4llm, "__version__", "?")
+        versao_pdf = getattr(pymupdf, "__version__", None) or getattr(pymupdf, "VersionBind", "?")
+        versoes = f"pymupdf4llm {versao_llm}; pymupdf {versao_pdf}"
+        return f"scripts/converter_ppcs_markdown.py; {versoes}; ocr {ocr}"
+
     if force_ocr:
-        return pymupdf4llm.to_markdown(str(source_path), force_ocr=True, use_ocr=True)
+        return pymupdf4llm.to_markdown(str(source_path), force_ocr=True, use_ocr=True), conversor("forcado")
 
     markdown = pymupdf4llm.to_markdown(str(source_path), use_ocr=False)
     if extracted_text_is_weak(markdown):
-        return pymupdf4llm.to_markdown(str(source_path), use_ocr=True)
-    return markdown
+        return pymupdf4llm.to_markdown(str(source_path), use_ocr=True), conversor("automatico")
+    return markdown, conversor("nao")
+
+
+ESCALAR_SIMPLES = re.compile(r"^[^\W_][\w.\/:@%?=&+-]*$")
+
+
+def escalar_yaml(valor: str) -> str:
+    """Como `serializarFrontMatterPpc` (TypeScript): aspas só quando o YAML simples mudaria o valor."""
+    if ESCALAR_SIMPLES.match(valor) and ": " not in valor:
+        return valor
+    return json.dumps(valor, ensure_ascii=False)
+
+
+def front_matter_proveniencia(markdown_path: str, url: str, sha256: str, conversor: str, data: str) -> str:
+    """Front matter de proveniência registrada, na ordem de `CAMPOS_PROVENIENCIA`."""
+    campus_id, curso_slug = Path(markdown_path).with_suffix("").parts[-2:]
+    campos = [
+        ("id", f"ppc:{campus_id}/{curso_slug}"),
+        ("fonte_url", url),
+        ("fonte_sha256", sha256),
+        ("convertido_em", data),
+        ("conversor", conversor),
+        ("proveniencia", "registrada"),
+    ]
+    return "---\n" + "".join(f"{campo}: {escalar_yaml(valor)}\n" for campo, valor in campos) + "---\n"
 
 
 def set_conversion_error(ppc: dict[str, object], message: str) -> None:
@@ -214,8 +253,9 @@ def convert_ppcs(
         target.parent.mkdir(parents=True, exist_ok=True)
         try:
             with tempfile.TemporaryDirectory() as tmp:
-                source_path = download_source(url, Path(tmp))
-                markdown = sanitize_markdown(convert_file(source_path, force_ocr=force_ocr))
+                source_path, sha256 = download_source(url, Path(tmp))
+                convertido, conversor = convert_file(source_path, force_ocr=force_ocr)
+                markdown = sanitize_markdown(convertido)
         except Exception as exc:
             if target.exists():
                 target.unlink()
@@ -238,7 +278,8 @@ def convert_ppcs(
             converted += 1
             changed = True
             continue
-        target.write_text(markdown, encoding="utf-8")
+        data = datetime.date.today().isoformat()
+        target.write_text(front_matter_proveniencia(markdown_path, url, sha256, conversor, data) + markdown, encoding="utf-8")
         ppc["conversao"] = {
             "status": "convertido",
         }
