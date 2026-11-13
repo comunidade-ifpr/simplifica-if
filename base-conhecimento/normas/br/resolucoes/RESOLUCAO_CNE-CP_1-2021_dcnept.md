@@ -7,7 +7,7 @@ data_publicacao: "2021-01-05"
 orgao: CNE/CP
 jurisdicao: BR
 ementa: "Define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica."
-status_vigencia: vigente
+status_vigencia: revogada
 keywords:
   - DCNEPT
   - "educação profissional"
@@ -18,12 +18,16 @@ aliases:
   - "Resolução CNE/CP nº 1/2021"
   - DCNEPT
 fonte: https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-297767578
+revogada_por:
+  - "Resolução CNE/CP nº 2/2026"
 ---
 
 ## Resumo
 
 - Define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica
 - Documento normativo: RESOLUÇÃO CNE/CP Nº 1, DE 5 DE JANEIRO DE 2021
+- Revogada pela Resolução CNE/CP nº 2, de 11 de novembro de 2026 (art. 74, II), que define as novas DCN da EPT.
+- Continua aplicável aos estudantes matriculados em cursos técnicos e cursos superiores de tecnologia ofertados até a publicação da Resolução CNE/CP nº 2/2026, que podem concluir o curso por esta resolução (art. 71, parágrafo único, da Resolução CNE/CP nº 2/2026). Os cursos autorizados e em oferta têm até dois anos para se adequar às novas diretrizes (art. 71, caput).
 
 ## Texto da norma
 

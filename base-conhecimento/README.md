@@ -107,6 +107,7 @@ A proposta é preenchível e não autoriza oferta. Cada perfil profissional exig
 | [Resolução CONSUP/IFPR nº 276/2026](normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_276-2026_rede-certifica.md) | Resolução | 2026 | Dispõe sobre o Regulamento do Processo de Certificação Profissional da Rede Certifica no âmbito do Instituto Federal do Paraná - IFPR. |
 | [Lei nº 15.468/2026](normas/br/leis/LEI_BR_15468-2026_educacao-politica-direitos-cidadania.md) | Lei | 2026 | Altera a LDB para incluir educação política e direitos da cidadania como componente curricular obrigatório da educação básica. |
 | [Resolução CONSUP/IFPR nº 292/2026](normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_292-2026_calendario-academico-2027.md) | Resolução | 2026 | Estabelece o calendário acadêmico e administrativo de referência para os cursos técnicos de nível médio e de graduação do IFPR no ano de 2027. |
+| [Resolução CNE/CP nº 2/2026](normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md) | Resolução | 2026 | Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica. |
 
 ## Manutenção
 

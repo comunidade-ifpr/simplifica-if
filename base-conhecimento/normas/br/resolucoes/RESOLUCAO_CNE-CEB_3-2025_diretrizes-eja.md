@@ -7,7 +7,7 @@ data_publicacao: "2025-04-09"
 orgao: CNE/CEB
 jurisdicao: BR
 ementa: "Institui as Diretrizes Operacionais Nacionais para a Educação de Jovens e Adultos – EJA."
-status_vigencia: alterada
+status_vigencia: "parcialmente revogada"
 keywords:
   - "educação de jovens e adultos"
   - EJA
@@ -28,8 +28,11 @@ revoga:
   - "Resolução CNE/CEB nº 1/2021"
 alterada_por:
   - "Resolução CNE/CEB nº 6/2025"
+revogada_por:
+  - "Resolução CNE/CP nº 2/2026 (art. 6º, inciso III)"
 relaciona_se_a:
   - "Resolução CNE/CP nº 1/2021"
+  - "Resolução CNE/CP nº 2/2026"
   - "Resolução CNE/CEB nº 2/2024"
 ---
 
@@ -40,7 +43,7 @@ relaciona_se_a:
 - Alterada pela Resolução CNE/CEB nº 6, de 17 de julho de 2025 (DOU de 21/7/2025, Seção 1, p. 39), que acrescentou o art. 18-A sobre o período de transição, encerrado em 31/12/2025. O texto abaixo é consolidado e marca o dispositivo incluído.
 - A oferta deve ocorrer em diferentes turnos, incluindo o noturno (art. 2º, § 2º). A forma principal é presencial; a EaD é admitida só no Ensino Médio, com pelo menos 50% da carga horária presencial (art. 3º, III; art. 8º, parágrafo único).
 - Carga horária mínima da EJA (art. 5º): 600 h nos anos iniciais do Ensino Fundamental, 1.600 h nos anos finais e 1.200 h no Ensino Médio, com no mínimo 200 h por área do conhecimento no Ensino Médio (§ 3º).
-- EJA articulada à Educação Profissional e Tecnológica (art. 6º): na educação profissional técnica de nível médio, mínimo de 2.400 h, assegurando cumulativamente 1.200 h de formação geral mais a carga horária mínima da habilitação técnica. A organização deve observar as DCN da EPT, do Ensino Médio e da EJA e o Decreto nº 5.840/2006 (parágrafo único).
+- EJA articulada à Educação Profissional e Tecnológica (art. 6º): 600 h de formação geral mais 160 h de qualificação profissional nos anos iniciais do Ensino Fundamental, e 1.600 h (1.400 h de formação geral e 200 h de formação profissional) nos anos finais. O inciso III, que fixava 2.400 h para a educação profissional técnica de nível médio, foi revogado pela Resolução CNE/CP nº 2/2026 (art. 74, V). Essa oferta passou a seguir o art. 30 da Resolução CNE/CP nº 2/2026: 1.200 h de formação geral básica mais a carga horária da habilitação técnica (800, 1.000 ou 1.200 h), com até 300 h de contabilização simultânea. A organização deve observar as DCN da EPT, do Ensino Médio e da EJA e o Decreto nº 5.840/2006 (parágrafo único).
 - Formas de articulação com a Educação Profissional: concomitante, concomitante na forma e integrada no conteúdo, e integrada (art. 7º).
 - Idade mínima de ingresso: 15 anos completos no Ensino Fundamental e 18 anos completos no Ensino Médio (art. 16).
 - Admite a Pedagogia da Alternância, com Tempo Escola e Tempo Comunidade (art. 15).
@@ -115,7 +118,7 @@ A oferta da EJA articulada à Educação Profissional e Tecnológica:
 
 - **I –** quando destinada aos anos iniciais do Ensino Fundamental, deverá contar com carga horária da formação geral básica estabelecida pelos sistemas de ensino, não podendo ser inferior a seiscentas horas, acrescida da carga horária mínima para a qualificação profissional de cento e sessenta horas;
 - **II –** quando destinada aos anos finais do Ensino Fundamental, deverá contar com carga horária mínima de mil e seiscentas horas, assegurando-se cumulativamente, a destinação de mil e quatrocentas horas para a formação geral e duzentas horas para a formação profissional; e
-- **III –** quando destinada à educação profissional técnica de nível médio, deverá contar com carga horária mínima de duas mil e quatrocentas horas, assegurando-se cumulativamente, destinação de mil e duzentas horas para a formação geral, acrescida da carga horária mínima estabelecida para a respectiva habilitação profissional técnica.
+- **III –** (Revogado pela Resolução CNE/CP nº 2, de 11 de novembro de 2026) quando destinada à educação profissional técnica de nível médio, deverá contar com carga horária mínima de duas mil e quatrocentas horas, assegurando-se cumulativamente, destinação de mil e duzentas horas para a formação geral, acrescida da carga horária mínima estabelecida para a respectiva habilitação profissional técnica.
 
 **Parágrafo único.** A organização da EJA, quando articulada à Educação Profissional e Tecnológica, na forma integrada ou concomitante, deve observar as Diretrizes Curriculares Nacionais e demais atos normativos do Conselho Nacional de Educação - CNE, para a Educação Profissional Técnica de Nível Médio, para o Ensino Fundamental, para o Ensino Médio e para a EJA, bem como as determinações do Decreto nº 5.840, de 13 de julho de 2006.
 
@@ -255,3 +258,4 @@ MARIA DO PILAR LACERDA ALMEIDA E SILVA
 - Texto original conferido com o PDF oficial do CNE ([rceb003_25.pdf](https://www.gov.br/mec/pt-br/cne/2025/abril/rceb003_25.pdf)) e com a publicação no DOU de 9/4/2025, Edição 68, Seção 1, p. 16.
 - O art. 18-A foi incluído pela Resolução CNE/CEB nº 6, de 17 de julho de 2025, publicada no DOU de 21/7/2025, Edição 135, Seção 1, p. 39 ([cópia do PDF do DOU disponibilizada pela ABMES](https://abmes.org.br/arquivos/legislacoes/Resolucao-ceb-006-2025-07-17.pdf); [página do CNE](https://www.gov.br/mec/pt-br/cne/2025/julho-2025/rceb006_25.pdf)). O art. 1º da Resolução nº 6/2025 declara que "o art. 18 [...] fica acrescido", mas o dispositivo inserido é numerado como art. 18-A.
 - O PDF oficial do CNE da Resolução nº 3/2025 já registra em nota a alteração pela Resolução nº 6/2025, mas não incorpora o art. 18-A ao corpo do texto.
+- O inciso III do art. 6º foi revogado pelo art. 74, V, da Resolução CNE/CP nº 2, de 11 de novembro de 2026 (DCN da EPT). O texto revogado foi mantido e marcado para referência histórica.

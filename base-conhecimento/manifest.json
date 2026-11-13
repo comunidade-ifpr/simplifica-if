@@ -366,7 +366,7 @@
     "orgao": "CNE/CP",
     "jurisdicao": "BR",
     "ementa": "Define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica.",
-    "status_vigencia": "vigente",
+    "status_vigencia": "revogada",
     "keywords": [
       "DCNEPT",
       "educação profissional",
@@ -637,7 +637,7 @@
     "orgao": "CNE/CEB",
     "jurisdicao": "BR",
     "ementa": "Institui as Diretrizes Operacionais Nacionais para a Educação de Jovens e Adultos – EJA.",
-    "status_vigencia": "alterada",
+    "status_vigencia": "parcialmente revogada",
     "keywords": [
       "educação de jovens e adultos",
       "EJA",
@@ -896,5 +896,48 @@
     ],
     "fonte": "https://sei.ifpr.edu.br/sei/controlador_externo.php?acao=documento_conferir&id_orgao_acesso_externo=0",
     "path": "normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_292-2026_calendario-academico-2027.md"
+  },
+  {
+    "title": "Resolução CNE/CP nº 2/2026",
+    "tipo_documento": "Resolução",
+    "numero": "2",
+    "ano": 2026,
+    "data_publicacao": "2026-11-11",
+    "orgao": "CNE/CP",
+    "jurisdicao": "BR",
+    "ementa": "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
+    "status_vigencia": "vigente",
+    "keywords": [
+      "DCNEPT",
+      "educação profissional",
+      "EPT",
+      "EPTNM",
+      "diretrizes curriculares",
+      "cursos técnicos",
+      "cursos superiores de tecnologia",
+      "itinerário formativo profissional",
+      "carga horária",
+      "prática profissional supervisionada",
+      "estágio supervisionado",
+      "educação a distância",
+      "semipresencial",
+      "acompanhamento de egressos",
+      "certificação profissional",
+      "cursos experimentais",
+      "formação docente",
+      "inteligência artificial",
+      "CNCT",
+      "CNE"
+    ],
+    "aliases": [
+      "Resolução CNE/CP nº 2/2026",
+      "Resolução CNE/CP nº 2, de 11 de novembro de 2026",
+      "DCN EPT 2026",
+      "DCNEPT 2026",
+      "Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica",
+      "Novas DCN da EPT"
+    ],
+    "fonte": "PDF da Resolução CNE/CP nº 2, de 11 de novembro de 2026, assinado pelo Presidente do CNE (URL oficial no portal do CNE ou no DOU a registrar)",
+    "path": "normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md"
   }
 ]
