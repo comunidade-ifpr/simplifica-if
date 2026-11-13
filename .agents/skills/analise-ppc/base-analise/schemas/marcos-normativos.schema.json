@@ -50,7 +50,7 @@
             "type": "array",
             "items": {
               "type": "string",
-              "pattern": "^(?:br\\/(?:lei|lc|decreto|decreto-lei|mp|ec)|(?:br|ifpr)\\/[a-z0-9]+(?:-[a-z0-9]+)*\\/(?:res|portaria|nt|parecer|in|deliberacao))\\/(\\d{4})\\/([1-9]\\d*)#(?:art[1-9]\\d*[A-Z]*(?:-par(?:[1-9]\\d*[A-Z]*|unico))?(?:-[ivxlc]+)?(?:-al-[a-z])?|anexo\\d+(?:-item\\d+)?)$"
+              "pattern": "^(?:br\\/(?:lei|lc|decreto|decreto-lei|mp|ec)|(?:br|ifpr)\\/[a-z0-9]+(?:-[a-z0-9]+)*\\/(?:res|portaria|nt|parecer|in|deliberacao))\\/(\\d{4})\\/([1-9]\\d*)#(?:(?:anexo\\d+-)?art[1-9]\\d*[A-Z]*(?:-par(?:[1-9]\\d*[A-Z]*|unico))?(?:-[ivxlc]+[A-Z]?)?(?:-al-[a-z])?(?:-item\\d+)?|anexo\\d+(?:-item\\d+)?|secao\\d+)$"
             },
             "description": "ID do ato com o dispositivo revogado, como br/cne-ceb/res/2025/3#art6-iii"
           },

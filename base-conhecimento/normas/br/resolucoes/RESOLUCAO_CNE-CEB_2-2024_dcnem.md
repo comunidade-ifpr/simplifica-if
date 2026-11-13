@@ -44,7 +44,7 @@ A PRESIDENTA DA CÂMARA DE EDUCAÇÃO BÁSICA DO CONSELHO NACIONAL DE EDUCAÇÃO
 
 Ficam instituídas as Diretrizes Curriculares Nacionais para o Ensino Médio e estabelecidas as diretrizes gerais para os Itinerários Formativos, a serem observadas pelos sistemas de ensino e suas unidades escolares na organização curricular.
 
-Parágrafo único. As Diretrizes de que trata o caput aplicam-se a todas as formas de oferta do Ensino Médio, complementadas, quando necessário, por diretrizes próprias de cada uma das modalidades da Educação Básica, definidas na Lei nº 9.394, de 20 de dezembro de
+**Parágrafo único.** As Diretrizes de que trata o caput aplicam-se a todas as formas de oferta do Ensino Médio, complementadas, quando necessário, por diretrizes próprias de cada uma das modalidades da Educação Básica, definidas na Lei nº 9.394, de 20 de dezembro de
 
 1996.
 
@@ -163,7 +163,7 @@ São princípios específicos que devem orientar a oferta do Ensino Médio:
 
 A organização curricular do Ensino Médio, estruturada de modo a promover a Formação Integral e Integrada dos educandos, está organizada a partir da articulação e integração entre a Formação Geral Básica e os Itinerários Formativos de Aprofundamento e de Itinerário de Formação Técnica e Profissional.
 
-Parágrafo único. A Formação Geral Básica e os Itinerários Formativos não devem se constituir em blocos distintos e segregados de oferta curricular.
+**Parágrafo único.** A Formação Geral Básica e os Itinerários Formativos não devem se constituir em blocos distintos e segregados de oferta curricular.
 
 #### Art. 10.
 
@@ -203,7 +203,8 @@ Os sistemas de ensino deverão assegurar aos estudantes oportunidades de constru
 - d) seu engajamento na vida comunitária e social e sua participação na transformação e melhoria contínua da vida comum;
 - e) sua participação cidadã e política, considerando os parâmetros democráticos que estruturam a sociedade brasileira; e
 - f) sua realização plena como pessoa.
-Parágrafo único. A oferta do Projeto de Vida é estratégia curricular e poderá obedecer a uma lógica transversal às áreas do conhecimento e deverá estar presente ao longo de todo o Ensino Médio:
+
+**Parágrafo único.** A oferta do Projeto de Vida é estratégia curricular e poderá obedecer a uma lógica transversal às áreas do conhecimento e deverá estar presente ao longo de todo o Ensino Médio:
 
 - **I –** no início da trajetória formativa no Ensino Médio: a orientação e apoio aos estudantes para a identificação de seus interesses, inclinações e objetivos, definindo a escolha do itinerário que mais se alinha a seu Projeto de Vida; e
 - **II –** no final da trajetória formativa no Ensino Médio: a orientação e apoio aos estudantes para a identificação das diferentes oportunidades e possibilidades de progressão de estudos no Ensino Superior e de integração ao mundo do trabalho. ###
@@ -216,7 +217,8 @@ Observada a obrigatoriedade do cumprimento da carga horária total mínima de 3.
 - **I –** 2.400 (duas mil e quatrocentas) horas, a serem complementadas, articuladas e integradas aos Itinerários Formativos de Aprofundamento por áreas de conhecimento;
 - **II –** 2.100 (duas mil e cem) horas, a serem complementadas, articuladas e integradas aos Itinerários de Formação Técnica e Profissional na forma de cursos técnicos de 1.000 (mil) ou 1.200 (mil e duzentas) horas; e
 - **III –** 2.200 (duas mil e duzentas) horas, a serem complementadas, articuladas e integradas aos Itinerários de Formação Técnica e Profissional na forma de cursos técnicos de 800 (oitocentas) horas.
-Parágrafo único. Na oferta de itinerários organizados na forma de cursos de qualificação profissional técnica de nível médio, a carga horária mínima da Formação Geral Básica deve obedecer ao mínimo de 2.400 (duas mil e quatrocentas) horas.
+
+**Parágrafo único.** Na oferta de itinerários organizados na forma de cursos de qualificação profissional técnica de nível médio, a carga horária mínima da Formação Geral Básica deve obedecer ao mínimo de 2.400 (duas mil e quatrocentas) horas.
 
 #### Art. 14.
 
@@ -253,9 +255,7 @@ A oferta da carga horária da Formação Geral Básica deverá ser distribuída 
 - **III –** a participação comprovada em projetos de extensão universitária, de iniciação científica ou em atividades de direção em grêmios estudantis; e
 - **IV –** a participação em trabalhos remunerados ou voluntários supervisionados em instituições previamente credenciadas, desde que explicitadas sua relação exclusiva com o currículo do Ensino Médio, vedadas para esse fim as participações em entidades de caráter político-partidário e religioso.
 
-**§ 4º** O Conselho Nacional de Educação – CNE, juntamente ao Ministério da Educação, elaborará normativo complementar para especificar as regras de credenciamento das instituições aptas a receber estudantes para o trabalho remunerado ou voluntário, previstas no inciso IV do
-
-**§ 3º**, assim como as regras de comprovação de alinhamento curricular.
+**§ 4º** O Conselho Nacional de Educação – CNE, juntamente ao Ministério da Educação, elaborará normativo complementar para especificar as regras de credenciamento das instituições aptas a receber estudantes para o trabalho remunerado ou voluntário, previstas no inciso IV do § 3º, assim como as regras de comprovação de alinhamento curricular.
 
 #### Art. 17.
 
@@ -288,11 +288,9 @@ Os Itinerários Formativos terão carga horária mínima de 600 (seiscentas) hor
 
 #### Art. 19.
 
-Os sistemas de ensino deverão estabelecer o planejamento da oferta educativa de Ensino Médio de modo a assegurar que todas as escolas de sua rede ofertem o aprofundamento integral de todas as áreas do conhecimento, organizadas em, no mínimo, 2 (dois) itinerários formativos com ênfases distintas, excetuadas as que oferecerem a Formação Técnica e Profissional, na observância do disposto no art. 36,
+Os sistemas de ensino deverão estabelecer o planejamento da oferta educativa de Ensino Médio de modo a assegurar que todas as escolas de sua rede ofertem o aprofundamento integral de todas as áreas do conhecimento, organizadas em, no mínimo, 2 (dois) itinerários formativos com ênfases distintas, excetuadas as que oferecerem a Formação Técnica e Profissional, na observância do disposto no art. 36, § 2º-A, da Lei nº 9.394, de 20 de dezembro de 1996.
 
-**§ 2º**-A, da Lei nº 9.394, de 20 de dezembro de 1996.
-
-Parágrafo único. Para cumprir o disposto no caput, os sistemas de ensino poderão:
+**Parágrafo único.** Para cumprir o disposto no caput, os sistemas de ensino poderão:
 
 - **I –** ofertar 2 (dois) ou mais itinerários formativos integrados, com ênfase em 2 (duas) ou 3 (três) áreas do conhecimento;
 - **II –** ofertar 4 (quatro) ou mais itinerários formativos, obedecendo cada um a ênfase em 1 (uma) área do conhecimento;
@@ -334,7 +332,8 @@ Nas escolas que ofertam o Itinerário de Formação Técnica e Profissional, os 
 - **I –** escolas dedicadas a ofertar exclusivamente Ensino Médio articulado aos Itinerários de Formação Técnica e Profissional, com diversidade de programas e cursos, considerando os parâmetros disponíveis no CNCT;
 - **II –** escolas dedicadas a ofertar, de modo concomitante, o Ensino Médio articulado aos Itinerários de Formação Técnica e Profissional e Ensino Médio articulado a um ou mais Itinerários Formativos de Aprofundamento; e
 - **III –** escolas dedicadas a ofertar apenas Itinerários de Formação Técnica e Profissional, atendendo estudantes matriculados em diferentes escolas de Ensino Médio da rede de ensino, no modelo de formação técnica concomitante intercomplementar.
-Parágrafo único. Nos municípios em que houver apenas uma escola de Ensino Médio e houver a oferta de Itinerário de Formação Técnica e Profissional, os sistemas de ensino devem assegurar o atendimento na forma disposta no inciso II.
+
+**Parágrafo único.** Nos municípios em que houver apenas uma escola de Ensino Médio e houver a oferta de Itinerário de Formação Técnica e Profissional, os sistemas de ensino devem assegurar o atendimento na forma disposta no inciso II.
 
 #### Art. 23.
 
@@ -374,7 +373,7 @@ Na oferta do Ensino Médio em tempo parcial, pode-se considerar até 300 (trezen
 
 Os Itinerários de Formação Técnica e Profissional devem observar o disposto nas Diretrizes Curriculares Nacionais Gerais de Educação Profissional e Tecnológica, com oferta organizada a partir dos eixos tecnológicos e das áreas tecnológicas definidos no CNCT, conforme resolução específica em vigor.
 
-Parágrafo único. A organização curricular dos Itinerários de Formação Técnica e Profissional articulados com a Formação Geral Básica poderá ser feita de forma a assegurar a habilitação profissional técnica, de acordo com os cursos previstos no CNCT.
+**Parágrafo único.** A organização curricular dos Itinerários de Formação Técnica e Profissional articulados com a Formação Geral Básica poderá ser feita de forma a assegurar a habilitação profissional técnica, de acordo com os cursos previstos no CNCT.
 
 #### Art. 27.
 
@@ -415,7 +414,7 @@ O Ensino Médio, etapa final da Educação Básica, concebida como conjunto org�
 
 Os sistemas de ensino poderão estabelecer parcerias para o fortalecimento da oferta da Formação Técnica e Profissional do Ensino Médio com organizações e instituições autorizadas e reconhecidas, de acordo com normas definidas pelo respectivo Conselho de Educação.
 
-Parágrafo único. Nas situações em que a parceria com organizações e instituições autorizadas e reconhecidas implique a realização de atividades, estudos ou projetos fora da unidade educacional no qual estão regularmente matriculados no Ensino Médio, os sistemas de ensino definirão as normas e procedimentos para o registro de todos os atos administrativos da vida escolar do estudante, incluindo a matrícula, a frequência, a anotação do rendimento escolar e eventual certificação do estudante.
+**Parágrafo único.** Nas situações em que a parceria com organizações e instituições autorizadas e reconhecidas implique a realização de atividades, estudos ou projetos fora da unidade educacional no qual estão regularmente matriculados no Ensino Médio, os sistemas de ensino definirão as normas e procedimentos para o registro de todos os atos administrativos da vida escolar do estudante, incluindo a matrícula, a frequência, a anotação do rendimento escolar e eventual certificação do estudante.
 
 ## TÍTULO III
 
@@ -481,7 +480,7 @@ Os sistemas de ensino, atendendo a democratização do acesso, permanência e su
 
 No âmbito da Política Nacional de Ensino Médio, os processos de monitoramento e avaliação deverão considerar estratégias que permitam o acompanhamento, a mensuração, a sistematização de informações e a tomada de decisões destinadas à melhoria contínua dos insumos, processos e resultados dos sistemas de ensino; as redes de ensino.
 
-Parágrafo único. As redes de ensino atendendo à garantia da qualidade da oferta do Ensino Médio, deverão:
+**Parágrafo único.** As redes de ensino atendendo à garantia da qualidade da oferta do Ensino Médio, deverão:
 
 - **I –** levantar, analisar e sistematizar dados e informações no âmbito dos seus territórios; e
 - **II –** realizar estudos técnicos que subsidiem o monitoramento e a avaliação periódica da implementação e resultados de programas e ações no contexto da Política Nacional de Ensino Médio.
@@ -565,7 +564,8 @@ A proposta pedagógica das unidades escolares que ofertam o Ensino Médio deve c
 - **XX –** a participação social e o protagonismo dos estudantes, como agentes de transformação de suas unidades de ensino e de suas comunidades;
 - **XXI –** as condições materiais, funcionais e didático-pedagógicas, para que os profissionais da escola efetivem as proposições do projeto; e
 - **XXII –** o Projeto de Vida como estratégia curricular voltado para a reflexão entre o universal e o particular que considere que todo projeto individual somente se realiza em dimensão coletiva com o objetivo de construir uma escola mais justa que contemple a aprendizagem e o desenvolvimento humano de adolescentes e jovens na escola e que possibilite o diálogo sobre as incertezas ligadas ao futuro, em especial aquelas concernentes ao mundo do trabalho.
-Parágrafo único. A proposta pedagógica deve, ainda, orientar:
+
+**Parágrafo único.** A proposta pedagógica deve, ainda, orientar:
 
 - **I –** dispositivos, medidas e atos de organização do trabalho escolar;
 - **II –** mecanismos de promoção e fortalecimento da autonomia escolar, mediante a alocação de recursos financeiros, administrativos e de suporte técnico necessários à sua realização; e
@@ -578,7 +578,7 @@ Parágrafo único. A proposta pedagógica deve, ainda, orientar:
 
 Estas Diretrizes devem orientar a elaboração de propostas curriculares, a formação de professores, os investimentos em materiais didáticos e os sistemas nacionais de avaliação da Educação Básica.
 
-Parágrafo único. O Ministério da Educação deve adequar o PNLD e demais programas nacionais voltados à distribuição de livros e materiais didáticos, recursos físicos e digitais para alunos e professores que atendam ao que foi definido para Formação Geral Básica e Itinerários Formativos de Aprofundamento, organizados de acordo com estas Diretrizes.
+**Parágrafo único.** O Ministério da Educação deve adequar o PNLD e demais programas nacionais voltados à distribuição de livros e materiais didáticos, recursos físicos e digitais para alunos e professores que atendam ao que foi definido para Formação Geral Básica e Itinerários Formativos de Aprofundamento, organizados de acordo com estas Diretrizes.
 
 #### Art. 39.
 

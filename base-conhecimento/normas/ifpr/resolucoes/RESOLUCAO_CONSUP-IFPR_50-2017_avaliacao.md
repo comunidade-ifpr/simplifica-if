@@ -109,13 +109,14 @@ O processo de avaliação de ensino-aprendizagem será:
 - **I –** diagnóstico: considera o conhecimento prévio e o construído durante o processo de ensino-aprendizagem, abrange descrição, apreciação qualitativa acerca dos resultados apresentados pelos envolvidos em diferentes etapas do processo educativo e indica avanços e entraves para intervir e agir, redefinindo ações e objetivos;
 - **II –** formativo: ocorre durante todo o processo de ensino-aprendizagem, é contínuo, interativo e centrado no processo por meio do qual o estudante (re)constrói seus conhecimentos, possibilitando esse acompanhamento, bem como fornecendo subsídios para a avaliação da própria prática docente;
 - **III –** somativo: possibilita a avaliação dos objetivos pretendidos; apresenta os resultados de aprendizagem em diferentes períodos e seus dados subsidiam o replanejamento do ensino para próxima etapa;
-Parágrafo único. A síntese do processo de avaliação dará origem à emissão de resultado.
+
+**Parágrafo único.** A síntese do processo de avaliação dará origem à emissão de resultado.
 
 #### Art. 8º
 
 O processo de avaliação do ensino-aprendizagem deve prever critérios articulados aos objetivos estabelecidos no plano de ensino, dialogados entre docentes e estudantes, corroborando, desta forma, para sua revisão contínua.
 
-Parágrafo único. As alterações decorrentes do diálogo sobre os critérios serão divulgadas à comunidade acadêmica por meio do plano de ensino do componente curricular.
+**Parágrafo único.** As alterações decorrentes do diálogo sobre os critérios serão divulgadas à comunidade acadêmica por meio do plano de ensino do componente curricular.
 
 ## TÍTULO IV
 
@@ -143,13 +144,14 @@ Para a avaliação do processo ensino-aprendizagem, deverão ser utilizados vár
 - **XVI –** atividades em Ambiente Virtual de Aprendizagem (AVA);
 - **XVII –** participação em atividades de mobilidade nacional e internacional;
 - **XVIII –** outras atividades de ensino, pesquisa, extensão e inovação pertinentes aos cursos.
-Parágrafo único. Após o registro dos conceitos no sistema acadêmico, os instrumentos avaliativos deverão ser devolvidos aos estudantes.
+
+**Parágrafo único.** Após o registro dos conceitos no sistema acadêmico, os instrumentos avaliativos deverão ser devolvidos aos estudantes.
 
 #### Art. 10.
 
 A produção do estudante, a partir dos diversificados instrumentos avaliativos, fornecerá ao docente indicadores de seu desenvolvimento cognitivo e da construção que está realizando nas áreas do conhecimento.
 
-Parágrafo único. O docente deve utilizar, ao menos, dois instrumentos ao longo de cada período avaliado para emitir resultados parciais e finais.
+**Parágrafo único.** O docente deve utilizar, ao menos, dois instrumentos ao longo de cada período avaliado para emitir resultados parciais e finais.
 
 #### Art. 11.
 
@@ -165,7 +167,7 @@ Os docentes terão autonomia didático/metodológica para definir qual estratég
 
 A avaliação do ensino-aprendizagem dos estudantes com deficiência, Transtornos Globais do Desenvolvimento, Transtornos do Espectro Autista, Altas Habilidades ou Superdotação, transtornos psiquiátricos, distúrbios e dificuldades de aprendizagem, preferencialmente, comprovadas por meio de laudos ou pareceres da respectiva área, deverá ser organizada pelos docentes juntamente aos profissionais da Seção Pedagógica e de Assuntos Estudantis, do Núcleo de Apoio às Pessoas com Necessidades Educacionais Específicas - NAPNE e registrada no Plano de Trabalho do Estudante.
 
-Parágrafo único. O Plano de Trabalho do Estudante contempla as flexibilizações necessárias e possíveis ao processo de ensino-aprendizagem e consequentemente da avaliação, considerando a singularidade e especificidade dos estudantes, de maneira que sejam atendidos em suas necessidades e possam avançar em seu processo de aprendizagem.
+**Parágrafo único.** O Plano de Trabalho do Estudante contempla as flexibilizações necessárias e possíveis ao processo de ensino-aprendizagem e consequentemente da avaliação, considerando a singularidade e especificidade dos estudantes, de maneira que sejam atendidos em suas necessidades e possam avançar em seu processo de aprendizagem.
 
 ## TÍTULO V
 
@@ -217,6 +219,7 @@ Os resultados obtidos no processo de avaliação serão emitidos por disciplinas
 - **II –** conceito B – quando a aprendizagem do estudante for PARCIALMENTE PLENA e atingir os objetivos, conforme critérios propostos no plano de ensino;
 - **III –** conceito C – quando a aprendizagem do estudante for SUFICIENTE e atingir os objetivos, conforme critérios propostos no plano de ensino;
 - **IV –** conceito D – quando a aprendizagem do estudante for INSUFICIENTE e não atingir os objetivos, conforme critérios propostos no plano de ensino;
+
 **§ 1º** Os conceitos deverão ter emissão parcial após cada término de período letivo, conforme organização curricular, e emissão final após o término das disciplinas/ unidades curriculares/ componentes curriculares/ áreas, de acordo com o calendário do campus.
 
 **§ 2º** Quando uma disciplina/ unidade curricular/ componente curricular/ área, em uma mesma turma, for ministrado por mais de um professor, os conceitos serão atribuídos em consenso pelos respectivos docentes a partir dos critérios, previamente, construídos em conjunto.
@@ -277,9 +280,13 @@ Esta Resolução entra em vigor na data de sua publicação, produzindo seus efe
 
 **§ 2º** A Pró-reitoria de Ensino – PROENS estabelecerá prazo para o encaminhamento dos Projetos Pedagógicos de Curso com as adequações a esta normativa.
 
+<!-- fora-do-ato: não consta do texto publicado em ifpr.edu.br (conferido em 13/11/2026) -->
+
 #### Art. 2º
 
 Esta Resolução entra em vigor nesta data, com ampla publicação e divulgação na página eletrônica do IFPR.
+
+<!-- /fora-do-ato -->
 
 #### ODACIR ANTONIO ZANATTA
 

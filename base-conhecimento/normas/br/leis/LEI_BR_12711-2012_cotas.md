@@ -33,59 +33,49 @@ Data de Sanção: 29 de agosto de 2012
 
 ---
 
-## ARTIGO 1º
+#### ARTIGO 1º
 
 As instituições federais de educação superior vinculadas ao Ministério da Educação reservarão, no mínimo, **50% (cinquenta por cento) de suas vagas** para estudantes que tenham cursado integralmente o ensino médio em escolas públicas.
 
-### Parágrafo Único
+**Parágrafo Único** No mínimo 50% das vagas reservadas de acordo com o caput deste artigo serão destinadas a estudantes oriundos de famílias com renda igual ou inferior a **1,5 (um vírgula cinco) salário mínimo per capita**.
 
-No mínimo 50% das vagas reservadas de acordo com o caput deste artigo serão destinadas a estudantes oriundos de famílias com renda igual ou inferior a **1,5 (um vírgula cinco) salário mínimo per capita**.
-
-## ARTIGO 2º
+#### ARTIGO 2º
 
 Vetado.
 
-## ARTIGO 3º
+#### ARTIGO 3º
 
 Em cada instituição federal de educação superior, no mínimo 50% das vagas de que trata o art. 1º desta Lei será preenchido, por uma margem de preferência, por autodeclarados pretos, pardos e indígenas, em proporção **no mínimo igual à de pretos, pardos e indígenas na população da unidade da Federação** onde está instalada a instituição, segundo o último censo da Fundação Instituto Brasileiro de Geografia e Estatística (IBGE).
 
-### Parágrafo Único
+**Parágrafo Único** As instituições federais de educação superior deverão implementar, em seus processos de seleção, mecanismos que favoreçam a comprovação da veracidade das informações prestadas por candidatos que se autodeclarem pretos, pardos ou indígenas, nos termos de regulamentação do Ministério da Educação.
 
-As instituições federais de educação superior deverão implementar, em seus processos de seleção, mecanismos que favoreçam a comprovação da veracidade das informações prestadas por candidatos que se autodeclarem pretos, pardos ou indígenas, nos termos de regulamentação do Ministério da Educação.
-
-## ARTIGO 4º
+#### ARTIGO 4º
 
 As instituições federais de ensino técnico de nível médio vinculadas ao Ministério da Educação reservarão, no mínimo, **50% (cinquenta por cento) de suas vagas** para estudantes que tenham cursado integralmente o ensino fundamental em escolas públicas.
 
-### Parágrafo Único
+**Parágrafo Único** No mínimo 50% das vagas reservadas de acordo com o caput deste artigo serão destinadas a estudantes oriundos de famílias com renda igual ou inferior a **1,5 (um vírgula cinco) salário mínimo per capita**.
 
-No mínimo 50% das vagas reservadas de acordo com o caput deste artigo serão destinadas a estudantes oriundos de famílias com renda igual ou inferior a **1,5 (um vírgula cinco) salário mínimo per capita**.
-
-## ARTIGO 5º
+#### ARTIGO 5º
 
 Em cada instituição federal de ensino técnico de nível médio, no mínimo 50% das vagas de que trata o art. 4º desta Lei será preenchido, por uma margem de preferência, por autodeclarados pretos, pardos e indígenas, em proporção **no mínimo igual à de pretos, pardos e indígenas na população da unidade da Federação** onde está instalada a instituição, segundo o último censo do IBGE.
 
-### Parágrafo Único
+**Parágrafo Único** As instituições federais de ensino técnico de nível médio deverão implementar, em seus processos de seleção, mecanismos que favoreçam a comprovação da veracidade das informações prestadas por candidatos que se autodeclarem pretos, pardos ou indígenas, nos termos de regulamentação do Ministério da Educação.
 
-As instituições federais de ensino técnico de nível médio deverão implementar, em seus processos de seleção, mecanismos que favoreçam a comprovação da veracidade das informações prestadas por candidatos que se autodeclarem pretos, pardos ou indígenas, nos termos de regulamentação do Ministério da Educação.
-
-## ARTIGO 6º
+#### ARTIGO 6º
 
 O Ministério da Educação acompanhará e avaliará continuamente o programa de reserva de vagas instituído por esta Lei, devendo efetuar o acompanhamento da trajetória acadêmica dos estudantes beneficiários das ações afirmativas, de modo a avaliar o impacto dessas políticas na promoção da igualdade de oportunidades educacionais.
 
-## ARTIGO 7º
+#### ARTIGO 7º
 
 A implementação do disposto nos arts. 1º, 3º, 4º e 5º desta Lei será avaliada após dez anos de sua vigência, podendo ser prorrogada, revogada ou modificada por decisão do Poder Legislativo, com base em relatório técnico do Ministério da Educação.
 
-## ARTIGO 8º
+#### ARTIGO 8º
 
 O Ministério da Educação deverá implementar, no mínimo, 25% (vinte e cinco por cento) do total de vagas de reserva a cada ano, até o cumprimento integral do disposto nos arts. 1º, 3º, 4º e 5º desta Lei, com base no poder de alocação orçamentária anual de recursos para educação.
 
-### Parágrafo Único
+**Parágrafo Único** Poderá ser implementado percentual superior a 25% (vinte e cinco por cento) anualmente, desde que não comprometa a qualidade da educação oferecida pelas instituições federais de educação superior e pelos institutos federais de educação, ciência e tecnologia.
 
-Poderá ser implementado percentual superior a 25% (vinte e cinco por cento) anualmente, desde que não comprometa a qualidade da educação oferecida pelas instituições federais de educação superior e pelos institutos federais de educação, ciência e tecnologia.
-
-## ARTIGO 9º
+#### ARTIGO 9º
 
 Esta Lei entra em vigor na data de sua publicação.
 

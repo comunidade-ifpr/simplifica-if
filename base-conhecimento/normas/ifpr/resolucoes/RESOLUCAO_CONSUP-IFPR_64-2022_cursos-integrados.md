@@ -70,7 +70,7 @@ As diretrizes para os cursos técnicos integrados ao ensino médio pautam-se nos
 
 Os cursos técnicos integrados ao ensino médio deverão representar, no mínimo, 50% da oferta de vagas em cada campus, conforme previsto na lei de criação dos Institutos Federais, considerando a verticalização entre os diferentes níveis de ensino.
 
-Parágrafo único: Aos campi que não se adequarem ao caput, caberá a apresentação de um plano de estudo a fim de justificar e/ou informar um cronograma para a adequação do percentual de oferta dos cursos de ensino médio integrado.
+**Parágrafo único:** Aos campi que não se adequarem ao caput, caberá a apresentação de um plano de estudo a fim de justificar e/ou informar um cronograma para a adequação do percentual de oferta dos cursos de ensino médio integrado.
 
 #### Art. 4º
 
@@ -124,7 +124,7 @@ A organização curricular da oferta integrada deve se estruturar:
 
 A partir da interface entre o perfil do ingressante e o perfil profissional do egresso, o currículo deve estabelecer os conhecimentos necessários para a composição das ementas, da organização dos componentes curriculares e da distribuição de carga horária no curso, de modo a garantir a complementaridade e a integração dos conhecimentos.
 
-Parágrafo único. Independente dos formatos dos currículos, deve-se promover a integração e a interdisciplinaridade entre componentes curriculares, considerando que repetições e sobreposições de conteúdos são positivos desde que aplicados de forma pertinente e com vistas a consolidar o conhecimento e a aprendizagem.
+**Parágrafo único.** Independente dos formatos dos currículos, deve-se promover a integração e a interdisciplinaridade entre componentes curriculares, considerando que repetições e sobreposições de conteúdos são positivos desde que aplicados de forma pertinente e com vistas a consolidar o conhecimento e a aprendizagem.
 
 #### Art. 10.
 
@@ -142,7 +142,7 @@ A composição das ementas dos componentes curriculares deve ser pautada pelos o
 
 A organização curricular deve garantir a realização de práticas profissionais que possibilitem ao estudante a compreensão do mundo do trabalho por meio de estágios curriculares obrigatórios, projetos integradores de intervenção, projetos de ensino, pesquisa, extensão e inovação, experimentos e atividades em ambientes especiais, tais como laboratórios, oficinas, empresas (incluindo empresa júnior, escritório modelo e incubadoras), instituições públicas, organizações do terceiro setor, ateliês, dentre outras, preferencialmente, com tempos e espaços previstos no Projeto Pedagógico do Curso (PPC).
 
-Parágrafo único. Nos campi em que há contextos de fronteira e/ou multi/plurilinguístico, avaliar a viabilidade da possibilidade de realização das práticas profissionais em outros países, caso exista interesse do estudante/instituição, atentando-se aos critérios de convênio e seguridade estudantil vigentes.
+**Parágrafo único.** Nos campi em que há contextos de fronteira e/ou multi/plurilinguístico, avaliar a viabilidade da possibilidade de realização das práticas profissionais em outros países, caso exista interesse do estudante/instituição, atentando-se aos critérios de convênio e seguridade estudantil vigentes.
 
 #### Art. 13.
 
@@ -156,7 +156,7 @@ A organização curricular pode ser feita por disciplinas, componentes curricula
 
 Em caso de organização dos conhecimentos por componentes curriculares, deve-se, preferencialmente, ofertar o mínimo de duas aulas semanais, como estratégia de diminuição da quantidade de componentes curriculares e de forma a aprofundar e qualificar os processos de ensino e aprendizagem.
 
-Parágrafo único. Caso não seja possível a oferta de no mínimo duas aulas semanais por componente curricular, o PPC deve indicar a justificativa coerente com os princípios, concepção e objetivos estabelecidos nesta Resolução.
+**Parágrafo único.** Caso não seja possível a oferta de no mínimo duas aulas semanais por componente curricular, o PPC deve indicar a justificativa coerente com os princípios, concepção e objetivos estabelecidos nesta Resolução.
 
 #### Art. 16.
 
@@ -170,7 +170,7 @@ Os cursos ofertados na modalidade EJA-EPT e de educação do campo poderão ser 
 
 Para a construção de um currículo integrado, deve-se garantir espaço e tempo destinados ao planejamento e avaliação coletiva.
 
-Parágrafo único. Os colegiados de curso devem realizar encontros periódicos e permanentes, minimamente bimestrais, para as reuniões pedagógicas, preferencialmente assessorados pelas seções pedagógicas e de assuntos estudantis dos campi.
+**Parágrafo único.** Os colegiados de curso devem realizar encontros periódicos e permanentes, minimamente bimestrais, para as reuniões pedagógicas, preferencialmente assessorados pelas seções pedagógicas e de assuntos estudantis dos campi.
 
 #### Art. 19.
 
@@ -193,7 +193,7 @@ A duração dos cursos será de 3 (três) ou de 4 (quatro) anos, sendo prioridad
 
 As cargas horárias previstas nas regulamentações que tratam do ensino médio nacional não devem ser assumidas de modo a fragmentar a organização curricular dos cursos, visto que a possibilidade dos itinerários formativos integrados é prevista em lei, assegurada a autonomia didático-pedagógica prevista nas legislações específicas sobre a EPT e a criação da rede federal.
 
-Parágrafo único. O cômputo de 1.800 horas de conteúdos da Base Nacional Curricular Comum (BNCC) do ensino médio é atendido na totalidade da matriz curricular dos cursos técnicos integrados e pode, inclusive, ser ampliado, uma vez que formação geral e formação específica se articulam de modo a conformar uma unidade indivisível.
+**Parágrafo único.** O cômputo de 1.800 horas de conteúdos da Base Nacional Curricular Comum (BNCC) do ensino médio é atendido na totalidade da matriz curricular dos cursos técnicos integrados e pode, inclusive, ser ampliado, uma vez que formação geral e formação específica se articulam de modo a conformar uma unidade indivisível.
 
 #### Art. 22.
 
@@ -218,7 +218,7 @@ A realização de aulas em contraturno deve considerar a garantia das condiçõe
 
 Os cursos criados anteriormente a estas diretrizes que ultrapassarem a carga horária de 10% na solicitação de ajustes curriculares terão que comprovar a condição de permanência e êxito dos estudantes, com base em justificativa e análise do seu histórico.
 
-Parágrafo único. A justificativa descrita no caput deve conter o relatório de integralização e a avaliação dos estudantes, via pesquisa de egressos.
+**Parágrafo único.** A justificativa descrita no caput deve conter o relatório de integralização e a avaliação dos estudantes, via pesquisa de egressos.
 
 ## TÍTULO IV
 
@@ -278,7 +278,7 @@ Os PPCs deverão ser avaliados permanentemente em relação ao andamento do curs
 
 os ajustes curriculares dos PPCs poderão ser solicitados a partir da metade do período total do curso.
 
-Parágrafo único. Os ajustes devem seguir as normativas disponibilizadas pela Proens.
+**Parágrafo único.** Os ajustes devem seguir as normativas disponibilizadas pela Proens.
 
 ## TÍTULO V
 
@@ -318,7 +318,7 @@ O Plano Estratégico de Ações de Permanência e Êxito deve ser instituído po
 
 O pleno acesso ao currículo dos estudantes com necessidades específicas será garantido, a fim de promover a permanência na instituição e o êxito em sua trajetória acadêmica, de forma a favorecer a conquista e o exercício de sua autonomia.
 
-Parágrafo único - Indicam-se como elementos para o alcance da permanência e êxito para os estudantes com necessidades específicas:
+**Parágrafo único** - Indicam-se como elementos para o alcance da permanência e êxito para os estudantes com necessidades específicas:
 
 - **I –** adaptações e flexibilização curricular;
 - **II –** atendimento educacional especializado;

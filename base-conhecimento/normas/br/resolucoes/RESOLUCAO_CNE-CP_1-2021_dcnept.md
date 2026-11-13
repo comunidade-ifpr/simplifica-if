@@ -44,7 +44,7 @@ A Presidente do Conselho Nacional de Educação, de conformidade com o disposto 
 
 A presente Resolução define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.
 
-Parágrafo único. Para os fins desta Resolução, entende-se por Diretriz o conjunto articulado de princípios e critérios a serem observados pelos sistemas de ensino e pelas instituições e redes de ensino públicas e privadas, na organização, no planejamento, no desenvolvimento e na avaliação da Educação Profissional e Tecnológica, presencial e a distância.
+**Parágrafo único.** Para os fins desta Resolução, entende-se por Diretriz o conjunto articulado de princípios e critérios a serem observados pelos sistemas de ensino e pelas instituições e redes de ensino públicas e privadas, na organização, no planejamento, no desenvolvimento e na avaliação da Educação Profissional e Tecnológica, presencial e a distância.
 
 #### Art. 2º
 
@@ -83,9 +83,7 @@ São princípios da Educação Profissional e Tecnológica:
 
 #### Art. 4º
 
-A Educação Profissional e Tecnológica, com base no
-
-**§ 2º** do art. 39 da LDB e no Decreto nº 5.154/2004, é desenvolvida por meio de cursos e programas de:
+A Educação Profissional e Tecnológica, com base no § 2º do art. 39 da LDB e no Decreto nº 5.154/2004, é desenvolvida por meio de cursos e programas de:
 
 - **I –** qualificação profissional, inclusive a formação inicial e a formação continuada de trabalhadores;
 - **II –** Educação Profissional Técnica de Nível Médio, incluindo saídas intermediárias de qualificação profissional técnica e cursos de especialização profissional técnica; e
@@ -206,7 +204,7 @@ A estruturação de cursos de qualificação profissional deve considerar, no m�
 
 A formação inicial para o trabalho poderá compreender a oferta de cursos e programas especiais de capacitação profissional, de duração variável, abertos à comunidade e condicionada a matrícula à capacidade de aproveitamento do estudante, sem exigência de vinculação a nível formal de escolaridade ou ao perfil profissional de conclusão de uma determinada ocupação, voltados para o desenvolvimento de saberes instrumentais relacionados ao mundo do trabalho, na perspectiva da geração de trabalho e renda.
 
-Parágrafo único. Para esses cursos e programas especiais abertos à comunidade e estruturados nos termos do art. 42 da LDB, caberá às entidades ofertantes definir critérios para o processo seletivo e para o aproveitamento de estudos, quando couber.
+**Parágrafo único.** Para esses cursos e programas especiais abertos à comunidade e estruturados nos termos do art. 42 da LDB, caberá às entidades ofertantes definir critérios para o processo seletivo e para o aproveitamento de estudos, quando couber.
 
 ### CAPÍTULO V
 
@@ -288,7 +286,7 @@ As instituições de ensino devem formular e implantar, coletiva e participativa
 
 O planejamento curricular fundamenta-se no compromisso ético da instituição e rede de ensino em relação à concretização da identidade do perfil profissional de conclusão do curso, o qual é definido pela explicitação dos conhecimentos, habilidades, atitudes, valores e emoções, compreendidos nas competências profissionais e pessoais, que devem ser garantidos ao final de cada habilitação profissional técnica e das respectivas saídas intermediárias correspondentes às etapas de qualificação profissional técnica, e da especialização profissional técnica, que compõem o correspondente itinerário formativo do curso técnico de nível médio.
 
-Parágrafo único. Quando se tratar de profissões regulamentadas, o perfil profissional de conclusão deve considerar e contemplar as atribuições funcionais previstas na legislação específica.
+**Parágrafo único.** Quando se tratar de profissões regulamentadas, o perfil profissional de conclusão deve considerar e contemplar as atribuições funcionais previstas na legislação específica.
 
 #### Art. 24.
 
@@ -339,13 +337,7 @@ A estrutura do PPC, a ser submetida à aprovação dos órgãos competentes, no 
 
 A carga horária mínima dos cursos técnicos é estabelecida no CNCT ou por instrumento correspondente a vir substituí-lo, de acordo com a singularidade de cada habilitação profissional técnica.
 
-**§ 1º** Os cursos de qualificação profissional técnica e os cursos técnicos, na forma articulada, integrada com o Ensino Médio ou com este concomitante em instituições e redes de ensino distintas, com projeto pedagógico unificado, terão carga horária que, em conjunto com a da formação geral, totalizará, no mínimo, 3.000 (três mil) horas, a partir do ano de 2021, garantindo-se carga horária máxima de 1.800 (mil e oitocentas) horas para a BNCC, nos termos das Diretrizes Curriculares Nacionais para o Ensino Médio, em atenção ao disposto no
-
-**§5º** do
-
-#### Art. 35-A
-
-da LDB.
+**§ 1º** Os cursos de qualificação profissional técnica e os cursos técnicos, na forma articulada, integrada com o Ensino Médio ou com este concomitante em instituições e redes de ensino distintas, com projeto pedagógico unificado, terão carga horária que, em conjunto com a da formação geral, totalizará, no mínimo, 3.000 (três mil) horas, a partir do ano de 2021, garantindo-se carga horária máxima de 1.800 (mil e oitocentas) horas para a BNCC, nos termos das Diretrizes Curriculares Nacionais para o Ensino Médio, em atenção ao disposto no §5º do Art. 35-A da LDB.
 
 **§ 2º** Os cursos de qualificação profissional técnica e os cursos técnicos, na forma articulada integrada com o Ensino Médio na modalidade de EJA, deve assegurar o mínimo de 1.200 (mil e duzentas) horas para a BNCC.
 
@@ -474,7 +466,7 @@ A formação continuada deve prever aperfeiçoamentos referentes às ocupações
 
 Os itinerários de formação de Educação Profissional e Tecnológica podem prever, na sua estruturação, cursos de aperfeiçoamento e de especialização profissional vinculados a um determinado perfil profissional, na perspectiva da formação continuada.
 
-Parágrafo único. A instituição de ensino ofertante de curso de especialização profissional deve resguardar a respectiva correspondência com a oferta regular de ao menos um curso técnico ou superior de tecnologia no âmbito do respectivo eixo tecnológico, que esteja estreitamente relacionado com o perfil profissional de conclusão da especialização.
+**Parágrafo único.** A instituição de ensino ofertante de curso de especialização profissional deve resguardar a respectiva correspondência com a oferta regular de ao menos um curso técnico ou superior de tecnologia no âmbito do respectivo eixo tecnológico, que esteja estreitamente relacionado com o perfil profissional de conclusão da especialização.
 
 #### Art. 37.
 
@@ -532,7 +524,7 @@ A oferta de Cursos Superiores de Tecnologia na modalidade EaD deve observar o di
 
 A avaliação da aprendizagem dos estudantes visa à sua progressão contínua para o alcance do perfil profissional de conclusão, sendo diagnóstica, formativa e somativa, com prevalência dos aspectos qualitativos sobre os quantitativos, na perspectiva do desenvolvimento das competências profissionais da capacidade de aprendizagem, para continuar aprendendo ao longo da vida.
 
-Parágrafo único. As instituições de Educação Profissional e Tecnológica podem, respeitadas as condições de cada instituição e rede de ensino, oferecer oportunidades de nivelamento de estudos, visando a suprir eventuais insuficiências formativas constatadas na avaliação da aprendizagem.
+**Parágrafo único.** As instituições de Educação Profissional e Tecnológica podem, respeitadas as condições de cada instituição e rede de ensino, oferecer oportunidades de nivelamento de estudos, visando a suprir eventuais insuficiências formativas constatadas na avaliação da aprendizagem.
 
 ### CAPÍTULO XIV
 
@@ -632,7 +624,7 @@ Na falta de profissionais com licenciatura específica e experiência profission
 
 Para o exercício do magistério nos cursos de Educação Profissional Tecnológica de Graduação, o docente deve possuir a formação acadêmica exigida para o nível superior, nos termos do art. 66 da Lei 9.394/1996.
 
-Parágrafo único. Na ponderação da avaliação da qualidade do corpo docente das disciplinas da formação profissional, a competência e a experiência na área devem ter equivalência com o requisito acadêmico, em face das características desta modalidade de ensino.
+**Parágrafo único.** Na ponderação da avaliação da qualidade do corpo docente das disciplinas da formação profissional, a competência e a experiência na área devem ter equivalência com o requisito acadêmico, em face das características desta modalidade de ensino.
 
 #### Art. 57.
 
@@ -647,7 +639,8 @@ Nos cursos de qualificação profissional podem atuar instrutores:
 
 - **I –** de nível médio, com comprovada competência técnica referente ao saber operativo de atividades inerentes à respectiva formação profissional, preferencialmente em cursos técnicos; e
 - **II –** de nível superior, com formação em curso de graduação, na área de atuação, e comprovada experiência profissional e competência na área tecnológica identificada no respectivo eixo tecnológico ao qual a formação profissional está relacionada.
-Parágrafo único. Dadas as especificidades dos cursos de Educação Profissional Técnica de Nível Médio, os seus docentes podem contar com a colaboração dos instrutores referidos nos incisos I e II do caput e, no caso dos Cursos Superiores de Tecnologia, com a colaboração dos instrutores referidos no inciso II do caput.
+
+**Parágrafo único.** Dadas as especificidades dos cursos de Educação Profissional Técnica de Nível Médio, os seus docentes podem contar com a colaboração dos instrutores referidos nos incisos I e II do caput e, no caso dos Cursos Superiores de Tecnologia, com a colaboração dos instrutores referidos no inciso II do caput.
 
 ### CAPÍTULO XVIII
 

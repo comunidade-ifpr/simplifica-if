@@ -52,15 +52,15 @@ revoga:
 
 O Conselho Superior do Instituto Federal do Paraná, no uso de suas atribuições legais e estatutárias, e tendo em vista o contido no parecer exarado pelo Conselheiro João Cláudio Madureira no processo nº 23411.003272/2013-58, resolve:
 
-### Art. 1º
+#### Art. 1º
 
 Aprovar o Regimento Interno Comum aos Câmpus do Instituto Federal do Paraná, nos termos do Anexo desta Resolução.
 
-### Art. 2º
+#### Art. 2º
 
 Revogar a Resolução nº 08/2010-CONSUP, de 29 de março de 2010, e a Resolução nº 41/2013-CONSUP, de 09 de dezembro de 2013.
 
-### Art. 3º
+#### Art. 3º
 
 Esta Resolução entra em vigor nesta data, com ampla publicação e divulgação na página eletrônica do IFPR.
 
@@ -80,13 +80,13 @@ Os Colegiados de Curso possuem os seguintes componentes:
 - II – 01 (um) representante técnico-administrativo em educação ligado diretamente ao curso, quando houver;
 - III – 02 (dois) representantes discentes, de turmas distintas.
 
-Parágrafo único. O Colegiado de Curso será coordenado por um(a) docente e, na sua ausência, pela Coordenação de Ensino do Câmpus.
+**Parágrafo único.** O Colegiado de Curso será coordenado por um(a) docente e, na sua ausência, pela Coordenação de Ensino do Câmpus.
 
 #### Art. 26
 
 O Colegiado de Curso reunir-se-á ordinariamente com periodicidade mínima bimestral, por convocação da Coordenação de Curso ou, quando houver necessidade, por convocação da Coordenação de Curso ou da Direção de Ensino, Pesquisa e Extensão do Câmpus.
 
-Parágrafo único. As proposições e deliberações advindas da reunião do Colegiado de Curso serão lavradas em ata, com a assinatura de todos os membros presentes.
+**Parágrafo único.** As proposições e deliberações advindas da reunião do Colegiado de Curso serão lavradas em ata, com a assinatura de todos os membros presentes.
 
 #### Art. 27
 

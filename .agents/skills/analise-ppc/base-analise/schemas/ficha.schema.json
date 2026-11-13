@@ -69,7 +69,7 @@
           "dispositivo": {
             "description": "Um dispositivo do ato, como #art28-vii, #art28-par1-iv ou #art24-parunico",
             "type": "string",
-            "pattern": "^#(?:art[1-9]\\d*[A-Z]*(?:-par(?:[1-9]\\d*[A-Z]*|unico))?(?:-[ivxlc]+)?(?:-al-[a-z])?|anexo\\d+(?:-item\\d+)?)$"
+            "pattern": "^#(?:(?:anexo\\d+-)?art[1-9]\\d*[A-Z]*(?:-par(?:[1-9]\\d*[A-Z]*|unico))?(?:-[ivxlc]+[A-Z]?)?(?:-al-[a-z])?(?:-item\\d+)?|anexo\\d+(?:-item\\d+)?|secao\\d+)$"
           },
           "papel": {
             "type": "string",

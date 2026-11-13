@@ -16,6 +16,7 @@ import {
   validarMarkdown,
   validarPadroesLocais,
   validarReadme,
+  validarEstruturaNorma,
   validarStubs,
   validarUnicidadeIds,
 } from "./validacao/normas.ts";
@@ -37,7 +38,10 @@ export function validarBase(caminhos: CaminhosBase, opcoes: { artefatosPpc?: boo
   erros.push(...validarCatalogos(ctx));
   if (opcoes.artefatosPpc) erros.push(...validarArtefatosConversaoPpc(ctx));
 
-  for (const caminho of arquivosNormas(caminhos)) erros.push(...validarMarkdown(ctx, caminho));
+  for (const caminho of arquivosNormas(caminhos)) {
+    erros.push(...validarMarkdown(ctx, caminho));
+    erros.push(...validarEstruturaNorma(ctx, caminho));
+  }
   const stubs = validarStubs(ctx);
   erros.push(...stubs.erros);
   erros.push(...validarUnicidadeIds(ctx, arquivosNormas(caminhos), stubs.ids));

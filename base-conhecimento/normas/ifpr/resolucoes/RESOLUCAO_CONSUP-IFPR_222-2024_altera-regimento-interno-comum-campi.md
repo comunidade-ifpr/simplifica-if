@@ -41,21 +41,21 @@ altera:
 
 > Altera dispositivo da Resolução nº 08, de 30 de abril de 2014, que regulamenta o Regimento Interno Comum aos Câmpus do Instituto Federal do Paraná.
 
-### Art. 1º
+#### Art. 1º
 
 Altera o art. 6º da Resolução nº 08/2014, com as seguintes mudanças:
 
-- II – Diretoria de Planejamento e Administração e/ou equivalentes;
-- III – Diretoria de Ensino, Pesquisa e Extensão e/ou equivalentes;
-- VIII – 01 (um) representante dos responsáveis de alunos da Educação Profissional Técnica Integrada ao Ensino Médio;
-- IX – 03 (três) representantes da sociedade civil, sendo 01 (um) indicado por entidades patronais, 01 (um) indicado pelo SINDIEDUTEC e 01 (uma) associação da sociedade civil;
-- X – 01 (um) representante dos núcleos existentes no campus.
+> - II – Diretoria de Planejamento e Administração e/ou equivalentes;
+> - III – Diretoria de Ensino, Pesquisa e Extensão e/ou equivalentes;
+> - VIII – 01 (um) representante dos responsáveis de alunos da Educação Profissional Técnica Integrada ao Ensino Médio;
+> - IX – 03 (três) representantes da sociedade civil, sendo 01 (um) indicado por entidades patronais, 01 (um) indicado pelo SINDIEDUTEC e 01 (uma) associação da sociedade civil;
+> - X – 01 (um) representante dos núcleos existentes no campus.
 
-### Art. 2º
+#### Art. 2º
 
 Revoga o § 1º do art. 6º da Resolução nº 08/2014.
 
-### Art. 3º
+#### Art. 3º
 
 Esta Resolução entra em vigor na data de sua publicação.
 

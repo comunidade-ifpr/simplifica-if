@@ -181,7 +181,11 @@ O Calendário Acadêmico e Administrativo dos campi poderá prever sábados leti
 
 Os campi deverão propor seu Calendário Acadêmico e Administrativo com base neste calendário de referência e de acordo com modelo elaborado pela Proens, submetendo-o à análise do Colégio de Gestão Pedagógica do Campus (CGPC) e do Colégio Dirigente do Campus (Codic).
 
+<!-- redacao-nao-vigente -->
+
 **§ 1º** (redação original) Com antecedência mínima de 45 (quarenta e cinco) dias antes do início do ano letivo de 2026, o calendário deverá ser encaminhado à Proens por meio de processo administrativo no Sistema SEI, acompanhado dos extratos das atas de apreciação pelo CGPC e pelo Codic.
+
+<!-- /redacao-nao-vigente -->
 
 **§ 1º** (alterado pela Resolução CONSUP/IFPR nº 263, de 10 de dezembro de 2025) Com antecedência mínima de 30 (trinta) dias antes do início do ano letivo de 2026, o calendário deverá ser encaminhado à Proens por meio de processo administrativo no Sistema SEI, acompanhado dos extratos das atas de apreciação pelo CGPC e pelo Codic.
 
@@ -201,7 +205,11 @@ Somente poderá ser considerado encerrado o ano letivo após o cumprimento integ
 
 É de responsabilidade da equipe diretiva, da equipe pedagógica e dos docentes do campus fazerem cumprir o Calendário Acadêmico e Administrativo.
 
+<!-- redacao-nao-vigente -->
+
 **Parágrafo único.** (redação original) Caberá à Diretoria de Ensino, Pesquisa e Extensão ou setor correlato, a partir da discussão coletiva com a comunidade acadêmica, definir a forma e os procedimentos para reposição de aulas, quando necessário para o cumprimento do Calendário Acadêmico e Administrativo.
+
+<!-- /redacao-nao-vigente -->
 
 **§ 1º** (redação dada pela Resolução CONSUP/IFPR nº 263/2025) Caberá à Diretoria de Ensino, Pesquisa e Extensão ou setor correlato, a partir da discussão coletiva com a comunidade acadêmica, definir a forma e os procedimentos para reposição de aulas, quando necessário para o cumprimento do Calendário Acadêmico e Administrativo.
 

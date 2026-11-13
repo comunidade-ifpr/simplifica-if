@@ -202,7 +202,8 @@ Na dimensão estratégica da articulação intersetorial e integração com terr
 - **VIII –** apoiar os educandos participantes de projetos e iniciativas esportivas, culturais e artísticas na compatibilização de sua jornada escolar com os compromissos de treinos, competições, ensaios e apresentações, a partir das normas estabelecidas no sistema de ensino;
 - **IX –** apoiar os educandos que sejam atendidos em serviços de saúde e de assistência social na compatibilização de sua jornada escolar com os compromissos em consultas, atendimentos e eventos semelhantes; e
 - **X –** integrar colegiados e outras formas de colaboração e gestão existentes no território (comissões, fóruns, conselhos), contribuindo com o planejamento, realização e acompanhamento de propostas e ações destinadas à garantia do direito à educação.
-Parágrafo único. No desenvolvimento das formas de colaboração com entidades privadas previstas no inciso IV, os sistemas de ensino priorizarão parcerias com organizações sociais sem fins lucrativos. #
+
+**Parágrafo único.** No desenvolvimento das formas de colaboração com entidades privadas previstas no inciso IV, os sistemas de ensino priorizarão parcerias com organizações sociais sem fins lucrativos. #
 
 #### Seção IV Do Currículo, das Práticas Pedagógicas e Avaliação da Aprendizagem e do Desenvolvimento
 
@@ -316,7 +317,8 @@ Na dimensão estratégica do monitoramento e avaliação, compete às escolas:
 - **II –** planejar e conduzir momento colaborativos de análise, reflexão e tomada de decisão com base nos resultados das avaliações, considerando as especificidades do território, da comunidade e da dinâmica escolar;
 - **III –** dialogar com os profissionais da educação, educandos e suas famílias sobre os processos e resultados da avaliação, promovendo a compreensão e envolvimento no processo educativo; e
 - **IV –** elaborar e revisar planos de ação para o aprimoramento contínuo da implementação da Educação Integral em Tempo Integral e seus efeitos sobre a aprendizagem e o desenvolvimento dos educandos em sua escola.
-Parágrafo único. As escolas devem reconhecer a importância e assegurar a participação ativa das famílias e da comunidade no cotidiano escolar da jornada de tempo integral, promovendo canais permanentes de escuta, diálogo e corresponsabilidade nos processos de acompanhamento, avaliação e tomada de decisão, de modo a fortalecer o vínculo escola-comunidade e ampliar as condições para o desenvolvimento integral dos educandos.
+
+**Parágrafo único.** As escolas devem reconhecer a importância e assegurar a participação ativa das famílias e da comunidade no cotidiano escolar da jornada de tempo integral, promovendo canais permanentes de escuta, diálogo e corresponsabilidade nos processos de acompanhamento, avaliação e tomada de decisão, de modo a fortalecer o vínculo escola-comunidade e ampliar as condições para o desenvolvimento integral dos educandos.
 
 ### CAPÍTULO IV
 
@@ -330,7 +332,7 @@ Compete ao Ministério da Educação - MEC, nos termos do art. 211 da Constitui�
 
 Os sistemas de ensino deverão revisar e atualizar, no prazo de cento e oitenta dias a partir da publicação desta Resolução, os normativos que regulamentam a Educação Integral em Tempo Integral em suas respectivas redes de ensino.
 
-Parágrafo único. Os sistemas de ensino que não possuem normativo específico sobre a Educação Integral em Tempo Integral deverão elaborá-lo e instituí-lo dentro do mesmo prazo estabelecido no caput.
+**Parágrafo único.** Os sistemas de ensino que não possuem normativo específico sobre a Educação Integral em Tempo Integral deverão elaborá-lo e instituí-lo dentro do mesmo prazo estabelecido no caput.
 
 #### Art. 29.
 

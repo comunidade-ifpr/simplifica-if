@@ -11,6 +11,7 @@ import {
   type FrontMatter,
 } from "../front-matter.ts";
 import { ehObjeto, type ObjetoJson, representar, textoDe, valoresIguais } from "@simplifica-if/kb/json";
+import { analisarNorma } from "@simplifica-if/kb/normas/estrutura";
 import { esquemaNorma } from "@simplifica-if/kb/normas/front-matter";
 import { idDoAto, idEsperadoDaNorma } from "@simplifica-if/kb/normas/ids";
 import { caminhoStubs, lerRegistroStubs } from "@simplifica-if/kb/normas/registro";
@@ -248,4 +249,25 @@ export function validarItemManifest(ctx: Contexto, item: ObjetoJson): string[] {
     }
   }
   return erros;
+}
+
+/**
+ * Estrutura do corpo da norma (parser de dispositivos de `@simplifica-if/kb/normas/estrutura`):
+ * cabeçalho de artigo `#### Art. Nº` só com o rótulo, rótulos de parágrafo e inciso em negrito,
+ * nenhum `**` solto, marcadores de trecho fechados e IDs de dispositivo únicos. Avisos (rótulo
+ * repetido no texto publicado, com ID pela posição) não são erro.
+ */
+export function validarEstruturaNorma(ctx: Contexto, caminho: string): string[] {
+  const texto = lerTexto(caminho);
+  let id: string;
+  try {
+    const { meta } = analisarFrontMatter(texto, ctx.rel(caminho));
+    if (typeof meta.id !== "string") return [];
+    id = meta.id;
+  } catch (erro) {
+    if (erro instanceof ErroFrontMatter) return [];
+    throw erro;
+  }
+  const estrutura = analisarNorma(texto, { id, path: ctx.rel(caminho) });
+  return estrutura.problemas.filter((problema) => !problema.startsWith("aviso:"));
 }

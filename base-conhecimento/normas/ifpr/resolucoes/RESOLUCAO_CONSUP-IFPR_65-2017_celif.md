@@ -74,7 +74,7 @@ O CELIF será regido pelo Regimento Geral do IFPR e pela Resolução que aprovou
 
 O CELIF tem por atribuição coordenar as ações de ensino, pesquisa, extensão e inovação na área de línguas, para as comunidades interna e externa, com vistas à inclusão social, à diversidade cultural e à interculturalidade.
 
-Parágrafo único. O CELIF colaborará com as ações de internacionalização do Instituto Federal do Paraná em conjunto com a área de Relações Internacionais mediante a análise e aprovação do Conselho do CELIF.
+**Parágrafo único.** O CELIF colaborará com as ações de internacionalização do Instituto Federal do Paraná em conjunto com a área de Relações Internacionais mediante a análise e aprovação do Conselho do CELIF.
 
 #### Art. 5º
 
@@ -120,7 +120,7 @@ O CELIF contará com membros permanentes e eventuais.
 
 As atividades de ensino do CELIF serão exercidas por profissionais licenciados em Letras, com habilitação na língua-alvo; preferencialmente por servidores do quadro permanente do IFPR.
 
-Parágrafo único. Deverá ser respeitado o disposto em regulamentações internas e/ou regulamentações próprias em caso de cursos voltados a atender programas ou projetos específicos.
+**Parágrafo único.** Deverá ser respeitado o disposto em regulamentações internas e/ou regulamentações próprias em caso de cursos voltados a atender programas ou projetos específicos.
 
 #### Art. 9º
 
@@ -158,7 +158,7 @@ A administração do CELIF será exercida pelos seguintes órgãos:
 
 O Colegiado é composto por todos os membros permanentes do CELIF e respectivos suplentes.
 
-Parágrafo único. As reuniões do colegiado serão presididas pelo Coordenador geral do CELIF e na sua ausência ou impedimentos pelo Vice Coordenador.
+**Parágrafo único.** As reuniões do colegiado serão presididas pelo Coordenador geral do CELIF e na sua ausência ou impedimentos pelo Vice Coordenador.
 
 #### Art. 13.
 
@@ -197,7 +197,7 @@ A Coordenação Geral é o órgão executivo incumbido de coordenar e acompanhar
 
 A Vice Coordenação Geral é o órgão responsável pela assessoria à Coordenação Geral nas ações a serem desenvolvidas pelo CELIF.
 
-Parágrafo único. O Vice Coordenador Geral substituirá o Coordenador Geral em suas ausências e/ou impedimentos.
+**Parágrafo único.** O Vice Coordenador Geral substituirá o Coordenador Geral em suas ausências e/ou impedimentos.
 
 #### Art. 19.
 

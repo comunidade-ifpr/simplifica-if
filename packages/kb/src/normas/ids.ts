@@ -43,9 +43,13 @@ const RE_ID_NORMA = new RegExp(
 export const RE_ID_ATO = new RegExp(RE_ID_NORMA.source.replace(String.raw`(?:~(${VARIANTES.join("|")}))?`, ""));
 const RE_ID_EXTERNO = /^externo:[a-z0-9]+(?:[-.][a-z0-9]+)*(?:\/[a-z0-9]+(?:[-.][a-z0-9]+)*)*$/;
 const RE_ID_CNCT = /^cnct:[a-z0-9]+(?:-[a-z0-9]+)*$/;
-/** Dispositivo: artigo (com letra maiúscula colada), parágrafo, inciso, alínea; ou item de anexo. */
+/**
+ * Dispositivo: artigo (com letra maiúscula colada), parágrafo, inciso (com letra: `-ivA`), alínea e
+ * item; artigo de anexo (`#anexo1-art5`); anexo e item de anexo; seção de norma sem artigos
+ * (`#secao1`, nota técnica). Regras em `estrutura.ts`.
+ */
 const RE_DISPOSITIVO =
-  /^#(?:art[1-9]\d*[A-Z]*(?:-par(?:[1-9]\d*[A-Z]*|unico))?(?:-[ivxlc]+)?(?:-al-[a-z])?|anexo\d+(?:-item\d+)?)$/;
+  /^#(?:(?:anexo\d+-)?art[1-9]\d*[A-Z]*(?:-par(?:[1-9]\d*[A-Z]*|unico))?(?:-[ivxlc]+[A-Z]?)?(?:-al-[a-z])?(?:-item\d+)?|anexo\d+(?:-item\d+)?|secao\d+)$/;
 
 export function ehIdNorma(id: string): boolean {
   return RE_ID_NORMA.test(id);

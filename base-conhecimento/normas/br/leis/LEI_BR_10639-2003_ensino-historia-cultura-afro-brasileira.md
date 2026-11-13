@@ -31,33 +31,35 @@ alterada_por:
 - Altera a Lei nº 9.394, de 20 de dezembro de 1996, que estabelece as diretrizes e bases da educação nacional, para incluir no currículo oficial da Rede de Ensino a obrigatoriedade da temática 'História e Cultura Afro-Brasileira', e dá outras providências
 - Relação normativa: Lei nº 11.645/2008
 
+---
+
 **Altera a Lei nº 9.394, de 20 de dezembro de 1996, que estabelece as diretrizes e bases da educação nacional, para incluir no currículo oficial da Rede de Ensino a obrigatoriedade da temática "História e Cultura Afro-Brasileira", e dá outras providências.**
 
 O PRESIDENTE DA REPÚBLICA Faço saber que o Congresso Nacional decreta e eu sanciono a seguinte Lei:
 
-## Art. 1º
+#### Art. 1º
 
 A Lei nº 9.394, de 20 de dezembro de 1996, passa a vigorar acrescida dos seguintes arts. 26-A, 79-A e 79-B:
 
-### Art. 26-A
+> **Art. 26-A**
+>
+> Nos estabelecimentos de ensino fundamental e médio, oficiais e particulares, torna-se obrigatório o ensino sobre História e Cultura Afro-Brasileira.
+>
+> § 1º O conteúdo programático a que se refere o caput deste artigo incluirá o estudo da História da África e dos Africanos, a luta dos negros no Brasil, a cultura negra brasileira e o negro na formação da sociedade nacional, resgatando a contribuição do povo negro nas áreas social, econômica e política pertinentes à História do Brasil.
+>
+> § 2º Os conteúdos referentes à História e Cultura Afro-Brasileira serão ministrados no âmbito de todo o currículo escolar, em especial nas áreas de Educação Artística e de Literatura e História Brasileiras.
+>
+> § 3º (VETADO)
+>
+> **Art. 79-A**
+>
+> (VETADO)
+>
+> **Art. 79-B**
+>
+> O calendário escolar incluirá o dia 20 de novembro como "Dia Nacional da Consciência Negra".
 
-Nos estabelecimentos de ensino fundamental e médio, oficiais e particulares, torna-se obrigatório o ensino sobre História e Cultura Afro-Brasileira.
-
-§ 1º O conteúdo programático a que se refere o caput deste artigo incluirá o estudo da História da África e dos Africanos, a luta dos negros no Brasil, a cultura negra brasileira e o negro na formação da sociedade nacional, resgatando a contribuição do povo negro nas áreas social, econômica e política pertinentes à História do Brasil.
-
-§ 2º Os conteúdos referentes à História e Cultura Afro-Brasileira serão ministrados no âmbito de todo o currículo escolar, em especial nas áreas de Educação Artística e de Literatura e História Brasileiras.
-
-§ 3º (VETADO)
-
-### Art. 79-A
-
-(VETADO)
-
-### Art. 79-B
-
-O calendário escolar incluirá o dia 20 de novembro como "Dia Nacional da Consciência Negra".
-
-## Art. 2º
+#### Art. 2º
 
 Esta Lei entra em vigor na data de sua publicação.
 

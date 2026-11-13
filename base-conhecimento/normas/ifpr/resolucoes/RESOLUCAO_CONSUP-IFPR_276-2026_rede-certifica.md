@@ -329,7 +329,7 @@ As etapas do processo de certificação profissional são definidas da seguinte 
 
 Nos processos de Certificação de Qualificação Profissional, a escolaridade mínima, quando exigida, e a respectiva forma de comprovação serão estabelecidas no Projeto Pedagógico de Certificação Profissional (PPCP), observado o disposto nesta Resolução e na legislação aplicável. (Redação dada pela Resolução CONSUP/IFPR nº 282, de 13 de agosto de 2026.)
 
-~~Parágrafo único. O disposto neste artigo não se aplica aos processos de Certificação Profissional Técnica, Certificação de Especialização Profissional Técnica e Certificação Profissional Tecnológica.~~ (Revogado pela Resolução CONSUP/IFPR nº 282, de 13 de agosto de 2026.)
+~~**Parágrafo único.** O disposto neste artigo não se aplica aos processos de Certificação Profissional Técnica, Certificação de Especialização Profissional Técnica e Certificação Profissional Tecnológica.~~ (Revogado pela Resolução CONSUP/IFPR nº 282, de 13 de agosto de 2026.)
 
 **§ 1º** A matrícula no processo de certificação profissional dependerá da comprovação da escolaridade mínima, quando exigida. (Incluído pela Resolução CONSUP/IFPR nº 282, de 13 de agosto de 2026.)
 

@@ -101,7 +101,7 @@ São objetivos da Política linguística:
 - **XIII -** promover a inclusão social por meio da inclusão linguística;
 - **XIV -** oportunizar o ensino-aprendizagem de línguas estrangeiras/adicionais para além de inglês, espanhol e LIBRAS, tais como: alemão, francês, japonês, italiano, entre outras.
 
-Parágrafo único. O IFPR compromete-se, mediante a realocação de recursos financeiros, materiais e humanos, por meio da especificação de um percentual orçamentário de 2% (dois por cento), proveniente do Fundo de Desenvolvimento Institucional (FDI), para a área de línguas, a fim de ampliar a oferta de cursos para os estudantes, bem como oportunizar formação continuada aos servidores da instituição, de maneira a contribuir para a participação mais efetiva de estudantes e servidores em atividades de internacionalização.
+**Parágrafo único.** O IFPR compromete-se, mediante a realocação de recursos financeiros, materiais e humanos, por meio da especificação de um percentual orçamentário de 2% (dois por cento), proveniente do Fundo de Desenvolvimento Institucional (FDI), para a área de línguas, a fim de ampliar a oferta de cursos para os estudantes, bem como oportunizar formação continuada aos servidores da instituição, de maneira a contribuir para a participação mais efetiva de estudantes e servidores em atividades de internacionalização.
 
 #### Art. 6º
 

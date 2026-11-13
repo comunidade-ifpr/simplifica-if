@@ -43,7 +43,9 @@ Este documento consolida os artigos da LDB mais relevantes para análise de Proj
 
 ### Seção I - Disposições Gerais
 
-#### Art. 24. Carga Horária e Organização da Educação Básica
+#### Art. 24.
+
+Carga Horária e Organização da Educação Básica
 
 A educação básica, nos níveis fundamental e médio, será organizada de acordo com as seguintes regras comuns:
 
@@ -78,7 +80,9 @@ Cada instituição de ensino expede históricos escolares, declarações de conc
 
 ---
 
-#### Art. 26. Currículos da Educação Básica
+#### Art. 26.
+
+Currículos da Educação Básica
 
 Os currículos da educação infantil, do ensino fundamental e do ensino médio devem ter base nacional comum, complementada por uma parte diversificada adequada às características regionais e locais da sociedade, da cultura, da economia e dos educandos.
 
@@ -94,7 +98,9 @@ Para análise de PPCs, esta obrigação alcança os projetos que abrangem o curr
 
 ## CAPÍTULO III - DA EDUCAÇÃO PROFISSIONAL E TECNOLÓGICA
 
-#### Art. 36-B. Educação Profissional Técnica de Nível Médio
+#### Art. 36-B.
+
+Educação Profissional Técnica de Nível Médio
 
 A educação profissional técnica de nível médio será desenvolvida nas seguintes formas:
 (Incluído pela Lei nº 11.741, de 2008)
@@ -116,7 +122,9 @@ A educação profissional técnica de nível médio será desenvolvida nas segui
 
 ---
 
-#### Art. 36-C. Formas de Articulação da Educação Profissional Técnica
+#### Art. 36-C.
+
+Formas de Articulação da Educação Profissional Técnica
 
 A educação profissional técnica de nível médio articulada será desenvolvida de forma:
 (Incluído pela Lei nº 11.741, de 2008)
@@ -132,7 +140,9 @@ Oferecida a quem ingresse no ensino médio ou já o esteja cursando, efetuando-s
 
 ---
 
-#### Art. 36-D. Diplomas e Certificados
+#### Art. 36-D.
+
+Diplomas e Certificados
 
 Os diplomas de cursos de educação profissional técnica de nível médio, quando registrados, terão validade nacional e habilitarão ao prosseguimento de estudos na educação superior.
 
@@ -140,7 +150,9 @@ Os diplomas de cursos de educação profissional técnica de nível médio, quan
 
 ---
 
-#### Art. 39. Educação Profissional e Tecnológica
+#### Art. 39.
+
+Educação Profissional e Tecnológica
 
 A educação profissional e tecnológica, no cumprimento dos objetivos da educação nacional, integra-se aos diferentes níveis e modalidades de educação e às dimensões do trabalho, da ciência e da tecnologia.
 (Redação dada pela Lei nº 11.741, de 2008)
@@ -159,27 +171,35 @@ A educação profissional e tecnológica, no cumprimento dos objetivos da educa�
 
 ---
 
-#### Art. 40. Desenvolvimento da Educação Profissional
+#### Art. 40.
+
+Desenvolvimento da Educação Profissional
 
 A educação profissional será desenvolvida em articulação com o ensino regular ou por diferentes estratégias de educação continuada, em instituições especializadas ou no ambiente de trabalho.
 
 ---
 
-#### Art. 41. Certificação de Conhecimentos
+#### Art. 41.
+
+Certificação de Conhecimentos
 
 O conhecimento adquirido na educação profissional e tecnológica, inclusive no trabalho, poderá ser objeto de avaliação, reconhecimento e certificação para prosseguimento ou conclusão de estudos.
 (Redação dada pela Lei nº 11.741, de 2008)
 
 ---
 
-#### Art. 42. Cursos Especiais
+#### Art. 42.
+
+Cursos Especiais
 
 As instituições de educação profissional e tecnológica, além dos seus cursos regulares, oferecerão cursos especiais, abertos à comunidade, condicionada a matrícula à capacidade de aproveitamento e não necessariamente ao nível de escolaridade.
 (Redação dada pela Lei nº 11.741, de 2008)
 
 ---
 
-#### Art. 42-A. Itinerários Formativos Contínuos
+#### Art. 42-A.
+
+Itinerários Formativos Contínuos
 
 A educação profissional e tecnológica organizada em eixos tecnológicos observará o princípio da integração curricular entre cursos e programas, de modo a viabilizar itinerários formativos contínuos e trajetórias progressivas de formação entre todos os níveis educacionais.
 (Incluído pela Lei nº 14.645, de 2023)
@@ -194,7 +214,9 @@ A educação profissional e tecnológica organizada em eixos tecnológicos obser
 
 ---
 
-#### Art. 42-B. Avaliação da Qualidade
+#### Art. 42-B.
+
+Avaliação da Qualidade
 
 A oferta de educação profissional técnica e tecnológica será orientada pela avaliação da qualidade das instituições e dos cursos, que deverá considerar:
 - As estatísticas de oferta, fluxo e rendimento

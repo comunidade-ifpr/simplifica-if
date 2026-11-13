@@ -968,211 +968,211 @@ Terá direito a auxílio-inclusão, nos termos da lei, a pessoa com deficiência
 
 O § 6º-A do art. 135 da Lei nº 4.737, de 15 de julho de 1965 (Código Eleitoral), passa a vigorar com a seguinte redação:
 
-"Art. 135. .................................................................................
-
-....................................................................................................
-
-§ 6º-A. Os Tribunais Regionais Eleitorais deverão, a cada eleição, expedir instruções aos Juízes Eleitorais para orientá-los na escolha dos locais de votação, de maneira a garantir acessibilidade para o eleitor com deficiência ou com mobilidade reduzida, inclusive em seu entorno e nos sistemas de transporte que lhe dão acesso.
-
-..............................................................................................." (NR)
+> "Art. 135. .................................................................................
+>
+> ....................................................................................................
+>
+> § 6º-A. Os Tribunais Regionais Eleitorais deverão, a cada eleição, expedir instruções aos Juízes Eleitorais para orientá-los na escolha dos locais de votação, de maneira a garantir acessibilidade para o eleitor com deficiência ou com mobilidade reduzida, inclusive em seu entorno e nos sistemas de transporte que lhe dão acesso.
+>
+> ..............................................................................................." (NR)
 
 #### Art. 97.
 
 A Consolidação das Leis do Trabalho (CLT), aprovada pelo Decreto-Lei nº 5.452, de 1º de maio de 1943, passa a vigorar com as seguintes alterações:
 
-"Art. 428. .................................................................................
-
-..................................................................................................
-
-§ 6º Para os fins do contrato de aprendizagem, a comprovação da escolaridade de aprendiz com deficiência deve considerar, sobretudo, as habilidades e competências relacionadas com a profissionalização.
-
-..........................................................................................................
-
-§ 8º Para o aprendiz com deficiência com 18 (dezoito) anos ou mais, a validade do contrato de aprendizagem pressupõe anotação na CTPS e matrícula e frequência em programa de aprendizagem desenvolvido sob orientação de entidade qualificada em formação técnico-profissional metódica." (NR)
-
-"Art. 433. .................................................................................
-
-..................................................................................................
-
-I - desempenho insuficiente ou inadaptação do aprendiz, salvo para o aprendiz com deficiência quando desprovido de recursos de acessibilidade, de tecnologias assistivas e de apoio necessário ao desempenho de suas atividades;
-
-..............................................................................................." (NR)
+> "Art. 428. .................................................................................
+>
+> ..................................................................................................
+>
+> § 6º Para os fins do contrato de aprendizagem, a comprovação da escolaridade de aprendiz com deficiência deve considerar, sobretudo, as habilidades e competências relacionadas com a profissionalização.
+>
+> ..........................................................................................................
+>
+> § 8º Para o aprendiz com deficiência com 18 (dezoito) anos ou mais, a validade do contrato de aprendizagem pressupõe anotação na CTPS e matrícula e frequência em programa de aprendizagem desenvolvido sob orientação de entidade qualificada em formação técnico-profissional metódica." (NR)
+>
+> "Art. 433. .................................................................................
+>
+> ..................................................................................................
+>
+> I - desempenho insuficiente ou inadaptação do aprendiz, salvo para o aprendiz com deficiência quando desprovido de recursos de acessibilidade, de tecnologias assistivas e de apoio necessário ao desempenho de suas atividades;
+>
+> ..............................................................................................." (NR)
 
 #### Art. 98.
 
 A Lei nº 7.853, de 24 de outubro de 1989, passa a vigorar com as seguintes alterações:
 
-"Art. 3º As medidas judiciais destinadas à proteção de interesses coletivos, difusos, individuais homogêneos e individuais indisponíveis da pessoa com deficiência poderão ser propostas pelo Ministério Público, pela Defensoria Pública, pela União, pelos Estados, pelos Municípios, pelo Distrito Federal, por associação constituída há mais de 1 (um) ano, nos termos da lei civil, por autarquia, por empresa pública e por fundação ou sociedade de economia mista que inclua, entre suas finalidades institucionais, a proteção dos interesses e a promoção de direitos da pessoa com deficiência.
-
-..............................................................................................." (NR)
-
-"Art. 8º Constitui crime punível com reclusão de 2 (dois) a 5 (cinco) anos e multa:
-
-I - recusar, cobrar valores adicionais, suspender, procrastinar, cancelar ou fazer cessar inscrição de aluno em estabelecimento de ensino de qualquer curso ou grau, público ou privado, em razão de sua deficiência;
-
-II - obstar inscrição em concurso público ou acesso de alguém a qualquer cargo ou emprego público, em razão de sua deficiência;
-
-III - negar ou obstar emprego, trabalho ou promoção à pessoa em razão de sua deficiência;
-
-IV - recusar, retardar ou dificultar internação ou deixar de prestar assistência médico-hospitalar e ambulatorial à pessoa com deficiência;
-
-V - deixar de cumprir, retardar ou frustrar execução de ordem judicial expedida na ação civil a que alude esta Lei;
-
-VI - recusar, retardar ou omitir dados técnicos indispensáveis à propositura da ação civil pública objeto desta Lei, quando requisitados.
-
-§ 1º Se o crime for praticado contra pessoa com deficiência menor de 18 (dezoito) anos, a pena é agravada em 1/3 (um terço).
-
-§ 2º A pena pela adoção deliberada de critérios subjetivos para indeferimento de inscrição, de aprovação e de cumprimento de estágio probatório em concursos públicos não exclui a responsabilidade patrimonial pessoal do administrador público pelos danos causados.
-
-§ 3º Incorre nas mesmas penas quem impede ou dificulta o ingresso de pessoa com deficiência em planos privados de assistência à saúde, inclusive com cobrança de valores diferenciados.
-
-§ 4º Se o crime for praticado em atendimento de urgência e emergência, a pena é agravada em 1/3 (um terço)." (NR)
+> "Art. 3º As medidas judiciais destinadas à proteção de interesses coletivos, difusos, individuais homogêneos e individuais indisponíveis da pessoa com deficiência poderão ser propostas pelo Ministério Público, pela Defensoria Pública, pela União, pelos Estados, pelos Municípios, pelo Distrito Federal, por associação constituída há mais de 1 (um) ano, nos termos da lei civil, por autarquia, por empresa pública e por fundação ou sociedade de economia mista que inclua, entre suas finalidades institucionais, a proteção dos interesses e a promoção de direitos da pessoa com deficiência.
+>
+> ..............................................................................................." (NR)
+>
+> "Art. 8º Constitui crime punível com reclusão de 2 (dois) a 5 (cinco) anos e multa:
+>
+> I - recusar, cobrar valores adicionais, suspender, procrastinar, cancelar ou fazer cessar inscrição de aluno em estabelecimento de ensino de qualquer curso ou grau, público ou privado, em razão de sua deficiência;
+>
+> II - obstar inscrição em concurso público ou acesso de alguém a qualquer cargo ou emprego público, em razão de sua deficiência;
+>
+> III - negar ou obstar emprego, trabalho ou promoção à pessoa em razão de sua deficiência;
+>
+> IV - recusar, retardar ou dificultar internação ou deixar de prestar assistência médico-hospitalar e ambulatorial à pessoa com deficiência;
+>
+> V - deixar de cumprir, retardar ou frustrar execução de ordem judicial expedida na ação civil a que alude esta Lei;
+>
+> VI - recusar, retardar ou omitir dados técnicos indispensáveis à propositura da ação civil pública objeto desta Lei, quando requisitados.
+>
+> § 1º Se o crime for praticado contra pessoa com deficiência menor de 18 (dezoito) anos, a pena é agravada em 1/3 (um terço).
+>
+> § 2º A pena pela adoção deliberada de critérios subjetivos para indeferimento de inscrição, de aprovação e de cumprimento de estágio probatório em concursos públicos não exclui a responsabilidade patrimonial pessoal do administrador público pelos danos causados.
+>
+> § 3º Incorre nas mesmas penas quem impede ou dificulta o ingresso de pessoa com deficiência em planos privados de assistência à saúde, inclusive com cobrança de valores diferenciados.
+>
+> § 4º Se o crime for praticado em atendimento de urgência e emergência, a pena é agravada em 1/3 (um terço)." (NR)
 
 #### Art. 99.
 
 O art. 20 da Lei nº 8.036, de 11 de maio de 1990, passa a vigorar acrescido do seguinte inciso XVIII:
 
-"Art. 20. ...................................................................................
-
-....................................................................................................
-
-XVIII - quando o trabalhador com deficiência, por prescrição, necessite adquirir órtese ou prótese para promoção de acessibilidade e de inclusão social.
-
-..............................................................................................." (NR)
+> "Art. 20. ...................................................................................
+>
+> ....................................................................................................
+>
+> XVIII - quando o trabalhador com deficiência, por prescrição, necessite adquirir órtese ou prótese para promoção de acessibilidade e de inclusão social.
+>
+> ..............................................................................................." (NR)
 
 #### Art. 100.
 
 A Lei nº 8.078, de 11 de setembro de 1990 (Código de Defesa do Consumidor), passa a vigorar com as seguintes alterações:
 
-"Art. 6º .....................................................................................
-
-....................................................................................................
-
-Parágrafo único. A informação de que trata o inciso III do caput deste artigo deve ser acessível à pessoa com deficiência, observado o disposto em regulamento." (NR)
-
-"Art. 43. ...................................................................................
-
-....................................................................................................
-
-§ 6º Todas as informações de que trata o caput deste artigo devem ser disponibilizadas em formatos acessíveis, inclusive para a pessoa com deficiência, mediante solicitação do consumidor." (NR)
+> "Art. 6º .....................................................................................
+>
+> ....................................................................................................
+>
+> Parágrafo único. A informação de que trata o inciso III do caput deste artigo deve ser acessível à pessoa com deficiência, observado o disposto em regulamento." (NR)
+>
+> "Art. 43. ...................................................................................
+>
+> ....................................................................................................
+>
+> § 6º Todas as informações de que trata o caput deste artigo devem ser disponibilizadas em formatos acessíveis, inclusive para a pessoa com deficiência, mediante solicitação do consumidor." (NR)
 
 #### Art. 101.
 
 A Lei nº 8.213, de 24 de julho de 1991, passa a vigorar com as seguintes alterações:
 
-"Art. 16. ...................................................................................
-
-I - o cônjuge, a companheira, o companheiro e o filho não emancipado, de qualquer condição, menor de 21 (vinte e um) anos ou inválido ou que tenha deficiência intelectual ou mental ou deficiência grave;
-
-..........................................................................................................
-
-III - o irmão não emancipado, de qualquer condição, menor de 21 (vinte e um) anos ou inválido ou que tenha deficiência intelectual ou mental ou deficiência grave;
-
-..............................................................................................." (NR)
-
-"Art. 77. ...................................................................................
-
-...................................................................................................
-
-§ 2º ...........................................................................................
-
-....................................................................................................
-
-II - para o filho, a pessoa a ele equiparada ou o irmão, de ambos os sexos, pela emancipação ou ao completar 21 (vinte e um) anos de idade, salvo se for inválido ou tiver deficiência intelectual ou mental ou deficiência grave;
-
-...........................................................................................................
-
-§ 4º ( VETADO).
-
-..............................................................................................." (NR)
-
-"Art. 93. (VETADO):
-
-I - (VETADO);
-
-II - (VETADO);
-
-III - (VETADO);
-
-IV - (VETADO);
-
-V - (VETADO).
-
-§ 1º A dispensa de pessoa com deficiência ou de beneficiário reabilitado da Previdência Social ao final de contrato por prazo determinado de mais de 90 (noventa) dias e a dispensa imotivada em contrato por prazo indeterminado somente poderão ocorrer após a contratação de outro trabalhador com deficiência ou beneficiário reabilitado da Previdência Social.
-
-§ 2º Ao Ministério do Trabalho e Emprego incumbe estabelecer a sistemática de fiscalização, bem como gerar dados e estatísticas sobre o total de empregados e as vagas preenchidas por pessoas com deficiência e por beneficiários reabilitados da Previdência Social, fornecendo-os, quando solicitados, aos sindicatos, às entidades representativas dos empregados ou aos cidadãos interessados.
-
-§ 3º Para a reserva de cargos será considerada somente a contratação direta de pessoa com deficiência, excluído o aprendiz com deficiência de que trata a Consolidação das Leis do Trabalho (CLT), aprovada pelo Decreto-Lei nº 5.452, de 1º de maio de 1943.
-
-§ 4º (VETADO)." (NR)
-
-"Art. 110-A. No ato de requerimento de benefícios operacionalizados pelo INSS, não será exigida apresentação de termo de curatela de titular ou de beneficiário com deficiência, observados os procedimentos a serem estabelecidos em regulamento."
+> "Art. 16. ...................................................................................
+>
+> I - o cônjuge, a companheira, o companheiro e o filho não emancipado, de qualquer condição, menor de 21 (vinte e um) anos ou inválido ou que tenha deficiência intelectual ou mental ou deficiência grave;
+>
+> ..........................................................................................................
+>
+> III - o irmão não emancipado, de qualquer condição, menor de 21 (vinte e um) anos ou inválido ou que tenha deficiência intelectual ou mental ou deficiência grave;
+>
+> ..............................................................................................." (NR)
+>
+> "Art. 77. ...................................................................................
+>
+> ...................................................................................................
+>
+> § 2º ...........................................................................................
+>
+> ....................................................................................................
+>
+> II - para o filho, a pessoa a ele equiparada ou o irmão, de ambos os sexos, pela emancipação ou ao completar 21 (vinte e um) anos de idade, salvo se for inválido ou tiver deficiência intelectual ou mental ou deficiência grave;
+>
+> ...........................................................................................................
+>
+> § 4º ( VETADO).
+>
+> ..............................................................................................." (NR)
+>
+> "Art. 93. (VETADO):
+>
+> I - (VETADO);
+>
+> II - (VETADO);
+>
+> III - (VETADO);
+>
+> IV - (VETADO);
+>
+> V - (VETADO).
+>
+> § 1º A dispensa de pessoa com deficiência ou de beneficiário reabilitado da Previdência Social ao final de contrato por prazo determinado de mais de 90 (noventa) dias e a dispensa imotivada em contrato por prazo indeterminado somente poderão ocorrer após a contratação de outro trabalhador com deficiência ou beneficiário reabilitado da Previdência Social.
+>
+> § 2º Ao Ministério do Trabalho e Emprego incumbe estabelecer a sistemática de fiscalização, bem como gerar dados e estatísticas sobre o total de empregados e as vagas preenchidas por pessoas com deficiência e por beneficiários reabilitados da Previdência Social, fornecendo-os, quando solicitados, aos sindicatos, às entidades representativas dos empregados ou aos cidadãos interessados.
+>
+> § 3º Para a reserva de cargos será considerada somente a contratação direta de pessoa com deficiência, excluído o aprendiz com deficiência de que trata a Consolidação das Leis do Trabalho (CLT), aprovada pelo Decreto-Lei nº 5.452, de 1º de maio de 1943.
+>
+> § 4º (VETADO)." (NR)
+>
+> "Art. 110-A. No ato de requerimento de benefícios operacionalizados pelo INSS, não será exigida apresentação de termo de curatela de titular ou de beneficiário com deficiência, observados os procedimentos a serem estabelecidos em regulamento."
 
 #### Art. 102.
 
 O art. 2º da Lei nº 8.313, de 23 de dezembro de 1991, passa a vigorar acrescido do seguinte § 3º:
 
-"Art. 2º .....................................................................................
-
-.....................................................................................................
-
-§ 3º Os incentivos criados por esta Lei somente serão concedidos a projetos culturais que forem disponibilizados, sempre que tecnicamente possível, também em formato acessível à pessoa com deficiência, observado o disposto em regulamento." (NR)
+> "Art. 2º .....................................................................................
+>
+> .....................................................................................................
+>
+> § 3º Os incentivos criados por esta Lei somente serão concedidos a projetos culturais que forem disponibilizados, sempre que tecnicamente possível, também em formato acessível à pessoa com deficiência, observado o disposto em regulamento." (NR)
 
 #### Art. 103.
 
 O art. 11 da Lei nº 8.429, de 2 de junho de 1992, passa a vigorar acrescido do seguinte inciso IX:
 
-"Art. 11. ...................................................................................
-
-.....................................................................................................
-
-IX - deixar de cumprir a exigência de requisitos de acessibilidade previstos na legislação." (NR)
+> "Art. 11. ...................................................................................
+>
+> .....................................................................................................
+>
+> IX - deixar de cumprir a exigência de requisitos de acessibilidade previstos na legislação." (NR)
 
 #### Art. 104.
 
 A Lei nº 8.666, de 21 de junho de 1993, passa a vigorar com as seguintes alterações:
 
-"Art. 3º .....................................................................................
-
-...................................................................................................
-
-§ 2º ...........................................................................................
-
-....................................................................................................
-
-V - produzidos ou prestados por empresas que comprovem cumprimento de reserva de cargos prevista em lei para pessoa com deficiência ou para reabilitado da Previdência Social e que atendam às regras de acessibilidade previstas na legislação.
-
-...........................................................................................................
-
-§ 5º Nos processos de licitação, poderá ser estabelecida margem de preferência para:
-
-I - produtos manufaturados e para serviços nacionais que atendam a normas técnicas brasileiras; e
-
-II - bens e serviços produzidos ou prestados por empresas que comprovem cumprimento de reserva de cargos prevista em lei para pessoa com deficiência ou para reabilitado da Previdência Social e que atendam às regras de acessibilidade previstas na legislação.
-
-..............................................................................................." (NR)
-
-"Art. 66-A. As empresas enquadradas no inciso V do § 2º e no inciso II do § 5º do art. 3º desta Lei deverão cumprir, durante todo o período de execução do contrato, a reserva de cargos prevista em lei para pessoa com deficiência ou para reabilitado da Previdência Social, bem como as regras de acessibilidade previstas na legislação.
-
-Parágrafo único. Cabe à administração fiscalizar o cumprimento dos requisitos de acessibilidade nos serviços e nos ambientes de trabalho."
+> "Art. 3º .....................................................................................
+>
+> ...................................................................................................
+>
+> § 2º ...........................................................................................
+>
+> ....................................................................................................
+>
+> V - produzidos ou prestados por empresas que comprovem cumprimento de reserva de cargos prevista em lei para pessoa com deficiência ou para reabilitado da Previdência Social e que atendam às regras de acessibilidade previstas na legislação.
+>
+> ...........................................................................................................
+>
+> § 5º Nos processos de licitação, poderá ser estabelecida margem de preferência para:
+>
+> I - produtos manufaturados e para serviços nacionais que atendam a normas técnicas brasileiras; e
+>
+> II - bens e serviços produzidos ou prestados por empresas que comprovem cumprimento de reserva de cargos prevista em lei para pessoa com deficiência ou para reabilitado da Previdência Social e que atendam às regras de acessibilidade previstas na legislação.
+>
+> ..............................................................................................." (NR)
+>
+> "Art. 66-A. As empresas enquadradas no inciso V do § 2º e no inciso II do § 5º do art. 3º desta Lei deverão cumprir, durante todo o período de execução do contrato, a reserva de cargos prevista em lei para pessoa com deficiência ou para reabilitado da Previdência Social, bem como as regras de acessibilidade previstas na legislação.
+>
+> Parágrafo único. Cabe à administração fiscalizar o cumprimento dos requisitos de acessibilidade nos serviços e nos ambientes de trabalho."
 
 #### Art. 105.
 
 O art. 20 da Lei nº 8.742, de 7 de dezembro de 1993, passa a vigorar com as seguintes alterações:
 
-"Art. 20. ...................................................................................
-
-....................................................................................................
-
-§ 2º Para efeito de concessão do benefício de prestação continuada, considera- se pessoa com deficiência aquela que tem impedimento de longo prazo de natureza física, mental, intelectual ou sensorial, o qual, em interação com uma ou mais barreiras, pode obstruir sua participação plena e efetiva na sociedade em igualdade de condições com as demais pessoas.
-
-..........................................................................................................
-
-§ 9º Os rendimentos decorrentes de estágio supervisionado e de aprendizagem não serão computados para os fins de cálculo da renda familiar per capita a que se refere o § 3º deste artigo.
-
-...........................................................................................................
-
-§ 11. Para concessão do benefício de que trata o caput deste artigo, poderão ser utilizados outros elementos probatórios da condição de miserabilidade do grupo familiar e da situação de vulnerabilidade, conforme regulamento." (NR)
+> "Art. 20. ...................................................................................
+>
+> ....................................................................................................
+>
+> § 2º Para efeito de concessão do benefício de prestação continuada, considera- se pessoa com deficiência aquela que tem impedimento de longo prazo de natureza física, mental, intelectual ou sensorial, o qual, em interação com uma ou mais barreiras, pode obstruir sua participação plena e efetiva na sociedade em igualdade de condições com as demais pessoas.
+>
+> ..........................................................................................................
+>
+> § 9º Os rendimentos decorrentes de estágio supervisionado e de aprendizagem não serão computados para os fins de cálculo da renda familiar per capita a que se refere o § 3º deste artigo.
+>
+> ...........................................................................................................
+>
+> § 11. Para concessão do benefício de que trata o caput deste artigo, poderão ser utilizados outros elementos probatórios da condição de miserabilidade do grupo familiar e da situação de vulnerabilidade, conforme regulamento." (NR)
 
 #### Art. 106.
 
@@ -1182,315 +1182,315 @@ O art. 20 da Lei nº 8.742, de 7 de dezembro de 1993, passa a vigorar com as seg
 
 A Lei nº 9.029, de 13 de abril de 1995, passa a vigorar com as seguintes alterações:
 
-"Art. 1º É proibida a adoção de qualquer prática discriminatória e limitativa para efeito de acesso à relação de trabalho, ou de sua manutenção, por motivo de sexo, origem, raça, cor, estado civil, situação familiar, deficiência, reabilitação profissional, idade, entre outros, ressalvadas, nesse caso, as hipóteses de proteção à criança e ao adolescente previstas no inciso XXXIII do art. 7º da Constituição Federal." (NR)
-
-"Art. 3º Sem prejuízo do prescrito no art. 2º desta Lei e nos dispositivos legais que tipificam os crimes resultantes de preconceito de etnia, raça, cor ou deficiência, as infrações ao disposto nesta Lei são passíveis das seguintes cominações:
-
-..............................................................................................." (NR)
-
-"Art. 4º .....................................................................................
-
-I - a reintegração com ressarcimento integral de todo o período de afastamento, mediante pagamento das remunerações devidas, corrigidas monetariamente e acrescidas de juros legais;
-
-..............................................................................................." (NR)
+> "Art. 1º É proibida a adoção de qualquer prática discriminatória e limitativa para efeito de acesso à relação de trabalho, ou de sua manutenção, por motivo de sexo, origem, raça, cor, estado civil, situação familiar, deficiência, reabilitação profissional, idade, entre outros, ressalvadas, nesse caso, as hipóteses de proteção à criança e ao adolescente previstas no inciso XXXIII do art. 7º da Constituição Federal." (NR)
+>
+> "Art. 3º Sem prejuízo do prescrito no art. 2º desta Lei e nos dispositivos legais que tipificam os crimes resultantes de preconceito de etnia, raça, cor ou deficiência, as infrações ao disposto nesta Lei são passíveis das seguintes cominações:
+>
+> ..............................................................................................." (NR)
+>
+> "Art. 4º .....................................................................................
+>
+> I - a reintegração com ressarcimento integral de todo o período de afastamento, mediante pagamento das remunerações devidas, corrigidas monetariamente e acrescidas de juros legais;
+>
+> ..............................................................................................." (NR)
 
 #### Art. 108.
 
 O art. 35 da Lei nº 9.250, de 26 de dezembro de 1995, passa a vigorar acrescido do seguinte § 5º:
 
-"Art. 35. ...................................................................................
-
-..................................................................................................
-
-§ 5º Sem prejuízo do disposto no inciso IX do parágrafo único do art. 3º da Lei nº 10.741, de 1º de outubro de 2003, a pessoa com deficiência, ou o contribuinte que tenha dependente nessa condição, tem preferência na restituição referida no inciso III do art. 4º e na alínea "c" do inciso II do art. 8º." (NR)
+> "Art. 35. ...................................................................................
+>
+> ..................................................................................................
+>
+> § 5º Sem prejuízo do disposto no inciso IX do parágrafo único do art. 3º da Lei nº 10.741, de 1º de outubro de 2003, a pessoa com deficiência, ou o contribuinte que tenha dependente nessa condição, tem preferência na restituição referida no inciso III do art. 4º e na alínea "c" do inciso II do art. 8º." (NR)
 
 #### Art. 109.
 
 A Lei nº 9.503, de 23 de setembro de 1997 (Código de Trânsito Brasileiro), passa a vigorar com as seguintes alterações:
 
-"Art. 2º .....................................................................................
-
-Parágrafo único. Para os efeitos deste Código, são consideradas vias terrestres as praias abertas à circulação pública, as vias internas pertencentes aos condomínios constituídos por unidades autônomas e as vias e áreas de estacionamento de estabelecimentos privados de uso coletivo." (NR)
-
-"Art. 86-A. As vagas de estacionamento regulamentado de que trata o inciso XVII do art. 181 desta Lei deverão ser sinalizadas com as respectivas placas indicativas de destinação e com placas informando os dados sobre a infração por estacionamento indevido."
-
-"Art. 147-A. Ao candidato com deficiência auditiva é assegurada acessibilidade de comunicação, mediante emprego de tecnologias assistivas ou de ajudas técnicas em todas as etapas do processo de habilitação.
-
-§ 1º O material didático audiovisual utilizado em aulas teóricas dos cursos que precedem os exames previstos no art. 147 desta Lei deve ser acessível, por meio de subtitulação com legenda oculta associada à tradução simultânea em Libras.
-
-§ 2º É assegurado também ao candidato com deficiência auditiva requerer, no ato de sua inscrição, os serviços de intérprete da Libras, para acompanhamento em aulas práticas e teóricas."
-
-"Art. 154. (VETADO)."
-
-"Art. 181. .................................................................................
-
-..................................................................................................
-
-XVII - ...................................................................................... Infração - grave;
-
-..............................................................................................." (NR)
+> "Art. 2º .....................................................................................
+>
+> Parágrafo único. Para os efeitos deste Código, são consideradas vias terrestres as praias abertas à circulação pública, as vias internas pertencentes aos condomínios constituídos por unidades autônomas e as vias e áreas de estacionamento de estabelecimentos privados de uso coletivo." (NR)
+>
+> "Art. 86-A. As vagas de estacionamento regulamentado de que trata o inciso XVII do art. 181 desta Lei deverão ser sinalizadas com as respectivas placas indicativas de destinação e com placas informando os dados sobre a infração por estacionamento indevido."
+>
+> "Art. 147-A. Ao candidato com deficiência auditiva é assegurada acessibilidade de comunicação, mediante emprego de tecnologias assistivas ou de ajudas técnicas em todas as etapas do processo de habilitação.
+>
+> § 1º O material didático audiovisual utilizado em aulas teóricas dos cursos que precedem os exames previstos no art. 147 desta Lei deve ser acessível, por meio de subtitulação com legenda oculta associada à tradução simultânea em Libras.
+>
+> § 2º É assegurado também ao candidato com deficiência auditiva requerer, no ato de sua inscrição, os serviços de intérprete da Libras, para acompanhamento em aulas práticas e teóricas."
+>
+> "Art. 154. (VETADO)."
+>
+> "Art. 181. .................................................................................
+>
+> ..................................................................................................
+>
+> XVII - ...................................................................................... Infração - grave;
+>
+> ..............................................................................................." (NR)
 
 #### Art. 110.
 
 O inciso VI e o § 1º do art. 56 da Lei nº 9.615, de 24 de março de 1998, passam a vigorar com a seguinte redação:
 
-"Art. 56. ..................................................................................
-
-.....................................................................................................
-
-VI - 2,7% (dois inteiros e sete décimos por cento) da arrecadação bruta dos concursos de prognósticos e loterias federais e similares cuja realização estiver sujeita a autorização federal, deduzindo-se esse valor do montante destinado aos prêmios;
-
-..........................................................................................................
-
-§ 1º Do total de recursos financeiros resultantes do percentual de que trata o inciso VI do caput, 62,96% (sessenta e dois inteiros e noventa e seis centésimos por cento) serão destinados ao Comitê Olímpico Brasileiro (COB) e 37,04% (trinta e sete inteiros e quatro centésimos por cento) ao Comitê Paralímpico Brasileiro (CPB), devendo ser observado, em ambos os casos, o conjunto de normas aplicáveis à celebração de convênios pela União.
-
-..............................................................................................." (NR)
+> "Art. 56. ..................................................................................
+>
+> .....................................................................................................
+>
+> VI - 2,7% (dois inteiros e sete décimos por cento) da arrecadação bruta dos concursos de prognósticos e loterias federais e similares cuja realização estiver sujeita a autorização federal, deduzindo-se esse valor do montante destinado aos prêmios;
+>
+> ..........................................................................................................
+>
+> § 1º Do total de recursos financeiros resultantes do percentual de que trata o inciso VI do caput, 62,96% (sessenta e dois inteiros e noventa e seis centésimos por cento) serão destinados ao Comitê Olímpico Brasileiro (COB) e 37,04% (trinta e sete inteiros e quatro centésimos por cento) ao Comitê Paralímpico Brasileiro (CPB), devendo ser observado, em ambos os casos, o conjunto de normas aplicáveis à celebração de convênios pela União.
+>
+> ..............................................................................................." (NR)
 
 #### Art. 111.
 
 O art. 1º da Lei nº 10.048, de 8 de novembro de 2000, passa a vigorar com a seguinte redação:
 
-"Art. 1º As pessoas com deficiência, os idosos com idade igual ou superior a 60 (sessenta) anos, as gestantes, as lactantes, as pessoas com crianças de colo e os obesos terão atendimento prioritário, nos termos desta Lei." (NR)
+> "Art. 1º As pessoas com deficiência, os idosos com idade igual ou superior a 60 (sessenta) anos, as gestantes, as lactantes, as pessoas com crianças de colo e os obesos terão atendimento prioritário, nos termos desta Lei." (NR)
 
 #### Art. 112.
 
 A Lei nº 10.098, de 19 de dezembro de 2000, passa a vigorar com as seguintes alterações:
 
-"Art. 2º .....................................................................................
-
-I - acessibilidade: possibilidade e condição de alcance para utilização, com segurança e autonomia, de espaços, mobiliários, equipamentos urbanos, edificações, transportes, informação e comunicação, inclusive seus sistemas e tecnologias, bem como de outros serviços e instalações abertos ao público, de uso público ou privados de uso coletivo, tanto na zona urbana como na rural, por pessoa com deficiência ou com mobilidade reduzida;
-
-II - barreiras: qualquer entrave, obstáculo, atitude ou comportamento que limite ou impeça a participação social da pessoa, bem como o gozo, a fruição e o exercício de seus direitos à acessibilidade, à liberdade de movimento e de expressão, à comunicação, ao acesso à informação, à compreensão, à circulação com segurança, entre outros, classificadas em:
-
-a) barreiras urbanísticas: as existentes nas vias e nos espaços públicos e privados abertos ao público ou de uso coletivo;
-
-b) barreiras arquitetônicas: as existentes nos edifícios públicos e privados;
-
-c) barreiras nos transportes: as existentes nos sistemas e meios de transportes;
-
-d) barreiras nas comunicações e na informação: qualquer entrave, obstáculo, atitude ou comportamento que dificulte ou impossibilite a expressão ou o recebimento de mensagens e de informações por intermédio de sistemas de comunicação e de tecnologia da informação;
-
-III - pessoa com deficiência: aquela que tem impedimento de longo prazo de natureza física, mental, intelectual ou sensorial, o qual, em interação com uma ou mais barreiras, pode obstruir sua participação plena e efetiva na sociedade em igualdade de condições com as demais pessoas;
-
-IV - pessoa com mobilidade reduzida: aquela que tenha, por qualquer motivo, dificuldade de movimentação, permanente ou temporária, gerando redução efetiva da mobilidade, da flexibilidade, da coordenação motora ou da percepção, incluindo idoso, gestante, lactante, pessoa com criança de colo e obeso;
-
-V - acompanhante: aquele que acompanha a pessoa com deficiência, podendo ou não desempenhar as funções de atendente pessoal;
-
-VI - elemento de urbanização: quaisquer componentes de obras de urbanização, tais como os referentes a pavimentação, saneamento, encanamento para esgotos, distribuição de energia elétrica e de gás, iluminação pública, serviços de comunicação, abastecimento e distribuição de água, paisagismo e os que materializam as indicações do planejamento urbanístico;
-
-VII - mobiliário urbano: conjunto de objetos existentes nas vias e nos espaços públicos, superpostos ou adicionados aos elementos de urbanização ou de edificação, de forma que sua modificação ou seu traslado não provoque alterações substanciais nesses elementos, tais como semáforos, postes de sinalização e similares, terminais e pontos de acesso coletivo às telecomunicações, fontes de água, lixeiras, toldos, marquises, bancos, quiosques e quaisquer outros de natureza análoga;
-
-VIII - tecnologia assistiva ou ajuda técnica: produtos, equipamentos, dispositivos, recursos, metodologias, estratégias, práticas e serviços que objetivem promover a funcionalidade, relacionada à atividade e à participação da pessoa com deficiência ou com mobilidade reduzida, visando à sua autonomia, independência, qualidade de vida e inclusão social;
-
-IX - comunicação: forma de interação dos cidadãos que abrange, entre outras opções, as línguas, inclusive a Língua Brasileira de Sinais (Libras), a visualização de textos, o Braille, o sistema de sinalização ou de comunicação tátil, os caracteres ampliados, os dispositivos multimídia, assim como a linguagem simples, escrita e oral, os sistemas auditivos e os meios de voz digitalizados e os modos, meios e formatos aumentativos e alternativos de comunicação, incluindo as tecnologias da informação e das comunicações;
-
-X - desenho universal: concepção de produtos, ambientes, programas e serviços a serem usados por todas as pessoas, sem necessidade de adaptação ou de projeto específico, incluindo os recursos de tecnologia assistiva." (NR)
-
-"Art. 3º O planejamento e a urbanização das vias públicas, dos parques e dos demais espaços de uso público deverão ser concebidos e executados de forma a torná-los acessíveis para todas as pessoas, inclusive para aquelas com deficiência ou com mobilidade reduzida.
-
-Parágrafo único. O passeio público, elemento obrigatório de urbanização e parte da via pública, normalmente segregado e em nível diferente, destina-se somente à circulação de pedestres e, quando possível, à implantação de mobiliário urbano e de vegetação." (NR)
-
-"Art. 9º .....................................................................................
-
-Parágrafo único. Os semáforos para pedestres instalados em vias públicas de grande circulação, ou que deem acesso aos serviços de reabilitação, devem obrigatoriamente estar equipados com mecanismo que emita sinal sonoro suave para orientação do pedestre." (NR)
-
-"Art. 10-A. A instalação de qualquer mobiliário urbano em área de circulação comum para pedestre que ofereça risco de acidente à pessoa com deficiência deverá ser indicada mediante sinalização tátil de alerta no piso, de acordo com as normas técnicas pertinentes."
-
-"Art. 12-A. Os centros comerciais e os estabelecimentos congêneres devem fornecer carros e cadeiras de rodas, motorizados ou não, para o atendimento da pessoa com deficiência ou com mobilidade reduzida."
+> "Art. 2º .....................................................................................
+>
+> I - acessibilidade: possibilidade e condição de alcance para utilização, com segurança e autonomia, de espaços, mobiliários, equipamentos urbanos, edificações, transportes, informação e comunicação, inclusive seus sistemas e tecnologias, bem como de outros serviços e instalações abertos ao público, de uso público ou privados de uso coletivo, tanto na zona urbana como na rural, por pessoa com deficiência ou com mobilidade reduzida;
+>
+> II - barreiras: qualquer entrave, obstáculo, atitude ou comportamento que limite ou impeça a participação social da pessoa, bem como o gozo, a fruição e o exercício de seus direitos à acessibilidade, à liberdade de movimento e de expressão, à comunicação, ao acesso à informação, à compreensão, à circulação com segurança, entre outros, classificadas em:
+>
+> a) barreiras urbanísticas: as existentes nas vias e nos espaços públicos e privados abertos ao público ou de uso coletivo;
+>
+> b) barreiras arquitetônicas: as existentes nos edifícios públicos e privados;
+>
+> c) barreiras nos transportes: as existentes nos sistemas e meios de transportes;
+>
+> d) barreiras nas comunicações e na informação: qualquer entrave, obstáculo, atitude ou comportamento que dificulte ou impossibilite a expressão ou o recebimento de mensagens e de informações por intermédio de sistemas de comunicação e de tecnologia da informação;
+>
+> III - pessoa com deficiência: aquela que tem impedimento de longo prazo de natureza física, mental, intelectual ou sensorial, o qual, em interação com uma ou mais barreiras, pode obstruir sua participação plena e efetiva na sociedade em igualdade de condições com as demais pessoas;
+>
+> IV - pessoa com mobilidade reduzida: aquela que tenha, por qualquer motivo, dificuldade de movimentação, permanente ou temporária, gerando redução efetiva da mobilidade, da flexibilidade, da coordenação motora ou da percepção, incluindo idoso, gestante, lactante, pessoa com criança de colo e obeso;
+>
+> V - acompanhante: aquele que acompanha a pessoa com deficiência, podendo ou não desempenhar as funções de atendente pessoal;
+>
+> VI - elemento de urbanização: quaisquer componentes de obras de urbanização, tais como os referentes a pavimentação, saneamento, encanamento para esgotos, distribuição de energia elétrica e de gás, iluminação pública, serviços de comunicação, abastecimento e distribuição de água, paisagismo e os que materializam as indicações do planejamento urbanístico;
+>
+> VII - mobiliário urbano: conjunto de objetos existentes nas vias e nos espaços públicos, superpostos ou adicionados aos elementos de urbanização ou de edificação, de forma que sua modificação ou seu traslado não provoque alterações substanciais nesses elementos, tais como semáforos, postes de sinalização e similares, terminais e pontos de acesso coletivo às telecomunicações, fontes de água, lixeiras, toldos, marquises, bancos, quiosques e quaisquer outros de natureza análoga;
+>
+> VIII - tecnologia assistiva ou ajuda técnica: produtos, equipamentos, dispositivos, recursos, metodologias, estratégias, práticas e serviços que objetivem promover a funcionalidade, relacionada à atividade e à participação da pessoa com deficiência ou com mobilidade reduzida, visando à sua autonomia, independência, qualidade de vida e inclusão social;
+>
+> IX - comunicação: forma de interação dos cidadãos que abrange, entre outras opções, as línguas, inclusive a Língua Brasileira de Sinais (Libras), a visualização de textos, o Braille, o sistema de sinalização ou de comunicação tátil, os caracteres ampliados, os dispositivos multimídia, assim como a linguagem simples, escrita e oral, os sistemas auditivos e os meios de voz digitalizados e os modos, meios e formatos aumentativos e alternativos de comunicação, incluindo as tecnologias da informação e das comunicações;
+>
+> X - desenho universal: concepção de produtos, ambientes, programas e serviços a serem usados por todas as pessoas, sem necessidade de adaptação ou de projeto específico, incluindo os recursos de tecnologia assistiva." (NR)
+>
+> "Art. 3º O planejamento e a urbanização das vias públicas, dos parques e dos demais espaços de uso público deverão ser concebidos e executados de forma a torná-los acessíveis para todas as pessoas, inclusive para aquelas com deficiência ou com mobilidade reduzida.
+>
+> Parágrafo único. O passeio público, elemento obrigatório de urbanização e parte da via pública, normalmente segregado e em nível diferente, destina-se somente à circulação de pedestres e, quando possível, à implantação de mobiliário urbano e de vegetação." (NR)
+>
+> "Art. 9º .....................................................................................
+>
+> Parágrafo único. Os semáforos para pedestres instalados em vias públicas de grande circulação, ou que deem acesso aos serviços de reabilitação, devem obrigatoriamente estar equipados com mecanismo que emita sinal sonoro suave para orientação do pedestre." (NR)
+>
+> "Art. 10-A. A instalação de qualquer mobiliário urbano em área de circulação comum para pedestre que ofereça risco de acidente à pessoa com deficiência deverá ser indicada mediante sinalização tátil de alerta no piso, de acordo com as normas técnicas pertinentes."
+>
+> "Art. 12-A. Os centros comerciais e os estabelecimentos congêneres devem fornecer carros e cadeiras de rodas, motorizados ou não, para o atendimento da pessoa com deficiência ou com mobilidade reduzida."
 
 #### Art. 113.
 
 A Lei nº 10.257, de 10 de julho de 2001 (Estatuto da Cidade), passa a vigorar com as seguintes alterações:
 
-"Art. 3º .....................................................................................
-
-....................................................................................................
-
-III - promover, por iniciativa própria e em conjunto com os Estados, o Distrito Federal e os Municípios, programas de construção de moradias e melhoria das condições habitacionais, de saneamento básico, das calçadas, dos passeios públicos, do mobiliário urbano e dos demais espaços de uso público;
-
-IV - instituir diretrizes para desenvolvimento urbano, inclusive habitação, saneamento básico, transporte e mobilidade urbana, que incluam regras de acessibilidade aos locais de uso público;
-
-..............................................................................................." (NR)
-
-"Art. 41. ...................................................................................
-
-......................................................................................................
-
-§ 3º As cidades de que trata o caput deste artigo devem elaborar plano de rotas acessíveis, compatível com o plano diretor no qual está inserido, que disponha sobre os passeios públicos a serem implantados ou reformados pelo poder público, com vistas a garantir acessibilidade da pessoa com deficiência ou com mobilidade reduzida a todas as rotas e vias existentes, inclusive as que concentrem os focos geradores de maior circulação de pedestres, como os órgãos públicos e os locais de prestação de serviços públicos e privados de saúde, educação, assistência social, esporte, cultura, correios e telégrafos, bancos, entre outros, sempre que possível de maneira integrada com os sistemas de transporte coletivo de passageiros." (NR)
+> "Art. 3º .....................................................................................
+>
+> ....................................................................................................
+>
+> III - promover, por iniciativa própria e em conjunto com os Estados, o Distrito Federal e os Municípios, programas de construção de moradias e melhoria das condições habitacionais, de saneamento básico, das calçadas, dos passeios públicos, do mobiliário urbano e dos demais espaços de uso público;
+>
+> IV - instituir diretrizes para desenvolvimento urbano, inclusive habitação, saneamento básico, transporte e mobilidade urbana, que incluam regras de acessibilidade aos locais de uso público;
+>
+> ..............................................................................................." (NR)
+>
+> "Art. 41. ...................................................................................
+>
+> ......................................................................................................
+>
+> § 3º As cidades de que trata o caput deste artigo devem elaborar plano de rotas acessíveis, compatível com o plano diretor no qual está inserido, que disponha sobre os passeios públicos a serem implantados ou reformados pelo poder público, com vistas a garantir acessibilidade da pessoa com deficiência ou com mobilidade reduzida a todas as rotas e vias existentes, inclusive as que concentrem os focos geradores de maior circulação de pedestres, como os órgãos públicos e os locais de prestação de serviços públicos e privados de saúde, educação, assistência social, esporte, cultura, correios e telégrafos, bancos, entre outros, sempre que possível de maneira integrada com os sistemas de transporte coletivo de passageiros." (NR)
 
 #### Art. 114.
 
 A Lei nº 10.406, de 10 de janeiro de 2002 (Código Civil), passa a vigorar com as seguintes alterações:
 
-"Art. 3º São absolutamente incapazes de exercer pessoalmente os atos da vida civil os menores de 16 (dezesseis) anos.
-
-I - (Revogado);
-
-II - (Revogado);
-
-III - (Revogado)." (NR)
-
-"Art. 4º São incapazes, relativamente a certos atos ou à maneira de os exercer:
-
-...........................................................................................................
-
-II - os ébrios habituais e os viciados em tóxico;
-
-III - aqueles que, por causa transitória ou permanente, não puderem exprimir sua vontade;
-
-..........................................................................................................
-
-Parágrafo único. A capacidade dos indígenas será regulada por legislação especial." (NR)
-
-"Art. 228. .................................................................................
-
-...................................................................................................
-
-II - (Revogado);
-
-III - (Revogado);
-
-.....................................................................................................
-
-§ 1º ...........................................................................................
-
-§ 2º A pessoa com deficiência poderá testemunhar em igualdade de condições com as demais pessoas, sendo-lhe assegurados todos os recursos de tecnologia assistiva." (NR)
-
-"Art. 1.518 Até a celebração do casamento podem os pais ou tutores revogar a autorização." (NR)
-
-"Art. 1.548 ..............................................................................
-
-I - (Revogado);
-
-..............................................................................................." (NR)
-
-"Art. 1.550 ..............................................................................
-
-...................................................................................................
-
-§ 1º ...........................................................................................
-
-§ 2º A pessoa com deficiência mental ou intelectual em idade núbia poderá contrair matrimônio, expressando sua vontade diretamente ou por meio de seu responsável ou curador." (NR)
-
-"Art. 1.557 ..............................................................................
-
-.....................................................................................................
-
-III - a ignorância, anterior ao casamento, de defeito físico irremediável que não caracterize deficiência ou de moléstia grave e transmissível, por contágio ou por herança, capaz de pôr em risco a saúde do outro cônjuge ou de sua descendência;
-
-IV - (Revogado)." (NR)
-
-"Art. 1.767 ..............................................................................
-
-I - aqueles que, por causa transitória ou permanente, não puderem exprimir sua vontade;
-
-II - (Revogado);
-
-III - os ébrios habituais e os viciados em tóxico;
-
-IV - (Revogado);
-
-..............................................................................................." (NR)
-
-"Art. 1.768 O processo que define os termos da curatela deve ser promovido:
-
-..........................................................................................................
-
-IV - pela própria pessoa." (NR)
-
-"Art. 1.769 O Ministério Público somente promoverá o processo que define os termos da curatela:
-
-I - nos casos de deficiência mental ou intelectual;
-
-..........................................................................................................
-
-III - se, existindo, forem menores ou incapazes as pessoas mencionadas no inciso II." (NR)
-
-"Art. 1.771 Antes de se pronunciar acerca dos termos da curatela, o juiz, que deverá ser assistido por equipe multidisciplinar, entrevistará pessoalmente o interditando." (NR)
-
-"Art. 1.772 O juiz determinará, segundo as potencialidades da pessoa, os limites da curatela, circunscritos às restrições constantes do art. 1.782, e indicará curador.
-
-Parágrafo único. Para a escolha do curador, o juiz levará em conta a vontade e as preferências do interditando, a ausência de conflito de interesses e de influência indevida, a proporcionalidade e a adequação às circunstâncias da pessoa." (NR)
-
-"Art. 1.775-A Na nomeação de curador para a pessoa com deficiência, o juiz poderá estabelecer curatela compartilhada a mais de uma pessoa."
-
-"Art. 1.777 As pessoas referidas no inciso I do art. 1.767 receberão todo o apoio necessário para ter preservado o direito à convivência familiar e comunitária, sendo evitado o seu recolhimento em estabelecimento que os afaste desse convívio." (NR)
+> "Art. 3º São absolutamente incapazes de exercer pessoalmente os atos da vida civil os menores de 16 (dezesseis) anos.
+>
+> I - (Revogado);
+>
+> II - (Revogado);
+>
+> III - (Revogado)." (NR)
+>
+> "Art. 4º São incapazes, relativamente a certos atos ou à maneira de os exercer:
+>
+> ...........................................................................................................
+>
+> II - os ébrios habituais e os viciados em tóxico;
+>
+> III - aqueles que, por causa transitória ou permanente, não puderem exprimir sua vontade;
+>
+> ..........................................................................................................
+>
+> Parágrafo único. A capacidade dos indígenas será regulada por legislação especial." (NR)
+>
+> "Art. 228. .................................................................................
+>
+> ...................................................................................................
+>
+> II - (Revogado);
+>
+> III - (Revogado);
+>
+> .....................................................................................................
+>
+> § 1º ...........................................................................................
+>
+> § 2º A pessoa com deficiência poderá testemunhar em igualdade de condições com as demais pessoas, sendo-lhe assegurados todos os recursos de tecnologia assistiva." (NR)
+>
+> "Art. 1.518 Até a celebração do casamento podem os pais ou tutores revogar a autorização." (NR)
+>
+> "Art. 1.548 ..............................................................................
+>
+> I - (Revogado);
+>
+> ..............................................................................................." (NR)
+>
+> "Art. 1.550 ..............................................................................
+>
+> ...................................................................................................
+>
+> § 1º ...........................................................................................
+>
+> § 2º A pessoa com deficiência mental ou intelectual em idade núbia poderá contrair matrimônio, expressando sua vontade diretamente ou por meio de seu responsável ou curador." (NR)
+>
+> "Art. 1.557 ..............................................................................
+>
+> .....................................................................................................
+>
+> III - a ignorância, anterior ao casamento, de defeito físico irremediável que não caracterize deficiência ou de moléstia grave e transmissível, por contágio ou por herança, capaz de pôr em risco a saúde do outro cônjuge ou de sua descendência;
+>
+> IV - (Revogado)." (NR)
+>
+> "Art. 1.767 ..............................................................................
+>
+> I - aqueles que, por causa transitória ou permanente, não puderem exprimir sua vontade;
+>
+> II - (Revogado);
+>
+> III - os ébrios habituais e os viciados em tóxico;
+>
+> IV - (Revogado);
+>
+> ..............................................................................................." (NR)
+>
+> "Art. 1.768 O processo que define os termos da curatela deve ser promovido:
+>
+> ..........................................................................................................
+>
+> IV - pela própria pessoa." (NR)
+>
+> "Art. 1.769 O Ministério Público somente promoverá o processo que define os termos da curatela:
+>
+> I - nos casos de deficiência mental ou intelectual;
+>
+> ..........................................................................................................
+>
+> III - se, existindo, forem menores ou incapazes as pessoas mencionadas no inciso II." (NR)
+>
+> "Art. 1.771 Antes de se pronunciar acerca dos termos da curatela, o juiz, que deverá ser assistido por equipe multidisciplinar, entrevistará pessoalmente o interditando." (NR)
+>
+> "Art. 1.772 O juiz determinará, segundo as potencialidades da pessoa, os limites da curatela, circunscritos às restrições constantes do art. 1.782, e indicará curador.
+>
+> Parágrafo único. Para a escolha do curador, o juiz levará em conta a vontade e as preferências do interditando, a ausência de conflito de interesses e de influência indevida, a proporcionalidade e a adequação às circunstâncias da pessoa." (NR)
+>
+> "Art. 1.775-A Na nomeação de curador para a pessoa com deficiência, o juiz poderá estabelecer curatela compartilhada a mais de uma pessoa."
+>
+> "Art. 1.777 As pessoas referidas no inciso I do art. 1.767 receberão todo o apoio necessário para ter preservado o direito à convivência familiar e comunitária, sendo evitado o seu recolhimento em estabelecimento que os afaste desse convívio." (NR)
 
 #### Art. 115.
 
 O Título IV do Livro IV da Parte Especial da Lei nº 10.406, de 10 de janeiro de 2002 (Código Civil), passa a vigorar com a seguinte redação:
 
-"TÍTULO IV Da Tutela, da Curatela e da Tomada de Decisão Apoiada"
+> "TÍTULO IV Da Tutela, da Curatela e da Tomada de Decisão Apoiada"
 
 #### Art. 116.
 
 O Título IV do Livro IV da Parte Especial da Lei nº 10.406, de 10 de janeiro de 2002 (Código Civil), passa a vigorar acrescido do seguinte Capítulo III:
 
-"CAPÍTULO III Da Tomada de Decisão Apoiada
-
-Art. 1.783-A A tomada de decisão apoiada é o processo pelo qual a pessoa com deficiência elege pelo menos 2 (duas) pessoas idôneas, com as quais mantenha vínculos e que gozem de sua confiança, para prestar-lhe apoio na tomada de decisão sobre atos da vida civil, fornecendo-lhes os elementos e informações necessários para que possa exercer sua capacidade.
-
-§ 1º Para formular pedido de tomada de decisão apoiada, a pessoa com deficiência e os apoiadores devem apresentar termo em que constem os limites do apoio a ser oferecido e os compromissos dos apoiadores, inclusive o prazo de vigência do acordo e o respeito a vontade, aos direitos e aos interesses da pessoa que devem apoiar.
-
-§ 2º O pedido de tomada de decisão apoiada será requerido pela pessoa a ser apoiada, com indicação expressa das pessoas aptas a prestarem o apoio previsto no caput deste artigo.
-
-§ 3º Antes de se pronunciar sobre o pedido de tomada de decisão apoiada, o juiz, assistido por equipe multidisciplinar, após oitiva do Ministério Público, ouvirá pessoalmente o requerente e as pessoas que lhe prestarão apoio.
-
-§ 4º A decisão tomada por pessoa apoiada terá validade e efeitos sobre terceiros, sem restrições, desde que esteja inserida nos limites do apoio acordado.
-
-§ 5º Terceiro com quem a pessoa apoiada mantenha relação negocial pode solicitar que os apoiadores contra-assinem o contrato ou acordo, especificando, por escrito, sua função em relação ao apoiado.
-
-§ 6º Em caso de negócio jurídico que possa trazer risco ou prejuízo relevante, havendo divergência de opiniões entre a pessoa apoiada e um dos apoiadores, deverá o juiz, ouvido o Ministério Público, decidir sobre a questão.
-
-§ 7º Se o apoiador agir com negligência, exercer pressão indevida ou não adimplir as obrigações assumidas, poderá a pessoa apoiada ou qualquer pessoa apresentar denúncia ao Ministério Público ou ao juiz.
-
-§ 8º Se procedente a denúncia, o juiz destituirá o apoiador e nomeará, ouvida a pessoa apoiada e se for de seu interesse, outra pessoa para prestação de apoio.
-
-§ 9º A pessoa apoiada pode, a qualquer tempo, solicitar o término de acordo firmado em processo de tomada de decisão apoiada.
-
-§ 10. O apoiador pode solicitar ao juiz a exclusão de sua participação do processo de tomada de decisão apoiada, sendo seu desligamento condicionado a manifestação do juiz sobre a matéria.
-
-§ 11. Aplicam-se a tomada de decisão apoiada, no que couber, as disposições referentes a prestação de contas na curatela."
+> "CAPÍTULO III Da Tomada de Decisão Apoiada
+>
+> Art. 1.783-A A tomada de decisão apoiada é o processo pelo qual a pessoa com deficiência elege pelo menos 2 (duas) pessoas idôneas, com as quais mantenha vínculos e que gozem de sua confiança, para prestar-lhe apoio na tomada de decisão sobre atos da vida civil, fornecendo-lhes os elementos e informações necessários para que possa exercer sua capacidade.
+>
+> § 1º Para formular pedido de tomada de decisão apoiada, a pessoa com deficiência e os apoiadores devem apresentar termo em que constem os limites do apoio a ser oferecido e os compromissos dos apoiadores, inclusive o prazo de vigência do acordo e o respeito a vontade, aos direitos e aos interesses da pessoa que devem apoiar.
+>
+> § 2º O pedido de tomada de decisão apoiada será requerido pela pessoa a ser apoiada, com indicação expressa das pessoas aptas a prestarem o apoio previsto no caput deste artigo.
+>
+> § 3º Antes de se pronunciar sobre o pedido de tomada de decisão apoiada, o juiz, assistido por equipe multidisciplinar, após oitiva do Ministério Público, ouvirá pessoalmente o requerente e as pessoas que lhe prestarão apoio.
+>
+> § 4º A decisão tomada por pessoa apoiada terá validade e efeitos sobre terceiros, sem restrições, desde que esteja inserida nos limites do apoio acordado.
+>
+> § 5º Terceiro com quem a pessoa apoiada mantenha relação negocial pode solicitar que os apoiadores contra-assinem o contrato ou acordo, especificando, por escrito, sua função em relação ao apoiado.
+>
+> § 6º Em caso de negócio jurídico que possa trazer risco ou prejuízo relevante, havendo divergência de opiniões entre a pessoa apoiada e um dos apoiadores, deverá o juiz, ouvido o Ministério Público, decidir sobre a questão.
+>
+> § 7º Se o apoiador agir com negligência, exercer pressão indevida ou não adimplir as obrigações assumidas, poderá a pessoa apoiada ou qualquer pessoa apresentar denúncia ao Ministério Público ou ao juiz.
+>
+> § 8º Se procedente a denúncia, o juiz destituirá o apoiador e nomeará, ouvida a pessoa apoiada e se for de seu interesse, outra pessoa para prestação de apoio.
+>
+> § 9º A pessoa apoiada pode, a qualquer tempo, solicitar o término de acordo firmado em processo de tomada de decisão apoiada.
+>
+> § 10. O apoiador pode solicitar ao juiz a exclusão de sua participação do processo de tomada de decisão apoiada, sendo seu desligamento condicionado a manifestação do juiz sobre a matéria.
+>
+> § 11. Aplicam-se a tomada de decisão apoiada, no que couber, as disposições referentes a prestação de contas na curatela."
 
 #### Art. 117.
 
 O art. 1º da Lei nº 11.126, de 27 de junho de 2005, passa a vigorar com a seguinte redação:
 
-"Art. 1º É assegurado a pessoa com deficiência visual acompanhada de cão-guia o direito de ingressar e de permanecer com o animal em todos os meios de transporte e em estabelecimentos abertos ao público, de uso público e privados de uso coletivo, desde que observadas as condições impostas por esta Lei.
-
-...........................................................................................................
-
-§ 2º O disposto no caput deste artigo aplica-se a todas as modalidades e jurisdições do serviço de transporte coletivo de passageiros, inclusive em esfera internacional com origem no território brasileiro." (NR)
+> "Art. 1º É assegurado a pessoa com deficiência visual acompanhada de cão-guia o direito de ingressar e de permanecer com o animal em todos os meios de transporte e em estabelecimentos abertos ao público, de uso público e privados de uso coletivo, desde que observadas as condições impostas por esta Lei.
+>
+> ...........................................................................................................
+>
+> § 2º O disposto no caput deste artigo aplica-se a todas as modalidades e jurisdições do serviço de transporte coletivo de passageiros, inclusive em esfera internacional com origem no território brasileiro." (NR)
 
 #### Art. 118.
 
 O inciso IV do art. 46 da Lei nº 11.904, de 14 de janeiro de 2009, passa a vigorar acrescido da seguinte alínea "k":
 
-"Art. 46. ...................................................................................
-
-....................................................................................................
-
-IV - ..........................................................................................
-
-...................................................................................................
-
-k) de acessibilidade a todas as pessoas.
-
-............................................................................................... " (NR)
+> "Art. 46. ...................................................................................
+>
+> ....................................................................................................
+>
+> IV - ..........................................................................................
+>
+> ...................................................................................................
+>
+> k) de acessibilidade a todas as pessoas.
+>
+> ............................................................................................... " (NR)
 
 #### Art. 119.
 
 A Lei nº 12.587, de 3 de janeiro de 2012, passa a vigorar acrescida do seguinte art. 12-B:
 
-"Art. 12-B. Na outorga de exploração de serviço de táxi, reservar-se-ão 10% (dez por cento) das vagas para condutores com deficiência.
-
-§ 1º Para concorrer às vagas reservadas na forma do caput deste artigo, o condutor com deficiência deverá observar os seguintes requisitos quanto ao veículo utilizado:
-
-I - ser de sua propriedade e por ele conduzido; e
-
-II - estar adaptado às suas necessidades, nos termos da legislação vigente.
-
-§ 2º No caso de não preenchimento das vagas na forma estabelecida no caput deste artigo, as remanescentes devem ser disponibilizadas para os demais concorrentes."
+> "Art. 12-B. Na outorga de exploração de serviço de táxi, reservar-se-ão 10% (dez por cento) das vagas para condutores com deficiência.
+>
+> § 1º Para concorrer às vagas reservadas na forma do caput deste artigo, o condutor com deficiência deverá observar os seguintes requisitos quanto ao veículo utilizado:
+>
+> I - ser de sua propriedade e por ele conduzido; e
+>
+> II - estar adaptado às suas necessidades, nos termos da legislação vigente.
+>
+> § 2º No caso de não preenchimento das vagas na forma estabelecida no caput deste artigo, as remanescentes devem ser disponibilizadas para os demais concorrentes."
 
 #### Art. 120.
 

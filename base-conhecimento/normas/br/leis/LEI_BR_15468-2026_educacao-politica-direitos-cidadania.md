@@ -36,7 +36,7 @@ altera:
 
 O PRESIDENTE DA REPÚBLICA Faço saber que o Congresso Nacional decreta e eu sanciono a seguinte Lei:
 
-### Art. 1º
+#### Art. 1º
 
 O art. 26 da Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), passa a vigorar acrescido do seguinte § 9º-B:
 
@@ -48,7 +48,7 @@ O art. 26 da Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases
 >
 > .................................................................................................................................................. (NR)
 
-### Art. 2º
+#### Art. 2º
 
 Esta Lei entra em vigor na data de sua publicação.
 

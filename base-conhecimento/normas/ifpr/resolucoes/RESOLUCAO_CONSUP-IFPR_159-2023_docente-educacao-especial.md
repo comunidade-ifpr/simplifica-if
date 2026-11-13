@@ -175,7 +175,7 @@ A carga horária de trabalho do docente da Educação Especial será distribuíd
 - **I -** para docentes com 40h e Dedicação Exclusiva: no mínimo 12 (doze) e no máximo 16 (dezesseis) horas de ensino; 16 (dezesseis) horas de pesquisa extensão; 4 (quatro) horas de apoio ao ensino; 4 (quatro) de manutenção do ensino;
 - **II -** para docentes com 20h: no mínimo 8 (oito) e no máximo 12 (doze) horas de ensino, 4 (quatro) horas de apoio ao ensino; 4 (quatro) horas para manutenção do ensino.
 
-Parágrafo único. A carga horária do Docente de Educação Especial será organizada e/ou distribuída de acordo com a legislação vigente que regulamenta a carreira dos demais docentes EBTT.
+**Parágrafo único.** A carga horária do Docente de Educação Especial será organizada e/ou distribuída de acordo com a legislação vigente que regulamenta a carreira dos demais docentes EBTT.
 
 ## CAPÍTULO III
 
@@ -197,7 +197,7 @@ O AEE deverá ser apresentado nos projetos pedagógicos dos cursos (PPC). No ite
 
 A organização do AEE se dará por meio de atendimento individual ou em pequenos grupos, conforme avaliação do Docente de Educação Especial.
 
-Parágrafo único. A duração e frequência dos atendimentos serão definidas com base nas necessidades dos estudantes identificadas na avaliação do Docente de Educação Especial.
+**Parágrafo único.** A duração e frequência dos atendimentos serão definidas com base nas necessidades dos estudantes identificadas na avaliação do Docente de Educação Especial.
 
 ### Seção I
 
@@ -283,15 +283,15 @@ A AICE também poderá ser composta pelos seguintes documentos complementares:
 - **III -** avaliações e pareceres de outros profissionais que atendam ou atenderam o estudante;
 - **IV -** laudos médicos, caso os tenha.
 
-§ 1º Durante a avaliação e atendimento, o Docente de Educação Especial pode indicar e proceder encaminhamentos adicionais, quando necessários, que permitam conhecer e avaliar as necessidades do estudante, com apoio da Equipe Multiprofissional e/ou coordenação da Cnapne.
+**§ 1º** Durante a avaliação e atendimento, o Docente de Educação Especial pode indicar e proceder encaminhamentos adicionais, quando necessários, que permitam conhecer e avaliar as necessidades do estudante, com apoio da Equipe Multiprofissional e/ou coordenação da Cnapne.
 
-§ 2º Além da inserção no AEE, outros encaminhamentos para serviços internos e externos ao campus, de acordo com as necessidades específicas dos estudantes, podem ser indicados, quando necessários, pelo Docente da Educação Especial com o apoio da Equipe Multiprofissional ou Coordenação da Cnapne, como a necessidade de adaptações de recursos, materiais e metodologias e/ou flexibilização curricular.
+**§ 2º** Além da inserção no AEE, outros encaminhamentos para serviços internos e externos ao campus, de acordo com as necessidades específicas dos estudantes, podem ser indicados, quando necessários, pelo Docente da Educação Especial com o apoio da Equipe Multiprofissional ou Coordenação da Cnapne, como a necessidade de adaptações de recursos, materiais e metodologias e/ou flexibilização curricular.
 
 #### Art. 27
 
 A AICE, realizada pelo docente da Educação Especial, deve ser contabilizada na carga horária de ensino desse profissional, até quatro horas semanais (conforme demanda) e registrada no PTD.
 
-Parágrafo único. Após a AICE, o docente de Educação Especial realizará continuamente a avaliação da aprendizagem do estudante no AEE e, quando necessário, estabelecerá diálogo com os demais docentes, definindo a necessidade de continuidade, a periodicidade e quantidade de atendimentos, conforme as necessidades de cada estudante.
+**Parágrafo único.** Após a AICE, o docente de Educação Especial realizará continuamente a avaliação da aprendizagem do estudante no AEE e, quando necessário, estabelecerá diálogo com os demais docentes, definindo a necessidade de continuidade, a periodicidade e quantidade de atendimentos, conforme as necessidades de cada estudante.
 
 #### Art. 28
 

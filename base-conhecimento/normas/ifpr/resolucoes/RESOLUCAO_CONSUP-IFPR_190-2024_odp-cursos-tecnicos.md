@@ -161,7 +161,8 @@ O acesso unificado pode ocorrer por:
 - **III –** análise de histórico escolar;
 - **IV –** prova;
 - **V –** outras formas disponíveis que garantam o acesso de forma isonômica.
-Parágrafo único. Pelas especificidades de cada forma de oferta, integrada, concomitante ou subsequente, é possível prever formas de acesso unificado diferenciadas.
+
+**Parágrafo único.** Pelas especificidades de cada forma de oferta, integrada, concomitante ou subsequente, é possível prever formas de acesso unificado diferenciadas.
 
 #### Art. 17.
 
@@ -217,6 +218,7 @@ Para a classificação dos candidatos, serão adotados os critérios a seguir, e
 - **II –** candidatos matriculados no mesmo campus do IFPR em cursos técnicos de nível médio de diferente denominação, ou de diferente eixo tecnológico, por ordem de compatibilidade de matriz curricular cursada;
 - **III –** candidatos matriculados em outra instituição pública em cursos técnicos de nível médio, por ordem de compatibilidade de matriz curricular cursada;
 - **IV –** candidatos matriculados em instituições privadas em cursos técnicos de nível médio, por ordem de compatibilidade de matriz curricular cursada
+
 **§ 1º** No caso de empate, prevalecerá o candidato de maior idade.
 
 **§ 2º** A incompatibilidade curricular da matriz cursada em relação ao curso pretendido no IFPR poderá resultar em eliminação do candidato.
@@ -255,7 +257,7 @@ Entende-se por reingresso o retorno do estudante que teve a matrícula cancelada
 
 Poderão participar do processo de acesso simplificado para ocupação das vagas, portadores de diploma de cursos técnicos de nível médio.
 
-Parágrafo único. A ocupação de vagas para portadores de diploma ocorrerá após a ocupação das vagas por transferência interna e externa e por reingresso. #
+**Parágrafo único.** A ocupação de vagas para portadores de diploma ocorrerá após a ocupação das vagas por transferência interna e externa e por reingresso. #
 
 #### Seção V Do Ingresso por acordo de convênio
 
@@ -344,7 +346,7 @@ DO ACOMPANHAMENTO ACADÊMICO #
 
 A frequência mínima para aprovação do estudante nos cursos técnicos na forma de oferta integrada é de setenta e cinco por cento da carga horária total de todos os componentes curriculares do período letivo.
 
-Parágrafo único. Os componentes curriculares em regime de dependência não são computados na carga horária total do período letivo.
+**Parágrafo único.** Os componentes curriculares em regime de dependência não são computados na carga horária total do período letivo.
 
 #### Art. 41.
 

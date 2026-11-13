@@ -41,22 +41,22 @@ altera:
 
 > Altera dispositivos da Resolução nº 08, de 30 de abril de 2014, que regulamenta o Regimento Interno Comum aos Campus do Instituto Federal do Paraná.
 
-### Art. 1º
+#### Art. 1º
 
 Altera o art. 6º da Resolução nº 08/2014, com as seguintes mudanças:
 
-- XI – Diretores(as) e/ou equivalentes;
-- § 4º Quando o organograma do campus previr a existência de diretorias e mais de um nível organizacional, comporão o CODIC exclusivamente as diretorias que integrarem o nível organizacional mais elevado.
+> - XI – Diretores(as) e/ou equivalentes;
+> - § 4º Quando o organograma do campus previr a existência de diretorias e mais de um nível organizacional, comporão o CODIC exclusivamente as diretorias que integrarem o nível organizacional mais elevado.
 
-### Art. 2º
+#### Art. 2º
 
 Revoga os incisos II e III do art. 6º da Resolução nº 08/2014.
 
-### Art. 3º
+#### Art. 3º
 
 Permanecem inalteradas as demais disposições da Resolução nº 08/2014.
 
-### Art. 4º
+#### Art. 4º
 
 Esta Resolução entra em vigor na data de sua publicação.
 
