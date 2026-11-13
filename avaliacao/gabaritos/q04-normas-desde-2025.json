@@ -43,7 +43,7 @@
         "Resolução CNE/CP nº 1/2021",
         "Resolução CNE/CP nº 1/2022",
         "Resolução CNE/CP nº 3/2022",
-        "Resolução CNE/CEB nº 3/2025 (art. 6º, inciso III)"
+        "Resolução CNE/CEB nº 3/2025 (art. 6º, III)"
       ],
       "altera": []
     },
@@ -53,7 +53,7 @@
       "status_vigencia": "vigente",
       "revoga": [],
       "altera": [
-        "Lei nº 9.394/1996"
+        "Lei nº 9.394/1996 (art. 26, § 9º-B)"
       ]
     },
     "ifpr/consup/res/2025/239": {
@@ -61,8 +61,8 @@
       "data_publicacao": "2025-06-10",
       "status_vigencia": "vigente",
       "revoga": [
-        "Resolução nº 11/2009",
-        "Resolução nº 53/2011"
+        "Resolução CONSUP/IFPR nº 11/2009",
+        "Resolução CONSUP/IFPR nº 53/2011"
       ],
       "altera": []
     },
@@ -70,15 +70,17 @@
       "titulo": "Resolução CONSUP/IFPR nº 242/2025",
       "data_publicacao": "2025-06-13",
       "status_vigencia": "vigente",
-      "revoga": [],
+      "revoga": [
+        "Resolução CONSUP/IFPR nº 8/2014 (incisos II e III do art. 6º do Regimento Interno Comum aos Câmpus (anexo))"
+      ],
       "altera": [
-        "Resolução CONSUP/IFPR nº 8/2014"
+        "Resolução CONSUP/IFPR nº 8/2014 (art. 6º do Regimento Interno Comum aos Câmpus (anexo))"
       ]
     },
     "ifpr/consup/res/2025/259": {
       "titulo": "Resolução CONSUP/IFPR nº 259/2025",
       "data_publicacao": "2025-11-27",
-      "status_vigencia": "vigente",
+      "status_vigencia": "alterada",
       "revoga": [],
       "altera": []
     },
@@ -87,23 +89,23 @@
       "data_publicacao": "2026-02-04",
       "status_vigencia": "vigente",
       "revoga": [
-        "Resolução CONSUP/IFPR nº 01/2009",
+        "Resolução CONSUP/IFPR nº 1/2009",
         "Resolução CONSUP/IFPR nº 10/2009",
         "Resolução CONSUP/IFPR nº 13/2011",
         "Resolução CONSUP/IFPR nº 39/2012",
-        "Resolução CONSUP/IFPR nº 02/2014",
-        "Resolução CONSUP/IFPR nº 02/2015",
-        "Art. 5º da Resolução CONSUP/IFPR nº 10/2018",
+        "Resolução CONSUP/IFPR nº 2/2014",
+        "Resolução CONSUP/IFPR nº 2/2015",
+        "Resolução CONSUP/IFPR nº 10/2018 (art. 5º)",
         "Resolução CONSUP/IFPR nº 59/2018",
         "Resolução CONSUP/IFPR nº 60/2018",
-        "Resolução CONSUP/IFPR nº 06/2020"
+        "Resolução CONSUP/IFPR nº 6/2020"
       ],
       "altera": []
     },
     "ifpr/consup/res/2026/276": {
       "titulo": "Resolução CONSUP/IFPR nº 276/2026",
       "data_publicacao": "2026-06-11",
-      "status_vigencia": "vigente",
+      "status_vigencia": "parcialmente revogada",
       "revoga": [],
       "altera": []
     },

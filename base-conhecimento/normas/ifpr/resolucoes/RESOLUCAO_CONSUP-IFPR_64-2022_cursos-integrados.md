@@ -5,10 +5,14 @@ tipo_documento: "Resolução"
 numero: 64
 ano: 2022
 data_publicacao: "2022-03-23"
+assinada_em: "2022-03-23"
+publicada_em: "a confirmar"
+vigente_de: "2022-04-01"
+datas_fonte: "Art. 49: \"entra em vigor em 1º de abril de 2022\"."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Estabelece as diretrizes para a oferta de cursos técnicos integrados ao ensino médio do IFPR."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - "curso técnico integrado"
   - "ensino médio"
@@ -19,6 +23,7 @@ aliases:
   - "Resolução CONSUP/IFPR nº 64/2022"
   - "Resolução IFPR 64/2022"
 fonte: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=1736791&id_orgao_publicacao=0"
+vigencia_calculada_em: "2026-11-13"
 ---
 
 ## Resumo

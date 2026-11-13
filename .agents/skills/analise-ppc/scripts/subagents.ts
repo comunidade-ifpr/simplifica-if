@@ -29,6 +29,7 @@ import { listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { componentesMatriz, gerarContextoCnctRodada, lerJsonSeExistir } from "./cnct-catalogo.ts";
 import { marcoLegivel, referenciasLegiveisDaFicha, universoOuVazio } from "./referencias-fichas.ts";
+import { carregarMarcos } from "./validacao-base.ts";
 import {
   caminhosRodada,
   carregarFichas,
@@ -143,20 +144,17 @@ export function fichaParaSubagente(ficha: ObjetoPy, universo: UniversoReferencia
 }
 
 /**
- * Marcos normativos (`marcos` de `marcos-normativos.json`), ou lista vazia. Com `universo`, as normas
- * vêm por extenso ("Resolução CNE/CP nº 2/2026") em vez do ID.
+ * Marcos normativos (`marcos` de `marcos-normativos.json`, com vigente, substituídas, antecessoras e
+ * dispositivos revogados derivados de `base-conhecimento/relacoes.yaml`), ou lista vazia. Com
+ * `universo`, as normas vêm por extenso ("Resolução CNE/CP nº 2/2026") em vez do ID.
  */
 export function carregarMarcosNormativos(
   caminho = caminhosPadrao().marcosNormativosPath,
   universo?: UniversoReferencias,
 ): unknown[] {
   if (!existe(caminho)) return [];
-  const payload = lerJsonPy(caminho);
-  const marcos = ehObjetoPy(payload) ? obter(payload, "marcos") : null;
-  if (!Array.isArray(marcos)) return [];
-  return universo === undefined
-    ? marcos
-    : marcos.map((marco) => (ehObjetoPy(marco) ? marcoLegivel(marco, universo) : marco));
+  const marcos = carregarMarcos(caminho);
+  return universo === undefined ? marcos : marcos.map((marco) => marcoLegivel(marco, universo));
 }
 
 /** Contexto do protocolo `verificar-fundamentacao-normativa` para os sub-agentes. */

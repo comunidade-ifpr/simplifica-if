@@ -5,10 +5,14 @@ tipo_documento: "Resolução"
 numero: 50
 ano: 2017
 data_publicacao: "2017-07-14"
+assinada_em: "2017-07-14"
+publicada_em: "a confirmar"
+vigente_de: "2018-01-01"
+datas_fonte: "Art. 24: vigência na publicação, \"produzindo seus efeitos a partir de 1º de janeiro de 2018\" (vigente_de = início dos efeitos)."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Estabelece as normas de avaliação dos processos de ensino-aprendizagem no âmbito do IFPR."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - "avaliação"
   - conceitos
@@ -20,6 +24,7 @@ aliases:
   - "Resolução nº 50/2017"
   - "Resolução CONSUP/IFPR 50/2017"
 fonte: https://ifpr.edu.br/resolucao-no-50-de-14-de-julho-de-2017/
+vigencia_calculada_em: "2026-11-13"
 ---
 
 ## Resumo

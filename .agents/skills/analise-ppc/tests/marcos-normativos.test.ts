@@ -5,8 +5,10 @@ import path from "node:path";
 import type { ObjetoJson } from "@simplifica-if/kb/json";
 import { UniversoReferencias } from "@simplifica-if/kb/normas/referencia-estruturada";
 import { type EntradaRegistro, Registro } from "@simplifica-if/kb/normas/registro";
+import type { LinhaDerivada } from "@simplifica-if/kb/normas/vigencia";
 import { lerJson, listarArquivos } from "../scripts/arquivos.ts";
 import { caminhosPadrao } from "../scripts/caminhos.ts";
+import type { Derivacao } from "../scripts/marcos.ts";
 import { carregarUniverso, referenciasLegiveisDaFicha } from "../scripts/referencias-fichas.ts";
 import {
   carregarMarcos,
@@ -75,11 +77,8 @@ function marcoValido(sobrescritas: ObjetoJson = {}): ObjetoJson {
   return {
     id: "dcn_ept",
     tema: "DCN da EPT",
-    vigente: DCN_EPT_2026,
+    linha: [DCN_EPT_2021, DCN_EPT_2026],
     aplica_a: "Cursos técnicos.",
-    substitui: [DCN_EPT_2021],
-    antecessoras_historicas: [],
-    dispositivos_revogados: [],
     fichas_responsaveis: ["CT-SUP-12"],
     fichas_base_legal: ["CT-SUP-12"],
     transicao: "",
@@ -87,6 +86,39 @@ function marcoValido(sobrescritas: ObjetoJson = {}): ObjetoJson {
     ...sobrescritas,
   };
 }
+
+/** Derivação sintética: o resultado depende só do último ato da linha. */
+const DERIVACOES: Record<string, LinhaDerivada> = {
+  [DCN_EPT_2026]: {
+    vigente: DCN_EPT_2026,
+    substitui: [DCN_EPT_2021],
+    antecessoras_historicas: [],
+    dispositivos_revogados: [],
+  },
+  [DCN_EPT_2021]: {
+    vigente: DCN_EPT_2021,
+    substitui: [DCN_EPT_2026, "br/cne-cp/res/2099/9"],
+    antecessoras_historicas: [],
+    dispositivos_revogados: ["br/cne-ceb/res/2099/3#art6-iii"],
+  },
+  "br/cne-cp/res/1999/9": {
+    vigente: "br/cne-cp/res/1999/9",
+    substitui: [],
+    antecessoras_historicas: [],
+    dispositivos_revogados: [],
+  },
+  "br/cne-ceb/res/2012/6": {
+    vigente: "br/cne-ceb/res/2012/6",
+    substitui: [],
+    antecessoras_historicas: [],
+    dispositivos_revogados: [],
+  },
+};
+const derivarSintetico: Derivacao = (linha) => {
+  const derivado = DERIVACOES[linha.at(-1)!];
+  if (!derivado) throw new Error(`linha normativa sem derivação: ${linha.join(", ")}`);
+  return derivado;
+};
 
 const temporarios: string[] = [];
 afterEach(() => {
@@ -160,23 +192,28 @@ describe("referências das fichas", () => {
 });
 
 describe("registro de marcos normativos", () => {
+  const validar = (arquivo: string, fichas?: Map<string, Ficha>) =>
+    validarMarcosNormativos(UNIVERSO_SINTETICO, arquivo, fichas, derivarSintetico);
+
   test("aceita marco válido", () => {
     const arquivo = gravarMarcos(marcoValido());
-    expect(validarMarcosNormativos(UNIVERSO_SINTETICO, arquivo, new Map([["CT-SUP-12", {}]]))).toEqual([]);
+    expect(validar(arquivo, new Map([["CT-SUP-12", {}]]))).toEqual([]);
   });
 
-  test("aponta marco inconsistente", () => {
+  test("deriva vigente e substituídas da linha", () => {
+    const arquivo = gravarMarcos(marcoValido());
+    const [marco] = carregarMarcos(arquivo, derivarSintetico);
+    expect(marco).toMatchObject({ id: "dcn_ept", vigente: DCN_EPT_2026, substitui: [DCN_EPT_2021] });
+    expect(marco).not.toHaveProperty("linha");
+  });
+
+  test("aponta marco inconsistente (campos derivados)", () => {
     const arquivo = gravarMarcos(
-      marcoValido({
-        vigente: DCN_EPT_2021,
-        substitui: [DCN_EPT_2026, "br/cne-cp/res/2099/9"],
-        dispositivos_revogados: ["br/cne-ceb/res/2099/3#art6-iii"],
-        fichas_base_legal: ["CT-INEXISTENTE"],
-      }),
+      marcoValido({ linha: [DCN_EPT_2021], fichas_base_legal: ["CT-INEXISTENTE"] }),
       marcoValido(),
     );
 
-    const erros = validarMarcosNormativos(UNIVERSO_SINTETICO, arquivo, new Map([["CT-SUP-12", {}]]));
+    const erros = validar(arquivo, new Map([["CT-SUP-12", {}]]));
 
     expect(erros).toEqual([
       `${arquivo}: marco dcn_ept: norma marcada como vigente está revogada no manifesto: Resolução CNE/CP nº 1/2021 (${DCN_EPT_2021})`,
@@ -188,41 +225,40 @@ describe("registro de marcos normativos", () => {
     ]);
   });
 
-  test("aponta norma vigente fora do manifesto (inexistente ou só stub)", () => {
+  test("aponta norma vigente fora do manifesto (inexistente ou só stub) e linha sem derivação", () => {
     const arquivo = gravarMarcos(
-      marcoValido({ vigente: "br/cne-cp/res/1999/9" }),
-      marcoValido({ id: "outro", vigente: "br/cne-ceb/res/2012/6" }),
+      marcoValido({ linha: ["br/cne-cp/res/1999/9"] }),
+      marcoValido({ id: "outro", linha: ["br/cne-ceb/res/2012/6"] }),
+      marcoValido({ id: "terceiro", linha: ["br/lei/1996/9394"] }),
     );
-    expect(validarMarcosNormativos(UNIVERSO_SINTETICO, arquivo)).toEqual([
+    expect(validar(arquivo)).toEqual([
+      `${arquivo}: marco dcn_ept: \`linha\` cita ID inexistente na base: br/cne-cp/res/1999/9`,
       `${arquivo}: marco dcn_ept: norma vigente fora do manifesto da base: br/cne-cp/res/1999/9 (br/cne-cp/res/1999/9)`,
       `${arquivo}: marco outro: norma vigente fora do manifesto da base: Resolução CNE/CEB nº 6/2012 (br/cne-ceb/res/2012/6)`,
+      `${arquivo}: marco terceiro: linha normativa sem derivação: br/lei/1996/9394`,
     ]);
   });
 
-  test("exige o schema do marco, com IDs no formato canônico", () => {
+  test("exige o schema do marco, com IDs no formato canônico e sem campos derivados", () => {
     const marco = marcoValido();
     delete marco.fichas_responsaveis;
     const arquivo = gravarMarcos(
       marco,
-      marcoValido({ substitui: "texto" }),
-      marcoValido({
-        vigente: "Resolução CNE/CP nº 2/2026",
-        dispositivos_revogados: ["br/cne-ceb/res/2025/3, art. 6º"],
-      }),
+      marcoValido({ linha: "texto" }),
+      marcoValido({ linha: ["Resolução CNE/CP nº 2/2026"] }),
+      marcoValido({ vigente: DCN_EPT_2026 }),
     );
-    expect(validarMarcosNormativos(UNIVERSO_SINTETICO, arquivo)).toEqual([
+    expect(validar(arquivo)).toEqual([
       `${arquivo}: $.marcos[0]: campo obrigatório ausente: fichas_responsaveis`,
-      `${arquivo}: $.marcos[1].substitui: tipo string; esperado array`,
-      `${arquivo}: $.marcos[2].vigente: valor 'Resolução CNE/CP nº 2/2026' fora do formato`,
-      `${arquivo}: $.marcos[2].dispositivos_revogados[0]: valor 'br/cne-ceb/res/2025/3, art. 6º' fora do formato`,
+      `${arquivo}: $.marcos[1].linha: tipo string; esperado array`,
+      `${arquivo}: $.marcos[2].linha[0]: valor 'Resolução CNE/CP nº 2/2026' fora do formato`,
+      `${arquivo}: $.marcos[3]: campo não permitido: vigente`,
     ]);
   });
 
   test("registro ausente", () => {
     const arquivo = path.join(tmpdir(), "nao-existe-marcos.json");
-    expect(validarMarcosNormativos(UNIVERSO_SINTETICO, arquivo)).toEqual([
-      `${arquivo}: registro de marcos normativos não encontrado`,
-    ]);
+    expect(validar(arquivo)).toEqual([`${arquivo}: registro de marcos normativos não encontrado`]);
   });
 });
 

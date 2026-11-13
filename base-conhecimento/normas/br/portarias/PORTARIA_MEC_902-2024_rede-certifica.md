@@ -5,10 +5,14 @@ tipo_documento: "Portaria"
 numero: 902
 ano: 2024
 data_publicacao: "2024-09-10"
+assinada_em: "2024-09-09"
+publicada_em: "2024-09-10"
+vigente_de: "2024-09-10"
+datas_fonte: "Resumo: \"Publicada no Diário Oficial da União em 10 de setembro de 2024\"; fonte (DOU): portaria de 9 de setembro de 2024; art. 31 (vigência na publicação)."
 orgao: MEC
 jurisdicao: BR
 ementa: "Institui a Rede Nacional de Certificação Profissional no âmbito do Ministério da Educação - Rede Certifica."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - "Rede Certifica"
   - "certificação profissional"
@@ -20,6 +24,15 @@ aliases:
   - "Portaria 902/2024"
   - "Rede Nacional de Certificação Profissional"
 fonte: "https://www.in.gov.br/en/web/dou/-/portaria-n-902-de-9-de-setembro-de-2024-583426362"
+vigencia_calculada_em: "2026-11-13"
+revoga:
+  - "Portaria MEC nº 24/2021"
+regulamentada_por:
+  - "Resolução CONSUP/IFPR nº 276/2026 (art. 1º)"
+fundamenta_se_em:
+  - "Lei nº 9.394/1996"
+  - "Lei nº 11.892/2008"
+  - "Resolução CNE/CP nº 1/2021"
 ---
 
 ## Resumo

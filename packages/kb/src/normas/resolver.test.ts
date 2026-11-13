@@ -169,7 +169,7 @@ describe("extrairCitacoes", () => {
     const texto =
       "Resolução CONSUP/IFPR nº 54/2011.\nResolução nº 54, de 21 de dezembro de 2011.\nResolução nº 1, de 19 de agosto de 2021; Instrução Normativa Reitoria/IFPR nº 1, de 26 de julho de 2021; Instrução Normativa nº 1, de 19 de agosto de 2021.";
     const ids = extrairCitacoes(texto).map((c) => [c.id, c.regra]);
-    expect(ids[1]).toEqual(["ifpr/consup/res/2011/54", "orgao-no-documento"]);
+    expect(ids[1]).toEqual(["ifpr/consup/res/2011/54", "data-registro"]);
     expect(ids.at(-1)).toEqual([null, "orgao-ausente"]);
   });
 });

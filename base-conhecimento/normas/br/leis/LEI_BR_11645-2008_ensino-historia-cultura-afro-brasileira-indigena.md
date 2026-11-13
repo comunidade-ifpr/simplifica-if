@@ -5,10 +5,14 @@ tipo_documento: Lei
 numero: 11645
 ano: 2008
 data_publicacao: "2008-03-10"
+assinada_em: "2008-03-10"
+publicada_em: "2008-03-11"
+vigente_de: "2008-03-11"
+datas_fonte: "Texto: \"Publicado no Diário Oficial da União de 11 de março de 2008\"; art. 2º (vigência na publicação)."
 orgao: "Presidência da República"
 jurisdicao: BR
 ementa: "Altera a LDB para incluir a obrigatoriedade da temática História e Cultura Afro-Brasileira e Indígena."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - "história"
   - "cultura afro-brasileira"
@@ -20,9 +24,10 @@ aliases:
   - "Lei nº 11.645/2008"
   - "Lei 11.645/2008"
 fonte: https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/lei/l11645.htm
+vigencia_calculada_em: "2026-11-13"
 altera:
-  - "Lei nº 9.394/1996"
-  - "Lei nº 10.639/2003"
+  - "Lei nº 9.394/1996 (art. 26-A)"
+  - "Lei nº 10.639/2003 (art. 1º)"
 ---
 
 ## Resumo

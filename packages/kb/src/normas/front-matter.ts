@@ -55,6 +55,9 @@ export const esquemaValoresFrontMatter = z
 
 const texto = z.string().min(1);
 const listaTexto = z.array(z.string());
+const RE_DATA_ISO = /^\d{4}-\d{2}-\d{2}$/;
+/** Data ISO ou "a confirmar" (dado que a base ainda não prova; nunca inventar). */
+const dataOuAConfirmar = z.union([z.string().regex(RE_DATA_ISO), z.literal("a confirmar")]);
 
 /**
  * Contrato semântico do front matter de uma norma da base (depois da coerção). Os campos
@@ -77,6 +80,14 @@ export const esquemaNorma = z
     keywords: listaTexto.min(1),
     aliases: listaTexto.optional(),
     fonte: z.string().optional(),
+    /** Data do ato (assinatura). */
+    assinada_em: z.string().regex(RE_DATA_ISO, "assinada_em deve ser AAAA-MM-DD"),
+    /** Publicação oficial (DOU, Boletim de Serviço) ou "a confirmar". */
+    publicada_em: dataOuAConfirmar,
+    /** Início dos efeitos (vigência) ou "a confirmar". */
+    vigente_de: dataOuAConfirmar,
+    /** De onde vieram as datas (dispositivo, nota de publicação, fonte oficial). */
+    datas_fonte: z.string().min(1),
   })
   .superRefine((norma, ctx) => {
     const variante = varianteDoId(norma.id);
@@ -89,6 +100,12 @@ export const esquemaNorma = z
     }
     if (variante !== null && idDoAto(norma.id) === norma.id) {
       ctx.addIssue({ code: "custom", path: ["id"], message: "id de variante sem o ID do ato" });
+    }
+    if (RE_DATA_ISO.test(norma.publicada_em) && norma.publicada_em < norma.assinada_em) {
+      ctx.addIssue({ code: "custom", path: ["publicada_em"], message: "publicada_em anterior a assinada_em" });
+    }
+    if (RE_DATA_ISO.test(norma.vigente_de) && norma.vigente_de < norma.assinada_em) {
+      ctx.addIssue({ code: "custom", path: ["vigente_de"], message: "vigente_de anterior a assinada_em" });
     }
   });
 export type Norma = z.output<typeof esquemaNorma>;

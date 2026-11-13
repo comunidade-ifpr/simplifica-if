@@ -5,10 +5,14 @@ tipo_documento: "Resolução"
 numero: 7
 ano: 2025
 data_publicacao: "2025-08-01"
+assinada_em: "2025-08-01"
+publicada_em: "a confirmar"
+vigente_de: "a confirmar"
+datas_fonte: "Art. 29: vigência na publicação; data do DOU não registrada na base."
 orgao: CNE/CEB
 jurisdicao: BR
 ementa: "Institui as Diretrizes Operacionais Nacionais para a Educação Integral em Tempo Integral na Educação Básica."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - "tempo integral"
   - "educação integral"
@@ -19,6 +23,8 @@ aliases:
   - "Resolução CNE/CEB nº 7/2025"
   - "Educação Integral em Tempo Integral"
 fonte: https://www.in.gov.br/en/web/dou/-/resolucao-cne/ceb-n-7-de-1-de-agosto-de-2025-646951446
+vigencia_calculada_em: "2026-11-13"
+vigencia_a_confirmar: "início de vigência de Resolução CNE/CEB nº 7/2025 a confirmar (ato de 2025-08-01; publicação não registrada): presumida vigente"
 ---
 
 ## Resumo

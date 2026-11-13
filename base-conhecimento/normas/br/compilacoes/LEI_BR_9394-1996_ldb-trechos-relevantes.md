@@ -6,6 +6,10 @@ tipo_documento: "Compilação"
 numero: 9394
 ano: 1996
 data_publicacao: "1996-12-20"
+assinada_em: "1996-12-20"
+publicada_em: "1996-12-23"
+vigente_de: "1996-12-23"
+datas_fonte: "Datas do ato (br/lei/1996/9394)."
 orgao: "Presidência da República"
 jurisdicao: BR
 ementa: "Compilação de dispositivos da Lei de Diretrizes e Bases da Educação Nacional relevantes para PPCs."

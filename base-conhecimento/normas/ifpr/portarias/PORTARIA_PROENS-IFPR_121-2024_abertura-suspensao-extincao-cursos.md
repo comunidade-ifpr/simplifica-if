@@ -5,10 +5,14 @@ tipo_documento: Portaria
 numero: 121
 ano: 2024
 data_publicacao: "2024-06-12"
+assinada_em: "2024-06-12"
+publicada_em: "2024-06-13"
+vigente_de: "2024-06-13"
+datas_fonte: "Texto: \"Boletim de Serviço Eletrônico em 13/06/2024\"; art. 75 (vigência na publicação)."
 orgao: PROENS/IFPR
 jurisdicao: IFPR
 ementa: "Institui diretrizes e procedimentos de abertura, suspensão, reversão de suspensão, extinção e ajuste de cursos no IFPR."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - "abertura de curso"
   - "suspensão de curso"
@@ -19,6 +23,9 @@ aliases:
   - "Portaria PROENS/IFPR nº 121/2024"
   - "Portaria PROENS 121/2024"
 fonte: "Fonte oficial pendente de confirmação pública"
+vigencia_calculada_em: "2026-11-13"
+revoga:
+  - "Portaria PROENS/IFPR nº 26/2021"
 ---
 
 ## Resumo

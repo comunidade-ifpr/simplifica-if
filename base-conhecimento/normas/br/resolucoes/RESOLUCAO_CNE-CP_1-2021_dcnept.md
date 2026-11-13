@@ -5,10 +5,14 @@ tipo_documento: "Resolução"
 numero: 1
 ano: 2021
 data_publicacao: "2021-01-05"
+assinada_em: "2021-01-05"
+publicada_em: "a confirmar"
+vigente_de: "a confirmar"
+datas_fonte: "Art. 65: vigência na publicação; data do DOU não registrada na base."
 orgao: CNE/CP
 jurisdicao: BR
 ementa: "Define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica."
-status_vigencia: revogada
+status_vigencia: "revogada"
 keywords:
   - DCNEPT
   - "educação profissional"
@@ -19,8 +23,15 @@ aliases:
   - "Resolução CNE/CP nº 1/2021"
   - "DCNEPT 2021"
 fonte: https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-297767578
+vigencia_calculada_em: "2026-11-13"
+vigencia_a_confirmar: "início de vigência de Resolução CNE/CP nº 1/2021 a confirmar (ato de 2021-01-05; publicação não registrada): presumida vigente; revogação por Resolução CNE/CP nº 2/2026 (#art74-ii) produz efeito na vigência da origem, a confirmar (não antes de 2026-11-11): presumida em vigor em 2026-11-13"
+revoga:
+  - "Resolução CNE/CP nº 3/2002"
+  - "Resolução CNE/CEB nº 6/2012"
 revogada_por:
-  - "Resolução CNE/CP nº 2/2026"
+  - "Resolução CNE/CP nº 2/2026 (art. 74, II)"
+fundamenta:
+  - "Portaria MEC nº 902/2024"
 ---
 
 ## Resumo

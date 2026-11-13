@@ -5,10 +5,14 @@ tipo_documento: "Resolução"
 numero: 148
 ano: 2023
 data_publicacao: "2023-10-11"
+assinada_em: "2023-10-11"
+publicada_em: "a confirmar"
+vigente_de: "a confirmar"
+datas_fonte: "Art. 14: vigência na publicação; data de publicação não registrada na base."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Dispõe sobre adaptação de materiais e atividades e flexibilização curricular para estudantes com necessidades educacionais específicas."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - "adaptação curricular"
   - "flexibilização curricular"
@@ -19,6 +23,8 @@ aliases:
   - "Resolução CONSUP/IFPR nº 148/2023"
   - "Resolução IFPR 148/2023"
 fonte: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=2730182&id_orgao_publicacao=0"
+vigencia_calculada_em: "2026-11-13"
+vigencia_a_confirmar: "início de vigência de Resolução CONSUP/IFPR nº 148/2023 a confirmar (ato de 2023-10-11; publicação não registrada): presumida vigente"
 ---
 
 ## Resumo

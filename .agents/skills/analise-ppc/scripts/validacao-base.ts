@@ -26,12 +26,26 @@ import {
 import { aparar, ordenarTextos } from "@simplifica-if/kb/texto";
 import { lerJson, listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
-import { jsonSchemaGerado, schemasDesatualizados } from "./esquemas.ts";
+import { jsonSchemaGerado, type MarcoArquivo, schemasDesatualizados } from "./esquemas.ts";
+import { type Derivacao, derivacaoPadrao, derivarMarco } from "./marcos.ts";
 import { carregarUniverso } from "./referencias-fichas.ts";
 import { validarSchemaAnalise } from "./schema-analise.ts";
 
 export type Ficha = ObjetoJson;
 export type Marco = ObjetoJson;
+
+/** Marcos do arquivo com os campos derivados; marco cuja linha não deriva fica de fora. */
+function marcosDerivados(marcos: readonly ObjetoJson[], derivar: Derivacao): Marco[] {
+  const saida: Marco[] = [];
+  for (const marco of marcos) {
+    try {
+      saida.push(derivarMarco(marco as unknown as MarcoArquivo, derivar) as unknown as Marco);
+    } catch {
+      // O erro é relatado por validarMarcosNormativos.
+    }
+  }
+  return saida;
+}
 
 const TIPOS_ESCOPO_TOPICO = new Set(["tematico", "multitematico", "transversal", "condicional"]);
 
@@ -159,13 +173,20 @@ export function validarTopicosFichas(
   return erros;
 }
 
-/** Marcos de `marcos-normativos.json`; ausente, inválido ou fora do formato dá lista vazia. */
-export function carregarMarcos(caminho: string = caminhosPadrao().marcosNormativosPath): Marco[] {
+/**
+ * Marcos de `marcos-normativos.json` com os campos derivados de `relacoes.yaml` (vigente,
+ * substitui, antecessoras_historicas, dispositivos_revogados); ausente, inválido ou fora do
+ * formato dá lista vazia.
+ */
+export function carregarMarcos(
+  caminho: string = caminhosPadrao().marcosNormativosPath,
+  derivar: Derivacao = derivacaoPadrao(),
+): Marco[] {
   if (!existsSync(caminho)) return [];
   const lido = tentarLerJson(caminho);
   if ("erro" in lido) return [];
   const marcos = ehObjeto(lido.valor) ? lido.valor.marcos : undefined;
-  return Array.isArray(marcos) ? marcos.filter(ehObjeto) : [];
+  return Array.isArray(marcos) ? marcosDerivados(marcos.filter(ehObjeto), derivar) : [];
 }
 
 /** `br/cne-ceb/res/2025/3#art6-iii` → ato e dispositivo. */
@@ -262,13 +283,16 @@ export function validarReferenciasFichas(
 }
 
 /**
- * Confere `marcos-normativos.json`: schema (gerado do zod), ids únicos, norma vigente com texto na
- * base e não revogada, normas substituídas e dispositivos revogados existentes e fichas citadas.
+ * Confere `marcos-normativos.json`: schema (gerado do zod), ids únicos, atos da linha registrados,
+ * linha que deriva um único ato vigente com texto na base e não revogado, normas substituídas e
+ * dispositivos revogados existentes e fichas citadas. Os campos conferidos depois do schema são os
+ * derivados de `relacoes.yaml` (`derivar`).
  */
 export function validarMarcosNormativos(
   universo: UniversoReferencias,
   caminho: string = caminhosPadrao().marcosNormativosPath,
   fichasPorId?: Map<string, Ficha>,
+  derivar: Derivacao = derivacaoPadrao(),
 ): string[] {
   if (!existsSync(caminho)) return [`${caminho}: registro de marcos normativos não encontrado`];
   const lido = tentarLerJson(caminho);
@@ -279,11 +303,21 @@ export function validarMarcosNormativos(
   if (erros.length) return erros;
 
   const ids = new Set<string>();
-  for (const marco of itensDe((lido.valor as ObjetoJson).marcos) as Marco[]) {
-    const marcoId = textoDe(marco.id);
+  for (const arquivo of itensDe((lido.valor as ObjetoJson).marcos) as unknown as MarcoArquivo[]) {
+    const marcoId = textoDe(arquivo.id);
     const prefixo = `${caminho}: marco ${marcoId}:`;
     if (ids.has(marcoId)) erros.push(`${caminho}: marco duplicado: ${marcoId}`);
     ids.add(marcoId);
+    for (const ato of arquivo.linha) {
+      if (universo.fonte(ato) === undefined) erros.push(`${prefixo} \`linha\` cita ID inexistente na base: ${ato}`);
+    }
+    let marco: Marco;
+    try {
+      marco = derivarMarco(arquivo, derivar) as unknown as Marco;
+    } catch (erro) {
+      erros.push(`${prefixo} ${(erro as Error).message}`);
+      continue;
+    }
     const vigente = textoDe(marco.vigente);
     const fonteVigente = universo.fonte(vigente);
     if (fonteVigente === undefined || fonteVigente.situacao !== "base") {

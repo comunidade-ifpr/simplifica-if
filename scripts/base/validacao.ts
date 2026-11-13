@@ -17,6 +17,7 @@ import {
   validarPadroesLocais,
   validarReadme,
   validarEstruturaNorma,
+  validarRelacoesEVigencia,
   validarStubs,
   validarUnicidadeIds,
 } from "./validacao/normas.ts";
@@ -45,6 +46,7 @@ export function validarBase(caminhos: CaminhosBase, opcoes: { artefatosPpc?: boo
   const stubs = validarStubs(ctx);
   erros.push(...stubs.erros);
   erros.push(...validarUnicidadeIds(ctx, arquivosNormas(caminhos), stubs.ids));
+  if (stubs.erros.length === 0) erros.push(...validarRelacoesEVigencia(ctx));
 
   for (const item of manifest) {
     if (ehObjeto(item)) erros.push(...validarItemManifest(ctx, item));

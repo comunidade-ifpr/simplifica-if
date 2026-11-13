@@ -5,10 +5,14 @@ tipo_documento: "Resolução"
 numero: 271
 ano: 2026
 data_publicacao: "2026-02-04"
+assinada_em: "2026-02-04"
+publicada_em: "2026-02-05"
+vigente_de: "2026-02-04"
+datas_fonte: "Resumo: Boletim de Serviço Eletrônico de 05/02/2026; art. 8º: \"entra em vigor nesta data\"."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Aprova o novo Estatuto do Instituto Federal de Educação, Ciência e Tecnologia do Paraná."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - "Estatuto do IFPR"
   - "organização institucional"
@@ -22,17 +26,18 @@ aliases:
   - "Estatuto do IFPR"
   - "Novo Estatuto do IFPR"
 fonte: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4216886&id_orgao_publicacao=0"
+vigencia_calculada_em: "2026-11-13"
 revoga:
-  - "Resolução CONSUP/IFPR nº 01/2009"
+  - "Resolução CONSUP/IFPR nº 1/2009"
   - "Resolução CONSUP/IFPR nº 10/2009"
   - "Resolução CONSUP/IFPR nº 13/2011"
   - "Resolução CONSUP/IFPR nº 39/2012"
-  - "Resolução CONSUP/IFPR nº 02/2014"
-  - "Resolução CONSUP/IFPR nº 02/2015"
-  - "Art. 5º da Resolução CONSUP/IFPR nº 10/2018"
+  - "Resolução CONSUP/IFPR nº 2/2014"
+  - "Resolução CONSUP/IFPR nº 2/2015"
+  - "Resolução CONSUP/IFPR nº 10/2018 (art. 5º)"
   - "Resolução CONSUP/IFPR nº 59/2018"
   - "Resolução CONSUP/IFPR nº 60/2018"
-  - "Resolução CONSUP/IFPR nº 06/2020"
+  - "Resolução CONSUP/IFPR nº 6/2020"
 ---
 
 ## Resumo

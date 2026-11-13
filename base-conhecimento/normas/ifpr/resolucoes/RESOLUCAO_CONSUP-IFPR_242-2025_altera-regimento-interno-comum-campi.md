@@ -5,10 +5,14 @@ tipo_documento: "Resolução"
 numero: 242
 ano: 2025
 data_publicacao: "2025-06-13"
+assinada_em: "2025-06-13"
+publicada_em: "2025-06-17"
+vigente_de: "2025-06-17"
+datas_fonte: "Dados essenciais: publicação no Boletim de Serviço Eletrônico em 17/06/2025; art. 4º (vigência na publicação)."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Altera dispositivos da Resolução nº 08/2014, que regulamenta o Regimento Interno Comum aos Câmpus do IFPR."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - "regimento interno"
   - campi
@@ -19,8 +23,11 @@ aliases:
   - "Resolução IFPR nº 242/2025"
   - "Resolução CONSUP/IFPR 242/2025"
 fonte: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=3797141&id_orgao_publicacao=0"
+vigencia_calculada_em: "2026-11-13"
+revoga:
+  - "Resolução CONSUP/IFPR nº 8/2014 (incisos II e III do art. 6º do Regimento Interno Comum aos Câmpus (anexo))"
 altera:
-  - "Resolução CONSUP/IFPR nº 8/2014"
+  - "Resolução CONSUP/IFPR nº 8/2014 (art. 6º do Regimento Interno Comum aos Câmpus (anexo))"
 ---
 
 ## Resumo

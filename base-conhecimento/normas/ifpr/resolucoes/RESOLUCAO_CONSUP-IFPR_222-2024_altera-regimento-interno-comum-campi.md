@@ -5,10 +5,14 @@ tipo_documento: "Resolução"
 numero: 222
 ano: 2024
 data_publicacao: "2024-12-27"
+assinada_em: "2024-12-27"
+publicada_em: "2024-12-30"
+vigente_de: "2024-12-30"
+datas_fonte: "Dados essenciais: publicação no Boletim de Serviço Eletrônico em 30/12/2024; art. 3º (vigência na publicação)."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Altera dispositivo da Resolução nº 08/2014, que regulamenta o Regimento Interno Comum aos Câmpus do IFPR."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - "regimento interno"
   - campi
@@ -19,8 +23,11 @@ aliases:
   - "Resolução IFPR nº 222/2024"
   - "Resolução CONSUP/IFPR 222/2024"
 fonte: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=3510159&id_orgao_publicacao=0"
+vigencia_calculada_em: "2026-11-13"
+revoga:
+  - "Resolução CONSUP/IFPR nº 8/2014 (§ 1º do art. 6º do Regimento Interno Comum aos Câmpus (anexo))"
 altera:
-  - "Resolução CONSUP/IFPR nº 8/2014"
+  - "Resolução CONSUP/IFPR nº 8/2014 (art. 6º do Regimento Interno Comum aos Câmpus (anexo))"
 ---
 
 ## Resumo

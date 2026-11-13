@@ -5,10 +5,14 @@ tipo_documento: "Resolução"
 numero: 276
 ano: 2026
 data_publicacao: "2026-06-11"
+assinada_em: "2026-06-11"
+publicada_em: "a confirmar"
+vigente_de: "2026-06-11"
+datas_fonte: "Art. 46: \"entra em vigor nesta data\"; a base registra a publicação da consolidação (13/08/2026), não a do ato."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Dispõe sobre o Regulamento do Processo de Certificação Profissional da Rede Certifica no âmbito do Instituto Federal do Paraná - IFPR."
-status_vigencia: vigente
+status_vigencia: "parcialmente revogada"
 keywords:
   - "Rede Certifica"
   - "certificação profissional"
@@ -22,6 +26,12 @@ aliases:
   - "Regulamento Rede Certifica IFPR"
   - "SEI 4333864"
 fonte: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4513717&id_orgao_publicacao=0"
+vigencia_calculada_em: "2026-11-13"
+vigencia_a_confirmar: "revogação por Resolução CONSUP/IFPR nº 282/2026 produz efeito na vigência da origem, a confirmar (não antes de 2026-08-13): presumida em vigor em 2026-11-13"
+revogada_por:
+  - "Resolução CONSUP/IFPR nº 282/2026 — art. 31, parágrafo único"
+regulamenta:
+  - "Portaria MEC nº 902/2024"
 ---
 
 ## Resumo

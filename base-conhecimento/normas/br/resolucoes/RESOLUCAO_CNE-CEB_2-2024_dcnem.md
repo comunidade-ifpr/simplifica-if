@@ -5,10 +5,14 @@ tipo_documento: "Resolução"
 numero: 2
 ano: 2024
 data_publicacao: "2024-11-13"
+assinada_em: "2024-11-13"
+publicada_em: "a confirmar"
+vigente_de: "2024-12-02"
+datas_fonte: "Art. 44: \"entrará em vigor em 2 de dezembro de 2024\"; data do DOU não registrada na base."
 orgao: CNE/CEB
 jurisdicao: BR
 ementa: "Institui as Diretrizes Curriculares Nacionais para o Ensino Médio."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - DCNEM
   - "ensino médio"
@@ -19,6 +23,11 @@ aliases:
   - "Resolução CNE/CEB nº 2/2024"
   - "DCNEM 2024"
 fonte: https://www.in.gov.br/en/web/dou/-/resolucao-cne/ceb-n-2-de-13-de-novembro-de-2024-596497964
+vigencia_calculada_em: "2026-11-13"
+revoga:
+  - "Resolução CNE/CEB nº 3/2018"
+fundamenta_se_em:
+  - "Lei nº 9.394/1996"
 ---
 
 ## Resumo

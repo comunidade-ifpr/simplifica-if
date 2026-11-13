@@ -13,6 +13,7 @@ import {
 import { ordenarTextos } from "@simplifica-if/kb/texto";
 import { agoraUtc, escreverTexto, lerJson, listarArquivos } from "./arquivos.ts";
 import type { UniversoReferencias } from "@simplifica-if/kb/normas/referencia-estruturada";
+import { carregarMarcos } from "./validacao-base.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { marcoLegivel, normasCitadas, referenciasLegiveisDaFicha, universoOuVazio } from "./referencias-fichas.ts";
 
@@ -128,22 +129,20 @@ function itemSchema(caminhos: CaminhosAnalise, arquivo: string): Item {
 function itensMarcosNormativos(caminhos: CaminhosAnalise, universo: UniversoReferencias): Item[] {
   const origem = caminhos.marcosNormativosPath;
   if (!existsSync(origem)) return [];
-  const payload = lerObjeto(origem);
-  return itensDe(obter(payload, "marcos", []))
-    .filter(ehObjeto)
-    .map((marco) => {
-      const legivel = marcoLegivel(marco, universo);
-      return {
-        categoria: "marco_normativo",
-        id: textoDe(obter(marco, "id", "")),
-        titulo: textoDe(obter(marco, "tema", "")),
-        vigente: textoDe(obter(legivel, "vigente", "")),
-        vigente_id: textoDe(obter(marco, "vigente", "")),
-        substitui: lista(legivel.substitui),
-        substitui_ids: lista(marco.substitui),
-        arquivo: relativo(caminhos, origem),
-      };
-    });
+  // Vigente e substituídas são derivados de base-conhecimento/relacoes.yaml (fase 5).
+  return carregarMarcos(origem).map((marco) => {
+    const legivel = marcoLegivel(marco, universo);
+    return {
+      categoria: "marco_normativo",
+      id: textoDe(obter(marco, "id", "")),
+      titulo: textoDe(obter(marco, "tema", "")),
+      vigente: textoDe(obter(legivel, "vigente", "")),
+      vigente_id: textoDe(obter(marco, "vigente", "")),
+      substitui: lista(legivel.substitui),
+      substitui_ids: lista(marco.substitui),
+      arquivo: relativo(caminhos, origem),
+    };
+  });
 }
 
 /** Monta o índice; `geradoEm` fixa a data (por padrão, agora em UTC). */

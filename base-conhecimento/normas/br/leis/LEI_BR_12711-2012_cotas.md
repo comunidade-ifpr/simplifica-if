@@ -5,10 +5,14 @@ tipo_documento: Lei
 numero: 12711
 ano: 2012
 data_publicacao: "2012-08-29"
+assinada_em: "2012-08-29"
+publicada_em: "2012-08-30"
+vigente_de: "2012-08-30"
+datas_fonte: "Fonte (Planalto, conferida em 13/11/2026): \"Este texto não substitui o publicado no DOU de 30.8.2012\"; art. 9º (vigência na publicação)."
 orgao: "Presidência da República"
 jurisdicao: BR
 ementa: "Dispõe sobre o ingresso nas universidades federais e nas instituições federais de ensino técnico de nível médio."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - cotas
   - "reserva de vagas"
@@ -20,6 +24,7 @@ aliases:
   - "Lei 12.711/2012"
   - "Lei de Cotas"
 fonte: https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2012/lei/l12711.htm
+vigencia_calculada_em: "2026-11-13"
 ---
 
 ## Resumo

@@ -1,0 +1,85 @@
+# Regras de transição como dado (fase 5 do plano de arquitetura): "revogada" não é "inaplicável".
+#
+# Contrato: esquemaTransicao em packages/kb/src/normas/vigencia.ts (zod), conferido por
+# bun run scripts/validar_base.ts (dispositivo existente e evidência literal no texto).
+# A situação de cada regra numa data sai de `bun run kb vigencia <id> --em <data>`.
+#
+# Campos:
+#   id: identificador estável da regra
+#   norma: ato que estabelece a regra; dispositivo: onde ela está
+#   tipo: faculdade-de-adequacao | prazo-de-adequacao | direito-de-conclusao |
+#         prazo-de-implantacao | prazo-normativo | ressalva-de-revogacao
+#   norma_anterior: ato revogado cujos efeitos a regra preserva ou cuja substituição disciplina
+#   aplica_a: a quem a regra se aplica; regra: o que ela permite ou exige
+#   inicio: vigencia | publicacao (da norma) | AAAA-MM-DD
+#   fim: duração ISO (P2Y, P180D), data AAAA-MM-DD ou sem-prazo
+#   evidencia: trecho literal do dispositivo
+
+transicoes:
+  - id: dcnept-2026-art70
+    norma: br/cne-cp/res/2026/2
+    dispositivo: "#art70"
+    tipo: faculdade-de-adequacao
+    norma_anterior: br/cne-cp/res/2021/1
+    aplica_a: Processos de autorização de cursos técnicos e de cursos superiores de tecnologia em tramitação, que ainda não estejam na fase de avaliação.
+    regra: Podem ser adequados à Res. CNE/CP nº 2/2026 por solicitação da instituição ou do órgão regulador; a adequação é facultativa e não prejudica a continuidade do processo.
+    inicio: vigencia
+    fim: sem-prazo
+    evidencia: "e que ainda não estejam na fase de avaliação, podem ser adequados a esta Resolução por solicitação da instituição ou do órgão regulador do sistema de ensino"
+  - id: dcnept-2026-art71
+    norma: br/cne-cp/res/2026/2
+    dispositivo: "#art71"
+    tipo: prazo-de-adequacao
+    norma_anterior: br/cne-cp/res/2021/1
+    aplica_a: Cursos técnicos e cursos superiores de tecnologia autorizados e em oferta.
+    regra: Período de transição de até dois anos, a partir da vigência da Res. CNE/CP nº 2/2026, para a adequação dos cursos.
+    inicio: vigencia
+    fim: P2Y
+    evidencia: "é assegurado período de transição de até dois anos, a partir da vigência desta Resolução"
+  - id: dcnept-2026-art71-parunico
+    norma: br/cne-cp/res/2026/2
+    dispositivo: "#art71-parunico"
+    tipo: direito-de-conclusao
+    norma_anterior: br/cne-cp/res/2021/1
+    aplica_a: Estudantes matriculados em cursos técnicos e superiores de tecnologia ofertados até a data de publicação da Res. CNE/CP nº 2/2026.
+    regra: Têm assegurado o direito de concluir o curso com base na Res. CNE/CP nº 1/2021.
+    inicio: publicacao
+    fim: sem-prazo
+    evidencia: "fica assegurado o direito de conclusão de seus cursos, com base na Resolução CNE/CP nº 1, de 5 de janeiro de 2021"
+  - id: dcnept-2026-art72
+    norma: br/cne-cp/res/2026/2
+    dispositivo: "#art72"
+    tipo: prazo-de-implantacao
+    aplica_a: Formação docente para a EPTNM (Capítulo XIII da Res. CNE/CP nº 2/2026).
+    regra: Transição para a implantação definitiva do Capítulo XIII entre a publicação da Resolução e 31/12/2030.
+    inicio: publicacao
+    fim: "2030-12-31"
+    evidencia: "o intervalo compreendido entre a data de publicação desta Resolução e 31 de dezembro de 2030"
+  - id: dcnept-2026-art73
+    norma: br/cne-cp/res/2026/2
+    dispositivo: "#art73"
+    tipo: prazo-normativo
+    aplica_a: Órgãos normativos dos sistemas de ensino (no IFPR, CONSUP e PROENS).
+    regra: Editar normas complementares para implementar a Resolução em até 180 dias da publicação.
+    inicio: publicacao
+    fim: P180D
+    evidencia: "no prazo de até cento e oitenta dias contados de sua publicação"
+  - id: dcnept-2021-art63
+    norma: br/cne-cp/res/2021/1
+    dispositivo: "#art63"
+    tipo: faculdade-de-adequacao
+    aplica_a: Processos de autorização de cursos de EPT de graduação em tramitação, fora da fase de avaliação.
+    regra: Podem ser adequados à Res. CNE/CP nº 1/2021 por solicitação da instituição.
+    inicio: vigencia
+    fim: sem-prazo
+    evidencia: "podem ser, sem prejudicar a continuidade do processo, por solicitação da instituição, adequados a esta Resolução"
+  - id: dcnem-2024-art42
+    norma: br/cne-ceb/res/2024/2
+    dispositivo: "#art42"
+    tipo: ressalva-de-revogacao
+    norma_anterior: br/cne-ceb/res/2018/3
+    aplica_a: Estudantes matriculados no Ensino Médio antes da publicação da Res. CNE/CEB nº 2/2024.
+    regra: As redes podem manter a organização curricular da Res. CNE/CEB nº 3/2018 em regime de transição, ou migrar para a nova, com aproveitamento integral dos estudos e sem alongar a etapa.
+    inicio: vigencia
+    fim: sem-prazo
+    evidencia: "É permitido às redes de ensino a manutenção da organização curricular orientada pela Resolução CNE/CEB nº 3, de 21 de novembro de 2018, em regime de transição"

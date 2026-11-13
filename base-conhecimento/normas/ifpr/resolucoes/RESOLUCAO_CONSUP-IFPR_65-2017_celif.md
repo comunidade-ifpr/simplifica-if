@@ -5,10 +5,14 @@ tipo_documento: "Resolução"
 numero: 65
 ano: 2017
 data_publicacao: "2017-12-13"
+assinada_em: "2017-12-13"
+publicada_em: "a confirmar"
+vigente_de: "2017-12-13"
+datas_fonte: "Art. 2º: \"entra em vigor nesta data\"."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Dispõe sobre a instituição e funcionamento do Centro de Línguas do IFPR."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - CELIF
   - "Centro de Línguas"
@@ -22,6 +26,7 @@ aliases:
   - "Resolução IFPR 65/2017"
   - "Regulamento do CELIF"
 fonte: "https://ifpr.edu.br/resolucao-no-65-2017/"
+vigencia_calculada_em: "2026-11-13"
 ---
 
 ## Resumo

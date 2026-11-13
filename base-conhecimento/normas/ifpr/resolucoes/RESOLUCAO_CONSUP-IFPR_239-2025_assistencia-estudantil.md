@@ -5,10 +5,14 @@ tipo_documento: "Resolução"
 numero: 239
 ano: 2025
 data_publicacao: "2025-06-10"
+assinada_em: "2025-06-10"
+publicada_em: "2025-06-17"
+vigente_de: "2025-06-17"
+datas_fonte: "Texto: \"Boletim de Serviço Eletrônico em 17/06/2025\"; art. 14 (vigência após a publicação)."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Dispõe sobre a Política Institucional de Assistência Estudantil no IFPR."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - "assistência estudantil"
   - "permanência"
@@ -19,9 +23,10 @@ aliases:
   - "Resolução CONSUP/IFPR nº 239/2025"
   - "Resolução IFPR 239/2025"
 fonte: "Fonte oficial pendente de confirmação pública"
+vigencia_calculada_em: "2026-11-13"
 revoga:
-  - "Resolução nº 11/2009"
-  - "Resolução nº 53/2011"
+  - "Resolução CONSUP/IFPR nº 11/2009"
+  - "Resolução CONSUP/IFPR nº 53/2011"
 ---
 
 ## Resumo

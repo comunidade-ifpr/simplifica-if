@@ -11,10 +11,14 @@ import {
   type FrontMatter,
 } from "../front-matter.ts";
 import { ehObjeto, type ObjetoJson, representar, textoDe, valoresIguais } from "@simplifica-if/kb/json";
-import { analisarNorma } from "@simplifica-if/kb/normas/estrutura";
+import { analisarNorma, indiceDispositivos } from "@simplifica-if/kb/normas/estrutura";
+import { normasComCamposGerados } from "@simplifica-if/kb/normas/gerado";
+import { carregarRelacoes, validarRelacoes } from "@simplifica-if/kb/normas/relacoes";
+import { caminhoConfigVigencia, carregarTransicoes, dataReferencia, statusEm } from "@simplifica-if/kb/normas/vigencia";
+import { palavrasDoTexto } from "@simplifica-if/kb/normas/markdown";
 import { esquemaNorma } from "@simplifica-if/kb/normas/front-matter";
 import { idDoAto, idEsperadoDaNorma } from "@simplifica-if/kb/normas/ids";
-import { caminhoStubs, lerRegistroStubs } from "@simplifica-if/kb/normas/registro";
+import { caminhoStubs, carregarRegistro, lerRegistroStubs } from "@simplifica-if/kb/normas/registro";
 import { ZodError } from "zod";
 import { apararInicio, ErroDecodificacao, lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
 import { type Contexto, listaOrdenada, mesmosElementos, PADROES_LOCAIS, type Resultado } from "./contexto.ts";
@@ -137,7 +141,11 @@ export function validarIdNorma(r: string, meta: FrontMatter): string[] {
   const resultado = esquemaNorma.safeParse(meta);
   if (!resultado.success) {
     for (const problema of resultado.error.issues) {
-      if (problema.path[0] === "id" || problema.path[0] === "variante") {
+      if (
+        ["id", "variante", "assinada_em", "publicada_em", "vigente_de", "datas_fonte"].includes(
+          String(problema.path[0]),
+        )
+      ) {
         erros.push(`${r}: ${problema.path.join(".")}: ${problema.message}`);
       }
     }
@@ -270,4 +278,74 @@ export function validarEstruturaNorma(ctx: Contexto, caminho: string): string[] 
   }
   const estrutura = analisarNorma(texto, { id, path: ctx.rel(caminho) });
   return estrutura.problemas.filter((problema) => !problema.startsWith("aviso:"));
+}
+
+/**
+ * Relações, transições e vigência (fase 5): contrato e evidências de `relacoes.yaml` e
+ * `transicoes.yaml`, campos gerados do front matter em dia (`gerar_base.ts`) e status dos stubs
+ * atingidos por relações igual ao calculado na `data_referencia`.
+ */
+export function validarRelacoesEVigencia(ctx: Contexto): string[] {
+  const raiz = ctx.c.raizProjeto;
+  const erros = validarRelacoes(raiz);
+  if (erros.length) return erros;
+
+  const indice = indiceDispositivos(raiz);
+  const registro = carregarRegistro(raiz);
+  try {
+    const transicoes = carregarTransicoes(raiz);
+    const ids = new Set<string>();
+    transicoes.forEach((transicao, i) => {
+      const rotulo = `transicoes.yaml: transicoes.${i} (${transicao.id})`;
+      if (ids.has(transicao.id)) erros.push(`${rotulo}: id repetido`);
+      ids.add(transicao.id);
+      const disp = indice.get(`${transicao.norma}${transicao.dispositivo}`);
+      if (!disp)
+        erros.push(`${rotulo}: dispositivo ${transicao.norma}${transicao.dispositivo} não existe no texto da base`);
+      else if (!palavrasDoTexto(disp.texto).join(" ").includes(palavrasDoTexto(transicao.evidencia).join(" "))) {
+        erros.push(`${rotulo}: evidência não está em ${transicao.norma}${transicao.dispositivo}`);
+      }
+      if (transicao.norma_anterior && !registro.obter(transicao.norma_anterior)) {
+        erros.push(`${rotulo}: norma_anterior ${transicao.norma_anterior} fora da base e dos stubs`);
+      }
+    });
+  } catch (erro) {
+    if (erro instanceof ZodError) {
+      erros.push(...erro.issues.map((problema) => `transicoes.yaml: ${problema.path.join(".")}: ${problema.message}`));
+    } else erros.push(`transicoes.yaml: ${(erro as Error).message.split("\n")[0]}`);
+  }
+
+  if (!existsSync(caminhoConfigVigencia(raiz))) {
+    return [...erros, "config/vigencia.yaml não encontrado (data_referencia da vigência publicada)"];
+  }
+  let referencia: string;
+  try {
+    referencia = dataReferencia(raiz);
+  } catch (erro) {
+    return [...erros, `config/vigencia.yaml: ${(erro as Error).message.split("\n")[0]}`];
+  }
+  const alvos = new Set(carregarRelacoes(raiz).map((relacao) => relacao.alvo));
+  for (const entrada of registro.entradas) {
+    if (entrada.situacao !== "stub") continue;
+    const registrado = entrada.status_vigencia ?? "a confirmar";
+    if (!alvos.has(entrada.id)) {
+      if (registrado !== "a confirmar") {
+        erros.push(`normas/stubs.yaml: ${entrada.id}: status ${registrado} sem relação em relacoes.yaml que o prove`);
+      }
+      continue;
+    }
+    const calculado = statusEm(entrada.id, referencia, raiz);
+    if (calculado.eventos.some((evento) => evento.ocorreu !== false) && registrado !== calculado.status) {
+      erros.push(
+        `normas/stubs.yaml: ${entrada.id}: status_vigencia ${registrado} difere do calculado em ${referencia} (${calculado.status})`,
+      );
+    }
+  }
+
+  for (const norma of normasComCamposGerados(raiz)) {
+    if (norma.atual !== norma.esperado) {
+      erros.push(`${norma.path}: campos gerados do front matter desatualizados; rode bun run scripts/gerar_base.ts`);
+    }
+  }
+  return erros;
 }

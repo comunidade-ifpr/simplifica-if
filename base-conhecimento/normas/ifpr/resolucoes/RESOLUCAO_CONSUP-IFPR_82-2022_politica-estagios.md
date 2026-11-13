@@ -5,10 +5,14 @@ tipo_documento: "Resolução"
 numero: 82
 ano: 2022
 data_publicacao: "2022-06-02"
+assinada_em: "2022-06-02"
+publicada_em: "a confirmar"
+vigente_de: "2022-06-02"
+datas_fonte: "Art. 64: \"entra em vigor nesta data\"."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Dispõe sobre a política de estágios do IFPR e define as orientações para sua realização."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - estágio
   - "política de estágios"
@@ -22,8 +26,11 @@ aliases:
   - "Resolução IFPR nº 82/2022"
   - "Resolução CONSUP/IFPR 82/2022"
 fonte: "https://sei.ifpr.edu.br/sei/modulos/pesquisa/md_pesq_documento_consulta_externa.php?bQdXWIUhq46-kuNuYYlAsyjFfu3aG4dBu2PjbFgpOb_9MvqFNtXlXEMWSYTBr1f7z0g5p97pRY7Jz5GItK4e8Xec8Opj4qhb1B-j4vYnOx5UGQdx3Vg_XjVwpM_WbQF8"
+vigencia_calculada_em: "2026-11-13"
 revoga:
   - "Resolução CONSUP/IFPR nº 36/2019"
+fundamenta_se_em:
+  - "Lei nº 11.788/2008"
 relaciona_se_a:
   - "Lei nº 11.788/2008"
   - "Lei nº 9.394/1996"

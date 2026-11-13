@@ -5,10 +5,14 @@ tipo_documento: "Resolução"
 numero: 8
 ano: 2014
 data_publicacao: "2014-04-30"
+assinada_em: "2014-04-30"
+publicada_em: "a confirmar"
+vigente_de: "2014-04-30"
+datas_fonte: "Art. 3º: \"entra em vigor nesta data\"."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Regulamenta o Regimento Interno Comum aos Câmpus do Instituto Federal do Paraná."
-status_vigencia: alterada
+status_vigencia: "parcialmente revogada"
 keywords:
   - "regimento interno"
   - campi
@@ -21,12 +25,16 @@ aliases:
   - "Resolução 08/2014"
   - "Resolução CONSUP/IFPR 8/2014"
 fonte: https://ifpr.edu.br/resolucao-082014/
-alterada_por:
-  - "Resolução CONSUP/IFPR nº 222/2024"
-  - "Resolução CONSUP/IFPR nº 242/2025"
+vigencia_calculada_em: "2026-11-13"
 revoga:
-  - "Resolução CONSUP nº 08/2010"
-  - "Resolução CONSUP nº 41/2013"
+  - "Resolução CONSUP/IFPR nº 8/2010"
+  - "Resolução CONSUP/IFPR nº 41/2013"
+revogada_por:
+  - "Resolução CONSUP/IFPR nº 222/2024 (art. 2º) — § 1º do art. 6º do Regimento Interno Comum aos Câmpus (anexo)"
+  - "Resolução CONSUP/IFPR nº 242/2025 (art. 2º) — incisos II e III do art. 6º do Regimento Interno Comum aos Câmpus (anexo)"
+alterada_por:
+  - "Resolução CONSUP/IFPR nº 222/2024 (art. 1º) — art. 6º do Regimento Interno Comum aos Câmpus (anexo)"
+  - "Resolução CONSUP/IFPR nº 242/2025 (art. 1º) — art. 6º do Regimento Interno Comum aos Câmpus (anexo)"
 ---
 
 ## Resumo

@@ -12,7 +12,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { z } from "zod";
 import { jsonIndentado, type ObjetoJson } from "@simplifica-if/kb/json";
-import { RE_ID_ATO, RE_ID_ATO_COM_DISPOSITIVO } from "@simplifica-if/kb/normas/ids";
+import { RE_ID_ATO } from "@simplifica-if/kb/normas/ids";
 import { esquemaReferenciaNormativa } from "@simplifica-if/kb/normas/referencia-estruturada";
 import { escreverTexto } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
@@ -59,13 +59,13 @@ export const esquemaMarcosNormativos = z.strictObject({
     z.strictObject({
       id: z.string(),
       tema: z.string(),
-      vigente: idAto.describe("ID do ato vigente, com texto na base (manifest.json)"),
+      linha: z
+        .array(idAto)
+        .min(1)
+        .describe(
+          "IDs dos atos do tema, do mais antigo ao mais recente conhecido; vigente, substituídas, antecessoras e dispositivos revogados são derivados de base-conhecimento/relacoes.yaml",
+        ),
       aplica_a: z.string(),
-      substitui: z.array(idAto).describe("IDs dos atos substituídos pelo vigente"),
-      antecessoras_historicas: z.array(idAto),
-      dispositivos_revogados: z
-        .array(z.string().regex(RE_ID_ATO_COM_DISPOSITIVO))
-        .describe("ID do ato com o dispositivo revogado, como br/cne-ceb/res/2025/3#art6-iii"),
       fichas_responsaveis: z.array(z.string()),
       fichas_base_legal: z.array(z.string()),
       transicao: z.string(),
@@ -74,7 +74,24 @@ export const esquemaMarcosNormativos = z.strictObject({
   ),
 });
 export type MarcosNormativos = z.output<typeof esquemaMarcosNormativos>;
-export type Marco = MarcosNormativos["marcos"][number];
+/** Marco como está no arquivo (identificação, transição e orientação). */
+export type MarcoArquivo = MarcosNormativos["marcos"][number];
+
+/** Marco com os campos derivados de `relacoes.yaml` (vigente, substituídas etc.), sem a linha. */
+export interface Marco {
+  id: string;
+  tema: string;
+  vigente: string;
+  aplica_a: string;
+  substitui: string[];
+  antecessoras_historicas: string[];
+  dispositivos_revogados: string[];
+  fichas_responsaveis: string[];
+  fichas_base_legal: string[];
+  transicao: string;
+  orientacao_analise: string;
+  [campo: string]: unknown;
+}
 
 /** Esquemas gerados, pelo nome do arquivo em `schemas/`. */
 const GERADOS = {

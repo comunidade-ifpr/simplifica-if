@@ -119,8 +119,8 @@ const RE_ANEXO = /^ANEXO\b(?:\s+([IVXLC]+|\d+)\b)?/i;
 const RE_ANEXO_IMPLICITO = /^(?:REGULAMENTO|ESTATUTO|REGIMENTO)\b/;
 const RE_FECHO =
   /^(?:(?:Brasília|Curitiba)\s*[,/–-]|Publicad[oa] no Diário|Este (?:texto|conteúdo) não substitui|Documento assinado eletronicamente|A autenticidade d)/i;
-/** Assinatura: três ou mais palavras em caixa alta no início do parágrafo (nome de quem assina). */
-const RE_ASSINATURA = /^[A-ZÀ-Ú]{3,}(?:\s+(?:D[AEO]S?|[A-ZÀ-Ú]{2,})){2,}(?:\s|$)/;
+/** Assinatura: três ou mais palavras em caixa alta no início do parágrafo, ou parágrafo só com nome em caixa alta. */
+const RE_ASSINATURA = /^[A-ZÀ-Ú]{3,}(?:\s+(?:D[AEO]S?|[A-ZÀ-Ú]{2,})){2,}(?:\s|$)|^[A-ZÀ-Ú]{3,}(?:\s+[A-ZÀ-Ú]{3,})+$/;
 /**
  * Marcadores (comentário HTML, que não é texto) de trecho que fica fora dos dispositivos:
  * `redacao-nao-vigente` (redação anterior que o arquivo reproduz ao lado da vigente) e

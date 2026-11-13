@@ -5,10 +5,14 @@ tipo_documento: "Resolução"
 numero: 1
 ano: 2012
 data_publicacao: "2012-02-02"
+assinada_em: "2012-02-02"
+publicada_em: "a confirmar"
+vigente_de: "2012-02-02"
+datas_fonte: "Art. 2º: \"entra em vigor nesta data\"."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Institui o regulamento disciplinar do corpo discente do Instituto Federal do Paraná (IFPR)."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - "regulamento disciplinar"
   - "corpo discente"
@@ -22,6 +26,7 @@ aliases:
   - "Resolução nº 01/2012"
   - "Regulamento Disciplinar do Corpo Discente do IFPR"
 fonte: https://ifpr.edu.br/resolucao-012012/
+vigencia_calculada_em: "2026-11-13"
 ---
 
 ## Resumo

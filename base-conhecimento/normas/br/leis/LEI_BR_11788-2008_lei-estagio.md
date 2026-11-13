@@ -5,10 +5,14 @@ tipo_documento: Lei
 numero: 11788
 ano: 2008
 data_publicacao: "2008-09-25"
+assinada_em: "2008-09-25"
+publicada_em: "2008-09-26"
+vigente_de: "2008-09-26"
+datas_fonte: "Texto: \"Publicado no Diário Oficial da União de 26 de setembro de 2008\"; art. 21 (vigência na publicação)."
 orgao: "Presidência da República"
 jurisdicao: BR
 ementa: "Dispõe sobre o estágio de estudantes."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - "estágio"
   - "educação profissional"
@@ -21,6 +25,15 @@ aliases:
   - "Lei 11.788/2008"
   - "Lei do Estágio"
 fonte: https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/lei/l11788.htm
+vigencia_calculada_em: "2026-11-13"
+revoga:
+  - "Lei nº 9.394/1996 (art. 82, parágrafo único)"
+  - "Lei nº 6.494/1977"
+  - "Lei nº 8.859/1994"
+altera:
+  - "Lei nº 9.394/1996 (art. 82)"
+fundamenta:
+  - "Resolução CONSUP/IFPR nº 82/2022"
 ---
 
 ## Resumo

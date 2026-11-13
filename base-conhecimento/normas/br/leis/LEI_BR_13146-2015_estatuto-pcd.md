@@ -5,10 +5,14 @@ tipo_documento: Lei
 numero: 13146
 ano: 2015
 data_publicacao: "2015-07-06"
+assinada_em: "2015-07-06"
+publicada_em: "2015-07-07"
+vigente_de: "2016-01-03"
+datas_fonte: "Fonte (Planalto, conferida em 13/11/2026): \"publicado no DOU de 7.7.2015\"; art. 127: vigência após 180 dias da publicação (contagem da LC 95/1998, art. 8º, § 1º)."
 orgao: "Presidência da República"
 jurisdicao: BR
 ementa: "Institui a Lei Brasileira de Inclusão da Pessoa com Deficiência."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - "pessoa com deficiência"
   - acessibilidade
@@ -21,6 +25,7 @@ aliases:
   - "Estatuto da Pessoa com Deficiência"
   - LBI
 fonte: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2015/lei/l13146.htm
+vigencia_calculada_em: "2026-11-13"
 ---
 
 ## Resumo

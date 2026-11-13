@@ -5,10 +5,14 @@ tipo_documento: "Resolução"
 numero: 259
 ano: 2025
 data_publicacao: "2025-11-27"
+assinada_em: "2025-11-27"
+publicada_em: "2025-12-15"
+vigente_de: "2025-12-15"
+datas_fonte: "Resumo: publicada no Boletim de Serviço Eletrônico em 15/12/2025; art. 16 (vigência na publicação)."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Estabelece o Calendário Acadêmico e Administrativo de referência dos cursos técnicos de nível médio e graduação do IFPR para o ano de 2026."
-status_vigencia: vigente
+status_vigencia: "alterada"
 keywords:
   - "calendário acadêmico"
   - "calendário de referência 2026"
@@ -25,6 +29,10 @@ aliases:
   - "Calendário de referência 2026"
   - "SEI 3972484"
 fonte: "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4138775&id_orgao_publicacao=0"
+vigencia_calculada_em: "2026-11-13"
+vigencia_a_confirmar: "alteração por Resolução CONSUP/IFPR nº 263/2025 produz efeito na vigência da origem, a confirmar (não antes de 2025-12-10): presumida em vigor em 2026-11-13"
+alterada_por:
+  - "Resolução CONSUP/IFPR nº 263/2025 — datas de junho, prazo de envio do calendário à Proens (art. 10, § 1º) e art. 12"
 ---
 
 ## Resumo

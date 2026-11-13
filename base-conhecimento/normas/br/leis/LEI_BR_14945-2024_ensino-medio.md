@@ -5,10 +5,14 @@ tipo_documento: Lei
 numero: 14945
 ano: 2024
 data_publicacao: "2024-07-31"
+assinada_em: "2024-07-31"
+publicada_em: "2024-08-01"
+vigente_de: "2024-08-01"
+datas_fonte: "Texto: \"entra em vigor na data de sua publicação, sendo 1º de agosto de 2024\"; Planalto: DOU de 1º.8.2024."
 orgao: "Presidência da República"
 jurisdicao: BR
 ementa: "Altera a LDB para instituir a Política Nacional de Ensino Médio."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - "ensino médio"
   - "formação geral básica"
@@ -20,6 +24,9 @@ aliases:
   - "Lei 14.945/2024"
   - "Novo Ensino Médio 2024"
 fonte: https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2024/lei/l14945.htm
+vigencia_calculada_em: "2026-11-13"
+revoga:
+  - "Lei nº 13.415/2017 (revogação parcial (disposições que conflitem com a Lei nº 14.945/2024))"
 altera:
   - "Lei nº 9.394/1996"
 ---

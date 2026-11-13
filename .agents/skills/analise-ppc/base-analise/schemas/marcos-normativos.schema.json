@@ -23,36 +23,17 @@
           "tema": {
             "type": "string"
           },
-          "vigente": {
-            "type": "string",
-            "pattern": "^(?:br\\/(?:lei|lc|decreto|decreto-lei|mp|ec)|(?:br|ifpr)\\/[a-z0-9]+(?:-[a-z0-9]+)*\\/(?:res|portaria|nt|parecer|in|deliberacao))\\/(\\d{4})\\/([1-9]\\d*)$",
-            "description": "ID do ato vigente, com texto na base (manifest.json)"
+          "linha": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^(?:br\\/(?:lei|lc|decreto|decreto-lei|mp|ec)|(?:br|ifpr)\\/[a-z0-9]+(?:-[a-z0-9]+)*\\/(?:res|portaria|nt|parecer|in|deliberacao))\\/(\\d{4})\\/([1-9]\\d*)$"
+            },
+            "description": "IDs dos atos do tema, do mais antigo ao mais recente conhecido; vigente, substituídas, antecessoras e dispositivos revogados são derivados de base-conhecimento/relacoes.yaml"
           },
           "aplica_a": {
             "type": "string"
-          },
-          "substitui": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "pattern": "^(?:br\\/(?:lei|lc|decreto|decreto-lei|mp|ec)|(?:br|ifpr)\\/[a-z0-9]+(?:-[a-z0-9]+)*\\/(?:res|portaria|nt|parecer|in|deliberacao))\\/(\\d{4})\\/([1-9]\\d*)$"
-            },
-            "description": "IDs dos atos substituídos pelo vigente"
-          },
-          "antecessoras_historicas": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "pattern": "^(?:br\\/(?:lei|lc|decreto|decreto-lei|mp|ec)|(?:br|ifpr)\\/[a-z0-9]+(?:-[a-z0-9]+)*\\/(?:res|portaria|nt|parecer|in|deliberacao))\\/(\\d{4})\\/([1-9]\\d*)$"
-            }
-          },
-          "dispositivos_revogados": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "pattern": "^(?:br\\/(?:lei|lc|decreto|decreto-lei|mp|ec)|(?:br|ifpr)\\/[a-z0-9]+(?:-[a-z0-9]+)*\\/(?:res|portaria|nt|parecer|in|deliberacao))\\/(\\d{4})\\/([1-9]\\d*)#(?:(?:anexo\\d+-)?art[1-9]\\d*[A-Z]*(?:-par(?:[1-9]\\d*[A-Z]*|unico))?(?:-[ivxlc]+[A-Z]?)?(?:-al-[a-z])?(?:-item\\d+)?|anexo\\d+(?:-item\\d+)?|secao\\d+)$"
-            },
-            "description": "ID do ato com o dispositivo revogado, como br/cne-ceb/res/2025/3#art6-iii"
           },
           "fichas_responsaveis": {
             "type": "array",
@@ -76,11 +57,8 @@
         "required": [
           "id",
           "tema",
-          "vigente",
+          "linha",
           "aplica_a",
-          "substitui",
-          "antecessoras_historicas",
-          "dispositivos_revogados",
           "fichas_responsaveis",
           "fichas_base_legal",
           "transicao",

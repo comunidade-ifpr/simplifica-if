@@ -5,10 +5,14 @@ tipo_documento: "Resolução"
 numero: 292
 ano: 2026
 data_publicacao: "2026-10-05"
+assinada_em: "2026-10-05"
+publicada_em: "2026-10-05"
+vigente_de: "2026-10-05"
+datas_fonte: "Resumo: publicada no Boletim de Serviço Eletrônico em 5/10/2026; art. 21: \"entra em vigor nesta data\"."
 orgao: CONSUP/IFPR
 jurisdicao: IFPR
 ementa: "Estabelece o calendário acadêmico e administrativo de referência para os cursos técnicos de nível médio e de graduação do IFPR no ano de 2027."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - "calendário acadêmico"
   - "calendário de referência 2027"
@@ -26,6 +30,7 @@ aliases:
   - "Calendário de referência 2027"
   - "SEI 4422750"
 fonte: "https://sei.ifpr.edu.br/sei/controlador_externo.php?acao=documento_conferir&id_orgao_acesso_externo=0"
+vigencia_calculada_em: "2026-11-13"
 ---
 
 ## Resumo

@@ -5,10 +5,14 @@ tipo_documento: Lei
 numero: 11892
 ano: 2008
 data_publicacao: "2008-12-29"
+assinada_em: "2008-12-29"
+publicada_em: "2008-12-30"
+vigente_de: "2008-12-30"
+datas_fonte: "Texto: \"Este texto não substitui o publicado no DOU de 30.12.2008\"; art. 20 (vigência na publicação)."
 orgao: "Presidência da República"
 jurisdicao: BR
 ementa: "Institui a Rede Federal de Educação Profissional, Científica e Tecnológica e cria os Institutos Federais."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - "Rede Federal"
   - "Institutos Federais"
@@ -20,6 +24,9 @@ aliases:
   - "Lei 11.892/2008"
   - "Lei de criação dos Institutos Federais"
 fonte: https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/lei/l11892.htm
+vigencia_calculada_em: "2026-11-13"
+fundamenta:
+  - "Portaria MEC nº 902/2024"
 ---
 
 ## Resumo

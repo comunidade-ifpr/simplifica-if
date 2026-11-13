@@ -43,6 +43,10 @@ tipo_documento: Lei
 numero: 1
 ano: 2020
 data_publicacao: "2020-01-02"
+assinada_em: "2020-01-02"
+publicada_em: "a confirmar"
+vigente_de: "a confirmar"
+datas_fonte: "Teste."
 orgao: "Presidência da República"
 jurisdicao: BR
 ementa: "Ementa de teste."
@@ -332,6 +336,7 @@ describe("validação da base", () => {
       "normas/ifpr/resolucoes/2020-01-01_res.md: campos obrigatórios ausentes: keywords",
       "normas/ifpr/resolucoes/2020-01-01_res.md: keywords deve ser lista não vazia",
       "normas/ifpr/resolucoes/2020-01-01_res.md: id duplicado br/lei/2020/1 (também em normas/br/leis/lei.md)",
+      "config/vigencia.yaml não encontrado (data_referencia da vigência publicada)",
     ]);
 
     writeFileSync(caminhos.manifest, manifestJson([{ ...manifest[0]!, jurisdicao: "XX", title: "Outro" }]));

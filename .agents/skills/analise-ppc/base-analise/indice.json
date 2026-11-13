@@ -1,6 +1,6 @@
 {
   "base_analise_dir": "analise-ppc/base-analise",
-  "gerado_em": "2026-11-13T22:01:41+00:00",
+  "gerado_em": "2026-11-13T23:43:39+00:00",
   "resumo": {
     "total_fichas": 80,
     "total_validacoes_cruzadas": 29,
@@ -4506,14 +4506,14 @@
       "vigente": "Resolução CNE/CP nº 2/2026",
       "vigente_id": "br/cne-cp/res/2026/2",
       "substitui": [
-        "Resolução CNE/CP nº 1/2021",
         "Resolução CNE/CEB nº 1/2014",
+        "Resolução CNE/CP nº 1/2021",
         "Resolução CNE/CP nº 1/2022",
         "Resolução CNE/CP nº 3/2022"
       ],
       "substitui_ids": [
-        "br/cne-cp/res/2021/1",
         "br/cne-ceb/res/2014/1",
+        "br/cne-cp/res/2021/1",
         "br/cne-cp/res/2022/1",
         "br/cne-cp/res/2022/3"
       ],

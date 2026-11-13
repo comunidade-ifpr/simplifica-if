@@ -5,10 +5,14 @@ tipo_documento: Lei
 numero: 10639
 ano: 2003
 data_publicacao: "2003-01-09"
+assinada_em: "2003-01-09"
+publicada_em: "2003-01-10"
+vigente_de: "2003-01-10"
+datas_fonte: "Texto: \"Publicado no Diário Oficial da União de 10 de janeiro de 2003\"; art. 2º (vigência na publicação)."
 orgao: "Presidência da República"
 jurisdicao: BR
 ementa: "Altera a LDB para incluir a obrigatoriedade da temática História e Cultura Afro-Brasileira."
-status_vigencia: alterada
+status_vigencia: "alterada"
 keywords:
   - "história"
   - "cultura afro-brasileira"
@@ -20,10 +24,11 @@ aliases:
   - "Lei nº 10.639/2003"
   - "Lei 10.639/2003"
 fonte: https://www.planalto.gov.br/ccivil_03/leis/2003/l10.639.htm
+vigencia_calculada_em: "2026-11-13"
 altera:
-  - "Lei nº 9.394/1996"
+  - "Lei nº 9.394/1996 (acrescenta os arts. 26-A, 79-A e 79-B)"
 alterada_por:
-  - "Lei nº 11.645/2008"
+  - "Lei nº 11.645/2008 (art. 1º) — art. 1º"
 ---
 
 ## Resumo

@@ -5,10 +5,14 @@ tipo_documento: Lei
 numero: 15468
 ano: 2026
 data_publicacao: "2026-07-14"
+assinada_em: "2026-07-13"
+publicada_em: "2026-07-14"
+vigente_de: "2026-07-14"
+datas_fonte: "Texto: \"Brasília, 13 de julho de 2026\"; resumo: publicação e vigência em 14 de julho de 2026 (art. 2º)."
 orgao: "Presidência da República"
 jurisdicao: BR
 ementa: "Altera a LDB para incluir educação política e direitos da cidadania como componente curricular obrigatório da educação básica."
-status_vigencia: vigente
+status_vigencia: "vigente"
 keywords:
   - LDB
   - "educação política"
@@ -20,8 +24,9 @@ aliases:
   - "Lei nº 15.468/2026"
   - "Lei 15.468/2026"
 fonte: https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2026/lei/l15468.htm
+vigencia_calculada_em: "2026-11-13"
 altera:
-  - "Lei nº 9.394/1996"
+  - "Lei nº 9.394/1996 (art. 26, § 9º-B)"
 ---
 
 ## Resumo

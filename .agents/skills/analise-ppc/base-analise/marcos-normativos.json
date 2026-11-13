@@ -1,24 +1,16 @@
 {
-  "versao": 3,
-  "descricao": "Registro único dos marcos normativos que as fichas tratam como referência vigente, com as normas e os dispositivos que eles revogaram e as regras de transição. As normas são citadas por ID canônico (vigente, substitui e antecessoras_historicas: ID do ato, como br/cne-cp/res/2026/2; dispositivos_revogados: ID do ato com o dispositivo, como br/cne-ceb/res/2025/3#art6-iii), conferido contra base-conhecimento/manifest.json e base-conhecimento/normas/stubs.yaml, de onde vem a vigência; este arquivo guarda a orientação de análise. É injetado nos subagentes, com as normas por extenso, em contextos.fundamentacao_normativa.marcos_normativos e conferido por `bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts validar-base` contra o schema zod de scripts/esquemas.ts (schemas/marcos-normativos.schema.json é gerado dele).",
+  "versao": 4,
+  "descricao": "Registro único dos marcos normativos que as fichas tratam como referência vigente: identificação do tema (id, tema, linha, aplica_a e fichas), a regra de transição e a orientação de análise. A linha lista os atos do tema, do mais antigo ao mais recente conhecido, por ID canônico. A norma vigente, as substituídas, as antecessoras históricas e os dispositivos revogados NÃO ficam aqui: são derivados em tempo de leitura de base-conhecimento/relacoes.yaml na data_referencia de base-conhecimento/config/vigencia.yaml (derivarLinha em packages/kb/src/normas/vigencia.ts; as regras de transição como dado estão em base-conhecimento/transicoes.yaml). É injetado nos subagentes, com as normas por extenso e os campos derivados, em contextos.fundamentacao_normativa.marcos_normativos e conferido por `bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts validar-base` contra o schema zod de scripts/esquemas.ts (schemas/marcos-normativos.schema.json é gerado dele).",
   "marcos": [
     {
       "id": "dcn_ept",
       "tema": "Diretrizes Curriculares Nacionais da Educação Profissional e Tecnológica",
-      "vigente": "br/cne-cp/res/2026/2",
-      "aplica_a": "Todos os cursos técnicos de nível médio, em qualquer forma e formato de oferta.",
-      "substitui": [
+      "linha": [
+        "br/cne-ceb/res/2012/6",
         "br/cne-cp/res/2021/1",
-        "br/cne-ceb/res/2014/1",
-        "br/cne-cp/res/2022/1",
-        "br/cne-cp/res/2022/3"
+        "br/cne-cp/res/2026/2"
       ],
-      "antecessoras_historicas": [
-        "br/cne-ceb/res/2012/6"
-      ],
-      "dispositivos_revogados": [
-        "br/cne-ceb/res/2025/3#art6-iii"
-      ],
+      "aplica_a": "Todos os cursos técnicos de nível médio, em qualquer forma e formato de oferta.",
       "fichas_responsaveis": [
         "CT-SUP-12"
       ],
@@ -35,15 +27,12 @@
     {
       "id": "dcnem",
       "tema": "Diretrizes Curriculares Nacionais do Ensino Médio",
-      "vigente": "br/cne-ceb/res/2024/2",
+      "linha": [
+        "br/cne-ceb/res/2012/2",
+        "br/cne-ceb/res/2018/3",
+        "br/cne-ceb/res/2024/2"
+      ],
       "aplica_a": "Cursos técnicos integrados ao ensino médio e projetos concomitantes que organizem o currículo do ensino médio.",
-      "substitui": [
-        "br/cne-ceb/res/2018/3"
-      ],
-      "antecessoras_historicas": [
-        "br/cne-ceb/res/2012/2"
-      ],
-      "dispositivos_revogados": [],
       "fichas_responsaveis": [
         "CT-SUP-12"
       ],
@@ -59,15 +48,11 @@
     {
       "id": "eja",
       "tema": "Diretrizes Operacionais Nacionais da Educação de Jovens e Adultos",
-      "vigente": "br/cne-ceb/res/2025/3",
+      "linha": [
+        "br/cne-ceb/res/2021/1",
+        "br/cne-ceb/res/2025/3"
+      ],
       "aplica_a": "Ofertas articuladas à EJA, incluindo PROEJA.",
-      "substitui": [
-        "br/cne-ceb/res/2021/1"
-      ],
-      "antecessoras_historicas": [],
-      "dispositivos_revogados": [
-        "br/cne-ceb/res/2025/3#art6-iii"
-      ],
       "fichas_responsaveis": [
         "CT-CURR-02"
       ],
@@ -80,14 +65,11 @@
     {
       "id": "assistencia_estudantil_ifpr",
       "tema": "Política Institucional de Assistência Estudantil do IFPR",
-      "vigente": "ifpr/consup/res/2025/239",
-      "aplica_a": "Cursos técnicos de nível médio presenciais e cursos superiores do IFPR.",
-      "substitui": [
+      "linha": [
         "ifpr/consup/res/2009/11",
-        "ifpr/consup/res/2011/53"
+        "ifpr/consup/res/2025/239"
       ],
-      "antecessoras_historicas": [],
-      "dispositivos_revogados": [],
+      "aplica_a": "Cursos técnicos de nível médio presenciais e cursos superiores do IFPR.",
       "fichas_responsaveis": [
         "CT-SUP-24"
       ],

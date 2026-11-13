@@ -5,6 +5,10 @@ tipo_documento: "Resolução"
 numero: 3
 ano: 2025
 data_publicacao: "2025-04-09"
+assinada_em: "2025-04-08"
+publicada_em: "2025-04-09"
+vigente_de: "2025-04-09"
+datas_fonte: "Resumo: \"RESOLUÇÃO CNE/CEB Nº 3, DE 8 DE ABRIL DE 2025, publicada no DOU de 9/4/2025\"; art. 20 (vigência na publicação)."
 orgao: CNE/CEB
 jurisdicao: BR
 ementa: "Institui as Diretrizes Operacionais Nacionais para a Educação de Jovens e Adultos – EJA."
@@ -25,12 +29,14 @@ aliases:
   - "Diretrizes Operacionais Nacionais para a EJA"
   - "Diretrizes Operacionais da EJA"
 fonte: https://www.gov.br/mec/pt-br/cne/2025/abril/rceb003_25.pdf
+vigencia_calculada_em: "2026-11-13"
+vigencia_a_confirmar: "revogação por Resolução CNE/CP nº 2/2026 (#art74-v) produz efeito na vigência da origem, a confirmar (não antes de 2026-11-11): presumida em vigor em 2026-11-13; alteração por Resolução CNE/CEB nº 6/2025 produz efeito na vigência da origem, a confirmar (não antes de 2025-07-17): presumida em vigor em 2026-11-13"
 revoga:
   - "Resolução CNE/CEB nº 1/2021"
-alterada_por:
-  - "Resolução CNE/CEB nº 6/2025"
 revogada_por:
-  - "Resolução CNE/CP nº 2/2026 (art. 6º, inciso III)"
+  - "Resolução CNE/CP nº 2/2026 (art. 74, V) — art. 6º, III"
+alterada_por:
+  - "Resolução CNE/CEB nº 6/2025 — art. 18-A"
 relaciona_se_a:
   - "Resolução CNE/CP nº 1/2021"
   - "Resolução CNE/CP nº 2/2026"

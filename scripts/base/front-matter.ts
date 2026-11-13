@@ -10,6 +10,8 @@ import {
   type FrontMatter,
   type ValorFrontMatter,
 } from "@simplifica-if/kb/normas/front-matter";
+import { idDoAto } from "@simplifica-if/kb/normas/ids";
+import { carregarRelacoes } from "@simplifica-if/kb/normas/relacoes";
 import { compararTexto, lerTexto, ordenarCaminhos } from "@simplifica-if/kb/texto";
 
 export { analisarFrontMatter, ErroFrontMatter, type FrontMatter, type ValorFrontMatter };
@@ -21,6 +23,9 @@ export const CAMPOS_OBRIGATORIOS = [
   "numero",
   "ano",
   "data_publicacao",
+  "assinada_em",
+  "publicada_em",
+  "vigente_de",
   "ementa",
   "status_vigencia",
   "keywords",
@@ -33,6 +38,9 @@ export const CAMPOS_MANIFEST = [
   "numero",
   "ano",
   "data_publicacao",
+  "assinada_em",
+  "publicada_em",
+  "vigente_de",
   "orgao",
   "jurisdicao",
   "ementa",
@@ -53,7 +61,10 @@ export const DIRETORIOS_POR_TIPO: Record<string, string> = {
   "IFPR|Nota Técnica": "normas/ifpr/notas-tecnicas",
 };
 
-export type ItemManifest = Record<string, ValorFrontMatter>;
+export type ItemManifest = Record<string, ValorFrontMatter | RelacaoManifest[]>;
+
+/** Relação de `relacoes.yaml` em que a norma é origem ou alvo, como vai para o `manifest.json`. */
+export type RelacaoManifest = Record<string, string>;
 
 export function lerFrontMatter(caminhos: CaminhosBase, caminho: string) {
   return analisarFrontMatter(lerTexto(caminho), relativo(caminhos, caminho));
@@ -70,7 +81,26 @@ export function itemManifest(caminhos: CaminhosBase, caminho: string): ItemManif
   const item: ItemManifest = {};
   for (const campo of CAMPOS_MANIFEST) item[campo] = meta[campo]!;
   item.path = relativo(caminhos, caminho);
+  if (typeof meta.vigencia_a_confirmar === "string") item.vigencia_a_confirmar = meta.vigencia_a_confirmar;
+  const relacoes = relacoesManifest(textoDe(meta.id), caminhos.raizProjeto);
+  if (relacoes.length) item.relacoes = relacoes;
   return item;
+}
+
+/** Relações (origem ou alvo) do ato, de `relacoes.yaml`, com os campos que existirem. */
+export function relacoesManifest(id: string, raizProjeto: string): RelacaoManifest[] {
+  if (idDoAto(id) !== id) return [];
+  return carregarRelacoes(raizProjeto)
+    .filter((relacao) => relacao.origem === id || relacao.alvo === id)
+    .map((relacao) => {
+      const item: RelacaoManifest = { tipo: relacao.tipo, origem: relacao.origem };
+      if (relacao.operador) item.operador = relacao.operador;
+      item.alvo = relacao.alvo;
+      if (relacao.alvo_dispositivo) item.alvo_dispositivo = relacao.alvo_dispositivo;
+      if (relacao.alcance) item.alcance = relacao.alcance;
+      item.efeito_de = relacao.efeito_de;
+      return item;
+    });
 }
 
 export function arquivosNormas(caminhos: CaminhosBase): string[] {
