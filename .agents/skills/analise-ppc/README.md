@@ -50,7 +50,7 @@ Ao gerar o relatório, a skill publica no Surge por padrão e retorna `publicaca
 
 ## Fluxo técnico
 
-O ponto de entrada é `scripts/analise_ppc.ts` (Bun). Rodam em TypeScript `preparar-documento`, `montar-grupos-subagents`, `preparar-prompts-subagents`, `montar-grupo-avulso`, `mesclar-resultados-avulsos`, `validar-resultados`, `validar-base`, `gerar-indice` e `gerar-mapa`. Ainda dependem de Python: `gerar-relatorio-html`, que delega a `scripts/analise_ppc.py` (mesmos argumentos e código de saída), e a conversão de entrada `.docx` em `preparar-documento`, feita por `scripts/converter_docx.py` (`python-docx`). Com PPC em `.md`, a preparação, os grupos e os prompts dispensam Python. `ANALISE_PPC_PYTHON` escolhe o interpretador Python (padrão `python3`). Em testes e diferenciais, `ANALISE_PPC_AGORA` (data ISO 8601) fixa o relógio da rodada: nome do diretório, `criado_em` e `data_conversao`.
+O ponto de entrada é `scripts/analise_ppc.ts` (Bun), e todos os subcomandos rodam em TypeScript, inclusive `gerar-relatorio-html` e a publicação no Surge. Só a conversão de entrada `.docx` em `preparar-documento` ainda depende de Python: `scripts/converter_docx.py` (`python-docx`), chamado por subprocesso até a trilha T3 do `PLANO-ARQUITETURA.md`. Com PPC em `.md`, a skill inteira dispensa Python. `ANALISE_PPC_PYTHON` escolhe o interpretador da conversão DOCX (padrão `python3`). Em testes e diferenciais, `ANALISE_PPC_AGORA` (data ISO 8601) fixa o relógio da rodada: nome do diretório, `criado_em` e `data_conversao`. Fora da skill, o conversor de PDF de PPCs da base (`scripts/converter_ppcs_markdown.py`) também continua em Python, até a trilha T5.
 
 ```bash
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts preparar-documento caminho/PPC.docx
@@ -86,3 +86,5 @@ bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts validar-base
 bun test ./.agents/skills/analise-ppc
 python3 -m pytest .agents/skills/analise-ppc/tests
 ```
+
+O `bun test` cobre a skill inteira; o `pytest` cobre só os extratores da conversão DOCX, que ainda é Python.

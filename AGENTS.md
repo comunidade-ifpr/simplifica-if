@@ -113,4 +113,4 @@ bun test ./.agents/skills/analise-ppc
 python3 -m pytest .agents/skills/analise-ppc/tests
 ```
 
-Sem `--check`, `gerar-mapa` e `gerar-indice` regeneram `mapa-fichas.md` e `indice.json` da base de análise. O `analise_ppc.ts` é o ponto de entrada único da skill; os subcomandos ainda não portados delegam a `analise_ppc.py`.
+Sem `--check`, `gerar-mapa` e `gerar-indice` regeneram `mapa-fichas.md` e `indice.json` da base de análise. O `analise_ppc.ts` é o ponto de entrada único da skill, e todos os subcomandos rodam em TypeScript; só a conversão de entrada `.docx` ainda chama Python (`converter_docx.py`), e o `pytest` cobre só os extratores dessa conversão.

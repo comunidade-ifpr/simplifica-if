@@ -4,13 +4,13 @@
 
 Esta skill executa análise de PPC por sub-agentes dentro da conversa. Os scripts são deliberadamente pequenos: convertem o documento para `PPC.md`, montam grupos de fichas e renderizam o PPC HTML anotado a partir do JSON coletado dos sub-agentes.
 
-O ponto de entrada é `scripts/analise_ppc.ts` (Bun). Rodam em TypeScript `preparar-documento`, `montar-grupos-subagents`, `preparar-prompts-subagents`, `montar-grupo-avulso`, `mesclar-resultados-avulsos`, `validar-resultados`, `validar-base`, `gerar-indice` e `gerar-mapa`. Ainda dependem de Python: `gerar-relatorio-html`, que delega a `scripts/analise_ppc.py` (mesmos argumentos e código de saída), e a conversão de entrada `.docx` em `preparar-documento`, feita por `scripts/converter_docx.py` (`python-docx`). Com PPC em `.md`, a preparação, os grupos e os prompts dispensam Python. `ANALISE_PPC_PYTHON` escolhe o interpretador Python (padrão `python3`).
+O ponto de entrada é `scripts/analise_ppc.ts` (Bun), e todos os subcomandos rodam em TypeScript, inclusive `gerar-relatorio-html` e a publicação no Surge. Só a conversão de entrada `.docx` em `preparar-documento` ainda depende de Python: `scripts/converter_docx.py` (`python-docx`), chamado por subprocesso até a trilha T3 do `PLANO-ARQUITETURA.md`. Com PPC em `.md`, a skill inteira dispensa Python. `ANALISE_PPC_PYTHON` escolhe o interpretador da conversão DOCX (padrão `python3`).
 
 O output padrão fica em `.agents/skills/analise-ppc/output/<rodada>/`. O relatório final fica em `relatorio-analise.html`; os assets do leitor ficam em `assets/`; os artefatos de suporte ficam em `arquivos-suporte/`.
 
 ## Dependências
 
-Rode `bun install` na raiz do repositório (o ponto de entrada usa `commander` e `@simplifica-if/kb`). Para entrada `.docx` e para `gerar-relatorio-html`, que ainda usam Python, instale também as dependências Python, a partir da raiz do projeto onde a skill está instalada:
+Rode `bun install` na raiz do repositório (o ponto de entrada usa `commander`, `htmlparser2` e `@simplifica-if/kb`). Só a entrada `.docx` ainda usa Python; para ela, instale também as dependências Python, a partir da raiz do projeto onde a skill está instalada:
 
 ```bash
 python3 -m pip install -r .agents/skills/analise-ppc/requirements.txt
@@ -184,6 +184,8 @@ bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts validar-base
 bun test ./.agents/skills/analise-ppc
 python3 -m pytest .agents/skills/analise-ppc/tests
 ```
+
+O `pytest` cobre só os extratores da conversão DOCX, que ainda é Python.
 
 ## Entrega do relatório
 
