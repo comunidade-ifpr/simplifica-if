@@ -559,6 +559,18 @@ Em aberto:
   - `cnct:<curso>` é aceito, mas nenhuma ficha o usa: as fichas citam o catálogo, e o curso vem do contexto da rodada;
   - as validações cruzadas continuam sem `referencias_normativas`.
 
+**Fase 3 concluída em 13/11/2026** (branch `worktree-agent-a06982efc2d096698`).
+
+- **`cnct_id`:** os 124 cursos de nível médio receberam `cnct_id` (`cnct:<id>` de `catalogos/cnct/index.json`) pela denominação normalizada: 123 casam, inclusive "Mecânica", "Administração – PROEJA" e os demais nomes sem "Técnico em" de Campo Largo. O único sem habilitação, Melhoria de Processos (Arapongas, suspenso), tem `cnct_ausencia` com o motivo: o PPC declara oferta experimental fora do CNCT. A auditoria acusa curso técnico ativo ou em oferta sem nenhum dos dois, e `validar_base.ts`, `cnct_id` fora do catálogo. Os dois campos são publicados no curso (`campus.schema.json`).
+- **Turno:** enum de 7 valores (`matutino` 58, `vespertino` 26, `noturno` 35, `integral` 5, `diurno` 38, `matutino-com-contraturno` 38, `vespertino-com-contraturno` 6), mais `turno_original` (a grafia exata, com marca) e `turno_nota`. As notas de rodapé vieram dos editais: 87/2024 (SEI) e 88/2024 (PDF) para 2025, conferidos oferta a oferta; 130/2025 (retificado pelo 138/2025) e 128/2025 para 2026, porque a página de cursos do PS 2026, fonte das ofertas, saiu do ar. São 85 ofertas com `turno_nota`. `padronizarTurno` propõe o enum, e a auditoria recusa marca de rodapé sem nota. O `turno` público passou de texto livre a enum; a grafia antiga está em `turno_original`.
+- **Curadoria do PPC por campo:** `curadoria_ano`/`data_curadoria_ano` e `curadoria_vagas`/`data_curadoria_vagas` substituem o par único; na migração, os dois campos herdaram o par. O JSON público já tinha status por campo, e o formato não mudou.
+- **9 PPCs com ano de capa anterior ao registrado:** 1 corrigido (Assis Chateaubriand, Agropecuária subsequente, 2023 → 2021). Nos outros 8, o ano registrado é o de aprovação, ajuste ou atualização citado na própria capa; a evidência está em `ppc.observacoes`, e a convenção aguarda decisão humana.
+- **Q08:** o gabarito usa `cnct_id` e o turno padronizado (Q01 e Q05 também passaram ao `cnct_id`), com os mesmos conjuntos.
+- **Pendências:**
+  - 8 ofertas de 2026 divergem do Anexo I do Edital 130/2025 no turno (Coronel Vivida ×2, Foz do Iguaçu ×3, Ivaiporã, União da Vitória ×2), e a de Toledo não consta dele. A divergência está em `turno_nota`. Uma delas, Foz do Iguaçu, Desenvolvimento de Sistemas, é âncora da Q08: matutino na página e integral no edital;
+  - convenção do ano do PPC (capa ou ato posterior);
+  - o `trecho_fonte` público do ano do PPC ainda diz "registrado no Notion".
+
 **Trilha T, passo T1 concluído em 13/11/2026** (branch `worktree-agent-ac5acad58383e32fc`).
 
 - O que foi portado:
