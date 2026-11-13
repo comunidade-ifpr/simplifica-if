@@ -272,6 +272,8 @@ class Parser {
   private readonly nos: NoAberto[] = [];
   private readonly alvos = new Map<Segmento, NoAberto>();
   private estrutura: string[] = [];
+  /** Níveis de cabeçalho da pilha de estrutura (paralelo a `estrutura`). */
+  private niveis: number[] = [];
   /** Artigo corrente, parágrafo corrente (ou `null` no caput), último inciso, última alínea. */
   private artigo: NoAberto | null = null;
   private paragrafo: NoAberto | null = null;
@@ -455,6 +457,7 @@ class Parser {
         this.numeroAnexo = numero;
         this.anexo = null;
         this.estrutura = [];
+        this.niveis = [];
         this.anexo = this.abrir("anexo", `anexo${numero}`, texto, null, inicio);
         this.segmento("dispositivo", texto, inicio, fim, this.anexo);
         return;
@@ -468,7 +471,12 @@ class Parser {
     }
     // Divisão estrutural ou rubrica: atualiza a pilha de estrutura pelo nível do cabeçalho.
     const nivel = no.depth;
-    this.estrutura = [...this.estrutura.slice(0, Math.max(0, nivel - 2)), texto];
+    while (this.niveis.length && this.niveis.at(-1)! >= nivel) {
+      this.niveis.pop();
+      this.estrutura = this.estrutura.slice(0, -1);
+    }
+    this.niveis.push(nivel);
+    this.estrutura = [...this.estrutura, texto];
     this.ultimo = null;
     if (this.anexo) this.segmento("dispositivo", texto, inicio, fim, this.anexo);
     else this.segmento("estrutura", texto, inicio, fim);

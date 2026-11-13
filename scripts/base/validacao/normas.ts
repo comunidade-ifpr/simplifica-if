@@ -13,6 +13,7 @@ import {
 import { ehObjeto, type ObjetoJson, representar, textoDe, valoresIguais } from "@simplifica-if/kb/json";
 import { analisarNorma, indiceDispositivos } from "@simplifica-if/kb/normas/estrutura";
 import { normasComCamposGerados } from "@simplifica-if/kb/normas/gerado";
+import { validarCorrespondencias } from "@simplifica-if/kb/normas/correspondencia";
 import { carregarRelacoes, validarRelacoes } from "@simplifica-if/kb/normas/relacoes";
 import { caminhoConfigVigencia, carregarTransicoes, dataReferencia, statusEm } from "@simplifica-if/kb/normas/vigencia";
 import { palavrasDoTexto } from "@simplifica-if/kb/normas/markdown";
@@ -281,8 +282,8 @@ export function validarEstruturaNorma(ctx: Contexto, caminho: string): string[] 
 }
 
 /**
- * Relações, transições e vigência (fase 5): contrato e evidências de `relacoes.yaml` e
- * `transicoes.yaml`, campos gerados do front matter em dia (`gerar_base.ts`) e status dos stubs
+ * Relações, transições, correspondências e vigência (fase 5): contrato e evidências de
+ * `relacoes.yaml`, `transicoes.yaml` e `correspondencias/*.yaml`, campos gerados do front matter em dia (`gerar_base.ts`) e status dos stubs
  * atingidos por relações igual ao calculado na `data_referencia`.
  */
 export function validarRelacoesEVigencia(ctx: Contexto): string[] {
@@ -290,6 +291,7 @@ export function validarRelacoesEVigencia(ctx: Contexto): string[] {
   const erros = validarRelacoes(raiz);
   if (erros.length) return erros;
 
+  erros.push(...validarCorrespondencias(raiz));
   const indice = indiceDispositivos(raiz);
   const registro = carregarRegistro(raiz);
   try {

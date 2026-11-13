@@ -83,3 +83,13 @@ transicoes:
     inicio: vigencia
     fim: sem-prazo
     evidencia: "É permitido às redes de ensino a manutenção da organização curricular orientada pela Resolução CNE/CEB nº 3, de 21 de novembro de 2018, em regime de transição"
+  - id: dcnept-2021-art62
+    norma: br/cne-cp/res/2021/1
+    dispositivo: "#art62"
+    tipo: direito-de-conclusao
+    norma_anterior: br/cne-ceb/res/2012/6
+    aplica_a: Estudantes de cursos técnicos e de graduação tecnológica oferecidos antes do exercício em que a Res. CNE/CP nº 1/2021 produziu efeitos.
+    regra: Têm assegurado o direito de concluir o curso com base na Res. CNE/CEB nº 6/2012 (técnicos) e na Res. CNE/CP nº 3/2002 (tecnologia).
+    inicio: vigencia
+    fim: sem-prazo
+    evidencia: "fica assegurado o direito de conclusão de seus cursos organizados, respectivamente, com base na Resolução CNE/CEB nº 6, de 20 de setembro de 2012"

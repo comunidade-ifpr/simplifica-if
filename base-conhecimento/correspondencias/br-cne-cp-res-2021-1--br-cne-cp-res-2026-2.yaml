@@ -1,0 +1,607 @@
+# Tabela de correspondência: Res. CNE/CP nº 1/2021 (revogada) → Res. CNE/CP nº 2/2026 (fase 5).
+#
+# RASCUNHO. Proposta por leitura comparada dos dois textos da base, sem validação jurídica: a
+# revisão humana é obrigatória antes de usar a tabela como fundamento de parecer (princípio 4 do
+# plano de arquitetura). Ao revisar, troque `status` por `revisado` e registre quem revisou.
+#
+# Contrato: esquemaCorrespondencia em packages/kb/src/normas/correspondencia.ts (zod), conferido por
+# bun run scripts/validar_base.ts (dispositivos existentes nos dois textos e todos os artigos da
+# origem cobertos). Consulta: bun run kb correspondencia br/cne-cp/res/2021/1#art20
+#
+# Cada item: origem (dispositivo da 1/2021), tipo, destino (dispositivos da 2/2026; vazio em
+# sem-equivalente) e nota.
+#   equivalente: o destino trata do mesmo assunto com o mesmo efeito normativo (pode mudar a redação);
+#   parcial: o destino trata do assunto, mas muda requisito, alcance, prazo ou valor (ver nota);
+#   sem-equivalente: a 2/2026 não traz regra correspondente.
+# Dispositivo sem item próprio herda o item do ancestral mais próximo (o do artigo, no mínimo).
+
+origem: br/cne-cp/res/2021/1
+destino: br/cne-cp/res/2026/2
+status: rascunho
+elaborado_em: "2026-11-13"
+metodo: Leitura comparada, artigo por artigo, dos textos de base-conhecimento/normas; incisos e parágrafos detalhados nos artigos mais usados na análise de PPC técnico (16, 20, 24, 25 e 26).
+
+itens:
+  - origem: "#art1"
+    tipo: equivalente
+    destino: ["#art1"]
+    nota: Objeto da Resolução (define as DCN da EPT).
+  - origem: "#art1-parunico"
+    tipo: sem-equivalente
+    destino: []
+    nota: A 2/2026 não define "Diretriz".
+  - origem: "#art2"
+    tipo: parcial
+    destino: ["#art1-par1", "#art1-par2"]
+    nota: EPT como modalidade integrada aos níveis e às dimensões do trabalho, da ciência, da cultura e da tecnologia; a 2/2026 acrescenta a organização por áreas tecnológicas e itinerários formativos profissionais.
+  - origem: "#art3"
+    tipo: parcial
+    destino: ["#art3"]
+    nota: Princípios reescritos (17 incisos na 2/2026, 19 na 1/2021). Entram protagonismo do estudante, equidade, acessibilidade, governança democrática e acompanhamento de egressos (art. 3º, XVII); o pluralismo de ideias passa ao art. 23.
+  - origem: "#art4"
+    tipo: parcial
+    destino: ["#art7"]
+    nota: Cursos e programas da EPT; a 2/2026 detalha a composição de cada nível (qualificação, EPTNM, graduação e pós) e trata da formação inicial e continuada nos §§ 1º a 3º.
+  - origem: "#art5"
+    tipo: parcial
+    destino: ["#art9"]
+    nota: Organização por itinerários formativos; na 2/2026 a organização por itinerários com certificações intermediárias é a regra ("devem ser organizados"), e não faculdade.
+  - origem: "#art5-par2"
+    tipo: equivalente
+    destino: ["#art9-par1"]
+  - origem: "#art5-par3"
+    tipo: equivalente
+    destino: ["#art9-par2"]
+  - origem: "#art5-par4"
+    tipo: equivalente
+    destino: ["#art9-par3"]
+  - origem: "#art5-par5"
+    tipo: parcial
+    destino: ["#art9-par4"]
+    nota: Definição de itinerário formativo; o inciso III muda a redação da construção vertical.
+  - origem: "#art5-par6"
+    tipo: equivalente
+    destino: ["#art9-par7"]
+  - origem: "#art5-par7"
+    tipo: equivalente
+    destino: ["#art9-par5"]
+  - origem: "#art5-par8"
+    tipo: parcial
+    destino: ["#art2-xvii"]
+    nota: Definição de eixo tecnológico, agora no glossário do art. 2º.
+  - origem: "#art6"
+    tipo: parcial
+    destino: ["#art10"]
+    nota: Articulação da EPT com a educação básica e superior; a 2/2026 acrescenta o aproveitamento de saberes do trabalho.
+  - origem: "#art7"
+    tipo: parcial
+    destino: ["#art11"]
+    nota: Referência aos eixos e áreas tecnológicas; a definição de competência profissional (§ 3º) passa ao art. 2º, XIII, e a competência do CNE/MEC (§ 4º) ao art. 12.
+  - origem: "#art7-par3"
+    tipo: parcial
+    destino: ["#art2-xiii"]
+  - origem: "#art7-par4"
+    tipo: parcial
+    destino: ["#art12"]
+  - origem: "#art8"
+    tipo: parcial
+    destino: ["#art26", "#art27"]
+    nota: Os critérios de planejamento se distribuem pelo planejamento do PPC (art. 26) e pela condição de autorização (art. 27); não há lista equivalente.
+  - origem: "#art9"
+    tipo: parcial
+    destino: ["#art12"]
+    nota: Atualização do CNCT e do CNCST pelo MEC, agora dividida em estrutural e básica.
+  - origem: "#art10"
+    tipo: parcial
+    destino: ["#art47"]
+    nota: Cursos experimentais. O prazo para submeter ao reconhecimento cai de 3 anos (técnicos) para um ano após a conclusão da primeira turma (art. 47, IV), e entram exigências de capacidade institucional, Sistec e vedação a cursos da Tabela de Convergência.
+  - origem: "#art11"
+    tipo: parcial
+    destino: ["#art47"]
+    nota: Publicidade e readequação de experimentais; a 2/2026 passa a exigir a informação no portal da instituição (art. 47, III) e disciplina a inclusão no CNCT (§ 7º).
+  - origem: "#art12"
+    tipo: parcial
+    destino: ["#art13"]
+    nota: Qualificação profissional; a 2/2026 exige cadastro no Sistec dos cursos com 160 h ou mais (art. 13, § 2º).
+  - origem: "#art12-par2"
+    tipo: parcial
+    destino: ["#art17-par2"]
+  - origem: "#art12-par3"
+    tipo: equivalente
+    destino: ["#art15"]
+  - origem: "#art12-par5"
+    tipo: equivalente
+    destino: ["#art16"]
+  - origem: "#art12-par6"
+    tipo: parcial
+    destino: ["#art13-par3"]
+  - origem: "#art12-par7"
+    tipo: parcial
+    destino: ["#art44-par1"]
+  - origem: "#art13"
+    tipo: parcial
+    destino: ["#art14"]
+    nota: Elementos do PPC de qualificação; a 2/2026 acrescenta carga horária com frequência mínima e acessibilidade, e restringe a exigência aos cursos cadastrados no Sistec.
+  - origem: "#art14"
+    tipo: parcial
+    destino: ["#art7-par2"]
+    nota: Formação inicial e cursos especiais abertos à comunidade.
+  - origem: "#art15"
+    tipo: parcial
+    destino: ["#art17"]
+    nota: Abrangência da EPTNM; a especialização técnica passa a "pós-técnico".
+  - origem: "#art15-par1"
+    tipo: parcial
+    destino: ["#art17-par1"]
+  - origem: "#art15-par2"
+    tipo: parcial
+    destino: ["#art18-par2"]
+  - origem: "#art16"
+    tipo: parcial
+    destino: ["#art18"]
+    nota: Formas de oferta. Na 2/2026 as formas são articulada (integrada, concomitante e concomitante intercomplementar, alíneas do inciso I) e subsequente.
+  - origem: "#art16-i"
+    tipo: equivalente
+    destino: ["#art18-i-al-a"]
+  - origem: "#art16-ii"
+    tipo: equivalente
+    destino: ["#art18-i-al-b"]
+  - origem: "#art16-iii"
+    tipo: parcial
+    destino: ["#art18-i-al-c", "#art18-par1"]
+    nota: A 2/2026 detalha a parceria e a expedição do diploma (art. 18, § 1º; art. 45, § 5º).
+  - origem: "#art16-iv"
+    tipo: equivalente
+    destino: ["#art18-ii"]
+  - origem: "#art16-par1"
+    tipo: parcial
+    destino: ["#art18-par2"]
+  - origem: "#art16-par2"
+    tipo: parcial
+    destino: ["#art18-par2"]
+  - origem: "#art16-par3"
+    tipo: equivalente
+    destino: ["#art18-par3"]
+  - origem: "#art16-par4"
+    tipo: equivalente
+    destino: ["#art18-par4"]
+  - origem: "#art17"
+    tipo: equivalente
+    destino: ["#art19"]
+  - origem: "#art18"
+    tipo: equivalente
+    destino: ["#art25"]
+    nota: EPT articulada à EJA (a 2/2026 remete ao art. 37, § 3º, da LDB).
+  - origem: "#art19"
+    tipo: parcial
+    destino: ["#art20"]
+    nota: Especialização técnica (pós-técnico); a vinculação passa a ser ao eixo tecnológico de curso técnico autorizado.
+  - origem: "#art20"
+    tipo: parcial
+    destino: ["#art22"]
+    nota: A lista de elementos da estruturação dos cursos técnicos é retomada no art. 22, com acréscimos (competências para demandas complexas, direitos humanos, sustentabilidade, cidadania fiscal, uso responsável das tecnologias) e sem o inciso X (fundamentos de empreendedorismo, cooperativismo etc.).
+  - origem: "#art20-i"
+    tipo: equivalente
+    destino: ["#art22-v"]
+    nota: Base tecnológica, agora "composição obrigatória".
+  - origem: "#art20-ii"
+    tipo: equivalente
+    destino: ["#art22-vi"]
+  - origem: "#art20-iii"
+    tipo: equivalente
+    destino: ["#art22-vii"]
+  - origem: "#art20-iv"
+    tipo: parcial
+    destino: ["#art22-iii"]
+    nota: Pertinência e coerência passam a se referir às competências, e não aos conteúdos.
+  - origem: "#art20-v"
+    tipo: parcial
+    destino: ["#art22-viii"]
+    nota: O diálogo inclui sustentabilidade ambiental e cidadania fiscal.
+  - origem: "#art20-vi"
+    tipo: equivalente
+    destino: ["#art22-ix"]
+  - origem: "#art20-vii"
+    tipo: equivalente
+    destino: ["#art22-ii"]
+  - origem: "#art20-viii"
+    tipo: parcial
+    destino: ["#art22-xi"]
+    nota: Domínio das tecnologias passa a "utilização responsável" das tecnologias do eixo.
+  - origem: "#art20-ix"
+    tipo: parcial
+    destino: ["#art28-par1-iii", "#art36"]
+    nota: A vivência de situações práticas passa à prática profissional intrínseca ao currículo e à prática profissional supervisionada obrigatória.
+  - origem: "#art20-x"
+    tipo: sem-equivalente
+    destino: []
+    nota: Sem lista de fundamentos aplicados (empreendedorismo, cooperativismo, tecnologia da informação, gestão de pessoas, legislação etc.); o empreendedorismo aparece só nos princípios (art. 3º, VIII).
+  - origem: "#art20-par1"
+    tipo: parcial
+    destino: ["#art18-par2"]
+  - origem: "#art20-par2"
+    tipo: equivalente
+    destino: ["#art22-iv"]
+    nota: Competências socioemocionais, agora inciso do art. 22.
+  - origem: "#art21"
+    tipo: equivalente
+    destino: ["#art23"]
+  - origem: "#art22"
+    tipo: parcial
+    destino: ["#art23"]
+    nota: A formulação coletiva da proposta pedagógica (arts. 12 e 13 da LDB) não tem artigo próprio; o art. 23 trata do currículo como prerrogativa da instituição.
+  - origem: "#art23"
+    tipo: equivalente
+    destino: ["#art24"]
+  - origem: "#art23-parunico"
+    tipo: equivalente
+    destino: ["#art24-parunico"]
+    nota: Profissões regulamentadas.
+  - origem: "#art24"
+    tipo: parcial
+    destino: ["#art26"]
+    nota: Planejamento do PPC técnico; a 2/2026 acrescenta o formato de oferta, a carga horária total e o acompanhamento de egressos por pelo menos dois anos (art. 26, III, VII e X).
+  - origem: "#art24-i"
+    tipo: equivalente
+    destino: ["#art26-i"]
+  - origem: "#art24-ii"
+    tipo: parcial
+    destino: ["#art26-ii"]
+    nota: Articulação com o mundo do trabalho por "permanente estratégia dual de formação".
+  - origem: "#art24-iii"
+    tipo: equivalente
+    destino: ["#art26-iv"]
+  - origem: "#art24-iv"
+    tipo: equivalente
+    destino: ["#art26-v"]
+  - origem: "#art24-v"
+    tipo: equivalente
+    destino: ["#art26-viii"]
+  - origem: "#art24-vi"
+    tipo: equivalente
+    destino: ["#art26-ix"]
+  - origem: "#art24-vii"
+    tipo: equivalente
+    destino: ["#art26-xi"]
+  - origem: "#art24-viii"
+    tipo: parcial
+    destino: ["#art28"]
+    nota: A elaboração do PPC deixa de ser item do planejamento; a estrutura do PPC está no art. 28.
+  - origem: "#art24-ix"
+    tipo: equivalente
+    destino: ["#art26-xii"]
+  - origem: "#art24-x"
+    tipo: parcial
+    destino: ["#art26-vi"]
+    nota: Inovação por metodologias ativas e tecnologias digitais, como a IA.
+  - origem: "#art24-par1"
+    tipo: equivalente
+    destino: ["#art27"]
+  - origem: "#art24-par2"
+    tipo: parcial
+    destino: ["#art44-par1"]
+  - origem: "#art25"
+    tipo: parcial
+    destino: ["#art28"]
+    nota: Estrutura mínima do PPC de EPTNM. A 2/2026 tem 18 itens; são novos o formato da oferta (II), a acessibilidade (V), o itinerário formativo (VII), a carga horária com frequência mínima (VIII), a estratégia de integração com o mundo do trabalho (XIII) e o acompanhamento de egressos (XVIII).
+  - origem: "#art25-i"
+    tipo: equivalente
+    destino: ["#art28-i"]
+  - origem: "#art25-ii"
+    tipo: equivalente
+    destino: ["#art28-iii"]
+  - origem: "#art25-iii"
+    tipo: equivalente
+    destino: ["#art28-iv"]
+  - origem: "#art25-iv"
+    tipo: equivalente
+    destino: ["#art28-vi"]
+    nota: >-
+      "Saídas intermediárias" passam a "certificações intermediárias"; a especialização técnica deixa de ser item.
+  - origem: "#art25-v"
+    tipo: parcial
+    destino: ["#art28-ix"]
+    nota: Organização curricular passa a matriz com correspondência aos resultados de aprendizagem do perfil.
+  - origem: "#art25-vi"
+    tipo: equivalente
+    destino: ["#art28-x"]
+  - origem: "#art25-vii"
+    tipo: parcial
+    destino: ["#art28-xi"]
+    nota: Acrescenta a recomposição das aprendizagens.
+  - origem: "#art25-viii"
+    tipo: equivalente
+    destino: ["#art28-xii"]
+  - origem: "#art25-ix"
+    tipo: parcial
+    destino: ["#art28-xiv"]
+    nota: Inclui coordenadores e mediadores pedagógicos.
+  - origem: "#art25-x"
+    tipo: equivalente
+    destino: ["#art28-xv"]
+  - origem: "#art25-xi"
+    tipo: equivalente
+    destino: ["#art28-xvi"]
+  - origem: "#art25-xii"
+    tipo: parcial
+    destino: ["#art28-xvii"]
+    nota: Exige carga horária, atividades e ambientes do estágio obrigatório.
+  - origem: "#art25-par1"
+    tipo: parcial
+    destino: ["#art28-par1"]
+    nota: A 2/2026 acrescenta a avaliação da aprendizagem (inciso V).
+  - origem: "#art25-par1-i"
+    tipo: parcial
+    destino: ["#art28-par1-i"]
+    nota: Cargas horárias "presenciais e não presenciais".
+  - origem: "#art25-par1-ii"
+    tipo: equivalente
+    destino: ["#art28-par1-ii"]
+  - origem: "#art25-par1-iii"
+    tipo: equivalente
+    destino: ["#art28-par1-iii"]
+  - origem: "#art25-par1-iv"
+    tipo: parcial
+    destino: ["#art28-par1-iv"]
+    nota: Estágio "quando requerido pela natureza da ocupação".
+  - origem: "#art25-par2"
+    tipo: equivalente
+    destino: ["#art28-par3"]
+  - origem: "#art26"
+    tipo: parcial
+    destino: ["#art29"]
+    nota: Carga horária mínima; a 2/2026 fixa as faixas de 800, 1.000 ou 1.200 horas conforme o CNCT.
+  - origem: "#art26-par1"
+    tipo: parcial
+    destino: ["#art29-par2", "#art29-par3"]
+    nota: Mínimo de 3.000 h no integrado e no concomitante intercomplementar mantido; a 1/2021 limitava a 1.800 h a BNCC, e a 2/2026 admite contabilização simultânea de até 300 h entre formação geral básica e técnica, com integração curricular efetiva (§ 3º).
+  - origem: "#art26-par2"
+    tipo: parcial
+    destino: ["#art30"]
+    nota: EJA articulada à EPT no ensino médio; formação geral básica mínima de 1.200 h acrescida da carga da habilitação, com até 300 h de contabilização simultânea.
+  - origem: "#art26-par3"
+    tipo: equivalente
+    destino: ["#art29-par4", "#art17-par2"]
+    nota: Qualificação profissional técnica com no mínimo 20% da carga horária mínima da habilitação.
+  - origem: "#art26-par4"
+    tipo: equivalente
+    destino: ["#art29-par5"]
+    nota: Especialização técnica (pós-técnico) com 25% da carga mínima da habilitação.
+  - origem: "#art26-par5"
+    tipo: parcial
+    destino: ["#art28-par2", "#art50"]
+    nota: Carga não presencial no curso presencial; a 2/2026 admite até 30% da carga mínima em atividades síncronas, síncronas mediadas ou assíncronas nas formas concomitante e subsequente (art. 28, § 2º), com 70% presencial (art. 50); o integrado é só presencial (art. 49, § 5º).
+  - origem: "#art26-par6"
+    tipo: parcial
+    destino: ["#art49", "#art51", "#art52"]
+    nota: Os percentuais da EaD são substituídos pelos formatos semipresencial e a distância; os cursos da área de Gestão e Promoção da Saúde e Bem-Estar passam a ser só presenciais (art. 49, § 8º).
+  - origem: "#art26-par7"
+    tipo: parcial
+    destino: ["#art37-par3", "#art37-par6"]
+    nota: A carga do estágio, obrigatório ou não, é acrescida à mínima; na EPTNM o estágio obrigatório não pode passar de um terço da carga mínima da habilitação.
+  - origem: "#art26-par8"
+    tipo: equivalente
+    destino: ["#art31"]
+  - origem: "#art26-par9"
+    tipo: parcial
+    destino: ["#art18-par2"]
+  - origem: "#art27"
+    tipo: parcial
+    destino: ["#art32"]
+    nota: Abrangência da graduação e pós tecnológicas; o aperfeiçoamento tecnológico deixa a lista.
+  - origem: "#art28"
+    tipo: parcial
+    destino: ["#art33"]
+    nota: Elementos dos cursos superiores de tecnologia, com acréscimos (metodologias ativas, direitos humanos, uso responsável das tecnologias).
+  - origem: "#art29"
+    tipo: equivalente
+    destino: ["#art34"]
+  - origem: "#art29-par1"
+    tipo: parcial
+    destino: ["#art35-par2", "#art44-par4"]
+  - origem: "#art29-par2"
+    tipo: parcial
+    destino: ["#art45-par7"]
+  - origem: "#art30"
+    tipo: parcial
+    destino: ["#art35"]
+    nota: O PPC de CST segue a regulação da educação superior; sem lista própria de itens.
+  - origem: "#art31"
+    tipo: equivalente
+    destino: ["#art35-par1"]
+  - origem: "#art32"
+    tipo: parcial
+    destino: ["#art32", "#art69"]
+  - origem: "#art32-par1"
+    tipo: parcial
+    destino: ["#art35-par3", "#art69"]
+  - origem: "#art32-par2"
+    tipo: parcial
+    destino: ["#art32-parunico"]
+  - origem: "#art33"
+    tipo: parcial
+    destino: ["#art36"]
+    nota: A prática profissional supervisionada passa a dimensão formativa obrigatória dos cursos técnicos e CST, integrando a carga mínima, transversal ou em componentes próprios.
+  - origem: "#art33-par1"
+    tipo: parcial
+    destino: ["#art36-par1"]
+  - origem: "#art33-par2"
+    tipo: equivalente
+    destino: ["#art36-par2"]
+  - origem: "#art34"
+    tipo: parcial
+    destino: ["#art37"]
+    nota: Estágio; a 2/2026 define quando é obrigatório, exige justificativa no PPC e limita o obrigatório na EPTNM a um terço da carga mínima (§§ 2º, 4º e 6º).
+  - origem: "#art34-par1"
+    tipo: parcial
+    destino: ["#art37", "#art37-par5"]
+  - origem: "#art34-par2"
+    tipo: parcial
+    destino: ["#art28-par1-iv", "#art28-xvii"]
+  - origem: "#art35"
+    tipo: parcial
+    destino: ["#art7-par3"]
+  - origem: "#art36"
+    tipo: parcial
+    destino: ["#art31", "#art20"]
+  - origem: "#art36-parunico"
+    tipo: parcial
+    destino: ["#art20", "#art35-par3"]
+  - origem: "#art37"
+    tipo: parcial
+    destino: ["#art31", "#art9-par7"]
+  - origem: "#art38"
+    tipo: parcial
+    destino: ["#art29-par5"]
+  - origem: "#art39"
+    tipo: sem-equivalente
+    destino: []
+    nota: A 2/2026 não limita a carga dos cursos de atualização e aperfeiçoamento à do curso relacionado.
+  - origem: "#art40"
+    tipo: parcial
+    destino: ["#art48"]
+    nota: Conceito de EaD substituído pelas definições do art. 48 (EaD, atividade presencial, síncrona, síncrona mediada, assíncrona, polo e mediador).
+  - origem: "#art41"
+    tipo: sem-equivalente
+    destino: []
+    nota: Sem regra própria para qualificação profissional a distância; os formatos do art. 49 tratam dos cursos de EPTNM.
+  - origem: "#art42"
+    tipo: parcial
+    destino: ["#art53"]
+    nota: Condições de infraestrutura para cursos técnicos a distância; entram mediador pedagógico, credenciamento de polos e vedação de compartilhamento (§§ 1º a 4º).
+  - origem: "#art42-par1"
+    tipo: parcial
+    destino: ["#art3-v"]
+    nota: Indissociabilidade teoria-prática, agora princípio (integração entre teoria e prática).
+  - origem: "#art42-par2"
+    tipo: equivalente
+    destino: ["#art53-par5"]
+  - origem: "#art42-par3"
+    tipo: equivalente
+    destino: ["#art53-par6"]
+  - origem: "#art43"
+    tipo: equivalente
+    destino: ["#art53-par7"]
+  - origem: "#art43-par1"
+    tipo: parcial
+    destino: ["#art49-par8", "#art52"]
+    nota: O mínimo de 50% presencial na área da Saúde vira oferta exclusivamente presencial para a área de Gestão e Promoção da Saúde e Bem-Estar; nos demais, os mínimos do formato a distância (art. 52).
+  - origem: "#art43-par2"
+    tipo: equivalente
+    destino: ["#art53-par8"]
+  - origem: "#art43-par3"
+    tipo: parcial
+    destino: ["#art53-par2", "#art53-par3"]
+  - origem: "#art44"
+    tipo: parcial
+    destino: ["#art54"]
+  - origem: "#art45"
+    tipo: parcial
+    destino: ["#art38"]
+    nota: Avaliação da aprendizagem; a 2/2026 exige critérios no PPC, avaliação presencial em componentes a distância e veda avaliação automatizada para progressão (§§ 2º, 8º e 9º).
+  - origem: "#art45-parunico"
+    tipo: parcial
+    destino: ["#art28-xi", "#art38-par4"]
+    nota: Nivelamento passa a recomposição das aprendizagens e devolutivas pedagógicas.
+  - origem: "#art46"
+    tipo: parcial
+    destino: ["#art42"]
+    nota: Aproveitamento de estudos; a 2/2026 exige avaliação individual com instrumento formal (parágrafo único).
+  - origem: "#art47"
+    tipo: parcial
+    destino: ["#art43"]
+    nota: Certificação profissional; a 2/2026 exige o PPCP com itens mínimos e veda a certificação em cursos experimentais (§ 4º).
+  - origem: "#art48"
+    tipo: equivalente
+    destino: ["#art44"]
+  - origem: "#art49"
+    tipo: parcial
+    destino: ["#art45"]
+    nota: Expedição e registro de diplomas; a 2/2026 exige código autenticador do Sistec nos diplomas técnicos (§§ 2º e 3º).
+  - origem: "#art49-par1"
+    tipo: equivalente
+    destino: ["#art45-par1"]
+  - origem: "#art49-par2"
+    tipo: equivalente
+    destino: ["#art44-par4"]
+  - origem: "#art49-par3"
+    tipo: parcial
+    destino: ["#art45-par6"]
+  - origem: "#art49-par4"
+    tipo: equivalente
+    destino: ["#art45-par7"]
+  - origem: "#art49-par5"
+    tipo: equivalente
+    destino: ["#art44-par1"]
+  - origem: "#art49-par6"
+    tipo: parcial
+    destino: ["#art20"]
+  - origem: "#art50"
+    tipo: parcial
+    destino: ["#art44-par3"]
+  - origem: "#art51"
+    tipo: parcial
+    destino: ["#art46-i"]
+  - origem: "#art52"
+    tipo: equivalente
+    destino: ["#art46-ii"]
+  - origem: "#art53"
+    tipo: parcial
+    destino: ["#art57"]
+    nota: Formação inicial docente em nível superior por licenciatura, formação pedagógica, especialização ou programas especiais; transição até 31/12/2030 (art. 72).
+  - origem: "#art53-par1"
+    tipo: parcial
+    destino: ["#art57-par6"]
+  - origem: "#art53-par2"
+    tipo: parcial
+    destino: ["#art61"]
+    nota: Graduados não licenciados em exercício até a publicação continuam, desde que se matriculem em formação ou obtenham certificação de competência.
+  - origem: "#art53-par3"
+    tipo: parcial
+    destino: ["#art59"]
+  - origem: "#art54"
+    tipo: parcial
+    destino: ["#art62"]
+    nota: Notório saber; o fundamento passa ao art. 61, IV, da LDB.
+  - origem: "#art55"
+    tipo: parcial
+    destino: ["#art59-par1"]
+  - origem: "#art56"
+    tipo: equivalente
+    destino: ["#art58"]
+  - origem: "#art57"
+    tipo: parcial
+    destino: ["#art56"]
+  - origem: "#art58"
+    tipo: equivalente
+    destino: ["#art63"]
+  - origem: "#art58-parunico"
+    tipo: equivalente
+    destino: ["#art63-par1"]
+  - origem: "#art59"
+    tipo: parcial
+    destino: ["#art39", "#art40"]
+    nota: Avaliação da EPT, agora no Sinaept, coordenada pelo MEC por intermédio do Inep.
+  - origem: "#art60"
+    tipo: equivalente
+    destino: ["#art41"]
+  - origem: "#art61"
+    tipo: parcial
+    destino: ["#art64", "#art73"]
+    nota: Medidas complementares; a 2/2026 dá a coordenação nacional à SETEC e prazo de 180 dias para normas complementares dos sistemas.
+  - origem: "#art62"
+    tipo: parcial
+    destino: ["#art71-parunico"]
+    nota: Direito de conclusão; a 2/2026 assegura a conclusão com base na Res. CNE/CP nº 1/2021 aos matriculados até a sua publicação (e não mais pelas resoluções de 2012 e 2002).
+  - origem: "#art63"
+    tipo: parcial
+    destino: ["#art70"]
+    nota: Processos de autorização em tramitação; a 2/2026 estende a faculdade de adequação aos cursos técnicos.
+  - origem: "#art64"
+    tipo: parcial
+    destino: ["#art74"]
+    nota: Cláusula de revogação; cada resolução revoga as suas antecessoras (a 2/2026 revoga a própria 1/2021, art. 74, II).
+  - origem: "#art65"
+    tipo: parcial
+    destino: ["#art75"]
+    nota: Vigência na publicação; a 1/2021 a restringia à implantação de novas turmas.

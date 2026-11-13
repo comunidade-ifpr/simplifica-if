@@ -311,8 +311,11 @@ perguntas:
             - 'base tecnologica'
             - 'estruturacao dos cursos'
       observacoes: >-
-        Correspondência proposta pela leitura comparada dos dois textos, sem validação jurídica. A tabela
-        de correspondência 1/2021 → 2/2026 (fase 5) exige leitura humana e pode classificar como parcial.
+        Confirmado pela tabela de correspondência 1/2021 → 2/2026 da fase 5
+        (base-conhecimento/correspondencias/br-cne-cp-res-2021-1--br-cne-cp-res-2026-2.yaml, item #art20:
+        parcial → #art22, com os incisos mapeados um a um e o inciso X sem equivalente; `bun run kb
+        correspondencia br/cne-cp/res/2021/1#art20`). A tabela está em rascunho, sem validação jurídica;
+        o gabarito continua provisório até a revisão humana dela.
 
   - id: Q08
     origem: plano
@@ -866,9 +869,11 @@ perguntas:
             - '3\.?000\s*(?:h\b|horas)'
             - 'tres mil horas'
       observacoes: >-
-        Correspondência proposta pela leitura comparada, sem validação jurídica (tabela 1/2021 → 2/2026
-        da fase 5). No Markdown da nº 1/2021, o § 1º do art. 26 está partido por um heading espúrio
-        "#### Art. 35-A" (citação à LDB), defeito a sanear na fase 5.
+        Confirmado pela tabela de correspondência 1/2021 → 2/2026 da fase 5 (item #art26-par1: parcial →
+        #art29-par2 e #art29-par3; `bun run kb correspondencia br/cne-cp/res/2021/1#art26-par1`). A tabela
+        está em rascunho, sem validação jurídica; o gabarito continua provisório até a revisão humana dela.
+        O heading espúrio "#### Art. 35-A" que partia o § 1º do art. 26 no Markdown da nº 1/2021 foi
+        corrigido no saneamento da fase 5.
 
   - id: Q24
     origem: uso-real

@@ -15,6 +15,7 @@ import { avaliarResolvedor } from "./avaliacao/resolvedor.ts";
 import { ehIdExterno, ehIdNorma, idDoAto } from "./normas/ids.ts";
 import { registroPadrao, resolverCitacao } from "./normas/resolver.ts";
 import { ppcsQueCitam } from "./ppcs/citacoes.ts";
+import { registrarComandosNormas } from "./normas/comandos.ts";
 
 function json(valor: unknown): void {
   process.stdout.write(`${JSON.stringify(valor, null, 2)}\n`);
@@ -138,5 +139,7 @@ programa
       );
     }
   });
+
+registrarComandosNormas(programa);
 
 await programa.parseAsync();
