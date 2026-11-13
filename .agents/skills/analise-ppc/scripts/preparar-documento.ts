@@ -1,0 +1,217 @@
+/**
+ * Cria a rodada de análise e o `PPC.md` canônico (porte de `preparar_documento.py`).
+ *
+ * Entrada `.md`: tudo em TypeScript. Entrada `.docx`: a conversão em artefatos
+ * ainda é feita pelo Python (`converter_docx.py`, por subprocesso, até a
+ * trilha T3); a normalização do Markdown, a identificação e os arquivos da
+ * rodada são feitos aqui.
+ */
+import { copyFileSync, existsSync, mkdirSync, statSync, utimesSync } from "node:fs";
+import path from "node:path";
+import { type ObjetoPy, verdadeiro } from "@simplifica-if/kb/python/valores";
+import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
+import { normalizarMarkdown } from "./normalizador-markdown.ts";
+import {
+  agoraIso,
+  atualizarManifestoBase,
+  caminhoRelativoSeguro,
+  type CaminhosRodada,
+  caminhosRodada,
+  escreverJsonPy,
+  escreverTextoPy,
+  extrairIdentificacaoDaConversao,
+  type Identificacao,
+  inferirIdentificacaoDoMarkdown,
+  lerJsonPy,
+  lerTexto,
+  type Relogio,
+  relogioDoAmbiente,
+  resolverCaminho,
+  timestampSlug,
+  valorIdentificacaoPreenchido,
+} from "./rodada.ts";
+
+export const SCRIPT_CONVERSAO_DOCX = path.join(import.meta.dir, "converter_docx.py");
+
+export type OpcoesPreparacao = {
+  saidaBase?: string;
+  relogio?: Relogio;
+  caminhos?: CaminhosAnalise;
+  /** Interpretador Python da conversão DOCX; padrão: `ANALISE_PPC_PYTHON` ou `python3`. */
+  python?: string;
+};
+
+export type ArtefatosDocx = {
+  output_dir: string | null;
+  markdown: string | null;
+  markdown_bruto: string | null;
+  dados: string | null;
+  matriz_curricular: string | null;
+  ementario: string | null;
+};
+
+/** `Path.stem`: nome sem a última extensão. */
+function radical(arquivo: string): string {
+  const nome = path.basename(arquivo);
+  const ponto = nome.lastIndexOf(".");
+  return ponto > 0 && ponto < nome.length - 1 ? nome.slice(0, ponto) : nome;
+}
+
+/** `Path.suffix`. */
+function extensao(arquivo: string): string {
+  const nome = path.basename(arquivo);
+  const ponto = nome.lastIndexOf(".");
+  return ponto > 0 && ponto < nome.length - 1 ? nome.slice(ponto) : "";
+}
+
+function criarRodada(saidaBase: string, nomeBase: string, relogio: Relogio): string {
+  const base = resolverCaminho(saidaBase);
+  let rodada = path.join(base, `${timestampSlug(relogio)}-${nomeBase}`);
+  let sufixo = 2;
+  while (existsSync(rodada)) {
+    rodada = path.join(base, `${timestampSlug(relogio)}-${nomeBase}-${sufixo}`);
+    sufixo += 1;
+  }
+  mkdirSync(rodada, { recursive: true });
+  return rodada;
+}
+
+/** Normaliza o Markdown e grava o `PPC.md` canônico. */
+function prepararMarkdown(arquivo: string, caminhos: CaminhosRodada, skill: CaminhosAnalise): Identificacao {
+  const texto = lerTexto(arquivo);
+  escreverTextoPy(caminhos.ppc, normalizarMarkdown(texto).markdownNormalizado);
+  return inferirIdentificacaoDoMarkdown(texto, radical(arquivo), skill);
+}
+
+/** Valores preenchidos de `preferencial` sobrescrevem os de `base`. */
+export function mesclarIdentificacaoPreferindoPreenchidos(
+  base: Record<string, string>,
+  preferencial: Record<string, string>,
+): Record<string, string> {
+  const mesclada = { ...base };
+  for (const [chave, valor] of Object.entries(preferencial)) {
+    if (valorIdentificacaoPreenchido(valor)) mesclada[chave] = valor;
+  }
+  return mesclada;
+}
+
+/** Converte o DOCX em artefatos pelo Python (`converter_docx.py`). */
+export function converterDocx(arquivo: string, saida: string, python?: string): ArtefatosDocx {
+  const interpretador = python ?? process.env.ANALISE_PPC_PYTHON ?? "python3";
+  const processo = Bun.spawnSync([interpretador, "-B", SCRIPT_CONVERSAO_DOCX, arquivo, saida], {
+    stdout: "pipe",
+    stderr: "inherit",
+  });
+  if (processo.exitCode !== 0) {
+    throw new Error(
+      `A conversão DOCX falhou (${interpretador} ${SCRIPT_CONVERSAO_DOCX}, código ${processo.exitCode}).`,
+    );
+  }
+  return JSON.parse(processo.stdout.toString()) as ArtefatosDocx;
+}
+
+/** `shutil.copy2`: copia conteúdo, permissões e datas. */
+function copiarArquivo(origem: string, destino: string): void {
+  mkdirSync(path.dirname(destino), { recursive: true });
+  copyFileSync(origem, destino);
+  const info = statSync(origem);
+  utimesSync(destino, info.atime, info.mtime);
+}
+
+function prepararDocx(
+  arquivo: string,
+  caminhos: CaminhosRodada,
+  skill: CaminhosAnalise,
+  python: string | undefined,
+): { identificacao: Identificacao; conversao: ArtefatosDocx } {
+  mkdirSync(caminhos.artefatosConversaoDir, { recursive: true });
+  const artefatos = converterDocx(arquivo, caminhos.artefatosConversaoDir, python);
+  if (!artefatos.markdown) throw new Error("A conversão DOCX não gerou Markdown normalizado.");
+  const normalizado = normalizarMarkdown(lerTexto(artefatos.markdown)).markdownNormalizado;
+  escreverTextoPy(artefatos.markdown, normalizado);
+  escreverTextoPy(caminhos.ppc, normalizado);
+  if (artefatos.markdown_bruto) copiarArquivo(artefatos.markdown_bruto, caminhos.ppcBruto);
+  let identificacao = inferirIdentificacaoDoMarkdown(lerTexto(caminhos.ppc), radical(arquivo), skill);
+  if (artefatos.dados && existsSync(artefatos.dados)) {
+    try {
+      identificacao = mesclarIdentificacaoPreferindoPreenchidos(
+        identificacao,
+        extrairIdentificacaoDaConversao(lerJsonPy(artefatos.dados), radical(arquivo), skill) as Record<string, string>,
+      ) as Identificacao;
+    } catch {
+      // Como no Python: dados de conversão ilegíveis não impedem a rodada.
+    }
+  }
+  const conversao: ArtefatosDocx = {
+    output_dir: artefatos.output_dir,
+    markdown: artefatos.markdown,
+    markdown_bruto: artefatos.markdown_bruto,
+    dados: artefatos.dados,
+    matriz_curricular: artefatos.matriz_curricular,
+    ementario: artefatos.ementario,
+  };
+  escreverJsonPy(caminhos.preparacaoDocx, conversao);
+  return { identificacao, conversao };
+}
+
+export type ResultadoPreparacao = {
+  rodadaDir: string;
+  metadata: string;
+  manifesto: string;
+  ppc: string;
+  resumo: ObjetoPy;
+};
+
+/** `preparar_documento`: cria a rodada, o `PPC.md`, `metadata.json` e `manifesto-rodada.json`. */
+export function prepararDocumento(arquivoEntrada: string, opcoes: OpcoesPreparacao = {}): ResultadoPreparacao {
+  const skill = opcoes.caminhos ?? caminhosPadrao();
+  const relogio = opcoes.relogio ?? relogioDoAmbiente;
+  const arquivo = resolverCaminho(arquivoEntrada);
+  if (!existsSync(arquivo)) throw new Error(`Arquivo não encontrado: ${arquivo}`);
+  const tipo = extensao(arquivo).toLowerCase();
+  if (tipo !== ".md" && tipo !== ".docx") throw new Error("A entrada deve ser um arquivo .md ou .docx.");
+
+  const rodada = criarRodada(
+    opcoes.saidaBase || skill.outputDir,
+    radical(arquivo).toLowerCase().replaceAll(" ", "-"),
+    relogio,
+  );
+  const caminhos = caminhosRodada(rodada);
+  mkdirSync(caminhos.suporteDir, { recursive: true });
+
+  let identificacao: Identificacao;
+  let conversao: ArtefatosDocx | undefined;
+  if (tipo === ".md") identificacao = prepararMarkdown(arquivo, caminhos, skill);
+  else ({ identificacao, conversao } = prepararDocx(arquivo, caminhos, skill, opcoes.python));
+
+  const metadata: ObjetoPy = {
+    curso: identificacao.curso,
+    campus: identificacao.campus,
+    modalidade: identificacao.modalidade,
+    arquivo_origem: arquivo,
+    ppc_markdown: path.relative(rodada, caminhos.ppc),
+    rodada_dir: resolverCaminho(rodada),
+    suporte_dir: resolverCaminho(caminhos.suporteDir),
+    criado_em: agoraIso(relogio),
+  };
+  for (const chave of ["forma_oferta", "modalidade_ensino", "eixo_tecnologico"] as const) {
+    if (verdadeiro(identificacao[chave])) metadata[chave] = identificacao[chave];
+  }
+  if (conversao) metadata.artefatos_conversao_docx = conversao;
+
+  escreverJsonPy(caminhos.metadata, metadata);
+  const manifesto = atualizarManifestoBase(rodada, { caminhos: skill, relogio });
+  return {
+    rodadaDir: rodada,
+    metadata: caminhos.metadata,
+    manifesto: caminhos.manifesto,
+    ppc: caminhos.ppc,
+    resumo: {
+      rodada_dir: caminhoRelativoSeguro(rodada, process.cwd()),
+      curso: metadata.curso,
+      campus: metadata.campus,
+      modalidade: metadata.modalidade,
+      ppc_sha256: manifesto.ppc_sha256,
+    },
+  };
+}
