@@ -100,7 +100,9 @@ Aceite fontes externas, como Google Sheets ou Edupage, somente quando forem apon
 
 ## PPCs
 
-Quando a página oficial do curso indicar o Projeto Pedagógico de Curso, registre o PPC vigente no objeto `ppc` do curso. A base não mantém múltiplos PPCs históricos por curso; PPCs históricos relevantes ficam documentados nas movimentações e nas evidências SEI.
+Quando a página oficial do curso indicar o Projeto Pedagógico de Curso, registre o PPC vigente no objeto `ppc` do curso.
+
+**Política de versão: a base guarda só o PPC vigente de cada curso.** Quando o curso ganha PPC novo (por exemplo, nas reformulações exigidas pelo art. 71 da Res. CNE/CP nº 2/2026), atualize `ppc.url`, reconverta e substitua o Markdown no mesmo caminho. A versão anterior continua recuperável pelo histórico do git (`git log --follow -- base-conhecimento/<markdown_path>` e `git show <commit>:base-conhecimento/<markdown_path>`); o `conversao_commit` do front matter aponta o commit de cada conversão reconstruída. Por isso o ID do PPC não tem versão: é `ppc:<campus_id>/<curso_slug>`. PPCs históricos relevantes para a gestão ficam documentados nas movimentações e nas evidências SEI.
 
 Regras:
 
@@ -122,6 +124,26 @@ Para converter PDFs em Markdown, use `scripts/converter_ppcs_markdown.py`. Depoi
 bun run scripts/gerar_indice_ppcs.ts
 bun run scripts/validar_base.ts
 ```
+
+### Proveniência do PPC convertido
+
+Todo PPC em `institucional/ifpr/ppcs/<campus_id>/<curso_slug>.md` começa com front matter YAML (contrato em `packages/kb/src/ppcs/front-matter.ts`):
+
+| Campo | Conteúdo |
+|---|---|
+| `id` | `ppc:<campus_id>/<curso_slug>` |
+| `fonte_url` | URL do arquivo convertido; deve ser igual ao `ppc.url` vigente |
+| `fonte_sha256` | SHA-256 dos bytes baixados, ou `desconhecido` |
+| `convertido_em` | data da conversão (AAAA-MM-DD) |
+| `conversor` | script, versões do `pymupdf4llm` e do PyMuPDF e uso de OCR, ou `desconhecido` |
+| `proveniencia` | `registrada` (gravada pelo conversor) ou `reconstruida` (preenchida depois) |
+| `conversao_commit`, `pos_processamento_commits`, `nota_proveniencia` | só na reconstruída: commit da conversão, commits de limpeza posteriores e o motivo do que ficou `desconhecido` |
+
+O conversor grava a proveniência `registrada` em toda conversão nova. Os 202 PPCs convertidos antes de 13/11/2026 têm proveniência `reconstruida` pelo histórico do git: `convertido_em` é a data do commit em que o texto entrou na base, e `fonte_url` é o `ppc.url` do campus JSON nesse commit. O hash e a versão do conversor ficaram `desconhecido`, porque o PDF da época não foi guardado e o PDF baixado hoje não prova ser o mesmo; não os preencha à mão. Ao reconverter um PPC, a proveniência passa a `registrada`.
+
+`validar_base.ts` acusa PPC sem front matter, `id` fora do caminho e `fonte_url` diferente do `ppc.url` vigente: se o curso trocou de PPC, reconverta (ou, se só a URL mudou de endereço, confira o documento e reconverta mesmo assim, para registrar o hash).
+
+Quem lê o Markdown por código deve ignorar o front matter: `corpoPpc` e `mascararFrontMatter` (que mantém os números de linha) estão no mesmo módulo.
 
 ## Movimentações e SEI
 
@@ -149,7 +171,13 @@ Regras:
 
 A coleção `institucional/ifpr/ppcs/` contém PPCs convertidos e índices derivados:
 
-- `institucional/ifpr/ppcs/index.json`;
-- `institucional/ifpr/ppcs/secoes/*.jsonl`.
+- `institucional/ifpr/ppcs/index.json` (schema `ppcs_index`, versão 2): um item por PPC, com `taxonomia` e o resumo da proveniência;
+- `institucional/ifpr/ppcs/secoes/<tipo>.jsonl` (schema `ppcs_secao`): uma linha por seção, com `preview` (500 primeiros caracteres do texto limpo), `linha_inicio` e `linha_fim` no arquivo `.md` (contadas desde 1, com o front matter), `heading`, `numeracao` e `origem_tipo`.
 
-Esses arquivos são gerados automaticamente. Não os edite manualmente; ajuste o registro em `dados/institucional/` ou o Markdown convertido e rode novamente os comandos de publicação.
+**Texto integral fora do git.** O git guarda só preview e linhas: o texto integral das seções duplicaria o dos PPCs (cerca de 64 MB) e incharia o histórico e o `site/` a cada regeneração. Quem precisar dele lê as linhas do próprio Markdown, com `lerTextoSecao` (`packages/kb/src/ppcs/citacoes.ts`) ou `textoDaSecao` (`packages/kb/src/ppcs/secoes.ts`). O texto integral indexado vai para o `kb.sqlite` da fase 6, derivado e fora do git.
+
+Esses arquivos são gerados automaticamente por `scripts/gerar_indice_ppcs.ts` (lógica em `packages/kb/src/ppcs/secoes.ts`). Não os edite manualmente; ajuste o registro em `dados/institucional/` ou o Markdown convertido e rode novamente os comandos de publicação.
+
+**Taxonomia por nível.** Cursos de nível médio usam a taxonomia `tecnico`, em que cada tipo aponta os incisos do art. 28 da Res. CNE/CP nº 2/2026 que cobre (`identificacao` I, `formato_oferta` II, `justificativa` e `objetivos` III, `requisitos_acesso` IV, `acessibilidade_inclusao` V, `perfil_egresso` VI, `itinerario_formativo` VII, `carga_horaria` VIII, `organizacao_curricular` e `matriz_curricular` IX, `aproveitamento_estudos` X, `avaliacao` XI, `infraestrutura` XII, `mundo_trabalho` XIII, `corpo_docente` XIV, `certificados_diplomas` XV, `prazo_integralizacao` XVI, `estagio_praticas` XVII, `acompanhamento_egresso` XVIII e § 4º), mais tipos do modelo do IFPR sem inciso próprio. Graduação, pós-graduação e FIC usam a taxonomia `geral`, sem os tipos próprios do art. 28 e com `contexto_institucional` e `atividades_complementares`. A lista completa, com rótulos e incisos, fica em `secoes.taxonomias` do índice.
+
+**Como o tipo é decidido.** Cabeçalhos de página ("Campus Curitiba do IFPR", "PROENS") não abrem seção, e rótulos internos ("EMENTA:", "Bibliografia básica", "1º ano") ficam no texto da seção. No ementário, cada "Componente curricular: …" abre uma seção. O tipo vem das regras sobre o título (`origem_tipo: titulo`); sem regra, herda do título numerado ancestral (`numeracao`) ou da seção anterior (`contexto`). O que vem antes do primeiro título numerado é `pretextual`, e tudo depois do primeiro anexo é `anexos`. `pretextual` e `outros` (não classificado) não ganham arquivo. Seções com menos de 40 caracteres de texto ficam fora do índice.

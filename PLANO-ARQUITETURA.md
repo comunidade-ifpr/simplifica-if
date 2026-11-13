@@ -95,7 +95,7 @@ fichas analise-ppc ──┘               └─ paridade (texto, json, schema)
   - `curso:curitiba/tecnico-em-enfermagem` (a chave atual de `dados/institucional/`);
   - `campus:curitiba`;
   - `cnct:tecnico-em-enfermagem`;
-  - `ppc:curitiba/tecnico-em-enfermagem@<versão>`;
+  - `ppc:curitiba/tecnico-em-enfermagem`, sem versão: a base guarda só o PPC vigente de cada curso, e as versões anteriores se recuperam pelo histórico do git (decisão de 13/11/2026, fase 4);
   - `ficha:CT-CURR-12`.
 
 **Só o texto vigente.** Os dispositivos guardam a redação atual. Notas como "Redação dada pela Lei X" viram metadado do dispositivo, sem modelar redações históricas.
@@ -269,9 +269,9 @@ Esta fase vem antes do SQLite porque é barata e dá o maior ganho em busca tem�
 - **Proveniência no front matter de cada PPC convertido:**
   - URL de origem, hash do arquivo-fonte, data de conversão e versão do conversor;
   - o ano do documento continua em `dados/institucional/`.
-- **Política de versão de PPC.** As adequações exigidas pelo art. 71 vão gerar reformulações em dois anos. Decidir se a base guarda só o PPC vigente, com o histórico no git, ou várias versões, com `ppc:...@<versão>`.
+- **Política de versão de PPC.** As adequações exigidas pelo art. 71 vão gerar reformulações em dois anos. **Decidido em 13/11/2026:** a base guarda só o PPC vigente de cada curso; o PPC novo substitui o Markdown no mesmo caminho, e as versões anteriores se recuperam pelo git (`git log --follow`, `git show <commit>:<caminho>`). O ID fica `ppc:<campus_id>/<curso_slug>`, sem `@<versão>`.
 - **Índice de seções v2, ainda no pipeline atual:**
-  - guarda o texto integral da seção, em vez do preview de 500 caracteres;
+  - guarda as linhas de início e fim de cada seção no Markdown, além do preview de 500 caracteres. **Decidido em 13/11/2026:** o texto integral não é versionado (duplicaria cerca de 64 MB dos PPCs e incharia o histórico e o `site/` a cada regeneração); quem precisar dele lê as linhas do Markdown, e o texto integral indexado fica no `kb.sqlite` da fase 6, derivado e fora do git;
   - taxonomia separada por nível. Para cursos técnicos, ela cobre os incisos do art. 28. Graduação, pós e FIC (90 PPCs) ficam com uma taxonomia geral.
   - Hoje, "Acompanhamento do egresso" cai em `outros` em 107 de 107 ocorrências. Medido em 13/11/2026: 65% das ocorrências de seção, 78% dos títulos distintos e 60% do texto vão para `outros`.
 
@@ -331,6 +331,7 @@ Esta fase vem antes do SQLite porque é barata e dá o maior ganho em busca tem�
   - FTS5 com `tokenize="unicode61 remove_diacritics 2"`;
   - o FTS5 não tem stemmer para português, então uma coluna auxiliar recebe os termos reduzidos por um stemmer em TypeScript;
   - um léxico de sinônimos por tipo de seção completa a busca.
+- **Texto integral das seções de PPC** (decisão da fase 4): o banco guarda o texto de cada seção, recortado pelas linhas do índice (`linha_inicio`–`linha_fim`); os JSONL versionados ficam só com preview e linhas.
 - **Citações extraídas dos PPCs,** pelo resolvedor da fase 2, com seção e papel (fundamento ou referência bibliográfica).
 - **Fatos de PPC cruzados com o SUAP.**
   - O SUAP já tem a carga horária das matrizes, inclusive a situação "CH divergentes".
@@ -490,15 +491,15 @@ O `kb.sqlite` nunca é o lugar de edição.
 Decididas:
 - núcleo em `packages/kb`;
 - corpus DOCX na pasta `PPCs Dentec` do OneDrive;
-- Movimentações fora do escopo.
+- Movimentações fora do escopo;
+- política de versão de PPC: só o vigente, com o histórico no git e ID `ppc:<campus_id>/<curso_slug>` sem versão (13/11/2026, fase 4).
 
 Em aberto:
 
 1. **Fallback "rendered" de figuras na conversão DOCX:** `soffice` ou remover com alerta (T3).
 2. **Conversor de PDF de PPCs:** porte ou exceção Python, conforme a medição de T5.
-3. **Política de versão de PPC:** só o vigente ou várias versões (fase 4).
-4. **Modelo e orçamento do harness de avaliação:** modelo fixado e número de execuções por pergunta (fase 1).
-5. **Data do DOU e URL oficial da Res. CNE/CP 2/2026:** necessárias para `publicada_em` e `vigente_de` (fase 5).
+3. **Modelo e orçamento do harness de avaliação:** modelo fixado e número de execuções por pergunta (fase 1).
+4. **Data do DOU e URL oficial da Res. CNE/CP 2/2026:** necessárias para `publicada_em` e `vigente_de` (fase 5).
 
 ## Andamento
 
@@ -594,6 +595,36 @@ Em aberto:
 - Removidos: `gerar_relatorio_html.py`, `publicar_surge.py`, `analise_ppc.py`, `common.py` e `test_flow.py`.
 - Testes: `relatorio.test.ts` (25 casos) porta os 20 testes de relatório e Surge de `test_flow.py` (o 21º, sem CLI de modelo, já estava em `orquestracao.test.ts`) e acrescenta a paridade do `_HTMLPrettyPrinter`, dos blocos e do unescape de atributos; `paridade-t2.test.ts` (8 casos) cobre o kit novo. O `pytest` ficou com os extratores DOCX.
 - Python que continua: `conversao_docx/` e `converter_docx.py`, chamados por subprocesso para entrada `.docx` (T3); fora da skill, `scripts/converter_ppcs_markdown.py` (T5) e `verificar-calendario/scripts/render_relatorio_pdf.py` (T4).
+
+**Fase 4 concluída em 13/11/2026** (branch `worktree-agent-a3f03148ee02d376b`).
+
+- **Política de PPC:** decisão do usuário: só o PPC vigente, histórico no git, ID `ppc:<campus_id>/<curso_slug>` sem versão. Registrada em [Arquitetura alvo](#arquitetura-alvo), na fase 4 e em `docs/curadoria-metadados-institucionais.md`.
+- **Proveniência:** front matter YAML nos 202 PPCs (`id`, `fonte_url`, `fonte_sha256`, `convertido_em`, `conversor`, `proveniencia`), contrato zod em `packages/kb/src/ppcs/front-matter.ts`, lido pelo parser `failsafe` das normas.
+  - Os 202 têm proveniência `reconstruida` pelo git: `convertido_em` e `conversao_commit` do último commit que acrescentou ou reconverteu o arquivo (191 em 11/05/2026, os demais entre 19/05 e 06/07); `fonte_url` do campus JSON nesse commit, igual ao `ppc.url` atual nos 202; `pos_processamento_commits` em 200 (limpezas de ruído e remoção de sumário).
+  - Ficaram `desconhecido` o hash e o conversor: o PDF da época não foi guardado, e baixar os 202 PDFs hoje não provaria que são os arquivos convertidos. O script de preenchimento ficou registrado no commit `367a87b` e foi removido.
+  - `scripts/converter_ppcs_markdown.py` grava `registrada` (SHA-256 dos bytes baixados, versões do `pymupdf4llm` e do PyMuPDF, OCR), no mesmo formato do serializador TypeScript.
+  - `validar_base.ts` exige o front matter, o `id` coerente com o caminho e `fonte_url` igual ao `ppc.url` vigente (URL nova exige reconversão).
+- **Consumidores:** `kb citacoes`, `kb adequacao-art71`, `kb avaliar-resolvedor` e os gabaritos leem o PPC com o front matter em branco, preservando as linhas do arquivo (as citações deslocam de 10 a 13 linhas; Q02 regenerado, só com `linha` alterada; 59 PPCs, mesmas ocorrências e regras; resolvedor com as mesmas métricas). O `preparar-documento` da `analise-ppc` descarta o front matter: `PPC.md` e identificação idênticos nos 202 PPCs, e a rodada até `montar-grupos-subagents` idêntica no PPC de Enfermagem de Curitiba.
+- **Índice de seções v2** (`packages/kb/src/ppcs/secoes.ts`, schemas `ppcs_index` v2 e `ppcs_secao` novo):
+  - preview de 500 caracteres com `linha_inicio` e `linha_fim` no `.md` (contadas com o front matter), `numeracao`, `nivel`, `taxonomia` e `origem_tipo`; `textoDaSecao` e `lerTextoSecao` (`packages/kb`) reconstroem o texto integral pelas linhas, testado nas 20 mil seções dos 202 PPCs;
+  - decisão: o git guarda preview e linhas; o texto integral fica no `kb.sqlite` da fase 6. Uma primeira versão com texto integral nos JSONL (63,7 MB) foi descartada antes do merge e não ficou no histórico;
+  - taxonomia `tecnico` (32 tipos; os 22 ligados ao art. 28 cobrem os incisos I a XVIII e os §§ 1º e 4º) e `geral` (29 tipos), publicadas em `secoes.taxonomias`;
+  - segmentação: cabeçalhos de página não abrem seção; rótulos internos ("EMENTA:", "Bibliografia básica", "1º ano") ficam no texto; "Componente curricular: …" abre seção no ementário; título sem regra herda do ancestral numerado ou da seção anterior; zonas pré-textual e de anexos.
+- **Medida** (ocorrências com 40+ caracteres; antes com a segmentação e a taxonomia v1):
+
+  | | Antes | Só regras de título novas | v2 |
+  |---|---|---|---|
+  | Técnicos em `outros` | 60,3% (8.521 de 14.131) | 35,5% | **1,3%** (118 de 9.086) |
+  | Geral em `outros` | 69,5% (11.253 de 16.185) | 31,4% | 0,9% (102 de 11.924) |
+  | "Acompanhamento do egresso" em `outros` | 107 de 107 | — | 0; 109 seções `acompanhamento_egresso` |
+
+  Nos técnicos, 3,0% das ocorrências são `pretextual` e 12,5% `anexos`. O tipo vem do título em 56%, da numeração em 3% e do contexto em 39% (sobretudo componentes do ementário e subdivisões de anexos e regulamentos); amostras de herança por contexto mostraram acerto alto, mas sem medida formal.
+- **Tamanho:** `index.json` 152 KB → 235 KB; `secoes/` 9,0 MB → 19,9 MB (32 arquivos; o maior, `ementas.jsonl`, 4,6 MB). O aumento vem de mais seções indexadas (anexos, componentes do ementário e tipos novos) e dos campos novos por linha.
+- **Pendências:**
+  - Q5 e Q6 no harness, quando houver linha de base (fase 1);
+  - revisão humana de uma amostra da classificação, sobretudo das heranças por contexto;
+  - o conversor ainda lê e grava `conversao` nos campus JSON gerados de `base-conhecimento/`, e não em `dados/institucional/` (trilha T5);
+  - a identificação de curso da `analise-ppc` pode usar o `id` do front matter (hoje ele é só descartado).
 
 ## Histórico de revisões
 
