@@ -37,7 +37,7 @@ Para consultar ou alterar campi, cursos, metadados de PPC e SUAP, horários dos 
 
 - [Curadoria de metadados institucionais](base-conhecimento/docs/curadoria-metadados-institucionais.md)
 
-Para solicitações sobre `Movimentações de Cursos`, a única base que continua no Notion, leia primeiro:
+Para solicitações sobre `Movimentações de Cursos`, a única base que continua no Notion (cada movimentação aponta para o curso pela chave `campus_id/curso_slug` em `Curso ID`), leia primeiro:
 
 - [Operação do Notion por agentes](base-conhecimento/docs/notion-operacao-agentes.md)
 

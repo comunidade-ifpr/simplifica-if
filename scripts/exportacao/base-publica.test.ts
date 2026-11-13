@@ -92,7 +92,7 @@ describe("auditarBase", () => {
 
   test("exige curso em movimentação com processo SEI", () => {
     const erros = auditarBase(base({ movimentacoes: [movimentacao({ numeroSei: "123" })] }));
-    expect(erros).toEqual(["Movimentação de curso 'Mov' (pg-mov): SEI Processo informado sem relação Curso"]);
+    expect(erros).toEqual(["Movimentação de curso 'Mov' (pg-mov): SEI Processo informado sem Curso ID"]);
   });
 });
 

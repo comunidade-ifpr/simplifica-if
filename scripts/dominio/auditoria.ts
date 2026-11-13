@@ -79,12 +79,12 @@ function auditarMovimentacoes(movimentacoes: Movimentacao[], cursos: Set<string>
   const erros: string[] = [];
   for (const movimentacao of movimentacoes) {
     const nome = rotulo("Movimentação de curso", movimentacao);
-    if (movimentacao.cursoIds.length > 1) erros.push(`${nome}: relação Curso deve conter no máximo 1 página`);
+    if (movimentacao.cursoIds.length > 1) erros.push(`${nome}: Curso ID deve conter uma única chave`);
     for (const cursoId of movimentacao.cursoIds) {
-      if (!cursos.has(cursoId)) erros.push(`${nome}: relação Curso aponta para página desconhecida: ${cursoId}`);
+      if (!cursos.has(cursoId)) erros.push(`${nome}: Curso ID não existe em dados/institucional/: ${cursoId}`);
     }
     if (movimentacao.numeroSei.trim() && !movimentacao.cursoIds.length) {
-      erros.push(`${nome}: SEI Processo informado sem relação Curso`);
+      erros.push(`${nome}: SEI Processo informado sem Curso ID`);
     }
   }
   return erros;

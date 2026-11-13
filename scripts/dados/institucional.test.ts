@@ -7,7 +7,6 @@ import type { Campus, Curso } from "../dominio/curso.ts";
 import type { EditalIngresso, OfertaIngresso, ProcessoSeletivo } from "../dominio/ingresso.ts";
 import type { Movimentacao } from "../dominio/movimentacao.ts";
 import { montarCampi, montarProcessos } from "../exportacao/base-publica.ts";
-import { vincularMovimentacoes } from "../exportar_base_publica.ts";
 import { RepositorioCursosLocal } from "./cursos.ts";
 import { carregarDadosInstitucionais, deDominio, gravarDadosInstitucionais, paraDominio } from "./institucional.ts";
 import { validarDadosInstitucionais } from "./validacao.ts";
@@ -148,10 +147,10 @@ describe("dados/institucional", () => {
     const { dados, erros } = carregarDadosInstitucionais(raiz);
     expect(erros).toEqual([]);
 
-    const local = paraDominio(dados);
+    // No Notion, a movimentação aponta para o curso por `Curso ID`, a chave canônica.
     const baseLocal: BaseInstitucional = {
-      ...local,
-      movimentacoes: vincularMovimentacoes([movimentacao], local.cursos),
+      ...paraDominio(dados),
+      movimentacoes: [{ ...movimentacao, cursoIds: ["exemplo/tecnico-em-exemplo"] }],
     };
     expect(montarCampi(baseLocal)).toEqual(montarCampi(baseNotion));
     expect(montarProcessos(baseLocal, "2026-11-13")).toEqual(montarProcessos(baseNotion, "2026-11-13"));
@@ -201,18 +200,6 @@ describe("dados/institucional", () => {
     gravarDadosInstitucionais(dados, raiz);
     const { erros } = validarDadosInstitucionais(raiz);
     expect(erros.some((erro) => erro.includes("página desconhecida ou sem campus_id: fantasma"))).toBe(true);
-  });
-});
-
-describe("movimentações do Notion", () => {
-  test("passam a apontar para a chave canônica do curso; página desconhecida fica para a auditoria", () => {
-    const local = paraDominio(deDominio(baseNotion));
-    const [vinculada, solta] = vincularMovimentacoes(
-      [movimentacao, { ...movimentacao, id: "pg-mov-2", cursoIds: ["pg-outro"] }],
-      local.cursos,
-    );
-    expect(vinculada!.cursoIds).toEqual(["exemplo/tecnico-em-exemplo"]);
-    expect(solta!.cursoIds).toEqual(["pg-outro"]);
   });
 });
 

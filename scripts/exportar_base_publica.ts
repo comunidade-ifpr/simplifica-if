@@ -9,7 +9,6 @@ import { lerArgumentos } from "./cli.ts";
 import { carregarDataSources, RAIZ_BASE } from "./config.ts";
 import { carregarDadosInstitucionais, paraDominio } from "./dados/institucional.ts";
 import { auditarBase, type BaseInstitucional } from "./dominio/auditoria.ts";
-import type { Movimentacao } from "./dominio/movimentacao.ts";
 import { montarCampi, montarIndiceCampi, montarIndiceProcessos, montarProcessos } from "./exportacao/base-publica.ts";
 import { dataLocalIso } from "./datas.ts";
 import { ClienteNotion } from "./notion/cliente.ts";
@@ -38,21 +37,6 @@ function gravarJson(caminho: string, dados: unknown, dryRun: boolean) {
   console.log(`exportado: ${relativo}`);
 }
 
-/**
- * As movimentações ainda apontam para a página do curso no Notion antigo; aqui a relação passa a usar
- * a chave canônica do curso. Página sem curso correspondente fica como está, e a auditoria a acusa.
- */
-export function vincularMovimentacoes(
-  movimentacoes: Movimentacao[],
-  cursos: Array<{ id: string; notionPageId: string }>,
-): Movimentacao[] {
-  const chavePorPagina = new Map(cursos.filter((c) => c.notionPageId).map((c) => [c.notionPageId, c.id]));
-  return movimentacoes.map((movimentacao) => ({
-    ...movimentacao,
-    cursoIds: movimentacao.cursoIds.map((id) => chavePorPagina.get(id) ?? id),
-  }));
-}
-
 async function main(): Promise<number> {
   const args = lerArgumentos(process.argv.slice(2), { "dry-run": { type: "boolean" } }, { uso: USO });
   if ("codigo" in args) return args.codigo;
@@ -65,10 +49,8 @@ async function main(): Promise<number> {
     return 1;
   }
   const local = paraDominio(dados);
-  const movimentacoes = vincularMovimentacoes(
-    await carregarMovimentacoes(ClienteNotion.doAmbiente(), carregarDataSources()),
-    local.cursos,
-  );
+  // Cada movimentação aponta para o curso pela chave canônica em `Curso ID`.
+  const movimentacoes = await carregarMovimentacoes(ClienteNotion.doAmbiente(), carregarDataSources());
   const base: BaseInstitucional = { ...local, movimentacoes };
   const contagem = {
     campi: base.campi.length,
@@ -111,4 +93,4 @@ async function main(): Promise<number> {
   return 0;
 }
 
-if (import.meta.main) process.exitCode = await main();
+process.exitCode = await main();
