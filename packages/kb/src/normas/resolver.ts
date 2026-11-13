@@ -651,6 +651,14 @@ function achadosEstruturais(t: string, registro: Registro): Achado[] {
         tipo = plural.tipo;
         orgaoAntes = plural.orgao ? { orgao: plural.orgao, inicio: 0, fim: 0 } : null;
         regra = "enumeracao";
+      } else if (
+        nucleo.comMarcador &&
+        nucleo.ano !== null &&
+        /^\s*\(?\s*(?:cne\s*\/\s*c(?:p|eb|be|es)|consup(?:\s*\/\s*ifpr)?)\b/.test(t.slice(nucleo.fim, nucleo.fim + 30))
+      ) {
+        // Sem tipo, com o órgão logo depois: "nº 1, de 5 de janeiro de 2021 (CNE/CP)".
+        tipo = "res";
+        regra = "tipo-implicito";
       } else {
         continue;
       }

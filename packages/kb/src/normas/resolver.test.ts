@@ -80,6 +80,7 @@ describe("resolverCitacao", () => {
     ["Resolução CNE/CP nº 1, de 5 de janeiro<br>de 2021", "br/cne-cp/res/2021/1", "estrutural"],
     ["Resolução nº 1, de 5 de janeiro de 2021 (CNE/CP)", "br/cne-cp/res/2021/1", "estrutural"],
     ["CNE/CP nº 1/2021", "br/cne-cp/res/2021/1", "tipo-implicito"],
+    ["n° 1, de 5 de janeiro de 2021 (CNE/CP)", "br/cne-cp/res/2021/1", "tipo-implicito"],
     [
       "Resolução CNE/CEB nº 1/2021, que define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica",
       "br/cne-cp/res/2021/1",
