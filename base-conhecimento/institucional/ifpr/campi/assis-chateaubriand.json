@@ -43,9 +43,10 @@
         "markdown_path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-agropecuaria.md",
         "metadados": {
           "ano_documento": {
-            "ano": 2023,
-            "trecho_fonte": "Ano do documento registrado no Notion: 2023",
-            "status_curadoria": "precisa_revisao"
+            "ano": 2021,
+            "trecho_fonte": "Ano do documento registrado no Notion: 2021",
+            "status_curadoria": "revisado",
+            "revisado_em": "2026-11-13"
           },
           "vagas": {
             "quantidade": 40,
