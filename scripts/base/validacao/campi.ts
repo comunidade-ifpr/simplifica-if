@@ -2,7 +2,7 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { naBase } from "../caminhos.ts";
-import { itensDe, textoDe, valoresIguais } from "../json.ts";
+import { itensDe, textoDe, valoresIguais } from "@simplifica-if/kb/json";
 import type { CampusJson, IndiceCampiJson } from "../tipos-schemas.ts";
 import { type Contexto, ehRecebido, listaOrdenada, mesmosElementos, RE_SLUG, type Recebido } from "./contexto.ts";
 

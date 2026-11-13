@@ -1,7 +1,7 @@
 import { readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { RAIZ_PROJETO } from "../config.ts";
-import { compararTexto } from "./texto.ts";
+import { compararTexto } from "@simplifica-if/kb/texto";
 
 /**
  * Caminhos da base pública. Os `path` dos manifestos continuam relativos a

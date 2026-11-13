@@ -3,7 +3,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { ehDiretorio, listarDiretorio, naBase } from "../caminhos.ts";
 import { LIMITE_PREVIEW_SECAO, TIPOS_SECAO_INDEXADOS } from "../indice-ppcs.ts";
-import { ehObjeto, itensDe, textoDe, valoresIguais } from "../json.ts";
+import { ehObjeto, itensDe, textoDe, valoresIguais } from "@simplifica-if/kb/json";
 import type { IndicePpcpsJson, IndicePpcsJson } from "../tipos-schemas.ts";
 import {
   aparar,
@@ -13,7 +13,7 @@ import {
   linhasDeArquivo,
   ordenarCaminhos,
   ordenarTextos,
-} from "../texto.ts";
+} from "@simplifica-if/kb/texto";
 import { campiLegiveis, type CursoCampus, type PpcCurso } from "./campi.ts";
 import { type Contexto, ehRecebido, listaOrdenada, mesmosElementos, type Recebido } from "./contexto.ts";
 

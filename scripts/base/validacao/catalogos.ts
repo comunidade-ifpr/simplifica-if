@@ -1,7 +1,7 @@
 /** Validação dos catálogos (catalogos_manifest.json e CNCT). */
 import path from "node:path";
 import { listarDiretorio, listarRecursivo, naBase } from "../caminhos.ts";
-import { textoDe, valoresIguais } from "../json.ts";
+import { textoDe, valoresIguais } from "@simplifica-if/kb/json";
 import type { CursoCnctJson, IndiceCnctJson, ManifestCatalogosJson, ManifestCnctJson } from "../tipos-schemas.ts";
 import { type Contexto, ehRecebido, listaOrdenada, mesmosElementos, RE_SLUG, type Recebido } from "./contexto.ts";
 

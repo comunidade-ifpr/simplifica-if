@@ -1,5 +1,5 @@
 /** Validação do institucional_manifest.json e das coleções institucionais. */
-import { valoresIguais } from "../json.ts";
+import { valoresIguais } from "@simplifica-if/kb/json";
 import type { IndiceCampiJson, ManifestInstitucionalJson } from "../tipos-schemas.ts";
 import { validarCampi } from "./campi.ts";
 import { type Contexto, ehRecebido } from "./contexto.ts";

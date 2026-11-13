@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { z } from "zod";
-import { ehObjeto, type ObjetoJson } from "./base/json.ts";
+import { ehObjeto, type ObjetoJson } from "@simplifica-if/kb/json";
 import { validarJson } from "./esquema.ts";
 
 export const RAIZ_PROJETO = path.resolve(import.meta.dir, "..");

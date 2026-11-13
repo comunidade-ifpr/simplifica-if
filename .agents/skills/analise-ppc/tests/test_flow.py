@@ -25,6 +25,7 @@ from analise_ppc import main as analise_ppc_main
 from publicar_surge import dominio_surge_padrao, preparar_site_surge, publicar_site_surge
 from subagents import (
     agrupar_fichas,
+    contexto_fundamentacao_normativa,
     carregar_fichas_ordenadas,
     carregar_validacoes_cruzadas_ordenadas,
     ficha_requer_fundamentacao_normativa,
@@ -45,9 +46,6 @@ from common import (
     round_paths,
     write_json,
 )
-from gerar_indice_base_analise import gerar_indice
-from gerar_mapa_fichas import MAPA_FICHAS_PATH, mapa_atualizado
-from validar_base_analise import validar_base_analise
 
 
 def _markdown_base() -> str:
@@ -387,33 +385,6 @@ def test_fichas_sao_agrupadas_em_blocos_estaveis_de_20() -> None:
     assert grupos[-1]["grupo_id"] == f"grupo-{len(grupos):03d}"
 
 
-def test_indice_base_analise_esta_atualizado() -> None:
-    indice_path = BASE_ANALISE_DIR / "indice.json"
-    atual = read_json(indice_path)
-    esperado = gerar_indice(gerado_em=atual["gerado_em"])
-
-    assert atual == esperado
-
-
-def test_mapa_fichas_esta_atualizado() -> None:
-    assert MAPA_FICHAS_PATH.exists()
-    assert mapa_atualizado()
-
-
-def test_fichas_usam_topicos_tematicos_sem_campo_legado() -> None:
-    topicos = {
-        str(topico["id"])
-        for topico in read_json(TOPICOS_FICHAS_PATH)["topicos"]
-    }
-    for ficha_path in FICHAS_DIR.glob("*.json"):
-        ficha = read_json(ficha_path)
-        assert "secoes_preferenciais" not in ficha
-        assert ficha["topicos_tematicos"]
-        assert set(ficha["topicos_tematicos"]).issubset(topicos)
-        assert ficha["tipo_escopo"] in {"tematico", "multitematico", "transversal", "condicional"}
-        assert ficha["ancoras_semanticas"]
-
-
 def test_ficha_progressao_parcial_diferencia_integrado_e_subsequente() -> None:
     ficha = read_json(FICHAS_DIR / "ct-sup-26.json")
     topico_avaliacao = next(
@@ -461,8 +432,10 @@ def test_ficha_educacao_politica_aplica_obrigacao_nova_sem_exigir_disciplina_aut
     assert "realidade social e política" in texto
 
 
-def test_base_analise_valida_contratos_e_schemas() -> None:
-    assert validar_base_analise() == []
+def test_contexto_normativo_dos_subagentes_inclui_marcos() -> None:
+    contexto = contexto_fundamentacao_normativa()
+    ids = {marco["id"] for marco in contexto["marcos_normativos"]}
+    assert {"dcn_ept", "dcnem", "eja"} <= ids
 
 
 def test_montar_grupos_subagents_salva_payload_na_rodada(tmp_path: Path) -> None:

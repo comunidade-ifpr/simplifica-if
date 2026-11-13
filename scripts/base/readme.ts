@@ -2,8 +2,8 @@
 import { existsSync, writeFileSync } from "node:fs";
 import type { CaminhosBase } from "./caminhos.ts";
 import { type ItemManifest, manifestJson } from "./front-matter.ts";
-import { textoDe } from "./json.ts";
-import { lerTexto } from "./texto.ts";
+import { textoDe } from "@simplifica-if/kb/json";
+import { lerTexto } from "@simplifica-if/kb/texto";
 
 const CABECALHO_TABELA = "| Documento | Tipo | Ano | Assunto |";
 const FIM_TABELA = "\n\n## Manutenção";

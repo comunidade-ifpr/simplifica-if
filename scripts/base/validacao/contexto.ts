@@ -2,10 +2,10 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { type CaminhosBase, relativo } from "../caminhos.ts";
-import { ehObjeto, type ObjetoJson, representar } from "../json.ts";
+import { ehObjeto, type ObjetoJson, representar } from "@simplifica-if/kb/json";
 import { arquivosCampi } from "../indice-ppcs.ts";
-import { ehUrlAbsoluta, validarJsonSchema } from "../schema.ts";
-import { lerTexto, ordenarTextos } from "../texto.ts";
+import { ehUrlAbsoluta, validarJsonSchema } from "@simplifica-if/kb/schema";
+import { lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
 import type {
   CampusJson,
   CursoCnctJson,

@@ -5,7 +5,7 @@
  */
 import type { CaminhosBase } from "./caminhos.ts";
 import { arquivosNormas } from "./front-matter.ts";
-import { ehObjeto } from "./json.ts";
+import { ehObjeto } from "@simplifica-if/kb/json";
 import { validarCatalogos } from "./validacao/catalogos.ts";
 import { Contexto } from "./validacao/contexto.ts";
 import { validarInstitucional } from "./validacao/institucional.ts";

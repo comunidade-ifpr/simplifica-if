@@ -5,7 +5,7 @@ description: Analisar Projetos Pedagógicos de Curso técnico do IFPR em Word DO
 
 # Análise de PPC
 
-Skill autocontida para analisar PPCs de cursos técnicos do IFPR em Word (`.docx`) ou Markdown (`.md`). A execução de IA ocorre apenas por sub-agentes na conversa atual. Os scripts Python fazem somente a preparação do documento, a organização dos grupos de fichas e a geração determinística do PPC HTML anotado.
+Skill autocontida para analisar PPCs de cursos técnicos do IFPR em Word (`.docx`) ou Markdown (`.md`). A execução de IA ocorre apenas por sub-agentes na conversa atual. Os scripts fazem somente a preparação do documento, a organização dos grupos de fichas e a geração determinística do PPC HTML anotado.
 
 ## Uso rápido
 
@@ -39,5 +39,7 @@ Ao final, informe explicitamente o link de abertura do relatório retornado pelo
 Execute os comandos a partir da raiz deste repositório:
 
 ```bash
-python3 -B .agents/skills/analise-ppc/scripts/analise_ppc.py --help
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts --help
 ```
+
+O ponto de entrada é `scripts/analise_ppc.ts` (Bun). `validar-base`, `gerar-indice` e `gerar-mapa` rodam em TypeScript; os demais subcomandos ainda delegam, por ora, a `scripts/analise_ppc.py` (mesmos argumentos e código de saída), por isso as dependências Python continuam necessárias.

@@ -26,6 +26,11 @@ export function aparar(texto: string): string {
   return apararInicio(texto).replace(RE_ESPACO_FINAL, "");
 }
 
+/** Remove espaços (conjunto `ESPACOS`) do fim. */
+export function apararFim(texto: string): string {
+  return texto.replace(RE_ESPACO_FINAL, "");
+}
+
 /** Remove espaços (conjunto `ESPACOS`) do início. */
 export function apararInicio(texto: string): string {
   return texto.replace(RE_ESPACO_INICIAL, "");

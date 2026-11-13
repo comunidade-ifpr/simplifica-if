@@ -23,7 +23,7 @@ import {
   verificarIndices,
 } from "./indice-ppcs.ts";
 import { gravarBase, substituirTabela, verificarBase } from "./readme.ts";
-import { validarJsonSchema } from "./schema.ts";
+import { validarJsonSchema } from "@simplifica-if/kb/schema";
 import { compararDiretorios, renderizarSite } from "./site.ts";
 import { validarBase } from "./validacao.ts";
 

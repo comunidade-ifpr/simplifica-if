@@ -2,13 +2,15 @@
 
 ## Resumo
 
-Esta skill executa análise de PPC por sub-agentes dentro da conversa. Os scripts Python são deliberadamente pequenos: convertem o documento para `PPC.md`, montam grupos de fichas e renderizam o PPC HTML anotado a partir do JSON coletado dos sub-agentes.
+Esta skill executa análise de PPC por sub-agentes dentro da conversa. Os scripts são deliberadamente pequenos: convertem o documento para `PPC.md`, montam grupos de fichas e renderizam o PPC HTML anotado a partir do JSON coletado dos sub-agentes.
+
+O ponto de entrada é `scripts/analise_ppc.ts` (Bun). `validar-base`, `gerar-indice` e `gerar-mapa` rodam em TypeScript; os demais subcomandos ainda delegam, por ora, a `scripts/analise_ppc.py` (mesmos argumentos e código de saída), por isso as dependências Python continuam necessárias.
 
 O output padrão fica em `.agents/skills/analise-ppc/output/<rodada>/`. O relatório final fica em `relatorio-analise.html`; os assets do leitor ficam em `assets/`; os artefatos de suporte ficam em `arquivos-suporte/`.
 
 ## Dependências
 
-Instale as dependências Python a partir da raiz do projeto onde a skill está instalada:
+Rode `bun install` na raiz do repositório (o ponto de entrada usa `commander` e `@simplifica-if/kb`). Instale também as dependências Python dos subcomandos que ainda delegam ao Python, a partir da raiz do projeto onde a skill está instalada:
 
 ```bash
 python3 -m pip install -r .agents/skills/analise-ppc/requirements.txt
@@ -19,9 +21,9 @@ python3 -m pip install -r .agents/skills/analise-ppc/requirements.txt
 Execute os comandos a partir da raiz deste repositório:
 
 ```bash
-python3 -B .agents/skills/analise-ppc/scripts/analise_ppc.py preparar-documento caminho/PPC.docx
-python3 -B .agents/skills/analise-ppc/scripts/analise_ppc.py montar-grupos-subagents --rodada-dir .agents/skills/analise-ppc/output/<rodada>
-python3 -B .agents/skills/analise-ppc/scripts/analise_ppc.py preparar-prompts-subagents --rodada-dir .agents/skills/analise-ppc/output/<rodada>
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts preparar-documento caminho/PPC.docx
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts montar-grupos-subagents --rodada-dir .agents/skills/analise-ppc/output/<rodada>
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts preparar-prompts-subagents --rodada-dir .agents/skills/analise-ppc/output/<rodada>
 ```
 
 Depois disso, o agente principal deve:
@@ -37,7 +39,7 @@ Depois disso, o agente principal deve:
 9. Gerar o relatório:
 
 ```bash
-python3 -B .agents/skills/analise-ppc/scripts/analise_ppc.py gerar-relatorio-html --rodada-dir .agents/skills/analise-ppc/output/<rodada> --resultados resultados-subagents.json
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-relatorio-html --rodada-dir .agents/skills/analise-ppc/output/<rodada> --resultados resultados-subagents.json
 ```
 
 ## Contrato de resultados
@@ -149,13 +151,13 @@ NAO_NORMATIVA
 Para reavaliar fichas específicas sem refazer todos os grupos:
 
 ```bash
-python3 -B .agents/skills/analise-ppc/scripts/analise_ppc.py montar-grupo-avulso --rodada-dir .agents/skills/analise-ppc/output/<rodada> --ficha-id CT-IDENT-01
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts montar-grupo-avulso --rodada-dir .agents/skills/analise-ppc/output/<rodada> --ficha-id CT-IDENT-01
 ```
 
 Spawnar um sub-agente com o grupo avulso retornado, salvar a resposta em `arquivos-suporte/resultado-avulso.json` e mesclar:
 
 ```bash
-python3 -B .agents/skills/analise-ppc/scripts/analise_ppc.py mesclar-resultados-avulsos --rodada-dir .agents/skills/analise-ppc/output/<rodada> --resultados-avulsos resultado-avulso.json
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts mesclar-resultados-avulsos --rodada-dir .agents/skills/analise-ppc/output/<rodada> --resultados-avulsos resultado-avulso.json
 ```
 
 Depois, rode novamente `gerar-relatorio-html`.
@@ -170,15 +172,16 @@ Checklist para fichas:
 2. Garanta `topicos_tematicos`, `tipo_escopo` e `ancoras_semanticas`.
 3. Atualize `base-analise/topicos-fichas.json` quando o tema ou a cobertura da ficha mudar.
 4. Atualize teste quando a ficha introduzir regra nova, regressão observada ou comportamento que não deve se perder.
-5. Regenere `base-analise/mapa-fichas.md` e `base-analise/indice.json`.
+5. Regenere `base-analise/mapa-fichas.md` e `base-analise/indice.json` (`gerar-mapa --check` e `gerar-indice --check` só conferem, sem reescrever).
 
 Comandos obrigatórios:
 
 ```bash
-python3 -B .agents/skills/analise-ppc/scripts/validar_base_analise.py
-python3 -B .agents/skills/analise-ppc/scripts/gerar_mapa_fichas.py
-python3 -B .agents/skills/analise-ppc/scripts/gerar_indice_base_analise.py
-python3 -B .agents/skills/analise-ppc/scripts/validar_base_analise.py
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts validar-base
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-mapa
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-indice
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts validar-base
+bun test ./.agents/skills/analise-ppc
 python3 -m pytest .agents/skills/analise-ppc/tests
 ```
 

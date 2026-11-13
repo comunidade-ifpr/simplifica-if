@@ -2,7 +2,15 @@
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { type CaminhosBase, listarDiretorio, naBase, relativo } from "./caminhos.ts";
-import { ehInteiro, ehObjeto, itensDe, jsonCompacto, jsonIndentado, type ObjetoJson, textoDe } from "./json.ts";
+import {
+  ehInteiro,
+  ehObjeto,
+  itensDe,
+  jsonCompacto,
+  jsonIndentado,
+  type ObjetoJson,
+  textoDe,
+} from "@simplifica-if/kb/json";
 import type { IndicePpcsJson } from "./tipos-schemas.ts";
 import {
   aparar,
@@ -14,7 +22,7 @@ import {
   lerTexto,
   ordenarTextos,
   prefixo,
-} from "./texto.ts";
+} from "@simplifica-if/kb/texto";
 
 export const LIMITE_PREVIEW_SECAO = 500;
 export const TIPOS_SECAO = new Set([

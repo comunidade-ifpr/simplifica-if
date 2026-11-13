@@ -1,7 +1,8 @@
 /**
- * Validação contra os JSON Schemas de base-conhecimento/schemas/, com o ajv
- * (draft 2020-12). As mensagens mantêm o texto e a ordem do validador próprio
- * que a base usava antes do ajv.
+ * Validação contra os JSON Schemas da base (base-conhecimento/schemas/ e
+ * base-analise/schemas/ da analise-ppc), com o ajv (draft 2020-12).
+ * `validarJsonSchema` mantém o texto e a ordem do validador próprio que a base
+ * usava antes do ajv; outros formatos de mensagem partem de `compilarJsonSchema`.
  */
 import { Ajv2020, type ErrorObject, type ValidateFunction } from "ajv/dist/2020.js";
 import { ehObjeto, type ObjetoJson, representar, textoDe } from "./json.ts";
@@ -45,7 +46,8 @@ const ajv = new Ajv2020({
 /** Validadores compilados por conteúdo do schema: cada base (e cada teste) traz os seus. */
 const compilados = new Map<string, ValidateFunction>();
 
-function compilar(schema: ObjetoJson): ValidateFunction {
+/** Validador ajv compilado (e guardado em cache) para `schema`; os erros ficam em `.errors`. */
+export function compilarJsonSchema(schema: ObjetoJson): ValidateFunction {
   const chave = JSON.stringify(schema);
   let validar = compilados.get(chave);
   if (!validar) {
@@ -156,7 +158,7 @@ function mensagemDe(erro: ErrorObject, caminho: string): string {
  * `type` inválido é a única mensagem do nó.
  */
 export function validarJsonSchema(dados: unknown, schema: ObjetoJson, rotulo: string): string[] {
-  const validar = compilar(schema);
+  const validar = compilarJsonSchema(schema);
   if (validar(dados)) return [];
   const erros = validar.errors ?? [];
   const nosComTipoInvalido = new Set(erros.filter((erro) => erro.keyword === "type").map((erro) => erro.instancePath));

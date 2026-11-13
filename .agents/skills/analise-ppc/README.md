@@ -1,6 +1,6 @@
 # Análise de PPC
 
-Esta skill analisa Projetos Pedagógicos de Curso técnico do IFPR a partir de um arquivo Word (`.docx`) ou Markdown (`.md`). A IA roda por sub-agentes na conversa atual; os scripts Python preparam o `PPC.md`, organizam as fichas e geram o PPC HTML anotado final.
+Esta skill analisa Projetos Pedagógicos de Curso técnico do IFPR a partir de um arquivo Word (`.docx`) ou Markdown (`.md`). A IA roda por sub-agentes na conversa atual; os scripts preparam o `PPC.md`, organizam as fichas e geram o PPC HTML anotado final.
 
 ## Formato aceito
 
@@ -50,16 +50,18 @@ Ao gerar o relatório, a skill publica no Surge por padrão e retorna `publicaca
 
 ## Fluxo técnico
 
+O ponto de entrada é `scripts/analise_ppc.ts` (Bun). `validar-base`, `gerar-indice` e `gerar-mapa` rodam em TypeScript; os demais subcomandos ainda delegam, por ora, a `scripts/analise_ppc.py` (mesmos argumentos e código de saída), por isso as dependências Python continuam necessárias.
+
 ```bash
-python3 -B .agents/skills/analise-ppc/scripts/analise_ppc.py preparar-documento caminho/PPC.docx
-python3 -B .agents/skills/analise-ppc/scripts/analise_ppc.py montar-grupos-subagents --rodada-dir .agents/skills/analise-ppc/output/<rodada>
-python3 -B .agents/skills/analise-ppc/scripts/analise_ppc.py preparar-prompts-subagents --rodada-dir .agents/skills/analise-ppc/output/<rodada>
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts preparar-documento caminho/PPC.docx
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts montar-grupos-subagents --rodada-dir .agents/skills/analise-ppc/output/<rodada>
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts preparar-prompts-subagents --rodada-dir .agents/skills/analise-ppc/output/<rodada>
 ```
 
 Depois, o agente principal spawna um sub-agente por grupo em `arquivos-suporte/grupos-subagents.json` ou usa os pacotes prontos de `arquivos-suporte/prompts-subagents/`. Passe também os blocos `contextos` de cada grupo, incluindo `contextos.cnct`, `contextos.estrutura`, `contextos.fundamentacao_normativa` e eventuais `contextos.anexos_visuais`. O CNCT vem da base unificada em `base-conhecimento/catalogos/cnct/`. Em seguida, colete as respostas em `arquivos-suporte/resultados-subagents.json`, rode a síntese transversal com `prompts/sintese-transversal.md` e `validacoes_cruzadas`, e gere o relatório:
 
 ```bash
-python3 -B .agents/skills/analise-ppc/scripts/analise_ppc.py gerar-relatorio-html --rodada-dir .agents/skills/analise-ppc/output/<rodada> --resultados resultados-subagents.json
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-relatorio-html --rodada-dir .agents/skills/analise-ppc/output/<rodada> --resultados resultados-subagents.json
 ```
 
 Para reavaliar fichas específicas, use `montar-grupo-avulso`, execute um sub-agente com o grupo retornado e depois `mesclar-resultados-avulsos`.
@@ -77,9 +79,10 @@ Ao criar, atualizar ou corrigir uma ficha em `base-analise/fichas/`:
 Comandos obrigatórios a partir da raiz do repositório:
 
 ```bash
-python3 -B .agents/skills/analise-ppc/scripts/validar_base_analise.py
-python3 -B .agents/skills/analise-ppc/scripts/gerar_mapa_fichas.py
-python3 -B .agents/skills/analise-ppc/scripts/gerar_indice_base_analise.py
-python3 -B .agents/skills/analise-ppc/scripts/validar_base_analise.py
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts validar-base
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-mapa
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-indice
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts validar-base
+bun test ./.agents/skills/analise-ppc
 python3 -m pytest .agents/skills/analise-ppc/tests
 ```

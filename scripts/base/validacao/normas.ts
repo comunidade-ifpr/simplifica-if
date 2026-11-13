@@ -10,8 +10,8 @@ import {
   ErroFrontMatter,
   type FrontMatter,
 } from "../front-matter.ts";
-import { ehObjeto, type ObjetoJson, representar, textoDe, valoresIguais } from "../json.ts";
-import { apararInicio, ErroDecodificacao, lerTexto, ordenarTextos } from "../texto.ts";
+import { ehObjeto, type ObjetoJson, representar, textoDe, valoresIguais } from "@simplifica-if/kb/json";
+import { apararInicio, ErroDecodificacao, lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
 import { type Contexto, listaOrdenada, mesmosElementos, PADROES_LOCAIS, type Resultado } from "./contexto.ts";
 
 const DIRETORIOS_IGNORADOS_PADROES_LOCAIS = new Set([".git", ".venv", "skills"]);

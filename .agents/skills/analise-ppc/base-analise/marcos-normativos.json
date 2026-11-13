@@ -1,6 +1,6 @@
 {
   "versao": 2,
-  "descricao": "Registro único dos marcos normativos que as fichas tratam como referência vigente, com as normas e os dispositivos que eles revogaram e as regras de transição. A vigência de cada norma vem de base-conhecimento/manifest.json; este arquivo guarda a orientação de análise. É injetado nos subagentes em contextos.fundamentacao_normativa.marcos_normativos e conferido por validar_base_analise.py contra schemas/marcos-normativos.schema.json.",
+  "descricao": "Registro único dos marcos normativos que as fichas tratam como referência vigente, com as normas e os dispositivos que eles revogaram e as regras de transição. A vigência de cada norma vem de base-conhecimento/manifest.json; este arquivo guarda a orientação de análise. É injetado nos subagentes em contextos.fundamentacao_normativa.marcos_normativos e conferido por `bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts validar-base` contra schemas/marcos-normativos.schema.json.",
   "marcos": [
     {
       "id": "dcn_ept",

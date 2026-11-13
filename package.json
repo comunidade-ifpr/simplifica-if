@@ -11,14 +11,16 @@
     "base:tipos": "bun run scripts/gerar_tipos_schemas.ts",
     "sei:sync": "bun run scripts/notion_atualizar_movimentacoes_sei.ts",
     "sei": "bun run --cwd packages/sei-cli sei",
-    "test": "bun test scripts && bun run --cwd packages/sei-cli test",
-    "typecheck": "tsc --noEmit && bun run --cwd packages/sei-cli typecheck",
-    "format": "bun fmt scripts && bun run --cwd packages/sei-cli format",
-    "format:check": "bun fmt --check scripts && bun run --cwd packages/sei-cli format:check"
+    "test": "bun test scripts ./.agents/skills && bun run --cwd packages/kb test && bun run --cwd packages/sei-cli test",
+    "typecheck": "tsc --noEmit && bun run --cwd packages/kb typecheck && bun run --cwd packages/sei-cli typecheck",
+    "format": "bun fmt scripts '.agents/skills/*/scripts/**/*.ts' '.agents/skills/*/tests/**/*.ts' && bun run --cwd packages/kb format && bun run --cwd packages/sei-cli format",
+    "format:check": "bun fmt --check scripts '.agents/skills/*/scripts/**/*.ts' '.agents/skills/*/tests/**/*.ts' && bun run --cwd packages/kb format:check && bun run --cwd packages/sei-cli format:check"
   },
   "dependencies": {
     "@notionhq/client": "5.31.1",
+    "@simplifica-if/kb": "workspace:*",
     "ajv": "8.20.0",
+    "commander": "15.1.0",
     "domhandler": "^6.0.1",
     "domutils": "^4.0.2",
     "dotenv": "^18.0.10",

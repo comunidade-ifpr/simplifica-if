@@ -55,9 +55,10 @@ Quando uma norma da base for revogada, rode o validador: ele lista as fichas a r
 Rode a partir da raiz do repositório sempre que alterar fichas, tópicos, validações cruzadas, contratos ou schemas:
 
 ```bash
-python3 -B .agents/skills/analise-ppc/scripts/validar_base_analise.py
-python3 -B .agents/skills/analise-ppc/scripts/gerar_mapa_fichas.py
-python3 -B .agents/skills/analise-ppc/scripts/gerar_indice_base_analise.py
-python3 -B .agents/skills/analise-ppc/scripts/validar_base_analise.py
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts validar-base
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-mapa
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-indice
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts validar-base
+bun test ./.agents/skills/analise-ppc
 python3 -m pytest .agents/skills/analise-ppc/tests
 ```

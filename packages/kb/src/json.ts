@@ -25,6 +25,37 @@ export function ehInteiro(valor: unknown): valor is number | boolean {
 }
 
 /**
+ * Itens percorridos por um laço sobre o valor, como nos scripts originais:
+ * lista dá os itens, texto dá os caracteres (code points), objeto dá as
+ * chaves e ausência (nulo ou não preenchido) dá lista vazia. Número e booleano
+ * verdadeiros não são percorríveis e lançam `TypeError`.
+ */
+export function itensPercorridos(valor: unknown): unknown[] {
+  if (!preenchido(valor)) return [];
+  if (Array.isArray(valor)) return [...valor];
+  if (typeof valor === "string") return Array.from(valor);
+  if (ehObjeto(valor)) return Object.keys(valor);
+  throw new TypeError(`${representar(valor)} não é percorrível`);
+}
+
+/**
+ * Valor considerado preenchido, pela regra de verdade usada desde os scripts
+ * originais: nulo/ausente, `false`, `0`, texto vazio, lista vazia e objeto
+ * vazio contam como não preenchidos.
+ */
+export function preenchido(valor: unknown): boolean {
+  if (valor === null || valor === undefined || valor === false || valor === 0 || valor === "") return false;
+  if (Array.isArray(valor)) return valor.length > 0;
+  if (ehObjeto(valor)) return Object.keys(valor).length > 0;
+  return true;
+}
+
+/** `textoDe(valor)` quando preenchido; senão `""`. */
+export function textoOuVazio(valor: unknown): string {
+  return preenchido(valor) ? textoDe(valor) : "";
+}
+
+/**
  * Igualdade estrutural entre valores JSON. Ausente equivale a `null`, booleano
  * equivale a 0/1 e a ordem das chaves dos objetos não importa.
  */

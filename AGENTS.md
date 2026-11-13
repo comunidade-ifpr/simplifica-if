@@ -81,18 +81,24 @@ bun run scripts/validar_base.ts
 bun run scripts/gerar_site.ts
 ```
 
-Os scripts que falam com Notion, SEI e SUAP, assim como o pipeline da base (`gerar_base.ts`, `gerar_indice_ppcs.ts`, `validar_base.ts`, `gerar_site.ts`, com lógica em `scripts/base/`), são TypeScript (Bun) e exigem `bun install` na raiz. Em `scripts/`, só `converter_ppcs_markdown.py` (depende de `pymupdf4llm`) continua em Python. Depois de alterar código TypeScript em `scripts/`, rode:
+Os scripts que falam com Notion, SEI e SUAP, assim como o pipeline da base (`gerar_base.ts`, `gerar_indice_ppcs.ts`, `validar_base.ts`, `gerar_site.ts`, com lógica em `scripts/base/`), são TypeScript (Bun) e exigem `bun install` na raiz. Regras compartilhadas entre `scripts/` e as skills (texto, JSON, JSON Schema, referências normativas) ficam no workspace `packages/kb` (`@simplifica-if/kb`); `packages/kb` não importa de `scripts/`. Em `scripts/`, só `converter_ppcs_markdown.py` (depende de `pymupdf4llm`) continua em Python. Depois de alterar código TypeScript em `scripts/`, `packages/kb` ou nas skills, rode:
 
 ```bash
 bun run format
 bun run typecheck
-bun test scripts
+bun run test
 ```
 
-O `bun run format` aplica `bun fmt` (largura 120, configurada em `bunfig.toml`) apenas em `scripts/`. Não rode `bun fmt` na raiz: Markdown e JSON de `base-conhecimento/` são textos normativos ou saídas de geradores e não devem ser reformatados.
+O `bun run format` aplica `bun fmt` (largura 120, configurada em `bunfig.toml`) apenas em `scripts/`, nos `.ts` de `.agents/skills/*/scripts/` e `.agents/skills/*/tests/` e nos workspaces de `packages/`. Não rode `bun fmt` na raiz: Markdown e JSON de `base-conhecimento/` são textos normativos ou saídas de geradores e não devem ser reformatados.
 
 Depois de alterar skills, rode os testes ou validações da skill afetada. Para a skill `analise-ppc`, use:
 
 ```bash
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts validar-base
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-mapa --check
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-indice --check
+bun test ./.agents/skills/analise-ppc
 python3 -m pytest .agents/skills/analise-ppc/tests
 ```
+
+Sem `--check`, `gerar-mapa` e `gerar-indice` regeneram `mapa-fichas.md` e `indice.json` da base de análise. O `analise_ppc.ts` é o ponto de entrada único da skill; os subcomandos ainda não portados delegam a `analise_ppc.py`.

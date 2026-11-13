@@ -1,7 +1,7 @@
 /** Front matter das normas e geração de `manifest.json`. */
 import { type CaminhosBase, listarRecursivo, relativo } from "./caminhos.ts";
-import { jsonIndentado, textoDe } from "./json.ts";
-import { aparar, compararTexto, dividirLinhas, lerTexto, ordenarCaminhos } from "./texto.ts";
+import { jsonIndentado, textoDe } from "@simplifica-if/kb/json";
+import { aparar, compararTexto, dividirLinhas, lerTexto, ordenarCaminhos } from "@simplifica-if/kb/texto";
 
 export const CAMPOS_OBRIGATORIOS = [
   "title",
