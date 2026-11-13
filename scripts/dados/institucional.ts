@@ -358,8 +358,9 @@ export function paraDominio(dados: DadosInstitucionais): {
 }
 
 /**
- * Converte entidades do domínio carregadas do Notion em registros locais, trocando IDs de página por
- * chaves canônicas. Usado uma única vez, na migração; falha se alguma relação não puder ser resolvida.
+ * Converte entidades do domínio com relações por ID de página do Notion em registros locais, trocando
+ * os IDs por chaves canônicas. Foi o núcleo da migração de 13/11/2026 e hoje serve aos testes; falha se
+ * alguma relação não puder ser resolvida.
  */
 export function deDominio(base: {
   campi: Campus[];

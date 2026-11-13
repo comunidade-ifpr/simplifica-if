@@ -12,8 +12,8 @@ const CAMPOS_BASE = ["id", "data_source_id", "title"] as const;
 
 /**
  * Bases que continuam no Notion. Campi, cursos, processos seletivos, editais e ofertas têm como
- * fonte os arquivos de `dados/institucional/`; as demais bases antigas ficam em `config/notion.json`
- * só para a migração e o arquivamento (`basesNotionLegadas`).
+ * fonte os arquivos de `dados/institucional/`; as bases antigas foram arquivadas (veja
+ * `bases_arquivadas` em `config/notion.json`).
  */
 export const BASES_NOTION = ["movimentacoes_cursos"] as const;
 export type BaseNotion = (typeof BASES_NOTION)[number];
@@ -64,14 +64,4 @@ export function carregarDataSources(): DataSources {
   }
   const { databases: bases } = validarJson(esquemaConfigNotion, config, CAMINHO_CONFIG_NOTION);
   return { movimentacoes_cursos: bases.movimentacoes_cursos.data_source_id };
-}
-
-/** Bases do Notion que já não são fonte de verdade, com o `data_source_id` de cada uma, para migração e arquivamento. */
-export function basesNotionLegadas(): Record<string, { id: string; data_source_id: string; title: string }> {
-  const config = JSON.parse(readFileSync(CAMINHO_CONFIG_NOTION, "utf-8")) as {
-    databases: Record<string, { id: string; data_source_id: string; title: string }>;
-  };
-  return Object.fromEntries(
-    Object.entries(config.databases).filter(([chave]) => !(BASES_NOTION as readonly string[]).includes(chave)),
-  );
 }

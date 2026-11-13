@@ -12,7 +12,7 @@ import { auditarBase, type BaseInstitucional } from "./dominio/auditoria.ts";
 import { montarCampi, montarIndiceCampi, montarIndiceProcessos, montarProcessos } from "./exportacao/base-publica.ts";
 import { dataLocalIso } from "./datas.ts";
 import { ClienteNotion } from "./notion/cliente.ts";
-import { carregarMovimentacoes } from "./notion/institucional.ts";
+import { carregarMovimentacoes } from "./notion/movimentacoes.ts";
 
 const USO = `uso: bun run scripts/exportar_base_publica.ts [--dry-run]
 
