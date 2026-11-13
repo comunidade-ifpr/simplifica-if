@@ -1,10 +1,8 @@
 /**
  * Validação do JSON de resultados dos sub-agentes (porte de
  * `validar_resultados_subagents`, `validar_alertas_transversais` e
- * `validar_resultados_rodada` de `gerar_relatorio_html.py`).
- *
- * O `gerar_relatorio_html.py` (trilha T2) ainda tem a sua própria cópia
- * dessas regras; as duas precisam continuar iguais até o porte do relatório.
+ * `validar_resultados_rodada` do antigo `gerar_relatorio_html.py`), usada por
+ * `validar-resultados` e por `gerar-relatorio-html` (`relatorio-html.ts`).
  */
 import path from "node:path";
 import { compararTexto } from "@simplifica-if/kb/texto";

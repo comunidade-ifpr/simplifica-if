@@ -579,6 +579,22 @@ Em aberto:
   - `conversao_docx/` e o novo `converter_docx.py`, chamado por subprocesso para entrada `.docx` (T3). O `markdown_normalizer.py` fica só para a conversão, igual ao porte.
 - Testes: `orquestracao.test.ts` (51 casos) porta 36 testes de `test_flow.py`; o `pytest` ficou com 28 casos (relatório, Surge e extratores DOCX), e o `test_flow.py` cria a rodada pelo entrypoint TypeScript, exercitando a cadeia mista.
 
+**Trilha T, passo T2 concluído em 13/11/2026** (branch `worktree-agent-a642457c659eb2137`).
+
+- O que foi portado:
+  - `gerar_relatorio_html.py` virou `relatorio-html.ts`, com template literals e o escape de `html.escape` (`&#x27;`);
+  - o `HTMLParser` do `_HTMLPrettyPrinter` virou `html-py.ts`, sobre o `Tokenizer` do `htmlparser2`. O `Parser` não serve, porque fecha tags implicitamente e o Python não (`<em>a<strong>b</em>c</strong>`). O porte reproduz uma peculiaridade do Python: fora de tags inline, o texto em volta de uma referência é aparado pedaço a pedaço, e `a &amp; b` sai `a&amp;b`;
+  - `publicar_surge.py` virou `publicar-surge.ts` (`Bun.spawnSync` da CLI `surge`);
+  - o `analise_ppc.ts` executa `gerar-relatorio-html` em TypeScript, com as mesmas opções, arquivos (HTML, `assets/`, `surge-site/`, `surge-publicacao.json`) e saída JSON.
+- Kit de paridade novo em `packages/kb/src/python/`: `textwrap.wrap` (`break_on_hyphens=False`), `html.escape`, `str.expandtabs`, `shlex.split`, `urllib.parse.quote` e `Path.as_uri()`, e `format(x, ".2f")` com empate para o par (o `toFixed` desempata para cima).
+- Diferencial, com Python 3.14, relógio fixo e Surge falso no `PATH` (nada foi publicado de verdade):
+  - 196 cenários: Markdown base e sintéticos (tabelas irregulares, listas, `<br>`, ênfases cruzadas, entidades, `\u2028`, CRLF, linhas longas), as 2 fixtures e 6 PPCs técnicos reais, cada um com resultados simples e 3 variados (todos os estados, evidências em texto e objeto com `anchor`, todos os status de `fundamentacao_normativa`, alertas transversais, `feedback_autores`, HTML, aspas e emoji); mais os 104 PPCs técnicos da base com resultados variados; 10 de publicação (sucesso, domínio padrão, por opção e por ambiente, `ANALISE_PPC_SURGE_CMD` com aspas, falha, saída sem confirmação, pedido de login, `surge-site` recriado); layout legado, `--resultados` absoluto e na raiz, caminho com espaço e caracteres reservados; e 27 casos negativos;
+  - 2.318 comparações (código de saída, stdout, stderr e todos os arquivos da rodada byte a byte, mais os argumentos recebidos pelo Surge falso): 2.311 idênticas, e as 7 restantes são as divergências aceitas abaixo.
+- Divergências aceitas, todas em caminhos de erro: o Python imprime traceback, e o TypeScript, uma linha `Tipo: mensagem` (com as mesmas mensagens); o texto de arquivo ausente difere (`ENOENT` em vez de `[Errno 2]`); erros de linha de comando seguem o `commander` (código 1), e não o `argparse` (código 2). Limites conhecidos, sem ocorrência no HTML que o relatório gera: casos patológicos de tokenização HTML (atributos com `/`, tags incompletas no fim do documento) não foram portados.
+- Removidos: `gerar_relatorio_html.py`, `publicar_surge.py`, `analise_ppc.py`, `common.py` e `test_flow.py`.
+- Testes: `relatorio.test.ts` (25 casos) porta os 20 testes de relatório e Surge de `test_flow.py` (o 21º, sem CLI de modelo, já estava em `orquestracao.test.ts`) e acrescenta a paridade do `_HTMLPrettyPrinter`, dos blocos e do unescape de atributos; `paridade-t2.test.ts` (8 casos) cobre o kit novo. O `pytest` ficou com os extratores DOCX.
+- Python que continua: `conversao_docx/` e `converter_docx.py`, chamados por subprocesso para entrada `.docx` (T3); fora da skill, `scripts/converter_ppcs_markdown.py` (T5) e `verificar-calendario/scripts/render_relatorio_pdf.py` (T4).
+
 ## Histórico de revisões
 
 **v2, 13/11/2026.** Incorpora duas revisões independentes.

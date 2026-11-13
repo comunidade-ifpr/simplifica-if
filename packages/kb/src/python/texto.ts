@@ -54,6 +54,26 @@ export function ehDigito(caractere: string): boolean {
   return RE_DIGITO.test(caractere);
 }
 
+/** `str.expandtabs(tamanho)`: cada tab vai até a próxima coluna múltipla de `tamanho`; `\n` e `\r` zeram a coluna. */
+export function expandirTabs(texto: string, tamanho = 8): string {
+  if (!texto.includes("\t")) return texto;
+  let saida = "";
+  let coluna = 0;
+  for (const caractere of texto) {
+    if (caractere === "\t") {
+      if (tamanho > 0) {
+        const espacos = tamanho - (coluna % tamanho);
+        saida += " ".repeat(espacos);
+        coluna += espacos;
+      }
+    } else {
+      saida += caractere;
+      coluna = caractere === "\n" || caractere === "\r" ? 0 : coluna + 1;
+    }
+  }
+  return saida;
+}
+
 /** `"".join(c for c in texto if c.isdigit())`. */
 export function somenteDigitos(texto: string): string {
   return Array.from(texto)
