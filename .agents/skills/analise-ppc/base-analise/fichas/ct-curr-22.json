@@ -41,9 +41,19 @@
     "sei 3881287"
   ],
   "referencias_normativas": [
-    "Nota Técnica PROENS/IFPR nº 1/2025 (SEI nº 3881287)",
-    "Resolução CONSUP/IFPR nº 159/2023",
-    "Resolução CONSUP/IFPR nº 148/2023"
+    {
+      "ref": "ifpr/proens/nt/2025/1",
+      "papel": "fundamento",
+      "nota": "SEI nº 3881287"
+    },
+    {
+      "ref": "ifpr/consup/res/2023/159",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/consup/res/2023/148",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "Quando o PPC trata do AEE, ele evita incorporá-lo como componente curricular da matriz, do fluxograma, do ementário seriado ou do histórico escolar do estudante?",
   "rubrica": "Verificar se o PPC trata o AEE como serviço/modalidade transversal e atendimento institucional, e não como disciplina, unidade curricular, componente da matriz, item de integralização, carga horária de certificação ou lançamento em histórico escolar. Aceitar menções descritivas sobre a organização do AEE, mas não sua inclusão em quadros de componentes, sínteses curriculares, representações gráficas, listas seriadas de disciplinas, regras de certificação ou registros acadêmicos do estudante.",

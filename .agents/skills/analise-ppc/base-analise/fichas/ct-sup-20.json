@@ -33,9 +33,39 @@
     "acompanhamento"
   ],
   "referencias_normativas": [
-    "Resolução CONSUP/IFPR nº 148/2023",
-    "Resolução CONSUP/IFPR nº 159/2023",
-    "Resolução CNE/CP nº 2/2026, arts. 5º, 38, § 6º, 44, §§ 5º e 6º, e 45, § 8º"
+    {
+      "ref": "ifpr/consup/res/2023/148",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/consup/res/2023/159",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art5",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art38-par6",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art44-par5",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art44-par6",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art45-par8",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "O PPC prevê recursos de acessibilidade e medidas pedagógicas de acompanhamento suficientes para apoiar permanência e aprendizagem?",
   "rubrica": "Verificar se o documento menciona recursos acessíveis, adaptações de materiais, critérios ou procedimentos diferenciados de avaliação e acompanhamento periódico das medidas adotadas. Considerar a Resolução CNE/CP nº 2/2026: acessibilidade, tecnologias assistivas e adaptações razoáveis (art. 5º); instrumentos e procedimentos avaliativos adequados, vedada a redução prévia das expectativas formativas (art. 38, § 6º). Quando o PPC tratar de terminalidade ou certificação específica, verificar se ela é excepcional, precedida dos apoios previstos, e se o documento segue o art. 45, § 8º: frente igual à dos demais certificados e verso com o que foi efetivamente desenvolvido, sem menção ao não desenvolvido nem à deficiência (art. 44, §§ 5º e 6º).",

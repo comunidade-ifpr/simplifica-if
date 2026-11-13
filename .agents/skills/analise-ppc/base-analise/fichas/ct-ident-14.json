@@ -33,7 +33,10 @@
     "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.ocupacoes_cbo"
   ],
   "referencias_normativas": [
-    "CNCT"
+    {
+      "ref": "cnct:catalogo",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "As ocupações CBO associadas ao curso no CNCT são consideradas de modo coerente na identidade profissional e no perfil do egresso?",
   "rubrica": "Comparar a identidade profissional, funções e ocupações mencionadas no PPC com `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.ocupacoes_cbo`, sem exigir transcrição literal, mas verificando compatibilidade material.",

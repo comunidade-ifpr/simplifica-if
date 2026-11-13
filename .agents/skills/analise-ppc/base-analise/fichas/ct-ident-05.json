@@ -36,7 +36,26 @@
     "resolução cne/ceb nº 06/2012"
   ],
   "referencias_normativas": [
-    "Resolução CNE/CP nº 2/2026, arts. 1º a 4º"
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art1",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art2",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art3",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art4",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "A concepção do curso explicita a perspectiva de Educação Profissional e Tecnológica com base normativa e pedagógica reconhecível?",
   "rubrica": "Verificar se o PPC articula EPT, trabalho, ciência, cultura e tecnologia para além de uma citação superficial e se a concepção toma como referência normativa principal as DCN da EPT vigentes, a Resolução CNE/CP nº 2/2026, cujos princípios (art. 3º) incluem a centralidade do trabalho como princípio educativo, a indissociabilidade entre ensino, pesquisa, extensão, inovação, ciência e tecnologia, a integração entre teoria e prática, o protagonismo do estudante e a organização por itinerários formativos profissionais. A Resolução CNE/CP nº 1/2021, revogada pela Resolução CNE/CP nº 2/2026, e a Resolução CNE/CEB nº 06/2012 podem aparecer como referência histórica ou de transição, mas não como fundamento vigente principal. Aplicar a regra de transição registrada em `contextos.fundamentacao_normativa.marcos_normativos`.",

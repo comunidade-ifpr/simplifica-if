@@ -50,7 +50,7 @@ Ao gerar o relatório, a skill publica no Surge por padrão e retorna `publicaca
 
 ## Fluxo técnico
 
-O ponto de entrada é `scripts/analise_ppc.ts` (Bun). Rodam em TypeScript `preparar-documento`, `montar-grupos-subagents`, `preparar-prompts-subagents`, `montar-grupo-avulso`, `mesclar-resultados-avulsos`, `validar-resultados`, `validar-base`, `gerar-indice` e `gerar-mapa`. Ainda dependem de Python: `gerar-relatorio-html`, que delega a `scripts/analise_ppc.py` (mesmos argumentos e código de saída), e a conversão de entrada `.docx` em `preparar-documento`, feita por `scripts/converter_docx.py` (`python-docx`). Com PPC em `.md`, a preparação, os grupos e os prompts dispensam Python. `ANALISE_PPC_PYTHON` escolhe o interpretador Python (padrão `python3`). Em testes e diferenciais, `ANALISE_PPC_AGORA` (data ISO 8601) fixa o relógio da rodada: nome do diretório, `criado_em` e `data_conversao`.
+O ponto de entrada é `scripts/analise_ppc.ts` (Bun). Rodam em TypeScript `preparar-documento`, `montar-grupos-subagents`, `preparar-prompts-subagents`, `montar-grupo-avulso`, `mesclar-resultados-avulsos`, `validar-resultados`, `validar-base`, `gerar-schemas`, `gerar-indice` e `gerar-mapa`. Ainda dependem de Python: `gerar-relatorio-html`, que delega a `scripts/analise_ppc.py` (mesmos argumentos e código de saída), e a conversão de entrada `.docx` em `preparar-documento`, feita por `scripts/converter_docx.py` (`python-docx`). Com PPC em `.md`, a preparação, os grupos e os prompts dispensam Python. `ANALISE_PPC_PYTHON` escolhe o interpretador Python (padrão `python3`). Em testes e diferenciais, `ANALISE_PPC_AGORA` (data ISO 8601) fixa o relógio da rodada: nome do diretório, `criado_em` e `data_conversao`.
 
 ```bash
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts preparar-documento caminho/PPC.docx
@@ -71,7 +71,7 @@ Para reavaliar fichas específicas, use `montar-grupo-avulso`, execute um sub-ag
 Ao criar, atualizar ou corrigir uma ficha em `base-analise/fichas/`:
 
 1. Garanta que a ficha declare `topicos_tematicos`, `tipo_escopo` e `ancoras_semanticas`.
-2. Cite em `referencias_normativas` apenas normas vigentes. Regras de transição e a norma vigente de cada tema ficam em `base-analise/marcos-normativos.json`; o validador acusa ficha que cite norma revogada no `base-conhecimento/manifest.json`.
+2. Cite em `referencias_normativas` apenas normas vigentes, por ID canônico, com `dispositivo` e `papel` (veja [Como citar normas nas fichas](base-analise/README.md#como-citar-normas-nas-fichas)). Regras de transição e a norma vigente de cada tema ficam em `base-analise/marcos-normativos.json`; o validador acusa ID inexistente, norma revogada no manifesto ou nos stubs, norma substituída por marco e dispositivo revogado.
 3. Atualize `base-analise/topicos-fichas.json` quando a cobertura temática mudar.
 4. Atualize ou crie teste quando a ficha cobrir comportamento novo, regra normativa específica ou regressão já observada.
 5. Regenere os artefatos derivados e valide a base.
@@ -79,6 +79,7 @@ Ao criar, atualizar ou corrigir uma ficha em `base-analise/fichas/`:
 Comandos obrigatórios a partir da raiz do repositório:
 
 ```bash
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-schemas --check
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts validar-base
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-mapa
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-indice

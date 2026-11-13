@@ -4,7 +4,8 @@
  * analise-ppc sempre usou:
  *
  * - num nó, `anyOf` ou `type` inválidos são a única mensagem do nó (e de seus filhos);
- * - depois vêm `enum`, `minimum`, `maximum` e os `required` ausentes, na ordem da lista;
+ * - depois vêm `enum`, `minimum`, `maximum`, os `required` ausentes (na ordem da lista) e as demais
+ *   palavras-chave (`pattern`, `minLength`, `additionalProperties`);
  * - os filhos seguem a ordem de `properties` no schema e a posição nas listas.
  */
 import type { ErrorObject } from "ajv/dist/2020.js";
@@ -50,6 +51,12 @@ function mensagemDe(erro: ErrorObject): string {
       return `valor ${textoDe(erro.data)} maior que ${textoDe(schema.maximum)}`;
     case "required":
       return `campo obrigatório ausente: ${String(erro.params.missingProperty)}`;
+    case "pattern":
+      return `valor ${representar(erro.data)} fora do formato`;
+    case "minLength":
+      return `valor ${representar(erro.data)} menor que o tamanho mínimo ${textoDe(schema.minLength)}`;
+    case "additionalProperties":
+      return `campo não permitido: ${String(erro.params.additionalProperty)}`;
     default:
       return erro.message ?? erro.keyword;
   }

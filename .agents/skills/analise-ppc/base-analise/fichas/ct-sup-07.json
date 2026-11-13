@@ -32,8 +32,20 @@
     "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.infraestrutura_minima"
   ],
   "referencias_normativas": [
-    "CNCT",
-    "Resolução CNE/CP nº 2/2026, art. 28, XII e § 3º"
+    {
+      "ref": "cnct:catalogo",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art28-xii",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art28-par3",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "A infraestrutura descrita é compatível, em nível institucional, com a execução da proposta curricular e com a infraestrutura mínima indicada no CNCT?",
   "rubrica": "Comparar laboratórios, biblioteca, acervo e espaços de aprendizagem descritos no PPC com `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.infraestrutura_minima`, avaliando aderência à oferta e aos componentes práticos. Quando houver atividades a distância, verificar também o ambiente virtual de aprendizagem e, se houver, a infraestrutura dos polos (Resolução CNE/CP nº 2/2026, art. 28, XII).",

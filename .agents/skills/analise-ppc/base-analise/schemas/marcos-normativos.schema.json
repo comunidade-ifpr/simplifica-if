@@ -2,15 +2,77 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://simplifica-if.local/analise-ppc/marcos-normativos.schema.json",
   "title": "Registro de marcos normativos",
+  "description": "Gerado de .agents/skills/analise-ppc/scripts/esquemas.ts (zod) por `analise_ppc.ts gerar-schemas`; não edite à mão.",
   "type": "object",
-  "required": ["versao", "descricao", "marcos"],
   "properties": {
-    "versao": { "type": "integer", "minimum": 1 },
-    "descricao": { "type": "string" },
+    "versao": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "descricao": {
+      "type": "string"
+    },
     "marcos": {
       "type": "array",
       "items": {
         "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "tema": {
+            "type": "string"
+          },
+          "vigente": {
+            "type": "string",
+            "pattern": "^(?:br\\/(?:lei|lc|decreto|decreto-lei|mp|ec)|(?:br|ifpr)\\/[a-z0-9]+(?:-[a-z0-9]+)*\\/(?:res|portaria|nt|parecer|in|deliberacao))\\/(\\d{4})\\/([1-9]\\d*)$",
+            "description": "ID do ato vigente, com texto na base (manifest.json)"
+          },
+          "aplica_a": {
+            "type": "string"
+          },
+          "substitui": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^(?:br\\/(?:lei|lc|decreto|decreto-lei|mp|ec)|(?:br|ifpr)\\/[a-z0-9]+(?:-[a-z0-9]+)*\\/(?:res|portaria|nt|parecer|in|deliberacao))\\/(\\d{4})\\/([1-9]\\d*)$"
+            },
+            "description": "IDs dos atos substituídos pelo vigente"
+          },
+          "antecessoras_historicas": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^(?:br\\/(?:lei|lc|decreto|decreto-lei|mp|ec)|(?:br|ifpr)\\/[a-z0-9]+(?:-[a-z0-9]+)*\\/(?:res|portaria|nt|parecer|in|deliberacao))\\/(\\d{4})\\/([1-9]\\d*)$"
+            }
+          },
+          "dispositivos_revogados": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^(?:br\\/(?:lei|lc|decreto|decreto-lei|mp|ec)|(?:br|ifpr)\\/[a-z0-9]+(?:-[a-z0-9]+)*\\/(?:res|portaria|nt|parecer|in|deliberacao))\\/(\\d{4})\\/([1-9]\\d*)#(?:art[1-9]\\d*[A-Z]*(?:-par(?:[1-9]\\d*[A-Z]*|unico))?(?:-[ivxlc]+)?(?:-al-[a-z])?|anexo\\d+(?:-item\\d+)?)$"
+            },
+            "description": "ID do ato com o dispositivo revogado, como br/cne-ceb/res/2025/3#art6-iii"
+          },
+          "fichas_responsaveis": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fichas_base_legal": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "transicao": {
+            "type": "string"
+          },
+          "orientacao_analise": {
+            "type": "string"
+          }
+        },
         "required": [
           "id",
           "tema",
@@ -24,20 +86,14 @@
           "transicao",
           "orientacao_analise"
         ],
-        "properties": {
-          "id": { "type": "string" },
-          "tema": { "type": "string" },
-          "vigente": { "type": "string" },
-          "aplica_a": { "type": "string" },
-          "substitui": { "type": "array", "items": { "type": "string" } },
-          "antecessoras_historicas": { "type": "array", "items": { "type": "string" } },
-          "dispositivos_revogados": { "type": "array", "items": { "type": "string" } },
-          "fichas_responsaveis": { "type": "array", "items": { "type": "string" } },
-          "fichas_base_legal": { "type": "array", "items": { "type": "string" } },
-          "transicao": { "type": "string" },
-          "orientacao_analise": { "type": "string" }
-        }
+        "additionalProperties": false
       }
     }
-  }
+  },
+  "required": [
+    "versao",
+    "descricao",
+    "marcos"
+  ],
+  "additionalProperties": false
 }

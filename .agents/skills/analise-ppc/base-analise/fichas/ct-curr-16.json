@@ -59,9 +59,24 @@
     "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.pre_requisitos_ingresso"
   ],
   "referencias_normativas": [
-    "CNCT",
-    "Resolução CONSUP/IFPR nº 190/2024",
-    "Resolução CNE/CP nº 2/2026, arts. 18 e 28, IV"
+    {
+      "ref": "cnct:catalogo",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/consup/res/2024/190",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art18",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art28-iv",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "Os pré-requisitos de ingresso previstos no PPC são compatíveis com o CNCT e com a forma de oferta do curso?",
   "rubrica": "Comparar as regras de ingresso do PPC com `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.pre_requisitos_ingresso`, considerando se a forma de oferta declarada é integrada, concomitante, subsequente ou EJA. Exigir que o texto registre de modo explícito a escolaridade mínima ou a condição de matrícula do candidato, e não apenas remeta genericamente ao processo seletivo. Usar como referência as formas definidas na Resolução CNE/CP nº 2/2026, art. 18: integrada, somente a quem concluiu o ensino fundamental, com matrícula única; concomitante, a quem ingresse no ensino médio ou o esteja cursando, com matrículas distintas; concomitante intercomplementar, simultânea ao ensino médio, em parceria entre instituições, com projeto pedagógico unificado; subsequente, a quem concluiu o ensino médio.",

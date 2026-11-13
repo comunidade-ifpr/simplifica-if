@@ -1,6 +1,6 @@
 {
   "base_analise_dir": "analise-ppc/base-analise",
-  "gerado_em": "2026-11-13T14:39:27+00:00",
+  "gerado_em": "2026-11-13T22:01:41+00:00",
   "resumo": {
     "total_fichas": 80,
     "total_validacoes_cruzadas": 29,
@@ -39,6 +39,7 @@
         "atividade curricular"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-curr-01.json"
     },
     {
@@ -90,9 +91,14 @@
         "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.carga_horaria_minima"
       ],
       "referencias_normativas": [
-        "CNCT",
+        "Catálogo Nacional de Cursos Técnicos (CNCT)",
         "Resolução CNE/CP nº 2/2026, arts. 29, 30 e 37, § 3º",
         "Resolução CONSUP/IFPR nº 64/2022, art. 22"
+      ],
+      "normas_citadas": [
+        "cnct:catalogo",
+        "br/cne-cp/res/2026/2",
+        "ifpr/consup/res/2022/64"
       ],
       "arquivo": "fichas/ct-curr-02.json"
     },
@@ -133,6 +139,12 @@
         "Resolução CNE/CP nº 2/2026, arts. 29, §§ 2º e 3º, e 30",
         "Resolução CNE/CEB nº 2/2024, arts. 13 e 25",
         "Resolução CNE/CP nº 2/2026, art. 18, § 2º"
+      ],
+      "normas_citadas": [
+        "br/lei/2024/14945",
+        "ifpr/consup/res/2022/64",
+        "br/cne-cp/res/2026/2",
+        "br/cne-ceb/res/2024/2"
       ],
       "arquivo": "fichas/ct-curr-03.json"
     },
@@ -177,6 +189,7 @@
         "eixo tecnológico"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-curr-04.json"
     },
     {
@@ -205,6 +218,7 @@
         "livros"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-curr-05.json"
     },
     {
@@ -236,6 +250,10 @@
       "referencias_normativas": [
         "ABNT NBR 6023",
         "Resolução CNE/CP nº 2/2026, art. 28, § 1º, I"
+      ],
+      "normas_citadas": [
+        "externo:abnt/nbr/6023",
+        "br/cne-cp/res/2026/2"
       ],
       "arquivo": "fichas/ct-curr-06.json"
     },
@@ -272,6 +290,7 @@
         "etapas"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-curr-07.json"
     },
     {
@@ -304,6 +323,9 @@
       ],
       "referencias_normativas": [
         "Resolução CNE/CP nº 2/2026, arts. 26, VI, e 28, § 1º, II"
+      ],
+      "normas_citadas": [
+        "br/cne-cp/res/2026/2"
       ],
       "arquivo": "fichas/ct-curr-08.json"
     },
@@ -338,7 +360,12 @@
       "referencias_normativas": [
         "Resolução CONSUP/IFPR nº 148/2023",
         "Resolução CONSUP/IFPR nº 159/2023",
-        "Nota Técnica PROENS/IFPR nº 1/2025 (SEI nº 3881287)"
+        "Nota Técnica PROENS/IFPR nº 1/2025 — SEI nº 3881287"
+      ],
+      "normas_citadas": [
+        "ifpr/consup/res/2023/148",
+        "ifpr/consup/res/2023/159",
+        "ifpr/proens/nt/2025/1"
       ],
       "arquivo": "fichas/ct-curr-09.json"
     },
@@ -373,6 +400,7 @@
         "processo formativo"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-curr-10.json"
     },
     {
@@ -409,6 +437,12 @@
         "Resolução CNE/CEB nº 2/2024",
         "Resolução CNE/CP nº 2/2026, arts. 7º, § 4º, e 22, X"
       ],
+      "normas_citadas": [
+        "br/lei/1996/9394",
+        "br/lei/2024/14945",
+        "br/cne-ceb/res/2024/2",
+        "br/cne-cp/res/2026/2"
+      ],
       "arquivo": "fichas/ct-curr-11.json"
     },
     {
@@ -443,6 +477,9 @@
       ],
       "referencias_normativas": [
         "Resolução CNE/CP nº 2/2026, arts. 9º e 28, VII"
+      ],
+      "normas_citadas": [
+        "br/cne-cp/res/2026/2"
       ],
       "arquivo": "fichas/ct-curr-12.json"
     },
@@ -480,6 +517,10 @@
       "referencias_normativas": [
         "Resolução CONSUP/IFPR nº 190/2024",
         "Resolução CNE/CP nº 2/2026, arts. 28, X, e 42"
+      ],
+      "normas_citadas": [
+        "ifpr/consup/res/2024/190",
+        "br/cne-cp/res/2026/2"
       ],
       "arquivo": "fichas/ct-curr-13.json"
     },
@@ -521,6 +562,11 @@
         "Resolução CNE/CP nº 2/2026, art. 26, VIII",
         "Resolução CONSUP/IFPR nº 190/2024, arts. 56, § 4º, e 62, § 4º"
       ],
+      "normas_citadas": [
+        "ifpr/consup/res/2022/64",
+        "br/cne-cp/res/2026/2",
+        "ifpr/consup/res/2024/190"
+      ],
       "arquivo": "fichas/ct-curr-14.json"
     },
     {
@@ -552,6 +598,9 @@
       ],
       "referencias_normativas": [
         "Resolução CNE/CP nº 2/2026, arts. 42 e 43"
+      ],
+      "normas_citadas": [
+        "br/cne-cp/res/2026/2"
       ],
       "arquivo": "fichas/ct-curr-15.json"
     },
@@ -606,9 +655,14 @@
         "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.pre_requisitos_ingresso"
       ],
       "referencias_normativas": [
-        "CNCT",
+        "Catálogo Nacional de Cursos Técnicos (CNCT)",
         "Resolução CONSUP/IFPR nº 190/2024",
         "Resolução CNE/CP nº 2/2026, arts. 18 e 28, IV"
+      ],
+      "normas_citadas": [
+        "cnct:catalogo",
+        "ifpr/consup/res/2024/190",
+        "br/cne-cp/res/2026/2"
       ],
       "arquivo": "fichas/ct-curr-16.json"
     },
@@ -642,8 +696,12 @@
         "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.itinerarios_formativos"
       ],
       "referencias_normativas": [
-        "CNCT",
+        "Catálogo Nacional de Cursos Técnicos (CNCT)",
         "Resolução CNE/CP nº 2/2026, arts. 9º, 17, § 2º, 28, VI e VII, e 29, § 4º"
+      ],
+      "normas_citadas": [
+        "cnct:catalogo",
+        "br/cne-cp/res/2026/2"
       ],
       "arquivo": "fichas/ct-curr-17.json"
     },
@@ -700,6 +758,11 @@
         "Lei nº 14.945/2024",
         "Resolução CNE/CEB nº 2/2024"
       ],
+      "normas_citadas": [
+        "br/lei/1996/9394",
+        "br/lei/2024/14945",
+        "br/cne-ceb/res/2024/2"
+      ],
       "arquivo": "fichas/ct-curr-18.json"
     },
     {
@@ -754,6 +817,11 @@
         "Resolução CNE/CP nº 2/2026, arts. 22, 26, II, 28, XIII e § 1º, III, e 36",
         "Resolução CNE/CEB nº 2/2024"
       ],
+      "normas_citadas": [
+        "ifpr/consup/res/2022/64",
+        "br/cne-cp/res/2026/2",
+        "br/cne-ceb/res/2024/2"
+      ],
       "arquivo": "fichas/ct-curr-19.json"
     },
     {
@@ -791,10 +859,16 @@
         "cnct_contexto.comparacoes.estagio_cnct"
       ],
       "referencias_normativas": [
-        "CNCT",
+        "Catálogo Nacional de Cursos Técnicos (CNCT)",
         "Lei nº 11.788/2008",
         "Resolução CONSUP/IFPR nº 82/2022",
         "Resolução CNE/CP nº 2/2026, arts. 28, XVII e § 1º, IV, e 37"
+      ],
+      "normas_citadas": [
+        "cnct:catalogo",
+        "br/lei/2008/11788",
+        "ifpr/consup/res/2022/82",
+        "br/cne-cp/res/2026/2"
       ],
       "arquivo": "fichas/ct-curr-20.json"
     },
@@ -845,6 +919,12 @@
         "Regulamento Geral de Estágio do campus",
         "Resolução CNE/CP nº 2/2026, art. 53, § 7º"
       ],
+      "normas_citadas": [
+        "br/lei/2008/11788",
+        "ifpr/consup/res/2022/82",
+        "externo:campus/regulamento-estagio",
+        "br/cne-cp/res/2026/2"
+      ],
       "arquivo": "fichas/ct-curr-21.json"
     },
     {
@@ -880,9 +960,14 @@
         "sei 3881287"
       ],
       "referencias_normativas": [
-        "Nota Técnica PROENS/IFPR nº 1/2025 (SEI nº 3881287)",
+        "Nota Técnica PROENS/IFPR nº 1/2025 — SEI nº 3881287",
         "Resolução CONSUP/IFPR nº 159/2023",
         "Resolução CONSUP/IFPR nº 148/2023"
+      ],
+      "normas_citadas": [
+        "ifpr/proens/nt/2025/1",
+        "ifpr/consup/res/2023/159",
+        "ifpr/consup/res/2023/148"
       ],
       "arquivo": "fichas/ct-curr-22.json"
     },
@@ -935,6 +1020,7 @@
         "organização semanal"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-curr-23.json"
     },
     {
@@ -979,6 +1065,12 @@
         "Resolução CONSUP/IFPR nº 82/2022",
         "Regulamento Geral de Estágio do campus",
         "Resolução CNE/CP nº 2/2026, art. 37, §§ 5º e 7º"
+      ],
+      "normas_citadas": [
+        "br/lei/2008/11788",
+        "ifpr/consup/res/2022/82",
+        "externo:campus/regulamento-estagio",
+        "br/cne-cp/res/2026/2"
       ],
       "arquivo": "fichas/ct-curr-24.json"
     },
@@ -1032,9 +1124,14 @@
         "Resolução Consup/IFPR nº 82/2022"
       ],
       "referencias_normativas": [
-        "CNCT",
+        "Catálogo Nacional de Cursos Técnicos (CNCT)",
         "Resolução CONSUP/IFPR nº 82/2022",
         "Regulamento Geral de Estágio do campus"
+      ],
+      "normas_citadas": [
+        "cnct:catalogo",
+        "ifpr/consup/res/2022/82",
+        "externo:campus/regulamento-estagio"
       ],
       "arquivo": "fichas/ct-curr-25.json"
     },
@@ -1074,6 +1171,10 @@
       "referencias_normativas": [
         "Lei nº 9.394/1996, art. 26, §§ 1º e 9º-B",
         "Lei nº 15.468/2026"
+      ],
+      "normas_citadas": [
+        "br/lei/1996/9394",
+        "br/lei/2026/15468"
       ],
       "arquivo": "fichas/ct-curr-26.json"
     },
@@ -1115,6 +1216,11 @@
         "Resolução CNE/CEB nº 2/2024, art. 28, § 3º",
         "Resolução CONSUP/IFPR nº 190/2024, art. 5º"
       ],
+      "normas_citadas": [
+        "br/cne-cp/res/2026/2",
+        "br/cne-ceb/res/2024/2",
+        "ifpr/consup/res/2024/190"
+      ],
       "arquivo": "fichas/ct-curr-27.json"
     },
     {
@@ -1151,8 +1257,12 @@
         "contexto_estrutural.cnct.comparacao_catalogo.correspondencia"
       ],
       "referencias_normativas": [
-        "CNCT",
+        "Catálogo Nacional de Cursos Técnicos (CNCT)",
         "Resolução CNE/CP nº 2/2026, art. 47"
+      ],
+      "normas_citadas": [
+        "cnct:catalogo",
+        "br/cne-cp/res/2026/2"
       ],
       "arquivo": "fichas/ct-ident-01.json"
     },
@@ -1190,6 +1300,10 @@
         "Resolução CNE/CP nº 2/2026, art. 28, I, II, VIII e XVI",
         "Resolução CONSUP/IFPR nº 190/2024, art. 69"
       ],
+      "normas_citadas": [
+        "br/cne-cp/res/2026/2",
+        "ifpr/consup/res/2024/190"
+      ],
       "arquivo": "fichas/ct-ident-02.json"
     },
     {
@@ -1219,6 +1333,9 @@
       "referencias_normativas": [
         "Resolução CNE/CP nº 2/2026, arts. 27 e 28, III"
       ],
+      "normas_citadas": [
+        "br/cne-cp/res/2026/2"
+      ],
       "arquivo": "fichas/ct-ident-03.json"
     },
     {
@@ -1246,6 +1363,7 @@
         "perfil do egresso"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-ident-04.json"
     },
     {
@@ -1281,6 +1399,9 @@
       "referencias_normativas": [
         "Resolução CNE/CP nº 2/2026, arts. 1º a 4º"
       ],
+      "normas_citadas": [
+        "br/cne-cp/res/2026/2"
+      ],
       "arquivo": "fichas/ct-ident-05.json"
     },
     {
@@ -1313,6 +1434,7 @@
         "contextualização"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-ident-06.json"
     },
     {
@@ -1342,6 +1464,7 @@
         "egresso"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-ident-07.json"
     },
     {
@@ -1387,6 +1510,12 @@
         "Resolução CNE/CEB nº 2/2024",
         "Resolução CNE/CP nº 2/2026"
       ],
+      "normas_citadas": [
+        "br/lei/1996/9394",
+        "br/lei/2024/14945",
+        "br/cne-ceb/res/2024/2",
+        "br/cne-cp/res/2026/2"
+      ],
       "arquivo": "fichas/ct-ident-08.json"
     },
     {
@@ -1422,6 +1551,7 @@
         "ensino médio"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-ident-09.json"
     },
     {
@@ -1452,6 +1582,7 @@
         "contexto_estrutural.cnct.comparacao_catalogo.correspondencia"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-ident-10.json"
     },
     {
@@ -1482,6 +1613,7 @@
         "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.campo_atuacao"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-ident-11.json"
     },
     {
@@ -1512,6 +1644,7 @@
         "especificidade"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-ident-12.json"
     },
     {
@@ -1547,7 +1680,10 @@
         "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.area_tecnologica"
       ],
       "referencias_normativas": [
-        "CNCT"
+        "Catálogo Nacional de Cursos Técnicos (CNCT)"
+      ],
+      "normas_citadas": [
+        "cnct:catalogo"
       ],
       "arquivo": "fichas/ct-ident-13.json"
     },
@@ -1580,7 +1716,10 @@
         "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.ocupacoes_cbo"
       ],
       "referencias_normativas": [
-        "CNCT"
+        "Catálogo Nacional de Cursos Técnicos (CNCT)"
+      ],
+      "normas_citadas": [
+        "cnct:catalogo"
       ],
       "arquivo": "fichas/ct-ident-14.json"
     },
@@ -1620,8 +1759,13 @@
       ],
       "referencias_normativas": [
         "Resolução CNE/CP nº 2/2026, arts. 44 e 45",
-        "Resolução CNE/CP nº 2/2025",
-        "CNCT"
+        "Resolução CNE/CP nº 2/2025, art. 1º",
+        "Catálogo Nacional de Cursos Técnicos (CNCT)"
+      ],
+      "normas_citadas": [
+        "br/cne-cp/res/2026/2",
+        "br/cne-cp/res/2025/2",
+        "cnct:catalogo"
       ],
       "arquivo": "fichas/ct-ident-15.json"
     },
@@ -1668,6 +1812,10 @@
       "referencias_normativas": [
         "Resolução CONSUP/IFPR nº 190/2024",
         "Lei nº 12.711/2012"
+      ],
+      "normas_citadas": [
+        "ifpr/consup/res/2024/190",
+        "br/lei/2012/12711"
       ],
       "arquivo": "fichas/ct-ident-16.json"
     },
@@ -1728,6 +1876,11 @@
         "Lei nº 13.409/2016",
         "Lei nº 14.723/2023"
       ],
+      "normas_citadas": [
+        "br/lei/2012/12711",
+        "br/lei/2016/13409",
+        "br/lei/2023/14723"
+      ],
       "arquivo": "fichas/ct-ident-17.json"
     },
     {
@@ -1771,6 +1924,9 @@
       ],
       "referencias_normativas": [
         "Resolução CNE/CP nº 2/2026, arts. 26, X, 28, XVIII e § 4º, e 67"
+      ],
+      "normas_citadas": [
+        "br/cne-cp/res/2026/2"
       ],
       "arquivo": "fichas/ct-ident-18.json"
     },
@@ -1824,11 +1980,18 @@
         "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.legislacao_profissional"
       ],
       "referencias_normativas": [
-        "CNCT",
+        "Catálogo Nacional de Cursos Técnicos (CNCT)",
         "Lei nº 5.524/1968",
         "Decreto nº 90.922/1985",
         "Lei nº 13.639/2018",
         "Resolução CFT nº 89/2019"
+      ],
+      "normas_citadas": [
+        "cnct:catalogo",
+        "br/lei/1968/5524",
+        "br/decreto/1985/90922",
+        "br/lei/2018/13639",
+        "externo:cft/res/2019/89"
       ],
       "arquivo": "fichas/ct-ident-19.json"
     },
@@ -1864,6 +2027,10 @@
         "Resolução CONSUP/IFPR nº 50/2017",
         "Resolução CNE/CP nº 2/2026, art. 38"
       ],
+      "normas_citadas": [
+        "ifpr/consup/res/2017/50",
+        "br/cne-cp/res/2026/2"
+      ],
       "arquivo": "fichas/ct-sup-01.json"
     },
     {
@@ -1896,6 +2063,9 @@
       "referencias_normativas": [
         "Resolução CNE/CP nº 2/2026, arts. 28, VIII e XI, e 38, § 4º"
       ],
+      "normas_citadas": [
+        "br/cne-cp/res/2026/2"
+      ],
       "arquivo": "fichas/ct-sup-02.json"
     },
     {
@@ -1926,6 +2096,7 @@
         "acompanhamento pedagógico"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-sup-03.json"
     },
     {
@@ -1960,6 +2131,11 @@
         "Resolução CONSUP/IFPR nº 159/2023",
         "Resolução CNE/CP nº 2/2026, arts. 5º e 28, V"
       ],
+      "normas_citadas": [
+        "ifpr/consup/res/2023/148",
+        "ifpr/consup/res/2023/159",
+        "br/cne-cp/res/2026/2"
+      ],
       "arquivo": "fichas/ct-sup-04.json"
     },
     {
@@ -1992,6 +2168,7 @@
         "experiência"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-sup-05.json"
     },
     {
@@ -2023,6 +2200,7 @@
         "governança"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-sup-06.json"
     },
     {
@@ -2051,8 +2229,12 @@
         "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.infraestrutura_minima"
       ],
       "referencias_normativas": [
-        "CNCT",
+        "Catálogo Nacional de Cursos Técnicos (CNCT)",
         "Resolução CNE/CP nº 2/2026, art. 28, XII e § 3º"
+      ],
+      "normas_citadas": [
+        "cnct:catalogo",
+        "br/cne-cp/res/2026/2"
       ],
       "arquivo": "fichas/ct-sup-07.json"
     },
@@ -2093,6 +2275,11 @@
         "Resolução CONSUP/IFPR nº 64/2022, arts. 31 e 32",
         "Portaria PROENS/IFPR nº 121/2024, arts. 67 a 69",
         "Resolução CNE/CP nº 2/2026, arts. 22, VII, e 26, X e XII"
+      ],
+      "normas_citadas": [
+        "ifpr/consup/res/2022/64",
+        "ifpr/proens/portaria/2024/121",
+        "br/cne-cp/res/2026/2"
       ],
       "arquivo": "fichas/ct-sup-08.json"
     },
@@ -2135,6 +2322,12 @@
         "Resolução CNE/CEB nº 2/2024",
         "Resolução CNE/CP nº 2/2026"
       ],
+      "normas_citadas": [
+        "br/lei/1996/9394",
+        "br/lei/2024/14945",
+        "br/cne-ceb/res/2024/2",
+        "br/cne-cp/res/2026/2"
+      ],
       "arquivo": "fichas/ct-sup-09.json"
     },
     {
@@ -2174,6 +2367,7 @@
         "equidade"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-sup-10.json"
     },
     {
@@ -2215,6 +2409,7 @@
         "banheiro adaptado"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-sup-11.json"
     },
     {
@@ -2258,6 +2453,12 @@
         "Lei nº 14.945/2024",
         "Resolução CNE/CEB nº 2/2024",
         "Resolução CNE/CP nº 2/2026"
+      ],
+      "normas_citadas": [
+        "br/lei/1996/9394",
+        "br/lei/2024/14945",
+        "br/cne-ceb/res/2024/2",
+        "br/cne-cp/res/2026/2"
       ],
       "arquivo": "fichas/ct-sup-12.json"
     },
@@ -2308,6 +2509,9 @@
       "referencias_normativas": [
         "ABNT NBR 6023"
       ],
+      "normas_citadas": [
+        "externo:abnt/nbr/6023"
+      ],
       "arquivo": "fichas/ct-sup-13.json"
     },
     {
@@ -2353,10 +2557,18 @@
       "referencias_normativas": [
         "Resolução CNE/CEB nº 2/2024",
         "Resolução CNE/CP nº 2/2026",
-        "Catálogo Nacional de Cursos Técnicos",
+        "Catálogo Nacional de Cursos Técnicos (CNCT)",
         "Plano de Desenvolvimento Institucional do IFPR",
         "Projeto Pedagógico Institucional do IFPR",
         "Regimento Geral do IFPR"
+      ],
+      "normas_citadas": [
+        "br/cne-ceb/res/2024/2",
+        "br/cne-cp/res/2026/2",
+        "cnct:catalogo",
+        "externo:ifpr/pdi",
+        "externo:ifpr/ppi",
+        "externo:ifpr/regimento-geral"
       ],
       "arquivo": "fichas/ct-sup-14.json"
     },
@@ -2392,6 +2604,9 @@
       "referencias_normativas": [
         "Resolução CNE/CP nº 2/2026, arts. 28, XIV, 60 a 63 e 72"
       ],
+      "normas_citadas": [
+        "br/cne-cp/res/2026/2"
+      ],
       "arquivo": "fichas/ct-sup-15.json"
     },
     {
@@ -2425,6 +2640,7 @@
         "suficiência"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-sup-16.json"
     },
     {
@@ -2463,9 +2679,14 @@
         "Resolução CONSUP/IFPR nº 64/2022"
       ],
       "referencias_normativas": [
-        "LDB, arts. 61 a 63",
+        "Lei nº 9.394/1996, arts. 61 a 63",
         "Resolução CNE/CP nº 2/2026, arts. 57, 59, 61 e 72",
         "Resolução CONSUP/IFPR nº 64/2022, arts. 41 a 43"
+      ],
+      "normas_citadas": [
+        "br/lei/1996/9394",
+        "br/cne-cp/res/2026/2",
+        "ifpr/consup/res/2022/64"
       ],
       "arquivo": "fichas/ct-sup-17.json"
     },
@@ -2498,6 +2719,9 @@
       ],
       "referencias_normativas": [
         "Resolução CONSUP/IFPR nº 148/2023"
+      ],
+      "normas_citadas": [
+        "ifpr/consup/res/2023/148"
       ],
       "arquivo": "fichas/ct-sup-18.json"
     },
@@ -2536,7 +2760,12 @@
       "referencias_normativas": [
         "Resolução CONSUP/IFPR nº 159/2023",
         "Resolução CONSUP/IFPR nº 148/2023",
-        "Nota Técnica PROENS/IFPR nº 1/2025 (SEI nº 3881287)"
+        "Nota Técnica PROENS/IFPR nº 1/2025 — SEI nº 3881287"
+      ],
+      "normas_citadas": [
+        "ifpr/consup/res/2023/159",
+        "ifpr/consup/res/2023/148",
+        "ifpr/proens/nt/2025/1"
       ],
       "arquivo": "fichas/ct-sup-19.json"
     },
@@ -2572,6 +2801,11 @@
         "Resolução CONSUP/IFPR nº 148/2023",
         "Resolução CONSUP/IFPR nº 159/2023",
         "Resolução CNE/CP nº 2/2026, arts. 5º, 38, § 6º, 44, §§ 5º e 6º, e 45, § 8º"
+      ],
+      "normas_citadas": [
+        "ifpr/consup/res/2023/148",
+        "ifpr/consup/res/2023/159",
+        "br/cne-cp/res/2026/2"
       ],
       "arquivo": "fichas/ct-sup-20.json"
     },
@@ -2621,8 +2855,12 @@
         "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.legislacao_profissional"
       ],
       "referencias_normativas": [
-        "CNCT",
+        "Catálogo Nacional de Cursos Técnicos (CNCT)",
         "Resolução CNE/CP nº 2/2026, art. 24, parágrafo único"
+      ],
+      "normas_citadas": [
+        "cnct:catalogo",
+        "br/cne-cp/res/2026/2"
       ],
       "arquivo": "fichas/ct-sup-21.json"
     },
@@ -2652,8 +2890,12 @@
         "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.infraestrutura_minima"
       ],
       "referencias_normativas": [
-        "CNCT",
+        "Catálogo Nacional de Cursos Técnicos (CNCT)",
         "Resolução CNE/CP nº 2/2026, art. 28, § 3º"
+      ],
+      "normas_citadas": [
+        "cnct:catalogo",
+        "br/cne-cp/res/2026/2"
       ],
       "arquivo": "fichas/ct-sup-22.json"
     },
@@ -2691,6 +2933,9 @@
       ],
       "referencias_normativas": [
         "Manual de Competências do IFPR"
+      ],
+      "normas_citadas": [
+        "externo:ifpr/manual-competencias"
       ],
       "arquivo": "fichas/ct-sup-23.json"
     },
@@ -2746,6 +2991,10 @@
         "Resolução CONSUP/IFPR nº 239/2025",
         "Lei nº 14.914/2024"
       ],
+      "normas_citadas": [
+        "ifpr/consup/res/2025/239",
+        "br/lei/2024/14914"
+      ],
       "arquivo": "fichas/ct-sup-24.json"
     },
     {
@@ -2793,6 +3042,9 @@
       "referencias_normativas": [
         "Lei nº 13.146/2015"
       ],
+      "normas_citadas": [
+        "br/lei/2015/13146"
+      ],
       "arquivo": "fichas/ct-sup-25.json"
     },
     {
@@ -2827,6 +3079,9 @@
       ],
       "referencias_normativas": [
         "Resolução CONSUP/IFPR nº 50/2017"
+      ],
+      "normas_citadas": [
+        "ifpr/consup/res/2017/50"
       ],
       "arquivo": "fichas/ct-sup-26.json"
     },
@@ -2880,6 +3135,7 @@
         "matriz curricular"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-trans-01.json"
     },
     {
@@ -2937,6 +3193,9 @@
       "referencias_normativas": [
         "Resolução CNE/CP nº 2/2026, art. 38, § 2º"
       ],
+      "normas_citadas": [
+        "br/cne-cp/res/2026/2"
+      ],
       "arquivo": "fichas/ct-trans-02.json"
     },
     {
@@ -2993,6 +3252,7 @@
         "pendências"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-trans-03.json"
     },
     {
@@ -3060,6 +3320,7 @@
         "pendências"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-trans-04.json"
     },
     {
@@ -3113,6 +3374,7 @@
         "referências"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-trans-05.json"
     },
     {
@@ -3159,6 +3421,7 @@
         "diligência"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-trans-06.json"
     },
     {
@@ -3221,6 +3484,7 @@
         "capacidade instalada"
       ],
       "referencias_normativas": [],
+      "normas_citadas": [],
       "arquivo": "fichas/ct-trans-07.json"
     },
     {
@@ -3278,7 +3542,11 @@
       ],
       "referencias_normativas": [
         "Resolução CNE/CP nº 2/2026, art. 22, II a V e IX",
-        "Catálogo Nacional de Cursos Técnicos (CNCT), perfil profissional do curso correspondente"
+        "Catálogo Nacional de Cursos Técnicos (CNCT) — perfil profissional do curso correspondente"
+      ],
+      "normas_citadas": [
+        "br/cne-cp/res/2026/2",
+        "cnct:catalogo"
       ],
       "arquivo": "fichas/ct-trans-08.json"
     },
@@ -4236,11 +4504,18 @@
       "id": "dcn_ept",
       "titulo": "Diretrizes Curriculares Nacionais da Educação Profissional e Tecnológica",
       "vigente": "Resolução CNE/CP nº 2/2026",
+      "vigente_id": "br/cne-cp/res/2026/2",
       "substitui": [
         "Resolução CNE/CP nº 1/2021",
         "Resolução CNE/CEB nº 1/2014",
         "Resolução CNE/CP nº 1/2022",
         "Resolução CNE/CP nº 3/2022"
+      ],
+      "substitui_ids": [
+        "br/cne-cp/res/2021/1",
+        "br/cne-ceb/res/2014/1",
+        "br/cne-cp/res/2022/1",
+        "br/cne-cp/res/2022/3"
       ],
       "arquivo": "marcos-normativos.json"
     },
@@ -4249,8 +4524,12 @@
       "id": "dcnem",
       "titulo": "Diretrizes Curriculares Nacionais do Ensino Médio",
       "vigente": "Resolução CNE/CEB nº 2/2024",
+      "vigente_id": "br/cne-ceb/res/2024/2",
       "substitui": [
         "Resolução CNE/CEB nº 3/2018"
+      ],
+      "substitui_ids": [
+        "br/cne-ceb/res/2018/3"
       ],
       "arquivo": "marcos-normativos.json"
     },
@@ -4259,8 +4538,12 @@
       "id": "eja",
       "titulo": "Diretrizes Operacionais Nacionais da Educação de Jovens e Adultos",
       "vigente": "Resolução CNE/CEB nº 3/2025",
+      "vigente_id": "br/cne-ceb/res/2025/3",
       "substitui": [
         "Resolução CNE/CEB nº 1/2021"
+      ],
+      "substitui_ids": [
+        "br/cne-ceb/res/2021/1"
       ],
       "arquivo": "marcos-normativos.json"
     },
@@ -4269,9 +4552,14 @@
       "id": "assistencia_estudantil_ifpr",
       "titulo": "Política Institucional de Assistência Estudantil do IFPR",
       "vigente": "Resolução CONSUP/IFPR nº 239/2025",
+      "vigente_id": "ifpr/consup/res/2025/239",
       "substitui": [
         "Resolução CONSUP/IFPR nº 11/2009",
         "Resolução CONSUP/IFPR nº 53/2011"
+      ],
+      "substitui_ids": [
+        "ifpr/consup/res/2009/11",
+        "ifpr/consup/res/2011/53"
       ],
       "arquivo": "marcos-normativos.json"
     },

@@ -44,9 +44,56 @@
     "Resolução CONSUP/IFPR nº 64/2022"
   ],
   "referencias_normativas": [
-    "LDB, arts. 61 a 63",
-    "Resolução CNE/CP nº 2/2026, arts. 57, 59, 61 e 72",
-    "Resolução CONSUP/IFPR nº 64/2022, arts. 41 a 43"
+    {
+      "ref": "br/lei/1996/9394",
+      "dispositivo": "#art61",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/lei/1996/9394",
+      "dispositivo": "#art62",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/lei/1996/9394",
+      "dispositivo": "#art63",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art57",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art59",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art61",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art72",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/consup/res/2022/64",
+      "dispositivo": "#art41",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/consup/res/2022/64",
+      "dispositivo": "#art42",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/consup/res/2022/64",
+      "dispositivo": "#art43",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "O PPC ou a política institucional/campus por ele indicada mostram como a formação pedagógica e o desenvolvimento docente sustentam a oferta do curso?",
   "rubrica": "Avaliar se o PPC, seus anexos ou remissões institucionais claras contemplam formação pedagógica, complementação pedagógica ou estratégias equivalentes para docentes graduados não licenciados que atuam na parte profissional, bem como ações de formação continuada/desenvolvimento docente compatíveis com a oferta do curso técnico integrado. A ficha não exige que o PPC crie um plano próprio e detalhado se houver remissão verificável a política institucional do IFPR, calendário de formação pedagógica, Sepae/coordenação pedagógica, RGE/PPP/PDI do campus ou outro instrumento local que assegure tempos, espaços e oportunidades de formação. Não penalizar a simples presença de docentes bacharéis quando o PPC demonstrar encaminhamento institucional para formação pedagógica e desenvolvimento docente. Pela Resolução CNE/CP nº 2/2026, a formação inicial para a docência na EPTNM ocorre em licenciatura, formação pedagógica para graduados não licenciados, especialização lato sensu estruturada para esse fim ou programas especiais (art. 57); docentes graduados não licenciados em exercício na data de publicação da Resolução podem continuar na docência desde que participem de um desses cursos ou obtenham reconhecimento de saberes por certificação de competência em IES credenciada com cursos de formação de professores autorizados e em oferta regular, exigidos no mínimo três anos de efetivo exercício docente na EPT (art. 61, II); a implantação definitiva do capítulo sobre formação docente tem transição até 31/12/2030 (art. 72); e a formação continuada é componente essencial da profissionalização docente (art. 59).",

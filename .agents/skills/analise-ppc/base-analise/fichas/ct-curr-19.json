@@ -67,9 +67,39 @@
     "iniciação científica"
   ],
   "referencias_normativas": [
-    "Resolução CONSUP/IFPR nº 64/2022",
-    "Resolução CNE/CP nº 2/2026, arts. 22, 26, II, 28, XIII e § 1º, III, e 36",
-    "Resolução CNE/CEB nº 2/2024"
+    {
+      "ref": "ifpr/consup/res/2022/64",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art22",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art26-ii",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art28-xiii",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art28-par1-iii",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art36",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-ceb/res/2024/2",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "A organização curricular explicita integração entre teoria e prática, formação geral e formação técnica, projetos integradores ou práticas profissionais articuladas?",
   "rubrica": "Avaliar se a seção de organização curricular mostra como a proposta supera a justaposição de componentes e articula formação geral, formação específica, prática social, projetos integradores, práticas profissionais e fundamentos aplicados ao curso. Pela Resolução CNE/CP nº 2/2026, a prática profissional supervisionada é dimensão formativa obrigatória do curso técnico, integra a carga horária mínima e pode ser desenvolvida de forma transversal ou por atividades e componentes específicos definidos no PPC (art. 36); o PPC deve explicitar a prática profissional intrínseca ao currículo (art. 28, § 1º, III) e a estratégia de integração entre a escola e as instituições do mundo do trabalho (art. 28, XIII; art. 26, II). Considerar também, quando pertinentes à formação, os elementos do art. 22, como o diálogo com o trabalho, a ciência, a cultura, a tecnologia, a sustentabilidade ambiental, a cidadania fiscal, o empreendedorismo e a inovação, e a compreensão das relações sociais de produção e de trabalho, além de outros fundamentos aplicados pertinentes ao curso, como cooperativismo, trabalho em equipe, gestão de pessoas, legislação trabalhista, ética profissional, segurança do trabalho e iniciação científica.",

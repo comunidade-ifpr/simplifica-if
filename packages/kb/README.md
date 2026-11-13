@@ -10,7 +10,8 @@ Núcleo da base de conhecimento ([plano de arquitetura](../../PLANO-ARQUITETURA.
 | `normas/registro.ts` | universo de IDs: `manifest.json` + `normas/stubs.yaml` |
 | `normas/resolver.ts` | `resolverCitacao(texto)` e `extrairCitacoes(texto)`, com regras nomeadas e confiança |
 | `normas/dispositivos.ts` | "art. 28, inciso XVI" → `#art28-xvi` |
-| `normas/referencias.ts` | casamento usado pelo validador da `analise-ppc` (mantido compatível) |
+| `normas/texto-dispositivos.ts` | o caminho inverso: `["#art29", "#art37-par3"]` → "arts. 29 e 37, § 3º" |
+| `normas/referencia-estruturada.ts` | `{ ref, dispositivo?, papel, nota? }` (zod), universo de IDs citáveis (normas, stubs, `externo:`, `cnct:`) e texto legível das referências das fichas da `analise-ppc` |
 | `ppcs/citacoes.ts` | citações dos PPCs convertidos; PPCs que citam uma norma |
 | `adequacao/art71.ts` | cursos técnicos sujeitos ao art. 71 da Res. CNE/CP nº 2/2026 e a DCN que cada PPC cita |
 | `avaliacao/resolvedor.ts` | precisão e recall do resolvedor em `avaliacao/resolvedor/citacoes-anotadas.yaml` |

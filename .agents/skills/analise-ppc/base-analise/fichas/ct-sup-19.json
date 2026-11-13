@@ -40,9 +40,19 @@
     "sei 3881287"
   ],
   "referencias_normativas": [
-    "Resolução CONSUP/IFPR nº 159/2023",
-    "Resolução CONSUP/IFPR nº 148/2023",
-    "Nota Técnica PROENS/IFPR nº 1/2025 (SEI nº 3881287)"
+    {
+      "ref": "ifpr/consup/res/2023/159",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/consup/res/2023/148",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/proens/nt/2025/1",
+      "papel": "fundamento",
+      "nota": "SEI nº 3881287"
+    }
   ],
   "pergunta": "Quando o PPC trata de AEE, ele descreve público-alvo, procedimentos e distinções conceituais de modo compatível com a normativa institucional?",
   "rubrica": "Avaliar se o PPC distingue AEE de adaptação e flexibilização curricular, identifica o público prioritário, descreve procedimentos como a AICE quando esse serviço é aplicável e mantém o AEE como serviço/modalidade transversal, sem tratá-lo como componente curricular da matriz ou como item lançável no histórico escolar do estudante.",

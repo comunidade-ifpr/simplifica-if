@@ -54,9 +54,30 @@
     "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.carga_horaria_minima"
   ],
   "referencias_normativas": [
-    "CNCT",
-    "Resolução CNE/CP nº 2/2026, arts. 29, 30 e 37, § 3º",
-    "Resolução CONSUP/IFPR nº 64/2022, art. 22"
+    {
+      "ref": "cnct:catalogo",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art29",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art30",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art37-par3",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/consup/res/2022/64",
+      "dispositivo": "#art22",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "A carga horária total do curso está apresentada de modo consistente e atende à carga horária mínima aplicável à forma de oferta, prevista no CNCT e nas DCN da EPT?",
   "rubrica": "Avaliar se o PPC informa claramente a carga horária total, se ela não varia materialmente entre os principais pontos do documento e se é igual ou superior a `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.carga_horaria_minima_horas`, considerando também a descrição de carga horária mínima do CNCT quando trouxer condições específicas. Verificar também o mínimo próprio da forma de oferta pela Resolução CNE/CP nº 2/2026: nos cursos integrados ao ensino médio e concomitantes intercomplementares, carga horária total mínima de 3.000 horas, admitida a contabilização simultânea de até 300 horas entre formação geral básica e formação técnica (art. 29, § 2º); na EJA articulada ao ensino médio, formação geral básica mínima de 1.200 horas acrescida da carga horária da habilitação técnica prevista no CNCT ou de qualificações profissionais técnicas planejadas, admitida a contabilização simultânea de até 300 horas entre formação geral básica e formação técnica, desde que haja integração curricular efetiva (art. 30 e parágrafo único; art. 29, § 3º). No IFPR, o integrado observa também a Resolução CONSUP/IFPR nº 64/2022, art. 22: mínimo de 3.000 horas em 3 anos e de 3.200 horas em 4 anos, sem ultrapassar 10% acima, incluído o estágio obrigatório; se esse teto institucional conflitar com o art. 37, § 3º, escalonar. A carga horária de estágio, obrigatório ou não obrigatório, é acrescida à carga horária mínima do curso e não pode ser usada para atingir o mínimo do CNCT (art. 37, § 3º).",

@@ -64,9 +64,18 @@
     "salário mínimo per capita"
   ],
   "referencias_normativas": [
-    "Lei nº 12.711/2012",
-    "Lei nº 13.409/2016",
-    "Lei nº 14.723/2023"
+    {
+      "ref": "br/lei/2012/12711",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/lei/2016/13409",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/lei/2023/14723",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "Quando o PPC tratar da política de cotas e reserva de vagas, o texto faz referência normativa adequada e evita reproduzir regras desatualizadas ou materialmente erradas?",
   "rubrica": "Verificar se a seção 1.1.2 ou equivalente registra a observância da Lei nº 12.711/2012 com suas alterações vigentes, especialmente as promovidas pelas Leis nº 13.409/2016 e nº 14.723/2023, ou se remete de forma segura à política institucional e ao edital sem reproduzir regras superadas. Se o PPC optar por detalhar grupos beneficiários, renda, percentuais ou critérios de distribuição, o texto não deve contrariar a legislação vigente. Não é necessário copiar a lei integralmente, mas é inadequado reproduzir critérios antigos como se fossem atuais.",

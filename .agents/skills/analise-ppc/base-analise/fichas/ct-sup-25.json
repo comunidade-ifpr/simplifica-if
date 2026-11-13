@@ -52,7 +52,10 @@
     "atendimento acessível"
   ],
   "referencias_normativas": [
-    "Lei nº 13.146/2015"
+    {
+      "ref": "br/lei/2015/13146",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "A seção de biblioteca informa condições físicas de acesso ao espaço, incluindo localização, piso e recursos de acessibilidade quando a biblioteca não estiver no térreo?",
   "rubrica": "Verificar se o PPC descreve a biblioteca como espaço físico acessível e utilizável pelos estudantes. A análise deve procurar informação sobre a localização da biblioteca no campus, se está no piso térreo ou em outro pavimento, e, quando não estiver no térreo, se há rampa, elevador ou outro meio acessível de circulação vertical. Também considerar menções a circulação interna, mobiliário, atendimento, sinalização, banheiros próximos ou outras condições que tornem o uso da biblioteca acessível. Não basta a seção dizer genericamente que o campus possui acessibilidade; a biblioteca deve aparecer como espaço contemplado ou a política de acessibilidade deve ser claramente aplicável a ela.",

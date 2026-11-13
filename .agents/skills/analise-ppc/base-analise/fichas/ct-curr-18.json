@@ -69,9 +69,18 @@
     "filmes de produção nacional"
   ],
   "referencias_normativas": [
-    "Lei nº 9.394/1996",
-    "Lei nº 14.945/2024",
-    "Resolução CNE/CEB nº 2/2024"
+    {
+      "ref": "br/lei/1996/9394",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/lei/2024/14945",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-ceb/res/2024/2",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "A estrutura curricular contempla os componentes obrigatórios da Formação Geral Básica e os conteúdos legais específicos aplicáveis ao ensino médio integrado?",
   "rubrica": "Verificar se a matriz curricular e/ou o ementário tornam observável a presença dos componentes curriculares obrigatórios da Formação Geral Básica do ensino médio: língua portuguesa e suas literaturas, língua inglesa, artes, educação física, matemática, biologia, física, química, filosofia, geografia, história e sociologia, conforme art. 35-D da LDB e art. 17 da Resolução CNE/CEB nº 2/2024. A ausência ou impossibilidade de localizar qualquer componente deve ser apontada explicitamente. Conteúdos legais específicos podem ser considerados como verificação complementar, sem substituir a exigência dos componentes obrigatórios.",

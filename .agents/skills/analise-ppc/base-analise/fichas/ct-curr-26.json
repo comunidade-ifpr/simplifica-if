@@ -46,8 +46,20 @@
     "projetos integradores"
   ],
   "referencias_normativas": [
-    "Lei nº 9.394/1996, art. 26, §§ 1º e 9º-B",
-    "Lei nº 15.468/2026"
+    {
+      "ref": "br/lei/1996/9394",
+      "dispositivo": "#art26-par1",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/lei/1996/9394",
+      "dispositivo": "#art26-par9B",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/lei/2026/15468",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "Quando o PPC abrange o currículo do ensino médio, a educação política e os direitos da cidadania aparecem de modo curricularmente verificável no estudo da realidade social e política?",
   "rubrica": "Aplicar esta ficha aos cursos técnicos integrados ao ensino médio e a projetos concomitantes cujo PPC unificado também organize o currículo do ensino médio. Verificar, no PPC completo, se educação política e direitos da cidadania estão incorporados de modo verificável ao estudo da realidade social e política, conforme o art. 26, §§ 1º e 9º-B, da LDB. Aceitar a implementação em componente existente, ementa, unidade curricular, projeto integrador, atividade interdisciplinar ou outra forma curricular claramente identificada; não exigir disciplina autônoma, denominação literal nem carga horária exclusiva, pois a Lei nº 15.468/2026 não define essas formas de implementação. Conteúdos genéricos de ética, direitos humanos ou cidadania só bastam quando a redação permitir reconhecer também a dimensão política e o estudo da realidade social e política. Usar `NAO_APLICAVEL` para cursos subsequentes e para PPCs técnicos concomitantes que não organizem o currículo do ensino médio. Se a forma de oferta ou o alcance do PPC não puderem ser determinados, usar `INCONCLUSIVO`.",

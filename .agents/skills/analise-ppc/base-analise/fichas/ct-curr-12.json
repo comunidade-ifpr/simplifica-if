@@ -34,7 +34,16 @@
     "fluxograma"
   ],
   "referencias_normativas": [
-    "Resolução CNE/CP nº 2/2026, arts. 9º e 28, VII"
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art9",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art28-vii",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "A organização curricular deixa clara a progressão formativa do estudante ao longo do curso?",
   "rubrica": "Avaliar se o PPC mostra a sequência de períodos, etapas ou anos e se a trajetória formativa é inteligível e coerente com a matriz curricular. Verificar também se o PPC explicita o itinerário formativo profissional a ser percorrido pelos estudantes, exigido pela Resolução CNE/CP nº 2/2026 (art. 9º; art. 28, VII), ainda que sem certificações intermediárias.",

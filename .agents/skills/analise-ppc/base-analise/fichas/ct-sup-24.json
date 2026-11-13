@@ -58,8 +58,14 @@
     "Resolução nº 53/2011"
   ],
   "referencias_normativas": [
-    "Resolução CONSUP/IFPR nº 239/2025",
-    "Lei nº 14.914/2024"
+    {
+      "ref": "ifpr/consup/res/2025/239",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/lei/2024/14914",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "A seção de políticas de atendimento aos estudantes adota a Política Institucional de Assistência Estudantil vigente, conforme a Resolução CONSUP/IFPR nº 239/2025, sem tratar a Resolução nº 11/2009 e a Resolução nº 53/2011 como normas vigentes?",
   "rubrica": "Verificar se a seção de políticas de atendimento, assistência, apoio, permanência ou acompanhamento estudantil referencia a Resolução CONSUP/IFPR nº 239/2025 como marco vigente da Política Institucional de Assistência Estudantil do IFPR. Avaliar se o texto reconhece a assistência estudantil como conjunto de programas, projetos, serviços e ações articulados ao ensino, pesquisa, extensão e inovação, voltados a ampliar e contribuir para as condições de permanência e conclusão de estudantes de cursos superiores e cursos técnicos de nível médio presenciais. Conferir se os princípios e objetivos citados são compatíveis com a Resolução nº 239/2025, especialmente direito à educação profissional, técnica e tecnológica pública, gratuita e de qualidade; gestão democrática, participativa e transparente; justiça social, igualdade de oportunidade e equidade; direitos humanos e eliminação de preconceito e discriminação; formação humana integral; universalização da assistência estudantil; e articulação com demais políticas institucionais. A Resolução nº 11/2009 e a Resolução nº 53/2011 podem aparecer apenas como normas revogadas ou contexto histórico; escalonar quando forem apresentadas como fundamento vigente.",

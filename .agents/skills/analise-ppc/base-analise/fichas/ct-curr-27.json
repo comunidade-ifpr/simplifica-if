@@ -40,9 +40,61 @@
     "ambiente virtual"
   ],
   "referencias_normativas": [
-    "Resolução CNE/CP nº 2/2026, arts. 28, II e § 2º, 38, § 8º, e 48 a 53",
-    "Resolução CNE/CEB nº 2/2024, art. 28, § 3º",
-    "Resolução CONSUP/IFPR nº 190/2024, art. 5º"
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art28-ii",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art28-par2",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art38-par8",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art48",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art49",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art50",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art51",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art52",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art53",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-ceb/res/2024/2",
+      "dispositivo": "#art28-par3",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/consup/res/2024/190",
+      "dispositivo": "#art5",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "O PPC declara o formato de oferta (presencial, semipresencial ou a distância) e organiza a carga horária presencial e não presencial dentro dos limites das DCN da EPT para a forma do curso?",
   "rubrica": "Identificar a forma de oferta (integrada, concomitante, concomitante intercomplementar, subsequente ou articulada à EJA) e o formato declarado (Resolução CNE/CP nº 2/2026, art. 28, II). Aplicar os limites da Resolução: (a) formas integrada e concomitante intercomplementar: exclusivamente atividades presenciais; excepcionalmente, no turno noturno, educação mediada por tecnologia, nos termos da Resolução CNE/CEB nº 2/2024, art. 28, § 3º (art. 49, §§ 5º e 6º); (b) concomitante e subsequente presenciais: dois testes cumulativos, com bases de cálculo diferentes: (i) a carga horária síncrona, síncrona mediada ou assíncrona não passa de 30% da carga horária mínima do curso no CNCT (`contexto_estrutural.cnct.comparacao_catalogo.correspondencia.carga_horaria_minima_horas`), com mediação pedagógica por professor, prevista no PPC e comunicada aos estudantes (art. 28, § 2º; art. 50, § 1º); (ii) pelo menos 70% da carga horária total do curso é presencial (art. 50). Registrar a memória de cálculo das duas bases; (c) semipresencial: no mínimo 30% presencial e mais 20% presencial ou síncrona mediada, sem contar a mesma hora duas vezes, e abaixo dos mínimos do presencial (art. 51); (d) a distância: no mínimo 10% presencial e mais 10% presencial ou síncrona mediada, com até 70 estudantes por mediador pedagógico (art. 52); (e) EJA articulada à EPTNM: presencial ou semipresencial (art. 49, § 7º); no IFPR o PROEJA é integrado e segue o item (a), de modo que o § 7º só alcança ofertas de EJA não integradas (em caso de dúvida, escalonar); (f) no IFPR, a Resolução CONSUP/IFPR nº 190/2024, art. 5º, admite apenas os formatos presencial e a distância, com presencial obrigatório nas formas integrada e concomitante: registrar como desconformidade institucional curso concomitante semipresencial ou a distância e curso subsequente semipresencial; (g) formato a distância: verificar professor responsável e mediador pedagógico por componente (art. 53, § 1º), polo EaD credenciado e não compartilhado (art. 53, §§ 2º e 4º), acordos ou termos de cooperação para prática profissional e estágio presencial demonstrados previamente no PPC (art. 53, § 7º) e avaliações presenciais periódicas com controle de frequência (art. 53, § 9º). Verificar também as vedações: curso técnico em magistério a distância e cursos da área Gestão e Promoção da Saúde e Bem-Estar, do eixo Ambiente e Saúde, fora do formato presencial (art. 49, §§ 1º e 8º). Componentes ofertados total ou parcialmente a distância exigem avaliação presencial (art. 38, § 8º), que integra a carga horária presencial até o limite de 5% da carga horária total do curso (art. 49, § 4º); o estágio é sempre presencial (art. 28, § 1º, IV). Usar a matriz, o ementário e a seção de metodologia para reconstituir a carga horária não presencial. Em curso presencial sem nenhuma atividade não presencial, registrar ATENDE desde que o formato esteja declarado.",

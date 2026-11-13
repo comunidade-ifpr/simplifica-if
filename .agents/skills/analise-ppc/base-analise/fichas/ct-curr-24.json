@@ -50,10 +50,28 @@
     "RGE"
   ],
   "referencias_normativas": [
-    "Lei nº 11.788/2008",
-    "Resolução CONSUP/IFPR nº 82/2022",
-    "Regulamento Geral de Estágio do campus",
-    "Resolução CNE/CP nº 2/2026, art. 37, §§ 5º e 7º"
+    {
+      "ref": "br/lei/2008/11788",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/consup/res/2022/82",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "externo:campus/regulamento-estagio",
+      "papel": "complementar"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art37-par5",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art37-par7",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "Quando há estágio obrigatório, o PPC organiza pedagogicamente sua oferta, orientação e acompanhamento de modo suficiente?",
   "rubrica": "Aplicar esta ficha quando CT-CURR-20 ou o próprio PPC indicar estágio obrigatório. Verificar se o PPC contextualiza a necessidade do estágio obrigatório, demonstra sua relevância para a formação, informa período ou momento de realização, organiza preferencialmente o estágio como componente curricular ou justifica outra forma de organização, e define modalidade de orientação conforme a Resolução Consup/IFPR nº 82/2022. Verificar também se prevê orientação alternativa para estudantes com necessidades educacionais específicas quando necessário e se remete ao Regulamento Geral de Estágio do campus. Usar `NAO_APLICAVEL` apenas quando o PPC declarar de forma clara que não há estágio obrigatório e não houver carga de estágio obrigatória na matriz. Verificar ainda se o acompanhamento prevê professor orientador da instituição e supervisor da parte concedente, comprovado por relatório com reflexões críticas e relação com a base teórica, e se a parte concedente deve assegurar acessibilidade ao estudante público da educação especial (Resolução CNE/CP nº 2/2026, art. 37, §§ 5º e 7º).",

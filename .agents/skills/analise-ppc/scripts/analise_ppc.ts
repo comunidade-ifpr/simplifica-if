@@ -16,6 +16,7 @@ import { Command, InvalidArgumentError } from "commander";
 import { dumpsPy } from "@simplifica-if/kb/python/json";
 import { inteiroDeTexto } from "@simplifica-if/kb/python/valores";
 import { caminhosPadrao } from "./caminhos.ts";
+import { escreverSchemas, schemasDesatualizados } from "./esquemas.ts";
 import { escreverIndice, indiceAtualizado } from "./indice-base.ts";
 import { escreverMapa, mapaAtualizado } from "./mapa-fichas.ts";
 import { prepararDocumento } from "./preparar-documento.ts";
@@ -151,6 +152,22 @@ function gerarMapa(opcoes: { check?: boolean }): number {
   return 0;
 }
 
+function gerarSchemas(opcoes: { check?: boolean }): number {
+  const caminhos = caminhosPadrao();
+  if (opcoes.check) {
+    const desatualizados = schemasDesatualizados(caminhos);
+    if (!desatualizados.length) {
+      console.log(`OK: ${caminhos.schemasDir}`);
+      return 0;
+    }
+    for (const arquivo of desatualizados)
+      console.log(`ERRO: ${arquivo} está desatualizado. Rode ${COMANDO} gerar-schemas.`);
+    return 1;
+  }
+  for (const arquivo of escreverSchemas(caminhos)) console.log(`Schema gerado em ${arquivo}.`);
+  return 0;
+}
+
 export function criarPrograma(): Command {
   const programa = new Command()
     .name("analise_ppc.ts")
@@ -242,6 +259,14 @@ export function criarPrograma(): Command {
     .description("Validar fichas, tópicos, marcos normativos, validações cruzadas e contratos da base de análise")
     .action(() => {
       process.exitCode = validarBase();
+    });
+
+  programa
+    .command("gerar-schemas")
+    .description("Gerar os JSON Schemas de ficha e marcos normativos a partir do zod (scripts/esquemas.ts)")
+    .option("--check", "verificar se os schemas estão atualizados sem reescrever")
+    .action((opcoes: { check?: boolean }) => {
+      process.exitCode = gerarSchemas(opcoes);
     });
 
   programa

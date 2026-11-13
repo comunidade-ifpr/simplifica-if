@@ -47,9 +47,46 @@
     "Portaria PROENS/IFPR nº 121/2024"
   ],
   "referencias_normativas": [
-    "Resolução CONSUP/IFPR nº 64/2022, arts. 31 e 32",
-    "Portaria PROENS/IFPR nº 121/2024, arts. 67 a 69",
-    "Resolução CNE/CP nº 2/2026, arts. 22, VII, e 26, X e XII"
+    {
+      "ref": "ifpr/consup/res/2022/64",
+      "dispositivo": "#art31",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/consup/res/2022/64",
+      "dispositivo": "#art32",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/proens/portaria/2024/121",
+      "dispositivo": "#art67",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/proens/portaria/2024/121",
+      "dispositivo": "#art68",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/proens/portaria/2024/121",
+      "dispositivo": "#art69",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art22-vii",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art26-x",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art26-xii",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "O PPC prevê avaliação periódica do próprio projeto pedagógico, com responsáveis, periodicidade, registro e finalidade de melhoria, conforme a Resolução CONSUP/IFPR nº 64/2022 e a Portaria PROENS/IFPR nº 121/2024?",
   "rubrica": "Verificar se a seção de avaliação do PPC ou avaliação do curso descreve processo contínuo e anual de acompanhamento do Projeto Pedagógico do Curso pelo Colegiado de Curso, em diálogo com a Sepae e, quando pertinente, com apoio da Diepex e da Coordenação do Curso, na perspectiva da avaliação emancipatória e priorizando aspectos qualitativos dos processos de ensino e aprendizagem. Para cursos técnicos integrados, observar também a Resolução CONSUP/IFPR nº 64/2022, arts. 31 e 32: avaliação anual pelo colegiado, avaliação permanente do andamento do curso, coerência entre planejamento e materialização, possibilidade de avaliação na metade do período total do curso, eventual ajuste curricular e participação estudantil. Pela Portaria PROENS/IFPR nº 121/2024, arts. 67 a 69, verificar registro das avaliações em atas, juntada ao processo do PPC e proposição de ações estratégicas de melhoria. Acompanhamento de egressos, CPA, indicadores e autoavaliação institucional são evidências complementares, mas não substituem a explicitação mínima do processo de avaliação periódica do PPC. A Resolução CNE/CP nº 2/2026 também pede procedimentos de avaliação da execução do PPC (art. 26, XII) e atualização permanente da organização curricular com base em estudos, articulação com o setor produtivo, resultados do acompanhamento de egressos, avaliações internas e Sinaept (art. 22, VII); esses elementos complementam, sem substituir, o processo institucional do IFPR.",

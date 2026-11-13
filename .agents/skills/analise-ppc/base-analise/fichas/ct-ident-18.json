@@ -48,7 +48,26 @@
     "CPA"
   ],
   "referencias_normativas": [
-    "Resolução CNE/CP nº 2/2026, arts. 26, X, 28, XVIII e § 4º, e 67"
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art26-x",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art28-xviii",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art28-par4",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art67",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "O PPC prevê acompanhamento de egressos com responsáveis, instrumentos ou estratégias de coleta de informações e uso dos resultados para retroalimentar o curso?",
   "rubrica": "Localizar a seção temática de acompanhamento de egressos ou trechos equivalentes, independentemente da numeração. Verificar se o PPC indica como o campus/curso acompanhará os egressos, quem participa do acompanhamento, quais informações serão observadas ou coletadas, como a comunicação com egressos será mantida e como os resultados poderão subsidiar avaliação, atualização curricular, formação continuada, relação com o mundo do trabalho ou melhoria do PPC. A Resolução CNE/CP nº 2/2026 exige mecanismo permanente de acompanhamento dos egressos por pelo menos dois anos consecutivos após a conclusão, com coleta de dados de inserção profissional para subsidiar a atualização periódica do PPC, metodologia e cronograma explicitados no PPC e proteção de dados conforme a LGPD (art. 26, X; art. 28, XVIII e § 4º; art. 67). Não exigir sistema específico nem formato único, mas exigir que o PPC indique método, cronograma ou periodicidade e o horizonte mínimo de dois anos, e avaliar se a previsão é operacional o bastante para sair da declaração genérica.",

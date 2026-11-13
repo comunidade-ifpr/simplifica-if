@@ -56,7 +56,11 @@
     "aprendizagem"
   ],
   "referencias_normativas": [
-    "Resolução CNE/CP nº 2/2026, art. 38, § 2º"
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art38-par2",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "A concepção do curso, as metodologias e a avaliação da aprendizagem operam de forma coerente entre si?",
   "rubrica": "Verificar se o discurso pedagógico do PPC se materializa nas estratégias de ensino e avaliação. Usar como parâmetro a exigência de que critérios e instrumentos de avaliação sejam coerentes com o perfil profissional, os resultados de aprendizagem e a organização curricular (Resolução CNE/CP nº 2/2026, art. 38, § 2º).",

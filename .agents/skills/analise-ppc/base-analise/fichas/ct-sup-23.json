@@ -40,7 +40,10 @@
     "gestão acadêmica"
   ],
   "referencias_normativas": [
-    "Manual de Competências do IFPR"
+    {
+      "ref": "externo:ifpr/manual-competencias",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "O PPC explicita de modo suficiente as atribuições da coordenação do curso, o vínculo com o Manual de Competências do IFPR, o regime de trabalho compatível e a participação em instâncias colegiadas?",
   "rubrica": "Verificar se a seção 8.1.1 ou equivalente identifica a coordenação do curso como instância acadêmico-administrativa do curso e se descreve, de modo reconhecível, suas atribuições, com referência ao Manual de Competências do IFPR ou fonte institucional equivalente. Confirmar também se o texto informa que a função é exercida em regime de trabalho compatível com suas atribuições e se menciona participação em colegiados ou instâncias acadêmicas relacionadas ao curso. O desempenho esperado pode aparecer de forma sintética no papel institucional da coordenação ou de forma distribuída nas atribuições descritas.",

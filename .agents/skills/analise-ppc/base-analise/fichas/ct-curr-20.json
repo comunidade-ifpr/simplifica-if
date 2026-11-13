@@ -45,10 +45,33 @@
     "cnct_contexto.comparacoes.estagio_cnct"
   ],
   "referencias_normativas": [
-    "CNCT",
-    "Lei nº 11.788/2008",
-    "Resolução CONSUP/IFPR nº 82/2022",
-    "Resolução CNE/CP nº 2/2026, arts. 28, XVII e § 1º, IV, e 37"
+    {
+      "ref": "cnct:catalogo",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/lei/2008/11788",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/consup/res/2022/82",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art28-xvii",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art28-par1-iv",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art37",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "O PPC explicita a decisão sobre estágio obrigatório, estágio não obrigatório ou ausência de estágio, com carga horária e requisito de aprovação/certificação compatíveis com o CNCT?",
   "rubrica": "Verificar se o PPC possui item próprio ou tratamento explícito sobre estágio, declarando se o curso prevê estágio obrigatório, estágio não obrigatório ou ausência de estágio. Comparar a decisão com `cnct_contexto.correspondencia.estagio` e `cnct_contexto.comparacoes.estagio_cnct`. Se houver estágio obrigatório, exigir carga horária determinada e indicação de que ele é requisito para aprovação/certificação ou integralização. Se o estágio for não obrigatório, exigir que o PPC o trate como opcional, acrescido à carga horária total do curso, sem requisito para aprovação/certificação. Se o PPC omitir a decisão sobre estágio, não usar `NAO_APLICAVEL`: registrar `NAO_ATENDE` ou `INCONCLUSIVO` conforme as evidências. Aplicar também a Resolução CNE/CP nº 2/2026: o estágio é obrigatório quando determinado por lei, exigido pela natureza da ocupação ou definido pela instituição em razão do perfil profissional, e essa obrigatoriedade deve ser justificada no PPC (art. 37, §§ 2º e 4º); a carga horária do estágio, obrigatório ou não, é acrescida à carga horária mínima do CNCT (art. 37, § 3º); na EPTNM, o estágio obrigatório não pode ultrapassar um terço da carga horária mínima da habilitação no CNCT (art. 37, § 6º); e o estágio é realizado obrigatoriamente de modo presencial (art. 28, § 1º, IV).",

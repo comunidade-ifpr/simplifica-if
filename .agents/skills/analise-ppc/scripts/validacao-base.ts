@@ -2,8 +2,9 @@
  * Validação da base de análise da skill: schemas, fichas, taxonomia de
  * tópicos, marcos normativos, validações cruzadas e contratos de exemplo.
  *
- * As mensagens são as mesmas do antigo `validar_base_analise.py`, conferidas
- * por teste diferencial sobre a base e sobre casos inválidos.
+ * As mensagens de schema seguem as do antigo `validar_base_analise.py`. As referências normativas
+ * das fichas e os marcos são conferidos por ID canônico (fase 2b do plano de arquitetura), contra
+ * `manifest.json`, `normas/stubs.yaml` e o CNCT.
  */
 import { existsSync } from "node:fs";
 import path from "node:path";
@@ -16,16 +17,17 @@ import {
   textoDe,
   textoOuVazio,
 } from "@simplifica-if/kb/json";
+import { ehIdDispositivo, RE_REFERENCIA } from "@simplifica-if/kb/normas/ids";
 import {
-  chaveEstruturada,
-  type NormaManifesto,
-  normaDaReferencia,
-  normalizarReferencia,
-  textoDaChave,
-} from "@simplifica-if/kb/normas/referencias";
+  type FonteReferencia,
+  textoIdComDispositivo,
+  type UniversoReferencias,
+} from "@simplifica-if/kb/normas/referencia-estruturada";
 import { aparar, ordenarTextos } from "@simplifica-if/kb/texto";
 import { lerJson, listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
+import { jsonSchemaGerado, schemasDesatualizados } from "./esquemas.ts";
+import { carregarUniverso } from "./referencias-fichas.ts";
 import { validarSchemaAnalise } from "./schema-analise.ts";
 
 export type Ficha = ObjetoJson;
@@ -157,13 +159,6 @@ export function validarTopicosFichas(
   return erros;
 }
 
-/** Normas do `manifest.json` da base de conhecimento; ausente ou fora do formato dá lista vazia. */
-export function carregarManifestNormas(caminho: string = caminhosPadrao().manifestNormasPath): NormaManifesto[] {
-  if (!existsSync(caminho)) return [];
-  const payload = lerJson(caminho);
-  return Array.isArray(payload) ? payload.filter(ehObjeto) : [];
-}
-
 /** Marcos de `marcos-normativos.json`; ausente, inválido ou fora do formato dá lista vazia. */
 export function carregarMarcos(caminho: string = caminhosPadrao().marcosNormativosPath): Marco[] {
   if (!existsSync(caminho)) return [];
@@ -173,100 +168,150 @@ export function carregarMarcos(caminho: string = caminhosPadrao().marcosNormativ
   return Array.isArray(marcos) ? marcos.filter(ehObjeto) : [];
 }
 
+/** `br/cne-ceb/res/2025/3#art6-iii` → ato e dispositivo. */
+function separarDispositivo(id: string): { ref: string; dispositivo: string | undefined } {
+  const posicao = id.indexOf("#");
+  return posicao === -1
+    ? { ref: id, dispositivo: undefined }
+    : { ref: id.slice(0, posicao), dispositivo: id.slice(posicao) };
+}
+
+/** Texto legível de um ID com dispositivo opcional; o próprio ID se o dispositivo for malformado. */
+function legivel(universo: UniversoReferencias, ref: string, dispositivo?: string): string {
+  if (dispositivo !== undefined && !ehIdDispositivo(dispositivo)) return `${ref}${dispositivo}`;
+  return textoIdComDispositivo(`${ref}${dispositivo ?? ""}`, universo);
+}
+
+/** Onde conferir a revogação: `revogada_por` no Markdown da norma ou `status_fonte` do stub. */
+function origemRevogacao(fonte: FonteReferencia): string {
+  if (fonte.path !== undefined) return `veja \`revogada_por\` em base-conhecimento/${fonte.path}`;
+  return `veja \`status_fonte\` (${fonte.status_fonte ?? "?"}) em base-conhecimento/normas/stubs.yaml`;
+}
+
 /**
- * Barra em `referencias_normativas` norma revogada no manifesto, norma
- * substituída por um marco e dispositivo revogado.
+ * Confere por ID as `referencias_normativas` das fichas: ID inexistente na base, norma revogada
+ * (manifesto ou stub), norma substituída por um marco, dispositivo revogado (o próprio ou um
+ * dispositivo dentro dele) e referência repetida. O formato de `ref` e `dispositivo` é do schema.
  */
-export function validarReferenciasVigentes(
+export function validarReferenciasFichas(
   fichasPorId: Map<string, Ficha>,
-  manifest: readonly NormaManifesto[],
+  universo: UniversoReferencias,
   marcos: readonly Marco[] = [],
 ): string[] {
-  const substituidas = new Map<string, { texto: string; marcoId: string }>();
+  const substituidas = new Map<string, string>();
   const dispositivos = new Map<string, string>();
   for (const marco of marcos) {
-    for (const texto of [...itensPercorridos(marco.substitui), ...itensPercorridos(marco.antecessoras_historicas)]) {
-      const chave = chaveEstruturada(textoDe(texto));
-      if (chave) substituidas.set(textoDaChave(chave), { texto: textoDe(texto), marcoId: textoDe(marco.id) });
+    for (const id of [...itensPercorridos(marco.substitui), ...itensPercorridos(marco.antecessoras_historicas)]) {
+      substituidas.set(textoDe(id), textoDe(marco.id));
     }
   }
   for (const marco of marcos) {
-    for (const texto of itensPercorridos(marco.dispositivos_revogados)) {
-      dispositivos.set(normalizarReferencia(textoDe(texto)), textoDe(marco.id));
-    }
+    for (const id of itensPercorridos(marco.dispositivos_revogados)) dispositivos.set(textoDe(id), textoDe(marco.id));
   }
 
   const erros: string[] = [];
   for (const fichaId of ordenarTextos(fichasPorId.keys())) {
-    const ficha = fichasPorId.get(fichaId)!;
-    for (const valor of itensPercorridos(ficha.referencias_normativas)) {
-      const referencia = textoDe(valor);
-      const normalizada = normalizarReferencia(referencia);
-      const norma = normaDaReferencia(referencia, manifest);
-      const chave = chaveEstruturada(referencia);
-      const substituida = chave ? substituidas.get(textoDaChave(chave)) : undefined;
-      if (norma && norma.status_vigencia === "revogada") {
+    const vistas = new Set<string>();
+    itensPercorridos(fichasPorId.get(fichaId)!.referencias_normativas).forEach((item, indice) => {
+      // Fora do formato, o erro é do schema; aqui só se confere o que é ID bem formado.
+      if (!ehObjeto(item) || typeof item.ref !== "string" || !RE_REFERENCIA.test(item.ref)) return;
+      if (
+        item.dispositivo !== undefined &&
+        !(typeof item.dispositivo === "string" && ehIdDispositivo(item.dispositivo))
+      ) {
+        return;
+      }
+      const ref = item.ref;
+      const dispositivo = item.dispositivo as string | undefined;
+      const campo = `${fichaId}: \`referencias_normativas[${indice}]\``;
+      const fonte = universo.fonte(ref);
+      if (fonte === undefined) {
         erros.push(
-          `${fichaId}: \`referencias_normativas\` cita norma revogada: ${referencia} ` +
-            `(veja \`revogada_por\` em base-conhecimento/${norma.path === undefined ? "" : textoDe(norma.path)}; ` +
+          `${campo} cita ID inexistente na base: ${ref} ` +
+            "(registre a norma em base-conhecimento/manifest.json ou em base-conhecimento/normas/stubs.yaml)",
+        );
+        return;
+      }
+      const texto = legivel(universo, ref, dispositivo);
+      const chave = `${ref}${dispositivo ?? ""}`;
+      if (vistas.has(chave)) erros.push(`${campo} repete a referência: ${texto}`);
+      vistas.add(chave);
+      const marcoSubstituta = substituidas.get(ref);
+      if (fonte.status_vigencia === "revogada") {
+        erros.push(
+          `${campo} cita norma revogada: ${texto} (${ref}; ${origemRevogacao(fonte)}; ` +
             "atualize a ficha e base-analise/marcos-normativos.json)",
         );
-      } else if (substituida) {
-        erros.push(
-          `${fichaId}: \`referencias_normativas\` cita norma substituída no marco ${substituida.marcoId}: ` +
-            `${referencia} (${substituida.texto})`,
-        );
+      } else if (marcoSubstituta !== undefined) {
+        erros.push(`${campo} cita norma substituída no marco ${marcoSubstituta}: ${texto} (${ref})`);
       }
-      for (const [dispositivo, marcoId] of dispositivos) {
-        if (normalizada.startsWith(dispositivo)) {
-          erros.push(
-            `${fichaId}: \`referencias_normativas\` cita dispositivo revogado (marco ${marcoId}): ${referencia}`,
-          );
+      if (dispositivo === undefined) return;
+      for (const [revogado, marcoId] of dispositivos) {
+        const alvo = separarDispositivo(revogado);
+        if (
+          alvo.ref === ref &&
+          alvo.dispositivo !== undefined &&
+          (dispositivo === alvo.dispositivo || dispositivo.startsWith(`${alvo.dispositivo}-`))
+        ) {
+          erros.push(`${campo} cita dispositivo revogado (marco ${marcoId}): ${texto}`);
         }
       }
-    }
+    });
   }
   return erros;
 }
 
-/** Confere `marcos-normativos.json`: schema, ids únicos, vigência no manifesto e fichas citadas. */
+/**
+ * Confere `marcos-normativos.json`: schema (gerado do zod), ids únicos, norma vigente com texto na
+ * base e não revogada, normas substituídas e dispositivos revogados existentes e fichas citadas.
+ */
 export function validarMarcosNormativos(
-  manifest: readonly NormaManifesto[],
+  universo: UniversoReferencias,
   caminho: string = caminhosPadrao().marcosNormativosPath,
   fichasPorId?: Map<string, Ficha>,
-  schema: ObjetoJson = carregarSchema(caminhosPadrao(), "marcos-normativos.schema.json"),
 ): string[] {
   if (!existsSync(caminho)) return [`${caminho}: registro de marcos normativos não encontrado`];
   const lido = tentarLerJson(caminho);
   if ("erro" in lido) return [`${caminho}: JSON inválido: ${lido.erro}`];
-  const erros = validarSchemaAnalise(lido.valor, schema).map((erro) => `${caminho}: ${erro}`);
+  const erros = validarSchemaAnalise(lido.valor, jsonSchemaGerado("marcos-normativos.schema.json")).map(
+    (erro) => `${caminho}: ${erro}`,
+  );
   if (erros.length) return erros;
 
   const ids = new Set<string>();
   for (const marco of itensDe((lido.valor as ObjetoJson).marcos) as Marco[]) {
     const marcoId = textoDe(marco.id);
+    const prefixo = `${caminho}: marco ${marcoId}:`;
     if (ids.has(marcoId)) erros.push(`${caminho}: marco duplicado: ${marcoId}`);
     ids.add(marcoId);
     const vigente = textoDe(marco.vigente);
-    const normaVigente = normaDaReferencia(vigente, manifest);
-    if (normaVigente === null) {
-      erros.push(`${caminho}: marco ${marcoId}: norma vigente fora do manifesto da base: ${vigente}`);
-    } else if (normaVigente.status_vigencia === "revogada") {
-      erros.push(`${caminho}: marco ${marcoId}: norma marcada como vigente está revogada no manifesto: ${vigente}`);
+    const fonteVigente = universo.fonte(vigente);
+    if (fonteVigente === undefined || fonteVigente.situacao !== "base") {
+      erros.push(`${prefixo} norma vigente fora do manifesto da base: ${legivel(universo, vigente)} (${vigente})`);
+    } else if (fonteVigente.status_vigencia === "revogada") {
+      erros.push(
+        `${prefixo} norma marcada como vigente está revogada no manifesto: ${legivel(universo, vigente)} (${vigente})`,
+      );
     }
-    for (const substituida of itensDe(marco.substitui)) {
-      const norma = normaDaReferencia(textoDe(substituida), manifest);
-      if (norma && norma.status_vigencia === "vigente") {
-        erros.push(
-          `${caminho}: marco ${marcoId}: norma listada como substituída está vigente no manifesto: ${textoDe(substituida)}`,
-        );
+    for (const campo of ["substitui", "antecessoras_historicas", "dispositivos_revogados"]) {
+      for (const valor of itensDe(marco[campo])) {
+        const { ref, dispositivo } = separarDispositivo(textoDe(valor));
+        const fonte = universo.fonte(ref);
+        if (fonte === undefined) {
+          erros.push(`${prefixo} \`${campo}\` cita ID inexistente na base: ${ref}`);
+        } else if (campo === "substitui" && fonte.status_vigencia === "vigente") {
+          erros.push(
+            `${prefixo} norma listada como substituída está vigente na base: ` +
+              `${legivel(universo, ref, dispositivo)} (${ref})`,
+          );
+        }
       }
     }
     if (fichasPorId !== undefined) {
       for (const campo of ["fichas_responsaveis", "fichas_base_legal"]) {
         for (const fichaId of itensDe(marco[campo])) {
           if (typeof fichaId !== "string" || !fichasPorId.has(fichaId)) {
-            erros.push(`${caminho}: marco ${marcoId}: \`${campo}\` cita ficha desconhecida: ${textoDe(fichaId)}`);
+            erros.push(`${prefixo} \`${campo}\` cita ficha desconhecida: ${textoDe(fichaId)}`);
           }
         }
       }
@@ -303,17 +348,19 @@ const ALERTA_EXEMPLO = {
 /** Valida a base de análise inteira e devolve as mensagens de erro (lista vazia quando válida). */
 export function validarBaseAnalise(caminhos: CaminhosAnalise = caminhosPadrao()): string[] {
   const erros: string[] = [];
-  const schemaFicha = carregarSchema(caminhos, "ficha.schema.json");
+  const schemaFicha = jsonSchemaGerado("ficha.schema.json");
   const schemaValidacao = carregarSchema(caminhos, "validacao-cruzada.schema.json");
   const schemaResultado = carregarSchema(caminhos, "resultado-lote.schema.json");
   const schemaAlertas = carregarSchema(caminhos, "alertas-transversais.schema.json");
-  const schemaMarcos = carregarSchema(caminhos, "marcos-normativos.schema.json");
 
   for (const arquivo of listarArquivos(caminhos.schemasDir, ".schema.json")) {
     const payload = lerJson(arquivo);
     if (!ehObjeto(payload) || payload.type !== "object") {
       erros.push(`${arquivo}: schema deve ser objeto com type=object`);
     }
+  }
+  for (const arquivo of schemasDesatualizados(caminhos)) {
+    erros.push(`${arquivo}: diverge do schema zod de scripts/esquemas.ts; rode \`analise_ppc.ts gerar-schemas\``);
   }
 
   const fichasPorId = new Map<string, Ficha>();
@@ -331,14 +378,14 @@ export function validarBaseAnalise(caminhos: CaminhosAnalise = caminhosPadrao())
   }
   erros.push(...validarTopicosFichas(fichasPorId, caminhos));
 
-  const manifest = carregarManifestNormas(caminhos.manifestNormasPath);
-  if (manifest.length === 0) {
+  const universo = carregarUniverso(caminhos);
+  if (universo === null) {
     erros.push(
       `${caminhos.manifestNormasPath}: manifesto de normas não encontrado; checagem de vigência não executada`,
     );
   } else {
-    erros.push(...validarReferenciasVigentes(fichasPorId, manifest, carregarMarcos(caminhos.marcosNormativosPath)));
-    erros.push(...validarMarcosNormativos(manifest, caminhos.marcosNormativosPath, fichasPorId, schemaMarcos));
+    erros.push(...validarReferenciasFichas(fichasPorId, universo, carregarMarcos(caminhos.marcosNormativosPath)));
+    erros.push(...validarMarcosNormativos(universo, caminhos.marcosNormativosPath, fichasPorId));
   }
 
   const idsValidacoes = new Set<string>();

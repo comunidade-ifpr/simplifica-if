@@ -51,8 +51,15 @@
     "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.legislacao_profissional"
   ],
   "referencias_normativas": [
-    "CNCT",
-    "Resolução CNE/CP nº 2/2026, art. 24, parágrafo único"
+    {
+      "ref": "cnct:catalogo",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art24-parunico",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "Quando o CNCT indicar legislação profissional específica, o PPC trata essa base legal de modo reconhecível e pertinente?",
   "rubrica": "Verificar `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.legislacao_profissional`; se houver legislação específica ou restrição profissional, avaliar se o PPC a cita, interpreta ou incorpora corretamente. Se o CNCT indicar profissão não regulamentada, verificar se o PPC não cria exigências indevidas. Em profissões regulamentadas, o perfil profissional de conclusão deve contemplar as atribuições funcionais previstas na legislação própria como condição para o registro e o exercício profissional (Resolução CNE/CP nº 2/2026, art. 24, parágrafo único).",

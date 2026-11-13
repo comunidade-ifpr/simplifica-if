@@ -32,7 +32,16 @@
     "integração curricular"
   ],
   "referencias_normativas": [
-    "Resolução CNE/CP nº 2/2026, arts. 26, VI, e 28, § 1º, II"
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art26-vi",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art28-par1-ii",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "As metodologias previstas sustentam integração curricular e desenvolvimento do perfil do egresso?",
   "rubrica": "Avaliar se as metodologias descritas vão além de uma lista genérica e se dialogam com a concepção do curso. Considerar que a Resolução CNE/CP nº 2/2026 pede metodologias ativas e orientação para a inovação com tecnologias digitais, incluída a inteligência artificial, que estimulem o protagonismo do estudante (art. 26, VI; art. 28, § 1º, II). Não exigir a menção literal a IA nem metodologias específicas; avaliar se as estratégias são concretas e coerentes com o perfil profissional.",

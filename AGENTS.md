@@ -107,10 +107,11 @@ Depois de alterar skills, rode os testes ou validações da skill afetada. Para 
 
 ```bash
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts validar-base
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-schemas --check
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-mapa --check
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-indice --check
 bun test ./.agents/skills/analise-ppc
 python3 -m pytest .agents/skills/analise-ppc/tests
 ```
 
-Sem `--check`, `gerar-mapa` e `gerar-indice` regeneram `mapa-fichas.md` e `indice.json` da base de análise. O `analise_ppc.ts` é o ponto de entrada único da skill; os subcomandos ainda não portados delegam a `analise_ppc.py`.
+Sem `--check`, `gerar-schemas`, `gerar-mapa` e `gerar-indice` regeneram os JSON Schemas de ficha e marcos (gerados do zod de `scripts/esquemas.ts`), `mapa-fichas.md` e `indice.json` da base de análise. O `analise_ppc.ts` é o ponto de entrada único da skill; os subcomandos ainda não portados delegam a `analise_ppc.py`.

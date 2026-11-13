@@ -43,9 +43,26 @@
     "avaliação"
   ],
   "referencias_normativas": [
-    "Resolução CONSUP/IFPR nº 64/2022, art. 16",
-    "Resolução CNE/CP nº 2/2026, art. 26, VIII",
-    "Resolução CONSUP/IFPR nº 190/2024, arts. 56, § 4º, e 62, § 4º"
+    {
+      "ref": "ifpr/consup/res/2022/64",
+      "dispositivo": "#art16",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art26-viii",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/consup/res/2024/190",
+      "dispositivo": "#art56-par4",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/consup/res/2024/190",
+      "dispositivo": "#art62-par4",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "Quando o PPC prevê projeto final, PFI, Projeto Integrador, TCC/TFC ou componente equivalente, ele caracteriza a atividade como prática profissional articulada/interdisciplinar e descreve suas condições básicas de funcionamento e avaliação?",
   "rubrica": "Aplicar quando o PPC prevê TCC, TFC, Projeto Final de Curso, Projeto Final Interdisciplinar (PFI), Projeto Integrador ou componente equivalente. Em cursos técnicos integrados, observar a Resolução CONSUP/IFPR nº 64/2022, art. 16: não tratar como problema a existência de projeto final quando ele estiver caracterizado como prática profissional articulada, interdisciplinar, de extensão, responsabilidade social, aprendizagem de práticas profissionais ou integração de conhecimentos; escalonar quando o texto configurar TCC acadêmico tradicional sem justificar vínculo com prática profissional. Verificar se o PPC explicita lugar na matriz, carga horária, obrigatoriedade ou não, série/período de oferta, objetivos pedagógicos, relação com perfil do egresso, orientação docente, formato individual ou em grupo, produtos admitidos, critérios de avaliação, apresentação/banca/seminário quando houver, prazos, responsabilidades e regras de aproveitamento/certificação quando tratado como TCC.",

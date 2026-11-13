@@ -4,7 +4,7 @@
 
 Esta skill executa análise de PPC por sub-agentes dentro da conversa. Os scripts são deliberadamente pequenos: convertem o documento para `PPC.md`, montam grupos de fichas e renderizam o PPC HTML anotado a partir do JSON coletado dos sub-agentes.
 
-O ponto de entrada é `scripts/analise_ppc.ts` (Bun). Rodam em TypeScript `preparar-documento`, `montar-grupos-subagents`, `preparar-prompts-subagents`, `montar-grupo-avulso`, `mesclar-resultados-avulsos`, `validar-resultados`, `validar-base`, `gerar-indice` e `gerar-mapa`. Ainda dependem de Python: `gerar-relatorio-html`, que delega a `scripts/analise_ppc.py` (mesmos argumentos e código de saída), e a conversão de entrada `.docx` em `preparar-documento`, feita por `scripts/converter_docx.py` (`python-docx`). Com PPC em `.md`, a preparação, os grupos e os prompts dispensam Python. `ANALISE_PPC_PYTHON` escolhe o interpretador Python (padrão `python3`).
+O ponto de entrada é `scripts/analise_ppc.ts` (Bun). Rodam em TypeScript `preparar-documento`, `montar-grupos-subagents`, `preparar-prompts-subagents`, `montar-grupo-avulso`, `mesclar-resultados-avulsos`, `validar-resultados`, `validar-base`, `gerar-schemas`, `gerar-indice` e `gerar-mapa`. Ainda dependem de Python: `gerar-relatorio-html`, que delega a `scripts/analise_ppc.py` (mesmos argumentos e código de saída), e a conversão de entrada `.docx` em `preparar-documento`, feita por `scripts/converter_docx.py` (`python-docx`). Com PPC em `.md`, a preparação, os grupos e os prompts dispensam Python. `ANALISE_PPC_PYTHON` escolhe o interpretador Python (padrão `python3`).
 
 O output padrão fica em `.agents/skills/analise-ppc/output/<rodada>/`. O relatório final fica em `relatorio-analise.html`; os assets do leitor ficam em `assets/`; os artefatos de suporte ficam em `arquivos-suporte/`.
 
@@ -169,7 +169,7 @@ Ao alterar fichas, validações cruzadas, contratos, schemas ou a taxonomia tem�
 Checklist para fichas:
 
 1. Edite a ficha em `base-analise/fichas/`.
-2. Garanta `topicos_tematicos`, `tipo_escopo` e `ancoras_semanticas`.
+2. Garanta `topicos_tematicos`, `tipo_escopo` e `ancoras_semanticas`. Cite normas em `referencias_normativas` por ID canônico, com `dispositivo` e `papel` (veja "Como citar normas nas fichas" em `base-analise/README.md`).
 3. Atualize `base-analise/topicos-fichas.json` quando o tema ou a cobertura da ficha mudar.
 4. Atualize teste quando a ficha introduzir regra nova, regressão observada ou comportamento que não deve se perder.
 5. Regenere `base-analise/mapa-fichas.md` e `base-analise/indice.json` (`gerar-mapa --check` e `gerar-indice --check` só conferem, sem reescrever).
@@ -177,6 +177,7 @@ Checklist para fichas:
 Comandos obrigatórios:
 
 ```bash
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-schemas --check
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts validar-base
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-mapa
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-indice

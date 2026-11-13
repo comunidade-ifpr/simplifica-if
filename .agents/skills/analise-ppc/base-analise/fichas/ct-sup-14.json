@@ -52,12 +52,30 @@
     "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.legislacao_profissional"
   ],
   "referencias_normativas": [
-    "Resolução CNE/CEB nº 2/2024",
-    "Resolução CNE/CP nº 2/2026",
-    "Catálogo Nacional de Cursos Técnicos",
-    "Plano de Desenvolvimento Institucional do IFPR",
-    "Projeto Pedagógico Institucional do IFPR",
-    "Regimento Geral do IFPR"
+    {
+      "ref": "br/cne-ceb/res/2024/2",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "cnct:catalogo",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "externo:ifpr/pdi",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "externo:ifpr/ppi",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "externo:ifpr/regimento-geral",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "O PPC referencia, de forma reconhecível, os marcos institucionais, o CNCT e a legislação profissional indicada para o curso quando houver?",
   "rubrica": "Verificar se a seção de referências inclui os marcos nacionais atuais aplicáveis ao curso técnico integrado (DCNEM 2024, DCN da EPT 2026 e CNCT; nas demais formas de oferta, DCN da EPT 2026 e CNCT), os marcos institucionais do IFPR (PDI, PPI, Regimento Geral ou norma institucional equivalente) e, quando `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.legislacao_profissional` trouxer norma específica, se essa legislação profissional aparece ou é tratada adequadamente.",

@@ -59,11 +59,26 @@
     "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.legislacao_profissional"
   ],
   "referencias_normativas": [
-    "CNCT",
-    "Lei nº 5.524/1968",
-    "Decreto nº 90.922/1985",
-    "Lei nº 13.639/2018",
-    "Resolução CFT nº 89/2019"
+    {
+      "ref": "cnct:catalogo",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/lei/1968/5524",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/decreto/1985/90922",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/lei/2018/13639",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "externo:cft/res/2019/89",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "O PPC trata o registro profissional de forma compatível com o conselho competente e com a legislação profissional aplicável à habilitação indicada pelo CNCT?",
   "rubrica": "Localizar a seção de registro profissional ou trechos equivalentes, independentemente da numeração. Verificar se o PPC identifica adequadamente o conselho ou sistema profissional aplicável, descreve com precisão a possibilidade de registro dos egressos, evita promessa automática indevida quando o registro depende de requerimento e regras do conselho, e mantém coerência com a legislação profissional indicada pelo CNCT e com as referências finais. Esta ficha avalia a seção temática; a ficha CT-SUP-21 continua responsável por verificar transversalmente o conjunto da legislação profissional no PPC.",

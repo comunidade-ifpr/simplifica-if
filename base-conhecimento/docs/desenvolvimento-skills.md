@@ -43,10 +43,11 @@ Depois de alterar `analise-ppc`:
 
 ```bash
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts validar-base
+bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-schemas --check
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-mapa --check
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-indice --check
 bun test ./.agents/skills/analise-ppc
 python3 -m pytest .agents/skills/analise-ppc/tests
 ```
 
-Sem `--check`, `gerar-mapa` e `gerar-indice` regeneram `base-analise/mapa-fichas.md` e `base-analise/indice.json`. O `bun run scripts/validar_base.ts` também roda a validação da base de análise. Os scripts TypeScript das skills ficam em `.agents/skills/<skill>/scripts/` e os testes em `.agents/skills/<skill>/tests/*.test.ts`; ambos entram em `bun run typecheck`, `bun run test` e `bun run format`. Regras compartilhadas (texto, JSON, JSON Schema, casamento de referências normativas) ficam em `packages/kb` e são importadas como `@simplifica-if/kb/...`.
+Sem `--check`, `gerar-schemas`, `gerar-mapa` e `gerar-indice` regeneram os JSON Schemas de ficha e marcos (gerados do zod de `scripts/esquemas.ts`), `base-analise/mapa-fichas.md` e `base-analise/indice.json`. O `bun run scripts/validar_base.ts` também roda a validação da base de análise. Os scripts TypeScript das skills ficam em `.agents/skills/<skill>/scripts/` e os testes em `.agents/skills/<skill>/tests/*.test.ts`; ambos entram em `bun run typecheck`, `bun run test` e `bun run format`. Regras compartilhadas (texto, JSON, JSON Schema, IDs de norma, referências normativas estruturadas e seu texto legível) ficam em `packages/kb` e são importadas como `@simplifica-if/kb/...`.

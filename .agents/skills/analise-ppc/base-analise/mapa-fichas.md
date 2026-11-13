@@ -3,7 +3,7 @@
 Este mapa organiza as fichas por tópicos semânticos, sem depender da numeração das seções do PPC.
 A numeração observada em um PPC específico deve ser detectada na rodada de análise, não codificada na ficha.
 
-Gerado em: 2026-11-13T14:39:27+00:00
+Gerado em: 2026-11-13T22:01:41+00:00
 
 ## Como usar
 
@@ -290,3 +290,40 @@ Agrupa fichas que cruzam múltiplos temas para apoiar a síntese do relatório, 
 - `CT-TRANS-06` (REC, transversal) - Síntese argumentativa para o parecer final
 - `CT-TRANS-07` (REC, transversal) - Dimensionamento de vagas compatível com infraestrutura e interesse público
 - `CT-TRANS-08` (OBRIG, transversal) - Coerência teórico-prática entre concepção, perfil e matriz
+
+## Normas citadas pelas fichas
+
+Gerado de `referencias_normativas`. Quando uma norma mudar, estas são as fichas a revisar.
+
+- `br/cne-ceb/res/2024/2` Resolução CNE/CEB nº 2/2024: `CT-CURR-03`, `CT-CURR-11`, `CT-CURR-18`, `CT-CURR-19`, `CT-CURR-27`, `CT-IDENT-08`, `CT-SUP-09`, `CT-SUP-12`, `CT-SUP-14`
+- `br/cne-cp/res/2025/2` Resolução CNE/CP nº 2/2025: `CT-IDENT-15` (complementar)
+- `br/cne-cp/res/2026/2` Resolução CNE/CP nº 2/2026: `CT-CURR-02`, `CT-CURR-03`, `CT-CURR-06`, `CT-CURR-08`, `CT-CURR-11`, `CT-CURR-12`, `CT-CURR-13`, `CT-CURR-14`, `CT-CURR-15`, `CT-CURR-16`, `CT-CURR-17`, `CT-CURR-19`, `CT-CURR-20`, `CT-CURR-21`, `CT-CURR-24`, `CT-CURR-27`, `CT-IDENT-01`, `CT-IDENT-02`, `CT-IDENT-03`, `CT-IDENT-05`, `CT-IDENT-08`, `CT-IDENT-15`, `CT-IDENT-18`, `CT-SUP-01`, `CT-SUP-02`, `CT-SUP-04`, `CT-SUP-07`, `CT-SUP-08`, `CT-SUP-09`, `CT-SUP-12`, `CT-SUP-14`, `CT-SUP-15`, `CT-SUP-17`, `CT-SUP-20`, `CT-SUP-21`, `CT-SUP-22`, `CT-TRANS-02`, `CT-TRANS-08`
+- `br/decreto/1985/90922` Decreto nº 90.922/1985: `CT-IDENT-19`
+- `br/lei/1968/5524` Lei nº 5.524/1968: `CT-IDENT-19`
+- `br/lei/1996/9394` Lei nº 9.394/1996: `CT-CURR-11`, `CT-CURR-18`, `CT-CURR-26`, `CT-IDENT-08`, `CT-SUP-09`, `CT-SUP-12`, `CT-SUP-17`
+- `br/lei/2008/11788` Lei nº 11.788/2008: `CT-CURR-20`, `CT-CURR-21`, `CT-CURR-24`
+- `br/lei/2012/12711` Lei nº 12.711/2012: `CT-IDENT-16`, `CT-IDENT-17`
+- `br/lei/2015/13146` Lei nº 13.146/2015: `CT-SUP-25`
+- `br/lei/2016/13409` Lei nº 13.409/2016: `CT-IDENT-17`
+- `br/lei/2018/13639` Lei nº 13.639/2018: `CT-IDENT-19`
+- `br/lei/2023/14723` Lei nº 14.723/2023: `CT-IDENT-17`
+- `br/lei/2024/14914` Lei nº 14.914/2024: `CT-SUP-24`
+- `br/lei/2024/14945` Lei nº 14.945/2024: `CT-CURR-03`, `CT-CURR-11`, `CT-CURR-18`, `CT-IDENT-08`, `CT-SUP-09`, `CT-SUP-12`
+- `br/lei/2026/15468` Lei nº 15.468/2026: `CT-CURR-26`
+- `cnct:catalogo` Catálogo Nacional de Cursos Técnicos (CNCT): `CT-CURR-02`, `CT-CURR-16`, `CT-CURR-17`, `CT-CURR-20`, `CT-CURR-25`, `CT-IDENT-01`, `CT-IDENT-13`, `CT-IDENT-14`, `CT-IDENT-15`, `CT-IDENT-19`, `CT-SUP-07`, `CT-SUP-14`, `CT-SUP-21`, `CT-SUP-22`, `CT-TRANS-08`
+- `externo:abnt/nbr/6023` ABNT NBR 6023: `CT-CURR-06` (complementar), `CT-SUP-13`
+- `externo:campus/regulamento-estagio` Regulamento Geral de Estágio do campus: `CT-CURR-21` (complementar), `CT-CURR-24` (complementar), `CT-CURR-25` (complementar)
+- `externo:cft/res/2019/89` Resolução CFT nº 89/2019: `CT-IDENT-19`
+- `externo:ifpr/manual-competencias` Manual de Competências do IFPR: `CT-SUP-23`
+- `externo:ifpr/pdi` Plano de Desenvolvimento Institucional do IFPR: `CT-SUP-14`
+- `externo:ifpr/ppi` Projeto Pedagógico Institucional do IFPR: `CT-SUP-14`
+- `externo:ifpr/regimento-geral` Regimento Geral do IFPR: `CT-SUP-14`
+- `ifpr/consup/res/2017/50` Resolução CONSUP/IFPR nº 50/2017: `CT-SUP-01`, `CT-SUP-26`
+- `ifpr/consup/res/2022/64` Resolução CONSUP/IFPR nº 64/2022: `CT-CURR-02`, `CT-CURR-03` (complementar), `CT-CURR-14`, `CT-CURR-19`, `CT-SUP-08`, `CT-SUP-17`
+- `ifpr/consup/res/2022/82` Resolução CONSUP/IFPR nº 82/2022: `CT-CURR-20`, `CT-CURR-21`, `CT-CURR-24`, `CT-CURR-25`
+- `ifpr/consup/res/2023/148` Resolução CONSUP/IFPR nº 148/2023: `CT-CURR-09`, `CT-CURR-22`, `CT-SUP-04`, `CT-SUP-18`, `CT-SUP-19`, `CT-SUP-20`
+- `ifpr/consup/res/2023/159` Resolução CONSUP/IFPR nº 159/2023: `CT-CURR-09`, `CT-CURR-22`, `CT-SUP-04`, `CT-SUP-19`, `CT-SUP-20`
+- `ifpr/consup/res/2024/190` Resolução CONSUP/IFPR nº 190/2024: `CT-CURR-13`, `CT-CURR-14`, `CT-CURR-16`, `CT-CURR-27`, `CT-IDENT-02`, `CT-IDENT-16`
+- `ifpr/consup/res/2025/239` Resolução CONSUP/IFPR nº 239/2025: `CT-SUP-24`
+- `ifpr/proens/nt/2025/1` Nota Técnica PROENS/IFPR nº 1/2025: `CT-CURR-09`, `CT-CURR-22`, `CT-SUP-19`
+- `ifpr/proens/portaria/2024/121` Portaria PROENS/IFPR nº 121/2024: `CT-SUP-08`

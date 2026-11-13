@@ -24,6 +24,7 @@ import { caminhosPadrao } from "../scripts/caminhos.ts";
 import { compararPpcComCnct } from "../scripts/cnct-catalogo.ts";
 import { normalizarMarkdown } from "../scripts/normalizador-markdown.ts";
 import { mesclarIdentificacaoPreferindoPreenchidos, prepararDocumento } from "../scripts/preparar-documento.ts";
+import { referenciasLegiveisDaFicha, universoOuVazio } from "../scripts/referencias-fichas.ts";
 import { ErroResultadosSubagents, validarResultadosRodada } from "../scripts/resultados.ts";
 import {
   agoraIso,
@@ -115,6 +116,13 @@ function textoFicha(ficha: ObjetoPy, campos: string[]): string {
 
 function lerFicha(nome: string): ObjetoPy {
   return lerJsonPy(path.join(caminhos.fichasDir, nome)) as ObjetoPy;
+}
+
+const universo = universoOuVazio(caminhos);
+
+/** `referencias_normativas` da ficha em texto legível. */
+function referencias(ficha: ObjetoPy): string[] {
+  return referenciasLegiveisDaFicha(ficha, universo).map((referencia) => referencia.texto);
 }
 
 function topico(id: string): ObjetoPy {
@@ -397,9 +405,54 @@ describe("fichas e grupos", () => {
     expect(fichaRequerFundamentacaoNormativa(fichas.get("CT-IDENT-04")!)).toBe(false);
   });
 
-  test("o contexto normativo inclui os marcos", () => {
-    const ids = (contextoFundamentacaoNormativa().marcos_normativos as ObjetoPy[]).map((marco) => marco.id);
-    expect(ids).toEqual(expect.arrayContaining(["dcn_ept", "dcnem", "eja"]));
+  test("o contexto normativo inclui os marcos, com as normas por extenso", () => {
+    const marcos = contextoFundamentacaoNormativa().marcos_normativos as ObjetoPy[];
+    expect(marcos.map((marco) => marco.id)).toEqual(expect.arrayContaining(["dcn_ept", "dcnem", "eja"]));
+    const dcnEpt = marcos.find((marco) => marco.id === "dcn_ept")!;
+    expect(dcnEpt.vigente).toBe("Resolução CNE/CP nº 2/2026");
+    expect(dcnEpt.substitui).toContain("Resolução CNE/CP nº 1/2021");
+    expect(dcnEpt.dispositivos_revogados).toEqual(["Resolução CNE/CEB nº 3/2025, art. 6º, III"]);
+  });
+
+  test("as fichas dos grupos levam as referências normativas em texto legível", () => {
+    const rodada = criarRodada();
+    const payload = montarGruposSubagents(rodada) as ObjetoPy & { grupos: Array<{ fichas: ObjetoPy[] }> };
+    const fichas = new Map(payload.grupos.flatMap((grupo) => grupo.fichas).map((ficha) => [ficha.id, ficha]));
+    expect(fichas.get("CT-CURR-02")!.referencias_normativas).toEqual([
+      {
+        texto: "Catálogo Nacional de Cursos Técnicos (CNCT)",
+        papel: "fundamento",
+        ref: "cnct:catalogo",
+        path: "catalogos/cnct/manifest.json",
+      },
+      {
+        texto: "Resolução CNE/CP nº 2/2026, arts. 29, 30 e 37, § 3º",
+        papel: "fundamento",
+        ref: "br/cne-cp/res/2026/2",
+        path: "normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
+      },
+      {
+        texto: "Resolução CONSUP/IFPR nº 64/2022, art. 22",
+        papel: "fundamento",
+        ref: "ifpr/consup/res/2022/64",
+        path: "normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
+      },
+    ]);
+    expect(fichas.get("CT-IDENT-17")!.referencias_normativas).toContainEqual({
+      texto: "Lei nº 13.409/2016",
+      papel: "fundamento",
+      ref: "br/lei/2016/13409",
+    });
+    const avulso = montarGrupoAvulso(rodada, ["CT-CURR-06"]) as { grupo: { fichas: ObjetoPy[] } };
+    expect(avulso.grupo.fichas[0]!.referencias_normativas).toEqual([
+      { texto: "ABNT NBR 6023", papel: "complementar", ref: "externo:abnt/nbr/6023" },
+      {
+        texto: "Resolução CNE/CP nº 2/2026, art. 28, § 1º, I",
+        papel: "fundamento",
+        ref: "br/cne-cp/res/2026/2",
+        path: "normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
+      },
+    ]);
   });
 
   test("monta os grupos e salva o payload na rodada", () => {
@@ -683,8 +736,8 @@ describe("conteúdo das fichas, validações e prompts", () => {
     expect([ficha.criticidade, ficha.tipo_escopo]).toEqual(["OBRIG", "condicional"]);
     expect(ficha.topicos_tematicos).toEqual(["temas_transversais_cidadania"]);
     expect(topico("temas_transversais_cidadania").fichas).toContain("CT-CURR-26");
-    expect(ficha.referencias_normativas).toContain("Lei nº 9.394/1996, art. 26, §§ 1º e 9º-B");
-    expect(ficha.referencias_normativas).toContain("Lei nº 15.468/2026");
+    expect(referencias(ficha)).toContain("Lei nº 9.394/1996, art. 26, §§ 1º e 9º-B");
+    expect(referencias(ficha)).toContain("Lei nº 15.468/2026");
     for (const trecho of [
       "cursos técnicos integrados ao ensino médio",
       "cursos subsequentes",
@@ -749,7 +802,7 @@ describe("conteúdo das fichas, validações e prompts", () => {
   test("projeto final trata o PFI como prática profissional articulada", () => {
     const ficha = lerFicha("ct-curr-14.json");
     const texto = textoFicha(ficha, CAMPOS_COM_TITULO);
-    expect(ficha.referencias_normativas).toContain("Resolução CONSUP/IFPR nº 64/2022, art. 16");
+    expect(referencias(ficha)).toContain("Resolução CONSUP/IFPR nº 64/2022, art. 16");
     expect(consultas(ficha)).toContain("projeto final interdisciplinar");
     for (const trecho of ["Projeto Integrador", "prática profissional articulada", "TCC acadêmico tradicional"]) {
       expect(texto).toContain(trecho);
@@ -776,8 +829,8 @@ describe("conteúdo das fichas, validações e prompts", () => {
   test("formação docente aceita política institucional verificável", () => {
     const ficha = lerFicha("ct-sup-17.json");
     const texto = textoFicha(ficha, CAMPOS);
-    expect(ficha.referencias_normativas).toContain("Resolução CNE/CP nº 2/2026, arts. 57, 59, 61 e 72");
-    expect(ficha.referencias_normativas).toContain("Resolução CONSUP/IFPR nº 64/2022, arts. 41 a 43");
+    expect(referencias(ficha)).toContain("Resolução CNE/CP nº 2/2026, arts. 57, 59, 61 e 72");
+    expect(referencias(ficha)).toContain("Resolução CONSUP/IFPR nº 64/2022, arts. 41 a 43");
     for (const trecho of [
       "política institucional do IFPR",
       "Não penalizar a simples presença de docentes bacharéis",
@@ -790,8 +843,8 @@ describe("conteúdo das fichas, validações e prompts", () => {
   test("assistência estudantil exige a Resolução 239 e a revogação das antigas", () => {
     const ficha = lerFicha("ct-sup-24.json");
     const texto = textoFicha(ficha, CAMPOS_COM_TITULO);
-    expect(ficha.referencias_normativas).toContain("Resolução CONSUP/IFPR nº 239/2025");
-    expect(ficha.referencias_normativas).toContain("Lei nº 14.914/2024");
+    expect(referencias(ficha)).toContain("Resolução CONSUP/IFPR nº 239/2025");
+    expect(referencias(ficha)).toContain("Lei nº 14.914/2024");
     expect(consultas(ficha)).toContain("política institucional de assistência estudantil");
     for (const trecho of [
       "Resolução nº 11/2009",
@@ -806,8 +859,8 @@ describe("conteúdo das fichas, validações e prompts", () => {
   test("avaliação do PPC exige periodicidade, registro e normas vigentes", () => {
     const ficha = lerFicha("ct-sup-08.json");
     const texto = textoFicha(ficha, CAMPOS_COM_TITULO);
-    expect(ficha.referencias_normativas).toContain("Resolução CONSUP/IFPR nº 64/2022, arts. 31 e 32");
-    expect(ficha.referencias_normativas).toContain("Portaria PROENS/IFPR nº 121/2024, arts. 67 a 69");
+    expect(referencias(ficha)).toContain("Resolução CONSUP/IFPR nº 64/2022, arts. 31 e 32");
+    expect(referencias(ficha)).toContain("Portaria PROENS/IFPR nº 121/2024, arts. 67 a 69");
     expect(consultas(ficha)).toContain("avaliação do ppc");
     for (const trecho of [
       "avaliação emancipatória",
@@ -825,7 +878,7 @@ describe("conteúdo das fichas, validações e prompts", () => {
     const texto = textoFicha(ficha, CAMPOS_COM_TITULO);
     for (const consulta of ["biblioteca", "piso térreo", "rampa", "elevador"])
       expect(consultas(ficha)).toContain(consulta);
-    expect(ficha.referencias_normativas).toContain("Lei nº 13.146/2015");
+    expect(referencias(ficha)).toContain("Lei nº 13.146/2015");
     for (const trecho of [
       "localização da biblioteca",
       "não estiver no térreo",

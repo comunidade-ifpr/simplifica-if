@@ -38,8 +38,15 @@
     "contexto_estrutural.cnct.comparacao_catalogo.correspondencia"
   ],
   "referencias_normativas": [
-    "CNCT",
-    "Resolução CNE/CP nº 2/2026, art. 47"
+    {
+      "ref": "cnct:catalogo",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art47",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "A denominação do curso e sua apresentação institucional estão compatíveis com a denominação do curso correspondente no CNCT?",
   "rubrica": "Comparar o nome do curso no PPC com `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.denominacao` e verificar se o nome aparece de forma estável, sem variações materiais entre capa, identificação, perfil e referências. Se o PPC declarar curso experimental, fora do CNCT, verificar a comprovação da capacidade institucional (art. 47, I, da Resolução CNE/CP nº 2/2026), a informação da condição experimental aos candidatos (III), o compromisso de submeter o curso ao reconhecimento em até um ano após a conclusão da primeira turma (IV) e, se o curso constar de tabela de convergência ou de submissão do CNCT, a justificativa técnica (§ 1º). Nesse caso, as fichas que dependem da correspondência CNCT devem usar INCONCLUSIVO com revisão humana.",

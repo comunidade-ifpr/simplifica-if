@@ -19,13 +19,16 @@ afterEach(() => {
   for (const dir of temporarios.splice(0)) rmSync(dir, { recursive: true, force: true });
 });
 
-/** Cópia da base de análise e do manifesto de normas num projeto temporário. */
+/** Cópia da base de análise e do registro de normas (manifesto, stubs, CNCT) num projeto temporário. */
 function copiaDaBase(): CaminhosAnalise {
   const raiz = mkdtempSync(path.join(tmpdir(), "base-analise-"));
   temporarios.push(raiz);
   const app = path.join(raiz, "proj", ".agents", "skills", "analise-ppc");
-  mkdirSync(path.join(raiz, "proj", "base-conhecimento"), { recursive: true });
-  cpSync(caminhos.manifestNormasPath, path.join(raiz, "proj", "base-conhecimento", "manifest.json"));
+  const base = path.join(raiz, "proj", "base-conhecimento");
+  for (const relativo of ["manifest.json", "normas/stubs.yaml", "catalogos/cnct/index.json"]) {
+    mkdirSync(path.dirname(path.join(base, relativo)), { recursive: true });
+    cpSync(path.join(caminhos.baseConhecimentoDir, relativo), path.join(base, relativo));
+  }
   cpSync(caminhos.baseAnaliseDir, path.join(app, "base-analise"), { recursive: true });
   return caminhosDaSkill(app);
 }
@@ -113,13 +116,15 @@ describe("validador em casos inválidos", () => {
 
   test("tópico desconhecido e legado na ficha", () => {
     const c = copiaDaBase();
-    editarJson(path.join(c.fichasDir, "ct-curr-03.json"), (ficha) => {
+    const arquivo = path.join(c.fichasDir, "ct-curr-03.json");
+    editarJson(arquivo, (ficha) => {
       ficha.topicos_tematicos = [...(ficha.topicos_tematicos as string[]), "inexistente"];
       ficha.secoes_preferenciais = [];
     });
-    const declarados = (lerJson(path.join(c.fichasDir, "ct-curr-03.json")) as ObjetoJson).topicos_tematicos as string[];
+    const declarados = (lerJson(arquivo) as ObjetoJson).topicos_tematicos as string[];
     const esperados = declarados.filter((topico) => topico !== "inexistente").sort();
     expect(validarBaseAnalise(c)).toEqual([
+      `${arquivo}: $: campo não permitido: secoes_preferenciais`,
       "CT-CURR-03: campo legado `secoes_preferenciais` não é aceito",
       "CT-CURR-03: tópicos desconhecidos: inexistente",
       `CT-CURR-03: topicos_tematicos divergente da taxonomia (ficha=['${[...declarados].sort().join("', '")}'], ` +
@@ -127,23 +132,61 @@ describe("validador em casos inválidos", () => {
     ]);
   });
 
-  test("referência a norma revogada, substituída por marco e a dispositivo revogado", () => {
+  test("referência a norma revogada, substituída por marco, a dispositivo revogado e a ID inexistente", () => {
     const c = copiaDaBase();
     editarJson(path.join(c.fichasDir, "ct-sup-01.json"), (ficha) => {
       ficha.referencias_normativas = [
-        "Res. CNE/CP n° 1/2021, art. 20",
-        "Resolução CNE/CP nº 1/2022",
-        "Resolução CNE/CEB nº 3/2025, art. 6º, III",
+        { ref: "br/cne-cp/res/2021/1", dispositivo: "#art20", papel: "fundamento" },
+        { ref: "br/cne-ceb/res/2012/2", papel: "fundamento" },
+        { ref: "br/cne-ceb/res/2025/3", dispositivo: "#art6-iii", papel: "fundamento" },
+        { ref: "br/cne-cp/res/2099/1", papel: "complementar" },
       ];
     });
     expect(validarBaseAnalise(c)).toEqual([
-      "CT-SUP-01: `referencias_normativas` cita norma revogada: Res. CNE/CP n° 1/2021, art. 20 " +
-        "(veja `revogada_por` em base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md; " +
+      "CT-SUP-01: `referencias_normativas[0]` cita norma revogada: Resolução CNE/CP nº 1/2021, art. 20 " +
+        "(br/cne-cp/res/2021/1; veja `revogada_por` em base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md; " +
         "atualize a ficha e base-analise/marcos-normativos.json)",
-      "CT-SUP-01: `referencias_normativas` cita norma substituída no marco dcn_ept: " +
-        "Resolução CNE/CP nº 1/2022 (Resolução CNE/CP nº 1/2022)",
-      "CT-SUP-01: `referencias_normativas` cita dispositivo revogado (marco eja): " +
+      "CT-SUP-01: `referencias_normativas[1]` cita norma substituída no marco dcnem: " +
+        "Resolução CNE/CEB nº 2/2012 (br/cne-ceb/res/2012/2)",
+      "CT-SUP-01: `referencias_normativas[2]` cita dispositivo revogado (marco eja): " +
         "Resolução CNE/CEB nº 3/2025, art. 6º, III",
+      "CT-SUP-01: `referencias_normativas[3]` cita ID inexistente na base: br/cne-cp/res/2099/1 " +
+        "(registre a norma em base-conhecimento/manifest.json ou em base-conhecimento/normas/stubs.yaml)",
+    ]);
+  });
+
+  test("referência fora do contrato: ID em texto, dispositivo malformado, papel e campo desconhecidos", () => {
+    const c = copiaDaBase();
+    const arquivo = path.join(c.fichasDir, "ct-sup-01.json");
+    editarJson(arquivo, (ficha) => {
+      ficha.referencias_normativas = [
+        "Resolução CNE/CP nº 2/2026, art. 38",
+        { ref: "Resolução CNE/CP nº 2/2026", papel: "fundamento" },
+        { ref: "br/cne-cp/res/2026/2", dispositivo: "#art38º", papel: "fundamento" },
+        { ref: "br/cne-cp/res/2026/2", dispositivo: "art. 38", papel: "principal", fonte: "x" },
+        { ref: "br/lei/1996/9394~compilacao", papel: "fundamento", nota: "" },
+      ];
+    });
+    expect(validarBaseAnalise(c)).toEqual([
+      `${arquivo}: $.referencias_normativas[0]: tipo string; esperado object`,
+      `${arquivo}: $.referencias_normativas[1].ref: valor 'Resolução CNE/CP nº 2/2026' fora do formato`,
+      `${arquivo}: $.referencias_normativas[2].dispositivo: valor '#art38º' fora do formato`,
+      `${arquivo}: $.referencias_normativas[3]: campo não permitido: fonte`,
+      `${arquivo}: $.referencias_normativas[3].dispositivo: valor 'art. 38' fora do formato`,
+      `${arquivo}: $.referencias_normativas[3].papel: valor 'principal' fora do enum`,
+      `${arquivo}: $.referencias_normativas[4].ref: valor 'br/lei/1996/9394~compilacao' fora do formato`,
+      `${arquivo}: $.referencias_normativas[4].nota: valor '' menor que o tamanho mínimo 1`,
+    ]);
+  });
+
+  test("schema gerado desatualizado em relação ao zod", () => {
+    const c = copiaDaBase();
+    editarJson(path.join(c.schemasDir, "ficha.schema.json"), (schema) => {
+      schema.title = "Editado à mão";
+    });
+    expect(validarBaseAnalise(c)).toEqual([
+      `${path.join(c.schemasDir, "ficha.schema.json")}: diverge do schema zod de scripts/esquemas.ts; ` +
+        "rode `analise_ppc.ts gerar-schemas`",
     ]);
   });
 
@@ -195,8 +238,9 @@ describe("entrypoint analise_ppc.ts", () => {
     return { codigo: processo.exitCode, saida: processo.stdout.toString(), erro: processo.stderr.toString() };
   }
 
-  test("validar-base, gerar-indice --check e gerar-mapa --check passam na base real", () => {
+  test("validar-base, gerar-schemas --check, gerar-indice --check e gerar-mapa --check passam na base real", () => {
     expect(executar("validar-base")).toMatchObject({ codigo: 0, saida: "Base de análise válida.\n" });
+    expect(executar("gerar-schemas", "--check")).toMatchObject({ codigo: 0, saida: `OK: ${caminhos.schemasDir}\n` });
     expect(executar("gerar-indice", "--check")).toMatchObject({ codigo: 0, saida: `OK: ${caminhos.indicePath}\n` });
     expect(executar("gerar-mapa", "--check")).toMatchObject({ codigo: 0, saida: `OK: ${caminhos.mapaFichasPath}\n` });
   });

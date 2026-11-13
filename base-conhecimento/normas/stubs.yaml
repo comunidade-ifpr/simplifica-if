@@ -77,7 +77,7 @@ normas:
     curadoria: rascunho
   - id: br/cne-cp/res/2025/2
     title: Resolução CNE/CP nº 2/2025
-    ementa: Citada pela ficha ct-ident-15 junto ao CNCT; ato e assunto a confirmar.
+    ementa: Cria a trava digital e a obrigatoriedade do código autenticador do Sistec para diplomas de cursos técnicos (art. 1º), conforme a remissão do art. 45, § 3º, da Resolução CNE/CP nº 2/2026, que a data de 8 de dezembro de 2025; texto oficial a conferir.
     status_vigencia: a confirmar
     curadoria: rascunho
 
@@ -263,6 +263,20 @@ normas:
     data_publicacao: "2004-04-14"
     ementa: Institui o Sistema Nacional de Avaliação da Educação Superior (SINAES).
     status_vigencia: a confirmar
+    curadoria: rascunho
+
+  # --- IFPR (substituídas por marcos de base-analise/marcos-normativos.json da analise-ppc)
+  - id: ifpr/consup/res/2009/11
+    title: Resolução CONSUP/IFPR nº 11/2009
+    ementa: Política de assistência estudantil do IFPR anterior à Resolução CONSUP/IFPR nº 239/2025 (de 21 de dezembro de 2009, retificada pela Resolução nº 53/2011).
+    status_vigencia: revogada
+    status_fonte: ifpr/consup/res/2025/239#art12
+    curadoria: rascunho
+  - id: ifpr/consup/res/2011/53
+    title: Resolução CONSUP/IFPR nº 53/2011
+    ementa: Retifica a Resolução CONSUP/IFPR nº 11/2009 (assistência estudantil).
+    status_vigencia: revogada
+    status_fonte: ifpr/consup/res/2025/239#art12
     curadoria: rascunho
 
 externos:

@@ -44,9 +44,25 @@
     "Resolução CNE/CP nº 2/2026"
   ],
   "referencias_normativas": [
-    "Resolução CNE/CP nº 2/2026, arts. 44 e 45",
-    "Resolução CNE/CP nº 2/2025",
-    "CNCT"
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art44",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art45",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2025/2",
+      "dispositivo": "#art1",
+      "papel": "complementar"
+    },
+    {
+      "ref": "cnct:catalogo",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "A seção de expedição de diplomas e certificados explicita o título técnico na habilitação profissional e o eixo tecnológico conforme o CNCT vigente?",
   "rubrica": "Verificar se o PPC informa que, após a integralização do curso e o cumprimento dos requisitos de conclusão, será expedido diploma com o correspondente título de técnico na respectiva habilitação profissional, indicando o eixo tecnológico vinculado ao curso conforme o CNCT. Quando houver certificações intermediárias ou certificados com terminalidade, verificar se o texto não confunde certificado, diploma e certificação de conhecimentos anteriores. Pela Resolução CNE/CP nº 2/2026, verificar ainda: a expedição do diploma de técnico condicionada à conclusão do ensino médio (art. 44, § 3º); o título de Técnico com flexão de gênero e indicação do eixo tecnológico (art. 45, § 1º); o código autenticador obrigatório do Sistec (art. 45, §§ 2º e 3º); o histórico escolar que acompanha o diploma, com perfil profissional de conclusão, componentes, cargas horárias, frequências, aproveitamentos e, quando for o caso, horas de estágio (art. 45, §§ 4º e 7º); e os certificados de qualificação profissional técnica intermediária, quando previstos (art. 45, § 4º, II, e § 6º). Exigir que o PPC trate pelo menos do título, do eixo e da condição de conclusão e não contradiga os demais elementos; a falta de menção à flexão de gênero, ao código autenticador ou ao conteúdo do histórico pode ser registrada como recomendação.",

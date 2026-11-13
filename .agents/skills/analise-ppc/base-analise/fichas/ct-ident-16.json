@@ -52,8 +52,14 @@
     "Lei nº 12.711/2012"
   ],
   "referencias_normativas": [
-    "Resolução CONSUP/IFPR nº 190/2024",
-    "Lei nº 12.711/2012"
+    {
+      "ref": "ifpr/consup/res/2024/190",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/lei/2012/12711",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "O PPC explicita a forma de ingresso e registra, de modo reconhecível, a política institucional de acesso e reserva de vagas aplicável ao curso?",
   "rubrica": "Verificar se a seção 1.1.2 ou equivalente informa como ocorre o ingresso no curso, com menção reconhecível ao processo seletivo, edital institucional ou outro mecanismo aplicável. Para as formas de acesso, considerar a Resolução IFPR nº 190/2024, especialmente a distinção entre acesso unificado e acesso simplificado. Separadamente, verificar se o texto registra a observância da política institucional de inclusão, reserva de vagas, cotas ou ações afirmativas segundo a regulamentação vigente e a legislação aplicável. Não basta remeter apenas a um edital futuro sem descrever minimamente a forma de acesso e a existência da política de reserva de vagas.",

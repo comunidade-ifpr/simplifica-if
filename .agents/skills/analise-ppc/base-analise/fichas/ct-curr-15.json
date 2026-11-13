@@ -31,7 +31,16 @@
     "legislação vigente"
   ],
   "referencias_normativas": [
-    "Resolução CNE/CP nº 2/2026, arts. 42 e 43"
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art42",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art43",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "Quando o PPC admite certificação de conhecimentos anteriores, o tratamento desse tema está descrito com clareza suficiente?",
   "rubrica": "Verificar se o PPC prevê a possibilidade de certificação, sua base normativa e o procedimento ou fluxo básico para análise do pedido, quando aplicável ao curso. Pela Resolução CNE/CP nº 2/2026, a avaliação de saberes e experiências anteriores não comprovados por certificado ou histórico deve ser individual e presencial, por instrumento definido no PPC e relacionada ao perfil profissional de conclusão (art. 42, I, III, IV e parágrafo único; art. 43, § 5º); o aproveitamento documental do art. 42, II, dispensa essa avaliação. O processo formal de certificação profissional exige Projeto Pedagógico de Certificação Profissional (PPCP) próprio (art. 43) e é vedado em cursos experimentais (art. 43, § 4º). Não exigir que o PPC do curso reproduza um PPCP, mas verificar se ele não confunde a certificação de conhecimentos anteriores no curso com processo de certificação profissional.",

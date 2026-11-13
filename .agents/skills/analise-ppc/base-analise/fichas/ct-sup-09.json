@@ -42,10 +42,22 @@
     "resolução cne/ceb nº 06/2012"
   ],
   "referencias_normativas": [
-    "Lei nº 9.394/1996",
-    "Lei nº 14.945/2024",
-    "Resolução CNE/CEB nº 2/2024",
-    "Resolução CNE/CP nº 2/2026"
+    {
+      "ref": "br/lei/1996/9394",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/lei/2024/14945",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-ceb/res/2024/2",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "A seção de referências apresenta base normativa suficiente e sem sinais evidentes de defasagem crítica?",
   "rubrica": "Checar se as referências normativas centrais aparecem e se a lista não depende apenas de atos revogados, superados ou laterais. Em cursos técnicos integrados ao Ensino Médio, a seção de referências deve permitir localizar os marcos atuais de Ensino Médio e EPT: Resolução CNE/CEB nº 2/2024, Resolução CNE/CP nº 2/2026, LDB e Lei nº 14.945/2024 quando pertinente. Em qualquer forma de oferta, a DCN da EPT vigente (Resolução CNE/CP nº 2/2026) deve aparecer; a Resolução CNE/CP nº 1/2021 foi revogada e só pode constar como referência histórica ou de transição (ver `contextos.fundamentacao_normativa.marcos_normativos`).",

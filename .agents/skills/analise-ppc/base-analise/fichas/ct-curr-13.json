@@ -39,8 +39,20 @@
     "seção V"
   ],
   "referencias_normativas": [
-    "Resolução CONSUP/IFPR nº 190/2024",
-    "Resolução CNE/CP nº 2/2026, arts. 28, X, e 42"
+    {
+      "ref": "ifpr/consup/res/2024/190",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art28-x",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art42",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "O PPC trata o aproveitamento de estudos com critérios, documentação e procedimento minimamente definidos?",
   "rubrica": "Verificar se o texto define o aproveitamento de estudos formalizados, delimita sua aplicação a componentes curriculares ou módulos cursados com êxito em curso de mesmo nível de ensino, indica o critério de equivalência de conteúdos com as ementas do PPC e referencia de modo específico a Resolução IFPR nº 190/2024, preferencialmente capítulo III, seção V. Não exigir que o PPC reproduza todo o fluxo administrativo, prazos, formulários ou instâncias quando esses detalhes forem remetidos de forma clara à norma institucional vigente. Considerar que a Resolução CNE/CP nº 2/2026 exige que o PPC traga os critérios para o aproveitamento de conhecimentos e experiências anteriores (art. 28, X), sempre diretamente relacionados ao perfil profissional de conclusão (art. 42). Quando o PPC admitir aproveitamento de experiências profissionais, cursos de qualificação ou saberes adquiridos fora de componentes cursados com êxito, verificar se prevê avaliação individual e presencial do estudante por instrumento definido no PPC (art. 42, I, III, IV e parágrafo único).",

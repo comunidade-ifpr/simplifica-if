@@ -32,9 +32,24 @@
     "inclusão"
   ],
   "referencias_normativas": [
-    "Resolução CONSUP/IFPR nº 148/2023",
-    "Resolução CONSUP/IFPR nº 159/2023",
-    "Resolução CNE/CP nº 2/2026, arts. 5º e 28, V"
+    {
+      "ref": "ifpr/consup/res/2023/148",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "ifpr/consup/res/2023/159",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art5",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art28-v",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "A política de atendimento aos estudantes contempla inclusão, acessibilidade e AEE com coerência institucional?",
   "rubrica": "Verificar se o PPC explicita apoio à inclusão com distinção adequada entre atendimento, adaptação e trabalho especializado. A Resolução CNE/CP nº 2/2026 exige que o PPC trate da acessibilidade para a inclusão dos estudantes público da educação especial (art. 28, V) e das condições de acessibilidade, tecnologias assistivas e adaptações razoáveis (art. 5º).",

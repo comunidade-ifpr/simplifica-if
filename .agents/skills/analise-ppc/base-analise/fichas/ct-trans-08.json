@@ -63,8 +63,36 @@
     "CNCT"
   ],
   "referencias_normativas": [
-    "Resolução CNE/CP nº 2/2026, art. 22, II a V e IX",
-    "Catálogo Nacional de Cursos Técnicos (CNCT), perfil profissional do curso correspondente"
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art22-ii",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art22-iii",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art22-iv",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art22-v",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art22-ix",
+      "papel": "fundamento"
+    },
+    {
+      "ref": "cnct:catalogo",
+      "papel": "fundamento",
+      "nota": "perfil profissional do curso correspondente"
+    }
   ],
   "pergunta": "O PPC demonstra de forma suficiente que a matriz curricular, o ementário, os projetos integradores e as práticas formativas concretizam a concepção do curso e o perfil do egresso declarados?",
   "rubrica": "Avaliar a articulação material entre concepção do curso, perfil do egresso, CNCT e organização curricular. Não basta haver discurso sobre formação integral, trabalho como princípio educativo, pesquisa como princípio pedagógico, autonomia, responsabilidade, sustentabilidade, tecnologias digitais, relações sociais de produção e mundo do trabalho; é necessário que a matriz, as ementas, os projetos integradores, práticas laboratoriais, práticas profissionais e estratégias avaliativas mostrem como essas dimensões serão desenvolvidas no percurso formativo. A análise deve produzir, além do estado e da justificativa, um texto de feedback aos autores quando houver fragilidade, desconexão ou necessidade de explicitação. Considerar os elementos da Resolução CNE/CP nº 2/2026, art. 22, inclusive a base tecnológica obrigatória com métodos, técnicas, ferramentas e tecnologias aplicáveis ao curso, com atenção às inovadoras e emergentes, como a IA (inciso V), e as competências socioemocionais integrantes do perfil profissional (inciso IV).",

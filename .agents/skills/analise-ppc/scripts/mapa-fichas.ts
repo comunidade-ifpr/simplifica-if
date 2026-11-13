@@ -4,6 +4,7 @@ import { ehObjeto, itensDe, itensPercorridos, type ObjetoJson, textoDe, textoOuV
 import { aparar, apararFim, compararTexto, dividirLinhas, lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
 import { agoraUtc, escreverTexto, lerJson, listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
+import { referenciasDaFicha, universoOuVazio } from "./referencias-fichas.ts";
 
 const PREFIXO_GERADO_EM = "Gerado em: ";
 
@@ -36,6 +37,38 @@ function listaEmCodigo(valores: unknown): string {
   return itensPercorridos(valores)
     .map((valor) => `\`${textoDe(valor)}\``)
     .join(", ");
+}
+
+/**
+ * Seção "Normas citadas pelas fichas": cada ID de `referencias_normativas`, com o título canônico e as
+ * fichas que o citam (marcadas quando só como `complementar`).
+ */
+function linhasNormasCitadas(fichas: Map<string, ObjetoJson>, caminhos: CaminhosAnalise): string[] {
+  const universo = universoOuVazio(caminhos);
+  const citantes = new Map<string, Map<string, Set<string>>>();
+  for (const fichaId of ordenarTextos(fichas.keys())) {
+    for (const referencia of referenciasDaFicha(fichas.get(fichaId)!)) {
+      const porFicha = citantes.get(referencia.ref) ?? new Map<string, Set<string>>();
+      const papeis = porFicha.get(fichaId) ?? new Set<string>();
+      papeis.add(referencia.papel);
+      porFicha.set(fichaId, papeis);
+      citantes.set(referencia.ref, porFicha);
+    }
+  }
+  const linhas = [
+    "## Normas citadas pelas fichas",
+    "",
+    "Gerado de `referencias_normativas`. Quando uma norma mudar, estas são as fichas a revisar.",
+    "",
+  ];
+  for (const ref of ordenarTextos(citantes.keys())) {
+    const fichasRef = [...citantes.get(ref)!].map(([fichaId, papeis]) =>
+      papeis.has("fundamento") ? `\`${fichaId}\`` : `\`${fichaId}\` (complementar)`,
+    );
+    linhas.push(`- \`${ref}\` ${universo.titulo(ref)}: ${fichasRef.join(", ")}`);
+  }
+  linhas.push("");
+  return linhas;
 }
 
 /** Gera o Markdown do mapa; `geradoEm` fixa a data (por padrão, agora em UTC). */
@@ -89,6 +122,7 @@ export function gerarMapaFichas(geradoEm?: string, caminhos: CaminhosAnalise = c
       linhas.push("");
     }
   }
+  linhas.push(...linhasNormasCitadas(fichas, caminhos));
 
   return `${apararFim(linhas.join("\n"))}\n`;
 }

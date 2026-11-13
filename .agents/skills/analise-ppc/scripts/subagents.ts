@@ -23,10 +23,12 @@ import {
   tipoPy,
   verdadeiro,
 } from "@simplifica-if/kb/python/valores";
+import type { UniversoReferencias } from "@simplifica-if/kb/normas/referencia-estruturada";
 import { aparar, compararTexto } from "@simplifica-if/kb/texto";
 import { listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { componentesMatriz, gerarContextoCnctRodada, lerJsonSeExistir } from "./cnct-catalogo.ts";
+import { marcoLegivel, referenciasLegiveisDaFicha, universoOuVazio } from "./referencias-fichas.ts";
 import {
   caminhosRodada,
   carregarFichas,
@@ -123,17 +125,38 @@ const TERMOS_NORMATIVOS = [
 /** A ficha tem referências normativas ou fala de norma, lei, resolução etc. */
 export function fichaRequerFundamentacaoNormativa(ficha: ObjetoPy): boolean {
   const referencias = obter(ficha, "referencias_normativas");
-  if (Array.isArray(referencias) && referencias.some((item) => aparar(strPy(item)))) return true;
+  if (Array.isArray(referencias) && referencias.length > 0) return true;
   const texto = casefold(textoDaFicha(ficha));
   return TERMOS_NORMATIVOS.some((termo) => texto.includes(termo));
 }
 
-/** Marcos normativos (`marcos` de `marcos-normativos.json`), ou lista vazia. */
-export function carregarMarcosNormativos(caminho = caminhosPadrao().marcosNormativosPath): unknown[] {
+/**
+ * Ficha como vai para os sub-agentes: `referencias_normativas` em texto legível, uma citação por
+ * norma, com o papel, o ID e o arquivo na base (`path`, relativo a `base-conhecimento/`).
+ */
+export function fichaParaSubagente(ficha: ObjetoPy, universo: UniversoReferencias): ObjetoPy {
+  if (!Object.hasOwn(ficha, "referencias_normativas")) return ficha;
+  const referencias = referenciasLegiveisDaFicha(ficha, universo).map(({ texto, papel, ref, path: caminho }) =>
+    caminho === undefined ? { texto, papel, ref } : { texto, papel, ref, path: caminho },
+  );
+  return { ...ficha, referencias_normativas: referencias };
+}
+
+/**
+ * Marcos normativos (`marcos` de `marcos-normativos.json`), ou lista vazia. Com `universo`, as normas
+ * vêm por extenso ("Resolução CNE/CP nº 2/2026") em vez do ID.
+ */
+export function carregarMarcosNormativos(
+  caminho = caminhosPadrao().marcosNormativosPath,
+  universo?: UniversoReferencias,
+): unknown[] {
   if (!existe(caminho)) return [];
   const payload = lerJsonPy(caminho);
   const marcos = ehObjetoPy(payload) ? obter(payload, "marcos") : null;
-  return Array.isArray(marcos) ? marcos : [];
+  if (!Array.isArray(marcos)) return [];
+  return universo === undefined
+    ? marcos
+    : marcos.map((marco) => (ehObjetoPy(marco) ? marcoLegivel(marco, universo) : marco));
 }
 
 /** Contexto do protocolo `verificar-fundamentacao-normativa` para os sub-agentes. */
@@ -154,7 +177,7 @@ export function contextoFundamentacaoNormativa(caminhos: CaminhosAnalise = camin
       cnct: seExiste(path.join(base, "catalogos", "cnct", "manifest.json")),
     },
     status_permitidos: STATUS_FUNDAMENTACAO_NORMATIVA,
-    marcos_normativos: carregarMarcosNormativos(caminhos.marcosNormativosPath),
+    marcos_normativos: carregarMarcosNormativos(caminhos.marcosNormativosPath, universoOuVazio(caminhos)),
     observacao:
       "Use este contexto quando o PPC citar norma ou fizer afirmação com força normativa. " +
       "Os campos path dentro dos manifestos são relativos a base-conhecimento/. " +
@@ -368,7 +391,10 @@ export function montarGruposSubagents(
   const caminhos = caminhosRodada(rodada);
   if (!existe(caminhos.ppc)) throw new Error(`PPC.md não encontrado: ${caminhos.ppc}`);
   const metadata = existe(caminhos.metadata) ? (lerJsonPy(caminhos.metadata) as ObjetoPy) : {};
-  const fichas = carregarFichasOrdenadas(opcoes.fichasDir ?? skill.fichasDir);
+  const universo = universoOuVazio(skill);
+  const fichas = carregarFichasOrdenadas(opcoes.fichasDir ?? skill.fichasDir).map((ficha) =>
+    fichaParaSubagente(ficha, universo),
+  );
   const grupos = agruparFichas(fichas, tamanhoGrupo);
   const cnct = gerarContextoCnctRodada(rodada, { caminhos: skill });
   const estrutura = gerarContextoEstruturalSubagents(rodada);
@@ -410,7 +436,10 @@ export function montarGrupoAvulso(rodada: string, fichaIds: string[], opcoes: Op
   }
   const faltantes = fichaIds.filter((fichaId) => !fichasPorId.has(fichaId));
   if (faltantes.length) throw new Error(`Fichas não encontradas: ${faltantes.join(", ")}`);
-  const selecionadas = fichaIds.map((fichaId) => copiarProfundoPy(fichasPorId.get(fichaId)!));
+  const universo = universoOuVazio(skill);
+  const selecionadas = fichaIds.map((fichaId) =>
+    fichaParaSubagente(copiarProfundoPy(fichasPorId.get(fichaId)!), universo),
+  );
   const grupo: Grupo = {
     grupo_id: `avulso-${sha256JsonPayload({ ficha_ids: fichaIds }).slice(0, 12)}`,
     intervalo: "avulso",

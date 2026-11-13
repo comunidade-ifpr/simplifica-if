@@ -31,7 +31,10 @@
     "resolução 148/2023"
   ],
   "referencias_normativas": [
-    "Resolução CONSUP/IFPR nº 148/2023"
+    {
+      "ref": "ifpr/consup/res/2023/148",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "A política de inclusão do PPC explicita instâncias institucionais, responsabilidades e base normativa de modo suficiente?",
   "rubrica": "Verificar se o PPC identifica o papel de instâncias como NAPNE/CNAPNE, define responsabilidades institucionais e referencia a normativa principal de adaptação e flexibilização curricular.",

@@ -37,7 +37,10 @@
     "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.area_tecnologica"
   ],
   "referencias_normativas": [
-    "CNCT"
+    {
+      "ref": "cnct:catalogo",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "O eixo tecnológico declarado no PPC é compatível com a correspondência do CNCT?",
   "rubrica": "Comparar as menções do PPC a eixo tecnológico com `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.eixo_tecnologico`, verificando se a identidade do curso não desloca a formação para outro eixo. O campo estruturado `area_tecnologica` pode ser usado como pista auxiliar de contexto quando existir na base, mas sua ausência no PPC não constitui lacuna, pois a Área Tecnológica não deve ser exigida como campo declaratório do PPC. Se o PPC declarar área tecnológica, verificar apenas se ela não contradiz a correspondência CNCT.",

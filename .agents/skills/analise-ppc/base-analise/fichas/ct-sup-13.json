@@ -48,7 +48,10 @@
     "data de acesso"
   ],
   "referencias_normativas": [
-    "ABNT NBR 6023"
+    {
+      "ref": "externo:abnt/nbr/6023",
+      "papel": "fundamento"
+    }
   ],
   "pergunta": "A seção de referências mantém aderência formal mínima a padrões bibliográficos reconhecíveis, especialmente ABNT, sem inconsistências evidentes?",
   "rubrica": "Avaliar se a lista apresenta padrão minimamente consistente de referência, com sinais formais compatíveis com a ABNT e dados essenciais quando cabíveis, como URL e data de acesso.",

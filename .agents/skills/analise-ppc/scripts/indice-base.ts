@@ -12,7 +12,9 @@ import {
 } from "@simplifica-if/kb/json";
 import { ordenarTextos } from "@simplifica-if/kb/texto";
 import { agoraUtc, escreverTexto, lerJson, listarArquivos } from "./arquivos.ts";
+import type { UniversoReferencias } from "@simplifica-if/kb/normas/referencia-estruturada";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
+import { marcoLegivel, normasCitadas, referenciasLegiveisDaFicha, universoOuVazio } from "./referencias-fichas.ts";
 
 type Item = { [campo: string]: unknown };
 
@@ -46,7 +48,7 @@ function relativo(caminhos: CaminhosAnalise, caminho: string): string {
   return path.relative(caminhos.baseAnaliseDir, caminho).split(path.sep).join("/");
 }
 
-function itemFicha(caminhos: CaminhosAnalise, arquivo: string): Item {
+function itemFicha(caminhos: CaminhosAnalise, arquivo: string, universo: UniversoReferencias): Item {
   const payload = lerObjeto(arquivo);
   return {
     categoria: "ficha",
@@ -57,7 +59,8 @@ function itemFicha(caminhos: CaminhosAnalise, arquivo: string): Item {
     topicos_tematicos: lista(payload.topicos_tematicos),
     tipo_escopo: textoOuVazio(payload.tipo_escopo),
     ancoras_semanticas: lista(payload.ancoras_semanticas),
-    referencias_normativas: obter(payload, "referencias_normativas", []),
+    referencias_normativas: referenciasLegiveisDaFicha(payload, universo).map((referencia) => referencia.texto),
+    normas_citadas: normasCitadas(payload),
     arquivo: relativo(caminhos, arquivo),
   };
 }
@@ -122,26 +125,34 @@ function itemSchema(caminhos: CaminhosAnalise, arquivo: string): Item {
   };
 }
 
-function itensMarcosNormativos(caminhos: CaminhosAnalise): Item[] {
+function itensMarcosNormativos(caminhos: CaminhosAnalise, universo: UniversoReferencias): Item[] {
   const origem = caminhos.marcosNormativosPath;
   if (!existsSync(origem)) return [];
   const payload = lerObjeto(origem);
   return itensDe(obter(payload, "marcos", []))
     .filter(ehObjeto)
-    .map((marco) => ({
-      categoria: "marco_normativo",
-      id: textoDe(obter(marco, "id", "")),
-      titulo: textoDe(obter(marco, "tema", "")),
-      vigente: textoDe(obter(marco, "vigente", "")),
-      substitui: lista(marco.substitui),
-      arquivo: relativo(caminhos, origem),
-    }));
+    .map((marco) => {
+      const legivel = marcoLegivel(marco, universo);
+      return {
+        categoria: "marco_normativo",
+        id: textoDe(obter(marco, "id", "")),
+        titulo: textoDe(obter(marco, "tema", "")),
+        vigente: textoDe(obter(legivel, "vigente", "")),
+        vigente_id: textoDe(obter(marco, "vigente", "")),
+        substitui: lista(legivel.substitui),
+        substitui_ids: lista(marco.substitui),
+        arquivo: relativo(caminhos, origem),
+      };
+    });
 }
 
 /** Monta o índice; `geradoEm` fixa a data (por padrão, agora em UTC). */
 export function gerarIndice(geradoEm?: string, caminhos: CaminhosAnalise = caminhosPadrao()): ObjetoJson {
   const base = caminhos.baseAnaliseDir;
-  const fichas = listarArquivos(path.join(base, "fichas"), ".json").map((arquivo) => itemFicha(caminhos, arquivo));
+  const universo = universoOuVazio(caminhos);
+  const fichas = listarArquivos(path.join(base, "fichas"), ".json").map((arquivo) =>
+    itemFicha(caminhos, arquivo, universo),
+  );
   const validacoes = listarArquivos(path.join(base, "validacoes-cruzadas"), ".json").map((arquivo) =>
     itemValidacaoCruzada(caminhos, arquivo),
   );
@@ -152,7 +163,7 @@ export function gerarIndice(geradoEm?: string, caminhos: CaminhosAnalise = camin
     itemSchema(caminhos, arquivo),
   );
   const topicos = carregarTopicos(caminhos).map((topico) => itemTopico(caminhos, topico));
-  const marcos = itensMarcosNormativos(caminhos);
+  const marcos = itensMarcosNormativos(caminhos, universo);
   const itens = [...fichas, ...validacoes, ...topicos, ...marcos, ...contratos, ...schemas];
   return {
     base_analise_dir: "analise-ppc/base-analise",
