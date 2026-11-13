@@ -529,7 +529,7 @@ Em aberto:
   - 17 PPCs citam a DCN da EPT como "CNE/CEB nº 1/2021", com o órgão trocado, e o resolvedor da fase 2 precisa tratar isso;
   - a Q08 se apoia em ofertas `sugerido` ainda não revisadas.
 
-**Fase 2a concluída em 13/11/2026** (branch `worktree-agent-ab78953406a22651e`). Falta a 2b: fichas com referências estruturadas e schema zod da ficha, depois do porte de `subagents.py`.
+**Fase 2 concluída em 13/11/2026.** A 2a (branch `worktree-agent-ab78953406a22651e`) fez IDs, stubs, resolvedor e CLI; a 2b (branch `worktree-agent-abea7e713fbce0ddc`) fez as fichas com referências estruturadas, descritas depois da 2a.
 
 - **IDs:** `id` no front matter das 36 normas e no `manifest.json` (diff só no campo novo), com lint de formato, unicidade e coerência com o ato em `validar_base.ts`. A LDB em trechos é `br/lei/1996/9394~compilacao`, com `variante: compilacao`; a regra está em `docs/padrao-front-matter-legislacao.md`.
 - **Front matter:** `yaml` 2.9.1 em schema `failsafe` mais zod (`packages/kb/src/normas/front-matter.ts`); paridade com o parser antigo nas 36 normas.
@@ -543,6 +543,21 @@ Em aberto:
   - 17 PPCs citam a DCN de 2021 com o órgão trocado (CNE/CEB); 1 a cita como "CNE/CP nº 1, de 5 de janeiro de 2022" e cai na CNE/CP 1/2022;
   - há duas Instruções Normativas do IFPR nº 1/2021 (26/07, curricularização da extensão, e 19/08, bibliotecas), citadas muitas vezes sem órgão;
   - a ficha `ct-ident-15` cita uma "Resolução CNE/CP nº 2/2025" que não foi identificada.
+
+**Fase 2b concluída em 13/11/2026** (branch `worktree-agent-abea7e713fbce0ddc`).
+
+- **Formato:** `referencias_normativas` das fichas é uma lista de `{ ref, dispositivo?, papel, nota? }`, uma entrada por dispositivo. `papel` é `fundamento` (a ficha aplica a regra) ou `complementar` (só remete a ela); `nota` guarda o que não cabe no ID, como o número SEI. `ref` aceita ato sem variante, stub, `externo:` e `cnct:` (`cnct:catalogo` ou `cnct:<curso>`). Contrato em `packages/kb/src/normas/referencia-estruturada.ts`; regras de citação em `base-analise/README.md`.
+- **Migração:** as 134 citações viraram 206 entradas, por script com `resolverCitacao` (109 pela regra `estrutural`, 25 por `alias`), removido depois do uso (commit `f232c31`). Cada citação foi conferida por ida e volta: o texto renderizado é igual ao original em 114 casos; nos outros 20 muda só o título canônico (CNCT, LDB), entra a nota (SEI, recorte do CNCT) ou o dispositivo revisado. Seis entradas ficaram `complementar`. A "Resolução CNE/CP nº 2/2025" da `ct-ident-15` foi identificada pelo art. 45, § 3º, da 2/2026 (trava digital do Sistec, art. 1º).
+- **Marcos:** `vigente`, `substitui` e `antecessoras_historicas` por ID; `dispositivos_revogados` como `ato#dispositivo`. `transicao` e `orientacao_analise` continuam em prosa. `stubs.yaml` ganhou as Res. CONSUP/IFPR 11/2009 e 53/2011, revogadas pela 239/2025; a medida do resolvedor e os gabaritos não mudaram.
+- **Schemas:** o zod de `scripts/esquemas.ts` é a fonte única da ficha e dos marcos. `ficha.schema.json` e `marcos-normativos.schema.json` são gerados por `analise_ppc.ts gerar-schemas`, conferidos por `--check` e por `validar-base`; o validador aplica o JSON Schema gerado com o `ajv`, para manter o formato das mensagens.
+- **Texto legível** (`normas/texto-dispositivos.ts` + título canônico) nas fichas dos grupos e prompts dos sub-agentes (com `ref`, `papel` e `path` da norma), nos marcos do contexto normativo, no `indice.json` (com `normas_citadas`) e no `mapa-fichas.md`, que ganhou a lista de fichas por norma.
+- **Validador por ID:** ID inexistente, norma revogada (manifesto ou stub), norma substituída por marco, dispositivo revogado ou contido nele, referência repetida; formato de `ref` e `dispositivo` pelo schema. O casamento textual `normas/referencias.ts` perdeu o último consumidor e foi removido.
+- **Pendências:**
+  - a existência do dispositivo no texto da norma depende do parser da fase 5;
+  - o `papel` foi atribuído na migração por regra simples (`fundamento`, salvo seis casos revisados) e merece revisão humana ficha a ficha;
+  - os stubs novos e o da Res. CNE/CP nº 2/2025 continuam em `curadoria: rascunho`;
+  - `cnct:<curso>` é aceito, mas nenhuma ficha o usa: as fichas citam o catálogo, e o curso vem do contexto da rodada;
+  - as validações cruzadas continuam sem `referencias_normativas`.
 
 **Trilha T, passo T1 concluído em 13/11/2026** (branch `worktree-agent-ac5acad58383e32fc`).
 
