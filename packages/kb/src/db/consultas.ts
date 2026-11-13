@@ -1,0 +1,877 @@
+/**
+ * Consultas ao `kb.sqlite`: SQL direto com `bun:sqlite`, e cada linha lida validada por zod na
+ * fronteira (Princípio 3). Toda resposta traz texto literal (seção, bloco de norma, trecho de fato,
+ * linha do SUAP) e a proveniência: `path` relativo à raiz do repositório e linha(s).
+ */
+import type { Database } from "bun:sqlite";
+import { z } from "zod";
+import { expandirConsulta, type Sinonimos } from "../busca/sinonimos.ts";
+import { radicais, termoFts, termos } from "../busca/tokens.ts";
+import { RESULTADOS_DIVERGENTES } from "../fatos/divergencias.ts";
+import { idDoAto } from "../normas/ids.ts";
+import { resolverCitacao, registroPadrao } from "../normas/resolver.ts";
+import { compararTexto } from "../texto.ts";
+
+const texto = z.string();
+const textoNulo = z.string().nullable();
+const inteiroNulo = z.number().int().nullable();
+
+function linhas<T>(esquema: z.ZodType<T>, valores: unknown[]): T[] {
+  return valores.map((v) => esquema.parse(v));
+}
+
+type Parametro = string | number | null;
+
+/* ================================================================ busca textual */
+
+/** Modo da busca: sem stemmer nem sinônimos, só radicais, ou radicais + léxico de sinônimos. */
+export type ModoBusca = "simples" | "radicais" | "completo";
+
+interface Conceito {
+  /** Alternativas do conceito (cada uma é uma sequência de termos; mais de um termo vira frase). */
+  alternativas: string[][];
+}
+
+/**
+ * Conceitos da consulta: cada termo vira um conceito; com `completo`, um grupo de sinônimos cujo
+ * termo aparece na consulta junta os termos dele num conceito só, com as alternativas do grupo.
+ */
+export function conceitosDaConsulta(consulta: string, modo: ModoBusca, lexico?: Sinonimos): Conceito[] {
+  if (modo === "simples") return [...new Set(termos(consulta))].map((t) => ({ alternativas: [[t]] }));
+  const r = [...new Set(radicais(consulta))];
+  if (modo === "radicais" || !lexico) return r.map((t) => ({ alternativas: [[t]] }));
+  const conceitos: Conceito[] = [];
+  const cobertos = new Set<string>();
+  for (const grupo of lexico.grupos) {
+    const termosGrupo = grupo.map((termo) => radicais(termo)).filter((x) => x.length > 0);
+    const presentes = termosGrupo.filter((x) => x.every((radical) => r.includes(radical)));
+    if (!presentes.length) continue;
+    for (const p of presentes) for (const radical of p) cobertos.add(radical);
+    conceitos.push({ alternativas: [...presentes, ...expandirConsulta({ tipos: {}, grupos: [grupo] }, r)] });
+  }
+  for (const t of r) if (!cobertos.has(t)) conceitos.push({ alternativas: [[t]] });
+  return conceitos;
+}
+
+function alternativaFts(alternativa: string[]): string {
+  return alternativa.length === 1 ? termoFts(alternativa[0]!) : termoFts(alternativa.join(" "));
+}
+
+/** Expressão FTS5: conceitos ligados por AND ou por OR, restrita às colunas do modo. */
+export function expressaoFts(conceitos: Conceito[], colunas: string[], operador: "AND" | "OR"): string | null {
+  if (!conceitos.length) return null;
+  const partes = conceitos.map((c) => {
+    const alternativas = c.alternativas.map(alternativaFts);
+    return alternativas.length === 1 ? alternativas[0]! : `(${alternativas.join(" OR ")})`;
+  });
+  return `{${colunas.join(" ")}} : (${partes.join(` ${operador} `)})`;
+}
+
+/** Linhas do texto com mais termos da consulta (literal, com o número da linha no arquivo). */
+export function linhasRelevantes(
+  textoSecao: string,
+  linhaInicial: number,
+  conceitos: Conceito[],
+  modo: ModoBusca,
+  maximo = 3,
+): { linha: number; texto: string }[] {
+  const alvo = conceitos.map((c) => new Set(c.alternativas.flat()));
+  const pontuadas = textoSecao.split("\n").map((linha, i) => {
+    const presentes = new Set(modo === "simples" ? termos(linha) : radicais(linha));
+    const pontos = alvo.filter((a) => [...a].some((t) => presentes.has(t))).length;
+    return { linha: linhaInicial + i, texto: linha, pontos };
+  });
+  return pontuadas
+    .filter((l) => l.pontos > 0)
+    .sort((a, b) => b.pontos - a.pontos || a.linha - b.linha)
+    .slice(0, maximo)
+    .sort((a, b) => a.linha - b.linha)
+    .map(({ linha, texto: t }) => ({ linha, texto: t }));
+}
+
+/** Linhas relevantes; se a seção casou só pelo título ou pelo tipo, as primeiras linhas do texto. */
+function trechoOuInicio(textoSecao: string, linhaInicial: number, conceitos: Conceito[], modo: ModoBusca) {
+  const relevantes = linhasRelevantes(textoSecao, linhaInicial, conceitos, modo);
+  if (relevantes.length) return relevantes;
+  return textoSecao
+    .split("\n")
+    .map((t, i) => ({ linha: linhaInicial + i, texto: t }))
+    .filter((l) => l.texto.trim())
+    .slice(0, 2);
+}
+
+/* ================================================================== seções */
+
+export interface FiltrosSecoes {
+  tipo?: string[] | undefined;
+  nivel?: string | undefined;
+  campus?: string | undefined;
+  cnct?: string | undefined;
+  forma?: string | undefined;
+  ppc?: string | undefined;
+}
+
+const esquemaLinhaSecao = z.strictObject({
+  rowid: z.number().int(),
+  id: texto,
+  ppc_id: texto,
+  tipo: texto,
+  titulo: texto,
+  numeracao: textoNulo,
+  path: texto,
+  linha_inicio: z.number().int(),
+  linha_fim: z.number().int(),
+  linha_texto: z.number().int(),
+  texto: texto,
+  curso_nome: texto,
+  campus_nome: texto,
+  nivel: texto,
+  tipo_oferta: texto,
+  cnct_id: textoNulo,
+  pontuacao: z.number(),
+});
+
+export interface ResultadoSecao {
+  id: string;
+  ppc: string;
+  curso: string;
+  campus: string;
+  nivel: string;
+  forma: string;
+  cnct_id: string | null;
+  tipo: string;
+  titulo: string;
+  path: string;
+  linha_inicio: number;
+  linha_fim: number;
+  pontuacao: number;
+  /** Linhas literais com mais termos da consulta. */
+  trecho: { linha: number; texto: string }[];
+  /** Texto integral da seção (só com `integral`). */
+  texto?: string;
+}
+
+const PESOS_SECOES = "bm25(secoes_fts, 6.0, 1.0, 6.0, 1.0, 2.0)";
+
+function normalizarCnct(valor: string): string {
+  return valor.startsWith("cnct:") ? valor : `cnct:${valor}`;
+}
+
+function normalizarPpc(valor: string): string {
+  return valor.startsWith("ppc:") ? valor : `ppc:${valor}`;
+}
+
+/**
+ * Busca de seções de PPC. A ordem: primeiro as seções com todos os conceitos da consulta (AND),
+ * depois as que têm algum (OR), cada grupo por BM25 com peso maior para o título.
+ */
+export function buscarSecoes(
+  db: Database,
+  consulta: string,
+  filtros: FiltrosSecoes = {},
+  opcoes: { limite?: number; modo?: ModoBusca; lexico?: Sinonimos; integral?: boolean; somenteTodos?: boolean } = {},
+): ResultadoSecao[] {
+  const limite = opcoes.limite ?? 10;
+  const modo = opcoes.modo ?? "completo";
+  const conceitos = conceitosDaConsulta(consulta, modo, opcoes.lexico);
+  const colunas =
+    modo === "simples"
+      ? ["titulo", "texto"]
+      : modo === "radicais"
+        ? ["titulo_radicais", "radicais"]
+        : ["titulo_radicais", "radicais", "expansao"];
+  const condicoes: string[] = [];
+  const parametros: Parametro[] = [];
+  if (filtros.tipo?.length) {
+    condicoes.push(`s.tipo IN (${filtros.tipo.map(() => "?").join(", ")})`);
+    parametros.push(...filtros.tipo);
+  }
+  if (filtros.nivel) {
+    condicoes.push("p.nivel = ?");
+    parametros.push(filtros.nivel);
+  }
+  if (filtros.campus) {
+    condicoes.push("p.campus_id = ?");
+    parametros.push(filtros.campus);
+  }
+  if (filtros.cnct) {
+    condicoes.push("c.cnct_id = ?");
+    parametros.push(normalizarCnct(filtros.cnct));
+  }
+  if (filtros.forma) {
+    condicoes.push("p.tipo_oferta = ?");
+    parametros.push(filtros.forma);
+  }
+  if (filtros.ppc) {
+    condicoes.push("p.id = ?");
+    parametros.push(normalizarPpc(filtros.ppc));
+  }
+  const filtroSql = condicoes.length ? ` AND ${condicoes.join(" AND ")}` : "";
+  const sql = `
+    SELECT s.rowid AS rowid, s.id, s.ppc_id, s.tipo, s.titulo, s.numeracao, s.path, s.linha_inicio, s.linha_fim,
+           s.linha_texto, s.texto, p.curso_nome, p.campus_nome, p.nivel, p.tipo_oferta, c.cnct_id,
+           ${PESOS_SECOES} AS pontuacao
+    FROM secoes_fts
+    JOIN secoes s ON s.rowid = secoes_fts.rowid
+    JOIN ppcs p ON p.id = s.ppc_id
+    LEFT JOIN cursos c ON c.id = p.curso_id
+    WHERE secoes_fts MATCH ?${filtroSql}
+    ORDER BY pontuacao, s.id
+    LIMIT ?`;
+  const vistos = new Set<number>();
+  const achados: z.output<typeof esquemaLinhaSecao>[] = [];
+  for (const operador of ["AND", "OR"] as const) {
+    if (achados.length >= limite) break;
+    if (operador === "OR" && (conceitos.length < 2 || opcoes.somenteTodos)) break;
+    const expressao = expressaoFts(conceitos, colunas, operador);
+    if (!expressao) break;
+    const encontrados = linhas(esquemaLinhaSecao, db.query(sql).all(expressao, ...parametros, limite + vistos.size));
+    for (const linha of encontrados) {
+      if (vistos.has(linha.rowid) || achados.length >= limite) continue;
+      vistos.add(linha.rowid);
+      achados.push(linha);
+    }
+  }
+  return achados.map((s) => ({
+    id: s.id,
+    ppc: s.ppc_id,
+    curso: s.curso_nome,
+    campus: s.campus_nome,
+    nivel: s.nivel,
+    forma: s.tipo_oferta,
+    cnct_id: s.cnct_id,
+    tipo: s.tipo,
+    titulo: s.titulo,
+    path: s.path,
+    linha_inicio: s.linha_inicio,
+    linha_fim: s.linha_fim,
+    pontuacao: Math.round(s.pontuacao * 1000) / 1000,
+    trecho: trechoOuInicio(s.texto, s.linha_texto, conceitos, modo),
+    ...(opcoes.integral ? { texto: s.texto } : {}),
+  }));
+}
+
+/** Seções de um PPC por tipo, na ordem do documento (texto integral). */
+export function secoesDoPpc(
+  db: Database,
+  ppc: string,
+  tipos: readonly string[],
+): {
+  id: string;
+  tipo: string;
+  titulo: string;
+  path: string;
+  linha_inicio: number;
+  linha_fim: number;
+  texto: string;
+}[] {
+  if (!tipos.length) return [];
+  const esquema = z.strictObject({
+    id: texto,
+    tipo: texto,
+    titulo: texto,
+    path: texto,
+    linha_inicio: z.number().int(),
+    linha_fim: z.number().int(),
+    texto: texto,
+  });
+  return linhas(
+    esquema,
+    db
+      .query(
+        `SELECT id, tipo, titulo, path, linha_inicio, linha_fim, texto FROM secoes
+         WHERE ppc_id = ? AND tipo IN (${tipos.map(() => "?").join(", ")}) ORDER BY linha_inicio`,
+      )
+      .all(normalizarPpc(ppc), ...tipos),
+  );
+}
+
+/* =================================================================== normas */
+
+const esquemaNorma = z.strictObject({
+  id: texto,
+  situacao: texto,
+  titulo: texto,
+  status_vigencia: textoNulo,
+  data_publicacao: textoNulo,
+  ementa: textoNulo,
+  path: textoNulo,
+});
+export type NormaResumo = z.output<typeof esquemaNorma>;
+
+const esquemaBloco = z.strictObject({
+  rowid: z.number().int(),
+  norma_id: texto,
+  ordem: z.number().int(),
+  titulo: textoNulo,
+  caminho: texto,
+  artigo: textoNulo,
+  dispositivo: textoNulo,
+  path: texto,
+  linha_inicio: z.number().int(),
+  linha_fim: z.number().int(),
+  texto: texto,
+});
+type Bloco = z.output<typeof esquemaBloco>;
+
+export function obterNorma(db: Database, id: string): NormaResumo | null {
+  const linha = db
+    .query("SELECT id, situacao, titulo, status_vigencia, data_publicacao, ementa, path FROM normas WHERE id = ?")
+    .get(id);
+  if (linha) return esquemaNorma.parse(linha);
+  const ato = idDoAto(id);
+  return ato !== id ? obterNorma(db, ato) : null;
+}
+
+/** Variante de arquivo (`~compilacao`) e o ato: os blocos de qualquer uma servem ao ato. */
+function idsDoAto(db: Database, id: string): string[] {
+  const ato = idDoAto(id);
+  return linhas(
+    z.strictObject({ id: texto }),
+    db.query("SELECT id FROM normas WHERE id = ? OR id LIKE ? ORDER BY id").all(ato, `${ato}~%`),
+  ).map((l) => l.id);
+}
+
+/**
+ * Bloco do artigo de uma norma (título "Art. N"). Sem título de artigo (normas ainda não
+ * saneadas), procura a linha que começa com "Art. N" dentro dos blocos e recorta até o próximo
+ * artigo. Depois da fase 5, a fonte passa a ser a tabela `dispositivos`.
+ */
+export function blocoDoArtigo(
+  db: Database,
+  normaId: string,
+  artigo: string,
+): {
+  norma_id: string;
+  artigo: string;
+  path: string;
+  linha_inicio: number;
+  linha_fim: number;
+  texto: string;
+  origem: string;
+} | null {
+  for (const id of idsDoAto(db, normaId)) {
+    const porTitulo = db
+      .query(
+        "SELECT rowid, norma_id, ordem, titulo, caminho, artigo, dispositivo, path, linha_inicio, linha_fim, texto FROM normas_blocos WHERE norma_id = ? AND artigo = ? ORDER BY ordem LIMIT 1",
+      )
+      .get(id, artigo);
+    if (porTitulo) {
+      const b = esquemaBloco.parse(porTitulo);
+      return {
+        norma_id: b.norma_id,
+        artigo,
+        path: b.path,
+        linha_inicio: b.linha_inicio,
+        linha_fim: b.linha_fim,
+        texto: [b.titulo, b.texto].filter(Boolean).join("\n\n"),
+        origem: "bloco-titulo-artigo",
+      };
+    }
+  }
+  const re = new RegExp(
+    `^[*_\\s]*Art(?:igo)?\\.?\\s*${artigo.replace("-", "\\s*-\\s*")}\\s*(?:[ºo°]\\.?)?(?![\\d])`,
+    "i",
+  );
+  for (const id of idsDoAto(db, normaId)) {
+    const blocos = linhas(
+      esquemaBloco,
+      db
+        .query(
+          "SELECT rowid, norma_id, ordem, titulo, caminho, artigo, dispositivo, path, linha_inicio, linha_fim, texto FROM normas_blocos WHERE norma_id = ? AND ordem >= 0 ORDER BY ordem",
+        )
+        .all(id),
+    );
+    for (const b of blocos) {
+      const corpo = b.texto.split("\n");
+      const inicio = corpo.findIndex((l) => re.test(l));
+      if (inicio === -1) continue;
+      let fim = corpo.length;
+      for (let i = inicio + 1; i < corpo.length; i += 1) {
+        if (/^[*_\s]*Art(?:igo)?\.?\s*\d/i.test(corpo[i]!)) {
+          fim = i;
+          break;
+        }
+      }
+      while (fim - 1 > inicio && !corpo[fim - 1]!.trim()) fim -= 1;
+      // linha do arquivo da primeira linha do corpo do bloco
+      const primeira = b.titulo === null ? b.linha_inicio : b.linha_inicio + 1 + contarVaziasIniciais(b);
+      return {
+        norma_id: b.norma_id,
+        artigo,
+        path: b.path,
+        linha_inicio: primeira + inicio,
+        linha_fim: primeira + fim - 1,
+        texto: corpo.slice(inicio, fim).join("\n"),
+        origem: "linha-art-no-bloco",
+      };
+    }
+  }
+  return null;
+}
+
+function contarVaziasIniciais(b: Bloco): number {
+  // o corpo do bloco foi aparado no início; o título fica na linha_inicio e o corpo começa depois
+  // das linhas vazias que o separam dele. Sem acesso ao arquivo, a distância é deduzida do fim.
+  const linhasCorpo = b.texto.split("\n").length;
+  return Math.max(0, b.linha_fim - b.linha_inicio - linhasCorpo);
+}
+
+export interface ResultadoNorma {
+  norma: NormaResumo;
+  bloco: {
+    titulo: string | null;
+    caminho: string;
+    artigo: string | null;
+    dispositivo: string | null;
+    path: string;
+    linha_inicio: number;
+    linha_fim: number;
+    texto: string;
+  };
+  pontuacao: number | null;
+  origem: "citacao-resolvida" | "busca-textual";
+}
+
+/**
+ * Busca de normas. Se a consulta é uma citação ("Res. CNE/CP 2/2026, art. 28") ou um ID, o
+ * resolvedor da fase 2 identifica a norma e o artigo; senão, busca textual por radicais nos
+ * metadados (título, aliases, palavras-chave, ementa) e nos blocos do texto.
+ */
+export function buscarNorma(
+  db: Database,
+  consulta: string,
+  opcoes: { limite?: number; situacao?: string; vigentes?: boolean } = {},
+): ResultadoNorma[] {
+  const limite = opcoes.limite ?? 10;
+  const saida: ResultadoNorma[] = [];
+  const resolucao = /^[a-z]+(\/[\w~-]+)+(#[\w-]+)?$/.test(consulta.trim())
+    ? {
+        id: consulta.trim().split("#")[0]!,
+        dispositivoId: consulta.includes("#") ? `#${consulta.split("#")[1]}` : undefined,
+      }
+    : resolverCitacao(consulta, registroPadrao());
+  if (resolucao.id) {
+    const norma = obterNorma(db, resolucao.id);
+    if (norma) {
+      const artigo = /^#art(\d+)([A-Z])?/.exec(resolucao.dispositivoId ?? "");
+      const bloco = artigo ? blocoDoArtigo(db, norma.id, artigo[2] ? `${artigo[1]}-${artigo[2]}` : artigo[1]!) : null;
+      if (bloco) {
+        saida.push({
+          norma,
+          bloco: {
+            titulo: `Art. ${bloco.artigo}`,
+            caminho: bloco.origem,
+            artigo: bloco.artigo,
+            dispositivo: resolucao.dispositivoId ?? null,
+            path: bloco.path,
+            linha_inicio: bloco.linha_inicio,
+            linha_fim: bloco.linha_fim,
+            texto: bloco.texto,
+          },
+          pontuacao: null,
+          origem: "citacao-resolvida",
+        });
+      } else {
+        const meta = db
+          .query(
+            "SELECT rowid, norma_id, ordem, titulo, caminho, artigo, dispositivo, path, linha_inicio, linha_fim, texto FROM normas_blocos WHERE norma_id = ? AND ordem = -1",
+          )
+          .get(norma.id);
+        if (meta) {
+          const b = esquemaBloco.parse(meta);
+          saida.push({
+            norma,
+            bloco: {
+              titulo: b.titulo,
+              caminho: b.caminho,
+              artigo: null,
+              dispositivo: null,
+              path: b.path,
+              linha_inicio: b.linha_inicio,
+              linha_fim: b.linha_fim,
+              texto: b.texto,
+            },
+            pontuacao: null,
+            origem: "citacao-resolvida",
+          });
+        }
+      }
+    }
+  }
+  // citação com artigo achado: a resposta é o artigo; a busca textual só entra sem ele
+  if (saida.some((r) => r.bloco.artigo !== null)) return saida;
+  const conceitos = conceitosDaConsulta(consulta, "radicais");
+  const condicoes: string[] = [];
+  const parametros: Parametro[] = [];
+  if (opcoes.situacao) {
+    condicoes.push("n.situacao = ?");
+    parametros.push(opcoes.situacao);
+  }
+  if (opcoes.vigentes) condicoes.push("coalesce(n.status_vigencia, '') NOT IN ('revogada')");
+  const sql = `
+    SELECT b.rowid AS rowid, b.norma_id, b.ordem, b.titulo, b.caminho, b.artigo, b.dispositivo, b.path, b.linha_inicio,
+           b.linha_fim, b.texto, bm25(normas_fts, 4.0, 1.0, 1.0) AS pontuacao
+    FROM normas_fts JOIN normas_blocos b ON b.rowid = normas_fts.rowid JOIN normas n ON n.id = b.norma_id
+    WHERE normas_fts MATCH ?${condicoes.length ? ` AND ${condicoes.join(" AND ")}` : ""}
+    ORDER BY pontuacao, b.rowid LIMIT ?`;
+  const esquema = esquemaBloco.extend({ pontuacao: z.number() });
+  const vistos = new Set<number>();
+  for (const operador of ["AND", "OR"] as const) {
+    if (saida.length >= limite) break;
+    if (operador === "OR" && conceitos.length < 2) break;
+    const expressao = expressaoFts(conceitos, ["radicais"], operador);
+    if (!expressao) break;
+    for (const b of linhas(esquema, db.query(sql).all(expressao, ...parametros, limite))) {
+      if (vistos.has(b.rowid) || saida.length >= limite) continue;
+      vistos.add(b.rowid);
+      const norma = obterNorma(db, b.norma_id)!;
+      saida.push({
+        norma,
+        bloco: {
+          titulo: b.titulo,
+          caminho: b.caminho,
+          artigo: b.artigo,
+          dispositivo: b.dispositivo,
+          path: b.path,
+          linha_inicio: b.linha_inicio,
+          linha_fim: b.linha_fim,
+          texto: b.texto,
+        },
+        pontuacao: Math.round(b.pontuacao * 1000) / 1000,
+        origem: "busca-textual",
+      });
+    }
+  }
+  return saida;
+}
+
+/* =================================================================== cursos */
+
+export interface FiltrosCursos {
+  eixo?: string | undefined;
+  turno?: string | undefined;
+  campus?: string | undefined;
+  nivel?: string | undefined;
+  forma?: string | undefined;
+  situacao?: string | undefined;
+  cnct?: string | undefined;
+  processo?: string | undefined;
+}
+
+const esquemaCurso = z.strictObject({
+  id: texto,
+  nome: texto,
+  campus_id: texto,
+  campus_nome: textoNulo,
+  nivel: textoNulo,
+  forma_oferta: textoNulo,
+  modalidade: textoNulo,
+  situacao: textoNulo,
+  cnct_id: textoNulo,
+  cnct_denominacao: textoNulo,
+  eixo_tecnologico: textoNulo,
+  carga_horaria_minima_h: inteiroNulo,
+  ppc_id: textoNulo,
+  ppc_markdown_path: textoNulo,
+  ppc_ano_documento: inteiroNulo,
+  path: texto,
+});
+
+const esquemaOferta = z.strictObject({
+  curso_id: texto,
+  id: texto,
+  tipo_oferta: texto,
+  vagas: inteiroNulo,
+  turno: textoNulo,
+  turno_original: textoNulo,
+  turno_nota: textoNulo,
+  status_curadoria: textoNulo,
+  trecho_fonte: textoNulo,
+  url_fonte: texto,
+  path: texto,
+  linha_turno: z.number().int(),
+  processos: texto,
+});
+
+export interface ResultadoCurso {
+  id: string;
+  nome: string;
+  campus: { id: string; nome: string | null };
+  nivel: string | null;
+  forma_oferta: string | null;
+  modalidade: string | null;
+  situacao: string | null;
+  cnct: {
+    id: string;
+    denominacao: string | null;
+    eixo_tecnologico: string | null;
+    carga_horaria_minima_h: number | null;
+  } | null;
+  ppc: { id: string; path: string | null; ano_documento: number | null } | null;
+  ofertas: {
+    id: string;
+    processos: string[];
+    tipo_oferta: string;
+    vagas: number | null;
+    turno: string | null;
+    turno_original: string | null;
+    turno_nota: string | null;
+    status_curadoria: string | null;
+    trecho_fonte: string | null;
+    url_fonte: string;
+    path: string;
+    linha: number;
+  }[];
+  path: string;
+}
+
+export function listarCursos(db: Database, filtros: FiltrosCursos = {}): ResultadoCurso[] {
+  const condicoes: string[] = [];
+  const parametros: Parametro[] = [];
+  const add = (sql: string, valor: string | undefined) => {
+    if (valor === undefined) return;
+    condicoes.push(sql);
+    parametros.push(valor);
+  };
+  add("k.eixo_tecnologico = ?", filtros.eixo);
+  add("c.campus_id = ?", filtros.campus);
+  add("c.nivel = ?", filtros.nivel);
+  add("c.forma_oferta = ?", filtros.forma);
+  add("c.situacao = ?", filtros.situacao);
+  add("c.cnct_id = ?", filtros.cnct ? normalizarCnct(filtros.cnct) : undefined);
+  const cursos = linhas(
+    esquemaCurso,
+    db
+      .query(
+        `SELECT c.id, c.nome, c.campus_id, ca.nome AS campus_nome, c.nivel, c.forma_oferta, c.modalidade, c.situacao,
+                c.cnct_id, k.denominacao AS cnct_denominacao, k.eixo_tecnologico, k.carga_horaria_minima_h,
+                c.ppc_id, c.ppc_markdown_path, c.ppc_ano_documento, c.path
+         FROM cursos c LEFT JOIN cnct k ON k.id = c.cnct_id LEFT JOIN campi ca ON ca.campus_id = c.campus_id
+         ${condicoes.length ? `WHERE ${condicoes.join(" AND ")}` : ""}
+         ORDER BY c.id`,
+      )
+      .all(...parametros),
+  );
+  const ofertas = linhas(
+    esquemaOferta,
+    db
+      .query(
+        `SELECT oc.curso_id, o.id, o.tipo_oferta, o.vagas, o.turno, o.turno_original, o.turno_nota, o.status_curadoria,
+                o.trecho_fonte, o.url_fonte, o.path, o.linha_turno,
+                (SELECT group_concat(processo_id, ',') FROM (SELECT processo_id FROM ofertas_processos op WHERE op.oferta_id = o.id ORDER BY processo_id)) AS processos
+         FROM ofertas_cursos oc JOIN ofertas o ON o.id = oc.oferta_id ORDER BY oc.curso_id, o.id`,
+      )
+      .all(),
+  );
+  const porCurso = new Map<string, z.output<typeof esquemaOferta>[]>();
+  for (const o of ofertas) porCurso.set(o.curso_id, [...(porCurso.get(o.curso_id) ?? []), o]);
+  const saida: ResultadoCurso[] = [];
+  for (const c of cursos) {
+    const lista = (porCurso.get(c.id) ?? []).filter(
+      (o) =>
+        (!filtros.turno || o.turno === filtros.turno) &&
+        (!filtros.processo || o.processos.split(",").includes(filtros.processo)),
+    );
+    if ((filtros.turno || filtros.processo) && !lista.length) continue;
+    saida.push({
+      id: c.id,
+      nome: c.nome,
+      campus: { id: c.campus_id, nome: c.campus_nome },
+      nivel: c.nivel,
+      forma_oferta: c.forma_oferta,
+      modalidade: c.modalidade,
+      situacao: c.situacao,
+      cnct: c.cnct_id
+        ? {
+            id: c.cnct_id,
+            denominacao: c.cnct_denominacao,
+            eixo_tecnologico: c.eixo_tecnologico,
+            carga_horaria_minima_h: c.carga_horaria_minima_h,
+          }
+        : null,
+      ppc: c.ppc_id
+        ? {
+            id: c.ppc_id,
+            path: c.ppc_markdown_path ? `base-conhecimento/${c.ppc_markdown_path}` : null,
+            ano_documento: c.ppc_ano_documento,
+          }
+        : null,
+      ofertas: lista.map((o) => ({
+        id: o.id,
+        processos: o.processos ? o.processos.split(",") : [],
+        tipo_oferta: o.tipo_oferta,
+        vagas: o.vagas,
+        turno: o.turno,
+        turno_original: o.turno_original,
+        turno_nota: o.turno_nota,
+        status_curadoria: o.status_curadoria,
+        trecho_fonte: o.trecho_fonte,
+        url_fonte: o.url_fonte,
+        path: o.path,
+        linha: o.linha_turno,
+      })),
+      path: c.path,
+    });
+  }
+  return saida;
+}
+
+/* ================================================================ fatos PPC */
+
+const esquemaFato = z.strictObject({
+  ppc_id: texto,
+  fato: texto,
+  valor: texto,
+  valor_num: inteiroNulo,
+  unidade: textoNulo,
+  status_curadoria: texto,
+  regra: texto,
+  trecho_fonte: texto,
+  path: texto,
+  linha: z.number().int(),
+  alternativas_json: texto,
+});
+
+const esquemaCruzamento = z.strictObject({
+  ppc_id: texto,
+  aspecto: texto,
+  resultado: texto,
+  valor_ppc: textoNulo,
+  valor_suap: textoNulo,
+  explicacao: texto,
+});
+
+const esquemaMatriz = z.strictObject({
+  curso_id: texto,
+  matriz_id: z.number().int(),
+  ano: inteiroNulo,
+  ch_exibida_h: z.number().int(),
+  estagio_exigido: z.number().int(),
+  ch_estagio_h: inteiroNulo,
+  trecho: texto,
+  path: texto,
+  linha: z.number().int(),
+});
+
+const esquemaPpcCurso = z.strictObject({
+  id: texto,
+  curso_nome: texto,
+  campus_nome: texto,
+  nivel: texto,
+  tipo_oferta: texto,
+  path: texto,
+  curso_id: textoNulo,
+  suap_matrizes_situacao: textoNulo,
+  suap_ch_comum_h: inteiroNulo,
+});
+
+export interface FatosDoPpc {
+  ppc: string;
+  curso: string | null;
+  nome: string;
+  campus: string;
+  nivel: string;
+  forma: string;
+  path: string;
+  fatos: (Omit<z.output<typeof esquemaFato>, "ppc_id" | "alternativas_json"> & { alternativas: unknown })[];
+  suap: {
+    situacao: string | null;
+    carga_horaria_comum_h: number | null;
+    matrizes: (Omit<z.output<typeof esquemaMatriz>, "curso_id" | "estagio_exigido"> & { estagio_exigido: boolean })[];
+  };
+  cruzamento: Omit<z.output<typeof esquemaCruzamento>, "ppc_id">[];
+}
+
+/** Fatos e cruzamento com o SUAP de um PPC, ou de todos (filtro opcional por nível). */
+export function fatosDosPpcs(db: Database, filtros: { ppc?: string; nivel?: string } = {}): FatosDoPpc[] {
+  const condicoes: string[] = [];
+  const parametros: Parametro[] = [];
+  if (filtros.ppc) {
+    condicoes.push("p.id = ?");
+    parametros.push(normalizarPpc(filtros.ppc));
+  }
+  if (filtros.nivel) {
+    condicoes.push("p.nivel = ?");
+    parametros.push(filtros.nivel);
+  }
+  const ppcs = linhas(
+    esquemaPpcCurso,
+    db
+      .query(
+        `SELECT p.id, p.curso_nome, p.campus_nome, p.nivel, p.tipo_oferta, p.path, p.curso_id,
+                c.suap_matrizes_situacao, c.suap_ch_comum_h
+         FROM ppcs p LEFT JOIN cursos c ON c.id = p.curso_id
+         ${condicoes.length ? `WHERE ${condicoes.join(" AND ")}` : ""} ORDER BY p.id`,
+      )
+      .all(...parametros),
+  );
+  const fatos = linhas(esquemaFato, db.query("SELECT * FROM ppc_fatos ORDER BY ppc_id, fato").all());
+  const cruz = linhas(esquemaCruzamento, db.query("SELECT * FROM ppc_suap ORDER BY ppc_id, aspecto").all());
+  const matrizes = linhas(
+    esquemaMatriz,
+    db
+      .query(
+        "SELECT curso_id, matriz_id, ano, ch_exibida_h, estagio_exigido, ch_estagio_h, trecho, path, linha FROM suap_matrizes ORDER BY curso_id, ordem",
+      )
+      .all(),
+  );
+  const agrupar = <T, K>(lista: T[], chave: (x: T) => K) => {
+    const m = new Map<K, T[]>();
+    for (const x of lista) m.set(chave(x), [...(m.get(chave(x)) ?? []), x]);
+    return m;
+  };
+  const fatosPor = agrupar(fatos, (f) => f.ppc_id);
+  const cruzPor = agrupar(cruz, (c) => c.ppc_id);
+  const matrizesPor = agrupar(matrizes, (m) => m.curso_id);
+  return ppcs.map((p) => ({
+    ppc: p.id,
+    curso: p.curso_id,
+    nome: p.curso_nome,
+    campus: p.campus_nome,
+    nivel: p.nivel,
+    forma: p.tipo_oferta,
+    path: p.path,
+    fatos: (fatosPor.get(p.id) ?? []).map(({ ppc_id: _p, alternativas_json, ...f }) => ({
+      ...f,
+      alternativas: JSON.parse(alternativas_json) as unknown,
+    })),
+    suap: {
+      situacao: p.suap_matrizes_situacao,
+      carga_horaria_comum_h: p.suap_ch_comum_h,
+      matrizes: (p.curso_id ? (matrizesPor.get(p.curso_id) ?? []) : []).map(
+        ({ curso_id: _c, estagio_exigido, ...m }) => ({
+          ...m,
+          estagio_exigido: estagio_exigido === 1,
+        }),
+      ),
+    },
+    cruzamento: (cruzPor.get(p.id) ?? []).map(({ ppc_id: _p, ...c }) => c),
+  }));
+}
+
+/** Só os PPCs com alguma divergência PPC × SUAP, e só as linhas divergentes do cruzamento. */
+export function divergenciasPpcSuap(
+  db: Database,
+  filtros: { nivel?: string } = {},
+): {
+  totais: Record<string, Record<string, number>>;
+  ppcs: FatosDoPpc[];
+} {
+  const todos = fatosDosPpcs(db, filtros);
+  const totais: Record<string, Record<string, number>> = {};
+  for (const p of todos) {
+    for (const c of p.cruzamento) {
+      totais[c.aspecto] ??= {};
+      totais[c.aspecto]![c.resultado] = (totais[c.aspecto]![c.resultado] ?? 0) + 1;
+    }
+  }
+  const ordenado: Record<string, Record<string, number>> = {};
+  for (const aspecto of Object.keys(totais).sort(compararTexto)) {
+    ordenado[aspecto] = Object.fromEntries(Object.entries(totais[aspecto]!).sort(([a], [b]) => compararTexto(a, b)));
+  }
+  const ppcs = todos
+    .map((p) => ({ ...p, cruzamento: p.cruzamento.filter((c) => RESULTADOS_DIVERGENTES.has(c.resultado)) }))
+    .filter((p) => p.cruzamento.length > 0);
+  return { totais: ordenado, ppcs };
+}

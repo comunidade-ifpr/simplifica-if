@@ -7,6 +7,9 @@
  *   bun run kb adequacao-art71 [--json] [--incluir-tecnologia]
  *   bun run kb avaliar-resolvedor [--json]
  *
+ * Comandos sobre o kb.sqlite (buscar-norma, buscar-secoes, cursos, ppc-fatos, pacote-contexto,
+ * avaliar-busca): db/comandos.ts.
+ *
  * Saídas sem relógio e com ordem estável: as mesmas fontes dão a mesma saída.
  */
 import { Command, InvalidArgumentError } from "commander";
@@ -15,6 +18,7 @@ import { avaliarResolvedor } from "./avaliacao/resolvedor.ts";
 import { ehIdExterno, ehIdNorma, idDoAto } from "./normas/ids.ts";
 import { registroPadrao, resolverCitacao } from "./normas/resolver.ts";
 import { ppcsQueCitam } from "./ppcs/citacoes.ts";
+import { registrarComandosBanco } from "./db/comandos.ts";
 
 function json(valor: unknown): void {
   process.stdout.write(`${JSON.stringify(valor, null, 2)}\n`);
@@ -138,5 +142,7 @@ programa
       );
     }
   });
+
+registrarComandosBanco(programa);
 
 await programa.parseAsync();

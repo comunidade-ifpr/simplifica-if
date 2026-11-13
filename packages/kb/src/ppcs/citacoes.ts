@@ -37,9 +37,14 @@ export function caminhoBase(raiz: string = raizRepositorio()): string {
  */
 export function lerTextoSecao(
   secao: { path: string; linha_inicio: number; linha_fim: number },
-  opcoes: { incluirTitulo?: boolean; raiz?: string } = {},
+  opcoes: { incluirTitulo?: boolean; raiz?: string; cache?: Map<string, string> } = {},
 ): string {
-  const texto = readFileSync(path.join(caminhoBase(opcoes.raiz), secao.path), "utf-8").replace(/\r\n?/g, "\n");
+  // `cache` (caminho → texto) evita reler o mesmo PPC a cada seção, como na compilação do kb.sqlite.
+  let texto = opcoes.cache?.get(secao.path);
+  if (texto === undefined) {
+    texto = readFileSync(path.join(caminhoBase(opcoes.raiz), secao.path), "utf-8").replace(/\r\n?/g, "\n");
+    opcoes.cache?.set(secao.path, texto);
+  }
   return textoDaSecao(texto, secao.linha_inicio, secao.linha_fim, { incluirTitulo: opcoes.incluirTitulo ?? false });
 }
 

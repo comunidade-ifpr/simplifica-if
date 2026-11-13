@@ -1,0 +1,58 @@
+# Léxico de sinônimos da busca de seções de PPC (kb buscar-secoes e pacote-contexto).
+#
+# Contrato: esquemaSinonimos em packages/kb/src/busca/sinonimos.ts (zod). Mudar este arquivo muda o
+# kb.sqlite (a CLI recompila sozinha) e a medida de recall em avaliacao/busca-secoes/; rode
+# `bun run kb avaliar-busca` e compare antes de manter a mudança.
+#
+# tipos: por tipo de seção (taxonomias técnico e geral de packages/kb/src/ppcs/secoes.ts), termos que
+#   descrevem o assunto do tipo. Os radicais desses termos vão para a coluna `expansao` do FTS das
+#   seções daquele tipo: uma consulta "acompanhamento de egressos" acha a seção do tipo
+#   acompanhamento_egresso mesmo quando o texto fala em "ex-alunos" ou "diplomados".
+# grupos: termos equivalentes em qualquer seção; a consulta com um deles busca também os outros.
+#
+# Rascunho (fase 6): escrito a partir dos títulos e rótulos dos tipos, sem revisão humana.
+
+tipos:
+  identificacao: [identificação do curso, dados do curso, denominação, eixo tecnológico, forma de oferta, modalidade, turno, vagas, regime de matrícula]
+  formato_oferta: [formato da oferta, presencial, semipresencial, a distância, ead, educação a distância, mediação tecnológica]
+  justificativa: [justificativa, demanda, arranjo produtivo local, desenvolvimento regional, contexto socioeconômico]
+  contexto_institucional: [histórico do campus, missão, visão, valores, pdi, ppi, instituto federal]
+  objetivos: [objetivo geral, objetivos específicos, finalidade do curso]
+  requisitos_acesso: [requisitos de acesso, forma de ingresso, processo seletivo, seleção, matrícula, pré-requisito]
+  acessibilidade_inclusao: [acessibilidade, inclusão, educação inclusiva, necessidades educacionais específicas, deficiência, napne, atendimento educacional especializado, aee, adaptação curricular, flexibilização curricular]
+  perfil_egresso: [perfil profissional de conclusão, perfil do egresso, competências, habilidades, área de atuação, campo de atuação]
+  itinerario_formativo: [itinerário formativo, certificação intermediária, saída intermediária, qualificação profissional]
+  carga_horaria: [carga horária, hora-relógio, hora-aula, frequência mínima, duração da aula]
+  organizacao_curricular: [organização curricular, estrutura curricular, núcleos, integração curricular, curricularização da extensão]
+  matriz_curricular: [matriz curricular, componentes curriculares, grade curricular, disciplinas, carga horária total]
+  ementas: [ementa, ementário, bibliografia básica, bibliografia complementar, componente curricular]
+  concepcao_pedagogica: [concepção pedagógica, metodologia, orientações metodológicas, práticas pedagógicas, interdisciplinaridade, pressupostos]
+  aproveitamento_estudos: [aproveitamento de estudos, aproveitamento de conhecimentos, experiências anteriores, validação de conhecimentos, certificação de conhecimentos, equivalência, dispensa de componente, exame de proficiência]
+  avaliacao: [avaliação da aprendizagem, recuperação, recuperação paralela, recomposição da aprendizagem, conceitos, critérios de avaliação, instrumentos avaliativos, aprovação, reprovação]
+  infraestrutura: [infraestrutura, laboratórios, biblioteca, acervo, salas de aula, equipamentos, espaço físico]
+  mundo_trabalho: [mundo do trabalho, integração com empresas, parcerias, setor produtivo, visitas técnicas]
+  corpo_docente: [corpo docente, professores, docentes, técnicos administrativos, servidores, titulação, regime de trabalho]
+  certificados_diplomas: [certificados, diplomas, certificação, expedição de diploma, histórico escolar]
+  prazo_integralizacao: [prazo de integralização, duração do curso, tempo máximo, prazo mínimo, prazo máximo]
+  estagio_praticas: [estágio, estágio obrigatório, estágio não obrigatório, estágio supervisionado, prática profissional, prática profissional supervisionada, termo de compromisso, concedente, supervisor de estágio]
+  acompanhamento_egresso: [acompanhamento de egressos, egressos, ex-alunos, ex-estudantes, diplomados, concluintes, trajetória profissional, inserção profissional, empregabilidade, política de egressos]
+  legislacao: [legislação, base legal, fundamentação legal, marco legal, normas, resoluções, leis]
+  atendimento_estudante: [assistência estudantil, permanência, êxito, auxílio estudantil, apoio ao estudante, atendimento ao estudante, programa de bolsas]
+  ensino_pesquisa_extensao: [ensino pesquisa e extensão, pesquisa, extensão, inovação, iniciação científica, projetos de extensão]
+  trabalho_conclusao: [trabalho de conclusão de curso, tcc, projeto final, monografia, trabalho final]
+  atividades_complementares: [atividades complementares, atividades acadêmico-científico-culturais, horas complementares]
+  avaliacao_curso: [avaliação do curso, avaliação do ppc, autoavaliação, comissão própria de avaliação, cpa, sinaes, enade]
+  gestao_curso: [coordenação do curso, colegiado, núcleo docente estruturante, nde, gestão do curso, coordenador]
+  referencias: [referências, bibliografia, referências bibliográficas]
+  anexos: [anexo, apêndice, regulamento, formulário]
+
+grupos:
+  - [egresso, ex-aluno, ex-estudante, diplomado, concluinte, formado]
+  - [aproveitamento, validação, dispensa, equivalência]
+  - [estágio, prática profissional supervisionada]
+  - [recuperação, recomposição]
+  - [necessidades específicas, necessidades educacionais específicas, deficiência]
+  - [assistência estudantil, permanência, auxílio estudantil]
+  - [tcc, trabalho de conclusão]
+  - [nde, núcleo docente estruturante]
+  - [ead, educação a distância, a distância]
