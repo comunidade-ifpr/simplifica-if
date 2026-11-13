@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/simplifica-if/base-conhecimento/main/schemas/ppcs_secao.schema.json",
+  "title": "Seção de PPC do IFPR (linha de secoes/<tipo>.jsonl)",
+  "type": "object",
+  "required": [
+    "id",
+    "ppc_id",
+    "campus_id",
+    "curso_slug",
+    "curso_nome",
+    "nivel",
+    "taxonomia",
+    "section_kind",
+    "origem_tipo",
+    "heading",
+    "path",
+    "linha_inicio",
+    "linha_fim",
+    "preview"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*/[a-z0-9]+(?:-[a-z0-9]+)*#[a-z_]+-[1-9][0-9]*$"
+    },
+    "ppc_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*/[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "campus_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "curso_slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "curso_nome": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nivel": {
+      "type": "string",
+      "minLength": 1
+    },
+    "taxonomia": {
+      "enum": [
+        "tecnico",
+        "geral"
+      ]
+    },
+    "section_kind": {
+      "enum": [
+        "acessibilidade_inclusao",
+        "acompanhamento_egresso",
+        "anexos",
+        "aproveitamento_estudos",
+        "atendimento_estudante",
+        "atividades_complementares",
+        "avaliacao",
+        "avaliacao_curso",
+        "carga_horaria",
+        "certificados_diplomas",
+        "concepcao_pedagogica",
+        "contexto_institucional",
+        "corpo_docente",
+        "ementas",
+        "ensino_pesquisa_extensao",
+        "estagio_praticas",
+        "formato_oferta",
+        "gestao_curso",
+        "identificacao",
+        "infraestrutura",
+        "itinerario_formativo",
+        "justificativa",
+        "legislacao",
+        "matriz_curricular",
+        "mundo_trabalho",
+        "objetivos",
+        "organizacao_curricular",
+        "perfil_egresso",
+        "prazo_integralizacao",
+        "referencias",
+        "requisitos_acesso",
+        "trabalho_conclusao"
+      ]
+    },
+    "origem_tipo": {
+      "description": "Como o tipo foi decidido: pelo próprio título, herdado do título numerado ancestral (numeracao) ou da seção anterior (contexto).",
+      "enum": [
+        "titulo",
+        "numeracao",
+        "contexto"
+      ]
+    },
+    "heading": {
+      "type": "string",
+      "minLength": 1
+    },
+    "numeracao": {
+      "type": "string",
+      "pattern": "^[0-9]+(?:\\.[0-9]+)*$"
+    },
+    "path": {
+      "type": "string",
+      "pattern": "^institucional/ifpr/ppcs/[a-z0-9]+(?:-[a-z0-9]+)*/[a-z0-9]+(?:-[a-z0-9]+)*\\.md$"
+    },
+    "linha_inicio": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Linha do título no arquivo .md, contada desde 1 com o front matter."
+    },
+    "linha_fim": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Última linha não vazia do corpo da seção."
+    },
+    "preview": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "description": "Primeiros 500 caracteres do texto limpo; o texto integral são as linhas linha_inicio–linha_fim do Markdown em path."
+    }
+  }
+}

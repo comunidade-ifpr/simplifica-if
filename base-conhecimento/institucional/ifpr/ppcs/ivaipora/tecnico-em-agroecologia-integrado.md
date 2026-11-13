@@ -1,3 +1,15 @@
+---
+id: ppc:ivaipora/tecnico-em-agroecologia-integrado
+fonte_url: https://ifpr.edu.br/ivaipora/wp-content/uploads/sites/15/2017/03/PPC-Integrado-em-Agroecologia-26-04-final.pdf
+fonte_sha256: desconhecido
+convertido_em: 2026-05-11
+conversor: desconhecido
+proveniencia: reconstruida
+conversao_commit: 92cc42a2a66c177d254b5a0600b8656188f6daa0
+pos_processamento_commits:
+  - 9a5b159256e17dafe3d68a47936ef3d6cdcae6bb
+nota_proveniencia: "Proveniência reconstruída em 2026-11-13 pelo histórico do git, sem baixar o PDF de novo. convertido_em é a data de autoria do commit em que o texto convertido entrou no git (conversao_commit). fonte_url é o ppc.url registrado no campus JSON nesse commit. fonte_sha256 e conversor são desconhecidos: o PDF da época não foi guardado, e o conversor não registrava versão. O texto foi pós-processado depois da conversão (limpeza de ruído, remoção de sumário)."
+---
 **INSTITUTO FEDERAL DO PARANÁ PRÓ-REITORIA DE ENSINO – PROENS DIRETORIA DE ENSINO MÉDIO E TÉCNICO COORDENAÇÃO DE ENSINO MÉDIO E TÉCNICO** 
 
 ## **Anexo I - Roteiro Padrão de PPC** 

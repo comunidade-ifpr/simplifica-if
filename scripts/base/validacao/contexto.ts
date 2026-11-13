@@ -18,6 +18,7 @@ import type {
   ManifestCnctJson,
   ManifestInstitucionalJson,
   ProcessoSeletivoJson,
+  SecaoPpcJson,
 } from "../tipos-schemas.ts";
 
 /** Resultado de uma leitura que pode falhar com mensagens de erro. */
@@ -35,6 +36,7 @@ export type FormatosSchemas = {
   indiceCnct: IndiceCnctJson;
   cursoCnct: CursoCnctJson;
   indicePpcs: IndicePpcsJson;
+  secaoPpc: SecaoPpcJson;
   indicePpcps: IndicePpcpsJson;
 };
 export type NomeSchema = keyof CaminhosBase["schemas"] & keyof FormatosSchemas;

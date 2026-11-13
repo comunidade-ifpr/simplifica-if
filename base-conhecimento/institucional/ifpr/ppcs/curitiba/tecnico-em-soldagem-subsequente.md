@@ -1,3 +1,15 @@
+---
+id: ppc:curitiba/tecnico-em-soldagem-subsequente
+fonte_url: https://sei.ifpr.edu.br/sei/controlador.php?acao=documento_download_anexo&acao_origem=procedimento_visualizar&id_anexo=1853224&arvore=1
+fonte_sha256: desconhecido
+convertido_em: 2026-05-26
+conversor: desconhecido
+proveniencia: reconstruida
+conversao_commit: 2a6abc861924a540f6e749602785d57a95582488
+pos_processamento_commits:
+  - 9a5b159256e17dafe3d68a47936ef3d6cdcae6bb
+nota_proveniencia: "Proveniência reconstruída em 2026-11-13 pelo histórico do git, sem baixar o PDF de novo. convertido_em é a data de autoria do commit em que o texto convertido entrou no git (conversao_commit). fonte_url é o ppc.url registrado no campus JSON nesse commit. fonte_sha256 e conversor são desconhecidos: o PDF da época não foi guardado, e o conversor não registrava versão. O texto foi pós-processado depois da conversão (limpeza de ruído, remoção de sumário)."
+---
 **MINISTÉRIO DA EDUCAÇÃO SECRETARIA DE EDUCAÇÃO PROFISSIONAL E TECNOLÓGICA INSTITUTO FEDERAL DE EDUCAÇÃO, CIÊNCIA E TECNOLOGIA DO PARANÁ PRÓ-REITORIA DE ENSINO DIRETORIA DE ENSINO**
 
 **PROJETO PEDAGÓGICO DE CURSO CURSO TÉCNICO EM SOLDAGEM**

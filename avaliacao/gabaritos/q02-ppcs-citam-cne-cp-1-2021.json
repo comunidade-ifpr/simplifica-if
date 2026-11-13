@@ -70,17 +70,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 336,
+          "linha": 349,
           "trecho": "Resolução n°01/2021",
           "regra": "orgao-no-documento"
         },
         {
-          "linha": 1722,
+          "linha": 1735,
           "trecho": "Resolução CNE/CP n° 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 1724,
+          "linha": 1737,
           "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-29",
           "regra": "url-dou"
         }
@@ -90,22 +90,22 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 195,
+          "linha": 208,
           "trecho": "Resolução nº 01 de 05 de janeiro de 2021, do Conselho Nacional de Educação (CNE)",
           "regra": "dcnept-2021-orgao-incompleto"
         },
         {
-          "linha": 245,
+          "linha": 258,
           "trecho": "Resolução CNE/CEB nº 01/2021",
           "regra": "dcnept-2021-orgao-trocado"
         },
         {
-          "linha": 798,
+          "linha": 811,
           "trecho": "Resolução n° 1/2021",
           "regra": "orgao-no-documento"
         },
         {
-          "linha": 2762,
+          "linha": 2775,
           "trecho": "Resolução CNE/CEB nº 1/2021",
           "regra": "dcnept-2021-orgao-trocado"
         }
@@ -115,47 +115,47 @@
       "nivel": "superior",
       "ocorrencias": [
         {
-          "linha": 338,
+          "linha": 351,
           "trecho": "Parecer CNE/CP nº 01/2021",
           "regra": "dcnept-2021-tipo-trocado"
         },
         {
-          "linha": 388,
+          "linha": 401,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 442,
+          "linha": 455,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 444,
+          "linha": 457,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 456,
+          "linha": 469,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 514,
+          "linha": 527,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 1030,
+          "linha": 1043,
           "trecho": "Resolução CNE/CP nº 1,de 5 dejaneiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2863,
+          "linha": 2876,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2939,
+          "linha": 2952,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -165,17 +165,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 107,
+          "linha": 120,
           "trecho": "Resolução CNE/CP Nº 1, de 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 217,
+          "linha": 230,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 1672,
+          "linha": 1685,
           "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -185,27 +185,27 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 151,
+          "linha": 164,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 314,
+          "linha": 327,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 460,
+          "linha": 473,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 475,
+          "linha": 488,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 1787,
+          "linha": 1800,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -215,27 +215,27 @@
       "nivel": "superior",
       "ocorrencias": [
         {
-          "linha": 394,
+          "linha": 407,
           "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 628,
+          "linha": 641,
           "trecho": "Resolução CNE/CP nº 1, de 18 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 934,
+          "linha": 947,
           "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 949,
+          "linha": 962,
           "trecho": "Resolução CNE/CP Nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 3571,
+          "linha": 3584,
           "trecho": "Resolução CNE/CP Nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -245,17 +245,17 @@
       "nivel": "superior",
       "ocorrencias": [
         {
-          "linha": 851,
+          "linha": 864,
           "trecho": "Resolução CNE/CP Nº 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 853,
+          "linha": 866,
           "trecho": "resolução CNE/CP nº 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2603,
+          "linha": 2616,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         }
@@ -265,32 +265,32 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 126,
+          "linha": 139,
           "trecho": "Resolução CNE/CP 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 226,
+          "linha": 239,
           "trecho": "RESOLUÇÃO CNE/CP 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 426,
+          "linha": 439,
           "trecho": "Resolução CNE/CP 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 468,
+          "linha": 481,
           "trecho": "Resolução CNE/CP 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 1272,
+          "linha": 1285,
           "trecho": "Resolução CNE/CP 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 1272,
+          "linha": 1285,
           "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-2977",
           "regra": "url-dou"
         }
@@ -300,37 +300,37 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 178,
+          "linha": 191,
           "trecho": "Resolução CNE/CP nº. 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 324,
+          "linha": 337,
           "trecho": "Resolução CNE/CP n. 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 326,
+          "linha": 339,
           "trecho": "RESOLUÇÃO CNE/CP N. 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 356,
+          "linha": 369,
           "trecho": "Resolução CNE/CP n. 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 362,
+          "linha": 375,
           "trecho": "RESOLUÇÃO CNE/CP n. 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 466,
+          "linha": 479,
           "trecho": "Resolução CNE/CP nº.1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2679,
+          "linha": 2692,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -340,37 +340,37 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 185,
+          "linha": 198,
           "trecho": "Resolução CNE/CP nº. 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 323,
+          "linha": 336,
           "trecho": "Resolução CNE/CP n. 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 323,
+          "linha": 336,
           "trecho": "RESOLUÇÃO CNE/CP N. 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 353,
+          "linha": 366,
           "trecho": "Resolução CNE/CP n. 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 363,
+          "linha": 376,
           "trecho": "RESOLUÇÃO CNE/CP n. 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 465,
+          "linha": 478,
           "trecho": "Resolução CNE/CP nº. 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2716,
+          "linha": 2729,
           "trecho": "Parecer CNE/CP n.º 01, de 05 de janeiro de 2021",
           "regra": "dcnept-2021-tipo-trocado"
         }
@@ -380,17 +380,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 288,
+          "linha": 301,
           "trecho": "Resolução nº 01, de 05 de janeiro de 2021",
           "regra": "data-registro"
         },
         {
-          "linha": 1633,
+          "linha": 1646,
           "trecho": "Resolução nº 01 de 05 de janeiro de 2021",
           "regra": "dcnept-2021-orgao-incompleto"
         },
         {
-          "linha": 1633,
+          "linha": 1646,
           "trecho": "https://www.in.gov.br/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021297767578.",
           "regra": "url-dou"
         }
@@ -400,7 +400,7 @@
       "nivel": "superior",
       "ocorrencias": [
         {
-          "linha": 192,
+          "linha": 205,
           "trecho": "Resolução CNE/CP 01/2021",
           "regra": "estrutural"
         }
@@ -410,37 +410,37 @@
       "nivel": "superior",
       "ocorrencias": [
         {
-          "linha": 183,
+          "linha": 196,
           "trecho": "Resolução CNE /CP nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 225,
+          "linha": 238,
           "trecho": "Resolução CNE/CP nº 01/ 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 676,
+          "linha": 689,
           "trecho": "Resolução CNE/CP nº 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 712,
+          "linha": 725,
           "trecho": "Resolução CNE/CP nº01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 716,
+          "linha": 729,
           "trecho": "Resolução CNE/CP nº01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2553,
+          "linha": 2566,
           "trecho": "Resolução CNE/CP 01, de 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2553,
+          "linha": 2566,
           "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021297767578.",
           "regra": "url-dou"
         }
@@ -450,22 +450,22 @@
       "nivel": "superior",
       "ocorrencias": [
         {
-          "linha": 238,
+          "linha": 251,
           "trecho": "Resolução nº 01, de 05 de janeiro de 2021 (CNE/CP",
           "regra": "estrutural"
         },
         {
-          "linha": 380,
+          "linha": 393,
           "trecho": "Resolução CNE/CP 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 768,
+          "linha": 781,
           "trecho": "Resolução nº 01, de 05 de janeiro de 2021",
           "regra": "data-registro"
         },
         {
-          "linha": 823,
+          "linha": 836,
           "trecho": "Resolução CNE/CP nº 01/2021",
           "regra": "estrutural"
         }
@@ -475,17 +475,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 201,
+          "linha": 214,
           "trecho": "Resolução CNE/CP n° 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2069,
+          "linha": 2082,
           "trecho": "Resolução CNE/CP N° 1, de 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2069,
+          "linha": 2082,
           "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-297767578",
           "regra": "url-dou"
         }
@@ -495,37 +495,37 @@
       "nivel": "superior",
       "ocorrencias": [
         {
-          "linha": 129,
+          "linha": 142,
           "trecho": "Resolução CNE/CP n° 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 299,
+          "linha": 312,
           "trecho": "Resolução CNE/CP n° 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 573,
+          "linha": 586,
           "trecho": "Resolução CES/CP nº 1, de 5 de janeiro de 2021",
           "regra": "data-registro"
         },
         {
-          "linha": 2101,
+          "linha": 2114,
           "trecho": "Resolução CNE/CP nº 1, de 05/01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2101,
+          "linha": 2114,
           "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-297767578",
           "regra": "url-dou"
         },
         {
-          "linha": 2171,
+          "linha": 2184,
           "trecho": "Resolução CNE/CP n° 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2171,
+          "linha": 2184,
           "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-297767578",
           "regra": "url-dou"
         }
@@ -535,27 +535,27 @@
       "nivel": "superior",
       "ocorrencias": [
         {
-          "linha": 114,
+          "linha": 127,
           "trecho": "Resolução CNE/CP n° 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 620,
+          "linha": 633,
           "trecho": "Resolução CNE/CP nº 1 de 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2353,
+          "linha": 2366,
           "trecho": "Resolução CNE/CP n° 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2353,
+          "linha": 2366,
           "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-297767578",
           "regra": "url-dou"
         },
         {
-          "linha": 2391,
+          "linha": 2404,
           "trecho": "Resolução nº 1 de 5 Janeiro de 2021",
           "regra": "data-registro"
         }
@@ -565,17 +565,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 182,
+          "linha": 194,
           "trecho": "Resolução CNE/CEB n° 1/2021",
           "regra": "dcnept-2021-orgao-trocado"
         },
         {
-          "linha": 535,
+          "linha": 547,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2316,
+          "linha": 2328,
           "trecho": "Resolução nº 1, de 05 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -585,27 +585,27 @@
       "nivel": "superior",
       "ocorrencias": [
         {
-          "linha": 287,
+          "linha": 300,
           "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 315,
+          "linha": 328,
           "trecho": "Resolução CNE nº 01/2021",
           "regra": "dcnept-2021-orgao-incompleto"
         },
         {
-          "linha": 395,
+          "linha": 408,
           "trecho": "Parecer CNE/CP nº 01, de 05 de janeiro de 2021",
           "regra": "dcnept-2021-tipo-trocado"
         },
         {
-          "linha": 751,
+          "linha": 764,
           "trecho": "Resolução CNE/CP nº 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 813,
+          "linha": 826,
           "trecho": "RESOLUÇÃO CNE/CP 1/2021",
           "regra": "estrutural"
         }
@@ -615,22 +615,22 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 171,
+          "linha": 184,
           "trecho": "Resolução do Conselho Nacional de Educação nº 01/2021",
           "regra": "dcnept-2021-orgao-incompleto"
         },
         {
-          "linha": 355,
+          "linha": 368,
           "trecho": "Resolução nº 01/2021",
           "regra": "orgao-no-documento"
         },
         {
-          "linha": 534,
+          "linha": 547,
           "trecho": "Resolução CNE/CP nº 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 1697,
+          "linha": 1710,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -640,22 +640,22 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 171,
+          "linha": 184,
           "trecho": "Resolução do Conselho Nacional de Educação nº 01/2021",
           "regra": "dcnept-2021-orgao-incompleto"
         },
         {
-          "linha": 439,
+          "linha": 452,
           "trecho": "Resolução nº 01/2021",
           "regra": "orgao-no-documento"
         },
         {
-          "linha": 585,
+          "linha": 598,
           "trecho": "Resolução CNE/CP nº 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 1905,
+          "linha": 1918,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -665,12 +665,12 @@
       "nivel": "superior",
       "ocorrencias": [
         {
-          "linha": 223,
+          "linha": 236,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 706,
+          "linha": 719,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -680,12 +680,12 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 201,
+          "linha": 213,
           "trecho": "Resolução do Conselho Nacional de Educação/CEB nº 1/2021",
           "regra": "dcnept-2021-orgao-incompleto"
         },
         {
-          "linha": 649,
+          "linha": 661,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         }
@@ -695,17 +695,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 150,
+          "linha": 163,
           "trecho": "Resolução CNE/CP n° 1, 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 668,
+          "linha": 681,
           "trecho": "Resolução CNE/CP nº 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 849,
+          "linha": 862,
           "trecho": "Resolução CNE/CP nº 01/2021",
           "regra": "estrutural"
         }
@@ -715,12 +715,12 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 182,
+          "linha": 195,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 396,
+          "linha": 409,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         }
@@ -730,27 +730,27 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 248,
+          "linha": 261,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 282,
+          "linha": 295,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 482,
+          "linha": 495,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 564,
+          "linha": 577,
           "trecho": "Resolução CNE/CP Nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 1522,
+          "linha": 1535,
           "trecho": "Resolução CNE/CP Nº 1/2021",
           "regra": "estrutural"
         }
@@ -760,37 +760,37 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 216,
+          "linha": 229,
           "trecho": "Resolução CNE/CP n.º 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 546,
+          "linha": 559,
           "trecho": "CNE/CP n.º 01/2021",
           "regra": "tipo-implicito"
         },
         {
-          "linha": 706,
+          "linha": 719,
           "trecho": "Resolução CNE/CP n.º 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 730,
+          "linha": 743,
           "trecho": "Resolução CNE/CP n.º 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 762,
+          "linha": 775,
           "trecho": "Resolução CNE/CP n.º 01/21",
           "regra": "estrutural"
         },
         {
-          "linha": 771,
+          "linha": 784,
           "trecho": "Resolução CNE/CP n.º 01/21",
           "regra": "estrutural"
         },
         {
-          "linha": 3148,
+          "linha": 3161,
           "trecho": "Resolução CNE/CP n.º 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -800,17 +800,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 158,
+          "linha": 170,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 356,
+          "linha": 368,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 1548,
+          "linha": 1560,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -820,7 +820,7 @@
       "nivel": "superior",
       "ocorrencias": [
         {
-          "linha": 2572,
+          "linha": 2585,
           "trecho": "Resolução CNE/CP nº 01, de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -830,7 +830,7 @@
       "nivel": "superior",
       "ocorrencias": [
         {
-          "linha": 2796,
+          "linha": 2809,
           "trecho": "Resolução CNE/CP nº 01, de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -840,17 +840,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 244,
+          "linha": 257,
           "trecho": "Resolução CNE/CEB nº 1/2021",
           "regra": "dcnept-2021-orgao-trocado"
         },
         {
-          "linha": 496,
+          "linha": 509,
           "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 807,
+          "linha": 820,
           "trecho": "Resolução CNE/CP no 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -860,22 +860,22 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 170,
+          "linha": 183,
           "trecho": "Resolução CNE/CEB nº 1/2021",
           "regra": "dcnept-2021-orgao-trocado"
         },
         {
-          "linha": 485,
+          "linha": 498,
           "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 733,
+          "linha": 746,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 742,
+          "linha": 755,
           "trecho": "Resolução CNE/CP nº 1,de 5 dejaneiro de 2021",
           "regra": "estrutural"
         }
@@ -885,27 +885,27 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 193,
+          "linha": 206,
           "trecho": "Resolução CNE/CEB nº 1/2021",
           "regra": "dcnept-2021-orgao-trocado"
         },
         {
-          "linha": 561,
+          "linha": 574,
           "trecho": "Resolução CNE/CEB nº 01/2021",
           "regra": "dcnept-2021-orgao-trocado"
         },
         {
-          "linha": 561,
+          "linha": 574,
           "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 3232,
+          "linha": 3245,
           "trecho": "Resolução nº 1** , de 05 de Janeiro de 2021",
           "regra": "dcnept-2021-orgao-trocado"
         },
         {
-          "linha": 3236,
+          "linha": 3249,
           "trecho": "Resolução nº 1** , de 05 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -915,47 +915,47 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 363,
+          "linha": 373,
           "trecho": "Resolução CNE/CEB nº 1/2021",
           "regra": "dcnept-2021-orgao-trocado"
         },
         {
-          "linha": 651,
+          "linha": 661,
           "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 651,
+          "linha": 661,
           "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 883,
+          "linha": 893,
           "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 891,
+          "linha": 901,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 891,
+          "linha": 901,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 891,
+          "linha": 901,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 891,
+          "linha": 901,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2941,
+          "linha": 2951,
           "trecho": "Resolução nº 1, de 05 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -965,27 +965,27 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 294,
+          "linha": 307,
           "trecho": "Resolução CNE/CEB nº 1/2021",
           "regra": "dcnept-2021-orgao-trocado"
         },
         {
-          "linha": 582,
+          "linha": 595,
           "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 582,
+          "linha": 595,
           "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 833,
+          "linha": 846,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2587,
+          "linha": 2600,
           "trecho": "Resolução nº 1, de 05 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -995,12 +995,12 @@
       "nivel": "superior",
       "ocorrencias": [
         {
-          "linha": 202,
+          "linha": 215,
           "trecho": "Resolução nº 01, de 05 de janeiro de 2021 (CNE/CP",
           "regra": "estrutural"
         },
         {
-          "linha": 802,
+          "linha": 815,
           "trecho": "Resolução nº 01, de 05 de janeiro de 2021",
           "regra": "data-registro"
         }
@@ -1010,17 +1010,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 181,
+          "linha": 194,
           "trecho": "Resolução CNE/CEB nº 1/2021",
           "regra": "dcnept-2021-orgao-trocado"
         },
         {
-          "linha": 733,
+          "linha": 746,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2935,
+          "linha": 2948,
           "trecho": "Resolução nº 1, de 5 de janeiro de 2021",
           "regra": "dcnept-2021-orgao-incompleto"
         }
@@ -1030,17 +1030,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 183,
+          "linha": 196,
           "trecho": "Resolução CNE/CEB nº 1/2021",
           "regra": "dcnept-2021-orgao-trocado"
         },
         {
-          "linha": 743,
+          "linha": 756,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2814,
+          "linha": 2827,
           "trecho": "Resolução nº 1, de 5 de janeiro de 2021",
           "regra": "dcnept-2021-orgao-incompleto"
         }
@@ -1050,17 +1050,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 178,
+          "linha": 191,
           "trecho": "Resolução CNE/CEB nº 1/2021",
           "regra": "dcnept-2021-orgao-trocado"
         },
         {
-          "linha": 454,
+          "linha": 467,
           "trecho": "Resolução CNE/CP n°01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 1488,
+          "linha": 1501,
           "trecho": "Resolução n° 1, de 5 de janeiro de 2021",
           "regra": "dcnept-2021-orgao-incompleto"
         }
@@ -1070,17 +1070,17 @@
       "nivel": "superior",
       "ocorrencias": [
         {
-          "linha": 283,
+          "linha": 296,
           "trecho": "Resolução nº 01, de 05 de janeiro de 2021 (CNE/CP",
           "regra": "estrutural"
         },
         {
-          "linha": 798,
+          "linha": 811,
           "trecho": "Resolução nº 01, de 05 de janeiro de 2021",
           "regra": "data-registro"
         },
         {
-          "linha": 2032,
+          "linha": 2045,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -1090,22 +1090,22 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 809,
+          "linha": 822,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2575,
+          "linha": 2588,
           "trecho": "Resolução 01 de** **05 de janeiro de 2021",
           "regra": "data-registro"
         },
         {
-          "linha": 2579,
+          "linha": 2592,
           "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-dejaneiro-de-2021-297767578",
           "regra": "url-dou"
         },
         {
-          "linha": 2991,
+          "linha": 3004,
           "trecho": "Resolução 01/2021",
           "regra": "orgao-no-documento"
         }
@@ -1115,17 +1115,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 886,
+          "linha": 899,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 3091,
+          "linha": 3104,
           "trecho": "Resolução 01 de 05 de janeiro de 2021",
           "regra": "data-registro"
         },
         {
-          "linha": 3093,
+          "linha": 3106,
           "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-297767578",
           "regra": "url-dou"
         }
@@ -1135,17 +1135,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 815,
+          "linha": 828,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 3143,
+          "linha": 3156,
           "trecho": "Resolução 01 de 05 de janeiro de 2021",
           "regra": "data-registro"
         },
         {
-          "linha": 3145,
+          "linha": 3158,
           "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-dejaneiro-de-2021-297767578",
           "regra": "url-dou"
         }
@@ -1155,7 +1155,7 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 196,
+          "linha": 209,
           "trecho": "Resolução CNE/CEB nº 1/2021",
           "regra": "dcnept-2021-orgao-trocado"
         }
@@ -1165,22 +1165,22 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 219,
+          "linha": 232,
           "trecho": "Resolução 01 de 05 de janeiro de 2021** , do Conselho Nacional de Educação (CNE)",
           "regra": "dcnept-2021-orgao-incompleto"
         },
         {
-          "linha": 700,
+          "linha": 713,
           "trecho": "Resolução CNE/CEB nº 1/2021",
           "regra": "dcnept-2021-orgao-trocado"
         },
         {
-          "linha": 3017,
+          "linha": 3030,
           "trecho": "Resolução 01 de 05 de janeiro de 2021",
           "regra": "dcnept-2021-orgao-incompleto"
         },
         {
-          "linha": 3017,
+          "linha": 3030,
           "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-29776757",
           "regra": "url-dou"
         }
@@ -1190,17 +1190,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 168,
+          "linha": 181,
           "trecho": "Resolução 01 de 05 de janeiro de 2021, do Conselho Nacional de Educação (CNE)",
           "regra": "dcnept-2021-orgao-incompleto"
         },
         {
-          "linha": 595,
+          "linha": 608,
           "trecho": "Resolução CNE/CEB nº 1/2021",
           "regra": "dcnept-2021-orgao-trocado"
         },
         {
-          "linha": 2883,
+          "linha": 2896,
           "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-29776757",
           "regra": "url-dou"
         }
@@ -1210,7 +1210,7 @@
       "nivel": "superior",
       "ocorrencias": [
         {
-          "linha": 2208,
+          "linha": 2221,
           "trecho": "Resolução CNE/CP No 1. de 05 de Janeiro de 2021",
           "regra": "estrutural"
         }
@@ -1220,17 +1220,17 @@
       "nivel": "superior",
       "ocorrencias": [
         {
-          "linha": 172,
+          "linha": 185,
           "trecho": "Resolução CNE/CP nº1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 554,
+          "linha": 567,
           "trecho": "Resolução CNE/CP nº1 de 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2512,
+          "linha": 2525,
           "trecho": "Resolução Nº 1 de 5 Janeiro de 2021",
           "regra": "data-registro"
         }
@@ -1240,22 +1240,22 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 183,
+          "linha": 196,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 393,
+          "linha": 406,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 607,
+          "linha": 620,
           "trecho": "Resolução CNE/CP nº 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 1557,
+          "linha": 1570,
           "trecho": "Resolução nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -1265,17 +1265,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 201,
+          "linha": 214,
           "trecho": "Resolução 01 de 05 de janeiro de 2021, do Conselho Nacional de Educação (CNE)",
           "regra": "dcnept-2021-orgao-incompleto"
         },
         {
-          "linha": 545,
+          "linha": 558,
           "trecho": "Resolução CNE/CEB nº 1/2021",
           "regra": "dcnept-2021-orgao-trocado"
         },
         {
-          "linha": 2033,
+          "linha": 2046,
           "trecho": "Resolução 01 de 05 de janeiro de 2021",
           "regra": "dcnept-2021-orgao-incompleto"
         }
@@ -1285,17 +1285,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 177,
+          "linha": 190,
           "trecho": "Resolução 01 de 05 de janeiro de 2021, do Conselho Nacional de Educação (CNE)",
           "regra": "dcnept-2021-orgao-incompleto"
         },
         {
-          "linha": 512,
+          "linha": 525,
           "trecho": "Resolução CNE/CEB nº 1/2021",
           "regra": "dcnept-2021-orgao-trocado"
         },
         {
-          "linha": 2822,
+          "linha": 2835,
           "trecho": "Resolução CNE nº 1, de 5 de janeiro de 2021",
           "regra": "dcnept-2021-orgao-incompleto"
         }
@@ -1305,17 +1305,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 173,
+          "linha": 186,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 589,
+          "linha": 602,
           "trecho": "Resolução CNE/CP nº 01 de 05 dejaneiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2848,
+          "linha": 2861,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -1325,17 +1325,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 141,
+          "linha": 154,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 533,
+          "linha": 546,
           "trecho": "Resolução CNE/CP nº 01 de 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2452,
+          "linha": 2465,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -1345,17 +1345,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 121,
+          "linha": 134,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 477,
+          "linha": 490,
           "trecho": "Resolução CNE/CP nº 01 de 05 dejaneiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2582,
+          "linha": 2595,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -1365,17 +1365,17 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 150,
+          "linha": 162,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 506,
+          "linha": 518,
           "trecho": "Resolução CNE/CP nº 01 de 05 de janeiro de 2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2592,
+          "linha": 2604,
           "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
           "regra": "estrutural"
         }
@@ -1385,32 +1385,32 @@
       "nivel": "superior",
       "ocorrencias": [
         {
-          "linha": 257,
+          "linha": 270,
           "trecho": "Resolução 01, de janeiro de 2021",
           "regra": "orgao-no-documento"
         },
         {
-          "linha": 259,
+          "linha": 272,
           "trecho": "Resolução CNE/CP 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 259,
+          "linha": 272,
           "trecho": "Resolução CNE/CP 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 271,
+          "linha": 284,
           "trecho": "Resolução CNE/CP n° 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 704,
+          "linha": 717,
           "trecho": "Resolução CNE/CP nº01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2413,
+          "linha": 2426,
           "trecho": "Resolução CNE/CP 01/2021",
           "regra": "estrutural"
         }
@@ -1420,42 +1420,42 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 182,
+          "linha": 195,
           "trecho": "Resolução CNE/CP nº. 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 338,
+          "linha": 351,
           "trecho": "Resolução CNE/CP n. 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 340,
+          "linha": 353,
           "trecho": "Resolução CNE/CP N. 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 370,
+          "linha": 383,
           "trecho": "Resolução CNE/CP n. 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 378,
+          "linha": 391,
           "trecho": "RESOLUÇÃO CNE/CP n. 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 384,
+          "linha": 397,
           "trecho": "Resolução CNE/CP nº 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 474,
+          "linha": 487,
           "trecho": "Resolução CNE/CP nº. 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 1821,
+          "linha": 1834,
           "trecho": "Parecer CNE/CP nº. 01, de 05 de janeiro de 2021",
           "regra": "dcnept-2021-tipo-trocado"
         }
@@ -1465,32 +1465,32 @@
       "nivel": "médio",
       "ocorrencias": [
         {
-          "linha": 225,
+          "linha": 238,
           "trecho": "Resolução CNE/CP nº 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 643,
+          "linha": 656,
           "trecho": "Resolução CNE/CEB n. 01/2021",
           "regra": "dcnept-2021-orgao-trocado"
         },
         {
-          "linha": 673,
+          "linha": 686,
           "trecho": "Resolução CNE/CP n. 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 683,
+          "linha": 696,
           "trecho": "Resolução CNE/CP n. 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 927,
+          "linha": 940,
           "trecho": "Resolução CNE/CP nº 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2670,
+          "linha": 2683,
           "trecho": "Resolução CNE/CP Nº 1, de 5 de janeiro De 2021",
           "regra": "estrutural"
         }
@@ -1500,27 +1500,27 @@
       "nivel": "superior",
       "ocorrencias": [
         {
-          "linha": 192,
+          "linha": 205,
           "trecho": "Resolução CNE/CP 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 290,
+          "linha": 303,
           "trecho": "Resolução MEC/CNE/CP nº 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 704,
+          "linha": 717,
           "trecho": "RESOLUÇÃO CNE/CP 1/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2305,
+          "linha": 2318,
           "trecho": "Resolução CNE/CP No 01/2021",
           "regra": "estrutural"
         },
         {
-          "linha": 2771,
+          "linha": 2784,
           "trecho": "Resolução CNE/CP 1, de 5 de Janeiro de 2021",
           "regra": "estrutural"
         }

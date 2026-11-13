@@ -2,18 +2,13 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { ehDiretorio, listarDiretorio, naBase } from "../caminhos.ts";
-import { LIMITE_PREVIEW_SECAO, TIPOS_SECAO_INDEXADOS } from "../indice-ppcs.ts";
-import { ehObjeto, itensDe, textoDe, valoresIguais } from "@simplifica-if/kb/json";
-import type { IndicePpcpsJson, IndicePpcsJson } from "../tipos-schemas.ts";
-import {
-  aparar,
-  contarCaracteres,
-  ESPACOS,
-  lerTexto,
-  linhasDeArquivo,
-  ordenarCaminhos,
-  ordenarTextos,
-} from "@simplifica-if/kb/texto";
+import { taxonomiasPublicadas, TIPOS_SECAO_INDEXADOS, VERSAO_INDICE } from "../indice-ppcs.ts";
+import { ehObjeto, type ObjetoJson, itensDe, valoresIguais } from "@simplifica-if/kb/json";
+import { analisarPpc, ErroFrontMatter, idPpc } from "@simplifica-if/kb/ppcs/front-matter";
+import { MINIMO_CARACTERES_SECAO, TAXONOMIAS } from "@simplifica-if/kb/ppcs/secoes";
+import { validarJsonSchema } from "@simplifica-if/kb/schema";
+import type { IndicePpcpsJson, IndicePpcsJson, SecaoPpcJson } from "../tipos-schemas.ts";
+import { aparar, ESPACOS, lerTexto, linhasDeArquivo, ordenarCaminhos, ordenarTextos } from "@simplifica-if/kb/texto";
 import { campiLegiveis, type CursoCampus, type PpcCurso } from "./campi.ts";
 import { type Contexto, ehRecebido, listaOrdenada, mesmosElementos, type Recebido } from "./contexto.ts";
 
@@ -25,18 +20,9 @@ const ARTEFATOS_CONVERSAO_PPC: Array<[string, RegExp]> = [
   ["OCR residual isolado", new RegExp(`^[${ESPACOS}]*eme<br>[${ESPACOS}]*$`, "m")],
   ["rodapé PROENS de conversão", /INSTITUTO FEDERAL DO PARANÁ[^\n]*Pró-Reitoria de Ensino - \*\*PROENS\*\*/],
 ];
-const TIPOS_SECAO = new Set(TIPOS_SECAO_INDEXADOS);
-const CAMPOS_SECAO = [
-  "id",
-  "ppc_id",
-  "campus_id",
-  "curso_slug",
-  "curso_nome",
-  "section_kind",
-  "heading",
-  "path",
-  "preview",
-];
+const TIPOS_POR_TAXONOMIA = new Map(
+  Object.entries(TAXONOMIAS).map(([nome, taxonomia]) => [nome, new Set(taxonomia.tipos.map((d) => d.tipo))]),
+);
 
 /** PPCs convertidos declarados nos campi: `campus/curso` → caminho do Markdown existente. */
 function ppcsConvertidosDosCampi(ctx: Contexto): Map<string, string> {
@@ -61,11 +47,12 @@ function ppcsConvertidosDosCampi(ctx: Contexto): Map<string, string> {
   return ppcs;
 }
 
-/** Erros de uma linha de secoes/<tipo>.jsonl. */
+/** Erros de uma linha de secoes/<tipo>.jsonl (schema ppcs_secao e coerência com o índice). */
 function validarLinhaSecao(
   linhaBruta: string,
   prefixo: string,
   tipoEsperado: string,
+  schema: ObjetoJson,
   idsVistos: Set<string>,
   itensIndicePorId: Map<string, Recebido<ItemIndicePpcs>>,
 ): string[] {
@@ -78,38 +65,31 @@ function validarLinhaSecao(
     return [`${prefixo}: JSON inválido: ${(erro as Error).message}`];
   }
   if (!ehObjeto(item)) return [`${prefixo}: item deve ser objeto`];
-  const ausentes = ordenarTextos(CAMPOS_SECAO.filter((campo) => !Object.hasOwn(item, campo)));
-  if (ausentes.length) return [`${prefixo}: campos ausentes: ${ausentes.join(", ")}`];
-  const secaoId = item.id;
-  const ppcId = item.ppc_id;
-  if (typeof secaoId !== "string" || typeof ppcId !== "string") return [`${prefixo}: id e ppc_id devem ser texto`];
+  const erros = validarJsonSchema(item, schema, prefixo);
+  if (erros.length) return erros;
+  const secao = item as unknown as SecaoPpcJson;
 
-  const erros: string[] = [];
-  if (idsVistos.has(secaoId)) erros.push(`${prefixo}: id duplicado: ${secaoId}`);
-  idsVistos.add(secaoId);
-  if (!secaoId.startsWith(`${ppcId}#`)) erros.push(`${prefixo}: id não deriva de ppc_id: ${secaoId}`);
-  const itemPpc = itensIndicePorId.get(ppcId);
+  if (idsVistos.has(secao.id)) erros.push(`${prefixo}: id duplicado: ${secao.id}`);
+  idsVistos.add(secao.id);
+  if (!secao.id.startsWith(`${secao.ppc_id}#${secao.section_kind}-`)) {
+    erros.push(`${prefixo}: id não deriva de ppc_id e section_kind: ${secao.id}`);
+  }
+  const itemPpc = itensIndicePorId.get(secao.ppc_id);
   if (itemPpc === undefined) {
-    erros.push(`${prefixo}: ppc_id inexistente no índice: ${ppcId}`);
+    erros.push(`${prefixo}: ppc_id inexistente no índice: ${secao.ppc_id}`);
     return erros;
   }
-  for (const campo of ["campus_id", "curso_slug", "curso_nome", "path"] as const) {
-    if (!valoresIguais(item[campo], itemPpc[campo])) {
-      erros.push(`${prefixo}: campo ${campo} diverge do índice para ${ppcId}`);
+  for (const campo of ["campus_id", "curso_slug", "curso_nome", "nivel", "taxonomia", "path"] as const) {
+    if (!valoresIguais(secao[campo], itemPpc[campo])) {
+      erros.push(`${prefixo}: campo ${campo} diverge do índice para ${secao.ppc_id}`);
     }
   }
-  const tipo = item.section_kind;
-  if (typeof tipo !== "string" || !TIPOS_SECAO.has(tipo)) {
-    erros.push(`${prefixo}: section_kind inválido: ${textoDe(tipo)}`);
-  } else if (tipo !== tipoEsperado) erros.push(`${prefixo}: section_kind diverge do arquivo: ${tipo}`);
-  for (const campo of ["heading", "preview"]) {
-    const valor = item[campo];
-    if (typeof valor !== "string" || !aparar(valor)) erros.push(`${prefixo}: ${campo} deve ser texto não vazio`);
+  if (secao.section_kind !== tipoEsperado)
+    erros.push(`${prefixo}: section_kind diverge do arquivo: ${secao.section_kind}`);
+  if (!TIPOS_POR_TAXONOMIA.get(secao.taxonomia)?.has(secao.section_kind)) {
+    erros.push(`${prefixo}: section_kind ${secao.section_kind} fora da taxonomia ${secao.taxonomia}`);
   }
-  const preview = item.preview;
-  if (typeof preview === "string" && contarCaracteres(preview) > LIMITE_PREVIEW_SECAO) {
-    erros.push(`${prefixo}: preview excede ${LIMITE_PREVIEW_SECAO} caracteres`);
-  }
+  if (secao.linha_fim < secao.linha_inicio) erros.push(`${prefixo}: linha_fim antes de linha_inicio`);
   return erros;
 }
 
@@ -119,6 +99,9 @@ function validarSecoesPpc(ctx: Contexto, itensIndicePorId: Map<string, Recebido<
   if (!ehDiretorio(raizSecoes)) return [`${rSecoes} não encontrado`];
 
   const erros: string[] = [];
+  const schema = ctx.carregarJson(ctx.c.schemas.secaoPpc, `schema ${ctx.rel(ctx.c.schemas.secaoPpc)}`);
+  if (!schema.ok) return schema.erros;
+  if (!ehObjeto(schema.valor)) return [`schema ${ctx.rel(ctx.c.schemas.secaoPpc)} deve conter um objeto JSON`];
   const idsVistos = new Set<string>();
   const arquivosEsperados = new Set(TIPOS_SECAO_INDEXADOS.map((tipo) => `${tipo}.jsonl`));
   const arquivos = listarDiretorio(raizSecoes, ".jsonl");
@@ -134,7 +117,9 @@ function validarSecoesPpc(ctx: Contexto, itensIndicePorId: Map<string, Recebido<
     const tipoEsperado = path.basename(caminho).replace(/\.[^.]*$/, "");
     const r = ctx.rel(caminho);
     for (const [indice, linha] of linhasDeArquivo(lerTexto(caminho)).entries()) {
-      erros.push(...validarLinhaSecao(linha, `${r}:${indice + 1}`, tipoEsperado, idsVistos, itensIndicePorId));
+      erros.push(
+        ...validarLinhaSecao(linha, `${r}:${indice + 1}`, tipoEsperado, schema.valor, idsVistos, itensIndicePorId),
+      );
     }
   }
 
@@ -158,8 +143,12 @@ export function validarPpcs(ctx: Contexto, manifest: unknown): string[] {
   if (!ehRecebido<IndicePpcsJson["secoes"]>(secoes)) {
     erros.push(`${rIndice}: secoes deve ser objeto`);
   } else {
-    if (!valoresIguais(secoes.preview_limite, LIMITE_PREVIEW_SECAO)) {
-      erros.push(`${rIndice}: secoes.preview_limite deve ser ${LIMITE_PREVIEW_SECAO}`);
+    if (!valoresIguais(indice.versao, VERSAO_INDICE)) erros.push(`${rIndice}: versao deve ser ${VERSAO_INDICE}`);
+    if (!valoresIguais(secoes.minimo_caracteres, MINIMO_CARACTERES_SECAO)) {
+      erros.push(`${rIndice}: secoes.minimo_caracteres deve ser ${MINIMO_CARACTERES_SECAO}`);
+    }
+    if (!valoresIguais(secoes.taxonomias, taxonomiasPublicadas())) {
+      erros.push(`${rIndice}: secoes.taxonomias diverge da taxonomia do pipeline`);
     }
     const esperados = Object.fromEntries(
       TIPOS_SECAO_INDEXADOS.map((tipo) => [tipo, ctx.rel(path.join(ctx.c.secoesPpcs, `${tipo}.jsonl`))]),
@@ -208,6 +197,7 @@ export function validarPpcs(ctx: Contexto, manifest: unknown): string[] {
     if (esperado !== undefined && valorPath !== esperado) {
       erros.push(`${rIndice}: path diverge do campus JSON em ${ppcId}: ${valorPath}`);
     }
+    erros.push(...validarProvenienciaItem(ctx, item, ppcId, valorPath));
   }
 
   const idsEsperados = new Set(ppcsEsperados.keys());
@@ -218,6 +208,49 @@ export function validarPpcs(ctx: Contexto, manifest: unknown): string[] {
   }
 
   erros.push(...validarSecoesPpc(ctx, itensPorId));
+  return erros;
+}
+
+/**
+ * Proveniência do PPC: front matter válido, `id` = `ppc:<campus_id>/<curso_slug>`, `fonte_url` igual
+ * ao `ppc.url` vigente (a base guarda só o PPC vigente; URL nova exige reconversão) e o resumo do
+ * índice igual ao front matter.
+ */
+function validarProvenienciaItem(
+  ctx: Contexto,
+  item: Recebido<ItemIndicePpcs>,
+  ppcId: string,
+  valorPath: string,
+): string[] {
+  const caminho = naBase(ctx.c, valorPath);
+  if (!existsSync(caminho)) return [];
+  let proveniencia;
+  try {
+    ({ proveniencia } = analisarPpc(lerTexto(caminho, { ignorarErros: true }), valorPath));
+  } catch (erro) {
+    if (erro instanceof ErroFrontMatter) return [erro.message];
+    throw erro;
+  }
+  const erros: string[] = [];
+  const [campusId, cursoSlug] = ppcId.split("/") as [string, string];
+  if (proveniencia.id !== idPpc(campusId, cursoSlug)) {
+    erros.push(`${valorPath}: id do front matter deve ser ${idPpc(campusId, cursoSlug)}`);
+  }
+  if (typeof item.fonte_pdf === "string" && proveniencia.fonte_url !== item.fonte_pdf) {
+    erros.push(
+      `${valorPath}: fonte_url do front matter difere do ppc.url vigente (${item.fonte_pdf}); reconverta o PPC ou corrija ppc.url`,
+    );
+  }
+  const resumo = {
+    situacao: proveniencia.proveniencia,
+    fonte_url: proveniencia.fonte_url,
+    fonte_sha256: proveniencia.fonte_sha256,
+    convertido_em: proveniencia.convertido_em,
+    conversor: proveniencia.conversor,
+  };
+  if (!valoresIguais(item.proveniencia, resumo)) {
+    erros.push(`índice de PPCs: proveniencia de ${ppcId} diverge do front matter`);
+  }
   return erros;
 }
 

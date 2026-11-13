@@ -1,3 +1,15 @@
+---
+id: ppc:curitiba/especializacao-em-gestao-publica
+fonte_url: https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2024/09/PPC-Pos-Graduacao-GP-3-habilitacoes-_3.pdf
+fonte_sha256: desconhecido
+convertido_em: 2026-05-11
+conversor: desconhecido
+proveniencia: reconstruida
+conversao_commit: 92cc42a2a66c177d254b5a0600b8656188f6daa0
+pos_processamento_commits:
+  - 096e70f6a532f0d03d4c895778960fa96e53ce9e
+nota_proveniencia: "Proveniência reconstruída em 2026-11-13 pelo histórico do git, sem baixar o PDF de novo. convertido_em é a data de autoria do commit em que o texto convertido entrou no git (conversao_commit). fonte_url é o ppc.url registrado no campus JSON nesse commit. fonte_sha256 e conversor são desconhecidos: o PDF da época não foi guardado, e o conversor não registrava versão. O texto foi pós-processado depois da conversão (limpeza de ruído, remoção de sumário)."
+---
 INSTITUTOFEDERAL PARANA
 
 MinisteriodaEducacao

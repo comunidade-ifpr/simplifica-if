@@ -54,7 +54,8 @@ A base também publica Projetos Pedagógicos de Curso (PPCs) do IFPR convertidos
 Para consumo por agentes IA, use:
 
 - [Índice de PPCs](institucional/ifpr/ppcs/index.json): catálogo estruturado com um item por PPC, filtrável por campus, curso, nível, tipo de oferta, ano do documento e links de origem.
-- Índices de seções dos PPCs: arquivos JSONL por tipo de seção em [`institucional/ifpr/ppcs/secoes/`](institucional/ifpr/ppcs/secoes/), úteis para localizar justificativas, objetivos, perfil profissional de conclusão, concepção pedagógica, organização curricular, avaliação, infraestrutura e outras partes recorrentes. Os caminhos estão listados em `secoes.paths` no índice de PPCs. Cada item traz apenas um `preview` curto; para análise substantiva, abra o Markdown completo indicado em `path`.
+- Índices de seções dos PPCs: arquivos JSONL por tipo de seção em [`institucional/ifpr/ppcs/secoes/`](institucional/ifpr/ppcs/secoes/), úteis para localizar justificativas, objetivos, perfil profissional de conclusão, acompanhamento de egressos, concepção pedagógica, organização curricular, avaliação, infraestrutura e outras partes recorrentes. Os caminhos e as taxonomias por nível (técnico, ligada aos incisos do art. 28 da Res. CNE/CP nº 2/2026, e geral) estão em `secoes` no índice de PPCs. Cada item traz um `preview` curto e as linhas `linha_inicio` e `linha_fim` da seção no Markdown indicado em `path`; o texto integral são essas linhas do próprio Markdown.
+- Proveniência: cada PPC em Markdown começa com front matter (`id: ppc:<campus>/<curso>`, URL de origem, hash do arquivo-fonte, data e versão do conversor). A base guarda só o PPC vigente de cada curso; versões anteriores ficam no histórico do git.
 
 Ao usar PPCs como apoio para redigir ou revisar textos, diferencie exemplos observados em PPCs de obrigações normativas. Para fundamentação regulatória, combine os PPCs com as normas da base e, quando se tratar de curso técnico, com o CNCT.
 

@@ -6,15 +6,14 @@ import { criarCaminhos, naBase, relativo } from "./caminhos.ts";
 import { analisarFrontMatter, ErroFrontMatter, itemManifest, manifestJson, montarManifest } from "./front-matter.ts";
 import {
   dataIndiceAtual,
-  dividirSecoes,
   gerarIndices,
   gravarIndices,
   limparTitulo,
   removerAcentos,
-  tipoSecao,
   tituloDaLinha,
   verificarIndices,
 } from "./indice-ppcs.ts";
+import { serializarFrontMatterPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import { gravarBase, substituirTabela, verificarBase } from "./readme.ts";
 import { validarJsonSchema } from "@simplifica-if/kb/schema";
 import { compararDiretorios, renderizarSite } from "./site.ts";
@@ -157,19 +156,8 @@ describe("índice de PPCs", () => {
     expect(limparTitulo("2.1-  <br>Justificativa |")).toBe("2.1- Justificativa");
   });
 
-  test("classifica seções sem acentos", () => {
+  test("remove acentos", () => {
     expect(removerAcentos("Concepção ﬁ")).toBe("Concepcao fi");
-    expect(tipoSecao("PERFIL PROFISSIONAL DE CONCLUSÃO")).toBe("perfil_egresso");
-    expect(tipoSecao("Estágio Supervisionado")).toBe("estagio_praticas");
-    expect(tipoSecao("Perfil do pessoal docente")).toBe("corpo_docente");
-    expect(tipoSecao("Anexos")).toBe("outros");
-  });
-
-  test("divide seções e descarta as curtas", () => {
-    const markdown = `capa\n## Justificativa\n${"texto ".repeat(10)}\n## Objetivos\ncurto\n**Referências**\n${"ref ".repeat(20)}`;
-    const secoes = dividirSecoes(markdown);
-    expect(secoes.map(([titulo]) => titulo)).toEqual(["Justificativa", "Referências"]);
-    expect(secoes[0]![1]).toBe("texto ".repeat(10).trim());
   });
 
   test("gera e verifica index.json e secoes/*.jsonl", () => {
@@ -181,7 +169,7 @@ describe("índice de PPCs", () => {
         {
           curso_slug: "tecnico-x",
           nome: "Técnico X",
-          nivel: "Técnico",
+          nivel: "médio",
           tipo_oferta: "Integrado",
           url: "https://ifpr.edu.br/x",
           modalidade: "Presencial",
@@ -200,7 +188,14 @@ describe("índice de PPCs", () => {
     escrever(
       raiz,
       "base-conhecimento/institucional/ifpr/ppcs/campus-a/tecnico-x.md",
-      `## Objetivos\n${"objetivo ".repeat(80)}\n## Ementas\n${"ementa ".repeat(10)}\n`,
+      serializarFrontMatterPpc({
+        id: "ppc:campus-a/tecnico-x",
+        fonte_url: "https://ifpr.edu.br/x.pdf",
+        fonte_sha256: "a".repeat(64),
+        convertido_em: "2026-11-13",
+        conversor: "teste",
+        proveniencia: "registrada",
+      }) + `## 1 Objetivos\n${"objetivo ".repeat(80)}\n## 2 Ementário\n${"ementa ".repeat(10)}\n`,
     );
     const caminhos = criarCaminhos(raiz);
     const indices = gerarIndices(caminhos, "2026-01-01");
@@ -209,13 +204,22 @@ describe("índice de PPCs", () => {
       id: "campus-a/tecnico-x",
       modalidade: "Presencial",
       ano_documento: 2021,
+      taxonomia: "tecnico",
+      proveniencia: { situacao: "registrada", convertido_em: "2026-11-13", conversor: "teste" },
     });
     expect(indices.itensPpc[0]).not.toHaveProperty("vagas");
     expect(indices.itensSecao.map((item) => item.id)).toEqual([
       "campus-a/tecnico-x#objetivos-1",
       "campus-a/tecnico-x#ementas-1",
     ]);
-    expect((indices.itensSecao[0]!.preview as string).length).toBe(500);
+    expect(indices.itensSecao[0]).toMatchObject({
+      heading: "1 Objetivos",
+      numeracao: "1",
+      linha_inicio: 9,
+      linha_fim: 10,
+      preview: "objetivo ".repeat(80).slice(0, 500),
+      origem_tipo: "titulo",
+    });
     expect(verificarIndices(caminhos, indices)).toContain("institucional/ifpr/ppcs/index.json está desatualizado");
 
     escrever(raiz, "base-conhecimento/institucional/ifpr/ppcs/secoes/antigo.jsonl", "");

@@ -12,7 +12,9 @@ Núcleo da base de conhecimento ([plano de arquitetura](../../PLANO-ARQUITETURA.
 | `normas/dispositivos.ts` | "art. 28, inciso XVI" → `#art28-xvi` |
 | `normas/texto-dispositivos.ts` | o caminho inverso: `["#art29", "#art37-par3"]` → "arts. 29 e 37, § 3º" |
 | `normas/referencia-estruturada.ts` | `{ ref, dispositivo?, papel, nota? }` (zod), universo de IDs citáveis (normas, stubs, `externo:`, `cnct:`) e texto legível das referências das fichas da `analise-ppc` |
-| `ppcs/citacoes.ts` | citações dos PPCs convertidos; PPCs que citam uma norma |
+| `ppcs/citacoes.ts` | citações dos PPCs convertidos; PPCs que citam uma norma; `lerTextoSecao` (texto integral de uma seção do índice pelas linhas) |
+| `ppcs/front-matter.ts` | front matter de proveniência dos PPCs (`ppc:<campus>/<curso>`, URL, hash, data, conversor) e leitura com o front matter em branco |
+| `ppcs/secoes.ts` | títulos, segmentação com linhas, taxonomias de seção por nível (técnico, ligada ao art. 28 da Res. CNE/CP nº 2/2026, e geral), preview e `textoDaSecao` |
 | `adequacao/art71.ts` | cursos técnicos sujeitos ao art. 71 da Res. CNE/CP nº 2/2026 e a DCN que cada PPC cita |
 | `avaliacao/resolvedor.ts` | precisão e recall do resolvedor em `avaliacao/resolvedor/citacoes-anotadas.yaml` |
 

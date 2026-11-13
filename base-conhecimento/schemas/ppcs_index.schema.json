@@ -22,8 +22,7 @@
       "const": "indice_ppcs"
     },
     "versao": {
-      "type": "integer",
-      "minimum": 1
+      "const": 2
     },
     "atualizado_em": {
       "type": "string",
@@ -37,37 +36,91 @@
       "type": "object",
       "required": [
         "preview_limite",
-        "paths"
+        "minimo_caracteres",
+        "paths",
+        "taxonomias"
       ],
       "additionalProperties": false,
       "properties": {
         "preview_limite": {
           "const": 500
         },
+        "minimo_caracteres": {
+          "const": 40
+        },
         "paths": {
           "type": "object",
           "required": [
+            "acessibilidade_inclusao",
+            "acompanhamento_egresso",
+            "anexos",
+            "aproveitamento_estudos",
+            "atendimento_estudante",
+            "atividades_complementares",
             "avaliacao",
+            "avaliacao_curso",
+            "carga_horaria",
+            "certificados_diplomas",
             "concepcao_pedagogica",
+            "contexto_institucional",
             "corpo_docente",
             "ementas",
+            "ensino_pesquisa_extensao",
             "estagio_praticas",
+            "formato_oferta",
+            "gestao_curso",
             "identificacao",
             "infraestrutura",
+            "itinerario_formativo",
             "justificativa",
+            "legislacao",
             "matriz_curricular",
+            "mundo_trabalho",
             "objetivos",
             "organizacao_curricular",
             "perfil_egresso",
-            "referencias"
+            "prazo_integralizacao",
+            "referencias",
+            "requisitos_acesso",
+            "trabalho_conclusao"
           ],
           "additionalProperties": false,
           "properties": {
+            "acessibilidade_inclusao": {
+              "const": "institucional/ifpr/ppcs/secoes/acessibilidade_inclusao.jsonl"
+            },
+            "acompanhamento_egresso": {
+              "const": "institucional/ifpr/ppcs/secoes/acompanhamento_egresso.jsonl"
+            },
+            "anexos": {
+              "const": "institucional/ifpr/ppcs/secoes/anexos.jsonl"
+            },
+            "aproveitamento_estudos": {
+              "const": "institucional/ifpr/ppcs/secoes/aproveitamento_estudos.jsonl"
+            },
+            "atendimento_estudante": {
+              "const": "institucional/ifpr/ppcs/secoes/atendimento_estudante.jsonl"
+            },
+            "atividades_complementares": {
+              "const": "institucional/ifpr/ppcs/secoes/atividades_complementares.jsonl"
+            },
             "avaliacao": {
               "const": "institucional/ifpr/ppcs/secoes/avaliacao.jsonl"
             },
+            "avaliacao_curso": {
+              "const": "institucional/ifpr/ppcs/secoes/avaliacao_curso.jsonl"
+            },
+            "carga_horaria": {
+              "const": "institucional/ifpr/ppcs/secoes/carga_horaria.jsonl"
+            },
+            "certificados_diplomas": {
+              "const": "institucional/ifpr/ppcs/secoes/certificados_diplomas.jsonl"
+            },
             "concepcao_pedagogica": {
               "const": "institucional/ifpr/ppcs/secoes/concepcao_pedagogica.jsonl"
+            },
+            "contexto_institucional": {
+              "const": "institucional/ifpr/ppcs/secoes/contexto_institucional.jsonl"
             },
             "corpo_docente": {
               "const": "institucional/ifpr/ppcs/secoes/corpo_docente.jsonl"
@@ -75,8 +128,17 @@
             "ementas": {
               "const": "institucional/ifpr/ppcs/secoes/ementas.jsonl"
             },
+            "ensino_pesquisa_extensao": {
+              "const": "institucional/ifpr/ppcs/secoes/ensino_pesquisa_extensao.jsonl"
+            },
             "estagio_praticas": {
               "const": "institucional/ifpr/ppcs/secoes/estagio_praticas.jsonl"
+            },
+            "formato_oferta": {
+              "const": "institucional/ifpr/ppcs/secoes/formato_oferta.jsonl"
+            },
+            "gestao_curso": {
+              "const": "institucional/ifpr/ppcs/secoes/gestao_curso.jsonl"
             },
             "identificacao": {
               "const": "institucional/ifpr/ppcs/secoes/identificacao.jsonl"
@@ -84,11 +146,20 @@
             "infraestrutura": {
               "const": "institucional/ifpr/ppcs/secoes/infraestrutura.jsonl"
             },
+            "itinerario_formativo": {
+              "const": "institucional/ifpr/ppcs/secoes/itinerario_formativo.jsonl"
+            },
             "justificativa": {
               "const": "institucional/ifpr/ppcs/secoes/justificativa.jsonl"
             },
+            "legislacao": {
+              "const": "institucional/ifpr/ppcs/secoes/legislacao.jsonl"
+            },
             "matriz_curricular": {
               "const": "institucional/ifpr/ppcs/secoes/matriz_curricular.jsonl"
+            },
+            "mundo_trabalho": {
+              "const": "institucional/ifpr/ppcs/secoes/mundo_trabalho.jsonl"
             },
             "objetivos": {
               "const": "institucional/ifpr/ppcs/secoes/objetivos.jsonl"
@@ -99,8 +170,209 @@
             "perfil_egresso": {
               "const": "institucional/ifpr/ppcs/secoes/perfil_egresso.jsonl"
             },
+            "prazo_integralizacao": {
+              "const": "institucional/ifpr/ppcs/secoes/prazo_integralizacao.jsonl"
+            },
             "referencias": {
               "const": "institucional/ifpr/ppcs/secoes/referencias.jsonl"
+            },
+            "requisitos_acesso": {
+              "const": "institucional/ifpr/ppcs/secoes/requisitos_acesso.jsonl"
+            },
+            "trabalho_conclusao": {
+              "const": "institucional/ifpr/ppcs/secoes/trabalho_conclusao.jsonl"
+            }
+          }
+        },
+        "taxonomias": {
+          "type": "object",
+          "required": [
+            "tecnico",
+            "geral"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "tecnico": {
+              "type": "object",
+              "required": [
+                "descricao",
+                "niveis",
+                "tipos"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "descricao": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "niveis": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "tipos": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "tipo",
+                      "rotulo",
+                      "indexado"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "tipo": {
+                        "enum": [
+                          "acessibilidade_inclusao",
+                          "acompanhamento_egresso",
+                          "anexos",
+                          "aproveitamento_estudos",
+                          "atendimento_estudante",
+                          "atividades_complementares",
+                          "avaliacao",
+                          "avaliacao_curso",
+                          "carga_horaria",
+                          "certificados_diplomas",
+                          "concepcao_pedagogica",
+                          "contexto_institucional",
+                          "corpo_docente",
+                          "ementas",
+                          "ensino_pesquisa_extensao",
+                          "estagio_praticas",
+                          "formato_oferta",
+                          "gestao_curso",
+                          "identificacao",
+                          "infraestrutura",
+                          "itinerario_formativo",
+                          "justificativa",
+                          "legislacao",
+                          "matriz_curricular",
+                          "mundo_trabalho",
+                          "objetivos",
+                          "organizacao_curricular",
+                          "outros",
+                          "perfil_egresso",
+                          "prazo_integralizacao",
+                          "pretextual",
+                          "referencias",
+                          "requisitos_acesso",
+                          "trabalho_conclusao"
+                        ]
+                      },
+                      "rotulo": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "indexado": {
+                        "type": "boolean"
+                      },
+                      "art28": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "geral": {
+              "type": "object",
+              "required": [
+                "descricao",
+                "niveis",
+                "tipos"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "descricao": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "niveis": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "tipos": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "tipo",
+                      "rotulo",
+                      "indexado"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "tipo": {
+                        "enum": [
+                          "acessibilidade_inclusao",
+                          "acompanhamento_egresso",
+                          "anexos",
+                          "aproveitamento_estudos",
+                          "atendimento_estudante",
+                          "atividades_complementares",
+                          "avaliacao",
+                          "avaliacao_curso",
+                          "carga_horaria",
+                          "certificados_diplomas",
+                          "concepcao_pedagogica",
+                          "contexto_institucional",
+                          "corpo_docente",
+                          "ementas",
+                          "ensino_pesquisa_extensao",
+                          "estagio_praticas",
+                          "formato_oferta",
+                          "gestao_curso",
+                          "identificacao",
+                          "infraestrutura",
+                          "itinerario_formativo",
+                          "justificativa",
+                          "legislacao",
+                          "matriz_curricular",
+                          "mundo_trabalho",
+                          "objetivos",
+                          "organizacao_curricular",
+                          "outros",
+                          "perfil_egresso",
+                          "prazo_integralizacao",
+                          "pretextual",
+                          "referencias",
+                          "requisitos_acesso",
+                          "trabalho_conclusao"
+                        ]
+                      },
+                      "rotulo": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "indexado": {
+                        "type": "boolean"
+                      },
+                      "art28": {
+                        "type": "array",
+                        "minItems": 1,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -118,10 +390,12 @@
           "curso_slug",
           "curso_nome",
           "nivel",
+          "taxonomia",
           "tipo_oferta",
           "curso_url",
           "fonte_pdf",
-          "path"
+          "path",
+          "proveniencia"
         ],
         "additionalProperties": false,
         "properties": {
@@ -148,6 +422,12 @@
           "nivel": {
             "type": "string",
             "minLength": 1
+          },
+          "taxonomia": {
+            "enum": [
+              "tecnico",
+              "geral"
+            ]
           },
           "tipo_oferta": {
             "type": "string",
@@ -182,6 +462,43 @@
           "path": {
             "type": "string",
             "pattern": "^institucional/ifpr/ppcs/[a-z0-9]+(?:-[a-z0-9]+)*/[a-z0-9]+(?:-[a-z0-9]+)*\\.md$"
+          },
+          "proveniencia": {
+            "type": "object",
+            "description": "Proveniência do Markdown convertido, lida do front matter do PPC.",
+            "required": [
+              "situacao",
+              "fonte_url",
+              "fonte_sha256",
+              "convertido_em",
+              "conversor"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "situacao": {
+                "enum": [
+                  "registrada",
+                  "reconstruida"
+                ]
+              },
+              "fonte_url": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^https://"
+              },
+              "fonte_sha256": {
+                "type": "string",
+                "pattern": "^(?:[0-9a-f]{64}|desconhecido)$"
+              },
+              "convertido_em": {
+                "type": "string",
+                "format": "date"
+              },
+              "conversor": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
           }
         }
       }
