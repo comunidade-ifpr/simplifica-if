@@ -7,6 +7,7 @@ Conjunto de avaliação e harness da fase 1 do [plano de arquitetura](../PLANO-A
 | `perguntas.yaml` | 25 perguntas (Q01–Q08 do plano + uso real), cada uma com gabarito |
 | `config.yaml` | modelo, execuções por pergunta, limite de turnos, orçamento e ferramentas |
 | `gabaritos/` | conjuntos esperados e universos, **gerados** (não edite à mão) |
+| `resolvedor/` | citações anotadas em 20 PPCs para medir o resolvedor de citações (rascunho) |
 | `ppcs-ouro/` | achados esperados por ficha da `analise-ppc` em 3 PPCs técnicos (rascunho) |
 | `resultados/` | rodadas do harness (fora do git) |
 
@@ -42,10 +43,9 @@ Cada rodada grava `relatorio.json`, `resumo.md` e o stream-json bruto (`brutos/`
 
 ## Como os gabaritos são gerados
 
-`bun run scripts/avaliacao/gabaritos/gerar.ts` lê `dados/institucional/`, `base-conhecimento/manifest.json`, o CNCT e os PPCs convertidos, e grava em `gabaritos/` os conjuntos esperados (ordenados, sem data) e `universos.json`. Rode de novo depois de mudar essas fontes e revise o diff: ele é a mudança do gabarito. `--verificar` só confere. Duas heurísticas são provisórias e trocam de implementação em fases futuras:
+`bun run scripts/avaliacao/gabaritos/gerar.ts` lê `dados/institucional/`, `base-conhecimento/manifest.json`, o CNCT e os PPCs convertidos, e grava em `gabaritos/` os conjuntos esperados (ordenados, sem data) e `universos.json`. Rode de novo depois de mudar essas fontes e revise o diff: ele é a mudança do gabarito. `--verificar` (ou `--check`) só confere. As citações de normas nos PPCs (Q02 e Q20) vêm do resolvedor de citações de `packages/kb`, o mesmo de `bun run kb citacoes <id>`. Uma heurística continua provisória: o curso casa com o CNCT pelo nome, até existir `cnct_id` (fase 3).
 
-- o curso casa com o CNCT pelo nome, até existir `cnct_id` (fase 3);
-- a citação da Res. CNE/CP nº 1/2021 nos PPCs é reconhecida por regex (`gabaritos/citacoes.ts`), até o resolvedor de citações (fase 2).
+O resolvedor tem conjunto anotado próprio em `resolvedor/citacoes-anotadas.yaml` (rascunho, revisão humana pendente), medido por `bun run kb avaliar-resolvedor`.
 
 ## PPCs-ouro
 

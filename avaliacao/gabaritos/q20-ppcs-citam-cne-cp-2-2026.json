@@ -1,7 +1,7 @@
 {
   "pergunta": "Q20",
-  "gerado_por": "scripts/avaliacao/gabaritos/citacoes.ts",
-  "criterio": "PPCs técnicos (nivel=médio) cujo texto casa com citacoesCneCp2de2026. A resolução é de 11/11/2026, posterior a todos os PPCs convertidos.",
+  "gerado_por": "bun run kb citacoes br/cne-cp/res/2026/2 (packages/kb/src/ppcs/citacoes.ts)",
+  "criterio": "PPCs técnicos (nivel=médio) com citação resolvida para br/cne-cp/res/2026/2. A resolução é de 11/11/2026, posterior a todos os PPCs convertidos.",
   "universo": "curso",
   "avaliar_precisao": true,
   "esperado": [],

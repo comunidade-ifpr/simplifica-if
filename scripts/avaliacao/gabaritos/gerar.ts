@@ -2,7 +2,7 @@
  * Gera os gabaritos de conjunto e os universos em `avaliacao/gabaritos/`.
  *
  *   bun run scripts/avaliacao/gabaritos/gerar.ts              # grava os arquivos
- *   bun run scripts/avaliacao/gabaritos/gerar.ts --verificar  # só confere (sai com 1 se divergir)
+ *   bun run scripts/avaliacao/gabaritos/gerar.ts --verificar  # só confere (sai com 1 se divergir; --check é sinônimo)
  *
  * Rode depois de mudar dados/institucional/, normas, CNCT, PPCs convertidos ou os geradores, e
  * revise o diff: ele é a mudança do gabarito.
@@ -37,7 +37,7 @@ export function divergencias(arquivos: Map<string, string>, dir: string = DIR_GA
 }
 
 if (import.meta.main) {
-  const verificar = process.argv.includes("--verificar");
+  const verificar = process.argv.includes("--verificar") || process.argv.includes("--check");
   const arquivos = gerarArquivos(carregarFontes());
   const diferentes = divergencias(arquivos);
   if (verificar) {

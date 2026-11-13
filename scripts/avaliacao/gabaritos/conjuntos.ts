@@ -7,7 +7,7 @@ import path from "node:path";
 import { compararTexto, normalizarTexto } from "../normalizar.ts";
 import type { GabaritoConjunto, Universos } from "../esquema.ts";
 import { idNorma, itemCampus, itemCurso, itensNorma } from "../universos.ts";
-import { citacoesCneCp1de2021, citacoesCneCp2de2026 } from "./citacoes.ts";
+import { type PpcCitante, ppcsQueCitam } from "@simplifica-if/kb/ppcs/citacoes";
 import { cnctDoCurso, type Fontes } from "./fontes.ts";
 
 /** Situações de curso que contam como "autorizado e em oferta" (art. 71 da Res. CNE/CP nº 2/2026). */
@@ -72,20 +72,35 @@ function q01(fontes: Fontes): GabaritoConjunto {
   };
 }
 
+/** PPCs que citam a norma, pelo resolvedor de citações (o mesmo conjunto de `bun run kb citacoes <id>`). */
+function ppcsQueCitamNorma(fontes: Fontes, id: string, filtro: (nivel: string) => boolean = () => true) {
+  return ppcsQueCitam(id, { raiz: fontes.raiz }).filter((ppc) => filtro(ppc.nivel));
+}
+
+function detalhesCitacoes(ppcs: PpcCitante[]) {
+  return detalhesOrdenados(
+    ppcs.map((ppc) => [
+      `curso:${ppc.ppc}`,
+      {
+        nivel: ppc.nivel,
+        ocorrencias: ppc.ocorrencias.map(({ linha, trecho, regra }) => ({ linha, trecho, regra })),
+      },
+    ]),
+  );
+}
+
 /** Q02: PPCs convertidos que citam a Resolução CNE/CP nº 1/2021. */
 function q02(fontes: Fontes): GabaritoConjunto {
-  const achados = fontes.ppcs
-    .map((ppc) => ({ ppc, trechos: citacoesCneCp1de2021(fontes.lerPpc(ppc.id)) }))
-    .filter(({ trechos }) => trechos.length > 0);
+  const ppcs = ppcsQueCitamNorma(fontes, "br/cne-cp/res/2021/1");
   return {
     pergunta: "Q02",
-    gerado_por: "scripts/avaliacao/gabaritos/citacoes.ts",
+    gerado_por: "bun run kb citacoes br/cne-cp/res/2021/1 (packages/kb/src/ppcs/citacoes.ts)",
     criterio:
-      "PPCs de base-conhecimento/institucional/ifpr/ppcs/ (todos os níveis) cujo texto casa com citacoesCneCp1de2021: Resolução CNE/CP nº 1/2021 por número e ano ou pela data de 5 de janeiro de 2021.",
+      "PPCs de base-conhecimento/institucional/ifpr/ppcs/ (todos os níveis) com ao menos uma citação resolvida para br/cne-cp/res/2021/1 pelo resolvedor de citações, inclusive as formas com órgão trocado (CNE/CEB nº 1/2021 seguida de 'educação profissional') e com tipo trocado (Parecer CNE/CP nº 01/2021 que define as Diretrizes), marcadas pela regra de cada ocorrência.",
     universo: "curso",
     avaliar_precisao: true,
-    esperado: ordenar(achados.map(({ ppc }) => `curso:${ppc.id}`)),
-    detalhes: detalhesOrdenados(achados.map(({ ppc, trechos }) => [`curso:${ppc.id}`, { nivel: ppc.nivel, trechos }])),
+    esperado: ordenar(ppcs.map((ppc) => `curso:${ppc.ppc}`)),
+    detalhes: detalhesCitacoes(ppcs),
   };
 }
 
@@ -237,19 +252,16 @@ function q13(fontes: Fontes): GabaritoConjunto {
 
 /** Q20: PPCs técnicos que já citam a Resolução CNE/CP nº 2/2026 (esperado: nenhum). */
 function q20(fontes: Fontes): GabaritoConjunto {
-  const achados = fontes.ppcs
-    .filter((ppc) => ppc.nivel === "médio")
-    .map((ppc) => ({ ppc, trechos: citacoesCneCp2de2026(fontes.lerPpc(ppc.id)) }))
-    .filter(({ trechos }) => trechos.length > 0);
+  const ppcs = ppcsQueCitamNorma(fontes, "br/cne-cp/res/2026/2", (nivel) => nivel === "médio");
   return {
     pergunta: "Q20",
-    gerado_por: "scripts/avaliacao/gabaritos/citacoes.ts",
+    gerado_por: "bun run kb citacoes br/cne-cp/res/2026/2 (packages/kb/src/ppcs/citacoes.ts)",
     criterio:
-      "PPCs técnicos (nivel=médio) cujo texto casa com citacoesCneCp2de2026. A resolução é de 11/11/2026, posterior a todos os PPCs convertidos.",
+      "PPCs técnicos (nivel=médio) com citação resolvida para br/cne-cp/res/2026/2. A resolução é de 11/11/2026, posterior a todos os PPCs convertidos.",
     universo: "curso",
     avaliar_precisao: true,
-    esperado: ordenar(achados.map(({ ppc }) => `curso:${ppc.id}`)),
-    detalhes: detalhesOrdenados(achados.map(({ ppc, trechos }) => [`curso:${ppc.id}`, { trechos }])),
+    esperado: ordenar(ppcs.map((ppc) => `curso:${ppc.ppc}`)),
+    detalhes: detalhesCitacoes(ppcs),
   };
 }
 

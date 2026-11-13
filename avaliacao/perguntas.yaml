@@ -94,11 +94,11 @@ perguntas:
       conjunto:
         arquivo: avaliacao/gabaritos/q02-ppcs-citam-cne-cp-1-2021.json
       observacoes: >-
-        Conjunto gerado pela heurística de scripts/avaliacao/gabaritos/citacoes.ts, conferida contra
-        os casos de fronteira dos 202 PPCs (CNE/CP nº 5/2021, CNE/CEB nº 1/2021 sem contexto de EPT,
-        quebras de OCR). Conta como citação a forma com órgão trocado (CNE/CEB) seguida de "educação
-        profissional"; decidir na curadoria se essa contagem fica.
-        Será refeito pelo resolvedor da fase 2.
+        Conjunto gerado pelo resolvedor de citações da fase 2 (o mesmo de `bun run kb citacoes
+        br/cne-cp/res/2021/1`), que deu os mesmos 59 PPCs da heurística anterior. Conta como citação a
+        forma com órgão trocado (CNE/CEB nº 1/2021 seguida de "educação profissional", regra
+        dcnept-2021-orgao-trocado) e com tipo trocado (Parecer CNE/CP nº 01/2021 que define as
+        Diretrizes); cada ocorrência traz a regra no gabarito. Decidir na curadoria se essas formas contam.
 
   - id: Q03
     origem: plano

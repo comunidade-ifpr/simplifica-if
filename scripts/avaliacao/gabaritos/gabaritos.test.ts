@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
 import { esquemaGabaritoConjunto, type GabaritoConjunto } from "../esquema.ts";
-import { citacoesCneCp1de2021, citacoesCneCp2de2026 } from "./citacoes.ts";
 import { GERADORES } from "./conjuntos.ts";
 import { cnctDoCurso, carregarFontes } from "./fontes.ts";
 import { divergencias, gerarArquivos } from "./gerar.ts";
@@ -79,37 +78,5 @@ describe("CNCT do curso", () => {
     expect(cnctDoCurso("Administração – PROEJA", fontes.cnct)?.id).toBe("tecnico-em-administracao");
     expect(cnctDoCurso("Mecânica", fontes.cnct)?.id).toBe("tecnico-em-mecanica");
     expect(cnctDoCurso("Técnico em Melhoria de Processos", fontes.cnct)).toBeUndefined();
-  });
-});
-
-describe("citações às DCN da EPT", () => {
-  test.each([
-    "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
-    "Resolução CNE/CP n. 01/2021",
-    "Resolução CNE/CP nº01/2021",
-    "Resolução CNE /CP nº 1/2021",
-    "Resolução CNE/CP nº 01 de 05 dejaneiro de 2021",
-    "Resolução CNE/CP nº 1. de 05 de janeiro de 2021",
-    "Resolução CNE/CP nº 1, de 5 de janeiro<br>de 2021",
-    "Resolução nº 1, de 5 de janeiro de 2021 (CNE/CP)",
-    "Parecer CNE/CP nº 01/2021 que Define as Diretrizes",
-    "Resolução CNE/CEB nº 1/2021, que define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional",
-  ])("reconhece %p", (texto) => {
-    expect(citacoesCneCp1de2021(texto).length).toBeGreaterThan(0);
-  });
-
-  test.each([
-    "Resolução CNE/CP nº 05 de 2021 DCN CG",
-    "Resolução CNE/CEB nº 01/2021 (EJA)",
-    "Resolução CNE/CP nº 11/2021",
-    "Resolução CNE/CP nº 1/2012",
-    "mestre em educação profissional e tecnológica (2021)",
-  ])("não reconhece %p", (texto) => {
-    expect(citacoesCneCp1de2021(texto)).toEqual([]);
-  });
-
-  test("Res. CNE/CP nº 2/2026", () => {
-    expect(citacoesCneCp2de2026("Resolução CNE/CP nº 2, de 11 de novembro de 2026")).toHaveLength(1);
-    expect(citacoesCneCp2de2026("Resolução CNE/CP nº 2/2025")).toEqual([]);
   });
 });
