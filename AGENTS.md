@@ -10,7 +10,20 @@ Também contém skills operacionais em `.agents/skills/`. O caminho `.claude/ski
 
 Para consultas, respostas a perguntas ou uso desta base como fonte por LLM, use primeiro os arquivos locais deste checkout. Não substitua arquivos locais por URLs públicas quando o conteúdo estiver disponível no repositório.
 
-Use os manifestos locais como ponto de entrada:
+Comece pela CLI `kb` (requer `bun install` na raiz). Ela consulta `tmp/kb.sqlite`, um banco derivado dos arquivos do checkout (normas, PPCs com o texto integral das seções, `dados/institucional/`, CNCT, fichas da `analise-ppc`), e o recompila sozinha quando ele falta ou está mais velho que as fontes (cerca de 6 s; `bun run kb:compilar` força). O banco nunca é fonte de verdade nem lugar de edição: toda resposta traz o texto literal e o arquivo e a linha de onde ele veio, e é esse arquivo que se cita.
+
+```bash
+bun run kb buscar-norma "Resolução CNE/CP nº 2/2026, art. 28" --json   # citação ou ID → o artigo; termos → busca nos metadados e no texto
+bun run kb buscar-secoes "acompanhamento de egressos" --cnct tecnico-em-agropecuaria --json   # seções de PPC; filtros --ppc, --tipo, --nivel, --campus, --forma
+bun run kb cursos --eixo "Informação e Comunicação" --processo processo-seletivo-2026 --json   # cursos com CNCT, ofertas e turno; filtros --turno, --campus, --nivel…
+bun run kb ppc-fatos curitiba/tecnico-em-enfermagem --json              # carga horária, estágio e ano do PPC, cruzados com o SUAP
+bun run kb ppc-fatos --divergencias --nivel médio                        # PPCs com divergência PPC × SUAP
+bun run kb pacote-contexto CT-CURR-12 curitiba/tecnico-em-enfermagem --json   # contexto de uma ficha da analise-ppc: CNCT, artigos citados, transições, seções
+```
+
+Os fatos de PPC têm status `extraido` (regra sobre o texto convertido, sem revisão humana): confira o `trecho_fonte` antes de afirmar uma divergência. A busca de seções usa radicais e um léxico de sinônimos (`packages/kb/dados/sinonimos.yaml`); se ela não achar o que se espera, procure nos arquivos.
+
+Os arquivos continuam a alternativa quando a CLI não cobre a pergunta. Use os manifestos locais como ponto de entrada:
 
 - `base-conhecimento/manifest.json`: normas, legislação, resoluções, portarias, notas técnicas e referências gerais.
 - `base-conhecimento/institucional_manifest.json`: coleções institucionais do IFPR.
@@ -21,12 +34,12 @@ Os campos `path` dos manifestos são relativos a `base-conhecimento/`. Ao abrir 
 
 Procedimento recomendado:
 
-1. Consulte o manifesto local adequado e filtre por `title`, `aliases`, `keywords`, `ementa`, `orgao`, `ano`, `status_vigencia`, campus, curso, nível ou tipo de oferta.
+1. Tente primeiro o comando `kb` correspondente (acima). Sem ele, consulte o manifesto local adequado e filtre por `title`, `aliases`, `keywords`, `ementa`, `orgao`, `ano`, `status_vigencia`, campus, curso, nível ou tipo de oferta.
 2. Abra os arquivos locais indicados no campo `path`, dentro de `base-conhecimento/`.
 3. Para normas, legislação e resoluções, use os Markdown em `base-conhecimento/normas/` como fonte principal e cite o título, a fonte oficial registrada no front matter e o artigo, seção ou item usado.
 4. Para metadados institucionais publicados, use os JSONs em `base-conhecimento/institucional/ifpr/`. Para estado operacional atual de bases geridas no Notion, consulte o Notion conforme a seção de curadoria e operação.
 5. Para CNCT, use `base-conhecimento/catalogos/cnct/manifest.json`, `base-conhecimento/catalogos/cnct/index.json` e, quando necessário, os arquivos em `base-conhecimento/catalogos/cnct/cursos/`.
-6. Para PPCs, use `base-conhecimento/institucional/ifpr/ppcs/index.json`, os índices de seções em `base-conhecimento/institucional/ifpr/ppcs/secoes/` e depois abra o Markdown completo do PPC antes de redigir resposta substantiva.
+6. Para PPCs, use `bun run kb buscar-secoes` (ou `base-conhecimento/institucional/ifpr/ppcs/index.json` e os índices de seções em `base-conhecimento/institucional/ifpr/ppcs/secoes/`) e depois abra o Markdown do PPC nas linhas indicadas antes de redigir resposta substantiva.
 7. Use busca online apenas quando o dado necessário não existir na base local, quando a pergunta exigir atualização externa ou quando for preciso confirmar informação em fonte oficial. Ao usar fonte externa, deixe isso explícito.
 
 Cada norma tem um ID canônico derivado do ato (`id` no front matter e no `manifest.json`), como `br/cne-cp/res/2026/2`, `br/lei/1996/9394` ou `ifpr/consup/res/2024/190`. Normas citadas sem texto na base (stubs) e referências `externo:` ficam em `base-conhecimento/normas/stubs.yaml`. Para identificar uma citação ou achar quem cita uma norma, use a CLI `kb` (requer `bun install` na raiz):
