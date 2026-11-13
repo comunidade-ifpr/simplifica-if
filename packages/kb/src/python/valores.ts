@@ -145,6 +145,20 @@ export function roundPy(valor: number, casas: number): number {
   return resultado === 0 && negativo ? -0 : resultado;
 }
 
+/**
+ * `f"{valor:.{casas}f}"` do Python: arredonda o valor binário exato com empate
+ * para o par (o `toFixed` do JavaScript desempata para cima: `0.125` dá
+ * `0.13`, e o Python, `0.12`) e mantém o sinal de `-0.0`.
+ */
+export function formatoFixoPy(valor: number, casas: number): string {
+  if (Number.isNaN(valor)) return "nan";
+  if (!Number.isFinite(valor)) return valor > 0 ? "inf" : "-inf";
+  const arredondado = roundPy(valor, casas);
+  const texto = Math.abs(arredondado).toFixed(casas);
+  const negativo = arredondado < 0 || Object.is(arredondado, -0);
+  return negativo ? `-${texto}` : texto;
+}
+
 /** `repr()` do Python para valores JSON. */
 export function reprPy(valor: unknown): string {
   if (valor === null || valor === undefined) return "None";

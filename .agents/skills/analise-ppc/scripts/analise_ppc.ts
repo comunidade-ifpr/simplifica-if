@@ -2,25 +2,27 @@
 /**
  * Ponto de entrada único da skill analise-ppc.
  *
- * Todos os subcomandos rodam em TypeScript, exceto `gerar-relatorio-html`,
- * que ainda delega a `analise_ppc.py` (mesmos argumentos, stdio herdado e
- * mesmo código de saída) até o porte do relatório (trilha T2). Em
- * `preparar-documento`, a conversão de `.docx` em artefatos ainda é feita pelo
- * Python (`converter_docx.py`), até a trilha T3.
+ * Todos os subcomandos rodam em TypeScript. Em `preparar-documento`, só a
+ * conversão de `.docx` em artefatos ainda é feita pelo Python
+ * (`converter_docx.py`), até a trilha T3; `ANALISE_PPC_PYTHON` escolhe o
+ * interpretador.
  *
  * `ANALISE_PPC_AGORA` (data ISO 8601) fixa o relógio, para testes e
- * diferenciais; `ANALISE_PPC_PYTHON` escolhe o interpretador Python.
+ * diferenciais.
  */
 import path from "node:path";
 import { Command, InvalidArgumentError } from "commander";
 import { dumpsPy } from "@simplifica-if/kb/python/json";
+import { caminhoComoUri } from "@simplifica-if/kb/python/url";
 import { inteiroDeTexto } from "@simplifica-if/kb/python/valores";
 import { caminhosPadrao } from "./caminhos.ts";
 import { escreverIndice, indiceAtualizado } from "./indice-base.ts";
 import { escreverMapa, mapaAtualizado } from "./mapa-fichas.ts";
 import { prepararDocumento } from "./preparar-documento.ts";
+import { dominioSurgePadrao, prepararSiteSurge, type PublicacaoSurge, publicarSiteSurge } from "./publicar-surge.ts";
+import { gerarRelatorioHtml } from "./relatorio-html.ts";
 import { validarResultadosRodada } from "./resultados.ts";
-import { TAMANHO_GRUPO_PADRAO } from "./rodada.ts";
+import { caminhosRodada, escreverJsonPy, resolverCaminho, TAMANHO_GRUPO_PADRAO } from "./rodada.ts";
 import {
   mesclarResultadosAvulsos,
   montarGrupoAvulso,
@@ -30,24 +32,6 @@ import {
 import { validarBaseAnalise } from "./validacao-base.ts";
 
 const COMANDO = "bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts";
-const SCRIPT_PYTHON = path.join(import.meta.dir, "analise_ppc.py");
-
-/** Subcomandos ainda implementados em Python, com a descrição exibida na ajuda. */
-export const SUBCOMANDOS_PYTHON: ReadonlyArray<readonly [nome: string, descricao: string]> = [
-  ["gerar-relatorio-html", "Gerar o relatório HTML final"],
-];
-
-/** Repassa o subcomando a `python3 -B analise_ppc.py` e devolve o código de saída. */
-async function delegarAoPython(subcomando: string, argumentos: string[]): Promise<number> {
-  const python = process.env.ANALISE_PPC_PYTHON ?? "python3";
-  const processo = Bun.spawn([python, "-B", SCRIPT_PYTHON, subcomando, ...argumentos], {
-    stdin: "inherit",
-    stdout: "inherit",
-    stderr: "inherit",
-  });
-  return await processo.exited;
-}
-
 /** Imprime o JSON como `print(json.dumps(payload, ensure_ascii=False, indent=2))`. */
 function imprimirJson(payload: unknown): void {
   process.stdout.write(`${dumpsPy(payload, { indent: 2 })}\n`);
@@ -149,6 +133,39 @@ function gerarMapa(opcoes: { check?: boolean }): number {
   escreverMapa(caminhos);
   console.log(`Mapa de fichas gerado em ${caminhos.mapaFichasPath}.`);
   return 0;
+}
+
+/** Saída de `gerar-relatorio-html`: caminho e URL do relatório e, se publicado, a URL pública. */
+export function payloadRelatorio(relatorioHtml: string, publicacao?: PublicacaoSurge): Objeto {
+  const relatorio = resolverCaminho(relatorioHtml);
+  const uri = caminhoComoUri(relatorio);
+  const payload: Objeto = {
+    relatorio_html: relatorio,
+    relatorio_url: uri,
+    mensagem: `Relatório pronto: ${uri}`,
+  };
+  if (publicacao) {
+    const publicUrl = publicacao.public_url || "";
+    Object.assign(payload, {
+      publicacao_servico: publicacao.servico,
+      publicacao_url: publicUrl,
+      surge_url: publicUrl,
+      surge_domain: publicacao.domain,
+      mensagem: `Relatório pronto: ${publicUrl || uri}`,
+    });
+  }
+  return payload;
+}
+
+function gerarRelatorio(opcoes: { rodadaDir: string; resultados: string; semSurge?: boolean; surgeDomain?: string }) {
+  const relatorio = gerarRelatorioHtml(opcoes.rodadaDir, opcoes.resultados);
+  if (opcoes.semSurge) return payloadRelatorio(relatorio.relatorio_html);
+  const rodada = caminhosRodada(opcoes.rodadaDir);
+  const siteDir = prepararSiteSurge(relatorio.relatorio_html, path.join(rodada.suporteDir, "surge-site"));
+  const publicacao = publicarSiteSurge(siteDir, opcoes.surgeDomain || dominioSurgePadrao(rodada.rodadaDir));
+  publicacao.relatorio_html_original = resolverCaminho(relatorio.relatorio_html);
+  escreverJsonPy(path.join(rodada.suporteDir, "surge-publicacao.json"), publicacao);
+  return payloadRelatorio(relatorio.relatorio_html, publicacao);
 }
 
 export function criarPrograma(): Command {
@@ -260,19 +277,21 @@ export function criarPrograma(): Command {
       process.exitCode = gerarMapa(opcoes);
     });
 
-  for (const [nome, descricao] of SUBCOMANDOS_PYTHON) {
-    programa
-      .command(nome)
-      .description(`${descricao} (delega a analise_ppc.py)`)
-      .helpOption(false)
-      .allowUnknownOption()
-      .allowExcessArguments()
-      .passThroughOptions()
-      .argument("[argumentos...]", "repassados a analise_ppc.py; use --help para ver as opções")
-      .action(async (argumentos: string[]) => {
-        process.exitCode = await delegarAoPython(nome, argumentos);
-      });
-  }
+  programa
+    .command("gerar-relatorio-html")
+    .description("Gerar o relatório HTML final")
+    .requiredOption("--rodada-dir <dir>", "Diretório da rodada")
+    .option(
+      "--resultados <arquivo>",
+      "JSON coletado dos sub-agentes; relativo a arquivos-suporte quando não absoluto",
+      "resultados-subagents.json",
+    )
+    .option("--sem-surge", "Gerar apenas o HTML local, sem publicar no Surge.")
+    .option("--surge-domain <dominio>", "Domínio Surge de publicação; padrão: analise-ppc-<rodada>.surge.sh.")
+    .action((opcoes: { rodadaDir: string; resultados: string; semSurge?: boolean; surgeDomain?: string }) => {
+      executar(() => imprimirJson(gerarRelatorio(opcoes)));
+    });
+
   return programa;
 }
 
