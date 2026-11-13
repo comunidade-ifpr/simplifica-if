@@ -30,9 +30,11 @@
     "recuperação",
     "estudos de recuperação"
   ],
-  "referencias_normativas": [],
+  "referencias_normativas": [
+    "Resolução CNE/CP nº 2/2026, arts. 28, VIII e XI, e 38, § 4º"
+  ],
   "pergunta": "O PPC descreve adequadamente frequência mínima e mecanismos de recuperação da aprendizagem?",
-  "rubrica": "Avaliar se frequência e recuperação aparecem como parte do sistema de acompanhamento do estudante.",
+  "rubrica": "Avaliar se frequência e recuperação aparecem como parte do sistema de acompanhamento do estudante. A Resolução CNE/CP nº 2/2026 exige que o PPC indique os percentuais mínimos de frequência (art. 28, VIII) e os critérios e procedimentos de recomposição das aprendizagens, quando necessária, com devolutivas pedagógicas e oportunidades de recuperação ao longo do processo formativo (art. 28, XI; art. 38, § 4º). Aceitar a terminologia institucional de recuperação paralela ou equivalente quando cumprir essa função.",
   "boa_evidencia": "Trechos que explicam frequência mínima, recuperação paralela ou final e seus critérios.",
   "ma_evidencia": "Ausência de frequência mínima ou recuperação tratada de forma vaga.",
   "escalonar_quando": "Escalonar se apenas um dos dispositivos estiver claramente descrito.",

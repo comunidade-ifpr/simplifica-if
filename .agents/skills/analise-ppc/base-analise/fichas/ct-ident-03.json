@@ -27,9 +27,11 @@
     "arranjo produtivo",
     "mercado de trabalho"
   ],
-  "referencias_normativas": [],
+  "referencias_normativas": [
+    "Resolução CNE/CP nº 2/2026, arts. 27 e 28, III"
+  ],
   "pergunta": "A justificativa do PPC demonstra demanda territorial, social ou produtiva de forma suficientemente ancorada?",
-  "rubrica": "Verificar se a oferta do curso é contextualizada por dados, diagnósticos locais ou argumentos concretos sobre pertinência regional.",
+  "rubrica": "Verificar se a oferta do curso é contextualizada por dados, diagnósticos locais ou argumentos concretos sobre pertinência regional. A Resolução CNE/CP nº 2/2026 condiciona a autorização de cursos técnicos ao atendimento de aspirações e interesses da sociedade e às demandas socioeconômicas, tecnológicas e ambientais locais e regionais (art. 27), o que reforça a exigência de justificativa ancorada no território.",
   "boa_evidencia": "Trechos sobre contexto regional, setores econômicos, demandas de formação e relevância social do curso.",
   "ma_evidencia": "Justificativa genérica, abstrata ou baseada apenas em fórmulas amplas sem vínculo com o território.",
   "escalonar_quando": "Escalonar se a justificativa existir, mas sem lastro territorial claro ou com dados frágeis.",

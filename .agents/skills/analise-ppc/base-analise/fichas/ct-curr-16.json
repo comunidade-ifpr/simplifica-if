@@ -60,10 +60,11 @@
   ],
   "referencias_normativas": [
     "CNCT",
-    "Resolução IFPR nº 190/2024"
+    "Resolução IFPR nº 190/2024",
+    "Resolução CNE/CP nº 2/2026, arts. 18 e 28, IV"
   ],
   "pergunta": "Os pré-requisitos de ingresso previstos no PPC são compatíveis com o CNCT e com a forma de oferta do curso?",
-  "rubrica": "Comparar as regras de ingresso do PPC com `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.pre_requisitos_ingresso`, considerando se a forma de oferta declarada é integrada, concomitante, subsequente ou EJA. Exigir que o texto registre de modo explícito a escolaridade mínima ou a condição de matrícula do candidato, e não apenas remeta genericamente ao processo seletivo.",
+  "rubrica": "Comparar as regras de ingresso do PPC com `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.pre_requisitos_ingresso`, considerando se a forma de oferta declarada é integrada, concomitante, subsequente ou EJA. Exigir que o texto registre de modo explícito a escolaridade mínima ou a condição de matrícula do candidato, e não apenas remeta genericamente ao processo seletivo. Usar como referência as formas definidas na Resolução CNE/CP nº 2/2026, art. 18: integrada, somente a quem concluiu o ensino fundamental, com matrícula única; concomitante, a quem ingresse no ensino médio ou o esteja cursando, com matrículas distintas; concomitante intercomplementar, simultânea ao ensino médio, em parceria entre instituições, com projeto pedagógico unificado; subsequente, a quem concluiu o ensino médio.",
   "boa_evidencia": "O PPC informa escolaridade mínima ou condição de matrícula compatíveis com o campo `Pré-Requisitos para Ingresso` do CNCT e com a forma de oferta adotada, como conclusão do ensino fundamental, matrícula concomitante ou conclusão do ensino médio, conforme o caso.",
   "ma_evidencia": "Requisitos de ingresso ausentes, contraditórios ou incompatíveis com a forma de oferta e com o CNCT, ou texto que menciona apenas processo seletivo sem dizer quem está habilitado a ingressar.",
   "escalonar_quando": "Escalonar se o PPC mencionar ingresso de modo genérico, se houver dúvida entre forma de oferta e requisito escolar correspondente, ou se a elegibilidade do candidato depender de inferência indireta.",

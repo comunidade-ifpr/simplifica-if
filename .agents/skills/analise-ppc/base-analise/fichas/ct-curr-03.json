@@ -36,13 +36,16 @@
   ],
   "referencias_normativas": [
     "Lei 14.945/2024",
-    "Resolução IFPR 64/2022"
+    "Resolução IFPR 64/2022",
+    "Resolução CNE/CP nº 2/2026, arts. 29, §§ 2º e 3º, e 30",
+    "Resolução CNE/CEB nº 2/2024, arts. 13 e 25",
+    "Resolução CNE/CP nº 2/2026, art. 18, § 2º"
   ],
   "pergunta": "A distribuição entre formação geral e formação técnica aparece de forma auditável e compatível com a modalidade ofertada?",
-  "rubrica": "Verificar se o PPC separa ou torna reconstituível a distribuição de cargas e componentes entre as dimensões formativas exigidas.",
+  "rubrica": "Verificar se o PPC separa ou torna reconstituível a distribuição de cargas e componentes entre as dimensões formativas exigidas. Quando o PPC contabilizar simultaneamente horas na formação geral básica e na formação técnica, verificar se o total simultâneo não passa de 300 horas, se os componentes e as horas envolvidos estão identificados e se a contagem decorre de organização curricular integrada, com correlação explícita entre conteúdos da BNCC e competências profissionais, vedada a simples justaposição ou duplicidade formal de componentes (Resolução CNE/CP nº 2/2026, art. 29, §§ 2º e 3º; art. 30, parágrafo único, para a EJA). No integrado, verificar também a formação geral básica mínima da DCNEM: 2.100 horas para cursos técnicos de 1.000 ou 1.200 horas e 2.200 horas para cursos de 800 horas (Resolução CNE/CEB nº 2/2024, art. 13, II e III), e 2.400 horas na oferta em tempo integral (art. 25, § 5º), como manda a Resolução CNE/CP nº 2/2026, art. 18, § 2º. Se houver contabilização simultânea em curso técnico de 800 horas ou em oferta de tempo integral, escalonar, por causa da divergência entre a DCNEM, art. 25, e a Resolução CNE/CP nº 2/2026, art. 29, § 2º. O parâmetro de 1.800 horas da Resolução IFPR nº 64/2022 não substitui esses mínimos.",
   "boa_evidencia": "Totais, subtotais ou quadros que permitam compreender a composição da carga horária.",
-  "ma_evidencia": "Distribuição opaca, não reconstituível ou contraditória com a oferta integrada.",
-  "escalonar_quando": "Escalonar se a estrutura permitir inferências, mas não oferecer discriminação suficiente.",
+  "ma_evidencia": "Distribuição opaca, não reconstituível ou contraditória com a oferta integrada. Também é má evidência contabilização simultânea acima de 300 horas, não identificada ou baseada apenas na repetição formal de componentes.",
+  "escalonar_quando": "Escalonar se a estrutura permitir inferências, mas não oferecer discriminação suficiente. Escalonar também se houver indício de dupla contagem de horas sem demonstração de integração curricular.",
   "evidencia_minima": 2,
   "estados_permitidos": [
     "ATENDE",

@@ -30,10 +30,11 @@
     "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.infraestrutura_minima"
   ],
   "referencias_normativas": [
-    "CNCT"
+    "CNCT",
+    "Resolução CNE/CP nº 2/2026, art. 28, § 3º"
   ],
   "pergunta": "A infraestrutura mínima indicada no CNCT está atendida ou justificada no PPC, especialmente quanto a laboratórios e ambientes específicos?",
-  "rubrica": "Comparar item a item os ambientes, laboratórios, biblioteca e recursos descritos em `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.infraestrutura_minima` com a seção de infraestrutura do PPC, aceitando equivalências materiais justificadas.",
+  "rubrica": "Comparar item a item os ambientes, laboratórios, biblioteca e recursos descritos em `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.infraestrutura_minima` com a seção de infraestrutura do PPC, aceitando equivalências materiais justificadas. Aceitar infraestrutura cedida por instituição distinta quando a viabilidade de uso estiver atestada por parceria formalizada (Resolução CNE/CP nº 2/2026, art. 28, § 3º).",
   "boa_evidencia": "O PPC descreve laboratórios, biblioteca e ambientes específicos equivalentes aos requisitos de infraestrutura mínima do CNCT, com vínculo claro com a oferta.",
   "ma_evidencia": "Ausência de laboratórios ou ambientes centrais indicados pelo CNCT, descrição genérica sem equivalência material ou justificativa insuficiente para lacunas.",
   "escalonar_quando": "Escalonar se parte da infraestrutura mínima estiver presente, mas houver dúvida sobre equivalência, suficiência, disponibilidade efetiva ou compartilhamento de laboratórios.",

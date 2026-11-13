@@ -1,10 +1,21 @@
 from __future__ import annotations
 
 import json
+import re
+import unicodedata
 from pathlib import Path
 from typing import Any
 
-from common import BASE_ANALISE_DIR, FICHAS_DIR, SCHEMAS_DIR, TOPICOS_FICHAS_PATH, VALIDACOES_CRUZADAS_DIR, read_json
+from common import (
+    BASE_ANALISE_DIR,
+    BASE_CONHECIMENTO_DIR,
+    FICHAS_DIR,
+    MARCOS_NORMATIVOS_PATH,
+    SCHEMAS_DIR,
+    TOPICOS_FICHAS_PATH,
+    VALIDACOES_CRUZADAS_DIR,
+    read_json,
+)
 
 
 class ErroValidacaoBaseAnalise(ValueError):
@@ -177,6 +188,175 @@ def _validar_topicos_fichas(fichas_por_id: dict[str, dict[str, Any]]) -> list[st
     return erros
 
 
+MANIFEST_NORMAS_PATH = BASE_CONHECIMENTO_DIR / "manifest.json"
+
+# Órgãos genéricos que não distinguem a norma (leis da Presidência, colegiado do IFPR).
+_TOKENS_ORGAO_GENERICOS = {"consup", "presidencia", "da", "republica"}
+_TIPOS_NORMA = ("resolucao", "lei", "portaria", "decreto", "nota tecnica", "parecer", "instrucao normativa")
+
+
+def _normalizar_referencia(texto: str) -> str:
+    """Normaliza grafias equivalentes de uma citação normativa para comparação.
+
+    Remove acentos e caixa, expande "res.", tira o marcador "nº"/"n°"/"n." antes do número, remove pontos de milhar,
+    reduz "nº 1, de 5 de janeiro de 2021" a "1/2021" e tira zeros à esquerda.
+    """
+    sem_acento = unicodedata.normalize("NFKD", str(texto)).encode("ascii", "ignore").decode("ascii").casefold()
+    s = re.sub(r"\bres\.\s*", "resolucao ", sem_acento)
+    s = re.sub(r"\bn\s*[o.]*\s*(?=\d)", "", s)
+    s = re.sub(r"(?<=\d)\.(?=\d{3}\b)", "", s)
+    s = re.sub(r"(\d+),?\s+de\s+\d{1,2}o?\s+de\s+[a-z]+\s+de\s+(\d{4})", r"\1/\2", s)
+    s = re.sub(r"\b0+(\d)", r"\1", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def _chave_estruturada(texto: str) -> tuple[str, str, str] | None:
+    """Extrai (tipo, número, ano) de uma citação normalizada, ou None se não houver padrão N/AAAA."""
+    s = _normalizar_referencia(texto)
+    tipo = next((t for t in _TIPOS_NORMA if s.startswith(t)), None)
+    numero_ano = re.search(r"(\d+)\s*/\s*(\d{4})\b", s)
+    if not tipo or not numero_ano:
+        return None
+    return tipo, numero_ano.group(1), numero_ano.group(2)
+
+
+def _tokens_orgao(orgao: str) -> set[str]:
+    return {tok for tok in re.split(r"[/\s]+", _normalizar_referencia(orgao)) if tok} - _TOKENS_ORGAO_GENERICOS
+
+
+def _carregar_manifest_normas(path: Path = MANIFEST_NORMAS_PATH) -> list[dict[str, Any]]:
+    if not path.exists():
+        return []
+    payload = read_json(path)
+    return [item for item in payload if isinstance(item, dict)] if isinstance(payload, list) else []
+
+
+def _norma_da_referencia(referencia: str, manifest: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Associa uma referência de ficha à norma do manifesto.
+
+    Primeiro por (tipo, número, ano), exigindo que os tokens distintivos do órgão (ex.: "cne" e "cp", "ifpr")
+    apareçam na referência; depois, como reserva, pelo título ou alias com número que inicia a referência. Siglas
+    sem número (ex.: "DCNEPT") não são usadas para casar, porque são ambíguas entre versões da norma.
+    """
+    texto = _normalizar_referencia(referencia)
+    chave = _chave_estruturada(referencia)
+    if chave:
+        tokens_ref = set(re.split(r"[/\s,;()]+", texto))
+        candidatas = []
+        for norma in manifest:
+            chave_norma = _chave_estruturada(f"{norma.get('tipo_documento', '')} {norma.get('numero', '')}/{norma.get('ano', '')}")
+            if chave_norma == chave and _tokens_orgao(str(norma.get("orgao") or "")) <= tokens_ref:
+                candidatas.append(norma)
+        if candidatas:
+            return candidatas[0]
+    melhor: tuple[int, dict[str, Any]] | None = None
+    for norma in manifest:
+        for chave_texto in [norma.get("title"), *(norma.get("aliases") or [])]:
+            alvo = _normalizar_referencia(str(chave_texto or ""))
+            if not alvo or not re.search(r"\d", alvo) or not texto.startswith(alvo):
+                continue
+            if len(texto) > len(alvo) and texto[len(alvo)].isalnum():
+                continue
+            if melhor is None or len(alvo) > melhor[0]:
+                melhor = (len(alvo), norma)
+    return melhor[1] if melhor else None
+
+
+def _carregar_marcos(path: Path = MARCOS_NORMATIVOS_PATH) -> list[dict[str, Any]]:
+    if not path.exists():
+        return []
+    try:
+        payload = read_json(path)
+    except json.JSONDecodeError:
+        return []
+    marcos = payload.get("marcos") if isinstance(payload, dict) else None
+    return [marco for marco in marcos if isinstance(marco, dict)] if isinstance(marcos, list) else []
+
+
+def _validar_referencias_vigentes(
+    fichas_por_id: dict[str, dict[str, Any]],
+    manifest: list[dict[str, Any]],
+    marcos: list[dict[str, Any]] | None = None,
+) -> list[str]:
+    """Barra em `referencias_normativas` norma revogada no manifesto, norma substituída por um marco e dispositivo revogado."""
+    marcos = marcos or []
+    substituidas = {
+        chave: (str(texto), str(marco.get("id")))
+        for marco in marcos
+        for texto in [*(marco.get("substitui") or []), *(marco.get("antecessoras_historicas") or [])]
+        if (chave := _chave_estruturada(str(texto)))
+    }
+    dispositivos = {
+        _normalizar_referencia(str(texto)): str(marco.get("id"))
+        for marco in marcos
+        for texto in marco.get("dispositivos_revogados") or []
+    }
+    erros: list[str] = []
+    for ficha_id, ficha in sorted(fichas_por_id.items()):
+        for referencia in ficha.get("referencias_normativas") or []:
+            referencia = str(referencia)
+            normalizada = _normalizar_referencia(referencia)
+            norma = _norma_da_referencia(referencia, manifest)
+            chave = _chave_estruturada(referencia)
+            if norma and norma.get("status_vigencia") == "revogada":
+                erros.append(
+                    f"{ficha_id}: `referencias_normativas` cita norma revogada: {referencia} "
+                    f"(veja `revogada_por` em base-conhecimento/{norma.get('path', '')}; "
+                    "atualize a ficha e base-analise/marcos-normativos.json)"
+                )
+            elif chave in substituidas:
+                texto, marco_id = substituidas[chave]
+                erros.append(
+                    f"{ficha_id}: `referencias_normativas` cita norma substituída no marco {marco_id}: {referencia} ({texto})"
+                )
+            for dispositivo, marco_id in dispositivos.items():
+                if normalizada.startswith(dispositivo):
+                    erros.append(
+                        f"{ficha_id}: `referencias_normativas` cita dispositivo revogado (marco {marco_id}): {referencia}"
+                    )
+    return erros
+
+
+def _validar_marcos_normativos(
+    manifest: list[dict[str, Any]],
+    path: Path = MARCOS_NORMATIVOS_PATH,
+    fichas_por_id: dict[str, dict[str, Any]] | None = None,
+) -> list[str]:
+    if not path.exists():
+        return [f"{path}: registro de marcos normativos não encontrado"]
+    try:
+        payload = read_json(path)
+    except json.JSONDecodeError as exc:
+        return [f"{path}: JSON inválido: {exc}"]
+    erros = [f"{path}: {erro}" for erro in _validar_schema(payload, _carregar_schema("marcos-normativos.schema.json"))]
+    if erros:
+        return erros
+    ids: set[str] = set()
+    for marco in payload["marcos"]:
+        marco_id = str(marco["id"])
+        if marco_id in ids:
+            erros.append(f"{path}: marco duplicado: {marco_id}")
+        ids.add(marco_id)
+        vigente = str(marco["vigente"])
+        norma = _norma_da_referencia(vigente, manifest)
+        if norma is None:
+            erros.append(f"{path}: marco {marco_id}: norma vigente fora do manifesto da base: {vigente}")
+        elif norma.get("status_vigencia") == "revogada":
+            erros.append(f"{path}: marco {marco_id}: norma marcada como vigente está revogada no manifesto: {vigente}")
+        for substituida in marco["substitui"]:
+            norma = _norma_da_referencia(str(substituida), manifest)
+            if norma and norma.get("status_vigencia") == "vigente":
+                erros.append(
+                    f"{path}: marco {marco_id}: norma listada como substituída está vigente no manifesto: {substituida}"
+                )
+        if fichas_por_id is not None:
+            for campo in ("fichas_responsaveis", "fichas_base_legal"):
+                for ficha_id in marco.get(campo) or []:
+                    if ficha_id not in fichas_por_id:
+                        erros.append(f"{path}: marco {marco_id}: `{campo}` cita ficha desconhecida: {ficha_id}")
+    return erros
+
+
 def validar_base_analise() -> list[str]:
     erros: list[str] = []
     schema_ficha = _carregar_schema("ficha.schema.json")
@@ -198,6 +378,12 @@ def validar_base_analise() -> list[str]:
             erros.append(f"{ficha_path}: ficha duplicada: {ficha_id}")
         fichas_por_id[ficha_id] = payload
     erros.extend(_validar_topicos_fichas(fichas_por_id))
+    manifest = _carregar_manifest_normas()
+    if not manifest:
+        erros.append(f"{MANIFEST_NORMAS_PATH}: manifesto de normas não encontrado; checagem de vigência não executada")
+    else:
+        erros.extend(_validar_referencias_vigentes(fichas_por_id, manifest, _carregar_marcos()))
+        erros.extend(_validar_marcos_normativos(manifest, fichas_por_id=fichas_por_id))
 
     ids_validacoes: set[str] = set()
     for validacao_path in sorted(VALIDACOES_CRUZADAS_DIR.glob("*.json")):

@@ -28,7 +28,8 @@
     "habilitação profissional",
     "eixo tecnológico",
     "Catálogo Nacional de Cursos Técnicos",
-    "Resolução CNE/CP nº 1/2021"
+    "Resolução CNE/CP nº 1/2021",
+    "Resolução CNE/CP nº 2/2026"
   ],
   "consultas": [
     "expedição de diplomas",
@@ -39,14 +40,16 @@
     "habilitação profissional",
     "eixo tecnológico",
     "Catálogo Nacional de Cursos Técnicos",
-    "Resolução CNE/CP nº 1/2021"
+    "Resolução CNE/CP nº 1/2021",
+    "Resolução CNE/CP nº 2/2026"
   ],
   "referencias_normativas": [
-    "Resolução CNE/CP nº 1/2021",
+    "Resolução CNE/CP nº 2/2026, arts. 44 e 45",
+    "Resolução CNE/CP nº 2/2025",
     "CNCT"
   ],
   "pergunta": "A seção de expedição de diplomas e certificados explicita o título técnico na habilitação profissional e o eixo tecnológico conforme o CNCT vigente?",
-  "rubrica": "Verificar se o PPC informa que, após a integralização do curso e o cumprimento dos requisitos de conclusão, será expedido diploma com o correspondente título de técnico na respectiva habilitação profissional, indicando o eixo tecnológico vinculado ao curso conforme o CNCT. Quando houver certificações intermediárias ou certificados com terminalidade, verificar se o texto não confunde certificado, diploma e certificação de conhecimentos anteriores.",
+  "rubrica": "Verificar se o PPC informa que, após a integralização do curso e o cumprimento dos requisitos de conclusão, será expedido diploma com o correspondente título de técnico na respectiva habilitação profissional, indicando o eixo tecnológico vinculado ao curso conforme o CNCT. Quando houver certificações intermediárias ou certificados com terminalidade, verificar se o texto não confunde certificado, diploma e certificação de conhecimentos anteriores. Pela Resolução CNE/CP nº 2/2026, verificar ainda: a expedição do diploma de técnico condicionada à conclusão do ensino médio (art. 44, § 3º); o título de Técnico com flexão de gênero e indicação do eixo tecnológico (art. 45, § 1º); o código autenticador obrigatório do Sistec (art. 45, §§ 2º e 3º); o histórico escolar que acompanha o diploma, com perfil profissional de conclusão, componentes, cargas horárias, frequências, aproveitamentos e, quando for o caso, horas de estágio (art. 45, §§ 4º e 7º); e os certificados de qualificação profissional técnica intermediária, quando previstos (art. 45, § 4º, II, e § 6º). Exigir que o PPC trate pelo menos do título, do eixo e da condição de conclusão e não contradiga os demais elementos; a falta de menção à flexão de gênero, ao código autenticador ou ao conteúdo do histórico pode ser registrada como recomendação.",
   "boa_evidencia": "Trecho da seção 4.1 ou equivalente que declara o diploma de Técnico em determinada habilitação profissional, identifica o eixo tecnológico e vincula a expedição à conclusão/integralização do curso e ao CNCT vigente.",
   "ma_evidencia": "Seção ausente, título do diploma genérico, omissão do eixo tecnológico, divergência entre habilitação do diploma e denominação CNCT, ou confusão entre diploma de conclusão e certificação de conhecimentos anteriores.",
   "escalonar_quando": "Escalonar se o PPC menciona diploma ou certificado, mas não permite confirmar o título técnico, o eixo tecnológico ou a coerência com a denominação e a habilitação profissional do CNCT.",

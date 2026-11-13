@@ -34,12 +34,13 @@
     "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.itinerarios_formativos"
   ],
   "referencias_normativas": [
-    "CNCT"
+    "CNCT",
+    "Resolução CNE/CP nº 2/2026, arts. 9º, 17, § 2º, 28, VI e VII, e 29, § 4º"
   ],
   "pergunta": "Os itinerários formativos, certificações intermediárias ou possibilidades de verticalização do PPC são coerentes com o CNCT?",
-  "rubrica": "Quando o PPC tratar de itinerários, certificações intermediárias, formação continuada ou verticalização, comparar essas previsões com `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.itinerarios_formativos`.",
+  "rubrica": "Quando o PPC tratar de itinerários, certificações intermediárias, formação continuada ou verticalização, comparar essas previsões com `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.itinerarios_formativos`. Quando houver certificação intermediária de qualificação profissional técnica, verificar se a etapa correspondente tem no mínimo 20% da carga horária prevista no CNCT para o curso e se o PPC define o perfil profissional dessa certificação (Resolução CNE/CP nº 2/2026, art. 17, § 2º; art. 28, VI e VII; art. 29, § 4º). A organização por itinerário formativo profissional é obrigatória e o itinerário a ser percorrido pelos estudantes deve constar do PPC (art. 9º; art. 28, VII); essa exigência é verificada também em CT-CURR-12. As certificações intermediárias são preferenciais: não registrar problema pela simples ausência delas.",
   "boa_evidencia": "Itinerários, certificações ou possibilidades de continuidade formativa compatíveis com as sugestões e trajetórias do CNCT.",
-  "ma_evidencia": "Itinerários ou certificações desconectados da habilitação, incompatíveis com o CNCT ou apresentados como obrigatórios sem sustentação no PPC.",
+  "ma_evidencia": "Itinerários ou certificações desconectados da habilitação, incompatíveis com o CNCT ou apresentados como obrigatórios sem sustentação no PPC. Também é má evidência certificação intermediária com menos de 20% da carga horária do CNCT ou sem perfil profissional definido.",
   "escalonar_quando": "Escalonar se houver menção a itinerários ou verticalização, mas a relação com o campo CNCT permanecer vaga ou contraditória.",
   "evidencia_minima": 2,
   "estados_permitidos": [

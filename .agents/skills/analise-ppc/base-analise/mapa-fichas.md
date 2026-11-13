@@ -3,7 +3,7 @@
 Este mapa organiza as fichas por tópicos semânticos, sem depender da numeração das seções do PPC.
 A numeração observada em um PPC específico deve ser detectada na rodada de análise, não codificada na ficha.
 
-Gerado em: 2026-07-21T19:18:56+00:00
+Gerado em: 2026-11-13T12:00:58+00:00
 
 ## Como usar
 
@@ -66,12 +66,12 @@ Concentra fichas que conferem fundamentação legal, vigência normativa, refer�
 
 - Tipo de escopo: `multitematico`
 - Aliases de título: `base legal`, `fundamentação legal`, `referências`, `referências normativas`, `legislação`
-- Termos de busca: `lei`, `resolução`, `portaria`, `parecer`, `norma`, `referências`, `DCNEPT`, `DCNEM`, `CNCT`, `IFPR`
+- Termos de busca: `lei`, `resolução`, `portaria`, `parecer`, `norma`, `referências`, `DCNEPT`, `DCN da EPT`, `DCNEM`, `CNCT`, `IFPR`
 
 - `CT-IDENT-08` (OBRIG, identidade) - Base legal atualizada nas seções de identidade
 - `CT-IDENT-19` (OBRIG, identidade) - Registro profissional descrito com conselho e base aplicável
 - `CT-SUP-09` (OBRIG, suporte) - Referências com vigência normativa observável
-- `CT-SUP-12` (BLOQ, suporte) - Referências com vigência normativa atualizada
+- `CT-SUP-12` (OBRIG, suporte) - Referências com vigência normativa atualizada
 - `CT-SUP-13` (OBRIG, suporte) - Referências com aderência formal mínima à ABNT
 - `CT-SUP-14` (OBRIG, suporte) - Referências institucionais e referenciais essenciais do curso
 - `CT-SUP-21` (OBRIG, suporte) - Legislação profissional CNCT tratada quando aplicável
@@ -86,7 +86,7 @@ Localiza fichas sobre denominação, eixo tecnológico, forma de oferta, carga h
 
 - Tipo de escopo: `tematico`
 - Aliases de título: `identificação do curso`, `características do curso`, `dados do curso`, `apresentação do curso`, `oferta do curso`
-- Termos de busca: `denominação`, `eixo tecnológico`, `forma de oferta`, `modalidade`, `vagas`, `turno`, `carga horária`, `duração`, `requisitos de acesso`
+- Termos de busca: `denominação`, `eixo tecnológico`, `forma de oferta`, `modalidade`, `vagas`, `turno`, `carga horária`, `duração`, `requisitos de acesso`, `formato de oferta`, `semipresencial`, `a distância`, `prazo de integralização`
 
 - `CT-IDENT-01` (OBRIG, identidade) - Denominação do curso alinhada ao CNCT
 - `CT-IDENT-02` (OBRIG, identidade) - Coerência da apresentação institucional do curso
@@ -98,6 +98,7 @@ Localiza fichas sobre denominação, eixo tecnológico, forma de oferta, carga h
 - `CT-CURR-16` (OBRIG, curriculo) - Pré-requisitos de ingresso compatíveis com o CNCT
 - `CT-CURR-23` (OBRIG, curriculo) - Distribuição semanal das aulas e contraturnos explicitada
 - `CT-TRANS-07` (REC, transversal) - Dimensionamento de vagas compatível com infraestrutura e interesse público
+- `CT-CURR-27` (OBRIG, curriculo) - Formato de oferta e carga horária não presencial compatíveis com as DCN da EPT
 
 ### Justificativa, objetivos e demanda social
 
@@ -196,6 +197,7 @@ Abrange estrutura curricular, carga horária, distribuição por período, compo
 - `CT-CURR-23` (OBRIG, curriculo) - Distribuição semanal das aulas e contraturnos explicitada
 - `CT-TRANS-03` (BLOQ, transversal) - Coerência interna entre ementas e bibliografias do currículo
 - `CT-TRANS-04` (BLOQ, transversal) - Coerência entre currículo, corpo docente e infraestrutura
+- `CT-CURR-27` (OBRIG, curriculo) - Formato de oferta e carga horária não presencial compatíveis com as DCN da EPT
 
 ## Projeto pedagógico
 

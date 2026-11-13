@@ -31,9 +31,11 @@
     "interdisciplinaridade",
     "integração curricular"
   ],
-  "referencias_normativas": [],
+  "referencias_normativas": [
+    "Resolução CNE/CP nº 2/2026, arts. 26, VI, e 28, § 1º, II"
+  ],
   "pergunta": "As metodologias previstas sustentam integração curricular e desenvolvimento do perfil do egresso?",
-  "rubrica": "Avaliar se as metodologias descritas vão além de uma lista genérica e se dialogam com a concepção do curso.",
+  "rubrica": "Avaliar se as metodologias descritas vão além de uma lista genérica e se dialogam com a concepção do curso. Considerar que a Resolução CNE/CP nº 2/2026 pede metodologias ativas e orientação para a inovação com tecnologias digitais, incluída a inteligência artificial, que estimulem o protagonismo do estudante (art. 26, VI; art. 28, § 1º, II). Não exigir a menção literal a IA nem metodologias específicas; avaliar se as estratégias são concretas e coerentes com o perfil profissional.",
   "boa_evidencia": "Descrição metodológica conectada com projetos, integração entre componentes e experiências formativas.",
   "ma_evidencia": "Metodologias genéricas sem vínculo visível com currículo, avaliação ou perfil profissional.",
   "escalonar_quando": "Escalonar se houver intenção metodológica, mas sem materialização suficiente na organização curricular.",

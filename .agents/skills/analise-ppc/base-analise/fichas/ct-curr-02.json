@@ -53,12 +53,16 @@
     "hora aula",
     "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.carga_horaria_minima"
   ],
-  "referencias_normativas": [],
-  "pergunta": "A carga horária total do curso está apresentada de modo consistente e atende à carga horária mínima prevista no CNCT?",
-  "rubrica": "Avaliar se o PPC informa claramente a carga horária total, se ela não varia materialmente entre os principais pontos do documento e se é igual ou superior a `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.carga_horaria_minima_horas`, considerando também a descrição de carga horária mínima do CNCT quando trouxer condições específicas.",
-  "boa_evidencia": "Carga horária total coincidente entre apresentação, matriz e sínteses curriculares, com valor igual ou superior ao campo `Carga Horária Mínima` do CNCT.",
-  "ma_evidencia": "Valores conflitantes, ausência de explicitação da unidade adotada ou carga horária total inferior ao mínimo CNCT.",
-  "escalonar_quando": "Escalonar se houver indício de inconsistência entre hora-aula e hora-relógio, dúvida sobre a conversão para hora-relógio ou condição específica da descrição CNCT não tratada.",
+  "referencias_normativas": [
+    "CNCT",
+    "Resolução CNE/CP nº 2/2026, arts. 29, 30 e 37, § 3º",
+    "Resolução CONSUP/IFPR nº 64/2022, art. 22"
+  ],
+  "pergunta": "A carga horária total do curso está apresentada de modo consistente e atende à carga horária mínima aplicável à forma de oferta, prevista no CNCT e nas DCN da EPT?",
+  "rubrica": "Avaliar se o PPC informa claramente a carga horária total, se ela não varia materialmente entre os principais pontos do documento e se é igual ou superior a `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.carga_horaria_minima_horas`, considerando também a descrição de carga horária mínima do CNCT quando trouxer condições específicas. Verificar também o mínimo próprio da forma de oferta pela Resolução CNE/CP nº 2/2026: nos cursos integrados ao ensino médio e concomitantes intercomplementares, carga horária total mínima de 3.000 horas, admitida a contabilização simultânea de até 300 horas entre formação geral básica e formação técnica (art. 29, § 2º); na EJA articulada ao ensino médio, formação geral básica mínima de 1.200 horas acrescida da carga horária da habilitação técnica prevista no CNCT ou de qualificações profissionais técnicas planejadas, admitida a contabilização simultânea de até 300 horas entre formação geral básica e formação técnica, desde que haja integração curricular efetiva (art. 30 e parágrafo único; art. 29, § 3º). No IFPR, o integrado observa também a Resolução CONSUP/IFPR nº 64/2022, art. 22: mínimo de 3.000 horas em 3 anos e de 3.200 horas em 4 anos, sem ultrapassar 10% acima, incluído o estágio obrigatório; se esse teto institucional conflitar com o art. 37, § 3º, escalonar. A carga horária de estágio, obrigatório ou não obrigatório, é acrescida à carga horária mínima do curso e não pode ser usada para atingir o mínimo do CNCT (art. 37, § 3º).",
+  "boa_evidencia": "Carga horária total coincidente entre apresentação, matriz e sínteses curriculares, com valor igual ou superior ao campo `Carga Horária Mínima` do CNCT. Nas formas integrada, concomitante intercomplementar ou EJA, o total também atende ao mínimo da Resolução CNE/CP nº 2/2026, sem depender da carga horária de estágio para alcançar o mínimo do CNCT (art. 37, § 3º).",
+  "ma_evidencia": "Valores conflitantes, ausência de explicitação da unidade adotada ou carga horária total inferior ao mínimo CNCT. Também é má evidência carga horária total inferior a 3.000 horas em curso integrado ou concomitante intercomplementar, ou mínimo do CNCT alcançado apenas com a carga horária de estágio.",
+  "escalonar_quando": "Escalonar se houver indício de inconsistência entre hora-aula e hora-relógio, dúvida sobre a conversão para hora-relógio ou condição específica da descrição CNCT não tratada. Escalonar também se não ficar claro se a carga horária de estágio foi computada dentro do mínimo exigido. Escalonar se as 3.000 horas do integrado ou do concomitante intercomplementar só forem alcançadas com a carga horária do estágio, pois a Resolução não decide expressamente esse caso.",
   "evidencia_minima": 2,
   "estados_permitidos": [
     "ATENDE",

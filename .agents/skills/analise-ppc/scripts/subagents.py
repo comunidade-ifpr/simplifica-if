@@ -10,6 +10,7 @@ from common import (
     BASE_CONHECIMENTO_DIR,
     DEFAULT_GROUP_SIZE,
     FICHAS_DIR,
+    MARCOS_NORMATIVOS_PATH,
     PROMPTS_DIR,
     VALIDACOES_CRUZADAS_DIR,
     ensure_directory,
@@ -144,11 +145,22 @@ def contexto_fundamentacao_normativa() -> dict[str, Any]:
             else None,
         },
         "status_permitidos": STATUS_FUNDAMENTACAO_NORMATIVA,
+        "marcos_normativos": carregar_marcos_normativos(),
         "observacao": (
             "Use este contexto quando o PPC citar norma ou fizer afirmação com força normativa. "
-            "Os campos path dentro dos manifestos são relativos a base-conhecimento/."
+            "Os campos path dentro dos manifestos são relativos a base-conhecimento/. "
+            "Em marcos_normativos estão a norma vigente de cada tema, as normas substituídas e as regras de "
+            "transição; consulte-os antes de julgar a vigência de uma citação do PPC."
         ),
     }
+
+
+def carregar_marcos_normativos(path: Path = MARCOS_NORMATIVOS_PATH) -> list[dict[str, Any]]:
+    if not path.exists():
+        return []
+    payload = read_json(path)
+    marcos = payload.get("marcos") if isinstance(payload, dict) else None
+    return marcos if isinstance(marcos, list) else []
 
 
 def contexto_validacoes_cruzadas(rodada_dir: Path, validacoes_dir: Path | None = None) -> dict[str, Any]:

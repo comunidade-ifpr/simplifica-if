@@ -15,7 +15,7 @@ Você fará uma revisão transversal depois que todos os sub-agentes concluírem
 
 Avalie as validações de `validacoes_cruzadas.validacoes` que forem aplicáveis ao PPC e aos resultados das fichas. Procure inconsistências que só aparecem ao comparar respostas de fichas diferentes, como divergências entre identificação, perfil do egresso, matriz, ementário, carga horária, AEE, estágio, infraestrutura, CNCT e base normativa. Em cursos técnicos integrados, verifique especialmente se fundamentos legais, concepção do curso e referências finais tratam de modo coerente a DCNEM vigente e as Diretrizes Curriculares Nacionais Gerais da Educação Profissional e Tecnológica.
 
-Use os achados `fundamentacao_normativa` para detectar padrões transversais: norma citada sem suporte, norma antiga usada como fundamento vigente principal, afirmação normativa sem fonte consultada, conflito entre CNCT e texto do PPC ou generalização indevida de regra restrita.
+Use os achados `fundamentacao_normativa` para detectar padrões transversais: norma citada sem suporte, norma antiga usada como fundamento vigente principal, afirmação normativa sem fonte consultada, conflito entre CNCT e texto do PPC ou generalização indevida de regra restrita. Antes de julgar a vigência de norma citada pelo PPC, consulte `contextos.fundamentacao_normativa.marcos_normativos` e aplique os campos `transicao` e `orientacao_analise` do marco correspondente.
 
 Para estágio, use também `cnct_contexto.correspondencia.estagio`, `cnct_contexto.estagio_ppc` e `cnct_contexto.comparacoes.estagio_cnct` quando disponíveis, conferindo se CT-CURR-20, CT-CURR-21, CT-CURR-24 e CT-CURR-25 são coerentes entre si e com a matriz.
 

@@ -31,9 +31,12 @@
     "espaços",
     "contexto_estrutural.cnct.comparacao_catalogo.correspondencia.infraestrutura_minima"
   ],
-  "referencias_normativas": [],
+  "referencias_normativas": [
+    "CNCT",
+    "Resolução CNE/CP nº 2/2026, art. 28, XII e § 3º"
+  ],
   "pergunta": "A infraestrutura descrita é compatível, em nível institucional, com a execução da proposta curricular e com a infraestrutura mínima indicada no CNCT?",
-  "rubrica": "Comparar laboratórios, biblioteca, acervo e espaços de aprendizagem descritos no PPC com `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.infraestrutura_minima`, avaliando aderência à oferta e aos componentes práticos.",
+  "rubrica": "Comparar laboratórios, biblioteca, acervo e espaços de aprendizagem descritos no PPC com `contexto_estrutural.cnct.comparacao_catalogo.correspondencia.infraestrutura_minima`, avaliando aderência à oferta e aos componentes práticos. Quando houver atividades a distância, verificar também o ambiente virtual de aprendizagem e, se houver, a infraestrutura dos polos (Resolução CNE/CP nº 2/2026, art. 28, XII).",
   "boa_evidencia": "Seção de infraestrutura com ambientes identificáveis, aderentes ao curso e compatíveis com o campo `Infraestrutura Mínima` do CNCT.",
   "ma_evidencia": "Infraestrutura genérica, desconectada do curso, sem menção a laboratórios centrais ou inferior à infraestrutura mínima CNCT.",
   "escalonar_quando": "Escalonar se a infraestrutura for parcialmente descrita, sem vínculo claro com componentes práticos ou sem correspondência observável com os ambientes mínimos do CNCT.",

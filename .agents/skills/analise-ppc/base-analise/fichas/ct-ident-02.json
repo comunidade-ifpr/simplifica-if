@@ -33,11 +33,14 @@
     "modalidade",
     "carga horária"
   ],
-  "referencias_normativas": [],
-  "pergunta": "A apresentação do curso oferece um quadro institucional coerente quanto a campus, modalidade, carga horária e duração?",
-  "rubrica": "Buscar consistência interna entre os elementos de identificação básicos e verificar se não há conflito explícito entre eles.",
+  "referencias_normativas": [
+    "Resolução CNE/CP nº 2/2026, art. 28, I, II, VIII e XVI",
+    "Resolução CONSUP/IFPR nº 190/2024, art. 69"
+  ],
+  "pergunta": "A apresentação do curso oferece um quadro institucional coerente quanto a campus, forma e formato de oferta, carga horária, duração e prazo máximo de integralização?",
+  "rubrica": "Buscar consistência interna entre os elementos de identificação básicos e verificar se não há conflito explícito entre eles. Pela Resolução CNE/CP nº 2/2026, o PPC deve conter a identificação do curso, o formato da oferta (presencial, semipresencial ou a distância), a carga horária total e o prazo máximo para a integralização (art. 28, I, II, VIII e XVI). Apontar a ausência desses dados, sem exigir que estejam todos no mesmo quadro. A Resolução CONSUP/IFPR nº 190/2024, art. 69, parágrafo único, afirma não haver prazo limite para a integralização, em conflito com o art. 28, XVI, da Resolução CNE/CP nº 2/2026. Se o PPC omitir o prazo máximo ou reproduzir a regra institucional, registrar a divergência normativa como recomendação ou ressalva para encaminhamento à PROENS, sem NAO_ATENDE só por esse motivo.",
   "boa_evidencia": "Quadro-resumo, introdução e apresentação apontando os mesmos dados centrais do curso.",
-  "ma_evidencia": "Modalidade divergente, campus contraditório ou carga horária incompatível entre trechos centrais.",
+  "ma_evidencia": "Modalidade divergente, campus contraditório ou carga horária incompatível entre trechos centrais. Também é má evidência a ausência do formato de oferta ou do prazo máximo de integralização.",
   "escalonar_quando": "Escalonar se a identificação estiver fragmentada em trechos contraditórios ou incompletos.",
   "evidencia_minima": 2,
   "estados_permitidos": [

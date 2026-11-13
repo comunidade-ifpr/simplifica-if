@@ -31,12 +31,12 @@
     "legislação vigente"
   ],
   "referencias_normativas": [
-    "Resolução CNE/CP 1/2021"
+    "Resolução CNE/CP nº 2/2026, arts. 42 e 43"
   ],
   "pergunta": "Quando o PPC admite certificação de conhecimentos anteriores, o tratamento desse tema está descrito com clareza suficiente?",
-  "rubrica": "Verificar se o PPC prevê a possibilidade de certificação, sua base normativa e o procedimento ou fluxo básico para análise do pedido, quando aplicável ao curso.",
-  "boa_evidencia": "Previsão explícita da certificação com referência normativa e descrição do processamento do pedido ou do mecanismo equivalente.",
-  "ma_evidencia": "Menção vaga à certificação sem norma, sem procedimento ou sem delimitação de como o estudante pode acessá-la.",
+  "rubrica": "Verificar se o PPC prevê a possibilidade de certificação, sua base normativa e o procedimento ou fluxo básico para análise do pedido, quando aplicável ao curso. Pela Resolução CNE/CP nº 2/2026, a avaliação de saberes e experiências anteriores não comprovados por certificado ou histórico deve ser individual e presencial, por instrumento definido no PPC e relacionada ao perfil profissional de conclusão (art. 42, I, III, IV e parágrafo único; art. 43, § 5º); o aproveitamento documental do art. 42, II, dispensa essa avaliação. O processo formal de certificação profissional exige Projeto Pedagógico de Certificação Profissional (PPCP) próprio (art. 43) e é vedado em cursos experimentais (art. 43, § 4º). Não exigir que o PPC do curso reproduza um PPCP, mas verificar se ele não confunde a certificação de conhecimentos anteriores no curso com processo de certificação profissional.",
+  "boa_evidencia": "Previsão explícita da certificação com referência normativa e descrição do processamento do pedido ou do mecanismo equivalente. A avaliação prevista é individual e presencial.",
+  "ma_evidencia": "Menção vaga à certificação sem norma, sem procedimento ou sem delimitação de como o estudante pode acessá-la. Também é má evidência certificação sem avaliação individual e presencial ou previsão de processo formal de certificação profissional (PPCP) em curso experimental (art. 43, § 4º).",
   "escalonar_quando": "Escalonar se o PPC indicar certificação de conhecimentos anteriores, mas o procedimento ou a base normativa permanecerem ambíguos.",
   "evidencia_minima": 2,
   "estados_permitidos": [

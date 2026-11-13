@@ -33,12 +33,13 @@
     "avaliação da aprendizagem"
   ],
   "referencias_normativas": [
-    "Resolução IFPR 50/2017"
+    "Resolução IFPR 50/2017",
+    "Resolução CNE/CP nº 2/2026, art. 38"
   ],
   "pergunta": "O sistema de avaliação da aprendizagem está descrito de forma coerente com a regulamentação institucional do IFPR?",
-  "rubrica": "Verificar se conceitos, critérios e dispositivos avaliativos aparecem de forma inteligível e compatível com a normativa institucional.",
+  "rubrica": "Verificar se conceitos, critérios e dispositivos avaliativos aparecem de forma inteligível e compatível com a normativa institucional. Considerar a Resolução CNE/CP nº 2/2026, art. 38: avaliação contínua, cumulativa, diagnóstica, formativa e somativa, com prevalência dos aspectos qualitativos (§ 1º); critérios, procedimentos, instrumentos e formas de registro explicitados no PPC e coerentes com o perfil profissional (§ 2º); situações teóricas e práticas (§ 5º); avaliação obrigatoriamente presencial nas unidades curriculares ofertadas parcial ou integralmente a distância (§ 8º); e supervisão humana significativa com direito à contestação, vedada a avaliação automatizada para progressão (§ 9º).",
   "boa_evidencia": "Descrição dos conceitos, da lógica de avaliação e da aprovação/reprovação.",
-  "ma_evidencia": "Avaliação tratada genericamente, sem conceitos ou sem referência institucional reconhecível.",
+  "ma_evidencia": "Avaliação tratada genericamente, sem conceitos ou sem referência institucional reconhecível. Também é má evidência prever avaliação automatizada como base para a progressão, sem supervisão humana.",
   "escalonar_quando": "Escalonar se o sistema parecer parcialmente descrito ou com terminologia híbrida.",
   "evidencia_minima": 2,
   "estados_permitidos": [

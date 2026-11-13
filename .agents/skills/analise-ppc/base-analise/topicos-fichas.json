@@ -24,7 +24,11 @@
         "turno",
         "carga horária",
         "duração",
-        "requisitos de acesso"
+        "requisitos de acesso",
+        "formato de oferta",
+        "semipresencial",
+        "a distância",
+        "prazo de integralização"
       ],
       "fichas": [
         "CT-IDENT-01",
@@ -36,7 +40,8 @@
         "CT-CURR-02",
         "CT-CURR-16",
         "CT-CURR-23",
-        "CT-TRANS-07"
+        "CT-TRANS-07",
+        "CT-CURR-27"
       ]
     },
     {
@@ -170,7 +175,8 @@
         "CT-CURR-19",
         "CT-CURR-23",
         "CT-TRANS-03",
-        "CT-TRANS-04"
+        "CT-TRANS-04",
+        "CT-CURR-27"
       ]
     },
     {
@@ -467,6 +473,7 @@
         "norma",
         "referências",
         "DCNEPT",
+        "DCN da EPT",
         "DCNEM",
         "CNCT",
         "IFPR"

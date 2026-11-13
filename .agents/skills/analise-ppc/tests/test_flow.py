@@ -36,6 +36,7 @@ from subagents import (
 )
 from common import (
     BASE_ANALISE_DIR,
+    BASE_CONHECIMENTO_DIR,
     FICHAS_DIR,
     TOPICOS_FICHAS_PATH,
     extract_identificacao_from_conversion_json,
@@ -538,7 +539,7 @@ def test_contexto_cnct_inclui_resumo_estruturado_de_estagio() -> None:
 
 def test_catalogo_cnct_interno_foi_substituido_pela_base_unificada() -> None:
     assert not (BASE_ANALISE_DIR / "dados" / "cnct" / "catalogo_cnct.csv").exists()
-    assert Path("base-conhecimento/catalogos/cnct/index.json").exists()
+    assert (BASE_CONHECIMENTO_DIR / "catalogos" / "cnct" / "index.json").exists()
 
 
 def test_ficha_convenios_estagio_declara_hipoteses_da_resolucao_82() -> None:
@@ -645,7 +646,7 @@ def test_ficha_formacao_docente_aceita_politica_institucional_verificavel() -> N
         for campo in ("pergunta", "rubrica", "boa_evidencia", "ma_evidencia", "escalonar_quando")
     )
 
-    assert "Resolução CNE/CP nº 1/2021, art. 53" in ficha["referencias_normativas"]
+    assert "Resolução CNE/CP nº 2/2026, arts. 57, 59, 61 e 72" in ficha["referencias_normativas"]
     assert "Resolução CONSUP/IFPR nº 64/2022, arts. 41 a 43" in ficha["referencias_normativas"]
     assert "política institucional do IFPR" in texto
     assert "Não penalizar a simples presença de docentes bacharéis" in texto
@@ -737,7 +738,8 @@ def test_detector_identifica_fichas_que_dependem_de_fundamentacao_normativa() ->
 
     assert ficha_requer_fundamentacao_normativa(fichas["CT-IDENT-08"])
     assert ficha_requer_fundamentacao_normativa(fichas["CT-CURR-20"])
-    assert not ficha_requer_fundamentacao_normativa(fichas["CT-IDENT-02"])
+    assert ficha_requer_fundamentacao_normativa(fichas["CT-IDENT-02"])
+    assert not ficha_requer_fundamentacao_normativa(fichas["CT-IDENT-04"])
 
 
 def test_gerar_relatorio_html_aceita_resultados_validos(tmp_path: Path) -> None:

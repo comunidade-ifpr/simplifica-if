@@ -69,9 +69,10 @@ Para reavaliar fichas específicas, use `montar-grupo-avulso`, execute um sub-ag
 Ao criar, atualizar ou corrigir uma ficha em `base-analise/fichas/`:
 
 1. Garanta que a ficha declare `topicos_tematicos`, `tipo_escopo` e `ancoras_semanticas`.
-2. Atualize `base-analise/topicos-fichas.json` quando a cobertura temática mudar.
-3. Atualize ou crie teste quando a ficha cobrir comportamento novo, regra normativa específica ou regressão já observada.
-4. Regenere os artefatos derivados e valide a base.
+2. Cite em `referencias_normativas` apenas normas vigentes. Regras de transição e a norma vigente de cada tema ficam em `base-analise/marcos-normativos.json`; o validador acusa ficha que cite norma revogada no `base-conhecimento/manifest.json`.
+3. Atualize `base-analise/topicos-fichas.json` quando a cobertura temática mudar.
+4. Atualize ou crie teste quando a ficha cobrir comportamento novo, regra normativa específica ou regressão já observada.
+5. Regenere os artefatos derivados e valide a base.
 
 Comandos obrigatórios a partir da raiz do repositório:
 

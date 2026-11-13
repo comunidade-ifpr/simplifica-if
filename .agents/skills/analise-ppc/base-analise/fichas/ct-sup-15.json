@@ -33,9 +33,11 @@
     "componentes curriculares",
     "experiência profissional"
   ],
-  "referencias_normativas": [],
+  "referencias_normativas": [
+    "Resolução CNE/CP nº 2/2026, arts. 28, XIV, 60 a 63 e 72"
+  ],
   "pergunta": "O PPC demonstra que os docentes previstos têm habilitação e formação compatíveis com os componentes curriculares do curso?",
-  "rubrica": "Avaliar se a seção docente define requisitos de titulação e formação coerentes para componentes da formação geral e técnica, com vínculo reconhecível entre docentes e componentes da oferta.",
+  "rubrica": "Avaliar se a seção docente define requisitos de titulação e formação coerentes para componentes da formação geral e técnica, com vínculo reconhecível entre docentes e componentes da oferta. O PPC deve apresentar o perfil de qualificação de professores, coordenadores, instrutores, mediadores pedagógicos e técnico-administrativos (Resolução CNE/CP nº 2/2026, art. 28, XIV). A experiência profissional na área deve ser preferencialmente requisito para a docência na EPTNM (art. 60); profissionais de notório saber só podem ser admitidos com reconhecimento pelo sistema de ensino e para o itinerário de formação técnica e profissional do ensino médio (art. 62); instrutores atuam de forma complementar, sob supervisão do docente responsável (art. 63, § 2º). As exigências dos arts. 60 a 63 estão em transição até 31/12/2030 (art. 72): a falta de adequação a elas gera recomendação, não NAO_ATENDE. O perfil de qualificação no PPC (art. 28, XIV) é exigível desde já.",
   "boa_evidencia": "Quadro docente com formação, titulação e eventual experiência profissional alinhadas aos componentes sob responsabilidade de cada docente.",
   "ma_evidencia": "Listagem de nomes ou títulos sem critério de habilitação, sem relação visível com os componentes ou com incompatibilidades evidentes de formação.",
   "escalonar_quando": "Escalonar se houver compatibilidade parcial, mas não for possível confirmar a habilitação de parte relevante dos componentes ou docentes.",
