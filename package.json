@@ -9,6 +9,8 @@
     "base:validar": "bun run scripts/validar_base.ts",
     "base:site": "bun run scripts/gerar_site.ts",
     "base:tipos": "bun run scripts/gerar_tipos_schemas.ts",
+    "avaliacao": "bun run scripts/avaliar.ts",
+    "avaliacao:gabaritos": "bun run scripts/avaliacao/gabaritos/gerar.ts",
     "sei:sync": "bun run scripts/notion_atualizar_movimentacoes_sei.ts",
     "sei": "bun run --cwd packages/sei-cli sei",
     "test": "bun test scripts ./.agents/skills && bun run --cwd packages/kb test && bun run --cwd packages/sei-cli test",

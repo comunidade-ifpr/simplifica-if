@@ -1,0 +1,148 @@
+# PPC-ouro: achados esperados por ficha da analise-ppc. RASCUNHO: revisão humana obrigatória.
+# Contrato: esquemaPpcOuro em scripts/avaliacao/esquema.ts. Cada evidência é trecho literal do PPC.
+ppc: curso:curitiba/tecnico-em-enfermagem
+arquivo: base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md
+status: rascunho
+revisado_por: null
+justificativa_escolha: >-
+  Subsequente do eixo Ambiente e Saúde, com ajuste curricular de 2023: exercita estágio obrigatório
+  no limite de um terço da carga do CNCT, legislação profissional (Cofen), certificação intermediária,
+  oferta só presencial (art. 49, § 8º) e base legal com a DCN revogada e órgão trocado.
+achados:
+  - ficha: CT-IDENT-01
+    estado_esperado: ATENDE
+    justificativa: A denominação coincide com a habilitação "Técnico em Enfermagem" do CNCT.
+    evidencias:
+      - trecho: Curso Técnico em Enfermagem
+        observacao: Seção 1.1.3 Denominação do Curso.
+    referencias:
+      - ancora: cnct:tecnico-em-enfermagem
+        arquivo: base-conhecimento/catalogos/cnct/cursos/tecnico-em-enfermagem.json
+        trecho: '"denominacao": "Técnico em Enfermagem"'
+    status: rascunho
+
+  - ficha: CT-IDENT-13
+    estado_esperado: ATENDE
+    justificativa: O eixo declarado (Ambiente e Saúde) é o eixo do curso no CNCT.
+    evidencias:
+      - trecho: Ambiente e Saúde
+        observacao: Seção 1.1.4 Eixo Tecnológico.
+    referencias:
+      - ancora: cnct:tecnico-em-enfermagem
+        arquivo: base-conhecimento/catalogos/cnct/cursos/tecnico-em-enfermagem.json
+        trecho: '"eixo_tecnologico": "Ambiente e Saúde"'
+    status: rascunho
+
+  - ficha: CT-CURR-02
+    estado_esperado: ATENDE
+    justificativa: >-
+      Carga total de 1.600 h, das quais 1.200 h teóricas e 400 h de estágio; o mínimo de 1.200 h do CNCT é
+      atingido sem a carga de estágio (art. 37, § 3º). Valores coincidentes entre identificação e matriz.
+    evidencias:
+      - trecho: 'Carga horária total em hora relógio: 1.600 horas'
+      - trecho: '|Carga horária teórica|||1.440|1.200|'
+      - trecho: '|**CARGA HORÁRIA TOTAL DO CURSO**|1.600||'
+    referencias:
+      - ancora: cnct:tecnico-em-enfermagem
+        arquivo: base-conhecimento/catalogos/cnct/cursos/tecnico-em-enfermagem.json
+        trecho: '"carga_horaria_minima_horas": 1200'
+      - ancora: br/cne-cp/res/2026/2#art37-par3
+        arquivo: base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md
+        trecho: deve ser acrescida à carga horária mínima do curso estabelecida no CNCT ou no CNCST
+    status: rascunho
+
+  - ficha: CT-CURR-20
+    estado_esperado: ATENDE
+    justificativa: >-
+      Estágio obrigatório de 400 h, acrescido às 1.200 h teóricas e igual ao teto de um terço da carga
+      mínima do CNCT (art. 37, § 6º). A matriz diz "mín. 400": conferir se o PPC admite carga acima do teto.
+    evidencias:
+      - trecho: 'Carga horária de Prática Profissional Supervisionada (estágio curricular): 400 horas'
+      - trecho: '|(ES) Estágio Supervisionado (mín. 400 horas-relógio)|-|400|'
+    referencias:
+      - ancora: br/cne-cp/res/2026/2#art37-par6
+        arquivo: base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md
+        trecho: não poderá ultrapassar a um terço da carga horária mínima prevista para a habilitação profissional estabelecida no CNCT
+    status: rascunho
+
+  - ficha: CT-CURR-16
+    estado_esperado: ATENDE
+    justificativa: >-
+      Exige ensino médio completo, como o CNCT para o subsequente. A idade mínima de 18 anos é requisito
+      adicional, não previsto no CNCT; avaliar se é ressalva.
+    evidencias:
+      - trecho: 'Escolaridade mínima exigida: Ensino Médio completo'
+      - trecho: 'Idade mínima exigida: dezoito (18) anos'
+    referencias:
+      - ancora: cnct:tecnico-em-enfermagem
+        arquivo: base-conhecimento/catalogos/cnct/cursos/tecnico-em-enfermagem.json
+        trecho: Para ingresso no Curso Técnico Subsequente, o estudante deverá ter concluído o Ensino Médio.
+    status: rascunho
+
+  - ficha: CT-IDENT-08
+    estado_esperado: NAO_ATENDE
+    justificativa: >-
+      A base legal cita como DCN da EPT a "Resolução do Conselho Nacional de Educação/CEB nº 1/2021" (órgão
+      trocado; o ato é a CNE/CP nº 1/2021) e a Res. CNE/CP nº 1/2021, revogada pela Res. CNE/CP nº 2/2026,
+      que não aparece.
+    evidencias:
+      - trecho: Resolução do Conselho Nacional de Educação/CEB nº 1/2021, define Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica
+      - trecho: 'Base legal específica do curso: Resolução CNE/CP nº 1/2021'
+    referencias:
+      - ancora: br/cne-cp/res/2026/2#art74-ii
+        arquivo: base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md
+        trecho: a Resolução CNE/CP nº 1, de 5 de janeiro de 2021;
+    status: rascunho
+
+  - ficha: CT-IDENT-18
+    estado_esperado: ATENDE
+    justificativa: >-
+      Seção 4.3 vincula o acompanhamento à Resolução IFPR nº 23/2021, atribui o contato à coordenação e
+      descreve pesquisa com egressos sobre inserção profissional. O uso dos resultados para revisar o PPC
+      e o prazo de dois anos do art. 28, § 4º, não estão explícitos: possível ressalva.
+    evidencias:
+      - trecho: O acompanhamento dos egressos do Curso Técnico em Enfermagem está articulado com a Resolução IFPR Nº 23, de 23 de julho de 2021.
+      - trecho: o curso desenvolve projetos de pesquisa com os egressos para avaliar questões sobre a inserção no mercado de trabalho
+    referencias:
+      - ancora: br/cne-cp/res/2026/2#art28-par4
+        arquivo: base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md
+        trecho: por pelo menos dois anos consecutivos, contados a partir da conclusão do curso
+    status: rascunho
+
+  - ficha: CT-SUP-21
+    estado_esperado: ATENDE
+    justificativa: >-
+      O item 1.1.22 cita Cofen/Coren, a Lei nº 7.498/1986, o Decreto nº 94.406/1987 e a Resolução Cofen
+      nº 609/2019, indicados no CNCT. Falta o Parecer Normativo nº 001/2019/COFEN.
+    evidencias:
+      - trecho: BRASIL. Lei nº 7.498, de 25 de junho de 1986. Dispõe sobre a regulamentação do exercício da enfermagem
+      - trecho: BRASIL. Conselho Federal de Enfermagem. Resolução COFEN Nº 609, de 1º de julho de 2019.
+    referencias:
+      - ancora: cnct:tecnico-em-enfermagem
+        arquivo: base-conhecimento/catalogos/cnct/cursos/tecnico-em-enfermagem.json
+        trecho: Lei nº 7.498, de 25 de junho de 1986
+    status: rascunho
+
+  - ficha: CT-IDENT-15
+    estado_esperado: ATENDE
+    justificativa: O diploma explicita a habilitação e o eixo tecnológico do CNCT; há também certificação intermediária de Auxiliar de Enfermagem.
+    evidencias:
+      - trecho: Diploma de Técnico em Enfermagem, do Eixo Tecnológico Ambiente e Saúde, após integralização dos quatro semestres do curso.
+      - trecho: Certificado de qualificação profissional em Auxiliar de Enfermagem, do Eixo Tecnológico Ambiente e Saúde
+    status: rascunho
+
+  - ficha: CT-CURR-27
+    estado_esperado: ATENDE
+    justificativa: >-
+      Formato presencial declarado, sem carga a distância na matriz. É o único formato admitido para a área
+      Gestão e Promoção da Saúde e Bem-Estar (art. 49, § 8º).
+    evidencias:
+      - trecho: Presencial
+        observacao: Seção 1.1.5 Modalidade.
+      - trecho: Subsequente ao Ensino Médio
+        observacao: Seção 1.1.6 Forma de Oferta.
+    referencias:
+      - ancora: br/cne-cp/res/2026/2#art49-par8
+        arquivo: base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md
+        trecho: será realizada exclusivamente no formato presencial
+    status: rascunho

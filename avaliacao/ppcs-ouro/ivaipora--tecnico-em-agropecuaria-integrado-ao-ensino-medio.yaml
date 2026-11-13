@@ -1,0 +1,142 @@
+# PPC-ouro: achados esperados por ficha da analise-ppc. RASCUNHO: revisão humana obrigatória.
+# Contrato: esquemaPpcOuro em scripts/avaliacao/esquema.ts. Cada evidência é trecho literal do PPC.
+ppc: curso:ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio
+arquivo: base-conhecimento/institucional/ifpr/ppcs/ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio.md
+status: rascunho
+revisado_por: null
+justificativa_escolha: >-
+  Integrado ao ensino médio de 2024 (primeira turma em 2025), eixo Recursos Naturais: exercita os
+  mínimos do integrado (3.000 h nacionais e regra do IFPR), curso sem estágio obrigatório, conselho
+  profissional (CFTA), acompanhamento de egressos com seção própria e base legal com normas revogadas.
+achados:
+  - ficha: CT-IDENT-01
+    estado_esperado: ATENDE
+    justificativa: A denominação coincide com a habilitação "Técnico em Agropecuária" do CNCT.
+    evidencias:
+      - trecho: Técnico em Agropecuária
+        observacao: Seção 1.1.3 Denominação do Curso.
+    referencias:
+      - ancora: cnct:tecnico-em-agropecuaria
+        arquivo: base-conhecimento/catalogos/cnct/cursos/tecnico-em-agropecuaria.json
+        trecho: '"denominacao": "Técnico em Agropecuária"'
+    status: rascunho
+
+  - ficha: CT-IDENT-13
+    estado_esperado: ATENDE
+    justificativa: O eixo declarado (Recursos Naturais) é o eixo do curso no CNCT.
+    evidencias:
+      - trecho: Recursos Naturais
+        observacao: Seção 1.1.4 Eixo Tecnológico.
+    referencias:
+      - ancora: cnct:tecnico-em-agropecuaria
+        arquivo: base-conhecimento/catalogos/cnct/cursos/tecnico-em-agropecuaria.json
+        trecho: '"eixo_tecnologico": "Recursos Naturais"'
+    status: rascunho
+
+  - ficha: CT-CURR-02
+    estado_esperado: ATENDE
+    justificativa: >-
+      3.200 h em 3 anos (1.200 h técnicas, 1.800 h de formação básica e 200 h complementares): acima de
+      3.000 h (art. 29, § 2º), com as 1.200 h do CNCT na parte técnica e dentro do teto de 10% da
+      Res. CONSUP/IFPR nº 64/2022, art. 22, I (até 3.300 h). Conferir os totais na matriz.
+    evidencias:
+      - trecho: O curso técnico em agropecuária integrado terá a carga horária total de 3.200 horas, sendo 1.200 horas de nível técnico, 1.800 horas de nível básico e 200 horas de atividades complementares.
+      - trecho: O curso terá duração de 3 (três) anos, divididos em 6 semestres acadêmicos.
+    referencias:
+      - ancora: br/cne-cp/res/2026/2#art29-par2
+        arquivo: base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md
+        trecho: deve-se atender a carga horária mínima de três mil horas
+      - ancora: ifpr/consup/res/2022/64#art22
+        arquivo: base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md
+        trecho: mínimo de 3000 (três mil) horas para a duração total do curso
+    status: rascunho
+
+  - ficha: CT-CURR-16
+    estado_esperado: ATENDE
+    justificativa: Exige ensino fundamental completo, como o CNCT para o integrado.
+    evidencias:
+      - trecho: Ensino Fundamental completo e aprovação no processo seletivo regulamentado pela Pró-Reitoria de Ensino
+    referencias:
+      - ancora: cnct:tecnico-em-agropecuaria
+        arquivo: base-conhecimento/catalogos/cnct/cursos/tecnico-em-agropecuaria.json
+        trecho: Para ingresso no curso técnico integrado ao ensino médio, o estudante deverá ter concluído o ensino fundamental.
+    status: rascunho
+
+  - ficha: CT-CURR-20
+    estado_esperado: INCONCLUSIVO
+    justificativa: >-
+      A identificação diz que o estágio obrigatório "não se aplica" (o CNCT deixa a critério da
+      instituição), mas as atribuições da coordenação falam em orientar o "estágio obrigatório" e o PPC não
+      trata do estágio não obrigatório. Contradição a escalonar.
+    evidencias:
+      - trecho: Não se aplica
+        observacao: Seção 1.1.11 Carga Horária de Estágio Obrigatório.
+      - trecho: ii) Orientar os estudantes para a realização das atividades complementares e estágio obrigatório
+    referencias:
+      - ancora: cnct:tecnico-em-agropecuaria
+        arquivo: base-conhecimento/catalogos/cnct/cursos/tecnico-em-agropecuaria.json
+        trecho: o curso poderá ter estágio curricular supervisionado obrigatório, a critério da instituição ofertante
+    status: rascunho
+
+  - ficha: CT-IDENT-08
+    estado_esperado: NAO_ATENDE
+    justificativa: >-
+      A base legal cita a DCN da EPT como "Resolução CNE/CEB nº 1/2021" (órgão trocado; a CNE/CP nº 1/2021
+      foi revogada pela CNE/CP nº 2/2026), a Res. CNE/CEB nº 3/2018 (revogada pela CNE/CEB nº 2/2024) e a
+      Res. CONSUP/IFPR nº 54/2011 (revogada pela nº 190/2024).
+    evidencias:
+      - trecho: ●Resolução CNE/CEB nº 1/2021, que define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica;
+      - trecho: '●Resolução CNE/CEB nº 3/2018: Define Diretrizes Curriculares Nacionais para o Ensino Médio'
+      - trecho: 'Resolução CONSUP/IFPR nº54/2011: Dispõe sobre a Organização Didático-Pedagógica'
+    referencias:
+      - ancora: br/cne-ceb/res/2024/2
+        arquivo: base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md
+        trecho: Fica revogada a Resolução CNE/CEB nº 3, de 21 de novembro de 2018
+      - ancora: ifpr/consup/res/2024/190
+        arquivo: base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_190-2024_odp-cursos-tecnicos.md
+        trecho: Resolução IFPR nº 54/2011
+    status: rascunho
+
+  - ficha: CT-IDENT-18
+    estado_esperado: ATENDE
+    justificativa: >-
+      Seção 4.3 vincula o acompanhamento à Política de Acompanhamento de Egressos do IFPR e prevê
+      questionários às turmas concluintes e banco de dados de egressos. O prazo de dois anos do art. 28,
+      § 4º, não está explícito: possível ressalva.
+    evidencias:
+      - trecho: serão desenvolvidas ações articuladas à Política de Acompanhamento de Egressos do IFPR (Resolução IFPR nº 23, de 23 de julho de 2021).
+      - trecho: Aplicação de questionários para as turmas concluintes
+    status: rascunho
+
+  - ficha: CT-SUP-21
+    estado_esperado: ATENDE
+    justificativa: >-
+      Cita a Lei nº 5.524/1968, o Decreto nº 90.922/1985 (com as alterações do Decreto nº 4.560/2002) e a
+      Lei nº 13.639/2018 (CFTA), indicados no CNCT. Falta a Portaria MT nº 3.156/1987.
+    evidencias:
+      - trecho: Lei Federal 5.524 de 5 de novembro de 1968
+      - trecho: Decreto Federal 90.922, de 6 de fevereiro de 1985 (com alterações do Decreto 4.560),
+      - trecho: criado a partir da Lei 13.639 de 26 de março de 2018
+    referencias:
+      - ancora: cnct:tecnico-em-agropecuaria
+        arquivo: base-conhecimento/catalogos/cnct/cursos/tecnico-em-agropecuaria.json
+        trecho: Lei nº 5.524, de 5 de novembro de 1968
+    status: rascunho
+
+  - ficha: CT-IDENT-15
+    estado_esperado: ATENDE
+    justificativa: O diploma explicita a habilitação e o eixo tecnológico do CNCT.
+    evidencias:
+      - trecho: Diploma de Técnico em Agropecuária, do Eixo Tecnológico Recursos Naturais e histórico escolar de conclusão do ensino médio.
+    status: rascunho
+
+  - ficha: CT-CURR-22
+    estado_esperado: ATENDE
+    justificativa: O AEE é descrito como atendimento no contraturno, não como componente da matriz.
+    evidencias:
+      - trecho: O campus também oferta o Atendimento Educacional Especializado (AEE), ministrado por professor de educação especial, voltado para a complementação e suplementação do ensino ministrado em sala de aula regular e oferecido durante o contraturno.
+    referencias:
+      - ancora: ifpr/proens/nt/2025/1
+        arquivo: base-conhecimento/normas/ifpr/notas-tecnicas/NOTA-TECNICA_PROENS-IFPR_1-2025_aee-nao-componente-curricular.md
+        trecho: Não deverão incorporar o Atendimento Educacional Especializado (AEE) como componente curricular.
+    status: rascunho

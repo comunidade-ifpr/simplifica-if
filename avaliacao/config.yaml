@@ -1,0 +1,51 @@
+# Configuração do harness de avaliação (bun run scripts/avaliar.ts).
+#
+# Decisão em aberto no PLANO-ARQUITETURA.md (item 4): modelo fixado e número de execuções por
+# pergunta. Os valores abaixo são um padrão provisório; o usuário decide antes da linha de base.
+# Para comparar fases, mantenha modelo, execuções e ferramentas iguais entre rodadas. O relatório
+# registra o ID efetivo do modelo informado pelo `claude -p`, mesmo quando aqui se usa um alias.
+
+# Alias ou nome completo aceito por `claude --model`. Um alias ("sonnet") acompanha versões novas;
+# para uma série histórica comparável, troque pelo nome completo do modelo.
+modelo: sonnet
+
+# O plano prevê 3 execuções por pergunta para medir a variância do agente.
+execucoes: 3
+
+# Limite de turnos do agente por execução; perguntas de conjunto costumam pedir mais leituras.
+max_turns: 40
+
+# Teto de gasto por execução (--max-budget-usd). A execução é interrompida ao atingi-lo.
+max_budget_usd_por_execucao: 1.5
+
+# Tempo máximo, em segundos, de uma execução antes de o processo ser encerrado.
+timeout_s: 900
+
+# Ferramentas embutidas disponíveis ao agente (--tools) e regras pré-aprovadas (--allowedTools).
+# Tudo o que não está pré-aprovado é negado (--permission-mode dontAsk): o agente só lê.
+ferramentas:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+ferramentas_permitidas:
+  - Read
+  - Grep
+  - Glob
+  - "Bash(jq *)"
+  - "Bash(ls *)"
+  - "Bash(wc *)"
+
+# Fontes de configuração do Claude Code (--setting-sources). Sem este campo, valem também as
+# configurações do usuário, inclusive plugins e hooks pessoais: no smoke test de 13/11/2026, um hook
+# de estilo "explanatory" do usuário acrescentou blocos "Insight" à resposta. Para uma linha de base
+# que não dependa da máquina, descomente (combinação ainda não testada numa execução real).
+# fontes_configuracao: [project, local]
+
+# Acrescentado ao prompt de sistema do agente. O AGENTS.md do repositório já é carregado pelo
+# Claude Code via CLAUDE.md; aqui só se fixa o formato da resposta para a pontuação.
+instrucao_sistema: >-
+  Você está respondendo a uma pergunta sobre a base de conhecimento local deste repositório.
+  Não altere arquivos. Responda em português, cite as fontes com o caminho do arquivo e o
+  dispositivo (artigo, parágrafo, inciso) ou o curso e o campus, e, quando a pergunta pedir uma
+  lista, apresente um item por linha com o campus e o nome do curso.

@@ -1,0 +1,2767 @@
+{
+  "gerado_por": "scripts/avaliacao/gabaritos/gerar.ts",
+  "campus": [
+    {
+      "id": "campus:arapongas",
+      "rotulo": "Arapongas",
+      "padroes": [
+        "(?<![a-z0-9])arapongas(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:assis-chateaubriand",
+      "rotulo": "Assis Chateaubriand",
+      "padroes": [
+        "(?<![a-z0-9])assis chateaubriand(?![a-z0-9])",
+        "(?<![a-z0-9])assis(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:astorga",
+      "rotulo": "Astorga",
+      "padroes": [
+        "(?<![a-z0-9])astorga(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:barracao",
+      "rotulo": "Barracão",
+      "padroes": [
+        "(?<![a-z0-9])barracao(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:campo-largo",
+      "rotulo": "Campo Largo",
+      "padroes": [
+        "(?<![a-z0-9])campo largo(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:capanema",
+      "rotulo": "Capanema",
+      "padroes": [
+        "(?<![a-z0-9])capanema(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:cascavel",
+      "rotulo": "Cascavel",
+      "padroes": [
+        "(?<![a-z0-9])cascavel(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:colombo",
+      "rotulo": "Colombo",
+      "padroes": [
+        "(?<![a-z0-9])colombo(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:coronel-vivida",
+      "rotulo": "Coronel Vivida",
+      "padroes": [
+        "(?<![a-z0-9])coronel vivida(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:curitiba",
+      "rotulo": "Curitiba",
+      "padroes": [
+        "(?<![a-z0-9])curitiba(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:foz-do-iguacu",
+      "rotulo": "Foz do Iguaçu",
+      "padroes": [
+        "(?<![a-z0-9])foz do iguacu(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:goioere",
+      "rotulo": "Goioerê",
+      "padroes": [
+        "(?<![a-z0-9])goioere(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:irati",
+      "rotulo": "Irati",
+      "padroes": [
+        "(?<![a-z0-9])irati(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:ivaipora",
+      "rotulo": "Ivaiporã",
+      "padroes": [
+        "(?<![a-z0-9])ivaipora(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:jacarezinho",
+      "rotulo": "Jacarezinho",
+      "padroes": [
+        "(?<![a-z0-9])jacarezinho(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:jaguariaiva",
+      "rotulo": "Jaguariaíva",
+      "padroes": [
+        "(?<![a-z0-9])jaguariaiva(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:londrina",
+      "rotulo": "Londrina",
+      "padroes": [
+        "(?<![a-z0-9])londrina(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:palmas",
+      "rotulo": "Palmas",
+      "padroes": [
+        "(?<![a-z0-9])palmas(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:paranagua",
+      "rotulo": "Paranaguá",
+      "padroes": [
+        "(?<![a-z0-9])paranagua(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:paranavai",
+      "rotulo": "Paranavaí",
+      "padroes": [
+        "(?<![a-z0-9])paranavai(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:pinhais",
+      "rotulo": "Pinhais",
+      "padroes": [
+        "(?<![a-z0-9])pinhais(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:pitanga",
+      "rotulo": "Pitanga",
+      "padroes": [
+        "(?<![a-z0-9])pitanga(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:ponta-grossa",
+      "rotulo": "Ponta Grossa",
+      "padroes": [
+        "(?<![a-z0-9])ponta grossa(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:quedas-do-iguacu",
+      "rotulo": "Quedas do Iguaçu",
+      "padroes": [
+        "(?<![a-z0-9])quedas do iguacu(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:reitoria",
+      "rotulo": "Reitoria",
+      "padroes": [
+        "(?<![a-z0-9])reitoria(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:telemaco-borba",
+      "rotulo": "Telêmaco Borba",
+      "padroes": [
+        "(?<![a-z0-9])telemaco borba(?![a-z0-9])",
+        "(?<![a-z0-9])telemaco(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:umuarama",
+      "rotulo": "Umuarama",
+      "padroes": [
+        "(?<![a-z0-9])umuarama(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "campus:uniao-da-vitoria",
+      "rotulo": "União da Vitória",
+      "padroes": [
+        "(?<![a-z0-9])uniao da vitoria(?![a-z0-9])"
+      ]
+    }
+  ],
+  "curso": [
+    {
+      "id": "curso:arapongas/especializacao-em-docencia-e-praticas-educativas",
+      "rotulo": "Especialização em Docência e Práticas Educativas",
+      "campus": "campus:arapongas",
+      "nucleo": "docencia e praticas educativas",
+      "forma": [
+        "especializacao",
+        "pos"
+      ]
+    },
+    {
+      "id": "curso:arapongas/gestao-de-competencias-para-exames-de-larga-escala",
+      "rotulo": "Gestão de Competências para Exames de Larga Escala (Cursinho)",
+      "campus": "campus:arapongas",
+      "nucleo": "gestao de competencias para exames de larga escala cursinho",
+      "forma": [
+        "fic",
+        "formacao inicial"
+      ]
+    },
+    {
+      "id": "curso:arapongas/portugues-como-lingua-de-acolhimento-plac",
+      "rotulo": "Português como Língua de Acolhimento - PLAc",
+      "campus": "campus:arapongas",
+      "nucleo": "portugues como lingua de acolhimento plac",
+      "forma": [
+        "fic",
+        "formacao inicial"
+      ]
+    },
+    {
+      "id": "curso:arapongas/programacao-com-enfase-em-analise-de-dados",
+      "rotulo": "Programação com ênfase em Análise de Dados",
+      "campus": "campus:arapongas",
+      "nucleo": "programacao com enfase em analise de dados",
+      "forma": [
+        "fic",
+        "formacao inicial"
+      ]
+    },
+    {
+      "id": "curso:arapongas/programacao-web",
+      "rotulo": "Programação Web",
+      "campus": "campus:arapongas",
+      "nucleo": "programacao web",
+      "forma": [
+        "fic",
+        "formacao inicial"
+      ]
+    },
+    {
+      "id": "curso:arapongas/tecnico-em-agente-comunitario-de-saude",
+      "rotulo": "Técnico em Agente Comunitário de Saúde",
+      "campus": "campus:arapongas",
+      "nucleo": "agente comunitario de saude",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:arapongas/tecnico-em-logistica",
+      "rotulo": "Técnico em Logística",
+      "campus": "campus:arapongas",
+      "nucleo": "logistica",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:arapongas/tecnico-em-meio-ambiente",
+      "rotulo": "Técnico em Meio Ambiente",
+      "campus": "campus:arapongas",
+      "nucleo": "meio ambiente",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:arapongas/tecnico-em-melhoria-de-processos",
+      "rotulo": "Técnico em Melhoria de Processos",
+      "campus": "campus:arapongas",
+      "nucleo": "melhoria de processos",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Sistemas de Energia Renovável",
+      "campus": "campus:arapongas",
+      "nucleo": "sistemas de energia renovavel",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:arapongas/tecnologia-em-processos-gerenciais",
+      "rotulo": "Tecnologia em Processos Gerenciais",
+      "campus": "campus:arapongas",
+      "nucleo": "processos gerenciais",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:assis-chateaubriand/tecnico-em-agropecuaria",
+      "rotulo": "Técnico em Agropecuária",
+      "campus": "campus:assis-chateaubriand",
+      "nucleo": "agropecuaria",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Agropecuária",
+      "campus": "campus:assis-chateaubriand",
+      "nucleo": "agropecuaria",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:assis-chateaubriand/tecnico-em-alimentos",
+      "rotulo": "Técnico em Alimentos",
+      "campus": "campus:assis-chateaubriand",
+      "nucleo": "alimentos",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:assis-chateaubriand/tecnico-em-comercio",
+      "rotulo": "Técnico em Comércio",
+      "campus": "campus:assis-chateaubriand",
+      "nucleo": "comercio",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Eletromecânica",
+      "campus": "campus:assis-chateaubriand",
+      "nucleo": "eletromecanica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:assis-chateaubriand/tecnico-em-eletromecanica-subsequente",
+      "rotulo": "Técnico em Eletromecânica",
+      "campus": "campus:assis-chateaubriand",
+      "nucleo": "eletromecanica",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:assis-chateaubriand/tecnico-em-eletrotecnica-subsequente",
+      "rotulo": "Técnico em Eletrotécnica",
+      "campus": "campus:assis-chateaubriand",
+      "nucleo": "eletrotecnica",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Informática para Internet",
+      "campus": "campus:assis-chateaubriand",
+      "nucleo": "informatica para internet",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Mecatrônica",
+      "campus": "campus:assis-chateaubriand",
+      "nucleo": "mecatronica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:assis-chateaubriand/tecnologia-em-automacao-industrial",
+      "rotulo": "Tecnologia em Automação Industrial",
+      "campus": "campus:assis-chateaubriand",
+      "nucleo": "automacao industrial",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:assis-chateaubriand/tecnologia-em-gestao-comercial",
+      "rotulo": "Tecnologia em Gestão Comercial",
+      "campus": "campus:assis-chateaubriand",
+      "nucleo": "gestao comercial",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Informática",
+      "campus": "campus:astorga",
+      "nucleo": "informatica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:astorga/licenciatura-em-pedagogia",
+      "rotulo": "Licenciatura em Pedagogia",
+      "campus": "campus:astorga",
+      "nucleo": "pedagogia",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:astorga/tecnico-em-desenvolvimento-de-sistemas",
+      "rotulo": "Técnico em Desenvolvimento de Sistemas",
+      "campus": "campus:astorga",
+      "nucleo": "desenvolvimento de sistemas",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:barracao/tecnico-em-administracao",
+      "rotulo": "Técnico em Administração",
+      "campus": "campus:barracao",
+      "nucleo": "administracao",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:barracao/tecnico-em-informatica",
+      "rotulo": "Técnico em Informática",
+      "campus": "campus:barracao",
+      "nucleo": "informatica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:barracao/tecnologia-em-comercio-exterior",
+      "rotulo": "Tecnologia em Comércio Exterior",
+      "campus": "campus:barracao",
+      "nucleo": "comercio exterior",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:campo-largo/administracao",
+      "rotulo": "Administração",
+      "campus": "campus:campo-largo",
+      "nucleo": "administracao",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:campo-largo/administracao-proeja",
+      "rotulo": "Administração – PROEJA",
+      "campus": "campus:campo-largo",
+      "nucleo": "administracao",
+      "forma": [
+        "tecnico",
+        "integrado",
+        "proeja",
+        "eja"
+      ]
+    },
+    {
+      "id": "curso:campo-largo/agroecologia",
+      "rotulo": "Agroecologia",
+      "campus": "campus:campo-largo",
+      "nucleo": "agroecologia",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:campo-largo/automacao-industrial",
+      "rotulo": "Automação Industrial",
+      "campus": "campus:campo-largo",
+      "nucleo": "automacao industrial",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:campo-largo/bacharelado-em-engenharia-eletrica",
+      "rotulo": "Bacharelado em Engenharia Elétrica",
+      "campus": "campus:campo-largo",
+      "nucleo": "eletrica",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:campo-largo/licenciatura-em-matematica",
+      "rotulo": "Licenciatura em Matemática",
+      "campus": "campus:campo-largo",
+      "nucleo": "matematica",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:campo-largo/mecanica",
+      "rotulo": "Mecânica",
+      "campus": "campus:campo-largo",
+      "nucleo": "mecanica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:campo-largo/tecnico-em-mecanica-subsequente",
+      "rotulo": "Técnico em Mecânica",
+      "campus": "campus:campo-largo",
+      "nucleo": "mecanica",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:campo-largo/tecnologia-em-agroecologia",
+      "rotulo": "Curso Superior de Tecnologia em Agroecologia",
+      "campus": "campus:campo-largo",
+      "nucleo": "agroecologia",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:campo-largo/tecnologia-em-materiais",
+      "rotulo": "Curso Superior de Tecnologia em Materiais",
+      "campus": "campus:campo-largo",
+      "nucleo": "materiais",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:campo-largo/tecnologia-em-processos-gerenciais",
+      "rotulo": "Curso Superior de Tecnologia em Processos Gerenciais",
+      "campus": "campus:campo-largo",
+      "nucleo": "processos gerenciais",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:capanema/licenciatura-em-matematica",
+      "rotulo": "Licenciatura em Matemática",
+      "campus": "campus:capanema",
+      "nucleo": "matematica",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:capanema/tecnico-em-agroecologia",
+      "rotulo": "Técnico em Agroecologia",
+      "campus": "campus:capanema",
+      "nucleo": "agroecologia",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:capanema/tecnico-em-cooperativismo",
+      "rotulo": "Técnico em Cooperativismo",
+      "campus": "campus:capanema",
+      "nucleo": "cooperativismo",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:capanema/tecnico-em-informatica",
+      "rotulo": "Técnico em Informática",
+      "campus": "campus:capanema",
+      "nucleo": "informatica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:capanema/tecnologia-em-sistemas-para-internet",
+      "rotulo": "Tecnologia em Sistemas para Internet",
+      "campus": "campus:capanema",
+      "nucleo": "sistemas para internet",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:cascavel/licenciatura-em-quimica",
+      "rotulo": "Licenciatura em Química",
+      "campus": "campus:cascavel",
+      "nucleo": "quimica",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:cascavel/tecnico-em-edificacoes",
+      "rotulo": "Técnico em Edificações",
+      "campus": "campus:cascavel",
+      "nucleo": "edificacoes",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:cascavel/tecnico-em-informatica",
+      "rotulo": "Técnico em Informática",
+      "campus": "campus:cascavel",
+      "nucleo": "informatica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:cascavel/tecnico-em-quimica",
+      "rotulo": "Técnico em Química",
+      "campus": "campus:cascavel",
+      "nucleo": "quimica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:cascavel/tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+      "rotulo": "Tecnologia em Análise e Desenvolvimento de Sistemas",
+      "campus": "campus:cascavel",
+      "nucleo": "analise e desenvolvimento de sistemas",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:cascavel/tecnologia-em-gestao-ambiental",
+      "rotulo": "Tecnologia em Gestão Ambiental",
+      "campus": "campus:cascavel",
+      "nucleo": "gestao ambiental",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:colombo/licenciatura-em-historia",
+      "rotulo": "Licenciatura em História",
+      "campus": "campus:colombo",
+      "nucleo": "historia",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:colombo/licenciatura-em-pedagogia",
+      "rotulo": "Licenciatura em Pedagogia",
+      "campus": "campus:colombo",
+      "nucleo": "pedagogia",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:colombo/tecnico-em-administracao-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Administração",
+      "campus": "campus:colombo",
+      "nucleo": "administracao",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:colombo/tecnico-em-administracao-subsequente",
+      "rotulo": "Técnico em Administração",
+      "campus": "campus:colombo",
+      "nucleo": "administracao",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:colombo/tecnico-em-alimentos-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Alimentos",
+      "campus": "campus:colombo",
+      "nucleo": "alimentos",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:colombo/tecnico-em-informatica-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Informática",
+      "campus": "campus:colombo",
+      "nucleo": "informatica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:colombo/tecnologia-em-alimentos",
+      "rotulo": "Tecnologia em Alimentos",
+      "campus": "campus:colombo",
+      "nucleo": "alimentos",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:colombo/tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+      "rotulo": "Tecnologia em Análise e Desenvolvimento de Sistemas",
+      "campus": "campus:colombo",
+      "nucleo": "analise e desenvolvimento de sistemas",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:colombo/tecnologia-em-processos-gerenciais",
+      "rotulo": "Tecnologia em Processos Gerenciais",
+      "campus": "campus:colombo",
+      "nucleo": "processos gerenciais",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:coronel-vivida/tecnico-em-administracao",
+      "rotulo": "Técnico em Administração",
+      "campus": "campus:coronel-vivida",
+      "nucleo": "administracao",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:coronel-vivida/tecnico-em-cooperativismo",
+      "rotulo": "Técnico em Cooperativismo",
+      "campus": "campus:coronel-vivida",
+      "nucleo": "cooperativismo",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:coronel-vivida/tecnologia-em-gestao-financeira",
+      "rotulo": "Tecnologia em Gestão Financeira",
+      "campus": "campus:coronel-vivida",
+      "nucleo": "gestao financeira",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:curitiba/aperfeicoamento-em-educacao-para-relacoes-etnico-raciais",
+      "rotulo": "Aperfeiçoamento em Educação para Relações Étnico-raciais",
+      "campus": "campus:curitiba",
+      "nucleo": "aperfeicoamento em educacao para relacoes etnico raciais",
+      "forma": [
+        "especializacao",
+        "pos"
+      ]
+    },
+    {
+      "id": "curso:curitiba/bacharelado-em-ciencias-contabeis",
+      "rotulo": "Bacharelado em Ciências Contábeis",
+      "campus": "campus:curitiba",
+      "nucleo": "ciencias contabeis",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:curitiba/especializacao-em-ciencias-da-natureza-ensino-de-fisica-e-astronomia",
+      "rotulo": "Especialização em Ciências da Natureza: Ensino de Física e Astronomia",
+      "campus": "campus:curitiba",
+      "nucleo": "ciencias da natureza ensino de fisica e astronomia",
+      "forma": [
+        "especializacao",
+        "pos"
+      ]
+    },
+    {
+      "id": "curso:curitiba/especializacao-em-design-educacional",
+      "rotulo": "Especialização em Design Educacional: Formação docente para construção de materiais didáticos digitais",
+      "campus": "campus:curitiba",
+      "nucleo": "design educacional formacao docente para construcao de materiais didaticos digitais",
+      "forma": [
+        "especializacao",
+        "pos"
+      ]
+    },
+    {
+      "id": "curso:curitiba/especializacao-em-educacao-musical-para-educacao-basica",
+      "rotulo": "Especialização em Educação Musical para a Educação Básica",
+      "campus": "campus:curitiba",
+      "nucleo": "educacao musical para a educacao basica",
+      "forma": [
+        "especializacao",
+        "pos"
+      ]
+    },
+    {
+      "id": "curso:curitiba/especializacao-em-educacao-profissional",
+      "rotulo": "Especialização em Educação Profissional",
+      "campus": "campus:curitiba",
+      "nucleo": "educacao profissional",
+      "forma": [
+        "especializacao",
+        "pos"
+      ]
+    },
+    {
+      "id": "curso:curitiba/especializacao-em-gestao-e-negocios",
+      "rotulo": "Especialização em Gestão e Negócios",
+      "campus": "campus:curitiba",
+      "nucleo": "gestao e negocios",
+      "forma": [
+        "especializacao",
+        "pos"
+      ]
+    },
+    {
+      "id": "curso:curitiba/especializacao-em-gestao-empresarial-contabil-e-tributaria",
+      "rotulo": "Especialização em Gestão Empresarial, Contábil e Tributária",
+      "campus": "campus:curitiba",
+      "nucleo": "gestao empresarial contabil e tributaria",
+      "forma": [
+        "especializacao",
+        "pos"
+      ]
+    },
+    {
+      "id": "curso:curitiba/especializacao-em-gestao-publica",
+      "rotulo": "Especialização em Gestão Pública",
+      "campus": "campus:curitiba",
+      "nucleo": "gestao publica",
+      "forma": [
+        "especializacao",
+        "pos"
+      ]
+    },
+    {
+      "id": "curso:curitiba/especializacao-em-gestao-social-de-politicas-publicas",
+      "rotulo": "Especialização em Gestão Social de Políticas Públicas",
+      "campus": "campus:curitiba",
+      "nucleo": "gestao social de politicas publicas",
+      "forma": [
+        "especializacao",
+        "pos"
+      ]
+    },
+    {
+      "id": "curso:curitiba/licenciatura-em-educacao-do-campo",
+      "rotulo": "Licenciatura em Educação do Campo",
+      "campus": "campus:curitiba",
+      "nucleo": "educacao do campo",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:curitiba/licenciatura-em-pedagogia",
+      "rotulo": "Licenciatura em Pedagogia",
+      "campus": "campus:curitiba",
+      "nucleo": "pedagogia",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:curitiba/mestrado-profissional-em-educacao-profissional-e-tecnologica-profept",
+      "rotulo": "Mestrado Profissional em Educação Profissional e Tecnológica (ProfEPT)",
+      "campus": "campus:curitiba",
+      "nucleo": "educacao profissional e tecnologica profept",
+      "forma": [
+        "mestrado"
+      ]
+    },
+    {
+      "id": "curso:curitiba/mestrado-profissional-em-propriedade-intelectual-e-transferencia-de-tecnologia-para-inovacao-profnit",
+      "rotulo": "Mestrado Profissional em Propriedade Intelectual e Transferência de Tecnologia para Inovação (PROFNIT)",
+      "campus": "campus:curitiba",
+      "nucleo": "propriedade intelectual e transferencia de tecnologia para inovacao profnit",
+      "forma": [
+        "mestrado"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-administracao-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Administração",
+      "campus": "campus:curitiba",
+      "nucleo": "administracao",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-condominio",
+      "rotulo": "Técnico em Condomínio",
+      "campus": "campus:curitiba",
+      "nucleo": "condominio",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Contabilidade",
+      "campus": "campus:curitiba",
+      "nucleo": "contabilidade",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-defesa-civil-ead",
+      "rotulo": "Técnico em Defesa Civil",
+      "campus": "campus:curitiba",
+      "nucleo": "defesa civil",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-edificacoes",
+      "rotulo": "Técnico em Edificações",
+      "campus": "campus:curitiba",
+      "nucleo": "edificacoes",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-eletromecanica",
+      "rotulo": "Técnico em Eletromecânica",
+      "campus": "campus:curitiba",
+      "nucleo": "eletromecanica",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Eletrônica",
+      "campus": "campus:curitiba",
+      "nucleo": "eletronica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-eletrotecnica",
+      "rotulo": "Técnico em Eletrotécnica",
+      "campus": "campus:curitiba",
+      "nucleo": "eletrotecnica",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-enfermagem",
+      "rotulo": "Técnico em Enfermagem",
+      "campus": "campus:curitiba",
+      "nucleo": "enfermagem",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-eventos",
+      "rotulo": "Técnico em Eventos",
+      "campus": "campus:curitiba",
+      "nucleo": "eventos",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-informatica-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Informática",
+      "campus": "campus:curitiba",
+      "nucleo": "informatica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-massoterapia",
+      "rotulo": "Técnico em Massoterapia",
+      "campus": "campus:curitiba",
+      "nucleo": "massoterapia",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-mecanica",
+      "rotulo": "Técnico em Mecânica",
+      "campus": "campus:curitiba",
+      "nucleo": "mecanica",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Mecânica",
+      "campus": "campus:curitiba",
+      "nucleo": "mecanica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Petróleo e Gás",
+      "campus": "campus:curitiba",
+      "nucleo": "petroleo e gas",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-processos-fotograficos",
+      "rotulo": "Técnico em Processos Fotográficos",
+      "campus": "campus:curitiba",
+      "nucleo": "processos fotograficos",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Processos Fotográficos",
+      "campus": "campus:curitiba",
+      "nucleo": "processos fotograficos",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-producao-de-audio-e-video",
+      "rotulo": "Técnico em Produção de Áudio e Vídeo",
+      "campus": "campus:curitiba",
+      "nucleo": "producao de audio e video",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Programação de Jogos Digitais",
+      "campus": "campus:curitiba",
+      "nucleo": "programacao de jogos digitais",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-protese-dentaria",
+      "rotulo": "Técnico em Prótese Dentária",
+      "campus": "campus:curitiba",
+      "nucleo": "protese dentaria",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-radiologia",
+      "rotulo": "Técnico em Radiologia",
+      "campus": "campus:curitiba",
+      "nucleo": "radiologia",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-saude-bucal",
+      "rotulo": "Técnico em Saúde Bucal",
+      "campus": "campus:curitiba",
+      "nucleo": "saude bucal",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-soldagem-subsequente",
+      "rotulo": "Técnico em Soldagem",
+      "campus": "campus:curitiba",
+      "nucleo": "soldagem",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-telecomunicacoes",
+      "rotulo": "Técnico em Telecomunicações",
+      "campus": "campus:curitiba",
+      "nucleo": "telecomunicacoes",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnico-em-transacoes-imobiliarias",
+      "rotulo": "Técnico em Transações Imobiliárias",
+      "campus": "campus:curitiba",
+      "nucleo": "transacoes imobiliarias",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnologia-em-gestao-publica",
+      "rotulo": "Tecnologia em Gestão Pública",
+      "campus": "campus:curitiba",
+      "nucleo": "gestao publica",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnologia-em-massoterapia",
+      "rotulo": "Tecnologia em Massoterapia",
+      "campus": "campus:curitiba",
+      "nucleo": "massoterapia",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnologia-em-processos-escolares",
+      "rotulo": "Tecnologia em Processos Escolares",
+      "campus": "campus:curitiba",
+      "nucleo": "processos escolares",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnologia-em-processos-gerenciais",
+      "rotulo": "Tecnologia em Processos Gerenciais",
+      "campus": "campus:curitiba",
+      "nucleo": "processos gerenciais",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:curitiba/tecnologia-em-secretariado",
+      "rotulo": "Tecnologia em Secretariado",
+      "campus": "campus:curitiba",
+      "nucleo": "secretariado",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:foz-do-iguacu/engenharia-de-aquicultura",
+      "rotulo": "Engenharia de Aquicultura",
+      "campus": "campus:foz-do-iguacu",
+      "nucleo": "aquicultura",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:foz-do-iguacu/especializacao-em-ensino-de-ciencias-e-matematica",
+      "rotulo": "Especializacao em Ensino de Ciencias e Matematica",
+      "campus": "campus:foz-do-iguacu",
+      "nucleo": "ensino de ciencias e matematica",
+      "forma": [
+        "especializacao",
+        "pos"
+      ]
+    },
+    {
+      "id": "curso:foz-do-iguacu/licenciatura-em-fisica",
+      "rotulo": "Licenciatura em Fisica",
+      "campus": "campus:foz-do-iguacu",
+      "nucleo": "fisica",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:foz-do-iguacu/pos-graduacao-lato-sensu-em-internet-das-coisas-iot-do-ifpr",
+      "rotulo": "Pos Graduacao Lato Sensu em Internet das Coisas Iot do Ifpr",
+      "campus": "campus:foz-do-iguacu",
+      "nucleo": "pos graduacao lato sensu em internet das coisas iot do ifpr",
+      "forma": [
+        "especializacao",
+        "pos"
+      ]
+    },
+    {
+      "id": "curso:foz-do-iguacu/tecnico-em-aquicultura",
+      "rotulo": "Técnico em Aquicultura",
+      "campus": "campus:foz-do-iguacu",
+      "nucleo": "aquicultura",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:foz-do-iguacu/tecnico-em-desenvolvimento-de-sistemas",
+      "rotulo": "Técnico em Desenvolvimento de Sistemas",
+      "campus": "campus:foz-do-iguacu",
+      "nucleo": "desenvolvimento de sistemas",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:foz-do-iguacu/tecnico-em-edificacoes-3",
+      "rotulo": "Técnico em Edificações",
+      "campus": "campus:foz-do-iguacu",
+      "nucleo": "edificacoes",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:foz-do-iguacu/tecnico-em-gastronomia",
+      "rotulo": "Técnico em Gastronomia",
+      "campus": "campus:foz-do-iguacu",
+      "nucleo": "gastronomia",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:foz-do-iguacu/tecnico-em-meio-ambiente",
+      "rotulo": "Técnico em Meio Ambiente",
+      "campus": "campus:foz-do-iguacu",
+      "nucleo": "meio ambiente",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:foz-do-iguacu/tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+      "rotulo": "Tecnologia em Análise e Desenvolvimento de Sistemas",
+      "campus": "campus:foz-do-iguacu",
+      "nucleo": "analise e desenvolvimento de sistemas",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:foz-do-iguacu/tecnologia-em-gastronomia",
+      "rotulo": "Tecnologia em Gastronomia",
+      "campus": "campus:foz-do-iguacu",
+      "nucleo": "gastronomia",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:goioere/tecnico-em-informatica",
+      "rotulo": "Técnico em Informática",
+      "campus": "campus:goioere",
+      "nucleo": "informatica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:goioere/tecnico-em-producao-de-moda",
+      "rotulo": "Técnico em Produção de Moda",
+      "campus": "campus:goioere",
+      "nucleo": "producao de moda",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:irati/bacharelado-em-agronomia",
+      "rotulo": "Bacharelado em Agronomia",
+      "campus": "campus:irati",
+      "nucleo": "agronomia",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:irati/bacharelado-em-engenharia-de-software",
+      "rotulo": "Bacharelado em Engenharia de Software",
+      "campus": "campus:irati",
+      "nucleo": "software",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:irati/licenciatura-em-quimica",
+      "rotulo": "Licenciatura em Química",
+      "campus": "campus:irati",
+      "nucleo": "quimica",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:irati/tecnico-em-agroecologia",
+      "rotulo": "Técnico em Agroecologia",
+      "campus": "campus:irati",
+      "nucleo": "agroecologia",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:irati/tecnico-em-informatica",
+      "rotulo": "Técnico em Informática",
+      "campus": "campus:irati",
+      "nucleo": "informatica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:irati/tecnico-em-quimica-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Química",
+      "campus": "campus:irati",
+      "nucleo": "quimica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:irati/tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+      "rotulo": "Tecnologia em Análise e Desenvolvimento de Sistemas",
+      "campus": "campus:irati",
+      "nucleo": "analise e desenvolvimento de sistemas",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:ivaipora/bacharelado-em-sistemas-de-informacao",
+      "rotulo": "Bacharelado em Sistemas de Informação",
+      "campus": "campus:ivaipora",
+      "nucleo": "sistemas de informacao",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:ivaipora/engenharia-agronomica",
+      "rotulo": "Engenharia Agronômica",
+      "campus": "campus:ivaipora",
+      "nucleo": "agronomica",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:ivaipora/licenciatura-em-fisica",
+      "rotulo": "Licenciatura em Física",
+      "campus": "campus:ivaipora",
+      "nucleo": "fisica",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:ivaipora/tecnico-em-agroecologia-integrado",
+      "rotulo": "Técnico em Agroecologia",
+      "campus": "campus:ivaipora",
+      "nucleo": "agroecologia",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Agropecuária",
+      "campus": "campus:ivaipora",
+      "nucleo": "agropecuaria",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:ivaipora/tecnico-em-eletrotecnica-integrado",
+      "rotulo": "Técnico em Eletrotécnica",
+      "campus": "campus:ivaipora",
+      "nucleo": "eletrotecnica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:ivaipora/tecnico-em-eletrotecnica-subsequente",
+      "rotulo": "Técnico em Eletrotécnica",
+      "campus": "campus:ivaipora",
+      "nucleo": "eletrotecnica",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Informática",
+      "campus": "campus:ivaipora",
+      "nucleo": "informatica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:ivaipora/tecnologia-em-agroecologia",
+      "rotulo": "Tecnologia em Agroecologia",
+      "campus": "campus:ivaipora",
+      "nucleo": "agroecologia",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:jacarezinho/educacao-sociedade-e-tecnologia",
+      "rotulo": "Educação, Sociedade e Tecnologia",
+      "campus": "campus:jacarezinho",
+      "nucleo": "educacao sociedade e tecnologia",
+      "forma": [
+        "especializacao",
+        "pos"
+      ]
+    },
+    {
+      "id": "curso:jacarezinho/engenharia-de-controle-e-automacao",
+      "rotulo": "Engenharia de Controle e Automação",
+      "campus": "campus:jacarezinho",
+      "nucleo": "controle e automacao",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:jacarezinho/licenciatura-em-quimica",
+      "rotulo": "Licenciatura em Química",
+      "campus": "campus:jacarezinho",
+      "nucleo": "quimica",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:jacarezinho/tecnico-em-alimentos",
+      "rotulo": "Técnico em Alimentos",
+      "campus": "campus:jacarezinho",
+      "nucleo": "alimentos",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:jacarezinho/tecnico-em-eletromecanica",
+      "rotulo": "Técnico em Eletromecânica",
+      "campus": "campus:jacarezinho",
+      "nucleo": "eletromecanica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:jacarezinho/tecnico-em-eletrotecnica",
+      "rotulo": "Técnico em Eletrotécnica",
+      "campus": "campus:jacarezinho",
+      "nucleo": "eletrotecnica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:jacarezinho/tecnico-em-informatica",
+      "rotulo": "Técnico em Informática",
+      "campus": "campus:jacarezinho",
+      "nucleo": "informatica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:jacarezinho/tecnico-em-mecanica",
+      "rotulo": "Técnico em Mecânica",
+      "campus": "campus:jacarezinho",
+      "nucleo": "mecanica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:jacarezinho/tecnico-em-teatro",
+      "rotulo": "Técnico em Teatro",
+      "campus": "campus:jacarezinho",
+      "nucleo": "teatro",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:jacarezinho/tecnologia-em-sistemas-para-internet",
+      "rotulo": "Tecnologia em Sistemas para Internet",
+      "campus": "campus:jacarezinho",
+      "nucleo": "sistemas para internet",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:jaguariaiva/especializacao-em-educacao-e-tecnologia",
+      "rotulo": "Especialização em Educação e Tecnologia",
+      "campus": "campus:jaguariaiva",
+      "nucleo": "educacao e tecnologia",
+      "forma": [
+        "especializacao",
+        "pos"
+      ]
+    },
+    {
+      "id": "curso:jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Alimentos",
+      "campus": "campus:jaguariaiva",
+      "nucleo": "alimentos",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:jaguariaiva/tecnico-em-biotecnologia-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Biotecnologia",
+      "campus": "campus:jaguariaiva",
+      "nucleo": "biotecnologia",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:jaguariaiva/tecnologo-em-gestao-da-qualidade",
+      "rotulo": "Tecnologo em Gestao da Qualidade",
+      "campus": "campus:jaguariaiva",
+      "nucleo": "tecnologo em gestao da qualidade",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:londrina/especializacao-lato-sensu-em-saude-coletiva-com-enfase-na-promocao-da-saude",
+      "rotulo": "Especializacao Lato Sensu em Saude Coletiva com Enfase na Promocao da Saude",
+      "campus": "campus:londrina",
+      "nucleo": "lato sensu em saude coletiva com enfase na promocao da saude",
+      "forma": [
+        "especializacao",
+        "pos"
+      ]
+    },
+    {
+      "id": "curso:londrina/licenciatura-em-ciencias-biologicas-2",
+      "rotulo": "Licenciatura em Ciencias Biologicas 2",
+      "campus": "campus:londrina",
+      "nucleo": "ciencias biologicas 2",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:londrina/tecnico-em-biotecnologia-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Biotecnologia",
+      "campus": "campus:londrina",
+      "nucleo": "biotecnologia",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:londrina/tecnico-em-enfermagem",
+      "rotulo": "Técnico em Enfermagem",
+      "campus": "campus:londrina",
+      "nucleo": "enfermagem",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:londrina/tecnico-em-informatica-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Informática",
+      "campus": "campus:londrina",
+      "nucleo": "informatica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:londrina/tecnico-em-massoterapia",
+      "rotulo": "Técnico em Massoterapia",
+      "campus": "campus:londrina",
+      "nucleo": "massoterapia",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:londrina/tecnico-em-protese-dentaria-2",
+      "rotulo": "Técnico em Prótese Dentária",
+      "campus": "campus:londrina",
+      "nucleo": "protese dentaria",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:londrina/tecnico-em-saude-bucal",
+      "rotulo": "Técnico em Saúde Bucal",
+      "campus": "campus:londrina",
+      "nucleo": "saude bucal",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+      "rotulo": "Tecnologia em Analise e Desenvolvimento de Sistemas",
+      "campus": "campus:londrina",
+      "nucleo": "analise e desenvolvimento de sistemas",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:palmas/agronomia",
+      "rotulo": "Agronomia",
+      "campus": "campus:palmas",
+      "nucleo": "agronomia",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:palmas/bacharelado-em-administracao",
+      "rotulo": "Bacharelado em Administração",
+      "campus": "campus:palmas",
+      "nucleo": "administracao",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:palmas/enfermagem",
+      "rotulo": "Enfermagem",
+      "campus": "campus:palmas",
+      "nucleo": "enfermagem",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:palmas/farmacia",
+      "rotulo": "Farmácia",
+      "campus": "campus:palmas",
+      "nucleo": "farmacia",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:palmas/licenciatura-em-educacao-fisica",
+      "rotulo": "Licenciatura em Educação Física",
+      "campus": "campus:palmas",
+      "nucleo": "educacao fisica",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:palmas/licenciatura-em-quimica",
+      "rotulo": "Licenciatura em Química",
+      "campus": "campus:palmas",
+      "nucleo": "quimica",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:palmas/pedagogia",
+      "rotulo": "Pedagogia",
+      "campus": "campus:palmas",
+      "nucleo": "pedagogia",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:palmas/sistemas-de-informacao",
+      "rotulo": "Sistemas de Informação",
+      "campus": "campus:palmas",
+      "nucleo": "sistemas de informacao",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:palmas/tecnico-em-agroindustria",
+      "rotulo": "Técnico em Agroindústria",
+      "campus": "campus:palmas",
+      "nucleo": "agroindustria",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:palmas/tecnico-em-alimentos",
+      "rotulo": "Técnico em Alimentos",
+      "campus": "campus:palmas",
+      "nucleo": "alimentos",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:palmas/tecnico-em-informatica-para-internet",
+      "rotulo": "Técnico em Informática para Internet",
+      "campus": "campus:palmas",
+      "nucleo": "informatica para internet",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:palmas/tecnico-em-servicos-juridicos",
+      "rotulo": "Técnico em Serviços Jurídicos",
+      "campus": "campus:palmas",
+      "nucleo": "servicos juridicos",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:paranagua/licenciatura-em-ciencias-sociais",
+      "rotulo": "Licenciatura em Ciências Sociais",
+      "campus": "campus:paranagua",
+      "nucleo": "ciencias sociais",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:paranagua/tecnico-em-informatica",
+      "rotulo": "Técnico em Informática",
+      "campus": "campus:paranagua",
+      "nucleo": "informatica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:paranagua/tecnico-em-mecanica",
+      "rotulo": "Técnico em Mecânica",
+      "campus": "campus:paranagua",
+      "nucleo": "mecanica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:paranagua/tecnico-em-meio-ambiente",
+      "rotulo": "Técnico em Meio Ambiente",
+      "campus": "campus:paranagua",
+      "nucleo": "meio ambiente",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:paranagua/tecnico-em-producao-cultural",
+      "rotulo": "Técnico em Produção Cultural",
+      "campus": "campus:paranagua",
+      "nucleo": "producao cultural",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:paranagua/tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+      "rotulo": "Tecnologia em Análise e Desenvolvimento de Sistemas",
+      "campus": "campus:paranagua",
+      "nucleo": "analise e desenvolvimento de sistemas",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:paranagua/tecnologia-em-gestao-ambiental",
+      "rotulo": "Tecnologia em Gestão Ambiental",
+      "campus": "campus:paranagua",
+      "nucleo": "gestao ambiental",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:paranagua/tecnologia-em-manutencao-industrial",
+      "rotulo": "Tecnologia em Manutenção Industrial",
+      "campus": "campus:paranagua",
+      "nucleo": "manutencao industrial",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:paranavai/engenharia-de-software",
+      "rotulo": "Engenharia de Software (bacharelado)",
+      "campus": "campus:paranavai",
+      "nucleo": "software bacharelado",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:paranavai/engenharia-eletrica",
+      "rotulo": "Engenharia Elétrica (bacharelado)",
+      "campus": "campus:paranavai",
+      "nucleo": "eletrica bacharelado",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:paranavai/especializacao-em-gestao-da-qualidade-e-tecnologia-de-alimentos",
+      "rotulo": "Especialização em Gestão da Qualidade e Tecnologia de Alimentos",
+      "campus": "campus:paranavai",
+      "nucleo": "gestao da qualidade e tecnologia de alimentos",
+      "forma": [
+        "especializacao",
+        "pos"
+      ]
+    },
+    {
+      "id": "curso:paranavai/licenciatura-em-quimica",
+      "rotulo": "Licenciatura em Química",
+      "campus": "campus:paranavai",
+      "nucleo": "quimica",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:paranavai/tecnico-em-agroindustria",
+      "rotulo": "Técnico em Agroindústria",
+      "campus": "campus:paranavai",
+      "nucleo": "agroindustria",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:paranavai/tecnico-em-eletromecanica-subsequente",
+      "rotulo": "Técnico em Eletromecânica",
+      "campus": "campus:paranavai",
+      "nucleo": "eletromecanica",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:paranavai/tecnico-em-informatica",
+      "rotulo": "Técnico em Informática",
+      "campus": "campus:paranavai",
+      "nucleo": "informatica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:paranavai/tecnico-em-mecatronica",
+      "rotulo": "Técnico em Mecatrônica",
+      "campus": "campus:paranavai",
+      "nucleo": "mecatronica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:pinhais/bacharelado-em-administracao",
+      "rotulo": "Bacharelado em Administração",
+      "campus": "campus:pinhais",
+      "nucleo": "administracao",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:pinhais/bacharelado-em-ciencia-da-computacao",
+      "rotulo": "Bacharelado em Ciência da Computação",
+      "campus": "campus:pinhais",
+      "nucleo": "ciencia da computacao",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:pinhais/tecnico-em-administracao-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Administração",
+      "campus": "campus:pinhais",
+      "nucleo": "administracao",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:pinhais/tecnico-em-informatica-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Informática",
+      "campus": "campus:pinhais",
+      "nucleo": "informatica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:pinhais/tecnologia-em-gestao-da-tecnologia-da-informacao",
+      "rotulo": "Tecnologia em Gestão da Tecnologia da Informação",
+      "campus": "campus:pinhais",
+      "nucleo": "gestao da tecnologia da informacao",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:pitanga/licenciatura-em-pedagogia",
+      "rotulo": "Licenciatura em Pedagogia",
+      "campus": "campus:pitanga",
+      "nucleo": "pedagogia",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:pitanga/licenciatura-em-quimica",
+      "rotulo": "Licenciatura em Química",
+      "campus": "campus:pitanga",
+      "nucleo": "quimica",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:pitanga/tecnico-em-alimentos",
+      "rotulo": "Técnico em Alimentos",
+      "campus": "campus:pitanga",
+      "nucleo": "alimentos",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:pitanga/tecnico-em-cooperativismo",
+      "rotulo": "Técnico em Cooperativismo",
+      "campus": "campus:pitanga",
+      "nucleo": "cooperativismo",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:pitanga/tecnico-em-desenvolvimento-de-sistemas",
+      "rotulo": "Técnico em Desenvolvimento de Sistemas",
+      "campus": "campus:pitanga",
+      "nucleo": "desenvolvimento de sistemas",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:pitanga/tecnologia-em-agroindustria",
+      "rotulo": "Tecnologia em Agroindústria",
+      "campus": "campus:pitanga",
+      "nucleo": "agroindustria",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:ponta-grossa/tecnico-em-informatica-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Informática",
+      "campus": "campus:ponta-grossa",
+      "nucleo": "informatica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:quedas-do-iguacu/tecnico-em-informatica",
+      "rotulo": "Técnico em Informática",
+      "campus": "campus:quedas-do-iguacu",
+      "nucleo": "informatica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:quedas-do-iguacu/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Informática para Internet",
+      "campus": "campus:quedas-do-iguacu",
+      "nucleo": "informatica para internet",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:quedas-do-iguacu/tecnico-em-meio-ambiente",
+      "rotulo": "Técnico em Meio Ambiente",
+      "campus": "campus:quedas-do-iguacu",
+      "nucleo": "meio ambiente",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:telemaco-borba/engenharia-eletrica",
+      "rotulo": "Engenharia Elétrica",
+      "campus": "campus:telemaco-borba",
+      "nucleo": "eletrica",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:telemaco-borba/licenciatura-em-fisica",
+      "rotulo": "Licenciatura em Física",
+      "campus": "campus:telemaco-borba",
+      "nucleo": "fisica",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Automação Industrial",
+      "campus": "campus:telemaco-borba",
+      "nucleo": "automacao industrial",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:telemaco-borba/tecnico-em-eletromecanica-subsequente",
+      "rotulo": "Técnico em Eletromecânica",
+      "campus": "campus:telemaco-borba",
+      "nucleo": "eletromecanica",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:telemaco-borba/tecnico-em-eletrotecnica-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Eletrotécnica",
+      "campus": "campus:telemaco-borba",
+      "nucleo": "eletrotecnica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Informática para Internet",
+      "campus": "campus:telemaco-borba",
+      "nucleo": "informatica para internet",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:telemaco-borba/tecnico-em-instrumentacao-industrial-subsequente",
+      "rotulo": "Técnico em Instrumentação Industrial",
+      "campus": "campus:telemaco-borba",
+      "nucleo": "instrumentacao industrial",
+      "forma": [
+        "tecnico",
+        "subsequente"
+      ]
+    },
+    {
+      "id": "curso:telemaco-borba/tecnico-em-mecanica",
+      "rotulo": "Técnico em Mecânica",
+      "campus": "campus:telemaco-borba",
+      "nucleo": "mecanica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:telemaco-borba/tecnico-em-programacao-de-jogos-digitais",
+      "rotulo": "Técnico em Programação de Jogos Digitais",
+      "campus": "campus:telemaco-borba",
+      "nucleo": "programacao de jogos digitais",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:telemaco-borba/tecnologia-em-manutencao-industrial",
+      "rotulo": "Tecnologia em Manutenção Industrial",
+      "campus": "campus:telemaco-borba",
+      "nucleo": "manutencao industrial",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:umuarama/bacharelado-em-arquitetura-e-urbanismo",
+      "rotulo": "Bacharelado em Arquitetura e Urbanismo",
+      "campus": "campus:umuarama",
+      "nucleo": "arquitetura e urbanismo",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:umuarama/licenciatura-em-ciencias-biologicas",
+      "rotulo": "Licenciatura em Ciências Biológicas",
+      "campus": "campus:umuarama",
+      "nucleo": "ciencias biologicas",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:umuarama/licenciatura-em-quimica",
+      "rotulo": "Licenciatura em Química",
+      "campus": "campus:umuarama",
+      "nucleo": "quimica",
+      "forma": [
+        "licenciatura"
+      ]
+    },
+    {
+      "id": "curso:umuarama/tecnico-em-edificacoes-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Edificações",
+      "campus": "campus:umuarama",
+      "nucleo": "edificacoes",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:umuarama/tecnico-em-informatica-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Informática",
+      "campus": "campus:umuarama",
+      "nucleo": "informatica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:umuarama/tecnico-em-quimica-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Química",
+      "campus": "campus:umuarama",
+      "nucleo": "quimica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:umuarama/tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+      "rotulo": "Tecnologia em Análise e Desenvolvimento de Sistemas",
+      "campus": "campus:umuarama",
+      "nucleo": "analise e desenvolvimento de sistemas",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:umuarama/tecnologia-em-gestao-do-agronegocio",
+      "rotulo": "Tecnologia em Gestão do Agronegócio",
+      "campus": "campus:umuarama",
+      "nucleo": "gestao do agronegocio",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    },
+    {
+      "id": "curso:uniao-da-vitoria/bacharelado-em-agronomia",
+      "rotulo": "Bacharelado em Agronomia",
+      "campus": "campus:uniao-da-vitoria",
+      "nucleo": "agronomia",
+      "forma": [
+        "bacharelado",
+        "engenharia"
+      ]
+    },
+    {
+      "id": "curso:uniao-da-vitoria/especializacao-em-educacao-ciencia-e-tecnologia",
+      "rotulo": "Especialização em Educação, Ciência e Tecnologia",
+      "campus": "campus:uniao-da-vitoria",
+      "nucleo": "educacao ciencia e tecnologia",
+      "forma": [
+        "especializacao",
+        "pos"
+      ]
+    },
+    {
+      "id": "curso:uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Informática",
+      "campus": "campus:uniao-da-vitoria",
+      "nucleo": "informatica",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja",
+      "rotulo": "Técnico em Manutenção e Suporte em Informática PROEJA",
+      "campus": "campus:uniao-da-vitoria",
+      "nucleo": "manutencao e suporte em informatica",
+      "forma": [
+        "tecnico",
+        "integrado",
+        "proeja",
+        "eja"
+      ]
+    },
+    {
+      "id": "curso:uniao-da-vitoria/tecnico-em-meio-ambiente-integrado-ao-ensino-medio",
+      "rotulo": "Técnico em Meio Ambiente",
+      "campus": "campus:uniao-da-vitoria",
+      "nucleo": "meio ambiente",
+      "forma": [
+        "tecnico",
+        "integrado"
+      ]
+    },
+    {
+      "id": "curso:uniao-da-vitoria/tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+      "rotulo": "Tecnologia em Analise e Desenvolvimento de Sistemas",
+      "campus": "campus:uniao-da-vitoria",
+      "nucleo": "analise e desenvolvimento de sistemas",
+      "forma": [
+        "tecnologia",
+        "tecnologo",
+        "superior"
+      ]
+    }
+  ],
+  "norma": [
+    {
+      "id": "br/cne-ceb/res/2024/2",
+      "rotulo": "Resolução CNE/CEB nº 2/2024",
+      "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md",
+      "padroes": [
+        "cne\\s*/\\s*ceb\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*2(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2024(?!\\d)"
+      ]
+    },
+    {
+      "id": "br/cne-ceb/res/2025/3",
+      "rotulo": "Resolução CNE/CEB nº 3/2025",
+      "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_3-2025_diretrizes-eja.md",
+      "padroes": [
+        "cne\\s*/\\s*ceb\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*3(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2025(?!\\d)",
+        "(?<![a-z0-9])diretrizes operacionais nacionais para a eja(?![a-z0-9])",
+        "(?<![a-z0-9])diretrizes operacionais da eja(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "br/cne-ceb/res/2025/7",
+      "rotulo": "Resolução CNE/CEB nº 7/2025",
+      "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_7-2025_tempo-integral.md",
+      "padroes": [
+        "cne\\s*/\\s*ceb\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*7(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2025(?!\\d)"
+      ]
+    },
+    {
+      "id": "br/cne-cp/res/2021/1",
+      "rotulo": "Resolução CNE/CP nº 1/2021",
+      "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md",
+      "padroes": [
+        "cne\\s*/\\s*cp\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*1(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2021(?!\\d)"
+      ]
+    },
+    {
+      "id": "br/cne-cp/res/2026/2",
+      "rotulo": "Resolução CNE/CP nº 2/2026",
+      "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
+      "padroes": [
+        "cne\\s*/\\s*cp\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*2(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2026(?!\\d)",
+        "(?<![a-z0-9])novas dcn da ept(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "br/lei/1996/9394",
+      "rotulo": "Lei nº 9.394/1996",
+      "path": "base-conhecimento/normas/br/leis/LEI_BR_9394-1996_ldb.md",
+      "padroes": [
+        "lei(?:\\s+federal)?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?9\\.?394(?!\\d)",
+        "(?<![a-z0-9])ldb(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "br/lei/2003/10639",
+      "rotulo": "Lei nº 10.639/2003",
+      "path": "base-conhecimento/normas/br/leis/LEI_BR_10639-2003_ensino-historia-cultura-afro-brasileira.md",
+      "padroes": [
+        "lei(?:\\s+federal)?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?10\\.?639(?!\\d)"
+      ]
+    },
+    {
+      "id": "br/lei/2008/11645",
+      "rotulo": "Lei nº 11.645/2008",
+      "path": "base-conhecimento/normas/br/leis/LEI_BR_11645-2008_ensino-historia-cultura-afro-brasileira-indigena.md",
+      "padroes": [
+        "lei(?:\\s+federal)?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?11\\.?645(?!\\d)"
+      ]
+    },
+    {
+      "id": "br/lei/2008/11788",
+      "rotulo": "Lei nº 11.788/2008",
+      "path": "base-conhecimento/normas/br/leis/LEI_BR_11788-2008_lei-estagio.md",
+      "padroes": [
+        "lei(?:\\s+federal)?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?11\\.?788(?!\\d)",
+        "(?<![a-z0-9])lei do estagio(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "br/lei/2008/11892",
+      "rotulo": "Lei nº 11.892/2008",
+      "path": "base-conhecimento/normas/br/leis/LEI_BR_11892-2008_criacao-ifs.md",
+      "padroes": [
+        "lei(?:\\s+federal)?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?11\\.?892(?!\\d)",
+        "(?<![a-z0-9])lei de criacao dos institutos federais(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "br/lei/2012/12711",
+      "rotulo": "Lei nº 12.711/2012",
+      "path": "base-conhecimento/normas/br/leis/LEI_BR_12711-2012_cotas.md",
+      "padroes": [
+        "lei(?:\\s+federal)?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?12\\.?711(?!\\d)",
+        "(?<![a-z0-9])lei de cotas(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "br/lei/2015/13146",
+      "rotulo": "Lei nº 13.146/2015",
+      "path": "base-conhecimento/normas/br/leis/LEI_BR_13146-2015_estatuto-pcd.md",
+      "padroes": [
+        "lei(?:\\s+federal)?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?13\\.?146(?!\\d)",
+        "(?<![a-z0-9])estatuto da pessoa com deficiencia(?![a-z0-9])",
+        "(?<![a-z0-9])lbi(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "br/lei/2024/14945",
+      "rotulo": "Lei nº 14.945/2024",
+      "path": "base-conhecimento/normas/br/leis/LEI_BR_14945-2024_ensino-medio.md",
+      "padroes": [
+        "lei(?:\\s+federal)?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?14\\.?945(?!\\d)"
+      ]
+    },
+    {
+      "id": "br/lei/2026/15468",
+      "rotulo": "Lei nº 15.468/2026",
+      "path": "base-conhecimento/normas/br/leis/LEI_BR_15468-2026_educacao-politica-direitos-cidadania.md",
+      "padroes": [
+        "lei(?:\\s+federal)?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?15\\.?468(?!\\d)"
+      ]
+    },
+    {
+      "id": "br/mec/portaria/2024/902",
+      "rotulo": "Portaria MEC nº 902/2024",
+      "path": "base-conhecimento/normas/br/portarias/PORTARIA_MEC_902-2024_rede-certifica.md",
+      "padroes": [
+        "(?:mec|portaria)\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*902(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2024(?!\\d)",
+        "(?<![a-z0-9])rede nacional de certificacao profissional(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2011/55",
+      "rotulo": "Resolução CONSUP/IFPR nº 55/2011",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_55-2011_odp-educacao-superior.md",
+      "padroes": [
+        "(?:consup|ifpr)(?:\\s*/\\s*(?:ifpr|consup))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*55(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2011(?!\\d)"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2012/1",
+      "rotulo": "Resolução CONSUP/IFPR nº 1/2012",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_1-2012_regulamento-disciplinar-discente.md",
+      "padroes": [
+        "(?:consup|ifpr)(?:\\s*/\\s*(?:ifpr|consup))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*1(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2012(?!\\d)",
+        "(?<![a-z0-9])regulamento disciplinar do corpo discente do ifpr(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2014/8",
+      "rotulo": "Resolução CONSUP/IFPR nº 8/2014",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_8-2014_regimento-interno-comum-campi.md",
+      "padroes": [
+        "(?:consup|ifpr)(?:\\s*/\\s*(?:ifpr|consup))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*8(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2014(?!\\d)"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2017/50",
+      "rotulo": "Resolução CONSUP/IFPR nº 50/2017",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_50-2017_avaliacao.md",
+      "padroes": [
+        "(?:consup|ifpr)(?:\\s*/\\s*(?:ifpr|consup))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*50(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2017(?!\\d)"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2017/65",
+      "rotulo": "Resolução CONSUP/IFPR nº 65/2017",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_65-2017_celif.md",
+      "padroes": [
+        "(?:consup|ifpr)(?:\\s*/\\s*(?:ifpr|consup))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*65(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2017(?!\\d)",
+        "(?<![a-z0-9])regulamento do celif(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2019/11",
+      "rotulo": "Resolução CONSUP/IFPR nº 11/2019",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_11-2019_politica-linguistica.md",
+      "padroes": [
+        "(?:consup|ifpr)(?:\\s*/\\s*(?:ifpr|consup))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*11(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2019(?!\\d)",
+        "(?<![a-z0-9])politica linguistica do ifpr(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2022/64",
+      "rotulo": "Resolução CONSUP/IFPR nº 64/2022",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
+      "padroes": [
+        "(?:consup|ifpr)(?:\\s*/\\s*(?:ifpr|consup))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*64(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2022(?!\\d)"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2022/82",
+      "rotulo": "Resolução CONSUP/IFPR nº 82/2022",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_82-2022_politica-estagios.md",
+      "padroes": [
+        "(?:consup|ifpr)(?:\\s*/\\s*(?:ifpr|consup))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*82(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2022(?!\\d)"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2023/148",
+      "rotulo": "Resolução CONSUP/IFPR nº 148/2023",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_148-2023_adaptacao-flexibilizacao-curricular.md",
+      "padroes": [
+        "(?:consup|ifpr)(?:\\s*/\\s*(?:ifpr|consup))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*148(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2023(?!\\d)"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2023/159",
+      "rotulo": "Resolução CONSUP/IFPR nº 159/2023",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_159-2023_docente-educacao-especial.md",
+      "padroes": [
+        "(?:consup|ifpr)(?:\\s*/\\s*(?:ifpr|consup))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*159(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2023(?!\\d)"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2024/190",
+      "rotulo": "Resolução CONSUP/IFPR nº 190/2024",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_190-2024_odp-cursos-tecnicos.md",
+      "padroes": [
+        "(?:consup|ifpr)(?:\\s*/\\s*(?:ifpr|consup))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*190(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2024(?!\\d)"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2024/222",
+      "rotulo": "Resolução CONSUP/IFPR nº 222/2024",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_222-2024_altera-regimento-interno-comum-campi.md",
+      "padroes": [
+        "(?:consup|ifpr)(?:\\s*/\\s*(?:ifpr|consup))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*222(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2024(?!\\d)"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2025/239",
+      "rotulo": "Resolução CONSUP/IFPR nº 239/2025",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_239-2025_assistencia-estudantil.md",
+      "padroes": [
+        "(?:consup|ifpr)(?:\\s*/\\s*(?:ifpr|consup))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*239(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2025(?!\\d)"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2025/242",
+      "rotulo": "Resolução CONSUP/IFPR nº 242/2025",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_242-2025_altera-regimento-interno-comum-campi.md",
+      "padroes": [
+        "(?:consup|ifpr)(?:\\s*/\\s*(?:ifpr|consup))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*242(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2025(?!\\d)"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2025/259",
+      "rotulo": "Resolução CONSUP/IFPR nº 259/2025",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_259-2025_calendario-academico.md",
+      "padroes": [
+        "(?:consup|ifpr)(?:\\s*/\\s*(?:ifpr|consup))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*259(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2025(?!\\d)"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2026/271",
+      "rotulo": "Resolução CONSUP/IFPR nº 271/2026",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_271-2026_estatuto-ifpr.md",
+      "padroes": [
+        "(?:consup|ifpr)(?:\\s*/\\s*(?:ifpr|consup))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*271(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2026(?!\\d)",
+        "(?<![a-z0-9])estatuto do ifpr(?![a-z0-9])",
+        "(?<![a-z0-9])novo estatuto do ifpr(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2026/276",
+      "rotulo": "Resolução CONSUP/IFPR nº 276/2026",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_276-2026_rede-certifica.md",
+      "padroes": [
+        "(?:consup|ifpr)(?:\\s*/\\s*(?:ifpr|consup))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*276(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2026(?!\\d)",
+        "(?<![a-z0-9])regulamento rede certifica ifpr(?![a-z0-9])"
+      ]
+    },
+    {
+      "id": "ifpr/consup/res/2026/292",
+      "rotulo": "Resolução CONSUP/IFPR nº 292/2026",
+      "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_292-2026_calendario-academico-2027.md",
+      "padroes": [
+        "(?:consup|ifpr)(?:\\s*/\\s*(?:ifpr|consup))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*292(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2026(?!\\d)"
+      ]
+    },
+    {
+      "id": "ifpr/proens/nt/2025/1",
+      "rotulo": "Nota Técnica PROENS/IFPR nº 1/2025",
+      "path": "base-conhecimento/normas/ifpr/notas-tecnicas/NOTA-TECNICA_PROENS-IFPR_1-2025_aee-nao-componente-curricular.md",
+      "padroes": [
+        "(?:nota\\s+tecnica|\\bnt)(?:\\s+(?:proens|ifpr)(?:\\s*/\\s*(?:proens|ifpr))?)?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*1(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2025(?!\\d)"
+      ]
+    },
+    {
+      "id": "ifpr/proens/portaria/2024/121",
+      "rotulo": "Portaria PROENS/IFPR nº 121/2024",
+      "path": "base-conhecimento/normas/ifpr/portarias/PORTARIA_PROENS-IFPR_121-2024_abertura-suspensao-extincao-cursos.md",
+      "padroes": [
+        "(?:proens|portaria)(?:\\s*/\\s*(?:ifpr|proens))?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?0*121(?:\\s*/\\s*|,?\\s*de\\s+\\d{1,2}o?\\s+de\\s*[a-z]+\\s+de\\s+)2024(?!\\d)"
+      ]
+    }
+  ]
+}

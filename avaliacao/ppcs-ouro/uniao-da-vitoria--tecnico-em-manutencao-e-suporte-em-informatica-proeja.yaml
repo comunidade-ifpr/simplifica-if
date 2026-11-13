@@ -1,0 +1,137 @@
+# PPC-ouro: achados esperados por ficha da analise-ppc. RASCUNHO: revisão humana obrigatória.
+# Contrato: esquemaPpcOuro em scripts/avaliacao/esquema.ts. Cada evidência é trecho literal do PPC.
+ppc: curso:uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja
+arquivo: base-conhecimento/institucional/ifpr/ppcs/uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja.md
+status: rascunho
+revisado_por: null
+justificativa_escolha: >-
+  PROEJA (EJA integrada) noturno, eixo Informação e Comunicação, PPC antigo (curso de 2014, layout
+  anterior ao modelo atual): exercita a regra de carga da EJA (art. 30 da Res. CNE/CP nº 2/2026),
+  profissão não regulamentada, inconsistência interna de carga de estágio e base legal muito defasada.
+achados:
+  - ficha: CT-IDENT-01
+    estado_esperado: ATENDE
+    justificativa: A denominação coincide com a habilitação "Técnico em Manutenção e Suporte em Informática" do CNCT.
+    evidencias:
+      - trecho: Curso Técnico em Manutenção e Suporte em Informática
+    referencias:
+      - ancora: cnct:tecnico-em-manutencao-e-suporte-em-informatica
+        arquivo: base-conhecimento/catalogos/cnct/cursos/tecnico-em-manutencao-e-suporte-em-informatica.json
+        trecho: '"denominacao": "Técnico em Manutenção e Suporte em Informática"'
+    status: rascunho
+
+  - ficha: CT-IDENT-13
+    estado_esperado: ATENDE
+    justificativa: O eixo declarado (Informação e Comunicação) é o eixo do curso no CNCT.
+    evidencias:
+      - trecho: '**EIXO TECNOLÓGICO:** Informação e Comunicação'
+    referencias:
+      - ancora: cnct:tecnico-em-manutencao-e-suporte-em-informatica
+        arquivo: base-conhecimento/catalogos/cnct/cursos/tecnico-em-manutencao-e-suporte-em-informatica.json
+        trecho: '"eixo_tecnologico": "Informação e Comunicação"'
+    status: rascunho
+
+  - ficha: CT-CURR-02
+    estado_esperado: ATENDE
+    justificativa: >-
+      2.400 h (1.200 h de formação geral e 1.200 h profissionais), valor repetido na identificação e na
+      organização curricular. Atende ao art. 30 da Res. CNE/CP nº 2/2026 (formação geral de no mínimo
+      1.200 h mais a habilitação do CNCT, 1.000 h).
+    evidencias:
+      - trecho: O curso possui carga horária de 2400 horas, nas quais contempla 1200 horas destinadas a formação geral e 1200 horas destinadas à formação profissional.
+    referencias:
+      - ancora: cnct:tecnico-em-manutencao-e-suporte-em-informatica
+        arquivo: base-conhecimento/catalogos/cnct/cursos/tecnico-em-manutencao-e-suporte-em-informatica.json
+        trecho: '"carga_horaria_minima_horas": 1000'
+      - ancora: br/cne-cp/res/2026/2#art30
+        arquivo: base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md
+        trecho: entre a formação geral básica, mínima de uma mil e duzentas horas
+    status: rascunho
+
+  - ficha: CT-CURR-20
+    estado_esperado: NAO_ATENDE
+    justificativa: >-
+      A carga do estágio obrigatório diverge: 100 h nas características do curso e 120 h no texto, no
+      ementário e no regulamento anexo. A obrigatoriedade não é justificada (art. 37, § 4º).
+    evidencias:
+      - trecho: '**Carga horária de estágio:** 100 horas'
+      - trecho: O estágio profissional supervisionado terá carga horária de 120 horas, de caráter obrigatório para os estudantes
+    referencias:
+      - ancora: br/cne-cp/res/2026/2#art37-par4
+        arquivo: base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md
+        trecho: A obrigatoriedade de que trata o § 2º deverá ser devidamente justificada e explicitada no PPC.
+    status: rascunho
+
+  - ficha: CT-CURR-16
+    estado_esperado: ATENDE
+    justificativa: Exige ensino fundamental concluído, como o CNCT para o integrado à EJA, e idade mínima de 18 anos.
+    evidencias:
+      - trecho: aos candidatos que tenham concluído o Ensino Fundamental e tenham idade mínima de 18 (dezoito) anos
+    referencias:
+      - ancora: cnct:tecnico-em-manutencao-e-suporte-em-informatica
+        arquivo: base-conhecimento/catalogos/cnct/cursos/tecnico-em-manutencao-e-suporte-em-informatica.json
+        trecho: Para ingresso no Curso Técnico Integrado à Educação de Jovens e Adultos, o estudante deverá ter concluído o Ensino Fundamental.
+    status: rascunho
+
+  - ficha: CT-IDENT-08
+    estado_esperado: NAO_ATENDE
+    justificativa: >-
+      Fundamenta-se na Res. CNE/CEB nº 6/2012 (revogada pela CNE/CP nº 1/2021, por sua vez revogada pela
+      CNE/CP nº 2/2026) e na Res. CONSUP/IFPR nº 54/2011 (revogada pela nº 190/2024).
+    evidencias:
+      - trecho: Resolução CNE/CEB n. 06/2012
+      - trecho: Conforme o artigo 18 da Resolução CONSUP/IFPR n. 54/2011
+    referencias:
+      - ancora: br/cne-cp/res/2021/1
+        arquivo: base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md
+        trecho: Ficam revogadas a Resolução CNE/CP nº 3, de 18 de dezembro de 2002, e a Resolução CNE/CEB nº 6, de 20 de setembro de 2012.
+      - ancora: ifpr/consup/res/2024/190
+        arquivo: base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_190-2024_odp-cursos-tecnicos.md
+        trecho: Resolução IFPR nº 54/2011
+    status: rascunho
+
+  - ficha: CT-IDENT-18
+    estado_esperado: NAO_ATENDE
+    justificativa: >-
+      Não há seção nem mecanismo de acompanhamento de egressos; o egresso só aparece no perfil
+      profissional de conclusão (art. 28, XVIII e § 4º).
+    evidencias:
+      - trecho: 3.3. PERFIL PROFISSIONAL DE CONCLUSÃO
+        observacao: Única seção sobre o egresso; a busca por "acompanhamento" de egressos não encontra nada.
+    referencias:
+      - ancora: br/cne-cp/res/2026/2#art28-xviii
+        arquivo: base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md
+        trecho: a metodologia e o cronograma de acompanhamento dos egressos do curso.
+    status: rascunho
+
+  - ficha: CT-SUP-21
+    estado_esperado: NAO_APLICAVEL
+    justificativa: O CNCT registra profissão não regulamentada para a habilitação.
+    evidencias:
+      - trecho: Curso Técnico em Manutenção e Suporte em Informática
+        observacao: Sem legislação profissional a tratar.
+    referencias:
+      - ancora: cnct:tecnico-em-manutencao-e-suporte-em-informatica
+        arquivo: base-conhecimento/catalogos/cnct/cursos/tecnico-em-manutencao-e-suporte-em-informatica.json
+        trecho: '"legislacao_profissional": "Profissão não regulamentada."'
+    status: rascunho
+
+  - ficha: CT-IDENT-15
+    estado_esperado: NAO_ATENDE
+    justificativa: O diploma explicita a habilitação, mas não o eixo tecnológico do CNCT.
+    evidencias:
+      - trecho: o egresso receberá o Diploma de **Técnico em Manutenção e Suporte em Informática**
+    status: rascunho
+
+  - ficha: CT-CURR-27
+    estado_esperado: ATENDE
+    justificativa: >-
+      Formato presencial declarado, sem carga a distância na organização curricular; a EJA articulada
+      admite presencial ou semipresencial (art. 49, § 7º).
+    evidencias:
+      - trecho: '**Modalidade:** presencial/Educação de Jovens e Adultos/PROEJA'
+    referencias:
+      - ancora: br/cne-cp/res/2026/2#art49-par7
+        arquivo: base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md
+        trecho: A EPTNM articulada à EJA poderá utilizar-se dos formatos presencial e semipresencial.
+    status: rascunho

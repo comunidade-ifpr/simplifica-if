@@ -1,0 +1,514 @@
+{
+  "pergunta": "Q02",
+  "gerado_por": "scripts/avaliacao/gabaritos/citacoes.ts",
+  "criterio": "PPCs de base-conhecimento/institucional/ifpr/ppcs/ (todos os níveis) cujo texto casa com citacoesCneCp1de2021: Resolução CNE/CP nº 1/2021 por número e ano ou pela data de 5 de janeiro de 2021.",
+  "universo": "curso",
+  "avaliar_precisao": true,
+  "esperado": [
+    "curso:arapongas/tecnico-em-melhoria-de-processos",
+    "curso:arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio",
+    "curso:arapongas/tecnologia-em-processos-gerenciais",
+    "curso:assis-chateaubriand/tecnico-em-alimentos",
+    "curso:assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio",
+    "curso:assis-chateaubriand/tecnologia-em-automacao-industrial",
+    "curso:assis-chateaubriand/tecnologia-em-gestao-comercial",
+    "curso:astorga/tecnico-em-desenvolvimento-de-sistemas",
+    "curso:barracao/tecnico-em-administracao",
+    "curso:barracao/tecnico-em-informatica",
+    "curso:campo-largo/administracao",
+    "curso:campo-largo/tecnologia-em-agroecologia",
+    "curso:campo-largo/tecnologia-em-materiais",
+    "curso:capanema/tecnologia-em-sistemas-para-internet",
+    "curso:cascavel/tecnico-em-edificacoes",
+    "curso:cascavel/tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+    "curso:cascavel/tecnologia-em-gestao-ambiental",
+    "curso:colombo/tecnico-em-informatica-integrado-ao-ensino-medio",
+    "curso:colombo/tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+    "curso:coronel-vivida/tecnico-em-administracao",
+    "curso:coronel-vivida/tecnico-em-cooperativismo",
+    "curso:coronel-vivida/tecnologia-em-gestao-financeira",
+    "curso:curitiba/tecnico-em-enfermagem",
+    "curso:curitiba/tecnico-em-massoterapia",
+    "curso:curitiba/tecnico-em-mecanica",
+    "curso:curitiba/tecnico-em-producao-de-audio-e-video",
+    "curso:curitiba/tecnico-em-saude-bucal",
+    "curso:curitiba/tecnico-em-soldagem-subsequente",
+    "curso:curitiba/tecnologia-em-processos-escolares",
+    "curso:curitiba/tecnologia-em-secretariado",
+    "curso:irati/tecnico-em-agroecologia",
+    "curso:irati/tecnico-em-informatica",
+    "curso:ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio",
+    "curso:ivaipora/tecnico-em-eletrotecnica-integrado",
+    "curso:ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio",
+    "curso:jacarezinho/tecnologia-em-sistemas-para-internet",
+    "curso:jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio",
+    "curso:jaguariaiva/tecnico-em-biotecnologia-integrado-ao-ensino-medio",
+    "curso:londrina/tecnico-em-enfermagem",
+    "curso:londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+    "curso:palmas/tecnico-em-alimentos",
+    "curso:palmas/tecnico-em-informatica-para-internet",
+    "curso:palmas/tecnico-em-servicos-juridicos",
+    "curso:paranagua/tecnico-em-informatica",
+    "curso:paranagua/tecnico-em-meio-ambiente",
+    "curso:paranagua/tecnico-em-producao-cultural",
+    "curso:paranagua/tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+    "curso:paranagua/tecnologia-em-gestao-ambiental",
+    "curso:pinhais/tecnico-em-administracao-integrado-ao-ensino-medio",
+    "curso:pitanga/tecnico-em-alimentos",
+    "curso:pitanga/tecnico-em-desenvolvimento-de-sistemas",
+    "curso:telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio",
+    "curso:telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
+    "curso:telemaco-borba/tecnico-em-mecanica",
+    "curso:telemaco-borba/tecnico-em-programacao-de-jogos-digitais",
+    "curso:telemaco-borba/tecnologia-em-manutencao-industrial",
+    "curso:uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio",
+    "curso:uniao-da-vitoria/tecnico-em-meio-ambiente-integrado-ao-ensino-medio",
+    "curso:uniao-da-vitoria/tecnologia-em-analise-e-desenvolvimento-de-sistemas"
+  ],
+  "detalhes": {
+    "curso:arapongas/tecnico-em-melhoria-de-processos": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 1, de 5 de janeiro de 2021"
+      ]
+    },
+    "curso:arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/ceb no 01/2021, que define as diretrizes curriculares nacionais para a educacao profissional",
+        "cne/ceb no 1/2021, de 05 de janeiro de 2021 . define diretrizes curriculares nacionais para a educacao profissional",
+        "resolucao no 01 de 05 de janeiro de 2021"
+      ]
+    },
+    "curso:arapongas/tecnologia-em-processos-gerenciais": {
+      "nivel": "superior",
+      "trechos": [
+        "cne/cp no 01/2021",
+        "cne/cp no 1, de 5 de janeiro de 2021",
+        "cne/cp no 1,de 5 dejaneiro de 2021",
+        "cne/cp no 1/2021"
+      ]
+    },
+    "curso:assis-chateaubriand/tecnico-em-alimentos": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 1, de 05 de janeiro de 2021",
+        "cne/cp no 1/2021"
+      ]
+    },
+    "curso:assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 1, de 5 de janeiro de 2021",
+        "cne/cp no 1/2021"
+      ]
+    },
+    "curso:assis-chateaubriand/tecnologia-em-automacao-industrial": {
+      "nivel": "superior",
+      "trechos": [
+        "cne/cp no 1, de 05 de janeiro de 2021",
+        "cne/cp no 1, de 5 de janeiro de 2021",
+        "cne/cp no 1/2021"
+      ]
+    },
+    "curso:assis-chateaubriand/tecnologia-em-gestao-comercial": {
+      "nivel": "superior",
+      "trechos": [
+        "cne/cp no 01/2021",
+        "cne/cp no 1/2021",
+        "resolucao no 1, de 5 de janeiro de 2021"
+      ]
+    },
+    "curso:astorga/tecnico-em-desenvolvimento-de-sistemas": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp 01/2021"
+      ]
+    },
+    "curso:barracao/tecnico-em-administracao": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp n. 01/2021",
+        "cne/cp n. 1/2021",
+        "cne/cp no 1, de 5 de janeiro de 2021",
+        "cne/cp no. 1/2021",
+        "cne/cp no.1/2021"
+      ]
+    },
+    "curso:barracao/tecnico-em-informatica": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp n. 01/2021",
+        "cne/cp n. 1/2021",
+        "cne/cp n.o 01, de 05 de janeiro de 2021",
+        "cne/cp no. 01/2021",
+        "cne/cp no. 1/2021"
+      ]
+    },
+    "curso:campo-largo/administracao": {
+      "nivel": "médio",
+      "trechos": [
+        "resolucao no 01 de 05 de janeiro de 2021",
+        "resolucao no 01, de 05 de janeiro de 2021"
+      ]
+    },
+    "curso:campo-largo/tecnologia-em-agroecologia": {
+      "nivel": "superior",
+      "trechos": [
+        "cne/cp 01/2021"
+      ]
+    },
+    "curso:campo-largo/tecnologia-em-materiais": {
+      "nivel": "superior",
+      "trechos": [
+        "cne /cp no 1/2021",
+        "cne/cp 01, de 05 de janeiro de 2021",
+        "cne/cp no 01/ 2021",
+        "cne/cp no 01/2021",
+        "cne/cp no01/2021"
+      ]
+    },
+    "curso:capanema/tecnologia-em-sistemas-para-internet": {
+      "nivel": "superior",
+      "trechos": [
+        "cne/cp 01/2021",
+        "cne/cp no 01/2021",
+        "resolucao no 01, de 05 de janeiro de 2021"
+      ]
+    },
+    "curso:cascavel/tecnico-em-edificacoes": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 1, de 05 de janeiro de 2021",
+        "cne/cp no 1/2021"
+      ]
+    },
+    "curso:cascavel/tecnologia-em-analise-e-desenvolvimento-de-sistemas": {
+      "nivel": "superior",
+      "trechos": [
+        "cne/cp no 1, de 5 de janeiro de 2021"
+      ]
+    },
+    "curso:cascavel/tecnologia-em-gestao-ambiental": {
+      "nivel": "superior",
+      "trechos": [
+        "cne/cp no 1 de 05 de janeiro de 2021",
+        "cne/cp no 1, de 5 de janeiro de 2021"
+      ]
+    },
+    "curso:colombo/tecnico-em-informatica-integrado-ao-ensino-medio": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/ceb no 1/2021 que define diretrizes curriculares nacionais gerais para a educacao profissional",
+        "cne/cp no 1, de 5 de janeiro de 2021",
+        "resolucao no 1, de 05 de janeiro de 2021"
+      ]
+    },
+    "curso:colombo/tecnologia-em-analise-e-desenvolvimento-de-sistemas": {
+      "nivel": "superior",
+      "trechos": [
+        "cne/cp 1/2021",
+        "cne/cp no 01, de 05 de janeiro de 2021",
+        "cne/cp no 01/2021",
+        "cne/cp no 1, de 05 de janeiro de 2021"
+      ]
+    },
+    "curso:coronel-vivida/tecnico-em-administracao": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 01/2021",
+        "cne/cp no 1, de 5 de janeiro de 2021"
+      ]
+    },
+    "curso:coronel-vivida/tecnico-em-cooperativismo": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 01/2021",
+        "cne/cp no 1, de 5 de janeiro de 2021"
+      ]
+    },
+    "curso:coronel-vivida/tecnologia-em-gestao-financeira": {
+      "nivel": "superior",
+      "trechos": [
+        "cne/cp no 1, de 5 de janeiro de 2021"
+      ]
+    },
+    "curso:curitiba/tecnico-em-enfermagem": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 1/2021",
+        "educacao/ceb no 1/2021, define diretrizes curriculares nacionais gerais para a educacao profissional"
+      ]
+    },
+    "curso:curitiba/tecnico-em-massoterapia": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 01/2021",
+        "cne/cp no 1, 05 de janeiro de 2021"
+      ]
+    },
+    "curso:curitiba/tecnico-em-mecanica": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 1/2021"
+      ]
+    },
+    "curso:curitiba/tecnico-em-producao-de-audio-e-video": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 1/2021"
+      ]
+    },
+    "curso:curitiba/tecnico-em-saude-bucal": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp n.o 01/2021",
+        "cne/cp n.o 1, de 5 de janeiro de 2021",
+        "cne/cp n.o 1/2021"
+      ]
+    },
+    "curso:curitiba/tecnico-em-soldagem-subsequente": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 1, de 5 de janeiro de 2021",
+        "cne/cp no 1/2021"
+      ]
+    },
+    "curso:curitiba/tecnologia-em-processos-escolares": {
+      "nivel": "superior",
+      "trechos": [
+        "cne/cp no 01, de janeiro de 2021"
+      ]
+    },
+    "curso:curitiba/tecnologia-em-secretariado": {
+      "nivel": "superior",
+      "trechos": [
+        "cne/cp no 01, de janeiro de 2021"
+      ]
+    },
+    "curso:irati/tecnico-em-agroecologia": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/ceb no 1/2021, define diretrizes curriculares nacionais gerais para a educacao profissional",
+        "cne/cp no 1, de 05 de janeiro de 2021",
+        "cne/cp no 1, de 5 de janeiro de 2021"
+      ]
+    },
+    "curso:irati/tecnico-em-informatica": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/ceb no 1/2021, define diretrizes curriculares nacionais gerais para a educacao profissional",
+        "cne/cp no 1, de 05 de janeiro de 2021",
+        "cne/cp no 1, de 5 de janeiro de 2021",
+        "cne/cp no 1,de 5 dejaneiro de 2021"
+      ]
+    },
+    "curso:ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/ceb no 01/2021- diretrizes curriculares nacionais para a educacao profissional",
+        "cne/ceb no 1/2021, que define as diretrizes curriculares nacionais gerais para a educacao profissional",
+        "cne/cp no 1, de 05 de janeiro de 2021",
+        "resolucao no 1 , de 05 de janeiro de 2021"
+      ]
+    },
+    "curso:ivaipora/tecnico-em-eletrotecnica-integrado": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/ceb no 1/2021 , que define as diretrizes curriculares nacionais gerais para a educacao profissional",
+        "cne/cp no 1, de 05 de janeiro de 2021",
+        "cne/cp no 1, de 5 de janeiro de 2021",
+        "resolucao no 1, de 05 de janeiro de 2021"
+      ]
+    },
+    "curso:ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/ceb no 1/2021 , que define as diretrizes curriculares nacionais gerais para a educacao profissional",
+        "cne/cp no 1, de 05 de janeiro de 2021",
+        "cne/cp no 1, de 5 de janeiro de 2021",
+        "resolucao no 1, de 05 de janeiro de 2021"
+      ]
+    },
+    "curso:jacarezinho/tecnologia-em-sistemas-para-internet": {
+      "nivel": "superior",
+      "trechos": [
+        "resolucao no 01 , de 05 de janeiro de 2021",
+        "resolucao no 01, de 05 de janeiro de 2021"
+      ]
+    },
+    "curso:jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/ceb no 1/2021: define as diretrizes curriculares nacionais gerais para a educacao profissional",
+        "cne/cp no 1/2021",
+        "resolucao no 1, de 5 de janeiro de 2021"
+      ]
+    },
+    "curso:jaguariaiva/tecnico-em-biotecnologia-integrado-ao-ensino-medio": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/ceb no 1/2021, que define as diretrizes curriculares nacionais gerais para a educacao profissional",
+        "cne/cp no 1/2021",
+        "resolucao no 1, de 5 de janeiro de 2021"
+      ]
+    },
+    "curso:londrina/tecnico-em-enfermagem": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/ceb no 1/2021, define diretrizes curriculares nacionais gerais para a educacao profissional",
+        "cne/cp no01/2021",
+        "resolucao no 1, de 5 de janeiro de 2021"
+      ]
+    },
+    "curso:londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas": {
+      "nivel": "superior",
+      "trechos": [
+        "cne/cp no 1, de 5 de janeiro de 2021",
+        "resolucao no 01, de 05 de janeiro de 2021"
+      ]
+    },
+    "curso:palmas/tecnico-em-alimentos": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 1, de 5 de janeiro de 2021",
+        "resolucao 01 de 05 de janeiro de 2021"
+      ]
+    },
+    "curso:palmas/tecnico-em-informatica-para-internet": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 1, de 5 de janeiro de 2021",
+        "resolucao 01 de 05 de janeiro de 2021"
+      ]
+    },
+    "curso:palmas/tecnico-em-servicos-juridicos": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 1, de 5 de janeiro de 2021",
+        "resolucao 01 de 05 de janeiro de 2021"
+      ]
+    },
+    "curso:paranagua/tecnico-em-informatica": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/ceb no 1/2021, define diretrizes curriculares nacionais gerais para a educacao profissional"
+      ]
+    },
+    "curso:paranagua/tecnico-em-meio-ambiente": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/ceb no 1/2021: diretrizes curriculares nacionais gerais para a educacao profissional",
+        "resolucao 01 de 05 de janeiro de 2021"
+      ]
+    },
+    "curso:paranagua/tecnico-em-producao-cultural": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/ceb no 1/2021: diretrizes curriculares nacionais gerais para a educacao profissional",
+        "resolucao 01 de 05 de janeiro de 2021"
+      ]
+    },
+    "curso:paranagua/tecnologia-em-analise-e-desenvolvimento-de-sistemas": {
+      "nivel": "superior",
+      "trechos": [
+        "cne/cp no 1. de 05 de janeiro de 2021"
+      ]
+    },
+    "curso:paranagua/tecnologia-em-gestao-ambiental": {
+      "nivel": "superior",
+      "trechos": [
+        "cne/cp no1 de 05 de janeiro de 2021",
+        "cne/cp no1/2021"
+      ]
+    },
+    "curso:pinhais/tecnico-em-administracao-integrado-ao-ensino-medio": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 01/2021",
+        "cne/cp no 1/2021",
+        "resolucao no 1, de 5 de janeiro de 2021"
+      ]
+    },
+    "curso:pitanga/tecnico-em-alimentos": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/ceb no 1/2021: diretrizes curriculares nacionais gerais para a educacao profissional",
+        "resolucao 01 de 05 de janeiro de 2021"
+      ]
+    },
+    "curso:pitanga/tecnico-em-desenvolvimento-de-sistemas": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/ceb no 1/2021: diretrizes curriculares nacionais gerais para a educacao - profissional",
+        "resolucao 01 de 05 de janeiro de 2021"
+      ]
+    },
+    "curso:telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 01 de 05 dejaneiro de 2021",
+        "cne/cp no 1, de 5 de janeiro de 2021"
+      ]
+    },
+    "curso:telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 01 de 05 de janeiro de 2021",
+        "cne/cp no 1, de 5 de janeiro de 2021"
+      ]
+    },
+    "curso:telemaco-borba/tecnico-em-mecanica": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 01 de 05 dejaneiro de 2021",
+        "cne/cp no 1, de 5 de janeiro de 2021"
+      ]
+    },
+    "curso:telemaco-borba/tecnico-em-programacao-de-jogos-digitais": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp no 01 de 05 de janeiro de 2021",
+        "cne/cp no 1, de 5 de janeiro de 2021"
+      ]
+    },
+    "curso:telemaco-borba/tecnologia-em-manutencao-industrial": {
+      "nivel": "superior",
+      "trechos": [
+        "cne/cp 01/2021",
+        "cne/cp no 01/2021",
+        "cne/cp no01/2021"
+      ]
+    },
+    "curso:uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/cp n. 01/2021",
+        "cne/cp n. 1/2021",
+        "cne/cp no 01/2021",
+        "cne/cp no. 01, de 05 de janeiro de 2021",
+        "cne/cp no. 01/2021",
+        "cne/cp no. 1/2021"
+      ]
+    },
+    "curso:uniao-da-vitoria/tecnico-em-meio-ambiente-integrado-ao-ensino-medio": {
+      "nivel": "médio",
+      "trechos": [
+        "cne/ceb n. 01/2021 apresenta como um dos principios norteadores da educacao profissional",
+        "cne/cp n. 01/2021",
+        "cne/cp n. 1/2021",
+        "cne/cp no 01/2021",
+        "cne/cp no 1, de 5 de janeiro de 2021",
+        "cne/cp no 1/2021"
+      ]
+    },
+    "curso:uniao-da-vitoria/tecnologia-em-analise-e-desenvolvimento-de-sistemas": {
+      "nivel": "superior",
+      "trechos": [
+        "cne/cp 1, de 5 de janeiro de 2021",
+        "cne/cp 1/2021",
+        "cne/cp no 01/2021"
+      ]
+    }
+  }
+}
