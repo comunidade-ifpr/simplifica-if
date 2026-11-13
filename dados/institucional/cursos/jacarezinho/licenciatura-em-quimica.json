@@ -1,0 +1,21 @@
+{
+  "campus_id": "jacarezinho",
+  "curso_slug": "licenciatura-em-quimica",
+  "nome": "Licenciatura em Química",
+  "nivel": "superior",
+  "forma_oferta": "licenciatura",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/jacarezinho/cursos/graduacao/licenciatura-em-quimica/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2025/01/PPC_Licenciatura_FINAL_2022_proens__1__atualizado.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/jacarezinho/licenciatura-em-quimica.md",
+    "ano_documento": 2022,
+    "curadoria": "Precisa de revisão"
+  }
+}

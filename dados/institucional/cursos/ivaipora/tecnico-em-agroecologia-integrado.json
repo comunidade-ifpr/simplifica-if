@@ -1,0 +1,34 @@
+{
+  "campus_id": "ivaipora",
+  "curso_slug": "tecnico-em-agroecologia-integrado",
+  "nome": "Técnico em Agroecologia",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/ivaipora/nossos-cursos/cursos-tecnicos/tecnico-em-agroecologia-integrado/",
+  "suap": {
+    "id": 173,
+    "codigo": "IVA001",
+    "vagas": 36,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "298 — TÉCNICO EM AGROECOLOGIA INTEGRADO - 2015 IVAIPORÃ — CH exibida: 3600 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/298/"
+      ],
+      "carga_horaria_comum_h": 3600,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/ivaipora/wp-content/uploads/sites/15/2017/03/PPC-Integrado-em-Agroecologia-26-04-final.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/ivaipora/tecnico-em-agroecologia-integrado.md",
+    "ano_documento": 2016,
+    "vagas": "20-35",
+    "trecho_vagas": "Número máximo de vagas do curso: 35 Número mínimo de vagas do curso: 20",
+    "curadoria": "Precisa de revisão"
+  }
+}

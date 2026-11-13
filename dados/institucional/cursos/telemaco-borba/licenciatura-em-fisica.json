@@ -1,0 +1,24 @@
+{
+  "campus_id": "telemaco-borba",
+  "curso_slug": "licenciatura-em-fisica",
+  "nome": "Licenciatura em Física",
+  "nivel": "superior",
+  "forma_oferta": "licenciatura",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/telemaco-borba/cursos-graduacao/licenciatura-em-fisica-2014/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/telemaco-borba/wp-content/uploads/sites/25/2023/02/PPC-2022-LFIS-Graduacao-IFPR-TB-.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/telemaco-borba/licenciatura-em-fisica.md",
+    "ano_documento": 2022,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anual): 40 (quarenta) vagas. 7",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

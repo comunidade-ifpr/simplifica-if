@@ -1,0 +1,21 @@
+{
+  "campus_id": "irati",
+  "curso_slug": "tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+  "nome": "Tecnologia em Análise e Desenvolvimento de Sistemas",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/irati/nossos-cursos/cursos_superiores/tecnologia-em-analise-e-desenvolvimento-de-sistemas/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/irati/wp-content/uploads/sites/14/2025/03/PPC-Turmas-ingressantes-a-partir-de-2021-ajuste-2025.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/irati/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md",
+    "ano_documento": 2014,
+    "curadoria": "Precisa de revisão"
+  }
+}

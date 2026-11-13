@@ -1,0 +1,15 @@
+{
+  "campus_id": "telemaco-borba",
+  "curso_slug": "tecnico-em-instrumentacao-industrial-subsequente",
+  "nome": "Técnico em Instrumentação Industrial",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "presencial",
+  "situacao": "abertura",
+  "pagina_oficial": "https://ifpr.edu.br/telemaco-borba/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  }
+}

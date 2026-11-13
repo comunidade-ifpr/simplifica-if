@@ -1,0 +1,33 @@
+{
+  "campus_id": "assis-chateaubriand",
+  "curso_slug": "tecnico-em-eletrotecnica-subsequente",
+  "nome": "Técnico em Eletrotécnica",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-subsequentes/eletrotecnica/informacoes/",
+  "suap": {
+    "id": 175,
+    "codigo": "AC007",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "333 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2013 ASSIS CHATEAUBRIAND — CH exibida: 1360 h; estágio exigido: Não; CH mínima de estágio (separada): -\n82 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2020 ASSIS CHATEAUBRIAND — CH exibida: 1334 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/333/",
+        "https://suap.ifpr.edu.br/edu/matriz/82/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2017/08/PPC-Eletrotecnica.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-eletrotecnica-subsequente.md",
+    "vagas": "20-40",
+    "trecho_vagas": "NÚMERO DE VAGAS: 40 ESTÁGIO: Não obrigatório MÍNIMO 20 MÁXIMO 40 CARGA HORÁRIA TOTAL: 1.360 h 3. ESTRUTURA E FUNCIONAMENTO 3.1 Justificativa da",
+    "curadoria": "Precisa de revisão"
+  }
+}

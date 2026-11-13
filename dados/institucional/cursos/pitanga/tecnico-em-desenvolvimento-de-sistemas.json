@@ -1,0 +1,34 @@
+{
+  "campus_id": "pitanga",
+  "curso_slug": "tecnico-em-desenvolvimento-de-sistemas",
+  "nome": "Técnico em Desenvolvimento de Sistemas",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/pitanga/nossos-cursos/integrados-ao-ensino-medio/tecnico-em-desenvolvimento-de-sistemas/",
+  "suap": {
+    "id": 621,
+    "codigo": "PIT003",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "828 — TÉCNICO EM DESENVOLVIMENTO DE SISTEMAS — CH exibida: 3510 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/828/"
+      ],
+      "carga_horaria_comum_h": 3510,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/pitanga/wp-content/uploads/sites/23/2025/09/PPC_Desenvolvimento_de_Sistemas_Integrado.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/pitanga/tecnico-em-desenvolvimento-de-sistemas.md",
+    "ano_documento": 2025,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais 40 (quarenta) vagas/ano",
+    "curadoria": "Precisa de revisão"
+  }
+}

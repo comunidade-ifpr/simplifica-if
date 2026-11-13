@@ -1,0 +1,24 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "especializacao-em-gestao-social-de-politicas-publicas",
+  "nome": "Especialização em Gestão Social de Políticas Públicas",
+  "nivel": "pós-graduação",
+  "forma_oferta": "especialização",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/pos-graduacao-2/especializacao-em-gestao-social-e-politicas-publicas/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2022/03/PPC_2022_Projeto_Pedagogico_do_Curso_Atual_2022.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/especializacao-em-gestao-social-de-politicas-publicas.md",
+    "ano_documento": 2021,
+    "vagas": "20-30",
+    "trecho_vagas": "Vagas: Mínimo: 20 vagas (Res. nº 18/2017, Art. 8º, § 1º, XI); Máximo: 30 vagas",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

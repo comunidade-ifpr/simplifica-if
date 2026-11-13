@@ -1,0 +1,23 @@
+{
+  "campus_id": "palmas",
+  "curso_slug": "enfermagem",
+  "nome": "Enfermagem",
+  "nivel": "superior",
+  "forma_oferta": "bacharelado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/palmas/about/nossos-cursos/about-nossos-cursos-cursos-de-graduacao-regulamentos/enfermagem-2-2/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/palmas/wp-content/uploads/sites/31/2023/06/PPC_Enfermagem_2023-1.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/palmas/enfermagem.md",
+    "ano_documento": 2010,
+    "vagas": "30",
+    "trecho_vagas": "Vagas totais (anuais): 30 12",
+    "curadoria": "Precisa de revisão"
+  }
+}

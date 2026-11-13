@@ -1,0 +1,23 @@
+{
+  "campus_id": "foz-do-iguacu",
+  "curso_slug": "pos-graduacao-lato-sensu-em-internet-das-coisas-iot-do-ifpr",
+  "nome": "Pos Graduacao Lato Sensu em Internet das Coisas Iot do Ifpr",
+  "nivel": "pós-graduação",
+  "forma_oferta": "especialização",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/foz-do-iguacu//pos-graduacao-lato-sensu-em-internet-das-coisas-iot-do-ifpr/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/foz-do-iguacu/wp-content/uploads/sites/12/2021/08/PPC-IoT-Foz-do-Iguacu-v-4.0.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/foz-do-iguacu/pos-graduacao-lato-sensu-em-internet-das-coisas-iot-do-ifpr.md",
+    "ano_documento": 2017,
+    "vagas": "20-30",
+    "trecho_vagas": "Vagas: 30 vagas Mínimo: 20 vagas Máximo: 30 vagas O número máximo de vagas é limitado pela infr",
+    "curadoria": "Precisa de revisão"
+  }
+}

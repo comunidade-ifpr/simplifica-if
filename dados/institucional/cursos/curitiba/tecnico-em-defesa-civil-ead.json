@@ -1,0 +1,15 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "tecnico-em-defesa-civil-ead",
+  "nome": "Técnico em Defesa Civil",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "ead",
+  "situacao": "em_oferta",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/curso-defesacivil/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  }
+}

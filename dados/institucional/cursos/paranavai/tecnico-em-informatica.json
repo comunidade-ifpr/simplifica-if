@@ -1,0 +1,36 @@
+{
+  "campus_id": "paranavai",
+  "curso_slug": "tecnico-em-informatica",
+  "nome": "Técnico em Informática",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/paranavai/tecnico-em-informatica/",
+  "suap": {
+    "id": 81,
+    "codigo": "PVAI003",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "62 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2016 PARANAVAÍ — CH exibida: 3536 h; estágio exigido: Não; CH mínima de estágio (separada): -\n900 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2016 PARANAVAÍ (2026) — CH exibida: 3536 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/62/",
+        "https://suap.ifpr.edu.br/edu/matriz/900/"
+      ],
+      "carga_horaria_comum_h": 3536,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/paranavai/wp-content/uploads/sites/21/2017/05/PPC-INFORMARTICA-TURMAS-INICIO-2016.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/paranavai/tecnico-em-informatica.md",
+    "ano_documento": 2015,
+    "vagas": "20-40",
+    "trecho_vagas": "Quantidade de Vagas : 20 (mínimo) a 40 (máximo)",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-20"
+  }
+}

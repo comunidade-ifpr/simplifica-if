@@ -1,0 +1,24 @@
+{
+  "oferta_id": "curitiba-tecnico-em-processos-fotograficos-matutino",
+  "processos": [
+    "processo-seletivo-2026"
+  ],
+  "curso_nome": "Técnico em Processos Fotográficos",
+  "tipo_oferta": "técnico subsequente",
+  "vagas": 30,
+  "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
+  "trecho_fonte": "Curitiba; Técnico em Processos Fotográficos; Turmas: 1; Turno: Matutino; Vagas: 30; Duração: 1,5 anos",
+  "forma_oferta": "30 vagas; 1 turma(s); turno Matutino; duração 1,5 anos",
+  "status_curadoria": "sugerido",
+  "modalidade": "presencial",
+  "turno": "Matutino",
+  "campi": [],
+  "cursos": [
+    "curitiba/tecnico-em-processos-fotograficos"
+  ],
+  "editais": [
+    "edital-subsequentes-curitiba-assis-2026"
+  ],
+  "campus_id_original": "curitiba",
+  "curso_slug_original": "tecnico-em-processos-fotograficos"
+}

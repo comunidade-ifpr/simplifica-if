@@ -1,0 +1,24 @@
+{
+  "campus_id": "ponta-grossa",
+  "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
+  "nome": "Técnico em Informática",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/ponta-grossa/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/ponta-grossa/wp-content/uploads/sites/28/2022/07/PPC-Informatica_2019-Final-REVISADO.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/ponta-grossa/tecnico-em-informatica-integrado-ao-ensino-medio.md",
+    "ano_documento": 2019,
+    "vagas": "30-35",
+    "trecho_vagas": "Número máximo de vagas do curso: 35; Número mínimo de vagas do curso: 30",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-20"
+  }
+}

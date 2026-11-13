@@ -1,0 +1,24 @@
+{
+  "oferta_id": "jaguariaiva-tecnico-em-alimentos-diurno-manha-e-tarde-1",
+  "processos": [
+    "processo-seletivo-2026"
+  ],
+  "curso_nome": "Técnico em Alimentos",
+  "tipo_oferta": "técnico integrado",
+  "vagas": 40,
+  "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
+  "trecho_fonte": "Jaguariaíva; Técnico em Alimentos; Turmas: 1; Turno: Diurno (manhã e tarde)¹; Vagas: 40; Duração: 4 anos",
+  "forma_oferta": "40 vagas; 1 turma(s); turno Diurno (manhã e tarde)¹; duração 4 anos",
+  "status_curadoria": "sugerido",
+  "modalidade": "presencial",
+  "turno": "Diurno (manhã e tarde)¹",
+  "campi": [],
+  "cursos": [
+    "jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio"
+  ],
+  "editais": [
+    "edital-integrados-2026"
+  ],
+  "campus_id_original": "jaguariaiva",
+  "curso_slug_original": "tecnico-em-alimentos-integrado-ao-ensino-medio"
+}

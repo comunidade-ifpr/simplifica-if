@@ -1,0 +1,23 @@
+{
+  "campus_id": "jacarezinho",
+  "curso_slug": "educacao-sociedade-e-tecnologia",
+  "nome": "Educação, Sociedade e Tecnologia",
+  "nivel": "pós-graduação",
+  "forma_oferta": "especialização",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/jacarezinho/cursos/especializacao/educacao-sociedade-e-tecnologia/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2025/06/PPC_especializacao_2025.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/jacarezinho/educacao-sociedade-e-tecnologia.md",
+    "ano_documento": 2025,
+    "vagas": "20-50",
+    "trecho_vagas": "Vagas ofertadas a) Mínimo: 20 vagas (Resolução Consup/IFPR n.121/2023) b) Máximo: 50 vagas, conforme oferta e ingresso descrita no PPC",
+    "curadoria": "Precisa de revisão"
+  }
+}

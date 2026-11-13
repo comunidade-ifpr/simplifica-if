@@ -1,0 +1,25 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "tecnologia-em-massoterapia",
+  "nome": "Tecnologia em Massoterapia",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-superiores/massoterapia/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2024/10/ppc_matutino.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/tecnologia-em-massoterapia.md",
+    "ano_documento": 2022,
+    "vagas": "20-35",
+    "trecho_vagas": "Vagas totais (anual): Mínimo 20 e máximo 35",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

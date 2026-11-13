@@ -1,0 +1,35 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "tecnico-em-processos-fotograficos",
+  "nome": "Técnico em Processos Fotográficos",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/processos-fotograficos/",
+  "suap": {
+    "id": 14,
+    "codigo": "CTB016",
+    "vagas": 30,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "14 — TÉCNICO EM PROCESSOS FOTOGRÁFICOS SUBSEQUENTE - 2014 CURITIBA — CH exibida: 952 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/14/"
+      ],
+      "carga_horaria_comum_h": 952,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2024/10/PPC-PF-SUB_V.2018-FINAL_pos-SEPAE-1.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/tecnico-em-processos-fotograficos.md",
+    "ano_documento": 2018,
+    "vagas": "20-40",
+    "trecho_vagas": "Número máximo de vagas do curso: 40; Número mínimo de vagas do curso: 20",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

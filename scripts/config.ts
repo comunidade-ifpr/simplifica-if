@@ -10,15 +10,12 @@ export const RAIZ_BASE = path.join(RAIZ_PROJETO, "base-conhecimento");
 const CAMINHO_CONFIG_NOTION = path.join(RAIZ_BASE, "config", "notion.json");
 const CAMPOS_BASE = ["id", "data_source_id", "title"] as const;
 
-export const BASES_NOTION = [
-  "campi",
-  "cursos",
-  "editais_ingresso",
-  "movimentacoes_cursos",
-  "ofertas_ingresso",
-  "processos_seletivos",
-  "tarefas",
-] as const;
+/**
+ * Bases que continuam no Notion. Campi, cursos, processos seletivos, editais e ofertas têm como
+ * fonte os arquivos de `dados/institucional/`; as demais bases antigas ficam em `config/notion.json`
+ * só para a migração e o arquivamento (`basesNotionLegadas`).
+ */
+export const BASES_NOTION = ["movimentacoes_cursos"] as const;
 export type BaseNotion = (typeof BASES_NOTION)[number];
 export type DataSources = Record<BaseNotion, string>;
 
@@ -55,13 +52,7 @@ export function validarConfigNotion(config: unknown): string[] {
 const esquemaBaseNotion = z.looseObject({ data_source_id: z.string() });
 export const esquemaConfigNotion = z.looseObject({
   databases: z.looseObject({
-    campi: esquemaBaseNotion,
-    cursos: esquemaBaseNotion,
-    editais_ingresso: esquemaBaseNotion,
     movimentacoes_cursos: esquemaBaseNotion,
-    ofertas_ingresso: esquemaBaseNotion,
-    processos_seletivos: esquemaBaseNotion,
-    tarefas: esquemaBaseNotion,
   }),
 });
 
@@ -72,13 +63,15 @@ export function carregarDataSources(): DataSources {
     throw new Error(`Configuração Notion inválida:\n- ${erros.join("\n- ")}`);
   }
   const { databases: bases } = validarJson(esquemaConfigNotion, config, CAMINHO_CONFIG_NOTION);
-  return {
-    campi: bases.campi.data_source_id,
-    cursos: bases.cursos.data_source_id,
-    editais_ingresso: bases.editais_ingresso.data_source_id,
-    movimentacoes_cursos: bases.movimentacoes_cursos.data_source_id,
-    ofertas_ingresso: bases.ofertas_ingresso.data_source_id,
-    processos_seletivos: bases.processos_seletivos.data_source_id,
-    tarefas: bases.tarefas.data_source_id,
+  return { movimentacoes_cursos: bases.movimentacoes_cursos.data_source_id };
+}
+
+/** Bases do Notion que já não são fonte de verdade, com o `data_source_id` de cada uma, para migração e arquivamento. */
+export function basesNotionLegadas(): Record<string, { id: string; data_source_id: string; title: string }> {
+  const config = JSON.parse(readFileSync(CAMINHO_CONFIG_NOTION, "utf-8")) as {
+    databases: Record<string, { id: string; data_source_id: string; title: string }>;
   };
+  return Object.fromEntries(
+    Object.entries(config.databases).filter(([chave]) => !(BASES_NOTION as readonly string[]).includes(chave)),
+  );
 }

@@ -1,0 +1,35 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "tecnico-em-producao-de-audio-e-video",
+  "nome": "Técnico em Produção de Áudio e Vídeo",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/producaoaudioevideo/",
+  "suap": {
+    "id": 146,
+    "codigo": "CTB017",
+    "vagas": 30,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "588 — TÉCNICO EM PRODUÇÃO DE ÁUDIO E VÍDEO SUBSEQUENTE - 2016 CURITIBA — CH exibida: 918 h; estágio exigido: Não; CH mínima de estágio (separada): -\n68 — TÉCNICO EM PRODUÇÃO DE ÁUDIO E VÍDEO SUBSEQUENTE - 2023 CURITIBA — CH exibida: 1231 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/588/",
+        "https://suap.ifpr.edu.br/edu/matriz/68/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2022/06/PPC_Final_PAV-SUBS_Valido-a-partir-de-2023.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/tecnico-em-producao-de-audio-e-video.md",
+    "ano_documento": 2022,
+    "vagas": "25-40",
+    "trecho_vagas": "Número máximo de vagas do curso: 40 (por turno); Número mínimo de vagas do curso: 25 (por turno)",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "campus_id": "telemaco-borba",
+  "curso_slug": "engenharia-eletrica",
+  "nome": "Engenharia Elétrica",
+  "nivel": "superior",
+  "forma_oferta": "bacharelado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/telemaco-borba/cursos-graduacao/engenharia-eletrica/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/telemaco-borba/wp-content/uploads/sites/25/2025/10/PPC_Engenharia_Eletrica_Campus_TB_2019_2021-REVISADO.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/telemaco-borba/engenharia-eletrica.md",
+    "ano_documento": 2019,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anual): 40 vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

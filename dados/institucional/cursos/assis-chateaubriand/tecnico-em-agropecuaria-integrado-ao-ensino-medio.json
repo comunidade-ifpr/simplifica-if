@@ -1,0 +1,36 @@
+{
+  "campus_id": "assis-chateaubriand",
+  "curso_slug": "tecnico-em-agropecuaria-integrado-ao-ensino-medio",
+  "nome": "Técnico em Agropecuária",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/",
+  "suap": {
+    "id": 77,
+    "codigo": "AC001",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "34 — TÉCNICO EM AGROPECUÁRIA INTEGRADO - 2018 ASSIS CHATEAUBRIAND — CH exibida: 3539 h; estágio exigido: Sim; CH mínima de estágio (separada): 200\n731 — TÉCNICO EM AGROPECUÁRIA INTEGRADO - 2018 ASSIS CHATEAUBRIAND (Trimestre) — CH exibida: 3539 h; estágio exigido: Sim; CH mínima de estágio (separada): 200",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/34/",
+        "https://suap.ifpr.edu.br/edu/matriz/731/"
+      ],
+      "carga_horaria_comum_h": 3539,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2017/08/PPC-Agropecuaria.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio.md",
+    "ano_documento": 2017,
+    "vagas": "20-40",
+    "trecho_vagas": "Número máximo de vagas do curso: 40; Número mínimo de vagas do curso: 20",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-20"
+  }
+}

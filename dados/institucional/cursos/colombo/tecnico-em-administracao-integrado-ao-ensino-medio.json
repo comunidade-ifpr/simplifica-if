@@ -1,0 +1,36 @@
+{
+  "campus_id": "colombo",
+  "curso_slug": "tecnico-em-administracao-integrado-ao-ensino-medio",
+  "nome": "Técnico em Administração",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/colombo/tecnicos-integrados/tecnico-em-administracao/",
+  "suap": {
+    "id": 35,
+    "codigo": "COL001",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "19 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2020 COLOMBO — CH exibida: 3109 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/19/"
+      ],
+      "carga_horaria_comum_h": 3109,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/colombo/wp-content/uploads/sites/9/2022/08/PPC_Integrado_ADM_final.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/colombo/tecnico-em-administracao-integrado-ao-ensino-medio.md",
+    "ano_documento": 2018,
+    "vagas": "20-40",
+    "trecho_vagas": "Número máximo de vagas do curso: 40 vagas; Número mínimo de vagas do curso: 20 vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

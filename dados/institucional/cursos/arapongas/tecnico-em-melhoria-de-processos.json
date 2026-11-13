@@ -1,0 +1,34 @@
+{
+  "campus_id": "arapongas",
+  "curso_slug": "tecnico-em-melhoria-de-processos",
+  "nome": "Técnico em Melhoria de Processos",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "ead",
+  "situacao": "suspenso",
+  "pagina_oficial": "https://ifpr.edu.br/arapongas/nossos-cursos/tecnico-subsequente/tecnico-em-melhoria-de-processos/",
+  "suap": {
+    "id": 1,
+    "codigo": "AR001",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "1 — TÉCNICO EM MELHORIA DE PROCESSOS SUBSEQUENTE - 2022 ARAPONGAS — CH exibida: 1200 h; estágio exigido: Não; CH mínima de estágio (separada): 0",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/1/"
+      ],
+      "carga_horaria_comum_h": 1200,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/arapongas/wp-content/uploads/sites/2/2022/09/PPC___CURSO_TECNICO_EM_MELHORIA_DE_PROCESSOS___VERSAO_FINAL.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/arapongas/tecnico-em-melhoria-de-processos.md",
+    "ano_documento": 2021,
+    "vagas": "20-40",
+    "trecho_vagas": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 20",
+    "curadoria": "Precisa de revisão"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "campus_id": "capanema",
+  "curso_slug": "licenciatura-em-matematica",
+  "nome": "Licenciatura em Matemática",
+  "nivel": "superior",
+  "forma_oferta": "licenciatura",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/capanema/nossos-cursos/graduacao/licenciatura-em-matematica/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/capanema/wp-content/uploads/sites/7/2023/07/PPC-2023.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/capanema/licenciatura-em-matematica.md",
+    "ano_documento": 2023,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anual) 40 vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

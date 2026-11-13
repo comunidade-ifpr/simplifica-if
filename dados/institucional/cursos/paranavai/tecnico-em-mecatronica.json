@@ -1,0 +1,35 @@
+{
+  "campus_id": "paranavai",
+  "curso_slug": "tecnico-em-mecatronica",
+  "nome": "Técnico em Mecatrônica",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/paranavai/ensino-medio/tecnico-em-mecatronica/",
+  "suap": {
+    "id": 73,
+    "codigo": "PVAI004",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "63 — TÉCNICO EM MECATRÔNICA INTEGRADO - 2017 PARANAVAÍ — CH exibida: 3538 h; estágio exigido: Não; CH mínima de estágio (separada): -\n899 — TÉCNICO EM MECATRÔNICA INTEGRADO - 2017 PARANAVAÍ (2026) — CH exibida: 3538 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/63/",
+        "https://suap.ifpr.edu.br/edu/matriz/899/"
+      ],
+      "carga_horaria_comum_h": 3538,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/paranavai/wp-content/uploads/sites/21/2017/05/PPC_Mecatronica_Pvai_inicio2017.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/paranavai/tecnico-em-mecatronica.md",
+    "ano_documento": 2016,
+    "vagas": "40",
+    "trecho_vagas": "Número máximo de vagas do curso : 40 alunos",
+    "curadoria": "Precisa de revisão"
+  }
+}

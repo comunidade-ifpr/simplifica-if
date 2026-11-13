@@ -1,0 +1,24 @@
+{
+  "oferta_id": "cascavel-tecnico-em-quimica-diurno-manha-duas-tardes-1",
+  "processos": [
+    "processo-seletivo-2026"
+  ],
+  "curso_nome": "Técnico em Química",
+  "tipo_oferta": "técnico integrado",
+  "vagas": 40,
+  "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
+  "trecho_fonte": "Cascavel; Técnico em Química; Turmas: 1; Turno: Diurno (manhã+duas tardes)¹; Vagas: 40; Duração: 3 anos",
+  "forma_oferta": "40 vagas; 1 turma(s); turno Diurno (manhã+duas tardes)¹; duração 3 anos",
+  "status_curadoria": "sugerido",
+  "modalidade": "presencial",
+  "turno": "Diurno (manhã+duas tardes)¹",
+  "campi": [],
+  "cursos": [
+    "cascavel/tecnico-em-quimica"
+  ],
+  "editais": [
+    "edital-integrados-2026"
+  ],
+  "campus_id_original": "cascavel",
+  "curso_slug_original": "tecnico-em-quimica"
+}

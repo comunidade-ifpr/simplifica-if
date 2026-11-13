@@ -1,0 +1,24 @@
+{
+  "campus_id": "campo-largo",
+  "curso_slug": "licenciatura-em-matematica",
+  "nome": "Licenciatura em Matemática",
+  "nivel": "superior",
+  "forma_oferta": "licenciatura",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/campo-largo/nossos-cursos/cursos-superiores/curso-de-licenciatura-em-matematica/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2019/12/PPC_Licenciatura_Matematica_Versao_Pos_CONSUP.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/campo-largo/licenciatura-em-matematica.md",
+    "ano_documento": 2019,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anual) 40 vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

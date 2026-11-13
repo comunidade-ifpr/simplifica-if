@@ -1,0 +1,21 @@
+{
+  "campus_id": "coronel-vivida",
+  "curso_slug": "tecnologia-em-gestao-financeira",
+  "nome": "Tecnologia em Gestão Financeira",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/coronel-vivida/nossos-cursos/graduacao/tecnologia-em-gestao-financeira/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/coronel-vivida/wp-content/uploads/sites/10/2025/12/PPC_TECNOLOGO_EM_GESTAO_FINANCEIRA_atualizacao_12-2025.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/coronel-vivida/tecnologia-em-gestao-financeira.md",
+    "ano_documento": 2025,
+    "curadoria": "Precisa de revisão"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "campus_id": "irati",
+  "curso_slug": "tecnico-em-quimica-integrado-ao-ensino-medio",
+  "nome": "Técnico em Química",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "abertura",
+  "pagina_oficial": "https://irati.ifpr.edu.br/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  }
+}

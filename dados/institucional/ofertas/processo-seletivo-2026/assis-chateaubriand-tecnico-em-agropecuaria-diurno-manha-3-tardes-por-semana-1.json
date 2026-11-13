@@ -1,0 +1,24 @@
+{
+  "oferta_id": "assis-chateaubriand-tecnico-em-agropecuaria-diurno-manha-3-tardes-por-semana-1",
+  "processos": [
+    "processo-seletivo-2026"
+  ],
+  "curso_nome": "Técnico em Agropecuária",
+  "tipo_oferta": "técnico integrado",
+  "vagas": 80,
+  "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
+  "trecho_fonte": "Assis Chateaubriand; Técnico em Agropecuária; Turmas: 2; Turno: Diurno (Manhã + 3 tardes por semana)¹; Vagas: 80; Duração: 3 anos",
+  "forma_oferta": "80 vagas; 2 turma(s); turno Diurno (Manhã + 3 tardes por semana)¹; duração 3 anos",
+  "status_curadoria": "sugerido",
+  "modalidade": "presencial",
+  "turno": "Diurno (Manhã + 3 tardes por semana)¹",
+  "campi": [],
+  "cursos": [
+    "assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio"
+  ],
+  "editais": [
+    "edital-integrados-2026"
+  ],
+  "campus_id_original": "assis-chateaubriand",
+  "curso_slug_original": "tecnico-em-agropecuaria-integrado-ao-ensino-medio"
+}

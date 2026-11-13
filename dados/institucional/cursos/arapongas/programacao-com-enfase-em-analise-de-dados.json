@@ -1,0 +1,22 @@
+{
+  "campus_id": "arapongas",
+  "curso_slug": "programacao-com-enfase-em-analise-de-dados",
+  "nome": "Programação com ênfase em Análise de Dados",
+  "nivel": "formação inicial e continuada",
+  "forma_oferta": "FIC",
+  "pagina_oficial": "https://ifpr.edu.br/arapongas/nossos-cursos/cursos-fic/programacao-com-enfase-em-analise-de-dados/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/arapongas/wp-content/uploads/sites/2/2024/06/PPC_FIC_Programacao_com_enfase_em_AD.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/arapongas/programacao-com-enfase-em-analise-de-dados.md",
+    "ano_documento": 2024,
+    "vagas": "20-40",
+    "trecho_vagas": "Vagas totais: 20 a 40 vagas",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

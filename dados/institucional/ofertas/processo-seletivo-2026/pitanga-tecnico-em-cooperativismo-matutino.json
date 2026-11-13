@@ -1,0 +1,24 @@
+{
+  "oferta_id": "pitanga-tecnico-em-cooperativismo-matutino",
+  "processos": [
+    "processo-seletivo-2026"
+  ],
+  "curso_nome": "Técnico em Cooperativismo",
+  "tipo_oferta": "técnico integrado",
+  "vagas": 40,
+  "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
+  "trecho_fonte": "Pitanga; Técnico em Cooperativismo; Turmas: 1; Turno: Matutino; Vagas: 40; Duração: 4 anos",
+  "forma_oferta": "40 vagas; 1 turma(s); turno Matutino; duração 4 anos",
+  "status_curadoria": "sugerido",
+  "modalidade": "presencial",
+  "turno": "Matutino",
+  "campi": [],
+  "cursos": [
+    "pitanga/tecnico-em-cooperativismo"
+  ],
+  "editais": [
+    "edital-integrados-2026"
+  ],
+  "campus_id_original": "pitanga",
+  "curso_slug_original": "tecnico-em-cooperativismo"
+}

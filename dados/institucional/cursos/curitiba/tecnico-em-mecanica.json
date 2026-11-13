@@ -1,0 +1,37 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "tecnico-em-mecanica",
+  "nome": "Técnico em Mecânica",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/mecanica/",
+  "suap": {
+    "id": 84,
+    "codigo": "CTB013",
+    "vagas": 30,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "283 — TÉCNICO EM MECÂNICA SUBSEQUENTE - 2014 CURITIBA — CH exibida: 1342 h; estágio exigido: Não; CH mínima de estágio (separada): -\n707 — TÉCNICO EM MECÂNICA SUBSEQUENTE - 2024 CURITIBA PROGRAMA AUTONOMIA E RENDA PETROBRÁS — CH exibida: 1204 h; estágio exigido: Não; CH mínima de estágio (separada): -\n783 — TÉCNICO EM MECÂNICA SUBSEQUENTE - 2025 CURITIBA — CH exibida: 1204 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/283/",
+        "https://suap.ifpr.edu.br/edu/matriz/707/",
+        "https://suap.ifpr.edu.br/edu/matriz/783/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2025/06/PPC-Curso-Tecnico-de-Mecanica-Subsequente-Campus-Curitiba.docx.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/tecnico-em-mecanica.md",
+    "ano_documento": 2025,
+    "vagas": "40",
+    "trecho_vagas": "Número máximo de vagas por ingresso (anual): 40 vagas; Número mínimo de vagas por ingresso (anual): 20 vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

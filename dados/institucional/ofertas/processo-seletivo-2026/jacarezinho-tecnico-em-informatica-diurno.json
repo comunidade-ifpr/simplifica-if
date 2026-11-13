@@ -1,0 +1,24 @@
+{
+  "oferta_id": "jacarezinho-tecnico-em-informatica-diurno",
+  "processos": [
+    "processo-seletivo-2026"
+  ],
+  "curso_nome": "Técnico em Informática",
+  "tipo_oferta": "técnico integrado",
+  "vagas": 40,
+  "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
+  "trecho_fonte": "Jacarezinho; Técnico em Informática; Turmas: 1; Turno: Diurno; Vagas: 40; Duração: 4 anos",
+  "forma_oferta": "40 vagas; 1 turma(s); turno Diurno; duração 4 anos",
+  "status_curadoria": "sugerido",
+  "modalidade": "presencial",
+  "turno": "Diurno",
+  "campi": [],
+  "cursos": [
+    "jacarezinho/tecnico-em-informatica"
+  ],
+  "editais": [
+    "edital-integrados-2026"
+  ],
+  "campus_id_original": "jacarezinho",
+  "curso_slug_original": "tecnico-em-informatica"
+}

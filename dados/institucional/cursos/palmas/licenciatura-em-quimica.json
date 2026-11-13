@@ -1,0 +1,24 @@
+{
+  "campus_id": "palmas",
+  "curso_slug": "licenciatura-em-quimica",
+  "nome": "Licenciatura em Química",
+  "nivel": "superior",
+  "forma_oferta": "licenciatura",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/palmas/about/nossos-cursos/about-nossos-cursos-cursos-de-graduacao-regulamentos/quimica-9/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/palmas/wp-content/uploads/sites/31/2025/10/PPC_GrauacaoQuimica_2025_2.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/palmas/licenciatura-em-quimica.md",
+    "ano_documento": 2023,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anual): 40 vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

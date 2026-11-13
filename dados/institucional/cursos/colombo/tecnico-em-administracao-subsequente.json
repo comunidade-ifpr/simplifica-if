@@ -1,0 +1,25 @@
+{
+  "campus_id": "colombo",
+  "curso_slug": "tecnico-em-administracao-subsequente",
+  "nome": "Técnico em Administração",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/colombo/tecnicos-subsequentes/tecnico-em-administracao/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/colombo/wp-content/uploads/sites/9/2022/08/PPC_Subs_Adm_Versao_Final.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/colombo/tecnico-em-administracao-subsequente.md",
+    "ano_documento": 2018,
+    "vagas": "20-40",
+    "trecho_vagas": "Número máximo de vagas do curso: 40 vagas; Número mínimo de vagas do curso: 20 vagas",
+    "periodicidade_vagas": "não especificada",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

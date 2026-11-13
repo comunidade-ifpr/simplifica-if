@@ -1,0 +1,22 @@
+{
+  "campus_id": "arapongas",
+  "curso_slug": "programacao-web",
+  "nome": "Programação Web",
+  "nivel": "formação inicial e continuada",
+  "forma_oferta": "FIC",
+  "pagina_oficial": "https://ifpr.edu.br/arapongas/nossos-cursos/cursos-fic/programacao-web/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/arapongas/wp-content/uploads/sites/2/2025/03/PPC_FIC_Programacao_WEB.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/arapongas/programacao-web.md",
+    "ano_documento": 2025,
+    "vagas": "20-40",
+    "trecho_vagas": "Vagas totais: 20 a 40 vagas",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

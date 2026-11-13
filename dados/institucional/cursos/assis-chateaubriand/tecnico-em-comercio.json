@@ -1,0 +1,35 @@
+{
+  "campus_id": "assis-chateaubriand",
+  "curso_slug": "tecnico-em-comercio",
+  "nome": "Técnico em Comércio",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-tecnicos/comercio-integrado-ao-ensino-medio/",
+  "suap": {
+    "id": 119,
+    "codigo": "AC004",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "61 — TÉCNICO EM COMÉRCIO INTEGRADO - 2019 ASSIS CHATEAUBRIAND — CH exibida: 3109 h; estágio exigido: Não; CH mínima de estágio (separada): -\n732 — TÉCNICO EM COMÉRCIO INTEGRADO - 2019 ASSIS CHATEAUBRIAND (Trimestre) — CH exibida: 3109 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/61/",
+        "https://suap.ifpr.edu.br/edu/matriz/732/"
+      ],
+      "carga_horaria_comum_h": 3109,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2022/10/PPC-do-Curso-de-Tecnico-em-Comercio.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-comercio.md",
+    "ano_documento": 2019,
+    "vagas": "20-40",
+    "trecho_vagas": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 20",
+    "curadoria": "Precisa de revisão"
+  }
+}

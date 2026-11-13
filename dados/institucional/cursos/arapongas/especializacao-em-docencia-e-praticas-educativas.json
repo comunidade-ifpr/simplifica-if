@@ -1,0 +1,22 @@
+{
+  "campus_id": "arapongas",
+  "curso_slug": "especializacao-em-docencia-e-praticas-educativas",
+  "nome": "Especialização em Docência e Práticas Educativas",
+  "nivel": "pós-graduação",
+  "forma_oferta": "especialização",
+  "pagina_oficial": "https://ifpr.edu.br/arapongas/nossos-cursos/pos-graduacao/especializacao-em-docencia-e-praticas-educativas/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/arapongas/wp-content/uploads/sites/2/2023/10/PPC-Pos-em-Docencia-e-Praticas-educativas.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/arapongas/especializacao-em-docencia-e-praticas-educativas.md",
+    "ano_documento": 2023,
+    "vagas": "20-40",
+    "trecho_vagas": "Vagas ofertadas: a) Mínimo: 20 vagas (Resolução Consup/IFPR n.121/2023); b) Máximo: 40 vagas",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

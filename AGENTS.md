@@ -2,7 +2,7 @@
 
 Este repositório contém uma base de conhecimento local do IFPR com normas, catálogos, PPCs, metadados institucionais e painéis derivados. A fonte documental publicada fica em `base-conhecimento/`; a saída publicável é gerada em `site/`.
 
-Para dados operacionais de gestão que vivem no Notion, como Campi, Cursos, Movimentações de Cursos, Processos Seletivos, Editais e Ofertas, o Notion é a fonte de verdade. JSONs institucionais gerados localmente são artefatos publicáveis/cache, não espelho operacional nem fonte de curadoria.
+Os dados institucionais de gestão (Campi, Cursos com metadados de PPC e SUAP, Processos Seletivos, Editais e Ofertas) têm como fonte de verdade os arquivos de `dados/institucional/`, versionados no git. Os JSONs institucionais em `base-conhecimento/` são artefatos publicáveis gerados a partir deles; não os edite à mão. O Notion guarda só a base de fluxo `Movimentações de Cursos`, que também deve sair dele no futuro.
 
 Também contém skills operacionais em `.agents/skills/`. O caminho `.claude/skills` é um symlink para esse diretório, para que o Claude Code descubra as mesmas skills; edite sempre em `.agents/skills/`. Ao fazer alterações em qualquer skill, leia primeiro o `README.md` da própria skill, quando existir. Use esse arquivo para entender propósito, fluxo de uso, comandos de manutenção e convenções locais antes de editar scripts, fichas, prompts, testes ou documentação. Se a alteração envolver base gerada ou índice consolidado, procure no `README.md` da skill o comando de regeneração ou validação correspondente e execute-o antes de concluir.
 
@@ -33,25 +33,27 @@ PPCs servem como exemplos institucionais observados, não como fonte normativa o
 
 ## Curadoria e operação
 
-Para tarefas de curadoria de metadados institucionais, especialmente campi e cursos, leia primeiro:
+Para consultar ou alterar campi, cursos, metadados de PPC e SUAP, horários dos campi, processos seletivos, editais ou ofertas de ingresso, leia primeiro:
 
 - [Curadoria de metadados institucionais](base-conhecimento/docs/curadoria-metadados-institucionais.md)
 
-Para solicitações sobre dados operacionais no Notion, como Campi, Cursos, metadados de PPC, Movimentações de Cursos, horários dos campi, Processos Seletivos, Editais ou Ofertas de Ingresso, leia primeiro:
+Para solicitações sobre `Movimentações de Cursos`, a única base que continua no Notion, leia primeiro:
 
 - [Operação do Notion por agentes](base-conhecimento/docs/notion-operacao-agentes.md)
+
+Pareceres de Curso e as bases do Consepe foram arquivados em `dados/arquivo-notion/`, somente para consulta.
 
 Para perguntas, conferências ou curadoria que dependam de dados do Sistema Eletrônico de Informações (SEI), use o pacote `packages/sei-cli` deste repositório como ferramenta operacional e leia primeiro:
 
 - [Uso do sei-cli por agentes](base-conhecimento/docs/sei-cli-operacao-agentes.md)
 - [Sincronização SEI → Notion](base-conhecimento/docs/sincronizacao-sei-notion.md)
 
-Por padrão, use a API do Notion com `NOTION_TOKEN` do projeto. Não presuma que o Notion MCP local do usuário acessa esta base, pois ele pode estar conectado ao Notion pessoal do usuário. Se `NOTION_TOKEN` não estiver disponível, peça ao usuário o token da integração Notion organizacional e grave em `.env.local`.
+Para `Movimentações de Cursos` e para a exportação pública, use a API do Notion com `NOTION_TOKEN` do projeto. Não presuma que o Notion MCP local do usuário acessa esta base, pois ele pode estar conectado ao Notion pessoal do usuário. Se `NOTION_TOKEN` não estiver disponível, peça ao usuário o token da integração Notion organizacional e grave em `.env.local`.
 
-Depois de alterar dados institucionais no Notion, rode:
+Depois de alterar `dados/institucional/` ou `Movimentações de Cursos`, rode:
 
 ```bash
-bun run scripts/notion_exportar_base_publica.ts
+bun run scripts/exportar_base_publica.ts
 bun run scripts/gerar_indice_ppcs.ts
 bun run scripts/validar_base.ts
 bun run scripts/gerar_site.ts

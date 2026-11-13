@@ -1,0 +1,24 @@
+{
+  "campus_id": "campo-largo",
+  "curso_slug": "tecnologia-em-materiais",
+  "nome": "Curso Superior de Tecnologia em Materiais",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/campo-largo/nossos-cursos/cursos-superiores/curso-superior-de-tecnologia-em-materiais/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2024/02/PPC_Tecnologo_Materiais_Ext.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/campo-largo/tecnologia-em-materiais.md",
+    "ano_documento": 2022,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anual) 40 vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

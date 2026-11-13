@@ -1,0 +1,35 @@
+{
+  "campus_id": "assis-chateaubriand",
+  "curso_slug": "tecnico-em-eletromecanica-integrado-ao-ensino-medio",
+  "nome": "Técnico em Eletromecânica",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-tecnicos/eletromecanica-integradoensino-medio/informacoes/",
+  "suap": {
+    "id": 2,
+    "codigo": "AC005",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "2 — TÉCNICO EM ELETROMECÂNICA INTEGRADO - 2014 ASSIS CHATEAUBRIAND — CH exibida: 3331 h; estágio exigido: Não; CH mínima de estágio (separada): -\n726 — TÉCNICO EM ELETROMECÂNICA INTEGRADO - 2014 ASSIS CHATEAUBRIAND (Trimestre) — CH exibida: 3331 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/2/",
+        "https://suap.ifpr.edu.br/edu/matriz/726/"
+      ],
+      "carga_horaria_comum_h": 3331,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2024/02/PPC-Integrado-em-Eletromecanica-11-DE-DEZEMBRO-DE-2013.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio.md",
+    "ano_documento": 2013,
+    "vagas": "20-40",
+    "trecho_vagas": "NÚMERO DE VAGAS: CARGA HORÁRIA TOTAL – HORAS RELÓGIO: 3331h/r MÍNIMO 20 MÁXIMO 40 CARGA HORÁRIA DE ESTÁGIO: Não obrigatório PARCERIA COM OUTRAS ESPECIFICAR (anex",
+    "curadoria": "Precisa de revisão"
+  }
+}

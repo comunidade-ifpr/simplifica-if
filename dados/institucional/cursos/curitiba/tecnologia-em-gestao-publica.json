@@ -1,0 +1,24 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "tecnologia-em-gestao-publica",
+  "nome": "Tecnologia em Gestão Pública",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-superiores/gestaopublica/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2013/04/PPC-TECNOLOGIA-EM-GESTAO-PUBLICA-Superior.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/tecnologia-em-gestao-publica.md",
+    "ano_documento": 2015,
+    "vagas": "20-40",
+    "trecho_vagas": "Quantidade de Vagas: Mínimo 20 e máximo 40",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

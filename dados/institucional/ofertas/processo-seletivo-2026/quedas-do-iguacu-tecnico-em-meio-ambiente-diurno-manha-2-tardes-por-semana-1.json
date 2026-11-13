@@ -1,0 +1,24 @@
+{
+  "oferta_id": "quedas-do-iguacu-tecnico-em-meio-ambiente-diurno-manha-2-tardes-por-semana-1",
+  "processos": [
+    "processo-seletivo-2026"
+  ],
+  "curso_nome": "Técnico em Meio Ambiente",
+  "tipo_oferta": "técnico integrado",
+  "vagas": 38,
+  "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
+  "trecho_fonte": "Quedas do Iguaçu; Técnico em Meio Ambiente; Turmas: 1; Turno: Diurno (Manhã + 2 tardes por semana)¹; Vagas: 38; Duração: 3 anos",
+  "forma_oferta": "38 vagas; 1 turma(s); turno Diurno (Manhã + 2 tardes por semana)¹; duração 3 anos",
+  "status_curadoria": "sugerido",
+  "modalidade": "presencial",
+  "turno": "Diurno (Manhã + 2 tardes por semana)¹",
+  "campi": [],
+  "cursos": [
+    "quedas-do-iguacu/tecnico-em-meio-ambiente"
+  ],
+  "editais": [
+    "edital-integrados-2026"
+  ],
+  "campus_id_original": "quedas-do-iguacu",
+  "curso_slug_original": "tecnico-em-meio-ambiente"
+}

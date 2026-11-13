@@ -1,0 +1,36 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "tecnico-em-processos-fotograficos-integrado-ao-ensino-medio",
+  "nome": "Técnico em Processos Fotográficos",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/processosfotograficos/",
+  "suap": {
+    "id": 180,
+    "codigo": "CTB015",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "86 — TÉCNICO EM PROCESSOS FOTOGRÁFICOS INTEGRADO - 2014 CURITIBA — CH exibida: 3390 h; estágio exigido: Não; CH mínima de estágio (separada): -\n847 — TÉCNICO EM PROCESSOS FOTOGRÁFICOS INTEGRADO - 2014 CURITIBA (Trimestre) — CH exibida: 3390 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/86/",
+        "https://suap.ifpr.edu.br/edu/matriz/847/"
+      ],
+      "carga_horaria_comum_h": 3390,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2025/07/PPC_PF-integrado_v.2018_1.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio.md",
+    "ano_documento": 2015,
+    "vagas": "15-30",
+    "trecho_vagas": "Número máximo de vagas do curso: 30; Número mínimo de vagas do curso: 15",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

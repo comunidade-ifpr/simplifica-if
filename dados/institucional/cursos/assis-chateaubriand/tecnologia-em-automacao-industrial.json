@@ -1,0 +1,21 @@
+{
+  "campus_id": "assis-chateaubriand",
+  "curso_slug": "tecnologia-em-automacao-industrial",
+  "nome": "Tecnologia em Automação Industrial",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-superiores/tecnologia-em-automacao-industrial/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2026/02/PPC_Tecnologia_em_Automacao_Industrial_2026.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnologia-em-automacao-industrial.md",
+    "ano_documento": 2025,
+    "curadoria": "Precisa de revisão"
+  }
+}

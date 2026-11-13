@@ -1,0 +1,25 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "licenciatura-em-pedagogia",
+  "nome": "Licenciatura em Pedagogia",
+  "nivel": "superior",
+  "forma_oferta": "licenciatura",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-superiores/licenciatura-em-pedagogia/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2025/05/PPC-PEDAGOGIA-AJUSTE-APS.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/licenciatura-em-pedagogia.md",
+    "ano_documento": 2023,
+    "vagas": "20-40",
+    "trecho_vagas": "Vagas totais (anual): Mínimo: 20; Máximo: 40",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

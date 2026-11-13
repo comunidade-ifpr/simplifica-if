@@ -1,0 +1,35 @@
+{
+  "campus_id": "arapongas",
+  "curso_slug": "tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio",
+  "nome": "Técnico em Sistemas de Energia Renovável",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/arapongas/nossos-cursos/curso-tecnico-integrado-ao-ensino-medio/tecnico-integrado-ao-ensino-medio-tecnico-em-sistemas-de-energia-renovavel/",
+  "suap": {
+    "id": 615,
+    "codigo": "AR002",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "824 — TÉCNICO EM SISTEMAS DE ENERGIA RENOVÁVEL - INTEGRADO - 2026 CAMPUS ARAPONGAS — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/824/"
+      ],
+      "carga_horaria_comum_h": 3200,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/arapongas/wp-content/uploads/sites/2/2025/12/PPC_Tecnico_em_Sistemas_de_Energia_Renovavel___Arapongas-2.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio.md",
+    "ano_documento": 2025,
+    "vagas": "20-40",
+    "trecho_vagas": "Vagas totais: Mínimo: 20 vagas; Máximo: 40 vagas",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

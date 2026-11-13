@@ -1,0 +1,23 @@
+{
+  "campus_id": "palmas",
+  "curso_slug": "pedagogia",
+  "nome": "Pedagogia",
+  "nivel": "superior",
+  "forma_oferta": "licenciatura",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/palmas/about/nossos-cursos/about-nossos-cursos-cursos-de-graduacao-regulamentos/pedagogia-8/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/palmas/wp-content/uploads/sites/31/2025/03/PPC-Pedagogia-Atualizado-2025.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/palmas/pedagogia.md",
+    "ano_documento": 2022,
+    "vagas": "40",
+    "trecho_vagas": "Quantidade de Vagas: 40 vagas anuais",
+    "curadoria": "Precisa de revisão"
+  }
+}

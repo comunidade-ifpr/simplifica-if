@@ -1,0 +1,35 @@
+{
+  "campus_id": "ivaipora",
+  "curso_slug": "tecnico-em-eletrotecnica-integrado",
+  "nome": "Técnico em Eletrotécnica",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/ivaipora/nossos-cursos/cursos-tecnicos/eletrotecnica-integrado-ao-ensino-medio/",
+  "suap": {
+    "id": 456,
+    "codigo": "IVA007",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "456 — TÉCNICO EM ELETROTÉCNICA INTEGRADO - 2025 IVAIPORÃ (SEMESTRAL) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/456/"
+      ],
+      "carga_horaria_comum_h": 3200,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/ivaipora/wp-content/uploads/sites/15/2024/03/Projeto-Pedagogico-do-Curso-de-Eletrotecnica-2025.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/ivaipora/tecnico-em-eletrotecnica-integrado.md",
+    "ano_documento": 2023,
+    "vagas": "20-40",
+    "trecho_vagas": "Número mínimo de vagas a serem ofertadas no processo seletivo: 20. Número máximo de vagas a serem ofertadas no processo seletivo: 40.",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-07-06"
+  }
+}

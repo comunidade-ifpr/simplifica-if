@@ -1,0 +1,25 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "tecnologia-em-processos-gerenciais",
+  "nome": "Tecnologia em Processos Gerenciais",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-superiores/processos-gerenciais/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2018/08/PPC-Processos-Gerenciais-16-de-junho.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/tecnologia-em-processos-gerenciais.md",
+    "ano_documento": 2018,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anual): 40 vagas anuais",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

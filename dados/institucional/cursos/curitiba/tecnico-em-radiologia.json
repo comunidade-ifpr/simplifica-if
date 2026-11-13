@@ -1,0 +1,35 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "tecnico-em-radiologia",
+  "nome": "Técnico em Radiologia",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/radiologia-2/",
+  "suap": {
+    "id": 44,
+    "codigo": "CTB020",
+    "vagas": 30,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "324 — TÉCNICO EM RADIOLOGIA SUBSEQUENTE - 2013 CURITIBA — CH exibida: 1846 h; estágio exigido: Não; CH mínima de estágio (separada): -\n270 — TÉCNICO EM RADIOLOGIA SUBSEQUENTE - 2014 CURITIBA — CH exibida: 2008 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/324/",
+        "https://suap.ifpr.edu.br/edu/matriz/270/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2022/05/PPC_RADIOLOGIA_2014-1-PDF-1.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/tecnico-em-radiologia.md",
+    "ano_documento": 2013,
+    "vagas": "20-35",
+    "trecho_vagas": "Número máximo de vagas do curso: 35; Número mínimo de vagas do curso: 20",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

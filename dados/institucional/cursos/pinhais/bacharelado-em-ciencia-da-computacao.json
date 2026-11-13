@@ -1,0 +1,24 @@
+{
+  "campus_id": "pinhais",
+  "curso_slug": "bacharelado-em-ciencia-da-computacao",
+  "nome": "Bacharelado em Ciência da Computação",
+  "nivel": "superior",
+  "forma_oferta": "bacharelado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/pinhais/institucional/nossos-cursos/cursos-superiores/bacharelado-em-ciencia-da-computacao/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/pinhais/wp-content/uploads/sites/22/2026/04/PPC-BCC-2027.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/pinhais/bacharelado-em-ciencia-da-computacao.md",
+    "ano_documento": 2025,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anual) 40 vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

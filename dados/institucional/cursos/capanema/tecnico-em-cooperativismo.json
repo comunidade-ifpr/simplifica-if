@@ -1,0 +1,34 @@
+{
+  "campus_id": "capanema",
+  "curso_slug": "tecnico-em-cooperativismo",
+  "nome": "Técnico em Cooperativismo",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/capanema/nossos-cursos/tecnico-integrado-ao-ensino-medio/tecnico-em-cooperativismo/",
+  "suap": {
+    "id": 66,
+    "codigo": "CAP001",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "65 — TÉCNICO EM COOPERATIVISMO INTEGRADO - 2018 CAPANEMA — CH exibida: 3150 h; estágio exigido: Sim; CH mínima de estágio (separada): 120",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/65/"
+      ],
+      "carga_horaria_comum_h": 3150,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/capanema/wp-content/uploads/sites/7/2018/04/PPC-Cooperativismo-2018-Capanema.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/capanema/tecnico-em-cooperativismo.md",
+    "ano_documento": 2017,
+    "vagas": "20-40",
+    "trecho_vagas": "Número máximo de vagas do curso : 40 Número mínimo de vagas do curso: 20",
+    "curadoria": "Precisa de revisão"
+  }
+}

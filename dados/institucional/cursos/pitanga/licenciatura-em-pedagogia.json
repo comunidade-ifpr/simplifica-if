@@ -1,0 +1,24 @@
+{
+  "campus_id": "pitanga",
+  "curso_slug": "licenciatura-em-pedagogia",
+  "nome": "Licenciatura em Pedagogia",
+  "nivel": "superior",
+  "forma_oferta": "licenciatura",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/pitanga/nossos-cursos/graduacao/licenciatura-em-pedagogia/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/pitanga/wp-content/uploads/sites/23/2023/09/PPC-Pedagogia-novo-2022.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/pitanga/licenciatura-em-pedagogia.md",
+    "ano_documento": 2022,
+    "vagas": "20",
+    "trecho_vagas": "Vagas totais (anual): 20 vagas (mínimo) a 40 vagas (máximo)",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

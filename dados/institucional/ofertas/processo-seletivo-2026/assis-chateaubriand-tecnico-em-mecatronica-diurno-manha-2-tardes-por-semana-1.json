@@ -1,0 +1,24 @@
+{
+  "oferta_id": "assis-chateaubriand-tecnico-em-mecatronica-diurno-manha-2-tardes-por-semana-1",
+  "processos": [
+    "processo-seletivo-2026"
+  ],
+  "curso_nome": "Técnico em Mecatrônica",
+  "tipo_oferta": "técnico integrado",
+  "vagas": 40,
+  "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
+  "trecho_fonte": "Assis Chateaubriand; Técnico em Mecatrônica; Turmas: 1; Turno: Diurno (manhã + 2 tardes por semana)¹; Vagas: 40; Duração: 3 anos",
+  "forma_oferta": "40 vagas; 1 turma(s); turno Diurno (manhã + 2 tardes por semana)¹; duração 3 anos",
+  "status_curadoria": "sugerido",
+  "modalidade": "presencial",
+  "turno": "Diurno (manhã + 2 tardes por semana)¹",
+  "campi": [],
+  "cursos": [
+    "assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio"
+  ],
+  "editais": [
+    "edital-integrados-2026"
+  ],
+  "campus_id_original": "assis-chateaubriand",
+  "curso_slug_original": "tecnico-em-mecatronica-integrado-ao-ensino-medio"
+}

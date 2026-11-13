@@ -1,0 +1,34 @@
+{
+  "campus_id": "barracao",
+  "curso_slug": "tecnico-em-informatica",
+  "nome": "Técnico em Informática",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/barracao/nossos-cursos/integrados-ao-ensino-medio/tecnico-em-informatica/",
+  "suap": {
+    "id": 62,
+    "codigo": "BA002",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "54 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2019 BARRACÃO — CH exibida: 3210 h; estágio exigido: Sim; CH mínima de estágio (separada): 120\n450 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2024 BARRACÃO — CH exibida: 3200 h; estágio exigido: Sim; CH mínima de estágio (separada): 90",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/54/",
+        "https://suap.ifpr.edu.br/edu/matriz/450/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/barracao/wp-content/uploads/sites/5/2023/12/PPC_INFO_Barracao-APROVACAO-CONSEPE.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/barracao/tecnico-em-informatica.md",
+    "ano_documento": 2023,
+    "vagas": "20-40",
+    "trecho_vagas": "Vagas totais Número mínimo de vagas do curso: 20. Número máximo de vagas do curso: 40",
+    "curadoria": "Revisado"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "oferta_id": "barracao-tecnico-em-administracao-matutino",
+  "processos": [
+    "processo-seletivo-2025"
+  ],
+  "curso_nome": "Técnico em Administração",
+  "tipo_oferta": "técnico integrado",
+  "vagas": 80,
+  "url_fonte": "https://sei.ifpr.edu.br/sei/modulos/pesquisa/md_pesq_documento_consulta_externa.php?9LibXMqGnN7gSpLFOOgUQFziRouBJ5VnVL5b7-UrE5Q7GkUT8wPLuH95dM3k3h0svK8oDe2VkVlFJxmy7CqeLV4BJT739Qeq7eOEEZNMH3izY5Xf0T2lahNatVmY24mO",
+  "trecho_fonte": "BARRACÃO; Técnico em Administração; Turmas: 2; Turno: Matutino; Vagas: 80; Duração: 4 anos",
+  "forma_oferta": "80 vagas; 2 turma(s); turno Matutino; duração 4 anos",
+  "status_curadoria": "sugerido",
+  "modalidade": "presencial",
+  "turno": "Matutino",
+  "campi": [],
+  "cursos": [
+    "barracao/tecnico-em-administracao"
+  ],
+  "editais": [
+    "edital-87-2024"
+  ],
+  "campus_id_original": "barracao",
+  "curso_slug_original": "tecnico-em-administracao"
+}

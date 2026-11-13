@@ -1,0 +1,23 @@
+{
+  "campus_id": "foz-do-iguacu",
+  "curso_slug": "licenciatura-em-fisica",
+  "nome": "Licenciatura em Fisica",
+  "nivel": "superior",
+  "forma_oferta": "licenciatura",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/foz-do-iguacu/superior/licenciatura-em-fisica/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/foz-do-iguacu/wp-content/uploads/sites/12/2023/08/PPC-Licenciatura-em-Fisica-Foz-2022-v7.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/foz-do-iguacu/licenciatura-em-fisica.md",
+    "ano_documento": 2022,
+    "vagas": "20-40",
+    "trecho_vagas": "Número de vagas ofertadas: Mínimo 20 e Máximo 40 vagas por ano",
+    "curadoria": "Precisa de revisão"
+  }
+}

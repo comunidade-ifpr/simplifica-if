@@ -1,0 +1,19 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "especializacao-em-gestao-empresarial-contabil-e-tributaria",
+  "nome": "Especialização em Gestão Empresarial, Contábil e Tributária",
+  "nivel": "pós-graduação",
+  "forma_oferta": "especialização",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/pos-graduacao-2/especializacao-em-gestao-empresarial-contabil-e-tributaria/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2020/03/ESPECIALIZA%C3%87%C3%83O-EM-GEST%C3%83O-EMPRESARIAL-CONT%C3%81BIL-E-TRIBUT%C3%81RIA-2019-2020-.pdf",
+    "curadoria": "Pendente"
+  }
+}

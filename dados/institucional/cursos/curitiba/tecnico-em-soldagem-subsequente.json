@@ -1,0 +1,25 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "tecnico-em-soldagem-subsequente",
+  "nome": "Técnico em Soldagem",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://sei.ifpr.edu.br/sei/controlador.php?acao=documento_download_anexo&acao_origem=procedimento_visualizar&id_anexo=1853224&arvore=1",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/tecnico-em-soldagem-subsequente.md",
+    "ano_documento": 2025,
+    "vagas": "36",
+    "trecho_vagas": "Vagas totais (anuais). Número de vagas por ingresso: 36 vagas.",
+    "periodicidade_vagas": "por ingresso",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-26"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "campus_id": "goioere",
+  "curso_slug": "tecnico-em-producao-de-moda",
+  "nome": "Técnico em Produção de Moda",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/goioere/integrados-ao-ensino-medio/tecnico-em-producao-de-moda/",
+  "suap": {
+    "id": 213,
+    "codigo": "GOI002",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "896 — TÉCNICO EM PRODUÇÃO DE MODA INTEGRADO - 2017 GOIOERÊ (TRIMESTRE) 2026 — CH exibida: 3345 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/896/"
+      ],
+      "carga_horaria_comum_h": 3345,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/goioere/wp-content/uploads/sites/13/2017/05/PPC-TECNICO-EM-PRODUCAO-DE-MODA-REVISADO-Piveta-Final.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/goioere/tecnico-em-producao-de-moda.md",
+    "ano_documento": 2016,
+    "vagas": "20-40",
+    "trecho_vagas": "Número máximo de vagas do curso: 40 vagas Número mínimo de vagas do curso: 20 vagas",
+    "curadoria": "Precisa de revisão"
+  }
+}

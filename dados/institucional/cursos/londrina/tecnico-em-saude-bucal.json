@@ -1,0 +1,35 @@
+{
+  "campus_id": "londrina",
+  "curso_slug": "tecnico-em-saude-bucal",
+  "nome": "Técnico em Saúde Bucal",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/londrina/tecnico-em-saude-bucal/",
+  "suap": {
+    "id": 200,
+    "codigo": "LON006",
+    "vagas": 30,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "204 — TÉCNICO EM SAÚDE BUCAL SUBSEQUENTE - 2018 LONDRINA — CH exibida: 1270 h; estágio exigido: Não; CH mínima de estágio (separada): -\n742 — TÉCNICO EM SAÚDE BUCAL SUBSEQUENTE - 2018 LONDRINA (Componentes) — CH exibida: 1270 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/204/",
+        "https://suap.ifpr.edu.br/edu/matriz/742/"
+      ],
+      "carga_horaria_comum_h": 1270,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/londrina/wp-content/uploads/sites/18/2023/12/PPC-Tecnico-em-Saude-Bucal.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/londrina/tecnico-em-saude-bucal.md",
+    "ano_documento": 2017,
+    "vagas": "20-30",
+    "trecho_vagas": "Número máximo de vagas do curso: 30 Número mínimo de vagas do curso: 20",
+    "curadoria": "Precisa de revisão"
+  }
+}

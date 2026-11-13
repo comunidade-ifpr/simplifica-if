@@ -1,0 +1,24 @@
+{
+  "oferta_id": "curitiba-tecnico-em-eventos-noturno",
+  "processos": [
+    "processo-seletivo-2026"
+  ],
+  "curso_nome": "Técnico em Eventos",
+  "tipo_oferta": "técnico subsequente",
+  "vagas": 35,
+  "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
+  "trecho_fonte": "Curitiba; Técnico em Eventos; Turmas: 1; Turno: Noturno; Vagas: 35; Duração: 1 ano",
+  "forma_oferta": "35 vagas; 1 turma(s); turno Noturno; duração 1 ano",
+  "status_curadoria": "sugerido",
+  "modalidade": "presencial",
+  "turno": "Noturno",
+  "campi": [],
+  "cursos": [
+    "curitiba/tecnico-em-eventos"
+  ],
+  "editais": [
+    "edital-subsequentes-curitiba-assis-2026"
+  ],
+  "campus_id_original": "curitiba",
+  "curso_slug_original": "tecnico-em-eventos"
+}

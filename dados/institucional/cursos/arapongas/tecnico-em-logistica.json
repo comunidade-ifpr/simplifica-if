@@ -1,0 +1,15 @@
+{
+  "campus_id": "arapongas",
+  "curso_slug": "tecnico-em-logistica",
+  "nome": "Técnico em Logística",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "ead",
+  "situacao": "incerto",
+  "pagina_oficial": "https://ifpr.edu.br/arapongas/nossos-cursos/ead/tecnico-em-logistica/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  }
+}

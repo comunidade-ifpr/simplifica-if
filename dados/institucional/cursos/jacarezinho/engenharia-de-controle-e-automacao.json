@@ -1,0 +1,24 @@
+{
+  "campus_id": "jacarezinho",
+  "curso_slug": "engenharia-de-controle-e-automacao",
+  "nome": "Engenharia de Controle e Automação",
+  "nivel": "superior",
+  "forma_oferta": "bacharelado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/jacarezinho/cursos/graduacao/engenharia-de-controle-e-automacao/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2025/02/PPC_ECA_IFPR___2017_Atualizado_em_2022.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/jacarezinho/engenharia-de-controle-e-automacao.md",
+    "ano_documento": 2022,
+    "vagas": "20-40",
+    "trecho_vagas": "Vagas Totais (anual) Mínimo de 20 e máximo de 40 vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

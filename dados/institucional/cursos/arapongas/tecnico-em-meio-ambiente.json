@@ -1,0 +1,15 @@
+{
+  "campus_id": "arapongas",
+  "curso_slug": "tecnico-em-meio-ambiente",
+  "nome": "Técnico em Meio Ambiente",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "ead",
+  "situacao": "incerto",
+  "pagina_oficial": "https://ifpr.edu.br/arapongas/nossos-cursos/ead/tecnico-em-meio-ambiente/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  }
+}

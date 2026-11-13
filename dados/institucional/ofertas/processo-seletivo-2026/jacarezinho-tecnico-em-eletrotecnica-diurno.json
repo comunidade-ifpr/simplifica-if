@@ -1,0 +1,24 @@
+{
+  "oferta_id": "jacarezinho-tecnico-em-eletrotecnica-diurno",
+  "processos": [
+    "processo-seletivo-2026"
+  ],
+  "curso_nome": "Técnico em Eletrotécnica",
+  "tipo_oferta": "técnico integrado",
+  "vagas": 20,
+  "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
+  "trecho_fonte": "Jacarezinho; Técnico em Eletrotécnica; Turmas: 1; Turno: Diurno; Vagas: 20; Duração: 4 anos",
+  "forma_oferta": "20 vagas; 1 turma(s); turno Diurno; duração 4 anos",
+  "status_curadoria": "sugerido",
+  "modalidade": "presencial",
+  "turno": "Diurno",
+  "campi": [],
+  "cursos": [
+    "jacarezinho/tecnico-em-eletrotecnica"
+  ],
+  "editais": [
+    "edital-integrados-2026"
+  ],
+  "campus_id_original": "jacarezinho",
+  "curso_slug_original": "tecnico-em-eletrotecnica"
+}

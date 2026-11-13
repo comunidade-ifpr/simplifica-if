@@ -1,0 +1,35 @@
+{
+  "campus_id": "assis-chateaubriand",
+  "curso_slug": "tecnico-em-mecatronica-integrado-ao-ensino-medio",
+  "nome": "Técnico em Mecatrônica",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-tecnicos/tecnico-em-mecatronica-integrado-ao-ensino-medio/",
+  "suap": {
+    "id": 636,
+    "codigo": "AC013",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "880 — TÉCNICO EM MECATRÔNICA 2026 - ASSIS CHATEAUBRIAND (Trimestre) — CH exibida: 3303 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/880/"
+      ],
+      "carga_horaria_comum_h": 3303,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/assis-chateaubriand/wp-content/uploads/sites/3/2026/02/PPC_Tecnico_em_Mecatronica_Integrado_2026.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio.md",
+    "ano_documento": 2025,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anual) Até 40 vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

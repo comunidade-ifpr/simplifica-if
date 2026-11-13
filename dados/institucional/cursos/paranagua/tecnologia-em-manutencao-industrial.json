@@ -1,0 +1,23 @@
+{
+  "campus_id": "paranagua",
+  "curso_slug": "tecnologia-em-manutencao-industrial",
+  "nome": "Tecnologia em Manutenção Industrial",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/paranagua/nossos-cursos/ensino-superior/manutencaoindustrial/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/paranagua/wp-content/uploads/sites/20/2013/12/PPC-Tecnologia-em-Manutencao-Industrial.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/paranagua/tecnologia-em-manutencao-industrial.md",
+    "ano_documento": 2011,
+    "vagas": "40",
+    "trecho_vagas": "A TOTAL: 3369 horas NÚMERO DE VAGAS: MÍNIMO MÁXIMO 20 40 Observar a carga horária mínima e máxima da área profissional do curso, conform",
+    "curadoria": "Precisa de revisão"
+  }
+}

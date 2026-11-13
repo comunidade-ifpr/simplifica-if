@@ -1,0 +1,34 @@
+{
+  "campus_id": "quedas-do-iguacu",
+  "curso_slug": "tecnico-em-meio-ambiente",
+  "nome": "Técnico em Meio Ambiente",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/quedas-do-iguacu/medio-integrado-2/tecnico-em-meio-ambiente/",
+  "suap": {
+    "id": 197,
+    "codigo": "QUED002",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "201 — TÉCNICO EM MEIO AMBIENTE INTEGRADO - 2020 QUEDAS DO IGUAÇU — CH exibida: 3253 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/201/"
+      ],
+      "carga_horaria_comum_h": 3253,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/quedas-do-iguacu/wp-content/uploads/sites/24/2023/05/PPC_Meio_Ambiente.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/quedas-do-iguacu/tecnico-em-meio-ambiente.md",
+    "ano_documento": 2019,
+    "vagas": "20-40",
+    "trecho_vagas": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 20",
+    "curadoria": "Precisa de revisão"
+  }
+}

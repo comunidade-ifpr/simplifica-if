@@ -1,0 +1,24 @@
+{
+  "oferta_id": "campo-largo-tecnico-em-mecanica-noturno",
+  "processos": [
+    "processo-seletivo-2025"
+  ],
+  "curso_nome": "Técnico em Mecânica",
+  "tipo_oferta": "técnico subsequente",
+  "vagas": 40,
+  "url_fonte": "https://ifpr.edu.br/wp-content/uploads/2024/10/ifpr_ps2025_edital_88.pdf",
+  "trecho_fonte": "CAMPO LARGO; Técnico em Mecânica; Turmas: 1; Turno: Noturno; Vagas: 40; Duração: 2 anos",
+  "forma_oferta": "40 vagas; 1 turma(s); turno Noturno; duração 2 anos",
+  "status_curadoria": "sugerido",
+  "modalidade": "presencial",
+  "turno": "Noturno",
+  "campi": [],
+  "cursos": [
+    "campo-largo/tecnico-em-mecanica-subsequente"
+  ],
+  "editais": [
+    "edital-88-2024"
+  ],
+  "campus_id_original": "campo-largo",
+  "curso_slug_original": "tecnico-em-mecanica-subsequente"
+}

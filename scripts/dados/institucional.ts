@@ -1,0 +1,479 @@
+/**
+ * Fonte de verdade local dos dados institucionais: campi, cursos, processos seletivos, editais e
+ * ofertas de ingresso. Cada registro é um arquivo JSON em `dados/institucional/`, versionado no git.
+ * As relações usam chaves canônicas (`campus_id`, `campus_id/curso_slug`, `processo_seletivo_id`,
+ * `edital_id`), nunca IDs de página do Notion; `notion_page_id` fica só como referência histórica.
+ *
+ * Este módulo lê, valida e grava esses arquivos e os converte nas entidades do domínio que a
+ * exportação pública e a auditoria já usam.
+ */
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
+import { z } from "zod";
+import { RAIZ_PROJETO } from "../config.ts";
+import { compararTexto } from "../dominio/comum.ts";
+import { chaveCurso, type Campus, type Curso } from "../dominio/curso.ts";
+import type { EditalIngresso, OfertaIngresso, ProcessoSeletivo } from "../dominio/ingresso.ts";
+
+export const RAIZ_DADOS_INSTITUCIONAIS = path.join(RAIZ_PROJETO, "dados", "institucional");
+
+const texto = z.string().optional();
+const inteiro = z.number().int().optional();
+const listaTexto = z.array(z.string()).optional();
+
+export const esquemaCampusLocal = z.strictObject({
+  campus_id: z.string(),
+  nome: z.string(),
+  site: texto,
+  calendario_academico: texto,
+  horarios_url: texto,
+  horarios_coletado_em: texto,
+  notion_page_id: texto,
+});
+export type CampusLocal = z.output<typeof esquemaCampusLocal>;
+
+export const esquemaCursoLocal = z.strictObject({
+  campus_id: z.string(),
+  curso_slug: z.string(),
+  nome: z.string(),
+  nivel: texto,
+  forma_oferta: texto,
+  modalidade: texto,
+  situacao: texto,
+  pagina_oficial: texto,
+  suap: z
+    .strictObject({
+      id: inteiro,
+      codigo: texto,
+      vagas: inteiro,
+      coletado_em: texto,
+      atualizado_em: texto,
+      matrizes: z
+        .strictObject({
+          resumo: texto,
+          urls: listaTexto,
+          carga_horaria_comum_h: inteiro,
+          situacao: texto,
+          coletado_em: texto,
+        })
+        .optional(),
+    })
+    .optional(),
+  ppc: z
+    .strictObject({
+      url: texto,
+      markdown_path: texto,
+      ano_documento: inteiro,
+      vagas: texto,
+      trecho_vagas: texto,
+      periodicidade_vagas: texto,
+      curadoria: texto,
+      data_curadoria: texto,
+      observacoes: texto,
+    })
+    .optional(),
+  notion_page_id: texto,
+});
+export type CursoLocal = z.output<typeof esquemaCursoLocal>;
+
+export const esquemaProcessoLocal = z.strictObject({
+  processo_seletivo_id: z.string(),
+  nome: z.string(),
+  ano_ingresso: inteiro,
+  instituicao: texto,
+  fontes: z.array(z.string()),
+  status_curadoria: texto,
+  verificado_em: texto,
+  observacoes: texto,
+  notion_page_id: texto,
+});
+export type ProcessoLocal = z.output<typeof esquemaProcessoLocal>;
+
+export const esquemaEditalLocal = z.strictObject({
+  edital_id: z.string(),
+  titulo: z.string(),
+  url: z.string(),
+  numero: texto,
+  ano: inteiro,
+  tipo: texto,
+  processos: z.array(z.string()),
+  notion_page_id: texto,
+});
+export type EditalLocal = z.output<typeof esquemaEditalLocal>;
+
+export const esquemaOfertaLocal = z.strictObject({
+  oferta_id: z.string(),
+  processos: z.array(z.string()),
+  curso_nome: z.string(),
+  tipo_oferta: z.string(),
+  vagas: inteiro,
+  url_fonte: z.string(),
+  pagina_fonte: inteiro,
+  trecho_fonte: texto,
+  forma_oferta: texto,
+  status_curadoria: texto,
+  revisado_em: texto,
+  modalidade: texto,
+  turno: texto,
+  /** Relações resolvidas; prevalecem sobre os campos `_original`, que guardam o texto do edital. */
+  campi: listaTexto,
+  cursos: listaTexto,
+  editais: listaTexto,
+  campus_id_original: texto,
+  curso_slug_original: texto,
+  notion_page_id: texto,
+});
+export type OfertaLocal = z.output<typeof esquemaOfertaLocal>;
+
+export interface DadosInstitucionais {
+  campi: CampusLocal[];
+  cursos: CursoLocal[];
+  processos: ProcessoLocal[];
+  editais: EditalLocal[];
+  ofertas: OfertaLocal[];
+}
+
+/** Caminho relativo de cada registro em `dados/institucional/`; o nome do arquivo é a chave canônica. */
+export const caminhosRegistro = {
+  campus: (c: CampusLocal) => path.join("campi", `${c.campus_id}.json`),
+  curso: (c: CursoLocal) => path.join("cursos", c.campus_id, `${c.curso_slug}.json`),
+  processo: (p: ProcessoLocal) => path.join("processos-seletivos", `${p.processo_seletivo_id}.json`),
+  edital: (e: EditalLocal) => path.join("editais", `${e.edital_id}.json`),
+  oferta: (o: OfertaLocal) => path.join("ofertas", o.processos[0] ?? "sem-processo", `${o.oferta_id}.json`),
+};
+
+/* ------------------------------------------------------------------ leitura */
+
+function arquivosJson(dir: string): string[] {
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir, { withFileTypes: true })
+    .flatMap((entrada) => {
+      const caminho = path.join(dir, entrada.name);
+      if (entrada.isDirectory()) return arquivosJson(caminho);
+      return entrada.name.endsWith(".json") ? [caminho] : [];
+    })
+    .sort(compararTexto);
+}
+
+function lerColecao<T>(
+  raiz: string,
+  subdir: string,
+  esquema: z.ZodType<T>,
+  caminhoEsperado: (item: T) => string,
+  erros: string[],
+): T[] {
+  const itens: T[] = [];
+  for (const arquivo of arquivosJson(path.join(raiz, subdir))) {
+    const relativo = path.relative(raiz, arquivo);
+    let bruto: unknown;
+    try {
+      bruto = JSON.parse(readFileSync(arquivo, "utf-8"));
+    } catch (erro) {
+      erros.push(`dados/institucional/${relativo}: JSON inválido: ${(erro as Error).message}`);
+      continue;
+    }
+    const resultado = esquema.safeParse(bruto);
+    if (!resultado.success) {
+      for (const problema of resultado.error.issues) {
+        erros.push(`dados/institucional/${relativo}: ${problema.path.join(".") || "(raiz)"}: ${problema.message}`);
+      }
+      continue;
+    }
+    const esperado = caminhoEsperado(resultado.data);
+    if (esperado !== relativo) {
+      erros.push(`dados/institucional/${relativo}: arquivo deveria estar em dados/institucional/${esperado}`);
+    }
+    itens.push(resultado.data);
+  }
+  return itens;
+}
+
+/** Lê e valida todos os registros. A lista de erros cobre JSON, schema e caminho do arquivo. */
+export function carregarDadosInstitucionais(raiz: string = RAIZ_DADOS_INSTITUCIONAIS): {
+  dados: DadosInstitucionais;
+  erros: string[];
+} {
+  const erros: string[] = [];
+  if (!existsSync(raiz)) return { dados: vazio(), erros: [`dados/institucional/ não encontrado em ${raiz}`] };
+  const dados: DadosInstitucionais = {
+    campi: lerColecao(raiz, "campi", esquemaCampusLocal, caminhosRegistro.campus, erros),
+    cursos: lerColecao(raiz, "cursos", esquemaCursoLocal, caminhosRegistro.curso, erros),
+    processos: lerColecao(raiz, "processos-seletivos", esquemaProcessoLocal, caminhosRegistro.processo, erros),
+    editais: lerColecao(raiz, "editais", esquemaEditalLocal, caminhosRegistro.edital, erros),
+    ofertas: lerColecao(raiz, "ofertas", esquemaOfertaLocal, caminhosRegistro.oferta, erros),
+  };
+  return { dados, erros };
+}
+
+function vazio(): DadosInstitucionais {
+  return { campi: [], cursos: [], processos: [], editais: [], ofertas: [] };
+}
+
+/* ------------------------------------------------------------------ gravação */
+
+/** Remove campos vazios, para que dado ausente seja chave ausente também nos arquivos de origem. */
+function semVazios<T>(valor: T): T {
+  if (Array.isArray(valor)) return valor.map(semVazios) as T;
+  if (valor && typeof valor === "object") {
+    const entradas = Object.entries(valor as Record<string, unknown>)
+      .map(([chave, item]) => [chave, semVazios(item)] as const)
+      .filter(([, item]) => {
+        if (item === undefined || item === null || item === "") return false;
+        if (typeof item === "object" && !Array.isArray(item) && !Object.keys(item).length) return false;
+        return true;
+      });
+    return Object.fromEntries(entradas) as T;
+  }
+  return valor;
+}
+
+export function textoRegistro(registro: unknown): string {
+  return `${JSON.stringify(semVazios(registro), null, 2)}\n`;
+}
+
+export function gravarRegistro(relativo: string, registro: unknown, raiz: string = RAIZ_DADOS_INSTITUCIONAIS): void {
+  const destino = path.join(raiz, relativo);
+  mkdirSync(path.dirname(destino), { recursive: true });
+  writeFileSync(destino, textoRegistro(registro), "utf-8");
+}
+
+export function gravarDadosInstitucionais(
+  dados: DadosInstitucionais,
+  raiz: string = RAIZ_DADOS_INSTITUCIONAIS,
+): number {
+  const registros: Array<[string, unknown]> = [
+    ...dados.campi.map((item): [string, unknown] => [caminhosRegistro.campus(item), item]),
+    ...dados.cursos.map((item): [string, unknown] => [caminhosRegistro.curso(item), item]),
+    ...dados.processos.map((item): [string, unknown] => [caminhosRegistro.processo(item), item]),
+    ...dados.editais.map((item): [string, unknown] => [caminhosRegistro.edital(item), item]),
+    ...dados.ofertas.map((item): [string, unknown] => [caminhosRegistro.oferta(item), item]),
+  ];
+  for (const [relativo, registro] of registros) gravarRegistro(relativo, registro, raiz);
+  return registros.length;
+}
+
+/* ------------------------------------------------------------------ domínio */
+
+/** Converte os registros locais nas entidades do domínio, com as chaves canônicas como `id`. */
+export function paraDominio(dados: DadosInstitucionais): {
+  campi: Campus[];
+  cursos: Curso[];
+  processos: ProcessoSeletivo[];
+  editais: EditalIngresso[];
+  ofertas: OfertaIngresso[];
+} {
+  return {
+    campi: dados.campi.map((c): Campus => ({
+      id: c.campus_id,
+      titulo: c.nome,
+      campusId: c.campus_id,
+      nome: c.nome,
+      site: c.site ?? "",
+      calendarioAcademico: c.calendario_academico ?? "",
+      horariosColetadoEm: c.horarios_coletado_em ?? "",
+      horariosUrl: c.horarios_url ?? "",
+    })),
+    cursos: dados.cursos.map((c): Curso => ({
+      id: chaveCurso(c.campus_id, c.curso_slug),
+      notionPageId: c.notion_page_id ?? "",
+      titulo: c.nome,
+      slug: c.curso_slug,
+      nome: c.nome,
+      nivel: c.nivel ?? "",
+      tipoOferta: c.forma_oferta ?? "",
+      paginaOficial: c.pagina_oficial ?? "",
+      modalidade: c.modalidade ?? "",
+      situacao: c.situacao ?? "",
+      campusIds: [c.campus_id],
+      suap: {
+        id: c.suap?.id,
+        codigo: c.suap?.codigo ?? "",
+        vagas: c.suap?.vagas,
+        coletadoEm: c.suap?.coletado_em ?? "",
+        atualizadoEm: c.suap?.atualizado_em ?? "",
+        matrizes: {
+          resumo: c.suap?.matrizes?.resumo ?? "",
+          urls: (c.suap?.matrizes?.urls ?? []).join("\n"),
+          cargaHorariaComumH: c.suap?.matrizes?.carga_horaria_comum_h,
+          situacao: c.suap?.matrizes?.situacao ?? "",
+          coletadoEm: c.suap?.matrizes?.coletado_em ?? "",
+        },
+      },
+      ppc: {
+        url: c.ppc?.url ?? "",
+        markdownPath: c.ppc?.markdown_path ?? "",
+        anoDocumento: c.ppc?.ano_documento,
+        vagas: c.ppc?.vagas ?? "",
+        trechoVagas: c.ppc?.trecho_vagas ?? "",
+        periodicidadeVagas: c.ppc?.periodicidade_vagas ?? "",
+        curadoria: c.ppc?.curadoria ?? "",
+        dataCuradoria: c.ppc?.data_curadoria ?? "",
+      },
+    })),
+    processos: dados.processos.map((p): ProcessoSeletivo => ({
+      id: p.processo_seletivo_id,
+      titulo: p.nome,
+      processoSeletivoId: p.processo_seletivo_id,
+      nome: p.nome,
+      anoIngresso: p.ano_ingresso,
+      instituicao: p.instituicao ?? "",
+      fontes: p.fontes,
+      statusCuradoria: p.status_curadoria ?? "",
+      verificadoEm: p.verificado_em ?? "",
+      observacoes: p.observacoes ?? "",
+    })),
+    editais: dados.editais.map((e): EditalIngresso => ({
+      id: e.edital_id,
+      titulo: e.titulo,
+      editalId: e.edital_id,
+      url: e.url,
+      numero: e.numero ?? "",
+      ano: e.ano,
+      tipo: e.tipo ?? "",
+      processoIds: e.processos,
+    })),
+    ofertas: dados.ofertas.map((o): OfertaIngresso => ({
+      id: `${o.processos[0] ?? ""}/${o.oferta_id}`,
+      titulo: o.oferta_id,
+      ofertaId: o.oferta_id,
+      cursoNome: o.curso_nome,
+      tipoOferta: o.tipo_oferta,
+      vagas: o.vagas,
+      urlFonte: o.url_fonte,
+      paginaFonte: o.pagina_fonte,
+      trechoFonte: o.trecho_fonte ?? "",
+      formaOferta: o.forma_oferta ?? "",
+      statusCuradoria: o.status_curadoria ?? "",
+      revisadoEm: o.revisado_em ?? "",
+      modalidade: o.modalidade ?? "",
+      turno: o.turno ?? "",
+      campusIdOriginal: o.campus_id_original ?? "",
+      cursoSlugOriginal: o.curso_slug_original ?? "",
+      processoIds: o.processos,
+      campusIds: o.campi ?? [],
+      cursoIds: o.cursos ?? [],
+      editalIds: o.editais ?? [],
+    })),
+  };
+}
+
+/**
+ * Converte entidades do domínio carregadas do Notion em registros locais, trocando IDs de página por
+ * chaves canônicas. Usado uma única vez, na migração; falha se alguma relação não puder ser resolvida.
+ */
+export function deDominio(base: {
+  campi: Campus[];
+  cursos: Curso[];
+  processos: ProcessoSeletivo[];
+  editais: EditalIngresso[];
+  ofertas: OfertaIngresso[];
+}): DadosInstitucionais {
+  const erros: string[] = [];
+  const campusPorPagina = new Map(base.campi.map((c) => [c.id, c.campusId]));
+  const processoPorPagina = new Map(base.processos.map((p) => [p.id, p.processoSeletivoId]));
+  const editalPorPagina = new Map(base.editais.map((e) => [e.id, e.editalId]));
+  const cursoPorPagina = new Map<string, string>();
+  const resolver = (mapa: Map<string, string>, ids: string[], contexto: string) =>
+    ids.map((id) => {
+      const chave = mapa.get(id);
+      if (!chave) erros.push(`${contexto}: relação para página desconhecida ${id}`);
+      return chave ?? "";
+    });
+
+  const cursos = base.cursos.map((c): CursoLocal => {
+    const [campusId = ""] = resolver(campusPorPagina, c.campusIds, `Curso ${c.nome} (${c.id})`);
+    cursoPorPagina.set(c.id, chaveCurso(campusId, c.slug));
+    return {
+      campus_id: campusId,
+      curso_slug: c.slug,
+      nome: c.nome,
+      nivel: c.nivel,
+      forma_oferta: c.tipoOferta,
+      modalidade: c.modalidade,
+      situacao: c.situacao,
+      pagina_oficial: c.paginaOficial,
+      suap: {
+        id: c.suap.id,
+        codigo: c.suap.codigo,
+        vagas: c.suap.vagas,
+        coletado_em: c.suap.coletadoEm,
+        atualizado_em: c.suap.atualizadoEm,
+        matrizes: {
+          resumo: c.suap.matrizes.resumo,
+          urls: c.suap.matrizes.urls.split("\n").filter((linha) => linha.trim()),
+          carga_horaria_comum_h: c.suap.matrizes.cargaHorariaComumH,
+          situacao: c.suap.matrizes.situacao,
+          coletado_em: c.suap.matrizes.coletadoEm,
+        },
+      },
+      ppc: {
+        url: c.ppc.url,
+        markdown_path: c.ppc.markdownPath,
+        ano_documento: c.ppc.anoDocumento,
+        vagas: c.ppc.vagas,
+        trecho_vagas: c.ppc.trechoVagas,
+        periodicidade_vagas: c.ppc.periodicidadeVagas,
+        curadoria: c.ppc.curadoria,
+        data_curadoria: c.ppc.dataCuradoria,
+      },
+      notion_page_id: c.notionPageId,
+    };
+  });
+
+  const dados: DadosInstitucionais = {
+    campi: base.campi.map((c): CampusLocal => ({
+      campus_id: c.campusId,
+      nome: c.nome,
+      site: c.site,
+      calendario_academico: c.calendarioAcademico,
+      horarios_url: c.horariosUrl,
+      horarios_coletado_em: c.horariosColetadoEm,
+      notion_page_id: c.id,
+    })),
+    cursos,
+    processos: base.processos.map((p): ProcessoLocal => ({
+      processo_seletivo_id: p.processoSeletivoId,
+      nome: p.nome,
+      ano_ingresso: p.anoIngresso,
+      instituicao: p.instituicao,
+      fontes: p.fontes,
+      status_curadoria: p.statusCuradoria,
+      verificado_em: p.verificadoEm,
+      observacoes: p.observacoes,
+      notion_page_id: p.id,
+    })),
+    editais: base.editais.map((e): EditalLocal => ({
+      edital_id: e.editalId,
+      titulo: e.titulo,
+      url: e.url,
+      numero: e.numero,
+      ano: e.ano,
+      tipo: e.tipo,
+      processos: resolver(processoPorPagina, e.processoIds, `Edital ${e.editalId}`),
+      notion_page_id: e.id,
+    })),
+    ofertas: base.ofertas.map((o): OfertaLocal => ({
+      oferta_id: o.ofertaId,
+      processos: resolver(processoPorPagina, o.processoIds, `Oferta ${o.ofertaId}`),
+      curso_nome: o.cursoNome,
+      tipo_oferta: o.tipoOferta,
+      vagas: o.vagas,
+      url_fonte: o.urlFonte,
+      pagina_fonte: o.paginaFonte,
+      trecho_fonte: o.trechoFonte,
+      forma_oferta: o.formaOferta,
+      status_curadoria: o.statusCuradoria,
+      revisado_em: o.revisadoEm,
+      modalidade: o.modalidade,
+      turno: o.turno,
+      campi: resolver(campusPorPagina, o.campusIds, `Oferta ${o.ofertaId}`),
+      cursos: resolver(cursoPorPagina, o.cursoIds, `Oferta ${o.ofertaId}`),
+      editais: resolver(editalPorPagina, o.editalIds, `Oferta ${o.ofertaId}`),
+      campus_id_original: o.campusIdOriginal,
+      curso_slug_original: o.cursoSlugOriginal,
+      notion_page_id: o.id,
+    })),
+  };
+  if (erros.length) throw new Error(`Relações não resolvidas na migração:\n- ${erros.join("\n- ")}`);
+  return dados;
+}

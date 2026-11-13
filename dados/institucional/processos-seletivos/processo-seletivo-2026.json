@@ -1,0 +1,13 @@
+{
+  "processo_seletivo_id": "processo-seletivo-2026",
+  "nome": "Processo Seletivo 2026",
+  "ano_ingresso": 2026,
+  "instituicao": "IFPR",
+  "fontes": [
+    "https://ifpr.edu.br/estude-conosco/processos-seletivos-tecnicos/",
+    "https://ifpr.edu.br/processo-seletivo/"
+  ],
+  "status_curadoria": "dados_parciais",
+  "verificado_em": "2026-05-11",
+  "observacoes": "Ofertas de cursos técnicos integrados e subsequentes extraídas das páginas oficiais de cursos do Processo Seletivo 2026. Editais registrados por página oficial; detalhamento por cotas ainda pendente."
+}

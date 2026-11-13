@@ -1,0 +1,23 @@
+{
+  "campus_id": "ivaipora",
+  "curso_slug": "licenciatura-em-fisica",
+  "nome": "Licenciatura em Física",
+  "nivel": "superior",
+  "forma_oferta": "licenciatura",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/ivaipora/nossos-cursos/ensino-superior/licenciatura-em-fisica/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/ivaipora/wp-content/uploads/sites/15/2025/02/PPC-Fisica_APS.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/ivaipora/licenciatura-em-fisica.md",
+    "ano_documento": 2023,
+    "vagas": "20-36",
+    "trecho_vagas": "Quantidade de Vagas: mínimo: 20 (vinte) vagas; máximo: 36 (trinta e seis) vagas",
+    "curadoria": "Precisa de revisão"
+  }
+}

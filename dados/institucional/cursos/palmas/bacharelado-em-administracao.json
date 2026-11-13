@@ -1,0 +1,23 @@
+{
+  "campus_id": "palmas",
+  "curso_slug": "bacharelado-em-administracao",
+  "nome": "Bacharelado em Administração",
+  "nivel": "superior",
+  "forma_oferta": "bacharelado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/palmas/about/nossos-cursos/about-nossos-cursos-cursos-de-graduacao-regulamentos/administracao-6/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/palmas/wp-content/uploads/sites/31/2023/06/PPC_Administracao_2023.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/palmas/bacharelado-em-administracao.md",
+    "ano_documento": 2011,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anuais): 40",
+    "curadoria": "Precisa de revisão"
+  }
+}

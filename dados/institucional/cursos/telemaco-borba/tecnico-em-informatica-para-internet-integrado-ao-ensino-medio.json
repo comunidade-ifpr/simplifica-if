@@ -1,0 +1,36 @@
+{
+  "campus_id": "telemaco-borba",
+  "curso_slug": "tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
+  "nome": "Técnico em Informática para Internet",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/telemaco-borba/cursos-tecnicos-integrados/informatica-para-internet/",
+  "suap": {
+    "id": 34,
+    "codigo": "TBOR002",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "21 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2019 TELEMACO BORBA — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -\n852 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2019 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -\n862 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2026 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/21/",
+        "https://suap.ifpr.edu.br/edu/matriz/852/",
+        "https://suap.ifpr.edu.br/edu/matriz/862/"
+      ],
+      "carga_horaria_comum_h": 3200,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/telemaco-borba/wp-content/uploads/sites/25/2026/02/PPC-CURSO-TECNICO-EM-INFORMATICA-VERSAO-FINAL.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.md",
+    "ano_documento": 2025,
+    "vagas": "40",
+    "trecho_vagas": "Total de vagas anuais: Uma turma de 40 vagas por ano",
+    "curadoria": "Precisa de revisão"
+  }
+}

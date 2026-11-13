@@ -1,0 +1,24 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "aperfeicoamento-em-educacao-para-relacoes-etnico-raciais",
+  "nome": "Aperfeiçoamento em Educação para Relações Étnico-raciais",
+  "nivel": "pós-graduação",
+  "forma_oferta": "especialização",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/pos-graduacao-2/aperfeicoamento-em-educacao-para-relacoes-etnico-raciais/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2024/03/PPC-Aperfeicoamento-ERER-2.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/aperfeicoamento-em-educacao-para-relacoes-etnico-raciais.md",
+    "ano_documento": 2023,
+    "vagas": "100-100",
+    "trecho_vagas": "Vagas ofertadas: a) Mínimo: 100 vagas (Resolução Consup/IFPR n.121/2023); b) Máximo: 100 vagas",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

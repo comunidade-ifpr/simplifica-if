@@ -1,0 +1,34 @@
+{
+  "campus_id": "pinhais",
+  "curso_slug": "tecnico-em-administracao-integrado-ao-ensino-medio",
+  "nome": "Técnico em Administração",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/pinhais/institucional/nossos-cursos/tecnicos-integrados/administracao/",
+  "suap": {
+    "id": 195,
+    "codigo": "PIN001",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "797 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2026 PINHAIS (Trimestre) — CH exibida: 3347 h; estágio exigido: Não; CH mínima de estágio (separada): -\n821 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2019 PINHAIS (Trimestre) — CH exibida: 3809 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/797/",
+        "https://suap.ifpr.edu.br/edu/matriz/821/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/pinhais/wp-content/uploads/sites/22/2025/05/Projeto_Pedagogico_de_Curso_3530515_PPC_ADM_2025_aprovadoCONSEPE.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/pinhais/tecnico-em-administracao-integrado-ao-ensino-medio.md",
+    "ano_documento": 2025,
+    "vagas": "20",
+    "trecho_vagas": "Vagas totais: número mínimo de vagas por turno: 20 vagas de ingresso; número máximo de vagas por turno: 40 vagas de ingresso; número máximo de vagas: 80 vagas de ingresso",
+    "curadoria": "Precisa de revisão"
+  }
+}

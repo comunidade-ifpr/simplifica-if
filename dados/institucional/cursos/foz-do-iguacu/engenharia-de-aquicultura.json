@@ -1,0 +1,24 @@
+{
+  "campus_id": "foz-do-iguacu",
+  "curso_slug": "engenharia-de-aquicultura",
+  "nome": "Engenharia de Aquicultura",
+  "nivel": "superior",
+  "forma_oferta": "bacharelado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/foz-do-iguacu/superior/engenharia-de-aquicultura/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/foz-do-iguacu/wp-content/uploads/sites/12/2025/05/PPC_Engenharia_de_Aquicultura___06_12_23-1.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/foz-do-iguacu/engenharia-de-aquicultura.md",
+    "ano_documento": 2022,
+    "vagas": "20-40",
+    "trecho_vagas": "Vagas totais (anual) Mínimo de 20 e máximo de 40. Sendo, 90% das vagas (36) para brasileiros e 10% das vagas (4) destinadas à Ar",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

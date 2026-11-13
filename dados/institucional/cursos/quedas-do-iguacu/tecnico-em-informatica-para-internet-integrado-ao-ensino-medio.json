@@ -1,0 +1,13 @@
+{
+  "campus_id": "quedas-do-iguacu",
+  "curso_slug": "tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
+  "nome": "Técnico em Informática para Internet",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "situacao": "abertura",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  }
+}

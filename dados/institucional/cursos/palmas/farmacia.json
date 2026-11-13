@@ -1,0 +1,23 @@
+{
+  "campus_id": "palmas",
+  "curso_slug": "farmacia",
+  "nome": "Farmácia",
+  "nivel": "superior",
+  "forma_oferta": "bacharelado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/palmas/about/nossos-cursos/about-nossos-cursos-cursos-de-graduacao-regulamentos/farmacia-12/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/palmas/wp-content/uploads/sites/31/2025/03/PPC-Farmacia-Atualizado-2025.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/palmas/farmacia.md",
+    "ano_documento": 2010,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anuais): 40",
+    "curadoria": "Precisa de revisão"
+  }
+}

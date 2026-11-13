@@ -1,0 +1,35 @@
+{
+  "campus_id": "londrina",
+  "curso_slug": "tecnico-em-protese-dentaria-2",
+  "nome": "Técnico em Prótese Dentária",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/londrina/tecnico-em-protese-dentaria-2/",
+  "suap": {
+    "id": 202,
+    "codigo": "LON005",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "208 — TÉCNICO EM PRÓTESE DENTÁRIA SUBSEQUENTE - 2014 LONDRINA — CH exibida: 1200 h; estágio exigido: Não; CH mínima de estágio (separada): -\n741 — TÉCNICO EM PRÓTESE DENTÁRIA SUBSEQUENTE - 2025 LONDRINA — CH exibida: 1200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/208/",
+        "https://suap.ifpr.edu.br/edu/matriz/741/"
+      ],
+      "carga_horaria_comum_h": 1200,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/londrina/wp-content/uploads/sites/18/2023/12/PPC-Tecnico-em-Protese-Dentaria.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/londrina/tecnico-em-protese-dentaria-2.md",
+    "ano_documento": 2013,
+    "vagas": "40",
+    "trecho_vagas": "NÚMERO DE VAGAS: 40 ESTÁGIO SUPERVISIONADO: 0 CARGA HORÁRIA TOTAL: 1200 horas MÍNIMO MÁXIMO 20 40",
+    "curadoria": "Precisa de revisão"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "campus_id": "londrina",
+  "curso_slug": "tecnico-em-massoterapia",
+  "nome": "Técnico em Massoterapia",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/londrina/tecnico-em-massoterapia/",
+  "suap": {
+    "id": 204,
+    "codigo": "LON004",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "209 — TÉCNICO EM MASSOTERAPIA SUBSEQUENTE - 2017 LONDRINA — CH exibida: 1380 h; estágio exigido: Não; CH mínima de estágio (separada): -\n739 — TÉCNICO EM MASSOTERAPIA SUBSEQUENTE - 2025 LONDRINA — CH exibida: 1380 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/209/",
+        "https://suap.ifpr.edu.br/edu/matriz/739/"
+      ],
+      "carga_horaria_comum_h": 1380,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/londrina/wp-content/uploads/sites/18/2018/04/PPC-Tecnico-em-Massoterapia.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/londrina/tecnico-em-massoterapia.md",
+    "ano_documento": 2016,
+    "vagas": "20-40",
+    "trecho_vagas": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 20",
+    "curadoria": "Precisa de revisão"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "campus_id": "campo-largo",
+  "curso_slug": "tecnologia-em-processos-gerenciais",
+  "nome": "Curso Superior de Tecnologia em Processos Gerenciais",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/campo-largo/nossos-cursos/cursos-superiores/curso-superior-de-tecnologia-em-processos-gerenciais/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2025/08/PPC_Tecnologo_Processos_Gerenciais_ingressantes_2024.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/campo-largo/tecnologia-em-processos-gerenciais.md",
+    "ano_documento": 2020,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anual) 40 vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

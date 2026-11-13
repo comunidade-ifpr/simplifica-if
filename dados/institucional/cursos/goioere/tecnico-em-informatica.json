@@ -1,0 +1,34 @@
+{
+  "campus_id": "goioere",
+  "curso_slug": "tecnico-em-informatica",
+  "nome": "Técnico em Informática",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/goioere/integrados-ao-ensino-medio/curso-tecnico/",
+  "suap": {
+    "id": 214,
+    "codigo": "GOI001",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "895 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2016 GOIOERÊ (Trimestre) 2026 — CH exibida: 3538 h; estágio exigido: Não; CH mínima de estágio (separada): -\n944 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2027 GOIOERÊ (Trimestre) — CH exibida: 3120 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/895/",
+        "https://suap.ifpr.edu.br/edu/matriz/944/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/goioere/wp-content/uploads/sites/13/2017/05/PPC-informatica-integrado-2016.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/goioere/tecnico-em-informatica.md",
+    "ano_documento": 2016,
+    "vagas": "20-40",
+    "trecho_vagas": "Número máximo de vagas do curso: 40 vagas Número mínimo de vagas do curso: 20 vagas",
+    "curadoria": "Precisa de revisão"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "campus_id": "uniao-da-vitoria",
+  "curso_slug": "especializacao-em-educacao-ciencia-e-tecnologia",
+  "nome": "Especialização em Educação, Ciência e Tecnologia",
+  "nivel": "pós-graduação",
+  "forma_oferta": "especialização",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/uniao-da-vitoria/especializacao/pos-graduacao-lato-sensu-em-educacao-ciencia-e-tecnologia/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/uniao-da-vitoria/wp-content/uploads/sites/27/2025/06/PPC_ESPECIALIZACAO__REVISADO_APOS_CONSEP-1.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/uniao-da-vitoria/especializacao-em-educacao-ciencia-e-tecnologia.md",
+    "ano_documento": 2023,
+    "vagas": "20-40",
+    "trecho_vagas": "Vagas ofertadas a) Mínimo: 20 vagas (Resolução Consup/IFPR n.121/2023) b) Máximo: 40 vagas",
+    "curadoria": "Precisa de revisão"
+  }
+}

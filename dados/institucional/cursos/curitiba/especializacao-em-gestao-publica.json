@@ -1,0 +1,24 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "especializacao-em-gestao-publica",
+  "nome": "Especialização em Gestão Pública",
+  "nivel": "pós-graduação",
+  "forma_oferta": "especialização",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/pos-graduacao-2/especializacao-em-gestao-publica/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2024/09/PPC-Pos-Graduacao-GP-3-habilitacoes-_3.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/especializacao-em-gestao-publica.md",
+    "ano_documento": 2017,
+    "vagas": "30-40",
+    "trecho_vagas": "Vagas: Mínimo: 30 vagas; Máximo: 40 vagas",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

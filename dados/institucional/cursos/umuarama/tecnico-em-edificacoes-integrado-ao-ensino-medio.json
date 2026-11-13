@@ -1,0 +1,35 @@
+{
+  "campus_id": "umuarama",
+  "curso_slug": "tecnico-em-edificacoes-integrado-ao-ensino-medio",
+  "nome": "Técnico em Edificações",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/umuarama/cursos/cursos-tecnicos/edificacoes-integrado/",
+  "suap": {
+    "id": 42,
+    "codigo": "UMU001",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "12 — TÉCNICO EM EDIFICAÇÕES INTEGRADO - 2016 UMUARAMA — CH exibida: 3789 h; estágio exigido: Não; CH mínima de estágio (separada): -\n872 — TÉCNICO EM EDIFICAÇÕES INTEGRADO - 2016 UMUARAMA (Trimestral) — CH exibida: 3789 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/12/",
+        "https://suap.ifpr.edu.br/edu/matriz/872/"
+      ],
+      "carga_horaria_comum_h": 3789,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://drive.google.com/file/d/1F3UIy62w60j3JixsuLyLwAYY7NvXEyTA/view?usp=drive_link",
+    "markdown_path": "institucional/ifpr/ppcs/umuarama/tecnico-em-edificacoes-integrado-ao-ensino-medio.md",
+    "ano_documento": 2018,
+    "vagas": "20-40",
+    "trecho_vagas": "Número máximo de vagas do curso: 40 vagas Número mínimo de vagas do curso: 20 vagas",
+    "curadoria": "Precisa de revisão"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "processo_seletivo_id": "processo-seletivo-2025",
+  "nome": "Processo Seletivo 2025",
+  "ano_ingresso": 2025,
+  "instituicao": "IFPR",
+  "fontes": [
+    "https://ifpr.edu.br/estude-conosco/processos-seletivos-tecnicos/",
+    "https://ifpr.edu.br/estude-conosco/processo-seletivo-2025/edital-do-processo-seletivo-para-cursos-tecnicos-2025/"
+  ],
+  "status_curadoria": "dados_parciais",
+  "verificado_em": "2026-05-11",
+  "observacoes": "Ofertas de cursos técnicos integrados extraídas do Anexo I do Edital nº 87/2024 e ofertas de cursos técnicos subsequentes extraídas do Anexo I do Edital nº 88/2024. Detalhamento por cotas ainda pendente."
+}

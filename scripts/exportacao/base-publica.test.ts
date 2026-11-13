@@ -18,6 +18,7 @@ const CAMPUS: Campus = {
 function curso(parcial: Partial<Curso> = {}): Curso {
   return {
     id: "pg-curso",
+    notionPageId: "pg-curso",
     titulo: "Técnico em Exemplo",
     slug: "tecnico-exemplo",
     nome: "Técnico em Exemplo",

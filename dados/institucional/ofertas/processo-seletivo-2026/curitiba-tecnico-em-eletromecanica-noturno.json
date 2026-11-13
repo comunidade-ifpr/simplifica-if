@@ -1,0 +1,24 @@
+{
+  "oferta_id": "curitiba-tecnico-em-eletromecanica-noturno",
+  "processos": [
+    "processo-seletivo-2026"
+  ],
+  "curso_nome": "Técnico em Eletromecânica",
+  "tipo_oferta": "técnico subsequente",
+  "vagas": 30,
+  "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
+  "trecho_fonte": "Curitiba; Técnico em Eletromecânica; Turmas: 1; Turno: Noturno; Vagas: 30; Duração: 2 anos",
+  "forma_oferta": "30 vagas; 1 turma(s); turno Noturno; duração 2 anos",
+  "status_curadoria": "sugerido",
+  "modalidade": "presencial",
+  "turno": "Noturno",
+  "campi": [],
+  "cursos": [
+    "curitiba/tecnico-em-eletromecanica"
+  ],
+  "editais": [
+    "edital-subsequentes-curitiba-assis-2026"
+  ],
+  "campus_id_original": "curitiba",
+  "curso_slug_original": "tecnico-em-eletromecanica"
+}

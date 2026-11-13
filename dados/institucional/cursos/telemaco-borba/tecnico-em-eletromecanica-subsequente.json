@@ -1,0 +1,15 @@
+{
+  "campus_id": "telemaco-borba",
+  "curso_slug": "tecnico-em-eletromecanica-subsequente",
+  "nome": "Técnico em Eletromecânica",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "presencial",
+  "situacao": "suspenso",
+  "pagina_oficial": "https://ifpr.edu.br/telemaco-borba/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  }
+}

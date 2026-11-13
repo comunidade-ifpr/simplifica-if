@@ -1,0 +1,19 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "especializacao-em-gestao-e-negocios",
+  "nome": "Especialização em Gestão e Negócios",
+  "nivel": "pós-graduação",
+  "forma_oferta": "especialização",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/pos-graduacao-2/especializacao-de-gestao-e-negocios/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2020/02/PPC-GN-FEV2020.pdf",
+    "curadoria": "Pendente"
+  }
+}

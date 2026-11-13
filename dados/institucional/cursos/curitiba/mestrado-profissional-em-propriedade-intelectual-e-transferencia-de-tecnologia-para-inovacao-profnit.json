@@ -1,0 +1,15 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "mestrado-profissional-em-propriedade-intelectual-e-transferencia-de-tecnologia-para-inovacao-profnit",
+  "nome": "Mestrado Profissional em Propriedade Intelectual e Transferência de Tecnologia para Inovação (PROFNIT)",
+  "nivel": "pós-graduação",
+  "forma_oferta": "mestrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/pos-graduacao-2/mestrado-profissional-profnit/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  }
+}

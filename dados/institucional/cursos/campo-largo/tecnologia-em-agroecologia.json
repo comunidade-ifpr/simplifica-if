@@ -1,0 +1,24 @@
+{
+  "campus_id": "campo-largo",
+  "curso_slug": "tecnologia-em-agroecologia",
+  "nome": "Curso Superior de Tecnologia em Agroecologia",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/campo-largo/nossos-cursos/cursos-superiores/curso-superior-de-tecnologia-em-agroecologia/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2025/11/PPC_TecnologoAgro_2025_aprovado-CONSEPE-em-2025.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/campo-largo/tecnologia-em-agroecologia.md",
+    "ano_documento": 2025,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anual) - 40 vagas para turmas ministradas no campus Campo Largo. 1",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

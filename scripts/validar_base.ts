@@ -3,10 +3,11 @@
 import { criarCaminhos } from "./base/caminhos.ts";
 import { validarBase } from "./base/validacao.ts";
 import { lerArgumentos } from "./cli.ts";
+import { validarDadosInstitucionais } from "./dados/validacao.ts";
 
 const USO = `uso: bun run scripts/validar_base.ts [--check-ppc-artifacts]
 
-Valida a base pública de conhecimento.
+Valida a base pública de conhecimento e os dados institucionais de origem (dados/institucional/).
 
   --check-ppc-artifacts  também acusa artefatos conhecidos de conversão nos PPCs em Markdown
   -h, --help             mostra esta ajuda`;
@@ -18,11 +19,16 @@ function main(): number {
   const { erros, totalNormas } = validarBase(criarCaminhos(), {
     artefatosPpc: args.values["check-ppc-artifacts"] ?? false,
   });
+  const dados = validarDadosInstitucionais();
+  erros.push(...dados.erros);
   if (erros.length) {
     for (const erro of erros) console.error(`ERRO: ${erro}`);
     return 1;
   }
-  console.log(`Base válida: ${totalNormas} normas publicadas, metadados institucionais e catálogos conferidos.`);
+  console.log(
+    `Base válida: ${totalNormas} normas publicadas, metadados institucionais e catálogos conferidos; ` +
+      `${dados.total} registros em dados/institucional/.`,
+  );
   return 0;
 }
 

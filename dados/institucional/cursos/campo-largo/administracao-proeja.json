@@ -1,0 +1,23 @@
+{
+  "campus_id": "campo-largo",
+  "curso_slug": "administracao-proeja",
+  "nome": "Administração – PROEJA",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/campo-largo/nossos-cursos/cursos-ensino-medio-integrado/administracao-proeja/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2018/12/PPC-PROEJA.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/campo-largo/administracao-proeja.md",
+    "ano_documento": 2018,
+    "vagas": "30-40",
+    "trecho_vagas": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 30",
+    "curadoria": "Precisa de revisão"
+  }
+}

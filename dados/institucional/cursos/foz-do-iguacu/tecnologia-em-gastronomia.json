@@ -1,0 +1,24 @@
+{
+  "campus_id": "foz-do-iguacu",
+  "curso_slug": "tecnologia-em-gastronomia",
+  "nome": "Tecnologia em Gastronomia",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/foz-do-iguacu/superior/curso-superior-de-tecnologia-em-gastronomia/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/foz-do-iguacu/wp-content/uploads/sites/12/2019/07/PPC-Tecnologia-em-Gastronomia-aprovado-com-portaria-de-autorizacao-1.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/foz-do-iguacu/tecnologia-em-gastronomia.md",
+    "ano_documento": 2017,
+    "vagas": "44",
+    "trecho_vagas": "Vagas totais (anual) 44 (quarenta e quatro), sendo 40 brasileiros e 4 estrangeiros",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

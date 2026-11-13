@@ -1,0 +1,24 @@
+{
+  "campus_id": "umuarama",
+  "curso_slug": "tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+  "nome": "Tecnologia em Análise e Desenvolvimento de Sistemas",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/umuarama/cursos/cursos-superiores/tecnologia-em-analise-e-desenvolvimento-de-sistemas/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/umuarama/wp-content/uploads/sites/26/2026/03/PPC_ADS_2023___APS.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/umuarama/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md",
+    "ano_documento": 2022,
+    "vagas": "20-40",
+    "trecho_vagas": "Vagas totais (anual) Mínimo: 20 vagas – Máximo: 40 vagas. 7",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

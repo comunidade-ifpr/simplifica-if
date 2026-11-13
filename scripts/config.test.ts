@@ -20,7 +20,9 @@ describe("config/notion.json", () => {
   test("configuração válida não tem erros e o schema devolve os data sources", () => {
     const config = configValida();
     expect(validarConfigNotion(config)).toEqual([]);
-    expect(esquemaConfigNotion.parse(config).databases.cursos.data_source_id).toBe("ds-cursos");
+    expect(esquemaConfigNotion.parse(config).databases.movimentacoes_cursos.data_source_id).toBe(
+      "ds-movimentacoes_cursos",
+    );
   });
 
   test("mantém as mensagens de cada defeito", () => {
@@ -29,19 +31,19 @@ describe("config/notion.json", () => {
       "config/notion.json: databases deve ser objeto",
     ]);
     const config = configValida();
-    delete (config.databases as Record<string, unknown>).campi;
-    config.databases.cursos!.data_source_id = "  ";
+    config.databases.movimentacoes_cursos!.data_source_id = "  ";
     config.parent_page_id = "";
     expect(validarConfigNotion(config)).toEqual([
       "config/notion.json: parent_page_id ausente",
-      "config/notion.json: base ausente: campi",
-      "config/notion.json: databases.cursos.data_source_id ausente",
+      "config/notion.json: databases.movimentacoes_cursos.data_source_id ausente",
     ]);
+    delete (config.databases as Record<string, unknown>).movimentacoes_cursos;
+    expect(validarConfigNotion(config)).toContain("config/notion.json: base ausente: movimentacoes_cursos");
   });
 
   test("o schema recusa o que a validação recusaria", () => {
     const config = configValida();
-    config.databases.tarefas!.data_source_id = 7 as unknown as string;
+    config.databases.movimentacoes_cursos!.data_source_id = 7 as unknown as string;
     expect(esquemaConfigNotion.safeParse(config).success).toBe(false);
     expect(esquemaConfigNotion.safeParse({ databases: {} }).success).toBe(false);
   });

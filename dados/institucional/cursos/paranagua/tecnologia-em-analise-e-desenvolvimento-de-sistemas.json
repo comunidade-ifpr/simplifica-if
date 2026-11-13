@@ -1,0 +1,21 @@
+{
+  "campus_id": "paranagua",
+  "curso_slug": "tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+  "nome": "Tecnologia em Análise e Desenvolvimento de Sistemas",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/paranagua/nossos-cursos/ensino-superior/tecnologia-em-analise-de-sistemas/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/paranagua/wp-content/uploads/sites/20/2025/02/PPC_TADS_2025.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/paranagua/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md",
+    "ano_documento": 2025,
+    "curadoria": "Precisa de revisão"
+  }
+}

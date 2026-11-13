@@ -1,0 +1,24 @@
+{
+  "campus_id": "palmas",
+  "curso_slug": "licenciatura-em-educacao-fisica",
+  "nome": "Licenciatura em Educação Física",
+  "nivel": "superior",
+  "forma_oferta": "licenciatura",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/palmas/about/nossos-cursos/about-nossos-cursos-cursos-de-graduacao-regulamentos/educacao-fisica/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/palmas/wp-content/uploads/sites/31/2025/03/PPC-Educacao-Fisica-Atualizado-2025.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/palmas/licenciatura-em-educacao-fisica.md",
+    "ano_documento": 2021,
+    "vagas": "50",
+    "trecho_vagas": "Vagas totais (anual) 50 Vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

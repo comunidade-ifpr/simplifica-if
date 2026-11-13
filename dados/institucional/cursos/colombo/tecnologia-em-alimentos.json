@@ -1,0 +1,25 @@
+{
+  "campus_id": "colombo",
+  "curso_slug": "tecnologia-em-alimentos",
+  "nome": "Tecnologia em Alimentos",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/colombo/superiores-tecnologia/tecnologia-em-alimentos/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/colombo/wp-content/uploads/sites/9/2022/08/PPCTAL_2022_Final-1.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/colombo/tecnologia-em-alimentos.md",
+    "ano_documento": 2022,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anual): 40 vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

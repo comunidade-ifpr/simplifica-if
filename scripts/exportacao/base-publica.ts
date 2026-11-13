@@ -160,7 +160,7 @@ function cursoJson(curso: Curso, movimentacoes: Movimentacao[]): CursoJson {
   const processos = processosSeiJson(movimentacoes);
   return preenchidos<CursoJson>({
     curso_slug: curso.slug,
-    notion_page_id: curso.id,
+    notion_page_id: curso.notionPageId,
     nome: curso.nome,
     nivel: doNotion(curso.nivel),
     tipo_oferta: doNotion(curso.tipoOferta),

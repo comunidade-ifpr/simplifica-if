@@ -1,0 +1,35 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "tecnico-em-condominio",
+  "nome": "Técnico em Condomínio",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/condominio/",
+  "suap": {
+    "id": 15,
+    "codigo": "CTB002",
+    "vagas": 30,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "3 — TÉCNICO EM CONDOMÍNIO SUBSEQUENTE - 2021 CURITIBA — CH exibida: 800 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/3/"
+      ],
+      "carga_horaria_comum_h": 800,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2021/04/PPC_Tec_Condominio_22_de_marco.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/tecnico-em-condominio.md",
+    "ano_documento": 2020,
+    "vagas": "25-40",
+    "trecho_vagas": "Número máximo de vagas do curso: 40; Número mínimo de vagas do curso: 25",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

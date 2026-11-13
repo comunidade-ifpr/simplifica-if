@@ -1,0 +1,24 @@
+{
+  "campus_id": "ivaipora",
+  "curso_slug": "bacharelado-em-sistemas-de-informacao",
+  "nome": "Bacharelado em Sistemas de Informação",
+  "nivel": "superior",
+  "forma_oferta": "bacharelado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/ivaipora/nossos-cursos/ensino-superior/bacharelado-em-sistemas-de-informacao/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/ivaipora/wp-content/uploads/sites/15/2026/02/PPC_SI_2026.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/ivaipora/bacharelado-em-sistemas-de-informacao.md",
+    "ano_documento": 2025,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anual): 40 vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

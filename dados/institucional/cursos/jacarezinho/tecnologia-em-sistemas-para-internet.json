@@ -1,0 +1,24 @@
+{
+  "campus_id": "jacarezinho",
+  "curso_slug": "tecnologia-em-sistemas-para-internet",
+  "nome": "Tecnologia em Sistemas para Internet",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/jacarezinho/cursos/graduacao/tecnologia-em-sistemas-para-internet/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2025/02/PPCSistemasparaInternet.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/jacarezinho/tecnologia-em-sistemas-para-internet.md",
+    "ano_documento": 2022,
+    "vagas": "40",
+    "trecho_vagas": "Vagas Totais (anual): 40",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

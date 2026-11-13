@@ -1,0 +1,35 @@
+{
+  "campus_id": "telemaco-borba",
+  "curso_slug": "tecnico-em-programacao-de-jogos-digitais",
+  "nome": "Técnico em Programação de Jogos Digitais",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/telemaco-borba/cursos-tecnicos-integrados/programacao-de-jogos-digitais/",
+  "suap": {
+    "id": 50,
+    "codigo": "TBOR004",
+    "vagas": 50,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "17 — TÉCNICO EM PROGRAMAÇÃO DE JOGOS DIGITAIS INTEGRADO - 2018 TELEMACO BORBA — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -\n854 — TÉCNICO EM PROGRAMAÇÃO DE JOGOS DIGITAIS INTEGRADO - 2018 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -\n864 — TÉCNICO EM PROGRAMAÇÃO DE JOGOS DIGITAIS INTEGRADO - 2026 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/17/",
+        "https://suap.ifpr.edu.br/edu/matriz/854/",
+        "https://suap.ifpr.edu.br/edu/matriz/864/"
+      ],
+      "carga_horaria_comum_h": 3200,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/telemaco-borba/wp-content/uploads/sites/25/2026/02/PPC-CURSOS-TECNICOS-EM-PROGRAMACAO-DE-JOGOS-DIGITAIS_VERSAO_FINAL.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/telemaco-borba/tecnico-em-programacao-de-jogos-digitais.md",
+    "ano_documento": 2025,
+    "vagas": "40",
+    "curadoria": "Pendente"
+  }
+}

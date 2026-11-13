@@ -1,0 +1,13 @@
+{
+  "campus_id": "palmas",
+  "curso_slug": "tecnico-em-agroindustria",
+  "nome": "Técnico em Agroindústria",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "situacao": "abertura",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  }
+}

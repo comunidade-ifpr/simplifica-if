@@ -1,0 +1,25 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "bacharelado-em-ciencias-contabeis",
+  "nome": "Bacharelado em Ciências Contábeis",
+  "nivel": "superior",
+  "forma_oferta": "bacharelado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-superiores/contabilidade/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2026/02/PPC-Bacharelado-em-Ciencias-Contabeis-IFPR-Campus-Curitiba-inicio-em-2026.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/bacharelado-em-ciencias-contabeis.md",
+    "ano_documento": 2025,
+    "vagas": "20-40",
+    "trecho_vagas": "Vagas totais (anual): Mínimo 20; Máximo 40",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "campus_id": "pitanga",
+  "curso_slug": "tecnologia-em-agroindustria",
+  "nome": "Tecnologia em Agroindústria",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/pitanga/nossos-cursos/graduacao/tecnologia-em-agroindustria/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/pitanga/wp-content/uploads/sites/23/2024/02/PPC-AGROINDUSTRIA-IFPR_Pitanga-_ATUALIZACAO-TROCA-DISCIPLINAS-2019-_-18-12-2018.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/pitanga/tecnologia-em-agroindustria.md",
+    "ano_documento": 2018,
+    "vagas": "20",
+    "trecho_vagas": "Vagas totais (anual): 20 vagas (mínimo) a 40 vagas (máximo)",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

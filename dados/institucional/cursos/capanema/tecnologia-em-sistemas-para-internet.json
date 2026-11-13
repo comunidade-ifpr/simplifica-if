@@ -1,0 +1,24 @@
+{
+  "campus_id": "capanema",
+  "curso_slug": "tecnologia-em-sistemas-para-internet",
+  "nome": "Tecnologia em Sistemas para Internet",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/capanema/nossos-cursos/graduacao/tecnologia-em-sistemas-para-internet/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/capanema/wp-content/uploads/sites/7/2026/01/PPC-SISTEMAS-PARA-INTERNET-CAPANEMA-2026.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/capanema/tecnologia-em-sistemas-para-internet.md",
+    "ano_documento": 2025,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anual) 40 vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

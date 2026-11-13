@@ -1,0 +1,35 @@
+{
+  "campus_id": "coronel-vivida",
+  "curso_slug": "tecnico-em-cooperativismo",
+  "nome": "Técnico em Cooperativismo",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/coronel-vivida/nossos-cursos/tecnicos-integrados/cooperativismo/",
+  "suap": {
+    "id": 120,
+    "codigo": "CV002",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "69 — TÉCNICO EM COOPERATIVISMO INTEGRADO - 2018 CORONEL VIVIDA — CH exibida: 3219 h; estágio exigido: Não; CH mínima de estágio (separada): -\n827 — TÉCNICO EM COOPERATIVISMO INTEGRADO - 2026 CORONEL VIVIDA (Trimestre) — CH exibida: 3712 h; estágio exigido: Não; CH mínima de estágio (separada): -\n866 — TÉCNICO EM COOPERATIVISMO INTEGRADO - 2018 CORONEL VIVIDA (Trimestre) — CH exibida: 3219 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/69/",
+        "https://suap.ifpr.edu.br/edu/matriz/827/",
+        "https://suap.ifpr.edu.br/edu/matriz/866/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/coronel-vivida/wp-content/uploads/sites/10/2026/05/PPC-COOP-VERSAO-FINAL-09.12.2025.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/coronel-vivida/tecnico-em-cooperativismo.md",
+    "ano_documento": 2025,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais 40 vagas",
+    "curadoria": "Precisa de revisão"
+  }
+}

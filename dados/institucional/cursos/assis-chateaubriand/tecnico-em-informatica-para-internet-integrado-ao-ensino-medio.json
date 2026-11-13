@@ -1,0 +1,37 @@
+{
+  "campus_id": "assis-chateaubriand",
+  "curso_slug": "tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
+  "nome": "Técnico em Informática para Internet",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/assis-chateaubriand/nossos-cursos/cursos-tecnicos/curso-tecnico-em-informatica-para-a-internet/",
+  "suap": {
+    "id": 162,
+    "codigo": "AC008",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "73 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2020 ASSIS CHATEAUBRIAND — CH exibida: 3181 h; estágio exigido: Não; CH mínima de estágio (separada): -\n734 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2020 ASSIS CHATEAUBRIAND (Trimestre) — CH exibida: 3181 h; estágio exigido: Não; CH mínima de estágio (separada): -\n834 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2020 CR TOLEDO (Trimestre) — CH exibida: 3181 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/73/",
+        "https://suap.ifpr.edu.br/edu/matriz/734/",
+        "https://suap.ifpr.edu.br/edu/matriz/834/"
+      ],
+      "carga_horaria_comum_h": 3181,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://drive.google.com/file/d/1hZ3CEJOKSC0oqwAD2EIU7YwXRraTcYba/view",
+    "markdown_path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.md",
+    "ano_documento": 2019,
+    "vagas": "20-30",
+    "trecho_vagas": "Número máximo de vagas do curso: 30 Número mínimo de vagas do curso: 20",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-20"
+  }
+}

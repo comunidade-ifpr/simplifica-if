@@ -1,0 +1,34 @@
+{
+  "campus_id": "paranagua",
+  "curso_slug": "tecnico-em-producao-cultural",
+  "nome": "Técnico em Produção Cultural",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/paranagua/nossos-cursos/ensino-medio-integrado/tecnico-em-producao-cultural/",
+  "suap": {
+    "id": 217,
+    "codigo": "PGUA004",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "394 — TÉCNICO EM PRODUÇÃO CULTURAL INTEGRADO - 2024 PARANAGUÁ — CH exibida: 3370 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/394/"
+      ],
+      "carga_horaria_comum_h": 3370,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/paranagua/wp-content/uploads/sites/20/2023/04/PPC_2022_Producao_Cultural-1-1.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/paranagua/tecnico-em-producao-cultural.md",
+    "ano_documento": 2023,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais 40 (quarenta) vagas",
+    "curadoria": "Precisa de revisão"
+  }
+}

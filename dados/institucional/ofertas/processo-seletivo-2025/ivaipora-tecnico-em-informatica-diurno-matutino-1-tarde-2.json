@@ -1,0 +1,24 @@
+{
+  "oferta_id": "ivaipora-tecnico-em-informatica-diurno-matutino-1-tarde-2",
+  "processos": [
+    "processo-seletivo-2025"
+  ],
+  "curso_nome": "Técnico em Informática",
+  "tipo_oferta": "técnico integrado",
+  "vagas": 40,
+  "url_fonte": "https://sei.ifpr.edu.br/sei/modulos/pesquisa/md_pesq_documento_consulta_externa.php?9LibXMqGnN7gSpLFOOgUQFziRouBJ5VnVL5b7-UrE5Q7GkUT8wPLuH95dM3k3h0svK8oDe2VkVlFJxmy7CqeLV4BJT739Qeq7eOEEZNMH3izY5Xf0T2lahNatVmY24mO",
+  "trecho_fonte": "IVAIPORÃ; Técnico em Informática; Turmas: 1; Turno: Diurno (Matutino + 1 tarde)²; Vagas: 40; Duração: 3 anos",
+  "forma_oferta": "40 vagas; 1 turma(s); turno Diurno (Matutino + 1 tarde)²; duração 3 anos",
+  "status_curadoria": "sugerido",
+  "modalidade": "presencial",
+  "turno": "Diurno (Matutino + 1 tarde)²",
+  "campi": [],
+  "cursos": [
+    "ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio"
+  ],
+  "editais": [
+    "edital-87-2024"
+  ],
+  "campus_id_original": "ivaipora",
+  "curso_slug_original": "tecnico-em-informatica-integrado-ao-ensino-medio"
+}

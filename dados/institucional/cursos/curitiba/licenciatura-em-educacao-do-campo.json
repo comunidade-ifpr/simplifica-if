@@ -1,0 +1,25 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "licenciatura-em-educacao-do-campo",
+  "nome": "Licenciatura em Educação do Campo",
+  "nivel": "superior",
+  "forma_oferta": "licenciatura",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-superiores/licenciatura-em-educacao-do-campo/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2025/02/PPC_Lic_Ed_Campo_Consup.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/licenciatura-em-educacao-do-campo.md",
+    "ano_documento": 2023,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anual): inicialmente disponibilizando 40 vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

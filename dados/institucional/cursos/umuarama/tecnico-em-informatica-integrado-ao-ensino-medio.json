@@ -1,0 +1,35 @@
+{
+  "campus_id": "umuarama",
+  "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
+  "nome": "Técnico em Informática",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/umuarama/cursos/cursos-tecnicos/informatica-integrado/",
+  "suap": {
+    "id": 58,
+    "codigo": "UMU002",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "49 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2015 UMUARAMA — CH exibida: 3545 h; estágio exigido: Não; CH mínima de estágio (separada): -\n873 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2015 UMUARAMA (Trimestral) — CH exibida: 3545 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/49/",
+        "https://suap.ifpr.edu.br/edu/matriz/873/"
+      ],
+      "carga_horaria_comum_h": 3545,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://drive.google.com/file/d/1mg4GH7XmsItSmsU7CzrpENX3wpVblfWn/view?usp=drive_link",
+    "markdown_path": "institucional/ifpr/ppcs/umuarama/tecnico-em-informatica-integrado-ao-ensino-medio.md",
+    "ano_documento": 2014,
+    "vagas": "20-40",
+    "trecho_vagas": "Número máximo de vagas do curso: 40 vagas Número mínimo de vagas do curso: 20 vagas",
+    "curadoria": "Precisa de revisão"
+  }
+}

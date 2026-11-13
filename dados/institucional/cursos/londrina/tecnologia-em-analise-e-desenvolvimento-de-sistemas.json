@@ -1,0 +1,24 @@
+{
+  "campus_id": "londrina",
+  "curso_slug": "tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+  "nome": "Tecnologia em Analise e Desenvolvimento de Sistemas",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/londrina/wp-content/uploads/sites/18/2025/02/IFPR_PPC_TADS_Londrina_2025_v1.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md",
+    "ano_documento": 2025,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anual) Quarenta vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

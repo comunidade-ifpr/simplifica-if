@@ -1,0 +1,24 @@
+{
+  "oferta_id": "foz-do-iguacu-tecnico-em-edificacoes-diurno-manha-1-tarde-2",
+  "processos": [
+    "processo-seletivo-2026"
+  ],
+  "curso_nome": "Técnico em Edificações",
+  "tipo_oferta": "técnico integrado",
+  "vagas": 40,
+  "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
+  "trecho_fonte": "Foz do Iguaçu; Técnico em Edificações; Turmas: 1; Turno: Diurno (Manhã + 1 tarde)²; Vagas: 40; Duração: 3 anos",
+  "forma_oferta": "40 vagas; 1 turma(s); turno Diurno (Manhã + 1 tarde)²; duração 3 anos",
+  "status_curadoria": "sugerido",
+  "modalidade": "presencial",
+  "turno": "Diurno (Manhã + 1 tarde)²",
+  "campi": [],
+  "cursos": [
+    "foz-do-iguacu/tecnico-em-edificacoes-3"
+  ],
+  "editais": [
+    "edital-integrados-2026"
+  ],
+  "campus_id_original": "foz-do-iguacu",
+  "curso_slug_original": "tecnico-em-edificacoes-3"
+}

@@ -1,0 +1,24 @@
+{
+  "oferta_id": "curitiba-tecnico-em-telecomunicacoes-noturno",
+  "processos": [
+    "processo-seletivo-2026"
+  ],
+  "curso_nome": "Técnico em Telecomunicações",
+  "tipo_oferta": "técnico subsequente",
+  "vagas": 36,
+  "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
+  "trecho_fonte": "Curitiba; Técnico em Telecomunicações; Turmas: 1; Turno: Noturno; Vagas: 36; Duração: 2 anos",
+  "forma_oferta": "36 vagas; 1 turma(s); turno Noturno; duração 2 anos",
+  "status_curadoria": "sugerido",
+  "modalidade": "presencial",
+  "turno": "Noturno",
+  "campi": [],
+  "cursos": [
+    "curitiba/tecnico-em-telecomunicacoes"
+  ],
+  "editais": [
+    "edital-subsequentes-curitiba-assis-2026"
+  ],
+  "campus_id_original": "curitiba",
+  "curso_slug_original": "tecnico-em-telecomunicacoes"
+}

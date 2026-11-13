@@ -1,0 +1,35 @@
+{
+  "campus_id": "irati",
+  "curso_slug": "tecnico-em-agroecologia",
+  "nome": "Técnico em Agroecologia",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/irati/tecnico-em-agroecologia/",
+  "suap": {
+    "id": 54,
+    "codigo": "IRA001",
+    "vagas": 160,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "686 — TÉCNICO EM AGROECOLOGIA INTEGRADO - 2017 IRATI (T) (IRA001) — CH exibida: 3280 h; estágio exigido: Não; CH mínima de estágio (separada): -\n458 — TÉCNICO EM AGROECOLOGIA INTEGRADO - 2024 IRATI — CH exibida: 3280 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/686/",
+        "https://suap.ifpr.edu.br/edu/matriz/458/"
+      ],
+      "carga_horaria_comum_h": 3280,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/irati/wp-content/uploads/sites/14/2025/12/PPC-Tecnico-em-Agroecologia-Vigente.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/irati/tecnico-em-agroecologia.md",
+    "ano_documento": 2025,
+    "vagas": "160",
+    "trecho_vagas": "Máximo de 80 alunos para a turma da manhã e máximo de 80 alunos para a turma da tarde.",
+    "curadoria": "Precisa de revisão"
+  }
+}

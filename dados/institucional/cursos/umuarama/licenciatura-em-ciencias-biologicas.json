@@ -1,0 +1,24 @@
+{
+  "campus_id": "umuarama",
+  "curso_slug": "licenciatura-em-ciencias-biologicas",
+  "nome": "Licenciatura em Ciências Biológicas",
+  "nivel": "superior",
+  "forma_oferta": "licenciatura",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/umuarama/cursos/cursos-superiores/licenciatura-em-ciencias-biologicas/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/umuarama/wp-content/uploads/sites/26/2026/03/PPC_CBIO_APS.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/umuarama/licenciatura-em-ciencias-biologicas.md",
+    "ano_documento": 2022,
+    "vagas": "20-40",
+    "trecho_vagas": "Vagas Totais (anual) Mínimo 20 - Máximo 40",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

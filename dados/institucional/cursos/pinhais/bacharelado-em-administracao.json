@@ -1,0 +1,21 @@
+{
+  "campus_id": "pinhais",
+  "curso_slug": "bacharelado-em-administracao",
+  "nome": "Bacharelado em Administração",
+  "nivel": "superior",
+  "forma_oferta": "bacharelado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/pinhais/institucional/nossos-cursos/cursos-superiores/bacharelado-em-administracao/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/pinhais/wp-content/uploads/sites/22/2025/12/PPC-Bac.-Administracao-Alterado-2025-Pos-CONSEPE.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/pinhais/bacharelado-em-administracao.md",
+    "ano_documento": 2025,
+    "curadoria": "Precisa de revisão"
+  }
+}

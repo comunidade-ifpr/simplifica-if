@@ -1,0 +1,36 @@
+{
+  "campus_id": "paranagua",
+  "curso_slug": "tecnico-em-meio-ambiente",
+  "nome": "Técnico em Meio Ambiente",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/paranagua/nossos-cursos/ensino-medio-integrado/tecnico-em-meio-ambiente/",
+  "suap": {
+    "id": 65,
+    "codigo": "PGUA003",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "42 — TÉCNICO EM MEIO AMBIENTE INTEGRADO - 2014 PARANAGUÁ — CH exibida: 3299 h; estágio exigido: Não; CH mínima de estágio (separada): -\n455 — TÉCNICO EM MEIO AMBIENTE INTEGRADO - 2025 PARANAGUÁ — CH exibida: 3332 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/42/",
+        "https://suap.ifpr.edu.br/edu/matriz/455/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/paranagua/wp-content/uploads/sites/20/2024/04/PPC-EMI-Meio-Ambiente.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/paranagua/tecnico-em-meio-ambiente.md",
+    "ano_documento": 2023,
+    "vagas": "40",
+    "trecho_vagas": "Quarenta vagas anuais.",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-19"
+  }
+}

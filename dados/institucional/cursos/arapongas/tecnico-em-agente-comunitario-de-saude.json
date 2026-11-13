@@ -1,0 +1,15 @@
+{
+  "campus_id": "arapongas",
+  "curso_slug": "tecnico-em-agente-comunitario-de-saude",
+  "nome": "Técnico em Agente Comunitário de Saúde",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "ead",
+  "situacao": "incerto",
+  "pagina_oficial": "https://ifpr.edu.br/arapongas/nossos-cursos/ead/tecnico-em-agente-comunitario-de-saude/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "campus_id": "telemaco-borba",
+  "curso_slug": "tecnico-em-eletrotecnica-integrado-ao-ensino-medio",
+  "nome": "Técnico em Eletrotécnica",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "abertura",
+  "pagina_oficial": "https://ifpr.edu.br/telemaco-borba/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  }
+}

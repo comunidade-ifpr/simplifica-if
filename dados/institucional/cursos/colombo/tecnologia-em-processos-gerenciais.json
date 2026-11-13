@@ -1,0 +1,25 @@
+{
+  "campus_id": "colombo",
+  "curso_slug": "tecnologia-em-processos-gerenciais",
+  "nome": "Tecnologia em Processos Gerenciais",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/colombo/superiores-tecnologia/tecnologia-em-processos-gerenciais/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/colombo/wp-content/uploads/sites/9/2025/03/PPC_TPG_COLOMBO_FINAL_CONSEPE_REV.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/colombo/tecnologia-em-processos-gerenciais.md",
+    "ano_documento": 2022,
+    "vagas": "20-40",
+    "trecho_vagas": "1.1.10 Vagas totais (anual): Máximo 40 vagas; Mínimo 20 vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

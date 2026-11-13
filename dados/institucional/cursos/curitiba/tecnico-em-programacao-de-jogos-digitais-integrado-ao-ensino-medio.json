@@ -1,0 +1,37 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio",
+  "nome": "Técnico em Programação de Jogos Digitais",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-de-ensino-medio-integrado/jogosdigitais-2/",
+  "suap": {
+    "id": 95,
+    "codigo": "CTB018",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "48 — TÉCNICO EM PROGRAMAÇÃO DE JOGOS DIGITAIS INTEGRADO - 2021 CURITIBA — CH exibida: 3449 h; estágio exigido: Não; CH mínima de estágio (separada): -\n431 — TÉCNICO EM PROGRAMAÇÃO DE JOGOS DIGITAIS INTEGRADO - 2023 CURITIBA — CH exibida: 3449 h; estágio exigido: Não; CH mínima de estágio (separada): -\n848 — TÉCNICO EM PROGRAMAÇÃO DE JOGOS DIGITAIS INTEGRADO - 2023 CURITIBA (Trimestre) — CH exibida: 3449 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/48/",
+        "https://suap.ifpr.edu.br/edu/matriz/431/",
+        "https://suap.ifpr.edu.br/edu/matriz/848/"
+      ],
+      "carga_horaria_comum_h": 3449,
+      "situacao": "Múltiplas — mesma CH",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2025/03/PPC_Jogos_Atualizacao_09_12_2024.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.md",
+    "ano_documento": 2019,
+    "vagas": "30-35",
+    "trecho_vagas": "Número máximo de vagas do curso: 35; Número mínimo de vagas do curso: 30",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

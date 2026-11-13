@@ -1,0 +1,34 @@
+{
+  "campus_id": "jacarezinho",
+  "curso_slug": "tecnico-em-alimentos",
+  "nome": "Técnico em Alimentos",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/jacarezinho/cursos/cursos-integrados/tecnico-em-alimentos-3/",
+  "suap": {
+    "id": 71,
+    "codigo": "JAC001",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "393 — TÉCNICO EM ALIMENTOS INTEGRADO - 2013 JACAREZINHO — CH exibida: 4402 h; estágio exigido: Não; CH mínima de estágio (separada): -\n29 — TÉCNICO EM ALIMENTOS INTEGRADO - 2020 JACAREZINHO — CH exibida: 3390 h; estágio exigido: Não; CH mínima de estágio (separada): 0",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/393/",
+        "https://suap.ifpr.edu.br/edu/matriz/29/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/jacarezinho/wp-content/uploads/sites/16/2019/12/PPC___Alimentos_2020_A-partir-2020.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/jacarezinho/tecnico-em-alimentos.md",
+    "ano_documento": 2019,
+    "vagas": "30-40",
+    "trecho_vagas": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 30",
+    "curadoria": "Precisa de revisão"
+  }
+}

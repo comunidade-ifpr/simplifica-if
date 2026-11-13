@@ -1,0 +1,34 @@
+{
+  "campus_id": "pinhais",
+  "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
+  "nome": "Técnico em Informática",
+  "nivel": "médio",
+  "forma_oferta": "integrado",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/pinhais/institucional/nossos-cursos/tecnicos-integrados/informatica/",
+  "suap": {
+    "id": 574,
+    "codigo": "PIN003",
+    "vagas": 80,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "798 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2026 PINHAIS (Trimestre) — CH exibida: 3347 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/798/"
+      ],
+      "carga_horaria_comum_h": 3347,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/pinhais/wp-content/uploads/sites/22/2025/04/PPC_Informatica_Integrado_EnsinoMedio_2019.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/pinhais/tecnico-em-informatica-integrado-ao-ensino-medio.md",
+    "ano_documento": 2018,
+    "vagas": "20-40",
+    "trecho_vagas": "Número máximo de vagas do curso: 40 Número mínimo de vagas do curso: 20",
+    "curadoria": "Precisa de revisão"
+  }
+}

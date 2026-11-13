@@ -1,0 +1,17 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "tecnico-em-transacoes-imobiliarias",
+  "nome": "Técnico em Transações Imobiliárias",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "situacao": "incerto",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "curadoria": "Precisa de revisão",
+    "data_curadoria": "2026-10-14"
+  }
+}

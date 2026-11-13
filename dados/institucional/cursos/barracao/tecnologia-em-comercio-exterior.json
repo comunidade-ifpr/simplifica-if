@@ -1,0 +1,24 @@
+{
+  "campus_id": "barracao",
+  "curso_slug": "tecnologia-em-comercio-exterior",
+  "nome": "Tecnologia em Comércio Exterior",
+  "nivel": "superior",
+  "forma_oferta": "graduação tecnológica",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/barracao/nossos-cursos/graduacao/comercio-exterior/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/barracao/wp-content/uploads/sites/5/2025/02/PPC-Comercio-Exterior-Atualizada-2025.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/barracao/tecnologia-em-comercio-exterior.md",
+    "ano_documento": 2023,
+    "vagas": "40",
+    "trecho_vagas": "Vagas totais (anual) 40 vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Precisa de revisão"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "oferta_id": "ivaipora-tecnico-em-eletrotecnica-noturno",
+  "processos": [
+    "processo-seletivo-2026"
+  ],
+  "curso_nome": "Técnico em Eletrotécnica",
+  "tipo_oferta": "técnico subsequente",
+  "vagas": 30,
+  "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/subsequentes-demais-campi/cursos/",
+  "trecho_fonte": "Ivaiporã; Técnico em Eletrotécnica; Turmas: 1; Turno: Noturno; Vagas: 30; Duração: 2 anos",
+  "forma_oferta": "30 vagas; 1 turma(s); turno Noturno; duração 2 anos",
+  "status_curadoria": "sugerido",
+  "modalidade": "presencial",
+  "turno": "Noturno",
+  "campi": [],
+  "cursos": [
+    "ivaipora/tecnico-em-eletrotecnica-subsequente"
+  ],
+  "editais": [
+    "edital-subsequentes-demais-campi-2026"
+  ],
+  "campus_id_original": "ivaipora",
+  "curso_slug_original": "tecnico-em-eletrotecnica-subsequente"
+}

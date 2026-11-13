@@ -1,0 +1,23 @@
+{
+  "campus_id": "jaguariaiva",
+  "curso_slug": "especializacao-em-educacao-e-tecnologia",
+  "nome": "Especialização em Educação e Tecnologia",
+  "nivel": "pós-graduação",
+  "forma_oferta": "especialização",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/jaguariaiva/pos-graduacao/curso-de-pos-graduacao/",
+  "suap": {
+    "matrizes": {
+      "urls": []
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/jaguariaiva/wp-content/uploads/sites/17/2023/06/PPC.pos.2023.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/jaguariaiva/especializacao-em-educacao-e-tecnologia.md",
+    "ano_documento": 2023,
+    "vagas": "30",
+    "trecho_vagas": "Número de vagas ofertadas: 30 vagas",
+    "curadoria": "Precisa de revisão"
+  }
+}

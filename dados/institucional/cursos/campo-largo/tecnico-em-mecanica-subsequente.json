@@ -1,0 +1,34 @@
+{
+  "campus_id": "campo-largo",
+  "curso_slug": "tecnico-em-mecanica-subsequente",
+  "nome": "Técnico em Mecânica",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/campo-largo/nossos-cursos/cursos-tecnicos-subsequentes/mecanica/",
+  "suap": {
+    "id": 83,
+    "codigo": "CL005",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "44 — TÉCNICO EM MECÂNICA SUBSEQUENTE - 2016 CAMPO LARGO — CH exibida: 1338 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/44/"
+      ],
+      "carga_horaria_comum_h": 1338,
+      "situacao": "Única ativa",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/campo-largo/wp-content/uploads/sites/6/2022/08/PPC-MECANICA-Sub-2016.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/campo-largo/tecnico-em-mecanica-subsequente.md",
+    "ano_documento": 2015,
+    "vagas": "40",
+    "trecho_vagas": "Numeromaximodevagasdocurso:40(quarenta) Numerominimodevagasdocurso:20(vinte)",
+    "curadoria": "Precisa de revisão"
+  }
+}

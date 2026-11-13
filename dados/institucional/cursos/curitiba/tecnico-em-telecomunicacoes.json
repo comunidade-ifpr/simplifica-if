@@ -1,0 +1,30 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "tecnico-em-telecomunicacoes",
+  "nome": "Técnico em Telecomunicações",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/telecomunicacoes-2/",
+  "suap": {
+    "id": 39,
+    "codigo": "CTB022",
+    "vagas": 30,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "326 — TÉCNICO EM TELECOMUNICAÇÕES SUBSEQUENTE - 2013 CURITIBA — CH exibida: 1270 h; estágio exigido: Não; CH mínima de estágio (separada): -\n13 — TÉCNICO EM TELECOMUNICAÇÕES SUBSEQUENTE - 2014 CURITIBA — CH exibida: 1224 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/326/",
+        "https://suap.ifpr.edu.br/edu/matriz/13/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2010/12/Plano-de-Curso-Telecomunica%C3%A7%C3%B5es.pdf",
+    "curadoria": "Pendente"
+  }
+}

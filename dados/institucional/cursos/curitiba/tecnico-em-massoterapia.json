@@ -1,0 +1,35 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "tecnico-em-massoterapia",
+  "nome": "Técnico em Massoterapia",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/massoterapia-2/",
+  "suap": {
+    "id": 177,
+    "codigo": "CTB011",
+    "vagas": 30,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "315 — TÉCNICO EM MASSOTERAPIA SUBSEQUENTE - 2014 CURITIBA — CH exibida: 1395 h; estágio exigido: Não; CH mínima de estágio (separada): -\n83 — TÉCNICO EM MASSOTERAPIA SUBSEQUENTE - 2023 CURITIBA — CH exibida: 1374 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/315/",
+        "https://suap.ifpr.edu.br/edu/matriz/83/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2022/06/PPC_Final_MASSOTERAPIA-SUBS_Valido-a-partir-de-2023.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/tecnico-em-massoterapia.md",
+    "ano_documento": 2021,
+    "vagas": "30-36",
+    "trecho_vagas": "Número máximo de vagas do curso: 36; Número mínimo de vagas do curso: 30",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}

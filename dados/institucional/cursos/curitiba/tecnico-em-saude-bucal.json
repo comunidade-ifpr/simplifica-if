@@ -1,0 +1,36 @@
+{
+  "campus_id": "curitiba",
+  "curso_slug": "tecnico-em-saude-bucal",
+  "nome": "Técnico em Saúde Bucal",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/curitiba/nossos-cursos/cursos-tecnicos-subsequentes/saudebucal/",
+  "suap": {
+    "id": 210,
+    "codigo": "CTB021",
+    "vagas": 35,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "281 — TÉCNICO EM SAÚDE BUCAL SUBSEQUENTE - 2014 CURITIBA — CH exibida: 1530 h; estágio exigido: Não; CH mínima de estágio (separada): -\n835 — TÉCNICO EM SAÚDE BUCAL SUBSEQUENTE - 2026 CURITIBA — CH exibida: 1236 h; estágio exigido: Sim; CH mínima de estágio (separada): 72",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/281/",
+        "https://suap.ifpr.edu.br/edu/matriz/835/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "url": "https://ifpr.edu.br/curitiba/wp-content/uploads/sites/11/2026/04/PPC_Saude_Bucal_2025_Versao_Final.pdf",
+    "markdown_path": "institucional/ifpr/ppcs/curitiba/tecnico-em-saude-bucal.md",
+    "ano_documento": 2025,
+    "vagas": "15-25",
+    "trecho_vagas": "Número máximo de vagas por ingresso (anual): 25 vagas; Número mínimo de vagas por ingresso (anual): 15 vagas; Reserva de vagas por ingresso (anual): 2 vagas",
+    "periodicidade_vagas": "anual",
+    "curadoria": "Revisado",
+    "data_curadoria": "2026-05-11"
+  }
+}
