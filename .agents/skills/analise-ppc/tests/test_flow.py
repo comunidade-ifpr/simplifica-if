@@ -1,6 +1,14 @@
+"""Testes do que ainda é Python na analise-ppc: relatório HTML e publicação no Surge.
+
+A orquestração (preparar-documento, grupos, prompts, mescla e validar-resultados)
+foi portada para TypeScript e é testada em `orquestracao.test.ts`. Aqui a rodada é
+criada pelo próprio entrypoint TypeScript, como no fluxo real (cadeia mista).
+"""
+
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -16,36 +24,10 @@ from gerar_relatorio_html import (
     _resolver_anchor_evidencia,
     gerar_blocos_ppc,
     gerar_relatorio_html,
-    validar_resultados_rodada,
 )
-from conversao_docx.markdown_normalizer import MarkdownNormalizer
-from preparar_documento import _mesclar_identificacao_preferindo_preenchidos, preparar_documento
-from cnct_catalogo import comparar_ppc_com_cnct
 from analise_ppc import main as analise_ppc_main
 from publicar_surge import dominio_surge_padrao, preparar_site_surge, publicar_site_surge
-from subagents import (
-    agrupar_fichas,
-    contexto_fundamentacao_normativa,
-    carregar_fichas_ordenadas,
-    carregar_validacoes_cruzadas_ordenadas,
-    ficha_requer_fundamentacao_normativa,
-    ficha_requer_contexto_cnct,
-    mesclar_resultados_avulsos,
-    montar_grupo_avulso,
-    montar_grupos_subagents,
-    preparar_prompts_subagents,
-)
-from common import (
-    BASE_ANALISE_DIR,
-    BASE_CONHECIMENTO_DIR,
-    FICHAS_DIR,
-    TOPICOS_FICHAS_PATH,
-    extract_identificacao_from_conversion_json,
-    infer_identificacao_from_markdown,
-    read_json,
-    round_paths,
-    write_json,
-)
+from common import FICHAS_DIR, VALIDACOES_CRUZADAS_DIR, read_json, round_paths, write_json
 
 
 def _markdown_base() -> str:
@@ -62,10 +44,28 @@ O curso apresenta objetivos, perfil do egresso e justificativa institucional.
 
 
 def _criar_rodada(tmp_path: Path) -> Path:
+    """Cria a rodada pelo `preparar-documento` do entrypoint TypeScript."""
     arquivo_md = tmp_path / "PPC.md"
     arquivo_md.write_text(_markdown_base(), encoding="utf-8")
-    payload = preparar_documento(arquivo_md, output_base=tmp_path / "output")
-    return payload["rodada_dir"]
+    saida = tmp_path / "output"
+    subprocess.run(
+        ["bun", "run", str(SCRIPTS_DIR / "analise_ppc.ts"), "preparar-documento", str(arquivo_md), "--saida-base", str(saida)],
+        check=True,
+        capture_output=True,
+    )
+    (rodada_dir,) = list(saida.iterdir())
+    return rodada_dir
+
+
+def _fichas_ordenadas() -> list[dict[str, object]]:
+    fichas = [read_json(caminho) for caminho in sorted(FICHAS_DIR.glob("*.json"))]
+    return sorted(fichas, key=lambda ficha: str(ficha.get("id", "")))
+
+
+def _primeira_validacao_cruzada() -> str:
+    return sorted(str(read_json(caminho)["id"]) for caminho in VALIDACOES_CRUZADAS_DIR.glob("*.json"))[0]
+
+
 
 
 def _resultado(ficha_id: str, estado: str = "ATENDE", evidencias: int = 3) -> dict[str, object]:
@@ -79,17 +79,16 @@ def _resultado(ficha_id: str, estado: str = "ATENDE", evidencias: int = 3) -> di
         "revisao_humana_obrigatoria": False,
     }
 
-
 def _payload_resultados_completos() -> dict[str, object]:
-    fichas = carregar_fichas_ordenadas()
+    fichas = _fichas_ordenadas()
     grupos = []
-    for grupo in agrupar_fichas(fichas, tamanho_grupo=20):
+    for indice in range(0, len(fichas), 20):
         grupos.append(
             {
-                "grupo_id": grupo["grupo_id"],
+                "grupo_id": f"grupo-{indice // 20 + 1:03d}",
                 "resultados": [
                     _resultado(ficha["id"], evidencias=int(ficha.get("evidencia_minima", 3)))
-                    for ficha in grupo["fichas"]
+                    for ficha in fichas[indice : indice + 20]
                 ],
             }
         )
@@ -98,64 +97,6 @@ def _payload_resultados_completos() -> dict[str, object]:
         "grupos": grupos,
     }
 
-
-def test_preparar_documento_cria_rodada_markdown_basica(tmp_path: Path) -> None:
-    rodada_dir = _criar_rodada(tmp_path)
-    caminhos = round_paths(rodada_dir)
-
-    assert caminhos["ppc"].exists()
-    assert caminhos["metadata"].exists()
-    assert caminhos["manifesto"].exists()
-    metadata = read_json(caminhos["metadata"])
-    manifesto = read_json(caminhos["manifesto"])
-    assert metadata["curso"] == "Curso Técnico em Informática"
-    assert manifesto["execucao"] == "subagents-na-conversa"
-    assert set(caminhos) == {
-        "rodada_dir",
-        "suporte_dir",
-        "artefatos_conversao_dir",
-        "ppc",
-        "ppc_bruto",
-        "metadata",
-        "manifesto",
-        "preparacao_docx",
-        "cnct_contexto",
-        "contexto_estrutural_subagents",
-        "validacoes_cruzadas_contexto",
-        "grupos_avulsos_dir",
-        "prompts_subagents_dir",
-        "prompts_subagents_manifest",
-        "resultados_subagents",
-        "grupos_subagents",
-        "relatorio_html",
-    }
-
-
-def test_preparar_documento_markdown_remove_sumario_do_ppc_canonico(tmp_path: Path) -> None:
-    arquivo_md = tmp_path / "PPC.md"
-    arquivo_md.write_text(
-        """# Curso Técnico em Informática
-
-**Sumário**
-1. APRESENTAÇÃO 4
-1.1 IDENTIFICAÇÃO 5
-5.7 EMENTÁRIO 30
-
-# 1 APRESENTAÇÃO
-
-Texto do corpo.
-""",
-        encoding="utf-8",
-    )
-
-    payload = preparar_documento(arquivo_md, output_base=tmp_path / "output")
-    ppc = round_paths(payload["rodada_dir"])["ppc"].read_text(encoding="utf-8")
-
-    assert "5.7 EMENTÁRIO 30" not in ppc
-    assert "# 1 APRESENTAÇÃO" in ppc
-    assert "Texto do corpo." in ppc
-
-
 def test_gerar_blocos_ppc_cria_ids_estaveis_por_bloco() -> None:
     blocos = gerar_blocos_ppc(_markdown_base())
 
@@ -163,145 +104,6 @@ def test_gerar_blocos_ppc_cria_ids_estaveis_por_bloco() -> None:
     assert blocos[0].kind == "heading"
     assert blocos[0].text == "Curso Técnico em Informática"
     assert any("objetivos" in bloco.text for bloco in blocos)
-
-
-def test_normalizador_markdown_remove_sumario_convertido_antes_do_html() -> None:
-    markdown = """# CAPA
-
-**Sumário**
-1. APRESENTAÇÃO DO PROJETO 4
-
-## 1.1 IDENTIFICAÇÃO 4
-## 5.7 EMENTÁRIO 30
-### 5.7.1 Componentes curriculares obrigatórios 30
-# 1 APRESENTAÇÃO DO PROJETO
-
-## 1.1 IDENTIFICAÇÃO
-
-Texto do corpo.
-"""
-
-    normalizado = MarkdownNormalizer().normalize(markdown).markdown_normalizado
-    blocos = gerar_blocos_ppc(normalizado)
-
-    assert "5.7 EMENTÁRIO 30" not in normalizado
-    assert [bloco.text for bloco in blocos] == [
-        "CAPA",
-        "1 APRESENTAÇÃO DO PROJETO",
-        "1.1 IDENTIFICAÇÃO",
-        "Texto do corpo.",
-    ]
-
-
-def test_normalizador_markdown_remove_sumario_em_tabela_sem_titulo() -> None:
-    markdown = """# CAPA
-
-|---|---|---|
-|1.1|CARACTERÍSTICAS DO CURSO|7|
-|**2. JUSTIFICATIVA**||**9**|
-||6.3.1 CONCEPÇÃO DE AVALIAÇÃO|24|
-|6.15.1 EMENTÁRIO - 1° ANO|42|
-|Componente Curricular: Arte I|43|
-
-## **1. IDENTIFICAÇÃO DO CURSO**
-
-Texto do corpo.
-"""
-
-    normalizado = MarkdownNormalizer().normalize(markdown).markdown_normalizado
-
-    assert "CARACTERÍSTICAS DO CURSO|7" not in normalizado
-    assert "Componente Curricular: Arte I|43" not in normalizado
-    assert "1. IDENTIFICAÇÃO DO CURSO" in normalizado
-    assert "Texto do corpo." in normalizado
-
-
-def test_normalizador_markdown_remove_sumario_com_varios_itens_na_mesma_linha() -> None:
-    markdown = """# CAPA
-
-## **SUMÁRIO**
-**1.APRESENTAÇÃO DO PROJETO ........ 5** 1.1 IDENTIFICAÇÃO ....... 5 1.2 CONTEXTO HISTÓRICO ....... 7
-**2. PRINCÍPIOS E FUNDAMENTOS PEDAGÓGICOS ........ 16** 2.1 JUSTIFICATIVA ....... 17
-
-## **1.APRESENTAÇÃO DO PROJETO**
-
-Texto do corpo.
-"""
-
-    normalizado = MarkdownNormalizer().normalize(markdown).markdown_normalizado
-
-    assert "1.1 IDENTIFICAÇÃO ....... 5" not in normalizado
-    assert "2.1 JUSTIFICATIVA ....... 17" not in normalizado
-    assert "1.APRESENTAÇÃO DO PROJETO" in normalizado
-    assert "Texto do corpo." in normalizado
-
-
-def test_normalizador_markdown_remove_sumario_com_pontilhado_unicode() -> None:
-    markdown = """# CAPA
-
-**SUMÁRIO 1. IDENTIFICAÇÃO DO CURSO** …………………………………...…………………………..……...….….3 1.1. CARACTERÍSTICAS DO CURSO…………………………………………………………..……...….…..5
-
-**INSTITUTO FEDERAL DO PARANÁ | Pró-Reitoria de Ensino - PROENS**
-
-Av. Victor Ferreira do Amaral, 306 - Tarumã, Curitiba - PR
-
-10. AVALIAÇÃO DO PROJETO PEDAGÓGICO DO CURSO (PPC)......................................41 REFERÊNCIAS…………………………………………………………………………………………………………..42
-
-## **1. IDENTIFICAÇÃO DO CURSO**
-
-Texto do corpo.
-"""
-
-    normalizado = MarkdownNormalizer().normalize(markdown).markdown_normalizado
-
-    assert "SUMÁRIO 1. IDENTIFICAÇÃO" not in normalizado
-    assert "REFERÊNCIAS…………………………………………" not in normalizado
-    assert "1. IDENTIFICAÇÃO DO CURSO" in normalizado
-    assert "Texto do corpo." in normalizado
-
-
-def test_normalizador_markdown_remove_sumario_com_numero_titulo_pagina_em_celulas() -> None:
-    markdown = """# CAPA
-
-## **SUMÁRIO**
-|**1**|**IDENTIFICAÇÃO DO CURSO**|**4**|
-
-4
-
-## **1 IDENTIFICAÇÃO DO CURSO**
-
-Texto do corpo.
-"""
-
-    normalizado = MarkdownNormalizer().normalize(markdown).markdown_normalizado
-
-    assert "|**1**|**IDENTIFICAÇÃO DO CURSO**|**4**|" not in normalizado
-    assert "## **1 IDENTIFICAÇÃO DO CURSO**" in normalizado
-    assert "Texto do corpo." in normalizado
-
-
-def test_normalizador_markdown_nao_remove_tabela_do_corpo_com_numeracao() -> None:
-    markdown = """# CAPA
-
-## **1. IDENTIFICAÇÃO DA PROPOSTA**
-
-|---|---|---|
-|2.3 Vagas ofertadas|
-|a) Mínimo: 100 vagas|
-|2.4 Público-alvo|
-|Professores da rede pública|
-
-## **2. DADOS DO CURSO**
-
-Texto do corpo.
-"""
-
-    normalizado = MarkdownNormalizer().normalize(markdown).markdown_normalizado
-
-    assert "|2.3 Vagas ofertadas|" in normalizado
-    assert "|2.4 Público-alvo|" in normalizado
-    assert "Texto do corpo." in normalizado
-
 
 def test_gerar_blocos_ppc_preserva_br_html_como_quebra_de_linha() -> None:
     blocos = gerar_blocos_ppc(
@@ -316,404 +118,6 @@ def test_gerar_blocos_ppc_preserva_br_html_como_quebra_de_linha() -> None:
     html_tabela = next(bloco.html for bloco in blocos if bloco.kind == "table")
     assert "Linha 1<br>Linha 2" in html_tabela
     assert "&lt;br&gt;" not in html_tabela
-
-
-def test_inferencia_de_campus_usa_campi_conhecidos_na_capa() -> None:
-    identificacao = infer_identificacao_from_markdown(
-        """# PROJETO PEDAGÓGICO DO CURSO
-
-### TÉCNICO EM INFORMÁTICA PARA INTERNET
-
-Quedas do Iguaçu
-
-## SUMÁRIO
-""",
-        fallback_nome="PPC Técnico em Informática",
-    )
-
-    assert identificacao["campus"] == "Quedas do Iguaçu"
-
-
-def test_extracao_de_campus_ignora_chaves_de_inventario() -> None:
-    identificacao = extract_identificacao_from_conversion_json(
-        {
-            "dados_extraidos": {
-                "nome_curso": "Curso Técnico em Informática para Internet",
-                "unidade_de_fluxo_de_ar": "5",
-                "capela_de_fluxo_laminar": "1",
-            }
-        }
-    )
-
-    assert identificacao["campus"] == "Campus não identificado"
-
-
-def test_mesclagem_identificacao_preserva_campus_inferido_quando_conversao_nao_identifica() -> None:
-    mesclada = _mesclar_identificacao_preferindo_preenchidos(
-        {
-            "curso": "PPC Técnico",
-            "campus": "Quedas do Iguaçu",
-            "modalidade": "Integrado",
-        },
-        {
-            "curso": "Curso Técnico em Informática para Internet",
-            "campus": "Campus não identificado",
-            "modalidade": "Integrado ao Ensino Médio",
-        },
-    )
-
-    assert mesclada["curso"] == "Curso Técnico em Informática para Internet"
-    assert mesclada["campus"] == "Quedas do Iguaçu"
-    assert mesclada["modalidade"] == "Integrado ao Ensino Médio"
-
-
-def test_fichas_sao_agrupadas_em_blocos_estaveis_de_20() -> None:
-    fichas = carregar_fichas_ordenadas()
-    grupos = agrupar_fichas(fichas, tamanho_grupo=20)
-    total_fichas = len(fichas)
-    intervalos_esperados = [
-        f"{inicio}-{min(inicio + 19, total_fichas)}" for inicio in range(1, total_fichas + 1, 20)
-    ]
-    totais_esperados = [
-        min(20, total_fichas - indice) for indice in range(0, total_fichas, 20)
-    ]
-
-    assert total_fichas == len(list(FICHAS_DIR.glob("*.json")))
-    assert [grupo["intervalo"] for grupo in grupos] == intervalos_esperados
-    assert [grupo["total_fichas"] for grupo in grupos] == totais_esperados
-    assert grupos[0]["grupo_id"] == "grupo-001"
-    assert grupos[-1]["grupo_id"] == f"grupo-{len(grupos):03d}"
-
-
-def test_ficha_progressao_parcial_diferencia_integrado_e_subsequente() -> None:
-    ficha = read_json(FICHAS_DIR / "ct-sup-26.json")
-    topico_avaliacao = next(
-        topico
-        for topico in read_json(TOPICOS_FICHAS_PATH)["topicos"]
-        if topico["id"] == "avaliacao_aprendizagem"
-    )
-    texto = " ".join(
-        str(ficha.get(campo, ""))
-        for campo in ("pergunta", "rubrica", "boa_evidencia", "ma_evidencia", "escalonar_quando")
-    )
-
-    assert ficha["topicos_tematicos"] == ["avaliacao_aprendizagem"]
-    assert "CT-SUP-26" in topico_avaliacao["fichas"]
-    assert "progressão parcial" in " ".join(ficha["ancoras_semanticas"]).lower()
-    assert "cursos técnicos integrados" in texto
-    assert "cursos técnicos subsequentes" in texto
-    assert "arts. 18 e 19" in texto
-    assert "art. 20" in texto
-    assert "limite de 3 conceitos D próprio dos cursos integrados" in texto
-
-
-def test_ficha_educacao_politica_aplica_obrigacao_nova_sem_exigir_disciplina_autonoma() -> None:
-    ficha = read_json(FICHAS_DIR / "ct-curr-26.json")
-    topico_cidadania = next(
-        topico
-        for topico in read_json(TOPICOS_FICHAS_PATH)["topicos"]
-        if topico["id"] == "temas_transversais_cidadania"
-    )
-    texto = " ".join(
-        str(ficha.get(campo, ""))
-        for campo in ("pergunta", "rubrica", "boa_evidencia", "ma_evidencia", "escalonar_quando")
-    )
-
-    assert ficha["criticidade"] == "OBRIG"
-    assert ficha["tipo_escopo"] == "condicional"
-    assert ficha["topicos_tematicos"] == ["temas_transversais_cidadania"]
-    assert "CT-CURR-26" in topico_cidadania["fichas"]
-    assert "Lei nº 9.394/1996, art. 26, §§ 1º e 9º-B" in ficha["referencias_normativas"]
-    assert "Lei nº 15.468/2026" in ficha["referencias_normativas"]
-    assert "cursos técnicos integrados ao ensino médio" in texto
-    assert "cursos subsequentes" in texto
-    assert "NAO_APLICAVEL" in texto
-    assert "não exigir disciplina autônoma" in texto
-    assert "realidade social e política" in texto
-
-
-def test_contexto_normativo_dos_subagentes_inclui_marcos() -> None:
-    contexto = contexto_fundamentacao_normativa()
-    ids = {marco["id"] for marco in contexto["marcos_normativos"]}
-    assert {"dcn_ept", "dcnem", "eja"} <= ids
-
-
-def test_montar_grupos_subagents_salva_payload_na_rodada(tmp_path: Path) -> None:
-    rodada_dir = _criar_rodada(tmp_path)
-    caminhos = round_paths(rodada_dir)
-
-    payload = montar_grupos_subagents(rodada_dir)
-
-    assert caminhos["grupos_subagents"].exists()
-    assert payload["grupos_subagents_path"] == str(caminhos["grupos_subagents"])
-    assert payload["ppc_markdown"] == str(caminhos["ppc"])
-    assert payload["total_fichas"] == len(list(FICHAS_DIR.glob("*.json")))
-    assert len(payload["grupos"]) == (payload["total_fichas"] + 19) // 20
-    assert caminhos["cnct_contexto"].exists()
-    assert caminhos["contexto_estrutural_subagents"].exists()
-    assert caminhos["validacoes_cruzadas_contexto"].exists()
-    assert payload["cnct_contexto"]["correspondencia"]["denominacao"] == "Técnico em Informática"
-    assert "base-conhecimento/catalogos/cnct/index.json" in payload["cnct_contexto"]["fonte_catalogo"]
-    assert payload["sintese_transversal_template"].endswith("sintese-transversal.md")
-    assert payload["validacoes_cruzadas"]["total"] == len(carregar_validacoes_cruzadas_ordenadas())
-    assert payload["validacoes_cruzadas"]["validacoes"][0]["id"].startswith("VC-")
-    grupos_com_cnct = [grupo for grupo in payload["grupos"] if grupo["requer_contexto_cnct"]]
-    assert grupos_com_cnct
-    assert all("contextos" in grupo and "cnct" in grupo["contextos"] for grupo in grupos_com_cnct)
-    assert all("estrutura" in grupo["contextos"] for grupo in payload["grupos"])
-    grupos_com_fundamentacao = [grupo for grupo in payload["grupos"] if grupo["requer_fundamentacao_normativa"]]
-    assert grupos_com_fundamentacao
-    assert payload["fundamentacao_normativa"]["protocolo"] == "verificar-fundamentacao-normativa"
-    assert all("fundamentacao_normativa" in grupo["contextos"] for grupo in grupos_com_fundamentacao)
-
-
-def test_cli_montar_grupos_subagents_imprime_resumo_por_padrao(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    rodada_dir = _criar_rodada(tmp_path)
-
-    assert analise_ppc_main(["montar-grupos-subagents", "--rodada-dir", str(rodada_dir)]) == 0
-
-    saida = json.loads(capsys.readouterr().out)
-    assert saida["total_fichas"] == len(list(FICHAS_DIR.glob("*.json")))
-    assert saida["grupos_subagents"].endswith("grupos-subagents.json")
-    assert "cnct_contexto" not in saida
-    assert "fichas" not in saida["grupos"][0]
-
-
-def test_preparar_prompts_subagents_gera_pacotes_por_grupo(tmp_path: Path) -> None:
-    rodada_dir = _criar_rodada(tmp_path)
-    montar_grupos_subagents(rodada_dir, tamanho_grupo=30)
-
-    manifest = preparar_prompts_subagents(rodada_dir)
-
-    assert manifest["total_pacotes"] == 3
-    primeiro = Path(manifest["arquivos"][0]["arquivo"])
-    assert primeiro.exists()
-    texto = primeiro.read_text(encoding="utf-8")
-    assert "## Prompt de trabalho" in texto
-    assert "## PPC.md" in texto
-    assert "## Grupo e contextos" in texto
-    assert "Curso Técnico em Informática" in texto
-
-
-def test_contexto_cnct_inclui_resumo_estruturado_de_estagio() -> None:
-    contexto = comparar_ppc_com_cnct(
-        {"curso": "Curso Técnico em Informática"},
-        {"dados_extraidos": {"carga_horaria_estagio": "0 horas"}},
-        {},
-    )
-
-    assert contexto["correspondencia"]["denominacao"] == "Técnico em Informática"
-    assert "base-conhecimento/catalogos/cnct/index.json" in contexto["fonte_catalogo"]
-    assert contexto["correspondencia"]["estagio"]["menciona_estagio"] is True
-    assert contexto["correspondencia"]["estagio"]["obrigatoriedade"] == "FACULTADO_A_INSTITUICAO"
-    assert contexto["estagio_ppc"]["indicio_estagio_obrigatorio_por_carga"] is False
-    assert contexto["comparacoes"]["estagio_cnct"]["status"] == "COMPATIVEL"
-
-
-def test_catalogo_cnct_interno_foi_substituido_pela_base_unificada() -> None:
-    assert not (BASE_ANALISE_DIR / "dados" / "cnct" / "catalogo_cnct.csv").exists()
-    assert (BASE_CONHECIMENTO_DIR / "catalogos" / "cnct" / "index.json").exists()
-
-
-def test_ficha_convenios_estagio_declara_hipoteses_da_resolucao_82() -> None:
-    ficha = read_json(FICHAS_DIR / "ct-curr-21.json")
-    texto = " ".join(
-        str(ficha.get(campo, ""))
-        for campo in ("pergunta", "rubrica", "boa_evidencia", "ma_evidencia", "escalonar_quando")
-    )
-
-    assert "agente de integração" in texto
-    assert "UCE pública ou privada" in texto
-    assert "10 estudantes simultaneamente" in texto
-    assert "Seção de Estágios e Relações Comunitárias" in texto
-    assert "Direção" in texto
-    assert "Termo de Compromisso de Estágio e Plano de Estágio" in texto
-
-
-def test_fichas_estagio_tem_escopos_separados() -> None:
-    topico_estagio = next(
-        topico
-        for topico in read_json(TOPICOS_FICHAS_PATH)["topicos"]
-        if topico["id"] == "estagio"
-    )
-    fichas = {
-        ficha_id: read_json(FICHAS_DIR / arquivo)
-        for ficha_id, arquivo in {
-            "CT-CURR-20": "ct-curr-20.json",
-            "CT-CURR-21": "ct-curr-21.json",
-            "CT-CURR-24": "ct-curr-24.json",
-            "CT-CURR-25": "ct-curr-25.json",
-        }.items()
-    }
-
-    assert topico_estagio["tipo_escopo"] == "condicional"
-    assert set(topico_estagio["fichas"]) == set(fichas)
-    assert all("estagio" in ficha["topicos_tematicos"] for ficha in fichas.values())
-    assert "perfil_egresso_mundo_trabalho" in fichas["CT-CURR-25"]["topicos_tematicos"]
-    assert all(ficha["tipo_escopo"] == "condicional" for ficha in fichas.values())
-    assert all("estágio" in " ".join(ficha["ancoras_semanticas"]).lower() for ficha in fichas.values())
-
-    texto_macro = fichas["CT-CURR-20"]["rubrica"]
-    texto_convenios = fichas["CT-CURR-21"]["rubrica"]
-    texto_orientacao = fichas["CT-CURR-24"]["rubrica"]
-    texto_campos = fichas["CT-CURR-25"]["rubrica"]
-
-    assert "aprovação/certificação" in texto_macro
-    assert "Termo de Compromisso de Estágio e Plano de Estágio" in texto_convenios
-    assert "modalidade de orientação" in texto_orientacao
-    assert "componente curricular" in texto_orientacao
-    assert "instituições públicas ou privadas" in texto_campos
-    assert "equivalência" in texto_campos
-    assert "orientação alternativa" not in texto_macro
-    assert "instituições públicas ou privadas" not in texto_convenios
-
-
-def test_ficha_eixo_cnct_nao_exige_area_tecnologica_no_ppc() -> None:
-    ficha = read_json(FICHAS_DIR / "ct-ident-13.json")
-    texto = " ".join(
-        str(ficha.get(campo, ""))
-        for campo in ("pergunta", "rubrica", "boa_evidencia", "ma_evidencia", "escalonar_quando")
-    )
-
-    assert "ausência de área tecnológica no PPC" in texto
-    assert "não constitui lacuna" in texto
-    assert "Não escalonar pela simples ausência de área tecnológica no PPC" in texto
-
-
-def test_ficha_projeto_final_trata_pfi_como_pratica_profissional_articulada() -> None:
-    ficha = read_json(FICHAS_DIR / "ct-curr-14.json")
-    texto = " ".join(
-        str(ficha.get(campo, ""))
-        for campo in ("titulo", "pergunta", "rubrica", "boa_evidencia", "ma_evidencia", "escalonar_quando")
-    )
-
-    assert "Resolução CONSUP/IFPR nº 64/2022, art. 16" in ficha["referencias_normativas"]
-    assert "projeto final interdisciplinar" in [consulta.casefold() for consulta in ficha["consultas"]]
-    assert "Projeto Integrador" in texto
-    assert "prática profissional articulada" in texto
-    assert "TCC acadêmico tradicional" in texto
-
-
-def test_validacao_cruzada_fecha_aritmetica_de_carga_horaria_com_memoria_de_calculo() -> None:
-    validacao = read_json(BASE_ANALISE_DIR / "validacoes-cruzadas" / "vc-05-16.json")
-    prompt = (SKILL_DIR / "prompts" / "sintese-transversal.md").read_text(encoding="utf-8")
-    texto = " ".join(
-        str(validacao.get(campo, ""))
-        for campo in ("titulo", "pergunta", "rubrica", "boa_evidencia", "ma_evidencia")
-    )
-
-    assert validacao["id"] == "VC-05-16"
-    assert validacao["criticidade"] == "BLOQ"
-    assert "memória de cálculo passo a passo" in texto
-    assert "aulas_totais * minutos_hora_aula / 60" in texto
-    assert "dias letivos anuais" in texto
-    assert "hora-relógio" in texto
-    assert "memória de cálculo" in prompt
-    assert "conversão de hora-aula para hora-relógio" in prompt
-
-
-def test_ficha_formacao_docente_aceita_politica_institucional_verificavel() -> None:
-    ficha = read_json(FICHAS_DIR / "ct-sup-17.json")
-    texto = " ".join(
-        str(ficha.get(campo, ""))
-        for campo in ("pergunta", "rubrica", "boa_evidencia", "ma_evidencia", "escalonar_quando")
-    )
-
-    assert "Resolução CNE/CP nº 2/2026, arts. 57, 59, 61 e 72" in ficha["referencias_normativas"]
-    assert "Resolução CONSUP/IFPR nº 64/2022, arts. 41 a 43" in ficha["referencias_normativas"]
-    assert "política institucional do IFPR" in texto
-    assert "Não penalizar a simples presença de docentes bacharéis" in texto
-    assert "genérica demais para ser verificável" in texto
-
-
-def test_ficha_assistencia_estudantil_exige_resolucao_239_e_revogacao_das_antigas() -> None:
-    ficha = read_json(FICHAS_DIR / "ct-sup-24.json")
-    texto = " ".join(
-        str(ficha.get(campo, ""))
-        for campo in ("titulo", "pergunta", "rubrica", "boa_evidencia", "ma_evidencia", "escalonar_quando")
-    )
-
-    assert "Resolução CONSUP/IFPR nº 239/2025" in ficha["referencias_normativas"]
-    assert "Lei nº 14.914/2024" in ficha["referencias_normativas"]
-    assert "política institucional de assistência estudantil" in [
-        consulta.casefold() for consulta in ficha["consultas"]
-    ]
-    assert "Resolução nº 11/2009" in texto
-    assert "Resolução nº 53/2011" in texto
-    assert "normas revogadas" in texto
-    assert "ensino, pesquisa, extensão e inovação" in texto
-
-
-def test_ficha_avaliacao_ppc_exige_periodicidade_registro_e_normas_vigentes() -> None:
-    ficha = read_json(FICHAS_DIR / "ct-sup-08.json")
-    texto = " ".join(
-        str(ficha.get(campo, ""))
-        for campo in ("titulo", "pergunta", "rubrica", "boa_evidencia", "ma_evidencia", "escalonar_quando")
-    )
-    consultas = [consulta.casefold() for consulta in ficha["consultas"]]
-
-    assert "Resolução CONSUP/IFPR nº 64/2022, arts. 31 e 32" in ficha["referencias_normativas"]
-    assert "Portaria PROENS/IFPR nº 121/2024, arts. 67 a 69" in ficha["referencias_normativas"]
-    assert "avaliação do ppc" in consultas
-    assert "avaliação emancipatória" in texto
-    assert "participação estudantil" in texto
-    assert "registro em atas" in texto
-    assert "ações estratégicas de melhoria" in texto
-    assert "não substituem a explicitação mínima do processo de avaliação periódica do PPC" in texto
-
-
-def test_ficha_biblioteca_exige_acessibilidade_fisica_do_espaco() -> None:
-    ficha = read_json(FICHAS_DIR / "ct-sup-25.json")
-    texto = " ".join(
-        str(ficha.get(campo, ""))
-        for campo in ("titulo", "pergunta", "rubrica", "boa_evidencia", "ma_evidencia", "escalonar_quando")
-    )
-    consultas = [consulta.casefold() for consulta in ficha["consultas"]]
-
-    assert "biblioteca" in consultas
-    assert "piso térreo" in consultas
-    assert "rampa" in consultas
-    assert "elevador" in consultas
-    assert "Lei nº 13.146/2015" in ficha["referencias_normativas"]
-    assert "localização da biblioteca" in texto
-    assert "não estiver no térreo" in texto
-    assert "circulação interna" in texto
-    assert "declaração genérica de acessibilidade do campus" in texto
-
-
-def test_montar_grupos_subagents_anexa_representacao_grafica_quando_disponivel(tmp_path: Path) -> None:
-    rodada_dir = _criar_rodada(tmp_path)
-    caminhos = round_paths(rodada_dir)
-    artefatos_dir = caminhos["artefatos_conversao_dir"]
-    imagem = artefatos_dir / "imagens" / "representacao_grafica.png"
-    imagem.parent.mkdir(parents=True)
-    imagem.write_bytes(b"imagem")
-    dados = artefatos_dir / "dados.json"
-    write_json(dados, {"representacao_grafica": {"extraida": True, "caminho": "imagens/representacao_grafica.png"}})
-    write_json(caminhos["preparacao_docx"], {"dados": str(dados)})
-
-    payload = montar_grupos_subagents(rodada_dir)
-    grupos_com_anexo = [grupo for grupo in payload["grupos"] if grupo["requer_anexos_visuais"]]
-
-    assert grupos_com_anexo
-    assert grupos_com_anexo[0]["contextos"]["anexos_visuais"][0]["arquivo"] == str(imagem.resolve())
-
-
-def test_detector_identifica_fichas_que_dependem_do_cnct() -> None:
-    fichas = {ficha["id"]: ficha for ficha in carregar_fichas_ordenadas()}
-
-    assert ficha_requer_contexto_cnct(fichas["CT-IDENT-01"])
-    assert not ficha_requer_contexto_cnct(fichas["CT-SUP-01"])
-
-
-def test_detector_identifica_fichas_que_dependem_de_fundamentacao_normativa() -> None:
-    fichas = {ficha["id"]: ficha for ficha in carregar_fichas_ordenadas()}
-
-    assert ficha_requer_fundamentacao_normativa(fichas["CT-IDENT-08"])
-    assert ficha_requer_fundamentacao_normativa(fichas["CT-CURR-20"])
-    assert ficha_requer_fundamentacao_normativa(fichas["CT-IDENT-02"])
-    assert not ficha_requer_fundamentacao_normativa(fichas["CT-IDENT-04"])
-
 
 def test_gerar_relatorio_html_aceita_resultados_validos(tmp_path: Path) -> None:
     rodada_dir = _criar_rodada(tmp_path)
@@ -732,7 +136,6 @@ def test_gerar_relatorio_html_aceita_resultados_validos(tmp_path: Path) -> None:
     assert "CT-IDENT-01" in html
     assert 'id="filtro-busca"' in html
     assert 'id="filtro-modo"' in html
-
 
 def test_gerar_relatorio_html_ordena_margem_pela_posicao_no_ppc(tmp_path: Path) -> None:
     rodada_dir = _criar_rodada(tmp_path)
@@ -771,7 +174,6 @@ def test_gerar_relatorio_html_ordena_margem_pela_posicao_no_ppc(tmp_path: Path) 
     assert 'id="ann-001"' in html[:pos_curr]
     assert 'href="#ann-001"' in html
 
-
 def test_publicar_site_surge_chama_cli_com_pasta_e_dominio(tmp_path: Path) -> None:
     relatorio = tmp_path / "relatorio.html"
     relatorio.write_text("<!doctype html><html><body><script>ok()</script></body></html>", encoding="utf-8")
@@ -803,12 +205,10 @@ def test_publicar_site_surge_chama_cli_com_pasta_e_dominio(tmp_path: Path) -> No
     args = json.loads(args_path.read_text(encoding="utf-8"))
     assert args == [str(site_dir.resolve()), "analise-ppc-teste.surge.sh"]
 
-
 def test_dominio_surge_padrao_usa_nome_da_rodada() -> None:
     dominio = dominio_surge_padrao(Path("/tmp/2026-06-29t10-00-00-ppc-tecnico-em-informatica---quedas"))
 
     assert dominio == "analise-ppc-2026-06-29t10-00-00-ppc-tecnico-em-informatica.surge.sh"
-
 
 def test_cli_gerar_relatorio_html_publica_surge_por_padrao(
     tmp_path: Path,
@@ -859,22 +259,6 @@ def test_cli_gerar_relatorio_html_publica_surge_por_padrao(
     assert publicacao["site_dir"] == str((caminhos["suporte_dir"] / "surge-site").resolve())
     assert publicacao["relatorio_html_original"] == str(caminhos["relatorio_html"].resolve())
 
-
-def test_validar_resultados_rodada_retorna_resumo_sem_gerar_html(tmp_path: Path) -> None:
-    rodada_dir = _criar_rodada(tmp_path)
-    caminhos = round_paths(rodada_dir)
-    write_json(caminhos["suporte_dir"] / "resultados-subagents.json", _payload_resultados_completos())
-
-    payload = validar_resultados_rodada(rodada_dir, Path("resultados-subagents.json"))
-
-    assert payload["valido"] is True
-    assert payload["total_fichas"] == len(list(FICHAS_DIR.glob("*.json")))
-    assert payload["total_fichas_esperadas"] == payload["total_fichas"]
-    assert payload["total_alertas_transversais"] == 0
-    assert payload["contagem_estado"] == {"ATENDE": payload["total_fichas"]}
-    assert not caminhos["relatorio_html"].exists()
-
-
 def test_gerar_relatorio_html_renderiza_fundamentacao_normativa(tmp_path: Path) -> None:
     rodada_dir = _criar_rodada(tmp_path)
     caminhos = round_paths(rodada_dir)
@@ -901,7 +285,6 @@ def test_gerar_relatorio_html_renderiza_fundamentacao_normativa(tmp_path: Path) 
     assert 'class="normative-section normative-confirmada-com-ressalva"' in html
     assert "CONFIRMADA_COM_RESSALVA" in html
     assert "RESOLUCAO_CNE-CP_1-2021_dcnept.md" in html
-
 
 def test_gerar_relatorio_html_renderiza_evidencia_estruturada(tmp_path: Path) -> None:
     rodada_dir = _criar_rodada(tmp_path)
@@ -934,7 +317,6 @@ def test_gerar_relatorio_html_renderiza_evidencia_estruturada(tmp_path: Path) ->
     assert "Fonte:</strong> PPC.md" not in html
     assert "Artefato:" not in html
 
-
 def test_resolver_anchor_por_titulo_de_secao_sem_depender_de_numeracao() -> None:
     blocos = gerar_blocos_ppc(
         """# Curso
@@ -962,7 +344,6 @@ O PPC trata o registro junto ao conselho profissional.
     assert bloco.kind == "paragraph"
     assert "pesquisas com egressos" in bloco.text
     assert quote == "pesquisas com egressos"
-
 
 def test_gerar_relatorio_html_usa_assets_externos_e_ppc_anotado(tmp_path: Path) -> None:
     rodada_dir = _criar_rodada(tmp_path)
@@ -1034,7 +415,6 @@ def test_gerar_relatorio_html_usa_assets_externos_e_ppc_anotado(tmp_path: Path) 
     assert (rodada_dir / "assets" / "analise-ppc.css").exists()
     assert (rodada_dir / "assets" / "analise-ppc.js").exists()
 
-
 def test_gerar_relatorio_html_rejeita_ficha_duplicada(tmp_path: Path) -> None:
     rodada_dir = _criar_rodada(tmp_path)
     caminhos = round_paths(rodada_dir)
@@ -1046,7 +426,6 @@ def test_gerar_relatorio_html_rejeita_ficha_duplicada(tmp_path: Path) -> None:
     with pytest.raises(ErroResultadosSubagents, match="duplicadas"):
         gerar_relatorio_html(rodada_dir, Path("resultados-subagents.json"))
 
-
 def test_gerar_relatorio_html_rejeita_ficha_desconhecida(tmp_path: Path) -> None:
     rodada_dir = _criar_rodada(tmp_path)
     caminhos = round_paths(rodada_dir)
@@ -1056,7 +435,6 @@ def test_gerar_relatorio_html_rejeita_ficha_desconhecida(tmp_path: Path) -> None
 
     with pytest.raises(ErroResultadosSubagents, match="desconhecidas"):
         gerar_relatorio_html(rodada_dir, Path("resultados-subagents.json"))
-
 
 def test_gerar_relatorio_html_rejeita_ficha_faltante(tmp_path: Path) -> None:
     rodada_dir = _criar_rodada(tmp_path)
@@ -1068,7 +446,6 @@ def test_gerar_relatorio_html_rejeita_ficha_faltante(tmp_path: Path) -> None:
     with pytest.raises(ErroResultadosSubagents, match="sem resultado"):
         gerar_relatorio_html(rodada_dir, Path("resultados-subagents.json"))
 
-
 def test_gerar_relatorio_html_rejeita_evidencias_abaixo_do_minimo(tmp_path: Path) -> None:
     rodada_dir = _criar_rodada(tmp_path)
     caminhos = round_paths(rodada_dir)
@@ -1079,7 +456,6 @@ def test_gerar_relatorio_html_rejeita_evidencias_abaixo_do_minimo(tmp_path: Path
     with pytest.raises(ErroResultadosSubagents, match="mínimo exigido"):
         gerar_relatorio_html(rodada_dir, Path("resultados-subagents.json"))
 
-
 def test_gerar_relatorio_html_renderiza_alertas_transversais(tmp_path: Path) -> None:
     rodada_dir = _criar_rodada(tmp_path)
     caminhos = round_paths(rodada_dir)
@@ -1087,7 +463,7 @@ def test_gerar_relatorio_html_renderiza_alertas_transversais(tmp_path: Path) -> 
     payload["alertas_transversais"] = [
         {
             "id": "ALERTA-001",
-            "validacao_id": carregar_validacoes_cruzadas_ordenadas()[0]["id"],
+            "validacao_id": _primeira_validacao_cruzada(),
             "titulo": "Inconsistência transversal",
             "criticidade": "OBRIG",
             "descricao": "Perfil e matriz precisam de revisão conjunta.",
@@ -1108,7 +484,6 @@ def test_gerar_relatorio_html_renderiza_alertas_transversais(tmp_path: Path) -> 
     assert 'id="alertas"' not in html
     assert "transversal-notes" in html
 
-
 def test_gerar_relatorio_html_renderiza_alerta_transversal_com_multiplas_ancoras(tmp_path: Path) -> None:
     rodada_dir = _criar_rodada(tmp_path)
     caminhos = round_paths(rodada_dir)
@@ -1116,7 +491,7 @@ def test_gerar_relatorio_html_renderiza_alerta_transversal_com_multiplas_ancoras
     payload["alertas_transversais"] = [
         {
             "id": "ALERTA-001",
-            "validacao_id": carregar_validacoes_cruzadas_ordenadas()[0]["id"],
+            "validacao_id": _primeira_validacao_cruzada(),
             "titulo": "Divergência entre identificação e apresentação",
             "criticidade": "OBRIG",
             "descricao": "Dois pontos do PPC precisam ser lidos em conjunto.",
@@ -1160,7 +535,6 @@ def test_gerar_relatorio_html_renderiza_alerta_transversal_com_multiplas_ancoras
     assert "estado-transversal" in html
     assert 'id="alertas"' not in html
 
-
 def test_gerar_relatorio_html_exige_validacao_id_em_alerta_transversal(tmp_path: Path) -> None:
     rodada_dir = _criar_rodada(tmp_path)
     caminhos = round_paths(rodada_dir)
@@ -1181,7 +555,6 @@ def test_gerar_relatorio_html_exige_validacao_id_em_alerta_transversal(tmp_path:
     with pytest.raises(ErroResultadosSubagents, match="validacao_id"):
         gerar_relatorio_html(rodada_dir, Path("resultados-subagents.json"))
 
-
 def test_gerar_relatorio_html_exige_feedback_autores_quando_ficha_solicita(tmp_path: Path) -> None:
     rodada_dir = _criar_rodada(tmp_path)
     caminhos = round_paths(rodada_dir)
@@ -1196,7 +569,6 @@ def test_gerar_relatorio_html_exige_feedback_autores_quando_ficha_solicita(tmp_p
 
     with pytest.raises(ErroResultadosSubagents, match="feedback_autores"):
         gerar_relatorio_html(rodada_dir, Path("resultados-subagents.json"))
-
 
 def test_gerar_relatorio_html_renderiza_feedback_autores(tmp_path: Path) -> None:
     rodada_dir = _criar_rodada(tmp_path)
@@ -1219,41 +591,6 @@ def test_gerar_relatorio_html_renderiza_feedback_autores(tmp_path: Path) -> None
     assert texto_feedback in html
     assert "Feedback aos autores" in html
 
-
-def test_montar_grupo_avulso_e_mesclar_resultados(tmp_path: Path) -> None:
-    rodada_dir = _criar_rodada(tmp_path)
-    caminhos = round_paths(rodada_dir)
-    base = _payload_resultados_completos()
-    write_json(caminhos["resultados_subagents"], base)
-
-    grupo = montar_grupo_avulso(rodada_dir, ["CT-IDENT-01"])
-    avulso_path = caminhos["suporte_dir"] / "resultado-avulso.json"
-    write_json(
-        avulso_path,
-        {
-            "grupo_id": grupo["grupo"]["grupo_id"],
-            "resultados": [_resultado("CT-IDENT-01", estado="INCONCLUSIVO")],
-        },
-    )
-    mesclado = mesclar_resultados_avulsos(
-        rodada_dir,
-        Path("resultados-subagents.json"),
-        Path("resultado-avulso.json"),
-    )
-    payload_mesclado = read_json(caminhos["resultados_subagents"])
-    resultados = [
-        item
-        for grupo_payload in payload_mesclado["grupos"]
-        for item in grupo_payload["resultados"]
-        if item["ficha_id"] == "CT-IDENT-01"
-    ]
-
-    assert Path(grupo["grupo_avulso_path"]).exists()
-    assert mesclado["fichas_substituidas"] == ["CT-IDENT-01"]
-    assert len(resultados) == 1
-    assert resultados[0]["estado"] == "INCONCLUSIVO"
-
-
 def test_nao_ha_codigo_de_execucao_por_cli_ou_tokens() -> None:
     textos = []
     for caminho in SCRIPTS_DIR.rglob("*.py"):
@@ -1270,40 +607,3 @@ def test_nao_ha_codigo_de_execucao_por_cli_ou_tokens() -> None:
     ]
     for proibido in proibidos:
         assert proibido not in conteudo
-
-
-def test_prompt_subagent_declara_contrato_de_saida() -> None:
-    prompt = (SKILL_DIR / "prompts" / "subagent-lote-fichas.md").read_text(encoding="utf-8")
-    for campo in (
-        "grupo_id",
-        "ficha_id",
-        "estado",
-        "confianca",
-        "justificativa",
-        "evidencias",
-        "lacunas",
-        "revisao_humana_obrigatoria",
-        "fundamentacao_normativa",
-        "feedback_autores",
-    ):
-        assert campo in prompt
-
-
-def test_prompt_sintese_transversal_declara_contrato() -> None:
-    prompt = (SKILL_DIR / "prompts" / "sintese-transversal.md").read_text(encoding="utf-8")
-    assert "alertas_transversais" in prompt
-    assert "validacao_id" in prompt
-    assert "fichas_relacionadas" in prompt
-
-
-def test_fixtures_qualitativas_exercitam_norma_e_estagio(tmp_path: Path) -> None:
-    fixture_norma = SKILL_DIR / "tests" / "fixtures" / "ppc_norma_sem_suporte.md"
-    fixture_estagio = SKILL_DIR / "tests" / "fixtures" / "ppc_estagio_contraditorio.md"
-    assert "dispensa a consulta ao Catálogo Nacional" in fixture_norma.read_text(encoding="utf-8")
-    assert "estágio é não obrigatório" in fixture_estagio.read_text(encoding="utf-8")
-
-    payload = preparar_documento(fixture_estagio, output_base=tmp_path / "output")
-    grupos = montar_grupos_subagents(payload["rodada_dir"])
-
-    assert grupos["cnct_contexto"]["correspondencia"]["denominacao"] == "Técnico em Informática"
-    assert any(grupo["requer_fundamentacao_normativa"] for grupo in grupos["grupos"])
