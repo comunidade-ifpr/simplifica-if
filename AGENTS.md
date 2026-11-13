@@ -35,7 +35,14 @@ Cada norma tem um ID canônico derivado do ato (`id` no front matter e no `manif
 bun run kb resolver "Resolução CNE/CP nº 1/2021, art. 20"   # ID canônico, dispositivo, regra e confiança
 bun run kb citacoes br/cne-cp/res/2021/1 --json              # PPCs convertidos que citam a norma, com linha, trecho e regra
 bun run kb adequacao-art71                                   # cursos técnicos em oferta e a DCN que cada PPC cita
+bun run kb dispositivo "br/cne-cp/res/2026/2#art28-xviii"    # texto do dispositivo, caput herdado, notas e linha no Markdown
+bun run kb vigencia br/cne-cp/res/2021/1 --em 2026-11-01     # status numa data, relações que o determinam e regras de transição
+bun run kb correspondencia "br/cne-cp/res/2021/1#art20"      # dispositivo correspondente na norma sucessora (tabela em rascunho)
+bun run kb impacto br/cne-cp/res/2021/1                      # fichas, validações, textos das skills, normas e PPCs afetados
+bun run kb relacoes br/lei/1996/9394                         # relações tipadas (revoga, altera, regulamenta, fundamenta-se-em)
 ```
+
+Os dispositivos têm ID próprio (`#art28-xvi`, `#art28-par1-iv`, `#art71-parunico`, `#art36A`, `#anexo1-art5`). As relações entre normas estão em `base-conhecimento/relacoes.yaml`, as regras de transição em `base-conhecimento/transicoes.yaml` e as tabelas de correspondência entre normas sucessoras em `base-conhecimento/correspondencias/`. O `status_vigencia` publicado é calculado na `data_referencia` de `base-conhecimento/config/vigencia.yaml`; quando ele depende de uma data ainda não registrada (por exemplo, a publicação da Res. CNE/CP nº 2/2026 no DOU), o front matter e o `manifest.json` trazem `vigencia_a_confirmar`. Norma revogada não é inaplicável: consulte as regras de transição (`kb vigencia`). A tabela de correspondência 1/2021 → 2/2026 é rascunho sem revisão jurídica; trate-a como indicação, não como fundamento.
 
 Confira a `regra` e a `confianca` das citações: as regras de confiança menor (`dcnept-2021-orgao-trocado`, `orgao-ausente-registro`, `orgao-no-documento`) completam ou corrigem citações incompletas dos PPCs e devem ser conferidas no trecho antes de afirmar algo substantivo. O resultado aponta o arquivo; abra o Markdown da norma ou do PPC antes de responder.
 
@@ -86,12 +93,15 @@ bun run typecheck
 
 Ao incluir uma norma em `base-conhecimento/normas/`, preencha o `id` conforme [Padrão de front matter](base-conhecimento/docs/padrao-front-matter-legislacao.md) e retire de `normas/stubs.yaml` o stub correspondente, se houver.
 
-Depois de alterar normas, catálogos, PPCs convertidos ou manifestos locais, rode:
+Depois de alterar normas, `relacoes.yaml`, `transicoes.yaml`, `correspondencias/`, `config/vigencia.yaml`, `normas/stubs.yaml`, catálogos, PPCs convertidos ou manifestos locais, rode:
 
 ```bash
+bun run scripts/gerar_base.ts      # campos gerados do front matter (relações, status de vigência) e manifest.json
 bun run scripts/validar_base.ts
 bun run scripts/gerar_site.ts
 ```
+
+Não edite à mão `status_vigencia`, `revoga`, `revogada_por`, `altera`, `alterada_por`, `regulamenta`, `regulamentada_por`, `fundamenta_se_em`, `fundamenta` nem `vigencia_*` no front matter das normas: eles são gerados. Relação nova entra em `relacoes.yaml`, com a evidência literal do texto; `bun run kb relacoes --propor` lista o que o regex encontrou e ainda não foi confirmado. Ao mudar a marcação de uma norma, preserve as palavras (`bun run --cwd packages/kb test src/normas` confere) e siga as convenções de corpo de `base-conhecimento/docs/padrao-front-matter-legislacao.md`.
 
 Os scripts que falam com Notion, SEI e SUAP, assim como o pipeline da base (`gerar_base.ts`, `gerar_indice_ppcs.ts`, `validar_base.ts`, `gerar_site.ts`, com lógica em `scripts/base/`), são TypeScript (Bun) e exigem `bun install` na raiz. Regras compartilhadas entre `scripts/` e as skills (texto, JSON, JSON Schema, referências normativas) ficam no workspace `packages/kb` (`@simplifica-if/kb`); `packages/kb` não importa de `scripts/`. Em `scripts/`, só `converter_ppcs_markdown.py` (depende de `pymupdf4llm`) continua em Python. Depois de alterar código TypeScript em `scripts/`, `packages/kb` ou nas skills, rode:
 

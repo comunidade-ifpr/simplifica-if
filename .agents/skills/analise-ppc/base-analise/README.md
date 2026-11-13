@@ -8,7 +8,7 @@ Centro canônico da base de análise do `analise-ppc`. Reúne, em um único luga
 - `topicos-fichas.json` — taxonomia semântica que organiza as fichas por tema, sem depender da numeração do PPC.
 - `mapa-fichas.md` — visão legível da taxonomia para consulta rápida.
 - `validacoes-cruzadas/` — verificações transversais de coerência entre seções e achados.
-- `marcos-normativos.json` — registro único da norma vigente de cada tema (DCN da EPT, DCNEM, EJA, assistência estudantil), das normas que ela substituiu e das regras de transição, com as normas por ID canônico. É injetado nos subagentes, com as normas por extenso, em `contextos.fundamentacao_normativa.marcos_normativos`.
+- `marcos-normativos.json` — registro único dos temas normativos (DCN da EPT, DCNEM, EJA, assistência estudantil): identificação (`id`, `tema`, `linha` com os atos do tema por ID canônico, `aplica_a`, fichas), regra de transição e orientação de análise. A norma vigente, as substituídas, as antecessoras e os dispositivos revogados são derivados de `base-conhecimento/relacoes.yaml` na leitura (`scripts/marcos.ts`). É injetado nos subagentes, com os campos derivados e as normas por extenso, em `contextos.fundamentacao_normativa.marcos_normativos`.
 - `contratos/` — exemplos mínimos de payload e formatos de referência.
 - `schemas/` — contratos JSON Schema para fichas, marcos, validações cruzadas e respostas. `ficha.schema.json` e `marcos-normativos.schema.json` são gerados do zod de `scripts/esquemas.ts` (veja [Schemas](#schemas)); os demais são editados à mão.
 - `indice.json` — índice consolidado da base de análise, gerado a partir dos JSONs reais.
@@ -53,11 +53,11 @@ O texto legível é renderizado da estrutura (`@simplifica-if/kb/normas/referenc
 
 ## Vigência das normas
 
-A vigência de cada norma vem de `base-conhecimento/manifest.json` (campo `status_vigencia`; a norma revogadora fica em `revogada_por`, no front matter do arquivo indicado em `path`) ou, para stubs, de `base-conhecimento/normas/stubs.yaml` (`status_vigencia` e `status_fonte`). `marcos-normativos.json` cita as normas por ID: `vigente`, `substitui` e `antecessoras_historicas` com o ID do ato; `dispositivos_revogados` com o ID do ato e o dispositivo (`br/cne-ceb/res/2025/3#art6-iii`). Os textos `transicao` e `orientacao_analise` continuam em prosa. O validador confere tudo por ID:
+A vigência de cada norma vem de `base-conhecimento/manifest.json` (campo `status_vigencia`, calculado na `data_referencia` de `base-conhecimento/config/vigencia.yaml` a partir de `base-conhecimento/relacoes.yaml`; a norma revogadora aparece em `revogada_por`, gerado no front matter do arquivo indicado em `path`) ou, para stubs, de `base-conhecimento/normas/stubs.yaml` (`status_vigencia` e `status_fonte`). `marcos-normativos.json` guarda só a `linha` de cada tema (IDs dos atos, do mais antigo ao mais recente conhecido), a `transicao` e a `orientacao_analise`; `vigente`, `substitui`, `antecessoras_historicas` (IDs de ato) e `dispositivos_revogados` (ato com dispositivo, `br/cne-ceb/res/2025/3#art6-iii`) são derivados das relações na leitura (`derivarLinha`, em `packages/kb/src/normas/vigencia.ts`): uma nova norma que revogue a vigente passa a ser a vigente do marco sem editar o arquivo. As regras de transição como dado estão em `base-conhecimento/transicoes.yaml`. O validador confere tudo por ID:
 
 - `ref` e `dispositivo` fora do formato canônico são erro de schema;
 - uma ficha não pode citar ID inexistente na base, norma `revogada` (no manifesto ou no stub), norma listada em `substitui` ou `antecessoras_historicas` de um marco, nem dispositivo listado em `dispositivos_revogados` ou contido nele (`#art6-iii-al-a` dentro de `#art6-iii`); também não pode repetir a mesma referência;
-- a norma `vigente` de cada marco precisa ter texto na base (manifesto) e não estar revogada; as normas de `substitui`, `antecessoras_historicas` e `dispositivos_revogados` precisam existir na base, e nenhuma de `substitui` pode continuar `vigente`;
+- a `linha` de cada marco precisa citar IDs registrados e derivar um ato vigente; a norma `vigente` derivada precisa ter texto na base (manifesto) e não estar revogada; as normas de `substitui`, `antecessoras_historicas` e `dispositivos_revogados` precisam existir na base, e nenhuma de `substitui` pode continuar `vigente`;
 - os IDs em `fichas_responsaveis` e `fichas_base_legal` precisam existir;
 - sem o manifesto, a validação falha em vez de pular a checagem.
 

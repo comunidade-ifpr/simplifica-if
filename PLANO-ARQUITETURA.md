@@ -499,7 +499,7 @@ Em aberto:
 1. **Fallback "rendered" de figuras na conversão DOCX:** `soffice` ou remover com alerta (T3).
 2. **Conversor de PDF de PPCs:** porte ou exceção Python, conforme a medição de T5.
 3. **Modelo e orçamento do harness de avaliação:** modelo fixado e número de execuções por pergunta (fase 1).
-4. **Data do DOU e URL oficial da Res. CNE/CP 2/2026:** necessárias para `publicada_em` e `vigente_de` (fase 5).
+4. **Data do DOU e URL oficial da Res. CNE/CP 2/2026:** necessárias para `publicada_em` e `vigente_de`; até lá, a vigência dela e a revogação da 1/2021 saem como "a confirmar" (fase 5).
 
 ## Andamento
 
@@ -667,6 +667,19 @@ Em aberto:
   - revisão humana de uma amostra da classificação, sobretudo das heranças por contexto;
   - o conversor ainda lê e grava `conversao` nos campus JSON gerados de `base-conhecimento/`, e não em `dados/institucional/` (trilha T5);
   - a identificação de curso da `analise-ppc` pode usar o `id` do front matter (hoje ele é só descartado).
+
+**Fase 5 concluída em 13/11/2026** (branch `worktree-agent-aed7a4ecca512e2d8`).
+
+- **Saneamento sem mudar palavras:** LDB (116 cabeçalhos com caput separados, `**` soltos removidos, parágrafos colados separados, capítulo V-A e dois períodos partidos recompostos), Leis 10.639, 11.645, 11.788, 12.711, 14.945 e 15.468 e Res. CONSUP 222/2024 e 242/2025 com `#### Art.` (a 12.711 mantém o rótulo "ARTIGO" do arquivo, para preservar palavras); a NT PROENS 1/2025 é lida por seção. Texto de outra norma alterado vai em citação (`>`); redações não vigentes reproduzidas ao lado da vigente (Lei 11.892, Res. 259/2025) e o "Art. 2º" que não consta da Res. 50/2017 publicada ficam entre comentários HTML; rótulos de parágrafo e inciso em negrito em 13 normas; heading falso "Art. 35-A" da Res. CNE/CP 1/2021 recomposto. Prova: `saneamento.test.ts` compara as palavras das 36 normas com `fcfc006` (36/36 idênticas). Lint da estrutura em `validar_base.ts`.
+- **Parser** (`normas/estrutura.ts`, `remark-parse` 11.0.0 + `remark-gfm` 4.0.1 + `unified` 11.0.5): 4.891 dispositivos (1.281 artigos, 1.188 parágrafos, 2.224 incisos, 191 alíneas, 6 anexos, 1 seção), com caput herdado, notas de redação (379 dispositivos), 19 revogados e 10 vetados, estrutura e linhas. Reconstituição: os segmentos reproduzem o corpo das 36 normas, palavra por palavra (36/36); IDs únicos e no formato (regex ampliada para inciso com letra, item de alínea, `#anexoN-artX` e `#secaoN`); 4 avisos de rótulo repetido no texto publicado (ID pela posição). 100% dos dispositivos citados nas fichas e nos marcos existem (122; o único de stub, `br/cne-cp/res/2025/2#art1`, não tem texto para conferir). Compilação da LDB: dispositivos com o ID do arquivo, deduplicados pelo ato (o integral prevalece).
+- **Datas:** `assinada_em`, `publicada_em`, `vigente_de` e `datas_fonte` nas 36 normas (zod e `manifest.json`); "a confirmar" quando a base não prova a data: publicação de 17 normas e início de vigência de 8, inclusive a Res. CNE/CP 2/2026 (decisão em aberto 4). Três leis conferidas no Planalto (12.711, 13.146, 14.945).
+- **Relações:** `base-conhecimento/relacoes.yaml` com 59 relações (39 `revoga`, 12 `altera`, 1 `regulamenta`, 7 `fundamenta-se-em`), cada uma com evidência literal conferida pelo validador: 32 pares migrados do front matter, 16 propostas do regex confirmadas no texto, 11 manuais; 6 propostas descartadas com motivo (`kb relacoes --propor` fica vazio). O front matter mostra as relações geradas por `gerar_base.ts`. 27 stubs novos como alvos e origens.
+- **Vigência:** `data_referencia` em `base-conhecimento/config/vigencia.yaml`; `status_vigencia` gerado. Igual ao manual em 30 das 35 normas com status calculado (a compilação continua manual); as 5 diferenças vêm de relações confirmadas no texto: LDB e Res. 55/2011, 8/2014 e 276/2026 passam a `parcialmente revogada` e a 259/2025 a `alterada`. Status incerto em 11 normas (`vigencia_a_confirmar`).
+- **Transições como dado:** `base-conhecimento/transicoes.yaml` (arts. 70 a 73 da 2/2026, 62 e 63 da 1/2021, 42 da DCNEM). `marcos-normativos.json` (versão 4) guarda só a identificação (`linha`), `transicao` e `orientacao_analise`; vigente, substituídas, antecessoras e dispositivos revogados são derivados na leitura (`derivarLinha`), com validador, índice e subagents ajustados. A derivação acrescenta a Res. CNE/CP 3/2002 às antecessoras da DCN da EPT.
+- **Correspondência 1/2021 → 2/2026** (rascunho): 168 itens cobrindo os 65 artigos (63 equivalentes, 101 parciais, 4 sem equivalente), com herança pelo ancestral. Q07 e Q23 apontam a tabela e seguem provisórios.
+- **`kb impacto`:** contra os 41 arquivos de conteúdo modificados no `b4aded0` (rodando sobre o conteúdo de `b4aded0^`; os 2 criados no commit ficam fora), a citação estrita teve precisão 1,0 e recall 0,317 (13 de 41); somando o sinal temático da taxonomia das fichas, recall 0,927 e precisão 0,481 (38 de 79). As fichas antigas raramente citavam a 1/2021: a mudança veio das regras materiais.
+- **CLI:** `kb dispositivo`, `vigencia`, `relacoes`, `correspondencia` e `impacto` (`normas/comandos.ts`); API para a fase 6 no README do `packages/kb`.
+- **Pendências humanas:** revisão jurídica da tabela de correspondência; data do DOU da 2/2026 (e as publicações de outras 16 normas); a Lei 14.945/2024 está parafraseada no Markdown e a Lei 12.711/2012 está desatualizada (Lei 14.723/2023 não aplicada); ementas descritivas dos 27 stubs novos; os "Trechos prioritários" da Res. 8/2014 ficam fora do texto normativo.
 
 ## Histórico de revisões
 
