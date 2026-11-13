@@ -11,6 +11,7 @@ import { raizRepositorio, type Registro } from "../normas/registro.ts";
 import { type Citacao, extrairCitacoes, registroPadrao } from "../normas/resolver.ts";
 import { compararTexto } from "../texto.ts";
 import { mascararFrontMatter } from "./front-matter.ts";
+import { textoDaSecao } from "./secoes.ts";
 
 const esquemaItemPpc = z.looseObject({
   id: z.string(),
@@ -27,6 +28,19 @@ export type ItemPpc = z.output<typeof esquemaItemPpc>;
 
 export function caminhoBase(raiz: string = raizRepositorio()): string {
   return path.join(raiz, "base-conhecimento");
+}
+
+/**
+ * Texto integral de uma seção do índice (`secoes/<tipo>.jsonl`): lê o PPC em `caminhoRelativo`
+ * (o `path` da seção, relativo a `base-conhecimento/`) e devolve as linhas `linha_inicio`–`linha_fim`.
+ * O git guarda só preview e linhas; o texto integral vem do próprio Markdown.
+ */
+export function lerTextoSecao(
+  secao: { path: string; linha_inicio: number; linha_fim: number },
+  opcoes: { incluirTitulo?: boolean; raiz?: string } = {},
+): string {
+  const texto = readFileSync(path.join(caminhoBase(opcoes.raiz), secao.path), "utf-8").replace(/\r\n?/g, "\n");
+  return textoDaSecao(texto, secao.linha_inicio, secao.linha_fim, { incluirTitulo: opcoes.incluirTitulo ?? false });
 }
 
 /** Itens de `ppcs/index.json`, ordenados por id. */

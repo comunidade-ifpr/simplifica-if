@@ -1,4 +1,10 @@
-/** Índices globais dos PPCs convertidos para Markdown (index.json e secoes/*.jsonl). */
+/**
+ * Índices globais dos PPCs convertidos para Markdown (index.json e secoes/*.jsonl), versão 2.
+ *
+ * Cada seção traz um preview (500 caracteres do texto limpo), as linhas de início e fim no arquivo
+ * `.md` (contadas com o front matter) e o tipo pela taxonomia do nível do curso (`@simplifica-if/kb/ppcs/secoes`). Cada PPC traz a
+ * proveniência lida do front matter (`@simplifica-if/kb/ppcs/front-matter`).
+ */
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { type CaminhosBase, listarDiretorio, naBase, relativo } from "./caminhos.ts";
@@ -11,145 +17,36 @@ import {
   type ObjetoJson,
   textoDe,
 } from "@simplifica-if/kb/json";
-import type { IndicePpcsJson } from "./tipos-schemas.ts";
+import { analisarPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import {
-  aparar,
-  apararCaracteres,
-  compararTexto,
-  contarCaracteres,
-  dividirLinhas,
-  ESPACOS,
-  lerTexto,
-  ordenarTextos,
-  prefixo,
-} from "@simplifica-if/kb/texto";
+  LIMITE_PREVIEW_SECAO,
+  MINIMO_CARACTERES_SECAO,
+  palavrasDeCampi,
+  previewSecao,
+  segmentarPpc,
+  TAXONOMIAS,
+  taxonomiaDoNivel,
+  TIPOS_NAO_INDEXADOS,
+} from "@simplifica-if/kb/ppcs/secoes";
+import type { IndicePpcsJson, SecaoPpcJson } from "./tipos-schemas.ts";
+import { compararTexto, contarCaracteres, lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
 
-export const LIMITE_PREVIEW_SECAO = 500;
-export const TIPOS_SECAO = new Set([
-  "identificacao",
-  "justificativa",
-  "objetivos",
-  "perfil_egresso",
-  "concepcao_pedagogica",
-  "organizacao_curricular",
-  "matriz_curricular",
-  "ementas",
-  "avaliacao",
-  "estagio_praticas",
-  "infraestrutura",
-  "corpo_docente",
-  "referencias",
-  "outros",
-]);
-export const TIPOS_SECAO_INDEXADOS = ordenarTextos([...TIPOS_SECAO].filter((tipo) => tipo !== "outros"));
+export { limparTexto, limparTitulo, removerAcentos, segmentarPpc, tituloDaLinha } from "@simplifica-if/kb/ppcs/secoes";
 
-const RE_ESPACOS = new RegExp(`[${ESPACOS}]+`, "g");
-const RE_NUMERACAO = new RegExp(`^\\p{Nd}+(?:\\.\\p{Nd}+)*[${ESPACOS}]*[-–.]?[${ESPACOS}]*`, "u");
-const RE_TITULO_MARKDOWN = new RegExp(`^#{2,6}[${ESPACOS}]+([^\\n]+?)[${ESPACOS}]*#*$`);
-const RE_TITULO_NEGRITO = /^\*\*([^\n]+?)\*\*$/;
-const MARCADORES_TITULO_NEGRITO = [
-  "identificacao",
-  "justificativa",
-  "objetivo",
-  "perfil",
-  "organizacao",
-  "matriz",
-  "ementa",
-  "avaliacao",
-  "infraestrutura",
-  "referencia",
-  "projeto pedagogico",
-];
-
-/** Remove acentos (NFKD sem marcas combinantes), como `unicodedata` no Python. */
-export function removerAcentos(texto: string): string {
-  return texto.normalize("NFKD").replace(/\p{Mn}/gu, "");
-}
-
-export function limparTexto(texto: string): string {
-  const limpo = texto
-    .replaceAll("\x00", "")
-    .replace(new RegExp(`<br[${ESPACOS}]*/?>`, "g"), " ")
-    .replace(/[*#>`_]+/g, "")
-    .replace(/\|+/g, " ");
-  return aparar(limpo.replace(RE_ESPACOS, " "));
-}
-
-export function limparTitulo(texto: string): string {
-  const limpo = limparTexto(texto).replace(RE_NUMERACAO, (trecho) => `${aparar(trecho)} `);
-  return apararCaracteres(limpo.replace(RE_ESPACOS, " "), " -");
-}
-
-/** Título de seção reconhecido numa linha do PPC, ou `null`. */
-export function tituloDaLinha(linha: string): string | null {
-  const limpa = aparar(linha);
-  if (!limpa) return null;
-
-  const markdown = RE_TITULO_MARKDOWN.exec(limpa);
-  if (markdown) return limparTitulo(markdown[1]!);
-
-  const negrito = RE_TITULO_NEGRITO.exec(limpa);
-  if (negrito) {
-    const candidato = limparTitulo(negrito[1]!);
-    const normalizado = removerAcentos(candidato).toLowerCase();
-    if (
-      contarCaracteres(candidato) <= 180 &&
-      MARCADORES_TITULO_NEGRITO.some((marcador) => normalizado.includes(marcador))
-    ) {
-      return candidato;
-    }
-  }
-  return null;
-}
-
-export function tipoSecao(titulo: string): string {
-  const n = removerAcentos(titulo).toLowerCase().replace(RE_ESPACOS, " ");
-  const tem = (...termos: string[]) => termos.some((termo) => n.includes(termo));
-
-  if (tem("identificacao", "caracteristicas do curso")) return "identificacao";
-  if (tem("justificativa")) return "justificativa";
-  if (tem("objetivo")) return "objetivos";
-  if (tem("perfil") && tem("egresso", "conclusao", "profissional")) return "perfil_egresso";
-  if (tem("concepcao", "pressupostos pedagogicos", "orientacao metodologica")) return "concepcao_pedagogica";
-  if (tem("organizacao curricular")) return "organizacao_curricular";
-  if (tem("matriz curricular")) return "matriz_curricular";
-  if (tem("ementa")) return "ementas";
-  if (tem("avaliacao")) return "avaliacao";
-  if (tem("estagio", "pratica profissional", "praticas profissionais")) return "estagio_praticas";
-  if (tem("infraestrutura")) return "infraestrutura";
-  if (tem("corpo docente", "pessoal docente", "perfil do pessoal")) return "corpo_docente";
-  if (tem("referencia")) return "referencias";
-  return "outros";
-}
-
-/** Divide o Markdown em pares (título, texto limpo), descartando seções com menos de 40 caracteres. */
-export function dividirSecoes(markdown: string): Array<[string, string]> {
-  const secoes: Array<[string, string]> = [];
-  let tituloAtual: string | null = null;
-  let linhasAtuais: string[] = [];
-  const fechar = () => {
-    if (tituloAtual === null) return;
-    const texto = limparTexto(linhasAtuais.join("\n"));
-    if (contarCaracteres(texto) >= 40) secoes.push([tituloAtual, texto]);
-  };
-
-  for (const linha of dividirLinhas(markdown)) {
-    const titulo = tituloDaLinha(linha);
-    if (titulo) {
-      fechar();
-      tituloAtual = titulo;
-      linhasAtuais = [];
-      continue;
-    }
-    if (tituloAtual !== null) linhasAtuais.push(linha);
-  }
-  fechar();
-  return secoes;
-}
+export const VERSAO_INDICE = 2;
+/** Tipos com arquivo em `secoes/`: todos os das duas taxonomias, menos `pretextual` e `outros`. */
+export const TIPOS_SECAO_INDEXADOS = ordenarTextos(
+  new Set(
+    Object.values(TAXONOMIAS)
+      .flatMap((taxonomia) => taxonomia.tipos.map((definicao) => definicao.tipo))
+      .filter((tipo) => !TIPOS_NAO_INDEXADOS.has(tipo)),
+  ),
+);
 
 /** Item de ppcs/index.json, no formato de schemas/ppcs_index.schema.json. */
 export type ItemPpc = IndicePpcsJson["items"][number];
-export type ItemSecao = Record<string, unknown> & { section_kind: string };
+/** Linha de secoes/<tipo>.jsonl, no formato de schemas/ppcs_secao.schema.json. */
+export type ItemSecao = SecaoPpcJson;
 
 function valorMetadado(ppc: ObjetoJson, chave: string, chaveInterna: string): unknown {
   const metadados = ppc.metadados;
@@ -166,12 +63,14 @@ function textoPreenchido(valor: unknown): string | null {
 /**
  * Item do índice para o PPC convertido `caminhoMarkdown` de um curso, ou
  * `null` se faltar algum campo textual obrigatório no campus JSON.
+ * `markdown` é o texto do PPC, de onde sai a proveniência (front matter).
  */
 export function montarItemPpc(
   campus: ObjetoJson,
   curso: ObjetoJson,
   ppc: ObjetoJson,
   caminhoMarkdown: string,
+  markdown: string,
 ): ItemPpc | null {
   const campusId = textoPreenchido(campus.id);
   const campusNome = textoPreenchido(campus.nome);
@@ -184,6 +83,7 @@ export function montarItemPpc(
   if (!campusId || !campusNome || !cursoSlug || !cursoNome || !nivel || !tipoOferta || !cursoUrl || !fontePdf) {
     return null;
   }
+  const { proveniencia } = analisarPpc(markdown, caminhoMarkdown);
   const item: ItemPpc = {
     id: `${campusId}/${cursoSlug}`,
     campus_id: campusId,
@@ -191,10 +91,18 @@ export function montarItemPpc(
     curso_slug: cursoSlug,
     curso_nome: cursoNome,
     nivel,
+    taxonomia: taxonomiaDoNivel(nivel),
     tipo_oferta: tipoOferta,
     curso_url: cursoUrl,
     fonte_pdf: fontePdf,
     path: caminhoMarkdown,
+    proveniencia: {
+      situacao: proveniencia.proveniencia,
+      fonte_url: proveniencia.fonte_url,
+      fonte_sha256: proveniencia.fonte_sha256,
+      convertido_em: proveniencia.convertido_em,
+      conversor: proveniencia.conversor,
+    },
   };
   const modalidade = textoPreenchido(curso.modalidade);
   if (modalidade) item.modalidade = modalidade;
@@ -229,35 +137,44 @@ export function coletarItensPpc(caminhos: CaminhosBase): ItemPpc[] {
       ) {
         continue;
       }
-      const item = montarItemPpc(campus, curso, ppc, caminhoMarkdown);
+      const markdown = lerTexto(naBase(caminhos, caminhoMarkdown), { ignorarErros: true });
+      const item = montarItemPpc(campus, curso, ppc, caminhoMarkdown, markdown);
       if (item) itens.push(item);
     }
   }
   return itens.sort((a, b) => compararTexto(a.campus_id, b.campus_id) || compararTexto(a.curso_nome, b.curso_nome));
 }
 
+/** Seções indexadas de todos os PPCs, na ordem dos PPCs e, dentro de cada um, na ordem do texto. */
 export function montarItensSecao(caminhos: CaminhosBase, itensPpc: ItemPpc[]): ItemSecao[] {
+  const palavras = palavrasDeCampi(itensPpc.map((item) => item.campus_nome));
   const secoes: ItemSecao[] = [];
   for (const itemPpc of itensPpc) {
     const markdown = lerTexto(naBase(caminhos, itemPpc.path), { ignorarErros: true });
     const contadores = new Map<string, number>();
-    for (const [titulo, texto] of dividirSecoes(markdown)) {
-      let tipo = tipoSecao(titulo);
-      if (!TIPOS_SECAO.has(tipo)) tipo = "outros";
-      if (!TIPOS_SECAO_INDEXADOS.includes(tipo)) continue;
-      const contador = (contadores.get(tipo) ?? 0) + 1;
-      contadores.set(tipo, contador);
-      secoes.push({
-        id: `${itemPpc.id}#${tipo}-${contador}`,
+    for (const secao of segmentarPpc(markdown, itemPpc.taxonomia, palavras)) {
+      if (TIPOS_NAO_INDEXADOS.has(secao.tipo)) continue;
+      if (contarCaracteres(secao.textoLimpo) < MINIMO_CARACTERES_SECAO) continue;
+      const contador = (contadores.get(secao.tipo) ?? 0) + 1;
+      contadores.set(secao.tipo, contador);
+      const item: ItemSecao = {
+        id: `${itemPpc.id}#${secao.tipo}-${contador}`,
         ppc_id: itemPpc.id,
         campus_id: itemPpc.campus_id,
         curso_slug: itemPpc.curso_slug,
         curso_nome: itemPpc.curso_nome,
-        section_kind: tipo,
-        heading: titulo,
+        nivel: itemPpc.nivel,
+        taxonomia: itemPpc.taxonomia,
+        section_kind: secao.tipo as ItemSecao["section_kind"],
+        origem_tipo: secao.origem as ItemSecao["origem_tipo"],
+        heading: secao.titulo,
+        ...(secao.numeracao ? { numeracao: secao.numeracao } : {}),
         path: itemPpc.path,
-        preview: prefixo(texto, LIMITE_PREVIEW_SECAO),
-      });
+        linha_inicio: secao.linhaInicio,
+        linha_fim: secao.linhaFim,
+        preview: previewSecao(secao),
+      };
+      secoes.push(item);
     }
   }
   return secoes;
@@ -274,14 +191,36 @@ export function caminhosSecoes(caminhos: CaminhosBase): IndicePpcsJson["secoes"]
   ) as IndicePpcsJson["secoes"]["paths"];
 }
 
+type TipoPublicado = IndicePpcsJson["secoes"]["taxonomias"]["tecnico"]["tipos"][number]["tipo"];
+
+/** Taxonomias publicadas no índice, para quem consulta saber o que cada tipo cobre. */
+export function taxonomiasPublicadas(): IndicePpcsJson["secoes"]["taxonomias"] {
+  const publicar = (nome: keyof typeof TAXONOMIAS) => ({
+    descricao: TAXONOMIAS[nome].descricao,
+    niveis: TAXONOMIAS[nome].niveis,
+    tipos: TAXONOMIAS[nome].tipos.map((definicao) => ({
+      tipo: definicao.tipo as TipoPublicado,
+      rotulo: definicao.rotulo,
+      indexado: !TIPOS_NAO_INDEXADOS.has(definicao.tipo),
+      ...(definicao.art28 ? { art28: definicao.art28 } : {}),
+    })),
+  });
+  return { tecnico: publicar("tecnico"), geral: publicar("geral") };
+}
+
 export function montarIndice(caminhos: CaminhosBase, itens: ItemPpc[], atualizadoEm: string): IndicePpcsJson {
   return {
     title: "Projetos Pedagógicos de Curso do IFPR",
     tipo: "indice_ppcs",
-    versao: 1,
+    versao: VERSAO_INDICE,
     atualizado_em: atualizadoEm,
     total_itens: itens.length,
-    secoes: { preview_limite: LIMITE_PREVIEW_SECAO, paths: caminhosSecoes(caminhos) },
+    secoes: {
+      preview_limite: LIMITE_PREVIEW_SECAO,
+      minimo_caracteres: MINIMO_CARACTERES_SECAO,
+      paths: caminhosSecoes(caminhos),
+      taxonomias: taxonomiasPublicadas(),
+    },
     items: itens,
   };
 }

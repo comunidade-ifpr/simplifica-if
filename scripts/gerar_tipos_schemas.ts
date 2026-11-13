@@ -28,6 +28,7 @@ const NOMES_TIPOS: Record<string, string> = {
   institucional_manifest: "ManifestInstitucionalJson",
   ppcps_index: "IndicePpcpsJson",
   ppcs_index: "IndicePpcsJson",
+  ppcs_secao: "SecaoPpcJson",
   processo_seletivo: "ProcessoSeletivoJson",
   processos_seletivos_index: "IndiceProcessosSeletivosJson",
 };

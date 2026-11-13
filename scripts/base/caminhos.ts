@@ -48,6 +48,7 @@ export function criarCaminhos(raizProjeto: string = RAIZ_PROJETO) {
       indiceCnct: schema("cnct_index"),
       cursoCnct: schema("cnct_curso"),
       indicePpcs: schema("ppcs_index"),
+      secaoPpc: schema("ppcs_secao"),
       indicePpcps: schema("ppcps_index"),
     },
     manifest: path.join(raiz, "manifest.json"),
