@@ -5,7 +5,7 @@
  * no Marco 1, a API HTTP do app chamam `responder` diretamente.
  */
 import type { Database } from "bun:sqlite";
-import type { ToolAnnotations } from "@modelcontextprotocol/sdk/types.js";
+import type { ToolAnnotations } from "@modelcontextprotocol/server";
 import { z } from "zod";
 import type { MetaBase } from "../banco.ts";
 import { type Base, ErroEntrada, esquemaResposta, type Resposta } from "../envelope.ts";

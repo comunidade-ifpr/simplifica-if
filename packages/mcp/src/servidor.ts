@@ -3,12 +3,13 @@
  * para leitura. Cada chamada devolve `structuredContent` (a `Resposta`, validada pelo
  * `outputSchema`) e `content` (o texto Markdown para a IA).
  *
- * O SDK 1.32 aceita schemas do zod 4 em `registerTool`, converte-os para JSON Schema na listagem e
- * valida entrada e saída; entrada inválida volta como resultado `isError` com o caminho do campo.
+ * O SDK 2.x recebe os schemas do zod 4 como Standard Schema em `registerTool`, converte-os para JSON
+ * Schema (2020-12) na listagem pelo próprio zod e valida entrada e saída; entrada inválida volta como
+ * resultado `isError` com o caminho do campo.
  */
 import { realpathSync, statSync } from "node:fs";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { McpServer } from "@modelcontextprotocol/server";
+import { type StdioServerHandle, serveStdio } from "@modelcontextprotocol/server/stdio";
 import { z } from "zod";
 // Import de texto: o conteúdo vai embutido no bundle, e o binário compilado não precisa do arquivo.
 import instrucoes from "../instrucoes.md" with { type: "text" };
@@ -71,10 +72,13 @@ export function criarServidor(ctx: Contexto, ferramentas: readonly Ferramenta[] 
   return servidor;
 }
 
-/** Abre o banco, cria o servidor e o conecta ao stdin/stdout do processo. */
-export async function iniciarStdio(opcoes: OpcoesServidor): Promise<{ servidor: McpServer; ctx: Contexto }> {
+/**
+ * Abre o banco e serve o MCP pelo stdin/stdout do processo. `serveStdio` decide a era na primeira
+ * mensagem: `initialize` (clientes da revisão 2025-11-25 e anteriores) ou `server/discover` e
+ * requisições com envelope `_meta` (revisão 2026-07-28); a fábrica cria o servidor da conexão.
+ */
+export async function iniciarStdio(opcoes: OpcoesServidor): Promise<{ conexao: StdioServerHandle; ctx: Contexto }> {
   const ctx = criarContexto(opcoes);
-  const servidor = criarServidor(ctx);
-  await servidor.connect(new StdioServerTransport());
-  return { servidor, ctx };
+  const conexao = serveStdio(() => criarServidor(ctx));
+  return { conexao, ctx };
 }

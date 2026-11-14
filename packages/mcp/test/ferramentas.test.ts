@@ -5,8 +5,7 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
+import { Client, InMemoryTransport } from "@modelcontextprotocol/client";
 import { z } from "zod";
 import { ErroEntrada } from "../src/envelope.ts";
 import { FERRAMENTAS } from "../src/ferramentas/index.ts";
@@ -194,10 +193,10 @@ describe("pelo protocolo MCP (em memória)", () => {
     const r = await cliente.callTool({ name: "etapa", arguments: { progresso: { feito: 1, total: 0 } } });
     expect(r.isError).toBe(true);
     const texto = (r.content as { text: string }[])[0]!.text;
+    // SDK 2.x: "Input validation error: Invalid arguments for tool etapa: id: <mensagem>, progresso.total: …"
     expect(texto).toContain("Invalid arguments for tool etapa");
-    expect(texto).toContain("Entrada inválida: esperava um texto");
-    expect(texto).toContain("at id");
-    expect(texto).toContain("at progresso.total");
+    expect(texto).toContain("id: Entrada inválida: esperava um texto");
+    expect(texto).toContain("progresso.total: ");
     await cliente.close();
     await servidor.close();
   });

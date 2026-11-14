@@ -5,8 +5,8 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { copyFileSync } from "node:fs";
 import path from "node:path";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
+import { Client } from "@modelcontextprotocol/client";
 import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
 import { MENSAGEM_INCOMPATIVEL } from "../src/banco.ts";
 import { INSTRUCOES } from "../src/servidor.ts";
@@ -21,7 +21,10 @@ function ambiente(extra: Record<string, string> = {}): Record<string, string> {
   return { PATH: process.env.PATH ?? "", HOME: process.env.HOME ?? "", ...extra };
 }
 
-async function conectar(args: string[], opcoes: { cwd: string; env?: Record<string, string> }) {
+async function conectar(
+  args: string[],
+  opcoes: { cwd: string; env?: Record<string, string>; negociacao?: "legacy" | "auto" },
+) {
   const transporte = new StdioClientTransport({
     command: process.execPath,
     args: ["run", CLI, ...args],
@@ -29,7 +32,10 @@ async function conectar(args: string[], opcoes: { cwd: string; env?: Record<stri
     env: opcoes.env ?? ambiente(),
     stderr: "pipe",
   });
-  const cliente = new Client({ name: "teste-stdio", version: "0" });
+  const cliente = new Client(
+    { name: "teste-stdio", version: "0" },
+    { versionNegotiation: { mode: opcoes.negociacao ?? "legacy" } },
+  );
   await cliente.connect(transporte);
   return cliente;
 }
@@ -79,6 +85,29 @@ describe("servidor em stdio", () => {
     } finally {
       await cliente.close();
     }
+  });
+
+  test("atende as duas eras do protocolo com a mesma resposta", async () => {
+    const banco = criarBancoFixture();
+    const respostas: unknown[] = [];
+    for (const [negociacao, era] of [
+      ["legacy", "legacy"],
+      ["auto", "modern"],
+    ] as const) {
+      const cliente = await conectar(["--banco", banco], { cwd: diretorioTemporario(), negociacao });
+      try {
+        expect(cliente.getProtocolEra()).toBe(era);
+        expect(cliente.getInstructions()).toBe(INSTRUCOES);
+        const { tools } = await cliente.listTools();
+        expect(tools.map((t) => t.name)).toEqual(["sobre_a_base", "etapa"]);
+        const r = await cliente.callTool({ name: "sobre_a_base", arguments: {} });
+        expect(r.isError).toBeFalsy();
+        respostas.push({ structuredContent: r.structuredContent, content: r.content, tools });
+      } finally {
+        await cliente.close();
+      }
+    }
+    expect(respostas[1]).toEqual(respostas[0]);
   });
 
   test("aceita o banco por SIMPLIFICA_KB e expande ~/", async () => {

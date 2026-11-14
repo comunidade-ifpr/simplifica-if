@@ -18,12 +18,13 @@
     "format:check": "bun fmt --check src test"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "1.32.2",
+    "@modelcontextprotocol/server": "2.4.0",
     "@simplifica-if/kb": "workspace:*",
     "commander": "15.1.0",
     "zod": "4.6.7"
   },
   "devDependencies": {
+    "@modelcontextprotocol/client": "2.4.0",
     "@types/bun": "^1.4.4",
     "typescript": "^7.0.2"
   }
