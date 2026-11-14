@@ -378,20 +378,20 @@ const makeArquivos = Effect.fn("FontesNormativas.layerArquivos")(function* (raiz
     if (!(yield* fs.exists(base).pipe(Effect.mapError(naoLe)))) return [];
     const saida: string[] = [];
     // percorre em ordem de nome, como `arquivosConteudoSkills` (recursão manual para pular diretórios)
-    const visitar = (dir: string): Effect.Effect<void, FalhaNasFontes> =>
-      Effect.gen(function* () {
-        const nomes = [...(yield* fs.readDirectory(dir).pipe(Effect.mapError(naoLe)))].sort();
-        for (const nome of nomes) {
-          const caminho = path.join(dir, nome);
-          const info = yield* fs.stat(caminho).pipe(Effect.mapError(naoLe));
-          if (info.type === "Directory") {
-            if (!IGNORAR_SKILLS.has(nome)) yield* visitar(caminho);
-            continue;
-          }
-          if (!/\.(json|md|yaml|yml)$/.test(nome) || /^README/i.test(nome) || GERADOS_SKILLS.has(nome)) continue;
-          saida.push(path.relative(raizConteudo, caminho).split(path.sep).join("/"));
+    // recursão por diretório, dentro da mesma operação (sem span próprio por diretório)
+    const visitar: (dir: string) => Effect.Effect<void, FalhaNasFontes> = Effect.fnUntraced(function* (dir: string) {
+      const nomes = [...(yield* fs.readDirectory(dir).pipe(Effect.mapError(naoLe)))].sort();
+      for (const nome of nomes) {
+        const caminho = path.join(dir, nome);
+        const info = yield* fs.stat(caminho).pipe(Effect.mapError(naoLe));
+        if (info.type === "Directory") {
+          if (!IGNORAR_SKILLS.has(nome)) yield* visitar(caminho);
+          continue;
         }
-      });
+        if (!/\.(json|md|yaml|yml)$/.test(nome) || /^README/i.test(nome) || GERADOS_SKILLS.has(nome)) continue;
+        saida.push(path.relative(raizConteudo, caminho).split(path.sep).join("/"));
+      }
+    });
     yield* visitar(base);
     return saida;
   });

@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- parser das normas sobre os arquivos do checkout, síncrono (compilação do banco e scripts)
 /**
  * Parser de dispositivos das normas (fase 5): Markdown → mdast (`remark-parse` + `remark-gfm`) →
  * artigos, parágrafos, incisos, alíneas, itens, anexos e seções, com ID canônico, caput herdado,
@@ -31,8 +32,8 @@
  * fecho, notas editoriais) na ordem do arquivo; as palavras dos segmentos concatenados são as
  * palavras do arquivo (`palavrasMarkdown`). O teste `estrutura.test.ts` confere isso nas 36 normas.
  */
-import { readdirSync, readFileSync, statSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import type { Heading, List, ListItem, Nodes, Paragraph, RootContent } from "mdast";
 import { analisarFrontMatter } from "./front-matter.ts";
 import { idDoAto, varianteDoId } from "./ids.ts";
@@ -756,9 +757,9 @@ export interface ArquivoNorma {
 
 function listarMd(diretorio: string): string[] {
   const saida: string[] = [];
-  for (const nome of readdirSync(diretorio)) {
-    const caminho = path.join(diretorio, nome);
-    if (statSync(caminho).isDirectory()) saida.push(...listarMd(caminho));
+  for (const nome of NodeFS.readdirSync(diretorio)) {
+    const caminho = NodePath.join(diretorio, nome);
+    if (NodeFS.statSync(caminho).isDirectory()) saida.push(...listarMd(caminho));
     else if (nome.endsWith(".md")) saida.push(caminho);
   }
   return saida;
@@ -766,11 +767,11 @@ function listarMd(diretorio: string): string[] {
 
 /** Normas da base (Markdown em `base-conhecimento/normas/`), por ordem de caminho. */
 export function listarNormas(raiz: string = raizRepositorio()): ArquivoNorma[] {
-  const base = path.join(raiz, "base-conhecimento");
-  return listarMd(path.join(base, "normas"))
+  const base = NodePath.join(raiz, "base-conhecimento");
+  return listarMd(NodePath.join(base, "normas"))
     .map((arquivo) => {
-      const relativo = path.relative(base, arquivo).split(path.sep).join("/");
-      const { meta } = analisarFrontMatter(readFileSync(arquivo, "utf-8"), relativo);
+      const relativo = NodePath.relative(base, arquivo).split(NodePath.sep).join("/");
+      const { meta } = analisarFrontMatter(NodeFS.readFileSync(arquivo, "utf-8"), relativo);
       return { id: String(meta.id), path: relativo, arquivo };
     })
     .sort((a, b) => compararTexto(a.path, b.path));
@@ -783,7 +784,7 @@ export function carregarEstruturas(raiz: string = raizRepositorio()): EstruturaN
   const emCache = cacheEstruturas.get(raiz);
   if (emCache) return emCache;
   const estruturas = listarNormas(raiz).map((norma) =>
-    analisarNorma(readFileSync(norma.arquivo, "utf-8"), { id: norma.id, path: norma.path }),
+    analisarNorma(NodeFS.readFileSync(norma.arquivo, "utf-8"), { id: norma.id, path: norma.path }),
   );
   cacheEstruturas.set(raiz, estruturas);
   return estruturas;

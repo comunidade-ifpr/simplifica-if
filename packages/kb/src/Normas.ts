@@ -166,9 +166,9 @@ const make = Effect.gen(function* () {
   }, prover);
 
   return Normas.of({
-    resolver: Effect.fn("Normas.resolver")(function* (texto: string) {
-      return resolucaoComEntrada(texto, fontes.registro);
-    }),
+    resolver: Effect.fn("Normas.resolver")((texto: string) =>
+      Effect.succeed(resolucaoComEntrada(texto, fontes.registro)),
+    ),
     buscar: Effect.fn("Normas.buscar")(function* (consulta: string, opcoes: OpcoesBuscaNorma = {}) {
       return yield* buscarNormaDetalhada(consulta, opcoes);
     }, prover),
@@ -185,28 +185,30 @@ const make = Effect.gen(function* () {
     descendentes: Effect.fn("Normas.descendentes")(function* (id: string) {
       return yield* descendentes(id);
     }, prover),
-    vigencia: Effect.fn("Normas.vigencia")(function* (id: string, opcoes: { readonly em?: string } = {}) {
-      const quando = opcoes.em ?? fontes.dataReferencia;
-      return {
-        ...statusEm(ato(id), quando, fontes.vigencia),
-        transicoes: transicoesAplicaveis(ato(id), quando, fontes.vigencia),
-      };
-    }),
-    relacoes: Effect.fn("Normas.relacoes")(function* (id: string) {
-      return { id: ato(id), ...relacoesDeEm(ato(id), fontes.relacoes) };
-    }),
-    sucessoras: Effect.fn("Normas.sucessoras")(function* (id: string) {
-      return sucessorasDe(ato(id), fontes.relacoes);
-    }),
+    vigencia: Effect.fn("Normas.vigencia")((id: string, opcoes: { readonly em?: string } = {}) =>
+      Effect.sync(() => {
+        const quando = opcoes.em ?? fontes.dataReferencia;
+        return {
+          ...statusEm(ato(id), quando, fontes.vigencia),
+          transicoes: transicoesAplicaveis(ato(id), quando, fontes.vigencia),
+        };
+      }),
+    ),
+    relacoes: Effect.fn("Normas.relacoes")((id: string) =>
+      Effect.sync(() => ({ id: ato(id), ...relacoesDeEm(ato(id), fontes.relacoes) })),
+    ),
+    sucessoras: Effect.fn("Normas.sucessoras")((id: string) =>
+      Effect.sync(() => sucessorasDe(ato(id), fontes.relacoes)),
+    ),
     trecho: Effect.fn("Normas.trecho")(function* (id: string, opcoes: { readonly subordinados?: boolean } = {}) {
       return (yield* trechoDoDispositivo(id, opcoes)) ?? null;
     }, prover),
-    tabelasDeCorrespondencia: Effect.fn("Normas.tabelasDeCorrespondencia")(function* (ato: string) {
-      return fonteCorrespondencia.tabelas(ato);
-    }, prover),
-    correspondencia: Effect.fn("Normas.correspondencia")(function* (id: string) {
-      return correspondenciaEm(id, fonteCorrespondencia);
-    }, prover),
+    tabelasDeCorrespondencia: Effect.fn("Normas.tabelasDeCorrespondencia")((ato: string) =>
+      Effect.sync(() => fonteCorrespondencia.tabelas(ato)),
+    ),
+    correspondencia: Effect.fn("Normas.correspondencia")((id: string) =>
+      Effect.sync(() => correspondenciaEm(id, fonteCorrespondencia)),
+    ),
     dataReferencia: Effect.succeed(fontes.dataReferencia),
   });
 });

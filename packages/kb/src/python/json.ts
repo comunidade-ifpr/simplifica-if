@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- leitura síncrona de JSON com a semântica do pipeline Python antigo, usada pelos scripts e skills
 /**
  * Leitura e escrita de JSON como o módulo `json` do Python.
  *
@@ -7,7 +8,7 @@
  * - `dumpsPy` reproduz `json.dumps(..., ensure_ascii=False)` com `indent`,
  *   `separators` e `sort_keys` (ordenação por code point).
  */
-import { readFileSync } from "node:fs";
+import * as NodeFS from "node:fs";
 import { compararTexto, lerTexto } from "../texto.ts";
 import { chavesPy, ehObjetoPy, FloatPy, ORDEM_CHAVES, type ObjetoPy, reprFloat } from "./valores.ts";
 
@@ -189,7 +190,7 @@ export function carregarJsonPy(caminho: string): unknown {
 
 /** Lê o JSON sem normalizar quebras de linha (equivale a `json.loads(path.read_bytes())`). */
 export function carregarJsonBytesPy(caminho: string): unknown {
-  return loadsPy(new TextDecoder("utf-8", { fatal: true }).decode(readFileSync(caminho)));
+  return loadsPy(new TextDecoder("utf-8", { fatal: true }).decode(NodeFS.readFileSync(caminho)));
 }
 
 const ESCAPES: Record<string, string> = {
