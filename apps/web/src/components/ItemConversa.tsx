@@ -5,6 +5,7 @@
 import { CheckIcon, CircleAlertIcon, InfoIcon, ShieldQuestionIcon, XIcon } from "lucide-react";
 import { useConversa } from "../contexto.tsx";
 import { type Item, rotuloFerramenta } from "../conversa/estado.ts";
+import { AvisoErro } from "./AvisoErro.tsx";
 import { Markdown } from "./Markdown.tsx";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert.tsx";
 import { Button } from "./ui/button.tsx";
@@ -87,10 +88,10 @@ export function ItemConversa({
       return <Aprovacao item={item} />;
     case "aviso":
       return item.gravidade === "erro" ? (
-        <Alert variant="error">
-          <CircleAlertIcon />
-          <AlertDescription>{item.texto}</AlertDescription>
-        </Alert>
+        <AvisoErro
+          icone
+          erro={{ texto: item.texto, ...(item.detalhe === undefined ? {} : { detalhe: item.detalhe }) }}
+        />
       ) : (
         <p className="flex items-center gap-2 text-muted-foreground text-sm">
           <InfoIcon className="size-4" /> {item.texto}

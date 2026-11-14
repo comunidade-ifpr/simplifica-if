@@ -9,7 +9,7 @@
  */
 import type { Decisao, Provider } from "@simplifica-if/contratos-app";
 import type { Acompanhamento, Api } from "../conexao/api.ts";
-import { mensagemDeErro } from "../conexao/erros.ts";
+import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { type Acao, type EstadoConversa, estadoInicial, type FaseConversa, reduzir } from "./estado.ts";
 
 export class ControleConversa {
@@ -50,7 +50,7 @@ export class ControleConversa {
     const { provider, pastaTrabalho } = this.estado;
     const pasta = pastaTrabalho.trim();
     if (pasta.length === 0) {
-      this.despachar({ tipo: "naoIniciou", erro: "Escolha a pasta de trabalho da conversa." });
+      this.despachar({ tipo: "naoIniciou", erro: { texto: "Escolha a pasta de trabalho da conversa." } });
       return;
     }
     this.despachar({ tipo: "iniciando" });
@@ -65,7 +65,7 @@ export class ControleConversa {
       }
       this.despachar({ tipo: "iniciada", sessao });
     } catch (erro) {
-      this.despachar({ tipo: "naoIniciou", erro: mensagemDeErro(erro) });
+      this.despachar({ tipo: "naoIniciou", erro: explicarErro(erro) });
     }
   }
 
@@ -94,7 +94,7 @@ export class ControleConversa {
       (erro: unknown) => {
         if (this.turno !== turno) return;
         this.turno = undefined;
-        this.despachar({ tipo: "turnoFalhou", erro: mensagemDeErroDoTurno(erro) });
+        this.despachar({ tipo: "turnoFalhou", erro: explicarFalhaDoTurno(erro) });
       },
     );
   }
@@ -107,7 +107,7 @@ export class ControleConversa {
       await this.api.chamar((cliente) => cliente["conversa.responderAprovacao"]({ sessao, aprovacao, decisao }));
       this.despachar({ tipo: "respondida", aprovacao, decisao });
     } catch (erro) {
-      this.despachar({ tipo: "respostaFalhou", aprovacao, erro: mensagemDeErro(erro) });
+      this.despachar({ tipo: "respostaFalhou", aprovacao, erro: explicarErro(erro) });
     }
   }
 
@@ -119,7 +119,7 @@ export class ControleConversa {
     try {
       await this.api.chamar((cliente) => cliente["conversa.interromper"]({ sessao }));
     } catch (erro) {
-      this.despachar({ tipo: "aviso", texto: mensagemDeErro(erro), gravidade: "erro" });
+      this.despachar({ tipo: "aviso", erro: explicarErro(erro) });
     }
   }
 
@@ -141,9 +141,12 @@ export class ControleConversa {
   }
 }
 
-function mensagemDeErroDoTurno(erro: unknown): string {
+function explicarFalhaDoTurno(erro: unknown): MensagemErro {
   if (typeof erro === "object" && erro !== null && (erro as { _tag?: unknown })._tag === "RpcClientError") {
-    return "A conexão com o servidor local caiu durante a resposta, e o restante dela se perdeu. Envie a mensagem de novo quando a conexão voltar.";
+    return {
+      texto:
+        "A conexão com o servidor local caiu durante a resposta, e o restante dela se perdeu. Envie a mensagem de novo quando a conexão voltar.",
+    };
   }
-  return mensagemDeErro(erro);
+  return explicarErro(erro);
 }

@@ -84,7 +84,7 @@ describe("reduzir: ferramentas, aprovações e avisos", () => {
       {
         tipo: "respostaFalhou",
         aprovacao: "a1",
-        erro: "Caiu.",
+        erro: { texto: "Caiu." },
       },
     );
     assert.deepInclude(falhou.itens[1], { situacao: "pendente" });
@@ -99,6 +99,12 @@ describe("reduzir: ferramentas, aprovações e avisos", () => {
       { tipo: "interrompendo" },
     );
     assert.strictEqual(estado.fase, "interrompendo");
+    assert.deepStrictEqual(estado.itens.at(-1), {
+      tipo: "aviso",
+      chave: "i2",
+      texto: "Limite de uso.",
+      gravidade: "erro",
+    });
     assert.deepStrictEqual(estado.uso, { entrada: 10, saida: 2, custoUsd: 0.01 });
     const fim = reduzir(estado, evento({ _tag: "FimTurno", motivo: "interrupted" }));
     assert.deepInclude(fim.itens.at(-1), { tipo: "aviso", texto: "Resposta interrompida.", gravidade: "info" });
@@ -106,14 +112,23 @@ describe("reduzir: ferramentas, aprovações e avisos", () => {
     assert.isFalse(foiInterrompido("end_turn"));
   });
 
+  it("o erro do provider no turno sai em português, com o original nos detalhes técnicos", () => {
+    const estado = aplicar(respondendo(), evento({ _tag: "Erro", mensagem: "Not logged in · Please run /login" }));
+    assert.deepInclude(estado.itens.at(-1), {
+      tipo: "aviso",
+      texto: "O ChatGPT (Codex) está sem login. Entre na conta pela tela Início e tente de novo.",
+      detalhe: "Not logged in · Please run /login",
+    });
+  });
+
   it("o turno que cai fecha o que ficou aberto e mostra o erro", () => {
     const estado = aplicar(respondendo(), evento({ _tag: "TextoParcial", texto: "Meio" }), {
       tipo: "turnoFalhou",
-      erro: "A conexão caiu.",
+      erro: { texto: "A conexão caiu.", detalhe: "socket fechado" },
     });
     assert.strictEqual(estado.fase, "pronta");
     assert.deepInclude(estado.itens[1], { final: true });
-    assert.deepInclude(estado.itens.at(-1), { tipo: "aviso", texto: "A conexão caiu." });
+    assert.deepInclude(estado.itens.at(-1), { tipo: "aviso", texto: "A conexão caiu.", detalhe: "socket fechado" });
   });
 });
 
@@ -125,10 +140,14 @@ describe("reduzir: sessão", () => {
       { tipo: "iniciando" },
       {
         tipo: "naoIniciou",
-        erro: "Pasta inválida.",
+        erro: { texto: "Pasta inválida." },
       },
     );
-    assert.deepInclude(erro, { fase: "configurando", provider: "antigravity", erroInicio: "Pasta inválida." });
+    assert.deepInclude(erro, {
+      fase: "configurando",
+      provider: "antigravity",
+      erroInicio: { texto: "Pasta inválida." },
+    });
     const nova = reduzir(respondendo(), { tipo: "nova" });
     assert.deepStrictEqual(nova, estadoInicial("codex", "/pasta"));
   });

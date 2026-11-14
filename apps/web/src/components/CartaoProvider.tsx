@@ -7,7 +7,7 @@ import type { EstadoInstalacao, EstadoLogin, EstadoProvider, Provider } from "@s
 import { CheckCircle2Icon, CircleAlertIcon, CircleDashedIcon, ExternalLinkIcon, RefreshCwIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Api } from "../conexao/api.ts";
-import { mensagemDeErro } from "../conexao/erros.ts";
+import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
 import { abrirExterno } from "../ponte-desktop.ts";
 import {
@@ -21,6 +21,7 @@ import {
   textoFaseInstalacao,
   textoFaseLogin,
 } from "../providers.ts";
+import { AvisoErro } from "./AvisoErro.tsx";
 import { Alert, AlertDescription } from "./ui/alert.tsx";
 import { Badge } from "./ui/badge.tsx";
 import { Button } from "./ui/button.tsx";
@@ -29,7 +30,7 @@ import { Spinner } from "./ui/spinner.tsx";
 type Deteccao =
   | { readonly fase: "detectando" }
   | { readonly fase: "detectado"; readonly estado: EstadoProvider }
-  | { readonly fase: "falhou"; readonly erro: string };
+  | { readonly fase: "falhou"; readonly erro: MensagemErro };
 
 /** A detecção do provider, com o erro já em texto. */
 function detectar(api: Api, provider: Provider): Promise<Deteccao> {
@@ -37,7 +38,7 @@ function detectar(api: Api, provider: Provider): Promise<Deteccao> {
     .chamar((cliente) => cliente["providers.detectar"]({ provider }))
     .then(
       (estado): Deteccao => ({ fase: "detectado", estado }),
-      (falha: unknown): Deteccao => ({ fase: "falhou", erro: mensagemDeErro(falha) }),
+      (falha: unknown): Deteccao => ({ fase: "falhou", erro: explicarErro(falha) }),
     );
 }
 
@@ -116,7 +117,7 @@ export function CartaoProvider({ provider }: { readonly provider: Provider }) {
   const [deteccao, setDeteccao] = useState<Deteccao>({ fase: "detectando" });
   const [instalacao, setInstalacao] = useState<EstadoInstalacao | undefined>();
   const [login, setLogin] = useState<EstadoLogin | undefined>();
-  const [erro, setErro] = useState<string | undefined>();
+  const [erro, setErro] = useState<MensagemErro | undefined>();
 
   useEffect(() => {
     let vivo = true;
@@ -137,7 +138,7 @@ export function CartaoProvider({ provider }: { readonly provider: Provider }) {
     const acompanhamento = api.acompanhar((cliente) => cliente["providers.instalar"]({ provider }), setInstalacao);
     acompanhamento.fim.then(detectarDeNovo, (falha: unknown) => {
       setInstalacao(undefined);
-      setErro(mensagemDeErro(falha));
+      setErro(explicarErro(falha));
     });
   };
 
@@ -158,7 +159,7 @@ export function CartaoProvider({ provider }: { readonly provider: Provider }) {
     );
     acompanhamento.fim.then(detectarDeNovo, (falha: unknown) => {
       setLogin(undefined);
-      setErro(mensagemDeErro(falha));
+      setErro(explicarErro(falha));
     });
   };
 
@@ -194,9 +195,7 @@ export function CartaoProvider({ provider }: { readonly provider: Provider }) {
           <Spinner size="sm" /> Detectando…
         </p>
       ) : deteccao.fase === "falhou" ? (
-        <Alert variant="error">
-          <AlertDescription>{deteccao.erro}</AlertDescription>
-        </Alert>
+        <AvisoErro erro={deteccao.erro} />
       ) : (
         <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
           <dt className="text-muted-foreground">Instalação</dt>
@@ -250,11 +249,7 @@ export function CartaoProvider({ provider }: { readonly provider: Provider }) {
 
       {instalacao === undefined ? null : <BarraProgresso estado={instalacao} />}
       {login === undefined ? null : <PassoLogin estado={login} />}
-      {erro === undefined ? null : (
-        <Alert variant="error">
-          <AlertDescription>{erro}</AlertDescription>
-        </Alert>
-      )}
+      {erro === undefined ? null : <AvisoErro erro={erro} />}
 
       {estado === undefined ? null : (
         <footer className="mt-auto flex flex-col gap-2">

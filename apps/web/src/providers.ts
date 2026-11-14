@@ -36,7 +36,8 @@ const ORIENTACOES: Readonly<Record<Provider, Partial<Record<"instalar" | "entrar
       comando: "claude",
     },
     entrar: {
-      texto: "O app ainda não faz o login do Claude. Entre na conta com o comando abaixo no Terminal e depois detecte de novo.",
+      texto:
+        "O app ainda não faz o login do Claude. Entre na conta com o comando abaixo no Terminal e depois detecte de novo.",
       comando: "claude",
     },
   },

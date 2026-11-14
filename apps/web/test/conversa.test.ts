@@ -53,11 +53,11 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
 
       // Sem pasta, não inicia.
       yield* Effect.promise(() => conversa.iniciar());
-      assert.strictEqual(conversa.obter().erroInicio, "Escolha a pasta de trabalho da conversa.");
+      assert.deepStrictEqual(conversa.obter().erroInicio, { texto: "Escolha a pasta de trabalho da conversa." });
       // Pasta que não existe: o erro do servidor, em português.
       conversa.escolher({ provider: "claude", pastaTrabalho: `${pasta}/nao-existe` });
       yield* Effect.promise(() => conversa.iniciar());
-      assert.match(conversa.obter().erroInicio ?? "", /^A pasta de trabalho precisa ser o caminho absoluto/);
+      assert.match(conversa.obter().erroInicio?.texto ?? "", /^A pasta de trabalho precisa ser o caminho absoluto/);
 
       conversa.escolher({ pastaTrabalho: pasta });
       yield* Effect.promise(() => conversa.iniciar());

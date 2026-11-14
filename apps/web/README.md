@@ -73,6 +73,6 @@ Os componentes de `src/components/ui` (button, badge, input, textarea, alert, se
 - **Etapas da skill e "detalhes técnicos" (M1.9):** as ferramentas aparecem todas como etapas, sem agrupamento.
 - **Leitor completo (M1.6):** o painel mostra só o Markdown do `lerLink`; links `ifpr://` soltos no texto, fora da sintaxe de link do Markdown, não viram botão.
 - **Login do Claude e do Codex, instalação do Claude (M1.8):** o motor só oferece `entrar` no Antigravity e `instalar` no Codex e no Antigravity. Nos outros, a Início mostra uma orientação provisória para o Terminal; o passo guiado é do M1.8.
-- **Erros dos providers em português (M1.14):** os erros tipados do servidor chegam em português; o `detalhe` de uma `FalhaProvider` pode vir em inglês.
+- **Erros dos providers em português (M1.14):** `src/conexao/erros.ts` traduz as falhas conhecidas (sem login, CLI ausente, MCP que não subiu, modelo fora da conta, tempo esgotado) pela `operacao`, pelo provider e por padrões do detalhe, e as outras viram "não conseguiu <operação>"; o texto original fica em "Detalhes técnicos", recolhido. Falta a tradução completa por tipo de erro, com os erros reais de cada CLI catalogados.
 - **Ícone e identidade final:** sem ícone; o nome e as cores seguem a skill `ifpr-design`.
 - **knip:** a tabela da stack prevê o knip, que o repositório ainda não usa.
