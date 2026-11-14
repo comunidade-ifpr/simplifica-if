@@ -2,15 +2,38 @@
  * A moldura das telas: o cabeçalho com o nome do app, a navegação, o estado da conexão e o tema; o
  * aviso de conexão; e a tela da rota.
  */
-import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { createRootRoute, type ErrorComponentProps, Link, Outlet } from "@tanstack/react-router";
 import { AvisoConexao } from "../components/AvisoConexao.tsx";
 import { IndicadorConexao } from "../components/IndicadorConexao.tsx";
 import { SeletorTema } from "../components/SeletorTema.tsx";
+import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx";
+import { Button } from "../components/ui/button.tsx";
+import { mensagemDeErro } from "../conexao/erros.ts";
 
 export const Route = createRootRoute({
   component: Moldura,
   notFoundComponent: () => <p className="p-6">Página não encontrada.</p>,
+  // O padrão do roteador é em inglês.
+  errorComponent: ErroDaTela,
 });
+
+function ErroDaTela({ error, reset }: ErrorComponentProps) {
+  return (
+    <div className="p-6">
+      <Alert variant="error">
+        <AlertTitle>Algo deu errado nesta tela</AlertTitle>
+        <AlertDescription>
+          <p>{mensagemDeErro(error)}</p>
+          <div>
+            <Button size="sm" variant="outline" onClick={reset}>
+              Tentar de novo
+            </Button>
+          </div>
+        </AlertDescription>
+      </Alert>
+    </div>
+  );
+}
 
 const classeAba =
   "rounded-md px-3 py-1.5 font-semibold text-sm text-white/85 hover:bg-white/10 hover:text-white data-[status=active]:bg-white/15 data-[status=active]:text-white";

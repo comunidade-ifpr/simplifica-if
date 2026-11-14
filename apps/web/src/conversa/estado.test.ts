@@ -28,7 +28,7 @@ describe("reduzir: texto", () => {
     );
     assert.strictEqual(estado.fase, "pronta");
     assert.deepStrictEqual(
-      estado.itens.map((item) => [item.tipo, "texto" in item ? item.texto : item.chave]),
+      estado.itens.map((item) => [item.tipo, "texto" in item ? item.texto : item.id]),
       [
         ["pessoa", "Olá"],
         ["resposta", "Carga horária: 1.200 h."],

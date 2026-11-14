@@ -72,7 +72,25 @@ const unidade = {
 
 const navegador = {
   extends: true,
-  optimizeDeps: { include: ["vite-plus/test/browser", "react-dom/client", "react-markdown", "remark-gfm"] },
+  // Como no T3: as dependências pré-empacotadas antes do primeiro teste, para o Vite não recarregar a página
+  // no meio da execução quando descobre uma nova.
+  optimizeDeps: {
+    include: [
+      "vite-plus/test/browser",
+      "react",
+      "react-dom/client",
+      "@tanstack/react-router",
+      "@base-ui/react/field",
+      "@base-ui/react/input",
+      "@base-ui/react/merge-props",
+      "@base-ui/react/use-render",
+      "class-variance-authority",
+      "lucide-react",
+      "react-markdown",
+      "remark-gfm",
+      "tailwind-merge",
+    ],
+  },
   test: {
     name: "navegador",
     include: ["src/**/*.browser.test.{ts,tsx}"],
