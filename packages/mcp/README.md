@@ -2,7 +2,7 @@
 
 Servidor MCP só de leitura que entrega a base de conhecimento do IFPR a qualquer IA (Claude, Codex, Gemini). Ele lê apenas o `kb.sqlite`, em modo somente leitura: não recompila o banco, não procura o repositório e não acessa a rede. Cada resposta traz o texto literal, a proveniência (`path` e linhas no repositório de origem), o link `ifpr://` e a versão da base.
 
-Especificação: `docs/plans/m0-simplifica-mcp.md` (M0.1). Prontos os passos T0 (banco autossuficiente, no `packages/kb`), T1 (servidor, CLI, banco, envelope, links e texto), T2 (normas), T3 (PPCs e cursos) e T6 (suítes transversais e CI): 15 das 16 ferramentas. Falta o T4, `pacote_contexto`.
+Especificação: `docs/plans/m0-simplifica-mcp.md` (M0.1). Prontos os passos T0 (banco autossuficiente, no `packages/kb`), T1 (servidor, CLI, banco, envelope, links e texto), T2 (normas), T3 (PPCs e cursos), T4 (`pacote_contexto`) e T6 (suítes transversais e CI): as 16 ferramentas.
 
 | # | Ferramenta | O que faz |
 |---|---|---|
@@ -19,7 +19,7 @@ Especificação: `docs/plans/m0-simplifica-mcp.md` (M0.1). Prontos os passos T0 
 | 11 | `listar_cursos` | cursos com CNCT, eixo, ofertas e turno |
 | 12 | `ficha_curso` | tudo sobre um curso |
 | 13 | `fatos_ppc` | fatos do PPC cruzados com o SUAP |
-| 14 | `pacote_contexto` | contexto de uma tarefa da `revisar-ppc` (passo T4, ainda não existe) |
+| 14 | `pacote_contexto` | contexto de uma tarefa da `revisar-ppc` para um PPC da base ou um `.md` da pasta de trabalho |
 | 15 | `sobre_a_base` | versão, data de referência e conteúdo da base |
 | 16 | `etapa` | etapa da tarefa, para o app |
 
@@ -33,15 +33,19 @@ node packages/mcp/src/cli.ts --banco tmp/kb.sqlite
 
 O servidor fala MCP pelo stdin/stdout; as mensagens de diagnóstico vão para o stderr.
 
+**Pasta de trabalho.** O `pacote_contexto` com `arquivo` é o único ponto em que o servidor lê um arquivo fora do banco (`src/leitura/PastaTrabalho.ts`). O caminho, relativo à pasta ou absoluto dentro dela, é recusado se sair da pasta, antes de tocar no disco (o que pega o `..` e o caminho absoluto de fora); depois de conferir que o arquivo existe, o caminho real (`realPath`, com os links simbólicos seguidos) é conferido de novo, o que pega o symlink para fora. Só `.md`, até 8 MB.
+
 | Opção | Padrão | Uso |
 |---|---|---|
 | `--banco <caminho>` | variável `SIMPLIFICA_KB` | `kb.sqlite` a servir (obrigatório). `~/` no início é expandido. |
-| `--pasta-trabalho <dir>` | diretório atual | única pasta de onde o servidor lê arquivos (para o `pacote_contexto`, no passo T4) |
+| `--pasta-trabalho <dir>` | diretório atual | única pasta de onde o servidor lê arquivos: o `arquivo` do `pacote_contexto` |
 | `--canal <dev\|beta\|estavel>` | `dev` | canal informado em `base.canal` quando o banco não o registra |
 
 Um banco com `versao_esquema` diferente da esperada (`VERSAO_ESQUEMA` de `packages/kb/src/db/esquema.ts`) é recusado com "base incompatível com esta versão do simplifica-mcp; atualize".
 
 ## Configuração no piloto zero
+
+Para quem vai instalar, o passo a passo está no [guia do piloto zero](../../docs/guia-piloto-zero.md).
 
 Para rodar a partir do checkout, o comando é `node /caminho/simplifica-if/packages/mcp/src/cli.ts --banco /caminho/kb.sqlite` (Node da versão de `.node-version`). O executável `simplifica-mcp`, um Node SEA que não precisa de Node instalado, sai de `pnpm mcp:executavel` em `packages/mcp/dist-exe/` (`--alvo` ou `--todos` para outras plataformas).
 
@@ -78,7 +82,8 @@ packages/mcp/
 │   ├── contratos.ts         # Effect Schema do envelope (Resposta, Aviso, Fonte, Página) e dos tipos comuns; erros
 │   ├── esquema.ts           # construtores de schema (texto aparado, inteiro…) e o JSON Schema das ferramentas
 │   ├── validacao.ts         # entrada inválida → mensagem em português, no formato do servidor anterior
-│   ├── leitura/             # serviço `Leitura`: um método por ferramenta, com envelope, paginação e orçamento
+│   ├── leitura/             # serviço `Leitura`: um método por ferramenta, com envelope, paginação e orçamento;
+│   │                        # `PastaTrabalho`, a leitura do `.md` do `pacote_contexto` (o único `FileSystem`)
 │   ├── envelope.ts          # base, avisos e cursor opaco
 │   ├── orcamento.ts         # paginação pelo limite e pelo teto de caracteres ao mesmo tempo
 │   ├── links.ts, texto.ts   # IDs → ifpr://; Markdown compacto para a IA (funções puras)
@@ -97,7 +102,7 @@ Regras de negócio ficam em `packages/kb`; aqui ficam a validação de entrada, 
 
 Três pontos de entrada, sem curinga:
 
-- `@simplifica-if/mcp/toolkit`: `FerramentasIfpr`, `FERRAMENTAS`, `layerHandlers`, `registrarFerramentas`, `layerRegistro`, `layerLeitura`, `Leitura`, `NOME_SERVIDOR`, `VERSAO_PACOTE`, `INSTRUCOES` e `PROTOCOLOS`;
+- `@simplifica-if/mcp/toolkit`: `FerramentasIfpr`, `FERRAMENTAS`, `layerHandlers`, `registrarFerramentas`, `layerRegistro`, `layerLeitura` (sem pasta de trabalho: o `pacote_contexto` aceita só `ppc`), `layerLeituraComPasta` (com ela; pede `FileSystem` e `Path`), `Leitura`, `NOME_SERVIDOR`, `VERSAO_PACOTE`, `INSTRUCOES` e `PROTOCOLOS`;
 - `@simplifica-if/mcp/rpc`: `GrupoLeitura` (`fichaNorma`, `lerDispositivos`, `buscarNorma`, `fichaCurso`, `lerSecao`, `buscarSecoes`, `listarCursos`, `sobreABase`), `layerHandlersRpc` e `layerLeitura`;
 - `@simplifica-if/mcp/contratos`: os schemas do envelope e dos tipos comuns.
 
@@ -118,6 +123,7 @@ O registro é próprio (`addTool`), e não `McpServer.registerToolkit`, para que
 pnpm --filter @simplifica-if/mcp test
 pnpm --filter @simplifica-if/mcp typecheck
 node packages/mcp/test/gabarito.ts --comparar --schemas-equivalentes   # na raiz: o gabarito do C0 pelo protocolo
+node packages/mcp/test/gabarito.ts --atualizar pacote_contexto        # regrava só essa parte (ver testes-gabarito/README.md)
 pnpm fmt                             # na raiz: vp fmt no repositório inteiro
 pnpm mcp:smoke                       # na raiz: as suítes transversais também na base real (tmp/kb.sqlite)
 ```
@@ -129,13 +135,15 @@ As suítes de `test/transversal/` cobrem todas as ferramentas de `FERRAMENTAS`, 
 | Suíte | O que confere | Fixture | Base real |
 |---|---|---|---|
 | `contrato.test.ts` | Toda ferramenta tem amostras. Pelo protocolo, a entrada válida passa no `inputSchema`, responde sem erro, e a saída passa no `outputSchema` (ajv) e no Effect Schema. A inválida volta `isError`, com a mensagem em português que começa pelo campo | sim | — |
-| `paridade.test.ts` | Cada ferramenta × o comando da CLI `kb` no mesmo banco: mesmos IDs, textos e totais. `etapa` não tem comando, e o motivo fica registrado | — | sim |
+| `paridade.test.ts` | Cada ferramenta × o comando da CLI `kb` no mesmo banco: mesmos IDs, textos e totais (o `pacote_contexto`, byte a byte, pela base e pelo arquivo). `etapa` não tem comando, e o motivo fica registrado | — | sim |
 | `sem-repositorio.test.ts` | Todas as ferramentas numa pasta só com o `kb.sqlite` (diretório atual e `HOME`, com o `PATH` mínimo), com as respostas iguais às do processo de teste e a pasta intacta | sim | sim |
 | `orcamento.test.ts` | Nenhum texto acima do teto da ferramenta. A paginação percorrida com o cursor tem mais de uma página e soma o total, sem repetir item | sim | sim |
 | `determinismo.test.ts` | Dois processos em stdio, com as mesmas chamadas, dão as linhas de resposta iguais byte a byte | sim | sim |
+| `pasta-de-trabalho.test.ts` | O `pacote_contexto` com `arquivo`, pelo servidor isolado: lê o `.md` de dentro da pasta (relativo, em subpasta e absoluto) e recusa `..`, caminho absoluto de fora e link simbólico para fora, antes de ler. A pasta fica como estava | sim | — |
 | `descricoes.test.ts` | Pelo `tools/list`: título, descrição (até 600 caracteres) com a frase "Use quando…", parâmetros descritos e o tamanho do que vai ao modelo | sim | — |
 
 - **Fixture e base real:** o `pnpm test` roda a parte da fixture, que não depende do `tmp/kb.sqlite`. O `pnpm mcp:smoke` roda as suítes inteiras com `SIMPLIFICA_SMOKE=1`; a CLI `kb` compila o banco se ele faltar ou estiver velho.
+- **Amostras do `pacote_contexto`:** só com `ppc`. O `arquivo` depende da pasta de trabalho, e as suítes por amostra montam o `Leitura` sem ela; ele tem a suíte própria.
 - **Sem repositório:** sem `SIMPLIFICA_MCP_EXE`, o servidor é o bundle do executável (`conferirBundle`), no Node com `--permission`. Ele só lê a pasta do banco e o próprio código, não escreve e não abre processos, e um controle negativo confere que ler fora da pasta é negado. Com `SIMPLIFICA_MCP_EXE`, o servidor é o executável, sem o modelo de permissões. Duas ressalvas:
   - o `realpath` em JavaScript do Node faz `lstat` dos diretórios ancestrais, e o modelo de permissões nega isso. Um gancho de pré-carga troca o `realpath` pelo nativo. O executável não aceita o gancho, e por isso roda sem `--permission`;
   - no Node 26.12, o `node:sqlite` abre arquivos sem passar pelo modelo de permissões. O isolamento do banco vem de a pasta só ter o `kb.sqlite`.
@@ -144,7 +152,8 @@ As suítes de `test/transversal/` cobrem todas as ferramentas de `FERRAMENTAS`, 
   ```bash
   pnpm mcp:executavel
   cd packages/mcp && SIMPLIFICA_MCP_EXE=$PWD/dist-exe/simplifica-mcp \
-    pnpm exec vp test run --config ../../vite.config.ts --dir . test/transversal/sem-repositorio.test.ts test/transversal/determinismo.test.ts
+    pnpm exec vp test run --config ../../vite.config.ts --dir . test/transversal/sem-repositorio.test.ts \
+    test/transversal/determinismo.test.ts test/transversal/pasta-de-trabalho.test.ts
   ```
 
 ## CI
@@ -154,7 +163,7 @@ O workflow `.github/workflows/ci.yml` roda em todo push e PR, sem segredos e sem
 | Job | Runner | Passos | Tempo estimado |
 |---|---|---|---|
 | `verificacao` | `ubuntu-24.04` | `pnpm fmt:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm kb compilar`, `pnpm mcp:smoke`, `validar_base.ts`, `testes-gabarito/kb.sh --comparar`, `testes-gabarito/base.sh --comparar` e `gabarito.ts --comparar --schemas-equivalentes` | 6 a 8 min |
-| `executavel` | `macos-15` (arm64), `ubuntu-24.04` (x64), `windows-2025` (x64) | `pnpm mcp:executavel`; `sem-repositorio.test.ts` e `determinismo.test.ts` contra o executável; o executável como artefato `simplifica-mcp-<alvo>`, por 14 dias | 3 a 6 min cada |
+| `executavel` | `macos-15` (arm64), `ubuntu-24.04` (x64), `windows-2025` (x64) | `pnpm mcp:executavel`; `sem-repositorio.test.ts`, `determinismo.test.ts` e `pasta-de-trabalho.test.ts` contra o executável; o executável como artefato `simplifica-mcp-<alvo>`, por 14 dias | 3 a 6 min cada |
 
 O `testes-gabarito/banco.sh` fica fora do CI. Ele compara o `.dump` do `sqlite3`, e esse texto muda com o build do `sqlite3`, não com o banco: o 3.40 do Debian escreve `replace(…, char(10))` onde o 3.54 escreve `unistr(…)`, e o 3.54 do sqlite.org escreve `0` onde o da Apple escreve `0.0`. O banco compilado no Linux, despejado pelo `sqlite3` do macOS, é igual ao gabarito. Rode o `banco.sh` no macOS.
 

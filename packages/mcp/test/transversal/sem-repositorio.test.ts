@@ -21,10 +21,10 @@ import {
   BANCO_REAL,
   bancosFixture,
   chamadas,
+  comparavel,
   conteudoDaPasta,
   emProcesso,
   EXE,
-  type Resultado,
   resultado,
   rotulo,
   servidorIsolado,
@@ -40,10 +40,6 @@ beforeAll(async () => {
   isolado = await servidorIsolado();
 }, 120_000);
 afterAll(limparTemporarios);
-
-/** Forma comparável de um resultado do `tools/call`. */
-const comparavel = (r: Resultado) =>
-  JSON.stringify({ isError: r.isError === true, content: r.content, structuredContent: r.structuredContent });
 
 async function conferir(banco: string, fonte: Fixture | "real") {
   const lista = chamadas(fonte);

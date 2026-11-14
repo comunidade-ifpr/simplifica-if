@@ -16,9 +16,20 @@
  * - `registrarFerramentas`: registra as ferramentas no `McpServer` com o texto Markdown no `content`
  *   e a entrada inválida como resultado de erro (ver `ferramentas/registrar.ts`);
  * - `layerRegistro`: as duas anteriores juntas, pronta para `registrations`;
- * - `layerLeitura`: o `Leitura` sobre o `kb.sqlite`, só leitura.
+ * - `layerLeitura`: o `Leitura` sobre o `kb.sqlite`, só leitura, sem ler arquivos (o `pacote_contexto`
+ *   aceita só `ppc`);
+ * - `layerLeituraComPasta`: o mesmo, com a pasta de trabalho de onde o `pacote_contexto` lê um `.md`
+ *   (`arquivo`); pede `FileSystem` e `Path` ao ambiente.
  */
 export { FERRAMENTAS, FerramentasIfpr, layerHandlers } from "./ferramentas/toolkit.ts";
 export { registrarFerramentas } from "./ferramentas/registrar.ts";
 export { Leitura } from "./leitura/Leitura.ts";
-export { INSTRUCOES, layerLeitura, layerRegistro, NOME_SERVIDOR, PROTOCOLOS, VERSAO_PACOTE } from "./servidor.ts";
+export {
+  INSTRUCOES,
+  layerLeitura,
+  layerLeituraComPasta,
+  layerRegistro,
+  NOME_SERVIDOR,
+  PROTOCOLOS,
+  VERSAO_PACOTE,
+} from "./servidor.ts";

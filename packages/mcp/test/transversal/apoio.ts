@@ -15,9 +15,12 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import * as NodeOS from "node:os";
 import * as NodeURL from "node:url";
+import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Effect from "effect/Effect";
+import * as Layer from "effect/Layer";
 import { conferirBundle } from "../../scripts/construir-executavel.ts";
-import { FERRAMENTAS } from "../../src/ferramentas/toolkit.ts";
+import { FERRAMENTAS, layerHandlers } from "../../src/ferramentas/toolkit.ts";
+import { layerLeituraComPasta } from "../../src/servidor.ts";
 import { camadaFerramentas, type FerramentaTestada, mensagemDeErro, responder } from "../apoio.ts";
 import { criarBancoFixture, diretorioTemporario } from "../fixture.ts";
 import { inserirNormas } from "../fixture-normas.ts";
@@ -93,9 +96,23 @@ const umResultado = (c: Chamada) =>
     return valido;
   });
 
-/** A resposta de cada chamada, calculada neste processo sobre o banco `banco`, no formato do `tools/call`. */
-export function emProcesso(banco: string, lista: ReadonlyArray<Chamada>): Promise<Resultado[]> {
-  return Effect.runPromise(Effect.forEach(lista, umResultado).pipe(Effect.provide(camadaFerramentas(banco))));
+/**
+ * Os handlers e o `Leitura` sobre `banco` com a pasta de trabalho `pasta`, no sistema de arquivos do
+ * Node, como o servidor os monta (`layerStdio`). Sem pasta (`camadaFerramentas`), `arquivo` é recusado.
+ */
+export const camadaComPasta = (banco: string, pasta: string) =>
+  layerHandlers.pipe(
+    Layer.provideMerge(layerLeituraComPasta({ banco, canal: "dev", pastaTrabalho: pasta })),
+    Layer.provide(NodeServices.layer),
+  );
+
+/**
+ * A resposta de cada chamada, calculada neste processo sobre o banco `banco` (com a pasta de trabalho
+ * `pasta`, se houver), no formato do `tools/call`.
+ */
+export function emProcesso(banco: string, lista: ReadonlyArray<Chamada>, pasta?: string): Promise<Resultado[]> {
+  const camada = pasta === undefined ? camadaFerramentas(banco) : camadaComPasta(banco, pasta);
+  return Effect.runPromise(Effect.forEach(lista, umResultado).pipe(Effect.provide(camada)));
 }
 
 /* ================================================================== servidor em stdio */
@@ -194,6 +211,10 @@ export function resultado(linha: string): Resultado {
   if (!mensagem.result) throw new Error(`resposta sem result: ${linha.slice(0, 300)}`);
   return mensagem.result;
 }
+
+/** Forma comparável de um resultado do `tools/call`: erro, texto e `structuredContent`, serializados. */
+export const comparavel = (r: Resultado) =>
+  JSON.stringify({ isError: r.isError === true, content: r.content, structuredContent: r.structuredContent });
 
 /** O servidor de sempre sobre `banco`: o executável de `SIMPLIFICA_MCP_EXE`, ou o Node com a CLI. */
 export function servidorPadrao(banco: string): Servidor {

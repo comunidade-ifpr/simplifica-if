@@ -98,14 +98,14 @@ const comando = Command.make(
     if (Option.isNone(banco)) return yield* new UsoInvalido({ motivo: "sem-banco" });
     if (!ehCanal(canal)) return yield* new UsoInvalido({ motivo: "canal", valor: canal });
     const caminho = expandirCaminho(path, banco.value);
-    yield* pastaReal(
+    const pasta = yield* pastaReal(
       expandirCaminho(
         path,
         Option.getOrElse(pastaTrabalho, () => "."),
       ),
     );
     const servicos = yield* Layer.build(
-      layerStdio({ banco: caminho, canal: canal as Canal }).pipe(Layer.provide(NodeStdio.layer)),
+      layerStdio({ banco: caminho, canal: canal as Canal, pastaTrabalho: pasta }).pipe(Layer.provide(NodeStdio.layer)),
     );
     const { base } = Context.get(servicos, Leitura.Leitura);
     yield* Console.error(

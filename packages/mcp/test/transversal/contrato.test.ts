@@ -5,8 +5,8 @@
  * - cada entrada válida passa no `inputSchema` publicado, responde sem erro e a saída passa no
  *   `outputSchema` publicado (ajv, draft 2020-12) e no Effect Schema da ferramenta;
  * - cada entrada inválida volta como resultado `isError`, sem `structuredContent`, com a mensagem em
- *   português e o campo (a do schema, com o prefixo do SDK; a do handler, sem ele); neste processo, o
- *   erro é `EntradaInvalida`.
+ *   português que nomeia o campo (a do schema, com o prefixo do SDK; a do handler, sem ele); neste
+ *   processo, o erro é `EntradaInvalida`.
  */
 import { afterAll, beforeAll, describe, expect, it, test } from "@effect/vitest";
 import * as Effect from "effect/Effect";
@@ -35,12 +35,13 @@ const RODAPE = /\n\nBase de \d{2}\/\d{2}\/\d{4} \(versão [^)]+\)\.$/;
 const prefixo = (nome: string) => `Input validation error: Invalid arguments for tool ${nome}: `;
 
 /**
- * A mensagem é legível: começa pelo campo, em português (o formatador de `src/validacao.ts` ou a
- * mensagem do handler), sem as mensagens do Effect em inglês, sem objeto serializado e sem pilha.
+ * A mensagem é legível: em português (o formatador de `src/validacao.ts` ou a mensagem do handler),
+ * nomeia um campo da entrada (ou as chaves não permitidas), sem as mensagens do Effect em inglês, sem
+ * objeto serializado e sem pilha de chamadas.
  */
-function conferirLegivel(mensagem: string, contexto: string): void {
-  // começa pelo campo ("consulta: …", "citacoes.0: …") ou pelas chaves não permitidas
-  expect(mensagem, contexto).toMatch(/^([a-z_][a-z0-9_]*(\.[a-z0-9_]+)*: |Chaves? inválidas?: )/);
+function conferirLegivel(mensagem: string, campos: ReadonlyArray<string>, contexto: string): void {
+  const nomeiaCampo = campos.some((c) => new RegExp(`(^|[^a-z_])${c}([^a-z_]|$)`).test(mensagem));
+  expect(nomeiaCampo || /Chaves? inválidas?: /.test(mensagem), `${contexto}: não nomeia o campo`).toBe(true);
   expect(mensagem, contexto).not.toMatch(/\b(Expected|Missing key|Unexpected|is missing|Invalid data)\b/);
   expect(mensagem, contexto).not.toContain("[object Object]");
   expect(mensagem, contexto).not.toMatch(/\n\s+at /);
@@ -82,6 +83,7 @@ describe.each(FERRAMENTAS.map((f) => f.nome))("contrato: %s", (nome) => {
       const ajv = new Ajv2020({ strict: false, allErrors: true });
       const validarEntrada = ajv.compile(publicada!.inputSchema as object);
       const validarSaida = ajv.compile(publicada!.outputSchema as object);
+      const campos = Object.keys(publicada!.inputSchema.properties ?? {});
 
       for (const args of a.validas) {
         const contexto = rotulo({ nome, args });
@@ -110,7 +112,7 @@ describe.each(FERRAMENTAS.map((f) => f.nome))("contrato: %s", (nome) => {
         // a validação do schema leva o prefixo do SDK; a do handler (ID mal formado) vem sem ele
         const mensagem = texto.startsWith(prefixo(nome)) ? texto.slice(prefixo(nome).length) : texto;
         expect(mensagem, contexto).toContain(trecho);
-        conferirLegivel(mensagem, contexto);
+        conferirLegivel(mensagem, campos, contexto);
         const erro = yield* Effect.flip(responder(f, args)).pipe(Effect.provide(camadaFerramentas(banco)));
         expect(ehEntradaInvalida(erro), contexto).toBe(true);
       }

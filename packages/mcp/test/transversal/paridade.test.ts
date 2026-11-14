@@ -1,14 +1,14 @@
 /**
  * Paridade (suíte transversal do T6): cada ferramenta × o comando correspondente da CLI `kb`, no mesmo
  * banco (`tmp/kb.sqlite`), com os mesmos IDs, textos e totais. Os casos estão em `paridade.ts`, um por
- * ferramenta (ou o motivo de não haver comando). Lento e dependente do checkout: roda só com
- * `SIMPLIFICA_SMOKE=1` (`pnpm mcp:smoke`); a cobertura dos casos roda sempre.
+ * ferramenta (ou o motivo de não haver comando), com a raiz do repositório como pasta de trabalho.
+ * Lento e dependente do checkout: roda só com `SIMPLIFICA_SMOKE=1` (`pnpm mcp:smoke`); a cobertura dos
+ * casos roda sempre.
  */
 import { beforeAll, describe, expect, it, test } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import { FERRAMENTAS } from "../../src/ferramentas/toolkit.ts";
-import { camadaFerramentas } from "../apoio.ts";
-import { BANCO_REAL, SMOKE } from "./apoio.ts";
+import { BANCO_REAL, camadaComPasta, RAIZ, SMOKE } from "./apoio.ts";
 import { kb, PARIDADE, type Paridade } from "./paridade.ts";
 
 const paridadeDe = (nome: string) => (PARIDADE as Partial<Record<string, Paridade>>)[nome];
@@ -34,6 +34,6 @@ describe.skipIf(!SMOKE)("paridade com a CLI kb na base real", () => {
   });
 
   for (const [nome, caso] of casos) {
-    it.effect(nome, () => Effect.provide(caso.conferir(), camadaFerramentas(BANCO_REAL)), 120_000);
+    it.effect(nome, () => Effect.provide(caso.conferir(), camadaComPasta(BANCO_REAL, RAIZ)), 120_000);
   }
 });

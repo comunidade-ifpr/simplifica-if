@@ -21,12 +21,12 @@ const MAX_PARAMETRO = 200;
 const MAX_TITULO = 40;
 /**
  * Máximo do `tools/list` sem os `outputSchema` (nome, título, descrição, anotações e `inputSchema`), a
- * parte que os clientes põem no contexto do modelo: hoje cerca de 17 mil caracteres, com 15 ferramentas.
+ * parte que os clientes põem no contexto do modelo: hoje cerca de 18 mil caracteres, com 16 ferramentas.
  */
 const MAX_TOOLS_LIST = 24_000;
 
-/** A frase que diz quando usar: "Use quando…", "Use antes de…", "Use para…", "Use só quando…". */
-const QUANDO_USAR = /(^|[.:] )Use (quando|antes|para|só quando)\b/;
+/** A frase que diz quando usar: "Use quando…", "Use antes de…", "Use para…", "Use só quando…", "Use dentro da…". */
+const QUANDO_USAR = /(^|[.:] )Use (quando|antes|para|só quando|dentro d[aoe])\b/;
 
 /**
  * Descrições da especificação que ainda não dizem quando usar a ferramenta. Mudar a descrição muda o

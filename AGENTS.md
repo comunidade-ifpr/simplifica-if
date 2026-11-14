@@ -10,6 +10,8 @@ Também contém skills operacionais em `.agents/skills/`. O caminho `.claude/ski
 
 Para consultas, respostas a perguntas ou uso desta base como fonte por LLM, use primeiro os arquivos locais deste checkout. Não substitua arquivos locais por URLs públicas quando o conteúdo estiver disponível no repositório.
 
+Para uso por MCP (o servidor `simplifica-mcp`, sem o checkout), veja [`packages/mcp/instrucoes.md`](packages/mcp/instrucoes.md).
+
 Comece pela CLI `kb` (requer `pnpm install` na raiz). Ela consulta `tmp/kb.sqlite`, um banco derivado dos arquivos do checkout (normas, PPCs com o texto integral das seções, `dados/institucional/`, CNCT, fichas da `revisar-ppc`), e o recompila sozinha quando ele falta ou está mais velho que as fontes (cerca de 8 s; `pnpm kb:compilar` força). O banco nunca é fonte de verdade nem lugar de edição: toda resposta traz o texto literal e o arquivo e a linha de onde ele veio, e é esse arquivo que se cita.
 
 ```bash

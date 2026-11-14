@@ -2,9 +2,10 @@
 /**
  * Casos de paridade (suíte transversal do T6): para cada ferramenta, a comparação com o comando da CLI
  * `kb` em JSON, no mesmo banco (`tmp/kb.sqlite`), com os mesmos IDs, textos e totais; ou o motivo de
- * não haver comando correspondente. Reúne os smokes do T2 (`banco-real.test.ts`) e do T3
- * (`smoke-base-real.test.ts`), agora indexados pelo nome da ferramenta: uma ferramenta nova sem caso
- * aqui quebra o `typecheck` e o `paridade.test.ts`.
+ * não haver comando correspondente. Reúne os smokes do T2 (`banco-real.test.ts`), do T3
+ * (`smoke-base-real.test.ts`) e do T4 (`smoke-pacote-contexto.test.ts`), agora indexados pelo nome da
+ * ferramenta: uma ferramenta nova sem caso aqui quebra o `typecheck` e o `paridade.test.ts`. As
+ * ferramentas rodam com a raiz do repositório como pasta de trabalho, como o `kb` lê os arquivos.
  *
  * Alguns comandos da CLI leem os arquivos do repositório (`resolver`, `vigencia`, `relacoes`,
  * `citacoes`, `impacto`, `adequacao-art71`); os demais, o banco. A CLI compila o banco se ele faltar ou
@@ -28,12 +29,13 @@ import { impactoDaNorma } from "../../src/ferramentas/impacto-da-norma.ts";
 import { lerDispositivos } from "../../src/ferramentas/ler-dispositivos.ts";
 import { lerSecao } from "../../src/ferramentas/ler-secao.ts";
 import { listarCursos } from "../../src/ferramentas/listar-cursos.ts";
+import { pacoteContexto, TETO_PACOTE_CONTEXTO } from "../../src/ferramentas/pacote-contexto.ts";
 import { resolverCitacoes } from "../../src/ferramentas/resolver-citacoes.ts";
 import { sobreABase } from "../../src/ferramentas/sobre-a-base.ts";
 import type * as Layer from "effect/Layer";
-import { type camadaFerramentas, type FerramentaTestada, responder, saidaValida } from "../apoio.ts";
+import { type FerramentaTestada, responder, saidaValida } from "../apoio.ts";
 import type { NomeFerramenta } from "./amostras.ts";
-import { BANCO_REAL, RAIZ } from "./apoio.ts";
+import { BANCO_REAL, type camadaComPasta, RAIZ } from "./apoio.ts";
 
 const CLI_KB = NodePath.join(RAIZ, "packages/kb/src/cli.ts");
 const PPC = "curitiba/tecnico-em-enfermagem";
@@ -43,7 +45,7 @@ const NORMA = "br/cne-cp/res/2021/1";
 type Json = any;
 
 /** O que um caso de paridade pede do ambiente: as ferramentas sobre o banco real. */
-type Ambiente = Layer.Success<ReturnType<typeof camadaFerramentas>>;
+type Ambiente = Layer.Success<ReturnType<typeof camadaComPasta>>;
 
 /** Um caso: a descrição e a conferência (as ferramentas sobre o banco real × a CLI). */
 export interface CasoParidade {
@@ -85,6 +87,27 @@ export function kb(...args: string[]): Promise<Json> {
   }
   return pendente;
 }
+
+/** `kb <args> --json` como a CLI o imprime, sem interpretar (para a comparação byte a byte). */
+function kbTexto(...args: string[]): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const processo = NodeChildProcess.spawn(process.execPath, [CLI_KB, ...args, "--json"], {
+      cwd: RAIZ,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    let stdout = "";
+    let stderr = "";
+    processo.stdout.setEncoding("utf-8").on("data", (parte: string) => (stdout += parte));
+    processo.stderr.setEncoding("utf-8").on("data", (parte: string) => (stderr += parte));
+    processo.once("error", reject);
+    processo.once("close", (codigo) =>
+      codigo === 0 ? resolve(stdout) : reject(new Error(`kb ${args.join(" ")}: ${stderr}`)),
+    );
+  });
+}
+
+/** O JSON como a CLI o imprime (`paraJson`: indentado com 2 espaços, com quebra de linha no fim). */
+const comoCli = (valor: unknown) => `${JSON.stringify(valor, null, 2)}\n`;
 
 /** `kb(...)` dentro de um Effect. */
 const kbE = (...args: string[]) => Effect.promise(() => kb(...args));
@@ -633,6 +656,50 @@ export const PARIDADE: { readonly [N in NomeFerramenta]: Paridade } = {
             expect(todos.map((p: Json) => [p.ppc, p.cruzamento])).toEqual(
               divergencias.ppcs.map((p: Json) => [p.ppc, p.cruzamento]),
             );
+          }),
+      },
+    ],
+  },
+
+  pacote_contexto: {
+    casos: [
+      {
+        descricao: "= kb pacote-contexto, byte a byte (uma ficha, um grupo e todas; PPC da base e arquivo .md)",
+        conferir: () =>
+          Effect.gen(function* () {
+            const arquivo = `base-conhecimento/institucional/ifpr/ppcs/${PPC}.md`;
+            const tarefas = ["CT-CURR-12", "grupo-001", "todas"];
+            const cli = yield* Effect.promise(() =>
+              Promise.all([
+                ...tarefas.map((t) => kbTexto("pacote-contexto", t, PPC)),
+                kbTexto("pacote-contexto", "CT-CURR-12", arquivo),
+              ]),
+            );
+            for (const [i, tarefa] of tarefas.entries()) {
+              const { resposta, texto } = yield* responder(pacoteContexto, { tarefa, ppc: PPC });
+              expect(saidaValida(pacoteContexto, resposta)).toBe(true);
+              expect(comoCli(resposta.dados), tarefa).toBe(cli[i]);
+              expect(texto.length).toBeLessThanOrEqual(TETO_PACOTE_CONTEXTO);
+            }
+            const doArquivo = yield* chamar(pacoteContexto, { tarefa: "CT-CURR-12", arquivo });
+            expect(comoCli(doArquivo.dados)).toBe(cli[tarefas.length]);
+          }),
+      },
+      {
+        descricao: "o mesmo PPC pela base e pelo arquivo: mesmas fichas, normas, marcos e transições",
+        conferir: () =>
+          Effect.gen(function* () {
+            const arquivo = `base-conhecimento/institucional/ifpr/ppcs/${PPC}.md`;
+            const daBase: Json = (yield* chamar(pacoteContexto, { tarefa: "CT-CURR-12", ppc: PPC })).dados;
+            const doArquivo: Json = (yield* chamar(pacoteContexto, { tarefa: "CT-CURR-12", arquivo })).dados;
+            for (const parte of ["fichas_ids", "fichas", "normas", "marcos", "data_referencia", "transicoes"]) {
+              expect(doArquivo[parte], parte).toEqual(daBase[parte]);
+            }
+            // cada seção do PPC da base está entre as do arquivo, com as mesmas linhas e o mesmo texto
+            const chave = (s: Json) =>
+              [s.id.split("#")[1], s.tipo, s.linha_inicio, s.linha_fim, s.texto].join("\u0000");
+            const doArquivoChaves = new Set(doArquivo.secoes.map(chave));
+            for (const s of daBase.secoes) expect(doArquivoChaves.has(chave(s))).toBe(true);
           }),
       },
     ],

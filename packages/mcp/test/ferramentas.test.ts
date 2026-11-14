@@ -68,6 +68,8 @@ const DESCRICOES: Record<string, string> = {
     "Tudo sobre um curso do IFPR: dados institucionais, PPC vigente, CNCT, ofertas, fatos do PPC cruzados com o SUAP (divergências), normas que o PPC cita e prazos de adequação. Use quando a pergunta for sobre um curso específico.",
   fatos_ppc:
     "Fatos extraídos de PPCs (carga horária, estágio, ano), com o trecho de origem, cruzados com as matrizes do SUAP publicadas na base. Use quando a pergunta cobrir vários PPCs ou só as divergências; para um curso, `ficha_curso` já traz os fatos. Os fatos são extraídos por regra, sem revisão humana: confira o trecho antes de afirmar uma divergência.",
+  pacote_contexto:
+    "Monta o contexto de uma tarefa da skill `revisar-ppc` para um PPC: fichas, CNCT, dispositivos citados nas fichas, marcos, transições, seções relevantes do PPC e fatos. Use dentro da `revisar-ppc`. Aceita um PPC da base ou um arquivo `.md` da pasta de trabalho.",
   sobre_a_base:
     "Versão, data de referência e conteúdo da base. Use quando o usuário (um servidor do IFPR) perguntar o que a base contém ou de quando ela é.",
   etapa: "Informa ao app em que etapa da tarefa você está. Use só quando a skill pedir.",
@@ -85,12 +87,8 @@ describe("registro", () => {
       expect(nome).toMatch(/^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/);
       expect(PREVISTAS).toContain(nome);
     }
-    // na ordem da tabela da especificação
-    expect(nomes).toEqual(PREVISTAS.filter((nome) => (nomes as readonly string[]).includes(nome)));
-    // todas as previstas menos `pacote_contexto` (T4)
-    for (const nome of PREVISTAS.filter((nome) => nome !== "pacote_contexto")) {
-      expect(nomes).toContain(nome);
-    }
+    // todas as previstas, na ordem da tabela da especificação
+    expect(nomes).toEqual(PREVISTAS);
   });
 
   test("descrições: texto da especificação e curtas", () => {

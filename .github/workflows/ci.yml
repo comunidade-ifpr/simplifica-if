@@ -3,7 +3,8 @@
 # - verificacao (Linux x64): formatação, lint, tipos, testes, banco, smoke do MCP contra a base real,
 #   validação da base e os gabaritos que não dependem do macOS.
 # - executavel (macOS arm64, Linux x64, Windows x64): o executável simplifica-mcp no runner nativo,
-#   as suítes "sem repositório" e "determinismo" contra ele, e o executável como artefato.
+#   as suítes "sem repositório", "determinismo" e "pasta de trabalho" contra ele, e o executável como
+#   artefato.
 #
 # Nenhum segredo e nenhum acesso a Notion, SEI ou SUAP: os testes que precisam deles se pulam sozinhos.
 name: CI
@@ -98,11 +99,12 @@ jobs:
           nome=$(cd packages/mcp/dist-exe && ls simplifica-mcp*)
           echo "SIMPLIFICA_MCP_EXE=${GITHUB_WORKSPACE}/packages/mcp/dist-exe/${nome}" >> "$GITHUB_ENV"
 
-      - name: Sem repositório e determinismo, contra o executável
+      - name: Sem repositório, determinismo e pasta de trabalho, contra o executável
         working-directory: packages/mcp
         run: >-
           pnpm exec vp test run --config ../../vite.config.ts --dir .
           test/transversal/sem-repositorio.test.ts test/transversal/determinismo.test.ts
+          test/transversal/pasta-de-trabalho.test.ts
 
       - name: Publica o executável
         uses: actions/upload-artifact@v4

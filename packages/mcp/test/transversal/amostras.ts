@@ -20,6 +20,7 @@ import { TETO_IMPACTO } from "../../src/ferramentas/impacto-da-norma.ts";
 import { TETO_LER_DISPOSITIVOS } from "../../src/ferramentas/ler-dispositivos.ts";
 import { TETO_LER_SECAO } from "../../src/ferramentas/ler-secao.ts";
 import { TETO_LISTAR_CURSOS } from "../../src/ferramentas/listar-cursos.ts";
+import { TETO_PACOTE_CONTEXTO } from "../../src/ferramentas/pacote-contexto.ts";
 import { TETO_RESOLVER_CITACOES } from "../../src/ferramentas/resolver-citacoes.ts";
 import type { FERRAMENTAS } from "../../src/ferramentas/toolkit.ts";
 import { DCN_2021, DCN_2026, EXTERNO, STUB } from "../fixture-normas.ts";
@@ -290,6 +291,27 @@ export const AMOSTRAS: { readonly [N in NomeFerramenta]: Amostras } = {
       real: { divergencias: true, limite: 50 },
       chaves: (d) => d.ppcs.map((p: Dados) => p.ppc),
     },
+  },
+  pacote_contexto: {
+    fixture: "ppcs",
+    // só com `ppc`: o `arquivo` depende da pasta de trabalho, e tem a suíte própria (`pasta-de-trabalho.test.ts`)
+    validas: [
+      { tarefa: "CT-CURR-12", ppc: PPC_ENFERMAGEM },
+      { tarefa: "todas", ppc: `ifpr://ppc/${PPC_ENFERMAGEM}` },
+    ],
+    reais: [
+      { tarefa: "CT-CURR-12", ppc: PPC_REAL },
+      { tarefa: "grupo-001", ppc: PPC_REAL },
+      { tarefa: "todas", ppc: PPC_REAL },
+    ],
+    invalidas: [
+      [{ tarefa: "", ppc: PPC_ENFERMAGEM }, "tarefa: "],
+      [{ tarefa: "CT-CURR-12" }, "informe exatamente um destes: ppc"],
+      [{ tarefa: "CT-CURR-12", ppc: PPC_ENFERMAGEM, arquivo: "PPC.md" }, "informe exatamente um destes: ppc"],
+      [{ tarefa: "CT-XXXX-99", ppc: PPC_ENFERMAGEM }, "tarefa não reconhecida"],
+    ],
+    teto: fixo(TETO_PACOTE_CONTEXTO),
+    paginacao: null,
   },
   sobre_a_base: {
     fixture: "ppcs",
