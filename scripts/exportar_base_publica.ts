@@ -3,8 +3,8 @@
  * Exporta os JSONs públicos de campi e processos seletivos. A fonte é `dados/institucional/`; só as
  * movimentações de cursos (processos SEI publicados em cada curso) ainda vêm do Notion.
  */
-import { mkdirSync, writeFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { lerArgumentos } from "./cli.ts";
 import { carregarDataSources, RAIZ_BASE } from "./config.ts";
 import { carregarDadosInstitucionais, paraDominio } from "./dados/institucional.ts";
@@ -21,19 +21,19 @@ Exporta dados/institucional/ e as movimentações do Notion para os JSONs públi
   --dry-run   lista o que seria gravado, sem escrever arquivos
   -h, --help  mostra esta ajuda`;
 
-const RAIZ_IFPR = path.join(RAIZ_BASE, "institucional", "ifpr");
-const RAIZ_CAMPI = path.join(RAIZ_IFPR, "campi");
-const RAIZ_PROCESSOS = path.join(RAIZ_IFPR, "processos-seletivos");
+const RAIZ_IFPR = NodePath.join(RAIZ_BASE, "institucional", "ifpr");
+const RAIZ_CAMPI = NodePath.join(RAIZ_IFPR, "campi");
+const RAIZ_PROCESSOS = NodePath.join(RAIZ_IFPR, "processos-seletivos");
 
 function gravarJson(caminho: string, dados: unknown, dryRun: boolean) {
   const texto = `${JSON.stringify(dados, null, 2)}\n`;
-  const relativo = path.relative(RAIZ_BASE, caminho);
+  const relativo = NodePath.relative(RAIZ_BASE, caminho);
   if (dryRun) {
     console.log(`planejado: ${relativo} (${texto.length} bytes)`);
     return;
   }
-  mkdirSync(path.dirname(caminho), { recursive: true });
-  writeFileSync(caminho, texto, "utf-8");
+  NodeFS.mkdirSync(NodePath.dirname(caminho), { recursive: true });
+  NodeFS.writeFileSync(caminho, texto, "utf-8");
   console.log(`exportado: ${relativo}`);
 }
 
@@ -74,10 +74,10 @@ async function main(): Promise<number> {
   const campi = montarCampi(base);
   const processos = montarProcessos(base, hoje);
 
-  for (const campus of campi) gravarJson(path.join(RAIZ_CAMPI, `${campus.id}.json`), campus, dryRun);
-  gravarJson(path.join(RAIZ_CAMPI, "index.json"), montarIndiceCampi(campi, hoje), dryRun);
-  for (const processo of processos) gravarJson(path.join(RAIZ_PROCESSOS, `${processo.id}.json`), processo, dryRun);
-  gravarJson(path.join(RAIZ_PROCESSOS, "index.json"), montarIndiceProcessos(processos), dryRun);
+  for (const campus of campi) gravarJson(NodePath.join(RAIZ_CAMPI, `${campus.id}.json`), campus, dryRun);
+  gravarJson(NodePath.join(RAIZ_CAMPI, "index.json"), montarIndiceCampi(campi, hoje), dryRun);
+  for (const processo of processos) gravarJson(NodePath.join(RAIZ_PROCESSOS, `${processo.id}.json`), processo, dryRun);
+  gravarJson(NodePath.join(RAIZ_PROCESSOS, "index.json"), montarIndiceProcessos(processos), dryRun);
 
   const somar = <T>(itens: T[], tamanho: (item: T) => number) =>
     itens.reduce((total, item) => total + tamanho(item), 0);

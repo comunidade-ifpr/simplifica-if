@@ -7,8 +7,8 @@
  * Este módulo lê, valida e grava esses arquivos e os converte nas entidades do domínio que a
  * exportação pública e a auditoria já usam.
  */
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { z } from "zod";
 import { RAIZ_PROJETO } from "../config.ts";
 import { compararTexto } from "../dominio/comum.ts";
@@ -22,7 +22,7 @@ import {
   type ProcessoSeletivo,
 } from "../dominio/ingresso.ts";
 
-export const RAIZ_DADOS_INSTITUCIONAIS = path.join(RAIZ_PROJETO, "dados", "institucional");
+export const RAIZ_DADOS_INSTITUCIONAIS = NodePath.join(RAIZ_PROJETO, "dados", "institucional");
 
 const texto = z.string().optional();
 const inteiro = z.number().int().optional();
@@ -160,20 +160,20 @@ export interface DadosInstitucionais {
 
 /** Caminho relativo de cada registro em `dados/institucional/`; o nome do arquivo é a chave canônica. */
 export const caminhosRegistro = {
-  campus: (c: CampusLocal) => path.join("campi", `${c.campus_id}.json`),
-  curso: (c: CursoLocal) => path.join("cursos", c.campus_id, `${c.curso_slug}.json`),
-  processo: (p: ProcessoLocal) => path.join("processos-seletivos", `${p.processo_seletivo_id}.json`),
-  edital: (e: EditalLocal) => path.join("editais", `${e.edital_id}.json`),
-  oferta: (o: OfertaLocal) => path.join("ofertas", o.processos[0] ?? "sem-processo", `${o.oferta_id}.json`),
+  campus: (c: CampusLocal) => NodePath.join("campi", `${c.campus_id}.json`),
+  curso: (c: CursoLocal) => NodePath.join("cursos", c.campus_id, `${c.curso_slug}.json`),
+  processo: (p: ProcessoLocal) => NodePath.join("processos-seletivos", `${p.processo_seletivo_id}.json`),
+  edital: (e: EditalLocal) => NodePath.join("editais", `${e.edital_id}.json`),
+  oferta: (o: OfertaLocal) => NodePath.join("ofertas", o.processos[0] ?? "sem-processo", `${o.oferta_id}.json`),
 };
 
 /* ------------------------------------------------------------------ leitura */
 
 function arquivosJson(dir: string): string[] {
-  if (!existsSync(dir)) return [];
-  return readdirSync(dir, { withFileTypes: true })
+  if (!NodeFS.existsSync(dir)) return [];
+  return NodeFS.readdirSync(dir, { withFileTypes: true })
     .flatMap((entrada) => {
-      const caminho = path.join(dir, entrada.name);
+      const caminho = NodePath.join(dir, entrada.name);
       if (entrada.isDirectory()) return arquivosJson(caminho);
       return entrada.name.endsWith(".json") ? [caminho] : [];
     })
@@ -188,11 +188,11 @@ function lerColecao<T>(
   erros: string[],
 ): T[] {
   const itens: T[] = [];
-  for (const arquivo of arquivosJson(path.join(raiz, subdir))) {
-    const relativo = path.relative(raiz, arquivo);
+  for (const arquivo of arquivosJson(NodePath.join(raiz, subdir))) {
+    const relativo = NodePath.relative(raiz, arquivo);
     let bruto: unknown;
     try {
-      bruto = JSON.parse(readFileSync(arquivo, "utf-8"));
+      bruto = JSON.parse(NodeFS.readFileSync(arquivo, "utf-8"));
     } catch (erro) {
       erros.push(`dados/institucional/${relativo}: JSON inválido: ${(erro as Error).message}`);
       continue;
@@ -219,7 +219,7 @@ export function carregarDadosInstitucionais(raiz: string = RAIZ_DADOS_INSTITUCIO
   erros: string[];
 } {
   const erros: string[] = [];
-  if (!existsSync(raiz)) return { dados: vazio(), erros: [`dados/institucional/ não encontrado em ${raiz}`] };
+  if (!NodeFS.existsSync(raiz)) return { dados: vazio(), erros: [`dados/institucional/ não encontrado em ${raiz}`] };
   const dados: DadosInstitucionais = {
     campi: lerColecao(raiz, "campi", esquemaCampusLocal, caminhosRegistro.campus, erros),
     cursos: lerColecao(raiz, "cursos", esquemaCursoLocal, caminhosRegistro.curso, erros),
@@ -257,9 +257,9 @@ export function textoRegistro(registro: unknown): string {
 }
 
 export function gravarRegistro(relativo: string, registro: unknown, raiz: string = RAIZ_DADOS_INSTITUCIONAIS): void {
-  const destino = path.join(raiz, relativo);
-  mkdirSync(path.dirname(destino), { recursive: true });
-  writeFileSync(destino, textoRegistro(registro), "utf-8");
+  const destino = NodePath.join(raiz, relativo);
+  NodeFS.mkdirSync(NodePath.dirname(destino), { recursive: true });
+  NodeFS.writeFileSync(destino, textoRegistro(registro), "utf-8");
 }
 
 export function gravarDadosInstitucionais(

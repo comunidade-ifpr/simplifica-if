@@ -9,14 +9,14 @@
  * caminho do arquivo saia relativo à raiz do repositório (`.` quando já é). O arquivo de cada caso é
  * o nome da `testsuite` de primeiro nível, que nos dois executores é o caminho do arquivo de teste.
  */
-import { readFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 
 const contagens = new Map<string, { casos: number; pulados: number }>();
 
 for (const argumento of process.argv.slice(2)) {
   const [prefixo, relatorio] = argumento.split("=") as [string, string];
-  const xml = readFileSync(relatorio, "utf8");
+  const xml = NodeFS.readFileSync(relatorio, "utf8");
   let profundidade = 0;
   let arquivo = "";
   let casoAberto = false;
@@ -28,7 +28,7 @@ for (const argumento of process.argv.slice(2)) {
         profundidade++;
         if (profundidade === 1) {
           const nomeSuite = /\bname="([^"]*)"/.exec(atributos)?.[1] ?? "";
-          arquivo = path.posix.normalize(path.posix.join(prefixo, nomeSuite));
+          arquivo = NodePath.posix.normalize(NodePath.posix.join(prefixo, nomeSuite));
           if (!contagens.has(arquivo)) contagens.set(arquivo, { casos: 0, pulados: 0 });
         }
       }

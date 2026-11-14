@@ -6,8 +6,8 @@
  * das fichas e os marcos são conferidos por ID canônico (fase 2b do plano de arquitetura), contra
  * `manifest.json`, `normas/stubs.yaml` e o CNCT.
  */
-import { existsSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import {
   ehObjeto,
   itensDe,
@@ -61,7 +61,7 @@ function tentarLerJson(caminho: string): { valor: unknown } | { erro: string } {
 }
 
 function carregarSchema(caminhos: CaminhosAnalise, nome: string): ObjetoJson {
-  const payload = lerJson(path.join(caminhos.schemasDir, nome));
+  const payload = lerJson(NodePath.join(caminhos.schemasDir, nome));
   if (!ehObjeto(payload)) throw new Error(`Schema inválido: ${nome}`);
   return payload;
 }
@@ -86,14 +86,14 @@ function conjuntoOrdenado(valores: Iterable<string>): string {
  * vale) e toda entrada é um tópico. Sem o arquivo (skill fora do repositório), não confere.
  */
 export function validarTopicosSecoes(idsTopicos: ReadonlySet<string>, caminhos: CaminhosAnalise): string[] {
-  const arquivo = path.join(
-    path.dirname(caminhos.baseConhecimentoDir),
+  const arquivo = NodePath.join(
+    NodePath.dirname(caminhos.baseConhecimentoDir),
     "packages",
     "kb",
     "dados",
     "topicos-secoes.yaml",
   );
-  if (!existsSync(arquivo)) return [];
+  if (!NodeFS.existsSync(arquivo)) return [];
   let mapa: Readonly<Record<string, ReadonlyArray<string>>>;
   try {
     mapa = lerTopicosSecoes(arquivo);
@@ -116,7 +116,7 @@ export function validarTopicosFichas(
   caminhos: CaminhosAnalise = caminhosPadrao(),
 ): string[] {
   const arquivo = caminhos.topicosFichasPath;
-  if (!existsSync(arquivo)) return [`${arquivo}: arquivo de taxonomia não encontrado`];
+  if (!NodeFS.existsSync(arquivo)) return [`${arquivo}: arquivo de taxonomia não encontrado`];
   const lido = tentarLerJson(arquivo);
   if ("erro" in lido) return [`${arquivo}: JSON inválido: ${lido.erro}`];
   if (!ehObjeto(lido.valor)) return [`${arquivo}: payload deve ser objeto JSON`];
@@ -214,7 +214,7 @@ export function carregarMarcos(
   caminho: string = caminhosPadrao().marcosNormativosPath,
   derivar: Derivacao = derivacaoPadrao(),
 ): Marco[] {
-  if (!existsSync(caminho)) return [];
+  if (!NodeFS.existsSync(caminho)) return [];
   const lido = tentarLerJson(caminho);
   if ("erro" in lido) return [];
   const marcos = ehObjeto(lido.valor) ? lido.valor.marcos : undefined;
@@ -326,7 +326,7 @@ export function validarMarcosNormativos(
   fichasPorId?: Map<string, Ficha>,
   derivar: Derivacao = derivacaoPadrao(),
 ): string[] {
-  if (!existsSync(caminho)) return [`${caminho}: registro de marcos normativos não encontrado`];
+  if (!NodeFS.existsSync(caminho)) return [`${caminho}: registro de marcos normativos não encontrado`];
   const lido = tentarLerJson(caminho);
   if ("erro" in lido) return [`${caminho}: JSON inválido: ${lido.erro}`];
   const erros = validarSchemaAnalise(lido.valor, jsonSchemaGerado("marcos-normativos.schema.json")).map(
@@ -467,7 +467,9 @@ export function validarBaseAnalise(caminhos: CaminhosAnalise = caminhosPadrao())
     idsValidacoes.add(validacaoId);
   }
 
-  erros.push(...validarArquivoJson(path.join(caminhos.contratosDir, "resposta_lote.exemplo.json"), schemaResultado));
+  erros.push(
+    ...validarArquivoJson(NodePath.join(caminhos.contratosDir, "resposta_lote.exemplo.json"), schemaResultado),
+  );
   erros.push(...validarSchemaAnalise(ALERTA_EXEMPLO, schemaAlertas));
   return erros;
 }

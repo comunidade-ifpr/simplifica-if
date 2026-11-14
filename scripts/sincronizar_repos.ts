@@ -11,9 +11,9 @@
  * Clona raso, com sparse checkout, num diretório temporário ao lado do destino, e depois troca a pasta
  * inteira: nunca busca o repositório do Effect para dentro deste.
  */
-import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeChildProcess from "node:child_process";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { parse as interpretarYaml } from "yaml";
 import { lerArgumentos } from "./cli.ts";
 import { RAIZ_PROJETO } from "./config.ts";
@@ -26,7 +26,7 @@ Traz .repos/effect na tag effect@<versão do catalog de pnpm-workspace.yaml>.
   -h, --help  mostra esta ajuda`;
 
 const REPOSITORIO = "https://github.com/Effect-TS/effect.git";
-const DESTINO = path.join(RAIZ_PROJETO, ".repos", "effect");
+const DESTINO = NodePath.join(RAIZ_PROJETO, ".repos", "effect");
 /** Padrões do sparse checkout (sem cone): o código do pacote `effect` e os guias para agentes. */
 export const PADROES = ["/packages/effect/src/", "/LLMS.md", "/MIGRATION.md", "/ai-docs/"];
 
@@ -39,7 +39,7 @@ export function tagDoCatalog(textoWorkspace: string): string {
 }
 
 function git(args: string[], cwd: string): string {
-  const resultado = spawnSync("git", args, { cwd, encoding: "utf-8" });
+  const resultado = NodeChildProcess.spawnSync("git", args, { cwd, encoding: "utf-8" });
   if (resultado.status !== 0) {
     throw new Error(`git ${args[0]} falhou (código ${resultado.status}): ${resultado.stderr.trim()}`);
   }
@@ -49,7 +49,7 @@ function git(args: string[], cwd: string): string {
 function main(): number {
   const lido = lerArgumentos(process.argv.slice(2), { "dry-run": { type: "boolean" } }, { uso: USO });
   if ("codigo" in lido) return lido.codigo;
-  const tag = tagDoCatalog(readFileSync(path.join(RAIZ_PROJETO, "pnpm-workspace.yaml"), "utf-8"));
+  const tag = tagDoCatalog(NodeFS.readFileSync(NodePath.join(RAIZ_PROJETO, "pnpm-workspace.yaml"), "utf-8"));
   const clonar = [
     "clone",
     "--quiet",
@@ -66,20 +66,20 @@ function main(): number {
     return 0;
   }
 
-  mkdirSync(path.dirname(DESTINO), { recursive: true });
-  const temporario = mkdtempSync(path.join(path.dirname(DESTINO), ".sync-effect-"));
+  NodeFS.mkdirSync(NodePath.dirname(DESTINO), { recursive: true });
+  const temporario = NodeFS.mkdtempSync(NodePath.join(NodePath.dirname(DESTINO), ".sync-effect-"));
   try {
-    const checkout = path.join(temporario, "checkout");
+    const checkout = NodePath.join(temporario, "checkout");
     git([...clonar, checkout], RAIZ_PROJETO);
     git(["sparse-checkout", "set", "--no-cone", ...PADROES], checkout);
     const commit = git(["rev-parse", "HEAD"], checkout).trim();
-    rmSync(path.join(checkout, ".git"), { recursive: true, force: true });
-    writeFileSync(path.join(checkout, "VERSAO"), `${tag}\n${REPOSITORIO} ${commit}\n`);
-    rmSync(DESTINO, { recursive: true, force: true });
-    renameSync(checkout, DESTINO);
+    NodeFS.rmSync(NodePath.join(checkout, ".git"), { recursive: true, force: true });
+    NodeFS.writeFileSync(NodePath.join(checkout, "VERSAO"), `${tag}\n${REPOSITORIO} ${commit}\n`);
+    NodeFS.rmSync(DESTINO, { recursive: true, force: true });
+    NodeFS.renameSync(checkout, DESTINO);
     console.log(`.repos/effect em ${tag} (${commit.slice(0, 12)})`);
   } finally {
-    rmSync(temporario, { recursive: true, force: true });
+    NodeFS.rmSync(temporario, { recursive: true, force: true });
   }
   return 0;
 }

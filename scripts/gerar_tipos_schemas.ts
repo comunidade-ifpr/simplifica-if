@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /** Gera scripts/base/tipos-schemas.ts, os tipos TypeScript dos JSON Schemas de base-conhecimento/schemas/. */
-import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeChildProcess from "node:child_process";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { compile, type JSONSchema } from "json-schema-to-typescript";
 import { listarDiretorio } from "./base/caminhos.ts";
 import { lerArgumentos } from "./cli.ts";
@@ -15,8 +15,8 @@ Gera scripts/base/tipos-schemas.ts a partir de base-conhecimento/schemas/*.schem
   --check     verifica se os tipos gerados estão atualizados, sem gravar
   -h, --help  mostra esta ajuda`;
 
-export const DESTINO_TIPOS = path.join(RAIZ_PROJETO, "scripts", "base", "tipos-schemas.ts");
-const RAIZ_SCHEMAS = path.join(RAIZ_BASE, "schemas");
+export const DESTINO_TIPOS = NodePath.join(RAIZ_PROJETO, "scripts", "base", "tipos-schemas.ts");
+const RAIZ_SCHEMAS = NodePath.join(RAIZ_BASE, "schemas");
 
 /** Nome do tipo gerado para cada schema; um schema novo precisa ganhar nome aqui. */
 const NOMES_TIPOS: Record<string, string> = {
@@ -43,8 +43,8 @@ const CABECALHO = `/**
 
 /** Formata como `vp fmt` formata scripts/, para que o arquivo gerado já saia formatado. */
 function formatar(codigo: string): string {
-  const resultado = spawnSync(
-    path.join(RAIZ_PROJETO, "node_modules", ".bin", "vp"),
+  const resultado = NodeChildProcess.spawnSync(
+    NodePath.join(RAIZ_PROJETO, "node_modules", ".bin", "vp"),
     ["fmt", `--stdin-filepath=${DESTINO_TIPOS}`],
     { cwd: RAIZ_PROJETO, input: codigo, encoding: "utf-8" },
   );
@@ -55,10 +55,10 @@ function formatar(codigo: string): string {
 export async function gerarTipos(): Promise<string> {
   const partes = [CABECALHO];
   for (const caminho of listarDiretorio(RAIZ_SCHEMAS, ".schema.json")) {
-    const chave = path.basename(caminho, ".schema.json");
+    const chave = NodePath.basename(caminho, ".schema.json");
     const nome = NOMES_TIPOS[chave];
     if (!nome) throw new Error(`schema sem nome de tipo em NOMES_TIPOS: ${chave}`);
-    const schema = JSON.parse(readFileSync(caminho, "utf-8")) as JSONSchema;
+    const schema = JSON.parse(NodeFS.readFileSync(caminho, "utf-8")) as JSONSchema;
     // O título do schema vira o comentário do tipo; o nome do tipo vem de NOMES_TIPOS.
     const comNome: JSONSchema = {
       ...schema,
@@ -82,16 +82,16 @@ async function main(): Promise<number> {
   const args = lerArgumentos(process.argv.slice(2), { check: { type: "boolean" } }, { uso: USO });
   if ("codigo" in args) return args.codigo;
   const tipos = await gerarTipos();
-  const rel = path.relative(RAIZ_PROJETO, DESTINO_TIPOS);
+  const rel = NodePath.relative(RAIZ_PROJETO, DESTINO_TIPOS);
   if (args.values.check) {
-    if (!existsSync(DESTINO_TIPOS) || readFileSync(DESTINO_TIPOS, "utf-8") !== tipos) {
+    if (!NodeFS.existsSync(DESTINO_TIPOS) || NodeFS.readFileSync(DESTINO_TIPOS, "utf-8") !== tipos) {
       console.error(`ERRO: ${rel} está desatualizado; rode node scripts/gerar_tipos_schemas.ts`);
       return 1;
     }
     console.log(`Tipos dos schemas atualizados: ${rel}`);
     return 0;
   }
-  writeFileSync(DESTINO_TIPOS, tipos, "utf-8");
+  NodeFS.writeFileSync(DESTINO_TIPOS, tipos, "utf-8");
   console.log(`Tipos dos schemas gerados: ${rel}`);
   return 0;
 }

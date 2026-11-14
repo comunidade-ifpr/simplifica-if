@@ -10,10 +10,10 @@
  *
  * Modelo, execuções por pergunta, limite de turnos e ferramentas vêm de `avaliacao/config.yaml`.
  */
-import { spawnSync } from "node:child_process";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import path from "node:path";
-import { parseArgs } from "node:util";
+import * as NodeChildProcess from "node:child_process";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
+import * as NodeUtil from "node:util";
 import {
   carregarConfig,
   carregarGabaritoConjunto,
@@ -68,9 +68,15 @@ function pontuar(contexto: Contexto, pergunta: Pergunta, resposta: string) {
 }
 
 function commitAtual(): string | null {
-  const rev = spawnSync("git", ["rev-parse", "--short", "HEAD"], { cwd: RAIZ_REPOSITORIO, encoding: "utf-8" });
+  const rev = NodeChildProcess.spawnSync("git", ["rev-parse", "--short", "HEAD"], {
+    cwd: RAIZ_REPOSITORIO,
+    encoding: "utf-8",
+  });
   if (rev.status !== 0) return null;
-  const sujo = spawnSync("git", ["status", "--porcelain"], { cwd: RAIZ_REPOSITORIO, encoding: "utf-8" }).stdout.trim();
+  const sujo = NodeChildProcess.spawnSync("git", ["status", "--porcelain"], {
+    cwd: RAIZ_REPOSITORIO,
+    encoding: "utf-8",
+  }).stdout.trim();
   return `${rev.stdout.trim()}${sujo ? " (com alterações locais)" : ""}`;
 }
 
@@ -82,8 +88,8 @@ function carimbo(data: Date): string {
 }
 
 function gravarRelatorio(dir: string, relatorio: Relatorio, perguntas: readonly Pergunta[], sufixo = ""): void {
-  writeFileSync(path.join(dir, `relatorio${sufixo}.json`), serializarJson(relatorio));
-  writeFileSync(path.join(dir, `resumo${sufixo}.md`), resumoMarkdown(relatorio, perguntas));
+  NodeFS.writeFileSync(NodePath.join(dir, `relatorio${sufixo}.json`), serializarJson(relatorio));
+  NodeFS.writeFileSync(NodePath.join(dir, `resumo${sufixo}.md`), resumoMarkdown(relatorio, perguntas));
 }
 
 function listarPerguntas(id: string): string[] {
@@ -120,8 +126,8 @@ function modoDryRun(contexto: Contexto, execucoes: number, modelo: string, confi
 }
 
 function modoPontuar(contexto: Contexto, arquivo: string, filtro: readonly string[]): void {
-  const caminho = path.resolve(arquivo);
-  const salvo = esquemaRelatorioSalvo.parse(JSON.parse(readFileSync(caminho, "utf-8")));
+  const caminho = NodePath.resolve(arquivo);
+  const salvo = esquemaRelatorioSalvo.parse(JSON.parse(NodeFS.readFileSync(caminho, "utf-8")));
   const original = salvo as unknown as Relatorio;
   const porId = new Map(contexto.perguntas.map((pergunta) => [pergunta.id, pergunta]));
   const execucoes: RegistroExecucao[] = [];
@@ -143,9 +149,9 @@ function modoPontuar(contexto: Contexto, arquivo: string, filtro: readonly strin
       })),
     execucoes,
   };
-  gravarRelatorio(path.dirname(caminho), relatorio, contexto.perguntas, "-repontuado");
+  gravarRelatorio(NodePath.dirname(caminho), relatorio, contexto.perguntas, "-repontuado");
   console.log(
-    `${execucoes.length} execuções repontuadas em ${path.relative(RAIZ_REPOSITORIO, path.dirname(caminho))}/`,
+    `${execucoes.length} execuções repontuadas em ${NodePath.relative(RAIZ_REPOSITORIO, NodePath.dirname(caminho))}/`,
   );
   console.log(resumoMarkdown(relatorio, contexto.perguntas).split("\n## Detalhe")[0]);
 }
@@ -159,10 +165,10 @@ async function modoExecutar(
 ): Promise<void> {
   const config = carregarConfig(configCaminho);
   const inicio = new Date();
-  const dir = path.resolve(
-    saida ?? path.join(DIR_AVALIACAO, "resultados", `${carimbo(inicio)}-${modelo.replace(/[^\w.-]+/gu, "_")}`),
+  const dir = NodePath.resolve(
+    saida ?? NodePath.join(DIR_AVALIACAO, "resultados", `${carimbo(inicio)}-${modelo.replace(/[^\w.-]+/gu, "_")}`),
   );
-  mkdirSync(path.join(dir, "brutos"), { recursive: true });
+  NodeFS.mkdirSync(NodePath.join(dir, "brutos"), { recursive: true });
   const relatorio: Relatorio = {
     versao: 1,
     iniciado_em: inicio.toISOString(),
@@ -182,9 +188,10 @@ async function modoExecutar(
     for (let n = 1; n <= execucoes; n++) {
       process.stdout.write(`${pergunta.id} #${n} … `);
       const bruta = await executarPergunta(pergunta.texto, RAIZ_REPOSITORIO, { config, modelo });
-      const arquivoBruto = path.join("brutos", `${pergunta.id}-${n}.jsonl`);
-      writeFileSync(path.join(dir, arquivoBruto), bruta.saida);
-      if (bruta.stderr.trim()) writeFileSync(path.join(dir, "brutos", `${pergunta.id}-${n}.stderr.txt`), bruta.stderr);
+      const arquivoBruto = NodePath.join("brutos", `${pergunta.id}-${n}.jsonl`);
+      NodeFS.writeFileSync(NodePath.join(dir, arquivoBruto), bruta.saida);
+      if (bruta.stderr.trim())
+        NodeFS.writeFileSync(NodePath.join(dir, "brutos", `${pergunta.id}-${n}.stderr.txt`), bruta.stderr);
       const execucao: Execucao = bruta.execucao;
       const pontuacao = pontuar(contexto, pergunta, execucao.resposta);
       relatorio.execucoes.push({
@@ -201,13 +208,13 @@ async function modoExecutar(
       );
     }
   }
-  console.log(`\nRelatório: ${path.relative(RAIZ_REPOSITORIO, dir)}/resumo.md`);
+  console.log(`\nRelatório: ${NodePath.relative(RAIZ_REPOSITORIO, dir)}/resumo.md`);
 }
 
 /* ------------------------------------------------------------------- main */
 
 async function main(argv: string[]): Promise<number> {
-  const { values } = parseArgs({
+  const { values } = NodeUtil.parseArgs({
     args: argv,
     options: {
       pergunta: { type: "string", multiple: true },

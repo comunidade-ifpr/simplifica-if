@@ -21,8 +21,8 @@
  * de curso. Cada valor passa por um validador do campo antes de ser aceito.
  * O front matter YAML (`---` … `---`) no topo é ignorado.
  */
-import { existsSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { escape, search, sub } from "@simplifica-if/kb/python/re";
 import { casefold, colapsarEspacos, semMarcas } from "@simplifica-if/kb/python/texto";
 import { ehObjetoPy, itensPy, type ObjetoPy, strPy, verdadeiro } from "@simplifica-if/kb/python/valores";
@@ -76,10 +76,10 @@ export function normalizarBusca(texto: string): string {
 let campiCache: { indice: string; campi: Array<[string, string]> } | null = null;
 
 function campiIfprConhecidos(baseConhecimentoDir: string): Array<[string, string]> {
-  const indice = path.join(baseConhecimentoDir, "institucional", "ifpr", "campi", "index.json");
+  const indice = NodePath.join(baseConhecimentoDir, "institucional", "ifpr", "campi", "index.json");
   if (campiCache?.indice === indice) return campiCache.campi;
   let campi: Array<[string, string]> = [];
-  if (existsSync(indice)) {
+  if (NodeFS.existsSync(indice)) {
     try {
       const payload = lerJsonPy(indice);
       const itens = ehObjetoPy(payload) ? payload.items : null;
@@ -544,11 +544,11 @@ let eixosCache: { indice: string; eixos: Array<[string, string]> } | null = null
 
 /** Eixos tecnológicos do CNCT (`base-conhecimento/catalogos/cnct/index.json`), do nome mais longo ao mais curto. */
 function eixosCnct(baseConhecimentoDir: string): Array<[string, string]> {
-  const indice = path.join(baseConhecimentoDir, "catalogos", "cnct", "index.json");
+  const indice = NodePath.join(baseConhecimentoDir, "catalogos", "cnct", "index.json");
   if (eixosCache?.indice === indice) return eixosCache.eixos;
   const nomes = new Set<string>();
   try {
-    const payload = existsSync(indice) ? lerJsonPy(indice) : null;
+    const payload = NodeFS.existsSync(indice) ? lerJsonPy(indice) : null;
     const itens = ehObjetoPy(payload) && Array.isArray(payload.items) ? payload.items : [];
     for (const item of itens) {
       if (ehObjetoPy(item) && typeof item.eixo_tecnologico === "string") nomes.add(item.eixo_tecnologico);

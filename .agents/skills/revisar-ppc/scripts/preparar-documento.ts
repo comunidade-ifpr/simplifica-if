@@ -6,9 +6,9 @@
  * trilha T3); a normalização do Markdown, a identificação e os arquivos da
  * rodada são feitos aqui.
  */
-import { spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, statSync, utimesSync } from "node:fs";
-import path from "node:path";
+import * as NodeChildProcess from "node:child_process";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { corpoPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import { type ObjetoPy, verdadeiro } from "@simplifica-if/kb/python/valores";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
@@ -37,7 +37,7 @@ import {
   timestampSlug,
 } from "./rodada.ts";
 
-export const SCRIPT_CONVERSAO_DOCX = path.join(import.meta.dirname, "converter_docx.py");
+export const SCRIPT_CONVERSAO_DOCX = NodePath.join(import.meta.dirname, "converter_docx.py");
 
 export type OpcoesPreparacao = {
   saidaBase?: string;
@@ -58,27 +58,27 @@ export type ArtefatosDocx = {
 
 /** `Path.stem`: nome sem a última extensão. */
 function radical(arquivo: string): string {
-  const nome = path.basename(arquivo);
+  const nome = NodePath.basename(arquivo);
   const ponto = nome.lastIndexOf(".");
   return ponto > 0 && ponto < nome.length - 1 ? nome.slice(0, ponto) : nome;
 }
 
 /** `Path.suffix`. */
 function extensao(arquivo: string): string {
-  const nome = path.basename(arquivo);
+  const nome = NodePath.basename(arquivo);
   const ponto = nome.lastIndexOf(".");
   return ponto > 0 && ponto < nome.length - 1 ? nome.slice(ponto) : "";
 }
 
 function criarRodada(saidaBase: string, nomeBase: string, relogio: Relogio): string {
   const base = resolverCaminho(saidaBase);
-  let rodada = path.join(base, `${timestampSlug(relogio)}-${nomeBase}`);
+  let rodada = NodePath.join(base, `${timestampSlug(relogio)}-${nomeBase}`);
   let sufixo = 2;
-  while (existsSync(rodada)) {
-    rodada = path.join(base, `${timestampSlug(relogio)}-${nomeBase}-${sufixo}`);
+  while (NodeFS.existsSync(rodada)) {
+    rodada = NodePath.join(base, `${timestampSlug(relogio)}-${nomeBase}-${sufixo}`);
     sufixo += 1;
   }
-  mkdirSync(rodada, { recursive: true });
+  NodeFS.mkdirSync(rodada, { recursive: true });
   return rodada;
 }
 
@@ -107,7 +107,7 @@ export function mesclarIdentificacaoPreferindoPreenchidos(
 /** Converte o DOCX em artefatos pelo Python (`converter_docx.py`). */
 export function converterDocx(arquivo: string, saida: string, python?: string): ArtefatosDocx {
   const interpretador = python ?? process.env.REVISAR_PPC_PYTHON ?? "python3";
-  const processo = spawnSync(interpretador, ["-B", SCRIPT_CONVERSAO_DOCX, arquivo, saida], {
+  const processo = NodeChildProcess.spawnSync(interpretador, ["-B", SCRIPT_CONVERSAO_DOCX, arquivo, saida], {
     stdio: ["ignore", "pipe", "inherit"],
     maxBuffer: 256 * 1024 * 1024,
   });
@@ -120,10 +120,10 @@ export function converterDocx(arquivo: string, saida: string, python?: string): 
 
 /** `shutil.copy2`: copia conteúdo, permissões e datas. */
 function copiarArquivo(origem: string, destino: string): void {
-  mkdirSync(path.dirname(destino), { recursive: true });
-  copyFileSync(origem, destino);
-  const info = statSync(origem);
-  utimesSync(destino, info.atime, info.mtime);
+  NodeFS.mkdirSync(NodePath.dirname(destino), { recursive: true });
+  NodeFS.copyFileSync(origem, destino);
+  const info = NodeFS.statSync(origem);
+  NodeFS.utimesSync(destino, info.atime, info.mtime);
 }
 
 function prepararDocx(
@@ -132,7 +132,7 @@ function prepararDocx(
   skill: CaminhosAnalise,
   python: string | undefined,
 ): { identificacao: IdentificacaoComFontes; conversao: ArtefatosDocx } {
-  mkdirSync(caminhos.artefatosConversaoDir, { recursive: true });
+  NodeFS.mkdirSync(caminhos.artefatosConversaoDir, { recursive: true });
   const artefatos = converterDocx(arquivo, caminhos.artefatosConversaoDir, python);
   if (!artefatos.markdown) throw new Error("A conversão DOCX não gerou Markdown normalizado.");
   const normalizado = normalizarMarkdown(lerTexto(artefatos.markdown)).markdownNormalizado;
@@ -144,7 +144,7 @@ function prepararDocx(
   // o que faltar, e o nome do arquivo fica por último.
   const { fontes, ...doMarkdown } = extrairIdentificacao(lerTexto(caminhos.ppc), "", skill);
   let identificacao = doMarkdown as Identificacao;
-  if (artefatos.dados && existsSync(artefatos.dados)) {
+  if (artefatos.dados && NodeFS.existsSync(artefatos.dados)) {
     try {
       const daConversao = extrairIdentificacaoDaConversao(lerJsonPy(artefatos.dados), "", skill);
       for (const [chave, valor] of Object.entries(daConversao) as Array<[keyof Identificacao, string]>) {
@@ -186,7 +186,7 @@ export function prepararDocumento(arquivoEntrada: string, opcoes: OpcoesPreparac
   const skill = opcoes.caminhos ?? caminhosPadrao();
   const relogio = opcoes.relogio ?? relogioDoAmbiente;
   const arquivo = resolverCaminho(arquivoEntrada);
-  if (!existsSync(arquivo)) throw new Error(`Arquivo não encontrado: ${arquivo}`);
+  if (!NodeFS.existsSync(arquivo)) throw new Error(`Arquivo não encontrado: ${arquivo}`);
   const tipo = extensao(arquivo).toLowerCase();
   if (tipo !== ".md" && tipo !== ".docx") throw new Error("A entrada deve ser um arquivo .md ou .docx.");
 
@@ -196,7 +196,7 @@ export function prepararDocumento(arquivoEntrada: string, opcoes: OpcoesPreparac
     relogio,
   );
   const caminhos = caminhosRodada(rodada);
-  mkdirSync(caminhos.suporteDir, { recursive: true });
+  NodeFS.mkdirSync(caminhos.suporteDir, { recursive: true });
 
   let identificacao: IdentificacaoComFontes;
   let conversao: ArtefatosDocx | undefined;
@@ -208,7 +208,7 @@ export function prepararDocumento(arquivoEntrada: string, opcoes: OpcoesPreparac
     campus: identificacao.campus,
     modalidade: identificacao.modalidade,
     arquivo_origem: arquivo,
-    ppc_markdown: path.relative(rodada, caminhos.ppc),
+    ppc_markdown: NodePath.relative(rodada, caminhos.ppc),
     rodada_dir: resolverCaminho(rodada),
     suporte_dir: resolverCaminho(caminhos.suporteDir),
     criado_em: agoraIso(relogio),

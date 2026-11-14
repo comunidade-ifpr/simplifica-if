@@ -1,13 +1,13 @@
-import { readFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { z } from "zod";
 import { ehObjeto, type ObjetoJson } from "@simplifica-if/kb/json";
 import { validarJson } from "./esquema.ts";
 
-export const RAIZ_PROJETO = path.resolve(import.meta.dirname, "..");
-export const RAIZ_BASE = path.join(RAIZ_PROJETO, "base-conhecimento");
+export const RAIZ_PROJETO = NodePath.resolve(import.meta.dirname, "..");
+export const RAIZ_BASE = NodePath.join(RAIZ_PROJETO, "base-conhecimento");
 
-const CAMINHO_CONFIG_NOTION = path.join(RAIZ_BASE, "config", "notion.json");
+const CAMINHO_CONFIG_NOTION = NodePath.join(RAIZ_BASE, "config", "notion.json");
 const CAMPOS_BASE = ["id", "data_source_id", "title"] as const;
 
 /**
@@ -57,7 +57,7 @@ export const esquemaConfigNotion = z.looseObject({
 });
 
 export function carregarDataSources(): DataSources {
-  const config: unknown = JSON.parse(readFileSync(CAMINHO_CONFIG_NOTION, "utf-8"));
+  const config: unknown = JSON.parse(NodeFS.readFileSync(CAMINHO_CONFIG_NOTION, "utf-8"));
   const erros = validarConfigNotion(config);
   if (erros.length) {
     throw new Error(`Configuração Notion inválida:\n- ${erros.join("\n- ")}`);

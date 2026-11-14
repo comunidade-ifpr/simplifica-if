@@ -7,14 +7,14 @@
  * Rode depois de mudar dados/institucional/, normas, CNCT, PPCs convertidos ou os geradores, e
  * revise o diff: ele é a mudança do gabarito.
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { serializarJson } from "../normalizar.ts";
 import { esquemaGabaritoConjunto, esquemaUniversos } from "../esquema.ts";
 import { ARQUIVO_UNIVERSOS, GERADORES, gerarUniversos } from "./conjuntos.ts";
 import { carregarFontes, RAIZ_REPOSITORIO, type Fontes } from "./fontes.ts";
 
-export const DIR_GABARITOS = path.join(RAIZ_REPOSITORIO, "avaliacao", "gabaritos");
+export const DIR_GABARITOS = NodePath.join(RAIZ_REPOSITORIO, "avaliacao", "gabaritos");
 
 /** Conteúdo serializado de cada arquivo gerado, por nome. */
 export function gerarArquivos(fontes: Fontes): Map<string, string> {
@@ -30,8 +30,8 @@ export function gerarArquivos(fontes: Fontes): Map<string, string> {
 export function divergencias(arquivos: Map<string, string>, dir: string = DIR_GABARITOS): string[] {
   return [...arquivos.entries()]
     .filter(([nome, conteudo]) => {
-      const caminho = path.join(dir, nome);
-      return !existsSync(caminho) || readFileSync(caminho, "utf-8") !== conteudo;
+      const caminho = NodePath.join(dir, nome);
+      return !NodeFS.existsSync(caminho) || NodeFS.readFileSync(caminho, "utf-8") !== conteudo;
     })
     .map(([nome]) => nome);
 }
@@ -48,8 +48,8 @@ if (import.meta.main) {
     }
     console.log(`${arquivos.size} gabaritos conferidos.`);
   } else {
-    mkdirSync(DIR_GABARITOS, { recursive: true });
-    for (const [nome, conteudo] of arquivos) writeFileSync(path.join(DIR_GABARITOS, nome), conteudo);
+    NodeFS.mkdirSync(DIR_GABARITOS, { recursive: true });
+    for (const [nome, conteudo] of arquivos) NodeFS.writeFileSync(NodePath.join(DIR_GABARITOS, nome), conteudo);
     console.log(`${arquivos.size} arquivos em avaliacao/gabaritos/ (${diferentes.length} alterados).`);
   }
 }

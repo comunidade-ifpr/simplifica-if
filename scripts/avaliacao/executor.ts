@@ -7,9 +7,9 @@
  * repositório definem) e as regras de `REGRAS_NEGADAS` vão sempre em `--disallowedTools`, qualquer que seja o
  * `config.yaml`.
  */
-import { spawn } from "node:child_process";
-import { readdirSync, readFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeChildProcess from "node:child_process";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { parse as interpretarEnv } from "dotenv";
 import type { ConfigAvaliacao } from "./esquema.ts";
 import { lerStreamJson, type Execucao } from "./stream.ts";
@@ -71,13 +71,14 @@ export function chavesArquivosEnv(diretorio: string): Set<string> {
   const chaves = new Set<string>();
   let nomes: string[];
   try {
-    nomes = readdirSync(diretorio).filter((nome) => /^\.env(?:\.|$)/u.test(nome));
+    nomes = NodeFS.readdirSync(diretorio).filter((nome) => /^\.env(?:\.|$)/u.test(nome));
   } catch {
     return chaves;
   }
   for (const nome of nomes) {
     try {
-      for (const chave of Object.keys(interpretarEnv(readFileSync(path.join(diretorio, nome))))) chaves.add(chave);
+      for (const chave of Object.keys(interpretarEnv(NodeFS.readFileSync(NodePath.join(diretorio, nome)))))
+        chaves.add(chave);
     } catch {
       // arquivo ilegível ou diretório com o mesmo nome: nada a excluir
     }
@@ -159,7 +160,7 @@ export interface ExecucaoBruta {
 
 export async function executarPergunta(texto: string, cwd: string, opcoes: OpcoesExecucao): Promise<ExecucaoBruta> {
   const binario = opcoes.binario ?? process.env.CLAUDE_BIN ?? "claude";
-  const processo = spawn(binario, argumentosClaude(texto, opcoes), {
+  const processo = NodeChildProcess.spawn(binario, argumentosClaude(texto, opcoes), {
     cwd,
     stdio: ["ignore", "pipe", "pipe"],
     env: ambienteClaude(process.env, new Set([...chavesArquivosEnv(cwd), ...chavesArquivosEnv(process.cwd())])),

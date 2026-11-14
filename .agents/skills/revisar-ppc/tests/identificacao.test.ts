@@ -6,11 +6,11 @@
  * Os trechos são mínimos e anonimizados, reproduzindo os formatos observados
  * nos PPCs da base.
  */
-import { spawnSync } from "node:child_process";
+import * as NodeChildProcess from "node:child_process";
 import { afterEach, describe, expect, test } from "vite-plus/test";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodeOS from "node:os";
+import * as NodePath from "node:path";
 import type { ObjetoPy } from "@simplifica-if/kb/python/valores";
 import {
   extrairIdentificacao,
@@ -31,11 +31,11 @@ import { lerJsonPy } from "../scripts/rodada.ts";
 
 const temporarios: string[] = [];
 afterEach(() => {
-  for (const dir of temporarios.splice(0)) rmSync(dir, { recursive: true, force: true });
+  for (const dir of temporarios.splice(0)) NodeFS.rmSync(dir, { recursive: true, force: true });
 });
 
 function diretorioTemporario(): string {
-  const dir = mkdtempSync(path.join(tmpdir(), "revisar-ppc-identificacao-"));
+  const dir = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "revisar-ppc-identificacao-"));
   temporarios.push(dir);
   return dir;
 }
@@ -289,8 +289,8 @@ describe("dados da conversão DOCX", () => {
 describe("preparar-documento", () => {
   test("metadata registra a identificação e a fonte de cada campo", () => {
     const dir = diretorioTemporario();
-    const arquivo = path.join(dir, "ppc-enfermagem.md");
-    writeFileSync(arquivo, PPC_TITULOS_NUMERADOS, "utf8");
+    const arquivo = NodePath.join(dir, "ppc-enfermagem.md");
+    NodeFS.writeFileSync(arquivo, PPC_TITULOS_NUMERADOS, "utf8");
     const { metadata } = prepararDocumento(arquivo, { saidaBase: dir, relogio: () => new Date(2026, 10, 13) });
     expect(lerJsonPy(metadata) as ObjetoPy).toMatchObject({
       curso: "Técnico em Enfermagem",
@@ -310,12 +310,13 @@ describe("preparar-documento", () => {
   });
 
   const python = [process.env.REVISAR_PPC_PYTHON, "python3.14", "python3"].find(
-    (candidato) => candidato && spawnSync(candidato, ["-c", "import docx"], { stdio: "ignore" }).status === 0,
+    (candidato) =>
+      candidato && NodeChildProcess.spawnSync(candidato, ["-c", "import docx"], { stdio: "ignore" }).status === 0,
   );
 
   test.skipIf(!python)("DOCX: base legal numa tabela não vira nome do curso", () => {
     const dir = diretorioTemporario();
-    const arquivo = path.join(dir, "ppc-sintetico.docx");
+    const arquivo = NodePath.join(dir, "ppc-sintetico.docx");
     const script = `
 import sys
 from docx import Document
@@ -337,7 +338,7 @@ for campo, valor in [
 d.add_paragraph("Base legal específica do curso: Resolução CNE/CP nº 1/2021")
 d.save(sys.argv[1])
 `;
-    expect(spawnSync(python!, ["-c", script, arquivo]).status).toBe(0);
+    expect(NodeChildProcess.spawnSync(python!, ["-c", script, arquivo]).status).toBe(0);
     const { metadata } = prepararDocumento(arquivo, {
       saidaBase: dir,
       relogio: () => new Date(2026, 10, 13),

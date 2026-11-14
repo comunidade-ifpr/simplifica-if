@@ -7,9 +7,9 @@
  * deslocamento (`2026-11-13T10:00:00-03:00`) e caminhos resolvidos como
  * `Path.resolve()`.
  */
-import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, realpathSync, statSync, writeFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeCrypto from "node:crypto";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { TAMANHO_MAXIMO_GRUPO } from "@simplifica-if/kb/db/pacote-contexto";
 import { carregarJsonPy, dumpsPy, jsonIndentadoPy } from "@simplifica-if/kb/python/json";
 import { type ObjetoPy, strPy } from "@simplifica-if/kb/python/valores";
@@ -81,24 +81,24 @@ export function timestampSlug(relogio: Relogio = relogioDoAmbiente): string {
 
 /** `Path(caminho).resolve()`: absoluto, com symlinks resolvidos na parte que existe. */
 export function resolverCaminho(caminho: string): string {
-  const absoluto = path.resolve(caminho);
+  const absoluto = NodePath.resolve(caminho);
   let existente = absoluto;
   const resto: string[] = [];
-  while (!existsSync(existente)) {
-    const pai = path.dirname(existente);
+  while (!NodeFS.existsSync(existente)) {
+    const pai = NodePath.dirname(existente);
     if (pai === existente) return absoluto;
-    resto.unshift(path.basename(existente));
+    resto.unshift(NodePath.basename(existente));
     existente = pai;
   }
-  return path.join(realpathSync(existente), ...resto);
+  return NodePath.join(NodeFS.realpathSync(existente), ...resto);
 }
 
 export function existe(caminho: string): boolean {
-  return existsSync(caminho);
+  return NodeFS.existsSync(caminho);
 }
 
 export function ehDiretorio(caminho: string): boolean {
-  return existsSync(caminho) && statSync(caminho).isDirectory();
+  return NodeFS.existsSync(caminho) && NodeFS.statSync(caminho).isDirectory();
 }
 
 /** `read_json`: JSON do Python (floats preservados). */
@@ -108,21 +108,21 @@ export function lerJsonPy(caminho: string): unknown {
 
 /** `write_json`: JSON indentado do Python, com `\n` final. */
 export function escreverJsonPy(caminho: string, valor: unknown): void {
-  mkdirSync(path.dirname(caminho), { recursive: true });
-  writeFileSync(caminho, jsonIndentadoPy(valor), "utf-8");
+  NodeFS.mkdirSync(NodePath.dirname(caminho), { recursive: true });
+  NodeFS.writeFileSync(caminho, jsonIndentadoPy(valor), "utf-8");
 }
 
 /** `write_text`. */
 export function escreverTextoPy(caminho: string, texto: string): void {
-  mkdirSync(path.dirname(caminho), { recursive: true });
-  writeFileSync(caminho, texto, "utf-8");
+  NodeFS.mkdirSync(NodePath.dirname(caminho), { recursive: true });
+  NodeFS.writeFileSync(caminho, texto, "utf-8");
 }
 
 /** `Path.read_text(encoding="utf-8")`: UTF-8 estrito com quebras de linha universais. */
 export { lerTexto } from "@simplifica-if/kb/texto";
 
 export function sha256Texto(texto: string): string {
-  return createHash("sha256").update(texto, "utf8").digest("hex");
+  return NodeCrypto.createHash("sha256").update(texto, "utf8").digest("hex");
 }
 
 /** `sha256_json_payload`: hash do JSON compacto com chaves ordenadas por code point. */
@@ -131,18 +131,18 @@ export function sha256JsonPayload(valor: unknown): string {
 }
 
 export function sha256Arquivo(caminho: string): string {
-  return createHash("sha256").update(readFileSync(caminho)).digest("hex");
+  return NodeCrypto.createHash("sha256").update(NodeFS.readFileSync(caminho)).digest("hex");
 }
 
 /** `sha256_catalogo_json`: hash de nome e conteúdo dos `*.json` do diretório, em ordem de nome. */
 export function sha256CatalogoJson(diretorio: string): string {
   const arquivos = listarArquivos(diretorio, ".json");
   if (!arquivos.length) return sha256Texto("[]");
-  const hash = createHash("sha256");
+  const hash = NodeCrypto.createHash("sha256");
   for (const arquivo of arquivos) {
-    hash.update(Buffer.from(path.basename(arquivo), "utf8"));
+    hash.update(Buffer.from(NodePath.basename(arquivo), "utf8"));
     hash.update(Buffer.from([0]));
-    hash.update(readFileSync(arquivo));
+    hash.update(NodeFS.readFileSync(arquivo));
     hash.update(Buffer.from([0]));
   }
   return hash.digest("hex");
@@ -163,7 +163,7 @@ export function caminhoRelativoSeguro(caminho: string, base: string): string {
   const alvo = resolverCaminho(caminho);
   const raiz = resolverCaminho(base);
   if (alvo === raiz) return ".";
-  const prefixo = raiz.endsWith(path.sep) ? raiz : raiz + path.sep;
+  const prefixo = raiz.endsWith(NodePath.sep) ? raiz : raiz + NodePath.sep;
   return alvo.startsWith(prefixo) ? alvo.slice(prefixo.length) : alvo;
 }
 
@@ -192,27 +192,28 @@ export type CaminhosRodada = {
 /** `round_paths`: arquivos da rodada em `arquivos-suporte/` (ou na raiz, em rodadas antigas). */
 export function caminhosRodada(rodada: string): CaminhosRodada {
   const rodadaDir = resolverCaminho(rodada);
-  const legados = ["PPC.md", "metadata.json", "manifesto-rodada.json"].map((nome) => path.join(rodadaDir, nome));
-  const suporte = path.join(rodadaDir, "arquivos-suporte");
-  const base = !existsSync(suporte) && legados.some((caminho) => existsSync(caminho)) ? rodadaDir : suporte;
+  const legados = ["PPC.md", "metadata.json", "manifesto-rodada.json"].map((nome) => NodePath.join(rodadaDir, nome));
+  const suporte = NodePath.join(rodadaDir, "arquivos-suporte");
+  const base =
+    !NodeFS.existsSync(suporte) && legados.some((caminho) => NodeFS.existsSync(caminho)) ? rodadaDir : suporte;
   return {
     rodadaDir,
     suporteDir: base,
-    artefatosConversaoDir: path.join(base, "artefatos-conversao"),
-    ppc: path.join(base, "PPC.md"),
-    ppcBruto: path.join(base, "PPC-bruto.md"),
-    metadata: path.join(base, "metadata.json"),
-    manifesto: path.join(base, "manifesto-rodada.json"),
-    preparacaoDocx: path.join(base, "preparacao-docx.json"),
-    cnctContexto: path.join(base, "cnct-contexto.json"),
-    contextoEstruturalSubagents: path.join(base, "contexto-estrutural-subagents.json"),
-    validacoesCruzadasContexto: path.join(base, "validacoes-cruzadas-contexto.json"),
-    gruposAvulsosDir: path.join(base, "grupos-avulsos"),
-    promptsSubagentsDir: path.join(base, "prompts-subagents"),
-    promptsSubagentsManifest: path.join(base, "prompts-subagents", "manifest.json"),
-    resultadosSubagents: path.join(base, "resultados-subagents.json"),
-    gruposSubagents: path.join(base, "grupos-subagents.json"),
-    relatorioHtml: path.join(rodadaDir, "relatorio-revisao.html"),
+    artefatosConversaoDir: NodePath.join(base, "artefatos-conversao"),
+    ppc: NodePath.join(base, "PPC.md"),
+    ppcBruto: NodePath.join(base, "PPC-bruto.md"),
+    metadata: NodePath.join(base, "metadata.json"),
+    manifesto: NodePath.join(base, "manifesto-rodada.json"),
+    preparacaoDocx: NodePath.join(base, "preparacao-docx.json"),
+    cnctContexto: NodePath.join(base, "cnct-contexto.json"),
+    contextoEstruturalSubagents: NodePath.join(base, "contexto-estrutural-subagents.json"),
+    validacoesCruzadasContexto: NodePath.join(base, "validacoes-cruzadas-contexto.json"),
+    gruposAvulsosDir: NodePath.join(base, "grupos-avulsos"),
+    promptsSubagentsDir: NodePath.join(base, "prompts-subagents"),
+    promptsSubagentsManifest: NodePath.join(base, "prompts-subagents", "manifest.json"),
+    resultadosSubagents: NodePath.join(base, "resultados-subagents.json"),
+    gruposSubagents: NodePath.join(base, "grupos-subagents.json"),
+    relatorioHtml: NodePath.join(rodadaDir, "relatorio-revisao.html"),
   };
 }
 
@@ -223,16 +224,16 @@ export function atualizarManifestoBase(
 ): ObjetoPy {
   const skill = opcoes.caminhos ?? caminhosPadrao();
   const caminhos = caminhosRodada(rodada);
-  const promptSubagent = path.join(skill.promptsDir, "subagent-lote-fichas.md");
-  const promptSintese = path.join(skill.promptsDir, "sintese-transversal.md");
+  const promptSubagent = NodePath.join(skill.promptsDir, "subagent-lote-fichas.md");
+  const promptSintese = NodePath.join(skill.promptsDir, "sintese-transversal.md");
   const manifesto = {
-    rodada_id: path.basename(rodada),
+    rodada_id: NodePath.basename(rodada),
     rodada_dir: resolverCaminho(rodada),
     ppc_sha256: sha256Arquivo(caminhos.ppc),
     fichas_sha256: sha256CatalogoJson(skill.fichasDir),
     validacoes_cruzadas_sha256: sha256CatalogoJson(skill.validacoesCruzadasDir),
-    prompt_subagent_sha256: existsSync(promptSubagent) ? sha256Arquivo(promptSubagent) : "",
-    prompt_sintese_transversal_sha256: existsSync(promptSintese) ? sha256Arquivo(promptSintese) : "",
+    prompt_subagent_sha256: NodeFS.existsSync(promptSubagent) ? sha256Arquivo(promptSubagent) : "",
+    prompt_sintese_transversal_sha256: NodeFS.existsSync(promptSintese) ? sha256Arquivo(promptSintese) : "",
     execucao: "subagents-na-conversa",
     criado_em: agoraIso(opcoes.relogio),
   };

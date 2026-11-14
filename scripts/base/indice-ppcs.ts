@@ -5,8 +5,8 @@
  * `.md` (contadas com o front matter) e o tipo pela taxonomia do nível do curso (`@simplifica-if/kb/ppcs/secoes`). Cada PPC traz a
  * proveniência lida do front matter (`@simplifica-if/kb/ppcs/front-matter`).
  */
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { type CaminhosBase, listarDiretorio, naBase, relativo } from "./caminhos.ts";
 import {
   ehInteiro,
@@ -117,7 +117,7 @@ export function montarItemPpc(
 }
 
 export function arquivosCampi(caminhos: CaminhosBase): string[] {
-  return listarDiretorio(caminhos.campi, ".json").filter((caminho) => path.basename(caminho) !== "index.json");
+  return listarDiretorio(caminhos.campi, ".json").filter((caminho) => NodePath.basename(caminho) !== "index.json");
 }
 
 export function coletarItensPpc(caminhos: CaminhosBase): ItemPpc[] {
@@ -133,7 +133,7 @@ export function coletarItensPpc(caminhos: CaminhosBase): ItemPpc[] {
         !ehObjeto(ppc.conversao) ||
         ppc.conversao.status !== "convertido" ||
         typeof caminhoMarkdown !== "string" ||
-        !existsSync(naBase(caminhos, caminhoMarkdown))
+        !NodeFS.existsSync(naBase(caminhos, caminhoMarkdown))
       ) {
         continue;
       }
@@ -176,7 +176,7 @@ export function montarItensSecao(caminhos: CaminhosBase, itensPpc: ItemPpc[]): I
 }
 
 export function caminhoSecao(caminhos: CaminhosBase, tipo: string): string {
-  return path.join(caminhos.secoesPpcs, `${tipo}.jsonl`);
+  return NodePath.join(caminhos.secoesPpcs, `${tipo}.jsonl`);
 }
 
 /** Caminho de cada `secoes/<tipo>.jsonl`; o schema fixa um caminho por tipo indexado. */
@@ -236,7 +236,7 @@ export function agruparPorTipo(itens: ItemSecao[]): Map<string, ItemSecao[]> {
 
 /** Data `atualizado_em` do índice atual, ou `hoje` se ausente/ilegível. */
 export function dataIndiceAtual(caminhos: CaminhosBase, hoje: string): string {
-  if (!existsSync(caminhos.indicePpcs)) return hoje;
+  if (!NodeFS.existsSync(caminhos.indicePpcs)) return hoje;
   let dados: unknown;
   try {
     dados = JSON.parse(lerTexto(caminhos.indicePpcs));
@@ -263,7 +263,7 @@ export function gerarIndices(caminhos: CaminhosBase, atualizadoEm: string): Indi
 
 export function verificarIndices(caminhos: CaminhosBase, indices: IndicesPpcs): string[] {
   const erros: string[] = [];
-  const atual = (caminho: string) => (existsSync(caminho) ? lerTexto(caminho) : null);
+  const atual = (caminho: string) => (NodeFS.existsSync(caminho) ? lerTexto(caminho) : null);
   if (atual(caminhos.indicePpcs) !== indices.indice) {
     erros.push(`${relativo(caminhos, caminhos.indicePpcs)} está desatualizado`);
   }
@@ -271,22 +271,22 @@ export function verificarIndices(caminhos: CaminhosBase, indices: IndicesPpcs): 
     const caminho = caminhoSecao(caminhos, tipo);
     if (atual(caminho) !== esperado) erros.push(`${relativo(caminhos, caminho)} está desatualizado`);
   }
-  if (existsSync(caminhos.secoesPpcs)) {
+  if (NodeFS.existsSync(caminhos.secoesPpcs)) {
     const esperados = new Set([...indices.secoes.keys()].map((tipo) => `${tipo}.jsonl`));
     const extras = listarDiretorio(caminhos.secoesPpcs, ".jsonl")
-      .map((caminho) => path.basename(caminho))
+      .map((caminho) => NodePath.basename(caminho))
       .filter((nome) => !esperados.has(nome));
     for (const nome of ordenarTextos(new Set(extras))) {
-      erros.push(`${relativo(caminhos, path.join(caminhos.secoesPpcs, nome))} não é mais gerado`);
+      erros.push(`${relativo(caminhos, NodePath.join(caminhos.secoesPpcs, nome))} não é mais gerado`);
     }
   }
   return erros;
 }
 
 export function gravarIndices(caminhos: CaminhosBase, indices: IndicesPpcs): void {
-  writeFileSync(caminhos.indicePpcs, indices.indice, "utf-8");
-  rmSync(path.join(path.dirname(caminhos.secoesPpcs), "secoes.jsonl"), { force: true });
-  mkdirSync(caminhos.secoesPpcs, { recursive: true });
-  for (const caminho of listarDiretorio(caminhos.secoesPpcs, ".jsonl")) rmSync(caminho);
-  for (const [tipo, texto] of indices.secoes) writeFileSync(caminhoSecao(caminhos, tipo), texto, "utf-8");
+  NodeFS.writeFileSync(caminhos.indicePpcs, indices.indice, "utf-8");
+  NodeFS.rmSync(NodePath.join(NodePath.dirname(caminhos.secoesPpcs), "secoes.jsonl"), { force: true });
+  NodeFS.mkdirSync(caminhos.secoesPpcs, { recursive: true });
+  for (const caminho of listarDiretorio(caminhos.secoesPpcs, ".jsonl")) NodeFS.rmSync(caminho);
+  for (const [tipo, texto] of indices.secoes) NodeFS.writeFileSync(caminhoSecao(caminhos, tipo), texto, "utf-8");
 }

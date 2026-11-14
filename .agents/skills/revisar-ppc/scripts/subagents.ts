@@ -9,8 +9,8 @@
  * é segmentado com a mesma segmentação e taxonomia do índice de seções (`bancoDoPpcAvulso`), porque
  * o PPC analisado pode não estar na base. As fichas transversais vão num grupo com o PPC inteiro.
  */
-import { mkdirSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import { bancoDoPpcAvulso } from "@simplifica-if/kb/db/compilar";
 import {
@@ -199,19 +199,19 @@ export function carregarMarcosNormativos(
 /** Contexto do protocolo `verificar-fundamentacao-normativa` para os sub-agentes. */
 export function contextoFundamentacaoNormativa(caminhos: CaminhosAnalise = caminhosPadrao()): ObjetoPy {
   const base = caminhos.baseConhecimentoDir;
-  const skill = path.join(path.dirname(caminhos.appDir), "verificar-fundamentacao-normativa");
+  const skill = NodePath.join(NodePath.dirname(caminhos.appDir), "verificar-fundamentacao-normativa");
   const seExiste = (caminho: string) => (existe(caminho) ? caminho : null);
   return {
     protocolo: "verificar-fundamentacao-normativa",
     skill_path: seExiste(skill),
-    skill_instrucoes: seExiste(path.join(skill, "SKILL.md")),
-    skill_relatorio: seExiste(path.join(skill, "references", "relatorio.md")),
+    skill_instrucoes: seExiste(NodePath.join(skill, "SKILL.md")),
+    skill_relatorio: seExiste(NodePath.join(skill, "references", "relatorio.md")),
     base_path: seExiste(base),
     manifestos: {
-      normas: seExiste(path.join(base, "manifest.json")),
-      institucional: seExiste(path.join(base, "institucional_manifest.json")),
-      catalogos: seExiste(path.join(base, "catalogos_manifest.json")),
-      cnct: seExiste(path.join(base, "catalogos", "cnct", "manifest.json")),
+      normas: seExiste(NodePath.join(base, "manifest.json")),
+      institucional: seExiste(NodePath.join(base, "institucional_manifest.json")),
+      catalogos: seExiste(NodePath.join(base, "catalogos_manifest.json")),
+      cnct: seExiste(NodePath.join(base, "catalogos", "cnct", "manifest.json")),
     },
     status_permitidos: STATUS_FUNDAMENTACAO_NORMATIVA,
     marcos_normativos: carregarMarcosNormativos(caminhos.marcosNormativosPath, universoOuVazio(caminhos)),
@@ -232,7 +232,7 @@ export function contextoValidacoesCruzadas(rodada: string, opcoes: OpcoesSkill =
   const contexto = {
     total: validacoes.length,
     fonte: resolverCaminho(diretorio),
-    prompt: path.join(skill.promptsDir, "sintese-transversal.md"),
+    prompt: NodePath.join(skill.promptsDir, "sintese-transversal.md"),
     uso:
       "Executar depois da coleta das fichas. Avaliar cada validação cruzada aplicável e, " +
       "quando houver problema transversal, registrar alerta com validacao_id.",
@@ -374,9 +374,9 @@ function anexosVisuais(rodada: string): AnexoVisual[] {
   const caminho = obter(representacao, "caminho");
   if (!verdadeiro(caminho)) return [];
   let imagem = strPy(caminho);
-  if (!path.isAbsolute(imagem)) {
-    const base = path.dirname(resolverCaminho(textoOuVazioPy(obter(preparacao, "dados")) || "."));
-    imagem = path.join(base, imagem);
+  if (!NodePath.isAbsolute(imagem)) {
+    const base = NodePath.dirname(resolverCaminho(textoOuVazioPy(obter(preparacao, "dados")) || "."));
+    imagem = NodePath.join(base, imagem);
   }
   if (!existe(imagem)) return [];
   return [
@@ -418,7 +418,7 @@ export type ContextoKbRodada = {
 
 export function abrirContextoKbRodada(rodada: string, skill: CaminhosAnalise = caminhosPadrao()): ContextoKbRodada {
   const caminhos = caminhosRodada(rodada);
-  const raiz = path.dirname(skill.baseConhecimentoDir);
+  const raiz = NodePath.dirname(skill.baseConhecimentoDir);
   const { kb, fechar } = abrirKb(caminhoDoBanco(raiz));
   const markdown = lerTexto(caminhos.ppc);
   const lexico = lerSinonimos();
@@ -551,7 +551,7 @@ function fichasParaSubagente(fichas: ObjetoPy[], universo: UniversoReferencias):
 }
 
 function promptTemplate(skill: CaminhosAnalise): string {
-  return path.join(skill.appDir, "prompts", "subagent-lote-fichas.md");
+  return NodePath.join(skill.appDir, "prompts", "subagent-lote-fichas.md");
 }
 
 /** Regra de agrupamento registrada no payload (para quem lê `grupos-subagents.json`). */
@@ -593,7 +593,7 @@ export function montarGruposSubagents(
     ppc_markdown: caminhos.ppc,
     grupos_subagents_path: caminhos.gruposSubagents,
     prompt_template: promptTemplate(skill),
-    sintese_transversal_template: path.join(skill.appDir, "prompts", "sintese-transversal.md"),
+    sintese_transversal_template: NodePath.join(skill.appDir, "prompts", "sintese-transversal.md"),
     cnct_contexto_path: caminhos.cnctContexto,
     cnct_contexto: contextos.cnct,
     contexto_estrutural_path: caminhos.contextoEstruturalSubagents,
@@ -653,10 +653,10 @@ export function montarGrupoAvulso(rodada: string, fichaIds: string[], opcoes: Op
     prompt_template: promptTemplate(skill),
     grupo,
   };
-  mkdirSync(caminhos.gruposAvulsosDir, { recursive: true });
-  const destino = path.join(caminhos.gruposAvulsosDir, `${grupo.grupo_id}.json`);
+  NodeFS.mkdirSync(caminhos.gruposAvulsosDir, { recursive: true });
+  const destino = NodePath.join(caminhos.gruposAvulsosDir, `${grupo.grupo_id}.json`);
   escreverJsonPy(destino, payload);
-  const prompt = path.join(caminhos.gruposAvulsosDir, `${grupo.grupo_id}.md`);
+  const prompt = NodePath.join(caminhos.gruposAvulsosDir, `${grupo.grupo_id}.md`);
   escreverTextoPy(prompt, pacotePromptGrupo(lerTexto(caminhos.ppc), lerTexto(promptTemplate(skill)), grupo));
   payload.grupo_avulso_path = destino;
   payload.prompt_subagent_path = prompt;
@@ -739,15 +739,15 @@ export function prepararPromptsSubagents(rodada: string, opcoes: OpcoesSkill = {
   if (!Array.isArray(grupos)) throw new Error("grupos-subagents.json não contém `grupos[]`.");
   const ppc = lerTexto(caminhos.ppc);
   const templatePath = strPy(
-    ou(obter(payload, "prompt_template"), path.join(skill.promptsDir, "subagent-lote-fichas.md")),
+    ou(obter(payload, "prompt_template"), NodePath.join(skill.promptsDir, "subagent-lote-fichas.md")),
   );
   const template = lerTexto(templatePath);
-  mkdirSync(caminhos.promptsSubagentsDir, { recursive: true });
+  NodeFS.mkdirSync(caminhos.promptsSubagentsDir, { recursive: true });
   const arquivos: ObjetoPy[] = [];
   for (const grupo of grupos) {
     if (!ehObjetoPy(grupo)) throw new Error("AttributeError: grupo não é objeto JSON");
     const grupoId = strPy(ou(obter(grupo, "grupo_id"), "grupo"));
-    const destino = path.join(caminhos.promptsSubagentsDir, `${grupoId}.md`);
+    const destino = NodePath.join(caminhos.promptsSubagentsDir, `${grupoId}.md`);
     const texto = pacotePromptGrupo(ppc, template, grupo);
     escreverTextoPy(destino, texto);
     arquivos.push({

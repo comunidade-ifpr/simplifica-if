@@ -5,9 +5,9 @@
  * troca o comando, dividido como `shlex.split`) com a pasta do site e o
  * domínio, e confere a saída. `REVISAR_PPC_SURGE_DOMAIN` fixa o domínio padrão.
  */
-import { spawnSync } from "node:child_process";
-import { copyFileSync, cpSync, existsSync, mkdirSync, rmSync } from "node:fs";
-import path from "node:path";
+import * as NodeChildProcess from "node:child_process";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { search } from "@simplifica-if/kb/python/re";
 import { dividirComandoShell } from "@simplifica-if/kb/python/shlex";
 import { asciiNfkd, casefold } from "@simplifica-if/kb/python/texto";
@@ -33,16 +33,17 @@ function slug(valor: string, limite = 48): string {
 export function dominioSurgePadrao(rodadaDir: string): string {
   const configurado = process.env.REVISAR_PPC_SURGE_DOMAIN;
   if (configurado) return configurado;
-  return `revisar-ppc-${slug(path.basename(rodadaDir))}.surge.sh`;
+  return `revisar-ppc-${slug(NodePath.basename(rodadaDir))}.surge.sh`;
 }
 
 /** Monta a pasta publicada: `index.html` (cópia do relatório) e `assets/`, recriada do zero. */
 export function prepararSiteSurge(relatorioHtml: string, destinoDir: string): string {
-  if (existsSync(destinoDir)) rmSync(destinoDir, { recursive: true });
-  mkdirSync(destinoDir, { recursive: true });
-  copyFileSync(relatorioHtml, path.join(destinoDir, "index.html"));
-  const assetsOrigem = path.join(path.dirname(relatorioHtml), "assets");
-  if (existsSync(assetsOrigem)) cpSync(assetsOrigem, path.join(destinoDir, "assets"), { recursive: true });
+  if (NodeFS.existsSync(destinoDir)) NodeFS.rmSync(destinoDir, { recursive: true });
+  NodeFS.mkdirSync(destinoDir, { recursive: true });
+  NodeFS.copyFileSync(relatorioHtml, NodePath.join(destinoDir, "index.html"));
+  const assetsOrigem = NodePath.join(NodePath.dirname(relatorioHtml), "assets");
+  if (NodeFS.existsSync(assetsOrigem))
+    NodeFS.cpSync(assetsOrigem, NodePath.join(destinoDir, "assets"), { recursive: true });
   return destinoDir;
 }
 
@@ -78,7 +79,7 @@ export type PublicacaoSurge = {
 export function publicarSiteSurge(siteDir: string, dominio: string, comando?: string[]): PublicacaoSurge {
   const site = resolverCaminho(siteDir);
   const [executavel, ...argumentos] = comandoBase(comando);
-  const processo = spawnSync(executavel!, [...argumentos, site, dominio], {
+  const processo = NodeChildProcess.spawnSync(executavel!, [...argumentos, site, dominio], {
     input: "",
     stdio: "pipe",
     maxBuffer: 64 * 1024 * 1024,

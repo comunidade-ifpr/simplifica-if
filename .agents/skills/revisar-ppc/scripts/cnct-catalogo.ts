@@ -6,7 +6,7 @@
  * O score é um float do Python (`round(score, 4)`), escrito como `1.0` no
  * JSON: por isso é `FloatPy`.
  */
-import path from "node:path";
+import * as NodePath from "node:path";
 import { SequenceMatcher } from "@simplifica-if/kb/python/difflib";
 import { escape, finditer, search, sub } from "@simplifica-if/kb/python/re";
 import { casefold, colapsarEspacos, semMarcas } from "@simplifica-if/kb/python/texto";
@@ -48,8 +48,8 @@ const CAMPOS_COMPLETOS = [
 ];
 
 export function caminhosCnct(caminhos: CaminhosAnalise = caminhosPadrao()) {
-  const raiz = path.join(caminhos.baseConhecimentoDir, "catalogos", "cnct");
-  return { raiz, manifesto: path.join(raiz, "manifest.json"), indice: path.join(raiz, "index.json") };
+  const raiz = NodePath.join(caminhos.baseConhecimentoDir, "catalogos", "cnct");
+  return { raiz, manifesto: NodePath.join(raiz, "manifest.json"), indice: NodePath.join(raiz, "index.json") };
 }
 
 /** Texto sem acentos, em casefold, só com `[a-z0-9]` separados por espaço. */
@@ -130,7 +130,7 @@ function carregarCursoCompleto(itemIndice: ObjetoPy, caminhos: CaminhosAnalise):
   const curso: ObjetoPy = { ...itemIndice };
   const valorPath = textoOuVazio(obter(itemIndice, "path"));
   if (valorPath) {
-    const arquivo = path.isAbsolute(valorPath) ? valorPath : path.join(caminhos.baseConhecimentoDir, valorPath);
+    const arquivo = NodePath.isAbsolute(valorPath) ? valorPath : NodePath.join(caminhos.baseConhecimentoDir, valorPath);
     if (existe(arquivo)) {
       const payload = lerJsonPy(arquivo);
       if (ehObjetoPy(payload)) {

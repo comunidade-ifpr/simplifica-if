@@ -1,5 +1,5 @@
 /** Validação dos catálogos (catalogos_manifest.json e CNCT). */
-import path from "node:path";
+import * as NodePath from "node:path";
 import { listarDiretorio, listarRecursivo, naBase } from "../caminhos.ts";
 import { textoDe, valoresIguais } from "@simplifica-if/kb/json";
 import type { CursoCnctJson, IndiceCnctJson, ManifestCatalogosJson, ManifestCnctJson } from "../tipos-schemas.ts";
@@ -50,7 +50,7 @@ function validarArquivoCursoCnct(
 
   const cursoId = dados.id;
   if (typeof cursoId !== "string" || !RE_SLUG.test(cursoId)) erros.push(`${r}: id deve ser slug ASCII minúsculo`);
-  else if (path.basename(caminho) !== `${cursoId}.json`) erros.push(`${r}: nome do arquivo diverge do id`);
+  else if (NodePath.basename(caminho) !== `${cursoId}.json`) erros.push(`${r}: nome do arquivo diverge do id`);
 
   for (const campo of CAMPOS_REPETIDOS_NO_INDICE) {
     if (!valoresIguais(dados[campo], itemIndice[campo])) erros.push(`${r}: campo ${campo} diverge do index.json`);

@@ -10,7 +10,7 @@
  * `REVISAR_PPC_AGORA` (data ISO 8601) fixa o relógio, para testes e
  * diferenciais.
  */
-import path from "node:path";
+import * as NodePath from "node:path";
 import { Command, InvalidArgumentError } from "commander";
 import { dumpsPy } from "@simplifica-if/kb/python/json";
 import { caminhoComoUri } from "@simplifica-if/kb/python/url";
@@ -41,7 +41,7 @@ function imprimirJson(payload: unknown): void {
  */
 async function comBancoFresco(acao: () => void): Promise<void> {
   try {
-    await garantirBancoFresco(path.dirname(caminhosPadrao().baseConhecimentoDir));
+    await garantirBancoFresco(NodePath.dirname(caminhosPadrao().baseConhecimentoDir));
   } catch (erro) {
     process.stderr.write(`${erro instanceof Error ? `${erro.name}: ${erro.message}` : String(erro)}\n`);
     process.exitCode = 1;
@@ -205,10 +205,10 @@ function gerarRelatorio(opcoes: { rodadaDir: string; resultados: string; semSurg
   const relatorio = gerarRelatorioHtml(opcoes.rodadaDir, opcoes.resultados);
   if (opcoes.semSurge) return payloadRelatorio(relatorio);
   const rodada = caminhosRodada(opcoes.rodadaDir);
-  const siteDir = prepararSiteSurge(relatorio.relatorio_html, path.join(rodada.suporteDir, "surge-site"));
+  const siteDir = prepararSiteSurge(relatorio.relatorio_html, NodePath.join(rodada.suporteDir, "surge-site"));
   const publicacao = publicarSiteSurge(siteDir, opcoes.surgeDomain || dominioSurgePadrao(rodada.rodadaDir));
   publicacao.relatorio_html_original = resolverCaminho(relatorio.relatorio_html);
-  escreverJsonPy(path.join(rodada.suporteDir, "surge-publicacao.json"), publicacao);
+  escreverJsonPy(NodePath.join(rodada.suporteDir, "surge-publicacao.json"), publicacao);
   return payloadRelatorio(relatorio, publicacao);
 }
 

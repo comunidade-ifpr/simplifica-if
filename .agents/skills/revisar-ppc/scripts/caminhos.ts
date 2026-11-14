@@ -4,8 +4,8 @@
  * mesmo quando a skill é aberta por `.claude/skills`), e a raiz do projeto é o
  * primeiro ancestral que contém `base-conhecimento/`.
  */
-import { existsSync, realpathSync, statSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 
 export type CaminhosAnalise = {
   appDir: string;
@@ -25,41 +25,41 @@ export type CaminhosAnalise = {
 };
 
 function ehDiretorio(caminho: string): boolean {
-  return existsSync(caminho) && statSync(caminho).isDirectory();
+  return NodeFS.existsSync(caminho) && NodeFS.statSync(caminho).isDirectory();
 }
 
 /** Caminhos de uma skill instalada em `appDir` (o diretório que contém `base-analise/`). */
 export function caminhosDaSkill(appDir: string): CaminhosAnalise {
-  const app = realpathSync(appDir);
-  let raiz = path.resolve(app, "../../..");
-  for (let candidato = app; ; candidato = path.dirname(candidato)) {
-    if (ehDiretorio(path.join(candidato, "base-conhecimento"))) {
+  const app = NodeFS.realpathSync(appDir);
+  let raiz = NodePath.resolve(app, "../../..");
+  for (let candidato = app; ; candidato = NodePath.dirname(candidato)) {
+    if (ehDiretorio(NodePath.join(candidato, "base-conhecimento"))) {
       raiz = candidato;
       break;
     }
-    if (path.dirname(candidato) === candidato) break;
+    if (NodePath.dirname(candidato) === candidato) break;
   }
-  const baseConhecimentoDir = path.join(raiz, "base-conhecimento");
-  const baseAnaliseDir = path.join(app, "base-analise");
+  const baseConhecimentoDir = NodePath.join(raiz, "base-conhecimento");
+  const baseAnaliseDir = NodePath.join(app, "base-analise");
   return {
     appDir: app,
     baseConhecimentoDir,
-    manifestNormasPath: path.join(baseConhecimentoDir, "manifest.json"),
+    manifestNormasPath: NodePath.join(baseConhecimentoDir, "manifest.json"),
     baseAnaliseDir,
-    fichasDir: path.join(baseAnaliseDir, "fichas"),
-    topicosFichasPath: path.join(baseAnaliseDir, "topicos-fichas.json"),
-    marcosNormativosPath: path.join(baseAnaliseDir, "marcos-normativos.json"),
-    validacoesCruzadasDir: path.join(baseAnaliseDir, "validacoes-cruzadas"),
-    schemasDir: path.join(baseAnaliseDir, "schemas"),
-    contratosDir: path.join(baseAnaliseDir, "contratos"),
-    indicePath: path.join(baseAnaliseDir, "indice.json"),
-    mapaFichasPath: path.join(baseAnaliseDir, "mapa-fichas.md"),
-    promptsDir: path.join(app, "prompts"),
-    outputDir: path.join(app, "output"),
+    fichasDir: NodePath.join(baseAnaliseDir, "fichas"),
+    topicosFichasPath: NodePath.join(baseAnaliseDir, "topicos-fichas.json"),
+    marcosNormativosPath: NodePath.join(baseAnaliseDir, "marcos-normativos.json"),
+    validacoesCruzadasDir: NodePath.join(baseAnaliseDir, "validacoes-cruzadas"),
+    schemasDir: NodePath.join(baseAnaliseDir, "schemas"),
+    contratosDir: NodePath.join(baseAnaliseDir, "contratos"),
+    indicePath: NodePath.join(baseAnaliseDir, "indice.json"),
+    mapaFichasPath: NodePath.join(baseAnaliseDir, "mapa-fichas.md"),
+    promptsDir: NodePath.join(app, "prompts"),
+    outputDir: NodePath.join(app, "output"),
   };
 }
 
 /** Caminhos desta skill (a que contém este arquivo). */
 export function caminhosPadrao(): CaminhosAnalise {
-  return caminhosDaSkill(path.join(import.meta.dirname, ".."));
+  return caminhosDaSkill(NodePath.join(import.meta.dirname, ".."));
 }

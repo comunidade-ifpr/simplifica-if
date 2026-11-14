@@ -1,5 +1,5 @@
-import { readdirSync, statSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { RAIZ_PROJETO } from "../config.ts";
 import { compararTexto } from "@simplifica-if/kb/texto";
 
@@ -8,35 +8,35 @@ import { compararTexto } from "@simplifica-if/kb/texto";
  * `base-conhecimento/` para preservar URLs como normas/... e institucional/...
  */
 export function criarCaminhos(raizProjeto: string = RAIZ_PROJETO) {
-  const raiz = path.join(raizProjeto, "base-conhecimento");
-  const institucional = path.join(raiz, "institucional");
-  const ppcs = path.join(institucional, "ifpr", "ppcs");
-  const ppcps = path.join(institucional, "ifpr", "ppcps");
-  const catalogos = path.join(raiz, "catalogos");
-  const processos = path.join(institucional, "ifpr", "processos-seletivos");
-  const schemas = path.join(raiz, "schemas");
-  const schema = (nome: string) => path.join(schemas, `${nome}.schema.json`);
+  const raiz = NodePath.join(raizProjeto, "base-conhecimento");
+  const institucional = NodePath.join(raiz, "institucional");
+  const ppcs = NodePath.join(institucional, "ifpr", "ppcs");
+  const ppcps = NodePath.join(institucional, "ifpr", "ppcps");
+  const catalogos = NodePath.join(raiz, "catalogos");
+  const processos = NodePath.join(institucional, "ifpr", "processos-seletivos");
+  const schemas = NodePath.join(raiz, "schemas");
+  const schema = (nome: string) => NodePath.join(schemas, `${nome}.schema.json`);
   return {
     raizProjeto,
     raiz,
-    site: path.join(raizProjeto, "site"),
-    normas: path.join(raiz, "normas"),
+    site: NodePath.join(raizProjeto, "site"),
+    normas: NodePath.join(raiz, "normas"),
     institucional,
-    campi: path.join(institucional, "ifpr", "campi"),
+    campi: NodePath.join(institucional, "ifpr", "campi"),
     ppcs,
-    indicePpcs: path.join(ppcs, "index.json"),
-    secoesPpcs: path.join(ppcs, "secoes"),
+    indicePpcs: NodePath.join(ppcs, "index.json"),
+    secoesPpcs: NodePath.join(ppcs, "secoes"),
     ppcps,
-    indicePpcps: path.join(ppcps, "index.json"),
+    indicePpcps: NodePath.join(ppcps, "index.json"),
     catalogos,
-    manifestInstitucional: path.join(raiz, "institucional_manifest.json"),
-    manifestCatalogos: path.join(raiz, "catalogos_manifest.json"),
-    indiceCampi: path.join(institucional, "ifpr", "campi", "index.json"),
+    manifestInstitucional: NodePath.join(raiz, "institucional_manifest.json"),
+    manifestCatalogos: NodePath.join(raiz, "catalogos_manifest.json"),
+    indiceCampi: NodePath.join(institucional, "ifpr", "campi", "index.json"),
     processosSeletivos: processos,
-    indiceProcessosSeletivos: path.join(processos, "index.json"),
-    manifestCnct: path.join(catalogos, "cnct", "manifest.json"),
-    indiceCnct: path.join(catalogos, "cnct", "index.json"),
-    cursosCnct: path.join(catalogos, "cnct", "cursos"),
+    indiceProcessosSeletivos: NodePath.join(processos, "index.json"),
+    manifestCnct: NodePath.join(catalogos, "cnct", "manifest.json"),
+    indiceCnct: NodePath.join(catalogos, "cnct", "index.json"),
+    cursosCnct: NodePath.join(catalogos, "cnct", "cursos"),
     schemas: {
       manifestInstitucional: schema("institucional_manifest"),
       manifestCatalogos: schema("catalogos_manifest"),
@@ -51,8 +51,8 @@ export function criarCaminhos(raizProjeto: string = RAIZ_PROJETO) {
       secaoPpc: schema("ppcs_secao"),
       indicePpcps: schema("ppcps_index"),
     },
-    manifest: path.join(raiz, "manifest.json"),
-    readme: path.join(raiz, "README.md"),
+    manifest: NodePath.join(raiz, "manifest.json"),
+    readme: NodePath.join(raiz, "README.md"),
   };
 }
 
@@ -63,7 +63,7 @@ export type CaminhosBase = ReturnType<typeof criarCaminhos>;
  * mas preserva `..` (ao contrário de `path.normalize`/`path.resolve`).
  */
 function partesLexicas(caminho: string): string[] {
-  return caminho.split(path.sep).filter((parte, i) => (i === 0 || parte !== "") && parte !== ".");
+  return caminho.split(NodePath.sep).filter((parte, i) => (i === 0 || parte !== "") && parte !== ".");
 }
 
 /**
@@ -78,7 +78,7 @@ export function relativo(caminhos: CaminhosBase, caminho: string): string {
   if (partes.length < raiz.length || raiz.some((parte, i) => parte !== partes[i])) {
     throw new Error(`'${caminho}' is not in the subpath of '${caminhos.raiz}'`);
   }
-  return partes.slice(raiz.length).join(path.sep) || ".";
+  return partes.slice(raiz.length).join(NodePath.sep) || ".";
 }
 
 /**
@@ -87,13 +87,13 @@ export function relativo(caminhos: CaminhosBase, caminho: string): string {
  * reproduzam o Python mesmo com `path` malformado nos índices.
  */
 export function naBase(caminhos: CaminhosBase, valor: string): string {
-  const base = path.isAbsolute(valor) ? valor : `${caminhos.raiz}${path.sep}${valor}`;
-  return partesLexicas(base).join(path.sep) || path.sep;
+  const base = NodePath.isAbsolute(valor) ? valor : `${caminhos.raiz}${NodePath.sep}${valor}`;
+  return partesLexicas(base).join(NodePath.sep) || NodePath.sep;
 }
 
 export function ehDiretorio(caminho: string): boolean {
   try {
-    return statSync(caminho).isDirectory();
+    return NodeFS.statSync(caminho).isDirectory();
   } catch {
     return false;
   }
@@ -101,7 +101,7 @@ export function ehDiretorio(caminho: string): boolean {
 
 export function ehArquivo(caminho: string): boolean {
   try {
-    return statSync(caminho).isFile();
+    return NodeFS.statSync(caminho).isFile();
   } catch {
     return false;
   }
@@ -113,10 +113,10 @@ export function ehArquivo(caminho: string): boolean {
  */
 export function listarDiretorio(diretorio: string, sufixo = ""): string[] {
   if (!ehDiretorio(diretorio)) return [];
-  return readdirSync(diretorio)
+  return NodeFS.readdirSync(diretorio)
     .filter((nome) => nome.endsWith(sufixo))
     .sort(compararTexto)
-    .map((nome) => path.join(diretorio, nome));
+    .map((nome) => NodePath.join(diretorio, nome));
 }
 
 /**
@@ -127,9 +127,9 @@ export function listarDiretorio(diretorio: string, sufixo = ""): string[] {
 export function listarRecursivo(diretorio: string, sufixo = ""): string[] {
   const resultado: string[] = [];
   const visitar = (atual: string) => {
-    const entradas = readdirSync(atual, { withFileTypes: true }).sort((a, b) => compararTexto(a.name, b.name));
+    const entradas = NodeFS.readdirSync(atual, { withFileTypes: true }).sort((a, b) => compararTexto(a.name, b.name));
     for (const entrada of entradas) {
-      const caminho = path.join(atual, entrada.name);
+      const caminho = NodePath.join(atual, entrada.name);
       if (entrada.name.endsWith(sufixo)) resultado.push(caminho);
       if (entrada.isDirectory()) visitar(caminho);
     }

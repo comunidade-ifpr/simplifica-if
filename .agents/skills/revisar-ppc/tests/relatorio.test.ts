@@ -4,20 +4,11 @@
  * `_HTMLPrettyPrinter`, dos blocos do PPC e da leitura de atributos do
  * `HTMLParser` (valores esperados gerados com o próprio Python).
  */
-import { spawnSync } from "node:child_process";
+import * as NodeChildProcess from "node:child_process";
 import { afterEach, describe, expect, test } from "vite-plus/test";
-import {
-  chmodSync,
-  existsSync,
-  mkdtempSync,
-  readdirSync,
-  readFileSync,
-  realpathSync,
-  rmSync,
-  writeFileSync,
-} from "node:fs";
-import { tmpdir } from "node:os";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodeOS from "node:os";
+import * as NodePath from "node:path";
 import { casefold } from "@simplifica-if/kb/python/texto";
 import type { ObjetoPy } from "@simplifica-if/kb/python/valores";
 import { caminhosPadrao } from "../scripts/caminhos.ts";
@@ -47,10 +38,10 @@ import {
 } from "../scripts/subagents.ts";
 
 const caminhos = caminhosPadrao();
-const RAIZ = path.resolve(caminhos.appDir, "../../..");
-const ENTRYPOINT = path.join(caminhos.appDir, "scripts", "revisar_ppc.ts");
+const RAIZ = NodePath.resolve(caminhos.appDir, "../../..");
+const ENTRYPOINT = NodePath.join(caminhos.appDir, "scripts", "revisar_ppc.ts");
 const RELOGIO = () => new Date("2026-11-13T12:34:56Z");
-const TOTAL_FICHAS = readdirSync(caminhos.fichasDir).filter((nome) => nome.endsWith(".json")).length;
+const TOTAL_FICHAS = NodeFS.readdirSync(caminhos.fichasDir).filter((nome) => nome.endsWith(".json")).length;
 
 const MARKDOWN_BASE = `# Curso Técnico em Informática
 
@@ -65,20 +56,20 @@ O curso apresenta objetivos, perfil do egresso e justificativa institucional.
 
 const temporarios: string[] = [];
 afterEach(() => {
-  for (const dir of temporarios.splice(0)) rmSync(dir, { recursive: true, force: true });
+  for (const dir of temporarios.splice(0)) NodeFS.rmSync(dir, { recursive: true, force: true });
 });
 
 function diretorioTemporario(): string {
-  const dir = realpathSync(mkdtempSync(path.join(tmpdir(), "revisar-ppc-relatorio-")));
+  const dir = NodeFS.realpathSync(NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "revisar-ppc-relatorio-")));
   temporarios.push(dir);
   return dir;
 }
 
 function criarRodada(markdown = MARKDOWN_BASE): string {
   const dir = diretorioTemporario();
-  const arquivo = path.join(dir, "PPC.md");
-  writeFileSync(arquivo, markdown, "utf-8");
-  return prepararDocumento(arquivo, { saidaBase: path.join(dir, "output"), relogio: RELOGIO }).rodadaDir;
+  const arquivo = NodePath.join(dir, "PPC.md");
+  NodeFS.writeFileSync(arquivo, markdown, "utf-8");
+  return prepararDocumento(arquivo, { saidaBase: NodePath.join(dir, "output"), relogio: RELOGIO }).rodadaDir;
 }
 
 function resultado(fichaId: string, estado = "ATENDE", evidencias = 3): ObjetoPy {
@@ -121,15 +112,15 @@ function primeiraValidacaoCruzada(): string {
 
 /** Grava os resultados, gera o relatório e devolve o HTML. */
 function gerar(rodada: string, payload: unknown): string {
-  escreverJsonPy(path.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
+  escreverJsonPy(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
   gerarRelatorioHtml(rodada, "resultados-subagents.json");
-  return readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8");
+  return NodeFS.readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8");
 }
 
 function surgeFalso(dir: string, corpo: string): string {
-  const arquivo = path.join(dir, "surge-falso");
-  writeFileSync(arquivo, `#!/bin/sh\n${corpo}\n`);
-  chmodSync(arquivo, 0o755);
+  const arquivo = NodePath.join(dir, "surge-falso");
+  NodeFS.writeFileSync(arquivo, `#!/bin/sh\n${corpo}\n`);
+  NodeFS.chmodSync(arquivo, 0o755);
   return arquivo;
 }
 
@@ -363,7 +354,7 @@ describe("situação da revisão", () => {
     expect(situacao([item("BLOQ", "ATENDE"), item("REC", "NAO_ATENDE")])).toBe("APTO_PARA_SUBMISSAO");
     expect(Object.keys(SITUACOES_REVISAO)).toEqual(
       [
-        ...((lerJsonPy(path.join(caminhos.appDir, "config", "politica_revisao.json")) as ObjetoPy)
+        ...((lerJsonPy(NodePath.join(caminhos.appDir, "config", "politica_revisao.json")) as ObjetoPy)
           .situacoes as string[]),
       ].reverse(),
     );
@@ -403,11 +394,11 @@ describe("situação da revisão com alertas transversais", () => {
         revisao_humana_obrigatoria: false,
       },
     ];
-    escreverJsonPy(path.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
+    escreverJsonPy(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
     expect(validarResultadosRodada(rodada, "resultados-subagents.json").situacao).toBe("REVISAO_SUBSTANCIAL");
     const relatorio = gerarRelatorioHtml(rodada, "resultados-subagents.json");
     expect(relatorio.situacao).toBe("REVISAO_SUBSTANCIAL");
-    expect(readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8")).toContain(
+    expect(NodeFS.readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8")).toContain(
       SITUACOES_REVISAO.REVISAO_SUBSTANCIAL,
     );
   });
@@ -417,14 +408,14 @@ describe("gerar-relatorio-html", () => {
   test("aceita resultados válidos", () => {
     const rodada = criarRodada();
     const rodadaPaths = caminhosRodada(rodada);
-    escreverJsonPy(path.join(rodadaPaths.suporteDir, "resultados-subagents.json"), payloadResultadosCompletos());
+    escreverJsonPy(NodePath.join(rodadaPaths.suporteDir, "resultados-subagents.json"), payloadResultadosCompletos());
     const payload = gerarRelatorioHtml(rodada, "resultados-subagents.json");
     expect(payload.relatorio_html).toBe(rodadaPaths.relatorioHtml);
     expect(payload.total_fichas).toBe(TOTAL_FICHAS);
     expect(payload.total_alertas_transversais).toBe(0);
     expect(payload.situacao).toBe("APTO_PARA_SUBMISSAO");
     expect(payload.situacao_rotulo).toBe("Apto para submissão");
-    const html = readFileSync(rodadaPaths.relatorioHtml, "utf-8");
+    const html = NodeFS.readFileSync(rodadaPaths.relatorioHtml, "utf-8");
     for (const trecho of [
       "<title>Relatório de revisão do PPC · Técnico em Informática\n",
       "PPC anotado",
@@ -549,8 +540,8 @@ describe("gerar-relatorio-html", () => {
     expect(html).toContain('\n          <section id="ppc-b00002"');
     expect(html).not.toContain("></section><section id=");
     expect(Math.max(...html.split("\n").map((linha) => linha.length))).toBeLessThan(260);
-    expect(existsSync(path.join(rodada, "assets", "revisar-ppc.css"))).toBe(true);
-    expect(existsSync(path.join(rodada, "assets", "revisar-ppc.js"))).toBe(true);
+    expect(NodeFS.existsSync(NodePath.join(rodada, "assets", "revisar-ppc.css"))).toBe(true);
+    expect(NodeFS.existsSync(NodePath.join(rodada, "assets", "revisar-ppc.js"))).toBe(true);
   });
 
   const negativos: Array<[string, (payload: Payload) => void, string]> = [
@@ -610,10 +601,10 @@ describe("gerar-relatorio-html", () => {
         revisao_humana_obrigatoria: true,
       },
     ];
-    escreverJsonPy(path.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
+    escreverJsonPy(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
     const relatorio = gerarRelatorioHtml(rodada, "resultados-subagents.json");
     expect(relatorio.total_alertas_transversais).toBe(1);
-    const html = readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8");
+    const html = NodeFS.readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8");
     for (const trecho of ["Alertas transversais", "ALERTA-001", "Validação cruzada", "transversal-notes"]) {
       expect(html).toContain(trecho);
     }
@@ -668,10 +659,10 @@ describe("gerar-relatorio-html", () => {
     item.estado = "NAO_ATENDE";
     item.revisao_humana_obrigatoria = true;
     item.feedback_autores = texto;
-    escreverJsonPy(path.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
+    escreverJsonPy(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
     const relatorio = gerarRelatorioHtml(rodada, "resultados-subagents.json");
     expect(relatorio.total_fichas).toBe(TOTAL_FICHAS);
-    const html = readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8");
+    const html = NodeFS.readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8");
     expect(html).toContain("Feedback sugerido aos autores");
     expect(html).toContain(texto);
     expect(html).toContain("Feedback aos autores");
@@ -681,10 +672,10 @@ describe("gerar-relatorio-html", () => {
 describe("publicação no Surge", () => {
   test("chama a CLI com a pasta e o domínio", () => {
     const dir = diretorioTemporario();
-    const relatorio = path.join(dir, "relatorio.html");
-    writeFileSync(relatorio, "<!doctype html><html><body><script>ok()</script></body></html>");
-    const site = prepararSiteSurge(relatorio, path.join(dir, "surge-site"));
-    const argumentos = path.join(dir, "args.txt");
+    const relatorio = NodePath.join(dir, "relatorio.html");
+    NodeFS.writeFileSync(relatorio, "<!doctype html><html><body><script>ok()</script></body></html>");
+    const site = prepararSiteSurge(relatorio, NodePath.join(dir, "surge-site"));
+    const argumentos = NodePath.join(dir, "args.txt");
     const falso = surgeFalso(
       dir,
       `printf '%s\\n' "$@" > "${argumentos}"\necho 'Success - Published to revisar-ppc-teste.surge.sh'`,
@@ -692,13 +683,13 @@ describe("publicação no Surge", () => {
     const payload = publicarSiteSurge(site, "revisar-ppc-teste.surge.sh", [falso]);
     expect(payload.public_url).toBe("https://revisar-ppc-teste.surge.sh");
     expect(payload.domain).toBe("revisar-ppc-teste.surge.sh");
-    expect(readFileSync(path.join(site, "index.html"), "utf-8")).toContain("<script>ok()</script>");
-    expect(readFileSync(argumentos, "utf-8")).toBe(`${site}\nrevisar-ppc-teste.surge.sh\n`);
+    expect(NodeFS.readFileSync(NodePath.join(site, "index.html"), "utf-8")).toContain("<script>ok()</script>");
+    expect(NodeFS.readFileSync(argumentos, "utf-8")).toBe(`${site}\nrevisar-ppc-teste.surge.sh\n`);
   });
 
   test("recusa saída sem confirmação, pedido de login e código de erro", () => {
     const dir = diretorioTemporario();
-    const site = path.join(dir, "site");
+    const site = NodePath.join(dir, "site");
     const mudo = surgeFalso(dir, "echo 'Publicando...'");
     expect(() => publicarSiteSurge(site, "x.surge.sh", [mudo])).toThrow("confirmação de publicação reconhecível");
     const login = surgeFalso(dir, "echo 'Login or create surge account'; echo 'email:'");
@@ -716,9 +707,9 @@ describe("publicação no Surge", () => {
   test("a CLI publica por padrão e grava surge-publicacao.json", () => {
     const rodada = criarRodada();
     const rodadaPaths = caminhosRodada(rodada);
-    escreverJsonPy(path.join(rodadaPaths.suporteDir, "resultados-subagents.json"), payloadResultadosCompletos());
+    escreverJsonPy(NodePath.join(rodadaPaths.suporteDir, "resultados-subagents.json"), payloadResultadosCompletos());
     const falso = surgeFalso(diretorioTemporario(), "echo 'Success - Published'");
-    const processo = spawnSync(
+    const processo = NodeChildProcess.spawnSync(
       process.execPath,
       [ENTRYPOINT, "gerar-relatorio-html", "--rodada-dir", rodada, "--surge-domain", "relatorio-ppc.surge.sh"],
       { cwd: RAIZ, env: { ...process.env, REVISAR_PPC_SURGE_CMD: falso } },
@@ -732,12 +723,12 @@ describe("publicação no Surge", () => {
       "Relatório de revisão do PPC pronto (Apto para submissão): https://relatorio-ppc.surge.sh. " +
         "Revisão prévia à submissão; não substitui a análise oficial da PROENS.",
     );
-    expect(existsSync(rodadaPaths.relatorioHtml)).toBe(true);
-    const site = path.join(rodadaPaths.suporteDir, "surge-site");
-    expect(casefold(readFileSync(path.join(site, "index.html"), "utf-8"))).toContain("<script");
-    expect(existsSync(path.join(site, "assets", "revisar-ppc.css"))).toBe(true);
-    expect(existsSync(path.join(site, "assets", "revisar-ppc.js"))).toBe(true);
-    const publicacao = lerJsonPy(path.join(rodadaPaths.suporteDir, "surge-publicacao.json")) as ObjetoPy;
+    expect(NodeFS.existsSync(rodadaPaths.relatorioHtml)).toBe(true);
+    const site = NodePath.join(rodadaPaths.suporteDir, "surge-site");
+    expect(casefold(NodeFS.readFileSync(NodePath.join(site, "index.html"), "utf-8"))).toContain("<script");
+    expect(NodeFS.existsSync(NodePath.join(site, "assets", "revisar-ppc.css"))).toBe(true);
+    expect(NodeFS.existsSync(NodePath.join(site, "assets", "revisar-ppc.js"))).toBe(true);
+    const publicacao = lerJsonPy(NodePath.join(rodadaPaths.suporteDir, "surge-publicacao.json")) as ObjetoPy;
     expect(publicacao.domain).toBe("relatorio-ppc.surge.sh");
     expect(publicacao.site_dir).toBe(site);
     expect(publicacao.relatorio_html_original).toBe(rodadaPaths.relatorioHtml);
@@ -746,10 +737,10 @@ describe("publicação no Surge", () => {
   test("--sem-surge devolve a URL local codificada como Path.as_uri", () => {
     const rodada = criarRodada();
     escreverJsonPy(
-      path.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"),
+      NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"),
       payloadResultadosCompletos(),
     );
-    const processo = spawnSync(
+    const processo = NodeChildProcess.spawnSync(
       process.execPath,
       [ENTRYPOINT, "gerar-relatorio-html", "--rodada-dir", rodada, "--sem-surge"],
       { cwd: RAIZ },

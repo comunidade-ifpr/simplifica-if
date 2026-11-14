@@ -1,8 +1,8 @@
 /** Validação das normas (Markdown com front matter), do manifest.json e do README.md. */
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
-import { existsSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { ehArquivo, listarDiretorio, listarRecursivo, naBase } from "../caminhos.ts";
 import {
   analisarFrontMatter,
@@ -52,7 +52,7 @@ function comparavel(campo: string, valor: unknown): unknown {
 export function validarPadroesLocais(ctx: Contexto): string[] {
   const erros: string[] = [];
   for (const caminho of listarRecursivo(ctx.c.raiz)) {
-    const partes = ctx.rel(caminho).split(path.sep);
+    const partes = ctx.rel(caminho).split(NodePath.sep);
     if (partes.some((parte) => DIRETORIOS_IGNORADOS_PADROES_LOCAIS.has(parte)) || !ehArquivo(caminho)) continue;
     let texto: string;
     try {
@@ -83,7 +83,7 @@ export function carregarManifest(ctx: Contexto): Resultado<unknown[]> {
 export function validarCoberturaManifest(ctx: Contexto, manifest: unknown[]): string[] {
   const erros: string[] = [];
   const markdownsNaRaiz = listarDiretorio(ctx.c.raiz, ".md")
-    .map((caminho) => path.basename(caminho))
+    .map((caminho) => NodePath.basename(caminho))
     .filter((nome) => nome !== "AGENTS.md" && nome !== "README.md");
   if (markdownsNaRaiz.length) {
     erros.push(`normas não devem ficar na raiz do repositório: ${listaOrdenada(markdownsNaRaiz)}`);
@@ -208,7 +208,7 @@ export function validarUnicidadeIds(ctx: Contexto, caminhos: string[], idsRegist
 /** `normas/stubs.yaml`: contrato (Effect Schema). Devolve os IDs registrados (stubs e `externo:`). */
 export function validarStubs(ctx: Contexto): { erros: string[]; ids: Set<string> } {
   const arquivo = caminhoStubs(ctx.c.raizProjeto);
-  if (!existsSync(arquivo)) return { erros: [], ids: new Set() };
+  if (!NodeFS.existsSync(arquivo)) return { erros: [], ids: new Set() };
   try {
     const registro = lerRegistroStubs(arquivo);
     return { erros: [], ids: new Set([...registro.normas, ...registro.externos].map((item) => item.id)) };
@@ -229,9 +229,9 @@ export function validarItemManifest(ctx: Contexto, item: ObjetoJson): string[] {
   if (typeof valorPath !== "string") return [...erros, "manifest.json: item sem path textual"];
 
   const caminho = naBase(ctx.c, valorPath);
-  if (!existsSync(caminho)) return [...erros, `manifest.json aponta para arquivo inexistente: ${valorPath}`];
+  if (!NodeFS.existsSync(caminho)) return [...erros, `manifest.json aponta para arquivo inexistente: ${valorPath}`];
 
-  if (RE_DATA_NO_INICIO.test(path.basename(caminho))) {
+  if (RE_DATA_NO_INICIO.test(NodePath.basename(caminho))) {
     erros.push(`${valorPath}: nome do arquivo não deve começar com data`);
   }
 
@@ -242,7 +242,7 @@ export function validarItemManifest(ctx: Contexto, item: ObjetoJson): string[] {
     erros.push(
       `manifest.json: item com jurisdição/tipo sem diretório configurado: (${representar(jurisdicao)}, ${representar(tipo)})`,
     );
-  } else if (ctx.rel(path.dirname(caminho)) !== diretorioEsperado) {
+  } else if (ctx.rel(NodePath.dirname(caminho)) !== diretorioEsperado) {
     erros.push(`${valorPath}: deveria estar em ${diretorioEsperado}`);
   }
 
@@ -320,7 +320,7 @@ export function validarRelacoesEVigencia(ctx: Contexto): string[] {
     else erros.push(`transicoes.yaml: ${(erro as Error).message.split("\n")[0]}`);
   }
 
-  if (!existsSync(caminhoConfigVigencia(raiz))) {
+  if (!NodeFS.existsSync(caminhoConfigVigencia(raiz))) {
     return [...erros, "config/vigencia.yaml não encontrado (data_referencia da vigência publicada)"];
   }
   let referencia: string;

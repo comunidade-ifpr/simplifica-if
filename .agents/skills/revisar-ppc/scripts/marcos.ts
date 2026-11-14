@@ -7,7 +7,7 @@
  * `derivarLinha` (`@simplifica-if/kb/normas/vigencia`), a partir de `base-conhecimento/relacoes.yaml`,
  * na `data_referencia` de `base-conhecimento/config/vigencia.yaml`.
  */
-import path from "node:path";
+import * as NodePath from "node:path";
 import { type LinhaDerivada, dataReferencia, derivarLinha } from "@simplifica-if/kb/normas/vigencia";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import type { Marco, MarcoArquivo } from "./esquemas.ts";
@@ -17,7 +17,7 @@ export type Derivacao = (linha: readonly string[]) => LinhaDerivada;
 
 /** Derivação sobre a base do checkout (relacoes.yaml na data de referência). */
 export function derivacaoPadrao(caminhos: CaminhosAnalise = caminhosPadrao()): Derivacao {
-  const raiz = path.dirname(caminhos.baseConhecimentoDir);
+  const raiz = NodePath.dirname(caminhos.baseConhecimentoDir);
   const data = dataReferencia(raiz);
   return (linha) => derivarLinha(linha, data, raiz);
 }

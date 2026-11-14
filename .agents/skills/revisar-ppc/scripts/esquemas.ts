@@ -8,8 +8,8 @@
  * eles exigem cabe no JSON Schema. As checagens que dependem da base (ID existente, norma revogada,
  * marco) ficam em `validacao-base.ts`.
  */
-import { existsSync, readFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { z } from "zod";
 import { jsonIndentado, type ObjetoJson } from "@simplifica-if/kb/json";
 import { RE_ID_ATO, RE_ID_DISPOSITIVO, RE_REFERENCIA } from "@simplifica-if/kb/normas/ids";
@@ -147,7 +147,7 @@ export function jsonSchemaGerado(nome: NomeSchemaGerado): ObjetoJson {
 /** Grava os JSON Schemas gerados em `schemas/`. */
 export function escreverSchemas(caminhos: CaminhosAnalise = caminhosPadrao()): string[] {
   return SCHEMAS_GERADOS.map((nome) => {
-    const arquivo = path.join(caminhos.schemasDir, nome);
+    const arquivo = NodePath.join(caminhos.schemasDir, nome);
     escreverTexto(arquivo, jsonIndentado(jsonSchemaGerado(nome)));
     return arquivo;
   });
@@ -155,9 +155,10 @@ export function escreverSchemas(caminhos: CaminhosAnalise = caminhosPadrao()): s
 
 /** Arquivos de `schemas/` que não coincidem com o gerado do zod (vazio quando estão em dia). */
 export function schemasDesatualizados(caminhos: CaminhosAnalise = caminhosPadrao()): string[] {
-  return SCHEMAS_GERADOS.map((nome) => path.join(caminhos.schemasDir, nome)).filter(
+  return SCHEMAS_GERADOS.map((nome) => NodePath.join(caminhos.schemasDir, nome)).filter(
     (arquivo) =>
-      !existsSync(arquivo) ||
-      readFileSync(arquivo, "utf-8") !== jsonIndentado(jsonSchemaGerado(path.basename(arquivo) as NomeSchemaGerado)),
+      !NodeFS.existsSync(arquivo) ||
+      NodeFS.readFileSync(arquivo, "utf-8") !==
+        jsonIndentado(jsonSchemaGerado(NodePath.basename(arquivo) as NomeSchemaGerado)),
   );
 }

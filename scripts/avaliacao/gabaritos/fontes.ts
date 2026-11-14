@@ -2,8 +2,8 @@
  * Leitura das fontes locais usadas pelos geradores de gabarito: manifesto de normas, dados
  * institucionais, CNCT e PPCs convertidos. Tudo é lido do checkout; nada depende do relógio.
  */
-import { existsSync, readFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { mascararFrontMatter } from "@simplifica-if/kb/ppcs/front-matter";
 import { z } from "zod";
 import { carregarDadosInstitucionais, type DadosInstitucionais } from "../../dados/institucional.ts";
@@ -60,22 +60,22 @@ export interface Fontes {
 }
 
 function lerJson(caminho: string): unknown {
-  return JSON.parse(readFileSync(caminho, "utf-8"));
+  return JSON.parse(NodeFS.readFileSync(caminho, "utf-8"));
 }
 
 export function carregarFontes(raiz: string = RAIZ_REPOSITORIO): Fontes {
-  const base = path.join(raiz, "base-conhecimento");
-  const normas = z.array(esquemaEntradaManifesto).parse(lerJson(path.join(base, "manifest.json")));
-  const { dados, erros } = carregarDadosInstitucionais(path.join(raiz, "dados", "institucional"));
+  const base = NodePath.join(raiz, "base-conhecimento");
+  const normas = z.array(esquemaEntradaManifesto).parse(lerJson(NodePath.join(base, "manifest.json")));
+  const { dados, erros } = carregarDadosInstitucionais(NodePath.join(raiz, "dados", "institucional"));
   if (erros.length > 0) throw new Error(`dados/institucional inválido:\n${erros.join("\n")}`);
   const cnct = z
     .object({ items: z.array(esquemaItemCnct) })
-    .parse(lerJson(path.join(base, "catalogos", "cnct", "index.json"))).items;
+    .parse(lerJson(NodePath.join(base, "catalogos", "cnct", "index.json"))).items;
   const ppcs = z
     .object({ items: z.array(esquemaItemPpc) })
-    .parse(lerJson(path.join(base, "institucional", "ifpr", "ppcs", "index.json"))).items;
+    .parse(lerJson(NodePath.join(base, "institucional", "ifpr", "ppcs", "index.json"))).items;
   const cache = new Map<string, string>();
-  const caminhoPpc = new Map(ppcs.map((ppc) => [ppc.id, path.join(base, ppc.path)]));
+  const caminhoPpc = new Map(ppcs.map((ppc) => [ppc.id, NodePath.join(base, ppc.path)]));
   return {
     raiz,
     normas: normas as EntradaNorma[],
@@ -86,8 +86,8 @@ export function carregarFontes(raiz: string = RAIZ_REPOSITORIO): Fontes {
       const emCache = cache.get(id);
       if (emCache !== undefined) return emCache;
       const caminho = caminhoPpc.get(id);
-      if (!caminho || !existsSync(caminho)) throw new Error(`PPC sem arquivo: ${id}`);
-      const texto = mascararFrontMatter(readFileSync(caminho, "utf-8"));
+      if (!caminho || !NodeFS.existsSync(caminho)) throw new Error(`PPC sem arquivo: ${id}`);
+      const texto = mascararFrontMatter(NodeFS.readFileSync(caminho, "utf-8"));
       cache.set(id, texto);
       return texto;
     },

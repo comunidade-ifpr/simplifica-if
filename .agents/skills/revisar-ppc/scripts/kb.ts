@@ -9,7 +9,7 @@
  *   efeito dos serviços com `Effect.runSync` (as consultas sobre o `node:sqlite` são síncronas), para
  *   as funções da skill, que ainda são síncronas.
  */
-import path from "node:path";
+import * as NodePath from "node:path";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Compilador from "@simplifica-if/kb/Compilador";
 import * as Layers from "@simplifica-if/kb/layers";
@@ -21,7 +21,7 @@ import * as Scope from "effect/Scope";
 
 /** O `kb.sqlite` do checkout em `raiz`: `KB_SQLITE` ou `<raiz>/tmp/kb.sqlite`, como na CLI `kb`. */
 export function caminhoDoBanco(raiz: string): string {
-  return process.env.KB_SQLITE ? path.resolve(process.env.KB_SQLITE) : path.join(raiz, "tmp", "kb.sqlite");
+  return process.env.KB_SQLITE ? NodePath.resolve(process.env.KB_SQLITE) : NodePath.join(raiz, "tmp", "kb.sqlite");
 }
 
 /** Recompila o banco do checkout se preciso (`KB_RECOMPILAR` como na CLI `kb`). */

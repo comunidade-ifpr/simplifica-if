@@ -1,7 +1,7 @@
 import { afterAll, describe, expect, test } from "vite-plus/test";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodeOS from "node:os";
+import * as NodePath from "node:path";
 import { carregarConfig } from "./carregar.ts";
 import { esquemaConfig } from "./esquema.ts";
 import {
@@ -12,8 +12,8 @@ import {
   VARIAVEIS_AMBIENTE_CLAUDE,
 } from "./executor.ts";
 
-const diretorio = mkdtempSync(path.join(tmpdir(), "avaliacao-env-"));
-afterAll(() => rmSync(diretorio, { recursive: true, force: true }));
+const diretorio = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "avaliacao-env-"));
+afterAll(() => NodeFS.rmSync(diretorio, { recursive: true, force: true }));
 
 /** Ambiente de um runtime que carrega o `.env.local` sozinho: shell do usuário + o que veio do arquivo. */
 const ENV_LOCAL = "NOTION_TOKEN=secret_x\nSUAP_USUARIO=fulano\nSUAP_SENHA=senha\nANTHROPIC_API_KEY=da-env-local\n";
@@ -33,8 +33,8 @@ const PROCESSO = {
 };
 
 describe("ambiente do claude -p", () => {
-  writeFileSync(path.join(diretorio, ".env.local"), ENV_LOCAL);
-  writeFileSync(path.join(diretorio, ".env"), "OUTRA=1\n");
+  NodeFS.writeFileSync(NodePath.join(diretorio, ".env.local"), ENV_LOCAL);
+  NodeFS.writeFileSync(NodePath.join(diretorio, ".env"), "OUTRA=1\n");
 
   test("lê as chaves de todos os .env* do diretório", () => {
     expect([...chavesArquivosEnv(diretorio)].sort()).toEqual([
@@ -44,7 +44,7 @@ describe("ambiente do claude -p", () => {
       "SUAP_SENHA",
       "SUAP_USUARIO",
     ]);
-    expect(chavesArquivosEnv(path.join(diretorio, "inexistente")).size).toBe(0);
+    expect(chavesArquivosEnv(NodePath.join(diretorio, "inexistente")).size).toBe(0);
   });
 
   test("só passa a lista explícita e nada que venha de .env*", () => {

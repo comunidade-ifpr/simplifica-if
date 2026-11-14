@@ -4,20 +4,11 @@
  * prompts, grupo avulso, mescla e validação de resultados (casos portados de
  * `test_flow.py`).
  */
-import { spawnSync } from "node:child_process";
+import * as NodeChildProcess from "node:child_process";
 import { afterEach, beforeAll, describe, expect, test } from "vite-plus/test";
-import {
-  existsSync,
-  mkdirSync,
-  mkdtempSync,
-  readdirSync,
-  readFileSync,
-  realpathSync,
-  rmSync,
-  writeFileSync,
-} from "node:fs";
-import { tmpdir } from "node:os";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodeOS from "node:os";
+import * as NodePath from "node:path";
 import { dumpsPy } from "@simplifica-if/kb/python/json";
 import { casefold } from "@simplifica-if/kb/python/texto";
 import { FloatPy, type ObjetoPy } from "@simplifica-if/kb/python/valores";
@@ -28,7 +19,7 @@ import { normalizarMarkdown } from "../scripts/normalizador-markdown.ts";
 import { mesclarIdentificacaoPreferindoPreenchidos, prepararDocumento } from "../scripts/preparar-documento.ts";
 import { referenciasLegiveisDaFicha, universoOuVazio } from "../scripts/referencias-fichas.ts";
 import { ErroResultadosSubagents, mesclarResultadosAvulsos, validarResultadosRodada } from "../scripts/resultados.ts";
-import { DatabaseSync } from "node:sqlite";
+import * as NodeSqlite from "node:sqlite";
 import { garantirBancoFresco } from "../scripts/kb.ts";
 import { agoraIso, caminhosRodada, escreverJsonPy, lerJsonPy, timestampSlug } from "../scripts/rodada.ts";
 import {
@@ -45,11 +36,11 @@ import {
 } from "../scripts/subagents.ts";
 
 const caminhos = caminhosPadrao();
-const RAIZ = path.resolve(caminhos.appDir, "../../..");
-const ENTRYPOINT = path.join(caminhos.appDir, "scripts", "revisar_ppc.ts");
-const FIXTURES = path.join(caminhos.appDir, "tests", "fixtures");
+const RAIZ = NodePath.resolve(caminhos.appDir, "../../..");
+const ENTRYPOINT = NodePath.join(caminhos.appDir, "scripts", "revisar_ppc.ts");
+const FIXTURES = NodePath.join(caminhos.appDir, "tests", "fixtures");
 const RELOGIO = () => new Date("2026-11-13T12:34:56Z");
-const TOTAL_FICHAS = readdirSync(caminhos.fichasDir).filter((nome) => nome.endsWith(".json")).length;
+const TOTAL_FICHAS = NodeFS.readdirSync(caminhos.fichasDir).filter((nome) => nome.endsWith(".json")).length;
 
 const MARKDOWN_BASE = `# Curso Técnico em Informática
 
@@ -71,20 +62,20 @@ beforeAll(async () => {
 
 const temporarios: string[] = [];
 afterEach(() => {
-  for (const dir of temporarios.splice(0)) rmSync(dir, { recursive: true, force: true });
+  for (const dir of temporarios.splice(0)) NodeFS.rmSync(dir, { recursive: true, force: true });
 });
 
 function diretorioTemporario(): string {
-  const dir = realpathSync(mkdtempSync(path.join(tmpdir(), "revisar-ppc-")));
+  const dir = NodeFS.realpathSync(NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "revisar-ppc-")));
   temporarios.push(dir);
   return dir;
 }
 
 function criarRodada(markdown = MARKDOWN_BASE): string {
   const dir = diretorioTemporario();
-  const arquivo = path.join(dir, "PPC.md");
-  writeFileSync(arquivo, markdown, "utf-8");
-  return prepararDocumento(arquivo, { saidaBase: path.join(dir, "output"), relogio: RELOGIO }).rodadaDir;
+  const arquivo = NodePath.join(dir, "PPC.md");
+  NodeFS.writeFileSync(arquivo, markdown, "utf-8");
+  return prepararDocumento(arquivo, { saidaBase: NodePath.join(dir, "output"), relogio: RELOGIO }).rodadaDir;
 }
 
 function resultado(fichaId: string, estado = "ATENDE", evidencias = 3): ObjetoPy {
@@ -118,7 +109,7 @@ function textoFicha(ficha: ObjetoPy, campos: string[]): string {
 }
 
 function lerFicha(nome: string): ObjetoPy {
-  return lerJsonPy(path.join(caminhos.fichasDir, nome)) as ObjetoPy;
+  return lerJsonPy(NodePath.join(caminhos.fichasDir, nome)) as ObjetoPy;
 }
 
 const universo = universoOuVazio(caminhos);
@@ -134,7 +125,7 @@ function topico(id: string): ObjetoPy {
 }
 
 function cli(...argumentos: string[]) {
-  const processo = spawnSync(process.execPath, [ENTRYPOINT, ...argumentos], {
+  const processo = NodeChildProcess.spawnSync(process.execPath, [ENTRYPOINT, ...argumentos], {
     cwd: RAIZ,
     env: { ...process.env, REVISAR_PPC_AGORA: "2026-11-13T12:34:56Z" },
     encoding: "utf-8",
@@ -155,9 +146,9 @@ describe("REVISAR_PPC_AGORA", () => {
   /** Relógio do ambiente lido num processo novo, com fuso e `REVISAR_PPC_AGORA` fixos. */
   function relogioEm(fuso: string, agora: string) {
     const codigo =
-      `import { agoraIso, timestampSlug } from ${JSON.stringify(path.join(caminhos.appDir, "scripts", "rodada.ts"))};` +
+      `import { agoraIso, timestampSlug } from ${JSON.stringify(NodePath.join(caminhos.appDir, "scripts", "rodada.ts"))};` +
       "console.log(JSON.stringify([timestampSlug(), agoraIso()]));";
-    const processo = spawnSync(process.execPath, ["--input-type=module", "-e", codigo], {
+    const processo = NodeChildProcess.spawnSync(process.execPath, ["--input-type=module", "-e", codigo], {
       env: { ...process.env, TZ: fuso, REVISAR_PPC_AGORA: agora },
       encoding: "utf-8",
     });
@@ -194,7 +185,7 @@ describe("preparar-documento", () => {
   test("cria a rodada a partir de Markdown", () => {
     const rodada = criarRodada();
     const c = caminhosRodada(rodada);
-    expect([c.ppc, c.metadata, c.manifesto].every((arquivo) => existsSync(arquivo))).toBe(true);
+    expect([c.ppc, c.metadata, c.manifesto].every((arquivo) => NodeFS.existsSync(arquivo))).toBe(true);
     expect((lerJsonPy(c.metadata) as ObjetoPy).curso).toBe("Técnico em Informática");
     expect((lerJsonPy(c.manifesto) as ObjetoPy).execucao).toBe("subagents-na-conversa");
     expect(Object.keys(c).sort()).toEqual(
@@ -218,7 +209,7 @@ describe("preparar-documento", () => {
         "relatorioHtml",
       ].sort(),
     );
-    expect(path.basename(rodada)).toMatch(/^2026-11-13t\d{2}-34-56-ppc$/);
+    expect(NodePath.basename(rodada)).toMatch(/^2026-11-13t\d{2}-34-56-ppc$/);
   });
 
   test("remove o sumário do PPC canônico", () => {
@@ -233,7 +224,7 @@ describe("preparar-documento", () => {
 
 Texto do corpo.
 `);
-    const ppc = readFileSync(caminhosRodada(rodada).ppc, "utf-8");
+    const ppc = NodeFS.readFileSync(caminhosRodada(rodada).ppc, "utf-8");
     expect(ppc).not.toContain("5.7 EMENTÁRIO 30");
     expect(ppc).toContain("# 1 APRESENTAÇÃO");
     expect(ppc).toContain("Texto do corpo.");
@@ -252,14 +243,14 @@ Campus: Assis Chateaubriand
 
 O curso apresenta objetivos.
 `);
-    const ppc = readFileSync(caminhosRodada(rodada).ppc, "utf-8");
+    const ppc = NodeFS.readFileSync(caminhosRodada(rodada).ppc, "utf-8");
     expect(ppc).toContain("Curso Técnico em Informática");
     expect(ppc).toContain("Assis Chateaubriand");
     expect((lerJsonPy(caminhosRodada(rodada).metadata) as ObjetoPy).campus).toBe("Assis Chateaubriand");
   });
 
   test("tira o front matter de proveniência de um PPC da base", () => {
-    const arquivo = path.join(
+    const arquivo = NodePath.join(
       caminhos.baseConhecimentoDir,
       "institucional",
       "ifpr",
@@ -268,18 +259,18 @@ O curso apresenta objetivos.
       "tecnico-em-eventos.md",
     );
     const rodada = prepararDocumento(arquivo, { saidaBase: diretorioTemporario(), relogio: RELOGIO }).rodadaDir;
-    const ppc = readFileSync(caminhosRodada(rodada).ppc, "utf-8");
+    const ppc = NodeFS.readFileSync(caminhosRodada(rodada).ppc, "utf-8");
     expect(ppc).not.toContain("fonte_url");
     expect(ppc).not.toContain("ppc:curitiba/tecnico-em-eventos");
   });
 
   test("rejeita extensão desconhecida e arquivo ausente", () => {
     const dir = diretorioTemporario();
-    writeFileSync(path.join(dir, "ppc.txt"), "x");
-    expect(() => prepararDocumento(path.join(dir, "ppc.txt"), { saidaBase: dir })).toThrow(
+    NodeFS.writeFileSync(NodePath.join(dir, "ppc.txt"), "x");
+    expect(() => prepararDocumento(NodePath.join(dir, "ppc.txt"), { saidaBase: dir })).toThrow(
       "A entrada deve ser um arquivo .md ou .docx.",
     );
-    expect(() => prepararDocumento(path.join(dir, "nao-existe.md"), { saidaBase: dir })).toThrow(
+    expect(() => prepararDocumento(NodePath.join(dir, "nao-existe.md"), { saidaBase: dir })).toThrow(
       "Arquivo não encontrado",
     );
   });
@@ -566,7 +557,7 @@ describe("fichas e grupos", () => {
     const rodada = criarRodada();
     const c = caminhosRodada(rodada);
     const payload = montarGruposSubagents(rodada) as ObjetoPy & { grupos: ObjetoPy[] };
-    expect(existsSync(c.gruposSubagents)).toBe(true);
+    expect(NodeFS.existsSync(c.gruposSubagents)).toBe(true);
     expect(payload.grupos_subagents_path).toBe(c.gruposSubagents);
     expect(payload.ppc_markdown).toBe(c.ppc);
     expect(payload.total_fichas).toBe(TOTAL_FICHAS);
@@ -575,7 +566,9 @@ describe("fichas e grupos", () => {
     );
     expect((payload.agrupamento as ObjetoPy).criterio).toBe("topico");
     expect(payload.grupos.every((g) => (g.contextos as ObjetoPy).ppc !== undefined)).toBe(true);
-    expect([c.cnctContexto, c.contextoEstruturalSubagents, c.validacoesCruzadasContexto].every(existsSync)).toBe(true);
+    expect([c.cnctContexto, c.contextoEstruturalSubagents, c.validacoesCruzadasContexto].every(NodeFS.existsSync)).toBe(
+      true,
+    );
     const cnct = payload.cnct_contexto as { correspondencia: ObjetoPy; fonte_catalogo: string };
     expect(cnct.correspondencia.denominacao).toBe("Técnico em Informática");
     expect(cnct.fonte_catalogo).toContain("base-conhecimento/catalogos/cnct/index.json");
@@ -592,7 +585,7 @@ describe("fichas e grupos", () => {
     expect((payload.fundamentacao_normativa as ObjetoPy).protocolo).toBe("verificar-fundamentacao-normativa");
     expect(comFundamentacao.every((g) => "fundamentacao_normativa" in (g.contextos as ObjetoPy))).toBe(true);
     // O score do CNCT é float do Python: escrito como 1.0.
-    expect(readFileSync(c.cnctContexto, "utf-8")).toContain('"score": 1.0');
+    expect(NodeFS.readFileSync(c.cnctContexto, "utf-8")).toContain('"score": 1.0');
   });
 
   test("a CLI imprime um resumo por padrão", () => {
@@ -610,10 +603,10 @@ describe("fichas e grupos", () => {
   test("anexa a representação gráfica quando disponível", () => {
     const rodada = criarRodada();
     const c = caminhosRodada(rodada);
-    const imagem = path.join(c.artefatosConversaoDir, "imagens", "representacao_grafica.png");
-    mkdirSync(path.dirname(imagem), { recursive: true });
-    writeFileSync(imagem, "imagem");
-    const dados = path.join(c.artefatosConversaoDir, "dados.json");
+    const imagem = NodePath.join(c.artefatosConversaoDir, "imagens", "representacao_grafica.png");
+    NodeFS.mkdirSync(NodePath.dirname(imagem), { recursive: true });
+    NodeFS.writeFileSync(imagem, "imagem");
+    const dados = NodePath.join(c.artefatosConversaoDir, "dados.json");
     escreverJsonPy(dados, { representacao_grafica: { extraida: true, caminho: "imagens/representacao_grafica.png" } });
     escreverJsonPy(c.preparacaoDocx, { dados });
     const payload = montarGruposSubagents(rodada) as { grupos: ObjetoPy[] };
@@ -628,7 +621,7 @@ describe("fichas e grupos", () => {
     const manifest = prepararPromptsSubagents(rodada) as { total_pacotes: number; arquivos: ObjetoPy[] };
     expect(manifest.total_pacotes).toBe(payload.grupos.length);
     const transversal = manifest.arquivos.find((a) => a.topico === "transversal")!;
-    const texto = readFileSync(String(transversal.arquivo), "utf-8");
+    const texto = NodeFS.readFileSync(String(transversal.arquivo), "utf-8");
     for (const trecho of [
       "## Prompt de trabalho",
       "## PPC.md",
@@ -641,10 +634,10 @@ describe("fichas e grupos", () => {
   });
 
   test("fixtures qualitativas exercitam norma e estágio", () => {
-    const fixtureNorma = path.join(FIXTURES, "ppc_norma_sem_suporte.md");
-    const fixtureEstagio = path.join(FIXTURES, "ppc_estagio_contraditorio.md");
-    expect(readFileSync(fixtureNorma, "utf-8")).toContain("dispensa a consulta ao Catálogo Nacional");
-    expect(readFileSync(fixtureEstagio, "utf-8")).toContain("estágio é não obrigatório");
+    const fixtureNorma = NodePath.join(FIXTURES, "ppc_norma_sem_suporte.md");
+    const fixtureEstagio = NodePath.join(FIXTURES, "ppc_estagio_contraditorio.md");
+    expect(NodeFS.readFileSync(fixtureNorma, "utf-8")).toContain("dispensa a consulta ao Catálogo Nacional");
+    expect(NodeFS.readFileSync(fixtureEstagio, "utf-8")).toContain("estágio é não obrigatório");
     const dir = diretorioTemporario();
     const { rodadaDir } = prepararDocumento(fixtureEstagio, { saidaBase: dir, relogio: RELOGIO });
     const grupos = montarGruposSubagents(rodadaDir) as ObjetoPy & { grupos: ObjetoPy[] };
@@ -709,7 +702,7 @@ describe("grupos por tópico num PPC fora da base", () => {
     // linhas e IDs de seção na taxonomia técnica do índice
     const secaoEstagio = secoes("estagio").find((s) => s.tipo === "estagio_praticas")!;
     expect(secaoEstagio.id).toBe("estagio_praticas-1");
-    expect(readFileSync(c.ppc, "utf-8").split("\n")[Number(secaoEstagio.linha_inicio) - 1]).toBe(
+    expect(NodeFS.readFileSync(c.ppc, "utf-8").split("\n")[Number(secaoEstagio.linha_inicio) - 1]).toBe(
       "# 3. ESTÁGIO CURRICULAR",
     );
 
@@ -727,7 +720,7 @@ describe("grupos por tópico num PPC fora da base", () => {
 
     const manifest = prepararPromptsSubagents(rodada) as { arquivos: ObjetoPy[] };
     const pacote = (topico: string) =>
-      readFileSync(String(manifest.arquivos.find((a) => a.topico === topico)!.arquivo), "utf-8");
+      NodeFS.readFileSync(String(manifest.arquivos.find((a) => a.topico === topico)!.arquivo), "utf-8");
     const textoEstagio = pacote("estagio");
     expect(textoEstagio).toContain("## PPC.md: seções do grupo");
     expect(textoEstagio).toContain("Regulamento Geral de Estágio do campus");
@@ -753,20 +746,20 @@ describe("grupos por tópico num PPC fora da base", () => {
 
   test("pacotes determinísticos com o relógio fixo (REVISAR_PPC_AGORA)", () => {
     const conteudos = [diretorioTemporario(), diretorioTemporario()].map((base) => {
-      const arquivo = path.join(base, "minuta.md");
-      writeFileSync(arquivo, MARKDOWN_TOPICOS, "utf-8");
-      const preparo = cli("preparar-documento", arquivo, "--saida-base", path.join(base, "saida"));
+      const arquivo = NodePath.join(base, "minuta.md");
+      NodeFS.writeFileSync(arquivo, MARKDOWN_TOPICOS, "utf-8");
+      const preparo = cli("preparar-documento", arquivo, "--saida-base", NodePath.join(base, "saida"));
       expect(preparo.codigo).toBe(0);
       const rodada = JSON.parse(preparo.stdout).rodada_dir as string;
       expect(cli("montar-grupos-subagents", "--rodada-dir", rodada).codigo).toBe(0);
       expect(cli("preparar-prompts-subagents", "--rodada-dir", rodada).codigo).toBe(0);
       const c = caminhosRodada(rodada);
-      const ler = (arquivo: string) => readFileSync(arquivo, "utf-8").replaceAll(base, "<base>");
+      const ler = (arquivo: string) => NodeFS.readFileSync(arquivo, "utf-8").replaceAll(base, "<base>");
       return [
         ler(c.gruposSubagents),
-        ...readdirSync(c.promptsSubagentsDir)
+        ...NodeFS.readdirSync(c.promptsSubagentsDir)
           .sort()
-          .map((nome) => ler(path.join(c.promptsSubagentsDir, nome))),
+          .map((nome) => ler(NodePath.join(c.promptsSubagentsDir, nome))),
       ];
     });
     expect(conteudos[0]!.length).toBeGreaterThan(10);
@@ -777,7 +770,7 @@ describe("grupos por tópico num PPC fora da base", () => {
     const rodada = criarRodada(MARKDOWN_TOPICOS);
     const payload = montarGruposSubagents(rodada) as ObjetoPy & { cnct_contexto: ObjetoPy };
     const correspondencia = payload.cnct_contexto.correspondencia as ObjetoPy;
-    const db = new DatabaseSync(caminhoBanco, { readOnly: true });
+    const db = new NodeSqlite.DatabaseSync(caminhoBanco, { readOnly: true });
     try {
       const linha = db.prepare("SELECT dados_json FROM cnct WHERE id = ?").get(`cnct:${correspondencia.id}`) as {
         dados_json: string;
@@ -816,8 +809,10 @@ describe("CNCT", () => {
   });
 
   test("o catálogo interno foi substituído pela base unificada", () => {
-    expect(existsSync(path.join(caminhos.baseAnaliseDir, "dados", "cnct", "catalogo_cnct.csv"))).toBe(false);
-    expect(existsSync(path.join(caminhos.baseConhecimentoDir, "catalogos", "cnct", "index.json"))).toBe(true);
+    expect(NodeFS.existsSync(NodePath.join(caminhos.baseAnaliseDir, "dados", "cnct", "catalogo_cnct.csv"))).toBe(false);
+    expect(NodeFS.existsSync(NodePath.join(caminhos.baseConhecimentoDir, "catalogos", "cnct", "index.json"))).toBe(
+      true,
+    );
   });
 });
 
@@ -831,12 +826,12 @@ describe("grupo avulso e mescla", () => {
       grupo_avulso_path: string;
       prompt_subagent_path: string;
     };
-    expect(existsSync(grupo.grupo_avulso_path)).toBe(true);
+    expect(NodeFS.existsSync(grupo.grupo_avulso_path)).toBe(true);
     expect(grupo.grupo.escopo_ppc).toBe("secoes");
-    expect(readFileSync(grupo.prompt_subagent_path, "utf-8")).toContain("## PPC.md: seções do grupo");
+    expect(NodeFS.readFileSync(grupo.prompt_subagent_path, "utf-8")).toContain("## PPC.md: seções do grupo");
     const transversal = montarGrupoAvulso(rodada, ["CT-TRANS-01", "CT-IDENT-01"]) as { grupo: ObjetoPy };
     expect(transversal.grupo.escopo_ppc).toBe("completo");
-    escreverJsonPy(path.join(c.suporteDir, "resultado-avulso.json"), {
+    escreverJsonPy(NodePath.join(c.suporteDir, "resultado-avulso.json"), {
       grupo_id: grupo.grupo.grupo_id,
       resultados: [{ ...resultado("CT-IDENT-01", "INCONCLUSIVO"), confianca: new FloatPy(1) }],
     });
@@ -847,7 +842,7 @@ describe("grupo avulso e mescla", () => {
     expect(resultados.length).toBe(1);
     expect(resultados[0]!.estado).toBe("INCONCLUSIVO");
     // A mescla preserva o float 1.0 do JSON.
-    expect(readFileSync(c.resultadosSubagents, "utf-8")).toContain('"confianca": 1.0');
+    expect(NodeFS.readFileSync(c.resultadosSubagents, "utf-8")).toContain('"confianca": 1.0');
     expect(validarResultadosRodada(rodada, "resultados-subagents.json").valido).toBe(true);
   });
 
@@ -861,7 +856,9 @@ describe("grupo avulso e mescla", () => {
       resultados: resultadosBase,
     });
     expect(validarResultadosRodada(rodada, "resultados-subagents.json").total_fichas).toBe(TOTAL_FICHAS);
-    escreverJsonPy(path.join(c.suporteDir, "avulso.json"), { resultados: [resultado("CT-IDENT-01", "INCONCLUSIVO")] });
+    escreverJsonPy(NodePath.join(c.suporteDir, "avulso.json"), {
+      resultados: [resultado("CT-IDENT-01", "INCONCLUSIVO")],
+    });
     mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json");
     const resumo = validarResultadosRodada(rodada, "resultados-subagents.json");
     expect(resumo.total_fichas).toBe(TOTAL_FICHAS);
@@ -890,13 +887,13 @@ describe("grupo avulso e mescla", () => {
       const rodada = criarRodada();
       const c = caminhosRodada(rodada);
       escreverJsonPy(c.resultadosSubagents, payloadResultadosCompletos());
-      const antes = readFileSync(c.resultadosSubagents, "utf-8");
-      escreverJsonPy(path.join(c.suporteDir, "avulso.json"), avulso);
+      const antes = NodeFS.readFileSync(c.resultadosSubagents, "utf-8");
+      escreverJsonPy(NodePath.join(c.suporteDir, "avulso.json"), avulso);
       expect(() => mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json")).toThrow(
         ErroResultadosSubagents,
       );
       expect(() => mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json")).toThrow(mensagem);
-      expect(readFileSync(c.resultadosSubagents, "utf-8")).toBe(antes);
+      expect(NodeFS.readFileSync(c.resultadosSubagents, "utf-8")).toBe(antes);
     });
   }
 
@@ -905,7 +902,7 @@ describe("grupo avulso e mescla", () => {
     expect(() => montarGrupoAvulso(rodada, ["CT-NAO-EXISTE"])).toThrow("Fichas não encontradas: CT-NAO-EXISTE");
     const c = caminhosRodada(rodada);
     escreverJsonPy(c.resultadosSubagents, payloadResultadosCompletos());
-    escreverJsonPy(path.join(c.suporteDir, "avulso.json"), { nada: [] });
+    escreverJsonPy(NodePath.join(c.suporteDir, "avulso.json"), { nada: [] });
     expect(() => mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json")).toThrow(
       "O resultado avulso precisa conter `grupos[]` ou `resultados[]`.",
     );
@@ -917,8 +914,8 @@ describe("validar-resultados", () => {
     const rodada = criarRodada();
     const payload = payloadResultadosCompletos();
     editar(payload);
-    writeFileSync(
-      path.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"),
+    NodeFS.writeFileSync(
+      NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"),
       dumpsPy(payload, { indent: 2 }),
     );
     return validarResultadosRodada(rodada, "resultados-subagents.json");
@@ -935,7 +932,7 @@ describe("validar-resultados", () => {
     expect(resumo.total_alertas_transversais).toBe(0);
     expect(resumo.contagem_estado).toEqual({ ATENDE: TOTAL_FICHAS });
     expect(resumo.situacao).toBe("APTO_PARA_SUBMISSAO");
-    expect(existsSync(c.relatorioHtml)).toBe(false);
+    expect(NodeFS.existsSync(c.relatorioHtml)).toBe(false);
   });
 
   const casos: Array<[string, (p: Payload) => void, string]> = [
@@ -1127,8 +1124,8 @@ describe("conteúdo das fichas, validações e prompts", () => {
   });
 
   test("validação cruzada fecha a aritmética de carga horária com memória de cálculo", () => {
-    const validacao = lerJsonPy(path.join(caminhos.validacoesCruzadasDir, "vc-05-16.json")) as ObjetoPy;
-    const prompt = readFileSync(path.join(caminhos.promptsDir, "sintese-transversal.md"), "utf-8");
+    const validacao = lerJsonPy(NodePath.join(caminhos.validacoesCruzadasDir, "vc-05-16.json")) as ObjetoPy;
+    const prompt = NodeFS.readFileSync(NodePath.join(caminhos.promptsDir, "sintese-transversal.md"), "utf-8");
     const texto = textoFicha(validacao, ["titulo", "pergunta", "rubrica", "boa_evidencia", "ma_evidencia"]);
     expect([validacao.id, validacao.criticidade]).toEqual(["VC-05-16", "BLOQ"]);
     for (const trecho of [
@@ -1207,7 +1204,7 @@ describe("conteúdo das fichas, validações e prompts", () => {
   });
 
   test("o prompt do sub-agente declara o contrato de saída", () => {
-    const prompt = readFileSync(path.join(caminhos.promptsDir, "subagent-lote-fichas.md"), "utf-8");
+    const prompt = NodeFS.readFileSync(NodePath.join(caminhos.promptsDir, "subagent-lote-fichas.md"), "utf-8");
     for (const campo of [
       "grupo_id",
       "ficha_id",
@@ -1225,17 +1222,17 @@ describe("conteúdo das fichas, validações e prompts", () => {
   });
 
   test("o prompt da síntese transversal declara o contrato", () => {
-    const prompt = readFileSync(path.join(caminhos.promptsDir, "sintese-transversal.md"), "utf-8");
+    const prompt = NodeFS.readFileSync(NodePath.join(caminhos.promptsDir, "sintese-transversal.md"), "utf-8");
     for (const campo of ["alertas_transversais", "validacao_id", "fichas_relacionadas"])
       expect(prompt).toContain(campo);
   });
 
   test("não há código de execução por CLI de modelo nem contagem de tokens", () => {
-    const scripts = path.join(caminhos.appDir, "scripts");
-    const conteudo = readdirSync(scripts, { recursive: true })
+    const scripts = NodePath.join(caminhos.appDir, "scripts");
+    const conteudo = NodeFS.readdirSync(scripts, { recursive: true })
       .map(String)
       .filter((nome) => nome.endsWith(".ts") || nome.endsWith(".py"))
-      .map((nome) => readFileSync(path.join(scripts, nome), "utf-8"))
+      .map((nome) => NodeFS.readFileSync(NodePath.join(scripts, nome), "utf-8"))
       .join("\n");
     for (const proibido of [
       "codex exec",
