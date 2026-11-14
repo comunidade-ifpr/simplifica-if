@@ -26,7 +26,7 @@ import * as Queue from "effect/Queue";
 import * as Stream from "effect/Stream";
 import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 import * as Canal from "../Canal.ts";
-import { type ConfigSessao, type Driver, type EstadoProvider, FalhaProvider, Gravador } from "../Driver.ts";
+import { type ConfigSessao, type Driver, type DeteccaoProvider, FalhaProvider, Gravador } from "../Driver.ts";
 import { type Evento, resumir, textoDeBlocos } from "../eventos.ts";
 import { type Ambiente, limparAmbiente, localizar, primeiraLinha } from "../processo.ts";
 import { resolveClaudeSdkExecutablePath } from "../t3/ClaudeExecutable.ts";
@@ -169,7 +169,7 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
         instalado: false,
         autenticado: false,
         mensagem: "CLI `claude` não encontrada no PATH",
-      } satisfies EstadoProvider;
+      } satisfies DeteccaoProvider;
     }
     const versao = Option.getOrUndefined(yield* primeiraLinha(executavel, ["--version"], opcoes.ambiente));
     // @effect-diagnostics-next-line abortControllerInEffect:off -- o Agent SDK recebe um AbortController, não um AbortSignal
@@ -201,7 +201,7 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
       ...(mcpGerenciado
         ? { aviso: "esta máquina tem MCP gerenciado pela organização (managed-mcp.json); o Claude não carrega o ifpr" }
         : {}),
-    } satisfies EstadoProvider;
+    } satisfies DeteccaoProvider;
   }).pipe(
     Effect.provideService(ChildProcessSpawner.ChildProcessSpawner, spawner),
     Effect.provideService(FileSystem.FileSystem, fs),

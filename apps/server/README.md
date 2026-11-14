@@ -33,7 +33,7 @@ SIMPLIFICA_SERVIDOR_TOKEN=$(openssl rand -base64 32) \
 
 | Grupo | Método | Resposta |
 |---|---|---|
-| providers | `providers.detectar({ provider })` | `EstadoProvider` |
+| providers | `providers.detectar({ provider })` | `EstadoProvider`, com `podeInstalar` e `podeEntrar` (o driver tem `instalar`, `entrar`) |
 | | `providers.instalar({ provider })` | stream de `EstadoInstalacao` |
 | | `providers.entrar({ provider })` | stream de `EstadoLogin` |
 | conversa | `conversa.iniciar({ provider, pastaTrabalho, modelo?, buscaWeb? })` | `{ sessao }`; já com o MCP `ifpr` ligado |

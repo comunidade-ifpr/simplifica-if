@@ -42,7 +42,7 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
   };
 
   const detectar = (provider: Motor.Provider) =>
-    Effect.sync((): Motor.EstadoProvider => ({
+    Effect.sync((): Motor.DeteccaoProvider => ({
       provider,
       instalado: estado[provider].instalado,
       autenticado: estado[provider].autenticado,
@@ -172,7 +172,9 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
   const driver = (provider: Motor.Provider): Motor.Driver => ({
     detectar: detectar(provider),
     iniciar: iniciar(provider),
-    ...(provider === "claude" ? {} : { instalar: instalar(provider), entrar: entrar(provider) }),
+    // Como os drivers reais: o app instala o Codex e o Antigravity, e só faz o login do Antigravity.
+    ...(provider === "claude" ? {} : { instalar: instalar(provider) }),
+    ...(provider === "antigravity" ? { entrar: entrar(provider) } : {}),
   });
 
   return Layer.succeed(

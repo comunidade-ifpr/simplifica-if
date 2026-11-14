@@ -19,7 +19,7 @@ import * as Path from "effect/Path";
 import * as ChildProcess from "effect/process/ChildProcess";
 import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 import * as Canal from "../Canal.ts";
-import { type ConfigSessao, type Driver, type EstadoProvider, FalhaProvider, Gravador } from "../Driver.ts";
+import { type ConfigSessao, type Driver, type DeteccaoProvider, FalhaProvider, Gravador } from "../Driver.ts";
 import { type Evento, resumir, textoDeBlocos } from "../eventos.ts";
 import { acompanharInstalacao, acompanharLogin } from "../estados.ts";
 import { type Ambiente, limparAmbiente } from "../processo.ts";
@@ -372,7 +372,7 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
         instalado: false,
         autenticado: false,
         mensagem: "Antigravity não instalado: use instalar",
-      } satisfies EstadoProvider;
+      } satisfies DeteccaoProvider;
     }
     const comToken = yield* fs.exists(arquivoToken).pipe(Effect.orElseSucceed(() => false));
     const autenticado =
@@ -393,7 +393,7 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
       autenticado,
       ...(resolvido.value.version ? { versao: resolvido.value.version } : {}),
       ...(autenticado ? { metodo: METODO_LOGIN } : { mensagem: "Antigravity sem login no app: use entrar" }),
-    } satisfies EstadoProvider;
+    } satisfies DeteccaoProvider;
   });
 
   const iniciar = Effect.fn("DriverAntigravity.iniciar")(function* (config: ConfigSessao) {

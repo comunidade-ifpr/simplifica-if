@@ -107,7 +107,13 @@ const make = Effect.gen(function* () {
   });
 
   const detectar = Effect.fn("Motor.detectar")(function* (provider: Provider) {
-    return yield* drivers[provider].detectar;
+    const driver = drivers[provider];
+    const deteccao = yield* driver.detectar;
+    return {
+      ...deteccao,
+      podeInstalar: driver.instalar !== undefined,
+      podeEntrar: driver.entrar !== undefined,
+    } satisfies EstadoProvider;
   });
 
   const responderAprovacao = Effect.fn("Motor.responderAprovacao")(function* (

@@ -71,8 +71,8 @@ export interface ConfigSessao {
 export const Decisao = Schema.Literals(["permitir", "negar"]);
 export type Decisao = typeof Decisao.Type;
 
-/** Resultado da detecção: instalado, versão e login. Nunca traz e-mail nem credencial. */
-export interface EstadoProvider {
+/** O que o driver detecta: instalado, versão e login. Nunca traz e-mail nem credencial. */
+export interface DeteccaoProvider {
   readonly provider: Provider;
   readonly instalado: boolean;
   /** `gerenciada`: a cópia que o app instalou; `local`: a CLI que o usuário já tinha. */
@@ -86,6 +86,17 @@ export interface EstadoProvider {
   readonly mensagem?: string;
   /** Algo que impede o app de funcionar direito mesmo com login (ex.: MCP bloqueado pela organização). */
   readonly aviso?: string;
+}
+
+/**
+ * Resultado de `Motor.detectar`: a detecção do driver e o que o app oferece para o provider, derivado
+ * de o driver ter `instalar` e `entrar`. A interface só mostra "Instalar" e "Entrar" quando há.
+ */
+export interface EstadoProvider extends DeteccaoProvider {
+  /** O app instala (ou atualiza) a CLI gerenciada do provider. */
+  readonly podeInstalar: boolean;
+  /** O app faz o login do provider. */
+  readonly podeEntrar: boolean;
 }
 
 export class FalhaProvider extends Schema.TaggedError<FalhaProvider>()("FalhaProvider", {
@@ -153,7 +164,7 @@ export class OperacaoNaoSuportada extends Schema.TaggedError<OperacaoNaoSuportad
 }
 
 export interface Driver {
-  readonly detectar: Effect.Effect<EstadoProvider>;
+  readonly detectar: Effect.Effect<DeteccaoProvider>;
   readonly iniciar: (config: ConfigSessao) => Effect.Effect<SessaoDriver, FalhaProvider, Scope.Scope>;
   /** Instala (ou atualiza) a CLI gerenciada; o stream termina numa fase final. */
   readonly instalar?: Stream.Stream<EstadoInstalacao, FalhaProvider>;

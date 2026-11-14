@@ -1,6 +1,7 @@
 /**
  * Um provider na tela de Início: detecção (instalado, login, versão, plano), "Instalar" com a barra de
- * progresso e "Entrar" com o link da página de login.
+ * progresso e "Entrar" com o link da página de login. Os botões só aparecem quando o app oferece a
+ * operação para o provider (`podeInstalar`, `podeEntrar`); senão, a orientação para fazer à mão.
  */
 import type { EstadoInstalacao, EstadoLogin, EstadoProvider, Provider } from "@simplifica-if/contratos-app";
 import { CheckCircle2Icon, CircleAlertIcon, CircleDashedIcon, ExternalLinkIcon, RefreshCwIcon } from "lucide-react";
@@ -13,6 +14,8 @@ import {
   DESCRICOES,
   instalacaoTerminou,
   loginTerminou,
+  type Orientacao,
+  orientacao,
   porcentagemInstalacao,
   tamanhoBaixado,
   textoFaseInstalacao,
@@ -92,6 +95,17 @@ function PassoLogin({ estado }: { readonly estado: EstadoLogin }) {
         </a>
       ) : null}
       {estado.mensagem === undefined ? null : <p className="text-muted-foreground text-xs">{estado.mensagem}</p>}
+    </div>
+  );
+}
+
+function PassoManual({ orientacao }: { readonly orientacao: Orientacao }) {
+  return (
+    <div className="flex flex-col gap-1.5 text-sm" data-orientacao>
+      <p className="text-muted-foreground">{orientacao.texto}</p>
+      {orientacao.comando === undefined ? null : (
+        <code className="self-start rounded-md bg-muted px-2 py-1 font-mono text-xs">{orientacao.comando}</code>
+      )}
     </div>
   );
 }
@@ -243,18 +257,24 @@ export function CartaoProvider({ provider }: { readonly provider: Provider }) {
       )}
 
       {estado === undefined ? null : (
-        <footer className="mt-auto flex flex-wrap gap-2">
-          {!estado.instalado || instalando ? (
-            <Button onClick={instalar} disabled={instalando}>
+        <footer className="mt-auto flex flex-col gap-2">
+          {(!estado.instalado || instalando) && estado.podeInstalar ? (
+            <Button className="self-start" onClick={instalar} disabled={instalando}>
               {instalando ? <Spinner /> : null}
               Instalar
             </Button>
           ) : null}
-          {estado.instalado && !estado.autenticado ? (
-            <Button onClick={entrar} disabled={entrando}>
+          {!estado.instalado && !estado.podeInstalar ? (
+            <PassoManual orientacao={orientacao(provider, "instalar")} />
+          ) : null}
+          {estado.instalado && !estado.autenticado && estado.podeEntrar ? (
+            <Button className="self-start" onClick={entrar} disabled={entrando}>
               {entrando ? <Spinner /> : null}
               Entrar
             </Button>
+          ) : null}
+          {estado.instalado && !estado.autenticado && !estado.podeEntrar ? (
+            <PassoManual orientacao={orientacao(provider, "entrar")} />
           ) : null}
         </footer>
       )}

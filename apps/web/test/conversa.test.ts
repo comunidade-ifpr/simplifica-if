@@ -167,6 +167,11 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
         api.chamar((cliente) => cliente["providers.detectar"]({ provider: "antigravity" })),
       );
       assert.isTrue(depois.autenticado);
+      assert.deepInclude(depois, { podeInstalar: true, podeEntrar: true });
+      const claude = yield* Effect.promise(() =>
+        api.chamar((cliente) => cliente["providers.detectar"]({ provider: "claude" })),
+      );
+      assert.deepInclude(claude, { podeInstalar: false, podeEntrar: false });
 
       // O Claude não tem instalação gerenciada: o erro tipado, em português.
       const recusa = yield* Effect.promise(() =>
