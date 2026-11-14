@@ -11,8 +11,8 @@
   "forma_oferta": "30 vagas; 1 turma(s); turno Diurno¹; duração 2 anos",
   "status_curadoria": "sugerido",
   "modalidade": "presencial",
-  "turno": "diurno",
-  "turno_original": "Diurno¹",
+  "turno": "Diurno¹",
+  "turno_padronizado": "diurno",
   "turno_nota": "Nota ¹ do Edital nº 88/2024, Anexo I: no Portal do Candidato do IFPR o turno “Diurno” aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”.",
   "campi": [],
   "cursos": [

@@ -11,8 +11,8 @@
   "forma_oferta": "25 vagas; 1 turma(s); turno Noturno; duração 2 anos",
   "status_curadoria": "sugerido",
   "modalidade": "presencial",
-  "turno": "noturno",
-  "turno_original": "Noturno",
+  "turno": "Noturno",
+  "turno_padronizado": "noturno",
   "campi": [],
   "cursos": [
     "curitiba/tecnico-em-protese-dentaria"

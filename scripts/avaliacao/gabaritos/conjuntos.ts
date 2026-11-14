@@ -175,7 +175,7 @@ function q08(fontes: Fontes): GabaritoConjunto {
   const cursoPorChave = new Map(fontes.dados.cursos.map((curso) => [chave(curso), curso]));
   const turnos = new Map<
     string,
-    Array<{ curso: string; turno: string; turno_original: string; tipo_oferta: string }>
+    Array<{ curso: string; turno_padronizado: string; turno: string; tipo_oferta: string }>
   >();
   for (const oferta of fontes.dados.ofertas) {
     if (!oferta.processos.includes("processo-seletivo-2026")) continue;
@@ -186,8 +186,8 @@ function q08(fontes: Fontes): GabaritoConjunto {
       const lista = turnos.get(campus) ?? [];
       lista.push({
         curso: `curso:${chaveCurso}`,
+        turno_padronizado: oferta.turno_padronizado ?? "",
         turno: oferta.turno ?? "",
-        turno_original: oferta.turno_original ?? "",
         tipo_oferta: oferta.tipo_oferta,
       });
       turnos.set(campus, lista);
@@ -197,14 +197,14 @@ function q08(fontes: Fontes): GabaritoConjunto {
     pergunta: "Q08",
     gerado_por: ARQUIVO_GERADOR,
     criterio:
-      "Campi das ofertas de dados/institucional/ofertas/processo-seletivo-2026/ cujo curso tem cnct_id de habilitação do eixo 'Informação e Comunicação' do CNCT. Detalhes: curso, turno padronizado, grafia do edital (turno_original) e tipo de oferta.",
+      "Campi das ofertas de dados/institucional/ofertas/processo-seletivo-2026/ cujo curso tem cnct_id de habilitação do eixo 'Informação e Comunicação' do CNCT. Detalhes: curso, turno padronizado (turno_padronizado), grafia da fonte (turno) e tipo de oferta.",
     universo: "campus",
     avaliar_precisao: true,
     esperado: ordenar(turnos.keys()),
     detalhes: detalhesOrdenados(
       [...turnos.entries()].map(([campus, lista]) => [
         campus,
-        lista.sort((a, b) => compararTexto(`${a.curso} ${a.turno}`, `${b.curso} ${b.turno}`)),
+        lista.sort((a, b) => compararTexto(`${a.curso} ${a.turno_padronizado}`, `${b.curso} ${b.turno_padronizado}`)),
       ]),
     ),
   };

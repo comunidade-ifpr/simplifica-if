@@ -261,8 +261,8 @@ function ofertaJson(
     },
     curso_slug: cursoSlug,
     modalidade: doNotion(oferta.modalidade),
-    turno: doNotion(oferta.turno),
-    turno_original: oferta.turnoOriginal,
+    turno: oferta.turno,
+    turno_padronizado: doNotion(oferta.turnoPadronizado),
     turno_nota: oferta.turnoNota,
   });
 }

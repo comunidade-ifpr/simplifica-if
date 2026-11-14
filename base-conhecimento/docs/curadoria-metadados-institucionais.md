@@ -179,11 +179,13 @@ Regras:
 4. Use `trecho_fonte` para evidenciar a quantidade de vagas.
 5. Quando houver cotas, registre total e detalhamento.
 6. Registre o turno em três campos:
-   - `turno`: o enum padronizado, `matutino`, `vespertino`, `noturno`, `integral`, `diurno` (manhã e tarde sem os dias definidos, como "Diurno (manhã e tarde)" e "Matutino/Vespertino"), `matutino-com-contraturno` (manhãs e algumas tardes, como "Diurno (Manhã + 2 tardes por semana)") ou `vespertino-com-contraturno` (tardes e algumas manhãs);
-   - `turno_original`: a grafia exata da fonte, com as marcas de nota de rodapé (`¹`, `²`, `³`);
-   - `turno_nota`: o que o enum não diz, sobretudo o texto da nota de rodapé do edital (como "aparece no Portal do Candidato do IFPR como turno Integral") e divergências entre a página e o edital.
+   - `turno`: a grafia exata da fonte da oferta, isto é, do quadro em `url_fonte` transcrito em `trecho_fonte`, com as marcas de nota de rodapé (`¹`, `²`, `³`). Grafia diferente em outra fonte (por exemplo, o Anexo I do edital quando a oferta veio da página de cursos do processo seletivo) não substitui a de `url_fonte`: vai em `turno_nota`;
+   - `turno_padronizado`: o enum, `matutino`, `vespertino`, `noturno`, `integral`, `diurno` (manhã e tarde sem os dias definidos, como "Diurno (manhã e tarde)" e "Matutino/Vespertino"), `matutino-com-contraturno` (manhãs e algumas tardes, como "Diurno (Manhã + 2 tardes por semana)") ou `vespertino-com-contraturno` (tardes e algumas manhãs);
+   - `turno_nota`: o que o enum não diz, sobretudo o texto da nota de rodapé do edital (como "aparece no Portal do Candidato do IFPR como turno Integral") e divergências entre a página e o edital, com a grafia da outra fonte.
 
-   `padronizarTurno` (`scripts/dominio/ingresso.ts`) propõe o enum a partir da grafia. A auditoria recusa turno fora do enum, `turno_original` sem `turno` e marca de rodapé sem `turno_nota`. Quando a fonte for uma página que omite o texto das notas, busque-o no Anexo I do edital correspondente e cite o número do edital na nota.
+   `padronizarTurno` (`scripts/dominio/ingresso.ts`) propõe o enum a partir da grafia. A auditoria recusa `turno_padronizado` fora do enum, `turno` sem `turno_padronizado`, `turno` que não aparece literalmente em `trecho_fonte` e marca de rodapé sem `turno_nota`. Quando a fonte for uma página que omite o texto das notas, busque-o no Anexo I do edital correspondente e cite o número do edital na nota.
+
+   No JSON público (`processos-seletivos[].ofertas[]`), os três campos saem com os mesmos nomes. `turno` é texto livre desde a primeira publicação e continua com a grafia da fonte; `turno_padronizado` foi acrescentado em 13/11/2026 para quem precisa filtrar. Entre a migração para `dados/institucional/` e essa data, o JSON público trouxe por engano o enum em `turno` e a grafia em `turno_original`; `turno_original` deixou de ser publicado.
 
 ## Índices globais de PPCs
 

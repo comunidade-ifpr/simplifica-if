@@ -11,8 +11,8 @@
   "forma_oferta": "30 vagas; 1 turma(s); turno Matutino; duração 3 anos",
   "status_curadoria": "sugerido",
   "modalidade": "presencial",
-  "turno": "matutino",
-  "turno_original": "Matutino",
+  "turno": "Matutino",
+  "turno_padronizado": "matutino",
   "campi": [],
   "cursos": [
     "curitiba/tecnico-em-administracao-integrado-ao-ensino-medio"

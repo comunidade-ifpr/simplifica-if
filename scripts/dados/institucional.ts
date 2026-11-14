@@ -135,9 +135,10 @@ export const esquemaOfertaLocal = z.strictObject({
   status_curadoria: texto,
   revisado_em: texto,
   modalidade: texto,
-  /** Turno padronizado; a grafia do edital fica em `turno_original` e a nota de rodapé em `turno_nota`. */
-  turno: z.enum(TURNOS).optional(),
-  turno_original: texto,
+  /** Grafia do turno na fonte (`trecho_fonte`), com as marcas de nota de rodapé. */
+  turno: texto,
+  /** Turno padronizado (enum); o texto da nota de rodapé e as divergências ficam em `turno_nota`. */
+  turno_padronizado: z.enum(TURNOS).optional(),
   turno_nota: texto,
   /** Relações resolvidas; prevalecem sobre os campos `_original`, que guardam o texto do edital. */
   campi: listaTexto,
@@ -375,7 +376,7 @@ export function paraDominio(dados: DadosInstitucionais): {
       revisadoEm: o.revisado_em ?? "",
       modalidade: o.modalidade ?? "",
       turno: o.turno ?? "",
-      turnoOriginal: o.turno_original ?? "",
+      turnoPadronizado: o.turno_padronizado ?? "",
       turnoNota: o.turno_nota ?? "",
       campusIdOriginal: o.campus_id_original ?? "",
       cursoSlugOriginal: o.curso_slug_original ?? "",
@@ -500,8 +501,8 @@ export function deDominio(base: {
       status_curadoria: o.statusCuradoria,
       revisado_em: o.revisadoEm,
       modalidade: o.modalidade,
-      turno: ehTurno(o.turno) ? o.turno : undefined,
-      turno_original: o.turnoOriginal,
+      turno: o.turno,
+      turno_padronizado: ehTurno(o.turnoPadronizado) ? o.turnoPadronizado : undefined,
       turno_nota: o.turnoNota,
       campi: resolver(campusPorPagina, o.campusIds, `Oferta ${o.ofertaId}`),
       cursos: resolver(cursoPorPagina, o.cursoIds, `Oferta ${o.ofertaId}`),
