@@ -1,7 +1,8 @@
 # Integração contínua (passo T6 do M0.1, docs/plans/m0-simplifica-mcp.md).
 #
-# - verificacao (Linux x64): formatação, lint, tipos, testes, banco, smoke do MCP contra a base real,
-#   validação da base e os gabaritos que não dependem do macOS.
+# - verificacao (Linux x64): formatação, lint, tipos, testes (os de navegador do apps/web no Chromium
+#   headless do Playwright), banco, smoke do MCP contra a base real, validação da base e os gabaritos
+#   que não dependem do macOS.
 # - executavel (macOS arm64, Linux x64, Windows x64): o executável simplifica-mcp no runner nativo,
 #   as suítes "sem repositório", "determinismo" e "pasta de trabalho" contra ele, e o executável como
 #   artefato.
@@ -39,6 +40,32 @@ jobs:
 
       - name: Tipos
         run: pnpm typecheck
+
+      # Os testes de navegador do apps/web (projeto `navegador`) rodam no Chromium headless do
+      # Playwright. Como no T3: só o headless shell, em cache pela versão do Playwright, e as
+      # bibliotecas do sistema só se faltar alguma.
+      - name: Versão do Playwright
+        id: playwright
+        run: echo "versao=$(node -p "require('./apps/web/node_modules/playwright/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Cache do Chromium
+        id: cache-chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-shell-${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright.outputs.versao }}
+
+      - name: Chromium dos testes de navegador
+        if: steps.cache-chromium.outputs.cache-hit != 'true'
+        run: node apps/web/node_modules/playwright/cli.js install --only-shell chromium
+
+      - name: Bibliotecas do sistema que faltarem ao Chromium
+        run: |
+          navegador=$(find "$HOME/.cache/ms-playwright" -name chrome-headless-shell -type f -print -quit)
+          test -n "$navegador"
+          if ldd "$navegador" | grep '=> not found'; then
+            node apps/web/node_modules/playwright/cli.js install-deps chromium
+          fi
 
       - name: Testes
         run: pnpm test

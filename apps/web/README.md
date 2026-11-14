@@ -61,7 +61,7 @@ pnpm --filter @simplifica-if/web exec vp test run --project navegador
 ```
 
 - **`unidade`** (Node): a origem da conexão, os erros, o redutor da conversa e, contra o `apps/server` de verdade no próprio processo (drivers de demonstração), o ingresso, as recusas, a reconexão quando o servidor cai e volta na mesma porta, a conversa inteira pela `ControleConversa` (aprovação, link `ifpr://`, interromper, nova conversa) e instalar e entrar.
-- **`navegador`** (Chromium headless pelo Playwright, como o T3): o app inteiro conectado ao `test/servidor-teste.ts`, que um comando do `vite.config.ts` sobe num processo Node; percorre o Início e a Conversa e confere que não aparece texto em inglês dos componentes copiados. Precisa do Chromium do Playwright 1.65 (`pnpm --filter @simplifica-if/web exec playwright install chromium` numa máquina nova ou no CI).
+- **`navegador`** (Chromium headless pelo Playwright, como o T3): o app inteiro conectado ao `test/servidor-teste.ts`, que um comando do `vite.config.ts` sobe num processo Node; percorre o Início e a Conversa e confere que não aparece texto em inglês dos componentes copiados. Precisa do Chromium do Playwright 1.65 (`pnpm --filter @simplifica-if/web exec playwright install chromium` numa máquina nova; o CI instala só o headless shell, com `--only-shell`, e o guarda em cache pela versão do Playwright).
 
 ## Código do T3
 
