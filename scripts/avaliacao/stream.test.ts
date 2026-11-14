@@ -69,7 +69,7 @@ describe("argumentos do claude -p", () => {
     max_turns: 12,
     max_budget_usd_por_execucao: 0.5,
     ferramentas: ["Read", "Grep"],
-    ferramentas_permitidas: ["Read", "Grep", "Bash(jq *)"],
+    ferramentas_permitidas: ["Read(./**)", "Grep"],
     instrucao_sistema: "Responda em português.",
     fontes_configuracao: ["project", "local"],
   });
@@ -88,7 +88,8 @@ describe("argumentos do claude -p", () => {
     expect(valor("--append-system-prompt")).toBe("Responda em português.");
     expect(valor("--setting-sources")).toBe("project,local");
     const inicio = argumentos.indexOf("--allowedTools") + 1;
-    expect(argumentos.slice(inicio, inicio + 3)).toEqual(["Read", "Grep", "Bash(jq *)"]);
+    expect(argumentos.slice(inicio, inicio + 2)).toEqual(["Read(./**)", "Grep"]);
+    expect(argumentos[inicio + 2]).toBe("--disallowedTools");
   });
 
   test("comando legível cita argumentos com espaço", () => {

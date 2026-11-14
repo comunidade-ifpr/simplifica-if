@@ -22,19 +22,19 @@ max_budget_usd_por_execucao: 1.5
 timeout_s: 900
 
 # Ferramentas embutidas disponíveis ao agente (--tools) e regras pré-aprovadas (--allowedTools).
-# Tudo o que não está pré-aprovado é negado (--permission-mode dontAsk): o agente só lê.
+# Tudo o que não está pré-aprovado é negado (--permission-mode dontAsk): o agente só lê, e só dentro
+# do repositório. Bash não entra (o esquema recusa): `jq -R . .env.local` ou `jq -n env` contornariam
+# as regras de leitura. Além disso, o executor passa sempre em --disallowedTools a leitura de `.env*`,
+# `~/.ssh`, `~/.aws`, `~/.config` etc. (REGRAS_NEGADAS em scripts/avaliacao/executor.ts) e entrega ao
+# `claude` um ambiente mínimo, sem as variáveis do `.env.local`.
 ferramentas:
   - Read
   - Grep
   - Glob
-  - Bash
 ferramentas_permitidas:
-  - Read
+  - "Read(./**)"
   - Grep
   - Glob
-  - "Bash(jq *)"
-  - "Bash(ls *)"
-  - "Bash(wc *)"
 
 # Fontes de configuração do Claude Code (--setting-sources). Sem este campo, valem também as
 # configurações do usuário, inclusive plugins e hooks pessoais: no smoke test de 13/11/2026, um hook

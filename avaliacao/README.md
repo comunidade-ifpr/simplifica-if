@@ -24,7 +24,7 @@ bun run scripts/avaliar.ts --pontuar avaliacao/resultados/<rodada>/relatorio.jso
 bun test scripts/avaliacao
 ```
 
-Cada rodada grava `relatorio.json`, `resumo.md` e o stream-json bruto (`brutos/`) em `resultados/<data>-<modelo>/`. O agente roda com cwd na raiz, só com ferramentas de leitura pré-aprovadas (`--permission-mode dontAsk` nega o resto), sem MCP e sem persistir sessão. O relatório registra o ID efetivo do modelo, o commit, as chamadas de ferramenta (e as negadas), os tokens e o custo.
+Cada rodada grava `relatorio.json`, `resumo.md` e o stream-json bruto (`brutos/`) em `resultados/<data>-<modelo>/`. O agente roda com cwd na raiz, só com Read, Grep e Glob pré-aprovados dentro do repositório (`--permission-mode dontAsk` nega o resto), sem Bash, sem MCP e sem persistir sessão. Como ele escolhe o que ler, o executor não depende do `config.yaml` para proteger segredos: o `claude` recebe um ambiente mínimo por lista explícita (`PATH`, `HOME`, locale, proxy e a credencial do próprio `claude` quando vem do shell), sem nenhuma variável definida em `.env*` (que o Bun carrega no `process.env`), e `--disallowedTools` nega sempre Bash, escrita, web e a leitura de `.env*`, `~/.ssh`, `~/.aws`, `~/.config`, `~/.claude` e `/etc` (`REGRAS_NEGADAS` em `scripts/avaliacao/executor.ts`). O relatório registra o ID efetivo do modelo, o commit, as chamadas de ferramenta (e as negadas), os tokens e o custo.
 
 **Pontuação** (`scripts/avaliacao/pontuacao.ts`), sobre a resposta normalizada (sem acentos, minúscula, `nº` → `no`):
 
