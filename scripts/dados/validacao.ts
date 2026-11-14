@@ -1,6 +1,7 @@
+// @effect-diagnostics nodeBuiltinImport:off -- validação síncrona de dados/institucional/ (validar_base), lê o índice do CNCT com node:fs
 /** Validação de `dados/institucional/`: schema, caminho de cada arquivo e as regras da auditoria institucional. */
-import { existsSync, readFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { RAIZ_BASE } from "../config.ts";
 import { chaveCurso } from "../dominio/curso.ts";
 import { auditarBase } from "../dominio/auditoria.ts";
@@ -13,9 +14,9 @@ import {
 
 /** IDs `cnct:<slug>` dos cursos de `catalogos/cnct/index.json`. */
 export function idsCnct(raizBase: string = RAIZ_BASE): Set<string> {
-  const arquivo = path.join(raizBase, "catalogos", "cnct", "index.json");
-  if (!existsSync(arquivo)) return new Set();
-  const indice = JSON.parse(readFileSync(arquivo, "utf-8")) as { items?: Array<{ id?: unknown }> };
+  const arquivo = NodePath.join(raizBase, "catalogos", "cnct", "index.json");
+  if (!NodeFS.existsSync(arquivo)) return new Set();
+  const indice = JSON.parse(NodeFS.readFileSync(arquivo, "utf-8")) as { items?: Array<{ id?: unknown }> };
   return new Set((indice.items ?? []).flatMap((item) => (typeof item.id === "string" ? [`cnct:${item.id}`] : [])));
 }
 

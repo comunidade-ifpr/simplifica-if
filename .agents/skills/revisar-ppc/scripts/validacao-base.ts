@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- validação síncrona da base de análise, também importada por scripts/validar_base.ts
 /**
  * Validação da base de análise da skill: schemas, fichas, taxonomia de
  * tópicos, marcos normativos, validações cruzadas e contratos de exemplo.
@@ -6,8 +7,8 @@
  * das fichas e os marcos são conferidos por ID canônico (fase 2b do plano de arquitetura), contra
  * `manifest.json`, `normas/stubs.yaml` e o CNCT.
  */
-import { existsSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import {
   ehObjeto,
   itensDe,
@@ -61,7 +62,7 @@ function tentarLerJson(caminho: string): { valor: unknown } | { erro: string } {
 }
 
 function carregarSchema(caminhos: CaminhosAnalise, nome: string): ObjetoJson {
-  const payload = lerJson(path.join(caminhos.schemasDir, nome));
+  const payload = lerJson(NodePath.join(caminhos.schemasDir, nome));
   if (!ehObjeto(payload)) throw new Error(`Schema inválido: ${nome}`);
   return payload;
 }
@@ -86,14 +87,14 @@ function conjuntoOrdenado(valores: Iterable<string>): string {
  * vale) e toda entrada é um tópico. Sem o arquivo (skill fora do repositório), não confere.
  */
 export function validarTopicosSecoes(idsTopicos: ReadonlySet<string>, caminhos: CaminhosAnalise): string[] {
-  const arquivo = path.join(
-    path.dirname(caminhos.baseConhecimentoDir),
+  const arquivo = NodePath.join(
+    NodePath.dirname(caminhos.baseConhecimentoDir),
     "packages",
     "kb",
     "dados",
     "topicos-secoes.yaml",
   );
-  if (!existsSync(arquivo)) return [];
+  if (!NodeFS.existsSync(arquivo)) return [];
   let mapa: Readonly<Record<string, ReadonlyArray<string>>>;
   try {
     mapa = lerTopicosSecoes(arquivo);
@@ -116,7 +117,7 @@ export function validarTopicosFichas(
   caminhos: CaminhosAnalise = caminhosPadrao(),
 ): string[] {
   const arquivo = caminhos.topicosFichasPath;
-  if (!existsSync(arquivo)) return [`${arquivo}: arquivo de taxonomia não encontrado`];
+  if (!NodeFS.existsSync(arquivo)) return [`${arquivo}: arquivo de taxonomia não encontrado`];
   const lido = tentarLerJson(arquivo);
   if ("erro" in lido) return [`${arquivo}: JSON inválido: ${lido.erro}`];
   if (!ehObjeto(lido.valor)) return [`${arquivo}: payload deve ser objeto JSON`];
@@ -214,7 +215,7 @@ export function carregarMarcos(
   caminho: string = caminhosPadrao().marcosNormativosPath,
   derivar: Derivacao = derivacaoPadrao(),
 ): Marco[] {
-  if (!existsSync(caminho)) return [];
+  if (!NodeFS.existsSync(caminho)) return [];
   const lido = tentarLerJson(caminho);
   if ("erro" in lido) return [];
   const marcos = ehObjeto(lido.valor) ? lido.valor.marcos : undefined;
@@ -315,7 +316,7 @@ export function validarReferenciasFichas(
 }
 
 /**
- * Confere `marcos-normativos.json`: schema (gerado do zod), ids únicos, atos da linha registrados,
+ * Confere `marcos-normativos.json`: schema (gerado do Effect Schema), ids únicos, atos da linha registrados,
  * linha que deriva um único ato vigente com texto na base e não revogado, normas substituídas e
  * dispositivos revogados existentes e fichas citadas. Os campos conferidos depois do schema são os
  * derivados de `relacoes.yaml` (`derivar`).
@@ -326,7 +327,7 @@ export function validarMarcosNormativos(
   fichasPorId?: Map<string, Ficha>,
   derivar: Derivacao = derivacaoPadrao(),
 ): string[] {
-  if (!existsSync(caminho)) return [`${caminho}: registro de marcos normativos não encontrado`];
+  if (!NodeFS.existsSync(caminho)) return [`${caminho}: registro de marcos normativos não encontrado`];
   const lido = tentarLerJson(caminho);
   if ("erro" in lido) return [`${caminho}: JSON inválido: ${lido.erro}`];
   const erros = validarSchemaAnalise(lido.valor, jsonSchemaGerado("marcos-normativos.schema.json")).map(
@@ -426,7 +427,7 @@ export function validarBaseAnalise(caminhos: CaminhosAnalise = caminhosPadrao())
     }
   }
   for (const arquivo of schemasDesatualizados(caminhos)) {
-    erros.push(`${arquivo}: diverge do schema zod de scripts/esquemas.ts; rode \`revisar_ppc.ts gerar-schemas\``);
+    erros.push(`${arquivo}: diverge do Effect Schema de scripts/esquemas.ts; rode \`revisar_ppc.ts gerar-schemas\``);
   }
 
   const fichasPorId = new Map<string, Ficha>();
@@ -467,7 +468,9 @@ export function validarBaseAnalise(caminhos: CaminhosAnalise = caminhosPadrao())
     idsValidacoes.add(validacaoId);
   }
 
-  erros.push(...validarArquivoJson(path.join(caminhos.contratosDir, "resposta_lote.exemplo.json"), schemaResultado));
+  erros.push(
+    ...validarArquivoJson(NodePath.join(caminhos.contratosDir, "resposta_lote.exemplo.json"), schemaResultado),
+  );
   erros.push(...validarSchemaAnalise(ALERTA_EXEMPLO, schemaAlertas));
   return erros;
 }

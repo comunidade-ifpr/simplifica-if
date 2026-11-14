@@ -1,16 +1,7 @@
+// @effect-diagnostics nodeBuiltinImport:off -- copia base-conhecimento/ para site/ com node:fs síncrono, num script de execução única (gerar_site)
 /** Saída publicável em site/: cópia de base-conhecimento/ sem arquivos locais. */
-import {
-  copyFileSync,
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  realpathSync,
-  rmSync,
-  statSync,
-  utimesSync,
-} from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { compararTexto } from "@simplifica-if/kb/texto";
 
 const NOMES_IGNORADOS = new Set([".DS_Store", "__pycache__", ".pytest_cache"]);
@@ -23,49 +14,49 @@ export function ignorarNaCopia(nome: string): boolean {
 
 function caminhoReal(caminho: string): string {
   try {
-    return realpathSync(caminho);
+    return NodeFS.realpathSync(caminho);
   } catch {
-    return path.resolve(caminho);
+    return NodePath.resolve(caminho);
   }
 }
 
 /** Copia a árvore seguindo links simbólicos e preservando datas de modificação (como `shutil.copytree`). */
 function copiarArvore(origem: string, destino: string): void {
-  mkdirSync(destino, { recursive: true });
-  for (const nome of readdirSync(origem)) {
+  NodeFS.mkdirSync(destino, { recursive: true });
+  for (const nome of NodeFS.readdirSync(origem)) {
     if (ignorarNaCopia(nome)) continue;
-    const de = path.join(origem, nome);
-    const para = path.join(destino, nome);
-    const info = statSync(de);
+    const de = NodePath.join(origem, nome);
+    const para = NodePath.join(destino, nome);
+    const info = NodeFS.statSync(de);
     if (info.isDirectory()) {
       copiarArvore(de, para);
     } else {
-      copyFileSync(de, para);
-      utimesSync(para, info.atime, info.mtime);
+      NodeFS.copyFileSync(de, para);
+      NodeFS.utimesSync(para, info.atime, info.mtime);
     }
   }
-  const info = statSync(origem);
-  utimesSync(destino, info.atime, info.mtime);
+  const info = NodeFS.statSync(origem);
+  NodeFS.utimesSync(destino, info.atime, info.mtime);
 }
 
 export function renderizarSite(raizBase: string, destino: string): void {
-  if (!existsSync(raizBase)) throw new Error(`Diretório da base não encontrado: ${raizBase}`);
+  if (!NodeFS.existsSync(raizBase)) throw new Error(`Diretório da base não encontrado: ${raizBase}`);
   if (caminhoReal(destino) === caminhoReal(raizBase)) {
     throw new Error("Destino do site não pode ser o mesmo diretório da base");
   }
-  if (existsSync(destino)) rmSync(destino, { recursive: true, force: true });
+  if (NodeFS.existsSync(destino)) NodeFS.rmSync(destino, { recursive: true, force: true });
   copiarArvore(raizBase, destino);
 }
 
 function listar(diretorio: string): string[] {
-  return readdirSync(diretorio)
+  return NodeFS.readdirSync(diretorio)
     .filter((nome) => !NOMES_IGNORADOS_COMPARACAO.has(nome))
     .sort(compararTexto);
 }
 
 function tipoEntrada(caminho: string): "dir" | "arquivo" | "outro" {
   try {
-    const info = statSync(caminho);
+    const info = NodeFS.statSync(caminho);
     if (info.isDirectory()) return "dir";
     return info.isFile() ? "arquivo" : "outro";
   } catch {
@@ -74,8 +65,8 @@ function tipoEntrada(caminho: string): "dir" | "arquivo" | "outro" {
 }
 
 function conteudoIgual(a: string, b: string): boolean {
-  if (statSync(a).size !== statSync(b).size) return false;
-  return readFileSync(a).equals(readFileSync(b));
+  if (NodeFS.statSync(a).size !== NodeFS.statSync(b).size) return false;
+  return NodeFS.readFileSync(a).equals(NodeFS.readFileSync(b));
 }
 
 /**
@@ -96,16 +87,16 @@ export function compararDiretorios(esperado: string, atual: string): string[] {
   const comuns = nomesEsperados.filter((nome) => atuais.has(nome));
   const subdiretorios: string[] = [];
   for (const nome of comuns) {
-    const tipoA = tipoEntrada(path.join(esperado, nome));
-    const tipoB = tipoEntrada(path.join(atual, nome));
+    const tipoA = tipoEntrada(NodePath.join(esperado, nome));
+    const tipoB = tipoEntrada(NodePath.join(atual, nome));
     if (tipoA === "dir" && tipoB === "dir") subdiretorios.push(nome);
     else if (tipoA !== tipoB) erros.push(`conteúdo divergente: ${nome}`);
-    else if (tipoA === "arquivo" && !conteudoIgual(path.join(esperado, nome), path.join(atual, nome))) {
+    else if (tipoA === "arquivo" && !conteudoIgual(NodePath.join(esperado, nome), NodePath.join(atual, nome))) {
       erros.push(`conteúdo divergente: ${nome}`);
     }
   }
   for (const nome of subdiretorios) {
-    for (const erro of compararDiretorios(path.join(esperado, nome), path.join(atual, nome))) {
+    for (const erro of compararDiretorios(NodePath.join(esperado, nome), NodePath.join(atual, nome))) {
       erros.push(`${nome}/${erro}`);
     }
   }

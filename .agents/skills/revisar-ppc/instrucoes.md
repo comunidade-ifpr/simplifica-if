@@ -10,7 +10,7 @@ O output padrão fica em `.agents/skills/revisar-ppc/output/<rodada>/`. O relat�
 
 ## Dependências
 
-Rode `pnpm install` na raiz do repositório (o ponto de entrada usa `commander`, `htmlparser2` e `@simplifica-if/kb`). Só a entrada `.docx` ainda usa Python; para ela, instale também as dependências Python, a partir da raiz do projeto onde a skill está instalada:
+Rode `pnpm install` na raiz do repositório (o ponto de entrada usa `effect` (`effect/cli`), `htmlparser2` e `@simplifica-if/kb`). Só a entrada `.docx` ainda usa Python; para ela, instale também as dependências Python, a partir da raiz do projeto onde a skill está instalada:
 
 ```bash
 python3 -m pip install -r .agents/skills/revisar-ppc/requirements.txt

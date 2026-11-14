@@ -1,10 +1,12 @@
+// @effect-diagnostics nodeBuiltinImport:off -- validação síncrona da base (validar_base), lê os PPCs e os índices com node:fs
 /** Validação do índice de PPCs, das seções indexadas, dos PPCPs e dos artefatos de conversão. */
-import { existsSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { ehDiretorio, listarDiretorio, naBase } from "../caminhos.ts";
 import { taxonomiasPublicadas, TIPOS_SECAO_INDEXADOS, VERSAO_INDICE } from "../indice-ppcs.ts";
 import { ehObjeto, type ObjetoJson, itensDe, valoresIguais } from "@simplifica-if/kb/json";
-import { analisarPpc, ErroFrontMatter, idPpc } from "@simplifica-if/kb/ppcs/front-matter";
+import { ehErroFrontMatter } from "@simplifica-if/kb/normas/front-matter";
+import { analisarPpc, idPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import { MINIMO_CARACTERES_SECAO, TAXONOMIAS } from "@simplifica-if/kb/ppcs/secoes";
 import { validarJsonSchema } from "@simplifica-if/kb/schema";
 import type { IndicePpcpsJson, IndicePpcsJson, SecaoPpcJson } from "../tipos-schemas.ts";
@@ -38,7 +40,7 @@ function ppcsConvertidosDosCampi(ctx: Contexto): Map<string, string> {
         ehRecebido<PpcCurso["conversao"]>(ppc.conversao) &&
         ppc.conversao.status === "convertido" &&
         typeof caminhoMarkdown === "string" &&
-        existsSync(naBase(ctx.c, caminhoMarkdown))
+        NodeFS.existsSync(naBase(ctx.c, caminhoMarkdown))
       ) {
         ppcs.set(`${campusId}/${cursoSlug}`, caminhoMarkdown);
       }
@@ -105,16 +107,16 @@ function validarSecoesPpc(ctx: Contexto, itensIndicePorId: Map<string, Recebido<
   const idsVistos = new Set<string>();
   const arquivosEsperados = new Set(TIPOS_SECAO_INDEXADOS.map((tipo) => `${tipo}.jsonl`));
   const arquivos = listarDiretorio(raizSecoes, ".jsonl");
-  const arquivosAtuais = new Set(arquivos.map((caminho) => path.basename(caminho)));
+  const arquivosAtuais = new Set(arquivos.map((caminho) => NodePath.basename(caminho)));
   for (const nome of ordenarTextos([...arquivosEsperados].filter((nome) => !arquivosAtuais.has(nome)))) {
-    erros.push(`${ctx.rel(path.join(raizSecoes, nome))} não encontrado`);
+    erros.push(`${ctx.rel(NodePath.join(raizSecoes, nome))} não encontrado`);
   }
   for (const nome of ordenarTextos([...arquivosAtuais].filter((nome) => !arquivosEsperados.has(nome)))) {
-    erros.push(`${ctx.rel(path.join(raizSecoes, nome))} não esperado`);
+    erros.push(`${ctx.rel(NodePath.join(raizSecoes, nome))} não esperado`);
   }
 
   for (const caminho of ordenarCaminhos(arquivos)) {
-    const tipoEsperado = path.basename(caminho).replace(/\.[^.]*$/, "");
+    const tipoEsperado = NodePath.basename(caminho).replace(/\.[^.]*$/, "");
     const r = ctx.rel(caminho);
     for (const [indice, linha] of linhasDeArquivo(lerTexto(caminho)).entries()) {
       erros.push(
@@ -123,8 +125,8 @@ function validarSecoesPpc(ctx: Contexto, itensIndicePorId: Map<string, Recebido<
     }
   }
 
-  const legado = path.join(path.dirname(raizSecoes), "secoes.jsonl");
-  if (existsSync(legado)) {
+  const legado = NodePath.join(NodePath.dirname(raizSecoes), "secoes.jsonl");
+  if (NodeFS.existsSync(legado)) {
     erros.push(`${ctx.rel(legado)} não deve mais ser versionado; use arquivos por seção em ${rSecoes}`);
   }
   if (!idsVistos.size) erros.push(`${rSecoes}: deve conter ao menos uma seção`);
@@ -151,7 +153,7 @@ export function validarPpcs(ctx: Contexto, manifest: unknown): string[] {
       erros.push(`${rIndice}: secoes.taxonomias diverge da taxonomia do pipeline`);
     }
     const esperados = Object.fromEntries(
-      TIPOS_SECAO_INDEXADOS.map((tipo) => [tipo, ctx.rel(path.join(ctx.c.secoesPpcs, `${tipo}.jsonl`))]),
+      TIPOS_SECAO_INDEXADOS.map((tipo) => [tipo, ctx.rel(NodePath.join(ctx.c.secoesPpcs, `${tipo}.jsonl`))]),
     );
     if (!valoresIguais(secoes.paths, esperados)) erros.push(`${rIndice}: secoes.paths diverge dos caminhos esperados`);
   }
@@ -192,7 +194,8 @@ export function validarPpcs(ctx: Contexto, manifest: unknown): string[] {
       erros.push(`${rIndice}: path ausente em ${ppcId}`);
       continue;
     }
-    if (!existsSync(naBase(ctx.c, valorPath))) erros.push(`${rIndice}: path inexistente em ${ppcId}: ${valorPath}`);
+    if (!NodeFS.existsSync(naBase(ctx.c, valorPath)))
+      erros.push(`${rIndice}: path inexistente em ${ppcId}: ${valorPath}`);
     const esperado = ppcsEsperados.get(ppcId);
     if (esperado !== undefined && valorPath !== esperado) {
       erros.push(`${rIndice}: path diverge do campus JSON em ${ppcId}: ${valorPath}`);
@@ -223,12 +226,12 @@ function validarProvenienciaItem(
   valorPath: string,
 ): string[] {
   const caminho = naBase(ctx.c, valorPath);
-  if (!existsSync(caminho)) return [];
+  if (!NodeFS.existsSync(caminho)) return [];
   let proveniencia;
   try {
     ({ proveniencia } = analisarPpc(lerTexto(caminho, { ignorarErros: true }), valorPath));
   } catch (erro) {
-    if (erro instanceof ErroFrontMatter) return [erro.message];
+    if (ehErroFrontMatter(erro)) return [erro.message];
     throw erro;
   }
   const erros: string[] = [];
@@ -285,7 +288,7 @@ export function validarPpcps(ctx: Contexto, manifest: unknown): string[] {
     if (pathsIndice.has(valorPath)) erros.push(`${rIndice}: path duplicado: ${valorPath}`);
     pathsIndice.add(valorPath);
     const caminho = naBase(ctx.c, valorPath);
-    if (!existsSync(caminho)) {
+    if (!NodeFS.existsSync(caminho)) {
       erros.push(`${rIndice}: path inexistente: ${valorPath}`);
       continue;
     }

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as Schema from "effect/Schema";
 
 export const SITUACOES_MATRIZES = [
   "Única ativa",
@@ -14,31 +14,31 @@ export const CRITERIO_COLETA =
 
 const SEM_MATRIZ_ATIVA = "Nenhuma matriz marcada Ativa=Sim.";
 
-export const esquemaSituacaoMatrizes = z.enum(SITUACOES_MATRIZES);
+export const esquemaSituacaoMatrizes = Schema.Literals(SITUACOES_MATRIZES);
 
 /**
  * Matriz curricular como aparece no SUAP. Usa a mesma forma do relatório gravado em disco,
  * que `--apply-report` lê de volta, por isso os nomes seguem o JSON. Só as matrizes ativas
  * trazem `url`, `carga_horaria_h` e `campos`.
  */
-export const esquemaMatrizSuap = z.strictObject({
-  id: z.number().int(),
-  ativa: z.boolean(),
-  descricao: z.string(),
-  url: z.string().exactOptional(),
-  carga_horaria_h: z.number().exactOptional(),
-  campos: z.record(z.string(), z.string()).exactOptional(),
+export const esquemaMatrizSuap = Schema.Struct({
+  id: Schema.Int,
+  ativa: Schema.Boolean,
+  descricao: Schema.String,
+  url: Schema.optionalKey(Schema.String),
+  carga_horaria_h: Schema.optionalKey(Schema.Number),
+  campos: Schema.optionalKey(Schema.Record(Schema.String, Schema.String)),
 });
-export type MatrizSuap = z.output<typeof esquemaMatrizSuap>;
+export type MatrizSuap = typeof esquemaMatrizSuap.Type;
 
-export const esquemaConsolidacaoMatrizes = z.strictObject({
+export const esquemaConsolidacaoMatrizes = Schema.Struct({
   situacao: esquemaSituacaoMatrizes,
   /** Só existe quando todas as matrizes ativas têm a mesma carga horária. */
-  carga_horaria_comum_h: z.number().nullable(),
+  carga_horaria_comum_h: Schema.NullOr(Schema.Number),
 });
-export type ConsolidacaoMatrizes = z.output<typeof esquemaConsolidacaoMatrizes>;
+export type ConsolidacaoMatrizes = typeof esquemaConsolidacaoMatrizes.Type;
 
-export function consolidarMatrizes(matrizes: MatrizSuap[]): ConsolidacaoMatrizes {
+export function consolidarMatrizes(matrizes: ReadonlyArray<MatrizSuap>): ConsolidacaoMatrizes {
   const ativas = matrizes.filter((matriz) => matriz.ativa);
   const cargas = new Set(ativas.map((matriz) => matriz.carga_horaria_h));
   const situacao: SituacaoMatrizes = !ativas.length
@@ -68,7 +68,7 @@ function formatarHoras(valor: number): string {
   return String(Number(valor.toPrecision(6)));
 }
 
-export function resumoMatrizesAtivas(matrizes: MatrizSuap[]): string {
+export function resumoMatrizesAtivas(matrizes: ReadonlyArray<MatrizSuap>): string {
   const linhas = matrizes
     .filter((matriz) => matriz.ativa)
     .map((matriz) => {
@@ -83,6 +83,6 @@ export function resumoMatrizesAtivas(matrizes: MatrizSuap[]): string {
   return linhas.join("\n") || SEM_MATRIZ_ATIVA;
 }
 
-export function urlsMatrizesAtivas(matrizes: MatrizSuap[]): string[] {
+export function urlsMatrizesAtivas(matrizes: ReadonlyArray<MatrizSuap>): string[] {
   return matrizes.filter((matriz) => matriz.ativa).map((matriz) => matriz.url ?? "");
 }

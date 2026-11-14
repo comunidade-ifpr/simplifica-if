@@ -1,5 +1,6 @@
+// @effect-diagnostics nodeBuiltinImport:off -- gerador síncrono de mapa-fichas.md, chamado pela CLI e pelos testes
 /** Mapa das fichas por tópico (`base-analise/mapa-fichas.md`). */
-import { existsSync } from "node:fs";
+import * as NodeFS from "node:fs";
 import { ehObjeto, itensDe, itensPercorridos, type ObjetoJson, textoDe, textoOuVazio } from "@simplifica-if/kb/json";
 import { aparar, apararFim, compararTexto, dividirLinhas, lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
 import { agoraUtc, escreverTexto, lerJson, listarArquivos } from "./arquivos.ts";
@@ -136,7 +137,7 @@ export function escreverMapa(caminhos: CaminhosAnalise = caminhosPadrao(), gerad
 
 /** Se `mapa-fichas.md` existe e é idêntico ao mapa gerado agora com o mesmo "Gerado em". */
 export function mapaAtualizado(caminhos: CaminhosAnalise = caminhosPadrao()): boolean {
-  if (!existsSync(caminhos.mapaFichasPath)) return false;
+  if (!NodeFS.existsSync(caminhos.mapaFichasPath)) return false;
   const atual = lerTexto(caminhos.mapaFichasPath);
   const linha = dividirLinhas(atual).find((texto) => texto.startsWith(PREFIXO_GERADO_EM));
   const geradoEm = linha ? linha.slice(PREFIXO_GERADO_EM.length) : "";

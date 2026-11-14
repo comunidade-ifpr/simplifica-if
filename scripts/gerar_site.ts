@@ -1,8 +1,9 @@
 #!/usr/bin/env node
+// @effect-diagnostics nodeBuiltinImport:off globalConsole:off -- script de execução única do pipeline da base, síncrono, com a casca de scripts/cli.ts: diretório temporário com node:fs e saída no console
 /** Gera a saída publicável em site/ a partir de base-conhecimento/. */
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
-import os from "node:os";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodeOS from "node:os";
+import * as NodePath from "node:path";
 import { criarCaminhos } from "./base/caminhos.ts";
 import { compararDiretorios, renderizarSite } from "./base/site.ts";
 import { lerArgumentos } from "./cli.ts";
@@ -15,14 +16,14 @@ Gera a saída publicável em site/ a partir de base-conhecimento/.
   -h, --help  mostra esta ajuda`;
 
 function verificarSite(raizBase: string, site: string): string[] {
-  if (!existsSync(site)) return ["site/ não existe; gere com node scripts/gerar_site.ts"];
-  const temporario = mkdtempSync(path.join(os.tmpdir(), "gerar-site-"));
+  if (!NodeFS.existsSync(site)) return ["site/ não existe; gere com node scripts/gerar_site.ts"];
+  const temporario = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "gerar-site-"));
   try {
-    const esperado = path.join(temporario, "site");
+    const esperado = NodePath.join(temporario, "site");
     renderizarSite(raizBase, esperado);
     return compararDiretorios(esperado, site);
   } finally {
-    rmSync(temporario, { recursive: true, force: true });
+    NodeFS.rmSync(temporario, { recursive: true, force: true });
   }
 }
 
@@ -31,7 +32,7 @@ function main(): number {
   if ("codigo" in args) return args.codigo;
 
   const caminhos = criarCaminhos();
-  const nomeBase = path.basename(caminhos.raiz);
+  const nomeBase = NodePath.basename(caminhos.raiz);
   if (args.values.check) {
     const erros = verificarSite(caminhos.raiz, caminhos.site);
     if (erros.length) {

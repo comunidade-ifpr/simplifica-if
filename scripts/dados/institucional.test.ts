@@ -1,7 +1,8 @@
+// @effect-diagnostics nodeBuiltinImport:off -- monta raízes temporárias com node:fs síncrono para o carregador síncrono sob teste
 import { afterEach, describe, expect, test } from "vite-plus/test";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import os from "node:os";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodeOS from "node:os";
+import * as NodePath from "node:path";
 import type { BaseInstitucional } from "../dominio/auditoria.ts";
 import type { Campus, Curso } from "../dominio/curso.ts";
 import type { EditalIngresso, OfertaIngresso, ProcessoSeletivo } from "../dominio/ingresso.ts";
@@ -13,12 +14,12 @@ import { validarDadosInstitucionais } from "./validacao.ts";
 
 const raizes: string[] = [];
 function raizTemporaria(): string {
-  const raiz = mkdtempSync(path.join(os.tmpdir(), "dados-teste-"));
+  const raiz = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "dados-teste-"));
   raizes.push(raiz);
   return raiz;
 }
 afterEach(() => {
-  for (const raiz of raizes.splice(0)) rmSync(raiz, { recursive: true, force: true });
+  for (const raiz of raizes.splice(0)) NodeFS.rmSync(raiz, { recursive: true, force: true });
 });
 
 const campus: Campus = {
@@ -167,13 +168,16 @@ describe("dados/institucional", () => {
     const raiz = raizTemporaria();
     gravarDadosInstitucionais(deDominio(baseNotion), raiz);
     const ofertaLocal = JSON.parse(
-      readFileSync(path.join(raiz, "ofertas", "processo-seletivo-2026", "exemplo-tecnico-em-exemplo.json"), "utf-8"),
+      NodeFS.readFileSync(
+        NodePath.join(raiz, "ofertas", "processo-seletivo-2026", "exemplo-tecnico-em-exemplo.json"),
+        "utf-8",
+      ),
     );
     expect(ofertaLocal.cursos).toEqual(["exemplo/tecnico-em-exemplo"]);
     expect(ofertaLocal.campi).toEqual(["exemplo"]);
     expect(ofertaLocal.editais).toEqual(["edital-1-2026"]);
     const cursoLocal = JSON.parse(
-      readFileSync(path.join(raiz, "cursos", "exemplo", "tecnico-em-exemplo.json"), "utf-8"),
+      NodeFS.readFileSync(NodePath.join(raiz, "cursos", "exemplo", "tecnico-em-exemplo.json"), "utf-8"),
     );
     expect(cursoLocal.suap.matrizes.urls).toHaveLength(2);
     expect(cursoLocal.suap).not.toHaveProperty("atualizado_em");
@@ -188,15 +192,42 @@ describe("dados/institucional", () => {
   test("acusa schema inválido e arquivo fora do caminho da chave", () => {
     const raiz = raizTemporaria();
     gravarDadosInstitucionais(deDominio(baseNotion), raiz);
-    mkdirSync(path.join(raiz, "campi"), { recursive: true });
-    writeFileSync(path.join(raiz, "campi", "outro-nome.json"), JSON.stringify({ campus_id: "outro", nome: "X" }));
-    writeFileSync(path.join(raiz, "campi", "quebrado.json"), JSON.stringify({ campus_id: "quebrado", extra: 1 }));
+    NodeFS.mkdirSync(NodePath.join(raiz, "campi"), { recursive: true });
+    NodeFS.writeFileSync(
+      NodePath.join(raiz, "campi", "outro-nome.json"),
+      JSON.stringify({ campus_id: "outro", nome: "X" }),
+    );
+    NodeFS.writeFileSync(
+      NodePath.join(raiz, "campi", "quebrado.json"),
+      JSON.stringify({ campus_id: "quebrado", extra: 1 }),
+    );
 
     const { erros } = carregarDadosInstitucionais(raiz);
     expect(erros).toContain(
       "dados/institucional/campi/outro-nome.json: arquivo deveria estar em dados/institucional/campi/outro.json",
     );
     expect(erros.some((erro) => erro.startsWith("dados/institucional/campi/quebrado.json: nome"))).toBe(true);
+  });
+
+  test("cada problema de schema vira uma linha em português, com arquivo e caminho", () => {
+    const raiz = raizTemporaria();
+    NodeFS.mkdirSync(NodePath.join(raiz, "campi"), { recursive: true });
+    NodeFS.writeFileSync(NodePath.join(raiz, "campi", "x.json"), JSON.stringify({ campus_id: "x", extra: 1 }));
+    NodeFS.mkdirSync(NodePath.join(raiz, "cursos", "a"), { recursive: true });
+    NodeFS.writeFileSync(
+      NodePath.join(raiz, "cursos", "a", "b.json"),
+      JSON.stringify({ campus_id: "a", curso_slug: "b", nome: "B", cnct_id: "cnct:catalogo", suap: { id: 1.5 } }),
+    );
+    NodeFS.mkdirSync(NodePath.join(raiz, "editais"), { recursive: true });
+    NodeFS.writeFileSync(NodePath.join(raiz, "editais", "e.json"), JSON.stringify([]));
+
+    expect(carregarDadosInstitucionais(raiz).erros).toEqual([
+      "dados/institucional/campi/x.json: extra: Entrada inválida: campo não permitido",
+      "dados/institucional/campi/x.json: nome: Entrada inválida: campo obrigatório ausente",
+      "dados/institucional/cursos/a/b.json: cnct_id: deve ser cnct:<slug do curso no CNCT>",
+      "dados/institucional/cursos/a/b.json: suap.id: Entrada inválida: esperava um inteiro",
+      "dados/institucional/editais/e.json: (raiz): Entrada inválida: esperava um objeto",
+    ]);
   });
 
   test("acusa cnct_id que não existe no CNCT e turno fora do enum", () => {
@@ -208,8 +239,8 @@ describe("dados/institucional", () => {
       "dados/institucional: Curso exemplo/tecnico-em-exemplo: cnct_id não existe no CNCT: cnct:tecnico-em-nada",
     ]);
 
-    writeFileSync(
-      path.join(raiz, "ofertas", "processo-seletivo-2026", "exemplo-tecnico-em-exemplo.json"),
+    NodeFS.writeFileSync(
+      NodePath.join(raiz, "ofertas", "processo-seletivo-2026", "exemplo-tecnico-em-exemplo.json"),
       JSON.stringify({ ...dados.ofertas[0], turno_padronizado: "Manhã" }),
     );
     expect(carregarDadosInstitucionais(raiz).erros.some((erro) => erro.includes(": turno_padronizado: "))).toBe(true);

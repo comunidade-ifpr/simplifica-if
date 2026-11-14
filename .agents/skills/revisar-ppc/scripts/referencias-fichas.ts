@@ -1,11 +1,12 @@
+// @effect-diagnostics nodeBuiltinImport:off -- texto legível das referências pelos carregadores síncronos do kb
 /**
  * Referências normativas das fichas e dos marcos em texto legível, para os consumidores da base de
  * análise (índice, mapa, grupos e prompts dos sub-agentes). A estrutura e a renderização são do
  * núcleo (`@simplifica-if/kb/normas/referencia-estruturada`); aqui ficam só as adaptações à skill.
  */
 import * as Schema from "effect/Schema";
-import { existsSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { Registro } from "@simplifica-if/kb/normas/registro";
 import {
   carregarUniversoReferencias,
@@ -23,8 +24,8 @@ import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
  * o manifesto de normas não existe.
  */
 export function carregarUniverso(caminhos: CaminhosAnalise = caminhosPadrao()): UniversoReferencias | null {
-  if (!existsSync(caminhos.manifestNormasPath)) return null;
-  return carregarUniversoReferencias(path.dirname(caminhos.baseConhecimentoDir));
+  if (!NodeFS.existsSync(caminhos.manifestNormasPath)) return null;
+  return carregarUniversoReferencias(NodePath.dirname(caminhos.baseConhecimentoDir));
 }
 
 /** Universo do projeto ou, sem manifesto, um universo vazio (os textos ficam com os IDs). */

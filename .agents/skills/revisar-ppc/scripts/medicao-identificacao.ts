@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- medição de execução única sobre os PPCs da base, síncrona
 /**
  * Medição da identificação do curso (curso, campus, forma de oferta e
  * modalidade) sobre os PPCs técnicos convertidos da base.
@@ -8,8 +9,8 @@
  * também não entra na extração (o nome de reserva é neutro), para que o slug
  * do caminho não conte como acerto.
  */
-import { existsSync, readdirSync, readFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { type Identificacao, inferirIdentificacaoDoMarkdown, normalizarBusca } from "./identificacao.ts";
 
@@ -71,23 +72,23 @@ export const extratorPadrao: Extrator = (texto, caminhos) =>
 
 /** Cursos técnicos (nível médio) com PPC convertido na base. */
 export function carregarGabarito(caminhos: CaminhosAnalise = caminhosPadrao()): Gabarito[] {
-  const raiz = path.dirname(caminhos.baseConhecimentoDir);
-  const cursosDir = path.join(raiz, "dados", "institucional", "cursos");
+  const raiz = NodePath.dirname(caminhos.baseConhecimentoDir);
+  const cursosDir = NodePath.join(raiz, "dados", "institucional", "cursos");
   const gabarito: Gabarito[] = [];
-  for (const campus of readdirSync(cursosDir).sort()) {
-    const dir = path.join(cursosDir, campus);
-    if (!existsSync(dir) || !campus || campus.startsWith(".")) continue;
+  for (const campus of NodeFS.readdirSync(cursosDir).sort()) {
+    const dir = NodePath.join(cursosDir, campus);
+    if (!NodeFS.existsSync(dir) || !campus || campus.startsWith(".")) continue;
     let arquivos: string[];
     try {
-      arquivos = readdirSync(dir).filter((nome) => nome.endsWith(".json"));
+      arquivos = NodeFS.readdirSync(dir).filter((nome) => nome.endsWith(".json"));
     } catch {
       continue;
     }
     for (const nome of arquivos.sort()) {
-      const curso = JSON.parse(readFileSync(path.join(dir, nome), "utf8")) as Record<string, any>;
+      const curso = JSON.parse(NodeFS.readFileSync(NodePath.join(dir, nome), "utf8")) as Record<string, any>;
       const caminho = curso.ppc?.markdown_path;
       if (curso.nivel !== "médio" || typeof caminho !== "string") continue;
-      if (!existsSync(path.join(caminhos.baseConhecimentoDir, caminho))) continue;
+      if (!NodeFS.existsSync(NodePath.join(caminhos.baseConhecimentoDir, caminho))) continue;
       gabarito.push({
         caminho,
         nome: String(curso.nome),
@@ -133,7 +134,10 @@ export function categoriaModalidade(texto: string): string {
 
 function campiPorNome(caminhos: CaminhosAnalise): Map<string, string> {
   const indice = JSON.parse(
-    readFileSync(path.join(caminhos.baseConhecimentoDir, "institucional", "ifpr", "campi", "index.json"), "utf8"),
+    NodeFS.readFileSync(
+      NodePath.join(caminhos.baseConhecimentoDir, "institucional", "ifpr", "campi", "index.json"),
+      "utf8",
+    ),
   ) as { items: Array<{ id: string; nome: string }> };
   return new Map(indice.items.map((item) => [normalizarBusca(item.nome), item.id]));
 }
@@ -194,7 +198,7 @@ export function medirIdentificacao(
     gabarito = gabarito.filter((item) => amostra.has(item.caminho));
   }
   const casos = gabarito.map((item): CasoMedido => {
-    const texto = readFileSync(path.join(caminhos.baseConhecimentoDir, item.caminho), "utf8");
+    const texto = NodeFS.readFileSync(NodePath.join(caminhos.baseConhecimentoDir, item.caminho), "utf8");
     return { caminho: item.caminho, gabarito: item, ...compararComGabarito(extrator(texto, caminhos), item, campus) };
   });
   const campos = {} as Medicao["campos"];

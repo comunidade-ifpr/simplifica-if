@@ -1,7 +1,8 @@
+// @effect-diagnostics nodeBuiltinImport:off -- gerador síncrono de indice.json, chamado pela CLI e pelos testes
 /** Índice consolidado da base de análise (`base-analise/indice.json`). */
-import { isDeepStrictEqual } from "node:util";
-import { existsSync } from "node:fs";
-import path from "node:path";
+import * as NodeUtil from "node:util";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import {
   ehObjeto,
   itensDe,
@@ -43,11 +44,11 @@ function lista(valor: unknown): unknown[] {
 
 /** Nome do arquivo sem a última extensão. */
 function semExtensao(caminho: string): string {
-  return path.basename(caminho, path.extname(caminho));
+  return NodePath.basename(caminho, NodePath.extname(caminho));
 }
 
 function relativo(caminhos: CaminhosAnalise, caminho: string): string {
-  return path.relative(caminhos.baseAnaliseDir, caminho).split(path.sep).join("/");
+  return NodePath.relative(caminhos.baseAnaliseDir, caminho).split(NodePath.sep).join("/");
 }
 
 function itemFicha(caminhos: CaminhosAnalise, arquivo: string, universo: UniversoReferencias): Item {
@@ -68,7 +69,7 @@ function itemFicha(caminhos: CaminhosAnalise, arquivo: string, universo: Univers
 }
 
 function carregarTopicos(caminhos: CaminhosAnalise): ObjetoJson[] {
-  if (!existsSync(caminhos.topicosFichasPath)) return [];
+  if (!NodeFS.existsSync(caminhos.topicosFichasPath)) return [];
   const payload = lerJson(caminhos.topicosFichasPath);
   const topicos = ehObjeto(payload) ? obter(payload, "topicos", []) : [];
   return itensDe(topicos).filter(ehObjeto);
@@ -109,7 +110,7 @@ function itemContrato(caminhos: CaminhosAnalise, arquivo: string): Item {
   return {
     categoria: "contrato",
     id,
-    titulo: path.basename(arquivo),
+    titulo: NodePath.basename(arquivo),
     tipo_contrato: id.endsWith(".exemplo") ? id.slice(0, -".exemplo".length) : id,
     campos_raiz: ordenarTextos(Object.keys(payload)),
     arquivo: relativo(caminhos, arquivo),
@@ -121,7 +122,7 @@ function itemSchema(caminhos: CaminhosAnalise, arquivo: string): Item {
   return {
     categoria: "schema",
     id: semExtensao(arquivo),
-    titulo: textoOuVazio(payload.title) || path.basename(arquivo),
+    titulo: textoOuVazio(payload.title) || NodePath.basename(arquivo),
     schema_id: textoOuVazio(payload.$id),
     arquivo: relativo(caminhos, arquivo),
   };
@@ -129,7 +130,7 @@ function itemSchema(caminhos: CaminhosAnalise, arquivo: string): Item {
 
 function itensMarcosNormativos(caminhos: CaminhosAnalise, universo: UniversoReferencias): Item[] {
   const origem = caminhos.marcosNormativosPath;
-  if (!existsSync(origem)) return [];
+  if (!NodeFS.existsSync(origem)) return [];
   // Vigente e substituídas são derivados de base-conhecimento/relacoes.yaml (fase 5).
   return carregarMarcos(origem).map((marco) => {
     const legivel = marcoLegivel(marco, universo);
@@ -150,16 +151,16 @@ function itensMarcosNormativos(caminhos: CaminhosAnalise, universo: UniversoRefe
 export function gerarIndice(geradoEm?: string, caminhos: CaminhosAnalise = caminhosPadrao()): ObjetoJson {
   const base = caminhos.baseAnaliseDir;
   const universo = universoOuVazio(caminhos);
-  const fichas = listarArquivos(path.join(base, "fichas"), ".json").map((arquivo) =>
+  const fichas = listarArquivos(NodePath.join(base, "fichas"), ".json").map((arquivo) =>
     itemFicha(caminhos, arquivo, universo),
   );
-  const validacoes = listarArquivos(path.join(base, "validacoes-cruzadas"), ".json").map((arquivo) =>
+  const validacoes = listarArquivos(NodePath.join(base, "validacoes-cruzadas"), ".json").map((arquivo) =>
     itemValidacaoCruzada(caminhos, arquivo),
   );
-  const contratos = listarArquivos(path.join(base, "contratos"), ".json").map((arquivo) =>
+  const contratos = listarArquivos(NodePath.join(base, "contratos"), ".json").map((arquivo) =>
     itemContrato(caminhos, arquivo),
   );
-  const schemas = listarArquivos(path.join(base, "schemas"), ".schema.json").map((arquivo) =>
+  const schemas = listarArquivos(NodePath.join(base, "schemas"), ".schema.json").map((arquivo) =>
     itemSchema(caminhos, arquivo),
   );
   const topicos = carregarTopicos(caminhos).map((topico) => itemTopico(caminhos, topico));
@@ -190,9 +191,9 @@ export function escreverIndice(caminhos: CaminhosAnalise = caminhosPadrao(), ger
 
 /** Se `indice.json` existe e equivale ao índice gerado agora com o mesmo `gerado_em`. */
 export function indiceAtualizado(caminhos: CaminhosAnalise = caminhosPadrao()): boolean {
-  if (!existsSync(caminhos.indicePath)) return false;
+  if (!NodeFS.existsSync(caminhos.indicePath)) return false;
   const atual = lerJson(caminhos.indicePath);
   const geradoEm = ehObjeto(atual) ? textoDe(obter(atual, "gerado_em", "")) : "";
   // O JSON gravado não tem as chaves `undefined` do objeto gerado; compara os dois como JSON.
-  return isDeepStrictEqual(atual, JSON.parse(JSON.stringify(gerarIndice(geradoEm, caminhos))));
+  return NodeUtil.isDeepStrictEqual(atual, JSON.parse(JSON.stringify(gerarIndice(geradoEm, caminhos))));
 }

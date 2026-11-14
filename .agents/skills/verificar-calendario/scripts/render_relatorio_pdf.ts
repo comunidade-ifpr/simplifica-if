@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off globalDate:off globalConsole:off -- script de execução única: lê o Markdown, grava o PDF e relata no console; a data do relatório é a do sistema
 /**
  * Relatório de verificação de calendário: Markdown → PDF (porte de
  * `render_relatorio_pdf.py`, que usava `reportlab`, para `pdfmake`).
@@ -41,10 +42,10 @@
  * `VERIFICAR_CALENDARIO_AGORA` (data ISO) fixa a data de criação do PDF, para
  * que a saída seja reproduzível.
  */
-import { mkdirSync, realpathSync } from "node:fs";
-import { writeFile } from "node:fs/promises";
-import { createRequire } from "node:module";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodeFSP from "node:fs/promises";
+import * as NodeModule from "node:module";
+import * as NodePath from "node:path";
 import type { Content, ContextPageSize, TableCell, TDocumentDefinitions } from "pdfmake/interfaces.js";
 import { aparar, apararCaracteres, dividirLinhas, lerTexto } from "@simplifica-if/kb/texto";
 import { match } from "@simplifica-if/kb/python/re";
@@ -59,15 +60,15 @@ type PdfKitDocumento = {
   _font: { font: object; ascender: number; lineHeight(corpo: number): number };
 };
 
-const requerer = createRequire(import.meta.url);
+const requerer = NodeModule.createRequire(import.meta.url);
 const pdfmake = requerer("pdfmake") as PdfMake;
 // `pdfkit` e `fontkit` são dependências do `pdfmake`, resolvidas a partir dele.
-const caminhoPdfmake = realpathSync(requerer.resolve("pdfmake"));
-const doPdfmake = createRequire(caminhoPdfmake);
+const caminhoPdfmake = NodeFS.realpathSync(requerer.resolve("pdfmake"));
+const doPdfmake = NodeModule.createRequire(caminhoPdfmake);
 const { PDFDocument: PdfKit } = doPdfmake("pdfkit") as {
   PDFDocument: new (opcoes: object) => PdfKitDocumento;
 };
-const fontkit = createRequire(doPdfmake.resolve("pdfkit"))("fontkit") as {
+const fontkit = NodeModule.createRequire(doPdfmake.resolve("pdfkit"))("fontkit") as {
   openSync(caminho: string): FonteFontkit;
 };
 
@@ -100,13 +101,13 @@ const FONTES_PADRAO = {
     bolditalics: "Courier-BoldOblique",
   },
 };
-const PASTA_ROBOTO = path.join(path.dirname(caminhoPdfmake), "..", "fonts", "Roboto");
+const PASTA_ROBOTO = NodePath.join(NodePath.dirname(caminhoPdfmake), "..", "fonts", "Roboto");
 const FONTE_RESERVA = {
   Roboto: {
-    normal: path.join(PASTA_ROBOTO, "Roboto-Regular.ttf"),
-    bold: path.join(PASTA_ROBOTO, "Roboto-Medium.ttf"),
-    italics: path.join(PASTA_ROBOTO, "Roboto-Italic.ttf"),
-    bolditalics: path.join(PASTA_ROBOTO, "Roboto-MediumItalic.ttf"),
+    normal: NodePath.join(PASTA_ROBOTO, "Roboto-Regular.ttf"),
+    bold: NodePath.join(PASTA_ROBOTO, "Roboto-Medium.ttf"),
+    italics: NodePath.join(PASTA_ROBOTO, "Roboto-Italic.ttf"),
+    bolditalics: NodePath.join(PASTA_ROBOTO, "Roboto-MediumItalic.ttf"),
   },
 };
 const ARQUIVOS_FONTES = new Set(
@@ -612,8 +613,8 @@ export async function gerarPdf(markdown: string, criadoEm?: Date): Promise<Buffe
 /** `construir_pdf`: lê o Markdown e grava o PDF, criando a pasta de saída. */
 export async function construirPdf(entrada: string, saida: string, criadoEm?: Date): Promise<void> {
   const pdf = await gerarPdf(lerTexto(entrada), criadoEm);
-  mkdirSync(path.dirname(saida), { recursive: true });
-  await writeFile(saida, pdf);
+  NodeFS.mkdirSync(NodePath.dirname(saida), { recursive: true });
+  await NodeFSP.writeFile(saida, pdf);
 }
 
 function dataFixa(): Date | undefined {
@@ -629,7 +630,7 @@ async function main(argumentos: string[]): Promise<number> {
     console.log("Uso: render_relatorio_pdf.ts entrada.md saida.pdf");
     return 1;
   }
-  await construirPdf(path.resolve(argumentos[0]!), path.resolve(argumentos[1]!), dataFixa());
+  await construirPdf(NodePath.resolve(argumentos[0]!), NodePath.resolve(argumentos[1]!), dataFixa());
   return 0;
 }
 

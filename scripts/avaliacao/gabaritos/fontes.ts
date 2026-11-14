@@ -1,84 +1,90 @@
+// @effect-diagnostics nodeBuiltinImport:off -- leitura síncrona das fontes do checkout pelo gerador de gabaritos, de execução única
 /**
  * Leitura das fontes locais usadas pelos geradores de gabarito: manifesto de normas, dados
  * institucionais, CNCT e PPCs convertidos. Tudo é lido do checkout; nada depende do relógio.
  */
-import { existsSync, readFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { mascararFrontMatter } from "@simplifica-if/kb/ppcs/front-matter";
-import { z } from "zod";
+import * as Schema from "effect/Schema";
 import { carregarDadosInstitucionais, type DadosInstitucionais } from "../../dados/institucional.ts";
+import { solto, TODOS_OS_ERROS, validarJson } from "../../esquema.ts";
 import { RAIZ_REPOSITORIO } from "../carregar.ts";
 import { compararTexto, normalizarTexto } from "../normalizar.ts";
 import type { EntradaManifesto } from "../universos.ts";
 
 export { RAIZ_REPOSITORIO };
 
-const esquemaEntradaManifesto = z.looseObject({
-  title: z.string(),
-  tipo_documento: z.string(),
-  numero: z.union([z.string(), z.number()]),
-  ano: z.number().int(),
-  data_publicacao: z.string(),
-  orgao: z.string(),
-  jurisdicao: z.string(),
-  status_vigencia: z.string(),
-  aliases: z.array(z.string()).optional(),
-  path: z.string(),
+const esquemaEntradaManifesto = solto({
+  title: Schema.String,
+  tipo_documento: Schema.String,
+  numero: Schema.Union([Schema.String, Schema.Finite]),
+  ano: Schema.Int,
+  data_publicacao: Schema.String,
+  orgao: Schema.String,
+  jurisdicao: Schema.String,
+  status_vigencia: Schema.String,
+  aliases: Schema.optional(Schema.Array(Schema.String)),
+  path: Schema.String,
 });
-export type EntradaNorma = z.output<typeof esquemaEntradaManifesto> & EntradaManifesto;
+export type EntradaNorma = typeof esquemaEntradaManifesto.Type & EntradaManifesto;
 
-const esquemaItemCnct = z.looseObject({
-  id: z.string(),
-  denominacao: z.string(),
-  denominacao_normalizada: z.string(),
-  eixo_tecnologico: z.string(),
-  area_tecnologica: z.string(),
-  carga_horaria_minima_horas: z.number(),
+const esquemaItemCnct = solto({
+  id: Schema.String,
+  denominacao: Schema.String,
+  denominacao_normalizada: Schema.String,
+  eixo_tecnologico: Schema.String,
+  area_tecnologica: Schema.String,
+  carga_horaria_minima_horas: Schema.Finite,
 });
-export type ItemCnct = z.output<typeof esquemaItemCnct>;
+export type ItemCnct = typeof esquemaItemCnct.Type;
 
-const esquemaItemPpc = z.looseObject({
-  id: z.string(),
-  campus_id: z.string(),
-  curso_slug: z.string(),
-  curso_nome: z.string(),
-  nivel: z.string(),
-  tipo_oferta: z.string(),
-  path: z.string(),
-  ano_documento: z.number().int().optional(),
+const esquemaItemPpc = solto({
+  id: Schema.String,
+  campus_id: Schema.String,
+  curso_slug: Schema.String,
+  curso_nome: Schema.String,
+  nivel: Schema.String,
+  tipo_oferta: Schema.String,
+  path: Schema.String,
+  ano_documento: Schema.optional(Schema.Int),
 });
-export type ItemPpc = z.output<typeof esquemaItemPpc>;
+export type ItemPpc = typeof esquemaItemPpc.Type;
+
+const esquemaManifesto = Schema.Array(esquemaEntradaManifesto);
+/** Índices com `items`; as demais chaves do arquivo são descartadas (`TODOS_OS_ERROS`). */
+const esquemaIndiceCnct = Schema.Struct({ items: Schema.Array(esquemaItemCnct) });
+const esquemaIndicePpcs = Schema.Struct({ items: Schema.Array(esquemaItemPpc) });
 
 export interface Fontes {
   raiz: string;
-  normas: EntradaNorma[];
+  normas: readonly EntradaNorma[];
   dados: DadosInstitucionais;
-  cnct: ItemCnct[];
-  ppcs: ItemPpc[];
+  cnct: readonly ItemCnct[];
+  ppcs: readonly ItemPpc[];
   /** Texto do PPC convertido, por id `campus_id/curso_slug`, com o front matter em branco. */
   lerPpc(id: string): string;
 }
 
 function lerJson(caminho: string): unknown {
-  return JSON.parse(readFileSync(caminho, "utf-8"));
+  return JSON.parse(NodeFS.readFileSync(caminho, "utf-8"));
 }
 
 export function carregarFontes(raiz: string = RAIZ_REPOSITORIO): Fontes {
-  const base = path.join(raiz, "base-conhecimento");
-  const normas = z.array(esquemaEntradaManifesto).parse(lerJson(path.join(base, "manifest.json")));
-  const { dados, erros } = carregarDadosInstitucionais(path.join(raiz, "dados", "institucional"));
+  const base = NodePath.join(raiz, "base-conhecimento");
+  const caminhoManifesto = NodePath.join(base, "manifest.json");
+  const normas = validarJson(esquemaManifesto, lerJson(caminhoManifesto), caminhoManifesto, TODOS_OS_ERROS);
+  const { dados, erros } = carregarDadosInstitucionais(NodePath.join(raiz, "dados", "institucional"));
   if (erros.length > 0) throw new Error(`dados/institucional inválido:\n${erros.join("\n")}`);
-  const cnct = z
-    .object({ items: z.array(esquemaItemCnct) })
-    .parse(lerJson(path.join(base, "catalogos", "cnct", "index.json"))).items;
-  const ppcs = z
-    .object({ items: z.array(esquemaItemPpc) })
-    .parse(lerJson(path.join(base, "institucional", "ifpr", "ppcs", "index.json"))).items;
+  const caminhoCnct = NodePath.join(base, "catalogos", "cnct", "index.json");
+  const cnct = validarJson(esquemaIndiceCnct, lerJson(caminhoCnct), caminhoCnct, TODOS_OS_ERROS).items;
+  const caminhoPpcs = NodePath.join(base, "institucional", "ifpr", "ppcs", "index.json");
+  const ppcs = validarJson(esquemaIndicePpcs, lerJson(caminhoPpcs), caminhoPpcs, TODOS_OS_ERROS).items;
   const cache = new Map<string, string>();
-  const caminhoPpc = new Map(ppcs.map((ppc) => [ppc.id, path.join(base, ppc.path)]));
+  const caminhoPpc = new Map(ppcs.map((ppc) => [ppc.id, NodePath.join(base, ppc.path)]));
   return {
     raiz,
-    normas: normas as EntradaNorma[],
+    normas: normas as readonly EntradaNorma[],
     dados,
     cnct,
     ppcs: [...ppcs].sort((a, b) => compararTexto(a.id, b.id)),
@@ -86,8 +92,8 @@ export function carregarFontes(raiz: string = RAIZ_REPOSITORIO): Fontes {
       const emCache = cache.get(id);
       if (emCache !== undefined) return emCache;
       const caminho = caminhoPpc.get(id);
-      if (!caminho || !existsSync(caminho)) throw new Error(`PPC sem arquivo: ${id}`);
-      const texto = mascararFrontMatter(readFileSync(caminho, "utf-8"));
+      if (!caminho || !NodeFS.existsSync(caminho)) throw new Error(`PPC sem arquivo: ${id}`);
+      const texto = mascararFrontMatter(NodeFS.readFileSync(caminho, "utf-8"));
       cache.set(id, texto);
       return texto;
     },

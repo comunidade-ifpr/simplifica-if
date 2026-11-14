@@ -49,7 +49,7 @@ O resolvedor tem conjunto anotado próprio em `resolvedor/citacoes-anotadas.yaml
 
 ## PPCs-ouro
 
-Os três arquivos de `ppcs-ouro/` (Enfermagem subsequente de Curitiba, Agropecuária integrado de Ivaiporã e Manutenção e Suporte em Informática PROEJA de União da Vitória) trazem, para 10 fichas objetivas cada, o estado esperado, a justificativa e o trecho do PPC como evidência. O contrato é `esquemaPpcOuro` (zod) em `scripts/avaliacao/esquema.ts`. Estão em `status: rascunho`: precisam de revisão humana antes de servir de referência. Quem revisar preenche `revisado_por` e troca o status para `revisado`.
+Os três arquivos de `ppcs-ouro/` (Enfermagem subsequente de Curitiba, Agropecuária integrado de Ivaiporã e Manutenção e Suporte em Informática PROEJA de União da Vitória) trazem, para 10 fichas objetivas cada, o estado esperado, a justificativa e o trecho do PPC como evidência. O contrato é `esquemaPpcOuro` (Effect Schema) em `scripts/avaliacao/esquema.ts`. Estão em `status: rascunho`: precisam de revisão humana antes de servir de referência. Quem revisar preenche `revisado_por` e troca o status para `revisado`.
 
 ## Custos
 

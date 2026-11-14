@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- gerador síncrono do relatório HTML a partir dos arquivos da rodada
 /**
  * Relatório HTML da rodada: o PPC anotado com os achados dos sub-agentes
  * (porte de `gerar_relatorio_html.py`, trilha T2).
@@ -14,8 +15,8 @@
  * - confiança com `:.2f` do Python (empate para o par);
  * - posições e larguras contadas em code points.
  */
-import { copyFileSync, mkdirSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { escapeHtml } from "@simplifica-if/kb/python/html";
 import { match, sub } from "@simplifica-if/kb/python/re";
 import { wrap } from "@simplifica-if/kb/python/textwrap";
@@ -904,11 +905,11 @@ const ASSETS = ["revisar-ppc.css", "revisar-ppc.js"];
 
 /** `_copiar_assets`: copia o CSS e o JS do relatório para `<destino>/assets`. */
 function copiarAssets(destinoDir: string, caminhos: CaminhosAnalise): string[] {
-  const destino = path.join(destinoDir, "assets");
-  mkdirSync(destino, { recursive: true });
+  const destino = NodePath.join(destinoDir, "assets");
+  NodeFS.mkdirSync(destino, { recursive: true });
   return ASSETS.map((nome) => {
-    const arquivo = path.join(destino, nome);
-    copyFileSync(path.join(caminhos.appDir, "assets", nome), arquivo);
+    const arquivo = NodePath.join(destino, nome);
+    NodeFS.copyFileSync(NodePath.join(caminhos.appDir, "assets", nome), arquivo);
     return arquivo;
   });
 }

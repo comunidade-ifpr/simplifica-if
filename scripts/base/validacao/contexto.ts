@@ -1,6 +1,7 @@
+// @effect-diagnostics nodeBuiltinImport:off -- validação síncrona da base (validar_base), lê os JSONs com node:fs
 /** Contexto e utilitários comuns aos módulos de validação da base. */
-import { existsSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { type CaminhosBase, relativo } from "../caminhos.ts";
 import { ehObjeto, type ObjetoJson, representar } from "@simplifica-if/kb/json";
 import { arquivosCampi } from "../indice-ppcs.ts";
@@ -122,7 +123,7 @@ export class Contexto {
         continue;
       }
       const limpo = alvo.split("#", 1)[0]!;
-      if (limpo && !existsSync(path.resolve(path.dirname(caminho), limpo))) {
+      if (limpo && !NodeFS.existsSync(NodePath.resolve(NodePath.dirname(caminho), limpo))) {
         erros.push(`${this.rel(caminho)}: link interno inexistente: ${alvo}`);
       }
     }

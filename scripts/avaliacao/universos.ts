@@ -83,7 +83,7 @@ export interface EntradaManifesto {
   ano: number;
   orgao: string;
   jurisdicao: string;
-  aliases?: string[] | undefined;
+  aliases?: readonly string[] | undefined;
   path: string;
 }
 
@@ -181,7 +181,7 @@ export function itensNorma(manifesto: readonly EntradaManifesto[]): ItemNorma[] 
     const existente = porId.get(id);
     const padroes = padroesNorma(entrada);
     if (existente) {
-      existente.padroes = [...new Set([...existente.padroes, ...padroes])];
+      porId.set(id, { ...existente, padroes: [...new Set([...existente.padroes, ...padroes])] });
       continue;
     }
     porId.set(id, { id, rotulo: entrada.title, path: `base-conhecimento/${entrada.path}`, padroes });

@@ -1,13 +1,14 @@
-import { readFileSync } from "node:fs";
-import path from "node:path";
-import { z } from "zod";
+// @effect-diagnostics nodeBuiltinImport:off -- raiz do projeto e config/notion.json lidos de forma síncrona: a config é lida também por validar_base, síncrono, e entra no programa Effect da sincronização por Effect.try
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
+import * as Schema from "effect/Schema";
 import { ehObjeto, type ObjetoJson } from "@simplifica-if/kb/json";
-import { validarJson } from "./esquema.ts";
+import { solto, validarJson } from "./esquema.ts";
 
-export const RAIZ_PROJETO = path.resolve(import.meta.dirname, "..");
-export const RAIZ_BASE = path.join(RAIZ_PROJETO, "base-conhecimento");
+export const RAIZ_PROJETO = NodePath.resolve(import.meta.dirname, "..");
+export const RAIZ_BASE = NodePath.join(RAIZ_PROJETO, "base-conhecimento");
 
-const CAMINHO_CONFIG_NOTION = path.join(RAIZ_BASE, "config", "notion.json");
+const CAMINHO_CONFIG_NOTION = NodePath.join(RAIZ_BASE, "config", "notion.json");
 const CAMPOS_BASE = ["id", "data_source_id", "title"] as const;
 
 /**
@@ -49,15 +50,15 @@ export function validarConfigNotion(config: unknown): string[] {
  * Parte de `config/notion.json` que o código consome. A conferência campo a campo, com mensagens
  * próprias, fica em `validarConfigNotion`; o schema só dá o tipo ao que ela já garantiu.
  */
-const esquemaBaseNotion = z.looseObject({ data_source_id: z.string() });
-export const esquemaConfigNotion = z.looseObject({
-  databases: z.looseObject({
+const esquemaBaseNotion = solto({ data_source_id: Schema.String });
+export const esquemaConfigNotion = solto({
+  databases: solto({
     movimentacoes_cursos: esquemaBaseNotion,
   }),
 });
 
 export function carregarDataSources(): DataSources {
-  const config: unknown = JSON.parse(readFileSync(CAMINHO_CONFIG_NOTION, "utf-8"));
+  const config: unknown = JSON.parse(NodeFS.readFileSync(CAMINHO_CONFIG_NOTION, "utf-8"));
   const erros = validarConfigNotion(config);
   if (erros.length) {
     throw new Error(`Configuração Notion inválida:\n- ${erros.join("\n- ")}`);

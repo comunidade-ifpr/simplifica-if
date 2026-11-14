@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- leitura e gravação síncronas de dados/institucional/, usadas pelo pipeline da base, pela exportação e pela coleta do SUAP
 /**
  * Fonte de verdade local dos dados institucionais: campi, cursos, processos seletivos, editais e
  * ofertas de ingresso. Cada registro é um arquivo JSON em `dados/institucional/`, versionado no git.
@@ -7,10 +8,13 @@
  * Este módulo lê, valida e grava esses arquivos e os converte nas entidades do domínio que a
  * exportação pública e a auditoria já usam.
  */
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import path from "node:path";
-import { z } from "zod";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
+import * as Result from "effect/Result";
+import * as Schema from "effect/Schema";
+import { caminhoTexto, problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { RAIZ_PROJETO } from "../config.ts";
+import { ESTRITO } from "../esquema.ts";
 import { compararTexto } from "../dominio/comum.ts";
 import { ehIdCnct } from "@simplifica-if/kb/normas/ids";
 import { chaveCurso, type Campus, type Curso } from "../dominio/curso.ts";
@@ -22,33 +26,37 @@ import {
   type ProcessoSeletivo,
 } from "../dominio/ingresso.ts";
 
-export const RAIZ_DADOS_INSTITUCIONAIS = path.join(RAIZ_PROJETO, "dados", "institucional");
+export const RAIZ_DADOS_INSTITUCIONAIS = NodePath.join(RAIZ_PROJETO, "dados", "institucional");
 
-const texto = z.string().optional();
-const inteiro = z.number().int().optional();
-const listaTexto = z.array(z.string()).optional();
+// Todos os objetos são estritos (chave a mais é erro): os registros decodificam com `ESTRITO`.
+const texto = Schema.optional(Schema.String);
+const inteiro = Schema.optional(Schema.Int);
+const listaTexto = Schema.optional(Schema.Array(Schema.String));
 
-export const esquemaCampusLocal = z.strictObject({
-  campus_id: z.string(),
-  nome: z.string(),
+export const esquemaCampusLocal = Schema.Struct({
+  campus_id: Schema.String,
+  nome: Schema.String,
   site: texto,
   calendario_academico: texto,
   horarios_url: texto,
   horarios_coletado_em: texto,
   notion_page_id: texto,
 });
-export type CampusLocal = z.output<typeof esquemaCampusLocal>;
+export type CampusLocal = typeof esquemaCampusLocal.Type;
 
 /** `cnct:<slug>` de um curso do CNCT; `cnct:catalogo` cita o catálogo inteiro e não serve aqui. */
-const cnctId = z
-  .string()
-  .refine((valor) => ehIdCnct(valor) && valor !== "cnct:catalogo", "deve ser cnct:<slug do curso no CNCT>")
-  .optional();
+const cnctId = Schema.optional(
+  Schema.String.check(
+    Schema.makeFilter((valor: string) => ehIdCnct(valor) && valor !== "cnct:catalogo", {
+      message: "deve ser cnct:<slug do curso no CNCT>",
+    }),
+  ),
+);
 
-export const esquemaCursoLocal = z.strictObject({
-  campus_id: z.string(),
-  curso_slug: z.string(),
-  nome: z.string(),
+export const esquemaCursoLocal = Schema.Struct({
+  campus_id: Schema.String,
+  curso_slug: Schema.String,
+  nome: Schema.String,
   nivel: texto,
   forma_oferta: texto,
   modalidade: texto,
@@ -58,26 +66,26 @@ export const esquemaCursoLocal = z.strictObject({
   cnct_id: cnctId,
   /** Motivo de um curso técnico não ter habilitação no CNCT; exclui `cnct_id`. */
   cnct_ausencia: texto,
-  suap: z
-    .strictObject({
+  suap: Schema.optional(
+    Schema.Struct({
       id: inteiro,
       codigo: texto,
       vagas: inteiro,
       coletado_em: texto,
       atualizado_em: texto,
-      matrizes: z
-        .strictObject({
+      matrizes: Schema.optional(
+        Schema.Struct({
           resumo: texto,
           urls: listaTexto,
           carga_horaria_comum_h: inteiro,
           situacao: texto,
           coletado_em: texto,
-        })
-        .optional(),
-    })
-    .optional(),
-  ppc: z
-    .strictObject({
+        }),
+      ),
+    }),
+  ),
+  ppc: Schema.optional(
+    Schema.Struct({
       url: texto,
       markdown_path: texto,
       ano_documento: inteiro,
@@ -91,44 +99,44 @@ export const esquemaCursoLocal = z.strictObject({
       curadoria_vagas: texto,
       data_curadoria_vagas: texto,
       observacoes: texto,
-    })
-    .optional(),
+    }),
+  ),
   notion_page_id: texto,
 });
-export type CursoLocal = z.output<typeof esquemaCursoLocal>;
+export type CursoLocal = typeof esquemaCursoLocal.Type;
 
-export const esquemaProcessoLocal = z.strictObject({
-  processo_seletivo_id: z.string(),
-  nome: z.string(),
+export const esquemaProcessoLocal = Schema.Struct({
+  processo_seletivo_id: Schema.String,
+  nome: Schema.String,
   ano_ingresso: inteiro,
   instituicao: texto,
-  fontes: z.array(z.string()),
+  fontes: Schema.Array(Schema.String),
   status_curadoria: texto,
   verificado_em: texto,
   observacoes: texto,
   notion_page_id: texto,
 });
-export type ProcessoLocal = z.output<typeof esquemaProcessoLocal>;
+export type ProcessoLocal = typeof esquemaProcessoLocal.Type;
 
-export const esquemaEditalLocal = z.strictObject({
-  edital_id: z.string(),
-  titulo: z.string(),
-  url: z.string(),
+export const esquemaEditalLocal = Schema.Struct({
+  edital_id: Schema.String,
+  titulo: Schema.String,
+  url: Schema.String,
   numero: texto,
   ano: inteiro,
   tipo: texto,
-  processos: z.array(z.string()),
+  processos: Schema.Array(Schema.String),
   notion_page_id: texto,
 });
-export type EditalLocal = z.output<typeof esquemaEditalLocal>;
+export type EditalLocal = typeof esquemaEditalLocal.Type;
 
-export const esquemaOfertaLocal = z.strictObject({
-  oferta_id: z.string(),
-  processos: z.array(z.string()),
-  curso_nome: z.string(),
-  tipo_oferta: z.string(),
+export const esquemaOfertaLocal = Schema.Struct({
+  oferta_id: Schema.String,
+  processos: Schema.Array(Schema.String),
+  curso_nome: Schema.String,
+  tipo_oferta: Schema.String,
   vagas: inteiro,
-  url_fonte: z.string(),
+  url_fonte: Schema.String,
   pagina_fonte: inteiro,
   trecho_fonte: texto,
   forma_oferta: texto,
@@ -138,7 +146,7 @@ export const esquemaOfertaLocal = z.strictObject({
   /** Grafia do turno na fonte (`trecho_fonte`), com as marcas de nota de rodapé. */
   turno: texto,
   /** Turno padronizado (enum); o texto da nota de rodapé e as divergências ficam em `turno_nota`. */
-  turno_padronizado: z.enum(TURNOS).optional(),
+  turno_padronizado: Schema.optional(Schema.Literals(TURNOS)),
   turno_nota: texto,
   /** Relações resolvidas; prevalecem sobre os campos `_original`, que guardam o texto do edital. */
   campi: listaTexto,
@@ -148,7 +156,16 @@ export const esquemaOfertaLocal = z.strictObject({
   curso_slug_original: texto,
   notion_page_id: texto,
 });
-export type OfertaLocal = z.output<typeof esquemaOfertaLocal>;
+export type OfertaLocal = typeof esquemaOfertaLocal.Type;
+
+/** Decodificadores de cada coleção, com todos os problemas e chave a mais como erro. */
+const decodificar = {
+  campus: Schema.decodeUnknownResult(esquemaCampusLocal, ESTRITO),
+  curso: Schema.decodeUnknownResult(esquemaCursoLocal, ESTRITO),
+  processo: Schema.decodeUnknownResult(esquemaProcessoLocal, ESTRITO),
+  edital: Schema.decodeUnknownResult(esquemaEditalLocal, ESTRITO),
+  oferta: Schema.decodeUnknownResult(esquemaOfertaLocal, ESTRITO),
+};
 
 export interface DadosInstitucionais {
   campi: CampusLocal[];
@@ -160,20 +177,20 @@ export interface DadosInstitucionais {
 
 /** Caminho relativo de cada registro em `dados/institucional/`; o nome do arquivo é a chave canônica. */
 export const caminhosRegistro = {
-  campus: (c: CampusLocal) => path.join("campi", `${c.campus_id}.json`),
-  curso: (c: CursoLocal) => path.join("cursos", c.campus_id, `${c.curso_slug}.json`),
-  processo: (p: ProcessoLocal) => path.join("processos-seletivos", `${p.processo_seletivo_id}.json`),
-  edital: (e: EditalLocal) => path.join("editais", `${e.edital_id}.json`),
-  oferta: (o: OfertaLocal) => path.join("ofertas", o.processos[0] ?? "sem-processo", `${o.oferta_id}.json`),
+  campus: (c: CampusLocal) => NodePath.join("campi", `${c.campus_id}.json`),
+  curso: (c: CursoLocal) => NodePath.join("cursos", c.campus_id, `${c.curso_slug}.json`),
+  processo: (p: ProcessoLocal) => NodePath.join("processos-seletivos", `${p.processo_seletivo_id}.json`),
+  edital: (e: EditalLocal) => NodePath.join("editais", `${e.edital_id}.json`),
+  oferta: (o: OfertaLocal) => NodePath.join("ofertas", o.processos[0] ?? "sem-processo", `${o.oferta_id}.json`),
 };
 
 /* ------------------------------------------------------------------ leitura */
 
 function arquivosJson(dir: string): string[] {
-  if (!existsSync(dir)) return [];
-  return readdirSync(dir, { withFileTypes: true })
+  if (!NodeFS.existsSync(dir)) return [];
+  return NodeFS.readdirSync(dir, { withFileTypes: true })
     .flatMap((entrada) => {
-      const caminho = path.join(dir, entrada.name);
+      const caminho = NodePath.join(dir, entrada.name);
       if (entrada.isDirectory()) return arquivosJson(caminho);
       return entrada.name.endsWith(".json") ? [caminho] : [];
     })
@@ -183,32 +200,34 @@ function arquivosJson(dir: string): string[] {
 function lerColecao<T>(
   raiz: string,
   subdir: string,
-  esquema: z.ZodType<T>,
+  decodificarRegistro: (valor: unknown) => Result.Result<T, Schema.SchemaError>,
   caminhoEsperado: (item: T) => string,
   erros: string[],
 ): T[] {
   const itens: T[] = [];
-  for (const arquivo of arquivosJson(path.join(raiz, subdir))) {
-    const relativo = path.relative(raiz, arquivo);
+  for (const arquivo of arquivosJson(NodePath.join(raiz, subdir))) {
+    const relativo = NodePath.relative(raiz, arquivo);
     let bruto: unknown;
     try {
-      bruto = JSON.parse(readFileSync(arquivo, "utf-8"));
+      bruto = JSON.parse(NodeFS.readFileSync(arquivo, "utf-8"));
     } catch (erro) {
       erros.push(`dados/institucional/${relativo}: JSON inválido: ${(erro as Error).message}`);
       continue;
     }
-    const resultado = esquema.safeParse(bruto);
-    if (!resultado.success) {
-      for (const problema of resultado.error.issues) {
-        erros.push(`dados/institucional/${relativo}: ${problema.path.join(".") || "(raiz)"}: ${problema.message}`);
+    const resultado = decodificarRegistro(bruto);
+    if (Result.isFailure(resultado)) {
+      for (const problema of problemas(resultado.failure.issue)) {
+        erros.push(
+          `dados/institucional/${relativo}: ${caminhoTexto(problema.caminho) || "(raiz)"}: ${problema.mensagem}`,
+        );
       }
       continue;
     }
-    const esperado = caminhoEsperado(resultado.data);
+    const esperado = caminhoEsperado(resultado.success);
     if (esperado !== relativo) {
       erros.push(`dados/institucional/${relativo}: arquivo deveria estar em dados/institucional/${esperado}`);
     }
-    itens.push(resultado.data);
+    itens.push(resultado.success);
   }
   return itens;
 }
@@ -219,13 +238,13 @@ export function carregarDadosInstitucionais(raiz: string = RAIZ_DADOS_INSTITUCIO
   erros: string[];
 } {
   const erros: string[] = [];
-  if (!existsSync(raiz)) return { dados: vazio(), erros: [`dados/institucional/ não encontrado em ${raiz}`] };
+  if (!NodeFS.existsSync(raiz)) return { dados: vazio(), erros: [`dados/institucional/ não encontrado em ${raiz}`] };
   const dados: DadosInstitucionais = {
-    campi: lerColecao(raiz, "campi", esquemaCampusLocal, caminhosRegistro.campus, erros),
-    cursos: lerColecao(raiz, "cursos", esquemaCursoLocal, caminhosRegistro.curso, erros),
-    processos: lerColecao(raiz, "processos-seletivos", esquemaProcessoLocal, caminhosRegistro.processo, erros),
-    editais: lerColecao(raiz, "editais", esquemaEditalLocal, caminhosRegistro.edital, erros),
-    ofertas: lerColecao(raiz, "ofertas", esquemaOfertaLocal, caminhosRegistro.oferta, erros),
+    campi: lerColecao(raiz, "campi", decodificar.campus, caminhosRegistro.campus, erros),
+    cursos: lerColecao(raiz, "cursos", decodificar.curso, caminhosRegistro.curso, erros),
+    processos: lerColecao(raiz, "processos-seletivos", decodificar.processo, caminhosRegistro.processo, erros),
+    editais: lerColecao(raiz, "editais", decodificar.edital, caminhosRegistro.edital, erros),
+    ofertas: lerColecao(raiz, "ofertas", decodificar.oferta, caminhosRegistro.oferta, erros),
   };
   return { dados, erros };
 }
@@ -257,9 +276,9 @@ export function textoRegistro(registro: unknown): string {
 }
 
 export function gravarRegistro(relativo: string, registro: unknown, raiz: string = RAIZ_DADOS_INSTITUCIONAIS): void {
-  const destino = path.join(raiz, relativo);
-  mkdirSync(path.dirname(destino), { recursive: true });
-  writeFileSync(destino, textoRegistro(registro), "utf-8");
+  const destino = NodePath.join(raiz, relativo);
+  NodeFS.mkdirSync(NodePath.dirname(destino), { recursive: true });
+  NodeFS.writeFileSync(destino, textoRegistro(registro), "utf-8");
 }
 
 export function gravarDadosInstitucionais(
@@ -346,7 +365,7 @@ export function paraDominio(dados: DadosInstitucionais): {
       nome: p.nome,
       anoIngresso: p.ano_ingresso,
       instituicao: p.instituicao ?? "",
-      fontes: p.fontes,
+      fontes: [...p.fontes],
       statusCuradoria: p.status_curadoria ?? "",
       verificadoEm: p.verificado_em ?? "",
       observacoes: p.observacoes ?? "",
@@ -359,7 +378,7 @@ export function paraDominio(dados: DadosInstitucionais): {
       numero: e.numero ?? "",
       ano: e.ano,
       tipo: e.tipo ?? "",
-      processoIds: e.processos,
+      processoIds: [...e.processos],
     })),
     ofertas: dados.ofertas.map((o): OfertaIngresso => ({
       id: `${o.processos[0] ?? ""}/${o.oferta_id}`,
@@ -380,10 +399,10 @@ export function paraDominio(dados: DadosInstitucionais): {
       turnoNota: o.turno_nota ?? "",
       campusIdOriginal: o.campus_id_original ?? "",
       cursoSlugOriginal: o.curso_slug_original ?? "",
-      processoIds: o.processos,
-      campusIds: o.campi ?? [],
-      cursoIds: o.cursos ?? [],
-      editalIds: o.editais ?? [],
+      processoIds: [...o.processos],
+      campusIds: [...(o.campi ?? [])],
+      cursoIds: [...(o.cursos ?? [])],
+      editalIds: [...(o.editais ?? [])],
     })),
   };
 }
@@ -472,7 +491,7 @@ export function deDominio(base: {
       nome: p.nome,
       ano_ingresso: p.anoIngresso,
       instituicao: p.instituicao,
-      fontes: p.fontes,
+      fontes: [...p.fontes],
       status_curadoria: p.statusCuradoria,
       verificado_em: p.verificadoEm,
       observacoes: p.observacoes,

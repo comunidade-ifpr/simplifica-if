@@ -1,6 +1,7 @@
+// @effect-diagnostics nodeBuiltinImport:off -- confere os trechos citados nos arquivos do checkout com node:fs síncrono
 import { describe, expect, test } from "vite-plus/test";
-import { existsSync, readFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import {
   carregarConfig,
   carregarGabaritoConjunto,
@@ -71,8 +72,8 @@ describe("perguntas.yaml", () => {
           faltando.push(`${pergunta.id}/${criterio.id}: trecho e arquivo andam juntos`);
           continue;
         }
-        const caminho = path.join(RAIZ_REPOSITORIO, criterio.arquivo);
-        if (!existsSync(caminho) || !readFileSync(caminho, "utf-8").includes(criterio.trecho)) {
+        const caminho = NodePath.join(RAIZ_REPOSITORIO, criterio.arquivo);
+        if (!NodeFS.existsSync(caminho) || !NodeFS.readFileSync(caminho, "utf-8").includes(criterio.trecho)) {
           faltando.push(`${pergunta.id}/${criterio.id}: ${criterio.trecho}`);
         }
       }

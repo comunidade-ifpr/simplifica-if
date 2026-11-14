@@ -1,4 +1,9 @@
-import { describe, expect, test } from "vite-plus/test";
+import * as NodeFileSystem from "@effect/platform-node/NodeFileSystem";
+import * as NodePath from "@effect/platform-node/NodePath";
+import { describe, expect, it, test } from "@effect/vitest";
+import * as Effect from "effect/Effect";
+import * as Layer from "effect/Layer";
+import { validar } from "../carregar.ts";
 import { esquemaGabaritoConjunto, type GabaritoConjunto } from "../esquema.ts";
 import { GERADORES } from "./conjuntos.ts";
 import { cnctDoCadastro, cnctDoCurso, carregarFontes } from "./fontes.ts";
@@ -8,13 +13,15 @@ const fontes = carregarFontes();
 const arquivos = gerarArquivos(fontes);
 
 function gabarito(nome: string): GabaritoConjunto {
-  return esquemaGabaritoConjunto.parse(JSON.parse(arquivos.get(nome) ?? "null"));
+  return validar(esquemaGabaritoConjunto, JSON.parse(arquivos.get(nome) ?? "null"), nome);
 }
 
 describe("geradores de gabarito", () => {
-  test("os arquivos versionados em avaliacao/gabaritos/ estão atualizados", () => {
-    expect(divergencias(arquivos)).toEqual([]);
-  });
+  it.effect("os arquivos versionados em avaliacao/gabaritos/ estão atualizados", () =>
+    Effect.gen(function* () {
+      expect(yield* divergencias(arquivos)).toEqual([]);
+    }).pipe(Effect.provide(Layer.mergeAll(NodeFileSystem.layer, NodePath.layer))),
+  );
 
   test("a geração é determinística", () => {
     expect(gerarArquivos(fontes)).toEqual(arquivos);

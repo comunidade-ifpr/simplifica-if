@@ -1,9 +1,10 @@
 #!/usr/bin/env node
+// @effect-diagnostics nodeBuiltinImport:off globalConsole:off -- script de execução única do pipeline da base, síncrono, com a casca de scripts/cli.ts: grava com node:fs e imprime no console
 /**
  * Gera os campos derivados do front matter das normas (relações de relacoes.yaml e status de
  * vigência na data_referencia de config/vigencia.yaml), manifest.json e a tabela do README.
  */
-import { writeFileSync } from "node:fs";
+import * as NodeFS from "node:fs";
 import { normasComCamposGerados } from "@simplifica-if/kb/normas/gerado";
 import { criarCaminhos } from "./base/caminhos.ts";
 import { montarManifest } from "./base/front-matter.ts";
@@ -43,7 +44,8 @@ function main(): number {
     return 0;
   }
 
-  for (const norma of normas) if (norma.atual !== norma.esperado) writeFileSync(norma.arquivo, norma.esperado, "utf-8");
+  for (const norma of normas)
+    if (norma.atual !== norma.esperado) NodeFS.writeFileSync(norma.arquivo, norma.esperado, "utf-8");
   const manifest = montarManifest(caminhos);
   gravarBase(caminhos, manifest);
   console.log(`Base gerada: ${manifest.length} normas publicadas.`);

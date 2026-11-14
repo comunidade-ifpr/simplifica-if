@@ -1,5 +1,6 @@
 /** Relatório de uma rodada do harness: JSON completo e resumo Markdown. */
-import { z } from "zod";
+import * as Schema from "effect/Schema";
+import { solto } from "../esquema.ts";
 import type { Pergunta } from "./esquema.ts";
 import type { Pontuacao } from "./pontuacao.ts";
 import type { Execucao } from "./stream.ts";
@@ -25,14 +26,14 @@ export interface Relatorio {
 }
 
 /** Validação mínima de um relatório salvo, usada por `--pontuar`. */
-export const esquemaRelatorioSalvo = z.looseObject({
-  versao: z.literal(1),
-  modelo_solicitado: z.string(),
-  execucoes: z.array(
-    z.looseObject({
-      pergunta: z.string(),
-      execucao: z.number().int(),
-      execucao_agente: z.looseObject({ resposta: z.string() }),
+export const esquemaRelatorioSalvo = solto({
+  versao: Schema.Literal(1),
+  modelo_solicitado: Schema.String,
+  execucoes: Schema.Array(
+    solto({
+      pergunta: Schema.String,
+      execucao: Schema.Int,
+      execucao_agente: solto({ resposta: Schema.String }),
     }),
   ),
 });

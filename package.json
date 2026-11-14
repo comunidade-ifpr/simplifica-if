@@ -30,7 +30,6 @@
     "@notionhq/client": "5.31.1",
     "@simplifica-if/kb": "workspace:*",
     "ajv": "8.20.0",
-    "commander": "15.1.0",
     "domhandler": "6.0.1",
     "domutils": "4.0.2",
     "dotenv": "18.0.10",
@@ -39,8 +38,7 @@
     "htmlparser2": "12.0.0",
     "pdfmake": "0.3.13",
     "sei-cli": "workspace:*",
-    "yaml": "2.9.1",
-    "zod": "4.6.7"
+    "yaml": "2.9.1"
   },
   "devDependencies": {
     "@effect/tsgo": "0.67.1",

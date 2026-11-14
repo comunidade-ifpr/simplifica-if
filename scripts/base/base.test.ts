@@ -1,7 +1,8 @@
+// @effect-diagnostics nodeBuiltinImport:off -- monta raízes temporárias com node:fs síncrono para o pipeline síncrono sob teste
 import { afterAll, describe, expect, test } from "vite-plus/test";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import os from "node:os";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodeOS from "node:os";
+import * as NodePath from "node:path";
 import { criarCaminhos, naBase, relativo } from "./caminhos.ts";
 import { analisarFrontMatter, ErroFrontMatter, itemManifest, manifestJson, montarManifest } from "./front-matter.ts";
 import {
@@ -21,19 +22,19 @@ import { validarBase } from "./validacao.ts";
 
 const temporarios: string[] = [];
 afterAll(() => {
-  for (const diretorio of temporarios) rmSync(diretorio, { recursive: true, force: true });
+  for (const diretorio of temporarios) NodeFS.rmSync(diretorio, { recursive: true, force: true });
 });
 
 function projetoTemporario(): string {
-  const raiz = mkdtempSync(path.join(os.tmpdir(), "base-teste-"));
+  const raiz = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "base-teste-"));
   temporarios.push(raiz);
   return raiz;
 }
 
 function escrever(raiz: string, relativo: string, conteudo: string) {
-  const caminho = path.join(raiz, relativo);
-  mkdirSync(path.dirname(caminho), { recursive: true });
-  writeFileSync(caminho, conteudo);
+  const caminho = NodePath.join(raiz, relativo);
+  NodeFS.mkdirSync(NodePath.dirname(caminho), { recursive: true });
+  NodeFS.writeFileSync(caminho, conteudo);
 }
 
 const NORMA = `---
@@ -114,7 +115,7 @@ describe("caminhos", () => {
     const caminhos = criarCaminhos("/p");
     expect(naBase(caminhos, "../README.md")).toBe("/p/base-conhecimento/../README.md");
     expect(relativo(caminhos, naBase(caminhos, "../README.md"))).toBe("../README.md");
-    expect(relativo(caminhos, path.dirname(naBase(caminhos, "../README.md")))).toBe("..");
+    expect(relativo(caminhos, NodePath.dirname(naBase(caminhos, "../README.md")))).toBe("..");
     expect(relativo(caminhos, naBase(caminhos, "normas//./a.md"))).toBe("normas/a.md");
     expect(naBase(caminhos, "/etc/x")).toBe("/etc/x");
     expect(() => relativo(caminhos, "/etc/x")).toThrow("is not in the subpath");
@@ -143,8 +144,8 @@ describe("manifest e README", () => {
 
     gravarBase(caminhos, manifest);
     expect(verificarBase(caminhos, manifest)).toEqual([]);
-    expect(readFileSync(caminhos.manifest, "utf-8")).toBe(manifestJson(manifest));
-    expect(readFileSync(caminhos.readme, "utf-8")).toContain(
+    expect(NodeFS.readFileSync(caminhos.manifest, "utf-8")).toBe(manifestJson(manifest));
+    expect(NodeFS.readFileSync(caminhos.readme, "utf-8")).toContain(
       "| [Lei nº 0/2019](normas/br/leis/lei-a.md) | Lei | 2020 | Ementa de teste. |\n| [Lei nº 1/2020](normas/br/leis/lei-b.md) | Lei | 2020 | Ementa de teste. |\n\n## Manutenção",
     );
     expect(() => substituirTabela("sem tabela", manifest)).toThrow();
@@ -231,11 +232,11 @@ describe("índice de PPCs", () => {
     expect(verificarIndices(caminhos, indices)).toEqual([]);
     expect(dataIndiceAtual(caminhos, "2030-01-01")).toBe("2026-01-01");
     expect(
-      readFileSync(path.join(caminhos.secoesPpcs, "ementas.jsonl"), "utf-8").startsWith(
+      NodeFS.readFileSync(NodePath.join(caminhos.secoesPpcs, "ementas.jsonl"), "utf-8").startsWith(
         '{"id":"campus-a/tecnico-x#ementas-1",',
       ),
     ).toBe(true);
-    expect(readFileSync(path.join(caminhos.secoesPpcs, "avaliacao.jsonl"), "utf-8")).toBe("");
+    expect(NodeFS.readFileSync(NodePath.join(caminhos.secoesPpcs, "avaliacao.jsonl"), "utf-8")).toBe("");
 
     escrever(raiz, "base-conhecimento/institucional/ifpr/ppcs/secoes/extra.jsonl", "");
     expect(verificarIndices(caminhos, indices)).toEqual([
@@ -318,8 +319,8 @@ describe("validação da base", () => {
     escrever(raiz, "base-conhecimento/README.md", `${README}\n[ok](normas/br/leis/lei.md) ${"/Us"}${"ers/"}x\n`);
     escrever(raiz, "base-conhecimento/solta.md", "x");
     const caminhos = criarCaminhos(raiz);
-    const manifest = [itemManifest(caminhos, path.join(caminhos.normas, "br/leis/lei.md"))];
-    writeFileSync(caminhos.manifest, manifestJson(manifest));
+    const manifest = [itemManifest(caminhos, NodePath.join(caminhos.normas, "br/leis/lei.md"))];
+    NodeFS.writeFileSync(caminhos.manifest, manifestJson(manifest));
 
     const { erros, totalNormas } = validarBase(caminhos);
     expect(totalNormas).toBe(1);
@@ -341,7 +342,7 @@ describe("validação da base", () => {
       "config/vigencia.yaml não encontrado (data_referencia da vigência publicada)",
     ]);
 
-    writeFileSync(caminhos.manifest, manifestJson([{ ...manifest[0]!, jurisdicao: "XX", title: "Outro" }]));
+    NodeFS.writeFileSync(caminhos.manifest, manifestJson([{ ...manifest[0]!, jurisdicao: "XX", title: "Outro" }]));
     const { erros: errosManifest } = validarBase(caminhos);
     expect(errosManifest).toContain("manifest.json: item com jurisdição/tipo sem diretório configurado: ('XX', 'Lei')");
     expect(errosManifest).toContain("normas/br/leis/lei.md: manifest.json diverge do front matter no campo title");
@@ -357,22 +358,24 @@ describe("site", () => {
     escrever(raiz, "base/.DS_Store", "x");
     escrever(raiz, "base/__pycache__/m.pyc", "x");
     escrever(raiz, "base/docs/c.pyc", "x");
-    const site = path.join(raiz, "site");
-    renderizarSite(path.join(raiz, "base"), site);
-    const esperado = path.join(raiz, "esperado");
-    renderizarSite(path.join(raiz, "base"), esperado);
+    const site = NodePath.join(raiz, "site");
+    renderizarSite(NodePath.join(raiz, "base"), site);
+    const esperado = NodePath.join(raiz, "esperado");
+    renderizarSite(NodePath.join(raiz, "base"), esperado);
     expect(compararDiretorios(esperado, site)).toEqual([]);
 
-    writeFileSync(path.join(site, "docs", "b.md"), "B");
+    NodeFS.writeFileSync(NodePath.join(site, "docs", "b.md"), "B");
     escrever(site, "extra.txt", "x");
     escrever(site, ".DS_Store", "x");
-    rmSync(path.join(site, "a.md"));
+    NodeFS.rmSync(NodePath.join(site, "a.md"));
     expect(compararDiretorios(esperado, site)).toEqual([
       "ausente em site/: a.md",
       "extra em site/: .DS_Store",
       "extra em site/: extra.txt",
       "docs/conteúdo divergente: b.md",
     ]);
-    expect(() => renderizarSite(path.join(raiz, "base"), path.join(raiz, "base"))).toThrow("não pode ser o mesmo");
+    expect(() => renderizarSite(NodePath.join(raiz, "base"), NodePath.join(raiz, "base"))).toThrow(
+      "não pode ser o mesmo",
+    );
   });
 });

@@ -10,7 +10,7 @@ Centro canônico da base de análise do `revisar-ppc`. Reúne, em um único luga
 - `validacoes-cruzadas/` — verificações transversais de coerência entre seções e achados.
 - `marcos-normativos.json` — registro único dos temas normativos (DCN da EPT, DCNEM, EJA, assistência estudantil): identificação (`id`, `tema`, `linha` com os atos do tema por ID canônico, `aplica_a`, fichas), regra de transição e orientação de análise. A norma vigente, as substituídas, as antecessoras e os dispositivos revogados são derivados de `base-conhecimento/relacoes.yaml` na leitura (`scripts/marcos.ts`). É injetado nos subagentes, com os campos derivados, as normas por extenso e as citações do PPC às normas de cada marco, em `contextos.fundamentacao_normativa.marcos_normativos`.
 - `contratos/` — exemplos mínimos de payload e formatos de referência.
-- `schemas/` — contratos JSON Schema para fichas, marcos, validações cruzadas e respostas. `ficha.schema.json` e `marcos-normativos.schema.json` são gerados do zod de `scripts/esquemas.ts` (veja [Schemas](#schemas)); os demais são editados à mão.
+- `schemas/` — contratos JSON Schema para fichas, marcos, validações cruzadas e respostas. `ficha.schema.json` e `marcos-normativos.schema.json` são gerados do Effect Schema de `scripts/esquemas.ts` (veja [Schemas](#schemas)); os demais são editados à mão.
 - `indice.json` — índice consolidado da base de análise, gerado a partir dos JSONs reais.
 - `mapa-fichas.md` também lista, no fim, as fichas que citam cada norma.
 
@@ -69,7 +69,7 @@ Quando uma norma da base for revogada, rode o validador: ele lista as fichas a r
 
 ## Schemas
 
-O contrato da ficha e o de `marcos-normativos.json` são os esquemas zod de `scripts/esquemas.ts`, a fonte única. `schemas/ficha.schema.json` e `schemas/marcos-normativos.schema.json` são gerados deles por `gerar-schemas`, para documentação, para o `indice.json` e para o ajv, que dá as mensagens de erro do validador (`$.referencias_normativas[0].ref: valor '...' fora do formato`). `gerar-schemas --check` e `validar-base` acusam schema gerado desatualizado. Ao mudar o contrato, edite `scripts/esquemas.ts` (ou `esquemaReferenciaNormativa`, no `packages/kb`) e rode `gerar-schemas`; não edite os dois JSON Schemas à mão. Os esquemas não usam refinamentos, para que tudo o que exigem caiba no JSON Schema.
+O contrato da ficha e o de `marcos-normativos.json` são os Effect Schemas de `scripts/esquemas.ts`, a fonte única. `schemas/ficha.schema.json` e `schemas/marcos-normativos.schema.json` são gerados deles por `gerar-schemas` (`Schema.toJsonSchemaDocument`, draft 2020-12), para documentação, para o `indice.json` e para o ajv, que dá as mensagens de erro do validador (`$.referencias_normativas[0].ref: valor '...' fora do formato`). `gerar-schemas --check` e `validar-base` acusam schema gerado desatualizado. Ao mudar o contrato, edite `scripts/esquemas.ts` (ou `esquemaReferenciaNormativa`, no `packages/kb`) e rode `gerar-schemas`; não edite os dois JSON Schemas à mão. Os esquemas não usam refinamentos, para que tudo o que exigem caiba no JSON Schema.
 
 ## Uso recomendado
 

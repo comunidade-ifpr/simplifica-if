@@ -7,49 +7,76 @@
  * Rode depois de mudar dados/institucional/, normas, CNCT, PPCs convertidos ou os geradores, e
  * revise o diff: ele é a mudança do gabarito.
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import path from "node:path";
-import { serializarJson } from "../normalizar.ts";
+import * as Console from "effect/Console";
+import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
+import * as Path from "effect/Path";
+import * as Command from "effect/cli/Command";
+import * as Flag from "effect/cli/Flag";
+import { executarPrincipal, sairCom } from "../../principal.ts";
+import { DIR_AVALIACAO, validar } from "../carregar.ts";
 import { esquemaGabaritoConjunto, esquemaUniversos } from "../esquema.ts";
+import { serializarJson } from "../normalizar.ts";
 import { ARQUIVO_UNIVERSOS, GERADORES, gerarUniversos } from "./conjuntos.ts";
-import { carregarFontes, RAIZ_REPOSITORIO, type Fontes } from "./fontes.ts";
+import { carregarFontes, type Fontes } from "./fontes.ts";
 
-export const DIR_GABARITOS = path.join(RAIZ_REPOSITORIO, "avaliacao", "gabaritos");
+export const DIR_GABARITOS = `${DIR_AVALIACAO}/gabaritos`;
 
-/** Conteúdo serializado de cada arquivo gerado, por nome. */
+/** Conteúdo serializado de cada arquivo gerado, por nome; o gerado passa pelo mesmo schema da leitura. */
 export function gerarArquivos(fontes: Fontes): Map<string, string> {
   const arquivos = new Map<string, string>();
-  arquivos.set(ARQUIVO_UNIVERSOS, serializarJson(esquemaUniversos.parse(gerarUniversos(fontes))));
+  arquivos.set(ARQUIVO_UNIVERSOS, serializarJson(validar(esquemaUniversos, gerarUniversos(fontes), ARQUIVO_UNIVERSOS)));
   for (const [nome, gerador] of Object.entries(GERADORES)) {
-    arquivos.set(nome, serializarJson(esquemaGabaritoConjunto.parse(gerador(fontes))));
+    arquivos.set(nome, serializarJson(validar(esquemaGabaritoConjunto, gerador(fontes), nome)));
   }
   return arquivos;
 }
 
 /** Nomes dos arquivos ausentes ou diferentes do que os geradores produzem hoje. */
-export function divergencias(arquivos: Map<string, string>, dir: string = DIR_GABARITOS): string[] {
-  return [...arquivos.entries()]
-    .filter(([nome, conteudo]) => {
-      const caminho = path.join(dir, nome);
-      return !existsSync(caminho) || readFileSync(caminho, "utf-8") !== conteudo;
-    })
-    .map(([nome]) => nome);
-}
+export const divergencias = Effect.fn("Gabaritos.divergencias")(function* (
+  arquivos: ReadonlyMap<string, string>,
+  dir: string = DIR_GABARITOS,
+) {
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
+  const diferentes: string[] = [];
+  for (const [nome, conteudo] of arquivos) {
+    const caminho = path.join(dir, nome);
+    const existe = yield* fs.exists(caminho);
+    if (!existe || (yield* fs.readFileString(caminho)) !== conteudo) diferentes.push(nome);
+  }
+  return diferentes;
+});
+
+const gerar = Command.make(
+  "gerar",
+  {
+    verificar: Flag.Boolean("verificar").pipe(
+      Flag.withAlias("check"),
+      Flag.withDescription("só confere: sai com 1 se algum arquivo divergir, sem gravar"),
+      Flag.withDefault(false),
+    ),
+  },
+  Effect.fn("Gabaritos.gerar")(function* ({ verificar }) {
+    const fs = yield* FileSystem.FileSystem;
+    const path = yield* Path.Path;
+    // Os geradores leem as fontes do checkout de forma síncrona; uma falha ali é defeito (pilha no stderr).
+    const arquivos = yield* Effect.sync(() => gerarArquivos(carregarFontes()));
+    const diferentes = yield* divergencias(arquivos);
+    if (verificar) {
+      if (diferentes.length > 0) {
+        yield* Console.error(`Gabaritos desatualizados: ${diferentes.join(", ")}`);
+        yield* Console.error("Rode node scripts/avaliacao/gabaritos/gerar.ts e revise o diff.");
+        return yield* sairCom(1);
+      }
+      return yield* Console.log(`${arquivos.size} gabaritos conferidos.`);
+    }
+    yield* fs.makeDirectory(DIR_GABARITOS, { recursive: true });
+    for (const [nome, conteudo] of arquivos) yield* fs.writeFileString(path.join(DIR_GABARITOS, nome), conteudo);
+    yield* Console.log(`${arquivos.size} arquivos em avaliacao/gabaritos/ (${diferentes.length} alterados).`);
+  }),
+).pipe(Command.withDescription("Gera (ou confere) os gabaritos de conjunto e os universos em avaliacao/gabaritos/."));
 
 if (import.meta.main) {
-  const verificar = process.argv.includes("--verificar") || process.argv.includes("--check");
-  const arquivos = gerarArquivos(carregarFontes());
-  const diferentes = divergencias(arquivos);
-  if (verificar) {
-    if (diferentes.length > 0) {
-      console.error(`Gabaritos desatualizados: ${diferentes.join(", ")}`);
-      console.error("Rode node scripts/avaliacao/gabaritos/gerar.ts e revise o diff.");
-      process.exit(1);
-    }
-    console.log(`${arquivos.size} gabaritos conferidos.`);
-  } else {
-    mkdirSync(DIR_GABARITOS, { recursive: true });
-    for (const [nome, conteudo] of arquivos) writeFileSync(path.join(DIR_GABARITOS, nome), conteudo);
-    console.log(`${arquivos.size} arquivos em avaliacao/gabaritos/ (${diferentes.length} alterados).`);
-  }
+  executarPrincipal("gerar", Command.run(gerar, { version: "1" }));
 }

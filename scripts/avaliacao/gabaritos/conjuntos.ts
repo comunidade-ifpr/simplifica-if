@@ -1,10 +1,11 @@
+// @effect-diagnostics nodeBuiltinImport:off -- geradores de gabarito síncronos sobre os arquivos do checkout, de execução única
 /**
  * Geradores dos gabaritos de conjunto. Cada gerador deriva o conjunto esperado das fontes locais
  * (dados institucionais, manifesto de normas, CNCT e PPCs), sem relógio e com ordem estável.
  */
 import { parse as interpretarYaml } from "yaml";
-import { readFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { compararTexto, normalizarTexto } from "../normalizar.ts";
 import type { GabaritoConjunto, Universos } from "../esquema.ts";
 import { idNorma, itemCampus, itemCurso, itensNorma } from "../universos.ts";
@@ -106,7 +107,7 @@ function q02(fontes: Fontes): GabaritoConjunto {
 }
 
 function frontMatter(caminho: string): Record<string, unknown> {
-  const texto = readFileSync(caminho, "utf-8");
+  const texto = NodeFS.readFileSync(caminho, "utf-8");
   const fim = texto.indexOf("\n---", 3);
   if (!texto.startsWith("---") || fim < 0) return {};
   const dados: unknown = interpretarYaml(texto.slice(3, fim));
@@ -130,7 +131,7 @@ function q04(fontes: Fontes): GabaritoConjunto {
     esperado: ordenar(normas.map(idNorma)),
     detalhes: detalhesOrdenados(
       normas.map((norma) => {
-        const fm = frontMatter(path.join(fontes.raiz, "base-conhecimento", norma.path));
+        const fm = frontMatter(NodePath.join(fontes.raiz, "base-conhecimento", norma.path));
         return [
           idNorma(norma),
           {

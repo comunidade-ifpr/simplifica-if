@@ -1,6 +1,7 @@
+// @effect-diagnostics nodeBuiltinImport:off -- validação síncrona da base (validar_base), lê os JSONs com node:fs
 /** Validação dos JSONs de campi (institucional/ifpr/campi/). */
-import { existsSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { naBase } from "../caminhos.ts";
 import { itensDe, textoDe, valoresIguais } from "@simplifica-if/kb/json";
 import type { CampusJson, IndiceCampiJson } from "../tipos-schemas.ts";
@@ -41,7 +42,7 @@ function validarPpcDoCurso(
   if (!ehRecebido<PpcCurso["conversao"]>(conversao)) {
     erros.push(`${r}: cursos[].ppc.conversao deve ser objeto`);
   } else if (conversao.status === "convertido") {
-    if (typeof caminhoMarkdown === "string" && !existsSync(naBase(ctx.c, caminhoMarkdown))) {
+    if (typeof caminhoMarkdown === "string" && !NodeFS.existsSync(naBase(ctx.c, caminhoMarkdown))) {
       erros.push(`${r}: markdown convertido inexistente: ${caminhoMarkdown}`);
     }
   }
@@ -70,7 +71,7 @@ function validarCursos(ctx: Contexto, r: string, cursos: unknown[], campusId: un
     if (Object.hasOwn(curso, "ppc_url")) erros.push(`${r}: cursos[].ppc_url foi substituído por cursos[].ppc.url`);
     const cnctId = curso.cnct_id;
     if (typeof cnctId === "string" && cnctId.startsWith("cnct:")) {
-      if (!existsSync(naBase(ctx.c, `catalogos/cnct/cursos/${cnctId.slice("cnct:".length)}.json`))) {
+      if (!NodeFS.existsSync(naBase(ctx.c, `catalogos/cnct/cursos/${cnctId.slice("cnct:".length)}.json`))) {
         erros.push(`${r}: cursos[].cnct_id não existe no CNCT: ${cnctId}`);
       }
     }
@@ -135,7 +136,7 @@ export function validarArquivoCampus(ctx: Contexto, caminho: string, itemIndice:
 
   const campusId = dados.id;
   if (typeof campusId !== "string" || !RE_SLUG.test(campusId)) erros.push(`${r}: id deve ser slug ASCII minúsculo`);
-  else if (path.basename(caminho) !== `${campusId}.json`) erros.push(`${r}: nome do arquivo diverge do id`);
+  else if (NodePath.basename(caminho) !== `${campusId}.json`) erros.push(`${r}: nome do arquivo diverge do id`);
 
   for (const campo of ["id", "nome"] as const) {
     if (!valoresIguais(dados[campo], itemIndice[campo])) erros.push(`${r}: campo ${campo} diverge do index.json`);

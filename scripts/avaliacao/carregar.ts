@@ -1,8 +1,12 @@
-/** Leitura e validação dos arquivos de `avaliacao/` (YAML com o pacote `yaml`, JSON e zod). */
+// @effect-diagnostics nodeBuiltinImport:off -- carregadores síncronos dos arquivos de avaliacao/, usados pelos testes, pelos geradores de gabarito e pelo avaliar.ts
+/** Leitura e validação dos arquivos de `avaliacao/` (YAML com o pacote `yaml`, JSON e Effect Schema). */
 import { parse as interpretarYaml } from "yaml";
-import { readFileSync } from "node:fs";
-import path from "node:path";
-import type { z } from "zod";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
+import * as Exit from "effect/Exit";
+import * as Schema from "effect/Schema";
+import { caminhoTexto, problemas } from "@simplifica-if/kb/esquema/mensagens";
+import { ESTRITO, type EsquemaSincrono } from "../esquema.ts";
 import {
   esquemaArquivoPerguntas,
   esquemaConfig,
@@ -16,50 +20,75 @@ import {
   type Universos,
 } from "./esquema.ts";
 
-export const RAIZ_REPOSITORIO = path.resolve(import.meta.dirname, "..", "..");
-export const DIR_AVALIACAO = path.join(RAIZ_REPOSITORIO, "avaliacao");
+export const RAIZ_REPOSITORIO = NodePath.resolve(import.meta.dirname, "..", "..");
+export const DIR_AVALIACAO = NodePath.join(RAIZ_REPOSITORIO, "avaliacao");
 
-function formatarErros(origem: string, erro: z.ZodError): string {
-  return erro.issues
-    .map((problema) => `${origem}: ${problema.path.join(".") || "(raiz)"}: ${problema.message}`)
-    .join("\n");
+/**
+ * Arquivo de `avaliacao/` (ou relatório salvo) fora do contrato. `problemas` traz uma linha por
+ * problema, `<caminho>: <mensagem>`, com `(raiz)` quando o problema é do arquivo inteiro.
+ */
+export class ArquivoAvaliacaoInvalido extends Schema.TaggedError<ArquivoAvaliacaoInvalido>()(
+  "ArquivoAvaliacaoInvalido",
+  {
+    origem: Schema.String,
+    problemas: Schema.Array(Schema.String),
+  },
+) {
+  override get message(): string {
+    return this.problemas.map((problema) => `${this.origem}: ${problema}`).join("\n");
+  }
 }
 
-function validar<T>(esquema: z.ZodType<T>, dados: unknown, origem: string): T {
-  const resultado = esquema.safeParse(dados);
-  if (!resultado.success) throw new Error(formatarErros(origem, resultado.error));
-  return resultado.data;
+export const ehArquivoAvaliacaoInvalido = Schema.is(ArquivoAvaliacaoInvalido);
+
+/** Erro de schema como `ArquivoAvaliacaoInvalido` de `origem`. */
+export function arquivoInvalido(origem: string, erro: Schema.SchemaError): ArquivoAvaliacaoInvalido {
+  return new ArquivoAvaliacaoInvalido({
+    origem,
+    problemas: problemas(erro.issue).map(
+      (problema) => `${caminhoTexto(problema.caminho) || "(raiz)"}: ${problema.mensagem}`,
+    ),
+  });
+}
+
+/** Decodifica `dados` com `ESTRITO` ou lança `ArquivoAvaliacaoInvalido`. */
+export function validar<T>(esquema: EsquemaSincrono<T>, dados: unknown, origem: string): T {
+  const resultado = Schema.decodeUnknownExit(esquema)(dados, ESTRITO);
+  if (Exit.isSuccess(resultado)) return resultado.value;
+  const erro = Exit.findErrorOption(resultado);
+  if (erro._tag === "Some") throw arquivoInvalido(origem, erro.value);
+  throw new ArquivoAvaliacaoInvalido({ origem, problemas: ["(raiz): formato inesperado"] });
 }
 
 export function lerYaml(caminho: string): unknown {
-  return interpretarYaml(readFileSync(caminho, "utf-8"));
+  return interpretarYaml(NodeFS.readFileSync(caminho, "utf-8"));
 }
 
 export function interpretarPerguntas(texto: string, origem = "perguntas.yaml"): ArquivoPerguntas {
   return validar(esquemaArquivoPerguntas, interpretarYaml(texto), origem);
 }
 
-export function carregarPerguntas(caminho = path.join(DIR_AVALIACAO, "perguntas.yaml")): ArquivoPerguntas {
-  return interpretarPerguntas(readFileSync(caminho, "utf-8"), path.relative(RAIZ_REPOSITORIO, caminho));
+export function carregarPerguntas(caminho = NodePath.join(DIR_AVALIACAO, "perguntas.yaml")): ArquivoPerguntas {
+  return interpretarPerguntas(NodeFS.readFileSync(caminho, "utf-8"), NodePath.relative(RAIZ_REPOSITORIO, caminho));
 }
 
-export function carregarConfig(caminho = path.join(DIR_AVALIACAO, "config.yaml")): ConfigAvaliacao {
-  return validar(esquemaConfig, lerYaml(caminho), path.relative(RAIZ_REPOSITORIO, caminho));
+export function carregarConfig(caminho = NodePath.join(DIR_AVALIACAO, "config.yaml")): ConfigAvaliacao {
+  return validar(esquemaConfig, lerYaml(caminho), NodePath.relative(RAIZ_REPOSITORIO, caminho));
 }
 
 export function carregarGabaritoConjunto(arquivo: string): GabaritoConjunto {
-  const caminho = path.resolve(RAIZ_REPOSITORIO, arquivo);
-  return validar(esquemaGabaritoConjunto, JSON.parse(readFileSync(caminho, "utf-8")), arquivo);
+  const caminho = NodePath.resolve(RAIZ_REPOSITORIO, arquivo);
+  return validar(esquemaGabaritoConjunto, JSON.parse(NodeFS.readFileSync(caminho, "utf-8")), arquivo);
 }
 
-export function carregarUniversos(caminho = path.join(DIR_AVALIACAO, "gabaritos", "universos.json")): Universos {
+export function carregarUniversos(caminho = NodePath.join(DIR_AVALIACAO, "gabaritos", "universos.json")): Universos {
   return validar(
     esquemaUniversos,
-    JSON.parse(readFileSync(caminho, "utf-8")),
-    path.relative(RAIZ_REPOSITORIO, caminho),
+    JSON.parse(NodeFS.readFileSync(caminho, "utf-8")),
+    NodePath.relative(RAIZ_REPOSITORIO, caminho),
   );
 }
 
 export function carregarPpcOuro(caminho: string): PpcOuro {
-  return validar(esquemaPpcOuro, lerYaml(caminho), path.relative(RAIZ_REPOSITORIO, caminho));
+  return validar(esquemaPpcOuro, lerYaml(caminho), NodePath.relative(RAIZ_REPOSITORIO, caminho));
 }

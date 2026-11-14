@@ -1,26 +1,27 @@
+// @effect-diagnostics nodeBuiltinImport:off globalDate:off -- os testes geram PDFs em diretórios temporários, chamam o script por processo e fixam a data
 /**
  * PDF do relatório de verificação de calendário (porte de
  * `render_relatorio_pdf.py`, trilha T4). A fixture `relatorio.md` foi
  * conferida contra o script Python com `reportlab` 5.1.0: as mesmas 2 páginas,
  * o mesmo texto e as mesmas posições de palavra (diferença máxima de 0,35 pt).
  */
-import { spawnSync } from "node:child_process";
+import * as NodeChildProcess from "node:child_process";
 import { afterAll, describe, expect, test } from "vite-plus/test";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
-import path from "node:path";
-import { inflateSync } from "node:zlib";
+import * as NodeFS from "node:fs";
+import * as NodeOS from "node:os";
+import * as NodePath from "node:path";
+import * as NodeZlib from "node:zlib";
 import { quebrarCjk, quebrarNormal } from "../scripts/quebra-linhas.ts";
 import { carregarRelatorio, gerarPdf } from "../scripts/render_relatorio_pdf.ts";
 
-const RAIZ = path.resolve(import.meta.dirname, "../../../..");
-const SCRIPT = path.join(RAIZ, ".agents/skills/verificar-calendario/scripts/render_relatorio_pdf.ts");
-const FIXTURE = path.join(import.meta.dirname, "fixtures/relatorio.md");
+const RAIZ = NodePath.resolve(import.meta.dirname, "../../../..");
+const SCRIPT = NodePath.join(RAIZ, ".agents/skills/verificar-calendario/scripts/render_relatorio_pdf.ts");
+const FIXTURE = NodePath.join(import.meta.dirname, "fixtures/relatorio.md");
 const DATA = new Date("2000-01-01T00:00:00Z");
 const temporarios: string[] = [];
 
 afterAll(() => {
-  for (const pasta of temporarios) rmSync(pasta, { recursive: true, force: true });
+  for (const pasta of temporarios) NodeFS.rmSync(pasta, { recursive: true, force: true });
 });
 
 /**
@@ -35,7 +36,7 @@ function textoPorPagina(pdf: Buffer): string[] {
     const inicio = objeto.index + objeto[0].length;
     const fim = bruto.indexOf("endstream", inicio);
     try {
-      conteudos.set(Number(objeto[1]), inflateSync(pdf.subarray(inicio, fim)).toString("latin1"));
+      conteudos.set(Number(objeto[1]), NodeZlib.inflateSync(pdf.subarray(inicio, fim)).toString("latin1"));
     } catch {
       // fluxo que não é Flate (fontes, imagens)
     }
@@ -146,14 +147,14 @@ describe("quebra de linhas do reportlab", () => {
 
 describe("PDF", () => {
   test("renderiza a fixture em 2 páginas, com cabeçalho repetido e o texto do Markdown", async () => {
-    const pdf = await gerarPdf(readFileSync(FIXTURE, "utf8"), DATA);
+    const pdf = await gerarPdf(NodeFS.readFileSync(FIXTURE, "utf8"), DATA);
     expect(pdf.subarray(0, 5).toString()).toBe("%PDF-");
     const paginas = textoPorPagina(pdf);
     expect(paginas).toHaveLength(2);
     for (const pagina of paginas) expect(pagina).toContain("ItemStatusObservação/Evidência");
 
     const texto = semEspacos(paginas.join(""));
-    const relatorio = carregarRelatorio(readFileSync(FIXTURE, "utf8"));
+    const relatorio = carregarRelatorio(NodeFS.readFileSync(FIXTURE, "utf8"));
     const esperado = [
       relatorio.titulo,
       relatorio.subtitulo,
@@ -179,7 +180,7 @@ describe("PDF", () => {
   });
 
   test("é reproduzível com data fixa e não embute fontes", async () => {
-    const markdown = readFileSync(FIXTURE, "utf8");
+    const markdown = NodeFS.readFileSync(FIXTURE, "utf8");
     const a = await gerarPdf(markdown, DATA);
     const b = await gerarPdf(markdown, DATA);
     expect(a.equals(b)).toBe(true);
@@ -198,16 +199,16 @@ describe("PDF", () => {
   });
 
   test("CLI: mesma interface do script Python", () => {
-    const pasta = mkdtempSync(path.join(tmpdir(), "relatorio-pdf-"));
+    const pasta = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "relatorio-pdf-"));
     temporarios.push(pasta);
-    const saida = path.join(pasta, "sub", "relatorio.pdf");
+    const saida = NodePath.join(pasta, "sub", "relatorio.pdf");
     const rodar = (...args: string[]) =>
-      spawnSync(process.execPath, [SCRIPT, ...args], {
+      NodeChildProcess.spawnSync(process.execPath, [SCRIPT, ...args], {
         env: { ...process.env, VERIFICAR_CALENDARIO_AGORA: "2000-01-01T00:00:00Z" },
       });
     const ok = rodar(FIXTURE, saida);
     expect(ok.status).toBe(0);
-    expect(textoPorPagina(readFileSync(saida))).toHaveLength(2);
+    expect(textoPorPagina(NodeFS.readFileSync(saida))).toHaveLength(2);
 
     const uso = rodar(FIXTURE);
     expect(uso.status).toBe(1);

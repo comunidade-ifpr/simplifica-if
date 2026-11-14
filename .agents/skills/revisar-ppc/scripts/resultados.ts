@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off extendsNativeError:off -- validação e mescla síncronas dos resultados da rodada; o erro de contrato é lançado com a mensagem montada no ponto da falha
 /**
  * Validação do JSON de resultados dos sub-agentes (porte de
  * `validar_resultados_subagents`, `validar_alertas_transversais` e
@@ -5,7 +6,7 @@
  * `validar-resultados` e por `gerar-relatorio-html` (`relatorio-html.ts`), e
  * mescla das reavaliações avulsas (`mesclar-resultados-avulsos`).
  */
-import path from "node:path";
+import * as NodePath from "node:path";
 import { compararTexto } from "@simplifica-if/kb/texto";
 import {
   ehNumeroPy,
@@ -48,10 +49,10 @@ function primeiroTexto(objeto: ObjetoPy, ...chaves: string[]): string {
 
 /** `resultados_path` absoluto, em `arquivos-suporte/` quando existe lá, ou na raiz da rodada. */
 export function resolverResultadosPath(rodada: string, resultados: string): string {
-  if (path.isAbsolute(resultados)) return resultados;
+  if (NodePath.isAbsolute(resultados)) return resultados;
   const caminhos = caminhosRodada(rodada);
-  const noSuporte = path.join(caminhos.suporteDir, resultados);
-  return existe(noSuporte) ? noSuporte : path.join(rodada, resultados);
+  const noSuporte = NodePath.join(caminhos.suporteDir, resultados);
+  return existe(noSuporte) ? noSuporte : NodePath.join(rodada, resultados);
 }
 
 /** Fichas por `id` (`str`), na ordem do id. */
@@ -435,7 +436,7 @@ export function validarResultadosRodada(
 
 /** Caminho relativo a `arquivos-suporte/` quando não absoluto. */
 function noSuporte(caminho: string, suporteDir: string): string {
-  return path.isAbsolute(caminho) ? caminho : path.join(suporteDir, caminho);
+  return NodePath.isAbsolute(caminho) ? caminho : NodePath.join(suporteDir, caminho);
 }
 
 function exigirObjeto(valor: unknown, descricao: string): ObjetoPy {

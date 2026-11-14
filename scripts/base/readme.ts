@@ -1,5 +1,6 @@
+// @effect-diagnostics nodeBuiltinImport:off -- grava manifest.json e o README com node:fs síncrono, num script de execução única (gerar_base)
 /** Tabela de normas do README da base, gerada a partir do manifest. */
-import { existsSync, writeFileSync } from "node:fs";
+import * as NodeFS from "node:fs";
 import type { CaminhosBase } from "./caminhos.ts";
 import { type ItemManifest, manifestJson } from "./front-matter.ts";
 import { textoDe } from "@simplifica-if/kb/json";
@@ -40,10 +41,10 @@ export function verificarBase(caminhos: CaminhosBase, manifest: ItemManifest[]):
 }
 
 export function gravarBase(caminhos: CaminhosBase, manifest: ItemManifest[]): void {
-  writeFileSync(caminhos.manifest, manifestJson(manifest), "utf-8");
-  writeFileSync(caminhos.readme, textoReadme(caminhos, manifest), "utf-8");
+  NodeFS.writeFileSync(caminhos.manifest, manifestJson(manifest), "utf-8");
+  NodeFS.writeFileSync(caminhos.readme, textoReadme(caminhos, manifest), "utf-8");
 }
 
 export function normasExistem(caminhos: CaminhosBase): boolean {
-  return existsSync(caminhos.normas);
+  return NodeFS.existsSync(caminhos.normas);
 }

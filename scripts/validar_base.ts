@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @effect-diagnostics globalConsole:off -- script de execução única do pipeline da base, síncrono, com a casca de scripts/cli.ts: imprime no console
 /** Valida a base pública de conhecimento. */
 import { criarCaminhos } from "./base/caminhos.ts";
 import { validarBase } from "./base/validacao.ts";

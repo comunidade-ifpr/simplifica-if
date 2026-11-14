@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @effect-diagnostics globalConsole:off -- script de execução única do pipeline da base, síncrono, com a casca de scripts/cli.ts: imprime no console
 /** Gera índices globais dos PPCs convertidos para Markdown. */
 import { criarCaminhos } from "./base/caminhos.ts";
 import { dataIndiceAtual, gerarIndices, gravarIndices, verificarIndices } from "./base/indice-ppcs.ts";

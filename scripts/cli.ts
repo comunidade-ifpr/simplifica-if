@@ -1,5 +1,6 @@
+// @effect-diagnostics globalConsole:off extendsNativeError:off -- casca síncrona dos scripts sem effect/cli (pipeline da base): imprime no console e sinaliza erro de uso por exceção
 /** Interpretação da linha de comando comum a todos os entrypoints: `--help`, opções estritas e erro de uso com código 2. */
-import { parseArgs, type ParseArgsConfig } from "node:util";
+import * as NodeUtil from "node:util";
 
 /** Destinos de saída; os testes substituem para capturar o que seria impresso. */
 export interface Saida {
@@ -15,13 +16,18 @@ export const SAIDA_PADRAO: Saida = {
 /** Erro de uso da linha de comando: imprime o uso no stderr e sai com código 2. */
 export class ErroUso extends Error {}
 
-type Opcoes = NonNullable<ParseArgsConfig["options"]>;
+type Opcoes = NonNullable<NodeUtil.ParseArgsConfig["options"]>;
 const AJUDA = { help: { type: "boolean", short: "h" } } as const;
 
 /** `parseArgs` estrito com `--help/-h`; erros de sintaxe (opção desconhecida, valor ausente) viram `ErroUso`. */
 export function lerLinhaComando<O extends Opcoes>(argv: string[], opcoes: O, { posicionais = false } = {}) {
   try {
-    return parseArgs({ args: argv, options: { ...opcoes, ...AJUDA }, allowPositionals: posicionais, strict: true });
+    return NodeUtil.parseArgs({
+      args: argv,
+      options: { ...opcoes, ...AJUDA },
+      allowPositionals: posicionais,
+      strict: true,
+    });
   } catch (erro) {
     throw new ErroUso(erro instanceof Error ? erro.message : String(erro));
   }

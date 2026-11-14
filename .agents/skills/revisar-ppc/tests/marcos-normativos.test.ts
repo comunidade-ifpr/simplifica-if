@@ -1,7 +1,8 @@
+// @effect-diagnostics nodeBuiltinImport:off -- os testes copiam a base para diretórios temporários
 import { afterEach, describe, expect, test } from "vite-plus/test";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodeOS from "node:os";
+import * as NodePath from "node:path";
 import type { ObjetoJson } from "@simplifica-if/kb/json";
 import { UniversoReferencias } from "@simplifica-if/kb/normas/referencia-estruturada";
 import { type EntradaRegistro, Registro } from "@simplifica-if/kb/normas/registro";
@@ -60,7 +61,7 @@ const caminhos = caminhosPadrao();
 function fichasReais(): Map<string, Ficha> {
   const fichas = new Map<string, Ficha>();
   for (const arquivo of listarArquivos(caminhos.fichasDir, ".json")) {
-    if (!path.basename(arquivo).startsWith("ct-")) continue;
+    if (!NodePath.basename(arquivo).startsWith("ct-")) continue;
     const ficha = lerJson(arquivo) as Ficha;
     fichas.set(String(ficha.id), ficha);
   }
@@ -122,14 +123,14 @@ const derivarSintetico: Derivacao = (linha) => {
 
 const temporarios: string[] = [];
 afterEach(() => {
-  for (const dir of temporarios.splice(0)) rmSync(dir, { recursive: true, force: true });
+  for (const dir of temporarios.splice(0)) NodeFS.rmSync(dir, { recursive: true, force: true });
 });
 
 function gravarMarcos(...marcos: ObjetoJson[]): string {
-  const dir = mkdtempSync(path.join(tmpdir(), "marcos-"));
+  const dir = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "marcos-"));
   temporarios.push(dir);
-  const arquivo = path.join(dir, "marcos.json");
-  writeFileSync(arquivo, JSON.stringify({ versao: 3, descricao: "teste", marcos }), "utf-8");
+  const arquivo = NodePath.join(dir, "marcos.json");
+  NodeFS.writeFileSync(arquivo, JSON.stringify({ versao: 3, descricao: "teste", marcos }), "utf-8");
   return arquivo;
 }
 
@@ -257,7 +258,7 @@ describe("registro de marcos normativos", () => {
   });
 
   test("registro ausente", () => {
-    const arquivo = path.join(tmpdir(), "nao-existe-marcos.json");
+    const arquivo = NodePath.join(NodeOS.tmpdir(), "nao-existe-marcos.json");
     expect(validar(arquivo)).toEqual([`${arquivo}: registro de marcos normativos não encontrado`]);
   });
 });
