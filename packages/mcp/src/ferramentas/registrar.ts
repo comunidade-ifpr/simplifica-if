@@ -14,7 +14,6 @@
 import * as Cause from "effect/Cause";
 import * as Effect from "effect/Effect";
 import * as Option from "effect/Option";
-import * as Schema from "effect/Schema";
 import * as Sink from "effect/Sink";
 import * as Stream from "effect/Stream";
 import { McpSchema, McpServer } from "effect/ai";
@@ -24,12 +23,18 @@ import { decodificadorDeEntrada, OPCOES_ENTRADA } from "../validacao.ts";
 import { FERRAMENTAS, FerramentasIfpr } from "./toolkit.ts";
 
 /**
- * A definição da ferramenta no `tools/list`. Ela é decodificada, e não construída com `new`: o
- * construtor de `McpSchema.ToolAnnotations` preenche `destructiveHint: true` (o padrão do MCP), e as
- * anotações ficam como as do servidor anterior, sem `destructiveHint`, que não se aplica a uma
- * ferramenta só de leitura.
+ * As anotações do `tools/list`. O `McpSchema` do Effect sempre escreve `destructiveHint` (o padrão do
+ * MCP é `true`); por isso ele vai explícito, `false`, como a anotação `Tool.Destructive` do Toolkit. O
+ * servidor anterior (SDK 2.x) o omitia: é a única diferença das anotações em relação ao gabarito do C0.
  */
-const decodificarDefinicao = Schema.decodeUnknownEffect(McpSchema.Tool);
+const anotacoes = (titulo: string) =>
+  ({
+    title: titulo,
+    readOnlyHint: true,
+    destructiveHint: false,
+    idempotentHint: true,
+    openWorldHint: false,
+  }) as const;
 
 /** Resultado de erro com o texto para a IA, sem `structuredContent`. */
 function resultadoDeErro(texto: string): McpSchema.CallToolResult {
@@ -50,16 +55,15 @@ export const registrarFerramentas = Effect.gen(function* () {
   for (const ferramenta of FERRAMENTAS) {
     const decodificar = decodificadorDeEntrada(ferramenta.nome, ferramenta.entrada);
     const textoCompleto = ferramenta.textoCompleto as (resposta: Resposta<unknown>) => string;
-    const definicao = yield* decodificarDefinicao({
-      name: ferramenta.nome,
-      title: ferramenta.titulo,
-      description: ferramenta.descricao,
-      inputSchema: jsonSchema(ferramenta.entrada),
-      outputSchema: jsonSchema(ferramenta.saida),
-      annotations: { title: ferramenta.titulo, readOnlyHint: true, idempotentHint: true, openWorldHint: false },
-    }).pipe(Effect.orDie);
     yield* servidor.addTool({
-      tool: definicao,
+      tool: new McpSchema.Tool({
+        name: ferramenta.nome,
+        title: ferramenta.titulo,
+        description: ferramenta.descricao,
+        inputSchema: jsonSchema(ferramenta.entrada),
+        outputSchema: jsonSchema(ferramenta.saida),
+        annotations: anotacoes(ferramenta.titulo),
+      }),
       annotations: ferramenta.tool.annotations,
       handle: (argumentos: unknown) =>
         decodificar(argumentos).pipe(

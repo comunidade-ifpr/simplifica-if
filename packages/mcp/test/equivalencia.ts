@@ -179,3 +179,98 @@ export function amostrasDeSaida(resposta: Json, limite = 400): Json[] {
   visitar(resposta, []);
   return amostras;
 }
+
+/* ================================================================== comparação com o gabarito */
+
+/** Uma ferramenta como o `tools/list` a descreve. */
+export interface DefinicaoListada {
+  readonly name: string;
+  readonly title?: string;
+  readonly description?: string;
+  readonly annotations?: Objeto;
+  readonly inputSchema: Json;
+  readonly outputSchema?: Json;
+}
+
+/** Uma chamada do gabarito: ferramenta, argumentos e resultado (`content` e `structuredContent`). */
+export interface ChamadaDoGabarito {
+  readonly name: string;
+  readonly arguments: Objeto;
+  readonly resultado: { readonly structuredContent?: Json };
+}
+
+/**
+ * A única diferença aceita nas anotações: o `McpSchema` do Effect sempre escreve `destructiveHint`, e
+ * o registro o manda `false` (ver `ferramentas/registrar.ts`); o servidor anterior o omitia.
+ */
+export const ANOTACOES_ACEITAS: Readonly<Objeto> = { destructiveHint: false };
+
+/** O resultado de comparar as definições novas com as do gabarito. */
+export interface Comparacao {
+  /** Diferenças fora das aceitas; vazio quando os schemas são equivalentes. */
+  readonly problemas: readonly string[];
+  /** Amostras conferidas no ajv (entrada e saída), todas com o mesmo veredito nos dois schemas. */
+  readonly amostras: number;
+}
+
+/**
+ * Compara as ferramentas do gabarito com as novas, na mesma ordem: nome, título, descrição e anotações
+ * iguais (menos `ANOTACOES_ACEITAS`); schemas normalizados iguais ou com as diferenças de
+ * `DIFERENCAS_ACEITAS`; e o mesmo veredito do ajv, nos dois schemas, para as amostras de entrada (a
+ * partir das chamadas do gabarito) e de saída (a partir de cada `structuredContent` do gabarito).
+ */
+export function compararDefinicoes(
+  antigas: readonly DefinicaoListada[],
+  novas: readonly DefinicaoListada[],
+  chamadas: readonly ChamadaDoGabarito[],
+): Comparacao {
+  const problemas: string[] = [];
+  const valida = validador();
+  let amostras = 0;
+  const nomes = (lista: readonly DefinicaoListada[]) => lista.map((t) => t.name).join(", ");
+  if (nomes(antigas) !== nomes(novas)) problemas.push(`ferramentas: [${nomes(antigas)}] → [${nomes(novas)}]`);
+  for (const antiga of antigas) {
+    const nova = novas.find((t) => t.name === antiga.name);
+    if (!nova) continue;
+    const rotulo = antiga.name;
+    if (antiga.title !== nova.title) problemas.push(`${rotulo}: título ${antiga.title} → ${nova.title}`);
+    if (antiga.description !== nova.description) problemas.push(`${rotulo}: descrição diferente`);
+    const anotacoes = JSON.stringify(ordenar({ ...antiga.annotations, ...ANOTACOES_ACEITAS }));
+    if (anotacoes !== JSON.stringify(ordenar(nova.annotations ?? {}))) {
+      problemas.push(`${rotulo}: anotações ${anotacoes} → ${JSON.stringify(ordenar(nova.annotations ?? {}))}`);
+    }
+    const aceitas = DIFERENCAS_ACEITAS[rotulo] ?? [];
+    const forma = [
+      ...diferencas(normalizar(antiga.inputSchema), normalizar(nova.inputSchema), "entrada"),
+      ...diferencas(normalizar(antiga.outputSchema), normalizar(nova.outputSchema), "saida"),
+    ];
+    for (const d of forma) if (!aceitas.includes(d)) problemas.push(`${rotulo}: ${d}`);
+    for (const d of aceitas)
+      if (!forma.includes(d)) problemas.push(`${rotulo}: diferença aceita que não aparece mais: ${d}`);
+    const doGabarito = chamadas.filter((c) => c.name === rotulo);
+    for (const amostra of amostrasDeEntrada(
+      antiga.inputSchema,
+      doGabarito.map((c) => c.arguments),
+    )) {
+      amostras++;
+      const antes = valida(antiga.inputSchema, amostra);
+      if (antes !== valida(nova.inputSchema, amostra)) {
+        problemas.push(`${rotulo}: entrada ${JSON.stringify(amostra)}: ${antes ? "aceita" : "recusada"} só no antigo`);
+      }
+    }
+    if (antiga.outputSchema === undefined || nova.outputSchema === undefined) continue;
+    for (const chamada of doGabarito) {
+      if (chamada.resultado.structuredContent === undefined) continue;
+      for (const amostra of amostrasDeSaida(chamada.resultado.structuredContent)) {
+        amostras++;
+        const antes = valida(antiga.outputSchema, amostra);
+        if (antes !== valida(nova.outputSchema, amostra)) {
+          problemas.push(
+            `${rotulo}: saída de ${JSON.stringify(chamada.arguments)}: ${antes ? "aceita" : "recusada"} só no antigo`,
+          );
+        }
+      }
+    }
+  }
+  return { problemas, amostras };
+}
