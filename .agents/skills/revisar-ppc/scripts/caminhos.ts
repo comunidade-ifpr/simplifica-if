@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- resolve os caminhos da skill de forma síncrona, na carga dos módulos
 /**
  * Caminhos da skill revisar-ppc, resolvidos como em `common.py`: o diretório
  * da skill é o pai de `scripts/`, com symlinks resolvidos (assim o caminho é o

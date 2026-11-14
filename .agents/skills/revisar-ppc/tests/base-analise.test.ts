@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- os testes copiam a base para diretórios temporários e chamam a CLI por processo
 import { afterEach, describe, expect, test } from "vite-plus/test";
 import * as NodeChildProcess from "node:child_process";
 import * as NodeFS from "node:fs";

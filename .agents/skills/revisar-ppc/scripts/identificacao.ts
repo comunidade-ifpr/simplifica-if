@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- extração heurística síncrona da identificação do curso a partir de arquivos locais
 /**
  * Identificação do curso no PPC: denominação, campus, forma de oferta,
  * modalidade de ensino e eixo tecnológico.

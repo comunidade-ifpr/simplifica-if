@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- validação síncrona da base de análise, também importada por scripts/validar_base.ts
 /**
  * Validação da base de análise da skill: schemas, fichas, taxonomia de
  * tópicos, marcos normativos, validações cruzadas e contratos de exemplo.

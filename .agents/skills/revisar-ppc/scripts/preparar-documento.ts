@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- preparação síncrona da rodada; a conversão .docx é um subprocesso Python de execução única
 /**
  * Cria a rodada de análise e o `PPC.md` canônico (porte de `preparar_documento.py`).
  *

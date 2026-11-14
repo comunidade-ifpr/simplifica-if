@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- gerador síncrono de indice.json, chamado pela CLI e pelos testes
 /** Índice consolidado da base de análise (`base-analise/indice.json`). */
 import * as NodeUtil from "node:util";
 import * as NodeFS from "node:fs";

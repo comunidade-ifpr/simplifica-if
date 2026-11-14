@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- os testes leem os schemas e as fichas dos arquivos da base
 /**
  * Veredito dos JSON Schemas gerados (`gerar-schemas`): a ficha e o registro de marcos validam igual
  * no schema anterior, gerado do zod (cópia congelada em `fixtures/schemas-zod/`), e no gerado hoje
@@ -5,7 +6,6 @@
  * pode mudar é o que se aceita e o que se recusa, as mensagens do validador e as descrições, que os
  * sub-agentes da revisão leem.
  */
-import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { describe, expect, test } from "vite-plus/test";
 import { ehObjeto, type ObjetoJson } from "@simplifica-if/kb/json";
