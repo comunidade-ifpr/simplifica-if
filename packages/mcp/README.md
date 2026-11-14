@@ -157,6 +157,8 @@ pnpm fmt                             # na raiz: vp fmt no repositório inteiro
 pnpm mcp:smoke                       # na raiz: as suítes transversais também na base real (tmp/kb.sqlite)
 ```
 
+Limitação conhecida: o `serverInfo` do `initialize` sai sem o `title` ("Base de conhecimento do IFPR") que o servidor do C0 anunciava. O `McpServer` do Effect 4.1.3 não aceita `title` nas opções de `layerStdio` e `layerHttp`, e o runtime monta o `serverInfo` só com `name`, `version`, `description`, `websiteUrl` e `icons`; não há API pública para escolhê-lo (desvio 1 do C2). Por isso o `gabarito.ts --comparar` estrito falha na linha 4 desde o C2 (e também nas capacidades `logging`, `completions` e `resources` e na ordem das chaves dos schemas do `tools/list`), e o CI usa `--comparar --schemas-equivalentes`, que aceita essas diferenças. Quando uma versão do Effect aceitar o `title`, passe-o nas duas layers (`servidor.ts` e `http.ts`) e tire o `delete servidor.title` do `gabarito.ts`.
+
 ## Suítes transversais
 
 As suítes de `test/transversal/` cobrem todas as ferramentas de `FERRAMENTAS`, sem repetir os testes por ferramenta. Elas tiram as entradas de `amostras.ts` e os casos de paridade de `paridade.ts`. Os dois registros são indexados pelo nome da ferramenta: uma ferramenta nova sem amostra ou sem caso de paridade quebra o `typecheck` e os testes.
