@@ -622,29 +622,64 @@ function renderizarMarcadores(anotacoes: Anotacao[]): string {
   return `<div class="annotation-markers" aria-label="Anotações do bloco">\n${links.join("\n")}\n</div>`;
 }
 
+/** Se `posicao` do HTML está em texto, fora de tag e de atributo (o último `<` antes dela já fechou). */
+function emTexto(html: string, posicao: number): boolean {
+  return html.lastIndexOf("<", posicao - 1) <= html.lastIndexOf(">", posicao - 1);
+}
+
+function linkEvidencia(anotacao: Anotacao, conteudo: string): string {
+  const annotationId = escape(texto(anotacao.annotation_id));
+  const fichaId = escape(texto(ou(anotacao.ficha_id, annotationId)));
+  const titulo = escape(texto(ou(anotacao.titulo, fichaId)));
+  const classe = classeEstado(texto(anotacao.estado));
+  return (
+    `<a class="evidence-link evidence-state-${escape(classe)}" href="#${annotationId}" ` +
+    `data-evidence-ref="${annotationId}" ` +
+    `title="Evidência de ${fichaId}: ${titulo}" ` +
+    `aria-label="Trecho usado como evidência de ${fichaId}">` +
+    conteudo +
+    `<span class="evidence-ref" aria-hidden="true">${fichaId}</span>` +
+    "</a>"
+  );
+}
+
+/**
+ * Destaca no HTML do bloco o trecho citado por cada anotação: a primeira ocorrência em texto (fora
+ * de tags e atributos) que não se sobrepõe a um destaque anterior. Fichas que citam o mesmo trecho
+ * dividem um destaque só: a primeira leva o `<mark>`, as demais entram como links logo depois.
+ */
 function aplicarDestaques(html: string, anotacoes: Anotacao[]): string {
-  let renderizado = html;
+  type Destaque = { inicio: number; fim: number; alvo: string; anotacoes: Anotacao[] };
+  const destaques: Destaque[] = [];
   for (const anotacao of anotacoes) {
     const trecho = aparar(texto(anotacao.quote));
     if (!trecho) continue;
     const alvo = escape(trecho);
-    const posicao = renderizado.indexOf(alvo);
-    if (posicao < 0) continue;
-    const annotationId = escape(texto(anotacao.annotation_id));
-    const fichaId = escape(texto(ou(anotacao.ficha_id, annotationId)));
-    const titulo = escape(texto(ou(anotacao.titulo, fichaId)));
-    const classe = classeEstado(texto(anotacao.estado));
-    const link =
-      `<a class="evidence-link evidence-state-${escape(classe)}" href="#${annotationId}" ` +
-      `data-evidence-ref="${annotationId}" ` +
-      `title="Evidência de ${fichaId}: ${titulo}" ` +
-      `aria-label="Trecho usado como evidência de ${fichaId}">` +
-      `<mark class="evidence-highlight">${alvo}</mark>` +
-      `<span class="evidence-ref" aria-hidden="true">${fichaId}</span>` +
-      "</a>";
-    renderizado = renderizado.slice(0, posicao) + link + renderizado.slice(posicao + alvo.length);
+    const mesmo = destaques.find((destaque) => destaque.alvo === alvo);
+    if (mesmo) {
+      mesmo.anotacoes.push(anotacao);
+      continue;
+    }
+    for (let posicao = html.indexOf(alvo); posicao >= 0; posicao = html.indexOf(alvo, posicao + 1)) {
+      const fim = posicao + alvo.length;
+      const sobrepoe = destaques.some((destaque) => posicao < destaque.fim && destaque.inicio < fim);
+      if (emTexto(html, posicao) && !sobrepoe) {
+        destaques.push({ inicio: posicao, fim, alvo, anotacoes: [anotacao] });
+        break;
+      }
+    }
   }
-  return renderizado;
+  let renderizado = "";
+  let cursor = 0;
+  for (const destaque of destaques.sort((a, b) => a.inicio - b.inicio)) {
+    const [primeira, ...demais] = destaque.anotacoes;
+    renderizado +=
+      html.slice(cursor, destaque.inicio) +
+      linkEvidencia(primeira!, `<mark class="evidence-highlight">${destaque.alvo}</mark>`) +
+      demais.map((anotacao) => linkEvidencia(anotacao, "")).join("");
+    cursor = destaque.fim;
+  }
+  return renderizado + html.slice(cursor);
 }
 
 function renderizarPpc(blocos: BlocoPpc[], anotacoesPorBloco: Map<string, Anotacao[]>): string {

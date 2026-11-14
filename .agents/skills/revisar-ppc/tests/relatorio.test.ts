@@ -27,6 +27,7 @@ import {
   formatarHtml,
   gerarBlocosPpc,
   gerarRelatorioHtml,
+  renderizarHtml,
   resolverAncoraEvidencia,
 } from "../scripts/relatorio-html.ts";
 import {
@@ -272,6 +273,80 @@ O PPC trata o registro junto ao conselho profissional.
     expect(bloco.kind).toBe("paragraph");
     expect(bloco.text).toContain("pesquisas com egressos");
     expect(quote).toBe("pesquisas com egressos");
+  });
+});
+
+describe("destaques de evidência no PPC", () => {
+  const PARAGRAFO = "O curso tem duração de 3 anos e carga horária de 1200 horas.";
+  const markdown = `# Curso Técnico em Informática\n\n${PARAGRAFO}\n`;
+  const resultadoCitando = (fichaId: string, titulo: string, quote: string) =>
+    ({
+      grupo_id: "grupo-001",
+      ficha_id: fichaId,
+      titulo,
+      criticidade: "OBRIG",
+      estado: "NAO_ATENDE",
+      confianca: 0.9,
+      justificativa: `Justificativa de ${fichaId}.`,
+      evidencias: [
+        { trecho: quote, secao: "", localizador: "", fonte: "PPC.md", artefato: "", anchor: { block_id: "", quote } },
+      ],
+      lacunas: [],
+      revisao_humana_obrigatoria: false,
+      feedback_autores: "",
+      fundamentacao_normativa: [],
+    }) as unknown as ResultadoNormalizado;
+
+  /** O conteúdo do bloco do parágrafo. */
+  function conteudoDoBloco(resultados: ResultadoNormalizado[]): string {
+    const html = renderizarHtml({ curso: "Curso" }, resultados, [], markdown);
+    const inicio = html.indexOf('<div class="block-content"><p>O curso tem');
+    expect(inicio).toBeGreaterThanOrEqual(0);
+    return html.slice(inicio, html.indexOf("</div>", inicio));
+  }
+
+  /** Nenhum `<` dentro de atributo e nenhum `<a>` aberto dentro de outro. */
+  function conferirMarcacao(conteudo: string) {
+    for (const [, valor] of conteudo.matchAll(/="([^"]*)"/g)) expect(valor).not.toContain("<");
+    let abertos = 0;
+    for (const [tag] of conteudo.matchAll(/<\/?a\b/g)) {
+      abertos += tag === "<a" ? 1 : -1;
+      expect(abertos).toBeGreaterThanOrEqual(0);
+      expect(abertos).toBeLessThanOrEqual(1);
+    }
+    expect(abertos).toBe(0);
+  }
+
+  test("não insere destaque dentro do atributo title de outro destaque", () => {
+    const conteudo = conteudoDoBloco([
+      resultadoCitando("CT-01", "Duração e carga horária", "duração de 3 anos"),
+      resultadoCitando("CT-02", "Carga horária", "carga horária"),
+    ]);
+    conferirMarcacao(conteudo);
+    expect(conteudo).toContain('title="Evidência de CT-01: Duração e carga horária"');
+    expect(conteudo).toContain('<mark class="evidence-highlight">duração de 3 anos</mark>');
+    expect(conteudo).toContain('<mark class="evidence-highlight">carga horária</mark>');
+  });
+
+  test("a mesma citação por duas fichas vira um destaque com links para as duas", () => {
+    const conteudo = conteudoDoBloco([
+      resultadoCitando("CT-01", "Duração", "duração de 3 anos"),
+      resultadoCitando("CT-02", "Prazo", "duração de 3 anos"),
+    ]);
+    conferirMarcacao(conteudo);
+    expect(conteudo.match(/<mark /g)?.length).toBe(1);
+    expect(conteudo).toContain('data-evidence-ref="ann-001"');
+    expect(conteudo).toContain('data-evidence-ref="ann-002"');
+  });
+
+  test("citação sobreposta a outra não aninha destaques", () => {
+    const conteudo = conteudoDoBloco([
+      resultadoCitando("CT-01", "Duração", "duração de 3 anos"),
+      resultadoCitando("CT-02", "Prazo", "3 anos e carga"),
+    ]);
+    conferirMarcacao(conteudo);
+    expect(conteudo).toContain('<mark class="evidence-highlight">duração de 3 anos</mark>');
+    expect(conteudo).toContain('data-evidence-ref="ann-001"');
   });
 });
 
