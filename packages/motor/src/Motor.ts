@@ -3,7 +3,8 @@
  * com o `simplifica-mcp` entregue por sessão e eventos iguais para os três.
  *
  * Cada sessão vive num `Scope` próprio; `encerrar` o fecha, e o processo do provider morre junto.
- * Ao fim da layer, as sessões abertas se encerram.
+ * Ao fim da layer, as sessões abertas se encerram. Com `resultados` num servidor MCP HTTP, o resumo
+ * vazio das ferramentas dele é completado com o que o servidor viu (`resultados.ts`).
  */
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
@@ -26,6 +27,7 @@ import {
   type TurnoEmAndamento,
 } from "./Driver.ts";
 import type { Evento, Provider } from "./eventos.ts";
+import * as Resultados from "./resultados.ts";
 
 export * from "./Driver.ts";
 export * from "./eventos.ts";
@@ -67,6 +69,8 @@ export class Motor extends Context.Service<
 interface SessaoAberta {
   readonly driver: SessaoDriver;
   readonly escopo: Scope.Closeable;
+  /** Completa o resumo das ferramentas MCP com o que o servidor do app viu (`resultados.ts`). */
+  readonly completar: Resultados.Completar;
 }
 
 const make = Effect.gen(function* () {
@@ -90,8 +94,9 @@ const make = Effect.gen(function* () {
       Scope.provide(escopo),
       Effect.onError(() => Scope.close(escopo, Exit.void)),
     );
+    const completar = yield* Resultados.completador(config).pipe(Scope.provide(escopo));
     const id = `${config.provider}-${++sequencia}`;
-    sessoes.set(id, { driver, escopo });
+    sessoes.set(id, { driver, escopo, completar });
     return id;
   });
 
@@ -122,7 +127,8 @@ const make = Effect.gen(function* () {
   return Motor.of({
     detectar,
     iniciarSessao,
-    enviarMensagem: (id, texto) => Stream.unwrap(Effect.map(buscar(id), (sessao) => sessao.driver.enviar(texto))),
+    enviarMensagem: (id, texto) =>
+      Stream.unwrap(Effect.map(buscar(id), (sessao) => sessao.completar(sessao.driver.enviar(texto)))),
     responderAprovacao,
     interromper,
     encerrar,

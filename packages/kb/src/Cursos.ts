@@ -40,10 +40,29 @@ const LinhaCitacao = Schema.Struct({
 const linhasCitacoes = Sql.todas(LinhaCitacao);
 const linhasPpcs = Sql.todas(Schema.Struct({ path: Schema.String }));
 
+const LinhaCnct = Schema.Struct({
+  id: Schema.String,
+  slug: Schema.String,
+  denominacao: Schema.String,
+  eixo_tecnologico: Schema.String,
+  area_tecnologica: Schema.NullOr(Schema.String),
+  carga_horaria_minima_h: Schema.NullOr(Schema.Int),
+  /** Arquivo do curso no catálogo, relativo à raiz do repositório. */
+  path: Schema.NullOr(Schema.String),
+  dados: Schema.fromJsonString(Schema.Record(Schema.String, Schema.Unknown)),
+});
+export type CursoCnct = typeof LinhaCnct.Type;
+const primeiroCnct = Sql.primeira(LinhaCnct);
+
 export class Cursos extends Context.Service<
   Cursos,
   {
     readonly listar: (filtros?: FiltrosCursos) => Effect.Effect<ResultadoCurso[], Sql.FalhaNaConsulta>;
+    /**
+     * Um curso do CNCT (`cnct:<slug>` ou `<slug>`) com as colunas da tabela `cnct` e o JSON do catálogo
+     * como está (`dados`, com as chaves na ordem do arquivo); `null` se o catálogo não o tem.
+     */
+    readonly cnct: (id: string) => Effect.Effect<CursoCnct | null, Sql.FalhaNaConsulta>;
     readonly adequacaoArt71: (opcoes?: {
       readonly incluirTecnologia?: boolean;
     }) => Effect.Effect<RelatorioAdequacao, Sql.FalhaNaConsulta>;
@@ -106,7 +125,20 @@ const make = Effect.gen(function* () {
     Effect.provideService(SqlClient.SqlClient, sql),
   );
 
-  return Cursos.of({ listar, adequacaoArt71 });
+  const cnct = Effect.fn("Cursos.cnct")(
+    function* (id: string) {
+      const linha = yield* primeiroCnct(
+        `SELECT id, slug, denominacao, eixo_tecnologico, area_tecnologica, carga_horaria_minima_h, path,
+                dados_json AS dados
+           FROM cnct WHERE id = ?`,
+        [id.startsWith("cnct:") ? id : `cnct:${id}`],
+      );
+      return linha ?? null;
+    },
+    Effect.provideService(SqlClient.SqlClient, sql),
+  );
+
+  return Cursos.of({ listar, adequacaoArt71, cnct });
 });
 
 export const layer = Layer.effect(Cursos, make);

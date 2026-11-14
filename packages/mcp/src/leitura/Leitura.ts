@@ -37,6 +37,8 @@ import { linkCampus } from "../links.ts";
 import { makeNormas } from "./normas.ts";
 import { makePacote } from "./pacote.ts";
 import { makePpcs } from "./ppcs.ts";
+import { type CampusDaBase, makeRecursos } from "./recursos.ts";
+import type * as Conteudos from "../recursos/conteudos.ts";
 
 /** Uma leitura: a entrada decodificada de uma ferramenta e a resposta com os dados dela. */
 type Metodo<E extends { readonly Type: unknown }, D extends { readonly Type: unknown }> = (
@@ -75,11 +77,23 @@ export class Leitura extends Context.Service<
     readonly pacoteContexto: Metodo<typeof PacoteContextoF.Entrada, typeof PacoteContextoF.Dados>;
     readonly sobreABase: Metodo<typeof SobreABase.Entrada, typeof SobreABase.Dados>;
     readonly etapa: Metodo<typeof Etapa.Entrada, typeof Etapa.Dados>;
+    /** Recursos `ifpr://` sem ferramenta própria (M1.5): PPC sem seção, CNCT, campus e ficha. */
+    readonly lerPpc: Metodo<typeof Conteudos.EntradaPpc, typeof Conteudos.DadosPpc>;
+    readonly lerCnct: Metodo<typeof Conteudos.EntradaCnct, typeof Conteudos.DadosCnct>;
+    readonly lerCampus: Metodo<typeof Conteudos.EntradaCampus, typeof Conteudos.DadosCampus>;
+    readonly lerFicha: Metodo<typeof Conteudos.EntradaFicha, typeof Conteudos.DadosFicha>;
   }
 >()("@simplifica-if/mcp/leitura/Leitura") {}
 
 const linhasNivel = Sql.todas(Schema.Struct({ nivel: Schema.String }));
-const linhasCampus = Sql.todas(Schema.Struct({ campus_id: Schema.String, nome: Schema.String }));
+const linhasCampus = Sql.todas(
+  Schema.Struct({
+    campus_id: Schema.String,
+    nome: Schema.String,
+    site: Schema.NullOr(Schema.String),
+    path: Schema.String,
+  }),
+);
 const linhasTipo = Sql.todas(Schema.Struct({ tipo: Schema.String }));
 
 const ehCanal = Schema.is(Schema.Literals(CANAIS));
@@ -121,23 +135,24 @@ const make = Effect.fn("Leitura.make")(function* (opcoes: { readonly canal: Cana
   const niveis = (yield* linhasNivel(
     "SELECT nivel FROM ppcs UNION SELECT nivel FROM cursos WHERE nivel IS NOT NULL ORDER BY nivel",
   )).map((n) => n.nivel);
-  const campi = (yield* linhasCampus("SELECT campus_id, nome FROM campi ORDER BY campus_id")).map((c) => ({
-    id: c.campus_id,
-    nome: c.nome,
-    link: linkCampus(c.campus_id),
-  }));
+  const linhasDosCampi = yield* linhasCampus("SELECT campus_id, nome, site, path FROM campi ORDER BY campus_id");
+  const campi = linhasDosCampi.map((c) => ({ id: c.campus_id, nome: c.nome, link: linkCampus(c.campus_id) }));
+  const campiPorId = new Map<string, CampusDaBase>(
+    linhasDosCampi.map((c) => [c.campus_id, { id: c.campus_id, nome: c.nome, site: c.site, path: c.path }]),
+  );
   const tiposDeSecao = (yield* linhasTipo("SELECT DISTINCT tipo FROM secoes ORDER BY tipo")).map((t) => t.tipo);
 
   const normas = yield* makeNormas(base);
   const ppcs = yield* makePpcs(base);
   const pacote = yield* makePacote(base);
+  const recursos = yield* makeRecursos(base, campiPorId);
 
   const sobreABase = responder(base, { contagens: meta.contagens, tipos_de_secao: tiposDeSecao, niveis, campi });
   const etapa = responder(base, { registrado: false });
 
   return Leitura.of({
     base,
-    ...comFalhaNaBase({ ...normas, ...ppcs, ...pacote }),
+    ...comFalhaNaBase({ ...normas, ...ppcs, ...pacote, ...recursos }),
     // respostas fixas, montadas uma vez: o banco não muda com o servidor no ar
     sobreABase: Effect.fn("Leitura.sobreABase")(() => Effect.succeed(sobreABase)),
     etapa: Effect.fn("Leitura.etapa")(() => Effect.succeed(etapa)),

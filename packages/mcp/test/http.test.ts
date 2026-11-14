@@ -198,7 +198,12 @@ layer(Http.layer({ banco }), { excludeTestServices: true })("servidor MCP por HT
       for (const c of chamadas) {
         expect(c.inicio).toBeGreaterThan(0);
         expect(c.duracaoMs).toBeGreaterThanOrEqual(0);
+        // O começo do texto do resultado, numa linha, até 300 caracteres.
+        expect(c.resumo?.length).toBeGreaterThan(0);
+        expect(c.resumo?.length).toBeLessThanOrEqual(300);
+        expect(c.resumo).not.toMatch(/\n/);
       }
+      expect(chamadas[1]?.resumo).toContain("nao-existe/curso");
     }),
   );
 

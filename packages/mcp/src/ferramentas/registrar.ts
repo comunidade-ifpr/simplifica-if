@@ -11,7 +11,8 @@
  * entrada de novo e codifica a resposta pelo `outputSchema`. O `structuredContent` é a `Resposta`
  * como o handler a montou (a mesma ordem de chaves do servidor anterior), e o `content`, o texto.
  *
- * Com uma `SessaoAtual` no contexto (o servidor HTTP), cada chamada é medida e registrada nela.
+ * Com uma `SessaoAtual` no contexto (o servidor HTTP), cada chamada é medida e registrada nela, com o
+ * começo do texto do resultado.
  */
 import * as Cause from "effect/Cause";
 import * as Effect from "effect/Effect";
@@ -21,7 +22,7 @@ import * as Stream from "effect/Stream";
 import { McpSchema, McpServer } from "effect/ai";
 import { ehEntradaInvalida, ehFalhaNaBase, type Resposta } from "../contratos.ts";
 import { jsonSchema } from "../esquema.ts";
-import { observarChamada } from "../SessaoAtual.ts";
+import { observarChamada, resumoDoResultado } from "../SessaoAtual.ts";
 import { decodificadorDeEntrada, OPCOES_ENTRADA } from "../validacao.ts";
 import { FERRAMENTAS, FerramentasIfpr } from "./toolkit.ts";
 
@@ -87,6 +88,7 @@ export const registrarFerramentas = Effect.gen(function* () {
               Cause.hasInterruptsOnly(causa) ? Effect.interrupt : Effect.succeed(resultadoDeErro(textoDaFalha(causa))),
             ),
           ),
+          resumoDoResultado,
         ),
     });
   }

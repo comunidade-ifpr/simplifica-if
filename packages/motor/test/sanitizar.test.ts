@@ -94,7 +94,7 @@ describe("configuração do MCP por provider", () => {
     });
   });
 
-  it("Codex: mcp_servers por thread e isolamento dos MCP do usuário", () => {
+  it("Codex: mcp_servers por thread e isolamento dos MCP, conectores e plugins do usuário", () => {
     assert.deepStrictEqual(configMcpCodex(CONFIG), {
       "mcp_servers.ifpr": {
         command: "/usr/local/bin/node",
@@ -104,6 +104,7 @@ describe("configuração do MCP por provider", () => {
     });
     assert.deepStrictEqual(isolamentoCodex({ mcp_servers: { ifpr: {}, pessoal: {}, docs: {} } }, CONFIG), {
       "features.apps": false,
+      "features.plugins": false,
       "mcp_servers.pessoal.enabled": false,
       "mcp_servers.docs.enabled": false,
     });
