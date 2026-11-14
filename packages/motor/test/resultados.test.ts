@@ -3,7 +3,8 @@
  * `Motor` sobre um driver falso que segue um roteiro, com um servidor MCP falso cujo `resultados` é
  * uma fila que o roteiro alimenta antes de cada evento, como o servidor real, que publica a chamada
  * antes de responder ao provider. O último teste repassa a gravação real do Antigravity pelo
- * normalizador dele.
+ * normalizador dele, com o `read_resource` casado com a leitura de recurso que o servidor registra
+ * (o URI no lugar do nome da ferramenta).
  */
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { assert, describe, it } from "@effect/vitest";
@@ -88,6 +89,12 @@ const concluida = (id: string, nome: string, resumo = "", falhou = false): Motor
   resumo,
   falhou,
 });
+const iniciada = (id: string, nome: string, entrada: unknown): Motor.Evento => ({
+  _tag: "FerramentaIniciada",
+  id,
+  nome,
+  entrada,
+});
 const chamada = (ferramenta: string, resumo: string, falhou = false): Passo => ({
   chamada: { ferramenta, resumo, falhou },
 });
@@ -119,6 +126,33 @@ describe("resultados do servidor MCP", () => {
         ["x1", ""],
       ]);
       assert.strictEqual(eventos.at(-1)?._tag, "FimTurno");
+    }).pipe(Effect.scoped),
+  );
+
+  it.effect("read_resource do Antigravity: casa com a leitura do URI no servidor ServerName", () =>
+    Effect.gen(function* () {
+      const uri = "ifpr://cnct/tecnico-em-enfermagem";
+      const { turno } = yield* sessaoCom([
+        [
+          // O servidor registra a leitura com o URI no lugar do nome; uma ferramenta lida antes não atrapalha.
+          chamada("buscar_norma", "Resolução CNE/CP nº 2/2026"),
+          chamada(uri, "Técnico em Enfermagem (CNCT)"),
+          { evento: iniciada("r1", "read_resource", { ServerName: "ifpr", Uri: uri }) },
+          { evento: concluida("r1", "read_resource") },
+          { evento: concluida("b1", "ifpr.buscar_norma") },
+          // De outro servidor, ou sem a entrada esperada: segue como veio, sem esperar.
+          { evento: iniciada("r2", "read_resource", { ServerName: "outro", Uri: uri }) },
+          { evento: concluida("r2", "read_resource") },
+          { evento: iniciada("r3", "read_resource", { uri }) },
+          { evento: concluida("r3", "read_resource") },
+        ],
+      ]);
+      assert.deepStrictEqual(resumos(yield* turno()), [
+        ["r1", "Técnico em Enfermagem (CNCT)"],
+        ["b1", "Resolução CNE/CP nº 2/2026"],
+        ["r2", ""],
+        ["r3", ""],
+      ]);
     }).pipe(Effect.scoped),
   );
 
@@ -185,16 +219,22 @@ describe("resultados do servidor MCP", () => {
             (m.tipo === "session/update" || (m.tipo === "session/prompt" && m.resposta !== undefined)),
         );
       // O normalizador real, sem mudança; antes de cada `FerramentaConcluida` de `ifpr`, o servidor
-      // falso vê a chamada. O `FimTurno` da gravação fica de fora: o roteiro termina o turno.
+      // falso vê a chamada, e antes do `read_resource`, a leitura do URI, como o servidor do app a
+      // registra (na gravação, de antes dos recursos, a leitura falhou sem chegar ao servidor). O
+      // `FimTurno` da gravação fica de fora: o roteiro termina o turno.
       const normalizar = criarNormalizadorAntigravity(["ifpr"]);
+      const uris = new Map<string, string>();
       const roteiro = linhas.flatMap(({ mensagem }): ReadonlyArray<Passo> =>
         normalizar(mensagem as unknown as EntradaAcp)
           .filter((evento) => evento._tag !== "FimTurno")
-          .flatMap((evento) =>
-            evento._tag === "FerramentaConcluida" && evento.nome.startsWith("ifpr.")
-              ? [chamada(evento.nome.slice(5), `resultado de ${evento.nome.slice(5)}`), { evento }]
-              : [{ evento }],
-          ),
+          .flatMap((evento): ReadonlyArray<Passo> => {
+            if (evento._tag === "FerramentaIniciada" && evento.nome === "read_resource") {
+              uris.set(evento.id, (evento.entrada as { readonly Uri: string }).Uri);
+            }
+            if (evento._tag !== "FerramentaConcluida") return [{ evento }];
+            const nome = evento.nome.startsWith("ifpr.") ? evento.nome.slice(5) : uris.get(evento.id);
+            return nome === undefined ? [{ evento }] : [chamada(nome, `resultado de ${nome}`), { evento }];
+          }),
       );
       const { turno } = yield* sessaoCom([roteiro]);
       const concluidas = (yield* turno()).filter((evento) => evento._tag === "FerramentaConcluida");
@@ -204,7 +244,7 @@ describe("resultados do servidor MCP", () => {
           ["ifpr.listar_cursos", "resultado de listar_cursos"],
           ["ifpr.buscar_norma", "resultado de buscar_norma"],
           ["ifpr.ficha_curso", "resultado de ficha_curso"],
-          ["read_resource", ""],
+          ["read_resource", "resultado de ifpr://cnct/tecnico-em-enfermagem"],
           ["ifpr.pacote_contexto", "resultado de pacote_contexto"],
           ["ifpr.sobre_a_base", "resultado de sobre_a_base"],
         ],

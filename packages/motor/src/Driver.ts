@@ -26,6 +26,7 @@ export interface ServidorMcpStdio {
  * (`buscar_norma`), o começo do resultado e se ele é de erro.
  */
 export interface ResultadoFerramenta {
+  /** O nome da ferramenta, sem o servidor; numa leitura de recurso (`resources/read`), o URI lido. */
   readonly ferramenta: string;
   readonly resumo: string;
   readonly falhou: boolean;
