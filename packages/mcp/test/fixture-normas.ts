@@ -5,7 +5,7 @@
  * de vigência, uma regra de transição e uma tabela de correspondência em rascunho. Os textos são
  * inventados; os formatos são os do `kb.sqlite`.
  */
-import { DatabaseSync } from "node:sqlite";
+import * as NodeSqlite from "node:sqlite";
 import { emTransacao } from "@simplifica-if/kb/db/transacao";
 import { radicais } from "@simplifica-if/kb/busca/tokens";
 
@@ -284,7 +284,7 @@ const ROMANOS = [
 
 /** Acrescenta as normas da fixture ao banco em `caminho` (criado por `criarBancoFixture`). */
 export function inserirNormas(caminho: string): void {
-  const db = new DatabaseSync(caminho);
+  const db = new NodeSqlite.DatabaseSync(caminho);
   emTransacao(db, () => {
     const insNorma = db.prepare(
       `INSERT INTO normas (id, situacao, titulo, tipo_documento, numero, ano, orgao, jurisdicao, data_publicacao, status_vigencia,

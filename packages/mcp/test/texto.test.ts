@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vite-plus/test";
-import type { Base, Resposta } from "../src/envelope.ts";
+import type { Base, Resposta } from "../src/contratos.ts";
 import { blocoItem, citacao, comLink, dataBr, montarTexto, rodape } from "../src/texto.ts";
 
 const BASE_DEV: Base = { versao: "dev-ab12cd34", commit: null, data_referencia: "2026-11-13", canal: "dev" };

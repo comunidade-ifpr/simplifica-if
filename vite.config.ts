@@ -136,12 +136,12 @@ export default defineConfig({
       "typescript/restrict-template-expressions": "off",
       "typescript/unbound-method": "off",
     },
-    // As regras do plugin próprio valem só onde o código já é Effect: por enquanto, `packages/kb` (C1).
-    // O C2 e o C3 estendem a lista de `files` ao MCP e aos scripts. As exceções reproduzem as do T3.
+    // As regras do plugin próprio valem só onde o código já é Effect: `packages/kb` (C1) e `packages/mcp`
+    // (C2). O C3 estende a lista de `files` aos scripts. As exceções reproduzem as do T3.
     // A ordem importa: cada override posterior sobrescreve o anterior para os arquivos em comum.
     overrides: [
       {
-        files: ["packages/kb/**"],
+        files: ["packages/kb/**", "packages/mcp/**"],
         rules: {
           "simplifica-if/namespace-node-imports": "error",
           "simplifica-if/no-global-process-runtime": "error",
@@ -157,13 +157,23 @@ export default defineConfig({
       },
       {
         // Como no T3: testes e utilitários de teste montam programas inline, sem `Effect.fn`.
-        files: ["packages/kb/**/*.test.ts", "packages/kb/**/{test,tests,testes,fixtures}/**"],
+        files: [
+          "packages/kb/**/*.test.ts",
+          "packages/kb/**/{test,tests,testes,fixtures}/**",
+          "packages/mcp/**/*.test.ts",
+          "packages/mcp/**/{test,tests,testes,fixtures}/**",
+        ],
         rules: { "simplifica-if/prefer-effect-fn": "off" },
       },
       {
         // Pontos de entrada (a CLI `kb` e os scripts do pacote) leem o processo do Node diretamente,
         // como `scripts/npm-launcher/**` no T3; o resto do pacote recebe o que precisar por injeção.
-        files: ["packages/kb/src/cli.ts", "packages/kb/scripts/**"],
+        files: [
+          "packages/kb/src/cli.ts",
+          "packages/kb/scripts/**",
+          "packages/mcp/src/cli.ts",
+          "packages/mcp/scripts/**",
+        ],
         rules: { "simplifica-if/no-global-process-runtime": "off" },
       },
     ],

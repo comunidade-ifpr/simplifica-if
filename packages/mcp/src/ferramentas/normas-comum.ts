@@ -1,104 +1,39 @@
 /**
- * Peças comuns das ferramentas de normas (especificação M0.1, "Tipos comuns"): o schema de
- * `DispositivoTexto`, a conversão do trecho do kb para ele, os avisos das normas e o corte do texto
- * para a IA no teto de caracteres de cada ferramenta (`NormaResumo` e `Relacao` ficam em
- * `tipos-comuns.ts`). Nenhuma regra normativa: só formato.
+ * Peças comuns das ferramentas de normas (especificação M0.1, "Tipos comuns"): os schemas de entrada
+ * de data e de ID e o texto para a IA (o literal de um dispositivo, a situação de uma norma e o corte
+ * no teto de caracteres de cada ferramenta). A conversão do kb para `DispositivoTexto` e os avisos das
+ * normas ficam no serviço `Leitura`. Nenhuma regra normativa: só formato.
  */
-import type { TrechoDispositivo } from "@simplifica-if/kb/db/consultas-normas";
-import * as Normas from "@simplifica-if/kb/Normas";
-import { z } from "zod";
-import { type Aviso, esquemaFonte, esquemaLink, type Resposta } from "../envelope.ts";
-import { linkNorma } from "../links.ts";
+import type { DispositivoTexto, NormaResumo, Resposta } from "../contratos.ts";
+import { texto } from "../esquema.ts";
 import { citacao, montarTexto } from "../texto.ts";
-import type { Kb } from "./ferramenta.ts";
-import type { NormaResumo } from "./tipos-comuns.ts";
 
 /* ================================================================== schemas */
 
 /** AAAA-MM-DD, como as datas da base. */
-export const esquemaData = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "use AAAA-MM-DD");
+export const esquemaData = (descricao: string) =>
+  texto({ padrao: { regex: /^\d{4}-\d{2}-\d{2}$/u, mensagem: "use AAAA-MM-DD" } }, descricao);
 
 /** ID canônico de norma com dispositivo: `br/cne-cp/res/2026/2#art28-vii`. */
-export const esquemaIdDispositivo = z
-  .string()
-  .regex(/^[a-z0-9][a-z0-9/:~.-]*#[A-Za-z0-9-]+$/, 'use o ID canônico com dispositivo, como "br/lei/1996/9394#art36"');
+export const esquemaIdDispositivo = texto({
+  padrao: {
+    regex: /^[a-z0-9][a-z0-9/:~.-]*#[A-Za-z0-9-]+$/u,
+    mensagem: 'use o ID canônico com dispositivo, como "br/lei/1996/9394#art36"',
+  },
+});
 
 /** ID canônico de norma, com ou sem dispositivo: `br/cne-cp/res/2021/1`, `br/cne-cp/res/2021/1#art20`. */
-export const esquemaIdNorma = z
-  .string()
-  .regex(
-    /^[a-z0-9][a-z0-9/:~.-]*(?:#[A-Za-z0-9-]+)?$/,
-    'use o ID canônico da norma, como "br/cne-cp/res/2021/1" (sem espaços; para uma citação em texto, use resolver_citacoes)',
+export const esquemaIdNorma = (descricao: string) =>
+  texto(
+    {
+      padrao: {
+        regex: /^[a-z0-9][a-z0-9/:~.-]*(?:#[A-Za-z0-9-]+)?$/u,
+        mensagem:
+          'use o ID canônico da norma, como "br/cne-cp/res/2021/1" (sem espaços; para uma citação em texto, use resolver_citacoes)',
+      },
+    },
+    descricao,
   );
-
-export const esquemaDispositivoTexto = z.strictObject({
-  /** ID canônico do ato com o dispositivo (`br/cne-cp/res/2026/2#art28-vii`). */
-  id: z.string(),
-  rotulo: z.string(),
-  tipo: z.string(),
-  /** Caput herdado, do mais alto ao mais próximo. */
-  caput: z.array(z.string()),
-  texto: z.string(),
-  subordinados: z.array(z.strictObject({ id: z.string(), rotulo: z.string(), texto: z.string() })),
-  revogado: z.boolean(),
-  vetado: z.boolean(),
-  fonte: esquemaFonte,
-  link: esquemaLink,
-});
-export type DispositivoTexto = z.infer<typeof esquemaDispositivoTexto>;
-
-/* ================================================================ conversões */
-
-/**
- * `DispositivoTexto` a partir do trecho do kb. Os rótulos dos subordinados (que o trecho não traz)
- * vêm dos descendentes do mesmo arquivo.
- */
-export function dispositivoTexto(kb: Kb, trecho: TrechoDispositivo): DispositivoTexto {
-  const rotulos = new Map<string, string>();
-  if (trecho.subordinados.length > 0) {
-    for (const d of kb(Normas.Normas.use((n) => n.descendentes(trecho.arquivo_id))))
-      rotulos.set(`${d.disp.ato}${d.disp.dispositivo}`, d.disp.rotulo);
-  }
-  return {
-    id: trecho.id,
-    rotulo: trecho.rotulo,
-    tipo: trecho.tipo,
-    caput: trecho.caput,
-    texto: trecho.texto,
-    subordinados: trecho.subordinados.map((s) => ({ id: s.id, rotulo: rotulos.get(s.id) ?? "", texto: s.texto })),
-    revogado: trecho.revogado,
-    vetado: trecho.vetado,
-    fonte: { path: trecho.path, linha_inicio: trecho.linha_inicio, linha_fim: trecho.linha_fim },
-    link: linkNorma(trecho.id),
-  };
-}
-
-/* ==================================================================== avisos */
-
-/** Avisos de vigência a confirmar e de norma sem texto, um por norma, na ordem em que aparecem. */
-export function avisosDasNormas(normas: Iterable<NormaResumo>): Aviso[] {
-  const vistas = new Set<string>();
-  const avisos: Aviso[] = [];
-  for (const n of normas) {
-    if (vistas.has(n.id)) continue;
-    vistas.add(n.id);
-    if (n.vigencia_a_confirmar) {
-      avisos.push({
-        tipo: "vigencia-a-confirmar",
-        mensagem: `a vigência de ${n.titulo} está a confirmar; veja ficha_norma antes de concluir`,
-        ref: n.id,
-      });
-    }
-    if (n.situacao !== "base") {
-      avisos.push({
-        tipo: "stub-sem-texto",
-        mensagem: `${n.titulo} não tem texto na base (${n.situacao === "stub" ? "só a identificação" : "referência externa"}): não afirme o conteúdo dela`,
-        ref: n.id,
-      });
-    }
-  }
-  return avisos;
-}
 
 /* ============================================================ texto e teto */
 
