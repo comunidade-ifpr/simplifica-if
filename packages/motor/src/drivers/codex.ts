@@ -165,11 +165,14 @@ export function configMcpCodex(config: ConfigSessao): Record<string, Schema.Json
 
 /**
  * Desliga, só nesta thread, os servidores MCP do usuário que não são da sessão, os conectores do
- * ChatGPT (`features.apps`, que trazem o `codex_apps` com busca web).
+ * ChatGPT (`features.apps`, que trazem o `codex_apps` com busca web) e os plugins
+ * (`features.plugins`). Os plugins trazem MCP próprios, skills e hooks: o `cua_repl` (computer use e
+ * navegador) vem do plugin `unified-computer-use@openai-bundled`, pelo `.mcp.json` dele, e sobe
+ * mesmo com `features.computer_use` e `features.browser_use` desligados.
  */
 export function isolamentoCodex(configUsuario: Registro, config: ConfigSessao): Record<string, Schema.Json> {
   const nossos = new Set(config.servidoresMcp.map((servidor) => servidor.nome));
-  const saida: Record<string, Schema.Json> = { "features.apps": false };
+  const saida: Record<string, Schema.Json> = { "features.apps": false, "features.plugins": false };
   for (const nome of Object.keys(registro(configUsuario.mcp_servers))) {
     if (!nossos.has(nome)) saida[`mcp_servers.${nome}.enabled`] = false;
   }
@@ -305,8 +308,8 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
         Effect.map((lista) => lista.data.find((candidato) => candidato.isDefault)?.model),
         Effect.orElseSucceed(() => undefined),
       ));
-    // Isolamento sem tocar no `config.toml`: os MCP e os conectores (apps) do usuário ficam
-    // desligados nesta thread. Sem isso, a resposta pode vir de outra ferramenta (busca web dos
+    // Isolamento sem tocar no `config.toml`: os MCP, os conectores (apps) e os plugins do usuário
+    // ficam desligados nesta thread. Sem isso, a resposta pode vir de outra ferramenta (busca web dos
     // conectores, MCP pessoais), e não da base.
     const configUsuario = yield* cliente.request("config/read", { includeLayers: false }).pipe(
       Effect.map((resposta) => registro(resposta.config)),
