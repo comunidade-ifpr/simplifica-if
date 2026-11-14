@@ -19,7 +19,7 @@
  * usa uma vez, em até `VALIDADE_INGRESSO_MS`. O token, que vale enquanto o servidor viver, nunca vai
  * na URL.
  */
-import { GrupoLeitura } from "@simplifica-if/mcp/grupo-leitura";
+import { GrupoLeitura, type LinkLido } from "@simplifica-if/mcp/grupo-leitura";
 import {
   AprovacaoDesconhecida,
   Decisao,
@@ -38,6 +38,7 @@ import { Rpc, RpcGroup } from "effect/rpc";
 export { AprovacaoDesconhecida, Decisao, FalhaProvider, OperacaoNaoSuportada, SessaoDesconhecida, TurnoEmAndamento };
 export { Evento, Provider };
 export { GrupoLeitura };
+export type { LinkLido };
 
 /* ================================================================== partida */
 

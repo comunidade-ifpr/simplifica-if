@@ -1,0 +1,45 @@
+{
+  "name": "@simplifica-if/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev",
+    "build": "vp build",
+    "preview": "vp preview",
+    "test": "vp test run --project unidade --project navegador",
+    "typecheck": "effect-tsgo tsrs --noEmit",
+    "servidor:teste": "node test/servidor-teste.ts --origem http://localhost:5190 --origem http://127.0.0.1:5190"
+  },
+  "dependencies": {
+    "@base-ui/react": "1.9.0",
+    "@fontsource-variable/open-sans": "5.3.0",
+    "@simplifica-if/contratos-app": "workspace:*",
+    "@tanstack/react-router": "1.170.10",
+    "class-variance-authority": "0.7.1",
+    "effect": "catalog:",
+    "lucide-react": "0.564.0",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-markdown": "10.1.0",
+    "remark-gfm": "4.0.1",
+    "tailwind-merge": "3.6.0"
+  },
+  "devDependencies": {
+    "@effect/platform-node": "catalog:",
+    "@effect/vitest": "catalog:",
+    "@simplifica-if/motor": "workspace:*",
+    "@simplifica-if/server": "workspace:*",
+    "@tailwindcss/vite": "catalog:",
+    "@tanstack/router-plugin": "1.168.13",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "6.1.2",
+    "@vitest/browser-playwright": "5.0.5",
+    "playwright": "1.65.0",
+    "tailwindcss": "catalog:",
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}

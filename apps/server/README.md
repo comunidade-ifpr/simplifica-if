@@ -26,7 +26,7 @@ SIMPLIFICA_SERVIDOR_TOKEN=$(openssl rand -base64 32) \
 
 - **Token:** pela variável `SIMPLIFICA_SERVIDOR_TOKEN` ou, como o desktop vai fazer, pela primeira linha do stdin, um `EnvelopePartida` em JSON: `{"token": "<32+ caracteres>", "origens": ["app://…"]}`. Nunca pela linha de comando. O servidor tira a variável do ambiente antes de abrir os providers.
 - **Linha de partida:** pronto o servidor, a única linha do stdout é a `LinhaPartida` em JSON; o desktop a lê. Logs e erros vão para o stderr.
-- **`ponte-mcp`:** `node apps/server/src/bin.ts ponte-mcp` é a ponte stdio → HTTP do MCP (`AcpMcpStdioBridge` do T3), que o `agy` abre por sessão porque não anuncia MCP por HTTP. O driver do Antigravity recebe `ponteMcp = { comando: process.execPath, argumentos: [<bin.ts>, "ponte-mcp"] }`; a URL e o token vão no ambiente da ponte.
+- **`ponte-mcp`:** `node apps/server/src/bin.ts ponte-mcp` é a ponte stdio → HTTP do MCP (`AcpMcpStdioBridge` do T3), que o `agy` abre por sessão porque não anuncia MCP por HTTP. O driver do Antigravity recebe o executável que roda o servidor e o script dele com o subcomando (`src/ponte.ts`, o `selfInvocationArgs` do T3): `node <bin.ts> ponte-mcp` no desenvolvimento e, no app empacotado, o executável do Electron com `<Resources>/servidor/bin.mjs ponte-mcp` (o driver põe `ELECTRON_RUN_AS_NODE=1`). A URL e o token vão no ambiente da ponte.
 - **Encerramento:** SIGTERM ou SIGINT; com o token pelo stdin, também o stdin fechado e a troca do processo pai (`launcherWatch.ts` do T3). Em todos os casos o RPC para (os WebSockets fecham com 1001), as conversas se encerram (o processo de cada provider morre), o servidor MCP fecha e o processo sai.
 
 ## API (`GrupoApp`)
@@ -66,6 +66,7 @@ No navegador, que não manda cabeçalho no WebSocket, a URL leva um ingresso com
 - `src/bin.ts`: entrada; o caminho rápido `ponte-mcp` e a CLI.
 - `src/cli.ts`: opções, partida, drivers reais, linha de partida e encerramento.
 - `src/partida.ts`: o token (ambiente ou envelope no stdin) e o cordão do stdin.
+- `src/ponte.ts`: o comando da ponte MCP (`ponte-mcp`) para o driver do Antigravity.
 - `src/servidor.ts`: a layer do servidor inteiro (`layer(opcoes)`, que pede os `Drivers`) e a rota `/rpc`.
 - `src/Autenticacao.ts`, `src/Conversas.ts` (motor + MCP por conversa), `src/handlers.ts`.
 - `src/t3/`: cópia do T3 (`launcherWatch.ts`), com `NOTICE`; registro em `docs/upstream-t3.md`.
@@ -85,7 +86,7 @@ Em `src/Conversas.ts`: persistência dos eventos em `enviar` e da conversa em `i
 
 Pendências registradas:
 
-- **Ponte no app empacotado (etapa do desktop):** `process.execPath` + `bin.ts` supõe o Node rodando TypeScript, o que só vale no desenvolvimento. O caminho da ponte no app empacotado se decide e se testa na etapa do desktop, junto com o bundle do servidor: a ponte será o executável do app com `ELECTRON_RUN_AS_NODE=1` (o driver já põe a variável) e o bundle. Nada a fazer no `apps/server` antes disso.
+- ~~**Ponte no app empacotado.**~~ Resolvida com o `apps/desktop`: o comando da ponte sai do `argv` do processo (`src/ponte.ts`), e o bundle roda a ponte com o Electron como Node (conferido no app empacotado).
 - **Windows:** o `awaitLauncherLoss` do T3 não age no Windows; ali o cordão é só o stdin.
 - **Erros do motor no contrato:** o `@simplifica-if/contratos-app` importa os erros e o `Decisao` de `@simplifica-if/motor`, cujo ponto de entrada (`Motor.ts`) traz também a implementação do serviço `Motor` (só Effect: sem Node, sem drivers, como o teste `sem-servidor.test.ts` confere). Se o bundle da interface pedir, os erros e os estados passam a um módulo só de schemas do motor.
 - **Observabilidade:** logs simples no stderr; sem arquivo de log nem OTLP.

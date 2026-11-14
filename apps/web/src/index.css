@@ -1,0 +1,291 @@
+/*
+ * Tema do Simplifica IF: Tailwind 4 com as cores e a tipografia da identidade do IFPR (skill
+ * `ifpr-design`: verde #1F8A42, vermelho #C72E2E, cinza #2D2D2D, Open Sans), num tema claro e num escuro.
+ *
+ * Os nomes dos tokens (`--primary`, `--muted-foreground`, `--warning-surface`…) são os do T3
+ * (`apps/web/src/index.css`), porque os componentes copiados para `components/ui` os usam. O texto
+ * comum fica em cinza escuro; o verde institucional vai no cabeçalho (texto grande e negrito, como pede
+ * o contraste) e, no tom escuro (#1B5E20, contraste AAA com branco), nos botões principais.
+ */
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark, .dark *));
+
+@theme {
+  --font-sans:
+    "Open Sans Variable", "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-placeholder: var(--placeholder);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-surface: var(--warning-surface);
+  --color-error: var(--error);
+  --color-error-foreground: var(--error-foreground);
+  --color-error-surface: var(--error-surface);
+  --color-message: var(--message);
+  --color-message-foreground: var(--message-foreground);
+  --color-marca: var(--marca);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+}
+
+:root {
+  color-scheme: light;
+  --radius: 0.5rem;
+  --control-radius: 0.5rem;
+
+  /* Identidade do IFPR */
+  --ifpr-verde: #1f8a42;
+  --ifpr-verde-escuro: #1b5e20;
+  --ifpr-verde-medio: #4caf50;
+  --ifpr-verde-claro: #81c784;
+  --ifpr-verde-muito-claro: #e8f5e9;
+  --ifpr-vermelho: #c72e2e;
+  --ifpr-vermelho-claro: #ef5350;
+  --ifpr-vermelho-muito-claro: #ffebee;
+  --ifpr-cinza-escuro: #2d2d2d;
+  --ifpr-cinza: #757575;
+  --ifpr-cinza-claro: #bdbdbd;
+  --ifpr-cinza-muito-claro: #f5f5f5;
+
+  --marca: var(--ifpr-verde);
+  --background: #fafafa;
+  --foreground: var(--ifpr-cinza-escuro);
+  --card: #ffffff;
+  --card-foreground: var(--ifpr-cinza-escuro);
+  --popover: #ffffff;
+  --popover-foreground: var(--ifpr-cinza-escuro);
+  --primary: var(--ifpr-verde-escuro);
+  --primary-foreground: #ffffff;
+  --secondary: var(--ifpr-cinza-muito-claro);
+  --secondary-foreground: var(--ifpr-cinza-escuro);
+  --muted: var(--ifpr-cinza-muito-claro);
+  /* #6b6b6b: o cinza médio do IFPR um pouco mais escuro, para AA também sobre #fafafa */
+  --muted-foreground: #6b6b6b;
+  --accent: var(--ifpr-verde-muito-claro);
+  --accent-foreground: var(--ifpr-verde-escuro);
+  --destructive: var(--ifpr-vermelho);
+  --destructive-foreground: #a32424;
+  --border: #e0e0e0;
+  --input: var(--ifpr-cinza-claro);
+  --ring: var(--ifpr-verde);
+  --placeholder: var(--muted-foreground);
+  --info: #0288d1;
+  --info-foreground: #01579b;
+  --success: var(--ifpr-verde);
+  --success-foreground: var(--ifpr-verde-escuro);
+  --warning: #ffa726;
+  --warning-foreground: #8a4b00;
+  --warning-surface: #fff3e0;
+  --error: var(--ifpr-vermelho);
+  --error-foreground: #a32424;
+  --error-surface: var(--ifpr-vermelho-muito-claro);
+  --message: var(--ifpr-verde-muito-claro);
+  --message-foreground: var(--ifpr-cinza-escuro);
+  /* Os componentes do T3 leem estas variáveis já com o ajuste de contraste deles; aqui, sem ajuste. */
+  --contrast-muted-foreground: var(--muted-foreground);
+}
+
+.dark {
+  color-scheme: dark;
+  --marca: #17672f;
+  --background: #121412;
+  --foreground: #ececec;
+  --card: #1b1e1b;
+  --card-foreground: #ececec;
+  --popover: #1b1e1b;
+  --popover-foreground: #ececec;
+  --primary: var(--ifpr-verde-medio);
+  --primary-foreground: #0b1f0e;
+  --secondary: #262a26;
+  --secondary-foreground: #ececec;
+  --muted: #262a26;
+  --muted-foreground: #a8a8a8;
+  --accent: #223a26;
+  --accent-foreground: #c8e6c9;
+  --destructive: var(--ifpr-vermelho-claro);
+  --destructive-foreground: #ff8a80;
+  --border: #2f342f;
+  --input: #3d433d;
+  --ring: var(--ifpr-verde-medio);
+  --info: #4fc3f7;
+  --info-foreground: #81d4fa;
+  --success: var(--ifpr-verde-medio);
+  --success-foreground: var(--ifpr-verde-claro);
+  --warning: #ffa726;
+  --warning-foreground: #ffcc80;
+  --warning-surface: color-mix(in srgb, #ffa726 14%, transparent);
+  --error: var(--ifpr-vermelho-claro);
+  --error-foreground: #ff8a80;
+  --error-surface: color-mix(in srgb, #ef5350 16%, transparent);
+  --message: #1f3323;
+  --message-foreground: #ececec;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html,
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+  code {
+    @apply rounded bg-muted px-1 py-0.5 font-mono text-[0.875em];
+  }
+}
+
+/* O texto em Markdown das respostas e do painel de leitura. */
+.markdown {
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+
+  & > * + * {
+    margin-top: 0.75em;
+  }
+  & h1,
+  & h2,
+  & h3,
+  & h4 {
+    font-weight: 600;
+    line-height: 1.3;
+    margin-top: 1.25em;
+  }
+  & h1 {
+    font-size: 1.375rem;
+  }
+  & h2 {
+    font-size: 1.2rem;
+  }
+  & h3 {
+    font-size: 1.05rem;
+  }
+  & ul {
+    list-style: disc;
+    padding-left: 1.5em;
+  }
+  & ol {
+    list-style: decimal;
+    padding-left: 1.5em;
+  }
+  & li + li {
+    margin-top: 0.25em;
+  }
+  & blockquote {
+    border-left: 4px solid var(--ifpr-verde);
+    padding-left: 1em;
+    color: var(--muted-foreground);
+  }
+  & pre {
+    background: var(--muted);
+    border-radius: var(--radius);
+    overflow-x: auto;
+    padding: 0.75em 1em;
+  }
+  & pre code {
+    background: none;
+    padding: 0;
+  }
+  & table {
+    border-collapse: collapse;
+    display: block;
+    overflow-x: auto;
+  }
+  & th,
+  & td {
+    border: 1px solid var(--border);
+    padding: 0.35em 0.6em;
+    text-align: left;
+  }
+  & th {
+    background: var(--muted);
+    font-weight: 600;
+  }
+  & a {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  & hr {
+    border-color: var(--border);
+  }
+}
+
+/* Um link `ifpr://`: abre a fonte no painel de leitura. */
+.link-ifpr {
+  align-items: baseline;
+  background: var(--accent);
+  border-radius: 0.375rem;
+  color: var(--accent-foreground);
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 600;
+  gap: 0.25rem;
+  padding: 0 0.375rem;
+  text-align: left;
+
+  & svg {
+    align-self: center;
+  }
+  &:hover {
+    text-decoration: underline;
+  }
+  &:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 1px;
+  }
+}
+
+/* O cursor que pisca no fim da resposta enquanto ela chega. */
+.cursor-resposta {
+  animation: piscar 1s steps(2) infinite;
+  background: currentColor;
+  display: inline-block;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  width: 0.5em;
+}
+
+@keyframes piscar {
+  to {
+    visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-resposta {
+    animation: none;
+  }
+}

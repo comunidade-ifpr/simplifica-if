@@ -33,6 +33,7 @@ import * as HostProcess from "@simplifica-if/motor/t3/HostProcess";
 import { expandHomePath, fixPath } from "@simplifica-if/motor/t3/os-jank";
 import { SUBCOMANDO_PONTE } from "./constantes.ts";
 import * as Partida from "./partida.ts";
+import { comandoPonte } from "./ponte.ts";
 import * as Servidor from "./servidor.ts";
 import { awaitLauncherLoss } from "./t3/launcherWatch.ts";
 
@@ -91,12 +92,12 @@ const servidor = Command.make(
         Option.getOrUndefined(opcoes.pastaEstado) ?? (yield* pastaEstadoPadrao),
       );
       const banco = path.resolve(yield* expandHomePath(opcoes.banco));
-      const bin = yield* path.fromFileUrl(new URL("./bin.ts", import.meta.url));
       const drivers = Drivers.layerNode({
         ambiente,
         pastaEstado,
-        // A ponte do Antigravity é este mesmo executável, como o `acp-mcp-bridge` do T3.
-        ponteMcp: { comando: process.execPath, argumentos: [bin, SUBCOMANDO_PONTE] },
+        // A ponte do Antigravity é este mesmo executável, como o `acp-mcp-bridge` do T3: no app
+        // empacotado, o Electron (como Node) e o bundle do servidor.
+        ponteMcp: yield* comandoPonte(),
       });
       const contexto = yield* Layer.build(
         Servidor.layer({

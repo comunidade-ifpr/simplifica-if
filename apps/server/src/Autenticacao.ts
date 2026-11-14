@@ -40,6 +40,9 @@ import { HttpServer, type HttpServerRequest, HttpServerResponse } from "effect/h
 import * as NetAddress from "effect/net/NetAddress";
 import { type Ingresso, PARAMETRO_INGRESSO, VALIDADE_INGRESSO_MS } from "@simplifica-if/contratos-app";
 
+/** Cabeçalhos aceitos no `POST /ingresso` vindo do navegador (`httpCors.ts` do T3, sem `dpop`). */
+export const CABECALHOS_CORS = ["authorization", "b3", "traceparent", "content-type"] as const;
+
 const SEM_CACHE = { "cache-control": "no-store" } as const;
 
 const recusa = (status: 401 | 403, erro: string, mensagem: string) =>
@@ -180,7 +183,9 @@ export const make = Effect.fnUntraced(function* (opcoes: {
         headers: {
           ...cors(conferido.origem),
           "access-control-allow-methods": "POST",
-          "access-control-allow-headers": "authorization",
+          // Como o T3 (`browserApiCorsAllowedHeaders`): o `HttpClient` do Effect na interface manda os
+          // cabeçalhos de rastreamento (`traceparent`, `b3`) junto com o token.
+          "access-control-allow-headers": CABECALHOS_CORS.join(", "),
           "access-control-max-age": "600",
         },
       });

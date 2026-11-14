@@ -1,0 +1,249 @@
+/**
+ * Conversa: escolher o provider e a pasta de trabalho, conversar, aprovar ou negar o que a IA pede,
+ * interromper e começar outra. Os links `ifpr://` das respostas abrem o painel de leitura ao lado.
+ * As etapas declaradas pela skill e "detalhes técnicos" chegam no M1.9.
+ */
+import type { Provider } from "@simplifica-if/contratos-app";
+import { createFileRoute } from "@tanstack/react-router";
+import { FolderOpenIcon, PlusIcon, SendHorizontalIcon, SquareIcon } from "lucide-react";
+import { type FormEvent, type KeyboardEvent, useEffect, useRef, useState } from "react";
+import { ItemConversa } from "../components/ItemConversa.tsx";
+import { PainelLeitura } from "../components/PainelLeitura.tsx";
+import { Alert, AlertDescription } from "../components/ui/alert.tsx";
+import { Button } from "../components/ui/button.tsx";
+import { Input } from "../components/ui/input.tsx";
+import { Spinner } from "../components/ui/spinner.tsx";
+import { Textarea } from "../components/ui/textarea.tsx";
+import { useConversa } from "../contexto.tsx";
+import { cn } from "../lib/utils.ts";
+import { ponteDesktop } from "../ponte-desktop.ts";
+import { DESCRICOES, PROVIDERS } from "../providers.ts";
+
+export const Route = createFileRoute("/conversa")({ component: TelaConversa });
+
+function EscolhaProvider() {
+  const [estado, conversa] = useConversa();
+  return (
+    <fieldset className="flex flex-col gap-2">
+      <legend className="mb-2 font-semibold">Com qual IA?</legend>
+      <div className="grid gap-2 sm:grid-cols-3">
+        {PROVIDERS.map((provider: Provider) => (
+          <label
+            key={provider}
+            className={cn(
+              "flex cursor-pointer items-center gap-2 rounded-lg border border-input px-3 py-2 text-sm has-checked:border-primary has-checked:bg-primary/8 has-focus-visible:ring-2 has-focus-visible:ring-ring",
+            )}
+          >
+            <input
+              type="radio"
+              name="provider"
+              value={provider}
+              className="accent-primary"
+              checked={estado.provider === provider}
+              onChange={() => conversa.escolher({ provider })}
+            />
+            {DESCRICOES[provider].nome}
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+function EscolhaPasta() {
+  const [estado, conversa] = useConversa();
+  const escolherPasta = ponteDesktop()?.escolherPasta;
+  return (
+    <div className="flex flex-col gap-2">
+      <label htmlFor="pasta-trabalho" className="font-semibold">
+        Pasta de trabalho
+      </label>
+      <p className="text-muted-foreground text-sm">
+        A IA lê e escreve só nesta pasta. Use uma pasta com os documentos da tarefa.
+      </p>
+      <div className="flex gap-2">
+        <Input
+          id="pasta-trabalho"
+          nativeInput
+          placeholder="/Users/voce/Documents/Simplifica IF/minha-tarefa"
+          value={estado.pastaTrabalho}
+          readOnly={escolherPasta !== undefined}
+          onChange={(evento) => conversa.escolher({ pastaTrabalho: evento.currentTarget.value })}
+        />
+        {escolherPasta === undefined ? null : (
+          <Button
+            variant="outline"
+            onClick={async () => {
+              const pasta = await escolherPasta();
+              if (pasta !== null) conversa.escolher({ pastaTrabalho: pasta });
+            }}
+          >
+            <FolderOpenIcon /> Escolher pasta…
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function FormularioInicio() {
+  const [estado, conversa] = useConversa();
+  const iniciando = estado.fase === "iniciando";
+  const aoEnviar = (evento: FormEvent) => {
+    evento.preventDefault();
+    void conversa.iniciar();
+  };
+  return (
+    <form onSubmit={aoEnviar} className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-6" aria-label="Nova conversa">
+      <div>
+        <h1 className="font-bold text-2xl tracking-tight">Nova conversa</h1>
+        <p className="text-muted-foreground">A IA consulta a base do IFPR pelo app e cita as fontes.</p>
+      </div>
+      <EscolhaProvider />
+      <EscolhaPasta />
+      {estado.erroInicio === undefined ? null : (
+        <Alert variant="error">
+          <AlertDescription>{estado.erroInicio}</AlertDescription>
+        </Alert>
+      )}
+      <div>
+        <Button type="submit" size="lg" disabled={iniciando}>
+          {iniciando ? <Spinner /> : null}
+          {iniciando ? "Abrindo a conversa…" : "Começar conversa"}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+function Compositor() {
+  const [estado, conversa] = useConversa();
+  const [texto, setTexto] = useState("");
+  const ocupada = estado.fase === "respondendo" || estado.fase === "interrompendo";
+  const enviar = () => {
+    if (texto.trim().length === 0 || ocupada) return;
+    conversa.enviar(texto);
+    setTexto("");
+  };
+  const aoTeclar = (evento: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (evento.key === "Enter" && !evento.shiftKey && !evento.nativeEvent.isComposing) {
+      evento.preventDefault();
+      enviar();
+    }
+  };
+  return (
+    <form
+      className="flex items-end gap-2 border-border border-t bg-background p-3"
+      onSubmit={(evento) => {
+        evento.preventDefault();
+        enviar();
+      }}
+    >
+      <Textarea
+        aria-label="Mensagem"
+        placeholder="O que você precisa? (Enter envia; Shift+Enter quebra a linha)"
+        rows={2}
+        value={texto}
+        onChange={(evento) => setTexto(evento.currentTarget.value)}
+        onKeyDown={aoTeclar}
+      />
+      {ocupada ? (
+        <Button
+          variant="destructive-outline"
+          size="lg"
+          disabled={estado.fase === "interrompendo"}
+          onClick={() => void conversa.interromper()}
+        >
+          {estado.fase === "interrompendo" ? <Spinner /> : <SquareIcon />}
+          Interromper
+        </Button>
+      ) : (
+        <Button type="submit" size="lg" disabled={texto.trim().length === 0}>
+          <SendHorizontalIcon /> Enviar
+        </Button>
+      )}
+    </form>
+  );
+}
+
+/** Rola a conversa até o fim quando `sinal` muda (item novo, texto chegando). */
+function RolarParaOFim({ sinal }: { readonly sinal: string }) {
+  const fim = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (sinal.length > 0) fim.current?.scrollIntoView({ block: "end" });
+  }, [sinal]);
+  return <div ref={fim} />;
+}
+
+function Conversa({ aoAbrirLink }: { readonly aoAbrirLink: (link: string) => void }) {
+  const [estado, conversa] = useConversa();
+  const ultimo = estado.itens.at(-1);
+  const tamanhoUltimo = ultimo?.tipo === "resposta" ? ultimo.texto.length : 0;
+
+  return (
+    <div className="flex h-full min-w-0 flex-1 flex-col">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-border border-b px-4 py-2 text-sm">
+        <p>
+          <span className="font-semibold">{DESCRICOES[estado.provider].nome}</span>
+          <span className="text-muted-foreground"> · pasta </span>
+          <span className="font-mono text-xs">{estado.pastaTrabalho}</span>
+        </p>
+        {estado.uso === undefined ? null : (
+          <p className="text-muted-foreground text-xs">
+            {estado.uso.entrada.toLocaleString("pt-BR")} tokens de entrada · {estado.uso.saida.toLocaleString("pt-BR")}{" "}
+            de saída
+          </p>
+        )}
+        <Button className="ml-auto" variant="outline" size="sm" onClick={() => conversa.nova()}>
+          <PlusIcon /> Nova conversa
+        </Button>
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-6" aria-live="polite">
+          {estado.itens.length === 0 ? (
+            <p className="text-center text-muted-foreground">Conversa aberta. Escreva sua pergunta abaixo.</p>
+          ) : null}
+          {estado.itens.map((item) => (
+            <ItemConversa key={item.chave} item={item} aoAbrirLink={aoAbrirLink} />
+          ))}
+          {estado.fase === "respondendo" && ultimo?.tipo === "pessoa" ? (
+            <p className="flex items-center gap-2 text-muted-foreground text-sm">
+              <Spinner size="sm" /> Pensando…
+            </p>
+          ) : null}
+          <RolarParaOFim sinal={`${estado.itens.length}:${tamanhoUltimo}`} />
+        </div>
+      </div>
+      <Compositor />
+    </div>
+  );
+}
+
+function TelaConversa() {
+  const [estado] = useConversa();
+  const [leitura, setLeitura] = useState<ReadonlyArray<string>>([]);
+  const abrirLink = (link: string) => setLeitura((historico) => [...historico, link]);
+
+  if (estado.fase === "configurando" || estado.fase === "iniciando") {
+    return (
+      <div className="h-full overflow-y-auto">
+        <FormularioInicio />
+      </div>
+    );
+  }
+  return (
+    <div className="flex h-full">
+      <Conversa aoAbrirLink={abrirLink} />
+      {leitura.length === 0 ? null : (
+        <div className="h-full w-[min(32rem,45vw)] shrink-0">
+          <PainelLeitura
+            historico={leitura}
+            aoAbrirLink={abrirLink}
+            aoVoltar={() => setLeitura((historico) => historico.slice(0, -1))}
+            aoFechar={() => setLeitura([])}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
