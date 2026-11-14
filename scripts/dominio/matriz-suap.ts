@@ -38,7 +38,7 @@ export const esquemaConsolidacaoMatrizes = Schema.Struct({
 });
 export type ConsolidacaoMatrizes = typeof esquemaConsolidacaoMatrizes.Type;
 
-export function consolidarMatrizes(matrizes: MatrizSuap[]): ConsolidacaoMatrizes {
+export function consolidarMatrizes(matrizes: ReadonlyArray<MatrizSuap>): ConsolidacaoMatrizes {
   const ativas = matrizes.filter((matriz) => matriz.ativa);
   const cargas = new Set(ativas.map((matriz) => matriz.carga_horaria_h));
   const situacao: SituacaoMatrizes = !ativas.length
@@ -68,7 +68,7 @@ function formatarHoras(valor: number): string {
   return String(Number(valor.toPrecision(6)));
 }
 
-export function resumoMatrizesAtivas(matrizes: MatrizSuap[]): string {
+export function resumoMatrizesAtivas(matrizes: ReadonlyArray<MatrizSuap>): string {
   const linhas = matrizes
     .filter((matriz) => matriz.ativa)
     .map((matriz) => {
@@ -83,6 +83,6 @@ export function resumoMatrizesAtivas(matrizes: MatrizSuap[]): string {
   return linhas.join("\n") || SEM_MATRIZ_ATIVA;
 }
 
-export function urlsMatrizesAtivas(matrizes: MatrizSuap[]): string[] {
+export function urlsMatrizesAtivas(matrizes: ReadonlyArray<MatrizSuap>): string[] {
   return matrizes.filter((matriz) => matriz.ativa).map((matriz) => matriz.url ?? "");
 }
