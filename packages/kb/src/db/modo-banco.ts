@@ -32,6 +32,8 @@ import { type ResolucaoComEntrada, resolucaoComEntrada } from "../normas/resolve
 import { type ResultadoVigencia, type SituacaoTransicao, statusEm, transicoesAplicaveis } from "../normas/vigencia.ts";
 import {
   cobreDispositivo,
+  type NormaCitadaNoPpc,
+  normasCitadasNoPpc,
   ocorrenciaGravada,
   type PpcCitante,
   type RelatorioCitacoes,
@@ -64,7 +66,21 @@ export {
   trechoDoDispositivo,
   vigenciaNoBanco,
 } from "./consultas-normas.ts";
-export { divergenciasPpcSuap, fatosDosPpcs, listarCursos, obterNorma, secoesDoPpc } from "./consultas.ts";
+export {
+  divergenciasPpcSuap,
+  fatosDosPpcs,
+  type FiltrosCursos,
+  type FiltrosFatos,
+  type FiltrosSecoes,
+  indiceSecoesDoPpc,
+  lerSecao,
+  listarCursos,
+  obterNorma,
+  type SecaoLida,
+  secoesDoPpc,
+} from "./consultas.ts";
+export { DCN_EPT, INDICADORES, type Indicador, ROTULOS_INDICADOR } from "../adequacao/art71.ts";
+export { type NormaCitadaNoPpc, type PpcCitante, REGRAS_BAIXA_CONFIANCA } from "../ppcs/citacoes.ts";
 
 /** Abre o `kb.sqlite` em `caminho` só para leitura, sem recompilar e sem procurar o repositório. */
 export function abrirBancoSomenteLeitura(caminho: string): Database {
@@ -162,6 +178,20 @@ export function ppcsQueCitamBanco(db: Database, id: string, opcoes: { confiancaM
     ppc.ocorrencias.push(ocorrenciaGravada({ ...linha, dispositivos }));
   }
   return [...porPpc.values()].sort((a, b) => compararTexto(a.ppc, b.ppc));
+}
+
+/**
+ * Normas citadas por um PPC (`campus/curso` ou `ppc:campus/curso`), pela tabela `citacoes`; `null` se o
+ * PPC não está na base. Cada contagem é a que `ppcsQueCitamBanco` dá ao PPC para aquele ato.
+ */
+export function normasCitadasDoPpcBanco(db: Database, ppc: string): NormaCitadaNoPpc[] | null {
+  const id = ppc.startsWith("ppc:") ? ppc : `ppc:${ppc}`;
+  if (!db.query("SELECT 1 FROM ppcs WHERE id = ?").get(id)) return null;
+  return normasCitadasNoPpc(
+    z
+      .array(z.strictObject({ id: z.string().nullable(), linha: z.number().int(), regra: z.string() }))
+      .parse(db.query("SELECT ato_id AS id, linha, regra FROM citacoes WHERE ppc_id = ? ORDER BY ordem").all(id)),
+  );
 }
 
 /** `kb citacoes <id> [--confianca-min]`: PPCs que citam a norma, com o título e a situação dela. */

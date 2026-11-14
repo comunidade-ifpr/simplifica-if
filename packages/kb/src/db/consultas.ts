@@ -295,6 +295,97 @@ export function secoesDoPpc(
   );
 }
 
+/** Seção de PPC lida pelo ID (`campus/curso#secao`), com o PPC, o texto integral e as vizinhas. */
+export interface SecaoLida {
+  id: string;
+  ppc: string;
+  curso: string;
+  campus: string;
+  nivel: string;
+  forma: string;
+  tipo: string;
+  titulo: string;
+  numeracao: string | null;
+  path: string;
+  linha_inicio: number;
+  linha_fim: number;
+  /** Primeira linha do texto (depois do título e das linhas em branco). */
+  linha_texto: number;
+  texto: string;
+  /** Seções vizinhas no documento (ordem de `linha_inicio`), ou `null` nas pontas. */
+  anterior: string | null;
+  proxima: string | null;
+}
+
+const esquemaSecaoLida = z.strictObject({
+  id: texto,
+  ppc_id: texto,
+  tipo: texto,
+  titulo: texto,
+  numeracao: textoNulo,
+  path: texto,
+  linha_inicio: z.number().int(),
+  linha_fim: z.number().int(),
+  linha_texto: z.number().int(),
+  texto: texto,
+  curso_nome: texto,
+  campus_nome: texto,
+  nivel: texto,
+  tipo_oferta: texto,
+});
+
+/** Índice das seções de um PPC, na ordem do documento (sem o texto). */
+export function indiceSecoesDoPpc(
+  db: Database,
+  ppc: string,
+): { id: string; tipo: string; titulo: string; linha_inicio: number; linha_fim: number }[] {
+  return linhas(
+    z.strictObject({
+      id: texto,
+      tipo: texto,
+      titulo: texto,
+      linha_inicio: z.number().int(),
+      linha_fim: z.number().int(),
+    }),
+    db
+      .query("SELECT id, tipo, titulo, linha_inicio, linha_fim FROM secoes WHERE ppc_id = ? ORDER BY linha_inicio, id")
+      .all(normalizarPpc(ppc)),
+  );
+}
+
+/** Uma seção de PPC pelo ID da tabela `secoes`, com o texto integral; `null` se não existe. */
+export function lerSecao(db: Database, id: string): SecaoLida | null {
+  const linha = db
+    .query(
+      `SELECT s.id, s.ppc_id, s.tipo, s.titulo, s.numeracao, s.path, s.linha_inicio, s.linha_fim, s.linha_texto, s.texto,
+              p.curso_nome, p.campus_nome, p.nivel, p.tipo_oferta
+       FROM secoes s JOIN ppcs p ON p.id = s.ppc_id WHERE s.id = ?`,
+    )
+    .get(id);
+  if (!linha) return null;
+  const s = esquemaSecaoLida.parse(linha);
+  const ids = indiceSecoesDoPpc(db, s.ppc_id).map((x) => x.id);
+  const i = ids.indexOf(s.id);
+  return {
+    id: s.id,
+    ppc: s.ppc_id,
+    curso: s.curso_nome,
+    campus: s.campus_nome,
+    nivel: s.nivel,
+    forma: s.tipo_oferta,
+    tipo: s.tipo,
+    titulo: s.titulo,
+    numeracao: s.numeracao,
+    path: s.path,
+    linha_inicio: s.linha_inicio,
+    linha_fim: s.linha_fim,
+    linha_texto: s.linha_texto,
+    texto: s.texto,
+    anterior: i > 0 ? ids[i - 1]! : null,
+    proxima: i >= 0 && i < ids.length - 1 ? ids[i + 1]! : null,
+  };
+}
+
 /* =================================================================== normas */
 
 const esquemaNorma = z.strictObject({
@@ -727,8 +818,15 @@ export interface FatosDoPpc {
   cruzamento: Omit<z.output<typeof esquemaCruzamento>, "ppc_id">[];
 }
 
-/** Fatos e cruzamento com o SUAP de um PPC, ou de todos (filtro opcional por nível). */
-export function fatosDosPpcs(db: Database, filtros: { ppc?: string; nivel?: string } = {}): FatosDoPpc[] {
+/** Filtros dos fatos de PPC: um PPC (`campus/curso` ou `ppc:campus/curso`), nível e campus (`campus_id`). */
+export interface FiltrosFatos {
+  ppc?: string | undefined;
+  nivel?: string | undefined;
+  campus?: string | undefined;
+}
+
+/** Fatos e cruzamento com o SUAP de um PPC, ou de todos (filtros opcionais por nível e campus). */
+export function fatosDosPpcs(db: Database, filtros: FiltrosFatos = {}): FatosDoPpc[] {
   const condicoes: string[] = [];
   const parametros: Parametro[] = [];
   if (filtros.ppc) {
@@ -738,6 +836,10 @@ export function fatosDosPpcs(db: Database, filtros: { ppc?: string; nivel?: stri
   if (filtros.nivel) {
     condicoes.push("p.nivel = ?");
     parametros.push(filtros.nivel);
+  }
+  if (filtros.campus) {
+    condicoes.push("p.campus_id = ?");
+    parametros.push(filtros.campus);
   }
   const ppcs = linhas(
     esquemaPpcCurso,
@@ -797,7 +899,7 @@ export function fatosDosPpcs(db: Database, filtros: { ppc?: string; nivel?: stri
 /** Só os PPCs com alguma divergência PPC × SUAP, e só as linhas divergentes do cruzamento. */
 export function divergenciasPpcSuap(
   db: Database,
-  filtros: { nivel?: string } = {},
+  filtros: FiltrosFatos = {},
 ): {
   totais: Record<string, Record<string, number>>;
   ppcs: FatosDoPpc[];

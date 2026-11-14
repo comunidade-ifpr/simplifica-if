@@ -36,8 +36,23 @@ const PREVISTAS = [
   "etapa",
 ];
 
-/** Texto exato da especificação (seções 15 e 16): mudar a descrição muda o comportamento do modelo. */
+/** Texto exato da especificação (seções 6 a 16): mudar a descrição muda o comportamento do modelo. */
 const DESCRICOES: Record<string, string> = {
+  citacoes_da_norma:
+    "PPCs da base que citam uma norma ou um dispositivo, com linha, trecho e confiança. Sem `ppc`, devolve um resumo por PPC; com `ppc`, as ocorrências.",
+  impacto_da_norma:
+    'O que uma norma (revogada, alterada ou nova) atinge na base: os PPCs que a citam, as fichas da `revisar-ppc`, as normas que a citam, as relações, as sucessoras e as transições. Use para responder "o que muda com esta norma".',
+  adequacao_art71:
+    "Cursos técnicos em oferta alcançados pelo art. 71 da Res. CNE/CP nº 2/2026, que dá prazo de adequação, com a DCN que cada PPC cita. Sem filtros, devolve os totais por indicador; filtre por campus, curso ou indicador para ver a lista.",
+  buscar_secoes:
+    "Busca trechos dos PPCs da base (todos os campi e níveis), com radicais e sinônimos por tipo de seção. Use para ver como outros cursos escreveram uma seção (estágio, egressos, avaliação…). PPCs são exemplos institucionais, não norma.",
+  ler_secao: "Lê uma seção inteira de PPC pelo ID, vindo de `buscar_secoes` ou de um link `ifpr://ppc/…#secao`.",
+  listar_cursos:
+    "Cursos do IFPR na base, com CNCT, eixo, ofertas e turno. Use filtros: a lista sem filtro é longa. Para os detalhes de um curso, use `ficha_curso`.",
+  ficha_curso:
+    "Tudo sobre um curso do IFPR: dados institucionais, PPC vigente, CNCT, ofertas, fatos do PPC cruzados com o SUAP (divergências), normas que o PPC cita e prazos de adequação.",
+  fatos_ppc:
+    "Fatos extraídos de PPCs (carga horária, estágio, ano), com o trecho de origem, cruzados com as matrizes do SUAP publicadas na base. Os fatos são extraídos por regra, sem revisão humana: confira o trecho antes de afirmar uma divergência.",
   sobre_a_base:
     "Versão, data de referência e conteúdo da base. Use quando o usuário (um servidor do IFPR) perguntar o que a base contém ou de quando ela é.",
   etapa: "Informa ao app em que etapa da tarefa você está. Use só quando a skill pedir.",
@@ -55,14 +70,30 @@ describe("registro", () => {
       expect(nome).toMatch(/^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/);
       expect(PREVISTAS).toContain(nome);
     }
-    expect(nomes).toEqual(["sobre_a_base", "etapa"]);
+    // na ordem da tabela da especificação
+    expect(nomes).toEqual(PREVISTAS.filter((n) => nomes.includes(n)));
+    for (const nome of [
+      "citacoes_da_norma",
+      "impacto_da_norma",
+      "adequacao_art71",
+      "buscar_secoes",
+      "ler_secao",
+      "listar_cursos",
+      "ficha_curso",
+      "fatos_ppc",
+      "sobre_a_base",
+      "etapa",
+    ]) {
+      expect(nomes).toContain(nome);
+    }
   });
 
-  test("descrições: texto da especificação, curtas e dizendo quando usar", () => {
+  test("descrições: texto da especificação e curtas", () => {
+    // O "Use…" não é exigido: as descrições literais de citacoes_da_norma, adequacao_art71,
+    // ler_secao, ficha_curso e fatos_ppc dizem quando usar sem essa palavra.
     for (const f of FERRAMENTAS) {
       expect(f.descricao).toBe(DESCRICOES[f.nome]!);
       expect(f.descricao.length).toBeLessThanOrEqual(600);
-      expect(f.descricao).toMatch(/\bUse\b/);
       expect(f.titulo.length).toBeGreaterThan(0);
     }
   });
