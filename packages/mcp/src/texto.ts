@@ -8,7 +8,7 @@
  *
  * Cada ferramenta escreve só o corpo; `montarTexto` acrescenta avisos, paginação e rodapé.
  */
-import type { Aviso, Base, Fonte, Link, Pagina, Resposta } from "./envelope.ts";
+import type { Aviso, Base, Fonte, Pagina, Resposta } from "./contratos.ts";
 
 /** `2026-11-13` → `13/11/2026` (por texto, sem fuso horário). */
 export function dataBr(iso: string): string {
@@ -38,13 +38,13 @@ export function linhaFonte(fonte: Fonte): string {
 }
 
 /** `[título](ifpr://…)`, com colchetes do título escapados. */
-export function comLink(titulo: string, link: Link): string {
+export function comLink(titulo: string, link: string): string {
   return `[${titulo.replace(/[[\]]/g, (c) => `\\${c}`)}](${link})`;
 }
 
 export interface ItemTexto {
   titulo: string;
-  link?: Link;
+  link?: string;
   /** Linha curta depois do título (situação, vigência, tipo). */
   detalhe?: string;
   literal?: string;

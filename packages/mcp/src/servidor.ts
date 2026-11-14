@@ -1,27 +1,24 @@
 /**
- * Servidor MCP `ifpr`: registra as ferramentas de `FERRAMENTAS` sobre um `kb.sqlite` aberto só
- * para leitura. Cada chamada devolve `structuredContent` (a `Resposta`, validada pelo
+ * Servidor MCP `ifpr` sobre um `kb.sqlite` só de leitura: as ferramentas de `FerramentasIfpr`,
+ * registradas por `registrarFerramentas` num `McpServer` do `effect/ai`, em stdio
+ * (`layerStdio`). Cada chamada devolve `structuredContent` (a `Resposta`, conferida pelo
  * `outputSchema`) e `content` (o texto Markdown para a IA).
  *
- * O SDK 2.x recebe os schemas do zod 4 como Standard Schema em `registerTool`, converte-os para JSON
- * Schema (2020-12) na listagem pelo próprio zod e valida entrada e saída; entrada inválida volta como
- * resultado `isError` com o caminho do campo.
+ * Os protocolos são os do T3 (`2025-06-18`, `2026-07-28`) mais o `2025-11-25`, que o servidor anterior
+ * (SDK 2.x) negociava com os clientes que o pedem; o primeiro da lista é o de quem pede uma versão
+ * desconhecida.
  */
-import { realpathSync, statSync } from "node:fs";
+import * as BaseKb from "@simplifica-if/kb/BaseKb";
+import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
 import * as Layers from "@simplifica-if/kb/layers";
-import * as Effect from "effect/Effect";
-import * as Exit from "effect/Exit";
 import * as Layer from "effect/Layer";
-import * as Scheduler from "effect/Scheduler";
-import * as Scope from "effect/Scope";
-import { McpServer } from "@modelcontextprotocol/server";
-import { type StdioServerHandle, serveStdio } from "@modelcontextprotocol/server/stdio";
-import { z } from "zod";
-import { abrirBanco } from "./banco.ts";
-import { type Canal, montarBase } from "./envelope.ts";
-import { type Contexto, FERRAMENTAS, type Ferramenta, type Kb } from "./ferramentas/index.ts";
+import { McpProtocol, McpServer } from "effect/ai";
+import type { Canal } from "./contratos.ts";
+import { registrarFerramentas } from "./ferramentas/registrar.ts";
+import { layerHandlers } from "./ferramentas/toolkit.ts";
 // Gerado de `instrucoes.md` (pnpm mcp:instrucoes): o texto vai embutido no bundle e no executável.
 import { INSTRUCOES } from "./instrucoes.gerado.ts";
+import * as Leitura from "./leitura/Leitura.ts";
 
 /** Nome do servidor; nos clientes, as ferramentas aparecem como `mcp__ifpr__<ferramenta>`. */
 export const NOME_SERVIDOR = "ifpr";
@@ -29,82 +26,41 @@ export const NOME_SERVIDOR = "ifpr";
 export const VERSAO_PACOTE = "0.1.0";
 export { INSTRUCOES };
 
-export interface OpcoesServidor {
-  /** Caminho absoluto do kb.sqlite. */
-  banco: string;
-  /** Caminho absoluto da pasta de trabalho. */
-  pastaTrabalho: string;
-  canal: Canal;
-}
+export const PROTOCOLOS = [McpProtocol.v2025_11_25, McpProtocol.v2025_06_18, McpProtocol.v2026_07_28] as const;
 
-function pastaReal(dir: string): string {
-  try {
-    if (statSync(dir).isDirectory()) return realpathSync(dir);
-  } catch {
-    // tratado abaixo
-  }
-  throw new Error(`pasta de trabalho não encontrada: ${dir}`);
-}
+export const MENSAGEM_INCOMPATIVEL = "base incompatível com esta versão do simplifica-mcp; atualize";
 
-/**
- * Ponte temporária do C1 para os serviços do kb (sai no C2, quando as ferramentas viram um Toolkit
- * Effect): as layers de `layerSomenteLeitura` são montadas uma vez, num escopo que dura o processo, e
- * cada chamada roda com `Effect.runSync`. As ferramentas ainda são síncronas, e as consultas do kb
- * sobre o `node:sqlite` também: nada no caminho é assíncrono.
- */
-export function abrirKb(caminho: string): { kb: Kb; fechar: () => void } {
-  const escopo = Effect.runSync(Scope.make());
-  // sem as cessões cooperativas do agendador, um efeito síncrono longo (decodificar milhares de
-  // linhas) não vira uma fronteira assíncrona, que o Effect.runSync recusaria
-  const sincrono = <A, E>(efeito: Effect.Effect<A, E>) =>
-    Effect.runSync(Effect.provideService(efeito, Scheduler.PreventSchedulerYield, true));
-  const contexto = sincrono(Layer.buildWithScope(Layers.layerSomenteLeitura({ caminho }), escopo));
-  return {
-    kb: (efeito) => sincrono(Effect.provide(efeito, contexto)),
-    fechar: () => Effect.runSync(Scope.close(escopo, Exit.void)),
-  };
-}
+/** O registro das ferramentas, com os handlers sobre o `Leitura` do ambiente. */
+export const layerRegistro = Layer.effectDiscard(registrarFerramentas).pipe(Layer.provide(layerHandlers));
 
-export function criarContexto(opcoes: OpcoesServidor): Contexto {
-  const pastaTrabalho = pastaReal(opcoes.pastaTrabalho);
-  const { db, meta } = abrirBanco(opcoes.banco);
-  const { kb } = abrirKb(opcoes.banco);
-  return { db, meta, base: montarBase(meta, opcoes.canal), pastaTrabalho, kb };
-}
+/** O `Leitura` sobre o `kb.sqlite` em `banco`, só leitura, sem o repositório. */
+export const layerLeitura = (opcoes: { readonly banco: string; readonly canal: Canal }) =>
+  Leitura.layer({ canal: opcoes.canal }).pipe(Layer.provideMerge(Layers.layerSomenteLeitura({ caminho: opcoes.banco })));
 
-export function criarServidor(ctx: Contexto, ferramentas: readonly Ferramenta[] = FERRAMENTAS): McpServer {
-  // Mensagens de validação do zod (entrada inválida) em português, para a IA corrigir a chamada.
-  z.config(z.locales.ptBR());
-  const servidor = new McpServer(
-    { name: NOME_SERVIDOR, title: "Base de conhecimento do IFPR", version: VERSAO_PACOTE },
-    { instructions: INSTRUCOES },
-  );
-  for (const ferramenta of ferramentas) {
-    servidor.registerTool(
-      ferramenta.nome,
-      {
-        title: ferramenta.titulo,
-        description: ferramenta.descricao,
-        inputSchema: ferramenta.entrada,
-        outputSchema: ferramenta.saida,
-        annotations: ferramenta.anotacoes,
-      },
-      (args) => {
-        const { resposta, texto } = ferramenta.responder(args, ctx);
-        return { structuredContent: resposta, content: [{ type: "text", text: texto }] };
-      },
-    );
-  }
-  return servidor;
-}
+/** O servidor MCP `ifpr` em stdio, sobre o `kb.sqlite` em `banco`. */
+export const layerStdio = (opcoes: { readonly banco: string; readonly canal: Canal }) =>
+  McpServer.layerStdio({
+    name: NOME_SERVIDOR,
+    version: VERSAO_PACOTE,
+    instructions: INSTRUCOES,
+    protocols: PROTOCOLOS,
+    registrations: layerRegistro,
+  }).pipe(Layer.provideMerge(layerLeitura(opcoes)));
 
 /**
- * Abre o banco e serve o MCP pelo stdin/stdout do processo. `serveStdio` decide a era na primeira
- * mensagem: `initialize` (clientes da revisão 2025-11-25 e anteriores) ou `server/discover` e
- * requisições com envelope `_meta` (revisão 2026-07-28); a fábrica cria o servidor da conexão.
+ * A mensagem dos erros de abertura do banco para quem instala o servidor: o kb fala "desta versão do
+ * kb", e quem usa o simplifica-mcp precisa saber que é o servidor que está desatualizado.
  */
-export async function iniciarStdio(opcoes: OpcoesServidor): Promise<{ conexao: StdioServerHandle; ctx: Contexto }> {
-  const ctx = criarContexto(opcoes);
-  const conexao = serveStdio(() => criarServidor(ctx));
-  return { conexao, ctx };
+export function mensagemDeAbertura(erro: BaseKb.BaseIncompativel | BaseKb.BaseAusente | Leitura.CanalDesconhecido): string {
+  switch (erro._tag) {
+    case "BaseAusente":
+      return `kb.sqlite não encontrado ou ilegível: ${erro.caminho}`;
+    case "CanalDesconhecido":
+      return `${MENSAGEM_INCOMPATIVEL} (tabela meta: ${erro.message})`;
+    case "BaseIncompativel":
+      if (erro.motivo === "esquema") {
+        return `${MENSAGEM_INCOMPATIVEL} (esquema da base: ${erro.encontrado ?? "ausente"}; esperado: ${VERSAO_ESQUEMA})`;
+      }
+      return `${MENSAGEM_INCOMPATIVEL} (${erro.problema ? `tabela meta: ${erro.problema}` : "o arquivo não é um kb.sqlite"})`;
+  }
 }

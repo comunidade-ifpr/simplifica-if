@@ -12,9 +12,8 @@ import path from "node:path";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import { Client } from "@modelcontextprotocol/client";
 import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
-import { MENSAGEM_INCOMPATIVEL } from "../src/banco.ts";
-import { FERRAMENTAS } from "../src/ferramentas/index.ts";
-import { INSTRUCOES } from "../src/servidor.ts";
+import { FERRAMENTAS } from "../src/ferramentas/toolkit.ts";
+import { INSTRUCOES, MENSAGEM_INCOMPATIVEL } from "../src/servidor.ts";
 import { criarBancoFixture, diretorioTemporario, limparTemporarios } from "./fixture.ts";
 
 afterEach(limparTemporarios);

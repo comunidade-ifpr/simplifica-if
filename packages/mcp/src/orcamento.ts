@@ -4,7 +4,9 @@
  * último item que cabe, e o cursor aponta para o primeiro que ficou de fora. Assim o texto nunca passa
  * do teto e a paginação continua completa e sem repetição.
  */
-import { codificarCursor, ErroEntrada, lerCursor, type Pagina } from "./envelope.ts";
+import * as Effect from "effect/Effect";
+import { EntradaInvalida, type Pagina } from "./contratos.ts";
+import { codificarCursor, CURSOR_ALEM_DO_FIM, lerCursor } from "./envelope.ts";
 
 /**
  * Folga para o que `montarTexto` acrescenta ao corpo (avisos, linha de paginação com o cursor,
@@ -23,18 +25,18 @@ export function cortar(texto: string, maximo: number): string {
  * `medir(item)` (o tamanho do bloco do item no texto, com o separador) couber em `orcamento`. O
  * primeiro item da página entra sempre; a ferramenta corta o texto dele se for maior que o orçamento.
  */
-export function paginarNoTeto<T>(
-  itens: readonly T[],
+export const paginarNoTeto = Effect.fn("orcamento.paginarNoTeto")(function* <T>(
+  itens: ReadonlyArray<T>,
   opcoes: {
-    limite: number;
-    cursor?: string | undefined;
-    consulta: unknown;
-    orcamento: number;
-    medir: (item: T) => number;
+    readonly limite: number;
+    readonly cursor?: string | undefined;
+    readonly consulta: unknown;
+    readonly orcamento: number;
+    readonly medir: (item: T) => number;
   },
-): { itens: T[]; pagina: Pagina; inicio: number } {
-  const inicio = lerCursor(opcoes.cursor, opcoes.consulta);
-  if (inicio > itens.length) throw new ErroEntrada("cursor além do fim da lista: repita a chamada sem cursor");
+) {
+  const inicio = yield* lerCursor(opcoes.cursor, opcoes.consulta);
+  if (inicio > itens.length) return yield* new EntradaInvalida({ mensagem: CURSOR_ALEM_DO_FIM });
   const pagina: T[] = [];
   let usado = 0;
   for (let i = inicio; i < itens.length && pagina.length < opcoes.limite; i += 1) {
@@ -44,16 +46,13 @@ export function paginarNoTeto<T>(
     usado += tamanho;
   }
   const fim = inicio + pagina.length;
-  return {
-    itens: pagina,
-    inicio,
-    pagina: {
-      total: itens.length,
-      devolvidos: pagina.length,
-      ...(fim < itens.length ? { cursor: codificarCursor(fim, opcoes.consulta) } : {}),
-    },
+  const dadosPagina: Pagina = {
+    total: itens.length,
+    devolvidos: pagina.length,
+    ...(fim < itens.length ? { cursor: codificarCursor(fim, opcoes.consulta) } : {}),
   };
-}
+  return { itens: pagina, inicio, pagina: dadosPagina };
+});
 
 /**
  * Linhas de uma lista dentro de `orcamento` caracteres; as que não cabem viram uma linha final
