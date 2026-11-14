@@ -1,13 +1,17 @@
 /** Relações, vigência, transições, front matter gerado, correspondência e impacto (fase 5). */
 import { describe, expect, test } from "bun:test";
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { correspondencia, validarCorrespondencias } from "./correspondencia.ts";
 import { dispositivosDoAto, listarNormas } from "./estrutura.ts";
 import { analisarFrontMatter } from "./front-matter.ts";
 import { normasComCamposGerados, reescreverFrontMatter } from "./gerado.ts";
 import { impacto } from "./impacto.ts";
-import { raizRepositorio } from "./registro.ts";
+import { idDoAto } from "./ids.ts";
+import { carregarRegistro, raizRepositorio } from "./registro.ts";
 import { carregarRelacoes, proporRelacoes, validarRelacoes } from "./relacoes.ts";
-import { dataReferencia, derivarLinha, statusEm, transicoesAplicaveis } from "./vigencia.ts";
+import { dataReferencia, derivarLinha, inicioVigencia, statusEm, transicoesAplicaveis } from "./vigencia.ts";
 
 const raiz = raizRepositorio();
 /** Último commit antes da fase 5 (mesmo de `saneamento.test.ts`). */
@@ -83,6 +87,29 @@ describe("vigência", () => {
     },
   );
 
+  test("stub com status registrado: o status só vale a partir do efeito da relação que o fundamenta", () => {
+    expect(statusEm("br/cne-ceb/res/2012/6", "2015-01-01", raiz).status).toBe("vigente");
+    expect(statusEm("br/cne-cp/res/2002/3", "2015-01-01", raiz).status).toBe("vigente");
+    expect(statusEm("br/cne-ceb/res/2014/1", "2015-01-01", raiz).status).toBe("vigente");
+    expect(statusEm("br/lei/1971/5692", "1990-01-01", raiz).status).toBe("vigente");
+    const registro = carregarRegistro(raiz);
+    const datados = registro.entradas.filter(
+      (e) => e.situacao === "stub" && e.status_vigencia && !["a confirmar", "vigente"].includes(e.status_vigencia),
+    );
+    expect(datados.length).toBeGreaterThan(20);
+    const errados: string[] = [];
+    for (const stub of datados) {
+      const efeito = inicioVigencia(idDoAto(stub.status_fonte!.split("#")[0]!), raiz);
+      const limite = efeito.data ?? efeito.minimo!;
+      const vespera = new Date(Date.parse(`${limite}T00:00:00Z`) - 86_400_000).toISOString().slice(0, 10);
+      const antes = statusEm(stub.id, vespera, raiz).status;
+      if (!["vigente", "alterada", "ainda-nao-vigente"].includes(antes)) errados.push(`${stub.id} ${vespera} ${antes}`);
+      const depois = statusEm(stub.id, "2027-01-01", raiz).status;
+      if (depois !== stub.status_vigencia) errados.push(`${stub.id} 2027-01-01 ${depois}`);
+    }
+    expect(errados).toEqual([]);
+  });
+
   test("regras de transição da 2/2026 alcançam a 1/2021", () => {
     const ids = transicoesAplicaveis(DCN_2021, "2026-11-13", raiz).map((t) => t.id);
     expect(ids).toEqual(expect.arrayContaining(["dcnept-2026-art71", "dcnept-2026-art71-parunico"]));
@@ -137,6 +164,36 @@ describe("correspondência 1/2021 → 2/2026", () => {
     expect(art26par1!.item.destino).toEqual(["#art29-par2", "#art29-par3"]);
     const [herdado] = correspondencia(`${DCN_2021}#art5-par1`, raiz);
     expect(herdado!.herdado_de).toBe("#art5");
+  });
+});
+
+describe("impacto de um dispositivo", () => {
+  const conteudo = mkdtempSync(path.join(tmpdir(), "kb-impacto-"));
+  const pasta = path.join(conteudo, ".agents", "skills", "x", "base-analise", "fichas");
+  mkdirSync(pasta, { recursive: true });
+  const ficha = (nome: string, refs: { ref: string; dispositivo: string }[]) =>
+    writeFileSync(path.join(pasta, `${nome}.json`), JSON.stringify({ referencias_normativas: refs }));
+  ficha("ct-x-01", [{ ref: DCN_2021, dispositivo: "#art29" }]);
+  ficha("ct-x-02", [{ ref: DCN_2021, dispositivo: "#art22-x" }]);
+  ficha("ct-x-03", [{ ref: DCN_2026, dispositivo: "#art22" }]); // destino do art. 20 da 1/2021
+  ficha("ct-x-04", [{ ref: DCN_2021, dispositivo: "#art2" }]);
+  ficha("ct-x-05", [{ ref: DCN_2026, dispositivo: "#art1-par1" }]); // destino do art. 2º da 1/2021
+
+  test("#art2 não casa #art29 nem #art22-x, e só os destinos do art. 2º contam como correspondentes", () => {
+    const r = impacto(`${DCN_2021}#art2`, { raiz, raizConteudo: conteudo, incluirPpcs: false });
+    const porArquivo = Object.fromEntries(r.arquivos.map((a) => [path.basename(a.arquivo, ".json"), a.motivos]));
+    expect(porArquivo).toEqual({ "ct-x-04": ["referencia"], "ct-x-05": ["referencia-correspondente"] });
+  });
+
+  test("o ato inteiro continua alcançando todos", () => {
+    const r = impacto(DCN_2021, { raiz, raizConteudo: conteudo, incluirPpcs: false });
+    expect(r.arquivos.map((a) => path.basename(a.arquivo, ".json")).sort()).toEqual([
+      "ct-x-01",
+      "ct-x-02",
+      "ct-x-03",
+      "ct-x-04",
+      "ct-x-05",
+    ]);
   });
 });
 

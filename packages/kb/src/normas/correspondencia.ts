@@ -169,10 +169,25 @@ export function correspondenciaEm(id: string, fonte: FonteCorrespondencia): Resu
   return saida;
 }
 
-/** Dispositivos de destino que correspondem a algum dispositivo do ato `origem` (para `kb impacto`). */
+/**
+ * Dispositivos de destino que correspondem ao ato `origem` (qualquer dispositivo) ou, com `#`, ao
+ * dispositivo e aos subordinados dele (para `kb impacto`).
+ */
 export function destinosDeOrigem(origem: string, raiz: string = raizRepositorio()): Set<string> {
+  return destinosDeOrigemEm(origem, fonteCorrespondenciaArquivos(raiz));
+}
+
+/** `destinosDeOrigem` sobre uma fonte de dados (arquivos ou `kb.sqlite`). */
+export function destinosDeOrigemEm(origem: string, fonte: FonteCorrespondencia): Set<string> {
   const saida = new Set<string>();
-  for (const tabela of carregarCorrespondencias(raiz).filter((t) => t.origem === idDoAto(origem))) {
+  if (origem.includes("#")) {
+    // Dispositivo: só os destinos dele (item próprio ou herdado do ancestral) e dos subordinados.
+    for (const r of correspondenciaEm(origem, fonte)) {
+      for (const item of [r.item, ...r.detalhes]) for (const d of item.destino) saida.add(`${r.destino_ato}${d}`);
+    }
+    return saida;
+  }
+  for (const tabela of fonte.tabelas(idDoAto(origem))) {
     for (const item of tabela.itens) for (const d of item.destino) saida.add(`${tabela.destino}${d}`);
   }
   return saida;

@@ -17,33 +17,49 @@ export type PartesDispositivo =
       /** `null` = caput; `"unico"` = parágrafo único. */
       par: { numero: number; letra: string } | "unico" | null;
       inc: string | null;
+      /** Letra do inciso (`#art9-ivA` → "A"). */
+      letraInc: string;
       ali: string | null;
+      item: number | null;
     }
-  | { tipo: "anexo"; anexo: number; item: number | null };
+  | { tipo: "anexo"; anexo: number; item: number | null }
+  /** Artigo de anexo: `#anexo1-art5` → anexo 1 e `#art5`. */
+  | { tipo: "artigo-anexo"; anexo: number; artigo: string }
+  | { tipo: "secao"; secao: number };
 
 type ItemArtigo = Extract<PartesDispositivo, { tipo: "artigo" }>;
 type Paragrafo = Exclude<ItemArtigo["par"], null>;
 
 const RE_PARTES_ARTIGO =
-  /^#art([1-9]\d*)([A-Z]*)(?:-par(?:([1-9]\d*)([A-Z]*)|(unico)))?(?:-([ivxlc]+))?(?:-al-([a-z]))?$/;
+  /^#art([1-9]\d*)([A-Z]*)(?:-par(?:([1-9]\d*)([A-Z]*)|(unico)))?(?:-([ivxlc]+)([A-Z]?))?(?:-al-([a-z]))?(?:-item(\d+))?$/;
 const RE_PARTES_ANEXO = /^#anexo(\d+)(?:-item(\d+))?$/;
+const RE_ARTIGO_ANEXO = /^#anexo(\d+)-(art.+)$/;
+const RE_SECAO = /^#secao(\d+)$/;
 
 /** Decompõe um ID de dispositivo; `null` se o formato for inválido. */
 export function partesDispositivo(id: string): PartesDispositivo | null {
   const artigo = RE_PARTES_ARTIGO.exec(id);
   if (artigo) {
-    const [, art, letraArt, par, letraPar, unico, inc, ali] = artigo;
+    const [, art, letraArt, par, letraPar, unico, inc, letraInc, ali, item] = artigo;
     return {
       tipo: "artigo",
       art: Number(art),
       letraArt: letraArt ?? "",
       par: unico ? "unico" : par ? { numero: Number(par), letra: letraPar ?? "" } : null,
       inc: inc ?? null,
+      letraInc: letraInc ?? "",
       ali: ali ?? null,
+      item: item ? Number(item) : null,
     };
   }
   const anexo = RE_PARTES_ANEXO.exec(id);
   if (anexo) return { tipo: "anexo", anexo: Number(anexo[1]), item: anexo[2] ? Number(anexo[2]) : null };
+  const artigoAnexo = RE_ARTIGO_ANEXO.exec(id);
+  if (artigoAnexo && RE_PARTES_ARTIGO.test(`#${artigoAnexo[2]}`)) {
+    return { tipo: "artigo-anexo", anexo: Number(artigoAnexo[1]), artigo: `#${artigoAnexo[2]}` };
+  }
+  const secao = RE_SECAO.exec(id);
+  if (secao) return { tipo: "secao", secao: Number(secao[1]) };
   return null;
 }
 
@@ -79,7 +95,7 @@ function comFaixas(numeros: readonly number[], rotulo: (numero: number) => strin
   return saida;
 }
 
-/** Incisos (com alínea, quando houver) de um mesmo parágrafo ou do caput. */
+/** Incisos (com letra, alínea e item, quando houver) de um mesmo parágrafo ou do caput. */
 function textoIncisos(itens: readonly ItemArtigo[]): string[] {
   const saida: string[] = [];
   let simples: number[] = [];
@@ -88,12 +104,17 @@ function textoIncisos(itens: readonly ItemArtigo[]): string[] {
     simples = [];
   };
   for (const item of itens) {
-    if (item.ali === null) {
-      simples.push(romanoParaNumero(item.inc!));
+    if (item.inc !== null && !item.letraInc && item.ali === null && item.item === null) {
+      simples.push(romanoParaNumero(item.inc));
       continue;
     }
     descarregar();
-    saida.push(`${item.inc!.toUpperCase()}, alínea "${item.ali}"`);
+    const rotulos = [
+      item.inc !== null ? `${item.inc.toUpperCase()}${item.letraInc ? `-${item.letraInc}` : ""}` : null,
+      item.ali !== null ? `alínea "${item.ali}"` : null,
+      item.item !== null ? `item ${item.item}` : null,
+    ];
+    saida.push(rotulos.filter((rotulo) => rotulo !== null).join(", "));
   }
   descarregar();
   return saida;
@@ -129,7 +150,7 @@ function textoPartesArtigo(itens: readonly ItemArtigo[]): string {
     while (fim + 1 < itens.length && JSON.stringify(itens[fim + 1]!.par) === chave) fim += 1;
     const bloco = itens.slice(i, fim + 1);
     i = fim + 1;
-    const comInciso = bloco.filter((item) => item.inc !== null);
+    const comInciso = bloco.filter((item) => item.inc !== null || item.ali !== null || item.item !== null);
     if (par === null) {
       unidades.push(listaPortugues(textoIncisos(comInciso)));
       continue;
@@ -151,6 +172,8 @@ function textoPartesArtigo(itens: readonly ItemArtigo[]): string {
 export function textoDispositivos(ids: readonly string[]): string {
   const artigos = new Map<string, { art: number; letra: string; puro: boolean; itens: ItemArtigo[] }>();
   const anexos: string[] = [];
+  const artigosDeAnexo = new Map<number, string[]>();
+  const secoes: string[] = [];
   for (const id of ids) {
     const partes = partesDispositivo(id);
     if (partes === null) throw new Error(`dispositivo malformado: ${id}`);
@@ -158,8 +181,16 @@ export function textoDispositivos(ids: readonly string[]): string {
       anexos.push(`Anexo ${partes.anexo}${partes.item === null ? "" : `, item ${partes.item}`}`);
       continue;
     }
+    if (partes.tipo === "artigo-anexo") {
+      artigosDeAnexo.set(partes.anexo, [...(artigosDeAnexo.get(partes.anexo) ?? []), partes.artigo]);
+      continue;
+    }
+    if (partes.tipo === "secao") {
+      secoes.push(`seção ${partes.secao}`);
+      continue;
+    }
     // O artigo inteiro e partes dele ficam em entradas separadas, para não se confundirem.
-    const puro = partes.par === null && partes.inc === null;
+    const puro = partes.par === null && partes.inc === null && partes.ali === null && partes.item === null;
     const chave = `${partes.art}${partes.letraArt}${puro ? "" : "+"}`;
     const artigo = artigos.get(chave) ?? { art: partes.art, letra: partes.letraArt, puro, itens: [] };
     if (!puro) artigo.itens.push(partes);
@@ -189,5 +220,8 @@ export function textoDispositivos(ids: readonly string[]): string {
   const partes: string[] = [];
   if (textos.length) partes.push(`${textos.length > 1 || faixa ? "arts." : "art."} ${listaPortugues(textos)}`);
   partes.push(...anexos);
+  for (const [anexo, artigosDoAnexo] of artigosDeAnexo)
+    partes.push(`Anexo ${anexo}, ${textoDispositivos(artigosDoAnexo)}`);
+  partes.push(...secoes);
   return listaPortugues(partes);
 }

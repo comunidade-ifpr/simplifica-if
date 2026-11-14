@@ -24,7 +24,12 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { type PpcCitante, ppcsQueCitam } from "../ppcs/citacoes.ts";
 import { type CitacaoResolvida, citacoesResolvidas, segmentosCitantes } from "./citacoes-normas.ts";
-import { correspondenciaEm, type FonteCorrespondencia, fonteCorrespondenciaArquivos } from "./correspondencia.ts";
+import {
+  correspondenciaEm,
+  destinosDeOrigemEm,
+  type FonteCorrespondencia,
+  fonteCorrespondenciaArquivos,
+} from "./correspondencia.ts";
 import { dispositivosDoAto } from "./estrutura.ts";
 import { idDoAto } from "./ids.ts";
 import { carregarRegistro, raizRepositorio, type Registro } from "./registro.ts";
@@ -246,11 +251,10 @@ export function impactoEm(
   const sucessoras = relacoes
     .filter((r) => r.tipo === "revoga" && r.alvo === ato && !relacaoParcial(r))
     .map((r) => r.origem);
-  // dispositivos de destino que correspondem a algum dispositivo do ato (`destinosDeOrigem`)
-  const correspondentes = new Set<string>();
-  for (const tabela of fonte.correspondencia.tabelas(ato)) {
-    for (const item of tabela.itens) for (const d of item.destino) correspondentes.add(`${tabela.destino}${d}`);
-  }
+  // dispositivos de destino que correspondem ao ato ou, com sufixo, ao dispositivo consultado e aos subordinados
+  const correspondentes = destinosDeOrigemEm(sufixo ? `${ato}#${sufixo}` : ato, fonte.correspondencia);
+  /** O dispositivo citado é o consultado ou um subordinado dele (`#art2` não casa `#art29`). */
+  const noDispositivo = (d: string | undefined) => !!d && (d === `#${sufixo}` || d.startsWith(`#${sufixo}-`));
   const transicoes = transicoesAplicaveis(ato, data, fonte.vigencia).map((t) => t.id);
 
   const citaLista = (
@@ -263,7 +267,7 @@ export function impactoEm(
       const alvo = idDoAto(c.id);
       const lista = c.dispositivos;
       if (alvo === ato) {
-        if (sufixo && !lista.some((d) => d === `#${sufixo}` || d.startsWith(`#${sufixo}-`))) continue;
+        if (sufixo && !lista.some(noDispositivo)) continue;
         cita = true;
         dispositivos.push(...lista.map((d) => `${ato}${d}`));
       } else if (sucessoras.includes(alvo) && lista.some((d) => correspondentes.has(`${alvo}${d}`))) {
@@ -296,7 +300,7 @@ export function impactoEm(
       if (json !== null) {
         textos = textosDoJson(json).join("\n");
         for (const ref of referenciasEstruturadas(json)) {
-          if (idDoAto(ref.ref) === ato && (!sufixo || ref.dispositivo?.startsWith(`#${sufixo}`))) {
+          if (idDoAto(ref.ref) === ato && (!sufixo || noDispositivo(ref.dispositivo))) {
             motivos.add("referencia");
             if (ref.dispositivo) dispositivos.add(`${ato}${ref.dispositivo}`);
           } else if (

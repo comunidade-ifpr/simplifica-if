@@ -170,6 +170,85 @@ describe("extrairCitacoes", () => {
       "Resolução CONSUP/IFPR nº 54/2011.\nResolução nº 54, de 21 de dezembro de 2011.\nResolução nº 1, de 19 de agosto de 2021; Instrução Normativa Reitoria/IFPR nº 1, de 26 de julho de 2021; Instrução Normativa nº 1, de 19 de agosto de 2021.";
     const ids = extrairCitacoes(texto).map((c) => [c.id, c.regra]);
     expect(ids[1]).toEqual(["ifpr/consup/res/2011/54", "data-registro"]);
-    expect(ids.at(-1)).toEqual([null, "orgao-ausente"]);
+    // A IN de 19/08/2021 é outro ato (Reitoria/PROENS), e não a da Reitoria de 26/07/2021.
+    expect(ids.at(-1)).toEqual(["ifpr/proens/in/2021/1", "data-registro"]);
+  });
+});
+
+describe("revisão do motor normativo", () => {
+  const IN_EXTENSAO = "ifpr/reitoria/in/2021/1"; // 26/07/2021, curricularização da extensão
+  const IN_BIBLIOTECAS = "ifpr/proens/in/2021/1"; // 19/08/2021, Reitoria/PROENS, bibliotecas
+
+  test.each([
+    ["Instrução Normativa Reitoria/IFPR nº 1, de 26 de julho de 2021", IN_EXTENSAO],
+    ["Instrução Normativa REITORIA/PROENS/IFPR nº 1, de 19 de agosto de 2021", IN_BIBLIOTECAS],
+    ["Instrução Normativa IFPR n. 1, de 26 de julho de 2021", IN_EXTENSAO],
+    ["INSTITUTO FEDERAL DO PARANÁ. Instrução normativa nº 1, de 19 de agosto de 2021", IN_BIBLIOTECAS],
+    ["Instrução Normativa nº 01, de 19 de agosto de 2021 (Reitoria/PROENS/IFPR)", IN_BIBLIOTECAS],
+    ["Instrução Normativa nº 1, de 19 de agosto de 2021", IN_BIBLIOTECAS],
+  ])("as duas IN IFPR nº 1/2021 têm IDs distintos: %p", (texto, id) => {
+    expect(resolverCitacao(texto).id).toBe(id);
+  });
+
+  test("órgão implícito do IFPR não troca de ato quando a data diverge da do ato registrado", () => {
+    // Implícito: IN do IFPR é da Reitoria, mas 3/3/2021 não é a data de nenhuma IN nº 1/2021.
+    expect(resolverCitacao("Instrução Normativa IFPR nº 1, de 3 de março de 2021").id).toBeNull();
+  });
+
+  test("IN sem órgão com data de 19/08/2021 não é completada com a IN da Reitoria citada sem data", () => {
+    const texto =
+      "Instrução Normativa Reitoria/IFPR nº 1/2021.\n\nOs livros seguem a Instrução Normativa nº 01, de 19 de agosto de 2021, que estabelece normas para as bibliotecas.";
+    expect(extrairCitacoes(texto).map((c) => c.id)).toEqual([IN_EXTENSAO, IN_BIBLIOTECAS]);
+  });
+
+  test("órgão implícito sem homônimo tolera data com erro de digitação", () => {
+    expect(resolverCitacao("Resolução IFPR nº 64, de 23 de julho de 2022").id).toBe("ifpr/consup/res/2022/64");
+  });
+
+  test.each([
+    ["Resolução nº 3, de 8 de abril de 2025", "br/cne-ceb/res/2025/3"],
+    ["Portaria nº 902, de 9 de setembro de 2024", "br/mec/portaria/2024/902"],
+    ["https://www.in.gov.br/web/dou/-/portaria-n-902-de-9-de-setembro-de-2024-582112940", "br/mec/portaria/2024/902"],
+    ["Resolução CNE nº 3, de 8 de abril de 2025", "br/cne-ceb/res/2025/3"],
+  ])("a data citada é a do ato (assinada_em): %p", (texto, id) => {
+    expect(resolverCitacao(texto).id).toBe(id);
+  });
+
+  test("Lei nº 15.468, de 13 de julho de 2026, confere com o ato citado no documento", () => {
+    const texto = "Lei nº 15.468/2026.\nLei nº 15.468, de 13 de julho de 2026.";
+    expect(extrairCitacoes(texto).map((c) => c.id)).toEqual(["br/lei/2026/15468", "br/lei/2026/15468"]);
+  });
+
+  test.each([
+    ["RESOLUÇÃO PROEPPI/IFPR N.94/2023", "ifpr/proeppi/res/2023/94"],
+    ["Resolução Proeppi/IFPR n.121/2023", "ifpr/proeppi/res/2023/121"],
+    ["Resolução PROEPI/IFPR nº 94/2023", "ifpr/proeppi/res/2023/94"],
+  ])("PROEPPI (e a grafia antiga PROEPI): %p", (texto, id) => {
+    expect(resolverCitacao(texto).id).toBe(id);
+  });
+
+  test("ano-no-documento só completa com órgão compatível", () => {
+    const ids = (texto: string) => extrairCitacoes(texto).map((c) => c.id);
+    expect(ids("Resolução CONSUP/IFPR nº 2/2017. Ver também a Resolução CNE nº 2 sobre o tema.")).toEqual([
+      "ifpr/consup/res/2017/2",
+      null,
+    ]);
+    expect(ids("Resolução CNE/CP nº 2/2017. Ver também a Resolução CONSUP nº 2 sobre o tema.")).toEqual([
+      "br/cne-cp/res/2017/2",
+      null,
+    ]);
+    expect(ids("Resolução CNE/CP nº 2/2017. Ver também a Resolução nº 2 do IFPR sobre o tema.")).toEqual([
+      "br/cne-cp/res/2017/2",
+      null,
+    ]);
+    // Órgão compatível continua completando.
+    expect(ids("Resolução CNE/CP nº 2/2017. Ver também a Resolução CNE nº 2 sobre o tema.")).toEqual([
+      "br/cne-cp/res/2017/2",
+      "br/cne-cp/res/2017/2",
+    ]);
+    expect(ids("Resolução CONSUP/IFPR nº 2/2017. Ver também a Resolução nº 2 do IFPR.")).toEqual([
+      "ifpr/consup/res/2017/2",
+      "ifpr/consup/res/2017/2",
+    ]);
   });
 });

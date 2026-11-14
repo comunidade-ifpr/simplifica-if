@@ -40,7 +40,16 @@ const esquemaNormaRegistro = z.strictObject({
   status_fonte: textoNulo,
   path: textoNulo,
   aliases_json: z.string(),
+  front_matter_json: textoNulo,
 });
+
+/** `assinada_em` do registro: a do front matter (norma da base) ou a `data_publicacao` (stub). */
+function assinadaEm(n: z.infer<typeof esquemaNormaRegistro>): string | undefined {
+  if (n.situacao === "stub") return n.data_publicacao ?? undefined;
+  if (n.situacao !== "base" || n.front_matter_json === null) return undefined;
+  const valor = (JSON.parse(n.front_matter_json) as Record<string, unknown>)["assinada_em"];
+  return typeof valor === "string" && /^\d{4}-\d{2}-\d{2}$/.test(valor) ? valor : undefined;
+}
 
 /** Registro de normas (o de `carregarRegistro`: base, stubs e externos) pela tabela `normas`. */
 export const registroBanco = memorizado((db: Database): Registro => {
@@ -49,7 +58,8 @@ export const registroBanco = memorizado((db: Database): Registro => {
     .parse(
       db
         .query(
-          "SELECT id, situacao, titulo, data_publicacao, status_vigencia, status_fonte, path, aliases_json FROM normas ORDER BY id",
+          "SELECT id, situacao, titulo, data_publicacao, status_vigencia, status_fonte, path, aliases_json, front_matter_json " +
+            "FROM normas ORDER BY id",
         )
         .all(),
     );
@@ -59,6 +69,7 @@ export const registroBanco = memorizado((db: Database): Registro => {
       id: n.id,
       title: n.titulo,
       situacao: n.situacao,
+      ...(assinadaEm(n) !== undefined ? { assinada_em: assinadaEm(n) } : {}),
       ...(n.data_publicacao !== null ? { data_publicacao: n.data_publicacao } : {}),
       ...(n.status_vigencia !== null ? { status_vigencia: n.status_vigencia } : {}),
       ...(n.status_fonte !== null ? { status_fonte: n.status_fonte } : {}),

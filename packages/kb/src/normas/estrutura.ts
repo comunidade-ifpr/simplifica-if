@@ -241,6 +241,26 @@ function textoEhRevogado(semRotulo: string, notas: NotaDispositivo[]): boolean {
   return resto === "" && notas.some((nota) => nota.tipo === "revogacao");
 }
 
+/** Rótulo comparável: `§ 3o`, `§ 3º` e `§3°` ficam iguais. */
+function rotuloComparavel(rotulo: string): string {
+  return rotulo
+    .replace(/[º°]/g, "o")
+    .replace(/[\s.]+/g, "")
+    .toLowerCase();
+}
+
+/**
+ * Tira o rótulo repetido no início do texto (Planalto: `**§ 3o** § 3º (Revogado).`), para que o
+ * texto que sobra seja lido como revogação. O rótulo só sai se for o mesmo do dispositivo.
+ */
+function semRotuloRepetido(texto: string, rotulo: string): string {
+  const m = /^[\s.–—-]*((?:§\s*\d+\s*[ºo°]?|art\.?\s*\d+\s*[ºo°]?(?:\s*-\s*[A-Z])?|par[áa]grafo\s+[úu]nico)\.?)/i.exec(
+    texto,
+  );
+  if (!m || rotuloComparavel(m[1]!) !== rotuloComparavel(rotulo)) return texto;
+  return texto.slice(m[0].length);
+}
+
 function textoEhVetado(semRotulo: string): boolean {
   return /^\(?\s*vetad[oa]\s*\)?\.?$/i.test(semRotulo.replace(RE_NOTA, " ").trim());
 }
@@ -421,7 +441,10 @@ class Parser {
       no.disp.texto = texto;
       no.disp.notas = notasDoTexto(texto);
       const vigente = palavrasDoTexto(no.vigentes.join("\n")).join(" ");
-      const semRotulo = vigente.startsWith(no.disp.rotulo) ? vigente.slice(no.disp.rotulo.length) : vigente;
+      const semRotulo = semRotuloRepetido(
+        vigente.startsWith(no.disp.rotulo) ? vigente.slice(no.disp.rotulo.length) : vigente,
+        no.disp.rotulo,
+      );
       no.disp.revogado = textoEhRevogado(semRotulo.replace(/^[\s.–—-]+/, ""), no.disp.notas);
       no.disp.vetado = textoEhVetado(semRotulo.replace(/^[\s.–—-]+/, ""));
     }

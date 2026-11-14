@@ -80,7 +80,9 @@ describe("textoDispositivos", () => {
       letraArt: "",
       par: { numero: 1, letra: "" },
       inc: "iv",
+      letraInc: "",
       ali: null,
+      item: null,
     });
     expect(partesDispositivo("#art28º")).toBeNull();
     expect(() => textoDispositivos(["art. 28"])).toThrow("dispositivo malformado: art. 28");

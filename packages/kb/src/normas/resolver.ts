@@ -18,7 +18,8 @@
  * - `enumeracao` (0,9): "Leis nº 10.639/2003 e 11.645/2008" herda tipo e órgão;
  * - `sem-ano-registro` (0,9): "Lei nº 11.788", ano tirado do registro;
  * - `orgao-implicito-ifpr` (0,85): "Resolução IFPR nº 50/2017" → CONSUP;
- * - `data-registro` (0,85): "Resolução nº 1, de 5 de janeiro de 2021", sem órgão, casada pela data;
+ * - `data-registro` (0,85): "Resolução nº 1, de 5 de janeiro de 2021", sem órgão, casada pela data
+ *   do ato (`assinada_em`; a de publicação só quando nenhum ato tem a data citada);
  * - `ano-divergente-registro` (0,8): lei com número do registro e ano diferente (erro de digitação);
  * - `orgao-incompleto-registro` (0,8): "Resolução CNE nº 6/2012", câmara única no registro;
  * - `dcnept-2021-orgao-incompleto` (0,8) e `dcnept-2021-orgao-trocado` (0,7): a DCN da EPT de 2021
@@ -28,16 +29,19 @@
  *   nº 01/2021, que define as Diretrizes...";
  * - `orgao-no-documento` (0,85) e `ano-no-documento` (0,8): citação incompleta completada pelo ato
  *   que o mesmo documento cita por inteiro ("Resolução nº 54/2011" e, noutra linha, "Resolução
- *   CONSUP/IFPR nº 54/2011"), se a data não divergir;
+ *   CONSUP/IFPR nº 54/2011"), com órgão compatível e se a data não divergir;
  * - `orgao-contexto-ifpr` (0,75): "no IFPR, pela Resolução nº 56/2012", sem ato no registro;
  * - `orgao-ausente-registro` (0,7): "Resolução nº 50/2017", sem órgão, com um único ato no registro
  *   (não decide, `orgao-conflitante`, se o texto fala do IFPR e o registro aponta ato federal).
- * Sem ID (`id: null`): `orgao-ausente`, `orgao-ambiguo`, `orgao-conflitante`, `sem-ano`,
+ * - `orgao-implicito-ifpr` e `orgao-contexto-ifpr` conferem a data citada: com data, vale o ato do IFPR
+ *   registrado nessa data; se o ato do órgão implícito tem outra data registrada e há homônimo no
+ *   registro (as duas IN nº 1/2021), não decide (`data-divergente`).
+ * Sem ID (`id: null`): `orgao-ausente`, `orgao-ambiguo`, `orgao-conflitante`, `data-divergente`, `sem-ano`,
  * `ato-nao-federal`, `ato-local` (portaria de campus), `nao-reconhecida`.
  */
 import { analisarDispositivos, dispositivoAntes, dispositivoDepois } from "./dispositivos.ts";
 import { ehIdExterno, montarIdNorma, partesIdNorma } from "./ids.ts";
-import { carregarRegistro, type Registro, type Situacao } from "./registro.ts";
+import { carregarRegistro, datasDoAto, type Registro, type Situacao } from "./registro.ts";
 import { normalizarComMapa, normalizarCitacao } from "./texto-citacao.ts";
 
 export interface Resolucao {
@@ -131,7 +135,8 @@ const ORGAOS: readonly [RegExp, Orgao][] = [
   [/\bconsup\b|conselho\s+superior/, { jurisdicao: "ifpr", orgao: "consup" }],
   [/\bconsepe\b/, { jurisdicao: "ifpr", orgao: "consepe" }],
   [/\bproens\b|pro-?\s*reitoria\s+de\s+ensino/, { jurisdicao: "ifpr", orgao: "proens" }],
-  [/\bproepi\b/, { jurisdicao: "ifpr", orgao: "proepi" }],
+  // PROEPPI (Pró-Reitoria de Extensão, Pesquisa, Pós-Graduação e Inovação); PROEPI é a grafia antiga.
+  [/\bproep?pi\b|pro-?\s*reitoria\s+de\s+extensao,?\s+pesquisa/, { jurisdicao: "ifpr", orgao: "proeppi" }],
   [/\bproad\b/, { jurisdicao: "ifpr", orgao: "proad" }],
   [/\breitoria\b|\breitor\b/, { jurisdicao: "ifpr", orgao: "reitoria" }],
   [/\bifpr\b|instituto\s+federal\s+do\s+parana/, { jurisdicao: "ifpr", orgao: null }],
@@ -380,6 +385,18 @@ function resultado(id: string | null, regra: string, registro: Registro): Resolu
   return { id, confianca: id === null ? 0 : (CONFIANCA[regra] ?? 0.5), regra, situacao };
 }
 
+/**
+ * A citação traz data, o ato `id` tem outra data registrada e o registro tem outro ato do IFPR com o
+ * mesmo tipo, número e ano (homônimo): a data não decide entre eles. Sem homônimo, a divergência é
+ * tomada por erro de digitação ("Resolução IFPR nº 64, de 23 de julho de 2022", ato de 23 de março).
+ */
+function dataDiverge(id: string, data: string | null, registro: Registro): boolean {
+  const conhecidas = datasDoAto(registro.obter(id));
+  if (data === null || conhecidas.length === 0 || conhecidas.includes(data)) return false;
+  const partes = partesIdNorma(id)!;
+  return registro.normasPorChave(partes.tipo, partes.ano, partes.numero, "ifpr").length > 1;
+}
+
 /** Resolve um ato já decomposto. `depois` é o texto que segue a citação, para as regras de contexto. */
 function resolverAto(ato: Ato, depois: string, registro: Registro, regraBase = "estrutural"): Resolucao {
   const { tipo, orgao, numero, ano, data } = ato;
@@ -436,7 +453,7 @@ function resolverAto(ato: Ato, depois: string, registro: Registro, regraBase = "
     // Com data na citação, o ato do registro só serve se a data não divergir.
     const porChave = registro
       .normasPorChave(tipo, ano, numero)
-      .filter((entrada) => !data || !entrada.data_publicacao || entrada.data_publicacao === data);
+      .filter((entrada) => !data || datasDoAto(entrada).length === 0 || datasDoAto(entrada).includes(data));
     const implicito = ORGAO_IFPR_POR_TIPO[tipo];
     if (porChave.length === 1) {
       // O registro aponta um ato federal, mas o texto fala do IFPR logo antes: não decide.
@@ -445,11 +462,8 @@ function resolverAto(ato: Ato, depois: string, registro: Registro, regraBase = "
       return resultado(porChave[0]!.id, "orgao-ausente-registro", registro);
     }
     if (ato.contextoIfpr && implicito) {
-      return resultado(
-        montarIdNorma({ jurisdicao: "ifpr", orgao: implicito, tipo, ano, numero }),
-        "orgao-contexto-ifpr",
-        registro,
-      );
+      const id = montarIdNorma({ jurisdicao: "ifpr", orgao: implicito, tipo, ano, numero });
+      if (!dataDiverge(id, data, registro)) return resultado(id, "orgao-contexto-ifpr", registro);
     }
     return resultado(null, "orgao-ausente", registro);
   }
@@ -463,7 +477,7 @@ function resolverAto(ato: Ato, depois: string, registro: Registro, regraBase = "
     const candidatos = registro
       .normasPorChave(tipo, ano, numero, "br")
       .filter((entrada) => /^br\/cne-/.test(entrada.id));
-    const porData = data ? candidatos.filter((entrada) => entrada.data_publicacao === data) : [];
+    const porData = data ? candidatos.filter((entrada) => datasDoAto(entrada).includes(data)) : [];
     if (porData.length === 1) return resultado(porData[0]!.id, "orgao-incompleto-registro", registro);
     if (candidatos.length === 1) return resultado(candidatos[0]!.id, "orgao-incompleto-registro", registro);
     return resultado(null, "orgao-ambiguo", registro);
@@ -471,13 +485,17 @@ function resolverAto(ato: Ato, depois: string, registro: Registro, regraBase = "
 
   // Resolução do IFPR é sempre de conselho: "IFPR. Reitoria. Resolução nº 58" é a do CONSUP.
   if (orgao.jurisdicao === "ifpr" && (orgao.orgao === null || (orgao.orgao === "reitoria" && tipo === "res"))) {
+    if (data) {
+      // Com data, o ato do IFPR registrado nessa data (IN Reitoria/PROENS nº 1, de 19/08/2021, e
+      // não a IN Reitoria nº 1, de 26/07/2021, que o órgão implícito daria).
+      const porData = registro.normasPorData(tipo, numero, data).filter((entrada) => entrada.id.startsWith("ifpr/"));
+      if (porData.length === 1) return resultado(porData[0]!.id, "orgao-implicito-ifpr", registro);
+    }
     const implicito = ORGAO_IFPR_POR_TIPO[tipo];
     if (!implicito) return resultado(null, "orgao-ambiguo", registro);
-    return resultado(
-      montarIdNorma({ jurisdicao: "ifpr", orgao: implicito, tipo, ano, numero }),
-      "orgao-implicito-ifpr",
-      registro,
-    );
+    const id = montarIdNorma({ jurisdicao: "ifpr", orgao: implicito, tipo, ano, numero });
+    if (dataDiverge(id, data, registro)) return resultado(null, "data-divergente", registro);
+    return resultado(id, "orgao-implicito-ifpr", registro);
   }
 
   return resultado(
@@ -509,50 +527,54 @@ interface Achado extends Resolucao {
   fragmentos?: (string | null)[];
 }
 
+/** O ato `id` (já resolvido no documento) é compatível com o órgão citado sem ano? */
+function orgaoCompativel(partes: NonNullable<ReturnType<typeof partesIdNorma>>, orgao: Orgao | null): boolean {
+  if (orgao === null) return true;
+  if (orgao.jurisdicao !== partes.jurisdicao) return false;
+  if (orgao.orgao === null) return true;
+  if (orgao.orgao === "cne") return partes.orgao?.startsWith("cne-") ?? false;
+  return partes.orgao === orgao.orgao;
+}
+
 /**
  * Completa, pelo próprio documento, citações que ficaram sem ID: "Resolução nº 54/2011" sem órgão
  * vira o único ato (res, 54, 2011) que o documento cita com órgão (`orgao-no-documento`); "Lei nº
- * 10.741" sem ano, o único ato (lei, 10741) citado com ano (`ano-no-documento`). Não completa
- * quando a data citada diverge da data do ato no documento ou no registro.
+ * 10.741" sem ano, o único ato (lei, 10741) de órgão compatível citado com ano (`ano-no-documento`:
+ * "Resolução CNE nº 2" não vira a CONSUP nº 2/2017, nem "Resolução nº 2 do IFPR" a CNE/CP nº 2/2017).
+ * Citação com data não é completada quando a data do ato (no documento ou no registro: `assinada_em`
+ * ou publicação) diverge.
  */
 function completarPeloDocumento(achados: Achado[], registro: Registro): void {
-  const resolvidos = new Map<string, Set<string>>();
+  const resolvidos = new Map<string, NonNullable<ReturnType<typeof partesIdNorma>>>();
   const datas = new Map<string, Set<string>>();
-  const anotar = (chave: string, id: string) => {
-    const conjunto = resolvidos.get(chave) ?? new Set<string>();
-    conjunto.add(id);
-    resolvidos.set(chave, conjunto);
-  };
   for (const achado of achados) {
     if (achado.id === null) continue;
     const id = achado.id.split("~")[0]!;
     const partes = partesIdNorma(id);
     if (!partes) continue;
-    anotar(`ano|${partes.tipo}|${partes.ano}|${partes.numero}`, id);
-    anotar(`num|${partes.tipo}|${partes.numero}`, id);
-    anotar(`num|${partes.tipo}|${partes.orgao ?? ""}|${partes.numero}`, id);
+    resolvidos.set(id, partes);
     if (achado.ato?.data) datas.set(id, (datas.get(id) ?? new Set<string>()).add(achado.ato.data));
   }
   for (const achado of achados) {
     if (achado.id !== null || !achado.ato) continue;
     const { tipo, numero, ano, orgao, data } = achado.ato;
-    let chave: string | null = null;
     let regra = "";
+    let filtro: ((partes: NonNullable<ReturnType<typeof partesIdNorma>>) => boolean) | null = null;
     if (achado.regra === "orgao-ausente" && ano !== null) {
-      chave = `ano|${tipo}|${ano}|${numero}`;
       regra = "orgao-no-documento";
+      filtro = (partes) => partes.ano === ano;
     } else if (achado.regra === "sem-ano") {
-      const segmento = orgao?.orgao && orgao.orgao !== "cne" ? orgao.orgao : null;
-      chave = segmento ? `num|${tipo}|${segmento}|${numero}` : `num|${tipo}|${numero}`;
       regra = "ano-no-documento";
+      filtro = (partes) => orgaoCompativel(partes, orgao);
     }
-    const candidatos = chave ? resolvidos.get(chave) : undefined;
-    if (!candidatos || candidatos.size !== 1) continue;
-    const id = [...candidatos][0]!;
+    if (!filtro) continue;
+    const candidatos = [...resolvidos].filter(
+      ([, partes]) => partes.tipo === tipo && partes.numero === numero && filtro(partes),
+    );
+    if (candidatos.length !== 1) continue;
+    const id = candidatos[0]![0];
     if (data) {
-      const conhecidas = new Set(datas.get(id));
-      const doRegistro = registro.obter(id)?.data_publicacao;
-      if (doRegistro) conhecidas.add(doRegistro);
+      const conhecidas = new Set([...(datas.get(id) ?? []), ...datasDoAto(registro.obter(id))]);
       if (conhecidas.size > 0 && !conhecidas.has(data)) continue;
     }
     Object.assign(achado, comDispositivos(resultado(id, regra, registro), achado.fragmentos ?? []));
@@ -567,7 +589,7 @@ interface Anterior {
 }
 
 /** Nomes de órgão encadeados por pontuação, terminando no início do tipo do ato. */
-const NOME_ORGAO = String.raw`(?:brasil|presidencia\s+da\s+republica|casa\s+civil|ministerio\s+da\s+educacao|mec|conselho\s+nacional\s+de\s+educacao|cne|camara\s+de\s+educacao\s+(?:basica|superior)|c[ep]b|ceb|ces|cp|conselho\s+pleno|instituto\s+federal(?:\s+de\s+educacao,?\s+ciencia\s+e\s+tecnologia)?\s+do\s+parana|ifpr|conselho\s+superior(?:\s+do\s+instituto\s+federal\s+do\s+parana)?|consup|consepe|reitoria|pro-?\s*reitoria\s+de\s+ensino|proens|comissao\s+nacional\s+de\s+avaliacao\s+da\s+educacao\s+superior|conaes|conselho\s+federal\s+de\s+[a-z]+(?:\s+[a-z]+){0,2})`;
+const NOME_ORGAO = String.raw`(?:brasil|presidencia\s+da\s+republica|casa\s+civil|ministerio\s+da\s+educacao|mec|conselho\s+nacional\s+de\s+educacao|cne|camara\s+de\s+educacao\s+(?:basica|superior)|c[ep]b|ceb|ces|cp|conselho\s+pleno|instituto\s+federal(?:\s+de\s+educacao,?\s+ciencia\s+e\s+tecnologia)?\s+do\s+parana|ifpr|conselho\s+superior(?:\s+do\s+instituto\s+federal\s+do\s+parana)?|consup|consepe|reitoria|pro-?\s*reitoria\s+de\s+ensino|proens|proep?pi|comissao\s+nacional\s+de\s+avaliacao\s+da\s+educacao\s+superior|conaes|conselho\s+federal\s+de\s+[a-z]+(?:\s+[a-z]+){0,2})`;
 const RE_CADEIA_ORGAOS = new RegExp(String.raw`(?:${NOME_ORGAO}\s*(?:\(\s*[a-z/]+\s*\))?\s*[.,:/-]?\s*)+$`);
 const RE_CADEIA_INICIO = new RegExp(String.raw`^(?:${NOME_ORGAO}\s*(?:\(\s*[a-z/]+\s*\))?\s*[.,:/-]?\s*)+`);
 

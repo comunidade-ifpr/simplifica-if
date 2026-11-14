@@ -16,7 +16,9 @@
  *   "a confirmar", o efeito é presumido a partir da assinatura da origem e marcado como incerto;
  * - status: `revogada` (revogação total) > `parcialmente revogada` (revogação de dispositivo ou com
  *   alcance) > `alterada` > `vigente`. `regulamenta` e `fundamenta-se-em` não mudam o status;
- * - stub sem relação que o atinja fica com o status registrado em `stubs.yaml`.
+ * - stub sem relação com efeito na data fica com o status registrado em `stubs.yaml`, mas um status
+ *   diferente de `vigente` só vale a partir da vigência do ato de `status_fonte` (antes dela, a norma
+ *   estava em vigor; sem essa data, "a confirmar").
  *
  * Revogada não é inaplicável: `transicoesAplicaveis` devolve as regras de transição (de
  * `base-conhecimento/transicoes.yaml`) que mantêm efeitos da norma revogada.
@@ -163,6 +165,13 @@ export function efeitoDaRelacao(relacao: Relacao, raiz: RaizOuFonte = raizReposi
   return inicioVigencia(relacao.origem, raiz);
 }
 
+/** Data de efeito do status registrado de um stub: a vigência do ato de `status_fonte`. */
+function efeitoDoStatusRegistrado(statusFonte: string | undefined, raiz: RaizOuFonte): Inicio | null {
+  if (!statusFonte) return null;
+  const efeito = inicioVigencia(idDoAto(statusFonte.split("#")[0]!), raiz);
+  return efeito.data || efeito.minimo ? efeito : null;
+}
+
 /** `true`, `false` ou `"a confirmar"`: o evento já ocorreu na data? */
 function ocorreu(inicio: Inicio, data: string): boolean | "a confirmar" {
   if (inicio.data) return data >= inicio.data;
@@ -269,7 +278,23 @@ export function statusEm(id: string, data: string, raiz: RaizOuFonte = raizRepos
         pendencias: [`status de ${titulo(ato)} não conferido (stub)`],
       };
     }
-    status = registrado as StatusVigencia;
+    if (registrado !== "vigente") {
+      // O status registrado (revogada, alterada…) só vale a partir do efeito do dispositivo que o
+      // fundamenta (`status_fonte`); antes disso, a norma estava em vigor.
+      const efeito = efeitoDoStatusRegistrado(entrada.status_fonte, fonte);
+      const vale = efeito ? ocorreu(efeito, data) : A_CONFIRMAR;
+      if (vale === A_CONFIRMAR) {
+        certo = false;
+        pendencias.push(
+          efeito
+            ? `status registrado de ${titulo(ato)} (${registrado}) depende da vigência de ${titulo(idDoAto(entrada.status_fonte!.split("#")[0]!))}, a confirmar` +
+                `${efeito.minimo ? ` (não antes de ${efeito.minimo})` : ""}`
+            : `status registrado de ${titulo(ato)} (${registrado}) sem data de efeito conhecida`,
+        );
+        if (!efeito) return { id: ato, data, status: "a confirmar", certo: false, inicio, eventos, pendencias };
+      }
+      if (vale !== false) status = registrado as StatusVigencia;
+    }
   }
   return { id: ato, data, status, certo, inicio, eventos, pendencias };
 }
@@ -306,6 +331,12 @@ export function intervalosVigencia(id: string, raiz: RaizOuFonte = raizRepositor
     const fonte = `${relacao.tipo} ${relacao.origem}${relacao.operador ?? ""}`;
     marcar(efeito.data, fonte);
     marcar(efeito.minimo, fonte);
+  }
+  const entrada = dados.registro().obter(ato);
+  if (entrada?.situacao === "stub") {
+    const efeito = efeitoDoStatusRegistrado(entrada.status_fonte, dados);
+    marcar(efeito?.data ?? null, `status_fonte ${entrada.status_fonte}`);
+    marcar(efeito?.minimo ?? null, `status_fonte ${entrada.status_fonte}`);
   }
   const datas = [...marcos.keys()].sort();
   const pontos: { de: string | null; fonte: string; em: string }[] = [
