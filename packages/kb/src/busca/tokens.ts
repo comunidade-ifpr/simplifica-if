@@ -3,11 +3,12 @@
  * `kb.sqlite`) e os termos da consulta, para que indexação e consulta não divirjam.
  *
  * - Tokens como os do tokenizador `unicode61` do FTS5: sequências de letras e dígitos.
- * - Minúsculas; palavras vazias (stopwords) de português ficam de fora.
- * - Radical Snowball (`stemmer.ts`) calculado com acentos e depois sem eles, como o
- *   `remove_diacritics 2` do FTS5 faz com o texto original.
+ * - Minúsculas; palavras vazias (stopwords) de português ficam de fora, com ou sem acento.
+ * - Radical Snowball (`radicalSemAcento` de `stemmer.ts`) calculado sobre a palavra já sem acentos,
+ *   como o `remove_diacritics 2` do FTS5 faz com o texto original: "avaliação" e "avaliacao" dão o
+ *   mesmo radical, e a consulta digitada sem acento acha o texto acentuado.
  */
-import { radical } from "./stemmer.ts";
+import { radicalSemAcento } from "./stemmer.ts";
 
 /** Palavras vazias de português (lista curta, conferida contra as consultas da avaliação). */
 export const PALAVRAS_VAZIAS = new Set(
@@ -16,7 +17,9 @@ export const PALAVRAS_VAZIAS = new Set(
     "eu foi há isso isto já la lhe mais mas me mesmo na nas nem no nos o os ou para pela pelas pelo " +
     "pelos por qual quando que se sem ser seu seus sua suas são também te tem um uma umas uns " +
     "sobre seja sejam ser será serão onde"
-  ).split(" "),
+  )
+    .split(" ")
+    .map((p) => semDiacriticos(p)),
 );
 
 const RE_TOKEN = /[\p{L}\p{N}]+/gu;
@@ -31,15 +34,15 @@ export function tokens(texto: string): string[] {
   return [...texto.toLowerCase().normalize("NFC").matchAll(RE_TOKEN)].map((m) => m[0]);
 }
 
-/** Radical sem acentos de um token em minúsculas; números ficam como estão. */
+/** Radical sem acentos de um token em minúsculas (igual para a forma acentuada e a sem acento). */
 export function radicalDoToken(token: string): string {
   if (/^\p{N}+$/u.test(token)) return token;
-  return semDiacriticos(radical(token));
+  return radicalSemAcento(semDiacriticos(token));
 }
 
-/** Tokens sem palavras vazias. */
+/** Tokens sem palavras vazias (comparadas sem acento: "são" e "sao" ficam de fora). */
 export function termos(texto: string): string[] {
-  return tokens(texto).filter((t) => !PALAVRAS_VAZIAS.has(t));
+  return tokens(texto).filter((t) => !PALAVRAS_VAZIAS.has(semDiacriticos(t)));
 }
 
 /** Radicais do texto, sem palavras vazias, na ordem (coluna auxiliar do FTS5). */

@@ -27,7 +27,7 @@ Núcleo da base de conhecimento ([plano de arquitetura](../../PLANO-ARQUITETURA.
 | `adequacao/art71.ts` | cursos técnicos sujeitos ao art. 71 da Res. CNE/CP nº 2/2026 e a DCN que cada PPC cita |
 | `avaliacao/resolvedor.ts` | precisão e recall do resolvedor em `avaliacao/resolvedor/citacoes-anotadas.yaml` |
 | `avaliacao/busca-secoes.ts` | recall@10 da busca de seções em `avaliacao/busca-secoes/consultas.yaml`, com e sem stemmer e sinônimos |
-| `busca/stemmer.ts`, `busca/tokens.ts` | stemmer Snowball de português (porte próprio, conferido contra `snowball-stemmers`) e termos da busca, iguais na indexação e na consulta |
+| `busca/stemmer.ts`, `busca/tokens.ts` | stemmer Snowball de português (porte próprio, conferido contra `snowball-stemmers`, e a variante `radicalSemAcento`, com os sufixos sem acentos) e termos da busca, iguais na indexação e na consulta e iguais com ou sem acento |
 | `busca/sinonimos.ts` | léxico de `dados/sinonimos.yaml`: termos por tipo de seção (expansão do documento) e grupos de equivalentes (expansão da consulta) |
 | `institucional/dados.ts` | leitura frouxa de `dados/institucional/` e das matrizes do SUAP (`suap.matrizes.resumo`) |
 | `fatos/ppc.ts`, `fatos/divergencias.ts` | fatos extraídos dos PPCs (carga total, estágio obrigatório e carga), com trecho e status `extraido`, e o cruzamento com o SUAP |
