@@ -528,6 +528,8 @@ O arquivo é `packages/mcp/instrucoes.md`. Ele vira o campo `instructions` do se
 6. **Fora da base:** se a base não tem a informação, diga isso. Não preencha com memória.
 7. **Versão:** informe a data da base quando a resposta depender dela.
 
+**Revisão do T5 (14/11/2026).** O texto cita as 16 ferramentas por intenção ("antes de afirmar uma obrigação, ache o dispositivo", "para ver como outros cursos escreveram uma seção"), sem repetir as descrições delas; um teste confere que nenhuma frase longa de descrição volta inteira. Para caber o item novo, **Revisão de PPC** (dentro da `revisar-ppc`, peça o contexto a `pacote_contexto` em vez de montá-lo com várias chamadas; `etapa` só quando a skill pedir), os itens 6 e 7 viraram um só, "Fora da base e versão". Tem 355 palavras; `test/instrucoes.test.ts` confere o limite, as 16 ferramentas, o link `ifpr://`, o texto literal, os selos "a confirmar" e `extraido`, o PPC como exemplo e o `pacote_contexto`. O `AGENTS.md` aponta para o arquivo na parte de consulta.
+
 ## T0 — Banco autossuficiente (em `packages/kb`)
 
 O objetivo é que todas as ferramentas respondam abrindo só o `kb.sqlite`, em modo somente leitura. A abordagem é trocar a fonte de dados das funções que já existem, sem reescrever regras.
@@ -670,3 +672,4 @@ args = ["--banco", "~/SimplificaIF/kb.sqlite"]
   - Testes: contrato, determinismo, orçamento, pasta de trabalho (`..`, absoluto, symlink para fora, arquivo inexistente, pasta com nome `.md`) e `ppc` contra `arquivo` (`test/pacote-contexto.test.ts`, 16); paridade byte a byte com `kb pacote-contexto` no smoke (`test/smoke-pacote-contexto.test.ts`, 4, em `pnpm mcp:smoke`).
   - Gabarito do MCP: `gabarito.ts --atualizar pacote_contexto` acrescentou a definição e três chamadas, sem mexer no resto (`testes-gabarito/README.md`). `tools/list` com 16 ferramentas.
   - Verificação: 1259 testes, nenhuma falha (17 pulados: 16 do smoke e 1 do sei-cli); smoke com 16 testes, sem falha; gabarito equivalente (16 ferramentas, 36 chamadas); base válida.
+- 14/11/2026: T5 pronto no mesmo branch: `instrucoes.md` revisto (ver "Revisão do T5"), 355 palavras, módulo gerado conferido com `pnpm mcp:instrucoes --check`; ponteiro no `AGENTS.md`; gabarito com as instruções novas (`gabarito.ts --atualizar instrucoes`).

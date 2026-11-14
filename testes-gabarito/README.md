@@ -37,3 +37,4 @@ O `gabarito.ts --atualizar <partes>` regrava só as partes nomeadas e mantém o 
 | Data | Comando | O que mudou |
 |---|---|---|
 | 14/11/2026 | `node packages/mcp/test/gabarito.ts --atualizar pacote_contexto` | T4 do M0.1: a 16ª ferramenta, `pacote_contexto`, entra no `tools/list` entre `fatos_ppc` e `sobre_a_base`, com três chamadas: `CT-CURR-12` sobre o PPC da base, `CT-CURR-12` sobre o Markdown do mesmo PPC como `arquivo` (a pasta de trabalho é a raiz do repositório) e a entrada inválida com `ppc` e `arquivo` juntos. De 33 para 36 chamadas; as outras 15 definições e as 33 chamadas continuam byte a byte as da captura |
+| 14/11/2026 | `node packages/mcp/test/gabarito.ts --atualizar instrucoes` | T5 do M0.1: as instruções revistas (`packages/mcp/instrucoes.md`), com as 16 ferramentas por intenção e o item "Revisão de PPC" |
