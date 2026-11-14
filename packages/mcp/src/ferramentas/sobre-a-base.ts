@@ -31,7 +31,7 @@ const ROTULOS_CONTAGEM: [tabela: string, rotulo: string][] = [
   ["ofertas", "ofertas de ingresso"],
   ["cnct", "cursos do CNCT"],
   ["campi", "campi"],
-  ["fichas", "fichas da analise-ppc"],
+  ["fichas", "fichas da revisar-ppc"],
 ];
 
 const linhasTipo = z.array(z.object({ tipo: z.string() }));
@@ -42,7 +42,7 @@ export const sobreABase = definirFerramenta({
   nome: "sobre_a_base",
   titulo: "Sobre a base",
   descricao:
-    "Versão, data de referência e conteúdo da base. Use quando o servidor perguntar o que a base contém ou de quando ela é.",
+    "Versão, data de referência e conteúdo da base. Use quando o usuário (um servidor do IFPR) perguntar o que a base contém ou de quando ela é.",
   entrada,
   dados,
   executar(_entrada, { db, meta, base }) {

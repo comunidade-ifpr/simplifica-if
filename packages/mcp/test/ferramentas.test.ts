@@ -40,7 +40,7 @@ const PREVISTAS = [
 /** Texto exato da especificação (seções 15 e 16): mudar a descrição muda o comportamento do modelo. */
 const DESCRICOES: Record<string, string> = {
   sobre_a_base:
-    "Versão, data de referência e conteúdo da base. Use quando o servidor perguntar o que a base contém ou de quando ela é.",
+    "Versão, data de referência e conteúdo da base. Use quando o usuário (um servidor do IFPR) perguntar o que a base contém ou de quando ela é.",
   etapa: "Informa ao app em que etapa da tarefa você está. Use só quando a skill pedir.",
 };
 

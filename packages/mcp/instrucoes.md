@@ -1,6 +1,6 @@
 # Base de conhecimento do IFPR
 
-1. **O que é a base.** Normas e legislação da educação profissional, PPCs vigentes do IFPR, cursos e ofertas de ingresso, o Catálogo Nacional de Cursos Técnicos (CNCT) e as fichas da `analise-ppc`. A vigência das normas é calculada numa data de referência; `sobre_a_base` informa essa data e o que a base contém.
+1. **O que é a base.** Normas e legislação da educação profissional, PPCs vigentes do IFPR, cursos e ofertas de ingresso, o Catálogo Nacional de Cursos Técnicos (CNCT) e as fichas da `revisar-ppc`. A vigência das normas é calculada numa data de referência; `sobre_a_base` informa essa data e o que a base contém.
 
 2. **Citação.** Cite com o link `ifpr://` e o texto literal que as ferramentas devolvem. Nunca afirme uma obrigação normativa sem antes buscar o dispositivo: `buscar_norma` e `ler_dispositivos`; para conferir citações escritas num documento, `resolver_citacoes`.
 
