@@ -4,7 +4,7 @@ import path from "node:path";
 import { carregarPpcOuro, DIR_AVALIACAO, RAIZ_REPOSITORIO } from "./carregar.ts";
 
 const DIR_OURO = path.join(DIR_AVALIACAO, "ppcs-ouro");
-const DIR_FICHAS = path.join(RAIZ_REPOSITORIO, ".agents", "skills", "analise-ppc", "base-analise", "fichas");
+const DIR_FICHAS = path.join(RAIZ_REPOSITORIO, ".agents", "skills", "revisar-ppc", "base-analise", "fichas");
 const arquivos = readdirSync(DIR_OURO)
   .filter((nome) => nome.endsWith(".yaml"))
   .sort();

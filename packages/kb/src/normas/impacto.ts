@@ -6,7 +6,7 @@
  *   fundamenta) e dispositivos de outras normas da base que a citam no texto;
  * - sucessora e correspondência: se a norma foi revogada no todo, a norma que a revogou, as regras
  *   de transição e os dispositivos correspondentes (tabela de correspondência);
- * - fichas e validações cruzadas da `analise-ppc`: referência estruturada à norma, referência a um
+ * - fichas e validações cruzadas da `revisar-ppc`: referência estruturada à norma, referência a um
  *   dispositivo correspondente da sucessora, ou citação no texto (resolvedor de citações);
  * - outros textos de conteúdo das skills (prompts, contratos, taxonomia, marcos): citação no texto;
  * - PPCs convertidos que citam a norma (`kb citacoes`).
@@ -73,7 +73,7 @@ function semAcentoMinusculo(texto: string): string {
  * `sem-equivalente`; sem tabela, qualquer dispositivo). Sinal temático, mais largo que a citação.
  */
 function topicosAtingidos(ato: string, raiz: string, raizConteudo: string): Map<string, { fichas: string[] }> {
-  const arquivo = path.join(raizConteudo, ".agents", "skills", "analise-ppc", "base-analise", "topicos-fichas.json");
+  const arquivo = path.join(raizConteudo, ".agents", "skills", "revisar-ppc", "base-analise", "topicos-fichas.json");
   const saida = new Map<string, { fichas: string[] }>();
   if (!existsSync(arquivo)) return saida;
   const taxonomia = JSON.parse(readFileSync(arquivo, "utf-8")) as {
@@ -88,7 +88,7 @@ function topicosAtingidos(ato: string, raiz: string, raizConteudo: string): Map<
     : dispositivos;
   const texto = semAcentoMinusculo(materiais.map((d) => d.texto).join("\n"));
   for (const topico of taxonomia.topicos ?? []) {
-    if (topico.id === "referencias_normativas" || topico.id === "sintese_transversal_parecer") continue;
+    if (topico.id === "referencias_normativas" || topico.id === "sintese_transversal_revisao") continue;
     const termos = (topico.termos_busca ?? []).map(semAcentoMinusculo).filter((t) => t.length >= 4);
     if (termos.some((termo) => new RegExp(`\\b${termo.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`).test(texto))) {
       saida.set(topico.id, { fichas: topico.fichas ?? [] });

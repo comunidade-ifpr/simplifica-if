@@ -1,12 +1,12 @@
-# Tópicos das fichas da analise-ppc (base-analise/topicos-fichas.json) → tipos de seção do PPC
+# Tópicos das fichas da revisar-ppc (base-analise/topicos-fichas.json) → tipos de seção do PPC
 # (taxonomias técnico e geral de packages/kb/src/ppcs/secoes.ts).
 #
-# Usado por `kb pacote-contexto <tarefa> <ppc>` e pelos grupos por tópico da analise-ppc: as seções
+# Usado por `kb pacote-contexto <tarefa> <ppc>` e pelos grupos por tópico da revisar-ppc: as seções
 # do PPC desses tipos entram inteiras no pacote; a busca textual pelas `consultas` das fichas completa
 # com o que a taxonomia não pegou. Contrato: esquemaTopicosSecoes em packages/kb/src/db/pacote-contexto.ts (zod).
 #
 # Rascunho (fase 6): escrito a partir dos títulos e descrições dos tópicos, sem revisão humana.
-# Ajustado na troca da analise-ppc para grupos por tópico, pelas âncoras semânticas que ficavam fora
+# Ajustado na troca da revisar-ppc para grupos por tópico, pelas âncoras semânticas que ficavam fora
 # do grupo em 4 rodadas (3 PPCs técnicos da base e uma minuta fora dela):
 # - `pretextual` (capa, dirigentes, comissão) em identificacao_oferta e corpo_docente_gestao: a capa
 #   traz curso, forma de oferta, campus e ano; a comissão e a coordenação. Fora do índice publicado,
@@ -32,4 +32,4 @@ infraestrutura: [infraestrutura]
 avaliacao_ppc_egressos: [avaliacao_curso, acompanhamento_egresso]
 referencias_normativas: [legislacao, referencias]
 temas_transversais_cidadania: [organizacao_curricular, concepcao_pedagogica]
-sintese_transversal_parecer: []
+sintese_transversal_revisao: []

@@ -239,7 +239,7 @@ describe("fase 5: o banco dá o mesmo resultado que a API de arquivos", () => {
 
   test("relações e marcos derivados", () => {
     expect(relacoesBanco(db)).toEqual(carregarRelacoes(raiz));
-    const marcos = lerJson(".agents/skills/analise-ppc/base-analise/marcos-normativos.json").marcos as {
+    const marcos = lerJson(".agents/skills/revisar-ppc/base-analise/marcos-normativos.json").marcos as {
       id: string;
       linha: string[];
     }[];

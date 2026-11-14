@@ -1,5 +1,5 @@
 /**
- * Paridade com o Python 3.14 do que o relatório da analise-ppc usa (trilha
+ * Paridade com o Python 3.14 do que o relatório da revisar-ppc usa (trilha
  * T2): `textwrap.wrap` (`break_on_hyphens=False`), `html.escape`,
  * `str.expandtabs`, `shlex.split`, `urllib.parse.quote`, `Path.as_uri()` e
  * `f"{x:.2f}"`. Os valores esperados foram gerados com o próprio Python.

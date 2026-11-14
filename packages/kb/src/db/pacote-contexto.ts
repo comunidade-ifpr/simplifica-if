@@ -1,5 +1,5 @@
 /**
- * `kb pacote-contexto <tarefa> <ppc>`: o contexto de uma tarefa da `analise-ppc` montado pelo banco,
+ * `kb pacote-contexto <tarefa> <ppc>`: o contexto de uma tarefa da `revisar-ppc` montado pelo banco,
  * em vez do PPC inteiro mais os manifestos.
  *
  * Tarefa: uma ficha (`CT-CURR-12`), várias separadas por vírgula, um tópico de
@@ -50,7 +50,7 @@ export function lerTopicosSecoes(
   return esquemaTopicosSecoes.parse(parse(readFileSync(caminho, "utf-8"), { schema: "failsafe" }) ?? {});
 }
 
-/** Tamanho máximo de um grupo de sub-agente da `analise-ppc` (fichas por grupo). */
+/** Tamanho máximo de um grupo de sub-agente da `revisar-ppc` (fichas por grupo). */
 export const TAMANHO_MAXIMO_GRUPO = 20;
 /** Grupo das fichas de escopo transversal, que recebem o PPC inteiro. */
 export const TOPICO_TRANSVERSAL = "transversal";
@@ -68,9 +68,9 @@ const esquemaTopicosFichas = z.looseObject({
 /** Tópico de `topicos-fichas.json`, na ordem da taxonomia. */
 export type TopicoFichas = z.output<typeof esquemaTopicosFichas>["topicos"][number];
 
-/** Tópicos de `.agents/skills/analise-ppc/base-analise/topicos-fichas.json`, na ordem do arquivo. */
+/** Tópicos de `.agents/skills/revisar-ppc/base-analise/topicos-fichas.json`, na ordem do arquivo. */
 export function lerTopicosFichas(raiz: string): TopicoFichas[] {
-  const arquivo = path.join(raiz, ".agents", "skills", "analise-ppc", "base-analise", "topicos-fichas.json");
+  const arquivo = path.join(raiz, ".agents", "skills", "revisar-ppc", "base-analise", "topicos-fichas.json");
   return esquemaTopicosFichas.parse(JSON.parse(readFileSync(arquivo, "utf-8"))).topicos;
 }
 
@@ -201,7 +201,7 @@ export function fichasDoBanco(db: Database, ids?: readonly string[]): FichaPacot
 }
 
 /**
- * IDs das fichas de uma tarefa. `grupo-NNN` é o n-ésimo grupo por tópico da `analise-ppc`
+ * IDs das fichas de uma tarefa. `grupo-NNN` é o n-ésimo grupo por tópico da `revisar-ppc`
  * (`agruparPorTopico` com `topicos`, o tamanho máximo padrão e todas as fichas do banco).
  */
 export function fichasDaTarefa(db: Database, tarefa: string, topicos?: readonly TopicoFichas[]): string[] {
@@ -676,7 +676,7 @@ export interface PacoteAvulso {
  * Pacote de contexto de um conjunto de fichas para um PPC que pode não estar na base: as normas,
  * os marcos, as transições e o CNCT vêm do `kb.sqlite` (`db`); as seções e as citações do PPC, do
  * banco em memória de `bancoDoPpcAvulso` (`dbPpc`), com as mesmas consultas do pacote de um PPC da
- * base. Usado pela `analise-ppc` para montar o contexto de cada grupo de sub-agente.
+ * base. Usado pela `revisar-ppc` para montar o contexto de cada grupo de sub-agente.
  */
 export function pacoteContextoAvulso(
   db: Database,

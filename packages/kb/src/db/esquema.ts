@@ -271,7 +271,7 @@ CREATE TABLE ppc_suap (
   PRIMARY KEY (ppc_id, aspecto)
 ) WITHOUT ROWID;
 
--- Fichas da analise-ppc, referências estruturadas, tópicos e marcos normativos.
+-- Fichas da revisar-ppc, referências estruturadas, tópicos e marcos normativos.
 CREATE TABLE fichas (
   id TEXT PRIMARY KEY,
   titulo TEXT NOT NULL,

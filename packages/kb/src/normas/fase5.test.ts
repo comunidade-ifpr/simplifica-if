@@ -146,7 +146,7 @@ describe("impacto", () => {
     expect(r.sucessoras).toEqual([DCN_2026]);
     expect(r.normas_que_citam.map((n) => n.id)).toContain("br/mec/portaria/2024/902");
     const arquivos = r.arquivos.map((a) => a.arquivo);
-    expect(arquivos).toContain(".agents/skills/analise-ppc/base-analise/validacoes-cruzadas/vc-01-03-11-normas.json");
-    expect(arquivos).toContain(".agents/skills/analise-ppc/base-analise/fichas/ct-curr-02.json");
+    expect(arquivos).toContain(".agents/skills/revisar-ppc/base-analise/validacoes-cruzadas/vc-01-03-11-normas.json");
+    expect(arquivos).toContain(".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-02.json");
   });
 });

@@ -259,7 +259,7 @@ export function registrarComandosBanco(programa: Command): void {
   programa
     .command("pacote-contexto")
     .description(
-      "Contexto de uma tarefa da analise-ppc (ficha, tópico, grupo-NNN ou todas) para um PPC: CNCT, fichas, dispositivos citados, marcos, regras de transição, seções relevantes e fatos.",
+      "Contexto de uma tarefa da revisar-ppc (ficha, tópico, grupo-NNN ou todas) para um PPC: CNCT, fichas, dispositivos citados, marcos, regras de transição, seções relevantes e fatos.",
     )
     .argument("<tarefa>", "CT-CURR-12, CT-CURR-12,CT-IDENT-01, estagio, grupo-001 ou todas")
     .argument("<ppc>", "campus/curso, ppc:campus/curso ou um arquivo .md (PPC fora da base)")

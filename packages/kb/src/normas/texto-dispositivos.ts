@@ -2,7 +2,7 @@
  * Texto legível de IDs de dispositivo: o caminho inverso de `dispositivos.ts`.
  *
  * `["#art29", "#art30", "#art37-par3"]` → "arts. 29, 30 e 37, § 3º", na redação usada nas fichas da
- * `analise-ppc` e nas normas: ordinal até 9 ("art. 9º", "§ 1º"), inciso em romano maiúsculo, faixa
+ * `revisar-ppc` e nas normas: ordinal até 9 ("art. 9º", "§ 1º"), inciso em romano maiúsculo, faixa
  * para três ou mais artigos ou incisos consecutivos ("arts. 48 a 53", "II a V") e ", e" antes do
  * último item quando o penúltimo já tem vírgula ("arts. 28, X, e 42").
  */

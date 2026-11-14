@@ -8,7 +8,7 @@ Conjunto de avaliação e harness da fase 1 do [plano de arquitetura](../PLANO-A
 | `config.yaml` | modelo, execuções por pergunta, limite de turnos, orçamento e ferramentas |
 | `gabaritos/` | conjuntos esperados e universos, **gerados** (não edite à mão) |
 | `resolvedor/` | citações anotadas em 20 PPCs para medir o resolvedor de citações (rascunho) |
-| `ppcs-ouro/` | achados esperados por ficha da `analise-ppc` em 3 PPCs técnicos (rascunho) |
+| `ppcs-ouro/` | achados esperados por ficha da `revisar-ppc` em 3 PPCs técnicos (rascunho) |
 | `resultados/` | rodadas do harness (fora do git) |
 
 O código fica em `scripts/avaliacao/` e o entrypoint é `scripts/avaliar.ts`.

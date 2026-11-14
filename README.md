@@ -40,7 +40,7 @@ As skills deste projeto ficam diretamente no diretório padrão de descoberta do
 
 Skills disponíveis:
 
-- `analise-ppc/`: análise IA-first de Projetos Pedagógicos de Curso técnico do IFPR.
+- `revisar-ppc/`: revisão prévia IA-first de Projetos Pedagógicos de Curso técnico do IFPR, antes da submissão à PROENS (não substitui a análise oficial da PROENS).
 - `ifpr-design/`: identidade visual do IFPR para materiais e interfaces.
 - `revisar-processo-ppc/`: revisão de processos SEI de PPC.
 - `suap-ifpr/`: consulta e navegação no SUAP do IFPR com apoio dos tutoriais oficiais, incluindo dados profissionais de docentes e técnicos administrativos, cursos e disciplinas. Os comandos são TypeScript (Bun) na raiz: `scripts/suap_consultar.ts` e `scripts/suap_tutoriais.ts`, testados por `bun test scripts`.
@@ -57,7 +57,7 @@ bun run scripts/gerar_indice_ppcs.ts --check
 bun run scripts/validar_base.ts
 bun run scripts/gerar_site.ts --check
 bun run scripts/gerar_tipos_schemas.ts --check
-python3 -m pytest .agents/skills/analise-ppc/tests
+python3 -m pytest .agents/skills/revisar-ppc/tests
 ```
 
 Os JSON Schemas de `base-conhecimento/schemas/` são a fonte do formato dos JSONs institucionais e de catálogos. O validador os aplica com o ajv, e os tipos TypeScript usados pelo exportador e pelo validador ficam em `scripts/base/tipos-schemas.ts`, gerado a partir deles. Depois de alterar um schema, rode `bun run scripts/gerar_tipos_schemas.ts` e `bun run typecheck`.

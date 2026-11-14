@@ -4,7 +4,7 @@ Situação em 13/11/2026. Este plano consolida duas análises de arquitetura de 
 
 A versão 2 incorpora duas revisões independentes, uma da migração para TypeScript e outra das fases de retrieval. A seção [Histórico de revisões](#histórico-de-revisões) registra o que mudou.
 
-**Escopo:** a `analise-ppc` e a base de conhecimento. `Movimentações de Cursos` (Notion) está fora do escopo por ora.
+**Escopo:** a `revisar-ppc` (antes `analise-ppc`; veja a renomeação em [Andamento](#andamento)) e a base de conhecimento. `Movimentações de Cursos` (Notion) está fora do escopo por ora.
 
 ## Tese
 
@@ -38,7 +38,7 @@ O que já existe e será aproveitado:
   - `scripts/base/json.ts`: serialização como no Python;
   - `scripts/base/schema.ts`: `ajv` com as mensagens e a ordem de erros do validador antigo.
 - **`packages/sei-cli`:** em TypeScript, com `fflate` e `commander`. É o modelo de workspace.
-- **Protótipos das fases 2 e 5,** hoje em Python na `analise-ppc`:
+- **Protótipos das fases 2 e 5,** hoje em Python na `revisar-ppc`:
   - casamento de referências por tipo, número, ano e órgão, em `validar_base_analise.py`;
   - registro de marcos com regras de transição, em `marcos-normativos.json`.
 
@@ -56,14 +56,14 @@ O que já existe e será aproveitado:
 
 | Onde | Dependências | Papel |
 |---|---|---|
-| `analise-ppc/scripts/conversao_docx/` (~4.000 linhas) | `python-docx`; `rapidfuzz` opcional (fallback para `difflib`) | DOCX → `PPC.md` |
-| `analise-ppc/scripts/conversao_docx/image_extractor.py` | `docx2pdf` (MS Word), `pdf2image` (poppler), `pdfplumber` | renderiza a página quando a figura é desenho vetorial (fallback "rendered") |
-| `analise-ppc/scripts/preparar_documento.py` | importa `MarkdownNormalizer` de `conversao_docx`, mesmo com entrada `.md` | cria a rodada e o `PPC.md` canônico |
-| `analise-ppc/scripts/gerar_relatorio_html.py` (~1.270) | stdlib (`HTMLParser`, `textwrap`) | PPC HTML anotado |
-| `analise-ppc/scripts/subagents.py`, `common.py`, `cnct_catalogo.py`, `analise_ppc.py` (~1.720) | stdlib (`SequenceMatcher`) | rodada, grupos, prompts, contextos, mescla |
-| `analise-ppc/scripts/validar_base_analise.py` (~430) | stdlib (validador de JSON Schema escrito à mão) | fichas, marcos, referências |
-| `analise-ppc/scripts/gerar_indice_base_analise.py`, `gerar_mapa_fichas.py`, `publicar_surge.py` (~390) | stdlib, CLI `surge` | índice, mapa, publicação |
-| `analise-ppc/tests/` (89 casos; `test_flow.py` importa todos os módulos) | `pytest` | testes |
+| `revisar-ppc/scripts/conversao_docx/` (~4.000 linhas) | `python-docx`; `rapidfuzz` opcional (fallback para `difflib`) | DOCX → `PPC.md` |
+| `revisar-ppc/scripts/conversao_docx/image_extractor.py` | `docx2pdf` (MS Word), `pdf2image` (poppler), `pdfplumber` | renderiza a página quando a figura é desenho vetorial (fallback "rendered") |
+| `revisar-ppc/scripts/preparar_documento.py` | importa `MarkdownNormalizer` de `conversao_docx`, mesmo com entrada `.md` | cria a rodada e o `PPC.md` canônico |
+| `revisar-ppc/scripts/gerar_relatorio_html.py` (~1.270) | stdlib (`HTMLParser`, `textwrap`) | PPC HTML anotado |
+| `revisar-ppc/scripts/subagents.py`, `common.py`, `cnct_catalogo.py`, `analise_ppc.py` (~1.720) | stdlib (`SequenceMatcher`) | rodada, grupos, prompts, contextos, mescla |
+| `revisar-ppc/scripts/validar_base_analise.py` (~430) | stdlib (validador de JSON Schema escrito à mão) | fichas, marcos, referências |
+| `revisar-ppc/scripts/gerar_indice_base_analise.py`, `gerar_mapa_fichas.py`, `publicar_surge.py` (~390) | stdlib, CLI `surge` | índice, mapa, publicação |
+| `revisar-ppc/tests/` (89 casos; `test_flow.py` importa todos os módulos) | `pytest` | testes |
 | `verificar-calendario/scripts/render_relatorio_pdf.py` | `reportlab` | relatório em PDF |
 | `scripts/converter_ppcs_markdown.py` | `pymupdf4llm`, `rapidocr-onnxruntime`, `urllib` | baixa PDFs de PPC e converte em Markdown com OCR |
 
@@ -79,7 +79,7 @@ relacoes.yaml ───────┤               packages/kb
 dados/institucional/ ┼──► parse ──► ├─ IDs, schemas, resolvedor   ──► kb.sqlite (FTS5) ──► CLI `kb … --json`
 catalogos/cnct/ ─────┤     valida    ├─ dispositivos e relações               │            └► MCP (só se houver
 ppcs/*.md (+ proveniência) ──┤ compila ├─ seções, citações, fatos            │               consumidor sem shell)
-fichas analise-ppc ──┘               └─ paridade (texto, json, schema)     ├──► JSONs públicos
+fichas revisar-ppc ──┘               └─ paridade (texto, json, schema)     ├──► JSONs públicos
                                                                             └──► site/, llms.txt
 ```
 
@@ -104,7 +104,7 @@ fichas analise-ppc ──┘               └─ paridade (texto, json, schema)
 
 | Fase | Entrega | Esforço | Depende de |
 |---|---|---|---|
-| 0 | Fundação TypeScript: `packages/kb`, validador da `analise-ppc` em TS | Baixo | — |
+| 0 | Fundação TypeScript: `packages/kb`, validador da `revisar-ppc` em TS | Baixo | — |
 | 1 | Conjunto de avaliação enxuto e harness com agente real | Baixo a médio | — |
 | 2 | Identidade de normas, referências externas e resolvedor de citações | Médio | 0 |
 | 3 | Curadoria rápida: `cnct_id`, turno, stubs, curadoria por campo | Baixo (humano) | 2 (stubs) |
@@ -124,7 +124,7 @@ Ficam fora do plano por ora:
 
 ### Fase 0 — Fundação TypeScript
 
-**Objetivo.** Criar o núcleo `packages/kb` e tirar do Python a validação da `analise-ppc`, que hoje duplica regras do pipeline TypeScript.
+**Objetivo.** Criar o núcleo `packages/kb` e tirar do Python a validação da `revisar-ppc`, que hoje duplica regras do pipeline TypeScript.
 
 **Entregas**
 
@@ -137,11 +137,11 @@ Ficam fora do plano por ora:
   - `tsconfig.json` passa a incluir `.agents/skills/*/scripts/**/*.ts` e `.agents/skills/*/tests/**/*.ts`.
   - `test`: `bun test scripts ./.agents/skills && bun run --cwd packages/kb test && …`. O caminho precisa começar com `./`, porque o `bun test` ignora diretórios com ponto.
   - `format`: `bun fmt scripts '.agents/skills/*/scripts/**/*.ts' '.agents/skills/*/tests/**/*.ts' && …`. O glob tem de ser só de `.ts`: `bun fmt` sobre `.agents/skills/` reformataria fichas JSON e Markdown.
-- **Validador da `analise-ppc` em TypeScript:**
+- **Validador da `revisar-ppc` em TypeScript:**
   - portar `validar_base_analise.py`, `gerar_indice_base_analise.py` e `gerar_mapa_fichas.py`, usando o `ajv` de `schema.ts` sobre os JSON Schemas atuais de `base-analise/schemas/`;
   - o casamento de referências vai para `packages/kb/src/normas/referencias.ts`, como semente do resolvedor da fase 2;
-  - a validação da `analise-ppc` passa a rodar também dentro de `bun run scripts/validar_base.ts`.
-- **Entrypoint único `analise_ppc.ts`.** Ele assume os subcomandos e chama o Python por subprocesso nos que ainda não foram portados. O `SKILL.md` muda uma vez só, e a trilha T troca as implementações por baixo.
+  - a validação da `revisar-ppc` passa a rodar também dentro de `bun run scripts/validar_base.ts`.
+- **Entrypoint único `revisar_ppc.ts`.** Ele assume os subcomandos e chama o Python por subprocesso nos que ainda não foram portados. O `SKILL.md` muda uma vez só, e a trilha T troca as implementações por baixo.
 - **Testes:** portar `test_marcos_normativos.py` e os casos de `test_flow.py` ligados à validação, ao índice e ao mapa. O resto de `test_flow.py` é fatiado junto com a trilha T.
 - **Diferencial:**
   - `indice.json` e `mapa-fichas.md`: idênticos aos do Python, com `gerado_em` fixo;
@@ -195,7 +195,7 @@ Ficam fora do plano por ora:
   | Q8 | Que campi ofertam cursos do eixo Informação e Comunicação, e em que turno? |
 
 - **Gabaritos ancorados em ID e texto citado,** não em número de linha. O commit `304bc46` já reescreveu 7 normas, e número de linha não sobrevive a isso. Para perguntas de conjunto, o gabarito é o conjunto esperado, gerado por um comando versionado.
-- **Três PPCs-ouro** com os achados esperados por ficha, para avaliar a `analise-ppc` em si.
+- **Três PPCs-ouro** com os achados esperados por ficha, para avaliar a `revisar-ppc` em si.
 - **Harness `bun run avaliacao`:**
   - chama um agente real (`claude -p`, modelo fixado) três vezes por pergunta;
   - pontua de forma determinística:
@@ -343,7 +343,7 @@ Esta fase vem antes do SQLite porque é barata e dá o maior ganho em busca tem�
   - `cursos`, `ppc-fatos`, `citacoes`.
   - Toda resposta traz o texto literal e a proveniência.
   - A CLI recompila o banco sozinha quando ele está ausente ou mais velho que as fontes.
-- **`kb pacote-contexto <tarefa> <ppc>`** monta o contexto da `analise-ppc` e substitui a montagem ad hoc de `subagents`.
+- **`kb pacote-contexto <tarefa> <ppc>`** monta o contexto da `revisar-ppc` e substitui a montagem ad hoc de `subagents`.
 - **`AGENTS.md`** passa a mandar os agentes consultarem a base pela CLI `kb`, mantendo os arquivos como alternativa.
 - Consultas em SQL direto com `bun:sqlite`, com as linhas validadas por zod na fronteira e sem ORM.
 
@@ -366,7 +366,7 @@ Entra só se surgir um consumidor sem shell: a CLI e os arquivos servem os agent
 
 ### Trilha T — Restante da migração Python → TypeScript
 
-Corre em paralelo às fases 1 a 7. Cada passo troca uma implementação por baixo do entrypoint `analise_ppc.ts` e só remove o Python depois do diferencial.
+Corre em paralelo às fases 1 a 7. Cada passo troca uma implementação por baixo do entrypoint `revisar_ppc.ts` e só remove o Python depois do diferencial.
 
 **T1. Orquestração**
 
@@ -430,7 +430,7 @@ Corre em paralelo às fases 1 a 7. Cada passo troca uma implementação por baix
 | `ajv` | JSON Schemas existentes, com mensagens compatíveis (`schema.ts`) | 0 | Já usada; fica |
 | `json-schema-to-typescript` | Tipos dos schemas públicos | — | Já usada; fica |
 | `bun:sqlite` | Banco compilado com FTS5 | 6 | Embutida |
-| `commander` | CLIs `kb` e `analise_ppc.ts` | 0, 6 | Já usada no `sei-cli` |
+| `commander` | CLIs `kb` e `revisar_ppc.ts` | 0, 6 | Já usada no `sei-cli` |
 | `yaml` (`schema: "failsafe"`) | Front matter e `relacoes.yaml` | 2, 5 | Nova |
 | `unified` + `remark-parse` + `remark-gfm` | Estrutura de normas e PPCs | 4, 5 | Nova |
 | `fflate` + `htmlparser2` + `domutils` | Leitura de DOCX | T3 | Já usadas |
@@ -748,6 +748,13 @@ Em aberto:
 - **Cobertura:** toda ficha em exatamente um grupo, nos 4 PPCs; toda seção dos tipos que o mapa liga aos tópicos das fichas está no grupo (0 faltas). Fora de todo grupo de tópico (só no transversal) ficam 8,4 mil caracteres de anexos em Enfermagem e 8,7 mil (anexos e `outros`) na minuta. Âncoras semânticas das fichas presentes no PPC (palavra inteira): 89%, 95%, 90% e 90% estão no próprio grupo. Na amostra das que faltam, a maioria é ocorrência incidental (“supervisão de estágio” nas referências, “autoavaliação” na avaliação da aprendizagem, “egressos” na organização curricular); casos reais: o capítulo de orientação do regulamento de estágio da minuta (anexo) e o “acervo” da biblioteca para as fichas de bibliografia.
 - **Formato:** `grupos-subagents.json` troca `intervalo` por `topico`, `topico_titulo`, `parte`, `partes`, `escopo_ppc` e ganha `agrupamento`; `contextos.ppc` (novo) e `contextos.fundamentacao_normativa` (com `normas`, `transicoes`, `data_referencia` e `citacoes_do_ppc`); o resumo da CLI e o `manifest.json` dos prompts mostram tópico, escopo, seções e caracteres. `resultados-subagents.json`, a mescla, a validação e o relatório não mudam.
 - **Pendências:** medir com agente real se os pacotes por tópico mantêm a concordância nos PPCs-ouro (critério da fase 6); revisão humana do mapa tópico → seção; decidir se tópicos pequenos devem ser juntados para baixar o total; anexos (regulamentos) só entram pela busca.
+
+**Renomeação da `analise-ppc` para `revisar-ppc` em 13/11/2026** (no `main`, sem commit).
+
+- **Motivo:** a skill faz uma revisão prévia do PPC, antes da submissão à PROENS; não é a análise oficial da PROENS nem emite parecer. O nome e o vocabulário imitavam o ato oficial. O novo nome faz par com a `revisar-processo-ppc`, que revisa o processo SEI.
+- **Nomes:** diretório `.agents/skills/revisar-ppc` (com `git mv`; o symlink `.claude/skills` continua apontando para `.agents/skills`), entrypoint `scripts/revisar_ppc.ts`, assets `revisar-ppc.css` e `revisar-ppc.js`, relatório `relatorio-revisao.html`, variáveis `REVISAR_PPC_AGORA`, `REVISAR_PPC_PYTHON`, `REVISAR_PPC_SURGE_CMD` e `REVISAR_PPC_SURGE_DOMAIN` (sem os nomes antigos), subdomínio padrão `revisar-ppc-<rodada>.surge.sh`. A `base-analise/` e os identificadores internos (`CaminhosAnalise`, `orientacao_analise`) ficam.
+- **Vocabulário:** a situação geral passa de `APROVADO`, `COM_RESSALVAS`, `DILIGENCIA` e `NAO_APROVADO` para `APTO_PARA_SUBMISSAO`, `APTO_COM_RESSALVAS`, `AJUSTES_NECESSARIOS` e `REVISAO_SUBSTANCIAL`, com rótulos em português no relatório e na saída da CLI (`situacao_rotulo`); `config/politica_parecer.json` virou `config/politica_revisao.json`. O relatório se chama "Relatório de revisão do PPC" e avisa, no cabeçalho e no rodapé, que não substitui a análise oficial da PROENS. O tópico `sintese_transversal_parecer` virou `sintese_transversal_revisao`, e as fichas CT-TRANS-05 e CT-TRANS-06 falam em ajustes e conclusão da revisão. "Parecer" como tipo de norma (Parecer CNE/CEB, termos de busca de referências normativas) continua.
+- **Histórico:** os nomes antigos ficam nas entradas anteriores deste Andamento, que registram o que foi feito com eles.
 
 ## Histórico de revisões
 

@@ -10,7 +10,7 @@ Também contém skills operacionais em `.agents/skills/`. O caminho `.claude/ski
 
 Para consultas, respostas a perguntas ou uso desta base como fonte por LLM, use primeiro os arquivos locais deste checkout. Não substitua arquivos locais por URLs públicas quando o conteúdo estiver disponível no repositório.
 
-Comece pela CLI `kb` (requer `bun install` na raiz). Ela consulta `tmp/kb.sqlite`, um banco derivado dos arquivos do checkout (normas, PPCs com o texto integral das seções, `dados/institucional/`, CNCT, fichas da `analise-ppc`), e o recompila sozinha quando ele falta ou está mais velho que as fontes (cerca de 8 s; `bun run kb:compilar` força). O banco nunca é fonte de verdade nem lugar de edição: toda resposta traz o texto literal e o arquivo e a linha de onde ele veio, e é esse arquivo que se cita.
+Comece pela CLI `kb` (requer `bun install` na raiz). Ela consulta `tmp/kb.sqlite`, um banco derivado dos arquivos do checkout (normas, PPCs com o texto integral das seções, `dados/institucional/`, CNCT, fichas da `revisar-ppc`), e o recompila sozinha quando ele falta ou está mais velho que as fontes (cerca de 8 s; `bun run kb:compilar` força). O banco nunca é fonte de verdade nem lugar de edição: toda resposta traz o texto literal e o arquivo e a linha de onde ele veio, e é esse arquivo que se cita.
 
 ```bash
 bun run kb buscar-norma "Resolução CNE/CP nº 2/2026, art. 28" --json   # citação ou ID → o dispositivo (caput, texto, linhas); termos → busca nos metadados e nos dispositivos
@@ -18,7 +18,7 @@ bun run kb buscar-secoes "acompanhamento de egressos" --cnct tecnico-em-agropecu
 bun run kb cursos --eixo "Informação e Comunicação" --processo processo-seletivo-2026 --json   # cursos com CNCT, ofertas e turno; filtros --turno, --campus, --nivel…
 bun run kb ppc-fatos curitiba/tecnico-em-enfermagem --json              # carga horária, estágio e ano do PPC, cruzados com o SUAP
 bun run kb ppc-fatos --divergencias --nivel médio                        # PPCs com divergência PPC × SUAP
-bun run kb pacote-contexto CT-CURR-12 curitiba/tecnico-em-enfermagem --json   # contexto de uma ficha da analise-ppc: CNCT, dispositivos citados, marcos e regras de transição, seções
+bun run kb pacote-contexto CT-CURR-12 curitiba/tecnico-em-enfermagem --json   # contexto de uma ficha da revisar-ppc: CNCT, dispositivos citados, marcos e regras de transição, seções
 ```
 
 Os fatos de PPC têm status `extraido` (regra sobre o texto convertido, sem revisão humana): confira o `trecho_fonte` antes de afirmar uma divergência. A busca de seções usa radicais e um léxico de sinônimos (`packages/kb/dados/sinonimos.yaml`); se ela não achar o que se espera, procure nos arquivos.
@@ -126,15 +126,15 @@ bun run test
 
 O `bun run format` aplica `bun fmt` (largura 120, configurada em `bunfig.toml`) apenas em `scripts/`, nos `.ts` de `.agents/skills/*/scripts/` e `.agents/skills/*/tests/` e nos workspaces de `packages/`. Não rode `bun fmt` na raiz: Markdown e JSON de `base-conhecimento/` são textos normativos ou saídas de geradores e não devem ser reformatados.
 
-Depois de alterar skills, rode os testes ou validações da skill afetada. Para a skill `analise-ppc`, use:
+Depois de alterar skills, rode os testes ou validações da skill afetada. Para a skill `revisar-ppc`, use:
 
 ```bash
-bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts validar-base
-bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-schemas --check
-bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-mapa --check
-bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-indice --check
-bun test ./.agents/skills/analise-ppc
-python3 -m pytest .agents/skills/analise-ppc/tests
+bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
+bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-schemas --check
+bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-mapa --check
+bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-indice --check
+bun test ./.agents/skills/revisar-ppc
+python3 -m pytest .agents/skills/revisar-ppc/tests
 ```
 
-Sem `--check`, `gerar-schemas`, `gerar-mapa` e `gerar-indice` regeneram os JSON Schemas de ficha e marcos (gerados do zod de `scripts/esquemas.ts`), `mapa-fichas.md` e `indice.json` da base de análise. O `analise_ppc.ts` é o ponto de entrada único da skill, e todos os subcomandos rodam em TypeScript; só a conversão de entrada `.docx` ainda chama Python (`converter_docx.py`), e o `pytest` cobre só os extratores dessa conversão.
+Sem `--check`, `gerar-schemas`, `gerar-mapa` e `gerar-indice` regeneram os JSON Schemas de ficha e marcos (gerados do zod de `scripts/esquemas.ts`), `mapa-fichas.md` e `indice.json` da base de análise. O `revisar_ppc.ts` é o ponto de entrada único da skill, e todos os subcomandos rodam em TypeScript; só a conversão de entrada `.docx` ainda chama Python (`converter_docx.py`), e o `pytest` cobre só os extratores dessa conversão.

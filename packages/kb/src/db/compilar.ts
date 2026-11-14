@@ -73,7 +73,7 @@ export interface ResumoCompilacao {
 }
 
 const BASE = "base-conhecimento";
-const ANALISE = ".agents/skills/analise-ppc/base-analise";
+const ANALISE = ".agents/skills/revisar-ppc/base-analise";
 
 const json = (valor: unknown): string => JSON.stringify(valor ?? null);
 
@@ -373,7 +373,7 @@ export interface OpcoesPpcAvulso {
   /**
    * Reconhece `# Título` como título de seção. No índice publicado só `##` a `######` contam (nos
    * PPCs convertidos de PDF, `#` aparece em linhas da capa); o normalizador e o conversor DOCX da
-   * `analise-ppc` põem o primeiro nível numerado em `#`. A segmentação roda como se fosse `##`, com
+   * `revisar-ppc` põem o primeiro nível numerado em `#`. A segmentação roda como se fosse `##`, com
    * as mesmas linhas.
    */
   titulosNivel1?: boolean;
@@ -381,7 +381,7 @@ export interface OpcoesPpcAvulso {
 
 /**
  * Banco em memória, com o esquema do `kb.sqlite`, só com um PPC que pode não estar na base (o
- * `PPC.md` de uma rodada da `analise-ppc`): uma linha em `ppcs`, as seções pela mesma segmentação e
+ * `PPC.md` de uma rodada da `revisar-ppc`): uma linha em `ppcs`, as seções pela mesma segmentação e
  * taxonomia do índice (`secoesIndexadas`) e as citações pelo mesmo resolvedor, gravadas por
  * `gravarSecoesECitacoes`. As consultas de seções (`secoesDoPpc`, `buscarSecoes`) e de citações
  * rodam nele sem mudança.
@@ -809,7 +809,7 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
       }
     }
 
-    /* ---------- fichas, tópicos e marcos da analise-ppc */
+    /* ---------- fichas, tópicos e marcos da revisar-ppc */
     const dirFichas = path.join(raiz, ANALISE, "fichas");
     const arquivosFichas = existsSync(dirFichas)
       ? readdirSync(dirFichas)
@@ -865,7 +865,7 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
       ins.inserir("fichas_topicos", { ficha_id: ficha, topico_id: topico });
     }
     // marcos-normativos.json guarda a linha do tema; vigente, substituídas, antecessoras e
-    // dispositivos revogados vêm de derivarLinha (fase 5) na data_referencia, como na analise-ppc.
+    // dispositivos revogados vêm de derivarLinha (fase 5) na data_referencia, como na revisar-ppc.
     const arquivoMarcos = path.join(raiz, ANALISE, "marcos-normativos.json");
     if (existsSync(arquivoMarcos)) {
       const marcos = esquemaMarcos.parse(lerJson(arquivoMarcos));

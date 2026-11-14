@@ -1,4 +1,4 @@
-/** Agrupamento das fichas da `analise-ppc` por tópico (`agruparPorTopico`), sem banco. */
+/** Agrupamento das fichas da `revisar-ppc` por tópico (`agruparPorTopico`), sem banco. */
 import { describe, expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
@@ -63,7 +63,7 @@ describe("grupos por tópico", () => {
 
   test("nas fichas reais, toda ficha cai em exatamente um grupo de no máximo 20", () => {
     const raiz = raizRepositorio();
-    const dir = path.join(raiz, ".agents/skills/analise-ppc/base-analise/fichas");
+    const dir = path.join(raiz, ".agents/skills/revisar-ppc/base-analise/fichas");
     const reais = readdirSync(dir)
       .filter((nome) => nome.endsWith(".json"))
       .map((nome) => JSON.parse(readFileSync(path.join(dir, nome), "utf-8")) as FichaPacote);

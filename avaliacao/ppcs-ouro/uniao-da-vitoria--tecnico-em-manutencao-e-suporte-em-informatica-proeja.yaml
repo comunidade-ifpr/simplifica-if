@@ -1,4 +1,4 @@
-# PPC-ouro: achados esperados por ficha da analise-ppc. RASCUNHO: revisão humana obrigatória.
+# PPC-ouro: achados esperados por ficha da revisar-ppc. RASCUNHO: revisão humana obrigatória.
 # Contrato: esquemaPpcOuro em scripts/avaliacao/esquema.ts. Cada evidência é trecho literal do PPC.
 ppc: curso:uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja
 arquivo: base-conhecimento/institucional/ifpr/ppcs/uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja.md
