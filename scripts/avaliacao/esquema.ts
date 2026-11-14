@@ -1,45 +1,60 @@
 /**
- * Contratos (zod) dos arquivos de `avaliacao/`: perguntas, configuração do harness, gabaritos de
- * conjunto, universos de itens reconhecíveis numa resposta e PPCs-ouro.
+ * Contratos (Effect Schema) dos arquivos de `avaliacao/`: perguntas, configuração do harness,
+ * gabaritos de conjunto, universos de itens reconhecíveis numa resposta e PPCs-ouro.
+ *
+ * Os objetos são estritos: decodifique com `ESTRITO` (`scripts/esquema.ts`), como faz
+ * `carregar.ts`. Os textos obrigatórios chegam sem espaços nas pontas (`Schema.Trim`).
  */
-import { z } from "zod";
+import * as Effect from "effect/Effect";
+import * as Schema from "effect/Schema";
 import { compilarPadrao } from "./normalizar.ts";
 
-const textoNaoVazio = z.string().trim().min(1);
+/** Texto com as pontas aparadas e pelo menos um caractere. */
+const textoNaoVazio = Schema.Trim.check(Schema.isMinLength(1));
+
+/** Número finito, como o `z.number()` (recusa `.inf` e `.nan` do YAML). */
+const numero = Schema.Finite;
+
+/** Lista que fica vazia quando o campo falta. */
+const listaOuVazia = <S extends Schema.Top>(item: S) =>
+  Schema.Array(item).pipe(Schema.withDecodingDefault(Effect.succeed([])));
 
 /** Fonte de regex aplicada ao texto normalizado (sem acentos, minúsculo); precisa compilar. */
-export const esquemaPadrao = textoNaoVazio.superRefine((fonte, ctx) => {
-  try {
-    compilarPadrao(fonte);
-  } catch (erro) {
-    ctx.addIssue({ code: "custom", message: `regex inválida: ${(erro as Error).message}` });
-  }
-});
+export const esquemaPadrao = textoNaoVazio.check(
+  Schema.makeFilter((fonte: string) => {
+    try {
+      compilarPadrao(fonte);
+      return true;
+    } catch (erro) {
+      return `regex inválida: ${(erro as Error).message}`;
+    }
+  }),
+);
 
 /**
  * Âncora provisória no formato de ID canônico do plano (fase 2): `br/cne-cp/res/2026/2#art71`,
  * `cnct:tecnico-em-enfermagem`, `curso:curitiba/tecnico-em-enfermagem`, `ficha:CT-CURR-20`.
  */
-export const esquemaAncora = z
-  .string()
-  .regex(
+export const esquemaAncora = Schema.String.check(
+  Schema.isPattern(
     /^(?:(?:br|ifpr)\/[a-z0-9-]+\/(?:[a-z]+\/)?\d{4}\/[0-9a-z-]+(?:#[a-zA-Z0-9-]+)?|(?:cnct|curso|campus|ppc|ficha|externo):[^\s]+)$/u,
-    "âncora fora do formato de ID do plano",
-  );
+    { message: "âncora fora do formato de ID do plano" },
+  ),
+);
 
-export const esquemaCriterio = z.strictObject({
-  id: z.string().regex(/^[a-z0-9][a-z0-9-]*$/u, "id em kebab-case"),
+export const esquemaCriterio = Schema.Struct({
+  id: Schema.String.check(Schema.isPattern(/^[a-z0-9][a-z0-9-]*$/u, { message: "id em kebab-case" })),
   descricao: textoNaoVazio,
   /** ID provisório no formato da fase 2; mapeado para o ID canônico quando ele existir. */
-  ancora: esquemaAncora.optional(),
+  ancora: Schema.optional(esquemaAncora),
   /** Caminho, a partir da raiz do repositório, do arquivo onde o `trecho` aparece literalmente. */
-  arquivo: textoNaoVazio.optional(),
+  arquivo: Schema.optional(textoNaoVazio),
   /** Trecho literal curto da fonte; o teste confere que ele existe em `arquivo`. */
-  trecho: textoNaoVazio.optional(),
+  trecho: Schema.optional(textoNaoVazio),
   /** Basta um padrão casar para o critério contar como presente. */
-  padroes: z.array(esquemaPadrao).min(1),
+  padroes: Schema.Array(esquemaPadrao).check(Schema.isMinLength(1)),
 });
-export type Criterio = z.output<typeof esquemaCriterio>;
+export type Criterio = typeof esquemaCriterio.Type;
 
 export const CATEGORIAS = [
   "carga-horaria",
@@ -53,66 +68,65 @@ export const CATEGORIAS = [
   "fluxo-processual",
 ] as const;
 
-export const esquemaGabarito = z
-  .strictObject({
-    /** `curado`: verificado na base local. `provisorio`: depende de curadoria humana ou de fase futura. */
-    status: z.enum(["curado", "provisorio"]),
-    resposta_esperada: textoNaoVazio,
-    deve_conter: z.array(esquemaCriterio).default([]),
-    nao_deve_conter: z.array(esquemaCriterio).default([]),
-    /** Gabarito de conjunto gerado por `scripts/avaliacao/gabaritos/gerar.ts`. */
-    conjunto: z.strictObject({ arquivo: textoNaoVazio }).optional(),
-    observacoes: z.string().optional(),
-  })
-  .superRefine((gabarito, ctx) => {
-    if (gabarito.deve_conter.length === 0 && !gabarito.conjunto) {
-      ctx.addIssue({ code: "custom", message: "gabarito sem deve_conter nem conjunto" });
-    }
-  });
-export type Gabarito = z.output<typeof esquemaGabarito>;
+export const esquemaGabarito = Schema.Struct({
+  /** `curado`: verificado na base local. `provisorio`: depende de curadoria humana ou de fase futura. */
+  status: Schema.Literals(["curado", "provisorio"]),
+  resposta_esperada: textoNaoVazio,
+  deve_conter: listaOuVazia(esquemaCriterio),
+  nao_deve_conter: listaOuVazia(esquemaCriterio),
+  /** Gabarito de conjunto gerado por `scripts/avaliacao/gabaritos/gerar.ts`. */
+  conjunto: Schema.optional(Schema.Struct({ arquivo: textoNaoVazio })),
+  observacoes: Schema.optional(Schema.String),
+}).check(
+  Schema.makeFilter((gabarito) =>
+    gabarito.deve_conter.length === 0 && !gabarito.conjunto ? "gabarito sem deve_conter nem conjunto" : true,
+  ),
+);
+export type Gabarito = typeof esquemaGabarito.Type;
 
-export const esquemaPergunta = z
-  .strictObject({
-    id: z.string().regex(/^Q\d{2}$/u, "id no formato Q01"),
-    texto: textoNaoVazio,
-    categoria: z.enum(CATEGORIAS),
-    tipo: z.enum(["pontual", "conjunto"]),
-    origem: z.enum(["plano", "uso-real"]),
-    gabarito: esquemaGabarito,
-  })
-  .superRefine((pergunta, ctx) => {
-    if (pergunta.tipo === "conjunto" && !pergunta.gabarito.conjunto) {
-      ctx.addIssue({ code: "custom", message: "pergunta de conjunto sem gabarito.conjunto" });
-    }
-    if (pergunta.tipo === "pontual" && pergunta.gabarito.conjunto) {
-      ctx.addIssue({ code: "custom", message: "pergunta pontual com gabarito.conjunto" });
-    }
-  });
-export type Pergunta = z.output<typeof esquemaPergunta>;
+export const esquemaPergunta = Schema.Struct({
+  id: Schema.String.check(Schema.isPattern(/^Q\d{2}$/u, { message: "id no formato Q01" })),
+  texto: textoNaoVazio,
+  categoria: Schema.Literals(CATEGORIAS),
+  tipo: Schema.Literals(["pontual", "conjunto"]),
+  origem: Schema.Literals(["plano", "uso-real"]),
+  gabarito: esquemaGabarito,
+}).check(
+  Schema.makeFilter((pergunta) => {
+    if (pergunta.tipo === "conjunto" && !pergunta.gabarito.conjunto) return "pergunta de conjunto sem gabarito.conjunto";
+    if (pergunta.tipo === "pontual" && pergunta.gabarito.conjunto) return "pergunta pontual com gabarito.conjunto";
+    return true;
+  }),
+);
+export type Pergunta = typeof esquemaPergunta.Type;
 
-export const esquemaArquivoPerguntas = z
-  .strictObject({ versao: z.literal(1), perguntas: z.array(esquemaPergunta).min(1) })
-  .superRefine((arquivo, ctx) => {
+export const esquemaArquivoPerguntas = Schema.Struct({
+  versao: Schema.Literal(1),
+  perguntas: Schema.Array(esquemaPergunta).check(Schema.isMinLength(1)),
+}).check(
+  Schema.makeFilter((arquivo) => {
+    const problemas: Schema.FilterIssue[] = [];
     const vistos = new Set<string>();
     for (const [indice, pergunta] of arquivo.perguntas.entries()) {
       if (vistos.has(pergunta.id)) {
-        ctx.addIssue({ code: "custom", path: ["perguntas", indice, "id"], message: `id repetido: ${pergunta.id}` });
+        problemas.push({ path: ["perguntas", indice, "id"], issue: `id repetido: ${pergunta.id}` });
       }
       vistos.add(pergunta.id);
       const criterios = new Set<string>();
       for (const criterio of [...pergunta.gabarito.deve_conter, ...pergunta.gabarito.nao_deve_conter]) {
         if (criterios.has(criterio.id)) {
-          ctx.addIssue({
-            code: "custom",
+          problemas.push({
             path: ["perguntas", indice, "gabarito"],
-            message: `${pergunta.id}: critério repetido: ${criterio.id}`,
+            issue: `${pergunta.id}: critério repetido: ${criterio.id}`,
           });
         }
         criterios.add(criterio.id);
       }
     }
-  });
-export type ArquivoPerguntas = z.output<typeof esquemaArquivoPerguntas>;
+    return problemas.length === 0 ? true : problemas;
+  }),
+);
+export type ArquivoPerguntas = typeof esquemaArquivoPerguntas.Type;
 
 /* ------------------------------------------------------------- configuração */
 
@@ -120,111 +134,115 @@ export type ArquivoPerguntas = z.output<typeof esquemaArquivoPerguntas>;
  * Bash dá ao agente leitura de qualquer arquivo e do ambiente (`jq -R . .env.local`, `jq -n env`),
  * fora do alcance das regras de Read; o harness não o oferece.
  */
-const ferramentaSemBash = textoNaoVazio.refine(
-  (regra) => !/^Bash(?:\(|$)/u.test(regra),
-  "Bash não é permitido no harness: contorna as regras de leitura (use Read, Grep e Glob)",
+const ferramentaSemBash = textoNaoVazio.check(
+  Schema.makeFilter((regra: string) => !/^Bash(?:\(|$)/u.test(regra), {
+    message: "Bash não é permitido no harness: contorna as regras de leitura (use Read, Grep e Glob)",
+  }),
 );
 
-export const esquemaConfig = z.strictObject({
+export const esquemaConfig = Schema.Struct({
   /** Alias ou nome completo aceito por `claude --model`. O relatório registra o ID efetivo. */
   modelo: textoNaoVazio,
-  execucoes: z.number().int().min(1).max(20),
-  max_turns: z.number().int().min(1).max(200),
-  max_budget_usd_por_execucao: z.number().positive().optional(),
-  timeout_s: z.number().int().min(10).default(600),
+  execucoes: Schema.Int.check(Schema.isGreaterThanOrEqualTo(1), Schema.isLessThanOrEqualTo(20)),
+  max_turns: Schema.Int.check(Schema.isGreaterThanOrEqualTo(1), Schema.isLessThanOrEqualTo(200)),
+  max_budget_usd_por_execucao: Schema.optional(numero.check(Schema.isGreaterThan(0))),
+  timeout_s: Schema.Int.check(Schema.isGreaterThanOrEqualTo(10)).pipe(Schema.withDecodingDefault(Effect.succeed(600))),
   /** Ferramentas embutidas disponíveis ao agente (`--tools`). Só leitura; Bash não (ver executor.ts). */
-  ferramentas: z.array(ferramentaSemBash).min(1),
+  ferramentas: Schema.Array(ferramentaSemBash).check(Schema.isMinLength(1)),
   /**
    * Regras pré-aprovadas (`--allowedTools`); o resto é negado (`--permission-mode dontAsk`). As
    * regras de `REGRAS_NEGADAS` (executor.ts) vão sempre em `--disallowedTools` e prevalecem.
    */
-  ferramentas_permitidas: z.array(ferramentaSemBash).min(1),
-  instrucao_sistema: z.string().default(""),
+  ferramentas_permitidas: Schema.Array(ferramentaSemBash).check(Schema.isMinLength(1)),
+  instrucao_sistema: Schema.String.pipe(Schema.withDecodingDefault(Effect.succeed(""))),
   /**
    * Fontes de configuração do Claude Code (`--setting-sources`). Sem o campo, valem as do usuário,
    * inclusive plugins e hooks pessoais, que mudam o estilo da resposta.
    */
-  fontes_configuracao: z
-    .array(z.enum(["user", "project", "local"]))
-    .min(1)
-    .optional(),
+  fontes_configuracao: Schema.optional(
+    Schema.Array(Schema.Literals(["user", "project", "local"])).check(Schema.isMinLength(1)),
+  ),
 });
-export type ConfigAvaliacao = z.output<typeof esquemaConfig>;
+export type ConfigAvaliacao = typeof esquemaConfig.Type;
 
 /* ---------------------------------------------------------------- universos */
 
 export const UNIVERSOS = ["campus", "curso", "norma"] as const;
 export type NomeUniverso = (typeof UNIVERSOS)[number];
 
-export const esquemaItemCampus = z.strictObject({
-  id: z.string().startsWith("campus:"),
+const idCom = (prefixo: string) => Schema.String.check(Schema.isStartingWith(prefixo));
+
+export const esquemaItemCampus = Schema.Struct({
+  id: idCom("campus:"),
   rotulo: textoNaoVazio,
-  padroes: z.array(esquemaPadrao).min(1),
+  padroes: Schema.Array(esquemaPadrao).check(Schema.isMinLength(1)),
 });
 
-export const esquemaItemCurso = z.strictObject({
-  id: z.string().startsWith("curso:"),
+export const esquemaItemCurso = Schema.Struct({
+  id: idCom("curso:"),
   rotulo: textoNaoVazio,
-  campus: z.string().startsWith("campus:"),
+  campus: idCom("campus:"),
   /** Nome normalizado sem "Técnico em", forma de oferta etc.: "informatica para internet". */
   nucleo: textoNaoVazio,
   /** Termos normalizados que distinguem cursos de mesmo núcleo no mesmo campus. */
-  forma: z.array(z.string()),
+  forma: Schema.Array(Schema.String),
 });
 
-export const esquemaItemNorma = z.strictObject({
+export const esquemaItemNorma = Schema.Struct({
   id: textoNaoVazio,
   rotulo: textoNaoVazio,
   path: textoNaoVazio,
-  padroes: z.array(esquemaPadrao).min(1),
+  padroes: Schema.Array(esquemaPadrao).check(Schema.isMinLength(1)),
 });
 
-export const esquemaUniversos = z.strictObject({
+export const esquemaUniversos = Schema.Struct({
   gerado_por: textoNaoVazio,
-  campus: z.array(esquemaItemCampus),
-  curso: z.array(esquemaItemCurso),
-  norma: z.array(esquemaItemNorma),
+  campus: Schema.Array(esquemaItemCampus),
+  curso: Schema.Array(esquemaItemCurso),
+  norma: Schema.Array(esquemaItemNorma),
 });
-export type Universos = z.output<typeof esquemaUniversos>;
-export type ItemCampus = z.output<typeof esquemaItemCampus>;
-export type ItemCurso = z.output<typeof esquemaItemCurso>;
-export type ItemNorma = z.output<typeof esquemaItemNorma>;
+export type Universos = typeof esquemaUniversos.Type;
+export type ItemCampus = typeof esquemaItemCampus.Type;
+export type ItemCurso = typeof esquemaItemCurso.Type;
+export type ItemNorma = typeof esquemaItemNorma.Type;
 
-export const esquemaGabaritoConjunto = z.strictObject({
-  pergunta: z.string().regex(/^Q\d{2}$/u),
+export const esquemaGabaritoConjunto = Schema.Struct({
+  pergunta: Schema.String.check(Schema.isPattern(/^Q\d{2}$/u)),
   gerado_por: textoNaoVazio,
   criterio: textoNaoVazio,
-  universo: z.enum(UNIVERSOS),
+  universo: Schema.Literals(UNIVERSOS),
   /** Falso quando a resposta correta pode citar itens fora do conjunto sem errar (ex.: normas afetadas). */
-  avaliar_precisao: z.boolean(),
-  esperado: z.array(textoNaoVazio),
-  detalhes: z.record(z.string(), z.unknown()),
+  avaliar_precisao: Schema.Boolean,
+  esperado: Schema.Array(textoNaoVazio),
+  detalhes: Schema.Record(Schema.String, Schema.Unknown),
 });
-export type GabaritoConjunto = z.output<typeof esquemaGabaritoConjunto>;
+export type GabaritoConjunto = typeof esquemaGabaritoConjunto.Type;
 
 /* -------------------------------------------------------------- PPCs-ouro */
 
 export const ESTADOS_FICHA = ["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"] as const;
 
-export const esquemaAchadoOuro = z.strictObject({
-  ficha: z.string().regex(/^CT-(?:CURR|IDENT|SUP|TRANS)-\d{2}$/u),
-  estado_esperado: z.enum(ESTADOS_FICHA),
+export const esquemaAchadoOuro = Schema.Struct({
+  ficha: Schema.String.check(Schema.isPattern(/^CT-(?:CURR|IDENT|SUP|TRANS)-\d{2}$/u)),
+  estado_esperado: Schema.Literals(ESTADOS_FICHA),
   justificativa: textoNaoVazio,
   /** Trechos literais do PPC convertido; o teste confere que cada um existe no arquivo. */
-  evidencias: z.array(z.strictObject({ trecho: textoNaoVazio, observacao: z.string().optional() })).min(1),
+  evidencias: Schema.Array(
+    Schema.Struct({ trecho: textoNaoVazio, observacao: Schema.optional(Schema.String) }),
+  ).check(Schema.isMinLength(1)),
   /** Fontes de comparação fora do PPC (CNCT, normas, dados institucionais), com trecho literal opcional. */
-  referencias: z
-    .array(z.strictObject({ ancora: esquemaAncora, arquivo: textoNaoVazio, trecho: z.string().optional() }))
-    .default([]),
-  status: z.enum(["rascunho", "revisado"]),
+  referencias: listaOuVazia(
+    Schema.Struct({ ancora: esquemaAncora, arquivo: textoNaoVazio, trecho: Schema.optional(Schema.String) }),
+  ),
+  status: Schema.Literals(["rascunho", "revisado"]),
 });
 
-export const esquemaPpcOuro = z.strictObject({
-  ppc: z.string().startsWith("curso:"),
+export const esquemaPpcOuro = Schema.Struct({
+  ppc: idCom("curso:"),
   arquivo: textoNaoVazio,
-  status: z.enum(["rascunho", "revisado"]),
-  revisado_por: z.string().nullable(),
+  status: Schema.Literals(["rascunho", "revisado"]),
+  revisado_por: Schema.NullOr(Schema.String),
   justificativa_escolha: textoNaoVazio,
-  achados: z.array(esquemaAchadoOuro).min(1),
+  achados: Schema.Array(esquemaAchadoOuro).check(Schema.isMinLength(1)),
 });
-export type PpcOuro = z.output<typeof esquemaPpcOuro>;
+export type PpcOuro = typeof esquemaPpcOuro.Type;

@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- confere os trechos citados nos arquivos do checkout com node:fs síncrono
 import { describe, expect, test } from "vite-plus/test";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";

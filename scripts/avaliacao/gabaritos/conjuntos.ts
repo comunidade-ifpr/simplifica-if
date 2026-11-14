@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- geradores de gabarito síncronos sobre os arquivos do checkout, de execução única
 /**
  * Geradores dos gabaritos de conjunto. Cada gerador deriva o conjunto esperado das fontes locais
  * (dados institucionais, manifesto de normas, CNCT e PPCs), sem relógio e com ordem estável.

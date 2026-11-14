@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- lê os PPCs-ouro, as fichas e os trechos citados com node:fs síncrono
 import { describe, expect, test } from "vite-plus/test";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
