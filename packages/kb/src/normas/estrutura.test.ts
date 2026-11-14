@@ -112,6 +112,19 @@ describe("parser sintético", () => {
     expect(nt.dispositivos.map((d) => d.dispositivo)).toEqual(["#secao1"]);
   });
 
+  test("rótulo repetido antes de (Revogado) não esconde a revogação", () => {
+    const ldb = obterDispositivo("br/lei/1996/9394#art36-par3", raiz)!;
+    expect(ldb.texto).toStartWith("§ 3o § 3º (Revogado).");
+    expect(ldb.revogado).toBe(true);
+    const sintetico = analisarNorma(
+      "## Texto da norma\n\n#### Art. 5º\n\nCaput.\n\n**§ 2o** § 2º (Revogado). (Redação dada pela Lei nº 9, de 2024)\n\n**§ 3o** § 3º do art. 4º continua.\n",
+      { id: "br/x/res/2020/2", path: "x.md" },
+    );
+    const porDisp = new Map(sintetico.dispositivos.map((d) => [d.dispositivo, d]));
+    expect(porDisp.get("#art5-par2")!.revogado).toBe(true);
+    expect(porDisp.get("#art5-par3")!.revogado).toBe(false);
+  });
+
   test("notas de redação", () => {
     expect(notasDoTexto("texto (Incluído pela Lei nº 13.415, de 2017) (Vide Decreto nº 1)").map((n) => n.tipo)).toEqual(
       ["inclusao", "vide"],
