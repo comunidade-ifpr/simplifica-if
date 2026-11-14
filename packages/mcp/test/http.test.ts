@@ -3,7 +3,8 @@
  * O servidor MCP por HTTP local (`src/http.ts`, M1.4), de verdade, em porta efêmera de `127.0.0.1`,
  * com o Client do SDK oficial: `initialize`, `tools/list` (as mesmas ferramentas do stdio) e
  * `tools/call`; o token por sessão (401 sem token, com token desconhecido e com token revogado; duas
- * sessões com tokens diferentes); `chamadas`; as defesas de `Host`, `Origin` e tamanho do corpo; a
+ * sessões com tokens diferentes); `chamadas`, com as chamadas de ferramenta e as leituras de recurso;
+ * as defesas de `Host`, `Origin` e tamanho do corpo; a
  * pasta de trabalho por sessão; e a paridade de uma chamada com o executável stdio.
  */
 import * as NodeFS from "node:fs";
@@ -204,6 +205,47 @@ layer(Http.layer({ banco }), { excludeTestServices: true })("servidor MCP por HT
         expect(c.resumo).not.toMatch(/\n/);
       }
       expect(chamadas[1]?.resumo).toContain("nao-existe/curso");
+    }),
+  );
+
+  it.effect("chamadas: cada leitura de recurso, com tipo recurso, o URI e o mesmo resumo", () =>
+    Effect.gen(function* () {
+      const servidor = yield* Http.ServidorMcpHttp;
+      const coleta = yield* servidor.chamadas.pipe(
+        Stream.filter((c) => c.sessao === "leituras"),
+        Stream.take(3),
+        Stream.runCollect,
+        Effect.forkScoped({ startImmediately: true }),
+      );
+      const cliente = yield* conectar(yield* servidor.abrirSessao({ rotulo: "leituras" }));
+      const uri = "ifpr://cnct/tecnico-em-enfermagem";
+      const { contents } = yield* Effect.promise(() => cliente.readResource({ uri }));
+      const invalido = "ifpr://campus/marte";
+      const erro = yield* Effect.promise(() =>
+        cliente.readResource({ uri: invalido }).then(
+          () => "leu sem erro",
+          (e: { readonly message: string }) => e.message,
+        ),
+      );
+      expect(erro).toContain('campus não encontrado na base: "marte"');
+      yield* Effect.promise(() => cliente.callTool({ name: "sobre_a_base", arguments: {} }));
+      const chamadas = yield* Fiber.join(coleta);
+      expect(chamadas.map(({ sessao, ferramenta, tipo, falhou }) => ({ sessao, ferramenta, tipo, falhou }))).toEqual([
+        { sessao: "leituras", ferramenta: uri, tipo: "recurso", falhou: false },
+        { sessao: "leituras", ferramenta: invalido, tipo: "recurso", falhou: true },
+        // a chamada de ferramenta continua sem `tipo`
+        { sessao: "leituras", ferramenta: "sobre_a_base", tipo: undefined, falhou: false },
+      ]);
+      expect("tipo" in chamadas[2]!).toBe(false);
+      // O resumo é o começo do texto lido, numa linha, até 300 caracteres, como o das ferramentas.
+      const texto = (contents[0] as { readonly text: string }).text.replace(/\s+/g, " ").trim();
+      expect(chamadas[0]?.resumo).toBe(`${texto.slice(0, 299)}…`);
+      expect(chamadas[0]?.resumo).toContain("Técnico em Enfermagem (CNCT)");
+      expect(chamadas[1]?.resumo).toContain('campus não encontrado na base: "marte"');
+      for (const c of chamadas) {
+        expect(c.inicio).toBeGreaterThan(0);
+        expect(c.duracaoMs).toBeGreaterThanOrEqual(0);
+      }
     }),
   );
 

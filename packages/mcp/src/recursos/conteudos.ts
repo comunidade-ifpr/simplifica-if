@@ -6,7 +6,7 @@
  * ferramentas `ficha_norma`, `ler_dispositivos`, `ficha_curso` e `ler_secao` (ver `recursos.ts`).
  */
 import * as Schema from "effect/Schema";
-import { EsquemaLink, FatosPpc, Fonte, type Resposta } from "../contratos.ts";
+import { EsquemaLink, FatosPpc, Fonte, Resposta } from "../contratos.ts";
 import { textoFatosPpc } from "../ferramentas/comum-ppcs.ts";
 import { type Curso, Curso as EsquemaCurso, linhaCurso } from "../ferramentas/listar-cursos.ts";
 import { corpoNoTeto, limitarTexto, tetoDoCorpo } from "../ferramentas/normas-comum.ts";
@@ -53,6 +53,9 @@ export const DadosPpc = Schema.Struct({
   ),
   fatos: FatosPpc,
 });
+
+/** A resposta inteira (envelope + dados), como a `saida` das ferramentas: o contrato do RPC `lerPpc`. */
+export const SaidaPpc = Resposta(DadosPpc);
 
 export function textoPpc(resposta: Resposta<typeof DadosPpc.Type>): string {
   const { dados: d } = resposta;
@@ -121,6 +124,9 @@ export const CAMPOS_CNCT = [
   ["legislacao_profissional", "Legislação profissional"],
 ] as const;
 
+/** A resposta inteira do recurso: o contrato do RPC `lerCnct`. */
+export const SaidaCnct = Resposta(DadosCnct);
+
 export function textoCnct(resposta: Resposta<typeof DadosCnct.Type>): string {
   const { dados: d } = resposta;
   const c = d.cnct;
@@ -161,6 +167,9 @@ export const DadosCampus = Schema.Struct({
   }),
   cursos: Schema.Array(EsquemaCurso),
 });
+
+/** A resposta inteira do recurso: o contrato do RPC `lerCampus`. */
+export const SaidaCampus = Resposta(DadosCampus);
 
 export function textoCampus(resposta: Resposta<typeof DadosCampus.Type>): string {
   const { dados: d } = resposta;
@@ -221,6 +230,9 @@ export const CAMPOS_FICHA = [
   ["ma_evidencia", "Má evidência"],
   ["escalonar_quando", "Escalonar quando"],
 ] as const;
+
+/** A resposta inteira do recurso: o contrato do RPC `lerFicha`. */
+export const SaidaFicha = Resposta(DadosFicha);
 
 export function textoFicha(resposta: Resposta<typeof DadosFicha.Type>): string {
   const { dados: d } = resposta;

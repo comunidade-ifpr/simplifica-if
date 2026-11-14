@@ -4,7 +4,7 @@
  * O mesmo Toolkit, as mesmas instruções e o mesmo registro de ferramentas do executável stdio
  * (`servidor.ts`), servidos por `McpServer.layerHttp` em `http://127.0.0.1:<porta>/mcp`. As CLIs dos
  * providers se ligam a ele com um token por sessão (`abrirSessao`), e o app vê cada chamada de
- * ferramenta (`chamadas`).
+ * ferramenta e cada leitura de recurso `ifpr://` (`chamadas`).
  *
  * Defesas, conferidas nesta ordem, antes de o protocolo MCP ver a requisição:
  *
@@ -92,18 +92,29 @@ export interface SessaoMcp {
   readonly cabecalhos: Readonly<Record<string, string>>;
 }
 
-/** Uma chamada de ferramenta, para o app (leitor, métricas). */
+export type { TipoChamada } from "./SessaoAtual.ts";
+
+/**
+ * Uma chamada de ferramenta (`tools/call`) ou uma leitura de recurso (`resources/read`), para o app
+ * (leitor, métricas). A leitura de recurso traz `tipo: "recurso"` e, em `ferramenta`, o URI pedido,
+ * como o provider o mandou (`ifpr://cnct/tecnico-em-enfermagem`); a chamada de ferramenta vem sem
+ * `tipo`, como antes.
+ */
 export interface ChamadaFerramenta {
   /** O rótulo da sessão. */
   readonly sessao: string;
+  /** O nome da ferramenta; numa leitura de recurso, o URI. */
   readonly ferramenta: string;
+  /** `recurso` numa leitura de recurso; ausente (o padrão, `ferramenta`) numa chamada de ferramenta. */
+  readonly tipo?: SessaoAtual.TipoChamada;
   /** Milissegundos do `Clock` no início da chamada. */
   readonly inicio: number;
   readonly duracaoMs: number;
   readonly falhou: boolean;
   /**
-   * O começo do texto do resultado, numa linha, até 300 caracteres (`LIMITE_RESUMO`). Serve a quem
-   * não recebe o resultado pelo provider (o `agy` não o manda pelo ACP).
+   * O começo do texto do resultado, numa linha, até 300 caracteres (`LIMITE_RESUMO`); na leitura de
+   * recurso que falhou, o da mensagem de erro. Serve a quem não recebe o resultado pelo provider (o
+   * `agy` não o manda pelo ACP).
    */
   readonly resumo?: string;
 }
@@ -137,7 +148,10 @@ export class ServidorMcpHttp extends Context.Service<
       readonly rotulo: string;
       readonly pastaTrabalho?: string;
     }) => Effect.Effect<SessaoMcp, never, Scope.Scope>;
-    /** As chamadas de ferramenta de todas as sessões, a partir de quando se assina o stream. */
+    /**
+     * As chamadas de ferramenta e as leituras de recurso de todas as sessões, a partir de quando se
+     * assina o stream.
+     */
     readonly chamadas: Stream.Stream<ChamadaFerramenta>;
   }
 >()("@simplifica-if/mcp/http/ServidorMcpHttp") {}
