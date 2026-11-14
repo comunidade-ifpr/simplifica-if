@@ -180,7 +180,7 @@ export function datasDoAto(entrada: EntradaRegistro | undefined): string[] {
 
 /** Raiz do repositório, a partir deste arquivo (`packages/kb/src/normas/`). */
 export function raizRepositorio(): string {
-  return path.resolve(import.meta.dir, "..", "..", "..", "..");
+  return path.resolve(import.meta.dirname, "..", "..", "..", "..");
 }
 
 export function caminhoStubs(raiz: string = raizRepositorio()): string {

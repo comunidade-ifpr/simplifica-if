@@ -62,10 +62,13 @@ const CNCT_CATALOGO: FonteReferencia = {
 
 /** Universo de IDs citáveis: registro de normas (manifesto + stubs) e cursos do CNCT. */
 export class UniversoReferencias {
-  constructor(
-    readonly registro: Registro,
-    private readonly cursosCnct: ReadonlyMap<string, string> = new Map(),
-  ) {}
+  readonly registro: Registro;
+  private readonly cursosCnct: ReadonlyMap<string, string>;
+
+  constructor(registro: Registro, cursosCnct: ReadonlyMap<string, string> = new Map()) {
+    this.registro = registro;
+    this.cursosCnct = cursosCnct;
+  }
 
   /** Fonte do ID, ou `undefined` se ele não existe na base. */
   fonte(ref: string): FonteReferencia | undefined {
