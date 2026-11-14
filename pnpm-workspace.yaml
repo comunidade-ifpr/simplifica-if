@@ -5,6 +5,7 @@ packages:
 # repositórios, atualizada no mesmo dia. Ver docs/plans/consolidacao-stack-t3.md, "Versões fixadas".
 # `pnpm sync:repos` traz `.repos/effect` na tag de `effect` daqui.
 catalog:
+  "@effect/openapi-generator": 4.1.2
   "@effect/platform-node": 4.1.2
   "@effect/vitest": 4.1.2
   "@types/node": 24.12.4

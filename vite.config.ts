@@ -60,6 +60,9 @@ export default defineConfig({
       "**/dist-exe/**",
       // módulos gerados com `--check` (como as instruções do MCP): o gerador é a fonte do formato
       "**/*.gerado.ts",
+      // pacotes copiados do T3 Code (docs/upstream-t3.md): ficam como no upstream, formatados pelo T3
+      "packages/effect-acp/**",
+      "packages/effect-codex-app-server/**",
       ".agents/skills/*/assets/**",
       ".agents/skills/*/base-analise/**",
       ".agents/skills/*/config/**",
@@ -83,6 +86,9 @@ export default defineConfig({
       ".agents/skills/*/assets/**",
       ".agents/skills/*/base-analise/**",
       ".agents/skills/*/output/**",
+      // pacotes copiados do T3 Code: o lint deles é o do upstream, com o plugin `t3code/*`
+      "packages/effect-acp/**",
+      "packages/effect-codex-app-server/**",
     ],
     plugins: ["eslint", "oxc", "unicorn", "typescript"],
     // Plugin próprio, com as regras de Effect copiadas do plugin do T3 (`simplifica-if/<regra>`).
