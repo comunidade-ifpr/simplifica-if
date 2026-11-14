@@ -1,20 +1,16 @@
 /**
- * Peças comuns às ferramentas de PPCs e cursos (T3): o resumo de norma, as regras de transição, os
- * fatos de PPC, a leitura dos IDs de PPC e de curso escritos pela IA e os avisos. Só formato: as
- * regras ficam em `@simplifica-if/kb/db/modo-banco`.
+ * Peças comuns às ferramentas de PPCs e cursos (T3): a norma pedida pela IA, as regras de transição,
+ * os fatos de PPC, a leitura dos IDs de PPC e de curso escritos pela IA e os avisos. `NormaResumo` e
+ * `Relacao` ficam em `tipos-comuns.ts`. Só formato: as regras ficam em `@simplifica-if/kb/db/modo-banco`.
  */
 import type { Database } from "bun:sqlite";
-import {
-  type fatosDosPpcs,
-  obterNorma,
-  REGRAS_BAIXA_CONFIANCA,
-  type vigenciaBanco,
-} from "@simplifica-if/kb/db/modo-banco";
+import { type fatosDosPpcs, REGRAS_BAIXA_CONFIANCA, type vigenciaBanco } from "@simplifica-if/kb/db/modo-banco";
 import { z } from "zod";
 import { type Aviso, ErroEntrada, esquemaFonte, esquemaLink, type Fonte } from "../envelope.ts";
 import { linkNorma, linkPpc, lerLink } from "../links.ts";
 import { blocoItem, comLink } from "../texto.ts";
 import { cortar } from "../orcamento.ts";
+import { type NormaResumo, normaResumo } from "./tipos-comuns.ts";
 
 /* ------------------------------------------------------------------ IDs */
 
@@ -65,44 +61,6 @@ export const idNorma = (descricao: string) =>
 export const filtroTexto = (descricao: string) => z.string().trim().min(1).max(200).describe(descricao);
 
 /* ------------------------------------------------------------------ normas */
-
-export const esquemaNormaResumo = z.strictObject({
-  id: z.string(),
-  titulo: z.string(),
-  situacao: z.enum(["base", "stub", "externo"]),
-  status_vigencia: z.string().nullable(),
-  vigencia_a_confirmar: z.boolean(),
-  data_publicacao: z.string().nullable(),
-  ementa: z.string().nullable(),
-  link: esquemaLink,
-});
-export type NormaResumo = z.infer<typeof esquemaNormaResumo>;
-
-const esquemaAConfirmar = z.object({ a_confirmar: z.string().nullable() });
-
-/**
- * A norma (o ato, sem dispositivo) pela tabela `normas`, ou `null`. `vigencia_a_confirmar` é
- * verdadeiro quando o front matter publicado traz `vigencia_a_confirmar` ou o status é "a confirmar".
- */
-export function normaResumo(db: Database, id: string): NormaResumo | null {
-  const norma = obterNorma(db, id.split("#")[0]!);
-  if (!norma) return null;
-  const { a_confirmar } = esquemaAConfirmar.parse(
-    db
-      .query("SELECT json_extract(front_matter_json, '$.vigencia_a_confirmar') AS a_confirmar FROM normas WHERE id = ?")
-      .get(norma.id),
-  );
-  return {
-    id: norma.id,
-    titulo: norma.titulo,
-    situacao: z.enum(["base", "stub", "externo"]).parse(norma.situacao),
-    status_vigencia: norma.status_vigencia,
-    vigencia_a_confirmar: Boolean(a_confirmar) || norma.status_vigencia === "a confirmar",
-    data_publicacao: norma.data_publicacao,
-    ementa: norma.ementa,
-    link: linkNorma(norma.id),
-  };
-}
 
 /** A norma pedida pela IA; ID desconhecido é erro de entrada, com a dica de onde achar o ID. */
 export function normaPedida(db: Database, id: string): NormaResumo {

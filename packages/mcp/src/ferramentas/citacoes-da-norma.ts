@@ -9,15 +9,8 @@ import { type Aviso, esquemaFonte, esquemaLink, responder } from "../envelope.ts
 import { linkNorma, linkPpc } from "../links.ts";
 import { cortar, paginarNoTeto, RESERVA_TEXTO } from "../orcamento.ts";
 import { blocoItem, comLink } from "../texto.ts";
-import {
-  avisoBaixaConfianca,
-  chavePpc,
-  esquemaNormaResumo,
-  filtroTexto,
-  idNorma,
-  type NormaResumo,
-  normaPedida,
-} from "./comum-ppcs.ts";
+import { avisoBaixaConfianca, chavePpc, filtroTexto, idNorma, normaPedida } from "./comum-ppcs.ts";
+import { esquemaNormaResumo, type NormaResumo } from "./tipos-comuns.ts";
 import { definirFerramenta } from "./ferramenta.ts";
 
 /** Teto do texto para a IA, em caracteres. */

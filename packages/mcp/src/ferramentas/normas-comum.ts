@@ -1,24 +1,18 @@
 /**
- * Peças comuns das ferramentas de normas (especificação M0.1, "Tipos comuns"): os schemas de
- * `NormaResumo`, `DispositivoTexto` e `Relacao`, a conversão das estruturas do kb para eles e o corte
- * do texto para a IA no teto de caracteres de cada ferramenta. Nenhuma regra normativa: só formato.
+ * Peças comuns das ferramentas de normas (especificação M0.1, "Tipos comuns"): o schema de
+ * `DispositivoTexto`, a conversão do trecho do kb para ele, os avisos das normas e o corte do texto
+ * para a IA no teto de caracteres de cada ferramenta (`NormaResumo` e `Relacao` ficam em
+ * `tipos-comuns.ts`). Nenhuma regra normativa: só formato.
  */
 import type { Database } from "bun:sqlite";
-import {
-  descendentesBanco,
-  type NormaDoBanco,
-  normaBanco,
-  type Relacao,
-  type TrechoDispositivo,
-} from "@simplifica-if/kb/db/modo-banco";
+import { descendentesBanco, type TrechoDispositivo } from "@simplifica-if/kb/db/modo-banco";
 import { z } from "zod";
 import { type Aviso, esquemaFonte, esquemaLink, type Resposta } from "../envelope.ts";
 import { linkNorma } from "../links.ts";
 import { citacao, montarTexto } from "../texto.ts";
+import type { NormaResumo } from "./tipos-comuns.ts";
 
 /* ================================================================== schemas */
-
-export const SITUACOES_NORMA = ["base", "stub", "externo"] as const;
 
 /** AAAA-MM-DD, como as datas da base. */
 export const esquemaData = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "use AAAA-MM-DD");
@@ -36,19 +30,6 @@ export const esquemaIdNorma = z
     'use o ID canônico da norma, como "br/cne-cp/res/2021/1" (sem espaços; para uma citação em texto, use resolver_citacoes)',
   );
 
-export const esquemaNormaResumo = z.strictObject({
-  id: z.string(),
-  titulo: z.string(),
-  situacao: z.enum(SITUACOES_NORMA),
-  /** Status publicado, calculado na `data_referencia` da base. */
-  status_vigencia: z.string().nullable(),
-  vigencia_a_confirmar: z.boolean(),
-  data_publicacao: z.string().nullable(),
-  ementa: z.string().nullable(),
-  link: esquemaLink,
-});
-export type NormaResumo = z.infer<typeof esquemaNormaResumo>;
-
 export const esquemaDispositivoTexto = z.strictObject({
   /** ID canônico do ato com o dispositivo (`br/cne-cp/res/2026/2#art28-vii`). */
   id: z.string(),
@@ -65,44 +46,7 @@ export const esquemaDispositivoTexto = z.strictObject({
 });
 export type DispositivoTexto = z.infer<typeof esquemaDispositivoTexto>;
 
-export const esquemaRelacao = z.strictObject({
-  tipo: z.string(),
-  origem: z.string(),
-  /** Dispositivo da origem que opera a relação (`#art74-ii`). */
-  operador: z.string().nullable(),
-  alvo: z.string(),
-  alvo_dispositivo: z.string().nullable(),
-  /** Parte do alvo atingida, quando descrita em texto. */
-  alcance: z.string().nullable(),
-  evidencia: z.strictObject({ em: z.string(), trecho: z.string() }),
-  confirmado_em: z.string().nullable(),
-  nota: z.string().nullable(),
-});
-export type RelacaoSaida = z.infer<typeof esquemaRelacao>;
-
 /* ================================================================ conversões */
-
-export function resumoDaNorma(norma: NormaDoBanco): NormaResumo {
-  return {
-    id: norma.id,
-    titulo: norma.titulo,
-    situacao: norma.situacao,
-    status_vigencia: norma.status_vigencia,
-    vigencia_a_confirmar: norma.vigencia_a_confirmar,
-    data_publicacao: norma.data_publicacao,
-    ementa: norma.ementa,
-    link: linkNorma(norma.id),
-  };
-}
-
-/** `normaBanco` com cache por chamada (várias respostas citam a mesma norma). */
-export function leitorDeNormas(db: Database): (id: string) => NormaDoBanco | null {
-  const cache = new Map<string, NormaDoBanco | null>();
-  return (id) => {
-    if (!cache.has(id)) cache.set(id, normaBanco(db, id));
-    return cache.get(id)!;
-  };
-}
 
 /**
  * `DispositivoTexto` a partir do trecho do kb. Os rótulos dos subordinados (que o trecho não traz)
@@ -125,20 +69,6 @@ export function dispositivoTexto(db: Database, trecho: TrechoDispositivo): Dispo
     vetado: trecho.vetado,
     fonte: { path: trecho.path, linha_inicio: trecho.linha_inicio, linha_fim: trecho.linha_fim },
     link: linkNorma(trecho.id),
-  };
-}
-
-export function relacaoSaida(r: Relacao): RelacaoSaida {
-  return {
-    tipo: r.tipo,
-    origem: r.origem,
-    operador: r.operador ?? null,
-    alvo: r.alvo,
-    alvo_dispositivo: r.alvo_dispositivo ?? null,
-    alcance: r.alcance ?? null,
-    evidencia: { em: r.evidencia.em, trecho: r.evidencia.trecho },
-    confirmado_em: r.confirmado_em ?? null,
-    nota: r.nota ?? null,
   };
 }
 

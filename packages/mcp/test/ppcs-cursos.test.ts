@@ -306,8 +306,10 @@ describe("impacto_da_norma", () => {
         operador: "#art74-ii",
         alvo: "br/cne-cp/res/2021/1",
         alvo_dispositivo: null,
+        alcance: null,
         evidencia: { em: "br/cne-cp/res/2026/2#art74-ii", trecho: "a Resolução CNE/CP nº 1, de 5 de janeiro de 2021" },
         confirmado_em: "2026-11-13",
+        nota: null,
       },
     ]);
     expect(d.normas_que_citam).toEqual([

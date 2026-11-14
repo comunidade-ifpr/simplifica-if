@@ -15,12 +15,10 @@ import {
   dispositivoTexto,
   esquemaDispositivoTexto,
   esquemaIdDispositivo,
-  leitorDeNormas,
   literalDoDispositivo,
-  type NormaResumo,
-  resumoDaNorma,
   tetoDoCorpo,
 } from "./normas-comum.ts";
+import { leitorDeNormas, type NormaResumo, resumoDaNorma } from "./tipos-comuns.ts";
 
 /** Teto do texto para a IA: o mesmo de `ler_secao` (a especificação não fixa um para esta ferramenta). */
 export const TETO_LER_DISPOSITIVOS = 20_000;

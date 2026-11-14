@@ -19,16 +19,18 @@ import {
   avisosDasNormas,
   esquemaData,
   esquemaIdNorma,
-  esquemaNormaResumo,
-  esquemaRelacao,
-  leitorDeNormas,
   limitarTexto,
-  type RelacaoSaida,
-  relacaoSaida,
-  resumoDaNorma,
   situacaoDaNorma,
   tetoDoCorpo,
 } from "./normas-comum.ts";
+import {
+  esquemaNormaResumo,
+  esquemaRelacao,
+  leitorDeNormas,
+  type RelacaoSaida,
+  relacaoSaida,
+  resumoDaNorma,
+} from "./tipos-comuns.ts";
 
 /** Teto do texto para a IA (a especificação não fixa um para esta ferramenta). */
 export const TETO_FICHA_NORMA = 12_000;

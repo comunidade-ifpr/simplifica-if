@@ -12,14 +12,13 @@ import { cortar, linhasNoOrcamento } from "../orcamento.ts";
 import { comLink, dataBr } from "../texto.ts";
 import {
   avisoVigencia,
-  esquemaNormaResumo,
   esquemaTransicaoResumo,
   idNorma,
   linhaTransicao,
   normaPedida,
-  normaResumo,
   transicaoResumo,
 } from "./comum-ppcs.ts";
+import { esquemaNormaResumo, esquemaRelacao, normaResumo, type RelacaoSaida, relacaoSaida } from "./tipos-comuns.ts";
 import { definirFerramenta } from "./ferramenta.ts";
 
 export const TETO_IMPACTO = 8000;
@@ -28,16 +27,6 @@ export const AMOSTRA_PPCS = 10;
 
 const entrada = z.strictObject({
   id: idNorma('ID canônico da norma, com dispositivo opcional ("br/cne-cp/res/2021/1")'),
-});
-
-const esquemaRelacao = z.strictObject({
-  tipo: z.string(),
-  origem: z.string(),
-  operador: z.string().nullable(),
-  alvo: z.string(),
-  alvo_dispositivo: z.string().nullable(),
-  evidencia: z.strictObject({ em: z.string(), trecho: z.string() }),
-  confirmado_em: z.string().nullable(),
 });
 
 const dados = z.strictObject({
@@ -120,15 +109,7 @@ export const impactoDaNorma = definirFerramenta({
         data_referencia: impacto.data_referencia,
         sucessoras: impacto.sucessoras,
         transicoes: impacto.transicoes.map((id) => transicaoResumo(transicoes.get(id)!)),
-        relacoes: relacoes.map((r) => ({
-          tipo: r.tipo,
-          origem: r.origem,
-          operador: r.operador ?? null,
-          alvo: r.alvo,
-          alvo_dispositivo: r.alvo_dispositivo ?? null,
-          evidencia: { em: r.evidencia.em, trecho: r.evidencia.trecho },
-          confirmado_em: r.confirmado_em ?? null,
-        })),
+        relacoes: relacoes.map(relacaoSaida),
         normas_que_citam: impacto.normas_que_citam.map((n) => ({
           id: n.id,
           titulo: normaResumo(db, n.id)?.titulo ?? n.id,
@@ -152,7 +133,7 @@ export const impactoDaNorma = definirFerramenta({
       linhas.length === 0
         ? `${titulo}: nenhuma.`
         : [`${titulo}:`, ...linhasNoOrcamento(linhas, orcamento, resto)].join("\n");
-    const relacao = (r: z.infer<typeof esquemaRelacao>) =>
+    const relacao = (r: RelacaoSaida) =>
       `- ${r.origem}${r.operador ?? ""} **${r.tipo}** ${r.alvo}${r.alvo_dispositivo ?? ""} — evidência em ${r.evidencia.em}: "${cortar(r.evidencia.trecho, 200)}"`;
     return [
       `Impacto de ${comLink(d.norma.titulo, d.norma.link)}: ${d.status} em ${dataBr(d.data_referencia)}.`,

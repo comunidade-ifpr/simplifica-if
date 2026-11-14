@@ -27,12 +27,12 @@ import {
   esquemaFatosPpc,
   esquemaTransicaoResumo,
   linhaTransicao,
-  normaResumo,
   paraFatosPpc,
   textoFatosPpc,
   type TransicaoResumo,
   transicaoResumo,
 } from "./comum-ppcs.ts";
+import { normaResumo } from "./tipos-comuns.ts";
 import { definirFerramenta } from "./ferramenta.ts";
 
 export const TETO_FICHA_CURSO = 12000;

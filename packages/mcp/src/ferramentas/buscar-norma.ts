@@ -14,14 +14,11 @@ import {
   dispositivoTexto,
   esquemaData,
   esquemaDispositivoTexto,
-  esquemaNormaResumo,
-  leitorDeNormas,
   literalDoDispositivo,
-  resumoDaNorma,
-  SITUACOES_NORMA,
   situacaoDaNorma,
   tetoDoCorpo,
 } from "./normas-comum.ts";
+import { esquemaNormaResumo, leitorDeNormas, resumoDaNorma, SITUACOES_NORMA } from "./tipos-comuns.ts";
 
 /** Teto do texto para a IA (especificação: 8 mil caracteres). */
 export const TETO_BUSCAR_NORMA = 8000;
