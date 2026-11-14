@@ -1,6 +1,6 @@
 /**
- * Grupos de fichas, contextos e pacotes de prompt para os sub-agentes, grupo
- * avulso e mescla de reavaliações.
+ * Grupos de fichas, contextos e pacotes de prompt para os sub-agentes e grupo
+ * avulso de reavaliação (a mescla da reavaliação fica em `resultados.ts`).
  *
  * Os grupos são por tópico (`topicos_tematicos` das fichas, `agruparPorTopico` do kb): cada ficha
  * entra uma vez, no grupo do seu tópico principal, e o grupo recebe só as seções do `PPC.md` dos
@@ -39,10 +39,8 @@ import {
   obter,
   type ObjetoPy,
   ou,
-  padraoSeAusente,
   strPy,
   textoOuVazioPy,
-  tipoPy,
   verdadeiro,
 } from "@simplifica-if/kb/python/valores";
 import type { UniversoReferencias } from "@simplifica-if/kb/normas/referencia-estruturada";
@@ -776,71 +774,4 @@ export function prepararPromptsSubagents(rodada: string, opcoes: OpcoesSkill = {
   };
   escreverJsonPy(caminhos.promptsSubagentsManifest, manifest);
   return manifest;
-}
-
-/** Caminho relativo a `arquivos-suporte/` quando não absoluto. */
-function noSuporte(caminho: string, suporteDir: string): string {
-  return path.isAbsolute(caminho) ? caminho : path.join(suporteDir, caminho);
-}
-
-function exigirObjeto(valor: unknown, descricao: string): ObjetoPy {
-  if (!ehObjetoPy(valor)) throw new Error(`AttributeError: ${descricao} não é objeto JSON`);
-  return valor;
-}
-
-/** `mesclar_resultados_avulsos`: substitui no JSON base os resultados das fichas reavaliadas. */
-export function mesclarResultadosAvulsos(
-  rodada: string,
-  resultadosBase: string,
-  resultadosAvulsos: string,
-  saida?: string,
-): ObjetoPy {
-  const caminhos = caminhosRodada(rodada);
-  const basePath = noSuporte(resultadosBase, caminhos.suporteDir);
-  const avulsoPath = noSuporte(resultadosAvulsos, caminhos.suporteDir);
-  const saidaResolvida = noSuporte(saida || resultadosBase, caminhos.suporteDir);
-  const base = exigirObjeto(lerJsonPy(basePath), "resultados base");
-  const avulso = exigirObjeto(lerJsonPy(avulsoPath), "resultado avulso");
-  const gruposBase = iterarPy(obter(base, "grupos", []));
-  const resultadosNovos: unknown[] = [];
-  const gruposAvulso = obter(avulso, "grupos");
-  const resultadosAvulso = obter(avulso, "resultados");
-  if (Array.isArray(gruposAvulso)) {
-    for (const grupo of gruposAvulso) {
-      resultadosNovos.push(...iterarPy(obter(exigirObjeto(grupo, "grupo avulso"), "resultados", [])));
-    }
-  } else if (Array.isArray(resultadosAvulso)) {
-    resultadosNovos.push(...resultadosAvulso);
-  } else {
-    throw new Error("O resultado avulso precisa conter `grupos[]` ou `resultados[]`.");
-  }
-  const idsAvulsos = new Set(resultadosNovos.map((item) => strPy(obter(exigirObjeto(item, "resultado"), "ficha_id"))));
-  const idsOrdenados = [...idsAvulsos].sort(compararTexto);
-  const gruposMesclados: ObjetoPy[] = [];
-  for (const grupo of gruposBase) {
-    const original = exigirObjeto(grupo, "grupo base");
-    const copia: ObjetoPy = { ...original };
-    copia.resultados = iterarPy(obter(original, "resultados", [])).filter(
-      (item) => !idsAvulsos.has(strPy(obter(exigirObjeto(item, "resultado"), "ficha_id"))),
-    );
-    if ((copia.resultados as unknown[]).length) gruposMesclados.push(copia);
-  }
-  gruposMesclados.push({
-    grupo_id: strPy(ou(obter(avulso, "grupo_id"), `reavaliacao-${sha256JsonPayload(idsOrdenados).slice(0, 12)}`)),
-    tipo: "reavaliacao",
-    resultados: resultadosNovos,
-  });
-  const payload: ObjetoPy = { ...base, grupos: gruposMesclados };
-  const metadata = padraoSeAusente(payload, "metadata", {});
-  if (!ehObjetoPy(metadata)) {
-    // Mesma falha do Python ao atribuir em `payload["metadata"][...]`.
-    throw new TypeError(
-      Array.isArray(metadata)
-        ? "list indices must be integers or slices, not str"
-        : `'${tipoPy(metadata)}' object does not support item assignment`,
-    );
-  }
-  metadata.reavaliacoes_mescladas = idsOrdenados;
-  escreverJsonPy(saidaResolvida, payload);
-  return { resultados_path: saidaResolvida, fichas_substituidas: idsOrdenados, total_grupos: gruposMesclados.length };
 }

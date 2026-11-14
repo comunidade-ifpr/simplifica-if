@@ -26,7 +26,7 @@ import { extrairIdentificacaoDaConversao, inferirIdentificacaoDoMarkdown } from 
 import { normalizarMarkdown } from "../scripts/normalizador-markdown.ts";
 import { mesclarIdentificacaoPreferindoPreenchidos, prepararDocumento } from "../scripts/preparar-documento.ts";
 import { referenciasLegiveisDaFicha, universoOuVazio } from "../scripts/referencias-fichas.ts";
-import { ErroResultadosSubagents, validarResultadosRodada } from "../scripts/resultados.ts";
+import { ErroResultadosSubagents, mesclarResultadosAvulsos, validarResultadosRodada } from "../scripts/resultados.ts";
 import { abrirBanco } from "@simplifica-if/kb/db/banco";
 import { agoraIso, caminhosRodada, escreverJsonPy, lerJsonPy, timestampSlug } from "../scripts/rodada.ts";
 import {
@@ -37,7 +37,6 @@ import {
   contextoFundamentacaoNormativa,
   fichaRequerContextoCnct,
   fichaRequerFundamentacaoNormativa,
-  mesclarResultadosAvulsos,
   montarGrupoAvulso,
   montarGruposSubagents,
   prepararPromptsSubagents,
@@ -770,6 +769,55 @@ describe("grupo avulso e mescla", () => {
     expect(readFileSync(c.resultadosSubagents, "utf-8")).toContain('"confianca": 1.0');
     expect(validarResultadosRodada(rodada, "resultados-subagents.json").valido).toBe(true);
   });
+
+  test("mescla com base no formato `resultados[]` sem perder os resultados originais", () => {
+    const rodada = criarRodada();
+    const c = caminhosRodada(rodada);
+    const resultadosBase = payloadResultadosCompletos().grupos.flatMap((grupo) => grupo.resultados);
+    escreverJsonPy(c.resultadosSubagents, {
+      metadata: { origem: "teste" },
+      grupo_id: "grupo-unico",
+      resultados: resultadosBase,
+    });
+    expect(validarResultadosRodada(rodada, "resultados-subagents.json").total_fichas).toBe(TOTAL_FICHAS);
+    escreverJsonPy(path.join(c.suporteDir, "avulso.json"), { resultados: [resultado("CT-IDENT-01", "INCONCLUSIVO")] });
+    mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json");
+    const resumo = validarResultadosRodada(rodada, "resultados-subagents.json");
+    expect(resumo.total_fichas).toBe(TOTAL_FICHAS);
+    const payload = lerJsonPy(c.resultadosSubagents) as Payload;
+    expect(payload.resultados).toBeUndefined();
+    const reavaliado = payload.grupos.flatMap((g) => g.resultados).filter((item) => item.ficha_id === "CT-IDENT-01");
+    expect(reavaliado.map((item) => item.estado)).toEqual(["INCONCLUSIVO"]);
+  });
+
+  const avulsosInvalidos: Array<[string, ObjetoPy, string]> = [
+    ["estado inválido", { resultados: [resultado("CT-IDENT-01", "TALVEZ")] }, "Estado inválido para CT-IDENT-01"],
+    ["ficha desconhecida", { resultados: [resultado("CT-NAO-EXISTE")] }, "Fichas desconhecidas: CT-NAO-EXISTE"],
+    [
+      "ficha repetida",
+      { resultados: [resultado("CT-IDENT-01"), resultado("CT-IDENT-01")] },
+      "Fichas duplicadas: CT-IDENT-01",
+    ],
+    [
+      "evidências insuficientes",
+      { resultados: [resultado("CT-IDENT-01", "ATENDE", 0)] },
+      "CT-IDENT-01 trouxe 0 evidências",
+    ],
+  ];
+  for (const [nome, avulso, mensagem] of avulsosInvalidos) {
+    test(`recusa avulso com ${nome} sem tocar a base`, () => {
+      const rodada = criarRodada();
+      const c = caminhosRodada(rodada);
+      escreverJsonPy(c.resultadosSubagents, payloadResultadosCompletos());
+      const antes = readFileSync(c.resultadosSubagents, "utf-8");
+      escreverJsonPy(path.join(c.suporteDir, "avulso.json"), avulso);
+      expect(() => mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json")).toThrow(
+        ErroResultadosSubagents,
+      );
+      expect(() => mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json")).toThrow(mensagem);
+      expect(readFileSync(c.resultadosSubagents, "utf-8")).toBe(antes);
+    });
+  }
 
   test("rejeita ficha desconhecida no grupo avulso e avulso sem resultados", () => {
     const rodada = criarRodada();

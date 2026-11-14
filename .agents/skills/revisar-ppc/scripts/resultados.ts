@@ -2,7 +2,8 @@
  * Validação do JSON de resultados dos sub-agentes (porte de
  * `validar_resultados_subagents`, `validar_alertas_transversais` e
  * `validar_resultados_rodada` do antigo `gerar_relatorio_html.py`), usada por
- * `validar-resultados` e por `gerar-relatorio-html` (`relatorio-html.ts`).
+ * `validar-resultados` e por `gerar-relatorio-html` (`relatorio-html.ts`), e
+ * mescla das reavaliações avulsas (`mesclar-resultados-avulsos`).
  */
 import path from "node:path";
 import { compararTexto } from "@simplifica-if/kb/texto";
@@ -16,14 +17,16 @@ import {
   obter,
   type ObjetoPy,
   ou,
+  padraoSeAusente,
   strPy,
   textoOuVazioPy,
+  tipoPy,
   verdadeiro,
 } from "@simplifica-if/kb/python/valores";
 import { aparar } from "@simplifica-if/kb/texto";
 import { listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
-import { caminhosRodada, existe, lerJsonPy } from "./rodada.ts";
+import { caminhosRodada, escreverJsonPy, existe, lerJsonPy, sha256JsonPayload } from "./rodada.ts";
 import { carregarFichasOrdenadas, STATUS_FUNDAMENTACAO_NORMATIVA } from "./subagents.ts";
 
 export class ErroResultadosSubagents extends Error {
@@ -178,17 +181,20 @@ export type ResultadoNormalizado = {
   [chave: string]: unknown;
 };
 
-/** `validar_resultados_subagents`: um resultado válido por ficha do catálogo, ordenados por ficha. */
-export function validarResultadosSubagents(
-  payload: ObjetoPy,
+/**
+ * Valida e normaliza os resultados dos blocos: fichas conhecidas, sem repetição, cada resultado
+ * com o contrato da ficha. Não exige que o catálogo inteiro esteja coberto.
+ */
+function validarBlocos(
+  blocos: unknown[],
   fichasPorId: Map<string, ObjetoPy>,
-): ResultadoNormalizado[] {
+): { normalizados: ResultadoNormalizado[]; vistos: Set<string> } {
   const vistos = new Set<string>();
   const normalizados: ResultadoNormalizado[] = [];
   const duplicados: string[] = [];
   const desconhecidos: string[] = [];
 
-  for (const bloco of blocosResultados(payload)) {
+  for (const bloco of blocos) {
     if (!ehObjetoPy(bloco)) throw new Error("AttributeError: bloco de resultados não é objeto JSON");
     const grupoId = texto(obter(bloco, "grupo_id"));
     const resultados = obter(bloco, "resultados");
@@ -267,6 +273,15 @@ export function validarResultadosSubagents(
   if (duplicados.length) throw new ErroResultadosSubagents(`Fichas duplicadas: ${unicosOrdenados(duplicados)}`);
   if (desconhecidos.length)
     throw new ErroResultadosSubagents(`Fichas desconhecidas: ${unicosOrdenados(desconhecidos)}`);
+  return { normalizados, vistos };
+}
+
+/** `validar_resultados_subagents`: um resultado válido por ficha do catálogo, ordenados por ficha. */
+export function validarResultadosSubagents(
+  payload: ObjetoPy,
+  fichasPorId: Map<string, ObjetoPy>,
+): ResultadoNormalizado[] {
+  const { normalizados, vistos } = validarBlocos(blocosResultados(payload), fichasPorId);
   const faltantes = [...fichasPorId.keys()].filter((fichaId) => !vistos.has(fichaId)).sort(compararTexto);
   if (faltantes.length) throw new ErroResultadosSubagents(`Fichas sem resultado: ${faltantes.join(", ")}`);
   return normalizados.sort((a, b) => compararTexto(a.ficha_id, b.ficha_id));
@@ -416,4 +431,82 @@ export function validarResultadosRodada(
       };
     }),
   };
+}
+
+/** Caminho relativo a `arquivos-suporte/` quando não absoluto. */
+function noSuporte(caminho: string, suporteDir: string): string {
+  return path.isAbsolute(caminho) ? caminho : path.join(suporteDir, caminho);
+}
+
+function exigirObjeto(valor: unknown, descricao: string): ObjetoPy {
+  if (!ehObjetoPy(valor)) throw new Error(`AttributeError: ${descricao} não é objeto JSON`);
+  return valor;
+}
+
+/**
+ * `mesclar_resultados_avulsos`: substitui no JSON base os resultados das fichas reavaliadas.
+ *
+ * O avulso é validado contra o contrato das fichas antes de qualquer escrita; se for inválido, a
+ * mescla é recusada e a base fica intacta. A base é normalizada para `grupos[]` antes da mescla
+ * (o formato `{"grupo_id", "resultados"}` vira um grupo), para que os resultados originais não se
+ * percam ao lado do grupo de reavaliação.
+ */
+export function mesclarResultadosAvulsos(
+  rodada: string,
+  resultadosBase: string,
+  resultadosAvulsos: string,
+  saida?: string,
+  caminhosAnalise: CaminhosAnalise = caminhosPadrao(),
+): ObjetoPy {
+  const caminhos = caminhosRodada(rodada);
+  const basePath = noSuporte(resultadosBase, caminhos.suporteDir);
+  const avulsoPath = noSuporte(resultadosAvulsos, caminhos.suporteDir);
+  const saidaResolvida = noSuporte(saida || resultadosBase, caminhos.suporteDir);
+  const base = exigirObjeto(lerJsonPy(basePath), "resultados base");
+  const avulso = exigirObjeto(lerJsonPy(avulsoPath), "resultado avulso");
+  if (!Array.isArray(obter(avulso, "grupos")) && !Array.isArray(obter(avulso, "resultados"))) {
+    throw new Error("O resultado avulso precisa conter `grupos[]` ou `resultados[]`.");
+  }
+  const blocosAvulso = blocosResultados(avulso);
+  validarBlocos(blocosAvulso, catalogoFichas(caminhosAnalise.fichasDir));
+  const resultadosNovos = blocosAvulso.flatMap((bloco) =>
+    iterarPy(obter(exigirObjeto(bloco, "grupo avulso"), "resultados")),
+  );
+  if (!resultadosNovos.length) throw new ErroResultadosSubagents("O resultado avulso não traz resultados.");
+
+  const gruposBase = blocosResultados(base);
+  const idsAvulsos = new Set(resultadosNovos.map((item) => strPy(obter(exigirObjeto(item, "resultado"), "ficha_id"))));
+  const idsOrdenados = [...idsAvulsos].sort(compararTexto);
+  const gruposMesclados: ObjetoPy[] = [];
+  for (const grupo of gruposBase) {
+    const original = exigirObjeto(grupo, "grupo base");
+    const copia: ObjetoPy = { ...original };
+    copia.resultados = iterarPy(obter(original, "resultados", [])).filter(
+      (item) => !idsAvulsos.has(strPy(obter(exigirObjeto(item, "resultado"), "ficha_id"))),
+    );
+    if ((copia.resultados as unknown[]).length) gruposMesclados.push(copia);
+  }
+  gruposMesclados.push({
+    grupo_id: strPy(ou(obter(avulso, "grupo_id"), `reavaliacao-${sha256JsonPayload(idsOrdenados).slice(0, 12)}`)),
+    tipo: "reavaliacao",
+    resultados: resultadosNovos,
+  });
+  const payload: ObjetoPy = { ...base, grupos: gruposMesclados };
+  if (!Array.isArray(obter(base, "grupos"))) {
+    // A base vinha como `{"grupo_id", "resultados"}`: esses campos viraram o primeiro grupo.
+    delete payload.resultados;
+    delete payload.grupo_id;
+  }
+  const metadata = padraoSeAusente(payload, "metadata", {});
+  if (!ehObjetoPy(metadata)) {
+    // Mesma falha do Python ao atribuir em `payload["metadata"][...]`.
+    throw new TypeError(
+      Array.isArray(metadata)
+        ? "list indices must be integers or slices, not str"
+        : `'${tipoPy(metadata)}' object does not support item assignment`,
+    );
+  }
+  metadata.reavaliacoes_mescladas = idsOrdenados;
+  escreverJsonPy(saidaResolvida, payload);
+  return { resultados_path: saidaResolvida, fichas_substituidas: idsOrdenados, total_grupos: gruposMesclados.length };
 }
