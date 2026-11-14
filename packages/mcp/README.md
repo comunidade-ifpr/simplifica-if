@@ -27,7 +27,7 @@ Especificação: `docs/plans/m0-simplifica-mcp.md` (M0.1). Prontos os passos T0 
 
 ```bash
 pnpm install                                         # na raiz do repositório
-pnpm kb:compilar                                 # gera tmp/kb.sqlite
+pnpm kb compilar                                     # gera tmp/kb.sqlite
 node packages/mcp/src/cli.ts --banco tmp/kb.sqlite
 ```
 
@@ -67,29 +67,56 @@ args = ["--banco", "~/SimplificaIF/kb.sqlite"]
 
 ## Estrutura
 
+O pacote é Effect 4 (`effect/ai`, `effect/rpc`, `effect/cli`), sem o SDK oficial do MCP em produção: o cliente do SDK (`@modelcontextprotocol/client`) fica só nos testes, como conferência independente do protocolo.
+
 ```
 packages/mcp/
-├── instrucoes.md       # campo `instructions` do servidor (até 400 palavras), embutido no bundle
+├── instrucoes.md            # campo `instructions` do servidor, embutido em src/instrucoes.gerado.ts
 ├── src/
-│   ├── cli.ts          # --banco, --pasta-trabalho, --canal; inicia em stdio
-│   ├── servidor.ts     # cria o servidor e registra as ferramentas
-│   ├── banco.ts        # abre o kb.sqlite só para leitura e confere versao_esquema
-│   ├── envelope.ts     # base, avisos, fonte, paginação com cursor opaco
-│   ├── links.ts        # IDs canônicos → ifpr://
-│   ├── texto.ts        # Markdown compacto para a IA (avisos, itens, rodapé)
-│   ├── orcamento.ts    # paginação pelo limite e pelo teto de caracteres ao mesmo tempo
-│   └── ferramentas/    # uma ferramenta por arquivo; index.ts é o registro
-│                       # tipos-comuns.ts: NormaResumo e Relacao, os mesmos em todas as ferramentas
-└── test/               # bancos de fixture com o DDL do kb; contrato, links, texto, banco, stdio, smoke
+│   ├── cli.ts               # effect/cli: --banco (ou SIMPLIFICA_KB), --pasta-trabalho, --canal; stdio
+│   ├── servidor.ts          # McpServer.layerStdio, layerLeitura, layerRegistro, mensagens de abertura
+│   ├── contratos.ts         # Effect Schema do envelope (Resposta, Aviso, Fonte, Página) e dos tipos comuns; erros
+│   ├── esquema.ts           # construtores de schema (texto aparado, inteiro…) e o JSON Schema das ferramentas
+│   ├── validacao.ts         # entrada inválida → mensagem em português, no formato do servidor anterior
+│   ├── leitura/             # serviço `Leitura`: um método por ferramenta, com envelope, paginação e orçamento
+│   ├── envelope.ts          # base, avisos e cursor opaco
+│   ├── orcamento.ts         # paginação pelo limite e pelo teto de caracteres ao mesmo tempo
+│   ├── links.ts, texto.ts   # IDs → ifpr://; Markdown compacto para a IA (funções puras)
+│   ├── ferramentas/         # um arquivo por ferramenta (Tool.make, descrição, texto)
+│   │   ├── toolkit.ts       # FerramentasIfpr (Toolkit) e layerHandlers
+│   │   └── registrar.ts     # registrarFerramentas, sobre McpServer.addTool
+│   ├── toolkit.ts           # export @simplifica-if/mcp/toolkit
+│   └── rpc.ts               # export @simplifica-if/mcp/rpc: GrupoLeitura e layerHandlersRpc
+└── test/                    # fixtures com o DDL do kb; contrato, equivalência, RPC, stdio, smoke
 ```
 
-Regras de negócio ficam em `packages/kb`; aqui só há validação de entrada, envelope e formatação.
+Regras de negócio ficam em `packages/kb`; aqui ficam a validação de entrada, o envelope, o orçamento e a formatação. As ferramentas MCP e o RPC chamam o mesmo serviço `Leitura`, com os mesmos schemas.
+
+## Uso pelo app (fork do T3)
+
+Três pontos de entrada, sem curinga:
+
+- `@simplifica-if/mcp/toolkit`: `FerramentasIfpr`, `FERRAMENTAS`, `layerHandlers`, `registrarFerramentas`, `layerRegistro`, `layerLeitura`, `Leitura`, `NOME_SERVIDOR`, `VERSAO_PACOTE`, `INSTRUCOES` e `PROTOCOLOS`;
+- `@simplifica-if/mcp/rpc`: `GrupoLeitura` (`fichaNorma`, `lerDispositivos`, `buscarNorma`, `fichaCurso`, `lerSecao`, `buscarSecoes`, `listarCursos`, `sobreABase`), `layerHandlersRpc` e `layerLeitura`;
+- `@simplifica-if/mcp/contratos`: os schemas do envelope e dos tipos comuns.
+
+```ts
+McpServer.layerHttp({
+  name: NOME_SERVIDOR, version: VERSAO_PACOTE, instructions: INSTRUCOES, protocols: PROTOCOLOS,
+  path: "/mcp/ifpr", registrations: layerRegistro,
+}).pipe(Layer.fresh, Layer.provide(layerLeitura({ banco, canal: "estavel" })))
+```
+
+O `Layer.fresh` é necessário quando há outro `McpServer` no mesmo grafo de layers (o do T3): sem ele, os dois endpoints compartilham o registro e listam as ferramentas um do outro.
+
+O registro é próprio (`addTool`), e não `McpServer.registerToolkit`, para que o `content` seja o texto Markdown e a entrada inválida volte como resultado `isError` com a mensagem em português, e não como erro `InvalidParams`.
 
 ## Manutenção
 
 ```bash
 pnpm --filter @simplifica-if/mcp test
 pnpm --filter @simplifica-if/mcp typecheck
+node packages/mcp/test/gabarito.ts --comparar --schemas-equivalentes   # na raiz: o gabarito do C0 pelo protocolo
 pnpm fmt                             # na raiz: vp fmt no repositório inteiro
 pnpm mcp:smoke                       # na raiz: as ferramentas × a CLI kb sobre o tmp/kb.sqlite
 ```

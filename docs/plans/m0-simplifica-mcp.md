@@ -546,25 +546,24 @@ O objetivo é que todas as ferramentas respondam abrindo só o `kb.sqlite`, em m
 
 ```
 packages/mcp/
-├── package.json        # @simplifica-if/mcp; @modelcontextprotocol/server (SDK 2.x), zod, @simplifica-if/kb
+├── package.json        # @simplifica-if/mcp; effect (peer), @simplifica-if/kb; exports ./toolkit, ./rpc, ./contratos
 ├── instrucoes.md
 ├── src/
-│   ├── servidor.ts     # cria o servidor, registra as ferramentas, transporte stdio
-│   ├── cli.ts          # --banco, --pasta-trabalho, --canal
-│   ├── banco.ts        # abre o kb.sqlite somente leitura e confere versao_esquema
+│   ├── cli.ts          # effect/cli: --banco, --pasta-trabalho, --canal; McpServer.layerStdio
+│   ├── servidor.ts     # layerStdio, layerLeitura, layerRegistro
+│   ├── contratos.ts    # Effect Schema do envelope e dos tipos comuns
+│   ├── leitura/        # serviço Leitura: um método por ferramenta (envelope, paginação, orçamento)
 │   ├── envelope.ts     # base, avisos, paginação, cursor
 │   ├── links.ts        # ids canônicos → ifpr://
 │   ├── texto.ts        # Markdown compacto para a IA
-│   └── ferramentas/    # um arquivo por ferramenta: entrada, saída, descrição, handler
+│   ├── ferramentas/    # um arquivo por ferramenta (Tool.make, descrição, texto); toolkit.ts, registrar.ts
+│   ├── toolkit.ts      # @simplifica-if/mcp/toolkit
+│   └── rpc.ts          # @simplifica-if/mcp/rpc: GrupoLeitura
 └── test/
 ```
 
-- **SDK:** linha 2.x (`@modelcontextprotocol/server`), decidida em 13/11/2026 depois de um porte de avaliação. Os schemas do zod 4 viram JSON Schema 2020-12 pelo próprio zod, e o stdio usa `serveStdio`, que atende as eras 2025 e 2026-07-28. A versão fica fixa, e cada atualização exige ler as notas de mudança.
-- **HTTP local (Marco 1):** usar `createMcpHandler` dentro do mesmo `Bun.serve` da API de leitura, com validação de Host e Origin na frente (`hostHeaderValidationResponse` e `originValidationResponse`), contra DNS rebinding.
-- **Sem Effect no Marco 0 (decidido em 14/11/2026):**
-  - o pacote fica no SDK 2.x com zod;
-  - os handlers continuam funções puras e síncronas, sem tipos do SDK, para que uma migração futura se limite a um adaptador em `servidor.ts`;
-  - a reavaliação fica para o Marco 1, com a API HTTP; os motivos estão no plano do app, em [Tecnologia e língua do código](app-simplifica-if.md#tecnologia-e-língua-do-código).
+- **Stack (C2 da consolidação, 14/11/2026):** Effect 4 (`effect/ai`), no lugar do SDK 2.x com zod. Cada ferramenta é um `Tool.make`, reunidas no Toolkit `FerramentasIfpr`, registrado por `registrarFerramentas` sobre `McpServer.addTool`: o `content` continua o Markdown compacto, e a entrada inválida continua um resultado `isError` com a mensagem em português. O stdio usa `McpServer.layerStdio`, que atende `2025-06-18`, `2025-11-25` e `2026-07-28` (testado com os clientes do SDK 1.23 e 2.4). Os JSON Schemas saem do Effect Schema e são equivalentes aos do zod pelo teste de equivalência (forma normalizada e veredito do ajv). Detalhes e desvios: [consolidação, C2](consolidacao-stack-t3.md#c2--packagesmcp-em-effect).
+- **HTTP local (Marco 1):** o fork monta o Toolkit num `McpServer.layerHttp` próprio, em `/mcp/ifpr`, ao lado do servidor do T3 (com `Layer.fresh`), e o leitor usa o grupo RPC `GrupoLeitura`, sobre o mesmo serviço `Leitura`. Na frente do HTTP local, validação de Host e Origin, contra DNS rebinding.
 - **Banco de versão diferente:** um banco com `versao_esquema` diferente do esperado gera um erro claro: "base incompatível com esta versão do simplifica-mcp; atualize".
 - **Links:** `links.ts` pode morar em `packages/kb`, se o app e o site também forem gerar links `ifpr://`.
 
