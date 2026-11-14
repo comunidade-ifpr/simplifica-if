@@ -3442,68 +3442,68 @@
     {
       "name": "listar_cursos",
       "title": "Listar cursos",
-      "description": "Cursos do IFPR na base, com CNCT, eixo, ofertas e turno. Use filtros: a lista sem filtro é longa. Para os detalhes de um curso, use `ficha_curso`.",
+      "description": "Cursos do IFPR na base, com CNCT, eixo, ofertas e turno. Use quando a pergunta envolver vários cursos, como os de um eixo, campus, turno ou processo seletivo, e prefira filtros, porque a lista sem filtro é longa. Para os detalhes de um curso, use `ficha_curso`.",
       "inputSchema": {
         "type": "object",
         "properties": {
           "eixo": {
             "type": "string",
+            "description": "eixo tecnológico do CNCT (\"Informação e Comunicação\")",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "eixo tecnológico do CNCT (\"Informação e Comunicação\")"
+            "maxLength": 200
           },
           "turno": {
             "type": "string",
+            "description": "turno de alguma oferta (\"matutino\", \"noturno\", \"integral\"…)",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "turno de alguma oferta (\"matutino\", \"noturno\", \"integral\"…)"
+            "maxLength": 200
           },
           "campus": {
             "type": "string",
+            "description": "campus, pelo ID (\"curitiba\")",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "campus, pelo ID (\"curitiba\")"
+            "maxLength": 200
           },
           "nivel": {
             "type": "string",
+            "description": "nível (\"médio\", \"superior\", \"pós-graduação\")",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "nível (\"médio\", \"superior\", \"pós-graduação\")"
+            "maxLength": 200
           },
           "forma": {
             "type": "string",
+            "description": "forma de oferta (\"integrado\", \"subsequente\", \"bacharelado\"…)",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "forma de oferta (\"integrado\", \"subsequente\", \"bacharelado\"…)"
+            "maxLength": 200
           },
           "situacao": {
             "type": "string",
+            "description": "situação do curso (\"ativo\", \"suspenso\"…)",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "situação do curso (\"ativo\", \"suspenso\"…)"
+            "maxLength": 200
           },
           "cnct": {
             "type": "string",
+            "description": "curso do CNCT (\"tecnico-em-enfermagem\")",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "curso do CNCT (\"tecnico-em-enfermagem\")"
+            "maxLength": 200
           },
           "processo": {
             "type": "string",
+            "description": "processo seletivo de alguma oferta (\"processo-seletivo-2026\")",
             "minLength": 1,
-            "maxLength": 200,
-            "description": "processo seletivo de alguma oferta (\"processo-seletivo-2026\")"
+            "maxLength": 200
           },
           "limite": {
-            "default": 50,
-            "description": "cursos por página (1 a 100); padrão 50",
             "type": "integer",
             "minimum": 1,
-            "maximum": 100
+            "maximum": 100,
+            "description": "cursos por página (1 a 100); padrão 50",
+            "default": 50
           },
           "cursor": {
-            "description": "cursor da página seguinte, devolvido pela chamada anterior",
             "type": "string",
+            "description": "cursor da página seguinte, devolvido pela chamada anterior",
             "minLength": 1
           }
         },
@@ -3520,9 +3520,13 @@
                 "type": "string"
               },
               "commit": {
-                "type": [
-                  "string",
-                  "null"
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
               "data_referencia": {
@@ -3563,27 +3567,43 @@
                       "type": "string"
                     },
                     "nivel": {
-                      "type": [
-                        "string",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     },
                     "forma_oferta": {
-                      "type": [
-                        "string",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     },
                     "modalidade": {
-                      "type": [
-                        "string",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     },
                     "situacao": {
-                      "type": [
-                        "string",
-                        "null"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
                       ]
                     },
                     "cnct": {
@@ -3598,9 +3618,13 @@
                               "type": "string"
                             },
                             "eixo": {
-                              "type": [
-                                "string",
-                                "null"
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
                               ]
                             }
                           },
@@ -3747,6 +3771,7 @@
       "annotations": {
         "title": "Listar cursos",
         "readOnlyHint": true,
+        "destructiveHint": false,
         "idempotentHint": true,
         "openWorldHint": false
       }
@@ -11591,12 +11616,12 @@
         "content": [
           {
             "type": "text",
-            "text": "225 cursos. Detalhes de um curso: `ficha_curso` com o ID.\n- [Especialização em Docência e Práticas Educativas](ifpr://curso/arapongas/especializacao-em-docencia-e-praticas-educativas) `arapongas/especializacao-em-docencia-e-praticas-educativas` — pós-graduação, especialização; PPC 2023\n- [Gestão de Competências para Exames de Larga Escala (Cursinho)](ifpr://curso/arapongas/gestao-de-competencias-para-exames-de-larga-escala) `arapongas/gestao-de-competencias-para-exames-de-larga-escala` — formação inicial e continuada, FIC; sem PPC na base\n- [Português como Língua de Acolhimento - PLAc](ifpr://curso/arapongas/portugues-como-lingua-de-acolhimento-plac) `arapongas/portugues-como-lingua-de-acolhimento-plac` — formação inicial e continuada, FIC; sem PPC na base\n- [Programação com ênfase em Análise de Dados](ifpr://curso/arapongas/programacao-com-enfase-em-analise-de-dados) `arapongas/programacao-com-enfase-em-analise-de-dados` — formação inicial e continuada, FIC; PPC 2024\n- [Programação Web](ifpr://curso/arapongas/programacao-web) `arapongas/programacao-web` — formação inicial e continuada, FIC; PPC 2025\n\nMostrando 5 de 225. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjo1LCJjIjoiMWQyMjQ2YWRmYzY2In0\"`.\n\nBase de 13/11/2026 (versão dev)."
+            "text": "225 cursos. Detalhes de um curso: `ficha_curso` com o ID.\n- [Especialização em Docência e Práticas Educativas](ifpr://curso/arapongas/especializacao-em-docencia-e-praticas-educativas) `arapongas/especializacao-em-docencia-e-praticas-educativas` — pós-graduação, especialização; PPC 2023\n- [Gestão de Competências para Exames de Larga Escala (Cursinho)](ifpr://curso/arapongas/gestao-de-competencias-para-exames-de-larga-escala) `arapongas/gestao-de-competencias-para-exames-de-larga-escala` — formação inicial e continuada, FIC; sem PPC na base\n- [Português como Língua de Acolhimento - PLAc](ifpr://curso/arapongas/portugues-como-lingua-de-acolhimento-plac) `arapongas/portugues-como-lingua-de-acolhimento-plac` — formação inicial e continuada, FIC; sem PPC na base\n- [Programação com ênfase em Análise de Dados](ifpr://curso/arapongas/programacao-com-enfase-em-analise-de-dados) `arapongas/programacao-com-enfase-em-analise-de-dados` — formação inicial e continuada, FIC; PPC 2024\n- [Programação Web](ifpr://curso/arapongas/programacao-web) `arapongas/programacao-web` — formação inicial e continuada, FIC; PPC 2025\n\nMostrando 5 de 225. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjo1LCJjIjoiZThhYzRiNWEyODYzIn0\"`.\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6d55a8b7",
+            "versao": "dev-266c42b4",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -11683,7 +11708,7 @@
           "pagina": {
             "total": 225,
             "devolvidos": 5,
-            "cursor": "eyJkIjo1LCJjIjoiMWQyMjQ2YWRmYzY2In0"
+            "cursor": "eyJkIjo1LCJjIjoiZThhYzRiNWEyODYzIn0"
           }
         }
       }
@@ -11698,12 +11723,12 @@
         "content": [
           {
             "type": "text",
-            "text": "25 cursos. Detalhes de um curso: `ficha_curso` com o ID.\n- [Técnico em Administração](ifpr://curso/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio) `curitiba/tecnico-em-administracao-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Administração (Gestão e Negócios); PPC 2014; turnos: matutino, matutino-com-contraturno\n- [Técnico em Condomínio](ifpr://curso/curitiba/tecnico-em-condominio) `curitiba/tecnico-em-condominio` — médio, subsequente, presencial, ativo; CNCT Técnico em Condomínio (Gestão e Negócios); PPC 2020; turnos: noturno\n- [Técnico em Contabilidade](ifpr://curso/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio) `curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Contabilidade (Gestão e Negócios); PPC 2015; turnos: matutino, matutino-com-contraturno\n- [Técnico em Defesa Civil](ifpr://curso/curitiba/tecnico-em-defesa-civil-ead) `curitiba/tecnico-em-defesa-civil-ead` — médio, subsequente, ead, em_oferta; CNCT Técnico em Defesa Civil (Segurança); sem PPC na base\n- [Técnico em Edificações](ifpr://curso/curitiba/tecnico-em-edificacoes) `curitiba/tecnico-em-edificacoes` — médio, subsequente, presencial, ativo; CNCT Técnico em Edificações (Infraestrutura); PPC 2014; turnos: noturno\n- [Técnico em Eletromecânica](ifpr://curso/curitiba/tecnico-em-eletromecanica) `curitiba/tecnico-em-eletromecanica` — médio, subsequente, presencial, ativo; CNCT Técnico em Eletromecânica (Controle e Processos Industriais); PPC 2017; turnos: noturno\n- [Técnico em Eletrônica](ifpr://curso/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio) `curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Eletrônica (Controle e Processos Industriais); PPC 2014; turnos: vespertino, vespertino-com-contraturno\n- [Técnico em Eletrotécnica](ifpr://curso/curitiba/tecnico-em-eletrotecnica) `curitiba/tecnico-em-eletrotecnica` — médio, subsequente, presencial, ativo; CNCT Técnico em Eletrotécnica (Controle e Processos Industriais); PPC 2015; turnos: noturno\n- [Técnico em Enfermagem](ifpr://curso/curitiba/tecnico-em-enfermagem) `curitiba/tecnico-em-enfermagem` — médio, subsequente, presencial, ativo; CNCT Técnico em Enfermagem (Ambiente e Saúde); PPC 2023; turnos: matutino\n- [Técnico em Eventos](ifpr://curso/curitiba/tecnico-em-eventos) `curitiba/tecnico-em-eventos` — médio, subsequente, presencial, ativo; CNCT Técnico em Eventos (Turismo, Hospitalidade e Lazer); PPC 2020; turnos: noturno\n- [Técnico em Informática](ifpr://curso/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio) `curitiba/tecnico-em-informatica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Informática (Informação e Comunicação); PPC 2019; turnos: vespertino, matutino\n- [Técnico em Massoterapia](ifpr://curso/curitiba/tecnico-em-massoterapia) `curitiba/tecnico-em-massoterapia` — médio, subsequente, presencial, ativo; CNCT Técnico em Massoterapia (Ambiente e Saúde); PPC 2021\n- [Técnico em Mecânica](ifpr://curso/curitiba/tecnico-em-mecanica) `curitiba/tecnico-em-mecanica` — médio, subsequente, presencial, ativo; CNCT Técnico em Mecânica (Controle e Processos Industriais); PPC 2025; turnos: noturno\n- [Técnico em Mecânica](ifpr://curso/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio) `curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Mecânica (Controle e Processos Industriais); PPC 2016; turnos: vespertino, vespertino-com-contraturno\n- [Técnico em Petróleo e Gás](ifpr://curso/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio) `curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Petróleo e Gás (Produção Industrial); PPC 2017; turnos: matutino, matutino-com-contraturno\n- [Técnico em Processos Fotográficos](ifpr://curso/curitiba/tecnico-em-processos-fotograficos) `curitiba/tecnico-em-processos-fotograficos` — médio, subsequente, presencial, ativo; CNCT Técnico em Processos Fotográficos (Produção Cultural e Design); PPC 2018; turnos: matutino\n- [Técnico em Processos Fotográficos](ifpr://curso/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio) `curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Processos Fotográficos (Produção Cultural e Design); PPC 2015; turnos: vespertino, vespertino-com-contraturno\n- [Técnico em Produção de Áudio e Vídeo](ifpr://curso/curitiba/tecnico-em-producao-de-audio-e-video) `curitiba/tecnico-em-producao-de-audio-e-video` — médio, subsequente, presencial, ativo; CNCT Técnico em Produção de Áudio e Vídeo (Produção Cultural e Design); PPC 2022; turnos: noturno, vespertino\n- [Técnico em Programação de Jogos Digitais](ifpr://curso/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio) `curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Programação de Jogos Digitais (Informação e Comunicação); PPC 2019; turnos: matutino, vespertino\n- [Técnico em Prótese Dentária](ifpr://curso/curitiba/tecnico-em-protese-dentaria) `curitiba/tecnico-em-protese-dentaria` — médio, subsequente, presencial, ativo; CNCT Técnico em Prótese Dentária (Ambiente e Saúde); sem PPC na base; turnos: noturno, vespertino\n- [Técnico em Radiologia](ifpr://curso/curitiba/tecnico-em-radiologia) `curitiba/tecnico-em-radiologia` — médio, subsequente, presencial, ativo; CNCT Técnico em Radiologia (Ambiente e Saúde); PPC 2013; turnos: matutino\n- [Técnico em Saúde Bucal](ifpr://curso/curitiba/tecnico-em-saude-bucal) `curitiba/tecnico-em-saude-bucal` — médio, subsequente, presencial, ativo; CNCT Técnico em Saúde Bucal (Ambiente e Saúde); PPC 2025; turnos: noturno\n- [Técnico em Soldagem](ifpr://curso/curitiba/tecnico-em-soldagem-subsequente) `curitiba/tecnico-em-soldagem-subsequente` — médio, subsequente, presencial, ativo; CNCT Técnico em Soldagem (Controle e Processos Industriais); PPC 2025\n- [Técnico em Telecomunicações](ifpr://curso/curitiba/tecnico-em-telecomunicacoes) `curitiba/tecnico-em-telecomunicacoes` — médio, subsequente, presencial, ativo; CNCT Técnico em Telecomunicações (Informação e Comunicação); sem PPC na base; turnos: noturno\n\nMostrando 24 de 25. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjoyNCwiYyI6ImZkNGMxYTY5YTE1NCJ9\"`.\n\nBase de 13/11/2026 (versão dev)."
+            "text": "25 cursos. Detalhes de um curso: `ficha_curso` com o ID.\n- [Técnico em Administração](ifpr://curso/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio) `curitiba/tecnico-em-administracao-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Administração (Gestão e Negócios); PPC 2014; turnos: matutino, matutino-com-contraturno\n- [Técnico em Condomínio](ifpr://curso/curitiba/tecnico-em-condominio) `curitiba/tecnico-em-condominio` — médio, subsequente, presencial, ativo; CNCT Técnico em Condomínio (Gestão e Negócios); PPC 2020; turnos: noturno\n- [Técnico em Contabilidade](ifpr://curso/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio) `curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Contabilidade (Gestão e Negócios); PPC 2015; turnos: matutino, matutino-com-contraturno\n- [Técnico em Defesa Civil](ifpr://curso/curitiba/tecnico-em-defesa-civil-ead) `curitiba/tecnico-em-defesa-civil-ead` — médio, subsequente, ead, em_oferta; CNCT Técnico em Defesa Civil (Segurança); sem PPC na base\n- [Técnico em Edificações](ifpr://curso/curitiba/tecnico-em-edificacoes) `curitiba/tecnico-em-edificacoes` — médio, subsequente, presencial, ativo; CNCT Técnico em Edificações (Infraestrutura); PPC 2014; turnos: noturno\n- [Técnico em Eletromecânica](ifpr://curso/curitiba/tecnico-em-eletromecanica) `curitiba/tecnico-em-eletromecanica` — médio, subsequente, presencial, ativo; CNCT Técnico em Eletromecânica (Controle e Processos Industriais); PPC 2017; turnos: noturno\n- [Técnico em Eletrônica](ifpr://curso/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio) `curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Eletrônica (Controle e Processos Industriais); PPC 2014; turnos: vespertino, vespertino-com-contraturno\n- [Técnico em Eletrotécnica](ifpr://curso/curitiba/tecnico-em-eletrotecnica) `curitiba/tecnico-em-eletrotecnica` — médio, subsequente, presencial, ativo; CNCT Técnico em Eletrotécnica (Controle e Processos Industriais); PPC 2015; turnos: noturno\n- [Técnico em Enfermagem](ifpr://curso/curitiba/tecnico-em-enfermagem) `curitiba/tecnico-em-enfermagem` — médio, subsequente, presencial, ativo; CNCT Técnico em Enfermagem (Ambiente e Saúde); PPC 2023; turnos: matutino\n- [Técnico em Eventos](ifpr://curso/curitiba/tecnico-em-eventos) `curitiba/tecnico-em-eventos` — médio, subsequente, presencial, ativo; CNCT Técnico em Eventos (Turismo, Hospitalidade e Lazer); PPC 2020; turnos: noturno\n- [Técnico em Informática](ifpr://curso/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio) `curitiba/tecnico-em-informatica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Informática (Informação e Comunicação); PPC 2019; turnos: vespertino, matutino\n- [Técnico em Massoterapia](ifpr://curso/curitiba/tecnico-em-massoterapia) `curitiba/tecnico-em-massoterapia` — médio, subsequente, presencial, ativo; CNCT Técnico em Massoterapia (Ambiente e Saúde); PPC 2021\n- [Técnico em Mecânica](ifpr://curso/curitiba/tecnico-em-mecanica) `curitiba/tecnico-em-mecanica` — médio, subsequente, presencial, ativo; CNCT Técnico em Mecânica (Controle e Processos Industriais); PPC 2025; turnos: noturno\n- [Técnico em Mecânica](ifpr://curso/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio) `curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Mecânica (Controle e Processos Industriais); PPC 2016; turnos: vespertino, vespertino-com-contraturno\n- [Técnico em Petróleo e Gás](ifpr://curso/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio) `curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Petróleo e Gás (Produção Industrial); PPC 2017; turnos: matutino, matutino-com-contraturno\n- [Técnico em Processos Fotográficos](ifpr://curso/curitiba/tecnico-em-processos-fotograficos) `curitiba/tecnico-em-processos-fotograficos` — médio, subsequente, presencial, ativo; CNCT Técnico em Processos Fotográficos (Produção Cultural e Design); PPC 2018; turnos: matutino\n- [Técnico em Processos Fotográficos](ifpr://curso/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio) `curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Processos Fotográficos (Produção Cultural e Design); PPC 2015; turnos: vespertino, vespertino-com-contraturno\n- [Técnico em Produção de Áudio e Vídeo](ifpr://curso/curitiba/tecnico-em-producao-de-audio-e-video) `curitiba/tecnico-em-producao-de-audio-e-video` — médio, subsequente, presencial, ativo; CNCT Técnico em Produção de Áudio e Vídeo (Produção Cultural e Design); PPC 2022; turnos: noturno, vespertino\n- [Técnico em Programação de Jogos Digitais](ifpr://curso/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio) `curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio` — médio, integrado, presencial, ativo; CNCT Técnico em Programação de Jogos Digitais (Informação e Comunicação); PPC 2019; turnos: matutino, vespertino\n- [Técnico em Prótese Dentária](ifpr://curso/curitiba/tecnico-em-protese-dentaria) `curitiba/tecnico-em-protese-dentaria` — médio, subsequente, presencial, ativo; CNCT Técnico em Prótese Dentária (Ambiente e Saúde); sem PPC na base; turnos: noturno, vespertino\n- [Técnico em Radiologia](ifpr://curso/curitiba/tecnico-em-radiologia) `curitiba/tecnico-em-radiologia` — médio, subsequente, presencial, ativo; CNCT Técnico em Radiologia (Ambiente e Saúde); PPC 2013; turnos: matutino\n- [Técnico em Saúde Bucal](ifpr://curso/curitiba/tecnico-em-saude-bucal) `curitiba/tecnico-em-saude-bucal` — médio, subsequente, presencial, ativo; CNCT Técnico em Saúde Bucal (Ambiente e Saúde); PPC 2025; turnos: noturno\n- [Técnico em Soldagem](ifpr://curso/curitiba/tecnico-em-soldagem-subsequente) `curitiba/tecnico-em-soldagem-subsequente` — médio, subsequente, presencial, ativo; CNCT Técnico em Soldagem (Controle e Processos Industriais); PPC 2025\n- [Técnico em Telecomunicações](ifpr://curso/curitiba/tecnico-em-telecomunicacoes) `curitiba/tecnico-em-telecomunicacoes` — médio, subsequente, presencial, ativo; CNCT Técnico em Telecomunicações (Informação e Comunicação); sem PPC na base; turnos: noturno\n\nMostrando 24 de 25. Para continuar, chame de novo com os mesmos filtros e `cursor: \"eyJkIjoyNCwiYyI6ImM3NjhhODdkNTBmMyJ9\"`.\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6d55a8b7",
+            "versao": "dev-266c42b4",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -12239,7 +12264,7 @@
           "pagina": {
             "total": 25,
             "devolvidos": 24,
-            "cursor": "eyJkIjoyNCwiYyI6ImZkNGMxYTY5YTE1NCJ9"
+            "cursor": "eyJkIjoyNCwiYyI6ImM3NjhhODdkNTBmMyJ9"
           }
         }
       }

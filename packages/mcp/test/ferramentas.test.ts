@@ -63,7 +63,7 @@ const DESCRICOES: Record<string, string> = {
   ler_secao:
     "Lê uma seção inteira de PPC pelo ID, vindo de `buscar_secoes` ou de um link `ifpr://ppc/…#secao`. Use quando o trecho devolvido por `buscar_secoes` não bastar.",
   listar_cursos:
-    "Cursos do IFPR na base, com CNCT, eixo, ofertas e turno. Use filtros: a lista sem filtro é longa. Para os detalhes de um curso, use `ficha_curso`.",
+    "Cursos do IFPR na base, com CNCT, eixo, ofertas e turno. Use quando a pergunta envolver vários cursos, como os de um eixo, campus, turno ou processo seletivo, e prefira filtros, porque a lista sem filtro é longa. Para os detalhes de um curso, use `ficha_curso`.",
   ficha_curso:
     "Tudo sobre um curso do IFPR: dados institucionais, PPC vigente, CNCT, ofertas, fatos do PPC cruzados com o SUAP (divergências), normas que o PPC cita e prazos de adequação. Use quando a pergunta for sobre um curso específico.",
   fatos_ppc:

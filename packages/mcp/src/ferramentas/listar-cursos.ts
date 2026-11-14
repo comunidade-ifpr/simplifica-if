@@ -58,7 +58,7 @@ export const listarCursos = definirFerramenta({
   nome: "listar_cursos",
   titulo: "Listar cursos",
   descricao:
-    "Cursos do IFPR na base, com CNCT, eixo, ofertas e turno. Use filtros: a lista sem filtro é longa. Para os detalhes de um curso, use `ficha_curso`.",
+    "Cursos do IFPR na base, com CNCT, eixo, ofertas e turno. Use quando a pergunta envolver vários cursos, como os de um eixo, campus, turno ou processo seletivo, e prefira filtros, porque a lista sem filtro é longa. Para os detalhes de um curso, use `ficha_curso`.",
   entrada: Entrada,
   dados: Dados,
   texto({ dados: d, pagina }) {

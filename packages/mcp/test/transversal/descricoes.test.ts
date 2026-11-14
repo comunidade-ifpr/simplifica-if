@@ -33,9 +33,7 @@ const QUANDO_USAR = /(^|[.:] )Use (quando|antes|para|só quando|dentro d[aoe])\b
  * comportamento do modelo e o gabarito do C0, e por isso é decisão à parte; o teste falha quando a
  * descrição deixar de precisar da exceção, para que ela saia daqui.
  */
-const SEM_QUANDO: Readonly<Record<string, string>> = {
-  listar_cursos: '"Use filtros: a lista sem filtro é longa." diz como usar, não quando',
-};
+const SEM_QUANDO: Readonly<Record<string, string>> = {};
 
 interface Propriedade {
   readonly description?: string;

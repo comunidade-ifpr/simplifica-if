@@ -360,7 +360,7 @@ Teto: 20 mil caracteres. Acima disso, a seção pagina por linhas.
 
 #### 11. `listar_cursos`
 
-> Cursos do IFPR na base, com CNCT, eixo, ofertas e turno. Use filtros: a lista sem filtro é longa. Para os detalhes de um curso, use `ficha_curso`.
+> Cursos do IFPR na base, com CNCT, eixo, ofertas e turno. Use quando a pergunta envolver vários cursos, como os de um eixo, campus, turno ou processo seletivo, e prefira filtros, porque a lista sem filtro é longa. Para os detalhes de um curso, use `ficha_curso`.
 
 ```ts
 entrada: {
