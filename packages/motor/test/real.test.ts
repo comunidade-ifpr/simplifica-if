@@ -47,7 +47,10 @@ describe.skipIf(!REAL)("providers reais", () => {
           const motor = yield* Motor.Motor;
           const fs = yield* FileSystem.FileSystem;
           const path = yield* Path.Path;
-          assert.isTrue(yield* fs.exists(path.join(RAIZ, "tmp/kb.sqlite")), "falta tmp/kb.sqlite: rode pnpm kb:compilar");
+          assert.isTrue(
+            yield* fs.exists(path.join(RAIZ, "tmp/kb.sqlite")),
+            "falta tmp/kb.sqlite: rode pnpm kb:compilar",
+          );
           const estado = yield* motor.detectar(provider);
           assert.isTrue(estado.autenticado, estado.mensagem);
           const pasta = yield* fs.realPath(yield* fs.makeTempDirectoryScoped({ prefix: "simplifica-motor-" }));

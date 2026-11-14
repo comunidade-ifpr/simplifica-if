@@ -667,7 +667,10 @@ Só métricas agregadas e com opt-in saem do computador. O padrão é não envia
 5. **Modo de permissão final** do Modo Servidor, a decidir com o atrito medido no piloto.
 6. **Computadores do piloto:** sistema operacional, permissão de instalação e hardware.
 7. **Aviso e termo de uso:** o texto que explica ao servidor o que vai para a IA conectada e o que não anexar. Vale uma revisão leve do encarregado de dados.
-8. **Isolamento do Codex e do Antigravity:** desligar por sessão o que é do usuário (como na PoC) ou dar a eles uma pasta própria do app (`CODEX_HOME`, equivalente do `~/.gemini`), o que pede um segundo login. Decide-se no M1.3, com o teste de isolamento.
+8. **Isolamento do Codex e do Antigravity.** Decidido em parte em 14/11/2026, no porte do T3 para o motor:
+   - **Antigravity: perfil próprio, como no T3.** O `agy` roda com o `GEMINI_HOME` do app (`--gemini-dir`, em `<pasta do app>/providers/antigravity/`), sem os MCP, os hooks, as configurações e as chaves de API do usuário. Controle feito: sem o perfil, o `agy` carrega o `~/.gemini/config/mcp_config.json`; com o perfil, não. Achado: o `agy` 1.5.9 no macOS guarda o login do Google no Keychain, e não no perfil; o login é compartilhado com o `agy` do usuário, e quem já entrou no terminal não precisa entrar de novo no app.
+   - **Codex: continua no `~/.codex`,** com o desligamento por thread (MCP do usuário, conectores do ChatGPT e busca web). O login é o do usuário.
+   - **Em aberto: levar o Codex para um `CODEX_HOME` próprio.** Vale se o desligamento por thread deixar escapar algo (o `cua_repl` já escapa) ou se a configuração do usuário mudar o comportamento por outro caminho. O custo é o login: copiar o `auth.json` faz o refresh token rodar em duas cópias, e uma pode derrubar a outra; o T3 resolve com uma pasta-sombra e um broker de token (`CodexHomeLayout`, `CodexManagedTokenBroker`). Decide-se no M1.3, com o teste de isolamento.
 9. **Política da máquina pela DTI:** se e quando o app lê um arquivo de política que só restringe a de fábrica.
 
 ## Andamento
