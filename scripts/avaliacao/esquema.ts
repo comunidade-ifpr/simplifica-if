@@ -93,7 +93,8 @@ export const esquemaPergunta = Schema.Struct({
   gabarito: esquemaGabarito,
 }).check(
   Schema.makeFilter((pergunta) => {
-    if (pergunta.tipo === "conjunto" && !pergunta.gabarito.conjunto) return "pergunta de conjunto sem gabarito.conjunto";
+    if (pergunta.tipo === "conjunto" && !pergunta.gabarito.conjunto)
+      return "pergunta de conjunto sem gabarito.conjunto";
     if (pergunta.tipo === "pontual" && pergunta.gabarito.conjunto) return "pergunta pontual com gabarito.conjunto";
     return true;
   }),
@@ -227,9 +228,9 @@ export const esquemaAchadoOuro = Schema.Struct({
   estado_esperado: Schema.Literals(ESTADOS_FICHA),
   justificativa: textoNaoVazio,
   /** Trechos literais do PPC convertido; o teste confere que cada um existe no arquivo. */
-  evidencias: Schema.Array(
-    Schema.Struct({ trecho: textoNaoVazio, observacao: Schema.optional(Schema.String) }),
-  ).check(Schema.isMinLength(1)),
+  evidencias: Schema.Array(Schema.Struct({ trecho: textoNaoVazio, observacao: Schema.optional(Schema.String) })).check(
+    Schema.isMinLength(1),
+  ),
   /** Fontes de comparação fora do PPC (CNCT, normas, dados institucionais), com trecho literal opcional. */
   referencias: listaOuVazia(
     Schema.Struct({ ancora: esquemaAncora, arquivo: textoNaoVazio, trecho: Schema.optional(Schema.String) }),

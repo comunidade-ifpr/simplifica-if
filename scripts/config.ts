@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- raiz do projeto e config/notion.json lidos de forma síncrona: a config é lida também por validar_base, síncrono, e entra no programa Effect da sincronização por Effect.try
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import * as Schema from "effect/Schema";

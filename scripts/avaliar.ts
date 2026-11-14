@@ -92,7 +92,8 @@ function sincrono<A>(carregar: () => A): Effect.Effect<A, ArquivoAvaliacaoInvali
       return Effect.succeed(carregar());
     } catch (erro) {
       if (ehArquivoAvaliacaoInvalido(erro)) return Effect.fail(erro);
-      if (erroDeArquivo(erro)) return Effect.fail(new ArquivoIlegivel({ caminho: erro.path, codigo: erro.code, cause: erro }));
+      if (erroDeArquivo(erro))
+        return Effect.fail(new ArquivoIlegivel({ caminho: erro.path, codigo: erro.code, cause: erro }));
       return Effect.die(erro);
     }
   });

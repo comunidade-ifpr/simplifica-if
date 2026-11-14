@@ -239,7 +239,8 @@ export const executarPergunta = Effect.fn("Avaliacao.executarPergunta")(function
     }),
   ).pipe(
     Effect.catchTags({
-      PlatformError: (erro) => Effect.fail(new FalhaAoExecutarClaude({ binario, motivo: erro.reason._tag, cause: erro })),
+      PlatformError: (erro) =>
+        Effect.fail(new FalhaAoExecutarClaude({ binario, motivo: erro.reason._tag, cause: erro })),
     }),
   );
 });

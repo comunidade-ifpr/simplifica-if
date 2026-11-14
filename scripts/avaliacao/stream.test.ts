@@ -67,14 +67,14 @@ describe("argumentos do claude -p", () => {
   const config = validar(
     esquemaConfig,
     {
-    modelo: "sonnet",
-    execucoes: 3,
-    max_turns: 12,
-    max_budget_usd_por_execucao: 0.5,
-    ferramentas: ["Read", "Grep"],
-    ferramentas_permitidas: ["Read(./**)", "Grep"],
-    instrucao_sistema: "Responda em português.",
-    fontes_configuracao: ["project", "local"],
+      modelo: "sonnet",
+      execucoes: 3,
+      max_turns: 12,
+      max_budget_usd_por_execucao: 0.5,
+      ferramentas: ["Read", "Grep"],
+      ferramentas_permitidas: ["Read(./**)", "Grep"],
+      instrucao_sistema: "Responda em português.",
+      fontes_configuracao: ["project", "local"],
     },
     "config de teste",
   );

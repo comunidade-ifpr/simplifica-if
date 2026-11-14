@@ -166,7 +166,10 @@ interface Registro {
  * e `stderr` e sai com `codigo`. Sem `codigo`, a saída fica aberta até o `kill`, como um `claude`
  * que não termina.
  */
-function spawnerDeTeste(roteiro: Roteiro): { readonly layer: Layer.Layer<ChildProcessSpawner.ChildProcessSpawner>; readonly registro: Registro } {
+function spawnerDeTeste(roteiro: Roteiro): {
+  readonly layer: Layer.Layer<ChildProcessSpawner.ChildProcessSpawner>;
+  readonly registro: Registro;
+} {
   const registro: Registro = { comandos: [], subiu: Deferred.makeUnsafe<void>(), mortos: 0, encerradosPeloEscopo: 0 };
   const servico = ChildProcessSpawner.make((comando) =>
     Effect.gen(function* () {
@@ -182,7 +185,8 @@ function spawnerDeTeste(roteiro: Roteiro): { readonly layer: Layer.Layer<ChildPr
           if (!(yield* Deferred.isDone(saiu)) && !(yield* Deferred.isDone(morto))) registro.encerradosPeloEscopo += 1;
         }),
       );
-      const aberto = roteiro.codigo === undefined ? Stream.drain(Stream.fromEffect(Deferred.await(morto))) : Stream.empty;
+      const aberto =
+        roteiro.codigo === undefined ? Stream.drain(Stream.fromEffect(Deferred.await(morto))) : Stream.empty;
       const stdout = Stream.concat(Stream.make(codificar(roteiro.stdout)), aberto);
       const stderr = Stream.concat(Stream.make(codificar(roteiro.stderr ?? "")), aberto);
       yield* Deferred.succeed(registro.subiu, undefined);
@@ -285,7 +289,8 @@ describe("execução do claude -p", () => {
       expect(Exit.isFailure(saida)).toBe(true);
       const erro = Exit.isFailure(saida) ? Exit.findErrorOption(saida) : undefined;
       expect(erro?._tag === "Some" && ehFalhaAoExecutarClaude(erro.value)).toBe(true);
-      if (erro?._tag === "Some") expect(erro.value.message).toBe("não foi possível executar claude-inexistente (NotFound)");
+      if (erro?._tag === "Some")
+        expect(erro.value.message).toBe("não foi possível executar claude-inexistente (NotFound)");
     }).pipe(Effect.provide(Layer.merge(layer, arquivos)));
   });
 });
