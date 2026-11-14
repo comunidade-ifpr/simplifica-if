@@ -352,15 +352,24 @@ export const SITUACOES_REVISAO = {
 
 export type SituacaoRevisao = keyof typeof SITUACOES_REVISAO;
 
-/** Situação geral da rodada pelos estados e criticidades. */
-export function situacao(resultados: ResultadoNormalizado[]): SituacaoRevisao {
-  if (resultados.some((item) => item.criticidade === "BLOQ" && item.estado === "NAO_ATENDE")) {
+/**
+ * Situação geral da rodada pelos estados e criticidades das fichas e pelos alertas transversais.
+ * Um alerta transversal é um problema encontrado: pesa como uma ficha `NAO_ATENDE` da mesma
+ * criticidade (`BLOQ` → revisão substancial, `OBRIG` → ajustes necessários; `REC`, como a ficha
+ * `REC` não atendida, não muda a situação) e, com revisão humana obrigatória, gera ressalva.
+ */
+export function situacao(resultados: ResultadoNormalizado[], alertas: ObjetoPy[] = []): SituacaoRevisao {
+  const alertaCom = (criticidade: string) => alertas.some((alerta) => obter(alerta, "criticidade") === criticidade);
+  if (resultados.some((item) => item.criticidade === "BLOQ" && item.estado === "NAO_ATENDE") || alertaCom("BLOQ")) {
     return "REVISAO_SUBSTANCIAL";
   }
-  if (resultados.some((item) => item.criticidade === "OBRIG" && item.estado === "NAO_ATENDE")) {
+  if (resultados.some((item) => item.criticidade === "OBRIG" && item.estado === "NAO_ATENDE") || alertaCom("OBRIG")) {
     return "AJUSTES_NECESSARIOS";
   }
-  if (resultados.some((item) => item.estado === "INCONCLUSIVO" || item.revisao_humana_obrigatoria)) {
+  if (
+    resultados.some((item) => item.estado === "INCONCLUSIVO" || item.revisao_humana_obrigatoria) ||
+    alertas.some((alerta) => obter(alerta, "revisao_humana_obrigatoria") === true)
+  ) {
     return "APTO_COM_RESSALVAS";
   }
   return "APTO_PARA_SUBMISSAO";
@@ -396,7 +405,7 @@ export function validarResultadosRodada(
     total_fichas_esperadas: fichasPorId.size,
     total_grupos: grupos.length,
     total_alertas_transversais: alertas.length,
-    situacao: situacao(normalizados),
+    situacao: situacao(normalizados, alertas),
     contagem_estado: contagem(normalizados.map((item) => item.estado)),
     contagem_criticidade: contagem(normalizados.map((item) => item.criticidade)),
     grupos: grupos.map((grupo) => {

@@ -34,6 +34,7 @@ import {
   type ResultadoNormalizado,
   SITUACOES_REVISAO,
   situacao,
+  validarResultadosRodada,
 } from "../scripts/resultados.ts";
 import { caminhosRodada, escreverJsonPy, lerJsonPy } from "../scripts/rodada.ts";
 import {
@@ -289,6 +290,49 @@ describe("situação da revisão", () => {
         ...((lerJsonPy(path.join(caminhos.appDir, "config", "politica_revisao.json")) as ObjetoPy)
           .situacoes as string[]),
       ].reverse(),
+    );
+  });
+});
+
+describe("situação da revisão com alertas transversais", () => {
+  const item = (criticidade: string, estado: string, revisao = false) =>
+    ({ criticidade, estado, revisao_humana_obrigatoria: revisao }) as unknown as ResultadoNormalizado;
+  const alerta = (criticidade: string, revisao = false): ObjetoPy => ({
+    criticidade,
+    revisao_humana_obrigatoria: revisao,
+  });
+
+  test("alerta pesa como ficha NAO_ATENDE de mesma criticidade", () => {
+    const fichas = [item("BLOQ", "ATENDE"), item("OBRIG", "ATENDE")];
+    expect(situacao(fichas, [alerta("BLOQ")])).toBe("REVISAO_SUBSTANCIAL");
+    expect(situacao(fichas, [alerta("OBRIG")])).toBe("AJUSTES_NECESSARIOS");
+    expect(situacao(fichas, [alerta("REC")])).toBe("APTO_PARA_SUBMISSAO");
+    expect(situacao(fichas, [alerta("REC", true)])).toBe("APTO_COM_RESSALVAS");
+    expect(situacao([item("OBRIG", "NAO_ATENDE")], [alerta("BLOQ")])).toBe("REVISAO_SUBSTANCIAL");
+    expect(situacao(fichas)).toBe("APTO_PARA_SUBMISSAO");
+  });
+
+  test("gerar-relatorio-html e validar-resultados contam alerta BLOQ com todas as fichas ATENDE", () => {
+    const rodada = criarRodada();
+    const payload = payloadResultadosCompletos();
+    payload.alertas_transversais = [
+      {
+        id: "ALERTA-001",
+        validacao_id: primeiraValidacaoCruzada(),
+        titulo: "Inconsistência bloqueante",
+        criticidade: "BLOQ",
+        descricao: "Carga horária da matriz diverge da identificação.",
+        fichas_relacionadas: [],
+        evidencias: ["Evidência transversal"],
+        revisao_humana_obrigatoria: false,
+      },
+    ];
+    escreverJsonPy(path.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
+    expect(validarResultadosRodada(rodada, "resultados-subagents.json").situacao).toBe("REVISAO_SUBSTANCIAL");
+    const relatorio = gerarRelatorioHtml(rodada, "resultados-subagents.json");
+    expect(relatorio.situacao).toBe("REVISAO_SUBSTANCIAL");
+    expect(readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8")).toContain(
+      SITUACOES_REVISAO.REVISAO_SUBSTANCIAL,
     );
   });
 });

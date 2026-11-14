@@ -738,7 +738,7 @@ export function renderizarHtml(
   }
 
   const contar = (filtro: (item: ResultadoNormalizado) => boolean) => resultados.filter(filtro).length;
-  const situacaoGeral = situacao(resultados);
+  const situacaoGeral = situacao(resultados, alertas);
   const revisaoHumana = contar((item) => item.revisao_humana_obrigatoria);
   const feedbacksAutores = contar((item) => verdadeiro(item.feedback_autores));
   const fundamentacoes = resultados.reduce(
@@ -905,7 +905,7 @@ export function gerarRelatorioHtml(
   const ppcMarkdown = lerTexto(rodadaPaths.ppc);
   if (!ehObjetoPy(metadata)) throw new Error("AttributeError: metadata.json precisa ser objeto");
   const html = formatarHtml(renderizarHtml(metadata, normalizados, alertas, ppcMarkdown));
-  const situacaoGeral = situacao(normalizados);
+  const situacaoGeral = situacao(normalizados, alertas);
   escreverTextoPy(rodadaPaths.relatorioHtml, html);
   const assets = copiarAssets(rodadaPaths.rodadaDir, caminhos);
   return {

@@ -876,7 +876,8 @@ describe("validar-resultados", () => {
       ];
     });
     expect(resumo.total_alertas_transversais).toBe(1);
-    expect(resumo.situacao).toBe("APTO_COM_RESSALVAS");
+    // Sem `criticidade`, o alerta é `OBRIG` e pesa como uma ficha OBRIG não atendida.
+    expect(resumo.situacao).toBe("AJUSTES_NECESSARIOS");
   });
 
   test("a CLI imprime o resumo e falha com mensagem em stderr", () => {
