@@ -33,7 +33,7 @@ import {
   transicoesAplicaveis,
 } from "../normas/vigencia.ts";
 import { bancoDoPpcAvulso, compilarBanco } from "./compilar.ts";
-import { buscarNorma, buscarSecoes, divergenciasPpcSuap, listarCursos } from "./consultas.ts";
+import { buscarNorma, buscarNormaDetalhada, buscarSecoes, divergenciasPpcSuap, listarCursos } from "./consultas.ts";
 import {
   descendentesBanco,
   fonteCorrespondenciaBanco,
@@ -301,6 +301,36 @@ describe("fase 5: o banco dá o mesmo resultado que a API de arquivos", () => {
         expect(banco).toEqual(arquivo);
       }
     }
+  });
+
+  test("citação resolvida respeita --vigentes e --situacao, com aviso", () => {
+    const citacao = "Resolução CNE/CP nº 1/2021, art. 20";
+    expect(buscarNorma(db, citacao)[0]!.dispositivo!.id).toBe("br/cne-cp/res/2021/1#art20");
+    // revogada em 2026-11-11 pela Res. CNE/CP nº 2/2026 (data_referencia 2026-11-13)
+    const vigentes = buscarNormaDetalhada(db, citacao, { vigentes: true });
+    expect(vigentes.resultados).toEqual([]);
+    expect(vigentes.avisos.join("\n")).toMatch(/br\/cne-cp\/res\/2021\/1.*vigente/);
+    // antes da revogação, passa
+    expect(buscarNorma(db, citacao, { vigentes: true, em: "2025-01-01" })[0]!.dispositivo!.id).toBe(
+      "br/cne-cp/res/2021/1#art20",
+    );
+    const situacao = buscarNormaDetalhada(db, citacao, { situacao: "stub" });
+    expect(situacao.resultados).toEqual([]);
+    expect(situacao.avisos.join("\n")).toContain("situação base");
+    // dispositivo revogado de norma em vigor
+    const revogado = buscarNormaDetalhada(db, "br/lei/1996/9394#art20", { vigentes: true });
+    expect(revogado.resultados).toEqual([]);
+    expect(revogado.avisos.join("\n")).toContain("revogado");
+    expect(buscarNorma(db, "Lei 9.394/1996, art. 3º", { vigentes: true })[0]!.dispositivo!.id).toBe(
+      "br/lei/1996/9394#art3",
+    );
+  });
+
+  test("ID de norma desconhecido devolve aviso, não busca textual", () => {
+    const r = buscarNormaDetalhada(db, "br/naoexiste/x");
+    expect(r.resultados).toEqual([]);
+    expect(r.avisos).toEqual(["ID desconhecido: br/naoexiste/x não está entre as normas da base"]);
+    expect(buscarNormaDetalhada(db, "ifpr/consup/res/1900/1#art1").avisos[0]).toContain("ID desconhecido");
   });
 
   test("FTS dos dispositivos acha o texto com o caput herdado", () => {
