@@ -5,9 +5,10 @@ import { dispositivosDoAto, listarNormas } from "./estrutura.ts";
 import { analisarFrontMatter } from "./front-matter.ts";
 import { normasComCamposGerados, reescreverFrontMatter } from "./gerado.ts";
 import { impacto } from "./impacto.ts";
-import { raizRepositorio } from "./registro.ts";
+import { idDoAto } from "./ids.ts";
+import { carregarRegistro, raizRepositorio } from "./registro.ts";
 import { carregarRelacoes, proporRelacoes, validarRelacoes } from "./relacoes.ts";
-import { dataReferencia, derivarLinha, statusEm, transicoesAplicaveis } from "./vigencia.ts";
+import { dataReferencia, derivarLinha, inicioVigencia, statusEm, transicoesAplicaveis } from "./vigencia.ts";
 
 const raiz = raizRepositorio();
 /** Último commit antes da fase 5 (mesmo de `saneamento.test.ts`). */
@@ -82,6 +83,29 @@ describe("vigência", () => {
       expect(divergentes).toEqual(justificadas);
     },
   );
+
+  test("stub com status registrado: o status só vale a partir do efeito da relação que o fundamenta", () => {
+    expect(statusEm("br/cne-ceb/res/2012/6", "2015-01-01", raiz).status).toBe("vigente");
+    expect(statusEm("br/cne-cp/res/2002/3", "2015-01-01", raiz).status).toBe("vigente");
+    expect(statusEm("br/cne-ceb/res/2014/1", "2015-01-01", raiz).status).toBe("vigente");
+    expect(statusEm("br/lei/1971/5692", "1990-01-01", raiz).status).toBe("vigente");
+    const registro = carregarRegistro(raiz);
+    const datados = registro.entradas.filter(
+      (e) => e.situacao === "stub" && e.status_vigencia && !["a confirmar", "vigente"].includes(e.status_vigencia),
+    );
+    expect(datados.length).toBeGreaterThan(20);
+    const errados: string[] = [];
+    for (const stub of datados) {
+      const efeito = inicioVigencia(idDoAto(stub.status_fonte!.split("#")[0]!), raiz);
+      const limite = efeito.data ?? efeito.minimo!;
+      const vespera = new Date(Date.parse(`${limite}T00:00:00Z`) - 86_400_000).toISOString().slice(0, 10);
+      const antes = statusEm(stub.id, vespera, raiz).status;
+      if (!["vigente", "alterada", "ainda-nao-vigente"].includes(antes)) errados.push(`${stub.id} ${vespera} ${antes}`);
+      const depois = statusEm(stub.id, "2027-01-01", raiz).status;
+      if (depois !== stub.status_vigencia) errados.push(`${stub.id} 2027-01-01 ${depois}`);
+    }
+    expect(errados).toEqual([]);
+  });
 
   test("regras de transição da 2/2026 alcançam a 1/2021", () => {
     const ids = transicoesAplicaveis(DCN_2021, "2026-11-13", raiz).map((t) => t.id);
