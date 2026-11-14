@@ -291,8 +291,9 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: { readonly 
       .request("thread/start", {
         cwd: config.pastaTrabalho,
         ephemeral: true,
+        // Somente leitura: qualquer escrita ou comando fora do sandbox passa por aprovação.
         approvalPolicy: "on-request",
-        sandbox: "workspace-write",
+        sandbox: "read-only",
         config: {
           ...isolamento,
           ...configMcpCodex(config),

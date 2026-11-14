@@ -29,9 +29,24 @@ export type EntradaAcp =
   | { readonly tipo: "session/update"; readonly notificacao: unknown }
   | { readonly tipo: "session/prompt"; readonly resposta: unknown };
 
-/** Nome da ferramenta: o `name` (extensão do Antigravity), ou o `title`, ou o `kind`. */
-function nomeFerramenta(atualizacao: Registro): string {
-  return texto(atualizacao.name) || texto(atualizacao.title) || texto(atualizacao.kind) || "ferramenta";
+/**
+ * Nome da ferramenta: o `name` (extensão do Antigravity), ou o `title`, ou o `kind`. O Antigravity
+ * chama as ferramentas MCP de `mcp_<servidor>_<ferramenta>`; com os servidores da sessão, vira
+ * `<servidor>.<ferramenta>`, como nos outros providers.
+ */
+function nomeFerramenta(atualizacao: Registro, servidores: ReadonlyArray<string> = []): string {
+  const nome = texto(atualizacao.name) || texto(atualizacao.title) || texto(atualizacao.kind) || "ferramenta";
+  for (const servidor of servidores) {
+    const prefixo = `mcp_${servidor}_`;
+    if (nome.startsWith(prefixo)) return `${servidor}.${nome.slice(prefixo.length)}`;
+  }
+  return nome;
+}
+
+/** O Antigravity injeta `toolSummary` (um resumo em inglês) nos argumentos; ele não foi para o MCP. */
+function entradaFerramenta(atualizacao: Registro): unknown {
+  const { toolSummary: _resumo, ...resto } = registro(atualizacao.rawInput);
+  return resto;
 }
 
 /**
@@ -39,7 +54,9 @@ function nomeFerramenta(atualizacao: Registro): string {
  * acumulam até o fim do turno (ou até uma ferramenta), quando viram `TextoFinal`: o ACP não manda
  * a mensagem completa.
  */
-export function criarNormalizadorAntigravity(): (entrada: EntradaAcp) => ReadonlyArray<Evento> {
+export function criarNormalizadorAntigravity(
+  servidores: ReadonlyArray<string> = [],
+): (entrada: EntradaAcp) => ReadonlyArray<Evento> {
   const nomes = new Map<string, string>();
   const iniciadas = new Set<string>();
   let acumulado = "";
@@ -79,7 +96,7 @@ export function criarNormalizadorAntigravity(): (entrada: EntradaAcp) => Readonl
       case "tool_call_update": {
         const id = texto(atualizacao.toolCallId);
         if (atualizacao.sessionUpdate === "tool_call" || atualizacao.name || atualizacao.title) {
-          if (!nomes.has(id)) nomes.set(id, nomeFerramenta(atualizacao));
+          if (!nomes.has(id)) nomes.set(id, nomeFerramenta(atualizacao, servidores));
         }
         const eventos: Array<Evento> = [];
         if (!iniciadas.has(id)) {
@@ -88,8 +105,8 @@ export function criarNormalizadorAntigravity(): (entrada: EntradaAcp) => Readonl
           eventos.push({
             _tag: "FerramentaIniciada",
             id,
-            nome: nomes.get(id) ?? nomeFerramenta(atualizacao),
-            entrada: atualizacao.rawInput ?? {},
+            nome: nomes.get(id) ?? nomeFerramenta(atualizacao, servidores),
+            entrada: entradaFerramenta(atualizacao),
           });
         }
         if (atualizacao.status === "completed" || atualizacao.status === "failed") {
@@ -97,7 +114,8 @@ export function criarNormalizadorAntigravity(): (entrada: EntradaAcp) => Readonl
           eventos.push({
             _tag: "FerramentaConcluida",
             id,
-            nome: nomes.get(id) ?? nomeFerramenta(atualizacao),
+            nome: nomes.get(id) ?? nomeFerramenta(atualizacao, servidores),
+            // O `agy` 1.5.3 não manda o resultado das ferramentas (sem `rawOutput` nem `content`).
             resumo: resumir(
               typeof conteudo === "string" ? conteudo : textoDeBlocos(registro(conteudo).content) || conteudo,
             ),
@@ -192,7 +210,7 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: { rea
     if (!login) {
       return yield* new FalhaProvider({ provider: PROVIDER, operacao: "login", detalhe: "Antigravity sem login" });
     }
-    const normalizar = criarNormalizadorAntigravity();
+    const normalizar = criarNormalizadorAntigravity(config.servidoresMcp.map((servidor) => servidor.nome));
     const processar = (entrada: EntradaAcp) =>
       Effect.suspend(() => {
         gravar("entrada", entrada);
@@ -205,7 +223,10 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: { rea
         gravar("entrada", { tipo: "session/request_permission", pedido });
         const decisao = yield* canal.pedirAprovacao({
           id: pedido.toolCall.toolCallId,
-          ferramenta: nomeFerramenta(registro(pedido.toolCall)),
+          ferramenta: nomeFerramenta(
+            registro(pedido.toolCall),
+            config.servidoresMcp.map((servidor) => servidor.nome),
+          ),
           descricao: pedido.title ?? pedido.toolCall.title ?? "permitir ação",
           entrada: pedido.toolCall.rawInput ?? {},
         });
