@@ -51,6 +51,24 @@ describe("front matter de PPC", () => {
     expect(linhasFrontMatter("---\nsem fim\n")).toBe(0);
   });
 
+  test("só remove bloco `---` que seja front matter de proveniência de PPC", () => {
+    // Minuta que abre com régua horizontal: o texto entre as réguas é do PPC.
+    const minuta = "---\n\n# Curso Técnico em Informática\n\nCampus: Curitiba\n\n---\n\n## 1. Apresentação\n";
+    expect(linhasFrontMatter(minuta)).toBe(0);
+    expect(corpoPpc(minuta)).toBe(minuta);
+    expect(mascararFrontMatter(minuta)).toBe(minuta);
+    // YAML válido, mas sem as chaves de proveniência.
+    const outroYaml = "---\ntitle: Minuta do PPC\nautor: Comissão\n---\n# Curso\n";
+    expect(linhasFrontMatter(outroYaml)).toBe(0);
+    expect(corpoPpc(outroYaml)).toBe(outroYaml);
+    // YAML inválido entre as réguas.
+    const invalido = "---\nCurso: Técnico: em: Informática\n  - x\n---\n# Curso\n";
+    expect(linhasFrontMatter(invalido)).toBe(0);
+    // Chaves de proveniência misturadas com outras: não é o front matter da base.
+    const misto = `${serializarFrontMatterPpc(reconstruida).replace("---\n", "---\ntitle: x\n")}# Curso\n`;
+    expect(linhasFrontMatter(misto)).toBe(0);
+  });
+
   test("registrada exige hash e conversor; reconstruída exige nota", () => {
     expect(() =>
       serializarFrontMatterPpc({ ...reconstruida, proveniencia: "registrada", nota_proveniencia: undefined }),

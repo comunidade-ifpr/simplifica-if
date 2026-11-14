@@ -23,14 +23,9 @@ import { AMOSTRA_MEDICAO, formatarMedicao, medirIdentificacao } from "./medicao-
 import { prepararDocumento } from "./preparar-documento.ts";
 import { dominioSurgePadrao, prepararSiteSurge, type PublicacaoSurge, publicarSiteSurge } from "./publicar-surge.ts";
 import { gerarRelatorioHtml, type RelatorioGerado } from "./relatorio-html.ts";
-import { validarResultadosRodada } from "./resultados.ts";
+import { mesclarResultadosAvulsos, validarResultadosRodada } from "./resultados.ts";
 import { caminhosRodada, escreverJsonPy, resolverCaminho, TAMANHO_GRUPO_PADRAO } from "./rodada.ts";
-import {
-  mesclarResultadosAvulsos,
-  montarGrupoAvulso,
-  montarGruposSubagents,
-  prepararPromptsSubagents,
-} from "./subagents.ts";
+import { montarGrupoAvulso, montarGruposSubagents, prepararPromptsSubagents } from "./subagents.ts";
 import { validarBaseAnalise } from "./validacao-base.ts";
 
 const COMANDO = "bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts";

@@ -14,6 +14,7 @@
  * O YAML é lido pelo mesmo parser das normas (`yaml` em schema `failsafe`): todo valor é texto ou
  * lista de texto.
  */
+import { parse } from "yaml";
 import { z } from "zod";
 import { analisarFrontMatter, ErroFrontMatter } from "../normas/front-matter.ts";
 
@@ -77,11 +78,40 @@ export function idPpc(campusId: string, cursoSlug: string): string {
   return `ppc:${campusId}/${cursoSlug}`;
 }
 
-/** Número de linhas do front matter (do `---` de abertura ao de fechamento), ou 0 se não houver. */
+const CAMPOS_CONHECIDOS = new Set<string>(CAMPOS_PROVENIENCIA);
+
+/**
+ * Se o YAML entre os `---` é o front matter de proveniência de PPC: um mapa só com campos de
+ * `CAMPOS_PROVENIENCIA`, com `id` e `fonte_url`. Um Markdown que abre com régua horizontal (`---`)
+ * ou com outro YAML não tem esse bloco, e o texto entre as réguas é do documento.
+ */
+function ehFrontMatterDePpc(yaml: string): boolean {
+  const chaves = chavesDoMapaYaml(yaml);
+  if (!chaves) return false;
+  return chaves.includes("id") && chaves.includes("fonte_url") && chaves.every((chave) => CAMPOS_CONHECIDOS.has(chave));
+}
+
+/** Chaves do YAML (schema `failsafe`), se ele for um mapa válido; `null` se não for. */
+export function chavesDoMapaYaml(yaml: string): string[] | null {
+  let bruto: unknown;
+  try {
+    bruto = parse(yaml, { schema: "failsafe", uniqueKeys: true, prettyErrors: false });
+  } catch {
+    return null;
+  }
+  if (bruto === null || typeof bruto !== "object" || Array.isArray(bruto)) return null;
+  return Object.keys(bruto);
+}
+
+/**
+ * Número de linhas do front matter de proveniência (do `---` de abertura ao de fechamento), ou 0
+ * se não houver. Um bloco `---` … `---` que não seja esse front matter não conta (`ehFrontMatterDePpc`).
+ */
 export function linhasFrontMatter(texto: string): number {
   if (!texto.startsWith("---\n")) return 0;
   const fim = texto.indexOf("\n---", 3);
   if (fim === -1) return 0;
+  if (!ehFrontMatterDePpc(texto.slice(4, fim + 1))) return 0;
   const depois = texto.indexOf("\n", fim + 4);
   const bloco = depois === -1 ? texto : texto.slice(0, depois);
   return bloco.split("\n").length;

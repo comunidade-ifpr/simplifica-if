@@ -26,7 +26,7 @@ import { extrairIdentificacaoDaConversao, inferirIdentificacaoDoMarkdown } from 
 import { normalizarMarkdown } from "../scripts/normalizador-markdown.ts";
 import { mesclarIdentificacaoPreferindoPreenchidos, prepararDocumento } from "../scripts/preparar-documento.ts";
 import { referenciasLegiveisDaFicha, universoOuVazio } from "../scripts/referencias-fichas.ts";
-import { ErroResultadosSubagents, validarResultadosRodada } from "../scripts/resultados.ts";
+import { ErroResultadosSubagents, mesclarResultadosAvulsos, validarResultadosRodada } from "../scripts/resultados.ts";
 import { abrirBanco } from "@simplifica-if/kb/db/banco";
 import { agoraIso, caminhosRodada, escreverJsonPy, lerJsonPy, timestampSlug } from "../scripts/rodada.ts";
 import {
@@ -37,7 +37,6 @@ import {
   contextoFundamentacaoNormativa,
   fichaRequerContextoCnct,
   fichaRequerFundamentacaoNormativa,
-  mesclarResultadosAvulsos,
   montarGrupoAvulso,
   montarGruposSubagents,
   prepararPromptsSubagents,
@@ -144,6 +143,44 @@ describe("relógio", () => {
   });
 });
 
+describe("REVISAR_PPC_AGORA", () => {
+  /** Relógio do ambiente lido num processo novo, com fuso e `REVISAR_PPC_AGORA` fixos. */
+  function relogioEm(fuso: string, agora: string) {
+    const codigo =
+      `import { agoraIso, timestampSlug } from ${JSON.stringify(path.join(caminhos.appDir, "scripts", "rodada.ts"))};` +
+      "console.log(JSON.stringify([timestampSlug(), agoraIso()]));";
+    const processo = Bun.spawnSync(["bun", "-e", codigo], {
+      env: { ...process.env, TZ: fuso, REVISAR_PPC_AGORA: agora },
+    });
+    return { codigo: processo.exitCode, stdout: processo.stdout.toString(), stderr: processo.stderr.toString() };
+  }
+
+  test("data sem hora é meia-noite local, como no Python (`datetime.fromisoformat`)", () => {
+    for (const [fuso, deslocamento] of [
+      ["America/Sao_Paulo", "-03:00"],
+      ["Asia/Tokyo", "+09:00"],
+    ]) {
+      const { codigo, stdout, stderr } = relogioEm(fuso!, "2026-11-13");
+      expect(stderr).toBe("");
+      expect(codigo).toBe(0);
+      expect(JSON.parse(stdout)).toEqual(["2026-11-13t00-00-00", `2026-11-13T00:00:00${deslocamento}`]);
+    }
+  });
+
+  test("data-hora com fuso continua sendo o instante dado", () => {
+    const { stdout } = relogioEm("America/Sao_Paulo", "2026-11-13T12:34:56Z");
+    expect(JSON.parse(stdout)).toEqual(["2026-11-13t09-34-56", "2026-11-13T09:34:56-03:00"]);
+  });
+
+  test("valor inválido é recusado", () => {
+    for (const valor of ["13/11/2026", "2026-02-30", "Nov 13 2026"]) {
+      const { codigo, stderr } = relogioEm("America/Sao_Paulo", valor);
+      expect(codigo).not.toBe(0);
+      expect(stderr).toContain(`REVISAR_PPC_AGORA inválida: ${valor}`);
+    }
+  });
+});
+
 describe("preparar-documento", () => {
   test("cria a rodada a partir de Markdown", () => {
     const rodada = criarRodada();
@@ -191,6 +228,40 @@ Texto do corpo.
     expect(ppc).not.toContain("5.7 EMENTÁRIO 30");
     expect(ppc).toContain("# 1 APRESENTAÇÃO");
     expect(ppc).toContain("Texto do corpo.");
+  });
+
+  test("minuta que abre com régua horizontal mantém o início do texto", () => {
+    const rodada = criarRodada(`---
+
+# Curso Técnico em Informática
+
+Campus: Assis Chateaubriand
+
+---
+
+## 1. Apresentação
+
+O curso apresenta objetivos.
+`);
+    const ppc = readFileSync(caminhosRodada(rodada).ppc, "utf-8");
+    expect(ppc).toContain("Curso Técnico em Informática");
+    expect(ppc).toContain("Assis Chateaubriand");
+    expect((lerJsonPy(caminhosRodada(rodada).metadata) as ObjetoPy).campus).toBe("Assis Chateaubriand");
+  });
+
+  test("tira o front matter de proveniência de um PPC da base", () => {
+    const arquivo = path.join(
+      caminhos.baseConhecimentoDir,
+      "institucional",
+      "ifpr",
+      "ppcs",
+      "curitiba",
+      "tecnico-em-eventos.md",
+    );
+    const rodada = prepararDocumento(arquivo, { saidaBase: diretorioTemporario(), relogio: RELOGIO }).rodadaDir;
+    const ppc = readFileSync(caminhosRodada(rodada).ppc, "utf-8");
+    expect(ppc).not.toContain("fonte_url");
+    expect(ppc).not.toContain("ppc:curitiba/tecnico-em-eventos");
   });
 
   test("rejeita extensão desconhecida e arquivo ausente", () => {
@@ -771,6 +842,55 @@ describe("grupo avulso e mescla", () => {
     expect(validarResultadosRodada(rodada, "resultados-subagents.json").valido).toBe(true);
   });
 
+  test("mescla com base no formato `resultados[]` sem perder os resultados originais", () => {
+    const rodada = criarRodada();
+    const c = caminhosRodada(rodada);
+    const resultadosBase = payloadResultadosCompletos().grupos.flatMap((grupo) => grupo.resultados);
+    escreverJsonPy(c.resultadosSubagents, {
+      metadata: { origem: "teste" },
+      grupo_id: "grupo-unico",
+      resultados: resultadosBase,
+    });
+    expect(validarResultadosRodada(rodada, "resultados-subagents.json").total_fichas).toBe(TOTAL_FICHAS);
+    escreverJsonPy(path.join(c.suporteDir, "avulso.json"), { resultados: [resultado("CT-IDENT-01", "INCONCLUSIVO")] });
+    mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json");
+    const resumo = validarResultadosRodada(rodada, "resultados-subagents.json");
+    expect(resumo.total_fichas).toBe(TOTAL_FICHAS);
+    const payload = lerJsonPy(c.resultadosSubagents) as Payload;
+    expect(payload.resultados).toBeUndefined();
+    const reavaliado = payload.grupos.flatMap((g) => g.resultados).filter((item) => item.ficha_id === "CT-IDENT-01");
+    expect(reavaliado.map((item) => item.estado)).toEqual(["INCONCLUSIVO"]);
+  });
+
+  const avulsosInvalidos: Array<[string, ObjetoPy, string]> = [
+    ["estado inválido", { resultados: [resultado("CT-IDENT-01", "TALVEZ")] }, "Estado inválido para CT-IDENT-01"],
+    ["ficha desconhecida", { resultados: [resultado("CT-NAO-EXISTE")] }, "Fichas desconhecidas: CT-NAO-EXISTE"],
+    [
+      "ficha repetida",
+      { resultados: [resultado("CT-IDENT-01"), resultado("CT-IDENT-01")] },
+      "Fichas duplicadas: CT-IDENT-01",
+    ],
+    [
+      "evidências insuficientes",
+      { resultados: [resultado("CT-IDENT-01", "ATENDE", 0)] },
+      "CT-IDENT-01 trouxe 0 evidências",
+    ],
+  ];
+  for (const [nome, avulso, mensagem] of avulsosInvalidos) {
+    test(`recusa avulso com ${nome} sem tocar a base`, () => {
+      const rodada = criarRodada();
+      const c = caminhosRodada(rodada);
+      escreverJsonPy(c.resultadosSubagents, payloadResultadosCompletos());
+      const antes = readFileSync(c.resultadosSubagents, "utf-8");
+      escreverJsonPy(path.join(c.suporteDir, "avulso.json"), avulso);
+      expect(() => mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json")).toThrow(
+        ErroResultadosSubagents,
+      );
+      expect(() => mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json")).toThrow(mensagem);
+      expect(readFileSync(c.resultadosSubagents, "utf-8")).toBe(antes);
+    });
+  }
+
   test("rejeita ficha desconhecida no grupo avulso e avulso sem resultados", () => {
     const rodada = criarRodada();
     expect(() => montarGrupoAvulso(rodada, ["CT-NAO-EXISTE"])).toThrow("Fichas não encontradas: CT-NAO-EXISTE");
@@ -876,7 +996,8 @@ describe("validar-resultados", () => {
       ];
     });
     expect(resumo.total_alertas_transversais).toBe(1);
-    expect(resumo.situacao).toBe("APTO_COM_RESSALVAS");
+    // Sem `criticidade`, o alerta é `OBRIG` e pesa como uma ficha OBRIG não atendida.
+    expect(resumo.situacao).toBe("AJUSTES_NECESSARIOS");
   });
 
   test("a CLI imprime o resumo e falha com mensagem em stderr", () => {

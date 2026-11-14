@@ -36,14 +36,16 @@ Relatório de revisão pronto (Ajustes necessários): [abrir relatório](https:/
 
 ## Situação da revisão
 
-O relatório classifica o PPC numa de quatro situações de revisão prévia, pela criticidade e pelo estado das fichas:
+O relatório classifica o PPC numa de quatro situações de revisão prévia, pela criticidade e pelo estado das fichas e pelos alertas transversais da síntese:
 
 | Situação | Rótulo no relatório | Quando |
 |---|---|---|
-| `REVISAO_SUBSTANCIAL` | Revisão substancial necessária | alguma ficha `BLOQ` com `NAO_ATENDE` |
-| `AJUSTES_NECESSARIOS` | Ajustes necessários | alguma ficha `OBRIG` com `NAO_ATENDE` |
-| `APTO_COM_RESSALVAS` | Apto com ressalvas | alguma ficha `INCONCLUSIVO` ou com revisão humana obrigatória |
+| `REVISAO_SUBSTANCIAL` | Revisão substancial necessária | alguma ficha `BLOQ` com `NAO_ATENDE` ou algum alerta transversal `BLOQ` |
+| `AJUSTES_NECESSARIOS` | Ajustes necessários | alguma ficha `OBRIG` com `NAO_ATENDE` ou algum alerta transversal `OBRIG` |
+| `APTO_COM_RESSALVAS` | Apto com ressalvas | alguma ficha `INCONCLUSIVO`, ou ficha ou alerta transversal com revisão humana obrigatória |
 | `APTO_PARA_SUBMISSAO` | Apto para submissão | nenhum dos casos acima |
+
+Um alerta transversal é um problema encontrado, por isso pesa como uma ficha `NAO_ATENDE` da mesma criticidade; o alerta `REC`, como a ficha `REC` não atendida, só pesa se pedir revisão humana.
 
 São indicações para quem vai submeter o PPC, não aprovação, diligência ou reprovação: essas decisões são da PROENS. A regra está em `situacao` (`scripts/resultados.ts`); `config/politica_revisao.json` lista as mesmas situações, com limiares por contagem que o código ainda não usa.
 
@@ -65,7 +67,7 @@ Ao gerar o relatório, a skill publica no Surge por padrão e retorna `publicaca
 
 ## Fluxo técnico
 
-O ponto de entrada é `scripts/revisar_ppc.ts` (Bun), e todos os subcomandos rodam em TypeScript, inclusive `gerar-relatorio-html` e a publicação no Surge. Só a conversão de entrada `.docx` em `preparar-documento` ainda depende de Python: `scripts/converter_docx.py` (`python-docx`), chamado por subprocesso até a trilha T3 do `PLANO-ARQUITETURA.md`. Com PPC em `.md`, a skill inteira dispensa Python. `REVISAR_PPC_PYTHON` escolhe o interpretador da conversão DOCX (padrão `python3`). Em testes e diferenciais, `REVISAR_PPC_AGORA` (data ISO 8601) fixa o relógio da rodada: nome do diretório, `criado_em` e `data_conversao`. Fora da skill, o conversor de PDF de PPCs da base (`scripts/converter_ppcs_markdown.py`) também continua em Python, até a trilha T5.
+O ponto de entrada é `scripts/revisar_ppc.ts` (Bun), e todos os subcomandos rodam em TypeScript, inclusive `gerar-relatorio-html` e a publicação no Surge. Só a conversão de entrada `.docx` em `preparar-documento` ainda depende de Python: `scripts/converter_docx.py` (`python-docx`), chamado por subprocesso até a trilha T3 do `PLANO-ARQUITETURA.md`. Com PPC em `.md`, a skill inteira dispensa Python. `REVISAR_PPC_PYTHON` escolhe o interpretador da conversão DOCX (padrão `python3`). Em testes e diferenciais, `REVISAR_PPC_AGORA` fixa o relógio da rodada: nome do diretório, `criado_em` e `data_conversao`. Aceita `AAAA-MM-DD` (meia-noite local) ou `AAAA-MM-DDTHH:MM[:SS]` com fuso opcional (`Z` ou `±HH:MM`; sem fuso, hora local), com a mesma leitura no TypeScript e na conversão DOCX em Python; outro formato é recusado. Fora da skill, o conversor de PDF de PPCs da base (`scripts/converter_ppcs_markdown.py`) também continua em Python, até a trilha T5.
 
 ```bash
 bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts preparar-documento caminho/PPC.docx
@@ -79,7 +81,7 @@ Depois, o agente principal spawna um sub-agente por grupo, de preferência com o
 bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-relatorio-html --rodada-dir .agents/skills/revisar-ppc/output/<rodada> --resultados resultados-subagents.json
 ```
 
-Para reavaliar fichas específicas, use `montar-grupo-avulso`, execute um sub-agente com o pacote retornado (`prompt_subagent_path`) e depois `mesclar-resultados-avulsos`.
+Para reavaliar fichas específicas, use `montar-grupo-avulso`, execute um sub-agente com o pacote retornado (`prompt_subagent_path`) e depois `mesclar-resultados-avulsos`. A mescla valida o avulso com o mesmo contrato de `validar-resultados` (fichas conhecidas, sem repetição, estado, confiança, evidências) e, se ele for inválido, recusa sem tocar a base; a base no formato `{"grupo_id", "resultados"}` é gravada em `grupos[]`, com os resultados originais.
 
 ## Grupos por tópico
 

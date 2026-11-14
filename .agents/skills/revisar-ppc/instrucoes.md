@@ -207,9 +207,9 @@ O `pytest` cobre só os extratores da conversão DOCX, que ainda é Python.
 
 `gerar-relatorio-html` e `validar-resultados` devolvem `situacao` (e o primeiro, também `situacao_rotulo`), calculada por `situacao` em `scripts/resultados.ts`:
 
-- `REVISAO_SUBSTANCIAL` (Revisão substancial necessária): alguma ficha `BLOQ` com `NAO_ATENDE`;
-- `AJUSTES_NECESSARIOS` (Ajustes necessários): alguma ficha `OBRIG` com `NAO_ATENDE`;
-- `APTO_COM_RESSALVAS` (Apto com ressalvas): alguma ficha `INCONCLUSIVO` ou com `revisao_humana_obrigatoria`;
+- `REVISAO_SUBSTANCIAL` (Revisão substancial necessária): alguma ficha `BLOQ` com `NAO_ATENDE` ou algum alerta transversal `BLOQ`;
+- `AJUSTES_NECESSARIOS` (Ajustes necessários): alguma ficha `OBRIG` com `NAO_ATENDE` ou algum alerta transversal `OBRIG` (a criticidade padrão do alerta);
+- `APTO_COM_RESSALVAS` (Apto com ressalvas): alguma ficha `INCONCLUSIVO`, ou ficha ou alerta transversal com `revisao_humana_obrigatoria`;
 - `APTO_PARA_SUBMISSAO` (Apto para submissão): nenhum dos casos acima.
 
 O relatório mostra o rótulo e avisa, no cabeçalho e no rodapé, que a revisão é prévia e não substitui a análise oficial da PROENS.

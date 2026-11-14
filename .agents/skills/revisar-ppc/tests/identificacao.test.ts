@@ -206,6 +206,14 @@ ${PPC_TITULOS_NUMERADOS}`;
     expect(extrairIdentificacao(texto)).toMatchObject({ curso: "Técnico em Enfermagem", campus: "Curitiba" });
   });
 
+  test("régua horizontal no topo não é front matter", () => {
+    const minuta = `---\n\n${PPC_TITULOS_NUMERADOS}\n---\n\nResto do texto.\n`;
+    expect(removerFrontMatter(minuta)).toBe(minuta);
+    expect(extrairIdentificacao(minuta)).toMatchObject({ curso: "Técnico em Enfermagem", campus: "Curitiba" });
+    const naoYaml = "---\nTexto livre, sem chave e valor\n---\nCorpo\n";
+    expect(removerFrontMatter(naoYaml)).toBe(naoYaml);
+  });
+
   test("sem nada identificável, os marcadores de ausência", () => {
     const identificacao = extrairIdentificacao("Texto qualquer sobre o curso: sem identificação.\n");
     expect(identificacao).toMatchObject({

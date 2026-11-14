@@ -27,6 +27,7 @@ import {
   formatarHtml,
   gerarBlocosPpc,
   gerarRelatorioHtml,
+  renderizarHtml,
   resolverAncoraEvidencia,
 } from "../scripts/relatorio-html.ts";
 import {
@@ -34,6 +35,7 @@ import {
   type ResultadoNormalizado,
   SITUACOES_REVISAO,
   situacao,
+  validarResultadosRodada,
 } from "../scripts/resultados.ts";
 import { caminhosRodada, escreverJsonPy, lerJsonPy } from "../scripts/rodada.ts";
 import {
@@ -274,6 +276,80 @@ O PPC trata o registro junto ao conselho profissional.
   });
 });
 
+describe("destaques de evidência no PPC", () => {
+  const PARAGRAFO = "O curso tem duração de 3 anos e carga horária de 1200 horas.";
+  const markdown = `# Curso Técnico em Informática\n\n${PARAGRAFO}\n`;
+  const resultadoCitando = (fichaId: string, titulo: string, quote: string) =>
+    ({
+      grupo_id: "grupo-001",
+      ficha_id: fichaId,
+      titulo,
+      criticidade: "OBRIG",
+      estado: "NAO_ATENDE",
+      confianca: 0.9,
+      justificativa: `Justificativa de ${fichaId}.`,
+      evidencias: [
+        { trecho: quote, secao: "", localizador: "", fonte: "PPC.md", artefato: "", anchor: { block_id: "", quote } },
+      ],
+      lacunas: [],
+      revisao_humana_obrigatoria: false,
+      feedback_autores: "",
+      fundamentacao_normativa: [],
+    }) as unknown as ResultadoNormalizado;
+
+  /** O conteúdo do bloco do parágrafo. */
+  function conteudoDoBloco(resultados: ResultadoNormalizado[]): string {
+    const html = renderizarHtml({ curso: "Curso" }, resultados, [], markdown);
+    const inicio = html.indexOf('<div class="block-content"><p>O curso tem');
+    expect(inicio).toBeGreaterThanOrEqual(0);
+    return html.slice(inicio, html.indexOf("</div>", inicio));
+  }
+
+  /** Nenhum `<` dentro de atributo e nenhum `<a>` aberto dentro de outro. */
+  function conferirMarcacao(conteudo: string) {
+    for (const [, valor] of conteudo.matchAll(/="([^"]*)"/g)) expect(valor).not.toContain("<");
+    let abertos = 0;
+    for (const [tag] of conteudo.matchAll(/<\/?a\b/g)) {
+      abertos += tag === "<a" ? 1 : -1;
+      expect(abertos).toBeGreaterThanOrEqual(0);
+      expect(abertos).toBeLessThanOrEqual(1);
+    }
+    expect(abertos).toBe(0);
+  }
+
+  test("não insere destaque dentro do atributo title de outro destaque", () => {
+    const conteudo = conteudoDoBloco([
+      resultadoCitando("CT-01", "Duração e carga horária", "duração de 3 anos"),
+      resultadoCitando("CT-02", "Carga horária", "carga horária"),
+    ]);
+    conferirMarcacao(conteudo);
+    expect(conteudo).toContain('title="Evidência de CT-01: Duração e carga horária"');
+    expect(conteudo).toContain('<mark class="evidence-highlight">duração de 3 anos</mark>');
+    expect(conteudo).toContain('<mark class="evidence-highlight">carga horária</mark>');
+  });
+
+  test("a mesma citação por duas fichas vira um destaque com links para as duas", () => {
+    const conteudo = conteudoDoBloco([
+      resultadoCitando("CT-01", "Duração", "duração de 3 anos"),
+      resultadoCitando("CT-02", "Prazo", "duração de 3 anos"),
+    ]);
+    conferirMarcacao(conteudo);
+    expect(conteudo.match(/<mark /g)?.length).toBe(1);
+    expect(conteudo).toContain('data-evidence-ref="ann-001"');
+    expect(conteudo).toContain('data-evidence-ref="ann-002"');
+  });
+
+  test("citação sobreposta a outra não aninha destaques", () => {
+    const conteudo = conteudoDoBloco([
+      resultadoCitando("CT-01", "Duração", "duração de 3 anos"),
+      resultadoCitando("CT-02", "Prazo", "3 anos e carga"),
+    ]);
+    conferirMarcacao(conteudo);
+    expect(conteudo).toContain('<mark class="evidence-highlight">duração de 3 anos</mark>');
+    expect(conteudo).toContain('data-evidence-ref="ann-001"');
+  });
+});
+
 describe("situação da revisão", () => {
   const item = (criticidade: string, estado: string, revisao = false) =>
     ({ criticidade, estado, revisao_humana_obrigatoria: revisao }) as unknown as ResultadoNormalizado;
@@ -289,6 +365,49 @@ describe("situação da revisão", () => {
         ...((lerJsonPy(path.join(caminhos.appDir, "config", "politica_revisao.json")) as ObjetoPy)
           .situacoes as string[]),
       ].reverse(),
+    );
+  });
+});
+
+describe("situação da revisão com alertas transversais", () => {
+  const item = (criticidade: string, estado: string, revisao = false) =>
+    ({ criticidade, estado, revisao_humana_obrigatoria: revisao }) as unknown as ResultadoNormalizado;
+  const alerta = (criticidade: string, revisao = false): ObjetoPy => ({
+    criticidade,
+    revisao_humana_obrigatoria: revisao,
+  });
+
+  test("alerta pesa como ficha NAO_ATENDE de mesma criticidade", () => {
+    const fichas = [item("BLOQ", "ATENDE"), item("OBRIG", "ATENDE")];
+    expect(situacao(fichas, [alerta("BLOQ")])).toBe("REVISAO_SUBSTANCIAL");
+    expect(situacao(fichas, [alerta("OBRIG")])).toBe("AJUSTES_NECESSARIOS");
+    expect(situacao(fichas, [alerta("REC")])).toBe("APTO_PARA_SUBMISSAO");
+    expect(situacao(fichas, [alerta("REC", true)])).toBe("APTO_COM_RESSALVAS");
+    expect(situacao([item("OBRIG", "NAO_ATENDE")], [alerta("BLOQ")])).toBe("REVISAO_SUBSTANCIAL");
+    expect(situacao(fichas)).toBe("APTO_PARA_SUBMISSAO");
+  });
+
+  test("gerar-relatorio-html e validar-resultados contam alerta BLOQ com todas as fichas ATENDE", () => {
+    const rodada = criarRodada();
+    const payload = payloadResultadosCompletos();
+    payload.alertas_transversais = [
+      {
+        id: "ALERTA-001",
+        validacao_id: primeiraValidacaoCruzada(),
+        titulo: "Inconsistência bloqueante",
+        criticidade: "BLOQ",
+        descricao: "Carga horária da matriz diverge da identificação.",
+        fichas_relacionadas: [],
+        evidencias: ["Evidência transversal"],
+        revisao_humana_obrigatoria: false,
+      },
+    ];
+    escreverJsonPy(path.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
+    expect(validarResultadosRodada(rodada, "resultados-subagents.json").situacao).toBe("REVISAO_SUBSTANCIAL");
+    const relatorio = gerarRelatorioHtml(rodada, "resultados-subagents.json");
+    expect(relatorio.situacao).toBe("REVISAO_SUBSTANCIAL");
+    expect(readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8")).toContain(
+      SITUACOES_REVISAO.REVISAO_SUBSTANCIAL,
     );
   });
 });
