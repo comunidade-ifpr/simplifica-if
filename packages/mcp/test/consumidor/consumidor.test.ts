@@ -97,7 +97,7 @@ describe("consumidor pelos especificadores públicos", () => {
       const [listaIfpr, listaT3] = yield* Effect.promise(() => Promise.all([ifpr.listTools(), t3.listTools()]));
 
       expect(listaIfpr.tools.map((t) => t.name)).toEqual(FERRAMENTAS.map((f) => f.nome));
-      expect(FERRAMENTAS).toHaveLength(15);
+      expect(FERRAMENTAS).toHaveLength(16);
       expect(listaT3.tools.map((t) => t.name)).toEqual(["eco_t3"]);
 
       expect(ifpr.getServerVersion()).toMatchObject({ name: NOME_SERVIDOR, version: VERSAO_PACOTE });

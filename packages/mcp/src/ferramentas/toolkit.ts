@@ -1,7 +1,7 @@
 /**
  * As ferramentas da base do IFPR como um Toolkit do `effect/ai` (`FerramentasIfpr`) e os handlers
  * (`layerHandlers`), que só chamam o serviço `Leitura`. A ordem é a da tabela "Ferramentas" da
- * especificação M0.1; `pacote_contexto` (T4) ainda não existe.
+ * especificação M0.1.
  */
 import * as Effect from "effect/Effect";
 import { Toolkit } from "effect/ai";
@@ -19,6 +19,7 @@ import { impactoDaNorma } from "./impacto-da-norma.ts";
 import { lerDispositivos } from "./ler-dispositivos.ts";
 import { lerSecao } from "./ler-secao.ts";
 import { listarCursos } from "./listar-cursos.ts";
+import { pacoteContexto } from "./pacote-contexto.ts";
 import { resolverCitacoes } from "./resolver-citacoes.ts";
 import { sobreABase } from "./sobre-a-base.ts";
 
@@ -37,6 +38,7 @@ export const FERRAMENTAS = [
   listarCursos,
   fichaCurso,
   fatosPpc,
+  pacoteContexto,
   sobreABase,
   etapa,
 ] as const;
@@ -55,6 +57,7 @@ export const FerramentasIfpr = Toolkit.make(
   listarCursos.tool,
   fichaCurso.tool,
   fatosPpc.tool,
+  pacoteContexto.tool,
   sobreABase.tool,
   etapa.tool,
 );
@@ -77,6 +80,7 @@ export const layerHandlers = FerramentasIfpr.toLayer(
       listar_cursos: leitura.listarCursos,
       ficha_curso: leitura.fichaCurso,
       fatos_ppc: leitura.fatosPpc,
+      pacote_contexto: leitura.pacoteContexto,
       sobre_a_base: leitura.sobreABase,
       etapa: leitura.etapa,
     });
