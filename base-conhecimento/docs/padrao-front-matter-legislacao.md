@@ -137,7 +137,7 @@ Regras:
 
 `node scripts/validar_base.ts` confere o formato, a unicidade, a coerência com `variante` e a igualdade com o ID derivado dos demais campos; para variante, confere também que o ato existe na base ou nos stubs.
 
-O front matter é lido com o pacote `yaml` no schema `failsafe` (todo valor é texto; só `ano` vira inteiro), com contrato zod em `packages/kb/src/normas/front-matter.ts`. Por isso `numero: 9394` continua texto no `manifest.json`.
+O front matter é lido com o pacote `yaml` no schema `failsafe` (todo valor é texto; só `ano` vira inteiro), com contrato em Effect Schema em `packages/kb/src/normas/front-matter.ts`. Por isso `numero: 9394` continua texto no `manifest.json`.
 
 ## Normas sem texto na base (stubs) e referências externas
 

@@ -14,7 +14,7 @@ Campi, cursos (com metadados de PPC e SUAP e horários dos campi), processos sel
 | Edital | `dados/institucional/editais/<edital_id>.json` | `edital_id` |
 | Oferta | `dados/institucional/ofertas/<processo_seletivo_id>/<oferta_id>.json` | `processo_seletivo_id/oferta_id` |
 
-Relações usam essas chaves, nunca IDs de página do Notion: `cursos[].campus_id`, `editais[].processos`, `ofertas[].campi`, `ofertas[].cursos` (`campus_id/curso_slug`) e `ofertas[].editais`. O campo `notion_page_id` é só referência histórica da migração e continua publicado enquanto o schema público o exigir. Os formatos estão em `scripts/dados/institucional.ts` (schemas zod).
+Relações usam essas chaves, nunca IDs de página do Notion: `cursos[].campus_id`, `editais[].processos`, `ofertas[].campi`, `ofertas[].cursos` (`campus_id/curso_slug`) e `ofertas[].editais`. O campo `notion_page_id` é só referência histórica da migração e continua publicado enquanto o schema público o exigir. Os formatos estão em `scripts/dados/institucional.ts` (Effect Schema).
 
 `Movimentações de Cursos` é a única base institucional que continua no Notion; veja [Operação do Notion por agentes](notion-operacao-agentes.md). Pareceres de Curso e as bases do Consepe foram arquivados em `dados/arquivo-notion/`, somente para consulta.
 
