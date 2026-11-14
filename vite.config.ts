@@ -82,6 +82,8 @@ export default defineConfig({
       ".agents/skills/*/output/**",
     ],
     plugins: ["eslint", "oxc", "unicorn", "typescript"],
+    // Plugin próprio, com as regras de Effect copiadas do plugin do T3 (`simplifica-if/<regra>`).
+    jsPlugins: ["./ferramentas/oxlint-plugin/index.ts"],
     categories: {
       correctness: "warn",
       suspicious: "warn",
@@ -134,6 +136,37 @@ export default defineConfig({
       "typescript/restrict-template-expressions": "off",
       "typescript/unbound-method": "off",
     },
+    // As regras do plugin próprio valem só onde o código já é Effect: por enquanto, `packages/kb` (C1).
+    // O C2 e o C3 estendem a lista de `files` ao MCP e aos scripts. As exceções reproduzem as do T3.
+    // A ordem importa: cada override posterior sobrescreve o anterior para os arquivos em comum.
+    overrides: [
+      {
+        files: ["packages/kb/**"],
+        rules: {
+          "simplifica-if/namespace-node-imports": "error",
+          "simplifica-if/no-global-process-runtime": "error",
+          "simplifica-if/no-inline-schema-compile": "error",
+          // Estas três só agem em arquivos de teste (a própria regra confere o nome do arquivo).
+          "simplifica-if/no-manual-effect-runtime-in-tests": "error",
+          "simplifica-if/no-real-time-wait-in-tests": "error",
+          "simplifica-if/no-wall-clock-in-tests": "error",
+          "simplifica-if/prefer-catch-tags": "error",
+          "simplifica-if/prefer-effect-fn": "error",
+          "simplifica-if/require-suppression-reason": "error",
+        },
+      },
+      {
+        // Como no T3: testes e utilitários de teste montam programas inline, sem `Effect.fn`.
+        files: ["packages/kb/**/*.test.ts", "packages/kb/**/{test,tests,testes,fixtures}/**"],
+        rules: { "simplifica-if/prefer-effect-fn": "off" },
+      },
+      {
+        // Pontos de entrada (a CLI `kb` e os scripts do pacote) leem o processo do Node diretamente,
+        // como `scripts/npm-launcher/**` no T3; o resto do pacote recebe o que precisar por injeção.
+        files: ["packages/kb/src/cli.ts", "packages/kb/scripts/**"],
+        rules: { "simplifica-if/no-global-process-runtime": "off" },
+      },
+    ],
     options: {
       reportUnusedDisableDirectives: "error",
       typeAware: false,

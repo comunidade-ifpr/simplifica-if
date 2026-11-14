@@ -3,8 +3,7 @@ packages:
 
 # Versões compartilhadas com o fork do T3 Code (simplifica-if-app): mesma versão nos dois
 # repositórios, atualizada no mesmo dia. Ver docs/plans/consolidacao-stack-t3.md, "Versões fixadas".
-# `effect` e `@effect/*` entram no código a partir do C1; `pnpm sync:repos` traz `.repos/effect` na
-# tag de `effect` daqui.
+# `pnpm sync:repos` traz `.repos/effect` na tag de `effect` daqui.
 catalog:
   "@effect/platform-node": 4.1.2
   "@effect/vitest": 4.1.2
@@ -13,11 +12,25 @@ catalog:
   vite: npm:@voidzero-dev/vite-plus-core@1.4.0
   vite-plus: 1.4.0
 
-# Copiados do T3: uma só cópia de vite, vite-plus e @types/node no workspace.
+# Copiados do T3: uma só cópia de vite, vite-plus, @types/node e effect no workspace; o
+# @effect/vitest usa o vitest do Vite+ (patch abaixo), não um vitest próprio.
 overrides:
+  "@effect/platform-node": "catalog:"
+  "@effect/vitest": "catalog:"
+  "@effect/vitest>vitest": "-"
   "@types/node": "catalog:"
+  effect: "catalog:"
   vite: "catalog:"
   vite-plus: "catalog:"
+
+# Como no T3: o patch faz o @effect/vitest importar vite-plus/test.
+packageExtensions:
+  "@effect/vitest@*":
+    dependencies:
+      vite-plus: "catalog:"
+
+patchedDependencies:
+  "@effect/vitest@4.1.2": patches/@effect__vitest@4.1.2.patch
 
 strictPeerDependencies: true
 
