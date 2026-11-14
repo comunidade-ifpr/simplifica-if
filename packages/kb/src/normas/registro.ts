@@ -15,6 +15,8 @@ export interface EntradaRegistro {
   id: string;
   title: string;
   situacao: Situacao;
+  /** Data do ato (assinatura). Nos stubs, a `data_publicacao` registrada, tomada como data do ato. */
+  assinada_em?: string | undefined;
   data_publicacao?: string | undefined;
   status_vigencia?: string | undefined;
   /** Stub com status provado na base: ID (com dispositivo) do ato que o determina. */
@@ -104,6 +106,7 @@ const esquemaItemManifest = z.looseObject({
   id: z.string(),
   title: z.string(),
   data_publicacao: z.string(),
+  assinada_em: z.string().optional(),
   status_vigencia: z.string(),
   aliases: z.array(z.string()).optional(),
   path: z.string(),
@@ -144,18 +147,18 @@ export class Registro {
     });
   }
 
-  /** Normas (base e stub) de um tipo e número com a data informada. */
+  /**
+   * Normas (base e stub) de um tipo e número com a data informada. A data citada é a do ato
+   * ("Resolução nº 3, de 8 de abril de 2025": `assinada_em`); só sem ato nessa data vale a data de
+   * publicação no DOU, que alguns textos citam no lugar da do ato.
+   */
   normasPorData(tipo: string, numero: string, data: string): EntradaRegistro[] {
-    return this.entradas.filter((entrada) => {
+    const candidatos = this.entradas.filter((entrada) => {
       const partes = partesIdNorma(entrada.id);
-      return (
-        partes !== null &&
-        partes.variante === null &&
-        partes.tipo === tipo &&
-        partes.numero === numero &&
-        entrada.data_publicacao === data
-      );
+      return partes !== null && partes.variante === null && partes.tipo === tipo && partes.numero === numero;
     });
+    const doAto = candidatos.filter((entrada) => entrada.assinada_em === data);
+    return doAto.length > 0 ? doAto : candidatos.filter((entrada) => entrada.data_publicacao === data);
   }
 
   /** Atos sem órgão (lei, decreto...) pelo número, quando a citação não traz o ano. */
@@ -165,6 +168,12 @@ export class Registro {
       return partes !== null && partes.variante === null && partes.tipo === tipo && partes.numero === numero;
     });
   }
+}
+
+/** Datas conhecidas do ato: a do ato e a de publicação (vazio quando nenhuma está registrada). */
+export function datasDoAto(entrada: EntradaRegistro | undefined): string[] {
+  if (!entrada) return [];
+  return [...new Set([entrada.assinada_em, entrada.data_publicacao].filter((d): d is string => !!d && RE_DATA.test(d)))];
 }
 
 /** Raiz do repositório, a partir deste arquivo (`packages/kb/src/normas/`). */
@@ -186,6 +195,7 @@ export function carregarRegistro(raiz: string = raizRepositorio()): Registro {
     id: item.id,
     title: item.title,
     situacao: "base",
+    assinada_em: item.assinada_em && RE_DATA.test(item.assinada_em) ? item.assinada_em : undefined,
     data_publicacao: item.data_publicacao,
     status_vigencia: item.status_vigencia,
     aliases: item.aliases ?? [],
@@ -199,6 +209,7 @@ export function carregarRegistro(raiz: string = raizRepositorio()): Registro {
         id: stub.id,
         title: stub.title,
         situacao: "stub",
+        assinada_em: stub.data_publicacao,
         data_publicacao: stub.data_publicacao,
         status_vigencia: stub.status_vigencia,
         status_fonte: stub.status_fonte,

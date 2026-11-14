@@ -369,8 +369,8 @@ ppcs:
       - trecho: "dispostas pela Resolução nº 23, de 23 de julho de 2021 que visa amparar"
         ids: [ifpr/consup/res/2021/23]
       - trecho: "estão de acordo com a Instrução Normativa nº 01, de 19 de agosto de 2021, que estabelece normas para execução da política de formação e desenvolvimento de coleções"
-        ids: []
-        sem_id: ["Instrução Normativa nº 01, de 19 de agosto de 2021 (órgão emissor não indicado)"]
+        # Órgão não indicado, mas a data e o assunto identificam a IN Reitoria/PROENS/IFPR nº 1/2021 (bibliotecas).
+        ids: [ifpr/proens/in/2021/1]
       - trecho: "Conforme o art. 23 da resolução IFPR nº 82/2022, o convênio de estágio será formalizado quando:"
         ids: [ifpr/consup/res/2022/82#art23]
       - trecho: "Ambos os prédios foram construídos dentro de normas de acessibilidade, conforme Lei nº 10.048"
