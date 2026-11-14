@@ -116,8 +116,11 @@ export function importsExternos(codigo: string): string[] {
   return [...especificadores].sort();
 }
 
-/** Gera o bundle num diretório temporário e confere os imports; devolve o caminho do `.mjs`. */
-async function conferirBundle(): Promise<string> {
+/**
+ * Gera o bundle num diretório temporário e confere os imports; devolve o caminho do `.mjs`. A suíte
+ * "sem repositório" (`test/transversal/sem-repositorio.test.ts`) roda o servidor por este bundle.
+ */
+export async function conferirBundle(): Promise<string> {
   const temporario = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "simplifica-mcp-bundle-"));
   await empacotar(opcoesBundle(temporario));
   const arquivos = NodeFS.readdirSync(temporario).filter((nome) => /\.m?js$/.test(nome));
