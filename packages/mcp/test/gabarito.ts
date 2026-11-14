@@ -18,7 +18,7 @@
  * partes: as chamadas (`content` e `structuredContent`) e as instruções continuam byte a byte; o
  * `tools/list` passa por `compararDefinicoes` (`equivalencia.ts`: textos e anotações iguais, schemas
  * equivalentes pela forma normalizada e pelo veredito do ajv); e o `initialize` aceita as diferenças do
- * `McpServer` do Effect 4.1.3, listadas em `DIFERENCAS_DO_INITIALIZE`.
+ * `McpServer` do Effect 4.1.3 e a capacidade `resources` dos links `ifpr://` (M1.5).
  *
  * Neutro de runtime: o servidor roda com o mesmo executável deste script (`process.execPath`), ou com
  * o comando de `SIMPLIFICA_MCP_EXE` (o executável empacotado). A comparação é byte a byte, sobre o JSON
@@ -204,11 +204,18 @@ if (modo === "--atualizar") {
   const problemas: string[] = [];
   const json = (valor: unknown) => mascarar(JSON.stringify(valor, null, 2));
   // `initialize`: o `McpServer.layerStdio` do Effect 4.1.3 não aceita `title` no `serverInfo` e sempre
-  // anuncia `logging` e `completions` (o servidor não registra nenhum dos dois; os clientes os ignoram)
+  // anuncia `logging` e `completions` (o servidor não registra nenhum dos dois; os clientes os ignoram).
+  // Desde o M1.5, o servidor também serve os links `ifpr://` como recursos, e o `initialize` anuncia
+  // `resources` (em stdio, com `subscribe`), que o gabarito do C0 não tinha.
   const servidor = { ...(antigo.servidor as Record<string, unknown>) };
   delete servidor.title;
   if (json(servidor) !== json(gabarito.servidor)) problemas.push(`servidor: ${json(gabarito.servidor)}`);
-  const capacidades = { logging: {}, completions: {}, ...(antigo.capacidades as Record<string, unknown>) };
+  const capacidades = {
+    logging: {},
+    completions: {},
+    resources: { subscribe: true, listChanged: true },
+    ...(antigo.capacidades as Record<string, unknown>),
+  };
   if (json(capacidades) !== json(gabarito.capacidades)) problemas.push(`capacidades: ${json(gabarito.capacidades)}`);
   if (antigo.instrucoes !== gabarito.instrucoes) problemas.push("instruções diferentes");
   const definicoes = compararDefinicoes(antigo.tools, tools as readonly DefinicaoListada[], antigo.chamadas);

@@ -20,6 +20,7 @@ import { layerHandlers } from "./ferramentas/toolkit.ts";
 import { INSTRUCOES } from "./instrucoes.gerado.ts";
 import * as Leitura from "./leitura/Leitura.ts";
 import * as PastaTrabalho from "./leitura/PastaTrabalho.ts";
+import { layerRecursos } from "./recursos/recursos.ts";
 
 /** Nome do servidor; nos clientes, as ferramentas aparecem como `mcp__ifpr__<ferramenta>`. */
 export const NOME_SERVIDOR = "ifpr";
@@ -41,8 +42,14 @@ export const PROTOCOLOS = [
 
 export const MENSAGEM_INCOMPATIVEL = "base incompatível com esta versão do simplifica-mcp; atualize";
 
-/** O registro das ferramentas, com os handlers sobre o `Leitura` do ambiente. */
-export const layerRegistro = Layer.effectDiscard(registrarFerramentas).pipe(Layer.provide(layerHandlers));
+/**
+ * O registro das ferramentas, com os handlers sobre o `Leitura` do ambiente, e dos recursos `ifpr://`
+ * (`recursos/recursos.ts`), sobre o mesmo `Leitura`.
+ */
+export const layerRegistro = Layer.mergeAll(
+  Layer.effectDiscard(registrarFerramentas).pipe(Layer.provide(layerHandlers)),
+  layerRecursos,
+);
 
 /** O `Leitura` sobre o `kb.sqlite` em `banco`, só leitura, sem o repositório. */
 export const layerLeitura = (opcoes: { readonly banco: string; readonly canal: Canal }) =>

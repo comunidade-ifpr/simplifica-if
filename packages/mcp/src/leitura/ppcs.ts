@@ -8,6 +8,7 @@
  */
 import { INDICADORES } from "@simplifica-if/kb/adequacao/art71";
 import * as Cursos from "@simplifica-if/kb/Cursos";
+import type { ResultadoCurso } from "@simplifica-if/kb/db/consultas";
 import * as Sql from "@simplifica-if/kb/db/sql";
 import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Impacto from "@simplifica-if/kb/Impacto";
@@ -76,6 +77,23 @@ const idDaSecao = Effect.fn("Leitura.idDaSecao")(function* (valor: string) {
   }
   return id;
 });
+
+/** Um curso do kb no formato de `listar_cursos` (também a lista de cursos dos recursos `ifpr://`). */
+export function paraCurso(c: ResultadoCurso): ListarCursos.Curso {
+  return {
+    id: c.id,
+    nome: c.nome,
+    campus: c.campus.id,
+    nivel: c.nivel,
+    forma_oferta: c.forma_oferta,
+    modalidade: c.modalidade,
+    situacao: c.situacao,
+    cnct: c.cnct ? { id: c.cnct.id, nome: c.cnct.denominacao ?? c.cnct.id, eixo: c.cnct.eixo_tecnologico } : null,
+    ppc: c.ppc ? { id: c.ppc.id, ano: c.ppc.ano_documento } : null,
+    turnos: [...new Set(c.ofertas.map((o) => o.turno).filter((t): t is string => t !== null))],
+    link: linkCurso(c.id),
+  };
+}
 
 export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
   const normas = yield* Normas.Normas;
@@ -373,19 +391,7 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
       cnct: e.cnct?.replace(/^cnct:/, ""),
       processo: e.processo,
     };
-    const lista: ListarCursos.Curso[] = (yield* cursos.listar(filtros)).map((c) => ({
-      id: c.id,
-      nome: c.nome,
-      campus: c.campus.id,
-      nivel: c.nivel,
-      forma_oferta: c.forma_oferta,
-      modalidade: c.modalidade,
-      situacao: c.situacao,
-      cnct: c.cnct ? { id: c.cnct.id, nome: c.cnct.denominacao ?? c.cnct.id, eixo: c.cnct.eixo_tecnologico } : null,
-      ppc: c.ppc ? { id: c.ppc.id, ano: c.ppc.ano_documento } : null,
-      turnos: [...new Set(c.ofertas.map((o) => o.turno).filter((t): t is string => t !== null))],
-      link: linkCurso(c.id),
-    }));
+    const lista = (yield* cursos.listar(filtros)).map(paraCurso);
     const { itens, pagina } = yield* paginarNoTeto(lista, {
       limite: e.limite,
       cursor: e.cursor,
