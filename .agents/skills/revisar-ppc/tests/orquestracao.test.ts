@@ -28,7 +28,8 @@ import { normalizarMarkdown } from "../scripts/normalizador-markdown.ts";
 import { mesclarIdentificacaoPreferindoPreenchidos, prepararDocumento } from "../scripts/preparar-documento.ts";
 import { referenciasLegiveisDaFicha, universoOuVazio } from "../scripts/referencias-fichas.ts";
 import { ErroResultadosSubagents, mesclarResultadosAvulsos, validarResultadosRodada } from "../scripts/resultados.ts";
-import { abrirBanco } from "@simplifica-if/kb/db/banco";
+import { DatabaseSync } from "node:sqlite";
+import { garantirBancoFresco } from "../scripts/kb.ts";
 import { agoraIso, caminhosRodada, escreverJsonPy, lerJsonPy, timestampSlug } from "../scripts/rodada.ts";
 import {
   agruparFichasPorTopico,
@@ -62,7 +63,11 @@ O curso apresenta objetivos, perfil do egresso e justificativa institucional.
 `;
 
 // Os grupos leem o kb.sqlite, que a primeira abertura recompila quando as fontes mudaram (cerca de 8 s).
-beforeAll(() => abrirBanco({ raiz: RAIZ }).close(), 120_000);
+// recompila o kb.sqlite se preciso, como o ponto de entrada da CLI (ponte do C1, em scripts/kb.ts)
+let caminhoBanco = "";
+beforeAll(async () => {
+  caminhoBanco = await garantirBancoFresco(RAIZ);
+}, 120_000);
 
 const temporarios: string[] = [];
 afterEach(() => {
@@ -772,7 +777,7 @@ describe("grupos por tópico num PPC fora da base", () => {
     const rodada = criarRodada(MARKDOWN_TOPICOS);
     const payload = montarGruposSubagents(rodada) as ObjetoPy & { cnct_contexto: ObjetoPy };
     const correspondencia = payload.cnct_contexto.correspondencia as ObjetoPy;
-    const db = abrirBanco({ raiz: RAIZ });
+    const db = new DatabaseSync(caminhoBanco, { readOnly: true });
     try {
       const linha = db.prepare("SELECT dados_json FROM cnct WHERE id = ?").get(`cnct:${correspondencia.id}`) as {
         dados_json: string;

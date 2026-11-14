@@ -94,7 +94,7 @@ export function validarTopicosSecoes(idsTopicos: ReadonlySet<string>, caminhos: 
     "topicos-secoes.yaml",
   );
   if (!existsSync(arquivo)) return [];
-  let mapa: Record<string, string[]>;
+  let mapa: Readonly<Record<string, ReadonlyArray<string>>>;
   try {
     mapa = lerTopicosSecoes(arquivo);
   } catch (erro) {

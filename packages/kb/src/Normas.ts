@@ -133,6 +133,10 @@ export class Normas extends Context.Service<
 const make = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
   const fontes = yield* FontesNormativas.FontesNormativas;
+  // as tabelas de correspondência e os dispositivos que elas citam não mudam com o banco aberto
+  const fonteCorrespondencia = yield* Effect.cached(
+    carregarFonteCorrespondencia.pipe(Effect.provideService(SqlClient.SqlClient, sql)),
+  );
   const prover = <A, E>(efeito: Effect.Effect<A, E, SqlClient.SqlClient | FontesNormativas.FontesNormativas>) =>
     efeito.pipe(
       Effect.provideService(SqlClient.SqlClient, sql),
@@ -198,10 +202,10 @@ const make = Effect.gen(function* () {
       return (yield* trechoDoDispositivo(id, opcoes)) ?? null;
     }, prover),
     tabelasDeCorrespondencia: Effect.fn("Normas.tabelasDeCorrespondencia")(function* (ato: string) {
-      return (yield* carregarFonteCorrespondencia).tabelas(ato);
+      return (yield* fonteCorrespondencia).tabelas(ato);
     }, prover),
     correspondencia: Effect.fn("Normas.correspondencia")(function* (id: string) {
-      return correspondenciaEm(id, yield* carregarFonteCorrespondencia);
+      return correspondenciaEm(id, yield* fonteCorrespondencia);
     }, prover),
     dataReferencia: Effect.succeed(fontes.dataReferencia),
   });

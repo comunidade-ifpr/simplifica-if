@@ -12,6 +12,7 @@ import * as SqlClient from "effect/sql/SqlClient";
 import {
   adequacaoArt71Em,
   type CursoParaAdequacao,
+  DCN_EPT,
   type FonteAdequacao,
   type RelatorioAdequacao,
 } from "./adequacao/art71.ts";
@@ -66,11 +67,14 @@ const carregarFonteAdequacao = Effect.fn("Cursos.carregarFonteAdequacao")(functi
     }
     return curso;
   });
-  // citações de cada PPC na ordem do resolvedor; PPC sem citação aparece com lista vazia
+  // citações de cada PPC na ordem do resolvedor; PPC sem citação aparece com lista vazia. A regra só
+  // olha as citações das DCN da EPT: as outras ficam no banco (o filtro da regra continua o mesmo).
   const porPpc = new Map<string, { id: string | null; linha: number; regra: string }[]>();
   for (const p of yield* linhasPpcs("SELECT path FROM ppcs")) porPpc.set(p.path, []);
   for (const c of yield* linhasCitacoes(
-    "SELECT p.path, c.norma_id AS id, c.linha, c.regra FROM citacoes c JOIN ppcs p ON p.id = c.ppc_id ORDER BY c.ppc_id, c.ordem",
+    `SELECT p.path, c.norma_id AS id, c.linha, c.regra FROM citacoes c JOIN ppcs p ON p.id = c.ppc_id
+     WHERE c.ato_id IN (${DCN_EPT.map(() => "?").join(", ")}) ORDER BY c.ppc_id, c.ordem`,
+    DCN_EPT.map((dcn) => dcn.id),
   )) {
     porPpc.get(c.path)?.push({ id: c.id, linha: c.linha, regra: c.regra });
   }

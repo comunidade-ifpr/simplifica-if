@@ -54,11 +54,15 @@ export class Impacto extends Context.Service<
 const make = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
   const fontes = yield* FontesNormativas.FontesNormativas;
+  // as tabelas de correspondência e os dispositivos que elas citam não mudam com o banco aberto
+  const fonteCorrespondencia = yield* Effect.cached(
+    carregarFonteCorrespondencia.pipe(Effect.provideService(SqlClient.SqlClient, sql)),
+  );
 
   const daNorma = Effect.fn("Impacto.daNorma")(
     function* (id: string, opcoes: OpcoesImpacto = {}) {
       const ato = idDoAto(id.split("#")[0]!);
-      const correspondencia = yield* carregarFonteCorrespondencia;
+      const correspondencia = yield* fonteCorrespondencia;
       const dispositivos = yield* linhasDispositivos(
         "SELECT dispositivo, texto FROM dispositivos WHERE ato_id = ? AND canonico = 1 ORDER BY norma_id <> ato_id, norma_id, ordem",
         [ato],
@@ -93,7 +97,7 @@ const make = Effect.gen(function* () {
           return dispositivos.map((d) => ({ dispositivo: d.dispositivo, texto: d.texto }));
         },
         // a taxonomia validada tem os campos que o impacto lê (`id`, `termos_busca`, `fichas`) e outros
-      topicos: () => conteudo.topicos as unknown as TopicoTaxonomia[],
+        topicos: () => conteudo.topicos as unknown as TopicoTaxonomia[],
         arquivosConteudo: () => conteudo.arquivos,
         segmentosCitantes: (excetoAto) => {
           pedido("segmentosCitantes", excetoAto, ato);

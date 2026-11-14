@@ -88,7 +88,7 @@ export function datasDoFrontMatter(meta: Readonly<Record<string, unknown>>): Dat
 /**
  * Datas por ID do ato a partir do front matter das normas da base (em qualquer ordem) e do registro:
  * os stubs entram com `data_publicacao` como data do ato. A regra única, sobre os arquivos
- * (`carregarDatas`) e sobre o `kb.sqlite` (`db/modo-banco.ts`).
+ * (`carregarDatas`) e sobre o `kb.sqlite` (`FontesNormativas.layerBanco`).
  */
 export function montarDatas(
   normas: Iterable<{ id: string; meta: Readonly<Record<string, unknown>> }>,
@@ -126,7 +126,7 @@ export function carregarDatas(raiz: string = raizRepositorio(), registro?: Regis
 /**
  * O que a vigência lê: registro, datas dos atos, relações e regras de transição. Duas
  * implementações: os arquivos do checkout (`fonteVigenciaArquivos`) e o `kb.sqlite`
- * (`fonteVigenciaBanco`, em `db/modo-banco.ts`); as regras (`statusEm`, `transicoesAplicaveis`,
+ * (`FontesNormativas.vigencia`, sobre qualquer das duas layers); as regras (`statusEm`, `transicoesAplicaveis`,
  * `derivarLinha`...) são as mesmas. Toda função abaixo que recebe `raiz` aceita também uma fonte.
  */
 export interface FonteVigencia {

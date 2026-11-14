@@ -94,8 +94,8 @@ export interface CursoParaAdequacao {
 
 /**
  * O que a adequação lê: os cursos e as citações resolvidas do PPC convertido de cada um. Duas
- * implementações: os arquivos (`fonteAdequacaoArquivos`) e o `kb.sqlite`
- * (`fonteAdequacaoBanco`, em `db/modo-banco.ts`); a regra (`adequacaoArt71Em`) é uma só.
+ * implementações: os arquivos (`fonteAdequacaoArquivos`) e o `kb.sqlite` (carregada pelo serviço
+ * `Cursos`); a regra (`adequacaoArt71Em`) é uma só.
  */
 export interface FonteAdequacao {
   cursos(): CursoParaAdequacao[];
