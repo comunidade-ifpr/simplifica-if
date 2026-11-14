@@ -33,7 +33,7 @@ import {
 import { dispositivosDoAto } from "./estrutura.ts";
 import { idDoAto } from "./ids.ts";
 import { carregarRegistro, raizRepositorio, type Registro } from "./registro.ts";
-import { carregarRelacoes, type Relacao, relacaoParcial } from "./relacoes.ts";
+import { carregarRelacoes, type Relacao, sucessorasDe } from "./relacoes.ts";
 import { dataReferencia, type RaizOuFonte, statusEm, transicoesAplicaveis } from "./vigencia.ts";
 
 export type MotivoImpacto =
@@ -248,9 +248,7 @@ export function impactoEm(
   const data = opcoes.data ?? fonte.dataReferencia();
   const vigencia = statusEm(ato, data, fonte.vigencia);
   const relacoes = fonte.relacoes().filter((r) => r.origem === ato || r.alvo === ato);
-  const sucessoras = relacoes
-    .filter((r) => r.tipo === "revoga" && r.alvo === ato && !relacaoParcial(r))
-    .map((r) => r.origem);
+  const sucessoras = sucessorasDe(ato, relacoes);
   // dispositivos de destino que correspondem ao ato ou, com sufixo, ao dispositivo consultado e aos subordinados
   const correspondentes = destinosDeOrigemEm(sufixo ? `${ato}#${sufixo}` : ato, fonte.correspondencia);
   /** O dispositivo citado é o consultado ou um subordinado dele (`#art2` não casa `#art29`). */

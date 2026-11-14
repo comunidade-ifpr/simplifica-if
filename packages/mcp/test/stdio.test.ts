@@ -9,6 +9,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import { Client } from "@modelcontextprotocol/client";
 import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
 import { MENSAGEM_INCOMPATIVEL } from "../src/banco.ts";
+import { FERRAMENTAS } from "../src/ferramentas/index.ts";
 import { INSTRUCOES } from "../src/servidor.ts";
 import { criarBancoFixture, diretorioTemporario, limparTemporarios } from "./fixture.ts";
 
@@ -64,7 +65,7 @@ describe("servidor em stdio", () => {
     try {
       expect(cliente.getInstructions()).toBe(INSTRUCOES);
       const { tools } = await cliente.listTools();
-      expect(tools.map((t) => t.name)).toEqual(["sobre_a_base", "etapa"]);
+      expect(tools.map((t) => t.name)).toEqual(FERRAMENTAS.map((f) => f.nome));
       for (const t of tools) {
         expect(t.description?.length).toBeGreaterThan(20);
         expect(t.annotations).toMatchObject({ readOnlyHint: true, idempotentHint: true, openWorldHint: false });
@@ -99,7 +100,7 @@ describe("servidor em stdio", () => {
         expect(cliente.getProtocolEra()).toBe(era);
         expect(cliente.getInstructions()).toBe(INSTRUCOES);
         const { tools } = await cliente.listTools();
-        expect(tools.map((t) => t.name)).toEqual(["sobre_a_base", "etapa"]);
+        expect(tools.map((t) => t.name)).toEqual(FERRAMENTAS.map((f) => f.nome));
         const r = await cliente.callTool({ name: "sobre_a_base", arguments: {} });
         expect(r.isError).toBeFalsy();
         respostas.push({ structuredContent: r.structuredContent, content: r.content, tools });
