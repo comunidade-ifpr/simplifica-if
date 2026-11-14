@@ -27,7 +27,7 @@ import { correspondenciaEm, type ResultadoCorrespondencia } from "../normas/corr
 import { idDoAto } from "../normas/ids.ts";
 import { type FonteImpacto, impactoEm, type ResultadoImpacto, type TopicoTaxonomia } from "../normas/impacto.ts";
 import type { Relacao } from "../normas/relacoes.ts";
-import { relacoesDeEm } from "../normas/relacoes.ts";
+import { relacoesDeEm, sucessorasDe } from "../normas/relacoes.ts";
 import { type ResolucaoComEntrada, resolucaoComEntrada } from "../normas/resolver.ts";
 import { type ResultadoVigencia, type SituacaoTransicao, statusEm, transicoesAplicaveis } from "../normas/vigencia.ts";
 import {
@@ -65,6 +65,14 @@ export {
   vigenciaNoBanco,
 } from "./consultas-normas.ts";
 export { divergenciasPpcSuap, fatosDosPpcs, listarCursos, obterNorma, secoesDoPpc } from "./consultas.ts";
+export { idDoAto } from "../normas/ids.ts";
+// Tipos das respostas, para o `packages/mcp` tipar os handlers sem importar outros módulos do kb.
+export type { DispositivoDoBanco, TrechoDispositivo } from "./consultas-normas.ts";
+export type { ResultadoNorma } from "./consultas.ts";
+export type { ResultadoCorrespondencia, TabelaCorrespondencia } from "../normas/correspondencia.ts";
+export type { Relacao } from "../normas/relacoes.ts";
+export type { ResolucaoComEntrada } from "../normas/resolver.ts";
+export type { EventoVigencia, ResultadoVigencia, SituacaoTransicao } from "../normas/vigencia.ts";
 
 /** Abre o `kb.sqlite` em `caminho` só para leitura, sem recompilar e sem procurar o repositório. */
 export function abrirBancoSomenteLeitura(caminho: string): Database {
@@ -108,6 +116,79 @@ export function vigenciaBanco(
 /** `kb relacoes <id>`: relações em que a norma é origem (`saida`) ou alvo (`entrada`). */
 export function relacoesDaNormaBanco(db: Database, id: string): { id: string; saida: Relacao[]; entrada: Relacao[] } {
   return { id: ato(id), ...relacoesDeEm(ato(id), fonteVigenciaBanco(db).relacoes()) };
+}
+
+/** Sucessoras da norma (as de `kb impacto`): atos que a revogam no todo, pela tabela `relacoes`. */
+export function sucessorasBanco(db: Database, id: string): string[] {
+  return sucessorasDe(ato(id), fonteVigenciaBanco(db).relacoes());
+}
+
+const esquemaNormaCompleta = z.strictObject({
+  id: z.string(),
+  situacao: z.enum(["base", "stub", "externo"]),
+  titulo: z.string(),
+  tipo_documento: z.string().nullable(),
+  numero: z.string().nullable(),
+  ano: z.number().int().nullable(),
+  orgao: z.string().nullable(),
+  jurisdicao: z.string().nullable(),
+  data_publicacao: z.string().nullable(),
+  status_vigencia: z.string().nullable(),
+  ementa: z.string().nullable(),
+  fonte: z.string().nullable(),
+  path: z.string().nullable(),
+  front_matter_json: z.string().nullable(),
+});
+
+/** Metadados de uma norma da base, stub ou referência externa, como o manifesto e o `stubs.yaml` os publicam. */
+export interface NormaDoBanco {
+  id: string;
+  situacao: "base" | "stub" | "externo";
+  titulo: string;
+  tipo_documento: string | null;
+  numero: string | null;
+  ano: number | null;
+  orgao: string | null;
+  jurisdicao: string | null;
+  data_publicacao: string | null;
+  /** Status publicado, calculado na `data_referencia`. */
+  status_vigencia: string | null;
+  ementa: string | null;
+  /** Fonte oficial (URL ou descrição) registrada no front matter ou no stub. */
+  fonte: string | null;
+  /** Markdown, relativo à raiz do repositório; `null` em stub e externo. */
+  path: string | null;
+  /** Explicação gerada (`vigencia_a_confirmar` do front matter) quando o status depende de data a confirmar. */
+  pendencia_vigencia: string | null;
+  /** O status publicado está "a confirmar": há pendência registrada ou o status é `a confirmar` (stubs). */
+  vigencia_a_confirmar: boolean;
+}
+
+/**
+ * Norma pelo ID (do ato, do arquivo com variante ou com `#dispositivo`), com os metadados que
+ * `obterNorma` não traz (órgão, tipo, número, ano, fonte e a pendência de vigência). `null` se a
+ * norma não está registrada.
+ */
+export function normaBanco(db: Database, id: string): NormaDoBanco | null {
+  const consultar = (chave: string) =>
+    db
+      .query(
+        `SELECT id, situacao, titulo, tipo_documento, numero, ano, orgao, jurisdicao, data_publicacao, status_vigencia,
+                ementa, fonte, path, front_matter_json FROM normas WHERE id = ?`,
+      )
+      .get(chave);
+  const norma = id.split("#")[0]!;
+  const linha = consultar(norma) ?? (idDoAto(norma) !== norma ? consultar(idDoAto(norma)) : null);
+  if (!linha) return null;
+  const { front_matter_json, ...n } = esquemaNormaCompleta.parse(linha);
+  const frontMatter =
+    front_matter_json === null ? {} : z.record(z.string(), z.unknown()).parse(JSON.parse(front_matter_json));
+  const pendencia = typeof frontMatter.vigencia_a_confirmar === "string" ? frontMatter.vigencia_a_confirmar : null;
+  return {
+    ...n,
+    pendencia_vigencia: pendencia,
+    vigencia_a_confirmar: pendencia !== null || n.status_vigencia === "a confirmar",
+  };
 }
 
 /* ================================================================= citações */

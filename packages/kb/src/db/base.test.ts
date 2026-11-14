@@ -18,7 +18,7 @@ import { avaliarBusca } from "../avaliacao/busca-secoes.ts";
 import { adequacaoArt71 } from "../adequacao/art71.ts";
 import { impacto } from "../normas/impacto.ts";
 import * as moduloRegistro from "../normas/registro.ts";
-import { carregarRegistro, raizRepositorio } from "../normas/registro.ts";
+import { caminhoStubs, carregarRegistro, lerRegistroStubs, raizRepositorio } from "../normas/registro.ts";
 import * as moduloResolver from "../normas/resolver.ts";
 import { registroPadrao, resolucaoComEntrada } from "../normas/resolver.ts";
 import { ppcsQueCitam, relatorioCitacoes } from "../ppcs/citacoes.ts";
@@ -31,7 +31,7 @@ import {
   obterDispositivo,
 } from "../normas/estrutura.ts";
 import { atosComVigencia } from "../normas/fontes-db.ts";
-import { carregarRelacoes, relacoesDe } from "../normas/relacoes.ts";
+import { carregarRelacoes, relacoesDe, sucessorasDe } from "../normas/relacoes.ts";
 import {
   carregarTransicoes,
   dataReferencia,
@@ -387,9 +387,75 @@ describe("modo banco: a mesma saída da CLI sobre os arquivos", () => {
     }
   }, 60_000);
 
+  test("norma: metadados iguais aos do manifest.json e do stubs.yaml", () => {
+    const manifest = lerJson("base-conhecimento/manifest.json") as Record<string, unknown>[];
+    const nulo = (valor: unknown) => (valor === undefined ? null : valor);
+    for (const item of manifest) {
+      const pendencia = nulo(item.vigencia_a_confirmar);
+      mesmoJson(mb.normaBanco(db, String(item.id)), {
+        id: item.id,
+        situacao: "base",
+        titulo: item.title,
+        tipo_documento: nulo(item.tipo_documento),
+        numero: item.numero === undefined ? null : String(item.numero),
+        ano: nulo(item.ano),
+        orgao: nulo(item.orgao),
+        jurisdicao: nulo(item.jurisdicao),
+        data_publicacao: nulo(item.data_publicacao),
+        status_vigencia: nulo(item.status_vigencia),
+        ementa: nulo(item.ementa),
+        fonte: nulo(item.fonte),
+        path: `base-conhecimento/${String(item.path)}`,
+        pendencia_vigencia: pendencia,
+        vigencia_a_confirmar: pendencia !== null || item.status_vigencia === "a confirmar",
+      });
+    }
+    const stubs = lerRegistroStubs(caminhoStubs(raiz));
+    const vazio = { tipo_documento: null, numero: null, ano: null, orgao: null, jurisdicao: null };
+    for (const s of stubs.normas) {
+      mesmoJson(mb.normaBanco(db, s.id), {
+        id: s.id,
+        situacao: "stub",
+        titulo: s.title,
+        ...vazio,
+        data_publicacao: s.data_publicacao ?? null,
+        status_vigencia: s.status_vigencia,
+        ementa: s.ementa,
+        fonte: s.fonte ?? null,
+        path: null,
+        pendencia_vigencia: null,
+        vigencia_a_confirmar: s.status_vigencia === "a confirmar",
+      });
+    }
+    for (const s of stubs.externos) {
+      mesmoJson(mb.normaBanco(db, s.id), {
+        id: s.id,
+        situacao: "externo",
+        titulo: s.title,
+        ...vazio,
+        data_publicacao: null,
+        status_vigencia: null,
+        ementa: s.descricao,
+        fonte: s.fonte ?? null,
+        path: null,
+        pendencia_vigencia: null,
+        vigencia_a_confirmar: false,
+      });
+    }
+    expect(mb.normaBanco(db, "br/cne-cp/res/2021/1#art20")?.id).toBe("br/cne-cp/res/2021/1");
+    expect(mb.normaBanco(db, "br/lei/1900/1")).toBeNull();
+  });
+
+  test("sucessoras de cada ato: a regra de sucessorasDe sobre relacoes.yaml", () => {
+    const relacoes = carregarRelacoes(raiz);
+    for (const ato of atosComVigencia(raiz)) mesmoJson(mb.sucessorasBanco(db, ato), sucessorasDe(ato, relacoes));
+    expect(mb.sucessorasBanco(db, "br/cne-cp/res/2021/1#art20")).toEqual(["br/cne-cp/res/2026/2"]);
+  });
+
   test("impacto: igual ao dos arquivos restrito às fichas (o banco não tem os outros textos das skills)", () => {
     for (const id of NORMAS) {
       const arquivos = impacto(id, { raiz });
+      expect(mb.sucessorasBanco(db, id)).toEqual(arquivos.sucessoras);
       arquivos.arquivos = arquivos.arquivos.filter((a) => a.arquivo.startsWith(FICHAS_DA_ANALISE));
       mesmoJson(mb.impactoBanco(db, id), arquivos);
     }
@@ -452,6 +518,8 @@ function todasAsConsultas(banco: Database, markdown: string) {
     citacoes: NORMAS.map((id) => mb.citacoesBanco(banco, id)),
     vigencia: NORMAS.map((id) => mb.vigenciaBanco(banco, id, { em: "2026-11-01" })),
     relacoes: NORMAS.map((id) => mb.relacoesDaNormaBanco(banco, id)),
+    normas: NORMAS.map((id) => mb.normaBanco(banco, id)),
+    sucessoras: NORMAS.map((id) => mb.sucessorasBanco(banco, id)),
     impacto: NORMAS.map((id) => mb.impactoBanco(banco, id)),
     adequacao: mb.adequacaoArt71Banco(banco, { incluirTecnologia: true }),
     buscarSecoes: mb.buscarSecoesBanco(banco, "acompanhamento de egressos", { cnct: "tecnico-em-informatica" }),

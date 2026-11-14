@@ -2,7 +2,7 @@
 
 Servidor MCP só de leitura que entrega a base de conhecimento do IFPR a qualquer IA (Claude, Codex, Gemini). Ele lê apenas o `kb.sqlite`, em modo somente leitura: não recompila o banco, não procura o repositório e não acessa a rede. Cada resposta traz o texto literal, a proveniência (`path` e linhas no repositório de origem), o link `ifpr://` e a versão da base.
 
-Especificação: `docs/plans/m0-simplifica-mcp.md` (M0.1). Este pacote está no passo T1: servidor, CLI, banco, envelope, links, texto e as ferramentas `sobre_a_base` e `etapa`.
+Especificação: `docs/plans/m0-simplifica-mcp.md` (M0.1). Passos prontos: T1 (servidor, CLI, banco, envelope, links, texto e as ferramentas `sobre_a_base` e `etapa`) e T2 (ferramentas de normas: `buscar_norma`, `ler_dispositivos`, `ficha_norma`, `correspondencia` e `resolver_citacoes`). O teste `test/banco-real.test.ts` compara as ferramentas com a CLI `kb` sobre o `tmp/kb.sqlite` e é pulado quando o banco não existe.
 
 ## Como rodar
 

@@ -36,8 +36,21 @@ const PREVISTAS = [
   "etapa",
 ];
 
-/** Texto exato da especificação (seções 15 e 16): mudar a descrição muda o comportamento do modelo. */
+/** Descrições da especificação sem a palavra "use". */
+const SEM_USE = new Set(["ficha_norma"]);
+
+/** Texto exato da especificação (seções 1 a 5, 15 e 16): mudar a descrição muda o comportamento do modelo. */
 const DESCRICOES: Record<string, string> = {
+  buscar_norma:
+    'Busca na legislação e nas normas da base do IFPR. Uma citação ou um ID ("Res. CNE/CP 2/2026, art. 28, VII", "br/lei/1996/9394#art36") vai direto ao dispositivo; termos fazem busca textual nos dispositivos e nos metadados das normas. Use antes de afirmar qualquer obrigação normativa. Devolve o texto literal, com o caput herdado.',
+  ler_dispositivos:
+    "Lê dispositivos pelo ID (até 20 por chamada), com o caput herdado, as notas de redação e, se pedido, os incisos, alíneas e parágrafos. Use quando já tiver o ID, vindo de `buscar_norma`, de `resolver_citacoes` ou de uma ficha.",
+  ficha_norma:
+    "Situação de uma norma numa data: a vigência, com o que a determina e o que está a confirmar; as relações com outras normas nos dois sentidos (revoga, altera, regulamenta, fundamenta-se em); as normas sucessoras; e as regras de transição. Norma revogada não é inaplicável: confira as transições antes de concluir.",
+  correspondencia:
+    "Dispositivo correspondente na norma sucessora, por exemplo do art. 20 da Res. CNE/CP 1/2021 para a Res. CNE/CP 2/2026. A tabela é rascunho, sem revisão jurídica: use como indicação, nunca como fundamento.",
+  resolver_citacoes:
+    "Identifica citações normativas escritas em texto livre (até 50 por chamada) e devolve o ID canônico, o dispositivo, a regra usada e a confiança. Use para conferir a fundamentação de um documento. Confiança abaixo de 0,9 pede conferência no trecho original.",
   sobre_a_base:
     "Versão, data de referência e conteúdo da base. Use quando o usuário (um servidor do IFPR) perguntar o que a base contém ou de quando ela é.",
   etapa: "Informa ao app em que etapa da tarefa você está. Use só quando a skill pedir.",
@@ -55,14 +68,20 @@ describe("registro", () => {
       expect(nome).toMatch(/^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/);
       expect(PREVISTAS).toContain(nome);
     }
-    expect(nomes).toEqual(["sobre_a_base", "etapa"]);
+    // na ordem da tabela da especificação
+    expect(nomes).toEqual(PREVISTAS.filter((nome) => nomes.includes(nome)));
+    for (const nome of ["buscar_norma", "ler_dispositivos", "ficha_norma", "correspondencia", "resolver_citacoes"]) {
+      expect(nomes).toContain(nome);
+    }
   });
 
   test("descrições: texto da especificação, curtas e dizendo quando usar", () => {
     for (const f of FERRAMENTAS) {
       expect(f.descricao).toBe(DESCRICOES[f.nome]!);
       expect(f.descricao.length).toBeLessThanOrEqual(600);
-      expect(f.descricao).toMatch(/\bUse\b/);
+      // A especificação dá "quando usar" em todas, mas `ficha_norma` diz isso sem a palavra
+      // ("confira as transições antes de concluir") e `correspondencia` diz "use como indicação".
+      if (!SEM_USE.has(f.nome)) expect(f.descricao).toMatch(/\b[Uu]se\b/);
       expect(f.titulo.length).toBeGreaterThan(0);
     }
   });
