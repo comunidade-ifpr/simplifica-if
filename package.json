@@ -13,7 +13,7 @@
     "mcp": "node packages/mcp/src/cli.ts",
     "mcp:instrucoes": "node packages/mcp/scripts/gerar-instrucoes.ts",
     "mcp:executavel": "node packages/mcp/scripts/construir-executavel.ts",
-    "mcp:smoke": "cd packages/mcp && SIMPLIFICA_SMOKE=1 vp test run --config ../../vite.config.ts --dir . test/banco-real.test.ts test/smoke-base-real.test.ts test/smoke-pacote-contexto.test.ts",
+    "mcp:smoke": "cd packages/mcp && SIMPLIFICA_SMOKE=1 vp test run --config ../../vite.config.ts --dir . test/transversal",
     "avaliacao": "node scripts/avaliar.ts",
     "avaliacao:gabaritos": "node scripts/avaliacao/gabaritos/gerar.ts",
     "sei:sync": "node scripts/notion_atualizar_movimentacoes_sei.ts",

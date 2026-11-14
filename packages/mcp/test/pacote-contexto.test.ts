@@ -3,7 +3,7 @@
  * `pacote_contexto` (T4) sobre a fixture de PPCs: contrato (entradas válidas e inválidas, saída no
  * outputSchema), determinismo, orçamento do texto (80 mil caracteres), a pasta de trabalho (`..`,
  * caminho absoluto, link simbólico para fora, arquivo inexistente) e `ppc` contra `arquivo`. A
- * paridade com `kb pacote-contexto` sobre a base real fica em `smoke-base-real.test.ts`.
+ * paridade com `kb pacote-contexto` sobre a base real fica em `transversal/paridade.ts`.
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";

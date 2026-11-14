@@ -2,7 +2,7 @@
 /**
  * Ferramentas de PPCs e cursos (T3) sobre a fixture ampliada: contrato (entradas válidas e inválidas,
  * saída no outputSchema), conteúdo, avisos, determinismo, orçamento do texto e paginação completa e
- * sem repetição. A paridade com a CLI sobre a base real fica em `smoke-base-real.test.ts`.
+ * sem repetição. A paridade com a CLI sobre a base real fica em `transversal/paridade.ts`.
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";

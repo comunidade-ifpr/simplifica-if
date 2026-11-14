@@ -1,0 +1,115 @@
+# Integração contínua (passo T6 do M0.1, docs/plans/m0-simplifica-mcp.md).
+#
+# - verificacao (Linux x64): formatação, lint, tipos, testes, banco, smoke do MCP contra a base real,
+#   validação da base e os gabaritos que não dependem do macOS.
+# - executavel (macOS arm64, Linux x64, Windows x64): o executável simplifica-mcp no runner nativo,
+#   as suítes "sem repositório", "determinismo" e "pasta de trabalho" contra ele, e o executável como
+#   artefato.
+#
+# Nenhum segredo e nenhum acesso a Notion, SEI ou SUAP: os testes que precisam deles se pulam sozinhos.
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificacao:
+    name: Verificação (Linux)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: ./.github/actions/preparar
+
+      - name: Formatação
+        run: pnpm fmt:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Tipos
+        run: pnpm typecheck
+
+      - name: Testes
+        run: pnpm test
+
+      - name: Compila o kb.sqlite
+        run: pnpm kb compilar
+
+      - name: Smoke do MCP (suítes transversais na base real)
+        run: pnpm mcp:smoke
+
+      - name: Valida a base
+        run: node scripts/validar_base.ts
+
+      - name: Gabarito da CLI kb
+        run: sh testes-gabarito/kb.sh --comparar
+
+      # O gabarito do banco (testes-gabarito/banco.sh) fica de fora: ele compara o `.dump` do sqlite3, e
+      # o texto do dump muda com o build do sqlite3 (o 3.40 do Debian escreve `replace(…, char(10))`
+      # onde o 3.54 escreve `unistr(…)`, e o 3.54 do sqlite.org escreve `0` onde o da Apple escreve `0.0`).
+      # O banco compilado no Linux é igual ao do macOS: conferido com o sqlite3 do macOS em 14/11/2026.
+
+      - name: Gabarito da base (geradores, validação e site)
+        run: sh testes-gabarito/base.sh --comparar
+
+      - name: Gabarito do MCP pelo protocolo
+        run: node packages/mcp/test/gabarito.ts --comparar --schemas-equivalentes
+
+  executavel:
+    name: Executável (${{ matrix.alvo }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - alvo: darwin-arm64
+            runner: macos-15
+          - alvo: linux-x64
+            runner: ubuntu-24.04
+          - alvo: win-x64
+            runner: windows-2025
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Fins de linha como no repositório
+        run: git config --global core.autocrlf false
+
+      - uses: actions/checkout@v5
+
+      - uses: ./.github/actions/preparar
+
+      - name: Constrói o executável
+        run: pnpm mcp:executavel
+
+      - name: Caminho do executável
+        run: |
+          nome=$(cd packages/mcp/dist-exe && ls simplifica-mcp*)
+          echo "SIMPLIFICA_MCP_EXE=${GITHUB_WORKSPACE}/packages/mcp/dist-exe/${nome}" >> "$GITHUB_ENV"
+
+      - name: Sem repositório, determinismo e pasta de trabalho, contra o executável
+        working-directory: packages/mcp
+        run: >-
+          pnpm exec vp test run --config ../../vite.config.ts --dir .
+          test/transversal/sem-repositorio.test.ts test/transversal/determinismo.test.ts
+          test/transversal/pasta-de-trabalho.test.ts
+
+      - name: Publica o executável
+        uses: actions/upload-artifact@v4
+        with:
+          name: simplifica-mcp-${{ matrix.alvo }}
+          path: packages/mcp/dist-exe/
+          if-no-files-found: error
+          retention-days: 14

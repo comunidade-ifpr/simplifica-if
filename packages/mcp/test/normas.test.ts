@@ -2,7 +2,7 @@
 /**
  * Ferramentas de normas (T2) sobre a fixture: contrato (entradas válidas e inválidas, saída no
  * `outputSchema`), determinismo, orçamento (teto do texto, paginação completa e sem repetição) e
- * a chamada pelo protocolo. A paridade com a CLI sobre o banco real está em `banco-real.test.ts`.
+ * a chamada pelo protocolo. A paridade com a CLI sobre o banco real está em `transversal/paridade.ts`.
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
