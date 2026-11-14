@@ -173,7 +173,9 @@ export class Registro {
 /** Datas conhecidas do ato: a do ato e a de publicação (vazio quando nenhuma está registrada). */
 export function datasDoAto(entrada: EntradaRegistro | undefined): string[] {
   if (!entrada) return [];
-  return [...new Set([entrada.assinada_em, entrada.data_publicacao].filter((d): d is string => !!d && RE_DATA.test(d)))];
+  return [
+    ...new Set([entrada.assinada_em, entrada.data_publicacao].filter((d): d is string => !!d && RE_DATA.test(d))),
+  ];
 }
 
 /** Raiz do repositório, a partir deste arquivo (`packages/kb/src/normas/`). */
