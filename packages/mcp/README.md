@@ -2,7 +2,26 @@
 
 Servidor MCP só de leitura que entrega a base de conhecimento do IFPR a qualquer IA (Claude, Codex, Gemini). Ele lê apenas o `kb.sqlite`, em modo somente leitura: não recompila o banco, não procura o repositório e não acessa a rede. Cada resposta traz o texto literal, a proveniência (`path` e linhas no repositório de origem), o link `ifpr://` e a versão da base.
 
-Especificação: `docs/plans/m0-simplifica-mcp.md` (M0.1). Passos prontos: T1 (servidor, CLI, banco, envelope, links, texto e as ferramentas `sobre_a_base` e `etapa`) e T2 (ferramentas de normas: `buscar_norma`, `ler_dispositivos`, `ficha_norma`, `correspondencia` e `resolver_citacoes`). O teste `test/banco-real.test.ts` compara as ferramentas com a CLI `kb` sobre o `tmp/kb.sqlite` e é pulado quando o banco não existe.
+Especificação: `docs/plans/m0-simplifica-mcp.md` (M0.1). Prontos os passos T0 (banco autossuficiente, no `packages/kb`), T1 (servidor, CLI, banco, envelope, links e texto), T2 (normas) e T3 (PPCs e cursos): 15 das 16 ferramentas. Falta o T4, `pacote_contexto`.
+
+| # | Ferramenta | O que faz |
+|---|---|---|
+| 1 | `buscar_norma` | busca normas por citação, ID ou termos |
+| 2 | `ler_dispositivos` | lê dispositivos pelo ID, com o caput herdado |
+| 3 | `ficha_norma` | vigência numa data, relações, sucessoras e transições |
+| 4 | `correspondencia` | dispositivo correspondente na norma sucessora (tabela em rascunho) |
+| 5 | `resolver_citacoes` | citações em texto livre → ID canônico, regra e confiança |
+| 6 | `citacoes_da_norma` | PPCs que citam uma norma ou dispositivo |
+| 7 | `impacto_da_norma` | o que uma norma atinge na base |
+| 8 | `adequacao_art71` | cursos técnicos alcançados pelo art. 71 da Res. CNE/CP nº 2/2026 |
+| 9 | `buscar_secoes` | busca trechos de PPCs |
+| 10 | `ler_secao` | lê uma seção de PPC pelo ID |
+| 11 | `listar_cursos` | cursos com CNCT, eixo, ofertas e turno |
+| 12 | `ficha_curso` | tudo sobre um curso |
+| 13 | `fatos_ppc` | fatos do PPC cruzados com o SUAP |
+| 14 | `pacote_contexto` | contexto de uma tarefa da `revisar-ppc` (passo T4, ainda não existe) |
+| 15 | `sobre_a_base` | versão, data de referência e conteúdo da base |
+| 16 | `etapa` | etapa da tarefa, para o app |
 
 ## Como rodar
 
@@ -58,8 +77,10 @@ packages/mcp/
 │   ├── envelope.ts     # base, avisos, fonte, paginação com cursor opaco
 │   ├── links.ts        # IDs canônicos → ifpr://
 │   ├── texto.ts        # Markdown compacto para a IA (avisos, itens, rodapé)
+│   ├── orcamento.ts    # paginação pelo limite e pelo teto de caracteres ao mesmo tempo
 │   └── ferramentas/    # uma ferramenta por arquivo; index.ts é o registro
-└── test/               # banco de fixture com o DDL do kb; contrato, links, texto, banco, stdio
+│                       # tipos-comuns.ts: NormaResumo e Relacao, os mesmos em todas as ferramentas
+└── test/               # bancos de fixture com o DDL do kb; contrato, links, texto, banco, stdio, smoke
 ```
 
 Regras de negócio ficam em `packages/kb`; aqui só há validação de entrada, envelope e formatação.
@@ -70,4 +91,7 @@ Regras de negócio ficam em `packages/kb`; aqui só há validação de entrada, 
 bun run --cwd packages/mcp test
 bun run --cwd packages/mcp typecheck
 bun run --cwd packages/mcp format
+bun run mcp:smoke                       # na raiz: as ferramentas × a CLI kb sobre o tmp/kb.sqlite
 ```
+
+O `mcp:smoke` roda `test/banco-real.test.ts` (normas) e `test/smoke-base-real.test.ts` (PPCs e cursos) com `SIMPLIFICA_SMOKE=1`; sem a variável, os dois ficam de fora do `bun run test`, que não depende do `tmp/kb.sqlite`. A CLI `kb` que eles chamam compila o banco se ele faltar ou estiver velho.
