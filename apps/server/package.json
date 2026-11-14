@@ -1,0 +1,29 @@
+{
+  "name": "@simplifica-if/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/servidor.ts"
+  },
+  "bin": {
+    "simplifica-servidor": "./src/bin.ts"
+  },
+  "scripts": {
+    "servidor": "node src/bin.ts",
+    "test": "vp test run --config ../../vite.config.ts --dir .",
+    "typecheck": "effect-tsgo tsrs --noEmit"
+  },
+  "dependencies": {
+    "@effect/platform-node": "catalog:",
+    "@simplifica-if/contratos-app": "workspace:*",
+    "@simplifica-if/mcp": "workspace:*",
+    "@simplifica-if/motor": "workspace:*",
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "@effect/vitest": "catalog:",
+    "@types/node": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}

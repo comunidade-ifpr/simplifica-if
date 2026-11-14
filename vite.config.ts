@@ -21,7 +21,7 @@ const TEST_EXCLUDE = [
 /** Código migrado no C3, sob as regras do plugin próprio (ver `lint.overrides`). */
 const ARQUIVOS_C3 = ["scripts/**", "packages/sei-cli/**", ".agents/skills/**", "testes-gabarito/**"];
 
-/** `vp test run` na raiz do repositório: os pacotes têm a própria execução (`pnpm -r test`). */
+/** `vp test run` na raiz do repositório: os pacotes e os apps têm a própria execução (`pnpm -r test`). */
 const execucaoNaRaiz = process.cwd() === import.meta.dirname;
 
 export default defineConfig({
@@ -29,7 +29,7 @@ export default defineConfig({
     environment: "node",
     pool: "forks",
     include: ["**/*.test.ts"],
-    exclude: execucaoNaRaiz ? [...TEST_EXCLUDE, "packages/**"] : TEST_EXCLUDE,
+    exclude: execucaoNaRaiz ? [...TEST_EXCLUDE, "packages/**", "apps/**"] : TEST_EXCLUDE,
     // Como no T3: no Node, os testes que percorrem a base inteira passam dos 5 s do prazo padrão.
     testTimeout: 60_000,
     hookTimeout: 60_000,
@@ -64,6 +64,7 @@ export default defineConfig({
       "packages/effect-acp/**",
       "packages/effect-codex-app-server/**",
       "packages/motor/src/t3/**",
+      "apps/server/src/t3/**",
       ".agents/skills/*/assets/**",
       ".agents/skills/*/base-analise/**",
       ".agents/skills/*/config/**",
@@ -147,11 +148,19 @@ export default defineConfig({
       "typescript/unbound-method": "off",
     },
     // As regras do plugin próprio valem onde o código já é Effect: `packages/kb` (C1), `packages/mcp`
-    // (C2) e, desde o C3, `scripts/`, as skills, o `sei-cli` e o gabarito. As exceções reproduzem as
+    // (C2), o motor, o servidor local (`apps/server`) e os contratos do app e, desde o C3, `scripts/`,
+    // as skills, o `sei-cli` e o gabarito. As exceções reproduzem as
     // do T3. A ordem importa: cada override posterior sobrescreve o anterior para os arquivos em comum.
     overrides: [
       {
-        files: ["packages/kb/**", "packages/mcp/**", "packages/motor/**", ...ARQUIVOS_C3],
+        files: [
+          "packages/kb/**",
+          "packages/mcp/**",
+          "packages/motor/**",
+          "packages/contratos-app/**",
+          "apps/server/**",
+          ...ARQUIVOS_C3,
+        ],
         rules: {
           "simplifica-if/namespace-node-imports": "error",
           "simplifica-if/no-global-process-runtime": "error",
@@ -181,6 +190,10 @@ export default defineConfig({
           // O harness do motor e o teste com providers reais passam o ambiente do processo aos drivers.
           "packages/motor/scripts/**",
           "packages/motor/test/real.test.ts",
+          // O servidor local: os pontos de entrada e o teste com provider real.
+          "apps/server/src/bin.ts",
+          "apps/server/src/cli.ts",
+          "apps/server/test/real.test.ts",
           // Como no T3: HostProcess é o ponto que lê o processo e entrega por Context.Reference.
           "packages/motor/src/t3/HostProcess.ts",
         ],

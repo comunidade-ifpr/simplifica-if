@@ -1,0 +1,26 @@
+{
+  "name": "@simplifica-if/contratos-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/contratos.ts"
+  },
+  "scripts": {
+    "test": "vp test run --config ../../vite.config.ts --dir .",
+    "typecheck": "effect-tsgo tsrs --noEmit"
+  },
+  "dependencies": {
+    "@simplifica-if/mcp": "workspace:*",
+    "@simplifica-if/motor": "workspace:*"
+  },
+  "peerDependencies": {
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "@effect/vitest": "catalog:",
+    "@types/node": "catalog:",
+    "effect": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}
