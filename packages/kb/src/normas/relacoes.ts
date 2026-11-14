@@ -94,8 +94,12 @@ export function relacaoParcial(relacao: Relacao): boolean {
 
 /** Relações que têm `id` (ato) como origem ou alvo. */
 export function relacoesDe(id: string, raiz: string = raizRepositorio()): { saida: Relacao[]; entrada: Relacao[] } {
+  return relacoesDeEm(id, carregarRelacoes(raiz));
+}
+
+/** `relacoesDe` sobre uma lista de relações (a do arquivo, ou a do `kb.sqlite`: `relacoesBanco`). */
+export function relacoesDeEm(id: string, relacoes: readonly Relacao[]): { saida: Relacao[]; entrada: Relacao[] } {
   const ato = idDoAto(id.split("#")[0]!);
-  const relacoes = carregarRelacoes(raiz);
   return {
     saida: relacoes.filter((relacao) => relacao.origem === ato),
     entrada: relacoes.filter((relacao) => relacao.alvo === ato),

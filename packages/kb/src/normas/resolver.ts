@@ -820,6 +820,15 @@ export function resolverCitacao(texto: string, registro: Registro = registroPadr
   return resultado(null, "nao-reconhecida", registro);
 }
 
+/** Saída de `kb resolver`: a resolução, mais o título e o arquivo (relativo a `base-conhecimento/`) do ID. */
+export type ResolucaoComEntrada = { texto: string } & Resolucao & { titulo?: string; path?: string | null };
+
+export function resolucaoComEntrada(texto: string, registro: Registro): ResolucaoComEntrada {
+  const resultado = resolverCitacao(texto, registro);
+  const entrada = resultado.id ? registro.obter(resultado.id) : undefined;
+  return { texto, ...resultado, ...(entrada ? { titulo: entrada.title, path: entrada.path ?? null } : {}) };
+}
+
 let padrao: Registro | null = null;
 
 /** Registro do checkout (lido uma vez por processo). */

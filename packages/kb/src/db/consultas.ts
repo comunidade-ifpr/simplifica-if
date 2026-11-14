@@ -9,6 +9,7 @@ import { expandirConsulta, type Sinonimos } from "../busca/sinonimos.ts";
 import { radicais, termoFts, termos } from "../busca/tokens.ts";
 import { RESULTADOS_DIVERGENTES } from "../fatos/divergencias.ts";
 import { idDoAto } from "../normas/ids.ts";
+import type { Registro } from "../normas/registro.ts";
 import { resolverCitacao, registroPadrao } from "../normas/resolver.ts";
 import { compararTexto } from "../texto.ts";
 import {
@@ -363,7 +364,14 @@ function metadadosDaNorma(db: Database, normaId: string): ResultadoNorma["metada
 export function buscarNorma(
   db: Database,
   consulta: string,
-  opcoes: { limite?: number; situacao?: string; vigentes?: boolean; em?: string } = {},
+  opcoes: {
+    limite?: number;
+    situacao?: string;
+    vigentes?: boolean;
+    em?: string;
+    /** Registro do resolvedor de citações (padrão: o do checkout; no modo banco, `registroBanco`). */
+    registro?: Registro;
+  } = {},
 ): ResultadoNorma[] {
   const limite = opcoes.limite ?? 10;
   const saida: ResultadoNorma[] = [];
@@ -373,7 +381,7 @@ export function buscarNorma(
           id: consulta.trim().split("#")[0]!,
           dispositivoId: consulta.includes("#") ? `#${consulta.split("#")[1]}` : undefined,
         }
-      : resolverCitacao(consulta, registroPadrao());
+      : resolverCitacao(consulta, opcoes.registro ?? registroPadrao());
   if (resolucao.id) {
     const norma = obterNorma(db, resolucao.id);
     if (norma) {
