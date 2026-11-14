@@ -47,11 +47,11 @@ export const sobreABase = definirFerramenta({
   dados,
   executar(_entrada, { db, meta, base }) {
     // ORDER BY com a colação BINARY do SQLite ordena por code point, como compararTexto do kb.
-    const tipos = linhasTipo.parse(db.query("SELECT DISTINCT tipo FROM secoes ORDER BY tipo").all());
+    const tipos = linhasTipo.parse(db.prepare("SELECT DISTINCT tipo FROM secoes ORDER BY tipo").all());
     const niveis = linhasNivel.parse(
-      db.query("SELECT nivel FROM ppcs UNION SELECT nivel FROM cursos WHERE nivel IS NOT NULL ORDER BY nivel").all(),
+      db.prepare("SELECT nivel FROM ppcs UNION SELECT nivel FROM cursos WHERE nivel IS NOT NULL ORDER BY nivel").all(),
     );
-    const campi = linhasCampus.parse(db.query("SELECT campus_id, nome FROM campi ORDER BY campus_id").all());
+    const campi = linhasCampus.parse(db.prepare("SELECT campus_id, nome FROM campi ORDER BY campus_id").all());
     return responder(base, {
       contagens: meta.contagens,
       tipos_de_secao: tipos.map((t) => t.tipo),

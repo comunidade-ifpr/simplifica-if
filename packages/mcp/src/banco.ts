@@ -4,7 +4,7 @@
  * `packages/kb/src/db/banco.ts`, que recompila a partir do checkout; por isso este módulo importa
  * do `kb` só o esquema, que não depende de arquivos.
  */
-import { Database } from "bun:sqlite";
+import { DatabaseSync } from "node:sqlite";
 import { statSync } from "node:fs";
 import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
 import { z } from "zod";
@@ -31,7 +31,7 @@ export interface MetaBase {
 }
 
 export interface Banco {
-  db: Database;
+  db: DatabaseSync;
   meta: MetaBase;
   caminho: string;
 }
@@ -62,9 +62,9 @@ export function abrirBanco(caminho: string): Banco {
     // ausente: tratado abaixo
   }
   if (!arquivo) throw new ErroBanco(`kb.sqlite não encontrado: ${caminho}`);
-  let db: Database;
+  let db: DatabaseSync;
   try {
-    db = new Database(caminho, { readonly: true, strict: true });
+    db = new DatabaseSync(caminho, { readOnly: true });
   } catch (erro) {
     throw new ErroBanco(`não foi possível abrir ${caminho}: ${mensagem(erro)}`);
   }
@@ -76,10 +76,10 @@ export function abrirBanco(caminho: string): Banco {
   }
 }
 
-function lerMeta(db: Database): MetaBase {
+function lerMeta(db: DatabaseSync): MetaBase {
   let linhas: z.infer<typeof esquemaLinhasMeta>;
   try {
-    linhas = esquemaLinhasMeta.parse(db.query("SELECT chave, valor FROM meta").all());
+    linhas = esquemaLinhasMeta.parse(db.prepare("SELECT chave, valor FROM meta").all());
   } catch (erro) {
     throw new ErroBanco(`${MENSAGEM_INCOMPATIVEL} (o arquivo não é um kb.sqlite: ${mensagem(erro)})`);
   }

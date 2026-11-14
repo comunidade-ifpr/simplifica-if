@@ -3,7 +3,7 @@
  * os fatos de PPC, a leitura dos IDs de PPC e de curso escritos pela IA e os avisos. `NormaResumo` e
  * `Relacao` ficam em `tipos-comuns.ts`. Só formato: as regras ficam em `@simplifica-if/kb/db/modo-banco`.
  */
-import type { Database } from "bun:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 import { type fatosDosPpcs, REGRAS_BAIXA_CONFIANCA, type vigenciaBanco } from "@simplifica-if/kb/db/modo-banco";
 import { z } from "zod";
 import { type Aviso, ErroEntrada, esquemaFonte, esquemaLink, type Fonte } from "../envelope.ts";
@@ -63,7 +63,7 @@ export const filtroTexto = (descricao: string) => z.string().trim().min(1).max(2
 /* ------------------------------------------------------------------ normas */
 
 /** A norma pedida pela IA; ID desconhecido é erro de entrada, com a dica de onde achar o ID. */
-export function normaPedida(db: Database, id: string): NormaResumo {
+export function normaPedida(db: DatabaseSync, id: string): NormaResumo {
   const norma = normaResumo(db, id);
   if (!norma) {
     throw new ErroEntrada(

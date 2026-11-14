@@ -6,7 +6,7 @@
  * trocada (o registro de normas montado da tabela `normas`, a vigência pelas tabelas, as citações da
  * tabela `citacoes`, o léxico e os tópicos das tabelas `sinonimos_*`, `topicos` e `topicos_secoes`).
  * Nada no caminho destas funções lê arquivo, procura a raiz do repositório ou consulta o relógio:
- * dentro de um binário `bun build --compile`, a leitura relativa ao código falharia.
+ * dentro de um executável empacotado (Node SEA), a leitura relativa ao código falharia.
  *
  * `db/base.test.ts` confere, no mesmo commit, que cada função dá a mesma saída que a CLI sobre os
  * arquivos, e roda todas a partir de uma cópia do banco num diretório vazio, com qualquer leitura de
@@ -15,7 +15,7 @@
  * Diferença inevitável: `impactoBanco` não traz os textos das skills que não estão no banco
  * (prompts, contratos, validações cruzadas); só as fichas da `revisar-ppc`.
  */
-import type { Database } from "bun:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 import { z } from "zod";
 import {
   adequacaoArt71Em,
@@ -91,7 +91,7 @@ export type { ResolucaoComEntrada } from "../normas/resolver.ts";
 export type { EventoVigencia, ResultadoVigencia, SituacaoTransicao } from "../normas/vigencia.ts";
 
 /** Abre o `kb.sqlite` em `caminho` só para leitura, sem recompilar e sem procurar o repositório. */
-export function abrirBancoSomenteLeitura(caminho: string): Database {
+export function abrirBancoSomenteLeitura(caminho: string): DatabaseSync {
   return abrirBanco({ caminho, somenteLeitura: true, recompilar: false });
 }
 
@@ -100,13 +100,13 @@ const ato = (id: string) => idDoAto(id.split("#")[0]!);
 /* ================================================================== normas */
 
 /** `kb resolver <texto>`: a citação resolvida, com título e arquivo da norma. */
-export function resolverBanco(db: Database, texto: string): ResolucaoComEntrada {
+export function resolverBanco(db: DatabaseSync, texto: string): ResolucaoComEntrada {
   return resolucaoComEntrada(texto, registroBanco(db));
 }
 
 /** `kb buscar-norma`: `buscarNorma` com o registro do banco para resolver citações. */
 export function buscarNormaBanco(
-  db: Database,
+  db: DatabaseSync,
   consulta: string,
   opcoes: { limite?: number; situacao?: string; vigentes?: boolean; em?: string } = {},
 ): ReturnType<typeof buscarNorma> {
@@ -114,13 +114,13 @@ export function buscarNormaBanco(
 }
 
 /** `kb correspondencia <id>`. */
-export function correspondenciaBanco(db: Database, id: string): ResultadoCorrespondencia[] {
+export function correspondenciaBanco(db: DatabaseSync, id: string): ResultadoCorrespondencia[] {
   return correspondenciaEm(id, fonteCorrespondenciaBanco(db));
 }
 
 /** `kb vigencia <id> [--em]`: status na data (padrão: `data_referencia`), eventos, pendências e transições. */
 export function vigenciaBanco(
-  db: Database,
+  db: DatabaseSync,
   id: string,
   opcoes: { em?: string } = {},
 ): ResultadoVigencia & { transicoes: SituacaoTransicao[] } {
@@ -130,12 +130,15 @@ export function vigenciaBanco(
 }
 
 /** `kb relacoes <id>`: relações em que a norma é origem (`saida`) ou alvo (`entrada`). */
-export function relacoesDaNormaBanco(db: Database, id: string): { id: string; saida: Relacao[]; entrada: Relacao[] } {
+export function relacoesDaNormaBanco(
+  db: DatabaseSync,
+  id: string,
+): { id: string; saida: Relacao[]; entrada: Relacao[] } {
   return { id: ato(id), ...relacoesDeEm(ato(id), fonteVigenciaBanco(db).relacoes()) };
 }
 
 /** Sucessoras da norma (as de `kb impacto`): atos que a revogam no todo, pela tabela `relacoes`. */
-export function sucessorasBanco(db: Database, id: string): string[] {
+export function sucessorasBanco(db: DatabaseSync, id: string): string[] {
   return sucessorasDe(ato(id), fonteVigenciaBanco(db).relacoes());
 }
 
@@ -185,10 +188,10 @@ export interface NormaDoBanco {
  * `obterNorma` não traz (órgão, tipo, número, ano, fonte e a pendência de vigência). `null` se a
  * norma não está registrada.
  */
-export function normaBanco(db: Database, id: string): NormaDoBanco | null {
+export function normaBanco(db: DatabaseSync, id: string): NormaDoBanco | null {
   const consultar = (chave: string) =>
     db
-      .query(
+      .prepare(
         `SELECT id, situacao, titulo, tipo_documento, numero, ano, orgao, jurisdicao, data_publicacao, status_vigencia,
                 ementa, fonte, path, front_matter_json FROM normas WHERE id = ?`,
       )
@@ -224,12 +227,16 @@ const esquemaCitante = z.strictObject({
 });
 
 /** `ppcsQueCitam` pela tabela `citacoes` (mesma ordem: PPC por ID, citação por posição). */
-export function ppcsQueCitamBanco(db: Database, id: string, opcoes: { confiancaMinima?: number } = {}): PpcCitante[] {
+export function ppcsQueCitamBanco(
+  db: DatabaseSync,
+  id: string,
+  opcoes: { confiancaMinima?: number } = {},
+): PpcCitante[] {
   const dispositivo = id.split("#")[1];
   const minimo = opcoes.confiancaMinima ?? 0;
   const linhas = z.array(esquemaCitante).parse(
     db
-      .query(
+      .prepare(
         `SELECT p.chave, p.campus_nome, p.curso_nome, p.nivel, p.tipo_oferta, p.path,
                 c.linha, c.trecho, c.regra, c.confianca, c.dispositivos_json
          FROM citacoes c JOIN ppcs p ON p.id = c.ppc_id
@@ -265,18 +272,22 @@ export function ppcsQueCitamBanco(db: Database, id: string, opcoes: { confiancaM
  * Normas citadas por um PPC (`campus/curso` ou `ppc:campus/curso`), pela tabela `citacoes`; `null` se o
  * PPC não está na base. Cada contagem é a que `ppcsQueCitamBanco` dá ao PPC para aquele ato.
  */
-export function normasCitadasDoPpcBanco(db: Database, ppc: string): NormaCitadaNoPpc[] | null {
+export function normasCitadasDoPpcBanco(db: DatabaseSync, ppc: string): NormaCitadaNoPpc[] | null {
   const id = ppc.startsWith("ppc:") ? ppc : `ppc:${ppc}`;
-  if (!db.query("SELECT 1 FROM ppcs WHERE id = ?").get(id)) return null;
+  if (!db.prepare("SELECT 1 FROM ppcs WHERE id = ?").get(id)) return null;
   return normasCitadasNoPpc(
     z
       .array(z.strictObject({ id: z.string().nullable(), linha: z.number().int(), regra: z.string() }))
-      .parse(db.query("SELECT ato_id AS id, linha, regra FROM citacoes WHERE ppc_id = ? ORDER BY ordem").all(id)),
+      .parse(db.prepare("SELECT ato_id AS id, linha, regra FROM citacoes WHERE ppc_id = ? ORDER BY ordem").all(id)),
   );
 }
 
 /** `kb citacoes <id> [--confianca-min]`: PPCs que citam a norma, com o título e a situação dela. */
-export function citacoesBanco(db: Database, id: string, opcoes: { confiancaMinima?: number } = {}): RelatorioCitacoes {
+export function citacoesBanco(
+  db: DatabaseSync,
+  id: string,
+  opcoes: { confiancaMinima?: number } = {},
+): RelatorioCitacoes {
   return relatorioCitacoes(id, ppcsQueCitamBanco(db, id, opcoes), registroBanco(db));
 }
 
@@ -292,7 +303,7 @@ const esquemaSegmento = z.strictObject({
 });
 
 /** O que o impacto lê, pelo banco. Sem os textos das skills: `arquivosConteudo` são só as fichas. */
-export function fonteImpactoBanco(db: Database): FonteImpacto {
+export function fonteImpactoBanco(db: DatabaseSync): FonteImpacto {
   const vigencia = fonteVigenciaBanco(db);
   return {
     registro: registroBanco(db),
@@ -305,7 +316,7 @@ export function fonteImpactoBanco(db: Database): FonteImpacto {
         .array(z.strictObject({ dispositivo: z.string(), texto: z.string() }))
         .parse(
           db
-            .query(
+            .prepare(
               "SELECT dispositivo, texto FROM dispositivos WHERE ato_id = ? AND canonico = 1 ORDER BY norma_id <> ato_id, norma_id, ordem",
             )
             .all(a),
@@ -313,12 +324,12 @@ export function fonteImpactoBanco(db: Database): FonteImpacto {
     topicos: () =>
       z
         .array(z.strictObject({ dados_json: z.string() }))
-        .parse(db.query("SELECT dados_json FROM topicos ORDER BY ordem").all())
+        .parse(db.prepare("SELECT dados_json FROM topicos ORDER BY ordem").all())
         .map((t) => JSON.parse(t.dados_json) as TopicoTaxonomia),
     arquivosConteudo: () =>
       z
         .array(z.strictObject({ path: z.string(), arquivo_json: z.string() }))
-        .parse(db.query("SELECT path, arquivo_json FROM fichas ORDER BY path").all())
+        .parse(db.prepare("SELECT path, arquivo_json FROM fichas ORDER BY path").all())
         .map((f) => ({ arquivo: f.path, texto: f.arquivo_json })),
     // uma citação por segmento: o impacto só pergunta se o segmento cita a norma
     segmentosCitantes: (excetoAto) =>
@@ -326,7 +337,7 @@ export function fonteImpactoBanco(db: Database): FonteImpacto {
         .array(esquemaSegmento)
         .parse(
           db
-            .query(
+            .prepare(
               "SELECT norma_id, ato_id, segmento, citado_id, dispositivos_json, trecho FROM normas_citacoes WHERE ato_id <> ? ORDER BY rowid",
             )
             .all(excetoAto),
@@ -352,7 +363,7 @@ export function fonteImpactoBanco(db: Database): FonteImpacto {
  * `revisar-ppc` (referência, citação, tema) e PPCs. Sem os outros textos das skills.
  */
 export function impactoBanco(
-  db: Database,
+  db: DatabaseSync,
   id: string,
   opcoes: { data?: string; incluirPpcs?: boolean } = {},
 ): ResultadoImpacto {
@@ -373,14 +384,14 @@ const esquemaCursoAdequacao = z.strictObject({
 });
 
 /** Cursos da tabela `cursos` e citações da tabela `citacoes` (PPC pelo `path`). */
-export function fonteAdequacaoBanco(db: Database): FonteAdequacao {
+export function fonteAdequacaoBanco(db: DatabaseSync): FonteAdequacao {
   return {
     cursos: () =>
       z
         .array(esquemaCursoAdequacao)
         .parse(
           db
-            .query(
+            .prepare(
               "SELECT campus_id, curso_slug, nome, nivel, forma_oferta, situacao, ppc_markdown_path, ppc_ano_documento FROM cursos ORDER BY id",
             )
             .all(),
@@ -402,19 +413,22 @@ export function fonteAdequacaoBanco(db: Database): FonteAdequacao {
       const ppc = z
         .strictObject({ id: z.string() })
         .nullable()
-        .parse(db.query("SELECT id FROM ppcs WHERE path = ?").get(`base-conhecimento/${markdown}`) ?? null);
+        .parse(db.prepare("SELECT id FROM ppcs WHERE path = ?").get(`base-conhecimento/${markdown}`) ?? null);
       if (!ppc) return null;
       return z
         .array(z.strictObject({ id: z.string().nullable(), linha: z.number().int(), regra: z.string() }))
         .parse(
-          db.query("SELECT norma_id AS id, linha, regra FROM citacoes WHERE ppc_id = ? ORDER BY ordem").all(ppc.id),
+          db.prepare("SELECT norma_id AS id, linha, regra FROM citacoes WHERE ppc_id = ? ORDER BY ordem").all(ppc.id),
         );
     },
   };
 }
 
 /** `kb adequacao-art71 [--incluir-tecnologia]`. */
-export function adequacaoArt71Banco(db: Database, opcoes: { incluirTecnologia?: boolean } = {}): RelatorioAdequacao {
+export function adequacaoArt71Banco(
+  db: DatabaseSync,
+  opcoes: { incluirTecnologia?: boolean } = {},
+): RelatorioAdequacao {
   return adequacaoArt71Em(fonteAdequacaoBanco(db), opcoes);
 }
 
@@ -422,7 +436,7 @@ export function adequacaoArt71Banco(db: Database, opcoes: { incluirTecnologia?: 
 
 /** `kb buscar-secoes`: `buscarSecoes` com o léxico do banco (salvo outro informado). */
 export function buscarSecoesBanco(
-  db: Database,
+  db: DatabaseSync,
   consulta: string,
   filtros: FiltrosSecoes = {},
   opcoes: { limite?: number; modo?: ModoBusca; integral?: boolean; somenteTodos?: boolean } = {},
@@ -432,7 +446,7 @@ export function buscarSecoesBanco(
 
 /** `kb pacote-contexto <tarefa> <ppc>` de um PPC da base, com léxico, tópicos e tamanho do PPC do banco. */
 export function pacoteContextoBanco(
-  db: Database,
+  db: DatabaseSync,
   tarefa: string,
   ppc: string,
   opcoes: { buscasPorFicha?: number } = {},
@@ -446,7 +460,7 @@ export function pacoteContextoBanco(
  * que então só identifica o PPC no pacote.
  */
 export function pacoteDoMarkdownBanco(
-  db: Database,
+  db: DatabaseSync,
   tarefa: string,
   arquivo: string,
   opcoes: { markdown?: string } = {},

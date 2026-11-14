@@ -4,7 +4,7 @@
  * para a IA no teto de caracteres de cada ferramenta (`NormaResumo` e `Relacao` ficam em
  * `tipos-comuns.ts`). Nenhuma regra normativa: só formato.
  */
-import type { Database } from "bun:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 import { descendentesBanco, type TrechoDispositivo } from "@simplifica-if/kb/db/modo-banco";
 import { z } from "zod";
 import { type Aviso, esquemaFonte, esquemaLink, type Resposta } from "../envelope.ts";
@@ -52,7 +52,7 @@ export type DispositivoTexto = z.infer<typeof esquemaDispositivoTexto>;
  * `DispositivoTexto` a partir do trecho do kb. Os rótulos dos subordinados (que o trecho não traz)
  * vêm dos descendentes do mesmo arquivo.
  */
-export function dispositivoTexto(db: Database, trecho: TrechoDispositivo): DispositivoTexto {
+export function dispositivoTexto(db: DatabaseSync, trecho: TrechoDispositivo): DispositivoTexto {
   const rotulos = new Map<string, string>();
   if (trecho.subordinados.length > 0) {
     for (const d of descendentesBanco(db, trecho.arquivo_id))

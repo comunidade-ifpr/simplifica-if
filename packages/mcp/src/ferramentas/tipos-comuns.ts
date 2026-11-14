@@ -3,7 +3,7 @@
  * os schemas de `NormaResumo` e `Relacao` e a conversão das estruturas do kb para eles. Um único
  * formato de norma e de relação em todas as respostas. Nenhuma regra normativa: só formato.
  */
-import type { Database } from "bun:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 import { type NormaDoBanco, normaBanco, type Relacao } from "@simplifica-if/kb/db/modo-banco";
 import { z } from "zod";
 import { esquemaLink } from "../envelope.ts";
@@ -54,13 +54,13 @@ export function resumoDaNorma(norma: NormaDoBanco): NormaResumo {
 }
 
 /** A norma (o ato, sem dispositivo) pela tabela `normas`, ou `null` se não está registrada. */
-export function normaResumo(db: Database, id: string): NormaResumo | null {
+export function normaResumo(db: DatabaseSync, id: string): NormaResumo | null {
   const norma = normaBanco(db, id);
   return norma ? resumoDaNorma(norma) : null;
 }
 
 /** `normaBanco` com cache por chamada (várias respostas citam a mesma norma). */
-export function leitorDeNormas(db: Database): (id: string) => NormaDoBanco | null {
+export function leitorDeNormas(db: DatabaseSync): (id: string) => NormaDoBanco | null {
   const cache = new Map<string, NormaDoBanco | null>();
   return (id) => {
     if (!cache.has(id)) cache.set(id, normaBanco(db, id));

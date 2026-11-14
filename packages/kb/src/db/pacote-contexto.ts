@@ -26,7 +26,7 @@
  * da CLI); sem `raiz`, do próprio banco (`sinonimos_*`, `topicos`, `topicos_secoes`,
  * `ppcs.caracteres`): é o modo banco, que responde só com o `kb.sqlite` (`db/modo-banco.ts`).
  */
-import type { Database } from "bun:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { parse } from "yaml";
@@ -50,7 +50,7 @@ export const esquemaTopicosSecoes = z.record(z.string(), z.array(z.string().rege
 export type TopicosSecoes = z.output<typeof esquemaTopicosSecoes>;
 
 export function lerTopicosSecoes(
-  caminho: string = path.resolve(import.meta.dir, "..", "..", "dados", "topicos-secoes.yaml"),
+  caminho: string = path.resolve(import.meta.dirname, "..", "..", "dados", "topicos-secoes.yaml"),
 ): TopicosSecoes {
   return esquemaTopicosSecoes.parse(parse(readFileSync(caminho, "utf-8"), { schema: "failsafe" }) ?? {});
 }
@@ -80,18 +80,18 @@ export function lerTopicosFichas(raiz: string): TopicoFichas[] {
 }
 
 /** Os tópicos de `lerTopicosFichas`, pela tabela `topicos` do banco (na ordem do arquivo). */
-export function topicosFichasBanco(db: Database): TopicoFichas[] {
+export function topicosFichasBanco(db: DatabaseSync): TopicoFichas[] {
   const linhas = z
     .array(z.strictObject({ dados_json: z.string() }))
-    .parse(db.query("SELECT dados_json FROM topicos ORDER BY ordem").all());
+    .parse(db.prepare("SELECT dados_json FROM topicos ORDER BY ordem").all());
   return esquemaTopicosFichas.parse({ topicos: linhas.map((l) => JSON.parse(l.dados_json)) }).topicos;
 }
 
 /** O mapa de `lerTopicosSecoes`, pela tabela `topicos_secoes` do banco (na ordem do arquivo). */
-export function topicosSecoesBanco(db: Database): TopicosSecoes {
+export function topicosSecoesBanco(db: DatabaseSync): TopicosSecoes {
   const linhas = z
     .array(z.strictObject({ topico: z.string(), tipos_json: z.string() }))
-    .parse(db.query("SELECT topico, tipos_json FROM topicos_secoes ORDER BY ordem").all());
+    .parse(db.prepare("SELECT topico, tipos_json FROM topicos_secoes ORDER BY ordem").all());
   return esquemaTopicosSecoes.parse(Object.fromEntries(linhas.map((l) => [l.topico, JSON.parse(l.tipos_json)])));
 }
 
@@ -213,11 +213,11 @@ const esquemaCitacao = z.strictObject({
 type CitacaoPpc = z.output<typeof esquemaCitacao>;
 
 /** Fichas do banco (JSON da ficha), em ordem de ID. */
-export function fichasDoBanco(db: Database, ids?: readonly string[]): FichaPacote[] {
+export function fichasDoBanco(db: DatabaseSync, ids?: readonly string[]): FichaPacote[] {
   const filtro = ids ? ` WHERE id IN (${ids.map(() => "?").join(", ")})` : "";
   return z
     .array(esquemaFicha)
-    .parse(db.query(`SELECT id, path, dados_json FROM fichas${filtro} ORDER BY id`).all(...(ids ?? [])))
+    .parse(db.prepare(`SELECT id, path, dados_json FROM fichas${filtro} ORDER BY id`).all(...(ids ?? [])))
     .map((f) => JSON.parse(f.dados_json) as FichaPacote);
 }
 
@@ -225,10 +225,10 @@ export function fichasDoBanco(db: Database, ids?: readonly string[]): FichaPacot
  * IDs das fichas de uma tarefa. `grupo-NNN` é o n-ésimo grupo por tópico da `revisar-ppc`
  * (`agruparPorTopico` com `topicos`, o tamanho máximo padrão e todas as fichas do banco).
  */
-export function fichasDaTarefa(db: Database, tarefa: string, topicos?: readonly TopicoFichas[]): string[] {
+export function fichasDaTarefa(db: DatabaseSync, tarefa: string, topicos?: readonly TopicoFichas[]): string[] {
   const todas = z
     .array(z.strictObject({ id: z.string() }))
-    .parse(db.query("SELECT id FROM fichas").all())
+    .parse(db.prepare("SELECT id FROM fichas").all())
     .map((f) => f.id)
     .sort(compararTexto);
   if (tarefa === "todas") return todas;
@@ -242,7 +242,7 @@ export function fichasDaTarefa(db: Database, tarefa: string, topicos?: readonly 
   }
   const topico = z
     .array(z.strictObject({ ficha_id: z.string() }))
-    .parse(db.query("SELECT ficha_id FROM fichas_topicos WHERE topico_id = ? ORDER BY ficha_id").all(tarefa));
+    .parse(db.prepare("SELECT ficha_id FROM fichas_topicos WHERE topico_id = ? ORDER BY ficha_id").all(tarefa));
   if (topico.length) return topico.map((t) => t.ficha_id).filter((id) => todas.includes(id));
   const pedidas = tarefa.split(",").map((t) => t.trim().toUpperCase());
   const faltando = pedidas.filter((id) => !todas.includes(id));
@@ -401,7 +401,7 @@ export function referenciasDasFichas(fichas: readonly FichaPacote[]): RefFicha[]
  * caput herdado, o próprio texto e os subordinados; um dispositivo contido noutro citado não se
  * repete (vai em `citados`).
  */
-export function normasDoPacote(db: Database, refs: readonly RefFicha[]): NormaDoPacote[] {
+export function normasDoPacote(db: DatabaseSync, refs: readonly RefFicha[]): NormaDoPacote[] {
   const porRef = new Map<string, RefFicha[]>();
   for (const r of refs) if (!r.ref.startsWith("cnct:")) porRef.set(r.ref, [...(porRef.get(r.ref) ?? []), r]);
   const normas: NormaDoPacote[] = [];
@@ -446,12 +446,12 @@ export function normasDoPacote(db: Database, refs: readonly RefFicha[]): NormaDo
 }
 
 /** Citações normativas resolvidas de um PPC (`citacoes`), na ordem do texto. */
-export function citacoesDoPpc(db: Database, ppcId: string): CitacaoPpc[] {
+export function citacoesDoPpc(db: DatabaseSync, ppcId: string): CitacaoPpc[] {
   return z
     .array(esquemaCitacao)
     .parse(
       db
-        .query(
+        .prepare(
           "SELECT ato_id, linha, trecho, papel, secao_tipo, regra FROM citacoes WHERE ppc_id = ? AND ato_id IS NOT NULL ORDER BY ordem",
         )
         .all(ppcId),
@@ -460,7 +460,7 @@ export function citacoesDoPpc(db: Database, ppcId: string): CitacaoPpc[] {
 
 /** Marcos ligados às normas das fichas ou às citadas pelo PPC, com as citações do PPC (fundamento) a elas. */
 export function marcosDoPacote(
-  db: Database,
+  db: DatabaseSync,
   refs: readonly RefFicha[],
   citacoesPpc: readonly CitacaoPpc[],
 ): MarcoDoPacote[] {
@@ -471,7 +471,7 @@ export function marcosDoPacote(
     .array(esquemaMarco)
     .parse(
       db
-        .query(
+        .prepare(
           "SELECT id, tema, vigente, aplica_a, transicao, orientacao_analise, normas_json, path FROM marcos ORDER BY id",
         )
         .all(),
@@ -511,7 +511,7 @@ export function marcosDoPacote(
  * fundamento, com a situação na `data_referencia` e o texto do dispositivo que as estabelece.
  */
 export function transicoesDoPacote(
-  db: Database,
+  db: DatabaseSync,
   refs: readonly RefFicha[],
   citacoesPpc: readonly CitacaoPpc[],
 ): { data_referencia: string; transicoes: TransicaoDoPacote[] } {
@@ -558,7 +558,7 @@ export function consultasDeTexto(ficha: FichaPacote): string[] {
  * `bancoDoPpcAvulso` (PPC fora da base): as consultas são as mesmas.
  */
 export function secoesDoPacote(
-  db: Database,
+  db: DatabaseSync,
   ppcId: string,
   fichas: readonly FichaPacote[],
   opcoes: OpcoesSecoes = {},
@@ -617,7 +617,7 @@ export interface OpcoesSecoes {
 }
 
 /** Opções de seção com o léxico e o mapa tópico → seções do banco, onde não foram informados. */
-function opcoesDoBanco(db: Database, opcoes: OpcoesSecoes): OpcoesSecoes {
+function opcoesDoBanco(db: DatabaseSync, opcoes: OpcoesSecoes): OpcoesSecoes {
   return {
     ...opcoes,
     lexico: opcoes.lexico ?? sinonimosBanco(db),
@@ -625,13 +625,13 @@ function opcoesDoBanco(db: Database, opcoes: OpcoesSecoes): OpcoesSecoes {
   };
 }
 
-function cnctDoBanco(db: Database, cnctId: string | null): unknown {
+function cnctDoBanco(db: DatabaseSync, cnctId: string | null): unknown {
   if (!cnctId) return null;
   const id = cnctId.startsWith("cnct:") ? cnctId : `cnct:${cnctId}`;
   const linha = z
     .strictObject({ dados_json: z.string(), path: z.string().nullable() })
     .nullable()
-    .parse(db.query("SELECT dados_json, path FROM cnct WHERE id = ?").get(id) ?? null);
+    .parse(db.prepare("SELECT dados_json, path FROM cnct WHERE id = ?").get(id) ?? null);
   return linha ? { id, path: linha.path, ...JSON.parse(linha.dados_json) } : null;
 }
 
@@ -646,10 +646,10 @@ export interface OpcoesPacote extends OpcoesSecoes {
   topicosFichas?: readonly TopicoFichas[];
 }
 
-export function pacoteContexto(db: Database, tarefa: string, ppcArg: string, opcoes: OpcoesPacote): PacoteContexto {
+export function pacoteContexto(db: DatabaseSync, tarefa: string, ppcArg: string, opcoes: OpcoesPacote): PacoteContexto {
   const ppcId = ppcArg.startsWith("ppc:") ? ppcArg : `ppc:${ppcArg}`;
   const ppcLinha = db
-    .query(
+    .prepare(
       `SELECT p.id, p.curso_nome, p.campus_nome, p.nivel, p.tipo_oferta, p.path, p.curso_id, p.ano_documento, c.cnct_id
        FROM ppcs p LEFT JOIN cursos c ON c.id = p.curso_id WHERE p.id = ?`,
     )
@@ -671,7 +671,7 @@ export function pacoteContexto(db: Database, tarefa: string, ppcArg: string, opc
       ? readFileSync(path.join(raiz, ppc.path), "utf-8").length
       : z
           .strictObject({ caracteres: z.number().int() })
-          .parse(db.query("SELECT caracteres FROM ppcs WHERE id = ?").get(ppc.id)).caracteres;
+          .parse(db.prepare("SELECT caracteres FROM ppcs WHERE id = ?").get(ppc.id)).caracteres;
   const pacote: PacoteContexto = {
     tarefa,
     fichas_ids: fichasIds,
@@ -717,8 +717,8 @@ export interface PacoteAvulso {
  * base. Usado pela `revisar-ppc` para montar o contexto de cada grupo de sub-agente.
  */
 export function pacoteContextoAvulso(
-  db: Database,
-  dbPpc: Database,
+  db: DatabaseSync,
+  dbPpc: DatabaseSync,
   fichas: readonly FichaPacote[],
   opcoes: {
     ppcId?: string;
@@ -745,10 +745,10 @@ export function pacoteContextoAvulso(
 }
 
 /** Palavras dos nomes dos campi dos PPCs do banco, para reconhecer cabeçalhos de página (`palavrasDeCampi`). */
-export function nomesDeCampiDoBanco(db: Database): string[] {
+export function nomesDeCampiDoBanco(db: DatabaseSync): string[] {
   return z
     .array(z.strictObject({ campus_nome: z.string() }))
-    .parse(db.query("SELECT DISTINCT campus_nome FROM ppcs ORDER BY campus_nome").all())
+    .parse(db.prepare("SELECT DISTINCT campus_nome FROM ppcs ORDER BY campus_nome").all())
     .map((l) => l.campus_nome);
 }
 
@@ -758,7 +758,7 @@ export function nomesDeCampiDoBanco(db: Database): string[] {
  * indexado em memória (`bancoDoPpcAvulso`).
  */
 export function pacoteDoMarkdown(
-  db: Database,
+  db: DatabaseSync,
   tarefa: string,
   arquivo: string,
   opcoes: OpcoesPacote & {
