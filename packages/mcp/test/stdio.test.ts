@@ -136,6 +136,46 @@ describe("servidor em stdio", () => {
   });
 });
 
+/** Manda só o `initialize` com a versão pedida e devolve a versão que o servidor respondeu. */
+async function versaoNegociada(banco: string, pedida: string): Promise<string> {
+  const processo = NodeChildProcess.spawn(COMANDO, comCli(["--banco", banco]), {
+    cwd: diretorioTemporario(),
+    env: ambiente(),
+    stdio: ["pipe", "pipe", "pipe"],
+  });
+  try {
+    const linha = await new Promise<string>((resolve, reject) => {
+      let saida = "";
+      processo.once("error", reject);
+      processo.stdout.setEncoding("utf-8").on("data", (parte: string) => {
+        saida += parte;
+        const fim = saida.indexOf("\n");
+        if (fim >= 0) resolve(saida.slice(0, fim));
+      });
+      processo.stdin.write(
+        `${JSON.stringify({
+          jsonrpc: "2.0",
+          id: 1,
+          method: "initialize",
+          params: { protocolVersion: pedida, capabilities: {}, clientInfo: { name: "teste", version: "0" } },
+        })}\n`,
+      );
+    });
+    return (JSON.parse(linha) as { result: { protocolVersion: string } }).result.protocolVersion;
+  } finally {
+    processo.kill();
+  }
+}
+
+describe("negociação de versão", () => {
+  test.each(["2024-11-05", "2025-03-26", "2025-06-18", "2025-11-25"])(
+    "devolve a versão pedida (%s), como o SDK anterior",
+    async (versao) => {
+      expect(await versaoNegociada(criarBancoFixture(), versao)).toBe(versao);
+    },
+  );
+});
+
 describe("erros de inicialização", () => {
   test("sem --banco nem SIMPLIFICA_KB", async () => {
     const { codigo, stderr, stdout } = await rodarCli([]);

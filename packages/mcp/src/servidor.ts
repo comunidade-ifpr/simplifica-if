@@ -26,7 +26,17 @@ export const NOME_SERVIDOR = "ifpr";
 export const VERSAO_PACOTE = "0.1.0";
 export { INSTRUCOES };
 
-export const PROTOCOLOS = [McpProtocol.v2025_11_25, McpProtocol.v2025_06_18, McpProtocol.v2026_07_28] as const;
+/**
+ * Versões aceitas no `initialize`. As de 2024 e 2025-03 continuam: sem elas, o cliente que só fala
+ * uma delas recebe outra versão e desconecta (o SDK 2.x anterior as aceitava).
+ */
+export const PROTOCOLOS = [
+  McpProtocol.v2025_11_25,
+  McpProtocol.v2025_06_18,
+  McpProtocol.v2025_03_26,
+  McpProtocol.v2024_11_05,
+  McpProtocol.v2026_07_28,
+] as const;
 
 export const MENSAGEM_INCOMPATIVEL = "base incompatível com esta versão do simplifica-mcp; atualize";
 
