@@ -756,6 +756,35 @@ Em aberto:
 - **Vocabulário:** a situação geral passa de `APROVADO`, `COM_RESSALVAS`, `DILIGENCIA` e `NAO_APROVADO` para `APTO_PARA_SUBMISSAO`, `APTO_COM_RESSALVAS`, `AJUSTES_NECESSARIOS` e `REVISAO_SUBSTANCIAL`, com rótulos em português no relatório e na saída da CLI (`situacao_rotulo`); `config/politica_parecer.json` virou `config/politica_revisao.json`. O relatório se chama "Relatório de revisão do PPC" e avisa, no cabeçalho e no rodapé, que não substitui a análise oficial da PROENS. O tópico `sintese_transversal_parecer` virou `sintese_transversal_revisao`, e as fichas CT-TRANS-05 e CT-TRANS-06 falam em ajustes e conclusão da revisão. "Parecer" como tipo de norma (Parecer CNE/CEB, termos de busca de referências normativas) continua.
 - **Histórico:** os nomes antigos ficam nas entradas anteriores deste Andamento, que registram o que foi feito com eles.
 
+**Revisão de código por área e correções em 14/11/2026** (no `main`, sem push).
+
+- **Método:** quatro revisões independentes, cada uma com verificação cética dos achados; depois, um agente corretor por área, com teste escrito antes da correção (o teste falha sem ela). Achado não reproduzido seria relatado, não corrigido; todos se reproduziram.
+- **Área 1, `revisar-ppc`** (5 achados): alertas BLOQ/OBRIG passam a pesar na situação geral; destaque do relatório só em nós de texto, com marca compartilhada para a mesma citação; a mescla normaliza a base e valida o resultado avulso; o front matter só é removido quando é o de proveniência; `REVISAR_PPC_AGORA` com data sem hora é meia-noite local no TypeScript e no Python.
+- **Área 2, motor de normas** (11 achados, 3 altos):
+  - status registrado de stub (`revogada`…) só vale a partir da vigência do ato de `status_fonte`;
+  - as duas IN IFPR nº 1/2021 viraram `ifpr/reitoria/in/2021/1` (26/07, extensão) e `ifpr/proens/in/2021/1` (19/08, bibliotecas, ato conjunto Reitoria/PROENS);
+  - a data citada é comparada primeiro com a do ato (`assinada_em`) e só depois com a de publicação;
+  - também: inciso `IV-A`, regex com tempo exponencial trocada por varredura linear, PROEPPI/PROEPI, `ano-no-documento` com órgão compatível, `#art2` sem casar `#art29`, item, alíneas em intervalo, rótulo repetido no parser, IDs de dispositivo que não renderizavam.
+  - Métricas do resolvedor sem mudança (precisão 0,98; recall 0,965); uma citação anotada mudou (Londrina, IN de 19/08/2021).
+- **Área 3, `kb.sqlite` e busca** (7 achados, 2 altos): radical sem acento (a busca sem acento dá o mesmo que a acentuada); regex de carga horária (a divergência falsa de Ivaiporã sumiu: 33 → 32); mtime do banco anterior à leitura das fontes; `--vigentes`/`--situacao` aplicados à citação resolvida e aviso de ID desconhecido (`buscarNormaDetalhada`); remoção do temporário em erro; unidade hora-aula.
+- **Área 4, dados, base e avaliação** (8 achados, 1 alto de segurança):
+  - o harness passava ao `claude -p` todo o `process.env`, inclusive o que o Bun carrega de `.env.local`. Agora: ambiente mínimo explícito, sem Bash, escrita nem web, e leitura negada a `.env*`, `~/.ssh`, `~/.aws`, `~/.config`, `~/.claude` e `/etc`;
+  - Lei 14.945/2024 transcrita do texto oficial. Ela não revoga a Lei 13.415 (relação removida; stub de volta a "a confirmar"); revoga dispositivos da LDB e altera a LDB e a Lei 12.711;
+  - `turno` público volta ao texto da fonte, e o enum vai para `turno_padronizado`. A auditoria rejeita `turno` que não esteja no `trecho_fonte`;
+  - Lei 10.639 vigente (a 11.645 só reescreve o art. 26-A da LDB); empreendedorismo mapeado para `#art22-viii` como `parcial`;
+  - taxonomia de seções: capas fora de `avaliacao` (8 → 0); bolsas fora de `acessibilidade_inclusao` (97 → 1); "objetivos do componente" fora de `objetivos` (27 → 0);
+  - `vigencia_a_confirmar` documentado como leitura obrigatória ao filtrar por `status_vigencia`.
+- **Integração com o MCP** (que entrou no `main` durante as correções): `preencherBanco` recebe `topicosSecoes` e `versao`/`commit`/`canal`; a correção de `kb impacto` passou a `destinosDeOrigemEm`, sobre a fonte de dados; o registro lido do banco (`registroBanco`) ganhou `assinada_em`, tirado do front matter, sem mudar o esquema, para o modo banco também separar as duas IN.
+- **Verificação:**
+  - testes: 404 nos scripts e skills, 404 no `kb`, 73 no `sei-cli`, 51 no `mcp`, 0 falhas; pytest: 16 passam, 1 pulado;
+  - sem erro: `format:check`, `typecheck`, `validar_base`, `gerar_base --check`, `gerar_tipos_schemas --check`, `avaliacao:gabaritos --check`, `validar-base`, `gerar-schemas`/`gerar-mapa`/`gerar-indice --check`.
+- **Pendências:**
+  - rodar o harness com o `claude` real para confirmar as regras de permissão;
+  - decidir o órgão no ID da IN conjunta de 19/08/2021: `proens`, como ficou, ou `reitoria-proens`, como a regra de derivação daria;
+  - conferir as duas IN na fonte oficial;
+  - `LEI_BR_12711-2012_cotas.md` também parece paráfrase;
+  - uma "IN nº 1/2021" sem data, em contexto IFPR, ainda vai para a IN da Reitoria.
+
 ## Histórico de revisões
 
 **v2, 13/11/2026.** Incorpora duas revisões independentes.
