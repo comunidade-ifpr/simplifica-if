@@ -467,6 +467,38 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
   const temporario = `${destino}.tmp-${process.pid}`;
   rmSync(temporario, { force: true });
   const db = new Database(temporario, { create: true, strict: true });
+  // em caso de erro, fecha o banco e remove o temporário (até ~130 MB) antes de propagar
+  let contagensInsercao: Record<string, number>;
+  try {
+    contagensInsercao = preencherBanco(db, { raiz, base, lexico, fontesNormativas, arquivos, fontesSha });
+    db.close();
+    utimesSync(temporario, leitura, leitura);
+    renameSync(temporario, destino);
+  } catch (erro) {
+    db.close();
+    rmSync(temporario, { force: true });
+    throw erro;
+  }
+  const contagens = Object.fromEntries(
+    Object.entries(contagensInsercao)
+      .filter(([tabela]) => tabela !== "meta")
+      .sort(([a], [b]) => compararTexto(a, b)),
+  );
+  return { destino, fontes: arquivos.length, fontes_sha256: fontesSha, contagens };
+}
+
+interface ContextoPreenchimento {
+  raiz: string;
+  base: string;
+  lexico: Sinonimos;
+  fontesNormativas: FontesNormativas;
+  arquivos: readonly string[];
+  fontesSha: string;
+}
+
+/** Esquema, carga de todas as tabelas, `optimize` do FTS5 e `VACUUM`; devolve as contagens por tabela. */
+function preencherBanco(db: Database, c: ContextoPreenchimento): Record<string, number> {
+  const { raiz, base, lexico, fontesNormativas, arquivos, fontesSha } = c;
   db.run(`PRAGMA page_size = ${PAGE_SIZE}`);
   db.run("PRAGMA journal_mode = OFF");
   db.run("PRAGMA synchronous = OFF");
@@ -934,15 +966,7 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
   db.run("INSERT INTO secoes_fts(secoes_fts) VALUES ('optimize')");
   db.run("INSERT INTO dispositivos_fts(dispositivos_fts) VALUES ('optimize')");
   db.run("VACUUM");
-  db.close();
-  utimesSync(temporario, leitura, leitura);
-  renameSync(temporario, destino);
-  const contagens = Object.fromEntries(
-    Object.entries(ins.contagens)
-      .filter(([tabela]) => tabela !== "meta")
-      .sort(([a], [b]) => compararTexto(a, b)),
-  );
-  return { destino, fontes: arquivos.length, fontes_sha256: fontesSha, contagens };
+  return ins.contagens;
 }
 
 if (import.meta.main) {

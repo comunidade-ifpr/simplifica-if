@@ -1,10 +1,11 @@
 /** Frescor do banco (`estadoDoBanco`) sobre uma raiz sintética, sem compilar a base. */
 import { Database } from "bun:sqlite";
 import { afterAll, describe, expect, test } from "bun:test";
-import { mkdirSync, mkdtempSync, rmSync, statSync, utimesSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readdirSync, rmSync, statSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { estadoDoBanco } from "./banco.ts";
+import { compilarBanco } from "./compilar.ts";
 import { VERSAO_ESQUEMA } from "./esquema.ts";
 import { arquivosFonte, hashConteudo, hashLista } from "./fontes.ts";
 
@@ -77,5 +78,19 @@ describe("estadoDoBanco", () => {
     db.run("UPDATE meta SET valor = '0' WHERE chave = 'versao_esquema'");
     db.close();
     expect(estadoDoBanco(raiz, caminho)).toEqual({ estado: "velho", motivo: "esquema" });
+  });
+});
+
+describe("compilarBanco com erro", () => {
+  test("remove o temporário e não deixa o banco no destino", () => {
+    // raiz sem a base: a carga das normas falha no meio da compilação, com o temporário já criado
+    const vazia = mkdtempSync(path.join(tmpdir(), "kb-erro-"));
+    try {
+      const destino = path.join(vazia, "tmp", "kb.sqlite");
+      expect(() => compilarBanco({ raiz: vazia, destino })).toThrow();
+      expect(readdirSync(path.dirname(destino))).toEqual([]);
+    } finally {
+      rmSync(vazia, { recursive: true, force: true });
+    }
   });
 });
