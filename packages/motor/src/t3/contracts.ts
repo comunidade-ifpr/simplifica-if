@@ -1,5 +1,5 @@
 // Trechos de `packages/contracts/src/` do T3 Code (a6d9140972): baseSchemas.ts, providerInstance.ts,
-// providerSetup.ts e resourceTelemetry.ts. Só os contratos que as partes copiadas usam; texto igual.
+// providerSetup.ts, resourceTelemetry.ts e server.ts. Só os contratos que as partes copiadas usam; texto igual.
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import * as SchemaTransformation from "effect/SchemaTransformation";
@@ -94,3 +94,19 @@ export const ShellEnvironmentPatch = Schema.Struct({
   FNM_MULTISHELL_PATH: Schema.optionalKey(Schema.NullOr(Schema.String)),
 });
 export type ShellEnvironmentPatch = typeof ShellEnvironmentPatch.Type;
+
+export const ServerProviderCompatibilityStatus = Schema.Literals([
+  "unknown",
+  "supported",
+  "graceful",
+  "unsupported",
+  "broken",
+]);
+export const ServerProviderCompatibilityAdvisory = Schema.Struct({
+  status: ServerProviderCompatibilityStatus,
+  latestVersionStatus: Schema.optionalKey(ServerProviderCompatibilityStatus),
+  message: Schema.NullOr(TrimmedNonEmptyString),
+  recommendedVersion: Schema.NullOr(TrimmedNonEmptyString),
+  recommendedRange: Schema.NullOr(TrimmedNonEmptyString),
+});
+export type ServerProviderCompatibilityAdvisory = typeof ServerProviderCompatibilityAdvisory.Type;
