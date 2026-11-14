@@ -140,14 +140,22 @@ const NOTIFICACOES = [
   "mcpServer/startupStatus/updated",
 ] as const;
 
-/** `mcp_servers.<nome>` para o `config` do `thread/start`. */
+/**
+ * `mcp_servers.<nome>` para o `config` do `thread/start`. Por stdio, `command`/`args`/`env`; por
+ * HTTP (streamable HTTP), `url` e `http_headers`, como o T3 passa o servidor dele
+ * (`codexThreadRuntimeParams` em `CodexAdapterV2.ts`).
+ */
 export function configMcpCodex(config: ConfigSessao): Record<string, Schema.Json> {
   const saida: Record<string, Schema.Json> = {};
   for (const servidor of config.servidoresMcp) {
     saida[`mcp_servers.${servidor.nome}`] = {
-      command: servidor.comando,
-      args: [...servidor.argumentos],
-      ...(servidor.ambiente ? { env: { ...servidor.ambiente } } : {}),
+      ...(servidor.tipo === "http"
+        ? { url: servidor.url, ...(servidor.cabecalhos ? { http_headers: { ...servidor.cabecalhos } } : {}) }
+        : {
+            command: servidor.comando,
+            args: [...servidor.argumentos],
+            ...(servidor.ambiente ? { env: { ...servidor.ambiente } } : {}),
+          }),
       // Sem pedir aprovação a cada chamada: as ferramentas do servidor são só de leitura.
       ...(servidor.preAprovado ? { default_tools_approval_mode: "approve" } : {}),
     };

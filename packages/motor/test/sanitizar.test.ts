@@ -1,18 +1,32 @@
 import { assert, describe, it } from "@effect/vitest";
 import { resumir, textoDeBlocos } from "../src/eventos.ts";
 import { configMcpCodex, isolamentoCodex } from "../src/drivers/codex.ts";
-import { mcpServersAcp } from "../src/drivers/antigravity.ts";
-import { nomeFerramentaClaude } from "../src/drivers/claude.ts";
+import { mcpServersAcp, recusaMcpAcp } from "../src/drivers/antigravity.ts";
+import { mcpServersClaude, nomeFerramentaClaude } from "../src/drivers/claude.ts";
+import type { ConfigSessao } from "../src/Driver.ts";
 import { limparAmbiente } from "../src/processo.ts";
 import { sanitizar } from "../src/sanitizar.ts";
 
 const SERVIDOR = {
+  tipo: "stdio" as const,
   nome: "ifpr",
   comando: "/usr/local/bin/node",
   argumentos: ["cli.ts", "--banco", "kb.sqlite"],
   preAprovado: true,
 };
 const CONFIG = { provider: "codex", pastaTrabalho: "/tmp/x", servidoresMcp: [SERVIDOR] } as const;
+const SERVIDOR_HTTP = {
+  tipo: "http",
+  nome: "ifpr",
+  url: "http://127.0.0.1:43210/mcp",
+  cabecalhos: { Authorization: "Bearer token-da-sessao" },
+  preAprovado: true,
+} as const;
+const CONFIG_HTTP = {
+  provider: "codex",
+  pastaTrabalho: "/tmp/x",
+  servidoresMcp: [SERVIDOR_HTTP],
+} as const satisfies ConfigSessao;
 
 describe("sanitizar", () => {
   it("tira e-mails, segredos e a pasta pessoal, e mantém contagens de tokens", () => {
@@ -61,6 +75,25 @@ describe("configuração do MCP por provider", () => {
     assert.strictEqual(nomeFerramentaClaude("Write"), "Write");
   });
 
+  it("Claude: mcpServers por stdio e por HTTP", () => {
+    assert.deepStrictEqual(mcpServersClaude(CONFIG), {
+      ifpr: {
+        type: "stdio",
+        command: "/usr/local/bin/node",
+        args: ["cli.ts", "--banco", "kb.sqlite"],
+        alwaysLoad: true,
+      },
+    });
+    assert.deepStrictEqual(mcpServersClaude(CONFIG_HTTP), {
+      ifpr: {
+        type: "http",
+        url: "http://127.0.0.1:43210/mcp",
+        headers: { Authorization: "Bearer token-da-sessao" },
+        alwaysLoad: true,
+      },
+    });
+  });
+
   it("Codex: mcp_servers por thread e isolamento dos MCP do usuário", () => {
     assert.deepStrictEqual(configMcpCodex(CONFIG), {
       "mcp_servers.ifpr": {
@@ -80,6 +113,50 @@ describe("configuração do MCP por provider", () => {
     assert.deepStrictEqual(mcpServersAcp({ ...CONFIG, provider: "antigravity" }), [
       { name: "ifpr", command: "/usr/local/bin/node", args: ["cli.ts", "--banco", "kb.sqlite"], env: [] },
     ]);
+  });
+
+  it("Codex: mcp_servers por HTTP com url e http_headers", () => {
+    assert.deepStrictEqual(configMcpCodex(CONFIG_HTTP), {
+      "mcp_servers.ifpr": {
+        url: "http://127.0.0.1:43210/mcp",
+        http_headers: { Authorization: "Bearer token-da-sessao" },
+        default_tools_approval_mode: "approve",
+      },
+    });
+    assert.deepStrictEqual(
+      configMcpCodex({
+        ...CONFIG_HTTP,
+        servidoresMcp: [{ tipo: "http", nome: "ifpr", url: "http://127.0.0.1:43210/mcp", preAprovado: false }],
+      }),
+      { "mcp_servers.ifpr": { url: "http://127.0.0.1:43210/mcp" } },
+    );
+  });
+
+  it("Antigravity: mcpServers HTTP do session/new", () => {
+    assert.deepStrictEqual(mcpServersAcp({ ...CONFIG_HTTP, provider: "antigravity" }), [
+      {
+        type: "http",
+        name: "ifpr",
+        url: "http://127.0.0.1:43210/mcp",
+        headers: [{ name: "Authorization", value: "Bearer token-da-sessao" }],
+      },
+    ]);
+  });
+
+  it("Antigravity: HTTP só com mcpCapabilities.http no initialize", () => {
+    const comHttp = { protocolVersion: 1, agentCapabilities: { mcpCapabilities: { http: true, sse: true } } };
+    const semHttp = {
+      protocolVersion: 1,
+      agentCapabilities: { mcpCapabilities: { sse: true } },
+      agentInfo: { name: "antigravity-acp", version: "agy_acp_server_1.0.0" },
+    };
+    assert.isUndefined(recusaMcpAcp(comHttp, { ...CONFIG_HTTP, provider: "antigravity" }));
+    assert.isUndefined(recusaMcpAcp(semHttp, { ...CONFIG, provider: "antigravity" }));
+    assert.match(
+      recusaMcpAcp(semHttp, { ...CONFIG_HTTP, provider: "antigravity" }) ?? "",
+      /agy_acp_server_1\.0\.0.*mcpCapabilities\.http.*ifpr/,
+    );
+    assert.isDefined(recusaMcpAcp({ protocolVersion: 1 }, { ...CONFIG_HTTP, provider: "antigravity" }));
   });
 
   it("ambiente: sem as variáveis de uma sessão hospedeira do Claude Code", () => {

@@ -2,7 +2,8 @@
  * Driver do Antigravity (Gemini) pelo ACP (`agy acp`, JSON-RPC por stdio) e o cliente
  * `@simplifica-if/effect-acp`, copiado do T3. O login é o do usuário (`oauth-personal`).
  *
- * - O MCP entra em `mcpServers` do `session/new` (o T3 passa `[]`; aqui vai o `simplifica-mcp`).
+ * - O MCP entra em `mcpServers` do `session/new`, por stdio ou por HTTP (este só se o `initialize`
+ *   anunciar `mcpCapabilities.http`, como no `AcpSessionRuntime` do T3).
  * - `initialize` e `authenticate` (eager, como no T3) também servem de detecção: o código -32000
  *   no `authenticate` quer dizer "sem login".
  * - `session/request_permission` vira `PedidoAprovacao`; o turno termina com a resposta do
@@ -149,14 +150,38 @@ const PROVIDER = "antigravity" as const;
 const CODIGO_SEM_LOGIN = -32000;
 const METODO_LOGIN = "oauth-personal";
 
-/** Servidores MCP no formato do ACP. O `command` precisa ser caminho absoluto. */
+/**
+ * Servidores MCP no formato do ACP: stdio (`command` com caminho absoluto) ou HTTP
+ * (`McpServerHttp`, `type: "http"`, com os cabeçalhos em lista `{ name, value }`).
+ */
 export function mcpServersAcp(config: ConfigSessao): ReadonlyArray<AcpSchema.McpServer> {
-  return config.servidoresMcp.map((servidor) => ({
-    name: servidor.nome,
-    command: servidor.comando,
-    args: [...servidor.argumentos],
-    env: Object.entries(servidor.ambiente ?? {}).map(([name, value]) => ({ name, value })),
-  }));
+  return config.servidoresMcp.map((servidor) =>
+    servidor.tipo === "http"
+      ? {
+          type: "http" as const,
+          name: servidor.nome,
+          url: servidor.url,
+          headers: Object.entries(servidor.cabecalhos ?? {}).map(([name, value]) => ({ name, value })),
+        }
+      : {
+          name: servidor.nome,
+          command: servidor.comando,
+          args: [...servidor.argumentos],
+          env: Object.entries(servidor.ambiente ?? {}).map(([name, value]) => ({ name, value })),
+        },
+  );
+}
+
+/**
+ * Confere, pelo `initialize`, se o agente aceita os servidores MCP da sessão. O stdio é obrigatório
+ * no ACP; o HTTP só vale com `agentCapabilities.mcpCapabilities.http`. Devolve o motivo da recusa,
+ * ou nada se o agente aceita todos. Sem suporte, a sessão falha: não cai para stdio em silêncio.
+ */
+export function recusaMcpAcp(inicio: AcpSchema.InitializeResponse, config: ConfigSessao): string | undefined {
+  const http = config.servidoresMcp.filter((servidor) => servidor.tipo === "http");
+  if (http.length === 0 || inicio.agentCapabilities?.mcpCapabilities?.http === true) return undefined;
+  const versao = inicio.agentInfo?.version ? ` (${inicio.agentInfo.version})` : "";
+  return `o agy${versao} não anuncia MCP por HTTP (mcpCapabilities.http) no initialize; servidores HTTP da sessão: ${http.map((servidor) => servidor.nome).join(", ")}`;
 }
 
 /** Dono do fluxo de login no `ProviderAuthController` do T3 (um app, um dono). */
@@ -235,7 +260,7 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
       AcpClient.layerChildProcess(filho, { transformStdout: makeAntigravityStdoutTransform() }),
     );
     const cliente = yield* Effect.service(AcpClient.AcpClient).pipe(Effect.provide(contexto));
-    yield* cliente.agent
+    const inicio = yield* cliente.agent
       .initialize({
         protocolVersion: 1,
         clientCapabilities: { fs: { readTextFile: false, writeTextFile: false }, terminal: false },
@@ -250,7 +275,7 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
           : Effect.fail(Canal.falhaDe(PROVIDER, "login")(erro)),
       ),
     );
-    return { cliente, login };
+    return { cliente, inicio, login };
   });
 
   // O fluxo de login do T3 (`AntigravityAuth`): um `agy acp` descartável numa pasta temporária, com o
@@ -338,6 +363,10 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
       });
     }
     const cliente = aberto.cliente;
+    const recusa = recusaMcpAcp(aberto.inicio, config);
+    if (recusa !== undefined) {
+      return yield* new FalhaProvider({ provider: PROVIDER, operacao: "session/new", detalhe: recusa });
+    }
     const normalizar = criarNormalizadorAntigravity(config.servidoresMcp.map((servidor) => servidor.nome));
     const processar = (entrada: EntradaAcp) =>
       Effect.suspend(() => {

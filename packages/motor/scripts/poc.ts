@@ -9,12 +9,14 @@
  *   pnpm motor:poc --provider antigravity --gravar /tmp/x.jsonl "<pergunta>"
  *   pnpm motor:poc --instalar antigravity                # instalação gerenciada (a do T3)
  *   pnpm motor:poc --entrar antigravity                  # login no perfil próprio: imprime a URL
+ *   pnpm motor:poc --provider codex --mcp http "<pergunta>"  # o servidor ifpr por HTTP local
  *
  * A pasta de estado (instalações e perfil do Antigravity) é `SIMPLIFICA_ESTADO` ou, no macOS,
  * `~/Library/Application Support/simplifica-if-poc`.
  *
  * Cada sessão roda numa pasta temporária vazia (apagada no fim), com o `simplifica-mcp` deste
- * checkout (`tmp/kb.sqlite`) como servidor `ifpr`. Imprime os eventos e, no fim, o resumo: tempo até
+ * checkout (`tmp/kb.sqlite`) como servidor `ifpr`: por stdio (padrão), um processo aberto pelo
+ * provider, ou, com `--mcp http`, o servidor HTTP local de `@simplifica-if/mcp/http` neste processo. Imprime os eventos e, no fim, o resumo: tempo até
  * o primeiro texto, tempo total, ferramentas chamadas e tokens.
  *
  * `--gravar` grava as mensagens nativas do provider em JSONL, sem e-mails, tokens nem a pasta do
@@ -39,6 +41,7 @@ import * as Motor from "../src/Motor.ts";
 import * as HostProcess from "../src/t3/HostProcess.ts";
 import { fixPath } from "../src/t3/os-jank.ts";
 import { sanitizar } from "../src/sanitizar.ts";
+import { servidorIfprHttp } from "./mcp-http.ts";
 
 const RAIZ = new URL("../../..", import.meta.url).pathname.replace(/\/$/, "");
 const PERGUNTA_PADRAO = "Qual a carga horária mínima do Técnico em Enfermagem no CNCT? Cite a fonte.";
@@ -130,6 +133,12 @@ const poc = Command.make(
       Flag.optional,
     ),
     modelo: Flag.String("modelo").pipe(Flag.optional),
+    mcp: Flag.Literals("mcp", ["stdio", "http"]).pipe(
+      Flag.withDescription(
+        "transporte do servidor ifpr: stdio (um processo por sessão) ou http (local, neste processo)",
+      ),
+      Flag.withDefault("stdio"),
+    ),
     instalar: Flag.Literals("instalar", ["codex", "antigravity"]).pipe(
       Flag.withDescription("instala a CLI gerenciada (a do T3) na pasta de estado"),
       Flag.optional,
@@ -180,18 +189,22 @@ const poc = Command.make(
       const pasta = yield* fs.makeTempDirectoryScoped({ prefix: "simplifica-poc-" });
       const pastaReal = yield* fs.realPath(pasta);
 
+      const servidorIfpr: Motor.ServidorMcp =
+        opcoes.mcp === "http"
+          ? yield* servidorIfprHttp({ banco, pastaTrabalho: pastaReal })
+          : {
+              tipo: "stdio",
+              nome: "ifpr",
+              comando: process.execPath,
+              argumentos: [path.join(RAIZ, "packages", "mcp", "src", "cli.ts"), "--banco", banco],
+              preAprovado: true,
+            };
+
       const inicio = yield* Clock.currentTimeMillis;
       const sessao = yield* motor.iniciarSessao({
         provider,
         pastaTrabalho: pastaReal,
-        servidoresMcp: [
-          {
-            nome: "ifpr",
-            comando: process.execPath,
-            argumentos: [path.join(RAIZ, "packages", "mcp", "src", "cli.ts"), "--banco", banco],
-            preAprovado: true,
-          },
-        ],
+        servidoresMcp: [servidorIfpr],
         ...(Option.isSome(opcoes.modelo) ? { modelo: opcoes.modelo.value } : {}),
       });
       yield* Console.log(`sessão ${sessao} em ${pastaReal}`);
@@ -217,7 +230,7 @@ const poc = Command.make(
       yield* Console.log(
         [
           "\n=== resumo ===",
-          `provider: ${provider}`,
+          `provider: ${provider} (MCP ${opcoes.mcp})`,
           `tempo até o primeiro texto: ${resumo.primeiroTexto === undefined ? "—" : segundos(resumo.primeiroTexto - inicio)}`,
           `tempo total: ${segundos(fim - inicio)}`,
           `ferramentas: ${resumo.ferramentas.length === 0 ? "nenhuma" : resumo.ferramentas.join(", ")}`,

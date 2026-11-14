@@ -10,6 +10,8 @@
  * A chamada passa pelo Toolkit (`FerramentasIfpr`, com os handlers do ambiente), que confere a
  * entrada de novo e codifica a resposta pelo `outputSchema`. O `structuredContent` é a `Resposta`
  * como o handler a montou (a mesma ordem de chaves do servidor anterior), e o `content`, o texto.
+ *
+ * Com uma `SessaoAtual` no contexto (o servidor HTTP), cada chamada é medida e registrada nela.
  */
 import * as Cause from "effect/Cause";
 import * as Effect from "effect/Effect";
@@ -19,6 +21,7 @@ import * as Stream from "effect/Stream";
 import { McpSchema, McpServer } from "effect/ai";
 import { ehEntradaInvalida, ehFalhaNaBase, type Resposta } from "../contratos.ts";
 import { jsonSchema } from "../esquema.ts";
+import { observarChamada } from "../SessaoAtual.ts";
 import { decodificadorDeEntrada, OPCOES_ENTRADA } from "../validacao.ts";
 import { FERRAMENTAS, FerramentasIfpr } from "./toolkit.ts";
 
@@ -66,19 +69,23 @@ export const registrarFerramentas = Effect.gen(function* () {
       }),
       annotations: ferramenta.tool.annotations,
       handle: (argumentos: unknown) =>
-        decodificar(argumentos).pipe(
-          Effect.andThen(kit.handle(ferramenta.nome, (argumentos ?? {}) as never, undefined, OPCOES_ENTRADA)),
-          Effect.flatMap((saida) => Stream.run(saida, Sink.last())),
-          Effect.flatMap(Effect.fromOption),
-          Effect.map(({ result }) => {
-            const resposta = result as Resposta<unknown>;
-            return new McpSchema.CallToolResult({
-              content: [{ type: "text", text: textoCompleto(resposta) }],
-              structuredContent: resposta,
-            });
-          }),
-          Effect.catchCause((causa) =>
-            Cause.hasInterruptsOnly(causa) ? Effect.interrupt : Effect.succeed(resultadoDeErro(textoDaFalha(causa))),
+        observarChamada(
+          ferramenta.nome,
+          (resultado) => resultado.isError === true,
+          decodificar(argumentos).pipe(
+            Effect.andThen(kit.handle(ferramenta.nome, (argumentos ?? {}) as never, undefined, OPCOES_ENTRADA)),
+            Effect.flatMap((saida) => Stream.run(saida, Sink.last())),
+            Effect.flatMap(Effect.fromOption),
+            Effect.map(({ result }) => {
+              const resposta = result as Resposta<unknown>;
+              return new McpSchema.CallToolResult({
+                content: [{ type: "text", text: textoCompleto(resposta) }],
+                structuredContent: resposta,
+              });
+            }),
+            Effect.catchCause((causa) =>
+              Cause.hasInterruptsOnly(causa) ? Effect.interrupt : Effect.succeed(resultadoDeErro(textoDaFalha(causa))),
+            ),
           ),
         ),
     });

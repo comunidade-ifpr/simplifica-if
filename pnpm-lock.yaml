@@ -376,6 +376,9 @@ importers:
       '@simplifica-if/effect-codex-app-server':
         specifier: workspace:*
         version: link:../effect-codex-app-server
+      '@simplifica-if/mcp':
+        specifier: workspace:*
+        version: link:../mcp
       yauzl:
         specifier: 3.4.0
         version: 3.4.0

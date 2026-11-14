@@ -59,6 +59,7 @@ describe.skipIf(!REAL)("providers reais", () => {
             pastaTrabalho: pasta,
             servidoresMcp: [
               {
+                tipo: "stdio",
                 nome: "ifpr",
                 comando: process.execPath,
                 argumentos: [path.join(RAIZ, "packages/mcp/src/cli.ts"), "--banco", path.join(RAIZ, "tmp/kb.sqlite")],
@@ -154,6 +155,7 @@ describe.skipIf(!REAL)("Antigravity: perfil próprio", () => {
             pastaTrabalho: pasta,
             servidoresMcp: [
               {
+                tipo: "stdio",
                 nome: "ifpr",
                 comando: process.execPath,
                 argumentos: [path.join(RAIZ, "packages/mcp/src/cli.ts"), "--banco", path.join(RAIZ, "tmp/kb.sqlite")],
