@@ -14,7 +14,7 @@
  * O teste `base.test.ts` compila duas vezes e compara o SHA-256 dos arquivos.
  */
 import { Database, type Statement } from "bun:sqlite";
-import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, utimesSync } from "node:fs";
 import path from "node:path";
 import { z } from "zod";
 import { expansaoDoTipo, lerSinonimos, type Sinonimos } from "../busca/sinonimos.ts";
@@ -456,6 +456,10 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
   const lexico = opcoes.sinonimos ?? lerSinonimos();
   const base = path.join(raiz, BASE);
 
+  // instante anterior à leitura das fontes: vira o mtime do banco no fim, para que uma fonte editada
+  // durante a compilação fique mais nova que ele e o atalho por mtime de `estadoDoBanco` não o declare
+  // fresco
+  const leitura = new Date();
   const arquivos = arquivosFonte(raiz);
   const fontesSha = hashConteudo(raiz, arquivos);
 
@@ -931,6 +935,7 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
   db.run("INSERT INTO dispositivos_fts(dispositivos_fts) VALUES ('optimize')");
   db.run("VACUUM");
   db.close();
+  utimesSync(temporario, leitura, leitura);
   renameSync(temporario, destino);
   const contagens = Object.fromEntries(
     Object.entries(ins.contagens)

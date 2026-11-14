@@ -7,7 +7,7 @@
 import { Database } from "bun:sqlite";
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { lerSinonimos } from "../busca/sinonimos.ts";
@@ -51,8 +51,10 @@ const dir = mkdtempSync(path.join(tmpdir(), "kb-base-"));
 const caminhoA = path.join(dir, "a.sqlite");
 const caminhoB = path.join(dir, "b.sqlite");
 let db: Database;
+let inicioCompilacaoA = 0;
 
 beforeAll(() => {
+  inicioCompilacaoA = Date.now();
   compilarBanco({ raiz, destino: caminhoA });
   compilarBanco({ raiz, destino: caminhoB });
   db = new Database(caminhoA, { readonly: true, strict: true });
@@ -69,6 +71,11 @@ const lerJson = (relativo: string) => JSON.parse(readFileSync(path.join(raiz, re
 describe("kb.sqlite da base", () => {
   test("dois builds sobre as mesmas fontes dão o mesmo arquivo", () => {
     expect(sha(caminhoA)).toBe(sha(caminhoB));
+  });
+
+  test("o mtime do banco é o do instante em que as fontes foram lidas, não o do fim da compilação", () => {
+    // fonte editada durante a compilação fica mais nova que o banco e força a recompilação seguinte
+    expect(statSync(caminhoA).mtimeMs).toBeLessThanOrEqual(inicioCompilacaoA + 1000);
   });
 
   test("recall@10 da busca de seções ≥ 0,8 (modo completo)", () => {

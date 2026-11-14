@@ -1,7 +1,7 @@
 /** Frescor do banco (`estadoDoBanco`) sobre uma raiz sintética, sem compilar a base. */
 import { Database } from "bun:sqlite";
 import { afterAll, describe, expect, test } from "bun:test";
-import { mkdirSync, mkdtempSync, rmSync, utimesSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, statSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { estadoDoBanco } from "./banco.ts";
@@ -50,8 +50,12 @@ describe("estadoDoBanco", () => {
 
   test("fonte tocada sem mudar o conteúdo: fresco pelo hash, e o mtime do banco avança", () => {
     banco(caminho, depois);
-    escrever("dados/institucional/cursos/a/b.json", "{}", new Date("2026-03-01T00:00:00Z"));
+    const tocada = new Date("2026-03-01T00:00:00Z");
+    escrever("dados/institucional/cursos/a/b.json", "{}", tocada);
     expect(estadoDoBanco(raiz, caminho)).toEqual({ estado: "fresco", motivo: "conteudo-igual" });
+    // o banco avança só até o mtime das fontes lidas antes do hash: uma edição durante o hash fica
+    // mais nova que ele e não passa por fresca
+    expect(statSync(caminho).mtimeMs).toBe(tocada.getTime());
     expect(estadoDoBanco(raiz, caminho)).toEqual({ estado: "fresco", motivo: "mtime" });
   });
 
