@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- medição de execução única sobre os PPCs da base, síncrona
 /**
  * Medição da identificação do curso (curso, campus, forma de oferta e
  * modalidade) sobre os PPCs técnicos convertidos da base.

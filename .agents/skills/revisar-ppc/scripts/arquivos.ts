@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off globalDate:off -- leitura e escrita síncronas dos arquivos da base de análise; o relógio padrão só entra quando quem chama não passa a data
 /** Leitura e escrita dos arquivos da base de análise. */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";

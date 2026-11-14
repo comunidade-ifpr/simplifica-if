@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off extendsNativeError:off -- validação e mescla síncronas dos resultados da rodada; o erro de contrato é lançado com a mensagem montada no ponto da falha
 /**
  * Validação do JSON de resultados dos sub-agentes (porte de
  * `validar_resultados_subagents`, `validar_alertas_transversais` e

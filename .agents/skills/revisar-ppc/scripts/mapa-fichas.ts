@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- gerador síncrono de mapa-fichas.md, chamado pela CLI e pelos testes
 /** Mapa das fichas por tópico (`base-analise/mapa-fichas.md`). */
 import * as NodeFS from "node:fs";
 import { ehObjeto, itensDe, itensPercorridos, type ObjetoJson, textoDe, textoOuVazio } from "@simplifica-if/kb/json";

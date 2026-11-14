@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Ponto de entrada único da skill revisar-ppc.
+ * Ponto de entrada único da skill revisar-ppc, em `effect/cli`.
  *
  * Todos os subcomandos rodam em TypeScript. Em `preparar-documento`, só a
  * conversão de `.docx` em artefatos ainda é feita pelo Python
@@ -9,12 +9,36 @@
  *
  * `REVISAR_PPC_AGORA` (data ISO 8601) fixa o relógio, para testes e
  * diferenciais.
+ *
+ * Os subcomandos que consultam o kb (`montar-grupos-subagents`, `montar-grupo-avulso` e
+ * `preparar-prompts-subagents`) recebem os serviços do kb de `camadaKb`, dentro do próprio handler:
+ * o `kb.sqlite` é recompilado antes, se estiver velho, e `--help` e os erros de uso não o abrem.
+ *
+ * Erros, como na CLI `kb`: o relatório padrão do `runMain` escreve no stdout e fica desligado.
+ * `EncerrarComCodigo` (o subcomando já imprimiu o resultado, como a lista de erros de
+ * `validar-base`) só dá o código de saída; erros de uso (`CliError`) já saem com a ajuda pelo
+ * `Command.run`; qualquer outro erro, tipado ou não, vira `<nome>: <mensagem>` no stderr. Todos
+ * terminam com código 1 (ou o de `EncerrarComCodigo`).
  */
-import * as NodePath from "node:path";
-import { Command, InvalidArgumentError } from "commander";
+import * as NodeRuntime from "@effect/platform-node/NodeRuntime";
+import * as NodeServices from "@effect/platform-node/NodeServices";
+import * as Compilador from "@simplifica-if/kb/Compilador";
+import * as Layers from "@simplifica-if/kb/layers";
 import { dumpsPy } from "@simplifica-if/kb/python/json";
 import { caminhoComoUri } from "@simplifica-if/kb/python/url";
-import { inteiroDeTexto } from "@simplifica-if/kb/python/valores";
+import * as Cause from "effect/Cause";
+import * as Config from "effect/Config";
+import * as Console from "effect/Console";
+import * as Effect from "effect/Effect";
+import * as Layer from "effect/Layer";
+import * as Option from "effect/Option";
+import * as Path from "effect/Path";
+import * as Runtime from "effect/Runtime";
+import * as Schema from "effect/Schema";
+import * as Argument from "effect/cli/Argument";
+import * as CliError from "effect/cli/CliError";
+import * as Command from "effect/cli/Command";
+import * as Flag from "effect/cli/Flag";
 import { caminhosPadrao } from "./caminhos.ts";
 import { escreverSchemas, schemasDesatualizados } from "./esquemas.ts";
 import { escreverIndice, indiceAtualizado } from "./indice-base.ts";
@@ -26,51 +50,62 @@ import { gerarRelatorioHtml, type RelatorioGerado } from "./relatorio-html.ts";
 import { mesclarResultadosAvulsos, validarResultadosRodada } from "./resultados.ts";
 import { caminhosRodada, escreverJsonPy, resolverCaminho, TAMANHO_GRUPO_PADRAO } from "./rodada.ts";
 import { montarGrupoAvulso, montarGruposSubagents, prepararPromptsSubagents } from "./subagents.ts";
-import { garantirBancoFresco } from "./kb.ts";
 import { validarBaseAnalise } from "./validacao-base.ts";
 
+const NOME = "revisar_ppc.ts";
 const COMANDO = "node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts";
-/** Imprime o JSON como `print(json.dumps(payload, ensure_ascii=False, indent=2))`. */
-function imprimirJson(payload: unknown): void {
-  process.stdout.write(`${dumpsPy(payload, { indent: 2 })}\n`);
-}
 
 /**
- * Ponte do C1: recompila o `kb.sqlite` antes dos subcomandos que consultam o kb (as funções da
- * skill ainda são síncronas e abrem o banco já fresco).
+ * O subcomando já imprimiu o resultado e só falta o código de saída. O `runMain` o lê pelo
+ * marcador `Runtime.errorExitCode`.
  */
-async function comBancoFresco(acao: () => void): Promise<void> {
-  try {
-    await garantirBancoFresco(NodePath.dirname(caminhosPadrao().baseConhecimentoDir));
-  } catch (erro) {
-    process.stderr.write(`${erro instanceof Error ? `${erro.name}: ${erro.message}` : String(erro)}\n`);
-    process.exitCode = 1;
-    return;
+export class EncerrarComCodigo extends Schema.TaggedError<EncerrarComCodigo>()("EncerrarComCodigo", {
+  codigo: Schema.Int,
+}) {
+  override get message(): string {
+    return `encerrado com o código ${this.codigo}`;
   }
-  executar(acao);
-}
 
-/** Executa um subcomando; erros viram mensagem em stderr e código de saída 1. */
-function executar(acao: () => void): void {
-  try {
-    acao();
-    process.exitCode = 0;
-  } catch (erro) {
-    const mensagem = erro instanceof Error ? `${erro.name}: ${erro.message}` : String(erro);
-    process.stderr.write(`${mensagem}\n`);
-    process.exitCode = 1;
+  override get [Runtime.errorExitCode](): number {
+    return this.codigo;
   }
 }
 
-function inteiro(valor: string): number {
-  const numero = inteiroDeTexto(valor);
-  if (numero === null) throw new InvalidArgumentError(`invalid int value: '${valor}'`);
-  return numero;
-}
+export const ehEncerrarComCodigo = Schema.is(EncerrarComCodigo);
 
-function acumular(valor: string, anteriores: string[] = []): string[] {
-  return [...anteriores, valor];
-}
+/** Encerra com `codigo` quando ele não é zero; com zero, termina normalmente. */
+const sairCom = (codigo: number): Effect.Effect<void, EncerrarComCodigo> =>
+  codigo === 0 ? Effect.void : Effect.fail(new EncerrarComCodigo({ codigo }));
+
+/**
+ * Os serviços do kb sobre o `kb.sqlite` do checkout em `raiz` (padrão: o pai de
+ * `base-conhecimento/`), só leitura, depois de garantir pelo
+ * `Compilador` que ele corresponde às fontes. Como na CLI `kb`: `KB_SQLITE` muda o caminho do banco
+ * (padrão `<raiz>/tmp/kb.sqlite`) e `KB_RECOMPILAR=nunca|sempre` desliga ou força a recompilação
+ * (outro valor vale `auto`).
+ */
+export const camadaKb = (opcoes: { readonly raiz?: string } = {}) =>
+  Layer.unwrap(
+    Effect.gen(function* () {
+      const path = yield* Path.Path;
+      const raiz = opcoes.raiz ?? path.dirname(caminhosPadrao().baseConhecimentoDir);
+      const compilador = yield* Compilador.Compilador;
+      const configurado = yield* Config.option(Config.String("KB_SQLITE"));
+      const caminho = Option.isSome(configurado)
+        ? path.resolve(configurado.value)
+        : path.join(raiz, "tmp", "kb.sqlite");
+      const recompilar = Option.getOrUndefined(yield* Config.option(Config.String("KB_RECOMPILAR")));
+      const politica = recompilar === "nunca" || recompilar === "sempre" ? recompilar : "auto";
+      yield* compilador.garantirFresco({ raiz, caminho, politica });
+      return Layers.layerSomenteLeitura({ caminho });
+    }),
+  ).pipe(Layer.provide(Compilador.layer));
+
+/** Imprime o JSON como `print(json.dumps(payload, ensure_ascii=False, indent=2))`. */
+const imprimirJson = (payload: unknown) => Console.log(dumpsPy(payload, { indent: 2 }));
+
+/** Executa um subcomando síncrono; o erro que ele lançar é relatado no stderr, com código 1. */
+const executar = <A>(acao: () => A) => Effect.sync(acao);
 
 type Objeto = Record<string, unknown>;
 
@@ -111,63 +146,6 @@ export function resumoGruposSubagents(payload: Objeto): Objeto {
   };
 }
 
-function validarBase(): number {
-  const erros = validarBaseAnalise();
-  if (erros.length) {
-    for (const erro of erros) console.log(erro);
-    return 1;
-  }
-  console.log("Base de análise válida.");
-  return 0;
-}
-
-function gerarIndice(opcoes: { check?: boolean }): number {
-  const caminhos = caminhosPadrao();
-  if (opcoes.check) {
-    if (indiceAtualizado(caminhos)) {
-      console.log(`OK: ${caminhos.indicePath}`);
-      return 0;
-    }
-    console.log(`ERRO: ${caminhos.indicePath} está desatualizado. Rode ${COMANDO} gerar-indice.`);
-    return 1;
-  }
-  const indice = escreverIndice(caminhos);
-  const resumo = indice.resumo as { total_fichas: number; total_itens: number };
-  console.log(`Índice gerado em ${caminhos.indicePath} (${resumo.total_fichas} fichas, ${resumo.total_itens} itens).`);
-  return 0;
-}
-
-function gerarMapa(opcoes: { check?: boolean }): number {
-  const caminhos = caminhosPadrao();
-  if (opcoes.check) {
-    if (mapaAtualizado(caminhos)) {
-      console.log(`OK: ${caminhos.mapaFichasPath}`);
-      return 0;
-    }
-    console.log(`ERRO: ${caminhos.mapaFichasPath} está desatualizado. Rode ${COMANDO} gerar-mapa.`);
-    return 1;
-  }
-  escreverMapa(caminhos);
-  console.log(`Mapa de fichas gerado em ${caminhos.mapaFichasPath}.`);
-  return 0;
-}
-
-function gerarSchemas(opcoes: { check?: boolean }): number {
-  const caminhos = caminhosPadrao();
-  if (opcoes.check) {
-    const desatualizados = schemasDesatualizados(caminhos);
-    if (!desatualizados.length) {
-      console.log(`OK: ${caminhos.schemasDir}`);
-      return 0;
-    }
-    for (const arquivo of desatualizados)
-      console.log(`ERRO: ${arquivo} está desatualizado. Rode ${COMANDO} gerar-schemas.`);
-    return 1;
-  }
-  for (const arquivo of escreverSchemas(caminhos)) console.log(`Schema gerado em ${arquivo}.`);
-  return 0;
-}
-
 /** Aviso das mensagens da CLI: a skill faz revisão prévia, não a análise oficial. */
 const AVISO_REVISAO = "Revisão prévia à submissão; não substitui a análise oficial da PROENS.";
 
@@ -201,174 +179,290 @@ export function payloadRelatorio(gerado: RelatorioGerado, publicacao?: Publicaca
   return payload;
 }
 
-function gerarRelatorio(opcoes: { rodadaDir: string; resultados: string; semSurge?: boolean; surgeDomain?: string }) {
-  const relatorio = gerarRelatorioHtml(opcoes.rodadaDir, opcoes.resultados);
+/** Gera o relatório e, sem `--sem-surge`, publica no Surge (as etapas são síncronas). */
+const gerarRelatorio = Effect.fn("revisar_ppc.gerarRelatorio")(function* (opcoes: {
+  readonly rodadaDir: string;
+  readonly resultados: string;
+  readonly semSurge: boolean;
+  readonly surgeDomain: Option.Option<string>;
+}) {
+  const path = yield* Path.Path;
+  const relatorio = yield* executar(() => gerarRelatorioHtml(opcoes.rodadaDir, opcoes.resultados));
   if (opcoes.semSurge) return payloadRelatorio(relatorio);
   const rodada = caminhosRodada(opcoes.rodadaDir);
-  const siteDir = prepararSiteSurge(relatorio.relatorio_html, NodePath.join(rodada.suporteDir, "surge-site"));
-  const publicacao = publicarSiteSurge(siteDir, opcoes.surgeDomain || dominioSurgePadrao(rodada.rodadaDir));
-  publicacao.relatorio_html_original = resolverCaminho(relatorio.relatorio_html);
-  escreverJsonPy(NodePath.join(rodada.suporteDir, "surge-publicacao.json"), publicacao);
-  return payloadRelatorio(relatorio, publicacao);
-}
+  return yield* executar(() => {
+    const siteDir = prepararSiteSurge(relatorio.relatorio_html, path.join(rodada.suporteDir, "surge-site"));
+    const dominio = Option.getOrElse(opcoes.surgeDomain, () => "") || dominioSurgePadrao(rodada.rodadaDir);
+    const publicacao = publicarSiteSurge(siteDir, dominio);
+    publicacao.relatorio_html_original = resolverCaminho(relatorio.relatorio_html);
+    escreverJsonPy(path.join(rodada.suporteDir, "surge-publicacao.json"), publicacao);
+    return payloadRelatorio(relatorio, publicacao);
+  });
+});
 
-export function criarPrograma(): Command {
-  const programa = new Command()
-    .name("revisar_ppc.ts")
-    .description(
-      "Revisão prévia de PPC técnico do IFPR por sub-agentes na conversa, antes da submissão à PROENS " +
-        "(não substitui a análise oficial da PROENS)",
-    )
-    .enablePositionalOptions();
+// --- flags comuns ---
 
-  programa
-    .command("preparar-documento")
-    .description("Criar a rodada e o PPC.md canônico")
-    .argument("<arquivo>", "Arquivo .md ou .docx de entrada")
-    .option("--saida-base <dir>", "Diretório base opcional para a rodada")
-    .action((arquivo: string, opcoes: { saidaBase?: string }) => {
-      executar(() => {
-        const resultado = prepararDocumento(arquivo, opcoes.saidaBase ? { saidaBase: opcoes.saidaBase } : {});
-        imprimirJson(resultado.resumo);
-      });
-    });
+const flagRodadaDir = Flag.String("rodada-dir").pipe(Flag.withDescription("Diretório da rodada"));
 
-  programa
-    .command("montar-grupos-subagents")
-    .description("Montar os grupos por tópico para sub-agentes e salvar grupos-subagents.json")
-    .requiredOption("--rodada-dir <dir>", "Diretório da rodada")
-    .option(
-      "--tamanho-grupo <n>",
-      "Quantidade máxima de fichas por grupo (tópicos maiores viram partes)",
-      inteiro,
-      TAMANHO_GRUPO_PADRAO,
-    )
-    .option(
-      "--detalhado",
+const flagResultados = Flag.String("resultados").pipe(
+  Flag.withDescription("JSON coletado dos sub-agentes; relativo a arquivos-suporte quando não absoluto"),
+  Flag.withDefault("resultados-subagents.json"),
+);
+
+const flagLigada = (nome: string, descricao: string) =>
+  Flag.Boolean(nome).pipe(Flag.withDescription(descricao), Flag.withDefault(false));
+
+const flagTexto = (nome: string, descricao: string) =>
+  Flag.String(nome).pipe(Flag.withDescription(descricao), Flag.optional);
+
+// --- subcomandos ---
+
+const prepararDocumentoCmd = Command.make(
+  "preparar-documento",
+  {
+    arquivo: Argument.String("arquivo").pipe(Argument.withDescription("Arquivo .md ou .docx de entrada")),
+    saidaBase: flagTexto("saida-base", "Diretório base opcional para a rodada"),
+  },
+  Effect.fn("revisar_ppc.prepararDocumento")(function* ({ arquivo, saidaBase }) {
+    const resultado = yield* executar(() =>
+      prepararDocumento(arquivo, Option.isSome(saidaBase) ? { saidaBase: saidaBase.value } : {}),
+    );
+    yield* imprimirJson(resultado.resumo);
+  }),
+).pipe(Command.withDescription("Criar a rodada e o PPC.md canônico"));
+
+const montarGruposCmd = Command.make(
+  "montar-grupos-subagents",
+  {
+    rodadaDir: flagRodadaDir,
+    tamanhoGrupo: Flag.Int("tamanho-grupo").pipe(
+      Flag.withDescription("Quantidade máxima de fichas por grupo (tópicos maiores viram partes)"),
+      Flag.withDefault(TAMANHO_GRUPO_PADRAO),
+    ),
+    detalhado: flagLigada(
+      "detalhado",
       "Imprimir o JSON completo; por padrão a CLI mostra apenas um resumo e salva o payload completo.",
-    )
-    .action((opcoes: { rodadaDir: string; tamanhoGrupo: number; detalhado?: boolean }) =>
-      comBancoFresco(() => {
-        const payload = montarGruposSubagents(opcoes.rodadaDir, opcoes.tamanhoGrupo);
-        imprimirJson(opcoes.detalhado ? payload : resumoGruposSubagents(payload));
-      }),
+    ),
+  },
+  Effect.fn("revisar_ppc.montarGruposSubagents")(
+    function* ({ rodadaDir, tamanhoGrupo, detalhado }) {
+      const payload = yield* montarGruposSubagents(rodadaDir, tamanhoGrupo);
+      yield* imprimirJson(detalhado ? payload : resumoGruposSubagents(payload));
+    },
+    (efeito) => Effect.provide(efeito, camadaKb()),
+  ),
+).pipe(Command.withDescription("Montar os grupos por tópico para sub-agentes e salvar grupos-subagents.json"));
+
+const prepararPromptsCmd = Command.make(
+  "preparar-prompts-subagents",
+  { rodadaDir: flagRodadaDir },
+  Effect.fn("revisar_ppc.prepararPromptsSubagents")(
+    function* ({ rodadaDir }) {
+      yield* imprimirJson(yield* prepararPromptsSubagents(rodadaDir));
+    },
+    (efeito) => Effect.provide(efeito, camadaKb()),
+  ),
+).pipe(Command.withDescription("Gerar pacotes Markdown autocontidos para cada grupo de sub-agente"));
+
+const montarGrupoAvulsoCmd = Command.make(
+  "montar-grupo-avulso",
+  {
+    rodadaDir: flagRodadaDir,
+    fichaId: Flag.String("ficha-id").pipe(
+      Flag.withDescription("Ficha a incluir no grupo avulso (repetível)"),
+      Flag.atLeast(1),
+    ),
+  },
+  Effect.fn("revisar_ppc.montarGrupoAvulso")(
+    function* ({ rodadaDir, fichaId }) {
+      yield* imprimirJson(yield* montarGrupoAvulso(rodadaDir, fichaId));
+    },
+    (efeito) => Effect.provide(efeito, camadaKb()),
+  ),
+).pipe(Command.withDescription("Montar um grupo avulso de fichas para reavaliação por sub-agente"));
+
+const mesclarResultadosCmd = Command.make(
+  "mesclar-resultados-avulsos",
+  {
+    rodadaDir: flagRodadaDir,
+    resultadosBase: Flag.String("resultados-base").pipe(
+      Flag.withDescription("JSON base de resultados; relativo a arquivos-suporte quando não absoluto"),
+      Flag.withDefault("resultados-subagents.json"),
+    ),
+    resultadosAvulsos: Flag.String("resultados-avulsos").pipe(
+      Flag.withDescription("JSON retornado pelo sub-agente avulso; relativo a arquivos-suporte quando não absoluto"),
+    ),
+    saida: flagTexto("saida", "Destino do JSON mesclado; padrão: sobrescreve --resultados-base"),
+  },
+  Effect.fn("revisar_ppc.mesclarResultadosAvulsos")(function* ({
+    rodadaDir,
+    resultadosBase,
+    resultadosAvulsos,
+    saida,
+  }) {
+    const mesclado = yield* executar(() =>
+      mesclarResultadosAvulsos(rodadaDir, resultadosBase, resultadosAvulsos, Option.getOrUndefined(saida)),
     );
+    yield* imprimirJson(mesclado);
+  }),
+).pipe(Command.withDescription("Mesclar respostas avulsas em resultados-subagents.json"));
 
-  programa
-    .command("preparar-prompts-subagents")
-    .description("Gerar pacotes Markdown autocontidos para cada grupo de sub-agente")
-    .requiredOption("--rodada-dir <dir>", "Diretório da rodada")
-    .action((opcoes: { rodadaDir: string }) => {
-      executar(() => imprimirJson(prepararPromptsSubagents(opcoes.rodadaDir)));
-    });
+const validarResultadosCmd = Command.make(
+  "validar-resultados",
+  { rodadaDir: flagRodadaDir, resultados: flagResultados },
+  Effect.fn("revisar_ppc.validarResultados")(function* ({ rodadaDir, resultados }) {
+    yield* imprimirJson(yield* executar(() => validarResultadosRodada(rodadaDir, resultados)));
+  }),
+).pipe(Command.withDescription("Validar cobertura e contrato do JSON de resultados sem gerar HTML"));
 
-  programa
-    .command("montar-grupo-avulso")
-    .description("Montar um grupo avulso de fichas para reavaliação por sub-agente")
-    .requiredOption("--rodada-dir <dir>", "Diretório da rodada")
-    .requiredOption("--ficha-id <id>", "Ficha a incluir no grupo avulso (repetível)", acumular)
-    .action((opcoes: { rodadaDir: string; fichaId: string[] }) =>
-      comBancoFresco(() => imprimirJson(montarGrupoAvulso(opcoes.rodadaDir, opcoes.fichaId))),
+const validarBaseCmd = Command.make(
+  "validar-base",
+  {},
+  Effect.fn("revisar_ppc.validarBase")(function* () {
+    const erros = yield* executar(() => validarBaseAnalise());
+    if (erros.length) {
+      yield* Console.log(erros.join("\n"));
+      return yield* sairCom(1);
+    }
+    yield* Console.log("Base de análise válida.");
+  }),
+).pipe(
+  Command.withDescription(
+    "Validar fichas, tópicos, marcos normativos, validações cruzadas e contratos da base de análise",
+  ),
+);
+
+const flagCheck = (alvo: string) => flagLigada("check", `verificar se ${alvo} sem reescrever`);
+
+const gerarSchemasCmd = Command.make(
+  "gerar-schemas",
+  { check: flagCheck("os schemas estão atualizados") },
+  Effect.fn("revisar_ppc.gerarSchemas")(function* ({ check }) {
+    const caminhos = caminhosPadrao();
+    if (!check) {
+      const arquivos = yield* executar(() => escreverSchemas(caminhos));
+      return yield* Console.log(arquivos.map((arquivo) => `Schema gerado em ${arquivo}.`).join("\n"));
+    }
+    const desatualizados = yield* executar(() => schemasDesatualizados(caminhos));
+    if (!desatualizados.length) return yield* Console.log(`OK: ${caminhos.schemasDir}`);
+    yield* Console.log(
+      desatualizados.map((arquivo) => `ERRO: ${arquivo} está desatualizado. Rode ${COMANDO} gerar-schemas.`).join("\n"),
     );
+    return yield* sairCom(1);
+  }),
+).pipe(
+  Command.withDescription(
+    "Gerar os JSON Schemas de ficha e marcos normativos a partir do Effect Schema (scripts/esquemas.ts)",
+  ),
+);
 
-  programa
-    .command("mesclar-resultados-avulsos")
-    .description("Mesclar respostas avulsas em resultados-subagents.json")
-    .requiredOption("--rodada-dir <dir>", "Diretório da rodada")
-    .option(
-      "--resultados-base <arquivo>",
-      "JSON base de resultados; relativo a arquivos-suporte quando não absoluto",
-      "resultados-subagents.json",
-    )
-    .requiredOption(
-      "--resultados-avulsos <arquivo>",
-      "JSON retornado pelo sub-agente avulso; relativo a arquivos-suporte quando não absoluto",
-    )
-    .option("--saida <arquivo>", "Destino do JSON mesclado; padrão: sobrescreve --resultados-base")
-    .action((opcoes: { rodadaDir: string; resultadosBase: string; resultadosAvulsos: string; saida?: string }) => {
-      executar(() =>
-        imprimirJson(
-          mesclarResultadosAvulsos(opcoes.rodadaDir, opcoes.resultadosBase, opcoes.resultadosAvulsos, opcoes.saida),
-        ),
-      );
+const gerarIndiceCmd = Command.make(
+  "gerar-indice",
+  { check: flagCheck("indice.json está atualizado") },
+  Effect.fn("revisar_ppc.gerarIndice")(function* ({ check }) {
+    const caminhos = caminhosPadrao();
+    if (check) {
+      if (yield* executar(() => indiceAtualizado(caminhos))) return yield* Console.log(`OK: ${caminhos.indicePath}`);
+      yield* Console.log(`ERRO: ${caminhos.indicePath} está desatualizado. Rode ${COMANDO} gerar-indice.`);
+      return yield* sairCom(1);
+    }
+    const indice = yield* executar(() => escreverIndice(caminhos));
+    const resumo = indice.resumo as { total_fichas: number; total_itens: number };
+    yield* Console.log(
+      `Índice gerado em ${caminhos.indicePath} (${resumo.total_fichas} fichas, ${resumo.total_itens} itens).`,
+    );
+  }),
+).pipe(Command.withDescription("Gerar base-analise/indice.json"));
+
+const gerarMapaCmd = Command.make(
+  "gerar-mapa",
+  { check: flagCheck("mapa-fichas.md está atualizado") },
+  Effect.fn("revisar_ppc.gerarMapa")(function* ({ check }) {
+    const caminhos = caminhosPadrao();
+    if (check) {
+      if (yield* executar(() => mapaAtualizado(caminhos))) return yield* Console.log(`OK: ${caminhos.mapaFichasPath}`);
+      yield* Console.log(`ERRO: ${caminhos.mapaFichasPath} está desatualizado. Rode ${COMANDO} gerar-mapa.`);
+      return yield* sairCom(1);
+    }
+    yield* executar(() => escreverMapa(caminhos));
+    yield* Console.log(`Mapa de fichas gerado em ${caminhos.mapaFichasPath}.`);
+  }),
+).pipe(Command.withDescription("Gerar base-analise/mapa-fichas.md"));
+
+const gerarRelatorioCmd = Command.make(
+  "gerar-relatorio-html",
+  {
+    rodadaDir: flagRodadaDir,
+    resultados: flagResultados,
+    semSurge: flagLigada("sem-surge", "Gerar apenas o HTML local, sem publicar no Surge."),
+    surgeDomain: flagTexto("surge-domain", "Domínio Surge de publicação; padrão: revisar-ppc-<rodada>.surge.sh."),
+  },
+  Effect.fn("revisar_ppc.gerarRelatorioHtml")(function* (opcoes) {
+    yield* imprimirJson(yield* gerarRelatorio(opcoes));
+  }),
+).pipe(Command.withDescription("Gerar o relatório de revisão do PPC (HTML anotado)"));
+
+const medirIdentificacaoCmd = Command.make(
+  "medir-identificacao",
+  {
+    amostra: flagLigada("amostra", "medir só a amostra fixa usada nos testes"),
+    erros: flagLigada("erros", "listar os casos errados ou vazios"),
+    json: flagLigada("json", "imprimir a medição completa em JSON"),
+  },
+  Effect.fn("revisar_ppc.medirIdentificacao")(function* ({ amostra, erros, json }) {
+    const texto = yield* executar(() => {
+      const medicao = medirIdentificacao(amostra ? { amostra: AMOSTRA_MEDICAO } : {});
+      // `formatarMedicao` termina com quebra de linha; o `Console.log` põe a sua.
+      return json ? JSON.stringify(medicao, null, 2) : formatarMedicao(medicao, { erros }).replace(/\n$/, "");
     });
+    yield* Console.log(texto);
+  }),
+).pipe(
+  Command.withDescription("Medir a identificação do curso nos PPCs técnicos da base contra dados/institucional/cursos"),
+);
 
-  programa
-    .command("validar-resultados")
-    .description("Validar cobertura e contrato do JSON de resultados sem gerar HTML")
-    .requiredOption("--rodada-dir <dir>", "Diretório da rodada")
-    .option(
-      "--resultados <arquivo>",
-      "JSON coletado dos sub-agentes; relativo a arquivos-suporte quando não absoluto",
-      "resultados-subagents.json",
-    )
-    .action((opcoes: { rodadaDir: string; resultados: string }) => {
-      executar(() => imprimirJson(validarResultadosRodada(opcoes.rodadaDir, opcoes.resultados)));
-    });
+export const revisarPpc = Command.make(NOME).pipe(
+  Command.withDescription(
+    "Revisão prévia de PPC técnico do IFPR por sub-agentes na conversa, antes da submissão à PROENS " +
+      "(não substitui a análise oficial da PROENS)",
+  ),
+  Command.withSubcommands([
+    prepararDocumentoCmd,
+    montarGruposCmd,
+    prepararPromptsCmd,
+    montarGrupoAvulsoCmd,
+    mesclarResultadosCmd,
+    validarResultadosCmd,
+    validarBaseCmd,
+    gerarSchemasCmd,
+    gerarIndiceCmd,
+    gerarMapaCmd,
+    gerarRelatorioCmd,
+    medirIdentificacaoCmd,
+  ]),
+);
 
-  programa
-    .command("validar-base")
-    .description("Validar fichas, tópicos, marcos normativos, validações cruzadas e contratos da base de análise")
-    .action(() => {
-      process.exitCode = validarBase();
-    });
+/** `Nome: mensagem`, como a CLI sempre escreveu os erros (`Error: ...`, `ErroResultadosSubagents: ...`). */
+const textoDoErro = (erro: unknown): string =>
+  erro instanceof Error ? `${erro.name}: ${erro.message}` : `${NOME}: ${String(erro)}`;
 
-  programa
-    .command("gerar-schemas")
-    .description("Gerar os JSON Schemas de ficha e marcos normativos a partir do zod (scripts/esquemas.ts)")
-    .option("--check", "verificar se os schemas estão atualizados sem reescrever")
-    .action((opcoes: { check?: boolean }) => {
-      process.exitCode = gerarSchemas(opcoes);
-    });
-
-  programa
-    .command("gerar-indice")
-    .description("Gerar base-analise/indice.json")
-    .option("--check", "verificar se indice.json está atualizado sem reescrever")
-    .action((opcoes: { check?: boolean }) => {
-      process.exitCode = gerarIndice(opcoes);
-    });
-
-  programa
-    .command("gerar-mapa")
-    .description("Gerar base-analise/mapa-fichas.md")
-    .option("--check", "verificar se mapa-fichas.md está atualizado sem reescrever")
-    .action((opcoes: { check?: boolean }) => {
-      process.exitCode = gerarMapa(opcoes);
-    });
-
-  programa
-    .command("gerar-relatorio-html")
-    .description("Gerar o relatório de revisão do PPC (HTML anotado)")
-    .requiredOption("--rodada-dir <dir>", "Diretório da rodada")
-    .option(
-      "--resultados <arquivo>",
-      "JSON coletado dos sub-agentes; relativo a arquivos-suporte quando não absoluto",
-      "resultados-subagents.json",
-    )
-    .option("--sem-surge", "Gerar apenas o HTML local, sem publicar no Surge.")
-    .option("--surge-domain <dominio>", "Domínio Surge de publicação; padrão: revisar-ppc-<rodada>.surge.sh.")
-    .action((opcoes: { rodadaDir: string; resultados: string; semSurge?: boolean; surgeDomain?: string }) => {
-      executar(() => imprimirJson(gerarRelatorio(opcoes)));
-    });
-
-  programa
-    .command("medir-identificacao")
-    .description("Medir a identificação do curso nos PPCs técnicos da base contra dados/institucional/cursos")
-    .option("--amostra", "medir só a amostra fixa usada nos testes")
-    .option("--erros", "listar os casos errados ou vazios")
-    .option("--json", "imprimir a medição completa em JSON")
-    .action((opcoes: { amostra?: boolean; erros?: boolean; json?: boolean }) => {
-      executar(() => {
-        const medicao = medirIdentificacao(opcoes.amostra ? { amostra: AMOSTRA_MEDICAO } : {});
-        if (opcoes.json) process.stdout.write(`${JSON.stringify(medicao, null, 2)}\n`);
-        else process.stdout.write(formatarMedicao(medicao, { erros: Boolean(opcoes.erros) }));
-      });
-    });
-
-  return programa;
-}
+/** Escreve no stderr o que a falha tem a dizer; o código de saída fica com o `runMain`. */
+const relatarFalha = (causa: Cause.Cause<unknown>): Effect.Effect<void> => {
+  if (Cause.hasInterruptsOnly(causa)) return Effect.void;
+  const erro = Cause.findErrorOption(causa);
+  if (Option.isSome(erro)) {
+    if (ehEncerrarComCodigo(erro.value) || CliError.isCliError(erro.value)) return Effect.void;
+    return Console.error(textoDoErro(erro.value));
+  }
+  return Console.error(textoDoErro(Cause.squash(causa)));
+};
 
 if (import.meta.main) {
-  await criarPrograma().parseAsync(process.argv);
+  NodeRuntime.runMain(
+    Command.run(revisarPpc, { version: "0.1.0" }).pipe(
+      Effect.tapCause(relatarFalha),
+      Effect.provide(NodeServices.layer),
+    ),
+    { disableErrorReporting: true },
+  );
 }

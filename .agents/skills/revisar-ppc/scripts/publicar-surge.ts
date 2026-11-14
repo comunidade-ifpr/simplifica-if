@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off extendsNativeError:off -- publicação síncrona pela CLI do Surge; o erro é lançado com a saída da CLI montada no ponto da falha
 /**
  * Publicação do relatório no Surge (porte de `publicar_surge.py`).
  *

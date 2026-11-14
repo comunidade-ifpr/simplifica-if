@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- deriva os marcos pelos carregadores síncronos do kb (relacoes.yaml, vigencia.yaml)
 /**
  * Marcos normativos com os campos derivados (fase 5 do plano de arquitetura).
  *
@@ -36,8 +37,8 @@ export function derivarMarco(marco: MarcoArquivo, derivar: Derivacao): Marco {
     substitui: derivado.substitui,
     antecessoras_historicas: derivado.antecessoras_historicas,
     dispositivos_revogados: derivado.dispositivos_revogados,
-    fichas_responsaveis: marco.fichas_responsaveis,
-    fichas_base_legal: marco.fichas_base_legal,
+    fichas_responsaveis: [...marco.fichas_responsaveis],
+    fichas_base_legal: [...marco.fichas_base_legal],
     transicao: marco.transicao,
     orientacao_analise: marco.orientacao_analise,
   };

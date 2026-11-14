@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off globalDate:off globalConsole:off -- script de execução única: lê o Markdown, grava o PDF e relata no console; a data do relatório é a do sistema
 /**
  * Relatório de verificação de calendário: Markdown → PDF (porte de
  * `render_relatorio_pdf.py`, que usava `reportlab`, para `pdfmake`).

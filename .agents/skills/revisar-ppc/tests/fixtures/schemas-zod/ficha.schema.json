@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://simplifica-if.local/revisar-ppc/ficha.schema.json",
+  "title": "Ficha de análise PPC",
+  "description": "Gerado de .agents/skills/revisar-ppc/scripts/esquemas.ts (zod) por `revisar_ppc.ts gerar-schemas`; não edite à mão.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "titulo": {
+      "type": "string"
+    },
+    "dominio": {
+      "type": "string",
+      "enum": [
+        "identidade",
+        "curriculo",
+        "suporte",
+        "transversal"
+      ]
+    },
+    "criticidade": {
+      "type": "string",
+      "enum": [
+        "BLOQ",
+        "OBRIG",
+        "REC"
+      ]
+    },
+    "topicos_tematicos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tipo_escopo": {
+      "type": "string",
+      "enum": [
+        "tematico",
+        "multitematico",
+        "transversal",
+        "condicional"
+      ]
+    },
+    "ancoras_semanticas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "consultas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "referencias_normativas": {
+      "description": "Uma entrada por dispositivo; entradas consecutivas da mesma norma e do mesmo papel formam uma citação no texto legível",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ref": {
+            "type": "string",
+            "pattern": "^(?:(?:br\\/(?:lei|lc|decreto|decreto-lei|mp|ec)|(?:br|ifpr)\\/[a-z0-9]+(?:-[a-z0-9]+)*\\/(?:res|portaria|nt|parecer|in|deliberacao))\\/(\\d{4})\\/([1-9]\\d*)|externo:[a-z0-9]+(?:[-.][a-z0-9]+)*(?:\\/[a-z0-9]+(?:[-.][a-z0-9]+)*)*|cnct:[a-z0-9]+(?:-[a-z0-9]+)*)$",
+            "description": "ID canônico: ato sem variante (br/..., ifpr/...), stub, externo:... ou cnct:..."
+          },
+          "dispositivo": {
+            "description": "Um dispositivo do ato, como #art28-vii, #art28-par1-iv ou #art24-parunico",
+            "type": "string",
+            "pattern": "^#(?:(?:anexo\\d+-)?art[1-9]\\d*[A-Z]*(?:-par(?:[1-9]\\d*[A-Z]*|unico))?(?:-[ivxlc]+[A-Z]?)?(?:-al-[a-z])?(?:-item\\d+)?|anexo\\d+(?:-item\\d+)?|secao\\d+)$"
+          },
+          "papel": {
+            "type": "string",
+            "enum": [
+              "fundamento",
+              "complementar"
+            ],
+            "description": "fundamento: a ficha aplica a regra; complementar: a ficha só remete à referência"
+          },
+          "nota": {
+            "description": "Detalhe da citação que não cabe em ref e dispositivo",
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "ref",
+          "papel"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "pergunta": {
+      "type": "string"
+    },
+    "rubrica": {
+      "type": "string"
+    },
+    "boa_evidencia": {
+      "type": "string"
+    },
+    "ma_evidencia": {
+      "type": "string"
+    },
+    "escalonar_quando": {
+      "type": "string"
+    },
+    "evidencia_minima": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "estados_permitidos": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "ATENDE",
+          "NAO_ATENDE",
+          "INCONCLUSIVO",
+          "NAO_APLICAVEL"
+        ]
+      }
+    },
+    "feedback_autores": {
+      "type": "object",
+      "properties": {
+        "obrigatorio_quando_estado": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ATENDE",
+              "NAO_ATENDE",
+              "INCONCLUSIVO",
+              "NAO_APLICAVEL"
+            ]
+          }
+        },
+        "orientacao": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "id",
+    "titulo",
+    "dominio",
+    "criticidade",
+    "topicos_tematicos",
+    "tipo_escopo",
+    "ancoras_semanticas",
+    "consultas",
+    "pergunta",
+    "rubrica",
+    "boa_evidencia",
+    "ma_evidencia",
+    "evidencia_minima",
+    "estados_permitidos"
+  ],
+  "additionalProperties": false
+}

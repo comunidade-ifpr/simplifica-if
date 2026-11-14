@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- texto legível das referências pelos carregadores síncronos do kb
 /**
  * Referências normativas das fichas e dos marcos em texto legível, para os consumidores da base de
  * análise (índice, mapa, grupos e prompts dos sub-agentes). A estrutura e a renderização são do

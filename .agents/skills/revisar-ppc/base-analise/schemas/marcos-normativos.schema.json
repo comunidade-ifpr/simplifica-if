@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://simplifica-if.local/revisar-ppc/marcos-normativos.schema.json",
   "title": "Registro de marcos normativos",
-  "description": "Gerado de .agents/skills/revisar-ppc/scripts/esquemas.ts (zod) por `revisar_ppc.ts gerar-schemas`; não edite à mão.",
+  "description": "Gerado de .agents/skills/revisar-ppc/scripts/esquemas.ts (Effect Schema) por `revisar_ppc.ts gerar-schemas`; não edite à mão.",
   "type": "object",
   "properties": {
     "versao": {
@@ -24,12 +24,12 @@
             "type": "string"
           },
           "linha": {
-            "minItems": 1,
             "type": "array",
             "items": {
               "type": "string",
               "pattern": "^(?:br\\/(?:lei|lc|decreto|decreto-lei|mp|ec)|(?:br|ifpr)\\/[a-z0-9]+(?:-[a-z0-9]+)*\\/(?:res|portaria|nt|parecer|in|deliberacao))\\/(\\d{4})\\/([1-9]\\d*)$"
             },
+            "minItems": 1,
             "description": "IDs dos atos do tema, do mais antigo ao mais recente conhecido; vigente, substituídas, antecessoras e dispositivos revogados são derivados de base-conhecimento/relacoes.yaml"
           },
           "aplica_a": {

@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- lê e grava os arquivos da rodada de forma síncrona; o Effect entra nas consultas ao kb (PacoteContexto) e no escopo do banco do PPC
 /**
  * Grupos de fichas, contextos e pacotes de prompt para os sub-agentes e grupo
  * avulso de reavaliação (a mescla da reavaliação fica em `resultados.ts`).
@@ -8,10 +9,18 @@
  * transição, montados pelo `pacote-contexto` do kb (`pacoteContextoAvulso`). O `PPC.md` da rodada
  * é segmentado com a mesma segmentação e taxonomia do índice de seções (`bancoDoPpcAvulso`), porque
  * o PPC analisado pode não estar na base. As fichas transversais vão num grupo com o PPC inteiro.
+ *
+ * As funções que consultam o kb (`montarGruposSubagents`, `montarGrupoAvulso`,
+ * `prepararPromptsSubagents`) são Effects que exigem o serviço `PacoteContexto` do kb, provido uma
+ * vez no ponto de entrada (`camadaKb` em `revisar_ppc.ts`, sobre o `kb.sqlite` fresco). O resto é
+ * leitura e escrita síncrona de arquivos da rodada.
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
+import * as Effect from "effect/Effect";
+import * as Schema from "effect/Schema";
 import * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
+import type * as Sql from "@simplifica-if/kb/db/sql";
 import { bancoDoPpcAvulso } from "@simplifica-if/kb/db/compilar";
 import {
   agruparPorTopico,
@@ -43,7 +52,6 @@ import {
 import type { UniversoReferencias } from "@simplifica-if/kb/normas/referencia-estruturada";
 import { aparar, compararTexto } from "@simplifica-if/kb/texto";
 import { listarArquivos } from "./arquivos.ts";
-import { abrirKb, caminhoDoBanco } from "./kb.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { componentesMatriz, gerarContextoCnctRodada, lerJsonSeExistir } from "./cnct-catalogo.ts";
 import { marcoLegivel, referenciasLegiveisDaFicha, universoOuVazio } from "./referencias-fichas.ts";
@@ -61,6 +69,39 @@ import {
   sha256JsonPayload,
   TAMANHO_GRUPO_PADRAO,
 } from "./rodada.ts";
+
+/** A rodada não tem o `PPC.md` canônico (rode `preparar-documento` antes). */
+export class RodadaSemPpc extends Schema.TaggedError<RodadaSemPpc>()("RodadaSemPpc", {
+  caminho: Schema.String,
+}) {
+  override get message(): string {
+    return `PPC.md não encontrado: ${this.caminho}`;
+  }
+}
+export const ehRodadaSemPpc = Schema.is(RodadaSemPpc);
+
+/** Grupo avulso sem fichas ou com fichas que a base não tem. */
+export class GrupoAvulsoInvalido extends Schema.TaggedError<GrupoAvulsoInvalido>()("GrupoAvulsoInvalido", {
+  desconhecidas: Schema.Array(Schema.String),
+}) {
+  override get message(): string {
+    return this.desconhecidas.length
+      ? `Fichas não encontradas: ${this.desconhecidas.join(", ")}`
+      : "Informe ao menos uma ficha para montar o grupo avulso.";
+  }
+}
+export const ehGrupoAvulsoInvalido = Schema.is(GrupoAvulsoInvalido);
+
+/** `grupos-subagents.json` sem a lista `grupos[]`. */
+export class GruposSubagentsInvalidos extends Schema.TaggedError<GruposSubagentsInvalidos>()(
+  "GruposSubagentsInvalidos",
+  { caminho: Schema.String },
+) {
+  override get message(): string {
+    return "grupos-subagents.json não contém `grupos[]`.";
+  }
+}
+export const ehGruposSubagentsInvalidos = Schema.is(GruposSubagentsInvalidos);
 
 const FICHA_REPRESENTACAO_GRAFICA = "CT-CURR-10";
 export const STATUS_FUNDAMENTACAO_NORMATIVA = [
@@ -405,47 +446,52 @@ const PPC_ID_RODADA = "ppc:rodada";
 const TOPICO_CITACOES_PPC = "referencias_normativas";
 
 /**
- * Contexto do kb para uma rodada: os serviços do kb sobre o `kb.sqlite` (que o ponto de entrada
- * deixa fresco, `garantirBancoFresco` em `kb.ts`) e o banco em memória com o `PPC.md` da rodada
- * segmentado pela taxonomia do índice de seções.
+ * Contexto do kb para uma rodada: o serviço `PacoteContexto` do kb (sobre o `kb.sqlite` que o ponto
+ * de entrada deixa fresco) e o banco em memória com o `PPC.md` da rodada segmentado pela taxonomia
+ * do índice de seções, fechado com o escopo.
  */
 export type ContextoKbRodada = {
   /** Linhas e total de caracteres do `PPC.md`. */
   markdown: string;
-  pacote(fichas: ObjetoPy[], escopo: "secoes" | "completo", citacoesPpc: boolean): PacoteAvulso;
-  fechar(): void;
+  pacote(
+    fichas: ObjetoPy[],
+    escopo: "secoes" | "completo",
+    citacoesPpc: boolean,
+  ): Effect.Effect<PacoteAvulso, Sql.FalhaNaConsulta>;
 };
 
-export function abrirContextoKbRodada(rodada: string, skill: CaminhosAnalise = caminhosPadrao()): ContextoKbRodada {
+export const abrirContextoKbRodada = Effect.fn("subagents.abrirContextoKbRodada")(function* (
+  rodada: string,
+  skill: CaminhosAnalise = caminhosPadrao(),
+) {
+  const pacotes = yield* PacoteContexto.PacoteContexto;
   const caminhos = caminhosRodada(rodada);
   const raiz = NodePath.dirname(skill.baseConhecimentoDir);
-  const { kb, fechar } = abrirKb(caminhoDoBanco(raiz));
   const markdown = lerTexto(caminhos.ppc);
   const lexico = lerSinonimos();
-  const dbPpc = bancoDoPpcAvulso(markdown, {
-    ppcId: PPC_ID_RODADA,
-    path: caminhos.ppc,
-    taxonomia: TAXONOMIA_RODADA,
-    palavrasCampi: palavrasDeCampi(kb(PacoteContexto.PacoteContexto.use((p) => p.nomesDeCampi))),
-    raiz,
-    sinonimos: lexico,
-    todasAsSecoes: true,
-    titulosNivel1: true,
-  });
-  return {
+  const palavrasCampi = palavrasDeCampi(yield* pacotes.nomesDeCampi);
+  const dbPpc = yield* Effect.acquireRelease(
+    Effect.sync(() =>
+      bancoDoPpcAvulso(markdown, {
+        ppcId: PPC_ID_RODADA,
+        path: caminhos.ppc,
+        taxonomia: TAXONOMIA_RODADA,
+        palavrasCampi,
+        raiz,
+        sinonimos: lexico,
+        todasAsSecoes: true,
+        titulosNivel1: true,
+      }),
+    ),
+    (db) => Effect.sync(() => db.close()),
+  );
+  const contexto: ContextoKbRodada = {
     markdown,
     pacote: (fichas, escopo, citacoesPpc) =>
-      kb(
-        PacoteContexto.PacoteContexto.use((p) =>
-          p.avulso(dbPpc, fichas.map(comoFichaPacote), { ppcId: PPC_ID_RODADA, escopo, citacoesPpc, lexico }),
-        ),
-      ),
-    fechar: () => {
-      dbPpc.close();
-      fechar();
-    },
+      pacotes.avulso(dbPpc, fichas.map(comoFichaPacote), { ppcId: PPC_ID_RODADA, escopo, citacoesPpc, lexico }),
   };
-}
+  return contexto;
+});
 
 /** Tópicos temáticos das fichas, sem repetição, em ordem. */
 function topicosDasFichas(fichas: ObjetoPy[]): string[] {
@@ -509,10 +555,15 @@ function fundamentacaoDoGrupo(contextos: Contextos, pacote: PacoteAvulso): Objet
   };
 }
 
-function adicionarContextosGrupo(grupo: Grupo, contextos: Contextos, kb: ContextoKbRodada, ppc: string): void {
+const adicionarContextosGrupo = Effect.fn("subagents.adicionarContextosGrupo")(function* (
+  grupo: Grupo,
+  contextos: Contextos,
+  kb: ContextoKbRodada,
+  ppc: string,
+) {
   const escopo = obter(grupo, "escopo_ppc") === "completo" ? "completo" : "secoes";
   // As fichas de referencias_normativas conferem a base normativa citada em qualquer ponto do PPC.
-  const pacote = kb.pacote(grupo.fichas, escopo, topicosDasFichas(grupo.fichas).includes(TOPICO_CITACOES_PPC));
+  const pacote = yield* kb.pacote(grupo.fichas, escopo, topicosDasFichas(grupo.fichas).includes(TOPICO_CITACOES_PPC));
   const saida: ObjetoPy = { ppc: contextoPpcDoGrupo(pacote, grupo.fichas, kb, ppc) };
   const requerCnct = grupo.fichas.some(fichaRequerContextoCnct);
   grupo.requer_contexto_cnct = requerCnct;
@@ -528,7 +579,7 @@ function adicionarContextosGrupo(grupo: Grupo, contextos: Contextos, kb: Context
   grupo.requer_anexos_visuais = anexosGrupo.length > 0;
   if (anexosGrupo.length) saida.anexos_visuais = anexosGrupo;
   grupo.contextos = saida;
-}
+});
 
 function contextosDaRodada(rodada: string, skill: CaminhosAnalise): Contextos {
   const universo = universoOuVazio(skill);
@@ -564,14 +615,14 @@ export const REGRA_AGRUPAMENTO =
   "e as que a busca pelas consultas das fichas achar.";
 
 /** `montar_grupos_subagents`: grupos por tópico com contextos, gravados em `grupos-subagents.json`. */
-export function montarGruposSubagents(
+export const montarGruposSubagents = Effect.fn("subagents.montarGruposSubagents")(function* (
   rodada: string,
-  tamanhoGrupo = TAMANHO_GRUPO_PADRAO,
+  tamanhoGrupo: number = TAMANHO_GRUPO_PADRAO,
   opcoes: OpcoesSkill = {},
-): ObjetoPy {
+) {
   const skill = opcoes.caminhos ?? caminhosPadrao();
   const caminhos = caminhosRodada(rodada);
-  if (!existe(caminhos.ppc)) throw new Error(`PPC.md não encontrado: ${caminhos.ppc}`);
+  if (!existe(caminhos.ppc)) return yield* new RodadaSemPpc({ caminho: caminhos.ppc });
   const metadata = existe(caminhos.metadata) ? (lerJsonPy(caminhos.metadata) as ObjetoPy) : {};
   const universo = universoOuVazio(skill);
   const fichas = carregarFichasOrdenadas(opcoes.fichasDir ?? skill.fichasDir);
@@ -579,16 +630,12 @@ export function montarGruposSubagents(
   const grupos = agruparFichasPorTopico(fichas, topicos, tamanhoGrupo);
   const contextos = contextosDaRodada(rodada, skill);
   const validacoes = contextoValidacoesCruzadas(rodada, opcoes);
-  const kb = abrirContextoKbRodada(rodada, skill);
-  try {
-    for (const grupo of grupos) {
-      adicionarContextosGrupo(grupo, contextos, kb, caminhos.ppc);
-      grupo.fichas = fichasParaSubagente(grupo.fichas, universo);
-    }
-  } finally {
-    kb.fechar();
+  const kb = yield* abrirContextoKbRodada(rodada, skill);
+  for (const grupo of grupos) {
+    yield* adicionarContextosGrupo(grupo, contextos, kb, caminhos.ppc);
+    grupo.fichas = fichasParaSubagente(grupo.fichas, universo);
   }
-  const payload = {
+  const payload: ObjetoPy = {
     rodada_dir: caminhos.rodadaDir,
     ppc_markdown: caminhos.ppc,
     grupos_subagents_path: caminhos.gruposSubagents,
@@ -610,11 +657,15 @@ export function montarGruposSubagents(
   };
   escreverJsonPy(caminhos.gruposSubagents, payload);
   return payload;
-}
+}, Effect.scoped);
 
 /** `montar_grupo_avulso`: grupo só com as fichas pedidas, gravado em `grupos-avulsos/`, com o pacote de prompt. */
-export function montarGrupoAvulso(rodada: string, fichaIds: string[], opcoes: OpcoesSkill = {}): ObjetoPy {
-  if (!fichaIds.length) throw new Error("Informe ao menos uma ficha para montar o grupo avulso.");
+export const montarGrupoAvulso = Effect.fn("subagents.montarGrupoAvulso")(function* (
+  rodada: string,
+  fichaIds: readonly string[],
+  opcoes: OpcoesSkill = {},
+) {
+  if (!fichaIds.length) return yield* new GrupoAvulsoInvalido({ desconhecidas: [] });
   const skill = opcoes.caminhos ?? caminhosPadrao();
   const caminhos = caminhosRodada(rodada);
   const fichasPorId = new Map<unknown, ObjetoPy>();
@@ -622,7 +673,7 @@ export function montarGrupoAvulso(rodada: string, fichaIds: string[], opcoes: Op
     fichasPorId.set(obrigatorio(ficha, "id"), ficha);
   }
   const faltantes = fichaIds.filter((fichaId) => !fichasPorId.has(fichaId));
-  if (faltantes.length) throw new Error(`Fichas não encontradas: ${faltantes.join(", ")}`);
+  if (faltantes.length) return yield* new GrupoAvulsoInvalido({ desconhecidas: faltantes });
   const universo = universoOuVazio(skill);
   const selecionadas = fichaIds.map((fichaId) => fichasPorId.get(fichaId)!);
   const topicos = carregarTopicosFichas(skill.topicosFichasPath);
@@ -640,12 +691,8 @@ export function montarGrupoAvulso(rodada: string, fichaIds: string[], opcoes: Op
     fichas: selecionadas,
   };
   const contextos = contextosDaRodada(rodada, skill);
-  const kb = abrirContextoKbRodada(rodada, skill);
-  try {
-    adicionarContextosGrupo(grupo, contextos, kb, caminhos.ppc);
-  } finally {
-    kb.fechar();
-  }
+  const kb = yield* abrirContextoKbRodada(rodada, skill);
+  yield* adicionarContextosGrupo(grupo, contextos, kb, caminhos.ppc);
   grupo.fichas = fichasParaSubagente(selecionadas, universo);
   const payload: ObjetoPy = {
     rodada_dir: caminhos.rodadaDir,
@@ -661,7 +708,7 @@ export function montarGrupoAvulso(rodada: string, fichaIds: string[], opcoes: Op
   payload.grupo_avulso_path = destino;
   payload.prompt_subagent_path = prompt;
   return payload;
-}
+}, Effect.scoped);
 
 /** Seções do `PPC.md` listadas em `contextos.ppc.secoes`, cada uma com a linha do título e a origem. */
 function secoesDoPpcEmMarkdown(ppc: string, secoes: unknown[]): string {
@@ -729,14 +776,17 @@ function pacotePromptGrupo(ppc: string, template: string, grupo: unknown): strin
 }
 
 /** `preparar_prompts_subagents`: um pacote Markdown autocontido por grupo, mais `manifest.json`. */
-export function prepararPromptsSubagents(rodada: string, opcoes: OpcoesSkill = {}): ObjetoPy {
+export const prepararPromptsSubagents = Effect.fn("subagents.prepararPromptsSubagents")(function* (
+  rodada: string,
+  opcoes: OpcoesSkill = {},
+) {
   const skill = opcoes.caminhos ?? caminhosPadrao();
   const caminhos = caminhosRodada(rodada);
   const payload = existe(caminhos.gruposSubagents)
     ? (lerJsonPy(caminhos.gruposSubagents) as ObjetoPy)
-    : montarGruposSubagents(rodada, TAMANHO_GRUPO_PADRAO, opcoes);
+    : yield* montarGruposSubagents(rodada, TAMANHO_GRUPO_PADRAO, opcoes);
   const grupos = obter(payload, "grupos");
-  if (!Array.isArray(grupos)) throw new Error("grupos-subagents.json não contém `grupos[]`.");
+  if (!Array.isArray(grupos)) return yield* new GruposSubagentsInvalidos({ caminho: caminhos.gruposSubagents });
   const ppc = lerTexto(caminhos.ppc);
   const templatePath = strPy(
     ou(obter(payload, "prompt_template"), NodePath.join(skill.promptsDir, "subagent-lote-fichas.md")),
@@ -758,7 +808,7 @@ export function prepararPromptsSubagents(rodada: string, opcoes: OpcoesSkill = {
       caracteres: texto.length,
     });
   }
-  const manifest = {
+  const manifest: ObjetoPy = {
     rodada_dir: caminhos.rodadaDir,
     ppc_markdown: caminhos.ppc,
     prompt_template: templatePath,
@@ -768,4 +818,4 @@ export function prepararPromptsSubagents(rodada: string, opcoes: OpcoesSkill = {
   };
   escreverJsonPy(caminhos.promptsSubagentsManifest, manifest);
   return manifest;
-}
+});

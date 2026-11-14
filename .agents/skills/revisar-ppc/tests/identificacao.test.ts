@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off globalDate:off -- os testes leem fixtures, chamam o Python por processo e fixam o relógio com datas dadas
 /**
  * Identificação do curso (curso, campus, forma de oferta, modalidade e eixo)
  * em PPCs Markdown e nos dados da conversão DOCX, mais a medição contra

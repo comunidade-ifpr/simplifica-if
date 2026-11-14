@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off globalDate:off -- os testes geram PDFs em diretórios temporários, chamam o script por processo e fixam a data
 /**
  * PDF do relatório de verificação de calendário (porte de
  * `render_relatorio_pdf.py`, trilha T4). A fixture `relatorio.md` foi

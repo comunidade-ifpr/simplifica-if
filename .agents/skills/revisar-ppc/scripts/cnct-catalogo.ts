@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- comparação síncrona do PPC da rodada com o CNCT, sobre arquivos locais
 /**
  * Comparação do curso do PPC com o Catálogo Nacional de Cursos Técnicos
  * (porte de `cnct_catalogo.py`): busca por denominação, resumo do estágio no

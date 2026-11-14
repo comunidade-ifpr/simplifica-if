@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off globalDate:off -- os testes montam rodadas em diretórios temporários e chamam a CLI por processo, com relógio fixo injetado
 /**
  * Relatório HTML e publicação no Surge da revisar-ppc (casos portados de
  * `test_flow.py`, trilha T2), mais a paridade com o Python 3.14 do

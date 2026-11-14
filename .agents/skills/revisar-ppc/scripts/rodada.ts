@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off globalDate:off -- arquivos da rodada lidos e gravados de forma síncrona; o relógio da rodada é REVISAR_PPC_AGORA ou o do sistema, como no conversor Python
 /**
  * Rodada de análise: caminhos, relógio, hashes e leitura e escrita de JSON
  * (porte de `common.py`). A identificação do curso fica em `identificacao.ts`.

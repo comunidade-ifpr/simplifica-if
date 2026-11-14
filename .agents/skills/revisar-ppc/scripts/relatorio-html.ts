@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- gerador síncrono do relatório HTML a partir dos arquivos da rodada
 /**
  * Relatório HTML da rodada: o PPC anotado com os achados dos sub-agentes
  * (porte de `gerar_relatorio_html.py`, trilha T2).

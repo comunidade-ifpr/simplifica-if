@@ -1,101 +1,109 @@
+// @effect-diagnostics nodeBuiltinImport:off -- gerador síncrono de arquivos da skill, chamado pela CLI e por validar_base.ts
 /**
- * Contratos zod da base de análise: ficha e registro de marcos normativos.
+ * Contratos da base de análise em Effect Schema: ficha e registro de marcos normativos.
  *
- * O zod é a fonte única. `schemas/ficha.schema.json` e `schemas/marcos-normativos.schema.json` são
- * gerados daqui (`revisar_ppc.ts gerar-schemas`), conferidos por `gerar-schemas --check` e por
- * `validar-base`, e servem de documentação e de entrada para o ajv, que dá as mensagens de erro no
- * formato do validador (`$.campo[0]: ...`). Por isso os esquemas não usam refinamentos: tudo o que
- * eles exigem cabe no JSON Schema. As checagens que dependem da base (ID existente, norma revogada,
- * marco) ficam em `validacao-base.ts`.
+ * O Effect Schema é a fonte única. `schemas/ficha.schema.json` e `schemas/marcos-normativos.schema.json`
+ * são gerados daqui (`revisar_ppc.ts gerar-schemas`, `Schema.toJsonSchemaDocument`, draft 2020-12),
+ * conferidos por `gerar-schemas --check` e por `validar-base`, e servem de documentação e de entrada
+ * para o ajv, que dá as mensagens de erro no formato do validador (`$.campo[0]: ...`). Por isso os
+ * esquemas não usam refinamentos: tudo o que eles exigem cabe no JSON Schema. As checagens que
+ * dependem da base (ID existente, norma revogada, marco) ficam em `validacao-base.ts`.
+ *
+ * As descrições são lidas pelos sub-agentes da revisão: mudar o texto muda a revisão.
+ * `tests/schemas-gerados.test.ts` confere que o veredito, as mensagens e as descrições são os do
+ * schema anterior, gerado do zod (`tests/fixtures/schemas-zod/`).
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { z } from "zod";
+import * as Schema from "effect/Schema";
+import * as Struct from "effect/Struct";
 import { jsonIndentado, type ObjetoJson } from "@simplifica-if/kb/json";
 import { RE_ID_ATO, RE_ID_DISPOSITIVO, RE_REFERENCIA } from "@simplifica-if/kb/normas/ids";
-import { PAPEIS_REFERENCIA } from "@simplifica-if/kb/normas/referencia-estruturada";
+import { esquemaReferenciaNormativa } from "@simplifica-if/kb/normas/referencia-estruturada";
 import { escreverTexto } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 
 /**
- * Referência normativa estruturada (`{ ref, dispositivo?, papel, nota? }`), para o JSON Schema da
- * ficha: cópia zod temporária do esquema do kb; o C3 passa a skill a Effect Schema e volta a
- * importar do kb (`esquemaReferenciaNormativa` em `@simplifica-if/kb/normas/referencia-estruturada`,
- * que `referencias-fichas.ts` já usa para validar as referências).
+ * `pattern` do JSON Schema para um `isPattern` cuja expressão não tem a flag `u`: sem ela, o
+ * `Schema.isPattern` não exporta o padrão (o JSON Schema interpreta `pattern` como Unicode). As
+ * expressões dos IDs só têm ASCII, e a leitura com e sem `u` coincide.
  */
-export const esquemaReferenciaNormativa = z.strictObject({
-  ref: z
-    .string()
-    .regex(RE_REFERENCIA)
-    .describe("ID canônico: ato sem variante (br/..., ifpr/...), stub, externo:... ou cnct:..."),
-  dispositivo: z
-    .string()
-    .regex(RE_ID_DISPOSITIVO)
-    .optional()
-    .describe("Um dispositivo do ato, como #art28-vii, #art28-par1-iv ou #art24-parunico"),
-  papel: z
-    .enum(PAPEIS_REFERENCIA)
-    .describe("fundamento: a ficha aplica a regra; complementar: a ficha só remete à referência"),
-  nota: z.string().min(1).optional().describe("Detalhe da citação que não cabe em ref e dispositivo"),
-});
+const padraoJson = (expressao: RegExp) => ({ toJsonSchema: () => ({ pattern: expressao.source }) });
+
+/**
+ * Referência normativa estruturada (`{ ref, dispositivo?, papel, nota? }`): o esquema do kb, com o
+ * `pattern` de `ref` e de `dispositivo` exportado para o JSON Schema (as anotações vão para a
+ * última checagem de cada campo, o `isPattern`; a decodificação não muda).
+ */
+const referenciaNormativa = esquemaReferenciaNormativa.mapFields(
+  Struct.evolve({
+    ref: (campo) => campo.annotate(padraoJson(RE_REFERENCIA)),
+    dispositivo: (campo) => Schema.optionalKey(campo.schema.annotate(padraoJson(RE_ID_DISPOSITIVO))),
+  }),
+);
+
+/** Inteiro (seguro, como o `z.int()`) maior ou igual a 1; no JSON Schema, sem o limite superior. */
+const inteiroPositivo = Schema.Number.check(
+  Schema.isInt({ toJsonSchema: () => ({ type: "integer" }) }),
+  Schema.isGreaterThanOrEqualTo(1),
+);
 
 const ESTADOS = ["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"] as const;
+const textos = Schema.Array(Schema.String);
 
-export const esquemaFicha = z.strictObject({
-  id: z.string(),
-  titulo: z.string(),
-  dominio: z.enum(["identidade", "curriculo", "suporte", "transversal"]),
-  criticidade: z.enum(["BLOQ", "OBRIG", "REC"]),
-  topicos_tematicos: z.array(z.string()),
-  tipo_escopo: z.enum(["tematico", "multitematico", "transversal", "condicional"]),
-  ancoras_semanticas: z.array(z.string()),
-  consultas: z.array(z.string()),
-  referencias_normativas: z
-    .array(esquemaReferenciaNormativa)
-    .optional()
-    .describe(
-      "Uma entrada por dispositivo; entradas consecutivas da mesma norma e do mesmo papel formam uma citação no texto legível",
-    ),
-  pergunta: z.string(),
-  rubrica: z.string(),
-  boa_evidencia: z.string(),
-  ma_evidencia: z.string(),
-  escalonar_quando: z.string().optional(),
-  evidencia_minima: z.int().min(1),
-  estados_permitidos: z.array(z.enum(ESTADOS)),
-  feedback_autores: z
-    .strictObject({
-      obrigatorio_quando_estado: z.array(z.enum(ESTADOS)).optional(),
-      orientacao: z.string().optional(),
-    })
-    .optional(),
-});
-export type Ficha = z.output<typeof esquemaFicha>;
-
-const idAto = z.string().regex(RE_ID_ATO);
-
-export const esquemaMarcosNormativos = z.strictObject({
-  versao: z.int().min(1),
-  descricao: z.string(),
-  marcos: z.array(
-    z.strictObject({
-      id: z.string(),
-      tema: z.string(),
-      linha: z
-        .array(idAto)
-        .min(1)
-        .describe(
-          "IDs dos atos do tema, do mais antigo ao mais recente conhecido; vigente, substituídas, antecessoras e dispositivos revogados são derivados de base-conhecimento/relacoes.yaml",
-        ),
-      aplica_a: z.string(),
-      fichas_responsaveis: z.array(z.string()),
-      fichas_base_legal: z.array(z.string()),
-      transicao: z.string(),
-      orientacao_analise: z.string(),
+export const esquemaFicha = Schema.Struct({
+  id: Schema.String,
+  titulo: Schema.String,
+  dominio: Schema.Literals(["identidade", "curriculo", "suporte", "transversal"]),
+  criticidade: Schema.Literals(["BLOQ", "OBRIG", "REC"]),
+  topicos_tematicos: textos,
+  tipo_escopo: Schema.Literals(["tematico", "multitematico", "transversal", "condicional"]),
+  ancoras_semanticas: textos,
+  consultas: textos,
+  referencias_normativas: Schema.optionalKey(
+    Schema.Array(referenciaNormativa).annotate({
+      description:
+        "Uma entrada por dispositivo; entradas consecutivas da mesma norma e do mesmo papel formam uma citação no texto legível",
+    }),
+  ),
+  pergunta: Schema.String,
+  rubrica: Schema.String,
+  boa_evidencia: Schema.String,
+  ma_evidencia: Schema.String,
+  escalonar_quando: Schema.optionalKey(Schema.String),
+  evidencia_minima: inteiroPositivo,
+  estados_permitidos: Schema.Array(Schema.Literals(ESTADOS)),
+  feedback_autores: Schema.optionalKey(
+    Schema.Struct({
+      obrigatorio_quando_estado: Schema.optionalKey(Schema.Array(Schema.Literals(ESTADOS))),
+      orientacao: Schema.optionalKey(Schema.String),
     }),
   ),
 });
-export type MarcosNormativos = z.output<typeof esquemaMarcosNormativos>;
+export type Ficha = typeof esquemaFicha.Type;
+
+export const esquemaMarcosNormativos = Schema.Struct({
+  versao: inteiroPositivo,
+  descricao: Schema.String,
+  marcos: Schema.Array(
+    Schema.Struct({
+      id: Schema.String,
+      tema: Schema.String,
+      linha: Schema.Array(Schema.String.check(Schema.isPattern(RE_ID_ATO, padraoJson(RE_ID_ATO))))
+        .check(Schema.isMinLength(1))
+        .annotate({
+          description:
+            "IDs dos atos do tema, do mais antigo ao mais recente conhecido; vigente, substituídas, antecessoras e dispositivos revogados são derivados de base-conhecimento/relacoes.yaml",
+        }),
+      aplica_a: Schema.String,
+      fichas_responsaveis: textos,
+      fichas_base_legal: textos,
+      transicao: Schema.String,
+      orientacao_analise: Schema.String,
+    }),
+  ),
+});
+export type MarcosNormativos = typeof esquemaMarcosNormativos.Type;
 /** Marco como está no arquivo (identificação, transição e orientação). */
 export type MarcoArquivo = MarcosNormativos["marcos"][number];
 
@@ -123,24 +131,24 @@ const GERADOS = {
 export type NomeSchemaGerado = keyof typeof GERADOS;
 export const SCHEMAS_GERADOS = Object.keys(GERADOS) as NomeSchemaGerado[];
 
-/** JSON Schema (draft 2020-12) gerado do zod, com `$id` e título estáveis. */
+const DIALETO = "https://json-schema.org/draft/2020-12/schema";
+
+/**
+ * JSON Schema (draft 2020-12) gerado do Effect Schema, com `$id` e título estáveis. Os objetos
+ * recusam chaves a mais (`additionalProperties: false`), como na decodificação com
+ * `onExcessProperty: "error"`; as definições compartilhadas, se houver, vão em `$defs`.
+ */
 export function jsonSchemaGerado(nome: NomeSchemaGerado): ObjetoJson {
   const { esquema, titulo } = GERADOS[nome];
-  const gerado = z.toJSONSchema(esquema, {
-    target: "draft-2020-12",
-    override: (contexto) => {
-      // `z.int()` emite os limites de inteiro seguro; o contrato não tem limite superior.
-      const no = contexto.jsonSchema as ObjetoJson;
-      if (no.maximum === Number.MAX_SAFE_INTEGER) delete no.maximum;
-    },
-  }) as ObjetoJson;
-  const { $schema, ...resto } = gerado;
+  const documento = Schema.toJsonSchemaDocument(esquema, { onExcessProperty: "error" });
+  const definicoes = Object.keys(documento.definitions).length ? { $defs: documento.definitions } : {};
   return {
-    $schema,
+    $schema: DIALETO,
     $id: `https://simplifica-if.local/revisar-ppc/${nome}`,
     title: titulo,
-    description: `Gerado de .agents/skills/revisar-ppc/scripts/esquemas.ts (zod) por \`revisar_ppc.ts gerar-schemas\`; não edite à mão.`,
-    ...resto,
+    description: `Gerado de .agents/skills/revisar-ppc/scripts/esquemas.ts (Effect Schema) por \`revisar_ppc.ts gerar-schemas\`; não edite à mão.`,
+    ...(documento.schema as ObjetoJson),
+    ...definicoes,
   };
 }
 
@@ -153,7 +161,7 @@ export function escreverSchemas(caminhos: CaminhosAnalise = caminhosPadrao()): s
   });
 }
 
-/** Arquivos de `schemas/` que não coincidem com o gerado do zod (vazio quando estão em dia). */
+/** Arquivos de `schemas/` que não coincidem com o gerado do Effect Schema (vazio quando estão em dia). */
 export function schemasDesatualizados(caminhos: CaminhosAnalise = caminhosPadrao()): string[] {
   return SCHEMAS_GERADOS.map((nome) => NodePath.join(caminhos.schemasDir, nome)).filter(
     (arquivo) =>

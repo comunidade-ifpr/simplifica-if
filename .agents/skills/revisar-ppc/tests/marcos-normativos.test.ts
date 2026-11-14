@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- os testes copiam a base para diretórios temporários
 import { afterEach, describe, expect, test } from "vite-plus/test";
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
