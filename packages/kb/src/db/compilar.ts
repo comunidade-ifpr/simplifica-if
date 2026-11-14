@@ -17,11 +17,10 @@
  * - o arquivo é escrito num temporário e renomeado (quem lê nunca vê um banco pela metade).
  * O teste `base.test.ts` compila duas vezes e compara o SHA-256 dos arquivos.
  */
-import * as NodeSqlite from "node:sqlite";
-import { emTransacao } from "./transacao.ts";
+import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { z } from "zod";
+import * as NodeSqlite from "node:sqlite";
 import { expansaoDoTipo, lerSinonimos, type Sinonimos } from "../busca/sinonimos.ts";
 import { radicais } from "../busca/tokens.ts";
 import { cruzarPpcSuap } from "../fatos/divergencias.ts";
@@ -52,10 +51,11 @@ import {
   esquemaLinhaTabelaCorrespondencia,
   esquemaLinhaTransicao,
   esquemaLinhaVigencia,
-  type FontesNormativas,
+  type LinhasNormativas,
 } from "./fontes-normativas.ts";
 import { fontesNormativasArquivos } from "../normas/fontes-db.ts";
 import { lerTopicosSecoes, type TopicosSecoes } from "../ppcs/topicos.ts";
+import { emTransacao } from "./transacao.ts";
 
 export const PAGE_SIZE = 4096;
 
@@ -63,7 +63,7 @@ export interface OpcoesCompilacao {
   raiz?: string;
   destino?: string;
   /** Carga da fase 5 (padrão: `fontesNormativasArquivos(raiz)`, pela API de `normas/`). */
-  fontesNormativas?: FontesNormativas;
+  fontesNormativas?: LinhasNormativas;
   /** Léxico de sinônimos (padrão: `packages/kb/dados/sinonimos.yaml`). */
   sinonimos?: Sinonimos;
   /** Tópicos das fichas → tipos de seção (padrão: `packages/kb/dados/topicos-secoes.yaml`). */
@@ -95,120 +95,148 @@ function lerJson(arquivo: string): unknown {
 
 /* ---------------------------------------------------------- esquemas de leitura */
 
-const esquemaManifest = z.array(
-  z.looseObject({
-    id: z.string(),
-    title: z.string(),
-    tipo_documento: z.string().optional(),
-    numero: z.union([z.string(), z.number()]).optional(),
-    ano: z.number().int().optional(),
-    data_publicacao: z.string().optional(),
-    orgao: z.string().optional(),
-    jurisdicao: z.string().optional(),
-    ementa: z.string().optional(),
-    status_vigencia: z.string().optional(),
-    keywords: z.array(z.string()).optional(),
-    aliases: z.array(z.string()).optional(),
-    fonte: z.string().optional(),
-    path: z.string(),
+const texto = Schema.optionalKey(Schema.String);
+const resto = [Schema.Record(Schema.String, Schema.Unknown)] as const;
+/** Objeto frouxo: exige os campos dados e deixa os demais na saída, na ordem de entrada, depois deles. */
+const solto = <Campos extends Schema.Struct.Fields>(campos: Campos) =>
+  Schema.StructWithRest(Schema.Struct(campos), resto);
+
+const esquemaManifest = Schema.Array(
+  solto({
+    id: Schema.String,
+    title: Schema.String,
+    tipo_documento: texto,
+    numero: Schema.optionalKey(Schema.Union([Schema.String, Schema.Number])),
+    ano: Schema.optionalKey(Schema.Int),
+    data_publicacao: texto,
+    orgao: texto,
+    jurisdicao: texto,
+    ementa: texto,
+    status_vigencia: texto,
+    keywords: Schema.optionalKey(Schema.Array(Schema.String)),
+    aliases: Schema.optionalKey(Schema.Array(Schema.String)),
+    fonte: texto,
+    path: Schema.String,
   }),
 );
 
-const esquemaIndicePpcs = z.looseObject({
-  items: z.array(
-    z.looseObject({
-      id: z.string(),
-      campus_id: z.string(),
-      campus_nome: z.string(),
-      curso_slug: z.string(),
-      curso_nome: z.string(),
-      nivel: z.string(),
-      taxonomia: z.string().optional(),
-      tipo_oferta: z.string(),
-      curso_url: z.string().optional(),
-      fonte_pdf: z.string().optional(),
-      path: z.string(),
-      proveniencia: z.unknown().optional(),
-      ano_documento: z.number().int().optional(),
+const esquemaIndicePpcs = solto({
+  items: Schema.Array(
+    solto({
+      id: Schema.String,
+      campus_id: Schema.String,
+      campus_nome: Schema.String,
+      curso_slug: Schema.String,
+      curso_nome: Schema.String,
+      nivel: Schema.String,
+      taxonomia: texto,
+      tipo_oferta: Schema.String,
+      curso_url: texto,
+      fonte_pdf: texto,
+      path: Schema.String,
+      proveniencia: Schema.optionalKey(Schema.Unknown),
+      ano_documento: Schema.optionalKey(Schema.Int),
     }),
   ),
-  secoes: z.looseObject({ paths: z.record(z.string(), z.string()) }),
+  secoes: solto({ paths: Schema.Record(Schema.String, Schema.String) }),
 });
 
-const esquemaSecaoJsonl = z.looseObject({
-  id: z.string(),
-  ppc_id: z.string(),
-  section_kind: z.string(),
-  origem_tipo: z.string().optional(),
-  heading: z.string(),
-  numeracao: z.string().nullable().optional(),
-  path: z.string(),
-  linha_inicio: z.number().int(),
-  linha_fim: z.number().int(),
+const esquemaSecaoJsonl = solto({
+  id: Schema.String,
+  ppc_id: Schema.String,
+  section_kind: Schema.String,
+  origem_tipo: texto,
+  heading: Schema.String,
+  numeracao: Schema.optionalKey(Schema.NullOr(Schema.String)),
+  path: Schema.String,
+  linha_inicio: Schema.Int,
+  linha_fim: Schema.Int,
 });
+type SecaoJsonl = typeof esquemaSecaoJsonl.Type;
 
-const esquemaCnctIndice = z.looseObject({
-  items: z.array(
-    z.looseObject({
-      id: z.string(),
-      denominacao: z.string(),
-      eixo_tecnologico: z.string(),
-      area_tecnologica: z.string().optional(),
-      carga_horaria_minima_horas: z.number().optional(),
-      path: z.string().optional(),
+const esquemaCnctIndice = solto({
+  items: Schema.Array(
+    solto({
+      id: Schema.String,
+      denominacao: Schema.String,
+      eixo_tecnologico: Schema.String,
+      area_tecnologica: texto,
+      carga_horaria_minima_horas: Schema.optionalKey(Schema.Number),
+      path: texto,
     }),
   ),
 });
 
-const esquemaFicha = z.looseObject({
-  id: z.string(),
-  titulo: z.string(),
-  dominio: z.string().optional(),
-  criticidade: z.string().optional(),
-  tipo_escopo: z.string().optional(),
-  pergunta: z.string().optional(),
-  rubrica: z.string().optional(),
-  topicos_tematicos: z.array(z.string()).optional(),
-  referencias_normativas: z
-    .array(
-      z.looseObject({
-        ref: z.string(),
-        dispositivo: z.string().optional(),
-        papel: z.string(),
-        nota: z.string().optional(),
+const esquemaFicha = solto({
+  id: Schema.String,
+  titulo: Schema.String,
+  dominio: texto,
+  criticidade: texto,
+  tipo_escopo: texto,
+  pergunta: texto,
+  rubrica: texto,
+  topicos_tematicos: Schema.optionalKey(Schema.Array(Schema.String)),
+  referencias_normativas: Schema.optionalKey(
+    Schema.Array(
+      solto({
+        ref: Schema.String,
+        dispositivo: texto,
+        papel: Schema.String,
+        nota: texto,
       }),
-    )
-    .optional(),
+    ),
+  ),
 });
 
-const esquemaTopicos = z.looseObject({
-  topicos: z.array(
-    z.looseObject({
-      id: z.string(),
-      titulo: z.string(),
-      grupo: z.string().optional(),
-      tipo_escopo: z.string().optional(),
-      descricao: z.string().optional(),
-      aliases_titulo: z.array(z.string()).optional(),
-      termos_busca: z.array(z.string()).optional(),
-      fichas: z.array(z.string()).optional(),
+/** Só a lista de tópicos, crua: `dados_json` de cada tópico guarda o item como está no arquivo. */
+const esquemaTopicosBrutos = Schema.Struct({ topicos: Schema.Array(Schema.Unknown) });
+
+const esquemaTopicos = solto({
+  topicos: Schema.Array(
+    solto({
+      id: Schema.String,
+      titulo: Schema.String,
+      grupo: texto,
+      tipo_escopo: texto,
+      descricao: texto,
+      aliases_titulo: Schema.optionalKey(Schema.Array(Schema.String)),
+      termos_busca: Schema.optionalKey(Schema.Array(Schema.String)),
+      fichas: Schema.optionalKey(Schema.Array(Schema.String)),
     }),
   ),
 });
 
-const esquemaMarcos = z.looseObject({
-  marcos: z.array(
-    z.looseObject({
-      id: z.string(),
-      tema: z.string(),
+const esquemaMarcos = solto({
+  marcos: Schema.Array(
+    solto({
+      id: Schema.String,
+      tema: Schema.String,
       /** Atos do tema, do mais antigo ao mais recente conhecido (o resto é derivado: `derivarLinha`). */
-      linha: z.array(z.string()).min(1),
-      aplica_a: z.string().optional(),
-      transicao: z.string().optional(),
-      orientacao_analise: z.string().optional(),
+      linha: Schema.Array(Schema.String).check(Schema.isMinLength(1)),
+      aplica_a: texto,
+      transicao: texto,
+      orientacao_analise: texto,
     }),
   ),
 });
+
+// Decodificadores compilados uma vez. Os das linhas da fase 5 recusam chaves extras: as linhas vão
+// inteiras para o INSERT, e uma chave a mais viraria uma coluna inexistente.
+const decodificarManifest = Schema.decodeUnknownSync(esquemaManifest);
+const decodificarIndicePpcs = Schema.decodeUnknownSync(esquemaIndicePpcs);
+const decodificarSecaoJsonl = Schema.decodeUnknownSync(esquemaSecaoJsonl);
+const decodificarCnctIndice = Schema.decodeUnknownSync(esquemaCnctIndice);
+const decodificarFicha = Schema.decodeUnknownSync(esquemaFicha);
+const decodificarTopicosBrutos = Schema.decodeUnknownSync(esquemaTopicosBrutos);
+const decodificarTopicos = Schema.decodeUnknownSync(esquemaTopicos);
+const decodificarMarcos = Schema.decodeUnknownSync(esquemaMarcos);
+const estrito = { onExcessProperty: "error" } as const;
+const decodificarLinhaDispositivo = Schema.decodeUnknownSync(esquemaLinhaDispositivo, estrito);
+const decodificarLinhaRelacao = Schema.decodeUnknownSync(esquemaLinhaRelacao, estrito);
+const decodificarLinhaVigencia = Schema.decodeUnknownSync(esquemaLinhaVigencia, estrito);
+const decodificarLinhaTransicao = Schema.decodeUnknownSync(esquemaLinhaTransicao, estrito);
+const decodificarLinhaTabelaCorrespondencia = Schema.decodeUnknownSync(esquemaLinhaTabelaCorrespondencia, estrito);
+const decodificarLinhaCorrespondencia = Schema.decodeUnknownSync(esquemaLinhaCorrespondencia, estrito);
 
 /* ------------------------------------------------------------------- papel */
 
@@ -526,7 +554,7 @@ export interface ContextoPreenchimento {
   base: string;
   lexico: Sinonimos;
   topicosSecoes: ReturnType<typeof lerTopicosSecoes>;
-  fontesNormativas: FontesNormativas;
+  fontesNormativas: LinhasNormativas;
   arquivos: readonly string[];
   fontesSha: string;
   /** Identificação da distribuição gravada em `meta` (só quando informada). */
@@ -549,7 +577,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
   emTransacao(db, () => {
     /* ---------- normas */
     const registro = carregarRegistro(raiz);
-    const manifest = esquemaManifest.parse(lerJson(NodePath.join(base, "manifest.json")));
+    const manifest = decodificarManifest(lerJson(NodePath.join(base, "manifest.json")));
     const insFtsNorma = db.prepare("INSERT INTO normas_fts (rowid, titulo, texto, radicais) VALUES (?, ?, ?, ?)");
     const blocoMetadados = (
       id: string,
@@ -640,7 +668,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         path: arquivo,
       });
     }
-    const cnct = esquemaCnctIndice.parse(lerJson(NodePath.join(base, "catalogos", "cnct", "index.json")));
+    const cnct = decodificarCnctIndice(lerJson(NodePath.join(base, "catalogos", "cnct", "index.json")));
     for (const item of [...cnct.items].sort((a, b) => compararTexto(a.id, b.id))) {
       const caminho = item.path ? `${BASE}/${item.path}` : null;
       const completo =
@@ -657,7 +685,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       });
     }
 
-    const indice = esquemaIndicePpcs.parse(lerJson(NodePath.join(base, "institucional", "ifpr", "ppcs", "index.json")));
+    const indice = decodificarIndicePpcs(lerJson(NodePath.join(base, "institucional", "ifpr", "ppcs", "index.json")));
     const itensPpc = [...indice.items].sort((a, b) => compararTexto(a.id, b.id));
     const ppcPorPath = new Map(itensPpc.map((item) => [item.path, item]));
     const cursoPorPpcPath = new Map<string, string>();
@@ -766,12 +794,12 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
     }
 
     /* ---------- PPCs, seções, citações e fatos */
-    const secoesPorPath = new Map<string, z.output<typeof esquemaSecaoJsonl>[]>();
+    const secoesPorPath = new Map<string, SecaoJsonl[]>();
     for (const tipo of Object.keys(indice.secoes.paths).sort(compararTexto)) {
       const arquivo = NodePath.join(base, indice.secoes.paths[tipo]!);
       for (const linha of NodeFS.readFileSync(arquivo, "utf-8").split("\n")) {
         if (!linha.trim()) continue;
-        const secao = esquemaSecaoJsonl.parse(JSON.parse(linha));
+        const secao = decodificarSecaoJsonl(JSON.parse(linha));
         const lista = secoesPorPath.get(secao.path) ?? [];
         lista.push(secao);
         secoesPorPath.set(secao.path, lista);
@@ -899,7 +927,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
     const fichas = arquivosFichas
       .map((nome) => {
         const bruto = lerJson(NodePath.join(dirFichas, nome));
-        return { nome, bruto, ficha: esquemaFicha.parse(bruto) };
+        return { nome, bruto, ficha: decodificarFicha(bruto) };
       })
       .sort((a, b) => compararTexto(a.ficha.id, b.ficha.id));
     const fichaTopico = new Set<string>();
@@ -931,8 +959,8 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
     const arquivoTopicos = NodePath.join(raiz, ANALISE, "topicos-fichas.json");
     if (NodeFS.existsSync(arquivoTopicos)) {
       const bruto = lerJson(arquivoTopicos);
-      const brutos = z.looseObject({ topicos: z.array(z.unknown()) }).parse(bruto).topicos;
-      const topicos = esquemaTopicos.parse(bruto).topicos.map((t, ordem) => ({ ...t, ordem, bruto: brutos[ordem] }));
+      const brutos = decodificarTopicosBrutos(bruto).topicos;
+      const topicos = decodificarTopicos(bruto).topicos.map((t, ordem) => ({ ...t, ordem, bruto: brutos[ordem] }));
       for (const t of [...topicos].sort((a, b) => compararTexto(a.id, b.id))) {
         ins.inserir("topicos", {
           id: t.id,
@@ -970,7 +998,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
     // dispositivos revogados vêm de derivarLinha (fase 5) na data_referencia, como na revisar-ppc.
     const arquivoMarcos = NodePath.join(raiz, ANALISE, "marcos-normativos.json");
     if (NodeFS.existsSync(arquivoMarcos)) {
-      const marcos = esquemaMarcos.parse(lerJson(arquivoMarcos));
+      const marcos = decodificarMarcos(lerJson(arquivoMarcos));
       const referencia = dataReferencia(raiz);
       for (const m of [...marcos.marcos].sort((a, b) => compararTexto(a.id, b.id))) {
         const derivado = derivarLinha(m.linha, referencia, raiz);
@@ -991,7 +1019,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
     /* ---------- fase 5: dispositivos (com FTS), relações, vigências, transições, correspondências */
     const insFtsDispositivo = db.prepare("INSERT INTO dispositivos_fts (rowid, texto, radicais) VALUES (?, ?, ?)");
     for (const linha of fontesNormativas.dispositivos()) {
-      const { caput, estrutura, notas, ...d } = esquemaLinhaDispositivo.parse(linha);
+      const { caput, estrutura, notas, ...d } = decodificarLinhaDispositivo(linha);
       const rowid = ins.inserir("dispositivos", {
         ...d,
         caput_json: json(caput),
@@ -1000,14 +1028,14 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       });
       if (d.canonico) insFtsDispositivo.run(rowid, d.texto_com_caput, radicais(d.texto_com_caput).join(" "));
     }
-    for (const linha of fontesNormativas.relacoes()) ins.inserir("relacoes", esquemaLinhaRelacao.parse(linha));
-    for (const linha of fontesNormativas.vigencias()) ins.inserir("vigencias", esquemaLinhaVigencia.parse(linha));
-    for (const linha of fontesNormativas.transicoes()) ins.inserir("transicoes", esquemaLinhaTransicao.parse(linha));
+    for (const linha of fontesNormativas.relacoes()) ins.inserir("relacoes", decodificarLinhaRelacao(linha));
+    for (const linha of fontesNormativas.vigencias()) ins.inserir("vigencias", decodificarLinhaVigencia(linha));
+    for (const linha of fontesNormativas.transicoes()) ins.inserir("transicoes", decodificarLinhaTransicao(linha));
     for (const linha of fontesNormativas.tabelasCorrespondencia()) {
-      ins.inserir("correspondencias_tabelas", esquemaLinhaTabelaCorrespondencia.parse(linha));
+      ins.inserir("correspondencias_tabelas", decodificarLinhaTabelaCorrespondencia(linha));
     }
     for (const linha of fontesNormativas.correspondencias()) {
-      const { destino, ...c } = esquemaLinhaCorrespondencia.parse(linha);
+      const { destino, ...c } = decodificarLinhaCorrespondencia(linha);
       ins.inserir("correspondencias", { ...c, destino_json: json(destino) });
     }
     // citações entre normas (para o impacto): as mesmas que o impacto extrai dos arquivos

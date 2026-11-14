@@ -1,5 +1,6 @@
+// @effect-diagnostics nodeBuiltinImport:off -- carga síncrona das linhas da fase 5 sobre os carregadores de normas/, usada pela compilação do banco
 /**
- * `FontesNormativas` (a carga da fase 5 no `kb.sqlite`, `db/fontes-normativas.ts`) pela API de
+ * `LinhasNormativas` (a carga da fase 5 no `kb.sqlite`, `db/fontes-normativas.ts`) pela API de
  * arquivos de `normas/`: nenhuma regra nova aqui, só o mapeamento para as linhas das tabelas.
  *
  * - `dispositivos`: `carregarEstruturas` (todas as normas, compilação da LDB inclusive, na ordem dos
@@ -13,14 +14,14 @@
  *
  * Ordem estável: arquivos por caminho, itens na ordem do arquivo, atos por ID (code point).
  */
-import path from "node:path";
+import * as NodePath from "node:path";
 import type {
-  FontesNormativas,
   LinhaCorrespondencia,
   LinhaDispositivo,
   LinhaRelacao,
   LinhaTabelaCorrespondencia,
   LinhaTransicao,
+  LinhasNormativas,
   LinhaVigencia,
 } from "../db/fontes-normativas.ts";
 import { compararTexto } from "../texto.ts";
@@ -40,7 +41,7 @@ import {
 const BASE = "base-conhecimento";
 
 function relativo(raiz: string, absoluto: string): string {
-  return path.relative(raiz, absoluto).split(path.sep).join("/");
+  return NodePath.relative(raiz, absoluto).split(NodePath.sep).join("/");
 }
 
 /** Linha da tabela `dispositivos` de cada dispositivo das normas da base. */
@@ -166,7 +167,7 @@ export function* linhasCorrespondencias(raiz: string = raizRepositorio()): Gener
 }
 
 /** A carga da fase 5 sobre os arquivos do checkout em `raiz`. */
-export function fontesNormativasArquivos(raiz: string = raizRepositorio()): FontesNormativas {
+export function fontesNormativasArquivos(raiz: string = raizRepositorio()): LinhasNormativas {
   return {
     dispositivos: () => linhasDispositivos(raiz),
     relacoes: () => linhasRelacoes(raiz),
