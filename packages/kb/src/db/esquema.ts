@@ -9,11 +9,13 @@
  * - toda linha com texto tem a proveniência: `path` (relativo à raiz do repositório, salvo onde dito)
  *   e linhas (`linha`, `linha_inicio`, `linha_fim`, desde 1, no arquivo com o front matter);
  * - listas e objetos auxiliares em colunas `*_json` (JSON compacto, chaves na ordem do arquivo).
+ * - `meta`: versão do esquema, data de referência, hashes das fontes e contagens; `versao`, `commit` e
+ *   `canal` só quando o build os informa (nada vem do relógio);
  * - FTS5 sem conteúdo próprio (`content=''`): o texto fica uma vez só, nas tabelas comuns, e o
  *   `rowid` do FTS é o da tabela de origem.
  */
 
-export const VERSAO_ESQUEMA = 2;
+export const VERSAO_ESQUEMA = 3;
 
 const TOKENIZADOR = `tokenize="unicode61 remove_diacritics 2"`;
 
@@ -195,6 +197,9 @@ CREATE TABLE ppcs (
   fonte_pdf TEXT,
   path TEXT NOT NULL,
   linhas INTEGER NOT NULL,
+  -- tamanho do arquivo em caracteres (String.length, fim de linha como no arquivo): o pacote de
+  -- contexto compara o pacote com o PPC inteiro sem abrir o Markdown
+  caracteres INTEGER NOT NULL,
   proveniencia_json TEXT NOT NULL
 );
 
@@ -281,7 +286,10 @@ CREATE TABLE fichas (
   pergunta TEXT,
   rubrica TEXT,
   path TEXT NOT NULL,
-  dados_json TEXT NOT NULL
+  dados_json TEXT NOT NULL,
+  -- o arquivo da ficha em JSON compacto, com as chaves na ordem do arquivo (dados_json segue o
+  -- esquema de leitura): o impacto percorre os textos da ficha nessa ordem
+  arquivo_json TEXT NOT NULL
 );
 
 CREATE TABLE fichas_referencias (
@@ -295,14 +303,38 @@ CREATE TABLE fichas_referencias (
 ) WITHOUT ROWID;
 CREATE INDEX fichas_referencias_ref ON fichas_referencias(ref);
 
+-- ordem: a do arquivo (topicos-fichas.json), que decide o grupo da ficha e a ordem dos grupos;
+-- dados_json: o tópico como no arquivo.
 CREATE TABLE topicos (
   id TEXT PRIMARY KEY,
+  ordem INTEGER NOT NULL UNIQUE,
   titulo TEXT NOT NULL,
   grupo TEXT,
   tipo_escopo TEXT,
   descricao TEXT,
   termos_json TEXT NOT NULL,
+  path TEXT NOT NULL,
+  dados_json TEXT NOT NULL
+);
+
+-- Tópicos das fichas → tipos de seção do PPC (packages/kb/dados/topicos-secoes.yaml), na ordem do arquivo.
+CREATE TABLE topicos_secoes (
+  ordem INTEGER PRIMARY KEY,
+  topico TEXT NOT NULL UNIQUE,
+  tipos_json TEXT NOT NULL,
   path TEXT NOT NULL
+);
+
+-- Léxico da busca de seções (packages/kb/dados/sinonimos.yaml), na ordem do arquivo: termos de cada
+-- tipo de seção (expansão do documento) e grupos de termos equivalentes (expansão da consulta).
+CREATE TABLE sinonimos_tipos (
+  ordem INTEGER PRIMARY KEY,
+  tipo TEXT NOT NULL UNIQUE,
+  termos_json TEXT NOT NULL
+);
+CREATE TABLE sinonimos_grupos (
+  ordem INTEGER PRIMARY KEY,
+  termos_json TEXT NOT NULL
 );
 
 CREATE TABLE fichas_topicos (
@@ -409,6 +441,24 @@ CREATE TABLE transicoes (
   path TEXT NOT NULL
 );
 CREATE INDEX transicoes_norma ON transicoes(norma_id);
+
+-- Citações resolvidas no texto das normas da base (dispositivos e preâmbulo), uma por citação com
+-- ID, para o impacto sem reprocessar os Markdown (normas/citacoes-normas.ts). Ordem: normas por
+-- caminho, segmentos e citações na ordem do texto. segmento: sufixo do dispositivo citante
+-- (#art5-ii) ou 'preâmbulo'.
+CREATE TABLE normas_citacoes (
+  rowid INTEGER PRIMARY KEY,
+  norma_id TEXT NOT NULL,
+  ato_id TEXT NOT NULL,
+  segmento TEXT NOT NULL,
+  citado_id TEXT NOT NULL,
+  citado_ato TEXT NOT NULL,
+  dispositivos_json TEXT NOT NULL,
+  trecho TEXT NOT NULL,
+  path TEXT NOT NULL,
+  linha_inicio INTEGER NOT NULL
+);
+CREATE INDEX normas_citacoes_citado ON normas_citacoes(citado_ato);
 CREATE INDEX transicoes_anterior ON transicoes(norma_anterior);
 
 CREATE TABLE correspondencias_tabelas (

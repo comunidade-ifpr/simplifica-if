@@ -14,17 +14,22 @@
  * Os arquivos de conteúdo podem vir de outra árvore (`raizConteudo`, por exemplo um `git archive` de
  * um commit antigo), para medir o impacto contra uma revisão real; o registro, as relações e a
  * correspondência vêm sempre de `raiz`.
+ *
+ * A regra é `impactoEm`, sobre uma `FonteImpacto`: os arquivos (`fonteImpactoArquivos`, o que
+ * `impacto` usa) ou o `kb.sqlite` (`fonteImpactoBanco`, em `db/modo-banco.ts`). O banco guarda as
+ * fichas da `revisar-ppc`, mas não os outros textos das skills: no modo banco, `arquivos` traz só
+ * fichas.
  */
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
-import { carregarCorrespondencias, correspondencia, destinosDeOrigem } from "./correspondencia.ts";
-import { carregarEstruturas, dispositivosDoAto } from "./estrutura.ts";
+import { type PpcCitante, ppcsQueCitam } from "../ppcs/citacoes.ts";
+import { type CitacaoResolvida, citacoesResolvidas, segmentosCitantes } from "./citacoes-normas.ts";
+import { correspondenciaEm, type FonteCorrespondencia, fonteCorrespondenciaArquivos } from "./correspondencia.ts";
+import { dispositivosDoAto } from "./estrutura.ts";
 import { idDoAto } from "./ids.ts";
 import { carregarRegistro, raizRepositorio, type Registro } from "./registro.ts";
-import { carregarRelacoes, relacaoParcial } from "./relacoes.ts";
-import { extrairCitacoes } from "./resolver.ts";
-import { dataReferencia, statusEm, transicoesAplicaveis } from "./vigencia.ts";
-import { ppcsQueCitam } from "../ppcs/citacoes.ts";
+import { carregarRelacoes, type Relacao, relacaoParcial } from "./relacoes.ts";
+import { dataReferencia, type RaizOuFonte, statusEm, transicoesAplicaveis } from "./vigencia.ts";
 
 export type MotivoImpacto =
   | "referencia"
@@ -67,27 +72,88 @@ function semAcentoMinusculo(texto: string): string {
     .toLowerCase();
 }
 
+/** Tópico da taxonomia das fichas (`topicos-fichas.json`), como o impacto o lê. */
+export interface TopicoTaxonomia {
+  id: string;
+  termos_busca?: string[];
+  fichas?: string[];
+}
+
+/**
+ * O que o impacto lê. Duas implementações: os arquivos (`fonteImpactoArquivos`) e o `kb.sqlite`
+ * (`fonteImpactoBanco`, em `db/modo-banco.ts`).
+ */
+export interface FonteImpacto {
+  registro: Registro;
+  /** Fonte da vigência (`statusEm`, `transicoesAplicaveis`). */
+  vigencia: RaizOuFonte;
+  dataReferencia(): string;
+  relacoes(): readonly Relacao[];
+  correspondencia: FonteCorrespondencia;
+  /** Dispositivos do ato (pela deduplicação de `dispositivosDoAto`), em ordem, com o texto. */
+  dispositivosDoAto(ato: string): { dispositivo: string; texto: string }[];
+  /** Tópicos de `topicos-fichas.json`, na ordem do arquivo (vazio sem a taxonomia). */
+  topicos(): TopicoTaxonomia[];
+  /** Arquivos de conteúdo das skills (caminho relativo à raiz do conteúdo e texto), em ordem. */
+  arquivosConteudo(): Iterable<{ arquivo: string; texto: string }>;
+  /** Segmentos das normas da base que não são do ato `excetoAto`, com as citações resolvidas. */
+  segmentosCitantes(
+    excetoAto: string,
+  ): Iterable<{ norma: string; ato: string; segmento: string; citacoes: CitacaoResolvida[] }>;
+  ppcsQueCitam(id: string): PpcCitante[];
+}
+
+/** O impacto sobre os arquivos do checkout (conteúdo das skills de `raizConteudo`). */
+export function fonteImpactoArquivos(raiz: string = raizRepositorio(), raizConteudo: string = raiz): FonteImpacto {
+  const registro = carregarRegistro(raiz);
+  return {
+    registro,
+    vigencia: raiz,
+    dataReferencia: () => dataReferencia(raiz),
+    relacoes: () => carregarRelacoes(raiz),
+    correspondencia: fonteCorrespondenciaArquivos(raiz),
+    dispositivosDoAto: (ato) => dispositivosDoAto(ato, raiz),
+    topicos: () => {
+      const arquivo = path.join(
+        raizConteudo,
+        ".agents",
+        "skills",
+        "revisar-ppc",
+        "base-analise",
+        "topicos-fichas.json",
+      );
+      if (!existsSync(arquivo)) return [];
+      return (JSON.parse(readFileSync(arquivo, "utf-8")) as { topicos?: TopicoTaxonomia[] }).topicos ?? [];
+    },
+    arquivosConteudo: function* () {
+      for (const arquivo of arquivosConteudoSkills(raizConteudo)) {
+        yield { arquivo, texto: readFileSync(path.join(raizConteudo, arquivo), "utf-8") };
+      }
+    },
+    // a extração roda só nos segmentos de outras normas
+    segmentosCitantes: (excetoAto) => segmentosCitantes(registro, raiz, excetoAto),
+    ppcsQueCitam: (id) => ppcsQueCitam(id, { registro, raiz }),
+  };
+}
+
 /**
  * Tópicos da taxonomia das fichas (`topicos-fichas.json`) atingidos: algum termo de busca do
  * tópico aparece num dispositivo da norma com mudança material (correspondência `parcial` ou
  * `sem-equivalente`; sem tabela, qualquer dispositivo). Sinal temático, mais largo que a citação.
  */
-function topicosAtingidos(ato: string, raiz: string, raizConteudo: string): Map<string, { fichas: string[] }> {
-  const arquivo = path.join(raizConteudo, ".agents", "skills", "revisar-ppc", "base-analise", "topicos-fichas.json");
+function topicosAtingidos(ato: string, fonte: FonteImpacto): Map<string, { fichas: string[] }> {
   const saida = new Map<string, { fichas: string[] }>();
-  if (!existsSync(arquivo)) return saida;
-  const taxonomia = JSON.parse(readFileSync(arquivo, "utf-8")) as {
-    topicos?: { id: string; termos_busca?: string[]; fichas?: string[] }[];
-  };
-  const dispositivos = dispositivosDoAto(ato, raiz);
-  const comTabela = carregarCorrespondencias(raiz).some((t) => t.origem === ato);
+  const taxonomia = fonte.topicos();
+  if (!taxonomia.length) return saida;
+  const dispositivos = fonte.dispositivosDoAto(ato);
+  const comTabela = fonte.correspondencia.tabelas(ato).length > 0;
   const materiais = comTabela
     ? dispositivos.filter((d) =>
-        correspondencia(`${ato}${d.dispositivo}`, raiz).some((c) => c.item.tipo !== "equivalente"),
+        correspondenciaEm(`${ato}${d.dispositivo}`, fonte.correspondencia).some((c) => c.item.tipo !== "equivalente"),
       )
     : dispositivos;
   const texto = semAcentoMinusculo(materiais.map((d) => d.texto).join("\n"));
-  for (const topico of taxonomia.topicos ?? []) {
+  for (const topico of taxonomia) {
     if (topico.id === "referencias_normativas" || topico.id === "sintese_transversal_revisao") continue;
     const termos = (topico.termos_busca ?? []).map(semAcentoMinusculo).filter((t) => t.length >= 4);
     if (termos.some((termo) => new RegExp(`\\b${termo.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`).test(texto))) {
@@ -162,27 +228,40 @@ export function impacto(
   opcoes: { raiz?: string; raizConteudo?: string; data?: string; incluirPpcs?: boolean } = {},
 ): ResultadoImpacto {
   const raiz = opcoes.raiz ?? raizRepositorio();
-  const raizConteudo = opcoes.raizConteudo ?? raiz;
-  const registro: Registro = carregarRegistro(raiz);
+  return impactoEm(id, fonteImpactoArquivos(raiz, opcoes.raizConteudo ?? raiz), opcoes);
+}
+
+/** Impacto sobre uma fonte de dados (arquivos ou `kb.sqlite`). */
+export function impactoEm(
+  id: string,
+  fonte: FonteImpacto,
+  opcoes: { data?: string; incluirPpcs?: boolean } = {},
+): ResultadoImpacto {
+  const registro = fonte.registro;
   const [norma, sufixo] = id.split("#") as [string, string | undefined];
   const ato = idDoAto(norma);
-  const data = opcoes.data ?? dataReferencia(raiz);
-  const vigencia = statusEm(ato, data, raiz);
-  const relacoes = carregarRelacoes(raiz).filter((r) => r.origem === ato || r.alvo === ato);
+  const data = opcoes.data ?? fonte.dataReferencia();
+  const vigencia = statusEm(ato, data, fonte.vigencia);
+  const relacoes = fonte.relacoes().filter((r) => r.origem === ato || r.alvo === ato);
   const sucessoras = relacoes
     .filter((r) => r.tipo === "revoga" && r.alvo === ato && !relacaoParcial(r))
     .map((r) => r.origem);
-  const correspondentes = destinosDeOrigem(ato, raiz);
-  const transicoes = transicoesAplicaveis(ato, data, raiz).map((t) => t.id);
+  // dispositivos de destino que correspondem a algum dispositivo do ato (`destinosDeOrigem`)
+  const correspondentes = new Set<string>();
+  for (const tabela of fonte.correspondencia.tabelas(ato)) {
+    for (const item of tabela.itens) for (const d of item.destino) correspondentes.add(`${tabela.destino}${d}`);
+  }
+  const transicoes = transicoesAplicaveis(ato, data, fonte.vigencia).map((t) => t.id);
 
-  const citaAto = (texto: string): { cita: boolean; dispositivos: string[]; sucessora: boolean } => {
+  const citaLista = (
+    citacoes: readonly CitacaoResolvida[],
+  ): { cita: boolean; dispositivos: string[]; sucessora: boolean } => {
     let cita = false;
     let sucessora = false;
     const dispositivos: string[] = [];
-    for (const c of extrairCitacoes(texto, registro)) {
-      if (c.id === null) continue;
+    for (const c of citacoes) {
       const alvo = idDoAto(c.id);
-      const lista = c.dispositivos ?? (c.dispositivoId ? [c.dispositivoId] : []);
+      const lista = c.dispositivos;
       if (alvo === ato) {
         if (sufixo && !lista.some((d) => d === `#${sufixo}` || d.startsWith(`#${sufixo}-`))) continue;
         cita = true;
@@ -194,16 +273,16 @@ export function impacto(
     }
     return { cita, dispositivos, sucessora };
   };
+  const citaAto = (texto: string) => citaLista(citacoesResolvidas(texto, registro));
 
-  const topicos = sufixo ? new Map<string, { fichas: string[] }>() : topicosAtingidos(ato, raiz, raizConteudo);
+  const topicos = sufixo ? new Map<string, { fichas: string[] }>() : topicosAtingidos(ato, fonte);
   const topicosPorFicha = new Map<string, string[]>();
   for (const [topico, { fichas }] of topicos) {
     for (const ficha of fichas) topicosPorFicha.set(ficha, [...(topicosPorFicha.get(ficha) ?? []), topico]);
   }
 
   const arquivos: ArquivoAfetado[] = [];
-  for (const arquivo of arquivosConteudoSkills(raizConteudo)) {
-    const texto = readFileSync(path.join(raizConteudo, arquivo), "utf-8");
+  for (const { arquivo, texto } of fonte.arquivosConteudo()) {
     const motivos = new Set<MotivoImpacto>();
     const dispositivos = new Set<string>();
     let textos = texto;
@@ -254,18 +333,14 @@ export function impacto(
 
   // Normas da base que citam a norma: dispositivos e preâmbulo (fundamento citado nos considerandos).
   const normasQueCitam = new Map<string, Set<string>>();
-  for (const estrutura of carregarEstruturas(raiz)) {
-    if (estrutura.ato === ato) continue;
-    for (const segmento of estrutura.segmentos) {
-      if (segmento.tipo !== "dispositivo" && segmento.tipo !== "preambulo") continue;
-      if (!citaAto(segmento.texto).cita) continue;
-      const lista = normasQueCitam.get(estrutura.id) ?? new Set<string>();
-      lista.add(segmento.dispositivo ? segmento.dispositivo.slice(segmento.dispositivo.indexOf("#")) : "preâmbulo");
-      normasQueCitam.set(estrutura.id, lista);
-    }
+  for (const segmento of fonte.segmentosCitantes(ato)) {
+    if (segmento.ato === ato || !citaLista(segmento.citacoes).cita) continue;
+    const lista = normasQueCitam.get(segmento.norma) ?? new Set<string>();
+    lista.add(segmento.segmento);
+    normasQueCitam.set(segmento.norma, lista);
   }
 
-  const ppcs = opcoes.incluirPpcs === false ? [] : ppcsQueCitam(id, { registro, raiz });
+  const ppcs = opcoes.incluirPpcs === false ? [] : fonte.ppcsQueCitam(id);
   return {
     id,
     titulo: registro.obter(ato)?.title ?? null,

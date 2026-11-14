@@ -89,11 +89,61 @@ export interface PpcCitante {
 }
 
 /** Uma linha de trecho legível: espaços colapsados. */
-function trechoLimpo(trecho: string): string {
+export function trechoLimpo(trecho: string): string {
   return trecho
     .replace(/<br\s*\/?>/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+/**
+ * Ocorrência de uma citação gravada no `kb.sqlite` (`citacoes.dispositivos_json`): o resolvedor põe
+ * em `dispositivoId` o primeiro dispositivo e em `dispositivos` a lista, só quando há mais de um.
+ */
+export function ocorrenciaGravada(citacao: {
+  linha: number;
+  trecho: string;
+  regra: string;
+  confianca: number;
+  dispositivos: readonly string[];
+}): Ocorrencia {
+  const lista = citacao.dispositivos;
+  return {
+    linha: citacao.linha,
+    trecho: trechoLimpo(citacao.trecho),
+    regra: citacao.regra,
+    confianca: citacao.confianca,
+    ...(lista.length ? { dispositivoId: lista[0]! } : {}),
+    ...(lista.length > 1 ? { dispositivos: [...lista] } : {}),
+  };
+}
+
+/** A lista de dispositivos de uma citação cobre o dispositivo pedido (sem `#`) ou um subordinado dele? */
+export function cobreDispositivo(lista: readonly string[], dispositivo: string): boolean {
+  const alvo = `#${dispositivo}`;
+  return lista.some((d) => d === alvo || d.startsWith(`${alvo}-`));
+}
+
+/** Saída de `kb citacoes <id>`: a norma no registro e os PPCs que a citam. */
+export interface RelatorioCitacoes {
+  id: string;
+  titulo: string | null;
+  situacao: string;
+  total_ppcs: number;
+  total_ocorrencias: number;
+  ppcs: PpcCitante[];
+}
+
+export function relatorioCitacoes(id: string, ppcs: PpcCitante[], registro: Registro): RelatorioCitacoes {
+  const entrada = registro.obter(idDoAto(id.split("#")[0]!));
+  return {
+    id,
+    titulo: entrada?.title ?? null,
+    situacao: entrada?.situacao ?? "nao-registrada",
+    total_ppcs: ppcs.length,
+    total_ocorrencias: ppcs.reduce((total, ppc) => total + ppc.ocorrencias.length, 0),
+    ppcs,
+  };
 }
 
 function ocorrencia(citacao: Citacao): Ocorrencia {
@@ -126,9 +176,10 @@ export function ppcsQueCitam(
       .filter((citacao) => citacao.id !== null && idDoAto(citacao.id) === ato && citacao.confianca >= minimo)
       .filter((citacao) => {
         if (!dispositivo) return true;
-        const alvo = `#${dispositivo}`;
-        const lista = citacao.dispositivos ?? (citacao.dispositivoId ? [citacao.dispositivoId] : []);
-        return lista.some((d) => d === alvo || d.startsWith(`${alvo}-`));
+        return cobreDispositivo(
+          citacao.dispositivos ?? (citacao.dispositivoId ? [citacao.dispositivoId] : []),
+          dispositivo,
+        );
       })
       .map(ocorrencia);
     if (ocorrencias.length === 0) continue;

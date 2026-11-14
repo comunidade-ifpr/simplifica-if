@@ -3,6 +3,10 @@
  * mais velho que as fontes (regras em `fontes.ts`). `KB_SQLITE` muda o caminho do banco;
  * `KB_RECOMPILAR=nunca` desliga a recompilação (falha se o banco faltar) e `KB_RECOMPILAR=sempre`
  * força uma compilação.
+ *
+ * Fora do repositório (o servidor MCP, um binário com só o `kb.sqlite`), a abertura é
+ * `abrirBanco({ caminho, recompilar: false })`: não procura o checkout, não confere as fontes e não
+ * compila; só abre o arquivo para leitura.
  */
 import { Database } from "bun:sqlite";
 import { existsSync, statSync, utimesSync } from "node:fs";
@@ -53,10 +57,24 @@ export interface OpcoesAbertura {
   caminho?: string;
   /** Mensagens de progresso (stderr, para não sujar o `--json`). */
   log?: (mensagem: string) => void;
+  /** Padrão `true`. `false` abre para escrita (testes); as consultas nunca escrevem. */
+  somenteLeitura?: boolean;
+  /**
+   * Padrão `true`: confere o banco contra as fontes do checkout e recompila se preciso (a CLI).
+   * `false`: abre o `caminho` (obrigatório) como está, sem procurar o repositório nem ler fontes;
+   * falha se o arquivo não existe. `KB_RECOMPILAR` não se aplica.
+   */
+  recompilar?: boolean;
 }
 
-/** Abre o banco só para leitura, recompilando antes se preciso. */
+/** Abre o banco só para leitura, recompilando antes se preciso (salvo `recompilar: false`). */
 export function abrirBanco(opcoes: OpcoesAbertura = {}): Database {
+  const somenteLeitura = opcoes.somenteLeitura ?? true;
+  if (opcoes.recompilar === false) {
+    if (!opcoes.caminho) throw new Error("abrirBanco com recompilar: false exige o caminho do kb.sqlite");
+    if (!existsSync(opcoes.caminho)) throw new Error(`kb.sqlite não encontrado: ${opcoes.caminho}`);
+    return new Database(opcoes.caminho, somenteLeitura ? { readonly: true, strict: true } : { strict: true });
+  }
   const raiz = opcoes.raiz ?? raizRepositorio();
   const caminho = opcoes.caminho ?? caminhoBancoPadrao(raiz);
   const log = opcoes.log ?? ((m: string) => process.stderr.write(`${m}\n`));
@@ -73,5 +91,5 @@ export function abrirBanco(opcoes: OpcoesAbertura = {}): Database {
     compilarBanco({ raiz, destino: caminho });
     log(`kb: banco compilado em ${((performance.now() - inicio) / 1000).toFixed(1)} s`);
   }
-  return new Database(caminho, { readonly: true, strict: true });
+  return new Database(caminho, somenteLeitura ? { readonly: true, strict: true } : { strict: true });
 }

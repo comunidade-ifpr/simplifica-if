@@ -64,22 +64,31 @@ export function dataReferencia(raiz: string = raizRepositorio()): string {
 
 const cacheDatas = new Map<string, Map<string, DatasNorma>>();
 
-/** Datas por ID do ato: normas da base (front matter) e stubs (`data_publicacao`). */
-export function carregarDatas(raiz: string = raizRepositorio(), registro?: Registro): Map<string, DatasNorma> {
-  const emCache = cacheDatas.get(raiz);
-  if (emCache) return emCache;
+/** Datas de uma norma da base pelo front matter (`assinada_em`, `publicada_em`, `vigente_de`). */
+export function datasDoFrontMatter(meta: Readonly<Record<string, unknown>>): DatasNorma {
+  const texto = (campo: string) => (typeof meta[campo] === "string" ? (meta[campo] as string) : A_CONFIRMAR);
+  return {
+    assinada_em: RE_DATA.test(texto("assinada_em")) ? texto("assinada_em") : null,
+    publicada_em: texto("publicada_em"),
+    vigente_de: texto("vigente_de"),
+  };
+}
+
+/**
+ * Datas por ID do ato a partir do front matter das normas da base (em qualquer ordem) e do registro:
+ * os stubs entram com `data_publicacao` como data do ato. A regra única, sobre os arquivos
+ * (`carregarDatas`) e sobre o `kb.sqlite` (`db/modo-banco.ts`).
+ */
+export function montarDatas(
+  normas: Iterable<{ id: string; meta: Readonly<Record<string, unknown>> }>,
+  registro: Registro,
+): Map<string, DatasNorma> {
   const datas = new Map<string, DatasNorma>();
-  for (const norma of listarNormas(raiz)) {
+  for (const norma of normas) {
     if (idDoAto(norma.id) !== norma.id) continue;
-    const { meta } = analisarFrontMatter(readFileSync(norma.arquivo, "utf-8"), norma.path);
-    const texto = (campo: string) => (typeof meta[campo] === "string" ? (meta[campo] as string) : A_CONFIRMAR);
-    datas.set(norma.id, {
-      assinada_em: RE_DATA.test(texto("assinada_em")) ? texto("assinada_em") : null,
-      publicada_em: texto("publicada_em"),
-      vigente_de: texto("vigente_de"),
-    });
+    datas.set(norma.id, datasDoFrontMatter(norma.meta));
   }
-  for (const entrada of (registro ?? carregarRegistro(raiz)).entradas) {
+  for (const entrada of registro.entradas) {
     if (entrada.situacao !== "stub" || datas.has(entrada.id)) continue;
     datas.set(entrada.id, {
       assinada_em: entrada.data_publicacao ?? null,
@@ -87,8 +96,49 @@ export function carregarDatas(raiz: string = raizRepositorio(), registro?: Regis
       vigente_de: A_CONFIRMAR,
     });
   }
+  return datas;
+}
+
+/** Datas por ID do ato: normas da base (front matter) e stubs (`data_publicacao`). */
+export function carregarDatas(raiz: string = raizRepositorio(), registro?: Registro): Map<string, DatasNorma> {
+  const emCache = cacheDatas.get(raiz);
+  if (emCache) return emCache;
+  const normas = listarNormas(raiz).map((norma) => ({
+    id: norma.id,
+    meta: analisarFrontMatter(readFileSync(norma.arquivo, "utf-8"), norma.path).meta,
+  }));
+  const datas = montarDatas(normas, registro ?? carregarRegistro(raiz));
   cacheDatas.set(raiz, datas);
   return datas;
+}
+
+/**
+ * O que a vigência lê: registro, datas dos atos, relações e regras de transição. Duas
+ * implementações: os arquivos do checkout (`fonteVigenciaArquivos`) e o `kb.sqlite`
+ * (`fonteVigenciaBanco`, em `db/modo-banco.ts`); as regras (`statusEm`, `transicoesAplicaveis`,
+ * `derivarLinha`...) são as mesmas. Toda função abaixo que recebe `raiz` aceita também uma fonte.
+ */
+export interface FonteVigencia {
+  registro(): Registro;
+  datas(): Map<string, DatasNorma>;
+  relacoes(): readonly Relacao[];
+  transicoes(): readonly Transicao[];
+}
+
+/** Raiz do checkout (os arquivos) ou uma fonte de dados da vigência. */
+export type RaizOuFonte = string | FonteVigencia;
+
+export function fonteVigenciaArquivos(raiz: string = raizRepositorio()): FonteVigencia {
+  return {
+    registro: () => carregarRegistro(raiz),
+    datas: () => carregarDatas(raiz),
+    relacoes: () => carregarRelacoes(raiz),
+    transicoes: () => carregarTransicoes(raiz),
+  };
+}
+
+function fonteDe(raiz: RaizOuFonte): FonteVigencia {
+  return typeof raiz === "string" ? fonteVigenciaArquivos(raiz) : raiz;
 }
 
 /** Início de vigência: data certa, ou mínimo (assinatura) com incerteza. */
@@ -100,14 +150,14 @@ export interface Inicio {
   certo: boolean;
 }
 
-export function inicioVigencia(id: string, raiz: string = raizRepositorio()): Inicio {
-  const datas = carregarDatas(raiz).get(idDoAto(id));
+export function inicioVigencia(id: string, raiz: RaizOuFonte = raizRepositorio()): Inicio {
+  const datas = fonteDe(raiz).datas().get(idDoAto(id));
   if (datas && RE_DATA.test(datas.vigente_de)) return { data: datas.vigente_de, minimo: datas.vigente_de, certo: true };
   return { data: null, minimo: datas?.assinada_em ?? null, certo: false };
 }
 
 /** Data a partir da qual a relação produz efeito. */
-export function efeitoDaRelacao(relacao: Relacao, raiz: string = raizRepositorio()): Inicio {
+export function efeitoDaRelacao(relacao: Relacao, raiz: RaizOuFonte = raizRepositorio()): Inicio {
   if (relacao.efeito_de !== "vigencia-da-origem")
     return { data: relacao.efeito_de, minimo: relacao.efeito_de, certo: true };
   return inicioVigencia(relacao.origem, raiz);
@@ -148,19 +198,21 @@ export interface ResultadoVigencia {
 const ORDEM: Record<string, number> = { vigente: 0, alterada: 1, "parcialmente revogada": 2, revogada: 3 };
 
 /** Status de vigência do ato `id` na data `data` (AAAA-MM-DD). */
-export function statusEm(id: string, data: string, raiz: string = raizRepositorio()): ResultadoVigencia {
+export function statusEm(id: string, data: string, raiz: RaizOuFonte = raizRepositorio()): ResultadoVigencia {
   if (!RE_DATA.test(data)) throw new Error(`data fora do formato AAAA-MM-DD: ${data}`);
   const ato = idDoAto(id.split("#")[0]!);
-  const registro = carregarRegistro(raiz);
+  const fonte = fonteDe(raiz);
+  const registro = fonte.registro();
   const entrada = registro.obter(ato);
-  const inicio = inicioVigencia(ato, raiz);
+  const inicio = inicioVigencia(ato, fonte);
   const pendencias: string[] = [];
   const titulo = (outro: string) => registro.obter(outro)?.title ?? outro;
 
-  const eventos: EventoVigencia[] = carregarRelacoes(raiz)
+  const eventos: EventoVigencia[] = fonte
+    .relacoes()
     .filter((relacao) => relacao.alvo === ato && (relacao.tipo === "revoga" || relacao.tipo === "altera"))
     .map((relacao) => {
-      const efeito = efeitoDaRelacao(relacao, raiz);
+      const efeito = efeitoDaRelacao(relacao, fonte);
       return {
         tipo: relacao.tipo,
         origem: relacao.origem,
@@ -238,18 +290,19 @@ export interface IntervaloVigencia {
  * de cada relação `revoga`/`altera` que o atinge): avaliar `statusEm` em cada uma dessas datas, e
  * numa anterior a todas, dá a função inteira. Intervalos vizinhos iguais são fundidos.
  */
-export function intervalosVigencia(id: string, raiz: string = raizRepositorio()): IntervaloVigencia[] {
+export function intervalosVigencia(id: string, raiz: RaizOuFonte = raizRepositorio()): IntervaloVigencia[] {
   const ato = idDoAto(id.split("#")[0]!);
+  const dados = fonteDe(raiz);
   const marcos = new Map<string, string[]>();
   const marcar = (data: string | null, fonte: string) => {
     if (data) marcos.set(data, [...new Set([...(marcos.get(data) ?? []), fonte])]);
   };
-  const inicio = inicioVigencia(ato, raiz);
+  const inicio = inicioVigencia(ato, dados);
   marcar(inicio.data, "inicio");
   marcar(inicio.minimo, "inicio");
-  for (const relacao of carregarRelacoes(raiz)) {
+  for (const relacao of dados.relacoes()) {
     if (relacao.alvo !== ato || (relacao.tipo !== "revoga" && relacao.tipo !== "altera")) continue;
-    const efeito = efeitoDaRelacao(relacao, raiz);
+    const efeito = efeitoDaRelacao(relacao, dados);
     const fonte = `${relacao.tipo} ${relacao.origem}${relacao.operador ?? ""}`;
     marcar(efeito.data, fonte);
     marcar(efeito.minimo, fonte);
@@ -261,7 +314,7 @@ export function intervalosVigencia(id: string, raiz: string = raizRepositorio())
   ];
   const saida: IntervaloVigencia[] = [];
   pontos.forEach((ponto, i) => {
-    const { status, certo } = statusEm(ato, ponto.em, raiz);
+    const { status, certo } = statusEm(ato, ponto.em, dados);
     const anterior = saida.at(-1);
     if (anterior && anterior.status === status && anterior.certo === certo) {
       anterior.ate = pontos[i + 1]?.de ?? null;
@@ -338,8 +391,8 @@ export interface SituacaoTransicao extends Transicao, DatasTransicao {
 }
 
 /** Início e fim resolvidos de uma regra de transição (pelas datas da norma que a estabelece). */
-export function datasTransicao(transicao: Transicao, raiz: string = raizRepositorio()): DatasTransicao {
-  const datas = carregarDatas(raiz).get(transicao.norma);
+export function datasTransicao(transicao: Transicao, raiz: RaizOuFonte = raizRepositorio()): DatasTransicao {
+  const datas = fonteDe(raiz).datas().get(transicao.norma);
   let inicio: Inicio;
   if (RE_DATA.test(transicao.inicio)) inicio = { data: transicao.inicio, minimo: transicao.inicio, certo: true };
   else if (transicao.inicio === "publicacao" && datas && RE_DATA.test(datas.publicada_em)) {
@@ -376,18 +429,24 @@ export function situacaoNaData(t: DatasTransicao & { fim: string }, data: string
 export function situacaoTransicao(
   transicao: Transicao,
   data: string,
-  raiz: string = raizRepositorio(),
+  raiz: RaizOuFonte = raizRepositorio(),
 ): SituacaoTransicao {
   const datas = datasTransicao(transicao, raiz);
   return { ...transicao, ...datas, situacao: situacaoNaData({ ...datas, fim: transicao.fim }, data) };
 }
 
 /** Regras de transição da norma `id` ou que preservam efeitos dela (norma anterior). */
-export function transicoesAplicaveis(id: string, data: string, raiz: string = raizRepositorio()): SituacaoTransicao[] {
+export function transicoesAplicaveis(
+  id: string,
+  data: string,
+  raiz: RaizOuFonte = raizRepositorio(),
+): SituacaoTransicao[] {
   const ato = idDoAto(id.split("#")[0]!);
-  return carregarTransicoes(raiz)
+  const fonte = fonteDe(raiz);
+  return fonte
+    .transicoes()
     .filter((t) => t.norma === ato || t.norma_anterior === ato)
-    .map((t) => situacaoTransicao(t, data, raiz));
+    .map((t) => situacaoTransicao(t, data, fonte));
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -409,10 +468,15 @@ export interface LinhaDerivada {
  * de um mesmo tema, do mais antigo ao mais recente conhecido) a partir de `relacoes.yaml`, na data
  * `data`. Uma nova norma que revogue o ato mais recente passa a ser a vigente sem editar a linha.
  */
-export function derivarLinha(linha: readonly string[], data: string, raiz: string = raizRepositorio()): LinhaDerivada {
+export function derivarLinha(
+  linha: readonly string[],
+  data: string,
+  raiz: RaizOuFonte = raizRepositorio(),
+): LinhaDerivada {
   if (linha.length === 0) throw new Error("linha normativa vazia");
-  const relacoes = carregarRelacoes(raiz).filter((r) => r.tipo === "revoga");
-  const emVigor = (r: Relacao) => ocorreu(efeitoDaRelacao(r, raiz), data) !== false;
+  const fonte = fonteDe(raiz);
+  const relacoes = fonte.relacoes().filter((r) => r.tipo === "revoga");
+  const emVigor = (r: Relacao) => ocorreu(efeitoDaRelacao(r, fonte), data) !== false;
   const revogadoPor = (ato: string) => relacoes.find((r) => r.alvo === ato && !relacaoParcial(r) && emVigor(r));
   let vigente = linha.at(-1)!;
   const visitados = new Set<string>();

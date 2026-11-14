@@ -66,6 +66,34 @@ export interface RelatorioAdequacao {
   cursos: CursoAdequacao[];
 }
 
+/** Curso como a adequação o lê (de `dados/institucional/cursos/` ou da tabela `cursos` do `kb.sqlite`). */
+export type CursoParaAdequacao = Pick<
+  z.output<typeof esquemaCurso>,
+  "campus_id" | "curso_slug" | "nome" | "nivel" | "forma_oferta" | "situacao" | "ppc"
+>;
+
+/**
+ * O que a adequação lê: os cursos e as citações resolvidas do PPC convertido de cada um. Duas
+ * implementações: os arquivos (`fonteAdequacaoArquivos`) e o `kb.sqlite`
+ * (`fonteAdequacaoBanco`, em `db/modo-banco.ts`); a regra (`adequacaoArt71Em`) é uma só.
+ */
+export interface FonteAdequacao {
+  cursos(): CursoParaAdequacao[];
+  /** Citações do PPC (`markdown_path`, relativo a `base-conhecimento/`), ou `null` se ele não está na base. */
+  citacoesDoPpc(markdown: string): { id: string | null; linha: number; regra: string }[] | null;
+}
+
+export function fonteAdequacaoArquivos(
+  raiz: string = raizRepositorio(),
+  registro: Registro = registroPadrao(),
+): FonteAdequacao {
+  return {
+    cursos: () => lerCursos(raiz),
+    citacoesDoPpc: (markdown) =>
+      existsSync(path.join(raiz, "base-conhecimento", markdown)) ? citacoesDoArquivo(markdown, registro, raiz) : null,
+  };
+}
+
 function lerCursos(raiz: string): z.output<typeof esquemaCurso>[] {
   const dir = path.join(raiz, "dados", "institucional", "cursos");
   const cursos: z.output<typeof esquemaCurso>[] = [];
@@ -82,14 +110,22 @@ function lerCursos(raiz: string): z.output<typeof esquemaCurso>[] {
 export function adequacaoArt71(
   opcoes: { raiz?: string; registro?: Registro; incluirTecnologia?: boolean } = {},
 ): RelatorioAdequacao {
-  const raiz = opcoes.raiz ?? raizRepositorio();
-  const registro = opcoes.registro ?? registroPadrao();
+  return adequacaoArt71Em(fonteAdequacaoArquivos(opcoes.raiz ?? raizRepositorio(), opcoes.registro), opcoes);
+}
+
+/** Adequação ao art. 71 sobre uma fonte de dados (arquivos ou `kb.sqlite`). */
+export function adequacaoArt71Em(
+  fonte: FonteAdequacao,
+  opcoes: { incluirTecnologia?: boolean } = {},
+): RelatorioAdequacao {
   const situacoes = new Set<string>(SITUACOES_EM_OFERTA);
-  const alcancados = lerCursos(raiz).filter(
-    (curso) =>
-      situacoes.has(curso.situacao ?? "") &&
-      (curso.nivel === "médio" || (opcoes.incluirTecnologia && curso.forma_oferta === "graduação tecnológica")),
-  );
+  const alcancados = fonte
+    .cursos()
+    .filter(
+      (curso) =>
+        situacoes.has(curso.situacao ?? "") &&
+        (curso.nivel === "médio" || (opcoes.incluirTecnologia && curso.forma_oferta === "graduação tecnológica")),
+    );
 
   const cursos: CursoAdequacao[] = alcancados.map((curso) => {
     const markdown = curso.ppc?.markdown_path ?? null;
@@ -101,10 +137,10 @@ export function adequacaoArt71(
       ppc: markdown,
       ppc_ano: curso.ppc?.ano_documento ?? null,
     };
-    if (!markdown || !existsSync(path.join(raiz, "base-conhecimento", markdown))) {
+    const citacoes = markdown ? fonte.citacoesDoPpc(markdown) : null;
+    if (!citacoes) {
       return { ...base, ppc: null, indicador: "sem-ppc-convertido" as const, dcn_citadas: [] };
     }
-    const citacoes = citacoesDoArquivo(markdown, registro, raiz);
     const dcnCitadas = DCN_EPT.flatMap((dcn) => {
       const daDcn = citacoes.filter((citacao) => citacao.id !== null && idDoAto(citacao.id) === dcn.id);
       if (daDcn.length === 0) return [];

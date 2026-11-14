@@ -2,17 +2,26 @@
  * O `kb.sqlite` compilado da base real (num diretório temporário): determinismo, recall da busca
  * de seções, coerência com os gabaritos da avaliação, literalidade das respostas e igualdade entre
  * o banco e a API de arquivos da fase 5 (dispositivos, correspondência, relações, marcos, vigência e
- * transições). Compila duas vezes (cerca de 9 s cada).
+ * transições). Modo banco (T0): cada consulta de `db/modo-banco.ts` dá a mesma saída que a CLI sobre
+ * os arquivos, e todas rodam a partir de uma cópia do banco num diretório vazio, sem ler arquivo
+ * fora dele. Compila três vezes (cerca de 9 s cada; a terceira com `versao`, `commit` e `canal`).
  */
 import { Database } from "bun:sqlite";
-import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import { afterAll, beforeAll, describe, expect, spyOn, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import * as fs from "node:fs";
+import { copyFileSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { lerSinonimos } from "../busca/sinonimos.ts";
 import { avaliarBusca } from "../avaliacao/busca-secoes.ts";
-import { raizRepositorio } from "../normas/registro.ts";
+import { adequacaoArt71 } from "../adequacao/art71.ts";
+import { impacto } from "../normas/impacto.ts";
+import * as moduloRegistro from "../normas/registro.ts";
+import { carregarRegistro, raizRepositorio } from "../normas/registro.ts";
+import * as moduloResolver from "../normas/resolver.ts";
+import { registroPadrao, resolucaoComEntrada } from "../normas/resolver.ts";
+import { ppcsQueCitam, relatorioCitacoes } from "../ppcs/citacoes.ts";
 import { carregarCorrespondencias, correspondencia, correspondenciaEm } from "../normas/correspondencia.ts";
 import {
   carregarDispositivos,
@@ -22,7 +31,7 @@ import {
   obterDispositivo,
 } from "../normas/estrutura.ts";
 import { atosComVigencia } from "../normas/fontes-db.ts";
-import { carregarRelacoes } from "../normas/relacoes.ts";
+import { carregarRelacoes, relacoesDe } from "../normas/relacoes.ts";
 import {
   carregarTransicoes,
   dataReferencia,
@@ -33,7 +42,7 @@ import {
   transicoesAplicaveis,
 } from "../normas/vigencia.ts";
 import { bancoDoPpcAvulso, compilarBanco } from "./compilar.ts";
-import { buscarNorma, buscarSecoes, divergenciasPpcSuap, listarCursos } from "./consultas.ts";
+import { buscarNorma, buscarSecoes, divergenciasPpcSuap, type FiltrosSecoes, listarCursos } from "./consultas.ts";
 import {
   descendentesBanco,
   fonteCorrespondenciaBanco,
@@ -43,20 +52,32 @@ import {
   transicoesNoBanco,
   vigenciaNoBanco,
 } from "./consultas-normas.ts";
-import { fichasDoBanco, nomesDeCampiDoBanco, pacoteContexto, pacoteContextoAvulso } from "./pacote-contexto.ts";
+import {
+  fichasDoBanco,
+  lerTopicosFichas,
+  lerTopicosSecoes,
+  nomesDeCampiDoBanco,
+  pacoteContexto,
+  pacoteContextoAvulso,
+  pacoteDoMarkdown,
+} from "./pacote-contexto.ts";
 import { palavrasDeCampi } from "../ppcs/secoes.ts";
+import { VERSAO_ESQUEMA } from "./esquema.ts";
+import * as mb from "./modo-banco.ts";
 
 const raiz = raizRepositorio();
 const dir = mkdtempSync(path.join(tmpdir(), "kb-base-"));
 const caminhoA = path.join(dir, "a.sqlite");
 const caminhoB = path.join(dir, "b.sqlite");
+const caminhoC = path.join(dir, "c.sqlite");
 let db: Database;
 
 beforeAll(() => {
   compilarBanco({ raiz, destino: caminhoA });
   compilarBanco({ raiz, destino: caminhoB });
+  compilarBanco({ raiz, destino: caminhoC, versao: "2026.11.13", commit: "0123abcd", canal: "teste" });
   db = new Database(caminhoA, { readonly: true, strict: true });
-}, 120_000);
+}, 180_000);
 
 afterAll(() => {
   db.close();
@@ -300,4 +321,242 @@ describe("fase 5: o banco dá o mesmo resultado que a API de arquivos", () => {
     const resultados = buscarNorma(db, "carga horária do estágio profissional supervisionado", { limite: 5 });
     expect(resultados.some((r) => r.dispositivo?.id.startsWith("br/cne-cp/res/2026/2#art37"))).toBe(true);
   });
+});
+
+/* ------------------------------------------------------------- modo banco (T0) */
+
+/** Saída igual byte a byte (JSON, com a ordem das chaves), não só igualdade estrutural. */
+const mesmoJson = (banco: unknown, arquivos: unknown) => expect(JSON.stringify(banco)).toBe(JSON.stringify(arquivos));
+
+const NORMAS = ["br/cne-cp/res/2021/1", "br/cne-cp/res/2026/2", "br/lei/1996/9394", "br/cne-cp/res/2021/1#art20"];
+const CITACOES = [
+  "Resolução CNE/CP nº 1/2021, art. 20",
+  "Res. CNE/CP 2/2026, art. 28, inciso VII",
+  "LDB, arts. 61 a 63",
+  "CNCT",
+  "texto sem citação",
+];
+const PPC = "curitiba/tecnico-em-enfermagem";
+const FICHAS_DA_ANALISE = ".agents/skills/revisar-ppc/base-analise/fichas/";
+
+describe("modo banco: a mesma saída da CLI sobre os arquivos", () => {
+  test("léxico, tópicos, registro e meta", () => {
+    mesmoJson(mb.sinonimosBanco(db), lerSinonimos());
+    mesmoJson(mb.topicosSecoesBanco(db), lerTopicosSecoes());
+    mesmoJson(mb.topicosFichasBanco(db), lerTopicosFichas(raiz));
+    mesmoJson(mb.registroBanco(db).entradas, carregarRegistro(raiz).entradas);
+    const meta = mb.metaBanco(db);
+    expect(meta.versao_esquema).toBe(String(VERSAO_ESQUEMA));
+    expect(meta.data_referencia).toBe(dataReferencia(raiz));
+    expect(["versao", "commit", "canal"].filter((c) => c in meta)).toEqual([]);
+  });
+
+  test("resolver e buscar-norma", () => {
+    for (const texto of CITACOES) mesmoJson(mb.resolverBanco(db, texto), resolucaoComEntrada(texto, registroPadrao()));
+    for (const consulta of [...CITACOES, "estágio supervisionado carga horária"]) {
+      mesmoJson(mb.buscarNormaBanco(db, consulta), buscarNorma(db, consulta));
+    }
+  }, 60_000);
+
+  test("citacoes, vigencia e relacoes", () => {
+    for (const id of NORMAS) {
+      const ato = id.split("#")[0]!;
+      mesmoJson(mb.citacoesBanco(db, id), relatorioCitacoes(id, ppcsQueCitam(id), registroPadrao()));
+      mesmoJson(
+        mb.citacoesBanco(db, id, { confiancaMinima: 0.9 }),
+        relatorioCitacoes(id, ppcsQueCitam(id, { confiancaMinima: 0.9 }), registroPadrao()),
+      );
+      for (const em of [undefined, "2020-01-01", "2026-11-01", "2030-01-01"]) {
+        const quando = em ?? dataReferencia(raiz);
+        mesmoJson(mb.vigenciaBanco(db, id, em ? { em } : {}), {
+          ...statusEm(ato, quando, raiz),
+          transicoes: transicoesAplicaveis(ato, quando, raiz),
+        });
+      }
+      mesmoJson(mb.relacoesDaNormaBanco(db, id), { id: ato, ...relacoesDe(ato, raiz) });
+    }
+  }, 60_000);
+
+  test("vigência de cada ato na data de referência (registro, datas e relações do banco)", () => {
+    const data = dataReferencia(raiz);
+    for (const ato of atosComVigencia(raiz)) {
+      mesmoJson(mb.vigenciaBanco(db, ato), {
+        ...statusEm(ato, data, raiz),
+        transicoes: transicoesAplicaveis(ato, data, raiz),
+      });
+    }
+  }, 60_000);
+
+  test("impacto: igual ao dos arquivos restrito às fichas (o banco não tem os outros textos das skills)", () => {
+    for (const id of NORMAS) {
+      const arquivos = impacto(id, { raiz });
+      arquivos.arquivos = arquivos.arquivos.filter((a) => a.arquivo.startsWith(FICHAS_DA_ANALISE));
+      mesmoJson(mb.impactoBanco(db, id), arquivos);
+    }
+    const semPpcs = impacto("br/cne-cp/res/2021/1", { raiz, incluirPpcs: false, data: "2026-11-01" });
+    semPpcs.arquivos = semPpcs.arquivos.filter((a) => a.arquivo.startsWith(FICHAS_DA_ANALISE));
+    mesmoJson(mb.impactoBanco(db, "br/cne-cp/res/2021/1", { incluirPpcs: false, data: "2026-11-01" }), semPpcs);
+  }, 60_000);
+
+  test("adequacao-art71", () => {
+    mesmoJson(mb.adequacaoArt71Banco(db), adequacaoArt71({ raiz }));
+    mesmoJson(
+      mb.adequacaoArt71Banco(db, { incluirTecnologia: true }),
+      adequacaoArt71({ raiz, incluirTecnologia: true }),
+    );
+  }, 60_000);
+
+  test("buscar-secoes e pacote-contexto (PPC da base e Markdown fora dela)", () => {
+    const lexico = lerSinonimos();
+    const buscas: [string, FiltrosSecoes][] = [
+      ["acompanhamento de egressos", { cnct: "tecnico-em-informatica" }],
+      ["estágio obrigatório", { ppc: PPC }],
+      ["avaliação da aprendizagem", { nivel: "médio", tipo: ["avaliacao"] }],
+    ];
+    for (const [consulta, filtros] of buscas) {
+      mesmoJson(mb.buscarSecoesBanco(db, consulta, filtros), buscarSecoes(db, consulta, filtros, { lexico }));
+    }
+    for (const tarefa of ["CT-CURR-12", "estagio", "grupo-002"]) {
+      mesmoJson(mb.pacoteContextoBanco(db, tarefa, PPC), pacoteContexto(db, tarefa, PPC, { lexico, raiz }));
+    }
+    const arquivo = path.join(raiz, "base-conhecimento/institucional/ifpr/ppcs", `${PPC}.md`);
+    for (const tarefa of ["CT-CURR-12", "grupo-001"]) {
+      mesmoJson(
+        mb.pacoteDoMarkdownBanco(db, tarefa, arquivo, { markdown: readFileSync(arquivo, "utf-8") }),
+        pacoteDoMarkdown(db, tarefa, arquivo, { lexico, raiz }),
+      );
+    }
+  }, 60_000);
+
+  test("meta: versao, commit e canal só quando informados no build", () => {
+    const comVersao = new Database(caminhoC, { readonly: true, strict: true });
+    try {
+      const meta = mb.metaBanco(comVersao);
+      expect([meta.versao, meta.commit, meta.canal]).toEqual(["2026.11.13", "0123abcd", "teste"]);
+      const { versao: _v, commit: _c, canal: _k, ...resto } = meta;
+      expect(resto).toEqual(mb.metaBanco(db));
+    } finally {
+      comVersao.close();
+    }
+  });
+});
+
+/** Todas as consultas do modo banco, com argumentos reais, numa saída só. */
+function todasAsConsultas(banco: Database, markdown: string) {
+  return {
+    meta: mb.metaBanco(banco),
+    resolver: CITACOES.map((t) => mb.resolverBanco(banco, t)),
+    buscarNorma: CITACOES.map((c) => mb.buscarNormaBanco(banco, c, { limite: 5 })),
+    dispositivo: mb.obterDispositivoBanco(banco, "br/cne-cp/res/2026/2#art71-parunico")?.disp ?? null,
+    correspondencia: mb.correspondenciaBanco(banco, "br/cne-cp/res/2021/1#art20"),
+    citacoes: NORMAS.map((id) => mb.citacoesBanco(banco, id)),
+    vigencia: NORMAS.map((id) => mb.vigenciaBanco(banco, id, { em: "2026-11-01" })),
+    relacoes: NORMAS.map((id) => mb.relacoesDaNormaBanco(banco, id)),
+    impacto: NORMAS.map((id) => mb.impactoBanco(banco, id)),
+    adequacao: mb.adequacaoArt71Banco(banco, { incluirTecnologia: true }),
+    buscarSecoes: mb.buscarSecoesBanco(banco, "acompanhamento de egressos", { cnct: "tecnico-em-informatica" }),
+    cursos: mb.listarCursos(banco, { eixo: "Informação e Comunicação", processo: "processo-seletivo-2026" }),
+    fatos: mb.fatosDosPpcs(banco, { ppc: PPC }),
+    divergencias: mb.divergenciasPpcSuap(banco, { nivel: "médio" }),
+    pacote: ["CT-CURR-12", "grupo-003"].map((t) => mb.pacoteContextoBanco(banco, t, PPC)),
+    pacoteMarkdown: mb.pacoteDoMarkdownBanco(banco, "estagio", "PPC.md", { markdown }),
+  };
+}
+
+describe("modo banco sem o repositório", () => {
+  test("todas as consultas a partir de uma cópia do banco num diretório vazio, sem ler arquivo fora dele", () => {
+    const markdown = readFileSync(path.join(raiz, "base-conhecimento/institucional/ifpr/ppcs", `${PPC}.md`), "utf-8");
+    const esperado = JSON.stringify(todasAsConsultas(db, markdown));
+    const vazio = fs.realpathSync(mkdtempSync(path.join(tmpdir(), "kb-sem-repo-")));
+    const caminho = path.join(vazio, "kb.sqlite");
+    copyFileSync(caminhoA, caminho);
+    const tentativas: string[] = [];
+    const dentro = (alvo: unknown) => typeof alvo === "string" && path.resolve(alvo).startsWith(`${vazio}${path.sep}`);
+    // qualquer acesso a arquivo fora do diretório do banco falha; a raiz do repositório e o
+    // registro do checkout também (protegem contra o que já estivesse em cache no processo)
+    const espioes = [
+      ...(
+        ["readFileSync", "readdirSync", "existsSync", "statSync", "lstatSync", "openSync", "realpathSync"] as const
+      ).map((nome) => {
+        const original = fs[nome] as (...args: unknown[]) => unknown;
+        return spyOn(fs, nome).mockImplementation(((...args: unknown[]) => {
+          if (dentro(args[0])) return original(...args);
+          tentativas.push(`${nome} ${String(args[0])}`);
+          throw new Error(`modo banco leu arquivo: ${nome} ${String(args[0])}`);
+        }) as never);
+      }),
+      spyOn(moduloRegistro, "raizRepositorio").mockImplementation(() => {
+        tentativas.push("raizRepositorio");
+        throw new Error("modo banco procurou a raiz do repositório");
+      }),
+      spyOn(moduloResolver, "registroPadrao").mockImplementation(() => {
+        tentativas.push("registroPadrao");
+        throw new Error("modo banco usou o registro do checkout");
+      }),
+    ];
+    const cwd = process.cwd();
+    process.chdir(vazio);
+    let banco: Database | undefined;
+    try {
+      banco = mb.abrirBancoSomenteLeitura(caminho);
+      const obtido = JSON.stringify(todasAsConsultas(banco, markdown));
+      expect(tentativas).toEqual([]);
+      expect(obtido).toBe(esperado);
+    } finally {
+      banco?.close();
+      process.chdir(cwd);
+      for (const espiao of espioes) espiao.mockRestore();
+      rmSync(vazio, { recursive: true, force: true });
+    }
+    expect(() => mb.abrirBancoSomenteLeitura(path.join(vazio, "nao-existe.sqlite"))).toThrow("não encontrado");
+  }, 60_000);
+});
+
+describe("modo banco num binário (bun build --compile), só com o kb.sqlite", () => {
+  test("o binário roda num diretório vazio e dá a mesma saída que o processo", () => {
+    const trabalho = fs.realpathSync(mkdtempSync(path.join(tmpdir(), "kb-binario-")));
+    const vazio = fs.realpathSync(mkdtempSync(path.join(tmpdir(), "kb-binario-vazio-")));
+    try {
+      // entrada fora do pacote, que importa o modo banco pelo caminho absoluto
+      const entrada = path.join(trabalho, "entrada.ts");
+      fs.writeFileSync(
+        entrada,
+        `import * as mb from ${JSON.stringify(path.join(import.meta.dir, "modo-banco.ts"))};
+const banco = mb.abrirBancoSomenteLeitura(process.argv[2]);
+const ids = ${JSON.stringify(NORMAS)};
+console.log(JSON.stringify({
+  resolver: mb.resolverBanco(banco, "Res. CNE/CP 2/2026, art. 28, inciso VII"),
+  citacoes: ids.map((id) => mb.citacoesBanco(banco, id)),
+  vigencia: ids.map((id) => mb.vigenciaBanco(banco, id)),
+  impacto: ids.map((id) => mb.impactoBanco(banco, id, { incluirPpcs: false })),
+  adequacao: mb.adequacaoArt71Banco(banco),
+  secoes: mb.buscarSecoesBanco(banco, "acompanhamento de egressos"),
+  pacote: mb.pacoteContextoBanco(banco, "grupo-001", ${JSON.stringify(PPC)}),
+}));
+`,
+      );
+      const binario = path.join(vazio, "kb-modo-banco");
+      const build = Bun.spawnSync(["bun", "build", "--compile", entrada, "--outfile", binario], {
+        cwd: trabalho,
+        stderr: "pipe",
+      });
+      expect(build.exitCode, build.stderr.toString()).toBe(0);
+      copyFileSync(caminhoA, path.join(vazio, "kb.sqlite"));
+      const execucao = Bun.spawnSync([binario, "kb.sqlite"], { cwd: vazio, stderr: "pipe", env: {} });
+      expect(execucao.exitCode, execucao.stderr.toString()).toBe(0);
+      const esperado = {
+        resolver: mb.resolverBanco(db, "Res. CNE/CP 2/2026, art. 28, inciso VII"),
+        citacoes: NORMAS.map((id) => mb.citacoesBanco(db, id)),
+        vigencia: NORMAS.map((id) => mb.vigenciaBanco(db, id)),
+        impacto: NORMAS.map((id) => mb.impactoBanco(db, id, { incluirPpcs: false })),
+        adequacao: mb.adequacaoArt71Banco(db),
+        secoes: mb.buscarSecoesBanco(db, "acompanhamento de egressos"),
+        pacote: mb.pacoteContextoBanco(db, "grupo-001", PPC),
+      };
+      expect(execucao.stdout.toString().trim()).toBe(JSON.stringify(esperado));
+    } finally {
+      rmSync(trabalho, { recursive: true, force: true });
+      rmSync(vazio, { recursive: true, force: true });
+    }
+  }, 60_000);
 });

@@ -21,6 +21,10 @@
  * - as seções do PPC dos tópicos das fichas (`dados/topicos-secoes.yaml`), mais as que a busca
  *   pelas `consultas` das fichas achar, com o texto integral e as linhas;
  * - os fatos do PPC e o cruzamento com o SUAP.
+ *
+ * Com `raiz`, o léxico, os tópicos e o tamanho do PPC vêm dos arquivos do checkout (o comportamento
+ * da CLI); sem `raiz`, do próprio banco (`sinonimos_*`, `topicos`, `topicos_secoes`,
+ * `ppcs.caracteres`): é o modo banco, que responde só com o `kb.sqlite` (`db/modo-banco.ts`).
  */
 import type { Database } from "bun:sqlite";
 import { readFileSync } from "node:fs";
@@ -32,6 +36,7 @@ import { idDoAto } from "../normas/ids.ts";
 import { palavrasDeCampi } from "../ppcs/secoes.ts";
 import { compararTexto } from "../texto.ts";
 import { bancoDoPpcAvulso } from "./compilar.ts";
+import { registroBanco, sinonimosBanco } from "./fontes-banco.ts";
 import { buscarSecoes, fatosDosPpcs, obterNorma, secoesDoPpc } from "./consultas.ts";
 import {
   dataReferenciaBanco,
@@ -72,6 +77,22 @@ export type TopicoFichas = z.output<typeof esquemaTopicosFichas>["topicos"][numb
 export function lerTopicosFichas(raiz: string): TopicoFichas[] {
   const arquivo = path.join(raiz, ".agents", "skills", "revisar-ppc", "base-analise", "topicos-fichas.json");
   return esquemaTopicosFichas.parse(JSON.parse(readFileSync(arquivo, "utf-8"))).topicos;
+}
+
+/** Os tópicos de `lerTopicosFichas`, pela tabela `topicos` do banco (na ordem do arquivo). */
+export function topicosFichasBanco(db: Database): TopicoFichas[] {
+  const linhas = z
+    .array(z.strictObject({ dados_json: z.string() }))
+    .parse(db.query("SELECT dados_json FROM topicos ORDER BY ordem").all());
+  return esquemaTopicosFichas.parse({ topicos: linhas.map((l) => JSON.parse(l.dados_json)) }).topicos;
+}
+
+/** O mapa de `lerTopicosSecoes`, pela tabela `topicos_secoes` do banco (na ordem do arquivo). */
+export function topicosSecoesBanco(db: Database): TopicosSecoes {
+  const linhas = z
+    .array(z.strictObject({ topico: z.string(), tipos_json: z.string() }))
+    .parse(db.query("SELECT topico, tipos_json FROM topicos_secoes ORDER BY ordem").all());
+  return esquemaTopicosSecoes.parse(Object.fromEntries(linhas.map((l) => [l.topico, JSON.parse(l.tipos_json)])));
 }
 
 /** Ficha como entra no pacote e no agrupamento: o JSON da ficha (`id`, tópicos, consultas, referências). */
@@ -595,6 +616,15 @@ export interface OpcoesSecoes {
   buscasPorFicha?: number;
 }
 
+/** Opções de seção com o léxico e o mapa tópico → seções do banco, onde não foram informados. */
+function opcoesDoBanco(db: Database, opcoes: OpcoesSecoes): OpcoesSecoes {
+  return {
+    ...opcoes,
+    lexico: opcoes.lexico ?? sinonimosBanco(db),
+    topicosSecoes: opcoes.topicosSecoes ?? topicosSecoesBanco(db),
+  };
+}
+
 function cnctDoBanco(db: Database, cnctId: string | null): unknown {
   if (!cnctId) return null;
   const id = cnctId.startsWith("cnct:") ? cnctId : `cnct:${cnctId}`;
@@ -607,12 +637,16 @@ function cnctDoBanco(db: Database, cnctId: string | null): unknown {
 
 /* ------------------------------------------------------------ pacotes */
 
-export function pacoteContexto(
-  db: Database,
-  tarefa: string,
-  ppcArg: string,
-  opcoes: { lexico?: Sinonimos; topicosSecoes?: TopicosSecoes; buscasPorFicha?: number; raiz: string },
-): PacoteContexto {
+/**
+ * Opções do pacote. `raiz` (o checkout): léxico, tópicos e tamanho do PPC lidos dos arquivos, como
+ * na CLI; sem ela, do banco. `lexico`, `topicosSecoes` e `topicosFichas` informados prevalecem.
+ */
+export interface OpcoesPacote extends OpcoesSecoes {
+  raiz?: string;
+  topicosFichas?: readonly TopicoFichas[];
+}
+
+export function pacoteContexto(db: Database, tarefa: string, ppcArg: string, opcoes: OpcoesPacote): PacoteContexto {
   const ppcId = ppcArg.startsWith("ppc:") ? ppcArg : `ppc:${ppcArg}`;
   const ppcLinha = db
     .query(
@@ -622,18 +656,22 @@ export function pacoteContexto(
     .get(ppcId);
   if (!ppcLinha) throw new Error(`PPC não encontrado: ${ppcId}`);
   const ppc = esquemaPpc.parse(ppcLinha);
-  const fichasIds = fichasDaTarefa(
-    db,
-    tarefa,
-    /^grupo-\d{3}$/.test(tarefa) ? lerTopicosFichas(opcoes.raiz) : undefined,
-  );
+  const raiz = opcoes.raiz;
+  const topicosDaTarefa = () =>
+    opcoes.topicosFichas ?? (raiz !== undefined ? lerTopicosFichas(raiz) : topicosFichasBanco(db));
+  const fichasIds = fichasDaTarefa(db, tarefa, /^grupo-\d{3}$/.test(tarefa) ? topicosDaTarefa() : undefined);
   const fichas = fichasDoBanco(db, fichasIds);
   const refs = referenciasDasFichas(fichas);
   const citacoesPpc = citacoesDoPpc(db, ppc.id);
-  const listaSecoes = secoesDoPacote(db, ppc.id, fichas, opcoes);
+  const listaSecoes = secoesDoPacote(db, ppc.id, fichas, raiz !== undefined ? opcoes : opcoesDoBanco(db, opcoes));
   const fatos = fatosDosPpcs(db, { ppc: ppc.id })[0] ?? null;
   const caracteresSecoes = listaSecoes.reduce((t, s) => t + s.texto.length, 0);
-  const ppcInteiro = readFileSync(path.join(opcoes.raiz, ppc.path), "utf-8").length;
+  const ppcInteiro =
+    raiz !== undefined
+      ? readFileSync(path.join(raiz, ppc.path), "utf-8").length
+      : z
+          .strictObject({ caracteres: z.number().int() })
+          .parse(db.query("SELECT caracteres FROM ppcs WHERE id = ?").get(ppc.id)).caracteres;
   const pacote: PacoteContexto = {
     tarefa,
     fichas_ids: fichasIds,
@@ -723,30 +761,35 @@ export function pacoteDoMarkdown(
   db: Database,
   tarefa: string,
   arquivo: string,
-  opcoes: { lexico?: Sinonimos; topicosSecoes?: TopicosSecoes; raiz: string },
+  opcoes: OpcoesPacote & {
+    /** Texto do PPC (padrão: lido de `arquivo`, que fica só como `path` quando o texto vem aqui). */
+    markdown?: string;
+  },
 ): PacoteAvulso & {
   path: string;
   fichas: FichaPacote[];
   tamanho: { caracteres: number; caracteres_ppc_inteiro: number };
 } {
-  const topicos = lerTopicosFichas(opcoes.raiz);
+  const raiz = opcoes.raiz;
+  const secoes = raiz !== undefined ? opcoes : opcoesDoBanco(db, opcoes);
+  const topicos = opcoes.topicosFichas ?? (raiz !== undefined ? lerTopicosFichas(raiz) : topicosFichasBanco(db));
   const ids = fichasDaTarefa(db, tarefa, topicos);
   const fichas = fichasDoBanco(db, ids);
   const grupo = /^grupo-\d{3}$/.test(tarefa)
     ? agruparPorTopico(fichasDoBanco(db), topicos)[Number(tarefa.slice(6)) - 1]
     : undefined;
-  const markdown = readFileSync(arquivo, "utf-8");
+  const markdown = opcoes.markdown ?? readFileSync(arquivo, "utf-8");
   const dbPpc = bancoDoPpcAvulso(markdown, {
     path: arquivo,
-    raiz: opcoes.raiz,
+    ...(raiz !== undefined ? { raiz } : { registro: registroBanco(db) }),
     palavrasCampi: palavrasDeCampi(nomesDeCampiDoBanco(db)),
-    ...(opcoes.lexico ? { sinonimos: opcoes.lexico } : {}),
+    ...(secoes.lexico ? { sinonimos: secoes.lexico } : {}),
   });
   try {
     const pacote = pacoteContextoAvulso(db, dbPpc, fichas, {
       escopo: grupo?.escopo ?? "secoes",
-      ...(opcoes.lexico ? { lexico: opcoes.lexico } : {}),
-      ...(opcoes.topicosSecoes ? { topicosSecoes: opcoes.topicosSecoes } : {}),
+      ...(secoes.lexico ? { lexico: secoes.lexico } : {}),
+      ...(secoes.topicosSecoes ? { topicosSecoes: secoes.topicosSecoes } : {}),
     });
     const saida = {
       path: arquivo,

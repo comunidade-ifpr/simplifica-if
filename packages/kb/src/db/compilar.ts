@@ -2,12 +2,13 @@
 /**
  * Compila o `kb.sqlite` a partir dos arquivos do checkout (fase 6 do plano).
  *
- *   bun run kb:compilar [--destino tmp/kb.sqlite]
+ *   bun run kb:compilar [--destino tmp/kb.sqlite] [--versao 2026.11.13] [--commit <sha>] [--canal piloto]
  *
  * O banco é derivado e fica fora do git (`tmp/`). Determinismo: as mesmas fontes geram o mesmo
  * arquivo, byte a byte. Para isso:
  * - toda leitura é ordenada por code point (caminhos, IDs) e os `rowid` saem dessa ordem;
- * - nada vem do relógio (nem a data do build: `meta` guarda só versão do esquema e hashes das fontes);
+ * - nada vem do relógio (nem a data do build: `meta` guarda versão do esquema, data de referência e
+ *   hashes das fontes; `versao`, `commit` e `canal` só quando informados, e então vêm de quem builda);
  * - `page_size` fixo, um único `INSERT` por linha numa transação, `optimize` do FTS5 e `VACUUM` no
  *   fim, que reescreve as páginas na ordem lógica e zera o espaço livre;
  * - o arquivo é escrito num temporário e renomeado (quem lê nunca vê um banco pela metade).
@@ -31,6 +32,7 @@ import {
   raizRepositorio,
   type Registro,
 } from "../normas/registro.ts";
+import { segmentosCitantes } from "../normas/citacoes-normas.ts";
 import { extrairCitacoes } from "../normas/resolver.ts";
 import { dataReferencia, derivarLinha } from "../normas/vigencia.ts";
 import { mascararFrontMatter } from "../ppcs/front-matter.ts";
@@ -49,6 +51,7 @@ import {
   type FontesNormativas,
 } from "./fontes-normativas.ts";
 import { fontesNormativasArquivos } from "../normas/fontes-db.ts";
+import { lerTopicosSecoes, type TopicosSecoes } from "./pacote-contexto.ts";
 
 export const PAGE_SIZE = 4096;
 
@@ -63,6 +66,15 @@ export interface OpcoesCompilacao {
   fontesNormativas?: FontesNormativas;
   /** Léxico de sinônimos (padrão: `packages/kb/dados/sinonimos.yaml`). */
   sinonimos?: Sinonimos;
+  /** Tópicos das fichas → tipos de seção (padrão: `packages/kb/dados/topicos-secoes.yaml`). */
+  topicosSecoes?: TopicosSecoes;
+  /**
+   * Identificação do build, gravada em `meta` só quando informada (sem ela, o banco depende só das
+   * fontes): `versao` (como `2026.11.13`), `commit` (o SHA das fontes) e `canal` (`piloto`...).
+   */
+  versao?: string;
+  commit?: string;
+  canal?: string;
 }
 
 export interface ResumoCompilacao {
@@ -387,7 +399,6 @@ export interface OpcoesPpcAvulso {
  * rodam nele sem mudança.
  */
 export function bancoDoPpcAvulso(markdownOriginal: string, opcoes: OpcoesPpcAvulso = {}): Database {
-  const raiz = opcoes.raiz ?? raizRepositorio();
   const markdown = markdownOriginal.replace(/\r\n?/g, "\n");
   const paraSegmentar = opcoes.titulosNivel1 ? markdown.replace(/^#(?=[ \t])/gm, "##") : markdown;
   const ppcId = opcoes.ppcId ?? "ppc:avulso";
@@ -413,6 +424,7 @@ export function bancoDoPpcAvulso(markdownOriginal: string, opcoes: OpcoesPpcAvul
       fonte_pdf: null,
       path: caminhoMd,
       linhas: markdown.split("\n").length,
+      caracteres: markdownOriginal.length,
       proveniencia_json: json(null),
     });
     gravarSecoesECitacoes(ins, {
@@ -432,7 +444,8 @@ export function bancoDoPpcAvulso(markdownOriginal: string, opcoes: OpcoesPpcAvul
         linha_fim: secao.linhaFim,
         texto: secao.texto,
       })),
-      registro: opcoes.registro ?? carregarRegistro(raiz),
+      // com o registro informado (modo banco), nada procura o checkout
+      registro: opcoes.registro ?? carregarRegistro(opcoes.raiz ?? raizRepositorio()),
       lexico: opcoes.sinonimos ?? lerSinonimos(),
       expansoes: new Map(),
       insFts: db.prepare(
@@ -454,6 +467,7 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
   const destino = opcoes.destino ?? caminhoBancoPadrao(raiz);
   const fontesNormativas = opcoes.fontesNormativas ?? fontesNormativasArquivos(raiz);
   const lexico = opcoes.sinonimos ?? lerSinonimos();
+  const topicosSecoes = opcoes.topicosSecoes ?? lerTopicosSecoes();
   const base = path.join(raiz, BASE);
 
   const arquivos = arquivosFonte(raiz);
@@ -708,7 +722,8 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
     const cache = new Map<string, string>();
     for (const item of itensPpc) {
       const caminhoMd = `${BASE}/${item.path}`;
-      const markdown = readFileSync(path.join(raiz, caminhoMd), "utf-8").replace(/\r\n?/g, "\n");
+      const bruto = readFileSync(path.join(raiz, caminhoMd), "utf-8");
+      const markdown = bruto.replace(/\r\n?/g, "\n");
       cache.clear();
       cache.set(item.path, markdown);
       const linhas = markdown.split("\n");
@@ -730,6 +745,7 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
         fonte_pdf: item.fonte_pdf,
         path: caminhoMd,
         linhas: linhas.length,
+        caracteres: bruto.length,
         proveniencia_json: json(item.proveniencia ?? null),
       });
 
@@ -817,10 +833,13 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
           .sort(compararTexto)
       : [];
     const fichas = arquivosFichas
-      .map((nome) => ({ nome, ficha: esquemaFicha.parse(lerJson(path.join(dirFichas, nome))) }))
+      .map((nome) => {
+        const bruto = lerJson(path.join(dirFichas, nome));
+        return { nome, bruto, ficha: esquemaFicha.parse(bruto) };
+      })
       .sort((a, b) => compararTexto(a.ficha.id, b.ficha.id));
     const fichaTopico = new Set<string>();
-    for (const { nome, ficha } of fichas) {
+    for (const { nome, bruto, ficha } of fichas) {
       ins.inserir("fichas", {
         id: ficha.id,
         titulo: ficha.titulo,
@@ -831,6 +850,7 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
         rubrica: ficha.rubrica,
         path: `${ANALISE}/fichas/${nome}`,
         dados_json: json(ficha),
+        arquivo_json: json(bruto),
       });
       (ficha.referencias_normativas ?? []).forEach((ref, ordem) => {
         ins.inserir("fichas_referencias", {
@@ -846,16 +866,20 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
     }
     const arquivoTopicos = path.join(raiz, ANALISE, "topicos-fichas.json");
     if (existsSync(arquivoTopicos)) {
-      const topicos = esquemaTopicos.parse(lerJson(arquivoTopicos));
-      for (const t of [...topicos.topicos].sort((a, b) => compararTexto(a.id, b.id))) {
+      const bruto = lerJson(arquivoTopicos);
+      const brutos = z.looseObject({ topicos: z.array(z.unknown()) }).parse(bruto).topicos;
+      const topicos = esquemaTopicos.parse(bruto).topicos.map((t, ordem) => ({ ...t, ordem, bruto: brutos[ordem] }));
+      for (const t of [...topicos].sort((a, b) => compararTexto(a.id, b.id))) {
         ins.inserir("topicos", {
           id: t.id,
+          ordem: t.ordem,
           titulo: t.titulo,
           grupo: t.grupo,
           tipo_escopo: t.tipo_escopo,
           descricao: t.descricao,
           termos_json: json({ aliases_titulo: t.aliases_titulo ?? [], termos_busca: t.termos_busca ?? [] }),
           path: `${ANALISE}/topicos-fichas.json`,
+          dados_json: json(t.bruto),
         });
         for (const ficha of t.fichas ?? []) fichaTopico.add(`${ficha}\0${t.id}`);
       }
@@ -864,6 +888,20 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
       const [ficha, topico] = par.split("\0") as [string, string];
       ins.inserir("fichas_topicos", { ficha_id: ficha, topico_id: topico });
     }
+    Object.entries(topicosSecoes).forEach(([topico, tipos], ordem) => {
+      ins.inserir("topicos_secoes", {
+        ordem,
+        topico,
+        tipos_json: json(tipos),
+        path: "packages/kb/dados/topicos-secoes.yaml",
+      });
+    });
+
+    /* ---------- léxico da busca de seções */
+    Object.entries(lexico.tipos).forEach(([tipo, termos], ordem) => {
+      ins.inserir("sinonimos_tipos", { ordem, tipo, termos_json: json(termos) });
+    });
+    lexico.grupos.forEach((termos, ordem) => ins.inserir("sinonimos_grupos", { ordem, termos_json: json(termos) }));
     // marcos-normativos.json guarda a linha do tema; vigente, substituídas, antecessoras e
     // dispositivos revogados vêm de derivarLinha (fase 5) na data_referencia, como na revisar-ppc.
     const arquivoMarcos = path.join(raiz, ANALISE, "marcos-normativos.json");
@@ -908,6 +946,22 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
       const { destino, ...c } = esquemaLinhaCorrespondencia.parse(linha);
       ins.inserir("correspondencias", { ...c, destino_json: json(destino) });
     }
+    // citações entre normas (para o impacto): as mesmas que o impacto extrai dos arquivos
+    for (const segmento of segmentosCitantes(registro, raiz)) {
+      for (const citacao of segmento.citacoes) {
+        ins.inserir("normas_citacoes", {
+          norma_id: segmento.norma,
+          ato_id: segmento.ato,
+          segmento: segmento.segmento,
+          citado_id: citacao.id,
+          citado_ato: idDoAto(citacao.id),
+          dispositivos_json: json(citacao.dispositivos),
+          trecho: citacao.trecho,
+          path: segmento.path,
+          linha_inicio: segmento.linha_inicio,
+        });
+      }
+    }
 
     /* ---------- meta */
     const meta: [string, string][] = [
@@ -922,6 +976,10 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
         json(Object.fromEntries(Object.entries(ins.contagens).sort(([a], [b]) => compararTexto(a, b)))),
       ],
     ];
+    for (const chave of ["versao", "commit", "canal"] as const) {
+      const valor = opcoes[chave];
+      if (valor !== undefined) meta.push([chave, valor]);
+    }
     for (const [chave, valor] of meta) ins.inserir("meta", { chave, valor });
   })();
 
@@ -940,10 +998,22 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
 }
 
 if (import.meta.main) {
-  const indice = process.argv.indexOf("--destino");
-  const destino = indice !== -1 ? path.resolve(process.argv[indice + 1]!) : undefined;
+  const argumento = (nome: string): string | undefined => {
+    const indice = process.argv.indexOf(nome);
+    if (indice === -1) return undefined;
+    const valor = process.argv[indice + 1];
+    if (!valor || valor.startsWith("--")) throw new Error(`${nome} exige um valor`);
+    return valor;
+  };
+  const destino = argumento("--destino");
+  const identificacao = Object.fromEntries(
+    (["versao", "commit", "canal"] as const).flatMap((chave) => {
+      const valor = argumento(`--${chave}`);
+      return valor === undefined ? [] : [[chave, valor]];
+    }),
+  ) as Pick<OpcoesCompilacao, "versao" | "commit" | "canal">;
   const inicio = performance.now();
-  const resumo = compilarBanco(destino ? { destino } : {});
+  const resumo = compilarBanco({ ...(destino ? { destino: path.resolve(destino) } : {}), ...identificacao });
   const segundos = ((performance.now() - inicio) / 1000).toFixed(1);
   const { createHash } = await import("node:crypto");
   const sha = createHash("sha256").update(readFileSync(resumo.destino)).digest("hex");

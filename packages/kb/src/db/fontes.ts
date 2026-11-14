@@ -43,7 +43,7 @@ const CODIGO = "packages/kb/src";
 const CODIGO_FORA = [
   /\.test\.ts$/,
   /^packages\/kb\/src\/(cli|python\/|avaliacao\/)/,
-  /^packages\/kb\/src\/db\/(consultas|consultas-normas|comandos|banco|pacote-contexto)\.ts$/,
+  /^packages\/kb\/src\/db\/(consultas|consultas-normas|comandos|banco|pacote-contexto|modo-banco|fontes-banco)\.ts$/,
   /^packages\/kb\/src\/normas\/(comandos|impacto)\.ts$/,
 ];
 

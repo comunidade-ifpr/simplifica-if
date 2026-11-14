@@ -16,8 +16,8 @@ import { Command, InvalidArgumentError } from "commander";
 import { adequacaoArt71, INDICADORES, ROTULOS_INDICADOR } from "./adequacao/art71.ts";
 import { avaliarResolvedor } from "./avaliacao/resolvedor.ts";
 import { ehIdExterno, ehIdNorma, idDoAto } from "./normas/ids.ts";
-import { registroPadrao, resolverCitacao } from "./normas/resolver.ts";
-import { ppcsQueCitam } from "./ppcs/citacoes.ts";
+import { registroPadrao, resolucaoComEntrada } from "./normas/resolver.ts";
+import { ppcsQueCitam, relatorioCitacoes } from "./ppcs/citacoes.ts";
 import { registrarComandosNormas } from "./normas/comandos.ts";
 import { registrarComandosBanco } from "./db/comandos.ts";
 
@@ -43,10 +43,10 @@ programa
   .option("--json", "saída em JSON")
   .action((partes: string[], opcoes: { json?: boolean }) => {
     const texto = partes.join(" ");
-    const resultado = resolverCitacao(texto);
-    const entrada = resultado.id ? registroPadrao().obter(resultado.id) : undefined;
-    const saida = { texto, ...resultado, ...(entrada ? { titulo: entrada.title, path: entrada.path ?? null } : {}) };
-    if (opcoes.json) return json(saida);
+    const registro = registroPadrao();
+    const resultado = resolucaoComEntrada(texto, registro);
+    const entrada = resultado.id ? registro.obter(resultado.id) : undefined;
+    if (opcoes.json) return json(resultado);
     if (!resultado.id) {
       console.log(`não resolvida (${resultado.regra})`);
       process.exitCode = 1;
@@ -78,16 +78,7 @@ programa
     const ppcs = ppcsQueCitam(id, { confiancaMinima: opcoes.confiancaMin });
     const entrada = registroPadrao().obter(idDoAto(norma!));
     const ocorrencias = ppcs.reduce((total, ppc) => total + ppc.ocorrencias.length, 0);
-    if (opcoes.json) {
-      return json({
-        id,
-        titulo: entrada?.title ?? null,
-        situacao: entrada?.situacao ?? "nao-registrada",
-        total_ppcs: ppcs.length,
-        total_ocorrencias: ocorrencias,
-        ppcs,
-      });
-    }
+    if (opcoes.json) return json(relatorioCitacoes(id, ppcs, registroPadrao()));
     console.log(`${id}${entrada ? ` — ${entrada.title}` : ""}: ${ppcs.length} PPCs, ${ocorrencias} ocorrências`);
     for (const ppc of ppcs) {
       console.log(`\n${ppc.ppc} (${ppc.nivel}, ${ppc.tipo_oferta})`);
