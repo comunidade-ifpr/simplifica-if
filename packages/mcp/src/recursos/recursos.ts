@@ -8,6 +8,12 @@
  * campus e ficha têm leitura própria (`leitura/recursos.ts`). O conteúdo é o texto Markdown da
  * ferramenta, com os avisos e o rodapé da versão da base, e a `base` e os avisos vão também no `_meta`.
  *
+ * A mesma leitura serve ao grupo RPC (`lerLink`, em `rpc.ts`): `lerRecurso` devolve um `LinkLido`
+ * (`grupo-leitura.ts`), com o tipo do conteúdo, a `Resposta` estruturada e o texto do `resources/read`.
+ *
+ * Com uma `SessaoAtual` no contexto (o servidor HTTP), cada leitura é registrada nela como as chamadas
+ * de ferramenta, com `tipo: "recurso"` e o URI no lugar do nome da ferramenta (`observarChamada`).
+ *
  * Os modelos casam pelo tipo (`ifpr://norma/*`, …) e todos chamam o mesmo leitor, que desmonta o link
  * (`lerLink`) e responde ao link malformado com `InvalidParams` em português. Um modelo curinga,
  * escondido do `resources/templates/list` por uma visibilidade, pega o link de tipo desconhecido e o
@@ -23,8 +29,10 @@ import { fichaCurso } from "../ferramentas/ficha-curso.ts";
 import { fichaNorma } from "../ferramentas/ficha-norma.ts";
 import { lerDispositivos } from "../ferramentas/ler-dispositivos.ts";
 import { lerSecao } from "../ferramentas/ler-secao.ts";
+import type { LinkLido } from "../grupo-leitura.ts";
 import * as Leitura from "../leitura/Leitura.ts";
 import { lerLink, linkCampus, linkNorma, type TipoLink, TIPOS_LINK } from "../links.ts";
+import { observarChamada, resumoDaLeitura, resumoDoTexto } from "../SessaoAtual.ts";
 import { linhaAviso, rodape } from "../texto.ts";
 import * as Conteudos from "./conteudos.ts";
 
@@ -99,12 +107,6 @@ function textoDoRecurso(resposta: Resposta<unknown>, corpo: string, continuacao?
   return partes.join("\n\n");
 }
 
-/** O recurso lido: o texto para a IA e a resposta de onde ele saiu. */
-export interface RecursoLido {
-  readonly texto: string;
-  readonly resposta: Resposta<unknown>;
-}
-
 const DICAS: Record<TipoLink, string> = {
   norma: '"ifpr://norma/br/cne-cp/res/2026/2" ou "ifpr://norma/br/cne-cp/res/2026/2#art28-xviii"',
   curso: '"ifpr://curso/curitiba/tecnico-em-enfermagem"',
@@ -137,7 +139,10 @@ function entrada<S extends Schema.Decoder<unknown>>(schema: S, valor: unknown, u
   );
 }
 
-/** Lê um link `ifpr://` pelo serviço `Leitura` do ambiente. */
+/**
+ * Lê um link `ifpr://` pelo serviço `Leitura` do ambiente: a resolução única do link, para o
+ * `resources/read` e para o RPC `lerLink`.
+ */
 export const lerRecurso = Effect.fn("recursos.lerRecurso")(function* (uri: string) {
   const leitura = yield* Leitura.Leitura;
   const link = lerLink(uri);
@@ -158,7 +163,7 @@ export const lerRecurso = Effect.fn("recursos.lerRecurso")(function* (uri: strin
     case "norma": {
       if (fragmento === null) {
         const resposta = yield* leitura.fichaNorma(yield* entrada(fichaNorma.entrada, { id: caminho }, uri));
-        return { resposta, texto: textoDoRecurso(resposta, fichaNorma.texto(resposta)) };
+        return { tipo: "norma", resposta, texto: textoDoRecurso(resposta, fichaNorma.texto(resposta)) } as const;
       }
       const id = `${caminho}#${fragmento}`;
       const resposta = yield* leitura.lerDispositivos(
@@ -169,44 +174,56 @@ export const lerRecurso = Effect.fn("recursos.lerRecurso")(function* (uri: strin
           mensagem: `dispositivo não encontrado na base: "${id}". Confira o ID com buscar_norma ou resolver_citacoes, ou leia a norma em ${linkNorma(caminho)}`,
         });
       }
-      return { resposta, texto: textoDoRecurso(resposta, lerDispositivos.texto(resposta)) };
+      return {
+        tipo: "dispositivo",
+        resposta,
+        texto: textoDoRecurso(resposta, lerDispositivos.texto(resposta)),
+      } as const;
     }
     case "curso": {
       yield* semFragmento;
       const resposta = yield* leitura.fichaCurso(yield* entrada(fichaCurso.entrada, { curso: caminho }, uri));
-      return { resposta, texto: textoDoRecurso(resposta, fichaCurso.texto(resposta)) };
+      return { tipo: "curso", resposta, texto: textoDoRecurso(resposta, fichaCurso.texto(resposta)) } as const;
     }
     case "ppc": {
       if (fragmento === null) {
         const resposta = yield* leitura.lerPpc({ ppc: caminho });
-        return { resposta, texto: textoDoRecurso(resposta, Conteudos.textoPpc(resposta)) };
+        return { tipo: "ppc", resposta, texto: textoDoRecurso(resposta, Conteudos.textoPpc(resposta)) } as const;
       }
       const id = `${caminho}#${fragmento}`;
       const resposta = yield* leitura.lerSecao(yield* entrada(lerSecao.entrada, { id }, uri));
       const continuacao = (cursor: string) =>
         `Seção longa: acima, as linhas ${resposta.dados.secao.fonte.linha_inicio}-${resposta.dados.secao.fonte.linha_fim}. Para o resto, chame \`ler_secao\` com \`id: "${id}"\` e \`cursor: "${cursor}"\`.`;
-      return { resposta, texto: textoDoRecurso(resposta, lerSecao.texto(resposta), continuacao) };
+      return {
+        tipo: "secao",
+        resposta,
+        texto: textoDoRecurso(resposta, lerSecao.texto(resposta), continuacao),
+      } as const;
     }
     case "cnct": {
       yield* semFragmento;
       const resposta = yield* leitura.lerCnct({ cnct: caminho });
-      return { resposta, texto: textoDoRecurso(resposta, Conteudos.textoCnct(resposta)) };
+      return { tipo: "cnct", resposta, texto: textoDoRecurso(resposta, Conteudos.textoCnct(resposta)) } as const;
     }
     case "campus": {
       yield* semFragmento;
       const resposta = yield* leitura.lerCampus({ campus: caminho });
-      return { resposta, texto: textoDoRecurso(resposta, Conteudos.textoCampus(resposta)) };
+      return {
+        tipo: "campus",
+        resposta,
+        texto: textoDoRecurso(resposta, Conteudos.textoCampus(resposta)),
+      } as const;
     }
     case "ficha": {
       yield* semFragmento;
       const resposta = yield* leitura.lerFicha({ ficha: caminho });
-      return { resposta, texto: textoDoRecurso(resposta, Conteudos.textoFicha(resposta)) };
+      return { tipo: "ficha", resposta, texto: textoDoRecurso(resposta, Conteudos.textoFicha(resposta)) } as const;
     }
   }
-}) as (uri: string) => Effect.Effect<RecursoLido, ErroDeLeitura, Leitura.Leitura>;
+}) as (uri: string) => Effect.Effect<LinkLido, ErroDeLeitura, Leitura.Leitura>;
 
 /** O resultado do `resources/read`: o texto Markdown, com a `base` e os avisos no `_meta`. */
-function resultado(uri: string, lido: RecursoLido): McpSchema.ReadResourceResult {
+function resultado(uri: string, lido: LinkLido): McpSchema.ReadResourceResult {
   return {
     contents: [
       {
@@ -219,15 +236,23 @@ function resultado(uri: string, lido: RecursoLido): McpSchema.ReadResourceResult
   };
 }
 
-/** A leitura como o `McpServer` a pede: a entrada inválida vira `InvalidParams`, a falha da base, `InternalError`. */
+/**
+ * A leitura como o `McpServer` a pede: a entrada inválida vira `InvalidParams`, a falha da base,
+ * `InternalError`. Com uma `SessaoAtual`, a leitura vai para as chamadas da sessão, com o resumo do
+ * texto lido ou da mensagem de erro.
+ */
 const lerParaMcp = (leitura: Leitura.Leitura["Service"], uri: string) =>
-  lerRecurso(uri).pipe(
-    Effect.map((lido) => resultado(uri, lido)),
-    Effect.catchTags({
-      EntradaInvalida: (erro) => Effect.fail(new McpSchema.InvalidParams({ message: erro.message })),
-      FalhaNaBase: (erro) => Effect.fail(new McpSchema.InternalError({ message: erro.message })),
-    }),
-    Effect.provideService(Leitura.Leitura, leitura),
+  observarChamada(
+    { ferramenta: uri, tipo: "recurso" },
+    lerRecurso(uri).pipe(
+      Effect.map((lido) => resultado(uri, lido)),
+      Effect.catchTags({
+        EntradaInvalida: (erro) => Effect.fail(new McpSchema.InvalidParams({ message: erro.message })),
+        FalhaNaBase: (erro) => Effect.fail(new McpSchema.InternalError({ message: erro.message })),
+      }),
+      Effect.provideService(Leitura.Leitura, leitura),
+    ),
+    { falhou: () => false, resumir: resumoDaLeitura, resumirErro: (erro) => resumoDoTexto(erro.message) },
   );
 
 /** Caminho do roteador de URI do `effect/ai` (`find-my-way`): `::` é o `:` literal, `*` o resto. */

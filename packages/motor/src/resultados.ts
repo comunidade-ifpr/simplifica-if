@@ -9,7 +9,14 @@
  * A correspondência é pela ordem e pelo nome da ferramenta, dentro da sessão: cada
  * `FerramentaConcluida` de `<servidor>.<ferramenta>` consome a próxima chamada de `<ferramenta>`
  * daquele servidor (com resumo ou não, para não desalinhar a fila) e, se o resumo veio vazio, fica
- * com o da chamada. A chamada chega antes do evento, porque o servidor a publica antes de responder
+ * com o da chamada.
+ *
+ * A leitura de recurso do Antigravity é a ferramenta `read_resource` dele, sem o prefixo do servidor;
+ * o servidor e o URI estão na entrada (`{ ServerName, Uri }`) do `FerramentaIniciada`. O servidor do
+ * app registra a leitura com o URI no lugar do nome da ferramenta, e o `FerramentaConcluida` dela
+ * consome a próxima chamada desse URI no servidor `ServerName`, como uma ferramenta de nome `Uri`.
+ *
+ * A chamada chega antes do evento, porque o servidor a publica antes de responder
  * ao provider; se não chegar em `ESPERA_RESULTADO` (o provider falhou a chamada sem chegar ao
  * servidor, por exemplo), o evento segue como veio. No início de cada turno, o que sobrou do anterior
  * é descartado.
@@ -26,6 +33,16 @@ import type { Evento } from "./eventos.ts";
 
 /** Quanto um `FerramentaConcluida` espera pela chamada correspondente. */
 export const ESPERA_RESULTADO = "1 second";
+
+/** A ferramenta com que o Antigravity lê um recurso MCP (`resources/read`). */
+export const LER_RECURSO_ANTIGRAVITY = "read_resource";
+
+/** O servidor e o URI de um `read_resource`, pela entrada dele; `undefined` se faltar um dos dois. */
+function leituraDeRecurso(entrada: unknown): { readonly servidor: string; readonly uri: string } | undefined {
+  if (typeof entrada !== "object" || entrada === null) return undefined;
+  const { ServerName: servidor, Uri: uri } = entrada as Record<string, unknown>;
+  return typeof servidor === "string" && typeof uri === "string" ? { servidor, uri } : undefined;
+}
 
 /** Transforma os eventos de um turno, completando os resumos vazios. */
 export type Completar = <E>(eventos: Stream.Stream<Evento, E>) => Stream.Stream<Evento, E>;
@@ -54,6 +71,9 @@ export const completador = Effect.fnUntraced(function* (config: ConfigSessao) {
   }
   if (fontes.length === 0) return ((eventos) => eventos) satisfies Completar as Completar;
 
+  /** As leituras de recurso iniciadas e ainda não concluídas, pelo id da ferramenta. */
+  const leituras = new Map<string, { readonly servidor: string; readonly uri: string }>();
+
   /** A próxima chamada de `ferramenta`; as de outro nome lidas no caminho ficam guardadas, na ordem. */
   const proxima = (fonte: Fonte, ferramenta: string): Effect.Effect<ResultadoFerramenta> =>
     Effect.suspend(() => {
@@ -68,11 +88,27 @@ export const completador = Effect.fnUntraced(function* (config: ConfigSessao) {
       });
     });
 
-  const completar = (evento: Evento): Effect.Effect<Evento> => {
-    if (evento._tag !== "FerramentaConcluida") return Effect.succeed(evento);
+  /** A fonte do evento e o nome da chamada que ele consome nela. */
+  const alvo = (evento: Extract<Evento, { readonly _tag: "FerramentaConcluida" }>) => {
+    const leitura = leituras.get(evento.id);
+    if (leitura !== undefined) {
+      leituras.delete(evento.id);
+      const fonte = fontes.find((candidata) => candidata.servidor === leitura.servidor);
+      return fonte === undefined ? undefined : { fonte, ferramenta: leitura.uri };
+    }
     const fonte = fontes.find((candidata) => evento.nome.startsWith(`${candidata.servidor}.`));
-    if (fonte === undefined) return Effect.succeed(evento);
-    return proxima(fonte, evento.nome.slice(fonte.servidor.length + 1)).pipe(
+    return fonte === undefined ? undefined : { fonte, ferramenta: evento.nome.slice(fonte.servidor.length + 1) };
+  };
+
+  const completar = (evento: Evento): Effect.Effect<Evento> => {
+    if (evento._tag === "FerramentaIniciada" && evento.nome === LER_RECURSO_ANTIGRAVITY) {
+      const leitura = leituraDeRecurso(evento.entrada);
+      if (leitura !== undefined) leituras.set(evento.id, leitura);
+    }
+    if (evento._tag !== "FerramentaConcluida") return Effect.succeed(evento);
+    const encontrado = alvo(evento);
+    if (encontrado === undefined) return Effect.succeed(evento);
+    return proxima(encontrado.fonte, encontrado.ferramenta).pipe(
       Effect.timeoutOption(ESPERA_RESULTADO),
       Effect.map((resultado) =>
         Option.isSome(resultado) && evento.resumo === "" ? { ...evento, resumo: resultado.value.resumo } : evento,
@@ -89,7 +125,7 @@ export const completador = Effect.fnUntraced(function* (config: ConfigSessao) {
         Effect.sync(() => fonte.guardadas.clear()),
       ),
     { discard: true },
-  );
+  ).pipe(Effect.andThen(Effect.sync(() => leituras.clear())));
 
   const completarTurno: Completar = (eventos) =>
     Stream.unwrap(Effect.as(descartarSobras, Stream.mapEffect(eventos, completar)));

@@ -454,6 +454,7 @@ Lacunas: MCP por HTTP local, recursos `ifpr://`, isolamento (`~/.codex` e `~/.ge
   - Identificador `br.edu.ifpr.simplifica`, nome e ícones pela identidade do IFPR (skill `ifpr-design`).
   - Instaladores de Windows (NSIS por usuário) e macOS gerados no CI, ainda sem assinatura definitiva.
   - Cada parte copiada do T3 registrada em [upstream-t3.md](../upstream-t3.md).
+  - **`apps/server` feito em 14/11/2026:** servidor local headless que junta o `Motor` (drivers reais), o MCP `ifpr` HTTP com um token por conversa e a API `effect/rpc` por WebSocket em `127.0.0.1` (grupos providers, conversa e leitura, contratos em `packages/contratos-app`), com o token do processo pai, `Host` e `Origin` conferidos e encerramento pelo SIGTERM ou pelo stdin fechado. Detalhes e pendências em `apps/server/README.md`.
 - **M1.2 — Motor de produção.** O `Motor` da PoC dentro do servidor local, com:
   - persistência das conversas e dos eventos em `effect/sql` sobre `node:sqlite`, com migrações em Effect;
   - retomada depois de fechar o app, pelo mecanismo de cada provider (a confirmar por provider);

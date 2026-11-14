@@ -1,8 +1,12 @@
 /**
  * O grupo RPC de leitura (`GrupoLeitura`) pelo cliente em memória do `RpcTest`, sobre os handlers
- * (`layerHandlersRpc`) e o `Leitura` de um banco de fixture: cada uma das 8 operações devolve o mesmo
- * que a ferramenta MCP de mesmo nome pelo caminho de `responder` (um contrato só para as duas), e o
- * erro tipado chega ao cliente com a mesma mensagem da ferramenta.
+ * (`layerHandlersRpc`) e o `Leitura` de um banco de fixture: cada uma das 8 operações das ferramentas
+ * devolve o mesmo que a ferramenta MCP de mesmo nome pelo caminho de `responder` (um contrato só para
+ * as duas), e o erro tipado chega ao cliente com a mesma mensagem da ferramenta.
+ *
+ * As leituras de link (M1.5): `lerLink` resolve cada tipo de link `ifpr://` como o `resources/read`
+ * (`lerRecurso`), com a resposta da ferramenta de mesmo conteúdo ou a dos RPCs próprios dos recursos
+ * (`lerPpc`, `lerCnct`, `lerCampus`, `lerFicha`).
  *
  * Dois bancos: o de normas (`fixture.ts` + `fixture-normas.ts`, com dispositivos e um PPC sem índice
  * FTS) e o de PPCs (`fixture-ppcs.ts`, com normas sem dispositivos, PPCs, cursos e o FTS das seções).
@@ -22,11 +26,13 @@ import { lerDispositivos } from "../src/ferramentas/ler-dispositivos.ts";
 import { lerSecao } from "../src/ferramentas/ler-secao.ts";
 import { listarCursos } from "../src/ferramentas/listar-cursos.ts";
 import { sobreABase } from "../src/ferramentas/sobre-a-base.ts";
-import { GrupoLeitura, layerHandlersRpc, layerLeitura } from "../src/rpc.ts";
+import { lerRecurso } from "../src/recursos/recursos.ts";
+import { GrupoLeitura } from "../src/grupo-leitura.ts";
+import { Leitura, layerHandlersRpc, layerLeitura } from "../src/rpc.ts";
 import { camadaFerramentas, type FerramentaTestada, mensagemDeErro, responder } from "./apoio.ts";
 import { criarBancoFixture, limparTemporarios } from "./fixture.ts";
 import { DCN_2021, DCN_2026, inserirNormas } from "./fixture-normas.ts";
-import { criarBancoFixturePpcs, PPC_ENFERMAGEM, PPC_INFORMATICA } from "./fixture-ppcs.ts";
+import { criarBancoFixturePpcs, PPC_ENFERMAGEM, PPC_FISICA, PPC_INFORMATICA } from "./fixture-ppcs.ts";
 
 afterEach(limparTemporarios);
 
@@ -146,6 +152,95 @@ describe("GrupoLeitura: erro tipado", () => {
       const mensagem = yield* mensagemDeErro(fichaNorma, { id }).pipe(Effect.provide(camadaFerramentas(banco)));
       expect(falha.message).toBe(mensagem);
       expect(mensagem).toContain("norma não encontrada na base");
+    }),
+  );
+});
+
+/** O que `lerRecurso` (o `resources/read`) devolve para `link`, direto sobre o `Leitura` do banco. */
+const viaRecurso = (banco: string, link: string) =>
+  Effect.gen(function* () {
+    yield* Leitura;
+    return yield* lerRecurso(link);
+  }).pipe(Effect.provide(layerLeitura({ banco, canal: "dev" })));
+
+describe("GrupoLeitura: links ifpr://", () => {
+  it.effect("lerLink de norma, dispositivo, curso e seção: a resposta da ferramenta e o texto do recurso", () =>
+    Effect.gen(function* () {
+      const normas = bancoNormas();
+      const norma = yield* viaRpc(normas, (c) => c.lerLink({ link: `ifpr://norma/${DCN_2021}` }));
+      expect(norma.tipo).toBe("norma");
+      expect(norma.resposta).toEqual(yield* viaFerramenta(fichaNorma, { id: DCN_2021 }, normas));
+      expect(norma).toEqual(yield* viaRecurso(normas, `ifpr://norma/${DCN_2021}`));
+
+      const id = `${DCN_2026}#art28`;
+      const dispositivo = yield* viaRpc(normas, (c) => c.lerLink({ link: `ifpr://norma/${id}` }));
+      expect(dispositivo.tipo).toBe("dispositivo");
+      expect(dispositivo.resposta).toEqual(yield* viaFerramenta(lerDispositivos, { ids: [id], filhos: true }, normas));
+
+      const ppcs = criarBancoFixturePpcs();
+      const curso = yield* viaRpc(ppcs, (c) => c.lerLink({ link: `ifpr://curso/${PPC_ENFERMAGEM}` }));
+      expect(curso.tipo).toBe("curso");
+      expect(curso.resposta).toEqual(yield* viaFerramenta(fichaCurso, { curso: PPC_ENFERMAGEM }, ppcs));
+      expect(curso.texto).toContain(`## [Técnico em Enfermagem](ifpr://curso/${PPC_ENFERMAGEM})`);
+      expect(curso.texto.endsWith("Base de 13/11/2026 (versão dev).")).toBe(true);
+
+      const secaoId = `${PPC_INFORMATICA}#estagio_praticas-1`;
+      const secao = yield* viaRpc(ppcs, (c) => c.lerLink({ link: `ifpr://ppc/${secaoId}` }));
+      expect(secao.tipo).toBe("secao");
+      expect(secao.resposta).toEqual(yield* viaFerramenta(lerSecao, { id: secaoId }, ppcs));
+    }),
+  );
+
+  it.effect("lerPpc, lerCnct, lerCampus e lerFicha: a mesma resposta que lerLink traz no tipo", () =>
+    Effect.gen(function* () {
+      const banco = criarBancoFixturePpcs();
+      const casos = [
+        ["ppc", `ifpr://ppc/${PPC_ENFERMAGEM}`, (c: ClienteLeitura) => c.lerPpc({ ppc: PPC_ENFERMAGEM })],
+        [
+          "cnct",
+          "ifpr://cnct/tecnico-em-enfermagem",
+          (c: ClienteLeitura) => c.lerCnct({ cnct: "tecnico-em-enfermagem" }),
+        ],
+        ["campus", "ifpr://campus/foz-do-iguacu", (c: ClienteLeitura) => c.lerCampus({ campus: "foz-do-iguacu" })],
+        ["ficha", "ifpr://ficha/CT-CURR-12", (c: ClienteLeitura) => c.lerFicha({ ficha: "CT-CURR-12" })],
+      ] as const satisfies ReadonlyArray<
+        readonly [string, string, (c: ClienteLeitura) => Effect.Effect<unknown, ErroDeLeitura>]
+      >;
+      for (const [tipo, link, chamar] of casos) {
+        const porLink = yield* viaRpc(banco, (c) => c.lerLink({ link }));
+        expect(porLink.tipo, link).toBe(tipo);
+        expect(porLink, link).toEqual(yield* viaRecurso(banco, link));
+        expect(yield* viaRpc<unknown>(banco, chamar), link).toEqual(porLink.resposta);
+      }
+      const ppc = yield* viaRpc(banco, (c) => c.lerPpc({ ppc: PPC_ENFERMAGEM }));
+      expect(ppc.dados.ppc.link).toBe(`ifpr://ppc/${PPC_ENFERMAGEM}`);
+      expect(ppc.dados.secoes.length).toBeGreaterThan(0);
+      expect(ppc.avisos.map((a) => a.tipo)).toEqual(["fato-extraido"]);
+      const cnct = yield* viaRpc(banco, (c) => c.lerCnct({ cnct: "tecnico-em-enfermagem" }));
+      expect(cnct.dados.cursos_ifpr.map((c) => c.link)).toContain(`ifpr://curso/${PPC_ENFERMAGEM}`);
+      const campus = yield* viaRpc(banco, (c) => c.lerCampus({ campus: "foz-do-iguacu" }));
+      expect(campus.dados.cursos.map((c) => c.link)).toContain(`ifpr://curso/${PPC_FISICA}`);
+      const ficha = yield* viaRpc(banco, (c) => c.lerFicha({ ficha: "ct-curr-12" }));
+      expect(ficha.dados.ficha.link).toBe("ifpr://ficha/CT-CURR-12");
+    }),
+  );
+
+  it.effect("link malformado, desconhecido ou inexistente: EntradaInvalida com a mensagem do resources/read", () =>
+    Effect.gen(function* () {
+      const banco = criarBancoFixturePpcs();
+      const casos: ReadonlyArray<readonly [string, RegExp]> = [
+        ["ifpr://curso/curitiba", /^link ifpr:\/\/ malformado: "ifpr:\/\/curso\/curitiba"/],
+        ["https://exemplo.org/x", /^link desconhecido: "https:\/\/exemplo\.org\/x"/],
+        ["ifpr://campus/marte", /^campus não encontrado na base: "marte"/],
+      ];
+      for (const [link, mensagem] of casos) {
+        const falha = yield* Effect.flip(viaRpc(banco, (c) => c.lerLink({ link })));
+        expect(ehEntradaInvalida(falha), link).toBe(true);
+        expect(falha.message, link).toMatch(mensagem);
+      }
+      const cnct = yield* Effect.flip(viaRpc(banco, (c) => c.lerCnct({ cnct: "tecnico-em-astronautica" })));
+      expect(ehEntradaInvalida(cnct)).toBe(true);
+      expect(cnct.message).toContain('curso não encontrado no CNCT: "tecnico-em-astronautica"');
     }),
   );
 });

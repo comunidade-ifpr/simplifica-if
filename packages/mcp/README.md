@@ -39,6 +39,8 @@ Desde o M1.5, os links que as ferramentas devolvem são recursos MCP, no execut�
 - **Conteúdo:** `text/markdown`, o mesmo texto da ferramenta: avisos ("Atenção:"), corpo com a fonte (`path:linhas`) e o rodapé com a versão da base. A `base` e os avisos vão também no `_meta` (`ifpr/base`, `ifpr/avisos`). Cada tipo tem o teto de tamanho da ferramenta correspondente; os novos, o seu (`TETO_RECURSO_*` em `src/recursos/conteudos.ts`).
 - **`resources/list`:** só pontos de entrada, não a base inteira: as normas centrais que estiverem na base (Res. CNE/CP nº 2/2026, Res. CNE/CP nº 1/2021, LDB) e os campi.
 - **Erros:** link malformado, de tipo desconhecido, de outro esquema ou de algo que não está na base volta como erro `InvalidParams` (-32602), com a mensagem em português e um exemplo do link certo. Os modelos casam pelo tipo (`ifpr://norma/*`…); um modelo curinga, escondido do `resources/templates/list` por `McpServer.visibility`, pega o resto, que sem ele voltaria com a mensagem em inglês do `effect/ai`.
+- **Resolução única:** `lerRecurso` (em `src/recursos/recursos.ts`) desmonta o link e chama o `Leitura`; é a mesma função do `resources/read` e do RPC `lerLink`. Ela devolve um `LinkLido`: o tipo do conteúdo (`norma`, `dispositivo`, `curso`, `ppc`, `secao`, `cnct`, `campus`, `ficha`), a `Resposta` estruturada e o texto Markdown.
+- **No servidor HTTP:** cada leitura entra no stream `chamadas`, como as chamadas de ferramenta (ver abaixo).
 
 ## Como rodar
 
@@ -114,7 +116,7 @@ packages/mcp/
 │   │   ├── toolkit.ts       # FerramentasIfpr (Toolkit) e layerHandlers
 │   │   └── registrar.ts     # registrarFerramentas, sobre McpServer.addTool
 │   ├── toolkit.ts           # export @simplifica-if/mcp/toolkit
-│   └── rpc.ts               # export @simplifica-if/mcp/rpc: GrupoLeitura e layerHandlersRpc
+│   └── rpc.ts               # export @simplifica-if/mcp/rpc: GrupoLeitura (ferramentas e links ifpr://) e layerHandlersRpc
 └── test/                    # fixtures com o DDL do kb; testes por ferramenta, equivalência, RPC, stdio
     └── transversal/         # suítes de todas as ferramentas: amostras.ts, paridade.ts e os *.test.ts
 ```
@@ -123,12 +125,13 @@ Regras de negócio ficam em `packages/kb`; aqui ficam a validação de entrada, 
 
 ## Uso pelo app (fork do T3)
 
-Quatro pontos de entrada, sem curinga:
+Cinco pontos de entrada, sem curinga:
 
-- `@simplifica-if/mcp/http` (M1.4): o servidor MCP dentro do processo do app, por HTTP em `127.0.0.1`. `layer({ banco, porta?, canal?, pastaTrabalho? })` dá o serviço `ServidorMcpHttp`: `url`, `porta`, `abrirSessao({ rotulo, pastaTrabalho? })` (um token por sessão, revogado no fim do `Scope`; a pasta da sessão vale mais que a da layer) e `chamadas` (cada chamada de ferramenta, com a sessão, a duração e se falhou). As defesas (`Host`, token em tempo constante, tamanho do corpo, `Origin`, protocolos) e o que veio do T3 estão no cabeçalho de `src/http.ts`. Para teste manual: `node packages/mcp/scripts/servir-http.ts --banco tmp/kb.sqlite`, que imprime a URL e o cabeçalho `Authorization` de uma sessão. O executável stdio não muda: o servidor HTTP do Node traz o `ws`, que o SEA não resolve;
+- `@simplifica-if/mcp/http` (M1.4): o servidor MCP dentro do processo do app, por HTTP em `127.0.0.1`. `layer({ banco, porta?, canal?, pastaTrabalho? })` dá o serviço `ServidorMcpHttp` com um `Leitura` próprio; `layerSobreLeitura({ porta?, pastaTrabalho? })` dá o mesmo serviço sobre o `Leitura` do ambiente, para quem já o tem (o `apps/server`, que o usa também no RPC de leitura, abre assim uma conexão só ao `kb.sqlite`). O serviço tem `url`, `porta`, `abrirSessao({ rotulo, pastaTrabalho? })` (um token por sessão, revogado no fim do `Scope`; a pasta da sessão vale mais que a da layer) e `chamadas` (cada chamada de ferramenta e cada leitura de recurso, com a sessão, a duração, se falhou e o começo do resultado em `resumo`, até 300 caracteres numa linha). A leitura de recurso vem com `tipo: "recurso"` e o URI pedido em `ferramenta` (`ifpr://cnct/tecnico-em-enfermagem`); na que falhou, o `resumo` é o começo da mensagem de erro. A chamada de ferramenta vem sem `tipo` (o padrão é `"ferramenta"`), como antes. O motor casa o `read_resource` do Antigravity (entrada `{ ServerName, Uri }`) com essa leitura pelo URI (`packages/motor/src/resultados.ts`). As defesas (`Host`, token em tempo constante, tamanho do corpo, `Origin`, protocolos) e o que veio do T3 estão no cabeçalho de `src/http.ts`. Para teste manual: `node packages/mcp/scripts/servir-http.ts --banco tmp/kb.sqlite`, que imprime a URL e o cabeçalho `Authorization` de uma sessão. O executável stdio não muda: o servidor HTTP do Node traz o `ws`, que o SEA não resolve;
 
 - `@simplifica-if/mcp/toolkit`: `FerramentasIfpr`, `FERRAMENTAS`, `layerHandlers`, `registrarFerramentas`, `layerRegistro` (ferramentas e recursos `ifpr://`), `layerLeitura` (sem pasta de trabalho: o `pacote_contexto` aceita só `ppc`), `layerLeituraComPasta` (com ela; pede `FileSystem` e `Path`), `Leitura`, `NOME_SERVIDOR`, `VERSAO_PACOTE`, `INSTRUCOES` e `PROTOCOLOS`;
-- `@simplifica-if/mcp/rpc`: `GrupoLeitura` (`fichaNorma`, `lerDispositivos`, `buscarNorma`, `fichaCurso`, `lerSecao`, `buscarSecoes`, `listarCursos`, `sobreABase`), `layerHandlersRpc` e `layerLeitura`;
+- `@simplifica-if/mcp/grupo-leitura`: as definições do grupo RPC de leitura, sem a implementação (como o `packages/contracts` do T3): `GrupoLeitura`, `LinkLido` e `EntradaLink`. É o que a interface do app importa, pelo `@simplifica-if/contratos-app`; o grafo dele não carrega o `kb`, o `Leitura` nem módulos do Node (`packages/contratos-app/test/sem-servidor.test.ts`). Por isso os schemas e o texto das ferramentas (`src/ferramentas/*.ts`, menos `registrar.ts` e `toolkit.ts`), `src/recursos/conteudos.ts`, `src/orcamento.ts` e `src/contratos.ts` não importam o `kb` em tempo de execução (só tipos) nem o `envelope.ts`;
+- `@simplifica-if/mcp/rpc`: `layerHandlersRpc` (os handlers do `GrupoLeitura`) e `layerLeitura`. As operações das ferramentas (`fichaNorma`, `lerDispositivos`, `buscarNorma`, `fichaCurso`, `lerSecao`, `buscarSecoes`, `listarCursos`, `sobreABase`), com a entrada e a resposta da ferramenta de mesmo nome; `lerLink({ link })`, para o leitor `ifpr://` da interface, que lê qualquer link pela resolução do `resources/read` e devolve o `LinkLido` (`tipo`, `resposta`, `texto`); e `lerPpc`, `lerCnct`, `lerCampus` e `lerFicha`, os conteúdos que só existem como recurso, com a mesma resposta que `lerLink` traz nesses tipos (os schemas `Entrada*` e `Saida*` de `src/recursos/conteudos.ts`). Link malformado ou que não está na base falha com `EntradaInvalida`, com a mensagem do `resources/read`;
 - `@simplifica-if/mcp/contratos`: os schemas do envelope e dos tipos comuns.
 
 ```ts
@@ -153,6 +156,8 @@ node packages/mcp/test/gabarito.ts --atualizar instrucoes             # depois d
 pnpm fmt                             # na raiz: vp fmt no repositório inteiro
 pnpm mcp:smoke                       # na raiz: as suítes transversais também na base real (tmp/kb.sqlite)
 ```
+
+Limitação conhecida: o `serverInfo` do `initialize` sai sem o `title` ("Base de conhecimento do IFPR") que o servidor do C0 anunciava. O `McpServer` do Effect 4.1.3 não aceita `title` nas opções de `layerStdio` e `layerHttp`, e o runtime monta o `serverInfo` só com `name`, `version`, `description`, `websiteUrl` e `icons`; não há API pública para escolhê-lo (desvio 1 do C2). Por isso o `gabarito.ts --comparar` estrito falha na linha 4 desde o C2 (e também nas capacidades `logging`, `completions` e `resources` e na ordem das chaves dos schemas do `tools/list`), e o CI usa `--comparar --schemas-equivalentes`, que aceita essas diferenças. Quando uma versão do Effect aceitar o `title`, passe-o nas duas layers (`servidor.ts` e `http.ts`) e tire o `delete servidor.title` do `gabarito.ts`.
 
 ## Suítes transversais
 

@@ -4,7 +4,7 @@
  * O mesmo Toolkit, as mesmas instruções e o mesmo registro de ferramentas do executável stdio
  * (`servidor.ts`), servidos por `McpServer.layerHttp` em `http://127.0.0.1:<porta>/mcp`. As CLIs dos
  * providers se ligam a ele com um token por sessão (`abrirSessao`), e o app vê cada chamada de
- * ferramenta (`chamadas`).
+ * ferramenta e cada leitura de recurso `ifpr://` (`chamadas`).
  *
  * Defesas, conferidas nesta ordem, antes de o protocolo MCP ver a requisição:
  *
@@ -35,6 +35,10 @@
  * Escopo por sessão: a requisição autorizada leva ao contexto da chamada a `SessaoAtual` (o rótulo e o
  * registro das chamadas, como o `McpInvocationContext` do T3) e, se a sessão tiver pasta de trabalho,
  * a `PastaTrabalho` dela, que vale mais que a pasta global (`pastaTrabalho` da layer).
+ *
+ * Duas layers: `layer({ banco })` monta o próprio `Leitura` sobre o `kb.sqlite`; `layerSobreLeitura()`
+ * pede o `Leitura` ao ambiente, para quem já o tem (o servidor do app, que o usa também no RPC) abrir
+ * uma conexão só ao banco.
  *
  * Trechos copiados do T3 Code (MIT, Copyright (c) 2026 T3 Tools Inc., commit a6d9140972), em inglês,
  * marcados com "T3:" abaixo: `normalizeMcpHttpResponse` e `parseBearerToken`.
@@ -92,18 +96,29 @@ export interface SessaoMcp {
   readonly cabecalhos: Readonly<Record<string, string>>;
 }
 
-/** Uma chamada de ferramenta, para o app (leitor, métricas). */
+export type { TipoChamada } from "./SessaoAtual.ts";
+
+/**
+ * Uma chamada de ferramenta (`tools/call`) ou uma leitura de recurso (`resources/read`), para o app
+ * (leitor, métricas). A leitura de recurso traz `tipo: "recurso"` e, em `ferramenta`, o URI pedido,
+ * como o provider o mandou (`ifpr://cnct/tecnico-em-enfermagem`); a chamada de ferramenta vem sem
+ * `tipo`, como antes.
+ */
 export interface ChamadaFerramenta {
   /** O rótulo da sessão. */
   readonly sessao: string;
+  /** O nome da ferramenta; numa leitura de recurso, o URI. */
   readonly ferramenta: string;
+  /** `recurso` numa leitura de recurso; ausente (o padrão, `ferramenta`) numa chamada de ferramenta. */
+  readonly tipo?: SessaoAtual.TipoChamada;
   /** Milissegundos do `Clock` no início da chamada. */
   readonly inicio: number;
   readonly duracaoMs: number;
   readonly falhou: boolean;
   /**
-   * O começo do texto do resultado, numa linha, até 300 caracteres (`LIMITE_RESUMO`). Serve a quem
-   * não recebe o resultado pelo provider (o `agy` não o manda pelo ACP).
+   * O começo do texto do resultado, numa linha, até 300 caracteres (`LIMITE_RESUMO`); na leitura de
+   * recurso que falhou, o da mensagem de erro. Serve a quem não recebe o resultado pelo provider (o
+   * `agy` não o manda pelo ACP).
    */
   readonly resumo?: string;
 }
@@ -137,7 +152,10 @@ export class ServidorMcpHttp extends Context.Service<
       readonly rotulo: string;
       readonly pastaTrabalho?: string;
     }) => Effect.Effect<SessaoMcp, never, Scope.Scope>;
-    /** As chamadas de ferramenta de todas as sessões, a partir de quando se assina o stream. */
+    /**
+     * As chamadas de ferramenta e as leituras de recurso de todas as sessões, a partir de quando se
+     * assina o stream.
+     */
     readonly chamadas: Stream.Stream<ChamadaFerramenta>;
   }
 >()("@simplifica-if/mcp/http/ServidorMcpHttp") {}
@@ -159,10 +177,12 @@ class Sessoes extends Context.Service<
     readonly abertas: Ref.Ref<ReadonlyArray<Sessao>>;
     readonly chamadas: PubSub.PubSub<ChamadaFerramenta>;
     readonly hashDoToken: (token: string) => Effect.Effect<Uint8Array>;
+    /** A pasta das sessões abertas sem pasta própria (`pastaTrabalho` da layer). */
+    readonly pastaPadrao: Option.Option<PastaTrabalho.PastaTrabalho["Service"]>;
   }
 >()("@simplifica-if/mcp/http/Sessoes") {}
 
-const makeSessoes = Effect.gen(function* () {
+const makeSessoes = Effect.fnUntraced(function* (pastaTrabalho: string | undefined) {
   const servidor = yield* HttpServer.HttpServer;
   const digest = yield* Digest.Digest;
   const endereco = servidor.address;
@@ -172,7 +192,9 @@ const makeSessoes = Effect.gen(function* () {
   // Um defeito do WebCrypto não é recuperável aqui: sem SHA-256 não há como conferir token.
   const hashDoToken = (token: string) =>
     digest.digest(Digest.sha256, new TextEncoder().encode(token)).pipe(Effect.orDie);
-  return Sessoes.of({ porta, abertas, chamadas, hashDoToken });
+  const pastaPadrao =
+    pastaTrabalho === undefined ? Option.none() : Option.some(yield* PastaTrabalho.make({ pasta: pastaTrabalho }));
+  return Sessoes.of({ porta, abertas, chamadas, hashDoToken, pastaPadrao });
 });
 
 /** A sessão do token, comparando o hash dele com o de todas as sessões, sem sair no primeiro acerto. */
@@ -329,8 +351,9 @@ const makeAutorizacao = Effect.gen(function* () {
       Effect.provideService(SessaoAtual.SessaoAtual, sessao.sessaoAtual),
       Effect.provideService(HttpIncomingMessage.MaxBodySize, ByteSize.bytes(LIMITE_CORPO)),
     );
-    const comPasta = Option.isSome(sessao.pasta)
-      ? Effect.provideService(comSessao, PastaTrabalho.PastaTrabalho, sessao.pasta.value)
+    const pasta = Option.orElse(sessao.pasta, () => sessoes.pastaPadrao);
+    const comPasta = Option.isSome(pasta)
+      ? Effect.provideService(comSessao, PastaTrabalho.PastaTrabalho, pasta.value)
       : comSessao;
     return yield* Effect.map(comPasta, normalizeMcpHttpResponse);
   }) satisfies Autorizacao;
@@ -341,29 +364,18 @@ const layerAutorizacao = HttpRouter.middleware<{ provides: SessaoAtual.SessaoAtu
 /* ================================================================== layer */
 
 /**
- * O servidor MCP `ifpr` por HTTP em `127.0.0.1`, sobre o `kb.sqlite` em `banco`, só leitura.
+ * O servidor MCP `ifpr` por HTTP em `127.0.0.1`, sobre o `Leitura` do ambiente: quem já tem o serviço
+ * (o servidor do app, que o usa também no RPC de leitura) monta uma conexão só ao `kb.sqlite`.
  *
  * - `porta`: a porta; sem ela (ou com 0), a que o sistema escolher;
- * - `canal`: o canal da base quando o banco não registra um (padrão: `dev`, como a CLI);
  * - `pastaTrabalho`: a pasta de onde o `pacote_contexto` lê um `.md` nas sessões abertas sem pasta
- *   própria; sem ela, essas sessões não leem arquivo nenhum.
+ *   própria; sem ela, essas sessões não leem arquivo nenhum. A pasta vai ao contexto de cada
+ *   requisição, como a da sessão; o `Leitura` do ambiente não precisa tê-la.
  *
  * O servidor fecha com o escopo da layer.
  */
-export const layer = (opcoes: {
-  readonly banco: string;
-  readonly porta?: number;
-  readonly canal?: Canal;
-  readonly pastaTrabalho?: string;
-}) => {
+export const layerSobreLeitura = (opcoes: { readonly porta?: number; readonly pastaTrabalho?: string } = {}) => {
   const porta = opcoes.porta ?? 0;
-  const canal = opcoes.canal ?? "dev";
-  const leitura =
-    opcoes.pastaTrabalho === undefined
-      ? layerLeitura({ banco: opcoes.banco, canal })
-      : layerLeitura({ banco: opcoes.banco, canal }).pipe(
-          Layer.provide(PastaTrabalho.layer({ pasta: opcoes.pastaTrabalho })),
-        );
   const mcp = McpServer.layerHttp({
     name: NOME_SERVIDOR,
     version: VERSAO_PACOTE,
@@ -372,7 +384,7 @@ export const layer = (opcoes: {
     protocols: PROTOCOLOS_HTTP,
     allowSessionTermination: true,
     registrations: layerRegistro,
-  }).pipe(Layer.provide(layerAutorizacao), Layer.provide(leitura));
+  }).pipe(Layer.provide(layerAutorizacao));
   const servir = HttpRouter.serve(mcp, { disableLogger: true, disableListenLog: true });
   const node = Layer.effect(
     HttpServer.HttpServer,
@@ -382,10 +394,28 @@ export const layer = (opcoes: {
   );
   return Layer.effect(ServidorMcpHttp, make).pipe(
     Layer.provide(servir),
-    Layer.provide(Layer.effect(Sessoes, makeSessoes)),
+    Layer.provide(Layer.effect(Sessoes, makeSessoes(opcoes.pastaTrabalho))),
     Layer.provide(node),
     Layer.provide(
       Layer.mergeAll(NodeHttpServer.layerHttpServices, NodeCrypto.layerDigest, NodeCrypto.layerSecureRandom),
     ),
   );
 };
+
+/**
+ * O servidor MCP `ifpr` por HTTP em `127.0.0.1`, sobre o `kb.sqlite` em `banco`, só leitura: o
+ * `layerSobreLeitura` com um `Leitura` próprio.
+ *
+ * - `porta` e `pastaTrabalho`: como em `layerSobreLeitura`;
+ * - `canal`: o canal da base quando o banco não registra um (padrão: `dev`, como a CLI).
+ */
+export const layer = (opcoes: {
+  readonly banco: string;
+  readonly porta?: number;
+  readonly canal?: Canal;
+  readonly pastaTrabalho?: string;
+}) =>
+  layerSobreLeitura({
+    ...(opcoes.porta === undefined ? {} : { porta: opcoes.porta }),
+    ...(opcoes.pastaTrabalho === undefined ? {} : { pastaTrabalho: opcoes.pastaTrabalho }),
+  }).pipe(Layer.provide(layerLeitura({ banco: opcoes.banco, canal: opcoes.canal ?? "dev" })));

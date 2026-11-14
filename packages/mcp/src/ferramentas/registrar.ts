@@ -71,8 +71,7 @@ export const registrarFerramentas = Effect.gen(function* () {
       annotations: ferramenta.tool.annotations,
       handle: (argumentos: unknown) =>
         observarChamada(
-          ferramenta.nome,
-          (resultado) => resultado.isError === true,
+          { ferramenta: ferramenta.nome },
           decodificar(argumentos).pipe(
             Effect.andThen(kit.handle(ferramenta.nome, (argumentos ?? {}) as never, undefined, OPCOES_ENTRADA)),
             Effect.flatMap((saida) => Stream.run(saida, Sink.last())),
@@ -88,7 +87,7 @@ export const registrarFerramentas = Effect.gen(function* () {
               Cause.hasInterruptsOnly(causa) ? Effect.interrupt : Effect.succeed(resultadoDeErro(textoDaFalha(causa))),
             ),
           ),
-          resumoDoResultado,
+          { falhou: (resultado) => resultado.isError === true, resumir: resumoDoResultado },
         ),
     });
   }

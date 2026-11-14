@@ -9,9 +9,11 @@ import { afterEach, describe, expect, it, test } from "@effect/vitest";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import { Tool } from "effect/ai";
+import { ROTULOS_INDICADOR as ROTULOS_KB } from "@simplifica-if/kb/adequacao/art71";
 import { ehEntradaInvalida } from "../src/contratos.ts";
 import { jsonSchema } from "../src/esquema.ts";
 import { etapa } from "../src/ferramentas/etapa.ts";
+import { ROTULOS_INDICADOR } from "../src/ferramentas/ficha-curso.ts";
 import { sobreABase } from "../src/ferramentas/sobre-a-base.ts";
 import { FERRAMENTAS } from "../src/ferramentas/toolkit.ts";
 import { INSTRUCOES, NOME_SERVIDOR, VERSAO_PACOTE } from "../src/servidor.ts";
@@ -273,4 +275,9 @@ describe("pacote", () => {
     };
     expect(VERSAO_PACOTE).toBe(pacote.version);
   });
+});
+
+test("os rótulos da adequação ao art. 71 na ficha_curso são os do kb", () => {
+  // A ficha_curso guarda uma cópia: o módulo dela é contrato da interface e não importa o kb.
+  expect(ROTULOS_INDICADOR).toStrictEqual(ROTULOS_KB);
 });

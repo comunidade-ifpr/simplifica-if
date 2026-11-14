@@ -5,7 +5,10 @@
   "type": "module",
   "exports": {
     ".": "./src/Motor.ts",
-    "./eventos": "./src/eventos.ts"
+    "./eventos": "./src/eventos.ts",
+    "./Canal": "./src/Canal.ts",
+    "./drivers": "./src/drivers/index.ts",
+    "./t3/*": "./src/t3/*.ts"
   },
   "scripts": {
     "poc": "node scripts/poc.ts",

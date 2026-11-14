@@ -3,7 +3,8 @@
  * O servidor MCP por HTTP local (`src/http.ts`, M1.4), de verdade, em porta efêmera de `127.0.0.1`,
  * com o Client do SDK oficial: `initialize`, `tools/list` (as mesmas ferramentas do stdio) e
  * `tools/call`; o token por sessão (401 sem token, com token desconhecido e com token revogado; duas
- * sessões com tokens diferentes); `chamadas`; as defesas de `Host`, `Origin` e tamanho do corpo; a
+ * sessões com tokens diferentes); `chamadas`, com as chamadas de ferramenta e as leituras de recurso;
+ * as defesas de `Host`, `Origin` e tamanho do corpo; a
  * pasta de trabalho por sessão; e a paridade de uma chamada com o executável stdio.
  */
 import * as NodeFS from "node:fs";
@@ -15,11 +16,13 @@ import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Fiber from "effect/Fiber";
+import * as Layer from "effect/Layer";
 import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
 import { FERRAMENTAS } from "../src/ferramentas/toolkit.ts";
 import * as Http from "../src/http.ts";
-import { INSTRUCOES } from "../src/servidor.ts";
+import { Leitura } from "../src/leitura/Leitura.ts";
+import { INSTRUCOES, layerLeitura } from "../src/servidor.ts";
 import { diretorioTemporario, limparTemporarios } from "./fixture.ts";
 import { criarBancoFixturePpcs, PPC_ENFERMAGEM } from "./fixture-ppcs.ts";
 
@@ -207,6 +210,47 @@ layer(Http.layer({ banco }), { excludeTestServices: true })("servidor MCP por HT
     }),
   );
 
+  it.effect("chamadas: cada leitura de recurso, com tipo recurso, o URI e o mesmo resumo", () =>
+    Effect.gen(function* () {
+      const servidor = yield* Http.ServidorMcpHttp;
+      const coleta = yield* servidor.chamadas.pipe(
+        Stream.filter((c) => c.sessao === "leituras"),
+        Stream.take(3),
+        Stream.runCollect,
+        Effect.forkScoped({ startImmediately: true }),
+      );
+      const cliente = yield* conectar(yield* servidor.abrirSessao({ rotulo: "leituras" }));
+      const uri = "ifpr://cnct/tecnico-em-enfermagem";
+      const { contents } = yield* Effect.promise(() => cliente.readResource({ uri }));
+      const invalido = "ifpr://campus/marte";
+      const erro = yield* Effect.promise(() =>
+        cliente.readResource({ uri: invalido }).then(
+          () => "leu sem erro",
+          (e: { readonly message: string }) => e.message,
+        ),
+      );
+      expect(erro).toContain('campus não encontrado na base: "marte"');
+      yield* Effect.promise(() => cliente.callTool({ name: "sobre_a_base", arguments: {} }));
+      const chamadas = yield* Fiber.join(coleta);
+      expect(chamadas.map(({ sessao, ferramenta, tipo, falhou }) => ({ sessao, ferramenta, tipo, falhou }))).toEqual([
+        { sessao: "leituras", ferramenta: uri, tipo: "recurso", falhou: false },
+        { sessao: "leituras", ferramenta: invalido, tipo: "recurso", falhou: true },
+        // a chamada de ferramenta continua sem `tipo`
+        { sessao: "leituras", ferramenta: "sobre_a_base", tipo: undefined, falhou: false },
+      ]);
+      expect("tipo" in chamadas[2]!).toBe(false);
+      // O resumo é o começo do texto lido, numa linha, até 300 caracteres, como o das ferramentas.
+      const texto = (contents[0] as { readonly text: string }).text.replace(/\s+/g, " ").trim();
+      expect(chamadas[0]?.resumo).toBe(`${texto.slice(0, 299)}…`);
+      expect(chamadas[0]?.resumo).toContain("Técnico em Enfermagem (CNCT)");
+      expect(chamadas[1]?.resumo).toContain('campus não encontrado na base: "marte"');
+      for (const c of chamadas) {
+        expect(c.inicio).toBeGreaterThan(0);
+        expect(c.duracaoMs).toBeGreaterThanOrEqual(0);
+      }
+    }),
+  );
+
   it.effect("recusa Host que não seja 127.0.0.1 ou localhost na porta do servidor (DNS rebinding)", () =>
     Effect.gen(function* () {
       const servidor = yield* Http.ServidorMcpHttp;
@@ -258,6 +302,30 @@ layer(Http.layer({ banco }), { excludeTestServices: true })("servidor MCP por HT
       expect(textoDe(semDisco)).toContain("pasta de trabalho desta sessão não existe");
     }),
   );
+});
+
+describe("sobre o Leitura do ambiente", () => {
+  // O servidor do app monta um `Leitura` só e o entrega ao MCP e ao RPC: uma conexão ao `kb.sqlite`.
+  const camada = Http.layerSobreLeitura({ pastaTrabalho: pasta }).pipe(
+    Layer.provideMerge(layerLeitura({ banco, canal: "beta" })),
+  );
+  layer(camada, { excludeTestServices: true })("layerSobreLeitura", (it) => {
+    it.effect("usa o Leitura dado, e a pasta da layer vale para a sessão sem pasta própria", () =>
+      Effect.gen(function* () {
+        const servidor = yield* Http.ServidorMcpHttp;
+        const leitura = yield* Leitura;
+        const cliente = yield* conectar(yield* servidor.abrirSessao({ rotulo: "ambiente" }));
+        const sobre = yield* Effect.promise(() => cliente.callTool({ name: "sobre_a_base", arguments: {} }));
+        // O canal é o do Leitura do ambiente, não o padrão `dev` do `layer({ banco })`.
+        expect(sobre.structuredContent).toMatchObject({ base: leitura.base });
+        expect(leitura.base.canal).toBe("beta");
+        const pacote = { name: "pacote_contexto", arguments: { tarefa: "CT-CURR-12", arquivo: "PPC.md" } };
+        const lido = yield* Effect.promise(() => cliente.callTool(pacote));
+        expect(lido.isError).toBeFalsy();
+        expect(lido.structuredContent).toMatchObject({ dados: { path: "PPC.md" } });
+      }),
+    );
+  });
 });
 
 describe("paridade com o stdio", () => {
