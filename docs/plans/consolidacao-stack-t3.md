@@ -4,6 +4,8 @@ Situação em 14/11/2026. Plano de migração deste repositório para a stack do
 
 Complementa o [plano do app](app-simplifica-if.md#tecnologia-e-língua-do-código) e o [M0.1](m0-simplifica-mcp.md). Onde este plano contradiz o que eles dizem sobre Bun, zod ou "API local de leitura", este plano prevalece.
 
+**Revisão de 14/11/2026: não há fork.** O app Simplifica IF passou a ser um app próprio, neste monorepo, com a stack do T3 e o código do T3 copiado e registrado em [upstream-t3.md](../upstream-t3.md) ([decisão 5 do plano do app](app-simplifica-if.md#decisões-13112026)). As etapas C0 a C3 estão concluídas e registram as decisões como foram tomadas. Onde elas falam do "fork" ou de `simplifica-if-app`, leia "o app, em `apps/` deste repositório". As partes que dependiam do fork (submódulo, registro no `McpHttpServer` do T3, versão sincronizada entre dois repositórios) foram revistas abaixo.
+
 ## Decisão (14/11/2026)
 
 O simplifica-if adota a stack do T3 Code de ponta a ponta:
@@ -12,28 +14,29 @@ O simplifica-if adota a stack do T3 Code de ponta a ponta:
 - **Effect 4** nos pacotes e pontos de entrada, **Effect Schema** no lugar do zod;
 - **as ferramentas do T3:** Vite+ (`vp`) para lint, formatação, testes e empacotamento, `effect-tsgo` para tipos.
 
-**Motivo.** O `kb` passa a ser um serviço Effect importado pelo servidor do fork (`simplifica-if-app`):
+**Motivo.** O `kb` passa a ser um serviço Effect importado pelo servidor local do app, que vive neste monorepo (na versão original desta decisão, o servidor de um fork do T3 em repositório separado):
 
 - o leitor `ifpr://`, o Explorar e o "Para você" leem por `effect/rpc`, com contratos em Effect Schema compartilhados;
-- as ferramentas MCP viram um Toolkit de `effect/ai`, registrado ao lado dos toolkits do T3 em `apps/server/src/mcp/McpHttpServer.ts`;
+- as ferramentas MCP viram um Toolkit de `effect/ai`, servido por MCP HTTP local no servidor do app (na versão original, registrado ao lado dos toolkits do T3 em `McpHttpServer.ts`);
 - somem a "API local de leitura" e o processo paralelo.
 
 **O que não muda:**
 
 - **Portabilidade do Marco 0.** O mesmo Toolkit roda num executável stdio, empacotado como Node SEA, como o `build:exe` do T3.
-- **Língua.** Código, comentários e commits deste repositório continuam em português. No fork, estrutura em inglês e conceitos do IFPR em português ([Regra de língua](app-simplifica-if.md#tecnologia-e-língua-do-código)).
+- **Língua.** Código, comentários e commits deste repositório continuam em português, inclusive no app. Só o código copiado do T3 mantém o inglês de origem ([Regra de língua](app-simplifica-if.md#tecnologia-e-língua-do-código)).
 - **Python.** A conversão de PPC e DOCX (`scripts/converter_ppcs_markdown.py`, `converter_docx.py` da `revisar-ppc`) fica como está.
 - **Regras e dados.** Nenhuma regra do `kb` muda de resultado. Markdown, JSON e YAML de `base-conhecimento/` e `dados/` não são tocados.
 
 ## Resultado esperado
 
 ```
-┌──────── simplifica-if-app (fork do T3) ─────────┐
-│ apps/server                                     │
-│  ├─ McpHttpServer.ts: toolkits do T3 + `ifpr`   │◄── @simplifica-if/mcp/toolkit
-│  ├─ RPC: leitor, Explorar, "Para você"          │◄── @simplifica-if/mcp/rpc
-│  └─ serviços do kb sobre o kb.sqlite            │◄── @simplifica-if/kb
-└─────────────────────────────────────────────────┘
+┌──────── app Simplifica IF (apps/ deste monorepo) ┐
+│ servidor local (Effect)                          │
+│  ├─ MCP HTTP local `ifpr` (127.0.0.1)            │◄── @simplifica-if/mcp/toolkit
+│  ├─ RPC: leitor, Explorar, "Para você"           │◄── @simplifica-if/mcp/rpc
+│  ├─ motor: Claude, Codex, Antigravity            │◄── @simplifica-if/motor
+│  └─ serviços do kb sobre o kb.sqlite             │◄── @simplifica-if/kb
+└──────────────────────────────────────────────────┘
 ┌──────── simplifica-mcp (executável Node SEA) ───┐
 │ McpServer.layerStdio + mesmo Toolkit + kb       │──► Claude Desktop, Codex, Gemini CLI
 └─────────────────────────────────────────────────┘
@@ -98,7 +101,7 @@ Python, fora do escopo: `scripts/converter_ppcs_markdown.py` (`pymupdf4llm`), `c
 
 ## Versões fixadas
 
-Uma versão só nos dois repositórios. Toda atualização do Effect acontece no mesmo dia aqui e no fork, junto com o rebase do fork.
+Uma versão só no monorepo, no catalog da raiz, para o `kb`, o MCP, o motor e o app. A atualização é um PR só, com os gabaritos. A versão acompanha a do T3 quando o código copiado depender dela, não automaticamente. As versões da interface e do desktop estão na [tabela da stack do plano do app](app-simplifica-if.md#tecnologia-e-língua-do-código).
 
 | Pacote | Versão | Onde fica |
 |---|---|---|
@@ -336,7 +339,7 @@ d=$(mktemp -d) && cp tmp/kb.sqlite "$d" && (cd "$d" && env -i PATH=/usr/bin:/bin
 
 Layers prontas para os consumidores, em `src/layers.ts`:
 
-- `layerSomenteLeitura({ caminho })`: banco somente leitura, todos os serviços de consulta, sem `FileSystem`. É a que o MCP e o fork usam.
+- `layerSomenteLeitura({ caminho })`: banco somente leitura, todos os serviços de consulta, sem `FileSystem`. É a que o MCP e o app usam.
 - `layerRepositorio({ raiz })`: arquivos e recompilação automática do `tmp/kb.sqlite`. É a da CLI.
 
 **Passos**
@@ -389,7 +392,7 @@ node packages/kb/scripts/medir.ts            # latência das consultas e tempo d
 
 ## C2 — `packages/mcp` em Effect
 
-**Objetivo.** As 16 ferramentas viram um Toolkit de `effect/ai`, servido em stdio pelo executável e exportado para o fork montar. Para a IA, nada muda.
+**Objetivo.** As 16 ferramentas viram um Toolkit de `effect/ai`, servido em stdio pelo executável e exportado para o app montar. Para a IA, nada muda.
 
 **Escopo.** `packages/mcp/**`, `docs/plans/m0-simplifica-mcp.md` (seção "Estrutura do pacote", quando a outra tarefa tiver terminado de editá-lo) e, se faltar algum método, `packages/kb/src/` (só acréscimos, listados no PR).
 
@@ -555,25 +558,13 @@ C2 e C3 começam juntos, depois do merge do C1, em worktrees separadas.
 | C2 | C1 | 3 a 5 dias |
 | C3 | C1 (em paralelo com o C2) | 5 a 8 dias |
 
-O M1.1 (fork) pode começar depois do C2: é o primeiro momento em que há Toolkit e RPC para registrar.
+O M1.1 (app e shell) pode começar depois do C2: é o primeiro momento em que há Toolkit e RPC para montar. C0 a C3 estão concluídos.
 
 ## Decisões em aberto
 
-1. **Como o fork consome `@simplifica-if/kb` e `@simplifica-if/mcp`.**
-   - **Recomendação: submódulo git** no fork, em `vendor/simplifica-if`, com sparse checkout de `packages/kb`, `packages/mcp` e dos arquivos de configuração. A pasta entra no `pnpm-workspace.yaml` do fork.
-     - O código chega como fonte TypeScript, sem etapa de build.
-     - Há uma única cópia do `effect`, a do catalog do fork, resolvida pela `peerDependency`.
-     - Fica fora dos arquivos do T3, então não pesa no rebase.
-     - As `fmt.ignorePatterns` e `lint.ignorePatterns` do fork excluem `vendor/**`; os testes do submódulo rodam aqui.
-   - **Depois, quando a API do `kb` estabilizar:** pacote publicado (JavaScript gerado por `vp pack` e `.d.ts`) num registro privado, com `effect` como `peerDependency`.
-   - **Descartada: dependência git do pnpm.** O pacote ficaria dentro de `node_modules`, e o Node não remove tipos de `.ts` dentro de `node_modules` (`ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING`). Só funcionaria com build, e aí o pacote publicado é melhor.
-2. **Nome das ferramentas no fork.**
-   - Se o Toolkit for registrado dentro do servidor MCP do T3, as ferramentas aparecem como `mcp__t3-code__buscar_norma`. Elas também ficam sujeitas à listagem adiada (`McpToolExposure`) e entram no orçamento medido por `AgentContextBudget.test.ts`.
-   - **Recomendação:** um segundo endpoint MCP no mesmo servidor HTTP, `name: "ifpr"`, em `/mcp/ifpr`, com as nossas `instructions`, montado em `McpHttpServer.ts` com o mesmo `registrarFerramentas`, e registrado nas sessões dos providers ao lado do `t3-code`.
-     - Os nomes ficam iguais aos do Marco 0 e das avaliações.
-     - O texto de `instrucoes.md` chega à IA.
-   - O experimento do passo 1 do C2 confirma a viabilidade.
-3. **Largura da formatação.** 120, como hoje (recomendado), ou o padrão do oxfmt, como o T3. Só importa se o fork passar a formatar o submódulo.
+1. **Como o app consome `@simplifica-if/kb` e `@simplifica-if/mcp`.** *Resolvida em 14/11/2026, sem fork.* O app vive em `apps/` deste monorepo e importa os pacotes por `workspace:*`, como fonte TypeScript, sem build e com uma única cópia do `effect`, a do catalog. Saem o submódulo, o sparse checkout e o pacote publicado num registro privado.
+2. **Nome das ferramentas no app.** *Resolvida em 14/11/2026, sem fork.* O servidor local tem um servidor MCP próprio, `name: "ifpr"`, com as nossas `instructions`, servido por HTTP local. Os nomes ficam iguais aos do Marco 0 e das avaliações, sem prefixo `mcp__t3-code__` e sem a listagem adiada do T3. O achado do experimento do C2 continua valendo se o servidor local montar um segundo `McpServer.layerHttp` no mesmo `HttpRouter`: o segundo precisa de `Layer.fresh`, como documentado em `packages/mcp/src/toolkit.ts`.
+3. **Largura da formatação.** *Resolvida:* 120 no código deste repositório, app inclusive. Os pacotes copiados do T3 iguais ao upstream ficam fora do `vp fmt` daqui ([upstream-t3.md](../upstream-t3.md)).
 4. **Compilação do banco por `SqlClient`.** Se a medição do C1 mostrar custo pequeno (até 20%), o `Compilador` pode usar o `SqlClient` e o `node:sqlite` direto sai do código. Decide-se no PR do C1.
    - **Medido no C1 (14/11/2026).** O `SqlClient` custa cerca de 1,6 µs a mais por instrução (50 mil inserções: 97 ms contra 18 ms). Com cerca de 120 mil instruções na compilação, isso dá uns 0,2 s, perto de 2% dos 12 s.
    - **Decisão do C1.** O `DatabaseSync` direto fica, dentro do `Compilador`. O custo não impede a troca, mas `preencherBanco` são umas 600 linhas síncronas, e reescrevê-las arrisca o determinismo do banco sem ganho no C1.
@@ -686,3 +677,4 @@ O M1.1 (fork) pode começar depois do C2: é o primeiro momento em que há Toolk
   - **Protocolos MCP:** `PROTOCOLOS` voltou a ter `2025-03-26` e `2024-11-05`. Sem eles, o cliente que só fala uma dessas versões recebia `2025-11-25` e desconectava. Há um teste de `initialize` por versão em `stdio.test.ts`.
   - **Cliente do Notion:** só falha de rede (`fetch failed` ou erro de sistema `E…`) é transitória; outra exceção vira `NotionPedidoRecusado` com `erro_inesperado` e não se repete.
   - **Agendamento SEI, para o curador:** o LaunchAgent instalado roda a cadeia inteira no Bun do Homebrew (`process.execPath` propaga o runtime), fora do runtime testado e sem versão fixada. A revisão conferiu que hoje funciona (módulos, CLI, lote e o programa inteiro com o Notion em memória dão o mesmo resultado no Bun e no Node). Mesmo assim, reinstale com o Node fixado: `fnm exec --using=26.12.1 node scripts/agendar_sincronizacao_sei.ts instalar`.
+- 14/11/2026: **sem fork.** O app passa a ser próprio, em `apps/` deste monorepo, com a stack do T3 também na interface ([plano do app](app-simplifica-if.md), decisões 5 e 7). Revistos aqui o resultado esperado, as versões fixadas (uma versão só no monorepo) e as decisões em aberto 1 a 3, agora resolvidas: os pacotes entram por `workspace:*`, o MCP do app é um servidor `ifpr` próprio por HTTP local (o `Layer.fresh` só vale se houver um segundo endpoint), e a largura fica em 120.
