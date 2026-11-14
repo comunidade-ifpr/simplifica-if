@@ -6,16 +6,13 @@
   "exports": {
     "./*": "./src/*.ts"
   },
-  "packageManager": "bun@1.4.4",
   "bin": {
     "simplifica-mcp": "./src/cli.ts"
   },
   "scripts": {
-    "mcp": "bun run src/cli.ts",
-    "test": "bun test",
-    "typecheck": "tsc --noEmit",
-    "format": "bun fmt src test",
-    "format:check": "bun fmt --check src test"
+    "mcp": "node src/cli.ts",
+    "test": "vp test run --config ../../vite.config.ts --dir .",
+    "typecheck": "effect-tsgo tsrs --noEmit"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "2.4.0",
@@ -25,7 +22,7 @@
   },
   "devDependencies": {
     "@modelcontextprotocol/client": "2.4.0",
-    "@types/bun": "^1.4.4",
-    "typescript": "^7.0.2"
+    "@types/node": "catalog:",
+    "vite-plus": "catalog:"
   }
 }

@@ -1,4 +1,10 @@
 {
   "extends": "./tsconfig.base.json",
-  "include": ["scripts/**/*.ts", ".agents/skills/*/scripts/**/*.ts", ".agents/skills/*/tests/**/*.ts"]
+  "include": [
+    "scripts/**/*.ts",
+    ".agents/skills/*/scripts/**/*.ts",
+    ".agents/skills/*/tests/**/*.ts",
+    "testes-gabarito/**/*.ts",
+    "vite.config.ts"
+  ]
 }

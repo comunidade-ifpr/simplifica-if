@@ -7,3 +7,6 @@ tmp/
 site/
 .env.local
 node_modules/
+dist-exe/
+# Código de referência (pnpm sync:repos), fora do git.
+.repos/
