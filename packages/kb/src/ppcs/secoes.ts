@@ -220,8 +220,10 @@ const REGRAS: Array<[string, RegExp]> = [
   ["anexos", /^(anexo|apendice)s?\b/],
   [
     "pretextual",
-    /^(sumario|lista de (figuras|tabelas|quadros|siglas|abreviaturas)|reitor|vice-?reitor|pro-?reitor|diretor|diretora|ficha catalografica|projeto (politico[- ])?pedagogico (de|do) curso\b.{20,})/,
+    /^(sumario|lista de (figuras|tabelas|quadros|siglas|abreviaturas)|reitor|vice-?reitor|pro-?reitor|diretor|diretora|ficha catalografica|projeto (politico[- ])?pedagogico (de|do) curso\b.{20,})|(aprovacao|ajuste curricular) do projeto pedagogico (de|do) curso \(/,
   ],
+  // Objetivos do plano de ensino de um componente: são do ementário, não os objetivos do curso.
+  ["ementas", /^objetivos? (geral |gerais )?(do|da|dos|das) (componentes?|disciplinas?|unidades? curriculares?)\b/],
   [
     "acompanhamento_egresso",
     /(acompanhamento|politica|monitoramento|insercao|relacionamento|programa).{0,40}egress|egress.{0,30}(acompanhamento|insercao)/,
@@ -257,7 +259,7 @@ const REGRAS: Array<[string, RegExp]> = [
   ],
   [
     "acessibilidade_inclusao",
-    /acessibilidade|educacao inclusiva|inclusao|napne|necessidades (educacionais )?especificas|atendimento educacional especializado|educacao especial|deficiencia|libras/,
+    /acessibilidade|educacao inclusiva|(?<!bolsas? (academicas )?de )inclusao(?! social)|napne|necessidades (educacionais )?especificas|atendimento educacional especializado|educacao especial|deficiencia|libras/,
   ],
   [
     "infraestrutura",
@@ -269,7 +271,7 @@ const REGRAS: Array<[string, RegExp]> = [
   ],
   [
     "atendimento_estudante",
-    /atendimento (ao|aos|do|dos|as) (estudante|discente|aluno)|assistencia estudantil|acesso e permanencia|permanencia e exito|politicas? de (atendimento|apoio)|apoio (ao|aos) (estudante|discente)|mobilidade|internacionaliza|monitoria|nivelamento|programas de (ensino|bolsas|apoio)/,
+    /atendimento (ao|aos|do|dos|as) (estudante|discente|aluno)|assistencia estudantil|acesso e permanencia|permanencia e exito|politicas? de (atendimento|apoio)|apoio (ao|aos) (estudante|discente)|mobilidade|internacionaliza|monitoria|nivelamento|programas de (ensino|bolsas|apoio)|inclusao social|\bpbis\b|bolsas? de inclusao|bolsa[- ]?atleta|estudante atleta|bolsa permanencia/,
   ],
   [
     "prazo_integralizacao",
@@ -282,7 +284,7 @@ const REGRAS: Array<[string, RegExp]> = [
   ],
   [
     "identificacao",
-    /identificacao|caracteristicas do curso|perfil do curso|dados (gerais|do curso)|denominacao|eixo tecnologico|informacoes do campus|endereco|vagas|turno|horario|nome do curso|^processo$|numero do processo|^ano de |habilitacao|^grau\b|apresentacao|comissao de (estruturacao|ajuste|elaboracao)|^curso\b/,
+    /identificacao|caracteristicas do curso|perfil do curso|dados (gerais|do curso)|denominacao|eixo tecnologico|informacoes do campus|endereco|vagas|turno|horario|nome do curso|^processo$|numero do processo|^ano de |habilitacao|^grau\b|apresentacao|comissao (de|responsavel pela) (estruturacao|ajuste|elaboracao)|^curso\b/,
   ],
   [
     "legislacao",
