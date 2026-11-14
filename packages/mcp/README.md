@@ -45,6 +45,8 @@ Um banco com `versao_esquema` diferente da esperada (`VERSAO_ESQUEMA` de `packag
 
 ## Configuração no piloto zero
 
+Para quem vai instalar, o passo a passo está no [guia do piloto zero](../../docs/guia-piloto-zero.md).
+
 Para rodar a partir do checkout, o comando é `node /caminho/simplifica-if/packages/mcp/src/cli.ts --banco /caminho/kb.sqlite` (Node da versão de `.node-version`). O executável `simplifica-mcp`, um Node SEA que não precisa de Node instalado, sai de `pnpm mcp:executavel` em `packages/mcp/dist-exe/` (`--alvo` ou `--todos` para outras plataformas).
 
 ```bash

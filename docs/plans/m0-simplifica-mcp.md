@@ -593,6 +593,8 @@ packages/mcp/
 
 ## Configuração no piloto zero
 
+O guia de instalação para quem não é técnico, com os caminhos absolutos no macOS e no Windows e as fontes oficiais de cada cliente, é o [guia do piloto zero](../guia-piloto-zero.md) (T7). O que segue é o resumo técnico.
+
 Para rodar a partir do checkout, o comando é `node /caminho/simplifica-if/packages/mcp/src/cli.ts --banco /caminho/kb.sqlite` (Node da versão de `.node-version`). O executável `simplifica-mcp`, um Node SEA que não precisa de Node instalado, sai de `pnpm mcp:executavel` em `packages/mcp/dist-exe/` (`--alvo` ou `--todos` para outras plataformas).
 
 ```bash
@@ -673,3 +675,8 @@ args = ["--banco", "~/SimplificaIF/kb.sqlite"]
   - Gabarito do MCP: `gabarito.ts --atualizar pacote_contexto` acrescentou a definição e três chamadas, sem mexer no resto (`testes-gabarito/README.md`). `tools/list` com 16 ferramentas.
   - Verificação: 1259 testes, nenhuma falha (17 pulados: 16 do smoke e 1 do sei-cli); smoke com 16 testes, sem falha; gabarito equivalente (16 ferramentas, 36 chamadas); base válida.
 - 14/11/2026: T5 pronto no mesmo branch: `instrucoes.md` revisto (ver "Revisão do T5"), 355 palavras, módulo gerado conferido com `pnpm mcp:instrucoes --check`; ponteiro no `AGENTS.md`; gabarito com as instruções novas (`gabarito.ts --atualizar instrucoes`).
+- 14/11/2026: T7 pronto no mesmo branch: [guia do piloto zero](../guia-piloto-zero.md), para a PROENS/DENS e as coordenações.
+  - Cobre os dois arquivos (preparados pela equipe até o M0.2), onde pô-los no macOS e no Windows, a configuração de Claude Desktop, Claude Code, Codex e Gemini CLI com caminho absoluto, uma pergunta de teste com o resultado esperado e o que fazer se o servidor não aparecer.
+  - Comandos e formatos conferidos na documentação oficial de cada cliente, citada no fim do guia. A página do Gemini CLI informa que ele foi substituído pelo Antigravity CLI em 18/06/2026; o guia registra isso, e a configuração do Antigravity fica para o M0.2.
+  - Claude Code testado de verdade (2.1.323): `claude mcp add --scope project` num diretório temporário, com o executável SEA (`pnpm mcp:executavel`, 142 MB) e o `kb.sqlite` reais; uma pergunta pelo `claude -p --mcp-config` respondeu com o link `ifpr://cnct/tecnico-em-enfermagem` e a data da base; servidor removido em seguida, sem tocar na configuração global.
+  - Pendente para o M0.2: distribuição pronta (download ou instalador), assinatura de código no macOS e no Windows, e o nome final do `.exe` (hoje o alvo `win-x64` sai com o sufixo do alvo e a equipe o renomeia).
