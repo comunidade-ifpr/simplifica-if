@@ -1,5 +1,8 @@
 /** Relações, vigência, transições, front matter gerado, correspondência e impacto (fase 5). */
 import { describe, expect, test } from "bun:test";
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { correspondencia, validarCorrespondencias } from "./correspondencia.ts";
 import { dispositivosDoAto, listarNormas } from "./estrutura.ts";
 import { analisarFrontMatter } from "./front-matter.ts";
@@ -161,6 +164,36 @@ describe("correspondência 1/2021 → 2/2026", () => {
     expect(art26par1!.item.destino).toEqual(["#art29-par2", "#art29-par3"]);
     const [herdado] = correspondencia(`${DCN_2021}#art5-par1`, raiz);
     expect(herdado!.herdado_de).toBe("#art5");
+  });
+});
+
+describe("impacto de um dispositivo", () => {
+  const conteudo = mkdtempSync(path.join(tmpdir(), "kb-impacto-"));
+  const pasta = path.join(conteudo, ".agents", "skills", "x", "base-analise", "fichas");
+  mkdirSync(pasta, { recursive: true });
+  const ficha = (nome: string, refs: { ref: string; dispositivo: string }[]) =>
+    writeFileSync(path.join(pasta, `${nome}.json`), JSON.stringify({ referencias_normativas: refs }));
+  ficha("ct-x-01", [{ ref: DCN_2021, dispositivo: "#art29" }]);
+  ficha("ct-x-02", [{ ref: DCN_2021, dispositivo: "#art22-x" }]);
+  ficha("ct-x-03", [{ ref: DCN_2026, dispositivo: "#art22" }]); // destino do art. 20 da 1/2021
+  ficha("ct-x-04", [{ ref: DCN_2021, dispositivo: "#art2" }]);
+  ficha("ct-x-05", [{ ref: DCN_2026, dispositivo: "#art1-par1" }]); // destino do art. 2º da 1/2021
+
+  test("#art2 não casa #art29 nem #art22-x, e só os destinos do art. 2º contam como correspondentes", () => {
+    const r = impacto(`${DCN_2021}#art2`, { raiz, raizConteudo: conteudo, incluirPpcs: false });
+    const porArquivo = Object.fromEntries(r.arquivos.map((a) => [path.basename(a.arquivo, ".json"), a.motivos]));
+    expect(porArquivo).toEqual({ "ct-x-04": ["referencia"], "ct-x-05": ["referencia-correspondente"] });
+  });
+
+  test("o ato inteiro continua alcançando todos", () => {
+    const r = impacto(DCN_2021, { raiz, raizConteudo: conteudo, incluirPpcs: false });
+    expect(r.arquivos.map((a) => path.basename(a.arquivo, ".json")).sort()).toEqual([
+      "ct-x-01",
+      "ct-x-02",
+      "ct-x-03",
+      "ct-x-04",
+      "ct-x-05",
+    ]);
   });
 });
 

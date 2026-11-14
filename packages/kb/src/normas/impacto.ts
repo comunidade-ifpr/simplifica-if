@@ -172,7 +172,9 @@ export function impacto(
   const sucessoras = relacoes
     .filter((r) => r.tipo === "revoga" && r.alvo === ato && !relacaoParcial(r))
     .map((r) => r.origem);
-  const correspondentes = destinosDeOrigem(ato, raiz);
+  const correspondentes = destinosDeOrigem(sufixo ? `${ato}#${sufixo}` : ato, raiz);
+  /** O dispositivo citado é o consultado ou um subordinado dele (`#art2` não casa `#art29`). */
+  const noDispositivo = (d: string | undefined) => !!d && (d === `#${sufixo}` || d.startsWith(`#${sufixo}-`));
   const transicoes = transicoesAplicaveis(ato, data, raiz).map((t) => t.id);
 
   const citaAto = (texto: string): { cita: boolean; dispositivos: string[]; sucessora: boolean } => {
@@ -184,7 +186,7 @@ export function impacto(
       const alvo = idDoAto(c.id);
       const lista = c.dispositivos ?? (c.dispositivoId ? [c.dispositivoId] : []);
       if (alvo === ato) {
-        if (sufixo && !lista.some((d) => d === `#${sufixo}` || d.startsWith(`#${sufixo}-`))) continue;
+        if (sufixo && !lista.some(noDispositivo)) continue;
         cita = true;
         dispositivos.push(...lista.map((d) => `${ato}${d}`));
       } else if (sucessoras.includes(alvo) && lista.some((d) => correspondentes.has(`${alvo}${d}`))) {
@@ -217,7 +219,7 @@ export function impacto(
       if (json !== null) {
         textos = textosDoJson(json).join("\n");
         for (const ref of referenciasEstruturadas(json)) {
-          if (idDoAto(ref.ref) === ato && (!sufixo || ref.dispositivo?.startsWith(`#${sufixo}`))) {
+          if (idDoAto(ref.ref) === ato && (!sufixo || noDispositivo(ref.dispositivo))) {
             motivos.add("referencia");
             if (ref.dispositivo) dispositivos.add(`${ato}${ref.dispositivo}`);
           } else if (
