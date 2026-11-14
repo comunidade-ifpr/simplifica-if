@@ -11,8 +11,16 @@ describe("horasDoTrecho", () => {
     ["3.579,34 hora relógio e/ou 4.295,20 hora-aula", 3579, "relogio"],
     ["3533 horas/relógio; 4240 horas/aula", 3533, "relogio"],
     ["3254 h/a", 3254, "aula"],
+    ["3.360 h (hora aula de 60 minutos)", 3360, "relogio"],
+    ["1.200 horas (aulas de 60 minutos)", 1200, "relogio"],
+    ["1440 horas-aula (aula de 50 minutos)", 1440, "aula"],
   ] as const)("%s → %d", (trecho, valor, unidade) => {
     expect(horasDoTrecho(trecho)).toEqual({ valor, unidade });
+  });
+
+  test("a marca do rótulo vale para o número sem marca", () => {
+    expect(horasDoTrecho("1.600 horas", "relogio")).toEqual({ valor: 1600, unidade: "relogio" });
+    expect(horasDoTrecho("1.600 horas")).toEqual({ valor: 1600, unidade: "sem-marca" });
   });
 
   test("ano de ato não é carga horária", () => {
@@ -57,6 +65,15 @@ describe("extrairFatosPpc", () => {
     const fatos = extrairFatosPpc(texto, SECOES);
     expect(fatos.find((f) => f.fato === "estagio_obrigatorio")?.valor).toBe("nao");
     expect(fatos.some((f) => f.fato === "estagio_carga_h")).toBe(false);
+  });
+
+  test("unidade do rótulo e hora-aula de 60 minutos (campo-largo/automacao-industrial, linha 103)", () => {
+    const texto = PPC.replace(
+      "**Carga horária total em hora-relógio:** 1.600 horas",
+      "Carga horária total em hora relógio: 3.360 h (hora aula de 60 minutos)",
+    );
+    const total = extrairFatosPpc(texto, SECOES).find((f) => f.fato === "carga_horaria_total_h")!;
+    expect([total.valor, total.regra]).toEqual(["3360", "rotulo-quadro-relogio"]);
   });
 
   test("o ementário não é fonte da carga total", () => {
@@ -116,6 +133,10 @@ describe("SUAP", () => {
     expect(r(1600, { estagioObrigatorio: "nao" }).estagio).toBe("diverge");
     expect(r(1600, { anoPpc: 2025 }).ano).toBe("ppc-mais-recente-que-matrizes");
     expect(r(1920, { chPpcEmHoraAula: true }).carga_horaria).toBe("confere-com-uma-matriz");
+    // estágio em hora-aula: 480 aulas de 50 min = 400 h
+    expect(r(1600, { estagioCargaH: 480, estagioCargaEmHoraAula: true }).estagio).toBe("confere");
+    expect(r(1600, { estagioCargaH: 480 }).estagio).toBe("diverge-carga");
+    expect(r(1600, { estagioCargaH: 500, estagioCargaEmHoraAula: true }).estagio).toBe("diverge-carga");
     expect(cruzarPpcSuap({ ...base, chPpc: null, matrizes: [] }).map((l) => l.resultado)).toEqual([
       "sem-suap",
       "sem-suap",

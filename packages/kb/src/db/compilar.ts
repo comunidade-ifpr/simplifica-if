@@ -801,6 +801,7 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
           chPpcEmHoraAula: valor("carga_horaria_total_h")?.regra.endsWith("-aula") ?? false,
           estagioObrigatorio: (valor("estagio_obrigatorio")?.valor as "sim" | "nao" | undefined) ?? null,
           estagioCargaH: valor("estagio_carga_h")?.valor_num ?? null,
+          estagioCargaEmHoraAula: valor("estagio_carga_h")?.regra.endsWith("-aula") ?? false,
           anoPpc: ano ?? null,
           chComumSuap: curso.dados.suap?.matrizes?.carga_horaria_comum_h ?? null,
           matrizes: resumo ? matrizesDoResumo(resumo) : [],
