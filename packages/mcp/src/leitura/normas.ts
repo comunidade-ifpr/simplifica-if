@@ -15,13 +15,7 @@ import type * as FichaNorma from "../ferramentas/ficha-norma.ts";
 import type * as LerDispositivos from "../ferramentas/ler-dispositivos.ts";
 import * as ResolverCitacoes from "../ferramentas/resolver-citacoes.ts";
 import { linkDe, linkNorma } from "../links.ts";
-import {
-  avisosDasNormas,
-  dispositivoTexto,
-  leitorDeNormas,
-  relacaoSaida,
-  resumoDaNorma,
-} from "./comum.ts";
+import { avisosDasNormas, dispositivoTexto, leitorDeNormas, relacaoSaida, resumoDaNorma } from "./comum.ts";
 
 function ocorreu(valor: EventoVigencia["ocorreu"]): string {
   return valor === true ? "sim" : valor === false ? "não" : "a confirmar";
@@ -178,9 +172,7 @@ export const makeNormas = Effect.fn("Leitura.makeNormas")(function* (base: Base)
     return t ? yield* dispositivoTexto(normas, t) : null;
   });
 
-  const correspondencia = Effect.fn("Leitura.correspondencia")(function* (
-    e: typeof Correspondencia.Entrada.Type,
-  ) {
+  const correspondencia = Effect.fn("Leitura.correspondencia")(function* (e: typeof Correspondencia.Entrada.Type) {
     const ato = idDoAto(e.id.split("#")[0]!);
     const comDispositivo = e.id.includes("#");
     const tabelas = yield* normas.tabelasDeCorrespondencia(ato);
@@ -208,7 +200,12 @@ export const makeNormas = Effect.fn("Leitura.makeNormas")(function* (base: Base)
         for (const d of r.textos_destino) {
           const t = yield* trecho(d.id);
           if (t) destino.push(t);
-          else avisos.push({ tipo: "nao-encontrado", mensagem: "dispositivo de destino fora do texto da base", ref: d.id });
+          else
+            avisos.push({
+              tipo: "nao-encontrado",
+              mensagem: "dispositivo de destino fora do texto da base",
+              ref: d.id,
+            });
         }
         const item: Correspondencia.Item = {
           origem,
@@ -228,7 +225,11 @@ export const makeNormas = Effect.fn("Leitura.makeNormas")(function* (base: Base)
     );
     const tabela = tabelas[0];
     if (!tabela) {
-      avisos.push({ tipo: "nao-encontrado", mensagem: "não há tabela de correspondência com origem nesta norma", ref: ato });
+      avisos.push({
+        tipo: "nao-encontrado",
+        mensagem: "não há tabela de correspondência com origem nesta norma",
+        ref: ato,
+      });
     } else if (itens.length === 0) {
       avisos.push({
         tipo: "nao-encontrado",
@@ -264,9 +265,7 @@ export const makeNormas = Effect.fn("Leitura.makeNormas")(function* (base: Base)
     );
   });
 
-  const resolverCitacoes = Effect.fn("Leitura.resolverCitacoes")(function* (
-    e: typeof ResolverCitacoes.Entrada.Type,
-  ) {
+  const resolverCitacoes = Effect.fn("Leitura.resolverCitacoes")(function* (e: typeof ResolverCitacoes.Entrada.Type) {
     // laço por citação (até 50): o resolvedor é uma regra pura sobre o registro carregado na layer
     const itens = yield* Effect.forEach(
       e.citacoes,
@@ -311,7 +310,11 @@ export const makeNormas = Effect.fn("Leitura.makeNormas")(function* (base: Base)
       ),
     ];
     for (const id of semTexto) {
-      avisos.push({ tipo: "stub-sem-texto", mensagem: "norma citada sem texto na base: não afirme o conteúdo dela", ref: id });
+      avisos.push({
+        tipo: "stub-sem-texto",
+        mensagem: "norma citada sem texto na base: não afirme o conteúdo dela",
+        ref: id,
+      });
     }
     return responder(base, { itens }, { avisos });
   });

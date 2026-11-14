@@ -8,6 +8,10 @@
  *
  * A layer dos handlers pede o `Leitura` do ambiente: `layerLeitura({ banco, canal })` monta o serviço
  * sobre o `kb.sqlite`.
+ *
+ * O cliente RPC passa o payload já decodificado (o `Type` do schema): os campos que a ferramenta MCP
+ * completa com padrão (`limite`, `integral`, `filhos`…) são obrigatórios aqui, com o mesmo valor padrão
+ * que a descrição da ferramenta indica.
  */
 import * as Effect from "effect/Effect";
 import { Rpc, RpcGroup } from "effect/rpc";

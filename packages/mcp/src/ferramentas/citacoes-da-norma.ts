@@ -20,11 +20,7 @@ export const Entrada = Schema.Struct({
   id: idNorma(
     'ID canônico da norma, com dispositivo opcional ("br/cne-cp/res/2021/1" ou "br/cne-cp/res/2021/1#art20")',
   ),
-  confianca_min: comPadrao(
-    numero({ minimo: 0, maximo: 1 }),
-    0,
-    "confiança mínima das citações (0 a 1); padrão 0",
-  ),
+  confianca_min: comPadrao(numero({ minimo: 0, maximo: 1 }), 0, "confiança mínima das citações (0 a 1); padrão 0"),
   ppc: opcional(filtroTexto('um PPC ("campus/curso"): devolve as ocorrências em vez do resumo')),
   nivel: opcional(filtroTexto('nível do PPC ("médio", "superior", "pós-graduação")')),
   campus: opcional(filtroTexto('campus, pelo ID ("curitiba")')),

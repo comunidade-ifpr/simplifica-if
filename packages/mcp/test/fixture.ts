@@ -3,10 +3,10 @@
  * Banco de teste: o DDL do `kb` com poucas linhas, num diretório temporário. Não depende do
  * `tmp/kb.sqlite`, que não está no git.
  */
-import { DatabaseSync } from "node:sqlite";
-import { mkdtempSync, rmSync } from "node:fs";
-import os from "node:os";
-import path from "node:path";
+import * as NodeSqlite from "node:sqlite";
+import * as NodeFS from "node:fs";
+import * as NodeOS from "node:os";
+import * as NodePath from "node:path";
 import { DDL, VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
 
 export const FONTES_SHA256 = "ab12cd34".padEnd(64, "0");
@@ -21,18 +21,18 @@ export interface OpcoesFixture {
 const temporarios: string[] = [];
 
 export function diretorioTemporario(prefixo = "simplifica-mcp-"): string {
-  const dir = mkdtempSync(path.join(os.tmpdir(), prefixo));
+  const dir = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), prefixo));
   temporarios.push(dir);
   return dir;
 }
 
 export function limparTemporarios(): void {
-  for (const dir of temporarios.splice(0)) rmSync(dir, { recursive: true, force: true });
+  for (const dir of temporarios.splice(0)) NodeFS.rmSync(dir, { recursive: true, force: true });
 }
 
 export function criarBancoFixture(opcoes: OpcoesFixture = {}, dir = diretorioTemporario()): string {
-  const caminho = path.join(dir, "kb.sqlite");
-  const db = new DatabaseSync(caminho);
+  const caminho = NodePath.join(dir, "kb.sqlite");
+  const db = new NodeSqlite.DatabaseSync(caminho);
   db.exec(DDL);
   const meta: Record<string, string | null> = {
     versao_esquema: String(VERSAO_ESQUEMA),

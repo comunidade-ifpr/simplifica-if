@@ -262,7 +262,9 @@ export function decodificadorDeEntrada<S extends Schema.Decoder<unknown>>(ferram
       const plural = chaves.length > 1 ? "s" : "";
       const mensagem = `Chave${plural} inválida${plural}: ${chaves.map((k) => comAspas(k)).join(", ")}`;
       return Effect.fail(
-        new EntradaInvalida({ mensagem: `Input validation error: Invalid arguments for tool ${ferramenta}: ${mensagem}` }),
+        new EntradaInvalida({
+          mensagem: `Input validation error: Invalid arguments for tool ${ferramenta}: ${mensagem}`,
+        }),
       );
     }
     return decodificar(valor, OPCOES_ENTRADA).pipe(

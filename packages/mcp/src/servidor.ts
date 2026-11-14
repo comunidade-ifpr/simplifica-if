@@ -35,7 +35,9 @@ export const layerRegistro = Layer.effectDiscard(registrarFerramentas).pipe(Laye
 
 /** O `Leitura` sobre o `kb.sqlite` em `banco`, só leitura, sem o repositório. */
 export const layerLeitura = (opcoes: { readonly banco: string; readonly canal: Canal }) =>
-  Leitura.layer({ canal: opcoes.canal }).pipe(Layer.provideMerge(Layers.layerSomenteLeitura({ caminho: opcoes.banco })));
+  Leitura.layer({ canal: opcoes.canal }).pipe(
+    Layer.provideMerge(Layers.layerSomenteLeitura({ caminho: opcoes.banco })),
+  );
 
 /** O servidor MCP `ifpr` em stdio, sobre o `kb.sqlite` em `banco`. */
 export const layerStdio = (opcoes: { readonly banco: string; readonly canal: Canal }) =>
@@ -51,7 +53,9 @@ export const layerStdio = (opcoes: { readonly banco: string; readonly canal: Can
  * A mensagem dos erros de abertura do banco para quem instala o servidor: o kb fala "desta versão do
  * kb", e quem usa o simplifica-mcp precisa saber que é o servidor que está desatualizado.
  */
-export function mensagemDeAbertura(erro: BaseKb.BaseIncompativel | BaseKb.BaseAusente | Leitura.CanalDesconhecido): string {
+export function mensagemDeAbertura(
+  erro: BaseKb.BaseIncompativel | BaseKb.BaseAusente | Leitura.CanalDesconhecido,
+): string {
   switch (erro._tag) {
     case "BaseAusente":
       return `kb.sqlite não encontrado ou ilegível: ${erro.caminho}`;

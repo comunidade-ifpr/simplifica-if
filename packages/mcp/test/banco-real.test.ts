@@ -7,8 +7,8 @@
  * T3 (`smoke-base-real.test.ts`): `pnpm mcp:smoke` roda os dois. A CLI roda antes de o banco ser
  * aberto aqui, e compila o `tmp/kb.sqlite` se ele faltar ou estiver velho.
  */
-import { spawn } from "node:child_process";
-import path from "node:path";
+import * as NodeChildProcess from "node:child_process";
+import * as NodePath from "node:path";
 import { beforeAll, describe, expect, it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import type * as Schema from "effect/Schema";
@@ -19,13 +19,13 @@ import { lerDispositivos } from "../src/ferramentas/ler-dispositivos.ts";
 import { resolverCitacoes } from "../src/ferramentas/resolver-citacoes.ts";
 import { camadaFerramentas, type FerramentaTestada, responder, saidaValida } from "./apoio.ts";
 
-const RAIZ = path.resolve(import.meta.dirname, "../../..");
-const BANCO = path.join(RAIZ, "tmp/kb.sqlite");
-const CLI_KB = path.join(RAIZ, "packages/kb/src/cli.ts");
+const RAIZ = NodePath.resolve(import.meta.dirname, "../../..");
+const BANCO = NodePath.join(RAIZ, "tmp/kb.sqlite");
+const CLI_KB = NodePath.join(RAIZ, "packages/kb/src/cli.ts");
 
 /** `node packages/kb/src/cli.ts <args> --json`, na raiz do repositório. */
 async function kb(...args: string[]): Promise<any> {
-  const processo = spawn(process.execPath, [CLI_KB, ...args, "--json"], {
+  const processo = NodeChildProcess.spawn(process.execPath, [CLI_KB, ...args, "--json"], {
     cwd: RAIZ,
     stdio: ["ignore", "pipe", "pipe"],
   });

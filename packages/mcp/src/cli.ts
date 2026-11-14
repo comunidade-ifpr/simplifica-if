@@ -13,7 +13,7 @@
  * que é do protocolo). Um erro tipado vira `simplifica-mcp: <mensagem>` no stderr, com código 1; os
  * erros de abertura do banco usam as mensagens do simplifica-mcp (`mensagemDeAbertura`).
  */
-import * as NodeOs from "node:os";
+import * as NodeOS from "node:os";
 import * as NodeRuntime from "@effect/platform-node/NodeRuntime";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as NodeStdio from "@effect/platform-node/NodeStdio";
@@ -57,8 +57,8 @@ const ehUsoInvalido = Schema.is(UsoInvalido);
 const ehCanal = Schema.is(Schema.Literals(CANAIS));
 
 function expandirCaminho(path: Path.Path, caminho: string): string {
-  if (caminho === "~") return NodeOs.homedir();
-  if (caminho.startsWith("~/")) return path.join(NodeOs.homedir(), caminho.slice(2));
+  if (caminho === "~") return NodeOS.homedir();
+  if (caminho.startsWith("~/")) return path.join(NodeOS.homedir(), caminho.slice(2));
   return path.resolve(caminho);
 }
 
@@ -69,9 +69,11 @@ const pastaReal = Effect.fn("simplifica-mcp.pastaReal")(function* (dir: string) 
   if (Option.isNone(info) || info.value.type !== "Directory") {
     return yield* new UsoInvalido({ motivo: "pasta-trabalho", valor: dir });
   }
-  return yield* fs.realPath(dir).pipe(
-    Effect.catchTags({ PlatformError: () => Effect.fail(new UsoInvalido({ motivo: "pasta-trabalho", valor: dir })) }),
-  );
+  return yield* fs
+    .realPath(dir)
+    .pipe(
+      Effect.catchTags({ PlatformError: () => Effect.fail(new UsoInvalido({ motivo: "pasta-trabalho", valor: dir })) }),
+    );
 });
 
 const comando = Command.make(
@@ -96,8 +98,15 @@ const comando = Command.make(
     if (Option.isNone(banco)) return yield* new UsoInvalido({ motivo: "sem-banco" });
     if (!ehCanal(canal)) return yield* new UsoInvalido({ motivo: "canal", valor: canal });
     const caminho = expandirCaminho(path, banco.value);
-    yield* pastaReal(expandirCaminho(path, Option.getOrElse(pastaTrabalho, () => ".")));
-    const servicos = yield* Layer.build(layerStdio({ banco: caminho, canal: canal as Canal }).pipe(Layer.provide(NodeStdio.layer)));
+    yield* pastaReal(
+      expandirCaminho(
+        path,
+        Option.getOrElse(pastaTrabalho, () => "."),
+      ),
+    );
+    const servicos = yield* Layer.build(
+      layerStdio({ banco: caminho, canal: canal as Canal }).pipe(Layer.provide(NodeStdio.layer)),
+    );
     const { base } = Context.get(servicos, Leitura.Leitura);
     yield* Console.error(
       `simplifica-mcp ${VERSAO_PACOTE}: base ${base.versao} (referência ${base.data_referencia}, canal ${base.canal})`,
@@ -120,7 +129,8 @@ const relatarFalha = (causa: Cause.Cause<unknown>): Effect.Effect<void> => {
   if (BaseKb.ehBaseAusente(valor) || BaseKb.ehBaseIncompativel(valor) || Leitura.ehCanalDesconhecido(valor)) {
     return Console.error(`simplifica-mcp: ${mensagemDeAbertura(valor)}`);
   }
-  if (Sql.ehFalhaNaConsulta(valor)) return Console.error(`simplifica-mcp: ${MENSAGEM_INCOMPATIVEL} (o arquivo não é um kb.sqlite)`);
+  if (Sql.ehFalhaNaConsulta(valor))
+    return Console.error(`simplifica-mcp: ${MENSAGEM_INCOMPATIVEL} (o arquivo não é um kb.sqlite)`);
   if (ehUsoInvalido(valor)) return Console.error(`simplifica-mcp: ${valor.message}`);
   return Console.error(`simplifica-mcp: ${valor instanceof Error ? valor.message : String(valor)}`);
 };

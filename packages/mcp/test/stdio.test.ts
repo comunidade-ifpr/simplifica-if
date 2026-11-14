@@ -6,10 +6,10 @@
  * Com `SIMPLIFICA_MCP_EXE` (o caminho do executável de `pnpm mcp:executavel`), o filho é o executável,
  * com o `PATH` reduzido a `/usr/bin:/bin`, sem Node.
  */
-import { spawn } from "node:child_process";
+import * as NodeChildProcess from "node:child_process";
 import { afterEach, describe, expect, test } from "vite-plus/test";
-import { copyFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import { Client } from "@modelcontextprotocol/client";
 import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
@@ -19,7 +19,7 @@ import { criarBancoFixture, diretorioTemporario, limparTemporarios } from "./fix
 
 afterEach(limparTemporarios);
 
-const CLI = path.resolve(import.meta.dirname, "../src/cli.ts");
+const CLI = NodePath.resolve(import.meta.dirname, "../src/cli.ts");
 const EXE = process.env.SIMPLIFICA_MCP_EXE;
 /** Comando e argumentos do servidor: o executável, ou o Node deste processo com a CLI. */
 const COMANDO = EXE ?? process.execPath;
@@ -50,7 +50,7 @@ async function conectar(
 }
 
 async function rodarCli(args: string[], env: Record<string, string> = ambiente()) {
-  const processo = spawn(COMANDO, comCli(args), {
+  const processo = NodeChildProcess.spawn(COMANDO, comCli(args), {
     cwd: diretorioTemporario(),
     env,
     stdio: ["ignore", "pipe", "pipe"],
@@ -122,7 +122,7 @@ describe("servidor em stdio", () => {
 
   test("aceita o banco por SIMPLIFICA_KB e expande ~/", async () => {
     const casa = diretorioTemporario();
-    copyFileSync(criarBancoFixture(), path.join(casa, "kb.sqlite"));
+    NodeFS.copyFileSync(criarBancoFixture(), NodePath.join(casa, "kb.sqlite"));
     const cliente = await conectar([], {
       cwd: diretorioTemporario(),
       env: ambiente({ HOME: casa, SIMPLIFICA_KB: "~/kb.sqlite" }),
@@ -154,11 +154,16 @@ describe("erros de inicialização", () => {
 
   test("banco ausente e pasta de trabalho inexistente", async () => {
     const dir = diretorioTemporario();
-    const ausente = await rodarCli(["--banco", path.join(dir, "kb.sqlite")]);
+    const ausente = await rodarCli(["--banco", NodePath.join(dir, "kb.sqlite")]);
     expect(ausente.codigo).toBe(1);
     expect(ausente.stderr).toContain("kb.sqlite não encontrado");
 
-    const pasta = await rodarCli(["--banco", criarBancoFixture(), "--pasta-trabalho", path.join(dir, "nao-existe")]);
+    const pasta = await rodarCli([
+      "--banco",
+      criarBancoFixture(),
+      "--pasta-trabalho",
+      NodePath.join(dir, "nao-existe"),
+    ]);
     expect(pasta.codigo).toBe(1);
     expect(pasta.stderr).toContain("pasta de trabalho não encontrada");
   });

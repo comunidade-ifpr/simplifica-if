@@ -14,14 +14,7 @@ import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
-import {
-  type Base,
-  CANAIS,
-  type Canal,
-  type ErroDeLeitura,
-  FalhaNaBase,
-  type Resposta,
-} from "../contratos.ts";
+import { type Base, CANAIS, type Canal, type ErroDeLeitura, FalhaNaBase, type Resposta } from "../contratos.ts";
 import { type MetaEnvelope, montarBase, responder } from "../envelope.ts";
 import type * as AdequacaoArt71 from "../ferramentas/adequacao-art71.ts";
 import type * as BuscarNorma from "../ferramentas/buscar-norma.ts";
@@ -93,12 +86,17 @@ function naBase<A, E extends { readonly _tag: string }>(
 ): Effect.Effect<A, Exclude<E, { readonly _tag: "FalhaNaConsulta" | "FalhaNasFontes" }> | FalhaNaBase> {
   return Effect.mapError(efeito, (erro) =>
     erro._tag === "FalhaNaConsulta" || erro._tag === "FalhaNasFontes"
-      ? new FalhaNaBase({ operacao: erro._tag === "FalhaNaConsulta" ? "consulta ao kb.sqlite" : "fontes normativas", cause: erro })
+      ? new FalhaNaBase({
+          operacao: erro._tag === "FalhaNaConsulta" ? "consulta ao kb.sqlite" : "fontes normativas",
+          cause: erro,
+        })
       : (erro as Exclude<E, { readonly _tag: "FalhaNaConsulta" | "FalhaNasFontes" }>),
   );
 }
 
-const comFalhaNaBase = <F extends Record<string, (entrada: never) => Effect.Effect<unknown, { readonly _tag: string }>>>(
+const comFalhaNaBase = <
+  F extends Record<string, (entrada: never) => Effect.Effect<unknown, { readonly _tag: string }>>,
+>(
   metodos: F,
 ) =>
   Object.fromEntries(
@@ -129,15 +127,15 @@ const make = Effect.fn("Leitura.make")(function* (opcoes: { readonly canal: Cana
   const normas = yield* makeNormas(base);
   const ppcs = yield* makePpcs(base);
 
+  const sobreABase = responder(base, { contagens: meta.contagens, tipos_de_secao: tiposDeSecao, niveis, campi });
+  const etapa = responder(base, { registrado: false });
+
   return Leitura.of({
     base,
     ...comFalhaNaBase({ ...normas, ...ppcs }),
-    sobreABase: Effect.fn("Leitura.sobreABase")(function* () {
-      return responder(base, { contagens: meta.contagens, tipos_de_secao: tiposDeSecao, niveis, campi });
-    }),
-    etapa: Effect.fn("Leitura.etapa")(function* () {
-      return responder(base, { registrado: false });
-    }),
+    // respostas fixas, montadas uma vez: o banco não muda com o servidor no ar
+    sobreABase: Effect.fn("Leitura.sobreABase")(() => Effect.succeed(sobreABase)),
+    etapa: Effect.fn("Leitura.etapa")(() => Effect.succeed(etapa)),
   });
 });
 

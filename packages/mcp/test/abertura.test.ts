@@ -4,8 +4,8 @@
  * repositório (`layerLeitura`, sobre o `BaseKb` do kb), e as mensagens que o servidor dá a quem o
  * instala quando o banco falta ou é de outra versão (`mensagemDeAbertura`).
  */
-import { existsSync, writeFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { afterEach, describe, expect, it } from "@effect/vitest";
 import * as BaseKb from "@simplifica-if/kb/BaseKb";
 import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
@@ -95,17 +95,17 @@ describe("abertura do banco", () => {
 
   it.effect("recusa arquivo que não é um kb.sqlite", () =>
     Effect.gen(function* () {
-      const caminho = path.join(diretorioTemporario(), "kb.sqlite");
-      writeFileSync(caminho, "não sou um banco\n".repeat(200));
+      const caminho = NodePath.join(diretorioTemporario(), "kb.sqlite");
+      NodeFS.writeFileSync(caminho, "não sou um banco\n".repeat(200));
       expect(yield* recusa(caminho)).toContain(MENSAGEM_INCOMPATIVEL);
     }),
   );
 
   it.effect("banco ausente: erro claro, e nenhum arquivo é criado", () =>
     Effect.gen(function* () {
-      const caminho = path.join(diretorioTemporario(), "nao-existe.sqlite");
+      const caminho = NodePath.join(diretorioTemporario(), "nao-existe.sqlite");
       expect(yield* recusa(caminho)).toBe(`kb.sqlite não encontrado ou ilegível: ${caminho}`);
-      expect(existsSync(caminho)).toBe(false);
+      expect(NodeFS.existsSync(caminho)).toBe(false);
     }),
   );
 

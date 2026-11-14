@@ -54,7 +54,11 @@ export const Dados = Schema.Struct({
     }),
   ),
   ofertas: Schema.Array(
-    Schema.Struct({ processo: Schema.String, turno: Schema.NullOr(Schema.String), vagas: Schema.NullOr(Schema.Finite) }),
+    Schema.Struct({
+      processo: Schema.String,
+      turno: Schema.NullOr(Schema.String),
+      vagas: Schema.NullOr(Schema.Finite),
+    }),
   ),
   fatos: Schema.NullOr(FatosPpc),
   normas_citadas: Schema.Array(

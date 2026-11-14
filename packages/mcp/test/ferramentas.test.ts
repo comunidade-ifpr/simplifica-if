@@ -3,8 +3,8 @@
  * Testes de contrato: o registro, as descrições, os schemas e as duas ferramentas do T1, chamadas
  * diretamente e pelo protocolo (Client do SDK ligado ao servidor em memória).
  */
-import { readFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { afterEach, describe, expect, it, test } from "@effect/vitest";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
@@ -270,7 +270,7 @@ describe("pacote", () => {
   });
 
   test("a versão do servidor é a do package.json", () => {
-    const pacote = JSON.parse(readFileSync(path.join(import.meta.dirname, "../package.json"), "utf8")) as {
+    const pacote = JSON.parse(NodeFS.readFileSync(NodePath.join(import.meta.dirname, "../package.json"), "utf8")) as {
       version: string;
     };
     expect(VERSAO_PACOTE).toBe(pacote.version);

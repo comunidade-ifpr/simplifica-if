@@ -4,8 +4,8 @@
  * `outputSchema`), determinismo, orçamento (teto do texto, paginação completa e sem repetição) e
  * a chamada pelo protocolo. A paridade com a CLI sobre o banco real está em `banco-real.test.ts`.
  */
-import * as fs from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { afterEach, describe, expect, expectTypeOf, it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import type * as Layer from "effect/Layer";
@@ -330,11 +330,7 @@ describe("ler_dispositivos", () => {
   );
 
   it.effect("determinismo", () =>
-    deterministico(
-      lerDispositivos,
-      { ids: [`${DCN_2026}#art28`, `${DCN_2021}#art20-i`], filhos: true },
-      contexto(),
-    ),
+    deterministico(lerDispositivos, { ids: [`${DCN_2026}#art28`, `${DCN_2021}#art20-i`], filhos: true }, contexto()),
   );
 
   it.effect("entrada inválida: erro legível", () =>
@@ -439,9 +435,7 @@ describe("ficha_norma", () => {
     }),
   );
 
-  it.effect("determinismo", () =>
-    deterministico(fichaNorma, { id: DCN_2021, em: "2026-11-01" }, contexto()),
-  );
+  it.effect("determinismo", () => deterministico(fichaNorma, { id: DCN_2021, em: "2026-11-01" }, contexto()));
 
   it.effect("entrada inválida e norma inexistente: erro legível", () =>
     Effect.gen(function* () {
@@ -550,9 +544,7 @@ describe("correspondencia", () => {
     }),
   );
 
-  it.effect("determinismo", () =>
-    deterministico(correspondencia, { id: DCN_2021 }, contexto()),
-  );
+  it.effect("determinismo", () => deterministico(correspondencia, { id: DCN_2021 }, contexto()));
 
   it.effect("entrada inválida: erro legível; cursor de outra consulta ou com dispositivo", () =>
     Effect.gen(function* () {
@@ -649,9 +641,7 @@ describe("resolver_citacoes", () => {
     }),
   );
 
-  it.effect("determinismo", () =>
-    deterministico(resolverCitacoes, { citacoes: CITACOES }, contexto()),
-  );
+  it.effect("determinismo", () => deterministico(resolverCitacoes, { citacoes: CITACOES }, contexto()));
 
   it.effect("entrada inválida: erro legível", () =>
     Effect.gen(function* () {
@@ -713,9 +703,9 @@ describe("ferramentas de normas sem o repositório", () => {
       const origem = contexto();
       const esperado = yield* Effect.forEach(chamadas, ([f, args]) => resp(f, args, origem));
 
-      const vazio = fs.realpathSync(diretorioTemporario("simplifica-mcp-sem-repo-"));
-      const banco = path.join(vazio, "kb.sqlite");
-      fs.copyFileSync(origem, banco);
+      const vazio = NodeFS.realpathSync(diretorioTemporario("simplifica-mcp-sem-repo-"));
+      const banco = NodePath.join(vazio, "kb.sqlite");
+      NodeFS.copyFileSync(origem, banco);
       const cwd = process.cwd();
       process.chdir(vazio);
       const obtido = yield* Effect.forEach(chamadas, ([f, args]) => resp(f, args, banco)).pipe(
@@ -725,7 +715,7 @@ describe("ferramentas de normas sem o repositório", () => {
         expect(JSON.stringify(r.resposta)).toBe(JSON.stringify(esperado[i]!.resposta));
         expect(r.texto).toBe(esperado[i]!.texto);
       });
-      expect(fs.readdirSync(vazio)).toEqual(["kb.sqlite"]);
+      expect(NodeFS.readdirSync(vazio)).toEqual(["kb.sqlite"]);
     }),
   );
 });

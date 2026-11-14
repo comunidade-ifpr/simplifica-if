@@ -58,7 +58,10 @@ export const mensagemDeErro = (ferramenta: FerramentaTestada, args: unknown) =>
 
 /** A resposta passa no `outputSchema` da ferramenta, com objetos fechados. */
 export function saidaValida(ferramenta: FerramentaTestada, resposta: unknown): boolean {
-  return Exit.isSuccess(Schema.decodeUnknownExit(ferramenta.saida as Schema.Decoder<unknown>)(resposta, OPCOES_ENTRADA));
+  return Exit.isSuccess(
+    // oxlint-disable-next-line simplifica-if/no-inline-schema-compile -- o schema muda a cada ferramenta testada; o custo de compilar é só do teste
+    Schema.decodeUnknownExit(ferramenta.saida as Schema.Decoder<unknown>)(resposta, OPCOES_ENTRADA),
+  );
 }
 
 /**

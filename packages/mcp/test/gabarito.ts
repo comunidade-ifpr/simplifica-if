@@ -20,16 +20,16 @@
  * do banco (a versão `dev-<8 hex de fontes_sha256>` do envelope e a impressão da consulta nos cursores),
  * que muda com qualquer mudança no código de `packages/kb/src`. O arquivo guarda a captura sem máscara.
  */
-import { readFileSync, writeFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import { Client } from "@modelcontextprotocol/client";
 import { type ChamadaDoGabarito, compararDefinicoes, type DefinicaoListada } from "./equivalencia.ts";
 
-const RAIZ = path.resolve(import.meta.dirname, "../../..");
-const CLI = path.join(RAIZ, "packages/mcp/src/cli.ts");
-const BANCO = path.join(RAIZ, "tmp/kb.sqlite");
-const ARQUIVO = path.join(RAIZ, "testes-gabarito/mcp.json");
+const RAIZ = NodePath.resolve(import.meta.dirname, "../../..");
+const CLI = NodePath.join(RAIZ, "packages/mcp/src/cli.ts");
+const BANCO = NodePath.join(RAIZ, "tmp/kb.sqlite");
+const ARQUIVO = NodePath.join(RAIZ, "testes-gabarito/mcp.json");
 
 const PPC = "curitiba/tecnico-em-enfermagem";
 const NORMA = "br/cne-cp/res/2021/1";
@@ -131,12 +131,12 @@ function mascarar(json: string): string {
   });
 }
 if (modo === "--capturar") {
-  writeFileSync(ARQUIVO, texto);
+  NodeFS.writeFileSync(ARQUIVO, texto);
   process.stdout.write(
-    `gabarito do MCP gravado em ${path.relative(RAIZ, ARQUIVO)} (${tools.length} ferramentas, ${chamadas.length} chamadas)\n`,
+    `gabarito do MCP gravado em ${NodePath.relative(RAIZ, ARQUIVO)} (${tools.length} ferramentas, ${chamadas.length} chamadas)\n`,
   );
 } else if (equivalentes) {
-  const antigo = JSON.parse(readFileSync(ARQUIVO, "utf8")) as {
+  const antigo = JSON.parse(NodeFS.readFileSync(ARQUIVO, "utf8")) as {
     readonly servidor: unknown;
     readonly capacidades: unknown;
     readonly instrucoes: unknown;
@@ -170,7 +170,7 @@ if (modo === "--capturar") {
     `gabarito do MCP: equivalente (${tools.length} ferramentas, ${chamadas.length} chamadas iguais, ${definicoes.amostras} amostras com o mesmo veredito)\n`,
   );
 } else {
-  const esperado = mascarar(readFileSync(ARQUIVO, "utf8"));
+  const esperado = mascarar(NodeFS.readFileSync(ARQUIVO, "utf8"));
   const obtido = mascarar(texto);
   if (esperado === obtido) {
     process.stdout.write(`gabarito do MCP: igual (${tools.length} ferramentas, ${chamadas.length} chamadas)\n`);

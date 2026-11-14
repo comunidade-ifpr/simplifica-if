@@ -21,7 +21,10 @@ const DIALETO = "https://json-schema.org/draft/2020-12/schema";
 export function jsonSchema(schema: Schema.Top): Record<string, unknown> {
   const documento = Schema.toJsonSchemaDocument(schema, { onExcessProperty: "error" });
   // `Schema.Struct({})` vira "qualquer valor não nulo" no Effect; a entrada sem campos é um objeto vazio
-  const vazio = SchemaAST.isObjects(schema.ast) && schema.ast.propertySignatures.length === 0 && schema.ast.indexSignatures.length === 0;
+  const vazio =
+    SchemaAST.isObjects(schema.ast) &&
+    schema.ast.propertySignatures.length === 0 &&
+    schema.ast.indexSignatures.length === 0;
   const raiz: Record<string, unknown> = vazio
     ? { type: "object", properties: {}, additionalProperties: false }
     : { ...documento.schema };
@@ -94,5 +97,7 @@ export function comPadrao<S extends Schema.Top>(schema: S, padrao: S["Encoded"],
 
 /** Campo opcional (a chave pode faltar), com a descrição para a IA quando ela não veio no schema. */
 export function opcional<S extends Schema.Top>(schema: S, descricao?: string) {
-  return Schema.optionalKey(descricao === undefined ? schema : schema.pipe(Schema.annotate<S>({ description: descricao })));
+  return Schema.optionalKey(
+    descricao === undefined ? schema : schema.pipe(Schema.annotate<S>({ description: descricao })),
+  );
 }

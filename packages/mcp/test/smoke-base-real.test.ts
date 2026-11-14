@@ -6,9 +6,9 @@
  * (`banco-real.test.ts`): `pnpm mcp:smoke` roda os dois. A CLI roda antes de o banco ser aberto
  * aqui, e compila o `tmp/kb.sqlite` se ele faltar ou estiver velho.
  */
-import { spawnSync } from "node:child_process";
-import path from "node:path";
-import { DatabaseSync } from "node:sqlite";
+import * as NodeChildProcess from "node:child_process";
+import * as NodePath from "node:path";
+import * as NodeSqlite from "node:sqlite";
 import { beforeAll, describe, expect, it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import type * as Schema from "effect/Schema";
@@ -22,8 +22,8 @@ import { lerSecao } from "../src/ferramentas/ler-secao.ts";
 import { listarCursos } from "../src/ferramentas/listar-cursos.ts";
 import { camadaFerramentas, type FerramentaTestada, responder, saidaValida } from "./apoio.ts";
 
-const RAIZ = path.resolve(import.meta.dirname, "../../..");
-const BANCO = path.join(RAIZ, "tmp/kb.sqlite");
+const RAIZ = NodePath.resolve(import.meta.dirname, "../../..");
+const BANCO = NodePath.join(RAIZ, "tmp/kb.sqlite");
 const ATIVO = process.env.SIMPLIFICA_SMOKE === "1";
 const PPC = "curitiba/tecnico-em-enfermagem";
 const NORMA = "br/cne-cp/res/2021/1";
@@ -32,7 +32,7 @@ const NORMA = "br/cne-cp/res/2021/1";
 type Json = any;
 
 function kb(...args: string[]): Json {
-  const r = spawnSync(process.execPath, ["packages/kb/src/cli.ts", ...args, "--json"], {
+  const r = NodeChildProcess.spawnSync(process.execPath, ["packages/kb/src/cli.ts", ...args, "--json"], {
     cwd: RAIZ,
     encoding: "utf-8",
     maxBuffer: 256 * 1024 * 1024,
@@ -131,7 +131,7 @@ describe.skipIf(!ATIVO)("smoke: ferramentas do T3 × CLI kb na base real", () =>
         const fichas = i.arquivos.filter((a: Json) => a.categoria === "ficha");
         expect(d.fichas.map((f) => [f.id, f.papel, f.dispositivos])).toEqual(
           fichas.map((a: Json) => [
-            path.basename(a.arquivo, ".json").toUpperCase(),
+            NodePath.basename(a.arquivo, ".json").toUpperCase(),
             a.motivos.join(", "),
             a.dispositivos,
           ]),
@@ -227,7 +227,7 @@ describe.skipIf(!ATIVO)("smoke: ferramentas do T3 × CLI kb na base real", () =>
         expect(daNorma.ocorrencias).toBe(cli.citacoes.ppcs.find((p: Json) => p.ppc === PPC).ocorrencias.length);
         // a soma das normas citadas é o total de citações resolvidas do PPC
         const total = d.normas_citadas.reduce((s, n) => s + n.ocorrencias, 0);
-        const db = new DatabaseSync(BANCO, { readOnly: true });
+        const db = new NodeSqlite.DatabaseSync(BANCO, { readOnly: true });
         const resolvidas = db
           .prepare("SELECT count(*) AS n FROM citacoes WHERE ppc_id = ? AND ato_id IS NOT NULL")
           .get(`ppc:${PPC}`) as { n: number };
