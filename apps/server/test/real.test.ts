@@ -12,6 +12,13 @@
  * chamada, e a resposta traz 1.200 horas e um link `ifpr://`. A pasta de estado é a do harness do
  * motor (`SIMPLIFICA_ESTADO` ou `~/Library/Application Support/simplifica-if-poc`), onde estão a
  * instalação e o login do Antigravity.
+ *
+ * No Antigravity, um segundo turno pede a leitura de um link `ifpr://` (`read_resource`, que o `agy`
+ * usa no lugar de `resources/read`) e confere que o evento sai com o resumo que o servidor viu: o
+ * `agy` não manda o resultado pelo ACP, e o motor casa a leitura pelo URI.
+ *
+ * O teste imprime, por turno, cada ferramenta (nome, entrada, se falhou e o começo do resumo), o tempo
+ * do turno e se a resposta cita um link `ifpr://`.
  */
 import * as NodeChildProcess from "node:child_process";
 import * as NodeCrypto from "node:crypto";
@@ -19,10 +26,12 @@ import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import { assert, describe, it } from "@effect/vitest";
+import * as Clock from "effect/Clock";
+import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
-import { LinhaPartida, Provider, VARIAVEL_TOKEN } from "@simplifica-if/contratos-app";
+import { type Evento, LinhaPartida, Provider, VARIAVEL_TOKEN } from "@simplifica-if/contratos-app";
 import { cliente } from "./apoio.ts";
 
 const REAL = process.env.SIMPLIFICA_POC_REAL === "1";
@@ -39,6 +48,25 @@ const PASTA_ESTADO =
   );
 
 const decodificarLinha = Schema.decodeUnknownEffect(Schema.fromJsonString(LinhaPartida));
+const LINK_LEITURA = "ifpr://cnct/tecnico-em-enfermagem";
+const PERGUNTA_LEITURA = `Leia o recurso ${LINK_LEITURA} do servidor MCP ifpr (read_resource) e diga o eixo tecnológico do curso.`;
+
+/** O registro de um turno: as ferramentas, com a entrada e o resumo, o tempo e os links `ifpr://`. */
+const registrarTurno = (rotulo: string, eventos: ReadonlyArray<Evento>, ms: number) =>
+  Effect.gen(function* () {
+    const texto = eventos.flatMap((e) => (e._tag === "TextoFinal" ? [e.texto] : [])).join("\n");
+    yield* Console.log(`[${PROVIDER}] ${rotulo}: ${(ms / 1000).toFixed(1)} s, ${eventos.length} eventos`);
+    for (const evento of eventos) {
+      if (evento._tag === "FerramentaIniciada") {
+        yield* Console.log(`  ▶ ${evento.nome} ${JSON.stringify(evento.entrada).slice(0, 200)}`);
+      } else if (evento._tag === "FerramentaConcluida") {
+        const resumo = evento.resumo.replace(/\s+/g, " ").slice(0, 120);
+        yield* Console.log(`  ■ ${evento.nome}${evento.falhou ? " (falhou)" : ""}: ${resumo || "(sem resumo)"}`);
+      }
+    }
+    const links = [...new Set(texto.match(/ifpr:\/\/[^\s)\]>"'`]+/g) ?? [])];
+    yield* Console.log(`  links ifpr:// na resposta: ${links.length ? links.join(", ") : "nenhum"}`);
+  });
 
 describe.skipIf(!REAL)("servidor com provider real", () => {
   it.live(
@@ -85,14 +113,22 @@ describe.skipIf(!REAL)("servidor com provider real", () => {
         );
         yield* Effect.addFinalizer(() => Effect.sync(() => NodeFS.rmSync(pasta, { recursive: true, force: true })));
         const { sessao } = yield* c["conversa.iniciar"]({ provider: PROVIDER, pastaTrabalho: pasta });
-        const eventos = yield* c["conversa.enviar"]({ sessao, texto: PERGUNTA }).pipe(
-          Stream.tap((evento) =>
-            evento._tag === "PedidoAprovacao"
-              ? c["conversa.responderAprovacao"]({ sessao, aprovacao: evento.id, decisao: "permitir" })
-              : Effect.void,
-          ),
-          Stream.runCollect,
-        );
+        const turno = (rotulo: string, texto: string) =>
+          Effect.gen(function* () {
+            const inicio = yield* Clock.currentTimeMillis;
+            const eventos = yield* c["conversa.enviar"]({ sessao, texto }).pipe(
+              Stream.tap((evento) =>
+                evento._tag === "PedidoAprovacao"
+                  ? c["conversa.responderAprovacao"]({ sessao, aprovacao: evento.id, decisao: "permitir" })
+                  : Effect.void,
+              ),
+              Stream.runCollect,
+            );
+            yield* registrarTurno(rotulo, eventos, (yield* Clock.currentTimeMillis) - inicio);
+            return eventos;
+          });
+        const eventos = yield* turno("pergunta do CNCT", PERGUNTA);
+        const leitura = PROVIDER === "antigravity" ? yield* turno("leitura de link", PERGUNTA_LEITURA) : [];
         yield* c["conversa.encerrar"]({ sessao });
 
         const ferramentas = eventos.flatMap((e) => (e._tag === "FerramentaIniciada" ? [e.nome] : []));
@@ -104,6 +140,18 @@ describe.skipIf(!REAL)("servidor com provider real", () => {
         assert.match(texto, /1\.200/);
         assert.match(texto, /ifpr:\/\//);
         assert.strictEqual(eventos.at(-1)?._tag, "FimTurno");
+
+        if (PROVIDER === "antigravity") {
+          const iniciadas = leitura.flatMap((e) =>
+            e._tag === "FerramentaIniciada" && e.nome === "read_resource" ? [e.id] : [],
+          );
+          assert.isNotEmpty(iniciadas, "o agy não chamou read_resource");
+          const concluidas = leitura.flatMap((e) =>
+            e._tag === "FerramentaConcluida" && iniciadas.includes(e.id) ? [e] : [],
+          );
+          assert.isNotEmpty(concluidas);
+          for (const concluida of concluidas) assert.notStrictEqual(concluida.resumo, "", "read_resource sem resumo");
+        }
       }).pipe(Effect.scoped),
     300_000,
   );
