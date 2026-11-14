@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- leitura síncrona de dados/institucional/cursos/, usada pela CLI e pelos scripts
 /**
  * Adequação ao art. 71 da Res. CNE/CP nº 2/2026: cursos técnicos autorizados e em oferta têm até
  * dois anos para se adequar às novas DCN da EPT. O artigo alcança todos esses cursos, não só os que
@@ -8,9 +9,9 @@
  * das citações resolvidas do PPC convertido do curso (`ppc.markdown_path`): a DCN mais recente que
  * o PPC cita. Tudo derivado dos arquivos, sem relógio.
  */
-import { existsSync, readdirSync, readFileSync } from "node:fs";
-import path from "node:path";
-import { z } from "zod";
+import * as Schema from "effect/Schema";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { idDoAto } from "../normas/ids.ts";
 import { raizRepositorio, type Registro } from "../normas/registro.ts";
 import { registroPadrao } from "../normas/resolver.ts";
@@ -37,15 +38,29 @@ export const ROTULOS_INDICADOR: Readonly<Record<Indicador, string>> = {
 /** Situações que contam como "autorizado e em oferta" (as mesmas dos gabaritos da avaliação). */
 export const SITUACOES_EM_OFERTA = ["ativo", "em_oferta"] as const;
 
-const esquemaCurso = z.looseObject({
-  campus_id: z.string(),
-  curso_slug: z.string(),
-  nome: z.string(),
-  nivel: z.string().optional(),
-  forma_oferta: z.string().optional(),
-  situacao: z.string().optional(),
-  ppc: z.looseObject({ markdown_path: z.string().optional(), ano_documento: z.number().int().optional() }).optional(),
-});
+const resto = [Schema.Record(Schema.String, Schema.Unknown)] as const;
+const esquemaCurso = Schema.StructWithRest(
+  Schema.Struct({
+    campus_id: Schema.String,
+    curso_slug: Schema.String,
+    nome: Schema.String,
+    nivel: Schema.optionalKey(Schema.String),
+    forma_oferta: Schema.optionalKey(Schema.String),
+    situacao: Schema.optionalKey(Schema.String),
+    ppc: Schema.optionalKey(
+      Schema.StructWithRest(
+        Schema.Struct({
+          markdown_path: Schema.optionalKey(Schema.String),
+          ano_documento: Schema.optionalKey(Schema.Int),
+        }),
+        resto,
+      ),
+    ),
+  }),
+  resto,
+);
+type Curso = typeof esquemaCurso.Type;
+const decodificarCurso = Schema.decodeUnknownSync(esquemaCurso);
 
 export interface CursoAdequacao {
   curso: string;
@@ -67,10 +82,15 @@ export interface RelatorioAdequacao {
 }
 
 /** Curso como a adequação o lê (de `dados/institucional/cursos/` ou da tabela `cursos` do `kb.sqlite`). */
-export type CursoParaAdequacao = Pick<
-  z.output<typeof esquemaCurso>,
-  "campus_id" | "curso_slug" | "nome" | "nivel" | "forma_oferta" | "situacao" | "ppc"
->;
+export interface CursoParaAdequacao {
+  campus_id: string;
+  curso_slug: string;
+  nome: string;
+  nivel?: string | undefined;
+  forma_oferta?: string | undefined;
+  situacao?: string | undefined;
+  ppc?: { markdown_path?: string | undefined; ano_documento?: number | undefined } | undefined;
+}
 
 /**
  * O que a adequação lê: os cursos e as citações resolvidas do PPC convertido de cada um. Duas
@@ -90,18 +110,20 @@ export function fonteAdequacaoArquivos(
   return {
     cursos: () => lerCursos(raiz),
     citacoesDoPpc: (markdown) =>
-      existsSync(path.join(raiz, "base-conhecimento", markdown)) ? citacoesDoArquivo(markdown, registro, raiz) : null,
+      NodeFS.existsSync(NodePath.join(raiz, "base-conhecimento", markdown))
+        ? citacoesDoArquivo(markdown, registro, raiz)
+        : null,
   };
 }
 
-function lerCursos(raiz: string): z.output<typeof esquemaCurso>[] {
-  const dir = path.join(raiz, "dados", "institucional", "cursos");
-  const cursos: z.output<typeof esquemaCurso>[] = [];
-  for (const campus of readdirSync(dir).sort(compararTexto)) {
-    const dirCampus = path.join(dir, campus);
-    for (const arquivo of readdirSync(dirCampus).sort(compararTexto)) {
+function lerCursos(raiz: string): Curso[] {
+  const dir = NodePath.join(raiz, "dados", "institucional", "cursos");
+  const cursos: Curso[] = [];
+  for (const campus of NodeFS.readdirSync(dir).sort(compararTexto)) {
+    const dirCampus = NodePath.join(dir, campus);
+    for (const arquivo of NodeFS.readdirSync(dirCampus).sort(compararTexto)) {
       if (!arquivo.endsWith(".json")) continue;
-      cursos.push(esquemaCurso.parse(JSON.parse(readFileSync(path.join(dirCampus, arquivo), "utf-8"))));
+      cursos.push(decodificarCurso(JSON.parse(NodeFS.readFileSync(NodePath.join(dirCampus, arquivo), "utf-8"))));
     }
   }
   return cursos;

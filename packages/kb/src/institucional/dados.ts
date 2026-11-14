@@ -1,25 +1,32 @@
+// @effect-diagnostics nodeBuiltinImport:off -- carregador síncrono de dados/institucional/, usado pela compilação do banco
 /**
  * Leitura de `dados/institucional/` pelo núcleo `packages/kb` (compilação do `kb.sqlite`).
  *
  * O contrato estrito desses arquivos é o de `scripts/dados/institucional.ts`, conferido por
- * `node scripts/validar_base.ts`; aqui os esquemas são frouxos (`looseObject`) e só exigem os
+ * `node scripts/validar_base.ts`; aqui os esquemas são frouxos (`StructWithRest`) e só exigem os
  * campos que o banco usa, para que a dependência continue num sentido só (scripts → kb).
  * Cada registro vem com o caminho do arquivo, relativo à raiz do repositório.
  */
-import { existsSync, readdirSync, readFileSync } from "node:fs";
-import path from "node:path";
-import { z } from "zod";
+import * as Result from "effect/Result";
+import * as Schema from "effect/Schema";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
+import { formatarErro } from "../esquema/mensagens.ts";
 import { compararTexto } from "../texto.ts";
 
-const texto = z.string().optional();
-const inteiro = z.number().int().optional();
+const texto = Schema.optionalKey(Schema.String);
+const inteiro = Schema.optionalKey(Schema.Int);
+const resto = [Schema.Record(Schema.String, Schema.Unknown)] as const;
+/** Objeto frouxo: exige os campos dados e deixa os demais na saída. */
+const solto = <Campos extends Schema.Struct.Fields>(campos: Campos) =>
+  Schema.StructWithRest(Schema.Struct(campos), resto);
 
-export const esquemaCampus = z.looseObject({ campus_id: z.string(), nome: z.string(), site: texto });
+export const esquemaCampus = solto({ campus_id: Schema.String, nome: Schema.String, site: texto });
 
-export const esquemaCurso = z.looseObject({
-  campus_id: z.string(),
-  curso_slug: z.string(),
-  nome: z.string(),
+export const esquemaCurso = solto({
+  campus_id: Schema.String,
+  curso_slug: Schema.String,
+  nome: Schema.String,
   nivel: texto,
   forma_oferta: texto,
   modalidade: texto,
@@ -27,24 +34,24 @@ export const esquemaCurso = z.looseObject({
   pagina_oficial: texto,
   cnct_id: texto,
   cnct_ausencia: texto,
-  suap: z
-    .looseObject({
+  suap: Schema.optionalKey(
+    solto({
       id: inteiro,
       codigo: texto,
       vagas: inteiro,
-      matrizes: z
-        .looseObject({
+      matrizes: Schema.optionalKey(
+        solto({
           resumo: texto,
-          urls: z.array(z.string()).optional(),
+          urls: Schema.optionalKey(Schema.Array(Schema.String)),
           carga_horaria_comum_h: inteiro,
           situacao: texto,
           coletado_em: texto,
-        })
-        .optional(),
-    })
-    .optional(),
-  ppc: z
-    .looseObject({
+        }),
+      ),
+    }),
+  ),
+  ppc: Schema.optionalKey(
+    solto({
       url: texto,
       markdown_path: texto,
       ano_documento: inteiro,
@@ -52,34 +59,34 @@ export const esquemaCurso = z.looseObject({
       data_curadoria_ano: texto,
       vagas: texto,
       observacoes: texto,
-    })
-    .optional(),
+    }),
+  ),
 });
 
-export const esquemaProcesso = z.looseObject({
-  processo_seletivo_id: z.string(),
-  nome: z.string(),
+export const esquemaProcesso = solto({
+  processo_seletivo_id: Schema.String,
+  nome: Schema.String,
   ano_ingresso: inteiro,
   status_curadoria: texto,
 });
 
-export const esquemaEdital = z.looseObject({
-  edital_id: z.string(),
-  titulo: z.string(),
-  url: z.string(),
+export const esquemaEdital = solto({
+  edital_id: Schema.String,
+  titulo: Schema.String,
+  url: Schema.String,
   numero: texto,
   ano: inteiro,
   tipo: texto,
-  processos: z.array(z.string()),
+  processos: Schema.Array(Schema.String),
 });
 
-export const esquemaOferta = z.looseObject({
-  oferta_id: z.string(),
-  processos: z.array(z.string()),
-  curso_nome: z.string(),
-  tipo_oferta: z.string(),
+export const esquemaOferta = solto({
+  oferta_id: Schema.String,
+  processos: Schema.Array(Schema.String),
+  curso_nome: Schema.String,
+  tipo_oferta: Schema.String,
   vagas: inteiro,
-  url_fonte: z.string(),
+  url_fonte: Schema.String,
   pagina_fonte: inteiro,
   trecho_fonte: texto,
   status_curadoria: texto,
@@ -87,9 +94,9 @@ export const esquemaOferta = z.looseObject({
   turno: texto,
   turno_padronizado: texto,
   turno_nota: texto,
-  campi: z.array(z.string()).optional(),
-  cursos: z.array(z.string()).optional(),
-  editais: z.array(z.string()).optional(),
+  campi: Schema.optionalKey(Schema.Array(Schema.String)),
+  cursos: Schema.optionalKey(Schema.Array(Schema.String)),
+  editais: Schema.optionalKey(Schema.Array(Schema.String)),
   campus_id_original: texto,
   curso_slug_original: texto,
 });
@@ -97,41 +104,51 @@ export const esquemaOferta = z.looseObject({
 export type Registro<T> = { arquivo: string; conteudo: string; dados: T };
 
 export interface DadosInstitucionaisKb {
-  campi: Registro<z.output<typeof esquemaCampus>>[];
-  cursos: Registro<z.output<typeof esquemaCurso>>[];
-  processos: Registro<z.output<typeof esquemaProcesso>>[];
-  editais: Registro<z.output<typeof esquemaEdital>>[];
-  ofertas: Registro<z.output<typeof esquemaOferta>>[];
+  campi: Registro<typeof esquemaCampus.Type>[];
+  cursos: Registro<typeof esquemaCurso.Type>[];
+  processos: Registro<typeof esquemaProcesso.Type>[];
+  editais: Registro<typeof esquemaEdital.Type>[];
+  ofertas: Registro<typeof esquemaOferta.Type>[];
 }
 
+const decodificarCampus = Schema.decodeUnknownResult(esquemaCampus);
+const decodificarCurso = Schema.decodeUnknownResult(esquemaCurso);
+const decodificarProcesso = Schema.decodeUnknownResult(esquemaProcesso);
+const decodificarEdital = Schema.decodeUnknownResult(esquemaEdital);
+const decodificarOferta = Schema.decodeUnknownResult(esquemaOferta);
+
 function arquivosJson(dir: string): string[] {
-  if (!existsSync(dir)) return [];
-  return readdirSync(dir, { withFileTypes: true })
+  if (!NodeFS.existsSync(dir)) return [];
+  return NodeFS.readdirSync(dir, { withFileTypes: true })
     .flatMap((entrada) => {
-      const caminho = path.join(dir, entrada.name);
+      const caminho = NodePath.join(dir, entrada.name);
       if (entrada.isDirectory()) return arquivosJson(caminho);
       return entrada.name.endsWith(".json") ? [caminho] : [];
     })
     .sort(compararTexto);
 }
 
-function colecao<T>(raiz: string, subdir: string, esquema: z.ZodType<T>): Registro<T>[] {
-  return arquivosJson(path.join(raiz, "dados", "institucional", subdir)).map((arquivo) => {
-    const conteudo = readFileSync(arquivo, "utf-8");
-    const relativo = path.relative(raiz, arquivo).split(path.sep).join("/");
-    const resultado = esquema.safeParse(JSON.parse(conteudo));
-    if (!resultado.success) throw new Error(`${relativo}: ${resultado.error.message}`);
-    return { arquivo: relativo, conteudo, dados: resultado.data };
+function colecao<T>(
+  raiz: string,
+  subdir: string,
+  decodificar: (valor: unknown) => Result.Result<T, Schema.SchemaError>,
+): Registro<T>[] {
+  return arquivosJson(NodePath.join(raiz, "dados", "institucional", subdir)).map((arquivo) => {
+    const conteudo = NodeFS.readFileSync(arquivo, "utf-8");
+    const relativo = NodePath.relative(raiz, arquivo).split(NodePath.sep).join("/");
+    const resultado = decodificar(JSON.parse(conteudo));
+    if (Result.isFailure(resultado)) throw new Error(`${relativo}: ${formatarErro(resultado.failure)}`);
+    return { arquivo: relativo, conteudo, dados: resultado.success };
   });
 }
 
 export function carregarDadosInstitucionaisKb(raiz: string): DadosInstitucionaisKb {
   return {
-    campi: colecao(raiz, "campi", esquemaCampus),
-    cursos: colecao(raiz, "cursos", esquemaCurso),
-    processos: colecao(raiz, "processos-seletivos", esquemaProcesso),
-    editais: colecao(raiz, "editais", esquemaEdital),
-    ofertas: colecao(raiz, "ofertas", esquemaOferta),
+    campi: colecao(raiz, "campi", decodificarCampus),
+    cursos: colecao(raiz, "cursos", decodificarCurso),
+    processos: colecao(raiz, "processos-seletivos", decodificarProcesso),
+    editais: colecao(raiz, "editais", decodificarEdital),
+    ofertas: colecao(raiz, "ofertas", decodificarOferta),
   };
 }
 

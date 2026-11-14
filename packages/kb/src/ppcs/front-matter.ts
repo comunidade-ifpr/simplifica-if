@@ -14,8 +14,10 @@
  * O YAML é lido pelo mesmo parser das normas (`yaml` em schema `failsafe`): todo valor é texto ou
  * lista de texto.
  */
+import * as Result from "effect/Result";
+import * as Schema from "effect/Schema";
 import { parse } from "yaml";
-import { z } from "zod";
+import { caminhoTexto, problemas } from "../esquema/mensagens.ts";
 import { analisarFrontMatter, ErroFrontMatter } from "../normas/front-matter.ts";
 
 export { ErroFrontMatter };
@@ -39,40 +41,47 @@ export const CAMPOS_PROVENIENCIA = [
   "nota_proveniencia",
 ] as const;
 
-export const esquemaProvenienciaPpc = z
-  .strictObject({
-    id: z.string().regex(RE_ID_PPC, "id deve ser ppc:<campus_id>/<curso_slug>"),
-    fonte_url: z.string().regex(/^https:\/\/\S+$/, "fonte_url deve ser URL https"),
-    fonte_sha256: z.union([
-      z.string().regex(RE_SHA256, "fonte_sha256 deve ter 64 hexadecimais"),
-      z.literal(DESCONHECIDO),
-    ]),
-    convertido_em: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "convertido_em deve ser AAAA-MM-DD"),
-    conversor: z.string().min(1),
-    proveniencia: z.enum(["registrada", "reconstruida"]),
-    /** Commit em que o texto convertido entrou no git (só na proveniência reconstruída). */
-    conversao_commit: z.string().regex(RE_COMMIT, "conversao_commit deve ter 40 hexadecimais").optional(),
-    /** Commits que alteraram o texto depois da conversão (limpeza de ruído, remoção de sumário). */
-    pos_processamento_commits: z.array(z.string().regex(RE_COMMIT)).min(1).optional(),
-    nota_proveniencia: z.string().min(1).optional(),
-  })
-  .superRefine((meta, ctx) => {
+const padrao = (re: RegExp, mensagem: string) => Schema.String.check(Schema.isPattern(re, { message: mensagem }));
+const textoNaoVazio = Schema.String.check(Schema.isMinLength(1));
+
+/** Contrato do front matter de proveniência (decodificado sem chaves extras). */
+export const esquemaProvenienciaPpc = Schema.Struct({
+  id: padrao(RE_ID_PPC, "id deve ser ppc:<campus_id>/<curso_slug>"),
+  fonte_url: padrao(/^https:\/\/\S+$/, "fonte_url deve ser URL https"),
+  fonte_sha256: Schema.Union([
+    padrao(RE_SHA256, "fonte_sha256 deve ter 64 hexadecimais"),
+    Schema.Literal(DESCONHECIDO),
+  ]),
+  convertido_em: padrao(/^\d{4}-\d{2}-\d{2}$/, "convertido_em deve ser AAAA-MM-DD"),
+  conversor: textoNaoVazio,
+  proveniencia: Schema.Literals(["registrada", "reconstruida"]),
+  /** Commit em que o texto convertido entrou no git (só na proveniência reconstruída). */
+  conversao_commit: Schema.optionalKey(padrao(RE_COMMIT, "conversao_commit deve ter 40 hexadecimais")),
+  /** Commits que alteraram o texto depois da conversão (limpeza de ruído, remoção de sumário). */
+  pos_processamento_commits: Schema.optionalKey(
+    Schema.Array(Schema.String.check(Schema.isPattern(RE_COMMIT))).check(Schema.isMinLength(1)),
+  ),
+  nota_proveniencia: Schema.optionalKey(textoNaoVazio),
+}).check(
+  Schema.makeFilter((meta) => {
+    const achados: Schema.FilterIssue[] = [];
     if (meta.proveniencia === "registrada") {
       if (meta.fonte_sha256 === DESCONHECIDO) {
-        ctx.addIssue({ code: "custom", path: ["fonte_sha256"], message: "proveniência registrada exige o hash" });
+        achados.push({ path: ["fonte_sha256"], issue: "proveniência registrada exige o hash" });
       }
       if (meta.conversor === DESCONHECIDO) {
-        ctx.addIssue({ code: "custom", path: ["conversor"], message: "proveniência registrada exige o conversor" });
+        achados.push({ path: ["conversor"], issue: "proveniência registrada exige o conversor" });
       }
     } else if (!meta.nota_proveniencia) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["nota_proveniencia"],
-        message: "proveniência reconstruída exige nota_proveniencia",
-      });
+      achados.push({ path: ["nota_proveniencia"], issue: "proveniência reconstruída exige nota_proveniencia" });
     }
-  });
-export type ProvenienciaPpc = z.output<typeof esquemaProvenienciaPpc>;
+    return achados;
+  }),
+);
+export type ProvenienciaPpc = typeof esquemaProvenienciaPpc.Type;
+const opcoesProveniencia = { onExcessProperty: "error", errors: "all" } as const;
+const decodificarProveniencia = Schema.decodeUnknownResult(esquemaProvenienciaPpc, opcoesProveniencia);
+const validarProveniencia = Schema.decodeUnknownSync(esquemaProvenienciaPpc, opcoesProveniencia);
 
 export function idPpc(campusId: string, cursoSlug: string): string {
   return `ppc:${campusId}/${cursoSlug}`;
@@ -120,12 +129,14 @@ export function linhasFrontMatter(texto: string): number {
 /** Proveniência e corpo de um PPC; erro se o front matter faltar ou sair do contrato. */
 export function analisarPpc(texto: string, rotulo: string): { proveniencia: ProvenienciaPpc; corpo: string } {
   const { meta, corpo } = analisarFrontMatter(texto, rotulo);
-  const resultado = esquemaProvenienciaPpc.safeParse(meta);
-  if (!resultado.success) {
-    const problemas = resultado.error.issues.map((p) => `${p.path.length ? `${p.path.join(".")}: ` : ""}${p.message}`);
-    throw new ErroFrontMatter(`${rotulo}: front matter de PPC inválido: ${problemas.join("; ")}`);
+  const resultado = decodificarProveniencia(meta);
+  if (Result.isFailure(resultado)) {
+    const linhas = problemas(resultado.failure.issue).map(
+      (p) => `${p.caminho.length ? `${caminhoTexto(p.caminho)}: ` : ""}${p.mensagem}`,
+    );
+    throw new ErroFrontMatter({ rotulo, detalhe: `front matter de PPC inválido: ${linhas.join("; ")}` });
   }
-  return { proveniencia: resultado.data, corpo };
+  return { proveniencia: resultado.success, corpo };
 }
 
 /** Texto sem o front matter (o corpo começa na linha seguinte ao `---` de fechamento). */
@@ -156,16 +167,16 @@ function escalar(valor: string): string {
 
 /** Front matter em YAML, na ordem de `CAMPOS_PROVENIENCIA`, terminado em `---\n`. */
 export function serializarFrontMatterPpc(proveniencia: ProvenienciaPpc): string {
-  const valido = esquemaProvenienciaPpc.parse(proveniencia);
+  const valido = validarProveniencia(proveniencia);
   const linhas = ["---"];
   for (const campo of CAMPOS_PROVENIENCIA) {
     const valor = valido[campo];
     if (valor === undefined) continue;
-    if (Array.isArray(valor)) {
+    if (typeof valor === "string") {
+      linhas.push(`${campo}: ${escalar(valor)}`);
+    } else {
       linhas.push(`${campo}:`);
       for (const item of valor) linhas.push(`  - ${escalar(item)}`);
-    } else {
-      linhas.push(`${campo}: ${escalar(valor)}`);
     }
   }
   linhas.push("---");

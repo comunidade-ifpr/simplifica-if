@@ -1,4 +1,6 @@
 /** Validação das normas (Markdown com front matter), do manifest.json e do README.md. */
+import * as Result from "effect/Result";
+import * as Schema from "effect/Schema";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { ehArquivo, listarDiretorio, listarRecursivo, naBase } from "../caminhos.ts";
@@ -17,12 +19,19 @@ import { validarCorrespondencias } from "@simplifica-if/kb/normas/correspondenci
 import { carregarRelacoes, validarRelacoes } from "@simplifica-if/kb/normas/relacoes";
 import { caminhoConfigVigencia, carregarTransicoes, dataReferencia, statusEm } from "@simplifica-if/kb/normas/vigencia";
 import { palavrasDoTexto } from "@simplifica-if/kb/normas/markdown";
+import { caminhoTexto, problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { esquemaNorma } from "@simplifica-if/kb/normas/front-matter";
 import { idDoAto, idEsperadoDaNorma } from "@simplifica-if/kb/normas/ids";
 import { caminhoStubs, carregarRegistro, lerRegistroStubs } from "@simplifica-if/kb/normas/registro";
-import { ZodError } from "zod";
 import { apararInicio, ErroDecodificacao, lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
 import { type Contexto, listaOrdenada, mesmosElementos, PADROES_LOCAIS, type Resultado } from "./contexto.ts";
+
+const decodificarNorma = Schema.decodeUnknownResult(esquemaNorma, { errors: "all" });
+
+/** Linhas `<prefixo>: <caminho>: <mensagem>` de um erro de schema (texto pelo formatador pt-BR do kb). */
+function linhasDoErro(prefixo: string, erro: Schema.SchemaError): string[] {
+  return problemas(erro.issue).map((p) => `${prefixo}: ${caminhoTexto(p.caminho)}: ${p.mensagem}`);
+}
 
 const DIRETORIOS_IGNORADOS_PADROES_LOCAIS = new Set([".git", ".venv", "skills"]);
 const RE_DATA_NO_INICIO = /^\p{Nd}{4}-\p{Nd}{2}-\p{Nd}{2}_/u;
@@ -133,21 +142,21 @@ export function validarMarkdown(ctx: Contexto, caminho: string): string[] {
 }
 
 /**
- * `id` canônico da norma: formato e coerência com `variante` (zod) e igualdade com o ID derivado de
+ * `id` canônico da norma: formato e coerência com `variante` (Effect Schema) e igualdade com o ID derivado de
  * tipo, órgão, jurisdição, ano e número (regras em `@simplifica-if/kb/normas/ids`).
  */
 export function validarIdNorma(r: string, meta: FrontMatter): string[] {
   if (!("id" in meta)) return [];
   const erros: string[] = [];
-  const resultado = esquemaNorma.safeParse(meta);
-  if (!resultado.success) {
-    for (const problema of resultado.error.issues) {
+  const resultado = decodificarNorma(meta);
+  if (Result.isFailure(resultado)) {
+    for (const problema of problemas(resultado.failure.issue)) {
       if (
         ["id", "variante", "assinada_em", "publicada_em", "vigente_de", "datas_fonte"].includes(
-          String(problema.path[0]),
+          String(problema.caminho[0]),
         )
       ) {
-        erros.push(`${r}: ${problema.path.join(".")}: ${problema.message}`);
+        erros.push(`${r}: ${caminhoTexto(problema.caminho)}: ${problema.mensagem}`);
       }
     }
   }
@@ -196,7 +205,7 @@ export function validarUnicidadeIds(ctx: Contexto, caminhos: string[], idsRegist
   return erros;
 }
 
-/** `normas/stubs.yaml`: contrato zod. Devolve os IDs registrados (stubs e `externo:`). */
+/** `normas/stubs.yaml`: contrato (Effect Schema). Devolve os IDs registrados (stubs e `externo:`). */
 export function validarStubs(ctx: Contexto): { erros: string[]; ids: Set<string> } {
   const arquivo = caminhoStubs(ctx.c.raizProjeto);
   if (!existsSync(arquivo)) return { erros: [], ids: new Set() };
@@ -204,12 +213,7 @@ export function validarStubs(ctx: Contexto): { erros: string[]; ids: Set<string>
     const registro = lerRegistroStubs(arquivo);
     return { erros: [], ids: new Set([...registro.normas, ...registro.externos].map((item) => item.id)) };
   } catch (erro) {
-    if (erro instanceof ZodError) {
-      return {
-        erros: erro.issues.map((problema) => `${ctx.rel(arquivo)}: ${problema.path.join(".")}: ${problema.message}`),
-        ids: new Set(),
-      };
-    }
+    if (Schema.isSchemaError(erro)) return { erros: linhasDoErro(ctx.rel(arquivo), erro), ids: new Set() };
     return { erros: [`${ctx.rel(arquivo)}: ${(erro as Error).message.split("\n")[0]}`], ids: new Set() };
   }
 }
@@ -312,9 +316,8 @@ export function validarRelacoesEVigencia(ctx: Contexto): string[] {
       }
     });
   } catch (erro) {
-    if (erro instanceof ZodError) {
-      erros.push(...erro.issues.map((problema) => `transicoes.yaml: ${problema.path.join(".")}: ${problema.message}`));
-    } else erros.push(`transicoes.yaml: ${(erro as Error).message.split("\n")[0]}`);
+    if (Schema.isSchemaError(erro)) erros.push(...linhasDoErro("transicoes.yaml", erro));
+    else erros.push(`transicoes.yaml: ${(erro as Error).message.split("\n")[0]}`);
   }
 
   if (!existsSync(caminhoConfigVigencia(raiz))) {

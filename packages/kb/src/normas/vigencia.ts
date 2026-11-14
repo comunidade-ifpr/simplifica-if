@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- carregador síncrono de vigencia.yaml, transicoes.yaml e normas, usado pelos scripts e pela compilação do banco
 /**
  * Vigência calculada numa data explícita (fase 5): nunca o relógio do build.
  *
@@ -23,10 +24,10 @@
  * Revogada não é inaplicável: `transicoesAplicaveis` devolve as regras de transição (de
  * `base-conhecimento/transicoes.yaml`) que mantêm efeitos da norma revogada.
  */
-import { existsSync, readFileSync } from "node:fs";
-import path from "node:path";
+import * as Schema from "effect/Schema";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { parse } from "yaml";
-import { z } from "zod";
 import { analisarFrontMatter } from "./front-matter.ts";
 import { idDoAto } from "./ids.ts";
 import { listarNormas } from "./estrutura.ts";
@@ -52,16 +53,24 @@ export interface DatasNorma {
   vigente_de: string;
 }
 
-const esquemaConfig = z.strictObject({ data_referencia: z.string().regex(RE_DATA) });
+const esquemaConfig = Schema.Struct({ data_referencia: Schema.String.check(Schema.isPattern(RE_DATA)) });
+const decodificarConfig = Schema.decodeUnknownSync(esquemaConfig, { onExcessProperty: "error", errors: "all" });
 
 export function caminhoConfigVigencia(raiz: string = raizRepositorio()): string {
-  return path.join(raiz, "base-conhecimento", "config", "vigencia.yaml");
+  return NodePath.join(raiz, "base-conhecimento", "config", "vigencia.yaml");
+}
+
+/**
+ * `data_referencia` do texto de `base-conhecimento/config/vigencia.yaml`. Fora do contrato, lança o
+ * `Schema.SchemaError` (texto em português por `esquema/mensagens.ts`).
+ */
+export function dataReferenciaDoYaml(texto: string): string {
+  return decodificarConfig(parse(texto, { schema: "failsafe" })).data_referencia;
 }
 
 /** `data_referencia` declarada em `base-conhecimento/config/vigencia.yaml`. */
 export function dataReferencia(raiz: string = raizRepositorio()): string {
-  const bruto = parse(readFileSync(caminhoConfigVigencia(raiz), "utf-8"), { schema: "failsafe" });
-  return esquemaConfig.parse(bruto).data_referencia;
+  return dataReferenciaDoYaml(NodeFS.readFileSync(caminhoConfigVigencia(raiz), "utf-8"));
 }
 
 const cacheDatas = new Map<string, Map<string, DatasNorma>>();
@@ -107,7 +116,7 @@ export function carregarDatas(raiz: string = raizRepositorio(), registro?: Regis
   if (emCache) return emCache;
   const normas = listarNormas(raiz).map((norma) => ({
     id: norma.id,
-    meta: analisarFrontMatter(readFileSync(norma.arquivo, "utf-8"), norma.path).meta,
+    meta: analisarFrontMatter(NodeFS.readFileSync(norma.arquivo, "utf-8"), norma.path).meta,
   }));
   const datas = montarDatas(normas, registro ?? carregarRegistro(raiz));
   cacheDatas.set(raiz, datas);
@@ -359,12 +368,14 @@ export function intervalosVigencia(id: string, raiz: RaizOuFonte = raizRepositor
 // ---------------------------------------------------------------------------------------------
 // Regras de transição (`base-conhecimento/transicoes.yaml`)
 
-const idAto = z.string().regex(/^[a-z0-9/-]+$/);
-export const esquemaTransicao = z.strictObject({
-  id: z.string().regex(/^[a-z0-9-]+$/),
+const idAto = Schema.String.check(Schema.isPattern(/^[a-z0-9/-]+$/));
+const textoNaoVazio = Schema.String.check(Schema.isMinLength(1));
+const data = Schema.String.check(Schema.isPattern(RE_DATA));
+export const esquemaTransicao = Schema.Struct({
+  id: Schema.String.check(Schema.isPattern(/^[a-z0-9-]+$/)),
   norma: idAto,
-  dispositivo: z.string().regex(/^#/),
-  tipo: z.enum([
+  dispositivo: Schema.String.check(Schema.isPattern(/^#/)),
+  tipo: Schema.Literals([
     "faculdade-de-adequacao",
     "prazo-de-adequacao",
     "direito-de-conclusao",
@@ -373,33 +384,42 @@ export const esquemaTransicao = z.strictObject({
     "ressalva-de-revogacao",
   ]),
   /** Norma revogada cujos efeitos a regra preserva (ou cuja adequação ela disciplina). */
-  norma_anterior: idAto.optional(),
-  aplica_a: z.string().min(1),
-  regra: z.string().min(1),
+  norma_anterior: Schema.optionalKey(idAto),
+  aplica_a: textoNaoVazio,
+  regra: textoNaoVazio,
   /** Marco inicial: vigência ou publicação da norma, ou data. */
-  inicio: z.union([z.enum(["vigencia", "publicacao"]), z.string().regex(RE_DATA)]),
+  inicio: Schema.Union([Schema.Literals(["vigencia", "publicacao"]), data]),
   /** Fim: duração ISO (P2Y, P180D), data, ou sem prazo. */
-  fim: z.union([z.string().regex(/^P\d+[YMD]$/), z.string().regex(RE_DATA), z.literal("sem-prazo")]),
-  evidencia: z.string().min(1),
+  fim: Schema.Union([Schema.String.check(Schema.isPattern(/^P\d+[YMD]$/)), data, Schema.Literal("sem-prazo")]),
+  evidencia: textoNaoVazio,
 });
-export type Transicao = z.output<typeof esquemaTransicao>;
-const esquemaTransicoes = z.strictObject({ transicoes: z.array(esquemaTransicao) });
+export type Transicao = typeof esquemaTransicao.Type;
+const esquemaTransicoes = Schema.Struct({ transicoes: Schema.Array(esquemaTransicao) });
+const decodificarTransicoes = Schema.decodeUnknownSync(esquemaTransicoes, { onExcessProperty: "error", errors: "all" });
 
 export function caminhoTransicoes(raiz: string = raizRepositorio()): string {
-  return path.join(raiz, "base-conhecimento", "transicoes.yaml");
+  return NodePath.join(raiz, "base-conhecimento", "transicoes.yaml");
+}
+
+/**
+ * Regras de transição do texto de `transicoes.yaml` (YAML `failsafe`: todo escalar é texto). Fora do
+ * contrato, lança o `Schema.SchemaError` (texto em português por `esquema/mensagens.ts`).
+ */
+export function transicoesDoYaml(texto: string): Transicao[] {
+  return [...decodificarTransicoes(parse(texto, { schema: "failsafe", uniqueKeys: true })).transicoes];
 }
 
 export function carregarTransicoes(raiz: string = raizRepositorio()): Transicao[] {
   const arquivo = caminhoTransicoes(raiz);
-  if (!existsSync(arquivo)) return [];
-  return esquemaTransicoes.parse(parse(readFileSync(arquivo, "utf-8"), { schema: "failsafe", uniqueKeys: true }))
-    .transicoes;
+  if (!NodeFS.existsSync(arquivo)) return [];
+  return transicoesDoYaml(NodeFS.readFileSync(arquivo, "utf-8"));
 }
 
 function somarDuracao(data: string, duracao: string): string {
   const m = /^P(\d+)([YMD])$/.exec(duracao)!;
   const quantidade = Number(m[1]);
   const [ano, mes, dia] = data.split("-").map(Number) as [number, number, number];
+  // @effect-diagnostics-next-line globalDate:off -- aritmética de calendário sobre datas dadas, sem relógio
   const d = new Date(Date.UTC(ano, mes - 1, dia));
   if (m[2] === "Y") d.setUTCFullYear(d.getUTCFullYear() + quantidade);
   else if (m[2] === "M") d.setUTCMonth(d.getUTCMonth() + quantidade);

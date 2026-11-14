@@ -74,9 +74,10 @@ export function itemManifest(caminhos: CaminhosBase, caminho: string): ItemManif
   const { meta } = lerFrontMatter(caminhos, caminho);
   const ausentes = CAMPOS_MANIFEST.filter((campo) => !(campo in meta));
   if (ausentes.length) {
-    throw new ErroFrontMatter(
-      `${relativo(caminhos, caminho)}: campos ausentes para manifest.json: ${ausentes.join(", ")}`,
-    );
+    throw new ErroFrontMatter({
+      rotulo: relativo(caminhos, caminho),
+      detalhe: `campos ausentes para manifest.json: ${ausentes.join(", ")}`,
+    });
   }
   const item: ItemManifest = {};
   for (const campo of CAMPOS_MANIFEST) item[campo] = meta[campo]!;

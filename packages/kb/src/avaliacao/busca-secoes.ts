@@ -1,46 +1,49 @@
+// @effect-diagnostics nodeBuiltinImport:off -- leitura síncrona do conjunto rotulado da avaliação
 /**
  * Recall@10 da busca de seções (`kb buscar-secoes`) no conjunto rotulado de
  * `avaliacao/busca-secoes/consultas.yaml`, nos três modos: sem stemmer nem sinônimos (`simples`),
  * só radicais (`radicais`) e radicais com o léxico de sinônimos (`completo`, o padrão da CLI).
  * Meta do plano (fase 6): recall@10 ≥ 0,8.
  */
-import type { DatabaseSync } from "node:sqlite";
-import { readFileSync } from "node:fs";
-import path from "node:path";
+import * as Effect from "effect/Effect";
+import * as Schema from "effect/Schema";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
+import type * as NodeSqlite from "node:sqlite";
 import { parse } from "yaml";
-import { z } from "zod";
 import type { Sinonimos } from "../busca/sinonimos.ts";
 import { semDiacriticos } from "../busca/tokens.ts";
 import { buscarSecoes, type FiltrosSecoes, type ModoBusca } from "../db/consultas.ts";
 import { raizRepositorio } from "../normas/registro.ts";
 
-const esquemaConsultas = z.strictObject({
-  consultas: z.array(
-    z.strictObject({
-      id: z.string(),
-      consulta: z.string().min(1),
-      filtros: z
-        .strictObject({
-          ppc: z.string().optional(),
-          cnct: z.string().optional(),
-          campus: z.string().optional(),
-          nivel: z.string().optional(),
-          forma: z.string().optional(),
-          tipo: z.string().optional(),
-        })
-        .default({}),
-      esperadas: z.array(z.strictObject({ ppc: z.string(), titulo: z.string().min(1) })).min(1),
+const esquemaConsultas = Schema.Struct({
+  consultas: Schema.Array(
+    Schema.Struct({
+      id: Schema.String,
+      consulta: Schema.String.check(Schema.isMinLength(1)),
+      filtros: Schema.Struct({
+        ppc: Schema.optionalKey(Schema.String),
+        cnct: Schema.optionalKey(Schema.String),
+        campus: Schema.optionalKey(Schema.String),
+        nivel: Schema.optionalKey(Schema.String),
+        forma: Schema.optionalKey(Schema.String),
+        tipo: Schema.optionalKey(Schema.String),
+      }).pipe(Schema.withDecodingDefaultKey(Effect.succeed({}))),
+      esperadas: Schema.Array(
+        Schema.Struct({ ppc: Schema.String, titulo: Schema.String.check(Schema.isMinLength(1)) }),
+      ).check(Schema.isMinLength(1)),
     }),
   ),
 });
-export type ConsultasRotuladas = z.output<typeof esquemaConsultas>;
+export type ConsultasRotuladas = typeof esquemaConsultas.Type;
+const decodificarConsultas = Schema.decodeUnknownSync(esquemaConsultas, { onExcessProperty: "error", errors: "all" });
 
 export function caminhoConsultas(raiz: string = raizRepositorio()): string {
-  return path.join(raiz, "avaliacao", "busca-secoes", "consultas.yaml");
+  return NodePath.join(raiz, "avaliacao", "busca-secoes", "consultas.yaml");
 }
 
 export function lerConsultas(caminho: string = caminhoConsultas()): ConsultasRotuladas {
-  return esquemaConsultas.parse(parse(readFileSync(caminho, "utf-8"), { schema: "failsafe" }));
+  return decodificarConsultas(parse(NodeFS.readFileSync(caminho, "utf-8"), { schema: "failsafe" }));
 }
 
 const normalizar = (t: string) => semDiacriticos(t).toLowerCase().replace(/\s+/g, " ").trim();
@@ -62,7 +65,7 @@ export interface ResultadoAvaliacaoBusca {
 }
 
 export function avaliarBusca(
-  db: DatabaseSync,
+  db: NodeSqlite.DatabaseSync,
   opcoes: { lexico: Sinonimos; k?: number; conjunto?: ConsultasRotuladas },
 ): ResultadoAvaliacaoBusca {
   const k = opcoes.k ?? 10;

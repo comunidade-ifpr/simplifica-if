@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- carregador síncrono do índice do CNCT, usado pelos scripts e pela skill revisar-ppc
 /**
  * Referências normativas estruturadas: `{ ref, dispositivo?, papel, nota? }`, como nas fichas da
  * `revisar-ppc` (fase 2 do plano de arquitetura), e o texto legível renderizado a partir delas.
@@ -15,9 +16,9 @@
  * O texto legível usa o título canônico (`manifest.json`, `stubs.yaml` ou o catálogo) e o
  * dispositivo por extenso: "Resolução CNE/CP nº 2/2026, art. 28, VII".
  */
-import { existsSync, readFileSync } from "node:fs";
-import path from "node:path";
-import { z } from "zod";
+import * as Schema from "effect/Schema";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { ehIdAto, ehIdCnct, ehIdExterno, RE_ID_DISPOSITIVO, RE_REFERENCIA } from "./ids.ts";
 import { carregarRegistro, raizRepositorio, type Registro, type Situacao } from "./registro.ts";
 import { textoDispositivos } from "./texto-dispositivos.ts";
@@ -25,22 +26,26 @@ import { textoDispositivos } from "./texto-dispositivos.ts";
 export const PAPEIS_REFERENCIA = ["fundamento", "complementar"] as const;
 export type PapelReferencia = (typeof PAPEIS_REFERENCIA)[number];
 
-export const esquemaReferenciaNormativa = z.strictObject({
-  ref: z
-    .string()
-    .regex(RE_REFERENCIA)
-    .describe("ID canônico: ato sem variante (br/..., ifpr/...), stub, externo:... ou cnct:..."),
-  dispositivo: z
-    .string()
-    .regex(RE_ID_DISPOSITIVO)
-    .optional()
-    .describe("Um dispositivo do ato, como #art28-vii, #art28-par1-iv ou #art24-parunico"),
-  papel: z
-    .enum(PAPEIS_REFERENCIA)
-    .describe("fundamento: a ficha aplica a regra; complementar: a ficha só remete à referência"),
-  nota: z.string().min(1).optional().describe("Detalhe da citação que não cabe em ref e dispositivo"),
+/** Referência normativa estruturada (decodificada sem chaves extras: `onExcessProperty: "error"`). */
+export const esquemaReferenciaNormativa = Schema.Struct({
+  ref: Schema.String.check(Schema.isPattern(RE_REFERENCIA)).annotate({
+    description: "ID canônico: ato sem variante (br/..., ifpr/...), stub, externo:... ou cnct:...",
+  }),
+  dispositivo: Schema.optionalKey(
+    Schema.String.check(Schema.isPattern(RE_ID_DISPOSITIVO)).annotate({
+      description: "Um dispositivo do ato, como #art28-vii, #art28-par1-iv ou #art24-parunico",
+    }),
+  ),
+  papel: Schema.Literals(PAPEIS_REFERENCIA).annotate({
+    description: "fundamento: a ficha aplica a regra; complementar: a ficha só remete à referência",
+  }),
+  nota: Schema.optionalKey(
+    Schema.String.check(Schema.isMinLength(1)).annotate({
+      description: "Detalhe da citação que não cabe em ref e dispositivo",
+    }),
+  ),
 });
-export type ReferenciaNormativa = z.output<typeof esquemaReferenciaNormativa>;
+export type ReferenciaNormativa = typeof esquemaReferenciaNormativa.Type;
 
 /** O que se sabe de um ID citável. */
 export interface FonteReferencia {
@@ -100,14 +105,16 @@ export class UniversoReferencias {
   }
 }
 
+const decodificarIndiceCnct = Schema.decodeUnknownSync(
+  Schema.Struct({ items: Schema.Array(Schema.Struct({ id: Schema.String, denominacao: Schema.String })) }),
+);
+
 /** Cursos de `catalogos/cnct/index.json` (`id` → denominação); vazio se o índice não existe. */
 export function carregarCursosCnct(raiz: string = raizRepositorio()): Map<string, string> {
-  const arquivo = path.join(raiz, "base-conhecimento", "catalogos", "cnct", "index.json");
+  const arquivo = NodePath.join(raiz, "base-conhecimento", "catalogos", "cnct", "index.json");
   const cursos = new Map<string, string>();
-  if (!existsSync(arquivo)) return cursos;
-  const indice = z
-    .object({ items: z.array(z.looseObject({ id: z.string(), denominacao: z.string() })) })
-    .parse(JSON.parse(readFileSync(arquivo, "utf-8")));
+  if (!NodeFS.existsSync(arquivo)) return cursos;
+  const indice = decodificarIndiceCnct(JSON.parse(NodeFS.readFileSync(arquivo, "utf-8")));
   for (const item of indice.items) cursos.set(item.id, item.denominacao);
   return cursos;
 }

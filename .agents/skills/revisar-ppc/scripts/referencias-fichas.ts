@@ -3,9 +3,9 @@
  * análise (índice, mapa, grupos e prompts dos sub-agentes). A estrutura e a renderização são do
  * núcleo (`@simplifica-if/kb/normas/referencia-estruturada`); aqui ficam só as adaptações à skill.
  */
+import * as Schema from "effect/Schema";
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { z } from "zod";
 import { Registro } from "@simplifica-if/kb/normas/registro";
 import {
   carregarUniversoReferencias,
@@ -32,11 +32,13 @@ export function universoOuVazio(caminhos: CaminhosAnalise = caminhosPadrao()): U
   return carregarUniverso(caminhos) ?? new UniversoReferencias(new Registro([]));
 }
 
-const listaReferencias = z.array(esquemaReferenciaNormativa);
+const decodificarReferencias = Schema.decodeUnknownSync(Schema.Array(esquemaReferenciaNormativa), {
+  onExcessProperty: "error",
+});
 
-/** `referencias_normativas` da ficha, validadas pelo zod (ausente é lista vazia). */
+/** `referencias_normativas` da ficha, validadas pelo esquema do kb (ausente é lista vazia). */
 export function referenciasDaFicha(ficha: { [campo: string]: unknown }): ReferenciaNormativa[] {
-  return ficha.referencias_normativas === undefined ? [] : listaReferencias.parse(ficha.referencias_normativas);
+  return ficha.referencias_normativas === undefined ? [] : [...decodificarReferencias(ficha.referencias_normativas)];
 }
 
 /** Citações legíveis da ficha, na ordem da ficha. */

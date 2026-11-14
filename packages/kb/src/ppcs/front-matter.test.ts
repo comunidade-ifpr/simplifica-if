@@ -72,10 +72,8 @@ describe("front matter de PPC", () => {
   });
 
   test("registrada exige hash e conversor; reconstruída exige nota", () => {
-    expect(() =>
-      serializarFrontMatterPpc({ ...reconstruida, proveniencia: "registrada", nota_proveniencia: undefined }),
-    ).toThrow();
     const { nota_proveniencia: _nota, ...semNota } = reconstruida;
+    expect(() => serializarFrontMatterPpc({ ...semNota, proveniencia: "registrada" })).toThrow();
     expect(() =>
       analisarPpc(
         serializarFrontMatterPpc({ ...semNota, nota_proveniencia: "x" }).replace(/nota_proveniencia.*\n/, ""),

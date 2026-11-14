@@ -1,11 +1,12 @@
+// @effect-diagnostics nodeBuiltinImport:off -- carregador síncrono do índice e do texto dos PPCs, usado pelos scripts e pela compilação do banco
 /**
  * Citações normativas extraídas dos PPCs convertidos (`base-conhecimento/institucional/ifpr/ppcs/`),
  * pelo resolvedor de `normas/resolver.ts`. Tudo é derivado dos arquivos do checkout, sem relógio e
  * com ordem estável (PPC por id, citação por posição).
  */
-import { readFileSync } from "node:fs";
-import path from "node:path";
-import { z } from "zod";
+import * as Schema from "effect/Schema";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { idDoAto } from "../normas/ids.ts";
 import { raizRepositorio, type Registro } from "../normas/registro.ts";
 import { type Citacao, extrairCitacoes, registroPadrao } from "../normas/resolver.ts";
@@ -13,21 +14,25 @@ import { compararTexto } from "../texto.ts";
 import { mascararFrontMatter } from "./front-matter.ts";
 import { textoDaSecao } from "./secoes.ts";
 
-const esquemaItemPpc = z.looseObject({
-  id: z.string(),
-  campus_id: z.string(),
-  campus_nome: z.string(),
-  curso_slug: z.string(),
-  curso_nome: z.string(),
-  nivel: z.string(),
-  tipo_oferta: z.string(),
-  path: z.string(),
-  ano_documento: z.number().int().optional(),
-});
-export type ItemPpc = z.output<typeof esquemaItemPpc>;
+const esquemaItemPpc = Schema.StructWithRest(
+  Schema.Struct({
+    id: Schema.String,
+    campus_id: Schema.String,
+    campus_nome: Schema.String,
+    curso_slug: Schema.String,
+    curso_nome: Schema.String,
+    nivel: Schema.String,
+    tipo_oferta: Schema.String,
+    path: Schema.String,
+    ano_documento: Schema.optionalKey(Schema.Int),
+  }),
+  [Schema.Record(Schema.String, Schema.Unknown)],
+);
+export type ItemPpc = typeof esquemaItemPpc.Type;
+const decodificarIndicePpcs = Schema.decodeUnknownSync(Schema.Struct({ items: Schema.Array(esquemaItemPpc) }));
 
 export function caminhoBase(raiz: string = raizRepositorio()): string {
-  return path.join(raiz, "base-conhecimento");
+  return NodePath.join(raiz, "base-conhecimento");
 }
 
 /**
@@ -42,7 +47,7 @@ export function lerTextoSecao(
   // `cache` (caminho → texto) evita reler o mesmo PPC a cada seção, como na compilação do kb.sqlite.
   let texto = opcoes.cache?.get(secao.path);
   if (texto === undefined) {
-    texto = readFileSync(path.join(caminhoBase(opcoes.raiz), secao.path), "utf-8").replace(/\r\n?/g, "\n");
+    texto = NodeFS.readFileSync(NodePath.join(caminhoBase(opcoes.raiz), secao.path), "utf-8").replace(/\r\n?/g, "\n");
     opcoes.cache?.set(secao.path, texto);
   }
   return textoDaSecao(texto, secao.linha_inicio, secao.linha_fim, { incluirTitulo: opcoes.incluirTitulo ?? false });
@@ -50,8 +55,8 @@ export function lerTextoSecao(
 
 /** Itens de `ppcs/index.json`, ordenados por id. */
 export function carregarIndicePpcs(raiz: string = raizRepositorio()): ItemPpc[] {
-  const arquivo = path.join(caminhoBase(raiz), "institucional", "ifpr", "ppcs", "index.json");
-  const indice = z.object({ items: z.array(esquemaItemPpc) }).parse(JSON.parse(readFileSync(arquivo, "utf-8")));
+  const arquivo = NodePath.join(caminhoBase(raiz), "institucional", "ifpr", "ppcs", "index.json");
+  const indice = decodificarIndicePpcs(JSON.parse(NodeFS.readFileSync(arquivo, "utf-8")));
   return [...indice.items].sort((a, b) => compararTexto(a.id, b.id));
 }
 
@@ -64,7 +69,7 @@ export function citacoesDoArquivo(
   registro: Registro = registroPadrao(),
   raiz: string = raizRepositorio(),
 ): Citacao[] {
-  const bruto = readFileSync(path.join(caminhoBase(raiz), caminhoRelativo), "utf-8").replace(/\r\n?/g, "\n");
+  const bruto = NodeFS.readFileSync(NodePath.join(caminhoBase(raiz), caminhoRelativo), "utf-8").replace(/\r\n?/g, "\n");
   const texto = mascararFrontMatter(bruto);
   return extrairCitacoes(texto, registro);
 }

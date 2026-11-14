@@ -1,11 +1,12 @@
+// @effect-diagnostics nodeBuiltinImport:off -- carregador síncrono de manifest.json e stubs.yaml, usado pelos scripts e pela compilação do banco
 /**
  * Registro de IDs conhecidos: normas da base (`manifest.json`), normas-stub e referências externas
  * (`normas/stubs.yaml`). É o universo contra o qual o resolvedor confere e completa citações.
  */
-import { existsSync, readFileSync } from "node:fs";
-import path from "node:path";
+import * as Schema from "effect/Schema";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { parse } from "yaml";
-import { z } from "zod";
 import { compararTexto } from "../texto.ts";
 import { ehIdDispositivo, ehIdExterno, ehIdNorma, idDoAto, partesIdNorma } from "./ids.ts";
 
@@ -29,88 +30,110 @@ export interface EntradaRegistro {
 const RE_DATA = /^\d{4}-\d{2}-\d{2}$/;
 const STATUS_STUB = ["vigente", "alterada", "revogada", "parcialmente revogada", "a confirmar"] as const;
 
-const esquemaStub = z.strictObject({
-  id: z.string().refine(ehIdNorma, "id de norma fora do formato canônico"),
-  title: z.string().min(1),
-  data_publicacao: z.string().regex(RE_DATA, "data_publicacao deve ser AAAA-MM-DD").optional(),
-  ementa: z.string().min(1),
-  status_vigencia: z.enum(STATUS_STUB),
-  status_fonte: z
-    .string()
-    .refine((valor) => {
+/** Texto que satisfaz `predicado`, com a mensagem dada quando não satisfaz. */
+const textoQue = (predicado: (valor: string) => boolean, mensagem: string) =>
+  Schema.String.check(Schema.makeFilter((valor: string) => predicado(valor), { message: mensagem }));
+const textoNaoVazio = Schema.String.check(Schema.isMinLength(1));
+const CURADORIA = Schema.Literals(["rascunho", "conferido"]);
+
+const esquemaStub = Schema.Struct({
+  id: textoQue(ehIdNorma, "id de norma fora do formato canônico"),
+  title: textoNaoVazio,
+  data_publicacao: Schema.optionalKey(
+    Schema.String.check(Schema.isPattern(RE_DATA, { message: "data_publicacao deve ser AAAA-MM-DD" })),
+  ),
+  ementa: textoNaoVazio,
+  status_vigencia: Schema.Literals(STATUS_STUB),
+  status_fonte: Schema.optionalKey(
+    textoQue((valor) => {
       const [norma, dispositivo] = valor.split("#");
       return ehIdNorma(norma!) && (dispositivo === undefined || ehIdDispositivo(`#${dispositivo}`));
-    }, "status_fonte deve ser ID de norma com dispositivo opcional")
-    .optional(),
-  aliases: z.array(z.string().min(1)).optional(),
-  fonte: z.string().optional(),
-  observacoes: z.string().optional(),
-  curadoria: z.enum(["rascunho", "conferido"]),
+    }, "status_fonte deve ser ID de norma com dispositivo opcional"),
+  ),
+  aliases: Schema.optionalKey(Schema.Array(textoNaoVazio)),
+  fonte: Schema.optionalKey(Schema.String),
+  observacoes: Schema.optionalKey(Schema.String),
+  curadoria: CURADORIA,
 });
 
-const esquemaExterno = z.strictObject({
-  id: z.string().refine(ehIdExterno, "id externo fora do formato externo:<segmentos>"),
-  title: z.string().min(1),
-  descricao: z.string().min(1),
-  aliases: z.array(z.string().min(1)).optional(),
-  fonte: z.string().optional(),
-  curadoria: z.enum(["rascunho", "conferido"]),
+const esquemaExterno = Schema.Struct({
+  id: textoQue(ehIdExterno, "id externo fora do formato externo:<segmentos>"),
+  title: textoNaoVazio,
+  descricao: textoNaoVazio,
+  aliases: Schema.optionalKey(Schema.Array(textoNaoVazio)),
+  fonte: Schema.optionalKey(Schema.String),
+  curadoria: CURADORIA,
 });
 
-/** Contrato de `base-conhecimento/normas/stubs.yaml`. */
-export const esquemaRegistroStubs = z
-  .strictObject({ normas: z.array(esquemaStub), externos: z.array(esquemaExterno) })
-  .superRefine((registro, ctx) => {
+/** Contrato de `base-conhecimento/normas/stubs.yaml` (decodificado sem chaves extras). */
+export const esquemaRegistroStubs = Schema.Struct({
+  normas: Schema.Array(esquemaStub),
+  externos: Schema.Array(esquemaExterno),
+}).check(
+  Schema.makeFilter((registro) => {
+    const problemas: Schema.FilterIssue[] = [];
     const vistos = new Set<string>();
     for (const [lista, itens] of [
       ["normas", registro.normas],
       ["externos", registro.externos],
     ] as const) {
       itens.forEach((item, indice) => {
-        if (vistos.has(item.id)) {
-          ctx.addIssue({ code: "custom", path: [lista, indice, "id"], message: `id duplicado: ${item.id}` });
-        }
+        if (vistos.has(item.id)) problemas.push({ path: [lista, indice, "id"], issue: `id duplicado: ${item.id}` });
         vistos.add(item.id);
       });
     }
     registro.normas.forEach((stub, indice) => {
       if (stub.status_vigencia !== "a confirmar" && !stub.status_fonte) {
-        ctx.addIssue({
-          code: "custom",
+        problemas.push({
           path: ["normas", indice, "status_fonte"],
-          message: "status diferente de 'a confirmar' exige status_fonte",
+          issue: "status diferente de 'a confirmar' exige status_fonte",
         });
       }
       const partes = partesIdNorma(stub.id);
-      if (partes?.variante) {
-        ctx.addIssue({ code: "custom", path: ["normas", indice, "id"], message: "stub não tem variante" });
-      }
+      if (partes?.variante) problemas.push({ path: ["normas", indice, "id"], issue: "stub não tem variante" });
       if (partes && stub.data_publicacao && !stub.data_publicacao.startsWith(String(partes.ano))) {
-        ctx.addIssue({
-          code: "custom",
+        problemas.push({
           path: ["normas", indice, "data_publicacao"],
-          message: `data_publicacao fora do ano do id (${partes.ano})`,
+          issue: `data_publicacao fora do ano do id (${partes.ano})`,
         });
       }
     });
-  });
-export type RegistroStubs = z.output<typeof esquemaRegistroStubs>;
+    return problemas;
+  }),
+);
+export type RegistroStubs = typeof esquemaRegistroStubs.Type;
 
-/** Lê e valida `stubs.yaml` (YAML `failsafe`: todo escalar é texto). */
-export function lerRegistroStubs(caminho: string): RegistroStubs {
-  const bruto = parse(readFileSync(caminho, "utf-8"), { schema: "failsafe", uniqueKeys: true });
-  return esquemaRegistroStubs.parse(bruto);
+const decodificarRegistroStubs = Schema.decodeUnknownSync(esquemaRegistroStubs, {
+  onExcessProperty: "error",
+  errors: "all",
+});
+
+/**
+ * Valida o texto de `stubs.yaml` (YAML `failsafe`: todo escalar é texto). Fora do contrato, lança o
+ * `Schema.SchemaError` (texto em português por `esquema/mensagens.ts`).
+ */
+export function registroStubsDoYaml(texto: string): RegistroStubs {
+  return decodificarRegistroStubs(parse(texto, { schema: "failsafe", uniqueKeys: true }));
 }
 
-const esquemaItemManifest = z.looseObject({
-  id: z.string(),
-  title: z.string(),
-  data_publicacao: z.string(),
-  assinada_em: z.string().optional(),
-  status_vigencia: z.string(),
-  aliases: z.array(z.string()).optional(),
-  path: z.string(),
-});
+/** Lê e valida `stubs.yaml`. */
+export function lerRegistroStubs(caminho: string): RegistroStubs {
+  return registroStubsDoYaml(NodeFS.readFileSync(caminho, "utf-8"));
+}
+
+const esquemaItemManifest = Schema.StructWithRest(
+  Schema.Struct({
+    id: Schema.String,
+    title: Schema.String,
+    data_publicacao: Schema.String,
+    assinada_em: Schema.optionalKey(Schema.String),
+    status_vigencia: Schema.String,
+    aliases: Schema.optionalKey(Schema.Array(Schema.String)),
+    path: Schema.String,
+  }),
+  [Schema.Record(Schema.String, Schema.Unknown)],
+);
+const decodificarManifest = Schema.decodeUnknownSync(Schema.Array(esquemaItemManifest));
 
 /** Universo de IDs conhecidos, com buscas usadas pelo resolvedor. */
 export class Registro {
@@ -180,19 +203,19 @@ export function datasDoAto(entrada: EntradaRegistro | undefined): string[] {
 
 /** Raiz do repositório, a partir deste arquivo (`packages/kb/src/normas/`). */
 export function raizRepositorio(): string {
-  return path.resolve(import.meta.dirname, "..", "..", "..", "..");
+  return NodePath.resolve(import.meta.dirname, "..", "..", "..", "..");
 }
 
 export function caminhoStubs(raiz: string = raizRepositorio()): string {
-  return path.join(raiz, "base-conhecimento", "normas", "stubs.yaml");
+  return NodePath.join(raiz, "base-conhecimento", "normas", "stubs.yaml");
 }
 
-/** Monta o registro com `manifest.json` e `stubs.yaml` do checkout. */
-export function carregarRegistro(raiz: string = raizRepositorio()): Registro {
-  const base = path.join(raiz, "base-conhecimento");
-  const manifest = z
-    .array(esquemaItemManifest)
-    .parse(JSON.parse(readFileSync(path.join(base, "manifest.json"), "utf-8")));
+/**
+ * Monta o registro com o texto de `base-conhecimento/manifest.json` e, se existir, o de
+ * `base-conhecimento/normas/stubs.yaml`.
+ */
+export function montarRegistro(manifestJson: string, stubsYaml: string | null): Registro {
+  const manifest = decodificarManifest(JSON.parse(manifestJson));
   const entradas: EntradaRegistro[] = manifest.map((item) => ({
     id: item.id,
     title: item.title,
@@ -200,12 +223,11 @@ export function carregarRegistro(raiz: string = raizRepositorio()): Registro {
     assinada_em: item.assinada_em && RE_DATA.test(item.assinada_em) ? item.assinada_em : undefined,
     data_publicacao: item.data_publicacao,
     status_vigencia: item.status_vigencia,
-    aliases: item.aliases ?? [],
+    aliases: [...(item.aliases ?? [])],
     path: item.path,
   }));
-  const arquivoStubs = caminhoStubs(raiz);
-  if (existsSync(arquivoStubs)) {
-    const stubs = lerRegistroStubs(arquivoStubs);
+  if (stubsYaml !== null) {
+    const stubs = registroStubsDoYaml(stubsYaml);
     for (const stub of stubs.normas) {
       entradas.push({
         id: stub.id,
@@ -215,12 +237,24 @@ export function carregarRegistro(raiz: string = raizRepositorio()): Registro {
         data_publicacao: stub.data_publicacao,
         status_vigencia: stub.status_vigencia,
         status_fonte: stub.status_fonte,
-        aliases: stub.aliases ?? [],
+        aliases: [...(stub.aliases ?? [])],
       });
     }
     for (const externo of stubs.externos) {
-      entradas.push({ id: externo.id, title: externo.title, situacao: "externo", aliases: externo.aliases ?? [] });
+      entradas.push({
+        id: externo.id,
+        title: externo.title,
+        situacao: "externo",
+        aliases: [...(externo.aliases ?? [])],
+      });
     }
   }
   return new Registro(entradas);
+}
+
+/** Monta o registro com `manifest.json` e `stubs.yaml` do checkout. */
+export function carregarRegistro(raiz: string = raizRepositorio()): Registro {
+  const manifest = NodeFS.readFileSync(NodePath.join(raiz, "base-conhecimento", "manifest.json"), "utf-8");
+  const arquivoStubs = caminhoStubs(raiz);
+  return montarRegistro(manifest, NodeFS.existsSync(arquivoStubs) ? NodeFS.readFileSync(arquivoStubs, "utf-8") : null);
 }

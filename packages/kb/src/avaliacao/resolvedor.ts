@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- avaliação síncrona sobre os arquivos do checkout, usada pela CLI
 /**
  * Avaliação do resolvedor de citações contra `avaliacao/resolvedor/citacoes-anotadas.yaml`.
  *
@@ -6,10 +7,10 @@
  * no PPC). Dispositivos são medidos à parte: fração dos dispositivos anotados que o resolvedor
  * devolveu para o mesmo ato na mesma linha.
  */
-import { readFileSync } from "node:fs";
-import path from "node:path";
+import * as Schema from "effect/Schema";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { parse } from "yaml";
-import { z } from "zod";
 import { idDoAto } from "../normas/ids.ts";
 import { raizRepositorio, type Registro } from "../normas/registro.ts";
 import { extrairCitacoes, registroPadrao } from "../normas/resolver.ts";
@@ -17,26 +18,33 @@ import { carregarIndicePpcs } from "../ppcs/citacoes.ts";
 import { mascararFrontMatter } from "../ppcs/front-matter.ts";
 import { compararTexto } from "../texto.ts";
 
-const esquemaLinha = z.strictObject({
-  trecho: z.string().min(10),
-  ids: z.array(z.string()),
-  sem_id: z.array(z.string()).optional(),
+const esquemaLinha = Schema.Struct({
+  trecho: Schema.String.check(Schema.isMinLength(10)),
+  ids: Schema.Array(Schema.String),
+  sem_id: Schema.optionalKey(Schema.Array(Schema.String)),
 });
 
-export const esquemaCitacoesAnotadas = z.strictObject({
-  status: z.enum(["rascunho", "revisado"]),
-  revisado_por: z.string().nullable(),
-  anotado_por: z.string(),
-  ppcs: z.array(z.strictObject({ ppc: z.string(), linhas: z.array(esquemaLinha).min(1) })).min(1),
+/** Contrato de `citacoes-anotadas.yaml` (decodificado sem chaves extras). */
+export const esquemaCitacoesAnotadas = Schema.Struct({
+  status: Schema.Literals(["rascunho", "revisado"]),
+  revisado_por: Schema.NullOr(Schema.String),
+  anotado_por: Schema.String,
+  ppcs: Schema.Array(
+    Schema.Struct({ ppc: Schema.String, linhas: Schema.Array(esquemaLinha).check(Schema.isMinLength(1)) }),
+  ).check(Schema.isMinLength(1)),
 });
-export type CitacoesAnotadas = z.output<typeof esquemaCitacoesAnotadas>;
+export type CitacoesAnotadas = typeof esquemaCitacoesAnotadas.Type;
+const decodificarAnotacoes = Schema.decodeUnknownSync(esquemaCitacoesAnotadas, {
+  onExcessProperty: "error",
+  errors: "all",
+});
 
 export function caminhoAnotacoes(raiz: string = raizRepositorio()): string {
-  return path.join(raiz, "avaliacao", "resolvedor", "citacoes-anotadas.yaml");
+  return NodePath.join(raiz, "avaliacao", "resolvedor", "citacoes-anotadas.yaml");
 }
 
 export function lerAnotacoes(caminho: string = caminhoAnotacoes()): CitacoesAnotadas {
-  return esquemaCitacoesAnotadas.parse(parse(readFileSync(caminho, "utf-8")));
+  return decodificarAnotacoes(parse(NodeFS.readFileSync(caminho, "utf-8")));
 }
 
 export interface ErroAvaliacao {
@@ -89,7 +97,7 @@ export function avaliarResolvedor(
       problemas.push(`${ppc}: PPC fora do índice`);
       continue;
     }
-    const texto = mascararFrontMatter(readFileSync(path.join(raiz, "base-conhecimento", relativo), "utf-8"));
+    const texto = mascararFrontMatter(NodeFS.readFileSync(NodePath.join(raiz, "base-conhecimento", relativo), "utf-8"));
     const citacoes = extrairCitacoes(texto, registro);
     const linhasTexto = texto.split("\n");
 

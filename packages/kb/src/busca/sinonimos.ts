@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- carregador síncrono do léxico, usado pelos scripts, pela skill revisar-ppc e pela compilação do banco
 /**
  * Léxico de sinônimos da busca de seções (`packages/kb/dados/sinonimos.yaml`).
  *
@@ -6,25 +7,45 @@
  * - `grupos`: termos equivalentes; a consulta que contém um deles ganha os outros — expansão da
  *   consulta.
  */
-import { readFileSync } from "node:fs";
-import path from "node:path";
+import * as Schema from "effect/Schema";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { parse } from "yaml";
-import { z } from "zod";
 import { radicais } from "./tokens.ts";
 
-export const esquemaSinonimos = z.strictObject({
-  tipos: z.record(z.string().regex(/^[a-z_]+$/), z.array(z.string().min(1)).min(1)),
-  grupos: z.array(z.array(z.string().min(1)).min(2)),
-});
-export type Sinonimos = z.output<typeof esquemaSinonimos>;
+const termo = Schema.String.check(Schema.isMinLength(1));
 
-export function caminhoSinonimos(raizPacote: string = path.resolve(import.meta.dirname, "..", "..")): string {
-  return path.join(raizPacote, "dados", "sinonimos.yaml");
+/** Contrato do léxico (decodificado sem chaves extras). */
+export const esquemaSinonimos = Schema.Struct({
+  tipos: Schema.Record(
+    Schema.String.check(Schema.isPattern(/^[a-z_]+$/)),
+    Schema.Array(termo).check(Schema.isMinLength(1)),
+  ),
+  grupos: Schema.Array(Schema.Array(termo).check(Schema.isMinLength(2))),
+});
+export type Sinonimos = typeof esquemaSinonimos.Type;
+const decodificarSinonimos = Schema.decodeUnknownSync(esquemaSinonimos, { onExcessProperty: "error", errors: "all" });
+
+export function caminhoSinonimos(raizPacote: string = NodePath.resolve(import.meta.dirname, "..", "..")): string {
+  return NodePath.join(raizPacote, "dados", "sinonimos.yaml");
 }
 
-/** Lê e valida o léxico (YAML `failsafe`: todo escalar é texto). */
+/**
+ * Valida o léxico já interpretado (do YAML ou remontado das tabelas do banco). Fora do contrato,
+ * lança o `Schema.SchemaError` (texto em português por `esquema/mensagens.ts`).
+ */
+export function sinonimosDeObjeto(objeto: unknown): Sinonimos {
+  return decodificarSinonimos(objeto);
+}
+
+/** Léxico do texto de `sinonimos.yaml` (YAML `failsafe`: todo escalar é texto). */
+export function sinonimosDoYaml(texto: string): Sinonimos {
+  return sinonimosDeObjeto(parse(texto, { schema: "failsafe", uniqueKeys: true }));
+}
+
+/** Lê e valida o léxico. */
 export function lerSinonimos(caminho: string = caminhoSinonimos()): Sinonimos {
-  return esquemaSinonimos.parse(parse(readFileSync(caminho, "utf-8"), { schema: "failsafe", uniqueKeys: true }));
+  return sinonimosDoYaml(NodeFS.readFileSync(caminho, "utf-8"));
 }
 
 /** Texto de expansão de um tipo de seção: os termos do léxico, separados por " ; ". */
