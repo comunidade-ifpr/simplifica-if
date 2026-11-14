@@ -112,7 +112,7 @@ export function horasDoTrecho(
     const limiteDepois = Math.min(n.fim + 22, lista[i + 1]?.inicio ?? Infinity);
     const limiteAntes = Math.max(0, n.inicio - 22, lista[i - 1]?.fim ?? 0);
     const depois = todas.find((m) => m.posicao >= n.fim && m.posicao < limiteDepois);
-    const antes = todas.findLast((m) => m.posicao >= limiteAntes && m.posicao < n.inicio);
+    const antes = todas.filter((m) => m.posicao >= limiteAntes && m.posicao < n.inicio).at(-1);
     return { ...n, unidade: depois?.unidade ?? antes?.unidade ?? unidadeRotulo ?? ("sem-marca" as const) };
   });
   const relogio = marcados.find((n) => n.unidade === "relogio");
