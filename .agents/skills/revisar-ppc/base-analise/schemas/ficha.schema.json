@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://simplifica-if.local/revisar-ppc/ficha.schema.json",
   "title": "Ficha de análise PPC",
-  "description": "Gerado de .agents/skills/revisar-ppc/scripts/esquemas.ts (zod) por `revisar_ppc.ts gerar-schemas`; não edite à mão.",
+  "description": "Gerado de .agents/skills/revisar-ppc/scripts/esquemas.ts (Effect Schema) por `revisar_ppc.ts gerar-schemas`; não edite à mão.",
   "type": "object",
   "properties": {
     "id": {
@@ -56,7 +56,6 @@
       }
     },
     "referencias_normativas": {
-      "description": "Uma entrada por dispositivo; entradas consecutivas da mesma norma e do mesmo papel formam uma citação no texto legível",
       "type": "array",
       "items": {
         "type": "object",
@@ -67,9 +66,9 @@
             "description": "ID canônico: ato sem variante (br/..., ifpr/...), stub, externo:... ou cnct:..."
           },
           "dispositivo": {
-            "description": "Um dispositivo do ato, como #art28-vii, #art28-par1-iv ou #art24-parunico",
             "type": "string",
-            "pattern": "^#(?:(?:anexo\\d+-)?art[1-9]\\d*[A-Z]*(?:-par(?:[1-9]\\d*[A-Z]*|unico))?(?:-[ivxlc]+[A-Z]?)?(?:-al-[a-z])?(?:-item\\d+)?|anexo\\d+(?:-item\\d+)?|secao\\d+)$"
+            "pattern": "^#(?:(?:anexo\\d+-)?art[1-9]\\d*[A-Z]*(?:-par(?:[1-9]\\d*[A-Z]*|unico))?(?:-[ivxlc]+[A-Z]?)?(?:-al-[a-z])?(?:-item\\d+)?|anexo\\d+(?:-item\\d+)?|secao\\d+)$",
+            "description": "Um dispositivo do ato, como #art28-vii, #art28-par1-iv ou #art24-parunico"
           },
           "papel": {
             "type": "string",
@@ -80,9 +79,9 @@
             "description": "fundamento: a ficha aplica a regra; complementar: a ficha só remete à referência"
           },
           "nota": {
-            "description": "Detalhe da citação que não cabe em ref e dispositivo",
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "description": "Detalhe da citação que não cabe em ref e dispositivo"
           }
         },
         "required": [
@@ -90,7 +89,8 @@
           "papel"
         ],
         "additionalProperties": false
-      }
+      },
+      "description": "Uma entrada por dispositivo; entradas consecutivas da mesma norma e do mesmo papel formam uma citação no texto legível"
     },
     "pergunta": {
       "type": "string"

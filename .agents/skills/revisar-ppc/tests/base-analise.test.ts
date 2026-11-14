@@ -191,13 +191,13 @@ describe("validador em casos inválidos", () => {
     ]);
   });
 
-  test("schema gerado desatualizado em relação ao zod", () => {
+  test("schema gerado desatualizado em relação ao Effect Schema", () => {
     const c = copiaDaBase();
     editarJson(NodePath.join(c.schemasDir, "ficha.schema.json"), (schema) => {
       schema.title = "Editado à mão";
     });
     expect(validarBaseAnalise(c)).toEqual([
-      `${NodePath.join(c.schemasDir, "ficha.schema.json")}: diverge do schema zod de scripts/esquemas.ts; ` +
+      `${NodePath.join(c.schemasDir, "ficha.schema.json")}: diverge do Effect Schema de scripts/esquemas.ts; ` +
         "rode `revisar_ppc.ts gerar-schemas`",
     ]);
   });

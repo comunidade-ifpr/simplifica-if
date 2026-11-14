@@ -315,7 +315,7 @@ export function validarReferenciasFichas(
 }
 
 /**
- * Confere `marcos-normativos.json`: schema (gerado do zod), ids únicos, atos da linha registrados,
+ * Confere `marcos-normativos.json`: schema (gerado do Effect Schema), ids únicos, atos da linha registrados,
  * linha que deriva um único ato vigente com texto na base e não revogado, normas substituídas e
  * dispositivos revogados existentes e fichas citadas. Os campos conferidos depois do schema são os
  * derivados de `relacoes.yaml` (`derivar`).
@@ -426,7 +426,7 @@ export function validarBaseAnalise(caminhos: CaminhosAnalise = caminhosPadrao())
     }
   }
   for (const arquivo of schemasDesatualizados(caminhos)) {
-    erros.push(`${arquivo}: diverge do schema zod de scripts/esquemas.ts; rode \`revisar_ppc.ts gerar-schemas\``);
+    erros.push(`${arquivo}: diverge do Effect Schema de scripts/esquemas.ts; rode \`revisar_ppc.ts gerar-schemas\``);
   }
 
   const fichasPorId = new Map<string, Ficha>();
