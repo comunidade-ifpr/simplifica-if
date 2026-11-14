@@ -1,0 +1,123 @@
+/**
+ * O motor de conversa do Simplifica IF: sessões com Claude, Codex (ChatGPT) ou Antigravity (Gemini),
+ * com o `simplifica-mcp` entregue por sessão e eventos iguais para os três.
+ *
+ * Cada sessão vive num `Scope` próprio; `encerrar` o fecha, e o processo do provider morre junto.
+ * Ao fim da layer, as sessões abertas se encerram.
+ */
+import * as Context from "effect/Context";
+import * as Effect from "effect/Effect";
+import * as Exit from "effect/Exit";
+import * as Layer from "effect/Layer";
+import * as Schema from "effect/Schema";
+import * as Scope from "effect/Scope";
+import * as Stream from "effect/Stream";
+import {
+  type AprovacaoDesconhecida,
+  type ConfigSessao,
+  type Decisao,
+  Drivers,
+  type EstadoProvider,
+  type FalhaProvider,
+  type SessaoDriver,
+  type TurnoEmAndamento,
+} from "./Driver.ts";
+import type { Evento, Provider } from "./eventos.ts";
+
+export * from "./Driver.ts";
+export * from "./eventos.ts";
+
+export class SessaoDesconhecida extends Schema.TaggedError<SessaoDesconhecida>()("SessaoDesconhecida", {
+  id: Schema.String,
+}) {
+  override get message(): string {
+    return `sessão desconhecida ou já encerrada: ${this.id}`;
+  }
+}
+
+export class Motor extends Context.Service<
+  Motor,
+  {
+    readonly detectar: (provider: Provider) => Effect.Effect<EstadoProvider>;
+    readonly iniciarSessao: (config: ConfigSessao) => Effect.Effect<string, FalhaProvider>;
+    readonly enviarMensagem: (
+      sessao: string,
+      texto: string,
+    ) => Stream.Stream<Evento, FalhaProvider | TurnoEmAndamento | SessaoDesconhecida>;
+    readonly responderAprovacao: (
+      sessao: string,
+      idAprovacao: string,
+      decisao: Decisao,
+    ) => Effect.Effect<void, SessaoDesconhecida | AprovacaoDesconhecida>;
+    readonly interromper: (sessao: string) => Effect.Effect<void, SessaoDesconhecida | FalhaProvider>;
+    readonly encerrar: (sessao: string) => Effect.Effect<void, SessaoDesconhecida>;
+  }
+>()("@simplifica-if/motor/Motor") {}
+
+interface SessaoAberta {
+  readonly driver: SessaoDriver;
+  readonly escopo: Scope.Closeable;
+}
+
+const make = Effect.gen(function* () {
+  const drivers = yield* Drivers;
+  const sessoes = new Map<string, SessaoAberta>();
+  let sequencia = 0;
+
+  yield* Effect.addFinalizer(() =>
+    Effect.forEach([...sessoes.values()], (sessao) => Scope.close(sessao.escopo, Exit.void), { discard: true }),
+  );
+
+  const buscar = (id: string) =>
+    Effect.suspend(() => {
+      const sessao = sessoes.get(id);
+      return sessao === undefined ? Effect.fail(new SessaoDesconhecida({ id })) : Effect.succeed(sessao);
+    });
+
+  const iniciarSessao = Effect.fn("Motor.iniciarSessao")(function* (config: ConfigSessao) {
+    const escopo = yield* Scope.make();
+    const driver = yield* drivers[config.provider].iniciar(config).pipe(
+      Scope.provide(escopo),
+      Effect.onError(() => Scope.close(escopo, Exit.void)),
+    );
+    const id = `${config.provider}-${++sequencia}`;
+    sessoes.set(id, { driver, escopo });
+    return id;
+  });
+
+  const encerrar = Effect.fn("Motor.encerrar")(function* (id: string) {
+    const sessao = yield* buscar(id);
+    sessoes.delete(id);
+    yield* Scope.close(sessao.escopo, Exit.void);
+  });
+
+  const detectar = Effect.fn("Motor.detectar")(function* (provider: Provider) {
+    return yield* drivers[provider].detectar;
+  });
+
+  const responderAprovacao = Effect.fn("Motor.responderAprovacao")(function* (
+    id: string,
+    idAprovacao: string,
+    decisao: Decisao,
+  ) {
+    const sessao = yield* buscar(id);
+    yield* sessao.driver.responder(idAprovacao, decisao);
+  });
+
+  const interromper = Effect.fn("Motor.interromper")(function* (id: string) {
+    const sessao = yield* buscar(id);
+    yield* sessao.driver.interromper;
+  });
+
+  return Motor.of({
+    detectar,
+    iniciarSessao,
+    enviarMensagem: (id, texto) => Stream.unwrap(Effect.map(buscar(id), (sessao) => sessao.driver.enviar(texto))),
+    responderAprovacao,
+    interromper,
+    encerrar,
+  });
+});
+
+/** O motor sobre os drivers do ambiente (`Drivers.layerNode` ou drivers de teste). */
+export const layer = Layer.effect(Motor, make);

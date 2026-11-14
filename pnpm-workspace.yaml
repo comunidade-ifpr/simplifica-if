@@ -5,6 +5,7 @@ packages:
 # repositórios, atualizada no mesmo dia. Ver docs/plans/consolidacao-stack-t3.md, "Versões fixadas".
 # `pnpm sync:repos` traz `.repos/effect` na tag de `effect` daqui.
 catalog:
+  "@effect/openapi-generator": 4.1.2
   "@effect/platform-node": 4.1.2
   "@effect/vitest": 4.1.2
   "@types/node": 24.12.4
@@ -15,6 +16,16 @@ catalog:
 # Copiados do T3: uma só cópia de vite, vite-plus, @types/node e effect no workspace; o
 # @effect/vitest usa o vitest do Vite+ (patch abaixo), não um vitest próprio.
 overrides:
+  # Como no T3: o motor passa ao SDK o `claude` instalado pelo usuário, então os binários que o SDK
+  # traz não são usados.
+  "@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-darwin-arm64": "-"
+  "@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-darwin-x64": "-"
+  "@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-linux-arm64": "-"
+  "@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-linux-arm64-musl": "-"
+  "@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-linux-x64": "-"
+  "@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-linux-x64-musl": "-"
+  "@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-win32-arm64": "-"
+  "@anthropic-ai/claude-agent-sdk>@anthropic-ai/claude-agent-sdk-win32-x64": "-"
   "@effect/platform-node": "catalog:"
   "@effect/vitest": "catalog:"
   "@effect/vitest>vitest": "-"
@@ -51,3 +62,5 @@ minimumReleaseAgeExclude:
   - "@effect/tsgo-win32-arm64@0.67.1"
   - "@effect/tsgo-win32-x64@0.67.1"
   - "@effect/tsgo@0.67.1"
+  # Como no T3 (a mesma versão de apps/server).
+  - "@anthropic-ai/claude-agent-sdk@0.3.321"

@@ -1,0 +1,39 @@
+# Código copiado do T3 Code
+
+O [T3 Code](https://github.com/pingdotgg/t3code) é MIT (Copyright (c) 2026 T3 Tools Inc.). Tudo o que este repositório copia dele fica registrado aqui, com a origem, o commit e as adaptações. Cada parte guarda a atribuição: um `NOTICE` no pacote, um cabeçalho no arquivo ou o arquivo `LICENSE-T3` ao lado.
+
+Para ver o que mudou no upstream desde o commit registrado de cada parte:
+
+```bash
+node scripts/upstream_t3.ts status                     # partes com mudança no upstream, arquivos e commits
+node scripts/upstream_t3.ts diff effect-acp            # diff do upstream de uma parte, do commit registrado até o HEAD
+node scripts/upstream_t3.ts status --upstream ~/t3code --ref origin/main
+```
+
+O checkout padrão do upstream é `$T3CODE_DIR` (ou `T3CODE_DIR`). O script só lê o git do upstream (`rev-parse`, `rev-list`, `diff`); para comparar com o `main` remoto, rode `git fetch` lá antes e passe `--ref origin/main`.
+
+Ao atualizar uma parte, copie de novo, refaça as adaptações listadas e troque o commit e a data na tabela.
+
+## Partes copiadas
+
+O script lê esta tabela. A coluna "Origem no T3" lista caminhos do upstream entre crases (pathspecs do git, com `*` permitido); "Aqui" lista os caminhos neste repositório.
+
+| Parte | Origem no T3 | Aqui | Commit | Data | Adaptações |
+|---|---|---|---|---|---|
+| effect-acp | `packages/effect-acp` | `packages/effect-acp` | a6d91409729be6ba854b3f16adedc08847e3b24c | 2026-11-14 | Nome `@simplifica-if/effect-acp`; `NOTICE` com a licença; fora do `vp fmt` e do `vp lint` daqui (o upstream formata em 100 colunas e usa o plugin `t3code/*`). Código igual ao upstream. |
+| effect-codex-app-server | `packages/effect-codex-app-server` | `packages/effect-codex-app-server` | a6d91409729be6ba854b3f16adedc08847e3b24c | 2026-11-14 | Nome `@simplifica-if/effect-codex-app-server`; `NOTICE`; fora do `vp fmt` e do `vp lint` daqui. Código igual ao upstream. |
+| nodeSqliteClient | `packages/shared/src/nodeSqliteClient.ts` | `packages/kb/src/db/nodeSqliteClient.ts` | a6d91409729be6ba854b3f16adedc08847e3b24c | 2026-11-14 | Cabeçalho com a licença e a diretiva `nodeBuiltinImport:off`; código sem alteração, em inglês. O `kb` usa só a conexão principal. |
+| plugin de lint | `oxlint-plugin-t3code/utils.ts` `oxlint-plugin-t3code/test/utils.ts` `oxlint-plugin-t3code/rules/namespace-node-imports*` `oxlint-plugin-t3code/rules/no-global-process-runtime*` `oxlint-plugin-t3code/rules/no-inline-schema-compile*` `oxlint-plugin-t3code/rules/no-manual-effect-runtime-in-tests*` `oxlint-plugin-t3code/rules/no-real-time-wait-in-tests*` `oxlint-plugin-t3code/rules/no-wall-clock-in-tests*` `oxlint-plugin-t3code/rules/prefer-catch-tags*` `oxlint-plugin-t3code/rules/prefer-effect-fn*` `oxlint-plugin-t3code/rules/require-suppression-reason*` | `ferramentas/oxlint-plugin` | a6d91409729be6ba854b3f16adedc08847e3b24c | 2026-11-14 | Só as 9 regras de Effect e de testes; `index.ts` próprio; plugin `simplifica-if`; cabeçalho de atribuição em cada arquivo e `LICENSE-T3`; caminhos do plugin e da raiz em `test/utils.ts`. Lógica sem alteração, mensagens em inglês. |
+| patch do @effect/vitest | `patches/@effect__vitest@4.1.2.patch` | `patches/@effect__vitest@4.1.2.patch` | a6d91409729be6ba854b3f16adedc08847e3b24c | 2026-11-14 | Igual ao upstream (faz o `@effect/vitest` importar `vite-plus/test`). |
+| tsconfig.base.json | `tsconfig.base.json` | `tsconfig.base.json` | a6d91409729be6ba854b3f16adedc08847e3b24c | 2026-11-14 | Sem as opções de React; com `noUnusedLocals`, `noUnusedParameters` e `noFallthroughCasesInSwitch`. |
+| tsconfig.effect.json | `tsconfig.effect.json` | `tsconfig.effect.json` | a6d91409729be6ba854b3f16adedc08847e3b24c | 2026-11-14 | Regras do language service do Effect; comentário de origem no topo. |
+| regras de lint e catalog | `vite.config.ts` `pnpm-workspace.yaml` | `vite.config.ts` `pnpm-workspace.yaml` | a6d91409729be6ba854b3f16adedc08847e3b24c | 2026-11-14 | Só trechos: as regras do `lint` sem as de React; `overrides`, `packageExtensions` e versões do catalog compartilhadas. O resto é deste repositório. |
+
+## Inspirado no T3, sem cópia de código
+
+Não entram na tabela, porque não há arquivo de origem a acompanhar; quem mexer neles pode conferir o original:
+
+- `packages/mcp/scripts/construir-executavel.ts`: segue o `build:exe` do T3 (Node SEA).
+- `packages/mcp/src/ferramentas/registrar.ts`: segue o `registerImageTool` do T3.
+- `scripts/sincronizar_repos.ts`: segue o `sync:repos` do T3.
+- `packages/motor`: drivers escritos do zero, com as armadilhas aprendidas em `apps/server/src/provider/` e `apps/server/src/orchestration-v2/Adapters/` (ambiente do Claude, `account/read` do Codex, `agy acp`). Ver `packages/motor/README.md`.

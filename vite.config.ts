@@ -60,6 +60,9 @@ export default defineConfig({
       "**/dist-exe/**",
       // módulos gerados com `--check` (como as instruções do MCP): o gerador é a fonte do formato
       "**/*.gerado.ts",
+      // pacotes copiados do T3 Code (docs/upstream-t3.md): ficam como no upstream, formatados pelo T3
+      "packages/effect-acp/**",
+      "packages/effect-codex-app-server/**",
       ".agents/skills/*/assets/**",
       ".agents/skills/*/base-analise/**",
       ".agents/skills/*/config/**",
@@ -83,6 +86,9 @@ export default defineConfig({
       ".agents/skills/*/assets/**",
       ".agents/skills/*/base-analise/**",
       ".agents/skills/*/output/**",
+      // pacotes copiados do T3 Code: o lint deles é o do upstream, com o plugin `t3code/*`
+      "packages/effect-acp/**",
+      "packages/effect-codex-app-server/**",
     ],
     plugins: ["eslint", "oxc", "unicorn", "typescript"],
     // Plugin próprio, com as regras de Effect copiadas do plugin do T3 (`simplifica-if/<regra>`).
@@ -144,7 +150,7 @@ export default defineConfig({
     // do T3. A ordem importa: cada override posterior sobrescreve o anterior para os arquivos em comum.
     overrides: [
       {
-        files: ["packages/kb/**", "packages/mcp/**", ...ARQUIVOS_C3],
+        files: ["packages/kb/**", "packages/mcp/**", "packages/motor/**", ...ARQUIVOS_C3],
         rules: {
           "simplifica-if/namespace-node-imports": "error",
           "simplifica-if/no-global-process-runtime": "error",
@@ -171,6 +177,9 @@ export default defineConfig({
           "packages/kb/scripts/**",
           "packages/mcp/src/cli.ts",
           "packages/mcp/scripts/**",
+          // O harness do motor e o teste com providers reais passam o ambiente do processo aos drivers.
+          "packages/motor/scripts/**",
+          "packages/motor/test/real.test.ts",
         ],
         rules: { "simplifica-if/no-global-process-runtime": "off" },
       },
