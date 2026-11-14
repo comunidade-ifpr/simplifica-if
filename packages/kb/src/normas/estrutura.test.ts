@@ -1,6 +1,7 @@
+// @effect-diagnostics nodeBuiltinImport:off -- lê as normas, as fichas e os marcos da base com node:fs síncrono
 import { describe, expect, test } from "vite-plus/test";
-import { readdirSync, readFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import {
   analisarNorma,
   carregarDispositivos,
@@ -143,7 +144,7 @@ describe("normas da base", () => {
 
   for (const estrutura of estruturas) {
     test(`reconstituição: ${estrutura.path}`, () => {
-      const texto = readFileSync(arquivos.get(estrutura.path)!, "utf-8");
+      const texto = NodeFS.readFileSync(arquivos.get(estrutura.path)!, "utf-8");
       expect(primeiraDivergencia(palavrasMarkdown(texto), palavrasDosSegmentos(estrutura.segmentos))).toBeNull();
     });
   }
@@ -183,15 +184,15 @@ describe("normas da base", () => {
   test("100% dos dispositivos citados nas fichas e nos marcos existem (normas com texto na base)", () => {
     const indice = indiceDispositivos(raiz);
     const registro = carregarRegistro(raiz);
-    const base = path.join(raiz, ".agents", "skills", "revisar-ppc", "base-analise");
+    const base = NodePath.join(raiz, ".agents", "skills", "revisar-ppc", "base-analise");
     const citados: string[] = [];
-    for (const nome of readdirSync(path.join(base, "fichas")).filter((n) => n.endsWith(".json"))) {
-      const ficha = JSON.parse(readFileSync(path.join(base, "fichas", nome), "utf-8"));
+    for (const nome of NodeFS.readdirSync(NodePath.join(base, "fichas")).filter((n) => n.endsWith(".json"))) {
+      const ficha = JSON.parse(NodeFS.readFileSync(NodePath.join(base, "fichas", nome), "utf-8"));
       for (const ref of ficha.referencias_normativas ?? []) {
         if (ref.dispositivo && registro.situacao(ref.ref) === "base") citados.push(`${ref.ref}${ref.dispositivo}`);
       }
     }
-    const marcos = JSON.parse(readFileSync(path.join(base, "marcos-normativos.json"), "utf-8"));
+    const marcos = JSON.parse(NodeFS.readFileSync(NodePath.join(base, "marcos-normativos.json"), "utf-8"));
     for (const marco of marcos.marcos) {
       for (const id of marco.dispositivos_revogados ?? []) citados.push(id);
     }

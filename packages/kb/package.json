@@ -12,16 +12,21 @@
   },
   "dependencies": {
     "ajv": "8.20.0",
-    "commander": "15.1.0",
     "remark-gfm": "4.0.1",
     "remark-parse": "11.0.0",
     "unified": "11.0.5",
-    "yaml": "2.9.1",
-    "zod": "4.6.7"
+    "yaml": "2.9.1"
+  },
+  "peerDependencies": {
+    "@effect/platform-node": "catalog:",
+    "effect": "catalog:"
   },
   "devDependencies": {
+    "@effect/platform-node": "catalog:",
+    "@effect/vitest": "catalog:",
     "@types/mdast": "4.0.4",
     "@types/node": "catalog:",
+    "effect": "catalog:",
     "vite-plus": "catalog:"
   }
 }

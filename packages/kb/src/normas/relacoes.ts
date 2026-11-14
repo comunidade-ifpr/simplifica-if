@@ -1,9 +1,10 @@
+// @effect-diagnostics nodeBuiltinImport:off -- carregador síncrono de relacoes.yaml, usado pelos scripts e pela compilação do banco
 /**
  * Relações entre normas (`base-conhecimento/relacoes.yaml`): `revoga`, `altera`, `regulamenta` e
  * `fundamenta-se-em`, com origem, dispositivo operador, alvo (ato ou dispositivo), efeito e a
  * evidência literal no texto da base.
  *
- * - `carregarRelacoes(raiz)`: lê e valida o contrato (zod) do arquivo;
+ * - `carregarRelacoes(raiz)`: lê e valida o contrato (Effect Schema) do arquivo;
  * - `validarRelacoes(raiz)`: confere IDs no registro (normas e stubs), operador e alvo_dispositivo
  *   no texto da base, evidência contida no dispositivo e status dos stubs atingidos;
  * - `camposRelacoesFrontMatter(...)`: os campos de relação que `gerar_base.ts` escreve no front
@@ -12,10 +13,12 @@
  *   "passa a vigorar"...) que propõe arestas ainda não registradas nem descartadas. A proposta só
  *   entra no YAML depois de conferida no texto por uma pessoa (princípio 4 do plano).
  */
-import { existsSync, readFileSync } from "node:fs";
-import path from "node:path";
+import * as Effect from "effect/Effect";
+import * as Schema from "effect/Schema";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { parse } from "yaml";
-import { z } from "zod";
+import { caminhoTexto, problemas } from "../esquema/mensagens.ts";
 import { carregarDispositivos, carregarEstruturas, type Dispositivo, indiceDispositivos } from "./estrutura.ts";
 import { ehIdAto, ehIdDispositivo, idDoAto } from "./ids.ts";
 import { palavrasDoTexto } from "./markdown.ts";
@@ -27,56 +30,76 @@ export const TIPOS_RELACAO = ["revoga", "altera", "regulamenta", "fundamenta-se-
 export type TipoRelacao = (typeof TIPOS_RELACAO)[number];
 
 const RE_DATA = /^\d{4}-\d{2}-\d{2}$/;
-const idAto = z.string().refine(ehIdAto, "ID de ato fora do formato canônico");
-const dispositivo = z.string().refine(ehIdDispositivo, "dispositivo fora do formato (#art28-xvi)");
+/** Texto que satisfaz `predicado`, com a mensagem dada quando não satisfaz. */
+const textoQue = (predicado: (valor: string) => boolean, mensagem: string) =>
+  Schema.String.check(Schema.makeFilter((valor: string) => predicado(valor), { message: mensagem }));
+const textoNaoVazio = Schema.String.check(Schema.isMinLength(1));
+const idAto = textoQue(ehIdAto, "ID de ato fora do formato canônico");
+const dispositivo = textoQue(ehIdDispositivo, "dispositivo fora do formato (#art28-xvi)");
 
-export const esquemaRelacao = z.strictObject({
-  tipo: z.enum(TIPOS_RELACAO),
+export const esquemaRelacao = Schema.Struct({
+  tipo: Schema.Literals(TIPOS_RELACAO),
   origem: idAto,
-  operador: dispositivo.optional(),
+  operador: Schema.optionalKey(dispositivo),
   alvo: idAto,
-  alvo_dispositivo: dispositivo.optional(),
-  alcance: z.string().min(1).optional(),
-  efeito_de: z.union([z.literal("vigencia-da-origem"), z.string().regex(RE_DATA)]).default("vigencia-da-origem"),
-  evidencia: z.strictObject({
-    em: z.string().refine((valor) => {
+  alvo_dispositivo: Schema.optionalKey(dispositivo),
+  alcance: Schema.optionalKey(textoNaoVazio),
+  efeito_de: Schema.Union([Schema.Literal("vigencia-da-origem"), Schema.String.check(Schema.isPattern(RE_DATA))]).pipe(
+    Schema.withDecodingDefaultKey(Effect.succeed("vigencia-da-origem")),
+  ),
+  evidencia: Schema.Struct({
+    em: textoQue((valor) => {
       const [ato, disp] = valor.split("#");
       return ehIdAto(ato!) && (disp === undefined || ehIdDispositivo(`#${disp}`));
     }, "evidencia.em deve ser ID de ato com dispositivo opcional"),
-    trecho: z.string().min(1),
+    trecho: textoNaoVazio,
   }),
-  confirmado_em: z.string().regex(RE_DATA),
-  proposta: z.enum(["front-matter", "regex", "manual"]),
-  nota: z.string().optional(),
+  confirmado_em: Schema.String.check(Schema.isPattern(RE_DATA)),
+  proposta: Schema.Literals(["front-matter", "regex", "manual"]),
+  nota: Schema.optionalKey(Schema.String),
 });
-export type Relacao = z.output<typeof esquemaRelacao>;
+export type Relacao = typeof esquemaRelacao.Type;
 
-export const esquemaDescartada = z.strictObject({
+export const esquemaDescartada = Schema.Struct({
   origem: idAto,
-  operador: z.union([dispositivo, z.literal("*")]),
-  motivo: z.string().min(1),
+  operador: Schema.Union([dispositivo, Schema.Literal("*")]),
+  motivo: textoNaoVazio,
 });
-export type Descartada = z.output<typeof esquemaDescartada>;
+export type Descartada = typeof esquemaDescartada.Type;
 
-export const esquemaRelacoes = z.strictObject({
-  relacoes: z.array(esquemaRelacao),
-  descartadas: z.array(esquemaDescartada).default([]),
+export const esquemaRelacoes = Schema.Struct({
+  relacoes: Schema.mutable(Schema.Array(esquemaRelacao)),
+  descartadas: Schema.mutable(Schema.Array(esquemaDescartada)).pipe(Schema.withDecodingDefaultKey(Effect.succeed([]))),
 });
-export type ArquivoRelacoes = z.output<typeof esquemaRelacoes>;
+export type ArquivoRelacoes = typeof esquemaRelacoes.Type;
+const decodificarRelacoes = Schema.decodeUnknownSync(esquemaRelacoes, { onExcessProperty: "error", errors: "all" });
 
 export function caminhoRelacoes(raiz: string = raizRepositorio()): string {
-  return path.join(raiz, "base-conhecimento", "relacoes.yaml");
+  return NodePath.join(raiz, "base-conhecimento", "relacoes.yaml");
+}
+
+/**
+ * Contrato de `relacoes.yaml` sobre o texto do arquivo (YAML `failsafe`: todo escalar é texto).
+ * Fora do contrato, lança o `Schema.SchemaError` (texto em português por `esquema/mensagens.ts`).
+ */
+export function arquivoRelacoesDoYaml(texto: string): ArquivoRelacoes {
+  return decodificarRelacoes(parse(texto, { schema: "failsafe", uniqueKeys: true }));
+}
+
+/** Relações do texto de `relacoes.yaml`, na ordem do arquivo. */
+export function relacoesDoYaml(texto: string): Relacao[] {
+  return arquivoRelacoesDoYaml(texto).relacoes;
 }
 
 const cache = new Map<string, ArquivoRelacoes>();
 
-/** Lê `relacoes.yaml` (YAML `failsafe`: todo escalar é texto) e aplica o contrato zod. */
+/** Lê `relacoes.yaml` e aplica o contrato. */
 export function carregarArquivoRelacoes(raiz: string = raizRepositorio()): ArquivoRelacoes {
   const emCache = cache.get(raiz);
   if (emCache) return emCache;
   const arquivo = caminhoRelacoes(raiz);
-  const dados = existsSync(arquivo)
-    ? esquemaRelacoes.parse(parse(readFileSync(arquivo, "utf-8"), { schema: "failsafe", uniqueKeys: true }))
+  const dados = NodeFS.existsSync(arquivo)
+    ? arquivoRelacoesDoYaml(NodeFS.readFileSync(arquivo, "utf-8"))
     : { relacoes: [], descartadas: [] };
   cache.set(raiz, dados);
   return dados;
@@ -137,8 +160,8 @@ export function validarRelacoes(
     cache.delete(raiz);
     arquivo = carregarArquivoRelacoes(raiz);
   } catch (erro) {
-    if (erro instanceof z.ZodError) {
-      return erro.issues.map((problema) => `relacoes.yaml: ${problema.path.join(".")}: ${problema.message}`);
+    if (Schema.isSchemaError(erro)) {
+      return problemas(erro.issue).map((p) => `relacoes.yaml: ${caminhoTexto(p.caminho)}: ${p.mensagem}`);
     }
     return [`relacoes.yaml: ${(erro as Error).message.split("\n")[0]}`];
   }

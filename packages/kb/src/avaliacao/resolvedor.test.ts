@@ -14,6 +14,7 @@ describe("avaliação do resolvedor (avaliacao/resolvedor/citacoes-anotadas.yaml
   });
 
   test("metas do plano: precisão ≥ 0,95 e recall ≥ 0,90", () => {
+    // @effect-diagnostics-next-line globalConsole:off -- as métricas aparecem no log do teste
     console.log(
       `resolvedor: precisão ${resultado.precisao}, recall ${resultado.recall}, dispositivos ${resultado.dispositivos.taxa} ` +
         `(${resultado.acertos}/${resultado.emitidos} emitidos, ${resultado.acertos}/${resultado.anotados} anotados)`,

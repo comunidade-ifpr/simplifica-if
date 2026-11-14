@@ -1,9 +1,9 @@
 /**
- * Ferramenta 11, `listar_cursos`: cursos do IFPR com CNCT, eixo, ofertas e turno (`listarCursos`, a
+ * Ferramenta 11, `listar_cursos`: cursos do IFPR com CNCT, eixo, ofertas e turno (`Cursos.listar`, a
  * regra de `kb cursos`). Cada curso numa linha compacta, sem o detalhe das ofertas, que fica na
  * `ficha_curso`.
  */
-import { listarCursos as listarCursosBanco } from "@simplifica-if/kb/db/modo-banco";
+import * as Cursos from "@simplifica-if/kb/Cursos";
 import { z } from "zod";
 import { type Aviso, esquemaLink, responder } from "../envelope.ts";
 import { linkCurso } from "../links.ts";
@@ -64,7 +64,7 @@ export const listarCursos = definirFerramenta({
     "Cursos do IFPR na base, com CNCT, eixo, ofertas e turno. Use filtros: a lista sem filtro é longa. Para os detalhes de um curso, use `ficha_curso`.",
   entrada,
   dados,
-  executar(e, { db, base }) {
+  executar(e, { kb, base }) {
     const filtros = {
       eixo: e.eixo,
       turno: e.turno,
@@ -75,7 +75,7 @@ export const listarCursos = definirFerramenta({
       cnct: e.cnct?.replace(/^cnct:/, ""),
       processo: e.processo,
     };
-    const cursos: Curso[] = listarCursosBanco(db, filtros).map((c) => ({
+    const cursos: Curso[] = kb(Cursos.Cursos.use((c) => c.listar(filtros))).map((c) => ({
       id: c.id,
       nome: c.nome,
       campus: c.campus.id,

@@ -17,7 +17,7 @@ import {
   textoDe,
   textoOuVazio,
 } from "@simplifica-if/kb/json";
-import { lerTopicosSecoes } from "@simplifica-if/kb/db/pacote-contexto";
+import { lerTopicosSecoes } from "@simplifica-if/kb/ppcs/topicos";
 import { ehIdDispositivo, RE_REFERENCIA } from "@simplifica-if/kb/normas/ids";
 import {
   type FonteReferencia,
@@ -94,7 +94,7 @@ export function validarTopicosSecoes(idsTopicos: ReadonlySet<string>, caminhos: 
     "topicos-secoes.yaml",
   );
   if (!existsSync(arquivo)) return [];
-  let mapa: Record<string, string[]>;
+  let mapa: Readonly<Record<string, ReadonlyArray<string>>>;
   try {
     mapa = lerTopicosSecoes(arquivo);
   } catch (erro) {

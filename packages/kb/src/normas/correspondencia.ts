@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- carregador síncrono de correspondencias/*.yaml, usado pelos scripts e pela compilação do banco
 /**
  * Tabelas de correspondência entre normas que se sucedem (fase 5), em
  * `base-conhecimento/correspondencias/*.yaml`: por dispositivo da norma de origem, `equivalente`,
@@ -6,67 +7,78 @@
  * As tabelas são propostas por leitura comparada e ficam `status: rascunho` até a revisão
  * jurídica humana. Dispositivo sem item próprio herda o item do ancestral mais próximo.
  */
-import { existsSync, readdirSync, readFileSync } from "node:fs";
-import path from "node:path";
+import * as Schema from "effect/Schema";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { parse } from "yaml";
-import { z } from "zod";
+import { caminhoTexto, problemas } from "../esquema/mensagens.ts";
 import { dispositivosDoAto, indiceDispositivos } from "./estrutura.ts";
 import { ehIdAto, ehIdDispositivo, idDoAto } from "./ids.ts";
 import { raizRepositorio } from "./registro.ts";
 
-const dispositivo = z.string().refine(ehIdDispositivo, "dispositivo fora do formato (#art20-iii)");
+/** Texto que satisfaz `predicado`, com a mensagem dada quando não satisfaz. */
+const textoQue = (predicado: (valor: string) => boolean, mensagem: string) =>
+  Schema.String.check(Schema.makeFilter((valor: string) => predicado(valor), { message: mensagem }));
+const textoNaoVazio = Schema.String.check(Schema.isMinLength(1));
+const dispositivo = textoQue(ehIdDispositivo, "dispositivo fora do formato (#art20-iii)");
 
 export const TIPOS_CORRESPONDENCIA = ["equivalente", "parcial", "sem-equivalente"] as const;
 export type TipoCorrespondencia = (typeof TIPOS_CORRESPONDENCIA)[number];
 
-export const esquemaItemCorrespondencia = z
-  .strictObject({
-    origem: dispositivo,
-    tipo: z.enum(TIPOS_CORRESPONDENCIA),
-    destino: z.array(dispositivo),
-    nota: z.string().min(1).optional(),
-  })
-  .superRefine((item, ctx) => {
+export const esquemaItemCorrespondencia = Schema.Struct({
+  origem: dispositivo,
+  tipo: Schema.Literals(TIPOS_CORRESPONDENCIA),
+  destino: Schema.Array(dispositivo),
+  nota: Schema.optionalKey(textoNaoVazio),
+}).check(
+  Schema.makeFilter((item) => {
+    const achados: Schema.FilterIssue[] = [];
     if (item.tipo === "sem-equivalente" && item.destino.length) {
-      ctx.addIssue({ code: "custom", path: ["destino"], message: "sem-equivalente não tem destino" });
+      achados.push({ path: ["destino"], issue: "sem-equivalente não tem destino" });
     }
     if (item.tipo !== "sem-equivalente" && item.destino.length === 0) {
-      ctx.addIssue({ code: "custom", path: ["destino"], message: `${item.tipo} exige destino` });
+      achados.push({ path: ["destino"], issue: `${item.tipo} exige destino` });
     }
     if (item.tipo === "sem-equivalente" && !item.nota) {
-      ctx.addIssue({ code: "custom", path: ["nota"], message: "sem-equivalente exige nota" });
+      achados.push({ path: ["nota"], issue: "sem-equivalente exige nota" });
     }
-  });
+    return achados;
+  }),
+);
 
-export const esquemaCorrespondencia = z.strictObject({
-  origem: z.string().refine(ehIdAto, "origem deve ser ID de ato"),
-  destino: z.string().refine(ehIdAto, "destino deve ser ID de ato"),
-  status: z.enum(["rascunho", "revisado"]),
-  elaborado_em: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  revisado_por: z.string().optional(),
-  metodo: z.string().min(1),
-  itens: z.array(esquemaItemCorrespondencia).min(1),
+export const esquemaCorrespondencia = Schema.Struct({
+  origem: textoQue(ehIdAto, "origem deve ser ID de ato"),
+  destino: textoQue(ehIdAto, "destino deve ser ID de ato"),
+  status: Schema.Literals(["rascunho", "revisado"]),
+  elaborado_em: Schema.String.check(Schema.isPattern(/^\d{4}-\d{2}-\d{2}$/)),
+  revisado_por: Schema.optionalKey(Schema.String),
+  metodo: textoNaoVazio,
+  itens: Schema.Array(esquemaItemCorrespondencia).check(Schema.isMinLength(1)),
 });
-export type TabelaCorrespondencia = z.output<typeof esquemaCorrespondencia> & { arquivo: string };
-export type ItemCorrespondencia = z.output<typeof esquemaItemCorrespondencia>;
+export type TabelaCorrespondencia = typeof esquemaCorrespondencia.Type & { arquivo: string };
+export type ItemCorrespondencia = typeof esquemaItemCorrespondencia.Type;
+const decodificarCorrespondencia = Schema.decodeUnknownSync(esquemaCorrespondencia, {
+  onExcessProperty: "error",
+  errors: "all",
+});
 
 export function diretorioCorrespondencias(raiz: string = raizRepositorio()): string {
-  return path.join(raiz, "base-conhecimento", "correspondencias");
+  return NodePath.join(raiz, "base-conhecimento", "correspondencias");
 }
 
 /** Tabelas de correspondência da base (arquivo relativo à raiz do repositório). */
 export function carregarCorrespondencias(raiz: string = raizRepositorio()): TabelaCorrespondencia[] {
   const diretorio = diretorioCorrespondencias(raiz);
-  if (!existsSync(diretorio)) return [];
-  return readdirSync(diretorio)
+  if (!NodeFS.existsSync(diretorio)) return [];
+  return NodeFS.readdirSync(diretorio)
     .filter((nome) => nome.endsWith(".yaml"))
     .sort()
     .map((nome) => {
-      const arquivo = path.join(diretorio, nome);
-      const dados = esquemaCorrespondencia.parse(
-        parse(readFileSync(arquivo, "utf-8"), { schema: "failsafe", uniqueKeys: true }),
+      const arquivo = NodePath.join(diretorio, nome);
+      const dados = decodificarCorrespondencia(
+        parse(NodeFS.readFileSync(arquivo, "utf-8"), { schema: "failsafe", uniqueKeys: true }),
       );
-      return { ...dados, arquivo: path.relative(raiz, arquivo).split(path.sep).join("/") };
+      return { ...dados, arquivo: NodePath.relative(raiz, arquivo).split(NodePath.sep).join("/") };
     });
 }
 
@@ -199,8 +211,8 @@ export function validarCorrespondencias(raiz: string = raizRepositorio()): strin
   try {
     tabelas = carregarCorrespondencias(raiz);
   } catch (erro) {
-    if (erro instanceof z.ZodError) {
-      return erro.issues.map((p) => `correspondencias: ${p.path.join(".")}: ${p.message}`);
+    if (Schema.isSchemaError(erro)) {
+      return problemas(erro.issue).map((p) => `correspondencias: ${caminhoTexto(p.caminho)}: ${p.mensagem}`);
     }
     return [`correspondencias: ${(erro as Error).message.split("\n")[0]}`];
   }

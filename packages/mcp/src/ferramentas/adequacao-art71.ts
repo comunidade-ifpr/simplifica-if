@@ -1,15 +1,10 @@
 /**
  * Ferramenta 8, `adequacao_art71`: cursos técnicos em oferta alcançados pelo art. 71 da Res. CNE/CP
- * nº 2/2026, com a DCN mais recente que cada PPC cita (`adequacaoArt71Banco`, a regra de
+ * nº 2/2026, com a DCN mais recente que cada PPC cita (`Cursos.adequacaoArt71`, a regra de
  * `kb adequacao-art71`). Sem filtros, só os totais por indicador; com filtro, a lista paginada.
  */
-import {
-  adequacaoArt71Banco,
-  DCN_EPT,
-  INDICADORES,
-  type Indicador,
-  ROTULOS_INDICADOR,
-} from "@simplifica-if/kb/db/modo-banco";
+import { DCN_EPT, INDICADORES, type Indicador, ROTULOS_INDICADOR } from "@simplifica-if/kb/adequacao/art71";
+import * as Cursos from "@simplifica-if/kb/Cursos";
 import { z } from "zod";
 import { type Aviso, esquemaLink, responder } from "../envelope.ts";
 import { linkCurso, linkNorma } from "../links.ts";
@@ -77,8 +72,8 @@ export const adequacaoArt71 = definirFerramenta({
     "Cursos técnicos em oferta alcançados pelo art. 71 da Res. CNE/CP nº 2/2026, que dá prazo de adequação, com a DCN que cada PPC cita. Use quando perguntarem quais PPCs ainda precisam ser atualizados para a nova DCN da EPT. Sem filtros, devolve os totais por indicador; filtre por campus, curso ou indicador para ver a lista.",
   entrada,
   dados,
-  executar(e, { db, base }) {
-    const relatorio = adequacaoArt71Banco(db, { incluirTecnologia: e.incluir_tecnologia });
+  executar(e, { kb, base }) {
+    const relatorio = kb(Cursos.Cursos.use((c) => c.adequacaoArt71({ incluirTecnologia: e.incluir_tecnologia })));
     const curso =
       e.curso === undefined
         ? undefined

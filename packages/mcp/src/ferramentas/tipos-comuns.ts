@@ -3,11 +3,12 @@
  * os schemas de `NormaResumo` e `Relacao` e a conversão das estruturas do kb para eles. Um único
  * formato de norma e de relação em todas as respostas. Nenhuma regra normativa: só formato.
  */
-import type { DatabaseSync } from "node:sqlite";
-import { type NormaDoBanco, normaBanco, type Relacao } from "@simplifica-if/kb/db/modo-banco";
+import * as Normas from "@simplifica-if/kb/Normas";
+import type { Relacao } from "@simplifica-if/kb/normas/relacoes";
 import { z } from "zod";
 import { esquemaLink } from "../envelope.ts";
 import { linkNorma } from "../links.ts";
+import type { Kb } from "./ferramenta.ts";
 
 export const SITUACOES_NORMA = ["base", "stub", "externo"] as const;
 
@@ -40,7 +41,7 @@ export const esquemaRelacao = z.strictObject({
 });
 export type RelacaoSaida = z.infer<typeof esquemaRelacao>;
 
-export function resumoDaNorma(norma: NormaDoBanco): NormaResumo {
+export function resumoDaNorma(norma: Normas.FichaNorma): NormaResumo {
   return {
     id: norma.id,
     titulo: norma.titulo,
@@ -54,16 +55,16 @@ export function resumoDaNorma(norma: NormaDoBanco): NormaResumo {
 }
 
 /** A norma (o ato, sem dispositivo) pela tabela `normas`, ou `null` se não está registrada. */
-export function normaResumo(db: DatabaseSync, id: string): NormaResumo | null {
-  const norma = normaBanco(db, id);
+export function normaResumo(kb: Kb, id: string): NormaResumo | null {
+  const norma = kb(Normas.Normas.use((n) => n.ficha(id)));
   return norma ? resumoDaNorma(norma) : null;
 }
 
-/** `normaBanco` com cache por chamada (várias respostas citam a mesma norma). */
-export function leitorDeNormas(db: DatabaseSync): (id: string) => NormaDoBanco | null {
-  const cache = new Map<string, NormaDoBanco | null>();
+/** `Normas.ficha` com cache por chamada (várias respostas citam a mesma norma). */
+export function leitorDeNormas(kb: Kb): (id: string) => Normas.FichaNorma | null {
+  const cache = new Map<string, Normas.FichaNorma | null>();
   return (id) => {
-    if (!cache.has(id)) cache.set(id, normaBanco(db, id));
+    if (!cache.has(id)) cache.set(id, kb(Normas.Normas.use((n) => n.ficha(id))));
     return cache.get(id)!;
   };
 }

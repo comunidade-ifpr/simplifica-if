@@ -26,12 +26,28 @@ import { gerarRelatorioHtml, type RelatorioGerado } from "./relatorio-html.ts";
 import { mesclarResultadosAvulsos, validarResultadosRodada } from "./resultados.ts";
 import { caminhosRodada, escreverJsonPy, resolverCaminho, TAMANHO_GRUPO_PADRAO } from "./rodada.ts";
 import { montarGrupoAvulso, montarGruposSubagents, prepararPromptsSubagents } from "./subagents.ts";
+import { garantirBancoFresco } from "./kb.ts";
 import { validarBaseAnalise } from "./validacao-base.ts";
 
 const COMANDO = "node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts";
 /** Imprime o JSON como `print(json.dumps(payload, ensure_ascii=False, indent=2))`. */
 function imprimirJson(payload: unknown): void {
   process.stdout.write(`${dumpsPy(payload, { indent: 2 })}\n`);
+}
+
+/**
+ * Ponte do C1: recompila o `kb.sqlite` antes dos subcomandos que consultam o kb (as funções da
+ * skill ainda são síncronas e abrem o banco já fresco).
+ */
+async function comBancoFresco(acao: () => void): Promise<void> {
+  try {
+    await garantirBancoFresco(path.dirname(caminhosPadrao().baseConhecimentoDir));
+  } catch (erro) {
+    process.stderr.write(`${erro instanceof Error ? `${erro.name}: ${erro.message}` : String(erro)}\n`);
+    process.exitCode = 1;
+    return;
+  }
+  executar(acao);
 }
 
 /** Executa um subcomando; erros viram mensagem em stderr e código de saída 1. */
@@ -231,12 +247,12 @@ export function criarPrograma(): Command {
       "--detalhado",
       "Imprimir o JSON completo; por padrão a CLI mostra apenas um resumo e salva o payload completo.",
     )
-    .action((opcoes: { rodadaDir: string; tamanhoGrupo: number; detalhado?: boolean }) => {
-      executar(() => {
+    .action((opcoes: { rodadaDir: string; tamanhoGrupo: number; detalhado?: boolean }) =>
+      comBancoFresco(() => {
         const payload = montarGruposSubagents(opcoes.rodadaDir, opcoes.tamanhoGrupo);
         imprimirJson(opcoes.detalhado ? payload : resumoGruposSubagents(payload));
-      });
-    });
+      }),
+    );
 
   programa
     .command("preparar-prompts-subagents")
@@ -251,9 +267,9 @@ export function criarPrograma(): Command {
     .description("Montar um grupo avulso de fichas para reavaliação por sub-agente")
     .requiredOption("--rodada-dir <dir>", "Diretório da rodada")
     .requiredOption("--ficha-id <id>", "Ficha a incluir no grupo avulso (repetível)", acumular)
-    .action((opcoes: { rodadaDir: string; fichaId: string[] }) => {
-      executar(() => imprimirJson(montarGrupoAvulso(opcoes.rodadaDir, opcoes.fichaId)));
-    });
+    .action((opcoes: { rodadaDir: string; fichaId: string[] }) =>
+      comBancoFresco(() => imprimirJson(montarGrupoAvulso(opcoes.rodadaDir, opcoes.fichaId))),
+    );
 
   programa
     .command("mesclar-resultados-avulsos")

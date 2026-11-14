@@ -1,9 +1,9 @@
 /**
- * Ferramenta 10, `ler_secao`: uma seção inteira de PPC pelo ID (`lerSecao`), com as vizinhas. Acima
+ * Ferramenta 10, `ler_secao`: uma seção inteira de PPC pelo ID (`Ppcs.lerSecao`), com as vizinhas. Acima
  * do teto, o texto pagina por linhas: cada página termina numa linha inteira, e a `fonte` traz as
  * linhas da página.
  */
-import { lerSecao as lerSecaoBanco } from "@simplifica-if/kb/db/modo-banco";
+import * as Ppcs from "@simplifica-if/kb/Ppcs";
 import { z } from "zod";
 import { ErroEntrada, esquemaFonte, esquemaLink, type Fonte, type Pagina, responder } from "../envelope.ts";
 import { lerLink, linkPpc } from "../links.ts";
@@ -70,9 +70,9 @@ export const lerSecao = definirFerramenta({
     "Lê uma seção inteira de PPC pelo ID, vindo de `buscar_secoes` ou de um link `ifpr://ppc/…#secao`. Use quando o trecho devolvido por `buscar_secoes` não bastar.",
   entrada,
   dados,
-  executar(e, { db, base }) {
+  executar(e, { kb, base }) {
     const id = idDaSecao(e.id);
-    const secao = lerSecaoBanco(db, id);
+    const secao = kb(Ppcs.Ppcs.use((p) => p.lerSecao(id)));
     if (!secao) {
       throw new ErroEntrada(
         `seção não encontrada: "${id}". Use um ID devolvido por buscar_secoes ou pela ficha_curso (ppc.secoes)`,

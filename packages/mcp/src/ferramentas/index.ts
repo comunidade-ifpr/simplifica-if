@@ -37,4 +37,4 @@ export const FERRAMENTAS: readonly Ferramenta[] = [
   etapa,
 ];
 
-export type { Contexto, Ferramenta } from "./ferramenta.ts";
+export type { Contexto, Ferramenta, Kb } from "./ferramenta.ts";

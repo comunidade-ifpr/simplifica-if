@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- leitura síncrona de texto (UTF-8 estrito), usada pelos carregadores e pelos scripts
 /**
  * Regras de texto que determinam o conteúdo gerado (manifest.json, README.md,
  * índices de PPC, site/) e as mensagens do validador.
@@ -12,8 +13,8 @@
  *   caracteres contam code points;
  * - a leitura de texto precisa falhar em UTF-8 inválido e normalizar `\r\n`/`\r`.
  */
-import { readFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 
 /** Classe de caracteres (para usar dentro de `[...]`) com todos os espaços Unicode reconhecidos. */
 export const ESPACOS = "\\t\\n\\v\\f\\r \\x1c-\\x1f\\x85\\xa0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000";
@@ -115,8 +116,8 @@ export function ordenarTextos(textos: Iterable<string>): string[] {
 /** Ordena caminhos componente a componente (`a/b` antes de `a-c/x`). */
 export function ordenarCaminhos(caminhos: Iterable<string>): string[] {
   return [...caminhos].sort((a, b) => {
-    const pa = a.split(path.sep);
-    const pb = b.split(path.sep);
+    const pa = a.split(NodePath.sep);
+    const pb = b.split(NodePath.sep);
     const limite = Math.min(pa.length, pb.length);
     for (let i = 0; i < limite; i += 1) {
       const comparacao = compararTexto(pa[i]!, pb[i]!);
@@ -126,6 +127,7 @@ export function ordenarCaminhos(caminhos: Iterable<string>): string[] {
   });
 }
 
+// @effect-diagnostics-next-line extendsNativeError:off -- erro do carregador síncrono `lerTexto`, capturado por instanceof nos scripts (o C3 o troca)
 export class ErroDecodificacao extends Error {}
 
 /**
@@ -133,7 +135,7 @@ export class ErroDecodificacao extends Error {}
  * para `\n`. Com `ignorarErros`, descarta bytes inválidos em vez de falhar.
  */
 export function lerTexto(caminho: string, opcoes: { ignorarErros?: boolean } = {}): string {
-  const bytes = readFileSync(caminho);
+  const bytes = NodeFS.readFileSync(caminho);
   let texto: string;
   try {
     texto = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(bytes);

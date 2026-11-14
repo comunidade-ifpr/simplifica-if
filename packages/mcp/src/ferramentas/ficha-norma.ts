@@ -1,15 +1,11 @@
 /**
  * Ferramenta 3, `ficha_norma`: a situação de uma norma numa data, composta de `kb vigencia`
- * (`vigenciaBanco`: status, eventos, pendências e transições), `kb relacoes`
- * (`relacoesDaNormaBanco`) e das sucessoras de `kb impacto` (`sucessorasBanco`).
+ * (`Normas.vigencia`: status, eventos, pendências e transições), `kb relacoes`
+ * (`Normas.relacoes`) e das sucessoras de `kb impacto` (`Normas.sucessoras`).
  */
-import {
-  type EventoVigencia,
-  idDoAto,
-  relacoesDaNormaBanco,
-  sucessorasBanco,
-  vigenciaBanco,
-} from "@simplifica-if/kb/db/modo-banco";
+import * as Normas from "@simplifica-if/kb/Normas";
+import { idDoAto } from "@simplifica-if/kb/normas/ids";
+import type { EventoVigencia } from "@simplifica-if/kb/normas/vigencia";
 import { z } from "zod";
 import { type Aviso, ErroEntrada, esquemaLink, responder } from "../envelope.ts";
 import { linkNorma } from "../links.ts";
@@ -109,16 +105,16 @@ export const fichaNorma = definirFerramenta({
     "Situação de uma norma numa data: a vigência, com o que a determina e o que está a confirmar; as relações com outras normas nos dois sentidos (revoga, altera, regulamenta, fundamenta-se em); as normas sucessoras; e as regras de transição. Use quando a resposta depender de a norma estar em vigor, revogada ou substituída. Norma revogada não é inaplicável: confira as transições antes de concluir.",
   entrada,
   dados,
-  executar({ id, em }, { db, base }) {
+  executar({ id, em }, { kb, base }) {
     const ato = idDoAto(id.split("#")[0]!);
-    const norma = leitorDeNormas(db)(ato);
+    const norma = leitorDeNormas(kb)(ato);
     if (!norma) {
       throw new ErroEntrada(
         `norma não encontrada na base: ${id}. Use buscar_norma ou resolver_citacoes para achar o ID canônico.`,
       );
     }
-    const vigencia = vigenciaBanco(db, ato, em ? { em } : {});
-    const relacoes = relacoesDaNormaBanco(db, ato);
+    const vigencia = kb(Normas.Normas.use((n) => n.vigencia(ato, em ? { em } : {})));
+    const relacoes = kb(Normas.Normas.use((n) => n.relacoes(ato)));
     const resumo = resumoDaNorma(norma);
     const avisos: Aviso[] = vigencia.pendencias.map((p) => ({ tipo: "vigencia-a-confirmar", mensagem: p, ref: ato }));
     avisos.push(...avisosDasNormas([resumo]).filter((a) => a.tipo !== "vigencia-a-confirmar"));
@@ -151,7 +147,7 @@ export const fichaNorma = definirFerramenta({
           pendencias: vigencia.pendencias,
         },
         relacoes: { entrada: relacoes.entrada.map(relacaoSaida), saida: relacoes.saida.map(relacaoSaida) },
-        sucessoras: sucessorasBanco(db, ato),
+        sucessoras: kb(Normas.Normas.use((n) => n.sucessoras(ato))),
         transicoes: vigencia.transicoes.map((t) => ({
           id: t.id,
           dispositivo: `${t.norma}${t.dispositivo}`,

@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- percorre e hasheia milhares de fontes a cada comando da CLI; a versão síncrona é a mais rápida
 /**
  * Fontes do `kb.sqlite` e a impressão digital delas, para a CLI decidir quando recompilar.
  *
@@ -18,10 +19,12 @@
  * O hash gravado depende só do conteúdo e dos caminhos, nunca de mtime ou relógio, e por isso não
  * quebra o determinismo do banco.
  */
-import { createHash } from "node:crypto";
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import path from "node:path";
+import * as NodeCrypto from "node:crypto";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
+import * as NodeSqlite from "node:sqlite";
 import { compararTexto } from "../texto.ts";
+import { VERSAO_ESQUEMA } from "./esquema.ts";
 import { ARQUIVOS_FONTES_NORMATIVAS } from "./fontes-normativas.ts";
 
 /** Diretórios e arquivos de dados (relativos à raiz), com o filtro de extensão. */
@@ -43,17 +46,20 @@ const CODIGO = "packages/kb/src";
 const CODIGO_FORA = [
   /\.test\.ts$/,
   /^packages\/kb\/src\/(cli|python\/|avaliacao\/)/,
-  /^packages\/kb\/src\/db\/(consultas|consultas-normas|comandos|banco|pacote-contexto|modo-banco|fontes-banco)\.ts$/,
+  /^packages\/kb\/src\/db\/(consultas|consultas-normas|comandos|pacote-contexto|sql|conexao|nodeSqliteClient)\.ts$/,
+  // serviços Effect, layers e CLI: consultam o banco, não o compilam
+  /^packages\/kb\/src\/([A-Z][A-Za-z]*|layers)\.ts$/,
+  /^packages\/kb\/src\/(cli|esquema|testes)\//,
   /^packages\/kb\/src\/normas\/(comandos|impacto)\.ts$/,
 ];
 
 function listar(raiz: string, relativo: string, extensoes: readonly string[]): string[] {
-  const absoluto = path.join(raiz, relativo);
-  if (!existsSync(absoluto)) return [];
-  const info = statSync(absoluto);
+  const absoluto = NodePath.join(raiz, relativo);
+  if (!NodeFS.existsSync(absoluto)) return [];
+  const info = NodeFS.statSync(absoluto);
   if (info.isFile()) return [relativo];
   const saida: string[] = [];
-  for (const entrada of readdirSync(absoluto, { withFileTypes: true })) {
+  for (const entrada of NodeFS.readdirSync(absoluto, { withFileTypes: true })) {
     const filho = `${relativo}/${entrada.name}`;
     if (entrada.isDirectory()) saida.push(...listar(raiz, filho, extensoes));
     else if (extensoes.length === 0 || extensoes.some((e) => entrada.name.endsWith(e))) saida.push(filho);
@@ -69,15 +75,15 @@ export function arquivosFonte(raiz: string): string[] {
 }
 
 export function hashLista(arquivos: readonly string[]): string {
-  return createHash("sha256").update(arquivos.join("\n")).digest("hex");
+  return NodeCrypto.createHash("sha256").update(arquivos.join("\n")).digest("hex");
 }
 
 /** SHA-256 de (caminho, SHA-256 do conteúdo) de cada fonte, em ordem. */
 export function hashConteudo(raiz: string, arquivos: readonly string[]): string {
-  const total = createHash("sha256");
+  const total = NodeCrypto.createHash("sha256");
   for (const arquivo of arquivos) {
-    const conteudo = createHash("sha256")
-      .update(readFileSync(path.join(raiz, arquivo)))
+    const conteudo = NodeCrypto.createHash("sha256")
+      .update(NodeFS.readFileSync(NodePath.join(raiz, arquivo)))
       .digest("hex");
     total.update(`${arquivo}\0${conteudo}\n`);
   }
@@ -86,6 +92,45 @@ export function hashConteudo(raiz: string, arquivos: readonly string[]): string 
 
 export function mtimeMaisRecente(raiz: string, arquivos: readonly string[]): number {
   let maximo = 0;
-  for (const arquivo of arquivos) maximo = Math.max(maximo, statSync(path.join(raiz, arquivo)).mtimeMs);
+  for (const arquivo of arquivos) maximo = Math.max(maximo, NodeFS.statSync(NodePath.join(raiz, arquivo)).mtimeMs);
   return maximo;
+}
+
+/** Situação do banco diante das fontes do checkout. */
+export type Estado =
+  | { estado: "fresco"; motivo: "mtime" | "conteudo-igual" }
+  | { estado: "velho"; motivo: "ausente" | "esquema" | "lista-de-fontes" | "conteudo" };
+
+function lerMeta(caminho: string): Map<string, string> | null {
+  try {
+    const db = new NodeSqlite.DatabaseSync(caminho, { readOnly: true });
+    try {
+      const linhas = db.prepare("SELECT chave, valor FROM meta").all();
+      return new Map(linhas.map((m) => [String(m["chave"]), String(m["valor"])]));
+    } finally {
+      db.close();
+    }
+  } catch {
+    return null;
+  }
+}
+
+/** Decide se o banco em `caminho` corresponde às fontes do checkout em `raiz`. */
+export function estadoDoBanco(raiz: string, caminho: string): Estado {
+  if (!NodeFS.existsSync(caminho)) return { estado: "velho", motivo: "ausente" };
+  const meta = lerMeta(caminho);
+  if (!meta || meta.get("versao_esquema") !== String(VERSAO_ESQUEMA)) return { estado: "velho", motivo: "esquema" };
+  const arquivos = arquivosFonte(raiz);
+  if (meta.get("fontes_lista_sha256") !== hashLista(arquivos)) return { estado: "velho", motivo: "lista-de-fontes" };
+  const mtimeBanco = NodeFS.statSync(caminho).mtimeMs;
+  const mtimeFontes = mtimeMaisRecente(raiz, arquivos);
+  if (mtimeFontes <= mtimeBanco) return { estado: "fresco", motivo: "mtime" };
+  if (meta.get("fontes_sha256") === hashConteudo(raiz, arquivos)) {
+    // o banco avança até o mtime das fontes lido antes do hash, não até agora: uma fonte editada
+    // durante o hash fica mais nova que o banco e é conferida na próxima abertura
+    const instante = mtimeFontes / 1000;
+    NodeFS.utimesSync(caminho, instante, instante);
+    return { estado: "fresco", motivo: "conteudo-igual" };
+  }
+  return { estado: "velho", motivo: "conteudo" };
 }

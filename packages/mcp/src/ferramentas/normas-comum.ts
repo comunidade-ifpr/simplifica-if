@@ -4,12 +4,13 @@
  * para a IA no teto de caracteres de cada ferramenta (`NormaResumo` e `Relacao` ficam em
  * `tipos-comuns.ts`). Nenhuma regra normativa: só formato.
  */
-import type { DatabaseSync } from "node:sqlite";
-import { descendentesBanco, type TrechoDispositivo } from "@simplifica-if/kb/db/modo-banco";
+import type { TrechoDispositivo } from "@simplifica-if/kb/db/consultas-normas";
+import * as Normas from "@simplifica-if/kb/Normas";
 import { z } from "zod";
 import { type Aviso, esquemaFonte, esquemaLink, type Resposta } from "../envelope.ts";
 import { linkNorma } from "../links.ts";
 import { citacao, montarTexto } from "../texto.ts";
+import type { Kb } from "./ferramenta.ts";
 import type { NormaResumo } from "./tipos-comuns.ts";
 
 /* ================================================================== schemas */
@@ -52,10 +53,10 @@ export type DispositivoTexto = z.infer<typeof esquemaDispositivoTexto>;
  * `DispositivoTexto` a partir do trecho do kb. Os rótulos dos subordinados (que o trecho não traz)
  * vêm dos descendentes do mesmo arquivo.
  */
-export function dispositivoTexto(db: DatabaseSync, trecho: TrechoDispositivo): DispositivoTexto {
+export function dispositivoTexto(kb: Kb, trecho: TrechoDispositivo): DispositivoTexto {
   const rotulos = new Map<string, string>();
   if (trecho.subordinados.length > 0) {
-    for (const d of descendentesBanco(db, trecho.arquivo_id))
+    for (const d of kb(Normas.Normas.use((n) => n.descendentes(trecho.arquivo_id))))
       rotulos.set(`${d.disp.ato}${d.disp.dispositivo}`, d.disp.rotulo);
   }
   return {

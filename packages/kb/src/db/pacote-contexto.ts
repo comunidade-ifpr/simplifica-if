@@ -22,78 +22,72 @@
  *   pelas `consultas` das fichas achar, com o texto integral e as linhas;
  * - os fatos do PPC e o cruzamento com o SUAP.
  *
- * Com `raiz`, o léxico, os tópicos e o tamanho do PPC vêm dos arquivos do checkout (o comportamento
- * da CLI); sem `raiz`, do próprio banco (`sinonimos_*`, `topicos`, `topicos_secoes`,
- * `ppcs.caracteres`): é o modo banco, que responde só com o `kb.sqlite` (`db/modo-banco.ts`).
+ * O léxico, os tópicos e a data de referência vêm de `FontesNormativas` (do banco ou dos arquivos,
+ * conforme a layer); o tamanho do PPC, de `ppcs.caracteres`. As consultas pedem o `SqlClient` do
+ * ambiente: o `kb.sqlite` ou, para as partes que leem um PPC fora da base, o banco em memória de
+ * `bancoDoPpcAvulso` (`Conexao.layerDeConexao`).
  */
-import type { DatabaseSync } from "node:sqlite";
-import { readFileSync } from "node:fs";
-import path from "node:path";
-import { parse } from "yaml";
-import { z } from "zod";
+import type * as NodeSqlite from "node:sqlite";
+import * as Effect from "effect/Effect";
+import * as Schema from "effect/Schema";
 import type { Sinonimos } from "../busca/sinonimos.ts";
+import * as FontesNormativas from "../FontesNormativas.ts";
 import { idDoAto } from "../normas/ids.ts";
 import { palavrasDeCampi } from "../ppcs/secoes.ts";
+import type { TopicoFichas, TopicosSecoes } from "../ppcs/topicos.ts";
 import { compararTexto } from "../texto.ts";
 import { bancoDoPpcAvulso } from "./compilar.ts";
-import { registroBanco, sinonimosBanco } from "./fontes-banco.ts";
+import * as Conexao from "./conexao.ts";
 import { buscarSecoes, fatosDosPpcs, obterNorma, secoesDoPpc } from "./consultas.ts";
 import {
-  dataReferenciaBanco,
   type TransicaoNoBanco,
   type TrechoDispositivo,
-  transicoesNoBanco,
+  transicoesDosAtos,
   trechoDoDispositivo,
 } from "./consultas-normas.ts";
-
-export const esquemaTopicosSecoes = z.record(z.string(), z.array(z.string().regex(/^[a-z_]+$/)));
-export type TopicosSecoes = z.output<typeof esquemaTopicosSecoes>;
-
-export function lerTopicosSecoes(
-  caminho: string = path.resolve(import.meta.dirname, "..", "..", "dados", "topicos-secoes.yaml"),
-): TopicosSecoes {
-  return esquemaTopicosSecoes.parse(parse(readFileSync(caminho, "utf-8"), { schema: "failsafe" }) ?? {});
-}
+import * as Sql from "./sql.ts";
 
 /** Tamanho máximo de um grupo de sub-agente da `revisar-ppc` (fichas por grupo). */
 export const TAMANHO_MAXIMO_GRUPO = 20;
 /** Grupo das fichas de escopo transversal, que recebem o PPC inteiro. */
 export const TOPICO_TRANSVERSAL = "transversal";
 
-const esquemaTopicosFichas = z.looseObject({
-  topicos: z.array(
-    z.looseObject({
-      id: z.string(),
-      titulo: z.string().optional(),
-      tipo_escopo: z.string().optional(),
-      fichas: z.array(z.string()).optional(),
-    }),
-  ),
-});
-/** Tópico de `topicos-fichas.json`, na ordem da taxonomia. */
-export type TopicoFichas = z.output<typeof esquemaTopicosFichas>["topicos"][number];
+/* ------------------------------------------------------------ erros */
 
-/** Tópicos de `.agents/skills/revisar-ppc/base-analise/topicos-fichas.json`, na ordem do arquivo. */
-export function lerTopicosFichas(raiz: string): TopicoFichas[] {
-  const arquivo = path.join(raiz, ".agents", "skills", "revisar-ppc", "base-analise", "topicos-fichas.json");
-  return esquemaTopicosFichas.parse(JSON.parse(readFileSync(arquivo, "utf-8"))).topicos;
+export class PpcNaoEncontrado extends Schema.TaggedError<PpcNaoEncontrado>()("PpcNaoEncontrado", {
+  ppc: Schema.String,
+}) {
+  override get message(): string {
+    return `PPC não encontrado: ${this.ppc}`;
+  }
 }
 
-/** Os tópicos de `lerTopicosFichas`, pela tabela `topicos` do banco (na ordem do arquivo). */
-export function topicosFichasBanco(db: DatabaseSync): TopicoFichas[] {
-  const linhas = z
-    .array(z.strictObject({ dados_json: z.string() }))
-    .parse(db.prepare("SELECT dados_json FROM topicos ORDER BY ordem").all());
-  return esquemaTopicosFichas.parse({ topicos: linhas.map((l) => JSON.parse(l.dados_json)) }).topicos;
+export const ehPpcNaoEncontrado = Schema.is(PpcNaoEncontrado);
+
+export class GrupoInexistente extends Schema.TaggedError<GrupoInexistente>()("GrupoInexistente", {
+  grupo: Schema.String,
+  /** Quantos grupos a rodada tem. */
+  total: Schema.Number,
+}) {
+  override get message(): string {
+    return `grupo inexistente: ${this.grupo} (há ${this.total})`;
+  }
 }
 
-/** O mapa de `lerTopicosSecoes`, pela tabela `topicos_secoes` do banco (na ordem do arquivo). */
-export function topicosSecoesBanco(db: DatabaseSync): TopicosSecoes {
-  const linhas = z
-    .array(z.strictObject({ topico: z.string(), tipos_json: z.string() }))
-    .parse(db.prepare("SELECT topico, tipos_json FROM topicos_secoes ORDER BY ordem").all());
-  return esquemaTopicosSecoes.parse(Object.fromEntries(linhas.map((l) => [l.topico, JSON.parse(l.tipos_json)])));
+export const ehGrupoInexistente = Schema.is(GrupoInexistente);
+
+export class TarefaNaoReconhecida extends Schema.TaggedError<TarefaNaoReconhecida>()("TarefaNaoReconhecida", {
+  /** Fichas pedidas que não estão no banco. */
+  fichas: Schema.Array(Schema.String),
+}) {
+  override get message(): string {
+    return `tarefa não reconhecida (ficha, tópico, grupo-NNN ou todas): ${this.fichas.join(", ")}`;
+  }
 }
+
+export const ehTarefaNaoReconhecida = Schema.is(TarefaNaoReconhecida);
+
+/* ------------------------------------------------------------ fichas e grupos */
 
 /** Ficha como entra no pacote e no agrupamento: o JSON da ficha (`id`, tópicos, consultas, referências). */
 export type FichaPacote = { id: string } & Record<string, unknown>;
@@ -180,76 +174,117 @@ export function agruparPorTopico<F extends FichaPacote>(
   return grupos;
 }
 
-const esquemaFicha = z.strictObject({ id: z.string(), path: z.string(), dados_json: z.string() });
-const esquemaPpc = z.strictObject({
-  id: z.string(),
-  curso_nome: z.string(),
-  campus_nome: z.string(),
-  nivel: z.string(),
-  tipo_oferta: z.string(),
-  path: z.string(),
-  curso_id: z.string().nullable(),
-  ano_documento: z.number().int().nullable(),
-  cnct_id: z.string().nullable(),
+/* ------------------------------------------------------------ linhas do banco */
+
+const TextoNulo = Schema.NullOr(Schema.String);
+
+// o JSON da ficha entra no pacote como está (chaves e ordem do arquivo)
+const linhasFichas = Sql.todas(
+  Schema.Struct({ id: Schema.String, path: Schema.String, dados_json: Schema.fromJsonString(Schema.Unknown) }),
+);
+const linhasIdsFichas = Sql.todas(Schema.Struct({ id: Schema.String }));
+const linhasFichasTopico = Sql.todas(Schema.Struct({ ficha_id: Schema.String }));
+
+const LinhaPpc = Schema.Struct({
+  id: Schema.String,
+  curso_nome: Schema.String,
+  campus_nome: Schema.String,
+  nivel: Schema.String,
+  tipo_oferta: Schema.String,
+  path: Schema.String,
+  curso_id: TextoNulo,
+  ano_documento: Schema.NullOr(Schema.Int),
+  cnct_id: TextoNulo,
 });
-const esquemaMarco = z.strictObject({
-  id: z.string(),
-  tema: z.string(),
-  vigente: z.string(),
-  aplica_a: z.string().nullable(),
-  transicao: z.string().nullable(),
-  orientacao_analise: z.string().nullable(),
-  normas_json: z.string(),
-  path: z.string(),
+const primeiroPpc = Sql.primeira(LinhaPpc);
+const primeirosCaracteres = Sql.primeira(Schema.Struct({ caracteres: Schema.Int }));
+
+// `normas_json` entra no pacote como está (as chaves do arquivo de marcos)
+const linhasMarcos = Sql.todas(
+  Schema.Struct({
+    id: Schema.String,
+    tema: Schema.String,
+    vigente: Schema.String,
+    aplica_a: TextoNulo,
+    transicao: TextoNulo,
+    orientacao_analise: TextoNulo,
+    normas_json: Schema.fromJsonString(Schema.Unknown),
+    path: Schema.String,
+  }),
+);
+
+/** As normas de um marco, como `marcos-normativos.json` as grava. */
+interface NormasDoMarco {
+  linha: string[];
+  vigente: string;
+  substitui: string[];
+  antecessoras_historicas: string[];
+  dispositivos_revogados: string[];
+}
+
+const LinhaCitacao = Schema.Struct({
+  ato_id: Schema.String,
+  linha: Schema.Int,
+  trecho: Schema.String,
+  papel: Schema.String,
+  secao_tipo: TextoNulo,
+  regra: Schema.String,
 });
-const esquemaCitacao = z.strictObject({
-  ato_id: z.string(),
-  linha: z.number().int(),
-  trecho: z.string(),
-  papel: z.string(),
-  secao_tipo: z.string().nullable(),
-  regra: z.string(),
-});
-type CitacaoPpc = z.output<typeof esquemaCitacao>;
+type CitacaoPpc = typeof LinhaCitacao.Type;
+const linhasCitacoes = Sql.todas(LinhaCitacao);
+
+// o JSON do curso do CNCT entra no pacote como está
+const primeiroCnct = Sql.primeira(
+  Schema.Struct({ dados_json: Schema.fromJsonString(Schema.Unknown), path: TextoNulo }),
+);
+
+const linhasCampi = Sql.todas(Schema.Struct({ campus_nome: Schema.String }));
+
+/** Tamanho do pacote em JSON indentado, como a CLI o imprime. */
+function caracteresDoJson(valor: unknown): number {
+  return JSON.stringify(valor, null, 2).length;
+}
+
+/* ------------------------------------------------------------ fichas da tarefa */
 
 /** Fichas do banco (JSON da ficha), em ordem de ID. */
-export function fichasDoBanco(db: DatabaseSync, ids?: readonly string[]): FichaPacote[] {
+export const fichasDoBanco = Effect.fn("pacoteContexto.fichasDoBanco")(function* (ids?: readonly string[]) {
   const filtro = ids ? ` WHERE id IN (${ids.map(() => "?").join(", ")})` : "";
-  return z
-    .array(esquemaFicha)
-    .parse(db.prepare(`SELECT id, path, dados_json FROM fichas${filtro} ORDER BY id`).all(...(ids ?? [])))
-    .map((f) => JSON.parse(f.dados_json) as FichaPacote);
-}
+  const linhas = yield* linhasFichas(`SELECT id, path, dados_json FROM fichas${filtro} ORDER BY id`, ids ?? []);
+  return linhas.map((f) => f.dados_json as FichaPacote);
+});
 
 /**
  * IDs das fichas de uma tarefa. `grupo-NNN` é o n-ésimo grupo por tópico da `revisar-ppc`
- * (`agruparPorTopico` com `topicos`, o tamanho máximo padrão e todas as fichas do banco).
+ * (`agruparPorTopico` com `topicos`, o tamanho máximo padrão e todas as fichas do banco); sem
+ * `topicos`, os de `FontesNormativas`.
  */
-export function fichasDaTarefa(db: DatabaseSync, tarefa: string, topicos?: readonly TopicoFichas[]): string[] {
-  const todas = z
-    .array(z.strictObject({ id: z.string() }))
-    .parse(db.prepare("SELECT id FROM fichas").all())
-    .map((f) => f.id)
-    .sort(compararTexto);
+export const fichasDaTarefa = Effect.fn("pacoteContexto.fichasDaTarefa")(function* (
+  tarefa: string,
+  topicos?: readonly TopicoFichas[],
+) {
+  const todas = (yield* linhasIdsFichas("SELECT id FROM fichas")).map((f) => f.id).sort(compararTexto);
   if (tarefa === "todas") return todas;
   const grupo = /^grupo-(\d{3})$/.exec(tarefa);
   if (grupo) {
-    if (!topicos) throw new Error("grupo-NNN exige os tópicos de topicos-fichas.json");
-    const grupos = agruparPorTopico(fichasDoBanco(db), topicos);
+    const taxonomia = topicos ?? (yield* FontesNormativas.FontesNormativas).topicosFichas;
+    const grupos = agruparPorTopico(yield* fichasDoBanco(), taxonomia);
     const escolhido = grupos[Number(grupo[1]) - 1];
-    if (!escolhido) throw new Error(`grupo inexistente: ${tarefa} (há ${grupos.length})`);
+    if (!escolhido) return yield* new GrupoInexistente({ grupo: tarefa, total: grupos.length });
     return escolhido.fichas.map((f) => f.id);
   }
-  const topico = z
-    .array(z.strictObject({ ficha_id: z.string() }))
-    .parse(db.prepare("SELECT ficha_id FROM fichas_topicos WHERE topico_id = ? ORDER BY ficha_id").all(tarefa));
+  const topico = yield* linhasFichasTopico(
+    "SELECT ficha_id FROM fichas_topicos WHERE topico_id = ? ORDER BY ficha_id",
+    [tarefa],
+  );
   if (topico.length) return topico.map((t) => t.ficha_id).filter((id) => todas.includes(id));
   const pedidas = tarefa.split(",").map((t) => t.trim().toUpperCase());
   const faltando = pedidas.filter((id) => !todas.includes(id));
-  if (faltando.length)
-    throw new Error(`tarefa não reconhecida (ficha, tópico, grupo-NNN ou todas): ${faltando.join(", ")}`);
+  if (faltando.length) return yield* new TarefaNaoReconhecida({ fichas: faltando });
   return pedidas;
-}
+});
+
+/* ------------------------------------------------------------ tipos do pacote */
 
 /**
  * Dispositivo citado no pacote: o essencial de `TrechoDispositivo`, sem os campos vazios (caput,
@@ -260,7 +295,7 @@ export interface DispositivoDoPacote {
   /** Todos os IDs pedidos pelas fichas que este trecho cobre (o próprio e subordinados). */
   citados?: string[];
   fichas: string[];
-  caput?: string[];
+  caput?: TrechoDispositivo["caput"];
   texto: string;
   subordinados?: TrechoDispositivo["subordinados"];
   notas?: TrechoDispositivo["notas"];
@@ -285,7 +320,7 @@ export interface TransicaoDoPacote {
   inicio_minimo: string | null;
   fim: string;
   fim_em: string | null;
-  caput?: string[];
+  caput?: TrechoDispositivo["caput"];
   texto: string | null;
   path: string | null;
   linha_inicio: number | null;
@@ -348,7 +383,7 @@ export interface SecaoDoPacote {
 export interface PacoteContexto {
   tarefa: string;
   fichas_ids: string[];
-  ppc: z.output<typeof esquemaPpc> & { path: string };
+  ppc: typeof LinhaPpc.Type & { path: string };
   cnct: unknown;
   fichas: unknown[];
   normas: NormaDoPacote[];
@@ -401,12 +436,12 @@ export function referenciasDasFichas(fichas: readonly FichaPacote[]): RefFicha[]
  * caput herdado, o próprio texto e os subordinados; um dispositivo contido noutro citado não se
  * repete (vai em `citados`).
  */
-export function normasDoPacote(db: DatabaseSync, refs: readonly RefFicha[]): NormaDoPacote[] {
+export const normasDoPacote = Effect.fn("pacoteContexto.normasDoPacote")(function* (refs: readonly RefFicha[]) {
   const porRef = new Map<string, RefFicha[]>();
   for (const r of refs) if (!r.ref.startsWith("cnct:")) porRef.set(r.ref, [...(porRef.get(r.ref) ?? []), r]);
   const normas: NormaDoPacote[] = [];
   for (const [ref, lista] of porRef) {
-    const norma = obterNorma(db, ref);
+    const norma = yield* obterNorma(ref);
     // um pedido por dispositivo, do mais geral (menos segmentos no ID) ao mais específico
     const pedidos = new Map<string, string[]>();
     for (const r of lista) {
@@ -426,7 +461,7 @@ export function normasDoPacote(db: DatabaseSync, refs: readonly RefFicha[]): Nor
         cobre.fichas = [...new Set([...cobre.fichas, ...fichasPedido])].sort(compararTexto);
         continue;
       }
-      const trecho = norma?.path ? trechoDoDispositivo(db, id, { subordinados: true }) : null;
+      const trecho = norma?.path ? yield* trechoDoDispositivo(id, { subordinados: true }) : null;
       if (trecho) trechos.push({ trecho, citados: [id], fichas: [...fichasPedido].sort(compararTexto) });
       else semTexto.push(id);
     }
@@ -443,46 +478,28 @@ export function normasDoPacote(db: DatabaseSync, refs: readonly RefFicha[]): Nor
     });
   }
   return normas;
-}
+});
 
 /** Citações normativas resolvidas de um PPC (`citacoes`), na ordem do texto. */
-export function citacoesDoPpc(db: DatabaseSync, ppcId: string): CitacaoPpc[] {
-  return z
-    .array(esquemaCitacao)
-    .parse(
-      db
-        .prepare(
-          "SELECT ato_id, linha, trecho, papel, secao_tipo, regra FROM citacoes WHERE ppc_id = ? AND ato_id IS NOT NULL ORDER BY ordem",
-        )
-        .all(ppcId),
-    );
-}
+export const citacoesDoPpc = Effect.fn("pacoteContexto.citacoesDoPpc")(function* (ppcId: string) {
+  return yield* linhasCitacoes(
+    "SELECT ato_id, linha, trecho, papel, secao_tipo, regra FROM citacoes WHERE ppc_id = ? AND ato_id IS NOT NULL ORDER BY ordem",
+    [ppcId],
+  );
+});
 
 /** Marcos ligados às normas das fichas ou às citadas pelo PPC, com as citações do PPC (fundamento) a elas. */
-export function marcosDoPacote(
-  db: DatabaseSync,
+export const marcosDoPacote = Effect.fn("pacoteContexto.marcosDoPacote")(function* (
   refs: readonly RefFicha[],
   citacoesPpc: readonly CitacaoPpc[],
-): MarcoDoPacote[] {
+) {
   const atosCitadosPpc = new Set(citacoesPpc.map((c) => c.ato_id));
   const atosFichas = new Set(refs.map((r) => idDoAto(r.ref)));
   const marcos: MarcoDoPacote[] = [];
-  for (const m of z
-    .array(esquemaMarco)
-    .parse(
-      db
-        .prepare(
-          "SELECT id, tema, vigente, aplica_a, transicao, orientacao_analise, normas_json, path FROM marcos ORDER BY id",
-        )
-        .all(),
-    )) {
-    const normasMarco = JSON.parse(m.normas_json) as {
-      linha: string[];
-      vigente: string;
-      substitui: string[];
-      antecessoras_historicas: string[];
-      dispositivos_revogados: string[];
-    };
+  for (const m of yield* linhasMarcos(
+    "SELECT id, tema, vigente, aplica_a, transicao, orientacao_analise, normas_json, path FROM marcos ORDER BY id",
+  )) {
+    const normasMarco = m.normas_json as NormasDoMarco;
     const envolvidas = new Set([
       ...normasMarco.linha,
       normasMarco.vigente,
@@ -504,25 +521,26 @@ export function marcosDoPacote(
     });
   }
   return marcos;
-}
+});
 
 /**
  * Regras de transição (tabela `transicoes`) das normas das fichas e das que o PPC cita como
- * fundamento, com a situação na `data_referencia` e o texto do dispositivo que as estabelece.
+ * fundamento, com a situação na `data_referencia` (de `FontesNormativas`) e o texto do dispositivo
+ * que as estabelece.
  */
-export function transicoesDoPacote(
-  db: DatabaseSync,
+export const transicoesDoPacote = Effect.fn("pacoteContexto.transicoesDoPacote")(function* (
   refs: readonly RefFicha[],
   citacoesPpc: readonly CitacaoPpc[],
-): { data_referencia: string; transicoes: TransicaoDoPacote[] } {
-  const data = dataReferenciaBanco(db);
+) {
+  const { dataReferencia: data } = yield* FontesNormativas.FontesNormativas;
   const atosFichas = new Set(refs.map((r) => idDoAto(r.ref)));
   const atosTransicao = [
     ...new Set([...atosFichas, ...citacoesPpc.filter((c) => c.papel === "fundamento").map((c) => c.ato_id)]),
   ].sort(compararTexto);
-  const transicoes: TransicaoDoPacote[] = transicoesNoBanco(db, atosTransicao, data).map((t) => {
-    const d = trechoDoDispositivo(db, `${t.norma_id}${t.dispositivo}`);
-    return {
+  const transicoes: TransicaoDoPacote[] = [];
+  for (const t of yield* transicoesDosAtos(atosTransicao, data)) {
+    const d = yield* trechoDoDispositivo(`${t.norma_id}${t.dispositivo}`);
+    transicoes.push({
       id: t.id,
       norma_id: t.norma_id,
       dispositivo: t.dispositivo,
@@ -541,33 +559,42 @@ export function transicoesDoPacote(
       path: d?.path ?? null,
       linha_inicio: d?.linha_inicio ?? null,
       linha_fim: d?.linha_fim ?? null,
-    };
-  });
+    });
+  }
   return { data_referencia: data, transicoes };
-}
+});
 
 /** Consultas da ficha que são texto do PPC (as que são nomes de campo, como `cnct_contexto.x`, ficam fora). */
 export function consultasDeTexto(ficha: FichaPacote): string[] {
   return textos(ficha.consultas).filter((c) => !/^[\w.]+$/.test(c) || !/[._]/.test(c));
 }
 
+/** Opções da seleção de seções do PPC. */
+export interface OpcoesSecoes {
+  /** Léxico da busca (padrão: o de `FontesNormativas`, que `buscarSecoes` lê). */
+  lexico?: Sinonimos;
+  /** Mapa tópico → tipos de seção (padrão: o de `FontesNormativas`). */
+  topicosSecoes?: TopicosSecoes;
+  /** Seções por consulta de ficha (padrão 1: a melhor com todos os termos). */
+  buscasPorFicha?: number;
+}
+
 /**
  * Seções do PPC para as fichas: as dos tipos mapeados para os tópicos das fichas
  * (`dados/topicos-secoes.yaml`), mais, por consulta de cada ficha, a melhor seção com todos os
- * termos (AND); em ordem do documento. `db` é o `kb.sqlite` (PPC da base) ou o banco em memória de
- * `bancoDoPpcAvulso` (PPC fora da base): as consultas são as mesmas.
+ * termos (AND); em ordem do documento. O `SqlClient` do ambiente é o `kb.sqlite` (PPC da base) ou
+ * o banco em memória de `bancoDoPpcAvulso` (PPC fora da base): as consultas são as mesmas.
  */
-export function secoesDoPacote(
-  db: DatabaseSync,
+export const secoesDoPacote = Effect.fn("pacoteContexto.secoesDoPacote")(function* (
   ppcId: string,
   fichas: readonly FichaPacote[],
   opcoes: OpcoesSecoes = {},
-): SecaoDoPacote[] {
-  const mapa = opcoes.topicosSecoes ?? lerTopicosSecoes();
+) {
+  const mapa = opcoes.topicosSecoes ?? (yield* FontesNormativas.FontesNormativas).topicosSecoes;
   const secoes = new Map<string, SecaoDoPacote>();
   const topicos = [...new Set(fichas.flatMap((f) => textos(f.topicos_tematicos)))].sort(compararTexto);
   for (const topico of topicos) {
-    for (const s of secoesDoPpc(db, ppcId, mapa[topico] ?? [])) {
+    for (const s of yield* secoesDoPpc(ppcId, mapa[topico] ?? [])) {
       const atual = secoes.get(s.id) ?? { ...s, motivo: [] };
       atual.motivo.push(`topico:${topico}`);
       secoes.set(s.id, atual);
@@ -576,8 +603,7 @@ export function secoesDoPacote(
   const buscas = opcoes.buscasPorFicha ?? 1;
   for (const ficha of [...fichas].sort((a, b) => compararTexto(a.id, b.id))) {
     for (const consulta of consultasDeTexto(ficha)) {
-      const achados = buscarSecoes(
-        db,
+      const achados = yield* buscarSecoes(
         consulta,
         { ppc: ppcId },
         {
@@ -606,93 +632,82 @@ export function secoesDoPacote(
     }
   }
   return [...secoes.values()].sort((a, b) => a.linha_inicio - b.linha_inicio);
-}
+});
 
-/** Opções da seleção de seções do PPC. */
-export interface OpcoesSecoes {
-  lexico?: Sinonimos;
-  topicosSecoes?: TopicosSecoes;
-  /** Seções por consulta de ficha (padrão 1: a melhor com todos os termos). */
-  buscasPorFicha?: number;
-}
-
-/** Opções de seção com o léxico e o mapa tópico → seções do banco, onde não foram informados. */
-function opcoesDoBanco(db: DatabaseSync, opcoes: OpcoesSecoes): OpcoesSecoes {
-  return {
-    ...opcoes,
-    lexico: opcoes.lexico ?? sinonimosBanco(db),
-    topicosSecoes: opcoes.topicosSecoes ?? topicosSecoesBanco(db),
-  };
-}
-
-function cnctDoBanco(db: DatabaseSync, cnctId: string | null): unknown {
+/** O curso do CNCT (`cnct`) com ID e arquivo, ou `null`. */
+const cnctDoBanco = Effect.fn("pacoteContexto.cnctDoBanco")(function* (cnctId: string | null) {
   if (!cnctId) return null;
   const id = cnctId.startsWith("cnct:") ? cnctId : `cnct:${cnctId}`;
-  const linha = z
-    .strictObject({ dados_json: z.string(), path: z.string().nullable() })
-    .nullable()
-    .parse(db.prepare("SELECT dados_json, path FROM cnct WHERE id = ?").get(id) ?? null);
-  return linha ? { id, path: linha.path, ...JSON.parse(linha.dados_json) } : null;
-}
+  const linha = yield* primeiroCnct("SELECT dados_json, path FROM cnct WHERE id = ?", [id]);
+  return linha ? { id, path: linha.path, ...(linha.dados_json as Record<string, unknown>) } : null;
+});
 
 /* ------------------------------------------------------------ pacotes */
 
 /**
- * Opções do pacote. `raiz` (o checkout): léxico, tópicos e tamanho do PPC lidos dos arquivos, como
- * na CLI; sem ela, do banco. `lexico`, `topicosSecoes` e `topicosFichas` informados prevalecem.
+ * Opções do pacote. `lexico`, `topicosSecoes` e `topicosFichas` informados prevalecem sobre os de
+ * `FontesNormativas`.
  */
 export interface OpcoesPacote extends OpcoesSecoes {
-  raiz?: string;
   topicosFichas?: readonly TopicoFichas[];
 }
 
-export function pacoteContexto(db: DatabaseSync, tarefa: string, ppcArg: string, opcoes: OpcoesPacote): PacoteContexto {
+/** `lexico` e `topicosSecoes` das opções ou, onde faltam, os de `FontesNormativas`. */
+function opcoesComFontes(
+  opcoes: OpcoesSecoes,
+  fontes: { readonly sinonimos: Sinonimos; readonly topicosSecoes: TopicosSecoes },
+): OpcoesSecoes & { lexico: Sinonimos; topicosSecoes: TopicosSecoes } {
+  return {
+    ...opcoes,
+    lexico: opcoes.lexico ?? fontes.sinonimos,
+    topicosSecoes: opcoes.topicosSecoes ?? fontes.topicosSecoes,
+  };
+}
+
+/** Pacote de contexto de uma tarefa para um PPC da base (`campus/curso` ou `ppc:campus/curso`). */
+export const pacoteContexto = Effect.fn("pacoteContexto.pacoteContexto")(function* (
+  tarefa: string,
+  ppcArg: string,
+  opcoes: OpcoesPacote = {},
+) {
   const ppcId = ppcArg.startsWith("ppc:") ? ppcArg : `ppc:${ppcArg}`;
-  const ppcLinha = db
-    .prepare(
-      `SELECT p.id, p.curso_nome, p.campus_nome, p.nivel, p.tipo_oferta, p.path, p.curso_id, p.ano_documento, c.cnct_id
+  const ppc = yield* primeiroPpc(
+    `SELECT p.id, p.curso_nome, p.campus_nome, p.nivel, p.tipo_oferta, p.path, p.curso_id, p.ano_documento, c.cnct_id
        FROM ppcs p LEFT JOIN cursos c ON c.id = p.curso_id WHERE p.id = ?`,
-    )
-    .get(ppcId);
-  if (!ppcLinha) throw new Error(`PPC não encontrado: ${ppcId}`);
-  const ppc = esquemaPpc.parse(ppcLinha);
-  const raiz = opcoes.raiz;
-  const topicosDaTarefa = () =>
-    opcoes.topicosFichas ?? (raiz !== undefined ? lerTopicosFichas(raiz) : topicosFichasBanco(db));
-  const fichasIds = fichasDaTarefa(db, tarefa, /^grupo-\d{3}$/.test(tarefa) ? topicosDaTarefa() : undefined);
-  const fichas = fichasDoBanco(db, fichasIds);
+    [ppcId],
+  );
+  if (!ppc) return yield* new PpcNaoEncontrado({ ppc: ppcId });
+  const secoesOpcoes = opcoesComFontes(opcoes, yield* FontesNormativas.FontesNormativas);
+  const fichasIds = yield* fichasDaTarefa(tarefa, opcoes.topicosFichas);
+  const fichas = yield* fichasDoBanco(fichasIds);
   const refs = referenciasDasFichas(fichas);
-  const citacoesPpc = citacoesDoPpc(db, ppc.id);
-  const listaSecoes = secoesDoPacote(db, ppc.id, fichas, raiz !== undefined ? opcoes : opcoesDoBanco(db, opcoes));
-  const fatos = fatosDosPpcs(db, { ppc: ppc.id })[0] ?? null;
+  const citacoesPpc = yield* citacoesDoPpc(ppc.id);
+  const listaSecoes = yield* secoesDoPacote(ppc.id, fichas, secoesOpcoes);
+  const fatos = (yield* fatosDosPpcs({ ppc: ppc.id }))[0] ?? null;
   const caracteresSecoes = listaSecoes.reduce((t, s) => t + s.texto.length, 0);
-  const ppcInteiro =
-    raiz !== undefined
-      ? readFileSync(path.join(raiz, ppc.path), "utf-8").length
-      : z
-          .strictObject({ caracteres: z.number().int() })
-          .parse(db.prepare("SELECT caracteres FROM ppcs WHERE id = ?").get(ppc.id)).caracteres;
+  const ppcInteiro = yield* primeirosCaracteres("SELECT caracteres FROM ppcs WHERE id = ?", [ppc.id]);
+  if (!ppcInteiro) return yield* new Sql.FalhaNaConsulta({ consulta: "ppcs.caracteres", cause: "ausente" });
   const pacote: PacoteContexto = {
     tarefa,
     fichas_ids: fichasIds,
     ppc,
-    cnct: cnctDoBanco(db, ppc.cnct_id),
+    cnct: yield* cnctDoBanco(ppc.cnct_id),
     fichas,
-    normas: normasDoPacote(db, refs),
-    marcos: marcosDoPacote(db, refs, citacoesPpc),
-    ...transicoesDoPacote(db, refs, citacoesPpc),
+    normas: yield* normasDoPacote(refs),
+    marcos: yield* marcosDoPacote(refs, citacoesPpc),
+    ...(yield* transicoesDoPacote(refs, citacoesPpc)),
     secoes: listaSecoes,
     fatos: fatos ? { fatos: fatos.fatos, suap: fatos.suap, cruzamento: fatos.cruzamento } : null,
     tamanho: {
       caracteres: 0,
       secoes: listaSecoes.length,
       caracteres_secoes: caracteresSecoes,
-      caracteres_ppc_inteiro: ppcInteiro,
+      caracteres_ppc_inteiro: ppcInteiro.caracteres,
     },
   };
-  pacote.tamanho.caracteres = JSON.stringify(pacote, null, 2).length;
+  pacote.tamanho.caracteres = caracteresDoJson(pacote);
   return pacote;
-}
+});
 
 /** Pacote de fichas para um PPC fora da base (o `PPC.md` de uma rodada), sem o PPC e sem as fichas. */
 export interface PacoteAvulso {
@@ -710,96 +725,101 @@ export interface PacoteAvulso {
   citacoes_ppc?: CitacaoPpc[];
 }
 
+/** Opções de `pacoteContextoAvulso`. */
+export type OpcoesPacoteAvulso = {
+  ppcId?: string;
+  cnctId?: string | null;
+  escopo?: "secoes" | "completo";
+  /** Inclui `citacoes_ppc`: as fichas que conferem a base normativa citada no PPC inteiro. */
+  citacoesPpc?: boolean;
+} & OpcoesSecoes;
+
 /**
  * Pacote de contexto de um conjunto de fichas para um PPC que pode não estar na base: as normas,
- * os marcos, as transições e o CNCT vêm do `kb.sqlite` (`db`); as seções e as citações do PPC, do
- * banco em memória de `bancoDoPpcAvulso` (`dbPpc`), com as mesmas consultas do pacote de um PPC da
- * base. Usado pela `revisar-ppc` para montar o contexto de cada grupo de sub-agente.
+ * os marcos, as transições e o CNCT vêm do `SqlClient` do ambiente (o `kb.sqlite`); as seções e as
+ * citações do PPC, do banco em memória de `bancoDoPpcAvulso` (`dbPpc`, que fica aberto: quem o
+ * criou o fecha), com as mesmas consultas do pacote de um PPC da base. Usado pela `revisar-ppc`
+ * para montar o contexto de cada grupo de sub-agente.
  */
-export function pacoteContextoAvulso(
-  db: DatabaseSync,
-  dbPpc: DatabaseSync,
+export const pacoteContextoAvulso = Effect.fn("pacoteContexto.pacoteContextoAvulso")(function* (
+  dbPpc: NodeSqlite.DatabaseSync,
   fichas: readonly FichaPacote[],
-  opcoes: {
-    ppcId?: string;
-    cnctId?: string | null;
-    escopo?: "secoes" | "completo";
-    /** Inclui `citacoes_ppc`: as fichas que conferem a base normativa citada no PPC inteiro. */
-    citacoesPpc?: boolean;
-  } & OpcoesSecoes = {},
-): PacoteAvulso {
+  opcoes: OpcoesPacoteAvulso = {},
+) {
   const ppcId = opcoes.ppcId ?? "ppc:avulso";
   const escopo = opcoes.escopo ?? "secoes";
+  const doPpc = Effect.provide(Conexao.layerDeConexao(dbPpc));
   const refs = referenciasDasFichas(fichas);
-  const citacoesPpc = citacoesDoPpc(dbPpc, ppcId);
-  return {
+  const citacoesPpc = yield* citacoesDoPpc(ppcId).pipe(doPpc);
+  const pacote: PacoteAvulso = {
     fichas_ids: [...fichas].map((f) => f.id).sort(compararTexto),
-    cnct: cnctDoBanco(db, opcoes.cnctId ?? null),
-    normas: normasDoPacote(db, refs),
-    marcos: marcosDoPacote(db, refs, citacoesPpc),
-    ...transicoesDoPacote(db, refs, citacoesPpc),
+    cnct: yield* cnctDoBanco(opcoes.cnctId ?? null),
+    normas: yield* normasDoPacote(refs),
+    marcos: yield* marcosDoPacote(refs, citacoesPpc),
+    ...(yield* transicoesDoPacote(refs, citacoesPpc)),
     escopo,
-    secoes: escopo === "completo" ? [] : secoesDoPacote(dbPpc, ppcId, fichas, opcoes),
-    ...(opcoes.citacoesPpc ? { citacoes_ppc: citacoesPpc } : {}),
+    secoes: escopo === "completo" ? [] : yield* secoesDoPacote(ppcId, fichas, opcoes).pipe(doPpc),
+    ...(opcoes.citacoesPpc ? { citacoes_ppc: [...citacoesPpc] } : {}),
   };
-}
+  return pacote;
+});
 
-/** Palavras dos nomes dos campi dos PPCs do banco, para reconhecer cabeçalhos de página (`palavrasDeCampi`). */
-export function nomesDeCampiDoBanco(db: DatabaseSync): string[] {
-  return z
-    .array(z.strictObject({ campus_nome: z.string() }))
-    .parse(db.prepare("SELECT DISTINCT campus_nome FROM ppcs ORDER BY campus_nome").all())
-    .map((l) => l.campus_nome);
-}
+/** Nomes dos campi dos PPCs do banco, para reconhecer cabeçalhos de página (`palavrasDeCampi`). */
+export const nomesDeCampiDoBanco = Effect.fn("pacoteContexto.nomesDeCampiDoBanco")(function* () {
+  const linhas = yield* linhasCampi("SELECT DISTINCT campus_nome FROM ppcs ORDER BY campus_nome");
+  return linhas.map((l) => l.campus_nome);
+});
 
-/**
- * `kb pacote-contexto <tarefa> <arquivo.md>`: o pacote de uma tarefa para um PPC fora da base. As
- * fichas e o agrupamento vêm do banco (`grupo-NNN` traz o escopo do grupo); o PPC é segmentado e
- * indexado em memória (`bancoDoPpcAvulso`).
- */
-export function pacoteDoMarkdown(
-  db: DatabaseSync,
-  tarefa: string,
-  arquivo: string,
-  opcoes: OpcoesPacote & {
-    /** Texto do PPC (padrão: lido de `arquivo`, que fica só como `path` quando o texto vem aqui). */
-    markdown?: string;
-  },
-): PacoteAvulso & {
+/** Pacote de `pacoteDoMarkdown`: o avulso, mais o arquivo, as fichas e os tamanhos. */
+export type PacoteDoMarkdown = PacoteAvulso & {
   path: string;
   fichas: FichaPacote[];
   tamanho: { caracteres: number; caracteres_ppc_inteiro: number };
-} {
-  const raiz = opcoes.raiz;
-  const secoes = raiz !== undefined ? opcoes : opcoesDoBanco(db, opcoes);
-  const topicos = opcoes.topicosFichas ?? (raiz !== undefined ? lerTopicosFichas(raiz) : topicosFichasBanco(db));
-  const ids = fichasDaTarefa(db, tarefa, topicos);
-  const fichas = fichasDoBanco(db, ids);
+};
+
+/**
+ * `kb pacote-contexto <tarefa> <arquivo.md>`: o pacote de uma tarefa para um PPC fora da base. As
+ * fichas e o agrupamento vêm do banco (`grupo-NNN` traz o escopo do grupo); o PPC (`markdown`, o
+ * texto já lido de `arquivo`, que fica só como `path`) é segmentado e indexado num banco em memória
+ * (`bancoDoPpcAvulso`), fechado no fim.
+ */
+export const pacoteDoMarkdown = Effect.fn("pacoteContexto.pacoteDoMarkdown")(function* (
+  tarefa: string,
+  arquivo: string,
+  opcoes: OpcoesPacote & { markdown: string },
+) {
+  const fontes = yield* FontesNormativas.FontesNormativas;
+  const secoes = opcoesComFontes(opcoes, fontes);
+  const topicos = opcoes.topicosFichas ?? fontes.topicosFichas;
+  const ids = yield* fichasDaTarefa(tarefa, topicos);
+  const fichas = yield* fichasDoBanco(ids);
   const grupo = /^grupo-\d{3}$/.test(tarefa)
-    ? agruparPorTopico(fichasDoBanco(db), topicos)[Number(tarefa.slice(6)) - 1]
+    ? agruparPorTopico(yield* fichasDoBanco(), topicos)[Number(tarefa.slice(6)) - 1]
     : undefined;
-  const markdown = opcoes.markdown ?? readFileSync(arquivo, "utf-8");
-  const dbPpc = bancoDoPpcAvulso(markdown, {
-    path: arquivo,
-    ...(raiz !== undefined ? { raiz } : { registro: registroBanco(db) }),
-    palavrasCampi: palavrasDeCampi(nomesDeCampiDoBanco(db)),
-    ...(secoes.lexico ? { sinonimos: secoes.lexico } : {}),
+  const markdown = opcoes.markdown;
+  const palavrasCampi = palavrasDeCampi(yield* nomesDeCampiDoBanco());
+  const dbPpc = yield* Effect.acquireRelease(
+    Effect.sync(() =>
+      bancoDoPpcAvulso(markdown, {
+        path: arquivo,
+        registro: fontes.registro,
+        palavrasCampi,
+        sinonimos: secoes.lexico,
+      }),
+    ),
+    (db) => Effect.sync(() => db.close()),
+  );
+  const pacote = yield* pacoteContextoAvulso(dbPpc, fichas, {
+    escopo: grupo?.escopo ?? "secoes",
+    lexico: secoes.lexico,
+    topicosSecoes: secoes.topicosSecoes,
   });
-  try {
-    const pacote = pacoteContextoAvulso(db, dbPpc, fichas, {
-      escopo: grupo?.escopo ?? "secoes",
-      ...(secoes.lexico ? { lexico: secoes.lexico } : {}),
-      ...(secoes.topicosSecoes ? { topicosSecoes: secoes.topicosSecoes } : {}),
-    });
-    const saida = {
-      path: arquivo,
-      ...pacote,
-      fichas,
-      tamanho: { caracteres: 0, caracteres_ppc_inteiro: markdown.length },
-    };
-    saida.tamanho.caracteres = JSON.stringify(saida, null, 2).length;
-    return saida;
-  } finally {
-    dbPpc.close();
-  }
-}
+  const saida: PacoteDoMarkdown = {
+    path: arquivo,
+    ...pacote,
+    fichas,
+    tamanho: { caracteres: 0, caracteres_ppc_inteiro: markdown.length },
+  };
+  saida.tamanho.caracteres = caracteresDoJson(saida);
+  return saida;
+}, Effect.scoped);

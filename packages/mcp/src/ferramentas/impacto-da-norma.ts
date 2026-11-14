@@ -1,10 +1,13 @@
 /**
- * Ferramenta 7, `impacto_da_norma`: o que uma norma atinge na base, por `impactoBanco` (a regra de
+ * Ferramenta 7, `impacto_da_norma`: o que uma norma atinge na base, por `Impacto.daNorma` (a regra de
  * `kb impacto`): relações, sucessoras, transições, normas que a citam, fichas da `revisar-ppc`,
  * tópicos e PPCs. Os outros arquivos das skills ficam na CLI (servem à curadoria); a lista completa
  * de PPCs vem de `citacoes_da_norma`.
  */
-import { fonteVigenciaBanco, impactoBanco, ppcsQueCitamBanco, vigenciaBanco } from "@simplifica-if/kb/db/modo-banco";
+import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
+import * as Impacto from "@simplifica-if/kb/Impacto";
+import * as Normas from "@simplifica-if/kb/Normas";
+import * as Ppcs from "@simplifica-if/kb/Ppcs";
 import { z } from "zod";
 import { type Aviso, esquemaLink, responder } from "../envelope.ts";
 import { linkFicha, linkNorma, linkPpc } from "../links.ts";
@@ -72,14 +75,14 @@ export const impactoDaNorma = definirFerramenta({
     'O que uma norma (revogada, alterada ou nova) atinge na base: os PPCs que a citam, as fichas da `revisar-ppc`, as normas que a citam, as relações, as sucessoras e as transições. Use para responder "o que muda com esta norma".',
   entrada,
   dados,
-  executar(e, { db, base }) {
-    const norma = normaPedida(db, e.id);
-    const impacto = impactoBanco(db, e.id, { incluirPpcs: false });
-    const ppcs = ppcsQueCitamBanco(db, e.id);
-    const transicoes = new Map(vigenciaBanco(db, norma.id).transicoes.map((t) => [t.id, t]));
-    const relacoes = fonteVigenciaBanco(db)
-      .relacoes()
-      .filter((r) => r.origem === norma.id || r.alvo === norma.id);
+  executar(e, { db, kb, base }) {
+    const norma = normaPedida(kb, e.id);
+    const impacto = kb(Impacto.Impacto.use((i) => i.daNorma(e.id, { incluirPpcs: false })));
+    const ppcs = kb(Ppcs.Ppcs.use((p) => p.citacoesDaNorma(e.id)));
+    const transicoes = new Map(kb(Normas.Normas.use((n) => n.vigencia(norma.id))).transicoes.map((t) => [t.id, t]));
+    const relacoes = kb(FontesNormativas.FontesNormativas.useSync((f) => f.relacoes)).filter(
+      (r) => r.origem === norma.id || r.alvo === norma.id,
+    );
     const fichas = impacto.arquivos
       .filter((a) => a.categoria === "ficha")
       .map((a) => {
@@ -112,7 +115,7 @@ export const impactoDaNorma = definirFerramenta({
         relacoes: relacoes.map(relacaoSaida),
         normas_que_citam: impacto.normas_que_citam.map((n) => ({
           id: n.id,
-          titulo: normaResumo(db, n.id)?.titulo ?? n.id,
+          titulo: normaResumo(kb, n.id)?.titulo ?? n.id,
           dispositivos: n.dispositivos,
           link: linkNorma(n.id),
         })),

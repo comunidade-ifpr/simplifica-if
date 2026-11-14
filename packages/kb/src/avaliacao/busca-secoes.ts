@@ -1,46 +1,49 @@
+// @effect-diagnostics nodeBuiltinImport:off -- leitura síncrona do conjunto rotulado da avaliação
 /**
  * Recall@10 da busca de seções (`kb buscar-secoes`) no conjunto rotulado de
  * `avaliacao/busca-secoes/consultas.yaml`, nos três modos: sem stemmer nem sinônimos (`simples`),
  * só radicais (`radicais`) e radicais com o léxico de sinônimos (`completo`, o padrão da CLI).
  * Meta do plano (fase 6): recall@10 ≥ 0,8.
  */
-import type { DatabaseSync } from "node:sqlite";
-import { readFileSync } from "node:fs";
-import path from "node:path";
+import * as Effect from "effect/Effect";
+import * as Schema from "effect/Schema";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { parse } from "yaml";
-import { z } from "zod";
 import type { Sinonimos } from "../busca/sinonimos.ts";
 import { semDiacriticos } from "../busca/tokens.ts";
-import { buscarSecoes, type FiltrosSecoes, type ModoBusca } from "../db/consultas.ts";
+import * as Ppcs from "../Ppcs.ts";
+import type { FiltrosSecoes, ModoBusca } from "../db/consultas.ts";
 import { raizRepositorio } from "../normas/registro.ts";
 
-const esquemaConsultas = z.strictObject({
-  consultas: z.array(
-    z.strictObject({
-      id: z.string(),
-      consulta: z.string().min(1),
-      filtros: z
-        .strictObject({
-          ppc: z.string().optional(),
-          cnct: z.string().optional(),
-          campus: z.string().optional(),
-          nivel: z.string().optional(),
-          forma: z.string().optional(),
-          tipo: z.string().optional(),
-        })
-        .default({}),
-      esperadas: z.array(z.strictObject({ ppc: z.string(), titulo: z.string().min(1) })).min(1),
+const esquemaConsultas = Schema.Struct({
+  consultas: Schema.Array(
+    Schema.Struct({
+      id: Schema.String,
+      consulta: Schema.String.check(Schema.isMinLength(1)),
+      filtros: Schema.Struct({
+        ppc: Schema.optionalKey(Schema.String),
+        cnct: Schema.optionalKey(Schema.String),
+        campus: Schema.optionalKey(Schema.String),
+        nivel: Schema.optionalKey(Schema.String),
+        forma: Schema.optionalKey(Schema.String),
+        tipo: Schema.optionalKey(Schema.String),
+      }).pipe(Schema.withDecodingDefaultKey(Effect.succeed({}))),
+      esperadas: Schema.Array(
+        Schema.Struct({ ppc: Schema.String, titulo: Schema.String.check(Schema.isMinLength(1)) }),
+      ).check(Schema.isMinLength(1)),
     }),
   ),
 });
-export type ConsultasRotuladas = z.output<typeof esquemaConsultas>;
+export type ConsultasRotuladas = typeof esquemaConsultas.Type;
+const decodificarConsultas = Schema.decodeUnknownSync(esquemaConsultas, { onExcessProperty: "error", errors: "all" });
 
 export function caminhoConsultas(raiz: string = raizRepositorio()): string {
-  return path.join(raiz, "avaliacao", "busca-secoes", "consultas.yaml");
+  return NodePath.join(raiz, "avaliacao", "busca-secoes", "consultas.yaml");
 }
 
 export function lerConsultas(caminho: string = caminhoConsultas()): ConsultasRotuladas {
-  return esquemaConsultas.parse(parse(readFileSync(caminho, "utf-8"), { schema: "failsafe" }));
+  return decodificarConsultas(parse(NodeFS.readFileSync(caminho, "utf-8"), { schema: "failsafe" }));
 }
 
 const normalizar = (t: string) => semDiacriticos(t).toLowerCase().replace(/\s+/g, " ").trim();
@@ -61,12 +64,35 @@ export interface ResultadoAvaliacaoBusca {
   }[];
 }
 
-export function avaliarBusca(
-  db: DatabaseSync,
-  opcoes: { lexico: Sinonimos; k?: number; conjunto?: ConsultasRotuladas },
-): ResultadoAvaliacaoBusca {
+/** Léxico sem grupos nem tipos: os modos `simples` e `radicais` medem a busca sem sinônimos. */
+const LEXICO_VAZIO: Sinonimos = { tipos: {}, grupos: [] };
+
+export class ConsultasRotuladasIlegiveis extends Schema.TaggedError<ConsultasRotuladasIlegiveis>()(
+  "ConsultasRotuladasIlegiveis",
+  { caminho: Schema.String, cause: Schema.Defect() },
+) {
+  override get message(): string {
+    return `não foi possível ler o conjunto rotulado da busca de seções (${this.caminho})`;
+  }
+}
+
+export const ehConsultasRotuladasIlegiveis = Schema.is(ConsultasRotuladasIlegiveis);
+
+/**
+ * Recall@k de cada consulta rotulada nos três modos, pelo `Ppcs.buscarSecoes`. O modo `completo` usa
+ * o léxico de `FontesNormativas` (ou `opcoes.lexico`); os outros, um léxico vazio.
+ */
+export const avaliarBusca = Effect.fn("avaliacao.avaliarBusca")(function* (
+  opcoes: { readonly lexico?: Sinonimos; readonly k?: number; readonly conjunto?: ConsultasRotuladas } = {},
+) {
+  const ppcs = yield* Ppcs.Ppcs;
   const k = opcoes.k ?? 10;
-  const conjunto = opcoes.conjunto ?? lerConsultas();
+  const conjunto =
+    opcoes.conjunto ??
+    (yield* Effect.try({
+      try: () => lerConsultas(),
+      catch: (cause) => new ConsultasRotuladasIlegiveis({ caminho: caminhoConsultas(), cause }),
+    }));
   const somas: Record<ModoBusca, number> = { simples: 0, radicais: 0, completo: 0 };
   const detalhes: ResultadoAvaliacaoBusca["detalhes"] = [];
   for (const c of conjunto.consultas) {
@@ -81,7 +107,12 @@ export function avaliarBusca(
     const recall = {} as Record<ModoBusca, number>;
     const faltando = {} as Record<ModoBusca, string[]>;
     for (const modo of MODOS) {
-      const achados = buscarSecoes(db, c.consulta, filtros, { limite: k, modo, lexico: opcoes.lexico });
+      const lexico = modo === "completo" ? opcoes.lexico : LEXICO_VAZIO;
+      const achados = yield* ppcs.buscarSecoes(c.consulta, filtros, {
+        limite: k,
+        modo,
+        ...(lexico ? { lexico } : {}),
+      });
       const perdidas = c.esperadas.filter(
         (e) => !achados.some((a) => a.ppc === `ppc:${e.ppc}` && normalizar(a.titulo).includes(normalizar(e.titulo))),
       );
@@ -94,11 +125,12 @@ export function avaliarBusca(
   }
   const n = conjunto.consultas.length;
   const media = (modo: ModoBusca) => Math.round((somas[modo] / n) * 1000) / 1000;
-  return {
+  const resultado: ResultadoAvaliacaoBusca = {
     k,
     consultas: n,
     recall: { simples: media("simples"), radicais: media("radicais"), completo: media("completo") },
     meta: 0.8,
     detalhes,
   };
-}
+  return resultado;
+});

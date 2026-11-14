@@ -1,5 +1,5 @@
 {
-  // Igual ao tsconfig.base.json do T3 Code, sem React e ainda sem o tsconfig.effect.json (C1), mais as
+  // Igual ao tsconfig.base.json do T3 Code, sem React, mais as
   // checagens de não usados e de switch que este repositório já tinha.
   "compilerOptions": {
     "target": "ESNext",

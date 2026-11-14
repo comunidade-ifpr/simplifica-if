@@ -1,15 +1,17 @@
 /**
  * Peças comuns às ferramentas de PPCs e cursos (T3): a norma pedida pela IA, as regras de transição,
  * os fatos de PPC, a leitura dos IDs de PPC e de curso escritos pela IA e os avisos. `NormaResumo` e
- * `Relacao` ficam em `tipos-comuns.ts`. Só formato: as regras ficam em `@simplifica-if/kb/db/modo-banco`.
+ * `Relacao` ficam em `tipos-comuns.ts`. Só formato: as regras ficam nos serviços do kb.
  */
-import type { DatabaseSync } from "node:sqlite";
-import { type fatosDosPpcs, REGRAS_BAIXA_CONFIANCA, type vigenciaBanco } from "@simplifica-if/kb/db/modo-banco";
+import type { FatosDoPpc } from "@simplifica-if/kb/db/consultas";
+import type { SituacaoTransicao } from "@simplifica-if/kb/normas/vigencia";
+import { REGRAS_BAIXA_CONFIANCA } from "@simplifica-if/kb/ppcs/citacoes";
 import { z } from "zod";
 import { type Aviso, ErroEntrada, esquemaFonte, esquemaLink, type Fonte } from "../envelope.ts";
 import { linkNorma, linkPpc, lerLink } from "../links.ts";
 import { blocoItem, comLink } from "../texto.ts";
 import { cortar } from "../orcamento.ts";
+import type { Kb } from "./ferramenta.ts";
 import { type NormaResumo, normaResumo } from "./tipos-comuns.ts";
 
 /* ------------------------------------------------------------------ IDs */
@@ -63,8 +65,8 @@ export const filtroTexto = (descricao: string) => z.string().trim().min(1).max(2
 /* ------------------------------------------------------------------ normas */
 
 /** A norma pedida pela IA; ID desconhecido é erro de entrada, com a dica de onde achar o ID. */
-export function normaPedida(db: DatabaseSync, id: string): NormaResumo {
-  const norma = normaResumo(db, id);
+export function normaPedida(kb: Kb, id: string): NormaResumo {
+  const norma = normaResumo(kb, id);
   if (!norma) {
     throw new ErroEntrada(
       `norma não encontrada na base: "${id}". Use o ID canônico (como "br/cne-cp/res/2021/1"), vindo de buscar_norma ou de resolver_citacoes`,
@@ -96,8 +98,6 @@ export const esquemaTransicaoResumo = z.strictObject({
   link: esquemaLink,
 });
 export type TransicaoResumo = z.infer<typeof esquemaTransicaoResumo>;
-
-type SituacaoTransicao = ReturnType<typeof vigenciaBanco>["transicoes"][number];
 
 export function transicaoResumo(t: SituacaoTransicao): TransicaoResumo {
   return { id: t.id, regra: t.regra, situacao_na_data: t.situacao, link: linkNorma(t.norma, t.dispositivo.slice(1)) };
@@ -170,8 +170,6 @@ export const esquemaFatosPpc = z.strictObject({
   ),
 });
 export type FatosPpc = z.infer<typeof esquemaFatosPpc>;
-
-type FatosDoPpc = ReturnType<typeof fatosDosPpcs>[number];
 
 function fonteLinha(path: string, linha: number): Fonte {
   return { path, linha_inicio: linha, linha_fim: linha };

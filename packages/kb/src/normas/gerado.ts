@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- campos gerados do front matter, lidos dos arquivos pelos scripts (gerar_base, validar_base)
 /**
  * Campos GERADOS do front matter das normas (fase 5), escritos por `scripts/gerar_base.ts` e
  * conferidos por `gerar_base.ts --check` e `validar_base.ts`:
@@ -11,7 +12,7 @@
  * Variantes de arquivo (`~compilacao`) não têm campos gerados: o status da compilação descreve o
  * texto reproduzido e continua manual (padrão de front matter).
  */
-import { readFileSync } from "node:fs";
+import * as NodeFS from "node:fs";
 import { idDoAto } from "./ids.ts";
 import { listarNormas } from "./estrutura.ts";
 import { carregarRegistro, raizRepositorio } from "./registro.ts";
@@ -106,7 +107,7 @@ export interface NormaGerada {
 /** Texto esperado de cada norma da base, com os campos gerados atualizados. */
 export function normasComCamposGerados(raiz: string = raizRepositorio()): NormaGerada[] {
   return listarNormas(raiz).map((norma) => {
-    const atual = readFileSync(norma.arquivo, "utf-8");
+    const atual = NodeFS.readFileSync(norma.arquivo, "utf-8");
     return { ...norma, atual, esperado: reescreverFrontMatter(atual, camposGerados(norma.id, raiz)) };
   });
 }

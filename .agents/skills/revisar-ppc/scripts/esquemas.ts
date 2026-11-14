@@ -12,10 +12,32 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { z } from "zod";
 import { jsonIndentado, type ObjetoJson } from "@simplifica-if/kb/json";
-import { RE_ID_ATO } from "@simplifica-if/kb/normas/ids";
-import { esquemaReferenciaNormativa } from "@simplifica-if/kb/normas/referencia-estruturada";
+import { RE_ID_ATO, RE_ID_DISPOSITIVO, RE_REFERENCIA } from "@simplifica-if/kb/normas/ids";
+import { PAPEIS_REFERENCIA } from "@simplifica-if/kb/normas/referencia-estruturada";
 import { escreverTexto } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
+
+/**
+ * Referência normativa estruturada (`{ ref, dispositivo?, papel, nota? }`), para o JSON Schema da
+ * ficha: cópia zod temporária do esquema do kb; o C3 passa a skill a Effect Schema e volta a
+ * importar do kb (`esquemaReferenciaNormativa` em `@simplifica-if/kb/normas/referencia-estruturada`,
+ * que `referencias-fichas.ts` já usa para validar as referências).
+ */
+export const esquemaReferenciaNormativa = z.strictObject({
+  ref: z
+    .string()
+    .regex(RE_REFERENCIA)
+    .describe("ID canônico: ato sem variante (br/..., ifpr/...), stub, externo:... ou cnct:..."),
+  dispositivo: z
+    .string()
+    .regex(RE_ID_DISPOSITIVO)
+    .optional()
+    .describe("Um dispositivo do ato, como #art28-vii, #art28-par1-iv ou #art24-parunico"),
+  papel: z
+    .enum(PAPEIS_REFERENCIA)
+    .describe("fundamento: a ficha aplica a regra; complementar: a ficha só remete à referência"),
+  nota: z.string().min(1).optional().describe("Detalhe da citação que não cabe em ref e dispositivo"),
+});
 
 const ESTADOS = ["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"] as const;
 

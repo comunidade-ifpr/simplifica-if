@@ -64,8 +64,8 @@ function opcoesBundle(outDir: string) {
     deps: { alwaysBundle: () => true, onlyBundle: false },
     // o SEA embute um arquivo só; nada de import() para outro chunk
     outputOptions: { codeSplitting: false },
-    // num bundle, todo módulo é o principal: os `if (import.meta.main)` das CLIs dos pacotes (como o de
-    // `kb/src/db/compilar.ts`) não podem rodar
+    // num bundle, todo módulo é o principal: um `if (import.meta.main)` de CLI de pacote que entre no
+    // bundle não pode rodar
     define: { "import.meta.main": "false" },
   } as const;
 }

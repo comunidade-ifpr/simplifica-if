@@ -1,4 +1,6 @@
 import { describe, expect, test } from "vite-plus/test";
+import * as Result from "effect/Result";
+import * as Schema from "effect/Schema";
 import { analisarDispositivos } from "./dispositivos.ts";
 import { ehIdAto, ehIdCnct, RE_ID_ATO_COM_DISPOSITIVO, RE_REFERENCIA, semAcento } from "./ids.ts";
 import {
@@ -101,11 +103,11 @@ describe("referências estruturadas", () => {
   ];
 
   test("o esquema aceita o formato e recusa texto livre", () => {
-    for (const entrada of entradas) expect(esquemaReferenciaNormativa.parse(entrada)).toEqual(entrada);
-    expect(esquemaReferenciaNormativa.safeParse("Resolução CNE/CP nº 2/2026").success).toBe(false);
-    expect(esquemaReferenciaNormativa.safeParse({ ref: "br/cne-cp/res/2026/2", papel: "principal" }).success).toBe(
-      false,
-    );
+    const decodificar = Schema.decodeUnknownResult(esquemaReferenciaNormativa, { onExcessProperty: "error" });
+    for (const entrada of entradas) expect(Result.getOrThrow(decodificar(entrada))).toEqual(entrada);
+    expect(Result.isFailure(decodificar("Resolução CNE/CP nº 2/2026"))).toBe(true);
+    expect(Result.isFailure(decodificar({ ref: "br/cne-cp/res/2026/2", papel: "principal" }))).toBe(true);
+    expect(Result.isFailure(decodificar({ ref: "br/cne-cp/res/2026/2", papel: "fundamento", extra: "x" }))).toBe(true);
   });
 
   test("agrupa entradas consecutivas da mesma norma e do mesmo papel", () => {

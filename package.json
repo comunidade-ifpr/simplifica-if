@@ -9,7 +9,7 @@
     "base:site": "node scripts/gerar_site.ts",
     "base:tipos": "node scripts/gerar_tipos_schemas.ts",
     "kb": "node packages/kb/src/cli.ts",
-    "kb:compilar": "node packages/kb/src/db/compilar.ts",
+    "kb:compilar": "node packages/kb/src/cli.ts compilar",
     "mcp": "node packages/mcp/src/cli.ts",
     "mcp:instrucoes": "node packages/mcp/scripts/gerar-instrucoes.ts",
     "mcp:executavel": "node packages/mcp/scripts/construir-executavel.ts",
@@ -26,6 +26,7 @@
     "fmt:check": "vp fmt --check"
   },
   "dependencies": {
+    "@effect/platform-node": "catalog:",
     "@notionhq/client": "5.31.1",
     "@simplifica-if/kb": "workspace:*",
     "ajv": "8.20.0",
@@ -33,6 +34,7 @@
     "domhandler": "6.0.1",
     "domutils": "4.0.2",
     "dotenv": "18.0.10",
+    "effect": "catalog:",
     "entities": "8.1.0",
     "htmlparser2": "12.0.0",
     "pdfmake": "0.3.13",
@@ -42,6 +44,8 @@
   },
   "devDependencies": {
     "@effect/tsgo": "0.67.1",
+    "@effect/vitest": "catalog:",
+    "@oxlint/plugins": "1.89.0",
     "@types/node": "catalog:",
     "@types/pdfmake": "0.3.3",
     "json-schema-to-typescript": "16.0.0",

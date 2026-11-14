@@ -1,19 +1,14 @@
 /**
  * Ferramenta 4, `correspondencia`: o dispositivo correspondente na norma sucessora, pela tabela de
- * correspondência (`correspondenciaBanco`, o `kb correspondencia`). Sem dispositivo, todos os
+ * correspondência (`Normas.correspondencia`, o `kb correspondencia`). Sem dispositivo, todos os
  * artigos da norma, de 10 em 10.
  */
-import {
-  correspondenciaBanco,
-  fonteCorrespondenciaBanco,
-  idDoAto,
-  trechoDoDispositivo,
-} from "@simplifica-if/kb/db/modo-banco";
+import * as Normas from "@simplifica-if/kb/Normas";
+import { idDoAto } from "@simplifica-if/kb/normas/ids";
 import { z } from "zod";
 import { type Aviso, ErroEntrada, paginar, responder } from "../envelope.ts";
 import { blocoItem, linhaFonte } from "../texto.ts";
-import type { Contexto } from "./ferramenta.ts";
-import { definirFerramenta } from "./ferramenta.ts";
+import { definirFerramenta, type Kb } from "./ferramenta.ts";
 import {
   type BlocoComLiteral,
   corpoNoTeto,
@@ -72,9 +67,9 @@ const dados = z.strictObject({
 
 type Item = z.infer<typeof dados>["itens"][number];
 
-function trecho(db: Contexto["db"], id: string): DispositivoTexto | null {
-  const t = trechoDoDispositivo(db, id);
-  return t ? dispositivoTexto(db, t) : null;
+function trecho(kb: Kb, id: string): DispositivoTexto | null {
+  const t = kb(Normas.Normas.use((n) => n.trecho(id)));
+  return t ? dispositivoTexto(kb, t) : null;
 }
 
 export const correspondencia = definirFerramenta({
@@ -84,11 +79,11 @@ export const correspondencia = definirFerramenta({
     "Dispositivo correspondente na norma sucessora, por exemplo do art. 20 da Res. CNE/CP 1/2021 para a Res. CNE/CP 2/2026. Use quando um PPC ou documento citar dispositivo de norma revogada. A tabela é rascunho, sem revisão jurídica: trate-a como indicação, nunca como fundamento.",
   entrada,
   dados,
-  executar({ id, cursor }, { db, base }) {
+  executar({ id, cursor }, { kb, base }) {
     const ato = idDoAto(id.split("#")[0]!);
     const comDispositivo = id.includes("#");
-    const tabelas = fonteCorrespondenciaBanco(db).tabelas(ato);
-    const resultados = correspondenciaBanco(db, id);
+    const tabelas = kb(Normas.Normas.use((n) => n.tabelasDeCorrespondencia(ato)));
+    const resultados = kb(Normas.Normas.use((n) => n.correspondencia(id)));
     const avisos: Aviso[] = [];
     if (comDispositivo && cursor !== undefined) {
       throw new ErroEntrada("cursor só vale na consulta da norma inteira (ID sem dispositivo)");
@@ -97,11 +92,11 @@ export const correspondencia = definirFerramenta({
       ? { itens: resultados, pagina: undefined }
       : paginar(resultados, { limite: PAGINA_CORRESPONDENCIA, cursor, consulta: { id } });
     const itens = pagina.map((r): Item => {
-      const origem = trecho(db, r.id);
+      const origem = trecho(kb, r.id);
       if (!origem) throw new Error(`dispositivo de origem da correspondência fora do texto: ${r.id}`);
       const destino: DispositivoTexto[] = [];
       for (const d of r.textos_destino) {
-        const t = trecho(db, d.id);
+        const t = trecho(kb, d.id);
         if (t) destino.push(t);
         else
           avisos.push({ tipo: "nao-encontrado", mensagem: "dispositivo de destino fora do texto da base", ref: d.id });

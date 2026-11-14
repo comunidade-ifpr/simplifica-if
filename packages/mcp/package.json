@@ -15,9 +15,11 @@
     "typecheck": "effect-tsgo tsrs --noEmit"
   },
   "dependencies": {
+    "@effect/platform-node": "catalog:",
     "@modelcontextprotocol/server": "2.4.0",
     "@simplifica-if/kb": "workspace:*",
     "commander": "15.1.0",
+    "effect": "catalog:",
     "zod": "4.6.7"
   },
   "devDependencies": {

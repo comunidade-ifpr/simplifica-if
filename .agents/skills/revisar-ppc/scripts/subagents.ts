@@ -9,21 +9,18 @@
  * é segmentado com a mesma segmentação e taxonomia do índice de seções (`bancoDoPpcAvulso`), porque
  * o PPC analisado pode não estar na base. As fichas transversais vão num grupo com o PPC inteiro.
  */
-import type { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
-import { abrirBanco } from "@simplifica-if/kb/db/banco";
+import * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import { bancoDoPpcAvulso } from "@simplifica-if/kb/db/compilar";
 import {
   agruparPorTopico,
   type FichaPacote,
-  nomesDeCampiDoBanco,
   type PacoteAvulso,
-  pacoteContextoAvulso,
   TOPICO_TRANSVERSAL,
-  type TopicoFichas,
   topicoPrincipal,
 } from "@simplifica-if/kb/db/pacote-contexto";
+import type { TopicoFichas } from "@simplifica-if/kb/ppcs/topicos";
 import { lerSinonimos } from "@simplifica-if/kb/busca/sinonimos";
 import { palavrasDeCampi, textoDaSecao } from "@simplifica-if/kb/ppcs/secoes";
 import { copiarProfundoPy, dumpsPy } from "@simplifica-if/kb/python/json";
@@ -46,6 +43,7 @@ import {
 import type { UniversoReferencias } from "@simplifica-if/kb/normas/referencia-estruturada";
 import { aparar, compararTexto } from "@simplifica-if/kb/texto";
 import { listarArquivos } from "./arquivos.ts";
+import { abrirKb, caminhoDoBanco } from "./kb.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { componentesMatriz, gerarContextoCnctRodada, lerJsonSeExistir } from "./cnct-catalogo.ts";
 import { marcoLegivel, referenciasLegiveisDaFicha, universoOuVazio } from "./referencias-fichas.ts";
@@ -407,12 +405,11 @@ const PPC_ID_RODADA = "ppc:rodada";
 const TOPICO_CITACOES_PPC = "referencias_normativas";
 
 /**
- * Contexto do kb para uma rodada: o `kb.sqlite` (recompilado sozinho quando velho) e o banco em
- * memória com o `PPC.md` da rodada segmentado pela taxonomia do índice de seções.
+ * Contexto do kb para uma rodada: os serviços do kb sobre o `kb.sqlite` (que o ponto de entrada
+ * deixa fresco, `garantirBancoFresco` em `kb.ts`) e o banco em memória com o `PPC.md` da rodada
+ * segmentado pela taxonomia do índice de seções.
  */
 export type ContextoKbRodada = {
-  db: DatabaseSync;
-  dbPpc: DatabaseSync;
   /** Linhas e total de caracteres do `PPC.md`. */
   markdown: string;
   pacote(fichas: ObjetoPy[], escopo: "secoes" | "completo", citacoesPpc: boolean): PacoteAvulso;
@@ -422,33 +419,30 @@ export type ContextoKbRodada = {
 export function abrirContextoKbRodada(rodada: string, skill: CaminhosAnalise = caminhosPadrao()): ContextoKbRodada {
   const caminhos = caminhosRodada(rodada);
   const raiz = path.dirname(skill.baseConhecimentoDir);
-  const db = abrirBanco({ raiz });
+  const { kb, fechar } = abrirKb(caminhoDoBanco(raiz));
   const markdown = lerTexto(caminhos.ppc);
   const lexico = lerSinonimos();
   const dbPpc = bancoDoPpcAvulso(markdown, {
     ppcId: PPC_ID_RODADA,
     path: caminhos.ppc,
     taxonomia: TAXONOMIA_RODADA,
-    palavrasCampi: palavrasDeCampi(nomesDeCampiDoBanco(db)),
+    palavrasCampi: palavrasDeCampi(kb(PacoteContexto.PacoteContexto.use((p) => p.nomesDeCampi))),
     raiz,
     sinonimos: lexico,
     todasAsSecoes: true,
     titulosNivel1: true,
   });
   return {
-    db,
-    dbPpc,
     markdown,
     pacote: (fichas, escopo, citacoesPpc) =>
-      pacoteContextoAvulso(db, dbPpc, fichas.map(comoFichaPacote), {
-        ppcId: PPC_ID_RODADA,
-        escopo,
-        citacoesPpc,
-        lexico,
-      }),
+      kb(
+        PacoteContexto.PacoteContexto.use((p) =>
+          p.avulso(dbPpc, fichas.map(comoFichaPacote), { ppcId: PPC_ID_RODADA, escopo, citacoesPpc, lexico }),
+        ),
+      ),
     fechar: () => {
       dbPpc.close();
-      db.close();
+      fechar();
     },
   };
 }

@@ -1,8 +1,11 @@
-#!/usr/bin/env node
+// @effect-diagnostics nodeBuiltinImport:off -- a compilação escreve dezenas de milhares de linhas pelo node:sqlite direto, numa transação (ver Compilador.ts)
 /**
  * Compila o `kb.sqlite` a partir dos arquivos do checkout (fase 6 do plano).
  *
  *   pnpm kb:compilar [--destino tmp/kb.sqlite] [--versao 2026.11.13] [--commit <sha>] [--canal piloto]
+ *
+ * O serviço `Compilador` orquestra (temporário, renomeação, mtime); aqui ficam as partes síncronas:
+ * `prepararCompilacao` (fontes e impressão digital), `preencherBanco` e `bancoDoPpcAvulso`.
  *
  * O banco é derivado e fica fora do git (`tmp/`). Determinismo: as mesmas fontes geram o mesmo
  * arquivo, byte a byte. Para isso:
@@ -14,11 +17,10 @@
  * - o arquivo é escrito num temporário e renomeado (quem lê nunca vê um banco pela metade).
  * O teste `base.test.ts` compila duas vezes e compara o SHA-256 dos arquivos.
  */
-import { DatabaseSync, type StatementSync } from "node:sqlite";
-import { emTransacao } from "./transacao.ts";
-import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, utimesSync } from "node:fs";
-import path from "node:path";
-import { z } from "zod";
+import * as Schema from "effect/Schema";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
+import * as NodeSqlite from "node:sqlite";
 import { expansaoDoTipo, lerSinonimos, type Sinonimos } from "../busca/sinonimos.ts";
 import { radicais } from "../busca/tokens.ts";
 import { cruzarPpcSuap } from "../fatos/divergencias.ts";
@@ -49,22 +51,19 @@ import {
   esquemaLinhaTabelaCorrespondencia,
   esquemaLinhaTransicao,
   esquemaLinhaVigencia,
-  type FontesNormativas,
+  type LinhasNormativas,
 } from "./fontes-normativas.ts";
 import { fontesNormativasArquivos } from "../normas/fontes-db.ts";
-import { lerTopicosSecoes, type TopicosSecoes } from "./pacote-contexto.ts";
+import { lerTopicosSecoes, type TopicosSecoes } from "../ppcs/topicos.ts";
+import { emTransacao } from "./transacao.ts";
 
 export const PAGE_SIZE = 4096;
-
-export function caminhoBancoPadrao(raiz: string = raizRepositorio()): string {
-  return process.env.KB_SQLITE ? path.resolve(process.env.KB_SQLITE) : path.join(raiz, "tmp", "kb.sqlite");
-}
 
 export interface OpcoesCompilacao {
   raiz?: string;
   destino?: string;
   /** Carga da fase 5 (padrão: `fontesNormativasArquivos(raiz)`, pela API de `normas/`). */
-  fontesNormativas?: FontesNormativas;
+  fontesNormativas?: LinhasNormativas;
   /** Léxico de sinônimos (padrão: `packages/kb/dados/sinonimos.yaml`). */
   sinonimos?: Sinonimos;
   /** Tópicos das fichas → tipos de seção (padrão: `packages/kb/dados/topicos-secoes.yaml`). */
@@ -91,125 +90,153 @@ const ANALISE = ".agents/skills/revisar-ppc/base-analise";
 const json = (valor: unknown): string => JSON.stringify(valor ?? null);
 
 function lerJson(arquivo: string): unknown {
-  return JSON.parse(readFileSync(arquivo, "utf-8"));
+  return JSON.parse(NodeFS.readFileSync(arquivo, "utf-8"));
 }
 
 /* ---------------------------------------------------------- esquemas de leitura */
 
-const esquemaManifest = z.array(
-  z.looseObject({
-    id: z.string(),
-    title: z.string(),
-    tipo_documento: z.string().optional(),
-    numero: z.union([z.string(), z.number()]).optional(),
-    ano: z.number().int().optional(),
-    data_publicacao: z.string().optional(),
-    orgao: z.string().optional(),
-    jurisdicao: z.string().optional(),
-    ementa: z.string().optional(),
-    status_vigencia: z.string().optional(),
-    keywords: z.array(z.string()).optional(),
-    aliases: z.array(z.string()).optional(),
-    fonte: z.string().optional(),
-    path: z.string(),
+const texto = Schema.optionalKey(Schema.String);
+const resto = [Schema.Record(Schema.String, Schema.Unknown)] as const;
+/** Objeto frouxo: exige os campos dados e deixa os demais na saída, na ordem de entrada, depois deles. */
+const solto = <Campos extends Schema.Struct.Fields>(campos: Campos) =>
+  Schema.StructWithRest(Schema.Struct(campos), resto);
+
+const esquemaManifest = Schema.Array(
+  solto({
+    id: Schema.String,
+    title: Schema.String,
+    tipo_documento: texto,
+    numero: Schema.optionalKey(Schema.Union([Schema.String, Schema.Number])),
+    ano: Schema.optionalKey(Schema.Int),
+    data_publicacao: texto,
+    orgao: texto,
+    jurisdicao: texto,
+    ementa: texto,
+    status_vigencia: texto,
+    keywords: Schema.optionalKey(Schema.Array(Schema.String)),
+    aliases: Schema.optionalKey(Schema.Array(Schema.String)),
+    fonte: texto,
+    path: Schema.String,
   }),
 );
 
-const esquemaIndicePpcs = z.looseObject({
-  items: z.array(
-    z.looseObject({
-      id: z.string(),
-      campus_id: z.string(),
-      campus_nome: z.string(),
-      curso_slug: z.string(),
-      curso_nome: z.string(),
-      nivel: z.string(),
-      taxonomia: z.string().optional(),
-      tipo_oferta: z.string(),
-      curso_url: z.string().optional(),
-      fonte_pdf: z.string().optional(),
-      path: z.string(),
-      proveniencia: z.unknown().optional(),
-      ano_documento: z.number().int().optional(),
+const esquemaIndicePpcs = solto({
+  items: Schema.Array(
+    solto({
+      id: Schema.String,
+      campus_id: Schema.String,
+      campus_nome: Schema.String,
+      curso_slug: Schema.String,
+      curso_nome: Schema.String,
+      nivel: Schema.String,
+      taxonomia: texto,
+      tipo_oferta: Schema.String,
+      curso_url: texto,
+      fonte_pdf: texto,
+      path: Schema.String,
+      proveniencia: Schema.optionalKey(Schema.Unknown),
+      ano_documento: Schema.optionalKey(Schema.Int),
     }),
   ),
-  secoes: z.looseObject({ paths: z.record(z.string(), z.string()) }),
+  secoes: solto({ paths: Schema.Record(Schema.String, Schema.String) }),
 });
 
-const esquemaSecaoJsonl = z.looseObject({
-  id: z.string(),
-  ppc_id: z.string(),
-  section_kind: z.string(),
-  origem_tipo: z.string().optional(),
-  heading: z.string(),
-  numeracao: z.string().nullable().optional(),
-  path: z.string(),
-  linha_inicio: z.number().int(),
-  linha_fim: z.number().int(),
+const esquemaSecaoJsonl = solto({
+  id: Schema.String,
+  ppc_id: Schema.String,
+  section_kind: Schema.String,
+  origem_tipo: texto,
+  heading: Schema.String,
+  numeracao: Schema.optionalKey(Schema.NullOr(Schema.String)),
+  path: Schema.String,
+  linha_inicio: Schema.Int,
+  linha_fim: Schema.Int,
 });
+type SecaoJsonl = typeof esquemaSecaoJsonl.Type;
 
-const esquemaCnctIndice = z.looseObject({
-  items: z.array(
-    z.looseObject({
-      id: z.string(),
-      denominacao: z.string(),
-      eixo_tecnologico: z.string(),
-      area_tecnologica: z.string().optional(),
-      carga_horaria_minima_horas: z.number().optional(),
-      path: z.string().optional(),
+const esquemaCnctIndice = solto({
+  items: Schema.Array(
+    solto({
+      id: Schema.String,
+      denominacao: Schema.String,
+      eixo_tecnologico: Schema.String,
+      area_tecnologica: texto,
+      carga_horaria_minima_horas: Schema.optionalKey(Schema.Number),
+      path: texto,
     }),
   ),
 });
 
-const esquemaFicha = z.looseObject({
-  id: z.string(),
-  titulo: z.string(),
-  dominio: z.string().optional(),
-  criticidade: z.string().optional(),
-  tipo_escopo: z.string().optional(),
-  pergunta: z.string().optional(),
-  rubrica: z.string().optional(),
-  topicos_tematicos: z.array(z.string()).optional(),
-  referencias_normativas: z
-    .array(
-      z.looseObject({
-        ref: z.string(),
-        dispositivo: z.string().optional(),
-        papel: z.string(),
-        nota: z.string().optional(),
+const esquemaFicha = solto({
+  id: Schema.String,
+  titulo: Schema.String,
+  dominio: texto,
+  criticidade: texto,
+  tipo_escopo: texto,
+  pergunta: texto,
+  rubrica: texto,
+  topicos_tematicos: Schema.optionalKey(Schema.Array(Schema.String)),
+  referencias_normativas: Schema.optionalKey(
+    Schema.Array(
+      solto({
+        ref: Schema.String,
+        dispositivo: texto,
+        papel: Schema.String,
+        nota: texto,
       }),
-    )
-    .optional(),
+    ),
+  ),
 });
 
-const esquemaTopicos = z.looseObject({
-  topicos: z.array(
-    z.looseObject({
-      id: z.string(),
-      titulo: z.string(),
-      grupo: z.string().optional(),
-      tipo_escopo: z.string().optional(),
-      descricao: z.string().optional(),
-      aliases_titulo: z.array(z.string()).optional(),
-      termos_busca: z.array(z.string()).optional(),
-      fichas: z.array(z.string()).optional(),
+/** Só a lista de tópicos, crua: `dados_json` de cada tópico guarda o item como está no arquivo. */
+const esquemaTopicosBrutos = Schema.Struct({ topicos: Schema.Array(Schema.Unknown) });
+
+const esquemaTopicos = solto({
+  topicos: Schema.Array(
+    solto({
+      id: Schema.String,
+      titulo: Schema.String,
+      grupo: texto,
+      tipo_escopo: texto,
+      descricao: texto,
+      aliases_titulo: Schema.optionalKey(Schema.Array(Schema.String)),
+      termos_busca: Schema.optionalKey(Schema.Array(Schema.String)),
+      fichas: Schema.optionalKey(Schema.Array(Schema.String)),
     }),
   ),
 });
 
-const esquemaMarcos = z.looseObject({
-  marcos: z.array(
-    z.looseObject({
-      id: z.string(),
-      tema: z.string(),
+const esquemaMarcos = solto({
+  marcos: Schema.Array(
+    solto({
+      id: Schema.String,
+      tema: Schema.String,
       /** Atos do tema, do mais antigo ao mais recente conhecido (o resto é derivado: `derivarLinha`). */
-      linha: z.array(z.string()).min(1),
-      aplica_a: z.string().optional(),
-      transicao: z.string().optional(),
-      orientacao_analise: z.string().optional(),
+      linha: Schema.Array(Schema.String).check(Schema.isMinLength(1)),
+      aplica_a: texto,
+      transicao: texto,
+      orientacao_analise: texto,
     }),
   ),
 });
+
+// Decodificadores compilados uma vez. Os das linhas da fase 5 recusam chaves extras: as linhas vão
+// inteiras para o INSERT, e uma chave a mais viraria uma coluna inexistente.
+const decodificarManifest = Schema.decodeUnknownSync(esquemaManifest);
+const decodificarIndicePpcs = Schema.decodeUnknownSync(esquemaIndicePpcs);
+const decodificarSecaoJsonl = Schema.decodeUnknownSync(esquemaSecaoJsonl);
+const decodificarCnctIndice = Schema.decodeUnknownSync(esquemaCnctIndice);
+const decodificarFicha = Schema.decodeUnknownSync(esquemaFicha);
+const decodificarTopicosBrutos = Schema.decodeUnknownSync(esquemaTopicosBrutos);
+const decodificarTopicos = Schema.decodeUnknownSync(esquemaTopicos);
+const decodificarMarcos = Schema.decodeUnknownSync(esquemaMarcos);
+const estrito = { onExcessProperty: "error" } as const;
+const decodificarLinhaDispositivo = Schema.decodeUnknownSync(esquemaLinhaDispositivo, estrito);
+const decodificarLinhaRelacao = Schema.decodeUnknownSync(esquemaLinhaRelacao, estrito);
+const decodificarLinhaVigencia = Schema.decodeUnknownSync(esquemaLinhaVigencia, estrito);
+const decodificarLinhaTransicao = Schema.decodeUnknownSync(esquemaLinhaTransicao, estrito);
+const decodificarLinhaTabelaCorrespondencia = Schema.decodeUnknownSync(esquemaLinhaTabelaCorrespondencia, estrito);
+const decodificarLinhaCorrespondencia = Schema.decodeUnknownSync(esquemaLinhaCorrespondencia, estrito);
 
 /* ------------------------------------------------------------------- papel */
 
@@ -239,10 +266,10 @@ export function papelDaCitacao(
 /* --------------------------------------------------------------- compilação */
 
 export class Inseridor {
-  private readonly db: DatabaseSync;
-  private readonly cache = new Map<string, StatementSync>();
+  private readonly db: NodeSqlite.DatabaseSync;
+  private readonly cache = new Map<string, NodeSqlite.StatementSync>();
   readonly contagens: Record<string, number> = {};
-  constructor(db: DatabaseSync) {
+  constructor(db: NodeSqlite.DatabaseSync) {
     this.db = db;
   }
 
@@ -294,7 +321,7 @@ export function gravarSecoesECitacoes(
     lexico: Sinonimos;
     /** Cache da expansão por tipo de seção, compartilhado entre PPCs. */
     expansoes: Map<string, string>;
-    insFts: StatementSync;
+    insFts: NodeSqlite.StatementSync;
   },
 ): void {
   const linhas = p.markdown.split("\n");
@@ -402,13 +429,13 @@ export interface OpcoesPpcAvulso {
  * `gravarSecoesECitacoes`. As consultas de seções (`secoesDoPpc`, `buscarSecoes`) e de citações
  * rodam nele sem mudança.
  */
-export function bancoDoPpcAvulso(markdownOriginal: string, opcoes: OpcoesPpcAvulso = {}): DatabaseSync {
+export function bancoDoPpcAvulso(markdownOriginal: string, opcoes: OpcoesPpcAvulso = {}): NodeSqlite.DatabaseSync {
   const markdown = markdownOriginal.replace(/\r\n?/g, "\n");
   const paraSegmentar = opcoes.titulosNivel1 ? markdown.replace(/^#(?=[ \t])/gm, "##") : markdown;
   const ppcId = opcoes.ppcId ?? "ppc:avulso";
   const caminhoMd = opcoes.path ?? "PPC.md";
   const taxonomia = opcoes.taxonomia ?? "tecnico";
-  const db = new DatabaseSync(":memory:");
+  const db = new NodeSqlite.DatabaseSync(":memory:");
   db.exec(DDL);
   const ins = new Inseridor(db);
   emTransacao(db, () => {
@@ -466,62 +493,68 @@ function linhaNoYaml(conteudo: string, id: string): number {
   return indice === -1 ? 1 : indice + 1;
 }
 
-export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
-  const raiz = opcoes.raiz ?? raizRepositorio();
-  const destino = opcoes.destino ?? caminhoBancoPadrao(raiz);
-  const fontesNormativas = opcoes.fontesNormativas ?? fontesNormativasArquivos(raiz);
-  const lexico = opcoes.sinonimos ?? lerSinonimos();
-  const topicosSecoes = opcoes.topicosSecoes ?? lerTopicosSecoes();
-  const base = path.join(raiz, BASE);
+/** O que a compilação precisa antes de abrir o banco: fontes lidas e a impressão digital delas. */
+export interface PreparoCompilacao {
+  readonly destino: string;
+  /** Instante anterior à leitura das fontes, em milissegundos (vira o mtime do banco no fim). */
+  readonly leitura: number;
+  readonly contexto: ContextoPreenchimento;
+}
 
-  // instante anterior à leitura das fontes: vira o mtime do banco no fim, para que uma fonte editada
-  // durante a compilação fique mais nova que ele e o atalho por mtime de `estadoDoBanco` não o declare
-  // fresco
-  const leitura = new Date();
+/**
+ * Lê as fontes e calcula a impressão digital. `leitura` é o instante anterior à leitura: vira o mtime
+ * do banco no fim, para que uma fonte editada durante a compilação fique mais nova que ele e o atalho
+ * por mtime de `estadoDoBanco` não o declare fresco.
+ */
+export function prepararCompilacao(
+  opcoes: OpcoesCompilacao & { raiz: string; destino: string },
+  leitura: number,
+): PreparoCompilacao {
+  const raiz = opcoes.raiz;
   const arquivos = arquivosFonte(raiz);
   const fontesSha = hashConteudo(raiz, arquivos);
-
-  mkdirSync(path.dirname(destino), { recursive: true });
-  const temporario = `${destino}.tmp-${process.pid}`;
-  rmSync(temporario, { force: true });
-  const db = new DatabaseSync(temporario);
-  // em caso de erro, fecha o banco e remove o temporário (até ~130 MB) antes de propagar
-  let contagensInsercao: Record<string, number>;
-  try {
-    contagensInsercao = preencherBanco(db, {
+  return {
+    destino: opcoes.destino,
+    leitura,
+    contexto: {
       raiz,
-      base,
-      lexico,
-      topicosSecoes,
-      fontesNormativas,
+      base: NodePath.join(raiz, BASE),
+      lexico: opcoes.sinonimos ?? lerSinonimos(),
+      topicosSecoes: opcoes.topicosSecoes ?? lerTopicosSecoes(),
+      fontesNormativas: opcoes.fontesNormativas ?? fontesNormativasArquivos(raiz),
       arquivos,
       fontesSha,
       versao: opcoes.versao,
       commit: opcoes.commit,
       canal: opcoes.canal,
-    });
-    db.close();
-    utimesSync(temporario, leitura, leitura);
-    renameSync(temporario, destino);
-  } catch (erro) {
-    db.close();
-    rmSync(temporario, { force: true });
-    throw erro;
-  }
+    },
+  };
+}
+
+/** Resumo de uma compilação (o que `pnpm kb:compilar` imprime). */
+export function resumoCompilacao(
+  preparo: PreparoCompilacao,
+  contagensInsercao: Record<string, number>,
+): ResumoCompilacao {
   const contagens = Object.fromEntries(
     Object.entries(contagensInsercao)
       .filter(([tabela]) => tabela !== "meta")
       .sort(([a], [b]) => compararTexto(a, b)),
   );
-  return { destino, fontes: arquivos.length, fontes_sha256: fontesSha, contagens };
+  return {
+    destino: preparo.destino,
+    fontes: preparo.contexto.arquivos.length,
+    fontes_sha256: preparo.contexto.fontesSha,
+    contagens,
+  };
 }
 
-interface ContextoPreenchimento {
+export interface ContextoPreenchimento {
   raiz: string;
   base: string;
   lexico: Sinonimos;
   topicosSecoes: ReturnType<typeof lerTopicosSecoes>;
-  fontesNormativas: FontesNormativas;
+  fontesNormativas: LinhasNormativas;
   arquivos: readonly string[];
   fontesSha: string;
   /** Identificação da distribuição gravada em `meta` (só quando informada). */
@@ -531,7 +564,7 @@ interface ContextoPreenchimento {
 }
 
 /** Esquema, carga de todas as tabelas, `optimize` do FTS5 e `VACUUM`; devolve as contagens por tabela. */
-function preencherBanco(db: DatabaseSync, c: ContextoPreenchimento): Record<string, number> {
+export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchimento): Record<string, number> {
   const { raiz, base, lexico, topicosSecoes, fontesNormativas, arquivos, fontesSha } = c;
   db.exec(`PRAGMA page_size = ${PAGE_SIZE}`);
   db.exec("PRAGMA journal_mode = OFF");
@@ -544,7 +577,7 @@ function preencherBanco(db: DatabaseSync, c: ContextoPreenchimento): Record<stri
   emTransacao(db, () => {
     /* ---------- normas */
     const registro = carregarRegistro(raiz);
-    const manifest = esquemaManifest.parse(lerJson(path.join(base, "manifest.json")));
+    const manifest = decodificarManifest(lerJson(NodePath.join(base, "manifest.json")));
     const insFtsNorma = db.prepare("INSERT INTO normas_fts (rowid, titulo, texto, radicais) VALUES (?, ?, ?, ?)");
     const blocoMetadados = (
       id: string,
@@ -559,7 +592,7 @@ function preencherBanco(db: DatabaseSync, c: ContextoPreenchimento): Record<stri
     };
     for (const item of [...manifest].sort((a, b) => compararTexto(a.id, b.id))) {
       const caminhoMd = `${BASE}/${item.path}`;
-      const md = readFileSync(path.join(raiz, caminhoMd), "utf-8").replace(/\r\n?/g, "\n");
+      const md = NodeFS.readFileSync(NodePath.join(raiz, caminhoMd), "utf-8").replace(/\r\n?/g, "\n");
       const { meta } = analisarFrontMatter(md, caminhoMd);
       ins.inserir("normas", {
         id: item.id,
@@ -590,10 +623,10 @@ function preencherBanco(db: DatabaseSync, c: ContextoPreenchimento): Record<stri
       );
     }
     const arquivoStubs = caminhoStubs(raiz);
-    if (existsSync(arquivoStubs)) {
-      const conteudo = readFileSync(arquivoStubs, "utf-8");
+    if (NodeFS.existsSync(arquivoStubs)) {
+      const conteudo = NodeFS.readFileSync(arquivoStubs, "utf-8");
       const stubs = lerRegistroStubs(arquivoStubs);
-      const caminho = path.relative(raiz, arquivoStubs).split(path.sep).join("/");
+      const caminho = NodePath.relative(raiz, arquivoStubs).split(NodePath.sep).join("/");
       const todos = [
         ...stubs.normas.map((s) => ({ ...s, situacao: "stub" as const, ementa: s.ementa })),
         ...stubs.externos.map((s) => ({ ...s, situacao: "externo" as const, ementa: s.descricao })),
@@ -635,10 +668,11 @@ function preencherBanco(db: DatabaseSync, c: ContextoPreenchimento): Record<stri
         path: arquivo,
       });
     }
-    const cnct = esquemaCnctIndice.parse(lerJson(path.join(base, "catalogos", "cnct", "index.json")));
+    const cnct = decodificarCnctIndice(lerJson(NodePath.join(base, "catalogos", "cnct", "index.json")));
     for (const item of [...cnct.items].sort((a, b) => compararTexto(a.id, b.id))) {
       const caminho = item.path ? `${BASE}/${item.path}` : null;
-      const completo = caminho && existsSync(path.join(raiz, caminho)) ? lerJson(path.join(raiz, caminho)) : item;
+      const completo =
+        caminho && NodeFS.existsSync(NodePath.join(raiz, caminho)) ? lerJson(NodePath.join(raiz, caminho)) : item;
       ins.inserir("cnct", {
         id: `cnct:${item.id}`,
         slug: item.id,
@@ -651,7 +685,7 @@ function preencherBanco(db: DatabaseSync, c: ContextoPreenchimento): Record<stri
       });
     }
 
-    const indice = esquemaIndicePpcs.parse(lerJson(path.join(base, "institucional", "ifpr", "ppcs", "index.json")));
+    const indice = decodificarIndicePpcs(lerJson(NodePath.join(base, "institucional", "ifpr", "ppcs", "index.json")));
     const itensPpc = [...indice.items].sort((a, b) => compararTexto(a.id, b.id));
     const ppcPorPath = new Map(itensPpc.map((item) => [item.path, item]));
     const cursoPorPpcPath = new Map<string, string>();
@@ -760,12 +794,12 @@ function preencherBanco(db: DatabaseSync, c: ContextoPreenchimento): Record<stri
     }
 
     /* ---------- PPCs, seções, citações e fatos */
-    const secoesPorPath = new Map<string, z.output<typeof esquemaSecaoJsonl>[]>();
+    const secoesPorPath = new Map<string, SecaoJsonl[]>();
     for (const tipo of Object.keys(indice.secoes.paths).sort(compararTexto)) {
-      const arquivo = path.join(base, indice.secoes.paths[tipo]!);
-      for (const linha of readFileSync(arquivo, "utf-8").split("\n")) {
+      const arquivo = NodePath.join(base, indice.secoes.paths[tipo]!);
+      for (const linha of NodeFS.readFileSync(arquivo, "utf-8").split("\n")) {
         if (!linha.trim()) continue;
-        const secao = esquemaSecaoJsonl.parse(JSON.parse(linha));
+        const secao = decodificarSecaoJsonl(JSON.parse(linha));
         const lista = secoesPorPath.get(secao.path) ?? [];
         lista.push(secao);
         secoesPorPath.set(secao.path, lista);
@@ -779,7 +813,7 @@ function preencherBanco(db: DatabaseSync, c: ContextoPreenchimento): Record<stri
     const cache = new Map<string, string>();
     for (const item of itensPpc) {
       const caminhoMd = `${BASE}/${item.path}`;
-      const bruto = readFileSync(path.join(raiz, caminhoMd), "utf-8");
+      const bruto = NodeFS.readFileSync(NodePath.join(raiz, caminhoMd), "utf-8");
       const markdown = bruto.replace(/\r\n?/g, "\n");
       cache.clear();
       cache.set(item.path, markdown);
@@ -884,16 +918,16 @@ function preencherBanco(db: DatabaseSync, c: ContextoPreenchimento): Record<stri
     }
 
     /* ---------- fichas, tópicos e marcos da revisar-ppc */
-    const dirFichas = path.join(raiz, ANALISE, "fichas");
-    const arquivosFichas = existsSync(dirFichas)
-      ? readdirSync(dirFichas)
+    const dirFichas = NodePath.join(raiz, ANALISE, "fichas");
+    const arquivosFichas = NodeFS.existsSync(dirFichas)
+      ? NodeFS.readdirSync(dirFichas)
           .filter((nome) => nome.endsWith(".json"))
           .sort(compararTexto)
       : [];
     const fichas = arquivosFichas
       .map((nome) => {
-        const bruto = lerJson(path.join(dirFichas, nome));
-        return { nome, bruto, ficha: esquemaFicha.parse(bruto) };
+        const bruto = lerJson(NodePath.join(dirFichas, nome));
+        return { nome, bruto, ficha: decodificarFicha(bruto) };
       })
       .sort((a, b) => compararTexto(a.ficha.id, b.ficha.id));
     const fichaTopico = new Set<string>();
@@ -922,11 +956,11 @@ function preencherBanco(db: DatabaseSync, c: ContextoPreenchimento): Record<stri
       });
       for (const topico of ficha.topicos_tematicos ?? []) fichaTopico.add(`${ficha.id}\0${topico}`);
     }
-    const arquivoTopicos = path.join(raiz, ANALISE, "topicos-fichas.json");
-    if (existsSync(arquivoTopicos)) {
+    const arquivoTopicos = NodePath.join(raiz, ANALISE, "topicos-fichas.json");
+    if (NodeFS.existsSync(arquivoTopicos)) {
       const bruto = lerJson(arquivoTopicos);
-      const brutos = z.looseObject({ topicos: z.array(z.unknown()) }).parse(bruto).topicos;
-      const topicos = esquemaTopicos.parse(bruto).topicos.map((t, ordem) => ({ ...t, ordem, bruto: brutos[ordem] }));
+      const brutos = decodificarTopicosBrutos(bruto).topicos;
+      const topicos = decodificarTopicos(bruto).topicos.map((t, ordem) => ({ ...t, ordem, bruto: brutos[ordem] }));
       for (const t of [...topicos].sort((a, b) => compararTexto(a.id, b.id))) {
         ins.inserir("topicos", {
           id: t.id,
@@ -962,9 +996,9 @@ function preencherBanco(db: DatabaseSync, c: ContextoPreenchimento): Record<stri
     lexico.grupos.forEach((termos, ordem) => ins.inserir("sinonimos_grupos", { ordem, termos_json: json(termos) }));
     // marcos-normativos.json guarda a linha do tema; vigente, substituídas, antecessoras e
     // dispositivos revogados vêm de derivarLinha (fase 5) na data_referencia, como na revisar-ppc.
-    const arquivoMarcos = path.join(raiz, ANALISE, "marcos-normativos.json");
-    if (existsSync(arquivoMarcos)) {
-      const marcos = esquemaMarcos.parse(lerJson(arquivoMarcos));
+    const arquivoMarcos = NodePath.join(raiz, ANALISE, "marcos-normativos.json");
+    if (NodeFS.existsSync(arquivoMarcos)) {
+      const marcos = decodificarMarcos(lerJson(arquivoMarcos));
       const referencia = dataReferencia(raiz);
       for (const m of [...marcos.marcos].sort((a, b) => compararTexto(a.id, b.id))) {
         const derivado = derivarLinha(m.linha, referencia, raiz);
@@ -985,7 +1019,7 @@ function preencherBanco(db: DatabaseSync, c: ContextoPreenchimento): Record<stri
     /* ---------- fase 5: dispositivos (com FTS), relações, vigências, transições, correspondências */
     const insFtsDispositivo = db.prepare("INSERT INTO dispositivos_fts (rowid, texto, radicais) VALUES (?, ?, ?)");
     for (const linha of fontesNormativas.dispositivos()) {
-      const { caput, estrutura, notas, ...d } = esquemaLinhaDispositivo.parse(linha);
+      const { caput, estrutura, notas, ...d } = decodificarLinhaDispositivo(linha);
       const rowid = ins.inserir("dispositivos", {
         ...d,
         caput_json: json(caput),
@@ -994,14 +1028,14 @@ function preencherBanco(db: DatabaseSync, c: ContextoPreenchimento): Record<stri
       });
       if (d.canonico) insFtsDispositivo.run(rowid, d.texto_com_caput, radicais(d.texto_com_caput).join(" "));
     }
-    for (const linha of fontesNormativas.relacoes()) ins.inserir("relacoes", esquemaLinhaRelacao.parse(linha));
-    for (const linha of fontesNormativas.vigencias()) ins.inserir("vigencias", esquemaLinhaVigencia.parse(linha));
-    for (const linha of fontesNormativas.transicoes()) ins.inserir("transicoes", esquemaLinhaTransicao.parse(linha));
+    for (const linha of fontesNormativas.relacoes()) ins.inserir("relacoes", decodificarLinhaRelacao(linha));
+    for (const linha of fontesNormativas.vigencias()) ins.inserir("vigencias", decodificarLinhaVigencia(linha));
+    for (const linha of fontesNormativas.transicoes()) ins.inserir("transicoes", decodificarLinhaTransicao(linha));
     for (const linha of fontesNormativas.tabelasCorrespondencia()) {
-      ins.inserir("correspondencias_tabelas", esquemaLinhaTabelaCorrespondencia.parse(linha));
+      ins.inserir("correspondencias_tabelas", decodificarLinhaTabelaCorrespondencia(linha));
     }
     for (const linha of fontesNormativas.correspondencias()) {
-      const { destino, ...c } = esquemaLinhaCorrespondencia.parse(linha);
+      const { destino, ...c } = decodificarLinhaCorrespondencia(linha);
       ins.inserir("correspondencias", { ...c, destino_json: json(destino) });
     }
     // citações entre normas (para o impacto): as mesmas que o impacto extrai dos arquivos
@@ -1046,35 +1080,4 @@ function preencherBanco(db: DatabaseSync, c: ContextoPreenchimento): Record<stri
   db.exec("INSERT INTO dispositivos_fts(dispositivos_fts) VALUES ('optimize')");
   db.exec("VACUUM");
   return ins.contagens;
-}
-
-if (import.meta.main) {
-  const argumento = (nome: string): string | undefined => {
-    const indice = process.argv.indexOf(nome);
-    if (indice === -1) return undefined;
-    const valor = process.argv[indice + 1];
-    if (!valor || valor.startsWith("--")) throw new Error(`${nome} exige um valor`);
-    return valor;
-  };
-  const destino = argumento("--destino");
-  const identificacao = Object.fromEntries(
-    (["versao", "commit", "canal"] as const).flatMap((chave) => {
-      const valor = argumento(`--${chave}`);
-      return valor === undefined ? [] : [[chave, valor]];
-    }),
-  ) as Pick<OpcoesCompilacao, "versao" | "commit" | "canal">;
-  const inicio = performance.now();
-  const resumo = compilarBanco({ ...(destino ? { destino: path.resolve(destino) } : {}), ...identificacao });
-  const segundos = ((performance.now() - inicio) / 1000).toFixed(1);
-  const { createHash } = await import("node:crypto");
-  const sha = createHash("sha256").update(readFileSync(resumo.destino)).digest("hex");
-  const tamanho = (readFileSync(resumo.destino).byteLength / 1024 / 1024).toFixed(1);
-  console.log(`${path.relative(process.cwd(), resumo.destino) || resumo.destino}: ${tamanho} MB em ${segundos} s`);
-  console.log(`sha256 ${sha}`);
-  console.log(`fontes ${resumo.fontes} (sha256 ${resumo.fontes_sha256.slice(0, 16)}…)`);
-  console.log(
-    Object.entries(resumo.contagens)
-      .map(([tabela, n]) => `${tabela} ${n}`)
-      .join(", "),
-  );
 }

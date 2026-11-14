@@ -1,9 +1,9 @@
 /**
  * Ferramenta 2, `ler_dispositivos`: dispositivos pelo ID, em lote, com caput herdado, notas de
- * redação e, se pedido, os subordinados (`obterDispositivoBanco` e `trechoDoDispositivo`, o
+ * redação e, se pedido, os subordinados (`Normas.dispositivo` e `Normas.trecho`, o
  * `kb dispositivo [--filhos]`).
  */
-import { obterDispositivoBanco, trechoDoDispositivo } from "@simplifica-if/kb/db/modo-banco";
+import * as Normas from "@simplifica-if/kb/Normas";
 import { z } from "zod";
 import { type Aviso, responder } from "../envelope.ts";
 import { blocoItem, linhaFonte } from "../texto.ts";
@@ -57,14 +57,14 @@ export const lerDispositivos = definirFerramenta({
     "Lê dispositivos pelo ID (até 20 por chamada), com o caput herdado, as notas de redação e, se pedido, os incisos, alíneas e parágrafos. Use quando já tiver o ID, vindo de `buscar_norma`, de `resolver_citacoes` ou de uma ficha.",
   entrada,
   dados,
-  executar({ ids, filhos }, { db, base }) {
-    const norma = leitorDeNormas(db);
+  executar({ ids, filhos }, { kb, base }) {
+    const norma = leitorDeNormas(kb);
     const dispositivos: Dispositivo[] = [];
     const normas: NormaResumo[] = [];
     const naoEncontrados: string[] = [];
     for (const id of new Set(ids)) {
-      const achado = obterDispositivoBanco(db, id);
-      const trecho = achado ? trechoDoDispositivo(db, id, { subordinados: filhos }) : null;
+      const achado = kb(Normas.Normas.use((n) => n.dispositivo(id)));
+      const trecho = achado ? kb(Normas.Normas.use((n) => n.trecho(id, { subordinados: filhos }))) : null;
       const registrada = achado ? norma(achado.disp.ato) : null;
       if (!achado || !trecho || !registrada) {
         naoEncontrados.push(id);
@@ -73,7 +73,7 @@ export const lerDispositivos = definirFerramenta({
       const { pai } = achado.disp;
       normas.push(resumoDaNorma(registrada));
       dispositivos.push({
-        ...dispositivoTexto(db, trecho),
+        ...dispositivoTexto(kb, trecho),
         norma: registrada.titulo,
         notas: trecho.notas.map((n) => n.texto),
         pai: pai === null ? null : `${achado.disp.ato}${pai.slice(pai.indexOf("#"))}`,

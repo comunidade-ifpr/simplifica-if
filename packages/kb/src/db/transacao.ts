@@ -1,10 +1,11 @@
 /**
- * Transação sobre um `DatabaseSync` do `node:sqlite`, no lugar do `db.transaction(fn)()` do Bun:
+ * Transação sobre um `NodeSqlite.DatabaseSync` do `node:sqlite`, no lugar do `db.transaction(fn)()` do Bun:
  * `BEGIN`, a função e `COMMIT`, com `ROLLBACK` se ela lançar.
  */
-import type { DatabaseSync } from "node:sqlite";
+// @effect-diagnostics nodeBuiltinImport:off -- transação sobre o NodeSqlite.DatabaseSync da compilação e das fixtures
+import type * as NodeSqlite from "node:sqlite";
 
-export function emTransacao<T>(db: DatabaseSync, fn: () => T): T {
+export function emTransacao<T>(db: NodeSqlite.DatabaseSync, fn: () => T): T {
   db.exec("BEGIN");
   try {
     const resultado = fn();

@@ -1,9 +1,9 @@
 /**
  * Ferramenta 13, `fatos_ppc`: fatos extraídos dos PPCs (carga horária, estágio, ano), com o trecho de
- * origem, cruzados com as matrizes do SUAP (`fatosDosPpcs` e `divergenciasPpcSuap`, a regra de
+ * origem, cruzados com as matrizes do SUAP (`Ppcs.fatos` e `Ppcs.divergencias`, a regra de
  * `kb ppc-fatos`). Os fatos têm status `extraido`: o aviso `fato-extraido` vai sempre.
  */
-import { divergenciasPpcSuap, fatosDosPpcs } from "@simplifica-if/kb/db/modo-banco";
+import * as Ppcs from "@simplifica-if/kb/Ppcs";
 import { z } from "zod";
 import { type Aviso, responder } from "../envelope.ts";
 import { paginarNoTeto, RESERVA_TEXTO } from "../orcamento.ts";
@@ -44,13 +44,15 @@ export const fatosPpc = definirFerramenta({
     "Fatos extraídos de PPCs (carga horária, estágio, ano), com o trecho de origem, cruzados com as matrizes do SUAP publicadas na base. Use quando a pergunta cobrir vários PPCs ou só as divergências; para um curso, `ficha_curso` já traz os fatos. Os fatos são extraídos por regra, sem revisão humana: confira o trecho antes de afirmar uma divergência.",
   entrada,
   dados,
-  executar(e, { db, base }) {
+  executar(e, { kb, base }) {
     const filtros = {
       ppc: e.ppc === undefined ? undefined : chavePpc(e.ppc),
       nivel: e.nivel,
       campus: e.campus,
     };
-    const resultado = e.divergencias ? divergenciasPpcSuap(db, filtros) : { ppcs: fatosDosPpcs(db, filtros) };
+    const resultado = e.divergencias
+      ? kb(Ppcs.Ppcs.use((p) => p.divergencias(filtros)))
+      : { ppcs: kb(Ppcs.Ppcs.use((p) => p.fatos(filtros))) };
     const ppcs = resultado.ppcs.map(paraFatosPpc);
     const { itens, pagina } = paginarNoTeto(ppcs, {
       limite: e.limite,
