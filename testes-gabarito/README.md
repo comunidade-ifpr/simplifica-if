@@ -17,3 +17,14 @@ Notas da captura:
 
 - Na suíte com Bun, `testes.txt` soma 1015 casos: 1000 passando e 15 pulados (14 do smoke, que só roda com `SIMPLIFICA_SMOKE=1`, e 1 de `sei-cli/test/fluxo.test.ts`, que precisa de snapshots locais). Os blocos pulados pelo smoke contam 6 e 8 casos no JUnit do Bun; rodando, são 5 e 7 (`testes-smoke.txt`), porque o Bun conta de outro jeito os `describe.skipIf` pulados.
 - `exportar_base_publica` fica fora de `base.sh`: lê as movimentações do Notion e grava a data do dia. Com Bun, em 14/11/2026, a única diferença no git foi `atualizado_em` de `campi/index.json` (de `2026-11-13` para `2026-11-14`).
+- A impressão digital das fontes do banco (`meta.fontes_sha256`, `fontes_lista_sha256` e `fontes_total`) inclui o código de `packages/kb/src` e muda com qualquer mudança de código. `banco.sh` a deixa fora do hash da `meta`, e `gabarito.ts --comparar` mascara a versão `dev-<8 hex>` do envelope e a impressão da consulta nos cursores. O `banco.txt` foi recalculado com essa regra sobre o banco que o Bun compilou; as outras 33 linhas são as da primeira captura.
+
+Para conferir a contagem por arquivo no Node, gere o JUnit do vitest na raiz e em cada pacote e compare:
+
+```bash
+pnpm exec vp test run --reporter=junit --outputFile=/tmp/raiz.xml
+for p in kb sei-cli mcp; do (cd packages/$p && pnpm exec vp test run --config ../../vite.config.ts --dir . --reporter=junit --outputFile=/tmp/$p.xml); done
+node testes-gabarito/contar_testes.ts .=/tmp/raiz.xml packages/kb=/tmp/kb.xml packages/sei-cli=/tmp/sei-cli.xml packages/mcp=/tmp/mcp.xml | diff testes-gabarito/testes.txt -
+```
+
+No C0, a única diferença esperada é a do JUnit do Bun nos blocos pulados do smoke (6 e 8 casos, contra 5 e 7) e o teste novo `packages/mcp/test/instrucoes.test.ts`.

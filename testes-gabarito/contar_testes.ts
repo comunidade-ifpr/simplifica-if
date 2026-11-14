@@ -1,5 +1,5 @@
 /**
- * Conta os casos de teste por arquivo a partir de relatórios JUnit (do `bun test` ou do vitest) e
+ * Conta os casos de teste por arquivo a partir de relatórios JUnit (do executor de testes do Bun ou do vitest) e
  * imprime `arquivo<TAB>casos<TAB>pulados`, em ordem, com o total no fim. É o formato de
  * `testes-gabarito/testes.txt`.
  *

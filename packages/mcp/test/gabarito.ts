@@ -8,7 +8,9 @@
  *
  * Neutro de runtime: o servidor roda com o mesmo executável deste script (`process.execPath`), ou com
  * o comando de `SIMPLIFICA_MCP_EXE` (o executável empacotado). A comparação é byte a byte, sobre o JSON
- * serializado com indentação de 2 espaços.
+ * serializado com indentação de 2 espaços, mascarando só o que depende da impressão digital das fontes
+ * do banco (a versão `dev-<8 hex de fontes_sha256>` do envelope e a impressão da consulta nos cursores),
+ * que muda com qualquer mudança no código de `packages/kb/src`. O arquivo guarda a captura sem máscara.
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -102,18 +104,35 @@ const gabarito = {
 await cliente.close();
 
 const texto = `${JSON.stringify(gabarito, null, 2)}\n`;
+
+/**
+ * Máscara do que depende da impressão digital das fontes: a versão de desenvolvimento da base
+ * (`dev-` e 8 hex) e a impressão da consulta nos cursores de paginação (que inclui a versão); o
+ * deslocamento do cursor continua conferido.
+ */
+function mascarar(json: string): string {
+  return json.replace(/\bdev-[0-9a-f]{8}\b/g, "dev-<fontes>").replace(/\beyJkIjo[A-Za-z0-9_-]+/g, (cursor) => {
+    try {
+      const { d } = JSON.parse(Buffer.from(cursor, "base64url").toString("utf8")) as { d: number };
+      return `<cursor d=${d}>`;
+    } catch {
+      return cursor;
+    }
+  });
+}
 if (modo === "--capturar") {
   writeFileSync(ARQUIVO, texto);
   process.stdout.write(
     `gabarito do MCP gravado em ${path.relative(RAIZ, ARQUIVO)} (${tools.length} ferramentas, ${chamadas.length} chamadas)\n`,
   );
 } else {
-  const esperado = readFileSync(ARQUIVO, "utf8");
-  if (esperado === texto) {
+  const esperado = mascarar(readFileSync(ARQUIVO, "utf8"));
+  const obtido = mascarar(texto);
+  if (esperado === obtido) {
     process.stdout.write(`gabarito do MCP: igual (${tools.length} ferramentas, ${chamadas.length} chamadas)\n`);
   } else {
     const a = esperado.split("\n");
-    const b = texto.split("\n");
+    const b = obtido.split("\n");
     const i = a.findIndex((linha, n) => linha !== b[n]);
     process.stderr.write(
       `gabarito do MCP: diferente a partir da linha ${i + 1}\n  esperado: ${a[i]}\n  obtido:   ${b[i]}\n`,
