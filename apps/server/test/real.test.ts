@@ -27,7 +27,6 @@ import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import { assert, describe, it } from "@effect/vitest";
 import * as Clock from "effect/Clock";
-import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
@@ -51,21 +50,25 @@ const decodificarLinha = Schema.decodeUnknownEffect(Schema.fromJsonString(LinhaP
 const LINK_LEITURA = "ifpr://cnct/tecnico-em-enfermagem";
 const PERGUNTA_LEITURA = `Leia o recurso ${LINK_LEITURA} do servidor MCP ifpr (read_resource) e diga o eixo tecnológico do curso.`;
 
-/** O registro de um turno: as ferramentas, com a entrada e o resumo, o tempo e os links `ifpr://`. */
+/**
+ * O registro de um turno: as ferramentas, com a entrada e o resumo, o tempo e os links `ifpr://`. Vai
+ * direto ao stderr, como o log do servidor: o vitest esconde o `console` dos testes que passam.
+ */
 const registrarTurno = (rotulo: string, eventos: ReadonlyArray<Evento>, ms: number) =>
-  Effect.gen(function* () {
+  Effect.sync(() => {
     const texto = eventos.flatMap((e) => (e._tag === "TextoFinal" ? [e.texto] : [])).join("\n");
-    yield* Console.log(`[${PROVIDER}] ${rotulo}: ${(ms / 1000).toFixed(1)} s, ${eventos.length} eventos`);
+    const linhas = [`[${PROVIDER}] ${rotulo}: ${(ms / 1000).toFixed(1)} s, ${eventos.length} eventos`];
     for (const evento of eventos) {
       if (evento._tag === "FerramentaIniciada") {
-        yield* Console.log(`  ▶ ${evento.nome} ${JSON.stringify(evento.entrada).slice(0, 200)}`);
+        linhas.push(`  ▶ ${evento.nome} ${JSON.stringify(evento.entrada).slice(0, 200)}`);
       } else if (evento._tag === "FerramentaConcluida") {
         const resumo = evento.resumo.replace(/\s+/g, " ").slice(0, 120);
-        yield* Console.log(`  ■ ${evento.nome}${evento.falhou ? " (falhou)" : ""}: ${resumo || "(sem resumo)"}`);
+        linhas.push(`  ■ ${evento.nome}${evento.falhou ? " (falhou)" : ""}: ${resumo || "(sem resumo)"}`);
       }
     }
     const links = [...new Set(texto.match(/ifpr:\/\/[^\s)\]>"'`]+/g) ?? [])];
-    yield* Console.log(`  links ifpr:// na resposta: ${links.length ? links.join(", ") : "nenhum"}`);
+    linhas.push(`  links ifpr:// na resposta: ${links.length ? links.join(", ") : "nenhum"}`);
+    process.stderr.write(`${linhas.join("\n")}\n`);
   });
 
 describe.skipIf(!REAL)("servidor com provider real", () => {

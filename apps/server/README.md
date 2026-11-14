@@ -77,7 +77,7 @@ pnpm --filter @simplifica-if/server test        # servidor em portas efêmeras c
 SIMPLIFICA_POC_REAL=1 SIMPLIFICA_PROVIDER=claude pnpm --filter @simplifica-if/server test real   # provider real, pelo RPC
 ```
 
-O teste real gasta a assinatura do usuário e usa a pasta de estado do harness do motor (`SIMPLIFICA_ESTADO` ou `~/Library/Application Support/simplifica-if-poc`).
+O teste real gasta a assinatura do usuário e usa a pasta de estado do harness do motor (`SIMPLIFICA_ESTADO` ou `~/Library/Application Support/simplifica-if-poc`). Ele imprime no stderr, por turno, as ferramentas (nome, entrada, resumo), o tempo e os links `ifpr://` da resposta; no Antigravity, um segundo turno confere que o `read_resource` de um link `ifpr://` sai com o resumo que o servidor viu.
 
 ## Pontos de extensão (M1.2) e pendências
 
@@ -85,7 +85,7 @@ Em `src/Conversas.ts`: persistência dos eventos em `enviar` e da conversa em `i
 
 Pendências registradas:
 
-- **Ponte no app empacotado:** `process.execPath` + `bin.ts` supõe o Node rodando TypeScript. No Electron, a ponte será o executável do app com `ELECTRON_RUN_AS_NODE=1` (o driver já põe a variável) e o bundle do servidor.
+- **Ponte no app empacotado (etapa do desktop):** `process.execPath` + `bin.ts` supõe o Node rodando TypeScript, o que só vale no desenvolvimento. O caminho da ponte no app empacotado se decide e se testa na etapa do desktop, junto com o bundle do servidor: a ponte será o executável do app com `ELECTRON_RUN_AS_NODE=1` (o driver já põe a variável) e o bundle. Nada a fazer no `apps/server` antes disso.
 - **Windows:** o `awaitLauncherLoss` do T3 não age no Windows; ali o cordão é só o stdin.
-- **Bundle da interface:** `@simplifica-if/contratos-app` importa o `GrupoLeitura` de `@simplifica-if/mcp/rpc`, que traz os handlers e o `kb`. Para o `apps/web`, os schemas da leitura precisam de um ponto de entrada sem o código do servidor.
+- **Erros do motor no contrato:** o `@simplifica-if/contratos-app` importa os erros e o `Decisao` de `@simplifica-if/motor`, cujo ponto de entrada (`Motor.ts`) traz também a implementação do serviço `Motor` (só Effect: sem Node, sem drivers, como o teste `sem-servidor.test.ts` confere). Se o bundle da interface pedir, os erros e os estados passam a um módulo só de schemas do motor.
 - **Observabilidade:** logs simples no stderr; sem arquivo de log nem OTLP.
