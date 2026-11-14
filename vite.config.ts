@@ -18,6 +18,9 @@ const TEST_EXCLUDE = [
   "**/.{idea,git,cache,output,temp}/**",
 ];
 
+/** Código migrado no C3, sob as regras do plugin próprio (ver `lint.overrides`). */
+const ARQUIVOS_C3 = ["scripts/**", "packages/sei-cli/**", ".agents/skills/**", "testes-gabarito/**"];
+
 /** `vp test run` na raiz do repositório: os pacotes têm a própria execução (`pnpm -r test`). */
 const execucaoNaRaiz = process.cwd() === import.meta.dirname;
 
@@ -136,12 +139,13 @@ export default defineConfig({
       "typescript/restrict-template-expressions": "off",
       "typescript/unbound-method": "off",
     },
-    // As regras do plugin próprio valem só onde o código já é Effect: por enquanto, `packages/kb` (C1).
-    // O C2 e o C3 estendem a lista de `files` ao MCP e aos scripts. As exceções reproduzem as do T3.
-    // A ordem importa: cada override posterior sobrescreve o anterior para os arquivos em comum.
+    // As regras do plugin próprio valem onde o código já é Effect: `packages/kb` (C1) e, desde o C3,
+    // `scripts/`, as skills, o `sei-cli` e o gabarito. O C2 estende a lista ao MCP. As exceções
+    // reproduzem as do T3. A ordem importa: cada override posterior sobrescreve o anterior para os
+    // arquivos em comum.
     overrides: [
       {
-        files: ["packages/kb/**"],
+        files: ["packages/kb/**", ...ARQUIVOS_C3],
         rules: {
           "simplifica-if/namespace-node-imports": "error",
           "simplifica-if/no-global-process-runtime": "error",
@@ -157,7 +161,7 @@ export default defineConfig({
       },
       {
         // Como no T3: testes e utilitários de teste montam programas inline, sem `Effect.fn`.
-        files: ["packages/kb/**/*.test.ts", "packages/kb/**/{test,tests,testes,fixtures}/**"],
+        files: ["**/*.test.ts", "**/{test,tests,testes,fixtures}/**"],
         rules: { "simplifica-if/prefer-effect-fn": "off" },
       },
       {
