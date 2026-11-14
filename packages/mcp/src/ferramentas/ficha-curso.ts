@@ -1,19 +1,14 @@
 /**
  * Ferramenta 12, `ficha_curso`: tudo sobre um curso, composto das consultas do kb que as outras
- * ferramentas usam. Dados do curso, CNCT e ofertas vêm de `listarCursos` (`listar_cursos`); os fatos,
- * de `fatosDosPpcs` (`fatos_ppc`); as normas citadas, de `normasCitadasDoPpcBanco`, cujas contagens
+ * ferramentas usam. Dados do curso, CNCT e ofertas vêm de `Cursos.listar` (`listar_cursos`); os fatos,
+ * de `Ppcs.fatos` (`fatos_ppc`); as normas citadas, de `Ppcs.normasCitadas`, cujas contagens
  * são as de `citacoes_da_norma` para o PPC; a adequação, da própria `adequacao_art71`; as transições,
  * das normas citadas. É também o conteúdo do link `ifpr://curso/…` no app.
  */
-import {
-  fatosDosPpcs,
-  indiceSecoesDoPpc,
-  listarCursos,
-  normasCitadasDoPpcBanco,
-  ROTULOS_INDICADOR,
-  type Indicador,
-  vigenciaBanco,
-} from "@simplifica-if/kb/db/modo-banco";
+import { type Indicador, ROTULOS_INDICADOR } from "@simplifica-if/kb/adequacao/art71";
+import * as Cursos from "@simplifica-if/kb/Cursos";
+import * as Normas from "@simplifica-if/kb/Normas";
+import * as Ppcs from "@simplifica-if/kb/Ppcs";
 import { z } from "zod";
 import { type Aviso, ErroEntrada, esquemaLink, responder } from "../envelope.ts";
 import { linkCampus, linkCnct, linkCurso, linkNorma, linkPpc } from "../links.ts";
@@ -104,20 +99,20 @@ export const fichaCurso = definirFerramenta({
   entrada,
   dados,
   executar(e, ctx) {
-    const { db, base } = ctx;
+    const { kb, base } = ctx;
     const chave = chaveCurso(e.curso);
     const id = `curso:${chave}`;
-    const curso = listarCursos(db, { campus: chave.split("/")[0] }).find((c) => c.id === id);
+    const curso = kb(Cursos.Cursos.use((c) => c.listar({ campus: chave.split("/")[0] }))).find((c) => c.id === id);
     if (!curso) {
       throw new ErroEntrada(`curso não encontrado na base: "${e.curso}". Use o ID de listar_cursos ("campus/curso")`);
     }
     const ppcId = curso.ppc?.id ?? null;
-    const citadas = ppcId ? (normasCitadasDoPpcBanco(db, ppcId) ?? []) : [];
-    const fatos = ppcId ? (fatosDosPpcs(db, { ppc: ppcId })[0] ?? null) : null;
+    const citadas = ppcId ? (kb(Ppcs.Ppcs.use((p) => p.normasCitadas(ppcId))) ?? []) : [];
+    const fatos = ppcId ? (kb(Ppcs.Ppcs.use((p) => p.fatos({ ppc: ppcId })))[0] ?? null) : null;
     const adequacao = adequacaoArt71.executar(adequacaoArt71.entrada.parse({ curso: chave }), ctx).dados.cursos[0];
     const transicoes = new Map<string, TransicaoResumo>();
     for (const n of citadas) {
-      for (const t of vigenciaBanco(db, n.id).transicoes) {
+      for (const t of kb(Normas.Normas.use((v) => v.vigencia(n.id))).transicoes) {
         if (!transicoes.has(t.id)) transicoes.set(t.id, transicaoResumo(t));
       }
     }
@@ -152,7 +147,11 @@ export const fichaCurso = definirFerramenta({
                 id: ppcId,
                 ano: curso.ppc.ano_documento,
                 link: linkPpc(ppcId),
-                secoes: indiceSecoesDoPpc(db, ppcId).map((s) => ({ id: s.id, tipo: s.tipo, titulo: s.titulo })),
+                secoes: kb(Ppcs.Ppcs.use((p) => p.indiceSecoesDoPpc(ppcId))).map((s) => ({
+                  id: s.id,
+                  tipo: s.tipo,
+                  titulo: s.titulo,
+                })),
               }
             : null,
         ofertas: curso.ofertas.flatMap((o) =>
@@ -164,7 +163,7 @@ export const fichaCurso = definirFerramenta({
         ),
         fatos: fatos ? paraFatosPpc(fatos) : null,
         normas_citadas: citadas.map((n) => {
-          const norma = normaResumo(db, n.id);
+          const norma = normaResumo(kb, n.id);
           return {
             id: n.id,
             titulo: norma?.titulo ?? n.id,

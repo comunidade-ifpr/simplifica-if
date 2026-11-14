@@ -1,9 +1,9 @@
 /**
- * Ferramenta 9, `buscar_secoes`: busca nas seções dos PPCs (`buscarSecoesBanco`, a regra de
+ * Ferramenta 9, `buscar_secoes`: busca nas seções dos PPCs (`Ppcs.buscarSecoes`, a regra de
  * `kb buscar-secoes`, com o léxico de sinônimos do banco). Devolve as linhas literais mais próximas da
  * consulta; com `integral`, o texto inteiro de até 5 seções.
  */
-import { buscarSecoesBanco } from "@simplifica-if/kb/db/modo-banco";
+import * as Ppcs from "@simplifica-if/kb/Ppcs";
 import { z } from "zod";
 import { type Aviso, ErroEntrada, esquemaFonte, esquemaLink, responder } from "../envelope.ts";
 import { linkPpc } from "../links.ts";
@@ -98,7 +98,7 @@ export const buscarSecoes = definirFerramenta({
     "Busca trechos dos PPCs da base (todos os campi e níveis), com radicais e sinônimos por tipo de seção. Use para ver como outros cursos escreveram uma seção (estágio, egressos, avaliação…). PPCs são exemplos institucionais, não norma.",
   entrada,
   dados,
-  executar(e, { db, base }) {
+  executar(e, { db, kb, base }) {
     if (e.tipo) {
       const conhecidos = new Set(
         linhasTipo.parse(db.prepare("SELECT DISTINCT tipo FROM secoes ORDER BY tipo").all()).map((t) => t.tipo),
@@ -127,7 +127,7 @@ export const buscarSecoes = definirFerramenta({
       forma: e.forma,
       ppc: e.ppc === undefined ? undefined : chavePpc(e.ppc),
     };
-    const achados = buscarSecoesBanco(db, e.consulta, filtros, { limite, integral: e.integral });
+    const achados = kb(Ppcs.Ppcs.use((p) => p.buscarSecoes(e.consulta, filtros, { limite, integral: e.integral })));
     if (achados.length === 0) {
       avisos.push({
         tipo: "nao-encontrado",

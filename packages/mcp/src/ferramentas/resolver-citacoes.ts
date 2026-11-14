@@ -1,8 +1,8 @@
 /**
  * Ferramenta 5, `resolver_citacoes`: citações normativas em texto livre, em lote, para o ID
- * canônico (`resolverBanco`, o `kb resolver`, com o registro montado da tabela `normas`).
+ * canônico (`Normas.resolver`, o `kb resolver`, com o registro montado da tabela `normas`).
  */
-import { resolverBanco } from "@simplifica-if/kb/db/modo-banco";
+import * as Normas from "@simplifica-if/kb/Normas";
 import { z } from "zod";
 import { type Aviso, esquemaLink, responder } from "../envelope.ts";
 import { linkDe } from "../links.ts";
@@ -49,9 +49,9 @@ export const resolverCitacoes = definirFerramenta({
     "Identifica citações normativas escritas em texto livre (até 50 por chamada) e devolve o ID canônico, o dispositivo, a regra usada e a confiança. Use para conferir a fundamentação de um documento. Confiança abaixo de 0,9 pede conferência no trecho original.",
   entrada,
   dados,
-  executar({ citacoes }, { db, base }) {
+  executar({ citacoes }, { kb, base }) {
     const itens = citacoes.map((texto) => {
-      const r = resolverBanco(db, texto);
+      const r = kb(Normas.Normas.use((n) => n.resolver(texto)));
       const sufixos = r.dispositivos ?? (r.dispositivoId ? [r.dispositivoId] : []);
       return {
         texto,

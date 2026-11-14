@@ -1,8 +1,8 @@
 /**
  * Ferramenta 1, `buscar_norma`: citação ou ID vão direto ao dispositivo; termos fazem busca textual
- * nos dispositivos e nos metadados das normas (`buscarNormaBanco`, o `kb buscar-norma`).
+ * nos dispositivos e nos metadados das normas (`Normas.buscar`, o `kb buscar-norma`).
  */
-import { buscarNormaBanco } from "@simplifica-if/kb/db/modo-banco";
+import * as Normas from "@simplifica-if/kb/Normas";
 import { z } from "zod";
 import { type Aviso, esquemaFonte, responder } from "../envelope.ts";
 import { blocoItem, linhaFonte } from "../texto.ts";
@@ -59,19 +59,23 @@ export const buscarNorma = definirFerramenta({
     'Busca na legislação e nas normas da base do IFPR. Uma citação ou um ID ("Res. CNE/CP 2/2026, art. 28, VII", "br/lei/1996/9394#art36") vai direto ao dispositivo; termos fazem busca textual nos dispositivos e nos metadados das normas. Use antes de afirmar qualquer obrigação normativa. Devolve o texto literal, com o caput herdado.',
   entrada,
   dados,
-  executar({ consulta, limite, situacao, vigentes, em }, { db, base }) {
-    const norma = leitorDeNormas(db);
-    const achados = buscarNormaBanco(db, consulta, {
-      limite,
-      ...(situacao ? { situacao } : {}),
-      ...(vigentes ? { vigentes } : {}),
-      ...(em ? { em } : {}),
-    });
+  executar({ consulta, limite, situacao, vigentes, em }, { kb, base }) {
+    const norma = leitorDeNormas(kb);
+    const achados = kb(
+      Normas.Normas.use((n) =>
+        n.buscar(consulta, {
+          limite,
+          ...(situacao ? { situacao } : {}),
+          ...(vigentes ? { vigentes } : {}),
+          ...(em ? { em } : {}),
+        }),
+      ),
+    ).resultados;
     const resultados = achados.map((r): Resultado => {
       const registrada = norma(r.norma.id);
       if (!registrada) throw new Error(`norma do resultado fora da tabela normas: ${r.norma.id}`);
       const resultado: Resultado = { norma: resumoDaNorma(registrada), origem: r.origem, pontuacao: r.pontuacao };
-      if (r.dispositivo) resultado.dispositivo = dispositivoTexto(db, r.dispositivo);
+      if (r.dispositivo) resultado.dispositivo = dispositivoTexto(kb, r.dispositivo);
       if (r.metadados) {
         resultado.metadados = {
           texto: r.metadados.texto,

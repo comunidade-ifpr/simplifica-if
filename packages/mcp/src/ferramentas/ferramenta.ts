@@ -5,14 +5,21 @@
  * no Marco 1, a API HTTP do app chamam `responder` diretamente.
  */
 import type { DatabaseSync } from "node:sqlite";
+import type { ServicosConsulta } from "@simplifica-if/kb/layers";
+import type * as Effect from "effect/Effect";
 import type { ToolAnnotations } from "@modelcontextprotocol/server";
 import { z } from "zod";
 import type { MetaBase } from "../banco.ts";
 import { type Base, ErroEntrada, esquemaResposta, type Resposta } from "../envelope.ts";
 import { montarTexto } from "../texto.ts";
 
+/** Roda um efeito dos serviços do kb e devolve o valor (ponte do C1; ver `abrirKb` em servidor.ts). */
+export type Kb = <A, E>(efeito: Effect.Effect<A, E, ServicosConsulta>) => A;
+
 export interface Contexto {
   db: DatabaseSync;
+  /** Os serviços do kb sobre o mesmo `kb.sqlite`. */
+  kb: Kb;
   meta: MetaBase;
   base: Base;
   /** Única pasta de onde o servidor lê arquivos (`pacote_contexto`, T4); caminho real e absoluto. */

@@ -8,12 +8,17 @@
  * resultado `isError` com o caminho do campo.
  */
 import { realpathSync, statSync } from "node:fs";
+import * as Layers from "@simplifica-if/kb/layers";
+import * as Effect from "effect/Effect";
+import * as Exit from "effect/Exit";
+import * as Layer from "effect/Layer";
+import * as Scope from "effect/Scope";
 import { McpServer } from "@modelcontextprotocol/server";
 import { type StdioServerHandle, serveStdio } from "@modelcontextprotocol/server/stdio";
 import { z } from "zod";
 import { abrirBanco } from "./banco.ts";
 import { type Canal, montarBase } from "./envelope.ts";
-import { type Contexto, FERRAMENTAS, type Ferramenta } from "./ferramentas/index.ts";
+import { type Contexto, FERRAMENTAS, type Ferramenta, type Kb } from "./ferramentas/index.ts";
 // Gerado de `instrucoes.md` (pnpm mcp:instrucoes): o texto vai embutido no bundle e no executável.
 import { INSTRUCOES } from "./instrucoes.gerado.ts";
 
@@ -40,10 +45,26 @@ function pastaReal(dir: string): string {
   throw new Error(`pasta de trabalho não encontrada: ${dir}`);
 }
 
+/**
+ * Ponte temporária do C1 para os serviços do kb (sai no C2, quando as ferramentas viram um Toolkit
+ * Effect): as layers de `layerSomenteLeitura` são montadas uma vez, num escopo que dura o processo, e
+ * cada chamada roda com `Effect.runSync`. As ferramentas ainda são síncronas, e as consultas do kb
+ * sobre o `node:sqlite` também: nada no caminho é assíncrono.
+ */
+export function abrirKb(caminho: string): { kb: Kb; fechar: () => void } {
+  const escopo = Effect.runSync(Scope.make());
+  const contexto = Effect.runSync(Layer.buildWithScope(Layers.layerSomenteLeitura({ caminho }), escopo));
+  return {
+    kb: (efeito) => Effect.runSync(Effect.provide(efeito, contexto)),
+    fechar: () => Effect.runSync(Scope.close(escopo, Exit.void)),
+  };
+}
+
 export function criarContexto(opcoes: OpcoesServidor): Contexto {
   const pastaTrabalho = pastaReal(opcoes.pastaTrabalho);
   const { db, meta } = abrirBanco(opcoes.banco);
-  return { db, meta, base: montarBase(meta, opcoes.canal), pastaTrabalho };
+  const { kb } = abrirKb(opcoes.banco);
+  return { db, meta, base: montarBase(meta, opcoes.canal), pastaTrabalho, kb };
 }
 
 export function criarServidor(ctx: Contexto, ferramentas: readonly Ferramenta[] = FERRAMENTAS): McpServer {

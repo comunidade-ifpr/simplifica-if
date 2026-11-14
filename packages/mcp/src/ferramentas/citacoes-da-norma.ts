@@ -1,9 +1,10 @@
 /**
  * Ferramenta 6, `citacoes_da_norma`: os PPCs que citam uma norma ou um dispositivo, pela tabela
- * `citacoes` (`ppcsQueCitamBanco`, a mesma regra de `kb citacoes`). Sem `ppc`, um resumo por PPC
+ * `citacoes` (`Ppcs.citacoesDaNorma`, a mesma regra de `kb citacoes`). Sem `ppc`, um resumo por PPC
  * (a contagem de ocorrências); com `ppc`, as ocorrências, com linha, trecho, regra e confiança.
  */
-import { type PpcCitante, ppcsQueCitamBanco } from "@simplifica-if/kb/db/modo-banco";
+import * as Ppcs from "@simplifica-if/kb/Ppcs";
+import type { PpcCitante } from "@simplifica-if/kb/ppcs/citacoes";
 import { z } from "zod";
 import { type Aviso, esquemaFonte, esquemaLink, responder } from "../envelope.ts";
 import { linkNorma, linkPpc } from "../links.ts";
@@ -109,11 +110,11 @@ export const citacoesDaNorma = definirFerramenta({
     "PPCs da base que citam uma norma ou um dispositivo, com linha, trecho e confiança. Use quando precisar da lista completa; `impacto_da_norma` traz só uma amostra. Sem `ppc`, devolve um resumo por PPC; com `ppc`, as ocorrências.",
   entrada,
   dados,
-  executar(e, { db, base }) {
-    const norma = normaPedida(db, e.id);
+  executar(e, { kb, base }) {
+    const norma = normaPedida(kb, e.id);
     const ato = norma.id;
     const ppc = e.ppc === undefined ? undefined : chavePpc(e.ppc);
-    const citantes = ppcsQueCitamBanco(db, e.id, { confiancaMinima: e.confianca_min }).filter(
+    const citantes = kb(Ppcs.Ppcs.use((p) => p.citacoesDaNorma(e.id, { confiancaMinima: e.confianca_min }))).filter(
       (p) =>
         (ppc === undefined || p.ppc === ppc) &&
         (e.nivel === undefined || p.nivel === e.nivel) &&
