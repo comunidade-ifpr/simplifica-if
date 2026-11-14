@@ -88,6 +88,16 @@ export interface PpcCitante {
   ocorrencias: Ocorrencia[];
 }
 
+/**
+ * Regras do resolvedor que completam ou corrigem citações incompletas dos PPCs: confiança menor, e a
+ * citação deve ser conferida no trecho antes de se afirmar algo substantivo (AGENTS.md).
+ */
+export const REGRAS_BAIXA_CONFIANCA: ReadonlySet<string> = new Set([
+  "dcnept-2021-orgao-trocado",
+  "orgao-ausente-registro",
+  "orgao-no-documento",
+]);
+
 /** Uma linha de trecho legível: espaços colapsados. */
 export function trechoLimpo(trecho: string): string {
   return trecho
@@ -194,4 +204,51 @@ export function ppcsQueCitam(
     });
   }
   return saida;
+}
+
+/** Uma norma citada por um PPC: o ato, quantas citações, as linhas e as regras do resolvedor. */
+export interface NormaCitadaNoPpc {
+  /** ID do ato (sem variante nem dispositivo). */
+  id: string;
+  /** Citações do ato no PPC, as mesmas que `ppcsQueCitam(id)` conta para este PPC. */
+  ocorrencias: number;
+  linhas: number[];
+  regras: string[];
+}
+
+/**
+ * Normas citadas por um PPC, a partir das citações resolvidas na ordem do documento (as de
+ * `citacoesDoArquivo` ou da tabela `citacoes`): uma entrada por ato, da mais citada para a menos
+ * citada e, no empate, pelo ID. Citações não resolvidas ficam fora.
+ */
+export function normasCitadasNoPpc(
+  citacoes: readonly { id: string | null; linha: number; regra: string }[],
+): NormaCitadaNoPpc[] {
+  const porAto = new Map<string, { ocorrencias: number; linhas: Set<number>; regras: Set<string> }>();
+  for (const citacao of citacoes) {
+    if (citacao.id === null) continue;
+    const ato = idDoAto(citacao.id);
+    const atual = porAto.get(ato) ?? { ocorrencias: 0, linhas: new Set<number>(), regras: new Set<string>() };
+    atual.ocorrencias += 1;
+    atual.linhas.add(citacao.linha);
+    atual.regras.add(citacao.regra);
+    porAto.set(ato, atual);
+  }
+  return [...porAto]
+    .map(([id, n]) => ({
+      id,
+      ocorrencias: n.ocorrencias,
+      linhas: [...n.linhas].sort((a, b) => a - b),
+      regras: [...n.regras].sort(compararTexto),
+    }))
+    .sort((a, b) => b.ocorrencias - a.ocorrencias || compararTexto(a.id, b.id));
+}
+
+/** Normas citadas pelo PPC em `caminhoRelativo` (relativo a `base-conhecimento/`), pelos arquivos. */
+export function normasCitadasDoArquivo(
+  caminhoRelativo: string,
+  registro: Registro = registroPadrao(),
+  raiz: string = raizRepositorio(),
+): NormaCitadaNoPpc[] {
+  return normasCitadasNoPpc(citacoesDoArquivo(caminhoRelativo, registro, raiz));
 }

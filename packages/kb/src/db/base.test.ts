@@ -21,7 +21,7 @@ import * as moduloRegistro from "../normas/registro.ts";
 import { caminhoStubs, carregarRegistro, lerRegistroStubs, raizRepositorio } from "../normas/registro.ts";
 import * as moduloResolver from "../normas/resolver.ts";
 import { registroPadrao, resolucaoComEntrada } from "../normas/resolver.ts";
-import { ppcsQueCitam, relatorioCitacoes } from "../ppcs/citacoes.ts";
+import { lerTextoSecao, normasCitadasDoArquivo, ppcsQueCitam, relatorioCitacoes } from "../ppcs/citacoes.ts";
 import { carregarCorrespondencias, correspondencia, correspondenciaEm } from "../normas/correspondencia.ts";
 import {
   carregarDispositivos,
@@ -538,6 +538,80 @@ describe("modo banco: a mesma saída da CLI sobre os arquivos", () => {
     }
   }, 60_000);
 
+  test("normas citadas por um PPC (ficha_curso): iguais às dos arquivos e às contagens de citacoes", () => {
+    const indice = JSON.parse(
+      readFileSync(path.join(raiz, "base-conhecimento/institucional/ifpr/ppcs/index.json"), "utf-8"),
+    ) as { items: { id: string; path: string }[] };
+    const amostra = [PPC, ...indice.items.filter((_, i) => i % 25 === 0).map((item) => item.id)];
+    for (const ppc of amostra) {
+      const item = indice.items.find((i) => i.id === ppc)!;
+      const banco = mb.normasCitadasDoPpcBanco(db, ppc);
+      mesmoJson(banco, normasCitadasDoArquivo(item.path, registroPadrao(), raiz));
+      expect(mb.normasCitadasDoPpcBanco(db, `ppc:${ppc}`)).toEqual(banco);
+    }
+    for (const norma of mb.normasCitadasDoPpcBanco(db, PPC)!) {
+      const citante = mb.ppcsQueCitamBanco(db, norma.id).find((p) => p.ppc === PPC);
+      expect(citante?.ocorrencias.length).toBe(norma.ocorrencias);
+    }
+    expect(mb.normasCitadasDoPpcBanco(db, "curitiba/nao-existe")).toBeNull();
+  }, 60_000);
+
+  test("seção por ID (ler_secao): a do índice de seções, com o texto lido do Markdown", () => {
+    const md = `institucional/ifpr/ppcs/${PPC}.md`;
+    const indice = JSON.parse(
+      readFileSync(path.join(raiz, "base-conhecimento/institucional/ifpr/ppcs/index.json"), "utf-8"),
+    ) as { secoes: { paths: Record<string, string> } };
+    const doIndice: { id: string; section_kind: string; heading: string; linha_inicio: number; linha_fim: number }[] =
+      [];
+    for (const arquivo of Object.values(indice.secoes.paths)) {
+      for (const linha of readFileSync(path.join(raiz, "base-conhecimento", arquivo), "utf-8").split("\n")) {
+        if (!linha.trim()) continue;
+        const secao = JSON.parse(linha) as (typeof doIndice)[number] & { path: string };
+        if (secao.path === md) doIndice.push(secao);
+      }
+    }
+    doIndice.sort((a, b) => a.linha_inicio - b.linha_inicio || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+    expect(doIndice.length).toBeGreaterThan(10);
+    expect(mb.indiceSecoesDoPpc(db, PPC).map((s) => s.id)).toEqual(doIndice.map((s) => s.id));
+    const cache = new Map<string, string>();
+    doIndice.forEach((esperada, i) => {
+      const lida = mb.lerSecao(db, esperada.id)!;
+      expect({
+        tipo: lida.tipo,
+        titulo: lida.titulo,
+        path: lida.path,
+        linha_inicio: lida.linha_inicio,
+        linha_fim: lida.linha_fim,
+        anterior: lida.anterior,
+        proxima: lida.proxima,
+      }).toEqual({
+        tipo: esperada.section_kind,
+        titulo: esperada.heading,
+        path: `base-conhecimento/${md}`,
+        linha_inicio: esperada.linha_inicio,
+        linha_fim: esperada.linha_fim,
+        anterior: doIndice[i - 1]?.id ?? null,
+        proxima: doIndice[i + 1]?.id ?? null,
+      });
+      expect(lida.texto).toBe(lerTextoSecao({ path: md, ...esperada }, { raiz, cache }));
+      // o texto vai de linha_texto a linha_fim, linha a linha
+      if (lida.texto) expect(lida.texto.split("\n").length).toBe(lida.linha_fim - lida.linha_texto + 1);
+    });
+    expect(mb.lerSecao(db, `${PPC}#nao-existe`)).toBeNull();
+  });
+
+  test("fatos de PPC por campus: o mesmo recorte do filtro sobre todos", () => {
+    const todos = mb.fatosDosPpcs(db);
+    mesmoJson(
+      mb.fatosDosPpcs(db, { campus: "curitiba" }),
+      todos.filter((p) => p.ppc.startsWith("ppc:curitiba/")),
+    );
+    const divergencias = mb.divergenciasPpcSuap(db, { nivel: "médio", campus: "curitiba" });
+    expect(divergencias.ppcs.every((p) => p.ppc.startsWith("ppc:curitiba/") && p.nivel === "médio")).toBe(true);
+    // sem campus, igual ao comando da CLI
+    mesmoJson(mb.divergenciasPpcSuap(db, {}), divergenciasPpcSuap(db));
+  });
+
   test("meta: versao, commit e canal só quando informados no build", () => {
     const comVersao = new Database(caminhoC, { readonly: true, strict: true });
     try {
@@ -569,6 +643,10 @@ function todasAsConsultas(banco: Database, markdown: string) {
     buscarSecoes: mb.buscarSecoesBanco(banco, "acompanhamento de egressos", { cnct: "tecnico-em-informatica" }),
     cursos: mb.listarCursos(banco, { eixo: "Informação e Comunicação", processo: "processo-seletivo-2026" }),
     fatos: mb.fatosDosPpcs(banco, { ppc: PPC }),
+    fatosCampus: mb.fatosDosPpcs(banco, { campus: "curitiba", nivel: "médio" }),
+    normasCitadas: mb.normasCitadasDoPpcBanco(banco, PPC),
+    secao: mb.lerSecao(banco, `${PPC}#carga_horaria-1`),
+    indiceSecoes: mb.indiceSecoesDoPpc(banco, PPC),
     divergencias: mb.divergenciasPpcSuap(banco, { nivel: "médio" }),
     pacote: ["CT-CURR-12", "grupo-003"].map((t) => mb.pacoteContextoBanco(banco, t, PPC)),
     pacoteMarkdown: mb.pacoteDoMarkdownBanco(banco, "estagio", "PPC.md", { markdown }),
