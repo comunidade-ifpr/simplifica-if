@@ -8,10 +8,10 @@ data_publicacao: "2024-07-31"
 assinada_em: "2024-07-31"
 publicada_em: "2024-08-01"
 vigente_de: "2024-08-01"
-datas_fonte: "Texto: \"entra em vigor na data de sua publicação, sendo 1º de agosto de 2024\"; Planalto: DOU de 1º.8.2024."
+datas_fonte: "Fonte (Planalto, conferida em 13/11/2026): \"Brasília, 31 de julho de 2024\"; \"Este texto não substitui o publicado no DOU de 1º.8.2024\"; art. 12 (vigência na data de publicação)."
 orgao: "Presidência da República"
 jurisdicao: BR
-ementa: "Altera a LDB para instituir a Política Nacional de Ensino Médio."
+ementa: "Altera a Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), a fim de definir diretrizes para o ensino médio, e as Leis nºs 14.818, de 16 de janeiro de 2024, 12.711, de 29 de agosto de 2012, 11.096, de 13 de janeiro de 2005, e 14.640, de 31 de julho de 2023."
 status_vigencia: "vigente"
 keywords:
   - "ensino médio"
@@ -26,238 +26,257 @@ aliases:
 fonte: https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2024/lei/l14945.htm
 vigencia_calculada_em: "2026-11-13"
 revoga:
-  - "Lei nº 13.415/2017 (revogação parcial (disposições que conflitem com a Lei nº 14.945/2024))"
+  - "Lei nº 9.394/1996 (art. 35-A; §§ 1º, 3º, 8º, 10, 11 e 12 e inciso II do § 6º do art. 36)"
 altera:
-  - "Lei nº 9.394/1996"
+  - "Lei nº 9.394/1996 (nova redação dos arts. 24, 26, 36 e 44; inclusão dos arts. 35-B, 35-C e 35-D)"
+  - "Lei nº 12.711/2012 (art. 1º)"
 ---
 
 ## Resumo
 
-- Lei nº 14.945, de 31 de julho de 2024
+- Dá nova redação aos arts. 24, 26, 36 e 44 da Lei nº 9.394/1996 (LDB) e inclui os arts. 35-B, 35-C e 35-D (art. 1º).
+- Formação geral básica de no mínimo 2.400 horas, ou 2.100 horas na formação técnica e profissional (LDB, art. 35-C); itinerários formativos de no mínimo 600 horas (LDB, art. 36).
+- Revoga o art. 35-A e os §§ 1º, 3º, 8º, 10, 11 e 12 e o inciso II do § 6º do art. 36 da LDB (art. 11).
+- Altera também as Leis nºs 14.818/2024, 12.711/2012, 11.096/2005 e 14.640/2023 (arts. 7º a 10).
+- Entra em vigor na data de sua publicação, 1º de agosto de 2024 (art. 12).
 
----
+## Texto da lei
 
-**Altera a Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), para instituir a Política Nacional de Ensino Médio.**
+> Altera a Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), a fim de definir diretrizes para o ensino médio, e as Leis nºs 14.818, de 16 de janeiro de 2024, 12.711, de 29 de agosto de 2012, 11.096, de 13 de janeiro de 2005, e 14.640, de 31 de julho de 2023.
 
-#### ARTIGO 1º
+O PRESIDENTE DA REPÚBLICA Faço saber que o Congresso Nacional decreta e eu sanciono a seguinte Lei:
 
-Altera a Lei nº 9.394, de 20 de dezembro de 1996, de Diretrizes e Bases da Educação Nacional, introduzindo as seguintes modificações:
+#### Art. 1º
 
-> **Seção I - Da Estrutura Curricular do Ensino Médio**
+A Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), passa a vigorar com as seguintes alterações:
+
+> “**Art. 24.** .........................................................................................................
 >
-> **Art. 24 (Modificado)**
+> **I –** a carga horária mínima anual será de 800 (oitocentas) horas para o ensino fundamental e de 1.000 (mil) horas para o ensino médio, distribuídas por, no mínimo, 200 (duzentos) dias de efetivo trabalho escolar, excluído o tempo reservado aos exames finais, quando houver;
 >
-> A educação básica, nos níveis fundamental e médio, será organizada de acordo com as seguintes regras comuns:
+> .......................................................................................................................
 >
-> I. A carga horária mínima anual será de **1.000 (mil) horas-relógio para o ensino médio**, com expansão progressiva para 1.400 (mil e quatrocentas) horas-relógio, observado o disposto no inciso II do art. 24;
+> **§ 1º** A carga horária mínima anual de que trata o inciso I do caput deste artigo será ampliada de forma progressiva para 1.400 (mil e quatrocentas) horas, considerados os prazos e as metas estabelecidos no Plano Nacional de Educação.
 >
-> II. O ensino médio será organizado de forma que contemple:
->    a) Uma **formação geral básica**;
->    b) Itinerários formativos que poderão incluir aprofundamento em áreas do conhecimento ou formação técnica e profissional;
+> ..............................................................................................................” (NR)
 >
-> III. A formação geral básica terá carga horária mínima de **2.400 (duas mil e quatrocentas) horas-relógio**, sendo possível reduzir para **2.100 (duas mil e cem) horas-relógio** quando articulada com educação profissional e tecnológica ou educação de jovens e adultos;
+> “**Art. 26.** ........................................................................................................
 >
-> IV. Os itinerários formativos terão carga horária mínima de **600 (seiscentas) horas-relógio**, sendo possível reduzir para **300 (trezentas) horas-relógio** quando em educação de jovens e adultos;
+> .......................................................................................................................
 >
-> V. A distribuição da carga horária deve respeitar:
->    a) Mínimo de **200 (duzentos) dias de efetivo trabalho escolar**, excluído o tempo reservado aos exames finais;
->    b) Distribuição entre os períodos letivos, com equilíbrio entre práticas educativas diversificadas;
+> **§ 7º** A integralização curricular poderá incluir, a critério dos sistemas de ensino, projetos e pesquisas envolvendo temas transversais que componham os currículos de que trata o caput deste artigo.
 >
-> VI. As escolas devem oferecer no mínimo **2 (dois) itinerários formativos** com ênfases distintas.
+> ..............................................................................................................” (NR)
 >
-> **Seção II - Da Formação Geral Básica**
+> “**Art. 35-B.** O currículo do ensino médio será composto de formação geral básica e de itinerários formativos.
 >
-> **Art. 35-C (Novo)**
+> **§ 1º** Os estabelecimentos que ofertem ensino médio estruturarão suas propostas pedagógicas considerando os seguintes elementos:
 >
-> A formação geral básica é composta por competências e habilidades em:
+> **I –** promoção de metodologias investigativas no processo de ensino e aprendizagem;
 >
-> I. Linguagens e tecnologias, incluindo:
->    a) Português;
->    b) Inglês;
->    c) Artes;
->    d) Educação física;
+> **II –** conexão dos processos de ensino e aprendizagem com a vida comunitária e social em cada território;
 >
-> II. Matemática e tecnologias;
+> **III –** reconhecimento do trabalho e de seu caráter formativo; e
 >
-> III. Ciências da natureza;
+> **IV –** articulação entre os diferentes saberes com base nas áreas do conhecimento e, quando for o caso, no currículo da formação técnica e profissional.
 >
-> IV. Ciências humanas e sociais aplicadas.
+> **§ 2º** Serão asseguradas aos estudantes oportunidades de construção de projetos de vida, em perspectiva orientada pelo desenvolvimento integral, nas dimensões física, cognitiva e socioemocional, pela integração comunitária no território, pela participação cidadã e pela preparação para o mundo do trabalho, de forma ambiental e socialmente responsável.
 >
-> **Art. 35-D (Novo)**
+> **§ 3º** O ensino médio será ofertado de forma presencial, admitido, excepcionalmente, ensino mediado por tecnologia, na forma de regulamento elaborado com a participação dos sistemas estaduais e distrital de ensino.
 >
-> Os currículos devem considerar:
+> **§ 4º** Para fins de cumprimento das exigências curriculares do ensino médio em regime de tempo integral, excepcionalmente, os sistemas de ensino poderão reconhecer aprendizagens, competências e habilidades desenvolvidas pelos estudantes em experiências extraescolares, mediante formas de comprovação definidas pelos sistemas de ensino e que considerem:
 >
-> I. A consolidação e aprofundamento dos conhecimentos da educação básica;
+> **I –** a experiência de estágio, programas de aprendizagem profissional, trabalho remunerado ou trabalho voluntário supervisionado, desde que explicitada a relação com o currículo do ensino médio;
 >
-> II. A preparação para o prosseguimento de estudos;
+> **II –** a conclusão de cursos de qualificação profissional, desde que comprovada por certificação emitida de acordo com a legislação; e
 >
-> III. O desenvolvimento da autonomia intelectual e do pensamento crítico;
+> **III –** a participação comprovada em projetos de extensão universitária ou de iniciação científica ou em atividades de direção em grêmios estudantis.”
 >
-> IV. A compreensão dos fundamentos científico-tecnológicos dos processos produtivos;
+> “**Art. 35-C.** A formação geral básica, com carga horária mínima total de 2.400 (duas mil e quatrocentas) horas, ocorrerá mediante articulação da Base Nacional Comum Curricular e da parte diversificada de que trata o caput do art. 26 desta Lei.
 >
-> V. A educação para a cidadania ativa.
+> **Parágrafo único.** No caso da formação técnica e profissional prevista no inciso V do caput do art. 36 desta Lei, a carga horária mínima da formação geral básica será de 2.100 (duas mil e cem) horas, admitindo-se que até 300 (trezentas) horas da carga horária da formação geral básica sejam destinadas ao aprofundamento de estudos de conteúdos da Base Nacional Comum Curricular diretamente relacionados à formação técnica profissional oferecida.”
 >
-> **Seção III - Dos Itinerários Formativos**
+> “**Art. 35-D.** A Base Nacional Comum Curricular do ensino médio estabelecerá direitos e objetivos de aprendizagem, conforme diretrizes do Conselho Nacional de Educação, nas seguintes áreas do conhecimento:
 >
-> **Art. 36 (Modificado)**
+> **I –** linguagens e suas tecnologias, integrada pela língua portuguesa e suas literaturas, língua inglesa, artes e educação física;
 >
-> O currículo do ensino médio será composto por:
+> **II –** matemática e suas tecnologias;
 >
-> I. A formação geral básica (FGBN), obrigatória em sua totalidade;
+> **III –** ciências da natureza e suas tecnologias, integrada por biologia, física e química;
 >
-> II. Itinerários formativos que poderão contemplar:
->    a) Aprofundamento em uma ou mais áreas do conhecimento;
->    b) Formação técnica e profissional;
->    c) Ambas as combinações anteriores;
+> **IV –** ciências humanas e sociais aplicadas, integrada por filosofia, geografia, história e sociologia.
 >
-> III. Os itinerários formativos devem:
->    a) Ser estruturados em núcleos temáticos;
->    b) Oferecer flexibilidade de escolha ao estudante;
->    c) Estar articulados às políticas públicas de educação;
+> **§ 1º** A Base Nacional Comum Curricular a que se refere o caput deste artigo deverá ser cumprida integralmente ao longo da formação geral básica.
 >
-> IV. A educação profissional e tecnológica integrada ao ensino médio deverá observar:
->    a) As diretrizes da educação profissional e tecnológica;
->    b) As cargas horárias de formação geral e técnica;
->    c) Os requisitos do Catálogo Nacional de Cursos Técnicos (CNCT);
+> **§ 2º** O ensino médio será ministrado em língua portuguesa, assegurada às comunidades indígenas a utilização das línguas maternas.
 >
-> V. As escolas podem oferecer itinerários formativos diversificados, desde que respeitem:
->    a) A carga horária mínima;
->    b) A articulação com a formação geral básica;
->    c) A demanda regional e local.
+> **§ 3º** Os currículos do ensino médio poderão ofertar outras línguas estrangeiras, preferencialmente o espanhol, de acordo com a disponibilidade de oferta, locais e horários definidos pelos sistemas de ensino.”
 >
-> **Seção IV - Da Educação Profissional e Tecnológica**
+> “**Art. 36.** Os itinerários formativos, articulados com a parte diversificada de que trata o caput do art. 26 desta Lei, terão carga horária mínima de 600 (seiscentas) horas, ressalvadas as especificidades da formação técnica e profissional, e serão compostos de aprofundamento das áreas do conhecimento ou de formação técnica e profissional, conforme a relevância para o contexto local e a possibilidade dos sistemas de ensino, consideradas as seguintes ênfases:
 >
-> **Art. 36-C (Novo)**
+> ......................................................................................................................
 >
-> A articulação entre educação médio e educação profissional e tecnológica observará:
+> **V –** formação técnica e profissional, organizada de acordo com os eixos tecnológicos e as áreas tecnológicas definidos nos termos previstos nas diretrizes curriculares nacionais de educação profissional e tecnológica, observados o Catálogo Nacional de Cursos Técnicos (CNCT) referido no § 3º do art. 42-A e o disposto nos arts. 36-A, 36-B, 36-C e 36-D desta Lei.
 >
-> I. Integração com itinerários formativos quando em cursos integrados;
+> **§ 1º** (Revogado).
 >
-> II. Possibilidade de concomitância no mesmo período;
+> **§ 1º-A** Cada itinerário formativo deverá contemplar integralmente o aprofundamento de ao menos uma das áreas do conhecimento previstas nos incisos I, II, III e IV do caput, ressalvada a formação técnica e profissional prevista no inciso V do caput deste artigo.
 >
-> III. Sequencialidade na educação de jovens e adultos;
+> ......................................................................................................................
 >
-> IV. As competências profissionais definidas no CNCT e em diretrizes específicas.
+> **§ 2º-A** Os sistemas de ensino deverão garantir que todas as escolas de ensino médio ofertem o aprofundamento integral de todas as áreas do conhecimento previstas nos incisos I, II, III e IV do caput deste artigo, organizadas em, no mínimo, 2 (dois) itinerários formativos com ênfases distintas, excetuadas as que oferecerem a formação técnica e profissional.
+>
+> **§ 2º-B** O Conselho Nacional de Educação, com participação dos sistemas estaduais e distrital de ensino, elaborará diretrizes nacionais de aprofundamento de cada uma das áreas do conhecimento previstas nos incisos I, II, III e IV do caput deste artigo, com orientações sobre os direitos e os objetivos de aprendizagem a serem considerados nos itinerários formativos, reconhecidas as especificidades da educação indígena e quilombola.
+>
+> **§ 2º-C** A União desenvolverá indicadores e estabelecerá padrões de desempenho esperados para o ensino médio, que serão referência nos processos nacionais de avaliação, a partir da Base Nacional Comum Curricular prevista no caput do art. 35-D desta Lei e das diretrizes nacionais de aprofundamento previstas no § 2º-B deste artigo.
+>
+> **§ 2º-D** Os sistemas de ensino apoiarão as escolas para a realização de programas e de projetos destinados à orientação dos estudantes no processo de escolha dos itinerários formativos.
+>
+> **§ 3º** (Revogado).
+>
+> ......................................................................................................................
+>
+> **§ 5º** Os sistemas de ensino, mediante disponibilidade de vagas na rede, possibilitarão ao aluno concluinte ou egresso do ensino médio cursar um segundo itinerário formativo.
+>
+> **§ 6º** A oferta de formação técnica e profissional poderá ser realizada mediante convênios ou outras formas de parceria entre as secretarias de educação e as instituições credenciadas de educação profissional, preferencialmente públicas, observados os limites estabelecidos na legislação, e considerará:
+>
+> ......................................................................................................................
+>
+> **II –** (revogado).
+>
+> ......................................................................................................................
+>
+> **§ 8º** (Revogado).
+>
+> **§ 8º-A** Os Estados manterão, na sede de cada um de seus Municípios, pelo menos 1 (uma) escola de sua rede pública com oferta de ensino médio regular no turno noturno, quando houver demanda manifesta e comprovada para matrícula de alunos nesse turno, na forma da regulamentação a ser estabelecida pelo respectivo sistema de ensino.
+>
+> ......................................................................................................................
+>
+> **§ 10.** (Revogado).
+>
+> **§ 11.** (Revogado).
+>
+> **§ 12.** (Revogado).
+>
+> .............................................................................................................” (NR)
+>
+> “**Art. 44.** .......................................................................................................
+>
+> ......................................................................................................................
+>
+> **§ 3º** (VETADO).” (NR)
 
-#### ARTIGO 2º
+#### Art. 2º
 
-Acrescenta novo artigo à Lei nº 9.394/1996 sobre critérios de equidade na expansão de matrículas em tempo integral.
+No planejamento da expansão das matrículas no ensino médio em tempo integral, serão observados critérios de equidade, de modo a assegurar a inclusão, nas diferentes etapas e modalidades educacionais estabelecidas na legislação, dos estudantes em condição de vulnerabilidade social, da população negra, quilombola, do campo e indígena e das pessoas com deficiência.
 
-**Equidade e Inclusão**
+#### Art. 3º
 
-As políticas de expansão do ensino médio em tempo integral devem:
+Na perspectiva da garantia de igualdade de condições de acesso, de permanência e de conclusão do ensino médio para todos os estudantes, os sistemas de ensino, em obediência às diretrizes curriculares nacionais estabelecidas pelo Conselho Nacional de Educação para cada uma das modalidades da educação básica, garantirão que a oferta curricular do ensino médio reconheça:
 
-I. Priorizar regiões e populações historicamente desfavorecidas;
+- **I –** as especificidades, as singularidades e as necessidades que caracterizam as diferentes populações atendidas no ensino médio; e
+- **II –** as condições necessárias à estruturação da oferta e do atendimento escolar em período noturno.
 
-II. Considerar:
-   a) Situação socioeconômica;
-   b) Localização geográfica (rural/urbana);
-   c) Inclusão de estudantes com deficiência;
-   d) Inclusão de estudantes negros, indígenas e quilombolas;
+#### Art. 4º
 
-III. Garantir acessibilidade física, comunicacional, atitudinal e metodológica;
+As secretarias estaduais e distrital de educação elaborarão planos de ação para a implementação escalonada das alterações promovidas por esta Lei.
 
-IV. Viabilizar o acesso através de:
-   a) Transporte escolar;
-   b) Alimentação escolar;
-   c) Material didático;
-   d) Assistência estudantil.
+**§ 1º** O Ministério da Educação prestará assistência técnica e financeira aos Estados e ao Distrito Federal e estabelecerá, em colaboração com os sistemas estaduais e distrital de ensino, estratégias de assistência e formação das equipes técnicas das secretarias de educação, com foco na elaboração dos planos de ação a que se refere o caput deste artigo.
 
-#### ARTIGO 3º
+**§ 2º** Na implementação do currículo do ensino médio a que se refere o inciso II do caput do art. 5º desta Lei, é admitida a transição para a nova configuração do ensino médio dos estudantes que cursam essa etapa da educação básica na data de publicação desta Lei.
 
-Implementação e apoio técnico e financeiro pela União.
+**§ 3º** Os sistemas estaduais e distrital de educação, com apoio do Ministério da Educação, estabelecerão políticas, programas e projetos de formação continuada dos docentes de ensino médio que incluam orientações didáticas e reflexões metodológicas relacionadas ao novo formato dessa etapa da educação básica.
 
-#### ARTIGO 4º
+#### Art. 5º
 
-Cronograma de implementação:
+A implementação das disposições previstas nesta Lei ocorrerá da seguinte forma:
 
-- **Até 31 de dezembro de 2024**: Publicação de diretrizes curriculares nacionais
-- **Ano letivo de 2025**: Início da implementação
-- **Transição progressiva**: Para estudantes já matriculados
-- **Até 2030**: Plenamente implementada
+- **I –** até o final de 2024, o Ministério da Educação, com a participação dos sistemas estaduais e distrital de ensino, estabelecerá as diretrizes nacionais de aprofundamento das áreas do conhecimento previstas no art. 36 da Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional);
+- **II –** no ano letivo de 2025, os sistemas de ensino deverão iniciar a implementação do currículo do ensino médio conforme o disposto nos arts. 35-B, 35-C, 35-D e 36 da Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional).
 
-#### ARTIGO 5º
+#### Art. 6º
 
-Alterações em legislações correlatas:
+A União, os Estados e o Distrito Federal, a fim de estimular a oferta de educação profissional e tecnológica articulada com o ensino médio, implementarão, na forma de regulamento, estratégias previstas na Política Nacional de Educação Profissional e Tecnológica, conforme o art. 4º da Lei nº 14.645, de 2 de agosto de 2023, por meio da promoção de cooperação técnica da União com os Estados e o Distrito Federal, no âmbito da Rede Federal de Educação Profissional, Científica e Tecnológica, sem prejuízo de outras formas de cooperação, e de articulação das políticas e programas constantes das Leis nºs 14.640, de 31 de julho de 2023, e Lei nº 14.645, de 2 de agosto de 2023.
 
-**Lei nº 11.096/2005 (Programa Universidade para Todos - ProUni)**
+#### Art. 7º
 
-Amplia elegibilidade para programas de bolsas estudantis incluindo educação profissional e tecnológica.
+O art. 1º da Lei nº 14.818, de 16 de janeiro de 2024, passa a vigorar com as seguintes alterações:
 
-**Lei nº 12.711/2012 (Lei de Cotas)**
+> “**Art. 1º.** ........................................................................................................
+>
+> **§ 1º** São elegíveis ao incentivo de que trata esta Lei os estudantes de baixa renda regularmente matriculados no ensino médio das redes públicas e das escolas comunitárias que atuam no âmbito da educação do campo conveniadas com o poder público, referidas na alínea b do inciso I do § 3º do art. 7º da Lei nº 14.113, de 25 de dezembro de 2020, em todas as modalidades, e pertencentes a famílias inscritas no Cadastro Único para Programas Sociais do Governo Federal (CadÚnico), com prioridade aos que tenham renda per capita mensal até o limite estabelecido no inciso II do caput do art. 5º da Lei nº 14.601, de 19 de junho de 2023.
+>
+> ......................................................................................................................
+>
+> **§ 3º.** .............................................................................................................
+>
+> ......................................................................................................................
+>
+> **IV –** à matrícula em ensino médio articulado com a educação profissional e tecnológica, de forma integrada ou concomitante.” (NR)
 
-Mantém 50% de vagas para egressos de escolas públicas, incluindo educação profissional e tecnológica.
+#### Art. 8º
 
-**Lei nº 14.640/2023 (Reforma dos Institutos Federais)**
+O caput do art. 1º da Lei nº 12.711, de 29 de agosto de 2012, passa a vigorar com a seguinte redação:
 
-Prioriza ensino médio articulado com educação profissional e tecnológica nos institutos federais.
+> “**Art. 1º** As instituições federais de educação superior vinculadas ao Ministério da Educação reservarão, em cada concurso seletivo para ingresso nos cursos de graduação, por curso e turno, no mínimo 50% (cinquenta por cento) de suas vagas para estudantes que tenham cursado integralmente o ensino médio em escolas públicas ou em escolas comunitárias que atuam no âmbito da educação do campo conveniadas com o poder público, referidas na alínea b do inciso I do § 3º do art. 7º da Lei nº 14.113, de 25 de dezembro de 2020.
+>
+> .............................................................................................................” (NR)
 
-**Lei nº 14.818/2024 (Benefícios Estudantis)**
+#### Art. 9º
 
-Inclui educação profissional e tecnológica entre benefícios estudantis (auxílio estudantil, bolsas).
+O inciso I do caput do art. 2º da Lei nº 11.096, de 13 de janeiro de 2005, passa a vigorar acrescido da seguinte alínea f:
 
-#### ARTIGO 6º
+> “**Art. 2º.** ........................................................................................................
+>
+> **I –** ..................................................................................................................
+>
+> .......................................................................................................................
+>
+> f) o ensino médio completo em escola comunitária que atue no âmbito da educação do campo conveniada com o poder público, referida na alínea b do inciso I do § 3º do art. 7º da Lei nº 14.113, de 25 de dezembro de 2020;
+>
+> .............................................................................................................” (NR)
 
-Revogação parcial e alterações
+#### Art. 10.
 
-Revoga parcialmente a Lei nº 13.415, de 16 de fevereiro de 2017, mantendo disposições que não conflitem com a presente lei.
+O art. 3º da Lei nº 14.640, de 31 de julho de 2023, passa a vigorar com as seguintes alterações:
 
-#### ARTIGO 7º
+> “**Art. 3º.** ........................................................................................................
+>
+> ......................................................................................................................
+>
+> **§ 3º.** ..............................................................................................................
+>
+> .......................................................................................................................
+>
+> **IV –** priorizará os estabelecimentos de ensino que ofertem matrículas de ensino médio articuladas com a educação profissional e tecnológica, nas modalidades integrada ou concomitante.
+>
+> **§ 4º** As matrículas de ensino médio em tempo integral articuladas com a educação profissional e tecnológica, fomentadas e criadas conforme disposto nesta Lei, serão priorizadas no âmbito da ação prevista no inciso I do caput do art. 4º da Lei nº 12.513, de 26 de outubro de 2011.” (NR)
 
-Vigor
+#### Art. 11.
 
-A presente lei entra em vigor na data de sua publicação, sendo 1º de agosto de 2024.
+Ficam revogados os seguintes dispositivos da Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional):
 
----
+- **I –** art. 35-A;
+- **II –** § 1º do art. 36;
+- **III –** § 3º do art. 36;
+- **IV –** inciso II do § 6º do art. 36;
+- **V –** § 8º do art. 36;
+- **VI –** § 10 do art. 36;
+- **VII –** § 11 do art. 36; e
+- **VIII –** § 12 do art. 36.
 
-## RESUMO EXECUTIVO
+#### Art. 12.
 
-### Principais Mudanças
+Esta Lei entra em vigor na data de sua publicação.
 
-1. **Carga Horária do Ensino Médio**
-   - Mínimo: 1.000 horas-relógio/ano (imediato)
-   - Expansão: 1.400 horas-relógio/ano (progressiva)
-   - Com educação profissional: 2.100 horas-relógio (FGB reduzida)
+**Parágrafo único.** (VETADO).
 
-2. **Estrutura Curricular Dual**
-   - Formação Geral Básica (FGB): 2.400h (ou 2.100h com EPT)
-   - Itinerários Formativos: 600h (ou 300h em EJA)
-   - Mínimo 2 itinerários distintos obrigatórios
+Brasília, 31 de julho de 2024; 203º da Independência e 136º da República.
 
-3. **Educação Profissional Integrada**
-   - Articulação obrigatória em cursos integrados
-   - Conformidade com CNCT
-   - Possibilidade de concomitância
+LUIZ INÁCIO LULA DA SILVA
+Silvio Luiz de Almeida
+Camilo Sobreira de Santana
+Anielle Francisco da Silva
+Luiz Henrique Eloy Amado
 
-4. **Equidade**
-   - Priorização de populações vulneráveis
-   - Acessibilidade garantida
-   - Inclusão de PcD, negros, indígenas, quilombolas
-
-5. **Implementação**
-   - Transição progressiva a partir de 2025
-   - Diretrizes até dezembro de 2024
-   - Vigência: 1º de agosto de 2024
-
-### Impacto na EPTNM
-
-- Aumenta carga horária do ensino médio técnico
-- Reforça articulação obrigatória
-- Expande acesso via Lei de Cotas e programas de bolsas
-- Requer adequação de PPCs e matrizes curriculares
-
-### Referências Legais Relacionadas
-
-- Lei nº 9.394/1996 (LDB) - modificada
-- Lei nº 13.415/2017 (Reforma anterior) - parcialmente revogada
-- Lei nº 12.711/2012 (Lei de Cotas)
-- Lei nº 14.640/2023 (Institutos Federais)
-- Catálogo Nacional de Cursos Técnicos (CNCT)
-- Diretrizes Curriculares Nacionais para a EPT
-
----
-
-**Processamento**: Convertido de HTML para Markdown estruturado
-**Data de Processamento**: 2025-11-17
-**Fonte**: Câmara dos Deputados
-**Status**: Vigente
+Este texto não substitui o publicado no DOU de 1º.8.2024.

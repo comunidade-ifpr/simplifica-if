@@ -63,6 +63,7 @@ describe("vigência", () => {
       // Status manuais anteriores que o cálculo muda, com a relação que justifica a mudança.
       const justificadas: Record<string, [string, string]> = {
         "br/lei/1996/9394": ["alterada", "parcialmente revogada"], // Lei 11.788, art. 22: revoga o par. único do art. 82
+        "br/lei/2012/12711": ["vigente", "alterada"], // Lei 14.945/2024, art. 8º: nova redação do caput do art. 1º
         "ifpr/consup/res/2011/55": ["alterada", "parcialmente revogada"], // art. 104 revogado pela Res. 2/2017 (nota no texto)
         "ifpr/consup/res/2014/8": ["alterada", "parcialmente revogada"], // Res. 222/2024 e 242/2025, art. 2º
         "ifpr/consup/res/2025/259": ["vigente", "alterada"], // Res. 263/2025 (notas no próprio texto)

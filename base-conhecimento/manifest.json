@@ -107,6 +107,15 @@
         "origem": "br/lei/2024/14945",
         "operador": "#art1",
         "alvo": "br/lei/1996/9394",
+        "alcance": "nova redação dos arts. 24, 26, 36 e 44; inclusão dos arts. 35-B, 35-C e 35-D",
+        "efeito_de": "vigencia-da-origem"
+      },
+      {
+        "tipo": "revoga",
+        "origem": "br/lei/2024/14945",
+        "operador": "#art11",
+        "alvo": "br/lei/1996/9394",
+        "alcance": "art. 35-A; §§ 1º, 3º, 8º, 10, 11 e 12 e inciso II do § 6º do art. 36",
         "efeito_de": "vigencia-da-origem"
       },
       {
@@ -448,7 +457,7 @@
     "orgao": "Presidência da República",
     "jurisdicao": "BR",
     "ementa": "Dispõe sobre o ingresso nas universidades federais e nas instituições federais de ensino técnico de nível médio.",
-    "status_vigencia": "vigente",
+    "status_vigencia": "alterada",
     "keywords": [
       "cotas",
       "reserva de vagas",
@@ -462,7 +471,17 @@
       "Lei de Cotas"
     ],
     "fonte": "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2012/lei/l12711.htm",
-    "path": "normas/br/leis/LEI_BR_12711-2012_cotas.md"
+    "path": "normas/br/leis/LEI_BR_12711-2012_cotas.md",
+    "relacoes": [
+      {
+        "tipo": "altera",
+        "origem": "br/lei/2024/14945",
+        "operador": "#art8",
+        "alvo": "br/lei/2012/12711",
+        "alvo_dispositivo": "#art1",
+        "efeito_de": "vigencia-da-origem"
+      }
+    ]
   },
   {
     "id": "ifpr/consup/res/2014/8",
@@ -943,7 +962,7 @@
     "vigente_de": "2024-08-01",
     "orgao": "Presidência da República",
     "jurisdicao": "BR",
-    "ementa": "Altera a LDB para instituir a Política Nacional de Ensino Médio.",
+    "ementa": "Altera a Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), a fim de definir diretrizes para o ensino médio, e as Leis nºs 14.818, de 16 de janeiro de 2024, 12.711, de 29 de agosto de 2012, 11.096, de 13 de janeiro de 2005, e 14.640, de 31 de julho de 2023.",
     "status_vigencia": "vigente",
     "keywords": [
       "ensino médio",
@@ -965,14 +984,23 @@
         "origem": "br/lei/2024/14945",
         "operador": "#art1",
         "alvo": "br/lei/1996/9394",
+        "alcance": "nova redação dos arts. 24, 26, 36 e 44; inclusão dos arts. 35-B, 35-C e 35-D",
         "efeito_de": "vigencia-da-origem"
       },
       {
         "tipo": "revoga",
         "origem": "br/lei/2024/14945",
-        "operador": "#art6",
-        "alvo": "br/lei/2017/13415",
-        "alcance": "revogação parcial (disposições que conflitem com a Lei nº 14.945/2024)",
+        "operador": "#art11",
+        "alvo": "br/lei/1996/9394",
+        "alcance": "art. 35-A; §§ 1º, 3º, 8º, 10, 11 e 12 e inciso II do § 6º do art. 36",
+        "efeito_de": "vigencia-da-origem"
+      },
+      {
+        "tipo": "altera",
+        "origem": "br/lei/2024/14945",
+        "operador": "#art8",
+        "alvo": "br/lei/2012/12711",
+        "alvo_dispositivo": "#art1",
         "efeito_de": "vigencia-da-origem"
       }
     ]

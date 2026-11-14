@@ -12,7 +12,7 @@ datas_fonte: "Fonte (Planalto, conferida em 13/11/2026): \"Este texto não subst
 orgao: "Presidência da República"
 jurisdicao: BR
 ementa: "Dispõe sobre o ingresso nas universidades federais e nas instituições federais de ensino técnico de nível médio."
-status_vigencia: "vigente"
+status_vigencia: "alterada"
 keywords:
   - cotas
   - "reserva de vagas"
@@ -25,6 +25,8 @@ aliases:
   - "Lei de Cotas"
 fonte: https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2012/lei/l12711.htm
 vigencia_calculada_em: "2026-11-13"
+alterada_por:
+  - "Lei nº 14.945/2024 (art. 8º) — art. 1º"
 ---
 
 ## Resumo
