@@ -17,7 +17,7 @@ import {
   textoDe,
   textoOuVazio,
 } from "@simplifica-if/kb/json";
-import { lerTopicosSecoes } from "@simplifica-if/kb/db/pacote-contexto";
+import { lerTopicosSecoes } from "@simplifica-if/kb/ppcs/topicos";
 import { ehIdDispositivo, RE_REFERENCIA } from "@simplifica-if/kb/normas/ids";
 import {
   type FonteReferencia,

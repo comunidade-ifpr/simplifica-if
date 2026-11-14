@@ -1,53 +1,60 @@
 /**
- * Consultas às tabelas da fase 5 no `kb.sqlite` (dispositivos, relações, vigências, transições e
- * correspondências), com zod na fronteira. As regras não são reescritas aqui: a deduplicação vem
- * gravada (`canonico`), e a herança da correspondência, os descendentes e a situação da transição
- * numa data usam as mesmas funções da API de arquivos (`correspondenciaEm`, `descendentesEm`,
- * `situacaoNaData`). `base.test.ts` confere que banco e arquivos dão o mesmo resultado.
+ * Consultas às tabelas da fase 5 no `kb.sqlite` (dispositivos, vigências, transições e
+ * correspondências), pelo `SqlClient`, com as linhas decodificadas por Effect Schema na borda. As
+ * regras não são reescritas aqui: a deduplicação vem gravada (`canonico`), e a herança da
+ * correspondência, os descendentes e a situação da transição numa data usam as mesmas funções da
+ * API de arquivos (`correspondenciaEm`, `descendentesEm`, `situacaoNaData`). `base.test.ts` confere
+ * que banco e arquivos dão o mesmo resultado.
+ *
+ * Exports: `obterDispositivo`, `descendentes`, `paraTrecho`, `trechoDoDispositivo`,
+ * `dispositivoOuAncestral`, `tabelasCorrespondencia`, `carregarFonteCorrespondencia`,
+ * `vigenciaNaData`, `sqlForaDeVigencia` (pura), `transicoesDosAtos`; tipos `DispositivoDoBanco`,
+ * `TrechoDispositivo`, `VigenciaNoBanco`, `TransicaoNoBanco`. As relações e a `data_referencia`
+ * vêm de `FontesNormativas`.
  */
-import type { DatabaseSync } from "node:sqlite";
-import { z } from "zod";
+import * as Effect from "effect/Effect";
+import * as Schema from "effect/Schema";
+import type * as SqlClient from "effect/sql/SqlClient";
 import type { FonteCorrespondencia, TabelaCorrespondencia } from "../normas/correspondencia.ts";
 import { descendentesEm, type Dispositivo, TIPOS_DISPOSITIVO, TIPOS_NOTA } from "../normas/estrutura.ts";
 import { idDoAto } from "../normas/ids.ts";
-import type { Relacao } from "../normas/relacoes.ts";
 import { type DatasTransicao, type Situacao, STATUS_VIGENCIA, situacaoNaData } from "../normas/vigencia.ts";
+import * as Sql from "./sql.ts";
 
-const texto = z.string();
-const textoNulo = z.string().nullable();
-const inteiro = z.number().int();
+const Texto = Schema.String;
+const TextoNulo = Schema.NullOr(Schema.String);
+const Inteiro = Schema.Int;
+const ListaTextos = Schema.Array(Schema.String);
 
 /* ============================================================== dispositivos */
 
 const COLUNAS_DISPOSITIVO =
   "rowid, id, ato_id, norma_id, dispositivo, tipo, rotulo, pai, ordem, texto, caput_json, texto_com_caput, estrutura_json, notas_json, revogado, vetado, canonico, path, linha_inicio, linha_fim";
 
-const esquemaLinha = z.strictObject({
-  rowid: inteiro,
-  id: texto,
-  ato_id: texto,
-  norma_id: texto,
-  dispositivo: texto,
-  tipo: z.enum(TIPOS_DISPOSITIVO),
-  rotulo: texto,
-  pai: textoNulo,
-  ordem: inteiro,
-  texto: texto,
-  caput_json: texto,
-  texto_com_caput: texto,
-  estrutura_json: texto,
-  notas_json: texto,
-  revogado: inteiro,
-  vetado: inteiro,
-  canonico: inteiro,
-  path: texto,
-  linha_inicio: inteiro,
-  linha_fim: inteiro,
+const LinhaDispositivo = Schema.Struct({
+  rowid: Inteiro,
+  id: Texto,
+  ato_id: Texto,
+  norma_id: Texto,
+  dispositivo: Texto,
+  tipo: Schema.Literals(TIPOS_DISPOSITIVO),
+  rotulo: Texto,
+  pai: TextoNulo,
+  ordem: Inteiro,
+  texto: Texto,
+  caput_json: Schema.fromJsonString(ListaTextos),
+  texto_com_caput: Texto,
+  estrutura_json: Schema.fromJsonString(ListaTextos),
+  notas_json: Schema.fromJsonString(Schema.Array(Schema.Struct({ tipo: Schema.Literals(TIPOS_NOTA), texto: Texto }))),
+  revogado: Inteiro,
+  vetado: Inteiro,
+  canonico: Inteiro,
+  path: Texto,
+  linha_inicio: Inteiro,
+  linha_fim: Inteiro,
 });
-type Linha = z.output<typeof esquemaLinha>;
-
-const listaTextos = z.array(z.string());
-const listaNotas = z.array(z.strictObject({ tipo: z.enum(TIPOS_NOTA), texto: z.string() }));
+const linhasDispositivo = Sql.todas(LinhaDispositivo);
+const primeiroDispositivo = Sql.primeira(LinhaDispositivo);
 
 /** Dispositivo do banco: o `Dispositivo` da API de arquivos, mais o arquivo (relativo à raiz) e o rowid. */
 export interface DispositivoDoBanco {
@@ -58,7 +65,7 @@ export interface DispositivoDoBanco {
   texto_com_caput: string;
 }
 
-function paraDispositivo(l: Linha): DispositivoDoBanco {
+function paraDispositivo(l: typeof LinhaDispositivo.Type): DispositivoDoBanco {
   return {
     disp: {
       id: l.id,
@@ -69,9 +76,9 @@ function paraDispositivo(l: Linha): DispositivoDoBanco {
       rotulo: l.rotulo,
       pai: l.pai,
       texto: l.texto,
-      caput: listaTextos.parse(JSON.parse(l.caput_json)),
-      estrutura: listaTextos.parse(JSON.parse(l.estrutura_json)),
-      notas: listaNotas.parse(JSON.parse(l.notas_json)),
+      caput: [...l.caput_json],
+      estrutura: [...l.estrutura_json],
+      notas: l.notas_json.map((n) => ({ tipo: n.tipo, texto: n.texto })),
       revogado: l.revogado === 1,
       vetado: l.vetado === 1,
       linha_inicio: l.linha_inicio,
@@ -84,49 +91,42 @@ function paraDispositivo(l: Linha): DispositivoDoBanco {
   };
 }
 
-function uma(db: DatabaseSync, sql: string, ...parametros: string[]): DispositivoDoBanco | undefined {
-  const linha = db.prepare(sql).get(...parametros);
-  return linha ? paraDispositivo(esquemaLinha.parse(linha)) : undefined;
-}
+// sem span: chamada por dispositivo (ancestrais, correspondência, busca textual)
+const uma = Effect.fnUntraced(function* (sql: string, parametros: ReadonlyArray<string>) {
+  const linha = yield* primeiroDispositivo(sql, parametros);
+  return linha ? paraDispositivo(linha) : undefined;
+});
 
 /**
  * Dispositivo pelo ID, com a regra de `obterDispositivo` (`normas/estrutura.ts`): pelo ID do ato, o
  * dispositivo canônico (o texto integral prevalece sobre a compilação); pelo ID do arquivo com
  * variante (`br/lei/1996/9394~compilacao#art36`), aquele dispositivo.
  */
-export function obterDispositivoBanco(db: DatabaseSync, id: string): DispositivoDoBanco | undefined {
+export const obterDispositivo = Effect.fn("consultasNormas.obterDispositivo")(function* (id: string) {
   const [norma, sufixo] = id.split("#") as [string, string | undefined];
   if (!sufixo) return undefined;
   const ato = idDoAto(norma);
-  const direto = uma(
-    db,
+  const direto = yield* uma(
     `SELECT ${COLUNAS_DISPOSITIVO} FROM dispositivos WHERE ato_id = ? AND dispositivo = ? AND canonico = 1`,
-    ato,
-    `#${sufixo}`,
+    [ato, `#${sufixo}`],
   );
   if (direto && (norma === direto.disp.ato || norma === direto.disp.norma)) return direto;
-  if (norma !== ato) return uma(db, `SELECT ${COLUNAS_DISPOSITIVO} FROM dispositivos WHERE id = ?`, id);
+  if (norma !== ato) return yield* uma(`SELECT ${COLUNAS_DISPOSITIVO} FROM dispositivos WHERE id = ?`, [id]);
   return direto;
-}
+});
 
 /** Descendentes de um dispositivo (pelo ID do arquivo), em ordem: `descendentesEm` sobre o arquivo dele. */
-export function descendentesBanco(db: DatabaseSync, id: string): DispositivoDoBanco[] {
-  const lista = z
-    .array(esquemaLinha)
-    .parse(
-      db
-        .prepare(
-          `SELECT ${COLUNAS_DISPOSITIVO} FROM dispositivos WHERE norma_id = (SELECT norma_id FROM dispositivos WHERE id = ?) ORDER BY ordem`,
-        )
-        .all(id),
-    )
-    .map(paraDispositivo);
+export const descendentes = Effect.fn("consultasNormas.descendentes")(function* (id: string) {
+  const lista = (yield* linhasDispositivo(
+    `SELECT ${COLUNAS_DISPOSITIVO} FROM dispositivos WHERE norma_id = (SELECT norma_id FROM dispositivos WHERE id = ?) ORDER BY ordem`,
+    [id],
+  )).map(paraDispositivo);
   const porId = new Map(lista.map((d) => [d.disp.id, d]));
   return descendentesEm(
     lista.map((d) => d.disp),
     id,
   ).map((d) => porId.get(d.id)!);
-}
+});
 
 /** Texto literal de um dispositivo para citar: caput herdado, o próprio texto e, se pedido, os subordinados. */
 export interface TrechoDispositivo {
@@ -151,13 +151,13 @@ export interface TrechoDispositivo {
   linha_fim: number;
 }
 
-export function paraTrecho(
-  db: DatabaseSync,
+/** Trecho para citar de um dispositivo já lido; com `subordinados`, lê os descendentes dele. */
+export const paraTrecho = Effect.fn("consultasNormas.paraTrecho")(function* (
   d: DispositivoDoBanco,
   opcoes: { subordinados?: boolean } = {},
-): TrechoDispositivo {
-  const filhos = opcoes.subordinados ? descendentesBanco(db, d.disp.id) : [];
-  return {
+) {
+  const filhos = opcoes.subordinados ? yield* descendentes(d.disp.id) : [];
+  const trecho: TrechoDispositivo = {
     id: `${d.disp.ato}${d.disp.dispositivo}`,
     arquivo_id: d.disp.id,
     tipo: d.disp.tipo,
@@ -172,75 +172,69 @@ export function paraTrecho(
     linha_inicio: d.disp.linha_inicio,
     linha_fim: Math.max(d.disp.linha_fim, ...filhos.map((f) => f.disp.linha_fim)),
   };
-}
+  return trecho;
+});
 
 /** Trecho de um dispositivo pelo ID; `null` se o dispositivo não está no texto da base. */
-export function trechoDoDispositivo(
-  db: DatabaseSync,
+export const trechoDoDispositivo = Effect.fn("consultasNormas.trechoDoDispositivo")(function* (
   id: string,
   opcoes: { subordinados?: boolean } = {},
-): TrechoDispositivo | null {
-  const d = obterDispositivoBanco(db, id);
-  return d ? paraTrecho(db, d, opcoes) : null;
-}
+) {
+  const d = yield* obterDispositivo(id);
+  return d ? yield* paraTrecho(d, opcoes) : null;
+});
 
 /** Dispositivo pedido ou, se ele não está no texto, o ancestral mais próximo pelo ID (`#art28-par1-iv` → `#art28-par1` → `#art28`). */
-export function dispositivoOuAncestral(db: DatabaseSync, id: string): DispositivoDoBanco | undefined {
+export const dispositivoOuAncestral = Effect.fn("consultasNormas.dispositivoOuAncestral")(function* (id: string) {
   const [norma, sufixo] = id.split("#") as [string, string | undefined];
   if (!sufixo) return undefined;
   const partes = sufixo.split("-");
   for (let n = partes.length; n > 0; n -= 1) {
-    const achado = obterDispositivoBanco(db, `${norma}#${partes.slice(0, n).join("-")}`);
+    const achado = yield* obterDispositivo(`${norma}#${partes.slice(0, n).join("-")}`);
     if (achado) return achado;
   }
   return undefined;
-}
+});
 
 /* ========================================================== correspondência */
 
-const esquemaTabela = z.strictObject({
-  arquivo: texto,
-  origem: texto,
-  destino: texto,
-  status: z.enum(["rascunho", "revisado"]),
-  elaborado_em: z.string(),
-  revisado_por: textoNulo,
-  metodo: texto,
+const LinhaTabela = Schema.Struct({
+  arquivo: Texto,
+  origem: Texto,
+  destino: Texto,
+  status: Schema.Literals(["rascunho", "revisado"]),
+  elaborado_em: Texto,
+  revisado_por: TextoNulo,
+  metodo: Texto,
 });
-const esquemaItem = z.strictObject({
-  tabela: texto,
-  origem: texto,
-  tipo: z.enum(["equivalente", "parcial", "sem-equivalente"]),
-  destino_json: texto,
-  nota: textoNulo,
+const linhasTabela = Sql.todas(LinhaTabela);
+
+const LinhaItem = Schema.Struct({
+  tabela: Texto,
+  origem: Texto,
+  tipo: Schema.Literals(["equivalente", "parcial", "sem-equivalente"]),
+  destino_json: Schema.fromJsonString(ListaTextos),
+  nota: TextoNulo,
 });
+const linhasItem = Sql.todas(LinhaItem);
 
 /** Tabelas de correspondência do banco, no formato de `carregarCorrespondencias`. */
-export function tabelasCorrespondenciaBanco(db: DatabaseSync, origem?: string): TabelaCorrespondencia[] {
-  const tabelas = z
-    .array(esquemaTabela)
-    .parse(
-      origem
-        ? db.prepare("SELECT * FROM correspondencias_tabelas WHERE origem = ? ORDER BY arquivo").all(origem)
-        : db.prepare("SELECT * FROM correspondencias_tabelas ORDER BY arquivo").all(),
-    );
-  return tabelas.map((t) => {
-    const itens = z
-      .array(esquemaItem)
-      .parse(
-        db
-          .prepare(
-            "SELECT tabela, origem, tipo, destino_json, nota FROM correspondencias WHERE tabela = ? ORDER BY ordem",
-          )
-          .all(t.arquivo),
-      )
-      .map((item) => ({
-        origem: item.origem.slice(t.origem.length),
-        tipo: item.tipo,
-        destino: listaTextos.parse(JSON.parse(item.destino_json)).map((d) => d.slice(t.destino.length)),
-        ...(item.nota !== null ? { nota: item.nota } : {}),
-      }));
-    return {
+export const tabelasCorrespondencia = Effect.fn("consultasNormas.tabelasCorrespondencia")(function* (origem?: string) {
+  const tabelas = origem
+    ? yield* linhasTabela("SELECT * FROM correspondencias_tabelas WHERE origem = ? ORDER BY arquivo", [origem])
+    : yield* linhasTabela("SELECT * FROM correspondencias_tabelas ORDER BY arquivo");
+  const saida: TabelaCorrespondencia[] = [];
+  for (const t of tabelas) {
+    const itens = (yield* linhasItem(
+      "SELECT tabela, origem, tipo, destino_json, nota FROM correspondencias WHERE tabela = ? ORDER BY ordem",
+      [t.arquivo],
+    )).map((item) => ({
+      origem: item.origem.slice(t.origem.length),
+      tipo: item.tipo,
+      destino: item.destino_json.map((d) => d.slice(t.destino.length)),
+      ...(item.nota !== null ? { nota: item.nota } : {}),
+    }));
+    saida.push({
       origem: t.origem,
       destino: t.destino,
       status: t.status,
@@ -249,91 +243,90 @@ export function tabelasCorrespondenciaBanco(db: DatabaseSync, origem?: string): 
       metodo: t.metodo,
       itens,
       arquivo: t.arquivo,
-    };
-  });
-}
-
-/** Fonte da correspondência (`correspondenciaEm`) sobre o banco. */
-export function fonteCorrespondenciaBanco(db: DatabaseSync): FonteCorrespondencia {
-  return {
-    tabelas: (ato) => tabelasCorrespondenciaBanco(db, ato),
-    dispositivo: (id) => {
-      const d = obterDispositivoBanco(db, id);
-      return d ? { pai: d.disp.pai, texto: d.disp.texto } : undefined;
-    },
-    artigos: (ato) =>
-      z
-        .array(z.strictObject({ dispositivo: texto }))
-        .parse(
-          db
-            .prepare(
-              "SELECT dispositivo FROM dispositivos WHERE ato_id = ? AND canonico = 1 AND tipo = 'artigo' ORDER BY norma_id <> ato_id, norma_id, ordem",
-            )
-            .all(ato),
-        )
-        .map((l) => l.dispositivo),
-  };
-}
-
-/* ================================================================== relações */
-
-const esquemaRelacao = z.strictObject({
-  ordem: inteiro,
-  tipo: z.enum(["revoga", "altera", "regulamenta", "fundamenta-se-em"]),
-  origem: texto,
-  operador: textoNulo,
-  alvo: texto,
-  alvo_dispositivo: textoNulo,
-  alcance: textoNulo,
-  efeito_de: texto,
-  efeito_em: textoNulo,
-  efeito_minimo: textoNulo,
-  evidencia_em: texto,
-  evidencia_trecho: texto,
-  confirmado_em: z.string(),
-  proposta: z.enum(["front-matter", "regex", "manual"]),
-  nota: textoNulo,
-  path: texto,
+    });
+  }
+  return saida;
 });
 
-/** Relações do banco no formato de `carregarRelacoes` (ordem do arquivo). */
-export function relacoesBanco(db: DatabaseSync): Relacao[] {
-  return z
-    .array(esquemaRelacao)
-    .parse(db.prepare("SELECT * FROM relacoes ORDER BY ordem").all())
-    .map((r) => ({
-      tipo: r.tipo,
-      origem: r.origem,
-      ...(r.operador !== null ? { operador: r.operador } : {}),
-      alvo: r.alvo,
-      ...(r.alvo_dispositivo !== null ? { alvo_dispositivo: r.alvo_dispositivo } : {}),
-      ...(r.alcance !== null ? { alcance: r.alcance } : {}),
-      efeito_de: r.efeito_de,
-      evidencia: { em: r.evidencia_em, trecho: r.evidencia_trecho },
-      confirmado_em: r.confirmado_em,
-      proposta: r.proposta,
-      ...(r.nota !== null ? { nota: r.nota } : {}),
-    }));
+const LinhaDispositivoCorrespondencia = Schema.Struct({ dispositivo: Texto, pai: TextoNulo, texto: Texto });
+const linhasDispositivoCorrespondencia = Sql.todas(LinhaDispositivoCorrespondencia);
+const linhasArtigo = Sql.todas(Schema.Struct({ dispositivo: Texto }));
+
+/** Defeito: a regra pediu à fonte carregada um ato que não está em nenhuma tabela de correspondência. */
+function foraDoCarregado(o: string, ato: string): never {
+  throw new Error(
+    `carregarFonteCorrespondencia: ${o} de ${ato}, que não é origem nem destino de tabela de correspondência`,
+  );
 }
+
+/**
+ * Fonte da correspondência (`correspondenciaEm`, `destinosDeOrigemEm`) sobre o banco, carregada de
+ * uma vez: todas as tabelas de correspondência, os artigos canônicos dos atos de origem (na ordem
+ * de antes: o texto integral primeiro, depois as variantes, por ordem no arquivo) e o pai e o texto
+ * dos dispositivos canônicos dos atos de origem e de destino. A regra só pergunta por esses atos
+ * (`tabelas(ato)` de outro ato é vazia, como antes); dispositivo ou artigos de outro ato é defeito.
+ */
+export const carregarFonteCorrespondencia: Effect.Effect<
+  FonteCorrespondencia,
+  Sql.FalhaNaConsulta,
+  SqlClient.SqlClient
+> = Effect.gen(function* () {
+  const tabelas = yield* tabelasCorrespondencia();
+  const origens = [...new Set(tabelas.map((t) => t.origem))];
+  const atos = [...new Set(tabelas.flatMap((t) => [t.origem, t.destino]))];
+  const porOrigem = new Map<string, TabelaCorrespondencia[]>();
+  for (const t of tabelas) porOrigem.set(t.origem, [...(porOrigem.get(t.origem) ?? []), t]);
+
+  const dispositivos = new Map<string, Map<string, { pai: string | null; texto: string }>>();
+  for (const ato of atos) {
+    const doAto = new Map<string, { pai: string | null; texto: string }>();
+    const linhas = yield* linhasDispositivoCorrespondencia(
+      "SELECT dispositivo, pai, texto FROM dispositivos WHERE ato_id = ? AND canonico = 1 ORDER BY rowid",
+      [ato],
+    );
+    // o primeiro por rowid, como o `.get()` da consulta por dispositivo
+    for (const l of linhas) if (!doAto.has(l.dispositivo)) doAto.set(l.dispositivo, { pai: l.pai, texto: l.texto });
+    dispositivos.set(ato, doAto);
+  }
+
+  const artigos = new Map<string, string[]>();
+  for (const ato of origens) {
+    const linhas = yield* linhasArtigo(
+      "SELECT dispositivo FROM dispositivos WHERE ato_id = ? AND canonico = 1 AND tipo = 'artigo' ORDER BY norma_id <> ato_id, norma_id, ordem",
+      [ato],
+    );
+    artigos.set(
+      ato,
+      linhas.map((l) => l.dispositivo),
+    );
+  }
+
+  const fonte: FonteCorrespondencia = {
+    tabelas: (ato) => porOrigem.get(ato) ?? [],
+    dispositivo: (id) => {
+      const [norma, sufixo] = id.split("#") as [string, string | undefined];
+      if (!sufixo) return undefined;
+      if (idDoAto(norma) !== norma) return foraDoCarregado("dispositivo de variante", id);
+      const doAto = dispositivos.get(norma);
+      if (!doAto) return foraDoCarregado("dispositivo", norma);
+      return doAto.get(`#${sufixo}`);
+    },
+    artigos: (ato) => artigos.get(ato) ?? foraDoCarregado("artigos", ato),
+  };
+  return fonte;
+}).pipe(Effect.withSpan("consultasNormas.carregarFonteCorrespondencia"));
 
 /* ================================================================= vigência */
 
-/** `data_referencia` gravada no banco (de `base-conhecimento/config/vigencia.yaml`). */
-export function dataReferenciaBanco(db: DatabaseSync): string {
-  const linha = z
-    .strictObject({ valor: texto })
-    .parse(db.prepare("SELECT valor FROM meta WHERE chave = 'data_referencia'").get());
-  return linha.valor;
-}
-
-const esquemaVigencia = z.strictObject({
-  alvo: texto,
-  de: textoNulo,
-  ate: textoNulo,
-  status: z.enum(STATUS_VIGENCIA),
-  certo: inteiro,
-  fonte: texto,
+const LinhaVigencia = Schema.Struct({
+  alvo: Texto,
+  de: TextoNulo,
+  ate: TextoNulo,
+  status: Schema.Literals(STATUS_VIGENCIA),
+  certo: Inteiro,
+  fonte: Texto,
 });
+const primeiraVigencia = Sql.primeira(LinhaVigencia);
 
 export interface VigenciaNoBanco {
   alvo: string;
@@ -346,16 +339,15 @@ export interface VigenciaNoBanco {
 }
 
 /** Status de um ato numa data, pelo intervalo gravado (o mesmo de `statusEm`); `null` para ato sem vigência. */
-export function vigenciaNoBanco(db: DatabaseSync, id: string, data: string): VigenciaNoBanco | null {
-  const linha = db
-    .prepare(
-      "SELECT alvo, de, ate, status, certo, fonte FROM vigencias WHERE alvo = ? AND (de IS NULL OR de <= ?) AND (ate IS NULL OR ? < ate)",
-    )
-    .get(idDoAto(id.split("#")[0]!), data, data);
-  if (!linha) return null;
-  const v = esquemaVigencia.parse(linha);
-  return { ...v, certo: v.certo === 1 };
-}
+export const vigenciaNaData = Effect.fn("consultasNormas.vigenciaNaData")(function* (id: string, data: string) {
+  const v = yield* primeiraVigencia(
+    "SELECT alvo, de, ate, status, certo, fonte FROM vigencias WHERE alvo = ? AND (de IS NULL OR de <= ?) AND (ate IS NULL OR ? < ate)",
+    [idDoAto(id.split("#")[0]!), data, data],
+  );
+  if (v === undefined) return null;
+  const vigencia: VigenciaNoBanco = { ...v, certo: v.certo === 1 };
+  return vigencia;
+});
 
 /** Condição SQL: o ato de `coluna` está revogado ou ainda não vigente na data (dois parâmetros: a data). */
 export function sqlForaDeVigencia(coluna: string): string {
@@ -365,41 +357,41 @@ export function sqlForaDeVigencia(coluna: string): string {
 
 /* =============================================================== transições */
 
-const esquemaTransicao = z.strictObject({
-  id: texto,
-  norma_id: texto,
-  dispositivo: texto,
-  tipo: texto,
-  norma_anterior: textoNulo,
-  aplica_a: texto,
-  regra: texto,
-  inicio: texto,
-  fim: texto,
-  inicio_em: textoNulo,
-  inicio_minimo: textoNulo,
-  fim_em: textoNulo,
-  evidencia: texto,
-  path: texto,
+const LinhaTransicao = Schema.Struct({
+  id: Texto,
+  norma_id: Texto,
+  dispositivo: Texto,
+  tipo: Texto,
+  norma_anterior: TextoNulo,
+  aplica_a: Texto,
+  regra: Texto,
+  inicio: Texto,
+  fim: Texto,
+  inicio_em: TextoNulo,
+  inicio_minimo: TextoNulo,
+  fim_em: TextoNulo,
+  evidencia: Texto,
+  path: Texto,
 });
+const linhasTransicao = Sql.todas(LinhaTransicao);
 
-export type TransicaoNoBanco = z.output<typeof esquemaTransicao> & DatasTransicao & { situacao: Situacao };
+export type TransicaoNoBanco = typeof LinhaTransicao.Type & DatasTransicao & { situacao: Situacao };
 
 /**
  * Regras de transição dos atos (que eles estabelecem ou que preservam efeitos deles, como
  * `transicoesAplicaveis`), na ordem do arquivo, com a situação na data (`situacaoNaData`).
  */
-export function transicoesNoBanco(db: DatabaseSync, atos: readonly string[], data: string): TransicaoNoBanco[] {
-  if (!atos.length) return [];
+export const transicoesDosAtos = Effect.fn("consultasNormas.transicoesDosAtos")(function* (
+  atos: readonly string[],
+  data: string,
+) {
+  const vazio: TransicaoNoBanco[] = [];
+  if (!atos.length) return vazio;
   const marcadores = atos.map(() => "?").join(", ");
-  return z
-    .array(esquemaTransicao)
-    .parse(
-      db
-        .prepare(
-          `SELECT id, norma_id, dispositivo, tipo, norma_anterior, aplica_a, regra, inicio, fim, inicio_em, inicio_minimo, fim_em, evidencia, path
+  const linhas = yield* linhasTransicao(
+    `SELECT id, norma_id, dispositivo, tipo, norma_anterior, aplica_a, regra, inicio, fim, inicio_em, inicio_minimo, fim_em, evidencia, path
            FROM transicoes WHERE norma_id IN (${marcadores}) OR norma_anterior IN (${marcadores}) ORDER BY rowid`,
-        )
-        .all(...atos, ...atos),
-    )
-    .map((t) => ({ ...t, situacao: situacaoNaData(t, data) }));
-}
+    [...atos, ...atos],
+  );
+  return linhas.map((t): TransicaoNoBanco => ({ ...t, situacao: situacaoNaData(t, data) }));
+});

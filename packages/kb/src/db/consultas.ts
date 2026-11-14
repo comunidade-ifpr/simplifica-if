@@ -1,35 +1,35 @@
 /**
- * Consultas ao `kb.sqlite`: SQL direto com `node:sqlite`, e cada linha lida validada por zod na
+ * Consultas ao `kb.sqlite` pelo `SqlClient`, com cada linha lida decodificada por Effect Schema na
  * fronteira (Princípio 3). Toda resposta traz texto literal (seção, dispositivo de norma, trecho de fato,
  * linha do SUAP) e a proveniência: `path` relativo à raiz do repositório e linha(s).
+ *
+ * Exports com banco (devolvem `Effect`): `buscarSecoes`, `secoesDoPpc`, `indiceSecoesDoPpc`, `lerSecao`,
+ * `obterNorma`, `buscarNorma`, `buscarNormaDetalhada`, `listarCursos`, `fatosDosPpcs`,
+ * `divergenciasPpcSuap`. Puras: `conceitosDaConsulta`, `expressaoFts`, `linhasRelevantes`. O registro
+ * do resolvedor, a `data_referencia` e o léxico padrão vêm de `FontesNormativas`.
  */
-import type { DatabaseSync } from "node:sqlite";
-import { z } from "zod";
+import * as Effect from "effect/Effect";
+import * as Schema from "effect/Schema";
 import { expandirConsulta, type Sinonimos } from "../busca/sinonimos.ts";
 import { radicais, termoFts, termos } from "../busca/tokens.ts";
 import { RESULTADOS_DIVERGENTES } from "../fatos/divergencias.ts";
+import * as FontesNormativas from "../FontesNormativas.ts";
 import { idDoAto } from "../normas/ids.ts";
-import type { Registro } from "../normas/registro.ts";
-import { resolverCitacao, registroPadrao } from "../normas/resolver.ts";
+import { resolverCitacao } from "../normas/resolver.ts";
 import { compararTexto } from "../texto.ts";
 import {
-  dataReferenciaBanco,
   dispositivoOuAncestral,
-  obterDispositivoBanco,
+  obterDispositivo,
   paraTrecho,
   sqlForaDeVigencia,
   type TrechoDispositivo,
 } from "./consultas-normas.ts";
+import * as Sql from "./sql.ts";
 
-const texto = z.string();
-const textoNulo = z.string().nullable();
-const inteiroNulo = z.number().int().nullable();
-
-function linhas<T>(esquema: z.ZodType<T>, valores: unknown[]): T[] {
-  return valores.map((v) => esquema.parse(v));
-}
-
-type Parametro = string | number | null;
+const Texto = Schema.String;
+const TextoNulo = Schema.NullOr(Schema.String);
+const Inteiro = Schema.Int;
+const InteiroNulo = Schema.NullOr(Schema.Int);
 
 /* ================================================================ busca textual */
 
@@ -120,25 +120,26 @@ export interface FiltrosSecoes {
   ppc?: string | undefined;
 }
 
-const esquemaLinhaSecao = z.strictObject({
-  rowid: z.number().int(),
-  id: texto,
-  ppc_id: texto,
-  tipo: texto,
-  titulo: texto,
-  numeracao: textoNulo,
-  path: texto,
-  linha_inicio: z.number().int(),
-  linha_fim: z.number().int(),
-  linha_texto: z.number().int(),
-  texto: texto,
-  curso_nome: texto,
-  campus_nome: texto,
-  nivel: texto,
-  tipo_oferta: texto,
-  cnct_id: textoNulo,
-  pontuacao: z.number(),
+const LinhaSecao = Schema.Struct({
+  rowid: Inteiro,
+  id: Texto,
+  ppc_id: Texto,
+  tipo: Texto,
+  titulo: Texto,
+  numeracao: TextoNulo,
+  path: Texto,
+  linha_inicio: Inteiro,
+  linha_fim: Inteiro,
+  linha_texto: Inteiro,
+  texto: Texto,
+  curso_nome: Texto,
+  campus_nome: Texto,
+  nivel: Texto,
+  tipo_oferta: Texto,
+  cnct_id: TextoNulo,
+  pontuacao: Schema.Number,
 });
+const linhasSecao = Sql.todas(LinhaSecao);
 
 export interface ResultadoSecao {
   id: string;
@@ -160,6 +161,15 @@ export interface ResultadoSecao {
   texto?: string;
 }
 
+/** Opções de `buscarSecoes`. Sem `lexico`, o léxico é o de `FontesNormativas.sinonimos`. */
+export interface OpcoesBuscaSecoes {
+  limite?: number;
+  modo?: ModoBusca;
+  lexico?: Sinonimos;
+  integral?: boolean;
+  somenteTodos?: boolean;
+}
+
 const PESOS_SECOES = "bm25(secoes_fts, 6.0, 1.0, 6.0, 1.0, 2.0)";
 
 function normalizarCnct(valor: string): string {
@@ -172,17 +182,19 @@ function normalizarPpc(valor: string): string {
 
 /**
  * Busca de seções de PPC. A ordem: primeiro as seções com todos os conceitos da consulta (AND),
- * depois as que têm algum (OR), cada grupo por BM25 com peso maior para o título.
+ * depois as que têm algum (OR), cada grupo por BM25 com peso maior para o título. O léxico de
+ * sinônimos vem de `FontesNormativas`, salvo outro em `opcoes.lexico` (a avaliação passa um léxico
+ * vazio para medir a busca sem sinônimos).
  */
-export function buscarSecoes(
-  db: DatabaseSync,
+export const buscarSecoes = Effect.fn("consultas.buscarSecoes")(function* (
   consulta: string,
   filtros: FiltrosSecoes = {},
-  opcoes: { limite?: number; modo?: ModoBusca; lexico?: Sinonimos; integral?: boolean; somenteTodos?: boolean } = {},
-): ResultadoSecao[] {
+  opcoes: OpcoesBuscaSecoes = {},
+) {
+  const lexico = opcoes.lexico ?? (yield* FontesNormativas.FontesNormativas).sinonimos;
   const limite = opcoes.limite ?? 10;
   const modo = opcoes.modo ?? "completo";
-  const conceitos = conceitosDaConsulta(consulta, modo, opcoes.lexico);
+  const conceitos = conceitosDaConsulta(consulta, modo, lexico);
   const colunas =
     modo === "simples"
       ? ["titulo", "texto"]
@@ -190,7 +202,7 @@ export function buscarSecoes(
         ? ["titulo_radicais", "radicais"]
         : ["titulo_radicais", "radicais", "expansao"];
   const condicoes: string[] = [];
-  const parametros: Parametro[] = [];
+  const parametros: Sql.Parametro[] = [];
   if (filtros.tipo?.length) {
     condicoes.push(`s.tipo IN (${filtros.tipo.map(() => "?").join(", ")})`);
     parametros.push(...filtros.tipo);
@@ -228,20 +240,20 @@ export function buscarSecoes(
     ORDER BY pontuacao, s.id
     LIMIT ?`;
   const vistos = new Set<number>();
-  const achados: z.output<typeof esquemaLinhaSecao>[] = [];
+  const achados: (typeof LinhaSecao.Type)[] = [];
   for (const operador of ["AND", "OR"] as const) {
     if (achados.length >= limite) break;
     if (operador === "OR" && (conceitos.length < 2 || opcoes.somenteTodos)) break;
     const expressao = expressaoFts(conceitos, colunas, operador);
     if (!expressao) break;
-    const encontrados = linhas(esquemaLinhaSecao, db.prepare(sql).all(expressao, ...parametros, limite + vistos.size));
+    const encontrados = yield* linhasSecao(sql, [expressao, ...parametros, limite + vistos.size]);
     for (const linha of encontrados) {
       if (vistos.has(linha.rowid) || achados.length >= limite) continue;
       vistos.add(linha.rowid);
       achados.push(linha);
     }
   }
-  return achados.map((s) => ({
+  return achados.map((s): ResultadoSecao => ({
     id: s.id,
     ppc: s.ppc_id,
     curso: s.curso_nome,
@@ -258,14 +270,10 @@ export function buscarSecoes(
     trecho: trechoOuInicio(s.texto, s.linha_texto, conceitos, modo),
     ...(opcoes.integral ? { texto: s.texto } : {}),
   }));
-}
+});
 
-/** Seções de um PPC por tipo, na ordem do documento (texto integral). */
-export function secoesDoPpc(
-  db: DatabaseSync,
-  ppc: string,
-  tipos: readonly string[],
-): {
+/** Seção de PPC com o texto integral (`secoesDoPpc`). */
+export interface SecaoDoPpc {
   id: string;
   tipo: string;
   titulo: string;
@@ -273,27 +281,31 @@ export function secoesDoPpc(
   linha_inicio: number;
   linha_fim: number;
   texto: string;
-}[] {
-  if (!tipos.length) return [];
-  const esquema = z.strictObject({
-    id: texto,
-    tipo: texto,
-    titulo: texto,
-    path: texto,
-    linha_inicio: z.number().int(),
-    linha_fim: z.number().int(),
-    texto: texto,
-  });
-  return linhas(
-    esquema,
-    db
-      .prepare(
-        `SELECT id, tipo, titulo, path, linha_inicio, linha_fim, texto FROM secoes
-         WHERE ppc_id = ? AND tipo IN (${tipos.map(() => "?").join(", ")}) ORDER BY linha_inicio`,
-      )
-      .all(normalizarPpc(ppc), ...tipos),
-  );
 }
+
+const LinhaSecaoDoPpc = Schema.Struct({
+  id: Texto,
+  tipo: Texto,
+  titulo: Texto,
+  path: Texto,
+  linha_inicio: Inteiro,
+  linha_fim: Inteiro,
+  texto: Texto,
+});
+const linhasSecaoDoPpc = Sql.todas(LinhaSecaoDoPpc);
+
+/** Seções de um PPC por tipo, na ordem do documento (texto integral). */
+export const secoesDoPpc = Effect.fn("consultas.secoesDoPpc")(function* (ppc: string, tipos: readonly string[]) {
+  const saida: SecaoDoPpc[] = [];
+  if (!tipos.length) return saida;
+  const linhas = yield* linhasSecaoDoPpc(
+    `SELECT id, tipo, titulo, path, linha_inicio, linha_fim, texto FROM secoes
+         WHERE ppc_id = ? AND tipo IN (${tipos.map(() => "?").join(", ")}) ORDER BY linha_inicio`,
+    [normalizarPpc(ppc), ...tipos],
+  );
+  for (const l of linhas) saida.push(l);
+  return saida;
+});
 
 /** Seção de PPC lida pelo ID (`campus/curso#secao`), com o PPC, o texto integral e as vizinhas. */
 export interface SecaoLida {
@@ -317,58 +329,63 @@ export interface SecaoLida {
   proxima: string | null;
 }
 
-const esquemaSecaoLida = z.strictObject({
-  id: texto,
-  ppc_id: texto,
-  tipo: texto,
-  titulo: texto,
-  numeracao: textoNulo,
-  path: texto,
-  linha_inicio: z.number().int(),
-  linha_fim: z.number().int(),
-  linha_texto: z.number().int(),
-  texto: texto,
-  curso_nome: texto,
-  campus_nome: texto,
-  nivel: texto,
-  tipo_oferta: texto,
+const LinhaSecaoLida = Schema.Struct({
+  id: Texto,
+  ppc_id: Texto,
+  tipo: Texto,
+  titulo: Texto,
+  numeracao: TextoNulo,
+  path: Texto,
+  linha_inicio: Inteiro,
+  linha_fim: Inteiro,
+  linha_texto: Inteiro,
+  texto: Texto,
+  curso_nome: Texto,
+  campus_nome: Texto,
+  nivel: Texto,
+  tipo_oferta: Texto,
 });
+const primeiraSecaoLida = Sql.primeira(LinhaSecaoLida);
 
-/** Índice das seções de um PPC, na ordem do documento (sem o texto). */
-export function indiceSecoesDoPpc(
-  db: DatabaseSync,
-  ppc: string,
-): { id: string; tipo: string; titulo: string; linha_inicio: number; linha_fim: number }[] {
-  return linhas(
-    z.strictObject({
-      id: texto,
-      tipo: texto,
-      titulo: texto,
-      linha_inicio: z.number().int(),
-      linha_fim: z.number().int(),
-    }),
-    db
-      .prepare(
-        "SELECT id, tipo, titulo, linha_inicio, linha_fim FROM secoes WHERE ppc_id = ? ORDER BY linha_inicio, id",
-      )
-      .all(normalizarPpc(ppc)),
-  );
+/** Entrada do índice de seções de um PPC (`indiceSecoesDoPpc`). */
+export interface EntradaIndiceSecoes {
+  id: string;
+  tipo: string;
+  titulo: string;
+  linha_inicio: number;
+  linha_fim: number;
 }
 
+const LinhaIndiceSecoes = Schema.Struct({
+  id: Texto,
+  tipo: Texto,
+  titulo: Texto,
+  linha_inicio: Inteiro,
+  linha_fim: Inteiro,
+});
+const linhasIndiceSecoes = Sql.todas(LinhaIndiceSecoes);
+
+/** Índice das seções de um PPC, na ordem do documento (sem o texto). */
+export const indiceSecoesDoPpc = Effect.fn("consultas.indiceSecoesDoPpc")(function* (ppc: string) {
+  const linhas = yield* linhasIndiceSecoes(
+    "SELECT id, tipo, titulo, linha_inicio, linha_fim FROM secoes WHERE ppc_id = ? ORDER BY linha_inicio, id",
+    [normalizarPpc(ppc)],
+  );
+  return linhas.map((l): EntradaIndiceSecoes => l);
+});
+
 /** Uma seção de PPC pelo ID da tabela `secoes`, com o texto integral; `null` se não existe. */
-export function lerSecao(db: DatabaseSync, id: string): SecaoLida | null {
-  const linha = db
-    .prepare(
-      `SELECT s.id, s.ppc_id, s.tipo, s.titulo, s.numeracao, s.path, s.linha_inicio, s.linha_fim, s.linha_texto, s.texto,
+export const lerSecao = Effect.fn("consultas.lerSecao")(function* (id: string) {
+  const s = yield* primeiraSecaoLida(
+    `SELECT s.id, s.ppc_id, s.tipo, s.titulo, s.numeracao, s.path, s.linha_inicio, s.linha_fim, s.linha_texto, s.texto,
               p.curso_nome, p.campus_nome, p.nivel, p.tipo_oferta
        FROM secoes s JOIN ppcs p ON p.id = s.ppc_id WHERE s.id = ?`,
-    )
-    .get(id);
-  if (!linha) return null;
-  const s = esquemaSecaoLida.parse(linha);
-  const ids = indiceSecoesDoPpc(db, s.ppc_id).map((x) => x.id);
+    [id],
+  );
+  if (!s) return null;
+  const ids = (yield* indiceSecoesDoPpc(s.ppc_id)).map((x) => x.id);
   const i = ids.indexOf(s.id);
-  return {
+  const secao: SecaoLida = {
     id: s.id,
     ppc: s.ppc_id,
     curso: s.curso_nome,
@@ -386,29 +403,45 @@ export function lerSecao(db: DatabaseSync, id: string): SecaoLida | null {
     anterior: i > 0 ? ids[i - 1]! : null,
     proxima: i >= 0 && i < ids.length - 1 ? ids[i + 1]! : null,
   };
-}
+  return secao;
+});
 
 /* =================================================================== normas */
 
-const esquemaNorma = z.strictObject({
-  id: texto,
-  situacao: texto,
-  titulo: texto,
-  status_vigencia: textoNulo,
-  data_publicacao: textoNulo,
-  ementa: textoNulo,
-  path: textoNulo,
+const LinhaNorma = Schema.Struct({
+  id: Texto,
+  situacao: Texto,
+  titulo: Texto,
+  status_vigencia: TextoNulo,
+  data_publicacao: TextoNulo,
+  ementa: TextoNulo,
+  path: TextoNulo,
 });
-export type NormaResumo = z.output<typeof esquemaNorma>;
+const primeiraNorma = Sql.primeira(LinhaNorma);
 
-export function obterNorma(db: DatabaseSync, id: string): NormaResumo | null {
-  const linha = db
-    .prepare("SELECT id, situacao, titulo, status_vigencia, data_publicacao, ementa, path FROM normas WHERE id = ?")
-    .get(id);
-  if (linha) return esquemaNorma.parse(linha);
-  const ato = idDoAto(id);
-  return ato !== id ? obterNorma(db, ato) : null;
+export interface NormaResumo {
+  id: string;
+  situacao: string;
+  titulo: string;
+  status_vigencia: string | null;
+  data_publicacao: string | null;
+  ementa: string | null;
+  path: string | null;
 }
+
+const SQL_NORMA =
+  "SELECT id, situacao, titulo, status_vigencia, data_publicacao, ementa, path FROM normas WHERE id = ?";
+
+/** Norma pelo ID; se o ID tem variante (`~compilacao`) e não está na base, o ato; `null` se nenhum. */
+export const obterNorma = Effect.fn("consultas.obterNorma")(function* (id: string) {
+  const linha: NormaResumo | undefined = yield* primeiraNorma(SQL_NORMA, [id]);
+  if (linha) return linha;
+  const ato = idDoAto(id);
+  if (ato === id) return null;
+  // o ID do ato não tem variante: a segunda consulta é a última
+  const doAto: NormaResumo | undefined = yield* primeiraNorma(SQL_NORMA, [ato]);
+  return doAto ?? null;
+});
 
 export interface ResultadoNorma {
   norma: NormaResumo;
@@ -422,22 +455,46 @@ export interface ResultadoNorma {
   origem: "citacao-resolvida" | "busca-textual";
 }
 
-const esquemaMetadados = z.strictObject({
-  rowid: z.number().int(),
-  norma_id: texto,
-  texto: texto,
-  path: texto,
-  linha: z.number().int(),
+/** Opções de `buscarNorma`. O registro do resolvedor e a `data_referencia` vêm de `FontesNormativas`. */
+export interface OpcoesBuscaNorma {
+  limite?: number;
+  situacao?: string;
+  vigentes?: boolean;
+  em?: string;
+}
+
+const LinhaMetadados = Schema.Struct({
+  rowid: Inteiro,
+  norma_id: Texto,
+  texto: Texto,
+  path: Texto,
+  linha: Inteiro,
+});
+const primeirosMetadados = Sql.primeira(LinhaMetadados);
+const linhasMetadadosPontuados = Sql.todas(Schema.Struct({ ...LinhaMetadados.fields, pontuacao: Schema.Number }));
+const linhasDispositivosPontuados = Sql.todas(
+  Schema.Struct({ rowid: Inteiro, id: Texto, norma_id: Texto, pontuacao: Schema.Number }),
+);
+const primeiraForaDeVigencia = Sql.primeira(Schema.Struct({ fora: Inteiro }));
+
+const metadadosDaNorma = Effect.fn("consultas.metadadosDaNorma")(function* (normaId: string) {
+  const m = yield* primeirosMetadados(
+    "SELECT rowid, norma_id, texto, path, linha FROM normas_metadados WHERE norma_id = ?",
+    [normaId],
+  );
+  if (!m) return null;
+  const metadados: ResultadoNorma["metadados"] = { texto: m.texto, path: m.path, linha: m.linha };
+  return metadados;
 });
 
-function metadadosDaNorma(db: DatabaseSync, normaId: string): ResultadoNorma["metadados"] {
-  const linha = db
-    .prepare("SELECT rowid, norma_id, texto, path, linha FROM normas_metadados WHERE norma_id = ?")
-    .get(normaId);
-  if (!linha) return null;
-  const m = esquemaMetadados.parse(linha);
-  return { texto: m.texto, path: m.path, linha: m.linha };
-}
+/** O ato está revogado ou ainda não vigente na data (intervalos de `vigencias`). */
+const atoForaDeVigencia = Effect.fn("consultas.atoForaDeVigencia")(function* (normaId: string, data: string) {
+  const linha = yield* primeiraForaDeVigencia(
+    `SELECT 1 AS fora FROM normas n WHERE n.id = ? AND ${sqlForaDeVigencia("n.id")}`,
+    [normaId, data, data],
+  );
+  return linha !== undefined;
+});
 
 /**
  * Busca de normas.
@@ -459,72 +516,59 @@ function metadadosDaNorma(db: DatabaseSync, normaId: string): ResultadoNorma["me
  * - ID com a forma de norma (`br/…`, `ifpr/…`) que não está na base: resposta vazia com aviso de ID
  *   desconhecido, sem busca textual.
  */
-export function buscarNorma(
-  db: DatabaseSync,
+export const buscarNorma = Effect.fn("consultas.buscarNorma")(function* (
   consulta: string,
-  opcoes: {
-    limite?: number;
-    situacao?: string;
-    vigentes?: boolean;
-    em?: string;
-    /** Registro do resolvedor de citações (padrão: o do checkout; no modo banco, `registroBanco`). */
-    registro?: Registro;
-  } = {},
-): ResultadoNorma[] {
-  return buscarNormaDetalhada(db, consulta, opcoes).resultados;
-}
+  opcoes: OpcoesBuscaNorma = {},
+) {
+  return (yield* buscarNormaDetalhada(consulta, opcoes)).resultados;
+});
 
 /** `buscarNorma` com os avisos (ID desconhecido, citação excluída pelos filtros). */
-export function buscarNormaDetalhada(
-  db: DatabaseSync,
+export const buscarNormaDetalhada = Effect.fn("consultas.buscarNormaDetalhada")(function* (
   consulta: string,
-  opcoes: {
-    limite?: number;
-    situacao?: string;
-    vigentes?: boolean;
-    em?: string;
-    /** Registro do resolvedor de citações (padrão: o do checkout; no modo banco, `registroBanco`). */
-    registro?: Registro;
-  } = {},
-): { resultados: ResultadoNorma[]; avisos: string[] } {
+  opcoes: OpcoesBuscaNorma = {},
+) {
+  const fontes = yield* FontesNormativas.FontesNormativas;
   const limite = opcoes.limite ?? 10;
   const saida: ResultadoNorma[] = [];
   const avisos: string[] = [];
-  const data = opcoes.em ?? dataReferenciaBanco(db);
+  const resposta = (): { resultados: ResultadoNorma[]; avisos: string[] } => ({ resultados: saida, avisos });
+  const vazia = (): { resultados: ResultadoNorma[]; avisos: string[] } => ({ resultados: [], avisos });
+  const data = opcoes.em ?? fontes.dataReferencia;
   const ehId = /^[a-z]+(\/[\w~-]+)+(#[\w-]+)?$/.test(consulta.trim());
   const resolucao: { id: string | null; dispositivoId?: string | undefined; dispositivos?: string[] | undefined } = ehId
     ? {
         id: consulta.trim().split("#")[0]!,
         dispositivoId: consulta.includes("#") ? `#${consulta.split("#")[1]}` : undefined,
       }
-    : resolverCitacao(consulta, opcoes.registro ?? registroPadrao());
+    : resolverCitacao(consulta, fontes.registro);
   if (resolucao.id) {
-    const norma = obterNorma(db, resolucao.id);
+    const norma = yield* obterNorma(resolucao.id);
     if (!norma && ehId && /^(br|ifpr)\//.test(resolucao.id)) {
       avisos.push(`ID desconhecido: ${resolucao.id} não está entre as normas da base`);
-      return { resultados: [], avisos };
+      return vazia();
     }
     if (norma) {
       if (opcoes.situacao && norma.situacao !== opcoes.situacao) {
         avisos.push(
           `${norma.id} (citada) tem situação ${norma.situacao}, fora do filtro --situacao ${opcoes.situacao}`,
         );
-        return { resultados: [], avisos };
+        return vazia();
       }
-      if (opcoes.vigentes && atoForaDeVigencia(db, norma.id, data)) {
+      if (opcoes.vigentes && (yield* atoForaDeVigencia(norma.id, data))) {
         avisos.push(
           `${norma.id} (citada) não está vigente em ${data} (${norma.status_vigencia ?? "sem status"}); ` +
             `sem --vigentes ela volta, e \`kb vigencia ${norma.id}\` mostra as regras de transição`,
         );
-        return { resultados: [], avisos };
+        return vazia();
       }
       const pedidos = resolucao.dispositivos ?? (resolucao.dispositivoId ? [resolucao.dispositivoId] : []);
       const vistos = new Set<string>();
       for (const pedido of pedidos) {
-        const achado = dispositivoOuAncestral(db, `${norma.id}${pedido}`);
+        const achado = yield* dispositivoOuAncestral(`${norma.id}${pedido}`);
         if (!achado || vistos.has(achado.disp.id)) continue;
         vistos.add(achado.disp.id);
-        const trecho = paraTrecho(db, achado, { subordinados: true });
+        const trecho = yield* paraTrecho(achado, { subordinados: true });
         if (opcoes.vigentes && trecho.revogado) {
           avisos.push(`${trecho.id} (citado) está revogado; sem --vigentes ele volta`);
           continue;
@@ -538,9 +582,9 @@ export function buscarNormaDetalhada(
           origem: "citacao-resolvida",
         });
       }
-      if (saida.length) return { resultados: saida, avisos };
-      if (avisos.length) return { resultados: [], avisos };
-      const metadados = metadadosDaNorma(db, norma.id);
+      if (saida.length) return resposta();
+      if (avisos.length) return vazia();
+      const metadados = yield* metadadosDaNorma(norma.id);
       if (metadados) {
         saida.push({ norma, dispositivo: null, pedido: null, metadados, pontuacao: null, origem: "citacao-resolvida" });
       }
@@ -550,7 +594,7 @@ export function buscarNormaDetalhada(
   const conceitos = conceitosDaConsulta(consulta, "radicais");
   const filtros = (colunaNorma: string) => {
     const condicoes: string[] = [];
-    const parametros: Parametro[] = [];
+    const parametros: Sql.Parametro[] = [];
     if (opcoes.situacao) {
       condicoes.push("n.situacao = ?");
       parametros.push(opcoes.situacao);
@@ -563,24 +607,21 @@ export function buscarNormaDetalhada(
   };
   const vistosMeta = new Set<number>();
   const vistosDisp = new Set<number>();
-  const metadados = (expressao: string) => {
+  // por etapa da busca textual (duas por operador), não por linha
+  const metadados = Effect.fnUntraced(function* (expressao: string) {
     const f = filtros("m.norma_id");
-    const linhasMeta = linhas(
-      esquemaMetadados.extend({ pontuacao: z.number() }),
-      db
-        .prepare(
-          `SELECT m.rowid AS rowid, m.norma_id, m.texto, m.path, m.linha, bm25(normas_fts, 4.0, 1.0, 1.0) AS pontuacao
+    const linhasMeta = yield* linhasMetadadosPontuados(
+      `SELECT m.rowid AS rowid, m.norma_id, m.texto, m.path, m.linha, bm25(normas_fts, 4.0, 1.0, 1.0) AS pontuacao
            FROM normas_fts JOIN normas_metadados m ON m.rowid = normas_fts.rowid JOIN normas n ON n.id = m.norma_id
            WHERE normas_fts MATCH ?${f.sql} ORDER BY pontuacao, m.rowid LIMIT ?`,
-        )
-        .all(expressao, ...f.parametros, limite + vistosMeta.size),
+      [expressao, ...f.parametros, limite + vistosMeta.size],
     );
     for (const m of linhasMeta) {
       if (saida.length >= limite || vistosMeta.has(m.rowid)) continue;
       if (saida.some((r) => r.metadados && r.norma.id === m.norma_id)) continue;
       vistosMeta.add(m.rowid);
       saida.push({
-        norma: obterNorma(db, m.norma_id)!,
+        norma: (yield* obterNorma(m.norma_id))!,
         dispositivo: null,
         pedido: null,
         metadados: { texto: m.texto, path: m.path, linha: m.linha },
@@ -588,53 +629,40 @@ export function buscarNormaDetalhada(
         origem: "busca-textual",
       });
     }
-  };
-  const dispositivos = (expressao: string) => {
+  });
+  const dispositivos = Effect.fnUntraced(function* (expressao: string) {
     const f = filtros("d.ato_id");
-    const achados = linhas(
-      z.strictObject({ rowid: z.number().int(), id: texto, norma_id: texto, pontuacao: z.number() }),
-      db
-        .prepare(
-          `SELECT d.rowid AS rowid, d.id, d.norma_id, bm25(dispositivos_fts, 1.0, 1.0) AS pontuacao
+    const achados = yield* linhasDispositivosPontuados(
+      `SELECT d.rowid AS rowid, d.id, d.norma_id, bm25(dispositivos_fts, 1.0, 1.0) AS pontuacao
            FROM dispositivos_fts JOIN dispositivos d ON d.rowid = dispositivos_fts.rowid JOIN normas n ON n.id = d.norma_id
            WHERE dispositivos_fts MATCH ?${f.sql}${opcoes.vigentes ? " AND d.revogado = 0" : ""}
            ORDER BY pontuacao, d.rowid LIMIT ?`,
-        )
-        .all(expressao, ...f.parametros, limite + vistosDisp.size),
+      [expressao, ...f.parametros, limite + vistosDisp.size],
     );
     for (const a of achados) {
       if (saida.length >= limite || vistosDisp.has(a.rowid)) continue;
       vistosDisp.add(a.rowid);
-      const d = obterDispositivoBanco(db, a.id)!;
+      const d = (yield* obterDispositivo(a.id))!;
       saida.push({
-        norma: obterNorma(db, a.norma_id)!,
-        dispositivo: paraTrecho(db, d),
+        norma: (yield* obterNorma(a.norma_id))!,
+        dispositivo: yield* paraTrecho(d),
         pedido: null,
         metadados: null,
         pontuacao: Math.round(a.pontuacao * 1000) / 1000,
         origem: "busca-textual",
       });
     }
-  };
+  });
   for (const operador of ["AND", "OR"] as const) {
     if (saida.length >= limite) break;
     if (operador === "OR" && conceitos.length < 2) break;
     const expressaoMeta = expressaoFts(conceitos, ["radicais"], operador);
     if (!expressaoMeta) break;
     const ordem = operador === "AND" ? [metadados, dispositivos] : [dispositivos, metadados];
-    for (const etapa of ordem) etapa(expressaoMeta);
+    for (const etapa of ordem) yield* etapa(expressaoMeta);
   }
-  return { resultados: saida, avisos };
-}
-
-/** O ato está revogado ou ainda não vigente na data (intervalos de `vigencias`). */
-function atoForaDeVigencia(db: DatabaseSync, normaId: string, data: string): boolean {
-  return (
-    db
-      .prepare(`SELECT 1 AS fora FROM normas n WHERE n.id = ? AND ${sqlForaDeVigencia("n.id")}`)
-      .get(normaId, data, data) !== undefined
-  );
-}
+  return resposta();
+});
 
 /* =================================================================== cursos */
 
@@ -649,40 +677,42 @@ export interface FiltrosCursos {
   processo?: string | undefined;
 }
 
-const esquemaCurso = z.strictObject({
-  id: texto,
-  nome: texto,
-  campus_id: texto,
-  campus_nome: textoNulo,
-  nivel: textoNulo,
-  forma_oferta: textoNulo,
-  modalidade: textoNulo,
-  situacao: textoNulo,
-  cnct_id: textoNulo,
-  cnct_denominacao: textoNulo,
-  eixo_tecnologico: textoNulo,
-  carga_horaria_minima_h: inteiroNulo,
-  ppc_id: textoNulo,
-  ppc_markdown_path: textoNulo,
-  ppc_ano_documento: inteiroNulo,
-  path: texto,
+const LinhaCurso = Schema.Struct({
+  id: Texto,
+  nome: Texto,
+  campus_id: Texto,
+  campus_nome: TextoNulo,
+  nivel: TextoNulo,
+  forma_oferta: TextoNulo,
+  modalidade: TextoNulo,
+  situacao: TextoNulo,
+  cnct_id: TextoNulo,
+  cnct_denominacao: TextoNulo,
+  eixo_tecnologico: TextoNulo,
+  carga_horaria_minima_h: InteiroNulo,
+  ppc_id: TextoNulo,
+  ppc_markdown_path: TextoNulo,
+  ppc_ano_documento: InteiroNulo,
+  path: Texto,
 });
+const linhasCurso = Sql.todas(LinhaCurso);
 
-const esquemaOferta = z.strictObject({
-  curso_id: texto,
-  id: texto,
-  tipo_oferta: texto,
-  vagas: inteiroNulo,
-  turno: textoNulo,
-  turno_original: textoNulo,
-  turno_nota: textoNulo,
-  status_curadoria: textoNulo,
-  trecho_fonte: textoNulo,
-  url_fonte: texto,
-  path: texto,
-  linha_turno: z.number().int(),
-  processos: texto,
+const LinhaOferta = Schema.Struct({
+  curso_id: Texto,
+  id: Texto,
+  tipo_oferta: Texto,
+  vagas: InteiroNulo,
+  turno: TextoNulo,
+  turno_original: TextoNulo,
+  turno_nota: TextoNulo,
+  status_curadoria: TextoNulo,
+  trecho_fonte: TextoNulo,
+  url_fonte: Texto,
+  path: Texto,
+  linha_turno: Inteiro,
+  processos: Texto,
 });
+const linhasOferta = Sql.todas(LinhaOferta);
 
 export interface ResultadoCurso {
   id: string;
@@ -716,9 +746,9 @@ export interface ResultadoCurso {
   path: string;
 }
 
-export function listarCursos(db: DatabaseSync, filtros: FiltrosCursos = {}): ResultadoCurso[] {
+export const listarCursos = Effect.fn("consultas.listarCursos")(function* (filtros: FiltrosCursos = {}) {
   const condicoes: string[] = [];
-  const parametros: Parametro[] = [];
+  const parametros: Sql.Parametro[] = [];
   const add = (sql: string, valor: string | undefined) => {
     if (valor === undefined) return;
     condicoes.push(sql);
@@ -730,31 +760,22 @@ export function listarCursos(db: DatabaseSync, filtros: FiltrosCursos = {}): Res
   add("c.forma_oferta = ?", filtros.forma);
   add("c.situacao = ?", filtros.situacao);
   add("c.cnct_id = ?", filtros.cnct ? normalizarCnct(filtros.cnct) : undefined);
-  const cursos = linhas(
-    esquemaCurso,
-    db
-      .prepare(
-        `SELECT c.id, c.nome, c.campus_id, ca.nome AS campus_nome, c.nivel, c.forma_oferta, c.modalidade, c.situacao,
+  const cursos = yield* linhasCurso(
+    `SELECT c.id, c.nome, c.campus_id, ca.nome AS campus_nome, c.nivel, c.forma_oferta, c.modalidade, c.situacao,
                 c.cnct_id, k.denominacao AS cnct_denominacao, k.eixo_tecnologico, k.carga_horaria_minima_h,
                 c.ppc_id, c.ppc_markdown_path, c.ppc_ano_documento, c.path
          FROM cursos c LEFT JOIN cnct k ON k.id = c.cnct_id LEFT JOIN campi ca ON ca.campus_id = c.campus_id
          ${condicoes.length ? `WHERE ${condicoes.join(" AND ")}` : ""}
          ORDER BY c.id`,
-      )
-      .all(...parametros),
+    parametros,
   );
-  const ofertas = linhas(
-    esquemaOferta,
-    db
-      .prepare(
-        `SELECT oc.curso_id, o.id, o.tipo_oferta, o.vagas, o.turno, o.turno_original, o.turno_nota, o.status_curadoria,
+  const ofertas = yield* linhasOferta(
+    `SELECT oc.curso_id, o.id, o.tipo_oferta, o.vagas, o.turno, o.turno_original, o.turno_nota, o.status_curadoria,
                 o.trecho_fonte, o.url_fonte, o.path, o.linha_turno,
                 (SELECT group_concat(processo_id, ',') FROM (SELECT processo_id FROM ofertas_processos op WHERE op.oferta_id = o.id ORDER BY processo_id)) AS processos
          FROM ofertas_cursos oc JOIN ofertas o ON o.id = oc.oferta_id ORDER BY oc.curso_id, o.id`,
-      )
-      .all(),
   );
-  const porCurso = new Map<string, z.output<typeof esquemaOferta>[]>();
+  const porCurso = new Map<string, (typeof LinhaOferta.Type)[]>();
   for (const o of ofertas) porCurso.set(o.curso_id, [...(porCurso.get(o.curso_id) ?? []), o]);
   const saida: ResultadoCurso[] = [];
   for (const c of cursos) {
@@ -805,56 +826,60 @@ export function listarCursos(db: DatabaseSync, filtros: FiltrosCursos = {}): Res
     });
   }
   return saida;
-}
+});
 
 /* ================================================================ fatos PPC */
 
-const esquemaFato = z.strictObject({
-  ppc_id: texto,
-  fato: texto,
-  valor: texto,
-  valor_num: inteiroNulo,
-  unidade: textoNulo,
-  status_curadoria: texto,
-  regra: texto,
-  trecho_fonte: texto,
-  path: texto,
-  linha: z.number().int(),
-  alternativas_json: texto,
+const LinhaFato = Schema.Struct({
+  ppc_id: Texto,
+  fato: Texto,
+  valor: Texto,
+  valor_num: InteiroNulo,
+  unidade: TextoNulo,
+  status_curadoria: Texto,
+  regra: Texto,
+  trecho_fonte: Texto,
+  path: Texto,
+  linha: Inteiro,
+  alternativas_json: Schema.fromJsonString(Schema.Unknown),
 });
+const linhasFato = Sql.todas(LinhaFato);
 
-const esquemaCruzamento = z.strictObject({
-  ppc_id: texto,
-  aspecto: texto,
-  resultado: texto,
-  valor_ppc: textoNulo,
-  valor_suap: textoNulo,
-  explicacao: texto,
+const LinhaCruzamento = Schema.Struct({
+  ppc_id: Texto,
+  aspecto: Texto,
+  resultado: Texto,
+  valor_ppc: TextoNulo,
+  valor_suap: TextoNulo,
+  explicacao: Texto,
 });
+const linhasCruzamento = Sql.todas(LinhaCruzamento);
 
-const esquemaMatriz = z.strictObject({
-  curso_id: texto,
-  matriz_id: z.number().int(),
-  ano: inteiroNulo,
-  ch_exibida_h: z.number().int(),
-  estagio_exigido: z.number().int(),
-  ch_estagio_h: inteiroNulo,
-  trecho: texto,
-  path: texto,
-  linha: z.number().int(),
+const LinhaMatriz = Schema.Struct({
+  curso_id: Texto,
+  matriz_id: Inteiro,
+  ano: InteiroNulo,
+  ch_exibida_h: Inteiro,
+  estagio_exigido: Inteiro,
+  ch_estagio_h: InteiroNulo,
+  trecho: Texto,
+  path: Texto,
+  linha: Inteiro,
 });
+const linhasMatriz = Sql.todas(LinhaMatriz);
 
-const esquemaPpcCurso = z.strictObject({
-  id: texto,
-  curso_nome: texto,
-  campus_nome: texto,
-  nivel: texto,
-  tipo_oferta: texto,
-  path: texto,
-  curso_id: textoNulo,
-  suap_matrizes_situacao: textoNulo,
-  suap_ch_comum_h: inteiroNulo,
+const LinhaPpcCurso = Schema.Struct({
+  id: Texto,
+  curso_nome: Texto,
+  campus_nome: Texto,
+  nivel: Texto,
+  tipo_oferta: Texto,
+  path: Texto,
+  curso_id: TextoNulo,
+  suap_matrizes_situacao: TextoNulo,
+  suap_ch_comum_h: InteiroNulo,
 });
+const linhasPpcCurso = Sql.todas(LinhaPpcCurso);
 
 export interface FatosDoPpc {
   ppc: string;
@@ -864,13 +889,13 @@ export interface FatosDoPpc {
   nivel: string;
   forma: string;
   path: string;
-  fatos: (Omit<z.output<typeof esquemaFato>, "ppc_id" | "alternativas_json"> & { alternativas: unknown })[];
+  fatos: (Omit<typeof LinhaFato.Type, "ppc_id" | "alternativas_json"> & { alternativas: unknown })[];
   suap: {
     situacao: string | null;
     carga_horaria_comum_h: number | null;
-    matrizes: (Omit<z.output<typeof esquemaMatriz>, "curso_id" | "estagio_exigido"> & { estagio_exigido: boolean })[];
+    matrizes: (Omit<typeof LinhaMatriz.Type, "curso_id" | "estagio_exigido"> & { estagio_exigido: boolean })[];
   };
-  cruzamento: Omit<z.output<typeof esquemaCruzamento>, "ppc_id">[];
+  cruzamento: Omit<typeof LinhaCruzamento.Type, "ppc_id">[];
 }
 
 /** Filtros dos fatos de PPC: um PPC (`campus/curso` ou `ppc:campus/curso`), nível e campus (`campus_id`). */
@@ -880,10 +905,16 @@ export interface FiltrosFatos {
   campus?: string | undefined;
 }
 
+function agrupar<T, K>(lista: readonly T[], chave: (x: T) => K): Map<K, T[]> {
+  const m = new Map<K, T[]>();
+  for (const x of lista) m.set(chave(x), [...(m.get(chave(x)) ?? []), x]);
+  return m;
+}
+
 /** Fatos e cruzamento com o SUAP de um PPC, ou de todos (filtros opcionais por nível e campus). */
-export function fatosDosPpcs(db: DatabaseSync, filtros: FiltrosFatos = {}): FatosDoPpc[] {
+export const fatosDosPpcs = Effect.fn("consultas.fatosDosPpcs")(function* (filtros: FiltrosFatos = {}) {
   const condicoes: string[] = [];
-  const parametros: Parametro[] = [];
+  const parametros: Sql.Parametro[] = [];
   if (filtros.ppc) {
     condicoes.push("p.id = ?");
     parametros.push(normalizarPpc(filtros.ppc));
@@ -896,36 +927,22 @@ export function fatosDosPpcs(db: DatabaseSync, filtros: FiltrosFatos = {}): Fato
     condicoes.push("p.campus_id = ?");
     parametros.push(filtros.campus);
   }
-  const ppcs = linhas(
-    esquemaPpcCurso,
-    db
-      .prepare(
-        `SELECT p.id, p.curso_nome, p.campus_nome, p.nivel, p.tipo_oferta, p.path, p.curso_id,
+  const ppcs = yield* linhasPpcCurso(
+    `SELECT p.id, p.curso_nome, p.campus_nome, p.nivel, p.tipo_oferta, p.path, p.curso_id,
                 c.suap_matrizes_situacao, c.suap_ch_comum_h
          FROM ppcs p LEFT JOIN cursos c ON c.id = p.curso_id
          ${condicoes.length ? `WHERE ${condicoes.join(" AND ")}` : ""} ORDER BY p.id`,
-      )
-      .all(...parametros),
+    parametros,
   );
-  const fatos = linhas(esquemaFato, db.prepare("SELECT * FROM ppc_fatos ORDER BY ppc_id, fato").all());
-  const cruz = linhas(esquemaCruzamento, db.prepare("SELECT * FROM ppc_suap ORDER BY ppc_id, aspecto").all());
-  const matrizes = linhas(
-    esquemaMatriz,
-    db
-      .prepare(
-        "SELECT curso_id, matriz_id, ano, ch_exibida_h, estagio_exigido, ch_estagio_h, trecho, path, linha FROM suap_matrizes ORDER BY curso_id, ordem",
-      )
-      .all(),
+  const fatos = yield* linhasFato("SELECT * FROM ppc_fatos ORDER BY ppc_id, fato");
+  const cruz = yield* linhasCruzamento("SELECT * FROM ppc_suap ORDER BY ppc_id, aspecto");
+  const matrizes = yield* linhasMatriz(
+    "SELECT curso_id, matriz_id, ano, ch_exibida_h, estagio_exigido, ch_estagio_h, trecho, path, linha FROM suap_matrizes ORDER BY curso_id, ordem",
   );
-  const agrupar = <T, K>(lista: T[], chave: (x: T) => K) => {
-    const m = new Map<K, T[]>();
-    for (const x of lista) m.set(chave(x), [...(m.get(chave(x)) ?? []), x]);
-    return m;
-  };
   const fatosPor = agrupar(fatos, (f) => f.ppc_id);
   const cruzPor = agrupar(cruz, (c) => c.ppc_id);
   const matrizesPor = agrupar(matrizes, (m) => m.curso_id);
-  return ppcs.map((p) => ({
+  return ppcs.map((p): FatosDoPpc => ({
     ppc: p.id,
     curso: p.curso_id,
     nome: p.curso_nome,
@@ -935,7 +952,7 @@ export function fatosDosPpcs(db: DatabaseSync, filtros: FiltrosFatos = {}): Fato
     path: p.path,
     fatos: (fatosPor.get(p.id) ?? []).map(({ ppc_id: _p, alternativas_json, ...f }) => ({
       ...f,
-      alternativas: JSON.parse(alternativas_json) as unknown,
+      alternativas: alternativas_json,
     })),
     suap: {
       situacao: p.suap_matrizes_situacao,
@@ -949,17 +966,17 @@ export function fatosDosPpcs(db: DatabaseSync, filtros: FiltrosFatos = {}): Fato
     },
     cruzamento: (cruzPor.get(p.id) ?? []).map(({ ppc_id: _p, ...c }) => c),
   }));
+});
+
+/** Totais por aspecto e resultado e os PPCs com divergência (`divergenciasPpcSuap`). */
+export interface DivergenciasPpcSuap {
+  totais: Record<string, Record<string, number>>;
+  ppcs: FatosDoPpc[];
 }
 
 /** Só os PPCs com alguma divergência PPC × SUAP, e só as linhas divergentes do cruzamento. */
-export function divergenciasPpcSuap(
-  db: DatabaseSync,
-  filtros: FiltrosFatos = {},
-): {
-  totais: Record<string, Record<string, number>>;
-  ppcs: FatosDoPpc[];
-} {
-  const todos = fatosDosPpcs(db, filtros);
+export const divergenciasPpcSuap = Effect.fn("consultas.divergenciasPpcSuap")(function* (filtros: FiltrosFatos = {}) {
+  const todos = yield* fatosDosPpcs(filtros);
   const totais: Record<string, Record<string, number>> = {};
   for (const p of todos) {
     for (const c of p.cruzamento) {
@@ -974,5 +991,6 @@ export function divergenciasPpcSuap(
   const ppcs = todos
     .map((p) => ({ ...p, cruzamento: p.cruzamento.filter((c) => RESULTADOS_DIVERGENTES.has(c.resultado)) }))
     .filter((p) => p.cruzamento.length > 0);
-  return { totais: ordenado, ppcs };
-}
+  const resultado: DivergenciasPpcSuap = { totais: ordenado, ppcs };
+  return resultado;
+});

@@ -15,26 +15,19 @@
  * um commit antigo), para medir o impacto contra uma revisão real; o registro, as relações e a
  * correspondência vêm sempre de `raiz`.
  *
- * A regra é `impactoEm`, sobre uma `FonteImpacto`: os arquivos (`fonteImpactoArquivos`, o que
- * `impacto` usa) ou o `kb.sqlite` (`fonteImpactoBanco`, em `db/modo-banco.ts`). O banco guarda as
- * fichas da `revisar-ppc`, mas não os outros textos das skills: no modo banco, `arquivos` traz só
- * fichas.
+ * A regra é `impactoEm`, pura, sobre uma `FonteImpacto` já carregada; o serviço `Impacto` a monta
+ * a partir de `FontesNormativas` (arquivos do checkout ou `kb.sqlite`) e do banco. O banco guarda as
+ * fichas da `revisar-ppc`, mas não os outros textos das skills: sobre `FontesNormativas.layerBanco`,
+ * `arquivos` traz só as fichas.
  */
-import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import path from "node:path";
-import { type PpcCitante, ppcsQueCitam } from "../ppcs/citacoes.ts";
-import { type CitacaoResolvida, citacoesResolvidas, segmentosCitantes } from "./citacoes-normas.ts";
-import {
-  correspondenciaEm,
-  destinosDeOrigemEm,
-  type FonteCorrespondencia,
-  fonteCorrespondenciaArquivos,
-} from "./correspondencia.ts";
-import { dispositivosDoAto } from "./estrutura.ts";
+import type { PpcCitante } from "../ppcs/citacoes.ts";
+import type { CitacaoResolvida } from "./citacoes-normas.ts";
+import { citacoesResolvidas } from "./citacoes-normas.ts";
+import { correspondenciaEm, destinosDeOrigemEm, type FonteCorrespondencia } from "./correspondencia.ts";
 import { idDoAto } from "./ids.ts";
-import { carregarRegistro, raizRepositorio, type Registro } from "./registro.ts";
-import { carregarRelacoes, type Relacao, sucessorasDe } from "./relacoes.ts";
-import { dataReferencia, type RaizOuFonte, statusEm, transicoesAplicaveis } from "./vigencia.ts";
+import type { Registro } from "./registro.ts";
+import { type Relacao, sucessorasDe } from "./relacoes.ts";
+import { type RaizOuFonte, statusEm, transicoesAplicaveis } from "./vigencia.ts";
 
 export type MotivoImpacto =
   | "referencia"
@@ -85,8 +78,9 @@ export interface TopicoTaxonomia {
 }
 
 /**
- * O que o impacto lê. Duas implementações: os arquivos (`fonteImpactoArquivos`) e o `kb.sqlite`
- * (`fonteImpactoBanco`, em `db/modo-banco.ts`).
+ * O que o impacto lê, já carregado: o serviço `Impacto` monta a fonte a partir de `FontesNormativas`
+ * (arquivos do checkout ou `kb.sqlite`) e do banco. `dispositivosDoAto`, `segmentosCitantes` e
+ * `ppcsQueCitam` só são pedidos para a norma em análise.
  */
 export interface FonteImpacto {
   registro: Registro;
@@ -106,39 +100,6 @@ export interface FonteImpacto {
     excetoAto: string,
   ): Iterable<{ norma: string; ato: string; segmento: string; citacoes: CitacaoResolvida[] }>;
   ppcsQueCitam(id: string): PpcCitante[];
-}
-
-/** O impacto sobre os arquivos do checkout (conteúdo das skills de `raizConteudo`). */
-export function fonteImpactoArquivos(raiz: string = raizRepositorio(), raizConteudo: string = raiz): FonteImpacto {
-  const registro = carregarRegistro(raiz);
-  return {
-    registro,
-    vigencia: raiz,
-    dataReferencia: () => dataReferencia(raiz),
-    relacoes: () => carregarRelacoes(raiz),
-    correspondencia: fonteCorrespondenciaArquivos(raiz),
-    dispositivosDoAto: (ato) => dispositivosDoAto(ato, raiz),
-    topicos: () => {
-      const arquivo = path.join(
-        raizConteudo,
-        ".agents",
-        "skills",
-        "revisar-ppc",
-        "base-analise",
-        "topicos-fichas.json",
-      );
-      if (!existsSync(arquivo)) return [];
-      return (JSON.parse(readFileSync(arquivo, "utf-8")) as { topicos?: TopicoTaxonomia[] }).topicos ?? [];
-    },
-    arquivosConteudo: function* () {
-      for (const arquivo of arquivosConteudoSkills(raizConteudo)) {
-        yield { arquivo, texto: readFileSync(path.join(raizConteudo, arquivo), "utf-8") };
-      }
-    },
-    // a extração roda só nos segmentos de outras normas
-    segmentosCitantes: (excetoAto) => segmentosCitantes(registro, raiz, excetoAto),
-    ppcsQueCitam: (id) => ppcsQueCitam(id, { registro, raiz }),
-  };
 }
 
 /**
@@ -165,28 +126,6 @@ function topicosAtingidos(ato: string, fonte: FonteImpacto): Map<string, { ficha
       saida.set(topico.id, { fichas: topico.fichas ?? [] });
     }
   }
-  return saida;
-}
-
-/** Arquivos de conteúdo (`.json`, `.md`, `.yaml`) das skills, sem código, testes, schemas, READMEs e gerados. */
-export function arquivosConteudoSkills(raizConteudo: string): string[] {
-  const base = path.join(raizConteudo, ".agents", "skills");
-  if (!existsSync(base)) return [];
-  const saida: string[] = [];
-  const ignorar = new Set(["scripts", "tests", "schemas", "node_modules", "__pycache__", "referencias"]);
-  const gerados = new Set(["indice.json", "mapa-fichas.md"]);
-  const visitar = (dir: string) => {
-    for (const nome of readdirSync(dir).sort()) {
-      const caminho = path.join(dir, nome);
-      if (statSync(caminho).isDirectory()) {
-        if (!ignorar.has(nome)) visitar(caminho);
-        continue;
-      }
-      if (!/\.(json|md|yaml|yml)$/.test(nome) || /^README/i.test(nome) || gerados.has(nome)) continue;
-      saida.push(path.relative(raizConteudo, caminho).split(path.sep).join("/"));
-    }
-  };
-  visitar(base);
   return saida;
 }
 
@@ -227,16 +166,7 @@ function categoria(arquivo: string): ArquivoAfetado["categoria"] {
   return "conteudo-skill";
 }
 
-/** Impacto de uma mudança na norma `id` (ato; o dispositivo, se houver, restringe as citações). */
-export function impacto(
-  id: string,
-  opcoes: { raiz?: string; raizConteudo?: string; data?: string; incluirPpcs?: boolean } = {},
-): ResultadoImpacto {
-  const raiz = opcoes.raiz ?? raizRepositorio();
-  return impactoEm(id, fonteImpactoArquivos(raiz, opcoes.raizConteudo ?? raiz), opcoes);
-}
-
-/** Impacto sobre uma fonte de dados (arquivos ou `kb.sqlite`). */
+/** Impacto da mudança na norma `id` (ato; o dispositivo, se houver, restringe as citações). */
 export function impactoEm(
   id: string,
   fonte: FonteImpacto,
@@ -318,7 +248,10 @@ export function impactoEm(
     for (const d of citacoes.dispositivos) dispositivos.add(d);
     let topicosDaFicha: string[] | undefined;
     if (categoria(arquivo) === "ficha") {
-      const fichaId = path.basename(arquivo, ".json").toUpperCase();
+      const fichaId = arquivo
+        .slice(arquivo.lastIndexOf("/") + 1)
+        .replace(/\.json$/, "")
+        .toUpperCase();
       topicosDaFicha = topicosPorFicha.get(fichaId);
       if (topicosDaFicha) motivos.add("tema");
     }

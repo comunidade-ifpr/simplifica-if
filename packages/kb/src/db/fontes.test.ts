@@ -4,7 +4,7 @@ import { afterAll, describe, expect, test } from "vite-plus/test";
 import { mkdirSync, mkdtempSync, readdirSync, rmSync, statSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { estadoDoBanco } from "./banco.ts";
+import { estadoDoBanco } from "./fontes.ts";
 import { compilarBanco } from "./compilar.ts";
 import { VERSAO_ESQUEMA } from "./esquema.ts";
 import { arquivosFonte, hashConteudo, hashLista } from "./fontes.ts";

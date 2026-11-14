@@ -3,14 +3,8 @@ import { describe, expect, test } from "vite-plus/test";
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { raizRepositorio } from "../normas/registro.ts";
-import {
-  agruparPorTopico,
-  type FichaPacote,
-  lerTopicosFichas,
-  TOPICO_TRANSVERSAL,
-  type TopicoFichas,
-  topicoPrincipal,
-} from "./pacote-contexto.ts";
+import { lerTopicosFichas, type TopicoFichas } from "../ppcs/topicos.ts";
+import { agruparPorTopico, type FichaPacote, TOPICO_TRANSVERSAL, topicoPrincipal } from "./pacote-contexto.ts";
 
 const topicos: TopicoFichas[] = [
   { id: "a", titulo: "A", fichas: ["F1", "F2", "F3", "F4", "F5"] },
