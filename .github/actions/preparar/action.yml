@@ -1,0 +1,40 @@
+name: Preparar Node e pnpm
+description: >-
+  Node da versão de .node-version, pnpm da versão de packageManager pelo corepack, cache do store do
+  pnpm e pnpm install --frozen-lockfile.
+
+runs:
+  using: composite
+  steps:
+    - name: Node de .node-version
+      uses: actions/setup-node@v5
+      with:
+        node-version-file: .node-version
+        # o cache é o do store do pnpm, abaixo
+        package-manager-cache: false
+
+    - name: pnpm pelo corepack
+      shell: bash
+      env:
+        COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
+      run: |
+        # o corepack vai fixado à parte: o Node 25 deixou de distribuí-lo
+        npm install --global corepack@0.36.0
+        corepack enable
+        pnpm --version
+
+    - name: Pasta do store do pnpm
+      id: store
+      shell: bash
+      run: echo "caminho=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+    - name: Cache do store do pnpm
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.store.outputs.caminho }}
+        key: pnpm-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: pnpm-${{ runner.os }}-${{ runner.arch }}-
+
+    - name: Dependências
+      shell: bash
+      run: pnpm install --frozen-lockfile
