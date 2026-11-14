@@ -236,7 +236,7 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: { readonly 
     if (executavel === undefined) {
       return yield* new FalhaProvider({ provider: PROVIDER, operacao: "iniciar", detalhe: "CLI `codex` ausente" });
     }
-    const canal = yield* Canal.make();
+    const canal = yield* Canal.make;
     const gravar = yield* Gravador;
     const { cliente } = yield* abrir(executavel, config.pastaTrabalho);
     const normalizar = criarNormalizadorCodex();

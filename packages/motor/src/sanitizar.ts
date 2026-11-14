@@ -5,7 +5,7 @@
 
 const CHAVE_SECRETA = /token|secret|password|senha|api_?key|authorization|cookie|credential|email/i;
 const EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g;
-const BEARER = /\b(Bearer|sk-[A-Za-z0-9_-]{4})[A-Za-z0-9._~+/=-]{8,}/g;
+const BEARER = /\b(Bearer\s+|sk-)[A-Za-z0-9._~+/=-]{8,}/g;
 
 /** Chaves que só contam tokens (uso), não segredos: ficam como estão. */
 const CHAVE_DE_CONTAGEM = /tokens$|^tokenUsage$|^tokenSource$|^apiKeySource$/i;

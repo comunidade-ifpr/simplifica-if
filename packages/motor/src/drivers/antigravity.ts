@@ -203,7 +203,7 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: { rea
     if (executavel === undefined) {
       return yield* new FalhaProvider({ provider: PROVIDER, operacao: "iniciar", detalhe: "CLI `agy` ausente" });
     }
-    const canal = yield* Canal.make();
+    const canal = yield* Canal.make;
     const gravar = yield* Gravador;
     const escopo = yield* Effect.scope;
     const { cliente, login } = yield* abrir(executavel, config.pastaTrabalho);

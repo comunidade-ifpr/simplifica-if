@@ -150,7 +150,7 @@ export default defineConfig({
     // do T3. A ordem importa: cada override posterior sobrescreve o anterior para os arquivos em comum.
     overrides: [
       {
-        files: ["packages/kb/**", "packages/mcp/**", ...ARQUIVOS_C3],
+        files: ["packages/kb/**", "packages/mcp/**", "packages/motor/**", ...ARQUIVOS_C3],
         rules: {
           "simplifica-if/namespace-node-imports": "error",
           "simplifica-if/no-global-process-runtime": "error",
@@ -177,6 +177,9 @@ export default defineConfig({
           "packages/kb/scripts/**",
           "packages/mcp/src/cli.ts",
           "packages/mcp/scripts/**",
+          // O harness do motor e o teste com providers reais passam o ambiente do processo aos drivers.
+          "packages/motor/scripts/**",
+          "packages/motor/test/real.test.ts",
         ],
         rules: { "simplifica-if/no-global-process-runtime": "off" },
       },

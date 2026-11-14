@@ -120,6 +120,7 @@ const opcoesBase = (ambiente: Ambiente, executavel: string) =>
   }) satisfies Options;
 
 /** Prompt que nunca entrega mensagem: o SDK inicializa (login, modelos) sem chamar a API. */
+// oxlint-disable-next-line require-yield -- nunca entrega mensagem, então nenhum prompt chega à API
 async function* nuncaEntrega(sinal: AbortSignal): AsyncGenerator<SDKUserMessage> {
   await new Promise<void>((resolver) => sinal.addEventListener("abort", () => resolver(), { once: true }));
 }
@@ -169,7 +170,7 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
     if (executavel === undefined) {
       return yield* new FalhaProvider({ provider: PROVIDER, operacao: "iniciar", detalhe: "CLI `claude` ausente" });
     }
-    const canal = yield* Canal.make();
+    const canal = yield* Canal.make;
     const gravar = yield* Gravador;
     const servicos = yield* Effect.context<never>();
     const entrada = yield* Queue.unbounded<SDKUserMessage, Cause.Done>();

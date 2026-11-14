@@ -35,20 +35,29 @@ export interface Canal {
   readonly turno: <E>(iniciar: Effect.Effect<void, E>) => Stream.Stream<Evento, E | FalhaProvider | TurnoEmAndamento>;
 }
 
-export const make = Effect.fn("Canal.make")(function* () {
+export const make: Effect.Effect<Canal> = Effect.sync(() => {
   let corrente: Fila | undefined;
   const pendentes = new Map<string, Deferred.Deferred<Decisao>>();
 
+  // O turno fica em andamento até o provider terminá-lo (`FimTurno` ou falha), mesmo que quem lê o
+  // stream pare antes: o provider continua trabalhando, e um segundo envio seria misturado a ele.
   const emitirAgora = (evento: Evento): void => {
     if (corrente === undefined) return;
     Queue.offerUnsafe(corrente, evento);
-    if (evento._tag === "FimTurno") Queue.endUnsafe(corrente);
+    if (evento._tag === "FimTurno") {
+      Queue.endUnsafe(corrente);
+      corrente = undefined;
+    }
   };
 
   const emitir = (evento: Evento) => Effect.sync(() => emitirAgora(evento));
 
   const falhar = (erro: FalhaProvider) =>
-    Effect.suspend(() => (corrente === undefined ? Effect.void : Queue.fail(corrente, erro).pipe(Effect.asVoid)));
+    Effect.suspend(() => {
+      const fila = corrente;
+      corrente = undefined;
+      return fila === undefined ? Effect.void : Queue.fail(fila, erro).pipe(Effect.asVoid);
+    });
 
   const pedirAprovacao: Canal["pedirAprovacao"] = Effect.fnUntraced(function* (pedido) {
     const resposta = yield* Deferred.make<Decisao>();
@@ -70,14 +79,9 @@ export const make = Effect.fn("Canal.make")(function* () {
         if (corrente !== undefined) return yield* new TurnoEmAndamento();
         const fila: Fila = yield* Queue.unbounded<Evento, FalhaProvider | Cause.Done>();
         corrente = fila;
-        yield* iniciar;
-        return Stream.fromQueue(fila).pipe(
-          Stream.ensuring(
-            Effect.sync(() => {
-              if (corrente === fila) corrente = undefined;
-            }),
-          ),
-        );
+        // Se o provider recusar o envio, não há turno.
+        yield* iniciar.pipe(Effect.onError(() => Effect.sync(() => (corrente = undefined))));
+        return Stream.fromQueue(fila);
       }),
     );
 
