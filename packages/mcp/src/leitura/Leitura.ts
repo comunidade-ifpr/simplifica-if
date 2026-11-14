@@ -5,7 +5,8 @@
  * a resposta como está.
  *
  * A layer depende dos serviços de consulta do kb (`layerSomenteLeitura`, sem `FileSystem`) e do canal
- * da linha de comando, que entra no envelope quando o banco não registra um. As falhas do banco
+ * da linha de comando, que entra no envelope quando o banco não registra um. A `PastaTrabalho`, de
+ * onde o `pacote_contexto` lê um `.md`, é opcional: sem ela, o `arquivo` é recusado. As falhas do banco
  * (`FalhaNaConsulta`, `FalhaNasFontes`) chegam aos métodos como `FalhaNaBase`.
  */
 import * as BaseKb from "@simplifica-if/kb/BaseKb";
@@ -29,10 +30,12 @@ import type * as ImpactoDaNorma from "../ferramentas/impacto-da-norma.ts";
 import type * as LerDispositivos from "../ferramentas/ler-dispositivos.ts";
 import type * as LerSecao from "../ferramentas/ler-secao.ts";
 import type * as ListarCursos from "../ferramentas/listar-cursos.ts";
+import type * as PacoteContextoF from "../ferramentas/pacote-contexto.ts";
 import type * as ResolverCitacoes from "../ferramentas/resolver-citacoes.ts";
 import type * as SobreABase from "../ferramentas/sobre-a-base.ts";
 import { linkCampus } from "../links.ts";
 import { makeNormas } from "./normas.ts";
+import { makePacote } from "./pacote.ts";
 import { makePpcs } from "./ppcs.ts";
 
 /** Uma leitura: a entrada decodificada de uma ferramenta e a resposta com os dados dela. */
@@ -69,6 +72,7 @@ export class Leitura extends Context.Service<
     readonly listarCursos: Metodo<typeof ListarCursos.Entrada, typeof ListarCursos.Dados>;
     readonly fichaCurso: Metodo<typeof FichaCurso.Entrada, typeof FichaCurso.Dados>;
     readonly fatosPpc: Metodo<typeof FatosPpc.Entrada, typeof FatosPpc.Dados>;
+    readonly pacoteContexto: Metodo<typeof PacoteContextoF.Entrada, typeof PacoteContextoF.Dados>;
     readonly sobreABase: Metodo<typeof SobreABase.Entrada, typeof SobreABase.Dados>;
     readonly etapa: Metodo<typeof Etapa.Entrada, typeof Etapa.Dados>;
   }
@@ -126,13 +130,14 @@ const make = Effect.fn("Leitura.make")(function* (opcoes: { readonly canal: Cana
 
   const normas = yield* makeNormas(base);
   const ppcs = yield* makePpcs(base);
+  const pacote = yield* makePacote(base);
 
   const sobreABase = responder(base, { contagens: meta.contagens, tipos_de_secao: tiposDeSecao, niveis, campi });
   const etapa = responder(base, { registrado: false });
 
   return Leitura.of({
     base,
-    ...comFalhaNaBase({ ...normas, ...ppcs }),
+    ...comFalhaNaBase({ ...normas, ...ppcs, ...pacote }),
     // respostas fixas, montadas uma vez: o banco não muda com o servidor no ar
     sobreABase: Effect.fn("Leitura.sobreABase")(() => Effect.succeed(sobreABase)),
     etapa: Effect.fn("Leitura.etapa")(() => Effect.succeed(etapa)),

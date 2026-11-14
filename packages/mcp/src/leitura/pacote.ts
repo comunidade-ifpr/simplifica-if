@@ -1,0 +1,83 @@
+/**
+ * Leitura da ferramenta `pacote_contexto` (T4), sobre o serviço `PacoteContexto` do kb e, para
+ * `arquivo`, sobre a `PastaTrabalho`, que o `Leitura` recebe como opcional: sem ela, `arquivo` é
+ * recusado. Os erros do kb (PPC, grupo ou tarefa desconhecidos) viram `EntradaInvalida`.
+ */
+import * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
+import { REGRAS_BAIXA_CONFIANCA } from "@simplifica-if/kb/ppcs/citacoes";
+import * as Effect from "effect/Effect";
+import * as Option from "effect/Option";
+import { type Aviso, type Base, EntradaInvalida } from "../contratos.ts";
+import { responder } from "../envelope.ts";
+import * as PacoteContextoF from "../ferramentas/pacote-contexto.ts";
+import { AVISO_FATO_EXTRAIDO, avisoBaixaConfianca, chavePpc } from "./comum.ts";
+import * as PastaTrabalho from "./PastaTrabalho.ts";
+
+/** Os avisos do pacote: transições e vigências a confirmar, fatos extraídos, citações de baixa confiança. */
+function avisosDoPacote(d: typeof PacoteContextoF.Dados.Type): Aviso[] {
+  const avisos: Aviso[] = [];
+  const aConfirmar = d.transicoes.filter((t) => t.situacao === "a confirmar").map((t) => t.id);
+  const normas = d.normas.filter((n) => n.status_vigencia?.includes("a confirmar")).map((n) => n.ref);
+  if (aConfirmar.length || normas.length) {
+    avisos.push({
+      tipo: "vigencia-a-confirmar",
+      mensagem: `há vigência a confirmar na data de referência${normas.length ? ` (normas: ${normas.join(", ")})` : ""}${aConfirmar.length ? ` (transições: ${aConfirmar.join(", ")})` : ""}; diga isso ao usuário e não conclua pelo prazo sem conferir a data`,
+    });
+  }
+  const semTexto = d.normas.flatMap((n) => n.sem_texto);
+  if (semTexto.length) {
+    avisos.push({
+      tipo: "stub-sem-texto",
+      mensagem: `dispositivos citados pelas fichas sem texto na base: ${semTexto.join(", ")}; não afirme o conteúdo deles`,
+    });
+  }
+  if ("fatos" in d && d.fatos !== null) avisos.push(AVISO_FATO_EXTRAIDO);
+  const regras = d.marcos.flatMap((m) => m.citacoes_no_ppc.map((c) => c.regra));
+  if (regras.some((r) => REGRAS_BAIXA_CONFIANCA.has(r))) avisos.push(...avisoBaixaConfianca(regras));
+  return avisos;
+}
+
+export const makePacote = Effect.fn("Leitura.makePacote")(function* (base: Base) {
+  const pacotes = yield* PacoteContexto.PacoteContexto;
+  const pasta = yield* Effect.serviceOption(PastaTrabalho.PastaTrabalho);
+
+  const doKb = <A, E extends { readonly _tag: string; readonly message: string }>(efeito: Effect.Effect<A, E>) =>
+    Effect.mapError(efeito, (erro) =>
+      erro._tag === "PpcNaoEncontrado" || erro._tag === "GrupoInexistente" || erro._tag === "TarefaNaoReconhecida"
+        ? new EntradaInvalida({
+            mensagem:
+              erro._tag === "PpcNaoEncontrado"
+                ? `${erro.message}. Use "campus/curso" (como "curitiba/tecnico-em-enfermagem"), vindo de listar_cursos ou de ficha_curso`
+                : erro.message,
+          })
+        : (erro as Exclude<E, { readonly _tag: "PpcNaoEncontrado" | "GrupoInexistente" | "TarefaNaoReconhecida" }>),
+    );
+
+  const pacoteContexto = Effect.fn("Leitura.pacoteContexto")(function* (e: typeof PacoteContextoF.Entrada.Type) {
+    if ((e.ppc === undefined) === (e.arquivo === undefined)) {
+      return yield* new EntradaInvalida({
+        mensagem:
+          'informe exatamente um destes: ppc (um PPC da base, como "curitiba/tecnico-em-enfermagem") ou arquivo (um .md dentro da pasta de trabalho do servidor)',
+      });
+    }
+    let dados: typeof PacoteContextoF.Dados.Type;
+    if (e.ppc !== undefined) {
+      dados = yield* doKb(pacotes.montar(e.tarefa, yield* chavePpc(e.ppc)));
+    } else {
+      if (Option.isNone(pasta)) {
+        return yield* new EntradaInvalida({
+          mensagem: "arquivo: este servidor não tem pasta de trabalho e não lê arquivos; use ppc, com um PPC da base",
+        });
+      }
+      const lido = yield* pasta.value.lerMarkdown(e.arquivo!);
+      dados = yield* doKb(pacotes.doMarkdown(e.tarefa, lido.caminho, lido.markdown));
+    }
+    const avisos = avisosDoPacote(dados);
+    // o texto passa do teto? (a mesma conta que a ferramenta faz com os avisos da resposta)
+    const comResumo = [...avisos, PacoteContextoF.AVISO_RESUMIDO];
+    const resumido = PacoteContextoF.corpoDoPacote(dados, PacoteContextoF.orcamentoDoCorpo(comResumo)).resumido;
+    return responder(base, dados, { avisos: resumido ? comResumo : avisos });
+  });
+
+  return { pacoteContexto };
+});

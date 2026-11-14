@@ -1,6 +1,6 @@
 # M0.1 — Servidor MCP `simplifica-mcp`
 
-Situação em 13/11/2026. Detalha o M0.1 do [plano do app](app-simplifica-if.md#marco-0--cérebro-portátil). Também cobre a parte do M0.2 que muda o `packages/kb`: o banco que responde sozinho, sem o repositório.
+Situação em 14/11/2026. Detalha o M0.1 do [plano do app](app-simplifica-if.md#marco-0--cérebro-portátil). Também cobre a parte do M0.2 que muda o `packages/kb`: o banco que responde sozinho, sem o repositório.
 
 ## Objetivo
 
@@ -499,6 +499,16 @@ As listas paginam pelo `limite` e pelo teto ao mesmo tempo: a página acaba no q
 - `ler_secao`: entrada `cursor`, para o trecho seguinte de uma seção acima do teto.
 - Anuláveis: `curso.nivel` e `cnct.eixo` em `ficha_curso`; `curso`, `suap.situacao` e `suap.matrizes[].ano` em `FatosPpc` (`fatos_ppc` e `ficha_curso`).
 
+### Acréscimos do T4
+
+Decididos na implementação do `pacote_contexto`:
+
+- **Dados:** o pacote do kb como está, o mesmo JSON de `kb pacote-contexto --json` (paridade byte a byte no smoke). O de um PPC da base e o de um arquivo têm formas diferentes (o do arquivo traz `path`, `escopo` e `tamanho` reduzido, e não traz `tarefa`, `ppc` nem `fatos`), e o `outputSchema` é a união das duas. As partes sem forma fixa no kb (fichas, CNCT, fatos, as normas de um marco) ficam livres no schema.
+- **Exatamente um de `ppc` e `arquivo`:** conferido no serviço `Leitura`, e não no schema, para o JSON Schema continuar um objeto simples; a mensagem diz os dois caminhos.
+- **Teto de 80 mil caracteres no texto.** Acima dele, os literais mais longos (seções, dispositivos, transições) são cortados por igual, nunca abaixo de 300 caracteres, e cada um continua com o ID, a fonte e a indicação de onde ler o resto (`ler_secao`, `ler_dispositivos` ou as linhas do arquivo). Se nem assim couber (`todas`), corta-se o fim do texto, com uma linha explicando. O JSON continua inteiro, e o aviso `resultado-resumido` sai sempre que algo é cortado. As fichas vêm sempre inteiras, porque nenhuma outra ferramenta as entrega.
+- **Avisos:** `vigencia-a-confirmar` (transições ou normas a confirmar na data), `stub-sem-texto` (dispositivo citado pela ficha sem texto na base), `fato-extraido` (PPC da base com fatos) e `citacao-baixa-confianca` (citações do PPC nos marcos).
+- **Pasta de trabalho:** caminho relativo à pasta ou absoluto dentro dela. A recusa do `..` e do caminho absoluto de fora acontece antes de tocar no disco, sem revelar se o arquivo de fora existe; o `realPath` vem depois da checagem de existência e recusa o symlink para fora. Só `.md`, até 8 MB. O `FileSystem` entra só no serviço `PastaTrabalho` do `packages/mcp`; o `Leitura` o recebe como opcional, e sem ele (`layerLeitura`, o do app) o `arquivo` é recusado. O stdio usa `layerLeituraComPasta`.
+
 ## Instruções do servidor
 
 O arquivo é `packages/mcp/instrucoes.md`. Ele vira o campo `instructions` do servidor MCP, e o `AGENTS.md` passa a apontar para ele na parte de consulta. Muitos clientes injetam as instruções em toda conversa, então o texto tem no máximo 400 palavras. Conteúdo:
@@ -655,3 +665,8 @@ args = ["--banco", "~/SimplificaIF/kb.sqlite"]
   - Os dois smokes contra o `tmp/kb.sqlite` só rodam com `SIMPLIFICA_SMOKE=1` (`pnpm mcp:smoke`, 12 testes); o `pnpm test` não depende do banco.
   - Frase "Use quando…" nas sete descrições que não a tinham; o teste de contrato exige "Use" em todas.
   - Verificação: 1001 testes, nenhuma falha (12 do smoke pulados); smoke sem falha; `tools/list` pelo stdio com 15 ferramentas; base válida.
+- 14/11/2026: T4 pronto no branch `t3/2d1fa41d`: `pacote_contexto`, a 16ª ferramenta (ver "Acréscimos do T4").
+  - Serviço `PastaTrabalho` (`packages/mcp/src/leitura/PastaTrabalho.ts`), o único com `FileSystem`; a CLI passa o `--pasta-trabalho` a ele.
+  - Testes: contrato, determinismo, orçamento, pasta de trabalho (`..`, absoluto, symlink para fora, arquivo inexistente, pasta com nome `.md`) e `ppc` contra `arquivo` (`test/pacote-contexto.test.ts`, 16); paridade byte a byte com `kb pacote-contexto` no smoke (`test/smoke-pacote-contexto.test.ts`, 4, em `pnpm mcp:smoke`).
+  - Gabarito do MCP: `gabarito.ts --atualizar pacote_contexto` acrescentou a definição e três chamadas, sem mexer no resto (`testes-gabarito/README.md`). `tools/list` com 16 ferramentas.
+  - Verificação: 1259 testes, nenhuma falha (17 pulados: 16 do smoke e 1 do sei-cli); smoke com 16 testes, sem falha; gabarito equivalente (16 ferramentas, 36 chamadas); base válida.

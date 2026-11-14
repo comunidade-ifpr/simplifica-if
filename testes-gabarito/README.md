@@ -5,7 +5,7 @@ Capturado em 14/11/2026, ainda com Bun (1.4.4), antes da etapa C0 da [consolida�
 | Peça | Conteúdo | Como conferir |
 |---|---|---|
 | `kb.sh` e `kb/` | stdout (`kb/<caso>.out`) e código de saída (`kb/codigos.txt`) de 84 invocações da CLI `kb`, em texto e com `--json`, inclusive casos de erro | `sh testes-gabarito/kb.sh --comparar` |
-| `mcp.json` | `initialize` (servidor, capacidades, instruções), `tools/list` e 33 chamadas (`content` e `structuredContent`), pelo Client do SDK em stdio | `node packages/mcp/test/gabarito.ts --comparar` |
+| `mcp.json` | `initialize` (servidor, capacidades, instruções), `tools/list` e 36 chamadas (`content` e `structuredContent`), pelo Client do SDK em stdio | `node packages/mcp/test/gabarito.ts --comparar` |
 | `testes.txt` | casos e pulados por arquivo de teste (`arquivo⇥casos⇥pulados`), da suíte inteira | relatórios JUnit + `node testes-gabarito/contar_testes.ts` |
 | `testes-smoke.txt` | o mesmo para o smoke contra a base real (`SIMPLIFICA_SMOKE=1`) | idem |
 | `banco.sh` e `banco.txt` | linhas e sha256 do `.dump` de cada tabela do `tmp/kb.sqlite`, sem as tabelas do FTS5 | `sh testes-gabarito/banco.sh --comparar` |
@@ -29,3 +29,11 @@ node testes-gabarito/contar_testes.ts .=/tmp/raiz.xml packages/kb=/tmp/kb.xml pa
 ```
 
 No C0, a única diferença esperada é a do JUnit do Bun nos blocos pulados do smoke (6 e 8 casos, contra 5 e 7) e o teste novo `packages/mcp/test/instrucoes.test.ts`.
+
+## Atualizações por decisão explícita
+
+O `gabarito.ts --atualizar <partes>` regrava só as partes nomeadas e mantém o resto de `mcp.json` como o C0 capturou: o nome de uma ferramenta troca ou acrescenta a definição dela no `tools/list` e as chamadas dela; `instrucoes` troca as instruções do `initialize`.
+
+| Data | Comando | O que mudou |
+|---|---|---|
+| 14/11/2026 | `node packages/mcp/test/gabarito.ts --atualizar pacote_contexto` | T4 do M0.1: a 16ª ferramenta, `pacote_contexto`, entra no `tools/list` entre `fatos_ppc` e `sobre_a_base`, com três chamadas: `CT-CURR-12` sobre o PPC da base, `CT-CURR-12` sobre o Markdown do mesmo PPC como `arquivo` (a pasta de trabalho é a raiz do repositório) e a entrada inválida com `ppc` e `arquivo` juntos. De 33 para 36 chamadas; as outras 15 definições e as 33 chamadas continuam byte a byte as da captura |

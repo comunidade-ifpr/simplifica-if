@@ -7,6 +7,12 @@
  *   node packages/mcp/test/gabarito.ts --comparar     # confere com testes-gabarito/mcp.json
  *   node packages/mcp/test/gabarito.ts --capturar     # regrava o gabarito (só por decisão explícita)
  *   node packages/mcp/test/gabarito.ts --comparar --schemas-equivalentes
+ *   node packages/mcp/test/gabarito.ts --atualizar pacote_contexto,instrucoes
+ *
+ * `--atualizar <partes>` regrava só as partes nomeadas, separadas por vírgula, e mantém o resto do
+ * arquivo como foi capturado: o nome de uma ferramenta troca (ou acrescenta, na posição do
+ * `tools/list`) a definição dela e as chamadas dela; `instrucoes` troca as instruções. Serve para uma
+ * ferramenta nova ou para uma mudança decidida nas instruções sem regravar o gabarito do C0 inteiro.
  *
  * Com `--schemas-equivalentes` (critério do C2, servidor no `McpServer` do Effect), a comparação é por
  * partes: as chamadas (`content` e `structuredContent`) e as instruções continuam byte a byte; o
@@ -66,6 +72,13 @@ const CHAMADAS: ReadonlyArray<{ readonly name: string; readonly arguments: Recor
   { name: "ficha_curso", arguments: { curso: "campus-inexistente/curso" } },
   { name: "fatos_ppc", arguments: { ppc: PPC } },
   { name: "fatos_ppc", arguments: { divergencias: true, nivel: "médio", limite: 3 } },
+  // T4: o `arquivo` é relativo à pasta de trabalho, que no gabarito é a raiz do repositório
+  { name: "pacote_contexto", arguments: { tarefa: "CT-CURR-12", ppc: PPC } },
+  {
+    name: "pacote_contexto",
+    arguments: { tarefa: "CT-CURR-12", arquivo: `base-conhecimento/institucional/ifpr/ppcs/${PPC}.md` },
+  },
+  { name: "pacote_contexto", arguments: { tarefa: "CT-CURR-12", ppc: PPC, arquivo: "PPC.md" } },
   { name: "sobre_a_base", arguments: {} },
   { name: "etapa", arguments: { id: "gabarito", progresso: { feito: 1, total: 2 } } },
   { name: "etapa", arguments: { id: "" } },
@@ -73,8 +86,15 @@ const CHAMADAS: ReadonlyArray<{ readonly name: string; readonly arguments: Recor
 
 const modo = process.argv[2];
 const equivalentes = process.argv.includes("--schemas-equivalentes");
-if ((modo !== "--capturar" && modo !== "--comparar") || (equivalentes && modo !== "--comparar")) {
-  process.stderr.write("uso: gabarito.ts --capturar | --comparar [--schemas-equivalentes]\n");
+const partes = modo === "--atualizar" ? (process.argv[3] ?? "").split(",").filter(Boolean) : [];
+if (
+  (modo !== "--capturar" && modo !== "--comparar" && modo !== "--atualizar") ||
+  (equivalentes && modo !== "--comparar") ||
+  (modo === "--atualizar" && partes.length === 0)
+) {
+  process.stderr.write(
+    "uso: gabarito.ts --capturar | --comparar [--schemas-equivalentes] | --atualizar <ferramenta|instrucoes>[,…]\n",
+  );
   process.exit(2);
 }
 
@@ -130,7 +150,45 @@ function mascarar(json: string): string {
     }
   });
 }
-if (modo === "--capturar") {
+if (modo === "--atualizar") {
+  const antigo = JSON.parse(NodeFS.readFileSync(ARQUIVO, "utf8")) as {
+    readonly instrucoes: unknown;
+    readonly tools: readonly { readonly name: string }[];
+    readonly chamadas: readonly unknown[];
+  };
+  const novas = tools as readonly { readonly name: string }[];
+  const ferramentas = partes.filter((p) => p !== "instrucoes");
+  for (const nome of ferramentas) {
+    if (!novas.some((t) => t.name === nome)) {
+      process.stderr.write(`gabarito.ts --atualizar: ferramenta desconhecida: ${nome}\n`);
+      process.exit(2);
+    }
+  }
+  // as definições na ordem do servidor: as atualizadas vêm da captura nova; as demais, do arquivo
+  const definicoes = novas
+    .map((t) => (ferramentas.includes(t.name) ? t : antigo.tools.find((a) => a.name === t.name)))
+    .filter((t) => t !== undefined);
+  // as chamadas na ordem de CHAMADAS: as das ferramentas atualizadas vêm da captura nova
+  const antigas = antigo.chamadas.filter((c) => !ferramentas.includes((c as { readonly name: string }).name));
+  let j = 0;
+  const chamadasNovas = CHAMADAS.map((c, i) => (ferramentas.includes(c.name) ? chamadas[i] : antigas[j++]));
+  if (j !== antigas.length) {
+    process.stderr.write(
+      `gabarito.ts --atualizar: o arquivo tem ${antigas.length} chamadas das outras ferramentas; CHAMADAS tem ${j}\n`,
+    );
+    process.exit(1);
+  }
+  const atualizado = {
+    ...antigo,
+    instrucoes: partes.includes("instrucoes") ? gabarito.instrucoes : antigo.instrucoes,
+    tools: definicoes,
+    chamadas: chamadasNovas,
+  };
+  NodeFS.writeFileSync(ARQUIVO, `${JSON.stringify(atualizado, null, 2)}\n`);
+  process.stdout.write(
+    `gabarito do MCP: ${partes.join(", ")} atualizado em ${NodePath.relative(RAIZ, ARQUIVO)} (${definicoes.length} ferramentas, ${chamadasNovas.length} chamadas)\n`,
+  );
+} else if (modo === "--capturar") {
   NodeFS.writeFileSync(ARQUIVO, texto);
   process.stdout.write(
     `gabarito do MCP gravado em ${NodePath.relative(RAIZ, ARQUIVO)} (${tools.length} ferramentas, ${chamadas.length} chamadas)\n`,
