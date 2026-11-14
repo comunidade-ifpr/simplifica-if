@@ -188,10 +188,11 @@ function cargaHorariaTotal(linhas: readonly string[], zona: readonly (Zona | nul
         vistas += 1;
         if (/^#/.test(linhas[j]!.trim())) break;
         const m =
-          /carga hor[aá]ria(?: total| global)?(?: do curso)?(?: [eé]| ser[aá])?(?: de)? ([\d.]{3,5}(?:,\d+)?) ?(?:\(|h\b|horas)/i.exec(
+          /carga hor[aá]ria(?: total| global)?(?: do curso)?(?: [eé]| ser[aá])?(?: de)? ([\d.]{3,5}(?:,\d+)?) ?(?:\(|h\b|horas)/di.exec(
             seguinte,
           );
-        const horas = m ? horasDoTrecho(seguinte.slice(m.index + m[0].length - m[1]!.length - 2)) : null;
+        // o trecho começa no número capturado (índice do grupo, com a flag `d`)
+        const horas = m ? horasDoTrecho(seguinte.slice(m.indices![1]![0])) : null;
         if (horas && horas.valor >= 160) {
           candidatos.push({
             prioridade: 1,

@@ -65,6 +65,31 @@ describe("extrairFatosPpc", () => {
   });
 });
 
+describe("título com o valor no parágrafo seguinte", () => {
+  const comParagrafo = (paragrafo: string) =>
+    ["---", "id: ppc:x/y", "---", "", "## 1.1.10 Carga horária total do curso", "", paragrafo].join("\n");
+  const secoes = [{ tipo: "outros", linha_inicio: 5, linha_fim: 7 }];
+  const total = (paragrafo: string) =>
+    extrairFatosPpc(comParagrafo(paragrafo), secoes).find((f) => f.fato === "carga_horaria_total_h")?.valor;
+
+  test("o número é o da carga global, não o seguinte (ivaiporã, eletrotécnica, linha 273)", () => {
+    expect(
+      total(
+        "Em consonância com a resolução CNE/CEB nº 01/2021, o curso possui carga horária global de 3.200 horas, distribuídas da seguinte forma: 1.200 horas de conteúdo técnico (núcleo técnico), 1.800 horas de fundamentos básicos.",
+      ),
+    ).toBe("3200");
+  });
+
+  test("número com 'horas' no fim da frase", () => {
+    expect(total("O curso tem carga horária de 3.200 horas.")).toBe("3200");
+  });
+
+  test("número com 'h' e com parêntese", () => {
+    expect(total("A carga horária total do curso é de 1600h.")).toBe("1600");
+    expect(total("A carga horária total é de 1.200 (mil e duzentas) horas.")).toBe("1200");
+  });
+});
+
 const RESUMO = [
   "71 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2020 CURITIBA — CH exibida: 1820 h; estágio exigido: Não; CH mínima de estágio (separada): -",
   "538 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2024 CURITIBA — CH exibida: 1600 h; estágio exigido: Sim; CH mínima de estágio (separada): 400",
