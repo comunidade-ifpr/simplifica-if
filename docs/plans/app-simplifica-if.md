@@ -146,7 +146,7 @@ O app precisa de uma fração disso. A PoC mostrou o tamanho: o motor tem cerca 
 
 **Candidatos para o M1** (cada um entra no manifesto quando for copiado):
 
-- motor: `ClaudeHome.ts`, `ClaudeExecutable.ts`, `CodexHomeLayout.ts` (se isolarmos o Codex) e `antigravityAuthSupport.ts`;
+- motor (porte em andamento no branch `t3/motor-porte-t3`): `CodexInstallation.ts` e `AntigravityInstallation.ts` (instalação gerenciada), `ClaudeExecutable.ts`, `ClaudeHome.ts`, `fixPath`, `antigravityAuthSupport.ts` e, se isolarmos o Codex, `CodexHomeLayout.ts`;
 - shell do app: configuração do Electron e do `preload`, transporte `effect/rpc` sobre WebSocket, atualizador, componentes `ui/` do shadcn (estilo `base-mira`), campo de mensagem em Tiptap e renderização de Markdown;
 - servidor: o padrão do `McpHttpServer.ts` para o MCP HTTP local.
 
@@ -464,19 +464,32 @@ Lacunas: MCP por HTTP local, recursos `ifpr://`, isolamento (`~/.codex` e `~/.ge
   - as skills chegam ao provider pelo motor (instruções da sessão e arquivos na pasta de trabalho), porque `settingSources: []` e o isolamento deixam de fora as skills do usuário.
 - **M1.3 — Providers no computador do servidor.**
   - **Detecção** de instalação, versão, login e plano, como o `--detectar` da PoC (cerca de 4 s para os três).
-  - **Instalação das CLIs sem terminal:** a do Codex é código aberto e pode ir junto com o app; a do Claude Code e a do Antigravity se instalam pelo instalador oficial, chamado pelo app.
-  - **Login dentro do app**, pelo fluxo oficial de cada CLI.
-  - **Isolamento:** a sessão do app não vê MCP, conectores, hooks nem configurações do usuário. Copiar do T3 `ClaudeHome.ts`, `ClaudeExecutable.ts`, `antigravityAuthSupport.ts` e, se o Codex ganhar uma pasta própria, `CodexHomeLayout.ts` (decisão em aberto 8).
+  - **Instalação e login copiados do T3, não escritos do zero.** O porte está em andamento no branch `t3/motor-porte-t3`, com registro em [upstream-t3.md](../upstream-t3.md).
+  - **Codex e Antigravity: instalação gerenciada** (`CodexInstallation.ts`, `AntigravityInstallation.ts`):
+    - o app baixa a própria cópia da CLI e confere o sha256;
+    - instala por staging e registra a versão ativa em `active.json`;
+    - verifica atualização de hora em hora;
+    - usa a CLI do usuário quando ela já está instalada.
+  - **Claude: passo guiado.** O T3 não instala a CLI do Claude, só a atualiza (`ClaudeMaintenance`). O servidor instala a CLI pelo instalador oficial e faz o login, com o passo a passo na tela de boas-vindas (M1.8); o app detecta quando terminou.
+  - **Login** pelo fluxo oficial de cada CLI, com o apoio do T3 (`antigravityAuthSupport.ts` no Antigravity).
+  - **Ambiente:** `ClaudeExecutable` (localiza o `claude`), `ClaudeHome` (ambiente da sessão; avisa quando há um `managed-mcp.json` da organização) e o `fixPath` do T3, porque o app aberto pelo Finder herda um PATH mínimo e não acha as CLIs.
+  - **Isolamento:** a sessão do app não vê MCP, conectores, hooks nem configurações do usuário. Se o Codex ganhar uma pasta própria, copiar também `CodexHomeLayout.ts` (decisão em aberto 8).
 - **M1.4 — MCP HTTP local.**
-  - O servidor local serve `FerramentasIfpr` por `McpServer.layerHttp` em `127.0.0.1`, porta escolhida na abertura, com token por sessão.
-  - O motor passa `{ type: "http", url, headers }` aos três: Claude (`mcpServers`), Codex (`mcp_servers.ifpr.url` e `http_headers`) e Antigravity (`mcpCapabilities.http`).
-  - Sai o processo `simplifica-mcp` por sessão. A ponte `createSdkMcpServer` do Claude fica descartada: pede Zod e só serviria a ele.
-  - A ferramenta `etapa` alimenta o indicador de etapas da conversa.
+  - O servidor local serve `FerramentasIfpr` por `McpServer.layerHttp` em `127.0.0.1`, porta escolhida na abertura.
+  - **Por que HTTP no processo do app, e não stdio por sessão:**
+    1. uma instância e uma conexão ao `kb.sqlite` para todas as sessões, sem processo Node por conversa;
+    2. o app vê cada chamada de ferramenta no próprio processo, o que alimenta o leitor, o "Para você" e as métricas;
+    3. escopo por sessão pelo cabeçalho `Authorization`, com um token por sessão;
+    4. uma configuração para os três providers: `type: "http"` no Claude (`mcpServers`), `url` com `http_headers` no Codex (`mcp_servers.ifpr`) e HTTP no ACP do Antigravity (`mcpCapabilities.http`);
+    5. ferramentas ligadas à interface, como abrir um link no leitor; a `etapa` alimenta o indicador de etapas da conversa.
+  - A ponte `createSdkMcpServer` do Claude fica descartada: pede Zod e só serviria a ele.
+  - **Falta testar** o HTTP no Codex e no `agy`. A PoC usou stdio nos três. Até o teste passar, o stdio por sessão fica como alternativa.
 - **M1.5 — Recursos `ifpr://` no MCP.** O `simplifica-mcp` lista e lê os links `ifpr://` como recursos (`resources/read`, com modelos de URI), no app e no executável stdio, sem mudar as ferramentas.
 - **M1.6 — Leitor `ifpr://`.** Painel nativo, que não depende do provider suportar MCP Apps. Lê do `kb` pelo grupo `GrupoLeitura` de `@simplifica-if/mcp/rpc`, por `effect/rpc`, sem passar pela IA.
 - **M1.7 — Política de fábrica.** Ver [Política de fábrica](#política-de-fábrica) abaixo.
 - **M1.8 — Primeiro uso.**
   - **Boas-vindas em três passos:** conectar a IA (M1.3), preencher o perfil (campus, função, cursos) e fazer uma tarefa de exemplo.
+  - **Conectar a IA:** Codex e Antigravity se instalam sozinhos, e o servidor só faz o login. Para o Claude, um passo guiado: instalar a CLI pelo instalador oficial, fazer o login e voltar ao app, que confere e segue.
   - **Aviso de uso:** a IA conectada é a da conta pessoal do servidor, e o app só entrega a ela a base pública e o que o servidor anexar. O aviso pede que não se anexe documento com dado pessoal ou de acesso restrito.
 - **M1.9 — Modo Servidor.** Início, tarefa, conversa com etapas, pasta de trabalho e "Desfazer".
 - **M1.10 — Atualização.** App, base e skills, nos três ritmos, com o aviso "Base atualizada", a lista de novidades e a opção de voltar uma versão.
@@ -615,7 +628,7 @@ Só métricas agregadas e com opt-in saem do computador. O padrão é não envia
 | Manutenção do motor e do app | equipe pequena mantém um app inteiro | motor fino (cerca de 1.420 linhas na PoC); copiar do T3 em vez de escrever; nenhum recurso de desenvolvedor; knip contra código morto |
 | Isolamento incompleto | MCP, conectores ou busca web do usuário respondem no lugar da base | desligar por sessão o que a PoC achou; teste de aceite que lista as ferramentas visíveis; pasta própria do Codex e do Antigravity se não bastar (decisão em aberto 8) |
 | Latência do Antigravity | o servidor desiste antes da resposta (cerca de 60 s até o primeiro texto) | estado do turno e aviso de espera na tela; "mais lento" na escolha da IA; meta medida no piloto |
-| Instalar a CLI do provider | servidor não técnico trava no primeiro passo | instalação pelo app, guia de uma página, piloto mede o atrito |
+| Instalar a CLI do provider | servidor não técnico trava no primeiro passo | instalação gerenciada copiada do T3 no Codex e no Antigravity; passo guiado para o Claude, o único que o servidor instala sozinho; piloto mede o atrito |
 | Binário sem assinatura | Windows Defender e Gatekeeper bloqueiam | certificados de assinatura (decisão em aberto) |
 | Computador institucional sem permissão de instalação | piloto não instala | instalador por usuário (NSIS per-user), conversa prévia com a DTI |
 | Variação entre IAs | mesma tarefa, qualidade diferente | regras no `kb`, avaliação em 3 IAs como critério de publicação |
@@ -666,3 +679,4 @@ Só métricas agregadas e com opt-in saem do computador. O padrão é não envia
 - 14/11/2026: decisão 7 revista. Este repositório consolida na stack do T3 (Node, pnpm, Effect 4, Vite+); o `kb` vira serviço Effect no servidor do fork, e some a API local de leitura. Plano em [consolidacao-stack-t3.md](consolidacao-stack-t3.md).
 - 14/11/2026: **M1.0, prova de conceito do motor**, integrada em `main`. Em vez do fork, app próprio com motor fino sobre as interfaces oficiais: Agent SDK (Claude), `codex app-server` (ChatGPT) e `agy acp` (Gemini). `packages/motor` com o serviço `Motor`, eventos normalizados e um driver por provider; `packages/effect-acp` e `packages/effect-codex-app-server` copiados do T3, registrados em [upstream-t3.md](../upstream-t3.md). Os três responderam à pergunta do CNCT com as ferramentas `ifpr` e citaram `ifpr://`, e os três fizeram a ida e volta de aprovação (negar, depois permitir). Achados e lacunas em `packages/motor/README.md`.
 - 14/11/2026: **direção revista: app próprio no monorepo, sem fork** (decisões 5 e 7). Stack do T3 também na interface, com as versões do T3 `a6d9140972`; código do T3 copiado e registrado em [upstream-t3.md](../upstream-t3.md), sincronizado caso a caso. Interface em pt-BR direto, sem `gt-react`. Marco 1 refeito com o que a PoC ensinou: motor de produção, providers no computador do servidor, MCP HTTP local, recursos `ifpr://`, política de fábrica mínima e meta de latência.
+- 14/11/2026: correção vinda da PoC. A instalação e o login das CLIs vêm do T3, não são escritos do zero: instalação gerenciada do Codex e do Antigravity (`CodexInstallation.ts`, `AntigravityInstallation.ts`), `ClaudeExecutable`, `ClaudeHome` e `fixPath`, em porte no branch `t3/motor-porte-t3`. O Claude é a exceção: passo guiado nas boas-vindas. O M1.4 registra os motivos do MCP HTTP local e que falta testá-lo no Codex e no `agy`.
