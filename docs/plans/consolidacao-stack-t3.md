@@ -393,6 +393,15 @@ node packages/kb/scripts/medir.ts            # latência das consultas e tempo d
 
 **Escopo.** `packages/mcp/**`, `docs/plans/m0-simplifica-mcp.md` (seção "Estrutura do pacote", quando a outra tarefa tiver terminado de editá-lo) e, se faltar algum método, `packages/kb/src/` (só acréscimos, listados no PR).
 
+**Ponto de partida (deixado pelo C1, ver o Andamento).**
+
+- **Ponte.** As ferramentas chamam os serviços do kb por `ctx.kb(Servico.Servico.use((s) => s.metodo(...)))`. A função `abrirKb` (`servidor.ts`) monta `Layers.layerSomenteLeitura({ caminho })` uma vez e roda cada chamada com `Effect.runSync` e `Scheduler.PreventSchedulerYield`. O C2 troca isso pela layer no `McpServer.layerStdio` e tira o `runSync`.
+- **SQL próprio.** Ainda há `DatabaseSync` no `Contexto` para o SQL próprio de três ferramentas: `sobre-a-base.ts`, os tipos de seção de `buscar-secoes.ts` e as fichas de `impacto-da-norma.ts`. Esse SQL vai para o serviço `Leitura` (ou para um método novo do kb, listado no PR).
+- **Abertura e meta.** `packages/mcp/src/banco.ts` duplica o que `BaseKb` faz: `meta` com a mesma forma, mais `linhas`, e os erros `BaseIncompativel`/`BaseAusente`. A diferença está nas mensagens: o kb diz "base incompatível com esta versão do kb", e os testes do mcp conferem "…do simplifica-mcp; atualize". Mapeie as mensagens no transporte.
+- **Testes "sem repositório".** `packages/mcp/test/normas.test.ts` e `ppcs-cursos.test.ts` ainda usam `packages/kb/src/testes/interceptacao.ts` (`vi.mock` de `node:fs`). Com `layerSomenteLeitura`, a garantia é de tipo; apague o módulo quando nenhum teste o usar e liste a remoção no PR.
+- **Fixtures em memória.** `@simplifica-if/kb/db/conexao` (`layerDeConexao(db)`) dá um `SqlClient` sobre um `DatabaseSync` já aberto, útil para fixtures em memória.
+- **Mensagens de entrada inválida.** O formatador pt-BR está em `@simplifica-if/kb/esquema/mensagens` (`formatarErro`, `problemas`). As folhas saem como "Entrada inválida: esperava um texto".
+
 **Decisões**
 
 | Decisão | Descartada |
@@ -460,6 +469,14 @@ claude mcp add ifpr-teste -- "$PWD/packages/mcp/dist-exe/simplifica-mcp" --banco
 
 **Escopo.** `scripts/**`, `packages/sei-cli/**`, `.agents/skills/**` (scripts, testes, `README.md`, `SKILL.md`), `base-conhecimento/docs/*.md` (só comandos), `AGENTS.md`, `README.md`, `PLANO-ARQUITETURA.md` (só comandos).
 
+**Ponto de partida (deixado pelo C1, ver o Andamento).**
+
+- **Ponte na `revisar-ppc`.** Fica em `scripts/kb.ts`. `garantirBancoFresco(raiz)` chama o `Compilador` por `Effect.runPromise` no ponto de entrada (`revisar_ppc.ts`, subcomandos `montar-grupos-subagents` e `montar-grupo-avulso`) e no `beforeAll` de `orquestracao.test.ts`. `abrirKb(caminho)` monta `layerSomenteLeitura` e roda os métodos com `Effect.runSync`. `subagents.ts` usa `PacoteContexto.avulso` e `nomesDeCampi`.
+- **Cópia zod.** `revisar-ppc/scripts/esquemas.ts` tem uma cópia zod temporária de `esquemaReferenciaNormativa`, para os JSON Schemas. A versão do kb é Effect Schema; ao migrar `gerar-schemas`, importe-a de volta e apague a cópia.
+- **Scripts.** Os scripts não precisaram de ponte. Eles usam os carregadores síncronos que o kb mantém, com a supressão `nodeBuiltinImport` justificada: `carregarRegistro`, `carregarRelacoes`, `statusEm(…, raiz)`, `carregarTransicoes`, `indiceDispositivos`, `ppcsQueCitam` dos arquivos, `normasComCamposGerados` e outros. Ao passar um script a Effect, prefira `FontesNormativas.layerArquivos({ raiz })` e os serviços. Os carregadores síncronos saem do kb quando o último chamador sair, num acréscimo listado no PR.
+- **Mudanças de API que os scripts já absorveram.** `ErroFrontMatter` virou `Schema.TaggedError`, com construtor `{ rotulo, detalhe }`. Os carregadores lançam `Schema.SchemaError` em vez de `ZodError`; formate com `esquema/mensagens.ts`. O esquema `esquemaNorma` é Effect Schema, usado por `scripts/base/validacao/normas.ts`.
+- **`tsconfig.effect.json`.** No C1, só o `packages/kb` o estende. Com ele, `globalConsole`, `nodeBuiltinImport` e `globalDate` dão erro em todo arquivo, então a raiz, as skills e o `sei-cli` passam a estendê-lo quando forem migrados. As regras do plugin de lint (`ferramentas/oxlint-plugin`) também valem só em `packages/kb/**`: estenda os `overrides` de `vite.config.ts` junto.
+
 **Decisões**
 
 | Decisão | Descartada |
@@ -522,7 +539,7 @@ C2 e C3 começam juntos, depois do merge do C1, em worktrees separadas.
 | Arquivo ou pasta | C2 | C3 |
 |---|---|---|
 | `packages/mcp/**` | sim | não |
-| `packages/kb/**` | só acréscimos que o MCP exigir, listados no PR | não |
+| `packages/kb/**` | só acréscimos que o MCP exigir, listados no PR, e a remoção de `src/testes/interceptacao.ts` quando os testes do mcp deixarem de usá-lo | só a remoção dos carregadores síncronos que ficarem sem chamador, listada no PR |
 | `scripts/**`, `packages/sei-cli/**`, `.agents/skills/**` | não | sim |
 | `AGENTS.md`, `README.md`, `PLANO-ARQUITETURA.md`, `base-conhecimento/docs/*.md` | não (a parte do MCP no `AGENTS.md` vai no PR do C3, a pedido do C2) | sim |
 | `docs/plans/m0-simplifica-mcp.md` | sim | não |
@@ -558,6 +575,9 @@ O M1.1 (fork) pode começar depois do C2: é o primeiro momento em que há Toolk
    - O experimento do passo 1 do C2 confirma a viabilidade.
 3. **Largura da formatação.** 120, como hoje (recomendado), ou o padrão do oxfmt, como o T3. Só importa se o fork passar a formatar o submódulo.
 4. **Compilação do banco por `SqlClient`.** Se a medição do C1 mostrar custo pequeno (até 20%), o `Compilador` pode usar o `SqlClient` e o `node:sqlite` direto sai do código. Decide-se no PR do C1.
+   - **Medido no C1 (14/11/2026).** O `SqlClient` custa cerca de 1,6 µs a mais por instrução (50 mil inserções: 97 ms contra 18 ms). Com cerca de 120 mil instruções na compilação, isso dá uns 0,2 s, perto de 2% dos 12 s.
+   - **Decisão do C1.** O `DatabaseSync` direto fica, dentro do `Compilador`. O custo não impede a troca, mas `preencherBanco` são umas 600 linhas síncronas, e reescrevê-las arrisca o determinismo do banco sem ganho no C1.
+   - **Troca posterior.** Fica em aberto para um PR próprio, junto com `bancoDoPpcAvulso`, que poderia gravar num `SqlClient` `:memory:`, e com `db/conexao.ts`, que então sairia.
 
 ## Andamento
 
@@ -585,3 +605,41 @@ O M1.1 (fork) pode começar depois do C2: é o primeiro momento em que há Toolk
   - Mudanças de código além das trocas mecânicas: `.get()` do `node:sqlite` devolve `undefined` onde o Bun devolvia `null`, o que invertia `atoForaDeVigencia` (`!== null`, corrigido para `!== undefined`); `segredos.ts` não desconta mais os valores que o Bun carregava sozinho dos `.env*` (o Node não os carrega); o agendamento grava o Node estável (`caminhoEstavelNode`, que recusa `Cellar/` e `fnm_multishells/`) e chama o script sem `run`.
   - Desempenho: as consultas ao banco empatam (o SQLite é o 3.54.0 nos dois); os comandos da CLI `kb` que leem arquivos (`citacoes`, `impacto`, `adequacao-art71`) ficaram cerca de 1,5 vez mais lentos, e o `kb.sh` inteiro leva 48 s, contra 33 s no Bun. A compilação do banco segue em cerca de 8 s.
   - Para o curador: o LaunchAgent instalado ainda chama `/opt/homebrew/bin/bun run …/scripts/sei_sync_agendado.ts`. Depois do merge, rode `pnpm install` e reinstale o agendamento com o Node 26.12.1: `node scripts/agendar_sincronizacao_sei.ts instalar` (ver `base-conhecimento/docs/sincronizacao-sei-notion.md`).
+- 14/11/2026: **C1 concluído.** O `packages/kb` virou serviços Effect 4 sobre um `SqlClient` do `node:sqlite`; a CLI `kb` está em `effect/cli`; Effect Schema substituiu o zod. Serviços em `packages/kb/src/`: `BaseKb`, `FontesNormativas` (`layerBanco` e `layerArquivos`), `Normas`, `Ppcs`, `Cursos`, `Impacto`, `PacoteContexto` e `Compilador`. Layers prontas em `layers.ts`: `layerSomenteLeitura({ caminho })`, `layerRepositorio({ raiz })` e `layerConsultas`. O README do pacote descreve os serviços e como consumi-los. Gabarito conferido no Node 26.12.1:
+  - CLI `kb`: as 84 invocações iguais byte a byte;
+  - MCP: `initialize`, `tools/list` e as 33 chamadas iguais, pelo Node e pelo executável SEA (141,7 MB, sem import externo, `stdio.test.ts` 7/7 apontado para ele, num diretório vazio só com o `kb.sqlite`);
+  - banco: as 32 tabelas iguais (`banco.sh`) e o `.dump` inteiro, com o FTS5, igual;
+  - base: `validar_base` sem erro; `pnpm mcp:smoke` 12/12.
+  - Testes: 1118 casos em 78 arquivos, sem falha, 13 pulados (os 12 do smoke e o de `sei-cli/test/fluxo.test.ts`, como no C0). No C0 eram 1014. As diferenças:
+    - +103 na raiz: os testes das nove regras do plugin de lint (`ferramentas/oxlint-plugin/rules/*.test.ts`);
+    - +1 em `packages/kb/src/db/base.test.ts`, que passou de 32 para 33 casos com o teste de tipo de `layerSomenteLeitura`;
+    - `db/banco.test.ts` virou `db/fontes.test.ts`, com os mesmos 7 casos.
+
+    Os testes do kb que rodam Effect usam `@effect/vitest`; os de regras puras continuam como estavam. A `revisar-ppc` passa `validar-base` e `gerar-schemas`, `gerar-mapa` e `gerar-indice` com `--check`. Sem `zod` nem `commander` em `packages/kb`. `pnpm fmt:check`, `pnpm lint` e `pnpm typecheck` estão limpos, sem diagnóstico de Effect.
+  - Desempenho, na mesma máquina, com o C0 numa worktree do commit `f992933`:
+    - `kb.sh` inteiro: 25 s, contra 48 s no C0. A CLI não lê mais os PPCs e as normas dos arquivos em `citacoes`, `impacto` e `adequacao-art71`; consulta o banco;
+    - compilação: 12,2 a 12,3 s, contra 12,3 s no C0;
+    - consultas, mediana em ms pelo `packages/kb/scripts/medir.ts` (C1) contra as funções do `modo-banco` (C0):
+
+      | Consulta | C0 | C1 |
+      |---|---|---|
+      | `buscar-secoes` | 2,8 | 3,0 |
+      | `buscar-norma` (citação) | 2,0 | 2,6 |
+      | `cursos` | 1,0 | 0,9 |
+      | `adequacao-art71` | 12,5 | 1,4 |
+      | `impacto` | 72,4 | 14,2 |
+      | `pacote-contexto` | 10,6 | 10,6 |
+
+      Todas ficam muito abaixo dos 200 ms do M2.1. Duas passavam de 20% na primeira versão e foram corrigidas: `adequacao-art71` (19,6 ms) passou a ler só as citações das DCN da EPT, as únicas que a regra olha; `correspondencia` (de 0,2 para 0,9 ms) passou a carregar a fonte de correspondência uma vez, na construção da layer.
+  - Desvios do plano:
+    1. **Chave dos serviços.** É `@simplifica-if/kb/<Nome>`, e não `simplifica-if/kb/<Nome>`: o diagnóstico `deterministicKeys` do `effect-tsgo` exige o nome do pacote.
+    2. **`tsconfig.effect.json` só no `packages/kb`.** Ele liga `globalConsole`, `nodeBuiltinImport` e `globalDate` como erro em qualquer arquivo, o que reprovaria `scripts/`, as skills, o `sei-cli` e o `mcp` antes da migração deles. O mesmo vale para as regras do plugin de lint (`ferramentas/oxlint-plugin`, nove regras do T3, com os testes delas: +103 casos na raiz), ligadas por `overrides` só em `packages/kb/**`. A regra `namespace-node-imports` do T3 pede `NodeFS`, com S maiúsculo, e não `NodeFs`.
+    3. **Carregadores síncronos.** Continuam no kb `carregarRegistro`, `carregarRelacoes`, `statusEm(…, raiz)`, o parser das normas, o `ppcsQueCitam` dos arquivos e outros, cada arquivo com a supressão `nodeBuiltinImport:off -- motivo`, como as ~90 do T3. Os scripts e a compilação os usam. A `FontesNormativas.layerArquivos` lê por `FileSystem` e `Path` e interpreta com as mesmas funções puras, extraídas deles (`montarRegistro`, `relacoesDoYaml`, `transicoesDoYaml`, `dataReferenciaDoYaml`, `sinonimosDoYaml`). Nenhum serviço chama os carregadores síncronos.
+    4. **`Compilador`.** O estado do banco (`estadoDoBanco`) e o hash das fontes continuam síncronos em `db/fontes.ts`: percorrem e hasheiam milhares de arquivos a cada comando da CLI. Só a orquestração da gravação usa `FileSystem` e `acquireUseRelease`. A decisão em aberto 4 foi medida; ver lá.
+    5. **`db/conexao.ts`, fora do plano.** É um `SqlClient` sobre um `DatabaseSync` já aberto, para o banco em memória do PPC avulso (`bancoDoPpcAvulso`, gravado pelo mesmo código da compilação) e para fixtures. O cliente do T3 só abre por nome de arquivo.
+    6. **Ponte com `Effect.runSync`, e não `runPromise`.** As ferramentas do MCP e as funções da `revisar-ppc` são síncronas, e as consultas sobre o `node:sqlite` também. As pontes (`packages/mcp/src/servidor.ts`, `abrirKb`; `.agents/skills/revisar-ppc/scripts/kb.ts`) montam `layerSomenteLeitura` uma vez num escopo do processo e rodam com `Scheduler.PreventSchedulerYield`. Sem isso, um efeito síncrono longo, como decodificar milhares de linhas, cede a vez ao agendador, e o `runSync` falha com "An asynchronous Effect was executed with Effect.runSync" (visto no `impacto_da_norma`). Pelo mesmo motivo, `Effect.cached` não serve na ponte, e os valores fixos são carregados na construção da layer. A `revisar-ppc` garante o banco fresco no ponto de entrada (`garantirBancoFresco`, `Effect.runPromise` do `Compilador`). Os scripts não precisaram de ponte: não usam o banco.
+    7. **Chamadores além do ponto de entrada.** Com a saída do `modo-banco`, as 16 ferramentas do mcp trocaram as chamadas `*Banco(db, …)` por `ctx.kb(Servico.use(…))`, sem mudar resultado; o SQL próprio de três ferramentas ficou no `DatabaseSync`. Na `revisar-ppc`, `subagents.ts`, `revisar_ppc.ts` e `orquestracao.test.ts` adotaram a ponte, e `esquemas.ts` ganhou uma cópia zod temporária de `esquemaReferenciaNormativa`, para gerar os JSON Schemas. `scripts/base/validacao/normas.ts` e `scripts/base/front-matter.ts` acompanharam o Effect Schema de `esquemaNorma` e o novo `ErroFrontMatter`, agora `Schema.TaggedError` com `{ rotulo, detalhe }`.
+    8. **Formatador pt-BR.** Usa `SchemaIssue.makeFormatterStandardSchemaV1` com ganchos de folha e de checagem: no Effect 4.1.3, `makeFormatterDefault` não aceita ganchos.
+    9. **CLI.** `NodeRuntime.runMain` roda com `disableErrorReporting`, porque o relatório padrão escreve no stdout. Os erros tipados vão para o stderr como `kb: <mensagem>`. `EncerrarComCodigo` só define o código de saída. O `pnpm kb:compilar` virou o subcomando `kb compilar`; o `main` de `db/compilar.ts` saiu, e com ele o motivo do `define` de `import.meta.main` no executável, que continua por precaução.
+    10. **Impressão digital das fontes.** Os serviços, as layers, a CLI e o cliente SQL ficaram fora das fontes do banco (`CODIGO_FORA` em `db/fontes.ts`): mudar uma consulta não recompila o banco.
+    11. **`testes/interceptacao.ts`.** Fica para os testes do mcp. O teste do kb passou a usar `layerSomenteLeitura`; ver o C2.
