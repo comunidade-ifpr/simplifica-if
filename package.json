@@ -12,6 +12,7 @@
     "kb": "bun run packages/kb/src/cli.ts",
     "kb:compilar": "bun run packages/kb/src/db/compilar.ts",
     "mcp": "bun run packages/mcp/src/cli.ts",
+    "mcp:smoke": "cd packages/mcp && SIMPLIFICA_SMOKE=1 bun test ./test/banco-real.test.ts ./test/smoke-base-real.test.ts",
     "avaliacao": "bun run scripts/avaliar.ts",
     "avaliacao:gabaritos": "bun run scripts/avaliacao/gabaritos/gerar.ts",
     "sei:sync": "bun run scripts/notion_atualizar_movimentacoes_sei.ts",

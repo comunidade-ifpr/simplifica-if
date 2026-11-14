@@ -2,11 +2,11 @@
  * Smoke das ferramentas de normas contra o banco real (`tmp/kb.sqlite`, de `bun run kb:compilar`):
  * cada ferramenta dá os mesmos IDs, textos e totais que o comando correspondente da CLI `kb` em
  * JSON. `resolver`, `vigencia`, `relacoes` e `impacto` da CLI leem os arquivos do repositório; os
- * demais, o banco. Sem o banco (CI), o arquivo é pulado. A CLI roda antes de o banco ser aberto
- * aqui, e recompila o `tmp/kb.sqlite` se ele estiver velho.
+ * demais, o banco. Lento e dependente do checkout; roda só com `SIMPLIFICA_SMOKE=1`, como o smoke do
+ * T3 (`smoke-base-real.test.ts`): `bun run mcp:smoke` roda os dois. A CLI roda antes de o banco ser
+ * aberto aqui, e compila o `tmp/kb.sqlite` se ele faltar ou estiver velho.
  */
 import { beforeAll, describe, expect, test } from "bun:test";
-import { existsSync } from "node:fs";
 import path from "node:path";
 import { buscarNorma } from "../src/ferramentas/buscar-norma.ts";
 import { correspondencia } from "../src/ferramentas/correspondencia.ts";
@@ -46,7 +46,7 @@ const sufixo = (id: string) => id.slice(id.indexOf("#"));
 
 let ctx: Contexto;
 
-describe.skipIf(!existsSync(BANCO))("banco real: paridade com a CLI kb", () => {
+describe.skipIf(process.env.SIMPLIFICA_SMOKE !== "1")("banco real: paridade com a CLI kb", () => {
   beforeAll(async () => {
     await kb("buscar-norma", "LDB"); // recompila o banco, se velho, antes de abri-lo
     ctx = criarContexto({ banco: BANCO, pastaTrabalho: diretorioTemporario(), canal: "dev" });

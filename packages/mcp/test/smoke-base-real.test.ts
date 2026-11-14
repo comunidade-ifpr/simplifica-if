@@ -1,12 +1,11 @@
 /**
  * Smoke contra a base real: as ferramentas do T3 sobre o `tmp/kb.sqlite` comparadas com a saída JSON
  * da CLI `kb` (que lê os arquivos em `citacoes`, `impacto` e `adequacao-art71`): mesmos IDs, textos e
- * totais. Lento e dependente do checkout; roda só com `SIMPLIFICA_SMOKE=1` e o banco compilado:
- *
- *   bun run kb:compilar && SIMPLIFICA_SMOKE=1 bun test --cwd packages/mcp test/smoke-base-real.test.ts
+ * totais. Lento e dependente do checkout; roda só com `SIMPLIFICA_SMOKE=1`, como o smoke das normas
+ * (`banco-real.test.ts`): `bun run mcp:smoke` roda os dois. A CLI roda antes de o banco ser aberto
+ * aqui, e compila o `tmp/kb.sqlite` se ele faltar ou estiver velho.
  */
 import { beforeAll, describe, expect, test } from "bun:test";
-import { existsSync } from "node:fs";
 import path from "node:path";
 import { adequacaoArt71 } from "../src/ferramentas/adequacao-art71.ts";
 import { buscarSecoes } from "../src/ferramentas/buscar-secoes.ts";
@@ -21,7 +20,7 @@ import { criarContexto } from "../src/servidor.ts";
 
 const RAIZ = path.resolve(import.meta.dir, "../../..");
 const BANCO = path.join(RAIZ, "tmp/kb.sqlite");
-const ATIVO = process.env.SIMPLIFICA_SMOKE === "1" && existsSync(BANCO);
+const ATIVO = process.env.SIMPLIFICA_SMOKE === "1";
 const PPC = "curitiba/tecnico-em-enfermagem";
 const NORMA = "br/cne-cp/res/2021/1";
 
