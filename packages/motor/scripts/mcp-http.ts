@@ -22,7 +22,8 @@ export const servidorIfprHttp = Effect.fn("poc.servidorIfprHttp")(function* (opc
     McpHttp.layer({ banco: opcoes.banco }).pipe(Layer.provide(NodeServices.layer)),
   ).pipe(Effect.orDie);
   const servidor = yield* Effect.service(McpHttp.ServidorMcpHttp).pipe(Effect.provide(contexto));
-  const sessao = yield* servidor.abrirSessao({ rotulo: "motor-poc", pastaTrabalho: opcoes.pastaTrabalho });
+  const rotulo = "motor-poc";
+  const sessao = yield* servidor.abrirSessao({ rotulo, pastaTrabalho: opcoes.pastaTrabalho });
   yield* Console.log(`[mcp http] ${servidor.url}`);
   // As chamadas chegam ao processo do app: é o que o HTTP traz além do stdio.
   yield* servidor.chamadas.pipe(
@@ -35,5 +36,14 @@ export const servidorIfprHttp = Effect.fn("poc.servidorIfprHttp")(function* (opc
     url: sessao.url,
     cabecalhos: sessao.cabecalhos,
     preAprovado: true,
+    // O resultado de cada chamada, para o motor completar o resumo que o `agy` não manda pelo ACP.
+    resultados: servidor.chamadas.pipe(
+      Stream.filter((chamada) => chamada.sessao === rotulo),
+      Stream.map((chamada) => ({
+        ferramenta: chamada.ferramenta,
+        resumo: chamada.resumo ?? "",
+        falhou: chamada.falhou,
+      })),
+    ),
   } satisfies ServidorMcp;
 });

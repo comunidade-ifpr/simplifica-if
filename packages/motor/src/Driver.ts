@@ -22,6 +22,16 @@ export interface ServidorMcpStdio {
 }
 
 /**
+ * Uma chamada de ferramenta concluída, como o servidor MCP do app a viu: o nome sem o servidor
+ * (`buscar_norma`), o começo do resultado e se ele é de erro.
+ */
+export interface ResultadoFerramenta {
+  readonly ferramenta: string;
+  readonly resumo: string;
+  readonly falhou: boolean;
+}
+
+/**
  * Servidor MCP por HTTP (streamable HTTP), já em execução: o provider só se conecta, só nesta sessão.
  * `cabecalhos` leva o escopo da sessão (`Authorization: Bearer <token>`).
  */
@@ -32,6 +42,13 @@ export interface ServidorMcpHttp {
   readonly cabecalhos?: Readonly<Record<string, string>>;
   /** Ferramentas só de leitura: o provider as chama sem pedir aprovação. */
   readonly preAprovado: boolean;
+  /**
+   * As chamadas desta sessão ao servidor, na ordem em que terminam (no app, o `chamadas` do
+   * `ServidorMcpHttp` de `@simplifica-if/mcp/http`, filtrado pelo rótulo da sessão). Com ele, o
+   * `Motor` completa o `resumo` vazio de `FerramentaConcluida` das ferramentas deste servidor: o
+   * `agy` não manda o resultado pelo ACP. Veja `resultados.ts`.
+   */
+  readonly resultados?: Stream.Stream<ResultadoFerramenta>;
 }
 
 /** Servidor MCP entregue ao provider só nesta sessão, por stdio ou por HTTP. */

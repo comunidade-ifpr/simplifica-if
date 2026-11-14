@@ -101,6 +101,11 @@ export interface ChamadaFerramenta {
   readonly inicio: number;
   readonly duracaoMs: number;
   readonly falhou: boolean;
+  /**
+   * O começo do texto do resultado, numa linha, até 300 caracteres (`LIMITE_RESUMO`). Serve a quem
+   * não recebe o resultado pelo provider (o `agy` não o manda pelo ACP).
+   */
+  readonly resumo?: string;
 }
 
 /** O servidor HTTP não abriu: porta ocupada, sem permissão ou interface indisponível. */
