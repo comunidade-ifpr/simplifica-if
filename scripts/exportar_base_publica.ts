@@ -20,9 +20,7 @@ import { carregarMovimentacoes } from "./notion/movimentacoes.ts";
 import { executarPrincipal, sairCom } from "./principal.ts";
 
 /** JSON com recuo de 2 e quebra de linha final, como os arquivos publicados sempre foram. */
-const textoJson = (dados: unknown) =>
-  // @effect-diagnostics-next-line globalJsonInEffect:off -- dados montados pelos geradores puros, sem ciclos; o formato (recuo de 2) é o dos arquivos publicados
-  `${JSON.stringify(dados, null, 2)}\n`;
+const textoJson = (dados: unknown) => `${JSON.stringify(dados, null, 2)}\n`;
 
 const gravarJson = Effect.fn("exportar.gravarJson")(function* (caminho: string, dados: unknown, dryRun: boolean) {
   const fs = yield* FileSystem.FileSystem;
