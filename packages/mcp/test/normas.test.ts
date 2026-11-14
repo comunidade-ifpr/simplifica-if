@@ -3,12 +3,10 @@
  * `outputSchema`), determinismo, orçamento (teto do texto, paginação completa e sem repetição) e
  * a chamada pelo protocolo. A paridade com a CLI sobre o banco real está em `banco-real.test.ts`.
  */
-import { afterEach, describe, expect, spyOn, test } from "bun:test";
+import { afterEach, describe, expect, test, vi } from "vite-plus/test";
 import * as fs from "node:fs";
 import path from "node:path";
 import { Client, InMemoryTransport } from "@modelcontextprotocol/client";
-import * as moduloRegistro from "@simplifica-if/kb/normas/registro";
-import * as moduloResolver from "@simplifica-if/kb/normas/resolver";
 import { z } from "zod";
 import { ErroEntrada } from "../src/envelope.ts";
 import { buscarNorma, TETO_BUSCAR_NORMA } from "../src/ferramentas/buscar-norma.ts";
@@ -30,6 +28,25 @@ import {
   TABELA,
   TAMANHO_ART36,
 } from "./fixture-normas.ts";
+import { interceptacao } from "@simplifica-if/kb/testes/interceptacao";
+
+// "Sem o repositório": `node:fs`, `raizRepositorio` e `registroPadrao` passam por `interceptacao`
+// (ver `testes/interceptacao.ts`); fora daquele teste, chamam as funções originais.
+vi.mock("node:fs", async (original) =>
+  (await import("@simplifica-if/kb/testes/interceptacao")).fsInterceptado(await original<typeof import("node:fs")>()),
+);
+vi.mock("@simplifica-if/kb/normas/registro", async (original) =>
+  (await import("@simplifica-if/kb/testes/interceptacao")).moduloInterceptado(
+    await original<typeof import("@simplifica-if/kb/normas/registro")>(),
+    ["raizRepositorio"],
+  ),
+);
+vi.mock("@simplifica-if/kb/normas/resolver", async (original) =>
+  (await import("@simplifica-if/kb/testes/interceptacao")).moduloInterceptado(
+    await original<typeof import("@simplifica-if/kb/normas/resolver")>(),
+    ["registroPadrao"],
+  ),
+);
 
 afterEach(limparTemporarios);
 
@@ -160,7 +177,7 @@ describe("buscar_norma", () => {
     const { resposta, texto } = chamar(buscarNorma, { consulta: "xyzzy plugh" }, contexto(), TETO_BUSCAR_NORMA);
     expect(resposta.dados.resultados).toEqual([]);
     expect(tipos(resposta.avisos)).toEqual(["nao-encontrado"]);
-    expect(texto).toStartWith("Atenção: nenhuma norma encontrada");
+    expect(String(texto).startsWith("Atenção: nenhuma norma encontrada")).toBe(true);
   });
 
   test("orçamento: artigo longo é cortado no texto com '…' e a indicação de ler_dispositivos; o JSON fica inteiro", () => {
@@ -391,7 +408,7 @@ describe("correspondencia", () => {
     expect(item.origem.id).toBe(`${DCN_2021}#art20`);
     expect(item.tipo).toBe("parcial");
     expect(item.destino.map((d) => d.id)).toEqual([`${DCN_2026}#art22`]);
-    expect(item.destino[0]!.texto).toStartWith("Art. 22.");
+    expect(String(item.destino[0]!.texto).startsWith("Art. 22.")).toBe(true);
     expect(item.nota).toBe("A lista é retomada no art. 22, com acréscimos.");
     expect(item.herdado_de).toBeNull();
     expect(item.detalhes).toEqual([
@@ -404,7 +421,7 @@ describe("correspondencia", () => {
     ]);
     expect(resposta.pagina).toBeUndefined();
     expect(tipos(resposta.avisos)).toEqual([`correspondencia-rascunho ${TABELA}`]);
-    expect(texto).toStartWith("Atenção: a tabela de correspondência");
+    expect(String(texto).startsWith("Atenção: a tabela de correspondência")).toBe(true);
     expect(texto).toContain("nunca como fundamento");
   });
 
@@ -518,7 +535,9 @@ describe("resolver_citacoes", () => {
     expect(trocado).toMatchObject({ id: DCN_2021, regra: "dcnept-2021-orgao-trocado", confianca: 0.7 });
     expect(ausente).toMatchObject({ id: "br/cne-cp/res/2020/1", situacao: "nao-registrada", titulo: null });
     expect(tipos(resposta.avisos)).toEqual(["citacao-baixa-confianca"]);
-    expect(resposta.avisos[0]!.mensagem).toStartWith("1 citação resolvida com confiança abaixo de 0,9");
+    expect(String(resposta.avisos[0]!.mensagem).startsWith("1 citação resolvida com confiança abaixo de 0,9")).toBe(
+      true,
+    );
     expect(texto).toContain("confiança 0.7, base; conferir no trecho)");
   });
 
@@ -603,24 +622,27 @@ describe("ferramentas de normas sem o repositório", () => {
     const dentro = (alvo: unknown) =>
       typeof alvo === "string" &&
       (path.resolve(alvo) === vazio || path.resolve(alvo).startsWith(`${vazio}${path.sep}`));
-    const espioes = [
-      ...(["readFileSync", "readdirSync", "existsSync", "statSync", "lstatSync", "openSync"] as const).map((nome) => {
-        const original = fs[nome] as (...args: unknown[]) => unknown;
-        return spyOn(fs, nome).mockImplementation(((...args: unknown[]) => {
-          if (dentro(args[0])) return original(...args);
-          tentativas.push(`${nome} ${String(args[0])}`);
-          throw new Error(`ferramenta leu arquivo fora do banco: ${nome} ${String(args[0])}`);
-        }) as never);
-      }),
-      spyOn(moduloRegistro, "raizRepositorio").mockImplementation(() => {
+    const leituras: readonly string[] = [
+      "readFileSync",
+      "readdirSync",
+      "existsSync",
+      "statSync",
+      "lstatSync",
+      "openSync",
+    ];
+    interceptacao.atual = (nome, args, original) => {
+      if (nome === "raizRepositorio") {
         tentativas.push("raizRepositorio");
         throw new Error("ferramenta procurou a raiz do repositório");
-      }),
-      spyOn(moduloResolver, "registroPadrao").mockImplementation(() => {
+      }
+      if (nome === "registroPadrao") {
         tentativas.push("registroPadrao");
         throw new Error("ferramenta usou o registro do checkout");
-      }),
-    ];
+      }
+      if (!leituras.includes(nome) || dentro(args[0])) return original(...args);
+      tentativas.push(`${nome} ${String(args[0])}`);
+      throw new Error(`ferramenta leu arquivo fora do banco: ${nome} ${String(args[0])}`);
+    };
     try {
       const isolado = criarContexto({ banco, pastaTrabalho: vazio, canal: "dev" });
       try {
@@ -635,7 +657,7 @@ describe("ferramentas de normas sem o repositório", () => {
       expect(tentativas).toEqual([]);
     } finally {
       process.chdir(cwd);
-      for (const espiao of espioes) espiao.mockRestore();
+      interceptacao.atual = undefined;
     }
   });
 });

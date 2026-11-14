@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { ErroUso, executarComando, exigirOpcoesDe, inteiro, lerArgumentos, type Saida } from "./cli.ts";
 
 function capturar() {
@@ -34,7 +34,7 @@ describe("lerArgumentos", () => {
     for (const argv of [["--foo"], ["--chec"], ["--check=1"], ["extra"]]) {
       const { saida, destino } = capturar();
       expect(lerArgumentos(argv, OPCOES, { uso: USO, saida: destino })).toEqual({ codigo: 2 });
-      expect(saida.err[0]).toStartWith(`${USO}\nerro: `);
+      expect(String(saida.err[0]).startsWith(`${USO}\nerro: `)).toBe(true);
       expect(saida.out).toEqual([]);
     }
   });

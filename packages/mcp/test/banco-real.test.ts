@@ -1,12 +1,13 @@
 /**
- * Smoke das ferramentas de normas contra o banco real (`tmp/kb.sqlite`, de `bun run kb:compilar`):
+ * Smoke das ferramentas de normas contra o banco real (`tmp/kb.sqlite`, de `pnpm kb:compilar`):
  * cada ferramenta dá os mesmos IDs, textos e totais que o comando correspondente da CLI `kb` em
  * JSON. `resolver`, `vigencia`, `relacoes` e `impacto` da CLI leem os arquivos do repositório; os
  * demais, o banco. Lento e dependente do checkout; roda só com `SIMPLIFICA_SMOKE=1`, como o smoke do
- * T3 (`smoke-base-real.test.ts`): `bun run mcp:smoke` roda os dois. A CLI roda antes de o banco ser
+ * T3 (`smoke-base-real.test.ts`): `pnpm mcp:smoke` roda os dois. A CLI roda antes de o banco ser
  * aberto aqui, e compila o `tmp/kb.sqlite` se ele faltar ou estiver velho.
  */
-import { beforeAll, describe, expect, test } from "bun:test";
+import { spawn } from "node:child_process";
+import { beforeAll, describe, expect, test } from "vite-plus/test";
 import path from "node:path";
 import { buscarNorma } from "../src/ferramentas/buscar-norma.ts";
 import { correspondencia } from "../src/ferramentas/correspondencia.ts";
@@ -17,23 +18,24 @@ import { resolverCitacoes } from "../src/ferramentas/resolver-citacoes.ts";
 import { criarContexto } from "../src/servidor.ts";
 import { diretorioTemporario } from "./fixture.ts";
 
-const RAIZ = path.resolve(import.meta.dir, "../../..");
+const RAIZ = path.resolve(import.meta.dirname, "../../..");
 const BANCO = path.join(RAIZ, "tmp/kb.sqlite");
 const CLI_KB = path.join(RAIZ, "packages/kb/src/cli.ts");
 
-/** `bun run kb <args> --json`, na raiz do repositório. */
+/** `node packages/kb/src/cli.ts <args> --json`, na raiz do repositório. */
 async function kb(...args: string[]): Promise<any> {
-  const processo = Bun.spawn([process.execPath, "run", CLI_KB, ...args, "--json"], {
+  const processo = spawn(process.execPath, [CLI_KB, ...args, "--json"], {
     cwd: RAIZ,
-    stdin: "ignore",
-    stdout: "pipe",
-    stderr: "pipe",
+    stdio: ["ignore", "pipe", "pipe"],
   });
-  const [stdout, stderr] = await Promise.all([
-    new Response(processo.stdout).text(),
-    new Response(processo.stderr).text(),
-    processo.exited,
-  ]);
+  let stdout = "";
+  let stderr = "";
+  processo.stdout.setEncoding("utf-8").on("data", (parte: string) => (stdout += parte));
+  processo.stderr.setEncoding("utf-8").on("data", (parte: string) => (stderr += parte));
+  await new Promise((resolve, reject) => {
+    processo.once("error", reject);
+    processo.once("close", resolve);
+  });
   try {
     return JSON.parse(stdout);
   } catch {

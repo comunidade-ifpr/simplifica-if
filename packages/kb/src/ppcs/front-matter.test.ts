@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import {
   analisarPpc,
   corpoPpc,
@@ -24,7 +24,9 @@ const reconstruida: ProvenienciaPpc = {
 describe("front matter de PPC", () => {
   test("serializa, lê de volta e preserva o corpo", () => {
     const yaml = serializarFrontMatterPpc(reconstruida);
-    expect(yaml).toStartWith("---\nid: ppc:curitiba/tecnico-em-enfermagem\nfonte_url: https://ifpr.edu.br/");
+    expect(
+      String(yaml).startsWith("---\nid: ppc:curitiba/tecnico-em-enfermagem\nfonte_url: https://ifpr.edu.br/"),
+    ).toBe(true);
     expect(yaml).toContain('nota_proveniencia: "Reconstruída pelo git: hash e conversor desconhecidos."');
     expect(yaml).toContain("pos_processamento_commits:\n  - 9a5b159");
     const texto = `${yaml}\n## 1 Identificação\ntexto\n`;

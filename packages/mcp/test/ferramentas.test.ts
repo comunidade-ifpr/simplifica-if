@@ -2,7 +2,7 @@
  * Testes de contrato: o registro, as descrições, os schemas e as duas ferramentas do T1, chamadas
  * diretamente e pelo protocolo (Client do SDK ligado ao servidor em memória).
  */
-import { afterEach, describe, expect, test } from "bun:test";
+import { afterEach, describe, expect, test } from "vite-plus/test";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { Client, InMemoryTransport } from "@modelcontextprotocol/client";
@@ -244,7 +244,7 @@ describe("pacote", () => {
   });
 
   test("a versão do servidor é a do package.json", () => {
-    const pacote = JSON.parse(readFileSync(path.join(import.meta.dir, "../package.json"), "utf8")) as {
+    const pacote = JSON.parse(readFileSync(path.join(import.meta.dirname, "../package.json"), "utf8")) as {
       version: string;
     };
     expect(VERSAO_PACOTE).toBe(pacote.version);

@@ -1,5 +1,6 @@
 /** Relações, vigência, transições, front matter gerado, correspondência e impacto (fase 5). */
-import { describe, expect, test } from "bun:test";
+import { spawnSync } from "node:child_process";
+import { describe, expect, test } from "vite-plus/test";
 import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -17,8 +18,7 @@ const raiz = raizRepositorio();
 /** Último commit antes da fase 5 (mesmo de `saneamento.test.ts`). */
 const REF_ANTES_SANEAMENTO = "fcfc006";
 const refDisponivel =
-  Bun.spawnSync(["git", "cat-file", "-e", `${REF_ANTES_SANEAMENTO}^{commit}`], { cwd: raiz, stderr: "pipe" })
-    .exitCode === 0;
+  spawnSync("git", ["cat-file", "-e", `${REF_ANTES_SANEAMENTO}^{commit}`], { cwd: raiz, stdio: "ignore" }).status === 0;
 const DCN_2021 = "br/cne-cp/res/2021/1";
 const DCN_2026 = "br/cne-cp/res/2026/2";
 
@@ -78,10 +78,11 @@ describe("vigência", () => {
       };
       const divergentes: Record<string, [string, string]> = {};
       for (const norma of listarNormas(raiz)) {
-        const antigo = Bun.spawnSync(["git", "show", `${REF_ANTES_SANEAMENTO}:base-conhecimento/${norma.path}`], {
+        const antigo = spawnSync("git", ["show", `${REF_ANTES_SANEAMENTO}:base-conhecimento/${norma.path}`], {
           cwd: raiz,
-          stdout: "pipe",
-        }).stdout.toString();
+          encoding: "utf-8",
+          maxBuffer: 64 * 1024 * 1024,
+        }).stdout;
         const manual = String(analisarFrontMatter(antigo, norma.path).meta.status_vigencia);
         if (norma.id.includes("~")) continue; // compilação: status manual (texto reproduzido)
         const calculado = statusEm(norma.id, dataReferencia(raiz), raiz).status;

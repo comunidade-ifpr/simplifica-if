@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { auditarBase, type BaseInstitucional } from "../dominio/auditoria.ts";
 import { caminhoMarkdownPpc, interpretarVagasPpc, type Campus, type Curso } from "../dominio/curso.ts";
 import type { OfertaIngresso } from "../dominio/ingresso.ts";

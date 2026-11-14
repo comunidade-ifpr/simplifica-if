@@ -6,7 +6,8 @@
  *
  * Roda só num checkout git que tenha o commit de referência; noutro caso, é pulado.
  */
-import { describe, expect, test } from "bun:test";
+import { spawnSync } from "node:child_process";
+import { describe, expect, test } from "vite-plus/test";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { listarNormas } from "./estrutura.ts";
@@ -30,17 +31,16 @@ const TEXTO_SUBSTITUIDO = new Map<string, string>([
 const raiz = raizRepositorio();
 
 function versaoAnterior(relativo: string): string | null {
-  const resultado = Bun.spawnSync(["git", "show", `${REF_ANTES_SANEAMENTO}:${relativo}`], {
+  const resultado = spawnSync("git", ["show", `${REF_ANTES_SANEAMENTO}:${relativo}`], {
     cwd: raiz,
-    stdout: "pipe",
-    stderr: "pipe",
+    encoding: "utf-8",
+    maxBuffer: 64 * 1024 * 1024,
   });
-  return resultado.exitCode === 0 ? resultado.stdout.toString() : null;
+  return resultado.status === 0 ? resultado.stdout : null;
 }
 
 const refDisponivel =
-  Bun.spawnSync(["git", "cat-file", "-e", `${REF_ANTES_SANEAMENTO}^{commit}`], { cwd: raiz, stderr: "pipe" })
-    .exitCode === 0;
+  spawnSync("git", ["cat-file", "-e", `${REF_ANTES_SANEAMENTO}^{commit}`], { cwd: raiz, stdio: "ignore" }).status === 0;
 
 describe.skipIf(!refDisponivel)(`saneamento: palavras iguais às de ${REF_ANTES_SANEAMENTO}`, () => {
   const normas = listarNormas(raiz);

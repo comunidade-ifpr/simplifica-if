@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { carregarGabaritoConjunto, carregarPerguntas, carregarUniversos } from "./carregar.ts";
 import type { GabaritoConjunto, Pergunta, Universos } from "./esquema.ts";
 import { normalizarTexto } from "./normalizar.ts";

@@ -1,5 +1,5 @@
 /** Termos da busca: a forma acentuada e a sem acento de uma palavra dão o mesmo radical. */
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { radicais, radicalDoToken, semDiacriticos, termos } from "./tokens.ts";
 
 const PARES = [

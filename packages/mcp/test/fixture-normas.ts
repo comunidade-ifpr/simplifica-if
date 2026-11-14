@@ -5,7 +5,8 @@
  * de vigência, uma regra de transição e uma tabela de correspondência em rascunho. Os textos são
  * inventados; os formatos são os do `kb.sqlite`.
  */
-import { Database } from "bun:sqlite";
+import { DatabaseSync } from "node:sqlite";
+import { emTransacao } from "@simplifica-if/kb/db/transacao";
 import { radicais } from "@simplifica-if/kb/busca/tokens";
 
 export const DCN_2021 = "br/cne-cp/res/2021/1";
@@ -283,8 +284,8 @@ const ROMANOS = [
 
 /** Acrescenta as normas da fixture ao banco em `caminho` (criado por `criarBancoFixture`). */
 export function inserirNormas(caminho: string): void {
-  const db = new Database(caminho, { strict: true });
-  db.transaction(() => {
+  const db = new DatabaseSync(caminho);
+  emTransacao(db, () => {
     const insNorma = db.prepare(
       `INSERT INTO normas (id, situacao, titulo, tipo_documento, numero, ano, orgao, jurisdicao, data_publicacao, status_vigencia,
          status_fonte, ementa, fonte, curadoria, path, aliases_json, keywords_json, front_matter_json)
@@ -439,6 +440,6 @@ export function inserirNormas(caminho: string): void {
     item("#art20", "parcial", ["#art22"], "A lista é retomada no art. 22, com acréscimos.");
     item("#art20-i", "equivalente", ["#art22-v"], "Base tecnológica, agora de composição obrigatória.");
     item("#art63", "sem-equivalente", [], "Sem regra correspondente.");
-  })();
+  });
   db.close();
 }

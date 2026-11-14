@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import type { Base, Resposta } from "../src/envelope.ts";
 import { blocoItem, citacao, comLink, dataBr, montarTexto, rodape } from "../src/texto.ts";
 

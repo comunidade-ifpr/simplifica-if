@@ -2,10 +2,11 @@
  * Smoke contra a base real: as ferramentas do T3 sobre o `tmp/kb.sqlite` comparadas com a saída JSON
  * da CLI `kb` (que lê os arquivos em `citacoes`, `impacto` e `adequacao-art71`): mesmos IDs, textos e
  * totais. Lento e dependente do checkout; roda só com `SIMPLIFICA_SMOKE=1`, como o smoke das normas
- * (`banco-real.test.ts`): `bun run mcp:smoke` roda os dois. A CLI roda antes de o banco ser aberto
+ * (`banco-real.test.ts`): `pnpm mcp:smoke` roda os dois. A CLI roda antes de o banco ser aberto
  * aqui, e compila o `tmp/kb.sqlite` se ele faltar ou estiver velho.
  */
-import { beforeAll, describe, expect, test } from "bun:test";
+import { spawnSync } from "node:child_process";
+import { beforeAll, describe, expect, test } from "vite-plus/test";
 import path from "node:path";
 import { adequacaoArt71 } from "../src/ferramentas/adequacao-art71.ts";
 import { buscarSecoes } from "../src/ferramentas/buscar-secoes.ts";
@@ -18,7 +19,7 @@ import { lerSecao } from "../src/ferramentas/ler-secao.ts";
 import { listarCursos } from "../src/ferramentas/listar-cursos.ts";
 import { criarContexto } from "../src/servidor.ts";
 
-const RAIZ = path.resolve(import.meta.dir, "../../..");
+const RAIZ = path.resolve(import.meta.dirname, "../../..");
 const BANCO = path.join(RAIZ, "tmp/kb.sqlite");
 const ATIVO = process.env.SIMPLIFICA_SMOKE === "1";
 const PPC = "curitiba/tecnico-em-enfermagem";
@@ -28,9 +29,13 @@ const NORMA = "br/cne-cp/res/2021/1";
 type Json = any;
 
 function kb(...args: string[]): Json {
-  const r = Bun.spawnSync(["bun", "run", "packages/kb/src/cli.ts", ...args, "--json"], { cwd: RAIZ });
-  if (r.exitCode !== 0) throw new Error(`kb ${args.join(" ")}: ${r.stderr.toString()}`);
-  return JSON.parse(r.stdout.toString());
+  const r = spawnSync(process.execPath, ["packages/kb/src/cli.ts", ...args, "--json"], {
+    cwd: RAIZ,
+    encoding: "utf-8",
+    maxBuffer: 256 * 1024 * 1024,
+  });
+  if (r.status !== 0) throw new Error(`kb ${args.join(" ")}: ${r.stderr}`);
+  return JSON.parse(r.stdout);
 }
 
 /** Todas as páginas de uma ferramenta, concatenando a lista de `chave`. */
@@ -177,7 +182,7 @@ describe.skipIf(!ATIVO)("smoke: ferramentas do T3 × CLI kb na base real", () =>
     // a soma das normas citadas é o total de citações resolvidas do PPC
     const total = d.normas_citadas.reduce((s, n) => s + n.ocorrencias, 0);
     const resolvidas = ctx.db
-      .query("SELECT count(*) AS n FROM citacoes WHERE ppc_id = ? AND ato_id IS NOT NULL")
+      .prepare("SELECT count(*) AS n FROM citacoes WHERE ppc_id = ? AND ato_id IS NOT NULL")
       .get(`ppc:${PPC}`) as { n: number };
     expect(total).toBe(resolvidas.n);
     const curso = cli.cursos.cursos.find((c: Json) => c.id === `curso:${PPC}`);

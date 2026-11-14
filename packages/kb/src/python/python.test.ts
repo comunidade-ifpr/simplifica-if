@@ -2,7 +2,7 @@
  * Paridade com o Python 3.14. Os valores esperados foram gerados com o
  * próprio Python (difflib, repr, round, json.dumps, str.casefold).
  */
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { SequenceMatcher } from "./difflib.ts";
 import { copiarProfundoPy, dumpsPy, jsonIndentadoPy, loadsPy } from "./json.ts";
 import { escape, fullmatch, match, search, sub } from "./re.ts";

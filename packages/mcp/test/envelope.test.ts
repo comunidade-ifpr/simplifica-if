@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { z } from "zod";
 import type { MetaBase } from "../src/banco.ts";
 import {

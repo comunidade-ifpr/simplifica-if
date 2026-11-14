@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import {
@@ -114,7 +114,7 @@ describe("parser sintético", () => {
 
   test("rótulo repetido antes de (Revogado) não esconde a revogação", () => {
     const ldb = obterDispositivo("br/lei/1996/9394#art36-par3", raiz)!;
-    expect(ldb.texto).toStartWith("§ 3o § 3º (Revogado).");
+    expect(String(ldb.texto).startsWith("§ 3o § 3º (Revogado).")).toBe(true);
     expect(ldb.revogado).toBe(true);
     const sintetico = analisarNorma(
       "## Texto da norma\n\n#### Art. 5º\n\nCaput.\n\n**§ 2o** § 2º (Revogado). (Redação dada pela Lei nº 9, de 2024)\n\n**§ 3o** § 3º do art. 4º continua.\n",
@@ -155,8 +155,10 @@ describe("normas da base", () => {
   });
 
   test("dispositivos conhecidos", () => {
-    expect(obterDispositivo("br/cne-cp/res/2026/2#art71-parunico")?.texto).toStartWith("Parágrafo único.");
-    expect(obterDispositivo("br/cne-cp/res/2026/2#art28-xvi")?.caput[0]).toStartWith("Art. 28");
+    expect(String(obterDispositivo("br/cne-cp/res/2026/2#art71-parunico")?.texto).startsWith("Parágrafo único.")).toBe(
+      true,
+    );
+    expect(String(obterDispositivo("br/cne-cp/res/2026/2#art28-xvi")?.caput[0]).startsWith("Art. 28")).toBe(true);
     expect(obterDispositivo("br/cne-cp/res/2026/2#art28-par1-iv")?.tipo).toBe("inciso");
     expect(obterDispositivo("br/lei/1996/9394#art36A")?.rotulo).toBe("Art. 36-A.");
     expect(obterDispositivo("br/lei/1996/9394#art26-par9B")?.tipo).toBe("paragrafo");

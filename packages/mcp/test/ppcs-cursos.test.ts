@@ -3,11 +3,9 @@
  * saída no outputSchema), conteúdo, avisos, determinismo, orçamento do texto e paginação completa e
  * sem repetição. A paridade com a CLI sobre a base real fica em `smoke-base-real.test.ts`.
  */
-import { afterEach, describe, expect, spyOn, test } from "bun:test";
+import { afterEach, describe, expect, test, vi } from "vite-plus/test";
 import * as fs from "node:fs";
 import path from "node:path";
-import * as moduloRegistro from "@simplifica-if/kb/normas/registro";
-import * as moduloResolver from "@simplifica-if/kb/normas/resolver";
 import { Client, InMemoryTransport } from "@modelcontextprotocol/client";
 import { ErroEntrada, type Resposta } from "../src/envelope.ts";
 import { adequacaoArt71, TETO_ADEQUACAO } from "../src/ferramentas/adequacao-art71.ts";
@@ -29,6 +27,25 @@ import {
   PPC_INFORMATICA,
   SECAO_LONGA,
 } from "./fixture-ppcs.ts";
+import { interceptacao } from "@simplifica-if/kb/testes/interceptacao";
+
+// "Sem o repositório": `node:fs`, `raizRepositorio` e `registroPadrao` passam por `interceptacao`
+// (ver `testes/interceptacao.ts`); fora daquele teste, chamam as funções originais.
+vi.mock("node:fs", async (original) =>
+  (await import("@simplifica-if/kb/testes/interceptacao")).fsInterceptado(await original<typeof import("node:fs")>()),
+);
+vi.mock("@simplifica-if/kb/normas/registro", async (original) =>
+  (await import("@simplifica-if/kb/testes/interceptacao")).moduloInterceptado(
+    await original<typeof import("@simplifica-if/kb/normas/registro")>(),
+    ["raizRepositorio"],
+  ),
+);
+vi.mock("@simplifica-if/kb/normas/resolver", async (original) =>
+  (await import("@simplifica-if/kb/testes/interceptacao")).moduloInterceptado(
+    await original<typeof import("@simplifica-if/kb/normas/resolver")>(),
+    ["registroPadrao"],
+  ),
+);
 
 afterEach(limparTemporarios);
 
@@ -152,30 +169,32 @@ describe("sem o repositório", () => {
     const ctx = criarContexto({ banco: path.join(dir, "kb.sqlite"), pastaTrabalho: dir, canal: "dev" });
     const tentativas: string[] = [];
     const dentro = (alvo: unknown) => typeof alvo === "string" && path.resolve(alvo).startsWith(`${dir}${path.sep}`);
-    const espioes = [
-      ...(
-        ["readFileSync", "readdirSync", "existsSync", "statSync", "lstatSync", "openSync", "realpathSync"] as const
-      ).map((nome) => {
-        const original = fs[nome] as (...args: unknown[]) => unknown;
-        return spyOn(fs, nome).mockImplementation(((...args: unknown[]) => {
-          if (dentro(args[0])) return original(...args);
-          tentativas.push(`${nome} ${String(args[0])}`);
-          throw new Error(`ferramenta leu arquivo: ${nome} ${String(args[0])}`);
-        }) as never);
-      }),
-      spyOn(moduloRegistro, "raizRepositorio").mockImplementation(() => {
+    const leituras: readonly string[] = [
+      "readFileSync",
+      "readdirSync",
+      "existsSync",
+      "statSync",
+      "lstatSync",
+      "openSync",
+      "realpathSync",
+    ];
+    interceptacao.atual = (nome, args, original) => {
+      if (nome === "raizRepositorio") {
         tentativas.push("raizRepositorio");
         throw new Error("ferramenta procurou a raiz do repositório");
-      }),
-      spyOn(moduloResolver, "registroPadrao").mockImplementation(() => {
+      }
+      if (nome === "registroPadrao") {
         tentativas.push("registroPadrao");
         throw new Error("ferramenta usou o registro do checkout");
-      }),
-    ];
+      }
+      if (!leituras.includes(nome) || dentro(args[0])) return original(...args);
+      tentativas.push(`${nome} ${String(args[0])}`);
+      throw new Error(`ferramenta leu arquivo: ${nome} ${String(args[0])}`);
+    };
     try {
       expect(esperado(ctx)).toBe(comRepositorio);
     } finally {
-      for (const espiao of espioes) espiao.mockRestore();
+      interceptacao.atual = undefined;
     }
     expect(tentativas).toEqual([]);
   });

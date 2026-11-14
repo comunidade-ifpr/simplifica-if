@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { esquemaConfig } from "./esquema.ts";
 import { argumentosClaude, comandoLegivel } from "./executor.ts";
 import { lerStreamJson } from "./stream.ts";

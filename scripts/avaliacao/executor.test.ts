@@ -1,4 +1,4 @@
-import { afterAll, describe, expect, test } from "bun:test";
+import { afterAll, describe, expect, test } from "vite-plus/test";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -15,7 +15,7 @@ import {
 const diretorio = mkdtempSync(path.join(tmpdir(), "avaliacao-env-"));
 afterAll(() => rmSync(diretorio, { recursive: true, force: true }));
 
-/** Ambiente como o Bun o monta: shell do usuário + o que veio de `.env.local`. */
+/** Ambiente de um runtime que carrega o `.env.local` sozinho: shell do usuário + o que veio do arquivo. */
 const ENV_LOCAL = "NOTION_TOKEN=secret_x\nSUAP_USUARIO=fulano\nSUAP_SENHA=senha\nANTHROPIC_API_KEY=da-env-local\n";
 const PROCESSO = {
   PATH: "/usr/bin:/bin",

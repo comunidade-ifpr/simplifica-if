@@ -4,7 +4,8 @@
  * prompts, grupo avulso, mescla e validação de resultados (casos portados de
  * `test_flow.py`).
  */
-import { afterEach, beforeAll, describe, expect, test } from "bun:test";
+import { spawnSync } from "node:child_process";
+import { afterEach, beforeAll, describe, expect, test } from "vite-plus/test";
 import {
   existsSync,
   mkdirSync,
@@ -128,11 +129,13 @@ function topico(id: string): ObjetoPy {
 }
 
 function cli(...argumentos: string[]) {
-  const processo = Bun.spawnSync(["bun", "run", ENTRYPOINT, ...argumentos], {
+  const processo = spawnSync(process.execPath, [ENTRYPOINT, ...argumentos], {
     cwd: RAIZ,
     env: { ...process.env, REVISAR_PPC_AGORA: "2026-11-13T12:34:56Z" },
+    encoding: "utf-8",
+    maxBuffer: 64 * 1024 * 1024,
   });
-  return { codigo: processo.exitCode, stdout: processo.stdout.toString(), stderr: processo.stderr.toString() };
+  return { codigo: processo.status, stdout: processo.stdout, stderr: processo.stderr };
 }
 
 describe("relógio", () => {
@@ -149,10 +152,11 @@ describe("REVISAR_PPC_AGORA", () => {
     const codigo =
       `import { agoraIso, timestampSlug } from ${JSON.stringify(path.join(caminhos.appDir, "scripts", "rodada.ts"))};` +
       "console.log(JSON.stringify([timestampSlug(), agoraIso()]));";
-    const processo = Bun.spawnSync(["bun", "-e", codigo], {
+    const processo = spawnSync(process.execPath, ["--input-type=module", "-e", codigo], {
       env: { ...process.env, TZ: fuso, REVISAR_PPC_AGORA: agora },
+      encoding: "utf-8",
     });
-    return { codigo: processo.exitCode, stdout: processo.stdout.toString(), stderr: processo.stderr.toString() };
+    return { codigo: processo.status, stdout: processo.stdout, stderr: processo.stderr };
   }
 
   test("data sem hora é meia-noite local, como no Python (`datetime.fromisoformat`)", () => {
@@ -570,10 +574,10 @@ describe("fichas e grupos", () => {
     const cnct = payload.cnct_contexto as { correspondencia: ObjetoPy; fonte_catalogo: string };
     expect(cnct.correspondencia.denominacao).toBe("Técnico em Informática");
     expect(cnct.fonte_catalogo).toContain("base-conhecimento/catalogos/cnct/index.json");
-    expect(String(payload.sintese_transversal_template)).toEndWith("sintese-transversal.md");
+    expect(String(String(payload.sintese_transversal_template)).endsWith("sintese-transversal.md")).toBe(true);
     const validacoes = payload.validacoes_cruzadas as { total: number; validacoes: ObjetoPy[] };
     expect(validacoes.total).toBe(carregarValidacoesCruzadasOrdenadas().length);
-    expect(String(validacoes.validacoes[0]!.id)).toStartWith("VC-");
+    expect(String(String(validacoes.validacoes[0]!.id)).startsWith("VC-")).toBe(true);
     const comCnct = payload.grupos.filter((g) => g.requer_contexto_cnct);
     expect(comCnct.length).toBeGreaterThan(0);
     expect(comCnct.every((g) => "cnct" in (g.contextos as ObjetoPy))).toBe(true);
@@ -592,7 +596,7 @@ describe("fichas e grupos", () => {
     expect(saida.codigo).toBe(0);
     const resumo = JSON.parse(saida.stdout);
     expect(resumo.total_fichas).toBe(TOTAL_FICHAS);
-    expect(resumo.grupos_subagents).toEndWith("grupos-subagents.json");
+    expect(String(resumo.grupos_subagents).endsWith("grupos-subagents.json")).toBe(true);
     expect(resumo).not.toHaveProperty("cnct_contexto");
     expect(resumo.grupos[0]).not.toHaveProperty("fichas");
     expect(saida.stdout).toContain('"score": 1.0');
@@ -770,7 +774,7 @@ describe("grupos por tópico num PPC fora da base", () => {
     const correspondencia = payload.cnct_contexto.correspondencia as ObjetoPy;
     const db = abrirBanco({ raiz: RAIZ });
     try {
-      const linha = db.query("SELECT dados_json FROM cnct WHERE id = ?").get(`cnct:${correspondencia.id}`) as {
+      const linha = db.prepare("SELECT dados_json FROM cnct WHERE id = ?").get(`cnct:${correspondencia.id}`) as {
         dados_json: string;
       };
       const kb = JSON.parse(linha.dados_json) as ObjetoPy;

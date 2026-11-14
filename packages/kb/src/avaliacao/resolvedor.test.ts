@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { adequacaoArt71, INDICADORES } from "../adequacao/art71.ts";
 import { ppcsQueCitam } from "../ppcs/citacoes.ts";
 import { avaliarResolvedor, lerAnotacoes } from "./resolvedor.ts";

@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test } from "bun:test";
+import { afterEach, describe, expect, test } from "vite-plus/test";
 import { existsSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
@@ -64,9 +64,9 @@ describe("abrirBanco", () => {
   test("abre só para leitura: escrever falha", () => {
     const { db } = abrirBanco(criarBancoFixture());
     try {
-      expect(() => db.run("INSERT INTO meta (chave, valor) VALUES ('x', 'y')")).toThrow(/readonly/);
-      expect(() => db.run("DELETE FROM campi")).toThrow(/readonly/);
-      expect(() => db.run("CREATE TABLE t (x)")).toThrow(/readonly/);
+      expect(() => db.exec("INSERT INTO meta (chave, valor) VALUES ('x', 'y')")).toThrow(/readonly/);
+      expect(() => db.exec("DELETE FROM campi")).toThrow(/readonly/);
+      expect(() => db.exec("CREATE TABLE t (x)")).toThrow(/readonly/);
     } finally {
       db.close();
     }

@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { esquemaGabaritoConjunto, type GabaritoConjunto } from "../esquema.ts";
 import { GERADORES } from "./conjuntos.ts";
 import { cnctDoCadastro, cnctDoCurso, carregarFontes } from "./fontes.ts";

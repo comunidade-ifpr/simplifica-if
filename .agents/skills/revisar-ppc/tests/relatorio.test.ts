@@ -4,7 +4,8 @@
  * `_HTMLPrettyPrinter`, dos blocos do PPC e da leitura de atributos do
  * `HTMLParser` (valores esperados gerados com o próprio Python).
  */
-import { afterEach, describe, expect, test } from "bun:test";
+import { spawnSync } from "node:child_process";
+import { afterEach, describe, expect, test } from "vite-plus/test";
 import {
   chmodSync,
   existsSync,
@@ -717,20 +718,12 @@ describe("publicação no Surge", () => {
     const rodadaPaths = caminhosRodada(rodada);
     escreverJsonPy(path.join(rodadaPaths.suporteDir, "resultados-subagents.json"), payloadResultadosCompletos());
     const falso = surgeFalso(diretorioTemporario(), "echo 'Success - Published'");
-    const processo = Bun.spawnSync(
-      [
-        "bun",
-        "run",
-        ENTRYPOINT,
-        "gerar-relatorio-html",
-        "--rodada-dir",
-        rodada,
-        "--surge-domain",
-        "relatorio-ppc.surge.sh",
-      ],
+    const processo = spawnSync(
+      process.execPath,
+      [ENTRYPOINT, "gerar-relatorio-html", "--rodada-dir", rodada, "--surge-domain", "relatorio-ppc.surge.sh"],
       { cwd: RAIZ, env: { ...process.env, REVISAR_PPC_SURGE_CMD: falso } },
     );
-    expect(processo.exitCode).toBe(0);
+    expect(processo.status).toBe(0);
     const saida = JSON.parse(processo.stdout.toString());
     expect(saida.publicacao_servico).toBe("surge");
     expect(saida.surge_url).toBe("https://relatorio-ppc.surge.sh");
@@ -756,13 +749,12 @@ describe("publicação no Surge", () => {
       path.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"),
       payloadResultadosCompletos(),
     );
-    const processo = Bun.spawnSync(
-      ["bun", "run", ENTRYPOINT, "gerar-relatorio-html", "--rodada-dir", rodada, "--sem-surge"],
-      {
-        cwd: RAIZ,
-      },
+    const processo = spawnSync(
+      process.execPath,
+      [ENTRYPOINT, "gerar-relatorio-html", "--rodada-dir", rodada, "--sem-surge"],
+      { cwd: RAIZ },
     );
-    expect(processo.exitCode).toBe(0);
+    expect(processo.status).toBe(0);
     const saida = JSON.parse(processo.stdout.toString());
     expect(Object.keys(saida)).toEqual(["relatorio_html", "relatorio_url", "situacao", "situacao_rotulo", "mensagem"]);
     expect(saida.situacao_rotulo).toBe("Apto para submissão");

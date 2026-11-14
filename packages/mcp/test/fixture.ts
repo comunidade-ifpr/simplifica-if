@@ -2,7 +2,7 @@
  * Banco de teste: o DDL do `kb` com poucas linhas, num diretório temporário. Não depende do
  * `tmp/kb.sqlite`, que não está no git.
  */
-import { Database } from "bun:sqlite";
+import { DatabaseSync } from "node:sqlite";
 import { mkdtempSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -31,8 +31,8 @@ export function limparTemporarios(): void {
 
 export function criarBancoFixture(opcoes: OpcoesFixture = {}, dir = diretorioTemporario()): string {
   const caminho = path.join(dir, "kb.sqlite");
-  const db = new Database(caminho, { create: true, strict: true });
-  db.run(DDL);
+  const db = new DatabaseSync(caminho);
+  db.exec(DDL);
   const meta: Record<string, string | null> = {
     versao_esquema: String(VERSAO_ESQUEMA),
     data_referencia: "2026-11-13",

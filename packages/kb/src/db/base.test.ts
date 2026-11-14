@@ -6,20 +6,20 @@
  * os arquivos, e todas rodam a partir de uma cópia do banco num diretório vazio, sem ler arquivo
  * fora dele. Compila três vezes (cerca de 9 s cada; a terceira com `versao`, `commit` e `canal`).
  */
-import { Database } from "bun:sqlite";
-import { afterAll, beforeAll, describe, expect, spyOn, test } from "bun:test";
+import { DatabaseSync } from "node:sqlite";
+import { afterAll, beforeAll, describe, expect, test, vi } from "vite-plus/test";
+import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import { copyFileSync, mkdtempSync, readFileSync, rmSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { build as empacotar } from "vite-plus/pack";
 import { lerSinonimos } from "../busca/sinonimos.ts";
 import { avaliarBusca } from "../avaliacao/busca-secoes.ts";
 import { adequacaoArt71 } from "../adequacao/art71.ts";
 import { impacto } from "../normas/impacto.ts";
-import * as moduloRegistro from "../normas/registro.ts";
 import { caminhoStubs, carregarRegistro, lerRegistroStubs, raizRepositorio } from "../normas/registro.ts";
-import * as moduloResolver from "../normas/resolver.ts";
 import { registroPadrao, resolucaoComEntrada } from "../normas/resolver.ts";
 import { lerTextoSecao, normasCitadasDoArquivo, ppcsQueCitam, relatorioCitacoes } from "../ppcs/citacoes.ts";
 import { carregarCorrespondencias, correspondencia, correspondenciaEm } from "../normas/correspondencia.ts";
@@ -71,13 +71,32 @@ import {
 import { palavrasDeCampi } from "../ppcs/secoes.ts";
 import { VERSAO_ESQUEMA } from "./esquema.ts";
 import * as mb from "./modo-banco.ts";
+import { interceptacao } from "../testes/interceptacao.ts";
+
+// "Sem o repositório": `node:fs`, `raizRepositorio` e `registroPadrao` passam por `interceptacao`
+// (ver `testes/interceptacao.ts`); fora daquele teste, chamam as funções originais.
+vi.mock("node:fs", async (original) =>
+  (await import("../testes/interceptacao.ts")).fsInterceptado(await original<typeof import("node:fs")>()),
+);
+vi.mock("../normas/registro.ts", async (original) =>
+  (await import("../testes/interceptacao.ts")).moduloInterceptado(
+    await original<typeof import("../normas/registro.ts")>(),
+    ["raizRepositorio"],
+  ),
+);
+vi.mock("../normas/resolver.ts", async (original) =>
+  (await import("../testes/interceptacao.ts")).moduloInterceptado(
+    await original<typeof import("../normas/resolver.ts")>(),
+    ["registroPadrao"],
+  ),
+);
 
 const raiz = raizRepositorio();
 const dir = mkdtempSync(path.join(tmpdir(), "kb-base-"));
 const caminhoA = path.join(dir, "a.sqlite");
 const caminhoB = path.join(dir, "b.sqlite");
 const caminhoC = path.join(dir, "c.sqlite");
-let db: Database;
+let db: DatabaseSync;
 let inicioCompilacaoA = 0;
 
 beforeAll(() => {
@@ -85,7 +104,7 @@ beforeAll(() => {
   compilarBanco({ raiz, destino: caminhoA });
   compilarBanco({ raiz, destino: caminhoB });
   compilarBanco({ raiz, destino: caminhoC, versao: "2026.11.13", commit: "0123abcd", canal: "teste" });
-  db = new Database(caminhoA, { readonly: true, strict: true });
+  db = new DatabaseSync(caminhoA, { readOnly: true });
 }, 180_000);
 
 afterAll(() => {
@@ -122,7 +141,9 @@ describe("kb.sqlite da base", () => {
 
   test("PPCs que citam a Res. CNE/CP 1/2021 = gabarito da Q02", () => {
     const ppcs = (
-      db.query("SELECT DISTINCT ppc_id FROM citacoes WHERE ato_id = ? ORDER BY ppc_id").all("br/cne-cp/res/2021/1") as {
+      db
+        .prepare("SELECT DISTINCT ppc_id FROM citacoes WHERE ato_id = ? ORDER BY ppc_id")
+        .all("br/cne-cp/res/2021/1") as {
         ppc_id: string;
       }[]
     ).map((l) => l.ppc_id.replace(/^ppc:/, ""));
@@ -194,17 +215,17 @@ describe("PPC fora da base (bancoDoPpcAvulso)", () => {
     "arapongas/tecnico-em-melhoria-de-processos",
     "curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio",
   ];
-  const secoesDe = (banco: Database, ppcId: string) =>
+  const secoesDe = (banco: DatabaseSync, ppcId: string) =>
     (
       banco
-        .query(
+        .prepare(
           "SELECT id, tipo, titulo, linha_inicio, linha_fim, linha_texto, texto FROM secoes WHERE ppc_id = ? ORDER BY linha_inicio",
         )
         .all(ppcId) as { id: string }[]
     ).map((s) => ({ ...s, id: s.id.slice(s.id.indexOf("#") + 1) }));
-  const citacoesDe = (banco: Database, ppcId: string) =>
+  const citacoesDe = (banco: DatabaseSync, ppcId: string) =>
     banco
-      .query("SELECT linha, trecho, ato_id, regra, secao_tipo, papel FROM citacoes WHERE ppc_id = ? ORDER BY ordem")
+      .prepare("SELECT linha, trecho, ato_id, regra, secao_tipo, papel FROM citacoes WHERE ppc_id = ? ORDER BY ordem")
       .all(ppcId);
 
   test("o Markdown segmentado em memória dá as mesmas seções e citações do kb.sqlite", () => {
@@ -279,7 +300,7 @@ describe("fase 5: o banco dá o mesmo resultado que a API de arquivos", () => {
       linha: string[];
     }[];
     for (const m of marcos) {
-      const linha = db.query("SELECT vigente, normas_json FROM marcos WHERE id = ?").get(m.id) as {
+      const linha = db.prepare("SELECT vigente, normas_json FROM marcos WHERE id = ?").get(m.id) as {
         vigente: string;
         normas_json: string;
       };
@@ -295,7 +316,7 @@ describe("fase 5: o banco dá o mesmo resultado que a API de arquivos", () => {
     for (const ato of atos) {
       const datas = new Set(["1990-01-01", "2026-11-01", "2026-11-12", dataReferencia(raiz), "2030-01-01"]);
       // as datas dos intervalos gravados e, independentemente deles, as que statusEm compara
-      const intervalos = db.query("SELECT de FROM vigencias WHERE alvo = ?").all(ato) as { de: string | null }[];
+      const intervalos = db.prepare("SELECT de FROM vigencias WHERE alvo = ?").all(ato) as { de: string | null }[];
       const inicio = inicioVigencia(ato, raiz);
       const efeitos = carregarRelacoes(raiz)
         .filter((r) => r.alvo === ato)
@@ -613,7 +634,7 @@ describe("modo banco: a mesma saída da CLI sobre os arquivos", () => {
   });
 
   test("meta: versao, commit e canal só quando informados no build", () => {
-    const comVersao = new Database(caminhoC, { readonly: true, strict: true });
+    const comVersao = new DatabaseSync(caminhoC, { readOnly: true });
     try {
       const meta = mb.metaBanco(comVersao);
       expect([meta.versao, meta.commit, meta.canal]).toEqual(["2026.11.13", "0123abcd", "teste"]);
@@ -626,7 +647,7 @@ describe("modo banco: a mesma saída da CLI sobre os arquivos", () => {
 });
 
 /** Todas as consultas do modo banco, com argumentos reais, numa saída só. */
-function todasAsConsultas(banco: Database, markdown: string) {
+function todasAsConsultas(banco: DatabaseSync, markdown: string) {
   return {
     meta: mb.metaBanco(banco),
     resolver: CITACOES.map((t) => mb.resolverBanco(banco, t)),
@@ -664,29 +685,31 @@ describe("modo banco sem o repositório", () => {
     const dentro = (alvo: unknown) => typeof alvo === "string" && path.resolve(alvo).startsWith(`${vazio}${path.sep}`);
     // qualquer acesso a arquivo fora do diretório do banco falha; a raiz do repositório e o
     // registro do checkout também (protegem contra o que já estivesse em cache no processo)
-    const espioes = [
-      ...(
-        ["readFileSync", "readdirSync", "existsSync", "statSync", "lstatSync", "openSync", "realpathSync"] as const
-      ).map((nome) => {
-        const original = fs[nome] as (...args: unknown[]) => unknown;
-        return spyOn(fs, nome).mockImplementation(((...args: unknown[]) => {
-          if (dentro(args[0])) return original(...args);
-          tentativas.push(`${nome} ${String(args[0])}`);
-          throw new Error(`modo banco leu arquivo: ${nome} ${String(args[0])}`);
-        }) as never);
-      }),
-      spyOn(moduloRegistro, "raizRepositorio").mockImplementation(() => {
+    const leituras: readonly string[] = [
+      "readFileSync",
+      "readdirSync",
+      "existsSync",
+      "statSync",
+      "lstatSync",
+      "openSync",
+      "realpathSync",
+    ];
+    interceptacao.atual = (nome, args, original) => {
+      if (nome === "raizRepositorio") {
         tentativas.push("raizRepositorio");
         throw new Error("modo banco procurou a raiz do repositório");
-      }),
-      spyOn(moduloResolver, "registroPadrao").mockImplementation(() => {
+      }
+      if (nome === "registroPadrao") {
         tentativas.push("registroPadrao");
         throw new Error("modo banco usou o registro do checkout");
-      }),
-    ];
+      }
+      if (!leituras.includes(nome) || dentro(args[0])) return original(...args);
+      tentativas.push(`${nome} ${String(args[0])}`);
+      throw new Error(`modo banco leu arquivo: ${nome} ${String(args[0])}`);
+    };
     const cwd = process.cwd();
     process.chdir(vazio);
-    let banco: Database | undefined;
+    let banco: DatabaseSync | undefined;
     try {
       banco = mb.abrirBancoSomenteLeitura(caminho);
       const obtido = JSON.stringify(todasAsConsultas(banco, markdown));
@@ -695,15 +718,15 @@ describe("modo banco sem o repositório", () => {
     } finally {
       banco?.close();
       process.chdir(cwd);
-      for (const espiao of espioes) espiao.mockRestore();
+      interceptacao.atual = undefined;
       rmSync(vazio, { recursive: true, force: true });
     }
     expect(() => mb.abrirBancoSomenteLeitura(path.join(vazio, "nao-existe.sqlite"))).toThrow("não encontrado");
   }, 60_000);
 });
 
-describe("modo banco num binário (bun build --compile), só com o kb.sqlite", () => {
-  test("o binário roda num diretório vazio e dá a mesma saída que o processo", () => {
+describe("modo banco num executável (Node SEA, pelo vp pack), só com o kb.sqlite", () => {
+  test("o executável roda num diretório vazio e dá a mesma saída que o processo", async () => {
     const trabalho = fs.realpathSync(mkdtempSync(path.join(tmpdir(), "kb-binario-")));
     const vazio = fs.realpathSync(mkdtempSync(path.join(tmpdir(), "kb-binario-vazio-")));
     try {
@@ -711,7 +734,7 @@ describe("modo banco num binário (bun build --compile), só com o kb.sqlite", (
       const entrada = path.join(trabalho, "entrada.ts");
       fs.writeFileSync(
         entrada,
-        `import * as mb from ${JSON.stringify(path.join(import.meta.dir, "modo-banco.ts"))};
+        `import * as mb from ${JSON.stringify(path.join(import.meta.dirname, "modo-banco.ts"))};
 const banco = mb.abrirBancoSomenteLeitura(process.argv[2]);
 const ids = ${JSON.stringify(NORMAS)};
 console.log(JSON.stringify({
@@ -725,15 +748,31 @@ console.log(JSON.stringify({
 }));
 `,
       );
-      const binario = path.join(vazio, "kb-modo-banco");
-      const build = Bun.spawnSync(["bun", "build", "--compile", entrada, "--outfile", binario], {
-        cwd: trabalho,
-        stderr: "pipe",
+      // um só chunk, com as dependências dentro: o SEA só resolve os módulos internos do Node
+      await empacotar({
+        entry: [entrada],
+        cwd: path.join(import.meta.dirname, "../.."),
+        config: false,
+        outDir: path.join(trabalho, "dist"),
+        platform: "node",
+        logLevel: "error",
+        report: false,
+        deps: { alwaysBundle: () => true, onlyBundle: false },
+        outputOptions: { codeSplitting: false },
+        // num bundle, todo módulo é o principal: os `if (import.meta.main)` das CLIs (como o de
+        // `compilar.ts`) não podem rodar; o Bun fazia essa troca sozinho no `--compile`
+        define: { "import.meta.main": "false" },
+        exe: { fileName: "kb-modo-banco", outDir: vazio, seaConfig: { useCodeCache: false } },
       });
-      expect(build.exitCode, build.stderr.toString()).toBe(0);
+      const binario = path.join(vazio, "kb-modo-banco");
       copyFileSync(caminhoA, path.join(vazio, "kb.sqlite"));
-      const execucao = Bun.spawnSync([binario, "kb.sqlite"], { cwd: vazio, stderr: "pipe", env: {} });
-      expect(execucao.exitCode, execucao.stderr.toString()).toBe(0);
+      const execucao = spawnSync(binario, ["kb.sqlite"], {
+        cwd: vazio,
+        env: {},
+        encoding: "utf-8",
+        maxBuffer: 256 * 1024 * 1024,
+      });
+      expect(execucao.status, execucao.stderr).toBe(0);
       const esperado = {
         resolver: mb.resolverBanco(db, "Res. CNE/CP 2/2026, art. 28, inciso VII"),
         citacoes: NORMAS.map((id) => mb.citacoesBanco(db, id)),
@@ -743,7 +782,7 @@ console.log(JSON.stringify({
         secoes: mb.buscarSecoesBanco(db, "acompanhamento de egressos"),
         pacote: mb.pacoteContextoBanco(db, "grupo-001", PPC),
       };
-      expect(execucao.stdout.toString().trim()).toBe(JSON.stringify(esperado));
+      expect(execucao.stdout.trim()).toBe(JSON.stringify(esperado));
     } finally {
       rmSync(trabalho, { recursive: true, force: true });
       rmSync(vazio, { recursive: true, force: true });

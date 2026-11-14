@@ -1,4 +1,5 @@
-import { afterEach, describe, expect, test } from "bun:test";
+import { afterEach, describe, expect, test } from "vite-plus/test";
+import { spawnSync } from "node:child_process";
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, unlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -245,8 +246,8 @@ describe("índice e mapa", () => {
 
 describe("entrypoint revisar_ppc.ts", () => {
   function executar(...argumentos: string[]) {
-    const processo = Bun.spawnSync(["bun", "run", ENTRYPOINT, ...argumentos], { cwd: RAIZ });
-    return { codigo: processo.exitCode, saida: processo.stdout.toString(), erro: processo.stderr.toString() };
+    const processo = spawnSync(process.execPath, [ENTRYPOINT, ...argumentos], { cwd: RAIZ, encoding: "utf-8" });
+    return { codigo: processo.status, saida: processo.stdout, erro: processo.stderr };
   }
 
   test("validar-base, gerar-schemas --check, gerar-indice --check e gerar-mapa --check passam na base real", () => {
