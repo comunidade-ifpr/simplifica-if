@@ -16,11 +16,13 @@ import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Fiber from "effect/Fiber";
+import * as Layer from "effect/Layer";
 import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
 import { FERRAMENTAS } from "../src/ferramentas/toolkit.ts";
 import * as Http from "../src/http.ts";
-import { INSTRUCOES } from "../src/servidor.ts";
+import { Leitura } from "../src/leitura/Leitura.ts";
+import { INSTRUCOES, layerLeitura } from "../src/servidor.ts";
 import { diretorioTemporario, limparTemporarios } from "./fixture.ts";
 import { criarBancoFixturePpcs, PPC_ENFERMAGEM } from "./fixture-ppcs.ts";
 
@@ -300,6 +302,30 @@ layer(Http.layer({ banco }), { excludeTestServices: true })("servidor MCP por HT
       expect(textoDe(semDisco)).toContain("pasta de trabalho desta sessão não existe");
     }),
   );
+});
+
+describe("sobre o Leitura do ambiente", () => {
+  // O servidor do app monta um `Leitura` só e o entrega ao MCP e ao RPC: uma conexão ao `kb.sqlite`.
+  const camada = Http.layerSobreLeitura({ pastaTrabalho: pasta }).pipe(
+    Layer.provideMerge(layerLeitura({ banco, canal: "beta" })),
+  );
+  layer(camada, { excludeTestServices: true })("layerSobreLeitura", (it) => {
+    it.effect("usa o Leitura dado, e a pasta da layer vale para a sessão sem pasta própria", () =>
+      Effect.gen(function* () {
+        const servidor = yield* Http.ServidorMcpHttp;
+        const leitura = yield* Leitura;
+        const cliente = yield* conectar(yield* servidor.abrirSessao({ rotulo: "ambiente" }));
+        const sobre = yield* Effect.promise(() => cliente.callTool({ name: "sobre_a_base", arguments: {} }));
+        // O canal é o do Leitura do ambiente, não o padrão `dev` do `layer({ banco })`.
+        expect(sobre.structuredContent).toMatchObject({ base: leitura.base });
+        expect(leitura.base.canal).toBe("beta");
+        const pacote = { name: "pacote_contexto", arguments: { tarefa: "CT-CURR-12", arquivo: "PPC.md" } };
+        const lido = yield* Effect.promise(() => cliente.callTool(pacote));
+        expect(lido.isError).toBeFalsy();
+        expect(lido.structuredContent).toMatchObject({ dados: { path: "PPC.md" } });
+      }),
+    );
+  });
 });
 
 describe("paridade com o stdio", () => {

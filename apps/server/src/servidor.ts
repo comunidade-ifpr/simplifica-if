@@ -10,7 +10,8 @@
  *   sessão com token próprio (`Conversas.ts`).
  * - **Motor** (`@simplifica-if/motor`) sobre os `Drivers` do ambiente: os reais (`Drivers.layerNode`,
  *   na CLI) ou drivers de teste.
- * - **Leitura** (`GrupoLeitura`) sobre o `kb.sqlite`, só leitura.
+ * - **Leitura** (`GrupoLeitura`) sobre o `kb.sqlite`, só leitura: o mesmo serviço `Leitura` (uma
+ *   conexão só ao banco) atende o RPC e o MCP HTTP (`McpHttp.layerSobreLeitura`).
  *
  * Tudo vive no escopo da layer: fechá-lo derruba o RPC, encerra as conversas (o processo de cada
  * provider morre) e fecha o servidor MCP.
@@ -111,12 +112,15 @@ const makeServidorApp = Effect.gen(function* () {
 export const layer = (opcoes: Opcoes) => {
   const porta = opcoes.porta ?? 0;
   const canal = opcoes.canal ?? "dev";
-  const mcp = McpHttp.layer({ banco: opcoes.banco, canal, ...(opcoes.portaMcp ? { porta: opcoes.portaMcp } : {}) });
-  const nucleo = Conversas.layer.pipe(Layer.provideMerge(Motor.layer), Layer.provideMerge(mcp));
-  const handlers = Handlers.layer.pipe(
-    Layer.provide(layerLeitura({ banco: opcoes.banco, canal })),
-    Layer.provide(nucleo),
+  // Um `Leitura` só (uma conexão ao `kb.sqlite`) para o MCP HTTP e para o RPC de leitura.
+  const leitura = layerLeitura({ banco: opcoes.banco, canal });
+  const mcp = McpHttp.layerSobreLeitura(opcoes.portaMcp ? { porta: opcoes.portaMcp } : {});
+  const nucleo = Conversas.layer.pipe(
+    Layer.provideMerge(Motor.layer),
+    Layer.provideMerge(mcp),
+    Layer.provideMerge(leitura),
   );
+  const handlers = Handlers.layer.pipe(Layer.provide(nucleo));
   const servir = HttpRouter.serve(layerRotaRpc, { disableLogger: true, disableListenLog: true });
   // Sem o fechamento preventivo: ele espera as conexões abertas antes de interromper os fibers que as
   // fecham, e um WebSocket conectado segurava o encerramento pelos 20 s do prazo. Assim, as conexões

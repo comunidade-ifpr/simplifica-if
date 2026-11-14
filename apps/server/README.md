@@ -3,7 +3,7 @@
 O servidor local do app desktop (M1.1): um processo Node, sem interface, que o desktop inicia e com quem a interface fala só por `effect/rpc`. Junta numa aplicação Effect:
 
 - o **`Motor`** (`@simplifica-if/motor`) com os drivers reais (`Drivers.layerNode`), a pasta de estado do app e o `fixPath` do T3 na partida;
-- o **MCP `ifpr` por HTTP** (`@simplifica-if/mcp/http`) sobre o `kb.sqlite`: cada conversa recebe uma sessão com token próprio, revogado ao encerrar, e o motor recebe as chamadas que o servidor viu (`resultados`);
+- o **MCP `ifpr` por HTTP** (`@simplifica-if/mcp/http`, `layerSobreLeitura`) sobre o mesmo serviço `Leitura` do RPC de leitura, numa conexão só ao `kb.sqlite`: cada conversa recebe uma sessão com token próprio, revogado ao encerrar, e o motor recebe as chamadas que o servidor viu (`resultados`);
 - a **API RPC** por WebSocket em `127.0.0.1`, com os contratos em [`packages/contratos-app`](../../packages/contratos-app/src/contratos.ts).
 
 ## Como rodar
@@ -80,7 +80,6 @@ Em `src/Conversas.ts`: persistência dos eventos em `enviar` e da conversa em `i
 
 Pendências registradas:
 
-- **Duas conexões ao `kb.sqlite`:** o `McpHttp.layer` monta o próprio `Leitura`, e o RPC de leitura monta outro. Para usar um só, o `http.ts` teria de aceitar o `Leitura` do ambiente.
 - **Conversas e conexões:** uma conversa não pertence a uma conexão; se a interface cair e voltar, as conversas continuam abertas até `conversa.encerrar` ou o fim do servidor. O M1.2 (retomada) decide se uma conversa sem cliente se encerra.
 - **Ponte no app empacotado:** `process.execPath` + `bin.ts` supõe o Node rodando TypeScript. No Electron, a ponte será o executável do app com `ELECTRON_RUN_AS_NODE=1` (o driver já põe a variável) e o bundle do servidor.
 - **Token na URL:** o `?token=` do navegador aparece na URL do WebSocket. O T3 usa tickets de curta duração emitidos por HTTP; se a interface sair do `file://`/protocolo próprio, trocar por tickets.
