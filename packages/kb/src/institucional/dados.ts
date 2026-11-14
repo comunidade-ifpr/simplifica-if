@@ -85,7 +85,7 @@ export const esquemaOferta = z.looseObject({
   status_curadoria: texto,
   modalidade: texto,
   turno: texto,
-  turno_original: texto,
+  turno_padronizado: texto,
   turno_nota: texto,
   campi: z.array(z.string()).optional(),
   cursos: z.array(z.string()).optional(),

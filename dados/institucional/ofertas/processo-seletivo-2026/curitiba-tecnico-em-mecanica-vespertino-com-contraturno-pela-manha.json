@@ -11,8 +11,8 @@
   "forma_oferta": "30 vagas; 1 turma(s); turno Vespertino com contraturno pela manhã; duração 3 anos",
   "status_curadoria": "sugerido",
   "modalidade": "presencial",
-  "turno": "vespertino-com-contraturno",
-  "turno_original": "Vespertino com contraturno pela manhã",
+  "turno": "Vespertino com contraturno pela manhã",
+  "turno_padronizado": "vespertino-com-contraturno",
   "turno_nota": "O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Vespertino (com contraturno pela manhã)³”. Nota ³ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “VESPERTINO”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”.",
   "campi": [],
   "cursos": [

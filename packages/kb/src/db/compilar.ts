@@ -733,8 +733,9 @@ function preencherBanco(db: Database, c: ContextoPreenchimento): Record<string, 
         curso_nome: o.curso_nome,
         tipo_oferta: o.tipo_oferta,
         vagas: o.vagas,
-        turno: o.turno,
-        turno_original: o.turno_original,
+        // No banco, `turno` é o enum e `turno_original` a grafia (nos dados: turno_padronizado e turno).
+        turno: o.turno_padronizado,
+        turno_original: o.turno,
         turno_nota: o.turno_nota,
         modalidade: o.modalidade,
         status_curadoria: o.status_curadoria,
@@ -744,7 +745,7 @@ function preencherBanco(db: Database, c: ContextoPreenchimento): Record<string, 
         trecho_fonte: o.trecho_fonte,
         editais_json: json(o.editais ?? []),
         path: arquivo,
-        linha_turno: linhaDaChave(conteudo, "turno"),
+        linha_turno: linhaDaChave(conteudo, "turno_padronizado"),
       });
       for (const processo of [...new Set(o.processos)].sort(compararTexto)) {
         ins.inserir("ofertas_processos", { oferta_id: chaveOferta(arquivo), processo_id: processo });

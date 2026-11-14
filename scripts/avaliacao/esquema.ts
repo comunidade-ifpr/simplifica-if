@@ -116,6 +116,15 @@ export type ArquivoPerguntas = z.output<typeof esquemaArquivoPerguntas>;
 
 /* ------------------------------------------------------------- configuração */
 
+/**
+ * Bash dá ao agente leitura de qualquer arquivo e do ambiente (`jq -R . .env.local`, `jq -n env`),
+ * fora do alcance das regras de Read; o harness não o oferece.
+ */
+const ferramentaSemBash = textoNaoVazio.refine(
+  (regra) => !/^Bash(?:\(|$)/u.test(regra),
+  "Bash não é permitido no harness: contorna as regras de leitura (use Read, Grep e Glob)",
+);
+
 export const esquemaConfig = z.strictObject({
   /** Alias ou nome completo aceito por `claude --model`. O relatório registra o ID efetivo. */
   modelo: textoNaoVazio,
@@ -123,10 +132,13 @@ export const esquemaConfig = z.strictObject({
   max_turns: z.number().int().min(1).max(200),
   max_budget_usd_por_execucao: z.number().positive().optional(),
   timeout_s: z.number().int().min(10).default(600),
-  /** Ferramentas embutidas disponíveis ao agente (`--tools`). */
-  ferramentas: z.array(textoNaoVazio).min(1),
-  /** Regras pré-aprovadas (`--allowedTools`); o resto é negado (`--permission-mode dontAsk`). */
-  ferramentas_permitidas: z.array(textoNaoVazio).min(1),
+  /** Ferramentas embutidas disponíveis ao agente (`--tools`). Só leitura; Bash não (ver executor.ts). */
+  ferramentas: z.array(ferramentaSemBash).min(1),
+  /**
+   * Regras pré-aprovadas (`--allowedTools`); o resto é negado (`--permission-mode dontAsk`). As
+   * regras de `REGRAS_NEGADAS` (executor.ts) vão sempre em `--disallowedTools` e prevalecem.
+   */
+  ferramentas_permitidas: z.array(ferramentaSemBash).min(1),
   instrucao_sistema: z.string().default(""),
   /**
    * Fontes de configuração do Claude Code (`--setting-sources`). Sem o campo, valem as do usuário,

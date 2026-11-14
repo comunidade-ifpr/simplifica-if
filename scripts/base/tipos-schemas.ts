@@ -610,9 +610,13 @@ export interface ProcessoSeletivoJson {
       | "outro";
     modalidade?: "presencial" | "ead" | "semipresencial";
     /**
-     * Turno padronizado. diurno: manhã e tarde sem os dias definidos; matutino-com-contraturno e vespertino-com-contraturno: um período todos os dias e o outro em alguns dias. A grafia do edital fica em turno_original.
+     * Grafia do turno na fonte da oferta (texto livre, como publicado antes do enum), com as marcas de nota de rodapé (¹, ², ³). Para filtrar, use turno_padronizado.
      */
-    turno?:
+    turno?: string;
+    /**
+     * Turno padronizado (enum). diurno: manhã e tarde sem os dias definidos; matutino-com-contraturno e vespertino-com-contraturno: um período todos os dias e o outro em alguns dias.
+     */
+    turno_padronizado?:
       | "matutino"
       | "vespertino"
       | "noturno"
@@ -620,10 +624,6 @@ export interface ProcessoSeletivoJson {
       | "diurno"
       | "matutino-com-contraturno"
       | "vespertino-com-contraturno";
-    /**
-     * Grafia do turno na fonte, com as marcas de nota de rodapé (¹, ², ³).
-     */
-    turno_original?: string;
     /**
      * O que o enum não diz: texto da nota de rodapé do edital e divergências entre fontes.
      */

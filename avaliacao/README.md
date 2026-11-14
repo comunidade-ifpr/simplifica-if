@@ -24,7 +24,7 @@ bun run scripts/avaliar.ts --pontuar avaliacao/resultados/<rodada>/relatorio.jso
 bun test scripts/avaliacao
 ```
 
-Cada rodada grava `relatorio.json`, `resumo.md` e o stream-json bruto (`brutos/`) em `resultados/<data>-<modelo>/`. O agente roda com cwd na raiz, só com ferramentas de leitura pré-aprovadas (`--permission-mode dontAsk` nega o resto), sem MCP e sem persistir sessão. O relatório registra o ID efetivo do modelo, o commit, as chamadas de ferramenta (e as negadas), os tokens e o custo.
+Cada rodada grava `relatorio.json`, `resumo.md` e o stream-json bruto (`brutos/`) em `resultados/<data>-<modelo>/`. O agente roda com cwd na raiz, só com Read, Grep e Glob pré-aprovados dentro do repositório (`--permission-mode dontAsk` nega o resto), sem Bash, sem MCP e sem persistir sessão. Como ele escolhe o que ler, o executor não depende do `config.yaml` para proteger segredos: o `claude` recebe um ambiente mínimo por lista explícita (`PATH`, `HOME`, locale, proxy e a credencial do próprio `claude` quando vem do shell), sem nenhuma variável definida em `.env*` (que o Bun carrega no `process.env`), e `--disallowedTools` nega sempre Bash, escrita, web e a leitura de `.env*`, `~/.ssh`, `~/.aws`, `~/.config`, `~/.claude` e `/etc` (`REGRAS_NEGADAS` em `scripts/avaliacao/executor.ts`). O relatório registra o ID efetivo do modelo, o commit, as chamadas de ferramenta (e as negadas), os tokens e o custo.
 
 **Pontuação** (`scripts/avaliacao/pontuacao.ts`), sobre a resposta normalizada (sem acentos, minúscula, `nº` → `no`):
 
@@ -43,7 +43,7 @@ Cada rodada grava `relatorio.json`, `resumo.md` e o stream-json bruto (`brutos/`
 
 ## Como os gabaritos são gerados
 
-`bun run scripts/avaliacao/gabaritos/gerar.ts` lê `dados/institucional/`, `base-conhecimento/manifest.json`, o CNCT e os PPCs convertidos, e grava em `gabaritos/` os conjuntos esperados (ordenados, sem data) e `universos.json`. Rode de novo depois de mudar essas fontes e revise o diff: ele é a mudança do gabarito. `--verificar` (ou `--check`) só confere. As citações de normas nos PPCs (Q02 e Q20) vêm do resolvedor de citações de `packages/kb`, o mesmo de `bun run kb citacoes <id>`. O curso chega ao CNCT pelo `cnct_id` cadastrado em `dados/institucional/cursos/` (fase 3), e o turno das ofertas é o enum padronizado.
+`bun run scripts/avaliacao/gabaritos/gerar.ts` lê `dados/institucional/`, `base-conhecimento/manifest.json`, o CNCT e os PPCs convertidos, e grava em `gabaritos/` os conjuntos esperados (ordenados, sem data) e `universos.json`. Rode de novo depois de mudar essas fontes e revise o diff: ele é a mudança do gabarito. `--verificar` (ou `--check`) só confere. As citações de normas nos PPCs (Q02 e Q20) vêm do resolvedor de citações de `packages/kb`, o mesmo de `bun run kb citacoes <id>`. O curso chega ao CNCT pelo `cnct_id` cadastrado em `dados/institucional/cursos/` (fase 3), e o turno das ofertas é o enum `turno_padronizado` (a grafia da fonte fica em `turno`).
 
 O resolvedor tem conjunto anotado próprio em `resolvedor/citacoes-anotadas.yaml` (rascunho, revisão humana pendente), medido por `bun run kb avaliar-resolvedor`.
 

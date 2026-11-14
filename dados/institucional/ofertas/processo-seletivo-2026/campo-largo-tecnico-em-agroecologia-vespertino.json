@@ -11,8 +11,8 @@
   "forma_oferta": "40 vagas; 1 turma(s); turno Vespertino; duração 4 anos",
   "status_curadoria": "sugerido",
   "modalidade": "presencial",
-  "turno": "vespertino",
-  "turno_original": "Vespertino",
+  "turno": "Vespertino",
+  "turno_padronizado": "vespertino",
   "campi": [],
   "cursos": [
     "campo-largo/agroecologia"

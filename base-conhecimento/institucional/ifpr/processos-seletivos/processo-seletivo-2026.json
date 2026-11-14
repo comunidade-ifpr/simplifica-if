@@ -47,8 +47,8 @@
         "edital_id": "edital-integrados-2026"
       },
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "assis-chateaubriand-tecnico-em-agropecuaria-diurno-manha-3-tardes-por-semana-1",
@@ -67,8 +67,8 @@
       },
       "curso_slug": "tecnico-em-agropecuaria-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 3 tardes por semana)¹",
+      "turno": "Diurno (Manhã + 3 tardes por semana)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”. O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Diurno (manhã + 3 tardes por semana)¹”."
     },
     {
@@ -88,8 +88,8 @@
       },
       "curso_slug": "tecnico-em-comercio",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 2 tardes por semana)²",
+      "turno": "Diurno (Manhã + 2 tardes por semana)²",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ² do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “MATUTINO”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”. O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Diurno (manhã + 2 tardes por semana)²”."
     },
     {
@@ -109,8 +109,8 @@
       },
       "curso_slug": "tecnico-em-eletromecanica-subsequente",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "assis-chateaubriand-tecnico-em-informatica-para-internet-diurno-manha-2-tardes-por-semana-1",
@@ -129,8 +129,8 @@
       },
       "curso_slug": "tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (manhã + 2 tardes por semana)¹",
+      "turno": "Diurno (manhã + 2 tardes por semana)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -150,8 +150,8 @@
       },
       "curso_slug": "tecnico-em-mecatronica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (manhã + 2 tardes por semana)¹",
+      "turno": "Diurno (manhã + 2 tardes por semana)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -171,8 +171,8 @@
       },
       "curso_slug": "curso-tecnico-de-informatica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "barracao-tecnico-em-administracao-matutino",
@@ -191,8 +191,8 @@
       },
       "curso_slug": "tecnico-em-administracao",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "barracao-tecnico-em-informatica-matutino",
@@ -211,8 +211,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "campo-largo-tecnico-em-administracao-matutino",
@@ -231,8 +231,8 @@
       },
       "curso_slug": "administracao",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "campo-largo-tecnico-em-agroecologia-vespertino",
@@ -251,8 +251,8 @@
       },
       "curso_slug": "agroecologia",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "campo-largo-tecnico-em-automacao-industrial-vespertino",
@@ -271,8 +271,8 @@
       },
       "curso_slug": "automacao-industrial",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "campo-largo-tecnico-em-mecanica-matutino",
@@ -291,8 +291,8 @@
       },
       "curso_slug": "mecanica",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "campo-largo-tecnico-em-mecanica-noturno",
@@ -311,8 +311,8 @@
       },
       "curso_slug": "tecnico-em-mecanica-subsequente",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "capanema-tecnico-em-agroecologia-diurno-manha-e-tarde-1",
@@ -331,8 +331,8 @@
       },
       "curso_slug": "tecnico-em-agroecologia",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno (manhã e tarde)¹",
+      "turno": "Diurno (manhã e tarde)¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -352,8 +352,8 @@
       },
       "curso_slug": "tecnico-em-cooperativismo",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "capanema-tecnico-em-informatica-matutino",
@@ -372,8 +372,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "cascavel-tecnico-em-edificacoes-diurno-manha-duas-tardes-1",
@@ -392,8 +392,8 @@
       },
       "curso_slug": "tecnico-em-edificacoes",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (manhã+duas tardes)¹",
+      "turno": "Diurno (manhã+duas tardes)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”. O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Diurno (manhã + 2 tardes por semana)¹”."
     },
     {
@@ -413,8 +413,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (manhã+duas tardes)¹",
+      "turno": "Diurno (manhã+duas tardes)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”. O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Diurno (manhã + 2 tardes por semana)¹”."
     },
     {
@@ -434,8 +434,8 @@
       },
       "curso_slug": "tecnico-em-quimica",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (manhã+duas tardes)¹",
+      "turno": "Diurno (manhã+duas tardes)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”. O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Diurno (manhã + 2 tardes por semana)¹”."
     },
     {
@@ -455,8 +455,8 @@
       },
       "curso_slug": "tecnico-em-administracao-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Matutino + duas tardes por semana¹",
+      "turno": "Matutino + duas tardes por semana¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”. O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Matutino (manhã + 2 tardes por semana¹”."
     },
     {
@@ -476,8 +476,8 @@
       },
       "curso_slug": "tecnico-em-alimentos-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "colombo-tecnico-em-informatica-matutino",
@@ -496,8 +496,8 @@
       },
       "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "coronel-vivida-tecnico-em-administracao-diurno-manha-2-tardes-1",
@@ -516,8 +516,8 @@
       },
       "curso_slug": "tecnico-em-administracao",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 2 tardes)¹",
+      "turno": "Diurno (Manhã + 2 tardes)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”. Divergência a revisar: o Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) registra o turno “Integral”."
     },
     {
@@ -537,8 +537,8 @@
       },
       "curso_slug": "tecnico-em-cooperativismo",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 2 tardes)¹",
+      "turno": "Diurno (Manhã + 2 tardes)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”. Divergência a revisar: o Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) registra o turno “Integral”."
     },
     {
@@ -558,8 +558,8 @@
       },
       "curso_slug": "tecnico-em-administracao-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Matutino com contraturno a tarde",
+      "turno": "Matutino com contraturno a tarde",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Matutino (com contraturno a tarde)²”. Nota ² do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “MATUTINO”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -579,8 +579,8 @@
       },
       "curso_slug": "tecnico-em-condominio",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "curitiba-tecnico-em-contabilidade-matutino-com-contraturno-a-tarde",
@@ -599,8 +599,8 @@
       },
       "curso_slug": "tecnico-em-contabilidade-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Matutino com contraturno a tarde",
+      "turno": "Matutino com contraturno a tarde",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Matutino (com contraturno a tarde)²”. Nota ² do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “MATUTINO”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -620,8 +620,8 @@
       },
       "curso_slug": "tecnico-em-edificacoes",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "curitiba-tecnico-em-eletromecanica-noturno",
@@ -640,8 +640,8 @@
       },
       "curso_slug": "tecnico-em-eletromecanica",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "curitiba-tecnico-em-eletronica-vespertino-com-contraturno-pela-manha",
@@ -660,8 +660,8 @@
       },
       "curso_slug": "tecnico-em-eletronica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "vespertino-com-contraturno",
-      "turno_original": "Vespertino com contraturno pela manhã",
+      "turno": "Vespertino com contraturno pela manhã",
+      "turno_padronizado": "vespertino-com-contraturno",
       "turno_nota": "O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Vespertino (com contraturno pela manhã)³”. Nota ³ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “VESPERTINO”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -681,8 +681,8 @@
       },
       "curso_slug": "tecnico-em-eletrotecnica",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "curitiba-tecnico-em-enfermagem-matutino",
@@ -701,8 +701,8 @@
       },
       "curso_slug": "tecnico-em-enfermagem",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "curitiba-tecnico-em-eventos-noturno",
@@ -721,8 +721,8 @@
       },
       "curso_slug": "tecnico-em-eventos",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "curitiba-tecnico-em-informatica-matutino",
@@ -741,8 +741,8 @@
       },
       "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "curitiba-tecnico-em-mecanica-noturno",
@@ -761,8 +761,8 @@
       },
       "curso_slug": "tecnico-em-mecanica",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "curitiba-tecnico-em-mecanica-vespertino-com-contraturno-pela-manha",
@@ -781,8 +781,8 @@
       },
       "curso_slug": "tecnico-em-mecanica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "vespertino-com-contraturno",
-      "turno_original": "Vespertino com contraturno pela manhã",
+      "turno": "Vespertino com contraturno pela manhã",
+      "turno_padronizado": "vespertino-com-contraturno",
       "turno_nota": "O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Vespertino (com contraturno pela manhã)³”. Nota ³ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “VESPERTINO”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -802,8 +802,8 @@
       },
       "curso_slug": "tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Matutino com contraturno a tarde",
+      "turno": "Matutino com contraturno a tarde",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Matutino (com contraturno a tarde)²”. Nota ² do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “MATUTINO”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -823,8 +823,8 @@
       },
       "curso_slug": "tecnico-em-processos-fotograficos",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "curitiba-tecnico-em-processos-fotograficos-vespertino-com-contraturno-pela-manha",
@@ -843,8 +843,8 @@
       },
       "curso_slug": "tecnico-em-processos-fotograficos-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "vespertino-com-contraturno",
-      "turno_original": "Vespertino com contraturno pela manhã",
+      "turno": "Vespertino com contraturno pela manhã",
+      "turno_padronizado": "vespertino-com-contraturno",
       "turno_nota": "O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Vespertino (com contraturno pela manhã)³”. Nota ³ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “VESPERTINO”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -864,8 +864,8 @@
       },
       "curso_slug": "tecnico-em-producao-de-audio-e-video",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "curitiba-tecnico-em-programacao-de-jogos-digitais-vespertino",
@@ -884,8 +884,8 @@
       },
       "curso_slug": "tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "curitiba-tecnico-em-protese-dentaria-noturno",
@@ -904,8 +904,8 @@
       },
       "curso_slug": "tecnico-em-protese-dentaria",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "curitiba-tecnico-em-protese-dentaria-vespertino",
@@ -924,8 +924,8 @@
       },
       "curso_slug": "tecnico-em-protese-dentaria",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "curitiba-tecnico-em-radiologia-matutino",
@@ -944,8 +944,8 @@
       },
       "curso_slug": "tecnico-em-radiologia",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "curitiba-tecnico-em-saude-bucal-noturno",
@@ -964,8 +964,8 @@
       },
       "curso_slug": "tecnico-em-saude-bucal",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "curitiba-tecnico-em-telecomunicacoes-noturno",
@@ -984,8 +984,8 @@
       },
       "curso_slug": "tecnico-em-telecomunicacoes",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "foz-do-iguacu-tecnico-em-aquicultura-diurno-manha-1-tarde-2",
@@ -1004,8 +1004,8 @@
       },
       "curso_slug": "tecnico-em-aquicultura",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 1 tarde)²",
+      "turno": "Diurno (Manhã + 1 tarde)²",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ² do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “MATUTINO”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1025,8 +1025,8 @@
       },
       "curso_slug": "tecnico-em-desenvolvimento-de-sistemas",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino",
+      "turno": "Matutino",
+      "turno_padronizado": "matutino",
       "turno_nota": "Divergência a revisar: o Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) registra o turno “Integral”."
     },
     {
@@ -1046,8 +1046,8 @@
       },
       "curso_slug": "tecnico-em-edificacoes-3",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 1 tarde)²",
+      "turno": "Diurno (Manhã + 1 tarde)²",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ² do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “MATUTINO”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”. Divergência a revisar: o Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) registra o turno “Integral”."
     },
     {
@@ -1067,8 +1067,8 @@
       },
       "curso_slug": "tecnico-em-gastronomia",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "foz-do-iguacu-tecnico-em-meio-ambiente-matutino",
@@ -1087,8 +1087,8 @@
       },
       "curso_slug": "tecnico-em-meio-ambiente",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino",
+      "turno": "Matutino",
+      "turno_padronizado": "matutino",
       "turno_nota": "Divergência a revisar: o Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) registra o turno “Integral”."
     },
     {
@@ -1108,8 +1108,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "irati-tecnico-em-agroecologia-matutino",
@@ -1128,8 +1128,8 @@
       },
       "curso_slug": "tecnico-em-agroecologia",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "irati-tecnico-em-informatica-matutino",
@@ -1148,8 +1148,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "irati-tecnico-em-informatica-vespertino",
@@ -1168,8 +1168,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "ivaipora-tecnico-em-agropecuaria-diurno-manha-e-tarde-2",
@@ -1188,8 +1188,8 @@
       },
       "curso_slug": "tecnico-em-agropecuaria-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno (manhã e tarde)²",
+      "turno": "Diurno (manhã e tarde)²",
+      "turno_padronizado": "diurno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ² do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “MATUTINO”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”. Divergência a revisar: o Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) registra o turno “Integral”."
     },
     {
@@ -1209,8 +1209,8 @@
       },
       "curso_slug": "tecnico-em-eletrotecnica-integrado",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno (manhã e tarde)²",
+      "turno": "Diurno (manhã e tarde)²",
+      "turno_padronizado": "diurno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ² do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “MATUTINO”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1230,8 +1230,8 @@
       },
       "curso_slug": "tecnico-em-eletrotecnica-subsequente",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "ivaipora-tecnico-em-informatica-diurno-manha-e-tarde-2",
@@ -1250,8 +1250,8 @@
       },
       "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno (manhã e tarde)²",
+      "turno": "Diurno (manhã e tarde)²",
+      "turno_padronizado": "diurno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ² do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “MATUTINO”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1271,8 +1271,8 @@
       },
       "curso_slug": "tecnico-em-alimentos",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno",
+      "turno": "Diurno",
+      "turno_padronizado": "diurno",
       "turno_nota": "O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Diurno¹”. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1292,8 +1292,8 @@
       },
       "curso_slug": "tecnico-em-eletrotecnica",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno",
+      "turno": "Diurno",
+      "turno_padronizado": "diurno",
       "turno_nota": "O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Diurno¹”. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1313,8 +1313,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno",
+      "turno": "Diurno",
+      "turno_padronizado": "diurno",
       "turno_nota": "O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Diurno¹”. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1334,8 +1334,8 @@
       },
       "curso_slug": "tecnico-em-mecanica",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno",
+      "turno": "Diurno",
+      "turno_padronizado": "diurno",
       "turno_nota": "O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Diurno¹”. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1355,8 +1355,8 @@
       },
       "curso_slug": "tecnico-em-teatro",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "jaguariaiva-tecnico-em-alimentos-diurno-manha-e-tarde-1",
@@ -1375,8 +1375,8 @@
       },
       "curso_slug": "tecnico-em-alimentos-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno (manhã e tarde)¹",
+      "turno": "Diurno (manhã e tarde)¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1395,8 +1395,8 @@
         "edital_id": "edital-integrados-2026"
       },
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno (manhã e tarde)¹",
+      "turno": "Diurno (manhã e tarde)¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1415,8 +1415,8 @@
         "edital_id": "edital-integrados-2026"
       },
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "londrina-tecnico-em-enfermagem-diurno1",
@@ -1435,8 +1435,8 @@
       },
       "curso_slug": "tecnico-em-enfermagem",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno¹",
+      "turno": "Diurno¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "A marca ¹ vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota. No Edital nº 128/2025, Anexo I, a grafia é “Diurno ²”, e a nota ² diz que o turno “Diurno” aparece no Portal do Candidato do IFPR como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1456,8 +1456,8 @@
       },
       "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "londrina-tecnico-em-massoterapia-matutino",
@@ -1476,8 +1476,8 @@
       },
       "curso_slug": "tecnico-em-massoterapia",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "londrina-tecnico-em-protese-dentaria-noturno",
@@ -1496,8 +1496,8 @@
       },
       "curso_slug": "tecnico-em-protese-dentaria-2",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "londrina-tecnico-em-saude-bucal-matutino",
@@ -1516,8 +1516,8 @@
       },
       "curso_slug": "tecnico-em-saude-bucal",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "palmas-tecnico-em-alimentos-diurno-manha-e-tarde",
@@ -1535,8 +1535,8 @@
         "edital_id": "edital-integrados-2026"
       },
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno (manhã e tarde)",
+      "turno": "Diurno (manhã e tarde)",
+      "turno_padronizado": "diurno",
       "turno_nota": "O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Diurno (manhã e tarde)¹”. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1555,8 +1555,8 @@
         "edital_id": "edital-integrados-2026"
       },
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno (manhã e tarde)",
+      "turno": "Diurno (manhã e tarde)",
+      "turno_padronizado": "diurno",
       "turno_nota": "O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Diurno (manhã e tarde)¹”. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1575,8 +1575,8 @@
         "edital_id": "edital-integrados-2026"
       },
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno (manhã e tarde)",
+      "turno": "Diurno (manhã e tarde)",
+      "turno_padronizado": "diurno",
       "turno_nota": "O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Diurno (manhã e tarde)¹”. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1596,8 +1596,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "paranagua-tecnico-em-mecanica-diurno-tarde-e-manha-1",
@@ -1616,8 +1616,8 @@
       },
       "curso_slug": "tecnico-em-mecanica",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno (tarde e manhã)¹",
+      "turno": "Diurno (tarde e manhã)¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1637,8 +1637,8 @@
       },
       "curso_slug": "tecnico-em-meio-ambiente",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "paranagua-tecnico-em-producao-cultural-matutino",
@@ -1657,8 +1657,8 @@
       },
       "curso_slug": "tecnico-em-producao-cultural",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "paranavai-tecnico-em-agroindustria-matutino",
@@ -1677,8 +1677,8 @@
       },
       "curso_slug": "tecnico-em-agroindustria",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "paranavai-tecnico-em-eletromecanica-noturno",
@@ -1697,8 +1697,8 @@
       },
       "curso_slug": "tecnico-em-eletromecanica-subsequente",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "paranavai-tecnico-em-informatica-matutino",
@@ -1717,8 +1717,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "paranavai-tecnico-em-mecatronica-matutino",
@@ -1737,8 +1737,8 @@
       },
       "curso_slug": "tecnico-em-mecatronica",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "pinhais-tecnico-em-administracao-matutino",
@@ -1757,8 +1757,8 @@
       },
       "curso_slug": "tecnico-em-administracao-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "pinhais-tecnico-em-administracao-vespertino",
@@ -1777,8 +1777,8 @@
       },
       "curso_slug": "tecnico-em-administracao-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "pinhais-tecnico-em-informatica-matutino",
@@ -1797,8 +1797,8 @@
       },
       "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "pinhais-tecnico-em-informatica-vespertino",
@@ -1817,8 +1817,8 @@
       },
       "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "pitanga-tecnico-em-alimentos-matutino",
@@ -1837,8 +1837,8 @@
       },
       "curso_slug": "tecnico-em-alimentos",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "pitanga-tecnico-em-cooperativismo-matutino",
@@ -1857,8 +1857,8 @@
       },
       "curso_slug": "tecnico-em-cooperativismo",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "pitanga-tecnico-em-desenvolvimento-de-sistemas-matutino",
@@ -1877,8 +1877,8 @@
       },
       "curso_slug": "tecnico-em-desenvolvimento-de-sistemas",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "ponta-grossa-tecnico-em-informatica-diurno-integral",
@@ -1896,8 +1896,8 @@
         "edital_id": "edital-integrados-2026"
       },
       "modalidade": "presencial",
-      "turno": "integral",
-      "turno_original": "Diurno (Integral)",
+      "turno": "Diurno (Integral)",
+      "turno_padronizado": "integral",
       "turno_nota": "O Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) grafa “Integral”."
     },
     {
@@ -1917,8 +1917,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 2 tardes por semana)¹",
+      "turno": "Diurno (Manhã + 2 tardes por semana)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1938,8 +1938,8 @@
       },
       "curso_slug": "tecnico-em-meio-ambiente",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 2 tardes por semana)¹",
+      "turno": "Diurno (Manhã + 2 tardes por semana)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1959,8 +1959,8 @@
       },
       "curso_slug": "tecnico-em-automacao-industrial-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Matutino/Vespertino¹",
+      "turno": "Matutino/Vespertino¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1980,8 +1980,8 @@
       },
       "curso_slug": "tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Matutino/Vespertino¹",
+      "turno": "Matutino/Vespertino¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -2001,8 +2001,8 @@
       },
       "curso_slug": "tecnico-em-mecanica",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Matutino/Vespertino¹",
+      "turno": "Matutino/Vespertino¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -2022,8 +2022,8 @@
       },
       "curso_slug": "tecnico-em-programacao-de-jogos-digitais",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Matutino/Vespertino¹",
+      "turno": "Matutino/Vespertino¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -2042,8 +2042,8 @@
         "edital_id": "edital-integrados-2026"
       },
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 2 tardes)¹",
+      "turno": "Diurno (Manhã + 2 tardes)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”. Divergência a revisar: a oferta não consta do Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025)."
     },
     {
@@ -2063,8 +2063,8 @@
       },
       "curso_slug": "tecnico-em-edificacoes-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Matutino/Vespertino¹",
+      "turno": "Matutino/Vespertino¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -2084,8 +2084,8 @@
       },
       "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Matutino/Vespertino¹",
+      "turno": "Matutino/Vespertino¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -2105,8 +2105,8 @@
       },
       "curso_slug": "tecnico-em-quimica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Matutino/Vespertino¹",
+      "turno": "Matutino/Vespertino¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -2126,8 +2126,8 @@
       },
       "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 2 tardes)¹",
+      "turno": "Diurno (Manhã + 2 tardes)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”. Divergência a revisar: o Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) registra o turno “Integral”."
     },
     {
@@ -2147,8 +2147,8 @@
       },
       "curso_slug": "tecnico-em-meio-ambiente-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 2 tardes)¹",
+      "turno": "Diurno (Manhã + 2 tardes)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ¹ do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “INTEGRAL”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”. Divergência a revisar: o Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) registra o turno “Integral”."
     }
   ],

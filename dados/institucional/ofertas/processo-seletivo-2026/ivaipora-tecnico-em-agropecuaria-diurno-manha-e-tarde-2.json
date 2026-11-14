@@ -11,8 +11,8 @@
   "forma_oferta": "35 vagas; 1 turma(s); turno Diurno (manhã e tarde)²; duração 3 anos",
   "status_curadoria": "sugerido",
   "modalidade": "presencial",
-  "turno": "diurno",
-  "turno_original": "Diurno (manhã e tarde)²",
+  "turno": "Diurno (manhã e tarde)²",
+  "turno_padronizado": "diurno",
   "turno_nota": "A marca vem da página de cursos do Processo Seletivo 2026 (url_fonte, fora do ar em 13/11/2026), sem o texto da nota; o texto é o da nota de mesmo número do edital. Nota ² do Edital nº 130/2025 (retificado pelo Edital nº 138/2025), Anexo I: no Portal do Candidato do IFPR o turno aparece como “MATUTINO”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”. Divergência a revisar: o Anexo I do Edital nº 130/2025 (retificado pelo Edital nº 138/2025) registra o turno “Integral”.",
   "campi": [],
   "cursos": [

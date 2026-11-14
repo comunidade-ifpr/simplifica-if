@@ -197,10 +197,15 @@ function auditarOfertas(base: BaseInstitucional, processoIdPorPagina: Map<string
     if (!oferta.tipoOferta) erros.push(`${nome}: Tipo de oferta ausente`);
     if (oferta.vagas === undefined) erros.push(`${nome}: Vagas ausente ou inválida`);
     if (!ehHttps(oferta.urlFonte)) erros.push(`${nome}: URL fonte ausente ou não HTTPS`);
-    if (oferta.turno && !ehTurno(oferta.turno)) erros.push(`${nome}: turno fora do enum: ${oferta.turno}`);
-    if (oferta.turnoOriginal && !oferta.turno) erros.push(`${nome}: turno_original sem turno padronizado`);
-    if (RE_MARCA_RODAPE.test(oferta.turnoOriginal) && !oferta.turnoNota) {
-      erros.push(`${nome}: turno_original com marca de rodapé sem turno_nota`);
+    if (oferta.turnoPadronizado && !ehTurno(oferta.turnoPadronizado)) {
+      erros.push(`${nome}: turno_padronizado fora do enum: ${oferta.turnoPadronizado}`);
+    }
+    if (oferta.turno && !oferta.turnoPadronizado) erros.push(`${nome}: turno sem turno_padronizado`);
+    if (oferta.turno && oferta.trechoFonte && !oferta.trechoFonte.includes(oferta.turno)) {
+      erros.push(`${nome}: turno "${oferta.turno}" não aparece literalmente em trecho_fonte`);
+    }
+    if (RE_MARCA_RODAPE.test(oferta.turno) && !oferta.turnoNota) {
+      erros.push(`${nome}: turno com marca de rodapé sem turno_nota`);
     }
     if (!oferta.processoIds.length) erros.push(`${nome}: relação Processo Seletivo ausente`);
     for (const processoPagina of oferta.processoIds) {

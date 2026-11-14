@@ -11,8 +11,8 @@
   "forma_oferta": "40 vagas; 1 turma(s); turno Integral; duração 4 anos",
   "status_curadoria": "sugerido",
   "modalidade": "presencial",
-  "turno": "integral",
-  "turno_original": "Integral",
+  "turno": "Integral",
+  "turno_padronizado": "integral",
   "campi": [],
   "cursos": [
     "foz-do-iguacu/tecnico-em-edificacoes-3"

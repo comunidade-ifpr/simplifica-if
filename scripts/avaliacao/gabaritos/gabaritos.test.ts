@@ -60,12 +60,16 @@ describe("geradores de gabarito", () => {
 
   test("Q08: o campus de Curitiba entra pela oferta noturna de Telecomunicações", () => {
     const q08 = gabarito("q08-campi-eixo-informacao-comunicacao.json");
-    const curitiba = q08.detalhes["campus:curitiba"] as Array<{ curso: string; turno: string; turno_original: string }>;
+    const curitiba = q08.detalhes["campus:curitiba"] as Array<{
+      curso: string;
+      turno_padronizado: string;
+      turno: string;
+    }>;
     expect(curitiba).toContainEqual(
       expect.objectContaining({
         curso: "curso:curitiba/tecnico-em-telecomunicacoes",
-        turno: "noturno",
-        turno_original: "Noturno",
+        turno_padronizado: "noturno",
+        turno: "Noturno",
       }),
     );
   });

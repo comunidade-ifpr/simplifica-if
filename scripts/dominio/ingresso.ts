@@ -1,8 +1,8 @@
 import { semAcento } from "@simplifica-if/kb/normas/ids";
 
 /**
- * Turno padronizado de uma oferta de ingresso. A grafia do edital fica em `turno_original`, com as
- * marcas de nota de rodapé, e o que não cabe no enum (o texto da nota) fica em `turno_nota`.
+ * Turno padronizado de uma oferta de ingresso (`turno_padronizado`). A grafia da fonte fica em `turno`,
+ * com as marcas de nota de rodapé, e o que não cabe no enum (o texto da nota) fica em `turno_nota`.
  *
  * - `matutino`, `vespertino`, `noturno`: um só período;
  * - `integral`: o edital diz "Integral" ou "Diurno (Integral)";
@@ -103,10 +103,10 @@ export interface OfertaIngresso {
   statusCuradoria: string;
   revisadoEm: string;
   modalidade: string;
-  /** Turno padronizado (`TURNOS`), ou vazio. */
+  /** Grafia do turno na fonte (`trechoFonte`), com as marcas de rodapé. */
   turno: string;
-  /** Grafia do turno na fonte, com as marcas de rodapé. */
-  turnoOriginal: string;
+  /** Turno padronizado (`TURNOS`), ou vazio. */
+  turnoPadronizado: string;
   /** O que o enum não diz: o texto da nota de rodapé do edital, divergências entre fontes. */
   turnoNota: string;
   campusIdOriginal: string;

@@ -11,8 +11,8 @@
   "forma_oferta": "80 vagas; 2 turma(s); turno Matutino; duração 4 anos",
   "status_curadoria": "sugerido",
   "modalidade": "presencial",
-  "turno": "matutino",
-  "turno_original": "Matutino",
+  "turno": "Matutino",
+  "turno_padronizado": "matutino",
   "campi": [],
   "cursos": [
     "goioere/tecnico-em-informatica"

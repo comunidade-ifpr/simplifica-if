@@ -128,11 +128,11 @@ describe("validação do YAML", () => {
 });
 
 describe("config.yaml", () => {
-  test("é válido e só pré-aprova ferramentas de leitura", () => {
+  test("é válido e só pré-aprova ferramentas de leitura dentro do repositório", () => {
     const config = carregarConfig();
     expect(config.execucoes).toBeGreaterThanOrEqual(1);
     for (const regra of config.ferramentas_permitidas) {
-      expect(regra).toMatch(/^(?:Read|Grep|Glob|Bash\((?:jq|ls|wc|head|cat|rg) \*\))$/u);
+      expect(regra).toMatch(/^(?:Read\(\.\/\*\*\)|Grep|Glob)$/u);
     }
   });
 });

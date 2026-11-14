@@ -107,13 +107,13 @@ const oferta: OfertaIngresso = {
   vagas: 40,
   urlFonte: "https://ifpr.edu.br/edital",
   paginaFonte: 12,
-  trechoFonte: "Técnico em Exemplo — 40 vagas",
+  trechoFonte: "Técnico em Exemplo — 40 vagas — Diurno (Manhã + 2 tardes)¹",
   formaOferta: "Integrado",
   statusCuradoria: "revisado",
   revisadoEm: "2026-01-10",
   modalidade: "Presencial",
-  turno: "matutino-com-contraturno",
-  turnoOriginal: "Diurno (Manhã + 2 tardes)¹",
+  turno: "Diurno (Manhã + 2 tardes)¹",
+  turnoPadronizado: "matutino-com-contraturno",
   turnoNota: "Nota ¹ do edital: aparece no Portal do Candidato como turno “Integral”.",
   campusIdOriginal: "",
   cursoSlugOriginal: "",
@@ -210,9 +210,9 @@ describe("dados/institucional", () => {
 
     writeFileSync(
       path.join(raiz, "ofertas", "processo-seletivo-2026", "exemplo-tecnico-em-exemplo.json"),
-      JSON.stringify({ ...dados.ofertas[0], turno: "Manhã" }),
+      JSON.stringify({ ...dados.ofertas[0], turno_padronizado: "Manhã" }),
     );
-    expect(carregarDadosInstitucionais(raiz).erros.some((erro) => erro.includes(": turno: "))).toBe(true);
+    expect(carregarDadosInstitucionais(raiz).erros.some((erro) => erro.includes(": turno_padronizado: "))).toBe(true);
   });
 
   test("a auditoria acusa curso de campus inexistente", () => {

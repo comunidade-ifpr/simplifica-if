@@ -213,9 +213,9 @@ itens:
     destino: ["#art28-par1-iii", "#art36"]
     nota: A vivência de situações práticas passa à prática profissional intrínseca ao currículo e à prática profissional supervisionada obrigatória.
   - origem: "#art20-x"
-    tipo: sem-equivalente
-    destino: []
-    nota: Sem lista de fundamentos aplicados (empreendedorismo, cooperativismo, tecnologia da informação, gestão de pessoas, legislação etc.); o empreendedorismo aparece só nos princípios (art. 3º, VIII).
+    tipo: parcial
+    destino: ["#art22-viii"]
+    nota: Sem a lista de fundamentos aplicados ao curso (cooperativismo, trabalho em equipe, tecnologia da informação, gestão de pessoas, legislação trabalhista, ética profissional, segurança do trabalho, iniciação científica). Empreendedorismo, inovação e sustentabilidade ambiental continuam no art. 22, VIII, como campos de diálogo e referências da formação, e as competências para o empreendedorismo estão também nos princípios (art. 3º, VIII).
   - origem: "#art20-par1"
     tipo: parcial
     destino: ["#art18-par2"]

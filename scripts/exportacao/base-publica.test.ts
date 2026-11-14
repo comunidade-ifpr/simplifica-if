@@ -158,13 +158,13 @@ describe("auditarBase", () => {
       tipoOferta: "técnico integrado",
       vagas: 40,
       urlFonte: "https://ifpr.edu.br/edital",
-      trechoFonte: "",
+      trechoFonte: "Exemplo; Técnico em Exemplo; Turno: Diurno (Manhã + 2 tardes)¹; Vagas: 40",
       formaOferta: "",
       statusCuradoria: "",
       revisadoEm: "",
       modalidade: "",
-      turno: "matutino-com-contraturno",
-      turnoOriginal: "Diurno (Manhã + 2 tardes)¹",
+      turno: "Diurno (Manhã + 2 tardes)¹",
+      turnoPadronizado: "matutino-com-contraturno",
       turnoNota: "Nota ¹: aparece como Integral no Portal do Candidato.",
       campusIdOriginal: "exemplo",
       cursoSlugOriginal: "",
@@ -177,9 +177,12 @@ describe("auditarBase", () => {
     const erros = (parcial: Partial<OfertaIngresso>) =>
       auditarBase(base({ ofertas: [{ ...oferta, ...parcial }] })).filter((erro) => erro.includes("turno"));
     expect(erros({})).toEqual([]);
-    expect(erros({ turnoNota: "" })).toEqual([`${nome}: turno_original com marca de rodapé sem turno_nota`]);
-    expect(erros({ turno: "Manhã" })).toEqual([`${nome}: turno fora do enum: Manhã`]);
-    expect(erros({ turno: "" })).toEqual([`${nome}: turno_original sem turno padronizado`]);
+    expect(erros({ turnoNota: "" })).toEqual([`${nome}: turno com marca de rodapé sem turno_nota`]);
+    expect(erros({ turnoPadronizado: "Manhã" })).toEqual([`${nome}: turno_padronizado fora do enum: Manhã`]);
+    expect(erros({ turnoPadronizado: "" })).toEqual([`${nome}: turno sem turno_padronizado`]);
+    expect(erros({ turno: "Integral" })).toEqual([
+      `${nome}: turno "Integral" não aparece literalmente em trecho_fonte`,
+    ]);
   });
 
   test("exige curso em movimentação com processo SEI", () => {

@@ -34,7 +34,9 @@ describe("relações", () => {
       migradas.some((r) => r.tipo === tipo && r.origem === origem && r.alvo === alvo);
     expect(tem("revoga", DCN_2026, DCN_2021)).toBe(true);
     expect(tem("revoga", DCN_2026, "br/cne-ceb/res/2025/3")).toBe(true);
-    expect(tem("altera", "br/lei/2008/11645", "br/lei/2003/10639")).toBe(true);
+    // A Lei 11.645 dá nova redação ao art. 26-A da LDB; o par antigo "altera Lei 10.639" foi retirado.
+    expect(tem("altera", "br/lei/2008/11645", "br/lei/1996/9394")).toBe(true);
+    expect(tem("altera", "br/lei/2008/11645", "br/lei/2003/10639")).toBe(false);
     expect(tem("altera", "br/cne-ceb/res/2025/6", "br/cne-ceb/res/2025/3")).toBe(true);
     expect(tem("altera", "ifpr/consup/res/2024/222", "ifpr/consup/res/2014/8")).toBe(true);
   });
@@ -67,6 +69,8 @@ describe("vigência", () => {
       // Status manuais anteriores que o cálculo muda, com a relação que justifica a mudança.
       const justificadas: Record<string, [string, string]> = {
         "br/lei/1996/9394": ["alterada", "parcialmente revogada"], // Lei 11.788, art. 22: revoga o par. único do art. 82
+        "br/lei/2003/10639": ["alterada", "vigente"], // a Lei 11.645 altera o art. 26-A da LDB, não a Lei 10.639
+        "br/lei/2012/12711": ["vigente", "alterada"], // Lei 14.945/2024, art. 8º: nova redação do caput do art. 1º
         "ifpr/consup/res/2011/55": ["alterada", "parcialmente revogada"], // art. 104 revogado pela Res. 2/2017 (nota no texto)
         "ifpr/consup/res/2014/8": ["alterada", "parcialmente revogada"], // Res. 222/2024 e 242/2025, art. 2º
         "ifpr/consup/res/2025/259": ["vigente", "alterada"], // Res. 263/2025 (notas no próprio texto)

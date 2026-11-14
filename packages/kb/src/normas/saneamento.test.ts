@@ -16,6 +16,17 @@ import { raizRepositorio } from "./registro.ts";
 /** Último commit antes do saneamento da fase 5 (merge da fase 4 em `main`). */
 export const REF_ANTES_SANEAMENTO = "fcfc006";
 
+/**
+ * Normas cujo texto foi substituído de propósito depois do saneamento (não é mudança de marcação).
+ * A comparação de palavras não se aplica a elas.
+ */
+const TEXTO_SUBSTITUIDO = new Map<string, string>([
+  [
+    "normas/br/leis/LEI_BR_14945-2024_ensino-medio.md",
+    "paráfrase trocada pela transcrição do texto oficial (Planalto) em 13/11/2026",
+  ],
+]);
+
 const raiz = raizRepositorio();
 
 function versaoAnterior(relativo: string): string | null {
@@ -37,6 +48,7 @@ describe.skipIf(!refDisponivel)(`saneamento: palavras iguais às de ${REF_ANTES_
     expect(normas.length).toBe(36);
   });
   for (const norma of normas) {
+    if (TEXTO_SUBSTITUIDO.has(norma.path)) continue;
     test(norma.path, () => {
       const relativo = path.posix.join("base-conhecimento", norma.path);
       const antes = versaoAnterior(relativo);

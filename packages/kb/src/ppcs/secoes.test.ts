@@ -76,6 +76,38 @@ describe("taxonomias", () => {
     expect(classificarTitulo("10 AVALIAÇÃO DO CURSO", "tecnico")).toBe("avaliacao_curso");
     expect(classificarTitulo("Título sem regra", "tecnico")).toBeNull();
   });
+
+  test("folha de rosto, bolsas e objetivos do componente não caem em avaliação, inclusão e objetivos", () => {
+    // Folha de rosto repetida no meio do PPC: o "( X )" de aprovação não é avaliação da aprendizagem.
+    for (const titulo of [
+      "APROVAÇÃO DO PROJETO PEDAGÓGICO DE CURSO ( ) AJUSTE CURRICULAR DO PROJETO PEDAGÓGICO DE CURSO ( X )",
+      "RESOLUÇÃO DE CRIAÇÃO: Resolução 78/10 do Conselho Superior APROVAÇÃO DO PROJETO PEDAGÓGICO DO CURSO ( ) AJUSTE CURRICULAR DO PROJETO PEDAGÓGICO DO CURSO (X)",
+    ])
+      expect(classificarTitulo(titulo, "tecnico")).toBe("pretextual");
+    // Programas e bolsas de pesquisa, extensão e inclusão social são apoio ao estudante.
+    for (const titulo of [
+      "5.1.1 Programas de Ensino, Pesquisa, Extensão, Inovação, Inclusão Social e Assistência estudantil",
+      "5.1.1 Programas de Pesquisa, Extensão, Inovação, Inclusão Social, Monitoria e Bolsa-Atleta",
+      "3.4.1 Bolsas de Pesquisa, Bolsas de Extensão e Inclusão Social",
+      "5.1.10 Bolsas de pesquisa, bolsas de extensão e inclusão social",
+      "PBIS - Programa de Bolsas Acadêmicas de Inclusão Social",
+      "Bolsas de inclusão",
+    ])
+      expect([titulo, classificarTitulo(titulo, "tecnico")]).toEqual([titulo, "atendimento_estudante"]);
+    expect(classificarTitulo("Programa Institucional de Bolsas de Iniciação Científica (PIBIC)", "tecnico")).toBe(
+      "ensino_pesquisa_extensao",
+    );
+    expect(classificarTitulo("5.2 Educação inclusiva e acessibilidade", "tecnico")).toBe("acessibilidade_inclusao");
+    expect(classificarTitulo("5.3 Inclusão social e acessibilidade", "tecnico")).toBe("acessibilidade_inclusao");
+    // Objetivos do componente pertencem ao plano de ensino (ementário), não aos objetivos do curso.
+    for (const titulo of [
+      "3. OBJETIVOS DO COMPONENTE CURRICULAR (geral e específicos)",
+      "Objetivos do Componente Curricular: Objetivo Geral:",
+      "OBJETIVOS DO COMPONENTE (GERAL E ESPECÍFICO) Objetivo Geral:",
+    ])
+      expect(classificarTitulo(titulo, "tecnico")).toBe("ementas");
+    expect(classificarTitulo("3 OBJETIVOS DO CURSO", "tecnico")).toBe("objetivos");
+  });
 });
 
 describe("segmentação", () => {

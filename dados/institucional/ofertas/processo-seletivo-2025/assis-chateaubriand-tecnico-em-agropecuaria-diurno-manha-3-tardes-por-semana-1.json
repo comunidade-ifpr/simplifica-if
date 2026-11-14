@@ -11,8 +11,8 @@
   "forma_oferta": "40 vagas; 1 turma(s); turno Diurno (Manhã + 3 tardes por semana)¹; duração 3 anos",
   "status_curadoria": "sugerido",
   "modalidade": "presencial",
-  "turno": "matutino-com-contraturno",
-  "turno_original": "Diurno (Manhã + 3 tardes por semana)¹",
+  "turno": "Diurno (Manhã + 3 tardes por semana)¹",
+  "turno_padronizado": "matutino-com-contraturno",
   "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”.",
   "campi": [],
   "cursos": [

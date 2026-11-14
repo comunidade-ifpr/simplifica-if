@@ -41,8 +41,8 @@
       },
       "curso_slug": "tecnico-em-melhoria-de-processos",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "assis-chateaubriand-tecnico-em-agropecuaria-diurno-manha-3-tardes-por-semana-1",
@@ -61,8 +61,8 @@
       },
       "curso_slug": "tecnico-em-agropecuaria-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 3 tardes por semana)¹",
+      "turno": "Diurno (Manhã + 3 tardes por semana)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -82,8 +82,8 @@
       },
       "curso_slug": "tecnico-em-agropecuaria",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "assis-chateaubriand-tecnico-em-alimentos-noturno",
@@ -102,8 +102,8 @@
       },
       "curso_slug": "tecnico-em-alimentos",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "assis-chateaubriand-tecnico-em-comercio-diurno-manha-1-tarde-por-semana-2",
@@ -122,8 +122,8 @@
       },
       "curso_slug": "tecnico-em-comercio",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 1 tarde por semana)²",
+      "turno": "Diurno (Manhã + 1 tarde por semana)²",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "Nota ² do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Matutino”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -143,8 +143,8 @@
       },
       "curso_slug": "tecnico-em-eletromecanica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "assis-chateaubriand-tecnico-em-eletromecanica-noturno",
@@ -163,8 +163,8 @@
       },
       "curso_slug": "tecnico-em-eletromecanica-subsequente",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "assis-chateaubriand-tecnico-em-eletrotecnica-noturno",
@@ -183,8 +183,8 @@
       },
       "curso_slug": "tecnico-em-eletrotecnica-subsequente",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "assis-chateaubriand-tecnico-em-informatica-para-internet-diurno-manha-2-tardes-por-semana-1",
@@ -203,8 +203,8 @@
       },
       "curso_slug": "tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (manhã + 2 tardes por semana)¹",
+      "turno": "Diurno (manhã + 2 tardes por semana)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -224,8 +224,8 @@
       },
       "curso_slug": "tecnico-em-desenvolvimento-de-sistemas",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "astorga-tecnico-em-informatica-matutino",
@@ -244,8 +244,8 @@
       },
       "curso_slug": "curso-tecnico-de-informatica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "barracao-tecnico-em-administracao-matutino",
@@ -264,8 +264,8 @@
       },
       "curso_slug": "tecnico-em-administracao",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "barracao-tecnico-em-informatica-matutino",
@@ -284,8 +284,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "campo-largo-tecnico-em-administracao-matutino",
@@ -304,8 +304,8 @@
       },
       "curso_slug": "administracao",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "campo-largo-tecnico-em-agroecologia-vespertino",
@@ -324,8 +324,8 @@
       },
       "curso_slug": "agroecologia",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "campo-largo-tecnico-em-automacao-industrial-vespertino",
@@ -344,8 +344,8 @@
       },
       "curso_slug": "automacao-industrial",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "campo-largo-tecnico-em-mecanica-matutino",
@@ -364,8 +364,8 @@
       },
       "curso_slug": "mecanica",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "campo-largo-tecnico-em-mecanica-noturno",
@@ -384,8 +384,8 @@
       },
       "curso_slug": "tecnico-em-mecanica-subsequente",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "capanema-tecnico-em-agroecologia-diurno-manha-e-tarde-1",
@@ -404,8 +404,8 @@
       },
       "curso_slug": "tecnico-em-agroecologia",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno (manhã e tarde)¹",
+      "turno": "Diurno (manhã e tarde)¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -425,8 +425,8 @@
       },
       "curso_slug": "tecnico-em-cooperativismo",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "capanema-tecnico-em-informatica-matutino",
@@ -445,8 +445,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "cascavel-tecnico-em-edificacoes-diurno-manha-duas-tardes-1",
@@ -465,8 +465,8 @@
       },
       "curso_slug": "tecnico-em-edificacoes",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (manhã+duas tardes)¹",
+      "turno": "Diurno (manhã+duas tardes)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -486,8 +486,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (manhã+duas tardes)¹",
+      "turno": "Diurno (manhã+duas tardes)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -507,8 +507,8 @@
       },
       "curso_slug": "tecnico-em-quimica",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (manhã+duas tardes)¹",
+      "turno": "Diurno (manhã+duas tardes)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -528,8 +528,8 @@
       },
       "curso_slug": "tecnico-em-administracao-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Matutino + duas tardes por semana¹",
+      "turno": "Matutino + duas tardes por semana¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -549,8 +549,8 @@
       },
       "curso_slug": "tecnico-em-alimentos-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "colombo-tecnico-em-informatica-matutino",
@@ -569,8 +569,8 @@
       },
       "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "coronel-vivida-tecnico-em-administracao-diurno-manha-2-tardes-1",
@@ -589,8 +589,8 @@
       },
       "curso_slug": "tecnico-em-administracao",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 2 tardes)¹",
+      "turno": "Diurno (Manhã + 2 tardes)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -610,8 +610,8 @@
       },
       "curso_slug": "tecnico-em-cooperativismo",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 2 tardes)¹",
+      "turno": "Diurno (Manhã + 2 tardes)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -630,8 +630,8 @@
         "edital_id": "edital-87-2024"
       },
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (manhã + 2 tardes por semana)¹",
+      "turno": "Diurno (manhã + 2 tardes por semana)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -651,8 +651,8 @@
       },
       "curso_slug": "tecnico-em-administracao-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "curitiba-tecnico-em-condominio-noturno",
@@ -671,8 +671,8 @@
       },
       "curso_slug": "tecnico-em-condominio",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "curitiba-tecnico-em-contabilidade-matutino",
@@ -691,8 +691,8 @@
       },
       "curso_slug": "tecnico-em-contabilidade-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "curitiba-tecnico-em-edificacoes-noturno",
@@ -711,8 +711,8 @@
       },
       "curso_slug": "tecnico-em-edificacoes",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "curitiba-tecnico-em-eletromecanica-noturno",
@@ -731,8 +731,8 @@
       },
       "curso_slug": "tecnico-em-eletromecanica",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "curitiba-tecnico-em-eletronica-vespertino",
@@ -751,8 +751,8 @@
       },
       "curso_slug": "tecnico-em-eletronica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "curitiba-tecnico-em-eletrotecnica-noturno",
@@ -771,8 +771,8 @@
       },
       "curso_slug": "tecnico-em-eletrotecnica",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "curitiba-tecnico-em-enfermagem-matutino",
@@ -791,8 +791,8 @@
       },
       "curso_slug": "tecnico-em-enfermagem",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "curitiba-tecnico-em-eventos-noturno",
@@ -811,8 +811,8 @@
       },
       "curso_slug": "tecnico-em-eventos",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "curitiba-tecnico-em-informatica-vespertino",
@@ -831,8 +831,8 @@
       },
       "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "curitiba-tecnico-em-mecanica-noturno",
@@ -851,8 +851,8 @@
       },
       "curso_slug": "tecnico-em-mecanica",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "curitiba-tecnico-em-mecanica-vespertino",
@@ -871,8 +871,8 @@
       },
       "curso_slug": "tecnico-em-mecanica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "curitiba-tecnico-em-petroleo-e-gas-matutino",
@@ -891,8 +891,8 @@
       },
       "curso_slug": "tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "curitiba-tecnico-em-processos-fotograficos-matutino",
@@ -911,8 +911,8 @@
       },
       "curso_slug": "tecnico-em-processos-fotograficos",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "curitiba-tecnico-em-processos-fotograficos-vespertino",
@@ -931,8 +931,8 @@
       },
       "curso_slug": "tecnico-em-processos-fotograficos-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "curitiba-tecnico-em-producao-de-audio-e-video-noturno",
@@ -951,8 +951,8 @@
       },
       "curso_slug": "tecnico-em-producao-de-audio-e-video",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "curitiba-tecnico-em-programacao-de-jogos-digitais-matutino",
@@ -971,8 +971,8 @@
       },
       "curso_slug": "tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "curitiba-tecnico-em-protese-dentaria-noturno",
@@ -991,8 +991,8 @@
       },
       "curso_slug": "tecnico-em-protese-dentaria",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "curitiba-tecnico-em-radiologia-matutino",
@@ -1011,8 +1011,8 @@
       },
       "curso_slug": "tecnico-em-radiologia",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "curitiba-tecnico-em-telecomunicacoes-noturno",
@@ -1031,8 +1031,8 @@
       },
       "curso_slug": "tecnico-em-telecomunicacoes",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "foz-do-iguacu-tecnico-em-aquicultura-diurno-manha-1-tarde-2",
@@ -1051,8 +1051,8 @@
       },
       "curso_slug": "tecnico-em-aquicultura",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 1 tarde)²",
+      "turno": "Diurno (Manhã + 1 tarde)²",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "Nota ² do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Matutino”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1072,8 +1072,8 @@
       },
       "curso_slug": "tecnico-em-desenvolvimento-de-sistemas",
       "modalidade": "presencial",
-      "turno": "integral",
-      "turno_original": "Integral"
+      "turno": "Integral",
+      "turno_padronizado": "integral"
     },
     {
       "id": "foz-do-iguacu-tecnico-em-edificacoes-integral",
@@ -1092,8 +1092,8 @@
       },
       "curso_slug": "tecnico-em-edificacoes-3",
       "modalidade": "presencial",
-      "turno": "integral",
-      "turno_original": "Integral"
+      "turno": "Integral",
+      "turno_padronizado": "integral"
     },
     {
       "id": "foz-do-iguacu-tecnico-em-meio-ambiente-integral",
@@ -1112,8 +1112,8 @@
       },
       "curso_slug": "tecnico-em-meio-ambiente",
       "modalidade": "presencial",
-      "turno": "integral",
-      "turno_original": "Integral"
+      "turno": "Integral",
+      "turno_padronizado": "integral"
     },
     {
       "id": "goioere-tecnico-em-informatica-matutino",
@@ -1132,8 +1132,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "irati-tecnico-em-agroecologia-matutino",
@@ -1152,8 +1152,8 @@
       },
       "curso_slug": "tecnico-em-agroecologia",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "irati-tecnico-em-agroecologia-vespertino",
@@ -1172,8 +1172,8 @@
       },
       "curso_slug": "tecnico-em-agroecologia",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "irati-tecnico-em-informatica-matutino",
@@ -1192,8 +1192,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "irati-tecnico-em-informatica-vespertino",
@@ -1212,8 +1212,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "ivaipora-tecnico-em-agropecuaria-diurno-matutino-1-tarde-2",
@@ -1232,8 +1232,8 @@
       },
       "curso_slug": "tecnico-em-agropecuaria-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Matutino + 1 tarde)²",
+      "turno": "Diurno (Matutino + 1 tarde)²",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "Nota ² do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Matutino”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1253,8 +1253,8 @@
       },
       "curso_slug": "tecnico-em-eletrotecnica-integrado",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Matutino + 1 tarde)²",
+      "turno": "Diurno (Matutino + 1 tarde)²",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "Nota ² do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Matutino”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1274,8 +1274,8 @@
       },
       "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Matutino + 1 tarde)²",
+      "turno": "Diurno (Matutino + 1 tarde)²",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "Nota ² do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Matutino”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1295,8 +1295,8 @@
       },
       "curso_slug": "tecnico-em-alimentos",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno¹",
+      "turno": "Diurno¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1316,8 +1316,8 @@
       },
       "curso_slug": "tecnico-em-eletrotecnica",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno¹",
+      "turno": "Diurno¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1337,8 +1337,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno¹",
+      "turno": "Diurno¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1358,8 +1358,8 @@
       },
       "curso_slug": "tecnico-em-mecanica",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno¹",
+      "turno": "Diurno¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1379,8 +1379,8 @@
       },
       "curso_slug": "tecnico-em-teatro",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "jaguariaiva-tecnico-em-alimentos-diurno-manha-e-tarde-1",
@@ -1399,8 +1399,8 @@
       },
       "curso_slug": "tecnico-em-alimentos-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno (manhã e tarde)¹",
+      "turno": "Diurno (manhã e tarde)¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1419,8 +1419,8 @@
         "edital_id": "edital-87-2024"
       },
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno (manhã e tarde)¹",
+      "turno": "Diurno (manhã e tarde)¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1439,8 +1439,8 @@
         "edital_id": "edital-87-2024"
       },
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "londrina-tecnico-em-enfermagem-diurno1",
@@ -1459,8 +1459,8 @@
       },
       "curso_slug": "tecnico-em-enfermagem",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno¹",
+      "turno": "Diurno¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "Nota ¹ do Edital nº 88/2024, Anexo I: no Portal do Candidato do IFPR o turno “Diurno” aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1480,8 +1480,8 @@
       },
       "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "londrina-tecnico-em-massoterapia-matutino",
@@ -1500,8 +1500,8 @@
       },
       "curso_slug": "tecnico-em-massoterapia",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "londrina-tecnico-em-protese-dentaria-noturno",
@@ -1520,8 +1520,8 @@
       },
       "curso_slug": "tecnico-em-protese-dentaria-2",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "londrina-tecnico-em-saude-bucal-noturno",
@@ -1540,8 +1540,8 @@
       },
       "curso_slug": "tecnico-em-saude-bucal",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "palmas-tecnico-em-alimentos-diurno-vespertino-2-manhas-por-semana-1",
@@ -1559,8 +1559,8 @@
         "edital_id": "edital-87-2024"
       },
       "modalidade": "presencial",
-      "turno": "vespertino-com-contraturno",
-      "turno_original": "Diurno (Vespertino + 2 manhãs por semana)¹",
+      "turno": "Diurno (Vespertino + 2 manhãs por semana)¹",
+      "turno_padronizado": "vespertino-com-contraturno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1579,8 +1579,8 @@
         "edital_id": "edital-87-2024"
       },
       "modalidade": "presencial",
-      "turno": "vespertino-com-contraturno",
-      "turno_original": "Diurno (Vespertino + 2 manhãs por semana)¹",
+      "turno": "Diurno (Vespertino + 2 manhãs por semana)¹",
+      "turno_padronizado": "vespertino-com-contraturno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1599,8 +1599,8 @@
         "edital_id": "edital-87-2024"
       },
       "modalidade": "presencial",
-      "turno": "vespertino-com-contraturno",
-      "turno_original": "Diurno (Vespertino + 2 manhãs por semana)¹",
+      "turno": "Diurno (Vespertino + 2 manhãs por semana)¹",
+      "turno_padronizado": "vespertino-com-contraturno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1620,8 +1620,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "paranagua-tecnico-em-mecanica-diurno-tarde-e-manha-1",
@@ -1640,8 +1640,8 @@
       },
       "curso_slug": "tecnico-em-mecanica",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Diurno (tarde e manhã)¹",
+      "turno": "Diurno (tarde e manhã)¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1661,8 +1661,8 @@
       },
       "curso_slug": "tecnico-em-meio-ambiente",
       "modalidade": "presencial",
-      "turno": "vespertino",
-      "turno_original": "Vespertino"
+      "turno": "Vespertino",
+      "turno_padronizado": "vespertino"
     },
     {
       "id": "paranagua-tecnico-em-producao-cultural-matutino",
@@ -1681,8 +1681,8 @@
       },
       "curso_slug": "tecnico-em-producao-cultural",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "paranavai-tecnico-em-agroindustria-matutino",
@@ -1701,8 +1701,8 @@
       },
       "curso_slug": "tecnico-em-agroindustria",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "paranavai-tecnico-em-eletromecanica-noturno",
@@ -1721,8 +1721,8 @@
       },
       "curso_slug": "tecnico-em-eletromecanica-subsequente",
       "modalidade": "presencial",
-      "turno": "noturno",
-      "turno_original": "Noturno"
+      "turno": "Noturno",
+      "turno_padronizado": "noturno"
     },
     {
       "id": "paranavai-tecnico-em-informatica-matutino",
@@ -1741,8 +1741,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "paranavai-tecnico-em-mecatronica-matutino",
@@ -1761,8 +1761,8 @@
       },
       "curso_slug": "tecnico-em-mecatronica",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "pinhais-tecnico-em-administracao-matutino",
@@ -1781,8 +1781,8 @@
       },
       "curso_slug": "tecnico-em-administracao-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "pinhais-tecnico-em-informatica-matutino",
@@ -1801,8 +1801,8 @@
       },
       "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "pitanga-tecnico-em-alimentos-matutino",
@@ -1821,8 +1821,8 @@
       },
       "curso_slug": "tecnico-em-alimentos",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "pitanga-tecnico-em-cooperativismo-matutino",
@@ -1841,8 +1841,8 @@
       },
       "curso_slug": "tecnico-em-cooperativismo",
       "modalidade": "presencial",
-      "turno": "matutino",
-      "turno_original": "Matutino"
+      "turno": "Matutino",
+      "turno_padronizado": "matutino"
     },
     {
       "id": "ponta-grossa-tecnico-em-informatica-integral",
@@ -1860,8 +1860,8 @@
         "edital_id": "edital-87-2024"
       },
       "modalidade": "presencial",
-      "turno": "integral",
-      "turno_original": "Integral"
+      "turno": "Integral",
+      "turno_padronizado": "integral"
     },
     {
       "id": "quedas-do-iguacu-tecnico-em-informatica-diurno-manha-2-tardes-por-semana-1",
@@ -1880,8 +1880,8 @@
       },
       "curso_slug": "tecnico-em-informatica",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 2 tardes por semana)¹",
+      "turno": "Diurno (Manhã + 2 tardes por semana)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1901,8 +1901,8 @@
       },
       "curso_slug": "tecnico-em-meio-ambiente",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 2 tardes por semana)¹",
+      "turno": "Diurno (Manhã + 2 tardes por semana)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1922,8 +1922,8 @@
       },
       "curso_slug": "tecnico-em-automacao-industrial-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Matutino/Vespertino¹",
+      "turno": "Matutino/Vespertino¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1943,8 +1943,8 @@
       },
       "curso_slug": "tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Matutino/Vespertino¹",
+      "turno": "Matutino/Vespertino¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1964,8 +1964,8 @@
       },
       "curso_slug": "tecnico-em-mecanica",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Matutino/Vespertino¹",
+      "turno": "Matutino/Vespertino¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -1984,8 +1984,8 @@
         "edital_id": "edital-87-2024"
       },
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Matutino/Vespertino¹",
+      "turno": "Matutino/Vespertino¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -2005,8 +2005,8 @@
       },
       "curso_slug": "tecnico-em-edificacoes-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Matutino/Vespertino¹",
+      "turno": "Matutino/Vespertino¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -2026,8 +2026,8 @@
       },
       "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Matutino/Vespertino¹",
+      "turno": "Matutino/Vespertino¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -2047,8 +2047,8 @@
       },
       "curso_slug": "tecnico-em-quimica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "diurno",
-      "turno_original": "Matutino/Vespertino¹",
+      "turno": "Matutino/Vespertino¹",
+      "turno_padronizado": "diurno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -2068,8 +2068,8 @@
       },
       "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 2 tardes)¹",
+      "turno": "Diurno (Manhã + 2 tardes)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     },
     {
@@ -2089,8 +2089,8 @@
       },
       "curso_slug": "tecnico-em-meio-ambiente-integrado-ao-ensino-medio",
       "modalidade": "presencial",
-      "turno": "matutino-com-contraturno",
-      "turno_original": "Diurno (Manhã + 2 tardes)¹",
+      "turno": "Diurno (Manhã + 2 tardes)¹",
+      "turno_padronizado": "matutino-com-contraturno",
       "turno_nota": "Nota ¹ do Edital nº 87/2024, Anexo I: no Portal do Candidato do IFPR o turno aparece como “Integral”, “sem prejuízo à informação deste quadro de vagas e a consequente necessidade de o estudante cumpri-la”."
     }
   ],
