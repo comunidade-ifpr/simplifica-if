@@ -115,10 +115,10 @@ A proposta é preenchível e não autoriza oferta. Cada perfil profissional exig
 A partir da raiz do projeto unificado:
 
 ```bash
-bun run scripts/gerar_base.ts
-bun run scripts/gerar_indice_ppcs.ts
-bun run scripts/validar_base.ts
-bun run scripts/gerar_site.ts
+node scripts/gerar_base.ts
+node scripts/gerar_indice_ppcs.ts
+node scripts/validar_base.ts
+node scripts/gerar_site.ts
 ```
 
 ## Documentos institucionais de referência

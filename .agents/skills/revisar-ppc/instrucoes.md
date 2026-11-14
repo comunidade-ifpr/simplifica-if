@@ -4,13 +4,13 @@
 
 Esta skill faz a revisão prévia de um PPC técnico do IFPR, antes da submissão à PROENS, por sub-agentes dentro da conversa. O produto é um relatório de revisão para quem elabora ou acompanha o PPC: não é parecer e não substitui a análise oficial da PROENS. Ao relatar o resultado, use esse vocabulário (revisão, relatório de revisão, ajustes) e não fale em aprovação, diligência ou reprovação. Os scripts são deliberadamente pequenos: convertem o documento para `PPC.md`, montam grupos de fichas e renderizam o PPC HTML anotado a partir do JSON coletado dos sub-agentes.
 
-O ponto de entrada é `scripts/revisar_ppc.ts` (Bun), e todos os subcomandos rodam em TypeScript, inclusive `gerar-relatorio-html` e a publicação no Surge. Só a conversão de entrada `.docx` em `preparar-documento` ainda depende de Python: `scripts/converter_docx.py` (`python-docx`), chamado por subprocesso até a trilha T3 do `PLANO-ARQUITETURA.md`. Com PPC em `.md`, a skill inteira dispensa Python. `REVISAR_PPC_PYTHON` escolhe o interpretador da conversão DOCX (padrão `python3`).
+O ponto de entrada é `scripts/revisar_ppc.ts` (Node), e todos os subcomandos rodam em TypeScript, inclusive `gerar-relatorio-html` e a publicação no Surge. Só a conversão de entrada `.docx` em `preparar-documento` ainda depende de Python: `scripts/converter_docx.py` (`python-docx`), chamado por subprocesso até a trilha T3 do `PLANO-ARQUITETURA.md`. Com PPC em `.md`, a skill inteira dispensa Python. `REVISAR_PPC_PYTHON` escolhe o interpretador da conversão DOCX (padrão `python3`).
 
 O output padrão fica em `.agents/skills/revisar-ppc/output/<rodada>/`. O relatório de revisão fica em `relatorio-revisao.html`; os assets do leitor ficam em `assets/`; os artefatos de suporte ficam em `arquivos-suporte/`.
 
 ## Dependências
 
-Rode `bun install` na raiz do repositório (o ponto de entrada usa `commander`, `htmlparser2` e `@simplifica-if/kb`). Só a entrada `.docx` ainda usa Python; para ela, instale também as dependências Python, a partir da raiz do projeto onde a skill está instalada:
+Rode `pnpm install` na raiz do repositório (o ponto de entrada usa `commander`, `htmlparser2` e `@simplifica-if/kb`). Só a entrada `.docx` ainda usa Python; para ela, instale também as dependências Python, a partir da raiz do projeto onde a skill está instalada:
 
 ```bash
 python3 -m pip install -r .agents/skills/revisar-ppc/requirements.txt
@@ -21,9 +21,9 @@ python3 -m pip install -r .agents/skills/revisar-ppc/requirements.txt
 Execute os comandos a partir da raiz deste repositório:
 
 ```bash
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts preparar-documento caminho/PPC.docx
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts montar-grupos-subagents --rodada-dir .agents/skills/revisar-ppc/output/<rodada>
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts preparar-prompts-subagents --rodada-dir .agents/skills/revisar-ppc/output/<rodada>
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts preparar-documento caminho/PPC.docx
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts montar-grupos-subagents --rodada-dir .agents/skills/revisar-ppc/output/<rodada>
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts preparar-prompts-subagents --rodada-dir .agents/skills/revisar-ppc/output/<rodada>
 ```
 
 Depois disso, o agente principal deve:
@@ -38,7 +38,7 @@ Depois disso, o agente principal deve:
 8. Gerar o relatório:
 
 ```bash
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-relatorio-html --rodada-dir .agents/skills/revisar-ppc/output/<rodada> --resultados resultados-subagents.json
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-relatorio-html --rodada-dir .agents/skills/revisar-ppc/output/<rodada> --resultados resultados-subagents.json
 ```
 
 ## Grupos por tópico e contexto de cada grupo
@@ -166,13 +166,13 @@ NAO_NORMATIVA
 Para reavaliar fichas específicas sem refazer todos os grupos:
 
 ```bash
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts montar-grupo-avulso --rodada-dir .agents/skills/revisar-ppc/output/<rodada> --ficha-id CT-IDENT-01
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts montar-grupo-avulso --rodada-dir .agents/skills/revisar-ppc/output/<rodada> --ficha-id CT-IDENT-01
 ```
 
 O grupo avulso usa o mesmo pacote por tópico: as seções do `PPC.md` dos tópicos das fichas pedidas (ou o PPC inteiro, se alguma for transversal), as normas, as transições e os marcos. O comando grava `grupos-avulsos/<grupo>.json` e o pacote de prompt `grupos-avulsos/<grupo>.md` (`prompt_subagent_path`). Spawnar um sub-agente com esse pacote, salvar a resposta em `arquivos-suporte/resultado-avulso.json` e mesclar:
 
 ```bash
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts mesclar-resultados-avulsos --rodada-dir .agents/skills/revisar-ppc/output/<rodada> --resultados-avulsos resultado-avulso.json
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts mesclar-resultados-avulsos --rodada-dir .agents/skills/revisar-ppc/output/<rodada> --resultados-avulsos resultado-avulso.json
 ```
 
 Depois, rode novamente `gerar-relatorio-html`.
@@ -192,12 +192,12 @@ Checklist para fichas:
 Comandos obrigatórios:
 
 ```bash
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-schemas --check
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-mapa
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-indice
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
-bun test ./.agents/skills/revisar-ppc
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-schemas --check
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-mapa
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-indice
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
+pnpm exec vp test run .agents/skills/revisar-ppc
 python3 -m pytest .agents/skills/revisar-ppc/tests
 ```
 

@@ -26,9 +26,9 @@ Especificação: `docs/plans/m0-simplifica-mcp.md` (M0.1). Prontos os passos T0 
 ## Como rodar
 
 ```bash
-bun install                                         # na raiz do repositório
-bun run kb:compilar                                 # gera tmp/kb.sqlite
-bun run packages/mcp/src/cli.ts --banco tmp/kb.sqlite
+pnpm install                                         # na raiz do repositório
+pnpm kb:compilar                                 # gera tmp/kb.sqlite
+node packages/mcp/src/cli.ts --banco tmp/kb.sqlite
 ```
 
 O servidor fala MCP pelo stdin/stdout; as mensagens de diagnóstico vão para o stderr.
@@ -43,7 +43,7 @@ Um banco com `versao_esquema` diferente da esperada (`VERSAO_ESQUEMA` de `packag
 
 ## Configuração no piloto zero
 
-Até haver binário (M0.2), o comando é `bun run /caminho/simplifica-if/packages/mcp/src/cli.ts --banco /caminho/kb.sqlite`. Depois, o binário `simplifica-mcp`.
+Para rodar a partir do checkout, o comando é `node /caminho/simplifica-if/packages/mcp/src/cli.ts --banco /caminho/kb.sqlite` (Node da versão de `.node-version`). O executável `simplifica-mcp`, um Node SEA que não precisa de Node instalado, sai de `pnpm mcp:executavel` em `packages/mcp/dist-exe/` (`--alvo` ou `--todos` para outras plataformas).
 
 ```bash
 # Claude Code
@@ -88,10 +88,10 @@ Regras de negócio ficam em `packages/kb`; aqui só há validação de entrada, 
 ## Manutenção
 
 ```bash
-bun run --cwd packages/mcp test
-bun run --cwd packages/mcp typecheck
-bun run --cwd packages/mcp format
-bun run mcp:smoke                       # na raiz: as ferramentas × a CLI kb sobre o tmp/kb.sqlite
+pnpm --filter @simplifica-if/mcp test
+pnpm --filter @simplifica-if/mcp typecheck
+pnpm fmt                             # na raiz: vp fmt no repositório inteiro
+pnpm mcp:smoke                       # na raiz: as ferramentas × a CLI kb sobre o tmp/kb.sqlite
 ```
 
-O `mcp:smoke` roda `test/banco-real.test.ts` (normas) e `test/smoke-base-real.test.ts` (PPCs e cursos) com `SIMPLIFICA_SMOKE=1`; sem a variável, os dois ficam de fora do `bun run test`, que não depende do `tmp/kb.sqlite`. A CLI `kb` que eles chamam compila o banco se ele faltar ou estiver velho.
+O `mcp:smoke` roda `test/banco-real.test.ts` (normas) e `test/smoke-base-real.test.ts` (PPCs e cursos) com `SIMPLIFICA_SMOKE=1`; sem a variável, os dois ficam de fora do `pnpm test`, que não depende do `tmp/kb.sqlite`. A CLI `kb` que eles chamam compila o banco se ele faltar ou estiver velho.

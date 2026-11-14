@@ -94,7 +94,7 @@ perguntas:
       conjunto:
         arquivo: avaliacao/gabaritos/q02-ppcs-citam-cne-cp-1-2021.json
       observacoes: >-
-        Conjunto gerado pelo resolvedor de citações da fase 2 (o mesmo de `bun run kb citacoes
+        Conjunto gerado pelo resolvedor de citações da fase 2 (o mesmo de `pnpm kb citacoes
         br/cne-cp/res/2021/1`), que deu os mesmos 59 PPCs da heurística anterior. Conta como citação a
         forma com órgão trocado (CNE/CEB nº 1/2021 seguida de "educação profissional", regra
         dcnept-2021-orgao-trocado) e com tipo trocado (Parecer CNE/CP nº 01/2021 que define as
@@ -313,7 +313,7 @@ perguntas:
       observacoes: >-
         Confirmado pela tabela de correspondência 1/2021 → 2/2026 da fase 5
         (base-conhecimento/correspondencias/br-cne-cp-res-2021-1--br-cne-cp-res-2026-2.yaml, item #art20:
-        parcial → #art22, com os incisos mapeados um a um e o inciso X sem equivalente; `bun run kb
+        parcial → #art22, com os incisos mapeados um a um e o inciso X sem equivalente; `pnpm kb
         correspondencia br/cne-cp/res/2021/1#art20`). A tabela está em rascunho, sem validação jurídica;
         o gabarito continua provisório até a revisão humana dela.
 
@@ -870,7 +870,7 @@ perguntas:
             - 'tres mil horas'
       observacoes: >-
         Confirmado pela tabela de correspondência 1/2021 → 2/2026 da fase 5 (item #art26-par1: parcial →
-        #art29-par2 e #art29-par3; `bun run kb correspondencia br/cne-cp/res/2021/1#art26-par1`). A tabela
+        #art29-par2 e #art29-par3; `pnpm kb correspondencia br/cne-cp/res/2021/1#art26-par1`). A tabela
         está em rascunho, sem validação jurídica; o gabarito continua provisório até a revisão humana dela.
         O heading espúrio "#### Art. 35-A" que partia o § 1º do art. 26 no Markdown da nº 1/2021 foi
         corrigido no saneamento da fase 5.

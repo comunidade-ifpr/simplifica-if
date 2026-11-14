@@ -27,11 +27,11 @@ Os JSONs em `base-conhecimento/institucional/ifpr/campi/` e `base-conhecimento/i
 3. Valide e publique:
 
 ```bash
-bun run scripts/validar_base.ts
-bun run scripts/exportar_base_publica.ts
-bun run scripts/gerar_indice_ppcs.ts
-bun run scripts/validar_base.ts
-bun run scripts/gerar_site.ts
+node scripts/validar_base.ts
+node scripts/exportar_base_publica.ts
+node scripts/gerar_indice_ppcs.ts
+node scripts/validar_base.ts
+node scripts/gerar_site.ts
 ```
 
 `validar_base.ts` confere schema, caminho de cada arquivo e as regras da auditoria institucional (chaves únicas, relações existentes, caminho esperado do PPC, URLs HTTPS). `exportar_base_publica.ts` lê `dados/institucional/` e, do Notion, só as movimentações; por isso precisa de `NOTION_TOKEN`.
@@ -74,8 +74,8 @@ Para relatórios brutos do SUAP com coluna `DIRETORIA`, use `institucional/ifpr/
 A coleta consulta todos os cursos com `suap.id`, usando três sessões simultâneas e cookies somente em memória. A coleta é somente leitura no SUAP; a gravação nos arquivos dos cursos é uma etapa explícita separada.
 
 ```bash
-bun run scripts/suap_coletar_matrizes.ts
-bun run scripts/suap_coletar_matrizes.ts --apply-report tmp/suap-matrizes/resultado.json
+node scripts/suap_coletar_matrizes.ts
+node scripts/suap_coletar_matrizes.ts --apply-report tmp/suap-matrizes/resultado.json
 ```
 
 Para restringir a consulta, use `--suap-id 211` (repetível). O relatório identifica cada curso por `curso_id` (`campus_id/curso_slug`), e a gravação confere `suap.id` e `suap.codigo` antes de escrever. Depois de gravar, publique com os comandos acima.
@@ -133,8 +133,8 @@ O ano do documento é o da capa ou folha de rosto. Quando a capa traz também um
 Para converter PDFs em Markdown, use `scripts/converter_ppcs_markdown.py`. Depois de converter ou alterar PPCs, regenere os índices:
 
 ```bash
-bun run scripts/gerar_indice_ppcs.ts
-bun run scripts/validar_base.ts
+node scripts/gerar_indice_ppcs.ts
+node scripts/validar_base.ts
 ```
 
 ### Proveniência do PPC convertido

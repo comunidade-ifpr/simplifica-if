@@ -48,7 +48,7 @@ O `front matter` existe para:
 
 ### Campos gerados (não edite à mão)
 
-`bun run scripts/gerar_base.ts` escreve estes campos a partir de `base-conhecimento/relacoes.yaml` e de `base-conhecimento/config/vigencia.yaml`; `gerar_base.ts --check` e `validar_base.ts` acusam divergência.
+`node scripts/gerar_base.ts` escreve estes campos a partir de `base-conhecimento/relacoes.yaml` e de `base-conhecimento/config/vigencia.yaml`; `gerar_base.ts --check` e `validar_base.ts` acusam divergência.
 
 | Campo | Origem |
 |-------|--------|
@@ -116,7 +116,7 @@ relaciona_se_a:
 
 ## ID canônico
 
-O `id` é derivado do ato (tipo, órgão, jurisdição, ano e número), nunca do nome do arquivo. Ele vai para o `manifest.json` e é a chave usada pelo resolvedor de citações (`bun run kb resolver`), por `bun run kb citacoes <id>` e pelos gabaritos da avaliação.
+O `id` é derivado do ato (tipo, órgão, jurisdição, ano e número), nunca do nome do arquivo. Ele vai para o `manifest.json` e é a chave usada pelo resolvedor de citações (`pnpm kb resolver`), por `pnpm kb citacoes <id>` e pelos gabaritos da avaliação.
 
 | Ato | Formato | Exemplos |
 |-----|---------|----------|
@@ -135,7 +135,7 @@ Regras:
 - **Compilação.** Uma compilação de trechos (`tipo_documento: Compilação`) é o mesmo ato que o texto integral, mas o arquivo precisa de ID próprio para que o `id` seja único por arquivo. O ID do arquivo é o do ato de origem com o sufixo `~compilacao`, e o front matter traz `variante: compilacao`. O tipo do ato de origem é `lei` quando o órgão é a Presidência da República; noutros casos, informe `tipo_ato` (ex.: `tipo_ato: Resolução`). A citação "LDB" ou "Lei nº 9.394/1996" resolve para o ato (`br/lei/1996/9394`); a busca deduplica pelos dispositivos.
 - Dispositivo: a letra de artigo vem colada e em maiúscula (`#art36A`); a alínea é sempre `-al-` (`#art5-al-a`), para que art. 36-A e alínea a do art. 36 não se confundam; parágrafo é `-par<n>` ou `-parunico`; inciso é o romano em minúsculas.
 
-`bun run scripts/validar_base.ts` confere o formato, a unicidade, a coerência com `variante` e a igualdade com o ID derivado dos demais campos; para variante, confere também que o ato existe na base ou nos stubs.
+`node scripts/validar_base.ts` confere o formato, a unicidade, a coerência com `variante` e a igualdade com o ID derivado dos demais campos; para variante, confere também que o ato existe na base ou nos stubs.
 
 O front matter é lido com o pacote `yaml` no schema `failsafe` (todo valor é texto; só `ano` vira inteiro), com contrato zod em `packages/kb/src/normas/front-matter.ts`. Por isso `numero: 9394` continua texto no `manifest.json`.
 
@@ -170,14 +170,14 @@ IDs de dispositivo: `#art28-xvi`, `#art28-par1-iv`, `#art71-parunico`, `#art36A`
 
 ## Relações (`relacoes.yaml`)
 
-`base-conhecimento/relacoes.yaml` é a fonte única das relações `revoga`, `altera`, `regulamenta` e `fundamenta-se-em`: origem, dispositivo operador (`#art74-ii`), alvo (ato e, se parcial, `alvo_dispositivo` ou `alcance`), `efeito_de` (data ou vigência da origem), evidência literal (`evidencia.em` + `trecho`, conferida pelo validador), `confirmado_em` e `proposta` (`front-matter`, `regex` ou `manual`). `bun run kb relacoes --propor` lista o que o regex sobre "Ficam revogados", "Revogam-se" e "passa a vigorar" encontra e ainda não está registrado nem descartado; uma proposta só entra depois de conferida no texto (descartes ficam em `descartadas`, com o motivo).
+`base-conhecimento/relacoes.yaml` é a fonte única das relações `revoga`, `altera`, `regulamenta` e `fundamenta-se-em`: origem, dispositivo operador (`#art74-ii`), alvo (ato e, se parcial, `alvo_dispositivo` ou `alcance`), `efeito_de` (data ou vigência da origem), evidência literal (`evidencia.em` + `trecho`, conferida pelo validador), `confirmado_em` e `proposta` (`front-matter`, `regex` ou `manual`). `pnpm kb relacoes --propor` lista o que o regex sobre "Ficam revogados", "Revogam-se" e "passa a vigorar" encontra e ainda não está registrado nem descartado; uma proposta só entra depois de conferida no texto (descartes ficam em `descartadas`, com o motivo).
 
 ## Vigência calculada
 
-O `status_vigencia` publicado é calculado na `data_referencia` de `base-conhecimento/config/vigencia.yaml`, nunca no relógio do build (`packages/kb/src/normas/vigencia.ts`): antes de `vigente_de`, a norma não está em vigor; uma relação produz efeito em `efeito_de` ou na vigência da origem; revogação total > parcial > alteração. Quando o cálculo depende de data "a confirmar" (como a publicação da Res. CNE/CP nº 2/2026), o status é presumido e o front matter (e o `manifest.json`) traz `vigencia_a_confirmar`. Quem filtra normas só por `status_vigencia` precisa olhar também esse campo: a Res. CNE/CP nº 1/2021 aparece como `revogada`, mas a revogação só produz efeito na publicação da Res. CNE/CP nº 2/2026 no DOU, ainda não registrada, e até lá a norma pode estar vigente. Stubs atingidos por relações têm de ter o status calculado. Para outra data: `bun run kb vigencia <id> --em AAAA-MM-DD`.
+O `status_vigencia` publicado é calculado na `data_referencia` de `base-conhecimento/config/vigencia.yaml`, nunca no relógio do build (`packages/kb/src/normas/vigencia.ts`): antes de `vigente_de`, a norma não está em vigor; uma relação produz efeito em `efeito_de` ou na vigência da origem; revogação total > parcial > alteração. Quando o cálculo depende de data "a confirmar" (como a publicação da Res. CNE/CP nº 2/2026), o status é presumido e o front matter (e o `manifest.json`) traz `vigencia_a_confirmar`. Quem filtra normas só por `status_vigencia` precisa olhar também esse campo: a Res. CNE/CP nº 1/2021 aparece como `revogada`, mas a revogação só produz efeito na publicação da Res. CNE/CP nº 2/2026 no DOU, ainda não registrada, e até lá a norma pode estar vigente. Stubs atingidos por relações têm de ter o status calculado. Para outra data: `pnpm kb vigencia <id> --em AAAA-MM-DD`.
 
 Regras de transição (direito de conclusão, prazos de adequação) são dados em `base-conhecimento/transicoes.yaml` e aparecem em `kb vigencia`: revogada não é inaplicável.
 
 ## Correspondência entre normas sucessoras
 
-`base-conhecimento/correspondencias/*.yaml` liga cada dispositivo da norma revogada aos da sucessora (`equivalente`, `parcial`, `sem-equivalente`, com nota). A tabela 1/2021 → 2/2026 está em `rascunho`: exige revisão jurídica humana antes de servir de fundamento. Consulta: `bun run kb correspondencia br/cne-cp/res/2021/1#art20`.
+`base-conhecimento/correspondencias/*.yaml` liga cada dispositivo da norma revogada aos da sucessora (`equivalente`, `parcial`, `sem-equivalente`, com nota). A tabela 1/2021 → 2/2026 está em `rascunho`: exige revisão jurídica humana antes de servir de fundamento. Consulta: `pnpm kb correspondencia br/cne-cp/res/2021/1#art20`.

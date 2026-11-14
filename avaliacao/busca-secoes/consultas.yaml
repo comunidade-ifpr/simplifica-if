@@ -2,7 +2,7 @@
 #
 # RASCUNHO, sem revisão humana. Rotulado por Claude lendo os títulos das seções dos PPCs (não o
 # ranking da busca): para cada consulta, as seções que uma pessoa abriria para responder.
-# Medida: `bun run kb avaliar-busca [--json]` (recall@10 com e sem stemmer e sinônimos).
+# Medida: `pnpm kb avaliar-busca [--json]` (recall@10 com e sem stemmer e sinônimos).
 #
 # Cada esperada é ancorada no PPC (`campus/curso`) e num trecho do título da seção (comparado sem
 # acentos e sem caixa), nunca em número de linha. Uma esperada conta como achada se alguma seção do

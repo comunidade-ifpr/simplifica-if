@@ -46,7 +46,7 @@ Os tópicos também decidem os grupos de sub-agente da rodada: cada ficha vai no
 ]
 ```
 
-- `ref`: ID canônico do ato, nunca texto livre. Use o `id` de `base-conhecimento/manifest.json` (norma com texto na base) ou de `base-conhecimento/normas/stubs.yaml` (norma sem texto, `externo:`); para o CNCT, `cnct:catalogo` ou `cnct:<id do curso>` de `catalogos/cnct/index.json`. A variante de arquivo (`~compilacao`) não é citável: cite o ato. Para descobrir o ID de uma citação, use `bun run kb resolver "Resolução CNE/CP nº 2/2026, art. 28, VII"`. Norma que ainda não existe na base entra antes em `stubs.yaml`.
+- `ref`: ID canônico do ato, nunca texto livre. Use o `id` de `base-conhecimento/manifest.json` (norma com texto na base) ou de `base-conhecimento/normas/stubs.yaml` (norma sem texto, `externo:`); para o CNCT, `cnct:catalogo` ou `cnct:<id do curso>` de `catalogos/cnct/index.json`. A variante de arquivo (`~compilacao`) não é citável: cite o ato. Para descobrir o ID de uma citação, use `pnpm kb resolver "Resolução CNE/CP nº 2/2026, art. 28, VII"`. Norma que ainda não existe na base entra antes em `stubs.yaml`.
 - `dispositivo` (opcional): um único dispositivo, no formato `#art28-vii`, `#art28-par1-iv`, `#art24-parunico`, `#art36A` ou `#art5-ii-al-a`. Para citar vários dispositivos da mesma norma, repita a entrada, em sequência; sem `dispositivo`, a referência é ao ato inteiro.
 - `papel`: `fundamento` quando a ficha aplica a regra da referência para decidir o estado; `complementar` quando só remete a ela (contexto, fonte local a que o PPC deve remeter, parâmetro técnico ou norma referida por outra).
 - `nota` (opcional): detalhe da citação que não cabe nos campos anteriores, como o número SEI ou o recorte do catálogo.
@@ -84,13 +84,13 @@ O contrato da ficha e o de `marcos-normativos.json` são os esquemas zod de `scr
 Rode a partir da raiz do repositório sempre que alterar fichas, tópicos, validações cruzadas, contratos ou schemas:
 
 ```bash
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-schemas
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-mapa
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-indice
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
-bun test ./.agents/skills/revisar-ppc
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-schemas
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-mapa
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-indice
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
+pnpm exec vp test run .agents/skills/revisar-ppc
 python3 -m pytest .agents/skills/revisar-ppc/tests
 ```
 
-O `bun test` cobre a validação da base, a orquestração da análise, o relatório HTML e a publicação no Surge, em TypeScript; o `pytest` cobre só o que ainda é Python (extratores da conversão DOCX).
+O `pnpm exec vp test run .agents/skills/revisar-ppc` cobre a validação da base, a orquestração da análise, o relatório HTML e a publicação no Surge, em TypeScript; o `pytest` cobre só o que ainda é Python (extratores da conversão DOCX).

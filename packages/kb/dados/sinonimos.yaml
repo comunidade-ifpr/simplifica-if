@@ -2,7 +2,7 @@
 #
 # Contrato: esquemaSinonimos em packages/kb/src/busca/sinonimos.ts (zod). Mudar este arquivo muda o
 # kb.sqlite (a CLI recompila sozinha) e a medida de recall em avaliacao/busca-secoes/; rode
-# `bun run kb avaliar-busca` e compare antes de manter a mudança.
+# `pnpm kb avaliar-busca` e compare antes de manter a mudança.
 #
 # tipos: por tipo de seção (taxonomias técnico e geral de packages/kb/src/ppcs/secoes.ts), termos que
 #   descrevem o assunto do tipo. Os radicais desses termos vão para a coluna `expansao` do FTS das

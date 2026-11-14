@@ -4,7 +4,7 @@ Situação em 13/11/2026. Detalha o M0.1 do [plano do app](app-simplifica-if.md#
 
 ## Objetivo
 
-Um servidor MCP só de leitura que entrega a base de conhecimento a qualquer IA (Claude, Codex, Gemini), com o texto literal, a proveniência e o link `ifpr://` em cada resposta. Ele roda só com o `kb.sqlite`: sem repositório, sem Bun e sem Python no computador do servidor.
+Um servidor MCP só de leitura que entrega a base de conhecimento a qualquer IA (Claude, Codex, Gemini), com o texto literal, a proveniência e o link `ifpr://` em cada resposta. Ele roda só com o `kb.sqlite`: sem repositório, sem Node e sem Python no computador do servidor.
 
 ## Ponto de partida (medido em 13/11/2026)
 
@@ -582,7 +582,7 @@ packages/mcp/
 
 ## Configuração no piloto zero
 
-Até haver binário (M0.2), o comando é `bun run /caminho/simplifica-if/packages/mcp/src/cli.ts --banco /caminho/kb.sqlite`. Depois, o binário `simplifica-mcp`.
+Para rodar a partir do checkout, o comando é `node /caminho/simplifica-if/packages/mcp/src/cli.ts --banco /caminho/kb.sqlite` (Node da versão de `.node-version`). O executável `simplifica-mcp`, um Node SEA que não precisa de Node instalado, sai de `pnpm mcp:executavel` em `packages/mcp/dist-exe/` (`--alvo` ou `--todos` para outras plataformas).
 
 ```bash
 # Claude Code
@@ -636,7 +636,7 @@ args = ["--banco", "~/SimplificaIF/kb.sqlite"]
 - 13/11/2026: T1 pronto no branch `t3/mcp-servidor-leitura` (commits `834d394` e `2b58b70`, sem merge).
   - SDK 1.32.2 com `registerTool` e schemas do zod 4.
   - `sobre_a_base` e `etapa` implementadas; 50 testes.
-  - Binário compilado de 84 MB, dos quais 83 MB são o runtime do Bun; ele funciona a partir de um diretório só com o `kb.sqlite`.
+  - Binário compilado de 84 MB, dos quais 83 MB são o runtime do Bun; ele funciona a partir de um diretório só com o `kb.sqlite`. Desde o C0 da [consolidação](consolidacao-stack-t3.md) (14/11/2026), o executável é um Node SEA de 141 MB, gerado por `pnpm mcp:executavel`.
   - `instrucoes.md` entra por import de texto, porque `readFileSync` falha dentro do binário.
 - 13/11/2026: T0 pronto no branch `t3/mcp-banco-autossuficiente` (commit `bcb127b`, sem merge).
   - Esquema 3: tabelas `sinonimos_*`, `topicos_secoes` e `normas_citacoes`; `meta` com `versao`, `commit` e `canal` quando o build os informa.
@@ -653,6 +653,6 @@ args = ["--banco", "~/SimplificaIF/kb.sqlite"]
 - 14/11/2026: decidido manter o SDK 2.x com zod, sem Effect, no Marco 0. T2 (normas) e T3 (PPCs e cursos) começaram em paralelo, em worktrees separadas, sobre `@simplifica-if/kb/db/modo-banco`.
 - 14/11/2026: T2 e T3 integrados em `main` (`3be531e`, `ed9f5b2`).
   - `NormaResumo` e `Relacao` num só módulo, `packages/mcp/src/ferramentas/tipos-comuns.ts`; a `Relacao` ficou com a união dos campos (`alcance` e `nota`).
-  - Os dois smokes contra o `tmp/kb.sqlite` só rodam com `SIMPLIFICA_SMOKE=1` (`bun run mcp:smoke`, 12 testes); o `bun run test` não depende do banco.
+  - Os dois smokes contra o `tmp/kb.sqlite` só rodam com `SIMPLIFICA_SMOKE=1` (`pnpm mcp:smoke`, 12 testes); o `pnpm test` não depende do banco.
   - Frase "Use quando…" nas sete descrições que não a tinham; o teste de contrato exige "Use" em todas.
   - Verificação: 1001 testes, nenhuma falha (12 do smoke pulados); smoke sem falha; `tools/list` pelo stdio com 15 ferramentas; base válida.

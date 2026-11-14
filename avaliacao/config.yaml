@@ -1,4 +1,4 @@
-# Configuração do harness de avaliação (bun run scripts/avaliar.ts).
+# Configuração do harness de avaliação (node scripts/avaliar.ts).
 #
 # Decisão em aberto no PLANO-ARQUITETURA.md (item 4): modelo fixado e número de execuções por
 # pergunta. Os valores abaixo são um padrão provisório; o usuário decide antes da linha de base.
