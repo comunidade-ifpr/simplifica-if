@@ -115,7 +115,7 @@ Derivado dos IDs canônicos do PLANO-ARQUITETURA:
 
 As ferramentas do `simplifica-mcp` devolvem esses links prontos, e as instruções do servidor MCP pedem à IA que os use nas citações.
 
-No M1, o `simplifica-mcp` passa a servir os mesmos links também como recursos MCP (`resources/read`), no app e no executável stdio. Na PoC, o Antigravity tentou `read_resource` num link `ifpr://` que recebeu.
+Desde o M1.5, o `simplifica-mcp` serve os mesmos links também como recursos MCP (`resources/read`), no app e no executável stdio. Na PoC, o Antigravity tentou `read_resource` num link `ifpr://` que recebeu.
 
 ### Código do T3: copiar, registrar, sincronizar sob demanda
 
@@ -491,6 +491,7 @@ Lacunas: MCP por HTTP local, recursos `ifpr://`, isolamento (`~/.codex` e `~/.ge
     - O stdio por sessão continua no motor como alternativa (`--mcp stdio` no harness).
     - **No app:** a ponte vira um subcomando do próprio executável, como o `acp-mcp-bridge` do T3. O empacotamento do servidor HTTP precisa marcar como externos os opcionais do `ws` (`bufferutil`, `utf-8-validate`).
 - **M1.5 — Recursos `ifpr://` no MCP.** O `simplifica-mcp` lista e lê os links `ifpr://` como recursos (`resources/read`, com modelos de URI), no app e no executável stdio, sem mudar as ferramentas.
+  - **Feito em 14/11/2026:** seis modelos de URI (norma com `#dispositivo`, curso, PPC com `#secao`, CNCT, campus, ficha) em `resources/templates/list`; `resources/read` em Markdown, com o texto e o envelope das ferramentas (o dispositivo e a seção devolvem só o trecho); `resources/list` com as normas centrais e os campi; link inválido como `InvalidParams` em português. Detalhes em `packages/mcp/README.md`.
 - **M1.6 — Leitor `ifpr://`.** Painel nativo, que não depende do provider suportar MCP Apps. Lê do `kb` pelo grupo `GrupoLeitura` de `@simplifica-if/mcp/rpc`, por `effect/rpc`, sem passar pela IA.
 - **M1.7 — Política de fábrica.** Ver [Política de fábrica](#política-de-fábrica) abaixo.
 - **M1.8 — Primeiro uso.**

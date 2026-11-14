@@ -1,6 +1,6 @@
 # simplifica-mcp
 
-Servidor MCP só de leitura que entrega a base de conhecimento do IFPR a qualquer IA (Claude, Codex, Gemini). Ele lê apenas o `kb.sqlite`, em modo somente leitura: não recompila o banco, não procura o repositório e não acessa a rede. Cada resposta traz o texto literal, a proveniência (`path` e linhas no repositório de origem), o link `ifpr://` e a versão da base.
+Servidor MCP só de leitura que entrega a base de conhecimento do IFPR a qualquer IA (Claude, Codex, Gemini). Ele lê apenas o `kb.sqlite`, em modo somente leitura: não recompila o banco, não procura o repositório e não acessa a rede. Cada resposta traz o texto literal, a proveniência (`path` e linhas no repositório de origem), o link `ifpr://` e a versão da base. Os mesmos links `ifpr://` também se leem como recursos MCP (M1.5, ver [Recursos `ifpr://`](#recursos-ifpr)).
 
 Especificação: `docs/plans/m0-simplifica-mcp.md` (M0.1). Prontos os passos T0 (banco autossuficiente, no `packages/kb`), T1 (servidor, CLI, banco, envelope, links e texto), T2 (normas), T3 (PPCs e cursos), T4 (`pacote_contexto`) e T6 (suítes transversais e CI): as 16 ferramentas.
 
@@ -22,6 +22,23 @@ Especificação: `docs/plans/m0-simplifica-mcp.md` (M0.1). Prontos os passos T0 
 | 14 | `pacote_contexto` | contexto de uma tarefa da `revisar-ppc` para um PPC da base ou um `.md` da pasta de trabalho |
 | 15 | `sobre_a_base` | versão, data de referência e conteúdo da base |
 | 16 | `etapa` | etapa da tarefa, para o app |
+
+## Recursos `ifpr://`
+
+Desde o M1.5, os links que as ferramentas devolvem são recursos MCP, no executável stdio e no servidor HTTP do app, sem mudar as ferramentas (`src/recursos/recursos.ts`). O `initialize` passa a anunciar a capacidade `resources`.
+
+| Modelo de URI (`resources/templates/list`) | `resources/read` devolve | Leitura |
+|---|---|---|
+| `ifpr://norma/{+norma}{#dispositivo}` | sem dispositivo, a ficha da norma (vigência, relações, sucessoras, transições); com `#dispositivo`, só o dispositivo, com o caput herdado, os incisos e as notas | `ficha_norma`; `ler_dispositivos` com `filhos` |
+| `ifpr://curso/{campus}/{curso}` | a ficha do curso | `ficha_curso` |
+| `ifpr://ppc/{campus}/{curso}{#secao}` | sem seção, o índice do PPC (fatos × SUAP e o link de cada seção, com as linhas); com `#secao`, o texto literal da seção (a seção longa vem no primeiro trecho, com o `cursor` para continuar em `ler_secao`) | `Leitura.lerPpc`; `ler_secao` |
+| `ifpr://cnct/{slug}` | o curso no CNCT (eixo, área, carga horária, perfil, campo de atuação, CBO, infraestrutura, legislação, cada campo com a linha no JSON do catálogo) e os cursos do IFPR com a habilitação | `Leitura.lerCnct`, sobre `Cursos.cnct` do kb |
+| `ifpr://campus/{campus}` | o campus e os cursos dele | `Leitura.lerCampus` |
+| `ifpr://ficha/{ficha}` | pergunta, rubrica, evidências (com a linha no arquivo da ficha) e referências normativas de uma ficha da `revisar-ppc` | `Leitura.lerFicha`, sobre `FontesNormativas.conteudoDasSkills` |
+
+- **Conteúdo:** `text/markdown`, o mesmo texto da ferramenta: avisos ("Atenção:"), corpo com a fonte (`path:linhas`) e o rodapé com a versão da base. A `base` e os avisos vão também no `_meta` (`ifpr/base`, `ifpr/avisos`). Cada tipo tem o teto de tamanho da ferramenta correspondente; os novos, o seu (`TETO_RECURSO_*` em `src/recursos/conteudos.ts`).
+- **`resources/list`:** só pontos de entrada, não a base inteira: as normas centrais que estiverem na base (Res. CNE/CP nº 2/2026, Res. CNE/CP nº 1/2021, LDB) e os campi.
+- **Erros:** link malformado, de tipo desconhecido, de outro esquema ou de algo que não está na base volta como erro `InvalidParams` (-32602), com a mensagem em português e um exemplo do link certo. Os modelos casam pelo tipo (`ifpr://norma/*`…); um modelo curinga, escondido do `resources/templates/list` por `McpServer.visibility`, pega o resto, que sem ele voltaria com a mensagem em inglês do `effect/ai`.
 
 ## Como rodar
 
@@ -84,11 +101,15 @@ packages/mcp/
 │   ├── contratos.ts         # Effect Schema do envelope (Resposta, Aviso, Fonte, Página) e dos tipos comuns; erros
 │   ├── esquema.ts           # construtores de schema (texto aparado, inteiro…) e o JSON Schema das ferramentas
 │   ├── validacao.ts         # entrada inválida → mensagem em português, no formato do servidor anterior
-│   ├── leitura/             # serviço `Leitura`: um método por ferramenta, com envelope, paginação e orçamento;
+│   ├── leitura/             # serviço `Leitura`: um método por ferramenta (e por recurso sem ferramenta),
+│   │                        # com envelope, paginação e orçamento;
 │   │                        # `PastaTrabalho`, a leitura do `.md` do `pacote_contexto` (o único `FileSystem`)
 │   ├── envelope.ts          # base, avisos e cursor opaco
 │   ├── orcamento.ts         # paginação pelo limite e pelo teto de caracteres ao mesmo tempo
 │   ├── links.ts, texto.ts   # IDs → ifpr://; Markdown compacto para a IA (funções puras)
+│   ├── recursos/            # os links ifpr:// como recursos MCP (M1.5): modelos, leitura e registro
+│   │   ├── recursos.ts      # MODELOS, lerRecurso, layerRecursos (parte do layerRegistro)
+│   │   └── conteudos.ts     # dados e texto do PPC sem seção, do CNCT, do campus e da ficha
 │   ├── ferramentas/         # um arquivo por ferramenta (Tool.make, descrição, texto)
 │   │   ├── toolkit.ts       # FerramentasIfpr (Toolkit) e layerHandlers
 │   │   └── registrar.ts     # registrarFerramentas, sobre McpServer.addTool
@@ -98,7 +119,7 @@ packages/mcp/
     └── transversal/         # suítes de todas as ferramentas: amostras.ts, paridade.ts e os *.test.ts
 ```
 
-Regras de negócio ficam em `packages/kb`; aqui ficam a validação de entrada, o envelope, o orçamento e a formatação. As ferramentas MCP e o RPC chamam o mesmo serviço `Leitura`, com os mesmos schemas.
+Regras de negócio ficam em `packages/kb`; aqui ficam a validação de entrada, o envelope, o orçamento e a formatação. As ferramentas MCP, os recursos `ifpr://` e o RPC chamam o mesmo serviço `Leitura`, com os mesmos schemas.
 
 ## Uso pelo app (fork do T3)
 
@@ -106,7 +127,7 @@ Quatro pontos de entrada, sem curinga:
 
 - `@simplifica-if/mcp/http` (M1.4): o servidor MCP dentro do processo do app, por HTTP em `127.0.0.1`. `layer({ banco, porta?, canal?, pastaTrabalho? })` dá o serviço `ServidorMcpHttp`: `url`, `porta`, `abrirSessao({ rotulo, pastaTrabalho? })` (um token por sessão, revogado no fim do `Scope`; a pasta da sessão vale mais que a da layer) e `chamadas` (cada chamada de ferramenta, com a sessão, a duração e se falhou). As defesas (`Host`, token em tempo constante, tamanho do corpo, `Origin`, protocolos) e o que veio do T3 estão no cabeçalho de `src/http.ts`. Para teste manual: `node packages/mcp/scripts/servir-http.ts --banco tmp/kb.sqlite`, que imprime a URL e o cabeçalho `Authorization` de uma sessão. O executável stdio não muda: o servidor HTTP do Node traz o `ws`, que o SEA não resolve;
 
-- `@simplifica-if/mcp/toolkit`: `FerramentasIfpr`, `FERRAMENTAS`, `layerHandlers`, `registrarFerramentas`, `layerRegistro`, `layerLeitura` (sem pasta de trabalho: o `pacote_contexto` aceita só `ppc`), `layerLeituraComPasta` (com ela; pede `FileSystem` e `Path`), `Leitura`, `NOME_SERVIDOR`, `VERSAO_PACOTE`, `INSTRUCOES` e `PROTOCOLOS`;
+- `@simplifica-if/mcp/toolkit`: `FerramentasIfpr`, `FERRAMENTAS`, `layerHandlers`, `registrarFerramentas`, `layerRegistro` (ferramentas e recursos `ifpr://`), `layerLeitura` (sem pasta de trabalho: o `pacote_contexto` aceita só `ppc`), `layerLeituraComPasta` (com ela; pede `FileSystem` e `Path`), `Leitura`, `NOME_SERVIDOR`, `VERSAO_PACOTE`, `INSTRUCOES` e `PROTOCOLOS`;
 - `@simplifica-if/mcp/rpc`: `GrupoLeitura` (`fichaNorma`, `lerDispositivos`, `buscarNorma`, `fichaCurso`, `lerSecao`, `buscarSecoes`, `listarCursos`, `sobreABase`), `layerHandlersRpc` e `layerLeitura`;
 - `@simplifica-if/mcp/contratos`: os schemas do envelope e dos tipos comuns.
 
@@ -128,6 +149,7 @@ pnpm --filter @simplifica-if/mcp test
 pnpm --filter @simplifica-if/mcp typecheck
 node packages/mcp/test/gabarito.ts --comparar --schemas-equivalentes   # na raiz: o gabarito do C0 pelo protocolo
 node packages/mcp/test/gabarito.ts --atualizar pacote_contexto        # regrava só essa parte (ver testes-gabarito/README.md)
+node packages/mcp/test/gabarito.ts --atualizar instrucoes             # depois de mudar instrucoes.md e rodar pnpm mcp:instrucoes
 pnpm fmt                             # na raiz: vp fmt no repositório inteiro
 pnpm mcp:smoke                       # na raiz: as suítes transversais também na base real (tmp/kb.sqlite)
 ```
