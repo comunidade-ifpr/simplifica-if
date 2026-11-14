@@ -669,7 +669,7 @@ args = ["--banco", "~/SimplificaIF/kb.sqlite"]
   - Os dois smokes contra o `tmp/kb.sqlite` só rodam com `SIMPLIFICA_SMOKE=1` (`pnpm mcp:smoke`, 12 testes); o `pnpm test` não depende do banco.
   - Frase "Use quando…" nas sete descrições que não a tinham; o teste de contrato exige "Use" em todas.
   - Verificação: 1001 testes, nenhuma falha (12 do smoke pulados); smoke sem falha; `tools/list` pelo stdio com 15 ferramentas; base válida.
-- 14/11/2026: T4 pronto no branch `t3/2d1fa41d`: `pacote_contexto`, a 16ª ferramenta (ver "Acréscimos do T4").
+- 14/11/2026: T4 pronto no branch `t3/mcp-contexto-instrucoes-guia`: `pacote_contexto`, a 16ª ferramenta (ver "Acréscimos do T4").
   - Serviço `PastaTrabalho` (`packages/mcp/src/leitura/PastaTrabalho.ts`), o único com `FileSystem`; a CLI passa o `--pasta-trabalho` a ele.
   - Testes: contrato, determinismo, orçamento, pasta de trabalho (`..`, absoluto, symlink para fora, arquivo inexistente, pasta com nome `.md`) e `ppc` contra `arquivo` (`test/pacote-contexto.test.ts`, 16); paridade byte a byte com `kb pacote-contexto` no smoke (`test/smoke-pacote-contexto.test.ts`, 4, em `pnpm mcp:smoke`).
   - Gabarito do MCP: `gabarito.ts --atualizar pacote_contexto` acrescentou a definição e três chamadas, sem mexer no resto (`testes-gabarito/README.md`). `tools/list` com 16 ferramentas.
