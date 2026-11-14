@@ -291,8 +291,9 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
   });
 
   const detectar: Driver["detectar"] = Effect.gen(function* () {
-    // Como o T3, a detecção não abre processo: a instalação resolve o executável e o login é o token
-    // do perfil próprio. Um token vencido aparece ao iniciar a sessão (erro de "sem login").
+    // O T3 não abre processo na detecção (o runtime antigo descompactava ~1 GB a cada execução). O
+    // `agy` 1.5.x é um binário só, e no macOS guarda o login no Keychain, não no `acp_token.json` do
+    // perfil: sem o arquivo, a detecção pergunta ao próprio `agy acp` (initialize + authenticate).
     const resolvido = yield* opcoes.instalacao.resolve(binario, ambienteNode).pipe(Effect.option);
     if (Option.isNone(resolvido)) {
       return {
@@ -302,7 +303,18 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
         mensagem: "Antigravity não instalado: use instalar",
       } satisfies EstadoProvider;
     }
-    const autenticado = yield* fs.exists(arquivoToken).pipe(Effect.orElseSucceed(() => false));
+    const comToken = yield* fs.exists(arquivoToken).pipe(Effect.orElseSucceed(() => false));
+    const autenticado =
+      comToken ||
+      (yield* Effect.scoped(
+        Effect.gen(function* () {
+          const pasta = yield* fs.makeTempDirectoryScoped({ prefix: "simplifica-antigravity-detectar-" });
+          return (yield* abrir(pasta)).login;
+        }),
+      ).pipe(
+        Effect.timeout("30 seconds"),
+        Effect.orElseSucceed(() => false),
+      ));
     return {
       provider: PROVIDER,
       instalado: true,
@@ -337,15 +349,24 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
     yield* cliente.handleRequestPermission((pedido) =>
       Effect.gen(function* () {
         gravar("entrada", { tipo: "session/request_permission", pedido });
-        const decisao = yield* canal.pedirAprovacao({
-          id: pedido.toolCall.toolCallId,
-          ferramenta: nomeFerramenta(
-            registro(pedido.toolCall),
-            config.servidoresMcp.map((servidor) => servidor.nome),
-          ),
-          descricao: pedido.title ?? pedido.toolCall.title ?? "permitir ação",
-          entrada: pedido.toolCall.rawInput ?? {},
-        });
+        const ferramenta = nomeFerramenta(
+          registro(pedido.toolCall),
+          config.servidoresMcp.map((servidor) => servidor.nome),
+        );
+        // No perfil próprio o `agy` pede permissão até para MCP. Ferramentas de servidores pré-aprovados
+        // (as de leitura do ifpr) passam sem perguntar, como no `allowedTools` do Claude e no
+        // `default_tools_approval_mode` do Codex.
+        const preAprovada = config.servidoresMcp.some(
+          (servidor) => servidor.preAprovado && ferramenta.startsWith(`${servidor.nome}.`),
+        );
+        const decisao = preAprovada
+          ? ("permitir" as const)
+          : yield* canal.pedirAprovacao({
+              id: pedido.toolCall.toolCallId,
+              ferramenta,
+              descricao: pedido.title ?? pedido.toolCall.title ?? "permitir ação",
+              entrada: entradaFerramenta(registro(pedido.toolCall)),
+            });
         const tipos = decisao === "permitir" ? ["allow_once", "allow_always"] : ["reject_once", "reject_always"];
         const opcao = pedido.options.find((candidata) => tipos.includes(candidata.kind));
         const resposta: AcpSchema.RequestPermissionResponse =
