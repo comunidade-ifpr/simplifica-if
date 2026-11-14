@@ -224,29 +224,42 @@ syncBuiltinESMExports();
 /** Como o servidor isolado roda: o executável, ou o bundle no Node com o modelo de permissões. */
 export type ModoIsolado = "executavel" | "node-com-permissoes";
 
+/** Arquivos a pôr na pasta isolada, além do `kb.sqlite`: conteúdo, ou `{ link }` para um link simbólico. */
+export type ArquivosDaPasta = Readonly<Record<string, string | { readonly link: string }>>;
+
+/** O servidor isolado de `servidorIsolado`. */
+export interface ServidorIsolado {
+  readonly modo: ModoIsolado;
+  readonly preparar: (banco: string, arquivos?: ArquivosDaPasta) => Servidor & { readonly pasta: string };
+}
+
 /**
- * O servidor sem o repositório. Cada banco vai, sozinho, para uma pasta vazia (`pasta`), que é o
- * diretório atual e o `HOME` do servidor, com o `PATH` mínimo.
+ * O servidor sem o repositório. Cada banco vai, sozinho (ou com os `arquivos` pedidos), para uma pasta
+ * vazia (`pasta`), que é o diretório atual, a pasta de trabalho e o `HOME` do servidor, com o `PATH`
+ * mínimo.
  *
  * - Com `SIMPLIFICA_MCP_EXE`: o executável, que não precisa de Node nem de `node_modules`.
  * - Sem ele: o bundle de `pnpm mcp:executavel` (um arquivo só, sem import externo) no Node deste
  *   processo, com `--permission`: o servidor só pode ler a pasta do banco, o bundle e o gancho, e não
  *   pode escrever nada nem abrir processos. Qualquer leitura fora disso falha com `ERR_ACCESS_DENIED`.
  */
-export async function servidorIsolado(): Promise<{
-  readonly modo: ModoIsolado;
-  readonly preparar: (banco: string) => Servidor & { readonly pasta: string };
-}> {
-  const pastaVazia = (banco: string) => {
+export async function servidorIsolado(): Promise<ServidorIsolado> {
+  const pastaIsolada = (banco: string, arquivos: ArquivosDaPasta) => {
     const pasta = NodeFS.realpathSync(diretorioTemporario("simplifica-mcp-sem-repo-"));
     NodeFS.copyFileSync(banco, NodePath.join(pasta, "kb.sqlite"));
+    for (const [nome, conteudo] of Object.entries(arquivos)) {
+      const destino = NodePath.join(pasta, nome);
+      NodeFS.mkdirSync(NodePath.dirname(destino), { recursive: true });
+      if (typeof conteudo === "string") NodeFS.writeFileSync(destino, conteudo);
+      else NodeFS.symlinkSync(conteudo.link, destino);
+    }
     return pasta;
   };
   if (EXE) {
     return {
       modo: "executavel",
-      preparar: (banco) => {
-        const pasta = pastaVazia(banco);
+      preparar: (banco, arquivos = {}) => {
+        const pasta = pastaIsolada(banco, arquivos);
         return { comando: EXE, args: ["--banco", "kb.sqlite"], cwd: pasta, env: ambienteMinimo(pasta), pasta };
       },
     };
@@ -260,8 +273,8 @@ export async function servidorIsolado(): Promise<{
   NodeFS.writeFileSync(gancho, GANCHO);
   return {
     modo: "node-com-permissoes",
-    preparar: (banco) => {
-      const pasta = pastaVazia(banco);
+    preparar: (banco, arquivos = {}) => {
+      const pasta = pastaIsolada(banco, arquivos);
       return {
         comando: process.execPath,
         args: [
@@ -280,6 +293,18 @@ export async function servidorIsolado(): Promise<{
       };
     },
   };
+}
+
+/**
+ * O que há na pasta isolada, em caminhos relativos, recursivamente. Fica de fora só o cache que a
+ * emulação x86 do Docker no Apple Silicon (Rosetta) grava no `HOME` de qualquer processo emulado
+ * (`.cache/rosetta`), que aparece ao reproduzir o job Linux x64 num Mac e não existe no runner.
+ */
+export function conteudoDaPasta(pasta: string): string[] {
+  const rosetta = NodePath.join(".cache", "rosetta");
+  return (NodeFS.readdirSync(pasta, { recursive: true }) as string[])
+    .filter((nome) => nome !== ".cache" && nome !== rosetta && !nome.startsWith(`${rosetta}${NodePath.sep}`))
+    .sort();
 }
 
 /** Os argumentos de uma amostra, com o cursor da página. */

@@ -12,7 +12,6 @@
  * journal ou WAL). Na fixture, sempre; na base real, com `SIMPLIFICA_SMOKE=1`.
  */
 import * as NodeChildProcess from "node:child_process";
-import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "@effect/vitest";
 import { FERRAMENTAS } from "../../src/ferramentas/toolkit.ts";
@@ -22,20 +21,20 @@ import {
   BANCO_REAL,
   bancosFixture,
   chamadas,
+  conteudoDaPasta,
   emProcesso,
   EXE,
-  type ModoIsolado,
   type Resultado,
   resultado,
   rotulo,
-  type Servidor,
   servidorIsolado,
+  type ServidorIsolado,
   sessaoStdio,
   SMOKE,
 } from "./apoio.ts";
 
 let bancos: Record<Fixture, string>;
-let isolado: { readonly modo: ModoIsolado; readonly preparar: (banco: string) => Servidor & { pasta: string } };
+let isolado: ServidorIsolado;
 beforeAll(async () => {
   bancos = bancosFixture();
   isolado = await servidorIsolado();
@@ -56,7 +55,7 @@ async function conferir(banco: string, fonte: Fixture | "real") {
     expect(comparavel(resultado(sessao.respostas[i]!)), rotulo(c)).toBe(comparavel(esperado[i]!));
   });
   expect(sessao.stderr).not.toContain("ERR_ACCESS_DENIED");
-  expect(NodeFS.readdirSync(servidor.pasta)).toEqual(["kb.sqlite"]);
+  expect(conteudoDaPasta(servidor.pasta)).toEqual(["kb.sqlite"]);
 }
 
 describe("sem repositório: só o kb.sqlite numa pasta vazia", () => {
