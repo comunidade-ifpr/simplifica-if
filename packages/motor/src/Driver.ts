@@ -5,10 +5,12 @@
  */
 import * as Context from "effect/Context";
 import type * as Effect from "effect/Effect";
-import * as Schema from "effect/Schema";
 import type * as Scope from "effect/Scope";
 import type * as Stream from "effect/Stream";
+import type { AprovacaoDesconhecida, Decisao, FalhaProvider, TurnoEmAndamento } from "./erros.ts";
 import type { Evento, Provider } from "./eventos.ts";
+
+export * from "./erros.ts";
 
 /** Servidor MCP por stdio: o provider abre o processo, só nesta sessão. */
 export interface ServidorMcpStdio {
@@ -68,11 +70,8 @@ export interface ConfigSessao {
   readonly buscaWeb?: boolean;
 }
 
-export const Decisao = Schema.Literals(["permitir", "negar"]);
-export type Decisao = typeof Decisao.Type;
-
-/** Resultado da detecção: instalado, versão e login. Nunca traz e-mail nem credencial. */
-export interface EstadoProvider {
+/** O que o driver detecta: instalado, versão e login. Nunca traz e-mail nem credencial. */
+export interface DeteccaoProvider {
   readonly provider: Provider;
   readonly instalado: boolean;
   /** `gerenciada`: a cópia que o app instalou; `local`: a CLI que o usuário já tinha. */
@@ -88,29 +87,15 @@ export interface EstadoProvider {
   readonly aviso?: string;
 }
 
-export class FalhaProvider extends Schema.TaggedError<FalhaProvider>()("FalhaProvider", {
-  provider: Schema.String,
-  operacao: Schema.String,
-  detalhe: Schema.String,
-  cause: Schema.optional(Schema.Defect()),
-}) {
-  override get message(): string {
-    return `${this.provider}: falha em ${this.operacao}: ${this.detalhe}`;
-  }
-}
-
-export class AprovacaoDesconhecida extends Schema.TaggedError<AprovacaoDesconhecida>()("AprovacaoDesconhecida", {
-  id: Schema.String,
-}) {
-  override get message(): string {
-    return `não há pedido de aprovação pendente com o id ${this.id}`;
-  }
-}
-
-export class TurnoEmAndamento extends Schema.TaggedError<TurnoEmAndamento>()("TurnoEmAndamento", {}) {
-  override get message(): string {
-    return "a sessão já tem um turno em andamento";
-  }
+/**
+ * Resultado de `Motor.detectar`: a detecção do driver e o que o app oferece para o provider, derivado
+ * de o driver ter `instalar` e `entrar`. A interface só mostra "Instalar" e "Entrar" quando há.
+ */
+export interface EstadoProvider extends DeteccaoProvider {
+  /** O app instala (ou atualiza) a CLI gerenciada do provider. */
+  readonly podeInstalar: boolean;
+  /** O app faz o login do provider. */
+  readonly podeEntrar: boolean;
 }
 
 export interface SessaoDriver {
@@ -143,17 +128,8 @@ export interface EstadoLogin {
   readonly mensagem?: string;
 }
 
-export class OperacaoNaoSuportada extends Schema.TaggedError<OperacaoNaoSuportada>()("OperacaoNaoSuportada", {
-  provider: Schema.String,
-  operacao: Schema.String,
-}) {
-  override get message(): string {
-    return `${this.provider} não oferece ${this.operacao} pelo app`;
-  }
-}
-
 export interface Driver {
-  readonly detectar: Effect.Effect<EstadoProvider>;
+  readonly detectar: Effect.Effect<DeteccaoProvider>;
   readonly iniciar: (config: ConfigSessao) => Effect.Effect<SessaoDriver, FalhaProvider, Scope.Scope>;
   /** Instala (ou atualiza) a CLI gerenciada; o stream termina numa fase final. */
   readonly instalar?: Stream.Stream<EstadoInstalacao, FalhaProvider>;

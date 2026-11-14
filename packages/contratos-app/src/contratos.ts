@@ -20,17 +20,19 @@
  * na URL.
  */
 import { GrupoLeitura, type LinkLido } from "@simplifica-if/mcp/grupo-leitura";
+import type {
+  EstadoInstalacao as EstadoInstalacaoMotor,
+  EstadoLogin as EstadoLoginMotor,
+  EstadoProvider as EstadoProviderMotor,
+} from "@simplifica-if/motor";
 import {
   AprovacaoDesconhecida,
   Decisao,
-  type EstadoInstalacao as EstadoInstalacaoMotor,
-  type EstadoLogin as EstadoLoginMotor,
-  type EstadoProvider as EstadoProviderMotor,
   FalhaProvider,
   OperacaoNaoSuportada,
   SessaoDesconhecida,
   TurnoEmAndamento,
-} from "@simplifica-if/motor";
+} from "@simplifica-if/motor/erros";
 import { Evento, Provider } from "@simplifica-if/motor/eventos";
 import * as Schema from "effect/Schema";
 import { Rpc, RpcGroup } from "effect/rpc";
@@ -98,7 +100,10 @@ export type LinhaPartida = typeof LinhaPartida.Type;
 
 /* ================================================================== estados */
 
-/** Resultado da detecção: instalado, versão e login. Nunca traz e-mail nem credencial. */
+/**
+ * Resultado da detecção: instalado, versão, login e o que o app oferece para o provider (instalar,
+ * entrar). Nunca traz e-mail nem credencial.
+ */
 export const EstadoProvider = Schema.Struct({
   provider: Provider,
   instalado: Schema.Boolean,
@@ -109,6 +114,10 @@ export const EstadoProvider = Schema.Struct({
   plano: Schema.optionalKey(Schema.String),
   mensagem: Schema.optionalKey(Schema.String),
   aviso: Schema.optionalKey(Schema.String),
+  /** O app instala (ou atualiza) a CLI gerenciada do provider (`providers.instalar`). */
+  podeInstalar: Schema.Boolean,
+  /** O app faz o login do provider (`providers.entrar`). */
+  podeEntrar: Schema.Boolean,
 });
 export type EstadoProvider = typeof EstadoProvider.Type;
 

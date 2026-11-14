@@ -1,23 +1,27 @@
 /**
  * Um provider na tela de Início: detecção (instalado, login, versão, plano), "Instalar" com a barra de
- * progresso e "Entrar" com o link da página de login.
+ * progresso e "Entrar" com o link da página de login. Os botões só aparecem quando o app oferece a
+ * operação para o provider (`podeInstalar`, `podeEntrar`); senão, a orientação para fazer à mão.
  */
 import type { EstadoInstalacao, EstadoLogin, EstadoProvider, Provider } from "@simplifica-if/contratos-app";
 import { CheckCircle2Icon, CircleAlertIcon, CircleDashedIcon, ExternalLinkIcon, RefreshCwIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Api } from "../conexao/api.ts";
-import { mensagemDeErro } from "../conexao/erros.ts";
+import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
 import { abrirExterno } from "../ponte-desktop.ts";
 import {
   DESCRICOES,
   instalacaoTerminou,
   loginTerminou,
+  type Orientacao,
+  orientacao,
   porcentagemInstalacao,
   tamanhoBaixado,
   textoFaseInstalacao,
   textoFaseLogin,
 } from "../providers.ts";
+import { AvisoErro } from "./AvisoErro.tsx";
 import { Alert, AlertDescription } from "./ui/alert.tsx";
 import { Badge } from "./ui/badge.tsx";
 import { Button } from "./ui/button.tsx";
@@ -26,7 +30,7 @@ import { Spinner } from "./ui/spinner.tsx";
 type Deteccao =
   | { readonly fase: "detectando" }
   | { readonly fase: "detectado"; readonly estado: EstadoProvider }
-  | { readonly fase: "falhou"; readonly erro: string };
+  | { readonly fase: "falhou"; readonly erro: MensagemErro };
 
 /** A detecção do provider, com o erro já em texto. */
 function detectar(api: Api, provider: Provider): Promise<Deteccao> {
@@ -34,7 +38,7 @@ function detectar(api: Api, provider: Provider): Promise<Deteccao> {
     .chamar((cliente) => cliente["providers.detectar"]({ provider }))
     .then(
       (estado): Deteccao => ({ fase: "detectado", estado }),
-      (falha: unknown): Deteccao => ({ fase: "falhou", erro: mensagemDeErro(falha) }),
+      (falha: unknown): Deteccao => ({ fase: "falhou", erro: explicarErro(falha) }),
     );
 }
 
@@ -96,13 +100,24 @@ function PassoLogin({ estado }: { readonly estado: EstadoLogin }) {
   );
 }
 
+function PassoManual({ orientacao }: { readonly orientacao: Orientacao }) {
+  return (
+    <div className="flex flex-col gap-1.5 text-sm" data-orientacao>
+      <p className="text-muted-foreground">{orientacao.texto}</p>
+      {orientacao.comando === undefined ? null : (
+        <code className="self-start rounded-md bg-muted px-2 py-1 font-mono text-xs">{orientacao.comando}</code>
+      )}
+    </div>
+  );
+}
+
 export function CartaoProvider({ provider }: { readonly provider: Provider }) {
   const api = useApi();
   const descricao = DESCRICOES[provider];
   const [deteccao, setDeteccao] = useState<Deteccao>({ fase: "detectando" });
   const [instalacao, setInstalacao] = useState<EstadoInstalacao | undefined>();
   const [login, setLogin] = useState<EstadoLogin | undefined>();
-  const [erro, setErro] = useState<string | undefined>();
+  const [erro, setErro] = useState<MensagemErro | undefined>();
 
   useEffect(() => {
     let vivo = true;
@@ -123,7 +138,7 @@ export function CartaoProvider({ provider }: { readonly provider: Provider }) {
     const acompanhamento = api.acompanhar((cliente) => cliente["providers.instalar"]({ provider }), setInstalacao);
     acompanhamento.fim.then(detectarDeNovo, (falha: unknown) => {
       setInstalacao(undefined);
-      setErro(mensagemDeErro(falha));
+      setErro(explicarErro(falha));
     });
   };
 
@@ -144,7 +159,7 @@ export function CartaoProvider({ provider }: { readonly provider: Provider }) {
     );
     acompanhamento.fim.then(detectarDeNovo, (falha: unknown) => {
       setLogin(undefined);
-      setErro(mensagemDeErro(falha));
+      setErro(explicarErro(falha));
     });
   };
 
@@ -180,9 +195,7 @@ export function CartaoProvider({ provider }: { readonly provider: Provider }) {
           <Spinner size="sm" /> Detectando…
         </p>
       ) : deteccao.fase === "falhou" ? (
-        <Alert variant="error">
-          <AlertDescription>{deteccao.erro}</AlertDescription>
-        </Alert>
+        <AvisoErro erro={deteccao.erro} />
       ) : (
         <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
           <dt className="text-muted-foreground">Instalação</dt>
@@ -236,25 +249,27 @@ export function CartaoProvider({ provider }: { readonly provider: Provider }) {
 
       {instalacao === undefined ? null : <BarraProgresso estado={instalacao} />}
       {login === undefined ? null : <PassoLogin estado={login} />}
-      {erro === undefined ? null : (
-        <Alert variant="error">
-          <AlertDescription>{erro}</AlertDescription>
-        </Alert>
-      )}
+      {erro === undefined ? null : <AvisoErro erro={erro} />}
 
       {estado === undefined ? null : (
-        <footer className="mt-auto flex flex-wrap gap-2">
-          {!estado.instalado || instalando ? (
-            <Button onClick={instalar} disabled={instalando}>
+        <footer className="mt-auto flex flex-col gap-2">
+          {(!estado.instalado || instalando) && estado.podeInstalar ? (
+            <Button className="self-start" onClick={instalar} disabled={instalando}>
               {instalando ? <Spinner /> : null}
               Instalar
             </Button>
           ) : null}
-          {estado.instalado && !estado.autenticado ? (
-            <Button onClick={entrar} disabled={entrando}>
+          {!estado.instalado && !estado.podeInstalar ? (
+            <PassoManual orientacao={orientacao(provider, "instalar")} />
+          ) : null}
+          {estado.instalado && !estado.autenticado && estado.podeEntrar ? (
+            <Button className="self-start" onClick={entrar} disabled={entrando}>
               {entrando ? <Spinner /> : null}
               Entrar
             </Button>
+          ) : null}
+          {estado.instalado && !estado.autenticado && !estado.podeEntrar ? (
+            <PassoManual orientacao={orientacao(provider, "entrar")} />
           ) : null}
         </footer>
       )}

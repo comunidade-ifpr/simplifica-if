@@ -8,6 +8,7 @@
  * `TextoFinal` vira uma resposta nova. O `FimTurno` fecha o que ficou aberto.
  */
 import type { Decisao, Evento, Provider } from "@simplifica-if/contratos-app";
+import { explicarErroDoTurno, type MensagemErro } from "../conexao/erros.ts";
 
 /**
  * Um item da conversa. `chave` é da interface e única na conversa (a chave do React); `id`, nas
@@ -33,7 +34,14 @@ export type Item =
       /** `enviando`: a resposta saiu e o servidor ainda não confirmou; `expirada`: o turno acabou antes. */
       readonly situacao: "pendente" | "enviando" | "permitida" | "negada" | "expirada";
     }
-  | { readonly tipo: "aviso"; readonly chave: string; readonly texto: string; readonly gravidade: "erro" | "info" };
+  | {
+      readonly tipo: "aviso";
+      readonly chave: string;
+      readonly texto: string;
+      readonly gravidade: "erro" | "info";
+      /** O texto técnico original de um erro, mostrado recolhido. */
+      readonly detalhe?: string;
+    };
 
 export type FaseConversa =
   /** Sem sessão: a pessoa escolhe o provider e a pasta. */
@@ -57,7 +65,7 @@ export interface EstadoConversa {
   readonly sessao?: string;
   readonly itens: ReadonlyArray<Item>;
   /** O erro de iniciar a sessão, mostrado no formulário. */
-  readonly erroInicio?: string;
+  readonly erroInicio?: MensagemErro;
   /** O uso de tokens do último turno, quando o provider informa. */
   readonly uso?: UsoTokens;
   /** Contador das chaves dos itens. */
@@ -76,17 +84,28 @@ export type Acao =
   | { readonly tipo: "escolher"; readonly provider?: Provider; readonly pastaTrabalho?: string }
   | { readonly tipo: "iniciando" }
   | { readonly tipo: "iniciada"; readonly sessao: string }
-  | { readonly tipo: "naoIniciou"; readonly erro: string }
+  | { readonly tipo: "naoIniciou"; readonly erro: MensagemErro }
   | { readonly tipo: "enviada"; readonly texto: string }
   | { readonly tipo: "evento"; readonly evento: Evento }
   /** O stream do turno terminou sem `FimTurno` (a conexão caiu, erro do servidor). */
-  | { readonly tipo: "turnoFalhou"; readonly erro: string }
+  | { readonly tipo: "turnoFalhou"; readonly erro: MensagemErro }
   | { readonly tipo: "respondendo"; readonly aprovacao: string }
   | { readonly tipo: "respondida"; readonly aprovacao: string; readonly decisao: Decisao }
-  | { readonly tipo: "respostaFalhou"; readonly aprovacao: string; readonly erro: string }
+  | { readonly tipo: "respostaFalhou"; readonly aprovacao: string; readonly erro: MensagemErro }
   | { readonly tipo: "interrompendo" }
-  | { readonly tipo: "aviso"; readonly texto: string; readonly gravidade: "erro" | "info" }
+  | { readonly tipo: "aviso"; readonly erro: MensagemErro }
   | { readonly tipo: "nova" };
+
+/** Um aviso de erro, com o detalhe técnico quando há. */
+const avisoDeErro =
+  (erro: MensagemErro) =>
+  (chave: string): Item => ({
+    tipo: "aviso",
+    chave,
+    texto: erro.texto,
+    gravidade: "erro",
+    ...(erro.detalhe === undefined ? {} : { detalhe: erro.detalhe }),
+  });
 
 const comItem = (estado: EstadoConversa, item: (chave: string) => Item): EstadoConversa => ({
   ...estado,
@@ -182,7 +201,7 @@ export function aplicarEvento(estado: EstadoConversa, evento: Evento): EstadoCon
         },
       };
     case "Erro":
-      return comItem(estado, (chave) => ({ tipo: "aviso", chave, texto: evento.mensagem, gravidade: "erro" }));
+      return comItem(estado, avisoDeErro(explicarErroDoTurno(estado.provider, evento.mensagem)));
     case "FimTurno": {
       const fechado: EstadoConversa = { ...estado, fase: "pronta", itens: fecharTurno(estado.itens) };
       return foiInterrompido(evento.motivo)
@@ -227,23 +246,18 @@ export function reduzir(estado: EstadoConversa, acao: Acao): EstadoConversa {
       return aplicarEvento(estado, acao.evento);
     case "turnoFalhou": {
       const fechado: EstadoConversa = { ...estado, fase: "pronta", itens: fecharTurno(estado.itens) };
-      return comItem(fechado, (chave) => ({ tipo: "aviso", chave, texto: acao.erro, gravidade: "erro" }));
+      return comItem(fechado, avisoDeErro(acao.erro));
     }
     case "respondendo":
       return trocarAprovacao(estado, acao.aprovacao, "enviando");
     case "respondida":
       return trocarAprovacao(estado, acao.aprovacao, acao.decisao === "permitir" ? "permitida" : "negada");
     case "respostaFalhou":
-      return comItem(trocarAprovacao(estado, acao.aprovacao, "pendente"), (chave) => ({
-        tipo: "aviso",
-        chave,
-        texto: acao.erro,
-        gravidade: "erro",
-      }));
+      return comItem(trocarAprovacao(estado, acao.aprovacao, "pendente"), avisoDeErro(acao.erro));
     case "interrompendo":
       return estado.fase === "respondendo" ? { ...estado, fase: "interrompendo" } : estado;
     case "aviso":
-      return comItem(estado, (chave) => ({ tipo: "aviso", chave, texto: acao.texto, gravidade: acao.gravidade }));
+      return comItem(estado, avisoDeErro(acao.erro));
     case "nova":
       return estadoInicial(estado.provider, estado.pastaTrabalho);
   }

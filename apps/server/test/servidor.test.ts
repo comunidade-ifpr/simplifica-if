@@ -154,6 +154,8 @@ layer(camada, { excludeTestServices: true })("servidor local", (it) => {
         autenticado: true,
         versao: "0.0.0-teste",
         plano: "teste",
+        podeInstalar: false,
+        podeEntrar: false,
       });
       // O driver falso não tem instalação gerenciada: o erro tipado chega ao cliente.
       const instalar = yield* Effect.exit(Stream.runCollect(c["providers.instalar"]({ provider: "claude" })));

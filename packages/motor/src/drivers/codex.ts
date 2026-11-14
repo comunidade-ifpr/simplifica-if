@@ -15,7 +15,7 @@ import type * as Schema from "effect/Schema";
 import * as ChildProcess from "effect/process/ChildProcess";
 import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 import * as Canal from "../Canal.ts";
-import { type ConfigSessao, type Driver, type EstadoProvider, FalhaProvider, Gravador } from "../Driver.ts";
+import { type ConfigSessao, type Driver, type DeteccaoProvider, FalhaProvider, Gravador } from "../Driver.ts";
 import { type Evento, resumir, textoDeBlocos } from "../eventos.ts";
 import { acompanharInstalacao } from "../estados.ts";
 import { type Ambiente, limparAmbiente } from "../processo.ts";
@@ -244,10 +244,10 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
           ...(typeof info.type === "string" ? { metodo: info.type } : {}),
           ...(typeof info.planType === "string" ? { plano: info.planType } : {}),
           ...(autenticado ? {} : { mensagem: "Codex sem login: rode `codex login`" }),
-        } satisfies EstadoProvider;
+        } satisfies DeteccaoProvider;
       }),
     ).pipe(Effect.timeout("30 seconds"), Effect.option);
-    return Option.getOrElse(resultado, (): EstadoProvider => ({
+    return Option.getOrElse(resultado, (): DeteccaoProvider => ({
       provider: PROVIDER,
       instalado: true,
       origem,

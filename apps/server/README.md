@@ -33,7 +33,7 @@ SIMPLIFICA_SERVIDOR_TOKEN=$(openssl rand -base64 32) \
 
 | Grupo | Método | Resposta |
 |---|---|---|
-| providers | `providers.detectar({ provider })` | `EstadoProvider` |
+| providers | `providers.detectar({ provider })` | `EstadoProvider`, com `podeInstalar` e `podeEntrar` (o driver tem `instalar`, `entrar`) |
 | | `providers.instalar({ provider })` | stream de `EstadoInstalacao` |
 | | `providers.entrar({ provider })` | stream de `EstadoLogin` |
 | conversa | `conversa.iniciar({ provider, pastaTrabalho, modelo?, buscaWeb? })` | `{ sessao }`; já com o MCP `ifpr` ligado |
@@ -88,5 +88,5 @@ Pendências registradas:
 
 - ~~**Ponte no app empacotado.**~~ Resolvida com o `apps/desktop`: o comando da ponte sai do `argv` do processo (`src/ponte.ts`), e o bundle roda a ponte com o Electron como Node (conferido no app empacotado).
 - **Windows:** o `awaitLauncherLoss` do T3 não age no Windows; ali o cordão é só o stdin.
-- **Erros do motor no contrato:** o `@simplifica-if/contratos-app` importa os erros e o `Decisao` de `@simplifica-if/motor`, cujo ponto de entrada (`Motor.ts`) traz também a implementação do serviço `Motor` (só Effect: sem Node, sem drivers, como o teste `sem-servidor.test.ts` confere). Se o bundle da interface pedir, os erros e os estados passam a um módulo só de schemas do motor.
-- **Observabilidade:** logs simples no stderr; sem arquivo de log nem OTLP.
+- ~~**Erros do motor no contrato.**~~ Resolvida: os erros e a `Decisao` ficam em `@simplifica-if/motor/erros`, só schemas, e o `@simplifica-if/contratos-app` importa do motor só eles e os tipos dos estados. O bundle da interface não leva mais o `Motor.ts` (o `sem-servidor.test.ts` confere).
+- **Observabilidade:** logs simples no stderr, que o desktop copia para o arquivo de log do app (`apps/desktop/src/registro.ts`); sem OTLP.

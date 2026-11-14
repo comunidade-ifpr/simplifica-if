@@ -1,12 +1,14 @@
 /**
- * O texto das respostas e do painel de leitura, em Markdown com GFM. Os links `ifpr://` viram botões
- * que abrem o painel de leitura; os outros abrem fora do app (no desktop, no navegador do sistema).
+ * O texto das respostas e do painel de leitura, em Markdown com GFM. Os links `ifpr://`, na sintaxe de
+ * link ou soltos no texto (`linksIfpr.ts`), viram botões que abrem o painel de leitura; os outros abrem
+ * fora do app (no desktop, no navegador do sistema).
  */
 import { BookOpenIcon } from "lucide-react";
 import { type ComponentProps, createContext, type MouseEvent, use } from "react";
 import ReactMarkdown, { type Components, defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { abrirExterno } from "../ponte-desktop.ts";
+import { remarkLinksIfpr } from "./linksIfpr.ts";
 
 export const ESQUEMA_IFPR = "ifpr://";
 
@@ -51,6 +53,8 @@ function LinkMarkdown({ href, children }: ComponentProps<"a">) {
 
 const COMPONENTES: Components = { a: LinkMarkdown };
 
+const PLUGINS = [remarkGfm, remarkLinksIfpr];
+
 export function Markdown({
   texto,
   aoAbrirLink,
@@ -61,7 +65,7 @@ export function Markdown({
   return (
     <AbrirLink value={aoAbrirLink}>
       <div className="markdown">
-        <ReactMarkdown remarkPlugins={[remarkGfm]} urlTransform={transformarUrl} components={COMPONENTES}>
+        <ReactMarkdown remarkPlugins={PLUGINS} urlTransform={transformarUrl} components={COMPONENTES}>
           {texto}
         </ReactMarkdown>
       </div>

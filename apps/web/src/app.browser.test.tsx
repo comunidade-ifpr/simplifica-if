@@ -44,7 +44,9 @@ it("Início: detecta os três providers, instala e entra", async () => {
   await expect.element(codex.getByRole("progressbar")).toBeInTheDocument();
   await expect.element(codex.getByText("Instalação concluída")).toBeVisible();
   await expect.element(codex.getByText("Instalado", { exact: true })).toBeVisible();
-  await expect.element(codex.getByRole("button", { name: "Entrar" })).toBeVisible();
+  // O app não faz o login do Codex: em vez de "Entrar", a orientação com o comando.
+  await expect.element(codex.getByText("codex login", { exact: true })).toBeVisible();
+  await expect.element(codex.getByRole("button", { name: "Entrar" })).not.toBeInTheDocument();
 
   // Antigravity: "Entrar" mostra o link da página de login do Google enquanto espera, e conclui.
   const gemini = page.getByRole("region", { name: "Gemini (Antigravity)" });

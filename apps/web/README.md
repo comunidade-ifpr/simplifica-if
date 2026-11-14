@@ -6,8 +6,8 @@ Este é o shell funcional. O Modo Servidor completo (tarefas, etapas da skill, p
 
 ## Telas
 
-- **Início** (`/`): Claude, ChatGPT (Codex) e Gemini (Antigravity), cada um com `providers.detectar` (instalado, login, versão, plano), "Instalar" (`providers.instalar`, com a barra de progresso de `EstadoInstalacao`) e "Entrar" (`providers.entrar`; em `aguardando`, a URL de login aparece como link, e o desktop a abre no navegador do sistema).
-- **Conversa** (`/conversa`): escolhe o provider e a pasta de trabalho (no desktop, o seletor de pastas do sistema; no navegador, um campo de texto) e conversa: texto parcial e final em Markdown, ferramentas como etapas (nome e resumo), pedido de aprovação com "Permitir" e "Negar", "Interromper" e "Nova conversa". Os links `ifpr://` das respostas abrem um painel lateral com o `lerLink` do `GrupoLeitura`, em Markdown.
+- **Início** (`/`): Claude, ChatGPT (Codex) e Gemini (Antigravity), cada um com `providers.detectar` (instalado, login, versão, plano), "Instalar" (`providers.instalar`, com a barra de progresso de `EstadoInstalacao`) e "Entrar" (`providers.entrar`; em `aguardando`, a URL de login aparece como link, e o desktop a abre no navegador do sistema). Os botões só aparecem quando a detecção diz que o app oferece a operação (`podeInstalar`, `podeEntrar`); senão, a orientação provisória para fazer no Terminal (`orientacao` em `src/providers.ts`): instalar o Claude Code pelo instalador oficial e entrar com `claude`; entrar no Codex com `codex login`.
+- **Conversa** (`/conversa`): escolhe o provider e a pasta de trabalho (no desktop, o seletor de pastas do sistema; no navegador, um campo de texto) e conversa: texto parcial e final em Markdown, ferramentas como etapas (nome e resumo), pedido de aprovação com "Permitir" e "Negar", "Interromper" e "Nova conversa". Os links `ifpr://` das respostas, na sintaxe de link do Markdown ou soltos no texto (`src/components/linksIfpr.ts`), abrem um painel lateral com o `lerLink` do `GrupoLeitura`, em Markdown.
 - No cabeçalho, o estado da conexão (conectado, reconectando com a contagem e "Tentar agora") e o tema (sistema, claro, escuro).
 
 ## Rodar em desenvolvimento
@@ -61,7 +61,7 @@ pnpm --filter @simplifica-if/web exec vp test run --project navegador
 ```
 
 - **`unidade`** (Node): a origem da conexão, os erros, o redutor da conversa e, contra o `apps/server` de verdade no próprio processo (drivers de demonstração), o ingresso, as recusas, a reconexão quando o servidor cai e volta na mesma porta, a conversa inteira pela `ControleConversa` (aprovação, link `ifpr://`, interromper, nova conversa) e instalar e entrar.
-- **`navegador`** (Chromium headless pelo Playwright, como o T3): o app inteiro conectado ao `test/servidor-teste.ts`, que um comando do `vite.config.ts` sobe num processo Node; percorre o Início e a Conversa e confere que não aparece texto em inglês dos componentes copiados. Precisa do Chromium do Playwright 1.65 (`pnpm --filter @simplifica-if/web exec playwright install chromium` numa máquina nova ou no CI).
+- **`navegador`** (Chromium headless pelo Playwright, como o T3): o app inteiro conectado ao `test/servidor-teste.ts`, que um comando do `vite.config.ts` sobe num processo Node; percorre o Início e a Conversa e confere que não aparece texto em inglês dos componentes copiados. Precisa do Chromium do Playwright 1.65 (`pnpm --filter @simplifica-if/web exec playwright install chromium` numa máquina nova; o CI instala só o headless shell, com `--only-shell`, e o guarda em cache pela versão do Playwright).
 
 ## Código do T3
 
@@ -71,8 +71,8 @@ Os componentes de `src/components/ui` (button, badge, input, textarea, alert, se
 
 - **Persistência e retomada (M1.2):** recarregar a interface perde a conversa; os eventos de um turno que chegam enquanto a conexão está fora se perdem (o servidor não guarda nem reenvia).
 - **Etapas da skill e "detalhes técnicos" (M1.9):** as ferramentas aparecem todas como etapas, sem agrupamento.
-- **Leitor completo (M1.6):** o painel mostra só o Markdown do `lerLink`; links `ifpr://` soltos no texto, fora da sintaxe de link do Markdown, não viram botão.
-- **Login do Claude e do Codex, instalação do Claude:** o motor só oferece `entrar` no Antigravity e `instalar` no Codex e no Antigravity (o passo guiado do Claude é do M1.8). Nos outros, o botão aparece e mostra o `OperacaoNaoSuportada` do servidor, em português; a interface ainda não sabe de antemão o que cada provider oferece (o contrato não diz).
-- **Erros dos providers em português (M1.14):** os erros tipados do servidor chegam em português; o `detalhe` de uma `FalhaProvider` pode vir em inglês.
+- **Leitor completo (M1.6):** o painel mostra só o Markdown do `lerLink`.
+- **Login do Claude e do Codex, instalação do Claude (M1.8):** o motor só oferece `entrar` no Antigravity e `instalar` no Codex e no Antigravity. Nos outros, a Início mostra uma orientação provisória para o Terminal; o passo guiado é do M1.8.
+- **Erros dos providers em português (M1.14):** `src/conexao/erros.ts` traduz as falhas conhecidas (sem login, CLI ausente, MCP que não subiu, modelo fora da conta, tempo esgotado) pela `operacao`, pelo provider e por padrões do detalhe, e as outras viram "não conseguiu <operação>"; o texto original fica em "Detalhes técnicos", recolhido. Falta a tradução completa por tipo de erro, com os erros reais de cada CLI catalogados.
 - **Ícone e identidade final:** sem ícone; o nome e as cores seguem a skill `ifpr-design`.
 - **knip:** a tabela da stack prevê o knip, que o repositório ainda não usa.

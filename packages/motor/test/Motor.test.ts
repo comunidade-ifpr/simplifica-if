@@ -144,12 +144,40 @@ describe("Motor", () => {
     });
   });
 
-  it.effect("detectar repassa o estado do driver", () => {
+  it.effect("detectar repassa o estado do driver e diz o que o app oferece", () => {
     const registro = { encerradas: 0, interrompidas: 0 };
     return Effect.gen(function* () {
       const motor = yield* Motor.Motor;
       const estado = yield* motor.detectar("codex");
-      assert.deepStrictEqual(estado, { provider: "claude", instalado: true, autenticado: true, plano: "teste" });
+      assert.deepStrictEqual(estado, {
+        provider: "claude",
+        instalado: true,
+        autenticado: true,
+        plano: "teste",
+        podeInstalar: false,
+        podeEntrar: false,
+      });
     }).pipe(Effect.provide(camada(registro)));
+  });
+
+  it.effect("podeInstalar e podeEntrar seguem o driver ter instalar e entrar", () => {
+    const registro = { encerradas: 0, interrompidas: 0 };
+    const base = driverFalso(registro);
+    const drivers = Motor.Drivers.of({
+      claude: base,
+      codex: { ...base, instalar: Stream.empty },
+      antigravity: { ...base, instalar: Stream.empty, entrar: Stream.empty },
+    });
+    return Effect.gen(function* () {
+      const motor = yield* Motor.Motor;
+      const capacidades = yield* Effect.forEach(["claude", "codex", "antigravity"] as const, (provider) =>
+        Effect.map(motor.detectar(provider), ({ podeInstalar, podeEntrar }) => ({ podeInstalar, podeEntrar })),
+      );
+      assert.deepStrictEqual(capacidades, [
+        { podeInstalar: false, podeEntrar: false },
+        { podeInstalar: true, podeEntrar: false },
+        { podeInstalar: true, podeEntrar: true },
+      ]);
+    }).pipe(Effect.provide(Motor.layer.pipe(Layer.provide(Layer.succeed(Motor.Drivers, drivers)))));
   });
 });

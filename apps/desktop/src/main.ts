@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off globalTimers:off -- processo principal do Electron, sem runtime Effect (ver README)
+// @effect-diagnostics nodeBuiltinImport:off globalTimers:off globalDate:off -- processo principal do Electron, sem runtime Effect (ver README)
 /**
  * O processo principal do Simplifica IF (Electron). Desenho do `apps/desktop` do T3 Code, reduzido ao
  * que o app faz:
@@ -31,6 +31,7 @@ import {
 } from "electron";
 import { ESQUEMA, HOST_APP, resolverConfiguracao, type Configuracao } from "./configuracao.ts";
 import { CANAIS, type Conexao } from "./ponteDesktop.ts";
+import { abrirLog } from "./registro.ts";
 import {
   hashesScriptsInline,
   isSameOriginRendererNavigation,
@@ -51,11 +52,20 @@ for (const stream of [process.stdout, process.stderr]) {
   });
 }
 
-const registrar = (mensagem: string) => process.stderr.write(`[desktop] ${mensagem}\n`);
-
 // A pasta do app: separada no desenvolvimento, para não misturar o login dos providers e o estado.
 app.setName(NOME);
 app.setPath("userData", NodePath.join(app.getPath("appData"), DESENVOLVIMENTO ? `${NOME} (dev)` : NOME));
+
+/** O log do app e do servidor (`registro.ts`), além do stderr. */
+const log = abrirLog(DESENVOLVIMENTO ? NodePath.join(app.getPath("userData"), "logs") : app.getPath("logs"));
+
+/** Copia para o arquivo de log o que vai para o stderr. */
+const paraStderrELog = (texto: string) => {
+  process.stderr.write(texto);
+  log.escrever(texto);
+};
+
+const registrar = (mensagem: string) => paraStderrELog(`${new Date().toISOString()} [desktop] ${mensagem}\n`);
 
 // T3: apps/desktop/src/electron/ElectronProtocol.ts (registerDesktopSchemePrivilegesSync) — antes do `ready`.
 protocol.registerSchemesAsPrivileged([
@@ -110,7 +120,7 @@ function subirServidor(): Promise<Conexao> {
     cwd: configuracao.cwd,
   });
   registrar(`iniciando o servidor: ${inicio.comando} ${inicio.argumentos.join(" ")}`);
-  const conexao = iniciarServidor(inicio, { aoStderr: (pedaco) => process.stderr.write(pedaco) }).then((iniciado) => {
+  const conexao = iniciarServidor(inicio, { aoStderr: paraStderrELog }).then((iniciado) => {
     servidor = iniciado;
     registrar(`servidor pronto (pid ${iniciado.pid}, porta ${iniciado.linha.porta})`);
     void iniciado.saida.then((saida) => {

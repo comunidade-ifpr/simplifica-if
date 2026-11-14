@@ -3,7 +3,8 @@
  * A interface do app (`apps/web`) importa `@simplifica-if/contratos-app`; nada do servidor pode vir
  * junto. Num Node limpo, o teste carrega o pacote e confere cada módulo que o carregamento resolveu:
  * nenhum módulo do Node (`node:sqlite`, `node:fs`, `node:crypto`…), nada do `@simplifica-if/kb`, do
- * serviço `Leitura` ou do servidor MCP, nenhum driver do motor nem os SDKs dos providers.
+ * serviço `Leitura` ou do servidor MCP, nem a implementação do motor (o serviço `Motor`, os drivers; só
+ * os schemas de `erros.ts` e `eventos.ts`) nem os SDKs dos providers.
  */
 import * as NodeChildProcess from "node:child_process";
 import * as NodePath from "node:path";
@@ -20,11 +21,12 @@ const PROIBIDOS: ReadonlyArray<readonly [RegExp, string]> = [
   [/\/packages\/mcp\/src\/(leitura|servidor|http|rpc|toolkit|envelope|SessaoAtual)/, "código de servidor do MCP"],
   [/\/packages\/mcp\/src\/ferramentas\/(registrar|toolkit)\.ts/, "registro de ferramentas do MCP"],
   [/\/packages\/motor\/src\/(drivers|processo|t3)\//, "driver do motor"],
+  [/\/packages\/motor\/src\/(Motor|Driver|Canal|resultados|estados)\.ts$/, "implementação do motor"],
   [/claude-agent-sdk|effect-acp|effect-codex-app-server|platform-node/, "SDK de provider ou plataforma Node"],
 ];
 
 describe("contratos do app sem código de servidor", () => {
-  it("importar o pacote não carrega node:*, o kb, a leitura do MCP nem os drivers", () => {
+  it("importar o pacote não carrega node:*, o kb, a leitura do MCP nem o motor", () => {
     const saida = NodeChildProcess.execFileSync(process.execPath, [AJUDANTE, CONTRATOS], { encoding: "utf8" });
     const urls: ReadonlyArray<string> = JSON.parse(saida);
     assert.isTrue(urls.some((url) => url.endsWith("/packages/mcp/src/grupo-leitura.ts")));

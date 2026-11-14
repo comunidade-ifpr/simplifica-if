@@ -7,9 +7,9 @@ import type { Provider } from "@simplifica-if/contratos-app";
 import { createFileRoute } from "@tanstack/react-router";
 import { FolderOpenIcon, PlusIcon, SendHorizontalIcon, SquareIcon } from "lucide-react";
 import { type FormEvent, type KeyboardEvent, useEffect, useRef, useState } from "react";
+import { AvisoErro } from "../components/AvisoErro.tsx";
 import { ItemConversa } from "../components/ItemConversa.tsx";
 import { PainelLeitura } from "../components/PainelLeitura.tsx";
-import { Alert, AlertDescription } from "../components/ui/alert.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { Input } from "../components/ui/input.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
@@ -101,11 +101,7 @@ function FormularioInicio() {
       </div>
       <EscolhaProvider />
       <EscolhaPasta />
-      {estado.erroInicio === undefined ? null : (
-        <Alert variant="error">
-          <AlertDescription>{estado.erroInicio}</AlertDescription>
-        </Alert>
-      )}
+      {estado.erroInicio === undefined ? null : <AvisoErro erro={estado.erroInicio} />}
       <div>
         <Button type="submit" size="lg" disabled={iniciando}>
           {iniciando ? <Spinner /> : null}
