@@ -53,6 +53,12 @@ peerDependencyRules:
   allowedVersions:
     vite: "*"
 
+# Como no T3: o Electron 44 não tem script de instalação (o `garantir-electron` do apps/desktop roda o
+# install.js), e o electron-winstaller não é usado (o instalador do Windows é o NSIS).
+allowBuilds:
+  electron: false
+  electron-winstaller: false
+
 # Como no T3: os binários do @effect/tsgo 0.67.1 são recentes demais para o minimumReleaseAge padrão.
 minimumReleaseAgeExclude:
   - "@effect/tsgo-darwin-arm64@0.67.1"

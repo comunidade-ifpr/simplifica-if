@@ -97,6 +97,8 @@ layer(camada, { excludeTestServices: true })("servidor local", (it) => {
       assert.strictEqual(preflight.status, 204);
       assert.strictEqual(preflight.cabecalhos["access-control-allow-origin"], ORIGEM);
       assert.include(String(preflight.cabecalhos["access-control-allow-headers"]), "authorization");
+      // O HttpClient do Effect na interface manda o `traceparent` (e o `b3`) no POST.
+      assert.include(String(preflight.cabecalhos["access-control-allow-headers"]), "traceparent");
       const alheio = yield* pedirHttp(urlIngresso, {
         metodo: "OPTIONS",
         cabecalhos: { origin: "https://site.example" },

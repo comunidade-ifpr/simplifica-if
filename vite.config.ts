@@ -65,6 +65,9 @@ export default defineConfig({
       "packages/effect-codex-app-server/**",
       "packages/motor/src/t3/**",
       "apps/server/src/t3/**",
+      "apps/desktop/scripts/t3/**",
+      // builds e bundles (o apps/web e o apps/desktop)
+      "**/dist/**",
       ".agents/skills/*/assets/**",
       ".agents/skills/*/base-analise/**",
       ".agents/skills/*/config/**",
@@ -91,6 +94,9 @@ export default defineConfig({
       // pacotes copiados do T3 Code: o lint deles é o do upstream, com o plugin `t3code/*`
       "packages/effect-acp/**",
       "packages/effect-codex-app-server/**",
+      "apps/desktop/scripts/t3/**",
+      // builds e bundles (o apps/web e o apps/desktop)
+      "**/dist/**",
     ],
     plugins: ["eslint", "oxc", "unicorn", "typescript"],
     // Plugin próprio, com as regras de Effect copiadas do plugin do T3 (`simplifica-if/<regra>`).

@@ -1,0 +1,129 @@
+# @simplifica-if/desktop
+
+O app desktop do Simplifica IF (M1.1): o processo principal do Electron 44, que inicia o servidor local ([`apps/server`](../server/README.md)) e mostra a interface ([`apps/web`](../web)) numa janela. Segue o desenho do `apps/desktop` do T3 Code, reduzido ao que o app faz; o que foi copiado está em [`docs/upstream-t3.md`](../../docs/upstream-t3.md).
+
+- Nome: **Simplifica IF**; `appId`: `br.edu.ifpr.simplifica`.
+- A pasta do app (`app.getPath("userData")`): `~/Library/Application Support/Simplifica IF` no macOS, `%APPDATA%\Simplifica IF` no Windows; no desenvolvimento, `Simplifica IF (dev)`. É também a `--pasta-estado` do servidor (as CLIs gerenciadas e o perfil do Antigravity).
+
+## Como rodar em desenvolvimento
+
+```bash
+pnpm install
+pnpm kb:compilar                                # tmp/kb.sqlite, a base do servidor
+pnpm --filter @simplifica-if/desktop garantir-electron   # baixa o Electron (uma vez; o dev também faz)
+
+pnpm --filter @simplifica-if/web dev            # terminal 1: a interface em http://localhost:5190
+pnpm --filter @simplifica-if/desktop dev        # terminal 2: o Electron
+```
+
+O `dev` constrói o processo principal e o preload em `dist/app`, e abre o Electron. O processo principal inicia o servidor com o Node 26 do repositório (`node apps/server/src/bin.ts`), e a janela carrega o dev server do `apps/web`. Não é preciso iniciar o servidor à mão.
+
+| Variável | Padrão | Uso |
+|---|---|---|
+| `SIMPLIFICA_WEB_URL` | `http://localhost:5190` (o `PORTA_DEV` do `apps/web/vite.config.ts`) | o dev server da interface; vazia, a janela carrega o build em `dist/app/web` pelo protocolo `simplifica://app`, como no app empacotado |
+| `SIMPLIFICA_NODE` | o Node que rodou o `dev` | o Node que roda o servidor em desenvolvimento |
+| `SIMPLIFICA_KB` | `tmp/kb.sqlite` | a base (`--banco`) |
+
+Argumentos depois de `dev` vão ao Electron, por exemplo `--remote-debugging-port=9333` para inspecionar a janela pelo Chrome DevTools Protocol.
+
+## Como empacotar
+
+```bash
+pnpm --filter @simplifica-if/desktop build          # os bundles em dist/ (servidor, interface, processo principal, preload)
+pnpm --filter @simplifica-if/desktop dist           # o instalador desta plataforma em dist/pacotes
+pnpm --filter @simplifica-if/desktop dist --dir  # só o app, sem dmg (dist/pacotes/mac-arm64/Simplifica IF.app)
+pnpm --filter @simplifica-if/desktop dist --win  # Windows (NSIS por usuário), a partir de outra máquina
+```
+
+O `build` gera:
+
+| Saída | O quê |
+|---|---|
+| `dist/app/main.cjs`, `dist/app/preload.cjs` | o processo principal e o preload, em CommonJS; só o `electron` fica de fora |
+| `dist/app/web/` | o build do `apps/web` (`pnpm --filter @simplifica-if/web build`); sem ele, a página provisória de `src/provisoria/`, que confere a ponte e o servidor |
+| `dist/app/package.json` | o manifesto do app, sem dependências |
+| `dist/recursos/servidor/` | o servidor (`apps/server/src/bin.ts`) em ESM, com as dependências dentro, menos `bufferutil` e `utf-8-validate` (opcionais do `ws`, que segue sem eles) e o `undici`, copiado em `node_modules/` ao lado (o `effect` o carrega por `import()` e usa os exports nomeados do CommonJS, que o bundle não reproduz) |
+
+O `dist` acrescenta a base (`dist/recursos/base/kb.sqlite`, de `SIMPLIFICA_KB` ou `tmp/kb.sqlite`) e chama o electron-builder (`scripts/empacotar.ts`), sem assinatura e sem publicação:
+
+- macOS: dmg e zip; Windows: NSIS por usuário (`oneClick`, sem pedir administrador);
+- o processo principal, o preload e a interface vão no `app.asar`; o servidor e a base vão fora dele, em `Resources/servidor` e `Resources/base`: o servidor roda no Node do Electron como módulos ES, e o SQLite precisa de um arquivo de verdade;
+- o ícone é `recursos/icone.png` (`node scripts/gerar-icone.ts`), provisório.
+
+## Partida e encerramento
+
+1. O processo principal gera um token (32 bytes aleatórios, base64url) e inicia o servidor como processo filho (`src/servidor.ts`):
+   - em desenvolvimento, `node apps/server/src/bin.ts`;
+   - no app empacotado, o próprio executável com `ELECTRON_RUN_AS_NODE=1` sobre `Resources/servidor/bin.mjs`;
+   - com `--banco` e `--pasta-estado`; o token e a origem da janela vão no `EnvelopePartida`, na primeira linha do stdin. Nunca na linha de comando nem no ambiente (o `SIMPLIFICA_SERVIDOR_TOKEN` herdado sai do ambiente do filho).
+2. Lê a `LinhaPartida` do stdout (prazo de 60 s) e abre a janela. O stderr do servidor (os logs) passa ao stderr do app.
+3. A interface pede a conexão pelo preload: `window.simplifica.conexao()` devolve `{ urlServidor: "http://127.0.0.1:<porta>", token }`. O processo principal só responde ao quadro principal da janela do app, na origem da interface.
+4. Ao sair (fechar a janela, Cmd+Q, SIGINT ou SIGTERM), fecha o stdin do servidor e espera 5 s; se ele não sair, SIGTERM e, 2 s depois, SIGKILL. Se o app morrer, o servidor sai sozinho: o stdin fecha e o processo pai muda (`launcherWatch.ts`).
+5. Se o servidor cair, ou não subir, um diálogo mostra o motivo (o fim do stderr) e oferece **Reiniciar** (novo token, nova porta, a janela recarrega) ou **Sair**.
+
+## A base no app empacotado (decisão)
+
+A ordem é `SIMPLIFICA_KB`, depois `<pasta do app>/base/kb.sqlite`, se existir, e por fim a base empacotada (`Resources/base/kb.sqlite`). Por enquanto o instalador leva a base inteira (cerca de 140 MB). A pasta do app é onde a atualização da base (M1.10) vai gravar as versões novas, sem reinstalar o app.
+
+## Preload (`window.simplifica`)
+
+```ts
+interface PonteDesktop {
+  conexao(): Promise<{ urlServidor: string; token: string }>; // espera o servidor ficar pronto
+  abrirExterno?(url: string): Promise<void>;                   // só http(s), no navegador do sistema
+  escolherPasta?(): Promise<string | null>;                    // diálogo do sistema; null se cancelar
+}
+```
+
+O contrato está em `src/ponteDesktop.ts`; a interface tem a cópia dela em `apps/web/src/ponte-desktop.ts`. O token nunca vai para log.
+
+## Segurança da janela
+
+Como no T3:
+
+- `contextIsolation`, `sandbox`, sem `nodeIntegration` e sem `<webview>`;
+- navegação só na origem da interface; links para fora, e `window.open`, abrem no navegador do sistema se forem http(s), e os outros esquemas são recusados;
+- nenhuma permissão do navegador (câmera, notificações…), salvo escrever na área de transferência;
+- uma instância só do app.
+
+Na interface empacotada, a CSP vai em cada resposta do protocolo `simplifica://app` (`src/seguranca.ts`), mais estreita que a do T3:
+
+- `connect-src` só para o servidor local na porta desta execução;
+- `script-src 'self'` mais o hash dos scripts inline do `index.html` (o do tema);
+- sem `eval`, `object-src 'none'`, `frame-src 'none'`.
+
+No desenvolvimento, a janela carrega o dev server sem CSP: o Vite precisa de script inline e do WebSocket do HMR.
+
+## Estrutura
+
+- `src/main.ts`: o processo principal (servidor, janela, IPC, protocolo, menu em pt-BR, ciclo de vida).
+- `src/servidor.ts`: o token, a montagem do comando, a linha de partida e o encerramento; sem Electron.
+- `src/configuracao.ts`: de onde vêm o servidor, a base, a interface e a pasta de estado; sem Electron.
+- `src/seguranca.ts`: CSP, navegação, links externos e arquivos do protocolo; sem Electron.
+- `src/preload.ts`, `src/ponteDesktop.ts`: a ponte e o contrato.
+- `scripts/construir.ts`, `scripts/empacotar.ts`, `scripts/dev.ts`, `scripts/gerar-icone.ts`.
+- `scripts/t3/`: cópia do T3 (`ensure-electron-runtime.mjs`), com `NOTICE`.
+
+O processo principal não usa Effect: as APIs do Electron são de callback, e o `main.cjs` fica pequeno, sem runtime. O servidor, que é Effect, roda noutro processo.
+
+## Testes
+
+```bash
+pnpm --filter @simplifica-if/desktop test
+```
+
+- `test/servidor.test.ts`: o token, a linha de partida, os argumentos e o ambiente (sem o token na linha de comando) e o encerramento (stdin, SIGTERM, SIGKILL, saída antes de ficar pronto), com processos Node falsos.
+- `test/configuracao.test.ts`: os caminhos no desenvolvimento e no app empacotado, a CSP, a navegação, os links externos e os arquivos do protocolo.
+- `test/integracao.test.ts`: o servidor de verdade (`apps/server`, banco de fixture, nenhum provider chamado), iniciado como o app o inicia: a linha de partida, o `POST /ingresso` com o token e a origem da janela, as recusas e o encerramento pelo stdin. Se o bundle (`build`) e o Electron existirem, repete com o Electron como Node sobre o bundle.
+- `test/empacotar.test.ts`: a identidade e os alvos do electron-builder.
+
+Nenhum teste abre janela. O T3 tem um smoke do app empacotado (`scripts/smoke-desktop-app.ts`, Playwright com `_electron`) que roda nos jobs de release; aqui ele fica como pendência do CI. Para conferir o app de verdade, empacote com `--dir` e abra o `.app`; com `--remote-debugging-port`, a página pode ser lida pelo CDP.
+
+## Pendências
+
+- **Assinatura de código e notarização** (macOS: Developer ID e notarização; Windows: certificado). Sem elas, o macOS pede "Abrir mesmo assim" e o Windows mostra o SmartScreen.
+- **Ícone final** pela identidade visual do IFPR (skill `ifpr-design`); o de `recursos/icone.png` é provisório.
+- **Instaladores no CI** (macOS e Windows), com o `kb.sqlite` da fábrica e um smoke do app empacotado, como o `smoke-desktop-app.ts` do T3.
+- **Windows:** o `dist --win` e o app no Windows ainda não foram testados; ali o cordão do servidor é só o stdin (o `awaitLauncherLoss` do T3 não age no Windows).
+- **Atualização do app** (`electron-updater`, M1.10) e da base na pasta do app.
+- **Tamanho:** o instalador leva a base inteira e o Electron com as línguas pt-BR e en-US.
