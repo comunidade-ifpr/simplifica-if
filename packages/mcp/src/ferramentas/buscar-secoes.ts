@@ -101,7 +101,7 @@ export const buscarSecoes = definirFerramenta({
   executar(e, { db, base }) {
     if (e.tipo) {
       const conhecidos = new Set(
-        linhasTipo.parse(db.query("SELECT DISTINCT tipo FROM secoes ORDER BY tipo").all()).map((t) => t.tipo),
+        linhasTipo.parse(db.prepare("SELECT DISTINCT tipo FROM secoes ORDER BY tipo").all()).map((t) => t.tipo),
       );
       const desconhecidos = e.tipo.filter((t) => !conhecidos.has(t));
       if (desconhecidos.length) {

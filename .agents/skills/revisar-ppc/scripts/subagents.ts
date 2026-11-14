@@ -9,7 +9,7 @@
  * é segmentado com a mesma segmentação e taxonomia do índice de seções (`bancoDoPpcAvulso`), porque
  * o PPC analisado pode não estar na base. As fichas transversais vão num grupo com o PPC inteiro.
  */
-import type { Database } from "bun:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
 import { abrirBanco } from "@simplifica-if/kb/db/banco";
@@ -411,8 +411,8 @@ const TOPICO_CITACOES_PPC = "referencias_normativas";
  * memória com o `PPC.md` da rodada segmentado pela taxonomia do índice de seções.
  */
 export type ContextoKbRodada = {
-  db: Database;
-  dbPpc: Database;
+  db: DatabaseSync;
+  dbPpc: DatabaseSync;
   /** Linhas e total de caracteres do `PPC.md`. */
   markdown: string;
   pacote(fichas: ObjetoPy[], escopo: "secoes" | "completo", citacoesPpc: boolean): PacoteAvulso;

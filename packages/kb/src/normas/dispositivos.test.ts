@@ -1,5 +1,5 @@
 /** Dispositivos citados → IDs (`dispositivos.ts`): inciso com letra, item, faixas, conjunções e desempenho. */
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { analisarDispositivos, dispositivoAntes } from "./dispositivos.ts";
 import { resolverCitacao } from "./resolver.ts";
 import { normalizarCitacao } from "./texto-citacao.ts";

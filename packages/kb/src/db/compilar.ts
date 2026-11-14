@@ -1,8 +1,8 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 /**
  * Compila o `kb.sqlite` a partir dos arquivos do checkout (fase 6 do plano).
  *
- *   bun run kb:compilar [--destino tmp/kb.sqlite] [--versao 2026.11.13] [--commit <sha>] [--canal piloto]
+ *   pnpm kb:compilar [--destino tmp/kb.sqlite] [--versao 2026.11.13] [--commit <sha>] [--canal piloto]
  *
  * O banco é derivado e fica fora do git (`tmp/`). Determinismo: as mesmas fontes geram o mesmo
  * arquivo, byte a byte. Para isso:
@@ -14,7 +14,8 @@
  * - o arquivo é escrito num temporário e renomeado (quem lê nunca vê um banco pela metade).
  * O teste `base.test.ts` compila duas vezes e compara o SHA-256 dos arquivos.
  */
-import { Database, type Statement } from "bun:sqlite";
+import { DatabaseSync, type StatementSync } from "node:sqlite";
+import { emTransacao } from "./transacao.ts";
 import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, utimesSync } from "node:fs";
 import path from "node:path";
 import { z } from "zod";
@@ -238,9 +239,12 @@ export function papelDaCitacao(
 /* --------------------------------------------------------------- compilação */
 
 export class Inseridor {
-  private readonly cache = new Map<string, Statement>();
+  private readonly db: DatabaseSync;
+  private readonly cache = new Map<string, StatementSync>();
   readonly contagens: Record<string, number> = {};
-  constructor(private readonly db: Database) {}
+  constructor(db: DatabaseSync) {
+    this.db = db;
+  }
 
   inserir(tabela: string, linha: Record<string, unknown>): number {
     const colunas = Object.keys(linha);
@@ -290,7 +294,7 @@ export function gravarSecoesECitacoes(
     lexico: Sinonimos;
     /** Cache da expansão por tipo de seção, compartilhado entre PPCs. */
     expansoes: Map<string, string>;
-    insFts: Statement;
+    insFts: StatementSync;
   },
 ): void {
   const linhas = p.markdown.split("\n");
@@ -398,16 +402,16 @@ export interface OpcoesPpcAvulso {
  * `gravarSecoesECitacoes`. As consultas de seções (`secoesDoPpc`, `buscarSecoes`) e de citações
  * rodam nele sem mudança.
  */
-export function bancoDoPpcAvulso(markdownOriginal: string, opcoes: OpcoesPpcAvulso = {}): Database {
+export function bancoDoPpcAvulso(markdownOriginal: string, opcoes: OpcoesPpcAvulso = {}): DatabaseSync {
   const markdown = markdownOriginal.replace(/\r\n?/g, "\n");
   const paraSegmentar = opcoes.titulosNivel1 ? markdown.replace(/^#(?=[ \t])/gm, "##") : markdown;
   const ppcId = opcoes.ppcId ?? "ppc:avulso";
   const caminhoMd = opcoes.path ?? "PPC.md";
   const taxonomia = opcoes.taxonomia ?? "tecnico";
-  const db = new Database(":memory:", { strict: true });
-  db.run(DDL);
+  const db = new DatabaseSync(":memory:");
+  db.exec(DDL);
   const ins = new Inseridor(db);
-  db.transaction(() => {
+  emTransacao(db, () => {
     ins.inserir("ppcs", {
       id: ppcId,
       chave: ppcId.replace(/^ppc:/, ""),
@@ -452,7 +456,7 @@ export function bancoDoPpcAvulso(markdownOriginal: string, opcoes: OpcoesPpcAvul
         "INSERT INTO secoes_fts (rowid, titulo, texto, titulo_radicais, radicais, expansao) VALUES (?, ?, ?, ?, ?, ?)",
       ),
     });
-  })();
+  });
   return db;
 }
 
@@ -480,7 +484,7 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
   mkdirSync(path.dirname(destino), { recursive: true });
   const temporario = `${destino}.tmp-${process.pid}`;
   rmSync(temporario, { force: true });
-  const db = new Database(temporario, { create: true, strict: true });
+  const db = new DatabaseSync(temporario);
   // em caso de erro, fecha o banco e remove o temporário (até ~130 MB) antes de propagar
   let contagensInsercao: Record<string, number>;
   try {
@@ -527,17 +531,17 @@ interface ContextoPreenchimento {
 }
 
 /** Esquema, carga de todas as tabelas, `optimize` do FTS5 e `VACUUM`; devolve as contagens por tabela. */
-function preencherBanco(db: Database, c: ContextoPreenchimento): Record<string, number> {
+function preencherBanco(db: DatabaseSync, c: ContextoPreenchimento): Record<string, number> {
   const { raiz, base, lexico, topicosSecoes, fontesNormativas, arquivos, fontesSha } = c;
-  db.run(`PRAGMA page_size = ${PAGE_SIZE}`);
-  db.run("PRAGMA journal_mode = OFF");
-  db.run("PRAGMA synchronous = OFF");
-  db.run("PRAGMA encoding = 'UTF-8'");
-  db.run(`PRAGMA user_version = ${VERSAO_ESQUEMA}`);
-  db.run(DDL);
+  db.exec(`PRAGMA page_size = ${PAGE_SIZE}`);
+  db.exec("PRAGMA journal_mode = OFF");
+  db.exec("PRAGMA synchronous = OFF");
+  db.exec("PRAGMA encoding = 'UTF-8'");
+  db.exec(`PRAGMA user_version = ${VERSAO_ESQUEMA}`);
+  db.exec(DDL);
   const ins = new Inseridor(db);
 
-  db.transaction(() => {
+  emTransacao(db, () => {
     /* ---------- normas */
     const registro = carregarRegistro(raiz);
     const manifest = esquemaManifest.parse(lerJson(path.join(base, "manifest.json")));
@@ -1035,12 +1039,12 @@ function preencherBanco(db: Database, c: ContextoPreenchimento): Record<string, 
       if (valor !== undefined) meta.push([chave, valor]);
     }
     for (const [chave, valor] of meta) ins.inserir("meta", { chave, valor });
-  })();
+  });
 
-  db.run("INSERT INTO normas_fts(normas_fts) VALUES ('optimize')");
-  db.run("INSERT INTO secoes_fts(secoes_fts) VALUES ('optimize')");
-  db.run("INSERT INTO dispositivos_fts(dispositivos_fts) VALUES ('optimize')");
-  db.run("VACUUM");
+  db.exec("INSERT INTO normas_fts(normas_fts) VALUES ('optimize')");
+  db.exec("INSERT INTO secoes_fts(secoes_fts) VALUES ('optimize')");
+  db.exec("INSERT INTO dispositivos_fts(dispositivos_fts) VALUES ('optimize')");
+  db.exec("VACUUM");
   return ins.contagens;
 }
 

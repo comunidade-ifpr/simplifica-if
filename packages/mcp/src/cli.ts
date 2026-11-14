@@ -1,8 +1,8 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 /**
  * CLI `simplifica-mcp`: inicia o servidor MCP só de leitura, em stdio, sobre um `kb.sqlite`.
  *
- *   bun run packages/mcp/src/cli.ts --banco tmp/kb.sqlite
+ *   node packages/mcp/src/cli.ts --banco tmp/kb.sqlite
  *   SIMPLIFICA_KB=~/SimplificaIF/kb.sqlite simplifica-mcp --canal beta
  *
  * O stdout é do protocolo MCP; as mensagens vão para o stderr. Um `~/` no início dos caminhos é

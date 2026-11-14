@@ -1,5 +1,5 @@
 /** Texto legível de IDs de dispositivo (`texto-dispositivos.ts`) alinhado ao contrato de `ids.ts`. */
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { carregarDispositivos } from "./estrutura.ts";
 import { ehIdDispositivo } from "./ids.ts";
 import { textoDispositivos } from "./texto-dispositivos.ts";

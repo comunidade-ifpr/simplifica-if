@@ -1,6 +1,6 @@
 {
   "pergunta": "Q02",
-  "gerado_por": "bun run kb citacoes br/cne-cp/res/2021/1 (packages/kb/src/ppcs/citacoes.ts)",
+  "gerado_por": "pnpm kb citacoes br/cne-cp/res/2021/1 (packages/kb/src/ppcs/citacoes.ts)",
   "criterio": "PPCs de base-conhecimento/institucional/ifpr/ppcs/ (todos os níveis) com ao menos uma citação resolvida para br/cne-cp/res/2021/1 pelo resolvedor de citações, inclusive as formas com órgão trocado (CNE/CEB nº 1/2021 seguida de 'educação profissional') e com tipo trocado (Parecer CNE/CP nº 01/2021 que define as Diretrizes), marcadas pela regra de cada ocorrência.",
   "universo": "curso",
   "avaliar_precisao": true,

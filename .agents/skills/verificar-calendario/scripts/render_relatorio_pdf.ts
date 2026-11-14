@@ -2,7 +2,7 @@
  * Relatório de verificação de calendário: Markdown → PDF (porte de
  * `render_relatorio_pdf.py`, que usava `reportlab`, para `pdfmake`).
  *
- * Uso: `bun run .agents/skills/verificar-calendario/scripts/render_relatorio_pdf.ts entrada.md saida.pdf`
+ * Uso: `node .agents/skills/verificar-calendario/scripts/render_relatorio_pdf.ts entrada.md saida.pdf`
  *
  * O Markdown aceito é o subconjunto que o relatório usa (`instrucoes.md`):
  * - 1ª linha: título; 2ª linha: subtítulo (sem os `#` e espaços iniciais);
@@ -42,9 +42,10 @@
  * que a saída seja reproduzível.
  */
 import { mkdirSync, realpathSync } from "node:fs";
+import { writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import path from "node:path";
-import type { Content, ContextPageSize, TableCell, TDocumentDefinitions } from "pdfmake/interfaces";
+import type { Content, ContextPageSize, TableCell, TDocumentDefinitions } from "pdfmake/interfaces.js";
 import { aparar, apararCaracteres, dividirLinhas, lerTexto } from "@simplifica-if/kb/texto";
 import { match } from "@simplifica-if/kb/python/re";
 import { type Linha, quebrarCjk, quebrarNormal } from "./quebra-linhas.ts";
@@ -122,8 +123,33 @@ function fonteReserva(): FonteFontkit {
 const CP1252 = new Set<number>([
   ...Array.from({ length: 0x80 }, (_, i) => i),
   ...Array.from({ length: 0x60 }, (_, i) => 0xa0 + i),
-  ...[0x20ac, 0x201a, 0x0192, 0x201e, 0x2026, 0x2020, 0x2021, 0x02c6, 0x2030, 0x0160, 0x2039, 0x0152, 0x017d],
-  ...[0x2018, 0x2019, 0x201c, 0x201d, 0x2022, 0x2013, 0x2014, 0x02dc, 0x2122, 0x0161, 0x203a, 0x0153, 0x017e, 0x0178],
+  0x20ac,
+  0x201a,
+  0x0192,
+  0x201e,
+  0x2026,
+  0x2020,
+  0x2021,
+  0x02c6,
+  0x2030,
+  0x0160,
+  0x2039,
+  0x0152,
+  0x017d,
+  0x2018,
+  0x2019,
+  0x201c,
+  0x201d,
+  0x2022,
+  0x2013,
+  0x2014,
+  0x02dc,
+  0x2122,
+  0x0161,
+  0x203a,
+  0x0153,
+  0x017e,
+  0x0178,
 ]);
 const SEM_GLIFO = "\u25a0";
 /** Seletores de variação, BOM, ZWJ etc.: a Roboto tem glifo vazio, mas o `reportlab` desenha `■`. */
@@ -587,7 +613,7 @@ export async function gerarPdf(markdown: string, criadoEm?: Date): Promise<Buffe
 export async function construirPdf(entrada: string, saida: string, criadoEm?: Date): Promise<void> {
   const pdf = await gerarPdf(lerTexto(entrada), criadoEm);
   mkdirSync(path.dirname(saida), { recursive: true });
-  await Bun.write(saida, pdf);
+  await writeFile(saida, pdf);
 }
 
 function dataFixa(): Date | undefined {

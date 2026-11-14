@@ -4,7 +4,7 @@
  * corpo do texto para a IA. O servidor registra a partir de `FERRAMENTAS` (index.ts); os testes e,
  * no Marco 1, a API HTTP do app chamam `responder` diretamente.
  */
-import type { Database } from "bun:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 import type { ToolAnnotations } from "@modelcontextprotocol/server";
 import { z } from "zod";
 import type { MetaBase } from "../banco.ts";
@@ -12,7 +12,7 @@ import { type Base, ErroEntrada, esquemaResposta, type Resposta } from "../envel
 import { montarTexto } from "../texto.ts";
 
 export interface Contexto {
-  db: Database;
+  db: DatabaseSync;
   meta: MetaBase;
   base: Base;
   /** Única pasta de onde o servidor lê arquivos (`pacote_contexto`, T4); caminho real e absoluto. */

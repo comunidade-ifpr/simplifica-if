@@ -1,0 +1,40 @@
+packages:
+  - packages/*
+
+# Versões compartilhadas com o fork do T3 Code (simplifica-if-app): mesma versão nos dois
+# repositórios, atualizada no mesmo dia. Ver docs/plans/consolidacao-stack-t3.md, "Versões fixadas".
+# `effect` e `@effect/*` entram no código a partir do C1; `pnpm sync:repos` traz `.repos/effect` na
+# tag de `effect` daqui.
+catalog:
+  "@effect/platform-node": 4.1.2
+  "@effect/vitest": 4.1.2
+  "@types/node": 24.12.4
+  effect: 4.1.3
+  vite: npm:@voidzero-dev/vite-plus-core@1.4.0
+  vite-plus: 1.4.0
+
+# Copiados do T3: uma só cópia de vite, vite-plus e @types/node no workspace.
+overrides:
+  "@types/node": "catalog:"
+  vite: "catalog:"
+  vite-plus: "catalog:"
+
+strictPeerDependencies: true
+
+peerDependencyRules:
+  allowAny:
+    - typescript
+    - vite
+  allowedVersions:
+    vite: "*"
+
+# Como no T3: os binários do @effect/tsgo 0.67.1 são recentes demais para o minimumReleaseAge padrão.
+minimumReleaseAgeExclude:
+  - "@effect/tsgo-darwin-arm64@0.67.1"
+  - "@effect/tsgo-darwin-x64@0.67.1"
+  - "@effect/tsgo-linux-arm64@0.67.1"
+  - "@effect/tsgo-linux-arm@0.67.1"
+  - "@effect/tsgo-linux-x64@0.67.1"
+  - "@effect/tsgo-win32-arm64@0.67.1"
+  - "@effect/tsgo-win32-x64@0.67.1"
+  - "@effect/tsgo@0.67.1"

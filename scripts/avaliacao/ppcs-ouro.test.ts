@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { carregarPpcOuro, DIR_AVALIACAO, RAIZ_REPOSITORIO } from "./carregar.ts";

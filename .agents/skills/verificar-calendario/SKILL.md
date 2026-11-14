@@ -72,8 +72,8 @@ Antes de executar, leia:
 Read .agents/skills/verificar-calendario/instrucoes.md
 ```
 
-Para gerar o PDF a partir do Markdown final, usar (requer `bun install` na raiz):
+Para gerar o PDF a partir do Markdown final, usar (requer `pnpm install` na raiz):
 
 ```text
-bun run .agents/skills/verificar-calendario/scripts/render_relatorio_pdf.ts caminho/relatorio.md caminho/relatorio.pdf
+node .agents/skills/verificar-calendario/scripts/render_relatorio_pdf.ts caminho/relatorio.md caminho/relatorio.pdf
 ```

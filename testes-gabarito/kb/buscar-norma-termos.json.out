@@ -1,0 +1,327 @@
+{
+  "consulta": "estágio supervisionado obrigatório",
+  "total": 10,
+  "avisos": [],
+  "resultados": [
+    {
+      "norma": {
+        "id": "br/cne-cp/res/2026/2",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CP nº 2/2026",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2026-11-11",
+        "ementa": "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md"
+      },
+      "dispositivo": {
+        "id": "br/cne-cp/res/2026/2#art37-par1",
+        "arquivo_id": "br/cne-cp/res/2026/2#art37-par1",
+        "tipo": "paragrafo",
+        "rotulo": "§ 1º",
+        "caput": [
+          "Art. 37. O estágio profissional supervisionado é ato educativo de responsabilidade e orientação da instituição de ensino, desenvolvido no ambiente de trabalho, supervisionado pela parte concedente, que visa à preparação para a vida cidadã e para o trabalho."
+        ],
+        "texto": "§ 1º O estágio profissional supervisionado pode ser obrigatório ou não obrigatório.",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
+        "linha_inicio": 592,
+        "linha_fim": 592
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -15.446,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "br/cne-cp/res/2026/2",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CP nº 2/2026",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2026-11-11",
+        "ementa": "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md"
+      },
+      "dispositivo": {
+        "id": "br/cne-cp/res/2026/2#art37-par3",
+        "arquivo_id": "br/cne-cp/res/2026/2#art37-par3",
+        "tipo": "paragrafo",
+        "rotulo": "§ 3º",
+        "caput": [
+          "Art. 37. O estágio profissional supervisionado é ato educativo de responsabilidade e orientação da instituição de ensino, desenvolvido no ambiente de trabalho, supervisionado pela parte concedente, que visa à preparação para a vida cidadã e para o trabalho."
+        ],
+        "texto": "§ 3º A carga horária do estágio, obrigatório ou não obrigatório, deve ser acrescida à carga horária mínima do curso estabelecida no CNCT ou no CNCST.",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
+        "linha_inicio": 596,
+        "linha_fim": 596
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -13.555,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "br/cne-cp/res/2026/2",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CP nº 2/2026",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2026-11-11",
+        "ementa": "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md"
+      },
+      "dispositivo": {
+        "id": "br/cne-cp/res/2026/2#art37-par2",
+        "arquivo_id": "br/cne-cp/res/2026/2#art37-par2",
+        "tipo": "paragrafo",
+        "rotulo": "§ 2º",
+        "caput": [
+          "Art. 37. O estágio profissional supervisionado é ato educativo de responsabilidade e orientação da instituição de ensino, desenvolvido no ambiente de trabalho, supervisionado pela parte concedente, que visa à preparação para a vida cidadã e para o trabalho."
+        ],
+        "texto": "§ 2º O estágio profissional supervisionado será obrigatório quando assim determinado por lei, exigido pela natureza da ocupação ou definido pela instituição educacional em razão do perfil profissional de conclusão do curso.",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
+        "linha_inicio": 594,
+        "linha_fim": 594
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -12.803,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "br/cne-cp/res/2026/2",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CP nº 2/2026",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2026-11-11",
+        "ementa": "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md"
+      },
+      "dispositivo": {
+        "id": "br/cne-cp/res/2026/2#art37-par6",
+        "arquivo_id": "br/cne-cp/res/2026/2#art37-par6",
+        "tipo": "paragrafo",
+        "rotulo": "§ 6º",
+        "caput": [
+          "Art. 37. O estágio profissional supervisionado é ato educativo de responsabilidade e orientação da instituição de ensino, desenvolvido no ambiente de trabalho, supervisionado pela parte concedente, que visa à preparação para a vida cidadã e para o trabalho."
+        ],
+        "texto": "§ 6º A carga horária destinada ao estágio profissional supervisionado, quando obrigatório, em cursos de EPTNM, em quaisquer das formas de oferta, não poderá ultrapassar a um terço da carga horária mínima prevista para a habilitação profissional estabelecida no CNCT.",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
+        "linha_inicio": 602,
+        "linha_fim": 602
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -12.273,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "br/cne-cp/res/2021/1",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CP nº 1/2021",
+        "status_vigencia": "revogada",
+        "data_publicacao": "2021-01-05",
+        "ementa": "Define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md"
+      },
+      "dispositivo": {
+        "id": "br/cne-cp/res/2021/1#art25-xii",
+        "arquivo_id": "br/cne-cp/res/2021/1#art25-xii",
+        "tipo": "inciso",
+        "rotulo": "XII",
+        "caput": [
+          "Art. 25. A estrutura do PPC, a ser submetida à aprovação dos órgãos competentes, no âmbito do correspondente sistema de ensino, deve conter, no mínimo:"
+        ],
+        "texto": "XII – identificação das atividades de estágio supervisionado obrigatório, quando couber.",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md",
+        "linha_inicio": 336,
+        "linha_fim": 336
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -11.997,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "ifpr/consup/res/2024/190",
+        "situacao": "base",
+        "titulo": "Resolução CONSUP/IFPR nº 190/2024",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2024-04-30",
+        "ementa": "Dispõe sobre a Organização Didático-Pedagógica dos Cursos Técnicos de Nível Médio no âmbito do IFPR.",
+        "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_190-2024_odp-cursos-tecnicos.md"
+      },
+      "dispositivo": {
+        "id": "ifpr/consup/res/2024/190#art67",
+        "arquivo_id": "ifpr/consup/res/2024/190#art67",
+        "tipo": "artigo",
+        "rotulo": "Art. 67.",
+        "caput": [],
+        "texto": "Art. 67. Estágio é ato educativo escolar supervisionado e orientado, desenvolvido no ambiente de trabalho, que propicia experiência acadêmica e profissional na área de formação do estudante, em consonância com o perfil profissional descrito no PPC, e que prepara o estudante para o exercício da cidadania e para o mundo do trabalho. Parágrafo único. O estágio poderá ser obrigatório ou não obrigatório, de acordo com as especificidades de cada curso.",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_190-2024_odp-cursos-tecnicos.md",
+        "linha_inicio": 535,
+        "linha_fim": 537
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -11.527,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "br/cne-cp/res/2026/2",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CP nº 2/2026",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2026-11-11",
+        "ementa": "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md"
+      },
+      "dispositivo": {
+        "id": "br/cne-cp/res/2026/2#art28-xvii",
+        "arquivo_id": "br/cne-cp/res/2026/2#art28-xvii",
+        "tipo": "inciso",
+        "rotulo": "XVII",
+        "caput": [
+          "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+        ],
+        "texto": "XVII – a identificação da carga horária, das atividades e dos ambientes do estágio supervisionado obrigatório, quando exigido; e",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
+        "linha_inicio": 474,
+        "linha_fim": 474
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -10.338,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "br/cne-cp/res/2021/1",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CP nº 1/2021",
+        "status_vigencia": "revogada",
+        "data_publicacao": "2021-01-05",
+        "ementa": "Define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md"
+      },
+      "dispositivo": {
+        "id": "br/cne-cp/res/2021/1#art26-par7",
+        "arquivo_id": "br/cne-cp/res/2021/1#art26-par7",
+        "tipo": "paragrafo",
+        "rotulo": "§ 7º",
+        "caput": [
+          "Art. 26. A carga horária mínima dos cursos técnicos é estabelecida no CNCT ou por instrumento correspondente a vir substituí-lo, de acordo com a singularidade de cada habilitação profissional técnica."
+        ],
+        "texto": "§ 7º A carga horária destinada ao estágio profissional supervisionado, quando previsto como obrigatório, em quaisquer das formas de oferta, deve ser adicionada à carga horária mínima estabelecida para o curso.",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md",
+        "linha_inicio": 363,
+        "linha_fim": 363
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -9.625,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "ifpr/consup/res/2022/64",
+        "situacao": "base",
+        "titulo": "Resolução CONSUP/IFPR nº 64/2022",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2022-03-23",
+        "ementa": "Estabelece as diretrizes para a oferta de cursos técnicos integrados ao ensino médio do IFPR.",
+        "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md"
+      },
+      "dispositivo": {
+        "id": "ifpr/consup/res/2022/64#art22-i-al-b",
+        "arquivo_id": "ifpr/consup/res/2022/64#art22-i-al-b",
+        "tipo": "alinea",
+        "rotulo": "b)",
+        "caput": [
+          "Art. 22. Adotar-se-á como referência para a carga horária dos cursos técnicos integrados ao ensino médio o número de horas para as respectivas habilitações profissionais previstas no Catálogo Nacional de Cursos Técnicos.",
+          "I – para os cursos organizados em 3 anos, serão considerados:"
+        ],
+        "texto": "b) carga horária de 1000 (mil) horas anuais, sem ultrapassar 10% da carga horária total, incluindo a carga horária do estágio supervisionado obrigatório, quando previsto.",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
+        "linha_inicio": 209,
+        "linha_fim": 209
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -9.004,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "ifpr/consup/res/2022/64",
+        "situacao": "base",
+        "titulo": "Resolução CONSUP/IFPR nº 64/2022",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2022-03-23",
+        "ementa": "Estabelece as diretrizes para a oferta de cursos técnicos integrados ao ensino médio do IFPR.",
+        "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md"
+      },
+      "dispositivo": {
+        "id": "ifpr/consup/res/2022/64#art22-ii-al-b",
+        "arquivo_id": "ifpr/consup/res/2022/64#art22-ii-al-b",
+        "tipo": "alinea",
+        "rotulo": "b)",
+        "caput": [
+          "Art. 22. Adotar-se-á como referência para a carga horária dos cursos técnicos integrados ao ensino médio o número de horas para as respectivas habilitações profissionais previstas no Catálogo Nacional de Cursos Técnicos.",
+          "II – para os cursos organizados em 4 anos, deve ser priorizada a oferta em turno único e serão considerados:"
+        ],
+        "texto": "b) carga horária mínima de 800 horas anuais, sem ultrapassar 10% da carga horária total, incluindo a carga horária do estágio supervisionado obrigatório, quando previsto.",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/ifpr/resolucoes/RESOLUCAO_CONSUP-IFPR_64-2022_cursos-integrados.md",
+        "linha_inicio": 212,
+        "linha_fim": 212
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -8.492,
+      "origem": "busca-textual"
+    }
+  ]
+}

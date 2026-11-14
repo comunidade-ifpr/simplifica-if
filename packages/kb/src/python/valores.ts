@@ -12,7 +12,10 @@ import { representar } from "../json.ts";
 import { aparar } from "../texto.ts";
 
 export class FloatPy {
-  constructor(readonly valor: number) {}
+  readonly valor: number;
+  constructor(valor: number) {
+    this.valor = valor;
+  }
   valueOf(): number {
     return this.valor;
   }

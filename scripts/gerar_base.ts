@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 /**
  * Gera os campos derivados do front matter das normas (relações de relacoes.yaml e status de
  * vigência na data_referencia de config/vigencia.yaml), manifest.json e a tabela do README.
@@ -10,7 +10,7 @@ import { montarManifest } from "./base/front-matter.ts";
 import { lerArgumentos } from "./cli.ts";
 import { gravarBase, normasExistem, verificarBase } from "./base/readme.ts";
 
-const USO = `uso: bun run scripts/gerar_base.ts [--check]
+const USO = `uso: node scripts/gerar_base.ts [--check]
 
 Gera os campos derivados do front matter das normas (relações e status de vigência),
 manifest.json e a tabela do README a partir de normas/*.md, relacoes.yaml e config/vigencia.yaml.

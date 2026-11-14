@@ -35,19 +35,19 @@ Ao criar ou revisar uma skill:
 Depois de alterar a base:
 
 ```bash
-bun run scripts/validar_base.ts
-bun run scripts/gerar_site.ts --check
+node scripts/validar_base.ts
+node scripts/gerar_site.ts --check
 ```
 
 Depois de alterar `revisar-ppc`:
 
 ```bash
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-schemas --check
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-mapa --check
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-indice --check
-bun test ./.agents/skills/revisar-ppc
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-schemas --check
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-mapa --check
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-indice --check
+pnpm exec vp test run .agents/skills/revisar-ppc
 python3 -m pytest .agents/skills/revisar-ppc/tests
 ```
 
-Sem `--check`, `gerar-schemas`, `gerar-mapa` e `gerar-indice` regeneram os JSON Schemas de ficha e marcos (gerados do zod de `scripts/esquemas.ts`), `base-analise/mapa-fichas.md` e `base-analise/indice.json`. O `bun run scripts/validar_base.ts` também roda a validação da base de análise. Os scripts TypeScript das skills ficam em `.agents/skills/<skill>/scripts/` e os testes em `.agents/skills/<skill>/tests/*.test.ts`; ambos entram em `bun run typecheck`, `bun run test` e `bun run format`. Regras compartilhadas (texto, JSON, JSON Schema, IDs de norma, referências normativas estruturadas e seu texto legível) ficam em `packages/kb` e são importadas como `@simplifica-if/kb/...`.
+Sem `--check`, `gerar-schemas`, `gerar-mapa` e `gerar-indice` regeneram os JSON Schemas de ficha e marcos (gerados do zod de `scripts/esquemas.ts`), `base-analise/mapa-fichas.md` e `base-analise/indice.json`. O `node scripts/validar_base.ts` também roda a validação da base de análise. Os scripts TypeScript das skills ficam em `.agents/skills/<skill>/scripts/` e os testes em `.agents/skills/<skill>/tests/*.test.ts`; ambos entram em `pnpm typecheck`, `pnpm test` e `pnpm fmt`. Regras compartilhadas (texto, JSON, JSON Schema, IDs de norma, referências normativas estruturadas e seu texto legível) ficam em `packages/kb` e são importadas como `@simplifica-if/kb/...`.

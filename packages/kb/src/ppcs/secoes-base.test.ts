@@ -1,5 +1,5 @@
 /** Conferências sobre a base real: o texto integral se reconstrói pelas linhas do índice. */
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { raizRepositorio } from "../normas/registro.ts";

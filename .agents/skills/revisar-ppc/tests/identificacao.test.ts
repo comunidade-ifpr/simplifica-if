@@ -6,7 +6,8 @@
  * Os trechos são mínimos e anonimizados, reproduzindo os formatos observados
  * nos PPCs da base.
  */
-import { afterEach, describe, expect, test } from "bun:test";
+import { spawnSync } from "node:child_process";
+import { afterEach, describe, expect, test } from "vite-plus/test";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -309,9 +310,7 @@ describe("preparar-documento", () => {
   });
 
   const python = [process.env.REVISAR_PPC_PYTHON, "python3.14", "python3"].find(
-    (candidato) =>
-      candidato &&
-      Bun.spawnSync([candidato, "-c", "import docx"], { stdout: "ignore", stderr: "ignore" }).exitCode === 0,
+    (candidato) => candidato && spawnSync(candidato, ["-c", "import docx"], { stdio: "ignore" }).status === 0,
   );
 
   test.skipIf(!python)("DOCX: base legal numa tabela não vira nome do curso", () => {
@@ -338,7 +337,7 @@ for campo, valor in [
 d.add_paragraph("Base legal específica do curso: Resolução CNE/CP nº 1/2021")
 d.save(sys.argv[1])
 `;
-    expect(Bun.spawnSync([python!, "-c", script, arquivo]).exitCode).toBe(0);
+    expect(spawnSync(python!, ["-c", script, arquivo]).status).toBe(0);
     const { metadata } = prepararDocumento(arquivo, {
       saidaBase: dir,
       relogio: () => new Date(2026, 10, 13),

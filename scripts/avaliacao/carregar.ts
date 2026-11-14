@@ -1,4 +1,5 @@
-/** Leitura e validação dos arquivos de `avaliacao/` (YAML com `Bun.YAML.parse`, JSON e zod). */
+/** Leitura e validação dos arquivos de `avaliacao/` (YAML com o pacote `yaml`, JSON e zod). */
+import { parse as interpretarYaml } from "yaml";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import type { z } from "zod";
@@ -15,7 +16,7 @@ import {
   type Universos,
 } from "./esquema.ts";
 
-export const RAIZ_REPOSITORIO = path.resolve(import.meta.dir, "..", "..");
+export const RAIZ_REPOSITORIO = path.resolve(import.meta.dirname, "..", "..");
 export const DIR_AVALIACAO = path.join(RAIZ_REPOSITORIO, "avaliacao");
 
 function formatarErros(origem: string, erro: z.ZodError): string {
@@ -31,11 +32,11 @@ function validar<T>(esquema: z.ZodType<T>, dados: unknown, origem: string): T {
 }
 
 export function lerYaml(caminho: string): unknown {
-  return Bun.YAML.parse(readFileSync(caminho, "utf-8"));
+  return interpretarYaml(readFileSync(caminho, "utf-8"));
 }
 
 export function interpretarPerguntas(texto: string, origem = "perguntas.yaml"): ArquivoPerguntas {
-  return validar(esquemaArquivoPerguntas, Bun.YAML.parse(texto), origem);
+  return validar(esquemaArquivoPerguntas, interpretarYaml(texto), origem);
 }
 
 export function carregarPerguntas(caminho = path.join(DIR_AVALIACAO, "perguntas.yaml")): ArquivoPerguntas {

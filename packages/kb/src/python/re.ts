@@ -4,7 +4,7 @@
  * `traduzirPadrao` converte um padrão Python para JavaScript (flag `u`):
  * - `\s`, `\d`, `\w`, `\b` e seus negados passam a ser Unicode como no
  *   Python (no JavaScript, `\d`, `\w` e `\b` são só ASCII e `\s` difere);
- * - `.` não casa só `\n` (no JavaScript, também deixa de casar `\r`, ` `, ` `);
+ * - `.` não casa só `\n` (no JavaScript, também deixa de casar `\r`, `\u2028`, `\u2029`);
  * - `$` casa no fim ou antes de um `\n` final;
  * - `]` logo depois de `[` ou `[^` é literal.
  *

@@ -4,7 +4,8 @@
  * matrizes do SUAP, uma seção longa e o índice FTS das seções. Os valores imitam os da base real
  * (Res. CNE/CP 1/2021 revogada pela 2/2026, art. 71), em escala mínima.
  */
-import { Database } from "bun:sqlite";
+import { DatabaseSync } from "node:sqlite";
+import { emTransacao } from "@simplifica-if/kb/db/transacao";
 import { radicais } from "@simplifica-if/kb/busca/tokens";
 import { criarBancoFixture, type OpcoesFixture } from "./fixture.ts";
 
@@ -22,13 +23,13 @@ const A_CONFIRMAR_2021 =
 
 export function criarBancoFixturePpcs(opcoes: OpcoesFixture = {}): string {
   const caminho = criarBancoFixture(opcoes);
-  const db = new Database(caminho, { strict: true });
-  db.transaction(() => povoar(db))();
+  const db = new DatabaseSync(caminho);
+  emTransacao(db, () => povoar(db));
   db.close();
   return caminho;
 }
 
-function povoar(db: Database): void {
+function povoar(db: DatabaseSync): void {
   const inserir = (tabela: string, linha: Record<string, string | number | null>) => {
     const colunas = Object.keys(linha);
     db.prepare(`INSERT INTO ${tabela} (${colunas.join(", ")}) VALUES (${colunas.map(() => "?").join(", ")})`).run(
@@ -134,14 +135,14 @@ function povoar(db: Database): void {
       dados_json: "{}",
     });
   }
-  db.run(
+  db.exec(
     `UPDATE cursos SET forma_oferta = 'subsequente', modalidade = 'presencial', situacao = 'ativo',
        cnct_id = 'cnct:tecnico-em-enfermagem', ppc_id = 'ppc:${PPC_ENFERMAGEM}',
        ppc_markdown_path = 'institucional/ifpr/ppcs/${PPC_ENFERMAGEM}.md', ppc_ano_documento = 2023,
        suap_matrizes_situacao = 'Única ativa'
      WHERE id = 'curso:${PPC_ENFERMAGEM}'`,
   );
-  db.run(
+  db.exec(
     `UPDATE cursos SET forma_oferta = 'licenciatura', situacao = 'ativo', ppc_id = 'ppc:${PPC_FISICA}',
        ppc_markdown_path = 'institucional/ifpr/ppcs/${PPC_FISICA}.md', ppc_ano_documento = 2019
      WHERE id = 'curso:${PPC_FISICA}'`,
@@ -222,7 +223,7 @@ function povoar(db: Database): void {
       proveniencia_json: "{}",
     });
   }
-  db.run(`UPDATE ppcs SET curso_id = 'curso:${PPC_ENFERMAGEM}' WHERE id = 'ppc:${PPC_ENFERMAGEM}'`);
+  db.exec(`UPDATE ppcs SET curso_id = 'curso:${PPC_ENFERMAGEM}' WHERE id = 'ppc:${PPC_ENFERMAGEM}'`);
 
   const longa = Array.from({ length: LINHAS_SECAO_LONGA }, (_, i) => `Linha ${i + 1} do anexo com o plano de estágio.`);
   for (const [ppc, secao, tipo, titulo, inicio, texto] of [
@@ -251,7 +252,7 @@ function povoar(db: Database): void {
     });
   }
   // Índice FTS de todas as seções, como na compilação (radicais do título e do texto).
-  const secoes = db.query("SELECT rowid, titulo, texto FROM secoes ORDER BY rowid").all() as {
+  const secoes = db.prepare("SELECT rowid, titulo, texto FROM secoes ORDER BY rowid").all() as {
     rowid: number;
     titulo: string;
     texto: string;

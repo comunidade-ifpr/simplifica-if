@@ -4,7 +4,7 @@
  * `str.expandtabs`, `shlex.split`, `urllib.parse.quote`, `Path.as_uri()` e
  * `f"{x:.2f}"`. Os valores esperados foram gerados com o próprio Python.
  */
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { escapeHtml } from "./html.ts";
 import { dividirComandoShell } from "./shlex.ts";
 import { expandirTabs } from "./texto.ts";

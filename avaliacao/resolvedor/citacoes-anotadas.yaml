@@ -1,7 +1,7 @@
 # Conjunto anotado para medir o resolvedor de citações (fase 2 do plano de arquitetura).
 #
 # Contrato: esquemaCitacoesAnotadas em packages/kb/src/avaliacao/resolvedor.ts.
-# Medição: bun test packages/kb (avaliacao-resolvedor.test.ts) e `bun run kb avaliar-resolvedor`.
+# Medição: pnpm exec vp test run packages/kb (avaliacao-resolvedor.test.ts) e `pnpm kb avaliar-resolvedor`.
 #
 # Seleção das linhas: 20 PPCs de campi, níveis e formas de oferta diferentes; em cada um, até 10
 # linhas espaçadas entre as que têm "resolução", "lei", "decreto", "parecer", "portaria",

@@ -61,5 +61,5 @@ export function caminhosDaSkill(appDir: string): CaminhosAnalise {
 
 /** Caminhos desta skill (a que contém este arquivo). */
 export function caminhosPadrao(): CaminhosAnalise {
-  return caminhosDaSkill(path.join(import.meta.dir, ".."));
+  return caminhosDaSkill(path.join(import.meta.dirname, ".."));
 }

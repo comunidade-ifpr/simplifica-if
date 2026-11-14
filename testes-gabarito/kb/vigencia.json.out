@@ -1,0 +1,108 @@
+{
+  "id": "br/cne-cp/res/2021/1",
+  "data": "2026-11-01",
+  "status": "vigente",
+  "certo": false,
+  "inicio": {
+    "data": null,
+    "minimo": "2021-01-05",
+    "certo": false
+  },
+  "eventos": [
+    {
+      "tipo": "revoga",
+      "origem": "br/cne-cp/res/2026/2",
+      "operador": "#art74-ii",
+      "alvo_dispositivo": null,
+      "alcance": null,
+      "parcial": false,
+      "efeito_de": null,
+      "efeito_minimo": "2026-11-11",
+      "ocorreu": false
+    }
+  ],
+  "pendencias": [
+    "início de vigência de Resolução CNE/CP nº 1/2021 a confirmar (ato de 2021-01-05; publicação não registrada): presumida vigente"
+  ],
+  "transicoes": [
+    {
+      "id": "dcnept-2026-art70",
+      "norma": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art70",
+      "tipo": "faculdade-de-adequacao",
+      "norma_anterior": "br/cne-cp/res/2021/1",
+      "aplica_a": "Processos de autorização de cursos técnicos e de cursos superiores de tecnologia em tramitação, que ainda não estejam na fase de avaliação.",
+      "regra": "Podem ser adequados à Res. CNE/CP nº 2/2026 por solicitação da instituição ou do órgão regulador; a adequação é facultativa e não prejudica a continuidade do processo.",
+      "inicio": "vigencia",
+      "fim": "sem-prazo",
+      "evidencia": "e que ainda não estejam na fase de avaliação, podem ser adequados a esta Resolução por solicitação da instituição ou do órgão regulador do sistema de ensino",
+      "inicio_em": null,
+      "inicio_minimo": "2026-11-11",
+      "fim_em": null,
+      "situacao": "a-iniciar"
+    },
+    {
+      "id": "dcnept-2026-art71",
+      "norma": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art71",
+      "tipo": "prazo-de-adequacao",
+      "norma_anterior": "br/cne-cp/res/2021/1",
+      "aplica_a": "Cursos técnicos e cursos superiores de tecnologia autorizados e em oferta.",
+      "regra": "Período de transição de até dois anos, a partir da vigência da Res. CNE/CP nº 2/2026, para a adequação dos cursos.",
+      "inicio": "vigencia",
+      "fim": "P2Y",
+      "evidencia": "é assegurado período de transição de até dois anos, a partir da vigência desta Resolução",
+      "inicio_em": null,
+      "inicio_minimo": "2026-11-11",
+      "fim_em": null,
+      "situacao": "a-iniciar"
+    },
+    {
+      "id": "dcnept-2026-art71-parunico",
+      "norma": "br/cne-cp/res/2026/2",
+      "dispositivo": "#art71-parunico",
+      "tipo": "direito-de-conclusao",
+      "norma_anterior": "br/cne-cp/res/2021/1",
+      "aplica_a": "Estudantes matriculados em cursos técnicos e superiores de tecnologia ofertados até a data de publicação da Res. CNE/CP nº 2/2026.",
+      "regra": "Têm assegurado o direito de concluir o curso com base na Res. CNE/CP nº 1/2021.",
+      "inicio": "publicacao",
+      "fim": "sem-prazo",
+      "evidencia": "fica assegurado o direito de conclusão de seus cursos, com base na Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+      "inicio_em": null,
+      "inicio_minimo": "2026-11-11",
+      "fim_em": null,
+      "situacao": "a-iniciar"
+    },
+    {
+      "id": "dcnept-2021-art63",
+      "norma": "br/cne-cp/res/2021/1",
+      "dispositivo": "#art63",
+      "tipo": "faculdade-de-adequacao",
+      "aplica_a": "Processos de autorização de cursos de EPT de graduação em tramitação, fora da fase de avaliação.",
+      "regra": "Podem ser adequados à Res. CNE/CP nº 1/2021 por solicitação da instituição.",
+      "inicio": "vigencia",
+      "fim": "sem-prazo",
+      "evidencia": "podem ser, sem prejudicar a continuidade do processo, por solicitação da instituição, adequados a esta Resolução",
+      "inicio_em": null,
+      "inicio_minimo": "2021-01-05",
+      "fim_em": null,
+      "situacao": "a confirmar"
+    },
+    {
+      "id": "dcnept-2021-art62",
+      "norma": "br/cne-cp/res/2021/1",
+      "dispositivo": "#art62",
+      "tipo": "direito-de-conclusao",
+      "norma_anterior": "br/cne-ceb/res/2012/6",
+      "aplica_a": "Estudantes de cursos técnicos e de graduação tecnológica oferecidos antes do exercício em que a Res. CNE/CP nº 1/2021 produziu efeitos.",
+      "regra": "Têm assegurado o direito de concluir o curso com base na Res. CNE/CEB nº 6/2012 (técnicos) e na Res. CNE/CP nº 3/2002 (tecnologia).",
+      "inicio": "vigencia",
+      "fim": "sem-prazo",
+      "evidencia": "fica assegurado o direito de conclusão de seus cursos organizados, respectivamente, com base na Resolução CNE/CEB nº 6, de 20 de setembro de 2012",
+      "inicio_em": null,
+      "inicio_minimo": "2021-01-05",
+      "fim_em": null,
+      "situacao": "a confirmar"
+    }
+  ]
+}

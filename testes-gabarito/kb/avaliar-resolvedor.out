@@ -1,0 +1,20 @@
+20 PPCs, 198 linhas, 258 citações anotadas, 254 emitidas
+precisão 0.98  recall 0.965  dispositivos 0.905
+falso-negativo  ifpr/reitoria/portaria/2022/536                                 arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio L2391
+falso-negativo  ifpr/reitoria/portaria/2021/43                                  irati/tecnico-em-informatica L2157
+falso-positivo  ifpr/reitoria/portaria/2019/72         orgao-no-documento       palmas/tecnico-em-alimentos L600
+falso-positivo  br/lei/1996/7498                       estrutural               curitiba/tecnico-em-enfermagem L445
+falso-negativo  br/lei/1986/7498                                                curitiba/tecnico-em-enfermagem L445
+dispositivo     br/cne-ceb/res/2012/6#art20-par1-iv    estrutural               uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja L529
+dispositivo     br/cne-cp/res/2012/1#art7              estrutural               uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja L565
+falso-negativo  ifpr/consup/res/2018/27                                         cascavel/tecnico-em-edificacoes L18
+falso-positivo  ifpr/reitoria/portaria/2016/19         orgao-no-documento       foz-do-iguacu/tecnico-em-aquicultura L90
+falso-positivo  br/cne-ceb/nt/2013/9                   estrutural               foz-do-iguacu/tecnico-em-aquicultura L1822
+falso-positivo  br/lei/2005/5626                       estrutural               cascavel/tecnologia-em-analise-e-desenvolvimento-de-sistemas L2104
+dispositivo     br/lei/2000/10098#art18                estrutural               cascavel/tecnologia-em-analise-e-desenvolvimento-de-sistemas L2104
+falso-negativo  br/mec/portaria/2016/413                                        londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas L388
+falso-negativo  externo:crf/deliberacao/2019/969                                palmas/farmacia L1186
+falso-negativo  br/lei/1996/9394                                                colombo/licenciatura-em-historia L301
+dispositivo     br/lei/2008/11788#art1                 estrutural               umuarama/bacharelado-em-arquitetura-e-urbanismo L781
+falso-negativo  br/mp/2001/2164                                                 umuarama/bacharelado-em-arquitetura-e-urbanismo L2398
+falso-negativo  br/lei/2000/10098                                               arapongas/programacao-web L715

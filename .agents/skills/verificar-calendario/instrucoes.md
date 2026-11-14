@@ -102,12 +102,12 @@ relatorio_verificacao_Centro_de_Referencia_Ponta_Grossa_2026_pdf_principal_20260
 Depois de concluir e revisar o relatório em Markdown, gerar obrigatoriamente a versão em PDF com o script da própria skill:
 
 ```bash
-bun run .agents/skills/verificar-calendario/scripts/render_relatorio_pdf.ts caminho/relatorio.md caminho/relatorio.pdf
+node .agents/skills/verificar-calendario/scripts/render_relatorio_pdf.ts caminho/relatorio.md caminho/relatorio.pdf
 ```
 
 ### Dependência
 
-O script é TypeScript (Bun) e usa o `pdfmake`, instalado com `bun install` na raiz do repositório. As fontes são Helvetica e Courier, padrão do PDF, sem arquivo embutido; elas cobrem os acentos do português. Caracteres fora da codificação WinAnsi (por exemplo, `≥` ou emoji) saem na fonte Roboto do próprio `pdfmake` ou como `■`: prefira escrever o status por extenso, sem emoji.
+O script é TypeScript (Node) e usa o `pdfmake`, instalado com `pnpm install` na raiz do repositório. As fontes são Helvetica e Courier, padrão do PDF, sem arquivo embutido; elas cobrem os acentos do português. Caracteres fora da codificação WinAnsi (por exemplo, `≥` ou emoji) saem na fonte Roboto do próprio `pdfmake` ou como `■`: prefira escrever o status por extenso, sem emoji.
 
 ### Critérios de qualidade do PDF
 

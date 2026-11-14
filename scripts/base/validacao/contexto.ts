@@ -57,6 +57,7 @@ export function ehRecebido<T>(valor: unknown): valor is Recebido<T> {
 /** Mensagens da conferência com o schema e, se não houver nenhuma, os dados no formato do schema. */
 export type Conferencia<T> = { erros: string[]; validos: T | null };
 
+// oxlint-disable-next-line eslint/no-useless-concat -- partidos de propósito: a validação procura estes textos na base e não pode achá-los neste arquivo
 export const PADROES_LOCAIS = ["/" + "Users/", "Down" + "loads/", "file" + "://"];
 export const RE_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -71,7 +72,11 @@ export function listaOrdenada(textos: Iterable<string>): string {
 
 /** Caminhos da base com as operações de leitura usadas por todas as validações. */
 export class Contexto {
-  constructor(readonly c: CaminhosBase) {}
+  readonly c: CaminhosBase;
+
+  constructor(c: CaminhosBase) {
+    this.c = c;
+  }
 
   /** Caminho relativo a `base-conhecimento/`, usado nas mensagens. */
   rel(caminho: string): string {

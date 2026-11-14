@@ -1,5 +1,5 @@
 /** Agrupamento das fichas da `revisar-ppc` por tópico (`agruparPorTopico`), sem banco. */
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { raizRepositorio } from "../normas/registro.ts";

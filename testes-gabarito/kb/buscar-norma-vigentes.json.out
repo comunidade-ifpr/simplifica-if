@@ -1,0 +1,131 @@
+{
+  "consulta": "itinerário formativo",
+  "total": 5,
+  "avisos": [],
+  "resultados": [
+    {
+      "norma": {
+        "id": "br/cne-ceb/res/2024/2",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CEB nº 2/2024",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2024-11-13",
+        "ementa": "Institui as Diretrizes Curriculares Nacionais para o Ensino Médio.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md"
+      },
+      "dispositivo": null,
+      "pedido": null,
+      "metadados": {
+        "texto": "Resolução CNE/CEB nº 2/2024\nDCNEM 2024\nDCNEM\nensino médio\ndiretrizes curriculares\nitinerários formativos\nCNE\nInstitui as Diretrizes Curriculares Nacionais para o Ensino Médio.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md",
+        "linha": 1
+      },
+      "pontuacao": -6.516,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "br/lei/2024/14945",
+        "situacao": "base",
+        "titulo": "Lei nº 14.945/2024",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2024-07-31",
+        "ementa": "Altera a Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), a fim de definir diretrizes para o ensino médio, e as Leis nºs 14.818, de 16 de janeiro de 2024, 12.711, de 29 de agosto de 2012, 11.096, de 13 de janeiro de 2005, e 14.640, de 31 de julho de 2023.",
+        "path": "base-conhecimento/normas/br/leis/LEI_BR_14945-2024_ensino-medio.md"
+      },
+      "dispositivo": null,
+      "pedido": null,
+      "metadados": {
+        "texto": "Lei nº 14.945/2024\nLei 14.945/2024\nNovo Ensino Médio 2024\nensino médio\nformação geral básica\nitinerários formativos\nEPT\nLDB\nAltera a Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), a fim de definir diretrizes para o ensino médio, e as Leis nºs 14.818, de 16 de janeiro de 2024, 12.711, de 29 de agosto de 2012, 11.096, de 13 de janeiro de 2005, e 14.640, de 31 de julho de 2023.",
+        "path": "base-conhecimento/normas/br/leis/LEI_BR_14945-2024_ensino-medio.md",
+        "linha": 1
+      },
+      "pontuacao": -3.685,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "br/cne-cp/res/2026/2",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CP nº 2/2026",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2026-11-11",
+        "ementa": "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md"
+      },
+      "dispositivo": null,
+      "pedido": null,
+      "metadados": {
+        "texto": "Resolução CNE/CP nº 2/2026\nResolução CNE/CP nº 2, de 11 de novembro de 2026\nDCN EPT 2026\nDCNEPT 2026\nDiretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica\nNovas DCN da EPT\nDCNEPT\neducação profissional\nEPT\nEPTNM\ndiretrizes curriculares\ncursos técnicos\ncursos superiores de tecnologia\nitinerário formativo profissional\ncarga horária\nprática profissional supervisionada\nestágio supervisionado\neducação a distância\nsemipresencial\nacompanhamento de egressos\ncertificação profissional\ncursos experimentais\nformação docente\ninteligência artificial\nCNCT\nCNE\nDefine as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
+        "linha": 1
+      },
+      "pontuacao": -3.515,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "br/cne-ceb/res/2024/2",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CEB nº 2/2024",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2024-11-13",
+        "ementa": "Institui as Diretrizes Curriculares Nacionais para o Ensino Médio.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md"
+      },
+      "dispositivo": {
+        "id": "br/cne-ceb/res/2024/2#art21-par4",
+        "arquivo_id": "br/cne-ceb/res/2024/2#art21-par4",
+        "tipo": "paragrafo",
+        "rotulo": "§ 4º",
+        "caput": [
+          "Art. 21. Na organização dos Itinerários Formativos de Aprofundamento, os sistemas de ensino poderão optar por ofertas curriculares de acordo com a seguinte tipologia:"
+        ],
+        "texto": "§ 4º Os Itinerários Formativos devem seguir os padrões mínimos de qualidade previstos nos Parâmetros Nacionais para a Oferta dos Itinerários Formativos que serão elaborados pelo Ministério da Educação.",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md",
+        "linha_inicio": 333,
+        "linha_fim": 333
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -8.43,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "br/cne-ceb/res/2024/2",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CEB nº 2/2024",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2024-11-13",
+        "ementa": "Institui as Diretrizes Curriculares Nacionais para o Ensino Médio.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md"
+      },
+      "dispositivo": {
+        "id": "br/cne-ceb/res/2024/2#art20-par1",
+        "arquivo_id": "br/cne-ceb/res/2024/2#art20-par1",
+        "tipo": "paragrafo",
+        "rotulo": "§ 1º",
+        "caput": [
+          "Art. 20. Caberá ao Ministério da Educação a proposição dos Parâmetros Nacionais para a Oferta dos Itinerários Formativos com a definição:"
+        ],
+        "texto": "§ 1º O CNE editará Parâmetros Nacionais para a Oferta dos Itinerários Formativos de Aprofundamento até o dia 31 de março de 2025.",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md",
+        "linha_inicio": 316,
+        "linha_fim": 316
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -7.787,
+      "origem": "busca-textual"
+    }
+  ]
+}

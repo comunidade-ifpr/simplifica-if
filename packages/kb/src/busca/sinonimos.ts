@@ -18,7 +18,7 @@ export const esquemaSinonimos = z.strictObject({
 });
 export type Sinonimos = z.output<typeof esquemaSinonimos>;
 
-export function caminhoSinonimos(raizPacote: string = path.resolve(import.meta.dir, "..", "..")): string {
+export function caminhoSinonimos(raizPacote: string = path.resolve(import.meta.dirname, "..", "..")): string {
   return path.join(raizPacote, "dados", "sinonimos.yaml");
 }
 

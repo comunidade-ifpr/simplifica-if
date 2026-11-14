@@ -41,7 +41,7 @@ Ao final, informe explicitamente o link de abertura do relatório retornado pelo
 Execute os comandos a partir da raiz deste repositório:
 
 ```bash
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts --help
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts --help
 ```
 
-O ponto de entrada é `scripts/revisar_ppc.ts` (Bun), e todos os subcomandos rodam em TypeScript, inclusive `gerar-relatorio-html` e a publicação no Surge. Só a conversão de entrada `.docx` em `preparar-documento` ainda depende de Python: `scripts/converter_docx.py` (`python-docx`), chamado por subprocesso até a trilha T3 do `PLANO-ARQUITETURA.md`. Com PPC em `.md`, a skill inteira dispensa Python. `REVISAR_PPC_PYTHON` escolhe o interpretador da conversão DOCX (padrão `python3`).
+O ponto de entrada é `scripts/revisar_ppc.ts` (Node), e todos os subcomandos rodam em TypeScript, inclusive `gerar-relatorio-html` e a publicação no Surge. Só a conversão de entrada `.docx` em `preparar-documento` ainda depende de Python: `scripts/converter_docx.py` (`python-docx`), chamado por subprocesso até a trilha T3 do `PLANO-ARQUITETURA.md`. Com PPC em `.md`, a skill inteira dispensa Python. `REVISAR_PPC_PYTHON` escolhe o interpretador da conversão DOCX (padrão `python3`).

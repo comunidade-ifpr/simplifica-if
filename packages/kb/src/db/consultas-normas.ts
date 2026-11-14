@@ -5,7 +5,7 @@
  * numa data usam as mesmas funções da API de arquivos (`correspondenciaEm`, `descendentesEm`,
  * `situacaoNaData`). `base.test.ts` confere que banco e arquivos dão o mesmo resultado.
  */
-import type { Database } from "bun:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 import { z } from "zod";
 import type { FonteCorrespondencia, TabelaCorrespondencia } from "../normas/correspondencia.ts";
 import { descendentesEm, type Dispositivo, TIPOS_DISPOSITIVO, TIPOS_NOTA } from "../normas/estrutura.ts";
@@ -84,8 +84,8 @@ function paraDispositivo(l: Linha): DispositivoDoBanco {
   };
 }
 
-function uma(db: Database, sql: string, ...parametros: string[]): DispositivoDoBanco | undefined {
-  const linha = db.query(sql).get(...parametros);
+function uma(db: DatabaseSync, sql: string, ...parametros: string[]): DispositivoDoBanco | undefined {
+  const linha = db.prepare(sql).get(...parametros);
   return linha ? paraDispositivo(esquemaLinha.parse(linha)) : undefined;
 }
 
@@ -94,7 +94,7 @@ function uma(db: Database, sql: string, ...parametros: string[]): DispositivoDoB
  * dispositivo canônico (o texto integral prevalece sobre a compilação); pelo ID do arquivo com
  * variante (`br/lei/1996/9394~compilacao#art36`), aquele dispositivo.
  */
-export function obterDispositivoBanco(db: Database, id: string): DispositivoDoBanco | undefined {
+export function obterDispositivoBanco(db: DatabaseSync, id: string): DispositivoDoBanco | undefined {
   const [norma, sufixo] = id.split("#") as [string, string | undefined];
   if (!sufixo) return undefined;
   const ato = idDoAto(norma);
@@ -110,12 +110,12 @@ export function obterDispositivoBanco(db: Database, id: string): DispositivoDoBa
 }
 
 /** Descendentes de um dispositivo (pelo ID do arquivo), em ordem: `descendentesEm` sobre o arquivo dele. */
-export function descendentesBanco(db: Database, id: string): DispositivoDoBanco[] {
+export function descendentesBanco(db: DatabaseSync, id: string): DispositivoDoBanco[] {
   const lista = z
     .array(esquemaLinha)
     .parse(
       db
-        .query(
+        .prepare(
           `SELECT ${COLUNAS_DISPOSITIVO} FROM dispositivos WHERE norma_id = (SELECT norma_id FROM dispositivos WHERE id = ?) ORDER BY ordem`,
         )
         .all(id),
@@ -152,7 +152,7 @@ export interface TrechoDispositivo {
 }
 
 export function paraTrecho(
-  db: Database,
+  db: DatabaseSync,
   d: DispositivoDoBanco,
   opcoes: { subordinados?: boolean } = {},
 ): TrechoDispositivo {
@@ -176,7 +176,7 @@ export function paraTrecho(
 
 /** Trecho de um dispositivo pelo ID; `null` se o dispositivo não está no texto da base. */
 export function trechoDoDispositivo(
-  db: Database,
+  db: DatabaseSync,
   id: string,
   opcoes: { subordinados?: boolean } = {},
 ): TrechoDispositivo | null {
@@ -185,7 +185,7 @@ export function trechoDoDispositivo(
 }
 
 /** Dispositivo pedido ou, se ele não está no texto, o ancestral mais próximo pelo ID (`#art28-par1-iv` → `#art28-par1` → `#art28`). */
-export function dispositivoOuAncestral(db: Database, id: string): DispositivoDoBanco | undefined {
+export function dispositivoOuAncestral(db: DatabaseSync, id: string): DispositivoDoBanco | undefined {
   const [norma, sufixo] = id.split("#") as [string, string | undefined];
   if (!sufixo) return undefined;
   const partes = sufixo.split("-");
@@ -216,20 +216,20 @@ const esquemaItem = z.strictObject({
 });
 
 /** Tabelas de correspondência do banco, no formato de `carregarCorrespondencias`. */
-export function tabelasCorrespondenciaBanco(db: Database, origem?: string): TabelaCorrespondencia[] {
+export function tabelasCorrespondenciaBanco(db: DatabaseSync, origem?: string): TabelaCorrespondencia[] {
   const tabelas = z
     .array(esquemaTabela)
     .parse(
       origem
-        ? db.query("SELECT * FROM correspondencias_tabelas WHERE origem = ? ORDER BY arquivo").all(origem)
-        : db.query("SELECT * FROM correspondencias_tabelas ORDER BY arquivo").all(),
+        ? db.prepare("SELECT * FROM correspondencias_tabelas WHERE origem = ? ORDER BY arquivo").all(origem)
+        : db.prepare("SELECT * FROM correspondencias_tabelas ORDER BY arquivo").all(),
     );
   return tabelas.map((t) => {
     const itens = z
       .array(esquemaItem)
       .parse(
         db
-          .query(
+          .prepare(
             "SELECT tabela, origem, tipo, destino_json, nota FROM correspondencias WHERE tabela = ? ORDER BY ordem",
           )
           .all(t.arquivo),
@@ -254,7 +254,7 @@ export function tabelasCorrespondenciaBanco(db: Database, origem?: string): Tabe
 }
 
 /** Fonte da correspondência (`correspondenciaEm`) sobre o banco. */
-export function fonteCorrespondenciaBanco(db: Database): FonteCorrespondencia {
+export function fonteCorrespondenciaBanco(db: DatabaseSync): FonteCorrespondencia {
   return {
     tabelas: (ato) => tabelasCorrespondenciaBanco(db, ato),
     dispositivo: (id) => {
@@ -266,7 +266,7 @@ export function fonteCorrespondenciaBanco(db: Database): FonteCorrespondencia {
         .array(z.strictObject({ dispositivo: texto }))
         .parse(
           db
-            .query(
+            .prepare(
               "SELECT dispositivo FROM dispositivos WHERE ato_id = ? AND canonico = 1 AND tipo = 'artigo' ORDER BY norma_id <> ato_id, norma_id, ordem",
             )
             .all(ato),
@@ -297,10 +297,10 @@ const esquemaRelacao = z.strictObject({
 });
 
 /** Relações do banco no formato de `carregarRelacoes` (ordem do arquivo). */
-export function relacoesBanco(db: Database): Relacao[] {
+export function relacoesBanco(db: DatabaseSync): Relacao[] {
   return z
     .array(esquemaRelacao)
-    .parse(db.query("SELECT * FROM relacoes ORDER BY ordem").all())
+    .parse(db.prepare("SELECT * FROM relacoes ORDER BY ordem").all())
     .map((r) => ({
       tipo: r.tipo,
       origem: r.origem,
@@ -319,10 +319,10 @@ export function relacoesBanco(db: Database): Relacao[] {
 /* ================================================================= vigência */
 
 /** `data_referencia` gravada no banco (de `base-conhecimento/config/vigencia.yaml`). */
-export function dataReferenciaBanco(db: Database): string {
+export function dataReferenciaBanco(db: DatabaseSync): string {
   const linha = z
     .strictObject({ valor: texto })
-    .parse(db.query("SELECT valor FROM meta WHERE chave = 'data_referencia'").get());
+    .parse(db.prepare("SELECT valor FROM meta WHERE chave = 'data_referencia'").get());
   return linha.valor;
 }
 
@@ -346,9 +346,9 @@ export interface VigenciaNoBanco {
 }
 
 /** Status de um ato numa data, pelo intervalo gravado (o mesmo de `statusEm`); `null` para ato sem vigência. */
-export function vigenciaNoBanco(db: Database, id: string, data: string): VigenciaNoBanco | null {
+export function vigenciaNoBanco(db: DatabaseSync, id: string, data: string): VigenciaNoBanco | null {
   const linha = db
-    .query(
+    .prepare(
       "SELECT alvo, de, ate, status, certo, fonte FROM vigencias WHERE alvo = ? AND (de IS NULL OR de <= ?) AND (ate IS NULL OR ? < ate)",
     )
     .get(idDoAto(id.split("#")[0]!), data, data);
@@ -388,14 +388,14 @@ export type TransicaoNoBanco = z.output<typeof esquemaTransicao> & DatasTransica
  * Regras de transição dos atos (que eles estabelecem ou que preservam efeitos deles, como
  * `transicoesAplicaveis`), na ordem do arquivo, com a situação na data (`situacaoNaData`).
  */
-export function transicoesNoBanco(db: Database, atos: readonly string[], data: string): TransicaoNoBanco[] {
+export function transicoesNoBanco(db: DatabaseSync, atos: readonly string[], data: string): TransicaoNoBanco[] {
   if (!atos.length) return [];
   const marcadores = atos.map(() => "?").join(", ");
   return z
     .array(esquemaTransicao)
     .parse(
       db
-        .query(
+        .prepare(
           `SELECT id, norma_id, dispositivo, tipo, norma_anterior, aplica_a, regra, inicio, fim, inicio_em, inicio_minimo, fim_em, evidencia, path
            FROM transicoes WHERE norma_id IN (${marcadores}) OR norma_anterior IN (${marcadores}) ORDER BY rowid`,
         )

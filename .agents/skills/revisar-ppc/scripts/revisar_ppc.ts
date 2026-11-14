@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 /**
  * Ponto de entrada único da skill revisar-ppc.
  *
@@ -28,7 +28,7 @@ import { caminhosRodada, escreverJsonPy, resolverCaminho, TAMANHO_GRUPO_PADRAO }
 import { montarGrupoAvulso, montarGruposSubagents, prepararPromptsSubagents } from "./subagents.ts";
 import { validarBaseAnalise } from "./validacao-base.ts";
 
-const COMANDO = "bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts";
+const COMANDO = "node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts";
 /** Imprime o JSON como `print(json.dumps(payload, ensure_ascii=False, indent=2))`. */
 function imprimirJson(payload: unknown): void {
   process.stdout.write(`${dumpsPy(payload, { indent: 2 })}\n`);

@@ -62,7 +62,7 @@ export const lerDispositivos = definirFerramenta({
     const dispositivos: Dispositivo[] = [];
     const normas: NormaResumo[] = [];
     const naoEncontrados: string[] = [];
-    for (const id of [...new Set(ids)]) {
+    for (const id of new Set(ids)) {
       const achado = obterDispositivoBanco(db, id);
       const trecho = achado ? trechoDoDispositivo(db, id, { subordinados: filhos }) : null;
       const registrada = achado ? norma(achado.disp.ato) : null;

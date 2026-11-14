@@ -1,0 +1,10 @@
+{
+  "texto": "Lei nº 9.394/1996, art. 36",
+  "id": "br/lei/1996/9394",
+  "confianca": 0.98,
+  "regra": "estrutural",
+  "situacao": "base",
+  "dispositivoId": "#art36",
+  "titulo": "Lei nº 9.394/1996",
+  "path": "normas/br/leis/LEI_BR_9394-1996_ldb.md"
+}

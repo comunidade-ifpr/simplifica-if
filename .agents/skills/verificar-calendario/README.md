@@ -15,13 +15,13 @@ Os textos integrais das resoluções ficam em `base-conhecimento/normas/ifpr/res
 
 Quando sair a resolução de calendário de referência de um novo ano:
 
-1. Incluir o texto da resolução em `base-conhecimento/normas/ifpr/resolucoes/` e rodar `bun run scripts/gerar_base.ts`, `bun run scripts/validar_base.ts` e `bun run scripts/gerar_site.ts`.
+1. Incluir o texto da resolução em `base-conhecimento/normas/ifpr/resolucoes/` e rodar `node scripts/gerar_base.ts`, `node scripts/validar_base.ts` e `node scripts/gerar_site.ts`.
 2. Criar `referencias/[ANO].md` com a mesma estrutura dos arquivos existentes: mapa de dispositivos, janela do ano letivo, datas do Art. 2º, requisitos críticos dos incisos e tabela obrigatória do relatório com a redação literal dos incisos.
 3. Acrescentar a linha do ano nas tabelas deste README, de `SKILL.md` e de `instrucoes.md`.
 
 Depois de alterar os arquivos, conferir se as referências a artigos e incisos batem com o texto da resolução na base.
 
-O PDF é gerado por `scripts/render_relatorio_pdf.ts` (`pdfmake`; a quebra de linhas que reproduz a do antigo script `reportlab` fica em `scripts/quebra-linhas.ts`). Depois de alterar esses scripts, rodar `bun test ./.agents/skills/verificar-calendario`, `bun run format` e `bun run typecheck` na raiz.
+O PDF é gerado por `scripts/render_relatorio_pdf.ts` (`pdfmake`; a quebra de linhas que reproduz a do antigo script `reportlab` fica em `scripts/quebra-linhas.ts`). Depois de alterar esses scripts, rodar `pnpm exec vp test run .agents/skills/verificar-calendario`, `pnpm fmt` e `pnpm typecheck` na raiz.
 
 ## Formatos aceitos
 

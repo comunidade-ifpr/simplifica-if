@@ -1,5 +1,5 @@
 /** Peças do banco sem compilar: papel da citação, expressão de busca, sinônimos. */
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { lerSinonimos } from "../busca/sinonimos.ts";
 import { radicais } from "../busca/tokens.ts";
 import { papelDaCitacao } from "./compilar.ts";

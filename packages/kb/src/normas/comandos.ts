@@ -2,12 +2,12 @@
  * Comandos da CLI `kb` da fase 5 (dispositivos, vigência, relações, correspondência e impacto),
  * registrados por `cli.ts` com `registrarComandosNormas(programa)`:
  *
- *   bun run kb dispositivo br/cne-cp/res/2026/2#art71-parunico [--json] [--filhos]
- *   bun run kb vigencia br/cne-cp/res/2021/1 [--em 2026-11-01] [--json]
- *   bun run kb relacoes br/lei/1996/9394 [--json]
- *   bun run kb relacoes --propor [--json]
- *   bun run kb correspondencia br/cne-cp/res/2021/1#art20 [--json]
- *   bun run kb impacto br/cne-cp/res/2021/1 [--json] [--sem-ppcs] [--conteudo <dir>]
+ *   pnpm kb dispositivo br/cne-cp/res/2026/2#art71-parunico [--json] [--filhos]
+ *   pnpm kb vigencia br/cne-cp/res/2021/1 [--em 2026-11-01] [--json]
+ *   pnpm kb relacoes br/lei/1996/9394 [--json]
+ *   pnpm kb relacoes --propor [--json]
+ *   pnpm kb correspondencia br/cne-cp/res/2021/1#art20 [--json]
+ *   pnpm kb impacto br/cne-cp/res/2021/1 [--json] [--sem-ppcs] [--conteudo <dir>]
  *
  * As saídas não dependem do relógio: a data é `--em` ou a `data_referencia` de
  * `base-conhecimento/config/vigencia.yaml`.
@@ -19,7 +19,7 @@
  * --propor` roda o regex sobre o parser, e `impacto` lê os textos das skills (inclusive de outra
  * árvore, `--conteudo`), que não estão no banco.
  */
-import type { Database } from "bun:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 import { type Command, InvalidArgumentError } from "commander";
 import { abrirBanco } from "../db/banco.ts";
 import { descendentesBanco, fonteCorrespondenciaBanco, obterDispositivoBanco } from "../db/consultas-normas.ts";
@@ -35,7 +35,7 @@ function json(valor: unknown): void {
   process.stdout.write(`${JSON.stringify(valor, null, 2)}\n`);
 }
 
-function comBanco<T>(acao: (db: Database) => T): T {
+function comBanco<T>(acao: (db: DatabaseSync) => T): T {
   const db = abrirBanco();
   try {
     return acao(db);

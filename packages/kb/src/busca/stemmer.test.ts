@@ -4,7 +4,7 @@
  * PPCs, nenhuma diferença) rodou fora do repositório; aqui ficam termos do domínio e uma amostra
  * sistemática (1 a cada 400 palavras do vocabulário em ordem).
  */
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { radical } from "./stemmer.ts";
 
 const DOMINIO: [string, string][] = [

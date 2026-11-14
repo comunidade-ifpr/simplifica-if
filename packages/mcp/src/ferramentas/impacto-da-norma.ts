@@ -83,7 +83,7 @@ export const impactoDaNorma = definirFerramenta({
     const fichas = impacto.arquivos
       .filter((a) => a.categoria === "ficha")
       .map((a) => {
-        const ficha = esquemaFicha.parse(db.query("SELECT id, titulo FROM fichas WHERE path = ?").get(a.arquivo));
+        const ficha = esquemaFicha.parse(db.prepare("SELECT id, titulo FROM fichas WHERE path = ?").get(a.arquivo));
         const id = ficha?.id ?? a.arquivo;
         return {
           id,

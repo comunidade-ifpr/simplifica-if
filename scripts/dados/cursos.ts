@@ -11,7 +11,11 @@ import {
 } from "./institucional.ts";
 
 export class RepositorioCursosLocal {
-  constructor(private readonly raiz: string = RAIZ_DADOS_INSTITUCIONAIS) {}
+  private readonly raiz: string;
+
+  constructor(raiz: string = RAIZ_DADOS_INSTITUCIONAIS) {
+    this.raiz = raiz;
+  }
 
   private carregar() {
     const { dados, erros } = carregarDadosInstitucionais(this.raiz);

@@ -6,6 +6,7 @@
  * trilha T3); a normalização do Markdown, a identificação e os arquivos da
  * rodada são feitos aqui.
  */
+import { spawnSync } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync, statSync, utimesSync } from "node:fs";
 import path from "node:path";
 import { corpoPpc } from "@simplifica-if/kb/ppcs/front-matter";
@@ -36,7 +37,7 @@ import {
   timestampSlug,
 } from "./rodada.ts";
 
-export const SCRIPT_CONVERSAO_DOCX = path.join(import.meta.dir, "converter_docx.py");
+export const SCRIPT_CONVERSAO_DOCX = path.join(import.meta.dirname, "converter_docx.py");
 
 export type OpcoesPreparacao = {
   saidaBase?: string;
@@ -106,14 +107,13 @@ export function mesclarIdentificacaoPreferindoPreenchidos(
 /** Converte o DOCX em artefatos pelo Python (`converter_docx.py`). */
 export function converterDocx(arquivo: string, saida: string, python?: string): ArtefatosDocx {
   const interpretador = python ?? process.env.REVISAR_PPC_PYTHON ?? "python3";
-  const processo = Bun.spawnSync([interpretador, "-B", SCRIPT_CONVERSAO_DOCX, arquivo, saida], {
-    stdout: "pipe",
-    stderr: "inherit",
+  const processo = spawnSync(interpretador, ["-B", SCRIPT_CONVERSAO_DOCX, arquivo, saida], {
+    stdio: ["ignore", "pipe", "inherit"],
+    maxBuffer: 256 * 1024 * 1024,
   });
-  if (processo.exitCode !== 0) {
-    throw new Error(
-      `A conversão DOCX falhou (${interpretador} ${SCRIPT_CONVERSAO_DOCX}, código ${processo.exitCode}).`,
-    );
+  if (processo.error) throw processo.error;
+  if (processo.status !== 0) {
+    throw new Error(`A conversão DOCX falhou (${interpretador} ${SCRIPT_CONVERSAO_DOCX}, código ${processo.status}).`);
   }
   return JSON.parse(processo.stdout.toString()) as ArtefatosDocx;
 }
@@ -149,7 +149,7 @@ function prepararDocx(
       const daConversao = extrairIdentificacaoDaConversao(lerJsonPy(artefatos.dados), "", skill);
       for (const [chave, valor] of Object.entries(daConversao) as Array<[keyof Identificacao, string]>) {
         if (valorIdentificacaoPreenchido(identificacao[chave]) || !valorIdentificacaoPreenchido(valor)) continue;
-        identificacao = { ...identificacao, [chave]: valor };
+        identificacao[chave] = valor;
         const fonte = chave === "modalidade" ? null : (chave as keyof FontesIdentificacao);
         if (fonte) fontes[fonte] = "conversao";
       }

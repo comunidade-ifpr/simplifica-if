@@ -4,7 +4,7 @@
  * só radicais (`radicais`) e radicais com o léxico de sinônimos (`completo`, o padrão da CLI).
  * Meta do plano (fase 6): recall@10 ≥ 0,8.
  */
-import type { Database } from "bun:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { parse } from "yaml";
@@ -62,7 +62,7 @@ export interface ResultadoAvaliacaoBusca {
 }
 
 export function avaliarBusca(
-  db: Database,
+  db: DatabaseSync,
   opcoes: { lexico: Sinonimos; k?: number; conjunto?: ConsultasRotuladas },
 ): ResultadoAvaliacaoBusca {
   const k = opcoes.k ?? 10;

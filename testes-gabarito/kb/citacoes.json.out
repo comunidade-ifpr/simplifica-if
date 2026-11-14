@@ -1,0 +1,2006 @@
+{
+  "id": "br/cne-cp/res/2021/1",
+  "titulo": "Resolução CNE/CP nº 1/2021",
+  "situacao": "base",
+  "total_ppcs": 59,
+  "total_ocorrencias": 233,
+  "ppcs": [
+    {
+      "ppc": "arapongas/tecnico-em-melhoria-de-processos",
+      "campus": "Arapongas",
+      "curso": "Técnico em Melhoria de Processos",
+      "nivel": "médio",
+      "tipo_oferta": "subsequente",
+      "path": "institucional/ifpr/ppcs/arapongas/tecnico-em-melhoria-de-processos.md",
+      "ocorrencias": [
+        {
+          "linha": 349,
+          "trecho": "Resolução n°01/2021",
+          "regra": "orgao-no-documento",
+          "confianca": 0.85,
+          "dispositivoId": "#art3"
+        },
+        {
+          "linha": 1735,
+          "trecho": "Resolução CNE/CP n° 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 1737,
+          "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-29",
+          "regra": "url-dou",
+          "confianca": 0.95
+        }
+      ]
+    },
+    {
+      "ppc": "arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio",
+      "campus": "Arapongas",
+      "curso": "Técnico em Sistemas de Energia Renovável",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio.md",
+      "ocorrencias": [
+        {
+          "linha": 208,
+          "trecho": "Resolução nº 01 de 05 de janeiro de 2021, do Conselho Nacional de Educação (CNE)",
+          "regra": "dcnept-2021-orgao-incompleto",
+          "confianca": 0.8
+        },
+        {
+          "linha": 258,
+          "trecho": "Resolução CNE/CEB nº 01/2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 811,
+          "trecho": "Resolução n° 1/2021",
+          "regra": "orgao-no-documento",
+          "confianca": 0.85,
+          "dispositivoId": "#art3"
+        },
+        {
+          "linha": 2775,
+          "trecho": "Resolução CNE/CEB nº 1/2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        }
+      ]
+    },
+    {
+      "ppc": "arapongas/tecnologia-em-processos-gerenciais",
+      "campus": "Arapongas",
+      "curso": "Tecnologia em Processos Gerenciais",
+      "nivel": "superior",
+      "tipo_oferta": "graduação tecnológica",
+      "path": "institucional/ifpr/ppcs/arapongas/tecnologia-em-processos-gerenciais.md",
+      "ocorrencias": [
+        {
+          "linha": 351,
+          "trecho": "Parecer CNE/CP nº 01/2021",
+          "regra": "dcnept-2021-tipo-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 401,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 455,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 457,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 469,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 527,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 1043,
+          "trecho": "Resolução CNE/CP nº 1,de 5 dejaneiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2876,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2952,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "assis-chateaubriand/tecnico-em-alimentos",
+      "campus": "Assis Chateaubriand",
+      "curso": "Técnico em Alimentos",
+      "nivel": "médio",
+      "tipo_oferta": "subsequente",
+      "path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-alimentos.md",
+      "ocorrencias": [
+        {
+          "linha": 120,
+          "trecho": "Resolução CNE/CP Nº 1, de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 230,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 1685,
+          "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio",
+      "campus": "Assis Chateaubriand",
+      "curso": "Técnico em Mecatrônica",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio.md",
+      "ocorrencias": [
+        {
+          "linha": 164,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 327,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 473,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 488,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 1800,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "assis-chateaubriand/tecnologia-em-automacao-industrial",
+      "campus": "Assis Chateaubriand",
+      "curso": "Tecnologia em Automação Industrial",
+      "nivel": "superior",
+      "tipo_oferta": "graduação tecnológica",
+      "path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnologia-em-automacao-industrial.md",
+      "ocorrencias": [
+        {
+          "linha": 407,
+          "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 641,
+          "trecho": "Resolução CNE/CP nº 1, de 18 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98,
+          "dispositivoId": "#art2"
+        },
+        {
+          "linha": 947,
+          "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 962,
+          "trecho": "Resolução CNE/CP Nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 3584,
+          "trecho": "Resolução CNE/CP Nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "assis-chateaubriand/tecnologia-em-gestao-comercial",
+      "campus": "Assis Chateaubriand",
+      "curso": "Tecnologia em Gestão Comercial",
+      "nivel": "superior",
+      "tipo_oferta": "graduação tecnológica",
+      "path": "institucional/ifpr/ppcs/assis-chateaubriand/tecnologia-em-gestao-comercial.md",
+      "ocorrencias": [
+        {
+          "linha": 864,
+          "trecho": "Resolução CNE/CP Nº 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 866,
+          "trecho": "resolução CNE/CP nº 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98,
+          "dispositivoId": "#art14-vi"
+        },
+        {
+          "linha": 2616,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98,
+          "dispositivoId": "#art19"
+        }
+      ]
+    },
+    {
+      "ppc": "astorga/tecnico-em-desenvolvimento-de-sistemas",
+      "campus": "Astorga",
+      "curso": "Técnico em Desenvolvimento de Sistemas",
+      "nivel": "médio",
+      "tipo_oferta": "subsequente",
+      "path": "institucional/ifpr/ppcs/astorga/tecnico-em-desenvolvimento-de-sistemas.md",
+      "ocorrencias": [
+        {
+          "linha": 139,
+          "trecho": "Resolução CNE/CP 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 239,
+          "trecho": "RESOLUÇÃO CNE/CP 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 439,
+          "trecho": "Resolução CNE/CP 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 481,
+          "trecho": "Resolução CNE/CP 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98,
+          "dispositivoId": "#art14-vi"
+        },
+        {
+          "linha": 1285,
+          "trecho": "Resolução CNE/CP 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 1285,
+          "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-2977",
+          "regra": "url-dou",
+          "confianca": 0.95
+        }
+      ]
+    },
+    {
+      "ppc": "barracao/tecnico-em-administracao",
+      "campus": "Barracão",
+      "curso": "Técnico em Administração",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/barracao/tecnico-em-administracao.md",
+      "ocorrencias": [
+        {
+          "linha": 191,
+          "trecho": "Resolução CNE/CP nº. 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 337,
+          "trecho": "Resolução CNE/CP n. 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 339,
+          "trecho": "RESOLUÇÃO CNE/CP N. 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 369,
+          "trecho": "Resolução CNE/CP n. 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 375,
+          "trecho": "RESOLUÇÃO CNE/CP n. 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 479,
+          "trecho": "Resolução CNE/CP nº.1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2692,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "barracao/tecnico-em-informatica",
+      "campus": "Barracão",
+      "curso": "Técnico em Informática",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/barracao/tecnico-em-informatica.md",
+      "ocorrencias": [
+        {
+          "linha": 198,
+          "trecho": "Resolução CNE/CP nº. 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 336,
+          "trecho": "Resolução CNE/CP n. 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 336,
+          "trecho": "RESOLUÇÃO CNE/CP N. 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 366,
+          "trecho": "Resolução CNE/CP n. 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 376,
+          "trecho": "RESOLUÇÃO CNE/CP n. 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 478,
+          "trecho": "Resolução CNE/CP nº. 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2729,
+          "trecho": "Parecer CNE/CP n.º 01, de 05 de janeiro de 2021",
+          "regra": "dcnept-2021-tipo-trocado",
+          "confianca": 0.7
+        }
+      ]
+    },
+    {
+      "ppc": "campo-largo/administracao",
+      "campus": "Campo Largo",
+      "curso": "Administração",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/campo-largo/administracao.md",
+      "ocorrencias": [
+        {
+          "linha": 301,
+          "trecho": "Resolução nº 01, de 05 de janeiro de 2021",
+          "regra": "data-registro",
+          "confianca": 0.85
+        },
+        {
+          "linha": 1646,
+          "trecho": "Resolução nº 01 de 05 de janeiro de 2021",
+          "regra": "dcnept-2021-orgao-incompleto",
+          "confianca": 0.8
+        },
+        {
+          "linha": 1646,
+          "trecho": "https://www.in.gov.br/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021297767578.",
+          "regra": "url-dou",
+          "confianca": 0.95
+        }
+      ]
+    },
+    {
+      "ppc": "campo-largo/tecnologia-em-agroecologia",
+      "campus": "Campo Largo",
+      "curso": "Curso Superior de Tecnologia em Agroecologia",
+      "nivel": "superior",
+      "tipo_oferta": "graduação tecnológica",
+      "path": "institucional/ifpr/ppcs/campo-largo/tecnologia-em-agroecologia.md",
+      "ocorrencias": [
+        {
+          "linha": 205,
+          "trecho": "Resolução CNE/CP 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "campo-largo/tecnologia-em-materiais",
+      "campus": "Campo Largo",
+      "curso": "Curso Superior de Tecnologia em Materiais",
+      "nivel": "superior",
+      "tipo_oferta": "graduação tecnológica",
+      "path": "institucional/ifpr/ppcs/campo-largo/tecnologia-em-materiais.md",
+      "ocorrencias": [
+        {
+          "linha": 196,
+          "trecho": "Resolução CNE /CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98,
+          "dispositivoId": "#art14"
+        },
+        {
+          "linha": 238,
+          "trecho": "Resolução CNE/CP nº 01/ 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 689,
+          "trecho": "Resolução CNE/CP nº 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 725,
+          "trecho": "Resolução CNE/CP nº01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 729,
+          "trecho": "Resolução CNE/CP nº01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2566,
+          "trecho": "Resolução CNE/CP 01, de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2566,
+          "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021297767578.",
+          "regra": "url-dou",
+          "confianca": 0.95
+        }
+      ]
+    },
+    {
+      "ppc": "capanema/tecnologia-em-sistemas-para-internet",
+      "campus": "Capanema",
+      "curso": "Tecnologia em Sistemas para Internet",
+      "nivel": "superior",
+      "tipo_oferta": "graduação tecnológica",
+      "path": "institucional/ifpr/ppcs/capanema/tecnologia-em-sistemas-para-internet.md",
+      "ocorrencias": [
+        {
+          "linha": 251,
+          "trecho": "Resolução nº 01, de 05 de janeiro de 2021 (CNE/CP",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 393,
+          "trecho": "Resolução CNE/CP 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 781,
+          "trecho": "Resolução nº 01, de 05 de janeiro de 2021",
+          "regra": "data-registro",
+          "confianca": 0.85
+        },
+        {
+          "linha": 836,
+          "trecho": "Resolução CNE/CP nº 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "cascavel/tecnico-em-edificacoes",
+      "campus": "Cascavel",
+      "curso": "Técnico em Edificações",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/cascavel/tecnico-em-edificacoes.md",
+      "ocorrencias": [
+        {
+          "linha": 214,
+          "trecho": "Resolução CNE/CP n° 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2082,
+          "trecho": "Resolução CNE/CP N° 1, de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2082,
+          "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-297767578",
+          "regra": "url-dou",
+          "confianca": 0.95
+        }
+      ]
+    },
+    {
+      "ppc": "cascavel/tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+      "campus": "Cascavel",
+      "curso": "Tecnologia em Análise e Desenvolvimento de Sistemas",
+      "nivel": "superior",
+      "tipo_oferta": "graduação tecnológica",
+      "path": "institucional/ifpr/ppcs/cascavel/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md",
+      "ocorrencias": [
+        {
+          "linha": 142,
+          "trecho": "Resolução CNE/CP n° 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 312,
+          "trecho": "Resolução CNE/CP n° 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 586,
+          "trecho": "Resolução CES/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "data-registro",
+          "confianca": 0.85
+        },
+        {
+          "linha": 2114,
+          "trecho": "Resolução CNE/CP nº 1, de 05/01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2114,
+          "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-297767578",
+          "regra": "url-dou",
+          "confianca": 0.95
+        },
+        {
+          "linha": 2184,
+          "trecho": "Resolução CNE/CP n° 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2184,
+          "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-297767578",
+          "regra": "url-dou",
+          "confianca": 0.95
+        }
+      ]
+    },
+    {
+      "ppc": "cascavel/tecnologia-em-gestao-ambiental",
+      "campus": "Cascavel",
+      "curso": "Tecnologia em Gestão Ambiental",
+      "nivel": "superior",
+      "tipo_oferta": "graduação tecnológica",
+      "path": "institucional/ifpr/ppcs/cascavel/tecnologia-em-gestao-ambiental.md",
+      "ocorrencias": [
+        {
+          "linha": 127,
+          "trecho": "Resolução CNE/CP n° 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 633,
+          "trecho": "Resolução CNE/CP nº 1 de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2366,
+          "trecho": "Resolução CNE/CP n° 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2366,
+          "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-297767578",
+          "regra": "url-dou",
+          "confianca": 0.95
+        },
+        {
+          "linha": 2404,
+          "trecho": "Resolução nº 1 de 5 Janeiro de 2021",
+          "regra": "data-registro",
+          "confianca": 0.85
+        }
+      ]
+    },
+    {
+      "ppc": "colombo/tecnico-em-informatica-integrado-ao-ensino-medio",
+      "campus": "Colombo",
+      "curso": "Técnico em Informática",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/colombo/tecnico-em-informatica-integrado-ao-ensino-medio.md",
+      "ocorrencias": [
+        {
+          "linha": 194,
+          "trecho": "Resolução CNE/CEB n° 1/2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 547,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2328,
+          "trecho": "Resolução nº 1, de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "colombo/tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+      "campus": "Colombo",
+      "curso": "Tecnologia em Análise e Desenvolvimento de Sistemas",
+      "nivel": "superior",
+      "tipo_oferta": "graduação tecnológica",
+      "path": "institucional/ifpr/ppcs/colombo/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md",
+      "ocorrencias": [
+        {
+          "linha": 300,
+          "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98,
+          "dispositivoId": "#art28"
+        },
+        {
+          "linha": 328,
+          "trecho": "Resolução CNE nº 01/2021",
+          "regra": "dcnept-2021-orgao-incompleto",
+          "confianca": 0.8
+        },
+        {
+          "linha": 408,
+          "trecho": "Parecer CNE/CP nº 01, de 05 de janeiro de 2021",
+          "regra": "dcnept-2021-tipo-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 764,
+          "trecho": "Resolução CNE/CP nº 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 826,
+          "trecho": "RESOLUÇÃO CNE/CP 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "coronel-vivida/tecnico-em-administracao",
+      "campus": "Coronel Vivida",
+      "curso": "Técnico em Administração",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/coronel-vivida/tecnico-em-administracao.md",
+      "ocorrencias": [
+        {
+          "linha": 184,
+          "trecho": "Resolução do Conselho Nacional de Educação nº 01/2021",
+          "regra": "dcnept-2021-orgao-incompleto",
+          "confianca": 0.8
+        },
+        {
+          "linha": 368,
+          "trecho": "Resolução nº 01/2021",
+          "regra": "orgao-no-documento",
+          "confianca": 0.85
+        },
+        {
+          "linha": 547,
+          "trecho": "Resolução CNE/CP nº 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 1710,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "coronel-vivida/tecnico-em-cooperativismo",
+      "campus": "Coronel Vivida",
+      "curso": "Técnico em Cooperativismo",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/coronel-vivida/tecnico-em-cooperativismo.md",
+      "ocorrencias": [
+        {
+          "linha": 184,
+          "trecho": "Resolução do Conselho Nacional de Educação nº 01/2021",
+          "regra": "dcnept-2021-orgao-incompleto",
+          "confianca": 0.8
+        },
+        {
+          "linha": 452,
+          "trecho": "Resolução nº 01/2021",
+          "regra": "orgao-no-documento",
+          "confianca": 0.85
+        },
+        {
+          "linha": 598,
+          "trecho": "Resolução CNE/CP nº 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 1918,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "coronel-vivida/tecnologia-em-gestao-financeira",
+      "campus": "Coronel Vivida",
+      "curso": "Tecnologia em Gestão Financeira",
+      "nivel": "superior",
+      "tipo_oferta": "graduação tecnológica",
+      "path": "institucional/ifpr/ppcs/coronel-vivida/tecnologia-em-gestao-financeira.md",
+      "ocorrencias": [
+        {
+          "linha": 236,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 719,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "curitiba/tecnico-em-enfermagem",
+      "campus": "Curitiba",
+      "curso": "Técnico em Enfermagem",
+      "nivel": "médio",
+      "tipo_oferta": "subsequente",
+      "path": "institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md",
+      "ocorrencias": [
+        {
+          "linha": 213,
+          "trecho": "Resolução do Conselho Nacional de Educação/CEB nº 1/2021",
+          "regra": "dcnept-2021-orgao-incompleto",
+          "confianca": 0.8
+        },
+        {
+          "linha": 661,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "curitiba/tecnico-em-massoterapia",
+      "campus": "Curitiba",
+      "curso": "Técnico em Massoterapia",
+      "nivel": "médio",
+      "tipo_oferta": "subsequente",
+      "path": "institucional/ifpr/ppcs/curitiba/tecnico-em-massoterapia.md",
+      "ocorrencias": [
+        {
+          "linha": 163,
+          "trecho": "Resolução CNE/CP n° 1, 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 681,
+          "trecho": "Resolução CNE/CP nº 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 862,
+          "trecho": "Resolução CNE/CP nº 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "curitiba/tecnico-em-mecanica",
+      "campus": "Curitiba",
+      "curso": "Técnico em Mecânica",
+      "nivel": "médio",
+      "tipo_oferta": "subsequente",
+      "path": "institucional/ifpr/ppcs/curitiba/tecnico-em-mecanica.md",
+      "ocorrencias": [
+        {
+          "linha": 195,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 409,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "curitiba/tecnico-em-producao-de-audio-e-video",
+      "campus": "Curitiba",
+      "curso": "Técnico em Produção de Áudio e Vídeo",
+      "nivel": "médio",
+      "tipo_oferta": "subsequente",
+      "path": "institucional/ifpr/ppcs/curitiba/tecnico-em-producao-de-audio-e-video.md",
+      "ocorrencias": [
+        {
+          "linha": 261,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 295,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 495,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 577,
+          "trecho": "Resolução CNE/CP Nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 1535,
+          "trecho": "Resolução CNE/CP Nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "curitiba/tecnico-em-saude-bucal",
+      "campus": "Curitiba",
+      "curso": "Técnico em Saúde Bucal",
+      "nivel": "médio",
+      "tipo_oferta": "subsequente",
+      "path": "institucional/ifpr/ppcs/curitiba/tecnico-em-saude-bucal.md",
+      "ocorrencias": [
+        {
+          "linha": 229,
+          "trecho": "Resolução CNE/CP n.º 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 559,
+          "trecho": "CNE/CP n.º 01/2021",
+          "regra": "tipo-implicito",
+          "confianca": 0.9
+        },
+        {
+          "linha": 719,
+          "trecho": "Resolução CNE/CP n.º 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 743,
+          "trecho": "Resolução CNE/CP n.º 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 775,
+          "trecho": "Resolução CNE/CP n.º 01/21",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 784,
+          "trecho": "Resolução CNE/CP n.º 01/21",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 3161,
+          "trecho": "Resolução CNE/CP n.º 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "curitiba/tecnico-em-soldagem-subsequente",
+      "campus": "Curitiba",
+      "curso": "Técnico em Soldagem",
+      "nivel": "médio",
+      "tipo_oferta": "subsequente",
+      "path": "institucional/ifpr/ppcs/curitiba/tecnico-em-soldagem-subsequente.md",
+      "ocorrencias": [
+        {
+          "linha": 170,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 368,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 1560,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "curitiba/tecnologia-em-processos-escolares",
+      "campus": "Curitiba",
+      "curso": "Tecnologia em Processos Escolares",
+      "nivel": "superior",
+      "tipo_oferta": "graduação tecnológica",
+      "path": "institucional/ifpr/ppcs/curitiba/tecnologia-em-processos-escolares.md",
+      "ocorrencias": [
+        {
+          "linha": 2585,
+          "trecho": "Resolução CNE/CP nº 01, de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "curitiba/tecnologia-em-secretariado",
+      "campus": "Curitiba",
+      "curso": "Tecnologia em Secretariado",
+      "nivel": "superior",
+      "tipo_oferta": "graduação tecnológica",
+      "path": "institucional/ifpr/ppcs/curitiba/tecnologia-em-secretariado.md",
+      "ocorrencias": [
+        {
+          "linha": 2809,
+          "trecho": "Resolução CNE/CP nº 01, de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "irati/tecnico-em-agroecologia",
+      "campus": "Irati",
+      "curso": "Técnico em Agroecologia",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/irati/tecnico-em-agroecologia.md",
+      "ocorrencias": [
+        {
+          "linha": 257,
+          "trecho": "Resolução CNE/CEB nº 1/2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 509,
+          "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 820,
+          "trecho": "Resolução CNE/CP no 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "irati/tecnico-em-informatica",
+      "campus": "Irati",
+      "curso": "Técnico em Informática",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/irati/tecnico-em-informatica.md",
+      "ocorrencias": [
+        {
+          "linha": 183,
+          "trecho": "Resolução CNE/CEB nº 1/2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 498,
+          "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 746,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 755,
+          "trecho": "Resolução CNE/CP nº 1,de 5 dejaneiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio",
+      "campus": "Ivaiporã",
+      "curso": "Técnico em Agropecuária",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio.md",
+      "ocorrencias": [
+        {
+          "linha": 206,
+          "trecho": "Resolução CNE/CEB nº 1/2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 574,
+          "trecho": "Resolução CNE/CEB nº 01/2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 574,
+          "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 3245,
+          "trecho": "Resolução nº 1** , de 05 de Janeiro de 2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 3249,
+          "trecho": "Resolução nº 1** , de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "ivaipora/tecnico-em-eletrotecnica-integrado",
+      "campus": "Ivaiporã",
+      "curso": "Técnico em Eletrotécnica",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/ivaipora/tecnico-em-eletrotecnica-integrado.md",
+      "ocorrencias": [
+        {
+          "linha": 373,
+          "trecho": "Resolução CNE/CEB nº 1/2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 661,
+          "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 661,
+          "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 893,
+          "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 901,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 901,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 901,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 901,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2951,
+          "trecho": "Resolução nº 1, de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio",
+      "campus": "Ivaiporã",
+      "curso": "Técnico em Informática",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio.md",
+      "ocorrencias": [
+        {
+          "linha": 307,
+          "trecho": "Resolução CNE/CEB nº 1/2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 595,
+          "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 595,
+          "trecho": "Resolução CNE/CP nº 1, de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 846,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2600,
+          "trecho": "Resolução nº 1, de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "jacarezinho/tecnologia-em-sistemas-para-internet",
+      "campus": "Jacarezinho",
+      "curso": "Tecnologia em Sistemas para Internet",
+      "nivel": "superior",
+      "tipo_oferta": "graduação tecnológica",
+      "path": "institucional/ifpr/ppcs/jacarezinho/tecnologia-em-sistemas-para-internet.md",
+      "ocorrencias": [
+        {
+          "linha": 215,
+          "trecho": "Resolução nº 01, de 05 de janeiro de 2021 (CNE/CP",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 815,
+          "trecho": "Resolução nº 01, de 05 de janeiro de 2021",
+          "regra": "data-registro",
+          "confianca": 0.85
+        }
+      ]
+    },
+    {
+      "ppc": "jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio",
+      "campus": "Jaguariaíva",
+      "curso": "Técnico em Alimentos",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio.md",
+      "ocorrencias": [
+        {
+          "linha": 194,
+          "trecho": "Resolução CNE/CEB nº 1/2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 746,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2948,
+          "trecho": "Resolução nº 1, de 5 de janeiro de 2021",
+          "regra": "dcnept-2021-orgao-incompleto",
+          "confianca": 0.8
+        }
+      ]
+    },
+    {
+      "ppc": "jaguariaiva/tecnico-em-biotecnologia-integrado-ao-ensino-medio",
+      "campus": "Jaguariaíva",
+      "curso": "Técnico em Biotecnologia",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/jaguariaiva/tecnico-em-biotecnologia-integrado-ao-ensino-medio.md",
+      "ocorrencias": [
+        {
+          "linha": 196,
+          "trecho": "Resolução CNE/CEB nº 1/2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 756,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2827,
+          "trecho": "Resolução nº 1, de 5 de janeiro de 2021",
+          "regra": "dcnept-2021-orgao-incompleto",
+          "confianca": 0.8
+        }
+      ]
+    },
+    {
+      "ppc": "londrina/tecnico-em-enfermagem",
+      "campus": "Londrina",
+      "curso": "Técnico em Enfermagem",
+      "nivel": "médio",
+      "tipo_oferta": "subsequente",
+      "path": "institucional/ifpr/ppcs/londrina/tecnico-em-enfermagem.md",
+      "ocorrencias": [
+        {
+          "linha": 191,
+          "trecho": "Resolução CNE/CEB nº 1/2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 467,
+          "trecho": "Resolução CNE/CP n°01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98,
+          "dispositivoId": "#art20-x"
+        },
+        {
+          "linha": 1501,
+          "trecho": "Resolução n° 1, de 5 de janeiro de 2021",
+          "regra": "dcnept-2021-orgao-incompleto",
+          "confianca": 0.8
+        }
+      ]
+    },
+    {
+      "ppc": "londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+      "campus": "Londrina",
+      "curso": "Tecnologia em Analise e Desenvolvimento de Sistemas",
+      "nivel": "superior",
+      "tipo_oferta": "graduação tecnológica",
+      "path": "institucional/ifpr/ppcs/londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md",
+      "ocorrencias": [
+        {
+          "linha": 296,
+          "trecho": "Resolução nº 01, de 05 de janeiro de 2021 (CNE/CP",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 811,
+          "trecho": "Resolução nº 01, de 05 de janeiro de 2021",
+          "regra": "data-registro",
+          "confianca": 0.85
+        },
+        {
+          "linha": 2045,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "palmas/tecnico-em-alimentos",
+      "campus": "Palmas",
+      "curso": "Técnico em Alimentos",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/palmas/tecnico-em-alimentos.md",
+      "ocorrencias": [
+        {
+          "linha": 822,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2588,
+          "trecho": "Resolução 01 de** **05 de janeiro de 2021",
+          "regra": "data-registro",
+          "confianca": 0.85
+        },
+        {
+          "linha": 2592,
+          "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-dejaneiro-de-2021-297767578",
+          "regra": "url-dou",
+          "confianca": 0.95
+        },
+        {
+          "linha": 3004,
+          "trecho": "Resolução 01/2021",
+          "regra": "orgao-no-documento",
+          "confianca": 0.85
+        }
+      ]
+    },
+    {
+      "ppc": "palmas/tecnico-em-informatica-para-internet",
+      "campus": "Palmas",
+      "curso": "Técnico em Informática para Internet",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/palmas/tecnico-em-informatica-para-internet.md",
+      "ocorrencias": [
+        {
+          "linha": 899,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 3104,
+          "trecho": "Resolução 01 de 05 de janeiro de 2021",
+          "regra": "data-registro",
+          "confianca": 0.85
+        },
+        {
+          "linha": 3106,
+          "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-297767578",
+          "regra": "url-dou",
+          "confianca": 0.95
+        }
+      ]
+    },
+    {
+      "ppc": "palmas/tecnico-em-servicos-juridicos",
+      "campus": "Palmas",
+      "curso": "Técnico em Serviços Jurídicos",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/palmas/tecnico-em-servicos-juridicos.md",
+      "ocorrencias": [
+        {
+          "linha": 828,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 3156,
+          "trecho": "Resolução 01 de 05 de janeiro de 2021",
+          "regra": "data-registro",
+          "confianca": 0.85
+        },
+        {
+          "linha": 3158,
+          "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-dejaneiro-de-2021-297767578",
+          "regra": "url-dou",
+          "confianca": 0.95
+        }
+      ]
+    },
+    {
+      "ppc": "paranagua/tecnico-em-informatica",
+      "campus": "Paranaguá",
+      "curso": "Técnico em Informática",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/paranagua/tecnico-em-informatica.md",
+      "ocorrencias": [
+        {
+          "linha": 209,
+          "trecho": "Resolução CNE/CEB nº 1/2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        }
+      ]
+    },
+    {
+      "ppc": "paranagua/tecnico-em-meio-ambiente",
+      "campus": "Paranaguá",
+      "curso": "Técnico em Meio Ambiente",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/paranagua/tecnico-em-meio-ambiente.md",
+      "ocorrencias": [
+        {
+          "linha": 232,
+          "trecho": "Resolução 01 de 05 de janeiro de 2021** , do Conselho Nacional de Educação (CNE)",
+          "regra": "dcnept-2021-orgao-incompleto",
+          "confianca": 0.8
+        },
+        {
+          "linha": 713,
+          "trecho": "Resolução CNE/CEB nº 1/2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 3030,
+          "trecho": "Resolução 01 de 05 de janeiro de 2021",
+          "regra": "dcnept-2021-orgao-incompleto",
+          "confianca": 0.8
+        },
+        {
+          "linha": 3030,
+          "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-29776757",
+          "regra": "url-dou",
+          "confianca": 0.95
+        }
+      ]
+    },
+    {
+      "ppc": "paranagua/tecnico-em-producao-cultural",
+      "campus": "Paranaguá",
+      "curso": "Técnico em Produção Cultural",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/paranagua/tecnico-em-producao-cultural.md",
+      "ocorrencias": [
+        {
+          "linha": 181,
+          "trecho": "Resolução 01 de 05 de janeiro de 2021, do Conselho Nacional de Educação (CNE)",
+          "regra": "dcnept-2021-orgao-incompleto",
+          "confianca": 0.8
+        },
+        {
+          "linha": 608,
+          "trecho": "Resolução CNE/CEB nº 1/2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 2896,
+          "trecho": "https://www.in.gov.br/en/web/dou/-/resolucao-cne/cp-n-1-de-5-de-janeiro-de-2021-29776757",
+          "regra": "url-dou",
+          "confianca": 0.95
+        }
+      ]
+    },
+    {
+      "ppc": "paranagua/tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+      "campus": "Paranaguá",
+      "curso": "Tecnologia em Análise e Desenvolvimento de Sistemas",
+      "nivel": "superior",
+      "tipo_oferta": "graduação tecnológica",
+      "path": "institucional/ifpr/ppcs/paranagua/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md",
+      "ocorrencias": [
+        {
+          "linha": 2221,
+          "trecho": "Resolução CNE/CP No 1. de 05 de Janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "paranagua/tecnologia-em-gestao-ambiental",
+      "campus": "Paranaguá",
+      "curso": "Tecnologia em Gestão Ambiental",
+      "nivel": "superior",
+      "tipo_oferta": "graduação tecnológica",
+      "path": "institucional/ifpr/ppcs/paranagua/tecnologia-em-gestao-ambiental.md",
+      "ocorrencias": [
+        {
+          "linha": 185,
+          "trecho": "Resolução CNE/CP nº1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 567,
+          "trecho": "Resolução CNE/CP nº1 de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2525,
+          "trecho": "Resolução Nº 1 de 5 Janeiro de 2021",
+          "regra": "data-registro",
+          "confianca": 0.85
+        }
+      ]
+    },
+    {
+      "ppc": "pinhais/tecnico-em-administracao-integrado-ao-ensino-medio",
+      "campus": "Pinhais",
+      "curso": "Técnico em Administração",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/pinhais/tecnico-em-administracao-integrado-ao-ensino-medio.md",
+      "ocorrencias": [
+        {
+          "linha": 196,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 406,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 620,
+          "trecho": "Resolução CNE/CP nº 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 1570,
+          "trecho": "Resolução nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "pitanga/tecnico-em-alimentos",
+      "campus": "Pitanga",
+      "curso": "Técnico em Alimentos",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/pitanga/tecnico-em-alimentos.md",
+      "ocorrencias": [
+        {
+          "linha": 214,
+          "trecho": "Resolução 01 de 05 de janeiro de 2021, do Conselho Nacional de Educação (CNE)",
+          "regra": "dcnept-2021-orgao-incompleto",
+          "confianca": 0.8
+        },
+        {
+          "linha": 558,
+          "trecho": "Resolução CNE/CEB nº 1/2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 2046,
+          "trecho": "Resolução 01 de 05 de janeiro de 2021",
+          "regra": "dcnept-2021-orgao-incompleto",
+          "confianca": 0.8
+        }
+      ]
+    },
+    {
+      "ppc": "pitanga/tecnico-em-desenvolvimento-de-sistemas",
+      "campus": "Pitanga",
+      "curso": "Técnico em Desenvolvimento de Sistemas",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/pitanga/tecnico-em-desenvolvimento-de-sistemas.md",
+      "ocorrencias": [
+        {
+          "linha": 190,
+          "trecho": "Resolução 01 de 05 de janeiro de 2021, do Conselho Nacional de Educação (CNE)",
+          "regra": "dcnept-2021-orgao-incompleto",
+          "confianca": 0.8
+        },
+        {
+          "linha": 525,
+          "trecho": "Resolução CNE/CEB nº 1/2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 2835,
+          "trecho": "Resolução CNE nº 1, de 5 de janeiro de 2021",
+          "regra": "dcnept-2021-orgao-incompleto",
+          "confianca": 0.8
+        }
+      ]
+    },
+    {
+      "ppc": "telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio",
+      "campus": "Telêmaco Borba",
+      "curso": "Técnico em Automação Industrial",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio.md",
+      "ocorrencias": [
+        {
+          "linha": 186,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 602,
+          "trecho": "Resolução CNE/CP nº 01 de 05 dejaneiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2861,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
+      "campus": "Telêmaco Borba",
+      "curso": "Técnico em Informática para Internet",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.md",
+      "ocorrencias": [
+        {
+          "linha": 154,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 546,
+          "trecho": "Resolução CNE/CP nº 01 de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2465,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "telemaco-borba/tecnico-em-mecanica",
+      "campus": "Telêmaco Borba",
+      "curso": "Técnico em Mecânica",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/telemaco-borba/tecnico-em-mecanica.md",
+      "ocorrencias": [
+        {
+          "linha": 134,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 490,
+          "trecho": "Resolução CNE/CP nº 01 de 05 dejaneiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2595,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "telemaco-borba/tecnico-em-programacao-de-jogos-digitais",
+      "campus": "Telêmaco Borba",
+      "curso": "Técnico em Programação de Jogos Digitais",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/telemaco-borba/tecnico-em-programacao-de-jogos-digitais.md",
+      "ocorrencias": [
+        {
+          "linha": 162,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 518,
+          "trecho": "Resolução CNE/CP nº 01 de 05 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2604,
+          "trecho": "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "telemaco-borba/tecnologia-em-manutencao-industrial",
+      "campus": "Telêmaco Borba",
+      "curso": "Tecnologia em Manutenção Industrial",
+      "nivel": "superior",
+      "tipo_oferta": "graduação tecnológica",
+      "path": "institucional/ifpr/ppcs/telemaco-borba/tecnologia-em-manutencao-industrial.md",
+      "ocorrencias": [
+        {
+          "linha": 270,
+          "trecho": "Resolução 01, de janeiro de 2021",
+          "regra": "orgao-no-documento",
+          "confianca": 0.85
+        },
+        {
+          "linha": 272,
+          "trecho": "Resolução CNE/CP 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 272,
+          "trecho": "Resolução CNE/CP 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 284,
+          "trecho": "Resolução CNE/CP n° 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 717,
+          "trecho": "Resolução CNE/CP nº01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2426,
+          "trecho": "Resolução CNE/CP 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio",
+      "campus": "União da Vitória",
+      "curso": "Técnico em Informática",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio.md",
+      "ocorrencias": [
+        {
+          "linha": 195,
+          "trecho": "Resolução CNE/CP nº. 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 351,
+          "trecho": "Resolução CNE/CP n. 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 353,
+          "trecho": "Resolução CNE/CP N. 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 383,
+          "trecho": "Resolução CNE/CP n. 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 391,
+          "trecho": "RESOLUÇÃO CNE/CP n. 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 397,
+          "trecho": "Resolução CNE/CP nº 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 487,
+          "trecho": "Resolução CNE/CP nº. 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 1834,
+          "trecho": "Parecer CNE/CP nº. 01, de 05 de janeiro de 2021",
+          "regra": "dcnept-2021-tipo-trocado",
+          "confianca": 0.7
+        }
+      ]
+    },
+    {
+      "ppc": "uniao-da-vitoria/tecnico-em-meio-ambiente-integrado-ao-ensino-medio",
+      "campus": "União da Vitória",
+      "curso": "Técnico em Meio Ambiente",
+      "nivel": "médio",
+      "tipo_oferta": "integrado",
+      "path": "institucional/ifpr/ppcs/uniao-da-vitoria/tecnico-em-meio-ambiente-integrado-ao-ensino-medio.md",
+      "ocorrencias": [
+        {
+          "linha": 238,
+          "trecho": "Resolução CNE/CP nº 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 656,
+          "trecho": "Resolução CNE/CEB n. 01/2021",
+          "regra": "dcnept-2021-orgao-trocado",
+          "confianca": 0.7
+        },
+        {
+          "linha": 686,
+          "trecho": "Resolução CNE/CP n. 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 696,
+          "trecho": "Resolução CNE/CP n. 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 940,
+          "trecho": "Resolução CNE/CP nº 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2683,
+          "trecho": "Resolução CNE/CP Nº 1, de 5 de janeiro De 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    },
+    {
+      "ppc": "uniao-da-vitoria/tecnologia-em-analise-e-desenvolvimento-de-sistemas",
+      "campus": "União da Vitória",
+      "curso": "Tecnologia em Analise e Desenvolvimento de Sistemas",
+      "nivel": "superior",
+      "tipo_oferta": "graduação tecnológica",
+      "path": "institucional/ifpr/ppcs/uniao-da-vitoria/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md",
+      "ocorrencias": [
+        {
+          "linha": 205,
+          "trecho": "Resolução CNE/CP 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 303,
+          "trecho": "Resolução MEC/CNE/CP nº 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 717,
+          "trecho": "RESOLUÇÃO CNE/CP 1/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2318,
+          "trecho": "Resolução CNE/CP No 01/2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        },
+        {
+          "linha": 2784,
+          "trecho": "Resolução CNE/CP 1, de 5 de Janeiro de 2021",
+          "regra": "estrutural",
+          "confianca": 0.98
+        }
+      ]
+    }
+  ]
+}

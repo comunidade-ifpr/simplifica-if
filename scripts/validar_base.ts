@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 /** Valida a base pública de conhecimento. */
 import { criarCaminhos } from "./base/caminhos.ts";
 import { validarBase } from "./base/validacao.ts";
@@ -6,7 +6,7 @@ import { validarBaseAnalise } from "../.agents/skills/revisar-ppc/scripts/valida
 import { lerArgumentos } from "./cli.ts";
 import { validarDadosInstitucionais } from "./dados/validacao.ts";
 
-const USO = `uso: bun run scripts/validar_base.ts [--check-ppc-artifacts]
+const USO = `uso: node scripts/validar_base.ts [--check-ppc-artifacts]
 
 Valida a base pública de conhecimento, os dados institucionais de origem (dados/institucional/)
 e a base de análise da skill revisar-ppc (.agents/skills/revisar-ppc/base-analise/).

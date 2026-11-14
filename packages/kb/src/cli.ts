@@ -1,11 +1,11 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 /**
  * CLI `kb`: consultas determinísticas à base de conhecimento.
  *
- *   bun run kb resolver "Resolução CNE/CP nº 1/2021, art. 20" [--json]
- *   bun run kb citacoes br/cne-cp/res/2021/1 [--json] [--confianca-min 0.8]
- *   bun run kb adequacao-art71 [--json] [--incluir-tecnologia]
- *   bun run kb avaliar-resolvedor [--json]
+ *   pnpm kb resolver "Resolução CNE/CP nº 1/2021, art. 20" [--json]
+ *   pnpm kb citacoes br/cne-cp/res/2021/1 [--json] [--confianca-min 0.8]
+ *   pnpm kb adequacao-art71 [--json] [--incluir-tecnologia]
+ *   pnpm kb avaliar-resolvedor [--json]
  *
  * Comandos sobre o kb.sqlite (buscar-norma, buscar-secoes, cursos, ppc-fatos, pacote-contexto,
  * avaliar-busca): db/comandos.ts.

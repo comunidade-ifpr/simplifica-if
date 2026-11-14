@@ -1,4 +1,4 @@
-import { afterAll, describe, expect, test } from "bun:test";
+import { afterAll, describe, expect, test } from "vite-plus/test";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -230,9 +230,11 @@ describe("índice de PPCs", () => {
     gravarIndices(caminhos, indices);
     expect(verificarIndices(caminhos, indices)).toEqual([]);
     expect(dataIndiceAtual(caminhos, "2030-01-01")).toBe("2026-01-01");
-    expect(readFileSync(path.join(caminhos.secoesPpcs, "ementas.jsonl"), "utf-8")).toStartWith(
-      '{"id":"campus-a/tecnico-x#ementas-1",',
-    );
+    expect(
+      readFileSync(path.join(caminhos.secoesPpcs, "ementas.jsonl"), "utf-8").startsWith(
+        '{"id":"campus-a/tecnico-x#ementas-1",',
+      ),
+    ).toBe(true);
     expect(readFileSync(path.join(caminhos.secoesPpcs, "avaliacao.jsonl"), "utf-8")).toBe("");
 
     escrever(raiz, "base-conhecimento/institucional/ifpr/ppcs/secoes/extra.jsonl", "");

@@ -67,18 +67,18 @@ Ao gerar o relatório, a skill publica no Surge por padrão e retorna `publicaca
 
 ## Fluxo técnico
 
-O ponto de entrada é `scripts/revisar_ppc.ts` (Bun), e todos os subcomandos rodam em TypeScript, inclusive `gerar-relatorio-html` e a publicação no Surge. Só a conversão de entrada `.docx` em `preparar-documento` ainda depende de Python: `scripts/converter_docx.py` (`python-docx`), chamado por subprocesso até a trilha T3 do `PLANO-ARQUITETURA.md`. Com PPC em `.md`, a skill inteira dispensa Python. `REVISAR_PPC_PYTHON` escolhe o interpretador da conversão DOCX (padrão `python3`). Em testes e diferenciais, `REVISAR_PPC_AGORA` fixa o relógio da rodada: nome do diretório, `criado_em` e `data_conversao`. Aceita `AAAA-MM-DD` (meia-noite local) ou `AAAA-MM-DDTHH:MM[:SS]` com fuso opcional (`Z` ou `±HH:MM`; sem fuso, hora local), com a mesma leitura no TypeScript e na conversão DOCX em Python; outro formato é recusado. Fora da skill, o conversor de PDF de PPCs da base (`scripts/converter_ppcs_markdown.py`) também continua em Python, até a trilha T5.
+O ponto de entrada é `scripts/revisar_ppc.ts` (Node), e todos os subcomandos rodam em TypeScript, inclusive `gerar-relatorio-html` e a publicação no Surge. Só a conversão de entrada `.docx` em `preparar-documento` ainda depende de Python: `scripts/converter_docx.py` (`python-docx`), chamado por subprocesso até a trilha T3 do `PLANO-ARQUITETURA.md`. Com PPC em `.md`, a skill inteira dispensa Python. `REVISAR_PPC_PYTHON` escolhe o interpretador da conversão DOCX (padrão `python3`). Em testes e diferenciais, `REVISAR_PPC_AGORA` fixa o relógio da rodada: nome do diretório, `criado_em` e `data_conversao`. Aceita `AAAA-MM-DD` (meia-noite local) ou `AAAA-MM-DDTHH:MM[:SS]` com fuso opcional (`Z` ou `±HH:MM`; sem fuso, hora local), com a mesma leitura no TypeScript e na conversão DOCX em Python; outro formato é recusado. Fora da skill, o conversor de PDF de PPCs da base (`scripts/converter_ppcs_markdown.py`) também continua em Python, até a trilha T5.
 
 ```bash
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts preparar-documento caminho/PPC.docx
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts montar-grupos-subagents --rodada-dir .agents/skills/revisar-ppc/output/<rodada>
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts preparar-prompts-subagents --rodada-dir .agents/skills/revisar-ppc/output/<rodada>
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts preparar-documento caminho/PPC.docx
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts montar-grupos-subagents --rodada-dir .agents/skills/revisar-ppc/output/<rodada>
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts preparar-prompts-subagents --rodada-dir .agents/skills/revisar-ppc/output/<rodada>
 ```
 
 Depois, o agente principal spawna um sub-agente por grupo, de preferência com os pacotes prontos de `arquivos-suporte/prompts-subagents/` (um por grupo, com o prompt, o trecho do PPC e o JSON do grupo). Em seguida, colete as respostas em `arquivos-suporte/resultados-subagents.json`, rode a síntese transversal com `prompts/sintese-transversal.md` e `validacoes_cruzadas`, e gere o relatório:
 
 ```bash
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-relatorio-html --rodada-dir .agents/skills/revisar-ppc/output/<rodada> --resultados resultados-subagents.json
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-relatorio-html --rodada-dir .agents/skills/revisar-ppc/output/<rodada> --resultados resultados-subagents.json
 ```
 
 Para reavaliar fichas específicas, use `montar-grupo-avulso`, execute um sub-agente com o pacote retornado (`prompt_subagent_path`) e depois `mesclar-resultados-avulsos`. A mescla valida o avulso com o mesmo contrato de `validar-resultados` (fichas conhecidas, sem repetição, estado, confiança, evidências) e, se ele for inválido, recusa sem tocar a base; a base no formato `{"grupo_id", "resultados"}` é gravada em `grupos[]`, com os resultados originais.
@@ -102,7 +102,7 @@ O `preparar-documento` grava em `metadata.json` o curso, o campus, a forma de of
 Para medir a identificação nos PPCs técnicos da base contra `dados/institucional/cursos` (só leitura, como gabarito):
 
 ```bash
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts medir-identificacao --erros
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts medir-identificacao --erros
 ```
 
 `--amostra` mede só a amostra fixa usada em `tests/identificacao.test.ts`, e `--json` imprime a medição completa.
@@ -120,13 +120,13 @@ Ao criar, atualizar ou corrigir uma ficha em `base-analise/fichas/`:
 Comandos obrigatórios a partir da raiz do repositório:
 
 ```bash
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-schemas --check
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-mapa
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-indice
-bun run .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
-bun test ./.agents/skills/revisar-ppc
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-schemas --check
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-mapa
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-indice
+node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
+pnpm exec vp test run .agents/skills/revisar-ppc
 python3 -m pytest .agents/skills/revisar-ppc/tests
 ```
 
-O `bun test` cobre a skill inteira; o `pytest` cobre só os extratores da conversão DOCX, que ainda é Python.
+O `pnpm exec vp test run .agents/skills/revisar-ppc` cobre a skill inteira; o `pytest` cobre só os extratores da conversão DOCX, que ainda é Python.

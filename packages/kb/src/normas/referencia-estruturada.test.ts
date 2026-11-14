@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { analisarDispositivos } from "./dispositivos.ts";
 import { ehIdAto, ehIdCnct, RE_ID_ATO_COM_DISPOSITIVO, RE_REFERENCIA, semAcento } from "./ids.ts";
 import {

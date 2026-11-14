@@ -3,13 +3,14 @@
  * `avaliacao/perguntas.yaml` num agente real (`claude -p`), pontua de forma determinística e grava
  * o relatório datado em `avaliacao/resultados/`.
  *
- *   bun run scripts/avaliar.ts --dry-run                      # mostra o que rodaria, sem custo
- *   bun run scripts/avaliar.ts --pergunta Q09 --execucoes 1   # roda só uma pergunta
- *   bun run scripts/avaliar.ts --modelo haiku                 # sobrescreve o modelo do config
- *   bun run scripts/avaliar.ts --pontuar avaliacao/resultados/<rodada>/relatorio.json
+ *   node scripts/avaliar.ts --dry-run                      # mostra o que rodaria, sem custo
+ *   node scripts/avaliar.ts --pergunta Q09 --execucoes 1   # roda só uma pergunta
+ *   node scripts/avaliar.ts --modelo haiku                 # sobrescreve o modelo do config
+ *   node scripts/avaliar.ts --pontuar avaliacao/resultados/<rodada>/relatorio.json
  *
  * Modelo, execuções por pergunta, limite de turnos e ferramentas vêm de `avaliacao/config.yaml`.
  */
+import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { parseArgs } from "node:util";
@@ -28,7 +29,7 @@ import { pontuarResposta } from "./avaliacao/pontuacao.ts";
 import { esquemaRelatorioSalvo, resumoMarkdown, type RegistroExecucao, type Relatorio } from "./avaliacao/relatorio.ts";
 import type { Execucao } from "./avaliacao/stream.ts";
 
-const AJUDA = `Uso: bun run scripts/avaliar.ts [opções]
+const AJUDA = `Uso: node scripts/avaliar.ts [opções]
 
   --pergunta <ids>     Só estas perguntas (Q01,Q09 ou a opção repetida)
   --execucoes <n>      Execuções por pergunta (padrão: config.yaml)
@@ -67,10 +68,10 @@ function pontuar(contexto: Contexto, pergunta: Pergunta, resposta: string) {
 }
 
 function commitAtual(): string | null {
-  const rev = Bun.spawnSync(["git", "rev-parse", "--short", "HEAD"], { cwd: RAIZ_REPOSITORIO });
-  if (rev.exitCode !== 0) return null;
-  const sujo = Bun.spawnSync(["git", "status", "--porcelain"], { cwd: RAIZ_REPOSITORIO }).stdout.toString().trim();
-  return `${rev.stdout.toString().trim()}${sujo ? " (com alterações locais)" : ""}`;
+  const rev = spawnSync("git", ["rev-parse", "--short", "HEAD"], { cwd: RAIZ_REPOSITORIO, encoding: "utf-8" });
+  if (rev.status !== 0) return null;
+  const sujo = spawnSync("git", ["status", "--porcelain"], { cwd: RAIZ_REPOSITORIO, encoding: "utf-8" }).stdout.trim();
+  return `${rev.stdout.trim()}${sujo ? " (com alterações locais)" : ""}`;
 }
 
 function carimbo(data: Date): string {

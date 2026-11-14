@@ -4,6 +4,8 @@ Situação em 13/11/2026. Este plano consolida duas análises de arquitetura de 
 
 A versão 2 incorpora duas revisões independentes, uma da migração para TypeScript e outra das fases de retrieval. A seção [Histórico de revisões](#histórico-de-revisões) registra o que mudou.
 
+Desde a etapa C0 da [consolidação na stack do T3](docs/plans/consolidacao-stack-t3.md) (14/11/2026), o repositório roda em Node e pnpm. Os comandos deste plano foram atualizados; onde o texto registra como era antes, ele fala do Bun.
+
 **Escopo:** a `revisar-ppc` (antes `analise-ppc`; veja a renomeação em [Andamento](#andamento)) e a base de conhecimento. `Movimentações de Cursos` (Notion) está fora do escopo por ora.
 
 ## Tese
@@ -21,7 +23,7 @@ O tamanho é pequeno: cerca de 3.500 dispositivos normativos, 202 PPCs (112 téc
 ## Princípios
 
 1. **Os arquivos no git são a fonte de verdade.** Markdown das normas, `dados/institucional/`, fichas, CNCT e PPCs convertidos. Todo banco ou índice é derivado, reproduzível e fica fora do git.
-2. **Uma linguagem.** Pipeline, skills, validadores e CLI em TypeScript (Bun). Quando não houver equivalente aceitável, a exceção fica isolada num script único, documentada e com teste de contrato.
+2. **Uma linguagem.** Pipeline, skills, validadores e CLI em TypeScript (Node, desde o C0; antes, Bun). Quando não houver equivalente aceitável, a exceção fica isolada num script único, documentada e com teste de contrato.
 3. **Contratos explícitos.** Os dados novos e os que forem reestruturados ganham schema zod. Os JSON Schemas existentes continuam validados por `ajv` até haver motivo medido para trocá-los.
 4. **Nada inferido por LLM entra sem revisão humana.** Relações de revogação, tabela de correspondência e fatos de PPC são propostos automaticamente e confirmados por diff no git.
 5. **Cada fase se mede.** O conjunto de avaliação (fase 1) roda antes e depois de cada fase de retrieval. Uma fase que não melhora nenhuma métrica não avança. A consolidação em TypeScript é decisão de manutenção e segue outro critério: paridade com o Python.
@@ -72,7 +74,7 @@ O `python3` do sistema não tem `python-docx`. Hoje não há um ambiente de refe
 ## Arquitetura alvo
 
 ```
-Fontes (git)                         Build (bun)                            Consulta
+Fontes (git)                         Build (node)                           Consulta
 ─────────────                        ───────────                            ────────
 normas/*.md ─────────┐
 relacoes.yaml ───────┤               packages/kb
@@ -135,12 +137,12 @@ Ficam fora do plano por ora:
 - **Kit de paridade movido para `packages/kb`:** `texto.ts`, `json.ts` e `schema.ts`. O `scripts/` passa a importá-lo de lá, para que a dependência vá num sentido só.
 - **Configuração da raiz:**
   - `tsconfig.json` passa a incluir `.agents/skills/*/scripts/**/*.ts` e `.agents/skills/*/tests/**/*.ts`.
-  - `test`: `bun test scripts ./.agents/skills && bun run --cwd packages/kb test && …`. O caminho precisa começar com `./`, porque o `bun test` ignora diretórios com ponto.
-  - `format`: `bun fmt scripts '.agents/skills/*/scripts/**/*.ts' '.agents/skills/*/tests/**/*.ts' && …`. O glob tem de ser só de `.ts`: `bun fmt` sobre `.agents/skills/` reformataria fichas JSON e Markdown.
+  - `test`: o executor de testes do Bun sobre `scripts ./.agents/skills`, mais os testes de cada pacote. O caminho precisava começar com `./`, porque o Bun ignorava diretórios com ponto. Desde o C0: `pnpm test`.
+  - `format`: o formatador do Bun só com globs de `.ts` em `scripts/` e nas skills, porque sobre `.agents/skills/` ele reformataria fichas JSON e Markdown. Desde o C0: `pnpm fmt` (`vp fmt`), com as exclusões em `vite.config.ts`.
 - **Validador da `revisar-ppc` em TypeScript:**
   - portar `validar_base_analise.py`, `gerar_indice_base_analise.py` e `gerar_mapa_fichas.py`, usando o `ajv` de `schema.ts` sobre os JSON Schemas atuais de `base-analise/schemas/`;
   - o casamento de referências vai para `packages/kb/src/normas/referencias.ts`, como semente do resolvedor da fase 2;
-  - a validação da `revisar-ppc` passa a rodar também dentro de `bun run scripts/validar_base.ts`.
+  - a validação da `revisar-ppc` passa a rodar também dentro de `node scripts/validar_base.ts`.
 - **Entrypoint único `revisar_ppc.ts`.** Ele assume os subcomandos e chama o Python por subprocesso nos que ainda não foram portados. O `SKILL.md` muda uma vez só, e a trilha T troca as implementações por baixo.
 - **Testes:** portar `test_marcos_normativos.py` e os casos de `test_flow.py` ligados à validação, ao índice e ao mapa. O resto de `test_flow.py` é fatiado junto com a trilha T.
 - **Diferencial:**
@@ -150,8 +152,8 @@ Ficam fora do plano por ora:
 **Critério de aceite**
 
 - `validar_base_analise.py`, `gerar_indice_base_analise.py` e `gerar_mapa_fichas.py` removidos.
-- `bun test ./.agents/skills` roda os casos portados, e a contagem aparece no relatório.
-- `bun run format:check` passa sem tocar JSON nem Markdown.
+- `pnpm exec vp test run .agents/skills` roda os casos portados, e a contagem aparece no relatório.
+- `pnpm fmt:check` passa sem tocar JSON nem Markdown.
 - `git grep` não encontra mais comandos Python para validar, indexar ou gerar o mapa em:
   - `instrucoes.md`;
   - `README.md` e `base-analise/README.md`;
@@ -196,14 +198,14 @@ Ficam fora do plano por ora:
 
 - **Gabaritos ancorados em ID e texto citado,** não em número de linha. O commit `304bc46` já reescreveu 7 normas, e número de linha não sobrevive a isso. Para perguntas de conjunto, o gabarito é o conjunto esperado, gerado por um comando versionado.
 - **Três PPCs-ouro** com os achados esperados por ficha, para avaliar a `revisar-ppc` em si.
-- **Harness `bun run avaliacao`:**
+- **Harness `pnpm avaliacao`:**
   - chama um agente real (`claude -p`, modelo fixado) três vezes por pergunta;
   - pontua de forma determinística:
     - IDs e conjuntos esperados presentes na resposta;
     - citações proibidas (revogadas, inexistentes) ausentes;
     - número de chamadas de ferramenta e de tokens.
   - O relatório datado vai para `avaliacao/resultados/`.
-- **Execução.** O harness roda sob demanda, antes e depois de cada fase de retrieval; não há CI no repositório. Os testes de componente (resolvedor, parser) rodam no `bun test`, a cada mudança.
+- **Execução.** O harness roda sob demanda, antes e depois de cada fase de retrieval; não há CI no repositório. Os testes de componente (resolvedor, parser) rodam no `pnpm test`, a cada mudança.
 
 **Linha de base.** Os números das análises de arquitetura (notas de 1,5 a 3,5, recall perto de 20% na Q2) não são reproduzíveis e não servem como referência. A linha de base é a primeira execução do harness.
 
@@ -326,7 +328,7 @@ Esta fase vem antes do SQLite porque é barata e dá o maior ganho em busca tem�
 
 **Entregas**
 
-- **`bun run kb:compilar` gera `tmp/kb.sqlite`,** fora do git e reproduzível. O SQLite embutido no Bun é a versão 3.54.0 e suporta FTS5; isso foi verificado.
+- **`pnpm kb:compilar` gera `tmp/kb.sqlite`,** fora do git e reproduzível. O SQLite embutido no Bun, e no Node 26 desde o C0, é a versão 3.54.0 e suporta FTS5; isso foi verificado.
 - **Busca textual:**
   - FTS5 com `tokenize="unicode61 remove_diacritics 2"`;
   - o FTS5 não tem stemmer para português, então uma coluna auxiliar recebe os termos reduzidos por um stemmer em TypeScript;
@@ -337,7 +339,7 @@ Esta fase vem antes do SQLite porque é barata e dá o maior ganho em busca tem�
   - O SUAP já tem a carga horária das matrizes, inclusive a situação "CH divergentes".
   - O valor está em apontar a divergência entre PPC e SUAP, não em extrair a carga isoladamente de um texto convertido de PDF.
   - Cada fato traz `trecho_fonte` e status de curadoria.
-- **CLI** `bun run kb <comando> --json`, com `commander`, como o `sei-cli`. São 8 a 10 comandos:
+- **CLI** `pnpm kb <comando> --json`, com `commander`, como o `sei-cli`. São 8 a 10 comandos:
   - `resolver`, `dispositivo`, `buscar-norma`;
   - `buscar-secoes`, `correspondencia`, `impacto`, `vigencia`;
   - `cursos`, `ppc-fatos`, `citacoes`.
@@ -345,7 +347,7 @@ Esta fase vem antes do SQLite porque é barata e dá o maior ganho em busca tem�
   - A CLI recompila o banco sozinha quando ele está ausente ou mais velho que as fontes.
 - **`kb pacote-contexto <tarefa> <ppc>`** monta o contexto da `revisar-ppc` e substitui a montagem ad hoc de `subagents`.
 - **`AGENTS.md`** passa a mandar os agentes consultarem a base pela CLI `kb`, mantendo os arquivos como alternativa.
-- Consultas em SQL direto com `bun:sqlite`, com as linhas validadas por zod na fronteira e sem ORM.
+- Consultas em SQL direto com `node:sqlite` (até o C0, `bun:sqlite`), com as linhas validadas por zod na fronteira e sem ORM.
 
 **Critério de aceite**
 
@@ -416,7 +418,7 @@ Corre em paralelo às fases 1 a 7. Cada passo troca uma implementação por baix
 - `git ls-files '*.py'` só lista a exceção de T5, se houver.
 - Os arquivos `requirements` foram removidos ou restritos à exceção.
 - `git grep -nE 'python3?|pytest|pip install'` só encontra a exceção.
-- `bun test ./.agents/skills` roda pelo menos os 89 casos equivalentes.
+- `pnpm exec vp test run .agents/skills` roda pelo menos os 89 casos equivalentes.
 - Há um relatório de diferencial por módulo, com os documentos do corpus e os diffs (zero ou aceitos).
 - Numa rodada real com relógio fixo, os JSONs da rodada e o HTML saem idênticos aos da versão Python.
 
@@ -429,7 +431,7 @@ Corre em paralelo às fases 1 a 7. Cada passo troca uma implementação por baix
 | `zod` 4 | Contratos de dados novos e reestruturados | 0, 2, 3 | Já usada |
 | `ajv` | JSON Schemas existentes, com mensagens compatíveis (`schema.ts`) | 0 | Já usada; fica |
 | `json-schema-to-typescript` | Tipos dos schemas públicos | — | Já usada; fica |
-| `bun:sqlite` | Banco compilado com FTS5 | 6 | Embutida |
+| `node:sqlite` (até o C0, `bun:sqlite`) | Banco compilado com FTS5 | 6 | Embutida |
 | `commander` | CLIs `kb` e `revisar_ppc.ts` | 0, 6 | Já usada no `sei-cli` |
 | `yaml` (`schema: "failsafe"`) | Front matter e `relacoes.yaml` | 2, 5 | Nova |
 | `unified` + `remark-parse` + `remark-gfm` | Estrutura de normas e PPCs | 4, 5 | Nova |
@@ -439,7 +441,7 @@ Corre em paralelo às fases 1 a 7. Cada passo troca uma implementação por baix
 | stemmer de português | Coluna auxiliar do FTS5 | 6 | Em avaliação: `snowball-stemmers` está parado desde 2022; comparar com RSLP |
 | `@modelcontextprotocol/sdk` | Servidor MCP | 7 | Condicional |
 
-As versões são fixadas exatamente na adoção (`bun add <pkg>@<versão>`).
+As versões são fixadas exatamente na adoção (`pnpm add <pkg>@<versão>`).
 
 **Inverter a direção dos schemas públicos** (gerar JSON Schema a partir de zod) fica como passo opcional, sem fase. Os testes com zod 4.6.7 mostraram diferenças em `z.toJSONSchema`:
 - `.meta({ id })` gera `$defs` com `$ref`, e não `$id` na raiz;
@@ -470,7 +472,7 @@ Por isso, só fazer com casos negativos e com diff dos schemas publicados.
 - Não tratar "revogada" como "inaplicável": as regras de transição são dados.
 - Não calcular nada com o relógio do build.
 - Não reimplementar regras do núcleo fora de `packages/kb`.
-- Não rodar `bun fmt` fora dos globs de `.ts`.
+- Não reformatar Markdown, JSON nem YAML: o `vp fmt` os exclui em `vite.config.ts`.
 
 ## Fora do escopo
 
@@ -516,8 +518,8 @@ Em aberto:
 
 - O que existe:
   - 25 perguntas em `avaliacao/perguntas.yaml`, 20 com gabarito curado e 5 provisórias;
-  - os gabaritos de conjunto são gerados por `bun run avaliacao:gabaritos`;
-  - o harness roda com `bun run avaliacao`;
+  - os gabaritos de conjunto são gerados por `pnpm avaliacao:gabaritos`;
+  - o harness roda com `pnpm avaliacao`;
   - há 3 PPCs-ouro em rascunho;
   - o smoke test com Q18 e haiku custou US$ 0,006.
 - Antes da linha de base:
@@ -625,7 +627,7 @@ Em aberto:
   - posição das palavras (`pdftotext -bbox`): nos 8 casos só com caracteres WinAnsi, mesmas palavras nas mesmas páginas, com diferença máxima de 0,35 pt em y (espessura da grade) e 0 em x; nos 4 com caracteres fora dela, as mesmas palavras nas mesmas linhas, com até 0,7 pt de diferença em y e até 3,3 pt em x depois de um glifo de reserva (larguras da Roboto, e não da Symbol);
   - visual (`pdftoppm` a 80 dpi, imagens lado a lado e diferença em `tmp/t4/saida/`): de 0 a 2,9% de pixels diferentes, só antisserrilhado e o deslocamento de 0,35 pt.
 - Divergências aceitas, todas em caracteres fora da cp1252: o `reportlab` desenhava `≥`, `→`, `✓` etc. com as fontes Symbol e ZapfDingbats, que o `pdfkit` não sabe usar (declara toda fonte padrão como WinAnsi). O porte usa a Roboto que acompanha o `pdfmake` (`≥`, `≤`, `≠`, `√`, grego), embutida só quando necessária; o que ela não tem (setas, `✓`, emoji, seletores de variação, BOM) sai como `■`, como no `reportlab`, com o mesmo avanço, mas um quadrado menor. Nas linhas com Roboto, a linha de base desce até 0,7 pt, e o `pdftotext` separa os `■` em palavras.
-- Removidos: `render_relatorio_pdf.py` e o `requirements.txt` da skill; `SKILL.md`, `instrucoes.md` e `README.md` usam `bun run .agents/skills/verificar-calendario/scripts/render_relatorio_pdf.ts`.
+- Removidos: `render_relatorio_pdf.py` e o `requirements.txt` da skill; `SKILL.md`, `instrucoes.md` e `README.md` usam `node .agents/skills/verificar-calendario/scripts/render_relatorio_pdf.ts`.
 - Testes: `render-relatorio-pdf.test.ts` (11 casos): leitura do Markdown, quebra de linhas, a fixture renderizada (2 páginas, cabeçalho repetido, texto em ordem), reprodutibilidade, fonte de reserva e CLI.
 - Python que continua: `conversao_docx/` e `converter_docx.py` (T3) e `scripts/converter_ppcs_markdown.py` (T5).
 
@@ -683,7 +685,7 @@ Em aberto:
 
 **Fase 6 implementada em 13/11/2026, sem o harness** (branch `worktree-agent-ab82063f6dd337963`; a ligação com a fase 5 fica para depois do merge).
 
-- **Banco:** `bun run kb:compilar` gera `tmp/kb.sqlite` (fora do git) em cerca de 6 s, com 127 MB: normas (manifest e stubs) e texto por bloco de título, PPCs com proveniência, 20.098 seções com o texto integral recortado por `lerTextoSecao`, 28.987 citações (19.119 resolvidas como `fundamento` e 7.874 como `referencia-bibliografica`, pela seção de referências ou pelo rótulo "Bibliografia"), cursos com `cnct_id`, matrizes do SUAP, ofertas com turno, processos, editais, CNCT, fichas com referências estruturadas, tópicos, marcos e fatos de PPC. Esquema em `packages/kb/src/db/esquema.ts`; consultas em SQL direto com zod na fronteira.
+- **Banco:** `pnpm kb:compilar` gera `tmp/kb.sqlite` (fora do git) em cerca de 6 s, com 127 MB: normas (manifest e stubs) e texto por bloco de título, PPCs com proveniência, 20.098 seções com o texto integral recortado por `lerTextoSecao`, 28.987 citações (19.119 resolvidas como `fundamento` e 7.874 como `referencia-bibliografica`, pela seção de referências ou pelo rótulo "Bibliografia"), cursos com `cnct_id`, matrizes do SUAP, ofertas com turno, processos, editais, CNCT, fichas com referências estruturadas, tópicos, marcos e fatos de PPC. Esquema em `packages/kb/src/db/esquema.ts`; consultas em SQL direto com zod na fronteira.
 - **Determinismo:** dois builds dão o mesmo arquivo byte a byte (teste em `db/base.test.ts`): leitura ordenada, `rowid` na ordem das fontes, nada do relógio, `page_size` fixo, `optimize` do FTS5 e `VACUUM`.
 - **Recompilação:** a CLI recompila quando o banco falta, muda a versão do esquema, muda a lista de fontes ou muda o conteúdo (SHA-256 das fontes, conferido só quando algum mtime passa o do banco).
 - **Busca:** FTS5 `unicode61 remove_diacritics 2`, coluna de radicais com um porte próprio do Snowball português (diferencial sem diferenças contra `snowball-stemmers` 0.6.0 em 75.882 palavras da base; o pacote está parado desde 2022 e o RSLP não tem referência em JavaScript para conferir um porte) e coluna de expansão com o léxico por tipo de seção (`packages/kb/dados/sinonimos.yaml`, rascunho).
@@ -803,7 +805,7 @@ Em aberto:
 - **Correções técnicas:**
   - `ajv` fica;
   - front matter com `yaml` em modo `failsafe`, para manter o diff zero do manifesto;
-  - `bun test` precisa do caminho `./.agents`, e `bun fmt` só pode rodar com globs de `.ts`;
+  - o executor de testes do Bun precisava do caminho `./.agents`, e o formatador do Bun só podia rodar com globs de `.ts`;
   - `htmlparser2` em vez de `fast-xml-parser`;
   - `remark-gfm`;
   - o `preparar_documento` depende do `markdown_normalizer`;

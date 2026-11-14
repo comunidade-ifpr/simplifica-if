@@ -1,9 +1,9 @@
 /**
- * Consultas ao `kb.sqlite`: SQL direto com `bun:sqlite`, e cada linha lida validada por zod na
+ * Consultas ao `kb.sqlite`: SQL direto com `node:sqlite`, e cada linha lida validada por zod na
  * fronteira (Princípio 3). Toda resposta traz texto literal (seção, dispositivo de norma, trecho de fato,
  * linha do SUAP) e a proveniência: `path` relativo à raiz do repositório e linha(s).
  */
-import type { Database } from "bun:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 import { z } from "zod";
 import { expandirConsulta, type Sinonimos } from "../busca/sinonimos.ts";
 import { radicais, termoFts, termos } from "../busca/tokens.ts";
@@ -175,7 +175,7 @@ function normalizarPpc(valor: string): string {
  * depois as que têm algum (OR), cada grupo por BM25 com peso maior para o título.
  */
 export function buscarSecoes(
-  db: Database,
+  db: DatabaseSync,
   consulta: string,
   filtros: FiltrosSecoes = {},
   opcoes: { limite?: number; modo?: ModoBusca; lexico?: Sinonimos; integral?: boolean; somenteTodos?: boolean } = {},
@@ -234,7 +234,7 @@ export function buscarSecoes(
     if (operador === "OR" && (conceitos.length < 2 || opcoes.somenteTodos)) break;
     const expressao = expressaoFts(conceitos, colunas, operador);
     if (!expressao) break;
-    const encontrados = linhas(esquemaLinhaSecao, db.query(sql).all(expressao, ...parametros, limite + vistos.size));
+    const encontrados = linhas(esquemaLinhaSecao, db.prepare(sql).all(expressao, ...parametros, limite + vistos.size));
     for (const linha of encontrados) {
       if (vistos.has(linha.rowid) || achados.length >= limite) continue;
       vistos.add(linha.rowid);
@@ -262,7 +262,7 @@ export function buscarSecoes(
 
 /** Seções de um PPC por tipo, na ordem do documento (texto integral). */
 export function secoesDoPpc(
-  db: Database,
+  db: DatabaseSync,
   ppc: string,
   tipos: readonly string[],
 ): {
@@ -287,7 +287,7 @@ export function secoesDoPpc(
   return linhas(
     esquema,
     db
-      .query(
+      .prepare(
         `SELECT id, tipo, titulo, path, linha_inicio, linha_fim, texto FROM secoes
          WHERE ppc_id = ? AND tipo IN (${tipos.map(() => "?").join(", ")}) ORDER BY linha_inicio`,
       )
@@ -336,7 +336,7 @@ const esquemaSecaoLida = z.strictObject({
 
 /** Índice das seções de um PPC, na ordem do documento (sem o texto). */
 export function indiceSecoesDoPpc(
-  db: Database,
+  db: DatabaseSync,
   ppc: string,
 ): { id: string; tipo: string; titulo: string; linha_inicio: number; linha_fim: number }[] {
   return linhas(
@@ -348,15 +348,17 @@ export function indiceSecoesDoPpc(
       linha_fim: z.number().int(),
     }),
     db
-      .query("SELECT id, tipo, titulo, linha_inicio, linha_fim FROM secoes WHERE ppc_id = ? ORDER BY linha_inicio, id")
+      .prepare(
+        "SELECT id, tipo, titulo, linha_inicio, linha_fim FROM secoes WHERE ppc_id = ? ORDER BY linha_inicio, id",
+      )
       .all(normalizarPpc(ppc)),
   );
 }
 
 /** Uma seção de PPC pelo ID da tabela `secoes`, com o texto integral; `null` se não existe. */
-export function lerSecao(db: Database, id: string): SecaoLida | null {
+export function lerSecao(db: DatabaseSync, id: string): SecaoLida | null {
   const linha = db
-    .query(
+    .prepare(
       `SELECT s.id, s.ppc_id, s.tipo, s.titulo, s.numeracao, s.path, s.linha_inicio, s.linha_fim, s.linha_texto, s.texto,
               p.curso_nome, p.campus_nome, p.nivel, p.tipo_oferta
        FROM secoes s JOIN ppcs p ON p.id = s.ppc_id WHERE s.id = ?`,
@@ -399,9 +401,9 @@ const esquemaNorma = z.strictObject({
 });
 export type NormaResumo = z.output<typeof esquemaNorma>;
 
-export function obterNorma(db: Database, id: string): NormaResumo | null {
+export function obterNorma(db: DatabaseSync, id: string): NormaResumo | null {
   const linha = db
-    .query("SELECT id, situacao, titulo, status_vigencia, data_publicacao, ementa, path FROM normas WHERE id = ?")
+    .prepare("SELECT id, situacao, titulo, status_vigencia, data_publicacao, ementa, path FROM normas WHERE id = ?")
     .get(id);
   if (linha) return esquemaNorma.parse(linha);
   const ato = idDoAto(id);
@@ -428,9 +430,9 @@ const esquemaMetadados = z.strictObject({
   linha: z.number().int(),
 });
 
-function metadadosDaNorma(db: Database, normaId: string): ResultadoNorma["metadados"] {
+function metadadosDaNorma(db: DatabaseSync, normaId: string): ResultadoNorma["metadados"] {
   const linha = db
-    .query("SELECT rowid, norma_id, texto, path, linha FROM normas_metadados WHERE norma_id = ?")
+    .prepare("SELECT rowid, norma_id, texto, path, linha FROM normas_metadados WHERE norma_id = ?")
     .get(normaId);
   if (!linha) return null;
   const m = esquemaMetadados.parse(linha);
@@ -458,7 +460,7 @@ function metadadosDaNorma(db: Database, normaId: string): ResultadoNorma["metada
  *   desconhecido, sem busca textual.
  */
 export function buscarNorma(
-  db: Database,
+  db: DatabaseSync,
   consulta: string,
   opcoes: {
     limite?: number;
@@ -474,7 +476,7 @@ export function buscarNorma(
 
 /** `buscarNorma` com os avisos (ID desconhecido, citação excluída pelos filtros). */
 export function buscarNormaDetalhada(
-  db: Database,
+  db: DatabaseSync,
   consulta: string,
   opcoes: {
     limite?: number;
@@ -566,7 +568,7 @@ export function buscarNormaDetalhada(
     const linhasMeta = linhas(
       esquemaMetadados.extend({ pontuacao: z.number() }),
       db
-        .query(
+        .prepare(
           `SELECT m.rowid AS rowid, m.norma_id, m.texto, m.path, m.linha, bm25(normas_fts, 4.0, 1.0, 1.0) AS pontuacao
            FROM normas_fts JOIN normas_metadados m ON m.rowid = normas_fts.rowid JOIN normas n ON n.id = m.norma_id
            WHERE normas_fts MATCH ?${f.sql} ORDER BY pontuacao, m.rowid LIMIT ?`,
@@ -592,7 +594,7 @@ export function buscarNormaDetalhada(
     const achados = linhas(
       z.strictObject({ rowid: z.number().int(), id: texto, norma_id: texto, pontuacao: z.number() }),
       db
-        .query(
+        .prepare(
           `SELECT d.rowid AS rowid, d.id, d.norma_id, bm25(dispositivos_fts, 1.0, 1.0) AS pontuacao
            FROM dispositivos_fts JOIN dispositivos d ON d.rowid = dispositivos_fts.rowid JOIN normas n ON n.id = d.norma_id
            WHERE dispositivos_fts MATCH ?${f.sql}${opcoes.vigentes ? " AND d.revogado = 0" : ""}
@@ -626,11 +628,11 @@ export function buscarNormaDetalhada(
 }
 
 /** O ato está revogado ou ainda não vigente na data (intervalos de `vigencias`). */
-function atoForaDeVigencia(db: Database, normaId: string, data: string): boolean {
+function atoForaDeVigencia(db: DatabaseSync, normaId: string, data: string): boolean {
   return (
     db
-      .query(`SELECT 1 AS fora FROM normas n WHERE n.id = ? AND ${sqlForaDeVigencia("n.id")}`)
-      .get(normaId, data, data) !== null
+      .prepare(`SELECT 1 AS fora FROM normas n WHERE n.id = ? AND ${sqlForaDeVigencia("n.id")}`)
+      .get(normaId, data, data) !== undefined
   );
 }
 
@@ -714,7 +716,7 @@ export interface ResultadoCurso {
   path: string;
 }
 
-export function listarCursos(db: Database, filtros: FiltrosCursos = {}): ResultadoCurso[] {
+export function listarCursos(db: DatabaseSync, filtros: FiltrosCursos = {}): ResultadoCurso[] {
   const condicoes: string[] = [];
   const parametros: Parametro[] = [];
   const add = (sql: string, valor: string | undefined) => {
@@ -731,7 +733,7 @@ export function listarCursos(db: Database, filtros: FiltrosCursos = {}): Resulta
   const cursos = linhas(
     esquemaCurso,
     db
-      .query(
+      .prepare(
         `SELECT c.id, c.nome, c.campus_id, ca.nome AS campus_nome, c.nivel, c.forma_oferta, c.modalidade, c.situacao,
                 c.cnct_id, k.denominacao AS cnct_denominacao, k.eixo_tecnologico, k.carga_horaria_minima_h,
                 c.ppc_id, c.ppc_markdown_path, c.ppc_ano_documento, c.path
@@ -744,7 +746,7 @@ export function listarCursos(db: Database, filtros: FiltrosCursos = {}): Resulta
   const ofertas = linhas(
     esquemaOferta,
     db
-      .query(
+      .prepare(
         `SELECT oc.curso_id, o.id, o.tipo_oferta, o.vagas, o.turno, o.turno_original, o.turno_nota, o.status_curadoria,
                 o.trecho_fonte, o.url_fonte, o.path, o.linha_turno,
                 (SELECT group_concat(processo_id, ',') FROM (SELECT processo_id FROM ofertas_processos op WHERE op.oferta_id = o.id ORDER BY processo_id)) AS processos
@@ -879,7 +881,7 @@ export interface FiltrosFatos {
 }
 
 /** Fatos e cruzamento com o SUAP de um PPC, ou de todos (filtros opcionais por nível e campus). */
-export function fatosDosPpcs(db: Database, filtros: FiltrosFatos = {}): FatosDoPpc[] {
+export function fatosDosPpcs(db: DatabaseSync, filtros: FiltrosFatos = {}): FatosDoPpc[] {
   const condicoes: string[] = [];
   const parametros: Parametro[] = [];
   if (filtros.ppc) {
@@ -897,7 +899,7 @@ export function fatosDosPpcs(db: Database, filtros: FiltrosFatos = {}): FatosDoP
   const ppcs = linhas(
     esquemaPpcCurso,
     db
-      .query(
+      .prepare(
         `SELECT p.id, p.curso_nome, p.campus_nome, p.nivel, p.tipo_oferta, p.path, p.curso_id,
                 c.suap_matrizes_situacao, c.suap_ch_comum_h
          FROM ppcs p LEFT JOIN cursos c ON c.id = p.curso_id
@@ -905,12 +907,12 @@ export function fatosDosPpcs(db: Database, filtros: FiltrosFatos = {}): FatosDoP
       )
       .all(...parametros),
   );
-  const fatos = linhas(esquemaFato, db.query("SELECT * FROM ppc_fatos ORDER BY ppc_id, fato").all());
-  const cruz = linhas(esquemaCruzamento, db.query("SELECT * FROM ppc_suap ORDER BY ppc_id, aspecto").all());
+  const fatos = linhas(esquemaFato, db.prepare("SELECT * FROM ppc_fatos ORDER BY ppc_id, fato").all());
+  const cruz = linhas(esquemaCruzamento, db.prepare("SELECT * FROM ppc_suap ORDER BY ppc_id, aspecto").all());
   const matrizes = linhas(
     esquemaMatriz,
     db
-      .query(
+      .prepare(
         "SELECT curso_id, matriz_id, ano, ch_exibida_h, estagio_exigido, ch_estagio_h, trecho, path, linha FROM suap_matrizes ORDER BY curso_id, ordem",
       )
       .all(),
@@ -951,7 +953,7 @@ export function fatosDosPpcs(db: Database, filtros: FiltrosFatos = {}): FatosDoP
 
 /** Só os PPCs com alguma divergência PPC × SUAP, e só as linhas divergentes do cruzamento. */
 export function divergenciasPpcSuap(
-  db: Database,
+  db: DatabaseSync,
   filtros: FiltrosFatos = {},
 ): {
   totais: Record<string, Record<string, number>>;

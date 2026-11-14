@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 /**
  * Exporta os JSONs públicos de campi e processos seletivos. A fonte é `dados/institucional/`; só as
  * movimentações de cursos (processos SEI publicados em cada curso) ainda vêm do Notion.
@@ -14,7 +14,7 @@ import { dataLocalIso } from "./datas.ts";
 import { ClienteNotion } from "./notion/cliente.ts";
 import { carregarMovimentacoes } from "./notion/movimentacoes.ts";
 
-const USO = `uso: bun run scripts/exportar_base_publica.ts [--dry-run]
+const USO = `uso: node scripts/exportar_base_publica.ts [--dry-run]
 
 Exporta dados/institucional/ e as movimentações do Notion para os JSONs públicos.
 

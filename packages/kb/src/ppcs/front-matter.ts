@@ -147,7 +147,7 @@ export function mascararFrontMatter(texto: string): string {
   return partes.join("\n");
 }
 
-const RE_ESCALAR_SIMPLES = /^[\p{L}\p{N}][\p{L}\p{N}_.\/:@%?=&+-]*$/u;
+const RE_ESCALAR_SIMPLES = /^[\p{L}\p{N}][\p{L}\p{N}_./:@%?=&+-]*$/u;
 
 function escalar(valor: string): string {
   // `failsafe` lê tudo como texto; aspas só quando o YAML simples poderia mudar o valor.

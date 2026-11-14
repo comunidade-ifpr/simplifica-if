@@ -1,8 +1,12 @@
 /**
  * Integração: o servidor como processo filho, em stdio, com `cwd` num diretório temporário vazio,
  * falando com o Client do SDK; e os erros de inicialização da CLI.
+ *
+ * Com `SIMPLIFICA_MCP_EXE` (o caminho do executável de `pnpm mcp:executavel`), o filho é o executável,
+ * com o `PATH` reduzido a `/usr/bin:/bin`, sem Node.
  */
-import { afterEach, describe, expect, test } from "bun:test";
+import { spawn } from "node:child_process";
+import { afterEach, describe, expect, test } from "vite-plus/test";
 import { copyFileSync } from "node:fs";
 import path from "node:path";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
@@ -15,11 +19,15 @@ import { criarBancoFixture, diretorioTemporario, limparTemporarios } from "./fix
 
 afterEach(limparTemporarios);
 
-const CLI = path.resolve(import.meta.dir, "../src/cli.ts");
+const CLI = path.resolve(import.meta.dirname, "../src/cli.ts");
+const EXE = process.env.SIMPLIFICA_MCP_EXE;
+/** Comando e argumentos do servidor: o executável, ou o Node deste processo com a CLI. */
+const COMANDO = EXE ?? process.execPath;
+const comCli = (args: string[]) => (EXE ? args : [CLI, ...args]);
 
 /** Ambiente mínimo, sem herdar SIMPLIFICA_KB do processo de teste. */
 function ambiente(extra: Record<string, string> = {}): Record<string, string> {
-  return { PATH: process.env.PATH ?? "", HOME: process.env.HOME ?? "", ...extra };
+  return { PATH: EXE ? "/usr/bin:/bin" : (process.env.PATH ?? ""), HOME: process.env.HOME ?? "", ...extra };
 }
 
 async function conectar(
@@ -27,8 +35,8 @@ async function conectar(
   opcoes: { cwd: string; env?: Record<string, string>; negociacao?: "legacy" | "auto" },
 ) {
   const transporte = new StdioClientTransport({
-    command: process.execPath,
-    args: ["run", CLI, ...args],
+    command: COMANDO,
+    args: comCli(args),
     cwd: opcoes.cwd,
     env: opcoes.env ?? ambiente(),
     stderr: "pipe",
@@ -42,18 +50,19 @@ async function conectar(
 }
 
 async function rodarCli(args: string[], env: Record<string, string> = ambiente()) {
-  const processo = Bun.spawn([process.execPath, "run", CLI, ...args], {
+  const processo = spawn(COMANDO, comCli(args), {
     cwd: diretorioTemporario(),
     env,
-    stdin: "ignore",
-    stdout: "pipe",
-    stderr: "pipe",
+    stdio: ["ignore", "pipe", "pipe"],
   });
-  const [stdout, stderr, codigo] = await Promise.all([
-    new Response(processo.stdout).text(),
-    new Response(processo.stderr).text(),
-    processo.exited,
-  ]);
+  let stdout = "";
+  let stderr = "";
+  processo.stdout.setEncoding("utf-8").on("data", (parte: string) => (stdout += parte));
+  processo.stderr.setEncoding("utf-8").on("data", (parte: string) => (stderr += parte));
+  const codigo = await new Promise<number | null>((resolve, reject) => {
+    processo.once("error", reject);
+    processo.once("close", resolve);
+  });
   return { stdout, stderr, codigo };
 }
 

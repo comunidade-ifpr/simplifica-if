@@ -2,14 +2,14 @@
  * Comandos da CLI `kb` que consultam o `kb.sqlite` (fase 6). Registrados por `registrarComandosBanco`
  * em `cli.ts`; o banco é aberto (e recompilado, se velho) só quando um deles roda.
  *
- *   bun run kb buscar-norma "<consulta ou citação>" [--json] [--limite N] [--situacao base|stub|externo] [--vigentes [--em AAAA-MM-DD]]
- *   bun run kb buscar-secoes "<consulta>" [--json] [--tipo T]... [--nivel N] [--campus C] [--cnct X] [--forma F] [--ppc P] [--modo M] [--integral]
- *   bun run kb cursos [--json] [--eixo E] [--turno T] [--campus C] [--nivel N] [--forma F] [--situacao S] [--cnct X] [--processo P]
- *   bun run kb ppc-fatos [<ppc>] [--json] [--divergencias] [--nivel N]
- *   bun run kb pacote-contexto <tarefa> <ppc> [--json]
- *   bun run kb avaliar-busca [--json]
+ *   pnpm kb buscar-norma "<consulta ou citação>" [--json] [--limite N] [--situacao base|stub|externo] [--vigentes [--em AAAA-MM-DD]]
+ *   pnpm kb buscar-secoes "<consulta>" [--json] [--tipo T]... [--nivel N] [--campus C] [--cnct X] [--forma F] [--ppc P] [--modo M] [--integral]
+ *   pnpm kb cursos [--json] [--eixo E] [--turno T] [--campus C] [--nivel N] [--forma F] [--situacao S] [--cnct X] [--processo P]
+ *   pnpm kb ppc-fatos [<ppc>] [--json] [--divergencias] [--nivel N]
+ *   pnpm kb pacote-contexto <tarefa> <ppc> [--json]
+ *   pnpm kb avaliar-busca [--json]
  */
-import type { Database } from "bun:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 import { existsSync } from "node:fs";
 import { type Command, InvalidArgumentError } from "commander";
 import { lerSinonimos } from "../busca/sinonimos.ts";
@@ -67,7 +67,7 @@ function imprimirPartes(
     console.log(`  ${s.path}:${s.linha_inicio}-${s.linha_fim} [${s.tipo}] ${s.titulo} (${s.motivo.join("; ")})`);
 }
 
-function comBanco<T>(acao: (db: Database) => T): T {
+function comBanco<T>(acao: (db: DatabaseSync) => T): T {
   const db = abrirBanco();
   try {
     return acao(db);

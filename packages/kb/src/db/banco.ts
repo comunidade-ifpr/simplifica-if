@@ -8,7 +8,7 @@
  * `abrirBanco({ caminho, recompilar: false })`: não procura o checkout, não confere as fontes e não
  * compila; só abre o arquivo para leitura.
  */
-import { Database } from "bun:sqlite";
+import { DatabaseSync } from "node:sqlite";
 import { existsSync, statSync, utimesSync } from "node:fs";
 import { z } from "zod";
 import { raizRepositorio } from "../normas/registro.ts";
@@ -24,9 +24,11 @@ const esquemaMeta = z.array(z.strictObject({ chave: z.string(), valor: z.string(
 
 function lerMeta(caminho: string): Map<string, string> | null {
   try {
-    const db = new Database(caminho, { readonly: true });
+    const db = new DatabaseSync(caminho, { readOnly: true });
     try {
-      return new Map(esquemaMeta.parse(db.query("SELECT chave, valor FROM meta").all()).map((m) => [m.chave, m.valor]));
+      return new Map(
+        esquemaMeta.parse(db.prepare("SELECT chave, valor FROM meta").all()).map((m) => [m.chave, m.valor]),
+      );
     } finally {
       db.close();
     }
@@ -71,12 +73,12 @@ export interface OpcoesAbertura {
 }
 
 /** Abre o banco só para leitura, recompilando antes se preciso (salvo `recompilar: false`). */
-export function abrirBanco(opcoes: OpcoesAbertura = {}): Database {
+export function abrirBanco(opcoes: OpcoesAbertura = {}): DatabaseSync {
   const somenteLeitura = opcoes.somenteLeitura ?? true;
   if (opcoes.recompilar === false) {
     if (!opcoes.caminho) throw new Error("abrirBanco com recompilar: false exige o caminho do kb.sqlite");
     if (!existsSync(opcoes.caminho)) throw new Error(`kb.sqlite não encontrado: ${opcoes.caminho}`);
-    return new Database(opcoes.caminho, somenteLeitura ? { readonly: true, strict: true } : { strict: true });
+    return new DatabaseSync(opcoes.caminho, { readOnly: somenteLeitura });
   }
   const raiz = opcoes.raiz ?? raizRepositorio();
   const caminho = opcoes.caminho ?? caminhoBancoPadrao(raiz);
@@ -86,7 +88,7 @@ export function abrirBanco(opcoes: OpcoesAbertura = {}): Database {
   if (estado.estado === "velho") {
     if (politica === "nunca") {
       throw new Error(
-        `kb.sqlite ${estado.motivo === "ausente" ? "ausente" : "desatualizado"} (${caminho}); rode bun run kb:compilar`,
+        `kb.sqlite ${estado.motivo === "ausente" ? "ausente" : "desatualizado"} (${caminho}); rode pnpm kb:compilar`,
       );
     }
     log(`kb: compilando ${caminho} (motivo: ${estado.motivo})…`);
@@ -94,5 +96,5 @@ export function abrirBanco(opcoes: OpcoesAbertura = {}): Database {
     compilarBanco({ raiz, destino: caminho });
     log(`kb: banco compilado em ${((performance.now() - inicio) / 1000).toFixed(1)} s`);
   }
-  return new Database(caminho, somenteLeitura ? { readonly: true, strict: true } : { strict: true });
+  return new DatabaseSync(caminho, { readOnly: somenteLeitura });
 }

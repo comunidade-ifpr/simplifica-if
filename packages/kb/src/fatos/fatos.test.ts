@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { matrizesDoResumo } from "../institucional/dados.ts";
 import { cruzarPpcSuap } from "./divergencias.ts";
 import { extrairFatosPpc, horasDoTrecho } from "./ppc.ts";

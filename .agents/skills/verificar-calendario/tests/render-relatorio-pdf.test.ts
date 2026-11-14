@@ -4,7 +4,8 @@
  * conferida contra o script Python com `reportlab` 5.1.0: as mesmas 2 páginas,
  * o mesmo texto e as mesmas posições de palavra (diferença máxima de 0,35 pt).
  */
-import { afterAll, describe, expect, test } from "bun:test";
+import { spawnSync } from "node:child_process";
+import { afterAll, describe, expect, test } from "vite-plus/test";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -12,9 +13,9 @@ import { inflateSync } from "node:zlib";
 import { quebrarCjk, quebrarNormal } from "../scripts/quebra-linhas.ts";
 import { carregarRelatorio, gerarPdf } from "../scripts/render_relatorio_pdf.ts";
 
-const RAIZ = path.resolve(import.meta.dir, "../../../..");
+const RAIZ = path.resolve(import.meta.dirname, "../../../..");
 const SCRIPT = path.join(RAIZ, ".agents/skills/verificar-calendario/scripts/render_relatorio_pdf.ts");
-const FIXTURE = path.join(import.meta.dir, "fixtures/relatorio.md");
+const FIXTURE = path.join(import.meta.dirname, "fixtures/relatorio.md");
 const DATA = new Date("2000-01-01T00:00:00Z");
 const temporarios: string[] = [];
 
@@ -201,15 +202,15 @@ describe("PDF", () => {
     temporarios.push(pasta);
     const saida = path.join(pasta, "sub", "relatorio.pdf");
     const rodar = (...args: string[]) =>
-      Bun.spawnSync(["bun", "run", SCRIPT, ...args], {
+      spawnSync(process.execPath, [SCRIPT, ...args], {
         env: { ...process.env, VERIFICAR_CALENDARIO_AGORA: "2000-01-01T00:00:00Z" },
       });
     const ok = rodar(FIXTURE, saida);
-    expect(ok.exitCode).toBe(0);
+    expect(ok.status).toBe(0);
     expect(textoPorPagina(readFileSync(saida))).toHaveLength(2);
 
     const uso = rodar(FIXTURE);
-    expect(uso.exitCode).toBe(1);
+    expect(uso.status).toBe(1);
     expect(uso.stdout.toString()).toContain("Uso: render_relatorio_pdf.ts entrada.md saida.pdf");
   });
 });

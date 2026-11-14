@@ -5,6 +5,7 @@
  * troca o comando, dividido como `shlex.split`) com a pasta do site e o
  * domínio, e confere a saída. `REVISAR_PPC_SURGE_DOMAIN` fixa o domínio padrão.
  */
+import { spawnSync } from "node:child_process";
 import { copyFileSync, cpSync, existsSync, mkdirSync, rmSync } from "node:fs";
 import path from "node:path";
 import { search } from "@simplifica-if/kb/python/re";
@@ -76,17 +77,19 @@ export type PublicacaoSurge = {
 /** Publica `siteDir` no Surge em `dominio`; lança `ErroPublicacaoSurge` se a CLI falhar ou não confirmar. */
 export function publicarSiteSurge(siteDir: string, dominio: string, comando?: string[]): PublicacaoSurge {
   const site = resolverCaminho(siteDir);
-  const processo = Bun.spawnSync([...comandoBase(comando), site, dominio], {
-    stdin: new Uint8Array(),
-    stdout: "pipe",
-    stderr: "pipe",
+  const [executavel, ...argumentos] = comandoBase(comando);
+  const processo = spawnSync(executavel!, [...argumentos, site, dominio], {
+    input: "",
+    stdio: "pipe",
+    maxBuffer: 64 * 1024 * 1024,
   });
+  if (processo.error) throw processo.error;
   const stdout = aparar(textoDoProcesso(processo.stdout));
   const stderr = aparar(textoDoProcesso(processo.stderr));
   const saida = [stdout, stderr].filter(Boolean).join("\n");
   const detalhes = saida ? `\n${saida}` : "";
 
-  if (processo.exitCode !== 0) throw new ErroPublicacaoSurge(`Falha ao publicar relatório no Surge.${detalhes}`);
+  if (processo.status !== 0) throw new ErroPublicacaoSurge(`Falha ao publicar relatório no Surge.${detalhes}`);
   if (search("\\bLogin or create surge account\\b|\\bemail:\\s*$", saida, { ignoreCase: true })) {
     throw new ErroPublicacaoSurge(
       "Falha ao publicar relatório no Surge: a CLI solicitou autenticação interativa. " +

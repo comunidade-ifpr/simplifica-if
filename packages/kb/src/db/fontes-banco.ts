@@ -7,7 +7,7 @@
  * Cada leitor guarda o resultado por banco aberto (`WeakMap`): o banco aberto só para leitura não
  * muda enquanto está aberto. `db/base.test.ts` confere que cada um é igual ao lido dos arquivos.
  */
-import type { Database } from "bun:sqlite";
+import type { DatabaseSync } from "node:sqlite";
 import { z } from "zod";
 import { esquemaSinonimos, type Sinonimos } from "../busca/sinonimos.ts";
 import { type EntradaRegistro, Registro } from "../normas/registro.ts";
@@ -21,8 +21,8 @@ import {
 } from "../normas/vigencia.ts";
 import { dataReferenciaBanco, relacoesBanco } from "./consultas-normas.ts";
 
-function memorizado<T>(calcular: (db: Database) => T): (db: Database) => T {
-  const cache = new WeakMap<Database, T>();
+function memorizado<T>(calcular: (db: DatabaseSync) => T): (db: DatabaseSync) => T {
+  const cache = new WeakMap<DatabaseSync, T>();
   return (db) => {
     if (!cache.has(db)) cache.set(db, calcular(db));
     return cache.get(db)!;
@@ -52,12 +52,12 @@ function assinadaEm(n: z.infer<typeof esquemaNormaRegistro>): string | undefined
 }
 
 /** Registro de normas (o de `carregarRegistro`: base, stubs e externos) pela tabela `normas`. */
-export const registroBanco = memorizado((db: Database): Registro => {
+export const registroBanco = memorizado((db: DatabaseSync): Registro => {
   const linhas = z
     .array(esquemaNormaRegistro)
     .parse(
       db
-        .query(
+        .prepare(
           "SELECT id, situacao, titulo, data_publicacao, status_vigencia, status_fonte, path, aliases_json, front_matter_json " +
             "FROM normas ORDER BY id",
         )
@@ -80,12 +80,12 @@ export const registroBanco = memorizado((db: Database): Registro => {
 });
 
 /** Datas dos atos (as de `carregarDatas`): front matter das normas da base e `data_publicacao` dos stubs. */
-export const datasBanco = memorizado((db: Database): Map<string, DatasNorma> => {
+export const datasBanco = memorizado((db: DatabaseSync): Map<string, DatasNorma> => {
   const normas = z
     .array(z.strictObject({ id: z.string(), front_matter_json: z.string() }))
     .parse(
       db
-        .query(
+        .prepare(
           "SELECT id, front_matter_json FROM normas WHERE situacao = 'base' AND front_matter_json IS NOT NULL ORDER BY id",
         )
         .all(),
@@ -108,12 +108,12 @@ const esquemaLinhaTransicao = z.strictObject({
 });
 
 /** Regras de transição (as de `carregarTransicoes`), na ordem do arquivo. */
-export const transicoesBanco = memorizado((db: Database): Transicao[] =>
+export const transicoesBanco = memorizado((db: DatabaseSync): Transicao[] =>
   z
     .array(esquemaLinhaTransicao)
     .parse(
       db
-        .query(
+        .prepare(
           "SELECT id, norma_id, dispositivo, tipo, norma_anterior, aplica_a, regra, inicio, fim, evidencia FROM transicoes ORDER BY rowid",
         )
         .all(),
@@ -134,10 +134,10 @@ export const transicoesBanco = memorizado((db: Database): Transicao[] =>
     ),
 );
 
-const relacoesMemorizadas = memorizado((db: Database): Relacao[] => relacoesBanco(db));
+const relacoesMemorizadas = memorizado((db: DatabaseSync): Relacao[] => relacoesBanco(db));
 
 /** A vigência (`statusEm`, `transicoesAplicaveis`, `derivarLinha`...) sobre o banco. */
-export const fonteVigenciaBanco = memorizado((db: Database): FonteVigencia => ({
+export const fonteVigenciaBanco = memorizado((db: DatabaseSync): FonteVigencia => ({
   registro: () => registroBanco(db),
   datas: () => datasBanco(db),
   relacoes: () => relacoesMemorizadas(db),
@@ -148,13 +148,13 @@ export const fonteVigenciaBanco = memorizado((db: Database): FonteVigencia => ({
 export { dataReferenciaBanco };
 
 /** Léxico da busca de seções (o de `lerSinonimos`), pelas tabelas `sinonimos_tipos` e `sinonimos_grupos`. */
-export const sinonimosBanco = memorizado((db: Database): Sinonimos => {
+export const sinonimosBanco = memorizado((db: DatabaseSync): Sinonimos => {
   const tipos = z
     .array(z.strictObject({ tipo: z.string(), termos_json: z.string() }))
-    .parse(db.query("SELECT tipo, termos_json FROM sinonimos_tipos ORDER BY ordem").all());
+    .parse(db.prepare("SELECT tipo, termos_json FROM sinonimos_tipos ORDER BY ordem").all());
   const grupos = z
     .array(z.strictObject({ termos_json: z.string() }))
-    .parse(db.query("SELECT termos_json FROM sinonimos_grupos ORDER BY ordem").all());
+    .parse(db.prepare("SELECT termos_json FROM sinonimos_grupos ORDER BY ordem").all());
   return esquemaSinonimos.parse({
     tipos: Object.fromEntries(tipos.map((t) => [t.tipo, JSON.parse(t.termos_json)])),
     grupos: grupos.map((g) => JSON.parse(g.termos_json)),
@@ -162,11 +162,11 @@ export const sinonimosBanco = memorizado((db: Database): Sinonimos => {
 });
 
 /** Linhas de `meta` (versão do esquema, data de referência, hashes, contagens; versão, commit e canal do build, se houver). */
-export function metaBanco(db: Database): Record<string, string> {
+export function metaBanco(db: DatabaseSync): Record<string, string> {
   return Object.fromEntries(
     z
       .array(z.strictObject({ chave: z.string(), valor: z.string() }))
-      .parse(db.query("SELECT chave, valor FROM meta ORDER BY chave").all())
+      .parse(db.prepare("SELECT chave, valor FROM meta ORDER BY chave").all())
       .map((m) => [m.chave, m.valor]),
   );
 }

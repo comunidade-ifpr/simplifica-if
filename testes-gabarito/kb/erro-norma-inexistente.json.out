@@ -1,0 +1,16 @@
+{
+  "id": "br/xx/res/1900/1",
+  "data": "2026-11-13",
+  "status": "vigente",
+  "certo": false,
+  "inicio": {
+    "data": null,
+    "minimo": null,
+    "certo": false
+  },
+  "eventos": [],
+  "pendencias": [
+    "datas de br/xx/res/1900/1 não registradas: vigência presumida"
+  ],
+  "transicoes": []
+}

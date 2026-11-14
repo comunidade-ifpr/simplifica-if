@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { lerLink, linkCampus, linkCnct, linkCurso, linkDe, linkFicha, linkNorma, linkPpc } from "../src/links.ts";
 
 describe("links ifpr:// (tabela de docs/plans/app-simplifica-if.md)", () => {

@@ -3,10 +3,11 @@
  * ferramentas de leitura e saída `stream-json`. O resto é negado (`--permission-mode dontAsk`).
  *
  * O agente lê arquivos escolhidos por ele, então o harness não confia na configuração para conter
- * segredos: o processo filho recebe um ambiente mínimo (lista explícita, sem o que o Bun carregou de
- * `.env*`) e as regras de `REGRAS_NEGADAS` vão sempre em `--disallowedTools`, qualquer que seja o
+ * segredos: o processo filho recebe um ambiente mínimo (lista explícita, sem o que os `.env*` do
+ * repositório definem) e as regras de `REGRAS_NEGADAS` vão sempre em `--disallowedTools`, qualquer que seja o
  * `config.yaml`.
  */
+import { spawn } from "node:child_process";
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { parse as interpretarEnv } from "dotenv";
@@ -42,8 +43,8 @@ export const VARIAVEIS_AMBIENTE_CLAUDE = [
 
 /**
  * Negadas sempre (`--disallowedTools`; negar prevalece sobre pré-aprovar). Bash fica de fora: um
- * `jq -R . .env.local` ou `jq -n env` contorna as regras de leitura, e um `bun` no subprocesso
- * recarregaria o `.env.local`. As regras de Read valem também para Grep e Glob.
+ * `jq -R . .env.local` ou `jq -n env` contorna as regras de leitura, e um `node --env-file` no
+ * subprocesso leria o `.env.local`. As regras de Read valem também para Grep e Glob.
  */
 export const REGRAS_NEGADAS = [
   "Bash",
@@ -65,7 +66,7 @@ export const REGRAS_NEGADAS = [
   "Read(//etc/**)",
 ] as const;
 
-/** Chaves definidas nos arquivos `.env*` de `diretorio` (os que o Bun carrega no process.env). */
+/** Chaves definidas nos arquivos `.env*` de `diretorio` (um runtime que os carrega sozinho as põe no process.env). */
 export function chavesArquivosEnv(diretorio: string): Set<string> {
   const chaves = new Set<string>();
   let nomes: string[];
@@ -86,7 +87,8 @@ export function chavesArquivosEnv(diretorio: string): Set<string> {
 
 /**
  * Ambiente do processo filho: só as variáveis de `VARIAVEIS_AMBIENTE_CLAUDE` presentes em `origem`,
- * menos as que algum `.env*` define (o Bun as pôs no process.env; não vêm do shell do usuário).
+ * menos as que algum `.env*` define (um runtime que carrega `.env*` sozinho as põe no process.env; não
+ * vêm do shell do usuário).
  */
 export function ambienteClaude(
   origem: Record<string, string | undefined>,
@@ -157,19 +159,20 @@ export interface ExecucaoBruta {
 
 export async function executarPergunta(texto: string, cwd: string, opcoes: OpcoesExecucao): Promise<ExecucaoBruta> {
   const binario = opcoes.binario ?? process.env.CLAUDE_BIN ?? "claude";
-  const processo = Bun.spawn([binario, ...argumentosClaude(texto, opcoes)], {
+  const processo = spawn(binario, argumentosClaude(texto, opcoes), {
     cwd,
-    stdin: "ignore",
-    stdout: "pipe",
-    stderr: "pipe",
+    stdio: ["ignore", "pipe", "pipe"],
     env: ambienteClaude(process.env, new Set([...chavesArquivosEnv(cwd), ...chavesArquivosEnv(process.cwd())])),
   });
   const limite = setTimeout(() => processo.kill(), opcoes.config.timeout_s * 1000);
-  const [saida, stderr, codigo] = await Promise.all([
-    new Response(processo.stdout).text(),
-    new Response(processo.stderr).text(),
-    processo.exited,
-  ]);
+  let saida = "";
+  let stderr = "";
+  processo.stdout.setEncoding("utf-8").on("data", (parte: string) => (saida += parte));
+  processo.stderr.setEncoding("utf-8").on("data", (parte: string) => (stderr += parte));
+  const codigo = await new Promise<number | null>((resolve, reject) => {
+    processo.once("error", reject);
+    processo.once("close", (saidaProcesso) => resolve(saidaProcesso));
+  });
   clearTimeout(limite);
   return { execucao: lerStreamJson(saida), saida, stderr, codigo };
 }

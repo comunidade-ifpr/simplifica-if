@@ -4,7 +4,7 @@ import { z } from "zod";
 import { ehObjeto, type ObjetoJson } from "@simplifica-if/kb/json";
 import { validarJson } from "./esquema.ts";
 
-export const RAIZ_PROJETO = path.resolve(import.meta.dir, "..");
+export const RAIZ_PROJETO = path.resolve(import.meta.dirname, "..");
 export const RAIZ_BASE = path.join(RAIZ_PROJETO, "base-conhecimento");
 
 const CAMINHO_CONFIG_NOTION = path.join(RAIZ_BASE, "config", "notion.json");

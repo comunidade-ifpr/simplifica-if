@@ -1,6 +1,6 @@
 /** Frescor do banco (`estadoDoBanco`) sobre uma raiz sintética, sem compilar a base. */
-import { Database } from "bun:sqlite";
-import { afterAll, describe, expect, test } from "bun:test";
+import { DatabaseSync } from "node:sqlite";
+import { afterAll, describe, expect, test } from "vite-plus/test";
 import { mkdirSync, mkdtempSync, readdirSync, rmSync, statSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -22,8 +22,8 @@ function escrever(relativo: string, conteudo: string, mtime: Date): void {
 function banco(caminho: string, mtime: Date): void {
   rmSync(caminho, { force: true });
   const arquivos = arquivosFonte(raiz);
-  const db = new Database(caminho, { create: true });
-  db.run("CREATE TABLE meta (chave TEXT PRIMARY KEY, valor TEXT NOT NULL)");
+  const db = new DatabaseSync(caminho);
+  db.exec("CREATE TABLE meta (chave TEXT PRIMARY KEY, valor TEXT NOT NULL)");
   const ins = db.prepare("INSERT INTO meta VALUES (?, ?)");
   ins.run("versao_esquema", String(VERSAO_ESQUEMA));
   ins.run("fontes_sha256", hashConteudo(raiz, arquivos));
@@ -74,8 +74,8 @@ describe("estadoDoBanco", () => {
 
   test("outra versão de esquema", () => {
     banco(caminho, new Date("2026-06-01T00:00:00Z"));
-    const db = new Database(caminho);
-    db.run("UPDATE meta SET valor = '0' WHERE chave = 'versao_esquema'");
+    const db = new DatabaseSync(caminho);
+    db.exec("UPDATE meta SET valor = '0' WHERE chave = 'versao_esquema'");
     db.close();
     expect(estadoDoBanco(raiz, caminho)).toEqual({ estado: "velho", motivo: "esquema" });
   });

@@ -43,16 +43,16 @@ Núcleo da base de conhecimento ([plano de arquitetura](../../PLANO-ARQUITETURA.
 Da raiz do repositório:
 
 ```bash
-bun run kb resolver "Res. CNE/CP 1/2021, art. 20" [--json]
-bun run kb citacoes br/cne-cp/res/2021/1 [--json] [--confianca-min 0.8]
-bun run kb adequacao-art71 [--json] [--incluir-tecnologia]
-bun run kb avaliar-resolvedor [--json]
-bun run kb dispositivo "br/cne-cp/res/2026/2#art71-parunico" [--json] [--filhos]   # lê o banco
-bun run kb vigencia br/cne-cp/res/2021/1 [--em 2026-11-12] [--json]
-bun run kb relacoes br/lei/1996/9394 [--json]
-bun run kb relacoes --propor [--json]
-bun run kb correspondencia "br/cne-cp/res/2021/1#art20" [--json]                  # lê o banco
-bun run kb impacto br/cne-cp/res/2021/1 [--json] [--sem-ppcs] [--conteudo <dir>]
+pnpm kb resolver "Res. CNE/CP 1/2021, art. 20" [--json]
+pnpm kb citacoes br/cne-cp/res/2021/1 [--json] [--confianca-min 0.8]
+pnpm kb adequacao-art71 [--json] [--incluir-tecnologia]
+pnpm kb avaliar-resolvedor [--json]
+pnpm kb dispositivo "br/cne-cp/res/2026/2#art71-parunico" [--json] [--filhos]   # lê o banco
+pnpm kb vigencia br/cne-cp/res/2021/1 [--em 2026-11-12] [--json]
+pnpm kb relacoes br/lei/1996/9394 [--json]
+pnpm kb relacoes --propor [--json]
+pnpm kb correspondencia "br/cne-cp/res/2021/1#art20" [--json]                  # lê o banco
+pnpm kb impacto br/cne-cp/res/2021/1 [--json] [--sem-ppcs] [--conteudo <dir>]
 ```
 
 `dispositivo` e `correspondencia` leem o `kb.sqlite` com as mesmas regras da API de arquivos (`db/base.test.ts` confere a igualdade em todos os dispositivos e em toda a tabela 1/2021 → 2/2026). `vigencia`, `relacoes` e `impacto` leem os arquivos: `vigencia` explica o status com os eventos e as pendências que `statusEm` monta (o banco guarda os intervalos que saem dele, conferidos contra `statusEm`); `relacoes --propor` roda o regex sobre o parser; `impacto` lê os textos das skills, inclusive de outra árvore (`--conteudo`), que não estão no banco.
@@ -60,13 +60,13 @@ bun run kb impacto br/cne-cp/res/2021/1 [--json] [--sem-ppcs] [--conteudo <dir>]
 Sobre o banco compilado (`tmp/kb.sqlite`, fora do git):
 
 ```bash
-bun run kb:compilar                                   # compila (cerca de 8 s, 132 MB); --destino muda o arquivo
-bun run kb buscar-norma "Lei 11.788, art. 10" [--json] [--limite N] [--situacao base|stub|externo] [--vigentes [--em AAAA-MM-DD]]
-bun run kb buscar-secoes "estágio não obrigatório" [--json] [--tipo T]... [--nivel N] [--campus C] [--cnct X] [--forma F] [--ppc P] [--modo simples|radicais|completo] [--integral]
-bun run kb cursos [--json] [--eixo E] [--turno T] [--campus C] [--nivel N] [--forma F] [--situacao S] [--cnct X] [--processo P]
-bun run kb ppc-fatos [<campus/curso>] [--json] [--divergencias] [--nivel N]
-bun run kb pacote-contexto <CT-CURR-12 | tópico | grupo-001 | todas> <campus/curso | arquivo.md> [--json]
-bun run kb avaliar-busca [--json]
+pnpm kb:compilar                                   # compila (cerca de 8 s, 132 MB); --destino muda o arquivo
+pnpm kb buscar-norma "Lei 11.788, art. 10" [--json] [--limite N] [--situacao base|stub|externo] [--vigentes [--em AAAA-MM-DD]]
+pnpm kb buscar-secoes "estágio não obrigatório" [--json] [--tipo T]... [--nivel N] [--campus C] [--cnct X] [--forma F] [--ppc P] [--modo simples|radicais|completo] [--integral]
+pnpm kb cursos [--json] [--eixo E] [--turno T] [--campus C] [--nivel N] [--forma F] [--situacao S] [--cnct X] [--processo P]
+pnpm kb ppc-fatos [<campus/curso>] [--json] [--divergencias] [--nivel N]
+pnpm kb pacote-contexto <CT-CURR-12 | tópico | grupo-001 | todas> <campus/curso | arquivo.md> [--json]
+pnpm kb avaliar-busca [--json]
 ```
 
 As saídas não dependem do relógio e têm ordem estável. As regras do resolvedor e suas confianças estão no comentário de `normas/resolver.ts`; uma citação que não identifica o ato volta com `id: null` e a regra que explica por quê.
@@ -95,12 +95,12 @@ No banco (fase 6), essa API entra por `normas/fontes-db.ts`; as tabelas estão d
 ## Manutenção
 
 ```bash
-bun run --cwd packages/kb test        # inclui a medida do resolvedor (metas: precisão ≥ 0,95, recall ≥ 0,90)
-bun run --cwd packages/kb typecheck
-bun run --cwd packages/kb format
+pnpm --filter @simplifica-if/kb test        # inclui a medida do resolvedor (metas: precisão ≥ 0,95, recall ≥ 0,90)
+pnpm --filter @simplifica-if/kb typecheck
+pnpm fmt                                    # na raiz: vp fmt no repositório inteiro
 ```
 
-Ao mudar o resolvedor, rode também `bun run avaliacao:gabaritos` e revise o diff de `avaliacao/gabaritos/` (Q02 e Q20 vêm de `kb citacoes`).
+Ao mudar o resolvedor, rode também `pnpm avaliacao:gabaritos` e revise o diff de `avaliacao/gabaritos/` (Q02 e Q20 vêm de `kb citacoes`).
 
 ## Banco compilado (`kb.sqlite`)
 
@@ -126,7 +126,7 @@ Ao mudar o resolvedor, rode também `bun run avaliacao:gabaritos` e revise o dif
 
 **PPC fora da base.** `bancoDoPpcAvulso(markdown, opcoes)` cria um banco em memória com o esquema do `kb.sqlite` e grava o PPC por `gravarSecoesECitacoes`, o mesmo caminho da compilação: seções de `secoesIndexadas` (ou, com `todasAsSecoes`, de `secoesComChave`, que mantém a capa, `outros` e as seções curtas) e citações do resolvedor. Com `titulosNivel1`, `# Título` conta como título (o normalizador da `revisar-ppc` põe o primeiro nível numerado em `#`; no índice publicado só `##` a `######` contam). Para um PPC da base, o banco em memória dá as mesmas seções e citações do `kb.sqlite` (`db/base.test.ts`). `pacoteContextoAvulso(db, dbPpc, fichas, opcoes)` monta o pacote de um conjunto de fichas: normas, marcos e transições do `kb.sqlite`; seções e citações do banco em memória; `citacoesPpc` acrescenta todas as citações normativas do PPC. A CLI aceita um `.md` no lugar de `<campus/curso>`.
 
-**Busca de seções.** Ao mudar `dados/sinonimos.yaml`, `busca/` ou as consultas de `db/consultas.ts`, rode `bun run kb avaliar-busca` e compare o recall@10 dos três modos com o anterior; o conjunto de `avaliacao/busca-secoes/` é rascunho, rotulado pelos títulos das seções.
+**Busca de seções.** Ao mudar `dados/sinonimos.yaml`, `busca/` ou as consultas de `db/consultas.ts`, rode `pnpm kb avaliar-busca` e compare o recall@10 dos três modos com o anterior; o conjunto de `avaliacao/busca-secoes/` é rascunho, rotulado pelos títulos das seções.
 
 ## Modo banco (sem o repositório)
 
@@ -148,6 +148,6 @@ O servidor MCP roda só com o `kb.sqlite`, sem o checkout. `db/modo-banco.ts` (`
 
 Abertura: `abrirBancoSomenteLeitura(caminho)`, igual a `abrirBanco({ caminho, somenteLeitura: true, recompilar: false })`: não procura o repositório nem compila. `metaBanco(db)` traz a versão do esquema, a `data_referencia` e a identificação do build.
 
-As regras não mudam; muda a fonte. A vigência (`statusEm`, `transicoesAplicaveis`, `derivarLinha`), o impacto (`impactoEm`) e a adequação ao art. 71 (`adequacaoArt71Em`) recebem uma fonte (`FonteVigencia`, `FonteImpacto`, `FonteAdequacao`), com implementação de arquivos e de banco, como a `FonteCorrespondencia`. O registro sai da tabela `normas`; as citações, de `citacoes` e `normas_citacoes`; o léxico e os tópicos, das tabelas próprias; o tamanho do PPC, de `ppcs.caracteres`. Nada no caminho dessas funções lê arquivo: dentro de um binário `bun build --compile`, a leitura relativa ao código falharia. O teste roda todas a partir de uma cópia do banco num diretório vazio, com qualquer leitura de arquivo fora dele falhando, e num binário compilado.
+As regras não mudam; muda a fonte. A vigência (`statusEm`, `transicoesAplicaveis`, `derivarLinha`), o impacto (`impactoEm`) e a adequação ao art. 71 (`adequacaoArt71Em`) recebem uma fonte (`FonteVigencia`, `FonteImpacto`, `FonteAdequacao`), com implementação de arquivos e de banco, como a `FonteCorrespondencia`. O registro sai da tabela `normas`; as citações, de `citacoes` e `normas_citacoes`; o léxico e os tópicos, das tabelas próprias; o tamanho do PPC, de `ppcs.caracteres`. Nada no caminho dessas funções lê arquivo: dentro de um binário `pnpm mcp:executavel`, a leitura relativa ao código falharia. O teste roda todas a partir de uma cópia do banco num diretório vazio, com qualquer leitura de arquivo fora dele falhando, e num binário compilado.
 
 Diferença inevitável: o `impactoBanco` traz só as fichas da `revisar-ppc` em `arquivos`; os outros textos das skills (prompts, validações cruzadas, contratos) não estão no banco e continuam só na CLI.

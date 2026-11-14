@@ -1,0 +1,118 @@
+[
+  {
+    "id": "br/cne-cp/res/2021/1#art20",
+    "tabela": "base-conhecimento/correspondencias/br-cne-cp-res-2021-1--br-cne-cp-res-2026-2.yaml",
+    "status": "rascunho",
+    "destino_ato": "br/cne-cp/res/2026/2",
+    "item": {
+      "origem": "#art20",
+      "tipo": "parcial",
+      "destino": [
+        "#art22"
+      ],
+      "nota": "A lista de elementos da estruturação dos cursos técnicos é retomada no art. 22, com acréscimos (competências para demandas complexas, direitos humanos, sustentabilidade, cidadania fiscal, uso responsável das tecnologias) e sem o inciso X (fundamentos de empreendedorismo, cooperativismo etc.)."
+    },
+    "herdado_de": null,
+    "detalhes": [
+      {
+        "origem": "#art20-i",
+        "tipo": "equivalente",
+        "destino": [
+          "#art22-v"
+        ],
+        "nota": "Base tecnológica, agora \"composição obrigatória\"."
+      },
+      {
+        "origem": "#art20-ii",
+        "tipo": "equivalente",
+        "destino": [
+          "#art22-vi"
+        ]
+      },
+      {
+        "origem": "#art20-iii",
+        "tipo": "equivalente",
+        "destino": [
+          "#art22-vii"
+        ]
+      },
+      {
+        "origem": "#art20-iv",
+        "tipo": "parcial",
+        "destino": [
+          "#art22-iii"
+        ],
+        "nota": "Pertinência e coerência passam a se referir às competências, e não aos conteúdos."
+      },
+      {
+        "origem": "#art20-v",
+        "tipo": "parcial",
+        "destino": [
+          "#art22-viii"
+        ],
+        "nota": "O diálogo inclui sustentabilidade ambiental e cidadania fiscal."
+      },
+      {
+        "origem": "#art20-vi",
+        "tipo": "equivalente",
+        "destino": [
+          "#art22-ix"
+        ]
+      },
+      {
+        "origem": "#art20-vii",
+        "tipo": "equivalente",
+        "destino": [
+          "#art22-ii"
+        ]
+      },
+      {
+        "origem": "#art20-viii",
+        "tipo": "parcial",
+        "destino": [
+          "#art22-xi"
+        ],
+        "nota": "Domínio das tecnologias passa a \"utilização responsável\" das tecnologias do eixo."
+      },
+      {
+        "origem": "#art20-ix",
+        "tipo": "parcial",
+        "destino": [
+          "#art28-par1-iii",
+          "#art36"
+        ],
+        "nota": "A vivência de situações práticas passa à prática profissional intrínseca ao currículo e à prática profissional supervisionada obrigatória."
+      },
+      {
+        "origem": "#art20-x",
+        "tipo": "parcial",
+        "destino": [
+          "#art22-viii"
+        ],
+        "nota": "Sem a lista de fundamentos aplicados ao curso (cooperativismo, trabalho em equipe, tecnologia da informação, gestão de pessoas, legislação trabalhista, ética profissional, segurança do trabalho, iniciação científica). Empreendedorismo, inovação e sustentabilidade ambiental continuam no art. 22, VIII, como campos de diálogo e referências da formação, e as competências para o empreendedorismo estão também nos princípios (art. 3º, VIII)."
+      },
+      {
+        "origem": "#art20-par1",
+        "tipo": "parcial",
+        "destino": [
+          "#art18-par2"
+        ]
+      },
+      {
+        "origem": "#art20-par2",
+        "tipo": "equivalente",
+        "destino": [
+          "#art22-iv"
+        ],
+        "nota": "Competências socioemocionais, agora inciso do art. 22."
+      }
+    ],
+    "texto_origem": "Art. 20. A estruturação dos cursos da Educação Profissional Técnica de Nível Médio, observados os princípios expressos no art. 3º, deve ainda considerar:",
+    "textos_destino": [
+      {
+        "id": "br/cne-cp/res/2026/2#art22",
+        "texto": "Art. 22. Os cursos técnicos devem considerar os seguintes elementos em sua organização e oferta:"
+      }
+    ]
+  }
+]

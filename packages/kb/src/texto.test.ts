@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { ehInteiro, representar, textoDe, valoresIguais } from "./json.ts";
 import { ehUrlAbsoluta, partesUrl, regexDoSchema } from "./schema.ts";
 import {

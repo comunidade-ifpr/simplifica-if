@@ -90,7 +90,14 @@ export interface Dispositivo {
 }
 
 export type TipoSegmento =
-  "resumo" | "editorial" | "rotulo" | "preambulo" | "estrutura" | "dispositivo" | "fecho" | "nao-vigente";
+  | "resumo"
+  | "editorial"
+  | "rotulo"
+  | "preambulo"
+  | "estrutura"
+  | "dispositivo"
+  | "fecho"
+  | "nao-vigente";
 
 export interface Segmento {
   tipo: TipoSegmento;
@@ -318,11 +325,15 @@ class Parser {
   private secao: NoAberto | null = null;
   private numeroSecao = 0;
 
-  constructor(
-    readonly norma: string,
-    readonly rotulo: string,
-    readonly modoSecao: boolean,
-  ) {}
+  readonly norma: string;
+  readonly rotulo: string;
+  readonly modoSecao: boolean;
+
+  constructor(norma: string, rotulo: string, modoSecao: boolean) {
+    this.norma = norma;
+    this.rotulo = rotulo;
+    this.modoSecao = modoSecao;
+  }
 
   private prefixo(): string {
     return this.anexo ? `${this.anexo.disp.dispositivo.slice(1)}-` : "";
