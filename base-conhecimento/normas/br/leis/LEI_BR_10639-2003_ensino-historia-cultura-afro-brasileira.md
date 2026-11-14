@@ -12,7 +12,7 @@ datas_fonte: "Texto: \"Publicado no Diário Oficial da União de 10 de janeiro d
 orgao: "Presidência da República"
 jurisdicao: BR
 ementa: "Altera a LDB para incluir a obrigatoriedade da temática História e Cultura Afro-Brasileira."
-status_vigencia: "alterada"
+status_vigencia: "vigente"
 keywords:
   - "história"
   - "cultura afro-brasileira"
@@ -27,8 +27,8 @@ fonte: https://www.planalto.gov.br/ccivil_03/leis/2003/l10.639.htm
 vigencia_calculada_em: "2026-11-13"
 altera:
   - "Lei nº 9.394/1996 (acrescenta os arts. 26-A, 79-A e 79-B)"
-alterada_por:
-  - "Lei nº 11.645/2008 (art. 1º) — art. 1º"
+relaciona_se_a:
+  - "Lei nº 11.645/2008"
 ---
 
 ## Resumo

@@ -175,7 +175,7 @@
     "orgao": "Presidência da República",
     "jurisdicao": "BR",
     "ementa": "Altera a LDB para incluir a obrigatoriedade da temática História e Cultura Afro-Brasileira.",
-    "status_vigencia": "alterada",
+    "status_vigencia": "vigente",
     "keywords": [
       "história",
       "cultura afro-brasileira",
@@ -197,14 +197,6 @@
         "operador": "#art1",
         "alvo": "br/lei/1996/9394",
         "alcance": "acrescenta os arts. 26-A, 79-A e 79-B",
-        "efeito_de": "vigencia-da-origem"
-      },
-      {
-        "tipo": "altera",
-        "origem": "br/lei/2008/11645",
-        "operador": "#art1",
-        "alvo": "br/lei/2003/10639",
-        "alvo_dispositivo": "#art1",
         "efeito_de": "vigencia-da-origem"
       }
     ]
@@ -244,14 +236,6 @@
         "operador": "#art1",
         "alvo": "br/lei/1996/9394",
         "alvo_dispositivo": "#art26A",
-        "efeito_de": "vigencia-da-origem"
-      },
-      {
-        "tipo": "altera",
-        "origem": "br/lei/2008/11645",
-        "operador": "#art1",
-        "alvo": "br/lei/2003/10639",
-        "alvo_dispositivo": "#art1",
         "efeito_de": "vigencia-da-origem"
       }
     ]

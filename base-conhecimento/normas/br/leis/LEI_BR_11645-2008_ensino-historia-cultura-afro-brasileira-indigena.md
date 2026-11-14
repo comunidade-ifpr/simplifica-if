@@ -27,7 +27,6 @@ fonte: https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/lei/l11645.htm
 vigencia_calculada_em: "2026-11-13"
 altera:
   - "Lei nº 9.394/1996 (art. 26-A)"
-  - "Lei nº 10.639/2003 (art. 1º)"
 ---
 
 ## Resumo

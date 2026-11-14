@@ -179,15 +179,7 @@ relacoes:
     evidencia: { em: "br/lei/2008/11645#art1", trecho: "O art. 26-A da Lei nº 9.394, de 20 de dezembro de 1996, passa a vigorar com a seguinte redação" }
     confirmado_em: "2026-11-13"
     proposta: front-matter
-  - tipo: altera
-    origem: br/lei/2008/11645
-    operador: "#art1"
-    alvo: br/lei/2003/10639
-    alvo_dispositivo: "#art1"
-    evidencia: { em: "br/lei/2008/11645#art1", trecho: "O art. 26-A da Lei nº 9.394, de 20 de dezembro de 1996, passa a vigorar com a seguinte redação" }
-    confirmado_em: "2026-11-13"
-    proposta: front-matter
-    nota: Par migrado do front matter. A Lei nº 11.645/2008 dá nova redação ao art. 26-A da LDB, que o art. 1º da Lei nº 10.639/2003 havia acrescentado; a alteração recai sobre a LDB, e a 10.639 aparece aqui porque o texto do art. 26-A que ela incluiu foi substituído.
+    nota: A alteração recai sobre o art. 26-A da LDB, não sobre a Lei nº 10.639/2003, que o havia acrescentado; o par "altera br/lei/2003/10639", migrado do front matter, foi retirado em 14/11/2026.
   - tipo: altera
     origem: br/lei/2008/11788
     operador: "#art20"
