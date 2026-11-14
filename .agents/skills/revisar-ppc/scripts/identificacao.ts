@@ -26,6 +26,7 @@ import path from "node:path";
 import { escape, search, sub } from "@simplifica-if/kb/python/re";
 import { casefold, colapsarEspacos, semMarcas } from "@simplifica-if/kb/python/texto";
 import { ehObjetoPy, itensPy, type ObjetoPy, strPy, verdadeiro } from "@simplifica-if/kb/python/valores";
+import { chavesDoMapaYaml } from "@simplifica-if/kb/ppcs/front-matter";
 import { aparar, dividirLinhas } from "@simplifica-if/kb/texto";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { lerJsonPy } from "./rodada.ts";
@@ -189,11 +190,15 @@ export function inferirCampusPorCapa(texto: string, caminhos: CaminhosAnalise = 
 
 // ---------------------------------------------------------------- texto
 
-/** Remove o front matter YAML (`---` … `---`) do topo, se houver. */
+/**
+ * Remove o front matter YAML (`---` … `---`) do topo, se houver. Como no Pandoc, o `---` de abertura
+ * não pode ser seguido de linha em branco, e o bloco precisa ser um mapa YAML: uma minuta que abre
+ * com régua horizontal mantém o texto entre as réguas.
+ */
 export function removerFrontMatter(texto: string): string {
-  const semBom = texto.replace(/^﻿/, "");
-  const m = /^---[ \t]*\r?\n[\s\S]*?\r?\n(?:---|\.\.\.)[ \t]*(?:\r?\n|$)/.exec(semBom);
-  return m ? semBom.slice(m[0].length) : semBom;
+  const semBom = texto.replace(/^\ufeff/, "");
+  const m = /^---[ \t]*\r?\n(?![ \t]*\r?\n)([\s\S]*?\r?\n)(?:---|\.\.\.)[ \t]*(?:\r?\n|$)/.exec(semBom);
+  return m && chavesDoMapaYaml(m[1]!) ? semBom.slice(m[0].length) : semBom;
 }
 
 /** Marca de início de rótulo em negrito (`**NOME DO CURSO:**`), que também fecha o valor anterior. */

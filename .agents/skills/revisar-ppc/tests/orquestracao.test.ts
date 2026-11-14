@@ -192,6 +192,40 @@ Texto do corpo.
     expect(ppc).toContain("Texto do corpo.");
   });
 
+  test("minuta que abre com régua horizontal mantém o início do texto", () => {
+    const rodada = criarRodada(`---
+
+# Curso Técnico em Informática
+
+Campus: Assis Chateaubriand
+
+---
+
+## 1. Apresentação
+
+O curso apresenta objetivos.
+`);
+    const ppc = readFileSync(caminhosRodada(rodada).ppc, "utf-8");
+    expect(ppc).toContain("Curso Técnico em Informática");
+    expect(ppc).toContain("Assis Chateaubriand");
+    expect((lerJsonPy(caminhosRodada(rodada).metadata) as ObjetoPy).campus).toBe("Assis Chateaubriand");
+  });
+
+  test("tira o front matter de proveniência de um PPC da base", () => {
+    const arquivo = path.join(
+      caminhos.baseConhecimentoDir,
+      "institucional",
+      "ifpr",
+      "ppcs",
+      "curitiba",
+      "tecnico-em-eventos.md",
+    );
+    const rodada = prepararDocumento(arquivo, { saidaBase: diretorioTemporario(), relogio: RELOGIO }).rodadaDir;
+    const ppc = readFileSync(caminhosRodada(rodada).ppc, "utf-8");
+    expect(ppc).not.toContain("fonte_url");
+    expect(ppc).not.toContain("ppc:curitiba/tecnico-em-eventos");
+  });
+
   test("rejeita extensão desconhecida e arquivo ausente", () => {
     const dir = diretorioTemporario();
     writeFileSync(path.join(dir, "ppc.txt"), "x");
