@@ -483,7 +483,13 @@ Lacunas: MCP por HTTP local, recursos `ifpr://`, isolamento (`~/.codex` e `~/.ge
     4. uma configuração para os três providers: `type: "http"` no Claude (`mcpServers`), `url` com `http_headers` no Codex (`mcp_servers.ifpr`) e HTTP no ACP do Antigravity (`mcpCapabilities.http`);
     5. ferramentas ligadas à interface, como abrir um link no leitor; a `etapa` alimenta o indicador de etapas da conversa.
   - A ponte `createSdkMcpServer` do Claude fica descartada: pede Zod e só serviria a ele.
-  - **Falta testar** o HTTP no Codex e no `agy`. A PoC usou stdio nos três. Até o teste passar, o stdio por sessão fica como alternativa.
+  - **Feito em 14/11/2026** (`@simplifica-if/mcp/http`), com teste real nos três providers:
+    - **Claude:** `mcpServers` com `type: "http"`.
+    - **Codex:** `mcp_servers.ifpr.url` com `http_headers`, por thread.
+    - **Antigravity:** o `agy` 1.5.9 não anuncia `mcpCapabilities.http`. Como o T3 faz com agentes ACP nessa situação, o MCP vai como stdio pela ponte `AcpMcpStdioBridge` do T3, que repassa ao servidor HTTP local; a URL e o token vão no `env` do servidor, nunca na linha de comando. Se uma versão futura anunciar HTTP, o driver passa a usar HTTP sozinho.
+    - O servidor escuta só em `127.0.0.1`, com porta escolhida na abertura e um token por sessão, revogado no fim da sessão. Ele confere `Host`, recusa `Origin`, limita o corpo a 1 MiB, aceita uma pasta de trabalho por sessão e entrega ao app cada chamada de ferramenta.
+    - O stdio por sessão continua no motor como alternativa (`--mcp stdio` no harness).
+    - **No app:** a ponte vira um subcomando do próprio executável, como o `acp-mcp-bridge` do T3. O empacotamento do servidor HTTP precisa marcar como externos os opcionais do `ws` (`bufferutil`, `utf-8-validate`).
 - **M1.5 — Recursos `ifpr://` no MCP.** O `simplifica-mcp` lista e lê os links `ifpr://` como recursos (`resources/read`, com modelos de URI), no app e no executável stdio, sem mudar as ferramentas.
 - **M1.6 — Leitor `ifpr://`.** Painel nativo, que não depende do provider suportar MCP Apps. Lê do `kb` pelo grupo `GrupoLeitura` de `@simplifica-if/mcp/rpc`, por `effect/rpc`, sem passar pela IA.
 - **M1.7 — Política de fábrica.** Ver [Política de fábrica](#política-de-fábrica) abaixo.

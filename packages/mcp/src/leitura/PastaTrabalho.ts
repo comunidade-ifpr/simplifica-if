@@ -10,7 +10,8 @@
  * aponta para fora é recusado.
  *
  * O `FileSystem` entra só aqui. A layer do kb (`layerSomenteLeitura`) continua sem ele, e o `Leitura`
- * pede este serviço como opcional: sem ele (o RPC do app, por exemplo), `arquivo` é recusado.
+ * pede este serviço como opcional: sem ele (o RPC do app, por exemplo), `arquivo` é recusado. No
+ * servidor HTTP, cada sessão tem a sua (`make`), fornecida por requisição.
  */
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
@@ -56,7 +57,8 @@ function dentro(path: Path.Path, relativo: string): boolean {
   return relativo !== "" && !path.isAbsolute(relativo) && relativo.split(path.sep)[0] !== "..";
 }
 
-const make = Effect.fn("PastaTrabalho.make")(function* (opcoes: { readonly pasta: string }) {
+/** A pasta de trabalho em `pasta`, conferida; o servidor HTTP monta uma por sessão. */
+export const make = Effect.fn("PastaTrabalho.make")(function* (opcoes: { readonly pasta: string }) {
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
   const invalida = () => new PastaTrabalhoInvalida({ pasta: opcoes.pasta });

@@ -10,8 +10,9 @@ import type * as Scope from "effect/Scope";
 import type * as Stream from "effect/Stream";
 import type { Evento, Provider } from "./eventos.ts";
 
-/** Servidor MCP por stdio, entregue ao provider só nesta sessão. */
-export interface ServidorMcp {
+/** Servidor MCP por stdio: o provider abre o processo, só nesta sessão. */
+export interface ServidorMcpStdio {
+  readonly tipo: "stdio";
   readonly nome: string;
   readonly comando: string;
   readonly argumentos: ReadonlyArray<string>;
@@ -19,6 +20,22 @@ export interface ServidorMcp {
   /** Ferramentas só de leitura: o provider as chama sem pedir aprovação. */
   readonly preAprovado: boolean;
 }
+
+/**
+ * Servidor MCP por HTTP (streamable HTTP), já em execução: o provider só se conecta, só nesta sessão.
+ * `cabecalhos` leva o escopo da sessão (`Authorization: Bearer <token>`).
+ */
+export interface ServidorMcpHttp {
+  readonly tipo: "http";
+  readonly nome: string;
+  readonly url: string;
+  readonly cabecalhos?: Readonly<Record<string, string>>;
+  /** Ferramentas só de leitura: o provider as chama sem pedir aprovação. */
+  readonly preAprovado: boolean;
+}
+
+/** Servidor MCP entregue ao provider só nesta sessão, por stdio ou por HTTP. */
+export type ServidorMcp = ServidorMcpStdio | ServidorMcpHttp;
 
 export interface ConfigSessao {
   readonly provider: Provider;

@@ -3,8 +3,8 @@
  * `claude` instalado pelo usuário e o login dele (Keychain ou `~/.claude`).
  *
  * - Uma sessão é um `query()` com entrada em stream: cada `enviar` empurra uma mensagem do usuário.
- * - O MCP entra em `mcpServers` como stdio, só nesta sessão; `settingSources: []` deixa de fora as
- *   configurações e os MCP do usuário e do projeto.
+ * - O MCP entra em `mcpServers`, por stdio ou por HTTP, só nesta sessão; `settingSources: []` deixa
+ *   de fora as configurações e os MCP do usuário e do projeto.
  * - As ferramentas de servidores `preAprovado` entram em `allowedTools` (`mcp__<servidor>`); as
  *   demais passam por `canUseTool`, que vira `PedidoAprovacao`.
  */
@@ -109,6 +109,31 @@ export function criarNormalizadorClaude(): (mensagem: SDKMessage) => ReadonlyArr
 
 const PROVIDER = "claude" as const;
 
+/** `mcpServers` do `query()`: `McpStdioServerConfig` ou `McpHttpServerConfig` do Agent SDK. */
+export function mcpServersClaude(config: ConfigSessao): Record<string, McpServerConfig> {
+  const saida: Record<string, McpServerConfig> = {};
+  for (const servidor of config.servidoresMcp) {
+    saida[servidor.nome] = {
+      ...(servidor.tipo === "http"
+        ? {
+            type: "http" as const,
+            url: servidor.url,
+            ...(servidor.cabecalhos ? { headers: { ...servidor.cabecalhos } } : {}),
+          }
+        : {
+            type: "stdio" as const,
+            command: servidor.comando,
+            args: [...servidor.argumentos],
+            ...(servidor.ambiente ? { env: { ...servidor.ambiente } } : {}),
+          }),
+      // Sem isso, as ferramentas MCP ficam atrás do ToolSearch, e cada turno gasta duas idas e
+      // voltas só para descobri-las.
+      alwaysLoad: true,
+    };
+  }
+  return saida;
+}
+
 function mensagemDoUsuario(texto: string): SDKUserMessage {
   return { type: "user", message: { role: "user", content: texto }, parent_tool_use_id: null };
 }
@@ -212,26 +237,13 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
       return resposta;
     };
 
-    const mcpServers: Record<string, McpServerConfig> = {};
-    for (const servidor of config.servidoresMcp) {
-      mcpServers[servidor.nome] = {
-        type: "stdio",
-        command: servidor.comando,
-        args: [...servidor.argumentos],
-        ...(servidor.ambiente ? { env: { ...servidor.ambiente } } : {}),
-        // Sem isso, as ferramentas MCP ficam atrás do ToolSearch, e cada turno gasta duas idas e
-        // voltas só para descobri-las.
-        alwaysLoad: true,
-      };
-    }
-
     const consulta: Query = query({
       prompt: Stream.toAsyncIterable(Stream.fromQueue(entrada)),
       options: {
         ...opcoesBase(opcoes.ambiente, executavel),
         abortController: abortar,
         cwd: config.pastaTrabalho,
-        mcpServers,
+        mcpServers: mcpServersClaude(config),
         allowedTools: config.servidoresMcp.filter((s) => s.preAprovado).map((s) => `mcp__${s.nome}`),
         ...(config.buscaWeb === true ? {} : { disallowedTools: ["WebSearch", "WebFetch"] }),
         permissionMode: "default",

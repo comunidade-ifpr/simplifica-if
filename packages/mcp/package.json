@@ -6,7 +6,8 @@
   "exports": {
     "./toolkit": "./src/toolkit.ts",
     "./rpc": "./src/rpc.ts",
-    "./contratos": "./src/contratos.ts"
+    "./contratos": "./src/contratos.ts",
+    "./http": "./src/http.ts"
   },
   "bin": {
     "simplifica-mcp": "./src/cli.ts"

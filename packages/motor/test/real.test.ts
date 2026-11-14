@@ -15,6 +15,7 @@ import * as Layer from "effect/Layer";
 import * as Path from "effect/Path";
 import * as Stream from "effect/Stream";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
+import { servidorIfprHttp } from "../scripts/mcp-http.ts";
 import * as Drivers from "../src/drivers/index.ts";
 import {
   buildAntigravityAcpSpawnInput,
@@ -33,15 +34,18 @@ const PASTA_ESTADO =
   process.env.SIMPLIFICA_ESTADO ??
   `${process.env.HOME ?? ""}/${process.platform === "darwin" ? "Library/Application Support/simplifica-if-poc" : ".simplifica-if-poc"}`;
 
+/** A ponte stdio → HTTP do MCP, para o Antigravity (o `agy` 1.5.9 não anuncia MCP por HTTP). */
+const PONTE_MCP = { comando: process.execPath, argumentos: [`${RAIZ}packages/motor/scripts/ponte-mcp.ts`] };
+
 const camada = Motor.layer.pipe(
-  Layer.provide(Drivers.layerNode({ ambiente: process.env, pastaEstado: PASTA_ESTADO })),
+  Layer.provide(Drivers.layerNode({ ambiente: process.env, pastaEstado: PASTA_ESTADO, ponteMcp: PONTE_MCP })),
   Layer.provideMerge(NodeServices.layer),
 );
 
 describe.skipIf(!REAL)("providers reais", () => {
   for (const provider of ["claude", "codex", "antigravity"] as const) {
     it.effect(
-      `${provider}: pergunta do CNCT com o simplifica-mcp`,
+      `${provider}: pergunta do CNCT com o simplifica-mcp por HTTP local`,
       () =>
         Effect.gen(function* () {
           const motor = yield* Motor.Motor;
@@ -54,18 +58,8 @@ describe.skipIf(!REAL)("providers reais", () => {
           const estado = yield* motor.detectar(provider);
           assert.isTrue(estado.autenticado, estado.mensagem);
           const pasta = yield* fs.realPath(yield* fs.makeTempDirectoryScoped({ prefix: "simplifica-motor-" }));
-          const sessao = yield* motor.iniciarSessao({
-            provider,
-            pastaTrabalho: pasta,
-            servidoresMcp: [
-              {
-                nome: "ifpr",
-                comando: process.execPath,
-                argumentos: [path.join(RAIZ, "packages/mcp/src/cli.ts"), "--banco", path.join(RAIZ, "tmp/kb.sqlite")],
-                preAprovado: true,
-              },
-            ],
-          });
+          const servidor = yield* servidorIfprHttp({ banco: path.join(RAIZ, "tmp/kb.sqlite"), pastaTrabalho: pasta });
+          const sessao = yield* motor.iniciarSessao({ provider, pastaTrabalho: pasta, servidoresMcp: [servidor] });
           const eventos = yield* Stream.runCollect(motor.enviarMensagem(sessao, PERGUNTA));
           yield* motor.encerrar(sessao);
           const ferramentas = eventos.flatMap((e) => (e._tag === "FerramentaIniciada" ? [e.nome] : []));
@@ -154,6 +148,7 @@ describe.skipIf(!REAL)("Antigravity: perfil próprio", () => {
             pastaTrabalho: pasta,
             servidoresMcp: [
               {
+                tipo: "stdio",
                 nome: "ifpr",
                 comando: process.execPath,
                 argumentos: [path.join(RAIZ, "packages/mcp/src/cli.ts"), "--banco", path.join(RAIZ, "tmp/kb.sqlite")],

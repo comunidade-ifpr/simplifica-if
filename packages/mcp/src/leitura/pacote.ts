@@ -2,6 +2,10 @@
  * Leitura da ferramenta `pacote_contexto` (T4), sobre o serviço `PacoteContexto` do kb e, para
  * `arquivo`, sobre a `PastaTrabalho`, que o `Leitura` recebe como opcional: sem ela, `arquivo` é
  * recusado. Os erros do kb (PPC, grupo ou tarefa desconhecidos) viram `EntradaInvalida`.
+ *
+ * A `PastaTrabalho` presente no contexto da chamada vale mais que a da construção do `Leitura`: o
+ * servidor HTTP (`http.ts`) a fornece por requisição, com a pasta da sessão do token. No stdio, a
+ * única pasta é a da construção.
  */
 import * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import { REGRAS_BAIXA_CONFIANCA } from "@simplifica-if/kb/ppcs/citacoes";
@@ -64,12 +68,15 @@ export const makePacote = Effect.fn("Leitura.makePacote")(function* (base: Base)
     if (e.ppc !== undefined) {
       dados = yield* doKb(pacotes.montar(e.tarefa, yield* chavePpc(e.ppc)));
     } else {
-      if (Option.isNone(pasta)) {
+      // a pasta da sessão (servidor HTTP), se houver; senão, a da construção
+      const daChamada = yield* Effect.serviceOption(PastaTrabalho.PastaTrabalho);
+      const atual = Option.orElse(daChamada, () => pasta);
+      if (Option.isNone(atual)) {
         return yield* new EntradaInvalida({
           mensagem: "arquivo: este servidor não tem pasta de trabalho e não lê arquivos; use ppc, com um PPC da base",
         });
       }
-      const lido = yield* pasta.value.lerMarkdown(e.arquivo!);
+      const lido = yield* atual.value.lerMarkdown(e.arquivo!);
       dados = yield* doKb(pacotes.doMarkdown(e.tarefa, lido.caminho, lido.markdown));
     }
     const avisos = avisosDoPacote(dados);

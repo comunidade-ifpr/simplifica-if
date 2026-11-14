@@ -24,6 +24,8 @@ export const layerNode = (opcoes: {
   readonly pastaEstado: string;
   /** Executável próprio do Antigravity (o `binaryPath` do T3); sem ele, a instalação gerenciada. */
   readonly binarioAntigravity?: string;
+  /** Ponte stdio → HTTP do MCP para o Antigravity (ver `PonteMcp` em `antigravity.ts`). */
+  readonly ponteMcp?: Antigravity.PonteMcp;
 }) =>
   Layer.effect(
     Drivers,
@@ -38,6 +40,7 @@ export const layerNode = (opcoes: {
           pastaEstado: opcoes.pastaEstado,
           instalacao: instalacaoAntigravity,
           ...(opcoes.binarioAntigravity ? { binario: opcoes.binarioAntigravity } : {}),
+          ...(opcoes.ponteMcp ? { ponteMcp: opcoes.ponteMcp } : {}),
         }),
       });
     }),

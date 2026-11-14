@@ -79,6 +79,8 @@ packages/mcp/
 ├── src/
 │   ├── cli.ts               # effect/cli: --banco (ou SIMPLIFICA_KB), --pasta-trabalho, --canal; stdio
 │   ├── servidor.ts          # McpServer.layerStdio, layerLeitura, layerRegistro, mensagens de abertura
+│   ├── http.ts              # export @simplifica-if/mcp/http: o servidor HTTP local do app, com token por sessão
+│   ├── SessaoAtual.ts       # a sessão da chamada (só no HTTP): rótulo e registro das chamadas
 │   ├── contratos.ts         # Effect Schema do envelope (Resposta, Aviso, Fonte, Página) e dos tipos comuns; erros
 │   ├── esquema.ts           # construtores de schema (texto aparado, inteiro…) e o JSON Schema das ferramentas
 │   ├── validacao.ts         # entrada inválida → mensagem em português, no formato do servidor anterior
@@ -100,7 +102,9 @@ Regras de negócio ficam em `packages/kb`; aqui ficam a validação de entrada, 
 
 ## Uso pelo app (fork do T3)
 
-Três pontos de entrada, sem curinga:
+Quatro pontos de entrada, sem curinga:
+
+- `@simplifica-if/mcp/http` (M1.4): o servidor MCP dentro do processo do app, por HTTP em `127.0.0.1`. `layer({ banco, porta?, canal?, pastaTrabalho? })` dá o serviço `ServidorMcpHttp`: `url`, `porta`, `abrirSessao({ rotulo, pastaTrabalho? })` (um token por sessão, revogado no fim do `Scope`; a pasta da sessão vale mais que a da layer) e `chamadas` (cada chamada de ferramenta, com a sessão, a duração e se falhou). As defesas (`Host`, token em tempo constante, tamanho do corpo, `Origin`, protocolos) e o que veio do T3 estão no cabeçalho de `src/http.ts`. Para teste manual: `node packages/mcp/scripts/servir-http.ts --banco tmp/kb.sqlite`, que imprime a URL e o cabeçalho `Authorization` de uma sessão. O executável stdio não muda: o servidor HTTP do Node traz o `ws`, que o SEA não resolve;
 
 - `@simplifica-if/mcp/toolkit`: `FerramentasIfpr`, `FERRAMENTAS`, `layerHandlers`, `registrarFerramentas`, `layerRegistro`, `layerLeitura` (sem pasta de trabalho: o `pacote_contexto` aceita só `ppc`), `layerLeituraComPasta` (com ela; pede `FileSystem` e `Path`), `Leitura`, `NOME_SERVIDOR`, `VERSAO_PACOTE`, `INSTRUCOES` e `PROTOCOLOS`;
 - `@simplifica-if/mcp/rpc`: `GrupoLeitura` (`fichaNorma`, `lerDispositivos`, `buscarNorma`, `fichaCurso`, `lerSecao`, `buscarSecoes`, `listarCursos`, `sobreABase`), `layerHandlersRpc` e `layerLeitura`;
