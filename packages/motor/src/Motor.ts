@@ -17,8 +17,11 @@ import {
   type ConfigSessao,
   type Decisao,
   Drivers,
+  type EstadoInstalacao,
+  type EstadoLogin,
   type EstadoProvider,
   type FalhaProvider,
+  OperacaoNaoSuportada,
   type SessaoDriver,
   type TurnoEmAndamento,
 } from "./Driver.ts";
@@ -51,6 +54,13 @@ export class Motor extends Context.Service<
     ) => Effect.Effect<void, SessaoDesconhecida | AprovacaoDesconhecida>;
     readonly interromper: (sessao: string) => Effect.Effect<void, SessaoDesconhecida | FalhaProvider>;
     readonly encerrar: (sessao: string) => Effect.Effect<void, SessaoDesconhecida>;
+    /** Instala ou atualiza a CLI gerenciada (Codex, Antigravity); termina numa fase final. */
+    readonly instalar: (provider: Provider) => Stream.Stream<EstadoInstalacao, FalhaProvider | OperacaoNaoSuportada>;
+    /**
+     * Login dentro do app (Antigravity, no perfil próprio). Em `aguardando`, o estado traz a `url`
+     * que o app abre no navegador; termina numa fase final.
+     */
+    readonly entrar: (provider: Provider) => Stream.Stream<EstadoLogin, FalhaProvider | OperacaoNaoSuportada>;
   }
 >()("@simplifica-if/motor/Motor") {}
 
@@ -116,6 +126,10 @@ const make = Effect.gen(function* () {
     responderAprovacao,
     interromper,
     encerrar,
+    instalar: (provider) =>
+      drivers[provider].instalar ?? Stream.fail(new OperacaoNaoSuportada({ provider, operacao: "instalação" })),
+    entrar: (provider) =>
+      drivers[provider].entrar ?? Stream.fail(new OperacaoNaoSuportada({ provider, operacao: "login" })),
   });
 });
 

@@ -20,6 +20,7 @@ import {
 } from "@anthropic-ai/claude-agent-sdk";
 import type * as Cause from "effect/Cause";
 import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
 import * as Option from "effect/Option";
 import * as Queue from "effect/Queue";
 import * as Stream from "effect/Stream";
@@ -28,6 +29,8 @@ import * as Canal from "../Canal.ts";
 import { type ConfigSessao, type Driver, type EstadoProvider, FalhaProvider, Gravador } from "../Driver.ts";
 import { type Evento, resumir, textoDeBlocos } from "../eventos.ts";
 import { type Ambiente, limparAmbiente, localizar, primeiraLinha } from "../processo.ts";
+import { resolveClaudeSdkExecutablePath } from "../t3/ClaudeExecutable.ts";
+import * as ClaudeHome from "../t3/ClaudeHome.ts";
 
 /** `mcp__ifpr__buscar_norma` → `ifpr.buscar_norma`; ferramentas nativas ficam como vieram. */
 export function nomeFerramentaClaude(nome: string): string {
@@ -126,8 +129,13 @@ async function* nuncaEntrega(sinal: AbortSignal): AsyncGenerator<SDKUserMessage>
 }
 
 export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly ambiente: Ambiente }) {
-  const executavel = (yield* localizar("claude", opcoes.ambiente)).pipe(Option.getOrUndefined);
+  const local = yield* localizar("claude", opcoes.ambiente);
+  // No Windows o SDK não passa pelo shell: o `claude.cmd` do npm vira o `claude.exe` do pacote (T3).
+  const executavel = Option.isSome(local)
+    ? yield* resolveClaudeSdkExecutablePath(local.value, limparAmbiente(opcoes.ambiente))
+    : undefined;
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
+  const fs = yield* FileSystem.FileSystem;
 
   const detectar: Driver["detectar"] = Effect.gen(function* () {
     if (executavel === undefined) {
@@ -155,6 +163,8 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
     // Mesmo critério do T3 (`ClaudeProvider.ts`): chave de API, e-mail ou assinatura contam como login.
     const autenticado =
       info !== undefined && (info.apiKeySource !== undefined || info.email !== undefined || !!info.subscriptionType);
+    // Com um `managed-mcp.json` da organização, o Claude ignora os MCP da sessão: o `ifpr` não sobe.
+    const mcpGerenciado = yield* ClaudeHome.hasClaudeManagedMcpConfig();
     return {
       provider: PROVIDER,
       instalado: true,
@@ -163,8 +173,14 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
       ...(info?.tokenSource ? { metodo: info.tokenSource } : info?.apiKeySource ? { metodo: "apiKey" } : {}),
       ...(info?.subscriptionType ? { plano: info.subscriptionType } : {}),
       ...(autenticado ? {} : { mensagem: "Claude sem login: rode `claude auth login`" }),
+      ...(mcpGerenciado
+        ? { aviso: "esta máquina tem MCP gerenciado pela organização (managed-mcp.json); o Claude não carrega o ifpr" }
+        : {}),
     } satisfies EstadoProvider;
-  }).pipe(Effect.provideService(ChildProcessSpawner.ChildProcessSpawner, spawner));
+  }).pipe(
+    Effect.provideService(ChildProcessSpawner.ChildProcessSpawner, spawner),
+    Effect.provideService(FileSystem.FileSystem, fs),
+  );
 
   const iniciar = Effect.fn("DriverClaude.iniciar")(function* (config: ConfigSessao) {
     if (executavel === undefined) {

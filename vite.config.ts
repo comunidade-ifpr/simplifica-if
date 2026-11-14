@@ -63,6 +63,7 @@ export default defineConfig({
       // pacotes copiados do T3 Code (docs/upstream-t3.md): ficam como no upstream, formatados pelo T3
       "packages/effect-acp/**",
       "packages/effect-codex-app-server/**",
+      "packages/motor/src/t3/**",
       ".agents/skills/*/assets/**",
       ".agents/skills/*/base-analise/**",
       ".agents/skills/*/config/**",
@@ -180,6 +181,8 @@ export default defineConfig({
           // O harness do motor e o teste com providers reais passam o ambiente do processo aos drivers.
           "packages/motor/scripts/**",
           "packages/motor/test/real.test.ts",
+          // Como no T3: HostProcess é o ponto que lê o processo e entrega por Context.Reference.
+          "packages/motor/src/t3/HostProcess.ts",
         ],
         rules: { "simplifica-if/no-global-process-runtime": "off" },
       },
