@@ -16,6 +16,7 @@ Os scripts de shell são neutros de runtime: o comando vem de `KB` (CLI `kb`) ou
 Notas da captura:
 
 - Na suíte com Bun, `testes.txt` soma 1015 casos: 1000 passando e 15 pulados (14 do smoke, que só roda com `SIMPLIFICA_SMOKE=1`, e 1 de `sei-cli/test/fluxo.test.ts`, que precisa de snapshots locais). Os blocos pulados pelo smoke contam 6 e 8 casos no JUnit do Bun; rodando, são 5 e 7 (`testes-smoke.txt`), porque o Bun conta de outro jeito os `describe.skipIf` pulados.
+- O hash do `site/` em `base.txt` foi recalculado no C0, com o Bun, depois da troca dos comandos em `base-conhecimento/README.md` e `base-conhecimento/docs/*.md`, que o site copia: o hash da primeira captura era `5908118c…`. Com os mesmos documentos, o Bun e o Node geram o mesmo `site/`.
 - `exportar_base_publica` fica fora de `base.sh`: lê as movimentações do Notion e grava a data do dia. Com Bun, em 14/11/2026, a única diferença no git foi `atualizado_em` de `campi/index.json` (de `2026-11-13` para `2026-11-14`).
 - A impressão digital das fontes do banco (`meta.fontes_sha256`, `fontes_lista_sha256` e `fontes_total`) inclui o código de `packages/kb/src` e muda com qualquer mudança de código. `banco.sh` a deixa fora do hash da `meta`, e `gabarito.ts --comparar` mascara a versão `dev-<8 hex>` do envelope e a impressão da consulta nos cursores. O `banco.txt` foi recalculado com essa regra sobre o banco que o Bun compilou; as outras 33 linhas são as da primeira captura.
 
