@@ -9,9 +9,14 @@
  * O pacote traz:
  * - o PPC (ID, arquivo, curso, forma, ano) e o curso do CNCT inteiro;
  * - as fichas (JSON da ficha, como os sub-agentes recebem);
- * - as normas citadas pelas fichas, com o texto do artigo citado (bloco do Markdown hoje; depois
- *   da fase 5, o dispositivo com o caput herdado), arquivo e linhas;
- * - as transições aplicáveis (`marcos-normativos.json`) e as citações do PPC às normas desses marcos;
+ * - as normas citadas pelas fichas, com o texto de cada dispositivo citado
+ *   (`referencias_normativas[].dispositivo`) da tabela `dispositivos`: caput herdado, o próprio
+ *   texto e os subordinados, arquivo e linhas; um dispositivo contido noutro citado não se repete;
+ * - os marcos normativos ligados (`marcos-normativos.json`, com vigente, substituídas e antecessoras
+ *   derivadas da fase 5) e as citações do PPC às normas desses marcos;
+ * - as regras de transição (tabela `transicoes`) das normas das fichas e das citadas como
+ *   fundamento pelo PPC, com a situação na `data_referencia` e o texto do dispositivo que as
+ *   estabelece;
  * - as seções do PPC dos tópicos das fichas (`dados/topicos-secoes.yaml`), mais as que a busca
  *   pelas `consultas` das fichas achar, com o texto integral e as linhas;
  * - os fatos do PPC e o cruzamento com o SUAP.
@@ -24,7 +29,14 @@ import { z } from "zod";
 import type { Sinonimos } from "../busca/sinonimos.ts";
 import { idDoAto } from "../normas/ids.ts";
 import { compararTexto } from "../texto.ts";
-import { blocoDoArtigo, buscarSecoes, fatosDosPpcs, obterNorma, secoesDoPpc } from "./consultas.ts";
+import { buscarSecoes, fatosDosPpcs, obterNorma, secoesDoPpc } from "./consultas.ts";
+import {
+  dataReferenciaBanco,
+  type TransicaoNoBanco,
+  type TrechoDispositivo,
+  transicoesNoBanco,
+  trechoDoDispositivo,
+} from "./consultas-normas.ts";
 
 export const esquemaTopicosSecoes = z.record(z.string(), z.array(z.string().regex(/^[a-z_]+$/)));
 export type TopicosSecoes = z.output<typeof esquemaTopicosSecoes>;
@@ -101,6 +113,63 @@ export function fichasDaTarefa(db: Database, tarefa: string): string[] {
   return pedidas;
 }
 
+/**
+ * Dispositivo citado no pacote: o essencial de `TrechoDispositivo`, sem os campos vazios (caput,
+ * subordinados e notas só quando existem; `citados` só quando o trecho cobre outros IDs pedidos).
+ */
+export interface DispositivoDoPacote {
+  id: string;
+  /** Todos os IDs pedidos pelas fichas que este trecho cobre (o próprio e subordinados). */
+  citados?: string[];
+  fichas: string[];
+  caput?: string[];
+  texto: string;
+  subordinados?: TrechoDispositivo["subordinados"];
+  notas?: TrechoDispositivo["notas"];
+  revogado?: true;
+  path: string;
+  linha_inicio: number;
+  linha_fim: number;
+}
+
+/** Regra de transição no pacote (tabela `transicoes`), com o texto literal do dispositivo. */
+export interface TransicaoDoPacote {
+  id: string;
+  norma_id: string;
+  dispositivo: string;
+  tipo: string;
+  norma_anterior: string | null;
+  aplica_a: string;
+  regra: string;
+  situacao: TransicaoNoBanco["situacao"];
+  inicio: string;
+  inicio_em: string | null;
+  inicio_minimo: string | null;
+  fim: string;
+  fim_em: string | null;
+  caput?: string[];
+  texto: string | null;
+  path: string | null;
+  linha_inicio: number | null;
+  linha_fim: number | null;
+}
+
+function paraPacote(trecho: TrechoDispositivo, citados: string[], fichas: string[]): DispositivoDoPacote {
+  return {
+    id: trecho.id,
+    ...(citados.length > 1 || citados[0] !== trecho.id ? { citados } : {}),
+    fichas,
+    ...(trecho.caput.length ? { caput: trecho.caput } : {}),
+    texto: trecho.texto,
+    ...(trecho.subordinados.length ? { subordinados: trecho.subordinados } : {}),
+    ...(trecho.notas.length ? { notas: trecho.notas } : {}),
+    ...(trecho.revogado ? { revogado: true as const } : {}),
+    path: trecho.path,
+    linha_inicio: trecho.linha_inicio,
+    linha_fim: trecho.linha_fim,
+  };
+}
+
 export interface PacoteContexto {
   tarefa: string;
   fichas_ids: string[];
@@ -113,17 +182,12 @@ export interface PacoteContexto {
     status_vigencia: string | null;
     path: string | null;
     fichas: string[];
-    artigos: {
-      dispositivos: string[];
-      artigo: string;
-      path: string;
-      linha_inicio: number;
-      linha_fim: number;
-      texto: string;
-      origem: string;
-    }[];
+    /** Dispositivos citados, com o texto, na ordem do arquivo. */
+    dispositivos: DispositivoDoPacote[];
+    /** Dispositivos citados que não estão no texto da base (stub, por exemplo). */
+    sem_texto: string[];
   }[];
-  transicoes: {
+  marcos: {
     marco: string;
     tema: string;
     vigente: string;
@@ -133,6 +197,10 @@ export interface PacoteContexto {
     path: string;
     citacoes_no_ppc: z.output<typeof esquemaCitacao>[];
   }[];
+  /** Data da situação das regras de transição (`data_referencia` de `config/vigencia.yaml`). */
+  data_referencia: string;
+  /** Regras de transição, com a situação em `data_referencia` e o texto do dispositivo que as estabelece. */
+  transicoes: TransicaoDoPacote[];
   secoes: {
     id: string;
     tipo: string;
@@ -198,12 +266,28 @@ export function pacoteContexto(
   const normas: PacoteContexto["normas"] = [];
   for (const [ref, lista] of porRef) {
     const norma = obterNorma(db, ref);
-    const artigos = new Map<string, string[]>();
+    // um pedido por dispositivo, do mais geral (menos segmentos no ID) ao mais específico
+    const pedidos = new Map<string, string[]>();
     for (const r of lista) {
-      const m = r.dispositivo ? /^#art(\d+)([A-Z])?/.exec(r.dispositivo) : null;
-      if (!m) continue;
-      const artigo = m[2] ? `${m[1]}-${m[2]}` : m[1]!;
-      artigos.set(artigo, [...new Set([...(artigos.get(artigo) ?? []), r.dispositivo!])]);
+      if (r.dispositivo) pedidos.set(r.dispositivo, [...new Set([...(pedidos.get(r.dispositivo) ?? []), r.ficha_id])]);
+    }
+    const ordenados = [...pedidos.keys()].sort(
+      (a, b) => a.split("-").length - b.split("-").length || compararTexto(a, b),
+    );
+    const trechos: { trecho: TrechoDispositivo; citados: string[]; fichas: string[] }[] = [];
+    const semTexto: string[] = [];
+    for (const pedido of ordenados) {
+      const id = `${idDoAto(ref)}${pedido}`;
+      const fichasPedido = pedidos.get(pedido)!;
+      const cobre = trechos.find((t) => t.trecho.id === id || t.trecho.subordinados.some((s) => s.id === id));
+      if (cobre) {
+        cobre.citados.push(id);
+        cobre.fichas = [...new Set([...cobre.fichas, ...fichasPedido])].sort(compararTexto);
+        continue;
+      }
+      const trecho = norma?.path ? trechoDoDispositivo(db, id, { subordinados: true }) : null;
+      if (trecho) trechos.push({ trecho, citados: [id], fichas: [...fichasPedido].sort(compararTexto) });
+      else semTexto.push(id);
     }
     normas.push({
       ref,
@@ -211,14 +295,10 @@ export function pacoteContexto(
       status_vigencia: norma?.status_vigencia ?? null,
       path: norma?.path ?? null,
       fichas: [...new Set(lista.map((r) => r.ficha_id))],
-      artigos: [...artigos.entries()]
-        .sort(([a], [b]) => parseInt(a, 10) - parseInt(b, 10) || compararTexto(a, b))
-        .flatMap(([artigo, dispositivos]) => {
-          const bloco = norma?.path ? blocoDoArtigo(db, norma.id, artigo) : null;
-          if (!bloco) return [];
-          const { norma_id: _norma, ...resto } = bloco;
-          return [{ dispositivos: dispositivos.sort(compararTexto), ...resto }];
-        }),
+      dispositivos: trechos
+        .sort((a, b) => a.trecho.linha_inicio - b.trecho.linha_inicio)
+        .map((t) => paraPacote(t.trecho, t.citados, t.fichas)),
+      sem_texto: semTexto,
     });
   }
 
@@ -234,7 +314,7 @@ export function pacoteContexto(
     );
   const atosCitadosPpc = new Set(citacoesPpc.map((c) => c.ato_id));
   const atosFichas = new Set(refs.map((r) => idDoAto(r.ref)));
-  const transicoes: PacoteContexto["transicoes"] = [];
+  const marcos: PacoteContexto["marcos"] = [];
   for (const m of z
     .array(esquemaMarco)
     .parse(
@@ -245,12 +325,14 @@ export function pacoteContexto(
         .all(),
     )) {
     const normasMarco = JSON.parse(m.normas_json) as {
+      linha: string[];
       vigente: string;
       substitui: string[];
       antecessoras_historicas: string[];
       dispositivos_revogados: string[];
     };
     const envolvidas = new Set([
+      ...normasMarco.linha,
       normasMarco.vigente,
       ...normasMarco.substitui,
       ...normasMarco.antecessoras_historicas,
@@ -258,7 +340,7 @@ export function pacoteContexto(
     ]);
     const ligado = [...envolvidas].some((id) => atosFichas.has(id) || atosCitadosPpc.has(id));
     if (!ligado) continue;
-    transicoes.push({
+    marcos.push({
       marco: m.id,
       tema: m.tema,
       vigente: m.vigente,
@@ -269,6 +351,35 @@ export function pacoteContexto(
       citacoes_no_ppc: citacoesPpc.filter((c) => envolvidas.has(c.ato_id) && c.papel === "fundamento"),
     });
   }
+
+  // regras de transição das normas das fichas e das que o PPC cita como fundamento
+  const data = dataReferenciaBanco(db);
+  const atosTransicao = [
+    ...new Set([...atosFichas, ...citacoesPpc.filter((c) => c.papel === "fundamento").map((c) => c.ato_id)]),
+  ].sort(compararTexto);
+  const transicoes: TransicaoDoPacote[] = transicoesNoBanco(db, atosTransicao, data).map((t) => {
+    const d = trechoDoDispositivo(db, `${t.norma_id}${t.dispositivo}`);
+    return {
+      id: t.id,
+      norma_id: t.norma_id,
+      dispositivo: t.dispositivo,
+      tipo: t.tipo,
+      norma_anterior: t.norma_anterior,
+      aplica_a: t.aplica_a,
+      regra: t.regra,
+      situacao: t.situacao,
+      inicio: t.inicio,
+      inicio_em: t.inicio_em,
+      inicio_minimo: t.inicio_minimo,
+      fim: t.fim,
+      fim_em: t.fim_em,
+      ...(d?.caput.length ? { caput: d.caput } : {}),
+      texto: d?.texto ?? null,
+      path: d?.path ?? null,
+      linha_inicio: d?.linha_inicio ?? null,
+      linha_fim: d?.linha_fim ?? null,
+    };
+  });
 
   // seções do PPC: pelos tipos dos tópicos e pela busca das consultas das fichas
   const mapa = opcoes.topicosSecoes ?? lerTopicosSecoes();
@@ -340,6 +451,8 @@ export function pacoteContexto(
     cnct,
     fichas,
     normas,
+    marcos,
+    data_referencia: data,
     transicoes,
     secoes: listaSecoes,
     fatos: fatos ? { fatos: fatos.fatos, suap: fatos.suap, cruzamento: fatos.cruzamento } : null,

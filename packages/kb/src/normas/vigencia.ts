@@ -222,6 +222,56 @@ export function statusEm(id: string, data: string, raiz: string = raizRepositori
   return { id: ato, data, status, certo, inicio, eventos, pendencias };
 }
 
+/** Trecho de datas com o mesmo resultado de `statusEm` (início inclusivo, fim exclusivo; `null` = aberto). */
+export interface IntervaloVigencia {
+  de: string | null;
+  ate: string | null;
+  status: StatusVigencia;
+  certo: boolean;
+  /** O que abre o intervalo: `inicio` (vigência ou assinatura do ato) ou a relação (`revoga br/...#art74-ii`). */
+  fonte: string;
+}
+
+/**
+ * `statusEm` como intervalos datados, para gravar no `kb.sqlite` sem o relógio. O status só muda nas
+ * datas que `statusEm` compara (início de vigência ou assinatura do ato e efeito, certo ou mínimo,
+ * de cada relação `revoga`/`altera` que o atinge): avaliar `statusEm` em cada uma dessas datas, e
+ * numa anterior a todas, dá a função inteira. Intervalos vizinhos iguais são fundidos.
+ */
+export function intervalosVigencia(id: string, raiz: string = raizRepositorio()): IntervaloVigencia[] {
+  const ato = idDoAto(id.split("#")[0]!);
+  const marcos = new Map<string, string[]>();
+  const marcar = (data: string | null, fonte: string) => {
+    if (data) marcos.set(data, [...new Set([...(marcos.get(data) ?? []), fonte])]);
+  };
+  const inicio = inicioVigencia(ato, raiz);
+  marcar(inicio.data, "inicio");
+  marcar(inicio.minimo, "inicio");
+  for (const relacao of carregarRelacoes(raiz)) {
+    if (relacao.alvo !== ato || (relacao.tipo !== "revoga" && relacao.tipo !== "altera")) continue;
+    const efeito = efeitoDaRelacao(relacao, raiz);
+    const fonte = `${relacao.tipo} ${relacao.origem}${relacao.operador ?? ""}`;
+    marcar(efeito.data, fonte);
+    marcar(efeito.minimo, fonte);
+  }
+  const datas = [...marcos.keys()].sort();
+  const pontos: { de: string | null; fonte: string; em: string }[] = [
+    { de: null, fonte: "anterior", em: "0001-01-01" },
+    ...datas.map((data) => ({ de: data, fonte: marcos.get(data)!.join("; "), em: data })),
+  ];
+  const saida: IntervaloVigencia[] = [];
+  pontos.forEach((ponto, i) => {
+    const { status, certo } = statusEm(ato, ponto.em, raiz);
+    const anterior = saida.at(-1);
+    if (anterior && anterior.status === status && anterior.certo === certo) {
+      anterior.ate = pontos[i + 1]?.de ?? null;
+      return;
+    }
+    saida.push({ de: ponto.de, ate: pontos[i + 1]?.de ?? null, status, certo, fonte: ponto.fonte });
+  });
+  return saida;
+}
+
 // ---------------------------------------------------------------------------------------------
 // Regras de transição (`base-conhecimento/transicoes.yaml`)
 
@@ -273,20 +323,22 @@ function somarDuracao(data: string, duracao: string): string {
   return d.toISOString().slice(0, 10);
 }
 
-export interface SituacaoTransicao extends Transicao {
+/** Datas de uma regra de transição que não dependem da data da consulta. */
+export interface DatasTransicao {
   inicio_em: string | null;
   inicio_minimo: string | null;
   fim_em: string | null;
-  /** Situação na data: `a-iniciar`, `em-curso`, `encerrada` ou `a confirmar`. */
-  situacao: "a-iniciar" | "em-curso" | "encerrada" | "a confirmar";
 }
 
-/** Situação de uma regra de transição numa data. */
-export function situacaoTransicao(
-  transicao: Transicao,
-  data: string,
-  raiz: string = raizRepositorio(),
-): SituacaoTransicao {
+export type Situacao = "a-iniciar" | "em-curso" | "encerrada" | "a confirmar";
+
+export interface SituacaoTransicao extends Transicao, DatasTransicao {
+  /** Situação na data: `a-iniciar`, `em-curso`, `encerrada` ou `a confirmar`. */
+  situacao: Situacao;
+}
+
+/** Início e fim resolvidos de uma regra de transição (pelas datas da norma que a estabelece). */
+export function datasTransicao(transicao: Transicao, raiz: string = raizRepositorio()): DatasTransicao {
   const datas = carregarDatas(raiz).get(transicao.norma);
   let inicio: Inicio;
   if (RE_DATA.test(transicao.inicio)) inicio = { data: transicao.inicio, minimo: transicao.inicio, certo: true };
@@ -295,25 +347,39 @@ export function situacaoTransicao(
   } else if (transicao.inicio === "publicacao")
     inicio = { data: null, minimo: datas?.assinada_em ?? null, certo: false };
   else inicio = inicioVigencia(transicao.norma, raiz);
-  const fimDe = (base: string | null) =>
-    base === null
+  const fim =
+    inicio.data === null || transicao.fim === "sem-prazo"
       ? null
-      : transicao.fim === "sem-prazo"
-        ? null
-        : RE_DATA.test(transicao.fim)
-          ? transicao.fim
-          : somarDuracao(base, transicao.fim);
-  const fim = fimDe(inicio.data);
-  const fimMinimo = fimDe(inicio.minimo);
-  let situacao: SituacaoTransicao["situacao"];
-  if (inicio.data === null) {
-    if (inicio.minimo && data < inicio.minimo) situacao = "a-iniciar";
-    else if (fimMinimo !== null && RE_DATA.test(transicao.fim) && data > transicao.fim) situacao = "encerrada";
-    else situacao = A_CONFIRMAR;
-  } else if (data < inicio.data) situacao = "a-iniciar";
-  else if (fim !== null && data > fim) situacao = "encerrada";
-  else situacao = "em-curso";
-  return { ...transicao, inicio_em: inicio.data, inicio_minimo: inicio.minimo, fim_em: fim, situacao };
+      : RE_DATA.test(transicao.fim)
+        ? transicao.fim
+        : somarDuracao(inicio.data, transicao.fim);
+  return { inicio_em: inicio.data, inicio_minimo: inicio.minimo, fim_em: fim };
+}
+
+/**
+ * Situação de uma regra de transição na data `data`, a partir das datas resolvidas: a regra única,
+ * aplicada sobre os arquivos (`situacaoTransicao`) e sobre o `kb.sqlite` (tabela `transicoes`).
+ */
+export function situacaoNaData(t: DatasTransicao & { fim: string }, data: string): Situacao {
+  if (t.inicio_em === null) {
+    if (t.inicio_minimo && data < t.inicio_minimo) return "a-iniciar";
+    // com o início a confirmar, só um fim em data fixa permite dizer que a regra acabou
+    if (t.inicio_minimo !== null && RE_DATA.test(t.fim) && data > t.fim) return "encerrada";
+    return A_CONFIRMAR;
+  }
+  if (data < t.inicio_em) return "a-iniciar";
+  if (t.fim_em !== null && data > t.fim_em) return "encerrada";
+  return "em-curso";
+}
+
+/** Situação de uma regra de transição numa data. */
+export function situacaoTransicao(
+  transicao: Transicao,
+  data: string,
+  raiz: string = raizRepositorio(),
+): SituacaoTransicao {
+  const datas = datasTransicao(transicao, raiz);
+  return { ...transicao, ...datas, situacao: situacaoNaData({ ...datas, fim: transicao.fim }, data) };
 }
 
 /** Regras de transição da norma `id` ou que preservam efeitos dela (norma anterior). */

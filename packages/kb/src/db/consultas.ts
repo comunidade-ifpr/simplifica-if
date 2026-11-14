@@ -1,6 +1,6 @@
 /**
  * Consultas ao `kb.sqlite`: SQL direto com `bun:sqlite`, e cada linha lida validada por zod na
- * fronteira (Princípio 3). Toda resposta traz texto literal (seção, bloco de norma, trecho de fato,
+ * fronteira (Princípio 3). Toda resposta traz texto literal (seção, dispositivo de norma, trecho de fato,
  * linha do SUAP) e a proveniência: `path` relativo à raiz do repositório e linha(s).
  */
 import type { Database } from "bun:sqlite";
@@ -11,6 +11,14 @@ import { RESULTADOS_DIVERGENTES } from "../fatos/divergencias.ts";
 import { idDoAto } from "../normas/ids.ts";
 import { resolverCitacao, registroPadrao } from "../normas/resolver.ts";
 import { compararTexto } from "../texto.ts";
+import {
+  dataReferenciaBanco,
+  dispositivoOuAncestral,
+  obterDispositivoBanco,
+  paraTrecho,
+  sqlForaDeVigencia,
+  type TrechoDispositivo,
+} from "./consultas-normas.ts";
 
 const texto = z.string();
 const textoNulo = z.string().nullable();
@@ -299,21 +307,6 @@ const esquemaNorma = z.strictObject({
 });
 export type NormaResumo = z.output<typeof esquemaNorma>;
 
-const esquemaBloco = z.strictObject({
-  rowid: z.number().int(),
-  norma_id: texto,
-  ordem: z.number().int(),
-  titulo: textoNulo,
-  caminho: texto,
-  artigo: textoNulo,
-  dispositivo: textoNulo,
-  path: texto,
-  linha_inicio: z.number().int(),
-  linha_fim: z.number().int(),
-  texto: texto,
-});
-type Bloco = z.output<typeof esquemaBloco>;
-
 export function obterNorma(db: Database, id: string): NormaResumo | null {
   const linha = db
     .query("SELECT id, situacao, titulo, status_vigencia, data_publicacao, ementa, path FROM normas WHERE id = ?")
@@ -323,225 +316,168 @@ export function obterNorma(db: Database, id: string): NormaResumo | null {
   return ato !== id ? obterNorma(db, ato) : null;
 }
 
-/** Variante de arquivo (`~compilacao`) e o ato: os blocos de qualquer uma servem ao ato. */
-function idsDoAto(db: Database, id: string): string[] {
-  const ato = idDoAto(id);
-  return linhas(
-    z.strictObject({ id: texto }),
-    db.query("SELECT id FROM normas WHERE id = ? OR id LIKE ? ORDER BY id").all(ato, `${ato}~%`),
-  ).map((l) => l.id);
-}
-
-/**
- * Bloco do artigo de uma norma (título "Art. N"). Sem título de artigo (normas ainda não
- * saneadas), procura a linha que começa com "Art. N" dentro dos blocos e recorta até o próximo
- * artigo. Depois da fase 5, a fonte passa a ser a tabela `dispositivos`.
- */
-export function blocoDoArtigo(
-  db: Database,
-  normaId: string,
-  artigo: string,
-): {
-  norma_id: string;
-  artigo: string;
-  path: string;
-  linha_inicio: number;
-  linha_fim: number;
-  texto: string;
-  origem: string;
-} | null {
-  for (const id of idsDoAto(db, normaId)) {
-    const porTitulo = db
-      .query(
-        "SELECT rowid, norma_id, ordem, titulo, caminho, artigo, dispositivo, path, linha_inicio, linha_fim, texto FROM normas_blocos WHERE norma_id = ? AND artigo = ? ORDER BY ordem LIMIT 1",
-      )
-      .get(id, artigo);
-    if (porTitulo) {
-      const b = esquemaBloco.parse(porTitulo);
-      return {
-        norma_id: b.norma_id,
-        artigo,
-        path: b.path,
-        linha_inicio: b.linha_inicio,
-        linha_fim: b.linha_fim,
-        texto: [b.titulo, b.texto].filter(Boolean).join("\n\n"),
-        origem: "bloco-titulo-artigo",
-      };
-    }
-  }
-  const re = new RegExp(
-    `^[*_\\s]*Art(?:igo)?\\.?\\s*${artigo.replace("-", "\\s*-\\s*")}\\s*(?:[ºo°]\\.?)?(?![\\d])`,
-    "i",
-  );
-  for (const id of idsDoAto(db, normaId)) {
-    const blocos = linhas(
-      esquemaBloco,
-      db
-        .query(
-          "SELECT rowid, norma_id, ordem, titulo, caminho, artigo, dispositivo, path, linha_inicio, linha_fim, texto FROM normas_blocos WHERE norma_id = ? AND ordem >= 0 ORDER BY ordem",
-        )
-        .all(id),
-    );
-    for (const b of blocos) {
-      const corpo = b.texto.split("\n");
-      const inicio = corpo.findIndex((l) => re.test(l));
-      if (inicio === -1) continue;
-      let fim = corpo.length;
-      for (let i = inicio + 1; i < corpo.length; i += 1) {
-        if (/^[*_\s]*Art(?:igo)?\.?\s*\d/i.test(corpo[i]!)) {
-          fim = i;
-          break;
-        }
-      }
-      while (fim - 1 > inicio && !corpo[fim - 1]!.trim()) fim -= 1;
-      // linha do arquivo da primeira linha do corpo do bloco
-      const primeira = b.titulo === null ? b.linha_inicio : b.linha_inicio + 1 + contarVaziasIniciais(b);
-      return {
-        norma_id: b.norma_id,
-        artigo,
-        path: b.path,
-        linha_inicio: primeira + inicio,
-        linha_fim: primeira + fim - 1,
-        texto: corpo.slice(inicio, fim).join("\n"),
-        origem: "linha-art-no-bloco",
-      };
-    }
-  }
-  return null;
-}
-
-function contarVaziasIniciais(b: Bloco): number {
-  // o corpo do bloco foi aparado no início; o título fica na linha_inicio e o corpo começa depois
-  // das linhas vazias que o separam dele. Sem acesso ao arquivo, a distância é deduzida do fim.
-  const linhasCorpo = b.texto.split("\n").length;
-  return Math.max(0, b.linha_fim - b.linha_inicio - linhasCorpo);
-}
-
 export interface ResultadoNorma {
   norma: NormaResumo;
-  bloco: {
-    titulo: string | null;
-    caminho: string;
-    artigo: string | null;
-    dispositivo: string | null;
-    path: string;
-    linha_inicio: number;
-    linha_fim: number;
-    texto: string;
-  };
+  /** Dispositivo (ID canônico, caput herdado, texto literal, arquivo e linhas), quando o achado é um dispositivo. */
+  dispositivo: TrechoDispositivo | null;
+  /** Dispositivo citado que não está no texto da base, quando `dispositivo` é o ancestral mais próximo. */
+  pedido: string | null;
+  /** Metadados da norma (título, aliases, palavras-chave, ementa), quando o achado é a própria norma. */
+  metadados: { texto: string; path: string; linha: number } | null;
   pontuacao: number | null;
   origem: "citacao-resolvida" | "busca-textual";
 }
 
+const esquemaMetadados = z.strictObject({
+  rowid: z.number().int(),
+  norma_id: texto,
+  texto: texto,
+  path: texto,
+  linha: z.number().int(),
+});
+
+function metadadosDaNorma(db: Database, normaId: string): ResultadoNorma["metadados"] {
+  const linha = db
+    .query("SELECT rowid, norma_id, texto, path, linha FROM normas_metadados WHERE norma_id = ?")
+    .get(normaId);
+  if (!linha) return null;
+  const m = esquemaMetadados.parse(linha);
+  return { texto: m.texto, path: m.path, linha: m.linha };
+}
+
 /**
- * Busca de normas. Se a consulta é uma citação ("Res. CNE/CP 2/2026, art. 28") ou um ID, o
- * resolvedor da fase 2 identifica a norma e o artigo; senão, busca textual por radicais nos
- * metadados (título, aliases, palavras-chave, ementa) e nos blocos do texto.
+ * Busca de normas.
+ *
+ * - Citação ("Res. CNE/CP 2/2026, art. 28, VII") ou ID (`br/cne-cp/res/2026/2#art28-vii`): o
+ *   resolvedor da fase 2 identifica a norma e os dispositivos, e a resposta é cada dispositivo da
+ *   tabela `dispositivos` (ID canônico, caput herdado, texto com os subordinados, arquivo e linhas);
+ *   dispositivo fora do texto da base cai no ancestral mais próximo (`pedido` guarda o citado).
+ *   Norma sem dispositivo citado (ou stub sem texto): os metadados, e a busca textual continua.
+ * - Termos: FTS5 por radicais em duas fontes, sem misturar as pontuações (BM25 de tabelas
+ *   diferentes não se comparam): com todos os conceitos (AND), primeiro os metadados das normas
+ *   (a consulta nomeia a norma), depois os dispositivos (`texto_com_caput`); com algum conceito
+ *   (OR), primeiro os dispositivos, depois os metadados.
+ * - `vigentes`: tira atos revogados ou ainda não vigentes na data `em` (padrão: `data_referencia`),
+ *   pelos intervalos de `vigencias`, e dispositivos revogados.
  */
 export function buscarNorma(
   db: Database,
   consulta: string,
-  opcoes: { limite?: number; situacao?: string; vigentes?: boolean } = {},
+  opcoes: { limite?: number; situacao?: string; vigentes?: boolean; em?: string } = {},
 ): ResultadoNorma[] {
   const limite = opcoes.limite ?? 10;
   const saida: ResultadoNorma[] = [];
-  const resolucao = /^[a-z]+(\/[\w~-]+)+(#[\w-]+)?$/.test(consulta.trim())
-    ? {
-        id: consulta.trim().split("#")[0]!,
-        dispositivoId: consulta.includes("#") ? `#${consulta.split("#")[1]}` : undefined,
-      }
-    : resolverCitacao(consulta, registroPadrao());
+  const resolucao: { id: string | null; dispositivoId?: string | undefined; dispositivos?: string[] | undefined } =
+    /^[a-z]+(\/[\w~-]+)+(#[\w-]+)?$/.test(consulta.trim())
+      ? {
+          id: consulta.trim().split("#")[0]!,
+          dispositivoId: consulta.includes("#") ? `#${consulta.split("#")[1]}` : undefined,
+        }
+      : resolverCitacao(consulta, registroPadrao());
   if (resolucao.id) {
     const norma = obterNorma(db, resolucao.id);
     if (norma) {
-      const artigo = /^#art(\d+)([A-Z])?/.exec(resolucao.dispositivoId ?? "");
-      const bloco = artigo ? blocoDoArtigo(db, norma.id, artigo[2] ? `${artigo[1]}-${artigo[2]}` : artigo[1]!) : null;
-      if (bloco) {
+      const pedidos = resolucao.dispositivos ?? (resolucao.dispositivoId ? [resolucao.dispositivoId] : []);
+      const vistos = new Set<string>();
+      for (const pedido of pedidos) {
+        const achado = dispositivoOuAncestral(db, `${norma.id}${pedido}`);
+        if (!achado || vistos.has(achado.disp.id)) continue;
+        vistos.add(achado.disp.id);
+        const trecho = paraTrecho(db, achado, { subordinados: true });
         saida.push({
           norma,
-          bloco: {
-            titulo: `Art. ${bloco.artigo}`,
-            caminho: bloco.origem,
-            artigo: bloco.artigo,
-            dispositivo: resolucao.dispositivoId ?? null,
-            path: bloco.path,
-            linha_inicio: bloco.linha_inicio,
-            linha_fim: bloco.linha_fim,
-            texto: bloco.texto,
-          },
+          dispositivo: trecho,
+          pedido: achado.disp.dispositivo === pedido ? null : `${idDoAto(norma.id)}${pedido}`,
+          metadados: null,
           pontuacao: null,
           origem: "citacao-resolvida",
         });
-      } else {
-        const meta = db
-          .query(
-            "SELECT rowid, norma_id, ordem, titulo, caminho, artigo, dispositivo, path, linha_inicio, linha_fim, texto FROM normas_blocos WHERE norma_id = ? AND ordem = -1",
-          )
-          .get(norma.id);
-        if (meta) {
-          const b = esquemaBloco.parse(meta);
-          saida.push({
-            norma,
-            bloco: {
-              titulo: b.titulo,
-              caminho: b.caminho,
-              artigo: null,
-              dispositivo: null,
-              path: b.path,
-              linha_inicio: b.linha_inicio,
-              linha_fim: b.linha_fim,
-              texto: b.texto,
-            },
-            pontuacao: null,
-            origem: "citacao-resolvida",
-          });
-        }
+      }
+      if (saida.length) return saida;
+      const metadados = metadadosDaNorma(db, norma.id);
+      if (metadados) {
+        saida.push({ norma, dispositivo: null, pedido: null, metadados, pontuacao: null, origem: "citacao-resolvida" });
       }
     }
   }
-  // citação com artigo achado: a resposta é o artigo; a busca textual só entra sem ele
-  if (saida.some((r) => r.bloco.artigo !== null)) return saida;
+
   const conceitos = conceitosDaConsulta(consulta, "radicais");
-  const condicoes: string[] = [];
-  const parametros: Parametro[] = [];
-  if (opcoes.situacao) {
-    condicoes.push("n.situacao = ?");
-    parametros.push(opcoes.situacao);
-  }
-  if (opcoes.vigentes) condicoes.push("coalesce(n.status_vigencia, '') NOT IN ('revogada')");
-  const sql = `
-    SELECT b.rowid AS rowid, b.norma_id, b.ordem, b.titulo, b.caminho, b.artigo, b.dispositivo, b.path, b.linha_inicio,
-           b.linha_fim, b.texto, bm25(normas_fts, 4.0, 1.0, 1.0) AS pontuacao
-    FROM normas_fts JOIN normas_blocos b ON b.rowid = normas_fts.rowid JOIN normas n ON n.id = b.norma_id
-    WHERE normas_fts MATCH ?${condicoes.length ? ` AND ${condicoes.join(" AND ")}` : ""}
-    ORDER BY pontuacao, b.rowid LIMIT ?`;
-  const esquema = esquemaBloco.extend({ pontuacao: z.number() });
-  const vistos = new Set<number>();
-  for (const operador of ["AND", "OR"] as const) {
-    if (saida.length >= limite) break;
-    if (operador === "OR" && conceitos.length < 2) break;
-    const expressao = expressaoFts(conceitos, ["radicais"], operador);
-    if (!expressao) break;
-    for (const b of linhas(esquema, db.query(sql).all(expressao, ...parametros, limite))) {
-      if (vistos.has(b.rowid) || saida.length >= limite) continue;
-      vistos.add(b.rowid);
-      const norma = obterNorma(db, b.norma_id)!;
+  const data = opcoes.em ?? dataReferenciaBanco(db);
+  const filtros = (colunaNorma: string) => {
+    const condicoes: string[] = [];
+    const parametros: Parametro[] = [];
+    if (opcoes.situacao) {
+      condicoes.push("n.situacao = ?");
+      parametros.push(opcoes.situacao);
+    }
+    if (opcoes.vigentes) {
+      condicoes.push(`NOT ${sqlForaDeVigencia(colunaNorma)}`);
+      parametros.push(data, data);
+    }
+    return { sql: condicoes.map((c) => ` AND ${c}`).join(""), parametros };
+  };
+  const vistosMeta = new Set<number>();
+  const vistosDisp = new Set<number>();
+  const metadados = (expressao: string) => {
+    const f = filtros("m.norma_id");
+    const linhasMeta = linhas(
+      esquemaMetadados.extend({ pontuacao: z.number() }),
+      db
+        .query(
+          `SELECT m.rowid AS rowid, m.norma_id, m.texto, m.path, m.linha, bm25(normas_fts, 4.0, 1.0, 1.0) AS pontuacao
+           FROM normas_fts JOIN normas_metadados m ON m.rowid = normas_fts.rowid JOIN normas n ON n.id = m.norma_id
+           WHERE normas_fts MATCH ?${f.sql} ORDER BY pontuacao, m.rowid LIMIT ?`,
+        )
+        .all(expressao, ...f.parametros, limite + vistosMeta.size),
+    );
+    for (const m of linhasMeta) {
+      if (saida.length >= limite || vistosMeta.has(m.rowid)) continue;
+      if (saida.some((r) => r.metadados && r.norma.id === m.norma_id)) continue;
+      vistosMeta.add(m.rowid);
       saida.push({
-        norma,
-        bloco: {
-          titulo: b.titulo,
-          caminho: b.caminho,
-          artigo: b.artigo,
-          dispositivo: b.dispositivo,
-          path: b.path,
-          linha_inicio: b.linha_inicio,
-          linha_fim: b.linha_fim,
-          texto: b.texto,
-        },
-        pontuacao: Math.round(b.pontuacao * 1000) / 1000,
+        norma: obterNorma(db, m.norma_id)!,
+        dispositivo: null,
+        pedido: null,
+        metadados: { texto: m.texto, path: m.path, linha: m.linha },
+        pontuacao: Math.round(m.pontuacao * 1000) / 1000,
         origem: "busca-textual",
       });
     }
+  };
+  const dispositivos = (expressao: string) => {
+    const f = filtros("d.ato_id");
+    const achados = linhas(
+      z.strictObject({ rowid: z.number().int(), id: texto, norma_id: texto, pontuacao: z.number() }),
+      db
+        .query(
+          `SELECT d.rowid AS rowid, d.id, d.norma_id, bm25(dispositivos_fts, 1.0, 1.0) AS pontuacao
+           FROM dispositivos_fts JOIN dispositivos d ON d.rowid = dispositivos_fts.rowid JOIN normas n ON n.id = d.norma_id
+           WHERE dispositivos_fts MATCH ?${f.sql}${opcoes.vigentes ? " AND d.revogado = 0" : ""}
+           ORDER BY pontuacao, d.rowid LIMIT ?`,
+        )
+        .all(expressao, ...f.parametros, limite + vistosDisp.size),
+    );
+    for (const a of achados) {
+      if (saida.length >= limite || vistosDisp.has(a.rowid)) continue;
+      vistosDisp.add(a.rowid);
+      const d = obterDispositivoBanco(db, a.id)!;
+      saida.push({
+        norma: obterNorma(db, a.norma_id)!,
+        dispositivo: paraTrecho(db, d),
+        pedido: null,
+        metadados: null,
+        pontuacao: Math.round(a.pontuacao * 1000) / 1000,
+        origem: "busca-textual",
+      });
+    }
+  };
+  for (const operador of ["AND", "OR"] as const) {
+    if (saida.length >= limite) break;
+    if (operador === "OR" && conceitos.length < 2) break;
+    const expressaoMeta = expressaoFts(conceitos, ["radicais"], operador);
+    if (!expressaoMeta) break;
+    const ordem = operador === "AND" ? [metadados, dispositivos] : [dispositivos, metadados];
+    for (const etapa of ordem) etapa(expressaoMeta);
   }
   return saida;
 }

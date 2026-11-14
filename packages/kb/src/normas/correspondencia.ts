@@ -10,7 +10,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { parse } from "yaml";
 import { z } from "zod";
-import { type Dispositivo, dispositivosDoAto, indiceDispositivos } from "./estrutura.ts";
+import { dispositivosDoAto, indiceDispositivos } from "./estrutura.ts";
 import { ehIdAto, ehIdDispositivo, idDoAto } from "./ids.ts";
 import { raizRepositorio } from "./registro.ts";
 
@@ -86,35 +86,61 @@ export interface ResultadoCorrespondencia {
   textos_destino: { id: string; texto: string | null }[];
 }
 
+/**
+ * O que a correspondência precisa ler: as tabelas e os dispositivos (pai e texto, pelo índice
+ * deduplicado do ato). Duas implementações: os arquivos (`fonteCorrespondenciaArquivos`) e o
+ * `kb.sqlite` (`db/consultas-normas.ts`); a regra (`correspondenciaEm`) é uma só.
+ */
+export interface FonteCorrespondencia {
+  /** Tabelas cuja origem é o ato. */
+  tabelas(ato: string): TabelaCorrespondencia[];
+  /** Dispositivo pelo ID do ato (`br/cne-cp/res/2021/1#art20-iii`): pai (ID completo) e texto. */
+  dispositivo(id: string): { pai: string | null; texto: string } | undefined;
+  /** Sufixos dos artigos do ato, em ordem (`#art1`, `#art2`...). */
+  artigos(ato: string): string[];
+}
+
+export function fonteCorrespondenciaArquivos(raiz: string = raizRepositorio()): FonteCorrespondencia {
+  return {
+    tabelas: (ato) => carregarCorrespondencias(raiz).filter((t) => t.origem === ato),
+    dispositivo: (id) => indiceDispositivos(raiz).get(id),
+    artigos: (ato) =>
+      dispositivosDoAto(ato, raiz)
+        .filter((d) => d.tipo === "artigo")
+        .map((d) => d.dispositivo),
+  };
+}
+
 /** Ancestrais de um ID de dispositivo, do mais próximo ao artigo (`#art20-par1-iii` → `#art20-par1`, `#art20`). */
-function ancestrais(dispositivoId: string, indice: Map<string, Dispositivo>, ato: string): string[] {
+function ancestrais(dispositivoId: string, fonte: FonteCorrespondencia, ato: string): string[] {
   const saida: string[] = [];
-  let atual = indice.get(`${ato}${dispositivoId}`)?.pai ?? null;
+  let atual = fonte.dispositivo(`${ato}${dispositivoId}`)?.pai ?? null;
   while (atual) {
     saida.push(atual.slice(atual.indexOf("#")));
-    atual = indice.get(`${ato}${atual.slice(atual.indexOf("#"))}`)?.pai ?? null;
+    atual = fonte.dispositivo(`${ato}${atual.slice(atual.indexOf("#"))}`)?.pai ?? null;
   }
   return saida;
 }
 
 /** Correspondência de um dispositivo (ou ato) de origem, pelas tabelas da base. */
 export function correspondencia(id: string, raiz: string = raizRepositorio()): ResultadoCorrespondencia[] {
+  return correspondenciaEm(id, fonteCorrespondenciaArquivos(raiz));
+}
+
+/** Correspondência de um dispositivo (ou ato) de origem, sobre uma fonte de dados. */
+export function correspondenciaEm(id: string, fonte: FonteCorrespondencia): ResultadoCorrespondencia[] {
   const [norma, sufixo] = id.split("#") as [string, string | undefined];
   const ato = idDoAto(norma);
-  const indice = indiceDispositivos(raiz);
   const saida: ResultadoCorrespondencia[] = [];
-  for (const tabela of carregarCorrespondencias(raiz).filter((t) => t.origem === ato)) {
+  const tabelas = fonte.tabelas(ato);
+  const alvos = tabelas.length === 0 ? [] : sufixo ? [`#${sufixo}`] : fonte.artigos(ato);
+  for (const tabela of tabelas) {
     const porOrigem = new Map(tabela.itens.map((item) => [item.origem, item]));
-    const alvos = sufixo
-      ? [`#${sufixo}`]
-      : dispositivosDoAto(ato, raiz)
-          .filter((d) => d.tipo === "artigo")
-          .map((d) => d.dispositivo);
     for (const alvo of alvos) {
       let item = porOrigem.get(alvo);
       let herdado: string | null = null;
       if (!item) {
-        for (const ancestral of ancestrais(alvo, indice, ato)) {
+        for (const ancestral of ancestrais(alvo, fonte, ato)) {
           item = porOrigem.get(ancestral);
           if (item) {
             herdado = ancestral;
@@ -132,10 +158,10 @@ export function correspondencia(id: string, raiz: string = raizRepositorio()): R
         item,
         herdado_de: herdado,
         detalhes,
-        texto_origem: indice.get(`${ato}${alvo}`)?.texto ?? null,
+        texto_origem: fonte.dispositivo(`${ato}${alvo}`)?.texto ?? null,
         textos_destino: item.destino.map((d) => ({
           id: `${tabela.destino}${d}`,
-          texto: indice.get(`${tabela.destino}${d}`)?.texto ?? null,
+          texto: fonte.dispositivo(`${tabela.destino}${d}`)?.texto ?? null,
         })),
       });
     }

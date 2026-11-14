@@ -2,7 +2,9 @@
  * Fontes do `kb.sqlite` e a impressão digital delas, para a CLI decidir quando recompilar.
  *
  * Fontes = os arquivos do git de onde o banco sai (normas, stubs, PPCs e índice de seções, CNCT,
- * `dados/institucional/`, fichas, tópicos e marcos da `analise-ppc`, léxico de sinônimos) mais o
+ * `dados/institucional/`, fichas, tópicos e marcos da `analise-ppc`, léxico de sinônimos, e os
+ * arquivos da fase 5: `relacoes.yaml`, `transicoes.yaml`, `correspondencias/`, `config/vigencia.yaml`)
+ * mais o
  * código que compila (`packages/kb/src/` menos testes, CLI e consultas). Mudou qualquer um, o banco
  * fica velho.
  *
@@ -41,7 +43,8 @@ const CODIGO = "packages/kb/src";
 const CODIGO_FORA = [
   /\.test\.ts$/,
   /^packages\/kb\/src\/(cli|python\/|avaliacao\/)/,
-  /^packages\/kb\/src\/db\/(consultas|comandos|banco|pacote-contexto)\.ts$/,
+  /^packages\/kb\/src\/db\/(consultas|consultas-normas|comandos|banco|pacote-contexto)\.ts$/,
+  /^packages\/kb\/src\/normas\/(comandos|impacto)\.ts$/,
 ];
 
 function listar(raiz: string, relativo: string, extensoes: readonly string[]): string[] {

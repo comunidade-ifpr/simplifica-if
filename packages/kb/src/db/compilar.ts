@@ -11,7 +11,7 @@
  * - `page_size` fixo, um único `INSERT` por linha numa transação, `optimize` do FTS5 e `VACUUM` no
  *   fim, que reescreve as páginas na ordem lógica e zera o espaço livre;
  * - o arquivo é escrito num temporário e renomeado (quem lê nunca vê um banco pela metade).
- * O teste `compilar.test.ts` compila duas vezes e compara o SHA-256 dos arquivos.
+ * O teste `base.test.ts` compila duas vezes e compara o SHA-256 dos arquivos.
  */
 import { Database, type Statement } from "bun:sqlite";
 import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync } from "node:fs";
@@ -26,6 +26,7 @@ import { analisarFrontMatter } from "../normas/front-matter.ts";
 import { idDoAto } from "../normas/ids.ts";
 import { caminhoStubs, carregarRegistro, lerRegistroStubs, raizRepositorio } from "../normas/registro.ts";
 import { extrairCitacoes } from "../normas/resolver.ts";
+import { dataReferencia, derivarLinha } from "../normas/vigencia.ts";
 import { mascararFrontMatter } from "../ppcs/front-matter.ts";
 import { lerTextoSecao } from "../ppcs/citacoes.ts";
 import { compararTexto } from "../texto.ts";
@@ -35,15 +36,12 @@ import {
   esquemaLinhaCorrespondencia,
   esquemaLinhaDispositivo,
   esquemaLinhaRelacao,
+  esquemaLinhaTabelaCorrespondencia,
   esquemaLinhaTransicao,
   esquemaLinhaVigencia,
   type FontesNormativas,
-  fontesNormativasVazias,
 } from "./fontes-normativas.ts";
-import { blocosDaNorma } from "./normas-blocos.ts";
-
-/** Implementação padrão das fontes da fase 5 (troque aqui ao ligar os módulos de `normas/`). */
-export const fontesNormativasPadrao: FontesNormativas = fontesNormativasVazias;
+import { fontesNormativasArquivos } from "../normas/fontes-db.ts";
 
 export const PAGE_SIZE = 4096;
 
@@ -54,6 +52,7 @@ export function caminhoBancoPadrao(raiz: string = raizRepositorio()): string {
 export interface OpcoesCompilacao {
   raiz?: string;
   destino?: string;
+  /** Carga da fase 5 (padrão: `fontesNormativasArquivos(raiz)`, pela API de `normas/`). */
   fontesNormativas?: FontesNormativas;
   /** Léxico de sinônimos (padrão: `packages/kb/dados/sinonimos.yaml`). */
   sinonimos?: Sinonimos;
@@ -183,11 +182,9 @@ const esquemaMarcos = z.looseObject({
     z.looseObject({
       id: z.string(),
       tema: z.string(),
-      vigente: z.string(),
+      /** Atos do tema, do mais antigo ao mais recente conhecido (o resto é derivado: `derivarLinha`). */
+      linha: z.array(z.string()).min(1),
       aplica_a: z.string().optional(),
-      substitui: z.array(z.string()).optional(),
-      antecessoras_historicas: z.array(z.string()).optional(),
-      dispositivos_revogados: z.array(z.string()).optional(),
       transicao: z.string().optional(),
       orientacao_analise: z.string().optional(),
     }),
@@ -255,7 +252,7 @@ function linhaNoYaml(conteudo: string, id: string): number {
 export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
   const raiz = opcoes.raiz ?? raizRepositorio();
   const destino = opcoes.destino ?? caminhoBancoPadrao(raiz);
-  const fontesNormativas = opcoes.fontesNormativas ?? fontesNormativasPadrao;
+  const fontesNormativas = opcoes.fontesNormativas ?? fontesNormativasArquivos(raiz);
   const lexico = opcoes.sinonimos ?? lerSinonimos();
   const base = path.join(raiz, BASE);
 
@@ -287,19 +284,7 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
       linha: number,
     ) => {
       const texto = partes.filter((p): p is string => Boolean(p)).join("\n");
-      const rowid = ins.inserir("normas_blocos", {
-        norma_id: id,
-        ordem: -1,
-        titulo,
-        nivel: 0,
-        caminho: "metadados",
-        artigo: null,
-        dispositivo: null,
-        path: caminho,
-        linha_inicio: linha,
-        linha_fim: linha,
-        texto,
-      });
+      const rowid = ins.inserir("normas_metadados", { norma_id: id, texto, path: caminho, linha });
       insFtsNorma.run(rowid, titulo, texto, radicais(`${titulo}\n${texto}`).join(" "));
     };
     for (const item of [...manifest].sort((a, b) => compararTexto(a.id, b.id))) {
@@ -333,22 +318,6 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
         caminhoMd,
         1,
       );
-      for (const bloco of blocosDaNorma(md)) {
-        const rowid = ins.inserir("normas_blocos", {
-          norma_id: item.id,
-          ordem: bloco.ordem,
-          titulo: bloco.titulo,
-          nivel: bloco.nivel,
-          caminho: bloco.caminho,
-          artigo: bloco.artigo,
-          dispositivo: bloco.dispositivo,
-          path: caminhoMd,
-          linha_inicio: bloco.linha_inicio,
-          linha_fim: bloco.linha_fim,
-          texto: bloco.texto,
-        });
-        insFtsNorma.run(rowid, bloco.caminho, bloco.texto, radicais(`${bloco.caminho}\n${bloco.texto}`).join(" "));
-      }
     }
     const arquivoStubs = caminhoStubs(raiz);
     if (existsSync(arquivoStubs)) {
@@ -741,44 +710,56 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
       const [ficha, topico] = par.split("\0") as [string, string];
       ins.inserir("fichas_topicos", { ficha_id: ficha, topico_id: topico });
     }
+    // marcos-normativos.json guarda a linha do tema; vigente, substituídas, antecessoras e
+    // dispositivos revogados vêm de derivarLinha (fase 5) na data_referencia, como na analise-ppc.
     const arquivoMarcos = path.join(raiz, ANALISE, "marcos-normativos.json");
     if (existsSync(arquivoMarcos)) {
       const marcos = esquemaMarcos.parse(lerJson(arquivoMarcos));
+      const referencia = dataReferencia(raiz);
       for (const m of [...marcos.marcos].sort((a, b) => compararTexto(a.id, b.id))) {
+        const derivado = derivarLinha(m.linha, referencia, raiz);
         ins.inserir("marcos", {
           id: m.id,
           tema: m.tema,
-          vigente: m.vigente,
+          vigente: derivado.vigente,
           aplica_a: m.aplica_a,
           transicao: m.transicao,
           orientacao_analise: m.orientacao_analise,
-          normas_json: json({
-            vigente: m.vigente,
-            substitui: m.substitui ?? [],
-            antecessoras_historicas: m.antecessoras_historicas ?? [],
-            dispositivos_revogados: m.dispositivos_revogados ?? [],
-          }),
+          normas_json: json({ linha: m.linha, data_referencia: referencia, ...derivado }),
           path: `${ANALISE}/marcos-normativos.json`,
           dados_json: json(m),
         });
       }
     }
 
-    /* ---------- fase 5 */
+    /* ---------- fase 5: dispositivos (com FTS), relações, vigências, transições, correspondências */
+    const insFtsDispositivo = db.prepare("INSERT INTO dispositivos_fts (rowid, texto, radicais) VALUES (?, ?, ?)");
     for (const linha of fontesNormativas.dispositivos()) {
-      const { notas, ...d } = esquemaLinhaDispositivo.parse(linha);
-      ins.inserir("dispositivos", { ...d, notas_json: json(notas) });
+      const { caput, estrutura, notas, ...d } = esquemaLinhaDispositivo.parse(linha);
+      const rowid = ins.inserir("dispositivos", {
+        ...d,
+        caput_json: json(caput),
+        estrutura_json: json(estrutura),
+        notas_json: json(notas),
+      });
+      if (d.canonico) insFtsDispositivo.run(rowid, d.texto_com_caput, radicais(d.texto_com_caput).join(" "));
     }
     for (const linha of fontesNormativas.relacoes()) ins.inserir("relacoes", esquemaLinhaRelacao.parse(linha));
     for (const linha of fontesNormativas.vigencias()) ins.inserir("vigencias", esquemaLinhaVigencia.parse(linha));
     for (const linha of fontesNormativas.transicoes()) ins.inserir("transicoes", esquemaLinhaTransicao.parse(linha));
+    for (const linha of fontesNormativas.tabelasCorrespondencia()) {
+      ins.inserir("correspondencias_tabelas", esquemaLinhaTabelaCorrespondencia.parse(linha));
+    }
     for (const linha of fontesNormativas.correspondencias()) {
-      ins.inserir("correspondencias", esquemaLinhaCorrespondencia.parse(linha));
+      const { destino, ...c } = esquemaLinhaCorrespondencia.parse(linha);
+      ins.inserir("correspondencias", { ...c, destino_json: json(destino) });
     }
 
     /* ---------- meta */
     const meta: [string, string][] = [
       ["versao_esquema", String(VERSAO_ESQUEMA)],
+      // data declarada em base-conhecimento/config/vigencia.yaml (fonte), não o relógio
+      ["data_referencia", dataReferencia(raiz)],
       ["fontes_sha256", fontesSha],
       ["fontes_lista_sha256", hashLista(arquivos)],
       ["fontes_total", String(arquivos.length)],
@@ -792,6 +773,7 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
 
   db.run("INSERT INTO normas_fts(normas_fts) VALUES ('optimize')");
   db.run("INSERT INTO secoes_fts(secoes_fts) VALUES ('optimize')");
+  db.run("INSERT INTO dispositivos_fts(dispositivos_fts) VALUES ('optimize')");
   db.run("VACUUM");
   db.close();
   renameSync(temporario, destino);

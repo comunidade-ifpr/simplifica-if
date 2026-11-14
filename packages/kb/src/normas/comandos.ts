@@ -11,10 +11,20 @@
  *
  * As saídas não dependem do relógio: a data é `--em` ou a `data_referencia` de
  * `base-conhecimento/config/vigencia.yaml`.
+ *
+ * `dispositivo` e `correspondencia` leem o `kb.sqlite` (recompilado sozinho se velho), pelas mesmas
+ * regras da API de arquivos (`db/consultas-normas.ts`; `db/base.test.ts` confere a igualdade).
+ * `vigencia`, `relacoes` e `impacto` leem os arquivos: `vigencia` explica o status com os eventos e
+ * as pendências que `statusEm` monta (o banco guarda só os intervalos que saem dele), `relacoes
+ * --propor` roda o regex sobre o parser, e `impacto` lê os textos das skills (inclusive de outra
+ * árvore, `--conteudo`), que não estão no banco.
  */
+import type { Database } from "bun:sqlite";
 import { type Command, InvalidArgumentError } from "commander";
-import { correspondencia } from "./correspondencia.ts";
-import { descendentes, obterDispositivo } from "./estrutura.ts";
+import { abrirBanco } from "../db/banco.ts";
+import { descendentesBanco, fonteCorrespondenciaBanco, obterDispositivoBanco } from "../db/consultas-normas.ts";
+import { obterNorma } from "../db/consultas.ts";
+import { correspondenciaEm } from "./correspondencia.ts";
 import { ehIdNorma, idDoAto } from "./ids.ts";
 import { impacto } from "./impacto.ts";
 import { carregarRegistro } from "./registro.ts";
@@ -23,6 +33,15 @@ import { dataReferencia, statusEm, transicoesAplicaveis } from "./vigencia.ts";
 
 function json(valor: unknown): void {
   process.stdout.write(`${JSON.stringify(valor, null, 2)}\n`);
+}
+
+function comBanco<T>(acao: (db: Database) => T): T {
+  const db = abrirBanco();
+  try {
+    return acao(db);
+  } finally {
+    db.close();
+  }
 }
 
 function data(valor: string): string {
@@ -45,19 +64,28 @@ export function registrarComandosNormas(programa: Command): void {
     .option("--filhos", "inclui incisos, alíneas e parágrafos do dispositivo")
     .action((id: string, opcoes: { json?: boolean; filhos?: boolean }) => {
       exigirIdNorma(programa, id);
-      const disp = obterDispositivo(id);
-      if (!disp) {
+      const achado = comBanco((db) => {
+        const d = obterDispositivoBanco(db, id);
+        if (!d) return null;
+        return {
+          d,
+          titulo: obterNorma(db, d.disp.ato)?.titulo ?? d.disp.ato,
+          filhos: opcoes.filhos ? descendentesBanco(db, d.disp.id).map((f) => f.disp) : [],
+        };
+      });
+      if (!achado) {
         if (opcoes.json) json({ id, encontrado: false });
         else console.log(`dispositivo não encontrado: ${id}`);
         process.exitCode = 1;
         return;
       }
-      const registro = carregarRegistro();
-      const filhos = opcoes.filhos ? descendentes(disp.id) : [];
-      const path = registro.obter(disp.norma)?.path ?? null;
+      const { disp } = achado.d;
+      const filhos = achado.filhos;
+      // path relativo a base-conhecimento/, como no manifest
+      const path = achado.d.path.replace(/^base-conhecimento\//, "");
       if (opcoes.json) return json({ ...disp, path, filhos });
-      console.log(`${disp.id} — ${registro.obter(disp.ato)?.title ?? disp.ato}`);
-      if (path) console.log(`  base-conhecimento/${path}:${disp.linha_inicio}-${disp.linha_fim}`);
+      console.log(`${disp.id} — ${achado.titulo}`);
+      console.log(`  ${achado.d.path}:${disp.linha_inicio}-${disp.linha_fim}`);
       if (disp.estrutura.length) console.log(`  ${disp.estrutura.join(" › ")}`);
       for (const caput of disp.caput) console.log(`  [caput] ${caput}`);
       console.log(`\n${disp.texto}`);
@@ -147,7 +175,7 @@ export function registrarComandosNormas(programa: Command): void {
     .option("--json", "saída em JSON")
     .action((id: string, opcoes: { json?: boolean }) => {
       exigirIdNorma(programa, id);
-      const resultados = correspondencia(id);
+      const resultados = comBanco((db) => correspondenciaEm(id, fonteCorrespondenciaBanco(db)));
       if (opcoes.json) return json(resultados);
       if (resultados.length === 0) {
         console.log(`sem tabela de correspondência para ${id}`);

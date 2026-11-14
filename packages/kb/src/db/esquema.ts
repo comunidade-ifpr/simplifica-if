@@ -13,7 +13,7 @@
  *   `rowid` do FTS é o da tabela de origem.
  */
 
-export const VERSAO_ESQUEMA = 1;
+export const VERSAO_ESQUEMA = 2;
 
 const TOKENIZADOR = `tokenize="unicode61 remove_diacritics 2"`;
 
@@ -47,25 +47,16 @@ CREATE TABLE normas (
   front_matter_json TEXT
 );
 
--- Texto das normas por bloco (título até o próximo título), como os Markdown estão hoje.
-CREATE TABLE normas_blocos (
+-- Metadados de cada norma (título, aliases, palavras-chave, ementa) para a busca pela identidade da
+-- norma; o texto normativo está em dispositivos. path/linha: o Markdown (linha 1) ou o stub em stubs.yaml.
+CREATE TABLE normas_metadados (
   rowid INTEGER PRIMARY KEY,
-  norma_id TEXT NOT NULL REFERENCES normas(id),
-  ordem INTEGER NOT NULL,
-  titulo TEXT,
-  nivel INTEGER NOT NULL,
-  caminho TEXT NOT NULL,
-  artigo TEXT,
-  dispositivo TEXT,
+  norma_id TEXT NOT NULL UNIQUE REFERENCES normas(id),
+  texto TEXT NOT NULL,
   path TEXT NOT NULL,
-  linha_inicio INTEGER NOT NULL,
-  linha_fim INTEGER NOT NULL,
-  texto TEXT NOT NULL
+  linha INTEGER NOT NULL
 );
-CREATE INDEX normas_blocos_norma ON normas_blocos(norma_id, ordem);
-CREATE INDEX normas_blocos_artigo ON normas_blocos(norma_id, artigo);
 
--- Metadados da norma (título, aliases, palavras-chave, ementa) e texto dos blocos.
 CREATE VIRTUAL TABLE normas_fts USING fts5(
   titulo, texto, radicais, content='', columnsize=1, ${TOKENIZADOR}
 );
@@ -320,6 +311,8 @@ CREATE TABLE fichas_topicos (
   PRIMARY KEY (ficha_id, topico_id)
 ) WITHOUT ROWID;
 
+-- vigente e normas_json (linha, data_referencia, vigente, substitui, antecessoras_historicas,
+-- dispositivos_revogados) derivados por derivarLinha (fase 5) na data_referencia.
 CREATE TABLE marcos (
   id TEXT PRIMARY KEY,
   tema TEXT NOT NULL,
@@ -332,59 +325,110 @@ CREATE TABLE marcos (
   dados_json TEXT NOT NULL
 );
 
--- Fase 5 (carga por FontesNormativas, em fontes-normativas.ts; vazias até o merge).
+-- Fase 5 (carga por FontesNormativas: normas/fontes-db.ts sobre a API de normas/).
+-- Dispositivos de todas as normas da base, compilação da LDB inclusive (id com ~variante);
+-- canonico = 1 no dispositivo que o índice do ato usa (o texto integral prevalece).
 CREATE TABLE dispositivos (
-  id TEXT PRIMARY KEY,
+  rowid INTEGER PRIMARY KEY,
+  id TEXT NOT NULL UNIQUE,
+  ato_id TEXT NOT NULL,
   norma_id TEXT NOT NULL,
   dispositivo TEXT NOT NULL,
+  tipo TEXT NOT NULL,
+  rotulo TEXT NOT NULL,
   pai TEXT,
   ordem INTEGER NOT NULL,
-  rotulo TEXT NOT NULL,
   texto TEXT NOT NULL,
+  caput_json TEXT NOT NULL,
   texto_com_caput TEXT NOT NULL,
+  estrutura_json TEXT NOT NULL,
+  notas_json TEXT NOT NULL,
+  revogado INTEGER NOT NULL,
+  vetado INTEGER NOT NULL,
+  canonico INTEGER NOT NULL,
   path TEXT NOT NULL,
   linha_inicio INTEGER NOT NULL,
-  linha_fim INTEGER NOT NULL,
-  notas_json TEXT NOT NULL
+  linha_fim INTEGER NOT NULL
 );
+CREATE INDEX dispositivos_ato ON dispositivos(ato_id, dispositivo);
 CREATE INDEX dispositivos_norma ON dispositivos(norma_id, ordem);
 
-CREATE TABLE relacoes (
-  origem TEXT NOT NULL,
-  alvo TEXT NOT NULL,
-  tipo TEXT NOT NULL,
-  efeito_de TEXT,
-  dispositivo_operador TEXT,
-  curadoria TEXT NOT NULL,
-  fonte TEXT,
-  PRIMARY KEY (origem, alvo, tipo)
-) WITHOUT ROWID;
-CREATE INDEX relacoes_alvo ON relacoes(alvo);
+-- Só os dispositivos canônicos. texto: texto_com_caput em tokens; radicais: radicais Snowball dele.
+CREATE VIRTUAL TABLE dispositivos_fts USING fts5(
+  texto, radicais, content='', columnsize=1, ${TOKENIZADOR}
+);
 
+CREATE TABLE relacoes (
+  ordem INTEGER PRIMARY KEY,
+  tipo TEXT NOT NULL,
+  origem TEXT NOT NULL,
+  operador TEXT,
+  alvo TEXT NOT NULL,
+  alvo_dispositivo TEXT,
+  alcance TEXT,
+  efeito_de TEXT NOT NULL,
+  efeito_em TEXT,
+  efeito_minimo TEXT,
+  evidencia_em TEXT NOT NULL,
+  evidencia_trecho TEXT NOT NULL,
+  confirmado_em TEXT,
+  proposta TEXT NOT NULL,
+  nota TEXT,
+  path TEXT NOT NULL
+);
+CREATE INDEX relacoes_alvo ON relacoes(alvo);
+CREATE INDEX relacoes_origem ON relacoes(origem);
+
+-- statusEm em intervalos: [de, ate), null = aberto. A consulta escolhe a data; nada do relógio.
 CREATE TABLE vigencias (
   alvo TEXT NOT NULL,
-  vigente_de TEXT,
-  vigente_ate TEXT,
-  fonte TEXT NOT NULL
-);
-CREATE INDEX vigencias_alvo ON vigencias(alvo);
+  ordem INTEGER NOT NULL,
+  de TEXT,
+  ate TEXT,
+  status TEXT NOT NULL,
+  certo INTEGER NOT NULL,
+  fonte TEXT NOT NULL,
+  PRIMARY KEY (alvo, ordem)
+) WITHOUT ROWID;
 
+-- Regras de transição; a situação numa data sai de situacaoNaData(inicio_em, inicio_minimo, fim_em, fim).
 CREATE TABLE transicoes (
   id TEXT PRIMARY KEY,
   norma_id TEXT NOT NULL,
-  dispositivo TEXT,
-  descricao TEXT NOT NULL,
-  inicio TEXT,
-  fim TEXT,
-  aplica_a TEXT NOT NULL
+  dispositivo TEXT NOT NULL,
+  tipo TEXT NOT NULL,
+  norma_anterior TEXT,
+  aplica_a TEXT NOT NULL,
+  regra TEXT NOT NULL,
+  inicio TEXT NOT NULL,
+  fim TEXT NOT NULL,
+  inicio_em TEXT,
+  inicio_minimo TEXT,
+  fim_em TEXT,
+  evidencia TEXT NOT NULL,
+  path TEXT NOT NULL
 );
+CREATE INDEX transicoes_norma ON transicoes(norma_id);
+CREATE INDEX transicoes_anterior ON transicoes(norma_anterior);
+
+CREATE TABLE correspondencias_tabelas (
+  arquivo TEXT PRIMARY KEY,
+  origem TEXT NOT NULL,
+  destino TEXT NOT NULL,
+  status TEXT NOT NULL,
+  elaborado_em TEXT,
+  revisado_por TEXT,
+  metodo TEXT NOT NULL
+) WITHOUT ROWID;
 
 CREATE TABLE correspondencias (
+  tabela TEXT NOT NULL REFERENCES correspondencias_tabelas(arquivo),
+  ordem INTEGER NOT NULL,
   origem TEXT NOT NULL,
-  alvo TEXT,
   tipo TEXT NOT NULL,
+  destino_json TEXT NOT NULL,
   nota TEXT,
-  curadoria TEXT NOT NULL
-);
+  PRIMARY KEY (tabela, ordem)
+) WITHOUT ROWID;
 CREATE INDEX correspondencias_origem ON correspondencias(origem);
 `;

@@ -694,6 +694,41 @@ Em aberto:
 - **Interface da fase 5:** `FontesNormativas` em `db/fontes-normativas.ts` (dispositivos, relações, vigências, transições e correspondências, com zod por linha), carregada vazia por `fontesNormativasPadrao`.
 - **Pendências:** ligar a fase 5; harness com agente real (orçamento) para os critérios de tokens e de concordância nos PPCs-ouro; revisão humana do conjunto de consultas, do léxico, do mapa tópico → seção (`dados/topicos-secoes.yaml`) e dos fatos extraídos; extrair estágio em mais PPCs (32 técnicos sem o fato); `pacote-contexto` por ficha ou tópico na `analise-ppc`.
 
+**Ligação das fases 5 e 6 concluída em 13/11/2026** (no `main`, depois do merge `28b2552`).
+
+- **Marcos:** o compilador lia `vigente` de `marcos-normativos.json`, que a fase 5 tirou do arquivo (2 falhas em `db/base.test.ts`). Agora a linha `marcos` sai de `derivarLinha` na `data_referencia`, a mesma derivação da `analise-ppc`.
+- **Carga:** `FontesNormativas` implementada por `normas/fontes-db.ts` sobre a API de `normas/`, padrão de `compilarBanco`; sem regra nova no banco. `ARQUIVOS_FONTES_NORMATIVAS` passa a listar `relacoes.yaml`, `transicoes.yaml`, `correspondencias/`, `config/vigencia.yaml` e `normas/stubs.yaml`.
+- **Esquema (versão 2):**
+  - `dispositivos` com todas as colunas de `Dispositivo` (tipo, caput, estrutura, notas com tipo, revogado, vetado), `ato_id`, `texto_com_caput` e `canonico` (a deduplicação de `indiceDispositivos`), mais `dispositivos_fts`;
+  - `relacoes` com o arquivo inteiro: a chave antiga (origem, alvo, tipo) não comportava revogações parciais repetidas;
+  - `vigencias` como intervalos `[de, ate)` com `status` e `certo`, calculados por `statusEm` nas datas em que ele pode mudar (`intervalosVigencia`);
+  - `transicoes` com as datas resolvidas; a situação numa data sai de `situacaoNaData`, extraída de `situacaoTransicao`;
+  - `correspondencias_tabelas` e `correspondencias`;
+  - `normas_blocos` (texto por título) deu lugar a `normas_metadados`. O texto normativo vem dos dispositivos, e o editorial e os resumos dos Markdown ficam fora da busca. `db/normas-blocos.ts` e `blocoDoArtigo` foram removidos.
+- **Números:** 4.891 dispositivos (4.867 canônicos no FTS; 24 da compilação da LDB), 59 relações, 205 intervalos de vigência para 103 atos (81 incertos), 8 transições, 168 itens de correspondência, 4 marcos. Dois builds seguidos dão o mesmo SHA-256 (`30bc62b8…`), em 7,3 a 8,1 s, com 131,8 MB (antes, 127,2 MB).
+- **CLI:** `kb dispositivo` e `kb correspondencia` leem o banco. A herança pelo ancestral virou `correspondenciaEm` sobre uma fonte, e os descendentes `descendentesEm`; as duas leituras usam a mesma função. `buscar-norma` devolve dispositivos com ID canônico, caput, subordinados (na citação), arquivo e linhas, e tem `--vigentes --em <data>` pelos intervalos. `vigencia`, `relacoes` e `impacto` continuam nos arquivos:
+  - `vigencia` explica eventos e pendências que só `statusEm` monta;
+  - `--propor` roda o regex sobre o parser;
+  - `impacto` lê os textos das skills, inclusive de outra árvore.
+- **Mesmo resultado nos dois caminhos** (`db/base.test.ts`), conferido em:
+  - todos os dispositivos, pelo ID do ato e pelo do arquivo;
+  - os descendentes;
+  - toda a correspondência da 1/2021 e as tabelas;
+  - as relações;
+  - os marcos derivados;
+  - o status e o `certo` de cada ato em cada data de mudança e na véspera;
+  - as transições em cinco datas.
+- **`pacote-contexto`** (Técnico em Enfermagem de Curitiba), em caracteres:
+
+  | Tarefa | Total antes | Total depois | Bloco de normas antes | Bloco de normas depois |
+  |---|---|---|---|---|
+  | CT-CURR-12 | 52.721 | 57.954 | 9.486 | 6.835 |
+  | `estagio` | 112.366 | 115.551 | 11.347 | 6.668 |
+  | grupos 001 a 004 | 334.557 a 379.761 | 345.733 a 385.542 | 30.415 a 56.325 | 30.815 a 57.196 |
+
+  O texto normativo encolheu nas fichas avulsas porque o inciso citado vem com o caput, e não o artigo inteiro. Nos grupos, o bloco de normas oscila entre −7% e +13%, pelo custo de cada trecho em JSON. O aumento do total vem das regras de transição, que antes não entravam: 7 ou 8 regras, cerca de 7 a 9 mil caracteres, com o texto literal do dispositivo.
+- **Pendências:** as da fase 6 (harness com agente real, revisões humanas) e as da fase 5 (data do DOU da 2/2026, revisão jurídica da correspondência). A busca de normas não tem conjunto rotulado para medir recall, como o das seções.
+
 ## Histórico de revisões
 
 **v2, 13/11/2026.** Incorpora duas revisões independentes.

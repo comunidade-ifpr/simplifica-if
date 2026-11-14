@@ -40,9 +40,19 @@ import { arvoreMarkdown, palavrasDoTexto, textoDoNo } from "./markdown.ts";
 import { raizRepositorio } from "./registro.ts";
 import { compararTexto } from "../texto.ts";
 
-export type TipoDispositivo = "artigo" | "paragrafo" | "inciso" | "alinea" | "item" | "anexo" | "secao";
+export const TIPOS_DISPOSITIVO = ["artigo", "paragrafo", "inciso", "alinea", "item", "anexo", "secao"] as const;
+export type TipoDispositivo = (typeof TIPOS_DISPOSITIVO)[number];
 
-export type TipoNota = "redacao" | "inclusao" | "revogacao" | "renumeracao" | "vide" | "vigencia" | "regulamento";
+export const TIPOS_NOTA = [
+  "redacao",
+  "inclusao",
+  "revogacao",
+  "renumeracao",
+  "vide",
+  "vigencia",
+  "regulamento",
+] as const;
+export type TipoNota = (typeof TIPOS_NOTA)[number];
 
 export interface NotaDispositivo {
   tipo: TipoNota;
@@ -793,13 +803,14 @@ export function obterDispositivo(id: string, raiz: string = raizRepositorio()): 
   return direto;
 }
 
-/** Descendentes de um dispositivo (filhos, netos...), em ordem. */
-export function descendentes(id: string, raiz: string = raizRepositorio()): Dispositivo[] {
-  const todos = carregarDispositivos(raiz);
-  const alvo = todos.find((disp) => disp.id === id);
-  if (!alvo) return [];
-  const ids = new Set([alvo.id]);
-  const saida: Dispositivo[] = [];
+/**
+ * Descendentes (filhos, netos...) do dispositivo `id` numa lista em ordem de arquivo: a regra única,
+ * usada sobre os arquivos (`descendentes`) e sobre o `kb.sqlite` (`db/consultas-normas.ts`).
+ */
+export function descendentesEm<T extends { id: string; pai: string | null }>(todos: readonly T[], id: string): T[] {
+  if (!todos.some((disp) => disp.id === id)) return [];
+  const ids = new Set([id]);
+  const saida: T[] = [];
   for (const disp of todos) {
     if (disp.pai && ids.has(disp.pai)) {
       ids.add(disp.id);
@@ -807,6 +818,11 @@ export function descendentes(id: string, raiz: string = raizRepositorio()): Disp
     }
   }
   return saida;
+}
+
+/** Descendentes de um dispositivo (filhos, netos...), em ordem. */
+export function descendentes(id: string, raiz: string = raizRepositorio()): Dispositivo[] {
+  return descendentesEm(carregarDispositivos(raiz), id);
 }
 
 /** Palavras dos segmentos concatenados (régua da reconstituição). */

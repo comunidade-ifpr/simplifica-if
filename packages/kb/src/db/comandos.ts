@@ -2,7 +2,7 @@
  * Comandos da CLI `kb` que consultam o `kb.sqlite` (fase 6). Registrados por `registrarComandosBanco`
  * em `cli.ts`; o banco é aberto (e recompilado, se velho) só quando um deles roda.
  *
- *   bun run kb buscar-norma "<consulta ou citação>" [--json] [--limite N] [--situacao base|stub|externo] [--vigentes]
+ *   bun run kb buscar-norma "<consulta ou citação>" [--json] [--limite N] [--situacao base|stub|externo] [--vigentes [--em AAAA-MM-DD]]
  *   bun run kb buscar-secoes "<consulta>" [--json] [--tipo T]... [--nivel N] [--campus C] [--cnct X] [--forma F] [--ppc P] [--modo M] [--integral]
  *   bun run kb cursos [--json] [--eixo E] [--turno T] [--campus C] [--nivel N] [--forma F] [--situacao S] [--cnct X] [--processo P]
  *   bun run kb ppc-fatos [<ppc>] [--json] [--divergencias] [--nivel N]
@@ -39,6 +39,11 @@ function acumular(valor: string, anteriores: string[] = []): string[] {
   return [...anteriores, valor];
 }
 
+function dataIso(valor: string): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(valor)) throw new InvalidArgumentError("use AAAA-MM-DD");
+  return valor;
+}
+
 function modo(valor: string): ModoBusca {
   if (valor !== "simples" && valor !== "radicais" && valor !== "completo") {
     throw new InvalidArgumentError("use simples, radicais ou completo");
@@ -67,32 +72,43 @@ export function registrarComandosBanco(programa: Command): void {
   programa
     .command("buscar-norma")
     .description(
-      "Busca normas: uma citação ou ID ('Res. CNE/CP 2/2026, art. 28') vai direto ao artigo; senão, busca textual com radicais nos metadados e no texto.",
+      "Busca normas: uma citação ou ID ('Res. CNE/CP 2/2026, art. 28, VII') vai direto ao dispositivo; senão, busca textual com radicais nos metadados das normas e nos dispositivos (com o caput herdado).",
     )
     .argument("<consulta...>", "citação, ID ou termos")
     .option("--json", "saída em JSON")
     .option("--limite <n>", "máximo de resultados", inteiroPositivo, 10)
     .option("--situacao <s>", "base, stub ou externo")
-    .option("--vigentes", "exclui normas com status 'revogada'")
-    .action((partes: string[], o: { json?: boolean; limite: number; situacao?: string; vigentes?: boolean }) => {
-      const consulta = partes.join(" ");
-      const resultados = comBanco((db) =>
-        buscarNorma(db, consulta, {
-          limite: o.limite,
-          ...(o.situacao ? { situacao: o.situacao } : {}),
-          ...(o.vigentes ? { vigentes: true } : {}),
-        }),
-      );
-      if (o.json) return json({ consulta, total: resultados.length, resultados });
-      for (const r of resultados) {
-        const b = r.bloco;
-        console.log(`${r.norma.id} — ${r.norma.titulo} [${r.norma.status_vigencia ?? r.norma.situacao}] (${r.origem})`);
-        console.log(
-          `  ${b.caminho}${b.artigo ? ` (art. ${b.artigo})` : ""} — ${b.path}:${b.linha_inicio}-${b.linha_fim}`,
+    .option("--vigentes", "exclui atos revogados ou ainda não vigentes na data e dispositivos revogados")
+    .option("--em <data>", "data da vigência para --vigentes (padrão: data_referencia)", dataIso)
+    .action(
+      (partes: string[], o: { json?: boolean; limite: number; situacao?: string; vigentes?: boolean; em?: string }) => {
+        const consulta = partes.join(" ");
+        const resultados = comBanco((db) =>
+          buscarNorma(db, consulta, {
+            limite: o.limite,
+            ...(o.situacao ? { situacao: o.situacao } : {}),
+            ...(o.vigentes ? { vigentes: true } : {}),
+            ...(o.em ? { em: o.em } : {}),
+          }),
         );
-        console.log(indentar(b.texto.length > 600 ? `${b.texto.slice(0, 600)}…` : b.texto));
-      }
-    });
+        if (o.json) return json({ consulta, total: resultados.length, resultados });
+        const curto = (t: string) => (t.length > 600 ? `${t.slice(0, 600)}…` : t);
+        for (const r of resultados) {
+          const cabecalho = `${r.norma.titulo} [${r.norma.status_vigencia ?? r.norma.situacao}] (${r.origem}${r.pontuacao !== null ? ` ${r.pontuacao}` : ""})`;
+          const d = r.dispositivo;
+          if (d) {
+            console.log(`${d.id} — ${cabecalho}${r.pedido ? ` — citado: ${r.pedido}, fora do texto` : ""}`);
+            console.log(`  ${d.path}:${d.linha_inicio}-${d.linha_fim}${d.revogado ? " (revogado)" : ""}`);
+            for (const caput of d.caput) console.log(indentar(`[caput] ${curto(caput)}`));
+            console.log(indentar(curto([d.texto, ...d.subordinados.map((f) => f.texto)].join("\n"))));
+          } else if (r.metadados) {
+            console.log(`${r.norma.id} — ${cabecalho}`);
+            console.log(`  metadados — ${r.metadados.path}:${r.metadados.linha}`);
+            console.log(indentar(curto(r.metadados.texto)));
+          }
+        }
+      },
+    );
 
   programa
     .command("buscar-secoes")
@@ -227,7 +243,7 @@ export function registrarComandosBanco(programa: Command): void {
   programa
     .command("pacote-contexto")
     .description(
-      "Contexto de uma tarefa da analise-ppc (ficha, tópico, grupo-NNN ou todas) para um PPC: CNCT, fichas, artigos citados, transições, seções relevantes e fatos.",
+      "Contexto de uma tarefa da analise-ppc (ficha, tópico, grupo-NNN ou todas) para um PPC: CNCT, fichas, dispositivos citados, marcos, regras de transição, seções relevantes e fatos.",
     )
     .argument("<tarefa>", "CT-CURR-12, CT-CURR-12,CT-IDENT-01, estagio, grupo-001 ou todas")
     .argument("<ppc>", "campus/curso ou ppc:campus/curso")
@@ -239,9 +255,12 @@ export function registrarComandosBanco(programa: Command): void {
       if (o.json) return json(pacote);
       console.log(`${pacote.ppc.id} — ${pacote.ppc.curso_nome}; fichas: ${pacote.fichas_ids.join(", ")}`);
       console.log(
-        `normas: ${pacote.normas.map((n) => `${n.ref} (${n.artigos.map((a) => `art. ${a.artigo}`).join(", ") || "sem artigo"})`).join("; ")}`,
+        `normas: ${pacote.normas.map((n) => `${n.ref} (${n.dispositivos.map((d) => d.id.slice(d.id.indexOf("#"))).join(", ") || "sem dispositivo"})`).join("; ")}`,
       );
-      console.log(`transições: ${pacote.transicoes.map((t) => t.marco).join(", ") || "nenhuma"}`);
+      console.log(`marcos: ${pacote.marcos.map((m) => m.marco).join(", ") || "nenhum"}`);
+      console.log(
+        `transições em ${pacote.data_referencia}: ${pacote.transicoes.map((t) => `${t.id} (${t.situacao})`).join(", ") || "nenhuma"}`,
+      );
       for (const s of pacote.secoes)
         console.log(`  ${s.path}:${s.linha_inicio}-${s.linha_fim} [${s.tipo}] ${s.titulo} (${s.motivo.join("; ")})`);
       console.log(

@@ -10,15 +10,15 @@ Também contém skills operacionais em `.agents/skills/`. O caminho `.claude/ski
 
 Para consultas, respostas a perguntas ou uso desta base como fonte por LLM, use primeiro os arquivos locais deste checkout. Não substitua arquivos locais por URLs públicas quando o conteúdo estiver disponível no repositório.
 
-Comece pela CLI `kb` (requer `bun install` na raiz). Ela consulta `tmp/kb.sqlite`, um banco derivado dos arquivos do checkout (normas, PPCs com o texto integral das seções, `dados/institucional/`, CNCT, fichas da `analise-ppc`), e o recompila sozinha quando ele falta ou está mais velho que as fontes (cerca de 6 s; `bun run kb:compilar` força). O banco nunca é fonte de verdade nem lugar de edição: toda resposta traz o texto literal e o arquivo e a linha de onde ele veio, e é esse arquivo que se cita.
+Comece pela CLI `kb` (requer `bun install` na raiz). Ela consulta `tmp/kb.sqlite`, um banco derivado dos arquivos do checkout (normas, PPCs com o texto integral das seções, `dados/institucional/`, CNCT, fichas da `analise-ppc`), e o recompila sozinha quando ele falta ou está mais velho que as fontes (cerca de 8 s; `bun run kb:compilar` força). O banco nunca é fonte de verdade nem lugar de edição: toda resposta traz o texto literal e o arquivo e a linha de onde ele veio, e é esse arquivo que se cita.
 
 ```bash
-bun run kb buscar-norma "Resolução CNE/CP nº 2/2026, art. 28" --json   # citação ou ID → o artigo; termos → busca nos metadados e no texto
+bun run kb buscar-norma "Resolução CNE/CP nº 2/2026, art. 28" --json   # citação ou ID → o dispositivo (caput, texto, linhas); termos → busca nos metadados e nos dispositivos
 bun run kb buscar-secoes "acompanhamento de egressos" --cnct tecnico-em-agropecuaria --json   # seções de PPC; filtros --ppc, --tipo, --nivel, --campus, --forma
 bun run kb cursos --eixo "Informação e Comunicação" --processo processo-seletivo-2026 --json   # cursos com CNCT, ofertas e turno; filtros --turno, --campus, --nivel…
 bun run kb ppc-fatos curitiba/tecnico-em-enfermagem --json              # carga horária, estágio e ano do PPC, cruzados com o SUAP
 bun run kb ppc-fatos --divergencias --nivel médio                        # PPCs com divergência PPC × SUAP
-bun run kb pacote-contexto CT-CURR-12 curitiba/tecnico-em-enfermagem --json   # contexto de uma ficha da analise-ppc: CNCT, artigos citados, transições, seções
+bun run kb pacote-contexto CT-CURR-12 curitiba/tecnico-em-enfermagem --json   # contexto de uma ficha da analise-ppc: CNCT, dispositivos citados, marcos e regras de transição, seções
 ```
 
 Os fatos de PPC têm status `extraido` (regra sobre o texto convertido, sem revisão humana): confira o `trecho_fonte` antes de afirmar uma divergência. A busca de seções usa radicais e um léxico de sinônimos (`packages/kb/dados/sinonimos.yaml`); se ela não achar o que se espera, procure nos arquivos.

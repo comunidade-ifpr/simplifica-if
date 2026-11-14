@@ -1,22 +1,21 @@
 /**
  * Ponto de carga das entidades normativas da fase 5 no `kb.sqlite`: dispositivos, relações entre
- * normas, vigência calculada, regras de transição e correspondência entre normas.
+ * normas, vigência em intervalos datados, regras de transição e tabelas de correspondência.
  *
- * A fase 6 cria as tabelas e a carga; a fase 5 (parser de dispositivos, `relacoes.yaml`, vigência,
- * transições e correspondência 2021 → 2026, em `packages/kb/src/normas/`) fornece os dados por esta
- * interface. Por ora a compilação usa `fontesNormativasVazias`, e as tabelas ficam vazias.
+ * A implementação é `fontesNormativasArquivos` (`normas/fontes-db.ts`), que lê pelos módulos de
+ * `normas/` (parser de dispositivos, `relacoes.yaml`, `statusEm`, `transicoes.yaml`,
+ * `correspondencias/`); `compilarBanco` a usa por padrão. Cada linha é validada pelo esquema zod
+ * abaixo antes do INSERT; a ordem de inserção é a ordem do iterável, que precisa ser estável para o
+ * banco sair byte a byte igual. Nada aqui depende do relógio: a vigência entra como intervalos
+ * datados (calculados por `statusEm` nas datas em que o status pode mudar), e a consulta escolhe a
+ * data.
  *
- * Para ligar a fase 5: implemente `FontesNormativas` (por exemplo, em `normas/fontes-db.ts`) e passe
- * a implementação a `compilarBanco({ fontesNormativas })`, ou troque o padrão em `compilar.ts`
- * (`fontesNormativasPadrao`). Cada linha é validada pelo esquema zod abaixo antes do INSERT; a ordem
- * de inserção é a ordem do iterável, que precisa ser estável (ordene por ID) para o banco sair
- * byte a byte igual. Nada aqui pode depender do relógio: a vigência entra como intervalos datados,
- * e a consulta escolhe a data (`kb vigencia --em <data>`).
- *
- * Arquivos que a fase 5 vier a ler (como `base-conhecimento/relacoes.yaml`) devem entrar em
- * `ARQUIVOS_FONTES_NORMATIVAS`, para que a CLI recompile o banco quando eles mudarem.
+ * Os arquivos que a carga lê, além das normas em `base-conhecimento/normas/` e do `manifest.json`,
+ * estão em `ARQUIVOS_FONTES_NORMATIVAS`, para que a CLI recompile o banco quando eles mudarem.
  */
 import { z } from "zod";
+import { TIPOS_DISPOSITIVO, TIPOS_NOTA } from "../normas/estrutura.ts";
+import { STATUS_VIGENCIA } from "../normas/vigencia.ts";
 
 const id = z.string().min(1);
 const opcional = z.string().min(1).nullable();
@@ -24,75 +23,134 @@ const data = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/)
   .nullable();
+const linha = z.number().int().positive();
 
-/** Dispositivo normativo (artigo, parágrafo, inciso, alínea, item), com o caput herdado. */
+/** Dispositivo normativo (artigo, parágrafo, inciso, alínea, item, anexo, seção), as colunas de `Dispositivo`. */
 export const esquemaLinhaDispositivo = z.strictObject({
-  /** `br/cne-cp/res/2026/2#art28-vii` */
+  /** ID do arquivo: `br/cne-cp/res/2026/2#art28-vii` (ou `br/lei/1996/9394~compilacao#art36`). */
   id,
+  /** ID do ato (sem variante). */
+  ato_id: id,
+  /** ID do arquivo (com variante, se houver). */
   norma_id: id,
   /** `#art28-vii` */
   dispositivo: id,
-  /** `#art28` (o pai imediato), ou `null` no artigo. */
-  pai: opcional,
-  /** Ordem no texto da norma (0, 1, 2…). */
-  ordem: z.number().int().nonnegative(),
+  tipo: z.enum(TIPOS_DISPOSITIVO),
   /** Rótulo como no texto ("Art. 28", "VII", "§ 1º"). */
   rotulo: z.string(),
-  /** Texto literal do dispositivo, só a redação vigente. */
+  /** ID completo do pai imediato, ou `null` no artigo, anexo e seção de primeiro nível. */
+  pai: opcional,
+  /** Ordem no arquivo da norma (0, 1, 2…). */
+  ordem: z.number().int().nonnegative(),
+  /** Texto literal do próprio dispositivo (com o rótulo, sem os filhos), só a redação vigente. */
   texto: z.string(),
-  /** Texto com o caput dos ancestrais (para busca e para citar inciso isolado). */
+  /** Textos dos ancestrais, do artigo até o pai (o caput herdado). */
+  caput: z.array(z.string()),
+  /** `caput` e `texto`, uma linha cada: o que a busca indexa e o que se cita para um inciso isolado. */
   texto_com_caput: z.string(),
+  /** Divisões estruturais (`TÍTULO V`, `CAPÍTULO III`...). */
+  estrutura: z.array(z.string()),
+  /** Notas de redação ("Redação dada pela Lei X"), com o tipo. */
+  notas: z.array(z.strictObject({ tipo: z.enum(TIPOS_NOTA), texto: z.string() })),
+  revogado: z.boolean(),
+  vetado: z.boolean(),
+  /** Este é o dispositivo do índice do ato (`indiceDispositivos`): o texto integral prevalece sobre a compilação. */
+  canonico: z.boolean(),
+  /** Markdown, relativo à raiz do repositório. */
   path: z.string(),
-  linha_inicio: z.number().int().positive(),
-  linha_fim: z.number().int().positive(),
-  /** Notas de redação ("Redação dada pela Lei X"), como JSON (lista de textos). */
-  notas: z.array(z.string()),
+  linha_inicio: linha,
+  linha_fim: linha,
 });
 export type LinhaDispositivo = z.output<typeof esquemaLinhaDispositivo>;
 
-/** Relação tipada e datada entre normas ou dispositivos (`relacoes.yaml`). */
+/** Relação tipada entre normas ou dispositivos (`relacoes.yaml`), uma por item do arquivo. */
 export const esquemaLinhaRelacao = z.strictObject({
-  origem: id,
-  alvo: id,
+  /** Posição no arquivo (0, 1, 2…). */
+  ordem: z.number().int().nonnegative(),
   tipo: z.enum(["revoga", "altera", "regulamenta", "fundamenta-se-em"]),
-  /** Data em que o efeito começa. */
-  efeito_de: data,
-  /** Dispositivo da origem que opera a relação (`#art74`). */
-  dispositivo_operador: opcional,
-  curadoria: z.enum(["proposta", "conferida"]),
-  fonte: opcional,
+  origem: id,
+  /** Dispositivo da origem que opera a relação (`#art74-ii`). */
+  operador: opcional,
+  alvo: id,
+  alvo_dispositivo: opcional,
+  alcance: opcional,
+  /** Como no arquivo: `vigencia-da-origem` ou data. */
+  efeito_de: z.string().min(1),
+  /** Data do efeito (`efeitoDaRelacao`), ou `null` quando depende de data a confirmar. */
+  efeito_em: data,
+  /** Limite inferior do efeito quando a data não é certa. */
+  efeito_minimo: data,
+  evidencia_em: id,
+  evidencia_trecho: z.string().min(1),
+  confirmado_em: data,
+  proposta: z.enum(["front-matter", "regex", "manual"]),
+  nota: opcional,
+  path: z.string(),
 });
 export type LinhaRelacao = z.output<typeof esquemaLinhaRelacao>;
 
-/** Intervalo de vigência de uma norma ou dispositivo (fim exclusivo; `null` = aberto). */
+/**
+ * Intervalo de vigência de um ato (`intervalosVigencia`): o resultado de `statusEm` em qualquer data
+ * de `de` (inclusivo; `null` = desde sempre) até `ate` (exclusivo; `null` = em aberto).
+ */
 export const esquemaLinhaVigencia = z.strictObject({
   alvo: id,
-  vigente_de: data,
-  vigente_ate: data,
-  /** Relação ou dado que determina o intervalo. */
+  ordem: z.number().int().nonnegative(),
+  de: data,
+  ate: data,
+  status: z.enum(STATUS_VIGENCIA),
+  /** `false` quando o status depende de data a confirmar. */
+  certo: z.boolean(),
+  /** O que abre o intervalo: `inicio`, `anterior` ou a relação (`revoga br/cne-cp/res/2026/2#art74-ii`). */
   fonte: z.string(),
 });
 export type LinhaVigencia = z.output<typeof esquemaLinhaVigencia>;
 
-/** Regra de transição como dado (art. 70 e 71 da Res. CNE/CP nº 2/2026, por exemplo). */
+/** Regra de transição (`transicoes.yaml`), com as datas resolvidas que não dependem da consulta. */
 export const esquemaLinhaTransicao = z.strictObject({
   id,
   norma_id: id,
-  dispositivo: opcional,
-  descricao: z.string(),
-  inicio: data,
-  fim: data,
+  dispositivo: id,
+  tipo: z.string().min(1),
+  /** Norma revogada cujos efeitos a regra preserva. */
+  norma_anterior: opcional,
   aplica_a: z.string(),
+  regra: z.string(),
+  /** Como no arquivo: `vigencia`, `publicacao` ou data. */
+  inicio: z.string().min(1),
+  /** Como no arquivo: duração ISO, data ou `sem-prazo`. */
+  fim: z.string().min(1),
+  inicio_em: data,
+  inicio_minimo: data,
+  fim_em: data,
+  evidencia: z.string(),
+  path: z.string(),
 });
 export type LinhaTransicao = z.output<typeof esquemaLinhaTransicao>;
 
-/** Correspondência entre dispositivos de normas sucessivas (1/2021 → 2/2026). */
-export const esquemaLinhaCorrespondencia = z.strictObject({
+/** Tabela de correspondência entre normas sucessivas (`correspondencias/*.yaml`). */
+export const esquemaLinhaTabelaCorrespondencia = z.strictObject({
+  /** Arquivo, relativo à raiz do repositório. */
+  arquivo: z.string(),
   origem: id,
-  alvo: opcional,
+  destino: id,
+  status: z.enum(["rascunho", "revisado"]),
+  elaborado_em: data,
+  revisado_por: opcional,
+  metodo: z.string(),
+});
+export type LinhaTabelaCorrespondencia = z.output<typeof esquemaLinhaTabelaCorrespondencia>;
+
+/** Item de uma tabela de correspondência (dispositivo de origem → dispositivos de destino). */
+export const esquemaLinhaCorrespondencia = z.strictObject({
+  tabela: z.string(),
+  ordem: z.number().int().nonnegative(),
+  /** ID do ato com o dispositivo de origem (`br/cne-cp/res/2021/1#art20`). */
+  origem: id,
   tipo: z.enum(["equivalente", "parcial", "sem-equivalente"]),
+  /** IDs dos dispositivos de destino (vazio em `sem-equivalente`). */
+  destino: z.array(id),
   nota: opcional,
-  curadoria: z.enum(["proposta", "conferida"]),
 });
 export type LinhaCorrespondencia = z.output<typeof esquemaLinhaCorrespondencia>;
 
@@ -102,20 +160,19 @@ export interface FontesNormativas {
   relacoes(): Iterable<LinhaRelacao>;
   vigencias(): Iterable<LinhaVigencia>;
   transicoes(): Iterable<LinhaTransicao>;
+  tabelasCorrespondencia(): Iterable<LinhaTabelaCorrespondencia>;
   correspondencias(): Iterable<LinhaCorrespondencia>;
 }
 
-/** Fontes vazias: as tabelas da fase 5 existem, sem linhas. */
-export const fontesNormativasVazias: FontesNormativas = {
-  dispositivos: () => [],
-  relacoes: () => [],
-  vigencias: () => [],
-  transicoes: () => [],
-  correspondencias: () => [],
-};
-
 /**
- * Arquivos (relativos à raiz do repositório) que a implementação da fase 5 lê, além das normas em
- * `base-conhecimento/normas/`, que já são fonte do banco. Entram na impressão digital das fontes.
+ * Arquivos e diretórios (relativos à raiz do repositório) que a carga da fase 5 lê, além das normas
+ * em `base-conhecimento/normas/` e do `manifest.json`, que já são fonte do banco. Entram na
+ * impressão digital das fontes (`fontes.ts`).
  */
-export const ARQUIVOS_FONTES_NORMATIVAS: readonly string[] = ["base-conhecimento/relacoes.yaml"];
+export const ARQUIVOS_FONTES_NORMATIVAS: readonly string[] = [
+  "base-conhecimento/config/vigencia.yaml",
+  "base-conhecimento/correspondencias",
+  "base-conhecimento/normas/stubs.yaml",
+  "base-conhecimento/relacoes.yaml",
+  "base-conhecimento/transicoes.yaml",
+];
