@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- lê as normas e o commit de referência (git) com node:fs e node:child_process síncronos
 /**
  * Prova do saneamento das normas (fase 5): removida a marcação Markdown e normalizados os espaços,
  * a sequência de palavras de cada norma é idêntica à do commit anterior ao saneamento
@@ -6,10 +7,10 @@
  *
  * Roda só num checkout git que tenha o commit de referência; noutro caso, é pulado.
  */
-import { spawnSync } from "node:child_process";
+import * as NodeChildProcess from "node:child_process";
 import { describe, expect, test } from "vite-plus/test";
-import { readFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { listarNormas } from "./estrutura.ts";
 import { palavrasMarkdown, primeiraDivergencia } from "./markdown.ts";
 import { raizRepositorio } from "./registro.ts";
@@ -31,7 +32,7 @@ const TEXTO_SUBSTITUIDO = new Map<string, string>([
 const raiz = raizRepositorio();
 
 function versaoAnterior(relativo: string): string | null {
-  const resultado = spawnSync("git", ["show", `${REF_ANTES_SANEAMENTO}:${relativo}`], {
+  const resultado = NodeChildProcess.spawnSync("git", ["show", `${REF_ANTES_SANEAMENTO}:${relativo}`], {
     cwd: raiz,
     encoding: "utf-8",
     maxBuffer: 64 * 1024 * 1024,
@@ -40,7 +41,10 @@ function versaoAnterior(relativo: string): string | null {
 }
 
 const refDisponivel =
-  spawnSync("git", ["cat-file", "-e", `${REF_ANTES_SANEAMENTO}^{commit}`], { cwd: raiz, stdio: "ignore" }).status === 0;
+  NodeChildProcess.spawnSync("git", ["cat-file", "-e", `${REF_ANTES_SANEAMENTO}^{commit}`], {
+    cwd: raiz,
+    stdio: "ignore",
+  }).status === 0;
 
 describe.skipIf(!refDisponivel)(`saneamento: palavras iguais às de ${REF_ANTES_SANEAMENTO}`, () => {
   const normas = listarNormas(raiz);
@@ -50,10 +54,10 @@ describe.skipIf(!refDisponivel)(`saneamento: palavras iguais às de ${REF_ANTES_
   for (const norma of normas) {
     if (TEXTO_SUBSTITUIDO.has(norma.path)) continue;
     test(norma.path, () => {
-      const relativo = path.posix.join("base-conhecimento", norma.path);
+      const relativo = NodePath.posix.join("base-conhecimento", norma.path);
       const antes = versaoAnterior(relativo);
       expect(antes).not.toBeNull();
-      const depois = readFileSync(path.join(raiz, relativo), "utf-8");
+      const depois = NodeFS.readFileSync(NodePath.join(raiz, relativo), "utf-8");
       expect(primeiraDivergencia(palavrasMarkdown(antes!), palavrasMarkdown(depois))).toBeNull();
     });
   }

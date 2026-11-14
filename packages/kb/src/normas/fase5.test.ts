@@ -1,14 +1,24 @@
-/** Relações, vigência, transições, front matter gerado, correspondência e impacto (fase 5). */
-import { spawnSync } from "node:child_process";
-import { describe, expect, test } from "vite-plus/test";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import path from "node:path";
+// @effect-diagnostics nodeBuiltinImport:off -- consulta o git (commit de referência) pelo node:child_process síncrono
+/**
+ * Relações, vigência, transições, front matter gerado, correspondência e impacto (fase 5). O impacto
+ * roda o serviço `Impacto` sobre a layer da CLI (`layerRepositorio`): fontes lidas dos arquivos do
+ * checkout e o `tmp/kb.sqlite`, recompilado se estiver velho.
+ */
+import * as NodeChildProcess from "node:child_process";
+import * as NodePath from "node:path";
+import * as NodeServices from "@effect/platform-node/NodeServices";
+import { describe, expect, layer, test } from "@effect/vitest";
+import * as DateTime from "effect/DateTime";
+import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
+import * as Layer from "effect/Layer";
+import * as Path from "effect/Path";
+import * as Impacto from "../Impacto.ts";
+import * as Layers from "../layers.ts";
 import { correspondencia, validarCorrespondencias } from "./correspondencia.ts";
 import { dispositivosDoAto, listarNormas } from "./estrutura.ts";
 import { analisarFrontMatter } from "./front-matter.ts";
 import { normasComCamposGerados, reescreverFrontMatter } from "./gerado.ts";
-import { impacto } from "./impacto.ts";
 import { idDoAto } from "./ids.ts";
 import { carregarRegistro, raizRepositorio } from "./registro.ts";
 import { carregarRelacoes, proporRelacoes, validarRelacoes } from "./relacoes.ts";
@@ -18,9 +28,16 @@ const raiz = raizRepositorio();
 /** Último commit antes da fase 5 (mesmo de `saneamento.test.ts`). */
 const REF_ANTES_SANEAMENTO = "fcfc006";
 const refDisponivel =
-  spawnSync("git", ["cat-file", "-e", `${REF_ANTES_SANEAMENTO}^{commit}`], { cwd: raiz, stdio: "ignore" }).status === 0;
+  NodeChildProcess.spawnSync("git", ["cat-file", "-e", `${REF_ANTES_SANEAMENTO}^{commit}`], {
+    cwd: raiz,
+    stdio: "ignore",
+  }).status === 0;
 const DCN_2021 = "br/cne-cp/res/2021/1";
 const DCN_2026 = "br/cne-cp/res/2026/2";
+
+/** Véspera de uma data AAAA-MM-DD, em UTC. */
+const vesperaDe = (data: string): string =>
+  DateTime.formatIsoDateUtc(DateTime.subtract(DateTime.makeUnsafe(`${data}T00:00:00Z`), { days: 1 }));
 
 describe("relações", () => {
   test("relacoes.yaml válido e sem propostas pendentes do regex", () => {
@@ -78,11 +95,15 @@ describe("vigência", () => {
       };
       const divergentes: Record<string, [string, string]> = {};
       for (const norma of listarNormas(raiz)) {
-        const antigo = spawnSync("git", ["show", `${REF_ANTES_SANEAMENTO}:base-conhecimento/${norma.path}`], {
-          cwd: raiz,
-          encoding: "utf-8",
-          maxBuffer: 64 * 1024 * 1024,
-        }).stdout;
+        const antigo = NodeChildProcess.spawnSync(
+          "git",
+          ["show", `${REF_ANTES_SANEAMENTO}:base-conhecimento/${norma.path}`],
+          {
+            cwd: raiz,
+            encoding: "utf-8",
+            maxBuffer: 64 * 1024 * 1024,
+          },
+        ).stdout;
         const manual = String(analisarFrontMatter(antigo, norma.path).meta.status_vigencia);
         if (norma.id.includes("~")) continue; // compilação: status manual (texto reproduzido)
         const calculado = statusEm(norma.id, dataReferencia(raiz), raiz).status;
@@ -106,7 +127,7 @@ describe("vigência", () => {
     for (const stub of datados) {
       const efeito = inicioVigencia(idDoAto(stub.status_fonte!.split("#")[0]!), raiz);
       const limite = efeito.data ?? efeito.minimo!;
-      const vespera = new Date(Date.parse(`${limite}T00:00:00Z`) - 86_400_000).toISOString().slice(0, 10);
+      const vespera = vesperaDe(limite);
       const antes = statusEm(stub.id, vespera, raiz).status;
       if (!["vigente", "alterada", "ainda-nao-vigente"].includes(antes)) errados.push(`${stub.id} ${vespera} ${antes}`);
       const depois = statusEm(stub.id, "2027-01-01", raiz).status;
@@ -172,43 +193,70 @@ describe("correspondência 1/2021 → 2/2026", () => {
   });
 });
 
-describe("impacto de um dispositivo", () => {
-  const conteudo = mkdtempSync(path.join(tmpdir(), "kb-impacto-"));
+/** Árvore de conteúdo sintética (`kb impacto --conteudo`): cinco fichas que citam dispositivos das DCN. */
+const conteudoSintetico = Effect.gen(function* () {
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
+  const conteudo = yield* fs.makeTempDirectoryScoped({ prefix: "kb-impacto-" });
   const pasta = path.join(conteudo, ".agents", "skills", "x", "base-analise", "fichas");
-  mkdirSync(pasta, { recursive: true });
+  yield* fs.makeDirectory(pasta, { recursive: true });
   const ficha = (nome: string, refs: { ref: string; dispositivo: string }[]) =>
-    writeFileSync(path.join(pasta, `${nome}.json`), JSON.stringify({ referencias_normativas: refs }));
-  ficha("ct-x-01", [{ ref: DCN_2021, dispositivo: "#art29" }]);
-  ficha("ct-x-02", [{ ref: DCN_2021, dispositivo: "#art22-x" }]);
-  ficha("ct-x-03", [{ ref: DCN_2026, dispositivo: "#art22" }]); // destino do art. 20 da 1/2021
-  ficha("ct-x-04", [{ ref: DCN_2021, dispositivo: "#art2" }]);
-  ficha("ct-x-05", [{ ref: DCN_2026, dispositivo: "#art1-par1" }]); // destino do art. 2º da 1/2021
-
-  test("#art2 não casa #art29 nem #art22-x, e só os destinos do art. 2º contam como correspondentes", () => {
-    const r = impacto(`${DCN_2021}#art2`, { raiz, raizConteudo: conteudo, incluirPpcs: false });
-    const porArquivo = Object.fromEntries(r.arquivos.map((a) => [path.basename(a.arquivo, ".json"), a.motivos]));
-    expect(porArquivo).toEqual({ "ct-x-04": ["referencia"], "ct-x-05": ["referencia-correspondente"] });
-  });
-
-  test("o ato inteiro continua alcançando todos", () => {
-    const r = impacto(DCN_2021, { raiz, raizConteudo: conteudo, incluirPpcs: false });
-    expect(r.arquivos.map((a) => path.basename(a.arquivo, ".json")).sort()).toEqual([
-      "ct-x-01",
-      "ct-x-02",
-      "ct-x-03",
-      "ct-x-04",
-      "ct-x-05",
-    ]);
-  });
+    fs.writeFileString(path.join(pasta, `${nome}.json`), JSON.stringify({ referencias_normativas: refs }));
+  yield* ficha("ct-x-01", [{ ref: DCN_2021, dispositivo: "#art29" }]);
+  yield* ficha("ct-x-02", [{ ref: DCN_2021, dispositivo: "#art22-x" }]);
+  yield* ficha("ct-x-03", [{ ref: DCN_2026, dispositivo: "#art22" }]); // destino do art. 20 da 1/2021
+  yield* ficha("ct-x-04", [{ ref: DCN_2021, dispositivo: "#art2" }]);
+  yield* ficha("ct-x-05", [{ ref: DCN_2026, dispositivo: "#art1-par1" }]); // destino do art. 2º da 1/2021
+  return conteudo;
 });
 
-describe("impacto", () => {
-  test("revogação da 1/2021 alcança a sucessora, transições, normas e conteúdos das skills", () => {
-    const r = impacto(DCN_2021, { raiz, incluirPpcs: false });
-    expect(r.sucessoras).toEqual([DCN_2026]);
-    expect(r.normas_que_citam.map((n) => n.id)).toContain("br/mec/portaria/2024/902");
-    const arquivos = r.arquivos.map((a) => a.arquivo);
-    expect(arquivos).toContain(".agents/skills/revisar-ppc/base-analise/validacoes-cruzadas/vc-01-03-11-normas.json");
-    expect(arquivos).toContain(".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-02.json");
+const nomeDaFicha = (arquivo: string) => NodePath.basename(arquivo, ".json");
+
+// a layer da CLI, com o relógio real: se o `tmp/kb.sqlite` estiver velho, ela o recompila com o mtime certo
+layer(Layers.layerRepositorio({ raiz }).pipe(Layer.provideMerge(NodeServices.layer)), {
+  excludeTestServices: true,
+  timeout: "180 seconds",
+})((it) => {
+  describe("impacto de um dispositivo", () => {
+    it.effect("#art2 não casa #art29 nem #art22-x, e só os destinos do art. 2º contam como correspondentes", () =>
+      Effect.gen(function* () {
+        const conteudo = yield* conteudoSintetico;
+        const impacto = yield* Impacto.Impacto;
+        const r = yield* impacto.daNorma(`${DCN_2021}#art2`, { raizConteudo: conteudo, incluirPpcs: false });
+        const porArquivo = Object.fromEntries(r.arquivos.map((a) => [nomeDaFicha(a.arquivo), a.motivos]));
+        expect(porArquivo).toEqual({ "ct-x-04": ["referencia"], "ct-x-05": ["referencia-correspondente"] });
+      }),
+    );
+
+    it.effect("o ato inteiro continua alcançando todos", () =>
+      Effect.gen(function* () {
+        const conteudo = yield* conteudoSintetico;
+        const impacto = yield* Impacto.Impacto;
+        const r = yield* impacto.daNorma(DCN_2021, { raizConteudo: conteudo, incluirPpcs: false });
+        expect(r.arquivos.map((a) => nomeDaFicha(a.arquivo)).sort()).toEqual([
+          "ct-x-01",
+          "ct-x-02",
+          "ct-x-03",
+          "ct-x-04",
+          "ct-x-05",
+        ]);
+      }),
+    );
+  });
+
+  describe("impacto", () => {
+    it.effect("revogação da 1/2021 alcança a sucessora, transições, normas e conteúdos das skills", () =>
+      Effect.gen(function* () {
+        const impacto = yield* Impacto.Impacto;
+        const r = yield* impacto.daNorma(DCN_2021, { incluirPpcs: false });
+        expect(r.sucessoras).toEqual([DCN_2026]);
+        expect(r.normas_que_citam.map((n) => n.id)).toContain("br/mec/portaria/2024/902");
+        const arquivos = r.arquivos.map((a) => a.arquivo);
+        expect(arquivos).toContain(
+          ".agents/skills/revisar-ppc/base-analise/validacoes-cruzadas/vc-01-03-11-normas.json",
+        );
+        expect(arquivos).toContain(".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-02.json");
+      }),
+    );
   });
 });

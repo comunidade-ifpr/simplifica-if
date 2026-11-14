@@ -34,10 +34,13 @@ describe("dispositivoAntes em tempo linear", () => {
     ["tokens repetidos", `${"art. 5, ".repeat(40)}! da Lei nº 9.394/1996`],
     ["prefixo grande", `${"art 1 , ".repeat(2000)}x! da Lei nº 9.394/1996`],
   ])("%s", (_nome, texto) => {
+    // o teste é de tempo de execução (regressão de backtracking quadrático): mede de propósito
+    // oxlint-disable-next-line simplifica-if/no-wall-clock-in-tests -- mede o tempo da regra pura, sem Effect
     const inicio = performance.now();
     expect(resolverCitacao(texto).id).toBe("br/lei/1996/9394");
     const prefixo = normalizarCitacao(texto.slice(0, texto.indexOf(" da Lei") + 3));
     expect(dispositivoAntes(prefixo)).toBeNull();
+    // oxlint-disable-next-line simplifica-if/no-wall-clock-in-tests -- mede o tempo da regra pura, sem Effect
     expect(performance.now() - inicio).toBeLessThan(50);
   });
 

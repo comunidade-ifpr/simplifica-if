@@ -1,7 +1,8 @@
+// @effect-diagnostics nodeBuiltinImport:off -- lê as fichas reais da revisar-ppc com node:fs síncrono
 /** Agrupamento das fichas da `revisar-ppc` por tópico (`agruparPorTopico`), sem banco. */
 import { describe, expect, test } from "vite-plus/test";
-import { readdirSync, readFileSync } from "node:fs";
-import path from "node:path";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import { raizRepositorio } from "../normas/registro.ts";
 import { lerTopicosFichas, type TopicoFichas } from "../ppcs/topicos.ts";
 import { agruparPorTopico, type FichaPacote, TOPICO_TRANSVERSAL, topicoPrincipal } from "./pacote-contexto.ts";
@@ -57,10 +58,10 @@ describe("grupos por tópico", () => {
 
   test("nas fichas reais, toda ficha cai em exatamente um grupo de no máximo 20", () => {
     const raiz = raizRepositorio();
-    const dir = path.join(raiz, ".agents/skills/revisar-ppc/base-analise/fichas");
-    const reais = readdirSync(dir)
+    const dir = NodePath.join(raiz, ".agents/skills/revisar-ppc/base-analise/fichas");
+    const reais = NodeFS.readdirSync(dir)
       .filter((nome) => nome.endsWith(".json"))
-      .map((nome) => JSON.parse(readFileSync(path.join(dir, nome), "utf-8")) as FichaPacote);
+      .map((nome) => JSON.parse(NodeFS.readFileSync(NodePath.join(dir, nome), "utf-8")) as FichaPacote);
     const grupos = agruparPorTopico(reais, lerTopicosFichas(raiz));
     const ids = grupos.flatMap((g) => g.fichas.map((f) => f.id));
     expect(ids.length).toBe(reais.length);

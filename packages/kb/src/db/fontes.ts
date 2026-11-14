@@ -49,7 +49,7 @@ const CODIGO_FORA = [
   /^packages\/kb\/src\/db\/(consultas|consultas-normas|comandos|pacote-contexto|sql|conexao|nodeSqliteClient)\.ts$/,
   // serviços Effect, layers e CLI: consultam o banco, não o compilam
   /^packages\/kb\/src\/([A-Z][A-Za-z]*|layers)\.ts$/,
-  /^packages\/kb\/src\/(cli|esquema)\//,
+  /^packages\/kb\/src\/(cli|esquema|testes)\//,
   /^packages\/kb\/src\/normas\/(comandos|impacto)\.ts$/,
 ];
 
