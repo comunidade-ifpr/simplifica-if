@@ -1,5 +1,6 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 /** Gera scripts/base/tipos-schemas.ts, os tipos TypeScript dos JSON Schemas de base-conhecimento/schemas/. */
+import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { compile, type JSONSchema } from "json-schema-to-typescript";
@@ -7,7 +8,7 @@ import { listarDiretorio } from "./base/caminhos.ts";
 import { lerArgumentos } from "./cli.ts";
 import { RAIZ_BASE, RAIZ_PROJETO } from "./config.ts";
 
-const USO = `uso: bun run scripts/gerar_tipos_schemas.ts [--check]
+const USO = `uso: node scripts/gerar_tipos_schemas.ts [--check]
 
 Gera scripts/base/tipos-schemas.ts a partir de base-conhecimento/schemas/*.schema.json.
 
@@ -36,18 +37,19 @@ const NOMES_TIPOS: Record<string, string> = {
 const CABECALHO = `/**
  * Tipos dos JSON Schemas de base-conhecimento/schemas/. Arquivo gerado por
  * scripts/gerar_tipos_schemas.ts; não edite à mão. Depois de alterar um
- * schema, rode \`bun run scripts/gerar_tipos_schemas.ts\`.
+ * schema, rode \`node scripts/gerar_tipos_schemas.ts\`.
  */
 `;
 
-/** Formata como `bun fmt` formata scripts/, para que o arquivo gerado já saia formatado. */
+/** Formata como `vp fmt` formata scripts/, para que o arquivo gerado já saia formatado. */
 function formatar(codigo: string): string {
-  const resultado = Bun.spawnSync(["bun", "fmt", "--stdin-filepath", DESTINO_TIPOS], {
-    cwd: RAIZ_PROJETO,
-    stdin: Buffer.from(codigo),
-  });
-  if (resultado.exitCode !== 0) throw new Error(`bun fmt falhou: ${resultado.stderr.toString()}`);
-  return resultado.stdout.toString();
+  const resultado = spawnSync(
+    path.join(RAIZ_PROJETO, "node_modules", ".bin", "vp"),
+    ["fmt", `--stdin-filepath=${DESTINO_TIPOS}`],
+    { cwd: RAIZ_PROJETO, input: codigo, encoding: "utf-8" },
+  );
+  if (resultado.status !== 0) throw new Error(`vp fmt falhou: ${resultado.stderr}`);
+  return resultado.stdout;
 }
 
 export async function gerarTipos(): Promise<string> {
@@ -83,7 +85,7 @@ async function main(): Promise<number> {
   const rel = path.relative(RAIZ_PROJETO, DESTINO_TIPOS);
   if (args.values.check) {
     if (!existsSync(DESTINO_TIPOS) || readFileSync(DESTINO_TIPOS, "utf-8") !== tipos) {
-      console.error(`ERRO: ${rel} está desatualizado; rode bun run scripts/gerar_tipos_schemas.ts`);
+      console.error(`ERRO: ${rel} está desatualizado; rode node scripts/gerar_tipos_schemas.ts`);
       return 1;
     }
     console.log(`Tipos dos schemas atualizados: ${rel}`);

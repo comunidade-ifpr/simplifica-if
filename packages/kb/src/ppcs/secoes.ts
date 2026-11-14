@@ -376,7 +376,7 @@ export function palavrasDeCampi(nomes: Iterable<string>): Set<string> {
 export function ehCabecalhoDePagina(titulo: string, palavrasCampi: ReadonlySet<string>): boolean {
   const palavras = removerAcentos(titulo)
     .toLowerCase()
-    .replace(/[\[\]()|,–—:.]/g, " ")
+    .replace(/[[\]()|,–—:.]/g, " ")
     .split(/\s+/)
     .filter((p) => p && p !== "-");
   if (!palavras.length) return true;

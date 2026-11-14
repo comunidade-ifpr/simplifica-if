@@ -346,7 +346,7 @@ export function validarRelacoesEVigencia(ctx: Contexto): string[] {
 
   for (const norma of normasComCamposGerados(raiz)) {
     if (norma.atual !== norma.esperado) {
-      erros.push(`${norma.path}: campos gerados do front matter desatualizados; rode bun run scripts/gerar_base.ts`);
+      erros.push(`${norma.path}: campos gerados do front matter desatualizados; rode node scripts/gerar_base.ts`);
     }
   }
   return erros;

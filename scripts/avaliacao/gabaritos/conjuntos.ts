@@ -2,6 +2,7 @@
  * Geradores dos gabaritos de conjunto. Cada gerador deriva o conjunto esperado das fontes locais
  * (dados institucionais, manifesto de normas, CNCT e PPCs), sem relógio e com ordem estável.
  */
+import { parse as interpretarYaml } from "yaml";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { compararTexto, normalizarTexto } from "../normalizar.ts";
@@ -72,7 +73,7 @@ function q01(fontes: Fontes): GabaritoConjunto {
   };
 }
 
-/** PPCs que citam a norma, pelo resolvedor de citações (o mesmo conjunto de `bun run kb citacoes <id>`). */
+/** PPCs que citam a norma, pelo resolvedor de citações (o mesmo conjunto de `pnpm kb citacoes <id>`). */
 function ppcsQueCitamNorma(fontes: Fontes, id: string, filtro: (nivel: string) => boolean = () => true) {
   return ppcsQueCitam(id, { raiz: fontes.raiz }).filter((ppc) => filtro(ppc.nivel));
 }
@@ -94,7 +95,7 @@ function q02(fontes: Fontes): GabaritoConjunto {
   const ppcs = ppcsQueCitamNorma(fontes, "br/cne-cp/res/2021/1");
   return {
     pergunta: "Q02",
-    gerado_por: "bun run kb citacoes br/cne-cp/res/2021/1 (packages/kb/src/ppcs/citacoes.ts)",
+    gerado_por: "pnpm kb citacoes br/cne-cp/res/2021/1 (packages/kb/src/ppcs/citacoes.ts)",
     criterio:
       "PPCs de base-conhecimento/institucional/ifpr/ppcs/ (todos os níveis) com ao menos uma citação resolvida para br/cne-cp/res/2021/1 pelo resolvedor de citações, inclusive as formas com órgão trocado (CNE/CEB nº 1/2021 seguida de 'educação profissional') e com tipo trocado (Parecer CNE/CP nº 01/2021 que define as Diretrizes), marcadas pela regra de cada ocorrência.",
     universo: "curso",
@@ -108,7 +109,7 @@ function frontMatter(caminho: string): Record<string, unknown> {
   const texto = readFileSync(caminho, "utf-8");
   const fim = texto.indexOf("\n---", 3);
   if (!texto.startsWith("---") || fim < 0) return {};
-  const dados = Bun.YAML.parse(texto.slice(3, fim));
+  const dados: unknown = interpretarYaml(texto.slice(3, fim));
   return typeof dados === "object" && dados !== null ? (dados as Record<string, unknown>) : {};
 }
 
@@ -264,7 +265,7 @@ function q20(fontes: Fontes): GabaritoConjunto {
   const ppcs = ppcsQueCitamNorma(fontes, "br/cne-cp/res/2026/2", (nivel) => nivel === "médio");
   return {
     pergunta: "Q20",
-    gerado_por: "bun run kb citacoes br/cne-cp/res/2026/2 (packages/kb/src/ppcs/citacoes.ts)",
+    gerado_por: "pnpm kb citacoes br/cne-cp/res/2026/2 (packages/kb/src/ppcs/citacoes.ts)",
     criterio:
       "PPCs técnicos (nivel=médio) com citação resolvida para br/cne-cp/res/2026/2. A resolução é de 11/11/2026, posterior a todos os PPCs convertidos.",
     universo: "curso",

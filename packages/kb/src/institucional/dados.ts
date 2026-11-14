@@ -2,7 +2,7 @@
  * Leitura de `dados/institucional/` pelo núcleo `packages/kb` (compilação do `kb.sqlite`).
  *
  * O contrato estrito desses arquivos é o de `scripts/dados/institucional.ts`, conferido por
- * `bun run scripts/validar_base.ts`; aqui os esquemas são frouxos (`looseObject`) e só exigem os
+ * `node scripts/validar_base.ts`; aqui os esquemas são frouxos (`looseObject`) e só exigem os
  * campos que o banco usa, para que a dependência continue num sentido só (scripts → kb).
  * Cada registro vem com o caminho do arquivo, relativo à raiz do repositório.
  */

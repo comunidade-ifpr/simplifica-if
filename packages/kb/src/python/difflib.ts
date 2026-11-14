@@ -26,7 +26,8 @@ export class SequenceMatcher<T = string> {
     const n = this.b.length;
     if (autojunk && n >= 200) {
       const limite = Math.floor(n / 100) + 1;
-      for (const [elemento, indices] of [...this.b2j]) {
+      // cópia: o laço apaga do próprio mapa
+      for (const [elemento, indices] of Array.from(this.b2j)) {
         if (indices.length > limite) this.b2j.delete(elemento);
       }
     }

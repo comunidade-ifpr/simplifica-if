@@ -1,6 +1,6 @@
 {
   "pergunta": "Q20",
-  "gerado_por": "bun run kb citacoes br/cne-cp/res/2026/2 (packages/kb/src/ppcs/citacoes.ts)",
+  "gerado_por": "pnpm kb citacoes br/cne-cp/res/2026/2 (packages/kb/src/ppcs/citacoes.ts)",
   "criterio": "PPCs técnicos (nivel=médio) com citação resolvida para br/cne-cp/res/2026/2. A resolução é de 11/11/2026, posterior a todos os PPCs convertidos.",
   "universo": "curso",
   "avaliar_precisao": true,

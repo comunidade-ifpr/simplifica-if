@@ -1,4 +1,5 @@
 /** Índice consolidado da base de análise (`base-analise/indice.json`). */
+import { isDeepStrictEqual } from "node:util";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import {
@@ -192,5 +193,6 @@ export function indiceAtualizado(caminhos: CaminhosAnalise = caminhosPadrao()): 
   if (!existsSync(caminhos.indicePath)) return false;
   const atual = lerJson(caminhos.indicePath);
   const geradoEm = ehObjeto(atual) ? textoDe(obter(atual, "gerado_em", "")) : "";
-  return Bun.deepEquals(atual, gerarIndice(geradoEm, caminhos));
+  // O JSON gravado não tem as chaves `undefined` do objeto gerado; compara os dois como JSON.
+  return isDeepStrictEqual(atual, JSON.parse(JSON.stringify(gerarIndice(geradoEm, caminhos))));
 }

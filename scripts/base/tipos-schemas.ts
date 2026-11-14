@@ -1,7 +1,7 @@
 /**
  * Tipos dos JSON Schemas de base-conhecimento/schemas/. Arquivo gerado por
  * scripts/gerar_tipos_schemas.ts; não edite à mão. Depois de alterar um
- * schema, rode `bun run scripts/gerar_tipos_schemas.ts`.
+ * schema, rode `node scripts/gerar_tipos_schemas.ts`.
  */
 
 /**

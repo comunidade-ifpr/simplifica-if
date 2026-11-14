@@ -1,11 +1,11 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 /** Gera índices globais dos PPCs convertidos para Markdown. */
 import { criarCaminhos } from "./base/caminhos.ts";
 import { dataIndiceAtual, gerarIndices, gravarIndices, verificarIndices } from "./base/indice-ppcs.ts";
 import { lerArgumentos } from "./cli.ts";
 import { dataLocalIso } from "./datas.ts";
 
-const USO = `uso: bun run scripts/gerar_indice_ppcs.ts [--check]
+const USO = `uso: node scripts/gerar_indice_ppcs.ts [--check]
 
 Gera índices globais dos PPCs convertidos para Markdown.
 
