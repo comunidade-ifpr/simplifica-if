@@ -1,10 +1,12 @@
 /**
  * `@simplifica-if/contratos-app`: o contrato entre a interface do app e o servidor local
  * (`apps/server`), em Effect Schema, como o `packages/contracts` do T3. A interface, o servidor e o
- * desktop importam daqui; nada aqui depende do Node.
+ * desktop importam daqui; nada aqui depende do Node, e importar o pacote não carrega o `kb`, a leitura
+ * do MCP nem os drivers do motor (`test/sem-servidor.test.ts` confere o grafo de imports).
  *
  * - `GrupoApp`: a API RPC (`effect/rpc`) por WebSocket. Três grupos: providers, conversa e leitura (o
- *   `GrupoLeitura` de `@simplifica-if/mcp/rpc`, sem duplicar). Os métodos de providers e de conversa
+ *   `GrupoLeitura` de `@simplifica-if/mcp/grupo-leitura`, só as definições, sem duplicar; os handlers
+ *   ficam em `@simplifica-if/mcp/rpc`, que este pacote não importa). Os métodos de providers e de conversa
  *   têm nome com prefixo, como os `WS_METHODS` do T3: `cliente["conversa.enviar"]({ … })`.
  * - `EnvelopePartida`: o que o processo pai (o desktop) escreve numa linha no stdin do servidor, como
  *   o `DesktopBackendBootstrap` do T3: o token do RPC e as origens permitidas.
@@ -14,7 +16,7 @@
  * Autenticação do WebSocket: `Authorization: Bearer <token>` ou, para o navegador, que não manda
  * cabeçalho no WebSocket, o parâmetro `?token=` na URL (`PARAMETRO_TOKEN`).
  */
-import { GrupoLeitura } from "@simplifica-if/mcp/rpc";
+import { GrupoLeitura } from "@simplifica-if/mcp/grupo-leitura";
 import {
   AprovacaoDesconhecida,
   Decisao,

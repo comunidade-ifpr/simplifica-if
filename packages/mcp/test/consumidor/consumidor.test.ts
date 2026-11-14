@@ -1,6 +1,6 @@
 /**
  * Um consumidor do pacote como o fork do T3: importa só pelos especificadores públicos
- * (`@simplifica-if/mcp/toolkit`, `/rpc`, `/contratos`, resolvidos pela autorreferência do `exports`
+ * (`@simplifica-if/mcp/toolkit`, `/rpc`, `/grupo-leitura`, `/contratos`, resolvidos pela autorreferência do `exports`
  * do package.json) e monta as ferramentas do IFPR num `McpServer.layerHttp` em `/mcp/ifpr`, ao lado
  * de um segundo `McpServer.layerHttp` "T3" em `/mcp`, com uma ferramenta própria, no mesmo
  * `HttpRouter`. O endpoint ifpr leva `Layer.fresh`, como documentado em `src/toolkit.ts`, para ter um
@@ -17,7 +17,8 @@ import { HttpRouter } from "effect/http";
 import { RpcTest } from "effect/rpc";
 import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { Resposta } from "@simplifica-if/mcp/contratos";
-import { GrupoLeitura, layerHandlersRpc } from "@simplifica-if/mcp/rpc";
+import { GrupoLeitura } from "@simplifica-if/mcp/grupo-leitura";
+import { layerHandlersRpc } from "@simplifica-if/mcp/rpc";
 import {
   FERRAMENTAS,
   INSTRUCOES,

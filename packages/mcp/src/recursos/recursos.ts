@@ -8,8 +8,8 @@
  * campus e ficha têm leitura própria (`leitura/recursos.ts`). O conteúdo é o texto Markdown da
  * ferramenta, com os avisos e o rodapé da versão da base, e a `base` e os avisos vão também no `_meta`.
  *
- * A mesma leitura serve ao grupo RPC (`lerLink`, em `rpc.ts`): `lerRecurso` devolve um `LinkLido`, com o
- * tipo do conteúdo, a `Resposta` estruturada e o texto do `resources/read`.
+ * A mesma leitura serve ao grupo RPC (`lerLink`, em `rpc.ts`): `lerRecurso` devolve um `LinkLido`
+ * (`grupo-leitura.ts`), com o tipo do conteúdo, a `Resposta` estruturada e o texto do `resources/read`.
  *
  * Com uma `SessaoAtual` no contexto (o servidor HTTP), cada leitura é registrada nela como as chamadas
  * de ferramenta, com `tipo: "recurso"` e o URI no lugar do nome da ferramenta (`observarChamada`).
@@ -29,6 +29,7 @@ import { fichaCurso } from "../ferramentas/ficha-curso.ts";
 import { fichaNorma } from "../ferramentas/ficha-norma.ts";
 import { lerDispositivos } from "../ferramentas/ler-dispositivos.ts";
 import { lerSecao } from "../ferramentas/ler-secao.ts";
+import type { LinkLido } from "../grupo-leitura.ts";
 import * as Leitura from "../leitura/Leitura.ts";
 import { lerLink, linkCampus, linkNorma, type TipoLink, TIPOS_LINK } from "../links.ts";
 import { observarChamada, resumoDaLeitura, resumoDoTexto } from "../SessaoAtual.ts";
@@ -105,33 +106,6 @@ function textoDoRecurso(resposta: Resposta<unknown>, corpo: string, continuacao?
   partes.push(rodape(resposta.base));
   return partes.join("\n\n");
 }
-
-/** Um link lido de um tipo de conteúdo: a `Resposta` com os dados dele e o texto do `resources/read`. */
-const lido = <T extends string, S extends Schema.Top>(tipo: T, resposta: S) =>
-  Schema.Struct({
-    tipo: Schema.Literal(tipo),
-    resposta,
-    /** O texto Markdown do `resources/read`: avisos, corpo e rodapé da base. */
-    texto: Schema.String,
-  });
-
-/**
- * O conteúdo de um link `ifpr://`, pelo tipo: `norma` (a ficha), `dispositivo` (norma com
- * `#dispositivo`), `curso`, `ppc` (o índice), `secao` (PPC com `#secao`), `cnct`, `campus` e `ficha`.
- * A `resposta` é a da ferramenta de mesmo conteúdo (`ficha_norma`, `ler_dispositivos`, `ficha_curso`,
- * `ler_secao`) ou da leitura própria do recurso.
- */
-export const LinkLido = Schema.Union([
-  lido("norma", fichaNorma.saida),
-  lido("dispositivo", lerDispositivos.saida),
-  lido("curso", fichaCurso.saida),
-  lido("ppc", Conteudos.SaidaPpc),
-  lido("secao", lerSecao.saida),
-  lido("cnct", Conteudos.SaidaCnct),
-  lido("campus", Conteudos.SaidaCampus),
-  lido("ficha", Conteudos.SaidaFicha),
-]);
-export type LinkLido = typeof LinkLido.Type;
 
 const DICAS: Record<TipoLink, string> = {
   norma: '"ifpr://norma/br/cne-cp/res/2026/2" ou "ifpr://norma/br/cne-cp/res/2026/2#art28-xviii"',

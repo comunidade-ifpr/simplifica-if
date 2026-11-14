@@ -18,7 +18,7 @@ import * as Ppcs from "@simplifica-if/kb/Ppcs";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import { type Aviso, type Base, EntradaInvalida, type Fonte, type Pagina, type TransicaoResumo } from "../contratos.ts";
-import { responder } from "../envelope.ts";
+import { paginarNoTeto, responder } from "../envelope.ts";
 import * as AdequacaoArt71 from "../ferramentas/adequacao-art71.ts";
 import * as BuscarSecoes from "../ferramentas/buscar-secoes.ts";
 import * as CitacoesDaNorma from "../ferramentas/citacoes-da-norma.ts";
@@ -29,7 +29,7 @@ import * as LerSecao from "../ferramentas/ler-secao.ts";
 import * as ListarCursos from "../ferramentas/listar-cursos.ts";
 import { textoFatosPpc } from "../ferramentas/comum-ppcs.ts";
 import { lerLink, linkCampus, linkCnct, linkCurso, linkFicha, linkNorma, linkPpc } from "../links.ts";
-import { paginarNoTeto, RESERVA_TEXTO } from "../orcamento.ts";
+import { RESERVA_TEXTO } from "../orcamento.ts";
 import { dataBr } from "../texto.ts";
 import {
   AVISO_FATO_EXTRAIDO,

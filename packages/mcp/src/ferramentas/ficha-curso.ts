@@ -6,7 +6,7 @@
  * das normas citadas. É também o conteúdo do link `ifpr://curso/…` no app.
  */
 import * as Schema from "effect/Schema";
-import { type Indicador, ROTULOS_INDICADOR } from "@simplifica-if/kb/adequacao/art71";
+import type { Indicador } from "@simplifica-if/kb/adequacao/art71";
 import { EsquemaLink, FatosPpc, TransicaoResumo } from "../contratos.ts";
 import { inteiro, textoAparado } from "../esquema.ts";
 import { linkNorma } from "../links.ts";
@@ -16,6 +16,21 @@ import { linhaTransicao, textoFatosPpc } from "./comum-ppcs.ts";
 import { definirFerramenta } from "./ferramenta.ts";
 
 export const TETO_FICHA_CURSO = 12000;
+
+/**
+ * Os rótulos dos indicadores de adequação ao art. 71, os mesmos do `ROTULOS_INDICADOR` do kb (o teste
+ * confere). Ficam copiados aqui porque este módulo é também contrato do `GrupoLeitura`, que a
+ * interface do app importa: o `adequacao/art71.ts` do kb lê arquivos e traria o `node:fs` e o
+ * resolvedor de citações. O tipo vem do kb só em tempo de compilação.
+ */
+export const ROTULOS_INDICADOR: Readonly<Record<Indicador, string>> = {
+  "cita-cne-cp-2-2026": "cita a Res. CNE/CP nº 2/2026",
+  "cita-cne-cp-1-2021": "cita a Res. CNE/CP nº 1/2021",
+  "cita-cne-ceb-6-2012": "cita a Res. CNE/CEB nº 6/2012",
+  "cita-cne-ceb-4-1999": "cita só a Res. CNE/CEB nº 4/1999",
+  "nao-cita-dcn": "não cita DCN da EPT",
+  "sem-ppc-convertido": "sem PPC convertido na base",
+};
 
 export const Entrada = Schema.Struct({
   curso: textoAparado(

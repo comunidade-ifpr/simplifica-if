@@ -1,7 +1,8 @@
 /**
- * `@simplifica-if/mcp/rpc`: o grupo RPC de leitura (`effect/rpc`) que o leitor `ifpr://`, o Explorar
- * e o "Para você" do app usam. Cada operação tem a entrada e a resposta da ferramenta MCP de mesmo
- * nome (um contrato só para as duas), e os handlers chamam o mesmo serviço `Leitura`.
+ * `@simplifica-if/mcp/rpc`: os handlers do grupo RPC de leitura (`effect/rpc`) que o leitor `ifpr://`,
+ * o Explorar e o "Para você" do app usam. As definições (`GrupoLeitura`, `LinkLido`, `EntradaLink`)
+ * ficam em `@simplifica-if/mcp/grupo-leitura`, sem o código do servidor, para a interface importá-las;
+ * aqui fica a implementação, que chama o serviço `Leitura`, o mesmo das ferramentas MCP.
  *
  *   const cliente = yield* RpcClient.make(GrupoLeitura)
  *   const ficha = yield* cliente.fichaNorma({ id: "br/cne-cp/res/2021/1" })
@@ -25,47 +26,12 @@
  * que a descrição da ferramenta indica.
  */
 import * as Effect from "effect/Effect";
-import { Rpc, RpcGroup } from "effect/rpc";
-import * as Schema from "effect/Schema";
-import { ErroDeLeitura } from "./contratos.ts";
-import { buscarNorma } from "./ferramentas/buscar-norma.ts";
-import { buscarSecoes } from "./ferramentas/buscar-secoes.ts";
-import { fichaCurso } from "./ferramentas/ficha-curso.ts";
-import { fichaNorma } from "./ferramentas/ficha-norma.ts";
-import { lerDispositivos } from "./ferramentas/ler-dispositivos.ts";
-import { lerSecao } from "./ferramentas/ler-secao.ts";
-import { listarCursos } from "./ferramentas/listar-cursos.ts";
-import { sobreABase } from "./ferramentas/sobre-a-base.ts";
+import { GrupoLeitura } from "./grupo-leitura.ts";
 import * as Leitura from "./leitura/Leitura.ts";
-import * as Conteudos from "./recursos/conteudos.ts";
-import { LinkLido, lerRecurso } from "./recursos/recursos.ts";
+import { lerRecurso } from "./recursos/recursos.ts";
 
 export { layerLeitura } from "./servidor.ts";
 export { Leitura } from "./leitura/Leitura.ts";
-export { LinkLido } from "./recursos/recursos.ts";
-
-/** A entrada de `lerLink`. O link é texto livre: o malformado volta como `EntradaInvalida`, em português. */
-export const EntradaLink = Schema.Struct({ link: Schema.String });
-
-export class GrupoLeitura extends RpcGroup.make(
-  Rpc.make("fichaNorma", { payload: fichaNorma.entrada, success: fichaNorma.saida, error: ErroDeLeitura }),
-  Rpc.make("lerDispositivos", {
-    payload: lerDispositivos.entrada,
-    success: lerDispositivos.saida,
-    error: ErroDeLeitura,
-  }),
-  Rpc.make("buscarNorma", { payload: buscarNorma.entrada, success: buscarNorma.saida, error: ErroDeLeitura }),
-  Rpc.make("fichaCurso", { payload: fichaCurso.entrada, success: fichaCurso.saida, error: ErroDeLeitura }),
-  Rpc.make("lerSecao", { payload: lerSecao.entrada, success: lerSecao.saida, error: ErroDeLeitura }),
-  Rpc.make("buscarSecoes", { payload: buscarSecoes.entrada, success: buscarSecoes.saida, error: ErroDeLeitura }),
-  Rpc.make("listarCursos", { payload: listarCursos.entrada, success: listarCursos.saida, error: ErroDeLeitura }),
-  Rpc.make("sobreABase", { payload: sobreABase.entrada, success: sobreABase.saida, error: ErroDeLeitura }),
-  Rpc.make("lerLink", { payload: EntradaLink, success: LinkLido, error: ErroDeLeitura }),
-  Rpc.make("lerPpc", { payload: Conteudos.EntradaPpc, success: Conteudos.SaidaPpc, error: ErroDeLeitura }),
-  Rpc.make("lerCnct", { payload: Conteudos.EntradaCnct, success: Conteudos.SaidaCnct, error: ErroDeLeitura }),
-  Rpc.make("lerCampus", { payload: Conteudos.EntradaCampus, success: Conteudos.SaidaCampus, error: ErroDeLeitura }),
-  Rpc.make("lerFicha", { payload: Conteudos.EntradaFicha, success: Conteudos.SaidaFicha, error: ErroDeLeitura }),
-) {}
 
 /** Os handlers do grupo: cada operação é um método de `Leitura`; `lerLink`, a leitura do `resources/read`. */
 export const layerHandlersRpc = GrupoLeitura.toLayer(

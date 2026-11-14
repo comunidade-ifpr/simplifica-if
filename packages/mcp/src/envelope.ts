@@ -108,3 +108,37 @@ export const paginar = Effect.fn("envelope.paginar")(function* <T>(
   };
   return { itens: pagina, pagina: dadosPagina };
 });
+
+/**
+ * Página de uma lista já ordenada: até `limite` itens a partir do cursor, enquanto a soma de
+ * `medir(item)` (o tamanho do bloco do item no texto, com o separador) couber em `orcamento`. O
+ * primeiro item da página entra sempre; a ferramenta corta o texto dele se for maior que o orçamento.
+ */
+export const paginarNoTeto = Effect.fn("envelope.paginarNoTeto")(function* <T>(
+  itens: ReadonlyArray<T>,
+  opcoes: {
+    readonly limite: number;
+    readonly cursor?: string | undefined;
+    readonly consulta: unknown;
+    readonly orcamento: number;
+    readonly medir: (item: T) => number;
+  },
+) {
+  const inicio = yield* lerCursor(opcoes.cursor, opcoes.consulta);
+  if (inicio > itens.length) return yield* new EntradaInvalida({ mensagem: CURSOR_ALEM_DO_FIM });
+  const pagina: T[] = [];
+  let usado = 0;
+  for (let i = inicio; i < itens.length && pagina.length < opcoes.limite; i += 1) {
+    const tamanho = opcoes.medir(itens[i]!);
+    if (pagina.length > 0 && usado + tamanho > opcoes.orcamento) break;
+    pagina.push(itens[i]!);
+    usado += tamanho;
+  }
+  const fim = inicio + pagina.length;
+  const dadosPagina: Pagina = {
+    total: itens.length,
+    devolvidos: pagina.length,
+    ...(fim < itens.length ? { cursor: codificarCursor(fim, opcoes.consulta) } : {}),
+  };
+  return { itens: pagina, inicio, pagina: dadosPagina };
+});
