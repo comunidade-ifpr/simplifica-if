@@ -15,7 +15,8 @@ import * as Exit from "effect/Exit";
 import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
 import * as Stream from "effect/Stream";
-import { PARAMETRO_TOKEN } from "@simplifica-if/contratos-app";
+import * as Schema from "effect/Schema";
+import { CAMINHO_INGRESSO, Ingresso, PARAMETRO_INGRESSO } from "@simplifica-if/contratos-app";
 import * as Servidor from "../src/servidor.ts";
 import {
   bancoFixture,
@@ -24,6 +25,7 @@ import {
   diretorioTemporario,
   layerDriversFalsos,
   limparTemporarios,
+  pedirHttp,
   pedirUpgrade,
   postarInitialize,
   type Registro,
@@ -46,6 +48,8 @@ const camada = Servidor.layer({
   toleranciaOrfa: TOLERANCIA_ORFA,
 }).pipe(Layer.provide(layerDriversFalsos(registro)), Layer.provide(NodeServices.layer));
 
+const decodificarIngresso = Schema.decodeEffect(Schema.fromJsonString(Ingresso));
+
 const AUTORIZACAO = { authorization: `Bearer ${TOKEN}` };
 
 layer(camada, { excludeTestServices: true })("servidor local", (it) => {
@@ -59,19 +63,65 @@ layer(camada, { excludeTestServices: true })("servidor local", (it) => {
     }),
   );
 
-  it.effect("recusa o upgrade sem token, com token errado, com Host ou Origin de fora", () =>
+  it.effect("recusa o upgrade sem credencial, com credencial errada, com Host ou Origin de fora", () =>
     Effect.gen(function* () {
       const { urlRpc, porta } = yield* Servidor.ServidorApp;
       assert.strictEqual(yield* pedirUpgrade(urlRpc, {}), 401);
       assert.strictEqual(yield* pedirUpgrade(urlRpc, { authorization: `Bearer ${TOKEN}x` }), 401);
-      assert.strictEqual(yield* pedirUpgrade(`${urlRpc}?${PARAMETRO_TOKEN}=errado`, {}), 401);
+      assert.strictEqual(yield* pedirUpgrade(`${urlRpc}?${PARAMETRO_INGRESSO}=errado`, {}), 401);
+      // O token nunca vale na URL: o navegador usa o ingresso.
+      assert.strictEqual(yield* pedirUpgrade(`${urlRpc}?token=${TOKEN}`, { origin: ORIGEM }), 401);
       assert.strictEqual(yield* pedirUpgrade(urlRpc, { ...AUTORIZACAO, host: `rebinding.example:${porta}` }), 403);
       assert.strictEqual(yield* pedirUpgrade(urlRpc, { ...AUTORIZACAO, origin: "https://site.example" }), 403);
-      // O que passa: o cabeçalho, o parâmetro (o navegador) e a origem do app; `localhost` também.
+      // O que passa: o cabeçalho, com ou sem a origem do app; `localhost` também.
       assert.strictEqual(yield* pedirUpgrade(urlRpc, AUTORIZACAO), 101);
-      assert.strictEqual(yield* pedirUpgrade(`${urlRpc}?${PARAMETRO_TOKEN}=${TOKEN}`, { origin: ORIGEM }), 101);
+      assert.strictEqual(yield* pedirUpgrade(urlRpc, { ...AUTORIZACAO, origin: ORIGEM }), 101);
       assert.strictEqual(yield* pedirUpgrade(urlRpc, { ...AUTORIZACAO, host: `localhost:${porta}` }), 101);
     }),
+  );
+
+  it.effect("ingresso: o token compra um ingresso, que abre uma conexão só", () =>
+    Effect.gen(function* () {
+      const { urlRpc, porta } = yield* Servidor.ServidorApp;
+      const urlIngresso = `http://127.0.0.1:${porta}${CAMINHO_INGRESSO}`;
+      const comprar = (cabecalhos: Record<string, string>) => pedirHttp(urlIngresso, { metodo: "POST", cabecalhos });
+
+      // Sem token, com token errado, de outra origem ou outro Host: nada de ingresso.
+      assert.strictEqual((yield* comprar({ origin: ORIGEM })).status, 401);
+      assert.strictEqual((yield* comprar({ authorization: "Bearer errado" })).status, 401);
+      assert.strictEqual((yield* comprar({ ...AUTORIZACAO, origin: "https://site.example" })).status, 403);
+      assert.strictEqual((yield* comprar({ ...AUTORIZACAO, host: `rebinding.example:${porta}` })).status, 403);
+
+      // O CORS do navegador: o preflight só responde à origem do app.
+      const preflight = yield* pedirHttp(urlIngresso, { metodo: "OPTIONS", cabecalhos: { origin: ORIGEM } });
+      assert.strictEqual(preflight.status, 204);
+      assert.strictEqual(preflight.cabecalhos["access-control-allow-origin"], ORIGEM);
+      assert.include(String(preflight.cabecalhos["access-control-allow-headers"]), "authorization");
+      const alheio = yield* pedirHttp(urlIngresso, {
+        metodo: "OPTIONS",
+        cabecalhos: { origin: "https://site.example" },
+      });
+      assert.strictEqual(alheio.status, 403);
+
+      const resposta = yield* comprar({ ...AUTORIZACAO, origin: ORIGEM });
+      assert.strictEqual(resposta.status, 200);
+      assert.strictEqual(resposta.cabecalhos["access-control-allow-origin"], ORIGEM);
+      const { ingresso } = yield* decodificarIngresso(resposta.corpo);
+      assert.notInclude(ingresso, TOKEN);
+      const comIngresso = `${urlRpc}?${PARAMETRO_INGRESSO}=${encodeURIComponent(ingresso)}`;
+      assert.strictEqual(yield* pedirUpgrade(comIngresso, { origin: "https://site.example" }), 403);
+      assert.strictEqual(yield* pedirUpgrade(comIngresso, { origin: ORIGEM }), 101);
+      // Gasto: não abre a segunda conexão.
+      assert.strictEqual(yield* pedirUpgrade(comIngresso, { origin: ORIGEM }), 401);
+
+      // O cliente RPC do navegador, com um ingresso novo.
+      const novo = yield* comprar({ ...AUTORIZACAO, origin: ORIGEM });
+      const segundo = yield* decodificarIngresso(novo.corpo);
+      const c = yield* cliente(`${urlRpc}?${PARAMETRO_INGRESSO}=${encodeURIComponent(segundo.ingresso)}`, {
+        origin: ORIGEM,
+      });
+      assert.strictEqual((yield* c["providers.detectar"]({ provider: "claude" })).provider, "claude");
+    }).pipe(Effect.scoped),
   );
 
   it.effect("o cliente RPC sem token ou com token errado não chega a chamar", () =>

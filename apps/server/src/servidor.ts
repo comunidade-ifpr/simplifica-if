@@ -5,7 +5,7 @@
  * - **RPC** (`GrupoApp` de `@simplifica-if/contratos-app`) por WebSocket em `ws://127.0.0.1:<porta>/rpc`,
  *   com um servidor `effect/rpc` para todas as conexões, como a rota `/ws` do T3 (`ws.ts`):
  *   `RpcServer.makeProtocolWithHttpEffectWebsocket` e a autenticação antes do upgrade
- *   (`Autenticacao.ts`).
+ *   (`Autenticacao.ts`), com o token ou um ingresso de curta duração (`POST /ingresso`).
  * - **MCP** `ifpr` por HTTP (`@simplifica-if/mcp/http`), numa porta própria; cada conversa recebe uma
  *   sessão com token próprio (`Conversas.ts`).
  * - **Motor** (`@simplifica-if/motor`) sobre os `Drivers` do ambiente: os reais (`Drivers.layerNode`,
@@ -29,7 +29,7 @@ import * as Schema from "effect/Schema";
 import { HttpRouter, HttpServer, HttpServerRequest } from "effect/http";
 import * as NetAddress from "effect/net/NetAddress";
 import { RpcSerialization, RpcServer } from "effect/rpc";
-import { CAMINHO_RPC, GrupoApp } from "@simplifica-if/contratos-app";
+import { CAMINHO_INGRESSO, CAMINHO_RPC, GrupoApp } from "@simplifica-if/contratos-app";
 import type { Canal } from "@simplifica-if/mcp/contratos";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import { layerLeitura } from "@simplifica-if/mcp/rpc";
@@ -79,7 +79,10 @@ export class ServidorApp extends Context.Service<
   }
 >()("@simplifica-if/server/servidor/ServidorApp") {}
 
-/** O servidor `effect/rpc` do `GrupoApp`, atrás da autenticação, na rota GET `/rpc`. */
+/**
+ * O servidor `effect/rpc` do `GrupoApp`, atrás da autenticação, na rota GET `/rpc`, e a emissão de
+ * ingressos do WebSocket em `POST /ingresso` (com o `OPTIONS` do CORS).
+ */
 const layerRotaRpc = Layer.unwrap(
   Effect.gen(function* () {
     const autenticacao = yield* Autenticacao.Autenticacao;
@@ -92,14 +95,18 @@ const layerRotaRpc = Layer.unwrap(
       disableFatalDefects: true,
       onDisconnect: conversas.clienteSaiu,
     }).pipe(Effect.provideService(RpcServer.Protocol, protocol), Effect.forkScoped);
-    return HttpRouter.add(
-      "GET",
-      CAMINHO_RPC,
-      Effect.gen(function* () {
-        const requisicao = yield* HttpServerRequest.HttpServerRequest;
-        const recusa = yield* autenticacao.conferir(requisicao);
-        return Option.isSome(recusa) ? recusa.value : yield* httpEffect;
-      }),
+    return Layer.mergeAll(
+      HttpRouter.add(
+        "GET",
+        CAMINHO_RPC,
+        Effect.gen(function* () {
+          const requisicao = yield* HttpServerRequest.HttpServerRequest;
+          const recusa = yield* autenticacao.conferir(requisicao);
+          return Option.isSome(recusa) ? recusa.value : yield* httpEffect;
+        }),
+      ),
+      HttpRouter.add("POST", CAMINHO_INGRESSO, autenticacao.emitirIngresso),
+      HttpRouter.add("OPTIONS", CAMINHO_INGRESSO, autenticacao.preflightIngresso),
     );
   }),
 );
@@ -145,6 +152,8 @@ export const layer = (opcoes: Opcoes) => {
     Layer.provide(Layer.mergeAll(handlers, RpcSerialization.layerJson)),
     Layer.provide(nucleo),
     Layer.provide(node),
-    Layer.provide(Layer.mergeAll(NodeHttpServer.layerHttpServices, NodeCrypto.layerDigest)),
+    Layer.provide(
+      Layer.mergeAll(NodeHttpServer.layerHttpServices, NodeCrypto.layerDigest, NodeCrypto.layerSecureRandom),
+    ),
   );
 };

@@ -14,7 +14,10 @@
  *   URLs do RPC e do MCP.
  *
  * Autenticação do WebSocket: `Authorization: Bearer <token>` ou, para o navegador, que não manda
- * cabeçalho no WebSocket, o parâmetro `?token=` na URL (`PARAMETRO_TOKEN`).
+ * cabeçalho no WebSocket, um ingresso de curta duração na URL (`?ingresso=`, `PARAMETRO_INGRESSO`),
+ * como o `wsTicket` do T3: o cliente o pede com o token em `POST /ingresso` (`CAMINHO_INGRESSO`) e o
+ * usa uma vez, em até `VALIDADE_INGRESSO_MS`. O token, que vale enquanto o servidor viver, nunca vai
+ * na URL.
  */
 import { GrupoLeitura } from "@simplifica-if/mcp/grupo-leitura";
 import {
@@ -41,8 +44,22 @@ export { GrupoLeitura };
 /** O caminho do WebSocket do RPC. */
 export const CAMINHO_RPC = "/rpc";
 
-/** O parâmetro da URL com o token, para o cliente que não manda cabeçalho no WebSocket (navegador). */
-export const PARAMETRO_TOKEN = "token";
+/** O caminho que troca o token (`Authorization: Bearer`) por um ingresso do WebSocket (`POST`). */
+export const CAMINHO_INGRESSO = "/ingresso";
+
+/** O parâmetro da URL do WebSocket com o ingresso, para o cliente que não manda cabeçalho (navegador). */
+export const PARAMETRO_INGRESSO = "ingresso";
+
+/** Por quanto tempo o ingresso vale depois de emitido; ele vale também para uma conexão só. */
+export const VALIDADE_INGRESSO_MS = 60_000;
+
+/** A resposta de `POST /ingresso`. */
+export const Ingresso = Schema.Struct({
+  ingresso: Schema.String,
+  /** Milissegundos desde a época Unix em que o ingresso deixa de valer. */
+  expiraEm: Schema.Number,
+});
+export type Ingresso = typeof Ingresso.Type;
 
 /** A variável de ambiente com o token, a alternativa ao `EnvelopePartida` no stdin. */
 export const VARIAVEL_TOKEN = "SIMPLIFICA_SERVIDOR_TOKEN";

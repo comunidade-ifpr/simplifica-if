@@ -142,6 +142,29 @@ export const pedirUpgrade = (url: string, cabecalhos: Record<string, string>) =>
     return Effect.sync(() => requisicao.destroy());
   });
 
+/** Uma requisição HTTP crua: o status, os cabeçalhos e o corpo da resposta. */
+export const pedirHttp = (
+  url: string,
+  opcoes: { readonly metodo: string; readonly cabecalhos?: Record<string, string> },
+) =>
+  Effect.callback<{ status: number; cabecalhos: NodeHttp.IncomingHttpHeaders; corpo: string }>((resume) => {
+    const requisicao = NodeHttp.request(url.replace(/^ws:/, "http:"), {
+      method: opcoes.metodo,
+      headers: opcoes.cabecalhos ?? {},
+    });
+    requisicao.on("response", (resposta) => {
+      let corpo = "";
+      resposta.setEncoding("utf8");
+      resposta.on("data", (pedaco: string) => (corpo += pedaco));
+      resposta.on("end", () =>
+        resume(Effect.succeed({ status: resposta.statusCode ?? 0, cabecalhos: resposta.headers, corpo })),
+      );
+    });
+    requisicao.on("error", (erro) => resume(Effect.die(erro)));
+    requisicao.end();
+    return Effect.sync(() => requisicao.destroy());
+  });
+
 const CORPO_INITIALIZE = JSON.stringify({
   jsonrpc: "2.0",
   id: 1,
