@@ -137,7 +137,7 @@ const poc = Command.make(
       Flag.withDescription(
         "transporte do servidor ifpr: stdio (um processo por sessão) ou http (local, neste processo)",
       ),
-      Flag.withDefault("stdio"),
+      Flag.withDefault("http"),
     ),
     instalar: Flag.Literals("instalar", ["codex", "antigravity"]).pipe(
       Flag.withDescription("instala a CLI gerenciada (a do T3) na pasta de estado"),
@@ -264,7 +264,12 @@ const program = Effect.gen(function* () {
       ? path.join(home, "Library", "Application Support", "simplifica-if-poc")
       : path.join(home, ".simplifica-if-poc");
   const pastaEstado = yield* Config.String("SIMPLIFICA_ESTADO").pipe(Config.withDefault(padrao));
-  const drivers = Drivers.layerNode({ ambiente: process.env, pastaEstado });
+  // Ponte stdio → HTTP do MCP para o Antigravity, que no 1.5.9 não anuncia MCP por HTTP (T3).
+  const ponteMcp = {
+    comando: process.execPath,
+    argumentos: [path.join(RAIZ, "packages", "motor", "scripts", "ponte-mcp.ts")],
+  };
+  const drivers = Drivers.layerNode({ ambiente: process.env, pastaEstado, ponteMcp });
   yield* Command.run(poc, { version: "0.1.0" }).pipe(
     Effect.provide(Motor.layer.pipe(Layer.provide(drivers))),
     Effect.provideService(Motor.Gravador, gravar),

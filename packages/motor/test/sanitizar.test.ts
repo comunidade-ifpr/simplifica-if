@@ -110,7 +110,7 @@ describe("configuração do MCP por provider", () => {
   });
 
   it("Antigravity: mcpServers do session/new", () => {
-    assert.deepStrictEqual(mcpServersAcp({ ...CONFIG, provider: "antigravity" }), [
+    assert.deepStrictEqual(mcpServersAcp({ ...CONFIG, provider: "antigravity" }, { http: false }), [
       { name: "ifpr", command: "/usr/local/bin/node", args: ["cli.ts", "--banco", "kb.sqlite"], env: [] },
     ]);
   });
@@ -133,12 +133,28 @@ describe("configuração do MCP por provider", () => {
   });
 
   it("Antigravity: mcpServers HTTP do session/new", () => {
-    assert.deepStrictEqual(mcpServersAcp({ ...CONFIG_HTTP, provider: "antigravity" }), [
+    assert.deepStrictEqual(mcpServersAcp({ ...CONFIG_HTTP, provider: "antigravity" }, { http: true }), [
       {
         type: "http",
         name: "ifpr",
         url: "http://127.0.0.1:43210/mcp",
         headers: [{ name: "Authorization", value: "Bearer token-da-sessao" }],
+      },
+    ]);
+  });
+
+  it("Antigravity sem HTTP: a ponte stdio do T3, com a URL e o token no env", () => {
+    const ponte = { comando: "/usr/local/bin/node", argumentos: ["ponte-mcp.ts"] };
+    assert.deepStrictEqual(mcpServersAcp({ ...CONFIG_HTTP, provider: "antigravity" }, { http: false, ponte }), [
+      {
+        name: "ifpr",
+        command: "/usr/local/bin/node",
+        args: ["ponte-mcp.ts"],
+        env: [
+          { name: "ELECTRON_RUN_AS_NODE", value: "1" },
+          { name: "T3_ACP_MCP_ENDPOINT", value: "http://127.0.0.1:43210/mcp" },
+          { name: "T3_ACP_MCP_AUTHORIZATION", value: "Bearer token-da-sessao" },
+        ],
       },
     ]);
   });
@@ -150,13 +166,15 @@ describe("configuração do MCP por provider", () => {
       agentCapabilities: { mcpCapabilities: { sse: true } },
       agentInfo: { name: "antigravity-acp", version: "agy_acp_server_1.0.0" },
     };
-    assert.isUndefined(recusaMcpAcp(comHttp, { ...CONFIG_HTTP, provider: "antigravity" }));
-    assert.isUndefined(recusaMcpAcp(semHttp, { ...CONFIG, provider: "antigravity" }));
+    const ponte = { comando: "/usr/local/bin/node", argumentos: ["ponte-mcp.ts"] };
+    assert.isUndefined(recusaMcpAcp(comHttp, { ...CONFIG_HTTP, provider: "antigravity" }, undefined));
+    assert.isUndefined(recusaMcpAcp(semHttp, { ...CONFIG, provider: "antigravity" }, undefined));
+    assert.isUndefined(recusaMcpAcp(semHttp, { ...CONFIG_HTTP, provider: "antigravity" }, ponte));
     assert.match(
-      recusaMcpAcp(semHttp, { ...CONFIG_HTTP, provider: "antigravity" }) ?? "",
+      recusaMcpAcp(semHttp, { ...CONFIG_HTTP, provider: "antigravity" }, undefined) ?? "",
       /agy_acp_server_1\.0\.0.*mcpCapabilities\.http.*ifpr/,
     );
-    assert.isDefined(recusaMcpAcp({ protocolVersion: 1 }, { ...CONFIG_HTTP, provider: "antigravity" }));
+    assert.isDefined(recusaMcpAcp({ protocolVersion: 1 }, { ...CONFIG_HTTP, provider: "antigravity" }, undefined));
   });
 
   it("ambiente: sem as variáveis de uma sessão hospedeira do Claude Code", () => {

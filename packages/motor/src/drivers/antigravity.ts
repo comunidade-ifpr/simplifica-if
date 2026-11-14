@@ -154,34 +154,78 @@ const METODO_LOGIN = "oauth-personal";
  * Servidores MCP no formato do ACP: stdio (`command` com caminho absoluto) ou HTTP
  * (`McpServerHttp`, `type: "http"`, com os cabeçalhos em lista `{ name, value }`).
  */
-export function mcpServersAcp(config: ConfigSessao): ReadonlyArray<AcpSchema.McpServer> {
-  return config.servidoresMcp.map((servidor) =>
-    servidor.tipo === "http"
-      ? {
-          type: "http" as const,
-          name: servidor.nome,
-          url: servidor.url,
-          headers: Object.entries(servidor.cabecalhos ?? {}).map(([name, value]) => ({ name, value })),
-        }
-      : {
+/**
+ * Comando que roda a ponte stdio → HTTP do T3 (`AcpMcpStdioBridge`), para agentes ACP que não
+ * anunciam MCP por HTTP. No app é o próprio executável com um subcomando; no harness,
+ * `node packages/motor/scripts/ponte-mcp.ts`.
+ */
+export interface PonteMcp {
+  readonly comando: string;
+  readonly argumentos: ReadonlyArray<string>;
+}
+
+/**
+ * Servidores MCP no formato do ACP, como o `acpMcpContext` do T3: HTTP quando o agente anuncia
+ * `mcpCapabilities.http`; senão, a ponte stdio, com a URL e o `Authorization` no `env` do servidor
+ * (nunca na linha de comando). O `command` do stdio precisa ser caminho absoluto.
+ */
+export function mcpServersAcp(
+  config: ConfigSessao,
+  opcoes: { readonly http: boolean; readonly ponte?: PonteMcp },
+): ReadonlyArray<AcpSchema.McpServer> {
+  return config.servidoresMcp.flatMap((servidor): ReadonlyArray<AcpSchema.McpServer> => {
+    if (servidor.tipo === "stdio") {
+      return [
+        {
           name: servidor.nome,
           command: servidor.comando,
           args: [...servidor.argumentos],
           env: Object.entries(servidor.ambiente ?? {}).map(([name, value]) => ({ name, value })),
         },
-  );
+      ];
+    }
+    if (opcoes.http) {
+      return [
+        {
+          type: "http" as const,
+          name: servidor.nome,
+          url: servidor.url,
+          headers: Object.entries(servidor.cabecalhos ?? {}).map(([name, value]) => ({ name, value })),
+        },
+      ];
+    }
+    if (opcoes.ponte === undefined) return [];
+    return [
+      {
+        name: servidor.nome,
+        command: opcoes.ponte.comando,
+        args: [...opcoes.ponte.argumentos],
+        env: [
+          // Como no T3: o app desktop roda como Node pelo Electron.
+          { name: "ELECTRON_RUN_AS_NODE", value: "1" },
+          { name: "T3_ACP_MCP_ENDPOINT", value: servidor.url },
+          { name: "T3_ACP_MCP_AUTHORIZATION", value: servidor.cabecalhos?.Authorization ?? "" },
+        ],
+      },
+    ];
+  });
 }
 
 /**
- * Confere, pelo `initialize`, se o agente aceita os servidores MCP da sessão. O stdio é obrigatório
- * no ACP; o HTTP só vale com `agentCapabilities.mcpCapabilities.http`. Devolve o motivo da recusa,
- * ou nada se o agente aceita todos. Sem suporte, a sessão falha: não cai para stdio em silêncio.
+ * Motivo para recusar a sessão, ou nada: servidor HTTP com um agente que não anuncia HTTP e sem a
+ * ponte stdio configurada. Não cai para nada em silêncio.
  */
-export function recusaMcpAcp(inicio: AcpSchema.InitializeResponse, config: ConfigSessao): string | undefined {
+export function recusaMcpAcp(
+  inicio: AcpSchema.InitializeResponse,
+  config: ConfigSessao,
+  ponte: PonteMcp | undefined,
+): string | undefined {
   const http = config.servidoresMcp.filter((servidor) => servidor.tipo === "http");
-  if (http.length === 0 || inicio.agentCapabilities?.mcpCapabilities?.http === true) return undefined;
+  if (http.length === 0 || inicio.agentCapabilities?.mcpCapabilities?.http === true || ponte !== undefined) {
+    return undefined;
+  }
   const versao = inicio.agentInfo?.version ? ` (${inicio.agentInfo.version})` : "";
-  return `o agy${versao} não anuncia MCP por HTTP (mcpCapabilities.http) no initialize; servidores HTTP da sessão: ${http.map((servidor) => servidor.nome).join(", ")}`;
+  return `o agy${versao} não anuncia MCP por HTTP (mcpCapabilities.http) e não há ponte stdio configurada; servidores HTTP da sessão: ${http.map((servidor) => servidor.nome).join(", ")}`;
 }
 
 /** Dono do fluxo de login no `ProviderAuthController` do T3 (um app, um dono). */
@@ -196,6 +240,8 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
   readonly instalacao: AntigravityInstallation.AntigravityInstallation["Service"];
   /** Executável próprio (o `binaryPath` do T3); vazio, a instalação gerenciada. */
   readonly binario?: string;
+  /** Ponte stdio → HTTP para o MCP, quando o `agy` não anuncia HTTP (o 1.5.9 não anuncia). */
+  readonly ponteMcp?: PonteMcp;
 }) {
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
   const fs = yield* FileSystem.FileSystem;
@@ -363,7 +409,7 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
       });
     }
     const cliente = aberto.cliente;
-    const recusa = recusaMcpAcp(aberto.inicio, config);
+    const recusa = recusaMcpAcp(aberto.inicio, config, opcoes.ponteMcp);
     if (recusa !== undefined) {
       return yield* new FalhaProvider({ provider: PROVIDER, operacao: "session/new", detalhe: recusa });
     }
@@ -408,7 +454,13 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
     );
 
     const sessao = yield* cliente.agent
-      .createSession({ cwd: config.pastaTrabalho, mcpServers: mcpServersAcp(config) })
+      .createSession({
+        cwd: config.pastaTrabalho,
+        mcpServers: mcpServersAcp(config, {
+          http: aberto.inicio.agentCapabilities?.mcpCapabilities?.http === true,
+          ...(opcoes.ponteMcp ? { ponte: opcoes.ponteMcp } : {}),
+        }),
+      })
       .pipe(Effect.mapError(Canal.falhaDe(PROVIDER, "session/new")));
     const sessionId = sessao.sessionId;
 
