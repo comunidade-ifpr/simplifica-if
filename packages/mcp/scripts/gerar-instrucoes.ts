@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @effect-diagnostics nodeBuiltinImport:off globalConsole:off -- gerador de código fora do runtime Effect: lê o Markdown, grava o módulo e escreve o resultado no terminal
 /**
  * Gera `src/instrucoes.gerado.ts` a partir de `instrucoes.md`: o texto das instruções do servidor
  * vira uma constante, embutida no bundle e no executável sem import de texto (que cada ferramenta

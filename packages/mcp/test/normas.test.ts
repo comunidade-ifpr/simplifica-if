@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- teste: monta o banco num diretório temporário vazio
 /**
  * Ferramentas de normas (T2) sobre a fixture: contrato (entradas válidas e inválidas, saída no
  * `outputSchema`), determinismo, orçamento (teto do texto, paginação completa e sem repetição) e
@@ -232,14 +233,12 @@ describe("buscar_norma", () => {
   );
 
   it.effect("limite 20 com resultados longos cabe no teto", () =>
-    Effect.gen(function* () {
-      yield* chamar(
-        buscarNorma,
-        { consulta: "elemento projeto pedagógico itinerário", limite: 20 },
-        contexto(),
-        TETO_BUSCAR_NORMA,
-      );
-    }),
+    chamar(
+      buscarNorma,
+      { consulta: "elemento projeto pedagógico itinerário", limite: 20 },
+      contexto(),
+      TETO_BUSCAR_NORMA,
+    ),
   );
 
   it.effect("determinismo", () =>
@@ -331,13 +330,11 @@ describe("ler_dispositivos", () => {
   );
 
   it.effect("determinismo", () =>
-    Effect.gen(function* () {
-      yield* deterministico(
-        lerDispositivos,
-        { ids: [`${DCN_2026}#art28`, `${DCN_2021}#art20-i`], filhos: true },
-        contexto(),
-      );
-    }),
+    deterministico(
+      lerDispositivos,
+      { ids: [`${DCN_2026}#art28`, `${DCN_2021}#art20-i`], filhos: true },
+      contexto(),
+    ),
   );
 
   it.effect("entrada inválida: erro legível", () =>
@@ -443,9 +440,7 @@ describe("ficha_norma", () => {
   );
 
   it.effect("determinismo", () =>
-    Effect.gen(function* () {
-      yield* deterministico(fichaNorma, { id: DCN_2021, em: "2026-11-01" }, contexto());
-    }),
+    deterministico(fichaNorma, { id: DCN_2021, em: "2026-11-01" }, contexto()),
   );
 
   it.effect("entrada inválida e norma inexistente: erro legível", () =>
@@ -556,9 +551,7 @@ describe("correspondencia", () => {
   );
 
   it.effect("determinismo", () =>
-    Effect.gen(function* () {
-      yield* deterministico(correspondencia, { id: DCN_2021 }, contexto());
-    }),
+    deterministico(correspondencia, { id: DCN_2021 }, contexto()),
   );
 
   it.effect("entrada inválida: erro legível; cursor de outra consulta ou com dispositivo", () =>
@@ -657,9 +650,7 @@ describe("resolver_citacoes", () => {
   );
 
   it.effect("determinismo", () =>
-    Effect.gen(function* () {
-      yield* deterministico(resolverCitacoes, { citacoes: CITACOES }, contexto());
-    }),
+    deterministico(resolverCitacoes, { citacoes: CITACOES }, contexto()),
   );
 
   it.effect("entrada inválida: erro legível", () =>

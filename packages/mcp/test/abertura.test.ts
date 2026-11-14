@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- teste: monta arquivos de banco inválidos num diretório temporário
 /**
  * Abertura do `kb.sqlite` pelo simplifica-mcp: só leitura, sem recompilar e sem procurar o
  * repositório (`layerLeitura`, sobre o `BaseKb` do kb), e as mensagens que o servidor dá a quem o

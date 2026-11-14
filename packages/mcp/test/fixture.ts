@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- fixture de teste: grava o banco num diretório temporário pelo node:sqlite
 /**
  * Banco de teste: o DDL do `kb` com poucas linhas, num diretório temporário. Não depende do
  * `tmp/kb.sqlite`, que não está no git.

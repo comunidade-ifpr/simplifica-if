@@ -26,10 +26,12 @@ import { decodificadorDeEntrada, OPCOES_ENTRADA } from "../src/validacao.ts";
 /** O que os testes usam de uma ferramenta (qualquer uma de `FERRAMENTAS`). */
 export interface FerramentaTestada<D extends Schema.Top = Schema.Top> {
   readonly nome: string;
-  readonly entrada: Schema.Top;
+  readonly entrada: Schema.Decoder<unknown>;
   readonly dados: D;
   readonly saida: Schema.Top;
-  readonly textoCompleto: (resposta: Resposta<D["Type"]>) => string;
+  // Método, e não propriedade: os parâmetros de método são bivariantes, e uma ferramenta concreta
+  // (com a `Resposta` dos dados dela) serve onde se pede `FerramentaTestada` de qualquer schema.
+  textoCompleto(resposta: Resposta<D["Type"]>): string;
 }
 
 /** Os handlers do Toolkit e o `Leitura` sobre o banco em `banco`. */

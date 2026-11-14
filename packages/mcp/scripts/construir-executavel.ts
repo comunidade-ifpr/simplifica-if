@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @effect-diagnostics nodeBuiltinImport:off globalConsole:off -- script de build, fora do runtime Effect: chama o empacotador e escreve o progresso no terminal
 /**
  * Empacota o servidor MCP (`src/cli.ts`) num executável Node SEA, `dist-exe/simplifica-mcp`, como o
  * `build:exe` do T3 Code: `vp pack` (tsdown) num só chunk, com todas as dependências dentro, e o SEA

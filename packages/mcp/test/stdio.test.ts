@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- teste: o servidor como processo filho, num diretório temporário
 /**
  * Integração: o servidor como processo filho, em stdio, com `cwd` num diretório temporário vazio,
  * falando com o Client do SDK; e os erros de inicialização da CLI.

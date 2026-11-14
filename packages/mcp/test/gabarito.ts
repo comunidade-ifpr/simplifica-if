@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- ferramenta de teste: lê e grava o gabarito em testes-gabarito/
 /**
  * Gabarito do servidor MCP: `initialize`, `tools/list` e as respostas (`content` e `structuredContent`)
  * de duas a três chamadas por ferramenta, colhidos pelo Client do SDK em stdio, com o servidor como

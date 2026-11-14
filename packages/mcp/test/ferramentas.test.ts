@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- teste: lê a especificação e o package.json do disco
 /**
  * Testes de contrato: o registro, as descrições, os schemas e as duas ferramentas do T1, chamadas
  * diretamente e pelo protocolo (Client do SDK ligado ao servidor em memória).
@@ -85,7 +86,7 @@ describe("registro", () => {
       expect(PREVISTAS).toContain(nome);
     }
     // na ordem da tabela da especificação
-    expect(nomes).toEqual(PREVISTAS.filter((nome) => nomes.includes(nome)));
+    expect(nomes).toEqual(PREVISTAS.filter((nome) => (nomes as readonly string[]).includes(nome)));
     // todas as previstas menos `pacote_contexto` (T4)
     for (const nome of PREVISTAS.filter((nome) => nome !== "pacote_contexto")) {
       expect(nomes).toContain(nome);
@@ -106,7 +107,7 @@ describe("registro", () => {
     for (const f of FERRAMENTAS) {
       const anotacoes = f.tool.annotations;
       expect({
-        title: Context.get(anotacoes, Tool.Title),
+        title: Context.getUnsafe(anotacoes, Tool.Title),
         readOnlyHint: Context.get(anotacoes, Tool.Readonly),
         destructiveHint: Context.get(anotacoes, Tool.Destructive),
         idempotentHint: Context.get(anotacoes, Tool.Idempotent),
