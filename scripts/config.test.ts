@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vite-plus/test";
 import { BASES_NOTION, carregarDataSources, esquemaConfigNotion, validarConfigNotion } from "./config.ts";
+import { decodificarOuNada } from "./esquema.ts";
 
 function configValida() {
   return {
@@ -20,7 +21,7 @@ describe("config/notion.json", () => {
   test("configuração válida não tem erros e o schema devolve os data sources", () => {
     const config = configValida();
     expect(validarConfigNotion(config)).toEqual([]);
-    expect(esquemaConfigNotion.parse(config).databases.movimentacoes_cursos.data_source_id).toBe(
+    expect(decodificarOuNada(esquemaConfigNotion, config)?.databases.movimentacoes_cursos.data_source_id).toBe(
       "ds-movimentacoes_cursos",
     );
   });
@@ -44,7 +45,7 @@ describe("config/notion.json", () => {
   test("o schema recusa o que a validação recusaria", () => {
     const config = configValida();
     config.databases.movimentacoes_cursos!.data_source_id = 7 as unknown as string;
-    expect(esquemaConfigNotion.safeParse(config).success).toBe(false);
-    expect(esquemaConfigNotion.safeParse({ databases: {} }).success).toBe(false);
+    expect(decodificarOuNada(esquemaConfigNotion, config)).toBeUndefined();
+    expect(decodificarOuNada(esquemaConfigNotion, { databases: {} })).toBeUndefined();
   });
 });
