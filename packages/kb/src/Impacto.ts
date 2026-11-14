@@ -54,15 +54,15 @@ export class Impacto extends Context.Service<
 const make = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
   const fontes = yield* FontesNormativas.FontesNormativas;
-  // as tabelas de correspondência e os dispositivos que elas citam não mudam com o banco aberto
-  const fonteCorrespondencia = yield* Effect.cached(
-    carregarFonteCorrespondencia.pipe(Effect.provideService(SqlClient.SqlClient, sql)),
-  );
+  // as tabelas de correspondência e os dispositivos que elas citam não mudam com o banco aberto:
+  // carregados uma vez, na construção da layer (um Effect.cached tornaria a primeira chamada
+  // assíncrona, e a ponte do C1 roda os métodos com Effect.runSync)
+  const fonteCorrespondencia = yield* carregarFonteCorrespondencia;
 
   const daNorma = Effect.fn("Impacto.daNorma")(
     function* (id: string, opcoes: OpcoesImpacto = {}) {
       const ato = idDoAto(id.split("#")[0]!);
-      const correspondencia = yield* fonteCorrespondencia;
+      const correspondencia = fonteCorrespondencia;
       const dispositivos = yield* linhasDispositivos(
         "SELECT dispositivo, texto FROM dispositivos WHERE ato_id = ? AND canonico = 1 ORDER BY norma_id <> ato_id, norma_id, ordem",
         [ato],

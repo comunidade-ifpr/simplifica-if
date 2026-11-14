@@ -12,6 +12,7 @@ import * as Layers from "@simplifica-if/kb/layers";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Layer from "effect/Layer";
+import * as Scheduler from "effect/Scheduler";
 import * as Scope from "effect/Scope";
 import { McpServer } from "@modelcontextprotocol/server";
 import { type StdioServerHandle, serveStdio } from "@modelcontextprotocol/server/stdio";
@@ -53,9 +54,13 @@ function pastaReal(dir: string): string {
  */
 export function abrirKb(caminho: string): { kb: Kb; fechar: () => void } {
   const escopo = Effect.runSync(Scope.make());
-  const contexto = Effect.runSync(Layer.buildWithScope(Layers.layerSomenteLeitura({ caminho }), escopo));
+  // sem as cessões cooperativas do agendador, um efeito síncrono longo (decodificar milhares de
+  // linhas) não vira uma fronteira assíncrona, que o Effect.runSync recusaria
+  const sincrono = <A, E>(efeito: Effect.Effect<A, E>) =>
+    Effect.runSync(Effect.provideService(efeito, Scheduler.PreventSchedulerYield, true));
+  const contexto = sincrono(Layer.buildWithScope(Layers.layerSomenteLeitura({ caminho }), escopo));
   return {
-    kb: (efeito) => Effect.runSync(Effect.provide(efeito, contexto)),
+    kb: (efeito) => sincrono(Effect.provide(efeito, contexto)),
     fechar: () => Effect.runSync(Scope.close(escopo, Exit.void)),
   };
 }

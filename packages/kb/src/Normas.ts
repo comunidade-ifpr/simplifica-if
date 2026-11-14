@@ -133,10 +133,10 @@ export class Normas extends Context.Service<
 const make = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
   const fontes = yield* FontesNormativas.FontesNormativas;
-  // as tabelas de correspondência e os dispositivos que elas citam não mudam com o banco aberto
-  const fonteCorrespondencia = yield* Effect.cached(
-    carregarFonteCorrespondencia.pipe(Effect.provideService(SqlClient.SqlClient, sql)),
-  );
+  // as tabelas de correspondência e os dispositivos que elas citam não mudam com o banco aberto:
+  // carregados uma vez, na construção da layer (um Effect.cached tornaria a primeira chamada
+  // assíncrona, e a ponte do C1 roda os métodos com Effect.runSync)
+  const fonteCorrespondencia = yield* carregarFonteCorrespondencia;
   const prover = <A, E>(efeito: Effect.Effect<A, E, SqlClient.SqlClient | FontesNormativas.FontesNormativas>) =>
     efeito.pipe(
       Effect.provideService(SqlClient.SqlClient, sql),
@@ -202,10 +202,10 @@ const make = Effect.gen(function* () {
       return (yield* trechoDoDispositivo(id, opcoes)) ?? null;
     }, prover),
     tabelasDeCorrespondencia: Effect.fn("Normas.tabelasDeCorrespondencia")(function* (ato: string) {
-      return (yield* fonteCorrespondencia).tabelas(ato);
+      return fonteCorrespondencia.tabelas(ato);
     }, prover),
     correspondencia: Effect.fn("Normas.correspondencia")(function* (id: string) {
-      return correspondenciaEm(id, yield* fonteCorrespondencia);
+      return correspondenciaEm(id, fonteCorrespondencia);
     }, prover),
     dataReferencia: Effect.succeed(fontes.dataReferencia),
   });
