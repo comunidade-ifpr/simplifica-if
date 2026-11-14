@@ -2,39 +2,59 @@
  * Leitura da saída `claude -p --output-format stream-json --verbose`: uma linha JSON por evento.
  * Extrai a resposta final, o modelo efetivo, as chamadas de ferramenta e o uso de tokens.
  */
-import { z } from "zod";
+import * as Effect from "effect/Effect";
+import * as Exit from "effect/Exit";
+import * as Schema from "effect/Schema";
+import { solto } from "../esquema.ts";
 
-const esquemaUso = z.looseObject({
-  input_tokens: z.number().optional(),
-  output_tokens: z.number().optional(),
-  cache_creation_input_tokens: z.number().optional(),
-  cache_read_input_tokens: z.number().optional(),
+/*
+ * Os eventos são objetos soltos: o `claude` acrescenta campos de versão para versão, e o harness lê
+ * só os que conhece. Linha que não é JSON, evento de outro tipo (`user`, `stream_event`...) ou campo
+ * conhecido com tipo inesperado: a linha é ignorada.
+ */
+
+const numero = Schema.optional(Schema.Finite);
+const texto = Schema.optional(Schema.String);
+
+const esquemaUso = solto({
+  input_tokens: numero,
+  output_tokens: numero,
+  cache_creation_input_tokens: numero,
+  cache_read_input_tokens: numero,
 });
 
-const esquemaBloco = z.looseObject({
-  type: z.string(),
-  id: z.string().optional(),
-  name: z.string().optional(),
-  text: z.string().optional(),
+const esquemaBloco = solto({
+  type: Schema.String,
+  id: texto,
+  name: texto,
+  text: texto,
 });
 
-const esquemaEvento = z.discriminatedUnion("type", [
-  z.looseObject({ type: z.literal("system"), subtype: z.string().optional(), model: z.string().optional() }),
-  z.looseObject({
-    type: z.literal("assistant"),
-    message: z.looseObject({ model: z.string().optional(), content: z.array(esquemaBloco).default([]) }),
+const esquemaResultado = solto({
+  type: Schema.Literal("result"),
+  subtype: texto,
+  is_error: Schema.optional(Schema.Boolean),
+  result: texto,
+  num_turns: numero,
+  duration_ms: numero,
+  total_cost_usd: numero,
+  usage: Schema.optional(esquemaUso),
+});
+
+const esquemaEvento = Schema.Union([
+  solto({ type: Schema.Literal("system"), subtype: texto, model: texto }),
+  solto({
+    type: Schema.Literal("assistant"),
+    message: solto({
+      model: texto,
+      content: Schema.Array(esquemaBloco).pipe(Schema.withDecodingDefault(Effect.succeed([]))),
+    }),
   }),
-  z.looseObject({
-    type: z.literal("result"),
-    subtype: z.string().optional(),
-    is_error: z.boolean().optional(),
-    result: z.string().optional(),
-    num_turns: z.number().optional(),
-    duration_ms: z.number().optional(),
-    total_cost_usd: z.number().optional(),
-    usage: esquemaUso.optional(),
-  }),
+  esquemaResultado,
 ]);
+
+/** Uma linha do stream: JSON e evento conhecido, ou falha (a linha é ignorada). */
+const decodificarLinha = Schema.decodeUnknownExit(Schema.fromJsonString(esquemaEvento));
 
 export interface Tokens {
   entrada: number;
@@ -66,20 +86,14 @@ export function lerStreamJson(saida: string): Execucao {
   const textos: string[] = [];
   let modelo: string | null = null;
   let negadas = 0;
-  let final: (z.output<typeof esquemaEvento> & { type: "result" }) | undefined;
+  let final: typeof esquemaResultado.Type | undefined;
 
   for (const linha of saida.split("\n")) {
     const limpa = linha.trim();
     if (!limpa.startsWith("{")) continue;
-    let bruto: unknown;
-    try {
-      bruto = JSON.parse(limpa);
-    } catch {
-      continue;
-    }
-    const evento = esquemaEvento.safeParse(bruto);
-    if (!evento.success) continue;
-    const dado = evento.data;
+    const evento = decodificarLinha(limpa);
+    if (Exit.isFailure(evento)) continue;
+    const dado = evento.value;
     if (dado.type === "system") {
       if (dado.subtype === "init" && dado.model) modelo = dado.model;
       if (dado.subtype === "permission_denied") negadas += 1;

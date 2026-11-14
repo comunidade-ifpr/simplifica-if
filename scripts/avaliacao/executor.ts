@@ -2,15 +2,27 @@
  * Execução de uma pergunta pelo agente real: `claude -p` com cwd na raiz do repositório, só
  * ferramentas de leitura e saída `stream-json`. O resto é negado (`--permission-mode dontAsk`).
  *
+ * O processo sobe pelo `ChildProcessSpawner` do `effect/process`, dentro de um escopo: passado o
+ * prazo (`timeout_s`), ele é morto e a saída parcial fica no registro; se a execução for
+ * interrompida (Ctrl-C no `avaliar.ts`), o fechamento do escopo mata o processo filho.
+ *
  * O agente lê arquivos escolhidos por ele, então o harness não confia na configuração para conter
  * segredos: o processo filho recebe um ambiente mínimo (lista explícita, sem o que os `.env*` do
  * repositório definem) e as regras de `REGRAS_NEGADAS` vão sempre em `--disallowedTools`, qualquer que seja o
  * `config.yaml`.
  */
-import * as NodeChildProcess from "node:child_process";
-import * as NodeFS from "node:fs";
-import * as NodePath from "node:path";
 import { parse as interpretarEnv } from "dotenv";
+import * as Duration from "effect/Duration";
+import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
+import * as Fiber from "effect/Fiber";
+import * as Option from "effect/Option";
+import * as Path from "effect/Path";
+import type * as PlatformError from "effect/PlatformError";
+import * as Schema from "effect/Schema";
+import * as Stream from "effect/Stream";
+import * as ChildProcess from "effect/process/ChildProcess";
+import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 import type { ConfigAvaliacao } from "./esquema.ts";
 import { lerStreamJson, type Execucao } from "./stream.ts";
 
@@ -66,25 +78,29 @@ export const REGRAS_NEGADAS = [
   "Read(//etc/**)",
 ] as const;
 
-/** Chaves definidas nos arquivos `.env*` de `diretorio` (um runtime que os carrega sozinho as põe no process.env). */
-export function chavesArquivosEnv(diretorio: string): Set<string> {
+/**
+ * Chaves definidas nos arquivos `.env*` de `diretorio` (um runtime que os carrega sozinho as põe no
+ * process.env). Diretório ausente ou arquivo ilegível: nada a excluir.
+ */
+export const chavesArquivosEnv = Effect.fn("Avaliacao.chavesArquivosEnv")(function* (diretorio: string) {
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
   const chaves = new Set<string>();
-  let nomes: string[];
-  try {
-    nomes = NodeFS.readdirSync(diretorio).filter((nome) => /^\.env(?:\.|$)/u.test(nome));
-  } catch {
-    return chaves;
-  }
+  const nomes = yield* fs.readDirectory(diretorio).pipe(
+    Effect.map((todos) => todos.filter((nome) => /^\.env(?:\.|$)/u.test(nome)).sort()),
+    Effect.catchTags({ PlatformError: () => Effect.succeed([] as string[]) }),
+  );
   for (const nome of nomes) {
-    try {
-      for (const chave of Object.keys(interpretarEnv(NodeFS.readFileSync(NodePath.join(diretorio, nome)))))
-        chaves.add(chave);
-    } catch {
-      // arquivo ilegível ou diretório com o mesmo nome: nada a excluir
-    }
+    const conteudo = yield* fs.readFile(path.join(diretorio, nome)).pipe(
+      Effect.asSome,
+      // diretório com o mesmo nome ou arquivo ilegível: nada a excluir
+      Effect.catchTags({ PlatformError: () => Effect.succeed(Option.none<Uint8Array>()) }),
+    );
+    if (Option.isNone(conteudo)) continue;
+    for (const chave of Object.keys(interpretarEnv(Buffer.from(conteudo.value)))) chaves.add(chave);
   }
   return chaves;
-}
+});
 
 /**
  * Ambiente do processo filho: só as variáveis de `VARIAVEIS_AMBIENTE_CLAUDE` presentes em `origem`,
@@ -107,7 +123,10 @@ export interface OpcoesExecucao {
   config: ConfigAvaliacao;
   /** Sobrescreve `config.modelo` (opção `--modelo`). */
   modelo?: string | undefined;
+  /** Executável do `claude`; sem ele, `CLAUDE_BIN` do ambiente ou `claude`. */
   binario?: string | undefined;
+  /** Ambiente de onde sai o do processo filho (padrão: `process.env`). */
+  ambiente?: Record<string, string | undefined> | undefined;
 }
 
 export function argumentosClaude(texto: string, opcoes: OpcoesExecucao): string[] {
@@ -155,25 +174,72 @@ export interface ExecucaoBruta {
   execucao: Execucao;
   saida: string;
   stderr: string;
+  /** Código de saída; `null` quando o processo foi morto (prazo esgotado ou sinal). */
   codigo: number | null;
 }
 
-export async function executarPergunta(texto: string, cwd: string, opcoes: OpcoesExecucao): Promise<ExecucaoBruta> {
-  const binario = opcoes.binario ?? process.env.CLAUDE_BIN ?? "claude";
-  const processo = NodeChildProcess.spawn(binario, argumentosClaude(texto, opcoes), {
-    cwd,
-    stdio: ["ignore", "pipe", "pipe"],
-    env: ambienteClaude(process.env, new Set([...chavesArquivosEnv(cwd), ...chavesArquivosEnv(process.cwd())])),
-  });
-  const limite = setTimeout(() => processo.kill(), opcoes.config.timeout_s * 1000);
-  let saida = "";
-  let stderr = "";
-  processo.stdout.setEncoding("utf-8").on("data", (parte: string) => (saida += parte));
-  processo.stderr.setEncoding("utf-8").on("data", (parte: string) => (stderr += parte));
-  const codigo = await new Promise<number | null>((resolve, reject) => {
-    processo.once("error", reject);
-    processo.once("close", (saidaProcesso) => resolve(saidaProcesso));
-  });
-  clearTimeout(limite);
-  return { execucao: lerStreamJson(saida), saida, stderr, codigo };
+/** Depois do SIGTERM (prazo ou interrupção), quanto esperar antes do SIGKILL. */
+export const ESPERA_ATE_SIGKILL = Duration.seconds(5);
+
+/** O `claude` não subiu ou a leitura da saída dele falhou (`motivo` é a razão do sistema, como `NotFound`). */
+export class FalhaAoExecutarClaude extends Schema.TaggedError<FalhaAoExecutarClaude>()("FalhaAoExecutarClaude", {
+  binario: Schema.String,
+  motivo: Schema.String,
+  cause: Schema.Defect(),
+}) {
+  override get message(): string {
+    return `não foi possível executar ${this.binario} (${this.motivo})`;
+  }
 }
+
+export const ehFalhaAoExecutarClaude = Schema.is(FalhaAoExecutarClaude);
+
+const textoDe = (fluxo: Stream.Stream<Uint8Array, PlatformError.PlatformError>) =>
+  Stream.mkString(Stream.decodeText(fluxo));
+
+/**
+ * Roda `claude -p` com `texto` em `cwd` e devolve o stream-json lido, a saída bruta, o stderr e o
+ * código de saída. Esgotado `config.timeout_s`, o processo é morto e o código fica `null`.
+ */
+export const executarPergunta = Effect.fn("Avaliacao.executarPergunta")(function* (
+  texto: string,
+  cwd: string,
+  opcoes: OpcoesExecucao,
+) {
+  const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
+  const path = yield* Path.Path;
+  const origem = opcoes.ambiente ?? process.env;
+  const binario = opcoes.binario ?? origem.CLAUDE_BIN ?? "claude";
+  const excluir = new Set([...(yield* chavesArquivosEnv(cwd)), ...(yield* chavesArquivosEnv(path.resolve()))]);
+  const comando = ChildProcess.make(binario, argumentosClaude(texto, opcoes), {
+    cwd,
+    env: ambienteClaude(origem, excluir),
+    extendEnv: false,
+    stdin: "ignore",
+    stdout: "pipe",
+    stderr: "pipe",
+    forceKillAfter: ESPERA_ATE_SIGKILL,
+  });
+  return yield* Effect.scoped(
+    Effect.gen(function* () {
+      const processo = yield* spawner.spawn(comando);
+      const fibraSaida = yield* Effect.forkScoped(textoDe(processo.stdout));
+      const fibraStderr = yield* Effect.forkScoped(textoDe(processo.stderr));
+      const fim = yield* processo.exitCode.pipe(
+        Effect.map((codigo): number | null => codigo),
+        // sem código: o processo terminou por sinal
+        Effect.catchTags({ PlatformError: () => Effect.succeed(null) }),
+        Effect.timeoutOption(Duration.seconds(opcoes.config.timeout_s)),
+      );
+      if (Option.isNone(fim)) yield* Effect.ignore(processo.kill({ forceKillAfter: ESPERA_ATE_SIGKILL }));
+      const saida = yield* Fiber.join(fibraSaida);
+      const stderr = yield* Fiber.join(fibraStderr);
+      const codigo = Option.isSome(fim) ? fim.value : null;
+      return { execucao: lerStreamJson(saida), saida, stderr, codigo } satisfies ExecucaoBruta;
+    }),
+  ).pipe(
+    Effect.catchTags({
+      PlatformError: (erro) => Effect.fail(new FalhaAoExecutarClaude({ binario, motivo: erro.reason._tag, cause: erro })),
+    }),
+  );
+});

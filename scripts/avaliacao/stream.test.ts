@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vite-plus/test";
+import { validar } from "./carregar.ts";
 import { esquemaConfig } from "./esquema.ts";
 import { argumentosClaude, comandoLegivel } from "./executor.ts";
 import { lerStreamJson } from "./stream.ts";
@@ -63,7 +64,9 @@ describe("stream-json do claude -p", () => {
 });
 
 describe("argumentos do claude -p", () => {
-  const config = esquemaConfig.parse({
+  const config = validar(
+    esquemaConfig,
+    {
     modelo: "sonnet",
     execucoes: 3,
     max_turns: 12,
@@ -72,7 +75,9 @@ describe("argumentos do claude -p", () => {
     ferramentas_permitidas: ["Read(./**)", "Grep"],
     instrucao_sistema: "Responda em português.",
     fontes_configuracao: ["project", "local"],
-  });
+    },
+    "config de teste",
+  );
 
   test("fixa modelo, saída stream-json, turnos, ferramentas só de leitura e orçamento", () => {
     const argumentos = argumentosClaude("Pergunta?", { config, modelo: "haiku" });
