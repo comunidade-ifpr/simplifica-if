@@ -2,10 +2,9 @@
  * Ferramenta 5, `resolver_citacoes`: citações normativas em texto livre, em lote, para o ID
  * canônico (`Normas.resolver`, o `kb resolver`, com o registro montado da tabela `normas`).
  */
-import * as Normas from "@simplifica-if/kb/Normas";
-import { z } from "zod";
-import { type Aviso, esquemaLink, responder } from "../envelope.ts";
-import { linkDe } from "../links.ts";
+import * as Schema from "effect/Schema";
+import { EsquemaLink } from "../contratos.ts";
+import { textoAparado } from "../esquema.ts";
 import { comLink } from "../texto.ts";
 import { definirFerramenta } from "./ferramenta.ts";
 import { limitarTexto, tetoDoCorpo } from "./normas-comum.ts";
@@ -18,85 +17,34 @@ export const TETO_RESOLVER_CITACOES = 12_000;
 /** `nao-registrada`: o ID foi reconhecido, mas a norma não está no registro da base. */
 export const SITUACOES_CITACAO = ["base", "stub", "externo", "nao-registrada", "nao-resolvida"] as const;
 
-const entrada = z.strictObject({
-  citacoes: z
-    .array(z.string().trim().min(1).max(500))
-    .min(1)
-    .max(50)
-    .describe('1 a 50 citações em texto livre, como "Resolução CNE/CP nº 1/2021, art. 20"'),
+export const Entrada = Schema.Struct({
+  citacoes: Schema.Array(textoAparado({ minimo: 1, maximo: 500 }))
+    .check(Schema.isMinLength(1), Schema.isMaxLength(50))
+    .annotate({ description: '1 a 50 citações em texto livre, como "Resolução CNE/CP nº 1/2021, art. 20"' }),
 });
 
-const dados = z.strictObject({
-  itens: z.array(
-    z.strictObject({
-      texto: z.string(),
-      id: z.string().nullable(),
-      /** IDs completos dos dispositivos citados (`br/cne-cp/res/2021/1#art20`). */
-      dispositivos: z.array(z.string()),
-      regra: z.string(),
-      confianca: z.number(),
-      situacao: z.enum(SITUACOES_CITACAO),
-      titulo: z.string().nullable(),
-      link: esquemaLink.nullable(),
-    }),
-  ),
+export const Item = Schema.Struct({
+  texto: Schema.String,
+  id: Schema.NullOr(Schema.String),
+  /** IDs completos dos dispositivos citados (`br/cne-cp/res/2021/1#art20`). */
+  dispositivos: Schema.Array(Schema.String),
+  regra: Schema.String,
+  confianca: Schema.Finite,
+  situacao: Schema.Literals(SITUACOES_CITACAO),
+  titulo: Schema.NullOr(Schema.String),
+  link: Schema.NullOr(EsquemaLink),
 });
+export type Item = typeof Item.Type;
+
+export const Dados = Schema.Struct({ itens: Schema.Array(Item) });
 
 export const resolverCitacoes = definirFerramenta({
   nome: "resolver_citacoes",
   titulo: "Identificar citações",
   descricao:
     "Identifica citações normativas escritas em texto livre (até 50 por chamada) e devolve o ID canônico, o dispositivo, a regra usada e a confiança. Use para conferir a fundamentação de um documento. Confiança abaixo de 0,9 pede conferência no trecho original.",
-  entrada,
-  dados,
-  executar({ citacoes }, { kb, base }) {
-    const itens = citacoes.map((texto) => {
-      const r = kb(Normas.Normas.use((n) => n.resolver(texto)));
-      const sufixos = r.dispositivos ?? (r.dispositivoId ? [r.dispositivoId] : []);
-      return {
-        texto,
-        id: r.id,
-        dispositivos: r.id ? sufixos.map((d) => `${r.id}${d}`) : [],
-        regra: r.regra,
-        confianca: r.confianca,
-        situacao: r.situacao,
-        titulo: r.titulo ?? null,
-        // `cnct:` é o catálogo (ou um curso dele), que tem link próprio; o resto é norma
-        link: r.id ? linkDe(r.id) : null,
-      };
-    });
-    const avisos: Aviso[] = [];
-    const baixas = itens.filter((i) => i.id !== null && i.confianca < CONFIANCA_CONFERIR).length;
-    if (baixas > 0) {
-      avisos.push({
-        tipo: "citacao-baixa-confianca",
-        mensagem: `${baixas} ${baixas === 1 ? "citação resolvida" : "citações resolvidas"} com confiança abaixo de 0,9: confira no trecho original antes de afirmar`,
-      });
-    }
-    const naoResolvidas = itens.filter((i) => i.id === null).length;
-    if (naoResolvidas > 0) {
-      avisos.push({
-        tipo: "nao-encontrado",
-        mensagem: `${naoResolvidas} ${naoResolvidas === 1 ? "citação não identificada" : "citações não identificadas"}: tente buscar_norma com os termos, e não preencha com memória`,
-      });
-    }
-    // o CNCT (`cnct:`) está na base, nos catálogos: não é "sem texto"
-    const semTexto = [
-      ...new Set(
-        itens
-          .filter((i) => (i.situacao === "stub" || i.situacao === "externo") && !i.id!.startsWith("cnct:"))
-          .map((i) => i.id!),
-      ),
-    ];
-    for (const id of semTexto) {
-      avisos.push({
-        tipo: "stub-sem-texto",
-        mensagem: "norma citada sem texto na base: não afirme o conteúdo dela",
-        ref: id,
-      });
-    }
-    return responder(base, { itens }, { avisos });
-  },
+  entrada: Entrada,
+  dados: Dados,
   texto(resposta) {
     const linhas = resposta.dados.itens.map((i, n) => {
       const citado = `${n + 1}. "${i.texto}"`;

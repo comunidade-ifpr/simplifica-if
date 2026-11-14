@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./*": "./src/*.ts"
+    "./toolkit": "./src/toolkit.ts",
+    "./rpc": "./src/rpc.ts",
+    "./contratos": "./src/contratos.ts"
   },
   "bin": {
     "simplifica-mcp": "./src/cli.ts"
@@ -15,16 +17,19 @@
     "typecheck": "effect-tsgo tsrs --noEmit"
   },
   "dependencies": {
+    "@simplifica-if/kb": "workspace:*"
+  },
+  "peerDependencies": {
     "@effect/platform-node": "catalog:",
-    "@modelcontextprotocol/server": "2.4.0",
-    "@simplifica-if/kb": "workspace:*",
-    "commander": "15.1.0",
-    "effect": "catalog:",
-    "zod": "4.6.7"
+    "effect": "catalog:"
   },
   "devDependencies": {
+    "@effect/platform-node": "catalog:",
+    "@effect/vitest": "catalog:",
     "@modelcontextprotocol/client": "2.4.0",
     "@types/node": "catalog:",
+    "ajv": "8.20.0",
+    "effect": "catalog:",
     "vite-plus": "catalog:"
   }
 }

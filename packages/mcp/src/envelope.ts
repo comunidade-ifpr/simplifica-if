@@ -1,90 +1,21 @@
+// @effect-diagnostics nodeBuiltinImport:off -- sha256 síncrono da impressão da consulta no cursor (o mesmo hash do servidor anterior)
 /**
- * Envelope comum das respostas (especificação M0.1, "Envelope"): a versão da base, os dados da
- * ferramenta, os avisos e a paginação. Os schemas zod são a fonte dos tipos e viram o
- * `outputSchema` de cada ferramenta.
+ * Envelope comum das respostas (especificação M0.1, "Envelope"): a `base` a partir da `meta` do
+ * banco, a resposta com avisos e paginação, e o cursor opaco. Os schemas ficam em `contratos.ts`.
+ * O serviço `Leitura` monta as respostas com estas funções.
  */
-import { createHash } from "node:crypto";
-import { z } from "zod";
-import type { MetaBase } from "./banco.ts";
-
-export type { Link } from "./links.ts";
-
-export const CANAIS = ["dev", "beta", "estavel"] as const;
-export type Canal = (typeof CANAIS)[number];
-
-export const TIPOS_AVISO = [
-  "vigencia-a-confirmar",
-  "correspondencia-rascunho",
-  "fato-extraido",
-  "citacao-baixa-confianca",
-  "stub-sem-texto",
-  "resultado-resumido",
-  "nao-encontrado",
-] as const;
-export type TipoAviso = (typeof TIPOS_AVISO)[number];
-
-export const esquemaLink = z.templateLiteral(["ifpr://", z.string().min(1)]);
-
-export const esquemaBase = z.strictObject({
-  /** `AAAA.MM.DD` quando o pacote for publicado (T0); `dev-<8 hex de fontes_sha256>` antes disso. */
-  versao: z.string(),
-  /** Commit de origem do pacote; `null` enquanto o banco não o registra (T0). */
-  commit: z.string().nullable(),
-  data_referencia: z.string(),
-  canal: z.enum(CANAIS),
-});
-export type Base = z.infer<typeof esquemaBase>;
-
-export const esquemaAviso = z.strictObject({
-  tipo: z.enum(TIPOS_AVISO),
-  mensagem: z.string(),
-  ref: z.string().optional(),
-});
-export type Aviso = z.infer<typeof esquemaAviso>;
-
-/** Proveniência: caminho no repositório de origem e linhas, desde 1. */
-export const esquemaFonte = z.strictObject({
-  path: z.string(),
-  linha_inicio: z.number().int().min(1),
-  linha_fim: z.number().int().min(1),
-});
-export type Fonte = z.infer<typeof esquemaFonte>;
-
-export const esquemaPagina = z.strictObject({
-  total: z.number().int().min(0),
-  devolvidos: z.number().int().min(0),
-  /** Cursor opaco da próxima página; ausente na última. */
-  cursor: z.string().optional(),
-});
-export type Pagina = z.infer<typeof esquemaPagina>;
-
-export function esquemaResposta<D extends z.ZodType>(dados: D) {
-  return z.strictObject({
-    base: esquemaBase,
-    dados,
-    avisos: z.array(esquemaAviso),
-    pagina: esquemaPagina.optional(),
-  });
-}
-
-export type Resposta<T> = {
-  base: Base;
-  dados: T;
-  avisos: Aviso[];
-  pagina?: Pagina;
-};
-
-/** Erro causado pela entrada (filtro, cursor): a mensagem vai para a IA, que pode corrigir a chamada. */
-export class ErroEntrada extends Error {
-  override name = "ErroEntrada";
-}
+import * as NodeCrypto from "node:crypto";
+import * as Effect from "effect/Effect";
+import * as Schema from "effect/Schema";
+import type { MetaBase } from "@simplifica-if/kb/BaseKb";
+import { type Aviso, type Base, type Canal, EntradaInvalida, type Pagina, type Resposta } from "./contratos.ts";
 
 /**
  * A `base` do envelope. `versao`, `commit` e `canal` vêm da tabela `meta` quando o banco os tem
  * (passo T0); sem eles, a versão é `dev-` e os 8 primeiros caracteres de `fontes_sha256`, o commit
  * fica `null` e o canal é o da linha de comando.
  */
-export function montarBase(meta: MetaBase, canal: Canal): Base {
+export function montarBase(meta: MetaEnvelope, canal: Canal): Base {
   return {
     versao: meta.versao ?? `dev-${meta.fontes_sha256.slice(0, 8)}`,
     commit: meta.commit,
@@ -93,12 +24,21 @@ export function montarBase(meta: MetaBase, canal: Canal): Base {
   };
 }
 
+/** O que o envelope usa da `meta` do banco (`BaseKb`), com o canal entre os do simplifica-mcp. */
+export interface MetaEnvelope extends Pick<MetaBase, "versao" | "commit" | "data_referencia" | "fontes_sha256"> {
+  readonly canal: Canal | null;
+}
+
 export function responder<T>(
   base: Base,
   dados: T,
-  extras: { avisos?: Aviso[]; pagina?: Pagina | undefined } = {},
+  extras: { readonly avisos?: ReadonlyArray<Aviso>; readonly pagina?: Pagina | undefined } = {},
 ): Resposta<T> {
-  const resposta: Resposta<T> = { base, dados, avisos: extras.avisos ?? [] };
+  const resposta: { base: Base; dados: T; avisos: ReadonlyArray<Aviso>; pagina?: Pagina } = {
+    base,
+    dados,
+    avisos: extras.avisos ?? [],
+  };
   if (extras.pagina) resposta.pagina = extras.pagina;
   return resposta;
 }
@@ -110,7 +50,10 @@ export function responder<T>(
  * base). Um cursor só vale para a mesma consulta na mesma base; trocar o filtro no meio da paginação
  * dá erro em vez de pular ou repetir itens.
  */
-const esquemaCursor = z.strictObject({ d: z.number().int().min(0), c: z.string() });
+const EstadoCursor = Schema.fromJsonString(
+  Schema.Struct({ d: Schema.Int.check(Schema.isGreaterThanOrEqualTo(0)), c: Schema.String }),
+);
+const decodificarEstado = Schema.decodeUnknownEffect(EstadoCursor);
 
 function serializarOrdenado(valor: unknown): string {
   if (Array.isArray(valor)) return `[${valor.map(serializarOrdenado).join(",")}]`;
@@ -124,43 +67,44 @@ function serializarOrdenado(valor: unknown): string {
 }
 
 export function impressaoConsulta(consulta: unknown): string {
-  return createHash("sha256").update(serializarOrdenado(consulta)).digest("hex").slice(0, 12);
+  return NodeCrypto.createHash("sha256").update(serializarOrdenado(consulta)).digest("hex").slice(0, 12);
 }
 
 export function codificarCursor(deslocamento: number, consulta: unknown): string {
   return Buffer.from(JSON.stringify({ d: deslocamento, c: impressaoConsulta(consulta) })).toString("base64url");
 }
 
+const CURSOR_INVALIDO = "cursor inválido: use o cursor devolvido pela chamada anterior, sem alterá-lo";
+
 /** Deslocamento guardado no cursor (0 sem cursor). */
-export function lerCursor(cursor: string | undefined, consulta: unknown): number {
+export const lerCursor = Effect.fn("envelope.lerCursor")(function* (cursor: string | undefined, consulta: unknown) {
   if (cursor === undefined) return 0;
-  let estado: z.infer<typeof esquemaCursor>;
-  try {
-    estado = esquemaCursor.parse(JSON.parse(Buffer.from(cursor, "base64url").toString("utf8")));
-  } catch {
-    throw new ErroEntrada("cursor inválido: use o cursor devolvido pela chamada anterior, sem alterá-lo");
-  }
+  const estado = yield* decodificarEstado(Buffer.from(cursor, "base64url").toString("utf8")).pipe(
+    Effect.catchTags({ SchemaError: () => Effect.fail(new EntradaInvalida({ mensagem: CURSOR_INVALIDO })) }),
+  );
   if (estado.c !== impressaoConsulta(consulta)) {
-    throw new ErroEntrada("o cursor é de outra consulta: repita a chamada com os mesmos filtros, ou sem cursor");
+    return yield* new EntradaInvalida({
+      mensagem: "o cursor é de outra consulta: repita a chamada com os mesmos filtros, ou sem cursor",
+    });
   }
   return estado.d;
-}
+});
+
+export const CURSOR_ALEM_DO_FIM = "cursor além do fim da lista: repita a chamada sem cursor";
 
 /** Recorta uma lista já ordenada em páginas de `limite` itens. */
-export function paginar<T>(
-  itens: readonly T[],
-  opcoes: { limite: number; cursor?: string | undefined; consulta: unknown },
-): { itens: T[]; pagina: Pagina } {
-  const inicio = lerCursor(opcoes.cursor, opcoes.consulta);
-  if (inicio > itens.length) throw new ErroEntrada("cursor além do fim da lista: repita a chamada sem cursor");
+export const paginar = Effect.fn("envelope.paginar")(function* <T>(
+  itens: ReadonlyArray<T>,
+  opcoes: { readonly limite: number; readonly cursor?: string | undefined; readonly consulta: unknown },
+) {
+  const inicio = yield* lerCursor(opcoes.cursor, opcoes.consulta);
+  if (inicio > itens.length) return yield* new EntradaInvalida({ mensagem: CURSOR_ALEM_DO_FIM });
   const pagina = itens.slice(inicio, inicio + opcoes.limite);
   const fim = inicio + pagina.length;
-  return {
-    itens: pagina,
-    pagina: {
-      total: itens.length,
-      devolvidos: pagina.length,
-      ...(fim < itens.length ? { cursor: codificarCursor(fim, opcoes.consulta) } : {}),
-    },
+  const dadosPagina: Pagina = {
+    total: itens.length,
+    devolvidos: pagina.length,
+    ...(fim < itens.length ? { cursor: codificarCursor(fim, opcoes.consulta) } : {}),
   };
-}
+  return { itens: pagina, pagina: dadosPagina };
+});

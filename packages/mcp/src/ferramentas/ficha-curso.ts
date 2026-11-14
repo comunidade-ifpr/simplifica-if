@@ -5,90 +5,75 @@
  * são as de `citacoes_da_norma` para o PPC; a adequação, da própria `adequacao_art71`; as transições,
  * das normas citadas. É também o conteúdo do link `ifpr://curso/…` no app.
  */
+import * as Schema from "effect/Schema";
 import { type Indicador, ROTULOS_INDICADOR } from "@simplifica-if/kb/adequacao/art71";
-import * as Cursos from "@simplifica-if/kb/Cursos";
-import * as Normas from "@simplifica-if/kb/Normas";
-import * as Ppcs from "@simplifica-if/kb/Ppcs";
-import { z } from "zod";
-import { type Aviso, ErroEntrada, esquemaLink, responder } from "../envelope.ts";
-import { linkCampus, linkCnct, linkCurso, linkNorma, linkPpc } from "../links.ts";
+import { EsquemaLink, FatosPpc, TransicaoResumo } from "../contratos.ts";
+import { inteiro, textoAparado } from "../esquema.ts";
+import { linkNorma } from "../links.ts";
 import { linhasNoOrcamento } from "../orcamento.ts";
 import { comLink } from "../texto.ts";
-import { adequacaoArt71 } from "./adequacao-art71.ts";
-import {
-  AVISO_FATO_EXTRAIDO,
-  avisoBaixaConfianca,
-  chaveCurso,
-  esquemaFatosPpc,
-  esquemaTransicaoResumo,
-  linhaTransicao,
-  paraFatosPpc,
-  textoFatosPpc,
-  type TransicaoResumo,
-  transicaoResumo,
-} from "./comum-ppcs.ts";
-import { normaResumo } from "./tipos-comuns.ts";
+import { linhaTransicao, textoFatosPpc } from "./comum-ppcs.ts";
 import { definirFerramenta } from "./ferramenta.ts";
 
 export const TETO_FICHA_CURSO = 12000;
 
-const entrada = z.strictObject({
-  curso: z
-    .string()
-    .trim()
-    .min(3)
-    .max(300)
-    .describe(
-      'o curso: "campus/curso" ou "curso:campus/curso" ("curitiba/tecnico-em-enfermagem"), vindo de listar_cursos',
-    ),
+export const Entrada = Schema.Struct({
+  curso: textoAparado(
+    { minimo: 3, maximo: 300 },
+    'o curso: "campus/curso" ou "curso:campus/curso" ("curitiba/tecnico-em-enfermagem"), vindo de listar_cursos',
+  ),
 });
 
-const dados = z.strictObject({
-  curso: z.strictObject({
-    id: z.string(),
-    nome: z.string(),
-    nivel: z.string().nullable(),
-    forma_oferta: z.string().nullable(),
-    modalidade: z.string().nullable(),
-    situacao: z.string().nullable(),
-    link: esquemaLink,
+export const Dados = Schema.Struct({
+  curso: Schema.Struct({
+    id: Schema.String,
+    nome: Schema.String,
+    nivel: Schema.NullOr(Schema.String),
+    forma_oferta: Schema.NullOr(Schema.String),
+    modalidade: Schema.NullOr(Schema.String),
+    situacao: Schema.NullOr(Schema.String),
+    link: EsquemaLink,
   }),
-  campus: z.strictObject({ id: z.string(), nome: z.string(), link: esquemaLink }),
-  cnct: z
-    .strictObject({
-      id: z.string(),
-      nome: z.string(),
-      eixo: z.string().nullable(),
-      carga_horaria_minima: z.number().nullable(),
-      link: esquemaLink,
-    })
-    .nullable(),
-  ppc: z
-    .strictObject({
-      id: z.string(),
-      ano: z.number().int().nullable(),
-      link: esquemaLink,
-      /** Seções do PPC na ordem do documento; o ID vai para `ler_secao`. */
-      secoes: z.array(z.strictObject({ id: z.string(), tipo: z.string(), titulo: z.string() })),
-    })
-    .nullable(),
-  ofertas: z.array(
-    z.strictObject({ processo: z.string(), turno: z.string().nullable(), vagas: z.number().nullable() }),
+  campus: Schema.Struct({ id: Schema.String, nome: Schema.String, link: EsquemaLink }),
+  cnct: Schema.NullOr(
+    Schema.Struct({
+      id: Schema.String,
+      nome: Schema.String,
+      eixo: Schema.NullOr(Schema.String),
+      carga_horaria_minima: Schema.NullOr(Schema.Finite),
+      link: EsquemaLink,
+    }),
   ),
-  fatos: esquemaFatosPpc.nullable(),
-  normas_citadas: z.array(
-    z.strictObject({
-      id: z.string(),
-      titulo: z.string(),
-      status_vigencia: z.string().nullable(),
-      ocorrencias: z.number().int().min(1),
-      link: esquemaLink,
+  ppc: Schema.NullOr(
+    Schema.Struct({
+      id: Schema.String,
+      ano: Schema.NullOr(Schema.Int),
+      link: EsquemaLink,
+      /** Seções do PPC na ordem do documento; o ID vai para `ler_secao`. */
+      secoes: Schema.Array(Schema.Struct({ id: Schema.String, tipo: Schema.String, titulo: Schema.String })),
+    }),
+  ),
+  ofertas: Schema.Array(
+    Schema.Struct({
+      processo: Schema.String,
+      turno: Schema.NullOr(Schema.String),
+      vagas: Schema.NullOr(Schema.Finite),
+    }),
+  ),
+  fatos: Schema.NullOr(FatosPpc),
+  normas_citadas: Schema.Array(
+    Schema.Struct({
+      id: Schema.String,
+      titulo: Schema.String,
+      status_vigencia: Schema.NullOr(Schema.String),
+      ocorrencias: inteiro({ minimo: 1 }),
+      link: EsquemaLink,
     }),
   ),
   /** `null` quando o curso não é alcançado pelo art. 71 (não é técnico em oferta). */
-  adequacao_art71: z.strictObject({ indicador: z.string() }).nullable(),
+  adequacao_art71: Schema.NullOr(Schema.Struct({ indicador: Schema.String })),
   /** Regras de transição das normas que o PPC cita (ou que preservam efeitos delas). */
-  transicoes_aplicaveis: z.array(esquemaTransicaoResumo),
+  transicoes_aplicaveis: Schema.Array(TransicaoResumo),
 });
 
 export const fichaCurso = definirFerramenta({
@@ -96,88 +81,8 @@ export const fichaCurso = definirFerramenta({
   titulo: "Ficha do curso",
   descricao:
     "Tudo sobre um curso do IFPR: dados institucionais, PPC vigente, CNCT, ofertas, fatos do PPC cruzados com o SUAP (divergências), normas que o PPC cita e prazos de adequação. Use quando a pergunta for sobre um curso específico.",
-  entrada,
-  dados,
-  executar(e, ctx) {
-    const { kb, base } = ctx;
-    const chave = chaveCurso(e.curso);
-    const id = `curso:${chave}`;
-    const curso = kb(Cursos.Cursos.use((c) => c.listar({ campus: chave.split("/")[0] }))).find((c) => c.id === id);
-    if (!curso) {
-      throw new ErroEntrada(`curso não encontrado na base: "${e.curso}". Use o ID de listar_cursos ("campus/curso")`);
-    }
-    const ppcId = curso.ppc?.id ?? null;
-    const citadas = ppcId ? (kb(Ppcs.Ppcs.use((p) => p.normasCitadas(ppcId))) ?? []) : [];
-    const fatos = ppcId ? (kb(Ppcs.Ppcs.use((p) => p.fatos({ ppc: ppcId })))[0] ?? null) : null;
-    const adequacao = adequacaoArt71.executar(adequacaoArt71.entrada.parse({ curso: chave }), ctx).dados.cursos[0];
-    const transicoes = new Map<string, TransicaoResumo>();
-    for (const n of citadas) {
-      for (const t of kb(Normas.Normas.use((v) => v.vigencia(n.id))).transicoes) {
-        if (!transicoes.has(t.id)) transicoes.set(t.id, transicaoResumo(t));
-      }
-    }
-    const avisos: Aviso[] = [];
-    if (fatos) avisos.push(AVISO_FATO_EXTRAIDO);
-    avisos.push(...avisoBaixaConfianca(citadas.flatMap((n) => n.regras)));
-    return responder(
-      base,
-      {
-        curso: {
-          id: curso.id,
-          nome: curso.nome,
-          nivel: curso.nivel,
-          forma_oferta: curso.forma_oferta,
-          modalidade: curso.modalidade,
-          situacao: curso.situacao,
-          link: linkCurso(curso.id),
-        },
-        campus: { id: curso.campus.id, nome: curso.campus.nome ?? curso.campus.id, link: linkCampus(curso.campus.id) },
-        cnct: curso.cnct
-          ? {
-              id: curso.cnct.id,
-              nome: curso.cnct.denominacao ?? curso.cnct.id,
-              eixo: curso.cnct.eixo_tecnologico,
-              carga_horaria_minima: curso.cnct.carga_horaria_minima_h,
-              link: linkCnct(curso.cnct.id),
-            }
-          : null,
-        ppc:
-          curso.ppc && ppcId
-            ? {
-                id: ppcId,
-                ano: curso.ppc.ano_documento,
-                link: linkPpc(ppcId),
-                secoes: kb(Ppcs.Ppcs.use((p) => p.indiceSecoesDoPpc(ppcId))).map((s) => ({
-                  id: s.id,
-                  tipo: s.tipo,
-                  titulo: s.titulo,
-                })),
-              }
-            : null,
-        ofertas: curso.ofertas.flatMap((o) =>
-          (o.processos.length ? o.processos : ["sem processo informado"]).map((processo) => ({
-            processo,
-            turno: o.turno,
-            vagas: o.vagas,
-          })),
-        ),
-        fatos: fatos ? paraFatosPpc(fatos) : null,
-        normas_citadas: citadas.map((n) => {
-          const norma = normaResumo(kb, n.id);
-          return {
-            id: n.id,
-            titulo: norma?.titulo ?? n.id,
-            status_vigencia: norma?.status_vigencia ?? null,
-            ocorrencias: n.ocorrencias,
-            link: linkNorma(n.id),
-          };
-        }),
-        adequacao_art71: adequacao ? { indicador: adequacao.indicador } : null,
-        transicoes_aplicaveis: [...transicoes.values()],
-      },
-      { avisos },
-    );
-  },
+  entrada: Entrada,
+  dados: Dados,
   texto({ dados: d }) {
     const c = d.curso;
     const partes = [

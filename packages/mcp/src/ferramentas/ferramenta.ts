@@ -1,75 +1,50 @@
 /**
  * Forma comum das ferramentas: nome, título, descrição (o texto que a IA lê para escolher a
- * ferramenta), schemas zod de entrada e de dados, anotações, o handler que devolve a `Resposta` e o
- * corpo do texto para a IA. O servidor registra a partir de `FERRAMENTAS` (index.ts); os testes e,
- * no Marco 1, a API HTTP do app chamam `responder` diretamente.
+ * ferramenta), schemas de entrada e de dados, e o corpo do texto Markdown para a IA. Cada ferramenta
+ * vira um `Tool` do `effect/ai`, só de leitura, idempotente e de mundo fechado (decisão de desenho
+ * 2), com a `Resposta` inteira como sucesso e `ErroDeLeitura` como falha. A regra fica no serviço
+ * `Leitura`; o texto, aqui.
  */
-import type { DatabaseSync } from "node:sqlite";
-import type { ServicosConsulta } from "@simplifica-if/kb/layers";
-import type * as Effect from "effect/Effect";
-import type { ToolAnnotations } from "@modelcontextprotocol/server";
-import { z } from "zod";
-import type { MetaBase } from "../banco.ts";
-import { type Base, ErroEntrada, esquemaResposta, type Resposta } from "../envelope.ts";
+import * as Schema from "effect/Schema";
+import { Tool } from "effect/ai";
+import { ErroDeLeitura, Resposta } from "../contratos.ts";
 import { montarTexto } from "../texto.ts";
 
-/** Roda um efeito dos serviços do kb e devolve o valor (ponte do C1; ver `abrirKb` em servidor.ts). */
-export type Kb = <A, E>(efeito: Effect.Effect<A, E, ServicosConsulta>) => A;
-
-export interface Contexto {
-  db: DatabaseSync;
-  /** Os serviços do kb sobre o mesmo `kb.sqlite`. */
-  kb: Kb;
-  meta: MetaBase;
-  base: Base;
-  /** Única pasta de onde o servidor lê arquivos (`pacote_contexto`, T4); caminho real e absoluto. */
-  pastaTrabalho: string;
-}
-
-/** Só leitura e mundo fechado: nenhuma ferramenta escreve nem acessa a rede (decisão de desenho 2). */
-export const ANOTACOES_LEITURA = {
-  readOnlyHint: true,
-  idempotentHint: true,
-  openWorldHint: false,
-} as const satisfies ToolAnnotations;
-
-export interface DefinicaoFerramenta<E extends z.ZodType, D extends z.ZodType> {
+export interface DefinicaoFerramenta<Nome extends string, E extends Schema.Top, D extends Schema.Top> {
   /** Verbo e objeto, em português e `snake_case`. */
-  nome: string;
-  titulo: string;
-  descricao: string;
-  entrada: E;
-  dados: D;
-  executar(entrada: z.output<E>, ctx: Contexto): Resposta<z.output<D>>;
+  readonly nome: Nome;
+  readonly titulo: string;
+  readonly descricao: string;
+  readonly entrada: E;
+  readonly dados: D;
   /** Corpo do texto para a IA; avisos, paginação e rodapé vêm de `montarTexto`. */
-  texto(resposta: Resposta<z.output<D>>): string;
+  readonly texto: (resposta: Resposta<D["Type"]>) => string;
 }
 
-export interface Ferramenta<
-  E extends z.ZodType = z.ZodType,
-  D extends z.ZodType = z.ZodType,
-> extends DefinicaoFerramenta<E, D> {
-  /** Schema da resposta inteira (envelope + dados): o `outputSchema` da ferramenta. */
-  saida: z.ZodType;
-  anotacoes: ToolAnnotations;
-  /** Valida a entrada, executa e monta o texto. Entrada inválida gera `ErroEntrada`. */
-  responder(args: unknown, ctx: Contexto): { resposta: Resposta<z.output<D>>; texto: string };
-}
-
-export function definirFerramenta<E extends z.ZodType, D extends z.ZodType>(
-  definicao: DefinicaoFerramenta<E, D>,
-): Ferramenta<E, D> {
+export function definirFerramenta<const Nome extends string, E extends Schema.Top, D extends Schema.Top>(
+  definicao: DefinicaoFerramenta<Nome, E, D>,
+) {
+  const saida = Resposta(definicao.dados);
+  const tool = Tool.make(definicao.nome, {
+    description: definicao.descricao,
+    parameters: definicao.entrada,
+    success: saida,
+    failure: ErroDeLeitura,
+  })
+    .annotate(Tool.Title, definicao.titulo)
+    .annotate(Tool.Readonly, true)
+    .annotate(Tool.Destructive, false)
+    .annotate(Tool.Idempotent, true)
+    .annotate(Tool.OpenWorld, false);
   return {
     ...definicao,
-    saida: esquemaResposta(definicao.dados),
-    anotacoes: { title: definicao.titulo, ...ANOTACOES_LEITURA },
-    responder(args, ctx) {
-      const entrada = definicao.entrada.safeParse(args ?? {});
-      if (!entrada.success) {
-        throw new ErroEntrada(`entrada inválida para ${definicao.nome}:\n${z.prettifyError(entrada.error)}`);
-      }
-      const resposta = definicao.executar(entrada.data, ctx);
-      return { resposta, texto: montarTexto(resposta, definicao.texto(resposta)) };
-    },
+    /** A resposta inteira (envelope + dados): o `outputSchema` da ferramenta. */
+    saida,
+    tool,
+    /** O texto inteiro para a IA: avisos, corpo, paginação e rodapé. */
+    textoCompleto: (resposta: Resposta<D["Type"]>) => montarTexto(resposta, definicao.texto(resposta)),
   };
 }
+
+/** Qualquer ferramenta definida aqui, para o registro e os testes. */
+export type Ferramenta = ReturnType<typeof definirFerramenta<string, Schema.Top, Schema.Top>>;

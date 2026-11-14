@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @effect-diagnostics nodeBuiltinImport:off globalConsole:off -- script de build, fora do runtime Effect: chama o empacotador e escreve o progresso no terminal
 /**
  * Empacota o servidor MCP (`src/cli.ts`) num executável Node SEA, `dist-exe/simplifica-mcp`, como o
  * `build:exe` do T3 Code: `vp pack` (tsdown) num só chunk, com todas as dependências dentro, e o SEA
@@ -12,19 +13,19 @@
  * `--build-sea`). Antes do SEA, confere que o bundle só importa módulos internos do Node: o SEA não
  * resolve pacotes, e um import externo só falharia ao rodar.
  */
-import { spawnSync } from "node:child_process";
-import { chmodSync, copyFileSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from "node:fs";
-import { isBuiltin } from "node:module";
-import os from "node:os";
-import path from "node:path";
-import { parseArgs } from "node:util";
+import * as NodeChildProcess from "node:child_process";
+import * as NodeFS from "node:fs";
+import * as NodeModule from "node:module";
+import * as NodeOS from "node:os";
+import * as NodePath from "node:path";
+import * as NodeUtil from "node:util";
 import { parseAst } from "vite-plus";
 import { build as empacotar } from "vite-plus/pack";
 
-const PACOTE = path.resolve(import.meta.dirname, "..");
-const RAIZ = path.resolve(PACOTE, "../..");
-const ENTRADA = path.join(PACOTE, "src", "cli.ts");
-const SAIDA = path.join(PACOTE, "dist-exe");
+const PACOTE = NodePath.resolve(import.meta.dirname, "..");
+const RAIZ = NodePath.resolve(PACOTE, "../..");
+const ENTRADA = NodePath.join(PACOTE, "src", "cli.ts");
+const SAIDA = NodePath.join(PACOTE, "dist-exe");
 const NOME = "simplifica-mcp";
 
 /** Alvos na nomenclatura do nodejs.org, como no T3. */
@@ -46,7 +47,9 @@ function alvoDaMaquina(): Alvo {
 }
 
 function versaoNode(): string {
-  const pacote = JSON.parse(readFileSync(path.join(RAIZ, "package.json"), "utf-8")) as { engines: { node: string } };
+  const pacote = JSON.parse(NodeFS.readFileSync(NodePath.join(RAIZ, "package.json"), "utf-8")) as {
+    engines: { node: string };
+  };
   return pacote.engines.node;
 }
 
@@ -97,7 +100,12 @@ export function importsExternos(codigo: string): string[] {
     ) {
       origem = n.arguments[0].value;
     }
-    if (typeof origem === "string" && !isBuiltin(origem) && !origem.startsWith("./") && !origem.startsWith("../")) {
+    if (
+      typeof origem === "string" &&
+      !NodeModule.isBuiltin(origem) &&
+      !origem.startsWith("./") &&
+      !origem.startsWith("../")
+    ) {
       especificadores.add(origem);
     }
     for (const [chave, valor] of Object.entries(n)) {
@@ -110,12 +118,12 @@ export function importsExternos(codigo: string): string[] {
 
 /** Gera o bundle num diretório temporário e confere os imports; devolve o caminho do `.mjs`. */
 async function conferirBundle(): Promise<string> {
-  const temporario = mkdtempSync(path.join(os.tmpdir(), "simplifica-mcp-bundle-"));
+  const temporario = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "simplifica-mcp-bundle-"));
   await empacotar(opcoesBundle(temporario));
-  const arquivos = readdirSync(temporario).filter((nome) => /\.m?js$/.test(nome));
+  const arquivos = NodeFS.readdirSync(temporario).filter((nome) => /\.m?js$/.test(nome));
   if (arquivos.length !== 1) throw new Error(`o bundle deveria ter um só chunk; saiu: ${arquivos.join(", ")}`);
-  const bundle = path.join(temporario, arquivos[0]!);
-  const externos = importsExternos(readFileSync(bundle, "utf-8"));
+  const bundle = NodePath.join(temporario, arquivos[0]!);
+  const externos = importsExternos(NodeFS.readFileSync(bundle, "utf-8"));
   if (externos.length) {
     throw new Error(`o bundle importa pacotes que o SEA não resolve: ${externos.join(", ")}`);
   }
@@ -125,8 +133,10 @@ async function conferirBundle(): Promise<string> {
 /** Assinatura ad hoc no macOS, se a que veio do SEA não for válida (a definitiva é decisão do app). */
 function assinarSePreciso(executavel: string): void {
   if (process.platform !== "darwin") return;
-  if (spawnSync("codesign", ["--verify", executavel], { stdio: "ignore" }).status === 0) return;
-  const assinatura = spawnSync("codesign", ["--sign", "-", "--force", executavel], { encoding: "utf-8" });
+  if (NodeChildProcess.spawnSync("codesign", ["--verify", executavel], { stdio: "ignore" }).status === 0) return;
+  const assinatura = NodeChildProcess.spawnSync("codesign", ["--sign", "-", "--force", executavel], {
+    encoding: "utf-8",
+  });
   if (assinatura.status !== 0) throw new Error(`codesign falhou: ${assinatura.stderr}`);
 }
 
@@ -137,11 +147,11 @@ async function construir(alvo: Alvo): Promise<string> {
     throw new Error(`o executável nativo exige o Node ${versao} (engines.node); este é o ${process.versions.node}`);
   }
   // cada alvo num diretório próprio: o tsdown limpa o diretório do executável a cada build
-  const trabalho = mkdtempSync(path.join(os.tmpdir(), "simplifica-mcp-exe-"));
-  const exeDir = path.join(trabalho, "exe");
+  const trabalho = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "simplifica-mcp-exe-"));
+  const exeDir = NodePath.join(trabalho, "exe");
   try {
     await empacotar({
-      ...opcoesBundle(path.join(trabalho, "bundle")),
+      ...opcoesBundle(NodePath.join(trabalho, "bundle")),
       exe: {
         fileName: NOME,
         outDir: exeDir,
@@ -150,22 +160,22 @@ async function construir(alvo: Alvo): Promise<string> {
       },
     });
     // o nativo sai como `simplifica-mcp`; nos outros, o tsdown acrescenta o alvo (e `.exe` no Windows)
-    const gerados = readdirSync(exeDir).filter((arquivo) => arquivo.startsWith(NOME));
+    const gerados = NodeFS.readdirSync(exeDir).filter((arquivo) => arquivo.startsWith(NOME));
     if (gerados.length !== 1) throw new Error(`esperava um executável de ${alvo}; saíram: ${gerados.join(", ")}`);
-    mkdirSync(SAIDA, { recursive: true });
-    const executavel = path.join(SAIDA, gerados[0]!);
+    NodeFS.mkdirSync(SAIDA, { recursive: true });
+    const executavel = NodePath.join(SAIDA, gerados[0]!);
     // cópia, não rename: o diretório temporário pode estar em outro volume
-    copyFileSync(path.join(exeDir, gerados[0]!), executavel);
-    chmodSync(executavel, 0o755);
+    NodeFS.copyFileSync(NodePath.join(exeDir, gerados[0]!), executavel);
+    NodeFS.chmodSync(executavel, 0o755);
     if (alvo.startsWith("darwin")) assinarSePreciso(executavel);
     return executavel;
   } finally {
-    rmSync(trabalho, { recursive: true, force: true });
+    NodeFS.rmSync(trabalho, { recursive: true, force: true });
   }
 }
 
 async function main(): Promise<number> {
-  const { values } = parseArgs({
+  const { values } = NodeUtil.parseArgs({
     options: { alvo: { type: "string", multiple: true }, todos: { type: "boolean" } },
     allowPositionals: false,
   });
@@ -174,12 +184,12 @@ async function main(): Promise<number> {
     if (!ehAlvo(alvo)) throw new Error(`alvo desconhecido: ${alvo} (use ${Object.keys(ALVOS).join(", ")})`);
   }
   const bundle = await conferirBundle();
-  console.log(`bundle conferido: só módulos internos do Node (${(statSync(bundle).size / 1024).toFixed(0)} kB)`);
-  rmSync(path.dirname(bundle), { recursive: true, force: true });
+  console.log(`bundle conferido: só módulos internos do Node (${(NodeFS.statSync(bundle).size / 1024).toFixed(0)} kB)`);
+  NodeFS.rmSync(NodePath.dirname(bundle), { recursive: true, force: true });
   for (const alvo of pedidos as Alvo[]) {
     const executavel = await construir(alvo);
-    const megabytes = (statSync(executavel).size / 1024 / 1024).toFixed(1);
-    console.log(`${alvo}: ${path.relative(RAIZ, executavel)} (${megabytes} MB)`);
+    const megabytes = (NodeFS.statSync(executavel).size / 1024 / 1024).toFixed(1);
+    console.log(`${alvo}: ${NodePath.relative(RAIZ, executavel)} (${megabytes} MB)`);
   }
   return 0;
 }

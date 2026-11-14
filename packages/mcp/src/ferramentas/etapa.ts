@@ -3,36 +3,34 @@
  * app que receba o aviso, e a ferramenta só confirma que não registrou nada; ela já existe no M0
  * para que as skills possam chamá-la desde o início.
  */
-import { z } from "zod";
-import { responder } from "../envelope.ts";
+import * as Schema from "effect/Schema";
+import { inteiro, opcional, texto } from "../esquema.ts";
 import { definirFerramenta } from "./ferramenta.ts";
 
-const entrada = z.strictObject({
-  id: z.string().min(1).max(200).describe("ID da etapa, como a skill o indica"),
-  progresso: z
-    .strictObject({
-      feito: z.number().int().min(0).describe("itens concluídos"),
-      total: z.number().int().min(1).describe("itens da etapa"),
-    })
-    .refine((p) => p.feito <= p.total, { message: "feito não pode passar de total" })
-    .optional()
-    .describe("quanto da etapa já foi feito"),
+// a descrição vem antes da checagem: anotada depois, ela ficaria na checagem e sumiria do JSON Schema
+const Progresso = Schema.Struct({
+  feito: inteiro({ minimo: 0 }).annotate({ description: "itens concluídos" }),
+  total: inteiro({ minimo: 1 }).annotate({ description: "itens da etapa" }),
+})
+  .annotate({ description: "quanto da etapa já foi feito" })
+  .check(Schema.makeFilter((p) => p.feito <= p.total || "feito não pode passar de total"));
+
+export const Entrada = Schema.Struct({
+  id: texto({ minimo: 1, maximo: 200 }, "ID da etapa, como a skill o indica"),
+  progresso: opcional(Progresso),
 });
 
-const dados = z.strictObject({
+export const Dados = Schema.Struct({
   /** `false` fora do app. */
-  registrado: z.boolean(),
+  registrado: Schema.Boolean,
 });
 
 export const etapa = definirFerramenta({
   nome: "etapa",
   titulo: "Etapa da tarefa",
   descricao: "Informa ao app em que etapa da tarefa você está. Use só quando a skill pedir.",
-  entrada,
-  dados,
-  executar(_entrada, { base }) {
-    return responder(base, { registrado: false });
-  },
+  entrada: Entrada,
+  dados: Dados,
   texto() {
     return "Etapa não registrada: não há app conectado a este servidor. Siga com a tarefa.";
   },

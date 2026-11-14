@@ -3,119 +3,50 @@
  * do teto, o texto pagina por linhas: cada página termina numa linha inteira, e a `fonte` traz as
  * linhas da página.
  */
-import * as Ppcs from "@simplifica-if/kb/Ppcs";
-import { z } from "zod";
-import { ErroEntrada, esquemaFonte, esquemaLink, type Fonte, type Pagina, responder } from "../envelope.ts";
-import { lerLink, linkPpc } from "../links.ts";
-import { cortar, paginarNoTeto, RESERVA_TEXTO } from "../orcamento.ts";
+import * as Schema from "effect/Schema";
+import { EsquemaLink, Fonte } from "../contratos.ts";
+import { opcional, texto, textoAparado } from "../esquema.ts";
+import { linkPpc } from "../links.ts";
+import { cortar, RESERVA_TEXTO } from "../orcamento.ts";
 import { blocoItem, comLink } from "../texto.ts";
 import { definirFerramenta } from "./ferramenta.ts";
 
 export const TETO_LER_SECAO = 20000;
 
-const entrada = z.strictObject({
-  id: z
-    .string()
-    .trim()
-    .min(3)
-    .max(300)
-    .describe(
-      'ID da seção ("curitiba/tecnico-em-enfermagem#estagio_praticas-1"), vindo de buscar_secoes, ou o link ifpr://ppc/…#secao',
-    ),
-  cursor: z
-    .string()
-    .min(1)
-    .optional()
-    .describe("cursor do trecho seguinte de uma seção longa, devolvido pela chamada anterior"),
+export const Entrada = Schema.Struct({
+  id: textoAparado(
+    { minimo: 3, maximo: 300 },
+    'ID da seção ("curitiba/tecnico-em-enfermagem#estagio_praticas-1"), vindo de buscar_secoes, ou o link ifpr://ppc/…#secao',
+  ),
+  cursor: opcional(
+    texto({ minimo: 1 }, "cursor do trecho seguinte de uma seção longa, devolvido pela chamada anterior"),
+  ),
 });
 
-const dados = z.strictObject({
-  secao: z.strictObject({
-    id: z.string(),
-    ppc: z.string(),
-    curso: z.string(),
-    tipo: z.string(),
-    titulo: z.string(),
+export const Dados = Schema.Struct({
+  secao: Schema.Struct({
+    id: Schema.String,
+    ppc: Schema.String,
+    curso: Schema.String,
+    tipo: Schema.String,
+    titulo: Schema.String,
     /** O texto literal (numa seção longa, o trecho desta página). */
-    texto: z.string(),
-    fonte: esquemaFonte,
-    link: esquemaLink,
+    texto: Schema.String,
+    fonte: Fonte,
+    link: EsquemaLink,
   }),
   /** IDs das seções vizinhas no documento. */
-  anterior: z.string().nullable(),
-  proxima: z.string().nullable(),
+  anterior: Schema.NullOr(Schema.String),
+  proxima: Schema.NullOr(Schema.String),
 });
-
-function idDaSecao(valor: string): string {
-  if (valor.startsWith("ifpr://")) {
-    const link = lerLink(valor);
-    if (!link || link.tipo !== "ppc" || link.fragmento === null) {
-      throw new ErroEntrada(`id: esperava um link ifpr://ppc/campus/curso#secao, veio "${valor}"`);
-    }
-    return `${link.caminho}#${link.fragmento}`;
-  }
-  const id = valor.replace(/^ppc:/, "");
-  if (!/^[A-Za-z0-9._~-]+\/[A-Za-z0-9._~-]+#[A-Za-z0-9._~-]+$/.test(id)) {
-    throw new ErroEntrada(
-      `id: esperava "campus/curso#secao" (como "curitiba/tecnico-em-enfermagem#estagio_praticas-1"), veio "${valor}"`,
-    );
-  }
-  return id;
-}
 
 export const lerSecao = definirFerramenta({
   nome: "ler_secao",
   titulo: "Ler seção de PPC",
   descricao:
     "Lê uma seção inteira de PPC pelo ID, vindo de `buscar_secoes` ou de um link `ifpr://ppc/…#secao`. Use quando o trecho devolvido por `buscar_secoes` não bastar.",
-  entrada,
-  dados,
-  executar(e, { kb, base }) {
-    const id = idDaSecao(e.id);
-    const secao = kb(Ppcs.Ppcs.use((p) => p.lerSecao(id)));
-    if (!secao) {
-      throw new ErroEntrada(
-        `seção não encontrada: "${id}". Use um ID devolvido por buscar_secoes ou pela ficha_curso (ppc.secoes)`,
-      );
-    }
-    const linhas = secao.texto.split("\n");
-    const orcamento = TETO_LER_SECAO - RESERVA_TEXTO;
-    const longa = secao.texto.length > orcamento;
-    let texto = secao.texto;
-    let fonte: Fonte = { path: secao.path, linha_inicio: secao.linha_inicio, linha_fim: secao.linha_fim };
-    let pagina: Pagina | undefined;
-    if (longa || e.cursor !== undefined) {
-      const recorte = paginarNoTeto(linhas, {
-        limite: linhas.length,
-        cursor: e.cursor,
-        consulta: { ferramenta: "ler_secao", base: base.versao, id },
-        orcamento,
-        medir: (linha) => linha.length + 1,
-      });
-      pagina = recorte.pagina;
-      texto = recorte.itens.join("\n");
-      const primeira = secao.linha_texto + recorte.inicio;
-      fonte = { path: secao.path, linha_inicio: primeira, linha_fim: primeira + recorte.itens.length - 1 };
-    }
-    return responder(
-      base,
-      {
-        secao: {
-          id: secao.id,
-          ppc: secao.ppc,
-          curso: secao.curso,
-          tipo: secao.tipo,
-          titulo: secao.titulo,
-          texto,
-          fonte,
-          link: linkPpc(secao.id),
-        },
-        anterior: secao.anterior,
-        proxima: secao.proxima,
-      },
-      pagina ? { pagina } : {},
-    );
-  },
+  entrada: Entrada,
+  dados: Dados,
   texto({ dados: d }) {
     const vizinhas = [
       d.anterior ? `anterior \`${d.anterior}\`` : null,

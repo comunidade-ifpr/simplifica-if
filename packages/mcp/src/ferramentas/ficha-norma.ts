@@ -3,168 +3,88 @@
  * (`Normas.vigencia`: status, eventos, pendências e transições), `kb relacoes`
  * (`Normas.relacoes`) e das sucessoras de `kb impacto` (`Normas.sucessoras`).
  */
-import * as Normas from "@simplifica-if/kb/Normas";
-import { idDoAto } from "@simplifica-if/kb/normas/ids";
-import type { EventoVigencia } from "@simplifica-if/kb/normas/vigencia";
-import { z } from "zod";
-import { type Aviso, ErroEntrada, esquemaLink, responder } from "../envelope.ts";
+import * as Schema from "effect/Schema";
+import { EsquemaLink, NormaResumo, Relacao } from "../contratos.ts";
+import { opcional } from "../esquema.ts";
 import { linkNorma } from "../links.ts";
 import { blocoItem, citacao, comLink, dataBr } from "../texto.ts";
 import { definirFerramenta } from "./ferramenta.ts";
-import {
-  avisosDasNormas,
-  esquemaData,
-  esquemaIdNorma,
-  limitarTexto,
-  situacaoDaNorma,
-  tetoDoCorpo,
-} from "./normas-comum.ts";
-import {
-  esquemaNormaResumo,
-  esquemaRelacao,
-  leitorDeNormas,
-  type RelacaoSaida,
-  relacaoSaida,
-  resumoDaNorma,
-} from "./tipos-comuns.ts";
+import { esquemaData, esquemaIdNorma, limitarTexto, situacaoDaNorma, tetoDoCorpo } from "./normas-comum.ts";
 
 /** Teto do texto para a IA (a especificação não fixa um para esta ferramenta). */
 export const TETO_FICHA_NORMA = 12_000;
 /** Evidência das relações no texto; o JSON traz o trecho inteiro. */
 const TRECHO_RELACAO = 200;
 
-const entrada = z.strictObject({
-  id: esquemaIdNorma.describe('ID canônico da norma, como "br/cne-cp/res/2021/1"'),
-  em: esquemaData.optional().describe("data da situação, AAAA-MM-DD (padrão: data de referência da base)"),
+export const Entrada = Schema.Struct({
+  id: esquemaIdNorma('ID canônico da norma, como "br/cne-cp/res/2021/1"'),
+  em: opcional(esquemaData("data da situação, AAAA-MM-DD (padrão: data de referência da base)")),
 });
 
-const esquemaInicio = z.strictObject({
-  data: z.string().nullable(),
-  minimo: z.string().nullable(),
-  certo: z.boolean(),
+const Inicio = Schema.Struct({
+  data: Schema.NullOr(Schema.String),
+  minimo: Schema.NullOr(Schema.String),
+  certo: Schema.Boolean,
 });
 
-const dados = z.strictObject({
-  norma: esquemaNormaResumo.extend({
-    orgao: z.string().nullable(),
-    tipo_documento: z.string().nullable(),
-    numero: z.string().nullable(),
-    ano: z.number().int().nullable(),
-    fonte_oficial: z.string().nullable(),
+export const Dados = Schema.Struct({
+  norma: Schema.Struct({
+    ...NormaResumo.fields,
+    orgao: Schema.NullOr(Schema.String),
+    tipo_documento: Schema.NullOr(Schema.String),
+    numero: Schema.NullOr(Schema.String),
+    ano: Schema.NullOr(Schema.Int),
+    fonte_oficial: Schema.NullOr(Schema.String),
   }),
-  vigencia: z.strictObject({
-    data: z.string(),
-    status: z.string(),
-    certo: z.boolean(),
-    inicio: esquemaInicio,
-    eventos: z.array(
-      z.strictObject({
-        tipo: z.string(),
-        origem: z.string(),
-        operador: z.string().nullable(),
+  vigencia: Schema.Struct({
+    data: Schema.String,
+    status: Schema.String,
+    certo: Schema.Boolean,
+    inicio: Inicio,
+    eventos: Schema.Array(
+      Schema.Struct({
+        tipo: Schema.String,
+        origem: Schema.String,
+        operador: Schema.NullOr(Schema.String),
         /** Dispositivo atingido, quando a relação é parcial. */
-        alvo_dispositivo: z.string().nullable(),
-        alcance: z.string().nullable(),
+        alvo_dispositivo: Schema.NullOr(Schema.String),
+        alcance: Schema.NullOr(Schema.String),
         /** Data em que o evento produz efeito; `null` se a confirmar. */
-        efeito_de: z.string().nullable(),
-        efeito_minimo: z.string().nullable(),
+        efeito_de: Schema.NullOr(Schema.String),
+        efeito_minimo: Schema.NullOr(Schema.String),
         /** Na data: "sim", "não" ou "a confirmar". */
-        ocorreu: z.string(),
+        ocorreu: Schema.String,
       }),
     ),
-    pendencias: z.array(z.string()),
+    pendencias: Schema.Array(Schema.String),
   }),
-  relacoes: z.strictObject({ entrada: z.array(esquemaRelacao), saida: z.array(esquemaRelacao) }),
-  sucessoras: z.array(z.string()),
-  transicoes: z.array(
-    z.strictObject({
-      id: z.string(),
+  relacoes: Schema.Struct({ entrada: Schema.Array(Relacao), saida: Schema.Array(Relacao) }),
+  sucessoras: Schema.Array(Schema.String),
+  transicoes: Schema.Array(
+    Schema.Struct({
+      id: Schema.String,
       /** Dispositivo que estabelece a regra, com a norma (`br/cne-cp/res/2026/2#art71`). */
-      dispositivo: z.string(),
-      tipo: z.string(),
-      norma_anterior: z.string().nullable(),
-      aplica_a: z.string(),
-      regra: z.string(),
-      situacao_na_data: z.string(),
-      inicio_em: z.string().nullable(),
-      fim_em: z.string().nullable(),
-      evidencia: z.string(),
-      link: esquemaLink,
+      dispositivo: Schema.String,
+      tipo: Schema.String,
+      norma_anterior: Schema.NullOr(Schema.String),
+      aplica_a: Schema.String,
+      regra: Schema.String,
+      situacao_na_data: Schema.String,
+      inicio_em: Schema.NullOr(Schema.String),
+      fim_em: Schema.NullOr(Schema.String),
+      evidencia: Schema.String,
+      link: EsquemaLink,
     }),
   ),
 });
-
-function ocorreu(valor: EventoVigencia["ocorreu"]): string {
-  return valor === true ? "sim" : valor === false ? "não" : "a confirmar";
-}
 
 export const fichaNorma = definirFerramenta({
   nome: "ficha_norma",
   titulo: "Ficha da norma",
   descricao:
     "Situação de uma norma numa data: a vigência, com o que a determina e o que está a confirmar; as relações com outras normas nos dois sentidos (revoga, altera, regulamenta, fundamenta-se em); as normas sucessoras; e as regras de transição. Use quando a resposta depender de a norma estar em vigor, revogada ou substituída. Norma revogada não é inaplicável: confira as transições antes de concluir.",
-  entrada,
-  dados,
-  executar({ id, em }, { kb, base }) {
-    const ato = idDoAto(id.split("#")[0]!);
-    const norma = leitorDeNormas(kb)(ato);
-    if (!norma) {
-      throw new ErroEntrada(
-        `norma não encontrada na base: ${id}. Use buscar_norma ou resolver_citacoes para achar o ID canônico.`,
-      );
-    }
-    const vigencia = kb(Normas.Normas.use((n) => n.vigencia(ato, em ? { em } : {})));
-    const relacoes = kb(Normas.Normas.use((n) => n.relacoes(ato)));
-    const resumo = resumoDaNorma(norma);
-    const avisos: Aviso[] = vigencia.pendencias.map((p) => ({ tipo: "vigencia-a-confirmar", mensagem: p, ref: ato }));
-    avisos.push(...avisosDasNormas([resumo]).filter((a) => a.tipo !== "vigencia-a-confirmar"));
-    return responder(
-      base,
-      {
-        norma: {
-          ...resumo,
-          orgao: norma.orgao,
-          tipo_documento: norma.tipo_documento,
-          numero: norma.numero,
-          ano: norma.ano,
-          fonte_oficial: norma.fonte,
-        },
-        vigencia: {
-          data: vigencia.data,
-          status: vigencia.status,
-          certo: vigencia.certo,
-          inicio: vigencia.inicio,
-          eventos: vigencia.eventos.map((e) => ({
-            tipo: e.tipo,
-            origem: e.origem,
-            operador: e.operador,
-            alvo_dispositivo: e.alvo_dispositivo,
-            alcance: e.alcance,
-            efeito_de: e.efeito_de,
-            efeito_minimo: e.efeito_minimo,
-            ocorreu: ocorreu(e.ocorreu),
-          })),
-          pendencias: vigencia.pendencias,
-        },
-        relacoes: { entrada: relacoes.entrada.map(relacaoSaida), saida: relacoes.saida.map(relacaoSaida) },
-        sucessoras: kb(Normas.Normas.use((n) => n.sucessoras(ato))),
-        transicoes: vigencia.transicoes.map((t) => ({
-          id: t.id,
-          dispositivo: `${t.norma}${t.dispositivo}`,
-          tipo: t.tipo,
-          norma_anterior: t.norma_anterior ?? null,
-          aplica_a: t.aplica_a,
-          regra: t.regra,
-          situacao_na_data: t.situacao,
-          inicio_em: t.inicio_em,
-          fim_em: t.fim_em,
-          evidencia: t.evidencia,
-          link: linkNorma(t.norma, t.dispositivo.slice(1)),
-        })),
-      },
-      { avisos },
-    );
-  },
+  entrada: Entrada,
+  dados: Dados,
   texto(resposta) {
     const { norma, vigencia, relacoes, sucessoras, transicoes } = resposta.dados;
     const titulos = new Map<string, string>([[norma.id, norma.titulo]]);
@@ -218,7 +138,7 @@ export const fichaNorma = definirFerramenta({
         ].join("\n"),
       );
     }
-    const linhaRelacao = (r: RelacaoSaida) => {
+    const linhaRelacao = (r: Relacao) => {
       const trecho =
         r.evidencia.trecho.length > TRECHO_RELACAO
           ? `${r.evidencia.trecho.slice(0, TRECHO_RELACAO - 1).trimEnd()}…`

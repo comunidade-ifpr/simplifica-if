@@ -3,38 +3,31 @@
  * origem, cruzados com as matrizes do SUAP (`Ppcs.fatos` e `Ppcs.divergencias`, a regra de
  * `kb ppc-fatos`). Os fatos têm status `extraido`: o aviso `fato-extraido` vai sempre.
  */
-import * as Ppcs from "@simplifica-if/kb/Ppcs";
-import { z } from "zod";
-import { type Aviso, responder } from "../envelope.ts";
-import { paginarNoTeto, RESERVA_TEXTO } from "../orcamento.ts";
-import {
-  AVISO_FATO_EXTRAIDO,
-  chavePpc,
-  esquemaFatosPpc,
-  paraFatosPpc,
-  filtroTexto,
-  textoFatosPpc,
-} from "./comum-ppcs.ts";
+import * as Schema from "effect/Schema";
+import { FatosPpc } from "../contratos.ts";
+import { comPadrao, inteiro, opcional, texto } from "../esquema.ts";
+import { filtroTexto, textoFatosPpc } from "./comum-ppcs.ts";
 import { definirFerramenta } from "./ferramenta.ts";
 
 export const TETO_FATOS = 12000;
 
-const entrada = z.strictObject({
-  ppc: filtroTexto('um PPC ("campus/curso")').optional(),
-  divergencias: z
-    .boolean()
-    .default(false)
-    .describe("só os PPCs com divergência PPC × SUAP (e só as linhas divergentes), com os totais por aspecto"),
-  nivel: filtroTexto('nível do PPC ("médio", "superior")').optional(),
-  campus: filtroTexto('campus, pelo ID ("curitiba")').optional(),
-  limite: z.number().int().min(1).max(50).default(20).describe("PPCs por página (1 a 50); padrão 20"),
-  cursor: z.string().min(1).optional().describe("cursor da página seguinte, devolvido pela chamada anterior"),
+export const Entrada = Schema.Struct({
+  ppc: opcional(filtroTexto('um PPC ("campus/curso")')),
+  divergencias: comPadrao(
+    Schema.Boolean,
+    false,
+    "só os PPCs com divergência PPC × SUAP (e só as linhas divergentes), com os totais por aspecto",
+  ),
+  nivel: opcional(filtroTexto('nível do PPC ("médio", "superior")')),
+  campus: opcional(filtroTexto('campus, pelo ID ("curitiba")')),
+  limite: comPadrao(inteiro({ minimo: 1, maximo: 50 }), 20, "PPCs por página (1 a 50); padrão 20"),
+  cursor: opcional(texto({ minimo: 1 }, "cursor da página seguinte, devolvido pela chamada anterior")),
 });
 
-const dados = z.strictObject({
-  ppcs: z.array(esquemaFatosPpc),
+export const Dados = Schema.Struct({
+  ppcs: Schema.Array(FatosPpc),
   /** Com `divergencias`: PPCs por aspecto e resultado do cruzamento, no recorte dos filtros. */
-  totais: z.record(z.string(), z.record(z.string(), z.number().int().min(0))).optional(),
+  totais: Schema.optionalKey(Schema.Record(Schema.String, Schema.Record(Schema.String, inteiro({ minimo: 0 })))),
 });
 
 export const fatosPpc = definirFerramenta({
@@ -42,40 +35,8 @@ export const fatosPpc = definirFerramenta({
   titulo: "Fatos do PPC × SUAP",
   descricao:
     "Fatos extraídos de PPCs (carga horária, estágio, ano), com o trecho de origem, cruzados com as matrizes do SUAP publicadas na base. Use quando a pergunta cobrir vários PPCs ou só as divergências; para um curso, `ficha_curso` já traz os fatos. Os fatos são extraídos por regra, sem revisão humana: confira o trecho antes de afirmar uma divergência.",
-  entrada,
-  dados,
-  executar(e, { kb, base }) {
-    const filtros = {
-      ppc: e.ppc === undefined ? undefined : chavePpc(e.ppc),
-      nivel: e.nivel,
-      campus: e.campus,
-    };
-    const resultado = e.divergencias
-      ? kb(Ppcs.Ppcs.use((p) => p.divergencias(filtros)))
-      : { ppcs: kb(Ppcs.Ppcs.use((p) => p.fatos(filtros))) };
-    const ppcs = resultado.ppcs.map(paraFatosPpc);
-    const { itens, pagina } = paginarNoTeto(ppcs, {
-      limite: e.limite,
-      cursor: e.cursor,
-      consulta: { ferramenta: "fatos_ppc", base: base.versao, divergencias: e.divergencias, ...filtros },
-      orcamento: TETO_FATOS - RESERVA_TEXTO - 600,
-      medir: (p) => textoFatosPpc(p).length + 2,
-    });
-    const avisos: Aviso[] = [AVISO_FATO_EXTRAIDO];
-    if (ppcs.length === 0) {
-      avisos.push({
-        tipo: "nao-encontrado",
-        mensagem: filtros.ppc
-          ? `PPC não encontrado na base${e.divergencias ? ", ou sem divergência PPC × SUAP" : ""}: ${filtros.ppc}`
-          : `nenhum PPC${e.divergencias ? " com divergência PPC × SUAP" : ""} com esses filtros`,
-      });
-    }
-    return responder(
-      base,
-      { ppcs: itens, ...("totais" in resultado ? { totais: resultado.totais } : {}) },
-      { avisos, pagina },
-    );
-  },
+  entrada: Entrada,
+  dados: Dados,
   texto({ dados: d }) {
     const partes: string[] = [];
     if (d.totais) {

@@ -4,7 +4,7 @@
  * matrizes do SUAP, uma seção longa e o índice FTS das seções. Os valores imitam os da base real
  * (Res. CNE/CP 1/2021 revogada pela 2/2026, art. 71), em escala mínima.
  */
-import { DatabaseSync } from "node:sqlite";
+import * as NodeSqlite from "node:sqlite";
 import { emTransacao } from "@simplifica-if/kb/db/transacao";
 import { radicais } from "@simplifica-if/kb/busca/tokens";
 import { criarBancoFixture, type OpcoesFixture } from "./fixture.ts";
@@ -23,13 +23,13 @@ const A_CONFIRMAR_2021 =
 
 export function criarBancoFixturePpcs(opcoes: OpcoesFixture = {}): string {
   const caminho = criarBancoFixture(opcoes);
-  const db = new DatabaseSync(caminho);
+  const db = new NodeSqlite.DatabaseSync(caminho);
   emTransacao(db, () => povoar(db));
   db.close();
   return caminho;
 }
 
-function povoar(db: DatabaseSync): void {
+function povoar(db: NodeSqlite.DatabaseSync): void {
   const inserir = (tabela: string, linha: Record<string, string | number | null>) => {
     const colunas = Object.keys(linha);
     db.prepare(`INSERT INTO ${tabela} (${colunas.join(", ")}) VALUES (${colunas.map(() => "?").join(", ")})`).run(

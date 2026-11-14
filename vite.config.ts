@@ -139,13 +139,12 @@ export default defineConfig({
       "typescript/restrict-template-expressions": "off",
       "typescript/unbound-method": "off",
     },
-    // As regras do plugin próprio valem onde o código já é Effect: `packages/kb` (C1) e, desde o C3,
-    // `scripts/`, as skills, o `sei-cli` e o gabarito. O C2 estende a lista ao MCP. As exceções
-    // reproduzem as do T3. A ordem importa: cada override posterior sobrescreve o anterior para os
-    // arquivos em comum.
+    // As regras do plugin próprio valem onde o código já é Effect: `packages/kb` (C1), `packages/mcp`
+    // (C2) e, desde o C3, `scripts/`, as skills, o `sei-cli` e o gabarito. As exceções reproduzem as
+    // do T3. A ordem importa: cada override posterior sobrescreve o anterior para os arquivos em comum.
     overrides: [
       {
-        files: ["packages/kb/**", ...ARQUIVOS_C3],
+        files: ["packages/kb/**", "packages/mcp/**", ...ARQUIVOS_C3],
         rules: {
           "simplifica-if/namespace-node-imports": "error",
           "simplifica-if/no-global-process-runtime": "error",
@@ -167,7 +166,12 @@ export default defineConfig({
       {
         // Pontos de entrada (a CLI `kb` e os scripts do pacote) leem o processo do Node diretamente,
         // como `scripts/npm-launcher/**` no T3; o resto do pacote recebe o que precisar por injeção.
-        files: ["packages/kb/src/cli.ts", "packages/kb/scripts/**"],
+        files: [
+          "packages/kb/src/cli.ts",
+          "packages/kb/scripts/**",
+          "packages/mcp/src/cli.ts",
+          "packages/mcp/scripts/**",
+        ],
         rules: { "simplifica-if/no-global-process-runtime": "off" },
       },
     ],
