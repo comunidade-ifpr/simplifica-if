@@ -11,14 +11,15 @@
     "base:tipos": "bun run scripts/gerar_tipos_schemas.ts",
     "kb": "bun run packages/kb/src/cli.ts",
     "kb:compilar": "bun run packages/kb/src/db/compilar.ts",
+    "mcp": "bun run packages/mcp/src/cli.ts",
     "avaliacao": "bun run scripts/avaliar.ts",
     "avaliacao:gabaritos": "bun run scripts/avaliacao/gabaritos/gerar.ts",
     "sei:sync": "bun run scripts/notion_atualizar_movimentacoes_sei.ts",
     "sei": "bun run --cwd packages/sei-cli sei",
-    "test": "bun test scripts ./.agents/skills && bun run --cwd packages/kb test && bun run --cwd packages/sei-cli test",
-    "typecheck": "tsc --noEmit && bun run --cwd packages/kb typecheck && bun run --cwd packages/sei-cli typecheck",
-    "format": "bun fmt scripts '.agents/skills/*/scripts/**/*.ts' '.agents/skills/*/tests/**/*.ts' && bun run --cwd packages/kb format && bun run --cwd packages/sei-cli format",
-    "format:check": "bun fmt --check scripts '.agents/skills/*/scripts/**/*.ts' '.agents/skills/*/tests/**/*.ts' && bun run --cwd packages/kb format:check && bun run --cwd packages/sei-cli format:check"
+    "test": "bun test scripts ./.agents/skills && bun run --cwd packages/kb test && bun run --cwd packages/sei-cli test && bun run --cwd packages/mcp test",
+    "typecheck": "tsc --noEmit && bun run --cwd packages/kb typecheck && bun run --cwd packages/sei-cli typecheck && bun run --cwd packages/mcp typecheck",
+    "format": "bun fmt scripts '.agents/skills/*/scripts/**/*.ts' '.agents/skills/*/tests/**/*.ts' && bun run --cwd packages/kb format && bun run --cwd packages/sei-cli format && bun run --cwd packages/mcp format",
+    "format:check": "bun fmt --check scripts '.agents/skills/*/scripts/**/*.ts' '.agents/skills/*/tests/**/*.ts' && bun run --cwd packages/kb format:check && bun run --cwd packages/sei-cli format:check && bun run --cwd packages/mcp format:check"
   },
   "dependencies": {
     "@notionhq/client": "5.31.1",
