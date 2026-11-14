@@ -1,7 +1,7 @@
 // @effect-diagnostics nodeBuiltinImport:off -- os testes leem os schemas e as fichas dos arquivos da base
 /**
  * Veredito dos JSON Schemas gerados (`gerar-schemas`): a ficha e o registro de marcos validam igual
- * no schema anterior, gerado do zod (cópia congelada em `fixtures/schemas-zod/`), e no gerado hoje
+ * no schema anterior ao C3 (cópia congelada em `fixtures/schemas-anteriores/`), e no gerado hoje
  * de `scripts/esquemas.ts`. O arquivo pode mudar de forma (ordem das chaves, `$defs`); o que não
  * pode mudar é o que se aceita e o que se recusa, as mensagens do validador e as descrições, que os
  * sub-agentes da revisão leem.
@@ -16,7 +16,7 @@ import { jsonSchemaGerado, type NomeSchemaGerado, SCHEMAS_GERADOS } from "../scr
 import { validarSchemaAnalise } from "../scripts/schema-analise.ts";
 
 const caminhos = caminhosPadrao();
-const ANTERIORES = NodePath.join(caminhos.appDir, "tests", "fixtures", "schemas-zod");
+const ANTERIORES = NodePath.join(caminhos.appDir, "tests", "fixtures", "schemas-anteriores");
 
 const anterior = (nome: NomeSchemaGerado) => lerJson(NodePath.join(ANTERIORES, nome)) as ObjetoJson;
 const atual = (nome: NomeSchemaGerado) => jsonSchemaGerado(nome);
@@ -140,7 +140,7 @@ function descricoes(documento: ObjetoJson): Map<string, string> {
   return saida;
 }
 
-describe("JSON Schemas gerados: o mesmo veredito do schema zod anterior", () => {
+describe("JSON Schemas gerados: o mesmo veredito do schema anterior ao C3", () => {
   test("os arquivos de base-analise/schemas/ são os gerados hoje", () => {
     for (const nome of SCHEMAS_GERADOS) {
       expect(lerJson(NodePath.join(caminhos.schemasDir, nome))).toEqual(atual(nome));

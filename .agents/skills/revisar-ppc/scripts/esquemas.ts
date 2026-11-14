@@ -11,7 +11,7 @@
  *
  * As descrições são lidas pelos sub-agentes da revisão: mudar o texto muda a revisão.
  * `tests/schemas-gerados.test.ts` confere que o veredito, as mensagens e as descrições são os do
- * schema anterior, gerado do zod (`tests/fixtures/schemas-zod/`).
+ * schema anterior ao C3 (`tests/fixtures/schemas-anteriores/`).
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
