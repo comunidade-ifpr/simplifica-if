@@ -47,6 +47,8 @@ export interface EstadoProvider {
   /** Plano da assinatura, quando o provider informa (`max`, `plus`, `pro`…). */
   readonly plano?: string;
   readonly mensagem?: string;
+  /** Algo que impede o app de funcionar direito mesmo com login (ex.: MCP bloqueado pela organização). */
+  readonly aviso?: string;
 }
 
 export class FalhaProvider extends Schema.TaggedError<FalhaProvider>()("FalhaProvider", {

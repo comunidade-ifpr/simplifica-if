@@ -30,6 +30,7 @@ import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
 import * as Drivers from "../src/drivers/index.ts";
 import * as Motor from "../src/Motor.ts";
+import { fixPath } from "../src/t3/os-jank.ts";
 import { sanitizar } from "../src/sanitizar.ts";
 
 const RAIZ = new URL("../../..", import.meta.url).pathname.replace(/\/$/, "");
@@ -203,6 +204,9 @@ const program = Effect.gen(function* () {
     const ms = Math.round(performance.now() - inicio);
     linhas.push(JSON.stringify(sanitizar({ ms, direcao, mensagem }, { home: process.env.HOME ?? "" })));
   };
+  // Como o servidor do T3 (`os-jank.ts`): um app aberto pelo Finder herda um PATH mínimo, sem
+  // ~/.local/bin; o fixPath o completa com o PATH do shell de login antes de procurar as CLIs.
+  yield* fixPath();
   const drivers = Drivers.layerNode({ ambiente: process.env });
   yield* Command.run(poc, { version: "0.1.0" }).pipe(
     Effect.provide(Motor.layer.pipe(Layer.provide(drivers))),
