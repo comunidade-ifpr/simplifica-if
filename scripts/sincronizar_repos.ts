@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @effect-diagnostics nodeBuiltinImport:off globalConsole:off -- utilitário de execução única, com a casca de scripts/cli.ts: clona por node:child_process, troca a pasta com node:fs e imprime no console
 /**
  * Traz o código de referência do Effect para `.repos/effect`, na tag da versão de `effect` do catalog
  * (`pnpm-workspace.yaml`), como o `sync:repos` do T3 Code. Diferente do T3, a pasta fica fora do git

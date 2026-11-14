@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- copia base-conhecimento/ para site/ com node:fs síncrono, num script de execução única (gerar_site)
 /** Saída publicável em site/: cópia de base-conhecimento/ sem arquivos locais. */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";

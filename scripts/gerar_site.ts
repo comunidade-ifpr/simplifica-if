@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @effect-diagnostics nodeBuiltinImport:off globalConsole:off -- script de execução única do pipeline da base, síncrono, com a casca de scripts/cli.ts: diretório temporário com node:fs e saída no console
 /** Gera a saída publicável em site/ a partir de base-conhecimento/. */
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";

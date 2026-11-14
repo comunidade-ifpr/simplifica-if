@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- validação síncrona da base (validar_base), monta caminhos com node:path
 /** Validação dos catálogos (catalogos_manifest.json e CNCT). */
 import * as NodePath from "node:path";
 import { listarDiretorio, listarRecursivo, naBase } from "../caminhos.ts";

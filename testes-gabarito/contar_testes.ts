@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- utilitário de execução única do gabarito: lê os relatórios JUnit com node:fs
 /**
  * Conta os casos de teste por arquivo a partir de relatórios JUnit (do executor de testes do Bun ou do vitest) e
  * imprime `arquivo<TAB>casos<TAB>pulados`, em ordem, com o total no fim. É o formato de

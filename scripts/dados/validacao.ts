@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- validação síncrona de dados/institucional/ (validar_base), lê o índice do CNCT com node:fs
 /** Validação de `dados/institucional/`: schema, caminho de cada arquivo e as regras da auditoria institucional. */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";

@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- validação síncrona da base (validar_base) sobre os carregadores síncronos do kb
 /** Validação das normas (Markdown com front matter), do manifest.json e do README.md. */
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
@@ -9,7 +10,7 @@ import {
   CAMPOS_MANIFEST,
   CAMPOS_OBRIGATORIOS,
   DIRETORIOS_POR_TIPO,
-  ErroFrontMatter,
+  ehErroFrontMatter,
   type FrontMatter,
 } from "../front-matter.ts";
 import { ehObjeto, type ObjetoJson, representar, textoDe, valoresIguais } from "@simplifica-if/kb/json";
@@ -122,7 +123,7 @@ export function validarMarkdown(ctx: Contexto, caminho: string): string[] {
   try {
     ({ meta, corpo } = analisarFrontMatter(texto, r));
   } catch (erro) {
-    if (erro instanceof ErroFrontMatter) return [erro.message];
+    if (ehErroFrontMatter(erro)) return [erro.message];
     throw erro;
   }
 
@@ -186,7 +187,7 @@ export function validarUnicidadeIds(ctx: Contexto, caminhos: string[], idsRegist
     try {
       ({ meta } = analisarFrontMatter(lerTexto(caminho), ctx.rel(caminho)));
     } catch (erro) {
-      if (erro instanceof ErroFrontMatter) continue;
+      if (ehErroFrontMatter(erro)) continue;
       throw erro;
     }
     if (typeof meta.id !== "string") continue;
@@ -250,7 +251,7 @@ export function validarItemManifest(ctx: Contexto, item: ObjetoJson): string[] {
   try {
     ({ meta } = analisarFrontMatter(lerTexto(caminho), ctx.rel(caminho)));
   } catch (erro) {
-    if (!(erro instanceof ErroFrontMatter)) throw erro;
+    if (!ehErroFrontMatter(erro)) throw erro;
     erros.push(erro.message);
     return erros;
   }
@@ -278,7 +279,7 @@ export function validarEstruturaNorma(ctx: Contexto, caminho: string): string[] 
     if (typeof meta.id !== "string") return [];
     id = meta.id;
   } catch (erro) {
-    if (erro instanceof ErroFrontMatter) return [];
+    if (ehErroFrontMatter(erro)) return [];
     throw erro;
   }
   const estrutura = analisarNorma(texto, { id, path: ctx.rel(caminho) });

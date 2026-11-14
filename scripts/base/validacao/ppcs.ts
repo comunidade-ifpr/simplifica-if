@@ -1,10 +1,12 @@
+// @effect-diagnostics nodeBuiltinImport:off -- validação síncrona da base (validar_base), lê os PPCs e os índices com node:fs
 /** Validação do índice de PPCs, das seções indexadas, dos PPCPs e dos artefatos de conversão. */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { ehDiretorio, listarDiretorio, naBase } from "../caminhos.ts";
 import { taxonomiasPublicadas, TIPOS_SECAO_INDEXADOS, VERSAO_INDICE } from "../indice-ppcs.ts";
 import { ehObjeto, type ObjetoJson, itensDe, valoresIguais } from "@simplifica-if/kb/json";
-import { analisarPpc, ErroFrontMatter, idPpc } from "@simplifica-if/kb/ppcs/front-matter";
+import { ehErroFrontMatter } from "@simplifica-if/kb/normas/front-matter";
+import { analisarPpc, idPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import { MINIMO_CARACTERES_SECAO, TAXONOMIAS } from "@simplifica-if/kb/ppcs/secoes";
 import { validarJsonSchema } from "@simplifica-if/kb/schema";
 import type { IndicePpcpsJson, IndicePpcsJson, SecaoPpcJson } from "../tipos-schemas.ts";
@@ -229,7 +231,7 @@ function validarProvenienciaItem(
   try {
     ({ proveniencia } = analisarPpc(lerTexto(caminho, { ignorarErros: true }), valorPath));
   } catch (erro) {
-    if (erro instanceof ErroFrontMatter) return [erro.message];
+    if (ehErroFrontMatter(erro)) return [erro.message];
     throw erro;
   }
   const erros: string[] = [];

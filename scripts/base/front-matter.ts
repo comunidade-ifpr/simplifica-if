@@ -1,11 +1,12 @@
 /**
- * Front matter das normas e geração de `manifest.json`. O parser (YAML `failsafe` + zod) fica em
+ * Front matter das normas e geração de `manifest.json`. O parser (YAML `failsafe` + Effect Schema) fica em
  * `@simplifica-if/kb/normas/front-matter`.
  */
 import { type CaminhosBase, listarRecursivo, relativo } from "./caminhos.ts";
 import { jsonIndentado, textoDe } from "@simplifica-if/kb/json";
 import {
   analisarFrontMatter,
+  ehErroFrontMatter,
   ErroFrontMatter,
   type FrontMatter,
   type ValorFrontMatter,
@@ -14,7 +15,7 @@ import { idDoAto } from "@simplifica-if/kb/normas/ids";
 import { carregarRelacoes } from "@simplifica-if/kb/normas/relacoes";
 import { compararTexto, lerTexto, ordenarCaminhos } from "@simplifica-if/kb/texto";
 
-export { analisarFrontMatter, ErroFrontMatter, type FrontMatter, type ValorFrontMatter };
+export { analisarFrontMatter, ehErroFrontMatter, ErroFrontMatter, type FrontMatter, type ValorFrontMatter };
 
 export const CAMPOS_OBRIGATORIOS = [
   "id",

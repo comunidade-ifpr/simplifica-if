@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- gera e grava os índices de PPCs com node:fs síncrono, num script de execução única (gerar_indice_ppcs)
 /**
  * Índices globais dos PPCs convertidos para Markdown (index.json e secoes/*.jsonl), versão 2.
  *

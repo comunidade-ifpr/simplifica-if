@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- validação síncrona da base (validar_base), lê os JSONs com node:fs
 /** Contexto e utilitários comuns aos módulos de validação da base. */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";

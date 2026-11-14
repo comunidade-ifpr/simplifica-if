@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- monta raízes temporárias com node:fs síncrono para o pipeline síncrono sob teste
 import { afterAll, describe, expect, test } from "vite-plus/test";
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @effect-diagnostics nodeBuiltinImport:off globalConsole:off -- script de execução única do pipeline da base, síncrono, com a casca de scripts/cli.ts: grava com node:fs e imprime no console
 /**
  * Gera os campos derivados do front matter das normas (relações de relacoes.yaml e status de
  * vigência na data_referencia de config/vigencia.yaml), manifest.json e a tabela do README.

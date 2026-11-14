@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- grava manifest.json e o README com node:fs síncrono, num script de execução única (gerar_base)
 /** Tabela de normas do README da base, gerada a partir do manifest. */
 import * as NodeFS from "node:fs";
 import type { CaminhosBase } from "./caminhos.ts";

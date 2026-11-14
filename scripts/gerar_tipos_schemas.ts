@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// @effect-diagnostics nodeBuiltinImport:off globalConsole:off -- gerador de execução única, com a casca de scripts/cli.ts: lê os JSON Schemas com node:fs, formata pelo vp fmt com node:child_process e imprime no console
 /** Gera scripts/base/tipos-schemas.ts, os tipos TypeScript dos JSON Schemas de base-conhecimento/schemas/. */
 import * as NodeChildProcess from "node:child_process";
 import * as NodeFS from "node:fs";
