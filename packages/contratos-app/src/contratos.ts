@@ -20,17 +20,19 @@
  * na URL.
  */
 import { GrupoLeitura, type LinkLido } from "@simplifica-if/mcp/grupo-leitura";
+import type {
+  EstadoInstalacao as EstadoInstalacaoMotor,
+  EstadoLogin as EstadoLoginMotor,
+  EstadoProvider as EstadoProviderMotor,
+} from "@simplifica-if/motor";
 import {
   AprovacaoDesconhecida,
   Decisao,
-  type EstadoInstalacao as EstadoInstalacaoMotor,
-  type EstadoLogin as EstadoLoginMotor,
-  type EstadoProvider as EstadoProviderMotor,
   FalhaProvider,
   OperacaoNaoSuportada,
   SessaoDesconhecida,
   TurnoEmAndamento,
-} from "@simplifica-if/motor";
+} from "@simplifica-if/motor/erros";
 import { Evento, Provider } from "@simplifica-if/motor/eventos";
 import * as Schema from "effect/Schema";
 import { Rpc, RpcGroup } from "effect/rpc";

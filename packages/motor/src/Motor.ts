@@ -10,7 +10,6 @@ import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Layer from "effect/Layer";
-import * as Schema from "effect/Schema";
 import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
 import {
@@ -26,19 +25,12 @@ import {
   type SessaoDriver,
   type TurnoEmAndamento,
 } from "./Driver.ts";
+import { SessaoDesconhecida } from "./erros.ts";
 import type { Evento, Provider } from "./eventos.ts";
 import * as Resultados from "./resultados.ts";
 
 export * from "./Driver.ts";
 export * from "./eventos.ts";
-
-export class SessaoDesconhecida extends Schema.TaggedError<SessaoDesconhecida>()("SessaoDesconhecida", {
-  id: Schema.String,
-}) {
-  override get message(): string {
-    return `sessão desconhecida ou já encerrada: ${this.id}`;
-  }
-}
 
 export class Motor extends Context.Service<
   Motor,

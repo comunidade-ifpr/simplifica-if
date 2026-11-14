@@ -49,7 +49,8 @@ O código do T3 está em `src/t3/`, em inglês e na formatação do upstream, co
 
 - `src/Motor.ts`: o serviço `Motor` (`detectar`, `iniciarSessao`, `enviarMensagem`, `responderAprovacao`, `interromper`, `encerrar`). Cada sessão tem um `Scope`; `encerrar` o fecha e o processo do provider morre junto.
 - `src/eventos.ts`: os eventos normalizados (Effect Schema): `TextoParcial`, `TextoFinal`, `FerramentaIniciada`, `FerramentaConcluida`, `PedidoAprovacao`, `UsoTokens`, `Erro`, `FimTurno`.
-- `src/Driver.ts`: o contrato do driver, `ConfigSessao`, `ServidorMcp`, `DeteccaoProvider` (o que o driver detecta), `EstadoProvider` (a detecção mais `podeInstalar` e `podeEntrar`, que o `Motor.detectar` deriva de o driver ter `instalar` e `entrar`) e os erros.
+- `src/erros.ts` (`@simplifica-if/motor/erros`): os erros (`FalhaProvider`, `OperacaoNaoSuportada`, `SessaoDesconhecida`…) e a `Decisao`, só schemas, para os contratos do app e a interface; `Driver.ts` os reexporta.
+- `src/Driver.ts`: o contrato do driver, `ConfigSessao`, `ServidorMcp`, `DeteccaoProvider` (o que o driver detecta) e `EstadoProvider` (a detecção mais `podeInstalar` e `podeEntrar`, que o `Motor.detectar` deriva de o driver ter `instalar` e `entrar`).
 - `src/Canal.ts`: a fila do turno e os pedidos de aprovação pendentes, comum aos drivers.
 - `src/resultados.ts`: completa o resumo das ferramentas MCP com os `resultados` do servidor HTTP do app.
 - `src/drivers/{claude,codex,antigravity}.ts`: um driver por provider. O normalizador de cada um é uma função pura (`criarNormalizador*`), testada com gravações reais em `test/fixtures/`.
