@@ -143,6 +143,44 @@ describe("relógio", () => {
   });
 });
 
+describe("REVISAR_PPC_AGORA", () => {
+  /** Relógio do ambiente lido num processo novo, com fuso e `REVISAR_PPC_AGORA` fixos. */
+  function relogioEm(fuso: string, agora: string) {
+    const codigo =
+      `import { agoraIso, timestampSlug } from ${JSON.stringify(path.join(caminhos.appDir, "scripts", "rodada.ts"))};` +
+      "console.log(JSON.stringify([timestampSlug(), agoraIso()]));";
+    const processo = Bun.spawnSync(["bun", "-e", codigo], {
+      env: { ...process.env, TZ: fuso, REVISAR_PPC_AGORA: agora },
+    });
+    return { codigo: processo.exitCode, stdout: processo.stdout.toString(), stderr: processo.stderr.toString() };
+  }
+
+  test("data sem hora é meia-noite local, como no Python (`datetime.fromisoformat`)", () => {
+    for (const [fuso, deslocamento] of [
+      ["America/Sao_Paulo", "-03:00"],
+      ["Asia/Tokyo", "+09:00"],
+    ]) {
+      const { codigo, stdout, stderr } = relogioEm(fuso!, "2026-11-13");
+      expect(stderr).toBe("");
+      expect(codigo).toBe(0);
+      expect(JSON.parse(stdout)).toEqual(["2026-11-13t00-00-00", `2026-11-13T00:00:00${deslocamento}`]);
+    }
+  });
+
+  test("data-hora com fuso continua sendo o instante dado", () => {
+    const { stdout } = relogioEm("America/Sao_Paulo", "2026-11-13T12:34:56Z");
+    expect(JSON.parse(stdout)).toEqual(["2026-11-13t09-34-56", "2026-11-13T09:34:56-03:00"]);
+  });
+
+  test("valor inválido é recusado", () => {
+    for (const valor of ["13/11/2026", "2026-02-30", "Nov 13 2026"]) {
+      const { codigo, stderr } = relogioEm("America/Sao_Paulo", valor);
+      expect(codigo).not.toBe(0);
+      expect(stderr).toContain(`REVISAR_PPC_AGORA inválida: ${valor}`);
+    }
+  });
+});
+
 describe("preparar-documento", () => {
   test("cria a rodada a partir de Markdown", () => {
     const rodada = criarRodada();

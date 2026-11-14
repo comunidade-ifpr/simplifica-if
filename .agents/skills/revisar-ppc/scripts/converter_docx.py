@@ -12,6 +12,7 @@ from __future__ import annotations
 import contextlib
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -22,13 +23,26 @@ if str(SCRIPT_DIR) not in sys.path:
 from conversao_docx import ConversionService  # noqa: E402
 
 
+# Formato aceito em `REVISAR_PPC_AGORA`, o mesmo de `RE_AGORA` em `rodada.ts`.
+_RE_AGORA = re.compile(r"\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,6})?)?(?:Z|[+-]\d{2}:\d{2})?)?")
+
+
 def _fixar_relogio(instante: str) -> None:
-    """Fixa o `data_conversao` dos dados extraídos (como `REVISAR_PPC_AGORA` no TypeScript)."""
+    """Fixa o `data_conversao` dos dados extraídos (como `REVISAR_PPC_AGORA` no TypeScript).
+
+    Data sem hora é meia-noite local, e data-hora sem fuso é hora local, como em `rodada.ts`;
+    fora de `_RE_AGORA`, o valor é recusado.
+    """
     import datetime as dt
 
     from conversao_docx import markdown_writer
 
-    fixo = dt.datetime.fromisoformat(instante.replace("Z", "+00:00")).astimezone().replace(tzinfo=None)
+    if not _RE_AGORA.fullmatch(instante):
+        raise ValueError(f"REVISAR_PPC_AGORA inválida: {instante}")
+    try:
+        fixo = dt.datetime.fromisoformat(instante.replace("Z", "+00:00")).astimezone().replace(tzinfo=None)
+    except ValueError as erro:
+        raise ValueError(f"REVISAR_PPC_AGORA inválida: {instante}") from erro
 
     class Relogio(dt.datetime):
         @classmethod

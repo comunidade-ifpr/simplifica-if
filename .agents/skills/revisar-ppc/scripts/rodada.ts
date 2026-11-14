@@ -26,14 +26,28 @@ export const TAMANHO_GRUPO_PADRAO = TAMANHO_MAXIMO_GRUPO;
 export type Relogio = () => Date;
 
 /**
- * Relógio da linha de comando: a variável `REVISAR_PPC_AGORA` (data ISO 8601)
- * fixa o instante, para testes e diferenciais; sem ela, a hora do sistema.
+ * Formato aceito em `REVISAR_PPC_AGORA`, o mesmo de `_fixar_relogio` em `converter_docx.py`:
+ * `AAAA-MM-DD`, ou `AAAA-MM-DDTHH:MM[:SS[.ffffff]]` com fuso opcional (`Z` ou `±HH:MM`).
+ */
+const RE_AGORA = /^(\d{4})-(\d{2})-(\d{2})(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,6})?)?(?:Z|[+-]\d{2}:\d{2})?)?$/;
+
+/**
+ * Relógio da linha de comando: a variável `REVISAR_PPC_AGORA` (data ISO 8601, veja `RE_AGORA`)
+ * fixa o instante, para testes e diferenciais; sem ela, a hora do sistema. Como no Python
+ * (`datetime.fromisoformat(...).astimezone()`), data sem hora é meia-noite local e data-hora sem
+ * fuso é hora local; o resto é recusado.
  */
 export function relogioDoAmbiente(): Date {
   const fixo = process.env.REVISAR_PPC_AGORA;
   if (fixo) {
-    const data = new Date(fixo);
-    if (Number.isNaN(data.getTime())) throw new Error(`REVISAR_PPC_AGORA inválida: ${fixo}`);
+    const m = RE_AGORA.exec(fixo);
+    const [ano, mes, dia] = m ? [Number(m[1]), Number(m[2]), Number(m[3])] : [0, 0, 0];
+    // Dia que existe no calendário (`new Date` aceitaria 2026-02-30 como 2 de março).
+    const calendario = new Date(Date.UTC(ano, mes - 1, dia));
+    const diaValido = m && calendario.getUTCMonth() === mes - 1 && calendario.getUTCDate() === dia;
+    // `new Date("AAAA-MM-DD")` seria meia-noite UTC; a data sem hora é meia-noite local.
+    const data = !diaValido ? null : fixo.length === 10 ? new Date(ano, mes - 1, dia) : new Date(fixo);
+    if (!data || Number.isNaN(data.getTime())) throw new Error(`REVISAR_PPC_AGORA inválida: ${fixo}`);
     return data;
   }
   return new Date();
