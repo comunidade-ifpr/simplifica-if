@@ -79,7 +79,7 @@ Erros tipados: `Sql.FalhaNaConsulta` (`db/sql.ts`: o banco não corresponde ao e
 | `db/fontes-normativas.ts` | interface de carga da fase 5 (`LinhasNormativas`: dispositivos, relações, vigências, transições, correspondências), com o schema de cada linha, e os arquivos que ela lê |
 | `db/sql.ts`, `db/nodeSqliteClient.ts`, `db/conexao.ts` | consultas pelo `SqlClient` com as linhas decodificadas por Effect Schema (`Sql.todas`, `Sql.primeira`); o cliente do `node:sqlite` copiado do T3 (MIT); um `SqlClient` sobre um `DatabaseSync` já aberto |
 | `db/consultas.ts`, `db/consultas-normas.ts`, `db/citacoes.ts`, `db/pacote-contexto.ts` | as consultas dos serviços, Effects sobre o `SqlClient` (as da fase 5 em `consultas-normas.ts`) |
-| `cli.ts`, `normas/comandos.ts`, `db/comandos.ts` | a CLI `kb`, em `effect/cli`, sobre `layerRepositorio` |
+| `cli.ts`, `cli/*.ts` | a CLI `kb`, em `effect/cli`: comandos de normas (`cli/normas.ts`), de PPCs e cursos (`cli/ppcs.ts`) e `compilar` (`cli/compilar.ts`), sobre `layerRepositorio` |
 | `normas/citacoes-normas.ts` | citações resolvidas no texto das normas da base (dispositivos e preâmbulo), para o `impacto` e a tabela `normas_citacoes` |
 
 ## CLI

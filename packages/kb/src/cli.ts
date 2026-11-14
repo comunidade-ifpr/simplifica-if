@@ -1,141 +1,87 @@
 #!/usr/bin/env node
 /**
- * CLI `kb`: consultas determinísticas à base de conhecimento.
+ * CLI `kb`: consultas determinísticas à base de conhecimento, em `effect/cli`.
  *
  *   pnpm kb resolver "Resolução CNE/CP nº 1/2021, art. 20" [--json]
- *   pnpm kb citacoes br/cne-cp/res/2021/1 [--json] [--confianca-min 0.8]
- *   pnpm kb adequacao-art71 [--json] [--incluir-tecnologia]
- *   pnpm kb avaliar-resolvedor [--json]
+ *   pnpm kb buscar-secoes "acompanhamento de egressos" --cnct tecnico-em-agropecuaria [--json]
+ *   pnpm kb compilar [--destino tmp/kb.sqlite]
+ *   pnpm kb --help
  *
- * Comandos sobre o kb.sqlite (buscar-norma, buscar-secoes, cursos, ppc-fatos, pacote-contexto,
- * avaliar-busca): db/comandos.ts.
+ * Os comandos estão em `cli/normas.ts` (normas, vigência, relações, impacto), `cli/ppcs.ts` (PPCs,
+ * cursos, pacote de contexto) e `cli/compilar.ts`. Saídas sem relógio e com ordem estável: as
+ * mesmas fontes dão a mesma saída.
  *
- * Saídas sem relógio e com ordem estável: as mesmas fontes dão a mesma saída.
+ * Erros: o relatório padrão do `runMain` escreve no stdout e sujaria a saída `--json`, então ele fica
+ * desligado e o programa trata o canal de erro aqui. `EncerrarComCodigo` (o comando já imprimiu o
+ * resultado, como "dispositivo não encontrado") só dá o código de saída; erros de uso (`CliError`)
+ * já saem com a ajuda pelo `Command.run`; qualquer outro erro tipado vira `kb: <mensagem>` no stderr,
+ * e um defeito, o `Cause.pretty` no stderr. Todos terminam com código 1 (ou o de `EncerrarComCodigo`).
  */
-import { Command, InvalidArgumentError } from "commander";
-import { adequacaoArt71, INDICADORES, ROTULOS_INDICADOR } from "./adequacao/art71.ts";
-import { avaliarResolvedor } from "./avaliacao/resolvedor.ts";
-import { ehIdExterno, ehIdNorma, idDoAto } from "./normas/ids.ts";
-import { registroPadrao, resolucaoComEntrada } from "./normas/resolver.ts";
-import { ppcsQueCitam, relatorioCitacoes } from "./ppcs/citacoes.ts";
-import { registrarComandosNormas } from "./normas/comandos.ts";
-import { registrarComandosBanco } from "./db/comandos.ts";
+import * as NodeRuntime from "@effect/platform-node/NodeRuntime";
+import * as NodeServices from "@effect/platform-node/NodeServices";
+import * as Cause from "effect/Cause";
+import * as Console from "effect/Console";
+import * as Effect from "effect/Effect";
+import * as Option from "effect/Option";
+import * as CliError from "effect/cli/CliError";
+import * as Command from "effect/cli/Command";
+import { compilar } from "./cli/compilar.ts";
+import { ehEncerrarComCodigo } from "./cli/comum.ts";
+import {
+  avaliarResolvedorCmd,
+  buscarNorma,
+  correspondencia,
+  dispositivo,
+  impacto,
+  relacoes,
+  resolver,
+  vigencia,
+} from "./cli/normas.ts";
+import {
+  adequacaoArt71,
+  avaliarBuscaCmd,
+  buscarSecoes,
+  citacoes,
+  cursos,
+  pacoteContexto,
+  ppcFatos,
+} from "./cli/ppcs.ts";
 
-function json(valor: unknown): void {
-  process.stdout.write(`${JSON.stringify(valor, null, 2)}\n`);
-}
+const kb = Command.make("kb").pipe(
+  Command.withDescription("Consultas à base de conhecimento do IFPR (IDs canônicos de normas, citações em PPCs)."),
+  Command.withSubcommands([
+    resolver,
+    citacoes,
+    adequacaoArt71,
+    avaliarResolvedorCmd,
+    dispositivo,
+    vigencia,
+    relacoes,
+    correspondencia,
+    impacto,
+    buscarNorma,
+    buscarSecoes,
+    cursos,
+    ppcFatos,
+    pacoteContexto,
+    avaliarBuscaCmd,
+    compilar,
+  ]),
+);
 
-function confianca(valor: string): number {
-  const numero = Number(valor);
-  if (!Number.isFinite(numero) || numero < 0 || numero > 1) throw new InvalidArgumentError("use um número entre 0 e 1");
-  return numero;
-}
+/** Escreve no stderr o que a falha tem a dizer; o código de saída fica com o `runMain`. */
+const relatarFalha = (causa: Cause.Cause<unknown>): Effect.Effect<void> => {
+  if (Cause.hasInterruptsOnly(causa)) return Effect.void;
+  const erro = Cause.findErrorOption(causa);
+  if (Option.isNone(erro)) return Console.error(Cause.pretty(causa));
+  if (ehEncerrarComCodigo(erro.value) || CliError.isCliError(erro.value)) return Effect.void;
+  const mensagem = erro.value instanceof Error ? erro.value.message : String(erro.value);
+  return Console.error(`kb: ${mensagem}`);
+};
 
-const programa = new Command()
-  .name("kb")
-  .description("Consultas à base de conhecimento do IFPR (IDs canônicos de normas, citações em PPCs).")
-  .showHelpAfterError();
+const programa = Command.run(kb, { version: "0.1.0" }).pipe(
+  Effect.tapCause(relatarFalha),
+  Effect.provide(NodeServices.layer),
+);
 
-programa
-  .command("resolver")
-  .description("Resolve uma citação normativa para o ID canônico (e o dispositivo, se houver).")
-  .argument("<texto...>", "citação, como 'Res. CNE/CP nº 1/2021, art. 20' ou uma URL do Planalto/DOU")
-  .option("--json", "saída em JSON")
-  .action((partes: string[], opcoes: { json?: boolean }) => {
-    const texto = partes.join(" ");
-    const registro = registroPadrao();
-    const resultado = resolucaoComEntrada(texto, registro);
-    const entrada = resultado.id ? registro.obter(resultado.id) : undefined;
-    if (opcoes.json) return json(resultado);
-    if (!resultado.id) {
-      console.log(`não resolvida (${resultado.regra})`);
-      process.exitCode = 1;
-      return;
-    }
-    console.log(
-      resultado.id +
-        (resultado.dispositivos
-          ? ` ${resultado.dispositivos.join(" ")}`
-          : resultado.dispositivoId
-            ? ` ${resultado.dispositivoId}`
-            : ""),
-    );
-    console.log(`  regra: ${resultado.regra}; confiança: ${resultado.confianca}; situação: ${resultado.situacao}`);
-    if (entrada) console.log(`  ${entrada.title}${entrada.path ? ` — base-conhecimento/${entrada.path}` : ""}`);
-  });
-
-programa
-  .command("citacoes")
-  .description("Lista os PPCs convertidos que citam a norma <id>, com linha, trecho e regra.")
-  .argument("<id>", "ID canônico, como br/cne-cp/res/2021/1 (aceita #dispositivo)")
-  .option("--json", "saída em JSON")
-  .option("--confianca-min <n>", "ignora citações com confiança menor", confianca, 0)
-  .action((id: string, opcoes: { json?: boolean; confiancaMin: number }) => {
-    const [norma] = id.split("#");
-    if (!ehIdNorma(norma!) && !ehIdExterno(norma!)) {
-      programa.error(`ID fora do formato canônico: ${id} (ex.: br/cne-cp/res/2021/1)`);
-    }
-    const ppcs = ppcsQueCitam(id, { confiancaMinima: opcoes.confiancaMin });
-    const entrada = registroPadrao().obter(idDoAto(norma!));
-    const ocorrencias = ppcs.reduce((total, ppc) => total + ppc.ocorrencias.length, 0);
-    if (opcoes.json) return json(relatorioCitacoes(id, ppcs, registroPadrao()));
-    console.log(`${id}${entrada ? ` — ${entrada.title}` : ""}: ${ppcs.length} PPCs, ${ocorrencias} ocorrências`);
-    for (const ppc of ppcs) {
-      console.log(`\n${ppc.ppc} (${ppc.nivel}, ${ppc.tipo_oferta})`);
-      for (const o of ppc.ocorrencias) {
-        const dispositivo = o.dispositivos?.join(" ") ?? o.dispositivoId ?? "";
-        console.log(`  L${o.linha} [${o.regra} ${o.confianca}] ${o.trecho}${dispositivo ? ` ${dispositivo}` : ""}`);
-      }
-    }
-  });
-
-programa
-  .command("adequacao-art71")
-  .description("Cursos técnicos em oferta sujeitos ao art. 71 da Res. CNE/CP nº 2/2026, com a DCN que o PPC cita.")
-  .option("--json", "saída em JSON")
-  .option("--incluir-tecnologia", "inclui os cursos superiores de tecnologia (o art. 71 também os alcança)")
-  .action((opcoes: { json?: boolean; incluirTecnologia?: boolean }) => {
-    const relatorio = adequacaoArt71({ incluirTecnologia: opcoes.incluirTecnologia ?? false });
-    if (opcoes.json) return json(relatorio);
-    console.log(`Art. 71 da Res. CNE/CP nº 2/2026: ${relatorio.total} cursos alcançados`);
-    console.log(relatorio.criterio);
-    console.log("");
-    for (const indicador of INDICADORES) {
-      console.log(`${String(relatorio.totais[indicador]).padStart(4)}  ${ROTULOS_INDICADOR[indicador]}`);
-    }
-    for (const indicador of INDICADORES) {
-      const cursos = relatorio.cursos.filter((curso) => curso.indicador === indicador);
-      if (cursos.length === 0) continue;
-      console.log(`\n## ${ROTULOS_INDICADOR[indicador]} (${cursos.length})`);
-      for (const curso of cursos) {
-        const ano = curso.ppc_ano ? ` PPC ${curso.ppc_ano}` : "";
-        console.log(`  ${curso.curso} — ${curso.nome} (${curso.forma_oferta ?? "?"}${ano})`);
-      }
-    }
-  });
-
-programa
-  .command("avaliar-resolvedor")
-  .description("Mede precisão e recall do resolvedor no conjunto anotado (avaliacao/resolvedor/).")
-  .option("--json", "saída em JSON")
-  .action((opcoes: { json?: boolean }) => {
-    const resultado = avaliarResolvedor();
-    if (opcoes.json) return json(resultado);
-    console.log(
-      `${resultado.ppcs} PPCs, ${resultado.linhas} linhas, ${resultado.anotados} citações anotadas, ${resultado.emitidos} emitidas`,
-    );
-    console.log(
-      `precisão ${resultado.precisao}  recall ${resultado.recall}  dispositivos ${resultado.dispositivos.taxa}`,
-    );
-    for (const problema of resultado.problemas) console.log(`PROBLEMA: ${problema}`);
-    for (const erro of resultado.erros) {
-      console.log(
-        `${erro.tipo.padEnd(15)} ${erro.id.padEnd(38)} ${(erro.regra ?? "").padEnd(24)} ${erro.ppc} L${erro.linha}`,
-      );
-    }
-  });
-
-registrarComandosNormas(programa);
-registrarComandosBanco(programa);
-
-await programa.parseAsync();
+NodeRuntime.runMain(programa, { disableErrorReporting: true });

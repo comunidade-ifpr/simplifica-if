@@ -9,11 +9,11 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import type * as NodeSqlite from "node:sqlite";
 import { parse } from "yaml";
 import type { Sinonimos } from "../busca/sinonimos.ts";
 import { semDiacriticos } from "../busca/tokens.ts";
-import { buscarSecoes, type FiltrosSecoes, type ModoBusca } from "../db/consultas.ts";
+import * as Ppcs from "../Ppcs.ts";
+import type { FiltrosSecoes, ModoBusca } from "../db/consultas.ts";
 import { raizRepositorio } from "../normas/registro.ts";
 
 const esquemaConsultas = Schema.Struct({
@@ -64,12 +64,35 @@ export interface ResultadoAvaliacaoBusca {
   }[];
 }
 
-export function avaliarBusca(
-  db: NodeSqlite.DatabaseSync,
-  opcoes: { lexico: Sinonimos; k?: number; conjunto?: ConsultasRotuladas },
-): ResultadoAvaliacaoBusca {
+/** Léxico sem grupos nem tipos: os modos `simples` e `radicais` medem a busca sem sinônimos. */
+const LEXICO_VAZIO: Sinonimos = { tipos: {}, grupos: [] };
+
+export class ConsultasRotuladasIlegiveis extends Schema.TaggedError<ConsultasRotuladasIlegiveis>()(
+  "ConsultasRotuladasIlegiveis",
+  { caminho: Schema.String, cause: Schema.Defect() },
+) {
+  override get message(): string {
+    return `não foi possível ler o conjunto rotulado da busca de seções (${this.caminho})`;
+  }
+}
+
+export const ehConsultasRotuladasIlegiveis = Schema.is(ConsultasRotuladasIlegiveis);
+
+/**
+ * Recall@k de cada consulta rotulada nos três modos, pelo `Ppcs.buscarSecoes`. O modo `completo` usa
+ * o léxico de `FontesNormativas` (ou `opcoes.lexico`); os outros, um léxico vazio.
+ */
+export const avaliarBusca = Effect.fn("avaliacao.avaliarBusca")(function* (
+  opcoes: { readonly lexico?: Sinonimos; readonly k?: number; readonly conjunto?: ConsultasRotuladas } = {},
+) {
+  const ppcs = yield* Ppcs.Ppcs;
   const k = opcoes.k ?? 10;
-  const conjunto = opcoes.conjunto ?? lerConsultas();
+  const conjunto =
+    opcoes.conjunto ??
+    (yield* Effect.try({
+      try: () => lerConsultas(),
+      catch: (cause) => new ConsultasRotuladasIlegiveis({ caminho: caminhoConsultas(), cause }),
+    }));
   const somas: Record<ModoBusca, number> = { simples: 0, radicais: 0, completo: 0 };
   const detalhes: ResultadoAvaliacaoBusca["detalhes"] = [];
   for (const c of conjunto.consultas) {
@@ -84,7 +107,12 @@ export function avaliarBusca(
     const recall = {} as Record<ModoBusca, number>;
     const faltando = {} as Record<ModoBusca, string[]>;
     for (const modo of MODOS) {
-      const achados = buscarSecoes(db, c.consulta, filtros, { limite: k, modo, lexico: opcoes.lexico });
+      const lexico = modo === "completo" ? opcoes.lexico : LEXICO_VAZIO;
+      const achados = yield* ppcs.buscarSecoes(c.consulta, filtros, {
+        limite: k,
+        modo,
+        ...(lexico ? { lexico } : {}),
+      });
       const perdidas = c.esperadas.filter(
         (e) => !achados.some((a) => a.ppc === `ppc:${e.ppc}` && normalizar(a.titulo).includes(normalizar(e.titulo))),
       );
@@ -97,11 +125,12 @@ export function avaliarBusca(
   }
   const n = conjunto.consultas.length;
   const media = (modo: ModoBusca) => Math.round((somas[modo] / n) * 1000) / 1000;
-  return {
+  const resultado: ResultadoAvaliacaoBusca = {
     k,
     consultas: n,
     recall: { simples: media("simples"), radicais: media("radicais"), completo: media("completo") },
     meta: 0.8,
     detalhes,
   };
-}
+  return resultado;
+});

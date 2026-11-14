@@ -9,7 +9,7 @@
     "base:site": "node scripts/gerar_site.ts",
     "base:tipos": "node scripts/gerar_tipos_schemas.ts",
     "kb": "node packages/kb/src/cli.ts",
-    "kb:compilar": "node packages/kb/src/db/compilar.ts",
+    "kb:compilar": "node packages/kb/src/cli.ts compilar",
     "mcp": "node packages/mcp/src/cli.ts",
     "mcp:instrucoes": "node packages/mcp/scripts/gerar-instrucoes.ts",
     "mcp:executavel": "node packages/mcp/scripts/construir-executavel.ts",
