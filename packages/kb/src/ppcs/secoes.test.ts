@@ -5,6 +5,8 @@ import {
   limparTitulo,
   numeracaoDoTitulo,
   palavrasDeCampi,
+  secoesComChave,
+  secoesIndexadas,
   segmentarPpc,
   TAXONOMIAS,
   taxonomiaDoNivel,
@@ -152,5 +154,37 @@ describe("texto integral pelas linhas", () => {
     expect(textoDaSecao(md, 9, 9)).toBe("");
     expect(() => textoDaSecao(md, 7, 4)).toThrow(RangeError);
     expect(() => textoDaSecao(md, 4, 99)).toThrow(RangeError);
+  });
+});
+
+describe("chaves das seções", () => {
+  const md = [
+    "## **PROJETO PEDAGÓGICO DO CURSO TÉCNICO EM INFORMÁTICA FORMA DE OFERTA: INTEGRADO**",
+    "",
+    "## 1 IDENTIFICAÇÃO",
+    "",
+    "## 1.1 Denominação",
+    "",
+    "Técnico em Informática",
+    "",
+    "## 1.2 Forma de oferta",
+    "",
+    "Integrado ao ensino médio, na modalidade presencial, com matrícula anual por série.",
+    "",
+    "## 2 ESTÁGIO",
+    "",
+    "O estágio supervisionado é não obrigatório e segue o regulamento de estágio do campus.",
+  ].join("\n");
+
+  test("as indexáveis numeram como o índice; as outras, numa série própria", () => {
+    const todas = secoesComChave(md, "tecnico");
+    expect(todas.map((s) => [s.chave, s.indexada])).toEqual([
+      ["pretextual-x1", false],
+      ["identificacao-x1", false],
+      ["identificacao-x2", false],
+      ["formato_oferta-1", true],
+      ["estagio_praticas-1", true],
+    ]);
+    expect(secoesIndexadas(md, "tecnico").map((s) => s.chave)).toEqual(["formato_oferta-1", "estagio_praticas-1"]);
   });
 });

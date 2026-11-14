@@ -17,6 +17,7 @@ import {
   textoDe,
   textoOuVazio,
 } from "@simplifica-if/kb/json";
+import { lerTopicosSecoes } from "@simplifica-if/kb/db/pacote-contexto";
 import { ehIdDispositivo, RE_REFERENCIA } from "@simplifica-if/kb/normas/ids";
 import {
   type FonteReferencia,
@@ -79,6 +80,36 @@ function conjuntoOrdenado(valores: Iterable<string>): string {
   return representar(ordenarTextos(new Set(valores)));
 }
 
+/**
+ * Confere o mapa tópico → tipos de seção do kb (`packages/kb/dados/topicos-secoes.yaml`), que decide
+ * as seções do PPC de cada grupo de sub-agente: todo tópico da taxonomia tem uma entrada (lista vazia
+ * vale) e toda entrada é um tópico. Sem o arquivo (skill fora do repositório), não confere.
+ */
+export function validarTopicosSecoes(idsTopicos: ReadonlySet<string>, caminhos: CaminhosAnalise): string[] {
+  const arquivo = path.join(
+    path.dirname(caminhos.baseConhecimentoDir),
+    "packages",
+    "kb",
+    "dados",
+    "topicos-secoes.yaml",
+  );
+  if (!existsSync(arquivo)) return [];
+  let mapa: Record<string, string[]>;
+  try {
+    mapa = lerTopicosSecoes(arquivo);
+  } catch (erro) {
+    return [`${arquivo}: inválido: ${erro instanceof Error ? erro.message : String(erro)}`];
+  }
+  const erros: string[] = [];
+  for (const id of ordenarTextos([...idsTopicos].filter((id) => !Object.hasOwn(mapa, id)))) {
+    erros.push(`${arquivo}: tópico sem tipos de seção: ${id}`);
+  }
+  for (const id of ordenarTextos(Object.keys(mapa).filter((id) => !idsTopicos.has(id)))) {
+    erros.push(`${arquivo}: tópico desconhecido: ${id}`);
+  }
+  return erros;
+}
+
 /** Confere `topicos-fichas.json` contra as fichas e os `topicos_tematicos` de cada ficha. */
 export function validarTopicosFichas(
   fichasPorId: Map<string, Ficha>,
@@ -137,6 +168,7 @@ export function validarTopicosFichas(
 
   const faltantes = ordenarTextos([...fichasPorId.keys()].filter((fichaId) => !fichasCobertas.has(fichaId)));
   if (faltantes.length) erros.push(`${arquivo}: fichas sem tópico temático: ${faltantes.join(", ")}`);
+  erros.push(...validarTopicosSecoes(idsTopicos, caminhos));
 
   for (const fichaId of ordenarTextos(fichasPorId.keys())) {
     const ficha = fichasPorId.get(fichaId)!;

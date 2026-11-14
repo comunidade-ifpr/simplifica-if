@@ -529,6 +529,50 @@ export function segmentarPpc(
   return secoes;
 }
 
+/**
+ * Seção com chave estável: `<tipo>-<n>` (n-ésima do tipo, na ordem do documento) para as que entram
+ * no índice; `<tipo>-x<n>` para as que ficam fora dele (`pretextual`, `outros` ou texto limpo curto).
+ */
+export type SecaoComChave = SecaoPpc & { chave: string; indexada: boolean };
+export type SecaoIndexada = SecaoComChave;
+
+/** A seção entra no índice publicado: tipo indexado e texto limpo com pelo menos `MINIMO_CARACTERES_SECAO`. */
+export function secaoIndexavel(secao: Pick<SecaoPpc, "tipo" | "textoLimpo">): boolean {
+  return !TIPOS_NAO_INDEXADOS.has(secao.tipo) && contarCaracteres(secao.textoLimpo) >= MINIMO_CARACTERES_SECAO;
+}
+
+/**
+ * Todas as seções de um PPC, com a chave: as indexáveis numeradas como no índice publicado (a chave é
+ * a parte do ID depois de `#`, `curitiba/tecnico-em-enfermagem#estagio_praticas-2`), as outras numa
+ * série própria (`identificacao-x1`, `pretextual-x1`), que não desloca a numeração do índice.
+ */
+export function secoesComChave(
+  markdown: string,
+  taxonomia: NomeTaxonomia,
+  palavrasCampi: ReadonlySet<string> = new Set(),
+): SecaoComChave[] {
+  const contadores = new Map<string, number>();
+  return segmentarPpc(markdown, taxonomia, palavrasCampi).map((secao) => {
+    const indexada = secaoIndexavel(secao);
+    const serie = indexada ? secao.tipo : `${secao.tipo}~`;
+    const contador = (contadores.get(serie) ?? 0) + 1;
+    contadores.set(serie, contador);
+    return { ...secao, chave: indexada ? `${secao.tipo}-${contador}` : `${secao.tipo}-x${contador}`, indexada };
+  });
+}
+
+/**
+ * Seções de um PPC que entram no índice de seções (`secaoIndexavel`), com a chave do índice. É o
+ * mesmo recorte do índice publicado (`scripts/base/indice-ppcs.ts`).
+ */
+export function secoesIndexadas(
+  markdown: string,
+  taxonomia: NomeTaxonomia,
+  palavrasCampi: ReadonlySet<string> = new Set(),
+): SecaoIndexada[] {
+  return secoesComChave(markdown, taxonomia, palavrasCampi).filter((secao) => secao.indexada);
+}
+
 /** Limite do `preview` de cada seção no índice publicado (o texto integral fica no Markdown). */
 export const LIMITE_PREVIEW_SECAO = 500;
 

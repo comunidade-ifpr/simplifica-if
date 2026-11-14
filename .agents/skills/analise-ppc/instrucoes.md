@@ -28,19 +28,34 @@ bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts preparar-prompts-subag
 
 Depois disso, o agente principal deve:
 
-1. Ler `arquivos-suporte/PPC.md`.
-2. Ler `arquivos-suporte/grupos-subagents.json`.
-3. Ler `prompts/subagent-lote-fichas.md`.
-4. Preferencialmente ler os pacotes prontos em `arquivos-suporte/prompts-subagents/*.md`.
-5. Spawnar um sub-agente por grupo.
-6. Passar a cada sub-agente o pacote do grupo ou, de forma equivalente, o PPC completo, o prompt de trabalho, as fichas do grupo e os blocos de `contextos` do grupo, incluindo `contextos.fundamentacao_normativa` quando presente.
-7. Coletar as respostas em `arquivos-suporte/resultados-subagents.json`.
-8. Fazer a etapa de validações cruzadas usando `prompts/sintese-transversal.md`, o PPC completo, todos os resultados, `cnct_contexto`, `contexto_estrutural` e `validacoes_cruzadas`; salvar o retorno em `alertas_transversais` dentro de `resultados-subagents.json`.
-9. Gerar o relatório:
+1. Ler `arquivos-suporte/grupos-subagents.json` (ou só o resumo impresso por `montar-grupos-subagents`).
+2. Ler `prompts/subagent-lote-fichas.md`.
+3. Ler os pacotes prontos em `arquivos-suporte/prompts-subagents/*.md` (um por grupo; `manifest.json` lista os arquivos, o tópico e o tamanho de cada um).
+4. Spawnar um sub-agente por grupo.
+5. Passar a cada sub-agente o pacote do grupo. De forma equivalente: o prompt de trabalho, as fichas do grupo, os blocos de `contextos` e o PPC do escopo do grupo: no escopo `secoes`, as seções listadas em `contextos.ppc.secoes` (linhas de `PPC.md`); no escopo `completo` (grupo `transversal`), o `PPC.md` inteiro.
+6. Coletar as respostas em `arquivos-suporte/resultados-subagents.json`.
+7. Fazer a etapa de validações cruzadas usando `prompts/sintese-transversal.md`, o PPC completo, todos os resultados, `cnct_contexto`, `contexto_estrutural`, `fundamentacao_normativa` (do topo de `grupos-subagents.json`, com todos os marcos) e `validacoes_cruzadas`; salvar o retorno em `alertas_transversais` dentro de `resultados-subagents.json`.
+8. Gerar o relatório:
 
 ```bash
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-relatorio-html --rodada-dir .agents/skills/analise-ppc/output/<rodada> --resultados resultados-subagents.json
 ```
+
+## Grupos por tópico e contexto de cada grupo
+
+`montar-grupos-subagents` monta um grupo por tópico de `base-analise/topicos-fichas.json`, na ordem da taxonomia, e um grupo `transversal` por último:
+
+- cada ficha entra uma vez, no grupo do seu tópico principal, o mais específico (menos fichas na taxonomia) dos seus `topicos_tematicos`; no empate, o primeiro na taxonomia;
+- as fichas com `tipo_escopo: transversal` vão no grupo `transversal`, que recebe o `PPC.md` inteiro (`escopo_ppc: "completo"`);
+- `--tamanho-grupo` (padrão 20) é o máximo de fichas por grupo; tópico maior vira partes equilibradas (`parte`, `partes`).
+
+Cada grupo traz `topico`, `topico_titulo`, `parte`, `partes`, `escopo_ppc` e, em `contextos`:
+
+- `ppc`: o escopo, o caminho do `PPC.md`, os tópicos das fichas do grupo e as seções selecionadas (`id` como no índice de seções, `tipo`, `titulo`, `linha_inicio`, `linha_fim`, `caracteres` e `motivo`: `topico:<id>` pelo tipo da seção ou `busca:<ficha>:<consulta>`). O `PPC.md` é segmentado com a segmentação e a taxonomia técnica do índice de seções (`packages/kb`), num banco em memória, porque o PPC analisado pode não estar na base; as seções dos tipos ligados aos tópicos das fichas (`packages/kb/dados/topicos-secoes.yaml`) entram inteiras, mais a melhor seção de cada consulta das fichas;
+- `cnct`, `estrutura` e `anexos_visuais`, como antes;
+- `fundamentacao_normativa`: protocolo, manifestos e status, mais o texto dos dispositivos citados pelas fichas do grupo (`normas`, com caput e subordinados), as regras de transição aplicáveis (`transicoes`, na `data_referencia`), os marcos (`marcos_normativos`, com `citacoes_no_ppc`) e, nos grupos com fichas de `referencias_normativas`, todas as citações normativas do PPC (`citacoes_do_ppc`). Tudo vem do `kb.sqlite`, que a CLI recompila sozinha quando está velho.
+
+No pacote de prompt, o escopo `secoes` aparece como `## PPC.md: seções do grupo`, cada seção com um comentário `<!-- seção <id> · linhas a-b · motivo -->` e o texto do `PPC.md`; o JSON do grupo vai sem a lista de seções, que já está no bloco do PPC.
 
 ## Contrato de resultados
 
@@ -108,7 +123,7 @@ O campo `fundamentacao_normativa` é opcional, mas deve ser usado quando a ficha
 arquivos-suporte/cnct-contexto.json
 ```
 
-O mesmo contexto aparece no topo de `grupos-subagents.json` como `cnct_contexto`. Grupos com fichas que mencionam CNCT ou `contexto_estrutural.cnct` recebem também `requer_contexto_cnct: true` e `contextos.cnct`. Passe esse bloco ao sub-agente junto com o PPC e as fichas do grupo.
+O mesmo contexto aparece no topo de `grupos-subagents.json` como `cnct_contexto`. Grupos com fichas que mencionam CNCT ou `contexto_estrutural.cnct` recebem também `requer_contexto_cnct: true` e `contextos.cnct`. Passe esse bloco ao sub-agente junto com o PPC e as fichas do grupo. O curso identificado é o mesmo registro da tabela `cnct` do `kb.sqlite` (`cnct:<id>`).
 
 ## Validações cruzadas
 
@@ -132,7 +147,7 @@ Esse bloco resume artefatos extraídos do DOCX, como identificação, matriz cur
 
 ## Fundamentação normativa
 
-`montar-grupos-subagents` também inclui `contextos.fundamentacao_normativa` nos grupos com fichas que citam ou dependem de base legal. Esse contexto aponta para `base-conhecimento/` e para a skill `verificar-fundamentacao-normativa`.
+`montar-grupos-subagents` também inclui `contextos.fundamentacao_normativa` nos grupos com fichas que citam ou dependem de base legal. Esse contexto traz o texto dos dispositivos citados pelas fichas, as regras de transição e os marcos (do `kb.sqlite`) e aponta para `base-conhecimento/` e para a skill `verificar-fundamentacao-normativa`.
 
 Quando um PPC afirmar algo sobre lei, resolução, portaria, nota técnica, CNCT ou regulamento, o sub-agente deve consultar a fonte antes de validar a alegação. A saída da ficha deve registrar os achados no campo `fundamentacao_normativa` usando os status:
 
@@ -154,7 +169,7 @@ Para reavaliar fichas específicas sem refazer todos os grupos:
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts montar-grupo-avulso --rodada-dir .agents/skills/analise-ppc/output/<rodada> --ficha-id CT-IDENT-01
 ```
 
-Spawnar um sub-agente com o grupo avulso retornado, salvar a resposta em `arquivos-suporte/resultado-avulso.json` e mesclar:
+O grupo avulso usa o mesmo pacote por tópico: as seções do `PPC.md` dos tópicos das fichas pedidas (ou o PPC inteiro, se alguma for transversal), as normas, as transições e os marcos. O comando grava `grupos-avulsos/<grupo>.json` e o pacote de prompt `grupos-avulsos/<grupo>.md` (`prompt_subagent_path`). Spawnar um sub-agente com esse pacote, salvar a resposta em `arquivos-suporte/resultado-avulso.json` e mesclar:
 
 ```bash
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts mesclar-resultados-avulsos --rodada-dir .agents/skills/analise-ppc/output/<rodada> --resultados-avulsos resultado-avulso.json

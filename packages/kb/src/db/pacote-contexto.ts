@@ -3,8 +3,9 @@
  * em vez do PPC inteiro mais os manifestos.
  *
  * Tarefa: uma ficha (`CT-CURR-12`), várias separadas por vírgula, um tópico de
- * `topicos-fichas.json` (`estagio`), um grupo da rodada (`grupo-001`: as fichas em ordem de ID,
- * de 20 em 20, como `agruparFichas` da skill) ou `todas`.
+ * `topicos-fichas.json` (`estagio`), um grupo da rodada (`grupo-001`: o n-ésimo grupo por tópico de
+ * `agruparPorTopico`, o mesmo da skill) ou `todas`. O PPC é um da base (`campus/curso`) ou, por
+ * `pacoteContextoAvulso`, um Markdown fora dela, segmentado em memória (`bancoDoPpcAvulso`).
  *
  * O pacote traz:
  * - o PPC (ID, arquivo, curso, forma, ano) e o curso do CNCT inteiro;
@@ -28,7 +29,9 @@ import { parse } from "yaml";
 import { z } from "zod";
 import type { Sinonimos } from "../busca/sinonimos.ts";
 import { idDoAto } from "../normas/ids.ts";
+import { palavrasDeCampi } from "../ppcs/secoes.ts";
 import { compararTexto } from "../texto.ts";
+import { bancoDoPpcAvulso } from "./compilar.ts";
 import { buscarSecoes, fatosDosPpcs, obterNorma, secoesDoPpc } from "./consultas.ts";
 import {
   dataReferenciaBanco,
@@ -47,16 +50,116 @@ export function lerTopicosSecoes(
   return esquemaTopicosSecoes.parse(parse(readFileSync(caminho, "utf-8"), { schema: "failsafe" }) ?? {});
 }
 
-const TAMANHO_GRUPO = 20;
+/** Tamanho máximo de um grupo de sub-agente da `analise-ppc` (fichas por grupo). */
+export const TAMANHO_MAXIMO_GRUPO = 20;
+/** Grupo das fichas de escopo transversal, que recebem o PPC inteiro. */
+export const TOPICO_TRANSVERSAL = "transversal";
+
+const esquemaTopicosFichas = z.looseObject({
+  topicos: z.array(
+    z.looseObject({
+      id: z.string(),
+      titulo: z.string().optional(),
+      tipo_escopo: z.string().optional(),
+      fichas: z.array(z.string()).optional(),
+    }),
+  ),
+});
+/** Tópico de `topicos-fichas.json`, na ordem da taxonomia. */
+export type TopicoFichas = z.output<typeof esquemaTopicosFichas>["topicos"][number];
+
+/** Tópicos de `.agents/skills/analise-ppc/base-analise/topicos-fichas.json`, na ordem do arquivo. */
+export function lerTopicosFichas(raiz: string): TopicoFichas[] {
+  const arquivo = path.join(raiz, ".agents", "skills", "analise-ppc", "base-analise", "topicos-fichas.json");
+  return esquemaTopicosFichas.parse(JSON.parse(readFileSync(arquivo, "utf-8"))).topicos;
+}
+
+/** Ficha como entra no pacote e no agrupamento: o JSON da ficha (`id`, tópicos, consultas, referências). */
+export type FichaPacote = { id: string } & Record<string, unknown>;
+
+function textos(valor: unknown): string[] {
+  return Array.isArray(valor) ? valor.filter((v): v is string => typeof v === "string") : [];
+}
+
+/**
+ * Tópico principal de uma ficha, o que decide o grupo do sub-agente:
+ * - ficha com `tipo_escopo: transversal` (as de síntese, que cruzam o PPC inteiro) ou sem tópico
+ *   conhecido → `transversal`;
+ * - senão, dos `topicos_tematicos` da ficha, o mais específico: o de menos fichas na taxonomia; no
+ *   empate, o primeiro na ordem de `topicos-fichas.json`.
+ * A ficha multitemática fica num grupo só, mas o pacote do grupo traz as seções de todos os tópicos
+ * dela (`secoesDoPacote`).
+ */
+export function topicoPrincipal(ficha: FichaPacote, topicos: readonly TopicoFichas[]): string {
+  if (ficha.tipo_escopo === "transversal") return TOPICO_TRANSVERSAL;
+  const proprios = new Set(textos(ficha.topicos_tematicos));
+  const candidatos = topicos
+    .map((topico, ordem) => ({ id: topico.id, ordem, total: topico.fichas?.length ?? 0 }))
+    .filter((topico) => proprios.has(topico.id));
+  if (!candidatos.length) return TOPICO_TRANSVERSAL;
+  candidatos.sort((a, b) => a.total - b.total || a.ordem - b.ordem);
+  return candidatos[0]!.id;
+}
+
+/** Grupo de fichas de um tópico (ou parte dele) para um sub-agente. */
+export interface GrupoDeTopico<F extends FichaPacote = FichaPacote> {
+  topico: string;
+  topico_titulo: string;
+  /** Parte do tópico (1 a `partes`) quando ele passa do tamanho máximo. */
+  parte: number;
+  partes: number;
+  /** `secoes`: o pacote traz as seções do PPC dos tópicos das fichas; `completo`: o PPC inteiro. */
+  escopo: "secoes" | "completo";
+  fichas: F[];
+}
+
+/**
+ * Grupos de sub-agente por tópico: cada ficha entra uma vez, no grupo do seu tópico principal
+ * (`topicoPrincipal`). Os grupos seguem a ordem de `topicos-fichas.json`, com o `transversal` por
+ * último; dentro do grupo, as fichas vão em ordem de ID. Tópico com mais fichas que
+ * `tamanhoMaximo` é dividido em partes de tamanho equilibrado (14 com máximo 10 → 7 + 7).
+ */
+export function agruparPorTopico<F extends FichaPacote>(
+  fichas: readonly F[],
+  topicos: readonly TopicoFichas[],
+  tamanhoMaximo: number = TAMANHO_MAXIMO_GRUPO,
+): GrupoDeTopico<F>[] {
+  if (!Number.isInteger(tamanhoMaximo) || tamanhoMaximo <= 0) {
+    throw new Error("O tamanho do grupo precisa ser maior que zero.");
+  }
+  const porTopico = new Map<string, F[]>();
+  for (const ficha of [...fichas].sort((a, b) => compararTexto(a.id, b.id))) {
+    const topico = topicoPrincipal(ficha, topicos);
+    porTopico.set(topico, [...(porTopico.get(topico) ?? []), ficha]);
+  }
+  const ordem = [...topicos.map((t) => t.id).filter((id) => id !== TOPICO_TRANSVERSAL), TOPICO_TRANSVERSAL];
+  const titulos = new Map(topicos.map((t) => [t.id, t.titulo ?? t.id]));
+  titulos.set(TOPICO_TRANSVERSAL, "Fichas transversais (PPC completo)");
+  const grupos: GrupoDeTopico<F>[] = [];
+  for (const topico of ordem) {
+    const lista = porTopico.get(topico);
+    if (!lista?.length) continue;
+    const partes = Math.ceil(lista.length / tamanhoMaximo);
+    const base = Math.floor(lista.length / partes);
+    const sobra = lista.length % partes;
+    let inicio = 0;
+    for (let parte = 1; parte <= partes; parte += 1) {
+      const tamanho = base + (parte <= sobra ? 1 : 0);
+      grupos.push({
+        topico,
+        topico_titulo: titulos.get(topico)!,
+        parte,
+        partes,
+        escopo: topico === TOPICO_TRANSVERSAL ? "completo" : "secoes",
+        fichas: lista.slice(inicio, inicio + tamanho),
+      });
+      inicio += tamanho;
+    }
+  }
+  return grupos;
+}
 
 const esquemaFicha = z.strictObject({ id: z.string(), path: z.string(), dados_json: z.string() });
-const esquemaRef = z.strictObject({
-  ficha_id: z.string(),
-  ref: z.string(),
-  dispositivo: z.string().nullable(),
-  papel: z.string(),
-  nota: z.string().nullable(),
-});
 const esquemaPpc = z.strictObject({
   id: z.string(),
   curso_nome: z.string(),
@@ -86,9 +189,22 @@ const esquemaCitacao = z.strictObject({
   secao_tipo: z.string().nullable(),
   regra: z.string(),
 });
+type CitacaoPpc = z.output<typeof esquemaCitacao>;
 
-/** IDs das fichas de uma tarefa. */
-export function fichasDaTarefa(db: Database, tarefa: string): string[] {
+/** Fichas do banco (JSON da ficha), em ordem de ID. */
+export function fichasDoBanco(db: Database, ids?: readonly string[]): FichaPacote[] {
+  const filtro = ids ? ` WHERE id IN (${ids.map(() => "?").join(", ")})` : "";
+  return z
+    .array(esquemaFicha)
+    .parse(db.query(`SELECT id, path, dados_json FROM fichas${filtro} ORDER BY id`).all(...(ids ?? [])))
+    .map((f) => JSON.parse(f.dados_json) as FichaPacote);
+}
+
+/**
+ * IDs das fichas de uma tarefa. `grupo-NNN` é o n-ésimo grupo por tópico da `analise-ppc`
+ * (`agruparPorTopico` com `topicos`, o tamanho máximo padrão e todas as fichas do banco).
+ */
+export function fichasDaTarefa(db: Database, tarefa: string, topicos?: readonly TopicoFichas[]): string[] {
   const todas = z
     .array(z.strictObject({ id: z.string() }))
     .parse(db.query("SELECT id FROM fichas").all())
@@ -97,10 +213,11 @@ export function fichasDaTarefa(db: Database, tarefa: string): string[] {
   if (tarefa === "todas") return todas;
   const grupo = /^grupo-(\d{3})$/.exec(tarefa);
   if (grupo) {
-    const indice = Number(grupo[1]) - 1;
-    const fichas = todas.slice(indice * TAMANHO_GRUPO, (indice + 1) * TAMANHO_GRUPO);
-    if (!fichas.length) throw new Error(`grupo inexistente: ${tarefa} (há ${Math.ceil(todas.length / TAMANHO_GRUPO)})`);
-    return fichas;
+    if (!topicos) throw new Error("grupo-NNN exige os tópicos de topicos-fichas.json");
+    const grupos = agruparPorTopico(fichasDoBanco(db), topicos);
+    const escolhido = grupos[Number(grupo[1]) - 1];
+    if (!escolhido) throw new Error(`grupo inexistente: ${tarefa} (há ${grupos.length})`);
+    return escolhido.fichas.map((f) => f.id);
   }
   const topico = z
     .array(z.strictObject({ ficha_id: z.string() }))
@@ -170,100 +287,103 @@ function paraPacote(trecho: TrechoDispositivo, citados: string[], fichas: string
   };
 }
 
+/** Norma citada pelas fichas, com o texto dos dispositivos citados. */
+export interface NormaDoPacote {
+  ref: string;
+  titulo: string | null;
+  status_vigencia: string | null;
+  path: string | null;
+  fichas: string[];
+  /** Dispositivos citados, com o texto, na ordem do arquivo. */
+  dispositivos: DispositivoDoPacote[];
+  /** Dispositivos citados que não estão no texto da base (stub, por exemplo). */
+  sem_texto: string[];
+}
+
+/** Marco normativo ligado às normas das fichas ou às citadas pelo PPC. */
+export interface MarcoDoPacote {
+  marco: string;
+  tema: string;
+  vigente: string;
+  normas: unknown;
+  transicao: string | null;
+  orientacao_analise: string | null;
+  path: string;
+  citacoes_no_ppc: CitacaoPpc[];
+}
+
+/** Seção do PPC no pacote, com o texto integral e por que entrou (`topico:<id>`, `busca:<ficha>:<consulta>`). */
+export interface SecaoDoPacote {
+  id: string;
+  tipo: string;
+  titulo: string;
+  path: string;
+  linha_inicio: number;
+  linha_fim: number;
+  motivo: string[];
+  texto: string;
+}
+
 export interface PacoteContexto {
   tarefa: string;
   fichas_ids: string[];
   ppc: z.output<typeof esquemaPpc> & { path: string };
   cnct: unknown;
   fichas: unknown[];
-  normas: {
-    ref: string;
-    titulo: string | null;
-    status_vigencia: string | null;
-    path: string | null;
-    fichas: string[];
-    /** Dispositivos citados, com o texto, na ordem do arquivo. */
-    dispositivos: DispositivoDoPacote[];
-    /** Dispositivos citados que não estão no texto da base (stub, por exemplo). */
-    sem_texto: string[];
-  }[];
-  marcos: {
-    marco: string;
-    tema: string;
-    vigente: string;
-    normas: unknown;
-    transicao: string | null;
-    orientacao_analise: string | null;
-    path: string;
-    citacoes_no_ppc: z.output<typeof esquemaCitacao>[];
-  }[];
+  normas: NormaDoPacote[];
+  marcos: MarcoDoPacote[];
   /** Data da situação das regras de transição (`data_referencia` de `config/vigencia.yaml`). */
   data_referencia: string;
   /** Regras de transição, com a situação em `data_referencia` e o texto do dispositivo que as estabelece. */
   transicoes: TransicaoDoPacote[];
-  secoes: {
-    id: string;
-    tipo: string;
-    titulo: string;
-    path: string;
-    linha_inicio: number;
-    linha_fim: number;
-    motivo: string[];
-    texto: string;
-  }[];
+  secoes: SecaoDoPacote[];
   fatos: unknown;
   tamanho: { caracteres: number; secoes: number; caracteres_secoes: number; caracteres_ppc_inteiro: number };
 }
 
-export function pacoteContexto(
-  db: Database,
-  tarefa: string,
-  ppcArg: string,
-  opcoes: { lexico?: Sinonimos; topicosSecoes?: TopicosSecoes; buscasPorFicha?: number; raiz: string },
-): PacoteContexto {
-  const ppcId = ppcArg.startsWith("ppc:") ? ppcArg : `ppc:${ppcArg}`;
-  const ppcLinha = db
-    .query(
-      `SELECT p.id, p.curso_nome, p.campus_nome, p.nivel, p.tipo_oferta, p.path, p.curso_id, p.ano_documento, c.cnct_id
-       FROM ppcs p LEFT JOIN cursos c ON c.id = p.curso_id WHERE p.id = ?`,
-    )
-    .get(ppcId);
-  if (!ppcLinha) throw new Error(`PPC não encontrado: ${ppcId}`);
-  const ppc = esquemaPpc.parse(ppcLinha);
-  const fichasIds = fichasDaTarefa(db, tarefa);
-  const marcadores = fichasIds.map(() => "?").join(", ");
+/* ------------------------------------------------------------ partes do pacote */
 
-  const fichas = z
-    .array(esquemaFicha)
-    .parse(
-      db.query(`SELECT id, path, dados_json FROM fichas WHERE id IN (${marcadores}) ORDER BY id`).all(...fichasIds),
-    )
-    .map((f) => JSON.parse(f.dados_json) as Record<string, unknown>);
+/** Referência normativa de uma ficha (`referencias_normativas[]`). */
+interface RefFicha {
+  ficha_id: string;
+  ref: string;
+  dispositivo: string | null;
+  papel: string;
+  nota: string | null;
+}
 
-  // CNCT do curso
-  const cnct = ppc.cnct_id
-    ? (() => {
-        const linha = z
-          .strictObject({ dados_json: z.string(), path: z.string().nullable() })
-          .nullable()
-          .parse(db.query("SELECT dados_json, path FROM cnct WHERE id = ?").get(ppc.cnct_id) ?? null);
-        return linha ? { id: ppc.cnct_id, path: linha.path, ...JSON.parse(linha.dados_json) } : null;
-      })()
-    : null;
+/** Referências das fichas, por norma, dispositivo (sem dispositivo antes) e ficha. */
+export function referenciasDasFichas(fichas: readonly FichaPacote[]): RefFicha[] {
+  const refs: RefFicha[] = [];
+  for (const ficha of [...fichas].sort((a, b) => compararTexto(a.id, b.id))) {
+    const lista = Array.isArray(ficha.referencias_normativas) ? ficha.referencias_normativas : [];
+    for (const item of lista as Record<string, unknown>[]) {
+      refs.push({
+        ficha_id: ficha.id,
+        ref: String(item.ref),
+        dispositivo: typeof item.dispositivo === "string" ? item.dispositivo : null,
+        papel: String(item.papel),
+        nota: typeof item.nota === "string" ? item.nota : null,
+      });
+    }
+  }
+  const nulo = (a: string | null, b: string | null) =>
+    a === b ? 0 : a === null ? -1 : b === null ? 1 : compararTexto(a, b);
+  return refs.sort(
+    (a, b) =>
+      compararTexto(a.ref, b.ref) || nulo(a.dispositivo, b.dispositivo) || compararTexto(a.ficha_id, b.ficha_id),
+  );
+}
 
-  // normas citadas pelas fichas, com o texto dos artigos
-  const refs = z
-    .array(esquemaRef)
-    .parse(
-      db
-        .query(
-          `SELECT ficha_id, ref, dispositivo, papel, nota FROM fichas_referencias WHERE ficha_id IN (${marcadores}) ORDER BY ref, dispositivo, ficha_id`,
-        )
-        .all(...fichasIds),
-    );
-  const porRef = new Map<string, z.output<typeof esquemaRef>[]>();
+/**
+ * Normas citadas pelas fichas, com o texto de cada dispositivo citado (`dispositivos` do banco):
+ * caput herdado, o próprio texto e os subordinados; um dispositivo contido noutro citado não se
+ * repete (vai em `citados`).
+ */
+export function normasDoPacote(db: Database, refs: readonly RefFicha[]): NormaDoPacote[] {
+  const porRef = new Map<string, RefFicha[]>();
   for (const r of refs) if (!r.ref.startsWith("cnct:")) porRef.set(r.ref, [...(porRef.get(r.ref) ?? []), r]);
-  const normas: PacoteContexto["normas"] = [];
+  const normas: NormaDoPacote[] = [];
   for (const [ref, lista] of porRef) {
     const norma = obterNorma(db, ref);
     // um pedido por dispositivo, do mais geral (menos segmentos no ID) ao mais específico
@@ -301,20 +421,31 @@ export function pacoteContexto(
       sem_texto: semTexto,
     });
   }
+  return normas;
+}
 
-  // transições: marcos ligados às normas das fichas ou às citadas pelo PPC
-  const citacoesPpc = z
+/** Citações normativas resolvidas de um PPC (`citacoes`), na ordem do texto. */
+export function citacoesDoPpc(db: Database, ppcId: string): CitacaoPpc[] {
+  return z
     .array(esquemaCitacao)
     .parse(
       db
         .query(
           "SELECT ato_id, linha, trecho, papel, secao_tipo, regra FROM citacoes WHERE ppc_id = ? AND ato_id IS NOT NULL ORDER BY ordem",
         )
-        .all(ppc.id),
+        .all(ppcId),
     );
+}
+
+/** Marcos ligados às normas das fichas ou às citadas pelo PPC, com as citações do PPC (fundamento) a elas. */
+export function marcosDoPacote(
+  db: Database,
+  refs: readonly RefFicha[],
+  citacoesPpc: readonly CitacaoPpc[],
+): MarcoDoPacote[] {
   const atosCitadosPpc = new Set(citacoesPpc.map((c) => c.ato_id));
   const atosFichas = new Set(refs.map((r) => idDoAto(r.ref)));
-  const marcos: PacoteContexto["marcos"] = [];
+  const marcos: MarcoDoPacote[] = [];
   for (const m of z
     .array(esquemaMarco)
     .parse(
@@ -351,9 +482,20 @@ export function pacoteContexto(
       citacoes_no_ppc: citacoesPpc.filter((c) => envolvidas.has(c.ato_id) && c.papel === "fundamento"),
     });
   }
+  return marcos;
+}
 
-  // regras de transição das normas das fichas e das que o PPC cita como fundamento
+/**
+ * Regras de transição (tabela `transicoes`) das normas das fichas e das que o PPC cita como
+ * fundamento, com a situação na `data_referencia` e o texto do dispositivo que as estabelece.
+ */
+export function transicoesDoPacote(
+  db: Database,
+  refs: readonly RefFicha[],
+  citacoesPpc: readonly CitacaoPpc[],
+): { data_referencia: string; transicoes: TransicaoDoPacote[] } {
   const data = dataReferenciaBanco(db);
+  const atosFichas = new Set(refs.map((r) => idDoAto(r.ref)));
   const atosTransicao = [
     ...new Set([...atosFichas, ...citacoesPpc.filter((c) => c.papel === "fundamento").map((c) => c.ato_id)]),
   ].sort(compararTexto);
@@ -380,40 +522,43 @@ export function pacoteContexto(
       linha_fim: d?.linha_fim ?? null,
     };
   });
+  return { data_referencia: data, transicoes };
+}
 
-  // seções do PPC: pelos tipos dos tópicos e pela busca das consultas das fichas
+/** Consultas da ficha que são texto do PPC (as que são nomes de campo, como `cnct_contexto.x`, ficam fora). */
+export function consultasDeTexto(ficha: FichaPacote): string[] {
+  return textos(ficha.consultas).filter((c) => !/^[\w.]+$/.test(c) || !/[._]/.test(c));
+}
+
+/**
+ * Seções do PPC para as fichas: as dos tipos mapeados para os tópicos das fichas
+ * (`dados/topicos-secoes.yaml`), mais, por consulta de cada ficha, a melhor seção com todos os
+ * termos (AND); em ordem do documento. `db` é o `kb.sqlite` (PPC da base) ou o banco em memória de
+ * `bancoDoPpcAvulso` (PPC fora da base): as consultas são as mesmas.
+ */
+export function secoesDoPacote(
+  db: Database,
+  ppcId: string,
+  fichas: readonly FichaPacote[],
+  opcoes: OpcoesSecoes = {},
+): SecaoDoPacote[] {
   const mapa = opcoes.topicosSecoes ?? lerTopicosSecoes();
-  const secoes = new Map<string, PacoteContexto["secoes"][number]>();
-  const topicos = z
-    .array(z.strictObject({ ficha_id: z.string(), topico_id: z.string() }))
-    .parse(
-      db
-        .query(
-          `SELECT ficha_id, topico_id FROM fichas_topicos WHERE ficha_id IN (${marcadores}) ORDER BY topico_id, ficha_id`,
-        )
-        .all(...fichasIds),
-    );
-  const tiposPorTopico = new Map<string, string[]>();
-  for (const t of topicos) tiposPorTopico.set(t.topico_id, mapa[t.topico_id] ?? []);
-  for (const [topico, tipos] of tiposPorTopico) {
-    for (const s of secoesDoPpc(db, ppc.id, tipos)) {
+  const secoes = new Map<string, SecaoDoPacote>();
+  const topicos = [...new Set(fichas.flatMap((f) => textos(f.topicos_tematicos)))].sort(compararTexto);
+  for (const topico of topicos) {
+    for (const s of secoesDoPpc(db, ppcId, mapa[topico] ?? [])) {
       const atual = secoes.get(s.id) ?? { ...s, motivo: [] };
       atual.motivo.push(`topico:${topico}`);
       secoes.set(s.id, atual);
     }
   }
-  // busca: só seções com todos os termos da consulta (AND), a melhor por consulta; consultas que
-  // são nomes de campo ("cnct_contexto.comparacoes.estagio_cnct") não são texto do PPC
   const buscas = opcoes.buscasPorFicha ?? 1;
-  for (const ficha of fichas) {
-    const consultas = (Array.isArray(ficha.consultas) ? (ficha.consultas as string[]) : []).filter(
-      (c) => !/^[\w.]+$/.test(c) || !/[._]/.test(c),
-    );
-    for (const consulta of consultas) {
+  for (const ficha of [...fichas].sort((a, b) => compararTexto(a.id, b.id))) {
+    for (const consulta of consultasDeTexto(ficha)) {
       const achados = buscarSecoes(
         db,
         consulta,
-        { ppc: ppc.id },
+        { ppc: ppcId },
         {
           limite: buscas,
           modo: "completo",
@@ -433,14 +578,59 @@ export function pacoteContexto(
           texto: a.texto ?? "",
           motivo: [],
         };
-        const motivo = `busca:${String(ficha.id)}:${consulta}`;
+        const motivo = `busca:${ficha.id}:${consulta}`;
         if (!atual.motivo.includes(motivo)) atual.motivo.push(motivo);
         secoes.set(a.id, atual);
       }
     }
   }
-  const listaSecoes = [...secoes.values()].sort((a, b) => a.linha_inicio - b.linha_inicio);
+  return [...secoes.values()].sort((a, b) => a.linha_inicio - b.linha_inicio);
+}
 
+/** Opções da seleção de seções do PPC. */
+export interface OpcoesSecoes {
+  lexico?: Sinonimos;
+  topicosSecoes?: TopicosSecoes;
+  /** Seções por consulta de ficha (padrão 1: a melhor com todos os termos). */
+  buscasPorFicha?: number;
+}
+
+function cnctDoBanco(db: Database, cnctId: string | null): unknown {
+  if (!cnctId) return null;
+  const id = cnctId.startsWith("cnct:") ? cnctId : `cnct:${cnctId}`;
+  const linha = z
+    .strictObject({ dados_json: z.string(), path: z.string().nullable() })
+    .nullable()
+    .parse(db.query("SELECT dados_json, path FROM cnct WHERE id = ?").get(id) ?? null);
+  return linha ? { id, path: linha.path, ...JSON.parse(linha.dados_json) } : null;
+}
+
+/* ------------------------------------------------------------ pacotes */
+
+export function pacoteContexto(
+  db: Database,
+  tarefa: string,
+  ppcArg: string,
+  opcoes: { lexico?: Sinonimos; topicosSecoes?: TopicosSecoes; buscasPorFicha?: number; raiz: string },
+): PacoteContexto {
+  const ppcId = ppcArg.startsWith("ppc:") ? ppcArg : `ppc:${ppcArg}`;
+  const ppcLinha = db
+    .query(
+      `SELECT p.id, p.curso_nome, p.campus_nome, p.nivel, p.tipo_oferta, p.path, p.curso_id, p.ano_documento, c.cnct_id
+       FROM ppcs p LEFT JOIN cursos c ON c.id = p.curso_id WHERE p.id = ?`,
+    )
+    .get(ppcId);
+  if (!ppcLinha) throw new Error(`PPC não encontrado: ${ppcId}`);
+  const ppc = esquemaPpc.parse(ppcLinha);
+  const fichasIds = fichasDaTarefa(
+    db,
+    tarefa,
+    /^grupo-\d{3}$/.test(tarefa) ? lerTopicosFichas(opcoes.raiz) : undefined,
+  );
+  const fichas = fichasDoBanco(db, fichasIds);
+  const refs = referenciasDasFichas(fichas);
+  const citacoesPpc = citacoesDoPpc(db, ppc.id);
+  const listaSecoes = secoesDoPacote(db, ppc.id, fichas, opcoes);
   const fatos = fatosDosPpcs(db, { ppc: ppc.id })[0] ?? null;
   const caracteresSecoes = listaSecoes.reduce((t, s) => t + s.texto.length, 0);
   const ppcInteiro = readFileSync(path.join(opcoes.raiz, ppc.path), "utf-8").length;
@@ -448,12 +638,11 @@ export function pacoteContexto(
     tarefa,
     fichas_ids: fichasIds,
     ppc,
-    cnct,
+    cnct: cnctDoBanco(db, ppc.cnct_id),
     fichas,
-    normas,
-    marcos,
-    data_referencia: data,
-    transicoes,
+    normas: normasDoPacote(db, refs),
+    marcos: marcosDoPacote(db, refs, citacoesPpc),
+    ...transicoesDoPacote(db, refs, citacoesPpc),
     secoes: listaSecoes,
     fatos: fatos ? { fatos: fatos.fatos, suap: fatos.suap, cruzamento: fatos.cruzamento } : null,
     tamanho: {
@@ -465,4 +654,109 @@ export function pacoteContexto(
   };
   pacote.tamanho.caracteres = JSON.stringify(pacote, null, 2).length;
   return pacote;
+}
+
+/** Pacote de fichas para um PPC fora da base (o `PPC.md` de uma rodada), sem o PPC e sem as fichas. */
+export interface PacoteAvulso {
+  fichas_ids: string[];
+  /** Curso do CNCT (`cnct`), quando o chamador identificou o `cnct_id`. */
+  cnct: unknown;
+  normas: NormaDoPacote[];
+  marcos: MarcoDoPacote[];
+  data_referencia: string;
+  transicoes: TransicaoDoPacote[];
+  escopo: "secoes" | "completo";
+  /** Seções do PPC (vazio no escopo `completo`, em que o chamador usa o PPC inteiro). */
+  secoes: SecaoDoPacote[];
+  /** Todas as citações normativas resolvidas do PPC, com linha, seção e papel (só com `citacoesPpc`). */
+  citacoes_ppc?: CitacaoPpc[];
+}
+
+/**
+ * Pacote de contexto de um conjunto de fichas para um PPC que pode não estar na base: as normas,
+ * os marcos, as transições e o CNCT vêm do `kb.sqlite` (`db`); as seções e as citações do PPC, do
+ * banco em memória de `bancoDoPpcAvulso` (`dbPpc`), com as mesmas consultas do pacote de um PPC da
+ * base. Usado pela `analise-ppc` para montar o contexto de cada grupo de sub-agente.
+ */
+export function pacoteContextoAvulso(
+  db: Database,
+  dbPpc: Database,
+  fichas: readonly FichaPacote[],
+  opcoes: {
+    ppcId?: string;
+    cnctId?: string | null;
+    escopo?: "secoes" | "completo";
+    /** Inclui `citacoes_ppc`: as fichas que conferem a base normativa citada no PPC inteiro. */
+    citacoesPpc?: boolean;
+  } & OpcoesSecoes = {},
+): PacoteAvulso {
+  const ppcId = opcoes.ppcId ?? "ppc:avulso";
+  const escopo = opcoes.escopo ?? "secoes";
+  const refs = referenciasDasFichas(fichas);
+  const citacoesPpc = citacoesDoPpc(dbPpc, ppcId);
+  return {
+    fichas_ids: [...fichas].map((f) => f.id).sort(compararTexto),
+    cnct: cnctDoBanco(db, opcoes.cnctId ?? null),
+    normas: normasDoPacote(db, refs),
+    marcos: marcosDoPacote(db, refs, citacoesPpc),
+    ...transicoesDoPacote(db, refs, citacoesPpc),
+    escopo,
+    secoes: escopo === "completo" ? [] : secoesDoPacote(dbPpc, ppcId, fichas, opcoes),
+    ...(opcoes.citacoesPpc ? { citacoes_ppc: citacoesPpc } : {}),
+  };
+}
+
+/** Palavras dos nomes dos campi dos PPCs do banco, para reconhecer cabeçalhos de página (`palavrasDeCampi`). */
+export function nomesDeCampiDoBanco(db: Database): string[] {
+  return z
+    .array(z.strictObject({ campus_nome: z.string() }))
+    .parse(db.query("SELECT DISTINCT campus_nome FROM ppcs ORDER BY campus_nome").all())
+    .map((l) => l.campus_nome);
+}
+
+/**
+ * `kb pacote-contexto <tarefa> <arquivo.md>`: o pacote de uma tarefa para um PPC fora da base. As
+ * fichas e o agrupamento vêm do banco (`grupo-NNN` traz o escopo do grupo); o PPC é segmentado e
+ * indexado em memória (`bancoDoPpcAvulso`).
+ */
+export function pacoteDoMarkdown(
+  db: Database,
+  tarefa: string,
+  arquivo: string,
+  opcoes: { lexico?: Sinonimos; topicosSecoes?: TopicosSecoes; raiz: string },
+): PacoteAvulso & {
+  path: string;
+  fichas: FichaPacote[];
+  tamanho: { caracteres: number; caracteres_ppc_inteiro: number };
+} {
+  const topicos = lerTopicosFichas(opcoes.raiz);
+  const ids = fichasDaTarefa(db, tarefa, topicos);
+  const fichas = fichasDoBanco(db, ids);
+  const grupo = /^grupo-\d{3}$/.test(tarefa)
+    ? agruparPorTopico(fichasDoBanco(db), topicos)[Number(tarefa.slice(6)) - 1]
+    : undefined;
+  const markdown = readFileSync(arquivo, "utf-8");
+  const dbPpc = bancoDoPpcAvulso(markdown, {
+    path: arquivo,
+    raiz: opcoes.raiz,
+    palavrasCampi: palavrasDeCampi(nomesDeCampiDoBanco(db)),
+    ...(opcoes.lexico ? { sinonimos: opcoes.lexico } : {}),
+  });
+  try {
+    const pacote = pacoteContextoAvulso(db, dbPpc, fichas, {
+      escopo: grupo?.escopo ?? "secoes",
+      ...(opcoes.lexico ? { lexico: opcoes.lexico } : {}),
+      ...(opcoes.topicosSecoes ? { topicosSecoes: opcoes.topicosSecoes } : {}),
+    });
+    const saida = {
+      path: arquivo,
+      ...pacote,
+      fichas,
+      tamanho: { caracteres: 0, caracteres_ppc_inteiro: markdown.length },
+    };
+    saida.tamanho.caracteres = JSON.stringify(saida, null, 2).length;
+    return saida;
+  } finally {
+    dbPpc.close();
+  }
 }

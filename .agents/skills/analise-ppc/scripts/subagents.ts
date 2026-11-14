@@ -1,9 +1,31 @@
 /**
  * Grupos de fichas, contextos e pacotes de prompt para os sub-agentes, grupo
- * avulso e mescla de reavaliações (porte de `subagents.py`).
+ * avulso e mescla de reavaliações.
+ *
+ * Os grupos são por tópico (`topicos_tematicos` das fichas, `agruparPorTopico` do kb): cada ficha
+ * entra uma vez, no grupo do seu tópico principal, e o grupo recebe só as seções do `PPC.md` dos
+ * tópicos das suas fichas, mais o texto das normas que elas citam, os marcos e as regras de
+ * transição, montados pelo `pacote-contexto` do kb (`pacoteContextoAvulso`). O `PPC.md` da rodada
+ * é segmentado com a mesma segmentação e taxonomia do índice de seções (`bancoDoPpcAvulso`), porque
+ * o PPC analisado pode não estar na base. As fichas transversais vão num grupo com o PPC inteiro.
  */
+import type { Database } from "bun:sqlite";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
+import { abrirBanco } from "@simplifica-if/kb/db/banco";
+import { bancoDoPpcAvulso } from "@simplifica-if/kb/db/compilar";
+import {
+  agruparPorTopico,
+  type FichaPacote,
+  nomesDeCampiDoBanco,
+  type PacoteAvulso,
+  pacoteContextoAvulso,
+  TOPICO_TRANSVERSAL,
+  type TopicoFichas,
+  topicoPrincipal,
+} from "@simplifica-if/kb/db/pacote-contexto";
+import { lerSinonimos } from "@simplifica-if/kb/busca/sinonimos";
+import { palavrasDeCampi, textoDaSecao } from "@simplifica-if/kb/ppcs/secoes";
 import { copiarProfundoPy, dumpsPy } from "@simplifica-if/kb/python/json";
 import { casefold, somenteDigitos } from "@simplifica-if/kb/python/texto";
 import {
@@ -76,20 +98,41 @@ export function carregarValidacoesCruzadasOrdenadas(validacoesDir?: string): Obj
 
 export type Grupo = ObjetoPy & { grupo_id: string; fichas: ObjetoPy[] };
 
-/** Divide as fichas em grupos de `tamanhoGrupo` (`grupo-001`, `grupo-002`…). */
-export function agruparFichas(fichas: ObjetoPy[], tamanhoGrupo = TAMANHO_GRUPO_PADRAO): Grupo[] {
-  if (tamanhoGrupo <= 0) throw new Error("O tamanho do grupo precisa ser maior que zero.");
-  const grupos: Grupo[] = [];
-  for (let indice = 0; indice < fichas.length; indice += tamanhoGrupo) {
-    const grupoFichas = fichas.slice(indice, indice + tamanhoGrupo);
-    grupos.push({
-      grupo_id: `grupo-${String(grupos.length + 1).padStart(3, "0")}`,
-      intervalo: `${indice + 1}-${indice + grupoFichas.length}`,
-      total_fichas: grupoFichas.length,
-      fichas: grupoFichas,
-    });
-  }
-  return grupos;
+/** Tópicos de `topicos-fichas.json`, na ordem da taxonomia. */
+export function carregarTopicosFichas(caminho = caminhosPadrao().topicosFichasPath): TopicoFichas[] {
+  const payload = lerJsonPy(caminho);
+  const topicos = ehObjetoPy(payload) ? obter(payload, "topicos") : [];
+  return (Array.isArray(topicos) ? topicos : []).filter(ehObjetoPy).map((topico) => ({
+    ...topico,
+    id: strPy(obter(topico, "id")),
+    fichas: iterarPy(obter(topico, "fichas", [])).map(strPy),
+  })) as TopicoFichas[];
+}
+
+function comoFichaPacote(ficha: ObjetoPy): FichaPacote {
+  return ficha as FichaPacote;
+}
+
+/**
+ * Grupos por tópico (`grupo-001`, `grupo-002`…), na ordem de `topicos-fichas.json` e com o grupo
+ * `transversal` por último: cada ficha entra uma vez, no grupo do tópico principal
+ * (`topicoPrincipal`); tópicos com mais de `tamanhoGrupo` fichas viram partes equilibradas.
+ */
+export function agruparFichasPorTopico(
+  fichas: ObjetoPy[],
+  topicos: readonly TopicoFichas[],
+  tamanhoGrupo = TAMANHO_GRUPO_PADRAO,
+): Grupo[] {
+  return agruparPorTopico(fichas.map(comoFichaPacote), topicos, tamanhoGrupo).map((grupo, indice) => ({
+    grupo_id: `grupo-${String(indice + 1).padStart(3, "0")}`,
+    topico: grupo.topico,
+    topico_titulo: grupo.topico_titulo,
+    parte: grupo.parte,
+    partes: grupo.partes,
+    escopo_ppc: grupo.escopo,
+    total_fichas: grupo.fichas.length,
+    fichas: grupo.fichas as ObjetoPy[],
+  }));
 }
 
 function textoDaFicha(ficha: ObjetoPy): string {
@@ -355,16 +398,136 @@ type Contextos = {
   estrutura: ObjetoPy;
   anexos: AnexoVisual[];
   fundamentacao: ObjetoPy;
+  /** Marcos com as normas por extenso, por ID. */
+  marcosLegiveis: Map<string, ObjetoPy>;
 };
 
-function adicionarContextosGrupo(grupo: Grupo, contextos: Contextos): void {
-  const saida: ObjetoPy = {};
+/** Taxonomia de seções usada no `PPC.md` da rodada: a skill analisa cursos técnicos. */
+export const TAXONOMIA_RODADA = "tecnico";
+const PPC_ID_RODADA = "ppc:rodada";
+/** Tópico cujas fichas recebem a lista de todas as citações normativas do PPC (`citacoes_do_ppc`). */
+const TOPICO_CITACOES_PPC = "referencias_normativas";
+
+/**
+ * Contexto do kb para uma rodada: o `kb.sqlite` (recompilado sozinho quando velho) e o banco em
+ * memória com o `PPC.md` da rodada segmentado pela taxonomia do índice de seções.
+ */
+export type ContextoKbRodada = {
+  db: Database;
+  dbPpc: Database;
+  /** Linhas e total de caracteres do `PPC.md`. */
+  markdown: string;
+  pacote(fichas: ObjetoPy[], escopo: "secoes" | "completo", citacoesPpc: boolean): PacoteAvulso;
+  fechar(): void;
+};
+
+export function abrirContextoKbRodada(rodada: string, skill: CaminhosAnalise = caminhosPadrao()): ContextoKbRodada {
+  const caminhos = caminhosRodada(rodada);
+  const raiz = path.dirname(skill.baseConhecimentoDir);
+  const db = abrirBanco({ raiz });
+  const markdown = lerTexto(caminhos.ppc);
+  const lexico = lerSinonimos();
+  const dbPpc = bancoDoPpcAvulso(markdown, {
+    ppcId: PPC_ID_RODADA,
+    path: caminhos.ppc,
+    taxonomia: TAXONOMIA_RODADA,
+    palavrasCampi: palavrasDeCampi(nomesDeCampiDoBanco(db)),
+    raiz,
+    sinonimos: lexico,
+    todasAsSecoes: true,
+    titulosNivel1: true,
+  });
+  return {
+    db,
+    dbPpc,
+    markdown,
+    pacote: (fichas, escopo, citacoesPpc) =>
+      pacoteContextoAvulso(db, dbPpc, fichas.map(comoFichaPacote), {
+        ppcId: PPC_ID_RODADA,
+        escopo,
+        citacoesPpc,
+        lexico,
+      }),
+    fechar: () => {
+      dbPpc.close();
+      db.close();
+    },
+  };
+}
+
+/** Tópicos temáticos das fichas, sem repetição, em ordem. */
+function topicosDasFichas(fichas: ObjetoPy[]): string[] {
+  return [...new Set(fichas.flatMap((ficha) => iterarPy(obter(ficha, "topicos_tematicos", [])).map(strPy)))].sort(
+    compararTexto,
+  );
+}
+
+/** `contextos.ppc`: o escopo do PPC no grupo e as seções selecionadas (sem o texto, que vai no pacote). */
+function contextoPpcDoGrupo(pacote: PacoteAvulso, fichas: ObjetoPy[], kb: ContextoKbRodada, ppc: string): ObjetoPy {
+  const secoes = pacote.secoes.map((secao) => ({
+    id: secao.id.slice(secao.id.indexOf("#") + 1),
+    tipo: secao.tipo,
+    titulo: secao.titulo,
+    linha_inicio: secao.linha_inicio,
+    linha_fim: secao.linha_fim,
+    caracteres: secao.texto.length,
+    motivo: secao.motivo,
+  }));
+  return {
+    escopo: pacote.escopo,
+    ppc_markdown: ppc,
+    taxonomia: TAXONOMIA_RODADA,
+    topicos: topicosDasFichas(fichas),
+    total_secoes: secoes.length,
+    caracteres_secoes: secoes.reduce((total, secao) => total + secao.caracteres, 0),
+    caracteres_ppc: kb.markdown.length,
+    secoes,
+  };
+}
+
+/**
+ * `contextos.fundamentacao_normativa` do grupo: o protocolo e os manifestos, os marcos normativos
+ * (por extenso, com as citações do PPC às normas de cada um), o texto dos dispositivos citados pelas
+ * fichas (com caput) e as regras de transição aplicáveis.
+ */
+function fundamentacaoDoGrupo(contextos: Contextos, pacote: PacoteAvulso): ObjetoPy {
+  const { marcos_normativos: _todos, observacao: _observacao, ...base } = contextos.fundamentacao;
+  // Todos os marcos (são poucos e as fichas remetem a eles); as citações do PPC vêm do pacote do kb.
+  const citacoes = new Map(pacote.marcos.map((marco) => [marco.marco, marco.citacoes_no_ppc]));
+  const marcos = [...contextos.marcosLegiveis].map(([id, marco]) => ({
+    ...marco,
+    citacoes_no_ppc: citacoes.get(id) ?? [],
+  }));
+  return {
+    ...base,
+    marcos_normativos: marcos,
+    data_referencia: pacote.data_referencia,
+    normas: pacote.normas,
+    transicoes: pacote.transicoes,
+    ...(pacote.citacoes_ppc ? { citacoes_do_ppc: pacote.citacoes_ppc } : {}),
+    observacao:
+      "Use este contexto quando o PPC citar norma ou fizer afirmação com força normativa. " +
+      "Em normas está o texto dos dispositivos citados pelas fichas do grupo (com o caput e os subordinados); " +
+      "em transicoes, as regras de transição das normas das fichas e das citadas pelo PPC, com a situação em " +
+      "data_referencia; em marcos_normativos, a norma vigente de cada tema, as substituídas e " +
+      "as citações do PPC a elas (linhas do PPC.md); em citacoes_do_ppc, quando presente, todas as citações " +
+      "normativas que o resolvedor do kb identificou no PPC.md, com linha, tipo de seção e papel. " +
+      "Consulte-os antes de julgar a vigência de uma citação do PPC. " +
+      "Os campos path dos manifestos são relativos a base-conhecimento/; os path das normas e transições, à raiz do repositório.",
+  };
+}
+
+function adicionarContextosGrupo(grupo: Grupo, contextos: Contextos, kb: ContextoKbRodada, ppc: string): void {
+  const escopo = obter(grupo, "escopo_ppc") === "completo" ? "completo" : "secoes";
+  // As fichas de referencias_normativas conferem a base normativa citada em qualquer ponto do PPC.
+  const pacote = kb.pacote(grupo.fichas, escopo, topicosDasFichas(grupo.fichas).includes(TOPICO_CITACOES_PPC));
+  const saida: ObjetoPy = { ppc: contextoPpcDoGrupo(pacote, grupo.fichas, kb, ppc) };
   const requerCnct = grupo.fichas.some(fichaRequerContextoCnct);
   grupo.requer_contexto_cnct = requerCnct;
   if (requerCnct) saida.cnct = contextos.cnct;
   const requerFundamentacao = grupo.fichas.some(fichaRequerFundamentacaoNormativa);
   grupo.requer_fundamentacao_normativa = requerFundamentacao;
-  if (requerFundamentacao) saida.fundamentacao_normativa = contextos.fundamentacao;
+  if (requerFundamentacao) saida.fundamentacao_normativa = fundamentacaoDoGrupo(contextos, pacote);
   grupo.requer_contexto_estrutural = true;
   saida.estrutura = contextos.estrutura;
   const anexosGrupo = contextos.anexos.filter((anexo) =>
@@ -375,11 +538,40 @@ function adicionarContextosGrupo(grupo: Grupo, contextos: Contextos): void {
   grupo.contextos = saida;
 }
 
+function contextosDaRodada(rodada: string, skill: CaminhosAnalise): Contextos {
+  const universo = universoOuVazio(skill);
+  return {
+    cnct: gerarContextoCnctRodada(rodada, { caminhos: skill }),
+    estrutura: gerarContextoEstruturalSubagents(rodada),
+    anexos: anexosVisuais(rodada),
+    fundamentacao: contextoFundamentacaoNormativa(skill),
+    marcosLegiveis: new Map(
+      carregarMarcosNormativos(skill.marcosNormativosPath, universo)
+        .filter(ehObjetoPy)
+        .map((marco) => [strPy(obter(marco, "id")), marco]),
+    ),
+  };
+}
+
+/** Ficha da forma como vai para o sub-agente (referências legíveis), a partir da ficha da base. */
+function fichasParaSubagente(fichas: ObjetoPy[], universo: UniversoReferencias): ObjetoPy[] {
+  return fichas.map((ficha) => fichaParaSubagente(copiarProfundoPy(ficha), universo));
+}
+
 function promptTemplate(skill: CaminhosAnalise): string {
   return path.join(skill.appDir, "prompts", "subagent-lote-fichas.md");
 }
 
-/** `montar_grupos_subagents`: grupos com contextos, gravados em `grupos-subagents.json`. */
+/** Regra de agrupamento registrada no payload (para quem lê `grupos-subagents.json`). */
+export const REGRA_AGRUPAMENTO =
+  "Um grupo por tópico de topicos-fichas.json, na ordem da taxonomia. Cada ficha entra uma vez, no " +
+  "tópico principal: o mais específico (menos fichas na taxonomia) dos seus topicos_tematicos; no " +
+  "empate, o primeiro na taxonomia. Fichas com tipo_escopo transversal vão no grupo transversal, por " +
+  "último, com o PPC completo. Tópico com mais fichas que o tamanho máximo vira partes equilibradas. " +
+  "O grupo recebe as seções do PPC.md de todos os tópicos das suas fichas (packages/kb/dados/topicos-secoes.yaml) " +
+  "e as que a busca pelas consultas das fichas achar.";
+
+/** `montar_grupos_subagents`: grupos por tópico com contextos, gravados em `grupos-subagents.json`. */
 export function montarGruposSubagents(
   rodada: string,
   tamanhoGrupo = TAMANHO_GRUPO_PADRAO,
@@ -390,16 +582,20 @@ export function montarGruposSubagents(
   if (!existe(caminhos.ppc)) throw new Error(`PPC.md não encontrado: ${caminhos.ppc}`);
   const metadata = existe(caminhos.metadata) ? (lerJsonPy(caminhos.metadata) as ObjetoPy) : {};
   const universo = universoOuVazio(skill);
-  const fichas = carregarFichasOrdenadas(opcoes.fichasDir ?? skill.fichasDir).map((ficha) =>
-    fichaParaSubagente(ficha, universo),
-  );
-  const grupos = agruparFichas(fichas, tamanhoGrupo);
-  const cnct = gerarContextoCnctRodada(rodada, { caminhos: skill });
-  const estrutura = gerarContextoEstruturalSubagents(rodada);
-  const anexos = anexosVisuais(rodada);
-  const fundamentacao = contextoFundamentacaoNormativa(skill);
+  const fichas = carregarFichasOrdenadas(opcoes.fichasDir ?? skill.fichasDir);
+  const topicos = carregarTopicosFichas(skill.topicosFichasPath);
+  const grupos = agruparFichasPorTopico(fichas, topicos, tamanhoGrupo);
+  const contextos = contextosDaRodada(rodada, skill);
   const validacoes = contextoValidacoesCruzadas(rodada, opcoes);
-  for (const grupo of grupos) adicionarContextosGrupo(grupo, { cnct, estrutura, anexos, fundamentacao });
+  const kb = abrirContextoKbRodada(rodada, skill);
+  try {
+    for (const grupo of grupos) {
+      adicionarContextosGrupo(grupo, contextos, kb, caminhos.ppc);
+      grupo.fichas = fichasParaSubagente(grupo.fichas, universo);
+    }
+  } finally {
+    kb.fechar();
+  }
   const payload = {
     rodada_dir: caminhos.rodadaDir,
     ppc_markdown: caminhos.ppc,
@@ -407,23 +603,24 @@ export function montarGruposSubagents(
     prompt_template: promptTemplate(skill),
     sintese_transversal_template: path.join(skill.appDir, "prompts", "sintese-transversal.md"),
     cnct_contexto_path: caminhos.cnctContexto,
-    cnct_contexto: cnct,
+    cnct_contexto: contextos.cnct,
     contexto_estrutural_path: caminhos.contextoEstruturalSubagents,
-    contexto_estrutural: estrutura,
+    contexto_estrutural: contextos.estrutura,
     validacoes_cruzadas_path: caminhos.validacoesCruzadasContexto,
     validacoes_cruzadas: validacoes,
-    fundamentacao_normativa: fundamentacao,
-    anexos_visuais: anexos,
+    fundamentacao_normativa: contextos.fundamentacao,
+    anexos_visuais: contextos.anexos,
     curso: obter(metadata, "curso", ""),
     total_fichas: fichas.length,
     tamanho_grupo: tamanhoGrupo,
+    agrupamento: { criterio: "topico", tamanho_maximo: tamanhoGrupo, regra: REGRA_AGRUPAMENTO },
     grupos,
   };
   escreverJsonPy(caminhos.gruposSubagents, payload);
   return payload;
 }
 
-/** `montar_grupo_avulso`: grupo só com as fichas pedidas, gravado em `grupos-avulsos/`. */
+/** `montar_grupo_avulso`: grupo só com as fichas pedidas, gravado em `grupos-avulsos/`, com o pacote de prompt. */
 export function montarGrupoAvulso(rodada: string, fichaIds: string[], opcoes: OpcoesSkill = {}): ObjetoPy {
   if (!fichaIds.length) throw new Error("Informe ao menos uma ficha para montar o grupo avulso.");
   const skill = opcoes.caminhos ?? caminhosPadrao();
@@ -435,20 +632,29 @@ export function montarGrupoAvulso(rodada: string, fichaIds: string[], opcoes: Op
   const faltantes = fichaIds.filter((fichaId) => !fichasPorId.has(fichaId));
   if (faltantes.length) throw new Error(`Fichas não encontradas: ${faltantes.join(", ")}`);
   const universo = universoOuVazio(skill);
-  const selecionadas = fichaIds.map((fichaId) =>
-    fichaParaSubagente(copiarProfundoPy(fichasPorId.get(fichaId)!), universo),
+  const selecionadas = fichaIds.map((fichaId) => fichasPorId.get(fichaId)!);
+  const topicos = carregarTopicosFichas(skill.topicosFichasPath);
+  const transversal = selecionadas.some(
+    (ficha) => topicoPrincipal(comoFichaPacote(ficha), topicos) === TOPICO_TRANSVERSAL,
   );
   const grupo: Grupo = {
     grupo_id: `avulso-${sha256JsonPayload({ ficha_ids: fichaIds }).slice(0, 12)}`,
-    intervalo: "avulso",
+    topico: "avulso",
+    topico_titulo: "Reavaliação avulsa",
+    parte: 1,
+    partes: 1,
+    escopo_ppc: transversal ? "completo" : "secoes",
     total_fichas: selecionadas.length,
     fichas: selecionadas,
   };
-  const cnct = gerarContextoCnctRodada(rodada, { caminhos: skill });
-  const estrutura = gerarContextoEstruturalSubagents(rodada);
-  const anexos = anexosVisuais(rodada);
-  const fundamentacao = contextoFundamentacaoNormativa(skill);
-  adicionarContextosGrupo(grupo, { cnct, estrutura, anexos, fundamentacao });
+  const contextos = contextosDaRodada(rodada, skill);
+  const kb = abrirContextoKbRodada(rodada, skill);
+  try {
+    adicionarContextosGrupo(grupo, contextos, kb, caminhos.ppc);
+  } finally {
+    kb.fechar();
+  }
+  grupo.fichas = fichasParaSubagente(selecionadas, universo);
   const payload: ObjetoPy = {
     rodada_dir: caminhos.rodadaDir,
     ppc_markdown: caminhos.ppc,
@@ -458,20 +664,74 @@ export function montarGrupoAvulso(rodada: string, fichaIds: string[], opcoes: Op
   mkdirSync(caminhos.gruposAvulsosDir, { recursive: true });
   const destino = path.join(caminhos.gruposAvulsosDir, `${grupo.grupo_id}.json`);
   escreverJsonPy(destino, payload);
+  const prompt = path.join(caminhos.gruposAvulsosDir, `${grupo.grupo_id}.md`);
+  escreverTextoPy(prompt, pacotePromptGrupo(lerTexto(caminhos.ppc), lerTexto(promptTemplate(skill)), grupo));
   payload.grupo_avulso_path = destino;
+  payload.prompt_subagent_path = prompt;
   return payload;
+}
+
+/** Seções do `PPC.md` listadas em `contextos.ppc.secoes`, cada uma com a linha do título e a origem. */
+function secoesDoPpcEmMarkdown(ppc: string, secoes: unknown[]): string {
+  return secoes
+    .filter(ehObjetoPy)
+    .map((secao) => {
+      const inicio = numeroPy(obter(secao, "linha_inicio"));
+      const fim = numeroPy(obter(secao, "linha_fim"));
+      const motivo = iterarPy(obter(secao, "motivo", []))
+        .map(strPy)
+        .join("; ");
+      const cabecalho = `<!-- seção ${strPy(obter(secao, "id"))} · linhas ${inicio}-${fim} · ${motivo} -->`;
+      return `${cabecalho}\n${textoDaSecao(ppc, inicio, fim, { incluirTitulo: true })}`;
+    })
+    .join("\n\n");
+}
+
+/** Bloco do PPC no pacote: o `PPC.md` inteiro (escopo `completo`) ou só as seções do grupo. */
+function blocoPpc(ppc: string, grupo: unknown): string {
+  const contextos = ehObjetoPy(grupo) ? obter(grupo, "contextos", {}) : {};
+  const contexto = ehObjetoPy(contextos) ? obter(contextos, "ppc") : undefined;
+  if (!ehObjetoPy(contexto) || obter(contexto, "escopo") !== "secoes") {
+    return ["## PPC.md", `\`\`\`markdown\n${aparar(ppc)}\n\`\`\``].join("\n\n");
+  }
+  const secoes = iterarPy(obter(contexto, "secoes", []));
+  const topicos = iterarPy(obter(contexto, "topicos", []))
+    .map(strPy)
+    .join(", ");
+  return [
+    "## PPC.md: seções do grupo",
+    `Este pacote traz ${secoes.length} seções do \`PPC.md\` (${strPy(obter(contexto, "caracteres_secoes"))} de ` +
+      `${strPy(obter(contexto, "caracteres_ppc"))} caracteres), escolhidas pelos tópicos das fichas (${topicos}) e ` +
+      "pelas consultas das fichas. " +
+      `O arquivo completo está em \`${strPy(obter(contexto, "ppc_markdown"))}\`: ` +
+      "leia-o antes de concluir que uma informação falta no PPC.",
+    `\`\`\`markdown\n${secoesDoPpcEmMarkdown(ppc, secoes)}\n\`\`\``,
+  ].join("\n\n");
+}
+
+/**
+ * Grupo como vai no JSON do pacote: sem a lista `contextos.ppc.secoes`, que já está no bloco do PPC
+ * (cada seção com o ID, as linhas e o motivo no comentário de abertura).
+ */
+function grupoParaPacote(grupo: unknown): unknown {
+  if (!ehObjetoPy(grupo)) return grupo;
+  const contextos = obter(grupo, "contextos");
+  const contextoPpc = ehObjetoPy(contextos) ? obter(contextos, "ppc") : undefined;
+  if (!ehObjetoPy(contextoPpc) || obter(contextoPpc, "escopo") !== "secoes") return grupo;
+  const { secoes: _secoes, ...resumo } = contextoPpc;
+  return { ...grupo, contextos: { ...(contextos as ObjetoPy), ppc: resumo } };
 }
 
 function pacotePromptGrupo(ppc: string, template: string, grupo: unknown): string {
   const grupoId = ehObjetoPy(grupo) ? strPy(obter(grupo, "grupo_id")) : "None";
+  const topico = ehObjetoPy(grupo) ? obter(grupo, "topico_titulo") : undefined;
   return `${[
-    `# Pacote de análise ${grupoId}`,
+    `# Pacote de análise ${grupoId}${verdadeiro(topico) ? ` (${strPy(topico)})` : ""}`,
     "## Prompt de trabalho",
     aparar(template),
-    "## PPC.md",
-    `\`\`\`markdown\n${aparar(ppc)}\n\`\`\``,
+    blocoPpc(ppc, grupo),
     "## Grupo e contextos",
-    `\`\`\`json\n${dumpsPy(grupo, { indent: 2 })}\n\`\`\``,
+    `\`\`\`json\n${dumpsPy(grupoParaPacote(grupo), { indent: 2 })}\n\`\`\``,
     "Retorne somente JSON válido no contrato do prompt de trabalho.",
   ].join("\n\n")}\n`;
 }
@@ -496,14 +756,22 @@ export function prepararPromptsSubagents(rodada: string, opcoes: OpcoesSkill = {
     if (!ehObjetoPy(grupo)) throw new Error("AttributeError: grupo não é objeto JSON");
     const grupoId = strPy(ou(obter(grupo, "grupo_id"), "grupo"));
     const destino = path.join(caminhos.promptsSubagentsDir, `${grupoId}.md`);
-    escreverTextoPy(destino, pacotePromptGrupo(ppc, template, grupo));
-    arquivos.push({ grupo_id: grupoId, arquivo: destino, total_fichas: obter(grupo, "total_fichas", 0) });
+    const texto = pacotePromptGrupo(ppc, template, grupo);
+    escreverTextoPy(destino, texto);
+    arquivos.push({
+      grupo_id: grupoId,
+      topico: obter(grupo, "topico", null),
+      arquivo: destino,
+      total_fichas: obter(grupo, "total_fichas", 0),
+      caracteres: texto.length,
+    });
   }
   const manifest = {
     rodada_dir: caminhos.rodadaDir,
     ppc_markdown: caminhos.ppc,
     prompt_template: templatePath,
     total_pacotes: arquivos.length,
+    caracteres_total: arquivos.reduce((total, arquivo) => total + numeroPy(arquivo.caracteres), 0),
     arquivos,
   };
   escreverJsonPy(caminhos.promptsSubagentsManifest, manifest);

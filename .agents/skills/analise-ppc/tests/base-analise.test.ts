@@ -7,7 +7,7 @@ import { lerJson, listarArquivos } from "../scripts/arquivos.ts";
 import { type CaminhosAnalise, caminhosDaSkill, caminhosPadrao } from "../scripts/caminhos.ts";
 import { escreverIndice, gerarIndice, indiceAtualizado } from "../scripts/indice-base.ts";
 import { escreverMapa, gerarMapaFichas, mapaAtualizado } from "../scripts/mapa-fichas.ts";
-import { validarBaseAnalise } from "../scripts/validacao-base.ts";
+import { validarBaseAnalise, validarTopicosSecoes } from "../scripts/validacao-base.ts";
 
 const caminhos = caminhosPadrao();
 const RAIZ = path.resolve(caminhos.appDir, "../../..");
@@ -68,6 +68,17 @@ describe("base de análise real", () => {
       expect(["tematico", "multitematico", "transversal", "condicional"]).toContain(String(ficha.tipo_escopo));
       expect((ficha.ancoras_semanticas as string[]).length).toBeGreaterThan(0);
     }
+  });
+});
+
+describe("mapa tópico → tipos de seção do kb", () => {
+  test("todo tópico da taxonomia tem entrada, e toda entrada é tópico", () => {
+    const caminhos = caminhosPadrao();
+    const topicos = (lerJson(caminhos.topicosFichasPath) as { topicos: { id: string }[] }).topicos.map((t) => t.id);
+    expect(validarTopicosSecoes(new Set(topicos), caminhos)).toEqual([]);
+    const erros = validarTopicosSecoes(new Set([...topicos.filter((id) => id !== "estagio"), "topico_novo"]), caminhos);
+    expect(erros.some((erro) => erro.endsWith("tópico sem tipos de seção: topico_novo"))).toBe(true);
+    expect(erros.some((erro) => erro.endsWith("tópico desconhecido: estagio"))).toBe(true);
   });
 });
 

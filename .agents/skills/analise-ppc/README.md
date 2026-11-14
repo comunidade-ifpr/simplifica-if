@@ -58,13 +58,25 @@ bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts montar-grupos-subagent
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts preparar-prompts-subagents --rodada-dir .agents/skills/analise-ppc/output/<rodada>
 ```
 
-Depois, o agente principal spawna um sub-agente por grupo em `arquivos-suporte/grupos-subagents.json` ou usa os pacotes prontos de `arquivos-suporte/prompts-subagents/`. Passe também os blocos `contextos` de cada grupo, incluindo `contextos.cnct`, `contextos.estrutura`, `contextos.fundamentacao_normativa` e eventuais `contextos.anexos_visuais`. O CNCT vem da base unificada em `base-conhecimento/catalogos/cnct/`. Em seguida, colete as respostas em `arquivos-suporte/resultados-subagents.json`, rode a síntese transversal com `prompts/sintese-transversal.md` e `validacoes_cruzadas`, e gere o relatório:
+Depois, o agente principal spawna um sub-agente por grupo, de preferência com os pacotes prontos de `arquivos-suporte/prompts-subagents/` (um por grupo, com o prompt, o trecho do PPC e o JSON do grupo). Em seguida, colete as respostas em `arquivos-suporte/resultados-subagents.json`, rode a síntese transversal com `prompts/sintese-transversal.md` e `validacoes_cruzadas`, e gere o relatório:
 
 ```bash
 bun run .agents/skills/analise-ppc/scripts/analise_ppc.ts gerar-relatorio-html --rodada-dir .agents/skills/analise-ppc/output/<rodada> --resultados resultados-subagents.json
 ```
 
-Para reavaliar fichas específicas, use `montar-grupo-avulso`, execute um sub-agente com o grupo retornado e depois `mesclar-resultados-avulsos`.
+Para reavaliar fichas específicas, use `montar-grupo-avulso`, execute um sub-agente com o pacote retornado (`prompt_subagent_path`) e depois `mesclar-resultados-avulsos`.
+
+## Grupos por tópico
+
+Os grupos de sub-agente são por tópico (`base-analise/topicos-fichas.json`), e o contexto de cada um sai do `pacote-contexto` do kb (`packages/kb`, `pacoteContextoAvulso`):
+
+- **Uma ficha, um grupo.** Cada ficha entra no grupo do seu tópico principal: o mais específico (o de menos fichas na taxonomia) entre os seus `topicos_tematicos`; no empate, o primeiro na ordem de `topicos-fichas.json`. As fichas com `tipo_escopo: transversal` (as `CT-TRANS-*`, que cruzam o PPC inteiro) vão num grupo `transversal`, por último, com o `PPC.md` completo; uma ficha sem tópico conhecido também. Os grupos seguem a ordem da taxonomia (`grupo-001`, `grupo-002`…).
+- **Tamanho máximo.** `--tamanho-grupo` (padrão 20) é o máximo de fichas por grupo; um tópico maior vira partes equilibradas (`parte`/`partes`). Hoje nenhum tópico passa de 14 fichas, e a rodada tem 17 grupos.
+- **Seções do PPC.** O `PPC.md` da rodada, que pode não estar na base, é segmentado com a segmentação e a taxonomia técnica do índice de seções (`secoesComChave` e `bancoDoPpcAvulso` do kb), num banco em memória com o esquema do `kb.sqlite`. Ficam também a capa, as seções `outros` e as de texto curto, que o índice publicado descarta, e `# Título` conta como título (o normalizador põe o primeiro nível numerado em `#`). Cada grupo recebe, inteiras, as seções dos tipos ligados a todos os tópicos das suas fichas (`packages/kb/dados/topicos-secoes.yaml`), inclusive os tópicos secundários das fichas multitemáticas, mais a melhor seção de cada `consulta` das fichas (busca com todos os termos). O pacote diz onde está o `PPC.md` completo, e o prompt manda conferi-lo antes de concluir que algo falta.
+- **Normas, marcos e transições.** Vêm do `kb.sqlite` (recompilado sozinho quando velho): o texto de cada dispositivo citado pelas fichas do grupo, com o caput e os subordinados; as regras de transição das normas das fichas e das citadas pelo PPC como fundamento, com a situação na `data_referencia`; os marcos normativos, com as citações do PPC às normas de cada um. Os grupos com fichas de `referencias_normativas` recebem também todas as citações normativas do PPC (`citacoes_do_ppc`).
+- **CNCT.** `contextos.cnct` continua sendo a comparação da skill (`cnct-contexto.json`): o curso do CNCT identificado pela denominação, com as comparações de eixo, carga e estágio. O registro é o mesmo do `kb.sqlite` (`cnct:<id>`, conferido em teste).
+
+`montar-grupos-subagents` imprime, por grupo, o tópico, o escopo do PPC (`secoes` ou `completo`) e o número de seções; `preparar-prompts-subagents` grava o tamanho de cada pacote (`caracteres`) no `manifest.json`.
 
 ## Identificação do curso
 

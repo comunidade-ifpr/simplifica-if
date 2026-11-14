@@ -24,11 +24,18 @@ import { extrairFatosPpc, type SecaoDoPpc } from "../fatos/ppc.ts";
 import { carregarDadosInstitucionaisKb, linhaDaChave, matrizesDoResumo } from "../institucional/dados.ts";
 import { analisarFrontMatter } from "../normas/front-matter.ts";
 import { idDoAto } from "../normas/ids.ts";
-import { caminhoStubs, carregarRegistro, lerRegistroStubs, raizRepositorio } from "../normas/registro.ts";
+import {
+  caminhoStubs,
+  carregarRegistro,
+  lerRegistroStubs,
+  raizRepositorio,
+  type Registro,
+} from "../normas/registro.ts";
 import { extrairCitacoes } from "../normas/resolver.ts";
 import { dataReferencia, derivarLinha } from "../normas/vigencia.ts";
 import { mascararFrontMatter } from "../ppcs/front-matter.ts";
 import { lerTextoSecao } from "../ppcs/citacoes.ts";
+import { type NomeTaxonomia, secoesComChave, secoesIndexadas } from "../ppcs/secoes.ts";
 import { compararTexto } from "../texto.ts";
 import { DDL, VERSAO_ESQUEMA } from "./esquema.ts";
 import { arquivosFonte, hashConteudo, hashLista } from "./fontes.ts";
@@ -218,7 +225,7 @@ export function papelDaCitacao(
 
 /* --------------------------------------------------------------- compilação */
 
-class Inseridor {
+export class Inseridor {
   private readonly cache = new Map<string, Statement>();
   readonly contagens: Record<string, number> = {};
   constructor(private readonly db: Database) {}
@@ -241,6 +248,199 @@ class Inseridor {
     this.contagens[tabela] = (this.contagens[tabela] ?? 0) + 1;
     return Number(resultado.lastInsertRowid);
   }
+}
+
+/** Seção de PPC a gravar em `secoes` e `secoes_fts` (texto integral já recortado). */
+export interface SecaoParaGravar {
+  id: string;
+  tipo: string;
+  origem_tipo: string | null;
+  titulo: string;
+  numeracao: string | null;
+  linha_inicio: number;
+  linha_fim: number;
+  texto: string;
+}
+
+/**
+ * Grava as seções de um PPC (com o FTS: tokens, radicais e expansão do léxico pelo tipo) e as
+ * citações normativas do texto, cada uma com a seção e o papel. É o mesmo caminho da compilação do
+ * banco e do banco em memória de um PPC fora da base (`bancoDoPpcAvulso`).
+ */
+export function gravarSecoesECitacoes(
+  ins: Inseridor,
+  p: {
+    ppcId: string;
+    caminhoMd: string;
+    markdown: string;
+    secoes: readonly SecaoParaGravar[];
+    registro: Registro;
+    lexico: Sinonimos;
+    /** Cache da expansão por tipo de seção, compartilhado entre PPCs. */
+    expansoes: Map<string, string>;
+    insFts: Statement;
+  },
+): void {
+  const linhas = p.markdown.split("\n");
+  for (const secao of p.secoes) {
+    let linhaTexto = secao.linha_inicio + 1;
+    while (linhaTexto < secao.linha_fim && !linhas[linhaTexto - 1]!.trim()) linhaTexto += 1;
+    const rowid = ins.inserir("secoes", {
+      id: secao.id,
+      ppc_id: p.ppcId,
+      tipo: secao.tipo,
+      origem_tipo: secao.origem_tipo,
+      titulo: secao.titulo,
+      numeracao: secao.numeracao,
+      path: p.caminhoMd,
+      linha_inicio: secao.linha_inicio,
+      linha_fim: secao.linha_fim,
+      linha_texto: linhaTexto,
+      texto: secao.texto,
+    });
+    let expansao = p.expansoes.get(secao.tipo);
+    if (expansao === undefined) {
+      expansao = radicais(expansaoDoTipo(p.lexico, secao.tipo)).join(" ");
+      p.expansoes.set(secao.tipo, expansao);
+    }
+    p.insFts.run(
+      rowid,
+      secao.titulo,
+      secao.texto,
+      radicais(secao.titulo).join(" "),
+      radicais(secao.texto).join(" "),
+      expansao,
+    );
+  }
+
+  const secaoDaLinha = (linha: number) => {
+    let achada: SecaoParaGravar | null = null;
+    for (const s of p.secoes) {
+      if (s.linha_inicio > linha) break;
+      if (linha <= s.linha_fim) achada = s;
+    }
+    return achada;
+  };
+  const citacoes = extrairCitacoes(mascararFrontMatter(p.markdown), p.registro);
+  citacoes.forEach((citacao, ordem) => {
+    const secao = secaoDaLinha(citacao.linha);
+    const dispositivos = citacao.dispositivos ?? (citacao.dispositivoId ? [citacao.dispositivoId] : []);
+    ins.inserir("citacoes", {
+      ppc_id: p.ppcId,
+      ordem,
+      linha: citacao.linha,
+      trecho: citacao.trecho,
+      norma_id: citacao.id,
+      ato_id: citacao.id ? idDoAto(citacao.id) : null,
+      dispositivos_json: json(dispositivos),
+      regra: citacao.regra,
+      confianca: citacao.confianca,
+      situacao: citacao.situacao,
+      secao_id: secao?.id ?? null,
+      secao_tipo: secao?.tipo ?? null,
+      papel: papelDaCitacao(
+        linhas,
+        citacao.linha,
+        secao ? { tipo: secao.tipo, linha_inicio: secao.linha_inicio } : null,
+      ),
+      path: p.caminhoMd,
+    });
+  });
+}
+
+/** Opções do banco em memória de um PPC fora da base. */
+export interface OpcoesPpcAvulso {
+  /** ID do PPC no banco em memória (padrão `ppc:avulso`). */
+  ppcId?: string;
+  /** Caminho gravado em `path` (o `PPC.md` da rodada, por exemplo). */
+  path?: string;
+  taxonomia?: NomeTaxonomia;
+  /** Palavras dos nomes de campi, para os cabeçalhos de página (`palavrasDeCampi`). */
+  palavrasCampi?: ReadonlySet<string>;
+  curso_nome?: string;
+  campus_nome?: string;
+  nivel?: string;
+  tipo_oferta?: string;
+  raiz?: string;
+  sinonimos?: Sinonimos;
+  registro?: Registro;
+  /**
+   * Grava também as seções que o índice publicado deixa de fora (`pretextual`, `outros` e as de
+   * texto curto, com chave `<tipo>-x<n>`): numa minuta, a capa e os campos curtos da identificação
+   * ("Forma de oferta: Subsequente") importam. Padrão: só as do índice, como no `kb.sqlite`.
+   */
+  todasAsSecoes?: boolean;
+  /**
+   * Reconhece `# Título` como título de seção. No índice publicado só `##` a `######` contam (nos
+   * PPCs convertidos de PDF, `#` aparece em linhas da capa); o normalizador e o conversor DOCX da
+   * `analise-ppc` põem o primeiro nível numerado em `#`. A segmentação roda como se fosse `##`, com
+   * as mesmas linhas.
+   */
+  titulosNivel1?: boolean;
+}
+
+/**
+ * Banco em memória, com o esquema do `kb.sqlite`, só com um PPC que pode não estar na base (o
+ * `PPC.md` de uma rodada da `analise-ppc`): uma linha em `ppcs`, as seções pela mesma segmentação e
+ * taxonomia do índice (`secoesIndexadas`) e as citações pelo mesmo resolvedor, gravadas por
+ * `gravarSecoesECitacoes`. As consultas de seções (`secoesDoPpc`, `buscarSecoes`) e de citações
+ * rodam nele sem mudança.
+ */
+export function bancoDoPpcAvulso(markdownOriginal: string, opcoes: OpcoesPpcAvulso = {}): Database {
+  const raiz = opcoes.raiz ?? raizRepositorio();
+  const markdown = markdownOriginal.replace(/\r\n?/g, "\n");
+  const paraSegmentar = opcoes.titulosNivel1 ? markdown.replace(/^#(?=[ \t])/gm, "##") : markdown;
+  const ppcId = opcoes.ppcId ?? "ppc:avulso";
+  const caminhoMd = opcoes.path ?? "PPC.md";
+  const taxonomia = opcoes.taxonomia ?? "tecnico";
+  const db = new Database(":memory:", { strict: true });
+  db.run(DDL);
+  const ins = new Inseridor(db);
+  db.transaction(() => {
+    ins.inserir("ppcs", {
+      id: ppcId,
+      chave: ppcId.replace(/^ppc:/, ""),
+      campus_id: "",
+      campus_nome: opcoes.campus_nome ?? "",
+      curso_slug: "",
+      curso_nome: opcoes.curso_nome ?? "",
+      curso_id: null,
+      nivel: opcoes.nivel ?? "médio",
+      taxonomia,
+      tipo_oferta: opcoes.tipo_oferta ?? "",
+      ano_documento: null,
+      curso_url: null,
+      fonte_pdf: null,
+      path: caminhoMd,
+      linhas: markdown.split("\n").length,
+      proveniencia_json: json(null),
+    });
+    gravarSecoesECitacoes(ins, {
+      ppcId,
+      caminhoMd,
+      markdown,
+      secoes: (opcoes.todasAsSecoes
+        ? secoesComChave(paraSegmentar, taxonomia, opcoes.palavrasCampi)
+        : secoesIndexadas(paraSegmentar, taxonomia, opcoes.palavrasCampi)
+      ).map((secao) => ({
+        id: `${ppcId}#${secao.chave}`,
+        tipo: secao.tipo,
+        origem_tipo: secao.origem,
+        titulo: secao.titulo,
+        numeracao: secao.numeracao,
+        linha_inicio: secao.linhaInicio,
+        linha_fim: secao.linhaFim,
+        texto: secao.texto,
+      })),
+      registro: opcoes.registro ?? carregarRegistro(raiz),
+      lexico: opcoes.sinonimos ?? lerSinonimos(),
+      expansoes: new Map(),
+      insFts: db.prepare(
+        "INSERT INTO secoes_fts (rowid, titulo, texto, titulo_radicais, radicais, expansao) VALUES (?, ?, ?, ?, ?, ?)",
+      ),
+    });
+  })();
+  return db;
 }
 
 function linhaNoYaml(conteudo: string, id: string): number {
@@ -536,70 +736,24 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
       const secoes = [...(secoesPorPath.get(item.path) ?? [])].sort(
         (a, b) => a.linha_inicio - b.linha_inicio || compararTexto(a.id, b.id),
       );
-      for (const secao of secoes) {
-        const texto = lerTextoSecao(secao, { raiz, cache });
-        let linhaTexto = secao.linha_inicio + 1;
-        while (linhaTexto < secao.linha_fim && !linhas[linhaTexto - 1]!.trim()) linhaTexto += 1;
-        const rowid = ins.inserir("secoes", {
+      gravarSecoesECitacoes(ins, {
+        ppcId,
+        caminhoMd,
+        markdown,
+        secoes: secoes.map((secao) => ({
           id: secao.id,
-          ppc_id: ppcId,
           tipo: secao.section_kind,
-          origem_tipo: secao.origem_tipo,
+          origem_tipo: secao.origem_tipo ?? null,
           titulo: secao.heading,
           numeracao: secao.numeracao ?? null,
-          path: caminhoMd,
           linha_inicio: secao.linha_inicio,
           linha_fim: secao.linha_fim,
-          linha_texto: linhaTexto,
-          texto,
-        });
-        let expansao = expansoes.get(secao.section_kind);
-        if (expansao === undefined) {
-          expansao = radicais(expansaoDoTipo(lexico, secao.section_kind)).join(" ");
-          expansoes.set(secao.section_kind, expansao);
-        }
-        insFtsSecao.run(
-          rowid,
-          secao.heading,
-          texto,
-          radicais(secao.heading).join(" "),
-          radicais(texto).join(" "),
-          expansao,
-        );
-      }
-
-      const secaoDaLinha = (linha: number) => {
-        let achada: (typeof secoes)[number] | null = null;
-        for (const s of secoes) {
-          if (s.linha_inicio > linha) break;
-          if (linha <= s.linha_fim) achada = s;
-        }
-        return achada;
-      };
-      const citacoes = extrairCitacoes(mascararFrontMatter(markdown), registro);
-      citacoes.forEach((citacao, ordem) => {
-        const secao = secaoDaLinha(citacao.linha);
-        const dispositivos = citacao.dispositivos ?? (citacao.dispositivoId ? [citacao.dispositivoId] : []);
-        ins.inserir("citacoes", {
-          ppc_id: ppcId,
-          ordem,
-          linha: citacao.linha,
-          trecho: citacao.trecho,
-          norma_id: citacao.id,
-          ato_id: citacao.id ? idDoAto(citacao.id) : null,
-          dispositivos_json: json(dispositivos),
-          regra: citacao.regra,
-          confianca: citacao.confianca,
-          situacao: citacao.situacao,
-          secao_id: secao?.id ?? null,
-          secao_tipo: secao?.section_kind ?? null,
-          papel: papelDaCitacao(
-            linhas,
-            citacao.linha,
-            secao ? { tipo: secao.section_kind, linha_inicio: secao.linha_inicio } : null,
-          ),
-          path: caminhoMd,
-        });
+          texto: lerTextoSecao(secao, { raiz, cache }),
+        })),
+        registro,
+        lexico,
+        expansoes,
+        insFts: insFtsSecao,
       });
 
       const fatos = extrairFatosPpc(

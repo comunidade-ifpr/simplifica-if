@@ -8,7 +8,7 @@ Centro canônico da base de análise do `analise-ppc`. Reúne, em um único luga
 - `topicos-fichas.json` — taxonomia semântica que organiza as fichas por tema, sem depender da numeração do PPC.
 - `mapa-fichas.md` — visão legível da taxonomia para consulta rápida.
 - `validacoes-cruzadas/` — verificações transversais de coerência entre seções e achados.
-- `marcos-normativos.json` — registro único dos temas normativos (DCN da EPT, DCNEM, EJA, assistência estudantil): identificação (`id`, `tema`, `linha` com os atos do tema por ID canônico, `aplica_a`, fichas), regra de transição e orientação de análise. A norma vigente, as substituídas, as antecessoras e os dispositivos revogados são derivados de `base-conhecimento/relacoes.yaml` na leitura (`scripts/marcos.ts`). É injetado nos subagentes, com os campos derivados e as normas por extenso, em `contextos.fundamentacao_normativa.marcos_normativos`.
+- `marcos-normativos.json` — registro único dos temas normativos (DCN da EPT, DCNEM, EJA, assistência estudantil): identificação (`id`, `tema`, `linha` com os atos do tema por ID canônico, `aplica_a`, fichas), regra de transição e orientação de análise. A norma vigente, as substituídas, as antecessoras e os dispositivos revogados são derivados de `base-conhecimento/relacoes.yaml` na leitura (`scripts/marcos.ts`). É injetado nos subagentes, com os campos derivados, as normas por extenso e as citações do PPC às normas de cada marco, em `contextos.fundamentacao_normativa.marcos_normativos`.
 - `contratos/` — exemplos mínimos de payload e formatos de referência.
 - `schemas/` — contratos JSON Schema para fichas, marcos, validações cruzadas e respostas. `ficha.schema.json` e `marcos-normativos.schema.json` são gerados do zod de `scripts/esquemas.ts` (veja [Schemas](#schemas)); os demais são editados à mão.
 - `indice.json` — índice consolidado da base de análise, gerado a partir dos JSONs reais.
@@ -29,6 +29,8 @@ Ao criar ou editar uma ficha, mantenha a ficha e a taxonomia sincronizadas:
 1. A ficha deve citar tópicos existentes em `topicos-fichas.json`.
 2. Cada tópico deve citar todas as fichas que pertencem a ele.
 3. `mapa-fichas.md` e `indice.json` são gerados; não edite manualmente.
+
+Os tópicos também decidem os grupos de sub-agente da rodada: cada ficha vai no grupo do seu tópico principal (o de menos fichas entre os seus `topicos_tematicos`; no empate, o primeiro na ordem deste arquivo), e as de `tipo_escopo: transversal` vão num grupo com o PPC inteiro. O grupo recebe as seções do PPC dos tipos ligados aos tópicos das suas fichas em `packages/kb/dados/topicos-secoes.yaml`; ao criar um tópico, acrescente-o lá também. As `consultas` da ficha são buscadas no PPC e trazem a melhor seção de cada uma: prefira termos que apareçam no texto do PPC.
 
 ## Como citar normas nas fichas
 

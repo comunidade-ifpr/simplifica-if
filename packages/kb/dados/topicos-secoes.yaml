@@ -1,15 +1,24 @@
 # Tópicos das fichas da analise-ppc (base-analise/topicos-fichas.json) → tipos de seção do PPC
 # (taxonomias técnico e geral de packages/kb/src/ppcs/secoes.ts).
 #
-# Usado por `kb pacote-contexto <tarefa> <ppc>`: as seções do PPC desses tipos entram inteiras no
-# pacote da ficha; a busca textual pelas `consultas` da ficha completa com o que a taxonomia não
-# pegou. Contrato: esquemaTopicosSecoes em packages/kb/src/db/pacote-contexto.ts (zod).
+# Usado por `kb pacote-contexto <tarefa> <ppc>` e pelos grupos por tópico da analise-ppc: as seções
+# do PPC desses tipos entram inteiras no pacote; a busca textual pelas `consultas` das fichas completa
+# com o que a taxonomia não pegou. Contrato: esquemaTopicosSecoes em packages/kb/src/db/pacote-contexto.ts (zod).
 #
 # Rascunho (fase 6): escrito a partir dos títulos e descrições dos tópicos, sem revisão humana.
+# Ajustado na troca da analise-ppc para grupos por tópico, pelas âncoras semânticas que ficavam fora
+# do grupo em 4 rodadas (3 PPCs técnicos da base e uma minuta fora dela):
+# - `pretextual` (capa, dirigentes, comissão) em identificacao_oferta e corpo_docente_gestao: a capa
+#   traz curso, forma de oferta, campus e ano; a comissão e a coordenação. Fora do índice publicado,
+#   esse tipo só existe no PPC de uma rodada (bancoDoPpcAvulso com todasAsSecoes);
+# - `ensino_pesquisa_extensao` em concepcao_metodologias (indissociabilidade, curricularização);
+# - `atendimento_estudante` em aee_acessibilidade_inclusao (NAPNE e AEE costumam estar na seção de
+#   atendimento ao estudante);
+# - `referencias` em referencias_normativas (CT-SUP-09 e CT-SUP-13 avaliam a seção de referências).
 
-identificacao_oferta: [identificacao, formato_oferta, carga_horaria, prazo_integralizacao, requisitos_acesso]
+identificacao_oferta: [pretextual, identificacao, formato_oferta, carga_horaria, prazo_integralizacao, requisitos_acesso]
 justificativa_objetivos: [justificativa, objetivos, contexto_institucional]
-concepcao_metodologias: [concepcao_pedagogica, organizacao_curricular]
+concepcao_metodologias: [concepcao_pedagogica, organizacao_curricular, ensino_pesquisa_extensao]
 perfil_egresso_mundo_trabalho: [perfil_egresso, mundo_trabalho, itinerario_formativo]
 matriz_curricular: [matriz_curricular, organizacao_curricular, carga_horaria, itinerario_formativo]
 ementario_bibliografias: [ementas]
@@ -17,10 +26,10 @@ estagio: [estagio_praticas]
 aproveitamento_certificacao_tfc: [aproveitamento_estudos, certificados_diplomas, itinerario_formativo, trabalho_conclusao]
 avaliacao_aprendizagem: [avaliacao]
 assistencia_estudantil_permanencia: [atendimento_estudante]
-aee_acessibilidade_inclusao: [acessibilidade_inclusao]
-corpo_docente_gestao: [corpo_docente, gestao_curso]
+aee_acessibilidade_inclusao: [acessibilidade_inclusao, atendimento_estudante]
+corpo_docente_gestao: [pretextual, corpo_docente, gestao_curso]
 infraestrutura: [infraestrutura]
 avaliacao_ppc_egressos: [avaliacao_curso, acompanhamento_egresso]
-referencias_normativas: [legislacao]
+referencias_normativas: [legislacao, referencias]
 temas_transversais_cidadania: [organizacao_curricular, concepcao_pedagogica]
 sintese_transversal_parecer: []

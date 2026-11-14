@@ -4,7 +4,7 @@
  * prompts, grupo avulso, mescla e validação de resultados (casos portados de
  * `test_flow.py`).
  */
-import { afterEach, describe, expect, test } from "bun:test";
+import { afterEach, beforeAll, describe, expect, test } from "bun:test";
 import {
   existsSync,
   mkdirSync,
@@ -27,10 +27,12 @@ import { normalizarMarkdown } from "../scripts/normalizador-markdown.ts";
 import { mesclarIdentificacaoPreferindoPreenchidos, prepararDocumento } from "../scripts/preparar-documento.ts";
 import { referenciasLegiveisDaFicha, universoOuVazio } from "../scripts/referencias-fichas.ts";
 import { ErroResultadosSubagents, validarResultadosRodada } from "../scripts/resultados.ts";
+import { abrirBanco } from "@simplifica-if/kb/db/banco";
 import { agoraIso, caminhosRodada, escreverJsonPy, lerJsonPy, timestampSlug } from "../scripts/rodada.ts";
 import {
-  agruparFichas,
+  agruparFichasPorTopico,
   carregarFichasOrdenadas,
+  carregarTopicosFichas,
   carregarValidacoesCruzadasOrdenadas,
   contextoFundamentacaoNormativa,
   fichaRequerContextoCnct,
@@ -58,6 +60,9 @@ Modalidade: Integrado
 
 O curso apresenta objetivos, perfil do egresso e justificativa institucional.
 `;
+
+// Os grupos leem o kb.sqlite, que a primeira abertura recompila quando as fontes mudaram (cerca de 8 s).
+beforeAll(() => abrirBanco({ raiz: RAIZ }).close(), 120_000);
 
 const temporarios: string[] = [];
 afterEach(() => {
@@ -96,7 +101,7 @@ type Payload = {
 };
 
 function payloadResultadosCompletos(): Payload {
-  const grupos = agruparFichas(carregarFichasOrdenadas(), 20).map((grupo) => ({
+  const grupos = agruparFichasPorTopico(carregarFichasOrdenadas(), carregarTopicosFichas(), 20).map((grupo) => ({
     grupo_id: grupo.grupo_id,
     resultados: grupo.fichas.map((ficha) => resultado(String(ficha.id), "ATENDE", Number(ficha.evidencia_minima ?? 3))),
   }));
@@ -371,21 +376,50 @@ Quedas do Iguaçu
 });
 
 describe("fichas e grupos", () => {
-  test("agrupa em blocos estáveis de 20", () => {
+  test("agrupa por tópico: cada ficha uma vez, na ordem da taxonomia, transversal por último", () => {
     const fichas = carregarFichasOrdenadas();
-    const grupos = agruparFichas(fichas, 20);
+    const topicos = carregarTopicosFichas();
+    const grupos = agruparFichasPorTopico(fichas, topicos, 20);
     expect(fichas.length).toBe(TOTAL_FICHAS);
-    const intervalos: string[] = [];
-    const totais: number[] = [];
-    for (let inicio = 1; inicio <= fichas.length; inicio += 20) {
-      intervalos.push(`${inicio}-${Math.min(inicio + 19, fichas.length)}`);
-      totais.push(Math.min(20, fichas.length - inicio + 1));
+    const ids = grupos.flatMap((g) => g.fichas.map((f) => String(f.id)));
+    expect(ids.length).toBe(TOTAL_FICHAS);
+    expect(new Set(ids).size).toBe(TOTAL_FICHAS);
+    expect(grupos.map((g) => g.grupo_id)).toEqual(grupos.map((_, i) => `grupo-${String(i + 1).padStart(3, "0")}`));
+    const ordem = topicos.map((t) => t.id);
+    const posicoes = grupos.filter((g) => g.topico !== "transversal").map((g) => ordem.indexOf(String(g.topico)));
+    expect(posicoes).toEqual([...posicoes].sort((a, b) => a - b));
+    const transversal = grupos.at(-1)!;
+    expect(transversal.topico).toBe("transversal");
+    expect(transversal.escopo_ppc).toBe("completo");
+    expect(transversal.fichas.every((f) => f.tipo_escopo === "transversal")).toBe(true);
+    expect(grupos.slice(0, -1).every((g) => g.escopo_ppc === "secoes")).toBe(true);
+    // cada ficha não transversal fica num dos seus tópicos, no grupo do tópico
+    for (const grupo of grupos.slice(0, -1)) {
+      for (const ficha of grupo.fichas) expect(ficha.topicos_tematicos as string[]).toContain(String(grupo.topico));
     }
-    expect(grupos.map((g) => g.intervalo)).toEqual(intervalos);
-    expect(grupos.map((g) => g.total_fichas)).toEqual(totais);
-    expect(grupos[0]!.grupo_id).toBe("grupo-001");
-    expect(grupos.at(-1)!.grupo_id).toBe(`grupo-${String(grupos.length).padStart(3, "0")}`);
-    expect(() => agruparFichas(fichas, 0)).toThrow("O tamanho do grupo precisa ser maior que zero.");
+    expect(grupos.every((g) => g.total_fichas === g.fichas.length && g.fichas.length <= 20)).toBe(true);
+    expect(() => agruparFichasPorTopico(fichas, topicos, 0)).toThrow("O tamanho do grupo precisa ser maior que zero.");
+  });
+
+  test("ficha multitemática vai para o tópico mais específico (menos fichas), não para o primeiro", () => {
+    const grupos = agruparFichasPorTopico(carregarFichasOrdenadas(), carregarTopicosFichas(), 20);
+    const grupoDa = (id: string) => grupos.find((g) => g.fichas.some((f) => f.id === id))!.topico;
+    expect(grupoDa("CT-CURR-25")).toBe("estagio"); // estagio (4) × perfil_egresso_mundo_trabalho (13)
+    expect(grupoDa("CT-IDENT-18")).toBe("avaliacao_ppc_egressos"); // 3 × 13
+    expect(grupoDa("CT-SUP-11")).toBe("infraestrutura"); // 6 × aee_acessibilidade_inclusao (9)
+    expect(grupoDa("CT-CURR-02")).toBe("identificacao_oferta"); // 11 × matriz_curricular (14)
+    expect(grupoDa("CT-TRANS-04")).toBe("transversal");
+  });
+
+  test("tópico maior que o tamanho máximo vira partes equilibradas", () => {
+    const fichas = carregarFichasOrdenadas();
+    const grupos = agruparFichasPorTopico(fichas, carregarTopicosFichas(), 5);
+    expect(grupos.every((g) => g.fichas.length <= 5)).toBe(true);
+    expect(new Set(grupos.flatMap((g) => g.fichas.map((f) => f.id))).size).toBe(TOTAL_FICHAS);
+    const partes = grupos.filter((g) => g.topico === "identificacao_oferta");
+    expect(partes.map((g) => [g.parte, g.partes])).toEqual(partes.map((_, i) => [i + 1, partes.length]));
+    const tamanhos = partes.map((g) => g.fichas.length);
+    expect(Math.max(...tamanhos) - Math.min(...tamanhos)).toBeLessThanOrEqual(1);
   });
 
   test("detecta fichas que dependem do CNCT e de fundamentação normativa", () => {
@@ -456,7 +490,11 @@ describe("fichas e grupos", () => {
     expect(payload.grupos_subagents_path).toBe(c.gruposSubagents);
     expect(payload.ppc_markdown).toBe(c.ppc);
     expect(payload.total_fichas).toBe(TOTAL_FICHAS);
-    expect(payload.grupos.length).toBe(Math.ceil(TOTAL_FICHAS / 20));
+    expect(payload.grupos.length).toBe(
+      agruparFichasPorTopico(carregarFichasOrdenadas(), carregarTopicosFichas()).length,
+    );
+    expect((payload.agrupamento as ObjetoPy).criterio).toBe("topico");
+    expect(payload.grupos.every((g) => (g.contextos as ObjetoPy).ppc !== undefined)).toBe(true);
     expect([c.cnctContexto, c.contextoEstruturalSubagents, c.validacoesCruzadasContexto].every(existsSync)).toBe(true);
     const cnct = payload.cnct_contexto as { correspondencia: ObjetoPy; fonte_catalogo: string };
     expect(cnct.correspondencia.denominacao).toBe("Técnico em Informática");
@@ -506,10 +544,11 @@ describe("fichas e grupos", () => {
 
   test("gera um pacote de prompt por grupo", () => {
     const rodada = criarRodada();
-    montarGruposSubagents(rodada, 30);
+    const payload = montarGruposSubagents(rodada, 30) as { grupos: ObjetoPy[] };
     const manifest = prepararPromptsSubagents(rodada) as { total_pacotes: number; arquivos: ObjetoPy[] };
-    expect(manifest.total_pacotes).toBe(Math.ceil(TOTAL_FICHAS / 30));
-    const texto = readFileSync(String(manifest.arquivos[0]!.arquivo), "utf-8");
+    expect(manifest.total_pacotes).toBe(payload.grupos.length);
+    const transversal = manifest.arquivos.find((a) => a.topico === "transversal")!;
+    const texto = readFileSync(String(transversal.arquivo), "utf-8");
     for (const trecho of [
       "## Prompt de trabalho",
       "## PPC.md",
@@ -518,6 +557,7 @@ describe("fichas e grupos", () => {
     ]) {
       expect(texto).toContain(trecho);
     }
+    expect(manifest.arquivos.every((a) => Number(a.caracteres) > 0)).toBe(true);
   });
 
   test("fixtures qualitativas exercitam norma e estágio", () => {
@@ -530,6 +570,152 @@ describe("fichas e grupos", () => {
     const grupos = montarGruposSubagents(rodadaDir) as ObjetoPy & { grupos: ObjetoPy[] };
     expect(((grupos.cnct_contexto as ObjetoPy).correspondencia as ObjetoPy).denominacao).toBe("Técnico em Informática");
     expect(grupos.grupos.some((g) => g.requer_fundamentacao_normativa)).toBe(true);
+  });
+});
+
+const MARKDOWN_TOPICOS = `# PROJETO PEDAGÓGICO DO CURSO TÉCNICO EM INFORMÁTICA
+
+Curso: Curso Técnico em Informática
+Campus: Assis Chateaubriand
+Forma de oferta: Integrado
+
+## 1. IDENTIFICAÇÃO DO CURSO
+
+Denominação do curso: Técnico em Informática, forma integrada ao ensino médio, presencial, turno matutino.
+
+## 2. JUSTIFICATIVA
+
+A demanda regional por profissionais de informática no município justifica a oferta deste curso técnico.
+
+## 3. ESTÁGIO CURRICULAR
+
+O estágio curricular supervisionado é não obrigatório e segue o Regulamento Geral de Estágio do campus, com Termo de Compromisso.
+
+## 4. AVALIAÇÃO DA APRENDIZAGEM
+
+A avaliação da aprendizagem é contínua e diagnóstica, com recuperação paralela e conselho de classe.
+
+## 5. INFRAESTRUTURA
+
+O campus dispõe de laboratórios de informática equipados e biblioteca com acervo atualizado.
+`;
+
+type GrupoTopico = ObjetoPy & {
+  grupo_id: string;
+  topico: string;
+  escopo_ppc: string;
+  fichas: ObjetoPy[];
+  contextos: ObjetoPy & { ppc: ObjetoPy & { secoes: ObjetoPy[] } };
+};
+
+describe("grupos por tópico num PPC fora da base", () => {
+  test("cada grupo recebe as seções do PPC.md dos seus tópicos; o transversal, o PPC inteiro", () => {
+    const rodada = criarRodada(MARKDOWN_TOPICOS);
+    const c = caminhosRodada(rodada);
+    const payload = montarGruposSubagents(rodada) as ObjetoPy & { grupos: GrupoTopico[] };
+    const porTopico = new Map(payload.grupos.map((g) => [g.topico, g]));
+    const secoes = (topico: string) => porTopico.get(topico)!.contextos.ppc.secoes;
+    const tipos = (topico: string) => secoes(topico).map((s) => String(s.tipo));
+
+    const estagio = porTopico.get("estagio")!;
+    expect(estagio.contextos.ppc.escopo).toBe("secoes");
+    expect(estagio.contextos.ppc.ppc_markdown).toBe(c.ppc);
+    expect(tipos("estagio")).toContain("estagio_praticas");
+    expect(secoes("estagio").find((s) => s.tipo === "estagio_praticas")!.motivo).toContain("topico:estagio");
+    expect(tipos("avaliacao_aprendizagem")).toContain("avaliacao");
+    expect(tipos("infraestrutura")).toContain("infraestrutura");
+    // a capa (pré-textual, fora do índice publicado) vai para a identificação
+    expect(tipos("identificacao_oferta")).toEqual(expect.arrayContaining(["pretextual", "identificacao"]));
+    // linhas e IDs de seção na taxonomia técnica do índice
+    const secaoEstagio = secoes("estagio").find((s) => s.tipo === "estagio_praticas")!;
+    expect(secaoEstagio.id).toBe("estagio_praticas-1");
+    expect(readFileSync(c.ppc, "utf-8").split("\n")[Number(secaoEstagio.linha_inicio) - 1]).toBe(
+      "# 3. ESTÁGIO CURRICULAR",
+    );
+
+    const transversal = porTopico.get("transversal")!;
+    expect(transversal.escopo_ppc).toBe("completo");
+    expect(transversal.contextos.ppc.secoes).toEqual([]);
+
+    // as normas citadas pelas fichas do grupo vêm com o texto do dispositivo e o caput
+    const fundamentacao = estagio.contextos.fundamentacao_normativa as ObjetoPy & { normas: ObjetoPy[] };
+    const dispositivos = fundamentacao.normas.flatMap((n) => n.dispositivos as ObjetoPy[]);
+    expect(dispositivos.length).toBeGreaterThan(0);
+    expect(dispositivos.every((d) => typeof d.texto === "string" && String(d.texto).length > 0)).toBe(true);
+    expect(Array.isArray(fundamentacao.transicoes)).toBe(true);
+    expect((fundamentacao.marcos_normativos as ObjetoPy[]).map((m) => m.id)).toContain("dcn_ept");
+
+    const manifest = prepararPromptsSubagents(rodada) as { arquivos: ObjetoPy[] };
+    const pacote = (topico: string) =>
+      readFileSync(String(manifest.arquivos.find((a) => a.topico === topico)!.arquivo), "utf-8");
+    const textoEstagio = pacote("estagio");
+    expect(textoEstagio).toContain("## PPC.md: seções do grupo");
+    expect(textoEstagio).toContain("Regulamento Geral de Estágio do campus");
+    expect(textoEstagio).toContain("<!-- seção estagio_praticas-1 · linhas");
+    expect(textoEstagio).not.toContain("laboratórios de informática equipados");
+    const textoTransversal = pacote("transversal");
+    expect(textoTransversal).toContain("laboratórios de informática equipados");
+    expect(textoTransversal).toContain("Regulamento Geral de Estágio do campus");
+  });
+
+  test("toda ficha recebe as seções de todos os seus tópicos, inclusive as multitemáticas", () => {
+    const rodada = criarRodada(MARKDOWN_TOPICOS);
+    const payload = montarGruposSubagents(rodada) as ObjetoPy & { grupos: GrupoTopico[] };
+    for (const grupo of payload.grupos.filter((g) => g.escopo_ppc === "secoes")) {
+      const topicos = new Set(grupo.fichas.flatMap((f) => f.topicos_tematicos as string[]));
+      expect(new Set(grupo.contextos.ppc.topicos as string[])).toEqual(topicos);
+    }
+    const infraestrutura = payload.grupos.find((g) => g.topico === "infraestrutura")!;
+    // CT-SUP-11 (acessibilidade física) também é do tópico aee_acessibilidade_inclusao
+    expect(infraestrutura.fichas.map((f) => f.id)).toContain("CT-SUP-11");
+    expect(infraestrutura.contextos.ppc.topicos as string[]).toContain("aee_acessibilidade_inclusao");
+  });
+
+  test("pacotes determinísticos com o relógio fixo (ANALISE_PPC_AGORA)", () => {
+    const conteudos = [diretorioTemporario(), diretorioTemporario()].map((base) => {
+      const arquivo = path.join(base, "minuta.md");
+      writeFileSync(arquivo, MARKDOWN_TOPICOS, "utf-8");
+      const preparo = cli("preparar-documento", arquivo, "--saida-base", path.join(base, "saida"));
+      expect(preparo.codigo).toBe(0);
+      const rodada = JSON.parse(preparo.stdout).rodada_dir as string;
+      expect(cli("montar-grupos-subagents", "--rodada-dir", rodada).codigo).toBe(0);
+      expect(cli("preparar-prompts-subagents", "--rodada-dir", rodada).codigo).toBe(0);
+      const c = caminhosRodada(rodada);
+      const ler = (arquivo: string) => readFileSync(arquivo, "utf-8").replaceAll(base, "<base>");
+      return [
+        ler(c.gruposSubagents),
+        ...readdirSync(c.promptsSubagentsDir)
+          .sort()
+          .map((nome) => ler(path.join(c.promptsSubagentsDir, nome))),
+      ];
+    });
+    expect(conteudos[0]!.length).toBeGreaterThan(10);
+    expect(conteudos[1]).toEqual(conteudos[0]!);
+  });
+
+  test("o CNCT identificado é o mesmo registro do kb.sqlite", () => {
+    const rodada = criarRodada(MARKDOWN_TOPICOS);
+    const payload = montarGruposSubagents(rodada) as ObjetoPy & { cnct_contexto: ObjetoPy };
+    const correspondencia = payload.cnct_contexto.correspondencia as ObjetoPy;
+    const db = abrirBanco({ raiz: RAIZ });
+    try {
+      const linha = db.query("SELECT dados_json FROM cnct WHERE id = ?").get(`cnct:${correspondencia.id}`) as {
+        dados_json: string;
+      };
+      const kb = JSON.parse(linha.dados_json) as ObjetoPy;
+      for (const campo of [
+        "denominacao",
+        "eixo_tecnologico",
+        "area_tecnologica",
+        "perfil_profissional",
+        "campo_atuacao",
+      ]) {
+        expect(correspondencia[campo]).toEqual(kb[campo]);
+      }
+      expect(Number(correspondencia.carga_horaria_minima_horas)).toBe(Number(kb.carga_horaria_minima_horas));
+    } finally {
+      db.close();
+    }
   });
 });
 
@@ -560,8 +746,16 @@ describe("grupo avulso e mescla", () => {
     const rodada = criarRodada();
     const c = caminhosRodada(rodada);
     escreverJsonPy(c.resultadosSubagents, payloadResultadosCompletos());
-    const grupo = montarGrupoAvulso(rodada, ["CT-IDENT-01"]) as { grupo: ObjetoPy; grupo_avulso_path: string };
+    const grupo = montarGrupoAvulso(rodada, ["CT-IDENT-01"]) as {
+      grupo: ObjetoPy;
+      grupo_avulso_path: string;
+      prompt_subagent_path: string;
+    };
     expect(existsSync(grupo.grupo_avulso_path)).toBe(true);
+    expect(grupo.grupo.escopo_ppc).toBe("secoes");
+    expect(readFileSync(grupo.prompt_subagent_path, "utf-8")).toContain("## PPC.md: seções do grupo");
+    const transversal = montarGrupoAvulso(rodada, ["CT-TRANS-01", "CT-IDENT-01"]) as { grupo: ObjetoPy };
+    expect(transversal.grupo.escopo_ppc).toBe("completo");
     escreverJsonPy(path.join(c.suporteDir, "resultado-avulso.json"), {
       grupo_id: grupo.grupo.grupo_id,
       resultados: [{ ...resultado("CT-IDENT-01", "INCONCLUSIVO"), confianca: new FloatPy(1) }],

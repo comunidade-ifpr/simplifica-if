@@ -23,7 +23,7 @@ Núcleo da base de conhecimento ([plano de arquitetura](../../PLANO-ARQUITETURA.
 | `normas/referencia-estruturada.ts` | `{ ref, dispositivo?, papel, nota? }` (zod), universo de IDs citáveis (normas, stubs, `externo:`, `cnct:`) e texto legível das referências das fichas da `analise-ppc` |
 | `ppcs/citacoes.ts` | citações dos PPCs convertidos; PPCs que citam uma norma; `lerTextoSecao` (texto integral de uma seção do índice pelas linhas) |
 | `ppcs/front-matter.ts` | front matter de proveniência dos PPCs (`ppc:<campus>/<curso>`, URL, hash, data, conversor) e leitura com o front matter em branco |
-| `ppcs/secoes.ts` | títulos, segmentação com linhas, taxonomias de seção por nível (técnico, ligada ao art. 28 da Res. CNE/CP nº 2/2026, e geral), preview e `textoDaSecao` |
+| `ppcs/secoes.ts` | títulos, segmentação com linhas, taxonomias de seção por nível (técnico, ligada ao art. 28 da Res. CNE/CP nº 2/2026, e geral), preview e `textoDaSecao`; `secoesIndexadas` (o recorte do índice publicado, com a chave `<tipo>-<n>` do ID) e `secoesComChave` (todas as seções, as de fora do índice com `<tipo>-x<n>`) |
 | `adequacao/art71.ts` | cursos técnicos sujeitos ao art. 71 da Res. CNE/CP nº 2/2026 e a DCN que cada PPC cita |
 | `avaliacao/resolvedor.ts` | precisão e recall do resolvedor em `avaliacao/resolvedor/citacoes-anotadas.yaml` |
 | `avaliacao/busca-secoes.ts` | recall@10 da busca de seções em `avaliacao/busca-secoes/consultas.yaml`, com e sem stemmer e sinônimos |
@@ -31,7 +31,7 @@ Núcleo da base de conhecimento ([plano de arquitetura](../../PLANO-ARQUITETURA.
 | `busca/sinonimos.ts` | léxico de `dados/sinonimos.yaml`: termos por tipo de seção (expansão do documento) e grupos de equivalentes (expansão da consulta) |
 | `institucional/dados.ts` | leitura frouxa de `dados/institucional/` e das matrizes do SUAP (`suap.matrizes.resumo`) |
 | `fatos/ppc.ts`, `fatos/divergencias.ts` | fatos extraídos dos PPCs (carga total, estágio obrigatório e carga), com trecho e status `extraido`, e o cruzamento com o SUAP |
-| `db/esquema.ts`, `db/compilar.ts` | esquema SQL e compilação determinística do `kb.sqlite` |
+| `db/esquema.ts`, `db/compilar.ts` | esquema SQL e compilação determinística do `kb.sqlite`; `gravarSecoesECitacoes` (seções, FTS e citações de um PPC) e `bancoDoPpcAvulso` (banco em memória, no mesmo esquema, com um PPC que pode não estar na base) |
 | `db/fontes.ts`, `db/banco.ts` | fontes do banco, impressão digital e recompilação automática |
 | `db/fontes-normativas.ts` | interface de carga da fase 5 (dispositivos, relações, vigências, transições, correspondências), com o zod de cada linha, e os arquivos que ela lê |
 | `db/consultas.ts`, `db/consultas-normas.ts`, `db/pacote-contexto.ts`, `db/comandos.ts` | consultas SQL com zod na fronteira (as da fase 5 em `consultas-normas.ts`) e os comandos da CLI sobre o banco |
@@ -63,7 +63,7 @@ bun run kb buscar-norma "Lei 11.788, art. 10" [--json] [--limite N] [--situacao 
 bun run kb buscar-secoes "estágio não obrigatório" [--json] [--tipo T]... [--nivel N] [--campus C] [--cnct X] [--forma F] [--ppc P] [--modo simples|radicais|completo] [--integral]
 bun run kb cursos [--json] [--eixo E] [--turno T] [--campus C] [--nivel N] [--forma F] [--situacao S] [--cnct X] [--processo P]
 bun run kb ppc-fatos [<campus/curso>] [--json] [--divergencias] [--nivel N]
-bun run kb pacote-contexto <CT-CURR-12 | tópico | grupo-001 | todas> <campus/curso> [--json]
+bun run kb pacote-contexto <CT-CURR-12 | tópico | grupo-001 | todas> <campus/curso | arquivo.md> [--json]
 bun run kb avaliar-busca [--json]
 ```
 
@@ -118,6 +118,10 @@ Ao mudar o resolvedor, rode também `bun run avaliacao:gabaritos` e revise o dif
 
 **Fase 5.** A carga entra por `FontesNormativas` (`db/fontes-normativas.ts`), implementada por `fontesNormativasArquivos` (`normas/fontes-db.ts`), o padrão de `compilarBanco`. Nenhuma regra é reescrita no banco: a deduplicação vai gravada (`canonico`), a vigência sai de `statusEm`, e as consultas (`db/consultas-normas.ts`) usam `correspondenciaEm`, `descendentesEm` e `situacaoNaData`, as mesmas funções da API de arquivos. Cada linha é validada pelo zod da tabela; a ordem de inserção é a dos arquivos. Arquivo novo que a carga ler entra em `ARQUIVOS_FONTES_NORMATIVAS` (hoje `relacoes.yaml`, `transicoes.yaml`, `correspondencias/`, `config/vigencia.yaml` e `normas/stubs.yaml`). Ao mudar o esquema, suba `VERSAO_ESQUEMA` (hoje 2).
 
-**`pacote-contexto`.** Por norma citada pelas fichas, o texto de cada dispositivo citado (`referencias_normativas[].dispositivo`): caput herdado, o próprio texto e os subordinados, arquivo e linhas; um dispositivo contido noutro citado não se repete (vai em `citados`). Também os marcos ligados (com os campos derivados) e as regras de transição das normas das fichas e das citadas como fundamento pelo PPC, com a situação na `data_referencia` e o texto do dispositivo que as estabelece.
+**`pacote-contexto`.** Por norma citada pelas fichas, o texto de cada dispositivo citado (`referencias_normativas[].dispositivo`): caput herdado, o próprio texto e os subordinados, arquivo e linhas; um dispositivo contido noutro citado não se repete (vai em `citados`). Também os marcos ligados (com os campos derivados) e as regras de transição das normas das fichas e das citadas como fundamento pelo PPC, com a situação na `data_referencia` e o texto do dispositivo que as estabelece. As seções do PPC são as dos tipos ligados aos tópicos das fichas (`dados/topicos-secoes.yaml`) mais a melhor seção de cada `consulta` das fichas. As partes são funções próprias (`normasDoPacote`, `marcosDoPacote`, `transicoesDoPacote`, `secoesDoPacote`), usadas pelo pacote de um PPC da base (`pacoteContexto`) e pelo de um PPC fora dela (`pacoteContextoAvulso`).
+
+**Grupos por tópico.** `grupo-NNN` é o n-ésimo grupo de sub-agente da `analise-ppc`, montado por `agruparPorTopico`: cada ficha vai no grupo do seu tópico principal (`topicoPrincipal`: o de menos fichas entre os seus `topicos_tematicos`, no empate o primeiro na ordem de `topicos-fichas.json`), as de `tipo_escopo: transversal` num grupo `transversal` por último, com o PPC inteiro (`escopo: "completo"`); tópico com mais de `TAMANHO_MAXIMO_GRUPO` (20) fichas vira partes equilibradas.
+
+**PPC fora da base.** `bancoDoPpcAvulso(markdown, opcoes)` cria um banco em memória com o esquema do `kb.sqlite` e grava o PPC por `gravarSecoesECitacoes`, o mesmo caminho da compilação: seções de `secoesIndexadas` (ou, com `todasAsSecoes`, de `secoesComChave`, que mantém a capa, `outros` e as seções curtas) e citações do resolvedor. Com `titulosNivel1`, `# Título` conta como título (o normalizador da `analise-ppc` põe o primeiro nível numerado em `#`; no índice publicado só `##` a `######` contam). Para um PPC da base, o banco em memória dá as mesmas seções e citações do `kb.sqlite` (`db/base.test.ts`). `pacoteContextoAvulso(db, dbPpc, fichas, opcoes)` monta o pacote de um conjunto de fichas: normas, marcos e transições do `kb.sqlite`; seções e citações do banco em memória; `citacoesPpc` acrescenta todas as citações normativas do PPC. A CLI aceita um `.md` no lugar de `<campus/curso>`.
 
 **Busca de seções.** Ao mudar `dados/sinonimos.yaml`, `busca/` ou as consultas de `db/consultas.ts`, rode `bun run kb avaliar-busca` e compare o recall@10 dos três modos com o anterior; o conjunto de `avaliacao/busca-secoes/` é rascunho, rotulado pelos títulos das seções.

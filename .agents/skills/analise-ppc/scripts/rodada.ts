@@ -10,13 +10,15 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, realpathSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { TAMANHO_MAXIMO_GRUPO } from "@simplifica-if/kb/db/pacote-contexto";
 import { carregarJsonPy, dumpsPy, jsonIndentadoPy } from "@simplifica-if/kb/python/json";
 import { type ObjetoPy, strPy } from "@simplifica-if/kb/python/valores";
 import { compararTexto } from "@simplifica-if/kb/texto";
 import { listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 
-export const TAMANHO_GRUPO_PADRAO = 20;
+/** Tamanho máximo de um grupo de sub-agente (fichas); tópicos maiores viram partes. */
+export const TAMANHO_GRUPO_PADRAO = TAMANHO_MAXIMO_GRUPO;
 
 // ---------------------------------------------------------------- relógio
 

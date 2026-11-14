@@ -24,8 +24,8 @@ Read .agents/skills/analise-ppc/instrucoes.md
 ## Fluxo principal
 
 1. Preparar o documento para criar a rodada e o `PPC.md`.
-2. Montar os grupos de fichas canônicas para sub-agentes, incluindo contexto CNCT da base unificada, contexto estrutural, validações cruzadas e anexos visuais quando disponíveis.
-3. Incluir contexto de fundamentação normativa para grupos com fichas que citam ou dependem de base legal, usando a base local e o protocolo da skill `verificar-fundamentacao-normativa`.
+2. Montar os grupos de fichas por tópico para sub-agentes: cada ficha em um grupo, o do seu tópico principal, e as fichas transversais num grupo com o PPC inteiro. Cada grupo recebe só as seções do `PPC.md` dos tópicos das suas fichas (segmentação e taxonomia do índice de seções do kb), além de contexto CNCT, contexto estrutural, validações cruzadas e anexos visuais quando disponíveis.
+3. Incluir contexto de fundamentação normativa para grupos com fichas que citam ou dependem de base legal: o texto dos dispositivos citados, as regras de transição e os marcos, do `kb.sqlite`, e o protocolo da skill `verificar-fundamentacao-normativa`.
 4. Gerar pacotes de prompt por grupo com `preparar-prompts-subagents`.
 5. Spawnar um sub-agente por grupo na conversa atual.
 6. Coletar as respostas em `arquivos-suporte/resultados-subagents.json`, incluindo evidências estruturadas e achados opcionais em `fundamentacao_normativa`.

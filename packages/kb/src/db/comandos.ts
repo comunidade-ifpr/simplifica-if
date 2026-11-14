@@ -10,6 +10,7 @@
  *   bun run kb avaliar-busca [--json]
  */
 import type { Database } from "bun:sqlite";
+import { existsSync } from "node:fs";
 import { type Command, InvalidArgumentError } from "commander";
 import { lerSinonimos } from "../busca/sinonimos.ts";
 import { avaliarBusca } from "../avaliacao/busca-secoes.ts";
@@ -23,7 +24,7 @@ import {
   listarCursos,
   type ModoBusca,
 } from "./consultas.ts";
-import { pacoteContexto } from "./pacote-contexto.ts";
+import { type PacoteContexto, pacoteContexto, pacoteDoMarkdown } from "./pacote-contexto.ts";
 
 function json(valor: unknown): void {
   process.stdout.write(`${JSON.stringify(valor, null, 2)}\n`);
@@ -49,6 +50,21 @@ function modo(valor: string): ModoBusca {
     throw new InvalidArgumentError("use simples, radicais ou completo");
   }
   return valor;
+}
+
+/** Normas, marcos, transições e seções de um pacote, em texto. */
+function imprimirPartes(
+  pacote: Pick<PacoteContexto, "normas" | "marcos" | "data_referencia" | "transicoes" | "secoes">,
+): void {
+  console.log(
+    `normas: ${pacote.normas.map((n) => `${n.ref} (${n.dispositivos.map((d) => d.id.slice(d.id.indexOf("#"))).join(", ") || "sem dispositivo"})`).join("; ")}`,
+  );
+  console.log(`marcos: ${pacote.marcos.map((m) => m.marco).join(", ") || "nenhum"}`);
+  console.log(
+    `transições em ${pacote.data_referencia}: ${pacote.transicoes.map((t) => `${t.id} (${t.situacao})`).join(", ") || "nenhuma"}`,
+  );
+  for (const s of pacote.secoes)
+    console.log(`  ${s.path}:${s.linha_inicio}-${s.linha_fim} [${s.tipo}] ${s.titulo} (${s.motivo.join("; ")})`);
 }
 
 function comBanco<T>(acao: (db: Database) => T): T {
@@ -246,23 +262,27 @@ export function registrarComandosBanco(programa: Command): void {
       "Contexto de uma tarefa da analise-ppc (ficha, tópico, grupo-NNN ou todas) para um PPC: CNCT, fichas, dispositivos citados, marcos, regras de transição, seções relevantes e fatos.",
     )
     .argument("<tarefa>", "CT-CURR-12, CT-CURR-12,CT-IDENT-01, estagio, grupo-001 ou todas")
-    .argument("<ppc>", "campus/curso ou ppc:campus/curso")
+    .argument("<ppc>", "campus/curso, ppc:campus/curso ou um arquivo .md (PPC fora da base)")
     .option("--json", "saída em JSON (o pacote inteiro)")
     .action((tarefa: string, ppc: string, o: { json?: boolean }) => {
+      if (ppc.toLowerCase().endsWith(".md") && existsSync(ppc)) {
+        const pacote = comBanco((db) =>
+          pacoteDoMarkdown(db, tarefa, ppc, { lexico: lerSinonimos(), raiz: raizRepositorio() }),
+        );
+        if (o.json) return json(pacote);
+        console.log(`${pacote.path} (fora da base); fichas: ${pacote.fichas_ids.join(", ")}`);
+        imprimirPartes(pacote);
+        console.log(
+          `tamanho: ${pacote.tamanho.caracteres} caracteres (${pacote.secoes.length} seções; PPC inteiro: ${pacote.tamanho.caracteres_ppc_inteiro})`,
+        );
+        return;
+      }
       const pacote = comBanco((db) =>
         pacoteContexto(db, tarefa, ppc, { lexico: lerSinonimos(), raiz: raizRepositorio() }),
       );
       if (o.json) return json(pacote);
       console.log(`${pacote.ppc.id} — ${pacote.ppc.curso_nome}; fichas: ${pacote.fichas_ids.join(", ")}`);
-      console.log(
-        `normas: ${pacote.normas.map((n) => `${n.ref} (${n.dispositivos.map((d) => d.id.slice(d.id.indexOf("#"))).join(", ") || "sem dispositivo"})`).join("; ")}`,
-      );
-      console.log(`marcos: ${pacote.marcos.map((m) => m.marco).join(", ") || "nenhum"}`);
-      console.log(
-        `transições em ${pacote.data_referencia}: ${pacote.transicoes.map((t) => `${t.id} (${t.situacao})`).join(", ") || "nenhuma"}`,
-      );
-      for (const s of pacote.secoes)
-        console.log(`  ${s.path}:${s.linha_inicio}-${s.linha_fim} [${s.tipo}] ${s.titulo} (${s.motivo.join("; ")})`);
+      imprimirPartes(pacote);
       console.log(
         `tamanho: ${pacote.tamanho.caracteres} caracteres (${pacote.tamanho.secoes} seções, ${pacote.tamanho.caracteres_secoes} caracteres de seção; PPC inteiro: ${pacote.tamanho.caracteres_ppc_inteiro})`,
       );

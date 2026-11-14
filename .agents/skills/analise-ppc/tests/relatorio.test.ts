@@ -31,7 +31,12 @@ import {
 } from "../scripts/relatorio-html.ts";
 import { ErroResultadosSubagents } from "../scripts/resultados.ts";
 import { caminhosRodada, escreverJsonPy, lerJsonPy } from "../scripts/rodada.ts";
-import { agruparFichas, carregarFichasOrdenadas, carregarValidacoesCruzadasOrdenadas } from "../scripts/subagents.ts";
+import {
+  agruparFichasPorTopico,
+  carregarFichasOrdenadas,
+  carregarTopicosFichas,
+  carregarValidacoesCruzadasOrdenadas,
+} from "../scripts/subagents.ts";
 
 const caminhos = caminhosPadrao();
 const RAIZ = path.resolve(caminhos.appDir, "../../..");
@@ -87,7 +92,7 @@ type Payload = {
 };
 
 function payloadResultadosCompletos(): Payload {
-  const grupos = agruparFichas(carregarFichasOrdenadas(), 20).map((grupo) => ({
+  const grupos = agruparFichasPorTopico(carregarFichasOrdenadas(), carregarTopicosFichas(), 20).map((grupo) => ({
     grupo_id: grupo.grupo_id,
     resultados: grupo.fichas.map((ficha) => resultado(String(ficha.id), "ATENDE", Number(ficha.evidencia_minima ?? 3))),
   }));
@@ -356,7 +361,7 @@ describe("gerar-relatorio-html", () => {
   test("usa assets externos e anota o PPC", () => {
     const rodada = criarRodada();
     const payload = payloadResultadosCompletos();
-    const primeiro = payload.grupos[0]!.resultados[0]!;
+    const primeiro = resultadoDa(payload, "CT-CURR-01");
     primeiro.estado = "NAO_ATENDE";
     primeiro.revisao_humana_obrigatoria = true;
     primeiro.lacunas = ["Falta detalhar a aderência da identificação."];

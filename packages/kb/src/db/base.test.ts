@@ -32,7 +32,7 @@ import {
   statusEm,
   transicoesAplicaveis,
 } from "../normas/vigencia.ts";
-import { compilarBanco } from "./compilar.ts";
+import { bancoDoPpcAvulso, compilarBanco } from "./compilar.ts";
 import { buscarNorma, buscarSecoes, divergenciasPpcSuap, listarCursos } from "./consultas.ts";
 import {
   descendentesBanco,
@@ -43,7 +43,8 @@ import {
   transicoesNoBanco,
   vigenciaNoBanco,
 } from "./consultas-normas.ts";
-import { pacoteContexto } from "./pacote-contexto.ts";
+import { fichasDoBanco, nomesDeCampiDoBanco, pacoteContexto, pacoteContextoAvulso } from "./pacote-contexto.ts";
+import { palavrasDeCampi } from "../ppcs/secoes.ts";
 
 const raiz = raizRepositorio();
 const dir = mkdtempSync(path.join(tmpdir(), "kb-base-"));
@@ -146,6 +147,69 @@ describe("kb.sqlite da base", () => {
     expect(pacote.transicoes.map((t) => t.id)).toContain("dcnept-2026-art71");
     for (const t of pacote.transicoes) expect(t.texto).not.toBeNull();
     expect(pacote.secoes.some((s) => s.tipo === "matriz_curricular")).toBe(true);
+  });
+});
+
+describe("PPC fora da base (bancoDoPpcAvulso)", () => {
+  const AMOSTRA = [
+    "curitiba/tecnico-em-enfermagem",
+    "jacarezinho/tecnico-em-eletromecanica",
+    "campo-largo/administracao-proeja",
+    "paranagua/tecnico-em-informatica",
+    "arapongas/tecnico-em-melhoria-de-processos",
+    "curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio",
+  ];
+  const secoesDe = (banco: Database, ppcId: string) =>
+    (
+      banco
+        .query(
+          "SELECT id, tipo, titulo, linha_inicio, linha_fim, linha_texto, texto FROM secoes WHERE ppc_id = ? ORDER BY linha_inicio",
+        )
+        .all(ppcId) as { id: string }[]
+    ).map((s) => ({ ...s, id: s.id.slice(s.id.indexOf("#") + 1) }));
+  const citacoesDe = (banco: Database, ppcId: string) =>
+    banco
+      .query("SELECT linha, trecho, ato_id, regra, secao_tipo, papel FROM citacoes WHERE ppc_id = ? ORDER BY ordem")
+      .all(ppcId);
+
+  test("o Markdown segmentado em memória dá as mesmas seções e citações do kb.sqlite", () => {
+    const palavras = palavrasDeCampi(nomesDeCampiDoBanco(db));
+    for (const chave of AMOSTRA) {
+      const md = readFileSync(path.join(raiz, "base-conhecimento/institucional/ifpr/ppcs", `${chave}.md`), "utf-8");
+      const avulso = bancoDoPpcAvulso(md, { ppcId: "ppc:avulso", palavrasCampi: palavras, raiz });
+      try {
+        expect(secoesDe(avulso, "ppc:avulso")).toEqual(secoesDe(db, `ppc:${chave}`));
+        expect(citacoesDe(avulso, "ppc:avulso")).toEqual(citacoesDe(db, `ppc:${chave}`));
+      } finally {
+        avulso.close();
+      }
+    }
+  });
+
+  test("o pacote avulso de um tópico tem as normas, marcos, transições e seções do tópico do pacote da base", () => {
+    const md = readFileSync(
+      path.join(raiz, "base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md"),
+      "utf-8",
+    );
+    const avulso = bancoDoPpcAvulso(md, { palavrasCampi: palavrasDeCampi(nomesDeCampiDoBanco(db)), raiz });
+    try {
+      const lexico = lerSinonimos();
+      const base = pacoteContexto(db, "estagio", "curitiba/tecnico-em-enfermagem", { lexico, raiz });
+      const pacote = pacoteContextoAvulso(db, avulso, fichasDoBanco(db, base.fichas_ids), { lexico });
+      expect(pacote.fichas_ids).toEqual(base.fichas_ids);
+      expect(pacote.normas).toEqual(base.normas);
+      expect(pacote.marcos).toEqual(base.marcos);
+      expect(pacote.transicoes).toEqual(base.transicoes);
+      const doTopico = (secoes: { id: string; motivo: string[] }[]) =>
+        secoes.filter((s) => s.motivo.some((m) => m.startsWith("topico:"))).map((s) => s.id.slice(s.id.indexOf("#")));
+      expect(doTopico(pacote.secoes)).toEqual(doTopico(base.secoes));
+      expect(pacote.secoes.every((s) => s.texto.length > 0)).toBe(true);
+      const completo = pacoteContextoAvulso(db, avulso, fichasDoBanco(db, base.fichas_ids), { escopo: "completo" });
+      expect(completo.secoes).toEqual([]);
+      expect(completo.normas).toEqual(base.normas);
+    } finally {
+      avulso.close();
+    }
   });
 });
 

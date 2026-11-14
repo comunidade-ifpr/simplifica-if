@@ -23,13 +23,13 @@ import {
   MINIMO_CARACTERES_SECAO,
   palavrasDeCampi,
   previewSecao,
-  segmentarPpc,
+  secoesIndexadas,
   TAXONOMIAS,
   taxonomiaDoNivel,
   TIPOS_NAO_INDEXADOS,
 } from "@simplifica-if/kb/ppcs/secoes";
 import type { IndicePpcsJson, SecaoPpcJson } from "./tipos-schemas.ts";
-import { compararTexto, contarCaracteres, lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
+import { compararTexto, lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
 
 export { limparTexto, limparTitulo, removerAcentos, segmentarPpc, tituloDaLinha } from "@simplifica-if/kb/ppcs/secoes";
 
@@ -151,14 +151,9 @@ export function montarItensSecao(caminhos: CaminhosBase, itensPpc: ItemPpc[]): I
   const secoes: ItemSecao[] = [];
   for (const itemPpc of itensPpc) {
     const markdown = lerTexto(naBase(caminhos, itemPpc.path), { ignorarErros: true });
-    const contadores = new Map<string, number>();
-    for (const secao of segmentarPpc(markdown, itemPpc.taxonomia, palavras)) {
-      if (TIPOS_NAO_INDEXADOS.has(secao.tipo)) continue;
-      if (contarCaracteres(secao.textoLimpo) < MINIMO_CARACTERES_SECAO) continue;
-      const contador = (contadores.get(secao.tipo) ?? 0) + 1;
-      contadores.set(secao.tipo, contador);
+    for (const secao of secoesIndexadas(markdown, itemPpc.taxonomia, palavras)) {
       const item: ItemSecao = {
-        id: `${itemPpc.id}#${secao.tipo}-${contador}`,
+        id: `${itemPpc.id}#${secao.chave}`,
         ppc_id: itemPpc.id,
         campus_id: itemPpc.campus_id,
         curso_slug: itemPpc.curso_slug,

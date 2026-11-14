@@ -81,8 +81,12 @@ export function resumoGruposSubagents(payload: Objeto): Objeto {
     total_grupos: grupos.length,
     grupos: grupos.map((grupo) => ({
       grupo_id: grupo.grupo_id,
-      intervalo: grupo.intervalo,
+      topico: grupo.topico,
+      parte: grupo.parte,
+      partes: grupo.partes,
+      escopo_ppc: grupo.escopo_ppc,
       total_fichas: grupo.total_fichas,
+      total_secoes: ((grupo.contextos ?? {}) as Objeto & { ppc?: Objeto }).ppc?.total_secoes ?? null,
       requer_contexto_cnct: grupo.requer_contexto_cnct ?? false,
       requer_fundamentacao_normativa: grupo.requer_fundamentacao_normativa ?? false,
       requer_anexos_visuais: grupo.requer_anexos_visuais ?? false,
@@ -206,9 +210,14 @@ export function criarPrograma(): Command {
 
   programa
     .command("montar-grupos-subagents")
-    .description("Listar grupos de fichas para sub-agentes e salvar grupos-subagents.json")
+    .description("Montar os grupos por tópico para sub-agentes e salvar grupos-subagents.json")
     .requiredOption("--rodada-dir <dir>", "Diretório da rodada")
-    .option("--tamanho-grupo <n>", "Quantidade de fichas por grupo", inteiro, TAMANHO_GRUPO_PADRAO)
+    .option(
+      "--tamanho-grupo <n>",
+      "Quantidade máxima de fichas por grupo (tópicos maiores viram partes)",
+      inteiro,
+      TAMANHO_GRUPO_PADRAO,
+    )
     .option(
       "--detalhado",
       "Imprimir o JSON completo; por padrão a CLI mostra apenas um resumo e salva o payload completo.",
