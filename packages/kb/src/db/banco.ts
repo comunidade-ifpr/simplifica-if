@@ -43,10 +43,13 @@ export function estadoDoBanco(raiz: string, caminho: string): Estado {
   const arquivos = arquivosFonte(raiz);
   if (meta.get("fontes_lista_sha256") !== hashLista(arquivos)) return { estado: "velho", motivo: "lista-de-fontes" };
   const mtimeBanco = statSync(caminho).mtimeMs;
-  if (mtimeMaisRecente(raiz, arquivos) <= mtimeBanco) return { estado: "fresco", motivo: "mtime" };
+  const mtimeFontes = mtimeMaisRecente(raiz, arquivos);
+  if (mtimeFontes <= mtimeBanco) return { estado: "fresco", motivo: "mtime" };
   if (meta.get("fontes_sha256") === hashConteudo(raiz, arquivos)) {
-    const agora = new Date();
-    utimesSync(caminho, agora, agora);
+    // o banco avança até o mtime das fontes lido antes do hash, não até agora: uma fonte editada
+    // durante o hash fica mais nova que o banco e é conferida na próxima abertura
+    const instante = new Date(mtimeFontes);
+    utimesSync(caminho, instante, instante);
     return { estado: "fresco", motivo: "conteudo-igual" };
   }
   return { estado: "velho", motivo: "conteudo" };

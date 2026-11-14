@@ -10,7 +10,7 @@ import { Database } from "bun:sqlite";
 import { afterAll, beforeAll, describe, expect, spyOn, test } from "bun:test";
 import { createHash } from "node:crypto";
 import * as fs from "node:fs";
-import { copyFileSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { copyFileSync, mkdtempSync, readFileSync, rmSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { lerSinonimos } from "../busca/sinonimos.ts";
@@ -42,7 +42,14 @@ import {
   transicoesAplicaveis,
 } from "../normas/vigencia.ts";
 import { bancoDoPpcAvulso, compilarBanco } from "./compilar.ts";
-import { buscarNorma, buscarSecoes, divergenciasPpcSuap, type FiltrosSecoes, listarCursos } from "./consultas.ts";
+import {
+  buscarNorma,
+  buscarNormaDetalhada,
+  buscarSecoes,
+  divergenciasPpcSuap,
+  type FiltrosSecoes,
+  listarCursos,
+} from "./consultas.ts";
 import {
   descendentesBanco,
   fonteCorrespondenciaBanco,
@@ -71,8 +78,10 @@ const caminhoA = path.join(dir, "a.sqlite");
 const caminhoB = path.join(dir, "b.sqlite");
 const caminhoC = path.join(dir, "c.sqlite");
 let db: Database;
+let inicioCompilacaoA = 0;
 
 beforeAll(() => {
+  inicioCompilacaoA = Date.now();
   compilarBanco({ raiz, destino: caminhoA });
   compilarBanco({ raiz, destino: caminhoB });
   compilarBanco({ raiz, destino: caminhoC, versao: "2026.11.13", commit: "0123abcd", canal: "teste" });
@@ -90,6 +99,11 @@ const lerJson = (relativo: string) => JSON.parse(readFileSync(path.join(raiz, re
 describe("kb.sqlite da base", () => {
   test("dois builds sobre as mesmas fontes dão o mesmo arquivo", () => {
     expect(sha(caminhoA)).toBe(sha(caminhoB));
+  });
+
+  test("o mtime do banco é o do instante em que as fontes foram lidas, não o do fim da compilação", () => {
+    // fonte editada durante a compilação fica mais nova que o banco e força a recompilação seguinte
+    expect(statSync(caminhoA).mtimeMs).toBeLessThanOrEqual(inicioCompilacaoA + 1000);
   });
 
   test("recall@10 da busca de seções ≥ 0,8 (modo completo)", () => {
@@ -315,6 +329,36 @@ describe("fase 5: o banco dá o mesmo resultado que a API de arquivos", () => {
         expect(banco).toEqual(arquivo);
       }
     }
+  });
+
+  test("citação resolvida respeita --vigentes e --situacao, com aviso", () => {
+    const citacao = "Resolução CNE/CP nº 1/2021, art. 20";
+    expect(buscarNorma(db, citacao)[0]!.dispositivo!.id).toBe("br/cne-cp/res/2021/1#art20");
+    // revogada em 2026-11-11 pela Res. CNE/CP nº 2/2026 (data_referencia 2026-11-13)
+    const vigentes = buscarNormaDetalhada(db, citacao, { vigentes: true });
+    expect(vigentes.resultados).toEqual([]);
+    expect(vigentes.avisos.join("\n")).toMatch(/br\/cne-cp\/res\/2021\/1.*vigente/);
+    // antes da revogação, passa
+    expect(buscarNorma(db, citacao, { vigentes: true, em: "2025-01-01" })[0]!.dispositivo!.id).toBe(
+      "br/cne-cp/res/2021/1#art20",
+    );
+    const situacao = buscarNormaDetalhada(db, citacao, { situacao: "stub" });
+    expect(situacao.resultados).toEqual([]);
+    expect(situacao.avisos.join("\n")).toContain("situação base");
+    // dispositivo revogado de norma em vigor
+    const revogado = buscarNormaDetalhada(db, "br/lei/1996/9394#art20", { vigentes: true });
+    expect(revogado.resultados).toEqual([]);
+    expect(revogado.avisos.join("\n")).toContain("revogado");
+    expect(buscarNorma(db, "Lei 9.394/1996, art. 3º", { vigentes: true })[0]!.dispositivo!.id).toBe(
+      "br/lei/1996/9394#art3",
+    );
+  });
+
+  test("ID de norma desconhecido devolve aviso, não busca textual", () => {
+    const r = buscarNormaDetalhada(db, "br/naoexiste/x");
+    expect(r.resultados).toEqual([]);
+    expect(r.avisos).toEqual(["ID desconhecido: br/naoexiste/x não está entre as normas da base"]);
+    expect(buscarNormaDetalhada(db, "ifpr/consup/res/1900/1#art1").avisos[0]).toContain("ID desconhecido");
   });
 
   test("FTS dos dispositivos acha o texto com o caput herdado", () => {

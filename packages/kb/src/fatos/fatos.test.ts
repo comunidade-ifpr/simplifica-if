@@ -11,8 +11,16 @@ describe("horasDoTrecho", () => {
     ["3.579,34 hora relógio e/ou 4.295,20 hora-aula", 3579, "relogio"],
     ["3533 horas/relógio; 4240 horas/aula", 3533, "relogio"],
     ["3254 h/a", 3254, "aula"],
+    ["3.360 h (hora aula de 60 minutos)", 3360, "relogio"],
+    ["1.200 horas (aulas de 60 minutos)", 1200, "relogio"],
+    ["1440 horas-aula (aula de 50 minutos)", 1440, "aula"],
   ] as const)("%s → %d", (trecho, valor, unidade) => {
     expect(horasDoTrecho(trecho)).toEqual({ valor, unidade });
+  });
+
+  test("a marca do rótulo vale para o número sem marca", () => {
+    expect(horasDoTrecho("1.600 horas", "relogio")).toEqual({ valor: 1600, unidade: "relogio" });
+    expect(horasDoTrecho("1.600 horas")).toEqual({ valor: 1600, unidade: "sem-marca" });
   });
 
   test("ano de ato não é carga horária", () => {
@@ -59,9 +67,43 @@ describe("extrairFatosPpc", () => {
     expect(fatos.some((f) => f.fato === "estagio_carga_h")).toBe(false);
   });
 
+  test("unidade do rótulo e hora-aula de 60 minutos (campo-largo/automacao-industrial, linha 103)", () => {
+    const texto = PPC.replace(
+      "**Carga horária total em hora-relógio:** 1.600 horas",
+      "Carga horária total em hora relógio: 3.360 h (hora aula de 60 minutos)",
+    );
+    const total = extrairFatosPpc(texto, SECOES).find((f) => f.fato === "carga_horaria_total_h")!;
+    expect([total.valor, total.regra]).toEqual(["3360", "rotulo-quadro-relogio"]);
+  });
+
   test("o ementário não é fonte da carga total", () => {
     const semQuadro = PPC.replace("**Carga horária total em hora-relógio:** 1.600 horas", "");
     expect(extrairFatosPpc(semQuadro, SECOES).some((f) => f.fato === "carga_horaria_total_h")).toBe(false);
+  });
+});
+
+describe("título com o valor no parágrafo seguinte", () => {
+  const comParagrafo = (paragrafo: string) =>
+    ["---", "id: ppc:x/y", "---", "", "## 1.1.10 Carga horária total do curso", "", paragrafo].join("\n");
+  const secoes = [{ tipo: "outros", linha_inicio: 5, linha_fim: 7 }];
+  const total = (paragrafo: string) =>
+    extrairFatosPpc(comParagrafo(paragrafo), secoes).find((f) => f.fato === "carga_horaria_total_h")?.valor;
+
+  test("o número é o da carga global, não o seguinte (ivaiporã, eletrotécnica, linha 273)", () => {
+    expect(
+      total(
+        "Em consonância com a resolução CNE/CEB nº 01/2021, o curso possui carga horária global de 3.200 horas, distribuídas da seguinte forma: 1.200 horas de conteúdo técnico (núcleo técnico), 1.800 horas de fundamentos básicos.",
+      ),
+    ).toBe("3200");
+  });
+
+  test("número com 'horas' no fim da frase", () => {
+    expect(total("O curso tem carga horária de 3.200 horas.")).toBe("3200");
+  });
+
+  test("número com 'h' e com parêntese", () => {
+    expect(total("A carga horária total do curso é de 1600h.")).toBe("1600");
+    expect(total("A carga horária total é de 1.200 (mil e duzentas) horas.")).toBe("1200");
   });
 });
 
@@ -91,6 +133,10 @@ describe("SUAP", () => {
     expect(r(1600, { estagioObrigatorio: "nao" }).estagio).toBe("diverge");
     expect(r(1600, { anoPpc: 2025 }).ano).toBe("ppc-mais-recente-que-matrizes");
     expect(r(1920, { chPpcEmHoraAula: true }).carga_horaria).toBe("confere-com-uma-matriz");
+    // estágio em hora-aula: 480 aulas de 50 min = 400 h
+    expect(r(1600, { estagioCargaH: 480, estagioCargaEmHoraAula: true }).estagio).toBe("confere");
+    expect(r(1600, { estagioCargaH: 480 }).estagio).toBe("diverge-carga");
+    expect(r(1600, { estagioCargaH: 500, estagioCargaEmHoraAula: true }).estagio).toBe("diverge-carga");
     expect(cruzarPpcSuap({ ...base, chPpc: null, matrizes: [] }).map((l) => l.resultado)).toEqual([
       "sem-suap",
       "sem-suap",

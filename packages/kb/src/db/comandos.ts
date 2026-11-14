@@ -17,7 +17,7 @@ import { avaliarBusca } from "../avaliacao/busca-secoes.ts";
 import { raizRepositorio } from "../normas/registro.ts";
 import { abrirBanco } from "./banco.ts";
 import {
-  buscarNorma,
+  buscarNormaDetalhada,
   buscarSecoes,
   divergenciasPpcSuap,
   fatosDosPpcs,
@@ -99,15 +99,17 @@ export function registrarComandosBanco(programa: Command): void {
     .action(
       (partes: string[], o: { json?: boolean; limite: number; situacao?: string; vigentes?: boolean; em?: string }) => {
         const consulta = partes.join(" ");
-        const resultados = comBanco((db) =>
-          buscarNorma(db, consulta, {
+        const { resultados, avisos } = comBanco((db) =>
+          buscarNormaDetalhada(db, consulta, {
             limite: o.limite,
             ...(o.situacao ? { situacao: o.situacao } : {}),
             ...(o.vigentes ? { vigentes: true } : {}),
             ...(o.em ? { em: o.em } : {}),
           }),
         );
-        if (o.json) return json({ consulta, total: resultados.length, resultados });
+        for (const aviso of avisos) process.stderr.write(`kb: ${aviso}\n`);
+        if (avisos.some((a) => a.startsWith("ID desconhecido"))) process.exitCode = 1;
+        if (o.json) return json({ consulta, total: resultados.length, avisos, resultados });
         const curto = (t: string) => (t.length > 600 ? `${t.slice(0, 600)}…` : t);
         for (const r of resultados) {
           const cabecalho = `${r.norma.titulo} [${r.norma.status_vigencia ?? r.norma.situacao}] (${r.origem}${r.pontuacao !== null ? ` ${r.pontuacao}` : ""})`;

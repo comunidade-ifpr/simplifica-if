@@ -15,7 +15,7 @@
  * O teste `base.test.ts` compila duas vezes e compara o SHA-256 dos arquivos.
  */
 import { Database, type Statement } from "bun:sqlite";
-import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, utimesSync } from "node:fs";
 import path from "node:path";
 import { z } from "zod";
 import { expansaoDoTipo, lerSinonimos, type Sinonimos } from "../busca/sinonimos.ts";
@@ -470,6 +470,10 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
   const topicosSecoes = opcoes.topicosSecoes ?? lerTopicosSecoes();
   const base = path.join(raiz, BASE);
 
+  // instante anterior à leitura das fontes: vira o mtime do banco no fim, para que uma fonte editada
+  // durante a compilação fique mais nova que ele e o atalho por mtime de `estadoDoBanco` não o declare
+  // fresco
+  const leitura = new Date();
   const arquivos = arquivosFonte(raiz);
   const fontesSha = hashConteudo(raiz, arquivos);
 
@@ -477,6 +481,54 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
   const temporario = `${destino}.tmp-${process.pid}`;
   rmSync(temporario, { force: true });
   const db = new Database(temporario, { create: true, strict: true });
+  // em caso de erro, fecha o banco e remove o temporário (até ~130 MB) antes de propagar
+  let contagensInsercao: Record<string, number>;
+  try {
+    contagensInsercao = preencherBanco(db, {
+      raiz,
+      base,
+      lexico,
+      topicosSecoes,
+      fontesNormativas,
+      arquivos,
+      fontesSha,
+      versao: opcoes.versao,
+      commit: opcoes.commit,
+      canal: opcoes.canal,
+    });
+    db.close();
+    utimesSync(temporario, leitura, leitura);
+    renameSync(temporario, destino);
+  } catch (erro) {
+    db.close();
+    rmSync(temporario, { force: true });
+    throw erro;
+  }
+  const contagens = Object.fromEntries(
+    Object.entries(contagensInsercao)
+      .filter(([tabela]) => tabela !== "meta")
+      .sort(([a], [b]) => compararTexto(a, b)),
+  );
+  return { destino, fontes: arquivos.length, fontes_sha256: fontesSha, contagens };
+}
+
+interface ContextoPreenchimento {
+  raiz: string;
+  base: string;
+  lexico: Sinonimos;
+  topicosSecoes: ReturnType<typeof lerTopicosSecoes>;
+  fontesNormativas: FontesNormativas;
+  arquivos: readonly string[];
+  fontesSha: string;
+  /** Identificação da distribuição gravada em `meta` (só quando informada). */
+  versao?: string | undefined;
+  commit?: string | undefined;
+  canal?: string | undefined;
+}
+
+/** Esquema, carga de todas as tabelas, `optimize` do FTS5 e `VACUUM`; devolve as contagens por tabela. */
+function preencherBanco(db: Database, c: ContextoPreenchimento): Record<string, number> {
+  const { raiz, base, lexico, topicosSecoes, fontesNormativas, arquivos, fontesSha } = c;
   db.run(`PRAGMA page_size = ${PAGE_SIZE}`);
   db.run("PRAGMA journal_mode = OFF");
   db.run("PRAGMA synchronous = OFF");
@@ -817,6 +869,7 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
           chPpcEmHoraAula: valor("carga_horaria_total_h")?.regra.endsWith("-aula") ?? false,
           estagioObrigatorio: (valor("estagio_obrigatorio")?.valor as "sim" | "nao" | undefined) ?? null,
           estagioCargaH: valor("estagio_carga_h")?.valor_num ?? null,
+          estagioCargaEmHoraAula: valor("estagio_carga_h")?.regra.endsWith("-aula") ?? false,
           anoPpc: ano ?? null,
           chComumSuap: curso.dados.suap?.matrizes?.carga_horaria_comum_h ?? null,
           matrizes: resumo ? matrizesDoResumo(resumo) : [],
@@ -977,7 +1030,7 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
       ],
     ];
     for (const chave of ["versao", "commit", "canal"] as const) {
-      const valor = opcoes[chave];
+      const valor = c[chave];
       if (valor !== undefined) meta.push([chave, valor]);
     }
     for (const [chave, valor] of meta) ins.inserir("meta", { chave, valor });
@@ -987,14 +1040,7 @@ export function compilarBanco(opcoes: OpcoesCompilacao = {}): ResumoCompilacao {
   db.run("INSERT INTO secoes_fts(secoes_fts) VALUES ('optimize')");
   db.run("INSERT INTO dispositivos_fts(dispositivos_fts) VALUES ('optimize')");
   db.run("VACUUM");
-  db.close();
-  renameSync(temporario, destino);
-  const contagens = Object.fromEntries(
-    Object.entries(ins.contagens)
-      .filter(([tabela]) => tabela !== "meta")
-      .sort(([a], [b]) => compararTexto(a, b)),
-  );
-  return { destino, fontes: arquivos.length, fontes_sha256: fontesSha, contagens };
+  return ins.contagens;
 }
 
 if (import.meta.main) {

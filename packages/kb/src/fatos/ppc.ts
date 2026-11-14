@@ -50,7 +50,10 @@ export function limparLinha(linha: string): string {
     .trim();
 }
 
-/** Números de horas de um trecho: "3.520", "3520h", "1.600 horas"; fora de 20–9000 são ignorados. */
+/**
+ * Números de horas de um trecho: "3.520", "3520h", "1.600 horas"; fora de 20–9000 são ignorados, assim
+ * como a duração da aula em minutos ("aula de 50 minutos").
+ */
 function numeros(trecho: string): { valor: number; inicio: number; fim: number }[] {
   const saida: { valor: number; inicio: number; fim: number }[] = [];
   for (const m of trecho.matchAll(/(?<![\d.,:])(\d{1,2}\.\d{3}|\d{2,4})(?:,(\d{1,2}))?(?![\d,]|\.\d|:\d)/g)) {
@@ -60,36 +63,57 @@ function numeros(trecho: string): { valor: number; inicio: number; fim: number }
     if (/^(19|20)\d\d$/.test(m[1]!) && /[/º°]\s*$|n[º°o.]\s*$/i.test(trecho.slice(Math.max(0, m.index! - 4), m.index!)))
       continue;
     if (/n[º°o.]\s*$/i.test(trecho.slice(Math.max(0, m.index! - 4), m.index!))) continue;
-    saida.push({ valor, inicio: m.index!, fim: m.index! + m[0].length });
+    const fim = m.index! + m[0].length;
+    if (/^\s*min/i.test(trecho.slice(fim))) continue;
+    saida.push({ valor, inicio: m.index!, fim });
   }
   return saida;
 }
 
-const RE_RELOGIO = /rel[oó]gio|\bh\s*\/\s*r\b|\bhr\b/i;
-const RE_AULA = /aula|\bh\s*\/\s*a\b/i;
+const RE_RELOGIO = /rel[oó]gio|\bh\s*\/\s*r\b|\bhr\b/gi;
+const RE_AULA = /aula|\bh\s*\/\s*a\b/gi;
+/** "hora-aula de 60 minutos" é hora-relógio. */
+const RE_AULA_60 = /^aulas?\s+de\s+60\s*min/i;
+
+export type UnidadeHoras = "relogio" | "aula";
+
+/** Marcas de unidade de um trecho, em ordem de posição. */
+function marcas(trecho: string): { posicao: number; unidade: UnidadeHoras }[] {
+  const r = [...trecho.matchAll(RE_RELOGIO)].map((m) => ({ posicao: m.index!, unidade: "relogio" as const }));
+  const a = [...trecho.matchAll(RE_AULA)].map((m) => ({
+    posicao: m.index!,
+    unidade: RE_AULA_60.test(trecho.slice(m.index!)) ? ("relogio" as const) : ("aula" as const),
+  }));
+  return [...r, ...a].sort((x, y) => x.posicao - y.posicao);
+}
+
+/** Unidade declarada num rótulo ("Carga horária total em hora-relógio"), se houver uma só. */
+export function unidadeDoRotulo(rotulo: string): UnidadeHoras | null {
+  const unidades = new Set(marcas(rotulo).map((m) => m.unidade));
+  return unidades.size === 1 ? [...unidades][0]! : null;
+}
 
 /**
  * Valor de horas depois de um rótulo: com hora-aula e hora-relógio no mesmo trecho, fica o de
  * hora-relógio; sem marcação, o primeiro número.
+ *
+ * A unidade de cada número é a marca mais próxima depois dele (até o número seguinte); sem ela, a mais
+ * próxima antes (depois do número anterior); sem nenhuma, a do rótulo (`unidadeRotulo`). "Hora-aula de
+ * 60 minutos" conta como hora-relógio.
  */
-export function horasDoTrecho(resto: string): { valor: number; unidade: "relogio" | "aula" | "sem-marca" } | null {
+export function horasDoTrecho(
+  resto: string,
+  unidadeRotulo: UnidadeHoras | null = null,
+): { valor: number; unidade: UnidadeHoras | "sem-marca" } | null {
   const lista = numeros(resto);
   if (lista.length === 0) return null;
-  // a unidade é a primeira marca depois do número (até o número seguinte); sem ela, a última antes
+  const todas = marcas(resto);
   const marcados = lista.map((n, i) => {
-    const depois = resto.slice(n.fim, Math.min(n.fim + 22, lista[i + 1]?.inicio ?? Infinity));
-    const antes = resto.slice(Math.max(0, n.inicio - 22, lista[i - 1]?.fim ?? 0), n.inicio);
-    const primeira = (trecho: string, ultima: boolean): "relogio" | "aula" | null => {
-      const r = [...trecho.matchAll(new RegExp(RE_RELOGIO.source, "gi"))].map((m) => m.index!);
-      const a = [...trecho.matchAll(new RegExp(RE_AULA.source, "gi"))].map((m) => m.index!);
-      if (!r.length && !a.length) return null;
-      const pr = ultima ? Math.max(-1, ...r) : Math.min(Infinity, ...r);
-      const pa = ultima ? Math.max(-1, ...a) : Math.min(Infinity, ...a);
-      if (!a.length) return "relogio";
-      if (!r.length) return "aula";
-      return (ultima ? pr > pa : pr < pa) ? "relogio" : "aula";
-    };
-    return { ...n, unidade: primeira(depois, false) ?? primeira(antes, true) ?? ("sem-marca" as const) };
+    const limiteDepois = Math.min(n.fim + 22, lista[i + 1]?.inicio ?? Infinity);
+    const limiteAntes = Math.max(0, n.inicio - 22, lista[i - 1]?.fim ?? 0);
+    const depois = todas.find((m) => m.posicao >= n.fim && m.posicao < limiteDepois);
+    const antes = todas.filter((m) => m.posicao >= limiteAntes && m.posicao < n.inicio).at(-1);
+    return { ...n, unidade: depois?.unidade ?? antes?.unidade ?? unidadeRotulo ?? ("sem-marca" as const) };
   });
   const relogio = marcados.find((n) => n.unidade === "relogio");
   if (relogio) return { valor: relogio.valor, unidade: "relogio" };
@@ -165,7 +189,9 @@ function cargaHorariaTotal(linhas: readonly string[], zona: readonly (Zona | nul
         while (j < linhas.length && !limparLinha(linhas[j]!)) j += 1;
         if (j < linhas.length && j - i <= 2) resto = limparLinha(linhas[j]!).slice(0, 120);
       }
-      const horas = horasDoTrecho(resto);
+      // o rótulo vai do "carga horária total" ao separador antes do valor
+      const textoRotulo = rotulo[0].slice(0, rotulo[0].length - rotulo[1]!.length);
+      const horas = horasDoTrecho(resto, unidadeDoRotulo(textoRotulo));
       const doCurso = /total do curso/i.test(limpa);
       if (horas && horas.valor >= 160) {
         const tabela = bruta.trimStart().startsWith("|");
@@ -188,10 +214,11 @@ function cargaHorariaTotal(linhas: readonly string[], zona: readonly (Zona | nul
         vistas += 1;
         if (/^#/.test(linhas[j]!.trim())) break;
         const m =
-          /carga hor[aá]ria(?: total| global)?(?: do curso)?(?: [eé]| ser[aá])?(?: de)? ([\d.]{3,5}(?:,\d+)?) ?(?:\(|h\b|horas)/i.exec(
+          /carga hor[aá]ria(?: total| global)?(?: do curso)?(?: [eé]| ser[aá])?(?: de)? ([\d.]{3,5}(?:,\d+)?) ?(?:\(|h\b|horas)/di.exec(
             seguinte,
           );
-        const horas = m ? horasDoTrecho(seguinte.slice(m.index + m[0].length - m[1]!.length - 2)) : null;
+        // o trecho começa no número capturado (índice do grupo, com a flag `d`)
+        const horas = m ? horasDoTrecho(seguinte.slice(m.indices![1]![0])) : null;
         if (horas && horas.valor >= 160) {
           candidatos.push({
             prioridade: 1,
@@ -270,7 +297,10 @@ function estagio(
         });
         continue;
       }
-      const horas = horasDoTrecho(resto.slice(0, 80));
+      const horas = horasDoTrecho(
+        resto.slice(0, 80),
+        unidadeDoRotulo(rotulo[0].slice(0, rotulo[0].length - rotulo[2]!.length)),
+      );
       if (horas && horas.valor >= 20 && !/n[aã]o[- ]obrigat/i.test(limpa)) {
         obrigatorio.push({
           prioridade: base,

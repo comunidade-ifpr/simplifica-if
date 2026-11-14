@@ -8,7 +8,7 @@
  *   estágio obrigatório, somada num lado e não no outro), `diverge`, `sem-fato-ppc`, `sem-suap`.
  * - `estagio`: o estágio obrigatório do PPC (sim/não e carga) contra a matriz mais recente do SUAP
  *   (maior ano, depois maior ID). `confere`, `diverge` (sim × não), `diverge-carga`, `sem-fato-ppc`,
- *   `sem-suap`.
+ *   `sem-suap`. Carga do estágio em hora-aula confere também convertida (aula de 50 ou 45 minutos).
  * - `ano`: o ano do PPC (`dados/institucional`) contra o ano da matriz mais recente. `confere` (há
  *   matriz do ano do PPC ou posterior), `ppc-mais-recente-que-matrizes` (o SUAP não tem matriz do
  *   PPC vigente), `sem-ano`, `sem-suap`.
@@ -34,9 +34,22 @@ export interface EntradaCruzamento {
   chPpcEmHoraAula?: boolean;
   estagioObrigatorio: "sim" | "nao" | null;
   estagioCargaH: number | null;
+  /** A carga do estágio veio em hora-aula (regra terminada em `-aula`). */
+  estagioCargaEmHoraAula?: boolean;
   anoPpc: number | null;
   chComumSuap: number | null;
   matrizes: readonly MatrizSuap[];
+}
+
+/** A carga como está e, se for hora-aula, convertida de aulas de 50 e de 45 minutos. */
+function conversoesHoraAula(ch: number, emHoraAula: boolean | undefined): { ch: number; nota: string }[] {
+  return emHoraAula
+    ? [
+        { ch, nota: "" },
+        { ch: Math.round((ch * 50) / 60), nota: " (convertendo hora-aula de 50 min)" },
+        { ch: Math.round((ch * 45) / 60), nota: " (convertendo hora-aula de 45 min)" },
+      ]
+    : [{ ch, nota: "" }];
 }
 
 function maisRecente(matrizes: readonly MatrizSuap[]): MatrizSuap | null {
@@ -72,13 +85,7 @@ export function cruzarPpcSuap(e: EntradaCruzamento): LinhaCruzamento[] {
     });
   } else {
     // carga só em hora-aula: confere também convertida (aula de 50 ou 45 minutos)
-    const conversoes = e.chPpcEmHoraAula
-      ? [
-          { ch: e.chPpc, nota: "" },
-          { ch: Math.round((e.chPpc * 50) / 60), nota: " (convertendo hora-aula de 50 min)" },
-          { ch: Math.round((e.chPpc * 45) / 60), nota: " (convertendo hora-aula de 45 min)" },
-        ]
-      : [{ ch: e.chPpc, nota: "" }];
+    const conversoes = conversoesHoraAula(e.chPpc, e.chPpcEmHoraAula);
     const convertida = conversoes.find((c) => e.matrizes.some((m) => m.ch_exibida_h === c.ch)) ?? conversoes[0]!;
     const ch = convertida.ch;
     const estagio = e.estagioCargaH ?? 0;
@@ -167,16 +174,28 @@ export function cruzarPpcSuap(e: EntradaCruzamento): LinhaCruzamento[] {
       e.estagioObrigatorio === "sim" &&
       e.estagioCargaH !== null &&
       recente.ch_estagio_h !== null &&
-      recente.ch_estagio_h > 0 &&
-      e.estagioCargaH !== recente.ch_estagio_h
+      recente.ch_estagio_h > 0
     ) {
-      saida.push({
-        aspecto: "estagio",
-        resultado: "diverge-carga",
-        valor_ppc: ppc,
-        valor_suap: suap,
-        explicacao: `carga do estágio: PPC ${e.estagioCargaH} h, SUAP ${recente.ch_estagio_h} h (${base})`,
-      });
+      const conversao = conversoesHoraAula(e.estagioCargaH, e.estagioCargaEmHoraAula).find(
+        (c) => c.ch === recente.ch_estagio_h,
+      );
+      if (conversao) {
+        saida.push({
+          aspecto: "estagio",
+          resultado: "confere",
+          valor_ppc: ppc,
+          valor_suap: suap,
+          explicacao: `${base}${conversao.nota}`,
+        });
+      } else {
+        saida.push({
+          aspecto: "estagio",
+          resultado: "diverge-carga",
+          valor_ppc: ppc,
+          valor_suap: suap,
+          explicacao: `carga do estágio: PPC ${e.estagioCargaH} h${e.estagioCargaEmHoraAula ? " (hora-aula)" : ""}, SUAP ${recente.ch_estagio_h} h (${base})`,
+        });
+      }
     } else {
       saida.push({ aspecto: "estagio", resultado: "confere", valor_ppc: ppc, valor_suap: suap, explicacao: base });
     }

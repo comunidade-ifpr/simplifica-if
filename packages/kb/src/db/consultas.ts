@@ -360,6 +360,11 @@ function metadadosDaNorma(db: Database, normaId: string): ResultadoNorma["metada
  *   (OR), primeiro os dispositivos, depois os metadados.
  * - `vigentes`: tira atos revogados ou ainda não vigentes na data `em` (padrão: `data_referencia`),
  *   pelos intervalos de `vigencias`, e dispositivos revogados.
+ * - `situacao` e `vigentes` valem também para a citação resolvida: a norma ou o dispositivo citado
+ *   que eles excluem não volta, e a resposta fica vazia com um aviso explicando por quê (a busca
+ *   textual não substitui a norma que a consulta nomeou).
+ * - ID com a forma de norma (`br/…`, `ifpr/…`) que não está na base: resposta vazia com aviso de ID
+ *   desconhecido, sem busca textual.
  */
 export function buscarNorma(
   db: Database,
@@ -373,18 +378,53 @@ export function buscarNorma(
     registro?: Registro;
   } = {},
 ): ResultadoNorma[] {
+  return buscarNormaDetalhada(db, consulta, opcoes).resultados;
+}
+
+/** `buscarNorma` com os avisos (ID desconhecido, citação excluída pelos filtros). */
+export function buscarNormaDetalhada(
+  db: Database,
+  consulta: string,
+  opcoes: {
+    limite?: number;
+    situacao?: string;
+    vigentes?: boolean;
+    em?: string;
+    /** Registro do resolvedor de citações (padrão: o do checkout; no modo banco, `registroBanco`). */
+    registro?: Registro;
+  } = {},
+): { resultados: ResultadoNorma[]; avisos: string[] } {
   const limite = opcoes.limite ?? 10;
   const saida: ResultadoNorma[] = [];
-  const resolucao: { id: string | null; dispositivoId?: string | undefined; dispositivos?: string[] | undefined } =
-    /^[a-z]+(\/[\w~-]+)+(#[\w-]+)?$/.test(consulta.trim())
-      ? {
-          id: consulta.trim().split("#")[0]!,
-          dispositivoId: consulta.includes("#") ? `#${consulta.split("#")[1]}` : undefined,
-        }
-      : resolverCitacao(consulta, opcoes.registro ?? registroPadrao());
+  const avisos: string[] = [];
+  const data = opcoes.em ?? dataReferenciaBanco(db);
+  const ehId = /^[a-z]+(\/[\w~-]+)+(#[\w-]+)?$/.test(consulta.trim());
+  const resolucao: { id: string | null; dispositivoId?: string | undefined; dispositivos?: string[] | undefined } = ehId
+    ? {
+        id: consulta.trim().split("#")[0]!,
+        dispositivoId: consulta.includes("#") ? `#${consulta.split("#")[1]}` : undefined,
+      }
+    : resolverCitacao(consulta, opcoes.registro ?? registroPadrao());
   if (resolucao.id) {
     const norma = obterNorma(db, resolucao.id);
+    if (!norma && ehId && /^(br|ifpr)\//.test(resolucao.id)) {
+      avisos.push(`ID desconhecido: ${resolucao.id} não está entre as normas da base`);
+      return { resultados: [], avisos };
+    }
     if (norma) {
+      if (opcoes.situacao && norma.situacao !== opcoes.situacao) {
+        avisos.push(
+          `${norma.id} (citada) tem situação ${norma.situacao}, fora do filtro --situacao ${opcoes.situacao}`,
+        );
+        return { resultados: [], avisos };
+      }
+      if (opcoes.vigentes && atoForaDeVigencia(db, norma.id, data)) {
+        avisos.push(
+          `${norma.id} (citada) não está vigente em ${data} (${norma.status_vigencia ?? "sem status"}); ` +
+            `sem --vigentes ela volta, e \`kb vigencia ${norma.id}\` mostra as regras de transição`,
+        );
+        return { resultados: [], avisos };
+      }
       const pedidos = resolucao.dispositivos ?? (resolucao.dispositivoId ? [resolucao.dispositivoId] : []);
       const vistos = new Set<string>();
       for (const pedido of pedidos) {
@@ -392,6 +432,10 @@ export function buscarNorma(
         if (!achado || vistos.has(achado.disp.id)) continue;
         vistos.add(achado.disp.id);
         const trecho = paraTrecho(db, achado, { subordinados: true });
+        if (opcoes.vigentes && trecho.revogado) {
+          avisos.push(`${trecho.id} (citado) está revogado; sem --vigentes ele volta`);
+          continue;
+        }
         saida.push({
           norma,
           dispositivo: trecho,
@@ -401,7 +445,8 @@ export function buscarNorma(
           origem: "citacao-resolvida",
         });
       }
-      if (saida.length) return saida;
+      if (saida.length) return { resultados: saida, avisos };
+      if (avisos.length) return { resultados: [], avisos };
       const metadados = metadadosDaNorma(db, norma.id);
       if (metadados) {
         saida.push({ norma, dispositivo: null, pedido: null, metadados, pontuacao: null, origem: "citacao-resolvida" });
@@ -410,7 +455,6 @@ export function buscarNorma(
   }
 
   const conceitos = conceitosDaConsulta(consulta, "radicais");
-  const data = opcoes.em ?? dataReferenciaBanco(db);
   const filtros = (colunaNorma: string) => {
     const condicoes: string[] = [];
     const parametros: Parametro[] = [];
@@ -487,7 +531,16 @@ export function buscarNorma(
     const ordem = operador === "AND" ? [metadados, dispositivos] : [dispositivos, metadados];
     for (const etapa of ordem) etapa(expressaoMeta);
   }
-  return saida;
+  return { resultados: saida, avisos };
+}
+
+/** O ato está revogado ou ainda não vigente na data (intervalos de `vigencias`). */
+function atoForaDeVigencia(db: Database, normaId: string, data: string): boolean {
+  return (
+    db
+      .query(`SELECT 1 AS fora FROM normas n WHERE n.id = ? AND ${sqlForaDeVigencia("n.id")}`)
+      .get(normaId, data, data) !== null
+  );
 }
 
 /* =================================================================== cursos */

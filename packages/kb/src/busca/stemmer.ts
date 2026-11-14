@@ -12,8 +12,10 @@
  * diferencial, e reduz bem as flexões que importam aqui (egresso/egressos, estágio/estágios,
  * aproveitamento/aproveitar).
  *
- * A palavra entra em minúsculas e com acentos (as regras dependem deles); quem indexa remove os
- * acentos do radical depois.
+ * `radical` é o algoritmo publicado: a palavra entra em minúsculas e com acentos (as regras dependem
+ * deles). `radicalSemAcento` é o mesmo algoritmo sobre a palavra sem acentos, com os sufixos também sem
+ * acentos ("ação" vira "acao", "ância" vira "ancia", "ã" e "õ" deixam de virar "a~" e "o~"): a busca usa
+ * esta variante, para que "avaliação" e "avaliacao" deem o mesmo radical.
  */
 
 const VOGAIS = new Set("aeiouáéíóúâêô");
@@ -113,8 +115,6 @@ const PASSO1: ReadonlyArray<readonly [string[], string]> = [
   [["iva", "ivo", "ivas", "ivos"], "iva"],
   [["ira", "iras"], "ira"],
 ];
-const TODOS_PASSO1 = PASSO1.flatMap(([lista]) => lista);
-const ACAO_PASSO1 = new Map(PASSO1.flatMap(([lista, acao]) => lista.map((s) => [s, acao] as const)));
 
 const PASSO2 = [
   "ada",
@@ -241,13 +241,42 @@ const PASSO2 = [
 
 const RESIDUAL = ["os", "a", "i", "o", "á", "í", "ó"];
 
+/** Sufixos de cada passo, com ou sem acentos. */
+interface Tabelas {
+  todosPasso1: string[];
+  acaoPasso1: Map<string, string>;
+  passo2: string[];
+  residual: string[];
+  amente: string[];
+  mente: string[];
+  idade: string[];
+  final: string[];
+}
+
+function tabelas(tirar: (s: string) => string): Tabelas {
+  const unicos = (lista: readonly string[]) => [...new Set(lista.map(tirar))];
+  return {
+    todosPasso1: unicos(PASSO1.flatMap(([lista]) => lista)),
+    acaoPasso1: new Map(PASSO1.flatMap(([lista, acao]) => lista.map((s) => [tirar(s), acao] as const))),
+    passo2: unicos(PASSO2),
+    residual: unicos(RESIDUAL),
+    amente: unicos(["iv", "os", "ic", "ad"]),
+    mente: unicos(["ante", "avel", "ível"]),
+    idade: unicos(["abil", "ic", "iv"]),
+    final: unicos(["e", "é", "ê", "ç"]),
+  };
+}
+
+const COM_ACENTO = tabelas((s) => s);
+const SEM_ACENTO = tabelas((s) => s.normalize("NFKD").replace(/\p{M}/gu, "").replaceAll("~", ""));
+
 /** Passo 1 (sufixos padrão). Devolve a palavra alterada ou `null`. */
-function passo1(w: string, r: { rv: number; r1: number; r2: number }): string | null {
-  const sufixo = maisLongo(w, TODOS_PASSO1);
+function passo1(w: string, r: { rv: number; r1: number; r2: number }, t: Tabelas): string | null {
+  const sufixo = maisLongo(w, t.todosPasso1);
   if (sufixo === null) return null;
   const inicio = w.length - sufixo.length;
   const emR2 = inicio >= r.r2;
-  const acao = ACAO_PASSO1.get(sufixo)!;
+  const acao = t.acaoPasso1.get(sufixo)!;
   switch (acao) {
     case "apagar":
       return emR2 ? w.slice(0, inicio) : null;
@@ -258,7 +287,7 @@ function passo1(w: string, r: { rv: number; r1: number; r2: number }): string | 
     case "amente": {
       if (inicio < r.r1) return null;
       let x = w.slice(0, inicio);
-      const antes = maisLongo(x, ["iv", "os", "ic", "ad"]);
+      const antes = maisLongo(x, t.amente);
       if (antes && x.length - antes.length >= r.r2) {
         x = x.slice(0, x.length - antes.length);
         if (antes === "iv" && x.endsWith("at") && x.length - 2 >= r.r2) x = x.slice(0, -2);
@@ -268,14 +297,14 @@ function passo1(w: string, r: { rv: number; r1: number; r2: number }): string | 
     case "mente": {
       if (!emR2) return null;
       let x = w.slice(0, inicio);
-      const antes = maisLongo(x, ["ante", "avel", "ível"]);
+      const antes = maisLongo(x, t.mente);
       if (antes && x.length - antes.length >= r.r2) x = x.slice(0, x.length - antes.length);
       return x;
     }
     case "idade": {
       if (!emR2) return null;
       let x = w.slice(0, inicio);
-      const antes = maisLongo(x, ["abil", "ic", "iv"]);
+      const antes = maisLongo(x, t.idade);
       if (antes && x.length - antes.length >= r.r2) x = x.slice(0, x.length - antes.length);
       return x;
     }
@@ -292,21 +321,43 @@ function passo1(w: string, r: { rv: number; r1: number; r2: number }): string | 
   }
 }
 
-const cache = new Map<string, string>();
+const cacheComAcento = new Map<string, string>();
+const cacheSemAcento = new Map<string, string>();
 
 /** Radical Snowball de uma palavra em minúsculas (com acentos). */
 export function radical(palavra: string): string {
+  return comCache(cacheComAcento, palavra, (p) =>
+    snowball(p.replaceAll("ã", "a~").replaceAll("õ", "o~"), COM_ACENTO).replaceAll("a~", "ã").replaceAll("o~", "õ"),
+  );
+}
+
+/**
+ * Radical de uma palavra em minúsculas e sem acentos, pelo mesmo algoritmo com os sufixos sem acentos.
+ * Não é igual a `semDiacriticos(radical(palavra))` ("avaliação" dá "avali" lá e "avaliaca" aqui antes
+ * do passo 1 sem acentos): é a função que a busca aplica à palavra já sem acentos, acentuada ou não.
+ */
+export function radicalSemAcento(palavra: string): string {
+  return comCache(cacheSemAcento, palavra, (p) => snowball(p, SEM_ACENTO));
+}
+
+function comCache(cache: Map<string, string>, palavra: string, calcular: (p: string) => string): string {
   const guardado = cache.get(palavra);
   if (guardado !== undefined) return guardado;
-  let w = palavra.replaceAll("ã", "a~").replaceAll("õ", "o~");
+  const saida = calcular(palavra);
+  if (cache.size < 500_000) cache.set(palavra, saida);
+  return saida;
+}
+
+function snowball(palavra: string, t: Tabelas): string {
+  let w = palavra;
   let r = regioes(w);
   let alterou = false;
-  const p1 = passo1(w, r);
+  const p1 = passo1(w, r, t);
   if (p1 !== null) {
     w = p1;
     alterou = true;
   } else {
-    const sufixo = maisLongo(w, PASSO2, r.rv);
+    const sufixo = maisLongo(w, t.passo2, r.rv);
     if (sufixo !== null) {
       w = w.slice(0, w.length - sufixo.length);
       alterou = true;
@@ -318,18 +369,16 @@ export function radical(palavra: string): string {
     if (w.endsWith("ci") && w.length - 1 >= r.rv) w = w.slice(0, -1);
   } else {
     // passo 4: sufixo residual em RV
-    const sufixo = maisLongo(w, RESIDUAL, r.rv);
+    const sufixo = maisLongo(w, t.residual, r.rv);
     if (sufixo !== null) w = w.slice(0, w.length - sufixo.length);
   }
   // passo 5: forma residual
-  const fim = maisLongo(w, ["e", "é", "ê", "ç"]);
+  const fim = maisLongo(w, t.final);
   if (fim === "ç") {
     w = `${w.slice(0, -1)}c`;
-  } else if (fim !== null && w.length - 1 >= r.rv) {
+  } else if (fim !== null && fim !== "c" && w.length - 1 >= r.rv) {
     w = w.slice(0, -1);
     if ((w.endsWith("gu") || w.endsWith("ci")) && w.length - 1 >= r.rv) w = w.slice(0, -1);
   }
-  const saida = w.replaceAll("a~", "ã").replaceAll("o~", "õ");
-  if (cache.size < 500_000) cache.set(palavra, saida);
-  return saida;
+  return w;
 }
