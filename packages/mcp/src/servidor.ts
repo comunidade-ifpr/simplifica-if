@@ -11,17 +11,17 @@ import { realpathSync, statSync } from "node:fs";
 import { McpServer } from "@modelcontextprotocol/server";
 import { type StdioServerHandle, serveStdio } from "@modelcontextprotocol/server/stdio";
 import { z } from "zod";
-// Import de texto: o conteúdo vai embutido no bundle, e o binário compilado não precisa do arquivo.
-import instrucoes from "../instrucoes.md" with { type: "text" };
 import { abrirBanco } from "./banco.ts";
 import { type Canal, montarBase } from "./envelope.ts";
 import { type Contexto, FERRAMENTAS, type Ferramenta } from "./ferramentas/index.ts";
+// Gerado de `instrucoes.md` (pnpm mcp:instrucoes): o texto vai embutido no bundle e no executável.
+import { INSTRUCOES } from "./instrucoes.gerado.ts";
 
 /** Nome do servidor; nos clientes, as ferramentas aparecem como `mcp__ifpr__<ferramenta>`. */
 export const NOME_SERVIDOR = "ifpr";
 /** Mesma versão do package.json (conferida nos testes). */
 export const VERSAO_PACOTE = "0.1.0";
-export const INSTRUCOES: string = instrucoes;
+export { INSTRUCOES };
 
 export interface OpcoesServidor {
   /** Caminho absoluto do kb.sqlite. */
