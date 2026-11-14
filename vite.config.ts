@@ -65,6 +65,11 @@ export default defineConfig({
       "packages/effect-codex-app-server/**",
       "packages/motor/src/t3/**",
       "apps/server/src/t3/**",
+      // a interface: os componentes copiados do T3 (formatados lá, em 100 colunas) e os gerados (rotas do
+      // TanStack Router, build)
+      "apps/web/src/components/ui/**",
+      "apps/web/src/routeTree.gen.ts",
+      "apps/web/dist/**",
       "apps/desktop/scripts/t3/**",
       // builds e bundles (o apps/web e o apps/desktop)
       "**/dist/**",
@@ -88,6 +93,9 @@ export default defineConfig({
       "tmp/**",
       "outputs/**",
       "**/dist-exe/**",
+      // a interface: as rotas geradas pelo plugin do TanStack Router e o build
+      "apps/web/src/routeTree.gen.ts",
+      "apps/web/dist/**",
       ".agents/skills/*/assets/**",
       ".agents/skills/*/base-analise/**",
       ".agents/skills/*/output/**",
@@ -165,6 +173,7 @@ export default defineConfig({
           "packages/motor/**",
           "packages/contratos-app/**",
           "apps/server/**",
+          "apps/web/**",
           ...ARQUIVOS_C3,
         ],
         rules: {
@@ -200,10 +209,34 @@ export default defineConfig({
           "apps/server/src/bin.ts",
           "apps/server/src/cli.ts",
           "apps/server/test/real.test.ts",
+          // A interface: a configuração do Vite e o servidor de teste rodam no Node e leem o processo.
+          "apps/web/vite.config.ts",
+          "apps/web/test/servidor-teste.ts",
           // Como no T3: HostProcess é o ponto que lê o processo e entrega por Context.Reference.
           "packages/motor/src/t3/HostProcess.ts",
         ],
         rules: { "simplifica-if/no-global-process-runtime": "off" },
+      },
+      {
+        // A interface (React): as regras de React do lint do T3 Code, que a raiz deixa de fora.
+        files: ["apps/web/**/*.{ts,tsx}"],
+        plugins: ["eslint", "oxc", "react", "unicorn", "typescript"],
+        rules: {
+          "react/no-object-type-as-default-prop": "off",
+          "react/jsx-no-constructed-context-values": "off",
+          "react/memo-dependencies": "error",
+          "react/purity": "error",
+          "react/refs": "error",
+          "react/exhaustive-effect-dependencies": "error",
+          "react/set-state-in-effect": "error",
+          "react/immutability": "error",
+          "react/no-array-index-key": "error",
+          "react/no-unstable-nested-components": "error",
+          "react/static-components": "error",
+          "react/capitalized-calls": "error",
+          "react-in-jsx-scope": "off",
+          "react-hooks/exhaustive-deps": "off",
+        },
       },
     ],
     options: {

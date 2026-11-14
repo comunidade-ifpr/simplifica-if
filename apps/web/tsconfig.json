@@ -1,0 +1,29 @@
+{
+  // Como o apps/web do T3: módulos do bundler, JSX do React, DOM e o alias `~` dos componentes do shadcn.
+  "extends": ["../../tsconfig.base.json", "../../tsconfig.effect.json"],
+  "compilerOptions": {
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "lib": ["ES2023", "ESNext.Disposable", "DOM", "DOM.Iterable"],
+    "types": ["node"],
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "plugins": [
+      {
+        "name": "@effect/language-service",
+        // Como no T3 (apps/web/tsconfig.json): a interface usa Date, console, timers e fetch do navegador
+        // fora do Effect.
+        "diagnosticSeverity": {
+          "globalDate": "off",
+          "globalConsole": "off",
+          "globalRandom": "off",
+          "globalTimers": "off",
+          "globalFetch": "off"
+        }
+      }
+    ]
+  },
+  "include": ["src", "test", "vite.config.ts"]
+}

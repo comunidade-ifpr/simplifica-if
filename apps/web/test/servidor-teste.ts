@@ -1,0 +1,64 @@
+// @effect-diagnostics nodeBuiltinImport:off globalJsonInEffect:off -- script de teste: lê argv, gera o token e imprime a linha de partida
+/**
+ * O `apps/server` de verdade, com os drivers de demonstração (`drivers-demonstracao.ts`) e o banco de
+ * fixture do MCP: a interface conversa com ele por RPC sem chamar provider real e sem `tmp/kb.sqlite`.
+ *
+ *   node apps/web/test/servidor-teste.ts [--porta 0] [--origem http://localhost:5190]… [--atraso-login 2000]
+ *
+ * Pronto o servidor, imprime uma linha JSON com `porta`, `urlServidor`, `token` (o de
+ * `SIMPLIFICA_SERVIDOR_TOKEN` ou um aleatório) e `pasta`, uma pasta de trabalho temporária. Encerra com SIGTERM, SIGINT ou, se o stdin não for um
+ * terminal, quando ele fecha (o processo que o iniciou morreu).
+ */
+import * as NodeCrypto from "node:crypto";
+import * as NodeUtil from "node:util";
+import * as NodeRuntime from "@effect/platform-node/NodeRuntime";
+import * as NodeServices from "@effect/platform-node/NodeServices";
+import * as Console from "effect/Console";
+import * as Duration from "effect/Duration";
+import * as Effect from "effect/Effect";
+import * as Layer from "effect/Layer";
+import * as Redacted from "effect/Redacted";
+import * as Servidor from "@simplifica-if/server";
+import { criarBancoFixture, diretorioTemporario, limparTemporarios } from "../../../packages/mcp/test/fixture.ts";
+import { inserirNormas } from "../../../packages/mcp/test/fixture-normas.ts";
+import * as Demonstracao from "./drivers-demonstracao.ts";
+
+const { values: opcoes } = NodeUtil.parseArgs({
+  options: {
+    porta: { type: "string", default: "0" },
+    origem: { type: "string", multiple: true, default: [] },
+    "atraso-login": { type: "string", default: "2000" },
+  },
+});
+
+const token = process.env.SIMPLIFICA_SERVIDOR_TOKEN ?? NodeCrypto.randomBytes(32).toString("base64url");
+delete process.env.SIMPLIFICA_SERVIDOR_TOKEN;
+
+if (!process.stdin.isTTY) {
+  process.stdin.resume();
+  process.stdin.on("close", () => process.kill(process.pid, "SIGTERM"));
+}
+
+const banco = criarBancoFixture();
+/** Uma pasta de trabalho que existe, para as conversas dos testes de navegador. */
+const pasta = diretorioTemporario("simplifica-web-pasta-");
+inserirNormas(banco);
+
+const camada = Servidor.layer({
+  banco,
+  token: Redacted.make(token),
+  porta: Number(opcoes.porta),
+  origens: opcoes.origem,
+}).pipe(
+  Layer.provide(Demonstracao.layer({ atrasoLogin: Duration.millis(Number(opcoes["atraso-login"])) })),
+  Layer.provide(NodeServices.layer),
+);
+
+const programa = Effect.gen(function* () {
+  yield* Effect.addFinalizer(() => Effect.sync(limparTemporarios));
+  const app = yield* Servidor.ServidorApp;
+  yield* Console.log(JSON.stringify({ porta: app.porta, urlServidor: `http://127.0.0.1:${app.porta}`, token, pasta }));
+  return yield* Effect.never;
+}).pipe(Effect.scoped, Effect.provide(camada));
+
+NodeRuntime.runMain(programa);
