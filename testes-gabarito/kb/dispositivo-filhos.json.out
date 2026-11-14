@@ -1,0 +1,650 @@
+{
+  "id": "br/cne-cp/res/2026/2#art28",
+  "dispositivo": "#art28",
+  "norma": "br/cne-cp/res/2026/2",
+  "ato": "br/cne-cp/res/2026/2",
+  "tipo": "artigo",
+  "rotulo": "Art. 28.",
+  "pai": null,
+  "texto": "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:",
+  "caput": [],
+  "estrutura": [
+    "CAPÍTULO V",
+    "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+  ],
+  "notas": [],
+  "revogado": false,
+  "vetado": false,
+  "linha_inicio": 454,
+  "linha_fim": 456,
+  "ordem": 192,
+  "path": "normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
+  "filhos": [
+    {
+      "id": "br/cne-cp/res/2026/2#art28-i",
+      "dispositivo": "#art28-i",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "I",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "I – a identificação do curso;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 458,
+      "linha_fim": 458,
+      "ordem": 193
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-ii",
+      "dispositivo": "#art28-ii",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "II",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "II – o formato da oferta – presencial, semipresencial ou a distância;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 459,
+      "linha_fim": 459,
+      "ordem": 194
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-iii",
+      "dispositivo": "#art28-iii",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "III",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "III – a justificativa e os objetivos;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 460,
+      "linha_fim": 460,
+      "ordem": 195
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-iv",
+      "dispositivo": "#art28-iv",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "IV",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "IV – os requisitos e as formas de acesso;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 461,
+      "linha_fim": 461,
+      "ordem": 196
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-v",
+      "dispositivo": "#art28-v",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "V",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "V – a acessibilidade para inclusão dos estudantes que são o público da educação especial;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 462,
+      "linha_fim": 462,
+      "ordem": 197
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-vi",
+      "dispositivo": "#art28-vi",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "VI",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "VI – o perfil profissional de conclusão do curso e perfil profissional de certificações intermediárias, quando oferecidas;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 463,
+      "linha_fim": 463,
+      "ordem": 198
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-vii",
+      "dispositivo": "#art28-vii",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "VII",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "VII – o itinerário formativo profissional a ser percorrido pelos estudantes, com certificações intermediárias, quando oferecidas;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 464,
+      "linha_fim": 464,
+      "ordem": 199
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-viii",
+      "dispositivo": "#art28-viii",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "VIII",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "VIII – a carga horária total do curso e de seus componentes curriculares, com indicação dos respectivos percentuais mínimos de frequência;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 465,
+      "linha_fim": 465,
+      "ordem": 200
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-ix",
+      "dispositivo": "#art28-ix",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "IX",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "IX – a organização com matriz curricular que assegure plena correspondência com os resultados de aprendizagem previstos para o perfil profissional de conclusão;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 466,
+      "linha_fim": 466,
+      "ordem": 201
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-x",
+      "dispositivo": "#art28-x",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "X",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "X – os critérios para o aproveitamento de conhecimentos e experiências anteriores, mediante avaliação e reconhecimento de competências profissionais já constituídas pelos estudantes que o desejarem;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 467,
+      "linha_fim": 467,
+      "ordem": 202
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-xi",
+      "dispositivo": "#art28-xi",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "XI",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "XI – os critérios e procedimentos de avaliação da aprendizagem e de recomposição das aprendizagens, quando necessária;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 468,
+      "linha_fim": 468,
+      "ordem": 203
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-xii",
+      "dispositivo": "#art28-xii",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "XII",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "XII – a infraestrutura física e tecnológica, com a identificação de acervo bibliográfico físico ou digital, laboratórios, instalações e equipamentos, ambiente virtual de aprendizagem e da infraestrutura física e tecnológica dos polos de apoio presencial, quando aplicável;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 469,
+      "linha_fim": 469,
+      "ordem": 204
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-xiii",
+      "dispositivo": "#art28-xiii",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "XIII",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "XIII – a estratégia de integração entre escola e instituições do mundo do trabalho;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 470,
+      "linha_fim": 470,
+      "ordem": 205
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-xiv",
+      "dispositivo": "#art28-xiv",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "XIV",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "XIV – o perfil de qualificação dos professores, coordenadores, instrutores, mediadores pedagógicos e técnico-administrativos;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 471,
+      "linha_fim": 471,
+      "ordem": 206
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-xv",
+      "dispositivo": "#art28-xv",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "XV",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "XV – os certificados e diplomas a serem emitidos;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 472,
+      "linha_fim": 472,
+      "ordem": 207
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-xvi",
+      "dispositivo": "#art28-xvi",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "XVI",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "XVI – o prazo máximo para a integralização do curso;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 473,
+      "linha_fim": 473,
+      "ordem": 208
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-xvii",
+      "dispositivo": "#art28-xvii",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "XVII",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "XVII – a identificação da carga horária, das atividades e dos ambientes do estágio supervisionado obrigatório, quando exigido; e",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 474,
+      "linha_fim": 474,
+      "ordem": 209
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-xviii",
+      "dispositivo": "#art28-xviii",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "XVIII",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "XVIII – a metodologia e o cronograma de acompanhamento dos egressos do curso.",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 475,
+      "linha_fim": 475,
+      "ordem": 210
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-par1",
+      "dispositivo": "#art28-par1",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "paragrafo",
+      "rotulo": "§ 1º",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "§ 1º A organização curricular deve explicitar:",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 477,
+      "linha_fim": 477,
+      "ordem": 211
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-par1-i",
+      "dispositivo": "#art28-par1-i",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "I",
+      "pai": "br/cne-cp/res/2026/2#art28-par1",
+      "texto": "I – os componentes curriculares e as suas unidades, as etapas ou módulos, acompanhados das respectivas cargas horárias presenciais e não presenciais, quando pertinente, o prazo máximo para integralização e a indicação da respectiva bibliografia básica e complementar;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:",
+        "§ 1º A organização curricular deve explicitar:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 479,
+      "linha_fim": 479,
+      "ordem": 212
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-par1-ii",
+      "dispositivo": "#art28-par1-ii",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "II",
+      "pai": "br/cne-cp/res/2026/2#art28-par1",
+      "texto": "II – as orientações metodológicas, incluídas as estratégias de execução das atividades presenciais e não presenciais com a utilização de metodologias ativas para o alcance dos resultados de aprendizagem previstos;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:",
+        "§ 1º A organização curricular deve explicitar:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 480,
+      "linha_fim": 480,
+      "ordem": 213
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-par1-iii",
+      "dispositivo": "#art28-par1-iii",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "III",
+      "pai": "br/cne-cp/res/2026/2#art28-par1",
+      "texto": "III – a prática profissional intrínseca ao currículo de todos os cursos, desenvolvida nos diversos ambientes de aprendizagem, inclusive em instituições do mundo do trabalho;",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:",
+        "§ 1º A organização curricular deve explicitar:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 481,
+      "linha_fim": 481,
+      "ordem": 214
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-par1-iv",
+      "dispositivo": "#art28-par1-iv",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "IV",
+      "pai": "br/cne-cp/res/2026/2#art28-par1",
+      "texto": "IV – o estágio profissional supervisionado, quando requerido pela natureza da ocupação profissional, como ato educativo desenvolvido em ambiente real de trabalho, nos termos da Lei nº 11.788, de 25 de setembro de 2008, realizado obrigatoriamente de modo presencial e cuja carga horária, quando obrigatória, não excederá o limite fixado no § 6º do art. 37; e",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:",
+        "§ 1º A organização curricular deve explicitar:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 482,
+      "linha_fim": 482,
+      "ordem": 215
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-par1-v",
+      "dispositivo": "#art28-par1-v",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "inciso",
+      "rotulo": "V",
+      "pai": "br/cne-cp/res/2026/2#art28-par1",
+      "texto": "V – a avaliação da aprendizagem.",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:",
+        "§ 1º A organização curricular deve explicitar:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 483,
+      "linha_fim": 483,
+      "ordem": 216
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-par2",
+      "dispositivo": "#art28-par2",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "paragrafo",
+      "rotulo": "§ 2º",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "§ 2º O curso presencial, nas formas de oferta concomitante e subsequente, pode prever carga horária de atividades síncronas, síncronas mediadas ou assíncronas, com a utilização de tecnologias digitais, até o limite de 30% (trinta por cento) da carga horária mínima do curso, com a garantia de mediação pedagógica realizada por professor.",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 485,
+      "linha_fim": 485,
+      "ordem": 217
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-par3",
+      "dispositivo": "#art28-par3",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "paragrafo",
+      "rotulo": "§ 3º",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "§ 3º As instituições e redes de ensino devem comprovar a existência da necessária infraestrutura física e tecnológica, na mesma instituição, ou cedida em instituição distinta, com viabilidade de uso atestada por parceria formalizada.",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 487,
+      "linha_fim": 487,
+      "ordem": 218
+    },
+    {
+      "id": "br/cne-cp/res/2026/2#art28-par4",
+      "dispositivo": "#art28-par4",
+      "norma": "br/cne-cp/res/2026/2",
+      "ato": "br/cne-cp/res/2026/2",
+      "tipo": "paragrafo",
+      "rotulo": "§ 4º",
+      "pai": "br/cne-cp/res/2026/2#art28",
+      "texto": "§ 4º O acompanhamento dos egressos do curso deverá ser realizado sistematicamente pela instituição ofertante por meio de mecanismo permanente que colete, por pelo menos dois anos consecutivos, contados a partir da conclusão do curso, dados consistentes de inserção profissional para subsidiar a atualização periódica do PPC, assegurada a proteção de dados, conforme a Lei nº 13.709, de 14 de agosto de 2018 (Lei Geral de Proteção de Dados Pessoais).",
+      "caput": [
+        "Art. 28. A estrutura do PPC de EPTNM, orientado pelos princípios basilares da EPT, definidos no art. 3º, a ser submetido à aprovação dos órgãos competentes dos respectivos sistemas de ensino, deve conter, no mínimo:"
+      ],
+      "estrutura": [
+        "CAPÍTULO V",
+        "DA EDUCAÇÃO PROFISSIONAL TÉCNICA DE NÍVEL MÉDIO – EPTNM"
+      ],
+      "notas": [],
+      "revogado": false,
+      "vetado": false,
+      "linha_inicio": 489,
+      "linha_fim": 489,
+      "ordem": 219
+    }
+  ]
+}

@@ -1,0 +1,206 @@
+ano: confere 88, ppc-mais-recente-que-matrizes 13, sem-ano 2, sem-suap 7
+carga_horaria: confere 45, confere-com-uma-matriz 13, diverge 32, explicada-pelo-estagio 2, sem-fato-ppc 13, sem-suap 5
+estagio: confere 67, diverge 7, sem-fato-ppc 31, sem-suap 5
+
+ppc:assis-chateaubriand/tecnico-em-agropecuaria — Técnico em Agropecuária (Assis Chateaubriand)
+  ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2021 ou posterior (anos: 2020)
+  carga_horaria: diverge — PPC 1233 h; mais próxima: matriz 76 (2020): 1232 h (diferença +1 h)
+    ano_documento = 2021 [Revisado] dados/institucional/cursos/assis-chateaubriand/tecnico-em-agropecuaria.json:30: "ano_documento": 2021,
+    carga_horaria_total_h = 1233 [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-agropecuaria.md:86: **Horário de oferta do curso:** segundas às sextas-feiras das 19:00h às 22:40h. **Carga horária total:** 1480 horas-aulas e 1233 horas-relógio
+
+ppc:assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio — Técnico em Informática para Internet (Assis Chateaubriand)
+  carga_horaria: diverge — PPC 3147 h; mais próxima: matriz 73 (2020): 3181 h (diferença -34 h)
+    carga_horaria_total_h = 3147 [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.md:86: mana – Segunda- feira e quinta feira. **Carga horária total em hora-relógio:** 3147 **Carga horária de estágio profissional obrigatório:** 0 **Número máximo de 
+
+ppc:capanema/tecnico-em-agroecologia — Técnico em Agroecologia (Capanema)
+  carga_horaria: diverge — PPC 3610 h; mais próxima: matriz 67 (2022): 3210 h (diferença +400 h)
+  estagio: diverge — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 67 (2022))
+    carga_horaria_total_h = 3610 [extraido] base-conhecimento/institucional/ifpr/ppcs/capanema/tecnico-em-agroecologia.md:90: **Carga horária Total** : 3.610 horas, sendo:
+    estagio_carga_h = 120 [extraido] base-conhecimento/institucional/ifpr/ppcs/capanema/tecnico-em-agroecologia.md:100: **Carga horária de estágio:** 120 horas
+    estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/capanema/tecnico-em-agroecologia.md:100: **Carga horária de estágio:** 120 horas
+
+ppc:cascavel/tecnico-em-edificacoes — Técnico em Edificações (Cascavel)
+  carga_horaria: diverge — PPC 3209 h; mais próxima: matriz 6 (2020): 3239 h (diferença -30 h)
+    carga_horaria_total_h = 3209 [extraido] base-conhecimento/institucional/ifpr/ppcs/cascavel/tecnico-em-edificacoes.md:130: Carga horária total: 3209 horas.
+
+ppc:cascavel/tecnico-em-informatica — Técnico em Informática (Cascavel)
+  carga_horaria: diverge — PPC 3332 h; mais próxima: matriz 9 (2022): 3173 h (diferença +159 h)
+    carga_horaria_total_h = 3332 [extraido] base-conhecimento/institucional/ifpr/ppcs/cascavel/tecnico-em-informatica.md:93: io às 13h30min e término às 17h10min. **Carga Horária Total:** 3.332 horas **Carga horária de estágio:** Não há **Número Máximo de Vagas por Curso:** 40 **Númer
+
+ppc:colombo/tecnico-em-informatica-integrado-ao-ensino-medio — Técnico em Informática (Colombo)
+  carga_horaria: diverge — PPC 3334 h; mais próxima: matriz 461 (2024): 3340 h (diferença -6 h)
+    carga_horaria_total_h = 3334 [extraido] base-conhecimento/institucional/ifpr/ppcs/colombo/tecnico-em-informatica-integrado-ao-ensino-medio.md:593: Colombo compreende 4 (quatro) anos, com carga horária total de 3.334 horas-relógio, compostas pelas cargas horárias dos núcleos de Formação Geral Básica e do nú
+
+ppc:curitiba/tecnico-em-administracao-integrado-ao-ensino-medio — Técnico em Administração (Curitiba)
+  carga_horaria: diverge — PPC 3254 h (hora-aula: o PPC não dá a carga em hora-relógio); mais próxima: matriz 301 (2014): 3288 h (diferença -34 h)
+    carga_horaria_total_h = 3254 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio.md:83: **Carga horária Total:** 3254 h/a
+
+ppc:curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio — Técnico em Contabilidade (Curitiba)
+  ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2015 ou posterior (anos: 2014)
+  carga_horaria: diverge — PPC 3588 h; mais próxima: matriz 75 (2014): 3388 h (diferença +200 h)
+    ano_documento = 2015 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.json:31: "ano_documento": 2015,
+    carga_horaria_total_h = 3588 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.md:79: **Horário de oferta do curso:** 1º e 2º Ano diurno: das 7h:15m às 12h:30m (semanalmente) e 13h:15m às 18h:30m (1 a 2 vezes por semana) e 3º ano matutino: das 7h
+
+ppc:curitiba/tecnico-em-eletrotecnica — Técnico em Eletrotécnica (Curitiba)
+  carga_horaria: diverge — PPC 1200 h; mais próxima: matriz 55 (2015): 1203 h (diferença -3 h)
+    carga_horaria_total_h = 1200 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-eletrotecnica.md:113: **Carga horária Total:** 1200 horas.
+
+ppc:curitiba/tecnico-em-enfermagem — Técnico em Enfermagem (Curitiba)
+  estagio: diverge — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 538 (2024))
+    estagio_carga_h = 400 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:126: Carga horária de Prática Profissional Supervisionada (estágio curricular): 400 horas
+    estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:126: Carga horária de Prática Profissional Supervisionada (estágio curricular): 400 horas
+
+ppc:curitiba/tecnico-em-massoterapia — Técnico em Massoterapia (Curitiba)
+  carga_horaria: diverge — PPC 1371 h; mais próxima: matriz 83 (2023): 1374 h (diferença -3 h)
+  estagio: diverge — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 83 (2023))
+    carga_horaria_total_h = 1371 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-massoterapia.md:115: **Carga horária total em hora-relógio:** 1371 horas
+    estagio_carga_h = 134 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-massoterapia.md:117: **Carga horária de estágio:** 134 horas relógio **Número máximo de vagas do curso:** 36 **Número mínimo de vagas do curso:** 30
+    estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-massoterapia.md:117: **Carga horária de estágio:** 134 horas relógio **Número máximo de vagas do curso:** 36 **Número mínimo de vagas do curso:** 30
+
+ppc:curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio — Técnico em Mecânica (Curitiba)
+  ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2016 ou posterior (anos: 2014)
+    ano_documento = 2016 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio.json:31: "ano_documento": 2016,
+
+ppc:curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio — Técnico em Petróleo e Gás (Curitiba)
+  ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2017 ou posterior (anos: 2014)
+    ano_documento = 2017 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio.json:31: "ano_documento": 2017,
+
+ppc:curitiba/tecnico-em-processos-fotograficos — Técnico em Processos Fotográficos (Curitiba)
+  ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2018 ou posterior (anos: 2014)
+    ano_documento = 2018 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-processos-fotograficos.json:30: "ano_documento": 2018,
+
+ppc:curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio — Técnico em Processos Fotográficos (Curitiba)
+  ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2015 ou posterior (anos: 2014)
+    ano_documento = 2015 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio.json:31: "ano_documento": 2015,
+
+ppc:curitiba/tecnico-em-producao-de-audio-e-video — Técnico em Produção de Áudio e Vídeo (Curitiba)
+  carga_horaria: diverge — PPC 1213 h; mais próxima: matriz 68 (2023): 1231 h (diferença -18 h)
+    carga_horaria_total_h = 1213 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-producao-de-audio-e-video.md:97: **Carga horária total em hora-relógio:** 1213 horas
+
+ppc:curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio — Técnico em Programação de Jogos Digitais (Curitiba)
+  carga_horaria: diverge — PPC 3444 h; mais próxima: matriz 48 (2021): 3449 h (diferença -5 h)
+    carga_horaria_total_h = 3444 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.md:203: **Carga horária total em hora relógio:** 3444
+
+ppc:curitiba/tecnico-em-radiologia — Técnico em Radiologia (Curitiba)
+  carga_horaria: diverge — PPC 2064 h; mais próxima: matriz 270 (2014): 2008 h (diferença +56 h)
+  estagio: diverge — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 270 (2014))
+    carga_horaria_total_h = 2064 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-radiologia.md:100: **Carga horária Total:** 2064 horas **Carga horária de estágio:** 600 horas **Número máximo de vagas do curso:** 35 **Número mínimo de vagas do curso:** 20 **An
+    estagio_carga_h = 600 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-radiologia.md:100: **Carga horária Total:** 2064 horas **Carga horária de estágio:** 600 horas **Número máximo de vagas do curso:** 35 **Número mínimo de vagas do curso:** 20 **An
+    estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-radiologia.md:100: **Carga horária Total:** 2064 horas **Carga horária de estágio:** 600 horas **Número máximo de vagas do curso:** 35 **Número mínimo de vagas do curso:** 20 **An
+
+ppc:curitiba/tecnico-em-saude-bucal — Técnico em Saúde Bucal (Curitiba)
+  carga_horaria: diverge — PPC 1235 h; mais próxima: matriz 835 (2026): 1236 h (diferença -1 h)
+    carga_horaria_total_h = 1235 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-saude-bucal.md:140: 1.1.11 Carga-Horária Total do Curso Carga horária total em hora relógio: 1.235 horas
+
+ppc:foz-do-iguacu/tecnico-em-edificacoes-3 — Técnico em Edificações (Foz do Iguaçu)
+  ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2016 ou posterior (anos: 2015)
+  carga_horaria: diverge — PPC 3579 h; mais próxima: matriz 74 (2015): 3342 h (diferença +237 h)
+    ano_documento = 2016 [Precisa de revisão] dados/institucional/cursos/foz-do-iguacu/tecnico-em-edificacoes-3.json:30: "ano_documento": 2016,
+    carga_horaria_total_h = 3579 [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/tecnico-em-edificacoes-3.md:93: **Carga horária total do curso:** 3.579,34 hora relógio e/ou 4.295,20 hora-aula horas.
+
+ppc:goioere/tecnico-em-informatica — Técnico em Informática (Goioerê)
+  carga_horaria: diverge — PPC 3533 h; mais próxima: matriz 895 (2016): 3538 h (diferença -5 h)
+    carga_horaria_total_h = 3533 [extraido] base-conhecimento/institucional/ifpr/ppcs/goioere/tecnico-em-informatica.md:87: **Carga Horária Total:** 3533 horas/relógio; 4240 horas/aula
+
+ppc:goioere/tecnico-em-producao-de-moda — Técnico em Produção de Moda (Goioerê)
+  carga_horaria: diverge — PPC 3334 h; mais próxima: matriz 896 (2017): 3345 h (diferença -11 h)
+    carga_horaria_total_h = 3334 [extraido] base-conhecimento/institucional/ifpr/ppcs/goioere/tecnico-em-producao-de-moda.md:96: **Carga Horária Total:** 3.334 horas/relógio; 4000 horas/aula
+
+ppc:irati/tecnico-em-agroecologia — Técnico em Agroecologia (Irati)
+  ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2025 ou posterior (anos: 2017, 2024)
+    ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/irati/tecnico-em-agroecologia.json:31: "ano_documento": 2025,
+
+ppc:irati/tecnico-em-informatica — Técnico em Informática (Irati)
+  ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2025 ou posterior (anos: 2017, 2024)
+    ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/irati/tecnico-em-informatica.json:31: "ano_documento": 2025,
+
+ppc:ivaipora/tecnico-em-agroecologia-integrado — Técnico em Agroecologia (Ivaiporã)
+  ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2016 ou posterior (anos: 2015)
+    ano_documento = 2016 [Precisa de revisão] dados/institucional/cursos/ivaipora/tecnico-em-agroecologia-integrado.json:30: "ano_documento": 2016,
+
+ppc:ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio — Técnico em Informática (Ivaiporã)
+  ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2023 ou posterior (anos: 2016)
+    ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio.json:30: "ano_documento": 2023,
+
+ppc:jacarezinho/tecnico-em-alimentos — Técnico em Alimentos (Jacarezinho)
+  estagio: diverge — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 29 (2020))
+    estagio_carga_h = 120 [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-alimentos.md:92: **Carga horária de estágio:** 120 horas
+    estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-alimentos.md:92: **Carga horária de estágio:** 120 horas
+
+ppc:jacarezinho/tecnico-em-eletromecanica — Técnico em Eletromecânica (Jacarezinho)
+  carga_horaria: diverge — PPC 3390 h; mais próxima: matriz 517 (2018): 1200 h (diferença +2190 h)
+    carga_horaria_total_h = 3390 [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-eletromecanica.md:93: **Carga horária Total:** 3.390 horas
+
+ppc:jacarezinho/tecnico-em-eletrotecnica — Técnico em Eletrotécnica (Jacarezinho)
+  carga_horaria: diverge — PPC 3390 h; mais próxima: matriz 35 (2018): 5460 h (diferença -2070 h)
+    carga_horaria_total_h = 3390 [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-eletrotecnica.md:101: **Carga horária Total:** 3.390 horas
+
+ppc:jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio — Técnico em Alimentos (Jaguariaíva)
+  carga_horaria: diverge — PPC 3500 h; mais próxima: matriz 78 (2019): 3509 h (diferença -9 h)
+    carga_horaria_total_h = 3500 [extraido] base-conhecimento/institucional/ifpr/ppcs/jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio.md:358: tualmente possui duração de três anos e carga horária total de 3.500 horas. Com o decorrer dos anos, tornou-se perceptível que a referida carga horária semanal 
+
+ppc:jaguariaiva/tecnico-em-biotecnologia-integrado-ao-ensino-medio — Técnico em Biotecnologia (Jaguariaíva)
+  carga_horaria: diverge — PPC 3600 h; mais próxima: matriz 736 (2019): 3634 h (diferença -34 h)
+    carga_horaria_total_h = 3600 [extraido] base-conhecimento/institucional/ifpr/ppcs/jaguariaiva/tecnico-em-biotecnologia-integrado-ao-ensino-medio.md:360: Para fins de revisão do PPC, destaca-se que o Curso de Biotecnologia começou a ser ofertado no campus Jaguariaíva no ano de 2015, e atualmente possui duração de
+
+ppc:londrina/tecnico-em-enfermagem — Técnico em Enfermagem (Londrina)
+  estagio: diverge — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 740 (2025))
+    estagio_carga_h = 515 [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-enfermagem.md:115: Carga horária de estágio obrigatório: 515 horas
+    estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-enfermagem.md:115: Carga horária de estágio obrigatório: 515 horas
+
+ppc:londrina/tecnico-em-protese-dentaria-2 — Técnico em Prótese Dentária (Londrina)
+  carga_horaria: diverge — PPC 1280 h; mais próxima: matriz 208 (2014): 1200 h (diferença +80 h)
+    carga_horaria_total_h = 1280 [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-protese-dentaria-2.md:180: O curso de Técnico em Prótese Dentária tem carga horária total de 1.280 horas, sendo esta carga horária é distribuída em dois anos, ou seja, quatro semestres le
+
+ppc:londrina/tecnico-em-saude-bucal — Técnico em Saúde Bucal (Londrina)
+  estagio: diverge — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 742 (2018))
+    estagio_carga_h = 70 [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-saude-bucal.md:112: **Carga horária de estágio:** 70h.
+    estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-saude-bucal.md:112: **Carga horária de estágio:** 70h.
+
+ppc:palmas/tecnico-em-alimentos — Técnico em Alimentos (Palmas)
+  carga_horaria: diverge — PPC 3073 h; mais próxima: matriz 16 (2023): 3006 h (diferença +67 h)
+    carga_horaria_total_h = 3073 [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/tecnico-em-alimentos.md:900: Dessa forma, em resumo, o Curso Técnico em Alimentos compreende 3 (três) anos, com carga horária total de 3.073 horas-relógio, compostas pelas cargas horárias d
+
+ppc:palmas/tecnico-em-servicos-juridicos — Técnico em Serviços Jurídicos (Palmas)
+  carga_horaria: diverge — PPC 3004 h; mais próxima: matriz 36 (2023): 3006 h (diferença -2 h)
+    carga_horaria_total_h = 3004 [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/tecnico-em-servicos-juridicos.md:911: Jurídicos compreende 3 (três) anos, com carga horária total de 3004 horas-relógio, compostas pelas cargas horárias dos núcleos que são 1706 horasrelógio para a 
+
+ppc:paranagua/tecnico-em-mecanica — Técnico em Mecânica (Paranaguá)
+  carga_horaria: diverge — PPC 3401 h; mais próxima: matriz 454 (2025): 3438 h (diferença -37 h)
+    carga_horaria_total_h = 3401 [extraido] base-conhecimento/institucional/ifpr/ppcs/paranagua/tecnico-em-mecanica.md:88: ealizar dependências no contra turno. **Carga horária Total:** 3401 (três mil, quatrocentas e uma) horas relógio. **Número máximo de vagas do curso:** 40 (quare
+
+ppc:paranavai/tecnico-em-informatica — Técnico em Informática (Paranavaí)
+  carga_horaria: diverge — PPC 3532 h; mais próxima: matriz 62 (2016): 3536 h (diferença -4 h)
+    carga_horaria_total_h = 3532 [extraido] base-conhecimento/institucional/ifpr/ppcs/paranavai/tecnico-em-informatica.md:76: ## **Carga Horária Total do Curso** : 4200 h/a - 3532 h/r
+
+ppc:paranavai/tecnico-em-mecatronica — Técnico em Mecatrônica (Paranavaí)
+  carga_horaria: diverge — PPC 3532 h; mais próxima: matriz 63 (2017): 3538 h (diferença -6 h)
+    carga_horaria_total_h = 3532 [extraido] base-conhecimento/institucional/ifpr/ppcs/paranavai/tecnico-em-mecatronica.md:102: **Carga Horária Total do Curso** : 3532 h/r.
+
+ppc:pinhais/tecnico-em-administracao-integrado-ao-ensino-medio — Técnico em Administração (Pinhais)
+  carga_horaria: diverge — PPC 3742 h; mais próxima: matriz 821 (2019): 3809 h (diferença -67 h)
+    carga_horaria_total_h = 3742 [extraido] base-conhecimento/institucional/ifpr/ppcs/pinhais/tecnico-em-administracao-integrado-ao-ensino-medio.md:268: o ano seguinte. Com duração de 4 anos e carga horária total de 3742 horas-relógio, a primeira turma foi integralizada em 2018, ano em que o Projeto Pedagógico d
+
+ppc:pinhais/tecnico-em-informatica-integrado-ao-ensino-medio — Técnico em Informática (Pinhais)
+  carga_horaria: diverge — PPC 3742 h; mais próxima: matriz 798 (2026): 3347 h (diferença +395 h)
+    carga_horaria_total_h = 3742 [extraido] base-conhecimento/institucional/ifpr/ppcs/pinhais/tecnico-em-informatica-integrado-ao-ensino-medio.md:129: **Carga horária total em hora relógio:** 3742
+
+ppc:quedas-do-iguacu/tecnico-em-informatica — Técnico em Informática (Quedas do Iguaçu)
+  carga_horaria: diverge — PPC 3349 h; mais próxima: matriz 80 (2019): 3301 h (diferença +48 h)
+    carga_horaria_total_h = 3349 [extraido] base-conhecimento/institucional/ifpr/ppcs/quedas-do-iguacu/tecnico-em-informatica.md:121: **Carga horária total em hora relógio:** 3.349 horas/relógio
+
+ppc:umuarama/tecnico-em-edificacoes-integrado-ao-ensino-medio — Técnico em Edificações (Umuarama)
+  ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2018 ou posterior (anos: 2016)
+    ano_documento = 2018 [Precisa de revisão] dados/institucional/cursos/umuarama/tecnico-em-edificacoes-integrado-ao-ensino-medio.json:31: "ano_documento": 2018,
+
+ppc:umuarama/tecnico-em-informatica-integrado-ao-ensino-medio — Técnico em Informática (Umuarama)
+  carga_horaria: diverge — PPC 3533 h; mais próxima: matriz 49 (2015): 3545 h (diferença -12 h)
+    carga_horaria_total_h = 3533 [extraido] base-conhecimento/institucional/ifpr/ppcs/umuarama/tecnico-em-informatica-integrado-ao-ensino-medio.md:79: - **Carga Horária Total: 3533 horas/relógio; 4240 horas/aula**
+
+ppc:umuarama/tecnico-em-quimica-integrado-ao-ensino-medio — Técnico em Química (Umuarama)
+  carga_horaria: diverge — PPC 3645 h; mais próxima: matriz 57 (2014): 3683 h (diferença -38 h)
+    carga_horaria_total_h = 3645 [extraido] base-conhecimento/institucional/ifpr/ppcs/umuarama/tecnico-em-quimica-integrado-ao-ensino-medio.md:87: **Carga Horária Total:** 3645 horas/relógio; 4374 horas/aula de 50 minutos
+
+ppc:uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio — Técnico em Informática (União da Vitória)
+  ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2025 ou posterior (anos: 2015, 2024)
+    ano_documento = 2025 [Revisado] dados/institucional/cursos/uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio.json:30: "ano_documento": 2025,

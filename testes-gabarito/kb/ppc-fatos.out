@@ -1,0 +1,8 @@
+ppc:curitiba/tecnico-em-enfermagem — Técnico em Enfermagem (Curitiba)
+  ano_documento = 2023 [Pendente] dados/institucional/cursos/curitiba/tecnico-em-enfermagem.json:30
+  carga_horaria_total_h = 1600 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:122
+  estagio_carga_h = 400 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:126
+  estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:126
+  SUAP ano: confere — anos das matrizes: 2020, 2024
+  SUAP carga_horaria: confere-com-uma-matriz — igual a matriz 538 (2024): 1600 h; o SUAP tem matrizes com CH diferentes (matriz 71 (2020): 1820 h; matriz 538 (2024): 1600 h)
+  SUAP estagio: diverge — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 538 (2024))

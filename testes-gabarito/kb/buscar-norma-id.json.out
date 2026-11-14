@@ -1,0 +1,316 @@
+{
+  "consulta": "br/cne-cp/res/2026/2",
+  "total": 10,
+  "avisos": [],
+  "resultados": [
+    {
+      "norma": {
+        "id": "br/cne-cp/res/2026/2",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CP nº 2/2026",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2026-11-11",
+        "ementa": "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md"
+      },
+      "dispositivo": null,
+      "pedido": null,
+      "metadados": {
+        "texto": "Resolução CNE/CP nº 2/2026\nResolução CNE/CP nº 2, de 11 de novembro de 2026\nDCN EPT 2026\nDCNEPT 2026\nDiretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica\nNovas DCN da EPT\nDCNEPT\neducação profissional\nEPT\nEPTNM\ndiretrizes curriculares\ncursos técnicos\ncursos superiores de tecnologia\nitinerário formativo profissional\ncarga horária\nprática profissional supervisionada\nestágio supervisionado\neducação a distância\nsemipresencial\nacompanhamento de egressos\ncertificação profissional\ncursos experimentais\nformação docente\ninteligência artificial\nCNCT\nCNE\nDefine as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
+        "linha": 1
+      },
+      "pontuacao": null,
+      "origem": "citacao-resolvida"
+    },
+    {
+      "norma": {
+        "id": "br/cne-ceb/res/2025/3",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CEB nº 3/2025",
+        "status_vigencia": "parcialmente revogada",
+        "data_publicacao": "2025-04-09",
+        "ementa": "Institui as Diretrizes Operacionais Nacionais para a Educação de Jovens e Adultos – EJA.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_3-2025_diretrizes-eja.md"
+      },
+      "dispositivo": {
+        "id": "br/cne-ceb/res/2025/3#art6-iii",
+        "arquivo_id": "br/cne-ceb/res/2025/3#art6-iii",
+        "tipo": "inciso",
+        "rotulo": "III",
+        "caput": [
+          "Art. 6º A oferta da EJA articulada à Educação Profissional e Tecnológica:"
+        ],
+        "texto": "III – (Revogado pela Resolução CNE/CP nº 2, de 11 de novembro de 2026) quando destinada à educação profissional técnica de nível médio, deverá contar com carga horária mínima de duas mil e quatrocentas horas, assegurando-se cumulativamente, destinação de mil e duzentas horas para a formação geral, acrescida da carga horária mínima estabelecida para a respectiva habilitação profissional técnica.",
+        "subordinados": [],
+        "notas": [
+          {
+            "tipo": "revogacao",
+            "texto": "(Revogado pela Resolução CNE/CP nº 2, de 11 de novembro de 2026)"
+          }
+        ],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_3-2025_diretrizes-eja.md",
+        "linha_inicio": 128,
+        "linha_fim": 128
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -16.715,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "br/cne-cp/res/2021/1",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CP nº 1/2021",
+        "status_vigencia": "revogada",
+        "data_publicacao": "2021-01-05",
+        "ementa": "Define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md"
+      },
+      "dispositivo": {
+        "id": "br/cne-cp/res/2021/1#art64",
+        "arquivo_id": "br/cne-cp/res/2021/1#art64",
+        "tipo": "artigo",
+        "rotulo": "Art. 64.",
+        "caput": [],
+        "texto": "Art. 64. Ficam revogadas a Resolução CNE/CP nº 3, de 18 de dezembro de 2002, e a Resolução CNE/CEB nº 6, de 20 de setembro de 2012.",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md",
+        "linha_inicio": 685,
+        "linha_fim": 687
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -13.734,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "br/cne-cp/res/2026/2",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CP nº 2/2026",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2026-11-11",
+        "ementa": "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md"
+      },
+      "dispositivo": {
+        "id": "br/cne-cp/res/2026/2#art74-ii",
+        "arquivo_id": "br/cne-cp/res/2026/2#art74-ii",
+        "tipo": "inciso",
+        "rotulo": "II",
+        "caput": [
+          "Art. 74. Ficam revogados:"
+        ],
+        "texto": "II – a Resolução CNE/CP nº 1, de 5 de janeiro de 2021;",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
+        "linha_inicio": 1093,
+        "linha_fim": 1093
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -13.686,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "br/cne-cp/res/2026/2",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CP nº 2/2026",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2026-11-11",
+        "ementa": "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md"
+      },
+      "dispositivo": {
+        "id": "br/cne-cp/res/2026/2#art74-iii",
+        "arquivo_id": "br/cne-cp/res/2026/2#art74-iii",
+        "tipo": "inciso",
+        "rotulo": "III",
+        "caput": [
+          "Art. 74. Ficam revogados:"
+        ],
+        "texto": "III – a Resolução CNE/CP nº 1, de 6 de maio de 2022;",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
+        "linha_inicio": 1094,
+        "linha_fim": 1094
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -13.686,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "br/cne-cp/res/2026/2",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CP nº 2/2026",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2026-11-11",
+        "ementa": "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md"
+      },
+      "dispositivo": {
+        "id": "br/cne-cp/res/2026/2#art74-iv",
+        "arquivo_id": "br/cne-cp/res/2026/2#art74-iv",
+        "tipo": "inciso",
+        "rotulo": "IV",
+        "caput": [
+          "Art. 74. Ficam revogados:"
+        ],
+        "texto": "IV – a Resolução CNE/CP nº 3, de 16 de novembro de 2022; e",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
+        "linha_inicio": 1095,
+        "linha_fim": 1095
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -13.593,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "br/cne-cp/res/2026/2",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CP nº 2/2026",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2026-11-11",
+        "ementa": "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md"
+      },
+      "dispositivo": {
+        "id": "br/cne-cp/res/2026/2#art45-par3",
+        "arquivo_id": "br/cne-cp/res/2026/2#art45-par3",
+        "tipo": "paragrafo",
+        "rotulo": "§ 3º",
+        "caput": [
+          "Art. 45. As instituições de ensino ofertantes de cursos de EPT são responsáveis por adotar as providências e prazos para expedição e registro dos certificados e diplomas."
+        ],
+        "texto": "§ 3º A emissão de diplomas de cursos técnicos de nível médio deve seguir o disposto no art. 1º da Resolução CNE/CP nº 2, de 8 de dezembro de 2025, que cria a trava digital e a obrigatoriedade do código autenticador para diplomas.",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
+        "linha_inicio": 732,
+        "linha_fim": 732
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -12.598,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "br/cne-cp/res/2026/2",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CP nº 2/2026",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2026-11-11",
+        "ementa": "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md"
+      },
+      "dispositivo": {
+        "id": "br/cne-cp/res/2026/2#art57-par1",
+        "arquivo_id": "br/cne-cp/res/2026/2#art57-par1",
+        "tipo": "paragrafo",
+        "rotulo": "§ 1º",
+        "caput": [
+          "Art. 57. A formação inicial de docentes para atuação na EPTNM deve ser realizada em nível superior:"
+        ],
+        "texto": "§ 1º Os cursos de graduação de licenciatura devem atender a Resolução CNE/CP nº 4, de 29 de maio de 2024, em especial o art. 14, e alterações posteriores.",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
+        "linha_inicio": 944,
+        "linha_fim": 944
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -10.415,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "br/cne-cp/res/2021/1",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CP nº 1/2021",
+        "status_vigencia": "revogada",
+        "data_publicacao": "2021-01-05",
+        "ementa": "Define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md"
+      },
+      "dispositivo": {
+        "id": "br/cne-cp/res/2021/1#art62",
+        "arquivo_id": "br/cne-cp/res/2021/1#art62",
+        "tipo": "artigo",
+        "rotulo": "Art. 62.",
+        "caput": [],
+        "texto": "Art. 62. Aos estudantes matriculados em cursos de Educação Profissional Técnica de Nível Médio e em cursos de Educação Profissional Tecnológica de Graduação oferecidos anteriormente ao exercício em que a presente Resolução produzirá efeitos, fica assegurado o direito de conclusão de seus cursos organizados, respectivamente, com base na Resolução CNE/CEB nº 6, de 20 de setembro de 2012, e na Resolução CNE/CP nº 3, de 18 de dezembro de 2002.",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md",
+        "linha_inicio": 677,
+        "linha_fim": 679
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -10.24,
+      "origem": "busca-textual"
+    },
+    {
+      "norma": {
+        "id": "br/cne-cp/res/2026/2",
+        "situacao": "base",
+        "titulo": "Resolução CNE/CP nº 2/2026",
+        "status_vigencia": "vigente",
+        "data_publicacao": "2026-11-11",
+        "ementa": "Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md"
+      },
+      "dispositivo": {
+        "id": "br/cne-cp/res/2026/2#art57-par7",
+        "arquivo_id": "br/cne-cp/res/2026/2#art57-par7",
+        "tipo": "paragrafo",
+        "rotulo": "§ 7º",
+        "caput": [
+          "Art. 57. A formação inicial de docentes para atuação na EPTNM deve ser realizada em nível superior:"
+        ],
+        "texto": "§ 7º Aos estudantes matriculados, na data da publicação desta Resolução, em curso de formação de docentes realizado nas formas previstas no art. 3º da Resolução CNE/CP nº 1, de 6 de maio de 2022, fica assegurado o direito de conclusão e de obtenção do respectivo título.",
+        "subordinados": [],
+        "notas": [],
+        "revogado": false,
+        "vetado": false,
+        "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
+        "linha_inicio": 956,
+        "linha_fim": 956
+      },
+      "pedido": null,
+      "metadados": null,
+      "pontuacao": -9.051,
+      "origem": "busca-textual"
+    }
+  ]
+}

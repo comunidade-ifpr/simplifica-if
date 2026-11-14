@@ -1,0 +1,97 @@
+Resolução CNE/CP nº 1/2021 (br/cne-cp/res/2021/1): revogada (a confirmar) em 2026-11-13
+  sucessora(s): br/cne-cp/res/2026/2
+  regras de transição: dcnept-2026-art70, dcnept-2026-art71, dcnept-2026-art71-parunico, dcnept-2021-art63, dcnept-2021-art62
+  relação: br/cne-cp/res/2026/2#art74-ii revoga br/cne-cp/res/2021/1
+  relação: br/cne-cp/res/2021/1#art64 revoga br/cne-cp/res/2002/3
+  relação: br/cne-cp/res/2021/1#art64 revoga br/cne-ceb/res/2012/6
+  relação: br/mec/portaria/2024/902 fundamenta-se-em br/cne-cp/res/2021/1
+  norma que a cita: br/mec/portaria/2024/902 (preâmbulo)
+  norma que a cita: br/cne-cp/res/2026/2 (#art71-parunico, #art74-ii)
+  norma que a cita: ifpr/proens/portaria/2024/121 (#art6)
+
+Arquivos das skills citando a norma ou dispositivos correspondentes: 35
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-02.json [referencia-correspondente, tema] br/cne-cp/res/2026/2#art29 br/cne-cp/res/2026/2#art30 br/cne-cp/res/2026/2#art37-par3
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-03.json [referencia-correspondente, citacao-sucessora, tema] br/cne-cp/res/2026/2#art18-par2 br/cne-cp/res/2026/2#art29-par2 br/cne-cp/res/2026/2#art29-par3 br/cne-cp/res/2026/2#art30
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-06.json [referencia-correspondente, tema] br/cne-cp/res/2026/2#art28-par1-i
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-08.json [referencia-correspondente, tema] br/cne-cp/res/2026/2#art26-vi br/cne-cp/res/2026/2#art28-par1-ii
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-12.json [referencia-correspondente, citacao-sucessora, tema] br/cne-cp/res/2026/2#art9
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-13.json [referencia-correspondente, tema] br/cne-cp/res/2026/2#art28-x br/cne-cp/res/2026/2#art42
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-14.json [referencia-correspondente, tema] br/cne-cp/res/2026/2#art26-viii
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-15.json [referencia-correspondente, tema] br/cne-cp/res/2026/2#art42 br/cne-cp/res/2026/2#art43
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-16.json [referencia-correspondente, citacao-sucessora, tema] br/cne-cp/res/2026/2#art18 br/cne-cp/res/2026/2#art28-iv
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-17.json [referencia-correspondente, citacao-sucessora, tema] br/cne-cp/res/2026/2#art17-par2 br/cne-cp/res/2026/2#art28-vi br/cne-cp/res/2026/2#art29-par4 br/cne-cp/res/2026/2#art9
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-19.json [referencia-correspondente, tema] br/cne-cp/res/2026/2#art22 br/cne-cp/res/2026/2#art26-ii br/cne-cp/res/2026/2#art28-par1-iii br/cne-cp/res/2026/2#art36
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-20.json [referencia-correspondente, tema] br/cne-cp/res/2026/2#art28-par1-iv br/cne-cp/res/2026/2#art28-xvii br/cne-cp/res/2026/2#art37
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-21.json [referencia-correspondente, citacao-sucessora, tema] br/cne-cp/res/2026/2#art53-par7
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-24.json [referencia-correspondente, citacao-sucessora, tema] br/cne-cp/res/2026/2#art37-par5
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-27.json [referencia-correspondente, tema] br/cne-cp/res/2026/2#art28-par2 br/cne-cp/res/2026/2#art48 br/cne-cp/res/2026/2#art49 br/cne-cp/res/2026/2#art50 br/cne-cp/res/2026/2#art51 br/cne-cp/res/2026/2#art52 br/cne-cp/res/2026/2#art53
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-01.json [referencia-correspondente, tema] br/cne-cp/res/2026/2#art47
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-02.json [referencia-correspondente, citacao-sucessora, tema] br/cne-cp/res/2026/2#art28-i br/cne-cp/res/2026/2#art28-xvi
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-03.json [referencia-correspondente, tema] br/cne-cp/res/2026/2#art27 br/cne-cp/res/2026/2#art28-iii
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-05.json [referencia-correspondente, citacao, tema] br/cne-cp/res/2026/2#art1 br/cne-cp/res/2026/2#art3
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-08.json [citacao, citacao-sucessora] br/cne-cp/res/2026/2#art30
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-15.json [referencia-correspondente, citacao, tema] br/cne-cp/res/2026/2#art44 br/cne-cp/res/2026/2#art45
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-01.json [referencia-correspondente, citacao-sucessora, tema] br/cne-cp/res/2026/2#art38
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-02.json [referencia-correspondente, tema] br/cne-cp/res/2026/2#art28-xi br/cne-cp/res/2026/2#art38-par4
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-07.json [referencia-correspondente, citacao-sucessora, tema] br/cne-cp/res/2026/2#art28-par3 br/cne-cp/res/2026/2#art28-xii
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-08.json [referencia-correspondente] br/cne-cp/res/2026/2#art22-vii br/cne-cp/res/2026/2#art26-xii
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-09.json [citacao]
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-12.json [citacao]
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-14.json [citacao]
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-15.json [referencia-correspondente, citacao-sucessora, tema] br/cne-cp/res/2026/2#art28-xiv br/cne-cp/res/2026/2#art61 br/cne-cp/res/2026/2#art62 br/cne-cp/res/2026/2#art63
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-17.json [referencia-correspondente, citacao, tema] br/cne-cp/res/2026/2#art57 br/cne-cp/res/2026/2#art59 br/cne-cp/res/2026/2#art61
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-21.json [referencia-correspondente, citacao-sucessora, tema] br/cne-cp/res/2026/2#art24-parunico
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-22.json [referencia-correspondente, citacao-sucessora, tema] br/cne-cp/res/2026/2#art28-par3
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-trans-08.json [referencia-correspondente, citacao-sucessora, tema] br/cne-cp/res/2026/2#art22 br/cne-cp/res/2026/2#art22-ii br/cne-cp/res/2026/2#art22-iii br/cne-cp/res/2026/2#art22-iv br/cne-cp/res/2026/2#art22-ix br/cne-cp/res/2026/2#art22-v
+  .agents/skills/revisar-ppc/base-analise/marcos-normativos.json [citacao, citacao-sucessora] br/cne-cp/res/2021/1#art71-parunico br/cne-cp/res/2026/2#art29 br/cne-cp/res/2026/2#art30
+  .agents/skills/revisar-ppc/base-analise/validacoes-cruzadas/vc-01-03-11-normas.json [citacao]
+
+Fichas só por tema (14 tópicos atingidos): 46
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-01.json (matriz_curricular)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-04.json (perfil_egresso_mundo_trabalho, matriz_curricular)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-05.json (ementario_bibliografias)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-07.json (matriz_curricular)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-09.json (aee_acessibilidade_inclusao)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-10.json (matriz_curricular)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-11.json (temas_transversais_cidadania)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-18.json (matriz_curricular)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-22.json (aee_acessibilidade_inclusao)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-23.json (identificacao_oferta, matriz_curricular)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-25.json (perfil_egresso_mundo_trabalho, estagio)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-curr-26.json (temas_transversais_cidadania)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-04.json (justificativa_objetivos)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-06.json (concepcao_metodologias)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-07.json (perfil_egresso_mundo_trabalho)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-09.json (identificacao_oferta)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-10.json (perfil_egresso_mundo_trabalho)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-11.json (perfil_egresso_mundo_trabalho)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-12.json (perfil_egresso_mundo_trabalho)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-13.json (identificacao_oferta)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-14.json (perfil_egresso_mundo_trabalho)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-16.json (identificacao_oferta)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-17.json (identificacao_oferta, assistencia_estudantil_permanencia)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-18.json (perfil_egresso_mundo_trabalho)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-ident-19.json (perfil_egresso_mundo_trabalho)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-03.json (assistencia_estudantil_permanencia)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-04.json (aee_acessibilidade_inclusao)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-05.json (corpo_docente_gestao)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-06.json (corpo_docente_gestao)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-10.json (aee_acessibilidade_inclusao, temas_transversais_cidadania)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-11.json (aee_acessibilidade_inclusao, infraestrutura)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-13.json (ementario_bibliografias)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-16.json (corpo_docente_gestao)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-18.json (aee_acessibilidade_inclusao)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-19.json (aee_acessibilidade_inclusao)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-20.json (aee_acessibilidade_inclusao)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-23.json (corpo_docente_gestao)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-24.json (assistencia_estudantil_permanencia)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-25.json (aee_acessibilidade_inclusao, infraestrutura)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-sup-26.json (avaliacao_aprendizagem)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-trans-01.json (justificativa_objetivos, perfil_egresso_mundo_trabalho)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-trans-02.json (concepcao_metodologias, avaliacao_aprendizagem)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-trans-03.json (matriz_curricular, ementario_bibliografias)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-trans-04.json (matriz_curricular, corpo_docente_gestao, infraestrutura)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-trans-05.json (justificativa_objetivos)
+  .agents/skills/revisar-ppc/base-analise/fichas/ct-trans-07.json (identificacao_oferta, infraestrutura)
+
+PPCs que citam a norma: 59
