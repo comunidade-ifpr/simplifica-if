@@ -591,6 +591,8 @@ packages/mcp/
 | Descrições | Tamanho máximo, e todas citam quando usar a ferramenta. As avaliações de escolha de ferramenta ficam no M0.5 |
 | Pasta de trabalho | `pacote_contexto` recusa caminho fora da pasta, inclusive por `..` e por symlink |
 
+As suítes estão em `packages/mcp/test/transversal/`, uma por linha da tabela, e rodam no CI (`.github/workflows/ci.yml`); ver o README do pacote e o andamento do T6.
+
 ## Configuração no piloto zero
 
 O guia de instalação para quem não é técnico, com os caminhos absolutos no macOS e no Windows e as fontes oficiais de cada cliente, é o [guia do piloto zero](../guia-piloto-zero.md) (T7). O que segue é o resumo técnico.
@@ -680,3 +682,32 @@ args = ["--banco", "~/SimplificaIF/kb.sqlite"]
   - Comandos e formatos conferidos na documentação oficial de cada cliente, citada no fim do guia. A página do Gemini CLI informa que ele foi substituído pelo Antigravity CLI em 18/06/2026; o guia registra isso, e a configuração do Antigravity fica para o M0.2.
   - Claude Code testado de verdade (2.1.323): `claude mcp add --scope project` num diretório temporário, com o executável SEA (`pnpm mcp:executavel`, 142 MB) e o `kb.sqlite` reais; uma pergunta pelo `claude -p --mcp-config` respondeu com o link `ifpr://cnct/tecnico-em-enfermagem` e a data da base; servidor removido em seguida, sem tocar na configuração global.
   - Pendente para o M0.2: distribuição pronta (download ou instalador), assinatura de código no macOS e no Windows, e o nome final do `.exe` (hoje o alvo `win-x64` sai com o sufixo do alvo e a equipe o renomeia).
+- 14/11/2026: **T6 pronto** no branch `t3/mcp-t6-suites-ci`: as suítes transversais e o CI no GitHub Actions. Commits `c69fab3` (suítes), `6f2d5f7` (CI), `296c351` (pasta isolada) e `369dc1a` (merge de `main` com o T4, T5 e T7, e o `pacote_contexto` nas suítes).
+  - **Suítes** (`packages/mcp/test/transversal/`), sobre todas as ferramentas de `FERRAMENTAS`. Tiram as entradas de `amostras.ts` e os casos de paridade de `paridade.ts`, dois registros indexados pelo nome da ferramenta: uma ferramenta nova sem amostra ou sem caso quebra o `typecheck` e os testes. 77 casos; o `pnpm test` roda 43, os da fixture, e o `pnpm mcp:smoke` roda os 77, com os da base real.
+    - contrato, 18 casos: a cobertura das amostras e a paginação declarada; e, por ferramenta, pelo protocolo, as válidas no `inputSchema` e no `outputSchema` (ajv e Effect Schema) e as inválidas com `isError` e mensagem em português que nomeia o campo;
+    - paridade, 17 casos: 16 com a CLI `kb` e a cobertura. Reúne `banco-real.test.ts`, `smoke-base-real.test.ts` e `smoke-pacote-contexto.test.ts`, que saíram, com as mesmas comparações; `sobre_a_base` compara as contagens com as tabelas do banco, e `etapa` registra por que não tem comando;
+    - sem repositório, 4 casos: cada fixture e a base real numa pasta só com o `kb.sqlite`. O servidor é o executável (`SIMPLIFICA_MCP_EXE`) ou o bundle no Node com `--permission`, e um controle negativo confere que o modelo de permissões está ativo. As respostas são iguais às do processo de teste, e a pasta fica intacta;
+    - orçamento, 32 casos: textos no teto, e a paginação com mais de uma página, sem repetir nem pular item, na fixture e na base real;
+    - determinismo, 4 casos: dois processos em stdio dão as linhas de resposta iguais byte a byte;
+    - descrições, 1 caso: tamanhos, a frase de quando usar, os parâmetros descritos e o `tools/list` sem `outputSchema` abaixo de 24 mil caracteres;
+    - pasta de trabalho, 1 caso: o `pacote_contexto` com `arquivo` pelo servidor isolado. Lê dentro da pasta (relativo, subpasta, absoluto) e recusa `..`, absoluto de fora e link simbólico para fora, de arquivo e de pasta, sem acesso negado no stderr.
+  - **CI** (`.github/workflows/ci.yml`, com o preparo em `.github/actions/preparar`): em todo push e PR, sem segredos e sem Notion, SEI ou SUAP. O preparo usa o Node de `.node-version`, o corepack 0.36.0 instalado à parte (o Node 25 deixou de distribuí-lo), o pnpm de `packageManager`, o cache do store e `pnpm install --frozen-lockfile`.
+    - `verificacao` (`ubuntu-24.04`): `fmt:check`, `lint`, `typecheck`, `test`, `kb compilar`, `mcp:smoke`, `validar_base.ts`, `kb.sh --comparar`, `base.sh --comparar` e o gabarito do MCP. Estimativa de 6 a 8 min;
+    - `executavel` (`macos-15`, `ubuntu-24.04`, `windows-2025`): `pnpm mcp:executavel`, as suítes sem repositório, determinismo e pasta de trabalho contra o executável, e o executável como artefato `simplifica-mcp-<alvo>` (14 dias). Estimativa de 3 a 6 min cada.
+  - **Validação e reprodução local:**
+    - `actionlint` 1.7.12, com o `shellcheck` 0.11.0, binários oficiais numa pasta temporária: nenhum erro. O script do preparo também passa no `shellcheck`;
+    - macOS (esta máquina): todos os passos dos dois jobs, mais o `banco.sh`. Foram 1340 casos, 1305 passando e 35 pulados, sem falha; `mcp:smoke` 77/77; os quatro gabaritos iguais; o executável `darwin-arm64` passa nas três suítes de processo;
+    - Linux, em Docker (`node:26.12.1-bookworm`): os passos do job `verificacao` em arm64, todos sem falha, em cerca de 3,5 min fora o preparo (`pnpm test` 135 s); os do job `executavel` em amd64 emulado (`linux-x64`): o executável passa nas três suítes de processo.
+    - O Windows não foi testado aqui. O ambiente mínimo do filho tem `SystemRoot`, e os casos de link simbólico são pulados no Windows. O primeiro run no GitHub vai dizer.
+  - Desvios e achados:
+    1. **`banco.sh` fora do CI.** O texto do `.dump` muda com o build do `sqlite3`, e não com o banco: o 3.40 do Debian escreve `replace(…, char(10))` onde o 3.54 escreve `unistr(…)`, e o 3.54 do sqlite.org escreve `0` onde o da Apple escreve `0.0`. O banco compilado no Linux, despejado pelo `sqlite3` do macOS, é igual ao gabarito. Os outros gabaritos rodam no Linux sem diferença.
+    2. **O `node:sqlite` não passa pelo modelo de permissões no Node 26.12:** abre um banco fora da pasta permitida. O isolamento do banco vem de a pasta só ter o `kb.sqlite`. O controle negativo usa uma leitura pelo `fs` (a `--pasta-trabalho` de fora), que é negada.
+    3. **`realpath` e modelo de permissões.** O `realpath` em JavaScript do Node (o do `FileSystem` do Effect, fora do Windows) faz `lstat` dos diretórios ancestrais, e o modelo de permissões nega isso. No Node, um gancho de pré-carga troca pelo `realpath` nativo. O executável aceita `--permission` pelo `NODE_OPTIONS`, mas não o gancho, e por isso roda a suíte sem o modelo de permissões.
+    4. **`listar_cursos` não diz quando usar** ("Use filtros: …"). A descrição é a da especificação e do gabarito, e por isso fica como exceção nomeada em `descricoes.test.ts`, que falha quando a exceção deixar de ser necessária.
+    5. **Rosetta.** Ao reproduzir o job `linux-x64` num Mac, a emulação x86 do Docker grava `.cache/rosetta` no `HOME` do processo, que é a pasta isolada. A conferência da pasta ignora só esse caminho, que não existe no runner.
+    6. **Gabarito de contagem.** `testes-gabarito/testes.txt` e `testes-smoke.txt`, do C0, ainda listam os três smokes que viraram `paridade.ts`. Não foram regerados, porque o gabarito só muda por decisão explícita.
+  - Pendências:
+    - o primeiro run do workflow no GitHub, depois do push, em especial o job do Windows;
+    - rodar o executável também sob `--permission`, trocando o `realpath` da `PastaTrabalho` e da CLI pelo nativo;
+    - uma descrição de `listar_cursos` que diga quando usar, com o gabarito do MCP atualizado (`gabarito.ts --atualizar listar_cursos`);
+    - decidir se o `banco.sh` passa a comparar um formato independente do `sqlite3`, para entrar no CI.
