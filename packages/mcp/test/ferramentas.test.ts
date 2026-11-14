@@ -36,17 +36,6 @@ const PREVISTAS = [
   "etapa",
 ];
 
-/** Descrições da especificação sem a palavra "Use". */
-const SEM_USE = new Set([
-  "ficha_norma",
-  "correspondencia",
-  "citacoes_da_norma",
-  "adequacao_art71",
-  "ler_secao",
-  "ficha_curso",
-  "fatos_ppc",
-]);
-
 /** Texto exato da especificação (seção "Ferramentas"): mudar a descrição muda o comportamento do modelo. */
 const DESCRICOES: Record<string, string> = {
   buscar_norma:
@@ -54,26 +43,27 @@ const DESCRICOES: Record<string, string> = {
   ler_dispositivos:
     "Lê dispositivos pelo ID (até 20 por chamada), com o caput herdado, as notas de redação e, se pedido, os incisos, alíneas e parágrafos. Use quando já tiver o ID, vindo de `buscar_norma`, de `resolver_citacoes` ou de uma ficha.",
   ficha_norma:
-    "Situação de uma norma numa data: a vigência, com o que a determina e o que está a confirmar; as relações com outras normas nos dois sentidos (revoga, altera, regulamenta, fundamenta-se em); as normas sucessoras; e as regras de transição. Norma revogada não é inaplicável: confira as transições antes de concluir.",
+    "Situação de uma norma numa data: a vigência, com o que a determina e o que está a confirmar; as relações com outras normas nos dois sentidos (revoga, altera, regulamenta, fundamenta-se em); as normas sucessoras; e as regras de transição. Use quando a resposta depender de a norma estar em vigor, revogada ou substituída. Norma revogada não é inaplicável: confira as transições antes de concluir.",
   correspondencia:
-    "Dispositivo correspondente na norma sucessora, por exemplo do art. 20 da Res. CNE/CP 1/2021 para a Res. CNE/CP 2/2026. A tabela é rascunho, sem revisão jurídica: use como indicação, nunca como fundamento.",
+    "Dispositivo correspondente na norma sucessora, por exemplo do art. 20 da Res. CNE/CP 1/2021 para a Res. CNE/CP 2/2026. Use quando um PPC ou documento citar dispositivo de norma revogada. A tabela é rascunho, sem revisão jurídica: trate-a como indicação, nunca como fundamento.",
   resolver_citacoes:
     "Identifica citações normativas escritas em texto livre (até 50 por chamada) e devolve o ID canônico, o dispositivo, a regra usada e a confiança. Use para conferir a fundamentação de um documento. Confiança abaixo de 0,9 pede conferência no trecho original.",
   citacoes_da_norma:
-    "PPCs da base que citam uma norma ou um dispositivo, com linha, trecho e confiança. Sem `ppc`, devolve um resumo por PPC; com `ppc`, as ocorrências.",
+    "PPCs da base que citam uma norma ou um dispositivo, com linha, trecho e confiança. Use quando precisar da lista completa; `impacto_da_norma` traz só uma amostra. Sem `ppc`, devolve um resumo por PPC; com `ppc`, as ocorrências.",
   impacto_da_norma:
     'O que uma norma (revogada, alterada ou nova) atinge na base: os PPCs que a citam, as fichas da `revisar-ppc`, as normas que a citam, as relações, as sucessoras e as transições. Use para responder "o que muda com esta norma".',
   adequacao_art71:
-    "Cursos técnicos em oferta alcançados pelo art. 71 da Res. CNE/CP nº 2/2026, que dá prazo de adequação, com a DCN que cada PPC cita. Sem filtros, devolve os totais por indicador; filtre por campus, curso ou indicador para ver a lista.",
+    "Cursos técnicos em oferta alcançados pelo art. 71 da Res. CNE/CP nº 2/2026, que dá prazo de adequação, com a DCN que cada PPC cita. Use quando perguntarem quais PPCs ainda precisam ser atualizados para a nova DCN da EPT. Sem filtros, devolve os totais por indicador; filtre por campus, curso ou indicador para ver a lista.",
   buscar_secoes:
     "Busca trechos dos PPCs da base (todos os campi e níveis), com radicais e sinônimos por tipo de seção. Use para ver como outros cursos escreveram uma seção (estágio, egressos, avaliação…). PPCs são exemplos institucionais, não norma.",
-  ler_secao: "Lê uma seção inteira de PPC pelo ID, vindo de `buscar_secoes` ou de um link `ifpr://ppc/…#secao`.",
+  ler_secao:
+    "Lê uma seção inteira de PPC pelo ID, vindo de `buscar_secoes` ou de um link `ifpr://ppc/…#secao`. Use quando o trecho devolvido por `buscar_secoes` não bastar.",
   listar_cursos:
     "Cursos do IFPR na base, com CNCT, eixo, ofertas e turno. Use filtros: a lista sem filtro é longa. Para os detalhes de um curso, use `ficha_curso`.",
   ficha_curso:
-    "Tudo sobre um curso do IFPR: dados institucionais, PPC vigente, CNCT, ofertas, fatos do PPC cruzados com o SUAP (divergências), normas que o PPC cita e prazos de adequação.",
+    "Tudo sobre um curso do IFPR: dados institucionais, PPC vigente, CNCT, ofertas, fatos do PPC cruzados com o SUAP (divergências), normas que o PPC cita e prazos de adequação. Use quando a pergunta for sobre um curso específico.",
   fatos_ppc:
-    "Fatos extraídos de PPCs (carga horária, estágio, ano), com o trecho de origem, cruzados com as matrizes do SUAP publicadas na base. Os fatos são extraídos por regra, sem revisão humana: confira o trecho antes de afirmar uma divergência.",
+    "Fatos extraídos de PPCs (carga horária, estágio, ano), com o trecho de origem, cruzados com as matrizes do SUAP publicadas na base. Use quando a pergunta cobrir vários PPCs ou só as divergências; para um curso, `ficha_curso` já traz os fatos. Os fatos são extraídos por regra, sem revisão humana: confira o trecho antes de afirmar uma divergência.",
   sobre_a_base:
     "Versão, data de referência e conteúdo da base. Use quando o usuário (um servidor do IFPR) perguntar o que a base contém ou de quando ela é.",
   etapa: "Informa ao app em que etapa da tarefa você está. Use só quando a skill pedir.",
@@ -103,8 +93,8 @@ describe("registro", () => {
     for (const f of FERRAMENTAS) {
       expect(f.descricao).toBe(DESCRICOES[f.nome]!);
       expect(f.descricao.length).toBeLessThanOrEqual(600);
-      // A especificação dá "quando usar" em todas, mas estas dizem isso sem a palavra "Use".
-      if (!SEM_USE.has(f.nome)) expect(f.descricao).toMatch(/\bUse\b/);
+      // a especificação exige que toda descrição diga quando usar a ferramenta, com "Use"
+      expect(f.descricao).toMatch(/\bUse\b/);
       expect(f.titulo.length).toBeGreaterThan(0);
     }
   });

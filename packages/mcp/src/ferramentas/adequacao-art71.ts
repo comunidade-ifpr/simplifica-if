@@ -74,7 +74,7 @@ export const adequacaoArt71 = definirFerramenta({
   nome: "adequacao_art71",
   titulo: "Adequação ao art. 71",
   descricao:
-    "Cursos técnicos em oferta alcançados pelo art. 71 da Res. CNE/CP nº 2/2026, que dá prazo de adequação, com a DCN que cada PPC cita. Sem filtros, devolve os totais por indicador; filtre por campus, curso ou indicador para ver a lista.",
+    "Cursos técnicos em oferta alcançados pelo art. 71 da Res. CNE/CP nº 2/2026, que dá prazo de adequação, com a DCN que cada PPC cita. Use quando perguntarem quais PPCs ainda precisam ser atualizados para a nova DCN da EPT. Sem filtros, devolve os totais por indicador; filtre por campus, curso ou indicador para ver a lista.",
   entrada,
   dados,
   executar(e, { db, base }) {

@@ -106,7 +106,7 @@ export const fichaNorma = definirFerramenta({
   nome: "ficha_norma",
   titulo: "Ficha da norma",
   descricao:
-    "Situação de uma norma numa data: a vigência, com o que a determina e o que está a confirmar; as relações com outras normas nos dois sentidos (revoga, altera, regulamenta, fundamenta-se em); as normas sucessoras; e as regras de transição. Norma revogada não é inaplicável: confira as transições antes de concluir.",
+    "Situação de uma norma numa data: a vigência, com o que a determina e o que está a confirmar; as relações com outras normas nos dois sentidos (revoga, altera, regulamenta, fundamenta-se em); as normas sucessoras; e as regras de transição. Use quando a resposta depender de a norma estar em vigor, revogada ou substituída. Norma revogada não é inaplicável: confira as transições antes de concluir.",
   entrada,
   dados,
   executar({ id, em }, { db, base }) {

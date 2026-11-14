@@ -100,7 +100,7 @@ export const fichaCurso = definirFerramenta({
   nome: "ficha_curso",
   titulo: "Ficha do curso",
   descricao:
-    "Tudo sobre um curso do IFPR: dados institucionais, PPC vigente, CNCT, ofertas, fatos do PPC cruzados com o SUAP (divergências), normas que o PPC cita e prazos de adequação.",
+    "Tudo sobre um curso do IFPR: dados institucionais, PPC vigente, CNCT, ofertas, fatos do PPC cruzados com o SUAP (divergências), normas que o PPC cita e prazos de adequação. Use quando a pergunta for sobre um curso específico.",
   entrada,
   dados,
   executar(e, ctx) {

@@ -81,7 +81,7 @@ export const correspondencia = definirFerramenta({
   nome: "correspondencia",
   titulo: "Correspondência entre normas",
   descricao:
-    "Dispositivo correspondente na norma sucessora, por exemplo do art. 20 da Res. CNE/CP 1/2021 para a Res. CNE/CP 2/2026. A tabela é rascunho, sem revisão jurídica: use como indicação, nunca como fundamento.",
+    "Dispositivo correspondente na norma sucessora, por exemplo do art. 20 da Res. CNE/CP 1/2021 para a Res. CNE/CP 2/2026. Use quando um PPC ou documento citar dispositivo de norma revogada. A tabela é rascunho, sem revisão jurídica: trate-a como indicação, nunca como fundamento.",
   entrada,
   dados,
   executar({ id, cursor }, { db, base }) {

@@ -106,7 +106,7 @@ export const citacoesDaNorma = definirFerramenta({
   nome: "citacoes_da_norma",
   titulo: "PPCs que citam a norma",
   descricao:
-    "PPCs da base que citam uma norma ou um dispositivo, com linha, trecho e confiança. Sem `ppc`, devolve um resumo por PPC; com `ppc`, as ocorrências.",
+    "PPCs da base que citam uma norma ou um dispositivo, com linha, trecho e confiança. Use quando precisar da lista completa; `impacto_da_norma` traz só uma amostra. Sem `ppc`, devolve um resumo por PPC; com `ppc`, as ocorrências.",
   entrada,
   dados,
   executar(e, { db, base }) {

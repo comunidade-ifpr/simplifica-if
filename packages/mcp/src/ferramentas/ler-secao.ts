@@ -66,7 +66,8 @@ function idDaSecao(valor: string): string {
 export const lerSecao = definirFerramenta({
   nome: "ler_secao",
   titulo: "Ler seção de PPC",
-  descricao: "Lê uma seção inteira de PPC pelo ID, vindo de `buscar_secoes` ou de um link `ifpr://ppc/…#secao`.",
+  descricao:
+    "Lê uma seção inteira de PPC pelo ID, vindo de `buscar_secoes` ou de um link `ifpr://ppc/…#secao`. Use quando o trecho devolvido por `buscar_secoes` não bastar.",
   entrada,
   dados,
   executar(e, { db, base }) {
