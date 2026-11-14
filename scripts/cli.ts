@@ -1,3 +1,4 @@
+// @effect-diagnostics globalConsole:off extendsNativeError:off -- casca síncrona dos scripts sem effect/cli (pipeline da base): imprime no console e sinaliza erro de uso por exceção
 /** Interpretação da linha de comando comum a todos os entrypoints: `--help`, opções estritas e erro de uso com código 2. */
 import * as NodeUtil from "node:util";
 

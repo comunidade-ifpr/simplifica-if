@@ -1,3 +1,4 @@
+// @effect-diagnostics globalDate:off -- formatação de datas dadas; o relógio padrão (`new Date()`) só entra quando quem chama não passa a data
 export function dataLocalIso(data = new Date()): string {
   const mes = String(data.getMonth() + 1).padStart(2, "0");
   const dia = String(data.getDate()).padStart(2, "0");
