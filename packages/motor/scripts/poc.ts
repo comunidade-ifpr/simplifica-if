@@ -7,6 +7,11 @@
  *   pnpm motor:poc --provider codex --aprovacao          # ida e volta de aprovação: nega, depois permite
  *   pnpm motor:poc --detectar                            # instalação e login dos três providers
  *   pnpm motor:poc --provider antigravity --gravar /tmp/x.jsonl "<pergunta>"
+ *   pnpm motor:poc --instalar antigravity                # instalação gerenciada (a do T3)
+ *   pnpm motor:poc --entrar antigravity                  # login no perfil próprio: imprime a URL
+ *
+ * A pasta de estado (instalações e perfil do Antigravity) é `SIMPLIFICA_ESTADO` ou, no macOS,
+ * `~/Library/Application Support/simplifica-if-poc`.
  *
  * Cada sessão roda numa pasta temporária vazia (apagada no fim), com o `simplifica-mcp` deste
  * checkout (`tmp/kb.sqlite`) como servidor `ifpr`. Imprime os eventos e, no fim, o resumo: tempo até
@@ -18,6 +23,7 @@
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as NodeRuntime from "@effect/platform-node/NodeRuntime";
 import * as Clock from "effect/Clock";
+import * as Config from "effect/Config";
 import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
@@ -30,6 +36,7 @@ import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
 import * as Drivers from "../src/drivers/index.ts";
 import * as Motor from "../src/Motor.ts";
+import * as HostProcess from "../src/t3/HostProcess.ts";
 import { fixPath } from "../src/t3/os-jank.ts";
 import { sanitizar } from "../src/sanitizar.ts";
 
@@ -123,6 +130,14 @@ const poc = Command.make(
       Flag.optional,
     ),
     modelo: Flag.String("modelo").pipe(Flag.optional),
+    instalar: Flag.Literals("instalar", ["codex", "antigravity"]).pipe(
+      Flag.withDescription("instala a CLI gerenciada (a do T3) na pasta de estado"),
+      Flag.optional,
+    ),
+    entrar: Flag.Literals("entrar", ["antigravity"]).pipe(
+      Flag.withDescription("login no perfil próprio do app; imprime a URL para abrir no navegador"),
+      Flag.optional,
+    ),
   },
   (opcoes) =>
     Effect.gen(function* () {
@@ -130,6 +145,26 @@ const poc = Command.make(
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
 
+      if (Option.isSome(opcoes.instalar)) {
+        yield* motor
+          .instalar(opcoes.instalar.value)
+          .pipe(Stream.runForEach((estado) => Console.log(`[instalação] ${JSON.stringify(estado)}`)));
+        return;
+      }
+      if (Option.isSome(opcoes.entrar)) {
+        yield* motor
+          .entrar(opcoes.entrar.value)
+          .pipe(
+            Stream.runForEach((estado) =>
+              Console.log(
+                estado.fase === "aguardando" && estado.url
+                  ? `[login] abra no navegador e entre com a conta Google:\n${estado.url}`
+                  : `[login] ${estado.fase}${estado.mensagem ? `: ${estado.mensagem}` : ""}`,
+              ),
+            ),
+          );
+        return;
+      }
       if (opcoes.detectar || Option.isNone(opcoes.provider)) {
         for (const provider of ["claude", "codex", "antigravity"] as const) {
           yield* Console.log(JSON.stringify(yield* motor.detectar(provider)));
@@ -207,7 +242,16 @@ const program = Effect.gen(function* () {
   // Como o servidor do T3 (`os-jank.ts`): um app aberto pelo Finder herda um PATH mínimo, sem
   // ~/.local/bin; o fixPath o completa com o PATH do shell de login antes de procurar as CLIs.
   yield* fixPath();
-  const drivers = Drivers.layerNode({ ambiente: process.env });
+  // Pasta de estado do app (instalações gerenciadas, perfil do Antigravity): fora do repositório,
+  // porque guarda o token do Antigravity.
+  const path = yield* Path.Path;
+  const home = yield* HostProcess.HomeDirectory;
+  const padrao =
+    (yield* HostProcess.Platform) === "darwin"
+      ? path.join(home, "Library", "Application Support", "simplifica-if-poc")
+      : path.join(home, ".simplifica-if-poc");
+  const pastaEstado = yield* Config.String("SIMPLIFICA_ESTADO").pipe(Config.withDefault(padrao));
+  const drivers = Drivers.layerNode({ ambiente: process.env, pastaEstado });
   yield* Command.run(poc, { version: "0.1.0" }).pipe(
     Effect.provide(Motor.layer.pipe(Layer.provide(drivers))),
     Effect.provideService(Motor.Gravador, gravar),

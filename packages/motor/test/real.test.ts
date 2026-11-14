@@ -21,8 +21,13 @@ const REAL = process.env.SIMPLIFICA_POC_REAL === "1";
 const RAIZ = new URL("../../..", import.meta.url).pathname;
 const PERGUNTA = "Qual a carga horária mínima do Técnico em Enfermagem no CNCT? Cite a fonte.";
 
+/** A mesma pasta de estado do harness, onde estão a instalação e o login do Antigravity. */
+const PASTA_ESTADO =
+  process.env.SIMPLIFICA_ESTADO ??
+  `${process.env.HOME ?? ""}/${process.platform === "darwin" ? "Library/Application Support/simplifica-if-poc" : ".simplifica-if-poc"}`;
+
 const camada = Motor.layer.pipe(
-  Layer.provide(Drivers.layerNode({ ambiente: process.env })),
+  Layer.provide(Drivers.layerNode({ ambiente: process.env, pastaEstado: PASTA_ESTADO })),
   Layer.provideMerge(NodeServices.layer),
 );
 

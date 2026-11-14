@@ -40,6 +40,8 @@ export type Decisao = typeof Decisao.Type;
 export interface EstadoProvider {
   readonly provider: Provider;
   readonly instalado: boolean;
+  /** `gerenciada`: a cópia que o app instalou; `local`: a CLI que o usuário já tinha. */
+  readonly origem?: "gerenciada" | "local";
   readonly versao?: string;
   readonly autenticado: boolean;
   /** Como está logado: `claude.ai`, `chatgpt`, `apiKey`, `oauth-personal`… */
@@ -83,9 +85,45 @@ export interface SessaoDriver {
   readonly interromper: Effect.Effect<void, FalhaProvider>;
 }
 
+/** Progresso da instalação gerenciada de uma CLI (a do T3: download, sha256, staging, versão ativa). */
+export interface EstadoInstalacao {
+  readonly provider: Provider;
+  readonly fase: "parada" | "baixando" | "extraindo" | "verificando" | "concluida" | "falhou" | "cancelada";
+  readonly baixados: number;
+  readonly total?: number;
+  /** A versão que a instalação oferece (a fixada pelo T3 ou uma mais nova). */
+  readonly versao?: string;
+  readonly versaoInstalada?: string;
+  readonly executavel?: string;
+  /** `local`: uma CLI suportada que o usuário já tinha; `gerenciada`: a cópia do app. */
+  readonly origem?: "gerenciada" | "local";
+  readonly mensagem?: string;
+}
+
+/** Progresso do login dentro do app. Em `aguardando`, `url` é a página que o app abre no navegador. */
+export interface EstadoLogin {
+  readonly provider: Provider;
+  readonly fase: "parado" | "iniciando" | "aguardando" | "verificando" | "concluido" | "falhou" | "cancelado";
+  readonly url?: string;
+  readonly mensagem?: string;
+}
+
+export class OperacaoNaoSuportada extends Schema.TaggedError<OperacaoNaoSuportada>()("OperacaoNaoSuportada", {
+  provider: Schema.String,
+  operacao: Schema.String,
+}) {
+  override get message(): string {
+    return `${this.provider} não oferece ${this.operacao} pelo app`;
+  }
+}
+
 export interface Driver {
   readonly detectar: Effect.Effect<EstadoProvider>;
   readonly iniciar: (config: ConfigSessao) => Effect.Effect<SessaoDriver, FalhaProvider, Scope.Scope>;
+  /** Instala (ou atualiza) a CLI gerenciada; o stream termina numa fase final. */
+  readonly instalar?: Stream.Stream<EstadoInstalacao, FalhaProvider>;
+  /** Login dentro do app; o stream termina numa fase final. */
+  readonly entrar?: Stream.Stream<EstadoLogin, FalhaProvider>;
 }
 
 /** Os drivers disponíveis, por provider. `Drivers.layerNode` (em `drivers/index.ts`) monta os reais. */

@@ -17,7 +17,9 @@ import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 import * as Canal from "../Canal.ts";
 import { type ConfigSessao, type Driver, type EstadoProvider, FalhaProvider, Gravador } from "../Driver.ts";
 import { type Evento, resumir, textoDeBlocos } from "../eventos.ts";
-import { type Ambiente, limparAmbiente, localizar } from "../processo.ts";
+import { acompanharInstalacao } from "../estados.ts";
+import { type Ambiente, limparAmbiente } from "../processo.ts";
+import type * as CodexInstallation from "../t3/CodexInstallation.ts";
 
 type Registro = Record<string, unknown>;
 const registro = (valor: unknown): Registro => (typeof valor === "object" && valor !== null ? (valor as Registro) : {});
@@ -166,8 +168,14 @@ export function isolamentoCodex(configUsuario: Registro, config: ConfigSessao): 
   return saida;
 }
 
-export const make = Effect.fn("DriverCodex.make")(function* (opcoes: { readonly ambiente: Ambiente }) {
-  const executavel = (yield* localizar("codex", opcoes.ambiente)).pipe(Option.getOrUndefined);
+export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
+  readonly ambiente: Ambiente;
+  /**
+   * A instalação do T3: prefere um `codex` local suportado no PATH e, sem ele, usa a cópia gerenciada
+   * em `<pastaEstado>/tools/codex`. O login continua o do `~/.codex` do usuário.
+   */
+  readonly instalacao: CodexInstallation.CodexInstallation["Service"];
+}) {
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
 
   /** Abre o app-server num processo e devolve o cliente já inicializado. */
@@ -195,14 +203,17 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: { readonly 
   });
 
   const detectar: Driver["detectar"] = Effect.gen(function* () {
-    if (executavel === undefined) {
+    const resolvido = yield* opcoes.instalacao.resolve().pipe(Effect.option);
+    if (Option.isNone(resolvido)) {
       return {
         provider: PROVIDER,
         instalado: false,
         autenticado: false,
-        mensagem: "CLI `codex` não encontrada no PATH",
+        mensagem: "Codex não instalado (ou versão sem suporte): use instalar",
       };
     }
+    const executavel = resolvido.value.executablePath;
+    const origem = resolvido.value.source === "managed" ? ("gerenciada" as const) : ("local" as const);
     const resultado = yield* Effect.scoped(
       Effect.gen(function* () {
         const { cliente, inicio } = yield* abrir(executavel, ".");
@@ -216,6 +227,7 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: { readonly 
         return {
           provider: PROVIDER,
           instalado: true,
+          origem,
           autenticado,
           ...(versao ? { versao } : {}),
           ...(typeof info.type === "string" ? { metodo: info.type } : {}),
@@ -227,18 +239,24 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: { readonly 
     return Option.getOrElse(resultado, (): EstadoProvider => ({
       provider: PROVIDER,
       instalado: true,
+      origem,
       autenticado: false,
       mensagem: "o app-server do Codex não respondeu",
     }));
   });
 
   const iniciar = Effect.fn("DriverCodex.iniciar")(function* (config: ConfigSessao) {
-    if (executavel === undefined) {
-      return yield* new FalhaProvider({ provider: PROVIDER, operacao: "iniciar", detalhe: "CLI `codex` ausente" });
-    }
+    // Reserva até o fim da sessão: a instalação não remove o binário de uma sessão em andamento.
+    const executavel = yield* opcoes.instalacao
+      .acquire()
+      .pipe(
+        Effect.mapError(
+          (erro) => new FalhaProvider({ provider: PROVIDER, operacao: "iniciar", detalhe: erro.detail, cause: erro }),
+        ),
+      );
     const canal = yield* Canal.make;
     const gravar = yield* Gravador;
-    const { cliente } = yield* abrir(executavel, config.pastaTrabalho);
+    const { cliente } = yield* abrir(executavel.executablePath, config.pastaTrabalho);
     const normalizar = criarNormalizadorCodex();
 
     for (const metodo of NOTIFICACOES) {
@@ -333,5 +351,5 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: { readonly 
     } satisfies Effect.Success<ReturnType<Driver["iniciar"]>>;
   });
 
-  return { detectar, iniciar } satisfies Driver;
+  return { detectar, iniciar, instalar: acompanharInstalacao(PROVIDER, opcoes.instalacao) } satisfies Driver;
 });

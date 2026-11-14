@@ -11,14 +11,28 @@
 import * as AcpClient from "@simplifica-if/effect-acp/client";
 import type * as AcpSchema from "@simplifica-if/effect-acp/compat";
 import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
+import * as Path from "effect/Path";
 import * as ChildProcess from "effect/process/ChildProcess";
 import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 import * as Canal from "../Canal.ts";
 import { type ConfigSessao, type Driver, type EstadoProvider, FalhaProvider, Gravador } from "../Driver.ts";
 import { type Evento, resumir, textoDeBlocos } from "../eventos.ts";
-import { type Ambiente, limparAmbiente, localizar, primeiraLinha } from "../processo.ts";
+import { acompanharInstalacao, acompanharLogin } from "../estados.ts";
+import { type Ambiente, limparAmbiente } from "../processo.ts";
+import { makeAntigravityAcpRuntime } from "../t3/antigravityAcpRuntime.ts";
+import { makeAntigravityAuth } from "../t3/AntigravityAuth.ts";
+import {
+  buildAntigravityAcpSpawnInput,
+  isAntigravitySignInRequiredError,
+  makeAntigravityStdoutTransform,
+  prepareAntigravityProfile,
+  resolveAntigravityInstanceDirectories,
+} from "../t3/antigravityAuthSupport.ts";
+import type * as AntigravityInstallation from "../t3/AntigravityInstallation.ts";
+import { ProviderInstanceId, ProviderSetupError } from "../t3/contracts-antigravity.ts";
 
 type Registro = Record<string, unknown>;
 const registro = (valor: unknown): Registro => (typeof valor === "object" && valor !== null ? (valor as Registro) : {});
@@ -145,24 +159,83 @@ export function mcpServersAcp(config: ConfigSessao): ReadonlyArray<AcpSchema.Mcp
   }));
 }
 
-export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: { readonly ambiente: Ambiente }) {
-  const executavel = (yield* localizar("agy", opcoes.ambiente)).pipe(Option.getOrUndefined);
-  const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
+/** Dono do fluxo de login no `ProviderAuthController` do T3 (um app, um dono). */
+const DONO_LOGIN = "simplifica-if";
+const INSTANCIA = ProviderInstanceId.make("antigravity");
 
-  const abrir = Effect.fn("DriverAntigravity.abrir")(function* (binario: string, pasta: string) {
+export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
+  readonly ambiente: Ambiente;
+  /** Pasta de estado do app: o perfil próprio fica em `<pastaEstado>/providers/antigravity/<hash>`. */
+  readonly pastaEstado: string;
+  /** A instalação do T3: a cópia gerenciada, ou o `binario` indicado. */
+  readonly instalacao: AntigravityInstallation.AntigravityInstallation["Service"];
+  /** Executável próprio (o `binaryPath` do T3); vazio, a instalação gerenciada. */
+  readonly binario?: string;
+}) {
+  const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
+  const ambienteNode = limparAmbiente(opcoes.ambiente) as NodeJS.ProcessEnv;
+  const binario = opcoes.binario ?? "";
+  // Perfil próprio, como no T3: GEMINI_HOME do app, sem o login, os MCP, os hooks e as chaves do
+  // usuário (o `agy` do terminal e o app Antigravity continuam com os deles).
+  const pastas = yield* resolveAntigravityInstanceDirectories(opcoes.pastaEstado, INSTANCIA);
+  const arquivoToken = path.join(pastas.profile, "antigravity-acp", "acp_token.json");
+
+  const comServicos = <A, E>(
+    efeito: Effect.Effect<A, E, FileSystem.FileSystem | Path.Path | ChildProcessSpawner.ChildProcessSpawner>,
+  ) =>
+    efeito.pipe(
+      Effect.provideService(FileSystem.FileSystem, fs),
+      Effect.provideService(Path.Path, path),
+      Effect.provideService(ChildProcessSpawner.ChildProcessSpawner, spawner),
+    );
+
+  /** Executável reservado, perfil preparado e a entrada de spawn do `agy acp`, como no `AntigravityDriver` do T3. */
+  const prepararSpawn = Effect.fn("DriverAntigravity.prepararSpawn")(function* (pasta: string) {
+    const executavel = yield* opcoes.instalacao.acquire(binario, ambienteNode);
+    const perfil = yield* comServicos(
+      prepareAntigravityProfile({
+        profileDirectory: pastas.profile,
+        baseEnv: ambienteNode,
+        tempDirectory: pastas.runtimeTemp,
+      }),
+    );
+    // Uma pasta temporária por processo; o T3 faz o mesmo para não apagar arquivos de outra sessão.
+    const temporaria = yield* Effect.acquireRelease(
+      fs.makeTempDirectory({ directory: perfil.tempDirectory, prefix: "run-" }),
+      (pastaTemp) => fs.remove(pastaTemp, { recursive: true, force: true }).pipe(Effect.ignore),
+    );
+    return {
+      executavel,
+      spawn: buildAntigravityAcpSpawnInput({
+        installation: executavel,
+        profile: perfil,
+        cwd: pasta,
+        baseEnv: ambienteNode,
+        runtimeTempDirectory: temporaria,
+      }),
+    };
+  });
+
+  const abrir = Effect.fn("DriverAntigravity.abrir")(function* (pasta: string) {
+    const { spawn } = yield* prepararSpawn(pasta).pipe(Effect.mapError(Canal.falhaDe(PROVIDER, "preparar agy acp")));
     const filho = yield* spawner
       .spawn(
-        ChildProcess.make(binario, ["acp"], {
+        ChildProcess.make(spawn.command, [...spawn.args], {
           cwd: pasta,
-          env: limparAmbiente(opcoes.ambiente),
+          ...(spawn.env ? { env: spawn.env } : {}),
           extendEnv: false,
           forceKillAfter: "2 seconds",
         }),
       )
       .pipe(Effect.mapError(Canal.falhaDe(PROVIDER, "abrir agy acp")));
-    const contexto = yield* Layer.build(AcpClient.layerChildProcess(filho));
+    // Sem login, o `agy` imprime a URL de autorização; o transform do T3 a troca pelo erro de "sem login".
+    const contexto = yield* Layer.build(
+      AcpClient.layerChildProcess(filho, { transformStdout: makeAntigravityStdoutTransform() }),
+    );
     const cliente = yield* Effect.service(AcpClient.AcpClient).pipe(Effect.provide(contexto));
-    const inicio = yield* cliente.agent
+    yield* cliente.agent
       .initialize({
         protocolVersion: 1,
         clientCapabilities: { fs: { readTextFile: false, writeTextFile: false }, terminal: false },
@@ -171,45 +244,88 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: { rea
       .pipe(Effect.mapError(Canal.falhaDe(PROVIDER, "initialize")));
     const login = yield* cliente.agent.authenticate({ methodId: METODO_LOGIN }).pipe(
       Effect.as(true),
-      Effect.catchTags({
-        AcpRequestError: (erro) =>
-          erro.code === CODIGO_SEM_LOGIN ? Effect.succeed(false) : Effect.fail(Canal.falhaDe(PROVIDER, "login")(erro)),
-      }),
-      Effect.mapError(Canal.falhaDe(PROVIDER, "login")),
+      Effect.catch((erro) =>
+        isAntigravitySignInRequiredError(erro) || (erro._tag === "AcpRequestError" && erro.code === CODIGO_SEM_LOGIN)
+          ? Effect.succeed(false)
+          : Effect.fail(Canal.falhaDe(PROVIDER, "login")(erro)),
+      ),
     );
-    return { cliente, inicio, login };
+    return { cliente, login };
+  });
+
+  // O fluxo de login do T3 (`AntigravityAuth`): um `agy acp` descartável numa pasta temporária, com o
+  // BROWSER trocado por um ajudante que entrega a URL em vez de abrir o navegador.
+  const login = yield* makeAntigravityAuth({
+    instanceId: INSTANCIA,
+    makeRuntime: Effect.fn("DriverAntigravity.runtimeDeLogin")(
+      function* (entrada) {
+        const pasta = yield* fs.makeTempDirectoryScoped({ prefix: "simplifica-antigravity-login-" });
+        const { executavel, spawn } = yield* prepararSpawn(pasta);
+        return yield* makeAntigravityAcpRuntime({
+          spawn,
+          cwd: pasta,
+          childProcessSpawner: spawner,
+          runtimeVersion: executavel.version,
+          ...(entrada.onAuthorizationUrl ? { onAuthorizationUrl: entrada.onAuthorizationUrl } : {}),
+        });
+      },
+      Effect.catchTags({
+        AntigravityInstallationError: (erro) =>
+          Effect.fail(
+            new ProviderSetupError({ instanceId: INSTANCIA, operation: "resolve", detail: erro.detail, cause: erro }),
+          ),
+        PlatformError: (erro) =>
+          Effect.fail(
+            new ProviderSetupError({
+              instanceId: INSTANCIA,
+              operation: "start",
+              detail: "Não foi possível preparar o perfil do Antigravity para o login.",
+              cause: erro,
+            }),
+          ),
+      }),
+    ),
+    onAuthenticated: () => Effect.void,
+    onSignedOut: Effect.void,
+    usesBrowser: true,
   });
 
   const detectar: Driver["detectar"] = Effect.gen(function* () {
-    if (executavel === undefined) {
-      return { provider: PROVIDER, instalado: false, autenticado: false, mensagem: "CLI `agy` não encontrada no PATH" };
+    // Como o T3, a detecção não abre processo: a instalação resolve o executável e o login é o token
+    // do perfil próprio. Um token vencido aparece ao iniciar a sessão (erro de "sem login").
+    const resolvido = yield* opcoes.instalacao.resolve(binario, ambienteNode).pipe(Effect.option);
+    if (Option.isNone(resolvido)) {
+      return {
+        provider: PROVIDER,
+        instalado: false,
+        autenticado: false,
+        mensagem: "Antigravity não instalado: use instalar",
+      } satisfies EstadoProvider;
     }
-    const versao = Option.getOrUndefined(yield* primeiraLinha(executavel, ["--version"], opcoes.ambiente));
-    const resultado = yield* Effect.scoped(abrir(executavel, ".")).pipe(Effect.timeout("30 seconds"), Effect.option);
-    const login = Option.map(resultado, (r) => r.login).pipe(Option.getOrElse(() => false));
+    const autenticado = yield* fs.exists(arquivoToken).pipe(Effect.orElseSucceed(() => false));
     return {
       provider: PROVIDER,
       instalado: true,
-      autenticado: login,
-      ...(versao ? { versao } : {}),
-      ...(login ? { metodo: METODO_LOGIN } : {}),
-      ...(login
-        ? {}
-        : { mensagem: Option.isNone(resultado) ? "o `agy acp` não respondeu" : "Antigravity sem login: rode `agy`" }),
+      origem: resolvido.value.source === "managed" ? "gerenciada" : "local",
+      autenticado,
+      ...(resolvido.value.version ? { versao: resolvido.value.version } : {}),
+      ...(autenticado ? { metodo: METODO_LOGIN } : { mensagem: "Antigravity sem login no app: use entrar" }),
     } satisfies EstadoProvider;
-  }).pipe(Effect.provideService(ChildProcessSpawner.ChildProcessSpawner, spawner));
+  });
 
   const iniciar = Effect.fn("DriverAntigravity.iniciar")(function* (config: ConfigSessao) {
-    if (executavel === undefined) {
-      return yield* new FalhaProvider({ provider: PROVIDER, operacao: "iniciar", detalhe: "CLI `agy` ausente" });
-    }
     const canal = yield* Canal.make;
     const gravar = yield* Gravador;
     const escopo = yield* Effect.scope;
-    const { cliente, login } = yield* abrir(executavel, config.pastaTrabalho);
-    if (!login) {
-      return yield* new FalhaProvider({ provider: PROVIDER, operacao: "login", detalhe: "Antigravity sem login" });
+    const aberto = yield* abrir(config.pastaTrabalho);
+    if (!aberto.login) {
+      return yield* new FalhaProvider({
+        provider: PROVIDER,
+        operacao: "login",
+        detalhe: "Antigravity sem login no app: use entrar",
+      });
     }
+    const cliente = aberto.cliente;
     const normalizar = criarNormalizadorAntigravity(config.servidoresMcp.map((servidor) => servidor.nome));
     const processar = (entrada: EntradaAcp) =>
       Effect.suspend(() => {
@@ -265,5 +381,10 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: { rea
     } satisfies Effect.Success<ReturnType<Driver["iniciar"]>>;
   });
 
-  return { detectar, iniciar } satisfies Driver;
+  return {
+    detectar,
+    iniciar,
+    instalar: acompanharInstalacao(PROVIDER, opcoes.instalacao),
+    entrar: acompanharLogin(PROVIDER, login.controller.start(DONO_LOGIN), login.controller.subscribe(DONO_LOGIN)),
+  } satisfies Driver;
 });
