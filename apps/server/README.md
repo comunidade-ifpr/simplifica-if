@@ -42,6 +42,8 @@ SIMPLIFICA_SERVIDOR_TOKEN=$(openssl rand -base64 32) \
 | | `conversa.interromper({ sessao })`, `conversa.encerrar({ sessao })` | — |
 | leitura | o `GrupoLeitura` de `@simplifica-if/mcp/rpc` (`lerLink` para qualquer link `ifpr://`, `fichaNorma`, `lerDispositivos`, `buscarNorma`, `fichaCurso`, `lerSecao`, `buscarSecoes`, `listarCursos`, `sobreABase`, `lerPpc`, `lerCnct`, `lerCampus`, `lerFicha` e o que ele ganhar) | as respostas das ferramentas MCP de mesmo nome |
 
+**Conversas e conexões.** A conversa pertence ao cliente RPC (a conexão WebSocket) que a abriu ou que a usou por último. Quando essa conexão cai, a conversa fica órfã por uma tolerância (`TOLERANCIA_ORFA`, 2 minutos; `toleranciaOrfa` na layer) e então se encerra, como em `conversa.encerrar`. A interface que recarrega volta como outro cliente e, ao usar a conversa (`enviar`, `responderAprovacao`, `interromper`), a adota e cancela o prazo. O T3 não amarra a sessão à conexão: as conversas dele são persistidas, e a sessão do provider se libera depois de 30 minutos ociosa. Sem persistência nem retomada (M1.2), a conversa sem cliente não volta a ser vista; com a retomada, a regra passa a ser a do T3.
+
 Erros tipados: `FalhaProvider` (sem o `cause`, que fica no log), `OperacaoNaoSuportada`, `PastaTrabalhoInvalida` (caminho não absoluto ou que não é pasta), `TurnoEmAndamento`, `SessaoDesconhecida`, `AprovacaoDesconhecida` e os da leitura.
 
 ```ts
@@ -80,7 +82,6 @@ Em `src/Conversas.ts`: persistência dos eventos em `enviar` e da conversa em `i
 
 Pendências registradas:
 
-- **Conversas e conexões:** uma conversa não pertence a uma conexão; se a interface cair e voltar, as conversas continuam abertas até `conversa.encerrar` ou o fim do servidor. O M1.2 (retomada) decide se uma conversa sem cliente se encerra.
 - **Ponte no app empacotado:** `process.execPath` + `bin.ts` supõe o Node rodando TypeScript. No Electron, a ponte será o executável do app com `ELECTRON_RUN_AS_NODE=1` (o driver já põe a variável) e o bundle do servidor.
 - **Token na URL:** o `?token=` do navegador aparece na URL do WebSocket. O T3 usa tickets de curta duração emitidos por HTTP; se a interface sair do `file://`/protocolo próprio, trocar por tickets.
 - **Windows:** o `awaitLauncherLoss` do T3 não age no Windows; ali o cordão é só o stdin.

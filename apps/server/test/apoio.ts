@@ -33,6 +33,8 @@ export function bancoFixture(): string {
 export interface Registro {
   readonly configs: Array<Motor.ConfigSessao>;
   encerradas: number;
+  /** Chamado a cada sessão encerrada, para o teste esperar pelo encerramento sem relógio. */
+  aoEncerrar?: (() => void) | undefined;
 }
 
 /**
@@ -54,7 +56,12 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
       registro.configs.push(config);
       const canal = yield* Canal.make;
       const escopo = yield* Effect.scope;
-      yield* Effect.addFinalizer(() => Effect.sync(() => registro.encerradas++));
+      yield* Effect.addFinalizer(() =>
+        Effect.sync(() => {
+          registro.encerradas++;
+          registro.aoEncerrar?.();
+        }),
+      );
       const responder = (texto: string) =>
         Effect.gen(function* () {
           yield* canal.emitir({ _tag: "TextoParcial", texto: "Vou " });

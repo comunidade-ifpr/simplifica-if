@@ -20,6 +20,7 @@ import * as NodeHttp from "node:http";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeHttpServer from "@effect/platform-node/NodeHttpServer";
 import * as Context from "effect/Context";
+import type * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
@@ -50,6 +51,8 @@ export interface Opcoes {
   readonly origens?: ReadonlyArray<string>;
   /** O canal da base quando o banco não registra um (padrão: `dev`, como a CLI do MCP). */
   readonly canal?: Canal;
+  /** Quanto a conversa espera pelo cliente que caiu antes de se encerrar (`Conversas.TOLERANCIA_ORFA`). */
+  readonly toleranciaOrfa?: Duration.Duration;
 }
 
 /** O servidor do RPC não abriu: porta ocupada, sem permissão ou interface indisponível. */
@@ -80,12 +83,15 @@ export class ServidorApp extends Context.Service<
 const layerRotaRpc = Layer.unwrap(
   Effect.gen(function* () {
     const autenticacao = yield* Autenticacao.Autenticacao;
+    const conversas = yield* Conversas.Conversas;
     const { protocol, httpEffect } = yield* RpcServer.makeProtocolWithHttpEffectWebsocket;
-    // Como o T3 (`WS_RPC_SERVER_OPTIONS`): um defeito num handler não derruba as outras chamadas.
-    yield* RpcServer.make(GrupoApp, { disableTracing: true, disableFatalDefects: true }).pipe(
-      Effect.provideService(RpcServer.Protocol, protocol),
-      Effect.forkScoped,
-    );
+    // Como o T3 (`WS_RPC_SERVER_OPTIONS`): um defeito num handler não derruba as outras chamadas. A
+    // conexão que cai deixa as conversas dela órfãs, encerradas depois da tolerância (`Conversas.ts`).
+    yield* RpcServer.make(GrupoApp, {
+      disableTracing: true,
+      disableFatalDefects: true,
+      onDisconnect: conversas.clienteSaiu,
+    }).pipe(Effect.provideService(RpcServer.Protocol, protocol), Effect.forkScoped);
     return HttpRouter.add(
       "GET",
       CAMINHO_RPC,
@@ -115,7 +121,7 @@ export const layer = (opcoes: Opcoes) => {
   // Um `Leitura` só (uma conexão ao `kb.sqlite`) para o MCP HTTP e para o RPC de leitura.
   const leitura = layerLeitura({ banco: opcoes.banco, canal });
   const mcp = McpHttp.layerSobreLeitura(opcoes.portaMcp ? { porta: opcoes.portaMcp } : {});
-  const nucleo = Conversas.layer.pipe(
+  const nucleo = Conversas.layer(opcoes.toleranciaOrfa === undefined ? {} : { tolerancia: opcoes.toleranciaOrfa }).pipe(
     Layer.provideMerge(Motor.layer),
     Layer.provideMerge(mcp),
     Layer.provideMerge(leitura),

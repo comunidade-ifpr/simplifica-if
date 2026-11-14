@@ -2,6 +2,9 @@
  * Os handlers do `GrupoApp`: casca fina sobre o `Motor` (providers), as `Conversas` (conversa) e o
  * `Leitura` do `simplifica-mcp` (leitura, os mesmos handlers de `@simplifica-if/mcp/rpc`).
  *
+ * Os métodos de conversa passam ao `Conversas` o cliente RPC que chama (`client.id`, um por conexão):
+ * é ele o dono da conversa, e a conversa de um cliente que caiu se encerra depois da tolerância.
+ *
  * O `FalhaProvider` chega à interface sem o `cause`, que pode trazer a pilha e caminhos do computador;
  * o erro inteiro vai para o log do servidor (stderr).
  */
@@ -49,12 +52,13 @@ const layerConversa = GrupoConversa.toLayer(
   Effect.gen(function* () {
     const conversas = yield* Conversas.Conversas;
     return GrupoConversa.of({
-      "conversa.iniciar": (entrada) =>
-        registrarEMapear(conversas.iniciar(entrada)).pipe(Effect.map((sessao) => ({ sessao }))),
-      "conversa.enviar": ({ sessao, texto }) => registrarEMapearStream(conversas.enviar(sessao, texto)),
-      "conversa.responderAprovacao": ({ sessao, aprovacao, decisao }) =>
-        conversas.responderAprovacao(sessao, aprovacao, decisao),
-      "conversa.interromper": ({ sessao }) => registrarEMapear(conversas.interromper(sessao)),
+      "conversa.iniciar": (entrada, { client }) =>
+        registrarEMapear(conversas.iniciar(client.id, entrada)).pipe(Effect.map((sessao) => ({ sessao }))),
+      "conversa.enviar": ({ sessao, texto }, { client }) =>
+        registrarEMapearStream(conversas.enviar(client.id, sessao, texto)),
+      "conversa.responderAprovacao": ({ sessao, aprovacao, decisao }, { client }) =>
+        conversas.responderAprovacao(client.id, sessao, aprovacao, decisao),
+      "conversa.interromper": ({ sessao }, { client }) => registrarEMapear(conversas.interromper(client.id, sessao)),
       "conversa.encerrar": ({ sessao }) => conversas.encerrar(sessao),
     });
   }),

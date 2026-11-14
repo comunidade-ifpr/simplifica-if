@@ -9,6 +9,7 @@
  */
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { afterAll, assert, layer } from "@effect/vitest";
+import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Layer from "effect/Layer";
@@ -35,10 +36,15 @@ const ORIGEM = "app://simplifica";
 const registro: Registro = { configs: [], encerradas: 0 };
 const pasta = diretorioTemporario("simplifica-servidor-");
 
-const camada = Servidor.layer({ banco: bancoFixture(), token: Redacted.make(TOKEN), origens: [ORIGEM] }).pipe(
-  Layer.provide(layerDriversFalsos(registro)),
-  Layer.provide(NodeServices.layer),
-);
+/** Curta, para o teste da conexão que cai; a do app é `Conversas.TOLERANCIA_ORFA`. */
+const TOLERANCIA_ORFA = Duration.millis(200);
+
+const camada = Servidor.layer({
+  banco: bancoFixture(),
+  token: Redacted.make(TOKEN),
+  origens: [ORIGEM],
+  toleranciaOrfa: TOLERANCIA_ORFA,
+}).pipe(Layer.provide(layerDriversFalsos(registro)), Layer.provide(NodeServices.layer));
 
 const AUTORIZACAO = { authorization: `Bearer ${TOKEN}` };
 
@@ -155,6 +161,27 @@ layer(camada, { excludeTestServices: true })("servidor local", (it) => {
       const depois = yield* Effect.exit(c["conversa.encerrar"]({ sessao }));
       assert.include(JSON.stringify(depois), "SessaoDesconhecida");
     }).pipe(Effect.scoped),
+  );
+
+  it.effect("conversa: quando a conexão cai, a conversa se encerra depois da tolerância", () =>
+    Effect.gen(function* () {
+      const { urlRpc } = yield* Servidor.ServidorApp;
+      const antes = registro.encerradas;
+      const encerrou = Effect.callback<void>((resume) => {
+        registro.aoEncerrar = () => resume(Effect.void);
+        return Effect.sync(() => (registro.aoEncerrar = undefined));
+      });
+      yield* Effect.scoped(
+        Effect.gen(function* () {
+          const c = yield* cliente(urlRpc, AUTORIZACAO);
+          yield* c["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
+        }),
+      );
+      // O cliente fechou o WebSocket: o `onDisconnect` do servidor deixa a conversa órfã.
+      assert.strictEqual(registro.encerradas, antes);
+      yield* encerrou.pipe(Effect.timeout(Duration.seconds(5)));
+      assert.strictEqual(registro.encerradas, antes + 1);
+    }),
   );
 
   it.effect("conversa: recusa a pasta inválida e entrega a falha do provider sem o cause", () =>
