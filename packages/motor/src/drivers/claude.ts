@@ -202,6 +202,9 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
         command: servidor.comando,
         args: [...servidor.argumentos],
         ...(servidor.ambiente ? { env: { ...servidor.ambiente } } : {}),
+        // Sem isso, as ferramentas MCP ficam atrás do ToolSearch, e cada turno gasta duas idas e
+        // voltas só para descobri-las.
+        alwaysLoad: true,
       };
     }
 
@@ -213,6 +216,7 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
         cwd: config.pastaTrabalho,
         mcpServers,
         allowedTools: config.servidoresMcp.filter((s) => s.preAprovado).map((s) => `mcp__${s.nome}`),
+        ...(config.buscaWeb === true ? {} : { disallowedTools: ["WebSearch", "WebFetch"] }),
         permissionMode: "default",
         canUseTool,
         includePartialMessages: true,

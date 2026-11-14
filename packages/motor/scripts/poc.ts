@@ -198,15 +198,19 @@ const program = Effect.gen(function* () {
   const indice = argv.indexOf("--gravar");
   const destino = indice >= 0 ? argv[indice + 1] : undefined;
   const linhas: Array<string> = [];
+  const inicio = performance.now();
   const gravar = (direcao: "entrada" | "saida", mensagem: unknown) => {
-    linhas.push(JSON.stringify(sanitizar({ direcao, mensagem }, { home: process.env.HOME ?? "" })));
+    const ms = Math.round(performance.now() - inicio);
+    linhas.push(JSON.stringify(sanitizar({ ms, direcao, mensagem }, { home: process.env.HOME ?? "" })));
   };
   const drivers = Drivers.layerNode({ ambiente: process.env });
   yield* Command.run(poc, { version: "0.1.0" }).pipe(
     Effect.provide(Motor.layer.pipe(Layer.provide(drivers))),
     Effect.provideService(Motor.Gravador, gravar),
     Effect.ensuring(
-      destino === undefined ? Effect.void : fs.writeFileString(destino, `${linhas.join("\n")}\n`).pipe(Effect.orDie),
+      destino === undefined
+        ? Effect.void
+        : Effect.suspend(() => fs.writeFileString(destino, `${linhas.join("\n")}\n`)).pipe(Effect.orDie),
     ),
   );
 });

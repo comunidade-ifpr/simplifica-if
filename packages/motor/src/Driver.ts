@@ -26,6 +26,11 @@ export interface ConfigSessao {
   readonly servidoresMcp: ReadonlyArray<ServidorMcp>;
   /** Modelo do provider; sem ele, o padrão da conta. */
   readonly modelo?: string;
+  /**
+   * Busca na web (padrão: desligada). Desligada, a resposta sai da base e do que o usuário anexa.
+   * O Antigravity não tem como desligá-la por sessão.
+   */
+  readonly buscaWeb?: boolean;
 }
 
 export const Decisao = Schema.Literals(["permitir", "negar"]);

@@ -94,6 +94,10 @@ export function criarNormalizadorCodex(): (metodo: string, parametros: unknown) 
         return [];
       case "error":
         return [{ _tag: "Erro", mensagem: resumir(texto(registro(p.error).message) || p) }];
+      case "mcpServer/startupStatus/updated":
+        return p.status === "failed"
+          ? [{ _tag: "Erro", mensagem: resumir(`servidor MCP ${texto(p.name)} não iniciou: ${texto(p.error)}`) }]
+          : [];
       case "turn/completed": {
         const turno = registro(p.turn);
         const eventos: Array<Evento> = [];
@@ -131,6 +135,7 @@ const NOTIFICACOES = [
   "thread/tokenUsage/updated",
   "error",
   "turn/completed",
+  "mcpServer/startupStatus/updated",
 ] as const;
 
 /** `mcp_servers.<nome>` para o `config` do `thread/start`. */
@@ -144,6 +149,19 @@ export function configMcpCodex(config: ConfigSessao): Record<string, Schema.Json
       // Sem pedir aprovação a cada chamada: as ferramentas do servidor são só de leitura.
       ...(servidor.preAprovado ? { default_tools_approval_mode: "approve" } : {}),
     };
+  }
+  return saida;
+}
+
+/**
+ * Desliga, só nesta thread, os servidores MCP do usuário que não são da sessão, os conectores do
+ * ChatGPT (`features.apps`, que trazem o `codex_apps` com busca web).
+ */
+export function isolamentoCodex(configUsuario: Registro, config: ConfigSessao): Record<string, Schema.Json> {
+  const nossos = new Set(config.servidoresMcp.map((servidor) => servidor.nome));
+  const saida: Record<string, Schema.Json> = { "features.apps": false };
+  for (const nome of Object.keys(registro(configUsuario.mcp_servers))) {
+    if (!nossos.has(nome)) saida[`mcp_servers.${nome}.enabled`] = false;
   }
   return saida;
 }
@@ -253,14 +271,34 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: { readonly 
       ),
     );
 
+    // O `model` do `config.toml` do usuário pode não valer para a conta (ex.: modelo de API numa conta
+    // ChatGPT); sem modelo na sessão, vai o padrão que o `model/list` dá para a conta.
+    const modelo =
+      config.modelo ??
+      (yield* cliente.request("model/list", {}).pipe(
+        Effect.map((lista) => lista.data.find((candidato) => candidato.isDefault)?.model),
+        Effect.orElseSucceed(() => undefined),
+      ));
+    // Isolamento sem tocar no `config.toml`: os MCP e os conectores (apps) do usuário ficam
+    // desligados nesta thread. Sem isso, a resposta pode vir de outra ferramenta (busca web dos
+    // conectores, MCP pessoais), e não da base.
+    const configUsuario = yield* cliente.request("config/read", { includeLayers: false }).pipe(
+      Effect.map((resposta) => registro(resposta.config)),
+      Effect.orElseSucceed((): Registro => ({})),
+    );
+    const isolamento = isolamentoCodex(configUsuario, config);
     const thread = yield* cliente
       .request("thread/start", {
         cwd: config.pastaTrabalho,
         ephemeral: true,
         approvalPolicy: "on-request",
         sandbox: "workspace-write",
-        config: configMcpCodex(config),
-        ...(config.modelo ? { model: config.modelo } : {}),
+        config: {
+          ...isolamento,
+          ...configMcpCodex(config),
+          ...(config.buscaWeb === true ? {} : { web_search: "disabled" }),
+        },
+        ...(modelo ? { model: modelo } : {}),
       })
       .pipe(Effect.mapError(Canal.falhaDe(PROVIDER, "thread/start")));
     const threadId = thread.thread.id;
