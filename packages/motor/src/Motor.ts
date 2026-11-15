@@ -3,13 +3,19 @@
  * com o `simplifica-mcp` entregue por sessão e eventos iguais para os três.
  *
  * Cada sessão vive num `Scope` próprio; `encerrar` o fecha, e o processo do provider morre junto.
+ * A política (`politica.ts`, a de fábrica por padrão) vale para todas as sessões: os providers
+ * permitidos, a busca web e as aprovações por tipo de ferramenta, que os drivers aplicam pelo `Canal`.
+ * As skills da sessão se gravam na pasta de trabalho e entram nas instruções (`skills.ts`).
  * Ao fim da layer, as sessões abertas se encerram. Com `resultados` num servidor MCP HTTP, o resumo
  * vazio das ferramentas dele é completado com o que o servidor viu (`resultados.ts`).
  */
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
+import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
+import * as Option from "effect/Option";
+import * as Path from "effect/Path";
 import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
 import {
@@ -20,17 +26,20 @@ import {
   type EstadoInstalacao,
   type EstadoLogin,
   type EstadoProvider,
-  type FalhaProvider,
+  FalhaProvider,
   OperacaoNaoSuportada,
   type SessaoDriver,
   type TurnoEmAndamento,
 } from "./Driver.ts";
 import { SessaoDesconhecida } from "./erros.ts";
 import type { Evento, Provider } from "./eventos.ts";
+import { buscaWebLigada, type Politica, POLITICA_FABRICA } from "./politica.ts";
 import * as Resultados from "./resultados.ts";
+import * as Skills from "./skills.ts";
 
 export * from "./Driver.ts";
 export * from "./eventos.ts";
+export * from "./politica.ts";
 
 export class Motor extends Context.Service<
   Motor,
@@ -65,8 +74,11 @@ interface SessaoAberta {
   readonly completar: Resultados.Completar;
 }
 
-const make = Effect.gen(function* () {
+const make = Effect.fnUntraced(function* (politica: Politica) {
   const drivers = yield* Drivers;
+  // Só as sessões com skills gravam arquivos: sem `FileSystem` na layer, elas falham com mensagem clara.
+  const fs = yield* Effect.serviceOption(FileSystem.FileSystem);
+  const path = yield* Effect.serviceOption(Path.Path);
   const sessoes = new Map<string, SessaoAberta>();
   let sequencia = 0;
 
@@ -80,9 +92,37 @@ const make = Effect.gen(function* () {
       return sessao === undefined ? Effect.fail(new SessaoDesconhecida({ id })) : Effect.succeed(sessao);
     });
 
-  const iniciarSessao = Effect.fn("Motor.iniciarSessao")(function* (config: ConfigSessao) {
+  const iniciarSessao = Effect.fn("Motor.iniciarSessao")(function* (pedida: ConfigSessao) {
+    if (!politica.providers.includes(pedida.provider)) {
+      return yield* new FalhaProvider({
+        provider: pedida.provider,
+        operacao: "iniciar",
+        detalhe: "a política do app não permite este provider",
+      });
+    }
+    let pastaSkills = "";
+    if (pedida.skills !== undefined && pedida.skills.length > 0) {
+      if (Option.isNone(fs) || Option.isNone(path)) {
+        return yield* new FalhaProvider({
+          provider: pedida.provider,
+          operacao: "skills",
+          detalhe: "o motor não tem acesso ao sistema de arquivos para gravar as skills",
+        });
+      }
+      pastaSkills = yield* Skills.gravarSkills(pedida).pipe(
+        Effect.provideService(FileSystem.FileSystem, fs.value),
+        Effect.provideService(Path.Path, path.value),
+      );
+    }
+    const separador = Option.isSome(path) ? path.value.sep : "/";
+    const instrucoes = Skills.instrucoesSessao(pedida, pastaSkills, separador);
+    const config: ConfigSessao = {
+      ...pedida,
+      buscaWeb: buscaWebLigada(politica, pedida.buscaWeb),
+      ...(instrucoes === undefined ? {} : { instrucoes }),
+    };
     const escopo = yield* Scope.make();
-    const driver = yield* drivers[config.provider].iniciar(config).pipe(
+    const driver = yield* drivers[config.provider].iniciar(config, politica).pipe(
       Scope.provide(escopo),
       Effect.onError(() => Scope.close(escopo, Exit.void)),
     );
@@ -137,5 +177,8 @@ const make = Effect.gen(function* () {
   });
 });
 
-/** O motor sobre os drivers do ambiente (`Drivers.layerNode` ou drivers de teste). */
-export const layer = Layer.effect(Motor, make);
+/** O motor sobre os drivers do ambiente (`Drivers.layerNode` ou drivers de teste), com a política de fábrica. */
+export const layer = Layer.effect(Motor, make(POLITICA_FABRICA));
+
+/** O motor com outra política (testes; no futuro, a da máquina, que só restringe a de fábrica). */
+export const layerComPolitica = (politica: Politica) => Layer.effect(Motor, make(politica));

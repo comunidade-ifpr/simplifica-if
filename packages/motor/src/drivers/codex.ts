@@ -5,7 +5,13 @@
  * - O MCP entra por thread, em `config` do `thread/start` (`mcp_servers.<nome>.*`), como o T3 faz
  *   com o servidor dele: nada se grava no `config.toml` do usuário.
  * - A thread é `ephemeral`: não aparece no histórico do Codex do usuário.
- * - Pedidos de aprovação (comando, edição de arquivo, elicitação de MCP) viram `PedidoAprovacao`.
+ * - Sandbox e aprovação vêm da política (`read-only` com `on-request` na de fábrica). Os pedidos de
+ *   aprovação (comando, edição de arquivo, elicitação de MCP) se classificam e passam pela política;
+ *   `perguntar` vira `PedidoAprovacao`.
+ * - Isolamento e contexto por thread (`isolamentoCodex`, `contextoCodex`): sem os MCP, conectores,
+ *   plugins, hooks, skills e `AGENTS.md` do usuário, e sem as ferramentas e instruções que a política
+ *   não usa. As instruções da sessão (com as skills do app) vão em `developerInstructions`.
+ * - Telemetria: `TELEMETRIA_CODEX_ARGS` no `codex app-server` (analytics, feedback e OpenTelemetry).
  */
 import * as CodexClient from "@simplifica-if/effect-codex-app-server/client";
 import * as Effect from "effect/Effect";
@@ -17,6 +23,14 @@ import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 import * as Canal from "../Canal.ts";
 import { type ConfigSessao, type Driver, type DeteccaoProvider, FalhaProvider, Gravador } from "../Driver.ts";
 import { type Evento, resumir, textoDeBlocos } from "../eventos.ts";
+import {
+  ambienteSemTelemetria,
+  buscaWebLigada,
+  caminhosDoComando,
+  type ClassePedido,
+  type Politica,
+  TELEMETRIA_CODEX_ARGS,
+} from "../politica.ts";
 import { acompanharInstalacao } from "../estados.ts";
 import { type Ambiente, limparAmbiente } from "../processo.ts";
 import type * as CodexInstallation from "../t3/CodexInstallation.ts";
@@ -145,7 +159,7 @@ const NOTIFICACOES = [
  * HTTP (streamable HTTP), `url` e `http_headers`, como o T3 passa o servidor dele
  * (`codexThreadRuntimeParams` em `CodexAdapterV2.ts`).
  */
-export function configMcpCodex(config: ConfigSessao): Record<string, Schema.Json> {
+export function configMcpCodex(config: ConfigSessao, politica: Politica): Record<string, Schema.Json> {
   const saida: Record<string, Schema.Json> = {};
   for (const servidor of config.servidoresMcp) {
     saida[`mcp_servers.${servidor.nome}`] = {
@@ -157,26 +171,78 @@ export function configMcpCodex(config: ConfigSessao): Record<string, Schema.Json
             ...(servidor.ambiente ? { env: { ...servidor.ambiente } } : {}),
           }),
       // Sem pedir aprovação a cada chamada: as ferramentas do servidor são só de leitura.
-      ...(servidor.preAprovado ? { default_tools_approval_mode: "approve" } : {}),
+      ...(servidor.preAprovado && politica.ferramentas.mcpApp === "permitir"
+        ? { default_tools_approval_mode: "approve" }
+        : {}),
     };
   }
   return saida;
 }
 
 /**
- * Desliga, só nesta thread, os servidores MCP do usuário que não são da sessão, os conectores do
- * ChatGPT (`features.apps`, que trazem o `codex_apps` com busca web) e os plugins
- * (`features.plugins`). Os plugins trazem MCP próprios, skills e hooks: o `cua_repl` (computer use e
- * navegador) vem do plugin `unified-computer-use@openai-bundled`, pelo `.mcp.json` dele, e sobe
- * mesmo com `features.computer_use` e `features.browser_use` desligados.
+ * Desliga, só nesta thread, o que vem do usuário:
+ * - os servidores MCP do usuário que não são da sessão;
+ * - os conectores do ChatGPT (`features.apps`, que trazem o `codex_apps` com busca web) e os plugins
+ *   (`features.plugins`). Os plugins trazem MCP próprios, skills e hooks: o `cua_repl` (computer use
+ *   e navegador) vem do plugin `unified-computer-use@openai-bundled`, pelo `.mcp.json` dele, e sobe
+ *   mesmo com `features.computer_use` e `features.browser_use` desligados;
+ * - os hooks (`features.hooks`);
+ * - as skills: as do sistema (`skills.bundled.enabled`) e cada uma que o `skills/list` acha para a
+ *   pasta (`skills.config`, por caminho), inclusive as de `.agents/skills` da pasta de trabalho; as
+ *   do app chegam pelas instruções da sessão;
+ * - o `AGENTS.md` da pasta de trabalho (`project_doc_max_bytes = 0`). O `~/.codex/AGENTS.md` do
+ *   usuário continua entrando: não há chave por thread que o tire (só um `CODEX_HOME` próprio).
  */
-export function isolamentoCodex(configUsuario: Registro, config: ConfigSessao): Record<string, Schema.Json> {
+export function isolamentoCodex(
+  configUsuario: Registro,
+  config: ConfigSessao,
+  skillsDoUsuario: ReadonlyArray<string> = [],
+): Record<string, Schema.Json> {
   const nossos = new Set(config.servidoresMcp.map((servidor) => servidor.nome));
-  const saida: Record<string, Schema.Json> = { "features.apps": false, "features.plugins": false };
+  const saida: Record<string, Schema.Json> = {
+    "features.apps": false,
+    "features.plugins": false,
+    "features.hooks": false,
+    "skills.bundled.enabled": false,
+    project_doc_max_bytes: 0,
+  };
   for (const nome of Object.keys(registro(configUsuario.mcp_servers))) {
     if (!nossos.has(nome)) saida[`mcp_servers.${nome}.enabled`] = false;
   }
+  if (skillsDoUsuario.length > 0) {
+    saida["skills.config"] = skillsDoUsuario.map((caminho) => ({ path: caminho, enabled: false }));
+  }
   return saida;
+}
+
+/**
+ * Tira do contexto o que a política não usa (medido na pergunta de referência; ver o README): as
+ * ferramentas de metas (`goals`), geração de imagem, `sleep`, sugestão de ferramentas e busca de
+ * skills, e as instruções de skills, de apps e de modos de colaboração. Ficam as instruções de
+ * permissão (o modelo precisa delas para pedir aprovação), o contexto do ambiente e o terminal.
+ */
+export const CONTEXTO_CODEX: Readonly<Record<string, Schema.Json>> = {
+  "features.goals": false,
+  "features.image_generation": false,
+  "features.sleep_tool": false,
+  "features.tool_suggest": false,
+  "features.skill_search": false,
+  include_skills_usage_instructions: false,
+  include_apps_instructions: false,
+  include_collaboration_mode_instructions: false,
+};
+
+/** Classifica o pedido de comando: o `cwd` e os caminhos citados; com rede, é `web`. */
+export function classificarComandoCodex(p: {
+  readonly command?: string | null;
+  readonly cwd?: string | null;
+  readonly networkApprovalContext?: unknown;
+}): ClassePedido {
+  if (p.networkApprovalContext !== undefined && p.networkApprovalContext !== null) return { tipo: "web", caminhos: [] };
+  return {
+    tipo: "comando",
+    caminhos: [...(p.cwd ? [p.cwd] : []), ...(p.command ? caminhosDoComando(p.command) : [])],
+  };
 }
 
 export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
@@ -193,9 +259,9 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
   const abrir = Effect.fn("DriverCodex.abrir")(function* (binario: string, pasta: string) {
     const filho = yield* spawner
       .spawn(
-        ChildProcess.make(binario, ["app-server"], {
+        ChildProcess.make(binario, ["app-server", ...TELEMETRIA_CODEX_ARGS], {
           cwd: pasta,
-          env: limparAmbiente(opcoes.ambiente),
+          env: ambienteSemTelemetria(PROVIDER, limparAmbiente(opcoes.ambiente)),
           extendEnv: false,
           forceKillAfter: "2 seconds",
         }),
@@ -256,7 +322,7 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
     }));
   });
 
-  const iniciar = Effect.fn("DriverCodex.iniciar")(function* (config: ConfigSessao) {
+  const iniciar = Effect.fn("DriverCodex.iniciar")(function* (config: ConfigSessao, politica: Politica) {
     // Reserva até o fim da sessão: a instalação não remove o binário de uma sessão em andamento.
     const executavel = yield* opcoes.instalacao
       .acquire()
@@ -265,39 +331,60 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
           (erro) => new FalhaProvider({ provider: PROVIDER, operacao: "iniciar", detalhe: erro.detail, cause: erro }),
         ),
       );
-    const canal = yield* Canal.make;
+    const canal = yield* Canal.comPolitica(politica, config.pastaTrabalho);
     const gravar = yield* Gravador;
     const { cliente } = yield* abrir(executavel.executablePath, config.pastaTrabalho);
     const normalizar = criarNormalizadorCodex();
+    const servidoresApp = new Set(config.servidoresMcp.filter((s) => s.preAprovado).map((s) => s.nome));
+    // Os arquivos de cada `fileChange`: o pedido de aprovação só traz o id do item.
+    const arquivosDoItem = new Map<string, ReadonlyArray<string>>();
 
     for (const metodo of NOTIFICACOES) {
       yield* cliente.handleServerNotification(metodo, (parametros) =>
         Effect.suspend(() => {
           gravar("entrada", { metodo, parametros });
+          const item = registro(registro(parametros).item);
+          if (metodo === "item/started" && item.type === "fileChange" && Array.isArray(item.changes)) {
+            arquivosDoItem.set(
+              texto(item.id),
+              item.changes.map((mudanca) => texto(registro(mudanca).path)).filter((caminho) => caminho !== ""),
+            );
+          }
           return Effect.forEach(normalizar(metodo, parametros), canal.emitir, { discard: true });
         }),
       );
     }
 
-    const aprovar = (id: string, ferramenta: string, descricao: string, entrada: unknown) =>
-      Effect.sync(() => gravar("entrada", { metodo: "pedido de aprovação", id, ferramenta, descricao })).pipe(
-        Effect.andThen(canal.pedirAprovacao({ id, ferramenta, descricao, entrada })),
+    const aprovar = (id: string, ferramenta: string, descricao: string, entrada: unknown, classe: ClassePedido) =>
+      Effect.sync(() => gravar("entrada", { metodo: "pedido de aprovação", id, ferramenta, descricao, classe })).pipe(
+        Effect.andThen(canal.aprovar({ id, ferramenta, descricao, entrada, classe })),
+        Effect.map(({ decisao }) => decisao),
         Effect.tap((decisao) => Effect.sync(() => gravar("saida", { metodo: "resposta de aprovação", id, decisao }))),
       );
     yield* cliente.handleServerRequest("item/commandExecution/requestApproval", (p) =>
-      aprovar(p.itemId, "comando", p.reason ?? `executar ${p.command ?? "comando"}`, { comando: p.command }).pipe(
-        Effect.map((decisao) => ({ decision: decisao === "permitir" ? "accept" : "decline" }) as const),
-      ),
+      aprovar(
+        p.approvalId ?? p.itemId,
+        "comando",
+        p.reason ?? `executar ${p.command ?? "comando"}`,
+        { comando: p.command, pasta: p.cwd },
+        classificarComandoCodex(p),
+      ).pipe(Effect.map((decisao) => ({ decision: decisao === "permitir" ? "accept" : "decline" }) as const)),
     );
-    yield* cliente.handleServerRequest("item/fileChange/requestApproval", (p) =>
-      aprovar(p.itemId, "editar_arquivos", p.reason ?? "alterar arquivos", { raiz: p.grantRoot }).pipe(
-        Effect.map((decisao) => ({ decision: decisao === "permitir" ? "accept" : "decline" }) as const),
-      ),
-    );
+    yield* cliente.handleServerRequest("item/fileChange/requestApproval", (p) => {
+      const arquivos = arquivosDoItem.get(p.itemId) ?? [];
+      return aprovar(
+        p.itemId,
+        "editar_arquivos",
+        p.reason ?? "alterar arquivos",
+        { arquivos, raiz: p.grantRoot },
+        { tipo: "escrita", caminhos: [...arquivos, ...(p.grantRoot ? [p.grantRoot] : [])] },
+      ).pipe(Effect.map((decisao) => ({ decision: decisao === "permitir" ? "accept" : "decline" }) as const));
+    });
     yield* cliente.handleServerRequest("mcpServer/elicitation/request", (p) =>
-      aprovar(`${p.serverName}:${p.message.slice(0, 40)}`, `${p.serverName}`, p.message, p._meta).pipe(
-        Effect.map((decisao) => ({ action: decisao === "permitir" ? "accept" : "decline" }) as const),
-      ),
+      aprovar(`${p.serverName}:${p.message.slice(0, 40)}`, `${p.serverName}`, p.message, p._meta, {
+        tipo: servidoresApp.has(p.serverName) ? "mcp-app" : "mcp-outro",
+        caminhos: [],
+      }).pipe(Effect.map((decisao) => ({ action: decisao === "permitir" ? "accept" : "decline" }) as const)),
     );
 
     // O `model` do `config.toml` do usuário pode não valer para a conta (ex.: modelo de API numa conta
@@ -315,19 +402,25 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
       Effect.map((resposta) => registro(resposta.config)),
       Effect.orElseSucceed((): Registro => ({})),
     );
-    const isolamento = isolamentoCodex(configUsuario, config);
+    // Todas as skills que o Codex acharia para a pasta (do usuário, do sistema e da pasta).
+    const skillsDoUsuario = yield* cliente.request("skills/list", { cwds: [config.pastaTrabalho] }).pipe(
+      Effect.map((resposta) => resposta.data.flatMap((entrada) => entrada.skills.map((skill) => skill.path))),
+      Effect.orElseSucceed((): ReadonlyArray<string> => []),
+    );
     const thread = yield* cliente
       .request("thread/start", {
         cwd: config.pastaTrabalho,
         ephemeral: true,
-        // Somente leitura: qualquer escrita ou comando fora do sandbox passa por aprovação.
-        approvalPolicy: "on-request",
-        sandbox: "read-only",
+        // Na de fábrica, somente leitura: qualquer escrita ou comando fora do sandbox passa por aprovação.
+        approvalPolicy: politica.codex.aprovacao,
+        sandbox: politica.codex.sandbox,
         config: {
-          ...isolamento,
-          ...configMcpCodex(config),
-          ...(config.buscaWeb === true ? {} : { web_search: "disabled" }),
+          ...isolamentoCodex(configUsuario, config, skillsDoUsuario),
+          ...CONTEXTO_CODEX,
+          ...configMcpCodex(config, politica),
+          ...(buscaWebLigada(politica, config.buscaWeb) ? {} : { web_search: "disabled" }),
         },
+        ...(config.instrucoes === undefined ? {} : { developerInstructions: config.instrucoes }),
         ...(modelo ? { model: modelo } : {}),
       })
       .pipe(Effect.mapError(Canal.falhaDe(PROVIDER, "thread/start")));

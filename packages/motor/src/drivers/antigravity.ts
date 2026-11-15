@@ -6,8 +6,11 @@
  *   anunciar `mcpCapabilities.http`, como no `AcpSessionRuntime` do T3).
  * - `initialize` e `authenticate` (eager, como no T3) também servem de detecção: o código -32000
  *   no `authenticate` quer dizer "sem login".
- * - `session/request_permission` vira `PedidoAprovacao`; o turno termina com a resposta do
- *   `session/prompt` (`stopReason`).
+ * - `session/request_permission` se classifica (`classificarAcp`) e passa pela política; `perguntar`
+ *   vira `PedidoAprovacao`. O turno termina com a resposta do `session/prompt` (`stopReason`).
+ * - As instruções da sessão (com as skills do app) e as ferramentas desligadas (busca web) vão no
+ *   `_meta.antigravity` do `session/new` (`systemPrompt.append`, `disabledTools`), como no T3.
+ * - Telemetria: `agy acp --disable-telemetry`, sem as `OTEL_*` herdadas.
  */
 import * as AcpClient from "@simplifica-if/effect-acp/client";
 import type * as AcpSchema from "@simplifica-if/effect-acp/compat";
@@ -21,6 +24,14 @@ import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 import * as Canal from "../Canal.ts";
 import { type ConfigSessao, type Driver, type DeteccaoProvider, FalhaProvider, Gravador } from "../Driver.ts";
 import { type Evento, resumir, textoDeBlocos } from "../eventos.ts";
+import {
+  ambienteSemTelemetria,
+  buscaWebLigada,
+  caminhosDoComando,
+  type ClassePedido,
+  type Politica,
+  TELEMETRIA_ANTIGRAVITY_ARGS,
+} from "../politica.ts";
 import { acompanharInstalacao, acompanharLogin } from "../estados.ts";
 import { type Ambiente, limparAmbiente } from "../processo.ts";
 import { makeAntigravityAcpRuntime } from "../t3/antigravityAcpRuntime.ts";
@@ -32,6 +43,7 @@ import {
   prepareAntigravityProfile,
   resolveAntigravityInstanceDirectories,
 } from "../t3/antigravityAuthSupport.ts";
+import { antigravitySessionMeta } from "../t3/AntigravityAcpSupport.ts";
 import type * as AntigravityInstallation from "../t3/AntigravityInstallation.ts";
 import { ProviderInstanceId, ProviderSetupError } from "../t3/contracts-antigravity.ts";
 
@@ -145,6 +157,53 @@ export function criarNormalizadorAntigravity(
   };
 }
 
+/** Ferramentas de web do `agy` 1.5.x, desligadas no `_meta.antigravity.disabledTools` sem busca web. */
+export const FERRAMENTAS_WEB_ANTIGRAVITY = ["search_web", "read_url_content", "browser_subagent"] as const;
+
+const CHAVE_DE_CAMINHO = /path|file|dir|cwd/i;
+
+/**
+ * Classifica o `toolCall` de um `session/request_permission` pelo `kind` do ACP (e pelo nome, para
+ * MCP): `read`/`search` são leitura; `edit`/`delete`/`move`, escrita; `execute`, comando; `fetch`,
+ * web. Os caminhos vêm de `locations` e das chaves de caminho da entrada (`Path`, `Cwd`…).
+ */
+export function classificarAcp(toolCall: Registro, servidoresApp: ReadonlyArray<string>): ClassePedido {
+  const nome = nomeFerramenta(toolCall, servidoresApp);
+  const entrada = registro(toolCall.rawInput);
+  const servidor = /^([^.]+)\./.exec(nome)?.[1] ?? (nome === "read_resource" ? texto(entrada.ServerName) : undefined);
+  if (servidor !== undefined && servidoresApp.includes(servidor)) return { tipo: "mcp-app", caminhos: [] };
+  if (nome.startsWith("mcp_") || nome.includes(".") || nome === "read_resource")
+    return { tipo: "mcp-outro", caminhos: [] };
+  const caminhos = [
+    ...(Array.isArray(toolCall.locations) ? toolCall.locations.map((local) => texto(registro(local).path)) : []),
+    ...Object.entries(entrada).flatMap(([chave, valor]) =>
+      typeof valor === "string" && CHAVE_DE_CAMINHO.test(chave) ? [valor] : [],
+    ),
+  ].filter((caminho) => caminho !== "");
+  switch (toolCall.kind) {
+    case "read":
+    case "search":
+      return { tipo: "leitura", caminhos };
+    case "edit":
+    case "delete":
+    case "move":
+      return { tipo: "escrita", caminhos };
+    case "execute": {
+      const comando = Object.values(entrada).find((valor) => typeof valor === "string" && valor.includes(" "));
+      return {
+        tipo: "comando",
+        caminhos: [...caminhos, ...(typeof comando === "string" ? caminhosDoComando(comando) : [])],
+      };
+    }
+    case "fetch":
+      return { tipo: "web", caminhos: [] };
+    default:
+      return (FERRAMENTAS_WEB_ANTIGRAVITY as ReadonlyArray<string>).includes(nome)
+        ? { tipo: "web", caminhos: [] }
+        : { tipo: "outra", caminhos };
+  }
+}
+
 const PROVIDER = "antigravity" as const;
 /** Código JSON-RPC que o `agy` devolve no `authenticate` quando falta login (`antigravityAuthSupport.ts` do T3). */
 const CODIGO_SEM_LOGIN = -32000;
@@ -246,7 +305,7 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
-  const ambienteNode = limparAmbiente(opcoes.ambiente) as NodeJS.ProcessEnv;
+  const ambienteNode = ambienteSemTelemetria(PROVIDER, limparAmbiente(opcoes.ambiente)) as NodeJS.ProcessEnv;
   const binario = opcoes.binario ?? "";
   // Perfil próprio, como no T3: GEMINI_HOME do app, sem o login, os MCP, os hooks e as chaves do
   // usuário (o `agy` do terminal e o app Antigravity continuam com os deles).
@@ -277,16 +336,15 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
       fs.makeTempDirectory({ directory: perfil.tempDirectory, prefix: "run-" }),
       (pastaTemp) => fs.remove(pastaTemp, { recursive: true, force: true }).pipe(Effect.ignore),
     );
-    return {
-      executavel,
-      spawn: buildAntigravityAcpSpawnInput({
-        installation: executavel,
-        profile: perfil,
-        cwd: pasta,
-        baseEnv: ambienteNode,
-        runtimeTempDirectory: temporaria,
-      }),
-    };
+    const spawn = buildAntigravityAcpSpawnInput({
+      installation: executavel,
+      profile: perfil,
+      cwd: pasta,
+      baseEnv: ambienteNode,
+      runtimeTempDirectory: temporaria,
+    });
+    // Telemetria desligada em todo `agy acp` do app: sessão, detecção e login.
+    return { executavel, spawn: { ...spawn, args: [...spawn.args, ...TELEMETRIA_ANTIGRAVITY_ARGS] } };
   });
 
   const abrir = Effect.fn("DriverAntigravity.abrir")(function* (pasta: string) {
@@ -396,8 +454,8 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
     } satisfies DeteccaoProvider;
   });
 
-  const iniciar = Effect.fn("DriverAntigravity.iniciar")(function* (config: ConfigSessao) {
-    const canal = yield* Canal.make;
+  const iniciar = Effect.fn("DriverAntigravity.iniciar")(function* (config: ConfigSessao, politica: Politica) {
+    const canal = yield* Canal.comPolitica(politica, config.pastaTrabalho);
     const gravar = yield* Gravador;
     const escopo = yield* Effect.scope;
     const aberto = yield* abrir(config.pastaTrabalho);
@@ -414,6 +472,7 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
       return yield* new FalhaProvider({ provider: PROVIDER, operacao: "session/new", detalhe: recusa });
     }
     const normalizar = criarNormalizadorAntigravity(config.servidoresMcp.map((servidor) => servidor.nome));
+    const servidoresApp = config.servidoresMcp.filter((servidor) => servidor.preAprovado).map((s) => s.nome);
     const processar = (entrada: EntradaAcp) =>
       Effect.suspend(() => {
         gravar("entrada", entrada);
@@ -428,20 +487,16 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
           registro(pedido.toolCall),
           config.servidoresMcp.map((servidor) => servidor.nome),
         );
-        // No perfil próprio o `agy` pede permissão até para MCP. Ferramentas de servidores pré-aprovados
-        // (as de leitura do ifpr) passam sem perguntar, como no `allowedTools` do Claude e no
-        // `default_tools_approval_mode` do Codex.
-        const preAprovada = config.servidoresMcp.some(
-          (servidor) => servidor.preAprovado && ferramenta.startsWith(`${servidor.nome}.`),
-        );
-        const decisao = preAprovada
-          ? ("permitir" as const)
-          : yield* canal.pedirAprovacao({
-              id: pedido.toolCall.toolCallId,
-              ferramenta,
-              descricao: pedido.title ?? pedido.toolCall.title ?? "permitir ação",
-              entrada: entradaFerramenta(registro(pedido.toolCall)),
-            });
+        // No perfil próprio o `agy` pede permissão até para MCP e leitura. A política responde sozinha
+        // o que pode (as ferramentas do ifpr passam, como no `allowedTools` do Claude e no
+        // `default_tools_approval_mode` do Codex; o que sai da pasta se nega) e pergunta o resto.
+        const { decisao } = yield* canal.aprovar({
+          id: pedido.toolCall.toolCallId,
+          ferramenta,
+          descricao: pedido.title ?? pedido.toolCall.title ?? "permitir ação",
+          entrada: entradaFerramenta(registro(pedido.toolCall)),
+          classe: classificarAcp(registro(pedido.toolCall), servidoresApp),
+        });
         const tipos = decisao === "permitir" ? ["allow_once", "allow_always"] : ["reject_once", "reject_always"];
         const opcao = pedido.options.find((candidata) => tipos.includes(candidata.kind));
         const resposta: AcpSchema.RequestPermissionResponse =
@@ -456,6 +511,14 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
     const sessao = yield* cliente.agent
       .createSession({
         cwd: config.pastaTrabalho,
+        ...(() => {
+          const meta = antigravitySessionMeta(
+            aberto.inicio,
+            config.instrucoes,
+            buscaWebLigada(politica, config.buscaWeb) ? [] : FERRAMENTAS_WEB_ANTIGRAVITY,
+          );
+          return meta === undefined ? {} : { _meta: meta };
+        })(),
         mcpServers: mcpServersAcp(config, {
           http: aberto.inicio.agentCapabilities?.mcpCapabilities?.http === true,
           ...(opcoes.ponteMcp ? { ponte: opcoes.ponteMcp } : {}),
