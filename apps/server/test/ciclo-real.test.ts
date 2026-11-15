@@ -10,10 +10,12 @@
  * temporário, numa pasta de trabalho temporária:
  *
  * 1. **três turnos seguidos** (duas palavras para lembrar e uma ferramenta `ifpr`);
- * 2. **interromper no meio do turno**, depois da primeira ferramenta, e um turno novo em seguida;
- * 3. **retomada depois de fechar**: a layer se encerra (o processo do provider morre) e outra, com o
+ * 2. **política de fábrica**: um pedido para escrever fora da pasta de trabalho; a política o nega sem
+ *    perguntar (nenhum `PedidoAprovacao` chega à conversa) e o arquivo não existe;
+ * 3. **interromper no meio do turno**, depois da primeira ferramenta, e um turno novo em seguida;
+ * 4. **retomada depois de fechar**: a layer se encerra (o processo do provider morre) e outra, com o
  *    mesmo banco, retoma a conversa, que precisa lembrar a primeira palavra;
- * 4. **queda do processo do provider**: no meio de um turno, o processo (e os filhos dele) leva
+ * 5. **queda do processo do provider**: no meio de um turno, o processo (e os filhos dele) leva
  *    SIGKILL; o turno termina com `Erro` e `FimTurno`, a conversa fica `caiu`, e a próxima mensagem a
  *    reabre pela retomada, lembrando a segunda palavra.
  *
@@ -90,8 +92,8 @@ const driversRegistrados = (aberturas: Array<Abertura>) =>
       const reais = yield* Motor.Drivers;
       const embrulhar = (driver: Motor.Driver): Motor.Driver => ({
         ...driver,
-        iniciar: (config) =>
-          driver.iniciar(config).pipe(
+        iniciar: (config, politica) =>
+          driver.iniciar(config, politica).pipe(
             Effect.tap(() => Effect.sync(() => aberturas.push({ retomar: config.retomar, resultado: "ok" }))),
             Effect.tapError((falha) =>
               Effect.sync(() =>
@@ -190,11 +192,29 @@ describe.skipIf(!REAL)("ciclo de vida da conversa com providers reais", () => {
             Effect.map(Clock.currentTimeMillis, (agora) => ((agora - inicio) / 1000).toFixed(1)),
           );
 
-          /** Um turno inteiro, com o tempo. */
+          /** Os pedidos de aprovação que chegaram à conversa (todos negados pelo teste). */
+          const pedidos: Array<string> = [];
+
+          /** Um turno inteiro, com o tempo; um pedido de aprovação que chegue é negado. */
           const turno = (conversas: Conversas.Conversas["Service"], id: string, texto: string, rotulo: string) =>
             Effect.gen(function* () {
               const tempo = yield* cronometro;
-              const eventos = [...(yield* Stream.runCollect(conversas.enviar(id, texto)))];
+              const eventos = [
+                ...(yield* Stream.runCollect(
+                  conversas
+                    .enviar(id, texto)
+                    .pipe(
+                      Stream.tap((evento) =>
+                        evento._tag === "PedidoAprovacao"
+                          ? Effect.sync(() => pedidos.push(evento.ferramenta)).pipe(
+                              Effect.andThen(conversas.responderAprovacao(id, evento.id, "negar")),
+                              Effect.ignore,
+                            )
+                          : Effect.void,
+                      ),
+                    ),
+                )),
+              ];
               const fim = eventos.at(-1);
               yield* log(
                 provider,
@@ -265,7 +285,21 @@ describe.skipIf(!REAL)("ciclo de vida da conversa com providers reais", () => {
           assert.isTrue(terceiro.some((e) => e._tag === "FerramentaIniciada" && e.nome.startsWith("ifpr.")));
           assert.strictEqual(terceiro.at(-1)?._tag, "FimTurno");
 
-          // 2. Interromper no meio do turno; a conversa aceita o turno seguinte.
+          // 2. A política nega sem perguntar a escrita fora da pasta de trabalho.
+          const fora = NodeFS.realpathSync(NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "simplifica-fora-")));
+          const alvo = NodePath.join(fora, "fora.txt");
+          const negado = yield* turno(
+            primeiro.conversas,
+            id,
+            `Crie o arquivo ${alvo} com o conteúdo ok, usando a sua ferramenta de escrever arquivos. ` +
+              "Se não for possível, diga em uma frase por quê, sem tentar outro caminho.",
+            "escrita fora da pasta (política)",
+          );
+          assert.strictEqual(negado.at(-1)?._tag, "FimTurno");
+          assert.isFalse(NodeFS.existsSync(alvo), "o arquivo fora da pasta não pode existir");
+          assert.deepStrictEqual(pedidos, [], "a política nega sem perguntar");
+
+          // 3. Interromper no meio do turno; a conversa aceita o turno seguinte.
           const interrompido = yield* turnoComAcao(
             primeiro.conversas,
             id,
@@ -282,7 +316,7 @@ describe.skipIf(!REAL)("ciclo de vida da conversa com providers reais", () => {
           assert.strictEqual(depoisDeInterromper.at(-1)?._tag, "FimTurno");
           assert.deepStrictEqual(erros(depoisDeInterromper), []);
 
-          // 3. Retomada depois de fechar: outra layer, o mesmo banco.
+          // 4. Retomada depois de fechar: outra layer, o mesmo banco.
           yield* primeiro.fechar;
           const segundo = yield* abrir(arquivo, aberturas);
           const lembrou = yield* turno(
@@ -298,7 +332,7 @@ describe.skipIf(!REAL)("ciclo de vida da conversa com providers reais", () => {
           );
           assert.match(textoFinal(lembrou).toLowerCase(), /abacaxi/);
 
-          // 4. Queda do processo do provider no meio do turno.
+          // 5. Queda do processo do provider no meio do turno.
           let morto = "";
           const caido = yield* turnoComAcao(
             segundo.conversas,
