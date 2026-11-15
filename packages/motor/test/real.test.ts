@@ -9,6 +9,8 @@
  */
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { assert, describe, it } from "@effect/vitest";
+import * as Clock from "effect/Clock";
+import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
@@ -178,4 +180,134 @@ describe.skipIf(!REAL)("Antigravity: perfil próprio", () => {
       }).pipe(Effect.scoped, Effect.provide(Layer.mergeAll(NodeServices.layer, NodeCrypto.layer))),
     300_000,
   );
+});
+
+/** Abre uma sessão real com o `ifpr` por HTTP local numa pasta temporária e roda um turno. */
+const turnoReal = Effect.fn("teste.turnoReal")(function* (
+  provider: Motor.Provider,
+  texto: string,
+  extra: Partial<Motor.ConfigSessao> = {},
+  pastaDada?: string,
+) {
+  const motor = yield* Motor.Motor;
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
+  assert.isTrue(yield* fs.exists(path.join(RAIZ, "tmp/kb.sqlite")), "falta tmp/kb.sqlite: rode pnpm kb:compilar");
+  const pasta = pastaDada ?? (yield* fs.realPath(yield* fs.makeTempDirectoryScoped({ prefix: "simplifica-motor-" })));
+  const servidor = yield* servidorIfprHttp({ banco: path.join(RAIZ, "tmp/kb.sqlite"), pastaTrabalho: pasta });
+  const inicio = yield* Clock.currentTimeMillis;
+  const sessao = yield* motor.iniciarSessao({ provider, pastaTrabalho: pasta, servidoresMcp: [servidor], ...extra });
+  const pedidos: Array<Motor.Evento> = [];
+  const eventos: Array<{ readonly ms: number; readonly evento: Motor.Evento }> = [];
+  yield* motor.enviarMensagem(sessao, texto).pipe(
+    Stream.runForEach((evento) =>
+      Effect.gen(function* () {
+        eventos.push({ ms: (yield* Clock.currentTimeMillis) - inicio, evento });
+        // Nada chega a perguntar nestes testes: se chegar, nega (e o teste confere).
+        if (evento._tag === "PedidoAprovacao") {
+          pedidos.push(evento);
+          yield* motor.responderAprovacao(sessao, evento.id, "negar");
+        }
+      }),
+    ),
+  );
+  yield* motor.encerrar(sessao);
+  return {
+    pasta,
+    pedidos,
+    eventos,
+    texto: eventos.flatMap(({ evento }) => (evento._tag === "TextoFinal" ? [evento.texto] : [])).join("\n"),
+  };
+});
+
+describe.skipIf(!REAL)("M1.2: política, texto parcial, contexto e skills", () => {
+  it.live(
+    "claude: texto parcial pelos stream_event, sem duplicar o TextoFinal",
+    () =>
+      Effect.gen(function* () {
+        const { eventos, texto } = yield* turnoReal("claude", PERGUNTA);
+        const parciais = eventos.filter(({ evento }) => evento._tag === "TextoParcial");
+        const finais = eventos.filter(({ evento }) => evento._tag === "TextoFinal");
+        assert.isAbove(parciais.length, 1);
+        assert.match(texto, /1\.200/);
+        // O texto dos pedaços é o dos TextoFinal, uma vez só.
+        const juntos = parciais.map(({ evento }) => (evento._tag === "TextoParcial" ? evento.texto : "")).join("");
+        assert.strictEqual(
+          juntos,
+          finais.map(({ evento }) => (evento._tag === "TextoFinal" ? evento.texto : "")).join(""),
+        );
+        yield* Console.log(
+          `[claude] primeiro TextoParcial em ${parciais[0]?.ms} ms; TextoFinal em ${finais.at(-1)?.ms} ms; ${parciais.length} pedaços`,
+        );
+      }).pipe(Effect.scoped, Effect.provide(camada)),
+    300_000,
+  );
+
+  it.live(
+    "codex: contexto da sessão (tokens de entrada de um turno sem ferramenta)",
+    () =>
+      Effect.gen(function* () {
+        const { eventos } = yield* turnoReal("codex", "Responda apenas: ok");
+        const uso = eventos.flatMap(({ evento }) => (evento._tag === "UsoTokens" ? [evento] : []));
+        const entrada = uso.reduce((soma, evento) => soma + evento.entrada, 0);
+        yield* Console.log(`[codex] tokens de entrada de um turno sem ferramenta: ${entrada}`);
+        // Antes do corte (só o isolamento do M1.4), 14 mil com as ferramentas do ifpr; ver o README.
+        assert.isBelow(entrada, 12_000);
+      }).pipe(Effect.scoped, Effect.provide(camada)),
+    300_000,
+  );
+
+  const SKILL: Motor.Skill = {
+    nome: "senha-do-dia",
+    descricao: "Use quando o usuário perguntar qual é a senha do dia.",
+    instrucoes:
+      "Leia o arquivo senha.txt desta pasta (ao lado deste SKILL.md) e responda só com o conteúdo dele, sem explicação.",
+    arquivos: [{ caminho: "senha.txt", conteudo: "girassol-azul-42\n" }],
+  };
+
+  for (const provider of ["claude", "codex", "antigravity"] as const) {
+    it.live(
+      `${provider}: skill do app pelas instruções da sessão e arquivos na pasta`,
+      () =>
+        Effect.gen(function* () {
+          const inicio = yield* Clock.currentTimeMillis;
+          const { texto, pedidos } = yield* turnoReal(provider, "Qual é a senha do dia?", { skills: [SKILL] });
+          yield* Console.log(
+            `[${provider}] skill: ${(yield* Clock.currentTimeMillis) - inicio} ms; pedidos: ${pedidos.length}`,
+          );
+          assert.include(texto, "girassol-azul-42");
+          // Ler dentro da pasta passa pela política sem perguntar.
+          assert.deepStrictEqual(pedidos, []);
+        }).pipe(Effect.scoped, Effect.provide(camada)),
+      300_000,
+    );
+
+    it.live(
+      `${provider}: a política nega sem perguntar a escrita fora da pasta de trabalho`,
+      () =>
+        Effect.gen(function* () {
+          const fs = yield* FileSystem.FileSystem;
+          const path = yield* Path.Path;
+          const fora = yield* fs.realPath(yield* fs.makeTempDirectoryScoped({ prefix: "simplifica-fora-" }));
+          const alvo = path.join(fora, "fora.txt");
+          const { texto, pedidos, eventos } = yield* turnoReal(
+            provider,
+            `Crie o arquivo ${alvo} com o conteúdo ok, usando a sua ferramenta de escrever arquivos. ` +
+              "Se não for possível, diga por quê, sem tentar outro caminho.",
+          );
+          const ferramentas = eventos.flatMap(({ evento }) =>
+            evento._tag === "FerramentaConcluida"
+              ? [`${evento.nome}${evento.falhou ? " (falhou)" : ""}: ${evento.resumo}`]
+              : [],
+          );
+          yield* Console.log(`[${provider}] escrita fora: ${ferramentas.join(" | ")}\n${texto.slice(0, 300)}`);
+          assert.isFalse(yield* fs.exists(alvo), "o arquivo fora da pasta não pode existir");
+          assert.deepStrictEqual(
+            pedidos.map((pedido) => (pedido._tag === "PedidoAprovacao" ? pedido.ferramenta : "")),
+            [],
+          );
+        }).pipe(Effect.scoped, Effect.provide(camada)),
+      300_000,
+    );
+  }
 });

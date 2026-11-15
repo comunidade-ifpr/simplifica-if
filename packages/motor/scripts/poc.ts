@@ -52,6 +52,8 @@ const NOVA_TENTATIVA = "Tente de novo criar o arquivo teste.txt nesta pasta; des
 interface Resumo {
   inicio: number;
   primeiroTexto?: number;
+  primeiroParcial?: number;
+  parciais: number;
   ferramentas: Array<string>;
   entrada: number;
   saida: number;
@@ -97,7 +99,11 @@ const turno = Effect.fn("poc.turno")(function* (
         if ((evento._tag === "TextoParcial" || evento._tag === "TextoFinal") && resumo.primeiroTexto === undefined) {
           resumo.primeiroTexto = agora;
         }
-        if (evento._tag === "TextoParcial") process.stdout.write(evento.texto);
+        if (evento._tag === "TextoParcial") {
+          resumo.primeiroParcial ??= agora;
+          resumo.parciais++;
+          process.stdout.write(evento.texto);
+        }
         const linha = formatar(evento);
         if (linha !== "") yield* Console.log(`${linha}  (+${((agora - resumo.inicio) / 1000).toFixed(1)} s)`);
         if (evento._tag === "TextoFinal") resumo.texto += `${evento.texto}\n`;
@@ -208,7 +214,16 @@ const poc = Command.make(
         ...(Option.isSome(opcoes.modelo) ? { modelo: opcoes.modelo.value } : {}),
       });
       yield* Console.log(`sessão ${sessao} em ${pastaReal}`);
-      const resumo: Resumo = { inicio, ferramentas: [], entrada: 0, saida: 0, cache: 0, texto: "", pedidos: 0 };
+      const resumo: Resumo = {
+        inicio,
+        parciais: 0,
+        ferramentas: [],
+        entrada: 0,
+        saida: 0,
+        cache: 0,
+        texto: "",
+        pedidos: 0,
+      };
 
       if (opcoes.aprovacao) {
         const respostas: Array<Motor.Decisao> = ["negar", "permitir"];
@@ -232,6 +247,7 @@ const poc = Command.make(
           "\n=== resumo ===",
           `provider: ${provider} (MCP ${opcoes.mcp})`,
           `tempo até o primeiro texto: ${resumo.primeiroTexto === undefined ? "—" : segundos(resumo.primeiroTexto - inicio)}`,
+          `primeiro texto parcial: ${resumo.primeiroParcial === undefined ? "—" : `${segundos(resumo.primeiroParcial - inicio)} (${resumo.parciais} pedaços)`}`,
           `tempo total: ${segundos(fim - inicio)}`,
           `ferramentas: ${resumo.ferramentas.length === 0 ? "nenhuma" : resumo.ferramentas.join(", ")}`,
           `tokens: entrada ${resumo.entrada}, saída ${resumo.saida}, cache ${resumo.cache}`,

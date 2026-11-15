@@ -4,9 +4,14 @@
  *
  * - Uma sessão é um `query()` com entrada em stream: cada `enviar` empurra uma mensagem do usuário.
  * - O MCP entra em `mcpServers`, por stdio ou por HTTP, só nesta sessão; `settingSources: []` deixa
- *   de fora as configurações e os MCP do usuário e do projeto.
- * - As ferramentas de servidores `preAprovado` entram em `allowedTools` (`mcp__<servidor>`); as
- *   demais passam por `canUseTool`, que vira `PedidoAprovacao`.
+ *   de fora as configurações, os MCP, as skills, os hooks e o `CLAUDE.md` do usuário e do projeto.
+ * - As ferramentas de servidores `preAprovado` entram em `allowedTools` (`mcp__<servidor>`), se a
+ *   política permite; as demais passam por `canUseTool`, que as classifica (`classificarClaude`) e
+ *   aplica a política: `perguntar` vira `PedidoAprovacao`.
+ * - As instruções da sessão (com as skills do app) vão no `append` do system prompt `claude_code`.
+ * - Telemetria: as variáveis de `TELEMETRIA_CLAUDE` no ambiente, sem as `OTEL_*` herdadas.
+ * - Texto parcial: `includePartialMessages` entrega os `stream_event`; cada `text_delta` vira
+ *   `TextoParcial` e o bloco completo (`assistant`), `TextoFinal`.
  * - **Retomada:** a sessão nova recebe um `sessionId` (UUID) escolhido aqui, que é o `idNativo`; a
  *   retomada abre o `query()` com `resume`, como o `ClaudeAdapterV2` do T3. Para isso o SDK grava a
  *   transcrição (`persistSession`, o padrão) em `~/.claude/projects/`, como o Claude Code e o T3.
@@ -37,6 +42,13 @@ import * as Schema from "effect/Schema";
 import * as Canal from "../Canal.ts";
 import { type ConfigSessao, type Driver, type DeteccaoProvider, FalhaProvider, Gravador } from "../Driver.ts";
 import { type Evento, resumir, textoDeBlocos } from "../eventos.ts";
+import {
+  ambienteSemTelemetria,
+  buscaWebLigada,
+  caminhosDoComando,
+  type ClassePedido,
+  type Politica,
+} from "../politica.ts";
 import { type Ambiente, limparAmbiente, localizar, primeiraLinha } from "../processo.ts";
 import { resolveClaudeSdkExecutablePath } from "../t3/ClaudeExecutable.ts";
 import * as ClaudeHome from "../t3/ClaudeHome.ts";
@@ -56,6 +68,8 @@ export function criarNormalizadorClaude(): (mensagem: SDKMessage) => ReadonlyArr
   return (mensagem) => {
     switch (mensagem.type) {
       case "stream_event": {
+        // Texto de subagente (`parent_tool_use_id`) não é a resposta; ele chega pela ferramenta.
+        if (mensagem.parent_tool_use_id !== null) return [];
         const evento = mensagem.event;
         if (evento.type === "content_block_delta" && evento.delta.type === "text_delta") {
           return [{ _tag: "TextoParcial", texto: evento.delta.text }];
@@ -119,6 +133,39 @@ export function criarNormalizadorClaude(): (mensagem: SDKMessage) => ReadonlyArr
 const PROVIDER = "claude" as const;
 const ehFalhaProvider = Schema.is(FalhaProvider);
 
+const LEITURA = new Set(["Read", "Glob", "Grep", "LS", "NotebookRead"]);
+const ESCRITA = new Set(["Write", "Edit", "MultiEdit", "NotebookEdit"]);
+const WEB = new Set(["WebFetch", "WebSearch"]);
+const RECURSOS_MCP = new Set(["ReadMcpResourceTool", "ListMcpResourcesTool"]);
+
+/**
+ * Classifica o pedido do `canUseTool` pelo nome da ferramenta do Claude Code e tira da entrada os
+ * caminhos que ele toca. `servidoresApp` são os servidores MCP `preAprovado` da sessão.
+ */
+export function classificarClaude(
+  ferramenta: string,
+  entrada: Record<string, unknown>,
+  servidoresApp: ReadonlyArray<string>,
+): ClassePedido {
+  const caminho = (chave: string) => (typeof entrada[chave] === "string" ? [entrada[chave]] : []);
+  const mcp = /^mcp__(.+?)__/.exec(ferramenta);
+  if (mcp) return { tipo: servidoresApp.includes(mcp[1] ?? "") ? "mcp-app" : "mcp-outro", caminhos: [] };
+  if (RECURSOS_MCP.has(ferramenta)) {
+    const servidor = typeof entrada.server === "string" ? entrada.server : undefined;
+    return { tipo: servidor !== undefined && servidoresApp.includes(servidor) ? "mcp-app" : "mcp-outro", caminhos: [] };
+  }
+  if (LEITURA.has(ferramenta)) {
+    return { tipo: "leitura", caminhos: [...caminho("file_path"), ...caminho("path"), ...caminho("notebook_path")] };
+  }
+  if (ESCRITA.has(ferramenta))
+    return { tipo: "escrita", caminhos: [...caminho("file_path"), ...caminho("notebook_path")] };
+  if (ferramenta === "Bash") {
+    return { tipo: "comando", caminhos: typeof entrada.command === "string" ? caminhosDoComando(entrada.command) : [] };
+  }
+  if (WEB.has(ferramenta)) return { tipo: "web", caminhos: [] };
+  return { tipo: "outra", caminhos: [] };
+}
+
 /** `mcpServers` do `query()`: `McpStdioServerConfig` ou `McpHttpServerConfig` do Agent SDK. */
 export function mcpServersClaude(config: ConfigSessao): Record<string, McpServerConfig> {
   const saida: Record<string, McpServerConfig> = {};
@@ -151,7 +198,7 @@ function mensagemDoUsuario(texto: string): SDKUserMessage {
 const opcoesBase = (ambiente: Ambiente, executavel: string) =>
   ({
     pathToClaudeCodeExecutable: executavel,
-    env: limparAmbiente(ambiente),
+    env: ambienteSemTelemetria(PROVIDER, limparAmbiente(ambiente)),
     // Isolamento: sem settings, CLAUDE.md, hooks nem MCP do usuário ou do projeto.
     settingSources: [],
     persistSession: false,
@@ -218,13 +265,14 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
     Effect.provideService(FileSystem.FileSystem, fs),
   );
 
-  const iniciar = Effect.fn("DriverClaude.iniciar")(function* (config: ConfigSessao) {
+  const iniciar = Effect.fn("DriverClaude.iniciar")(function* (config: ConfigSessao, politica: Politica) {
     if (executavel === undefined) {
       return yield* new FalhaProvider({ provider: PROVIDER, operacao: "iniciar", detalhe: "CLI `claude` ausente" });
     }
-    const canal = yield* Canal.make;
+    const canal = yield* Canal.comPolitica(politica, config.pastaTrabalho);
     const gravar = yield* Gravador;
     const servicos = yield* Effect.context<never>();
+    const servidoresApp = config.servidoresMcp.filter((s) => s.preAprovado).map((s) => s.nome);
     const entrada = yield* Queue.unbounded<SDKUserMessage, Cause.Done>();
     const queda = yield* Deferred.make<FalhaProvider>();
     // O id da sessão no Claude: escolhido aqui na sessão nova, o retomado na retomada. O SDK o confirma
@@ -235,19 +283,20 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
 
     const canUseTool: CanUseTool = async (ferramenta, dados, contexto) => {
       gravar("entrada", { type: "can_use_tool", toolName: ferramenta, input: dados, toolUseID: contexto.toolUseID });
-      const decisao = await Effect.runPromiseWith(servicos)(
-        canal.pedirAprovacao({
+      const { decisao, motivo } = await Effect.runPromiseWith(servicos)(
+        canal.aprovar({
           id: contexto.toolUseID,
           ferramenta: nomeFerramentaClaude(ferramenta),
           descricao: contexto.title ?? contexto.description ?? `usar ${ferramenta}`,
           entrada: dados,
+          classe: classificarClaude(ferramenta, dados, servidoresApp),
         }),
         { signal: contexto.signal },
       );
       const resposta: PermissionResult =
         decisao === "permitir"
           ? { behavior: "allow", updatedInput: dados }
-          : { behavior: "deny", message: "O usuário negou esta ação." };
+          : { behavior: "deny", message: motivo ?? "O usuário negou esta ação." };
       gravar("saida", { type: "can_use_tool_response", toolUseID: contexto.toolUseID, ...resposta });
       return resposta;
     };
@@ -266,11 +315,15 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
         abortController: abortar,
         cwd: config.pastaTrabalho,
         mcpServers: mcpServersClaude(config),
-        allowedTools: config.servidoresMcp.filter((s) => s.preAprovado).map((s) => `mcp__${s.nome}`),
-        ...(config.buscaWeb === true ? {} : { disallowedTools: ["WebSearch", "WebFetch"] }),
+        // As ferramentas do app passam sem `canUseTool` quando a política as permite.
+        allowedTools: politica.ferramentas.mcpApp === "permitir" ? servidoresApp.map((nome) => `mcp__${nome}`) : [],
+        ...(buscaWebLigada(politica, config.buscaWeb) ? {} : { disallowedTools: ["WebSearch", "WebFetch"] }),
         permissionMode: "default",
         canUseTool,
         includePartialMessages: true,
+        ...(config.instrucoes === undefined
+          ? {}
+          : { systemPrompt: { type: "preset" as const, preset: "claude_code" as const, append: config.instrucoes } }),
         ...(config.modelo ? { model: config.modelo } : {}),
       },
     });

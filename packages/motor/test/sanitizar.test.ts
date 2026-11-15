@@ -4,6 +4,7 @@ import { configMcpCodex, isolamentoCodex } from "../src/drivers/codex.ts";
 import { mcpServersAcp, recusaMcpAcp } from "../src/drivers/antigravity.ts";
 import { mcpServersClaude, nomeFerramentaClaude } from "../src/drivers/claude.ts";
 import type { ConfigSessao } from "../src/Driver.ts";
+import { POLITICA_FABRICA } from "../src/politica.ts";
 import { limparAmbiente } from "../src/processo.ts";
 import { sanitizar } from "../src/sanitizar.ts";
 
@@ -95,19 +96,26 @@ describe("configuração do MCP por provider", () => {
   });
 
   it("Codex: mcp_servers por thread e isolamento dos MCP, conectores e plugins do usuário", () => {
-    assert.deepStrictEqual(configMcpCodex(CONFIG), {
+    assert.deepStrictEqual(configMcpCodex(CONFIG, POLITICA_FABRICA), {
       "mcp_servers.ifpr": {
         command: "/usr/local/bin/node",
         args: ["cli.ts", "--banco", "kb.sqlite"],
         default_tools_approval_mode: "approve",
       },
     });
-    assert.deepStrictEqual(isolamentoCodex({ mcp_servers: { ifpr: {}, pessoal: {}, docs: {} } }, CONFIG), {
-      "features.apps": false,
-      "features.plugins": false,
-      "mcp_servers.pessoal.enabled": false,
-      "mcp_servers.docs.enabled": false,
-    });
+    assert.deepStrictEqual(
+      isolamentoCodex({ mcp_servers: { ifpr: {}, pessoal: {}, docs: {} } }, CONFIG, ["/u/.codex/skills/pdf/SKILL.md"]),
+      {
+        "features.apps": false,
+        "features.plugins": false,
+        "features.hooks": false,
+        "skills.bundled.enabled": false,
+        project_doc_max_bytes: 0,
+        "mcp_servers.pessoal.enabled": false,
+        "mcp_servers.docs.enabled": false,
+        "skills.config": [{ path: "/u/.codex/skills/pdf/SKILL.md", enabled: false }],
+      },
+    );
   });
 
   it("Antigravity: mcpServers do session/new", () => {
@@ -117,7 +125,7 @@ describe("configuração do MCP por provider", () => {
   });
 
   it("Codex: mcp_servers por HTTP com url e http_headers", () => {
-    assert.deepStrictEqual(configMcpCodex(CONFIG_HTTP), {
+    assert.deepStrictEqual(configMcpCodex(CONFIG_HTTP, POLITICA_FABRICA), {
       "mcp_servers.ifpr": {
         url: "http://127.0.0.1:43210/mcp",
         http_headers: { Authorization: "Bearer token-da-sessao" },
@@ -125,10 +133,13 @@ describe("configuração do MCP por provider", () => {
       },
     });
     assert.deepStrictEqual(
-      configMcpCodex({
-        ...CONFIG_HTTP,
-        servidoresMcp: [{ tipo: "http", nome: "ifpr", url: "http://127.0.0.1:43210/mcp", preAprovado: false }],
-      }),
+      configMcpCodex(
+        {
+          ...CONFIG_HTTP,
+          servidoresMcp: [{ tipo: "http", nome: "ifpr", url: "http://127.0.0.1:43210/mcp", preAprovado: false }],
+        },
+        POLITICA_FABRICA,
+      ),
       { "mcp_servers.ifpr": { url: "http://127.0.0.1:43210/mcp" } },
     );
   });
