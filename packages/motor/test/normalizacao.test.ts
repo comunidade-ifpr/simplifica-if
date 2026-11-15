@@ -94,6 +94,49 @@ describe("normalização", () => {
       }),
     );
 
+    it.effect("Claude: texto parcial pelos stream_event, sem duplicar o TextoFinal (gravação com tempos)", () =>
+      Effect.gen(function* () {
+        const passo = criarNormalizadorClaude();
+        const linhas = yield* lerFixture("claude-parcial.jsonl");
+        const comTempo = linhas
+          .filter((linha) => linha.direcao === "entrada" && typeof linha.mensagem.type === "string")
+          .flatMap((linha) => passo(linha.mensagem as never).map((evento) => ({ ms: linha.ms ?? 0, evento })));
+        yield* Effect.forEach(comTempo, ({ evento }) => validarEvento(evento), { discard: true });
+        const eventos = comTempo.map(({ evento }) => evento);
+        const parciais = comTempo.filter(({ evento }) => evento._tag === "TextoParcial");
+        const finais = comTempo.filter(({ evento }) => evento._tag === "TextoFinal");
+        // Um bloco de texto: muitos pedaços e um TextoFinal só, com o mesmo texto.
+        assert.isAbove(parciais.length, 50);
+        assert.strictEqual(finais.length, 1);
+        assert.strictEqual(textoParcial(eventos), deTipo(eventos, "TextoFinal")[0]?.texto);
+        // Os pedaços vêm antes do TextoFinal, e o primeiro antes do bloco completo.
+        const indiceFinal = eventos.findIndex((evento) => evento._tag === "TextoFinal");
+        assert.isTrue(eventos.slice(indiceFinal + 1).every((evento) => evento._tag !== "TextoParcial"));
+        assert.isBelow(parciais[0]?.ms ?? Infinity, finais[0]?.ms ?? 0);
+        // Medido nesta gravação: o texto vem depois das ferramentas, e o primeiro pedaço chega a 14,4 s
+        // do início, junto com o resto: o modelo redige a resposta no raciocínio oculto (README).
+        assert.isAbove(parciais[0]?.ms ?? 0, 10_000);
+        assert.isTrue(deTipo(eventos, "FerramentaIniciada").some((evento) => evento.nome.startsWith("ifpr.")));
+        assert.match(finais[0]?.evento._tag === "TextoFinal" ? finais[0].evento.texto : "", /ifpr:\/\//);
+      }),
+    );
+
+    it.effect("Claude: stream_event de subagente não vira TextoParcial", () =>
+      Effect.sync(() => {
+        const passo = criarNormalizadorClaude();
+        const delta = (pai: string | null) =>
+          passo({
+            type: "stream_event",
+            event: { type: "content_block_delta", index: 0, delta: { type: "text_delta", text: "oi" } },
+            parent_tool_use_id: pai,
+            uuid: "u",
+            session_id: "s",
+          } as never);
+        assert.deepStrictEqual(delta(null), [{ _tag: "TextoParcial", texto: "oi" }]);
+        assert.deepStrictEqual(delta("toolu_1"), []);
+      }),
+    );
+
     it.effect("Claude: aprovação negada e depois permitida", () =>
       Effect.gen(function* () {
         const passo = criarNormalizadorClaude();

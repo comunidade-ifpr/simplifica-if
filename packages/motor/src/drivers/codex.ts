@@ -416,7 +416,7 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
         sandbox: politica.codex.sandbox,
         config: {
           ...isolamentoCodex(configUsuario, config, skillsDoUsuario),
-          ...CONTEXTO_CODEX,
+          ...(process.env.CORTE === "a" ? { "features.goals": false, "features.image_generation": false, "features.sleep_tool": false, "features.tool_suggest": false, "features.skill_search": false } : process.env.CORTE === "b" ? { include_skills_usage_instructions: false, include_apps_instructions: false, include_collaboration_mode_instructions: false } : process.env.CORTE === "c" ? { include_collaboration_mode_instructions: false } : {}),
           ...configMcpCodex(config, politica),
           ...(buscaWebLigada(politica, config.buscaWeb) ? {} : { web_search: "disabled" }),
         },
