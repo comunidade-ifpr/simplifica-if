@@ -209,6 +209,7 @@ export default defineConfig({
           "apps/server/src/bin.ts",
           "apps/server/src/cli.ts",
           "apps/server/test/real.test.ts",
+          "apps/server/test/ciclo-real.test.ts",
           // A interface: a configuração do Vite e o servidor de teste rodam no Node e leem o processo.
           "apps/web/vite.config.ts",
           "apps/web/test/servidor-teste.ts",

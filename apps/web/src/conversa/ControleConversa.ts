@@ -4,10 +4,12 @@
  * que a conversa sobreviva à troca de tela e para que os testes a usem sem navegador; a interface lê o
  * estado com `useSyncExternalStore` (`obter` e `observar`).
  *
- * Uma conversa por vez (M1.1). Sem persistência (M1.2): recarregar a página perde a conversa, e a
- * sessão no servidor se encerra sozinha depois da tolerância de órfã.
+ * Uma conversa por vez. As conversas ficam gravadas no servidor (M1.2): `abrir` carrega uma pelo id
+ * (`conversa.carregar`) e, se ela tem turno em andamento (a interface recarregou no meio da resposta),
+ * volta a acompanhá-lo (`conversa.acompanhar`). A sessão do provider é do servidor: liberada ociosa e
+ * reaberta por retomada na próxima mensagem, sem nada a fazer aqui.
  */
-import type { Decisao, Provider } from "@simplifica-if/contratos-app";
+import type { Decisao, ItemConversa, Provider } from "@simplifica-if/contratos-app";
 import type { Acompanhamento, Api } from "../conexao/api.ts";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { type Acao, type EstadoConversa, estadoInicial, type FaseConversa, reduzir } from "./estado.ts";
@@ -69,6 +71,45 @@ export class ControleConversa {
     }
   }
 
+  /**
+   * Abre a conversa gravada `sessao`: o histórico e, se há turno em andamento, o resto dele. Não faz
+   * nada se ela já é a conversa corrente.
+   */
+  async abrir(sessao: string): Promise<void> {
+    if (this.estado.sessao === sessao && this.estado.fase !== "configurando") return;
+    this.turno?.cancelar();
+    this.turno = undefined;
+    this.despachar({ tipo: "abrindo", sessao });
+    try {
+      const gravada = await this.api.chamar((cliente) => cliente["conversa.carregar"]({ sessao }));
+      // A pessoa pode ter aberto outra (ou começado uma nova) enquanto esta carregava.
+      if (this.estado.sessao !== sessao || this.fase() !== "carregando") return;
+      this.despachar({ tipo: "carregada", gravada });
+      if (gravada.conversa.estado === "respondendo") this.acompanharTurno(sessao);
+    } catch (erro) {
+      if (this.estado.sessao !== sessao) return;
+      const mensagem = explicarErro(erro);
+      this.despachar({
+        tipo: "naoCarregou",
+        erro:
+          (erro as { _tag?: unknown } | null)?._tag === "SessaoDesconhecida"
+            ? { texto: "Esta conversa não existe mais no app." }
+            : mensagem,
+      });
+    }
+  }
+
+  /** Volta a acompanhar o turno em andamento da conversa (depois de recarregar a interface). */
+  private acompanharTurno(sessao: string): void {
+    const turno = this.api.acompanhar(
+      (cliente) => cliente["conversa.acompanhar"]({ sessao, depois: this.estado.ordem }),
+      (item: ItemConversa) => {
+        if (this.turno === turno) this.despachar({ tipo: "item", item });
+      },
+    );
+    this.seguir(turno);
+  }
+
   /** Envia a mensagem e acompanha o turno até o `FimTurno`. */
   enviar(texto: string): void {
     const sessao = this.estado.sessao;
@@ -81,6 +122,11 @@ export class ControleConversa {
         if (this.turno === turno) this.despachar({ tipo: "evento", evento });
       },
     );
+    this.seguir(turno);
+  }
+
+  /** Acompanha o fim do turno: sem `FimTurno`, o turno se fecha aqui; com erro, vira aviso. */
+  private seguir(turno: Acompanhamento): void {
     this.turno = turno;
     turno.fim.then(
       () => {
@@ -123,20 +169,25 @@ export class ControleConversa {
     }
   }
 
-  /** Encerra a sessão (o processo do provider morre) e volta à escolha, com o mesmo provider e pasta. */
+  /**
+   * Volta à escolha, com o mesmo provider e pasta. A conversa anterior fica gravada; sem turno em
+   * andamento, a sessão dela se libera já (o processo do provider morre) e se retoma quando ela for
+   * aberta de novo. Com turno em andamento, ele termina no servidor e fica no histórico.
+   */
   nova(): void {
     const sessao = this.estado.sessao;
+    const emTurno = this.estado.fase === "respondendo" || this.estado.fase === "interrompendo";
     this.turno?.cancelar();
     this.turno = undefined;
     this.despachar({ tipo: "nova" });
-    if (sessao !== undefined) void this.encerrarNoServidor(sessao);
+    if (sessao !== undefined && !emTurno) void this.encerrarNoServidor(sessao);
   }
 
   private async encerrarNoServidor(sessao: string): Promise<void> {
     try {
       await this.api.chamar((cliente) => cliente["conversa.encerrar"]({ sessao }));
     } catch {
-      // Já encerrada, ou a conexão caiu: o servidor encerra a órfã sozinho.
+      // A conexão caiu: o servidor libera a sessão ociosa sozinho.
     }
   }
 }

@@ -1,10 +1,12 @@
 /**
- * Início: os três providers, com a detecção e os botões de instalar e entrar. As tarefas, o "Para
- * você" e os recentes do Modo Servidor chegam no M1.9.
+ * Início: os três providers, com a detecção e os botões de instalar e entrar, e as conversas recentes
+ * (gravadas no servidor; cada uma abre com o histórico). As tarefas e o "Para você" do Modo Servidor
+ * chegam no M1.9.
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MessageSquareTextIcon } from "lucide-react";
 import { CartaoProvider } from "../components/CartaoProvider.tsx";
+import { ListaConversas } from "../components/ListaConversas.tsx";
 import { buttonVariants } from "../components/ui/button.tsx";
 import { useEstadoConexao } from "../contexto.tsx";
 import { PROVIDERS } from "../providers.ts";
@@ -29,11 +31,19 @@ function Inicio() {
           </Link>
         </section>
         {conexao.fase === "sem-servidor" ? null : (
-          <div className="grid gap-4 md:grid-cols-3">
-            {PROVIDERS.map((provider) => (
-              <CartaoProvider key={provider} provider={provider} />
-            ))}
-          </div>
+          <>
+            <div className="grid gap-4 md:grid-cols-3">
+              {PROVIDERS.map((provider) => (
+                <CartaoProvider key={provider} provider={provider} />
+              ))}
+            </div>
+            <section aria-labelledby="titulo-recentes" className="flex max-w-xl flex-col gap-2">
+              <h2 id="titulo-recentes" className="font-semibold text-lg">
+                Conversas recentes
+              </h2>
+              <ListaConversas limite={5} />
+            </section>
+          </>
         )}
       </div>
     </div>

@@ -6,8 +6,18 @@
  * fecha com o texto completo, que vale mais que a soma dos parciais (no Claude, os parciais chegam
  * todos no fim; no Codex, cada bloco tem os parciais e depois o final). Sem resposta aberta, o
  * `TextoFinal` vira uma resposta nova. O `FimTurno` fecha o que ficou aberto.
+ *
+ * Uma conversa gravada (`conversa.carregar`) se remonta com os mesmos passos (`aplicarItem`): a
+ * mensagem da pessoa, os eventos e as decisões de aprovação, na ordem.
  */
-import type { Decisao, Evento, Provider } from "@simplifica-if/contratos-app";
+import type {
+  ConversaGravada,
+  Decisao,
+  EstadoConversa as EstadoGravado,
+  Evento,
+  ItemConversa,
+  Provider,
+} from "@simplifica-if/contratos-app";
 import { explicarErroDoTurno, type MensagemErro } from "../conexao/erros.ts";
 
 /**
@@ -47,6 +57,8 @@ export type FaseConversa =
   /** Sem sessão: a pessoa escolhe o provider e a pasta. */
   | "configurando"
   | "iniciando"
+  /** Carregando uma conversa gravada (`conversa.carregar`). */
+  | "carregando"
   /** Sessão aberta, sem turno em andamento. */
   | "pronta"
   | "respondendo"
@@ -62,7 +74,14 @@ export interface EstadoConversa {
   readonly fase: FaseConversa;
   readonly provider: Provider;
   readonly pastaTrabalho: string;
+  /** O id da conversa no servidor. */
   readonly sessao?: string;
+  /** O título da conversa gravada (a primeira mensagem). */
+  readonly titulo?: string;
+  /** O estado da sessão do provider no servidor, quando carregada: `liberada` e `caiu` reabrem por retomada. */
+  readonly estadoServidor?: EstadoGravado;
+  /** A maior `ordem` de item gravado já vista (para `conversa.acompanhar`). */
+  readonly ordem: number;
   readonly itens: ReadonlyArray<Item>;
   /** O erro de iniciar a sessão, mostrado no formulário. */
   readonly erroInicio?: MensagemErro;
@@ -76,6 +95,7 @@ export const estadoInicial = (provider: Provider = "claude", pastaTrabalho = "")
   fase: "configurando",
   provider,
   pastaTrabalho,
+  ordem: 0,
   itens: [],
   proximoId: 1,
 });
@@ -87,6 +107,12 @@ export type Acao =
   | { readonly tipo: "naoIniciou"; readonly erro: MensagemErro }
   | { readonly tipo: "enviada"; readonly texto: string }
   | { readonly tipo: "evento"; readonly evento: Evento }
+  /** Abrindo uma conversa gravada, pelo id. */
+  | { readonly tipo: "abrindo"; readonly sessao: string }
+  | { readonly tipo: "carregada"; readonly gravada: ConversaGravada }
+  | { readonly tipo: "naoCarregou"; readonly erro: MensagemErro }
+  /** Um item de `conversa.acompanhar`. */
+  | { readonly tipo: "item"; readonly item: ItemConversa }
   /** O stream do turno terminou sem `FimTurno` (a conexão caiu, erro do servidor). */
   | { readonly tipo: "turnoFalhou"; readonly erro: MensagemErro }
   | { readonly tipo: "respondendo"; readonly aprovacao: string }
@@ -203,12 +229,49 @@ export function aplicarEvento(estado: EstadoConversa, evento: Evento): EstadoCon
     case "Erro":
       return comItem(estado, avisoDeErro(explicarErroDoTurno(estado.provider, evento.mensagem)));
     case "FimTurno": {
-      const fechado: EstadoConversa = { ...estado, fase: "pronta", itens: fecharTurno(estado.itens) };
+      const fechado: EstadoConversa = {
+        ...estado,
+        fase: "pronta",
+        itens: fecharTurno(estado.itens),
+        ...(estado.estadoServidor === "respondendo"
+          ? { estadoServidor: evento.motivo === "falha" ? "caiu" : "pronta" }
+          : {}),
+      };
       return foiInterrompido(evento.motivo)
         ? comItem(fechado, (chave) => ({ tipo: "aviso", chave, texto: "Resposta interrompida.", gravidade: "info" }))
         : fechado;
     }
   }
+}
+
+/** Um item gravado (ou acompanhado ao vivo) aplicado ao estado, como a interface o viu acontecer. */
+export function aplicarItem(estado: EstadoConversa, item: ItemConversa): EstadoConversa {
+  const comOrdem = item.ordem > estado.ordem ? { ...estado, ordem: item.ordem } : estado;
+  switch (item._tag) {
+    case "Mensagem": {
+      const { uso: _uso, ...resto } = comOrdem;
+      return comItem({ ...resto, fase: "respondendo" }, (chave) => ({ tipo: "pessoa", chave, texto: item.texto }));
+    }
+    case "EventoTurno":
+      return aplicarEvento(comOrdem, item.evento);
+    case "DecisaoAprovacao":
+      return trocarAprovacao(comOrdem, item.aprovacao, item.decisao === "permitir" ? "permitida" : "negada");
+  }
+}
+
+/** A conversa gravada remontada: os itens na ordem e, se não há turno em andamento, o turno fechado. */
+export function estadoDaConversa(gravada: ConversaGravada): EstadoConversa {
+  const { conversa } = gravada;
+  const inicial: EstadoConversa = {
+    ...estadoInicial(conversa.provider, conversa.pastaTrabalho),
+    fase: "pronta",
+    sessao: conversa.id,
+    titulo: conversa.titulo,
+    estadoServidor: conversa.estado,
+  };
+  const montado = gravada.itens.reduce(aplicarItem, inicial);
+  if (conversa.estado === "respondendo") return { ...montado, fase: "respondendo" };
+  return { ...montado, fase: "pronta", itens: fecharTurno(montado.itens) };
 }
 
 function trocarAprovacao(
@@ -236,11 +299,22 @@ export function reduzir(estado: EstadoConversa, acao: Acao): EstadoConversa {
     }
     case "iniciada":
       return { ...estado, fase: "pronta", sessao: acao.sessao };
+    case "abrindo":
+      return { ...estadoInicial(estado.provider, estado.pastaTrabalho), fase: "carregando", sessao: acao.sessao };
+    case "carregada":
+      return estadoDaConversa(acao.gravada);
+    case "naoCarregou":
+      return { ...estadoInicial(estado.provider, estado.pastaTrabalho), erroInicio: acao.erro };
+    case "item":
+      return aplicarItem(estado, acao.item);
     case "naoIniciou":
       return { ...estado, fase: "configurando", erroInicio: acao.erro };
     case "enviada": {
       const { uso: _uso, ...resto } = estado;
-      return comItem({ ...resto, fase: "respondendo" }, (chave) => ({ tipo: "pessoa", chave, texto: acao.texto }));
+      return comItem(
+        { ...resto, fase: "respondendo", ...(estado.titulo ? {} : { titulo: acao.texto }), estadoServidor: "respondendo" },
+        (chave) => ({ tipo: "pessoa", chave, texto: acao.texto }),
+      );
     }
     case "evento":
       return aplicarEvento(estado, acao.evento);

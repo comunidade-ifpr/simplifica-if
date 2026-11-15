@@ -523,7 +523,7 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
               ? `o processo do agy encerrou (código ${saida.value})`
               : "o processo do agy encerrou",
         });
-        return canal.morrer(falha).pipe(Effect.andThen(Deferred.succeed(queda, falha)));
+        return Deferred.succeed(queda, falha).pipe(Effect.andThen(canal.morrer(falha)), Effect.uninterruptible);
       }),
       Effect.forkScoped,
     );

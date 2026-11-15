@@ -282,11 +282,21 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
     );
 
     const normalizar = criarNormalizadorClaude();
+    // Interrompido, o turno do Claude termina com `error_during_execution` (medido com o SDK 0.3.321):
+    // não é erro para a pessoa, e o fim do turno sai como interrupção.
+    let interrompendo = false;
+    const depoisDeInterromper = (evento: Evento): ReadonlyArray<Evento> => {
+      if (!interrompendo) return [evento];
+      if (evento._tag === "Erro" && evento.mensagem.includes("error_during_execution")) return [];
+      if (evento._tag !== "FimTurno") return [evento];
+      interrompendo = false;
+      return [{ _tag: "FimTurno", motivo: "interrupted" }];
+    };
     yield* Stream.fromAsyncIterable(consulta, Canal.falhaDe(PROVIDER, "ler mensagens")).pipe(
       Stream.runForEach((mensagem) => {
         gravar("entrada", mensagem);
         if (typeof mensagem.session_id === "string" && mensagem.session_id !== "") idNativo = mensagem.session_id;
-        return Effect.forEach(normalizar(mensagem), canal.emitir, { discard: true });
+        return Effect.forEach(normalizar(mensagem).flatMap(depoisDeInterromper), canal.emitir, { discard: true });
       }),
       // O stream só acaba sozinho se o processo do `claude` acabou: é queda. No encerramento da sessão,
       // o fiber é interrompido antes.
@@ -298,7 +308,7 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
           : erro !== undefined
             ? Canal.falhaDe(PROVIDER, "sessão")(erro)
             : new FalhaProvider({ provider: PROVIDER, operacao: "sessão", detalhe: "o processo do Claude encerrou" });
-        return canal.morrer(falha).pipe(Effect.andThen(Deferred.succeed(queda, falha)));
+        return Deferred.succeed(queda, falha).pipe(Effect.andThen(canal.morrer(falha)), Effect.uninterruptible);
       }),
       Effect.forkScoped,
     );
@@ -318,7 +328,10 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
         ),
       responder: canal.responder,
       interromper: Effect.tryPromise({
-        try: () => consulta.interrupt(),
+        try: () => {
+          interrompendo = true;
+          return consulta.interrupt();
+        },
         catch: Canal.falhaDe(PROVIDER, "interromper"),
       }).pipe(Effect.asVoid),
     } satisfies Awaited<Effect.Success<ReturnType<Driver["iniciar"]>>>;

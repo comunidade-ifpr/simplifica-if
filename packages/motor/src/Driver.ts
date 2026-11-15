@@ -111,8 +111,9 @@ export interface SessaoDriver {
    */
   readonly idNativo?: string;
   /**
-   * Termina quando o processo do provider acaba sozinho (queda), com o motivo; nunca termina quando
-   * a sessão se encerra pelo `Scope`. Depois da queda, `enviar` falha com o mesmo erro.
+   * Termina quando o processo do provider acaba sozinho (queda), com o motivo, antes de o turno
+   * corrente falhar com o mesmo erro; nunca termina quando a sessão se encerra pelo `Scope`. Depois
+   * da queda, `enviar` falha com o mesmo erro.
    */
   readonly queda?: Effect.Effect<FalhaProvider>;
   /** Envia a mensagem e devolve os eventos do turno; o stream termina depois de `FimTurno`. */

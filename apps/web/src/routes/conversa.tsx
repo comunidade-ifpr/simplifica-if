@@ -2,13 +2,18 @@
  * Conversa: escolher o provider e a pasta de trabalho, conversar, aprovar ou negar o que a IA pede,
  * interromper e começar outra. Os links `ifpr://` das respostas abrem o painel de leitura ao lado.
  * As etapas declaradas pela skill e "detalhes técnicos" chegam no M1.9.
+ *
+ * As conversas ficam gravadas no servidor: a barra lateral as lista, e a conversa aberta fica na URL
+ * (`/conversa?id=…`). Ao recarregar a tela ou reabrir o app numa conversa, ela volta com o histórico
+ * e, se a IA estava respondendo, com o resto da resposta.
  */
 import type { Provider } from "@simplifica-if/contratos-app";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { FolderOpenIcon, PlusIcon, SendHorizontalIcon, SquareIcon } from "lucide-react";
-import { type FormEvent, type KeyboardEvent, useEffect, useRef, useState } from "react";
+import { type FormEvent, type KeyboardEvent, type ReactNode, useEffect, useRef, useState } from "react";
 import { AvisoErro } from "../components/AvisoErro.tsx";
 import { ItemConversa } from "../components/ItemConversa.tsx";
+import { ListaConversas } from "../components/ListaConversas.tsx";
 import { PainelLeitura } from "../components/PainelLeitura.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { Input } from "../components/ui/input.tsx";
@@ -19,7 +24,16 @@ import { cn } from "../lib/utils.ts";
 import { ponteDesktop } from "../ponte-desktop.ts";
 import { DESCRICOES, PROVIDERS } from "../providers.ts";
 
-export const Route = createFileRoute("/conversa")({ component: TelaConversa });
+/** A busca da rota: o id da conversa aberta, quando há. */
+export interface BuscaConversa {
+  readonly id?: string;
+}
+
+export const Route = createFileRoute("/conversa")({
+  component: TelaConversa,
+  validateSearch: (busca: Record<string, unknown>): BuscaConversa =>
+    typeof busca.id === "string" && busca.id !== "" ? { id: busca.id } : {},
+});
 
 function EscolhaProvider() {
   const [estado, conversa] = useConversa();
@@ -184,6 +198,7 @@ function Conversa({ aoAbrirLink }: { readonly aoAbrirLink: (link: string) => voi
           <span className="text-muted-foreground"> · pasta </span>
           <span className="font-mono text-xs">{estado.pastaTrabalho}</span>
         </p>
+        {estado.titulo ? <p className="font-semibold">{estado.titulo}</p> : null}
         {estado.uso === undefined ? null : (
           <p className="text-muted-foreground text-xs">
             {estado.uso.entrada.toLocaleString("pt-BR")} tokens de entrada · {estado.uso.saida.toLocaleString("pt-BR")}{" "}
@@ -198,6 +213,11 @@ function Conversa({ aoAbrirLink }: { readonly aoAbrirLink: (link: string) => voi
         <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-6" aria-live="polite">
           {estado.itens.length === 0 ? (
             <p className="text-center text-muted-foreground">Conversa aberta. Escreva sua pergunta abaixo.</p>
+          ) : null}
+          {estado.fase === "pronta" && estado.estadoServidor === "caiu" ? (
+            <p className="text-center text-muted-foreground text-sm">
+              A IA parou de funcionar na última resposta. A próxima mensagem retoma a conversa de onde parou.
+            </p>
           ) : null}
           {estado.itens.map((item) => (
             <ItemConversa key={item.chave} item={item} aoAbrirLink={aoAbrirLink} />
@@ -215,31 +235,74 @@ function Conversa({ aoAbrirLink }: { readonly aoAbrirLink: (link: string) => voi
   );
 }
 
-function TelaConversa() {
+/** A barra lateral: as conversas gravadas. */
+function BarraConversas() {
   const [estado] = useConversa();
+  return (
+    <nav
+      aria-label="Conversas gravadas"
+      className="hidden h-full w-64 shrink-0 flex-col gap-3 overflow-y-auto border-border border-r p-3 md:flex"
+    >
+      <h2 className="px-2 font-semibold text-muted-foreground text-xs uppercase tracking-wide">Conversas</h2>
+      <ListaConversas atual={estado.sessao} atualizar={`${estado.sessao ?? ""}:${estado.fase}`} />
+    </nav>
+  );
+}
+
+function TelaConversa() {
+  const [estado, conversa] = useConversa();
+  const { id } = Route.useSearch();
+  const navegar = useNavigate({ from: "/conversa" });
   const [leitura, setLeitura] = useState<ReadonlyArray<string>>([]);
   const abrirLink = (link: string) => setLeitura((historico) => [...historico, link]);
 
-  if (estado.fase === "configurando" || estado.fase === "iniciando") {
-    return (
-      <div className="h-full overflow-y-auto">
+  // A URL manda: um id que não é o da conversa corrente abre aquela conversa.
+  useEffect(() => {
+    if (id !== undefined && id !== conversa.obter().sessao) {
+      setLeitura([]);
+      void conversa.abrir(id);
+    }
+  }, [id, conversa]);
+  // E a URL acompanha a conversa corrente (a que acabou de começar, ou nenhuma depois de "Nova").
+  useEffect(() => {
+    const atual = conversa.obter().sessao;
+    if (atual !== id) void navegar({ search: atual === undefined ? {} : { id: atual }, replace: true });
+  }, [estado.sessao, id, conversa, navegar]);
+
+  let conteudo: ReactNode;
+  if (estado.fase === "carregando") {
+    conteudo = (
+      <p className="flex flex-1 items-center justify-center gap-2 text-muted-foreground">
+        <Spinner /> Abrindo a conversa…
+      </p>
+    );
+  } else if (estado.fase === "configurando" || estado.fase === "iniciando") {
+    conteudo = (
+      <div className="h-full flex-1 overflow-y-auto">
         <FormularioInicio />
       </div>
+    );
+  } else {
+    conteudo = (
+      <>
+        <Conversa aoAbrirLink={abrirLink} />
+        {leitura.length === 0 ? null : (
+          <div className="h-full w-[min(32rem,45vw)] shrink-0">
+            <PainelLeitura
+              historico={leitura}
+              aoAbrirLink={abrirLink}
+              aoVoltar={() => setLeitura((historico) => historico.slice(0, -1))}
+              aoFechar={() => setLeitura([])}
+            />
+          </div>
+        )}
+      </>
     );
   }
   return (
     <div className="flex h-full">
-      <Conversa aoAbrirLink={abrirLink} />
-      {leitura.length === 0 ? null : (
-        <div className="h-full w-[min(32rem,45vw)] shrink-0">
-          <PainelLeitura
-            historico={leitura}
-            aoAbrirLink={abrirLink}
-            aoVoltar={() => setLeitura((historico) => historico.slice(0, -1))}
-            aoFechar={() => setLeitura([])}
-          />
-        </div>
-      )}
+      <BarraConversas />
+      {conteudo}
     </div>
   );
 }

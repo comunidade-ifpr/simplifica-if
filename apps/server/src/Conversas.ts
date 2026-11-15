@@ -100,6 +100,8 @@ interface SessaoAberta {
   readonly id: string;
   /** O escopo da sessão MCP (o token). */
   readonly escopo: Scope.Closeable;
+  /** Termina com a queda do processo do provider. */
+  readonly queda: Effect.Effect<Motor.FalhaProvider>;
   /** O fiber que espera a queda do processo do provider. */
   vigia: Fiber.Fiber<void> | undefined;
 }
@@ -319,25 +321,31 @@ const make = Effect.fnUntraced(function* (opcoes: {
       }),
     );
 
-  /** O processo do provider caiu: a sessão se fecha, e a conversa fica `caiu`. */
+  /**
+   * O processo do provider caiu: a sessão sai da conversa e se fecha, e a conversa fica `caiu`. Sem
+   * a `trava`: o turno que falhou chama daqui também (`bombear`), e quem chegar primeiro fecha.
+   */
+  const derrubar = Effect.fn("Conversas.derrubar")(function* (viva: Viva, sessao: SessaoAberta) {
+    if (viva.sessao !== sessao) return false;
+    viva.sessao = undefined;
+    viva.caiu = true;
+    yield* cancelarOciosidade(viva);
+    yield* fecharSessao(sessao);
+    return true;
+  });
+
+  /** O vigia da sessão viu a queda fora do turno: o `Erro` fica no histórico. */
   const aoCair = (viva: Viva, sessao: SessaoAberta, falha: Motor.FalhaProvider) =>
     viva.trava.withPermits(1)(
       Effect.gen(function* () {
-        if (viva.sessao !== sessao) return;
-        yield* Effect.logWarning(`conversa ${viva.id}: o processo do provider caiu`, falha);
         sessao.vigia = undefined;
-        viva.sessao = undefined;
-        viva.caiu = true;
-        yield* cancelarOciosidade(viva);
-        yield* fecharSessao(sessao);
-        // Fora de um turno, ninguém viu a queda: o `Erro` fica no histórico. No meio de um turno, o
-        // próprio turno termina com o erro (`bombear`).
-        const turno = viva.turno;
-        const ultimoFalhou = turno === undefined && viva.ultimoTurnoFalhou;
-        if (turno === undefined && !ultimoFalhou) {
-          yield* registrarEvento(viva, { _tag: "Erro", mensagem: falha.message });
-        }
-        if (turno === undefined) yield* alterar(viva, { estado: "caiu" });
+        if (!(yield* derrubar(viva, sessao))) return;
+        yield* Effect.logWarning(`conversa ${viva.id}: o processo do provider caiu`, falha);
+        // No meio de um turno, o próprio turno termina com o erro (`bombear`); fora dele, ninguém viu a
+        // queda, e o `Erro` fica no histórico.
+        if (viva.turno !== undefined) return;
+        if (!viva.ultimoTurnoFalhou) yield* registrarEvento(viva, { _tag: "Erro", mensagem: falha.message });
+        yield* alterar(viva, { estado: "caiu" });
       }),
     );
 
@@ -397,7 +405,7 @@ const make = Effect.fnUntraced(function* (opcoes: {
           );
     const id = yield* abrir.pipe(Effect.onError(() => Scope.close(escopo, Exit.void)));
     const info = yield* motor.infoSessao(id).pipe(Effect.orDie);
-    const sessao: SessaoAberta = { id, escopo, vigia: undefined };
+    const sessao: SessaoAberta = { id, escopo, queda: info.queda, vigia: undefined };
     viva.sessao = sessao;
     viva.caiu = false;
     if (info.idNativo !== undefined && info.idNativo !== registro.idNativo) {
@@ -433,6 +441,10 @@ const make = Effect.fnUntraced(function* (opcoes: {
           // continua, e a próxima mensagem reabre a sessão se for preciso.
           yield* Effect.logWarning(`conversa ${viva.id}: o turno falhou`, erro);
           turno.falhou = true;
+          // Se foi queda do processo (o driver a avisa antes de falhar o turno), a sessão sai já, e o
+          // turno fecha com a conversa `caiu`.
+          const caiu = yield* sessao.queda.pipe(Effect.timeoutOption(Duration.seconds(1)));
+          if (Option.isSome(caiu)) yield* derrubar(viva, sessao);
           yield* registrarEvento(viva, { _tag: "Erro", mensagem: erro.message });
           yield* registrarEvento(viva, { _tag: "FimTurno", motivo: "falha" });
         }),

@@ -350,7 +350,7 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
     yield* cliente.awaitTermination.pipe(
       Effect.catch((erro) => {
         const falha = Canal.falhaDe(PROVIDER, "app-server encerrou")(erro);
-        return canal.morrer(falha).pipe(Effect.andThen(Deferred.succeed(queda, falha)));
+        return Deferred.succeed(queda, falha).pipe(Effect.andThen(canal.morrer(falha)), Effect.uninterruptible);
       }),
       Effect.forkScoped,
     );

@@ -29,13 +29,15 @@ function nomeProvider(provider: string): string {
 }
 
 /** Os tipos de falha de provider que a interface explica. */
-export type TipoFalha = "semLogin" | "cliAusente" | "mcp" | "modelo" | "tempo";
+export type TipoFalha = "semLogin" | "cliAusente" | "mcp" | "modelo" | "tempo" | "queda";
 
 /**
  * Os padrões de cada tipo, na ordem em que se conferem: o MCP e o modelo antes do login e da CLI
  * ausente, porque "MCP server not found" e "model not found" não são CLI ausente.
  */
 const PADROES: ReadonlyArray<readonly [TipoFalha, RegExp]> = [
+  // O processo do provider morreu (o servidor reabre a sessão pela retomada na próxima mensagem).
+  ["queda", /terminated by signal|process (exited|terminated)|processo d[oa] .* encerrou|app-server encerrou/i],
   ["mcp", /\bmcp\b|mcpCapabilities|ponte stdio/i],
   [
     "modelo",
@@ -83,6 +85,8 @@ function frase(tipo: TipoFalha | undefined, nome: string, operacao: string): str
       return `O modelo pedido não está disponível na sua conta do ${nome}. Use o modelo padrão da conta ou escolha outro.`;
     case "tempo":
       return `O ${nome} demorou demais para responder. Tente de novo em instantes.`;
+    case "queda":
+      return `O ${nome} parou de funcionar no meio da resposta. Envie a mensagem de novo: a conversa continua de onde parou.`;
     case undefined:
       return `O ${nome} não conseguiu ${textoOperacao(operacao)}. Tente de novo; se o erro continuar, veja os detalhes técnicos.`;
   }

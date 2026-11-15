@@ -77,7 +77,7 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
       const queda = yield* Deferred.make<Motor.FalhaProvider>();
       registro.derrubar = () => {
         const falha = new Motor.FalhaProvider({ provider, operacao: "sessão", detalhe: "o processo encerrou (teste)" });
-        return canal.morrer(falha).pipe(Effect.andThen(Deferred.succeed(queda, falha)), Effect.asVoid);
+        return Deferred.succeed(queda, falha).pipe(Effect.andThen(canal.morrer(falha)), Effect.uninterruptible);
       };
       yield* Effect.addFinalizer(() =>
         Effect.sync(() => {
