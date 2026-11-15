@@ -9,7 +9,6 @@
  */
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { afterAll, assert, layer } from "@effect/vitest";
-import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Layer from "effect/Layer";
@@ -25,6 +24,7 @@ import {
   diretorioTemporario,
   layerDriversFalsos,
   limparTemporarios,
+  novoRegistro,
   pedirHttp,
   pedirUpgrade,
   postarInitialize,
@@ -35,17 +35,13 @@ import {
 afterAll(limparTemporarios);
 
 const ORIGEM = "app://simplifica";
-const registro: Registro = { configs: [], encerradas: 0 };
+const registro: Registro = novoRegistro();
 const pasta = diretorioTemporario("simplifica-servidor-");
-
-/** Curta, para o teste da conexão que cai; a do app é `Conversas.TOLERANCIA_ORFA`. */
-const TOLERANCIA_ORFA = Duration.millis(200);
 
 const camada = Servidor.layer({
   banco: bancoFixture(),
   token: Redacted.make(TOKEN),
   origens: [ORIGEM],
-  toleranciaOrfa: TOLERANCIA_ORFA,
 }).pipe(Layer.provide(layerDriversFalsos(registro)), Layer.provide(NodeServices.layer));
 
 const decodificarIngresso = Schema.decodeEffect(Schema.fromJsonString(Ingresso));
@@ -186,7 +182,7 @@ layer(camada, { excludeTestServices: true })("servidor local", (it) => {
       assert.strictEqual(yield* postarInitialize(mcp.url, mcp.cabecalhos ?? {}), 200);
       assert.strictEqual(yield* postarInitialize(mcp.url, {}), 401);
 
-      const eventos = yield* c["conversa.enviar"]({ sessao, texto: "olá" }).pipe(
+      const eventos = yield* c["conversa.enviar"]({ sessao, texto: "pode escrever?" }).pipe(
         Stream.tap((evento) =>
           evento._tag === "PedidoAprovacao"
             ? c["conversa.responderAprovacao"]({ sessao, aprovacao: evento.id, decisao: "permitir" })
@@ -210,32 +206,56 @@ layer(camada, { excludeTestServices: true })("servidor local", (it) => {
       const antes = registro.encerradas;
       yield* c["conversa.encerrar"]({ sessao });
       assert.strictEqual(registro.encerradas, antes + 1);
-      // Encerrada a sessão, o token do MCP deixa de valer, e a sessão não existe mais.
+      // Encerrada a sessão, o token do MCP deixa de valer; a conversa continua gravada, liberada.
       assert.strictEqual(yield* postarInitialize(mcp.url, mcp.cabecalhos ?? {}), 401);
-      const depois = yield* Effect.exit(c["conversa.encerrar"]({ sessao }));
-      assert.include(JSON.stringify(depois), "SessaoDesconhecida");
+      const lista = yield* c["conversa.listar"]({});
+      assert.deepInclude(
+        lista.find((conversa) => conversa.id === sessao),
+        {
+          estado: "liberada",
+          titulo: "pode escrever?",
+          turnos: 1,
+        },
+      );
+      const { itens } = yield* c["conversa.carregar"]({ sessao });
+      assert.deepStrictEqual(
+        itens.map((item) => item._tag),
+        ["Mensagem", "EventoTurno", "EventoTurno", "DecisaoAprovacao", "EventoTurno", "EventoTurno", "EventoTurno"],
+      );
+      const encerrarDesconhecida = yield* Effect.exit(c["conversa.encerrar"]({ sessao: "nao-existe" }));
+      assert.include(JSON.stringify(encerrarDesconhecida), "SessaoDesconhecida");
     }).pipe(Effect.scoped),
   );
 
-  it.effect("conversa: quando a conexão cai, a conversa se encerra depois da tolerância", () =>
+  it.effect("conversa: a conexão que cai não encerra a conversa; outro cliente a carrega e continua", () =>
     Effect.gen(function* () {
       const { urlRpc } = yield* Servidor.ServidorApp;
       const antes = registro.encerradas;
-      const encerrou = Effect.callback<void>((resume) => {
-        registro.aoEncerrar = () => resume(Effect.void);
-        return Effect.sync(() => (registro.aoEncerrar = undefined));
-      });
-      yield* Effect.scoped(
+      const sessao = yield* Effect.scoped(
         Effect.gen(function* () {
           const c = yield* cliente(urlRpc, AUTORIZACAO);
-          yield* c["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
+          const { sessao } = yield* c["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
+          yield* Stream.runCollect(c["conversa.enviar"]({ sessao, texto: "olá" }));
+          return sessao;
         }),
       );
-      // O cliente fechou o WebSocket: o `onDisconnect` do servidor deixa a conversa órfã.
+      // O cliente fechou o WebSocket; a sessão do provider continua aberta.
+      const outro = yield* cliente(urlRpc, AUTORIZACAO);
+      const { conversa, itens } = yield* outro["conversa.carregar"]({ sessao });
+      assert.strictEqual(conversa.estado, "pronta");
+      assert.strictEqual(itens.length, 3);
+      const eventos = yield* Stream.runCollect(outro["conversa.enviar"]({ sessao, texto: "de novo" }));
+      assert.strictEqual([...eventos].at(-1)?._tag, "FimTurno");
       assert.strictEqual(registro.encerradas, antes);
-      yield* encerrou.pipe(Effect.timeout(Duration.seconds(5)));
-      assert.strictEqual(registro.encerradas, antes + 1);
-    }),
+      const acompanhados = yield* Stream.runCollect(outro["conversa.acompanhar"]({ sessao, depois: 3 }));
+      assert.deepStrictEqual(
+        [...acompanhados].map((item) => item.ordem),
+        [4, 5, 6],
+      );
+      const retomada = yield* outro["conversa.retomar"]({ sessao });
+      assert.strictEqual(retomada.estado, "pronta");
+      yield* outro["conversa.encerrar"]({ sessao });
+    }).pipe(Effect.scoped),
   );
 
   it.effect("conversa: recusa a pasta inválida e entrega a falha do provider sem o cause", () =>

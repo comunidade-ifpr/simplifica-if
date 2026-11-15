@@ -6,6 +6,7 @@
  */
 import * as NodeHttp from "node:http";
 import * as NodeSocket from "@effect/platform-node/NodeSocket";
+import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Socket from "effect/socket/Socket";
@@ -29,17 +30,30 @@ export function bancoFixture(): string {
   return banco;
 }
 
-/** O que o driver falso viu: a configuração de cada sessão aberta e quantas se encerraram. */
+/** O que o driver falso viu e como o teste o controla. */
 export interface Registro {
   readonly configs: Array<Motor.ConfigSessao>;
+  /** Os textos que chegaram ao provider, na ordem. */
+  readonly textos: Array<string>;
   encerradas: number;
   /** Chamado a cada sessão encerrada, para o teste esperar pelo encerramento sem relógio. */
   aoEncerrar?: (() => void) | undefined;
+  /** Derruba o "processo" da sessão aberta mais recente (a queda). */
+  derrubar?: (() => Effect.Effect<void>) | undefined;
+  /** O provider não retoma (como o `agy` sem `session/load`). */
+  recusarRetomada?: boolean;
+  /** O provider ignora o pedido de interrupção (o turno só acaba quando a sessão fecha). */
+  ignorarInterrupcao?: boolean;
 }
 
+export const novoRegistro = (): Registro => ({ configs: [], textos: [], encerradas: 0 });
+
 /**
- * Driver falso: pede aprovação para "escrever" e conclui conforme a decisão. O Codex falso falha ao
- * iniciar, com um `cause` que não pode chegar à interface.
+ * Driver falso. A resposta depende do texto: com "escrev", pede aprovação para "escrever" e conclui
+ * conforme a decisão; com "demor", só termina com a interrupção; senão, responde `Resposta a: <texto>`
+ * com o texto parcial e o final. A sessão tem um id nativo (`nativo-<n>`, ou o retomado) e uma queda
+ * que o teste dispara (`registro.derrubar`). O Codex falso falha ao iniciar, com um `cause` que não pode
+ * chegar à interface.
  */
 export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor.Driver => ({
   detectar: Effect.succeed({ provider, instalado: true, autenticado: true, versao: "0.0.0-teste", plano: "teste" }),
@@ -53,16 +67,25 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
           cause: new Error("/Users/alguem/segredo"),
         });
       }
+      if (config.retomar !== undefined && registro.recusarRetomada === true) {
+        return yield* new Motor.FalhaProvider({ provider, operacao: "retomar", detalhe: "não retoma (teste)" });
+      }
       registro.configs.push(config);
+      const idNativo = config.retomar ?? `nativo-${registro.configs.length}`;
       const canal = yield* Canal.make;
       const escopo = yield* Effect.scope;
+      const queda = yield* Deferred.make<Motor.FalhaProvider>();
+      registro.derrubar = () => {
+        const falha = new Motor.FalhaProvider({ provider, operacao: "sessão", detalhe: "o processo encerrou (teste)" });
+        return Deferred.succeed(queda, falha).pipe(Effect.andThen(canal.morrer(falha)), Effect.uninterruptible);
+      };
       yield* Effect.addFinalizer(() =>
         Effect.sync(() => {
           registro.encerradas++;
           registro.aoEncerrar?.();
         }),
       );
-      const responder = (texto: string) =>
+      const escrever = (texto: string) =>
         Effect.gen(function* () {
           yield* canal.emitir({ _tag: "TextoParcial", texto: "Vou " });
           yield* canal.emitir({ _tag: "FerramentaIniciada", id: "f1", nome: "escrever", entrada: { texto } });
@@ -82,10 +105,28 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
           yield* canal.emitir({ _tag: "TextoFinal", texto: `Vou ${decisao}` });
           yield* canal.emitir({ _tag: "FimTurno", motivo: "end_turn" });
         });
+      const responder = (texto: string) =>
+        Effect.gen(function* () {
+          registro.textos.push(texto);
+          if (texto.includes("escrev")) return yield* escrever(texto);
+          if (texto.includes("demor")) {
+            yield* canal.emitir({ _tag: "TextoParcial", texto: "Pensando " });
+            return yield* Effect.never;
+          }
+          yield* canal.emitir({ _tag: "TextoParcial", texto: "Resposta a: " });
+          yield* canal.emitir({ _tag: "TextoParcial", texto });
+          yield* canal.emitir({ _tag: "TextoFinal", texto: `Resposta a: ${texto}` });
+          yield* canal.emitir({ _tag: "FimTurno", motivo: "end_turn" });
+        });
       return {
+        idNativo,
+        queda: Deferred.await(queda),
         enviar: (texto) => canal.turno(Effect.asVoid(Effect.forkIn(responder(texto), escopo))),
         responder: canal.responder,
-        interromper: Effect.void,
+        interromper:
+          registro.ignorarInterrupcao === true
+            ? Effect.void
+            : canal.emitir({ _tag: "FimTurno", motivo: "interrupted" }),
       } satisfies Motor.SessaoDriver;
     }),
 });

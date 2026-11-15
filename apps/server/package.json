@@ -17,6 +17,7 @@
   "dependencies": {
     "@effect/platform-node": "catalog:",
     "@simplifica-if/contratos-app": "workspace:*",
+    "@simplifica-if/kb": "workspace:*",
     "@simplifica-if/mcp": "workspace:*",
     "@simplifica-if/motor": "workspace:*",
     "effect": "catalog:"

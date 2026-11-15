@@ -8,6 +8,8 @@
  *   (`Autenticacao.ts`), com o token ou um ingresso de curta duração (`POST /ingresso`).
  * - **MCP** `ifpr` por HTTP (`@simplifica-if/mcp/http`), numa porta própria; cada conversa recebe uma
  *   sessão com token próprio (`Conversas.ts`).
+ * - **Conversas** gravadas no banco `conversas.sqlite` da pasta de estado (`persistencia/`), com a
+ *   sessão do provider liberada ociosa e reaberta por retomada (`Conversas.ts`).
  * - **Motor** (`@simplifica-if/motor`) sobre os `Drivers` do ambiente: os reais (`Drivers.layerNode`,
  *   na CLI) ou drivers de teste.
  * - **Leitura** (`GrupoLeitura`) sobre o `kb.sqlite`, só leitura: o mesmo serviço `Leitura` (uma
@@ -37,6 +39,8 @@ import * as Motor from "@simplifica-if/motor";
 import * as Autenticacao from "./Autenticacao.ts";
 import * as Conversas from "./Conversas.ts";
 import * as Handlers from "./handlers.ts";
+import * as Banco from "./persistencia/Banco.ts";
+import * as Historico from "./persistencia/Historico.ts";
 
 export interface Opcoes {
   /** O `kb.sqlite` servido pelo MCP e pela leitura. */
@@ -51,8 +55,15 @@ export interface Opcoes {
   readonly origens?: ReadonlyArray<string>;
   /** O canal da base quando o banco não registra um (padrão: `dev`, como a CLI do MCP). */
   readonly canal?: Canal;
-  /** Quanto a conversa espera pelo cliente que caiu antes de se encerrar (`Conversas.TOLERANCIA_ORFA`). */
-  readonly toleranciaOrfa?: Duration.Duration;
+  /**
+   * O banco das conversas (`conversas.sqlite` na pasta de estado, na CLI). Sem ele, o banco fica na
+   * memória e as conversas se perdem quando o servidor fecha (testes).
+   */
+  readonly bancoConversas?: string;
+  /** Depois de quanto tempo sem turno a sessão do provider se libera (`Conversas.OCIOSIDADE`). */
+  readonly ociosidade?: Duration.Duration;
+  /** Quanto se espera pelo fim do turno interrompido antes de liberar a sessão (`Conversas.PRAZO_INTERRUPCAO`). */
+  readonly prazoInterrupcao?: Duration.Duration;
 }
 
 /** O servidor do RPC não abriu: porta ocupada, sem permissão ou interface indisponível. */
@@ -86,14 +97,12 @@ export class ServidorApp extends Context.Service<
 const layerRotaRpc = Layer.unwrap(
   Effect.gen(function* () {
     const autenticacao = yield* Autenticacao.Autenticacao;
-    const conversas = yield* Conversas.Conversas;
     const { protocol, httpEffect } = yield* RpcServer.makeProtocolWithHttpEffectWebsocket;
     // Como o T3 (`WS_RPC_SERVER_OPTIONS`): um defeito num handler não derruba as outras chamadas. A
-    // conexão que cai deixa as conversas dela órfãs, encerradas depois da tolerância (`Conversas.ts`).
+    // conexão que cai não encerra conversa: elas não dependem da conexão (`Conversas.ts`).
     yield* RpcServer.make(GrupoApp, {
       disableTracing: true,
       disableFatalDefects: true,
-      onDisconnect: conversas.clienteSaiu,
     }).pipe(Effect.provideService(RpcServer.Protocol, protocol), Effect.forkScoped);
     return Layer.mergeAll(
       HttpRouter.add(
@@ -128,8 +137,13 @@ export const layer = (opcoes: Opcoes) => {
   // Um `Leitura` só (uma conexão ao `kb.sqlite`) para o MCP HTTP e para o RPC de leitura.
   const leitura = layerLeitura({ banco: opcoes.banco, canal });
   const mcp = McpHttp.layerSobreLeitura(opcoes.portaMcp ? { porta: opcoes.portaMcp } : {});
-  const nucleo = Conversas.layer(opcoes.toleranciaOrfa === undefined ? {} : { tolerancia: opcoes.toleranciaOrfa }).pipe(
+  const banco = opcoes.bancoConversas === undefined ? Banco.layerMemoria : Banco.layerArquivo(opcoes.bancoConversas);
+  const nucleo = Conversas.layer({
+    ...(opcoes.ociosidade === undefined ? {} : { ociosidade: opcoes.ociosidade }),
+    ...(opcoes.prazoInterrupcao === undefined ? {} : { prazoInterrupcao: opcoes.prazoInterrupcao }),
+  }).pipe(
     Layer.provideMerge(Motor.layer),
+    Layer.provideMerge(Historico.layer.pipe(Layer.provide(banco))),
     Layer.provideMerge(mcp),
     Layer.provideMerge(leitura),
   );

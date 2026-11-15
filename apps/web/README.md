@@ -8,6 +8,7 @@ Este é o shell funcional. O Modo Servidor completo (tarefas, etapas da skill, p
 
 - **Início** (`/`): Claude, ChatGPT (Codex) e Gemini (Antigravity), cada um com `providers.detectar` (instalado, login, versão, plano), "Instalar" (`providers.instalar`, com a barra de progresso de `EstadoInstalacao`) e "Entrar" (`providers.entrar`; em `aguardando`, a URL de login aparece como link, e o desktop a abre no navegador do sistema). Os botões só aparecem quando a detecção diz que o app oferece a operação (`podeInstalar`, `podeEntrar`); senão, a orientação provisória para fazer no Terminal (`orientacao` em `src/providers.ts`): instalar o Claude Code pelo instalador oficial e entrar com `claude`; entrar no Codex com `codex login`.
 - **Conversa** (`/conversa`): escolhe o provider e a pasta de trabalho (no desktop, o seletor de pastas do sistema; no navegador, um campo de texto) e conversa: texto parcial e final em Markdown, ferramentas como etapas (nome e resumo), pedido de aprovação com "Permitir" e "Negar", "Interromper" e "Nova conversa". Os links `ifpr://` das respostas, na sintaxe de link do Markdown ou soltos no texto (`src/components/linksIfpr.ts`), abrem um painel lateral com o `lerLink` do `GrupoLeitura`, em Markdown.
+- **Conversas gravadas (M1.2):** a barra lateral da Conversa (em tela larga) e o Início listam as conversas do servidor (`conversa.listar`, `src/components/ListaConversas.tsx`). A conversa aberta fica na URL (`/conversa?id=…`): recarregar a tela a reabre com o histórico (`conversa.carregar`) e, se havia resposta em andamento, continua a acompanhá-la (`conversa.acompanhar`). Quando a IA caiu, a conversa avisa que a próxima mensagem a retoma.
 - No cabeçalho, o estado da conexão (conectado, reconectando com a contagem e "Tentar agora") e o tema (sistema, claro, escuro).
 
 ## Rodar em desenvolvimento
@@ -60,8 +61,8 @@ pnpm --filter @simplifica-if/web exec vp test run --project unidade
 pnpm --filter @simplifica-if/web exec vp test run --project navegador
 ```
 
-- **`unidade`** (Node): a origem da conexão, os erros, o redutor da conversa e, contra o `apps/server` de verdade no próprio processo (drivers de demonstração), o ingresso, as recusas, a reconexão quando o servidor cai e volta na mesma porta, a conversa inteira pela `ControleConversa` (aprovação, link `ifpr://`, interromper, nova conversa) e instalar e entrar.
-- **`navegador`** (Chromium headless pelo Playwright, como o T3): o app inteiro conectado ao `test/servidor-teste.ts`, que um comando do `vite.config.ts` sobe num processo Node; percorre o Início e a Conversa e confere que não aparece texto em inglês dos componentes copiados. Precisa do Chromium do Playwright 1.65 (`pnpm --filter @simplifica-if/web exec playwright install chromium` numa máquina nova; o CI instala só o headless shell, com `--only-shell`, e o guarda em cache pela versão do Playwright).
+- **`unidade`** (Node): a origem da conexão, os erros, o redutor da conversa e, contra o `apps/server` de verdade no próprio processo (drivers de demonstração), o ingresso, as recusas, a reconexão quando o servidor cai e volta na mesma porta, a conversa inteira pela `ControleConversa` (aprovação, link `ifpr://`, interromper, nova conversa, reabrir a conversa noutra interface, com a resposta em andamento) e instalar e entrar.
+- **`navegador`** (Chromium headless pelo Playwright, como o T3): o app inteiro conectado ao `test/servidor-teste.ts`, que um comando do `vite.config.ts` sobe num processo Node; percorre o Início e a Conversa (até reabrir a conversa pela lista lateral) e confere que não aparece texto em inglês dos componentes copiados. Precisa do Chromium do Playwright 1.65 (`pnpm --filter @simplifica-if/web exec playwright install chromium` numa máquina nova; o CI instala só o headless shell, com `--only-shell`, e o guarda em cache pela versão do Playwright).
 
 ## Código do T3
 
@@ -69,7 +70,6 @@ Os componentes de `src/components/ui` (button, badge, input, textarea, alert, se
 
 ## Pendências
 
-- **Persistência e retomada (M1.2):** recarregar a interface perde a conversa; os eventos de um turno que chegam enquanto a conexão está fora se perdem (o servidor não guarda nem reenvia).
 - **Etapas da skill e "detalhes técnicos" (M1.9):** as ferramentas aparecem todas como etapas, sem agrupamento.
 - **Leitor completo (M1.6):** o painel mostra só o Markdown do `lerLink`.
 - **Login do Claude e do Codex, instalação do Claude (M1.8):** o motor só oferece `entrar` no Antigravity e `instalar` no Codex e no Antigravity. Nos outros, a Início mostra uma orientação provisória para o Terminal; o passo guiado é do M1.8.

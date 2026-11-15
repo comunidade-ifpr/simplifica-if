@@ -9,6 +9,7 @@ import type * as Scope from "effect/Scope";
 import type * as Stream from "effect/Stream";
 import type { AprovacaoDesconhecida, Decisao, FalhaProvider, TurnoEmAndamento } from "./erros.ts";
 import type { Evento, Provider } from "./eventos.ts";
+import type { Politica } from "./politica.ts";
 
 export * from "./erros.ts";
 
@@ -57,6 +58,27 @@ export interface ServidorMcpHttp {
 /** Servidor MCP entregue ao provider só nesta sessão, por stdio ou por HTTP. */
 export type ServidorMcp = ServidorMcpStdio | ServidorMcpHttp;
 
+/** Um arquivo de uma skill: caminho relativo à pasta da skill e conteúdo em texto. */
+export interface ArquivoSkill {
+  readonly caminho: string;
+  readonly conteudo: string;
+}
+
+/**
+ * Uma skill do app, entregue pelo motor (o isolamento deixa de fora as skills do usuário). As
+ * instruções e os arquivos vão para `<pasta de trabalho>/.simplifica/skills/<nome>/` (`SKILL.md` e
+ * os `arquivos`), e as instruções da sessão listam a skill com o nome, a descrição e o caminho.
+ */
+export interface Skill {
+  /** Só letras minúsculas, dígitos e hífen: vira nome de pasta. */
+  readonly nome: string;
+  /** Quando usar a skill; é o que o provider lê para decidir. */
+  readonly descricao: string;
+  /** O corpo do `SKILL.md`: o passo a passo que o provider segue ao usar a skill. */
+  readonly instrucoes: string;
+  readonly arquivos?: ReadonlyArray<ArquivoSkill>;
+}
+
 export interface ConfigSessao {
   readonly provider: Provider;
   readonly pastaTrabalho: string;
@@ -65,9 +87,19 @@ export interface ConfigSessao {
   readonly modelo?: string;
   /**
    * Busca na web (padrão: desligada). Desligada, a resposta sai da base e do que o usuário anexa.
-   * O Antigravity não tem como desligá-la por sessão.
+   * Só vale se a política permitir (`isolamento.buscaWeb: "a-pedido"`); a de fábrica desliga.
    */
   readonly buscaWeb?: boolean;
+  /**
+   * Retoma a conversa nativa do provider com este id (o `idNativo` de uma sessão anterior), em vez de
+   * abrir uma nova: `resume` do Agent SDK (Claude), `thread/resume` (Codex), `session/load` do ACP
+   * (Antigravity). Se o provider não retoma, o driver falha com `FalhaProvider` na operação `retomar`.
+   */
+  readonly retomar?: string;
+  /** Instruções da sessão, somadas às do provider (system prompt, `developerInstructions`, `systemPrompt.append`). */
+  readonly instrucoes?: string;
+  /** Skills do app para esta sessão; o `Motor` grava os arquivos e as junta às `instrucoes`. */
+  readonly skills?: ReadonlyArray<Skill>;
 }
 
 /** O que o driver detecta: instalado, versão e login. Nunca traz e-mail nem credencial. */
@@ -99,6 +131,17 @@ export interface EstadoProvider extends DeteccaoProvider {
 }
 
 export interface SessaoDriver {
+  /**
+   * O id da conversa no próprio provider, que `ConfigSessao.retomar` aceita depois: o `session_id` do
+   * Agent SDK, o `threadId` do Codex, o `sessionId` do ACP. Sem ele, a sessão não se retoma.
+   */
+  readonly idNativo?: string;
+  /**
+   * Termina quando o processo do provider acaba sozinho (queda), com o motivo, antes de o turno
+   * corrente falhar com o mesmo erro; nunca termina quando a sessão se encerra pelo `Scope`. Depois
+   * da queda, `enviar` falha com o mesmo erro.
+   */
+  readonly queda?: Effect.Effect<FalhaProvider>;
   /** Envia a mensagem e devolve os eventos do turno; o stream termina depois de `FimTurno`. */
   readonly enviar: (texto: string) => Stream.Stream<Evento, FalhaProvider | TurnoEmAndamento>;
   readonly responder: (idAprovacao: string, decisao: Decisao) => Effect.Effect<void, AprovacaoDesconhecida>;
@@ -130,7 +173,11 @@ export interface EstadoLogin {
 
 export interface Driver {
   readonly detectar: Effect.Effect<DeteccaoProvider>;
-  readonly iniciar: (config: ConfigSessao) => Effect.Effect<SessaoDriver, FalhaProvider, Scope.Scope>;
+  /** Abre a sessão; o `Motor` passa a política e as `instrucoes` já com as skills. */
+  readonly iniciar: (
+    config: ConfigSessao,
+    politica: Politica,
+  ) => Effect.Effect<SessaoDriver, FalhaProvider, Scope.Scope>;
   /** Instala (ou atualiza) a CLI gerenciada; o stream termina numa fase final. */
   readonly instalar?: Stream.Stream<EstadoInstalacao, FalhaProvider>;
   /** Login dentro do app; o stream termina numa fase final. */

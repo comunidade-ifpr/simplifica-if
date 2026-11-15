@@ -2,11 +2,15 @@
  * O `Motor` sobre um driver falso feito com o mesmo `Canal` dos drivers reais: o turno, a ida e
  * volta da aprovação, o turno concorrente, a interrupção e o encerramento.
  */
+import * as NodeServices from "@effect/platform-node/NodeServices";
 import { assert, describe, it } from "@effect/vitest";
+import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Fiber from "effect/Fiber";
+import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
+import * as Path from "effect/Path";
 import * as Stream from "effect/Stream";
 import * as Canal from "../src/Canal.ts";
 import * as Motor from "../src/Motor.ts";
@@ -179,5 +183,177 @@ describe("Motor", () => {
         { podeInstalar: true, podeEntrar: true },
       ]);
     }).pipe(Effect.provide(Motor.layer.pipe(Layer.provide(Layer.succeed(Motor.Drivers, drivers)))));
+  });
+
+  it.effect("queda: o turno corrente falha, os próximos são recusados, e o motor informa o id nativo e a queda", () =>
+    Effect.gen(function* () {
+      const canal = yield* Canal.make;
+      const queda = yield* Deferred.make<Motor.FalhaProvider>();
+      const driver: Motor.Driver = {
+        detectar: Effect.succeed({ provider: "claude", instalado: true, autenticado: true }),
+        iniciar: (config) =>
+          Effect.succeed({
+            idNativo: config.retomar ?? "nativo-1",
+            queda: Deferred.await(queda),
+            enviar: () => canal.turno(Effect.void),
+            responder: canal.responder,
+            interromper: Effect.void,
+          } satisfies Motor.SessaoDriver),
+      };
+      const camadaQueda = Motor.layer.pipe(
+        Layer.provide(
+          Layer.succeed(Motor.Drivers, Motor.Drivers.of({ claude: driver, codex: driver, antigravity: driver })),
+        ),
+      );
+      yield* Effect.gen(function* () {
+        const motor = yield* Motor.Motor;
+        const sessao = yield* motor.iniciarSessao(CONFIG);
+        const info = yield* motor.infoSessao(sessao);
+        assert.strictEqual(info.idNativo, "nativo-1");
+        const retomada = yield* motor.infoSessao(yield* motor.iniciarSessao({ ...CONFIG, retomar: "nativo-9" }));
+        assert.strictEqual(retomada.idNativo, "nativo-9");
+
+        const turno = yield* Stream.runCollect(motor.enviarMensagem(sessao, "olá")).pipe(Effect.forkChild);
+        yield* Effect.yieldNow;
+        const falha = new Motor.FalhaProvider({ provider: "claude", operacao: "sessão", detalhe: "caiu" });
+        yield* canal.morrer(falha);
+        yield* Deferred.succeed(queda, falha);
+        const saida = yield* Fiber.await(turno);
+        assert.isTrue(Exit.hasFails(saida));
+        assert.strictEqual(yield* info.queda, falha);
+        const depois = yield* Effect.flip(Stream.runDrain(motor.enviarMensagem(sessao, "de novo")));
+        assert.strictEqual(depois, falha);
+      }).pipe(Effect.provide(camadaQueda));
+    }),
+  );
+});
+
+/**
+ * Driver falso que aplica a política pelo `Canal`, como os reais: três pedidos por turno (uma
+ * ferramenta do `ifpr`, uma escrita fora da pasta e uma dentro), com a resposta de cada um.
+ */
+const driverComPolitica = (configs: Array<{ config: Motor.ConfigSessao; politica: Motor.Politica }>): Motor.Driver => ({
+  detectar: Effect.succeed({ provider: "claude", instalado: true, autenticado: true }),
+  iniciar: (config, politica) =>
+    Effect.gen(function* () {
+      configs.push({ config, politica });
+      const canal = yield* Canal.comPolitica(politica, config.pastaTrabalho);
+      const escopo = yield* Effect.scope;
+      const pedidos = [
+        { id: "a", ferramenta: "ifpr.buscar_norma", classe: { tipo: "mcp-app", caminhos: [] } },
+        { id: "b", ferramenta: "Write", classe: { tipo: "escrita", caminhos: ["/etc/fora.txt"] } },
+        { id: "c", ferramenta: "Write", classe: { tipo: "escrita", caminhos: ["dentro.txt"] } },
+      ] as const;
+      const responder = Effect.gen(function* () {
+        for (const pedido of pedidos) {
+          const resposta = yield* canal.aprovar({ ...pedido, descricao: "teste", entrada: {} });
+          yield* canal.emitir({
+            _tag: "FerramentaConcluida",
+            id: pedido.id,
+            nome: pedido.ferramenta,
+            resumo: resposta.motivo ?? resposta.decisao,
+            falhou: resposta.decisao === "negar",
+          });
+        }
+        yield* canal.emitir({ _tag: "FimTurno", motivo: "end_turn" });
+      });
+      return {
+        enviar: () => canal.turno(Effect.asVoid(Effect.forkIn(responder, escopo))),
+        responder: canal.responder,
+        interromper: Effect.void,
+      } satisfies Motor.SessaoDriver;
+    }),
+});
+
+const camadaComPolitica = (
+  configs: Array<{ config: Motor.ConfigSessao; politica: Motor.Politica }>,
+  politica: Motor.Politica = Motor.POLITICA_FABRICA,
+) => {
+  const driver = driverComPolitica(configs);
+  return Motor.layerComPolitica(politica).pipe(
+    Layer.provide(
+      Layer.succeed(Motor.Drivers, Motor.Drivers.of({ claude: driver, codex: driver, antigravity: driver })),
+    ),
+  );
+};
+
+describe("Motor: política e skills", () => {
+  it.effect("aprovações pela política: ifpr passa, fora da pasta se nega sem perguntar, dentro pergunta", () =>
+    Effect.gen(function* () {
+      const motor = yield* Motor.Motor;
+      const sessao = yield* motor.iniciarSessao({ ...CONFIG, pastaTrabalho: "/Users/servidor/tarefa" });
+      const eventos = yield* turnoRespondendo(sessao, "permitir");
+      const pedidos = eventos.filter((evento) => evento._tag === "PedidoAprovacao");
+      assert.deepStrictEqual(
+        pedidos.map((evento) => evento.id),
+        ["c"],
+      );
+      const concluidas = eventos.flatMap((evento) =>
+        evento._tag === "FerramentaConcluida" ? [[evento.id, evento.falhou, evento.resumo]] : [],
+      );
+      assert.deepStrictEqual(concluidas, [
+        ["a", false, "A política do app permite usar as ferramentas do app."],
+        ["b", true, "A política do app não permite alterar arquivos fora da pasta de trabalho."],
+        ["c", false, "permitir"],
+      ]);
+    }).pipe(Effect.provide(camadaComPolitica([]))),
+  );
+
+  it.effect("provider fora da política não abre sessão; busca web desligada pela de fábrica", () => {
+    const configs: Array<{ config: Motor.ConfigSessao; politica: Motor.Politica }> = [];
+    const soClaude = { ...Motor.POLITICA_FABRICA, providers: ["claude" as const] };
+    return Effect.gen(function* () {
+      const motor = yield* Motor.Motor;
+      const recusada = yield* Effect.exit(motor.iniciarSessao({ ...CONFIG, provider: "codex" }));
+      assert.isTrue(Exit.hasFails(recusada));
+      yield* motor.iniciarSessao({ ...CONFIG, buscaWeb: true });
+      assert.strictEqual(configs.length, 1);
+      assert.strictEqual(configs[0]?.config.buscaWeb, false);
+      assert.strictEqual(configs[0]?.politica, soClaude);
+    }).pipe(Effect.provide(camadaComPolitica(configs, soClaude)));
+  });
+
+  it.effect("skills: grava SKILL.md e arquivos na pasta de trabalho e passa as instruções ao driver", () => {
+    const configs: Array<{ config: Motor.ConfigSessao; politica: Motor.Politica }> = [];
+    return Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem;
+      const path = yield* Path.Path;
+      const pasta = yield* fs.makeTempDirectoryScoped({ prefix: "simplifica-skills-" });
+      const motor = yield* Motor.Motor;
+      yield* motor.iniciarSessao({
+        ...CONFIG,
+        pastaTrabalho: pasta,
+        instrucoes: "Responda em português.",
+        skills: [
+          {
+            nome: "saudacao-ifpr",
+            descricao: "Use quando o usuário pedir a saudação do IFPR.",
+            instrucoes: "Responda com a frase do arquivo frase.txt.",
+            arquivos: [{ caminho: "frase.txt", conteudo: "Olá do IFPR" }],
+          },
+        ],
+      });
+      const raiz = path.join(pasta, ".simplifica", "skills", "saudacao-ifpr");
+      const skillMd = yield* fs.readFileString(path.join(raiz, "SKILL.md"));
+      assert.match(skillMd, /^---\nname: saudacao-ifpr\ndescription: "Use quando/);
+      assert.match(skillMd, /Responda com a frase do arquivo frase.txt./);
+      assert.strictEqual(yield* fs.readFileString(path.join(raiz, "frase.txt")), "Olá do IFPR");
+      const instrucoes = configs[0]?.config.instrucoes ?? "";
+      assert.match(instrucoes, /^Responda em português\.\n\n## Skills do Simplifica IF/);
+      assert.include(instrucoes, `\`saudacao-ifpr\`: Use quando o usuário pedir a saudação do IFPR.`);
+      assert.include(instrucoes, path.join(raiz, "SKILL.md"));
+
+      const invalida = yield* Effect.exit(
+        motor.iniciarSessao({
+          ...CONFIG,
+          pastaTrabalho: pasta,
+          skills: [
+            { nome: "x", descricao: "x", instrucoes: "x", arquivos: [{ caminho: "../fora.txt", conteudo: "" }] },
+          ],
+        }),
+      );
+      assert.isTrue(Exit.hasFails(invalida));
+      assert.isFalse(yield* fs.exists(path.join(pasta, ".simplifica", "skills", "fora.txt")));
+    }).pipe(Effect.scoped, Effect.provide(camadaComPolitica(configs)), Effect.provide(NodeServices.layer));
   });
 });

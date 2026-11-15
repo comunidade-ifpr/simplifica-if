@@ -309,6 +309,9 @@ importers:
       '@simplifica-if/contratos-app':
         specifier: workspace:*
         version: link:../../packages/contratos-app
+      '@simplifica-if/kb':
+        specifier: workspace:*
+        version: link:../../packages/kb
       '@simplifica-if/mcp':
         specifier: workspace:*
         version: link:../../packages/mcp

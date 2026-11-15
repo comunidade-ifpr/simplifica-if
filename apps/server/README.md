@@ -40,9 +40,19 @@ SIMPLIFICA_SERVIDOR_TOKEN=$(openssl rand -base64 32) \
 | | `conversa.enviar({ sessao, texto })` | stream de `Evento` até `FimTurno` |
 | | `conversa.responderAprovacao({ sessao, aprovacao, decisao })` | — |
 | | `conversa.interromper({ sessao })`, `conversa.encerrar({ sessao })` | — |
+| | `conversa.listar({})` | `ResumoConversa[]`, da mais recente para a mais antiga (título, provider, estado, turnos, datas) |
+| | `conversa.carregar({ sessao })` | `ConversaGravada`: o resumo e o histórico (`ItemConversa`: mensagens, eventos e decisões, com `ordem`) |
+| | `conversa.acompanhar({ sessao, depois })` | stream dos itens depois de `depois` e, se há turno em andamento, dos que chegam até o `FimTurno` |
+| | `conversa.retomar({ sessao })` | `ResumoConversa`; reabre a sessão do provider sem mandar mensagem |
 | leitura | o `GrupoLeitura` de `@simplifica-if/mcp/grupo-leitura`, com os handlers de `@simplifica-if/mcp/rpc` (`lerLink` para qualquer link `ifpr://`, `fichaNorma`, `lerDispositivos`, `buscarNorma`, `fichaCurso`, `lerSecao`, `buscarSecoes`, `listarCursos`, `sobreABase`, `lerPpc`, `lerCnct`, `lerCampus`, `lerFicha` e o que ele ganhar) | as respostas das ferramentas MCP de mesmo nome |
 
-**Conversas e conexões.** A conversa pertence ao cliente RPC (a conexão WebSocket) que a abriu ou que a usou por último. Quando essa conexão cai, a conversa fica órfã por uma tolerância (`TOLERANCIA_ORFA`, 2 minutos; `toleranciaOrfa` na layer) e então se encerra, como em `conversa.encerrar`. A interface que recarrega volta como outro cliente e, ao usar a conversa (`enviar`, `responderAprovacao`, `interromper`), a adota e cancela o prazo. O T3 não amarra a sessão à conexão: as conversas dele são persistidas, e a sessão do provider se libera depois de 30 minutos ociosa. Sem persistência nem retomada (M1.2), a conversa sem cliente não volta a ser vista; com a retomada, a regra passa a ser a do T3.
+**Conversas gravadas (M1.2).** A conversa tem id próprio, fica no banco `conversas.sqlite` da pasta de estado (`effect/sql` sobre `node:sqlite`, migrações em `src/persistencia/migracoes/`) e não depende da conexão: a interface que recarrega volta por `carregar` e, com turno em andamento, por `acompanhar`. Os eventos de cada turno passam por um fiber do servidor, que os grava e os publica; o `TextoParcial` não se grava (o texto parcial sem `TextoFinal` vira um `TextoFinal` no fim do turno). Estados: `pronta`, `respondendo`, `liberada` (sem processo do provider) e `caiu`.
+
+- **Sessão do provider:** ociosa por 30 minutos (como no T3), ela se libera; a próxima mensagem a reabre pela retomada nativa (`resume` do Agent SDK, `thread/resume` do Codex, `session/load` do `agy`). Se o provider não retomar, abre-se uma sessão nova, e a mensagem leva o histórico gravado como contexto.
+- **Interromper:** pede ao provider que pare; sem `FimTurno` em `PRAZO_INTERRUPCAO`, a sessão se libera e o turno fecha como interrompido.
+- **Queda do processo do provider:** o turno termina com `Erro` e `FimTurno` (motivo `falha`), a conversa fica `caiu`, e a próxima mensagem a reabre pela retomada.
+- **App fechado:** as sessões se liberam, e um turno em andamento fecha como interrompido; na abertura, as conversas que o banco dá como abertas passam a `liberada`.
+- **Política de aprovação (M1.7):** aplicada no motor (`packages/motor/src/politica.ts`); o servidor só vê os pedidos que a política manda perguntar.
 
 Erros tipados: `FalhaProvider` (sem o `cause`, que fica no log), `OperacaoNaoSuportada`, `PastaTrabalhoInvalida` (caminho não absoluto ou que não é pasta), `TurnoEmAndamento`, `SessaoDesconhecida`, `AprovacaoDesconhecida` e os da leitura.
 
@@ -68,7 +78,8 @@ No navegador, que não manda cabeçalho no WebSocket, a URL leva um ingresso com
 - `src/partida.ts`: o token (ambiente ou envelope no stdin) e o cordão do stdin.
 - `src/ponte.ts`: o comando da ponte MCP (`ponte-mcp`) para o driver do Antigravity.
 - `src/servidor.ts`: a layer do servidor inteiro (`layer(opcoes)`, que pede os `Drivers`) e a rota `/rpc`.
-- `src/Autenticacao.ts`, `src/Conversas.ts` (motor + MCP por conversa), `src/handlers.ts`.
+- `src/Autenticacao.ts`, `src/Conversas.ts` (motor + MCP por conversa, gravação, retomada e ciclo de vida da sessão), `src/handlers.ts`.
+- `src/persistencia/`: `Banco.ts` (o `node:sqlite` com os `PRAGMA` e as migrações do T3), `Historico.ts` (conversas e itens) e `migracoes/`.
 - `src/t3/`: cópia do T3 (`launcherWatch.ts`), com `NOTICE`; registro em `docs/upstream-t3.md`.
 
 ## Testes
@@ -76,15 +87,17 @@ No navegador, que não manda cabeçalho no WebSocket, a URL leva um ingresso com
 ```bash
 pnpm --filter @simplifica-if/server test        # servidor em portas efêmeras com drivers falsos; o bin.ts como processo
 SIMPLIFICA_POC_REAL=1 SIMPLIFICA_PROVIDER=claude pnpm --filter @simplifica-if/server test real   # provider real, pelo RPC
+SIMPLIFICA_POC_REAL=1 SIMPLIFICA_PROVIDER=claude pnpm --filter @simplifica-if/server test ciclo-real   # ciclo de vida da conversa
 ```
+
+O `ciclo-real` roda as `Conversas` sobre os drivers reais e um banco temporário: três turnos (o terceiro com uma ferramenta `ifpr`), escrita fora da pasta de trabalho negada pela política sem perguntar, interromper depois da primeira ferramenta e um turno em seguida, retomada depois de fechar a layer (lembrando a primeira palavra), SIGKILL no processo do provider no meio de um turno (`caiu`) e um turno depois, que o reabre. Sem `SIMPLIFICA_PROVIDER`, roda os três. Em 15/11/2026, com o Claude (Pro, Claude Code 2.1.325), tudo passou: turnos de 1 a 3 s, retomada nativa nas duas vezes, o turno da queda fechado 0,1 s depois do SIGKILL.
 
 O teste real gasta a assinatura do usuário e usa a pasta de estado do harness do motor (`SIMPLIFICA_ESTADO` ou `~/Library/Application Support/simplifica-if-poc`). Ele imprime no stderr, por turno, as ferramentas (nome, entrada, resumo), o tempo e os links `ifpr://` da resposta; no Antigravity, um segundo turno confere que o `read_resource` de um link `ifpr://` sai com o resumo que o servidor viu.
 
-## Pontos de extensão (M1.2) e pendências
+## Pendências
 
-Em `src/Conversas.ts`: persistência dos eventos em `enviar` e da conversa em `iniciar`, retomada, política de aprovação (responder em `enviar` o que a política permite) e skills (instruções e arquivos da sessão em `iniciar`).
-
-Pendências registradas:
+- **Ciclo real no Codex e no Antigravity:** o `ciclo-real` só rodou com o Claude. O `agy` 1.5.9 precisa anunciar `loadSession` para a retomada nativa; sem isso, a conversa recomeça com o histórico como contexto.
+- **Skills do app nas conversas:** o motor já as recebe (`ConfigSessao.skills`), mas o servidor ainda não as passa; entra com o M1.11.
 
 - ~~**Ponte no app empacotado.**~~ Resolvida com o `apps/desktop`: o comando da ponte sai do `argv` do processo (`src/ponte.ts`), e o bundle roda a ponte com o Electron como Node (conferido no app empacotado).
 - **Windows:** o `awaitLauncherLoss` do T3 não age no Windows; ali o cordão é só o stdin.

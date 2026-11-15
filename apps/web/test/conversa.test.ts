@@ -78,12 +78,13 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
       const fim = yield* esperar(conversa, (estado) => estado.fase === "pronta");
       assert.deepStrictEqual(
         fim.itens.map((item) => item.tipo),
-        ["pessoa", "resposta", "ferramenta", "aprovacao", "resposta"],
+        ["pessoa", "resposta", "ferramenta", "aprovacao", "resposta", "resposta"],
       );
       assert.deepInclude(fim.itens[3], { situacao: "permitida" });
-      // O parcial "Vou consultar a base." virou o texto final do primeiro bloco; o segundo traz o link.
-      assert.deepInclude(fim.itens[1], { texto: "Escrevi o resumo.md.", final: true });
-      const resposta = fim.itens[4];
+      // Cada bloco de texto é uma resposta: o de antes da ferramenta, o da aprovação e o do link.
+      assert.deepInclude(fim.itens[1], { texto: "Vou consultar a base.", final: true });
+      assert.deepInclude(fim.itens[4], { texto: "Escrevi o resumo.md.", final: true });
+      const resposta = fim.itens[5];
       assert.isTrue(resposta?.tipo === "resposta" && resposta.final && resposta.texto.includes(LINK_DEMONSTRACAO));
       assert.deepStrictEqual(fim.uso, { entrada: 1234, saida: 56 });
 
@@ -119,17 +120,59 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
       assert.strictEqual(conversa.obter().provider, "antigravity");
       assert.strictEqual(conversa.obter().pastaTrabalho, pasta);
       assert.isUndefined(conversa.obter().sessao);
-      // A sessão antiga foi encerrada no servidor.
+      // A conversa antiga fica gravada, com a sessão do provider liberada.
       const { api } = contexto;
-      const encerrada = yield* Effect.promise(() =>
-        api
-          .chamar((cliente) => cliente["conversa.encerrar"]({ sessao: sessao! }))
-          .then(
-            () => "encerrou",
-            (erro: unknown) => (erro as { _tag: string })._tag,
-          ),
+      const lista = yield* Effect.promise(() => api.chamar((cliente) => cliente["conversa.listar"]({})));
+      assert.deepInclude(
+        lista.find((gravada) => gravada.id === sessao),
+        { estado: "liberada", titulo: "Uma resposta demorada, por favor", turnos: 2 },
       );
-      assert.strictEqual(encerrada, "SessaoDesconhecida");
+    }).pipe(Effect.scoped),
+  );
+
+  it.effect("recarregar a interface: a conversa volta com o histórico e com o resto da resposta em andamento", () =>
+    Effect.gen(function* () {
+      const primeira = (yield* app).contexto.conversa;
+      primeira.escolher({ provider: "claude", pastaTrabalho: pasta });
+      yield* Effect.promise(() => primeira.iniciar());
+      const sessao = primeira.obter().sessao!;
+      primeira.enviar("Qual é a DCN da EPT?");
+      const respondida = yield* esperar(primeira, (estado) => estado.fase === "pronta" && estado.itens.length > 1);
+
+      // Outra interface (a tela recarregada) abre a mesma conversa pelo id.
+      const segunda = (yield* app).contexto.conversa;
+      yield* Effect.promise(() => segunda.abrir(sessao));
+      const aberta = segunda.obter();
+      assert.strictEqual(aberta.fase, "pronta");
+      assert.strictEqual(aberta.titulo, "Qual é a DCN da EPT?");
+      assert.deepStrictEqual(
+        aberta.itens.map((item) => item.tipo),
+        respondida.itens.map((item) => item.tipo),
+      );
+      const ultima = aberta.itens.at(-1);
+      assert.isTrue(ultima?.tipo === "resposta" && ultima.final && ultima.texto.includes(LINK_DEMONSTRACAO));
+
+      // Uma resposta em andamento quando a tela recarrega: a nova tela a acompanha e a interrompe.
+      segunda.enviar("Uma resposta demorada");
+      yield* esperar(segunda, (estado) =>
+        estado.itens.some((item) => item.tipo === "resposta" && item.texto.includes("demorar")),
+      );
+      const terceira = (yield* app).contexto.conversa;
+      yield* Effect.promise(() => terceira.abrir(sessao));
+      const acompanhando = yield* esperar(terceira, (estado) =>
+        estado.itens.some((item) => item.tipo === "resposta" && item.texto.includes("demorar")),
+      );
+      assert.strictEqual(acompanhando.fase, "respondendo");
+      yield* Effect.promise(() => terceira.interromper());
+      const interrompida = yield* esperar(terceira, (estado) => estado.fase === "pronta");
+      assert.deepInclude(interrompida.itens.at(-1), { tipo: "aviso", texto: "Resposta interrompida." });
+      // A tela antiga também vê o fim do turno.
+      yield* esperar(segunda, (estado) => estado.fase === "pronta");
+
+      // Uma conversa que não existe.
+      yield* Effect.promise(() => terceira.abrir("nao-existe"));
+      assert.strictEqual(terceira.obter().fase, "configurando");
+      assert.deepStrictEqual(terceira.obter().erroInicio, { texto: "Esta conversa não existe mais no app." });
     }).pipe(Effect.scoped),
   );
 
