@@ -3,6 +3,7 @@
  * volta da aprovação, o turno concorrente, a interrupção e o encerramento.
  */
 import { assert, describe, it } from "@effect/vitest";
+import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Fiber from "effect/Fiber";
@@ -180,4 +181,46 @@ describe("Motor", () => {
       ]);
     }).pipe(Effect.provide(Motor.layer.pipe(Layer.provide(Layer.succeed(Motor.Drivers, drivers)))));
   });
+
+  it.effect("queda: o turno corrente falha, os próximos são recusados, e o motor informa o id nativo e a queda", () =>
+    Effect.gen(function* () {
+      const canal = yield* Canal.make;
+      const queda = yield* Deferred.make<Motor.FalhaProvider>();
+      const driver: Motor.Driver = {
+        detectar: Effect.succeed({ provider: "claude", instalado: true, autenticado: true }),
+        iniciar: (config) =>
+          Effect.succeed({
+            idNativo: config.retomar ?? "nativo-1",
+            queda: Deferred.await(queda),
+            enviar: () => canal.turno(Effect.void),
+            responder: canal.responder,
+            interromper: Effect.void,
+          } satisfies Motor.SessaoDriver),
+      };
+      const camadaQueda = Motor.layer.pipe(
+        Layer.provide(
+          Layer.succeed(Motor.Drivers, Motor.Drivers.of({ claude: driver, codex: driver, antigravity: driver })),
+        ),
+      );
+      yield* Effect.gen(function* () {
+        const motor = yield* Motor.Motor;
+        const sessao = yield* motor.iniciarSessao(CONFIG);
+        const info = yield* motor.infoSessao(sessao);
+        assert.strictEqual(info.idNativo, "nativo-1");
+        const retomada = yield* motor.infoSessao(yield* motor.iniciarSessao({ ...CONFIG, retomar: "nativo-9" }));
+        assert.strictEqual(retomada.idNativo, "nativo-9");
+
+        const turno = yield* Stream.runCollect(motor.enviarMensagem(sessao, "olá")).pipe(Effect.forkChild);
+        yield* Effect.yieldNow;
+        const falha = new Motor.FalhaProvider({ provider: "claude", operacao: "sessão", detalhe: "caiu" });
+        yield* canal.morrer(falha);
+        yield* Deferred.succeed(queda, falha);
+        const saida = yield* Fiber.await(turno);
+        assert.isTrue(Exit.hasFails(saida));
+        assert.strictEqual(yield* info.queda, falha);
+        const depois = yield* Effect.flip(Stream.runDrain(motor.enviarMensagem(sessao, "de novo")));
+        assert.strictEqual(depois, falha);
+      }).pipe(Effect.provide(camadaQueda));
+    }),
+  );
 });

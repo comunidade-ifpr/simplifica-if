@@ -7,6 +7,11 @@
  *   de fora as configurações e os MCP do usuário e do projeto.
  * - As ferramentas de servidores `preAprovado` entram em `allowedTools` (`mcp__<servidor>`); as
  *   demais passam por `canUseTool`, que vira `PedidoAprovacao`.
+ * - **Retomada:** a sessão nova recebe um `sessionId` (UUID) escolhido aqui, que é o `idNativo`; a
+ *   retomada abre o `query()` com `resume`, como o `ClaudeAdapterV2` do T3. Para isso o SDK grava a
+ *   transcrição (`persistSession`, o padrão) em `~/.claude/projects/`, como o Claude Code e o T3.
+ * - **Queda:** quando o stream do SDK acaba sem que a sessão tenha sido encerrada (o processo do
+ *   `claude` morreu), o turno corrente falha e a sessão recusa os próximos (`Canal.morrer`).
  */
 import {
   query,
@@ -18,13 +23,17 @@ import {
   type SDKMessage,
   type SDKUserMessage,
 } from "@anthropic-ai/claude-agent-sdk";
-import type * as Cause from "effect/Cause";
+import * as Cause from "effect/Cause";
+import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
+import * as Exit from "effect/Exit";
 import * as FileSystem from "effect/FileSystem";
 import * as Option from "effect/Option";
 import * as Queue from "effect/Queue";
 import * as Stream from "effect/Stream";
 import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
+import * as SecureRandom from "effect/crypto/SecureRandom";
+import * as Schema from "effect/Schema";
 import * as Canal from "../Canal.ts";
 import { type ConfigSessao, type Driver, type DeteccaoProvider, FalhaProvider, Gravador } from "../Driver.ts";
 import { type Evento, resumir, textoDeBlocos } from "../eventos.ts";
@@ -108,6 +117,7 @@ export function criarNormalizadorClaude(): (mensagem: SDKMessage) => ReadonlyArr
 }
 
 const PROVIDER = "claude" as const;
+const ehFalhaProvider = Schema.is(FalhaProvider);
 
 /** `mcpServers` do `query()`: `McpStdioServerConfig` ou `McpHttpServerConfig` do Agent SDK. */
 export function mcpServersClaude(config: ConfigSessao): Record<string, McpServerConfig> {
@@ -161,6 +171,7 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
     : undefined;
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
   const fs = yield* FileSystem.FileSystem;
+  const aleatorio = yield* SecureRandom.SecureRandom;
 
   const detectar: Driver["detectar"] = Effect.gen(function* () {
     if (executavel === undefined) {
@@ -215,6 +226,10 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
     const gravar = yield* Gravador;
     const servicos = yield* Effect.context<never>();
     const entrada = yield* Queue.unbounded<SDKUserMessage, Cause.Done>();
+    const queda = yield* Deferred.make<FalhaProvider>();
+    // O id da sessão no Claude: escolhido aqui na sessão nova, o retomado na retomada. O SDK o confirma
+    // em cada mensagem (`session_id`); se mudar, vale o dele.
+    let idNativo = config.retomar ?? (yield* aleatorio.uuidV4());
     // @effect-diagnostics-next-line abortControllerInEffect:off -- o Agent SDK recebe um AbortController; o finalizador da sessão aborta
     const abortar = new AbortController();
 
@@ -241,6 +256,13 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
       prompt: Stream.toAsyncIterable(Stream.fromQueue(entrada)),
       options: {
         ...opcoesBase(opcoes.ambiente, executavel),
+        // Como o T3 (`claudeQueryEnvironment`): na retomada, o primeiro pedido espera os MCP conectarem;
+        // sem isso, o Claude diz ao modelo que o servidor `ifpr` caiu.
+        ...(config.retomar === undefined
+          ? {}
+          : { env: { ...limparAmbiente(opcoes.ambiente), MCP_CONNECTION_NONBLOCKING: "0" } }),
+        persistSession: true,
+        ...(config.retomar === undefined ? { sessionId: idNativo } : { resume: config.retomar }),
         abortController: abortar,
         cwd: config.pastaTrabalho,
         mcpServers: mcpServersClaude(config),
@@ -263,13 +285,29 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
     yield* Stream.fromAsyncIterable(consulta, Canal.falhaDe(PROVIDER, "ler mensagens")).pipe(
       Stream.runForEach((mensagem) => {
         gravar("entrada", mensagem);
+        if (typeof mensagem.session_id === "string" && mensagem.session_id !== "") idNativo = mensagem.session_id;
         return Effect.forEach(normalizar(mensagem), canal.emitir, { discard: true });
       }),
-      Effect.catchTags({ FalhaProvider: canal.falhar }),
+      // O stream só acaba sozinho se o processo do `claude` acabou: é queda. No encerramento da sessão,
+      // o fiber é interrompido antes.
+      Effect.exit,
+      Effect.flatMap((saida) => {
+        const erro = Exit.isFailure(saida) ? Cause.squash(saida.cause) : undefined;
+        const falha = ehFalhaProvider(erro)
+          ? erro
+          : erro !== undefined
+            ? Canal.falhaDe(PROVIDER, "sessão")(erro)
+            : new FalhaProvider({ provider: PROVIDER, operacao: "sessão", detalhe: "o processo do Claude encerrou" });
+        return canal.morrer(falha).pipe(Effect.andThen(Deferred.succeed(queda, falha)));
+      }),
       Effect.forkScoped,
     );
 
     return {
+      get idNativo() {
+        return idNativo;
+      },
+      queda: Deferred.await(queda),
       enviar: (texto) =>
         canal.turno(
           Effect.suspend(() => {

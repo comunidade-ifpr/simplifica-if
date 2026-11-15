@@ -34,6 +34,7 @@ import { expandHomePath, fixPath } from "@simplifica-if/motor/t3/os-jank";
 import { SUBCOMANDO_PONTE } from "./constantes.ts";
 import * as Partida from "./partida.ts";
 import { comandoPonte } from "./ponte.ts";
+import * as Banco from "./persistencia/Banco.ts";
 import * as Servidor from "./servidor.ts";
 import { awaitLauncherLoss } from "./t3/launcherWatch.ts";
 
@@ -63,7 +64,9 @@ const servidor = Command.make(
       Flag.withDefault(0),
     ),
     pastaEstado: Flag.String("pasta-estado").pipe(
-      Flag.withDescription("pasta do app: CLIs gerenciadas e perfil do Antigravity (ou SIMPLIFICA_ESTADO)"),
+      Flag.withDescription(
+        "pasta do app: conversas (conversas.sqlite), CLIs gerenciadas e perfil do Antigravity (ou SIMPLIFICA_ESTADO)",
+      ),
       Flag.withFallbackConfig(Config.String("SIMPLIFICA_ESTADO")),
       Flag.optional,
     ),
@@ -107,6 +110,7 @@ const servidor = Command.make(
           portaMcp: opcoes.portaMcp,
           origens: [...opcoes.origens, ...partida.origens],
           canal: opcoes.canal,
+          bancoConversas: path.join(pastaEstado, Banco.ARQUIVO_BANCO),
         }).pipe(Layer.provide(drivers)),
       );
       const app = Context.get(contexto, Servidor.ServidorApp);

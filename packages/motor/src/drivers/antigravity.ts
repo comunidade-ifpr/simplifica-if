@@ -8,9 +8,15 @@
  *   no `authenticate` quer dizer "sem login".
  * - `session/request_permission` vira `PedidoAprovacao`; o turno termina com a resposta do
  *   `session/prompt` (`stopReason`).
+ * - **Retomada:** `session/load` quando o `initialize` anuncia `loadSession` (como o
+ *   `AcpSessionRuntime` do T3), senão `session/resume` se anunciado; sem nenhum dos dois, a sessão
+ *   falha na operação `retomar`. O `session/load` repete o histórico em `session/update`, que fica de
+ *   fora dos eventos: fora de um turno, as atualizações não viram eventos.
+ * - **Queda:** quando o processo do `agy` acaba, o turno corrente falha e a sessão recusa os próximos.
  */
 import * as AcpClient from "@simplifica-if/effect-acp/client";
 import type * as AcpSchema from "@simplifica-if/effect-acp/compat";
+import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
@@ -228,6 +234,37 @@ export function recusaMcpAcp(
   return `o agy${versao} não anuncia MCP por HTTP (mcpCapabilities.http) e não há ponte stdio configurada; servidores HTTP da sessão: ${http.map((servidor) => servidor.nome).join(", ")}`;
 }
 
+/**
+ * Retoma uma sessão ACP: `session/load` se o agente anuncia `loadSession`, senão `session/resume` se
+ * anuncia `sessionCapabilities.resume` (a ordem do `AcpSessionRuntime` do T3); sem nenhum, falha na
+ * operação `retomar`, e quem chamou recomeça com o histórico como contexto.
+ */
+const retomarSessao = (
+  inicio: AcpSchema.InitializeResponse,
+  cliente: AcpClient.AcpClient["Service"],
+  pedido: { readonly sessionId: string; readonly cwd: string; readonly mcpServers: ReadonlyArray<AcpSchema.McpServer> },
+): Effect.Effect<{ readonly sessionId: string }, FalhaProvider> => {
+  const capacidades = inicio.agentCapabilities;
+  if (capacidades?.loadSession === true) {
+    return cliente.agent
+      .loadSession(pedido)
+      .pipe(Effect.as({ sessionId: pedido.sessionId }), Effect.mapError(Canal.falhaDe(PROVIDER, "retomar")));
+  }
+  if (capacidades?.sessionCapabilities?.resume != null) {
+    return cliente.agent
+      .resumeSession(pedido)
+      .pipe(Effect.as({ sessionId: pedido.sessionId }), Effect.mapError(Canal.falhaDe(PROVIDER, "retomar")));
+  }
+  const versao = inicio.agentInfo?.version ? ` ${inicio.agentInfo.version}` : "";
+  return Effect.fail(
+    new FalhaProvider({
+      provider: PROVIDER,
+      operacao: "retomar",
+      detalhe: `o agy${versao} não anuncia session/load nem session/resume`,
+    }),
+  );
+};
+
 /** Dono do fluxo de login no `ProviderAuthController` do T3 (um app, um dono). */
 const DONO_LOGIN = "simplifica-if";
 const INSTANCIA = ProviderInstanceId.make("antigravity");
@@ -321,7 +358,7 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
           : Effect.fail(Canal.falhaDe(PROVIDER, "login")(erro)),
       ),
     );
-    return { cliente, inicio, login };
+    return { cliente, inicio, login, filho };
   });
 
   // O fluxo de login do T3 (`AntigravityAuth`): um `agy acp` descartável numa pasta temporária, com o
@@ -414,9 +451,12 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
       return yield* new FalhaProvider({ provider: PROVIDER, operacao: "session/new", detalhe: recusa });
     }
     const normalizar = criarNormalizadorAntigravity(config.servidoresMcp.map((servidor) => servidor.nome));
+    // Fora de um turno (o histórico que o `session/load` repete), as atualizações não viram eventos.
+    let emTurno = false;
     const processar = (entrada: EntradaAcp) =>
       Effect.suspend(() => {
         gravar("entrada", entrada);
+        if (entrada.tipo === "session/update" && !emTurno) return Effect.void;
         return Effect.forEach(normalizar(entrada), canal.emitir, { discard: true });
       });
 
@@ -453,25 +493,55 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
       }),
     );
 
-    const sessao = yield* cliente.agent
-      .createSession({
-        cwd: config.pastaTrabalho,
-        mcpServers: mcpServersAcp(config, {
-          http: aberto.inicio.agentCapabilities?.mcpCapabilities?.http === true,
-          ...(opcoes.ponteMcp ? { ponte: opcoes.ponteMcp } : {}),
-        }),
-      })
-      .pipe(Effect.mapError(Canal.falhaDe(PROVIDER, "session/new")));
+    const mcpServers = mcpServersAcp(config, {
+      http: aberto.inicio.agentCapabilities?.mcpCapabilities?.http === true,
+      ...(opcoes.ponteMcp ? { ponte: opcoes.ponteMcp } : {}),
+    });
+    const sessao =
+      config.retomar === undefined
+        ? yield* cliente.agent
+            .createSession({ cwd: config.pastaTrabalho, mcpServers })
+            .pipe(Effect.mapError(Canal.falhaDe(PROVIDER, "session/new")))
+        : yield* retomarSessao(aberto.inicio, cliente, {
+            sessionId: config.retomar,
+            cwd: config.pastaTrabalho,
+            mcpServers,
+          });
     const sessionId = sessao.sessionId;
 
+    // Quando o processo do `agy` acaba sozinho (queda), o turno corrente falha e a sessão recusa os
+    // próximos. No encerramento da sessão, o fiber é interrompido antes de o processo morrer.
+    const queda = yield* Deferred.make<FalhaProvider>();
+    yield* aberto.filho.exitCode.pipe(
+      Effect.exit,
+      Effect.flatMap((saida) => {
+        const falha = new FalhaProvider({
+          provider: PROVIDER,
+          operacao: "sessão",
+          detalhe:
+            saida._tag === "Success"
+              ? `o processo do agy encerrou (código ${saida.value})`
+              : "o processo do agy encerrou",
+        });
+        return canal.morrer(falha).pipe(Effect.andThen(Deferred.succeed(queda, falha)));
+      }),
+      Effect.forkScoped,
+    );
+
     return {
+      idNativo: sessionId,
+      queda: Deferred.await(queda),
       enviar: (mensagem) =>
         canal.turno(
-          Effect.sync(() => gravar("saida", { tipo: "session/prompt", texto: mensagem })).pipe(
+          Effect.sync(() => {
+            emTurno = true;
+            gravar("saida", { tipo: "session/prompt", texto: mensagem });
+          }).pipe(
             Effect.andThen(
               cliente.agent.prompt({ sessionId, prompt: [{ type: "text", text: mensagem }] }).pipe(
                 Effect.flatMap((resposta) => processar({ tipo: "session/prompt", resposta })),
                 Effect.catch((erro) => canal.falhar(Canal.falhaDe(PROVIDER, "session/prompt")(erro))),
+                Effect.ensuring(Effect.sync(() => (emTurno = false))),
                 Effect.forkIn(escopo),
               ),
             ),

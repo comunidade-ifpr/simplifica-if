@@ -68,6 +68,12 @@ export interface ConfigSessao {
    * O Antigravity não tem como desligá-la por sessão.
    */
   readonly buscaWeb?: boolean;
+  /**
+   * Retoma a conversa nativa do provider com este id (o `idNativo` de uma sessão anterior), em vez de
+   * abrir uma nova: `resume` do Agent SDK (Claude), `thread/resume` (Codex), `session/load` do ACP
+   * (Antigravity). Se o provider não retoma, o driver falha com `FalhaProvider` na operação `retomar`.
+   */
+  readonly retomar?: string;
 }
 
 /** O que o driver detecta: instalado, versão e login. Nunca traz e-mail nem credencial. */
@@ -99,6 +105,16 @@ export interface EstadoProvider extends DeteccaoProvider {
 }
 
 export interface SessaoDriver {
+  /**
+   * O id da conversa no próprio provider, que `ConfigSessao.retomar` aceita depois: o `session_id` do
+   * Agent SDK, o `threadId` do Codex, o `sessionId` do ACP. Sem ele, a sessão não se retoma.
+   */
+  readonly idNativo?: string;
+  /**
+   * Termina quando o processo do provider acaba sozinho (queda), com o motivo; nunca termina quando
+   * a sessão se encerra pelo `Scope`. Depois da queda, `enviar` falha com o mesmo erro.
+   */
+  readonly queda?: Effect.Effect<FalhaProvider>;
   /** Envia a mensagem e devolve os eventos do turno; o stream termina depois de `FimTurno`. */
   readonly enviar: (texto: string) => Stream.Stream<Evento, FalhaProvider | TurnoEmAndamento>;
   readonly responder: (idAprovacao: string, decisao: Decisao) => Effect.Effect<void, AprovacaoDesconhecida>;

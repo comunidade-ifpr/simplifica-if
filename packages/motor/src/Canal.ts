@@ -21,6 +21,11 @@ export interface Canal {
   /** Termina o turno corrente com erro (o processo do provider caiu, por exemplo). */
   readonly falhar: (erro: FalhaProvider) => Effect.Effect<void>;
   /**
+   * O processo do provider acabou: termina o turno corrente com `erro` e recusa os próximos com o
+   * mesmo erro. A sessão não volta; quem a usa abre outra (por retomada).
+   */
+  readonly morrer: (erro: FalhaProvider) => Effect.Effect<void>;
+  /**
    * Emite `PedidoAprovacao` e espera a resposta de `responder`. Se o turno acabar antes (interrupção),
    * a espera é interrompida junto com quem a chamou.
    */
@@ -37,6 +42,7 @@ export interface Canal {
 
 export const make: Effect.Effect<Canal> = Effect.sync(() => {
   let corrente: Fila | undefined;
+  let morta: FalhaProvider | undefined;
   const pendentes = new Map<string, Deferred.Deferred<Decisao>>();
 
   // O turno fica em andamento até o provider terminá-lo (`FimTurno` ou falha), mesmo que quem lê o
@@ -59,6 +65,12 @@ export const make: Effect.Effect<Canal> = Effect.sync(() => {
       return fila === undefined ? Effect.void : Queue.fail(fila, erro).pipe(Effect.asVoid);
     });
 
+  const morrer = (erro: FalhaProvider) =>
+    Effect.suspend(() => {
+      morta ??= erro;
+      return falhar(erro);
+    });
+
   const pedirAprovacao: Canal["pedirAprovacao"] = Effect.fnUntraced(function* (pedido) {
     const resposta = yield* Deferred.make<Decisao>();
     pendentes.set(pedido.id, resposta);
@@ -76,6 +88,7 @@ export const make: Effect.Effect<Canal> = Effect.sync(() => {
   const turno: Canal["turno"] = (iniciar) =>
     Stream.unwrap(
       Effect.gen(function* () {
+        if (morta !== undefined) return yield* morta;
         if (corrente !== undefined) return yield* new TurnoEmAndamento();
         const fila: Fila = yield* Queue.unbounded<Evento, FalhaProvider | Cause.Done>();
         corrente = fila;
@@ -85,7 +98,7 @@ export const make: Effect.Effect<Canal> = Effect.sync(() => {
       }),
     );
 
-  return { emitir, emitirAgora, falhar, pedirAprovacao, responder, turno } satisfies Canal;
+  return { emitir, emitirAgora, falhar, morrer, pedirAprovacao, responder, turno } satisfies Canal;
 });
 
 /** Erro de provider a partir de uma causa qualquer, sem copiar o texto cru para atributos. */

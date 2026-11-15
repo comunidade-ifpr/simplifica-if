@@ -4,10 +4,14 @@
  *
  * - O MCP entra por thread, em `config` do `thread/start` (`mcp_servers.<nome>.*`), como o T3 faz
  *   com o servidor dele: nada se grava no `config.toml` do usuário.
- * - A thread é `ephemeral`: não aparece no histórico do Codex do usuário.
+ * - A thread é gravada pelo Codex (`~/.codex/sessions`), como no T3, para que se retome depois:
+ *   `thread/resume` com o `threadId` (o `idNativo`) e a mesma configuração da thread nova (o MCP vem
+ *   com o token da sessão nova). Por isso ela aparece no histórico do Codex do usuário.
+ * - **Queda:** quando o app-server acaba, o turno corrente falha e a sessão recusa os próximos.
  * - Pedidos de aprovação (comando, edição de arquivo, elicitação de MCP) viram `PedidoAprovacao`.
  */
 import * as CodexClient from "@simplifica-if/effect-codex-app-server/client";
+import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
@@ -316,31 +320,44 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
       Effect.orElseSucceed((): Registro => ({})),
     );
     const isolamento = isolamentoCodex(configUsuario, config);
-    const thread = yield* cliente
-      .request("thread/start", {
-        cwd: config.pastaTrabalho,
-        ephemeral: true,
-        // Somente leitura: qualquer escrita ou comando fora do sandbox passa por aprovação.
-        approvalPolicy: "on-request",
-        sandbox: "read-only",
-        config: {
-          ...isolamento,
-          ...configMcpCodex(config),
-          ...(config.buscaWeb === true ? {} : { web_search: "disabled" }),
-        },
-        ...(modelo ? { model: modelo } : {}),
-      })
-      .pipe(Effect.mapError(Canal.falhaDe(PROVIDER, "thread/start")));
+    const parametros = {
+      cwd: config.pastaTrabalho,
+      // Somente leitura: qualquer escrita ou comando fora do sandbox passa por aprovação.
+      approvalPolicy: "on-request",
+      sandbox: "read-only",
+      config: {
+        ...isolamento,
+        ...configMcpCodex(config),
+        ...(config.buscaWeb === true ? {} : { web_search: "disabled" }),
+      },
+      ...(modelo ? { model: modelo } : {}),
+    } as const;
+    const thread =
+      config.retomar === undefined
+        ? yield* cliente
+            .request("thread/start", parametros)
+            .pipe(Effect.mapError(Canal.falhaDe(PROVIDER, "thread/start")))
+        : yield* cliente
+            // Sem os turnos na resposta: o histórico da interface vem do banco do app.
+            .request("thread/resume", { ...parametros, threadId: config.retomar, excludeTurns: true })
+            .pipe(Effect.mapError(Canal.falhaDe(PROVIDER, "retomar")));
     const threadId = thread.thread.id;
     let turnoCorrente: string | undefined;
 
-    // Se o app-server cair no meio de um turno, o turno termina com erro.
+    // Se o app-server acabar (queda), o turno corrente termina com erro e a sessão recusa os próximos.
+    // No encerramento da sessão, o fiber é interrompido antes de o processo morrer.
+    const queda = yield* Deferred.make<FalhaProvider>();
     yield* cliente.awaitTermination.pipe(
-      Effect.catch((erro) => canal.falhar(Canal.falhaDe(PROVIDER, "app-server encerrou")(erro))),
+      Effect.catch((erro) => {
+        const falha = Canal.falhaDe(PROVIDER, "app-server encerrou")(erro);
+        return canal.morrer(falha).pipe(Effect.andThen(Deferred.succeed(queda, falha)));
+      }),
       Effect.forkScoped,
     );
 
     return {
+      idNativo: threadId,
+      queda: Deferred.await(queda),
       enviar: (mensagem) =>
         canal.turno(
           cliente

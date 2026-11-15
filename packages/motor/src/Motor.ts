@@ -48,6 +48,12 @@ export class Motor extends Context.Service<
     ) => Effect.Effect<void, SessaoDesconhecida | AprovacaoDesconhecida>;
     readonly interromper: (sessao: string) => Effect.Effect<void, SessaoDesconhecida | FalhaProvider>;
     readonly encerrar: (sessao: string) => Effect.Effect<void, SessaoDesconhecida>;
+    /**
+     * O que a sessão tem para durar além do processo: o id nativo para a retomada
+     * (`ConfigSessao.retomar`) e a queda do processo do provider (`queda` termina com o motivo; não
+     * termina se a sessão se encerra por `encerrar`).
+     */
+    readonly infoSessao: (sessao: string) => Effect.Effect<InfoSessao, SessaoDesconhecida>;
     /** Instala ou atualiza a CLI gerenciada (Codex, Antigravity); termina numa fase final. */
     readonly instalar: (provider: Provider) => Stream.Stream<EstadoInstalacao, FalhaProvider | OperacaoNaoSuportada>;
     /**
@@ -58,7 +64,15 @@ export class Motor extends Context.Service<
   }
 >()("@simplifica-if/motor/Motor") {}
 
+/** Ver `Motor.infoSessao`. */
+export interface InfoSessao {
+  readonly provider: Provider;
+  readonly idNativo: string | undefined;
+  readonly queda: Effect.Effect<FalhaProvider>;
+}
+
 interface SessaoAberta {
+  readonly provider: Provider;
   readonly driver: SessaoDriver;
   readonly escopo: Scope.Closeable;
   /** Completa o resumo das ferramentas MCP com o que o servidor do app viu (`resultados.ts`). */
@@ -88,7 +102,7 @@ const make = Effect.gen(function* () {
     );
     const completar = yield* Resultados.completador(config).pipe(Scope.provide(escopo));
     const id = `${config.provider}-${++sequencia}`;
-    sessoes.set(id, { driver, escopo, completar });
+    sessoes.set(id, { provider: config.provider, driver, escopo, completar });
     return id;
   });
 
@@ -122,8 +136,18 @@ const make = Effect.gen(function* () {
     yield* sessao.driver.interromper;
   });
 
+  const infoSessao = Effect.fn("Motor.infoSessao")(function* (id: string) {
+    const sessao = yield* buscar(id);
+    return {
+      provider: sessao.provider,
+      idNativo: sessao.driver.idNativo,
+      queda: sessao.driver.queda ?? Effect.never,
+    } satisfies InfoSessao;
+  });
+
   return Motor.of({
     detectar,
+    infoSessao,
     iniciarSessao,
     enviarMensagem: (id, texto) =>
       Stream.unwrap(Effect.map(buscar(id), (sessao) => sessao.completar(sessao.driver.enviar(texto)))),
