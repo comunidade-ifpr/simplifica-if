@@ -59,7 +59,9 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
 
       const responder = (texto: string) =>
         Effect.gen(function* () {
-          yield* canal.emitir({ _tag: "TextoParcial", texto: "Vou consultar a base. " });
+          // Como nos providers reais, cada bloco de texto se fecha num `TextoFinal` antes da ferramenta.
+          yield* canal.emitir({ _tag: "TextoParcial", texto: "Vou consultar a base." });
+          yield* canal.emitir({ _tag: "TextoFinal", texto: "Vou consultar a base." });
           yield* canal.emitir({
             _tag: "FerramentaIniciada",
             id: "t1",

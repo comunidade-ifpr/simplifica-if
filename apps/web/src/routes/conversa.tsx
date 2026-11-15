@@ -210,7 +210,7 @@ function Conversa({ aoAbrirLink }: { readonly aoAbrirLink: (link: string) => voi
         </Button>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-6" aria-live="polite">
+        <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-6" role="log" aria-label="Mensagens">
           {estado.itens.length === 0 ? (
             <p className="text-center text-muted-foreground">Conversa aberta. Escreva sua pergunta abaixo.</p>
           ) : null}
@@ -253,20 +253,29 @@ function TelaConversa() {
   const [estado, conversa] = useConversa();
   const { id } = Route.useSearch();
   const navegar = useNavigate({ from: "/conversa" });
-  const [leitura, setLeitura] = useState<ReadonlyArray<string>>([]);
+  // O painel de leitura é da conversa em que foi aberto: trocar de conversa o esvazia.
+  const [painel, setPainel] = useState<{ readonly sessao?: string; readonly links: ReadonlyArray<string> }>({
+    links: [],
+  });
+  const leitura = painel.sessao === estado.sessao ? painel.links : [];
+  const setLeitura = (mudar: (links: ReadonlyArray<string>) => ReadonlyArray<string>) =>
+    setPainel((anterior) => ({
+      ...(estado.sessao === undefined ? {} : { sessao: estado.sessao }),
+      links: mudar(anterior.sessao === estado.sessao ? anterior.links : []),
+    }));
   const abrirLink = (link: string) => setLeitura((historico) => [...historico, link]);
 
   // A URL manda: um id que não é o da conversa corrente abre aquela conversa.
   useEffect(() => {
-    if (id !== undefined && id !== conversa.obter().sessao) {
-      setLeitura([]);
-      void conversa.abrir(id);
-    }
+    if (id !== undefined && id !== conversa.obter().sessao) void conversa.abrir(id);
   }, [id, conversa]);
-  // E a URL acompanha a conversa corrente (a que acabou de começar, ou nenhuma depois de "Nova").
+  // E a URL acompanha a conversa corrente (a que acabou de começar, ou nenhuma depois de "Nova"). Se o
+  // efeito de cima acabou de abrir a conversa da URL, `estado` ainda é o da renderização anterior: o
+  // controle já está noutra sessão, e a URL fica.
   useEffect(() => {
-    const atual = conversa.obter().sessao;
-    if (atual !== id) void navegar({ search: atual === undefined ? {} : { id: atual }, replace: true });
+    const atual = estado.sessao;
+    if (atual === id || conversa.obter().sessao !== atual) return;
+    void navegar({ search: atual === undefined ? {} : { id: atual }, replace: true });
   }, [estado.sessao, id, conversa, navegar]);
 
   let conteudo: ReactNode;
@@ -292,7 +301,7 @@ function TelaConversa() {
               historico={leitura}
               aoAbrirLink={abrirLink}
               aoVoltar={() => setLeitura((historico) => historico.slice(0, -1))}
-              aoFechar={() => setLeitura([])}
+              aoFechar={() => setLeitura(() => [])}
             />
           </div>
         )}

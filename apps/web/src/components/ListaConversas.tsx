@@ -48,13 +48,17 @@ export function ListaConversas({
   useEffect(() => {
     if (!conectado) return;
     let vale = true;
-    api.chamar((cliente) => cliente["conversa.listar"]({})).then(
-      (conversas) => vale && setLista({ fase: "pronta", conversas }),
-      (erro: unknown) => vale && setLista({ fase: "falhou", erro: explicarErro(erro) }),
-    );
+    api
+      .chamar((cliente) => cliente["conversa.listar"]({}))
+      .then(
+        (conversas) => vale && setLista({ fase: "pronta", conversas }),
+        (erro: unknown) => vale && setLista({ fase: "falhou", erro: explicarErro(erro) }),
+      );
     return () => {
       vale = false;
     };
+    // `atualizar` é só o gatilho da recarga (a conversa corrente mudou, um turno acabou): o corpo não o lê.
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies
   }, [api, conectado, atualizar]);
 
   if (lista.fase === "carregando") {

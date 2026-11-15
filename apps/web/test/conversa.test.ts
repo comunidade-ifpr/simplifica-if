@@ -78,12 +78,13 @@ layer(layerServidor(), { excludeTestServices: true })("conversa pela interface",
       const fim = yield* esperar(conversa, (estado) => estado.fase === "pronta");
       assert.deepStrictEqual(
         fim.itens.map((item) => item.tipo),
-        ["pessoa", "resposta", "ferramenta", "aprovacao", "resposta"],
+        ["pessoa", "resposta", "ferramenta", "aprovacao", "resposta", "resposta"],
       );
       assert.deepInclude(fim.itens[3], { situacao: "permitida" });
-      // O parcial "Vou consultar a base." virou o texto final do primeiro bloco; o segundo traz o link.
-      assert.deepInclude(fim.itens[1], { texto: "Escrevi o resumo.md.", final: true });
-      const resposta = fim.itens[4];
+      // Cada bloco de texto é uma resposta: o de antes da ferramenta, o da aprovação e o do link.
+      assert.deepInclude(fim.itens[1], { texto: "Vou consultar a base.", final: true });
+      assert.deepInclude(fim.itens[4], { texto: "Escrevi o resumo.md.", final: true });
+      const resposta = fim.itens[5];
       assert.isTrue(resposta?.tipo === "resposta" && resposta.final && resposta.texto.includes(LINK_DEMONSTRACAO));
       assert.deepStrictEqual(fim.uso, { entrada: 1234, saida: 56 });
 

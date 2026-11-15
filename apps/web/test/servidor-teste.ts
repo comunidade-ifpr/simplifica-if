@@ -7,7 +7,8 @@
  *
  * Pronto o servidor, imprime uma linha JSON com `porta`, `urlServidor`, `token` (o de
  * `SIMPLIFICA_SERVIDOR_TOKEN` ou um aleatório) e `pasta`, uma pasta de trabalho temporária. Encerra com SIGTERM, SIGINT ou, se o stdin não for um
- * terminal, quando ele fecha (o processo que o iniciou morreu).
+ * terminal, quando ele fecha (o processo que o iniciou morreu). Os logs vão para o stderr: o stdout é
+ * só da linha JSON.
  */
 import * as NodeCrypto from "node:crypto";
 import * as NodeUtil from "node:util";
@@ -17,6 +18,7 @@ import * as Console from "effect/Console";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as Logger from "effect/Logger";
 import * as Redacted from "effect/Redacted";
 import * as Servidor from "@simplifica-if/server";
 import { criarBancoFixture, diretorioTemporario, limparTemporarios } from "../../../packages/mcp/test/fixture.ts";
@@ -59,6 +61,6 @@ const programa = Effect.gen(function* () {
   const app = yield* Servidor.ServidorApp;
   yield* Console.log(JSON.stringify({ porta: app.porta, urlServidor: `http://127.0.0.1:${app.porta}`, token, pasta }));
   return yield* Effect.never;
-}).pipe(Effect.scoped, Effect.provide(camada));
+}).pipe(Effect.scoped, Effect.provide(camada), Effect.provide(Layer.succeed(Logger.LogToStderr, true)));
 
 NodeRuntime.runMain(programa);

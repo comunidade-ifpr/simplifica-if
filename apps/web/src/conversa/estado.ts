@@ -312,7 +312,12 @@ export function reduzir(estado: EstadoConversa, acao: Acao): EstadoConversa {
     case "enviada": {
       const { uso: _uso, ...resto } = estado;
       return comItem(
-        { ...resto, fase: "respondendo", ...(estado.titulo ? {} : { titulo: acao.texto }), estadoServidor: "respondendo" },
+        {
+          ...resto,
+          fase: "respondendo",
+          ...(estado.titulo ? {} : { titulo: acao.texto }),
+          estadoServidor: "respondendo",
+        },
         (chave) => ({ tipo: "pessoa", chave, texto: acao.texto }),
       );
     }

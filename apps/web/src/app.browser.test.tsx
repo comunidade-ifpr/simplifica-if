@@ -73,7 +73,8 @@ it("Conversa: aprovação, link ifpr:// no painel, interromper e nova conversa",
   // Com "escrev", o provider de demonstração pede aprovação.
   await mensagem.fill("Pode escrever um resumo da DCN?");
   await userEvent.keyboard("{Enter}");
-  await expect.element(page.getByText("Pode escrever um resumo da DCN?")).toBeVisible();
+  const mensagens = page.getByRole("log", { name: "Mensagens" });
+  await expect.element(mensagens.getByText("Pode escrever um resumo da DCN?")).toBeVisible();
   await expect.element(page.getByText("Buscar norma")).toBeVisible();
   await expect.element(page.getByText("A IA pede permissão: Escrever arquivo")).toBeVisible();
   await page.getByRole("button", { name: "Permitir" }).click();
@@ -101,4 +102,11 @@ it("Conversa: aprovação, link ifpr:// no painel, interromper e nova conversa",
   await page.getByRole("button", { name: "Nova conversa" }).click();
   await expect.element(page.getByRole("button", { name: "Começar conversa" })).toBeVisible();
   await expect.element(page.getByLabelText("Pasta de trabalho")).toHaveValue(servidor.pasta);
+
+  // A conversa ficou gravada: a lista lateral (só em tela larga) a reabre, com o histórico.
+  await page.viewport(1280, 800);
+  const lista = page.getByRole("navigation", { name: "Conversas gravadas" });
+  await lista.getByRole("link", { name: /Pode escrever um resumo da DCN\?/ }).click();
+  await expect.element(mensagens.getByText("Pode escrever um resumo da DCN?")).toBeVisible();
+  await expect.element(mensagens.getByText("Resposta interrompida.")).toBeVisible();
 });
