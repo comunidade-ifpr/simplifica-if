@@ -1,6 +1,6 @@
 # @simplifica-if/motor
 
-Prova de conceito (M1.0) do motor de conversa do app Simplifica IF. O app não é fork do T3 Code: o motor é próprio, fino, sobre as interfaces oficiais e versionadas de cada provider, com a assinatura do servidor.
+Motor de conversa do app Simplifica IF: começou como prova de conceito (M1.0) e virou o motor de produção do M1.2, dentro do `apps/server`. O app não é fork do T3 Code: o motor é próprio, fino, sobre as interfaces oficiais e versionadas de cada provider, com a assinatura do servidor.
 
 | Provider | Interface | Login |
 |---|---|---|
@@ -51,7 +51,9 @@ O código do T3 está em `src/t3/`, em inglês e na formatação do upstream, co
 - `src/eventos.ts`: os eventos normalizados (Effect Schema): `TextoParcial`, `TextoFinal`, `FerramentaIniciada`, `FerramentaConcluida`, `PedidoAprovacao`, `UsoTokens`, `Erro`, `FimTurno`.
 - `src/erros.ts` (`@simplifica-if/motor/erros`): os erros (`FalhaProvider`, `OperacaoNaoSuportada`, `SessaoDesconhecida`…) e a `Decisao`, só schemas, para os contratos do app e a interface; `Driver.ts` os reexporta.
 - `src/Driver.ts`: o contrato do driver, `ConfigSessao`, `ServidorMcp`, `DeteccaoProvider` (o que o driver detecta) e `EstadoProvider` (a detecção mais `podeInstalar` e `podeEntrar`, que o `Motor.detectar` deriva de o driver ter `instalar` e `entrar`).
-- `src/Canal.ts`: a fila do turno e os pedidos de aprovação pendentes, comum aos drivers.
+- `src/Canal.ts`: a fila do turno, os pedidos de aprovação pendentes e a política aplicada a eles, comum aos drivers.
+- `src/politica.ts`: a política de fábrica e a avaliação por tipo de ferramenta e lugar.
+- `src/skills.ts`: os arquivos e as instruções das skills do app.
 - `src/resultados.ts`: completa o resumo das ferramentas MCP com os `resultados` do servidor HTTP do app.
 - `src/drivers/{claude,codex,antigravity}.ts`: um driver por provider. O normalizador de cada um é uma função pura (`criarNormalizador*`), testada com gravações reais em `test/fixtures/`.
 - `scripts/poc.ts`: o harness.
@@ -68,6 +70,33 @@ O código do T3 está em `src/t3/`, em inglês e na formatação do upstream, co
 **Resultado das ferramentas pelo servidor do app (`src/resultados.ts`):** o `agy` 1.5.x não manda o resultado pelo ACP (o `tool_call_update` com `completed` vem sem `rawOutput` e sem `content`), e o `FerramentaConcluida` do Antigravity sai com `resumo` vazio. O `ServidorMcpHttp` da sessão pode trazer `resultados`, um `Stream` das chamadas que o servidor viu (`{ ferramenta, resumo, falhou }`); o harness o liga ao `chamadas` de `@simplifica-if/mcp/http`, filtrado pelo rótulo da sessão, cujo `resumo` são os primeiros 300 caracteres do texto do resultado. O `Motor` passa os eventos do turno por um completador: cada `FerramentaConcluida` de `<servidor>.<ferramenta>` consome a próxima chamada daquela ferramenta (ordem e nome, dentro da sessão) e, se veio com resumo vazio, fica com o dela. O `read_resource` do Antigravity (sem prefixo de servidor; entrada `{ ServerName, Uri }`) consome a próxima leitura de recurso daquele URI no servidor `ServerName`: o servidor do app a registra com o URI em `ferramenta` (`tipo: "recurso"`). Espera até 1 s pela chamada; as sobras de um turno se descartam no início do seguinte. Os normalizadores não mudam, e o motor não depende do pacote MCP.
 
 **Toolkit no mesmo processo (`createSdkMcpServer`):** não é simples. O `tool()` do SDK pede esquema Zod (`AnyZodRawShape`) e o `instance` espera um `McpServer` do `@modelcontextprotocol/sdk`; o nosso Toolkit é `effect/ai` com Effect Schema. Teria de haver uma ponte, que só serviria ao Claude. Para o M1, a recomendação é servir o Toolkit por HTTP local dentro do servidor do app, como o `McpHttpServer.ts` do T3, e passar `{ type: "http", url, headers }` aos três: Claude (`mcpServers`), Codex (`mcp_servers.ifpr.url` e `http_headers`) e Antigravity (`mcpCapabilities.http: true` no `initialize` do `agy`). Isso também evita um processo Node por sessão.
+
+## Política de fábrica (M1.7, versão mínima)
+
+`src/politica.ts`: um Effect Schema embutido e congelado (`POLITICA_FABRICA`), só de leitura. Cada driver classifica o pedido de aprovação nativo num tipo de ferramenta, com os caminhos que ele toca (`classificarClaude`, `classificarComandoCodex`, `classificarAcp`), e o `Canal.comPolitica` decide: `permitir` e `negar` se respondem no motor, sem evento; `perguntar` vira `PedidoAprovacao`.
+
+| Tipo | Dentro da pasta de trabalho | Fora dela |
+|---|---|---|
+| leitura (ler, listar, buscar) | permitir | negar |
+| escrita (criar, alterar, apagar, mover) | perguntar | negar |
+| comando | perguntar | negar |
+| MCP do app (`preAprovado`, o `ifpr`) | permitir | — |
+| outro MCP, web | negar | — |
+| outra (subagente, plano…) | perguntar | — |
+
+Também: providers permitidos (`claude`, `codex`, `antigravity`), Codex em `read-only` com `on-request`, busca web e configuração do usuário desligadas, telemetria desligada nos três (variáveis do Claude, `-c` do `codex app-server`, `--disable-telemetry` do `agy`, sem `OTEL_*`). No macOS, `/tmp` e `/private/tmp` contam como a mesma pasta. O arquivo de política da máquina, gerido pela DTI, fica para depois (decisão em aberto 9).
+
+## Retomada, queda e interromper (M1.2)
+
+- **Retomada:** `ConfigSessao.retomar` com o `idNativo` de uma sessão anterior (`Motor.infoSessao`). Claude: `resume` (a sessão nova recebe um `sessionId` escolhido pelo driver, e o SDK grava a transcrição em `~/.claude/projects/`). Codex: `thread/resume`, com os mesmos parâmetros da thread nova; por isso a thread não é `ephemeral` e aparece no histórico do Codex do usuário. Antigravity: `session/load` quando o `initialize` anuncia `loadSession` (senão `session/resume`), com o mesmo `_meta`; o histórico que o `session/load` repete fica fora dos eventos.
+- **Queda:** quando o processo do provider acaba sozinho, `SessaoDriver.queda` termina antes de o turno corrente falhar com o mesmo erro (`Canal.morrer`), e a sessão recusa os próximos turnos. O `apps/server` usa isso para fechar a conversa como `caiu`.
+- **Interromper:** o Claude interrompido termina com `error_during_execution`; o driver o troca por `FimTurno` com motivo `interrupted`.
+
+## Skills do app, texto parcial e contexto (M1.2)
+
+- **Skills** (`src/skills.ts`): `ConfigSessao.skills` grava cada skill em `<pasta>/.simplifica/skills/<nome>/SKILL.md`, com os arquivos ao lado, e soma às instruções da sessão a lista das skills (system prompt do Claude, `developerInstructions` do Codex, `systemPrompt.append` do `_meta.antigravity`). O teste real (`test/real.test.ts`, um por provider) confere que a skill de exemplo lê um arquivo dela e responde sem pedido de aprovação; ainda não foi rodado nos três depois do merge.
+- **Texto parcial do Claude:** cada `text_delta` dos `stream_event` vira `TextoParcial`, e o bloco completo, `TextoFinal`, sem duplicar; os `stream_event` de subagente ficam de fora. Medido na pergunta de referência (`test/fixtures/claude-parcial.jsonl`): o texto vem depois das ferramentas, e o primeiro pedaço chega a cerca de 14 s, junto com o resto, porque o modelo redige a resposta no raciocínio oculto. O streaming funciona; a espera é do modelo.
+- **Contexto do Codex:** além do isolamento, `CONTEXTO_CODEX` desliga na thread as ferramentas e instruções que a política não usa (`features.goals`, `image_generation`, `sleep_tool`, `tool_suggest`, `skill_search`, `include_*_instructions`), e o isolamento tira as skills, os hooks e o `AGENTS.md` do usuário. Um turno sem ferramenta tinha 14 mil tokens de entrada só com o isolamento do M1.4; o teste real confere que fica abaixo de 12 mil (passou em 15/11/2026, codex-cli 0.169.0).
 
 ## Detecção
 

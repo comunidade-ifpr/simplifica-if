@@ -29,8 +29,8 @@
  * um `TextoFinal` no banco, e quem acompanha um turno em andamento recebe o texto parcial acumulado
  * num `TextoParcial` só.
  *
- * Pontos de extensão (outras frentes do M1.2): a política de aprovação (M1.7) responde em `bombear`
- * os pedidos que ela permite; as skills montam as instruções da sessão em `abrirSessao`.
+ * A política de aprovação (M1.7) fica no motor: aqui só chegam os pedidos que ela manda perguntar.
+ * Ponto de extensão: as skills do app (M1.11) entram como `ConfigSessao.skills` em `abrirSessao`.
  */
 import * as Context from "effect/Context";
 import * as Deferred from "effect/Deferred";
