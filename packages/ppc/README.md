@@ -54,3 +54,24 @@ node packages/ppc/scripts/pre-conferencia.ts --base                             
 node packages/ppc/scripts/pre-conferencia.ts --base --amostra CT-SUP-21 --estado nao_atende
 node packages/ppc/scripts/pre-conferencia.ts --docx <PPC.docx> --cnct <slug> --forma integrado --saida <comentado.docx>
 ```
+
+## Revisão prévia em DOCX (M1.11, etapa 3)
+
+`revisarDocx` (`src/revisao-previa.ts`) junta a conversão, a pré-conferência e os comentários do Word numa função pura sobre bytes e dados planos (o servidor do app a roda num `Worker`):
+
+```ts
+import { revisarDocx } from "@simplifica-if/ppc/revisao-previa";
+
+const revisao = revisarDocx(bytes, "PPC.docx", base, { agora: new Date() }); // base: BaseRevisaoPrevia (do kb.sqlite no app)
+// revisao.docx: a cópia com comentários; revisao.pendencias: por tema, com o que fazer, trecho, fontes legíveis
+// e onde o comentário ficou (no-trecho | no-inicio | so-na-lista); revisao.curso: CNCT e forma identificados
+```
+
+- **Curso:** o CNCT é a denominação mais longa do catálogo que aparece nas 200 primeiras linhas; a forma, PROEJA se aparece, senão a mais citada entre integrado, subsequente e concomitante. A pessoa pode escolher os dois (`cnct`, `forma`). Sem curso identificado, os critérios que dependem dele saem "a conferir".
+- **Temas:** a ordem do parecer da PROENS (as paradas da proposta B, `TEMAS`), pelo tópico da ficha em `topicos-fichas.json`; a triagem vem antes, em "Antes de começar".
+- **Comentários** (autor "Simplifica IF (revisão prévia)"): a frase do problema, "O que fazer" (por ficha) e a fonte com o nome da norma e o dispositivo por extenso (`rotuloDispositivo`: "art. 29, § 2º") e o endereço oficial quando a base o tem, porque `ifpr://` não abre no Word. "A conferir" sai como "Confira:" e "Se for o caso:", nunca como erro. Ausência (sem trecho) é comentada no título. Um comentário no título avisa que é revisão prévia, não parecer da PROENS, com a data da revisão, a data da base, quantos critérios foram conferidos e os itens não localizados no texto.
+- **Ancoragem** (`@simplifica-if/docx/comentarios`): o trecho é procurado num só parágrafo, com espaços, maiúsculas, aspas e travessões normalizados, e a sintaxe de link do Markdown é retirada antes (`comoNoDocumento`). Trecho que não se acha (atravessa parágrafos, está numa caixa de texto, foi escrito de outro jeito) não é ancorado em lugar nenhum: fica na lista e no aviso. As marcas são sempre filhas do parágrafo: run dentro de `w:ins`, link, campo ou controle de conteúdo é marcado por inteiro, por fora do invólucro (rejeitar as alterações não deixa comentário órfão); o texto apagado (`w:del`) não ancora. Comentários de outras pessoas ficam intactos, e os novos ganham ids livres.
+
+```bash
+node packages/ppc/scripts/amostras-revisao-previa.ts --saida <pasta>   # os casos de compatibilidade, para abrir no Word
+```
