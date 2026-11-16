@@ -7,16 +7,23 @@ O app desktop do Simplifica IF (M1.1): o processo principal do Electron 44, que 
 
 ## Como rodar em desenvolvimento
 
-```bash
-pnpm install
-pnpm kb:compilar                                # tmp/kb.sqlite, a base do servidor
-pnpm --filter @simplifica-if/desktop garantir-electron   # baixa o Electron (uma vez; o dev também faz)
+Na raiz do repositório:
 
-pnpm --filter @simplifica-if/web dev            # terminal 1: a interface em http://localhost:5190
-pnpm --filter @simplifica-if/desktop dev        # terminal 2: o Electron
+```bash
+pnpm install          # uma vez, e depois de cada pull que mude dependências
+pnpm kb:compilar      # tmp/kb.sqlite, a base do servidor (uma vez; recompile quando a base mudar)
+pnpm app:dev          # abre o app; o mesmo que pnpm --filter @simplifica-if/desktop dev
 ```
 
-O `dev` constrói o processo principal e o preload em `dist/app`, e abre o Electron. O processo principal inicia o servidor com o Node 26 do repositório (`node apps/server/src/bin.ts`), e a janela carrega o dev server do `apps/web`. Não é preciso iniciar o servidor à mão.
+O `app:dev` faz tudo num terminal só:
+
+1. constrói o processo principal e o preload em `dist/app` e baixa o Electron, se faltar;
+2. garante a interface: se `http://localhost:5190` já responde (por exemplo, `pnpm --filter @simplifica-if/web dev` noutro terminal), usa essa; senão, inicia o `apps/web` e espera ficar pronto;
+3. abre o Electron, que inicia o servidor com o Node do repositório (`node apps/server/src/bin.ts`) e carrega a interface.
+
+Ctrl+C ou fechar a janela encerra tudo, inclusive a interface que o `app:dev` iniciou. Mudanças em `apps/web` aparecem na hora; mudanças em `apps/desktop/src` ou `apps/server` pedem fechar e rodar de novo.
+
+Se a interface não responder, a janela tenta carregá-la 8 vezes, em cerca de 10 s, e desiste com uma mensagem no terminal dizendo o que rodar. Se a porta 5190 estiver ocupada por outro programa, o `apps/web` não sobe (`strictPort`) e o `app:dev` para com o aviso.
 
 | Variável | Padrão | Uso |
 |---|---|---|

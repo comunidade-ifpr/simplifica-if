@@ -220,6 +220,12 @@ function protegerConteudo(conteudo: WebContents): void {
 // pode ainda não estar de pé quando a janela abre.
 const ERROS_CARGA_REPETIVEIS = new Set([-2, -7, -9, -102, -105, -106, -118]);
 const ESPERAS_CARGA_MS = [100, 250, 500, 1_000, 2_000, 2_000, 2_000, 2_000];
+/**
+ * Tentativas de carga da janela atual. Volta a zero só quando a interface pede a conexão (carregou de
+ * verdade): o `did-finish-load` também dispara para a página de erro do Chromium, e zerar ali repetia
+ * para sempre.
+ */
+let tentativasCarga = 0;
 
 function criarJanela(): void {
   const nova = new BrowserWindow({
@@ -245,18 +251,26 @@ function criarJanela(): void {
     if (janela === nova) janela = undefined;
   });
 
-  let tentativa = 0;
-  nova.webContents.on("did-fail-load", (_evento, codigo, _descricao, url, quadroPrincipal) => {
-    const espera = ESPERAS_CARGA_MS[tentativa];
-    if (!quadroPrincipal || !ERROS_CARGA_REPETIVEIS.has(codigo) || espera === undefined) return;
+  tentativasCarga = 0;
+  nova.webContents.on("did-fail-load", (_evento, codigo, descricao, url, quadroPrincipal) => {
+    if (!quadroPrincipal || !ERROS_CARGA_REPETIVEIS.has(codigo)) return;
     if (!isSameOriginRendererNavigation({ applicationUrl: configuracao.urlJanela, navigationUrl: url })) return;
-    tentativa += 1;
+    const espera = ESPERAS_CARGA_MS[tentativasCarga];
+    if (espera === undefined) {
+      registrar(
+        `a interface não carregou (${descricao}) em ${configuracao.urlJanela}; desisti depois de ${ESPERAS_CARGA_MS.length} tentativas`,
+      );
+      if (DESENVOLVIMENTO) {
+        registrar(
+          "em desenvolvimento, use `pnpm --filter @simplifica-if/desktop dev`, que inicia a interface, ou rode `pnpm --filter @simplifica-if/web dev` antes",
+        );
+      }
+      return;
+    }
+    tentativasCarga += 1;
     setTimeout(() => {
       if (!nova.isDestroyed()) void nova.loadURL(configuracao.urlJanela);
     }, espera);
-  });
-  nova.webContents.on("did-finish-load", () => {
-    tentativa = 0;
   });
   void nova.loadURL(configuracao.urlJanela).catch(() => undefined);
 }
@@ -265,6 +279,7 @@ function criarJanela(): void {
 
 ipcMain.handle(CANAIS.conexao, async (evento) => {
   if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
+  tentativasCarga = 0;
   if (conexaoAtual === undefined) throw new Error("o servidor local ainda não foi iniciado");
   return conexaoAtual;
 });
