@@ -83,6 +83,8 @@ export class AnalisePpc extends Context.Service<
   AnalisePpc,
   {
     readonly analisar: (entrada: EntradaAnalise) => Effect.Effect<ResultadoRevisaoPpc, FalhaRevisaoPpc>;
+    /** O mesmo `analisar`, com o Markdown e as linhas da triagem (a lista viva guarda o texto do PPC). */
+    readonly analisarCompleto: (entrada: EntradaAnalise) => Effect.Effect<RevisaoDoArquivo, FalhaRevisaoPpc>;
     /**
      * Converte, pré-confere e (com `ia`) junta os resultados da IA; espera a vez em vez de recusar.
      * As mesmas conferências do `analisar` (arquivo liberado, tamanho, Worker com limites).
@@ -314,11 +316,8 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
     return { revisao: semDocx, sha256, arquivoComentado } satisfies RevisaoDoArquivo;
   });
 
-  const analisarUma = (entrada: EntradaAnalise) =>
-    revisarUm({ ...entrada, gravar: true }).pipe(Effect.map((r) => resultadoParaInterface(entrada.arquivo, r)));
-
-  const analisar = (entrada: EntradaAnalise) =>
-    analisarUma(entrada).pipe(
+  const analisarCompleto = (entrada: EntradaAnalise) =>
+    revisarUm({ ...entrada, gravar: true }).pipe(
       vez.withPermitsIfAvailable(1),
       Effect.flatMap(
         Option.match({
@@ -333,10 +332,12 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
         }),
       ),
     );
+  const analisar = (entrada: EntradaAnalise) =>
+    analisarCompleto(entrada).pipe(Effect.map((r) => resultadoParaInterface(entrada.arquivo, r)));
   const liberar = (arquivo: string) => Effect.sync(() => void liberados.add(NodePath.normalize(arquivo)));
   const revisarArquivo = (entrada: EntradaRevisarArquivo) => revisarUm(entrada).pipe(vez.withPermits(1));
 
-  return AnalisePpc.of({ analisar, liberar, revisarArquivo });
+  return AnalisePpc.of({ analisar, analisarCompleto, liberar, revisarArquivo });
 });
 
 /** O serviço sobre o `FontesNormativas` e o `SqlClient` do `kb.sqlite` (os do `Leitura` do servidor). */
