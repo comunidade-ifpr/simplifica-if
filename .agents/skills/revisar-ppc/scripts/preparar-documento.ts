@@ -11,7 +11,13 @@ import * as NodePath from "node:path";
 import { corpoPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import { type ObjetoPy, verdadeiro } from "@simplifica-if/kb/python/valores";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
-import { type ArtefatosDocx, converterDocx } from "@simplifica-if/ppc/conversao-docx/conversao";
+import {
+  type ArtefatosDocx,
+  type Conversao,
+  converterPpc,
+  gravarArtefatos,
+  lerArquivoDocx,
+} from "@simplifica-if/ppc/conversao-docx/conversao";
 import {
   extrairIdentificacao,
   extrairIdentificacaoDaConversao,
@@ -105,10 +111,9 @@ function prepararDocx(
   arquivo: string,
   caminhos: CaminhosRodada,
   skill: CaminhosAnalise,
-  relogio: Relogio,
+  convertido: Conversao,
 ): { identificacao: IdentificacaoComFontes; conversao: ArtefatosDocx } {
-  NodeFS.mkdirSync(caminhos.artefatosConversaoDir, { recursive: true });
-  const artefatos = converterDocx(arquivo, caminhos.artefatosConversaoDir, { agora: relogio() });
+  const artefatos = gravarArtefatos(convertido, arquivo, caminhos.artefatosConversaoDir);
   const normalizado = normalizarMarkdown(lerTexto(artefatos.markdown)).markdownNormalizado;
   escreverTextoPy(artefatos.markdown, normalizado);
   escreverTextoPy(caminhos.ppc, normalizado);
@@ -150,6 +155,11 @@ export function prepararDocumento(arquivoEntrada: string, opcoes: OpcoesPreparac
   const tipo = extensao(arquivo).toLowerCase();
   if (tipo !== ".md" && tipo !== ".docx") throw new Error("A entrada deve ser um arquivo .md ou .docx.");
 
+  // O `.docx` é convertido em memória antes de qualquer pasta ser criada: um arquivo que não é
+  // DOCX, está protegido por senha ou corrompido falha aqui, sem deixar uma rodada pela metade.
+  const convertido =
+    tipo === ".docx" ? converterPpc(lerArquivoDocx(arquivo), NodePath.basename(arquivo), { agora: relogio() }) : null;
+
   const rodada = criarRodada(
     opcoes.saidaBase || skill.outputDir,
     radical(arquivo).toLowerCase().replaceAll(" ", "-"),
@@ -160,8 +170,8 @@ export function prepararDocumento(arquivoEntrada: string, opcoes: OpcoesPreparac
 
   let identificacao: IdentificacaoComFontes;
   let conversao: ArtefatosDocx | undefined;
-  if (tipo === ".md") identificacao = prepararMarkdown(arquivo, caminhos, skill);
-  else ({ identificacao, conversao } = prepararDocx(arquivo, caminhos, skill, relogio));
+  if (convertido) ({ identificacao, conversao } = prepararDocx(arquivo, caminhos, skill, convertido));
+  else identificacao = prepararMarkdown(arquivo, caminhos, skill);
 
   const metadata: ObjetoPy = {
     curso: identificacao.curso,

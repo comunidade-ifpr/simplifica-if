@@ -58,4 +58,38 @@ describe("preparar-documento com .docx", () => {
     expect(texto).toBe(NodeFS.readFileSync(conversao.markdown!, "utf-8"));
     expect(texto).toContain("| CARGA HORÁRIA TOTAL DO CURSO | CARGA HORÁRIA TOTAL DO CURSO |  | 680 | 530 |");
   });
+
+  test("arquivo que não é DOCX falha antes de criar a rodada", () => {
+    const dir = diretorioTemporario();
+    const rodadas = NodePath.join(dir, "rodadas");
+    const casos: Array<[string, Uint8Array, RegExp]> = [
+      ["texto.docx", new TextEncoder().encode("isto não é um DOCX"), /não é um DOCX/],
+      [
+        "antigo.docx",
+        Uint8Array.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1, 0, 0, 0, 0]),
+        /Word 97-2003 \(\.doc\) ou um DOCX protegido por senha/,
+      ],
+      ["truncado.docx", docxDaFixture("ppc-minimo").slice(0, 300), /corrompido ou incompleto/],
+    ];
+    for (const [nome, bytes, mensagem] of casos) {
+      const arquivo = NodePath.join(dir, nome);
+      NodeFS.writeFileSync(arquivo, bytes);
+      expect(() => prepararDocumento(arquivo, { saidaBase: rodadas, relogio: () => new Date(2026, 10, 13) })).toThrow(
+        mensagem,
+      );
+    }
+    expect(NodeFS.existsSync(rodadas)).toBe(false);
+  });
+
+  test("arquivo de mais de 100 MB é recusado antes de ser lido", () => {
+    const dir = diretorioTemporario();
+    const arquivo = NodePath.join(dir, "enorme.docx");
+    // Arquivo esparso: tem o tamanho, sem ocupar o disco.
+    NodeFS.closeSync(NodeFS.openSync(arquivo, "w"));
+    NodeFS.truncateSync(arquivo, 101 * 1024 * 1024);
+    expect(() => prepararDocumento(arquivo, { saidaBase: NodePath.join(dir, "rodadas") })).toThrow(
+      /grande demais \(101 MB; o limite é de 100 MB\)/,
+    );
+    expect(NodeFS.existsSync(NodePath.join(dir, "rodadas"))).toBe(false);
+  });
 });
