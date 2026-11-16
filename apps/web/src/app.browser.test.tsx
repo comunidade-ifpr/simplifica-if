@@ -155,6 +155,11 @@ it("Analisar um PPC: do Início à lista de pendências por tema e à cópia com
   const comentado = `${servidor.pasta}/PPC de teste - revisão prévia (Simplifica IF).docx`;
   expect(abrirDocumento).toHaveBeenCalledWith(comentado);
   expect(mostrarNaPasta).toHaveBeenCalledWith(comentado);
+
+  // A cópia movida ou apagada: o desktop recusa, e a tela diz o que houve.
+  abrirDocumento.mockRejectedValueOnce(new Error("a cópia comentada não foi encontrada"));
+  await page.getByRole("button", { name: "Abrir o documento comentado" }).click();
+  await expect.element(page.getByText(/Não foi possível abrir a cópia comentada/)).toBeVisible();
 });
 
 it("Analisar um PPC: arquivo que não existe, com a mensagem do servidor em português", async () => {

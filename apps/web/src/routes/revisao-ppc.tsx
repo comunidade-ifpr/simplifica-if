@@ -16,7 +16,7 @@ import { Badge } from "../components/ui/badge.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { Input } from "../components/ui/input.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
-import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
+import { explicarErro, mensagemDeErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
 import { abrirExterno, ponteDesktop } from "../ponte-desktop.ts";
 import { agruparPorTema, dataBrasileira, descreverCurso, ROTULO_ESTADO, ROTULO_LOCAL } from "../revisao/agrupar.ts";
@@ -54,7 +54,19 @@ function RevisaoPpc() {
             parecer da PROENS.
           </p>
         </section>
-        <Escolha ocupada={estado.fase === "analisando"} aoEscolher={analisar} />
+        <Escolha
+          ocupada={estado.fase === "analisando"}
+          aoEscolher={analisar}
+          aoFalhar={(erro) =>
+            setEstado({
+              fase: "erro",
+              erro: {
+                texto: "Não foi possível usar o arquivo escolhido. Tente escolhê-lo de novo.",
+                detalhe: mensagemDeErro(erro),
+              },
+            })
+          }
+        />
         {estado.fase === "analisando" ? (
           <div role="status" className="flex items-center gap-2 text-muted-foreground">
             <Spinner /> Analisando {nomeDoArquivo(estado.arquivo)}: convertendo o documento e conferindo os critérios…
@@ -70,9 +82,11 @@ function RevisaoPpc() {
 function Escolha({
   ocupada,
   aoEscolher,
+  aoFalhar,
 }: {
   readonly ocupada: boolean;
   readonly aoEscolher: (arquivo: string) => void;
+  readonly aoFalhar: (erro: unknown) => void;
 }) {
   const escolherDocx = ponteDesktop()?.escolherDocx;
   const [caminho, setCaminho] = useState("");
@@ -83,8 +97,12 @@ function Escolha({
           size="lg"
           disabled={ocupada}
           onClick={async () => {
-            const arquivo = await escolherDocx();
-            if (arquivo !== null) aoEscolher(arquivo);
+            try {
+              const arquivo = await escolherDocx();
+              if (arquivo !== null) aoEscolher(arquivo);
+            } catch (erro) {
+              aoFalhar(erro);
+            }
           }}
         >
           <FileSearchIcon /> Escolher o PPC (.docx)…
@@ -118,6 +136,20 @@ function Escolha({
 
 function Resultado({ resultado }: { readonly resultado: ResultadoRevisaoPpc }) {
   const ponte = ponteDesktop();
+  const [erroCopia, setErroCopia] = useState<MensagemErro | undefined>(undefined);
+  /** Abre ou mostra a cópia; se ela foi movida ou apagada, a mensagem fica na tela. */
+  const usarCopia = async (acao: ((caminho: string) => Promise<void>) | undefined) => {
+    setErroCopia(undefined);
+    try {
+      await acao?.(resultado.arquivoComentado);
+    } catch (erro) {
+      setErroCopia({
+        texto:
+          "Não foi possível abrir a cópia comentada. Ela pode ter sido movida, renomeada ou apagada; analise o PPC de novo para gerar outra.",
+        detalhe: mensagemDeErro(erro),
+      });
+    }
+  };
   const precisam = resultado.pendencias.filter((p) => p.estado === "nao_atende").length;
   const conferir = resultado.pendencias.length - precisam;
   const grupos = agruparPorTema(resultado);
@@ -144,17 +176,18 @@ function Resultado({ resultado }: { readonly resultado: ResultadoRevisaoPpc }) {
         ) : (
           <div className="flex flex-wrap gap-2">
             {ponte.abrirDocumento === undefined ? null : (
-              <Button onClick={() => void ponte.abrirDocumento?.(resultado.arquivoComentado)}>
+              <Button onClick={() => void usarCopia(ponte.abrirDocumento)}>
                 <FileTextIcon /> Abrir o documento comentado
               </Button>
             )}
             {ponte.mostrarNaPasta === undefined ? null : (
-              <Button variant="outline" onClick={() => void ponte.mostrarNaPasta?.(resultado.arquivoComentado)}>
+              <Button variant="outline" onClick={() => void usarCopia(ponte.mostrarNaPasta)}>
                 <FolderOpenIcon /> Mostrar na pasta
               </Button>
             )}
           </div>
         )}
+        {erroCopia === undefined ? null : <AvisoErro erro={erroCopia} />}
       </div>
       {resultado.pendencias.length === 0 ? (
         <Alert variant="success">
