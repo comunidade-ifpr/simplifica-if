@@ -21,12 +21,16 @@ import * as SqlClient from "effect/sql/SqlClient";
 import * as Migrator from "effect/sql/Migrator";
 import * as NodeSqliteClient from "@simplifica-if/kb/db/nodeSqliteClient";
 import Migracao0001 from "./migracoes/0001_Conversas.ts";
+import Migracao0002 from "./migracoes/0002_RevisoesIa.ts";
 
 /** O nome do arquivo do banco na pasta de estado do app. */
 export const ARQUIVO_BANCO = "conversas.sqlite";
 
 /** As migrações, em ordem. Uma vez publicada, uma migração não muda: a mudança seguinte é outra. */
-const MIGRACOES = [[1, "Conversas", Migracao0001]] as const;
+const MIGRACOES = [
+  [1, "Conversas", Migracao0001],
+  [2, "RevisoesIa", Migracao0002],
+] as const;
 
 const carregador = (ate: number) =>
   Migrator.fromRecord(
