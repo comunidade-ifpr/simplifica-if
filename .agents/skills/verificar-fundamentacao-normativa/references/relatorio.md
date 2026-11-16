@@ -21,7 +21,7 @@ Use este formato quando o usuário pedir revisão de documento, PPC, parecer, mi
 
 **Trecho analisado:** <copie apenas o trecho necessário>
 
-**Fonte consultada:** <caminho local ou URL oficial> - <artigo, inciso, parágrafo, seção ou item>
+**Fonte consultada:** <link `ifpr://`, caminho local ou URL oficial> - <artigo, inciso, parágrafo, seção ou item>
 
 **Evidência:** <resumo fiel do dispositivo consultado>
 

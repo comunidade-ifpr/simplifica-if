@@ -9,26 +9,31 @@
 | 2026 | Resolução CONSUP/IFPR nº 259/2025 (alterada pela nº 263/2025) | `referencias/2026.md` |
 | 2027 | Resolução CONSUP/IFPR nº 292/2026 | `referencias/2027.md` |
 
-Se o calendário for de um ano sem arquivo de referência, não improvisar: localizar a resolução de calendário de referência daquele ano em `base-conhecimento/manifest.json`, criar o arquivo `referencias/[ANO].md` seguindo a estrutura dos existentes e só então verificar. Os textos das normas ficam em `base-conhecimento/normas/ifpr/resolucoes/`.
+Se o calendário for de um ano sem arquivo de referência, não improvisar. Dentro do repositório, localizar a resolução de calendário de referência daquele ano em `base-conhecimento/manifest.json`, criar o arquivo `referencias/[ANO].md` seguindo a estrutura dos existentes e só então verificar; os textos das normas ficam em `base-conhecimento/normas/ifpr/resolucoes/`. No app, procurar a resolução com `buscar_norma` e, sem arquivo de referência, informar ao usuário que a skill ainda não cobre aquele ano.
 
 A numeração dos artigos muda entre resoluções. Em 2026, o conceito de dia letivo está no art. 4º, § 2º, a janela do ano letivo no art. 5º e os itens obrigatórios no art. 7º (25 incisos). Em 2027, o conceito de dia letivo está no art. 5º, a janela no art. 8º e os itens obrigatórios no art. 11 (26 incisos). Nunca citar artigo ou inciso sem conferir no arquivo de referência do ano.
+
+## Onde a skill roda
+
+- **No app Simplifica IF (ou com as ferramentas `ifpr`):** não há comandos nem scripts. O texto da resolução vem das ferramentas `ifpr` (`ler_dispositivos` com o ID do dispositivo, `buscar_norma`, `ficha_norma`), citando o link `ifpr://`. O PDF do calendário é lido pela ferramenta de leitura de arquivos, que entrega as páginas para análise visual; uma planilha `xlsx` que não puder ser lida pede ao usuário o calendário exportado em PDF. O resultado é só o relatório em Markdown, gravado na pasta de trabalho; os passos de renderização com `pdftoppm` e de geração do PDF do relatório valem só no repositório.
+- **Dentro do repositório:** os textos locais das resoluções, a renderização das páginas com `pdftoppm` e a geração do PDF do relatório pelo script da skill, como descrito abaixo.
 
 ## Objetivo
 
 Verificar calendários acadêmicos do IFPR em `xlsx` ou `pdf`, com foco em conformidade normativa, consistência documental e qualidade da evidência apresentada.
 
-O resultado deve ser sempre um par de arquivos:
+Dentro do repositório, o resultado deve ser sempre um par de arquivos (no app, só o primeiro):
 
 - relatório em Markdown;
 - relatório em PDF retrato, gerado a partir do Markdown final.
 
-Os dois artefatos devem ser suficientemente claros para subsidiar ajuste do calendário antes da aprovação.
+Os artefatos devem ser suficientemente claros para subsidiar ajuste do calendário antes da aprovação.
 
 ## Princípio central para PDF
 
 Quando a entrada for PDF, a leitura deve ser feita **pela imagem renderizada das páginas**. Não usar a extração embutida do PDF como fonte primária de verdade.
 
-Fluxo esperado:
+Fluxo esperado (no app, os passos 1 e 3 se fazem pela leitura do PDF com a ferramenta de leitura de arquivos, sem comandos):
 
 1. Renderizar as páginas em PNG.
 2. Inspecionar visualmente cada página.
@@ -82,7 +87,7 @@ Salvar o relatório Markdown como:
 relatorio_verificacao_[CAMPUS]_[ANO]_[FONTE]_[AAAAMMDDHHMMSS].md
 ```
 
-Salvar o PDF com o mesmo nome-base, trocando apenas a extensão:
+Dentro do repositório, salvar o PDF com o mesmo nome-base, trocando apenas a extensão:
 
 ```text
 relatorio_verificacao_[CAMPUS]_[ANO]_[FONTE]_[AAAAMMDDHHMMSS].pdf
@@ -97,9 +102,9 @@ relatorio_verificacao_Irati_2026_xlsx_20260401153000.md
 relatorio_verificacao_Centro_de_Referencia_Ponta_Grossa_2026_pdf_principal_20260401153000.pdf
 ```
 
-## Geração obrigatória do PDF
+## Geração obrigatória do PDF (dentro do repositório)
 
-Depois de concluir e revisar o relatório em Markdown, gerar obrigatoriamente a versão em PDF com o script da própria skill:
+No app, este passo não existe: o relatório em Markdown é o resultado. Dentro do repositório, depois de concluir e revisar o relatório em Markdown, gerar obrigatoriamente a versão em PDF com o script da própria skill:
 
 ```bash
 node .agents/skills/verificar-calendario/scripts/render_relatorio_pdf.ts caminho/relatorio.md caminho/relatorio.pdf
@@ -125,7 +130,7 @@ O script é TypeScript (Node) e usa o `pdfmake`, instalado com `pnpm install` na
    - tipo de curso;
    - referência de aprovação;
    - resolução citada pelo próprio documento.
-2. Ler o arquivo `referencias/[ANO].md` da skill e o texto local da resolução que ele indica.
+2. Ler o arquivo `referencias/[ANO].md` da skill e o texto da resolução que ele indica (no app, pelas ferramentas `ifpr`; no repositório, o texto local).
 3. Confirmar se o documento está alinhado com a resolução de referência do ano.
 4. Verificar se há sinais de material reaproveitado de outro ano:
    - menção ao ano anterior em datas, cabeçalhos ou tabelas;
@@ -171,7 +176,7 @@ Contém:
 
 ### Renderização
 
-Preferencialmente usar `pdftoppm`.
+Dentro do repositório, preferencialmente usar `pdftoppm`. No app, ler o PDF com a ferramenta de leitura de arquivos.
 
 Exemplo:
 

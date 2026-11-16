@@ -1,6 +1,6 @@
 # Verificar Calendário
 
-Esta skill verifica calendários acadêmicos do IFPR, com foco na conformidade com a resolução de calendário de referência do ano, e gera relatório em Markdown e PDF.
+Esta skill verifica calendários acadêmicos do IFPR, com foco na conformidade com a resolução de calendário de referência do ano, e gera relatório em Markdown e, dentro do repositório, também em PDF. A skill também vai para o app Simplifica IF (bloco `simplifica:` do front matter do `SKILL.md`), onde o resultado é só o relatório em Markdown.
 
 ## Base normativa por ano
 
@@ -18,6 +18,7 @@ Quando sair a resolução de calendário de referência de um novo ano:
 1. Incluir o texto da resolução em `base-conhecimento/normas/ifpr/resolucoes/` e rodar `node scripts/gerar_base.ts`, `node scripts/validar_base.ts` e `node scripts/gerar_site.ts`.
 2. Criar `referencias/[ANO].md` com a mesma estrutura dos arquivos existentes: mapa de dispositivos, janela do ano letivo, datas do Art. 2º, requisitos críticos dos incisos e tabela obrigatória do relatório com a redação literal dos incisos.
 3. Acrescentar a linha do ano nas tabelas deste README, de `SKILL.md` e de `instrucoes.md`.
+4. Acrescentar `referencias/[ANO].md` à lista `simplifica.arquivos` do front matter do `SKILL.md`: só os arquivos listados ali vão para o app.
 
 Depois de alterar os arquivos, conferir se as referências a artigos e incisos batem com o texto da resolução na base.
 
@@ -64,9 +65,13 @@ A análise confere, entre outros pontos:
 - coerência entre calendário principal e documentos complementares;
 - sinais de documento reaproveitado de outro ano, com resolução, artigo ou quantidade de incisos antigos.
 
+## No app Simplifica IF
+
+No app, a skill roda sem o repositório: o servidor do app entrega o `SKILL.md`, o `instrucoes.md` e as `referencias/` listadas em `simplifica.arquivos`, e a IA lê a resolução pelas ferramentas MCP `ifpr` (`ler_dispositivos`, `buscar_norma`, `ficha_norma`). Não há scripts nem comandos: o PDF do calendário é lido pela ferramenta de leitura de arquivos, e o resultado é o relatório em Markdown na pasta de trabalho. `node scripts/validar_base.ts` confere o bloco `simplifica:` e os arquivos listados.
+
 ## Saídas esperadas
 
-Ao final, a IA deve entregar dois arquivos:
+Dentro do repositório, ao final, a IA deve entregar dois arquivos (no app, só o Markdown):
 
 - relatório em Markdown (`.md`);
 - relatório em PDF (`.pdf`) gerado a partir do Markdown.

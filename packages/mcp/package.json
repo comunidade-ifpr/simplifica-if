@@ -8,7 +8,8 @@
     "./rpc": "./src/rpc.ts",
     "./grupo-leitura": "./src/grupo-leitura.ts",
     "./contratos": "./src/contratos.ts",
-    "./http": "./src/http.ts"
+    "./http": "./src/http.ts",
+    "./skills": "./src/skills.ts"
   },
   "bin": {
     "simplifica-mcp": "./src/cli.ts"
@@ -19,7 +20,8 @@
     "typecheck": "effect-tsgo tsrs --noEmit"
   },
   "dependencies": {
-    "@simplifica-if/kb": "workspace:*"
+    "@simplifica-if/kb": "workspace:*",
+    "yaml": "2.9.1"
   },
   "peerDependencies": {
     "@effect/platform-node": "catalog:",
