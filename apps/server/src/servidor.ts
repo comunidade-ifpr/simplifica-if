@@ -48,6 +48,8 @@ import * as Handlers from "./handlers.ts";
 import * as Banco from "./persistencia/Banco.ts";
 import * as Historico from "./persistencia/Historico.ts";
 import * as AnalisePpc from "./revisao-ppc/AnalisePpc.ts";
+import * as RevisaoIa from "./revisao-ppc/RevisaoIa.ts";
+import * as Revisoes from "./persistencia/Revisoes.ts";
 
 export interface Opcoes {
   /** O `kb.sqlite` servido pelo MCP e pela leitura. */
@@ -78,6 +80,8 @@ export interface Opcoes {
   readonly pastaSkills?: string;
   /** Limites e script do Worker da revisão prévia (`AnalisePpc.LIMITES`); os testes os apertam. */
   readonly revisaoPpc?: AnalisePpc.OpcoesAnalise;
+  /** Paralelismo e tempo por turno da revisão com IA (`RevisaoIa.PARALELISMO`); os testes os mudam. */
+  readonly revisaoIa?: RevisaoIa.OpcoesRevisaoIa;
   /**
    * O segredo do processo principal do desktop (`EnvelopePartida.tokenDesktop`). Com ele, a revisão
    * prévia só analisa arquivos liberados em `CAMINHO_LIBERAR_ARQUIVO`.
@@ -178,6 +182,8 @@ export const layer = (opcoes: Opcoes) => {
     ...(opcoes.ociosidade === undefined ? {} : { ociosidade: opcoes.ociosidade }),
     ...(opcoes.prazoInterrupcao === undefined ? {} : { prazoInterrupcao: opcoes.prazoInterrupcao }),
   }).pipe(
+    Layer.provideMerge(RevisaoIa.layer(opcoes.revisaoIa)),
+    Layer.provideMerge(Revisoes.layer.pipe(Layer.provide(banco))),
     Layer.provideMerge(AnalisePpc.layer({ ...opcoes.revisaoPpc, exigirLiberacao: opcoes.tokenDesktop !== undefined })),
     Layer.provideMerge(Motor.layer),
     Layer.provideMerge(Historico.layer.pipe(Layer.provide(banco))),

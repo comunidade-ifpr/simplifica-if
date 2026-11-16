@@ -107,6 +107,9 @@ const paraRegistro = (linha: Linha): RegistroRevisaoIa => ({
 
 const agora = Effect.map(DateTime.now, DateTime.formatIso);
 
+/** JSON dos próprios dados do servidor (planos e resultados já validados), fora do código Effect. */
+const json = (valor: unknown): string => JSON.stringify(valor);
+
 const make = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
 
@@ -115,7 +118,7 @@ const make = Effect.gen(function* () {
     yield* sql`
       INSERT INTO revisoes_ia (id, arquivo, sha256, provider, modelo, modo, cnct, forma, situacao, plano, estimativa, criada_em, atualizada_em)
       VALUES (${r.id}, ${r.arquivo}, ${r.sha256}, ${r.provider}, ${r.modelo}, ${r.modo}, ${r.cnct}, ${r.forma},
-        ${r.situacao}, ${JSON.stringify(r.plano)}, ${JSON.stringify(r.estimativa)}, ${data}, ${data})
+        ${r.situacao}, ${json(r.plano)}, ${json(r.estimativa)}, ${data}, ${data})
     `;
   }, Effect.orDie);
 
@@ -140,7 +143,7 @@ const make = Effect.gen(function* () {
         situacao = ${a.situacao},
         motivo = ${a.motivo ?? null},
         limite = ${a.limite === true ? 1 : 0},
-        resultado = COALESCE(${a.resultado === undefined ? null : JSON.stringify(a.resultado)}, resultado),
+        resultado = COALESCE(${a.resultado === undefined ? null : json(a.resultado)}, resultado),
         atualizada_em = ${data}
       WHERE id = ${id}
     `;
@@ -150,7 +153,7 @@ const make = Effect.gen(function* () {
     const data = yield* agora;
     yield* sql`
       INSERT OR REPLACE INTO blocos_ia (revisao_id, bloco_id, resultado, uso, segundos, criado_em)
-      VALUES (${revisao}, ${b.bloco}, ${JSON.stringify(b.resultado)}, ${JSON.stringify(b.uso)}, ${b.segundos}, ${data})
+      VALUES (${revisao}, ${b.bloco}, ${json(b.resultado)}, ${json(b.uso)}, ${b.segundos}, ${data})
     `;
     yield* sql`UPDATE revisoes_ia SET atualizada_em = ${data} WHERE id = ${revisao}`;
   }, Effect.orDie);
