@@ -19,6 +19,7 @@
  * (`../base-2026.11.13/<arquivo>`), e o mesmo vale para o `latest-mac.yml` do `electron-updater`
  * (provider `generic`, não o `github`, que consulta a API).
  */
+import { parse, stringify } from "yaml";
 
 export const TAG_CANAL = (canal: string) => `canal-${canal}`;
 export const TAG_BASE = (versao: string) => `base-${versao}`;
@@ -45,3 +46,24 @@ export const urlPacoteBase = (versao: string) => (arquivo: string) => `../${TAG_
 
 /** `url` de um instalador no `latest-mac.yml` (relativa ao release do canal). */
 export const urlInstalador = (versao: string, arquivo: string) => `../${TAG_APP(versao)}/${arquivo}`;
+
+/**
+ * O `latest-mac.yml` / `latest.yml` do electron-builder com os arquivos apontando para o release
+ * imutável da versão (`../app-v<versao>/<arquivo>`), para ir ao release fixo do canal. O
+ * `electron-updater` resolve a URL relativa ao feed (`canal-beta/`), e o `sha512` continua o do
+ * arquivo: um instalador trocado no caminho é recusado por ele.
+ */
+export function reescreverLatestYml(texto: string, versao: string): string {
+  const lido = parse(texto) as { version?: unknown; path?: unknown; files?: Array<{ url?: unknown }> };
+  if (lido.version !== versao) throw new Error(`o yml é da versão ${String(lido.version)}, e a publicação, ${versao}`);
+  const relativo = (arquivo: unknown) => {
+    if (typeof arquivo !== "string" || arquivo.includes("/"))
+      throw new Error(`arquivo inesperado no yml: ${String(arquivo)}`);
+    return urlInstalador(versao, arquivo);
+  };
+  return stringify({
+    ...lido,
+    files: (lido.files ?? []).map((arquivo) => ({ ...arquivo, url: relativo(arquivo.url) })),
+    ...(lido.path === undefined ? {} : { path: relativo(lido.path) }),
+  });
+}

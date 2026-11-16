@@ -76,3 +76,23 @@ describe("novidades", () => {
     ]);
   });
 });
+
+describe("hospedagem no GitHub Releases", () => {
+  it("feed por link direto, nunca a API, e os yml do app apontando para o release da versão", async () => {
+    const { feedGitHub, reescreverLatestYml, urlPacoteBase } = await import("../src/hospedagem.ts");
+    expect(feedGitHub("ifpr/simplifica-if")).toBe(
+      "https://github.com/ifpr/simplifica-if/releases/download/canal-{canal}/",
+    );
+    expect(() => feedGitHub("não é repo")).toThrow();
+    expect(
+      new URL(urlPacoteBase("2026.11.20")("base.zst"), "https://github.com/o/r/releases/download/canal-beta/beta.json")
+        .href,
+    ).toBe("https://github.com/o/r/releases/download/base-2026.11.20/base.zst");
+    const yml =
+      "version: 0.2.0\nfiles:\n  - url: Simplifica-IF-0.2.0-arm64.zip\n    sha512: abc\n    size: 10\npath: Simplifica-IF-0.2.0-arm64.zip\nsha512: abc\n";
+    const reescrito = reescreverLatestYml(yml, "0.2.0");
+    expect(reescrito).toContain("url: ../app-v0.2.0/Simplifica-IF-0.2.0-arm64.zip");
+    expect(reescrito).toContain("sha512: abc");
+    expect(() => reescreverLatestYml(yml, "0.3.0")).toThrow("versão");
+  });
+});

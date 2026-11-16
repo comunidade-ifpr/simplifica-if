@@ -6,6 +6,7 @@
  *   pnpm fabrica gerar-chave --saida ~/.simplifica-fabrica          # uma vez: o par minisign (fora do repositório)
  *   pnpm fabrica canal --canal beta --versao 2026.11.20 [--repositorio dono/repo] [--anterior <kb.sqlite>]…
  *   pnpm fabrica publicar --canal beta --versao 2026.11.20 --repositorio dono/repo [--executar]
+ *   pnpm fabrica publicar-app --canal beta --versao 0.2.0 --repositorio dono/repo [--executar]
  *   pnpm fabrica propor-novidades --de <kb anterior> --para <kb nova> [--versao 2026.11.20]
  *
  * `canal` compila o `kb.sqlite` publicável com `--versao`, `--commit` e `--canal` (o build é
@@ -32,7 +33,14 @@ import * as Effect from "effect/Effect";
 import { arquivosFonte } from "@simplifica-if/kb/db/fontes";
 import { lerPastaSkills } from "@simplifica-if/mcp/skills";
 import { gerarCanal, type SkillDaFabrica } from "@simplifica-if/atualizacao/fabrica";
-import { TAG_BASE, TAG_CANAL, urlPacoteBase, validarRepositorio } from "@simplifica-if/atualizacao/hospedagem";
+import {
+  reescreverLatestYml,
+  TAG_APP,
+  TAG_BASE,
+  TAG_CANAL,
+  urlPacoteBase,
+  validarRepositorio,
+} from "@simplifica-if/atualizacao/hospedagem";
 import { fontesNaoClassificadas } from "@simplifica-if/atualizacao/fontes";
 import { lerInfoBanco } from "@simplifica-if/atualizacao/local";
 import {
@@ -283,6 +291,60 @@ function publicar(opcoes: { canal: Canal; versao: string; repositorio: string; e
   // Promover para o estável é publicar a mesma versão no canal estavel: pnpm fabrica canal --canal estavel …
 }
 
+/**
+ * O app: os instaladores de `apps/desktop/dist/pacotes` (de `pnpm --filter @simplifica-if/desktop dist`,
+ * em cada sistema) vão para o release imutável `app-v<versao>`, e os `latest*.yml`, reescritos para
+ * apontar para ele, para o release fixo do canal, onde o `electron-updater` (feed `generic`) procura.
+ */
+function publicarApp(opcoes: { canal: Canal; versao: string; repositorio: string; executar: boolean }) {
+  validarRepositorio(opcoes.repositorio);
+  const pacotes = NodePath.join(RAIZ, "apps", "desktop", "dist", "pacotes");
+  const ymls = ["latest-mac.yml", "latest.yml"].filter((nome) => NodeFS.existsSync(NodePath.join(pacotes, nome)));
+  if (ymls.length === 0) falhar(`sem latest*.yml em ${pacotes}: rode o dist (sem --dir) antes`);
+  const saida = NodePath.join(PASTA_FABRICA, `app-${opcoes.canal}-${opcoes.versao}`);
+  NodeFS.rmSync(saida, { recursive: true, force: true });
+  NodeFS.mkdirSync(saida, { recursive: true });
+  for (const nome of ymls) {
+    NodeFS.writeFileSync(
+      NodePath.join(saida, nome),
+      reescreverLatestYml(NodeFS.readFileSync(NodePath.join(pacotes, nome), "utf8"), opcoes.versao),
+    );
+  }
+  const instaladores = NodeFS.readdirSync(pacotes)
+    .filter((nome) => nome.includes(`-${opcoes.versao}-`) && /\.(dmg|zip|exe|blockmap)$/.test(nome))
+    .map((nome) => NodePath.join(pacotes, nome));
+  const repo = ["--repo", opcoes.repositorio];
+  const comandos = [
+    [
+      "gh",
+      "release",
+      "create",
+      TAG_APP(opcoes.versao),
+      ...instaladores,
+      ...repo,
+      "--title",
+      `Simplifica IF ${opcoes.versao}`,
+      "--notes",
+      "Instaladores do app.",
+      "--latest=false",
+    ],
+    [
+      "gh",
+      "release",
+      "upload",
+      TAG_CANAL(opcoes.canal),
+      ...ymls.map((nome) => NodePath.join(saida, nome)),
+      "--clobber",
+      ...repo,
+    ],
+  ];
+  for (const comando of comandos) {
+    console.log(`$ ${comando.map((parte) => (/\s/.test(parte) ? JSON.stringify(parte) : parte)).join(" ")}`);
+    if (opcoes.executar) NodeChild.execFileSync(comando[0]!, comando.slice(1), { stdio: "inherit" });
+  }
+  if (!opcoes.executar) console.log("\n(só mostrei os comandos; rode de novo com --executar para publicar)");
+}
+
 async function principal() {
   const [comando, ...resto] = process.argv.slice(2);
   const { values } = parseArgs({
@@ -319,6 +381,13 @@ async function principal() {
         repositorio: values.repositorio ?? falhar("--repositorio dono/repo"),
         executar: values.executar,
       });
+    case "publicar-app":
+      return publicarApp({
+        canal: canalDado,
+        versao: values.versao ?? falhar("--versao X.Y.Z (a do apps/desktop/package.json)"),
+        repositorio: values.repositorio ?? falhar("--repositorio dono/repo"),
+        executar: values.executar,
+      });
     case "propor-novidades": {
       const de = values.de ?? falhar("--de <kb.sqlite anterior>");
       const para = values.para ?? falhar("--para <kb.sqlite novo>");
@@ -328,7 +397,7 @@ async function principal() {
       return console.log(proposta(versao, new Date().toISOString().slice(0, 10), itens));
     }
     default:
-      return falhar("comandos: gerar-chave, canal, publicar, propor-novidades");
+      return falhar("comandos: gerar-chave, canal, publicar, publicar-app, propor-novidades");
   }
 }
 
