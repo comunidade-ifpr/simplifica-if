@@ -18,7 +18,7 @@
  */
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
-import { alvoDosTrechos, EstadoIa, extrairJson, fonteValida, trechoExiste } from "./conferencia.ts";
+import { alvoDosTrechos, EstadoIa, extrairJson, fonteValida, trechoConferivel, trechoExiste } from "./conferencia.ts";
 import { type ContextoNormativo, formatarContexto } from "./pedido.ts";
 import { dobrar, type FichaIa } from "./plano.ts";
 
@@ -247,8 +247,10 @@ export function conferirContestacao(
   const alvo = alvoDosTrechos(entrada.recorte);
   const trechos: string[] = [];
   const problemas: string[] = [];
+  // Trecho curto demais para conferir (um número de processo, uma data) não conta a favor nem contra;
+  // trecho conferível que não está no recorte é invenção e derruba a retirada.
   for (const e of resposta.evidencias) {
-    if (!e.trecho.trim()) continue;
+    if (!e.trecho.trim() || !trechoConferivel(e.trecho)) continue;
     if (trechoExiste(e.trecho, alvo)) trechos.push(e.trecho);
     else problemas.push("a IA citou um trecho que não está no documento");
   }

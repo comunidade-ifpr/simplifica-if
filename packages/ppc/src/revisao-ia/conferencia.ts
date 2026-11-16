@@ -98,13 +98,25 @@ const TRECHO_MINIMO = 25;
  * O trecho existe no alvo. Com reticências, cada pedaço tem ao menos 15 caracteres e existe, na ordem
  * do texto; o trecho todo soma ao menos 25 (sem isso, "est ... 400" passaria em quase qualquer texto).
  */
-export function trechoExiste(trecho: string, alvo: string): boolean {
-  const pedacos = trecho
+const pedacosDoTrecho = (trecho: string) =>
+  trecho
     .split(/\s*(?:\.\.\.|…|\[\.\.\.\]|\[…\])\s*/)
     .map(normalizar)
     .filter((p) => p.length > 0);
-  if (!pedacos.length || pedacos.some((p) => p.length < PEDACO_MINIMO)) return false;
-  if (pedacos.reduce((t, p) => t + p.length, 0) < TRECHO_MINIMO) return false;
+
+/** O trecho tem a forma que a conferência consegue conferir (pedaços de 15, ao menos 25 no todo). */
+export function trechoConferivel(trecho: string): boolean {
+  const pedacos = pedacosDoTrecho(trecho);
+  return (
+    pedacos.length > 0 &&
+    pedacos.every((p) => p.length >= PEDACO_MINIMO) &&
+    pedacos.reduce((t, p) => t + p.length, 0) >= TRECHO_MINIMO
+  );
+}
+
+export function trechoExiste(trecho: string, alvo: string): boolean {
+  const pedacos = pedacosDoTrecho(trecho);
+  if (!trechoConferivel(trecho)) return false;
   // Na ordem do texto: cada pedaço depois do anterior (reticências não reordenam o PPC).
   let desde = 0;
   for (const p of pedacos) {

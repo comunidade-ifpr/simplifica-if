@@ -148,6 +148,17 @@ describe("contestação: quem decide é o código", () => {
     expect(d.fontesDescartadas).toBe(1);
   });
 
+  test("trecho curto demais para conferir (um número de processo) não conta a favor nem contra", () => {
+    const d = conferir({
+      decisao: "retirar",
+      estado: "ATENDE",
+      explicacao: "Atende.",
+      evidencias: [{ trecho: "A reserva de vagas segue a Lei nº 12.711/2012" }, { trecho: "_23411.007188/2022-02_" }],
+    });
+    expect(d.estado).toBe("contestada_aceita");
+    expect(d.trechos).toHaveLength(1);
+  });
+
   test("o motivo da pessoa não é evidência: um trecho copiado do motivo não está no recorte", () => {
     const d = conferir({
       decisao: "retirar",

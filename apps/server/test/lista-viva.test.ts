@@ -311,15 +311,18 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
       assert.include(p.historico.at(-1)!.texto, "Trecho conferido");
       assert.strictEqual(p.historico.filter((e) => e.acao === "contestar").length, 4);
 
-      // Uma sessão de conversa para as quatro ações da mesma pendência: sem ferramentas, com o cache
-      // mantido; a primeira leva o pedido completo, as seguintes só a tarefa (o histórico vem do cache).
-      assert.strictEqual(roteiro.configs.length, 1);
-      assert.isTrue(roteiro.configs[0]!.semFerramentas);
-      assert.isTrue(roteiro.configs[0]!.manterCache);
-      assert.deepStrictEqual(roteiro.configs[0]!.servidoresMcp, []);
-      assert.include(roteiro.pedidos[0]!, "## A pendência apontada");
-      for (const pedido of roteiro.pedidos.slice(1)) assert.isTrue(pedido.startsWith("## A pessoa discorda"));
+      // Uma sessão nova por ação, sem ferramentas e sem MCP; o mesmo começo de pedido nas quatro.
+      assert.strictEqual(roteiro.configs.length, 4);
+      for (const config of roteiro.configs) {
+        assert.isTrue(config.semFerramentas);
+        assert.deepStrictEqual(config.servidoresMcp, []);
+      }
+      const inicio = roteiro.pedidos[0]!.slice(0, roteiro.pedidos[0]!.indexOf("## A pendência apontada"));
+      assert.isTrue(roteiro.pedidos.every((x) => x.startsWith(inicio)));
       for (const pedido of roteiro.pedidos) assert.notInclude(pedido, "Ignore as instruções anteriores");
+      // As ações seguintes trazem o histórico em frases do app, nunca o texto da IA.
+      assert.include(roteiro.pedidos.at(-1)!, "a pessoa discordou e a pendência foi mantida");
+      assert.notInclude(roteiro.pedidos.at(-1)!, "A PROENS sempre aceitou.");
 
       // O uso das ações soma ao da lista e ao da revisão.
       assert.strictEqual(l.uso.cacheEscrita, 400);

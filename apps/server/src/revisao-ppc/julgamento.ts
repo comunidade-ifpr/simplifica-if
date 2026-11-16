@@ -167,16 +167,14 @@ export interface EntradaTurno {
   readonly tempoTurno: Duration.Duration;
   /** O número da tentativa (para o registro do uso). */
   readonly numero: number;
-  /** Mantém o cache de prompt (a conversa por pendência; o julgamento do lote não). */
-  readonly manterCache?: boolean;
   /** Grava o uso assim que o turno acaba, em qualquer saída (sucesso, pausa, interrupção). */
   readonly registrarTentativa?: ((tentativa: TentativaIa) => Effect.Effect<void>) | undefined;
   readonly registrarTexto?: ((numero: number, texto: string) => Effect.Effect<void>) | undefined;
 }
 
 /** Uma sessão sem MCP e sem ferramentas, numa pasta vazia que some com o escopo. */
-export const abrirSessaoSemFerramentas = Effect.fn("RevisaoIa.abrirSessao")(function* (
-  entrada: Pick<EntradaTurno, "provider" | "modelo" | "instrucoes" | "manterCache">,
+const abrirSessaoSemFerramentas = Effect.fn("RevisaoIa.abrirSessao")(function* (
+  entrada: Pick<EntradaTurno, "provider" | "modelo" | "instrucoes">,
 ) {
   const motor = yield* Motor.Motor;
   const pasta = yield* Effect.acquireRelease(
@@ -193,7 +191,6 @@ export const abrirSessaoSemFerramentas = Effect.fn("RevisaoIa.abrirSessao")(func
         servidoresMcp: [],
         instrucoes: entrada.instrucoes,
         semFerramentas: true,
-        ...(entrada.manterCache === true ? { manterCache: true } : {}),
         ...(entrada.modelo ? { modelo: entrada.modelo } : {}),
       })
       .pipe(Effect.mapError((erro) => pausaDoErro(entrada.provider, erro.detalhe))),
@@ -202,26 +199,25 @@ export const abrirSessaoSemFerramentas = Effect.fn("RevisaoIa.abrirSessao")(func
 });
 
 /**
- * Um turno: numa sessão nova (`sessao` ausente; a pasta e a sessão somem no fim) ou numa sessão que
- * continua (a conversa por pendência, etapa 5b: o histórico vem do cache). O julgamento de um bloco e
- * as ações da conversa passam por aqui. Ferramenta anunciada ou pedido de aprovação vão em
- * `ferramentas` (quem chama descarta a resposta); erro, limite e tempo viram `PausaRevisao`.
+ * Um turno numa sessão nova, sem MCP e sem ferramentas, numa pasta vazia que some no fim: o julgamento
+ * de um bloco e as ações da conversa por pendência (etapa 5b) passam por aqui. Ferramenta anunciada ou
+ * pedido de aprovação vão em `ferramentas` (quem chama descarta a resposta); erro, limite e tempo
+ * viram `PausaRevisao`.
  *
- * `custoAnterior`: o `custoUsd` do Claude é o acumulado da sessão (o `total_cost_usd` do Agent SDK);
- * numa sessão que continua, o custo do turno é a diferença. `custoSessao` volta para o próximo turno.
+ * Sempre uma sessão nova, com o cache de prompt desligado (`semFerramentas`): na medição da etapa 5b,
+ * o segundo turno de uma sessão do Claude gravou 170 mil tokens no cache e não leu nada, como o bloco
+ * fixo de 158 mil da etapa 4; e uma sessão nova com uma mensagem só não tem ponto de leitura do cache.
  */
-export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (
-  entrada: EntradaTurno,
-  continuar?: { readonly sessao: string; readonly custoAnterior: number },
-) {
+export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (entrada: EntradaTurno) {
   const motor = yield* Motor.Motor;
   const comeco = yield* Clock.currentTimeMillis;
   const uso = usoVazio();
   const ferramentas: string[] = [];
-  let custoDaSessao = continuar?.custoAnterior ?? 0;
+  // O `custoUsd` do Claude é o acumulado da sessão (o `total_cost_usd` do Agent SDK): vale o último.
+  let custoDaSessao = 0;
   let segundos = 0;
   const registrar = Effect.suspend(() => {
-    uso.custoUsd = Math.max(0, custoDaSessao - (continuar?.custoAnterior ?? 0));
+    uso.custoUsd = custoDaSessao;
     return Clock.currentTimeMillis.pipe(
       Effect.flatMap((agora) => {
         segundos = Math.round((agora - comeco) / 100) / 10;
@@ -237,7 +233,7 @@ export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (
     );
   });
   const turno = Effect.gen(function* () {
-    const sessao = continuar?.sessao ?? (yield* abrirSessaoSemFerramentas(entrada));
+    const sessao = yield* abrirSessaoSemFerramentas(entrada);
     const textos: string[] = [];
     const erros: string[] = [];
     yield* motor.enviarMensagem(sessao, entrada.texto).pipe(
@@ -288,7 +284,7 @@ export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (
   }).pipe(Effect.scoped);
   // O uso fica gravado em qualquer saída: sucesso, pausa, interrupção.
   const texto = yield* turno.pipe(Effect.onExit(() => registrar));
-  return { texto, ferramentas: [...ferramentas], uso: { ...uso }, segundos, custoSessao: custoDaSessao };
+  return { texto, ferramentas: [...ferramentas], uso: { ...uso }, segundos };
 });
 
 /** Julga um bloco. Devolve o resultado (uma entrada por ficha), o uso somado e os segundos. */
