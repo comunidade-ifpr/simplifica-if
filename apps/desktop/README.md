@@ -88,7 +88,7 @@ interface PonteDesktop {
 }
 ```
 
-**Revisão prévia de PPC (M1.11).** `escolherDocx` abre o diálogo com o filtro `.docx` e confere a extensão de novo (o filtro pode ser contornado com "Todos os arquivos"); o processo principal guarda os arquivos escolhidos nesta execução. `abrirDocumento` (`shell.openPath`) e `mostrarNaPasta` (`shell.showItemInFolder`) só aceitam a cópia comentada de um deles: mesma pasta, `<nome> - revisão prévia (Simplifica IF).docx` ou com ` (2)` a ` (99)`, caminho normalizado e arquivo comum (não link, não pasta), por `copiaComentadaPermitida` de `src/seguranca.ts`. Assim a interface não abre outro arquivo do computador por esse caminho.
+**Revisão prévia de PPC (M1.11).** `escolherDocx` abre o diálogo com o filtro `.docx` e confere a extensão de novo (o filtro pode ser contornado com "Todos os arquivos"); o processo principal guarda os arquivos escolhidos nesta execução. Depois do diálogo, o processo principal libera o arquivo no servidor (`POST /revisao-ppc/liberar` com o `tokenDesktop`, um segundo segredo gerado a cada partida e passado só no envelope), e o servidor só analisa arquivos liberados. `abrirDocumento` (`shell.openPath`) e `mostrarNaPasta` (`shell.showItemInFolder`) só aceitam a cópia comentada de um deles: mesma pasta, `<nome> - revisão prévia (Simplifica IF).docx` ou com ` (2)` a ` (99)`, caminho normalizado e arquivo comum (não link, não pasta), por `copiaComentadaPermitida` de `src/seguranca.ts`. Assim a interface não abre outro arquivo do computador por esse caminho.
 
 O contrato está em `src/ponteDesktop.ts`; a interface tem a cópia dela em `apps/web/src/ponte-desktop.ts`. O token nunca vai para log.
 
