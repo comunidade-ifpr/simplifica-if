@@ -213,6 +213,15 @@ export const EntradaIniciar = Schema.Struct({
 });
 export type EntradaIniciar = typeof EntradaIniciar.Type;
 
+/** A `tarefa` de `conversa.iniciar` não é skill do catálogo nem `conversa`. */
+export class TarefaDesconhecida extends Schema.TaggedError<TarefaDesconhecida>()("TarefaDesconhecida", {
+  tarefa: Schema.String,
+}) {
+  override get message(): string {
+    return "Esta tarefa não existe mais no app.";
+  }
+}
+
 export const SessaoIniciada = Schema.Struct({
   /** O id da conversa, que dura além da sessão do provider (é o que os outros métodos recebem em `sessao`). */
   sessao: Schema.String,
@@ -299,7 +308,7 @@ export class GrupoConversa extends RpcGroup.make(
   Rpc.make("conversa.iniciar", {
     payload: EntradaIniciar,
     success: SessaoIniciada,
-    error: Schema.Union([FalhaProvider, PastaTrabalhoInvalida]),
+    error: Schema.Union([FalhaProvider, PastaTrabalhoInvalida, TarefaDesconhecida]),
   }),
   /**
    * Envia a mensagem; o stream traz os eventos do turno e termina depois de `FimTurno`. Sem sessão

@@ -61,6 +61,7 @@ import {
   type PastaConversa,
   PastaTrabalhoInvalida,
   type ResumoConversa,
+  TarefaDesconhecida,
 } from "@simplifica-if/contratos-app";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
@@ -86,7 +87,9 @@ const LIMITE_CONTEXTO = 24_000;
 export class Conversas extends Context.Service<
   Conversas,
   {
-    readonly iniciar: (entrada: EntradaIniciar) => Effect.Effect<string, Motor.FalhaProvider | PastaTrabalhoInvalida>;
+    readonly iniciar: (
+      entrada: EntradaIniciar,
+    ) => Effect.Effect<string, Motor.FalhaProvider | PastaTrabalhoInvalida | TarefaDesconhecida>;
     readonly enviar: (
       sessao: string,
       texto: string,
@@ -584,6 +587,10 @@ const make = Effect.fnUntraced(function* (opcoes: {
   );
 
   const iniciar = Effect.fn("Conversas.iniciar")(function* (entrada: EntradaIniciar) {
+    // O nome da tarefa entra numa instrução do app à IA: só uma skill do catálogo ou `conversa`.
+    const tarefa = entrada.tarefa;
+    if (tarefa !== undefined && tarefa !== TAREFA_CONVERSA && !catalogo.skills.some((skill) => skill.nome === tarefa))
+      return yield* new TarefaDesconhecida({ tarefa });
     const pasta = yield* conferirPasta(entrada.pastaTrabalho);
     const id = yield* aleatorio.uuidV4();
     yield* historico.criar({
