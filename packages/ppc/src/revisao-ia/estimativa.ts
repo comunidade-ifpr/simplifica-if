@@ -38,10 +38,12 @@ export const CARACTERES_POR_TOKEN = 2.0;
  */
 export const SAIDA_POR_FICHA = 900;
 /**
- * Folga para as novas tentativas. Cada uma é uma sessão nova com o pedido inteiro; nas duas execuções
- * reais, 0 de 5 e 3 de 5 blocos precisaram dela.
+ * Folga para as novas tentativas. Cada uma é uma sessão nova com o pedido inteiro. Nas execuções reais:
+ * 0 de 5 e 3 de 5 blocos com os recortes antigos; com a conferência estrita (trecho no conteúdo da
+ * ficha, NAO_ATENDE com trecho, limites por campo), 3 de 3 lotes nos três providers. Meio pedido a mais
+ * por bloco, em média, até a conferência estrita ser medida em mais execuções.
  */
-export const FOLGA_TENTATIVAS = 1.25;
+export const FOLGA_TENTATIVAS = 1.5;
 
 export const PARAMETROS: Record<Provider, ParametrosProvider> = {
   claude: {
@@ -52,8 +54,9 @@ export const PARAMETROS: Record<Provider, ParametrosProvider> = {
     saidaPorSegundo: 140,
     janelaReferencia: 2_000_000,
     nomeJanela: "uma janela de 5 horas do plano Pro",
-    // Sonnet: entrada gravada no cache a US$ 3,75/M (o Claude Code grava todo o pedido), saída a US$ 15/M.
-    precoEntrada: 3.75,
+    // Sonnet: entrada a US$ 3/M (a sessão de julgamento roda com `DISABLE_PROMPT_CACHING`: um turno só,
+    // sem gravar cache, medido em 16/11/2026), saída a US$ 15/M.
+    precoEntrada: 3,
     precoSaida: 15,
   },
   codex: {
