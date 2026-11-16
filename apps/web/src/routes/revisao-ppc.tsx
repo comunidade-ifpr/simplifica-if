@@ -200,7 +200,7 @@ function ItemPendencia({ pendencia }: { readonly pendencia: PendenciaRevisao }) 
         </Badge>
         <span className="text-muted-foreground text-xs">{pendencia.tituloFicha}</span>
       </div>
-      <p>{pendencia.mensagem}</p>
+      <p className="whitespace-pre-line">{pendencia.mensagem}</p>
       <p className="text-sm">
         <span className="font-medium">{pendencia.estado === "nao_atende" ? "O que fazer: " : "Se for o caso: "}</span>
         {pendencia.oQueFazer}
