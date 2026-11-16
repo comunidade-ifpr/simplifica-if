@@ -19,6 +19,7 @@ import {
 /** Trecho de uma linha do Markdown como aparece no DOCX: sem negrito, barras de tabela nem marcador de lista. */
 export const comoNoDocumento = (linha: string) =>
   linha
+    .replace(/!?\[([^\]]*)\]\([^)\s]*\)/g, "$1")
     .replace(/[*|]/g, " ")
     .replace(/^\s*[-+]\s+/, "")
     .replace(/\s+/g, " ")

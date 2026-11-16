@@ -10,6 +10,7 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { carregarRegistro, raizRepositorio } from "@simplifica-if/kb/normas/registro";
 import { carregarRelacoes } from "@simplifica-if/kb/normas/relacoes";
+import type { BaseRevisaoPrevia } from "../src/revisao-previa.ts";
 import type { BaseVerificacao, CursoCnct } from "../src/verificadores/comum.ts";
 
 export type PpcDaBase = { id: string; caminho: string; forma: string; cnct: CursoCnct | null };
@@ -53,3 +54,39 @@ export function baseComum(raiz: string = raizRepositorio()): Omit<BaseVerificaca
 }
 
 export const lerPpc = (ppc: PpcDaBase) => NodeFS.readFileSync(ppc.caminho, "utf8");
+
+/**
+ * A base da revisão prévia lida dos arquivos do checkout (testes e amostras). No app, o servidor a
+ * monta do `kb.sqlite` (`apps/server/src/revisao-ppc/BaseRevisao.ts`).
+ */
+export function baseRevisaoDeArquivos(raiz: string = raizRepositorio()): BaseRevisaoPrevia {
+  const { registro, relacoes } = baseComum(raiz);
+  const dirCnct = NodePath.join(raiz, "base-conhecimento/catalogos/cnct/cursos");
+  const cncts = NodeFS.readdirSync(dirCnct)
+    .filter((nome) => nome.endsWith(".json"))
+    .map((nome) => ({ ...(lerJson(NodePath.join(dirCnct, nome)) as object), slug: nome.slice(0, -5) }) as CursoCnct);
+  const dirFichas = NodePath.join(raiz, ".agents/skills/revisar-ppc/base-analise/fichas");
+  const fichas: Record<string, string> = {};
+  for (const nome of NodeFS.readdirSync(dirFichas).filter((n) => n.endsWith(".json"))) {
+    const ficha = lerJson(NodePath.join(dirFichas, nome)) as { id: string; titulo: string };
+    fichas[ficha.id] = ficha.titulo;
+  }
+  const topicos = (
+    lerJson(NodePath.join(raiz, ".agents/skills/revisar-ppc/base-analise/topicos-fichas.json")) as {
+      topicos: { id: string; fichas?: string[] }[];
+    }
+  ).topicos.map((t) => ({ id: t.id, fichas: t.fichas ?? [] }));
+  const vigencia = NodeFS.readFileSync(NodePath.join(raiz, "base-conhecimento/config/vigencia.yaml"), "utf8");
+  const urls: Record<string, string> = {};
+  for (const entrada of lerJson(NodePath.join(raiz, "base-conhecimento/manifest.json")) as { id: string; fonte?: string }[])
+    if (entrada.fonte?.startsWith("http")) urls[entrada.id] = entrada.fonte;
+  return {
+    normas: registro.entradas,
+    relacoes,
+    cncts,
+    urls,
+    fichas,
+    topicos,
+    dataBase: /data_referencia:\s*"?(\d{4}-\d{2}-\d{2})/.exec(vigencia)?.[1] ?? "",
+  };
+}
