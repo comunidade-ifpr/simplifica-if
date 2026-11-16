@@ -228,7 +228,7 @@ function quebrasPorFim(texto: string): number[] {
     const posicao = m.index + m[0].length;
     if (!proximaDe(quebras, posicao)) quebras.push(posicao);
   }
-  quebras.push(...quebrasPorLocal(texto));
+  for (const quebra of quebrasPorLocal(texto)) quebras.push(quebra);
   return quebras;
 }
 

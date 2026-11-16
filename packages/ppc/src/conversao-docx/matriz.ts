@@ -491,7 +491,7 @@ export function mesclarMatrizes(atual: Matriz | null, nova: MatrizPpc, recalcula
       continue;
     }
     const nomes = new Set(existente.componentes.map((item) => item.nome));
-    existente.componentes.push(...ano.componentes.filter((item) => !nomes.has(item.nome)));
+    for (const item of ano.componentes) if (!nomes.has(item.nome)) existente.componentes.push(item);
     Object.assign(existente.subtotais, ano.subtotais);
   }
   const anos = [...porAno.values()].sort((a, b) => ordemDoAno(a.ano) - ordemDoAno(b.ano));
@@ -665,9 +665,10 @@ export function substituirMatrizNoMarkdown(markdown: string, matriz: Matriz): st
 
     const novas = linhas.slice(0, inicio);
     if (novas.length && aparar(novas.at(-1)!)) novas.push("");
-    novas.push(...dividirLinhas(canonica));
+    // Laços, e não `push(...)`: o resto do documento pode ter centenas de milhares de linhas.
+    for (const item of dividirLinhas(canonica)) novas.push(item);
     if (fim < linhas.length && aparar(linhas[fim]!)) novas.push("");
-    novas.push(...linhas.slice(fim));
+    for (let i = fim; i < linhas.length; i += 1) novas.push(linhas[i]!);
     return `${aparar(novas.join("\n"))}\n`;
   }
   return markdown;

@@ -170,7 +170,9 @@ function filhosComEnvoltorios(elemento: Element, nome: string): Element[] {
   const saida: Element[] = [];
   for (const item of filhosElementos(elemento)) {
     if (item.name === nome) saida.push(item);
-    else if (ENVOLTORIOS_DE_BLOCO.has(item.name)) saida.push(...filhosComEnvoltorios(item, nome));
+    // Sem espalhar o array na chamada: um envoltório com centenas de milhares de filhos estouraria a pilha.
+    else if (ENVOLTORIOS_DE_BLOCO.has(item.name))
+      for (const interno of filhosComEnvoltorios(item, nome)) saida.push(interno);
   }
   return saida;
 }
@@ -265,7 +267,7 @@ function conteudoEmLinha(elemento: Element, fidelidade: Fidelidade): Element[] {
   if (fidelidade === "python-docx") return filhosElementos(elemento);
   const saida: Element[] = [];
   for (const item of filhosElementos(elemento)) {
-    if (ENVOLTORIOS.has(item.name)) saida.push(...conteudoEmLinha(item, fidelidade));
+    if (ENVOLTORIOS.has(item.name)) for (const interno of conteudoEmLinha(item, fidelidade)) saida.push(interno);
     else saida.push(item);
   }
   return saida;

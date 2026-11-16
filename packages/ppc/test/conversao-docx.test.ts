@@ -1010,6 +1010,35 @@ describe("regras do modo documento", () => {
     expect(converter("tabelas-em-controle", "python-docx").representacaoGrafica).toMatchObject({ metodo: "bitmap" });
   });
 
+  test("documento enorme converte sem estourar a pilha: 150 mil parágrafos, um deles com 200 mil runs inseridos", () => {
+    const runs = `<w:ins w:id="1" w:author="a">${run("x").repeat(200_000)}</w:ins>`;
+    const matriz = tabela([
+      linha(
+        [
+          "Ano",
+          "Componente Curricular",
+          "Número de aulas semanais",
+          "CH hora-aula no período",
+          "CH hora-relógio no período",
+        ].map((item) => celula(item)),
+      ),
+      linha(["1º Ano", "Matemática", "2", "80", "67"].map((item) => celula(item))),
+    ]);
+    const corpo =
+      titulo("5.6 MATRIZ CURRICULAR") +
+      matriz +
+      par(runs) +
+      par("Parágrafo de corpo, um entre muitos.").repeat(150_000);
+    // O texto repetido comprime mais de 200:1; com o limite padrão, o arquivo é recusado por isso.
+    expect(() => converterPpc(montarDocx({ corpo }), "grande.docx", { agora: AGORA })).toThrow(/compressão anormal/);
+    const convertido = converterPpc(montarDocx({ corpo }), "grande.docx", {
+      agora: AGORA,
+      limites: { razaoDeCompressao: 5000 },
+    });
+    expect(convertido.elementos.length).toBeGreaterThan(150_000);
+    expect(convertido.markdown).toContain("| 1º Ano | Matemática | 2 | 80 | 67 |");
+  });
+
   test("tabela que expandida passaria de dois milhões de células é recusada", () => {
     const larga = { texto: "x", colunas: 63, continuacao: false };
     const tabelaHostil: Tabela = {

@@ -419,11 +419,11 @@ function normalizarTabelasPipe(linhas: string[]): string[] {
     const bloco = linhas.slice(inicio, indice);
     if (blocoPareceTabelaPipe(bloco)) {
       if (normalizadas.length && aparar(normalizadas.at(-1)!)) normalizadas.push("");
-      normalizadas.push(...normalizarBlocoTabelaPipe(bloco));
+      for (const item of normalizarBlocoTabelaPipe(bloco)) normalizadas.push(item);
       if (indice < linhas.length && aparar(linhas[indice]!)) normalizadas.push("");
       continue;
     }
-    normalizadas.push(...bloco);
+    for (const item of bloco) normalizadas.push(item);
   }
   return normalizadas;
 }
