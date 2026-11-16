@@ -18,6 +18,15 @@ export interface PonteDesktop {
   abrirExterno?(url: string): Promise<void>;
   /** O diálogo de pasta do sistema; `null` se a pessoa cancelar. */
   escolherPasta?(): Promise<string | null>;
+  /** O diálogo de arquivo do sistema, só `.docx`; `null` se a pessoa cancelar. */
+  escolherDocx?(): Promise<string | null>;
+  /**
+   * Abre no programa padrão (o Word) a cópia comentada de um `.docx` escolhido por `escolherDocx`;
+   * outro arquivo é recusado.
+   */
+  abrirDocumento?(caminho: string): Promise<void>;
+  /** Mostra a cópia comentada na pasta (Finder, Explorador); mesma regra de `abrirDocumento`. */
+  mostrarNaPasta?(caminho: string): Promise<void>;
 }
 
 /** O nome em `window`. */
@@ -28,4 +37,7 @@ export const CANAIS = {
   conexao: "simplifica:conexao",
   abrirExterno: "simplifica:abrir-externo",
   escolherPasta: "simplifica:escolher-pasta",
+  escolherDocx: "simplifica:escolher-docx",
+  abrirDocumento: "simplifica:abrir-documento",
+  mostrarNaPasta: "simplifica:mostrar-na-pasta",
 } as const;

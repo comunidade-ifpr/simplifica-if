@@ -3,6 +3,10 @@
   "titulo": "Coerência teórico-prática entre concepção, perfil e matriz",
   "dominio": "transversal",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento transversal sobre os resumos dos temas: coerência teórico-prática entre concepção, perfil e matriz."
+  },
   "topicos_tematicos": [
     "concepcao_metodologias",
     "perfil_egresso_mundo_trabalho",

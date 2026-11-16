@@ -3,6 +3,10 @@
   "titulo": "Acompanhamento de egressos previsto com finalidade formativa",
   "dominio": "identidade",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: seção acompanhamento_egresso; a IA confirma responsáveis e instrumentos."
+  },
   "topicos_tematicos": [
     "avaliacao_ppc_egressos",
     "perfil_egresso_mundo_trabalho"

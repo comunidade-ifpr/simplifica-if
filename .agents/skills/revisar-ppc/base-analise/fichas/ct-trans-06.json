@@ -3,6 +3,10 @@
   "titulo": "Síntese argumentativa para a conclusão da revisão",
   "dominio": "transversal",
   "criticidade": "REC",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Síntese da IA sobre os resultados das demais fichas, para a conclusão da revisão."
+  },
   "topicos_tematicos": [
     "referencias_normativas",
     "sintese_transversal_revisao"

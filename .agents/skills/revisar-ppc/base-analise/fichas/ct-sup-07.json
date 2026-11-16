@@ -3,6 +3,10 @@
   "titulo": "Infraestrutura compatível com os componentes formativos",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: infraestrutura × proposta."
+  },
   "topicos_tematicos": [
     "infraestrutura"
   ],

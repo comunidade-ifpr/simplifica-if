@@ -3,6 +3,10 @@
   "titulo": "Governança acadêmica do curso",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: coordenação, colegiado, NDE (termos e seção)."
+  },
   "topicos_tematicos": [
     "corpo_docente_gestao"
   ],

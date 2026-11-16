@@ -3,6 +3,10 @@
   "titulo": "Política institucional de inclusão com papéis e normativas definidos",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: instâncias e normas de inclusão (termos + registro)."
+  },
   "topicos_tematicos": [
     "aee_acessibilidade_inclusao"
   ],

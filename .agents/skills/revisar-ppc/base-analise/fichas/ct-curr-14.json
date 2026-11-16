@@ -3,6 +3,10 @@
   "titulo": "Projeto final, TCC/TFC ou componente equivalente disciplinado quando previsto",
   "dominio": "curriculo",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: aplicabilidade em código (PFI/TCC na matriz); caracterização é julgamento."
+  },
   "topicos_tematicos": [
     "aproveitamento_certificacao_tfc"
   ],

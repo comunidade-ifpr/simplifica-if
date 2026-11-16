@@ -3,6 +3,10 @@
   "titulo": "Convênios e trâmites de estágio descritos quando houver estágio",
   "dominio": "curriculo",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: aplicabilidade (estágio) + termos (convênio, termo de compromisso, seguro)."
+  },
   "topicos_tematicos": [
     "estagio"
   ],

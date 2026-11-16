@@ -3,6 +3,10 @@
   "titulo": "Diploma técnico explicita habilitação profissional e eixo tecnológico",
   "dominio": "identidade",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: \"Técnico em X\" e eixo na seção de diplomas; a IA confirma certificado × diploma."
+  },
   "topicos_tematicos": [
     "perfil_egresso_mundo_trabalho"
   ],

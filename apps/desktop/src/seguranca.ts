@@ -153,3 +153,36 @@ export function resolverArquivo(input: {
   }
   return { tipo: "arquivo", caminho: NodePath.join(root, "index.html") };
 }
+
+/** `CAMINHO_LIBERAR_ARQUIVO` do `@simplifica-if/contratos-app` (o teste confere que são iguais). */
+export const CAMINHO_LIBERAR_ARQUIVO = "/revisao-ppc/liberar";
+
+/** `SUFIXO_REVISAO_PREVIA` do `@simplifica-if/contratos-app` (o teste confere que são iguais). */
+export const SUFIXO_REVISAO_PREVIA = " - revisão prévia (Simplifica IF)";
+
+/** Um `.docx` escolhido no diálogo do sistema (`escolherDocx`); `undefined` para outro arquivo. */
+export function docxEscolhido(caminho: unknown): string | undefined {
+  if (typeof caminho !== "string" || !NodePath.isAbsolute(caminho)) return undefined;
+  return NodePath.extname(caminho).toLowerCase() === ".docx" ? NodePath.normalize(caminho) : undefined;
+}
+
+/**
+ * A cópia comentada que o servidor gravou para um dos `.docx` escolhidos no diálogo nesta execução:
+ * na mesma pasta, `<nome> - revisão prévia (Simplifica IF).docx` ou com ` (2)` a ` (99)`. Só esses
+ * arquivos "Abrir o documento comentado" e "Mostrar na pasta" aceitam: a interface não abre outro
+ * arquivo do computador por esse caminho. Quem chama confere ainda que é arquivo comum (não link).
+ */
+export function copiaComentadaPermitida(caminho: unknown, escolhidos: ReadonlySet<string>): string | undefined {
+  if (typeof caminho !== "string" || !NodePath.isAbsolute(caminho)) return undefined;
+  if (NodePath.normalize(caminho) !== caminho) return undefined;
+  const pasta = NodePath.dirname(caminho);
+  const nome = NodePath.basename(caminho);
+  for (const escolhido of escolhidos) {
+    if (NodePath.dirname(escolhido) !== pasta) continue;
+    const prefixo = NodePath.basename(escolhido, NodePath.extname(escolhido)) + SUFIXO_REVISAO_PREVIA;
+    if (!nome.startsWith(prefixo) || !nome.toLowerCase().endsWith(".docx")) continue;
+    const resto = nome.slice(prefixo.length, -".docx".length);
+    if (resto === "" || /^ \(([2-9]|[1-9]\d)\)$/.test(resto)) return caminho;
+  }
+  return undefined;
+}

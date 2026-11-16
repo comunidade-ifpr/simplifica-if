@@ -1,0 +1,101 @@
+{
+  "ppcs": 110,
+  "fichas": {
+    "CT-IDENT-01": {
+      "atende": 107,
+      "nao_atende": 0,
+      "a_conferir": 3,
+      "nao_se_aplica": 0,
+      "apontamentos_nao_atende": 0,
+      "apontamentos_a_conferir": 2
+    },
+    "CT-IDENT-08": {
+      "atende": 0,
+      "nao_atende": 0,
+      "a_conferir": 110,
+      "nao_se_aplica": 0,
+      "apontamentos_nao_atende": 0,
+      "apontamentos_a_conferir": 321
+    },
+    "CT-IDENT-13": {
+      "atende": 106,
+      "nao_atende": 0,
+      "a_conferir": 4,
+      "nao_se_aplica": 0,
+      "apontamentos_nao_atende": 0,
+      "apontamentos_a_conferir": 3
+    },
+    "CT-CURR-02": {
+      "atende": 90,
+      "nao_atende": 0,
+      "a_conferir": 20,
+      "nao_se_aplica": 0,
+      "apontamentos_nao_atende": 0,
+      "apontamentos_a_conferir": 19
+    },
+    "CT-CURR-16": {
+      "atende": 106,
+      "nao_atende": 0,
+      "a_conferir": 4,
+      "nao_se_aplica": 0,
+      "apontamentos_nao_atende": 0,
+      "apontamentos_a_conferir": 4
+    },
+    "CT-CURR-18": {
+      "atende": 73,
+      "nao_atende": 0,
+      "a_conferir": 9,
+      "nao_se_aplica": 28,
+      "apontamentos_nao_atende": 0,
+      "apontamentos_a_conferir": 9
+    },
+    "CT-CURR-22": {
+      "atende": 107,
+      "nao_atende": 3,
+      "a_conferir": 0,
+      "nao_se_aplica": 0,
+      "apontamentos_nao_atende": 3,
+      "apontamentos_a_conferir": 0
+    },
+    "CT-SUP-09": {
+      "atende": 0,
+      "nao_atende": 0,
+      "a_conferir": 110,
+      "nao_se_aplica": 0,
+      "apontamentos_nao_atende": 0,
+      "apontamentos_a_conferir": 233
+    },
+    "CT-SUP-12": {
+      "atende": 0,
+      "nao_atende": 92,
+      "a_conferir": 18,
+      "nao_se_aplica": 0,
+      "apontamentos_nao_atende": 171,
+      "apontamentos_a_conferir": 284
+    },
+    "CT-SUP-14": {
+      "atende": 70,
+      "nao_atende": 11,
+      "a_conferir": 29,
+      "nao_se_aplica": 0,
+      "apontamentos_nao_atende": 12,
+      "apontamentos_a_conferir": 36
+    },
+    "CT-SUP-21": {
+      "atende": 23,
+      "nao_atende": 14,
+      "a_conferir": 73,
+      "nao_se_aplica": 0,
+      "apontamentos_nao_atende": 14,
+      "apontamentos_a_conferir": 73
+    },
+    "CT-SUP-24": {
+      "atende": 0,
+      "nao_atende": 14,
+      "a_conferir": 96,
+      "nao_se_aplica": 0,
+      "apontamentos_nao_atende": 14,
+      "apontamentos_a_conferir": 96
+    }
+  }
+}

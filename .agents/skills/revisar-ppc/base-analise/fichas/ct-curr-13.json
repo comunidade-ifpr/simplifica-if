@@ -3,6 +3,10 @@
   "titulo": "Aproveitamento de estudos com critérios e procedimento definidos",
   "dominio": "curriculo",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: seção aproveitamento_estudos; a IA confirma critérios e procedimento no trecho."
+  },
   "topicos_tematicos": [
     "aproveitamento_certificacao_tfc"
   ],

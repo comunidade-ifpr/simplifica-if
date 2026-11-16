@@ -3,6 +3,10 @@
   "titulo": "Progressão formativa e organização por períodos",
   "dominio": "curriculo",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: progressão formativa."
+  },
   "topicos_tematicos": [
     "matriz_curricular"
   ],

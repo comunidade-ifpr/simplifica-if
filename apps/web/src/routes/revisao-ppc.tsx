@@ -1,0 +1,276 @@
+/**
+ * "Analisar um PPC" (M1.11, etapa 3): a revisão prévia sem IA. A pessoa escolhe o `.docx` no diálogo
+ * do sistema; o servidor converte, confere os critérios que o código decide e grava uma cópia com
+ * comentários do Word ao lado do original. A tela mostra o andamento, a lista de pendências por tema
+ * (na ordem do parecer da PROENS) e os botões para abrir a cópia comentada e mostrá-la na pasta.
+ *
+ * No navegador (sem o desktop), o caminho do arquivo é digitado: é o modo de desenvolvimento.
+ */
+import type { PendenciaRevisao, ResultadoRevisaoPpc } from "@simplifica-if/contratos-app";
+import { createFileRoute } from "@tanstack/react-router";
+import { ExternalLinkIcon, FileSearchIcon, FileTextIcon, FolderOpenIcon } from "lucide-react";
+import { type FormEvent, useState } from "react";
+import { AvisoErro } from "../components/AvisoErro.tsx";
+import { Alert, AlertDescription } from "../components/ui/alert.tsx";
+import { Badge } from "../components/ui/badge.tsx";
+import { Button } from "../components/ui/button.tsx";
+import { Input } from "../components/ui/input.tsx";
+import { Spinner } from "../components/ui/spinner.tsx";
+import { explicarErro, mensagemDeErro, type MensagemErro } from "../conexao/erros.ts";
+import { useApi } from "../contexto.tsx";
+import { abrirExterno, ponteDesktop } from "../ponte-desktop.ts";
+import { agruparPorTema, dataBrasileira, descreverCurso, ROTULO_ESTADO, ROTULO_LOCAL } from "../revisao/agrupar.ts";
+
+export const Route = createFileRoute("/revisao-ppc")({ component: RevisaoPpc });
+
+type Estado =
+  | { readonly fase: "escolha" }
+  | { readonly fase: "analisando"; readonly arquivo: string }
+  | { readonly fase: "erro"; readonly erro: MensagemErro }
+  | { readonly fase: "pronta"; readonly resultado: ResultadoRevisaoPpc };
+
+const nomeDoArquivo = (caminho: string) => caminho.split(/[\\/]/).at(-1) ?? caminho;
+
+function RevisaoPpc() {
+  const api = useApi();
+  const [estado, setEstado] = useState<Estado>({ fase: "escolha" });
+  const analisar = async (arquivo: string) => {
+    setEstado({ fase: "analisando", arquivo });
+    try {
+      const resultado = await api.chamar((cliente) => cliente["revisaoPpc.analisar"]({ arquivo }));
+      setEstado({ fase: "pronta", resultado });
+    } catch (erro) {
+      setEstado({ fase: "erro", erro: explicarErro(erro) });
+    }
+  };
+  return (
+    <div className="h-full overflow-y-auto">
+      <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
+        <section className="flex flex-col gap-2">
+          <h1 className="font-bold text-2xl tracking-tight">Analisar um PPC</h1>
+          <p className="max-w-prose text-muted-foreground">
+            Revisão prévia, sem IA: o Simplifica IF confere no seu PPC os critérios que dá para conferir automaticamente
+            e devolve uma cópia do arquivo com comentários do Word nos trechos. O seu arquivo não é alterado. Não é
+            parecer da PROENS.
+          </p>
+        </section>
+        <Escolha
+          ocupada={estado.fase === "analisando"}
+          aoEscolher={analisar}
+          aoFalhar={(erro) =>
+            setEstado({
+              fase: "erro",
+              erro: {
+                texto: "Não foi possível usar o arquivo escolhido. Tente escolhê-lo de novo.",
+                detalhe: mensagemDeErro(erro),
+              },
+            })
+          }
+        />
+        {estado.fase === "analisando" ? (
+          <div role="status" className="flex items-center gap-2 text-muted-foreground">
+            <Spinner /> Analisando {nomeDoArquivo(estado.arquivo)}: convertendo o documento e conferindo os critérios…
+          </div>
+        ) : null}
+        {estado.fase === "erro" ? <AvisoErro erro={estado.erro} icone /> : null}
+        {estado.fase === "pronta" ? <Resultado resultado={estado.resultado} /> : null}
+      </div>
+    </div>
+  );
+}
+
+function Escolha({
+  ocupada,
+  aoEscolher,
+  aoFalhar,
+}: {
+  readonly ocupada: boolean;
+  readonly aoEscolher: (arquivo: string) => void;
+  readonly aoFalhar: (erro: unknown) => void;
+}) {
+  const escolherDocx = ponteDesktop()?.escolherDocx;
+  const [caminho, setCaminho] = useState("");
+  if (escolherDocx !== undefined)
+    return (
+      <div>
+        <Button
+          size="lg"
+          disabled={ocupada}
+          onClick={async () => {
+            try {
+              const arquivo = await escolherDocx();
+              if (arquivo !== null) aoEscolher(arquivo);
+            } catch (erro) {
+              aoFalhar(erro);
+            }
+          }}
+        >
+          <FileSearchIcon /> Escolher o PPC (.docx)…
+        </Button>
+      </div>
+    );
+  const aoEnviar = (evento: FormEvent) => {
+    evento.preventDefault();
+    if (caminho.trim()) aoEscolher(caminho.trim());
+  };
+  return (
+    <form className="flex flex-col gap-2" onSubmit={aoEnviar} aria-label="Escolher o PPC">
+      <label htmlFor="arquivo-ppc" className="font-semibold">
+        Caminho do PPC (.docx)
+      </label>
+      <div className="flex gap-2">
+        <Input
+          id="arquivo-ppc"
+          nativeInput
+          placeholder="/Users/voce/Documents/PPC.docx"
+          value={caminho}
+          onChange={(evento) => setCaminho(evento.currentTarget.value)}
+        />
+        <Button type="submit" disabled={ocupada}>
+          Analisar
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+function Resultado({ resultado }: { readonly resultado: ResultadoRevisaoPpc }) {
+  const ponte = ponteDesktop();
+  const [erroCopia, setErroCopia] = useState<MensagemErro | undefined>(undefined);
+  /** Abre ou mostra a cópia; se ela foi movida ou apagada, a mensagem fica na tela. */
+  const usarCopia = async (acao: ((caminho: string) => Promise<void>) | undefined) => {
+    setErroCopia(undefined);
+    try {
+      await acao?.(resultado.arquivoComentado);
+    } catch (erro) {
+      setErroCopia({
+        texto:
+          "Não foi possível abrir a cópia comentada. Ela pode ter sido movida, renomeada ou apagada; analise o PPC de novo para gerar outra.",
+        detalhe: mensagemDeErro(erro),
+      });
+    }
+  };
+  const precisam = resultado.pendencias.filter((p) => p.estado === "nao_atende").length;
+  const conferir = resultado.pendencias.length - precisam;
+  const grupos = agruparPorTema(resultado);
+  return (
+    <section aria-labelledby="titulo-resultado" className="flex flex-col gap-5">
+      <div className="flex flex-col gap-2 rounded-lg border p-4">
+        <h2 id="titulo-resultado" className="font-semibold text-lg">
+          {precisam} {precisam === 1 ? "ponto precisa" : "pontos precisam"} de ajuste e {conferir}{" "}
+          {conferir === 1 ? "é para conferir" : "são para conferir"}
+        </h2>
+        <p className="text-sm">Curso: {descreverCurso(resultado.curso)}</p>
+        <p className="text-muted-foreground text-sm">
+          {resultado.totalCriterios > resultado.conferidos
+            ? `${resultado.conferidos} de ${resultado.totalCriterios} critérios conferidos automaticamente; os demais exigem leitura.`
+            : `${resultado.conferidos} critérios conferidos automaticamente; os demais exigem leitura.`}{" "}
+          Base de normas de {dataBrasileira(resultado.dataBase)}. Uma revisão prévia sem pendências não é PPC aprovado.
+        </p>
+        <p className="text-sm">
+          Cópia comentada: <span className="font-medium">{nomeDoArquivo(resultado.arquivoComentado)}</span>, na pasta do
+          original.
+        </p>
+        {ponte?.abrirDocumento === undefined && ponte?.mostrarNaPasta === undefined ? (
+          <p className="break-all font-mono text-muted-foreground text-xs">{resultado.arquivoComentado}</p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {ponte.abrirDocumento === undefined ? null : (
+              <Button onClick={() => void usarCopia(ponte.abrirDocumento)}>
+                <FileTextIcon /> Abrir o documento comentado
+              </Button>
+            )}
+            {ponte.mostrarNaPasta === undefined ? null : (
+              <Button variant="outline" onClick={() => void usarCopia(ponte.mostrarNaPasta)}>
+                <FolderOpenIcon /> Mostrar na pasta
+              </Button>
+            )}
+          </div>
+        )}
+        {erroCopia === undefined ? null : <AvisoErro erro={erroCopia} />}
+      </div>
+      {resultado.pendencias.length === 0 ? (
+        <Alert variant="success">
+          <AlertDescription>
+            Nenhuma pendência nos critérios conferidos automaticamente. Os demais critérios ainda exigem leitura.
+          </AlertDescription>
+        </Alert>
+      ) : null}
+      {grupos.map((grupo) => (
+        <section key={grupo.ordem} aria-label={grupo.tema} className="flex flex-col gap-3">
+          <h3 className="font-semibold">{grupo.tema}</h3>
+          {grupo.pendencias.length ? (
+            <ul className="flex flex-col gap-3">
+              {grupo.pendencias.map((pendencia) => (
+                <ItemPendencia
+                  key={`${pendencia.ficha}|${pendencia.mensagem}|${pendencia.trecho ?? ""}`}
+                  pendencia={pendencia}
+                />
+              ))}
+            </ul>
+          ) : null}
+          {grupo.semPendencia.length ? (
+            <p className="text-muted-foreground text-sm">
+              Em ordem nos critérios conferidos:{" "}
+              {grupo.semPendencia
+                .map((c) => (c.estado === "nao_se_aplica" ? `${c.titulo} (não se aplica)` : c.titulo))
+                .join("; ")}
+              .
+            </p>
+          ) : null}
+        </section>
+      ))}
+    </section>
+  );
+}
+
+function ItemPendencia({ pendencia }: { readonly pendencia: PendenciaRevisao }) {
+  return (
+    <li className="flex flex-col gap-1.5 rounded-lg border p-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge variant={pendencia.estado === "nao_atende" ? "warning" : "info"}>
+          {ROTULO_ESTADO[pendencia.estado]}
+        </Badge>
+        <span className="text-muted-foreground text-xs">{pendencia.tituloFicha}</span>
+      </div>
+      <p className="whitespace-pre-line">{pendencia.mensagem}</p>
+      <p className="text-sm">
+        <span className="font-medium">{pendencia.estado === "nao_atende" ? "O que fazer: " : "Se for o caso: "}</span>
+        {pendencia.oQueFazer}
+      </p>
+      {pendencia.trecho === null ? null : (
+        <blockquote className="border-l-2 pl-3 text-muted-foreground text-sm">
+          “{pendencia.trecho}”{pendencia.secao === null ? null : <span> — seção {pendencia.secao}</span>}
+        </blockquote>
+      )}
+      {pendencia.fontes.length ? (
+        <p className="text-sm">
+          <span className="font-medium">Fonte: </span>
+          {pendencia.fontes.map((fonte, indice) => (
+            <span key={fonte.link}>
+              {indice > 0 ? "; " : null}
+              {fonte.url === null ? (
+                fonte.rotulo
+              ) : (
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 underline underline-offset-2"
+                  onClick={() => void abrirExterno(fonte.url!)}
+                >
+                  {fonte.rotulo}
+                  <ExternalLinkIcon className="size-3" aria-hidden />
+                </button>
+              )}
+            </span>
+          ))}
+        </p>
+      ) : null}
+      {pendencia.tambemEm.length ? (
+        <p className="text-muted-foreground text-sm">
+          Também em: {pendencia.tambemEm.map((t) => t.titulo).join("; ")}.
+        </p>
+      ) : null}
+      <p className="text-muted-foreground text-xs">{ROTULO_LOCAL[pendencia.noDocumento]}</p>
+    </li>
+  );
+}

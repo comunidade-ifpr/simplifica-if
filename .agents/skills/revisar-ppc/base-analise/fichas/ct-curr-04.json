@@ -3,6 +3,10 @@
   "titulo": "Componentes curriculares alinhados ao perfil profissional",
   "dominio": "curriculo",
   "criticidade": "BLOQ",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: componentes × perfil."
+  },
   "topicos_tematicos": [
     "matriz_curricular",
     "perfil_egresso_mundo_trabalho"

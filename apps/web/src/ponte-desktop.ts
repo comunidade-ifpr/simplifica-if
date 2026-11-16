@@ -21,6 +21,12 @@ export interface PonteDesktop {
   abrirExterno?(url: string): Promise<void>;
   /** O seletor de pastas do sistema; `null` se a pessoa cancelou. */
   escolherPasta?(): Promise<string | null>;
+  /** O seletor de arquivos do sistema, só `.docx`; `null` se a pessoa cancelou. */
+  escolherDocx?(): Promise<string | null>;
+  /** Abre no Word a cópia comentada de um `.docx` escolhido por `escolherDocx` (o desktop recusa outro arquivo). */
+  abrirDocumento?(caminho: string): Promise<void>;
+  /** Mostra a cópia comentada na pasta (mesma regra de `abrirDocumento`). */
+  mostrarNaPasta?(caminho: string): Promise<void>;
 }
 
 declare global {

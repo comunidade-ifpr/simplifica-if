@@ -321,6 +321,9 @@ importers:
       '@simplifica-if/contratos-app':
         specifier: workspace:*
         version: link:../../packages/contratos-app
+      '@simplifica-if/docx':
+        specifier: workspace:*
+        version: link:../../packages/docx
       '@simplifica-if/kb':
         specifier: workspace:*
         version: link:../../packages/kb
@@ -330,6 +333,9 @@ importers:
       '@simplifica-if/motor':
         specifier: workspace:*
         version: link:../../packages/motor
+      '@simplifica-if/ppc':
+        specifier: workspace:*
+        version: link:../../packages/ppc
       effect:
         specifier: 4.1.3
         version: 4.1.3
@@ -340,6 +346,9 @@ importers:
       '@types/node':
         specifier: 24.12.4
         version: 24.12.4
+      fflate:
+        specifier: 0.8.3
+        version: 0.8.3
       vite-plus:
         specifier: 1.4.0
         version: 1.4.0(@opentelemetry/api@1.10.0)(@types/node@24.12.4)(@vitest/browser-playwright@5.0.5)(@vitest/ui@5.0.5)(jiti@2.7.0)(playwright@1.65.0)(yaml@2.9.1)

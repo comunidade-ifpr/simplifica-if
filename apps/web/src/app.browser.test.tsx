@@ -1,12 +1,15 @@
 /**
  * O app inteiro no Chromium, conectado por RPC ao `apps/server` de verdade com os drivers de
  * demonstração (`test/servidor-teste.ts`, num processo Node): Início com os três providers, instalar e
- * entrar, e a conversa com aprovação, link `ifpr://` no painel de leitura, interromper e nova conversa.
+ * entrar, a conversa com aprovação, link `ifpr://` no painel de leitura, interromper e nova conversa, e
+ * "Analisar um PPC" (a revisão prévia sem IA, com o Worker de verdade e a ponte do desktop simulada: o
+ * diálogo devolve o PPC sintético do servidor de teste).
  */
-import { afterAll, beforeAll, expect, it } from "vite-plus/test";
+import { afterAll, afterEach, beforeAll, expect, it, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 import type { ServidorTeste } from "../vite.config.ts";
 import { iniciarServidorTeste, montarApp, pararServidoresTeste } from "../test/navegador.tsx";
+import type { PonteDesktop } from "./ponte-desktop.ts";
 
 let servidor: ServidorTeste;
 
@@ -16,6 +19,11 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await pararServidoresTeste();
+});
+
+// A ponte do desktop simulada só vale no teste que a monta.
+afterEach(() => {
+  delete window.simplifica;
 });
 
 /** Textos em inglês dos componentes copiados do T3 e do roteador que não podem aparecer na tela. */
@@ -109,4 +117,57 @@ it("Conversa: aprovação, link ifpr:// no painel, interromper e nova conversa",
   await lista.getByRole("link", { name: /Pode escrever um resumo da DCN\?/ }).click();
   await expect.element(mensagens.getByText("Pode escrever um resumo da DCN?")).toBeVisible();
   await expect.element(mensagens.getByText("Resposta interrompida.")).toBeVisible();
+});
+
+it("Analisar um PPC: do Início à lista de pendências por tema e à cópia comentada", async () => {
+  const abrirDocumento = vi.fn(async (_caminho: string) => {});
+  const mostrarNaPasta = vi.fn(async (_caminho: string) => {});
+  window.simplifica = {
+    conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
+    escolherDocx: async () => servidor.ppc,
+    abrirDocumento,
+    mostrarNaPasta,
+  } satisfies PonteDesktop;
+  await using _app = await montarApp(servidor);
+
+  await page.getByRole("link", { name: "Analisar um PPC" }).click();
+  await expect.element(page.getByRole("heading", { name: "Analisar um PPC" })).toBeVisible();
+  await page.getByRole("button", { name: "Escolher o PPC (.docx)…" }).click();
+
+  // O resumo: contagem em palavras, o curso, o que foi e o que não foi conferido, a cópia.
+  const resultado = page.getByRole("heading", { name: /precisam? de ajuste/ });
+  await expect.element(resultado).toBeVisible();
+  await expect.element(page.getByText(/critérios conferidos automaticamente; os demais exigem leitura/)).toBeVisible();
+  await expect.element(page.getByText(/Não identificamos o curso no Catálogo Nacional/)).toBeVisible();
+  await expect.element(page.getByText("PPC de teste - revisão prévia (Simplifica IF).docx")).toBeVisible();
+
+  // Os temas na ordem do parecer, com estados em linguagem comum.
+  const temas = [...document.querySelectorAll("section[aria-label] > h3")].map((h) => h.textContent);
+  expect(temas.indexOf("Matriz e estrutura curricular")).toBeLessThan(temas.indexOf("Fundamentos legais e normativos"));
+  const aee = page.getByRole("region", { name: "Acesso, permanência, AEE e inclusão" });
+  await expect.element(aee.getByText("Precisa de ajuste")).toBeVisible();
+  await expect.element(aee.getByText("“Atendimento Educacional Especializado”", { exact: false })).toBeVisible();
+  await expect.element(aee.getByText("Comentado no trecho, na cópia do documento.")).toBeVisible();
+  expect(document.body.innerText).not.toMatch(/nao_atende|a_conferir|ifpr:\/\//);
+
+  await page.getByRole("button", { name: "Abrir o documento comentado" }).click();
+  await page.getByRole("button", { name: "Mostrar na pasta" }).click();
+  const comentado = `${servidor.pasta}/PPC de teste - revisão prévia (Simplifica IF).docx`;
+  expect(abrirDocumento).toHaveBeenCalledWith(comentado);
+  expect(mostrarNaPasta).toHaveBeenCalledWith(comentado);
+
+  // A cópia movida ou apagada: o desktop recusa, e a tela diz o que houve.
+  abrirDocumento.mockRejectedValueOnce(new Error("a cópia comentada não foi encontrada"));
+  await page.getByRole("button", { name: "Abrir o documento comentado" }).click();
+  await expect.element(page.getByText(/Não foi possível abrir a cópia comentada/)).toBeVisible();
+});
+
+it("Analisar um PPC: arquivo que não existe, com a mensagem do servidor em português", async () => {
+  window.simplifica = {
+    conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
+    escolherDocx: async () => `${servidor.pasta}/não existe.docx`,
+  } satisfies PonteDesktop;
+  await using _app = await montarApp(servidor, "/revisao-ppc");
+  await page.getByRole("button", { name: "Escolher o PPC (.docx)…" }).click();
+  await expect.element(page.getByText("O arquivo não foi encontrado ou não pode ser lido.")).toBeVisible();
 });

@@ -3,6 +3,10 @@
   "titulo": "Política de cotas referenciada sem desatualização ou erro material",
   "dominio": "identidade",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: citação da lei de cotas e alteração (registro); a IA confere a regra reproduzida."
+  },
   "topicos_tematicos": [
     "assistencia_estudantil_permanencia",
     "identificacao_oferta"

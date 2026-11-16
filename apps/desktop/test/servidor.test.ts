@@ -106,6 +106,18 @@ describe("montarInicio", () => {
     expect(inicio.ambiente).toEqual({ PATH: "/usr/bin", HOME: "/home/x" });
     const envelope = Schema.decodeSync(Schema.fromJsonString(EnvelopePartida))(inicio.envelope.trimEnd());
     expect(envelope).toEqual({ token: TOKEN, origens: ["simplifica://app"] });
+    // Com o segredo do processo principal, ele vai no envelope (e só nele).
+    const comSegredo = montarInicio({
+      ...base,
+      tokenDesktop: "segredo-do-processo-principal-0123456789",
+      executor: { tipo: "node", node: "/usr/local/bin/node", bin: "/repo/apps/server/src/bin.ts" },
+    });
+    expect(Schema.decodeSync(Schema.fromJsonString(EnvelopePartida))(comSegredo.envelope.trimEnd())).toEqual({
+      token: TOKEN,
+      origens: ["simplifica://app"],
+      tokenDesktop: "segredo-do-processo-principal-0123456789",
+    });
+    expect(JSON.stringify([comSegredo.argumentos, comSegredo.ambiente])).not.toContain("segredo");
     expect(inicio.envelope.endsWith("\n")).toBe(true);
     expect(inicio.envelope.indexOf("\n")).toBe(inicio.envelope.length - 1);
   });

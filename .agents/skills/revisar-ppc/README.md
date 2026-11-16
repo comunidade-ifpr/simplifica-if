@@ -226,15 +226,22 @@ node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts medir-identificacao --err
 
 `--amostra` mede só a amostra fixa usada em `tests/identificacao.test.ts`, e `--json` imprime a medição completa.
 
+## Execução no app (D, S, J)
+
+Cada ficha declara `execucao: { modo, justificativa }`, a classificação da revisão de PPC no app (M1.11, proposta C, em `docs/plans/propostas/m1-11-revisao-ppc-C.md`): **D** (12 fichas), o código decide com a base, sem IA; **S** (38), o código acha o trecho e decide a aplicabilidade, e a IA confirma numa resposta curta; **J** (30), julgamento da IA sobre as seções do tema (as transversais, sobre os resumos). A justificativa diz o que o código usa e o que sobra para a IA. O schema recusa ficha sem `execucao`; `validar-base` recusa ficha D sem verificador registrado em `packages/ppc/src/verificadores/registro.ts` e verificador de ficha que não é D. `indice.json` traz o modo e o verificador de cada ficha (e a contagem por modo em `resumo.fichas_por_execucao`), e `mapa-fichas.md` lista as fichas por modo.
+
+Os verificadores, o que cada um confere, o estado `a_conferir` para tudo o que depende de extração e a precisão medida nos 110 PPCs técnicos da base estão no [README do `packages/ppc`](../../../packages/ppc/README.md#pré-conferência-sem-ia-fichas-d) e em [`PRECISAO.md`](../../../packages/ppc/PRECISAO.md). Mudar uma ficha para D é uma edição versionada: o verificador, o registro, os casos de teste e a medição na base entram juntos. A revisão por sub-agentes desta skill continua a avaliar todas as 80 fichas; o modo só muda a revisão no app.
+
 ## Manutenção de fichas
 
 Ao criar, atualizar ou corrigir uma ficha em `base-analise/fichas/`:
 
-1. Garanta que a ficha declare `topicos_tematicos`, `tipo_escopo` e `ancoras_semanticas`.
+1. Garanta que a ficha declare `execucao`, `topicos_tematicos`, `tipo_escopo` e `ancoras_semanticas`.
 2. Cite em `referencias_normativas` apenas normas vigentes, por ID canônico, com `dispositivo` e `papel` (veja [Como citar normas nas fichas](base-analise/README.md#como-citar-normas-nas-fichas)). Regras de transição e a norma vigente de cada tema ficam em `base-analise/marcos-normativos.json`; o validador acusa ID inexistente, norma revogada no manifesto ou nos stubs, norma substituída por marco e dispositivo revogado.
 3. Atualize `base-analise/topicos-fichas.json` quando a cobertura temática mudar.
-4. Atualize ou crie teste quando a ficha cobrir comportamento novo, regra normativa específica ou regressão já observada.
-5. Regenere os artefatos derivados e valide a base.
+4. Mantenha `execucao` coerente com a revisão no app (veja [Execução no app](#execução-no-app-d-s-j)): uma ficha `D` precisa de verificador registrado em `packages/ppc`.
+5. Atualize ou crie teste quando a ficha cobrir comportamento novo, regra normativa específica ou regressão já observada.
+6. Regenere os artefatos derivados e valide a base.
 
 Comandos obrigatórios a partir da raiz do repositório:
 

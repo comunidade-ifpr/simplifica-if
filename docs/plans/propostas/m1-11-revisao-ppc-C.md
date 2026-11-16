@@ -1,6 +1,6 @@
 # M1.11 — "Analisar um PPC" no app: proposta C (código primeiro, o DOCX da pessoa de volta com comentários)
 
-> **Registro (16/11/2026).** A síntese da seção 9 foi aprovada e está no plano (`docs/plans/app-simplifica-if.md`, M1.11). `comentarios.ts` e `pre-conferencia.ts` entraram em `main`. O contorno do achado de integração (seção 5) foi retirado: a conversão DOCX passou a escrever as seções em `##`, como os PPCs da base.
+> **Registro (16/11/2026).** A síntese da seção 9 foi aprovada e está no plano (`docs/plans/app-simplifica-if.md`, M1.11). `comentarios.ts` e `pre-conferencia.ts` entraram em `main`. O contorno do achado de integração (seção 5) foi retirado: a conversão DOCX passou a escrever as seções em `##`, como os PPCs da base. Na etapa 2 (16/11/2026), a classificação do anexo virou o campo `execucao` das fichas, sem mudança, e a PoC virou os 12 verificadores D de `packages/ppc/src/verificadores/`; os números da seção 2 são os da PoC, e os atuais, com a amostra conferida à mão, estão em `packages/ppc/PRECISAO.md`. O script `pre-conferencia-poc.ts` virou `pre-conferencia.ts`, que lê a base dos arquivos, sem o `tmp/kb.sqlite`. Na etapa 3 (16/11/2026), a entrega da seção 9 chegou ao app sem IA: `revisarDocx` (`packages/ppc/src/revisao-previa.ts`) num `Worker` do servidor, com a base do `kb.sqlite`, e a cópia comentada ao lado do original; as marcas do comentário passaram a ficar por fora de `w:ins` e de links.
 
 Proposta de desenho, 16/11/2026. É a terceira de três (A, B, C). O ponto de partida era repensar o produto e a divisão entre código e IA. A e B mandam todas as fichas para a IA; esta proposta pergunta quanto da revisão a base já decide sem IA, e o que a pessoa deveria levar embora.
 
@@ -286,8 +286,7 @@ Somas: D = 12 (CT-CURR-02, 16, 18, 22; CT-IDENT-01, 08, 13; CT-SUP-09, 12, 14, 2
 ## Reproduzir a PoC
 
 ```bash
-pnpm kb cursos --json > /dev/null        # compila tmp/kb.sqlite, se faltar
-node packages/ppc/scripts/pre-conferencia-poc.ts --base
-node packages/ppc/scripts/pre-conferencia-poc.ts --docx <PPC.docx> --cnct <slug> --forma integrado --saida <saida.docx>
+node packages/ppc/scripts/pre-conferencia.ts --base
+node packages/ppc/scripts/pre-conferencia.ts --docx <PPC.docx> --cnct <slug> --forma integrado --saida <saida.docx>
 pnpm --filter @simplifica-if/docx --filter @simplifica-if/ppc test
 ```

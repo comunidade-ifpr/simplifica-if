@@ -3,6 +3,10 @@
   "titulo": "Carga horária total apresentada com consistência",
   "dominio": "curriculo",
   "criticidade": "BLOQ",
+  "execucao": {
+    "modo": "D",
+    "justificativa": "Carga horária total extraída do PPC contra o mínimo do CNCT e o da forma integrada (3.000 h, Res. CNE/CP nº 2/2026, art. 29); como a extração não tem revisão humana, a divergência sai a conferir."
+  },
   "topicos_tematicos": [
     "identificacao_oferta",
     "matriz_curricular"

@@ -4,7 +4,7 @@
  * desktop importam daqui; nada aqui depende do Node, e importar o pacote não carrega o `kb`, a leitura
  * do MCP nem os drivers do motor (`test/sem-servidor.test.ts` confere o grafo de imports).
  *
- * - `GrupoApp`: a API RPC (`effect/rpc`) por WebSocket. Quatro grupos: providers, conversa, skills e leitura (o
+ * - `GrupoApp`: a API RPC (`effect/rpc`) por WebSocket. Cinco grupos: providers, conversa, skills, revisão de PPC e leitura (o
  *   `GrupoLeitura` de `@simplifica-if/mcp/grupo-leitura`, só as definições, sem duplicar; os handlers
  *   ficam em `@simplifica-if/mcp/rpc`, que este pacote não importa). Os métodos de providers e de conversa
  *   têm nome com prefixo, como os `WS_METHODS` do T3: `cliente["conversa.enviar"]({ … })`.
@@ -83,8 +83,17 @@ export const EnvelopePartida = Schema.Struct({
    * mandam `Origin` (o Node, o processo principal do Electron) se conectam.
    */
   origens: Schema.optionalKey(Schema.Array(Schema.String)),
+  /**
+   * O segredo do processo principal do desktop, que a janela nunca recebe. Com ele, a revisão prévia
+   * só analisa arquivos que o processo principal liberou (`CAMINHO_LIBERAR_ARQUIVO`), os escolhidos no
+   * diálogo do sistema; sem ele (desenvolvimento, navegador), aceita qualquer `.docx`.
+   */
+  tokenDesktop: Schema.optionalKey(TokenServidor),
 });
 export type EnvelopePartida = typeof EnvelopePartida.Type;
+
+/** `POST` com `Authorization: Bearer <tokenDesktop>` e `{ "arquivo": "<caminho absoluto>" }`: libera o arquivo. */
+export const CAMINHO_LIBERAR_ARQUIVO = "/revisao-ppc/liberar";
 
 /** A linha JSON que o servidor imprime no stdout quando está pronto; é a única coisa no stdout. */
 export const LinhaPartida = Schema.Struct({
@@ -343,7 +352,108 @@ export class GrupoSkills extends RpcGroup.make(
   Rpc.make("skills.listar", { payload: Schema.Struct({}), success: Schema.Array(ResumoSkill) }),
 ) {}
 
+/* ================================================================== revisão de PPC */
+
+/**
+ * O sufixo da cópia comentada: `<nome> - revisão prévia (Simplifica IF).docx` (depois ` (2)`, ` (3)`…),
+ * na pasta do original. O servidor grava com ele; o desktop só abre arquivos com ele.
+ */
+export const SUFIXO_REVISAO_PREVIA = " - revisão prévia (Simplifica IF)";
+
+/** Uma fonte da pendência, legível para quem não conhece o `ifpr://`: nome e dispositivo, e o endereço oficial. */
+export const FonteRevisao = Schema.Struct({
+  rotulo: Schema.String,
+  /** Endereço oficial (http), quando a base o registra. */
+  url: Schema.NullOr(Schema.String),
+  /** O link `ifpr://` (abre no painel de leitura). */
+  link: Schema.String,
+});
+
+/** Onde o comentário ficou na cópia comentada: no trecho, no título (ausência) ou só na lista. */
+export const LocalNoDocumento = Schema.Literals(["no-trecho", "no-inicio", "so-na-lista"]);
+export type LocalNoDocumento = typeof LocalNoDocumento.Type;
+
+export const PendenciaRevisao = Schema.Struct({
+  /** A ficha da `revisar-ppc` (`CT-SUP-12`) ou `TRIAGEM`. */
+  ficha: Schema.String,
+  tituloFicha: Schema.String,
+  /** O tema na ordem do parecer da PROENS, e a posição dele (0 = "Antes de começar"). */
+  tema: Schema.String,
+  ordemTema: Schema.Number,
+  /** `nao_atende`: pendência; `a_conferir`: a pessoa confere (nunca é erro afirmado). */
+  estado: Schema.Literals(["nao_atende", "a_conferir"]),
+  mensagem: Schema.String,
+  oQueFazer: Schema.String,
+  trecho: Schema.NullOr(Schema.String),
+  secao: Schema.NullOr(Schema.String),
+  fontes: Schema.Array(FonteRevisao),
+  /** Outras fichas que apontam o mesmo trecho ou a mesma norma ausente ("Também em …"). */
+  tambemEm: Schema.Array(Schema.Struct({ ficha: Schema.String, titulo: Schema.String })),
+  /** `no-inicio`: algo que falta, listado no comentário do título junto ao aviso. */
+  noDocumento: LocalNoDocumento,
+});
+export type PendenciaRevisao = typeof PendenciaRevisao.Type;
+
+/** Um critério conferido automaticamente (ficha D), com o resultado. */
+export const CriterioRevisao = Schema.Struct({
+  ficha: Schema.String,
+  titulo: Schema.String,
+  tema: Schema.String,
+  ordemTema: Schema.Number,
+  estado: Schema.Literals(["atende", "nao_atende", "a_conferir", "nao_se_aplica"]),
+  mensagem: Schema.String,
+});
+export type CriterioRevisao = typeof CriterioRevisao.Type;
+
+export const ResultadoRevisaoPpc = Schema.Struct({
+  arquivoOriginal: Schema.String,
+  /** A cópia comentada, na mesma pasta do original; o original não é alterado. */
+  arquivoComentado: Schema.String,
+  curso: Schema.Struct({
+    cnct: Schema.NullOr(Schema.Struct({ slug: Schema.String, denominacao: Schema.String })),
+    forma: Schema.NullOr(Schema.String),
+    origem: Schema.Literals(["documento", "pessoa"]),
+  }),
+  pendencias: Schema.Array(PendenciaRevisao),
+  criterios: Schema.Array(CriterioRevisao),
+  /** Quantos critérios o código conferiu, de quantos a revisão tem. */
+  conferidos: Schema.Number,
+  totalCriterios: Schema.Number,
+  /** `data_referencia` da base (AAAA-MM-DD). */
+  dataBase: Schema.String,
+});
+export type ResultadoRevisaoPpc = typeof ResultadoRevisaoPpc.Type;
+
+/** A análise não terminou; `motivo` é a frase para a pessoa (arquivo grande, protegido, corrompido, tempo). */
+export class FalhaRevisaoPpc extends Schema.TaggedError<FalhaRevisaoPpc>()("FalhaRevisaoPpc", {
+  arquivo: Schema.String,
+  motivo: Schema.String,
+}) {
+  override get message(): string {
+    return this.motivo;
+  }
+}
+
+export const ehFalhaRevisaoPpc = Schema.is(FalhaRevisaoPpc);
+
+export class GrupoRevisaoPpc extends RpcGroup.make(
+  /**
+   * Revisão prévia sem IA de um PPC em DOCX (M1.11, etapa 3): conversão, pré-conferência das fichas D
+   * e cópia comentada do DOCX. `arquivo` é o caminho absoluto escolhido no diálogo do sistema; `cnct`
+   * (slug) e `forma` substituem o curso identificado no documento.
+   */
+  Rpc.make("revisaoPpc.analisar", {
+    payload: Schema.Struct({
+      arquivo: Schema.String,
+      cnct: Schema.optionalKey(Schema.String),
+      forma: Schema.optionalKey(Schema.String),
+    }),
+    success: ResultadoRevisaoPpc,
+    error: FalhaRevisaoPpc,
+  }),
+) {}
+
 /* ================================================================== app */
 
-/** A API inteira do servidor local: providers, conversa, skills e leitura. */
-export class GrupoApp extends GrupoProviders.merge(GrupoConversa, GrupoSkills, GrupoLeitura) {}
+/** A API inteira do servidor local: providers, conversa, skills, revisão de PPC e leitura. */
+export class GrupoApp extends GrupoProviders.merge(GrupoConversa, GrupoSkills, GrupoRevisaoPpc, GrupoLeitura) {}

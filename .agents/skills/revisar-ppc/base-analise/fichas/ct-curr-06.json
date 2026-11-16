@@ -3,6 +3,10 @@
   "titulo": "Bibliografia básica e complementar minimamente suficiente",
   "dominio": "curriculo",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: contagem de básica/complementar por componente no ementário."
+  },
   "topicos_tematicos": [
     "ementario_bibliografias"
   ],

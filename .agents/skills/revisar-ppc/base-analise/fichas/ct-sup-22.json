@@ -3,6 +3,10 @@
   "titulo": "Infraestrutura mínima CNCT atendida ou justificada",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: itens de infraestrutura mínima do CNCT × seção de infraestrutura; a IA confirma equivalências."
+  },
   "topicos_tematicos": [
     "infraestrutura"
   ],

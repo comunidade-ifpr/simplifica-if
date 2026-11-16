@@ -96,6 +96,8 @@ export interface OpcoesInicio {
   /** Origens da janela aceitas no WebSocket e no `POST /ingresso`. */
   readonly origens: ReadonlyArray<string>;
   readonly token: string;
+  /** O segredo do processo principal (`EnvelopePartida.tokenDesktop`), que a janela nunca recebe. */
+  readonly tokenDesktop?: string;
   /** O ambiente do processo do app, que o servidor herda (o PATH e o HOME dos providers). */
   readonly ambiente: Readonly<Record<string, string | undefined>>;
   readonly cwd?: string;
@@ -137,7 +139,11 @@ export function montarInicio(opcoes: OpcoesInicio): Inicio {
     ],
     ambiente,
     cwd: opcoes.cwd,
-    envelope: `${JSON.stringify({ token: opcoes.token, origens: [...opcoes.origens] })}\n`,
+    envelope: `${JSON.stringify({
+      token: opcoes.token,
+      origens: [...opcoes.origens],
+      ...(opcoes.tokenDesktop === undefined ? {} : { tokenDesktop: opcoes.tokenDesktop }),
+    })}\n`,
   };
 }
 

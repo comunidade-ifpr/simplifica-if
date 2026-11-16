@@ -3,6 +3,10 @@
   "titulo": "Formato de oferta e carga horária não presencial compatíveis com as DCN da EPT",
   "dominio": "curriculo",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: formato declarado e CH não presencial da matriz × limites das DCN."
+  },
   "topicos_tematicos": [
     "identificacao_oferta",
     "matriz_curricular"

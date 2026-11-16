@@ -3,6 +3,10 @@
   "titulo": "Referências com vigência normativa atualizada",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "D",
+    "justificativa": "Normas citadas em todo o PPC com status revogada no registro; sem a sucessora vigente citada, é pendência; com ela, a pessoa confere se a citação é histórica."
+  },
   "topicos_tematicos": [
     "referencias_normativas"
   ],

@@ -3,6 +3,10 @@
   "titulo": "Coerência da apresentação institucional do curso",
   "dominio": "identidade",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: campus, forma, CH, duração e prazo em vários pontos × dados institucionais."
+  },
   "topicos_tematicos": [
     "identificacao_oferta"
   ],

@@ -90,6 +90,13 @@ export class Autenticacao extends Context.Service<
     readonly preflightIngresso: (
       requisicao: HttpServerRequest.HttpServerRequest,
     ) => Effect.Effect<HttpServerResponse.HttpServerResponse>;
+    /**
+     * Pedidos do processo principal do desktop (`CAMINHO_LIBERAR_ARQUIVO`): `Host` local, sem `Origin`
+     * (navegador nenhum) e o `tokenDesktop`; a recusa, ou nada. Sem `tokenDesktop`, sempre 404.
+     */
+    readonly conferirDesktop: (
+      requisicao: HttpServerRequest.HttpServerRequest,
+    ) => Effect.Effect<Option.Option<HttpServerResponse.HttpServerResponse>>;
   }
 >()("@simplifica-if/server/Autenticacao") {}
 
@@ -101,6 +108,7 @@ export const make = Effect.fnUntraced(function* (opcoes: {
   readonly token: Redacted.Redacted<string>;
   readonly origens: ReadonlyArray<string>;
   readonly porta: number;
+  readonly tokenDesktop?: Redacted.Redacted<string> | undefined;
 }) {
   const digest = yield* Digest.Digest;
   const random = yield* SecureRandom.SecureRandom;
@@ -191,11 +199,29 @@ export const make = Effect.fnUntraced(function* (opcoes: {
       });
     });
 
-  return Autenticacao.of({ conferir, emitirIngresso, preflightIngresso });
+  const esperadoDesktop =
+    opcoes.tokenDesktop === undefined ? undefined : yield* hashDe(Redacted.value(opcoes.tokenDesktop));
+  const conferirDesktop = Effect.fn("Autenticacao.conferirDesktop")(function* (
+    requisicao: HttpServerRequest.HttpServerRequest,
+  ) {
+    if (esperadoDesktop === undefined) return Option.some(HttpServerResponse.empty({ status: 404 }));
+    const host = requisicao.headers["host"]?.toLowerCase();
+    if (host === undefined || !hosts.has(host)) return Option.some(hostRecusado);
+    if (requisicao.headers["origin"] !== undefined) return Option.some(origemRecusada);
+    const token = tokenDaRequisicao(requisicao);
+    if (token !== undefined && Mac.timingSafeEqual(yield* hashDe(token), esperadoDesktop)) return Option.none();
+    return Option.some(credencialRecusada);
+  });
+
+  return Autenticacao.of({ conferir, emitirIngresso, preflightIngresso, conferirDesktop });
 });
 
 /** O `make`, com a porta do `HttpServer` do ambiente. */
-export const layer = (opcoes: { readonly token: Redacted.Redacted<string>; readonly origens: ReadonlyArray<string> }) =>
+export const layer = (opcoes: {
+  readonly token: Redacted.Redacted<string>;
+  readonly origens: ReadonlyArray<string>;
+  readonly tokenDesktop?: Redacted.Redacted<string> | undefined;
+}) =>
   Layer.effect(
     Autenticacao,
     Effect.gen(function* () {

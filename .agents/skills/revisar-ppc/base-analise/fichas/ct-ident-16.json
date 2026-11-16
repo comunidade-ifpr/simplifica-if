@@ -3,6 +3,10 @@
   "titulo": "Forma de ingresso e política institucional de acesso explicitadas",
   "dominio": "identidade",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: termos de processo seletivo, reserva de vagas, Res. 190/2024."
+  },
   "topicos_tematicos": [
     "identificacao_oferta"
   ],

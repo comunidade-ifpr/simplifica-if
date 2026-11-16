@@ -120,6 +120,24 @@ describe("validador em casos inválidos", () => {
     ]);
   });
 
+  test("ficha sem execucao, D sem verificador e verificador de ficha que não é D", () => {
+    const c = copiaDaBase();
+    const semExecucao = NodePath.join(c.fichasDir, "ct-curr-01.json");
+    editarJson(semExecucao, (ficha) => void delete ficha.execucao);
+    // CT-CURR-04 vira D sem verificador; CT-CURR-02, que tem verificador, vira J.
+    editarJson(NodePath.join(c.fichasDir, "ct-curr-04.json"), (ficha) => {
+      ficha.execucao = { modo: "D", justificativa: "teste" };
+    });
+    editarJson(NodePath.join(c.fichasDir, "ct-curr-02.json"), (ficha) => {
+      ficha.execucao = { modo: "J", justificativa: "teste" };
+    });
+    expect(validarBaseAnalise(c)).toEqual([
+      `${semExecucao}: $: campo obrigatório ausente: execucao`,
+      "CT-CURR-04: execucao.modo D sem verificador registrado em packages/ppc/src/verificadores/registro.ts",
+      "verificador d-carga-horaria-total: registrado para CT-CURR-02, que não é ficha D",
+    ]);
+  });
+
   test("ficha duplicada", () => {
     const c = copiaDaBase();
     const copia = NodePath.join(c.fichasDir, "ct-curr-99.json");

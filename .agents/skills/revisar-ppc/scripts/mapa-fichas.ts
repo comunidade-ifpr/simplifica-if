@@ -6,6 +6,7 @@ import { aparar, apararFim, compararTexto, dividirLinhas, lerTexto, ordenarTexto
 import { agoraUtc, escreverTexto, lerJson, listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { referenciasDaFicha, universoOuVazio } from "./referencias-fichas.ts";
+import { VERIFICADOR_POR_FICHA } from "@simplifica-if/ppc/verificadores/registro";
 
 const PREFIXO_GERADO_EM = "Gerado em: ";
 
@@ -30,8 +31,32 @@ function campo(objeto: ObjetoJson, nome: string, padrao = ""): string {
   return Object.hasOwn(objeto, nome) ? textoDe(objeto[nome]) : padrao;
 }
 
+function modoExecucao(ficha: ObjetoJson): string {
+  return ehObjeto(ficha.execucao) ? textoOuVazio(ficha.execucao.modo) : "";
+}
+
 function linhaFicha(ficha: ObjetoJson): string {
-  return `- \`${textoDe(ficha.id)}\` (${campo(ficha, "criticidade")}, ${campo(ficha, "dominio")}) - ${textoDe(ficha.titulo)}`;
+  return `- \`${textoDe(ficha.id)}\` (${campo(ficha, "criticidade")}, ${campo(ficha, "dominio")}, ${modoExecucao(ficha)}) - ${textoDe(ficha.titulo)}`;
+}
+
+/** Fichas por modo de execução no app (`execucao.modo`): D só código, S código e IA, J julgamento da IA. */
+function linhasExecucao(fichas: Map<string, ObjetoJson>): string[] {
+  const linhas = [
+    "## Execução no app",
+    "",
+    "O campo `execucao` de cada ficha diz como ela roda na revisão do app (M1.11): `D`, só código, com o verificador (entre parênteses) registrado em `packages/ppc/src/verificadores/registro.ts`; `S`, o código acha o trecho e a IA confirma; `J`, julgamento da IA sobre as seções.",
+    "",
+  ];
+  for (const modo of ["D", "S", "J"]) {
+    const ids = ordenarTextos([...fichas.values()].filter((f) => modoExecucao(f) === modo).map((f) => textoDe(f.id)));
+    const rotulo = (id: string) => {
+      const verificador = VERIFICADOR_POR_FICHA.get(id);
+      return verificador ? `\`${id}\` (\`${verificador.id}\`)` : `\`${id}\``;
+    };
+    linhas.push(`- \`${modo}\` (${ids.length}): ${ids.map(rotulo).join(", ")}`);
+  }
+  linhas.push("");
+  return linhas;
 }
 
 function listaEmCodigo(valores: unknown): string {
@@ -98,6 +123,8 @@ export function gerarMapaFichas(geradoEm?: string, caminhos: CaminhosAnalise = c
     "- Fichas transversais aparecem em tópicos próprios ou em mais de um tópico quando ajudam a cruzar seções.",
     "",
   ];
+
+  linhas.push(...linhasExecucao(fichas));
 
   for (const grupo of ordenarTextos(topicosPorGrupo.keys())) {
     linhas.push(`## ${grupo}`, "");

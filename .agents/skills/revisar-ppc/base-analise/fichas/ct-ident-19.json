@@ -3,6 +3,10 @@
   "titulo": "Registro profissional descrito com conselho e base aplicável",
   "dominio": "identidade",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: conselho do CNCT citado; a IA confere \"promessa automática\" de registro."
+  },
   "topicos_tematicos": [
     "perfil_egresso_mundo_trabalho",
     "referencias_normativas"

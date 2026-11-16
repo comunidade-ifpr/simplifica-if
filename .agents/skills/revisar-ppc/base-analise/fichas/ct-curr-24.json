@@ -3,6 +3,10 @@
   "titulo": "Organização pedagógica e orientação do estágio obrigatório",
   "dominio": "curriculo",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: organização pedagógica do estágio."
+  },
   "topicos_tematicos": [
     "estagio"
   ],

@@ -131,6 +131,7 @@ const servidor = Command.make(
         Servidor.layer({
           banco,
           token: partida.token,
+          ...(partida.tokenDesktop === undefined ? {} : { tokenDesktop: partida.tokenDesktop }),
           porta: opcoes.porta,
           portaMcp: opcoes.portaMcp,
           origens: [...opcoes.origens, ...partida.origens],

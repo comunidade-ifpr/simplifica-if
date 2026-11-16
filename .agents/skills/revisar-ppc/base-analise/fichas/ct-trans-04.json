@@ -3,6 +3,10 @@
   "titulo": "Coerência entre currículo, corpo docente e infraestrutura",
   "dominio": "transversal",
   "criticidade": "BLOQ",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento transversal sobre os resumos dos temas: currículo, corpo docente e infraestrutura."
+  },
   "topicos_tematicos": [
     "corpo_docente_gestao",
     "infraestrutura",

@@ -3,6 +3,10 @@
   "titulo": "Referências com vigência normativa observável",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "D",
+    "justificativa": "Marcos centrais vigentes (DCN da EPT; no integrado, DCNEM, LDB e Lei nº 14.945/2024) entre as citações resolvidas da seção de referências, e normas revogadas nela sem a sucessora."
+  },
   "topicos_tematicos": [
     "referencias_normativas"
   ],

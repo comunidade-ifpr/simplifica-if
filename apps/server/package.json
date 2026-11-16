@@ -17,14 +17,17 @@
   "dependencies": {
     "@effect/platform-node": "catalog:",
     "@simplifica-if/contratos-app": "workspace:*",
+    "@simplifica-if/docx": "workspace:*",
     "@simplifica-if/kb": "workspace:*",
     "@simplifica-if/mcp": "workspace:*",
     "@simplifica-if/motor": "workspace:*",
+    "@simplifica-if/ppc": "workspace:*",
     "effect": "catalog:"
   },
   "devDependencies": {
     "@effect/vitest": "catalog:",
     "@types/node": "catalog:",
+    "fflate": "0.8.3",
     "vite-plus": "catalog:"
   }
 }

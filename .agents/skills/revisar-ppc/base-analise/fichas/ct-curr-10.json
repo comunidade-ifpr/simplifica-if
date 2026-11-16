@@ -3,6 +3,10 @@
   "titulo": "Representação gráfica coerente com a organização curricular",
   "dominio": "curriculo",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: presença da representação gráfica (a conversão a detecta); a coerência fica com a pessoa (imagem)."
+  },
   "topicos_tematicos": [
     "matriz_curricular"
   ],

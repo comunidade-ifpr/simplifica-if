@@ -3,6 +3,10 @@
   "titulo": "Campos de estágio e equivalência coerentes com o perfil profissional",
   "dominio": "curriculo",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: campos de estágio × perfil."
+  },
   "topicos_tematicos": [
     "estagio",
     "perfil_egresso_mundo_trabalho"

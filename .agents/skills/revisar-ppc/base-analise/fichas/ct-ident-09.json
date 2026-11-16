@@ -3,6 +3,10 @@
   "titulo": "Modalidade coerente com a narrativa do PPC",
   "dominio": "identidade",
   "criticidade": "REC",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: modalidade declarada × menções a EaD/AVA."
+  },
   "topicos_tematicos": [
     "identificacao_oferta"
   ],

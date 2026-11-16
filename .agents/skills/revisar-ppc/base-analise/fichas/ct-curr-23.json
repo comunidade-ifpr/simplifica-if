@@ -3,6 +3,10 @@
   "titulo": "Distribuição semanal das aulas e contraturnos explicitada",
   "dominio": "curriculo",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: CH semanal da matriz × turno; a IA confirma o contraturno no trecho."
+  },
   "topicos_tematicos": [
     "identificacao_oferta",
     "matriz_curricular"

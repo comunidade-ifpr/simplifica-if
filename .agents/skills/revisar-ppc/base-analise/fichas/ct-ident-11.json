@@ -3,6 +3,10 @@
   "titulo": "Campos de atuação profissional do egresso estão explicitados",
   "dominio": "identidade",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: campo de atuação do CNCT × termos do PPC; a IA confirma equivalências."
+  },
   "topicos_tematicos": [
     "perfil_egresso_mundo_trabalho"
   ],

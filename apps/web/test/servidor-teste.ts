@@ -6,11 +6,15 @@
  *   node apps/web/test/servidor-teste.ts [--porta 0] [--origem http://localhost:5190]… [--atraso-login 2000]
  *
  * Pronto o servidor, imprime uma linha JSON com `porta`, `urlServidor`, `token` (o de
- * `SIMPLIFICA_SERVIDOR_TOKEN` ou um aleatório) e `pasta`, uma pasta de trabalho temporária. Encerra com SIGTERM, SIGINT ou, se o stdin não for um
+ * `SIMPLIFICA_SERVIDOR_TOKEN` ou um aleatório), `pasta`, uma pasta de trabalho temporária, e `ppc`, um
+ * PPC sintético em DOCX dentro dela (para a revisão prévia). Encerra com SIGTERM, SIGINT ou, se o stdin não for um
  * terminal, quando ele fecha (o processo que o iniciou morreu). Os logs vão para o stderr: o stdout é
  * só da linha JSON.
  */
 import * as NodeCrypto from "node:crypto";
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
+import * as NodeSqlite from "node:sqlite";
 import * as NodeUtil from "node:util";
 import * as NodeRuntime from "@effect/platform-node/NodeRuntime";
 import * as NodeServices from "@effect/platform-node/NodeServices";
@@ -23,6 +27,7 @@ import * as Redacted from "effect/Redacted";
 import * as Servidor from "@simplifica-if/server";
 import { criarBancoFixture, diretorioTemporario, limparTemporarios } from "../../../packages/mcp/test/fixture.ts";
 import { inserirNormas } from "../../../packages/mcp/test/fixture-normas.ts";
+import { ppcSintetico } from "../../../packages/ppc/src/testes/revisao-previa.ts";
 import * as Demonstracao from "./drivers-demonstracao.ts";
 
 const { values: opcoes } = NodeUtil.parseArgs({
@@ -45,6 +50,33 @@ const banco = criarBancoFixture();
 /** Uma pasta de trabalho que existe, para as conversas dos testes de navegador. */
 const pasta = diretorioTemporario("simplifica-web-pasta-");
 inserirNormas(banco);
+// A taxonomia de tópicos das fichas da `revisar-ppc`, para a revisão prévia agrupar por tema.
+{
+  const arquivo = NodePath.resolve(
+    import.meta.dirname,
+    "../../../.agents/skills/revisar-ppc/base-analise/topicos-fichas.json",
+  );
+  const { topicos } = JSON.parse(NodeFS.readFileSync(arquivo, "utf8")) as {
+    topicos: Array<{ id: string; titulo: string }>;
+  };
+  const db = new NodeSqlite.DatabaseSync(banco);
+  const inserir = db.prepare(
+    "INSERT INTO topicos (id, ordem, titulo, termos_json, path, dados_json) VALUES (?, ?, ?, '[]', ?, ?)",
+  );
+  topicos.forEach((topico, ordem) =>
+    inserir.run(
+      topico.id,
+      ordem,
+      topico.titulo,
+      ".agents/skills/revisar-ppc/base-analise/topicos-fichas.json",
+      JSON.stringify(topico),
+    ),
+  );
+  db.close();
+}
+/** Um PPC sintético (fictício) na pasta, para a revisão prévia. */
+const ppc = NodePath.join(pasta, "PPC de teste.docx");
+NodeFS.writeFileSync(ppc, ppcSintetico());
 
 const camada = Servidor.layer({
   banco,
@@ -59,7 +91,9 @@ const camada = Servidor.layer({
 const programa = Effect.gen(function* () {
   yield* Effect.addFinalizer(() => Effect.sync(limparTemporarios));
   const app = yield* Servidor.ServidorApp;
-  yield* Console.log(JSON.stringify({ porta: app.porta, urlServidor: `http://127.0.0.1:${app.porta}`, token, pasta }));
+  yield* Console.log(
+    JSON.stringify({ porta: app.porta, urlServidor: `http://127.0.0.1:${app.porta}`, token, pasta, ppc }),
+  );
   return yield* Effect.never;
 }).pipe(Effect.scoped, Effect.provide(camada), Effect.provideService(Logger.LogToStderr, true));
 

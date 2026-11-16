@@ -3,6 +3,10 @@
   "titulo": "Quantitativo e disponibilidade docente sustentam a oferta",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: contagem do quadro docente × CH da matriz."
+  },
   "topicos_tematicos": [
     "corpo_docente_gestao"
   ],

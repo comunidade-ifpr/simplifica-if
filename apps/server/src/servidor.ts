@@ -14,6 +14,8 @@
  *   na CLI) ou drivers de teste.
  * - **Skills do app** (`CatalogoSkills.ts`): as da pasta `pastaSkills` com bloco `simplifica:` válido,
  *   entregues a toda conversa e listadas por `skills.listar`.
+ * - **Revisão prévia de PPC** (`revisao-ppc/AnalisePpc.ts`): DOCX → pendências e cópia comentada, sem
+ *   IA, num `Worker` com limite de memória e de tempo, sobre a base do mesmo `kb.sqlite`.
  * - **Leitura** (`GrupoLeitura`) sobre o `kb.sqlite`, só leitura: o mesmo serviço `Leitura` (uma
  *   conexão só ao banco) atende o RPC e o MCP HTTP (`McpHttp.layerSobreLeitura`).
  *
@@ -21,6 +23,7 @@
  * provider morre) e fecha o servidor MCP.
  */
 import * as NodeHttp from "node:http";
+import * as NodePath from "node:path";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeHttpServer from "@effect/platform-node/NodeHttpServer";
 import * as Context from "effect/Context";
@@ -30,10 +33,10 @@ import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import type * as Redacted from "effect/Redacted";
 import * as Schema from "effect/Schema";
-import { HttpRouter, HttpServer, HttpServerRequest } from "effect/http";
+import { HttpRouter, HttpServer, HttpServerRequest, HttpServerResponse } from "effect/http";
 import * as NetAddress from "effect/net/NetAddress";
 import { RpcSerialization, RpcServer } from "effect/rpc";
-import { CAMINHO_INGRESSO, CAMINHO_RPC, GrupoApp } from "@simplifica-if/contratos-app";
+import { CAMINHO_INGRESSO, CAMINHO_LIBERAR_ARQUIVO, CAMINHO_RPC, GrupoApp } from "@simplifica-if/contratos-app";
 import type { Canal } from "@simplifica-if/mcp/contratos";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import { layerLeitura } from "@simplifica-if/mcp/rpc";
@@ -44,6 +47,7 @@ import * as Conversas from "./Conversas.ts";
 import * as Handlers from "./handlers.ts";
 import * as Banco from "./persistencia/Banco.ts";
 import * as Historico from "./persistencia/Historico.ts";
+import * as AnalisePpc from "./revisao-ppc/AnalisePpc.ts";
 
 export interface Opcoes {
   /** O `kb.sqlite` servido pelo MCP e pela leitura. */
@@ -72,6 +76,13 @@ export interface Opcoes {
    * `<Resources>/skills` no app empacotado. Sem ela, as conversas não recebem skills.
    */
   readonly pastaSkills?: string;
+  /** Limites e script do Worker da revisão prévia (`AnalisePpc.LIMITES`); os testes os apertam. */
+  readonly revisaoPpc?: AnalisePpc.OpcoesAnalise;
+  /**
+   * O segredo do processo principal do desktop (`EnvelopePartida.tokenDesktop`). Com ele, a revisão
+   * prévia só analisa arquivos liberados em `CAMINHO_LIBERAR_ARQUIVO`.
+   */
+  readonly tokenDesktop?: Redacted.Redacted<string>;
 }
 
 /** O servidor do RPC não abriu: porta ocupada, sem permissão ou interface indisponível. */
@@ -105,6 +116,7 @@ export class ServidorApp extends Context.Service<
 const layerRotaRpc = Layer.unwrap(
   Effect.gen(function* () {
     const autenticacao = yield* Autenticacao.Autenticacao;
+    const analise = yield* AnalisePpc.AnalisePpc;
     const { protocol, httpEffect } = yield* RpcServer.makeProtocolWithHttpEffectWebsocket;
     // Como o T3 (`WS_RPC_SERVER_OPTIONS`): um defeito num handler não derruba as outras chamadas. A
     // conexão que cai não encerra conversa: elas não dependem da conexão (`Conversas.ts`).
@@ -123,6 +135,22 @@ const layerRotaRpc = Layer.unwrap(
         }),
       ),
       HttpRouter.add("POST", CAMINHO_INGRESSO, autenticacao.emitirIngresso),
+      // O processo principal do desktop libera o arquivo escolhido no diálogo (revisão prévia).
+      HttpRouter.add(
+        "POST",
+        CAMINHO_LIBERAR_ARQUIVO,
+        Effect.gen(function* () {
+          const requisicao = yield* HttpServerRequest.HttpServerRequest;
+          const recusa = yield* autenticacao.conferirDesktop(requisicao);
+          if (Option.isSome(recusa)) return recusa.value;
+          const corpo = yield* Effect.option(requisicao.json);
+          const arquivo = Option.isSome(corpo) ? (corpo.value as { arquivo?: unknown } | null)?.arquivo : undefined;
+          if (typeof arquivo !== "string" || !NodePath.isAbsolute(arquivo))
+            return HttpServerResponse.empty({ status: 400 });
+          yield* analise.liberar(arquivo);
+          return HttpServerResponse.empty({ status: 204 });
+        }),
+      ),
       HttpRouter.add("OPTIONS", CAMINHO_INGRESSO, autenticacao.preflightIngresso),
     );
   }),
@@ -150,6 +178,7 @@ export const layer = (opcoes: Opcoes) => {
     ...(opcoes.ociosidade === undefined ? {} : { ociosidade: opcoes.ociosidade }),
     ...(opcoes.prazoInterrupcao === undefined ? {} : { prazoInterrupcao: opcoes.prazoInterrupcao }),
   }).pipe(
+    Layer.provideMerge(AnalisePpc.layer({ ...opcoes.revisaoPpc, exigirLiberacao: opcoes.tokenDesktop !== undefined })),
     Layer.provideMerge(Motor.layer),
     Layer.provideMerge(Historico.layer.pipe(Layer.provide(banco))),
     Layer.provideMerge(
@@ -173,7 +202,9 @@ export const layer = (opcoes: Opcoes) => {
   );
   return Layer.effect(ServidorApp, makeServidorApp).pipe(
     Layer.provide(servir),
-    Layer.provide(Autenticacao.layer({ token: opcoes.token, origens: opcoes.origens ?? [] })),
+    Layer.provide(
+      Autenticacao.layer({ token: opcoes.token, origens: opcoes.origens ?? [], tokenDesktop: opcoes.tokenDesktop }),
+    ),
     Layer.provide(Layer.mergeAll(handlers, RpcSerialization.layerJson)),
     Layer.provide(nucleo),
     Layer.provide(node),

@@ -3,6 +3,10 @@
   "titulo": "Componentes obrigatórios e conteúdos legais da FGB contemplados",
   "dominio": "curriculo",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "D",
+    "justificativa": "Componentes obrigatórios da Formação Geral Básica procurados pelo nome nas tabelas da matriz e do ementário; só se aplica ao integrado."
+  },
   "topicos_tematicos": [
     "matriz_curricular"
   ],

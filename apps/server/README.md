@@ -47,6 +47,7 @@ SIMPLIFICA_SERVIDOR_TOKEN=$(openssl rand -base64 32) \
 | | `conversa.acompanhar({ sessao, depois })` | stream dos itens depois de `depois` e, se há turno em andamento, dos que chegam até o `FimTurno` |
 | | `conversa.retomar({ sessao })` | `ResumoConversa`; reabre a sessão do provider sem mandar mensagem |
 | skills | `skills.listar({})` | `ResumoSkill[]` (`nome`, `titulo`, `resumo`, `area`), em ordem alfabética do nome; para os futuros cartões da tela inicial |
+| revisão de PPC | `revisaoPpc.analisar({ arquivo, cnct?, forma? })` | `ResultadoRevisaoPpc`: o caminho da cópia comentada, o curso considerado, as pendências (com tema, estado, o que fazer, trecho, fontes legíveis e onde ficou o comentário) e os critérios conferidos; erro `FalhaRevisaoPpc` com a frase para a pessoa |
 | leitura | o `GrupoLeitura` de `@simplifica-if/mcp/grupo-leitura`, com os handlers de `@simplifica-if/mcp/rpc` (`lerLink` para qualquer link `ifpr://`, `fichaNorma`, `lerDispositivos`, `buscarNorma`, `fichaCurso`, `lerSecao`, `buscarSecoes`, `listarCursos`, `sobreABase`, `lerPpc`, `lerCnct`, `lerCampus`, `lerFicha` e o que ele ganhar) | as respostas das ferramentas MCP de mesmo nome |
 
 **Conversas gravadas (M1.2).** A conversa tem id próprio, fica no banco `conversas.sqlite` da pasta de estado (`effect/sql` sobre `node:sqlite`, migrações em `src/persistencia/migracoes/`) e não depende da conexão: a interface que recarrega volta por `carregar` e, com turno em andamento, por `acompanhar`. Os eventos de cada turno passam por um fiber do servidor, que os grava e os publica; o `TextoParcial` não se grava (o texto parcial sem `TextoFinal` vira um `TextoFinal` no fim do turno). Estados: `pronta`, `respondendo`, `liberada` (sem processo do provider) e `caiu`.
@@ -77,6 +78,17 @@ O `CatalogoSkills` (`src/CatalogoSkills.ts`) lê a `--pasta-skills` uma vez, na 
 
 Hoje é uma: `verificar-fundamentacao-normativa`.
 
+## Revisão prévia de PPC (M1.11, etapa 3)
+
+`revisaoPpc.analisar` faz a revisão prévia **sem IA** de um PPC em DOCX (`src/revisao-ppc/AnalisePpc.ts`):
+
+1. **Pedido:** `arquivo` é o caminho absoluto escolhido no diálogo do sistema. No app, o servidor só aceita arquivos que o processo principal do desktop liberou nesta execução: o desktop manda no envelope de partida um segundo segredo, o `tokenDesktop`, que a janela nunca recebe, e libera cada arquivo escolhido por `POST /revisao-ppc/liberar` (`CAMINHO_LIBERAR_ARQUIVO`; `Host` local, sem `Origin`, `Authorization: Bearer <tokenDesktop>`). Assim, uma janela comprometida, que tem o token do RPC, não manda o servidor ler um `.docx` qualquer nem gravar ao lado dele. Sem `tokenDesktop` (o servidor iniciado à mão, com `SIMPLIFICA_SERVIDOR_TOKEN`, para o navegador e o desenvolvimento), qualquer `.docx` é aceito. Uma análise por vez (cada Worker pode usar 512 MB): a segunda simultânea é recusada com "Já há uma análise em andamento". O resto do pedido: só `.docx`, arquivo comum, até 20 MB, conferido pelo `stat` antes de ler (acima disso, a orientação de compactar as imagens). `cnct` (slug) e `forma` substituem o curso que a análise identifica no documento.
+2. **Base:** montada uma vez, na primeira análise, do mesmo `kb.sqlite` que o servidor serve (`FontesNormativas`, inclusive as datas dos atos e as transições da vigência, e as tabelas `cnct`, `normas`, `fichas`, `topicos` e `meta`). Nada vem de arquivos do repositório: o servidor empacotado, fora do checkout, faz a mesma análise. `test/revisao-ppc-base.test.ts` compila a base real num diretório temporário e confere que a base do banco é a mesma dos arquivos, campo a campo, com o mesmo resultado da revisão; e roda a revisão num processo filho (`test/sem-repositorio.ts`) com a leitura das pastas de dados do checkout bloqueada, sem nenhuma tentativa de leitura (o controle, a pré-conferência sem `vigencia`, esbarra no bloqueio).
+3. **Worker** (`src/revisao-ppc/trabalhador.ts`, `worker_threads`): roda `revisarDocx` de `@simplifica-if/ppc/revisao-previa` (conversão, pré-conferência das 12 fichas D e triagem, comentários). Limites em `LIMITES`: `resourceLimits.maxOldGenerationSizeMb` 512 (com piso de 64: com 2 MB, medido no Node 26, o V8 aborta o processo inteiro em vez de encerrar o Worker) e 30 s, com `terminate()` no estouro ou na interrupção. Estouro de memória (`ERR_WORKER_OUT_OF_MEMORY`), de tempo, `ErroDocx` (protegido, corrompido, bomba de descompactação, sem texto) e defeito viram `FalhaRevisaoPpc` com a frase em português; o defeito vai para o log. O servidor continua de pé, e o laço de eventos não para durante a análise (os testes conferem os dois).
+4. **Cópia:** gravada na pasta do original como `<nome> - revisão prévia (Simplifica IF).docx` (`SUFIXO_REVISAO_PREVIA` do contrato), com `flag: "wx"` (nunca sobrescreve: ` (2)`, ` (3)`… até 99). O original só é lido.
+
+Em desenvolvimento, o Worker é o `trabalhador.ts`; no bundle, o `trabalhador-ppc.mjs` ao lado do `bin.mjs` (`URL_TRABALHADOR`).
+
 ## Segurança
 
 - O RPC e o MCP escutam só em `127.0.0.1`, em portas escolhidas na abertura.
@@ -92,6 +104,7 @@ Hoje é uma: `verificar-fundamentacao-normativa`.
 - `src/partida.ts`: o token (ambiente ou envelope no stdin) e o cordão do stdin.
 - `src/ponte.ts`: o comando da ponte MCP (`ponte-mcp`) para o driver do Antigravity.
 - `src/servidor.ts`: a layer do servidor inteiro (`layer(opcoes)`, que pede os `Drivers`) e a rota `/rpc`.
+- `src/revisao-ppc/`: `AnalisePpc.ts` (o serviço da revisão prévia: pedido, base do `kb.sqlite`, Worker, cópia) e `trabalhador.ts` (o Worker).
 - `src/Autenticacao.ts`, `src/Conversas.ts` (motor + MCP por conversa, gravação, retomada e ciclo de vida da sessão), `src/CatalogoSkills.ts` (as skills do app), `src/handlers.ts`.
 - `src/persistencia/`: `Banco.ts` (o `node:sqlite` com os `PRAGMA` e as migrações do T3), `Historico.ts` (conversas e itens) e `migracoes/`.
 - `src/t3/`: cópia do T3 (`launcherWatch.ts`), com `NOTICE`; registro em `docs/upstream-t3.md`.
@@ -99,7 +112,7 @@ Hoje é uma: `verificar-fundamentacao-normativa`.
 ## Testes
 
 ```bash
-pnpm --filter @simplifica-if/server test        # servidor em portas efêmeras com drivers falsos; o bin.ts como processo
+pnpm --filter @simplifica-if/server test        # servidor em portas efêmeras com drivers falsos; o bin.ts como processo; a revisão prévia com o Worker de verdade (revisao-ppc.test.ts: cópia, recusas, bomba ZIP, estouro de memória e de tempo, laço de eventos livre)
 SIMPLIFICA_POC_REAL=1 SIMPLIFICA_PROVIDER=claude pnpm --filter @simplifica-if/server test real   # provider real, pelo RPC
 SIMPLIFICA_POC_REAL=1 SIMPLIFICA_PROVIDER=claude pnpm --filter @simplifica-if/server test ciclo-real   # ciclo de vida da conversa
 SIMPLIFICA_POC_REAL=1 SIMPLIFICA_PROVIDER=codex pnpm --filter @simplifica-if/server test skills-real   # uma skill do app numa conversa real
@@ -135,7 +148,8 @@ O teste real gasta a assinatura do usuário e usa a pasta de estado do harness d
 ## Pendências
 
 - ~~**Ciclo real no Codex e no Antigravity.**~~ Resolvida em 16/11/2026: passou nos dois, com retomada nativa. O `agy` 1.5.9 anuncia `loadSession` (e `sessionCapabilities.resume`); se uma versão deixar de anunciar, a conversa recomeça com o histórico como contexto.
-- ~~**Skills do app nas conversas.**~~ Resolvida: o `CatalogoSkills` as passa a toda conversa (ver [Skills do app](#skills-do-app)), com teste real verde nos três providers. Falta a `revisar-ppc` (depende da conversão DOCX em TypeScript).
+- ~~**Skills do app nas conversas.**~~ Resolvida: o `CatalogoSkills` as passa a toda conversa (ver [Skills do app](#skills-do-app)), com teste real verde nos três providers. A `revisar-ppc` entra pela revisão prévia (`revisaoPpc.analisar`); as etapas com IA são as 4 e 5 do M1.11.
+- **Revisão prévia:** a análise é uma chamada só, sem andamento por etapa (a conversão e a pré-conferência levam menos de 1 s nos PPCs de teste); a interface não deixa escolher o curso quando a identificação falha (o RPC já aceita `cnct` e `forma`); a comparação da base do `kb.sqlite` com a dos arquivos virou teste (`revisao-ppc-base.test.ts`).
 
 - ~~**Ponte no app empacotado.**~~ Resolvida com o `apps/desktop`: o comando da ponte sai do `argv` do processo (`src/ponte.ts`), e o bundle roda a ponte com o Electron como Node (conferido no app empacotado).
 - **Windows:** o `awaitLauncherLoss` do T3 não age no Windows; ali o cordão é só o stdin.

@@ -3,6 +3,10 @@
   "titulo": "Pré-requisitos de ingresso compatíveis com o CNCT",
   "dominio": "curriculo",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "D",
+    "justificativa": "Requisito de escolaridade de ingresso no texto do PPC contra o que o CNCT exige para a forma de oferta declarada; texto não encontrado sai a conferir."
+  },
   "topicos_tematicos": [
     "identificacao_oferta",
     "matriz_curricular"

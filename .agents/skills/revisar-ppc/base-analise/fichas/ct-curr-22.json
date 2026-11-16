@@ -3,6 +3,10 @@
   "titulo": "AEE não incorporado como componente curricular da matriz ou do histórico",
   "dominio": "curriculo",
   "criticidade": "BLOQ",
+  "execucao": {
+    "modo": "D",
+    "justificativa": "AEE numa linha de tabela da matriz, do ementário ou da organização curricular: é serviço, não componente."
+  },
   "topicos_tematicos": [
     "aee_acessibilidade_inclusao"
   ],

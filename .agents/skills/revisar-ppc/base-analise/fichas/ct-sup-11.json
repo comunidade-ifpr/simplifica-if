@@ -3,6 +3,10 @@
   "titulo": "Acessibilidade física e arquitetônica",
   "dominio": "suporte",
   "criticidade": "REC",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: termos de acessibilidade física."
+  },
   "topicos_tematicos": [
     "aee_acessibilidade_inclusao",
     "infraestrutura"

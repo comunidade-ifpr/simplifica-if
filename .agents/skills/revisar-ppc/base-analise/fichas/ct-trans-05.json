@@ -3,6 +3,10 @@
   "titulo": "Riscos globais e ajustes prioritários",
   "dominio": "transversal",
   "criticidade": "BLOQ",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Síntese da IA sobre os resultados das demais fichas: riscos globais e ajustes prioritários."
+  },
   "topicos_tematicos": [
     "avaliacao_ppc_egressos",
     "justificativa_objetivos",

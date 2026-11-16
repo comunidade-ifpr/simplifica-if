@@ -3,6 +3,10 @@
   "titulo": "Metodologias e integração curricular compatíveis com a proposta",
   "dominio": "curriculo",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: metodologias."
+  },
   "topicos_tematicos": [
     "concepcao_metodologias"
   ],

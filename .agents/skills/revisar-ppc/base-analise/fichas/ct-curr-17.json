@@ -3,6 +3,10 @@
   "titulo": "Itinerários formativos coerentes com o CNCT",
   "dominio": "curriculo",
   "criticidade": "REC",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: itinerários do CNCT × termos do PPC."
+  },
   "topicos_tematicos": [
     "aproveitamento_certificacao_tfc"
   ],

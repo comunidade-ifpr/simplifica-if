@@ -3,6 +3,10 @@
   "titulo": "Perfil do egresso",
   "dominio": "identidade",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: perfil do egresso."
+  },
   "topicos_tematicos": [
     "perfil_egresso_mundo_trabalho"
   ],

@@ -3,6 +3,10 @@
   "titulo": "Inclusão, AEE e flexibilização curricular articulados ao currículo",
   "dominio": "curriculo",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: inclusão no currículo."
+  },
   "topicos_tematicos": [
     "aee_acessibilidade_inclusao"
   ],

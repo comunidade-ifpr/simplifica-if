@@ -3,6 +3,10 @@
   "titulo": "Integração curricular e práticas profissionais articuladas",
   "dominio": "curriculo",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: integração teoria-prática."
+  },
   "topicos_tematicos": [
     "matriz_curricular"
   ],

@@ -3,6 +3,10 @@
   "titulo": "Base legal atualizada nas seções de identidade",
   "dominio": "identidade",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "D",
+    "justificativa": "Normas citadas nas seções de identidade com status revogada no registro, e se a sucessora vigente também é citada."
+  },
   "topicos_tematicos": [
     "referencias_normativas"
   ],

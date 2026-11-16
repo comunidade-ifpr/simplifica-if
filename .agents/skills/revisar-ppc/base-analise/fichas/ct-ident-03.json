@@ -3,6 +3,10 @@
   "titulo": "Justificativa baseada em demanda territorial e formativa",
   "dominio": "identidade",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: justificativa territorial."
+  },
   "topicos_tematicos": [
     "justificativa_objetivos"
   ],

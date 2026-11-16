@@ -3,6 +3,10 @@
   "titulo": "Inclusão, acessibilidade e AEE na política de atendimento",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: trecho de AEE e acessibilidade na política de atendimento."
+  },
   "topicos_tematicos": [
     "aee_acessibilidade_inclusao"
   ],

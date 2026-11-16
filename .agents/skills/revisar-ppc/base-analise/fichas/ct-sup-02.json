@@ -3,6 +3,10 @@
   "titulo": "Frequência mínima e recuperação da aprendizagem",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: percentual de frequência + termos de recuperação/recomposição."
+  },
   "topicos_tematicos": [
     "avaliacao_aprendizagem"
   ],

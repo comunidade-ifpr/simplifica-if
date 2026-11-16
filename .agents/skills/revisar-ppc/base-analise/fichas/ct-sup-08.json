@@ -3,6 +3,10 @@
   "titulo": "Avaliação periódica do PPC e acompanhamento de egressos",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: seção avaliacao_curso + Res. CONSUP 64/2022; a IA confirma periodicidade e responsáveis."
+  },
   "topicos_tematicos": [
     "avaliacao_ppc_egressos"
   ],

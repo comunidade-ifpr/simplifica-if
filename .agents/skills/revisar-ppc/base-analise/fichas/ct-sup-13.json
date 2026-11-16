@@ -3,6 +3,10 @@
   "titulo": "Referências com aderência formal mínima à ABNT",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: padrões ABNT por expressão regular; a IA olha só as linhas fora do padrão."
+  },
   "topicos_tematicos": [
     "ementario_bibliografias",
     "referencias_normativas"
