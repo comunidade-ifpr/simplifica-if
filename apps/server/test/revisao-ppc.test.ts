@@ -18,8 +18,8 @@ import * as Redacted from "effect/Redacted";
 import { strToU8, zipSync } from "fflate";
 import { CAMINHO_LIBERAR_ARQUIVO, ehFalhaRevisaoPpc } from "@simplifica-if/contratos-app";
 import * as Layers from "@simplifica-if/kb/layers";
-import { montarDocx, par } from "@simplifica-if/docx/testes/sintetico";
-import { corpoPpcSintetico, ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
+import { par } from "@simplifica-if/docx/testes/sintetico";
+import { ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
 import * as AnalisePpc from "../src/revisao-ppc/AnalisePpc.ts";
 import * as Servidor from "../src/servidor.ts";
 import {
@@ -189,7 +189,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("limites do Worker", (i
       Effect.gen(function* () {
         // 60 mil parágrafos (170 kB compactados) não cabem em 64 MB de heap; cabem nos 512 MB do padrão.
         const extenso = Array.from({ length: 60_000 }, (_, i) => par(`Parágrafo ${i} do texto do curso.`)).join("");
-        const grande = gravar("memoria.docx", montarDocx({ corpo: corpoPpcSintetico() + extenso }));
+        const grande = gravar("memoria.docx", ppcSintetico({ corpoExtra: extenso }));
         // Abaixo do piso (2 MB abortaria o processo inteiro): vale o piso de 64 MB.
         const erro = yield* analisarCom({ memoriaMb: 2 }, grande);
         assert.match(erro.message, /memória demais/);
