@@ -289,6 +289,41 @@ describe("leitor OOXML", () => {
     expect(descendentes(raiz!, "{urn:outro}p")).toHaveLength(1);
   });
 
+  test("Strict Open XML: mesmos elementos, com os namespaces do formato estrito", () => {
+    const estrito = (bytes: Uint8Array) => {
+      const partes = unzipSync(bytes);
+      const trocar = (nome: string) =>
+        strToU8(
+          strFromU8(partes[nome]!)
+            .replaceAll(
+              "http://schemas.openxmlformats.org/wordprocessingml/2006/main",
+              "http://purl.oclc.org/ooxml/wordprocessingml/main",
+            )
+            .replaceAll(
+              "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
+              "http://purl.oclc.org/ooxml/officeDocument/relationships",
+            )
+            .replaceAll("http://schemas.openxmlformats.org/drawingml/2006/", "http://purl.oclc.org/ooxml/drawingml/"),
+        );
+      return zipSync({
+        ...partes,
+        ...Object.fromEntries(
+          ["word/document.xml", "word/styles.xml", "_rels/.rels", "word/_rels/document.xml.rels"].map((nome) => [
+            nome,
+            trocar(nome),
+          ]),
+        ),
+      });
+    };
+    for (const nome of ["ppc-minimo", "texto-especial", "mesclas"]) {
+      const original = docxDaFixture(nome);
+      expect(elementosDoDocumento(lerDocx(estrito(original)))).toEqual(elementosDoDocumento(lerDocx(original)));
+    }
+    // A figura continua resolvida pela relação.
+    const convertido = converterPpc(estrito(docxDaFixture("ppc-minimo")), "ppc.docx", { agora: AGORA });
+    expect(convertido.representacaoGrafica).toMatchObject({ metodo: "bitmap" });
+  });
+
   test("datas das propriedades do documento em UTC", () => {
     expect(dataW3cEmUtc("2026-03-05T10:38:00Z")).toBe("2026-03-05T10:38:00+00:00");
     expect(dataW3cEmUtc("2026-04-22T00:06:00-03:00")).toBe("2026-04-22T03:06:00+00:00");

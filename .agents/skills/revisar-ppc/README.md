@@ -124,7 +124,7 @@ Deliberadas, no modo padrão:
 - **Alterações controladas.** O `python-docx` só lê os runs filhos diretos do parágrafo, e o texto inserido com o controle de alterações ligado (`w:ins`) sumia do `PPC.md`: "está previst na Resolução", "### e formas de acesso" no lugar de "### 1.1.2 Requisitos e formas de acesso". Agora entram os runs de `w:ins`, `w:moveTo`, `w:smartTag`, `w:sdt` em linha, `w:fldSimple` e `w:customXml`; o texto removido (`w:del`, `w:moveFrom`) continua de fora. Em 3 dos 12 PPCs do corpus isso muda 34, 89 e 131 linhas do `PPC.md`.
 - **Representação gráfica.** A figura desenhada com formas do Word não é mais renderizada (a conversão antiga chamava o MS Word e o poppler). O `_dados.json` traz `metodo: "vetorial_nao_renderizada"` (ou `"figura_nao_localizada"`, quando a seção não tem figura reconhecida) e o `PPC.md` recebe, depois do título da seção, um parágrafo `**Aviso da conversão:** …`. Um EMF ou WMF embutido é copiado como está (`metodo: "vetorial_arquivo_cru"`, com `arquivo_vetorial`), sem contar como imagem extraída. A imagem legada (`v:imagedata` em `w:pict` ou `w:object`) é reconhecida. A imagem sai com a extensão dela: a conversão antiga gravava qualquer formato como `representacao_grafica.png`.
 - **Propriedades do documento.** Sem `docProps/core.xml` (exportação do Google Docs), `metadata_documento` fica vazio; o `python-docx` inventava `title: "Word Document"`, `last_modified_by: "python-docx"` e a hora da conversão como `modified`.
-- **Robustez.** Mescla vertical malformada (continuação sem célula acima na mesma coluna) e imagem com relação externa não abortam mais a conversão. O prefixo de namespace do XML é livre.
+- **Robustez.** Mescla vertical malformada (continuação sem célula acima na mesma coluna) e imagem com relação externa não abortam mais a conversão. O prefixo de namespace do XML é livre, e o DOCX salvo como "Strict Open XML" é lido (o `python-docx` o via como documento vazio).
 - **Referências do ementário.** A busca aproximada de locais usa sempre a medida do `rapidfuzz`. A conversão antiga, sem o `rapidfuzz` instalado, caía num cálculo com `difflib`, com escores diferentes.
 
 Defeitos conhecidos da conversão antiga, mantidos para a saída não mudar (candidatos a correção, com o diferencial como rede):
@@ -133,7 +133,7 @@ Defeitos conhecidos da conversão antiga, mantidos para a saída não mudar (can
 - a numeração automática do Word (`w:numPr`) não é lida: listas e títulos numerados pelo Word saem sem o número, e só o estilo de lista ou o marcador digitado fazem um item;
 - alíneas digitadas (`a) texto`) viram `1. a) texto`;
 - `resumo_matriz_curricular.total_ha` e `total_hr` são sempre 0 (os totais válidos estão em `totais`);
-- o texto de uma tabela aninhada não entra na célula que a contém; o que vem antes do primeiro título (capa) fica fora do Markdown.
+- o texto de uma tabela aninhada, ou de um parágrafo em `w:sdt` dentro de uma célula, não entra na célula; o que vem antes do primeiro título (capa) fica fora do Markdown.
 
 ### Diferencial contra a conversão em Python
 

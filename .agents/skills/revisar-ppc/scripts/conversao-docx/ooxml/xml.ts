@@ -6,6 +6,9 @@
  * elemento é a URI. `analisarXml` resolve as declarações `xmlns` e renomeia elementos e atributos
  * para o prefixo convencional da URI (`w:`, `r:`, `a:`…), de modo que o resto do leitor compara
  * nomes simples. Namespace desconhecido vira `{uri}nome`, que não colide com os convencionais.
+ *
+ * As URIs do formato "Strict Open XML" (a outra opção de DOCX do "Salvar como" do Word) levam aos
+ * mesmos prefixos: o conteúdo é o mesmo, só o namespace muda.
  */
 import { type ChildNode, Element, isCDATA, isTag, isText } from "domhandler";
 import { parseDocument } from "htmlparser2";
@@ -24,6 +27,12 @@ const PREFIXO_DA_URI: Record<string, string> = {
   "http://purl.org/dc/elements/1.1/": "dc",
   "http://purl.org/dc/terms/": "dcterms",
   "http://www.w3.org/XML/1998/namespace": "xml",
+  // Strict Open XML.
+  "http://purl.oclc.org/ooxml/wordprocessingml/main": "w",
+  "http://purl.oclc.org/ooxml/officeDocument/relationships": "r",
+  "http://purl.oclc.org/ooxml/drawingml/main": "a",
+  "http://purl.oclc.org/ooxml/drawingml/wordprocessingDrawing": "wp",
+  "http://purl.oclc.org/ooxml/drawingml/picture": "pic",
 };
 
 type Escopo = ReadonlyMap<string, string>;

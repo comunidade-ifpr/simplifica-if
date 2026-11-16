@@ -9,11 +9,16 @@ import type { Element } from "domhandler";
 import { unzipSync } from "fflate";
 import { analisarXml, atributo, filhos } from "./xml.ts";
 
-const TIPO_RELACAO = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
-export const RELACAO_DOCUMENTO = `${TIPO_RELACAO}/officeDocument`;
-export const RELACAO_ESTILOS = `${TIPO_RELACAO}/styles`;
-export const RELACAO_PROPRIEDADES =
-  "http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties";
+/** Bases dos tipos de relação: a do formato de transição (o comum) e a do Strict Open XML. */
+const BASES_DE_RELACAO = [
+  "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
+  "http://purl.oclc.org/ooxml/officeDocument/relationships",
+];
+export const RELACAO_DOCUMENTO = BASES_DE_RELACAO.map((base) => `${base}/officeDocument`);
+export const RELACAO_ESTILOS = BASES_DE_RELACAO.map((base) => `${base}/styles`);
+export const RELACAO_PROPRIEDADES = [
+  "http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties",
+];
 
 export type Relacao = {
   id: string;
@@ -90,9 +95,9 @@ export class PacoteOoxml {
     return relacoes;
   }
 
-  /** Parte de destino da primeira relação do tipo dado. */
-  partePorTipo(origem: string, tipo: string): string | null {
-    for (const relacao of this.relacoes(origem).values()) if (relacao.tipo === tipo) return relacao.parte;
+  /** Parte de destino da primeira relação de um dos tipos dados. */
+  partePorTipo(origem: string, tipos: readonly string[]): string | null {
+    for (const relacao of this.relacoes(origem).values()) if (tipos.includes(relacao.tipo)) return relacao.parte;
     return null;
   }
 

@@ -801,11 +801,11 @@ Em aberto:
 - Diferenças deliberadas do modo padrão (`documento`), todas no README da skill:
   - o texto inserido com controle de alterações (`w:ins`) e os runs em `w:moveTo`, `w:smartTag`, `w:sdt` em linha, `w:fldSimple` e `w:customXml` entram no `PPC.md`; o `python-docx` os descartava, e 3 PPCs do corpus perdiam trechos (34, 89 e 131 linhas mudam);
   - a figura vetorial não é renderizada: `metodo: "vetorial_nao_renderizada"` e um aviso no `PPC.md`; EMF e WMF embutidos são copiados como estão; a imagem sai com a extensão dela;
-  - `metadata_documento` vazio sem `core.xml`; mescla vertical malformada e imagem externa não abortam.
+  - `metadata_documento` vazio sem `core.xml`; mescla vertical malformada e imagem externa não abortam; o DOCX em "Strict Open XML" é lido.
 - Defeitos da conversão antiga mantidos, para a saída não mudar (listados no README): negrito colado (`**a**b**`), numeração automática do Word ignorada, alíneas como `1. a)`, `total_ha` e `total_hr` zerados no resumo da matriz.
 - Desempenho no corpus: de 0,11 a 0,26 s por PPC, contra 0,85 a 2,2 s do Python; `preparar-documento` inteiro em 0,44 s.
 - Removidos: `conversao_docx/` (12 arquivos, cerca de 5.000 linhas), `converter_docx.py`, os 4 arquivos de `pytest` e o `requirements.txt` da skill; a opção `python` e a variável `REVISAR_PPC_PYTHON`.
-- Testes: `conversao-docx.test.ts` (49 casos: leitor, regras de domínio, os casos dos 4 arquivos de `pytest`, gabaritos do oráculo e figura) e `similaridade.test.ts` (4 casos); a skill tem 256 casos. O teste DOCX da identificação deixou de depender do `python-docx`.
+- Testes: `conversao-docx.test.ts` (50 casos: leitor, regras de domínio, os casos dos 4 arquivos de `pytest`, gabaritos do oráculo e figura) e `similaridade.test.ts` (4 casos); a skill tem 257 casos. O teste DOCX da identificação deixou de depender do `python-docx`.
 - Python que continua: só `scripts/converter_ppcs_markdown.py` (T5).
 - Pendências:
   - as duas revisões independentes e o merge;
