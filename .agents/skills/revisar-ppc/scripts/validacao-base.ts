@@ -26,6 +26,7 @@ import {
   type UniversoReferencias,
 } from "@simplifica-if/kb/normas/referencia-estruturada";
 import { aparar, ordenarTextos } from "@simplifica-if/kb/texto";
+import { VERIFICADOR_POR_FICHA } from "@simplifica-if/ppc/verificadores/registro";
 import { lerJson, listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { jsonSchemaGerado, type MarcoArquivo, schemasDesatualizados } from "./esquemas.ts";
@@ -388,6 +389,31 @@ export function validarMarcosNormativos(
 }
 
 /** Fichas de `fichas/` por id (na ordem dos arquivos; ids repetidos ficam com a última). */
+/**
+ * `execucao` contra o registro de verificadores de `packages/ppc` (M1.11): toda ficha D tem
+ * verificador registrado, e todo verificador registrado é de uma ficha D da base. A ausência do
+ * campo e o modo fora de D/S/J o schema já recusa.
+ */
+export function validarExecucaoFichas(
+  fichasPorId: ReadonlyMap<string, Ficha>,
+  verificadores: ReadonlyMap<string, { id: string }> = VERIFICADOR_POR_FICHA,
+): string[] {
+  const erros: string[] = [];
+  const modo = (ficha: Ficha | undefined) =>
+    ficha && ehObjeto(ficha.execucao) ? textoOuVazio(ficha.execucao.modo) : "";
+  for (const [id, ficha] of fichasPorId)
+    if (modo(ficha) === "D" && !verificadores.has(id))
+      erros.push(
+        `${id}: execucao.modo D sem verificador registrado em packages/ppc/src/verificadores/registro.ts`,
+      );
+  for (const [id, verificador] of verificadores)
+    if (modo(fichasPorId.get(id)) !== "D")
+      erros.push(
+        `verificador ${verificador.id}: registrado para ${id}, que ${fichasPorId.has(id) ? "não é ficha D" : "não existe na base"}`,
+      );
+  return erros;
+}
+
 export function carregarFichas(caminhos: CaminhosAnalise = caminhosPadrao()): Map<string, Ficha> {
   const fichas = new Map<string, Ficha>();
   for (const arquivo of listarArquivos(caminhos.fichasDir, ".json")) {
@@ -444,6 +470,7 @@ export function validarBaseAnalise(caminhos: CaminhosAnalise = caminhosPadrao())
     fichasPorId.set(fichaId, payload);
   }
   erros.push(...validarTopicosFichas(fichasPorId, caminhos));
+  erros.push(...validarExecucaoFichas(fichasPorId));
 
   const universo = carregarUniverso(caminhos);
   if (universo === null) {

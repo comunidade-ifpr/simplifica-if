@@ -6,6 +6,7 @@ import { aparar, apararFim, compararTexto, dividirLinhas, lerTexto, ordenarTexto
 import { agoraUtc, escreverTexto, lerJson, listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { referenciasDaFicha, universoOuVazio } from "./referencias-fichas.ts";
+import { VERIFICADOR_POR_FICHA } from "@simplifica-if/ppc/verificadores/registro";
 
 const PREFIXO_GERADO_EM = "Gerado em: ";
 
@@ -43,12 +44,16 @@ function linhasExecucao(fichas: Map<string, ObjetoJson>): string[] {
   const linhas = [
     "## Execução no app",
     "",
-    "O campo `execucao` de cada ficha diz como ela roda na revisão do app (M1.11): `D`, só código, com verificador em `packages/ppc/src/verificadores`; `S`, o código acha o trecho e a IA confirma; `J`, julgamento da IA sobre as seções.",
+    "O campo `execucao` de cada ficha diz como ela roda na revisão do app (M1.11): `D`, só código, com o verificador (entre parênteses) registrado em `packages/ppc/src/verificadores/registro.ts`; `S`, o código acha o trecho e a IA confirma; `J`, julgamento da IA sobre as seções.",
     "",
   ];
   for (const modo of ["D", "S", "J"]) {
     const ids = ordenarTextos([...fichas.values()].filter((f) => modoExecucao(f) === modo).map((f) => textoDe(f.id)));
-    linhas.push(`- \`${modo}\` (${ids.length}): ${ids.map((id) => `\`${id}\``).join(", ")}`);
+    const rotulo = (id: string) => {
+      const verificador = VERIFICADOR_POR_FICHA.get(id);
+      return verificador ? `\`${id}\` (\`${verificador.id}\`)` : `\`${id}\``;
+    };
+    linhas.push(`- \`${modo}\` (${ids.length}): ${ids.map(rotulo).join(", ")}`);
   }
   linhas.push("");
   return linhas;

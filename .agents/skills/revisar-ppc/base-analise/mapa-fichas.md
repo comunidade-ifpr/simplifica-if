@@ -3,7 +3,7 @@
 Este mapa organiza as fichas por tópicos semânticos, sem depender da numeração das seções do PPC.
 A numeração observada em um PPC específico deve ser detectada na rodada de análise, não codificada na ficha.
 
-Gerado em: 2026-11-16T15:42:32+00:00
+Gerado em: 2026-11-16T15:59:46+00:00
 
 ## Como usar
 
@@ -13,9 +13,9 @@ Gerado em: 2026-11-16T15:42:32+00:00
 
 ## Execução no app
 
-O campo `execucao` de cada ficha diz como ela roda na revisão do app (M1.11): `D`, só código, com verificador em `packages/ppc/src/verificadores`; `S`, o código acha o trecho e a IA confirma; `J`, julgamento da IA sobre as seções.
+O campo `execucao` de cada ficha diz como ela roda na revisão do app (M1.11): `D`, só código, com o verificador (entre parênteses) registrado em `packages/ppc/src/verificadores/registro.ts`; `S`, o código acha o trecho e a IA confirma; `J`, julgamento da IA sobre as seções.
 
-- `D` (12): `CT-CURR-02`, `CT-CURR-16`, `CT-CURR-18`, `CT-CURR-22`, `CT-IDENT-01`, `CT-IDENT-08`, `CT-IDENT-13`, `CT-SUP-09`, `CT-SUP-12`, `CT-SUP-14`, `CT-SUP-21`, `CT-SUP-24`
+- `D` (12): `CT-CURR-02` (`d-carga-horaria-total`), `CT-CURR-16` (`d-requisito-ingresso`), `CT-CURR-18` (`d-componentes-fgb`), `CT-CURR-22` (`d-aee-componente`), `CT-IDENT-01` (`d-denominacao-cnct`), `CT-IDENT-08` (`d-base-legal-identidade`), `CT-IDENT-13` (`d-eixo-cnct`), `CT-SUP-09` (`d-marcos-nas-referencias`), `CT-SUP-12` (`d-normas-revogadas`), `CT-SUP-14` (`d-cnct-e-marcos-institucionais`), `CT-SUP-21` (`d-legislacao-profissional`), `CT-SUP-24` (`d-politica-assistencia-estudantil`)
 - `S` (38): `CT-CURR-01`, `CT-CURR-03`, `CT-CURR-05`, `CT-CURR-06`, `CT-CURR-10`, `CT-CURR-11`, `CT-CURR-13`, `CT-CURR-15`, `CT-CURR-17`, `CT-CURR-20`, `CT-CURR-21`, `CT-CURR-23`, `CT-CURR-26`, `CT-CURR-27`, `CT-IDENT-02`, `CT-IDENT-09`, `CT-IDENT-11`, `CT-IDENT-14`, `CT-IDENT-15`, `CT-IDENT-16`, `CT-IDENT-17`, `CT-IDENT-18`, `CT-IDENT-19`, `CT-SUP-01`, `CT-SUP-02`, `CT-SUP-03`, `CT-SUP-04`, `CT-SUP-06`, `CT-SUP-08`, `CT-SUP-10`, `CT-SUP-11`, `CT-SUP-13`, `CT-SUP-16`, `CT-SUP-18`, `CT-SUP-22`, `CT-SUP-23`, `CT-SUP-25`, `CT-SUP-26`
 - `J` (30): `CT-CURR-04`, `CT-CURR-07`, `CT-CURR-08`, `CT-CURR-09`, `CT-CURR-12`, `CT-CURR-14`, `CT-CURR-19`, `CT-CURR-24`, `CT-CURR-25`, `CT-IDENT-03`, `CT-IDENT-04`, `CT-IDENT-05`, `CT-IDENT-06`, `CT-IDENT-07`, `CT-IDENT-10`, `CT-IDENT-12`, `CT-SUP-05`, `CT-SUP-07`, `CT-SUP-15`, `CT-SUP-17`, `CT-SUP-19`, `CT-SUP-20`, `CT-TRANS-01`, `CT-TRANS-02`, `CT-TRANS-03`, `CT-TRANS-04`, `CT-TRANS-05`, `CT-TRANS-06`, `CT-TRANS-07`, `CT-TRANS-08`
 

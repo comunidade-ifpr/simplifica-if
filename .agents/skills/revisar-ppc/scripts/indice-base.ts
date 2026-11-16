@@ -17,6 +17,7 @@ import { agoraUtc, escreverTexto, lerJson, listarArquivos } from "./arquivos.ts"
 import type { UniversoReferencias } from "@simplifica-if/kb/normas/referencia-estruturada";
 import { carregarMarcos } from "./validacao-base.ts";
 import { MODOS_EXECUCAO } from "./esquemas.ts";
+import { VERIFICADOR_POR_FICHA } from "@simplifica-if/ppc/verificadores/registro";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { marcoLegivel, normasCitadas, referenciasLegiveisDaFicha, universoOuVazio } from "./referencias-fichas.ts";
 
@@ -61,6 +62,7 @@ function itemFicha(caminhos: CaminhosAnalise, arquivo: string, universo: Univers
     dominio: obter(payload, "dominio", ""),
     criticidade: exigir(payload, "criticidade", arquivo),
     execucao: exigir(payload, "execucao", arquivo),
+    verificador: VERIFICADOR_POR_FICHA.get(textoOuVazio(payload.id))?.id ?? null,
     topicos_tematicos: lista(payload.topicos_tematicos),
     tipo_escopo: textoOuVazio(payload.tipo_escopo),
     ancoras_semanticas: lista(payload.ancoras_semanticas),

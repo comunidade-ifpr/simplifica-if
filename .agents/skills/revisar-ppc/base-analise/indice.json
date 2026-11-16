@@ -1,6 +1,6 @@
 {
   "base_analise_dir": "revisar-ppc/base-analise",
-  "gerado_em": "2026-11-16T15:42:33+00:00",
+  "gerado_em": "2026-11-16T15:59:46+00:00",
   "resumo": {
     "total_fichas": 80,
     "fichas_por_execucao": {
@@ -26,6 +26,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: tabela da matriz convertida (componentes, períodos, CH); a IA só olha se a matriz não for reconhecida."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "matriz_curricular"
       ],
@@ -61,6 +62,7 @@
         "modo": "D",
         "justificativa": "Carga horária total extraída do PPC contra o mínimo do CNCT e o da forma integrada (3.000 h, Res. CNE/CP nº 2/2026, art. 29); como a extração não tem revisão humana, a divergência sai a conferir."
       },
+      "verificador": "d-carga-horaria-total",
       "topicos_tematicos": [
         "identificacao_oferta",
         "matriz_curricular"
@@ -125,6 +127,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: somas por núcleo na matriz; a IA confirma o rótulo dos núcleos."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "matriz_curricular"
       ],
@@ -175,6 +178,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: componentes × perfil."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "matriz_curricular",
         "perfil_egresso_mundo_trabalho"
@@ -223,6 +227,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: cada componente da matriz tem ementa (pareamento de nomes); suficiência por amostra."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "ementario_bibliografias"
       ],
@@ -256,6 +261,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: contagem de básica/complementar por componente no ementário."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "ementario_bibliografias"
       ],
@@ -296,6 +302,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: progressão formativa."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "matriz_curricular"
       ],
@@ -336,6 +343,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: metodologias."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "concepcao_metodologias"
       ],
@@ -376,6 +384,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: inclusão no currículo."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "aee_acessibilidade_inclusao"
       ],
@@ -420,6 +429,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: presença da representação gráfica (a conversão a detecta); a coerência fica com a pessoa (imagem)."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "matriz_curricular"
       ],
@@ -458,6 +468,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: termos dos temas transversais legais nas ementas."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "temas_transversais_cidadania"
       ],
@@ -504,6 +515,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: progressão explicitada."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "matriz_curricular"
       ],
@@ -546,6 +558,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: seção aproveitamento_estudos; a IA confirma critérios e procedimento no trecho."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "aproveitamento_certificacao_tfc"
       ],
@@ -591,6 +604,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: aplicabilidade em código (PFI/TCC na matriz); caracterização é julgamento."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "aproveitamento_certificacao_tfc"
       ],
@@ -640,6 +654,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: aplicabilidade e trecho de certificação de conhecimentos."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "aproveitamento_certificacao_tfc"
       ],
@@ -679,6 +694,7 @@
         "modo": "D",
         "justificativa": "Requisito de escolaridade de ingresso no texto do PPC contra o que o CNCT exige para a forma de oferta declarada; texto não encontrado sai a conferir."
       },
+      "verificador": "d-requisito-ingresso",
       "topicos_tematicos": [
         "identificacao_oferta",
         "matriz_curricular"
@@ -745,6 +761,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: itinerários do CNCT × termos do PPC."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "aproveitamento_certificacao_tfc"
       ],
@@ -788,6 +805,7 @@
         "modo": "D",
         "justificativa": "Componentes obrigatórios da Formação Geral Básica procurados pelo nome nas tabelas da matriz e do ementário; só se aplica ao integrado."
       },
+      "verificador": "d-componentes-fgb",
       "topicos_tematicos": [
         "matriz_curricular"
       ],
@@ -852,6 +870,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: integração teoria-prática."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "matriz_curricular"
       ],
@@ -915,6 +934,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: estagio_obrigatorio/estagio_carga_h + CNCT e legislação profissional; a IA confirma o requisito de aprovação."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "estagio"
       ],
@@ -967,6 +987,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: aplicabilidade (estágio) + termos (convênio, termo de compromisso, seguro)."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "estagio"
       ],
@@ -1026,6 +1047,7 @@
         "modo": "D",
         "justificativa": "AEE numa linha de tabela da matriz, do ementário ou da organização curricular: é serviço, não componente."
       },
+      "verificador": "d-aee-componente",
       "topicos_tematicos": [
         "aee_acessibilidade_inclusao"
       ],
@@ -1074,6 +1096,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: CH semanal da matriz × turno; a IA confirma o contraturno no trecho."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "identificacao_oferta",
         "matriz_curricular"
@@ -1130,6 +1153,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: organização pedagógica do estágio."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "estagio"
       ],
@@ -1185,6 +1209,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: campos de estágio × perfil."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "estagio",
         "perfil_egresso_mundo_trabalho"
@@ -1250,6 +1275,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: termos de educação política e cidadania nas ementas (integrado)."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "temas_transversais_cidadania"
       ],
@@ -1297,6 +1323,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: formato declarado e CH não presencial da matriz × limites das DCN."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "identificacao_oferta",
         "matriz_curricular"
@@ -1346,6 +1373,7 @@
         "modo": "D",
         "justificativa": "Denominação do curso no início do PPC contra a do CNCT."
       },
+      "verificador": "d-denominacao-cnct",
       "topicos_tematicos": [
         "identificacao_oferta"
       ],
@@ -1393,6 +1421,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: campus, forma, CH, duração e prazo em vários pontos × dados institucionais."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "identificacao_oferta"
       ],
@@ -1437,6 +1466,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: justificativa territorial."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "justificativa_objetivos"
       ],
@@ -1473,6 +1503,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: objetivos."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "justificativa_objetivos"
       ],
@@ -1505,6 +1536,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: concepção de EPT."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "concepcao_metodologias"
       ],
@@ -1547,6 +1579,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: formação integral."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "concepcao_metodologias"
       ],
@@ -1584,6 +1617,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: perfil do egresso."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "perfil_egresso_mundo_trabalho"
       ],
@@ -1618,6 +1652,7 @@
         "modo": "D",
         "justificativa": "Normas citadas nas seções de identidade com status revogada no registro, e se a sucessora vigente também é citada."
       },
+      "verificador": "d-base-legal-identidade",
       "topicos_tematicos": [
         "referencias_normativas"
       ],
@@ -1673,6 +1708,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: modalidade declarada × menções a EaD/AVA."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "identificacao_oferta"
       ],
@@ -1713,6 +1749,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: competências × perfil do CNCT."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "perfil_egresso_mundo_trabalho"
       ],
@@ -1748,6 +1785,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: campo de atuação do CNCT × termos do PPC; a IA confirma equivalências."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "perfil_egresso_mundo_trabalho"
       ],
@@ -1783,6 +1821,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: clareza do perfil."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "perfil_egresso_mundo_trabalho"
       ],
@@ -1818,6 +1857,7 @@
         "modo": "D",
         "justificativa": "Eixo tecnológico declarado contra o do CNCT; a divergência sai a conferir (abreviações e texto colado pela conversão)."
       },
+      "verificador": "d-eixo-cnct",
       "topicos_tematicos": [
         "identificacao_oferta"
       ],
@@ -1862,6 +1902,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: códigos e ocupações CBO do CNCT no PPC."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "perfil_egresso_mundo_trabalho"
       ],
@@ -1902,6 +1943,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: \"Técnico em X\" e eixo na seção de diplomas; a IA confirma certificado × diploma."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "perfil_egresso_mundo_trabalho"
       ],
@@ -1952,6 +1994,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: termos de processo seletivo, reserva de vagas, Res. 190/2024."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "identificacao_oferta"
       ],
@@ -2006,6 +2049,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: citação da lei de cotas e alteração (registro); a IA confere a regra reproduzida."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "assistencia_estudantil_permanencia",
         "identificacao_oferta"
@@ -2074,6 +2118,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: seção acompanhamento_egresso; a IA confirma responsáveis e instrumentos."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "avaliacao_ppc_egressos",
         "perfil_egresso_mundo_trabalho"
@@ -2125,6 +2170,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: conselho do CNCT citado; a IA confere \"promessa automática\" de registro."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "perfil_egresso_mundo_trabalho",
         "referencias_normativas"
@@ -2194,6 +2240,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: norma de avaliação do IFPR citada + escala de conceitos."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "avaliacao_aprendizagem"
       ],
@@ -2236,6 +2283,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: percentual de frequência + termos de recuperação/recomposição."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "avaliacao_aprendizagem"
       ],
@@ -2275,6 +2323,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: trecho de assistência estudantil."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "assistencia_estudantil_permanencia"
       ],
@@ -2310,6 +2359,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: trecho de AEE e acessibilidade na política de atendimento."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "aee_acessibilidade_inclusao"
       ],
@@ -2353,6 +2403,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: corpo docente × oferta."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "corpo_docente_gestao"
       ],
@@ -2390,6 +2441,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: coordenação, colegiado, NDE (termos e seção)."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "corpo_docente_gestao"
       ],
@@ -2426,6 +2478,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: infraestrutura × proposta."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "infraestrutura"
       ],
@@ -2465,6 +2518,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: seção avaliacao_curso + Res. CONSUP 64/2022; a IA confirma periodicidade e responsáveis."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "avaliacao_ppc_egressos"
       ],
@@ -2514,6 +2568,7 @@
         "modo": "D",
         "justificativa": "Marcos centrais vigentes (DCN da EPT; no integrado, DCNEM, LDB e Lei nº 14.945/2024) entre as citações resolvidas da seção de referências, e normas revogadas nela sem a sucessora."
       },
+      "verificador": "d-marcos-nas-referencias",
       "topicos_tematicos": [
         "referencias_normativas"
       ],
@@ -2565,6 +2620,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: NEABI, NAPNE, NUGEDIS e afins (termos)."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "aee_acessibilidade_inclusao",
         "temas_transversais_cidadania"
@@ -2609,6 +2665,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: termos de acessibilidade física."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "aee_acessibilidade_inclusao",
         "infraestrutura"
@@ -2655,6 +2712,7 @@
         "modo": "D",
         "justificativa": "Normas citadas em todo o PPC com status revogada no registro; sem a sucessora vigente citada, é pendência; com ela, a pessoa confere se a citação é histórica."
       },
+      "verificador": "d-normas-revogadas",
       "topicos_tematicos": [
         "referencias_normativas"
       ],
@@ -2709,6 +2767,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: padrões ABNT por expressão regular; a IA olha só as linhas fora do padrão."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "ementario_bibliografias",
         "referencias_normativas"
@@ -2765,6 +2824,7 @@
         "modo": "D",
         "justificativa": "CNCT, DCN da EPT (e DCNEM no integrado), PDI, PPI ou Regimento e a legislação profissional do CNCT entre as citações e menções do PPC."
       },
+      "verificador": "d-cnct-e-marcos-institucionais",
       "topicos_tematicos": [
         "referencias_normativas"
       ],
@@ -2827,6 +2887,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: habilitação docente × componentes."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "corpo_docente_gestao"
       ],
@@ -2868,6 +2929,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: contagem do quadro docente × CH da matriz."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "corpo_docente_gestao"
       ],
@@ -2906,6 +2968,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: formação pedagógica."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "corpo_docente_gestao"
       ],
@@ -2957,6 +3020,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: instâncias e normas de inclusão (termos + registro)."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "aee_acessibilidade_inclusao"
       ],
@@ -2996,6 +3060,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: AEE: procedimentos e público."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "aee_acessibilidade_inclusao"
       ],
@@ -3044,6 +3109,7 @@
         "modo": "J",
         "justificativa": "Julgamento da IA: recursos de acessibilidade e permanência."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "aee_acessibilidade_inclusao"
       ],
@@ -3088,6 +3154,7 @@
         "modo": "D",
         "justificativa": "Atos de legislação profissional que o CNCT indica para o curso contra as citações resolvidas do PPC."
       },
+      "verificador": "d-legislacao-profissional",
       "topicos_tematicos": [
         "perfil_egresso_mundo_trabalho",
         "referencias_normativas"
@@ -3147,6 +3214,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: itens de infraestrutura mínima do CNCT × seção de infraestrutura; a IA confirma equivalências."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "infraestrutura"
       ],
@@ -3186,6 +3254,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: \"Manual de Competências\", regime de trabalho, participação (termos)."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "corpo_docente_gestao"
       ],
@@ -3230,6 +3299,7 @@
         "modo": "D",
         "justificativa": "Res. CONSUP/IFPR nº 239/2025 citada, e as Res. nº 11/2009 e nº 53/2011, revogadas por ela, citadas sem ela."
       },
+      "verificador": "d-politica-assistencia-estudantil",
       "topicos_tematicos": [
         "assistencia_estudantil_permanencia",
         "referencias_normativas"
@@ -3292,6 +3362,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: biblioteca: andar, piso, acessibilidade (termos)."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "aee_acessibilidade_inclusao",
         "infraestrutura"
@@ -3346,6 +3417,7 @@
         "modo": "S",
         "justificativa": "Código localiza e extrai, IA confirma: progressão parcial e dependência × forma; a IA confirma a operacionalidade."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "avaliacao_aprendizagem"
       ],
@@ -3388,6 +3460,7 @@
         "modo": "J",
         "justificativa": "Julgamento transversal sobre os resumos dos temas: coerência entre objetivos, perfil do egresso e matriz."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "justificativa_objetivos",
         "perfil_egresso_mundo_trabalho",
@@ -3445,6 +3518,7 @@
         "modo": "J",
         "justificativa": "Julgamento transversal sobre os resumos dos temas: coerência entre concepção, metodologias e avaliação."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "avaliacao_aprendizagem",
         "concepcao_metodologias",
@@ -3509,6 +3583,7 @@
         "modo": "J",
         "justificativa": "Julgamento transversal sobre os resumos dos temas: coerência entre ementas e bibliografias."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "ementario_bibliografias",
         "matriz_curricular",
@@ -3570,6 +3645,7 @@
         "modo": "J",
         "justificativa": "Julgamento transversal sobre os resumos dos temas: currículo, corpo docente e infraestrutura."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "corpo_docente_gestao",
         "infraestrutura",
@@ -3642,6 +3718,7 @@
         "modo": "J",
         "justificativa": "Síntese da IA sobre os resultados das demais fichas: riscos globais e ajustes prioritários."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "avaliacao_ppc_egressos",
         "justificativa_objetivos",
@@ -3700,6 +3777,7 @@
         "modo": "J",
         "justificativa": "Síntese da IA sobre os resultados das demais fichas, para a conclusão da revisão."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "referencias_normativas",
         "sintese_transversal_revisao"
@@ -3752,6 +3830,7 @@
         "modo": "J",
         "justificativa": "Julgamento transversal sobre os resumos dos temas: vagas × infraestrutura e interesse público."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "identificacao_oferta",
         "infraestrutura",
@@ -3819,6 +3898,7 @@
         "modo": "J",
         "justificativa": "Julgamento transversal sobre os resumos dos temas: coerência teórico-prática entre concepção, perfil e matriz."
       },
+      "verificador": null,
       "topicos_tematicos": [
         "concepcao_metodologias",
         "perfil_egresso_mundo_trabalho",
