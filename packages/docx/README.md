@@ -14,7 +14,8 @@ const documento = lerDocx(bytes); // blocos (parágrafos e tabelas) e propriedad
 | `xml.ts` | XML em árvore, com nomes canônicos pela URI do namespace; recusa XML malformado e aninhamento de mais de 256 níveis. |
 | `leitor.ts`, `modelo.ts` | Modelo intermediário do documento e os dois modos de leitura (`Fidelidade`). |
 | `erro.ts` | `ErroDocx`: todo arquivo recusado sai com ele, com mensagem em português. |
-| `testes/sintetico.ts` | Construtor de DOCX sintéticos para testes (não é usado em produção). |
+| `testes/sintetico.ts` | Construtor de DOCX sintéticos para testes (não é usado em produção): tabelas com `w:tblGrid` e parágrafo final, caixa de texto como o Word grava (`caixaDeTexto`), relações de hiperlink (`linkExterno`). `montarDocx` confere cada pacote com o validador abaixo e lança se o Word o recusaria (`validar: false` para o documento quebrado de propósito). |
+| `testes/validar-ooxml.ts` | Validador estrutural para testes (`problemasOoxml`): as regras que, violadas, fazem o Word recusar o arquivo e que os leitores tolerantes deixam passar (referência a relação inexistente, corpo ou célula que termina em tabela, grade da tabela, namespaces e `mc:Ignorable`, tipos de conteúdo, ids de comentário e de desenho). Roda em todo sintético e em toda saída de `comentarDocx` e `revisarDocx` nos testes. |
 
 ## Limites
 

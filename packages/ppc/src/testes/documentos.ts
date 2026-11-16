@@ -369,6 +369,9 @@ function rastreadas(): PartesDocx {
 /** Tabulações, quebras, hífen incondicional, hyperlinks, formatação, títulos e listas. */
 function textoEspecial(): PartesDocx {
   return {
+    // O hiperlink "relação quebrada" (`r:id` sem relação) exercita a leitura tolerante; o Word não
+    // abriria este arquivo, por isso ele fica fora do validador estrutural.
+    validar: false,
     relacoes: [{ id: "rId11", tipo: "hyperlink", alvo: "https://exemplo.edu.br/pagina", externa: true }],
     corpo: [
       par("Título pelo estilo", { estilo: "Ttulo1" }),
