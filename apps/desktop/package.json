@@ -14,8 +14,10 @@
     "typecheck": "effect-tsgo tsrs --noEmit"
   },
   "devDependencies": {
+    "@effect/platform-node": "catalog:",
     "@effect/vitest": "catalog:",
     "@simplifica-if/contratos-app": "workspace:*",
+    "@simplifica-if/mcp": "workspace:*",
     "@simplifica-if/server": "workspace:*",
     "@types/node": "catalog:",
     "effect": "catalog:",

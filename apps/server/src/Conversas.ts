@@ -30,7 +30,11 @@
  * num `TextoParcial` só.
  *
  * A política de aprovação (M1.7) fica no motor: aqui só chegam os pedidos que ela manda perguntar.
- * Ponto de extensão: as skills do app (M1.11) entram como `ConfigSessao.skills` em `abrirSessao`.
+ *
+ * **Skills do app (M1.11):** toda sessão aberta (nova, retomada ou recomeçada com o histórico) leva as
+ * skills do `CatalogoSkills` em `ConfigSessao.skills`. O motor grava os arquivos em
+ * `<pasta>/.simplifica/skills/` e lista as skills nas instruções da sessão; regravar a cada abertura
+ * faz a conversa retomada usar a versão das skills do app que está aberto.
  */
 import * as Context from "effect/Context";
 import * as Deferred from "effect/Deferred";
@@ -57,6 +61,7 @@ import {
 } from "@simplifica-if/contratos-app";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
+import { CatalogoSkills } from "./CatalogoSkills.ts";
 import { type Alteracao, Historico, type RegistroConversa } from "./persistencia/Historico.ts";
 
 /** O nome do servidor MCP na sessão do provider: as ferramentas chegam como `ifpr.<ferramenta>`. */
@@ -180,6 +185,7 @@ const make = Effect.fnUntraced(function* (opcoes: {
   const motor = yield* Motor.Motor;
   const mcp = yield* McpHttp.ServidorMcpHttp;
   const historico = yield* Historico;
+  const catalogo = yield* CatalogoSkills;
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
   const aleatorio = yield* SecureRandom.SecureRandom;
@@ -387,6 +393,7 @@ const make = Effect.fnUntraced(function* (opcoes: {
       servidoresMcp: [servidor],
       ...(registro.modelo === undefined ? {} : { modelo: registro.modelo }),
       ...(registro.buscaWeb === undefined ? {} : { buscaWeb: registro.buscaWeb }),
+      ...(catalogo.skills.length === 0 ? {} : { skills: catalogo.skills }),
     };
     const abrir =
       registro.idNativo === undefined
@@ -702,7 +709,8 @@ const make = Effect.fnUntraced(function* (opcoes: {
 });
 
 /**
- * Pede o `Motor`, o `ServidorMcpHttp`, o `Historico`, o `FileSystem`, o `Path` e o `SecureRandom`.
+ * Pede o `Motor`, o `ServidorMcpHttp`, o `Historico`, o `CatalogoSkills`, o `FileSystem`, o `Path` e o
+ * `SecureRandom`.
  * `ociosidade`: depois de quanto tempo sem turno a sessão se libera (`OCIOSIDADE`);
  * `prazoInterrupcao`: quanto se espera pelo fim do turno interrompido (`PRAZO_INTERRUPCAO`).
  */

@@ -114,6 +114,7 @@ function subirServidor(): Promise<Conexao> {
     executor: configuracao.executor,
     banco: configuracao.banco,
     pastaEstado: configuracao.pastaEstado,
+    pastaSkills: configuracao.pastaSkills,
     origens: configuracao.origens,
     token,
     ambiente: process.env,
@@ -458,7 +459,10 @@ if (!app.requestSingleInstanceLock()) {
     session.defaultSession.setPermissionCheckHandler((_conteudo, permissao) => permitidas.has(permissao));
     if (configuracao.interface.tipo === "pasta") registrarProtocolo(configuracao.interface.pasta);
     Menu.setApplicationMenu(menuAplicacao());
-    registrar(`interface: ${configuracao.urlJanela}; base: ${configuracao.banco}; estado: ${configuracao.pastaEstado}`);
+    registrar(
+      `interface: ${configuracao.urlJanela}; base: ${configuracao.banco}; estado: ${configuracao.pastaEstado}; ` +
+        `skills: ${configuracao.pastaSkills ?? "nenhuma"}`,
+    );
     await iniciar();
   });
 }

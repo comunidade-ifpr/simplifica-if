@@ -1,19 +1,28 @@
 /**
- * O contrato do app: os métodos do `GrupoApp` (os três grupos, sem colisão de nome) e os envelopes da
+ * O contrato do app: os métodos do `GrupoApp` (os quatro grupos, sem colisão de nome) e os envelopes da
  * partida do servidor.
  */
 import { assert, describe, it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Schema from "effect/Schema";
-import { EnvelopePartida, GrupoApp, GrupoConversa, GrupoLeitura, GrupoProviders } from "../src/contratos.ts";
+import {
+  EnvelopePartida,
+  GrupoApp,
+  GrupoConversa,
+  GrupoLeitura,
+  GrupoProviders,
+  GrupoSkills,
+} from "../src/contratos.ts";
 
 const decodificarEnvelope = Schema.decodeUnknownEffect(Schema.fromJsonString(EnvelopePartida));
 
 describe("contratos do app", () => {
-  it("o GrupoApp tem os métodos dos três grupos", () => {
+  it("o GrupoApp tem os métodos dos quatro grupos", () => {
     const metodos = [...GrupoApp.requests.keys()];
-    const partes = [GrupoProviders, GrupoConversa, GrupoLeitura].map((grupo) => [...grupo.requests.keys()]);
+    const partes = [GrupoProviders, GrupoConversa, GrupoSkills, GrupoLeitura].map((grupo) => [
+      ...grupo.requests.keys(),
+    ]);
     assert.strictEqual(metodos.length, partes.flat().length);
     assert.includeMembers(metodos, [
       "providers.detectar",
@@ -24,6 +33,7 @@ describe("contratos do app", () => {
       "conversa.responderAprovacao",
       "conversa.interromper",
       "conversa.encerrar",
+      "skills.listar",
       "fichaNorma",
       "sobreABase",
     ]);

@@ -91,6 +91,8 @@ export interface OpcoesInicio {
   readonly banco: string;
   /** `--pasta-estado`: as CLIs gerenciadas e o perfil do Antigravity. */
   readonly pastaEstado: string;
+  /** `--pasta-skills`: as skills do app; sem ela, o servidor sobe sem skills. */
+  readonly pastaSkills?: string | undefined;
   /** Origens da janela aceitas no WebSocket e no `POST /ingresso`. */
   readonly origens: ReadonlyArray<string>;
   readonly token: string;
@@ -125,7 +127,14 @@ export function montarInicio(opcoes: OpcoesInicio): Inicio {
   }
   return {
     comando: opcoes.executor.tipo === "node" ? opcoes.executor.node : opcoes.executor.electron,
-    argumentos: [script, "--banco", opcoes.banco, "--pasta-estado", opcoes.pastaEstado],
+    argumentos: [
+      script,
+      "--banco",
+      opcoes.banco,
+      "--pasta-estado",
+      opcoes.pastaEstado,
+      ...(opcoes.pastaSkills === undefined ? [] : ["--pasta-skills", opcoes.pastaSkills]),
+    ],
     ambiente,
     cwd: opcoes.cwd,
     envelope: `${JSON.stringify({ token: opcoes.token, origens: [...opcoes.origens] })}\n`,

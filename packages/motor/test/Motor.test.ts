@@ -354,6 +354,6 @@ describe("Motor: política e skills", () => {
       );
       assert.isTrue(Exit.hasFails(invalida));
       assert.isFalse(yield* fs.exists(path.join(pasta, ".simplifica", "skills", "fora.txt")));
-    }).pipe(Effect.scoped, Effect.provide(camadaComPolitica(configs)), Effect.provide(NodeServices.layer));
+    }).pipe(Effect.scoped, Effect.provide(camadaComPolitica(configs).pipe(Layer.provideMerge(NodeServices.layer))));
   });
 });

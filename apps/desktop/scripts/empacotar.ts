@@ -45,6 +45,8 @@ export function configuracaoBuilder(opcoes: { readonly dir: boolean }): Configur
       // O `node_modules` (o `undici`) o electron-builder não copia aqui: vai no `afterPack`.
       { from: "dist/recursos/servidor", to: "servidor", filter: ["**/*", "!**/*.map"] },
       { from: "dist/recursos/base", to: "base", filter: ["kb.sqlite"] },
+      // Só o que o build copiou (`skills.ts`): as skills do app e os arquivos listados no manifesto.
+      { from: "dist/recursos/skills", to: "skills" },
     ],
     afterPack: async (contexto) => {
       const recursos =

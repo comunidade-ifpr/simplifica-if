@@ -10,6 +10,9 @@
  * | base (`--banco`) | `SIMPLIFICA_KB` ou `tmp/kb.sqlite` do repositório | `SIMPLIFICA_KB`; senão `<pasta do app>/base/kb.sqlite`, se existir (onde a atualização da base, M1.10, vai gravar); senão `<Resources>/base/kb.sqlite`, a base empacotada |
  * | interface | `SIMPLIFICA_WEB_URL` (o dev server do `apps/web`); sem ela, o build em `dist/app/web` | o build do `apps/web` dentro do app, pelo protocolo `simplifica://app` |
  * | estado (`--pasta-estado`) | a pasta do app (`userData`, "Simplifica IF (dev)") | a pasta do app (`userData`, "Simplifica IF") |
+ * | skills (`--pasta-skills`) | `.agents/skills` do repositório (o servidor aceita só as com bloco `simplifica:`) | `<Resources>/skills`, gerada no build só com as skills do app e os arquivos listados |
+ *
+ * Sem a pasta de skills (não existe), o servidor sobe sem skills: as conversas funcionam, só sem elas.
  */
 import * as NodePath from "node:path";
 import type { Executor } from "./servidor.ts";
@@ -54,6 +57,8 @@ export interface Configuracao {
   readonly executor: Executor;
   readonly banco: string;
   readonly pastaEstado: string;
+  /** `--pasta-skills`; `undefined` se a pasta não existe. */
+  readonly pastaSkills: string | undefined;
   readonly interface: Interface;
   /** A URL que a janela abre. */
   readonly urlJanela: string;
@@ -100,6 +105,10 @@ export function resolverConfiguracao(entrada: Entrada): Configuracao {
         : NodePath.join(entrada.pastaRecursos, "base", "kb.sqlite")
       : NodePath.join(entrada.raizRepositorio, "tmp", "kb.sqlite"));
 
+  const pastaSkills = entrada.empacotado
+    ? NodePath.join(entrada.pastaRecursos, "skills")
+    : NodePath.join(entrada.raizRepositorio, ".agents", "skills");
+
   const urlWeb = entrada.empacotado ? undefined : definida(ambiente[VARIAVEIS.web]);
   const interfaceApp: Interface =
     urlWeb === undefined
@@ -111,6 +120,7 @@ export function resolverConfiguracao(entrada: Entrada): Configuracao {
     executor,
     banco,
     pastaEstado: entrada.pastaApp,
+    pastaSkills: entrada.existe(pastaSkills) ? pastaSkills : undefined,
     interface: interfaceApp,
     urlJanela,
     origens: [new URL(urlJanela).protocol === `${ESQUEMA}:` ? ORIGEM_APP : new URL(urlJanela).origin],
