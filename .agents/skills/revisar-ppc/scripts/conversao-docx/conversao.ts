@@ -55,6 +55,8 @@ export type Conversao = {
   dados: ObjetoPy;
   matriz: ObjetoPy | null;
   ementario: ObjetoPy | null;
+  /** Resumos da matriz e do ementário que vão para o `_dados.json`. */
+  resumos: { matriz: ObjetoPy | null; ementario: ObjetoPy | null };
   representacaoGrafica: RepresentacaoGrafica | null;
 };
 
@@ -84,7 +86,7 @@ function objetoOrdenado(mapa: Map<string, unknown>): ObjetoPy {
 }
 
 function matrizEmJson(matriz: Matriz): ObjetoPy {
-  if (matriz.tipo === "matriz_curricular_ppc") return matriz as unknown as ObjetoPy;
+  if (matriz.tipo === "matriz_curricular_ppc") return { ...matriz };
   return {
     ...matriz,
     componentes: matriz.componentes.map((componente) => ({ ...componente, cargas: objetoOrdenado(componente.cargas) })),
@@ -239,7 +241,11 @@ export function converterPpc(bytes: Uint8Array, nomeDoArquivo: string, opcoes: O
       total_tabelas: elementos.filter((elemento) => elemento.tipo === "tabela").length,
     },
   };
-  return { elementos, secoes, ...textos, dados, matriz, ementario, representacaoGrafica };
+  const resumos = {
+    matriz: extraidos.matriz ? resumoDaMatriz(extraidos.matriz) : null,
+    ementario: ementario ? resumoDoEmentario(ementario) : null,
+  };
+  return { elementos, secoes, ...textos, dados, matriz, ementario, resumos, representacaoGrafica };
 }
 
 /** `Path.stem`: nome sem a última extensão. */
@@ -283,8 +289,8 @@ function dadosPrincipais(
       ...(grafica.metodo === "vetorial_arquivo_cru" ? { arquivo_vetorial: grafica.arquivo!.caminho } : {}),
     };
   }
-  if (conversao.matriz) principais.resumo_matriz_curricular = resumoDaMatriz(conversao.matriz as unknown as Matriz);
-  if (conversao.ementario) principais.resumo_ementario = resumoDoEmentario(conversao.ementario);
+  if (conversao.resumos.matriz) principais.resumo_matriz_curricular = conversao.resumos.matriz;
+  if (conversao.resumos.ementario) principais.resumo_ementario = conversao.resumos.ementario;
   return principais;
 }
 
