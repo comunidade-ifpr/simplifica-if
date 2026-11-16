@@ -17,7 +17,7 @@ import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
 import * as Stream from "effect/Stream";
 import { CAMINHO_LIBERAR_ARQUIVO } from "@simplifica-if/contratos-app";
-import { comNumero, nomeSeguro } from "../src/PastasTrabalho.ts";
+import { comNumero, gravarSemSeguirLinks, nomeSeguro, removerSemSeguirLinks } from "../src/PastasTrabalho.ts";
 import * as Servidor from "../src/servidor.ts";
 import {
   bancoFixture,
@@ -60,6 +60,39 @@ describe("nomes", () => {
     assert.strictEqual(comNumero("ppc.docx", 1), "ppc.docx");
     assert.strictEqual(comNumero("ppc.docx", 2), "ppc (2).docx");
     assert.strictEqual(comNumero("LEIAME", 3), "LEIAME (3)");
+  });
+});
+
+describe("escrita sem seguir links", () => {
+  it("troca o link do arquivo e o da pasta pelo arquivo, sem tocar no alvo de fora", async () => {
+    const real = NodeFS.realpathSync(diretorioTemporario("simplifica-real-"));
+    const alvoFora = NodeFS.realpathSync(diretorioTemporario("simplifica-alvo-"));
+    NodeFS.writeFileSync(NodePath.join(alvoFora, "alvo.txt"), "DE FORA\n");
+    NodeFS.symlinkSync(NodePath.join(alvoFora, "alvo.txt"), NodePath.join(real, "x.txt"));
+    NodeFS.symlinkSync(alvoFora, NodePath.join(real, "sub"));
+    await gravarSemSeguirLinks(real, "x.txt", Buffer.from("restaurado\n"));
+    await gravarSemSeguirLinks(real, "sub/a.txt", Buffer.from("A\n"));
+    assert.strictEqual(NodeFS.readFileSync(NodePath.join(alvoFora, "alvo.txt"), "utf8"), "DE FORA\n");
+    assert.isFalse(NodeFS.existsSync(NodePath.join(alvoFora, "a.txt")));
+    assert.isTrue(NodeFS.lstatSync(NodePath.join(real, "x.txt")).isFile());
+    assert.strictEqual(NodeFS.readFileSync(NodePath.join(real, "x.txt"), "utf8"), "restaurado\n");
+    assert.isTrue(NodeFS.lstatSync(NodePath.join(real, "sub")).isDirectory());
+    assert.strictEqual(NodeFS.readFileSync(NodePath.join(real, "sub", "a.txt"), "utf8"), "A\n");
+    // Nenhum temporário fica para trás.
+    assert.deepStrictEqual(
+      NodeFS.readdirSync(real).filter((nome) => nome.startsWith(".")),
+      [],
+    );
+    // Remover um arquivo atrás de uma pasta-link remove só o link, nunca o arquivo de fora.
+    NodeFS.rmSync(NodePath.join(real, "sub"), { recursive: true });
+    NodeFS.symlinkSync(alvoFora, NodePath.join(real, "sub"));
+    await removerSemSeguirLinks(real, "sub/alvo.txt");
+    assert.isTrue(NodeFS.existsSync(NodePath.join(alvoFora, "alvo.txt")));
+    assert.isFalse(NodeFS.existsSync(NodePath.join(real, "sub")));
+    // Caminho do manifesto com `..` é recusado.
+    let recusou = false;
+    await gravarSemSeguirLinks(real, "../fora.txt", Buffer.from("x")).catch(() => (recusou = true));
+    assert.isTrue(recusou);
   });
 });
 
@@ -197,6 +230,47 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       assert.isFalse(vista.desfazer.disponivel);
       assert.match(vista.desfazer.aviso ?? "", /não guardou a cópia/);
     }).pipe(Effect.scoped),
+  );
+
+  it.effect(
+    "Desfazer não escreve fora da pasta: arquivo e pasta trocados por links, inclusive depois da previsão",
+    () =>
+      Effect.gen(function* () {
+        const { urlRpc } = yield* Servidor.ServidorApp;
+        const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+        const alvoFora = NodeFS.realpathSync(diretorioTemporario("simplifica-alvo-"));
+        NodeFS.writeFileSync(NodePath.join(alvoFora, "alvo.txt"), "ARQUIVO DE FORA\n");
+        const { pasta } = yield* rpc["pasta.criar"]({ titulo: "Links" });
+        NodeFS.writeFileSync(NodePath.join(pasta, "x.txt"), "antes\n");
+        NodeFS.mkdirSync(NodePath.join(pasta, "sub"));
+        NodeFS.writeFileSync(NodePath.join(pasta, "sub", "a.txt"), "A\n");
+        const { sessao } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
+        // O turno "da IA": troca x.txt por link para fora e muda sub/a.txt (a cópia de antes já está guardada).
+        yield* rpc["conversa.enviar"]({ sessao, texto: "oi" }).pipe(
+          Stream.tap(() =>
+            Effect.sync(() => {
+              if (NodeFS.lstatSync(NodePath.join(pasta, "x.txt")).isFile()) {
+                NodeFS.rmSync(NodePath.join(pasta, "x.txt"));
+                NodeFS.symlinkSync(NodePath.join(alvoFora, "alvo.txt"), NodePath.join(pasta, "x.txt"));
+                NodeFS.writeFileSync(NodePath.join(pasta, "sub", "a.txt"), "mudado pela IA\n");
+              }
+            }),
+          ),
+          Stream.runDrain,
+        );
+        const vista = yield* rpc["pasta.ver"]({ sessao });
+        assert.isTrue(vista.desfazer.disponivel);
+        // Entre a previsão e o Desfazer, a pasta vira link para fora.
+        NodeFS.rmSync(NodePath.join(pasta, "sub"), { recursive: true });
+        NodeFS.symlinkSync(alvoFora, NodePath.join(pasta, "sub"));
+        yield* rpc["pasta.desfazer"]({ sessao });
+        assert.strictEqual(NodeFS.readFileSync(NodePath.join(alvoFora, "alvo.txt"), "utf8"), "ARQUIVO DE FORA\n");
+        assert.isFalse(NodeFS.existsSync(NodePath.join(alvoFora, "a.txt")));
+        assert.isTrue(NodeFS.lstatSync(NodePath.join(pasta, "x.txt")).isFile());
+        assert.strictEqual(NodeFS.readFileSync(NodePath.join(pasta, "x.txt"), "utf8"), "antes\n");
+        assert.isTrue(NodeFS.lstatSync(NodePath.join(pasta, "sub")).isDirectory());
+        assert.strictEqual(NodeFS.readFileSync(NodePath.join(pasta, "sub", "a.txt"), "utf8"), "A\n");
+      }).pipe(Effect.scoped),
   );
 
   it.effect("conversa com pasta escolhida fora da raiz: sem lista nem Desfazer", () =>

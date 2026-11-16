@@ -105,26 +105,43 @@ interface Entrada {
   readonly alteradoEm: Date;
 }
 
-/** Os arquivos comuns da pasta (sem os que começam com `.` nem links), até `maximo + 1`. */
-async function listarArvore(pasta: string, maximo: number): Promise<Array<Entrada>> {
-  const saida: Array<Entrada> = [];
+interface Varredura {
+  /** Os arquivos comuns, até `maximo + 1`. */
+  readonly arquivos: ReadonlyArray<Entrada>;
+  /** Os links simbólicos (nunca copiados nem seguidos; no retrato, para o Desfazer vê-los). */
+  readonly links: ReadonlyArray<string>;
+  /** As subpastas (comuns, não links). */
+  readonly pastas: ReadonlyArray<string>;
+}
+
+/** A pasta sem os nomes que começam com `.`, sem seguir links. */
+async function varrer(pasta: string, maximo: number): Promise<Varredura> {
+  const arquivos: Array<Entrada> = [];
+  const links: Array<string> = [];
+  const pastas: Array<string> = [];
   const visitar = async (relativo: string): Promise<void> => {
     const entradas = await NodeFSP.readdir(NodePath.join(pasta, relativo), { withFileTypes: true });
     entradas.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
     for (const entrada of entradas) {
-      if (saida.length > maximo) return;
+      if (arquivos.length > maximo) return;
       if (entrada.name.startsWith(".")) continue;
       const rel = relativo === "" ? entrada.name : `${relativo}/${entrada.name}`;
-      if (entrada.isDirectory()) await visitar(rel);
-      else if (entrada.isFile()) {
+      if (entrada.isSymbolicLink()) links.push(rel);
+      else if (entrada.isDirectory()) {
+        pastas.push(rel);
+        await visitar(rel);
+      } else if (entrada.isFile()) {
         const info = await NodeFSP.lstat(NodePath.join(pasta, rel));
-        saida.push({ nome: rel, tamanho: info.size, alteradoEm: info.mtime });
+        arquivos.push({ nome: rel, tamanho: info.size, alteradoEm: info.mtime });
       }
     }
   };
   await visitar("");
-  return saida;
+  return { arquivos, links, pastas };
 }
+
+/** Os arquivos comuns da pasta, até `maximo + 1`. */
+const listarArvore = async (pasta: string, maximo: number) => (await varrer(pasta, maximo)).arquivos;
 
 async function sha256(arquivo: string): Promise<string> {
   const hash = NodeCrypto.createHash("sha256");
@@ -132,22 +149,28 @@ async function sha256(arquivo: string): Promise<string> {
   return hash.digest("hex");
 }
 
-/** Arquivo → `tamanho:sha256`. */
+/** Arquivo → `tamanho:sha256`; link simbólico → `link`. */
 type Retrato = Record<string, string>;
+
+/** O valor de um link no retrato: o Desfazer o remove, nunca o segue nem o restaura. */
+const LINK = "link";
 
 interface Manifesto {
   readonly turno: number;
   readonly criadaEm: string;
   /** Ausente quando a pasta passou dos limites e o turno ficou sem cópia. */
   readonly arquivos?: Retrato;
+  /** As subpastas de antes do turno. */
+  readonly pastas?: ReadonlyArray<string>;
   readonly aviso?: string;
 }
 
-async function retratar(pasta: string, arquivos: ReadonlyArray<Entrada>): Promise<Retrato> {
+async function retratar(pasta: string, varredura: Pick<Varredura, "arquivos" | "links">): Promise<Retrato> {
   const retrato: Retrato = {};
-  for (const arquivo of arquivos) {
+  for (const arquivo of varredura.arquivos) {
     retrato[arquivo.nome] = `${arquivo.tamanho}:${await sha256(NodePath.join(pasta, arquivo.nome))}`;
   }
+  for (const link of varredura.links) retrato[link] = LINK;
   return retrato;
 }
 
@@ -156,6 +179,102 @@ function dentro(pasta: string, relativo: string): string {
   const alvo = NodePath.resolve(pasta, relativo);
   if (!alvo.startsWith(pasta + NodePath.sep)) throw new Error(`caminho fora da pasta: ${relativo}`);
   return alvo;
+}
+
+/* ------------------------------------------------------------------ escrita sem seguir links */
+
+/** O prefixo do temporário da restauração (começa com `.`: fica fora das listas e das cópias). */
+const PREFIXO_TEMPORARIO = ".simplifica-desfazer-";
+
+/** As partes de um caminho relativo do manifesto; recusa vazio, `.`, `..`, `\\` e NUL. */
+function partesSeguras(relativo: string): Array<string> {
+  const partes = relativo.split("/");
+  if (partes.some((parte) => parte === "" || parte === "." || parte === ".." || /[\\\0]/.test(parte)))
+    throw new Error(`caminho inválido no manifesto: ${relativo}`);
+  return partes;
+}
+
+/** O caminho real de `alvo` está em `real` (ou é `real`)? */
+async function realDentro(real: string, alvo: string): Promise<void> {
+  const caminho = await NodeFSP.realpath(alvo);
+  if (caminho !== real && !caminho.startsWith(real + NodePath.sep)) throw new Error(`fora da pasta: ${alvo}`);
+}
+
+/**
+ * A pasta `partes` dentro de `real`, percorrida componente a componente com `lstat`, sem seguir link:
+ * um link no caminho é removido (nunca existiu numa cópia, que só tem arquivos e pastas comuns); com
+ * `criar`, a pasta que falta é criada (e anotada em `criadas`) e o link é trocado por uma pasta comum.
+ * Sem `criar`, devolve `undefined` quando a pasta não existe (ou era um link). Um arquivo comum no lugar
+ * de uma pasta é recusado.
+ */
+async function pastaSemLinks(
+  real: string,
+  partes: ReadonlyArray<string>,
+  criar: boolean,
+  criadas?: Array<string>,
+): Promise<string | undefined> {
+  let atual = real;
+  for (const parte of partes) {
+    const proximo = NodePath.join(atual, parte);
+    const info = await NodeFSP.lstat(proximo).catch(() => undefined);
+    if (info?.isSymbolicLink()) await NodeFSP.unlink(proximo);
+    if (info === undefined || info.isSymbolicLink()) {
+      if (!criar) return undefined;
+      await NodeFSP.mkdir(proximo);
+      criadas?.push(NodePath.relative(real, proximo).split(NodePath.sep).join("/"));
+    } else if (!info.isDirectory()) {
+      throw new Error(`um arquivo ocupa o lugar da pasta: ${NodePath.relative(real, proximo)}`);
+    }
+    atual = proximo;
+  }
+  await realDentro(real, atual);
+  return atual;
+}
+
+/** `O_NOFOLLOW` não existe no Windows. */
+const ABRIR_TEMPORARIO =
+  NodeFS.constants.O_WRONLY | NodeFS.constants.O_CREAT | NodeFS.constants.O_EXCL | (NodeFS.constants.O_NOFOLLOW ?? 0);
+
+/**
+ * Grava `conteudo` em `real/relativo` sem seguir link: as pastas do caminho conferidas por
+ * `pastaSemLinks`, um temporário novo na mesma pasta (`O_EXCL`, `O_NOFOLLOW`) e o `rename` sobre o
+ * alvo, que troca o próprio link (ou arquivo) de uma vez. O caminho real da pasta é conferido antes do
+ * `rename`.
+ */
+export async function gravarSemSeguirLinks(
+  real: string,
+  relativo: string,
+  conteudo: Uint8Array,
+  criadas?: Array<string>,
+): Promise<void> {
+  const partes = partesSeguras(relativo);
+  const nome = partes.pop()!;
+  const pasta = (await pastaSemLinks(real, partes, true, criadas))!;
+  const temporario = NodePath.join(pasta, `${PREFIXO_TEMPORARIO}${NodeCrypto.randomUUID()}`);
+  const arquivo = await NodeFSP.open(temporario, ABRIR_TEMPORARIO, 0o644);
+  try {
+    await arquivo.writeFile(conteudo);
+  } finally {
+    await arquivo.close();
+  }
+  try {
+    await realDentro(real, pasta);
+    await NodeFSP.rename(temporario, NodePath.join(pasta, nome));
+  } catch (erro) {
+    await NodeFSP.rm(temporario, { force: true });
+    throw erro;
+  }
+}
+
+/** Remove `real/relativo` se for arquivo ou link (o link em si, nunca o alvo); pastas no caminho, sem seguir links. */
+export async function removerSemSeguirLinks(real: string, relativo: string): Promise<void> {
+  const partes = partesSeguras(relativo);
+  const nome = partes.pop()!;
+  const pasta = await pastaSemLinks(real, partes, false);
+  if (pasta === undefined) return;
+  const alvo = NodePath.join(pasta, nome);
+  const info = await NodeFSP.lstat(alvo).catch(() => undefined);
+  if (info !== undefined && (info.isFile() || info.isSymbolicLink())) await NodeFSP.unlink(alvo);
 }
 
 async function lerManifestos(pastaCopias: string): Promise<Array<Manifesto>> {
@@ -189,7 +308,8 @@ async function copiarTurno(real: string, copias: string, turno: number, criadaEm
   const destino = NodePath.join(copias, String(turno));
   await NodeFSP.rm(destino, { recursive: true, force: true });
   await NodeFSP.mkdir(destino, { recursive: true });
-  const arquivos = await listarArvore(real, limites.arquivos);
+  const varredura = await varrer(real, limites.arquivos);
+  const arquivos = varredura.arquivos;
   const total = arquivos.reduce((soma, arquivo) => soma + arquivo.tamanho, 0);
   let manifesto: Manifesto;
   if (arquivos.length > limites.arquivos || total > limites.bytes) {
@@ -204,7 +324,7 @@ async function copiarTurno(real: string, copias: string, turno: number, criadaEm
       await NodeFSP.mkdir(NodePath.dirname(alvo), { recursive: true });
       await NodeFSP.copyFile(NodePath.join(real, arquivo.nome), alvo);
     }
-    manifesto = { turno, criadaEm, arquivos: await retratar(real, arquivos) };
+    manifesto = { turno, criadaEm, arquivos: await retratar(real, varredura), pastas: varredura.pastas };
   }
   // O manifesto por último: sem ele, a cópia pela metade não conta.
   await NodeFSP.writeFile(NodePath.join(destino, "manifesto.json"), JSON.stringify(manifesto));
@@ -304,8 +424,8 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     const aviso = manifestos[0]?.aviso;
     // Sem a cópia do turno mais recente, voltar a uma mais antiga desfaria também o que veio depois dela.
     if (aviso !== undefined) return { previsao: { ...SEM_DESFAZER, aviso } };
-    const agora = await listarArvore(real, limites.arquivos);
-    if (agora.length > limites.arquivos) return { previsao: { ...SEM_DESFAZER, ...(aviso ? { aviso } : {}) } };
+    const agora = await varrer(real, limites.arquivos);
+    if (agora.arquivos.length > limites.arquivos) return { previsao: { ...SEM_DESFAZER, ...(aviso ? { aviso } : {}) } };
     const retrato = await retratar(real, agora);
     for (const manifesto of manifestos) {
       if (manifesto.arquivos === undefined) continue;
@@ -368,14 +488,12 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
       const { previsao, manifesto } = await prever(conversa, real);
       if (!previsao.disponivel || manifesto === undefined) return;
       const copia = NodePath.join(pastaCopias(conversa), String(manifesto.turno), "arquivos");
-      for (const nome of previsao.criados) {
-        const alvo = dentro(real, nome);
-        if ((await NodeFSP.lstat(alvo)).isFile()) await NodeFSP.unlink(alvo);
-      }
+      const antes = manifesto.arquivos ?? {};
+      for (const nome of previsao.criados) await removerSemSeguirLinks(real, nome);
       for (const nome of [...previsao.alterados, ...previsao.apagados]) {
-        const alvo = dentro(real, nome);
-        await NodeFSP.mkdir(NodePath.dirname(alvo), { recursive: true });
-        await NodeFSP.copyFile(dentro(copia, nome), alvo);
+        // Um link de antes do turno não se restaura (a cópia não o tem); o que está no lugar sai.
+        if (antes[nome] === LINK) await removerSemSeguirLinks(real, nome);
+        else await gravarSemSeguirLinks(real, nome, await NodeFSP.readFile(dentro(copia, nome)));
       }
       // As cópias deste turno em diante já não valem: o próximo Desfazer volta mais um turno.
       for (const nome of await NodeFSP.readdir(pastaCopias(conversa))) {
