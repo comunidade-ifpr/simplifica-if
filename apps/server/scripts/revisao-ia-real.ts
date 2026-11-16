@@ -211,4 +211,29 @@ const nucleo = RevisaoIa.layer({ paralelismo }).pipe(
   Layer.provideMerge(layerLeitura({ banco: NodePath.join(RAIZ, "tmp/kb.sqlite"), canal: "dev" })),
 );
 
-programa.pipe(Effect.provide(nucleo), Effect.provide(NodeServices.layer), NodeRuntime.runMain);
+/**
+ * Só o uso das mensagens nativas (`usage` de cada `assistant`, `usage` e `modelUsage` do `result`, e o
+ * que o Codex e o ACP informam de tokens), para isolar de onde vêm os tokens; nada do texto do PPC.
+ */
+const arquivoUso = NodePath.join(saida, `uso-${provider}.jsonl`);
+const gravarUso = (direcao: "entrada" | "saida", mensagem: unknown) => {
+  const m = mensagem as Record<string, unknown> | null;
+  if (direcao !== "entrada" || !m || typeof m !== "object") return;
+  const interno = m["message"] as Record<string, unknown> | undefined;
+  const registro = {
+    tipo: m["type"] ?? m["method"],
+    ...(interno?.["usage"] ? { usage: interno["usage"] } : {}),
+    ...(m["usage"] ? { usage: m["usage"] } : {}),
+    ...(m["modelUsage"] ? { modelUsage: m["modelUsage"] } : {}),
+    ...(m["total_cost_usd"] !== undefined ? { total_cost_usd: m["total_cost_usd"] } : {}),
+    ...(typeof m["method"] === "string" && /token|usage/i.test(m["method"]) ? { params: m["params"] } : {}),
+  };
+  if (Object.keys(registro).length > 1) NodeFS.appendFileSync(arquivoUso, `${JSON.stringify(registro)}\n`);
+};
+
+programa.pipe(
+  Effect.provide(nucleo),
+  Effect.provideService(Motor.Gravador, gravarUso),
+  Effect.provide(NodeServices.layer),
+  NodeRuntime.runMain,
+);
