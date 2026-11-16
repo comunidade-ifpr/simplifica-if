@@ -47,6 +47,8 @@ export const UsoTokens = Schema.TaggedStruct("UsoTokens", {
   entrada: Schema.Number,
   saida: Schema.Number,
   cacheLeitura: Schema.optionalKey(Schema.Number),
+  /** Tokens gravados no cache nesta chamada (Claude: `cache_creation_input_tokens`), fora de `entrada`. */
+  cacheEscrita: Schema.optionalKey(Schema.Number),
   custoUsd: Schema.optionalKey(Schema.Number),
 });
 
