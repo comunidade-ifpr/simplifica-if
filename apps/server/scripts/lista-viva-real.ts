@@ -99,47 +99,25 @@ const programa = Effect.gen(function* () {
     return;
   }
   const id = (yield* listas.ultima)!;
-  const medir = (rotulo: string, acao: Effect.Effect<unknown, unknown>) =>
-    Effect.gen(function* () {
-      const inicio = Date.now();
-      const resultado = yield* Effect.result(acao);
-      const segundos = Math.round((Date.now() - inicio) / 100) / 10;
-      const lista = yield* viva.lista(id);
-      return {
-        rotulo,
-        segundos,
-        ok: resultado._tag === "Success",
-        erro: resultado._tag === "Failure" ? String(resultado.failure) : null,
-        lista,
-      };
-    });
   const relatorio: unknown[] = [];
-  const registrar = (
+  /** Roda uma ação e registra a situação, o texto e o uso do último passo do histórico da pendência. */
+  const medir = Effect.fn("ListaVivaReal.medir")(function* (
     rotulo: string,
     chave: string,
-    m: {
-      segundos: number;
-      ok: boolean;
-      erro: string | null;
-      lista: Awaited<ReturnType<typeof viva.lista>> extends never ? never : unknown;
-    },
-  ) => {
-    const lista = m.lista as {
-      pendencias: {
-        chave: string;
-        situacao: string;
-        historico: { texto: string; uso: unknown }[];
-        sugestao: unknown;
-      }[];
-    };
+    acao: Effect.Effect<unknown, unknown>,
+  ) {
+    const inicio = Date.now();
+    const resultado = yield* Effect.result(acao);
+    const segundos = Math.round((Date.now() - inicio) / 100) / 10;
+    const lista = yield* viva.lista(id);
     const p = lista.pendencias.find((x) => x.chave === chave)!;
     const evento = p.historico.at(-1);
     const linha = {
       rotulo,
       chave,
-      segundos: m.segundos,
-      ok: m.ok,
-      erro: m.erro,
+      segundos,
+      ok: resultado._tag === "Success",
+      erro: resultado._tag === "Failure" ? String(resultado.failure) : null,
       situacao: p.situacao,
       texto: evento?.texto,
       uso: evento?.uso,
@@ -147,23 +125,19 @@ const programa = Effect.gen(function* () {
     };
     relatorio.push(linha);
     console.error(JSON.stringify(linha, null, 2));
-  };
+  });
   const fundamentada = depois("--fundamentada", 2);
   if (fundamentada)
-    registrar(
-      "fundamentada",
-      fundamentada[0]!,
-      yield* medir("fundamentada", viva.contestar(id, fundamentada[0]!, fundamentada[1]!, "claude")),
-    );
+    yield* medir("fundamentada", fundamentada[0]!, viva.contestar(id, fundamentada[0]!, fundamentada[1]!, "claude"));
   const semFundamento = depois("--sem-fundamento", 2);
   if (semFundamento)
-    registrar(
+    yield* medir(
       "sem-fundamento",
       semFundamento[0]!,
-      yield* medir("sem-fundamento", viva.contestar(id, semFundamento[0]!, semFundamento[1]!, "claude")),
+      viva.contestar(id, semFundamento[0]!, semFundamento[1]!, "claude"),
     );
   const sugerir = depois("--sugerir");
-  if (sugerir) registrar("sugerir", sugerir[0]!, yield* medir("sugerir", viva.sugerir(id, sugerir[0]!, "claude")));
+  if (sugerir) yield* medir("sugerir", sugerir[0]!, viva.sugerir(id, sugerir[0]!, "claude"));
   const final = yield* viva.lista(id);
   const saidaJson = { uso: final.uso, acoes: relatorio };
   NodeFS.writeFileSync(NodePath.join(saida, "lista-viva-claude.json"), JSON.stringify(saidaJson, null, 2));
