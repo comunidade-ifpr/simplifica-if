@@ -110,19 +110,41 @@ Até 16/11/2026 a conversão era em Python (`conversao_docx/`, sobre `python-doc
 
 ### Arquivo hostil ou quebrado
 
-O app abre arquivos do usuário. O leitor recusa, com `ErroDocx` e mensagem em português:
+O app abre arquivos do usuário. O leitor e a conversão recusam, com `ErroDocx` e mensagem em português:
 
 - o que não é ZIP, o `.doc` renomeado e o DOCX protegido por senha (contêiner OLE: "arquivo do Word 97-2003 (.doc) ou um DOCX protegido por senha");
-- ZIP truncado, com entrada cifrada ou com mais de 10 mil entradas;
-- parte de mais de 100 MB descompactada, mais de 300 MB no total das partes lidas, ou parte de mais de 10 MB com compressão acima de 200:1. As partes são descompactadas sob demanda, em pedaços, e os limites (tamanho e razão) valem para o que de fato saiu, não para o tamanho declarado no ZIP; o que a conversão não lê (fontes, imagens, `customXml`) não é descompactado;
-- XML malformado ou truncado (antes virava um `PPC.md` pela metade, sem aviso), XML com mais de 256 níveis de aninhamento (antes, `RangeError`) e parte XML com mais de 1 milhão de elementos (o maior `document.xml` do corpus tem 104 mil; a árvore custa cerca de meio kilobyte por elemento);
-- linha de tabela com mais de 1.024 células, tabela com mais de 2 milhões de posições e tabela cujo texto, repetido pelas mesclas, passa de 16 milhões de caracteres; `gridSpan` e `gridBefore` ficam presos à faixa do Word (até 63 colunas);
+- ZIP truncado ou com entrada cifrada;
+- XML malformado ou truncado (antes virava um `PPC.md` pela metade, sem aviso);
 - documento sem texto nenhum (vazio, ou PPC digitalizado como imagem);
-- arquivo de mais de 100 MB, conferido antes da leitura.
+- o que passa dos limites abaixo.
+
+Os limites ficam em dois lugares, um por pacote, e quem chama pode trocar qualquer um (`limites` e `limitesDeTexto` nas opções de `converterPpc`). Os padrões vêm dos 12 PPCs reais conferidos em 16/11/2026.
+
+| Limite (`packages/docx/src/limites.ts`) | Padrão | Maior valor nos PPCs reais |
+|---|---:|---:|
+| Arquivo `.docx` (`bytesDoArquivo`), conferido antes da leitura | 20 MB | 7,3 MB |
+| Parte descompactada (`bytesPorParte`) | 25 MB | 4,5 MB (`document.xml`) |
+| Total das partes lidas (`bytesNoTotal`) | 60 MB | cerca de 6 MB |
+| Razão de compressão, nas partes de mais de 10 MB (`razaoDeCompressao`) | 200:1 | cerca de 15:1 |
+| Entradas no ZIP (`entradas`) | 10 mil | dezenas |
+| Elementos por parte XML (`elementosPorParte`) | 500 mil | 104 mil |
+| Níveis de aninhamento do XML (`profundidadeDoXml`) | 256 | dezenas |
+| Células por linha de tabela (`celulasPorLinha`) | 1.024 | 63 (o máximo do Word) |
+| Posições da grade de uma tabela (`posicoesPorTabela`) | 2 milhões | milhares |
+
+| Orçamento de texto do documento (`packages/ppc/src/conversao-docx/orcamento.ts`) | Padrão | Maior valor nos PPCs reais |
+|---|---:|---:|
+| Caracteres no documento: texto das tabelas expandidas e Markdown gerado (`caracteresNoDocumento`) | 8 milhões | 398 mil |
+| Caracteres num parágrafo, título ou célula (`caracteresPorBloco`) | 50 mil | 3,3 mil |
+| Caracteres seguidos sem letra nem dígito: espaços, tabulações, pontuação (`sequenciaSemTexto`) | 1.000 | 27 |
+
+O arquivo acima de 20 MB sai com a orientação de compactar as imagens no Word (Arquivo › Compactar imagens). As partes do ZIP são descompactadas sob demanda, em pedaços, e os limites de tamanho e de razão valem para o que de fato saiu, não para o tamanho declarado; o que a conversão não lê (fontes, imagens, `customXml`) não é descompactado. `gridSpan` e `gridBefore` ficam presos à faixa do Word (até 63 colunas).
+
+O orçamento de texto é por documento porque os limites por item não fecham a conta: sessenta tabelas logo abaixo do teto por tabela (num ZIP de 18 KB) custavam dois minutos. Ele é conferido logo depois da leitura, antes de qualquer trabalho proporcional ao texto. O teto de sequência sem letra nem dígito existe por causa das expressões regulares terminadas em `\s*$` ou em pontuação, que custam o quadrado de uma sequência dessas (80 mil tabulações num parágrafo, num ZIP de 3 KB, levavam 89 s); o aparo de espaços do `kb` deixou de usar expressão regular pelo mesmo motivo.
 
 Entidades declaradas no XML não são expandidas nem buscadas, e uma relação que aponta para fora do pacote resolve dentro dele. No `PPC.md`, só endereços `http`, `https` e `mailto` viram link, com parênteses e espaços escapados no endereço e `]` e `\` no texto. A consolidação de parágrafos do normalizador é linear no tamanho do texto.
 
-A conversão é síncrona e a árvore do XML fica inteira na memória: quem a chama a partir de um servidor deve isolá-la (veja o M1.11 em `docs/plans/app-simplifica-if.md`).
+Pior caso honesto dentro dos limites (um `document.xml` de 14 a 25 MB com 486 mil elementos e texto variado): 1,5 s e cerca de 690 MB de memória residente no pico; converte com o heap limitado a 512 MB. Um PPC típico leva 0,1 a 0,3 s e cerca de 150 MB. A conversão é síncrona e a árvore do XML fica inteira na memória: quem a chama a partir de um servidor deve isolá-la num `Worker` com limite de memória e de tempo (veja o M1.11 em `docs/plans/app-simplifica-if.md`). Os tetos barram os casos conhecidos, não toda entrada patológica; o limite de tempo do `Worker` é a defesa final.
 
 ### Diferenças em relação à conversão em Python
 

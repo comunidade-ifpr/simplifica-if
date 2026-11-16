@@ -817,6 +817,7 @@ Em aberto:
   - contêiner OLE (`.doc` renomeado ou DOCX com senha), arquivo que não é ZIP, ZIP truncado e entrada cifrada têm mensagem própria;
   - XML malformado ou truncado e aninhamento de mais de 256 níveis são recusados (antes: `PPC.md` pela metade e `RangeError`);
   - depois da re-verificação: a razão de compressão vale também para a saída real (96 MB de `<w:p/>` num ZIP de 142 KB com tamanho declarado de 100 bytes passavam e esgotavam a memória), teto de 1 milhão de elementos por parte XML, texto de tabela multiplicado pela mescla limitado a 16 milhões de caracteres e consolidação de parágrafos do normalizador em tempo linear (era quadrática: 40 mil parágrafos curtos, 19 s), com a mesma saída;
+  - depois da segunda re-verificação: limites reunidos em `packages/docx/src/limites.ts` e apertados ao que os PPCs reais usam (arquivo de 20 MB, 25 MB por parte, 60 MB no total, 500 mil elementos por parte XML); orçamento de texto por documento em `packages/ppc/src/conversao-docx/orcamento.ts` (8 milhões de caracteres, 50 mil por parágrafo ou célula, mil caracteres seguidos sem letra nem dígito), porque os tetos por item deixavam passar sessenta tabelas logo abaixo do teto; aparo de espaços do `kb` sem expressão regular (`[espaços]+$` custava o quadrado de uma sequência longa: 89 s para 80 mil tabulações num ZIP de 3 KB); decisão do normalizador pelo começo estável do parágrafo, tomada uma vez. Pior caso honesto dentro dos limites: 1,5 s e cerca de 690 MB de memória residente, com heap de 512 MB;
   - `gridSpan` e `gridBefore` presos à faixa do Word (um `gridSpan` de 2 bilhões num arquivo de 879 bytes esgotava a memória), 1.024 células por linha e 2 milhões de posições por tabela; mescla vertical resolvida numa passada, sem recursão; arrays grandes sem espalhamento em chamadas;
   - documento sem texto e arquivo de mais de 100 MB são recusados; só `http`, `https` e `mailto` viram link no Markdown;
   - `preparar-documento` converte em memória antes de criar a rodada.
@@ -834,7 +835,7 @@ Em aberto:
   - `titulosDeCorpo` tira de 2 a 33 falsas seções em 4 PPCs; `negritoUnido` não muda o número de títulos em nenhum;
   - `totaisDaMatriz`: os totais da matriz não mudam em nenhum dos 12 (todos declaram a linha de total do curso); `total_ha` e `total_hr` mudam nos 12;
   - tempo por PPC: de 0,11 a 0,26 s.
-- Testes: `packages/docx` 25 casos, `packages/ppc` 69, skill `revisar-ppc` 206 (os da conversão foram para os pacotes), `kb` 412; `pnpm fmt`, `pnpm lint`, `pnpm typecheck` (raiz e os 12 pacotes e apps) e `pnpm test` sem erro no Node 26.12.1; `validar-base` e os `--check` da skill sem erro.
+- Testes: `packages/docx` 26 casos, `packages/ppc` 73, skill `revisar-ppc` 206 (os da conversão foram para os pacotes), `kb` 413; `pnpm fmt`, `pnpm lint`, `pnpm typecheck` (raiz e os 12 pacotes e apps) e `pnpm test` sem erro no Node 26.12.1; `validar-base` e os `--check` da skill sem erro.
 - Pendências:
   - a re-verificação e o merge;
   - no servidor (M1.11 do plano do app): rodar a conversão num `Worker` com limite de memória e de tempo, sem bloquear o laço de eventos; a conversão é síncrona e mantém a árvore do XML na memória;
