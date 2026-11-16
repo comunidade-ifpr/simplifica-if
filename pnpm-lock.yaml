@@ -459,9 +459,6 @@ importers:
       '@noble/hashes':
         specifier: 1.8.0
         version: 1.8.0
-      '@simplifica-if/contratos-app':
-        specifier: workspace:*
-        version: link:../contratos-app
       '@simplifica-if/kb':
         specifier: workspace:*
         version: link:../kb

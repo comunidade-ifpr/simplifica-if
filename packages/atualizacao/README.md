@@ -12,7 +12,7 @@ Atualização nos três ritmos (M1.10, plano "Atualização: três ritmos"): a b
 | `src/pacote-skill.ts` | o pacote de uma skill: JSON dos arquivos comprimido, com os caminhos conferidos |
 | `src/local.ts` | a pasta do app, o estado (`atualizacao.json`), a validação do banco e a troca na abertura (`prepararAbertura`) |
 | `src/remoto.ts` | conferir o manifesto e baixar (patch ou inteiro), sem a API do GitHub |
-| `src/Atualizador.ts` | o serviço Effect do servidor: abertura e a cada 24 h, estado, canal, aplicar, voltar, novidades vistas |
+| `apps/server/src/Atualizador.ts` | (no servidor, que tem os contratos RPC) o serviço Effect: abertura e a cada 24 h, estado, canal, aplicar, voltar, novidades vistas |
 | `src/hospedagem.ts` | os links diretos do GitHub Releases e os `latest*.yml` do app |
 | `src/fabrica.ts`, `src/novidades.ts`, `src/fontes.ts` | a fábrica: gerar o canal, propor e conferir novidades, fontes publicáveis |
 

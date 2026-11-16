@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@noble/hashes": "1.8.0",
-    "@simplifica-if/contratos-app": "workspace:*",
     "@simplifica-if/kb": "workspace:*",
     "yaml": "2.9.1"
   },

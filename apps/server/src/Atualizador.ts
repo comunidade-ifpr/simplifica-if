@@ -4,7 +4,7 @@
  *
  * - **Quando confere:** na abertura (logo depois de o servidor subir) e a cada 24 horas, no canal
  *   gravado (`atualizacao.json`) ou no padrão da política; "Procurar agora" confere na hora.
- * - **O que faz:** baixa e confere em segundo plano (`remoto.ts`) e deixa a base e as skills
+ * - **O que faz:** baixa e confere em segundo plano (`@simplifica-if/atualizacao/remoto`) e deixa a base e as skills
  *   pendentes. A troca é na próxima abertura (`local.ts`); "Aplicar agora" e "Voltar" pedem ao
  *   desktop para reiniciar o servidor, e se recusam (adiam) enquanto uma análise ou revisão roda.
  * - **Desligado** quando a política não tem feed ou chave pública (a hospedagem e a chave de produção
@@ -25,10 +25,10 @@ import type {
   ResultadoTroca,
   SituacaoAtualizacao,
 } from "@simplifica-if/contratos-app";
-import type { Abertura } from "./local.ts";
-import { caminhos, gravarEstado, lerEstado, lerInfoBanco } from "./local.ts";
-import type { ChavePublica } from "./minisign.ts";
-import { atualizarUmaVez, type Baixar, baixarComFetch } from "./remoto.ts";
+import type { Abertura } from "@simplifica-if/atualizacao/local";
+import { caminhos, gravarEstado, lerEstado, lerInfoBanco } from "@simplifica-if/atualizacao/local";
+import type { ChavePublica } from "@simplifica-if/atualizacao/minisign";
+import { atualizarUmaVez, type Baixar, baixarComFetch } from "@simplifica-if/atualizacao/remoto";
 
 export interface Opcoes {
   /** `null`: atualização desligada, com o motivo. */
@@ -64,7 +64,7 @@ export class Atualizador extends Context.Service<
     readonly voltar: Effect.Effect<ResultadoTroca>;
     readonly novidadesVistas: Effect.Effect<EstadoAtualizacao>;
   }
->()("@simplifica-if/atualizacao/Atualizador") {}
+>()("@simplifica-if/server/Atualizador") {}
 
 interface Memoria {
   readonly situacao: SituacaoAtualizacao;

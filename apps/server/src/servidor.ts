@@ -41,7 +41,7 @@ import type { Canal } from "@simplifica-if/mcp/contratos";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import { layerLeitura } from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
-import * as Atualizador from "@simplifica-if/atualizacao/Atualizador";
+import * as Atualizador from "./Atualizador.ts";
 import type { Abertura } from "@simplifica-if/atualizacao/local";
 import type { ChavePublica } from "@simplifica-if/atualizacao/minisign";
 import * as Autenticacao from "./Autenticacao.ts";

@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it } from "@effect/vitest";
 import { arquivosFonte } from "@simplifica-if/kb/db/fontes";
 import { fontesNaoClassificadas } from "../src/fontes.ts";
 import { lerNovidades, novidadesDaVersao, proporNovidades, soAcrescimos } from "../src/novidades.ts";
-import { limparTemporarios, pastaTemporaria } from "./apoio.ts";
+import { limparTemporarios, pastaTemporaria } from "../src/testes/apoio.ts";
 
 afterEach(limparTemporarios);
 

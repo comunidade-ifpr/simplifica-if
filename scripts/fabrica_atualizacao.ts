@@ -23,11 +23,11 @@
  * (GitHub Releases do próprio repositório; ver `packages/atualizacao/src/hospedagem.ts`). O `gh` é ferramenta de quem
  * publica; o app só baixa pelos links diretos.
  */
-import * as NodeChild from "node:child_process";
+import * as NodeChildProcess from "node:child_process";
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
-import { parseArgs } from "node:util";
+import * as NodeUtil from "node:util";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Effect from "effect/Effect";
 import { arquivosFonte } from "@simplifica-if/kb/db/fontes";
@@ -82,7 +82,7 @@ const dentroDoRepositorio = (caminho: string) => {
 const expandir = (caminho: string) =>
   caminho.startsWith("~/") ? NodePath.join(NodeOS.homedir(), caminho.slice(2)) : caminho;
 
-const git = (...args: string[]) => NodeChild.execFileSync("git", args, { cwd: RAIZ, encoding: "utf8" }).trim();
+const git = (...args: string[]) => NodeChildProcess.execFileSync("git", args, { cwd: RAIZ, encoding: "utf8" }).trim();
 
 function lerChave() {
   const caminho = process.env["SIMPLIFICA_MINISIGN_CHAVE"];
@@ -175,7 +175,7 @@ async function canal(opcoes: {
   NodeFS.mkdirSync(PASTA_BASES, { recursive: true });
   const banco = NodePath.join(PASTA_BASES, `${opcoes.versao}.sqlite`);
   console.log(`compilando a base ${opcoes.versao} (commit ${commit})…`);
-  NodeChild.execFileSync(
+  NodeChildProcess.execFileSync(
     process.execPath,
     [
       NodePath.join(RAIZ, "packages", "kb", "src", "cli.ts"),
@@ -280,7 +280,7 @@ function publicar(opcoes: { canal: Canal; versao: string; repositorio: string; e
     console.log(`$ ${comando.map((parte) => (/\s/.test(parte) ? JSON.stringify(parte) : parte)).join(" ")}`);
     if (!opcoes.executar) continue;
     try {
-      NodeChild.execFileSync(comando[0]!, comando.slice(1), { stdio: "inherit" });
+      NodeChildProcess.execFileSync(comando[0]!, comando.slice(1), { stdio: "inherit" });
     } catch (erro) {
       // O release do canal já existe a partir da segunda publicação.
       if (indice !== 1) throw erro;
@@ -340,14 +340,14 @@ function publicarApp(opcoes: { canal: Canal; versao: string; repositorio: string
   ];
   for (const comando of comandos) {
     console.log(`$ ${comando.map((parte) => (/\s/.test(parte) ? JSON.stringify(parte) : parte)).join(" ")}`);
-    if (opcoes.executar) NodeChild.execFileSync(comando[0]!, comando.slice(1), { stdio: "inherit" });
+    if (opcoes.executar) NodeChildProcess.execFileSync(comando[0]!, comando.slice(1), { stdio: "inherit" });
   }
   if (!opcoes.executar) console.log("\n(só mostrei os comandos; rode de novo com --executar para publicar)");
 }
 
 async function principal() {
   const [comando, ...resto] = process.argv.slice(2);
-  const { values } = parseArgs({
+  const { values } = NodeUtil.parseArgs({
     args: resto,
     options: {
       saida: { type: "string" },

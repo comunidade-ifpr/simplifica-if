@@ -1,12 +1,12 @@
 // @effect-diagnostics nodeBuiltinImport:off -- teste: confere o formato contra o zstd do sistema, quando existir
-import * as NodeChild from "node:child_process";
+import * as NodeChildProcess from "node:child_process";
 import * as NodeCrypto from "node:crypto";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { afterEach, describe, expect, it } from "@effect/vitest";
 import { desempacotarSkill, empacotarSkill } from "../src/pacote-skill.ts";
 import { aplicarPatch, comprimir, criarPatch, descomprimir } from "../src/zstd.ts";
-import { limparTemporarios, pastaTemporaria } from "./apoio.ts";
+import { limparTemporarios, pastaTemporaria } from "../src/testes/apoio.ts";
 
 afterEach(limparTemporarios);
 
@@ -15,7 +15,7 @@ const nova = Buffer.concat([anterior.subarray(0, 400_000), Buffer.from("trecho n
 
 const temZstd = (() => {
   try {
-    NodeChild.execFileSync("zstd", ["--version"], { stdio: "ignore" });
+    NodeChildProcess.execFileSync("zstd", ["--version"], { stdio: "ignore" });
     return true;
   } catch {
     return false;
@@ -54,9 +54,9 @@ describe("zstd", () => {
     NodeFS.writeFileSync(a, anterior);
     NodeFS.writeFileSync(b, nova);
     NodeFS.writeFileSync(p, criarPatch(anterior, nova, 3));
-    NodeChild.execFileSync("zstd", ["-q", "-d", "-f", `--patch-from=${a}`, p, "-o", r]);
+    NodeChildProcess.execFileSync("zstd", ["-q", "-d", "-f", `--patch-from=${a}`, p, "-o", r]);
     expect(NodeFS.readFileSync(r).equals(nova)).toBe(true);
-    NodeChild.execFileSync("zstd", ["-q", "-f", `--patch-from=${a}`, b, "-o", q]);
+    NodeChildProcess.execFileSync("zstd", ["-q", "-f", `--patch-from=${a}`, b, "-o", q]);
     expect(aplicarPatch(anterior, NodeFS.readFileSync(q)).equals(nova)).toBe(true);
   });
 
