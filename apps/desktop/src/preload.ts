@@ -12,6 +12,13 @@ const ponte: PonteDesktop = {
     await ipcRenderer.invoke(CANAIS.abrirExterno, url);
   },
   escolherPasta: () => ipcRenderer.invoke(CANAIS.escolherPasta) as Promise<string | null>,
+  escolherDocx: () => ipcRenderer.invoke(CANAIS.escolherDocx) as Promise<string | null>,
+  abrirDocumento: async (caminho: string) => {
+    await ipcRenderer.invoke(CANAIS.abrirDocumento, caminho);
+  },
+  mostrarNaPasta: async (caminho: string) => {
+    await ipcRenderer.invoke(CANAIS.mostrarNaPasta, caminho);
+  },
 };
 
 contextBridge.exposeInMainWorld(NOME_PONTE, ponte);

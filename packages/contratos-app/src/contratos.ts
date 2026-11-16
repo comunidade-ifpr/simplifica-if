@@ -345,6 +345,12 @@ export class GrupoSkills extends RpcGroup.make(
 
 /* ================================================================== revisão de PPC */
 
+/**
+ * O sufixo da cópia comentada: `<nome> - revisão prévia (Simplifica IF).docx` (depois ` (2)`, ` (3)`…),
+ * na pasta do original. O servidor grava com ele; o desktop só abre arquivos com ele.
+ */
+export const SUFIXO_REVISAO_PREVIA = " - revisão prévia (Simplifica IF)";
+
 /** Uma fonte da pendência, legível para quem não conhece o `ifpr://`: nome e dispositivo, e o endereço oficial. */
 export const FonteRevisao = Schema.Struct({
   rotulo: Schema.String,

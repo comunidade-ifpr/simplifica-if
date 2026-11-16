@@ -27,7 +27,7 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 import type * as SqlClient from "effect/sql/SqlClient";
-import { FalhaRevisaoPpc, type ResultadoRevisaoPpc } from "@simplifica-if/contratos-app";
+import { FalhaRevisaoPpc, type ResultadoRevisaoPpc, SUFIXO_REVISAO_PREVIA } from "@simplifica-if/contratos-app";
 import { FontesNormativas } from "@simplifica-if/kb/FontesNormativas";
 import * as Sql from "@simplifica-if/kb/db/sql";
 import type { BaseRevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
@@ -62,8 +62,6 @@ export class AnalisePpc extends Context.Service<
   { readonly analisar: (entrada: EntradaAnalise) => Effect.Effect<ResultadoRevisaoPpc, FalhaRevisaoPpc> }
 >()("@simplifica-if/server/revisao-ppc/AnalisePpc") {}
 
-/** O sufixo da cópia comentada; o desktop só abre arquivos com ele (`apps/desktop/src/seguranca.ts`). */
-export const SUFIXO_COMENTADO = " - revisão prévia (Simplifica IF)";
 
 /** O script do Worker: o `.ts` ao lado deste no desenvolvimento, o `trabalhador-ppc.mjs` no bundle. */
 export const URL_TRABALHADOR = import.meta.url.endsWith(".ts")
@@ -183,7 +181,7 @@ async function gravarCopia(original: string, bytes: Uint8Array): Promise<string>
   const pasta = NodePath.dirname(original);
   const nome = NodePath.basename(original, NodePath.extname(original));
   for (let n = 1; n <= 99; n += 1) {
-    const destino = NodePath.join(pasta, `${nome}${SUFIXO_COMENTADO}${n === 1 ? "" : ` (${n})`}.docx`);
+    const destino = NodePath.join(pasta, `${nome}${SUFIXO_REVISAO_PREVIA}${n === 1 ? "" : ` (${n})`}.docx`);
     try {
       await NodeFS.writeFile(destino, bytes, { flag: "wx" });
       return destino;

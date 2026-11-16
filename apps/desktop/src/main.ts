@@ -33,6 +33,8 @@ import { ESQUEMA, HOST_APP, resolverConfiguracao, type Configuracao } from "./co
 import { CANAIS, type Conexao } from "./ponteDesktop.ts";
 import { abrirLog } from "./registro.ts";
 import {
+  copiaComentadaPermitida,
+  docxEscolhido,
   hashesScriptsInline,
   isSameOriginRendererNavigation,
   politicaConteudo,
@@ -300,6 +302,44 @@ ipcMain.handle(CANAIS.escolherPasta, async (evento) => {
     properties: ["openDirectory", "createDirectory"],
   });
   return escolha.canceled ? null : (escolha.filePaths[0] ?? null);
+});
+
+/** Os `.docx` escolhidos no diálogo nesta execução: só as cópias comentadas deles abrem pelo app. */
+const docxEscolhidos = new Set<string>();
+
+ipcMain.handle(CANAIS.escolherDocx, async (evento) => {
+  if (!remetenteConfiavel(evento) || janela === undefined) throw new Error("pedido recusado");
+  const escolha = await dialog.showOpenDialog(janela, {
+    title: "Escolher o PPC (.docx)",
+    buttonLabel: "Analisar",
+    properties: ["openFile"],
+    filters: [{ name: "Documento do Word", extensions: ["docx"] }],
+  });
+  // O filtro do diálogo pode ser contornado em alguns sistemas ("Todos os arquivos"): confere de novo.
+  const arquivo = escolha.canceled ? undefined : docxEscolhido(escolha.filePaths[0]);
+  if (arquivo === undefined) return null;
+  docxEscolhidos.add(arquivo);
+  return arquivo;
+});
+
+/** A cópia comentada pedida, se é de um `.docx` escolhido e é arquivo comum (não link nem pasta). */
+function copiaComentada(caminho: unknown): string {
+  const permitido = copiaComentadaPermitida(caminho, docxEscolhidos);
+  if (permitido === undefined) throw new Error("só a cópia comentada pelo Simplifica IF abre por aqui");
+  const info = NodeFS.lstatSync(permitido, { throwIfNoEntry: false });
+  if (info === undefined || !info.isFile()) throw new Error("a cópia comentada não foi encontrada");
+  return permitido;
+}
+
+ipcMain.handle(CANAIS.abrirDocumento, async (evento, caminho: unknown) => {
+  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
+  const erro = await shell.openPath(copiaComentada(caminho));
+  if (erro !== "") throw new Error(`não foi possível abrir o documento: ${erro}`);
+});
+
+ipcMain.handle(CANAIS.mostrarNaPasta, async (evento, caminho: unknown) => {
+  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
+  shell.showItemInFolder(copiaComentada(caminho));
 });
 
 /* ============================================================ protocolo */
