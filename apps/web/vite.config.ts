@@ -35,6 +35,10 @@ export interface ServidorTeste {
   readonly pasta: string;
   /** Um PPC sintético em DOCX, dentro de `pasta`. */
   readonly ppc: string;
+  /** Um documento em Markdown, dentro de `pasta`, para anexar às tarefas. */
+  readonly parecer: string;
+  /** A raiz das pastas de tarefa (no app, Documentos/Simplifica IF). */
+  readonly pastaTrabalhos: string;
 }
 
 /** Os servidores de teste abertos pelos testes de navegador, por origem do pedido. */

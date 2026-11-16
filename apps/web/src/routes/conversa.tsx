@@ -302,8 +302,10 @@ function Conversa({
             variant="outline"
             size="sm"
             onClick={() => {
-              conversa.nova();
-              if (deTarefa) void navegar({ to: "/" });
+              // A tarefa nova começa no Início. Sai da tela antes de esvaziar a conversa, para o efeito que
+              // acompanha a URL não trazer a tela de volta.
+              if (deTarefa) void navegar({ to: "/" }).then(() => conversa.nova());
+              else conversa.nova();
             }}
           >
             <PlusIcon /> {deTarefa ? "Nova tarefa" : "Nova conversa"}

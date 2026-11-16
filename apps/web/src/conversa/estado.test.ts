@@ -158,6 +158,7 @@ describe("rotuloFerramenta", () => {
     assert.strictEqual(rotuloFerramenta("ifpr.buscar_norma"), "Buscar norma");
     assert.strictEqual(rotuloFerramenta("mcp__ifpr__ficha_curso"), "Ficha do curso");
     assert.strictEqual(rotuloFerramenta("escrever_arquivo"), "Escrever arquivo");
+    assert.strictEqual(rotuloFerramenta("Write"), "Gravar arquivo");
     assert.strictEqual(rotuloFerramenta("Bash"), "Bash");
   });
 });

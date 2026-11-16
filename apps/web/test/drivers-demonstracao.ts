@@ -10,6 +10,8 @@
  * - **Antigravity:** instalado, sem login. "Entrar" fica em `aguardando` com a URL do Google por
  *   `atrasoLogin` e então conclui.
  */
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as Fiber from "effect/Fiber";
@@ -51,14 +53,56 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
       ...(estado[provider].instalado ? {} : { mensagem: "O app instala a própria cópia." }),
     }));
 
-  const iniciar = (provider: Motor.Provider) => (_config: Motor.ConfigSessao) =>
+  const iniciar = (provider: Motor.Provider) => (config: Motor.ConfigSessao) =>
     Effect.gen(function* () {
       const canal = yield* Canal.make;
       const escopo = yield* Effect.scope;
       let resposta: Fiber.Fiber<void> | undefined;
 
+      /** Uma chamada da ferramenta `etapa` (o indicador de etapas da tarefa). */
+      const etapa = (id: string, progresso?: { feito: number; total: number }) =>
+        Effect.gen(function* () {
+          const chamada = `etapa-${id}-${progresso?.feito ?? 0}`;
+          yield* canal.emitir({
+            _tag: "FerramentaIniciada",
+            id: chamada,
+            nome: "ifpr.etapa",
+            entrada: { id, ...(progresso === undefined ? {} : { progresso }) },
+          });
+          yield* canal.emitir({
+            _tag: "FerramentaConcluida",
+            id: chamada,
+            nome: "ifpr.etapa",
+            resumo: "Etapa registrada no app.",
+            falhou: false,
+          });
+        });
+
+      // O primeiro turno de uma tarefa (o servidor indica a skill): as etapas da
+      // `verificar-fundamentacao-normativa` e o relatório gravado na pasta, com aprovação.
+      const tarefa = Effect.gen(function* () {
+        yield* etapa("alegacoes");
+        yield* etapa("fontes", { feito: 1, total: 2 });
+        yield* etapa("fontes", { feito: 2, total: 2 });
+        yield* etapa("classificar");
+        const decisao = yield* canal.pedirAprovacao({
+          id: "a-relatorio",
+          ferramenta: "Write",
+          descricao: "Gravar relatorio.md na pasta da tarefa",
+          entrada: { caminho: "relatorio.md" },
+        });
+        if (decisao === "permitir") {
+          NodeFS.writeFileSync(
+            NodePath.join(config.pastaTrabalho, "relatorio.md"),
+            "# Relatório\n\nUma alegação confirmada.\n",
+          );
+        }
+        yield* etapa("relatorio");
+      });
+
       const responder = (texto: string) =>
         Effect.gen(function* () {
+          if (texto.startsWith("Siga a skill")) yield* tarefa;
           // Como nos providers reais, cada bloco de texto se fecha num `TextoFinal` antes da ferramenta.
           yield* canal.emitir({ _tag: "TextoParcial", texto: "Vou consultar a base." });
           yield* canal.emitir({ _tag: "TextoFinal", texto: "Vou consultar a base." });

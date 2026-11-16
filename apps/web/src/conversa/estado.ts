@@ -388,6 +388,20 @@ const ROTULOS_FERRAMENTA: Readonly<Record<string, string>> = {
   pacote_contexto: "Contexto da análise de PPC",
   resolver_citacoes: "Identificar citações",
   sobre_a_base: "Sobre a base",
+  // As nativas dos providers que mais aparecem (Claude, Codex, Antigravity).
+  Write: "Gravar arquivo",
+  Edit: "Alterar arquivo",
+  MultiEdit: "Alterar arquivo",
+  NotebookEdit: "Alterar arquivo",
+  Read: "Ler arquivo",
+  Glob: "Procurar arquivos",
+  Grep: "Procurar nos arquivos",
+  Bash: "Rodar um comando",
+  apply_patch: "Alterar arquivo",
+  write_file: "Gravar arquivo",
+  read_file: "Ler arquivo",
+  run_command: "Rodar um comando",
+  shell: "Rodar um comando",
 };
 
 /**
