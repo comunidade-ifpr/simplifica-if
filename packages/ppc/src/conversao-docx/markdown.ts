@@ -69,7 +69,9 @@ function formatarTrechos(trechos: Trecho[], regras: Regras): string {
     if (!acumulado.length) return;
     const texto = acumulado.join("");
     const url = urlCorrente && regras.linksSeguros ? enderecoSeguro(urlCorrente) : urlCorrente;
-    partes.push(url ? `[${regras.linksSeguros ? texto.replaceAll("]", "\\]") : texto}](${url})` : texto);
+    partes.push(
+      url ? `[${regras.linksSeguros ? texto.replaceAll("\\", "\\\\").replaceAll("]", "\\]") : texto}](${url})` : texto,
+    );
     acumulado = [];
   };
   for (const trecho of regras.negritoUnido ? unirTrechos(trechos) : trechos) {

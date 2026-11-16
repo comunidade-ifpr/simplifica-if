@@ -899,6 +899,7 @@ describe("regras do modo documento", () => {
     const relacoes = [
       { id: "rId11", tipo: "hyperlink" as const, alvo: "javascript:alert(1))[x](http://evil", externa: true },
       { id: "rId12", tipo: "hyperlink" as const, alvo: "https://exemplo.edu.br/a (b)/c d", externa: true },
+      { id: "rId15", tipo: "hyperlink" as const, alvo: "https://exemplo.edu.br/", externa: true },
       { id: "rId13", tipo: "hyperlink" as const, alvo: "MAILTO:alguem@exemplo.edu.br", externa: true },
       { id: "rId14", tipo: "hyperlink" as const, alvo: "file:///etc/passwd", externa: true },
     ];
@@ -913,6 +914,10 @@ describe("regras do modo documento", () => {
     );
     expect(bruto(corpo, {}, { relacoes })).toBe(
       "clique [texto \\] com colchete](https://exemplo.edu.br/a%20%28b%29/c%20d) [correio](MAILTO:alguem@exemplo.edu.br) arquivo",
+    );
+    // A barra invertida no fim do texto escaparia o colchete que fecha o link.
+    expect(bruto(par(hyperlink("C:\\pasta\\", 'r:id="rId15"')), {}, { relacoes })).toBe(
+      "[C:\\\\pasta\\\\](https://exemplo.edu.br/)",
     );
     // A conversão em Python punha o endereço cru no Markdown.
     expect(bruto(corpo, { regras: { linksSeguros: false } }, { relacoes })).toContain(
@@ -1037,6 +1042,27 @@ describe("regras do modo documento", () => {
     });
     expect(convertido.elementos.length).toBeGreaterThan(150_000);
     expect(convertido.markdown).toContain("| 1º Ano | Matemática | 2 | 80 | 67 |");
+  });
+
+  test("texto de célula multiplicado pela mescla vertical é recusado depressa", () => {
+    const mesclada = (texto: string, linhas: number) =>
+      montarDocx({
+        corpo:
+          titulo("1 TABELA") +
+          tabela([
+            linha([celula(texto, { vertical: "inicio" }), celula("a")]),
+            ...Array.from({ length: linhas }, () => linha([celula("", { vertical: "continua" }), celula("b")])),
+          ]),
+      });
+    // 1 MB de texto repetido em 2 mil linhas: 2 GB de tabela (antes, 113 s até `Invalid string length`).
+    const inicio = performance.now();
+    expect(() => converterPpc(mesclada("palavra ".repeat(131_072), 2000), "x.docx", { agora: AGORA })).toThrow(
+      /texto demais nas células mescladas/,
+    );
+    expect(performance.now() - inicio).toBeLessThan(5000);
+    // Abaixo do limite, a célula mesclada se repete, limpa uma vez só.
+    const { markdownBruto } = converterPpc(mesclada("palavra ".repeat(1024), 500), "x.docx", { agora: AGORA });
+    expect(markdownBruto.split("\n").filter((item) => item.startsWith("| palavra palavra"))).toHaveLength(501);
   });
 
   test("tabela que expandida passaria de dois milhões de células é recusada", () => {

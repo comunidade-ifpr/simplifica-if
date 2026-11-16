@@ -13,6 +13,8 @@ const r = String.raw;
 
 /** Células de uma tabela depois de expandida; a maior tabela de um PPC real tem alguns milhares. */
 const CELULAS_MAXIMAS = 2_000_000;
+/** Caracteres de texto de uma tabela expandida (com as repetições das mesclas). */
+const TEXTO_MAXIMO = 16 * 1024 * 1024;
 
 export type TabelaNormalizada = {
   cabecalho: string[];
@@ -45,10 +47,17 @@ function limparTextoDaCelula(texto: string): string {
  * continuação vazia de uma mescla vertical recebe o texto da célula de cima.
  */
 function expandirMesclas(linhas: CelulaTabela[][], colunas: number): string[][] {
+  // O texto de uma célula mesclada se repete na grade: é limpo uma vez só.
+  const limpos = new Map<string, string>();
+  const limpar = (texto: string) => {
+    let limpo = limpos.get(texto);
+    if (limpo === undefined) limpos.set(texto, (limpo = limparTextoDaCelula(texto)));
+    return limpo;
+  };
   const grade = linhas.map((linha) => {
     const expandida: Array<{ texto: string; continuacao: boolean }> = [];
     for (const celula of linha) {
-      const texto = limparTextoDaCelula(celula.texto);
+      const texto = limpar(celula.texto);
       for (let i = 0; i < celula.colunas; i += 1) {
         expandida.push({ texto: i === 0 ? texto : "", continuacao: celula.continuacao });
       }
@@ -61,6 +70,13 @@ function expandirMesclas(linhas: CelulaTabela[][], colunas: number): string[][] 
       // A linha de cima é sempre tão larga quanto esta: todas foram completadas até `colunas`.
       if (celula.continuacao && !celula.texto) celula.texto = grade[i - 1]![j]!.texto;
     }
+  }
+  // A mescla multiplica o texto: uma célula de 1 MB repetida em 2 mil linhas daria uma tabela de
+  // 2 GB no Markdown.
+  let caracteres = 0;
+  for (const linha of grade) for (const celula of linha) caracteres += celula.texto.length;
+  if (caracteres > TEXTO_MAXIMO) {
+    throw new ErroDocx("O arquivo DOCX não pôde ser lido: há uma tabela com texto demais nas células mescladas.");
   }
   return grade.map((linha) => linha.map((celula) => celula.texto));
 }

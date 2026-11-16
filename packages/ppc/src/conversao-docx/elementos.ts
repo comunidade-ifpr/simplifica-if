@@ -244,9 +244,13 @@ function gradeRepetida(tabela: TabelaOoxml): CelulaTabela[][] {
       }),
     );
   }
+  // Cada célula de origem é aparada uma vez; as repetições (colunas e linhas da mescla) apontam
+  // para a mesma célula lida.
+  const lidas = new Map<(typeof daLinha)[number][number], CelulaTabela>();
   return origens.map((linha) =>
     linha.flatMap((celula) => {
-      const lida: CelulaTabela = { texto: aparar(celula.texto), colunas: 1, continuacao: false };
+      let lida = lidas.get(celula);
+      if (!lida) lidas.set(celula, (lida = { texto: aparar(celula.texto), colunas: 1, continuacao: false }));
       return Array.from({ length: celula.colunas }, () => lida);
     }),
   );
