@@ -268,7 +268,7 @@ describe("conferência da resposta", () => {
 
   test("critério ausencia: NAO_ATENDE pede o tipo, e a ausência pede as lacunas; o conservador ignora o tipo", () => {
     const ausencia = { ...entrada, criterio: "ausencia" as const };
-    const nao = (extra: object, e = ausencia) =>
+    const nao = (extra: object, e: typeof entrada & { criterio?: "ausencia" } = ausencia) =>
       conferirResposta(
         resposta(resultado("CT-CURR-03", { estado: "NAO_ATENDE", ...extra }), resultado("CT-CURR-10")),
         bloco,
