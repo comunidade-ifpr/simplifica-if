@@ -85,6 +85,8 @@ O código do T3 está em `src/t3/`, em inglês e na formatação do upstream, co
 | outro MCP, web | negar | — |
 | outra (subagente, plano…) | perguntar | — |
 
+**Sessão de julgamento** (`ConfigSessao.semFerramentas`, a revisão de PPC com IA do M1.11): o `Motor` aplica a `POLITICA_JULGAMENTO` (toda ferramenta negada sem perguntar, dentro ou fora da pasta) em vez da política do app e recusa MCP ou skills na mesma sessão. O driver do Claude passa `tools: []`, `permissionMode: "dontAsk"` e as instruções do app como prompt de sistema inteiro (sem o do Claude Code): no teste real, a entrada fora do cache foi de 2 tokens por bloco. O Codex e o Antigravity seguem com as próprias ferramentas na lista, negadas pela política.
+
 Também: providers permitidos (`claude`, `codex`, `antigravity`), Codex em `read-only` com `on-request`, busca web e configuração do usuário desligadas, telemetria desligada nos três (variáveis do Claude, `-c` do `codex app-server`, `--disable-telemetry` do `agy`, sem `OTEL_*`). No macOS, `/tmp` e `/private/tmp` contam como a mesma pasta. O arquivo de política da máquina, gerido pela DTI, fica para depois (decisão em aberto 9).
 
 ## Retomada, queda e interromper (M1.2)

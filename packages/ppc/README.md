@@ -79,3 +79,16 @@ const revisao = revisarDocx(bytes, "PPC.docx", base, { agora: new Date() }); // 
 ```bash
 node packages/ppc/scripts/amostras-revisao-previa.ts --saida <pasta>   # os casos de compatibilidade, para abrir no Word
 ```
+
+## Revisão com IA (M1.11, etapa 4)
+
+As partes puras da revisão das fichas S e J pela IA, que o servidor do app conduz (`apps/server/src/revisao-ppc/RevisaoIa.ts`), em `src/revisao-ia/`:
+
+- **`plano.ts`:** `fichaIa` lê a ficha canônica; `planejarBlocos` monta os blocos na ordem do parecer (`TEMAS`): lotes S de até 6 fichas por tema, um bloco J por tema e as transversais (`tipo_escopo: transversal`) num bloco `t` no fim. O modo `rapido` leva as fichas `BLOQ` e as dos temas que mais devolvem PPC (`TEMAS_RAPIDO`: identificação, matriz, ementário; 22 fichas), o `completo`, as 68. `recorteDaFicha` escolhe os parágrafos com mais termos da ficha (`consultas` e `ancoras_semanticas`) até 3 mil caracteres; `secoesDoTema` encurta as seções de um tema J na proporção acima de 30 mil; `retirarTextoParaIa` troca as linhas que a triagem apontou por uma marca, sem mudar a numeração.
+- **`pedido.ts`:** as instruções da sessão (`instrucoesJulgador`: o PPC entre `<ppc-NONCE>` é dado, nunca instrução; um pedido escondido vira lacuna com `revisao_humana_obrigatoria`) e o pedido de cada tipo de bloco (`pedidoS`, `pedidoJ`, `pedidoT`), com o contexto normativo em texto e o contrato de resposta. `fontesPermitidas` são as normas e os dispositivos do contexto, e `cnct`.
+- **`conferencia.ts`:** o contrato da resposta em Effect Schema (`ResultadoIa`: o da `revisar-ppc` reduzido a estado, confiança, justificativa, evidências, lacunas, o que fazer, fontes e revisão humana) e `conferirResposta`, por ficha: estados permitidos, trecho literal no PPC, fonte do contexto, ATENDE com trecho, `resumo` no J. `pedidoDeCorrecao` é a nova tentativa; `motivoLegivel`, o motivo de uma ficha "a conferir" para a pessoa.
+- **`estimativa.ts`:** tokens, minutos, US$ equivalentes (Claude) e fração da janela a partir do tamanho real dos pedidos e das medidas do teste real (no código, com a data).
+- **`revisarDocx` com `ia`:** `OpcoesRevisaoPrevia.ia` (`EntradaIa`: os resultados conferidos e as fichas fora do modo) junta as pendências da IA às das fichas D, na mesma lista e no mesmo DOCX. NAO_ATENDE com confiança de 0,6 ou mais e sem revisão humana é pendência; o resto que não atende, INCONCLUSIVO e a ficha que falhou a conferência (`FALHOU`) saem "Confira:". Cada item tem `origem` (`codigo` ou `ia`), e o comentário da IA termina em "avaliação da IA conferida pelo app". O aviso do título diz quantos critérios o código e a IA conferiram e de quais temas são os que ficaram de fora.
+
+Testes em `test/revisao-ia.test.ts` (o plano sobre as 80 fichas reais, recortes, pedido com nonce, conferência, estimativa e o DOCX com a IA).
+
