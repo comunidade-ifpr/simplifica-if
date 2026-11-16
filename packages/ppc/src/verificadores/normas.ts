@@ -1,0 +1,340 @@
+/**
+ * Verificadores D da fundamentação normativa, sobre as citações resolvidas pelo registro do kb
+ * (`extrairCitacoes`) e as relações de revogação (`relacoes.yaml`):
+ *
+ * - CT-SUP-12: normas revogadas citadas em qualquer ponto (a ficha responsável pela vigência);
+ * - CT-IDENT-08: normas revogadas nas seções de identidade, e a DCN da EPT (e a DCNEM no integrado) citadas;
+ * - CT-SUP-09: os marcos centrais vigentes na seção de referências;
+ * - CT-SUP-14: CNCT e marcos institucionais (PDI, PPI, Regimento) referenciados;
+ * - CT-SUP-21: a legislação profissional que o CNCT indica;
+ * - CT-SUP-24: a Política de Assistência Estudantil (Res. CONSUP/IFPR nº 239/2025) e as revogadas por ela.
+ */
+import { extrairCitacoes } from "@simplifica-if/kb/normas/resolver";
+import {
+  type Apontamento,
+  apontamentoRevogada,
+  type BaseVerificacao,
+  citacaoSegura,
+  citacoesPorAto,
+  linkCnct,
+  linkNorma,
+  linhasDasSecoes,
+  normasRevogadasCitadas,
+  type PpcPreparado,
+  resultado,
+  type Trecho,
+  trecho,
+  type Verificador,
+} from "./comum.ts";
+
+const DCN_EPT = "br/cne-cp/res/2026/2";
+const DCNEM = "br/cne-ceb/res/2024/2";
+const LDB = "br/lei/1996/9394";
+const LEI_14945 = "br/lei/2024/14945";
+const PAE = "ifpr/consup/res/2025/239";
+const PAE_REVOGADAS = ["ifpr/consup/res/2009/11", "ifpr/consup/res/2011/53"];
+
+const titulo = (base: BaseVerificacao, id: string) => base.registro.obter(id)?.title ?? id;
+
+/** Primeira citação segura (ou a primeira) de cada ato citado. */
+function primeiraCitacao(ppc: PpcPreparado, id: string, linhas?: ReadonlySet<number>) {
+  const lista = (citacoesPorAto(ppc.citacoes).get(id) ?? []).filter((c) => !linhas || linhas.has(c.linha));
+  return lista.find(citacaoSegura) ?? lista[0];
+}
+
+const evidenciaDe = (ppc: PpcPreparado, citacao: { linha: number; trecho: string } | undefined): Trecho[] =>
+  citacao ? [trecho(ppc, citacao.linha, citacao.trecho)] : [];
+
+/* ------------------------------------------------------------------ CT-SUP-12 */
+
+export const normasRevogadas: Verificador = {
+  id: "d-normas-revogadas",
+  ficha: "CT-SUP-12",
+  descricao:
+    "Normas citadas em qualquer ponto do PPC com `status_vigencia: revogada` no registro. Sem nenhuma sucessora em vigor citada (pela cadeia de `revoga` em relacoes.yaml), é pendência; com ela, sem sucessora registrada ou com citação de confiança menor, a conferir (a citação pode ser histórica ou de transição).",
+  verificar(ppc, base) {
+    const revogadas = normasRevogadasCitadas(ppc.citacoes, ppc.citacoes, base);
+    return resultado(
+      this,
+      revogadas.map((norma) => apontamentoRevogada(ppc, base, norma)),
+      {
+        estado: "atende",
+        mensagem: `Nenhuma norma revogada entre as ${citacoesPorAto(ppc.citacoes).size} normas citadas reconhecidas.`,
+      },
+    );
+  },
+};
+
+/* ------------------------------------------------------------------ CT-IDENT-08 */
+
+/** Seções de identidade do curso (taxonomia `tecnico` do kb). */
+const SECOES_IDENTIDADE = new Set([
+  "identificacao",
+  "justificativa",
+  "objetivos",
+  "concepcao_pedagogica",
+  "perfil_egresso",
+  "legislacao",
+  "mundo_trabalho",
+  "formato_oferta",
+]);
+
+export const baseLegalIdentidade: Verificador = {
+  id: "d-base-legal-identidade",
+  ficha: "CT-IDENT-08",
+  descricao:
+    "Nas seções de identidade (identificação, justificativa, objetivos, concepção, perfil, legislação), as normas revogadas citadas, com a regra de CT-SUP-12; e, em todo o PPC, a DCN da EPT vigente (Res. CNE/CP nº 2/2026) e, no integrado, a DCNEM (Res. CNE/CEB nº 2/2024) citadas.",
+  verificar(ppc, base) {
+    const linhas = new Set(linhasDasSecoes(ppc, SECOES_IDENTIDADE));
+    const naIdentidade = ppc.citacoes.filter((c) => linhas.has(c.linha));
+    const apontamentos: Apontamento[] = normasRevogadasCitadas(naIdentidade, ppc.citacoes, base).map((norma) =>
+      apontamentoRevogada(ppc, base, norma),
+    );
+    const exigidas = base.forma === "integrado" ? [DCN_EPT, DCNEM] : [DCN_EPT];
+    const evidencias: Trecho[] = [];
+    for (const id of exigidas) {
+      const citacao = primeiraCitacao(ppc, id);
+      if (citacao) evidencias.push(...evidenciaDe(ppc, citacao));
+      else
+        apontamentos.push({
+          estado: "nao_atende",
+          mensagem: `O PPC não cita ${titulo(base, id)}, ${id === DCN_EPT ? "a DCN da EPT vigente" : "a DCNEM vigente"}.`,
+          trechos: [],
+          fontes: [linkNorma(id)],
+        });
+    }
+    if (!linhas.size)
+      apontamentos.push({
+        estado: "a_conferir",
+        mensagem: "Não reconhecemos as seções de identidade do curso; confira a fundamentação legal nelas.",
+        trechos: [],
+        fontes: [],
+      });
+    return resultado(this, apontamentos, {
+      estado: "atende",
+      mensagem: "A fundamentação cita as diretrizes vigentes, e as seções de identidade não citam norma revogada.",
+      evidencias,
+      fontes: exigidas.map(linkNorma),
+    });
+  },
+};
+
+/* ------------------------------------------------------------------ CT-SUP-09 */
+
+export const marcosNasReferencias: Verificador = {
+  id: "d-marcos-nas-referencias",
+  ficha: "CT-SUP-09",
+  descricao:
+    "Na seção de referências, a DCN da EPT vigente (Res. CNE/CP nº 2/2026) e, no integrado, a DCNEM (Res. CNE/CEB nº 2/2024), a LDB e a Lei nº 14.945/2024. Ausente em todo o PPC é pendência (a Lei nº 14.945/2024, “quando pertinente”, fica a conferir); citada só fora das referências, a conferir. As normas revogadas ficam com CT-SUP-12.",
+  verificar(ppc, base) {
+    const linhas = new Set(linhasDasSecoes(ppc, new Set(["referencias"])));
+    const exigidas = base.forma === "integrado" ? [DCN_EPT, DCNEM, LDB, LEI_14945] : [DCN_EPT];
+    const fontes = exigidas.map(linkNorma);
+    if (!linhas.size)
+      return resultado(
+        this,
+        [
+          {
+            estado: "a_conferir",
+            mensagem: "Não encontramos a seção de referências; confira se ela existe e cita os marcos vigentes.",
+            trechos: [],
+            fontes,
+          },
+        ],
+        { estado: "a_conferir", mensagem: "" },
+      );
+    const apontamentos: Apontamento[] = [];
+    const evidencias: Trecho[] = [];
+    for (const id of exigidas) {
+      const nasReferencias = primeiraCitacao(ppc, id, linhas);
+      if (nasReferencias) {
+        evidencias.push(...evidenciaDe(ppc, nasReferencias));
+        continue;
+      }
+      const noTexto = primeiraCitacao(ppc, id);
+      apontamentos.push(
+        noTexto
+          ? {
+              estado: "a_conferir",
+              mensagem: `${titulo(base, id)} é citada no texto, mas não aparece na seção de referências.`,
+              trechos: evidenciaDe(ppc, noTexto),
+              fontes: [linkNorma(id)],
+            }
+          : {
+              estado: id === LEI_14945 ? "a_conferir" : "nao_atende",
+              mensagem: `A seção de referências não traz ${titulo(base, id)}${id === LEI_14945 ? ", que alterou a LDB no ensino médio; confira se é pertinente" : ""}.`,
+              trechos: [],
+              fontes: [linkNorma(id)],
+            },
+      );
+    }
+    return resultado(this, apontamentos, {
+      estado: "atende",
+      mensagem: "A seção de referências traz os marcos vigentes da forma de oferta.",
+      evidencias,
+      fontes,
+    });
+  },
+};
+
+/* ------------------------------------------------------------------ CT-SUP-14 */
+
+const RE_CNCT = /cat[áa]logo nacional de cursos t[ée]cnicos|\bCNCT\b/i;
+const RE_INSTITUCIONAL =
+  /plano de desenvolvimento institucional|\bPDI\b|projeto pol[íi]tico[- ]pedag[óo]gico institucional|projeto pedag[óo]gico institucional|\bPPI\b|regimento geral|estatuto do (ifpr|instituto federal)/i;
+
+function primeiraLinha(ppc: PpcPreparado, padrao: RegExp): Trecho | null {
+  for (const [indice, linha] of ppc.linhas.entries()) {
+    const achado = padrao.exec(linha);
+    if (achado) return trecho(ppc, indice + 1, achado[0]);
+  }
+  return null;
+}
+
+export const marcosInstitucionais: Verificador = {
+  id: "d-cnct-e-marcos-institucionais",
+  ficha: "CT-SUP-14",
+  descricao:
+    "O CNCT e ao menos um marco institucional do IFPR (PDI, PPI, Regimento Geral ou Estatuto) mencionados no PPC. As DCN ficam com CT-SUP-09 e a legislação profissional com CT-SUP-21.",
+  verificar(ppc, base) {
+    const fontes = base.cnct ? [linkCnct(base.cnct.slug)] : [];
+    const apontamentos: Apontamento[] = [];
+    const evidencias: Trecho[] = [];
+    const cnct = primeiraLinha(ppc, RE_CNCT);
+    if (cnct) evidencias.push(cnct);
+    else
+      apontamentos.push({
+        estado: "nao_atende",
+        mensagem: "O PPC não menciona o Catálogo Nacional de Cursos Técnicos (CNCT).",
+        trechos: [],
+        fontes,
+      });
+    const institucional = primeiraLinha(ppc, RE_INSTITUCIONAL);
+    if (institucional) evidencias.push(institucional);
+    else
+      apontamentos.push({
+        estado: "nao_atende",
+        mensagem: "O PPC não menciona os marcos institucionais do IFPR (PDI, PPI, Regimento Geral ou Estatuto).",
+        trechos: [],
+        fontes: [],
+      });
+    return resultado(this, apontamentos, {
+      estado: "atende",
+      mensagem: "O PPC menciona o CNCT e os marcos institucionais do IFPR.",
+      evidencias,
+      fontes,
+    });
+  },
+};
+
+/* ------------------------------------------------------------------ CT-SUP-21 */
+
+export const legislacaoProfissional: Verificador = {
+  id: "d-legislacao-profissional",
+  ficha: "CT-SUP-21",
+  descricao:
+    "Os atos da legislação profissional do CNCT (campo `legislacao_profissional`, resolvidos pelo registro) contra as citações do PPC: nenhum citado é pendência; citar parte basta (a ficha pede tratamento reconhecível). Sem legislação no CNCT, não se aplica; com legislação que o registro não resolve, a conferir.",
+  verificar(ppc, base) {
+    const { cnct } = base;
+    if (!cnct)
+      return resultado(
+        this,
+        [{ estado: "a_conferir", mensagem: "O curso não foi identificado no CNCT.", trechos: [], fontes: [] }],
+        { estado: "a_conferir", mensagem: "" },
+      );
+    const fontes = [linkCnct(cnct.slug)];
+    const legislacao = (cnct.legislacao_profissional ?? "").split("\n").filter((item) => item.trim());
+    if (!legislacao.length)
+      return resultado(this, [], {
+        estado: "nao_se_aplica",
+        mensagem: "O CNCT não indica legislação profissional para o curso.",
+        fontes,
+      });
+    const ids = new Set(
+      legislacao.flatMap((item) =>
+        extrairCitacoes(item, base.registro)
+          .map((c) => c.id)
+          .filter((id): id is string => id !== null),
+      ),
+    );
+    if (!ids.size)
+      return resultado(
+        this,
+        [
+          {
+            estado: "a_conferir",
+            mensagem: `Não conseguimos identificar na base a legislação profissional que o CNCT indica (${legislacao.join("; ")}); confira se o PPC a trata.`,
+            trechos: [],
+            fontes,
+          },
+        ],
+        { estado: "a_conferir", mensagem: "" },
+      );
+    const citadas = ppc.citacoes.filter((c) => c.id !== null && ids.has(c.id));
+    if (!citadas.length)
+      return resultado(
+        this,
+        [
+          {
+            estado: "nao_atende",
+            mensagem: `O PPC não cita a legislação profissional que o CNCT indica para o curso: ${legislacao.join("; ")}.`,
+            trechos: [],
+            fontes,
+          },
+        ],
+        { estado: "nao_atende", mensagem: "" },
+      );
+    return resultado(this, [], {
+      estado: "atende",
+      mensagem: `O PPC cita ${new Set(citadas.map((c) => c.id)).size} dos ${ids.size} atos de legislação profissional do CNCT.`,
+      evidencias: citadas.slice(0, 3).map((c) => trecho(ppc, c.linha, c.trecho)),
+      fontes,
+    });
+  },
+};
+
+/* ------------------------------------------------------------------ CT-SUP-24 */
+
+export const politicaAssistenciaEstudantil: Verificador = {
+  id: "d-politica-assistencia-estudantil",
+  ficha: "CT-SUP-24",
+  descricao:
+    "A Res. CONSUP/IFPR nº 239/2025 (Política de Assistência Estudantil) citada, e as Res. nº 11/2009 e nº 53/2011, revogadas por ela: só as antigas é pendência; as duas juntas ou nenhuma, a conferir; só a 239/2025, atende.",
+  verificar(ppc, base) {
+    const fontes = [linkNorma(PAE)];
+    const atual = primeiraCitacao(ppc, PAE);
+    const antigas = PAE_REVOGADAS.map((id) => ({ id, citacao: primeiraCitacao(ppc, id) })).filter((a) => a.citacao);
+    const trechosAntigas = antigas.flatMap((a) => evidenciaDe(ppc, a.citacao));
+    const nomesAntigas = antigas.map((a) => titulo(base, a.id)).join(" e ");
+    if (atual && !antigas.length)
+      return resultado(this, [], {
+        estado: "atende",
+        mensagem: `O PPC cita ${titulo(base, PAE)}, a Política de Assistência Estudantil vigente.`,
+        evidencias: evidenciaDe(ppc, atual),
+        fontes,
+      });
+    const apontamento: Apontamento = atual
+      ? {
+          estado: "a_conferir",
+          mensagem: `O PPC cita ${titulo(base, PAE)} e também ${nomesAntigas}, revogada(s) por ela. Confira se a citação antiga é só histórica.`,
+          trechos: [...evidenciaDe(ppc, atual), ...trechosAntigas],
+          fontes,
+        }
+      : antigas.length && antigas.every((a) => citacaoSegura(a.citacao!))
+        ? {
+            estado: "nao_atende",
+            mensagem: `O PPC cita ${nomesAntigas}, revogada(s) pela ${titulo(base, PAE)}, sem citar a política vigente.`,
+            trechos: trechosAntigas,
+            fontes,
+          }
+        : {
+            estado: "a_conferir",
+            mensagem: antigas.length
+              ? `O PPC parece citar ${nomesAntigas}, revogada(s) pela ${titulo(base, PAE)}; confira a citação.`
+              : `O PPC não cita ${titulo(base, PAE)}, a Política de Assistência Estudantil vigente; confira a seção de atendimento ao estudante.`,
+            trechos: trechosAntigas,
+            fontes,
+          };
+    return resultado(this, [apontamento], { estado: "a_conferir", mensagem: "" });
+  },
+};
