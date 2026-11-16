@@ -8,8 +8,10 @@
  * - `$` casa no fim ou antes de um `\n` final;
  * - `]` logo depois de `[` ou `[^` é literal.
  *
- * As funções `search`, `match`, `fullmatch`, `sub`, `finditer` e `escape`
- * seguem as do Python.
+ * Com `dotAll` (`re.DOTALL`), `.` casa qualquer caractere.
+ *
+ * As funções `search`, `match`, `fullmatch`, `sub`, `split`, `finditer` e
+ * `escape` seguem as do Python.
  */
 import { ESPACOS } from "../texto.ts";
 
@@ -19,7 +21,7 @@ const NAO_LIMITE = `(?:(?<=[${PALAVRA}])(?=[${PALAVRA}])|(?<![${PALAVRA}])(?![${
 const SINTAXE_JS = new Set("^$\\.*+?()[]{}|/");
 
 /** Traduz a fonte de um padrão Python para a de um padrão JavaScript com flag `u`. */
-export function traduzirPadrao(fonte: string): string {
+export function traduzirPadrao(fonte: string, dotAll = false): string {
   let saida = "";
   let emClasse = false;
   let i = 0;
@@ -73,7 +75,7 @@ export function traduzirPadrao(fonte: string): string {
     }
     if (c === "(" && fonte.startsWith("(?P", i))
       throw new SyntaxError(`grupo nomeado do Python não suportado: ${fonte}`);
-    if (c === ".") saida += "[^\\n]";
+    if (c === ".") saida += dotAll ? "[\\s\\S]" : "[^\\n]";
     else if (c === "$") saida += "(?:$|(?=\\n$))";
     else saida += c;
     i += 1;
@@ -81,15 +83,15 @@ export function traduzirPadrao(fonte: string): string {
   return saida;
 }
 
-export type FlagsPy = { ignoreCase?: boolean };
+export type FlagsPy = { ignoreCase?: boolean; dotAll?: boolean };
 
 const cache = new Map<string, RegExp>();
 
 function compilar(fonte: string, modo: "search" | "match" | "fullmatch", flags: FlagsPy, global = false): RegExp {
-  const chave = `${modo}\u0000${flags.ignoreCase ? "i" : ""}${global ? "g" : ""}\u0000${fonte}`;
+  const chave = `${modo}\u0000${flags.ignoreCase ? "i" : ""}${flags.dotAll ? "s" : ""}${global ? "g" : ""}\u0000${fonte}`;
   let re = cache.get(chave);
   if (!re) {
-    const traduzido = traduzirPadrao(fonte);
+    const traduzido = traduzirPadrao(fonte, flags.dotAll);
     const corpo = modo === "search" ? traduzido : modo === "match" ? `^(?:${traduzido})` : `^(?:${traduzido})$`;
     re = new RegExp(corpo, `u${flags.ignoreCase ? "i" : ""}${global ? "g" : ""}`);
     cache.set(chave, re);
@@ -140,6 +142,18 @@ export function sub(
     ultimo = m.index + m[0].length;
   }
   return saida + texto.slice(ultimo);
+}
+
+/** `re.split(padrao, texto)` para padrões sem grupos de captura. */
+export function split(padrao: string, texto: string, flags: FlagsPy = {}): string[] {
+  const partes: string[] = [];
+  let ultimo = 0;
+  for (const m of texto.matchAll(compilar(padrao, "search", flags, true))) {
+    partes.push(texto.slice(ultimo, m.index));
+    ultimo = m.index + m[0].length;
+  }
+  partes.push(texto.slice(ultimo));
+  return partes;
 }
 
 /** `re.escape(texto)` em forma de fonte de padrão Python (escapa o que não é letra, dígito ou `_`). */
