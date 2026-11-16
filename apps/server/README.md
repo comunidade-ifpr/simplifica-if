@@ -75,7 +75,7 @@ O `CatalogoSkills` (`src/CatalogoSkills.ts`) lê a `--pasta-skills` uma vez, na 
 - **Quando:** toda sessão aberta pelas `Conversas` (nova, retomada pelo provider ou recomeçada com o histórico) leva todas as skills do catálogo em `ConfigSessao.skills`. O motor grava `<pasta>/.simplifica/skills/<nome>/` e põe nas instruções da sessão só o nome, a descrição e o caminho de cada `SKILL.md`; o provider o lê quando o pedido combina, e a leitura dentro da pasta de trabalho passa pela política sem perguntar.
 - Uma skill editada só vale depois de reiniciar o servidor. No app, as skills chegam pela atualização (M1.10).
 
-Hoje são duas: `verificar-fundamentacao-normativa` e `verificar-calendario`.
+Hoje é uma: `verificar-fundamentacao-normativa`.
 
 ## Segurança
 

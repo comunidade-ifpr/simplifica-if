@@ -236,7 +236,7 @@ O app é só o Modo Servidor: sem pastas de projeto, git, terminal nem logs de f
 │  │ O que você precisa hoje?                 [📎]  [Claude ▾] │ │
 │  └──────────────────────────────────────────────────────────┘ │
 │  Tarefas                                                       │
-│  [Analisar um PPC] [Verificar calendário] [Conferir base legal]│
+│  [Analisar um PPC] [Conferir base legal]                       │
 │  [Ver todas →]                                                 │
 │                                                                │
 │  Para você                                                     │
@@ -268,7 +268,7 @@ Um cartão abre um formulário curto definido no manifesto da skill (arquivo, cu
   ```
 
 - **Citações como chips.** Um link `ifpr://` vira um chip com o nome curto ("Res. CNE/CP 2/2026, art. 28, XVIII"). Ao clicar, o painel lateral abre a fonte.
-- **Resultados como documentos.** O PPC anotado, o relatório do calendário e o parecer abrem num visualizador, com opção de exportar em PDF ou DOCX.
+- **Resultados como documentos.** O PPC anotado e o parecer abrem num visualizador, com opção de exportar em PDF ou DOCX.
 - **Avaliação.** Toda resposta tem 👍/👎 e "Isto está errado".
 - **Desfazer.** "Desfazer o que a IA fez nesta pasta": o servidor local guarda uma cópia da pasta de trabalho antes de cada turno que pede escrita. O T3 usa checkpoints em git; aqui a pasta é pequena e o git ficaria oculto de qualquer jeito.
 
@@ -410,8 +410,8 @@ simplifica:
 - **M0.4 — Skills portáteis.**
   - Bloco `simplifica:` no front matter das skills, com validação.
   - As skills passam a citar ferramentas MCP quando estiverem disponíveis e mantêm a CLI como alternativa dentro do repositório.
-  - Primeiras skills: `verificar-fundamentacao-normativa`, `verificar-calendario` e `revisar-ppc` com entrada `.md`.
-  - **Andamento em 16/11/2026:** bloco e validação feitos (ver [Manifesto de skill](#manifesto-de-skill)). `verificar-fundamentacao-normativa` e `verificar-calendario` portáteis: o texto usa as ferramentas `ifpr` como caminho principal e a CLI `kb` e os scripts como alternativa dentro do repositório; no app, o calendário entrega só o relatório em Markdown (o PDF por script fica no repositório). Falta a `revisar-ppc` com entrada `.md`.
+  - Primeiras skills: `verificar-fundamentacao-normativa` e `revisar-ppc` com entrada `.md`.
+  - **Andamento em 16/11/2026:** bloco e validação feitos (ver [Manifesto de skill](#manifesto-de-skill)). `verificar-fundamentacao-normativa` e `verificar-calendario` portáteis: o texto usa as ferramentas `ifpr` como caminho principal e a CLI `kb` e os scripts como alternativa dentro do repositório; no app, o calendário entrega só o relatório em Markdown (o PDF por script fica no repositório). Falta a `revisar-ppc` com entrada `.md`. Em 16/11/2026, a `verificar-calendario` foi apagada do repositório: deixou de ser necessária.
 - **M0.5 — Avaliação em três IAs.**
   - O harness da fase 1 roda via MCP com Claude, GPT e Gemini, com o mesmo conjunto de perguntas.
   - Registra acerto, tokens e tempo por provider.
@@ -518,12 +518,13 @@ Lacunas: MCP por HTTP local, recursos `ifpr://`, isolamento (`~/.codex` e `~/.ge
 - **M1.10 — Atualização.** App, base e skills, nos três ritmos, com o aviso "Base atualizada", a lista de novidades e a opção de voltar uma versão.
 - **M1.11 — Skills no app:**
   - `revisar-ppc`, com entrada `.docx`. Depende do passo T3 da trilha do PLANO-ARQUITETURA, a conversão DOCX em TypeScript, que vira pré-requisito deste marco;
-  - `verificar-calendario`;
   - `verificar-fundamentacao-normativa`.
+
+  A `verificar-calendario` saiu do marco e do repositório em 16/11/2026: deixou de ser necessária.
 
   Os resultados abrem no visualizador e podem ser exportados.
 
-  **Andamento em 16/11/2026:** o servidor entrega as skills às conversas. O `CatalogoSkills` (`apps/server`) lê a `--pasta-skills` (no desenvolvimento, `.agents/skills`; no app empacotado, `Resources/skills`, que o build gera só com as skills elegíveis e os arquivos listados), aceita só as de bloco `simplifica:` válido e passa todas a toda conversa nova ou retomada (`ConfigSessao.skills`); o RPC `skills.listar` devolve nome, título, resumo e área para os futuros cartões. `verificar-calendario` e `verificar-fundamentacao-normativa` estão no catálogo; teste real com o Claude verde (a IA lê o `SKILL.md` sem pedido de aprovação). Falta: a `revisar-ppc` (depende da conversão DOCX em TypeScript), o teste real das skills no Codex e no Antigravity, os cartões e o indicador de etapas na interface (M1.9) e o visualizador dos resultados.
+  **Andamento em 16/11/2026:** o servidor entrega as skills às conversas. O `CatalogoSkills` (`apps/server`) lê a `--pasta-skills` (no desenvolvimento, `.agents/skills`; no app empacotado, `Resources/skills`, que o build gera só com as skills elegíveis e os arquivos listados), aceita só as de bloco `simplifica:` válido e passa todas a toda conversa nova ou retomada (`ConfigSessao.skills`); o RPC `skills.listar` devolve nome, título, resumo e área para os futuros cartões. `verificar-fundamentacao-normativa` está no catálogo (a `verificar-calendario` esteve até ser apagada, no mesmo dia); teste real com o Claude verde (a IA lê o `SKILL.md` sem pedido de aprovação). Falta: a `revisar-ppc` (depende da conversão DOCX em TypeScript), o teste real das skills no Codex e no Antigravity, os cartões e o indicador de etapas na interface (M1.9) e o visualizador dos resultados.
 - **M1.12 — "Isto está errado".**
   - **Pacote do relato:** pergunta, resposta, citações, versões da base, da skill e do app, e provider.
   - **Consentimento:** o servidor vê exatamente o que será enviado antes de enviar e pode retirar trechos.
@@ -710,3 +711,4 @@ Só métricas agregadas e com opt-in saem do computador. O padrão é não envia
 - 14/11/2026: correção vinda da PoC. A instalação e o login das CLIs vêm do T3, não são escritos do zero: instalação gerenciada do Codex e do Antigravity (`CodexInstallation.ts`, `AntigravityInstallation.ts`), `ClaudeExecutable`, `ClaudeHome` e `fixPath`, em porte no branch `t3/motor-porte-t3`. O Claude é a exceção: passo guiado nas boas-vindas. O M1.4 registra os motivos do MCP HTTP local e que falta testá-lo no Codex e no `agy`.
 - 15/11/2026: **M1.2 (motor de produção) e M1.7 (política de fábrica mínima)** integrados em `main`: conversas gravadas e retomadas pelo provider, lista de conversas e reabertura na interface, queda do processo e interromper com estado claro, política por tipo de ferramenta nos três drivers, skills do app pelo motor e contexto do Codex reduzido. Teste real do ciclo de vida verde com o Claude; faltam o Codex e o Antigravity.
 - 16/11/2026: **skills do app nas conversas** (M0.4 e M1.11, em parte). Manifesto `simplifica:` com Effect Schema em `@simplifica-if/mcp/skills`, validado no `validar_base.ts`; `verificar-fundamentacao-normativa` e `verificar-calendario` portáteis (ferramentas `ifpr` primeiro, CLI e scripts no repositório); `CatalogoSkills` no servidor, com `--pasta-skills` e o RPC `skills.listar`; o desktop passa a pasta e empacota só as skills elegíveis. Teste real com o Claude verde; faltam a `revisar-ppc`, o Codex e o Antigravity e a interface.
+- 16/11/2026: a skill `verificar-calendario` foi apagada do repositório (deixou de ser necessária), com o script do PDF e a dependência `pdfmake`; no app fica a `verificar-fundamentacao-normativa`.

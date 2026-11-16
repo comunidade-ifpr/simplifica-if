@@ -69,7 +69,7 @@ layer(camada, { excludeTestServices: true })("servidor local", (it) => {
       const skills = yield* rpc["skills.listar"]({});
       assert.deepStrictEqual(
         skills.map((skill) => skill.nome),
-        ["verificar-calendario", "verificar-fundamentacao-normativa"],
+        ["verificar-fundamentacao-normativa"],
       );
       for (const skill of skills) {
         assert.isNotEmpty(skill.titulo);

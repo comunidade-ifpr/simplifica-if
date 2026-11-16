@@ -59,12 +59,8 @@ describe("skills do app no pacote", () => {
     const destino = temporario();
     NodeFS.writeFileSync(NodePath.join(destino, "sobra.txt"), "de um build anterior");
     const nomes = await copiarSkills(NodePath.join(RAIZ, ".agents", "skills"), destino);
-    expect(nomes).toEqual(["verificar-calendario", "verificar-fundamentacao-normativa"]);
+    expect(nomes).toEqual(["verificar-fundamentacao-normativa"]);
     expect(arquivos(destino)).toEqual([
-      "verificar-calendario/SKILL.md",
-      "verificar-calendario/instrucoes.md",
-      "verificar-calendario/referencias/2026.md",
-      "verificar-calendario/referencias/2027.md",
       "verificar-fundamentacao-normativa/SKILL.md",
       "verificar-fundamentacao-normativa/references/relatorio.md",
     ]);

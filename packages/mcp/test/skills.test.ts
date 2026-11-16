@@ -176,13 +176,11 @@ describe("pasta de skills", () => {
       const pasta = yield* lerPastaSkills(NodePath.join(RAIZ, ".agents", "skills"));
       assert.deepStrictEqual(pasta.invalidas, []);
       const nomes = pasta.skills.map((skill) => skill.nome);
-      assert.includeMembers(nomes, ["verificar-calendario", "verificar-fundamentacao-normativa"]);
+      assert.includeMembers(nomes, ["verificar-fundamentacao-normativa"]);
       assert.include(pasta.foraDoApp, "suap-ifpr");
-      const calendario = pasta.skills.find((skill) => skill.nome === "verificar-calendario");
-      assert.includeMembers(calendario?.arquivos.map((arquivo) => arquivo.caminho) ?? [], [
-        "instrucoes.md",
-        "referencias/2026.md",
-        "referencias/2027.md",
+      const fundamentacao = pasta.skills.find((skill) => skill.nome === "verificar-fundamentacao-normativa");
+      assert.includeMembers(fundamentacao?.arquivos.map((arquivo) => arquivo.caminho) ?? [], [
+        "references/relatorio.md",
       ]);
     }).pipe(Effect.provide(NodeServices.layer)),
   );

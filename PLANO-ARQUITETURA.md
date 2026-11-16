@@ -401,7 +401,7 @@ Corre em paralelo às fases 1 a 7. Cada passo troca uma implementação por baix
   - os arquivos estão só na nuvem: marcar a pasta como "Manter sempre neste dispositivo" antes de rodar;
   - as fixtures versionadas são trechos mínimos e anonimizados: uma matriz com células mescladas, um ementário e uma identificação.
 
-**T4. PDF do calendário**
+**T4. PDF do calendário** (a skill `verificar-calendario` foi apagada em 16/11/2026, com o `render_relatorio_pdf.ts` e a dependência `pdfmake`)
 
 - `render_relatorio_pdf.py` (`reportlab`) passa para `pdfmake`.
 - Comparação visual e textual, com `creationDate` fixo.
@@ -436,7 +436,7 @@ Corre em paralelo às fases 1 a 7. Cada passo troca uma implementação por baix
 | `yaml` (`schema: "failsafe"`) | Front matter e `relacoes.yaml` | 2, 5 | Nova |
 | `unified` + `remark-parse` + `remark-gfm` | Estrutura de normas e PPCs | 4, 5 | Nova |
 | `fflate` + `htmlparser2` + `domutils` | Leitura de DOCX | T3 | Já usadas |
-| `pdfmake` | PDF do calendário | T4 | Usada (0.3.13, com `@types/pdfmake` 0.3.3) |
+| `pdfmake` | PDF do calendário | T4 | Removida em 16/11/2026, com a skill `verificar-calendario` |
 | `unpdf` + `tesseract.js` + `@napi-rs/canvas` | PDF → Markdown | T5 | Em avaliação; exceção provável |
 | stemmer de português | Coluna auxiliar do FTS5 | 6 | Em avaliação: `snowball-stemmers` está parado desde 2022; comparar com RSLP |
 | `@modelcontextprotocol/sdk` | Servidor MCP | 7 | Condicional |
