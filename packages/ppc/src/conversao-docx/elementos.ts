@@ -15,6 +15,7 @@ import {
   type TabelaOoxml,
   textoDoParagrafo,
 } from "@simplifica-if/docx/modelo";
+import { REGRAS_DO_DOCUMENTO, type Regras } from "./regras.ts";
 
 const r = String.raw;
 
@@ -98,6 +99,24 @@ function tituloPorFormatacao(paragrafo: ParagrafoOoxml): Titulo | null {
   return null;
 }
 
+const COMECA_COM_NUMERO_DE_SECAO = r`^\d+(?:\.\d+)*\.?\s`;
+
+/**
+ * Texto de corpo num parágrafo com estilo de título. Acontece quando o autor escreve o corpo logo
+ * depois do título sem trocar o estilo; tratado como título, cada frase abriria uma seção e a
+ * seção de verdade ficaria vazia. É corpo:
+ * - a frase de 200 caracteres ou mais;
+ * - o item de lista com marcador (numeração automática do tipo `bullet`);
+ * - sem numeração de seção no início, o texto terminado em ponto e vírgula, ou o de oito palavras
+ *   ou mais terminado em ponto ou dois-pontos.
+ */
+function ehTextoDeCorpo(paragrafo: ParagrafoOoxml, texto: string): boolean {
+  if (contarCaracteres(texto) >= 200 || paragrafo.numeracao?.formato === "bullet") return true;
+  if (match(COMECA_COM_NUMERO_DE_SECAO, texto)) return false;
+  if (texto.endsWith(";")) return true;
+  return /[.:]$/.test(texto) && texto.split(/\s+/).length >= 8;
+}
+
 // ---------------------------------------------------------------- listas
 
 const ESTILOS_DE_LISTA = [
@@ -111,12 +130,24 @@ const ESTILOS_DE_LISTA = [
 const MARCADORES = ["•", "-", "*", "–", "—"];
 
 /**
- * Item de lista pelo estilo ou pelo próprio texto (`1.`, `a)`, `•`, `-`).
+ * Item de lista pelo estilo, pela numeração automática do Word ou pelo próprio texto (`1.`, `a)`,
+ * `•`, `-`).
  *
- * A numeração automática do Word (`w:numPr`) não é consultada: a conversão em Python a procurava
- * no lugar errado e nunca a encontrou, e as fichas foram calibradas com o Markdown que sai assim.
+ * A numeração automática (`w:numPr`) só conta com a regra `listas`: a conversão em Python a
+ * procurava no lugar errado e nunca a encontrou.
  */
-function itemDeLista(paragrafo: ParagrafoOoxml): Pick<Paragrafo, "itemDeLista" | "nivelLista" | "tipoLista"> {
+function itemDeLista(
+  paragrafo: ParagrafoOoxml,
+  regras: Regras,
+): Pick<Paragrafo, "itemDeLista" | "nivelLista" | "tipoLista"> {
+  const numeracao = regras.listas ? paragrafo.numeracao : null;
+  if (numeracao) {
+    return {
+      itemDeLista: true,
+      nivelLista: numeracao.nivel,
+      tipoLista: numeracao.formato === "bullet" ? "marcador" : "numerada",
+    };
+  }
   const estilo = paragrafo.estilo ?? "";
   if (ESTILOS_DE_LISTA.some((nome) => estilo.includes(nome))) {
     const numerada = estilo.includes("Number") || estilo.includes("numerada");
@@ -155,17 +186,19 @@ function trechosDoParagrafo(paragrafo: ParagrafoOoxml): Trecho[] {
 }
 
 /** Título, parágrafo ou nada (parágrafo vazio). */
-function elementoDoParagrafo(paragrafo: ParagrafoOoxml): Titulo | Paragrafo | null {
+function elementoDoParagrafo(paragrafo: ParagrafoOoxml, regras: Regras): Titulo | Paragrafo | null {
   const nivel = paragrafo.estilo === null ? undefined : NIVEL_POR_ESTILO[paragrafo.estilo];
   if (nivel !== undefined) {
     const texto = aparar(textoDoParagrafo(paragrafo));
-    return texto ? { tipo: "titulo", texto, nivel, estilo: paragrafo.estilo } : null;
+    if (!texto) return null;
+    if (!regras.titulosDeCorpo || !ehTextoDeCorpo(paragrafo, texto))
+      return { tipo: "titulo", texto, nivel, estilo: paragrafo.estilo };
   }
   const titulo = tituloPorFormatacao(paragrafo);
   if (titulo) return titulo;
   const trechos = trechosDoParagrafo(paragrafo);
   if (!aparar(trechos.map((trecho) => trecho.texto).join(""))) return null;
-  return { tipo: "paragrafo", trechos, estilo: paragrafo.estilo, ...itemDeLista(paragrafo) };
+  return { tipo: "paragrafo", trechos, estilo: paragrafo.estilo, ...itemDeLista(paragrafo, regras) };
 }
 
 // ---------------------------------------------------------------- tabelas
@@ -179,27 +212,40 @@ function elementoDoParagrafo(paragrafo: ParagrafoOoxml): Titulo | Paragrafo | nu
  * Só vê as células filhas diretas da linha; as embrulhadas em `w:sdt` ficam para `gradeDireta`.
  */
 function gradeRepetida(tabela: TabelaOoxml): CelulaTabela[][] {
-  const diretas = tabela.linhas.map((linha) => linha.celulas.filter((celula) => celula.direta));
-  /** Célula que guarda o conteúdo: a própria, ou a do topo da mescla vertical. */
-  const origem = (indiceLinha: number, indiceCelula: number): (typeof diretas)[number][number] => {
-    const celula = diretas[indiceLinha]![indiceCelula]!;
-    if (celula.mesclaVertical !== "continuacao" || indiceLinha === 0) return celula;
-    let deslocamento = tabela.linhas[indiceLinha]!.colunasAntes;
-    for (let i = 0; i < indiceCelula; i += 1) deslocamento += diretas[indiceLinha]![i]!.colunas;
-    // A célula de cima é a que começa exatamente na mesma coluna da grade.
-    let restante = deslocamento - tabela.linhas[indiceLinha - 1]!.colunasAntes;
-    for (const [indice, acima] of diretas[indiceLinha - 1]!.entries()) {
-      if (restante < 0) break;
-      if (restante === 0) return origem(indiceLinha - 1, indice);
-      restante -= acima.colunas;
-    }
-    // Mescla malformada (nada começa nessa coluna na linha de cima): a célula vale por si. O
-    // `python-docx` lança `ValueError` aqui e a conversão antiga abortava.
-    return celula;
-  };
-  return diretas.map((linha, indiceLinha) =>
-    linha.flatMap((_, indiceCelula) => {
-      const celula = origem(indiceLinha, indiceCelula);
+  // Numa linha com células diretas, as embrulhadas em `w:sdt` também são dela (modo `documento`).
+  const mista = tabela.linhas.some((linha) => linha.celulas.some((celula) => celula.direta));
+  const daLinha = tabela.linhas.map((linha) =>
+    linha.celulas.filter((celula) => celula.direta || (mista && celula.embrulhada)),
+  );
+  /**
+   * Para cada célula, a que guarda o conteúdo: a própria, ou a do topo da mescla vertical. A
+   * resolução de uma linha usa a da linha de cima, já resolvida: uma mescla de milhares de linhas
+   * custa uma passada, sem recursão.
+   */
+  const origens: (typeof daLinha)[number][] = [];
+  for (const [indiceLinha, linha] of daLinha.entries()) {
+    const acima = indiceLinha > 0 ? daLinha[indiceLinha - 1]! : [];
+    let coluna = tabela.linhas[indiceLinha]!.colunasAntes;
+    origens.push(
+      linha.map((celula) => {
+        const inicio = coluna;
+        coluna += celula.colunas;
+        if (celula.mesclaVertical !== "continuacao" || indiceLinha === 0) return celula;
+        // A célula de cima é a que começa exatamente na mesma coluna da grade.
+        let restante = inicio - tabela.linhas[indiceLinha - 1]!.colunasAntes;
+        for (const [indice, candidata] of acima.entries()) {
+          if (restante < 0) break;
+          if (restante === 0) return origens[indiceLinha - 1]![indice]!;
+          restante -= candidata.colunas;
+        }
+        // Mescla malformada (nada começa nessa coluna na linha de cima): a célula vale por si. O
+        // `python-docx` lança `ValueError` aqui e a conversão antiga abortava.
+        return celula;
+      }),
+    );
+  }
+  return origens.map((linha) =>
+    linha.flatMap((celula) => {
       const lida: CelulaTabela = { texto: aparar(celula.texto), colunas: 1, continuacao: false };
       return Array.from({ length: celula.colunas }, () => lida);
     }),
@@ -234,7 +280,7 @@ function elementoDaTabela(tabela: TabelaOoxml): Tabela {
 // ---------------------------------------------------------------- documento
 
 /** Elementos do PPC na ordem do documento; a figura de um parágrafo vem antes do texto dele. */
-export function elementosDoDocumento(documento: DocumentoOoxml): Elemento[] {
+export function elementosDoDocumento(documento: DocumentoOoxml, regras: Regras = REGRAS_DO_DOCUMENTO): Elemento[] {
   const elementos: Elemento[] = [];
   for (const bloco of documento.blocos) {
     if (bloco.tipo === "tabela") {
@@ -242,7 +288,7 @@ export function elementosDoDocumento(documento: DocumentoOoxml): Elemento[] {
       continue;
     }
     if (bloco.figura) elementos.push({ tipo: "figura", figura: bloco.figura });
-    const elemento = elementoDoParagrafo(bloco);
+    const elemento = elementoDoParagrafo(bloco, regras);
     if (elemento) elementos.push(elemento);
   }
   return elementos;

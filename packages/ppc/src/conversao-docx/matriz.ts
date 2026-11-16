@@ -58,6 +58,32 @@ export type MatrizPpc = {
   totais: Totais;
 };
 
+/**
+ * Totais que a tabela declara na linha de total do curso, por chave de `totais`. Os demais são a
+ * soma dos componentes da parte. Fica fora do JSON (propriedade não enumerável): serve à mescla
+ * das partes, que não pode tomar a soma de uma parte pelo total do curso.
+ */
+const DECLARADOS: unique symbol = Symbol("totaisDeclarados");
+
+function marcarDeclarados(matriz: MatrizPpc, chaves: Iterable<string>): MatrizPpc {
+  Object.defineProperty(matriz, DECLARADOS, { value: new Set(chaves), enumerable: false, configurable: true });
+  return matriz;
+}
+
+/** Chaves de `totais` declaradas no documento (as outras foram calculadas). */
+export function totaisDeclarados(matriz: MatrizPpc): ReadonlySet<string> {
+  return (matriz as { [DECLARADOS]?: Set<string> })[DECLARADOS] ?? new Set();
+}
+
+/** De que campo dos componentes sai cada total calculado. */
+const CAMPO_DO_TOTAL: Record<string, string> = {
+  ch_total_hora_aula: "ch_hora_aula",
+  ch_total_hora_relogio: "ch_hora_relogio_cnct",
+  ch_ftp: "ch_ftp",
+  ch_fgb: "ch_fgb",
+  ch_np: "ch_np",
+};
+
 export type MatrizGenerica = {
   tipo: "matriz_curricular";
   headers: string[];
@@ -405,21 +431,25 @@ function extrairFormato(tabela: TabelaNormalizada, formato: Formato): MatrizPpc 
   }
   if (!anos.size) return null;
 
+  const declarados = Object.keys(totais);
   const componentes = [...anos.values()].flatMap((ano) => ano.componentes);
   totais.ch_total_hora_aula ??= somar(componentes.map((item) => item.ch_hora_aula));
   totais.ch_total_hora_relogio ??= somar(componentes.map((item) => item.ch_hora_relogio_cnct));
   for (const chave of formato.nucleos)
     totais[chave] ??= somar(componentes.map((item) => (item as ComponenteNucleos)[chave]));
 
-  return {
-    tipo: "matriz_curricular_ppc",
-    formato: formato.nome,
-    minutos_hora_aula: numeroDeclarado(linhas, ["hora aula", "min"], 40, 60, 50),
-    semanas_ano_letivo: numeroDeclarado(linhas, ["semanas", "ano letivo"], 30, 50, 40),
-    anos: [...anos.values()],
-    linhas_modelo: linhasModelo,
-    totais,
-  };
+  return marcarDeclarados(
+    {
+      tipo: "matriz_curricular_ppc",
+      formato: formato.nome,
+      minutos_hora_aula: numeroDeclarado(linhas, ["hora aula", "min"], 40, 60, 50),
+      semanas_ano_letivo: numeroDeclarado(linhas, ["semanas", "ano letivo"], 30, 50, 40),
+      anos: [...anos.values()],
+      linhas_modelo: linhasModelo,
+      totais,
+    },
+    declarados,
+  );
 }
 
 /** Matriz num dos formatos de PPC; o de núcleos tem precedência. */
@@ -445,7 +475,7 @@ export function pontuarMatriz(matriz: Matriz): number {
  * Junta as partes de uma matriz que o PPC divide em várias tabelas (uma por ano, ou quebrada entre
  * páginas). Matrizes de tipos ou formatos diferentes não se juntam: fica a de maior pontuação.
  */
-export function mesclarMatrizes(atual: Matriz | null, nova: MatrizPpc): Matriz {
+export function mesclarMatrizes(atual: Matriz | null, nova: MatrizPpc, recalcularTotais = true): Matriz {
   if (!atual) return nova;
   if (atual.tipo !== "matriz_curricular_ppc" || atual.formato !== nova.formato) {
     return pontuarMatriz(nova) > pontuarMatriz(atual) ? nova : atual;
@@ -469,10 +499,25 @@ export function mesclarMatrizes(atual: Matriz | null, nova: MatrizPpc): Matriz {
   const nomesModelo = new Set(atual.linhas_modelo.map((item) => item.nome));
   const linhasModelo = [...atual.linhas_modelo, ...nova.linhas_modelo.filter((item) => !nomesModelo.has(item.nome))];
 
-  // Os totais de cada parte já vêm completos (declarados ou calculados sobre a parte), e os da
-  // parte nova prevalecem: o total declarado na última tabela é o do curso.
+  // Cada parte traz os totais completos: os que a tabela declara e, para os demais, a soma dos
+  // componentes da própria parte.
   const totais: Totais = { ...atual.totais, ...nova.totais };
-  return { ...atual, anos, linhas_modelo: linhasModelo, totais };
+  if (!recalcularTotais) {
+    // A conversão em Python parava aqui: sem linha de total do curso, ficava a soma da última
+    // parte (160 h-a de um 2º ano no lugar das 400 do curso).
+    return { ...atual, anos, linhas_modelo: linhasModelo, totais };
+  }
+  // O total declarado vale (o da parte mais recente, se as duas declaram); o que nenhuma parte
+  // declara é somado de novo, sobre os componentes de todas.
+  const declarados = new Set([...totaisDeclarados(atual), ...totaisDeclarados(nova)]);
+  const componentes = anos.flatMap((ano) => ano.componentes) as Array<Record<string, Inteiro | null | string>>;
+  for (const chave of Object.keys(totais)) {
+    const campo = CAMPO_DO_TOTAL[chave];
+    if (totaisDeclarados(nova).has(chave) || !campo) continue;
+    if (totaisDeclarados(atual).has(chave)) totais[chave] = atual.totais[chave]!;
+    else totais[chave] = somar(componentes.map((item) => (item[campo] ?? null) as Inteiro | null));
+  }
+  return marcarDeclarados({ ...atual, anos, linhas_modelo: linhasModelo, totais }, declarados);
 }
 
 // ---------------------------------------------------------------- Markdown canônico

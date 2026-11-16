@@ -5,10 +5,14 @@
  * trabalham sobre esta forma.
  */
 import { match, sub } from "@simplifica-if/kb/python/re";
+import { ErroDocx } from "@simplifica-if/docx/erro";
 import { aparar } from "@simplifica-if/kb/texto";
 import type { CelulaTabela, Tabela } from "./elementos.ts";
 
 const r = String.raw;
+
+/** Células de uma tabela depois de expandida; a maior tabela de um PPC real tem alguns milhares. */
+const CELULAS_MAXIMAS = 2_000_000;
 
 export type TabelaNormalizada = {
   cabecalho: string[];
@@ -64,7 +68,18 @@ function expandirMesclas(linhas: CelulaTabela[][], colunas: number): string[][] 
 /** Tabela do documento em grade regular. */
 export function normalizarTabela(tabela: Tabela): TabelaNormalizada {
   if (!tabela.linhas.length) return { cabecalho: [], linhas: [] };
-  const colunas = Math.max(...tabela.linhas.map((linha) => linha.reduce((soma, celula) => soma + celula.colunas, 0)));
+  let colunas = 0;
+  for (const linha of tabela.linhas) {
+    colunas = Math.max(
+      colunas,
+      linha.reduce((soma, celula) => soma + celula.colunas, 0),
+    );
+  }
+  // Todas as linhas são completadas até a mais larga: uma linha desproporcional num arquivo
+  // montado para isso multiplicaria a tabela inteira.
+  if (colunas * tabela.linhas.length > CELULAS_MAXIMAS) {
+    throw new ErroDocx(`O arquivo DOCX não pôde ser lido: há uma tabela com mais de ${CELULAS_MAXIMAS} células.`);
+  }
   const [cabecalho = [], ...linhas] = expandirMesclas(tabela.linhas, colunas);
   return { cabecalho, linhas };
 }

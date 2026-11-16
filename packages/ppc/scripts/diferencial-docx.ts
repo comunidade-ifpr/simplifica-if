@@ -25,14 +25,17 @@
  *    pelo `DocxReader` do Python e pelo leitor em TypeScript no modo `python-docx`;
  * 2. os artefatos finais (`.md`, `-bruto.md`, `_dados.json`, matriz, ementário, imagem), também no
  *    modo `python-docx`, depois de neutralizadas as diferenças aceitas (`DIFERENCAS_ACEITAS`);
- * 3. o `PPC.md` do modo padrão (`documento`) contra o do modo `python-docx`: o que muda por a
- *    conversão nova ler o texto de alterações controladas e as imagens legadas.
+ * 3. a saída do modo padrão (`documento`) contra a do modo `python-docx`: quantas linhas do
+ *    `PPC.md` e dos JSONs mudam, no todo e por regra de `src/conversao-docx/regras.ts` (a conversão
+ *    padrão com uma regra desligada, contra a padrão). São as diferenças deliberadas da conversão
+ *    nova, descritas em `REGRAS_DO_MODO_DOCUMENTO`.
  */
 import * as NodeChildProcess from "node:child_process";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { converterDocx, converterPpc } from "../src/conversao-docx/conversao.ts";
+import { type Conversao, converterDocx, converterPpc } from "../src/conversao-docx/conversao.ts";
 import type { Elemento } from "../src/conversao-docx/elementos.ts";
+import { REGRAS_DO_PYTHON, type Regras } from "../src/conversao-docx/regras.ts";
 import { montarDocx } from "@simplifica-if/docx/testes/sintetico";
 import { FIXTURES } from "../src/testes/documentos.ts";
 
@@ -60,6 +63,30 @@ export const DIFERENCAS_ACEITAS = [
 ] as const;
 
 type IdDiferenca = (typeof DIFERENCAS_ACEITAS)[number]["id"];
+
+/** As regras do modo `documento`: o que cada uma muda em relação à conversão em Python. */
+export const REGRAS_DO_MODO_DOCUMENTO: Array<{ regra: keyof Regras; descricao: string }> = [
+  {
+    regra: "leitura",
+    descricao:
+      "lê o texto de alterações controladas (`w:ins`, `w:moveTo`) e de `w:smartTag`, `w:sdt` em linha, `w:fldSimple` e " +
+      "`w:customXml`; as linhas, células e parágrafos de tabela embrulhados em `w:sdt`; a numeração automática; a imagem " +
+      "legada; nas tabelas em `w:sdt` (Google Docs), tabulações e quebras da célula, sem o texto removido nem a versão de " +
+      "compatibilidade das caixas de texto",
+  },
+  { regra: "titulosDeCorpo", descricao: "texto de corpo com estilo de título sai como parágrafo, não como seção" },
+  {
+    regra: "listas",
+    descricao: "a numeração automática do Word faz itens de lista; o número digitado fica; a alínea sai como `- a) …`",
+  },
+  { regra: "negritoUnido", descricao: "runs seguidos de mesma formatação num marcador só (`**ab**`, não `**a**b**`)" },
+  { regra: "linksSeguros", descricao: "só `http`, `https` e `mailto` viram link, com parênteses e espaços escapados" },
+  {
+    regra: "totaisDaMatriz",
+    descricao:
+      "total não declarado da matriz dividida em tabelas é recalculado; `total_ha` e `total_hr` do resumo são somados",
+  },
+];
 
 /** Script Python: converte cada documento e despeja a camada de elementos do `DocxReader`. */
 const SCRIPT_PYTHON = String.raw`
@@ -186,8 +213,10 @@ type Resultado = {
   /** Arquivos que diferem depois de neutralizadas as diferenças aceitas. */
   arquivosDiferentes: string[];
   aceitas: IdDiferenca[];
-  /** Linhas do `PPC.md` que mudam no modo `documento` em relação ao modo `python-docx`. */
+  /** Linhas do `PPC.md` e dos JSONs que mudam no modo `documento` em relação ao modo `python-docx`. */
   linhasDoModoDocumento: number;
+  /** Linhas que cada regra muda: a conversão padrão com a regra desligada, contra a padrão. */
+  linhasPorRegra: Record<string, number>;
 };
 
 /** Neutraliza as diferenças aceitas nos artefatos do Python e do TypeScript; devolve as que ocorreram. */
@@ -233,10 +262,25 @@ function neutralizar(pastaPython: string, pastaTs: string, base: string, bloco: 
   return [...aceitas];
 }
 
+/** Texto dos artefatos de uma conversão em memória, sem o Markdown bruto e sem a data. */
+function textoDosArtefatos(conversao: Conversao): string {
+  return [
+    conversao.markdown,
+    ...[conversao.dados, conversao.resumos, conversao.matriz, conversao.ementario].map((item) =>
+      JSON.stringify(item, null, 1),
+    ),
+  ].join("\n");
+}
+
+/** Linhas que estão num texto e não no outro (por multiconjunto, sem alinhar). */
 function linhasDiferentes(a: string, b: string): number {
   if (a === b) return 0;
-  const processo = NodeChildProcess.spawnSync("diff", [a, b], { encoding: "utf-8", maxBuffer: 1 << 30 });
-  return processo.stdout.split("\n").filter((linha) => linha.startsWith("<") || linha.startsWith(">")).length;
+  const saldo = new Map<string, number>();
+  for (const linha of a.split("\n")) saldo.set(linha, (saldo.get(linha) ?? 0) + 1);
+  for (const linha of b.split("\n")) saldo.set(linha, (saldo.get(linha) ?? 0) - 1);
+  let total = 0;
+  for (const valor of saldo.values()) total += Math.abs(valor);
+  return total;
 }
 
 /** Casos para conferir `partialRatio` contra o `rapidfuzz`: locais com erros de digitação e textos pseudoaleatórios. */
@@ -399,6 +443,15 @@ function main(): number {
     const milissegundosTs = performance.now() - inicio;
     const compativel = converterPpc(bytes, NodePath.basename(documento.docx), { agora, fidelidade: "python-docx" });
     converterDocx(documento.docx, NodePath.join(pasta, "ts-documento"), { agora });
+    const padrao = textoDosArtefatos(converterPpc(bytes, NodePath.basename(documento.docx), { agora }));
+    const linhasPorRegra: Record<string, number> = {};
+    for (const { regra } of REGRAS_DO_MODO_DOCUMENTO) {
+      const semARegra = converterPpc(bytes, NodePath.basename(documento.docx), {
+        agora,
+        regras: { [regra]: REGRAS_DO_PYTHON[regra] },
+      });
+      linhasPorRegra[regra] = linhasDiferentes(padrao, textoDosArtefatos(semARegra));
+    }
 
     const resultado: Resultado = {
       documento,
@@ -408,10 +461,8 @@ function main(): number {
       elementosIguais: false,
       arquivosDiferentes: [],
       aceitas: [],
-      linhasDoModoDocumento: linhasDiferentes(
-        NodePath.join(pasta, "ts", `${base}.md`),
-        NodePath.join(pasta, "ts-documento", `${base}.md`),
-      ),
+      linhasDoModoDocumento: linhasDiferentes(padrao, textoDosArtefatos(compativel)),
+      linhasPorRegra,
     };
     resultados.push(resultado);
     if (python.erro) continue;
@@ -455,8 +506,8 @@ function main(): number {
     `- Documentos: ${resultados.length} (${resultados.filter((item) => item.documento.origem === "corpus").length} do corpus, ${resultados.filter((item) => item.documento.origem === "sintetico").length} sintéticos)`,
     `- Com diferença não aceita: ${falhas.length}`,
     "",
-    "| Documento | Arquivo | Python (s) | TS (ms) | Elementos | Artefatos | Diferenças aceitas | Linhas que mudam no modo `documento` |",
-    "|---|---|---:|---:|---|---|---|---:|",
+    `| Documento | Arquivo | Python (s) | TS (ms) | Elementos | Artefatos | Diferenças aceitas | Modo \`documento\` (linhas) | ${REGRAS_DO_MODO_DOCUMENTO.map((item) => item.regra).join(" | ")} |`,
+    `|---|---|---:|---:|---|---|---|---:|${REGRAS_DO_MODO_DOCUMENTO.map(() => "---:|").join("")}`,
     ...resultados.map((item) =>
       [
         "",
@@ -472,6 +523,7 @@ function main(): number {
             : "iguais",
         item.aceitas.join(", ") || "—",
         String(item.linhasDoModoDocumento),
+        ...REGRAS_DO_MODO_DOCUMENTO.map(({ regra }) => String(item.linhasPorRegra[regra] ?? 0)),
         "",
       ]
         .join(" | ")
@@ -481,6 +533,12 @@ function main(): number {
     "## Diferenças aceitas",
     "",
     ...DIFERENCAS_ACEITAS.map((item) => `- \`${item.id}\`: ${item.descricao}`),
+    "",
+    "## Regras do modo `documento`",
+    "",
+    "As colunas por regra contam as linhas (do `PPC.md` e dos JSONs) que mudam quando só aquela regra é desligada.",
+    "",
+    ...REGRAS_DO_MODO_DOCUMENTO.map((item) => `- \`${item.regra}\`: ${item.descricao}`),
     "",
   ];
   NodeFS.writeFileSync(NodePath.join(saida, "relatorio.md"), linhas.join("\n"), "utf-8");
@@ -492,7 +550,7 @@ function main(): number {
         : "igual";
     console.log(
       `${estado.padEnd(11)} ${item.documento.nome.padEnd(28)} python ${item.segundosPython?.toFixed(2) ?? "—"} s, ts ${item.milissegundosTs.toFixed(0)} ms` +
-        `${item.aceitas.length ? `, aceitas: ${item.aceitas.join(", ")}` : ""}, modo documento: ${item.linhasDoModoDocumento} linhas`,
+        `${item.aceitas.length ? `, aceitas: ${item.aceitas.join(", ")}` : ""}, modo documento: ${item.linhasDoModoDocumento} linhas (${REGRAS_DO_MODO_DOCUMENTO.map(({ regra }) => `${regra} ${item.linhasPorRegra[regra]}`).join(", ")})`,
     );
   }
   if (argumentos.includes("--gravar-gabaritos")) gravarGabaritos(raiz, saida, resultados);

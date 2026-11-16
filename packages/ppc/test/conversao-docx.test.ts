@@ -30,14 +30,16 @@ import {
   type MatrizPpc,
   mesclarMatrizes,
   substituirMatrizNoMarkdown,
+  totaisDeclarados,
 } from "../src/conversao-docx/matriz.ts";
 import { dataW3cEmUtc, type Fidelidade, lerDocx } from "@simplifica-if/docx/leitor";
 import { ErroDocx } from "@simplifica-if/docx/pacote";
 import { analisarXml, descendentes } from "@simplifica-if/docx/xml";
+import { REGRAS_DO_DOCUMENTO, REGRAS_DO_PYTHON } from "../src/conversao-docx/regras.ts";
 import { detectarSecoes, dicasDeIdentificacao, listarSecoes } from "../src/conversao-docx/secoes.ts";
 import { normalizarTabela, tabelaEmMarkdown, type TabelaNormalizada } from "../src/conversao-docx/tabelas.ts";
 import { carregarJsonPy as lerJsonPy } from "@simplifica-if/kb/python/json";
-import { celula, linha, montarDocx, par, tabela, titulo } from "@simplifica-if/docx/testes/sintetico";
+import { celula, hyperlink, linha, montarDocx, par, run, tabela, titulo } from "@simplifica-if/docx/testes/sintetico";
 import { docxDaFixture, FIXTURES } from "../src/testes/documentos.ts";
 
 const AGORA = new Date(2026, 10, 16, 12, 0, 0);
@@ -54,8 +56,9 @@ function diretorioTemporario(): string {
   return dir;
 }
 
+const regrasDa = (fidelidade: Fidelidade) => (fidelidade === "python-docx" ? REGRAS_DO_PYTHON : REGRAS_DO_DOCUMENTO);
 const elementos = (nome: string, fidelidade: Fidelidade = "documento") =>
-  elementosDoDocumento(lerDocx(docxDaFixture(nome), { fidelidade }));
+  elementosDoDocumento(lerDocx(docxDaFixture(nome), { fidelidade }), regrasDa(fidelidade));
 const converter = (nome: string, fidelidade: Fidelidade = "documento") =>
   converterPpc(docxDaFixture(nome), `${nome}.docx`, { agora: AGORA, fidelidade });
 const tabelas = (itens: Elemento[]) => itens.filter((item): item is Tabela => item.tipo === "tabela");
@@ -158,8 +161,10 @@ describe("leitor OOXML", () => {
       ["Campus:", "Campus Embrulhado"],
       ["Turno:", "Noturno"],
     ]);
-    // Com uma célula direta com texto, a grade repetida vale e a embrulhada fica de fora.
-    expect(textos(mista!)).toEqual([["direta"]]);
+    // Com uma célula direta com texto vale a grade repetida, e a embrulhada em `w:sdt` é da linha;
+    // o python-docx a deixava de fora.
+    expect(textos(mista!)).toEqual([["direta", "embrulhada"]]);
+    expect(textos(tabelas(elementos("controles", "python-docx"))[2]!)).toEqual([["direta"]]);
     // O texto da tabela aninhada não entra na célula que a contém.
     expect(textos(aninhada!)).toEqual([["fora\ndepois", "ao lado"]]);
   });
@@ -217,10 +222,13 @@ describe("leitor OOXML", () => {
       ["em dois ", "https://exemplo.edu.br/pagina"],
       ["pedaços", "https://exemplo.edu.br/pagina"],
     ]);
-    // Os dois runs do mesmo link viram um link só. O negrito colado sai como na conversão em Python
-    // (`**a****b**` vira `**a**b**`): defeito conhecido, mantido para a saída não mudar.
+    // Os dois runs do mesmo link viram um link só, com um negrito só.
     expect(converter("texto-especial").markdownBruto).toContain(
-      "[externo com âncora](https://exemplo.edu.br/pagina#secao) interno relação quebrada [**em dois **pedaços**](https://exemplo.edu.br/pagina)",
+      "[externo com âncora](https://exemplo.edu.br/pagina#secao) interno relação quebrada [**em dois pedaços**](https://exemplo.edu.br/pagina)",
+    );
+    // Na conversão em Python, o negrito colado saía quebrado (`**a****b**` virava `**a**b**`).
+    expect(converter("texto-especial", "python-docx").markdownBruto).toContain(
+      "[**em dois **pedaços**](https://exemplo.edu.br/pagina)",
     );
   });
 
@@ -341,9 +349,11 @@ describe("leitor OOXML", () => {
     expect(converter("sem-secoes").dados.metadata_documento).toEqual({});
   });
 
-  test("arquivo que não é DOCX é recusado com erro próprio", () => {
-    expect(() => lerDocx(strToU8("não é um zip"))).toThrow(ErroDocx);
-    expect(() => lerDocx(zipSync({ "outro.xml": strToU8("<a/>") }))).toThrow(/não tem documento principal/);
+  test("documento sem texto é recusado, em vez de virar um PPC.md em branco", () => {
+    const semTexto = montarDocx({ corpo: par("") + tabela([linha([celula(""), celula("")])]) });
+    expect(() => converterPpc(semTexto, "vazio.docx", { agora: AGORA })).toThrow(ErroDocx);
+    expect(() => converterPpc(semTexto, "vazio.docx", { agora: AGORA })).toThrow(/não tem texto.*digitalizado/);
+    expect(() => converterPpc(strToU8("não é um zip"), "x.docx", { agora: AGORA })).toThrow(ErroDocx);
   });
 });
 
@@ -748,7 +758,16 @@ describe("gabaritos da conversão em Python", () => {
   const fixtures = NodeFS.readdirSync(GABARITOS);
 
   test("há gabarito para os documentos sintéticos sem diferença aceita", () => {
-    expect(fixtures.sort()).toEqual(["controles", "mesclas", "ppc-minimo", "rastreadas", "texto-especial"]);
+    expect(fixtures.sort()).toEqual([
+      "controles",
+      "listas-automaticas",
+      "mesclas",
+      "ppc-minimo",
+      "rastreadas",
+      "tabelas-em-controle",
+      "texto-especial",
+      "titulos-de-corpo",
+    ]);
   });
 
   test.each(fixtures)("%s: o modo python-docx reproduz a saída do Python byte a byte", (nome) => {
@@ -764,10 +783,243 @@ describe("gabaritos da conversão em Python", () => {
     ).toEqual(esperados.sort());
   });
 
-  test("fora do documento de alterações controladas, o modo documento dá a mesma saída", () => {
-    for (const nome of fixtures.filter((item) => item !== "rastreadas")) {
-      expect(arquivosConvertidos(nome), nome).toEqual(arquivosConvertidos(nome, "python-docx"));
-    }
+  test("documento sem nada do que as regras mudam sai igual nos dois modos", () => {
+    expect(arquivosConvertidos("mesclas")).toEqual(arquivosConvertidos("mesclas", "python-docx"));
+  });
+});
+
+// ---------------------------------------------------------------- regras do modo documento
+
+describe("regras do modo documento", () => {
+  const bruto = (corpo: string, opcoes: Partial<Parameters<typeof converterPpc>[2]> = {}, extras = {}) =>
+    converterPpc(montarDocx({ corpo: titulo("1 SEÇÃO") + corpo, ...extras }), "x.docx", { agora: AGORA, ...opcoes })
+      .markdownBruto.split("\n")
+      .slice(2)
+      .join("\n");
+
+  test("texto de corpo com estilo de título sai como parágrafo, e a seção fica com o texto dela", () => {
+    expect(listarSecoes(detectarSecoes(elementos("titulos-de-corpo")))).toEqual([
+      "5.9 ESTÁGIO CURRICULAR",
+      // Título longo demais para ser título (mais de 200 caracteres) não está aqui; o numerado e curto, sim.
+      "1.1.3 Comissão de Estruturação de Curso (CEC) e Comissão de Ajuste Curricular (CAJ):",
+      "5.10 PROJETO FINAL",
+      "Título curto sem número.",
+    ]);
+    const { markdown } = converter("titulos-de-corpo");
+    expect(markdown).toContain(
+      [
+        "## 5.9 ESTÁGIO CURRICULAR",
+        "",
+        "O curso não prevê estágio curricular obrigatório, de modo que o estágio não integra a matriz e não é requisito para a conclusão do curso.",
+        "Sem prejuízo disso, o curso admite o estágio não obrigatório, por iniciativa do estudante:",
+        "- cumprir e fazer cumprir as normas e os procedimentos institucionais;",
+        "- zelar pelos laboratórios;",
+      ].join("\n"),
+    );
+    // Com a regra desligada, cada frase abre uma seção (e, sem ler as inserções, a primeira nem aparece).
+    const semARegra = converterPpc(docxDaFixture("titulos-de-corpo"), "x.docx", {
+      agora: AGORA,
+      regras: { titulosDeCorpo: false },
+    });
+    expect(listarSecoes(semARegra.secoes)).toHaveLength(9);
+    expect(listarSecoes(detectarSecoes(elementos("titulos-de-corpo", "python-docx")))).toHaveLength(8);
+  });
+
+  test("listas: numeração automática do Word, número digitado e alíneas", () => {
+    expect(converter("listas-automaticas").markdownBruto.split("\n").slice(2)).toEqual([
+      "São objetivos do curso:",
+      "- formar técnicos;",
+      "- integrar ensino e pesquisa:",
+      "  - na iniciação científica.",
+      "",
+      "Etapas:",
+      "1. diagnóstico;",
+      "  1. certificado de conclusão;",
+      "1. avaliação.",
+      "- redefinido como marcador;",
+      "",
+      "numeração desligada (numId 0).",
+      "numeração que não existe.",
+      "- **Item em negrito** e normal",
+      "",
+      "Parágrafo depois da lista.",
+      "2. segundo item digitado",
+      "3) terceiro",
+      "- b) alínea digitada",
+      "- **c)** alínea com a letra em negrito",
+    ]);
+    // A conversão em Python não via a numeração automática e renumerava o que era digitado.
+    expect(converter("listas-automaticas", "python-docx").markdownBruto.split("\n").slice(2)).toEqual([
+      "São objetivos do curso:",
+      "formar técnicos;",
+      "integrar ensino e pesquisa:",
+      "na iniciação científica.",
+      "Etapas:",
+      "- diagnóstico;",
+      "",
+      "certificado de conclusão;",
+      "avaliação.",
+      "redefinido como marcador;",
+      "numeração desligada (numId 0).",
+      "numeração que não existe.",
+      "**Item em negrito **e normal",
+      "Parágrafo depois da lista.",
+      "1. segundo item digitado",
+      "1. terceiro",
+      "1. b) alínea digitada",
+      // O marcador de lista levava junto um asterisco do negrito.
+      "1. *c)** alínea com a letra em negrito",
+    ]);
+  });
+
+  test("negrito unido: runs de mesma formatação num marcador só, com os espaços fora dele", () => {
+    const negrito = { negrito: true };
+    expect(
+      bruto(par(run("Pró-Reitoria", negrito) + run(" de ", negrito) + run("Ensino ", negrito) + run("e fim"))),
+    ).toBe("**Pró-Reitoria de Ensino** e fim");
+    expect(
+      bruto(
+        par(
+          run("a", negrito) +
+            run(" ", negrito) +
+            run("b", { italico: true }) +
+            run(" c", { negrito: true, italico: true }),
+        ),
+      ),
+    ).toBe("**a** *b* ***c***");
+    expect(bruto(par(run("normal ") + run("   ", negrito) + run("fim")))).toBe("normal    fim");
+    expect(bruto(par(run("riscado ", { tachado: true }) + run("e mais", { tachado: true })))).toBe(
+      "~~riscado e mais~~",
+    );
+    // Sem a regra, o defeito da conversão em Python.
+    expect(bruto(par(run("a", negrito) + run("b", negrito)), { regras: { negritoUnido: false } })).toBe("**a**b**");
+  });
+
+  test("links seguros: só http, https e mailto; parênteses e espaços escapados", () => {
+    const relacoes = [
+      { id: "rId11", tipo: "hyperlink" as const, alvo: "javascript:alert(1))[x](http://evil", externa: true },
+      { id: "rId12", tipo: "hyperlink" as const, alvo: "https://exemplo.edu.br/a (b)/c d", externa: true },
+      { id: "rId13", tipo: "hyperlink" as const, alvo: "MAILTO:alguem@exemplo.edu.br", externa: true },
+      { id: "rId14", tipo: "hyperlink" as const, alvo: "file:///etc/passwd", externa: true },
+    ];
+    const corpo = par(
+      hyperlink("clique", 'r:id="rId11"') +
+        run(" ") +
+        hyperlink("texto ] com colchete", 'r:id="rId12"') +
+        run(" ") +
+        hyperlink("correio", 'r:id="rId13"') +
+        run(" ") +
+        hyperlink("arquivo", 'r:id="rId14"'),
+    );
+    expect(bruto(corpo, {}, { relacoes })).toBe(
+      "clique [texto \\] com colchete](https://exemplo.edu.br/a%20%28b%29/c%20d) [correio](MAILTO:alguem@exemplo.edu.br) arquivo",
+    );
+    // A conversão em Python punha o endereço cru no Markdown.
+    expect(bruto(corpo, { regras: { linksSeguros: false } }, { relacoes })).toContain(
+      "[clique](javascript:alert(1))[x](http://evil)",
+    );
+  });
+
+  test("matriz dividida em tabelas sem linha de total: os totais são os do curso, não os da última parte", () => {
+    const cabecalho = [
+      "Ano",
+      "Componente Curricular",
+      "Número de aulas semanais",
+      "CH hora-aula no período",
+      "CH hora-relógio no período",
+    ];
+    const primeira = extrairMatrizPpc({
+      cabecalho,
+      linhas: [
+        ["1", "Matemática", "4", "160", "133"],
+        ["1", "Física", "2", "80", "67"],
+      ],
+    })!;
+    const segunda = extrairMatrizPpc({
+      cabecalho,
+      linhas: [
+        ["2", "Química", "2", "80", "67"],
+        ["2", "Biologia", "2", "80", "67"],
+      ],
+    })!;
+    expect(segunda.totais).toEqual({ ch_total_hora_aula: 160, ch_total_hora_relogio: 134 });
+    expect((mesclarMatrizes(primeira, segunda) as MatrizPpc).totais).toEqual({
+      ch_total_hora_aula: 400,
+      ch_total_hora_relogio: 334,
+    });
+    // A conversão em Python ficava com a soma da última parte.
+    expect((mesclarMatrizes(primeira, segunda, false) as MatrizPpc).totais).toEqual({
+      ch_total_hora_aula: 160,
+      ch_total_hora_relogio: 134,
+    });
+
+    // O total declarado vale, venha na primeira ou na última tabela; o não declarado é recalculado.
+    const total = "CARGA HORÁRIA TOTAL DO CURSO";
+    const comTotal = extrairMatrizPpc({
+      cabecalho,
+      linhas: [
+        ["3", "Projeto", "2", "80", "67"],
+        [total, total, total, "999", ""],
+      ],
+    })!;
+    expect([...totaisDeclarados(comTotal)]).toEqual(["ch_total_hora_aula"]);
+    const noFim = mesclarMatrizes(mesclarMatrizes(primeira, segunda), comTotal) as MatrizPpc;
+    expect(noFim.totais).toEqual({ ch_total_hora_aula: 999, ch_total_hora_relogio: 401 });
+    const noComeco = mesclarMatrizes(mesclarMatrizes(comTotal, primeira), segunda) as MatrizPpc;
+    expect(noComeco.totais).toEqual({ ch_total_hora_aula: 999, ch_total_hora_relogio: 401 });
+    // A marca do que foi declarado não vai para o JSON.
+    expect(JSON.parse(JSON.stringify(noFim))).not.toHaveProperty("totais_declarados");
+    expect(Object.keys(noFim)).toEqual([
+      "tipo",
+      "formato",
+      "minutos_hora_aula",
+      "semanas_ano_letivo",
+      "anos",
+      "linhas_modelo",
+      "totais",
+    ]);
+  });
+
+  test("resumo da matriz: total_ha e total_hr somam os componentes", () => {
+    expect(converter("ppc-minimo").resumos.matriz).toMatchObject({
+      total_anos: 2,
+      total_componentes: 3,
+      total_ha: 440,
+      total_hr: 330,
+    });
+    expect(converter("ppc-minimo", "python-docx").resumos.matriz).toMatchObject({ total_ha: 0, total_hr: 0 });
+  });
+
+  test("matriz com linha, célula e parágrafo embrulhados em w:sdt e linha removida na revisão", () => {
+    const nomes = (fidelidade: Fidelidade) =>
+      (
+        converter("tabelas-em-controle", fidelidade).matriz!.anos as Array<{ componentes: Array<{ nome: string }> }>
+      )[0]!.componentes.map((item) => item.nome);
+    expect(nomes("documento")).toEqual([
+      "Matemática",
+      "Linha em controle",
+      "Célula em controle",
+      "Parágrafo em controle",
+    ]);
+    // O python-docx perdia os componentes embrulhados, sem aviso, e desalinhava a linha da célula embrulhada.
+    expect(nomes("python-docx")).toEqual(["Matemática", "2"]);
+    const { markdown, representacaoGrafica } = converter("tabelas-em-controle");
+    expect(markdown).toContain("| Período: 1º ano<br>caixa de texto | ao lado |");
+    // A figura apagada na revisão não é a representação gráfica; sobra o desenho com formas.
+    expect(representacaoGrafica).toMatchObject({ metodo: "vetorial_nao_renderizada", temBitmap: false });
+    expect(converter("tabelas-em-controle", "python-docx").representacaoGrafica).toMatchObject({ metodo: "bitmap" });
+  });
+
+  test("tabela que expandida passaria de dois milhões de células é recusada", () => {
+    const larga = { texto: "x", colunas: 63, continuacao: false };
+    const tabelaHostil: Tabela = {
+      tipo: "tabela",
+      linhas: [
+        Array.from({ length: 1000 }, () => larga),
+        ...Array.from({ length: 40 }, () => [{ texto: "y", colunas: 1, continuacao: false }]),
+      ],
+    };
+    expect(() => normalizarTabela(tabelaHostil)).toThrow(ErroDocx);
   });
 });
 

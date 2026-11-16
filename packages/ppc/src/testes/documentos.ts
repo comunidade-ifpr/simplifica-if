@@ -13,6 +13,7 @@ import {
   imagem,
   linha,
   montarDocx,
+  NUMERACAO_PADRAO,
   par,
   run,
   tabela,
@@ -436,6 +437,122 @@ function semSecoes(): PartesDocx {
   };
 }
 
+const insercao = (conteudo: string) =>
+  `<w:ins w:id="1" w:author="Revisora" w:date="2026-01-01T00:00:00Z">${conteudo}</w:ins>`;
+const remocao = (conteudo: string) =>
+  `<w:del w:id="2" w:author="Revisora" w:date="2026-01-01T00:00:00Z">${conteudo}</w:del>`;
+const textoRemovido = (texto: string) => remocao(`<w:r><w:delText>${texto}</w:delText></w:r>`);
+
+/** Texto de corpo digitado em parágrafos com estilo de título, direto e por alteração controlada. */
+function titulosDeCorpo(): PartesDocx {
+  const frase =
+    "O curso não prevê estágio curricular obrigatório, de modo que o estágio não integra a matriz e não é requisito para a conclusão do curso.";
+  return {
+    numeracao: NUMERACAO_PADRAO,
+    corpo: [
+      par("5.9 ESTÁGIO CURRICULAR", { estilo: "Ttulo2" }),
+      par(insercao(run(frase)), { estilo: "Ttulo2" }),
+      par("Sem prejuízo disso, o curso admite o estágio não obrigatório, por iniciativa do estudante:", {
+        estilo: "Ttulo2",
+      }),
+      par("cumprir e fazer cumprir as normas e os procedimentos institucionais;", {
+        estilo: "Ttulo2",
+        numeracao: { id: 1 },
+      }),
+      par("zelar pelos laboratórios;", { estilo: "Ttulo2", numeracao: { id: 1 } }),
+      par(`8.1.1 ${"Atribuições da coordenação ".repeat(9)}do curso`, { estilo: "Ttulo2" }),
+      par("1.1.3 Comissão de Estruturação de Curso (CEC) e Comissão de Ajuste Curricular (CAJ):", { estilo: "Ttulo2" }),
+      par("5.10 PROJETO FINAL", { estilo: "Ttulo2" }),
+      par("Título curto sem número.", { estilo: "Ttulo2" }),
+      par("Texto do projeto."),
+    ].join(""),
+  };
+}
+
+/** Numeração automática do Word (`w:numPr`), com níveis, e marcadores digitados. */
+function listasAutomaticas(): PartesDocx {
+  return {
+    numeracao: NUMERACAO_PADRAO,
+    corpo: [
+      titulo("1 LISTAS"),
+      par("São objetivos do curso:"),
+      par("formar técnicos;", { numeracao: { id: 1 } }),
+      par("integrar ensino e pesquisa:", { numeracao: { id: 1 } }),
+      par("na iniciação científica.", { numeracao: { id: 1, nivel: 1 } }),
+      par("Etapas:"),
+      par("diagnóstico;", { numeracao: { id: 2 }, estilo: "PargrafodaLista" }),
+      par("certificado de conclusão;", { numeracao: { id: 2, nivel: 1 } }),
+      par("avaliação.", { numeracao: { id: 3 } }),
+      par("redefinido como marcador;", { numeracao: { id: 4 } }),
+      par("numeração desligada (numId 0).", { numeracao: { id: 0 } }),
+      par("numeração que não existe.", { numeracao: { id: 99 } }),
+      par(run("Item em negrito ", { negrito: true }) + run("e normal"), { numeracao: { id: 1 } }),
+      par("Parágrafo depois da lista."),
+      par("2. segundo item digitado"),
+      par("3) terceiro"),
+      par("b) alínea digitada"),
+      par(run("c)", { negrito: true }) + run(" alínea com a letra em negrito")),
+    ].join(""),
+  };
+}
+
+/** Linhas, células e parágrafos de tabela embrulhados em `w:sdt`; linhas e figuras removidas na revisão. */
+function tabelasEmControle(): PartesDocx {
+  const cabecalho = [
+    "Ano",
+    "Componente Curricular",
+    "Número de aulas semanais",
+    "CH hora-aula no período",
+    "CH hora-relógio no período",
+  ];
+  const componente = (ano: string, nome: string) =>
+    linha([celula(ano), celula(nome), celula("2"), celula("80"), celula("67")]);
+  const linhaRemovida = `<w:tr><w:trPr><w:del w:id="9" w:author="R" w:date="2026-01-01T00:00:00Z"/></w:trPr>${["1º Ano", "Removida na revisão", "2", "80", "67"].map((texto) => `<w:tc>${par(textoRemovido(texto))}</w:tc>`).join("")}</w:tr>`;
+  return {
+    relacoes: [{ id: "rId10", tipo: "image", alvo: "media/image1.png" }],
+    midia: { "image1.png": PNG_MINIMO },
+    corpo: [
+      titulo("5.6 MATRIZ CURRICULAR"),
+      tabela([
+        linha(cabecalho.map((item) => celula(item))),
+        componente("1º Ano", "Matemática"),
+        controle(componente("1º Ano", "Linha em controle")),
+        linhaRemovida,
+        linha([celula("1º Ano"), controle(celula("Célula em controle")), celula("2"), celula("80"), celula("67")]),
+        linha([
+          celula("1º Ano"),
+          celula(controle(par("Parágrafo em controle"))),
+          celula("2"),
+          celula("80"),
+          celula("67"),
+        ]),
+      ]),
+      titulo("5.7 TEXTO PROFUNDO"),
+      controle(
+        tabela([
+          linha([
+            celula(
+              par(
+                run("Período:\t1º ano") +
+                  `<w:moveFrom w:id="3" w:author="R">${run(" texto movido daqui")}</w:moveFrom>` +
+                  textoRemovido(" removido"),
+              ) +
+                par(
+                  `<w:r><mc:AlternateContent><mc:Choice Requires="wps"><w:drawing><wp:inline><a:graphic><a:graphicData><w:txbxContent>${par("caixa de texto")}</w:txbxContent></a:graphicData></a:graphic></wp:inline></w:drawing></mc:Choice>` +
+                    `<mc:Fallback><w:pict><v:textbox><w:txbxContent>${par("caixa de texto")}</w:txbxContent></v:textbox></w:pict></mc:Fallback></mc:AlternateContent></w:r>`,
+                ),
+            ),
+            celula("ao lado"),
+          ]),
+        ]),
+      ),
+      titulo("5.11 REPRESENTAÇÃO GRÁFICA DO PROCESSO FORMATIVO"),
+      par(remocao(imagem("rId10", "Figura apagada")) + run("A figura antiga foi apagada na revisão.")),
+      par(formas()),
+    ].join(""),
+  };
+}
+
 const figura = (conteudo: string, extras: Partial<PartesDocx> = {}): PartesDocx => ({
   corpo: [
     titulo("5 ORGANIZAÇÃO"),
@@ -466,6 +583,9 @@ export const FIXTURES: Fixture[] = [
   { nome: "rastreadas", partes: rastreadas, oraculo: true },
   { nome: "texto-especial", partes: textoEspecial, oraculo: true },
   { nome: "sem-secoes", partes: semSecoes, oraculo: true },
+  { nome: "titulos-de-corpo", partes: titulosDeCorpo, oraculo: true },
+  { nome: "listas-automaticas", partes: listasAutomaticas, oraculo: true },
+  { nome: "tabelas-em-controle", partes: tabelasEmControle, oraculo: true },
   { nome: "figura-vetorial", partes: () => figura(par(formas())), oraculo: true },
   { nome: "figura-legada", partes: () => figura(par(desenhoLegado())), oraculo: true },
   { nome: "figura-ausente", partes: () => figura(par("Só texto.")), oraculo: true },
