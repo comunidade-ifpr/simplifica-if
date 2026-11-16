@@ -1,7 +1,7 @@
 /**
- * Ferramenta 16, `etapa`: a skill informa ao app em que etapa da tarefa está. Até o Marco 1 não há
- * app que receba o aviso, e a ferramenta só confirma que não registrou nada; ela já existe no M0
- * para que as skills possam chamá-la desde o início.
+ * Ferramenta 16, `etapa`: a skill informa ao app em que etapa da tarefa está. O app (M1.9) lê a
+ * chamada nos eventos da conversa e mostra o indicador de etapas; o servidor do app responde
+ * `registrado: true`. Fora do app (o executável stdio), a ferramenta só confirma que não registrou nada.
  */
 import * as Schema from "effect/Schema";
 import { inteiro, opcional, texto } from "../esquema.ts";
@@ -31,7 +31,9 @@ export const etapa = definirFerramenta({
   descricao: "Informa ao app em que etapa da tarefa você está. Use só quando a skill pedir.",
   entrada: Entrada,
   dados: Dados,
-  texto() {
-    return "Etapa não registrada: não há app conectado a este servidor. Siga com a tarefa.";
+  texto({ dados }) {
+    return dados.registrado
+      ? "Etapa registrada no app. Siga com a tarefa."
+      : "Etapa não registrada: não há app conectado a este servidor. Siga com a tarefa.";
   },
 });

@@ -14,6 +14,12 @@ simplifica:
     - ler_dispositivos
     - ficha_norma
     - ficha_curso
+    - etapa
+  etapas:
+    - { id: alegacoes, rotulo: "Ler o documento e listar as alegações" }
+    - { id: fontes, rotulo: "Ler a fonte de cada alegação", progresso: true }
+    - { id: classificar, rotulo: "Classificar cada alegação" }
+    - { id: relatorio, rotulo: "Montar o relatório" }
   arquivos:
     - references/relatorio.md
   duracao_estimada: 10min
@@ -24,6 +30,8 @@ simplifica:
 Confira se cada afirmação normativa do documento está apoiada por fonte existente, vigente e pertinente. Nenhuma alegação sobre lei, resolução, portaria, regulamento ou CNCT se aceita sem ler a própria fonte.
 
 **Fontes.** Use as ferramentas `ifpr` conforme as instruções do servidor; neste método, `resolver_citacoes` para as citações explícitas, `buscar_norma` para as alegações sem norma citada, `ler_dispositivos` para ler o trecho, `ficha_norma` para a vigência e `ficha_curso` para o CNCT. Dentro do repositório `simplifica-if`, sem elas, use a CLI `pnpm kb` (`resolver`, `buscar-norma`, `dispositivo`, `vigencia`, `cursos`). Leia o documento na pasta de trabalho; se o formato não puder ser lido (`.docx`), peça PDF, Markdown ou texto colado.
+
+**Etapas.** No app, marque o avanço com a ferramenta `etapa` ao começar cada etapa: `alegacoes` (passos 1 e 2), `fontes` (passos 3 e 4, com `progresso` de alegações lidas sobre o total), `classificar` (passo 5) e `relatorio`. Fora do app, a ferramenta só confirma e você segue.
 
 ## Método
 
