@@ -21,6 +21,7 @@ import type { EstadoRevisaoIa, ListaPendencias } from "@simplifica-if/contratos-
 import * as Motor from "@simplifica-if/motor";
 import * as Canal from "@simplifica-if/motor/Canal";
 import { conteudoDoPpcParaFicha } from "@simplifica-if/ppc/revisao-ia/pedido";
+import { montarDocx, par } from "@simplifica-if/docx/testes/sintetico";
 import { ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Listas from "../src/persistencia/Listas.ts";
@@ -82,16 +83,24 @@ const blocoDo = (pedido: string) => /"bloco": ?"([^"]+)"/.exec(pedido)?.[1] ?? "
 const fichasDo = (pedido: string) =>
   (/exatamente um resultado para cada critério: ([^.]+)\./.exec(pedido)?.[1] ?? "").split(", ").filter(Boolean);
 
-/** A linha mais longa do PPC entregue (o primeiro trecho entre as marcas), até 60 caracteres. */
-const trechoDoRecorte = (pedido: string) => {
+/**
+ * A prova de leitura: a linha mais longa (40 caracteres ou mais) da seção do critério no PPC entregue,
+ * depois do comum (que acaba no primeiro título de seção com as linhas), até 80 caracteres.
+ */
+const provaDaSecao = (pedido: string) => {
   const m = /<ppc-([0-9a-f]+)>\n([\s\S]*?)\n<\/ppc-\1>/.exec(pedido)!;
-  return m[2]!
-    .split("\n")
+  const linhas = m[2]!.split("\n");
+  const inicio = linhas.findIndex((l) => /^### .*\(linhas \d/.test(l));
+  return linhas
+    .slice(inicio)
     .map((l) => l.trim())
-    .filter((l) => !/^(#|<|\[|\(|\|)/.test(l) && !l.includes("\t"))
+    .filter((l) => l.length >= 40 && !/^(#|<|\[|\(|\|)/.test(l) && !l.includes("\t"))
     .sort((a, b) => b.length - a.length)[0]!
-    .slice(0, 60);
+    .slice(0, 80);
 };
+
+/** O pedido sem os nonces (um por ação), para comparar o começo. */
+const semNonce = (pedido: string) => pedido.replace(/(ppc|motivo)-[0-9a-f]+/g, "$1-N");
 
 const trechoDoLote = (pedido: string, ficha: string) =>
   conteudoDoPpcParaFicha({ pedido }, ficha)
@@ -228,6 +237,9 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
 
       const { lista, final } = yield* revisarComIa(arquivo);
       assert.notStrictEqual(lista.id, pre.lista);
+      // A lista anterior do mesmo conteúdo sai (o texto do PPC não fica guardado em dobro).
+      const anterior = yield* c["revisaoPpc.lista"]({ lista: pre.lista! }).pipe(Effect.flip);
+      assert.include(anterior.message, "não existe mais");
       assert.strictEqual(lista.revisao, final.id);
       // A mesma pendência do código, na lista nova, com a situação e o histórico.
       const mesma = lista.pendencias.find((p) => p.chave === codigo.chave)!;
@@ -297,9 +309,8 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
           decisao: "retirar",
           estado: "ATENDE",
           explicacao: "A matriz traz a carga de cada componente.",
-          evidencias: [{ trecho: trechoDoRecorte(primeiro) }],
-          // Um dispositivo não entregue de norma não entregue: descartado, sem derrubar o trecho conferido.
-          fontes: ["br/lei/1900/1#art1"],
+          evidencias: [{ trecho: provaDaSecao(primeiro) }],
+          fontes: [],
         });
       l = yield* c["revisaoPpc.contestar"]({
         lista: lista.id,
@@ -309,6 +320,7 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
       p = l.pendencias.find((x) => x.chave === chave)!;
       assert.strictEqual(p.situacao, "contestada_aceita");
       assert.include(p.historico.at(-1)!.texto, "Trecho conferido");
+      assert.include(p.historico.at(-1)!.texto, "fica para conferir");
       assert.strictEqual(p.historico.filter((e) => e.acao === "contestar").length, 4);
 
       // Uma sessão nova por ação, sem ferramentas e sem MCP; o mesmo começo de pedido nas quatro.
@@ -317,8 +329,10 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
         assert.isTrue(config.semFerramentas);
         assert.deepStrictEqual(config.servidoresMcp, []);
       }
-      const inicio = roteiro.pedidos[0]!.slice(0, roteiro.pedidos[0]!.indexOf("## A pendência apontada"));
-      assert.isTrue(roteiro.pedidos.every((x) => x.startsWith(inicio)));
+      const inicio = semNonce(roteiro.pedidos[0]!.slice(0, roteiro.pedidos[0]!.indexOf("## A pendência apontada")));
+      assert.isTrue(roteiro.pedidos.every((x) => semNonce(x).startsWith(inicio)));
+      // Um nonce por ação.
+      assert.strictEqual(new Set(roteiro.pedidos.map((x) => /<ppc-([0-9a-f]+)>/.exec(x)![1])).size, 4);
       for (const pedido of roteiro.pedidos) assert.notInclude(pedido, "Ignore as instruções anteriores");
       // As ações seguintes trazem o histórico em frases do app, nunca o texto da IA.
       assert.include(roteiro.pedidos.at(-1)!, "a pessoa discordou e a pendência foi mantida");
@@ -329,13 +343,37 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
       const revisao = (yield* c["revisaoPpc.listarIa"]({})).find((r) => r.id === final.id)!;
       assert.strictEqual(revisao.uso.cacheEscrita - final.uso.cacheEscrita, 400);
 
-      // A cópia comentada nova: a retirada não está no documento; o aviso conta a situação.
+      // A cópia comentada nova: a contestada com evidência fica "a conferir", com o motivo e o trecho.
       const copia = yield* c["revisaoPpc.gerarCopia"]({ lista: lista.id });
       assert.notStrictEqual(copia.resultado.arquivoComentado, lista.resultado.arquivoComentado);
       const xml = strFromU8(unzipSync(NodeFS.readFileSync(copia.resultado.arquivoComentado))["word/comments.xml"]!);
-      assert.notInclude(xml, "carga por núcleo");
-      assert.include(xml, "Situação marcada no app");
-      assert.include(xml, "retirada depois de contestação");
+      assert.include(xml, "carga por núcleo");
+      assert.include(xml, "Confira antes de dar por resolvido");
+      assert.include(xml, "A matriz traz a carga de cada componente.");
+      assert.include(xml, "com um trecho do PPC conferido pelo app (ficam para conferir)");
+
+      // Uma pendência do código não sai por contestação: sem IA, a discordância fica para a curadoria.
+      const codigo = lista.pendencias.find((x) => x.pendencia.origem === "codigo" && x.pendencia.ficha !== "TRIAGEM")!;
+      const estimativa = yield* c["revisaoPpc.estimarAcao"]({
+        lista: lista.id,
+        chave: codigo.chave,
+        acao: "contestar",
+      });
+      assert.strictEqual(estimativa.custoUsd, 0);
+      const sessoes = roteiro.configs.length;
+      l = yield* c["revisaoPpc.contestar"]({
+        lista: lista.id,
+        chave: codigo.chave,
+        motivo: "A regra errou: o PPC cita a norma vigente.",
+      });
+      p = l.pendencias.find((x) => x.chave === codigo.chave)!;
+      assert.strictEqual(roteiro.configs.length, sessoes);
+      assert.strictEqual(p.situacao, "contestada_mantida");
+      assert.include(p.historico.at(-1)!.texto, "só muda com o arquivo corrigido");
+      const csv = yield* c["revisaoPpc.exportarDiscordancias"]({});
+      assert.include(csv, "A regra errou: o PPC cita a norma vigente.");
+      assert.include(csv, codigo.pendencia.ficha);
+      assert.notInclude(csv, "A matriz traz a carga de cada componente.");
     }),
   );
 
@@ -391,6 +429,40 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
       let p = l.pendencias.find((x) => x.chave === triagem.chave)!;
       assert.strictEqual(p.situacao, "resolvida");
       assert.strictEqual(p.resolvidaPor, "reanalise");
+
+      // Outro documento (outros títulos de seção): avisa e não marca nada.
+      const outro = gravar(
+        "Outro documento.docx",
+        montarDocx({
+          corpo: [
+            par("RELATÓRIO DE ATIVIDADES", { estilo: "Heading1" }),
+            par("Atividades do semestre."),
+            par("CONCLUSÃO", { estilo: "Heading1" }),
+            par("Fim."),
+          ].join(""),
+        }),
+      );
+      const recusa = yield* c["revisaoPpc.reanalisar"]({
+        lista: pre.lista!,
+        chave: triagem.chave,
+        arquivo: outro,
+      }).pipe(Effect.flip);
+      assert.include(recusa.message, "parece outro documento");
+
+      // A triagem nova do arquivo da reanálise entra na lista.
+      const semInjecao = yield* c["revisaoPpc.analisar"]({ arquivo: gravar("PPC limpo.docx", ppcSintetico()) });
+      const limpa = yield* c["revisaoPpc.lista"]({ lista: semInjecao.lista! });
+      assert.isFalse(limpa.pendencias.some((x) => x.pendencia.ficha === "TRIAGEM"));
+      const umaDoCodigo = limpa.pendencias.find((x) => x.pendencia.origem === "codigo")!;
+      const comCaixa = gravar("PPC limpo v2.docx", ppcSintetico({ caixaDeTexto: "atual" }));
+      const reanalisada = yield* c["revisaoPpc.reanalisar"]({
+        lista: limpa.id,
+        chave: umaDoCodigo.chave,
+        arquivo: comCaixa,
+      });
+      const nova = reanalisada.pendencias.find((x) => x.pendencia.ficha === "TRIAGEM")!;
+      assert.strictEqual(nova.situacao, "aberta");
+      assert.include(nova.historico[0]!.texto, "Apareceu na reanálise");
 
       // Uma pendência da IA: o lote de uma ficha no arquivo novo decide.
       const { lista } = yield* revisarComIa(gravar("PPC reanalise IA.docx", ppcSintetico()));

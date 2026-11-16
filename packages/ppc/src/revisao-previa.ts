@@ -129,7 +129,12 @@ export type PendenciaRevisao = {
 export type SituacaoPendencia = "aberta" | "vou_ajustar" | "resolvida" | "contestada_aceita" | "contestada_mantida";
 
 /** A situação e, quando há, a nota que vai ao comentário (quem resolveu, o que a revisão manteve). */
-export type MarcaPendencia = { situacao: SituacaoPendencia; nota?: string | undefined };
+export type MarcaPendencia = {
+  situacao: SituacaoPendencia;
+  nota?: string | undefined;
+  /** Sai do documento: só a pendência que a reanálise do arquivo atualizado confirmou como resolvida. */
+  foraDoDocumento?: boolean | undefined;
+};
 
 /**
  * A chave estável de uma pendência: a ficha e um hash (FNV-1a) da origem, do trecho e da mensagem. As do
@@ -150,14 +155,19 @@ const NOTA_SITUACAO: Record<SituacaoPendencia, string> = {
   aberta: "",
   vou_ajustar: "Situação no app: a coordenação vai ajustar.",
   resolvida: "Situação no app: marcada como resolvida.",
-  contestada_aceita: "",
+  contestada_aceita:
+    "Situação no app: a coordenação contestou, e a IA trouxe um trecho do PPC que o app conferiu. Confira antes de dar por resolvido.",
   contestada_mantida: "Situação no app: a coordenação discordou, e a revisão manteve o apontamento.",
 };
 
 /** O parágrafo do aviso com as situações marcadas no app (vazio se nenhuma foi marcada). */
 function textoDasSituacoes(marcas: readonly MarcaPendencia[]): string {
-  const conta = (s: SituacaoPendencia) => marcas.filter((m) => m.situacao === s).length;
+  const conta = (s: SituacaoPendencia, fora = false) =>
+    marcas.filter((m) => m.situacao === s && (m.foraDoDocumento === true) === fora).length;
   const partes = [
+    conta("resolvida", true)
+      ? `${plural(conta("resolvida", true), "confirmada como resolvida", "confirmadas como resolvidas")} na reanálise do arquivo atualizado (sem comentário neste documento)`
+      : "",
     conta("resolvida") ? plural(conta("resolvida"), "marcada como resolvida", "marcadas como resolvidas") : "",
     conta("vou_ajustar")
       ? plural(conta("vou_ajustar"), "que a coordenação vai ajustar", "que a coordenação vai ajustar")
@@ -166,7 +176,7 @@ function textoDasSituacoes(marcas: readonly MarcaPendencia[]): string {
       ? plural(conta("contestada_mantida"), "contestada e mantida pela revisão", "contestadas e mantidas pela revisão")
       : "",
     conta("contestada_aceita")
-      ? `${plural(conta("contestada_aceita"), "retirada", "retiradas")} depois de contestação com trecho ou norma conferidos pelo app (sem comentário no documento)`
+      ? `${plural(conta("contestada_aceita"), "contestada", "contestadas")} com um trecho do PPC conferido pelo app (ficam para conferir)`
       : "",
   ].filter(Boolean);
   return partes.length
@@ -627,7 +637,13 @@ function textoDoAviso(entrada: {
   onde: ReadonlyMap<PendenciaRevisao, string>;
   /** As situações marcadas no app (etapa 5b). */
   situacoes?: readonly MarcaPendencia[];
+  /** A nota da situação de cada pendência (vai antes dela na lista do título). */
+  notas?: ReadonlyMap<PendenciaRevisao, string>;
 }): string {
+  const nota = (p: PendenciaRevisao) => {
+    const n = entrada.notas?.get(p);
+    return n ? `${n} ` : "";
+  };
   const naoAtende = entrada.pendencias.filter((p) => p.estado === "nao_atende").length;
   const aConferir = entrada.pendencias.length - naoAtende;
   const vistos = entrada.conferidos + entrada.conferidosIa;
@@ -662,7 +678,7 @@ function textoDoAviso(entrada: {
   const ausentes = entrada.pendencias.filter((p) => p.noDocumento === "no-inicio");
   if (ausentes.length)
     partes.push(
-      `O que falta no documento (sem trecho onde comentar):\n${ausentes.map((p) => `- ${linhasDaPendencia(p).join(" ")}`).join("\n")}`,
+      `O que falta no documento (sem trecho onde comentar):\n${ausentes.map((p) => `- ${nota(p)}${linhasDaPendencia(p).join(" ")}`).join("\n")}`,
     );
   const fora = entrada.pendencias.filter((p) => p.noDocumento === "so-na-lista");
   if (fora.length)
@@ -671,7 +687,7 @@ function textoDoAviso(entrada: {
         .map((p) => {
           const [problema, ...resto] = linhasDaPendencia(p);
           const onde = entrada.onde.get(p) ?? ONDE_DESCONHECIDO;
-          return `- ${problema} Trecho: "${resumir(p.trecho ?? "")}", ${onde}. ${resto.join(" ")}`;
+          return `- ${nota(p)}${problema} Trecho: "${resumir(p.trecho ?? "")}", ${onde}. ${resto.join(" ")}`;
         })
         .join("\n")}`,
     );
@@ -719,11 +735,18 @@ export function revisarDocx(
   // não foi localizado.
   const comentar = { data: opcoes.agora.toISOString(), autor: AUTOR_COMENTARIOS };
   const marcas = itens.map((item) => opcoes.situacoes?.[chavePendencia(item)]);
-  // A retirada depois de contestação conferida não vai ao documento; as outras levam a situação.
-  const retirada = (indice: number) => marcas[indice]?.situacao === "contestada_aceita";
-  const comSituacao = (indice: number) => {
+  // Só a pendência confirmada pela reanálise sai do documento; a contestada com evidência conferida
+  // fica "a conferir", com o trecho e o motivo; as outras levam a situação.
+  const retirada = (indice: number) => marcas[indice]?.foraDoDocumento === true;
+  marcas.forEach((marca, indice) => {
+    if (marca?.situacao === "contestada_aceita") itens[indice] = { ...itens[indice]!, estado: "a_conferir" };
+  });
+  const notaDe = (indice: number) => {
     const marca = marcas[indice];
-    const nota = marca ? [NOTA_SITUACAO[marca.situacao], marca.nota ?? ""].filter(Boolean).join(" ") : "";
+    return marca ? [NOTA_SITUACAO[marca.situacao], marca.nota ?? ""].filter(Boolean).join(" ") : "";
+  };
+  const comSituacao = (indice: number) => {
+    const nota = notaDe(indice);
     return nota ? `${nota}\n${textoDoComentario(itens[indice]!)}` : textoDoComentario(itens[indice]!);
   };
   const comTrecho = itens.flatMap((item, indice) => (item.trechos.length && !retirada(indice) ? [indice] : []));
@@ -755,6 +778,7 @@ export function revisarDocx(
     curso,
     pendencias: pendencias.filter((_, indice) => !retirada(indice)),
     situacoes: marcas.filter((m): m is MarcaPendencia => m !== undefined),
+    notas: new Map(pendencias.map((p, indice) => [p, notaDe(indice)])),
   });
   const final = comentarDocx(comentado.docx, [{ trechos: [], texto: aviso, noInicioSeAusente: true }], comentar);
   const criterios: CriterioConferido[] = resultado.fichas.map((ficha) => {

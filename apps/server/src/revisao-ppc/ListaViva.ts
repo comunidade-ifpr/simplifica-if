@@ -21,6 +21,7 @@
  */
 import * as NodeCrypto from "node:crypto";
 import * as Context from "effect/Context";
+import * as DateTime from "effect/DateTime";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -39,6 +40,7 @@ import type { FontesNormativas } from "@simplifica-if/kb/FontesNormativas";
 import * as Motor from "@simplifica-if/motor";
 import {
   conferirContestacao,
+  MANTIDA_CODIGO,
   conferirSugestao,
   instrucoesConversa,
   pedidoContestacao,
@@ -48,7 +50,7 @@ import {
 } from "@simplifica-if/ppc/revisao-ia/conversa";
 import { estimarAcao } from "@simplifica-if/ppc/revisao-ia/estimativa";
 import { pedidoS } from "@simplifica-if/ppc/revisao-ia/pedido";
-import { retirarTextoParaIa, teveTextoParaIa } from "@simplifica-if/ppc/revisao-ia/plano";
+import { dobrar, retirarTextoParaIa, teveTextoParaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import { MODELO_PADRAO } from "@simplifica-if/ppc/revisao-ia/tipos";
 import {
   chavePendencia,
@@ -75,6 +77,8 @@ export class ListaViva extends Context.Service<
     readonly lista: (id: string) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc>;
     readonly ultima: Effect.Effect<ListaPendencias | null>;
     readonly apagar: (id: string) => Effect.Effect<void>;
+    /** As discordâncias contra pendências do código, em CSV, para a curadoria das regras. */
+    readonly exportarDiscordancias: Effect.Effect<string>;
     readonly marcar: (
       id: string,
       chave: string,
@@ -150,6 +154,35 @@ export const criarLista = Effect.fn("ListaViva.criarLista")(function* (d: DadosN
   );
   return resultado;
 });
+
+/** Um nonce novo por ação com IA: as marcas de uma ação não valem na seguinte. */
+const novoNonce = () => NodeCrypto.randomBytes(8).toString("hex");
+
+/** Títulos de seção (normalizados) de um Markdown convertido. */
+const titulos = (markdown: string) =>
+  new Set(
+    markdown
+      .split("\n")
+      .filter((l) => /^#{1,6}\s/.test(l))
+      .map((l) => dobrar(l.replace(/^#+\s*/, "").replace(/^[\d.\s]+/, "")))
+      .filter((t) => t.length >= 4),
+  );
+
+/** Quanto dos títulos do menor documento está no outro (0 a 1). */
+export function semelhancaDeTitulos(a: string, b: string): number {
+  const ta = titulos(a);
+  const tb = titulos(b);
+  const menor = ta.size <= tb.size ? ta : tb;
+  const maior = menor === ta ? tb : ta;
+  if (!menor.size) return 0;
+  return [...menor].filter((t) => maior.has(t)).length / menor.size;
+}
+
+/** O arquivo da reanálise tem de ter ao menos esta fração dos títulos de seção em comum com o analisado. */
+export const SEMELHANCA_MINIMA = 0.6;
+
+/** Dias sem uso que uma lista fica guardada (com o texto do PPC e os motivos). */
+export const DIAS_LISTA = 30;
 
 /* ============================================================ textos */
 
@@ -346,6 +379,9 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     // A reanálise de uma ficha do código não usa IA.
     if (acao === "reanalisar" && p.pendencia.origem === "codigo")
       return { provider, tokensEntrada: 0, tokensSaida: 0, segundos: 5, custoUsd: 0 } satisfies EstimativaAcao;
+    // A contestação de uma pendência do código não vai à IA.
+    if (acao === "contestar" && p.pendencia.origem === "codigo")
+      return { provider, tokensEntrada: 0, tokensSaida: 0, segundos: 1, custoUsd: 0 } satisfies EstimativaAcao;
     const ctx = yield* contextoPara(registro, p.pendencia.ficha);
     const prefixo = prefixoConversa({ ...ctx, pendencia: p.pendencia, nonce: registro.nonce });
     const texto =
@@ -353,7 +389,20 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         ? pedidoContestacao(prefixo, "x".repeat(400), [], registro.nonce)
         : acao === "sugerir"
           ? pedidoSugestao(prefixo, [])
-          : prefixo;
+          : pedidoS(
+              {
+                id: "reanalise",
+                tipo: "S",
+                tema: p.pendencia.tema,
+                ordemTema: p.pendencia.ordemTema,
+                fichas: [ctx.ficha.id],
+              },
+              [ctx.ficha],
+              new Map([[ctx.ficha.id, ctx.proprio]]),
+              ctx.contexto,
+              registro.nonce,
+              ctx.comum,
+            );
     return estimarAcao(
       texto.length + instrucoesConversa(registro.nonce).length,
       acao,
@@ -370,12 +419,13 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     acao: "contestar" | "sugerir";
     provider: Provider;
     modelo: string | null;
+    nonce: string;
     pedido: string;
   }) =>
     turnoSemFerramentas({
       provider: entrada.provider,
       modelo: entrada.modelo,
-      instrucoes: instrucoesConversa(entrada.registro.nonce),
+      instrucoes: instrucoesConversa(entrada.nonce),
       texto: entrada.pedido,
       tempoTurno: tempoAcao,
       numero: 1,
@@ -404,17 +454,30 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
           registro.arquivo,
           `Escreva o motivo em até ${LIMITE_MOTIVO.toLocaleString("pt-BR")} caracteres.`,
         );
+      // A pendência do código não sai por contestação: a discordância fica registrada (para a
+      // curadoria das regras) e a saída é "Já resolvi" com o arquivo corrigido. Sem IA, sem custo.
+      if (p.pendencia.origem === "codigo") {
+        yield* listas.mudar(
+          id,
+          chave,
+          { situacao: "contestada_mantida" },
+          { acao: "contestar", situacao: "contestada_mantida", texto: `Mantida: ${MANTIDA_CODIGO}`, motivo: limpo },
+        );
+        return yield* lista(id);
+      }
       const { provider, modelo } = provedor(registro, pedido);
       const ctx = yield* contextoPara(registro, p.pendencia.ficha);
       const eventos = (yield* listas.eventos(id)).filter((e) => e.chave === chave);
-      const prefixo = prefixoConversa({ ...ctx, pendencia: p.pendencia, nonce: registro.nonce });
+      const nonce = novoNonce();
+      const prefixo = prefixoConversa({ ...ctx, pendencia: p.pendencia, nonce });
       const turno = yield* conversar({
         registro,
         chave,
         acao: "contestar",
         provider,
         modelo,
-        pedido: pedidoContestacao(prefixo, limpo, turnosAnteriores(eventos), registro.nonce),
+        nonce,
+        pedido: pedidoContestacao(prefixo, limpo, turnosAnteriores(eventos), nonce),
       });
       const decisao = turno.ferramentas.length
         ? {
@@ -424,10 +487,17 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
             problemas: [],
             iaPediuRetirar: false,
           }
-        : conferirContestacao(turno.texto, { ficha: ctx.ficha, recorte: ctx.recorte, fontes: new Set(ctx.fontes) });
+        : conferirContestacao(turno.texto, {
+            ficha: ctx.ficha,
+            origem: "ia",
+            recorte: ctx.recorte,
+            secao: ctx.proprio.texto,
+            fontes: new Set(ctx.fontes),
+            trechoApontado: p.pendencia.trecho,
+          });
       const texto =
         decisao.estado === "contestada_aceita"
-          ? `Retirada: ${ponto(decisao.explicacao)}${decisao.trechos[0] ? ` Trecho conferido: “${decisao.trechos[0]}”.` : ""}`
+          ? `Contestada com evidência conferida (fica para conferir): ${ponto(decisao.explicacao)} Trecho conferido: “${decisao.trechos[0]}”.`
           : `Mantida: ${ponto(decisao.explicacao)}${decisao.iaPediuRetirar && decisao.problemas.length ? ` O app não retirou porque ${decisao.problemas.join("; ")}.` : ""}`;
       yield* listas.mudar(
         id,
@@ -451,13 +521,15 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       const { provider, modelo } = provedor(registro, pedido);
       const ctx = yield* contextoPara(registro, p.pendencia.ficha);
       const eventos = (yield* listas.eventos(id)).filter((e) => e.chave === chave);
-      const prefixo = prefixoConversa({ ...ctx, pendencia: p.pendencia, nonce: registro.nonce });
+      const nonce = novoNonce();
+      const prefixo = prefixoConversa({ ...ctx, pendencia: p.pendencia, nonce });
       const turno = yield* conversar({
         registro,
         chave,
         acao: "sugerir",
         provider,
         modelo,
+        nonce,
         pedido: pedidoSugestao(prefixo, turnosAnteriores(eventos)),
       });
       const sugestao = turno.ferramentas.length
@@ -519,8 +591,32 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
           arquivo,
           "É o mesmo arquivo analisado. Salve as mudanças no Word e escolha o arquivo atualizado.",
         );
-      const ficha = p.pendencia.ficha;
       const nome = arquivo.split(/[\\/]/).at(-1) ?? arquivo;
+      // Parece outro documento: outro curso (CNCT, forma) ou poucos títulos de seção em comum. Não marca nada.
+      const antes = registro.resultado.curso;
+      const depois = novo.revisao.curso;
+      const semelhanca = semelhancaDeTitulos(registro.markdown, novo.revisao.markdown);
+      if (
+        (antes.cnct?.slug ?? null) !== (depois.cnct?.slug ?? null) ||
+        antes.forma !== depois.forma ||
+        semelhanca < SEMELHANCA_MINIMA
+      )
+        return yield* falha(
+          arquivo,
+          `${nome} parece outro documento (${
+            semelhanca < SEMELHANCA_MINIMA
+              ? `só ${Math.round(semelhanca * 100)}% dos títulos de seção em comum`
+              : "outro curso ou outra forma de oferta"
+          }). Escolha a versão atualizada deste PPC; a pendência não foi marcada como resolvida.`,
+        );
+      // O que a triagem do arquivo novo aponta (texto dirigido a IA, seções ausentes) e a lista não tem entra nela.
+      const existentes = new Set((yield* listas.pendencias(id)).map((x) => x.chave));
+      const novasTriagem = novo.revisao.pendencias
+        .filter((x) => x.ficha === "TRIAGEM")
+        .map((x) => ({ chave: chavePendencia(x), pendencia: x }))
+        .filter((x) => !existentes.has(x.chave));
+      if (novasTriagem.length) yield* listas.acrescentar(id, novasTriagem, `Apareceu na reanálise de ${nome}.`);
+      const ficha = p.pendencia.ficha;
       let resolvida: boolean;
       let texto: string;
       let uso = null;
@@ -534,6 +630,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       } else {
         const { provider, modelo } = provedor(registro, pedido);
         const ctx = yield* contextoPara(registro, ficha, novo.revisao.markdown, novo.revisao.linhasTextoParaIa);
+        const nonceReanalise = novoNonce();
         const bloco = {
           id: `reanalise-${ficha.toLowerCase()}`,
           tipo: "S" as const,
@@ -546,13 +643,13 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
           [ctx.ficha],
           new Map([[ficha, ctx.proprio]]),
           ctx.contexto,
-          registro.nonce,
+          nonceReanalise,
           ctx.comum,
         );
         const julgado = yield* julgarBloco({
           provider,
           modelo,
-          nonce: registro.nonce,
+          nonce: nonceReanalise,
           bloco,
           fichas: [ctx.ficha],
           pedido: pedidoTexto,
@@ -592,6 +689,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     for (const p of pendencias) {
       if (p.situacao === "aberta") continue;
       const ultimo = eventos.filter((e) => e.chave === p.chave).at(-1);
+      const ultimaContestacao = eventos.filter((e) => e.chave === p.chave && e.acao === "contestar").at(-1);
       const nota =
         p.situacao === "resolvida"
           ? p.resolvidaPor === "reanalise"
@@ -599,8 +697,15 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
             : "Marcada pela coordenação, sem reanálise."
           : p.situacao === "contestada_mantida" && ultimo?.acao === "contestar"
             ? ultimo.texto.replace(/^Mantida: /, "Resposta da revisão: ")
-            : undefined;
-      situacoes[p.chave] = { situacao: p.situacao, ...(nota ? { nota } : {}) };
+            : p.situacao === "contestada_aceita" && ultimaContestacao
+              ? `Motivo da coordenação: “${ultimaContestacao.motivo ?? ""}”. ${ultimaContestacao.texto}`
+              : undefined;
+      situacoes[p.chave] = {
+        situacao: p.situacao,
+        ...(nota ? { nota } : {}),
+        // Só a pendência confirmada pela reanálise sai do documento.
+        ...(p.situacao === "resolvida" && p.resolvidaPor === "reanalise" ? { foraDoDocumento: true } : {}),
+      };
     }
     // A lista da revisão com IA: os resultados conferidos da IA entram de novo, como na conclusão.
     let ia: { resultados: ResultadoFichaIa[]; fora: string[] } | undefined;
@@ -626,15 +731,49 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     return yield* lista(id);
   });
 
-  const ultima = listas.ultima.pipe(
+  const expirar = DateTime.now.pipe(
+    Effect.map((agora) => DateTime.formatIso(DateTime.subtract(agora, { days: DIAS_LISTA }))),
+    Effect.flatMap(listas.expirar),
+  );
+
+  /** As discordâncias contra pendências do código, em CSV (separado por ponto e vírgula, como o Excel em português lê). */
+  const exportarDiscordancias = listas.contestacoes.pipe(
+    Effect.map((linhas) => {
+      const campo = (t: string) => `"${t.replace(/"/g, '""').replace(/\s+/g, " ").trim()}"`;
+      const cabeca = ["data", "arquivo", "ficha", "critério", "apontamento", "trecho", "motivo da coordenação"];
+      const corpo = linhas
+        .filter((l) => l.pendencia.origem === "codigo")
+        .map((l) =>
+          [
+            l.em.slice(0, 10),
+            l.arquivo.split(/[\\/]/).at(-1) ?? l.arquivo,
+            l.pendencia.ficha,
+            l.pendencia.tituloFicha,
+            l.pendencia.mensagem,
+            l.pendencia.trecho ?? "",
+            l.motivo ?? "",
+          ]
+            .map(campo)
+            .join(";"),
+        );
+      return [cabeca.map(campo).join(";"), ...corpo].join("\r\n");
+    }),
+  );
+
+  const ultima = expirar.pipe(
+    Effect.andThen(listas.ultima),
     Effect.flatMap((id) => (id === null ? Effect.succeed(null) : lista(id).pipe(Effect.orElseSucceed(() => null)))),
   );
+
+  // As listas sem uso há mais de `DIAS_LISTA` saem ao subir o servidor (e a cada `ultimaLista`).
+  yield* expirar;
 
   return ListaViva.of({
     analisar,
     lista,
     ultima,
     apagar: listas.apagar,
+    exportarDiscordancias,
     marcar,
     verParada,
     estimar,

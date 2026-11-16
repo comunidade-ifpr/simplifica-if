@@ -93,6 +93,18 @@ export class Listas extends Context.Service<
     readonly gravarAcao: (id: string, chave: string, acao: AcaoIaGravada) => Effect.Effect<void>;
     readonly uso: (id: string) => Effect.Effect<UsoRevisaoIa>;
     readonly apagar: (id: string) => Effect.Effect<void>;
+    /** Acrescenta pendências novas (a triagem do arquivo da reanálise), abertas, com o evento. */
+    readonly acrescentar: (
+      id: string,
+      pendencias: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>,
+      texto: string,
+    ) => Effect.Effect<void>;
+    /** Apaga as listas sem uso desde `antesDe` (ISO), com o texto do PPC e os motivos. */
+    readonly expirar: (antesDe: string) => Effect.Effect<number>;
+    /** As contestações registradas, de todas as listas, com a pendência e o arquivo. */
+    readonly contestacoes: Effect.Effect<
+      ReadonlyArray<{ arquivo: string; em: string; motivo: string | null; texto: string; pendencia: PendenciaRevisao }>
+    >;
   }
 >()("@simplifica-if/server/persistencia/Listas") {}
 
@@ -163,6 +175,13 @@ const make = Effect.gen(function* () {
             FROM eventos_pendencia e JOIN pendencias_vivas p ON p.lista_id = ${l.id} AND p.chave = e.chave
             WHERE e.lista_id = ${anterior.id}
           `;
+          // O uso das ações continua contado; as listas anteriores do mesmo conteúdo saem (o texto do
+          // PPC e os motivos não ficam guardados em dobro).
+          yield* sql`
+            UPDATE acoes_ia SET lista_id = ${l.id}
+            WHERE lista_id IN (SELECT id FROM listas_pendencias WHERE arquivo = ${l.arquivo} AND sha256 = ${l.sha256} AND id <> ${l.id})
+          `;
+          yield* sql`DELETE FROM listas_pendencias WHERE arquivo = ${l.arquivo} AND sha256 = ${l.sha256} AND id <> ${l.id}`;
         }
       }),
     );
@@ -304,7 +323,51 @@ const make = Effect.gen(function* () {
     yield* sql`DELETE FROM listas_pendencias WHERE id = ${id}`;
   }, Effect.orDie);
 
+  const acrescentar = Effect.fn("Listas.acrescentar")(function* (
+    id: string,
+    novas: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>,
+    texto: string,
+  ) {
+    const data = yield* agora;
+    const maior =
+      (yield* sql<{ m: number | null }>`SELECT MAX(ordem) AS m FROM pendencias_vivas WHERE lista_id = ${id}`)[0]?.m ??
+      0;
+    let ordem = maior + 1;
+    for (const p of novas) {
+      yield* sql`
+        INSERT OR IGNORE INTO pendencias_vivas (lista_id, chave, ordem, pendencia, situacao, resolvida_por, sugestao)
+        VALUES (${id}, ${p.chave}, ${ordem++}, ${json(p.pendencia)}, 'aberta', NULL, NULL)
+      `;
+      yield* sql`
+        INSERT INTO eventos_pendencia (lista_id, chave, em, acao, situacao, texto, motivo, uso)
+        VALUES (${id}, ${p.chave}, ${data}, 'reanalisar', 'aberta', ${texto}, NULL, NULL)
+      `;
+    }
+    yield* tocar(id, data);
+  }, Effect.orDie);
+
+  const expirar = Effect.fn("Listas.expirar")(function* (antesDe: string) {
+    const linhas = yield* sql<{ id: string }>`SELECT id FROM listas_pendencias WHERE atualizada_em < ${antesDe}`;
+    for (const l of linhas) yield* sql`DELETE FROM listas_pendencias WHERE id = ${l.id}`;
+    return linhas.length;
+  }, Effect.orDie);
+
+  const contestacoes = sql<{ arquivo: string; em: string; motivo: string | null; texto: string; pendencia: string }>`
+    SELECT l.arquivo, e.em, e.motivo, e.texto, p.pendencia
+    FROM eventos_pendencia e
+    JOIN pendencias_vivas p ON p.lista_id = e.lista_id AND p.chave = e.chave
+    JOIN listas_pendencias l ON l.id = e.lista_id
+    WHERE e.acao = 'contestar'
+    ORDER BY e.em
+  `.pipe(
+    Effect.map((linhas) => linhas.map((l) => ({ ...l, pendencia: ler<PendenciaRevisao>(l.pendencia) }))),
+    Effect.orDie,
+  );
+
   return Listas.of({
+    acrescentar,
+    expirar,
+    contestacoes,
     criar,
     buscar,
     ultima,

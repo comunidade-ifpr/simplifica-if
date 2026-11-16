@@ -95,6 +95,7 @@ const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
       "revisaoPpc.lista": ({ lista }) => viva.lista(lista),
       "revisaoPpc.ultimaLista": () => viva.ultima,
       "revisaoPpc.apagarLista": ({ lista }) => viva.apagar(lista),
+      "revisaoPpc.exportarDiscordancias": () => viva.exportarDiscordancias,
       "revisaoPpc.marcar": ({ lista, chave, situacao }) => viva.marcar(lista, chave, situacao).pipe(registrar),
       "revisaoPpc.verParada": ({ lista, ordem }) => viva.verParada(lista, ordem),
       "revisaoPpc.estimarAcao": ({ lista, chave, acao, provider }) =>

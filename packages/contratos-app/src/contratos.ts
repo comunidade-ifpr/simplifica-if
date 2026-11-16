@@ -556,7 +556,7 @@ export const SugestaoTexto = Schema.Struct({
   observacao: Schema.String,
   completar: Schema.Array(Schema.String),
   naoConferidos: Schema.Array(
-    Schema.Struct({ fato: Schema.String, tipo: Schema.Literals(["numero", "norma", "nome"]) }),
+    Schema.Struct({ fato: Schema.String, tipo: Schema.Literals(["numero", "norma", "nome", "sigla", "data"]) }),
   ),
 });
 export type SugestaoTexto = typeof SugestaoTexto.Type;
@@ -662,6 +662,11 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
   Rpc.make("revisaoPpc.lista", { payload: EntradaLista, success: ListaPendencias, error: FalhaRevisaoPpc }),
   /** A lista viva mais recente, para continuar depois de fechar o app (nula se não há). */
   Rpc.make("revisaoPpc.ultimaLista", { payload: Schema.Struct({}), success: Schema.NullOr(ListaPendencias) }),
+  /**
+   * As discordâncias registradas contra pendências do código (a conferência automática), em CSV, para a
+   * curadoria das regras: se o verificador errou, é defeito da regra. Leva o trecho e o motivo da pessoa.
+   */
+  Rpc.make("revisaoPpc.exportarDiscordancias", { payload: Schema.Struct({}), success: Schema.String }),
   /** Apaga a lista viva (com o texto do PPC que ela guarda). */
   Rpc.make("revisaoPpc.apagarLista", { payload: EntradaLista }),
   /** "Vou ajustar", "Já resolvi" (pela palavra da pessoa) ou "Reabrir": só muda a situação, sem IA. */
