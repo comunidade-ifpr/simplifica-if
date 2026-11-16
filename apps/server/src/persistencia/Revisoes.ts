@@ -43,6 +43,13 @@ export interface RegistroBlocoIa<Resultado = unknown> {
   readonly segundos: number;
 }
 
+export interface TentativaGravada {
+  readonly numero: number;
+  readonly uso: UsoRevisaoIa;
+  readonly segundos: number;
+  readonly ferramentas: ReadonlyArray<string>;
+}
+
 export type NovaRevisaoIa = Omit<RegistroRevisaoIa, "criadaEm" | "atualizadaEm" | "resultado" | "limite" | "motivo">;
 
 export interface AlteracaoRevisaoIa {
@@ -64,6 +71,16 @@ export class Revisoes extends Context.Service<
     readonly blocos: (revisao: string) => Effect.Effect<ReadonlyArray<RegistroBlocoIa>>;
     /** As revisões que o banco dá como em andamento, de uma execução anterior do servidor. */
     readonly emAndamento: Effect.Effect<ReadonlyArray<string>>;
+    /** Grava o uso de uma tentativa (mesmo sem o bloco terminar). */
+    readonly gravarTentativa: (revisao: string, bloco: string, tentativa: TentativaGravada) => Effect.Effect<void>;
+    /** O uso somado de todas as tentativas da revisão. */
+    readonly usoTotal: (revisao: string) => Effect.Effect<UsoRevisaoIa>;
+    /** Apaga a revisão, o plano (com o texto do PPC), os blocos e as tentativas. */
+    readonly apagar: (id: string) => Effect.Effect<void>;
+    /** Apaga as revisões `preparada` (nunca iniciadas) criadas antes de `antesDe` (ISO). */
+    readonly expirarPreparadas: (antesDe: string) => Effect.Effect<number>;
+    /** As revisões `preparada` do mesmo arquivo (para substituir ao preparar de novo). */
+    readonly preparadasDoArquivo: (arquivo: string) => Effect.Effect<ReadonlyArray<string>>;
   }
 >()("@simplifica-if/server/persistencia/Revisoes") {}
 
@@ -109,6 +126,7 @@ const agora = Effect.map(DateTime.now, DateTime.formatIso);
 
 /** JSON dos próprios dados do servidor (planos e resultados já validados), fora do código Effect. */
 const json = (valor: unknown): string => JSON.stringify(valor);
+const lerUso = (texto: string) => JSON.parse(texto) as UsoRevisaoIa;
 
 const make = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
@@ -175,7 +193,61 @@ const make = Effect.gen(function* () {
     Effect.orDie,
   );
 
-  return Revisoes.of({ criar, buscar, listar, alterar, gravarBloco, blocos, emAndamento });
+  const gravarTentativa = Effect.fn("Revisoes.gravarTentativa")(function* (
+    revisao: string,
+    bloco: string,
+    t: TentativaGravada,
+  ) {
+    const data = yield* agora;
+    yield* sql`
+      INSERT INTO tentativas_ia (revisao_id, bloco_id, numero, uso, segundos, ferramentas, criada_em)
+      VALUES (${revisao}, ${bloco}, ${t.numero}, ${json(t.uso)}, ${t.segundos}, ${json(t.ferramentas)}, ${data})
+    `;
+  }, Effect.orDie);
+
+  const usoTotal = Effect.fn("Revisoes.usoTotal")(function* (revisao: string) {
+    const linhas = yield* sql<{ uso: string }>`SELECT uso FROM tentativas_ia WHERE revisao_id = ${revisao}`;
+    const total = { entrada: 0, saida: 0, cacheLeitura: 0, cacheEscrita: 0, custoUsd: 0 };
+    for (const l of linhas) {
+      const u = lerUso(l.uso);
+      for (const k of Object.keys(total) as (keyof UsoRevisaoIa)[]) total[k] += u[k];
+    }
+    return total as UsoRevisaoIa;
+  }, Effect.orDie);
+
+  const apagar = Effect.fn("Revisoes.apagar")(function* (id: string) {
+    yield* sql`DELETE FROM revisoes_ia WHERE id = ${id}`;
+  }, Effect.orDie);
+
+  const expirarPreparadas = Effect.fn("Revisoes.expirarPreparadas")(function* (antesDe: string) {
+    const linhas = yield* sql<{ id: string }>`
+      SELECT id FROM revisoes_ia WHERE situacao = 'preparada' AND criada_em < ${antesDe}
+    `;
+    for (const l of linhas) yield* sql`DELETE FROM revisoes_ia WHERE id = ${l.id}`;
+    return linhas.length;
+  }, Effect.orDie);
+
+  const preparadasDoArquivo = Effect.fn("Revisoes.preparadasDoArquivo")(function* (arquivo: string) {
+    const linhas = yield* sql<{ id: string }>`
+      SELECT id FROM revisoes_ia WHERE situacao = 'preparada' AND arquivo = ${arquivo}
+    `;
+    return linhas.map((l) => l.id);
+  }, Effect.orDie);
+
+  return Revisoes.of({
+    criar,
+    buscar,
+    listar,
+    alterar,
+    gravarBloco,
+    blocos,
+    emAndamento,
+    gravarTentativa,
+    usoTotal,
+    apagar,
+    expirarPreparadas,
+    preparadasDoArquivo,
+  });
 });
 
 /** Pede o `SqlClient` do banco das conversas (`Banco.layerArquivo` ou `Banco.layerMemoria`). */

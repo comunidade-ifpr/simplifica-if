@@ -39,18 +39,21 @@ export function andamentoPorTema(estado: EstadoRevisaoIa): ReadonlyArray<TemaAnd
   return [...temas.entries()].sort(([a], [b]) => a - b).map(([ordem, t]) => ({ ordem, ...t }));
 }
 
-/** "12 critérios conferidos pelo código e 20 pela IA; 48 ficaram de fora (modo rápido)." */
+/** "34 de 80 critérios conferidos: 12 pelo código e 22 pela IA…; 13 ficaram para conferir…" */
 export function textoCobertura(r: ResultadoRevisaoPpc): string {
-  if (r.conferidosIa === 0)
+  if (r.conferidosIa + r.paraConferirIa === 0)
     return r.totalCriterios > r.conferidos
       ? `${r.conferidos} de ${r.totalCriterios} critérios conferidos automaticamente; os demais exigem leitura.`
       : `${r.conferidos} critérios conferidos automaticamente; os demais exigem leitura.`;
+  const paraConferir = r.paraConferirIa
+    ? ` ${r.paraConferirIa} ${r.paraConferirIa === 1 ? "foi à IA e ficou" : "foram à IA e ficaram"} para conferir na leitura.`
+    : "";
   const fora = r.foraDaRevisao.length
     ? ` ${r.foraDaRevisao.length} ficaram de fora (modo rápido) e exigem leitura.`
-    : r.conferidos + r.conferidosIa < r.totalCriterios
+    : r.conferidos + r.conferidosIa + r.paraConferirIa < r.totalCriterios
       ? " Os demais exigem leitura."
       : "";
-  return `${r.conferidos + r.conferidosIa} de ${r.totalCriterios} critérios conferidos: ${r.conferidos} pelo código e ${r.conferidosIa} pela IA, com cada trecho e cada norma citados conferidos pelo app.${fora}`;
+  return `${r.conferidos + r.conferidosIa} de ${r.totalCriterios} critérios conferidos: ${r.conferidos} pelo código e ${r.conferidosIa} pela IA, com cada trecho e cada norma citados conferidos pelo app.${paraConferir}${fora}`;
 }
 
 export const ROTULO_SITUACAO: Record<EstadoRevisaoIa["situacao"], string> = {

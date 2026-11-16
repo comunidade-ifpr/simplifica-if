@@ -134,8 +134,10 @@ export type RevisaoPrevia = {
   criterios: CriterioConferido[];
   /** Critérios conferidos pelo código (fichas D). */
   conferidos: number;
-  /** Critérios avaliados pela IA (fichas S e J), 0 sem a revisão com IA. */
+  /** Critérios que a IA decidiu (atende, não atende, não se aplica), com a resposta conferida pelo app. */
   conferidosIa: number;
+  /** Critérios que foram à IA e ficaram para conferir (INCONCLUSIVO ou resposta recusada na conferência). */
+  paraConferirIa: number;
   /** Títulos dos critérios que ficaram de fora (o modo rápido), vazio sem IA ou no completo. */
   foraDaRevisao: string[];
   totalCriterios: number;
@@ -539,6 +541,7 @@ function textoDoAviso(entrada: {
   dataBase: string;
   conferidos: number;
   conferidosIa: number;
+  paraConferirIa: number;
   foraDaRevisao: readonly string[];
   /** Os temas das fichas de fora, na ordem do parecer. */
   temasForaDaRevisao: readonly string[];
@@ -551,18 +554,24 @@ function textoDoAviso(entrada: {
   const naoAtende = entrada.pendencias.filter((p) => p.estado === "nao_atende").length;
   const aConferir = entrada.pendencias.length - naoAtende;
   const vistos = entrada.conferidos + entrada.conferidosIa;
-  const total =
-    entrada.conferidosIa > 0
-      ? `${vistos} de ${entrada.totalCriterios} critérios conferidos: ${entrada.conferidos} pelo código, com a base de normas, e ${entrada.conferidosIa} pela IA, com cada trecho e cada norma citados conferidos pelo app. ${
-          entrada.foraDaRevisao.length
-            ? `No modo rápido, ficaram de fora ${plural(entrada.foraDaRevisao.length, "critério", "critérios")}, que exigem leitura, dos temas: ${entrada.temasForaDaRevisao.join("; ")}.`
-            : vistos < entrada.totalCriterios
-              ? "Os demais exigem leitura."
-              : ""
-        }`.trim()
-      : entrada.totalCriterios > entrada.conferidos
-        ? `${entrada.conferidos} de ${entrada.totalCriterios} critérios conferidos automaticamente; os demais exigem leitura.`
-        : `${entrada.conferidos} critérios conferidos automaticamente; os demais exigem leitura.`;
+  const comIa = entrada.conferidosIa + entrada.paraConferirIa > 0;
+  const total = comIa
+    ? [
+        `${vistos} de ${entrada.totalCriterios} critérios conferidos: ${entrada.conferidos} pelo código, com a base de normas, e ${entrada.conferidosIa} pela IA, com cada trecho e cada norma citados conferidos pelo app.`,
+        entrada.paraConferirIa
+          ? `${plural(entrada.paraConferirIa, "critério foi", "critérios foram")} à IA e ${entrada.paraConferirIa === 1 ? "ficou" : "ficaram"} para conferir na leitura.`
+          : "",
+        entrada.foraDaRevisao.length
+          ? `No modo rápido, ficaram de fora ${plural(entrada.foraDaRevisao.length, "critério", "critérios")}, que exigem leitura, dos temas: ${entrada.temasForaDaRevisao.join("; ")}.`
+          : vistos + entrada.paraConferirIa < entrada.totalCriterios
+            ? "Os demais exigem leitura."
+            : "",
+      ]
+        .filter(Boolean)
+        .join(" ")
+    : entrada.totalCriterios > entrada.conferidos
+      ? `${entrada.conferidos} de ${entrada.totalCriterios} critérios conferidos automaticamente; os demais exigem leitura.`
+      : `${entrada.conferidos} critérios conferidos automaticamente; os demais exigem leitura.`;
   const curso = entrada.curso.cnct
     ? `Curso considerado: ${entrada.curso.cnct.denominacao} (CNCT)${entrada.curso.forma ? `, forma de oferta: ${NOME_DA_FORMA[entrada.curso.forma] ?? entrada.curso.forma}` : ""}.`
     : "O curso não foi identificado no CNCT: os critérios que dependem dele ficaram para conferir.";
@@ -620,7 +629,10 @@ export function revisarDocx(
     ...(opcoes.ia ? itensDaIa(opcoes.ia, registro, base, cnct?.slug ?? null) : []),
   ].sort((a, b) => a.ordemTema - b.ordemTema);
   const conferidos = resultado.fichas.length;
-  const conferidosIa = opcoes.ia?.resultados.length ?? 0;
+  // Só o que a IA decidiu conta como conferido; INCONCLUSIVO e a resposta recusada ficam para conferir.
+  const decididos = (opcoes.ia?.resultados ?? []).filter((r) => r.estado !== "INCONCLUSIVO" && r.estado !== "FALHOU");
+  const conferidosIa = decididos.length;
+  const paraConferirIa = (opcoes.ia?.resultados.length ?? 0) - conferidosIa;
   const foraDaRevisao = (opcoes.ia?.fora ?? []).map((f) => base.fichas[f] ?? f);
   const totalCriterios = Math.max(Object.keys(base.fichas).length, conferidos);
 
@@ -647,6 +659,7 @@ export function revisarDocx(
     dataBase: base.dataBase,
     conferidos,
     conferidosIa,
+    paraConferirIa,
     foraDaRevisao,
     temasForaDaRevisao: [...new Set((opcoes.ia?.fora ?? []).map((f) => temaDaFicha(f, base)))]
       .sort((a, b) => a - b)
@@ -687,6 +700,7 @@ export function revisarDocx(
     criterios,
     conferidos,
     conferidosIa,
+    paraConferirIa,
     foraDaRevisao,
     totalCriterios,
     dataBase: base.dataBase,

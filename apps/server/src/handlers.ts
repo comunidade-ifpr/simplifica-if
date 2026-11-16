@@ -91,6 +91,7 @@ const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
       "revisaoPpc.pausarIa": ({ revisao }) => ia.pausar(revisao).pipe(registrar),
       "revisaoPpc.acompanharIa": ({ revisao }) => ia.acompanhar(revisao),
       "revisaoPpc.listarIa": () => ia.listar,
+      "revisaoPpc.apagarIa": ({ revisao }) => ia.apagar(revisao),
     });
   }),
 );

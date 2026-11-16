@@ -111,7 +111,6 @@ export const POLITICA_FABRICA: Politica = congelar(
   }),
 );
 
-/** A busca web vale nesta sessão: pedida na sessão e permitida pela política. */
 /**
  * A política das sessões de julgamento (`ConfigSessao.semFerramentas`, a revisão de PPC do M1.11):
  * o contexto vai pronto na mensagem, e qualquer ferramenta se nega sem perguntar, dentro ou fora da
@@ -135,6 +134,7 @@ export const POLITICA_JULGAMENTO: Politica = congelar(
   }),
 );
 
+/** A busca web vale nesta sessão: pedida na sessão e permitida pela política. */
 export const buscaWebLigada = (politica: Politica, pedida: boolean | undefined): boolean =>
   pedida === true && politica.isolamento.buscaWeb === "a-pedido" && politica.ferramentas.web !== "negar";
 

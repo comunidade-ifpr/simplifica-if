@@ -18,6 +18,7 @@
  */
 import * as NodeCrypto from "node:crypto";
 import * as Context from "effect/Context";
+import * as DateTime from "effect/DateTime";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as FiberMap from "effect/FiberMap";
@@ -31,7 +32,6 @@ import {
   FalhaRevisaoPpc,
   type ModoRevisaoIa,
   type Provider,
-  type UsoRevisaoIa,
 } from "@simplifica-if/contratos-app";
 import type { FontesNormativas } from "@simplifica-if/kb/FontesNormativas";
 import * as Motor from "@simplifica-if/motor";
@@ -41,7 +41,7 @@ import { MODELO_PADRAO } from "@simplifica-if/ppc/revisao-ia/tipos";
 import { NOME_DA_FORMA, type ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 import { type RegistroRevisaoIa, Revisoes } from "../persistencia/Revisoes.ts";
 import { AnalisePpc, resultadoParaInterface } from "./AnalisePpc.ts";
-import { alvoDosTrechos, julgarBloco, type PausaRevisao, type ResultadoBloco } from "./julgamento.ts";
+import { julgarBloco, type PausaRevisao, type ResultadoBloco } from "./julgamento.ts";
 import { type PlanoRevisaoIa, preparar } from "./preparo.ts";
 
 /** Sessões ao mesmo tempo (o padrão; `OpcoesRevisaoIa.paralelismo` muda). */
@@ -65,6 +65,8 @@ export class RevisaoIa extends Context.Service<
     readonly pausar: (id: string) => Effect.Effect<EstadoRevisaoIa, FalhaRevisaoPpc>;
     readonly acompanhar: (id: string) => Stream.Stream<EstadoRevisaoIa, FalhaRevisaoPpc>;
     readonly listar: Effect.Effect<ReadonlyArray<EstadoRevisaoIa>>;
+    /** Para a execução, se houver, e apaga a revisão inteira (plano com o texto do PPC, blocos, tentativas). */
+    readonly apagar: (id: string) => Effect.Effect<void>;
   }
 >()("@simplifica-if/server/revisao-ppc/RevisaoIa") {}
 
@@ -72,6 +74,9 @@ export interface OpcoesRevisaoIa {
   readonly paralelismo?: number;
   readonly tempoTurno?: Duration.Duration;
 }
+
+/** Dias que uma revisão `preparada` e nunca iniciada fica guardada. */
+export const DIAS_PREPARADA = 7;
 
 const MOTIVO_APP_FECHADO = "A revisão foi interrompida quando o app foi fechado. O que já foi revisado está guardado.";
 const MOTIVO_PAUSA = "Pausada por você. O que já foi revisado está guardado.";
@@ -84,11 +89,17 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   const contextoKb = yield* Effect.context<FontesNormativas | SqlClient.SqlClient>();
   const contextoMotor = yield* Effect.context<Motor.Motor>();
   const execucoes = yield* FiberMap.make<string>();
+  const expirar = DateTime.now.pipe(
+    Effect.map((agora) => DateTime.formatIso(DateTime.subtract(agora, { days: DIAS_PREPARADA }))),
+    Effect.flatMap(revisoes.expirarPreparadas),
+  );
   const mudancas = yield* PubSub.unbounded<string>();
   /** Os blocos em andamento de cada revisão (só em memória: depois de reiniciar, nada está em andamento). */
   const emAndamento = new Map<string, Set<string>>();
 
   // Uma revisão em andamento numa execução anterior do servidor ficou parada no meio.
+  // Revisões preparadas e nunca iniciadas guardam o texto do PPC à toa: expiram em `DIAS_PREPARADA`.
+  yield* expirar;
   for (const id of yield* revisoes.emAndamento)
     yield* revisoes.alterar(id, { situacao: "pausada", motivo: MOTIVO_APP_FECHADO });
 
@@ -108,14 +119,8 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   const estado = Effect.fn("RevisaoIa.estado")(function* (registro: RegistroRevisaoIa<PlanoRevisaoIa | null>) {
     const gravados = new Map((yield* revisoes.blocos(registro.id)).map((b) => [b.bloco, b]));
     const andando = emAndamento.get(registro.id) ?? new Set();
-    const uso: { -readonly [K in keyof UsoRevisaoIa]: number } = {
-      entrada: 0,
-      saida: 0,
-      cacheLeitura: 0,
-      cacheEscrita: 0,
-      custoUsd: 0,
-    };
-    for (const b of gravados.values()) for (const k of Object.keys(uso) as (keyof UsoRevisaoIa)[]) uso[k] += b.uso[k];
+    // O uso é o de todas as tentativas, gravadas uma a uma: inclui as dos blocos que não terminaram.
+    const uso = yield* revisoes.usoTotal(registro.id);
     const blocos: BlocoRevisaoIa[] = (registro.plano?.blocos ?? []).map((b) => {
       const gravado = gravados.get(b.id);
       const resultado = gravado?.resultado as ResultadoBloco | undefined;
@@ -183,6 +188,8 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
       entrada.provider,
       paralelismo,
     );
+    // Preparar de novo o mesmo arquivo substitui a preparada anterior (nunca iniciada).
+    for (const antiga of yield* revisoes.preparadasDoArquivo(entrada.arquivo)) yield* revisoes.apagar(antiga);
     const id = `revisao-${NodeCrypto.randomUUID()}`;
     yield* revisoes.criar({
       id,
@@ -205,7 +212,6 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   const executar = Effect.fn("RevisaoIa.executar")(function* (id: string) {
     const registro = yield* buscar(id);
     const plano = registro.plano!;
-    const alvo = alvoDosTrechos(plano.markdown);
     const porId = new Map(plano.fichas.map((f) => [f.id, f]));
     const andando = new Set<string>();
     emAndamento.set(id, andando);
@@ -222,9 +228,9 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
           bloco,
           fichas: bloco.fichas.map((f) => porId.get(f)!),
           pedido,
-          alvo,
           fontes: new Set(bloco.fontes),
           tempoTurno,
+          registrarTentativa: (t) => revisoes.gravarTentativa(id, bloco.id, t),
         });
         yield* revisoes.gravarBloco(id, {
           bloco: bloco.id,
@@ -342,7 +348,20 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     Effect.flatMap((linhas) => Effect.forEach(linhas, (r) => estado({ ...r, plano: null }))),
   );
 
-  return RevisaoIa.of({ preparar: prepararRevisao, iniciar, pausar, acompanhar, listar });
+  const apagar = Effect.fn("RevisaoIa.apagar")(function* (id: string) {
+    yield* FiberMap.remove(execucoes, id);
+    yield* revisoes.apagar(id);
+    yield* avisar(id);
+  });
+
+  return RevisaoIa.of({
+    preparar: prepararRevisao,
+    iniciar,
+    pausar,
+    acompanhar,
+    listar: expirar.pipe(Effect.andThen(listar)),
+    apagar,
+  });
 });
 
 /** Pede o `Motor`, a `AnalisePpc`, as `Revisoes`, as `FontesNormativas` e o `SqlClient` do `kb.sqlite`. */

@@ -67,6 +67,7 @@ const resultado: ResultadoRevisaoPpc = {
   ],
   conferidos: 12,
   conferidosIa: 0,
+  paraConferirIa: 0,
   foraDaRevisao: [],
   totalCriterios: 80,
   dataBase: "2026-11-13",

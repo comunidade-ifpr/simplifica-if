@@ -311,7 +311,8 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
         ...(config.retomar === undefined
           ? {}
           : { env: { ...limparAmbiente(opcoes.ambiente), MCP_CONNECTION_NONBLOCKING: "0" } }),
-        persistSession: true,
+        // Julgamento: a sessão não é retomada, e o PPC não fica na transcrição do `~/.claude/projects/`.
+        persistSession: config.semFerramentas !== true,
         ...(config.retomar === undefined ? { sessionId: idNativo } : { resume: config.retomar }),
         abortController: abortar,
         cwd: config.pastaTrabalho,

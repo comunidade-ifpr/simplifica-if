@@ -1,8 +1,16 @@
 // @effect-diagnostics nodeBuiltinImport:off -- a pasta vazia de cada sessão de julgamento
 /**
  * O julgamento de um bloco (M1.11, etapa 4): uma sessão curta do motor, sem MCP e sem ferramentas,
- * numa pasta vazia, com o pedido pronto; a resposta conferida em código; uma nova tentativa com os
- * problemas; e, se falhar de novo, a ficha "a conferir" com o motivo.
+ * numa pasta vazia, com o pedido pronto; a resposta conferida em código; uma nova tentativa (numa
+ * sessão nova) com os problemas; e, se falhar de novo, a ficha "a conferir" com o motivo.
+ *
+ * Segunda defesa contra ferramentas, nos três providers: a sessão de julgamento não tem ferramenta
+ * (o motor as desliga), mas se o provider anunciar alguma (`FerramentaIniciada`), a resposta inteira é
+ * descartada e as fichas do bloco saem "a conferir". O texto livre da resposta (justificativa,
+ * lacunas) não é conferido contra o PPC; uma leitura do disco não pode chegar a ele.
+ *
+ * O uso de cada tentativa se registra ao fim dela (`registrarTentativa`), inclusive quando o bloco não
+ * termina (pausa, limite, interrupção): o que se gastou não some.
  *
  * Limite de taxa, cota esgotada, provider caído ou turno longo demais viram `PausaRevisao` (a revisão
  * pausa e retoma depois), nunca um resultado: o bloco só se grava inteiro e conferido.
@@ -25,7 +33,7 @@ import {
   pedidoDeCorrecao,
   type ResultadoIa,
 } from "@simplifica-if/ppc/revisao-ia/conferencia";
-import { instrucoesJulgador } from "@simplifica-if/ppc/revisao-ia/pedido";
+import { conteudoDoPpcParaFicha, instrucoesJulgador } from "@simplifica-if/ppc/revisao-ia/pedido";
 import type { Bloco, FichaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import type { ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 
@@ -43,7 +51,12 @@ export type ResultadoBloco = {
   tentativas: number;
   /** Os problemas da primeira resposta (por que houve nova tentativa), para o diagnóstico. */
   problemasPrimeira?: string[];
+  /** Ferramentas que o provider tentou usar (a resposta foi descartada). */
+  ferramentas?: string[];
 };
+
+/** O uso de uma tentativa, para gravar à parte (`tentativas_ia`). */
+export type TentativaIa = { numero: number; uso: UsoRevisaoIa; segundos: number; ferramentas: string[] };
 
 export const NOME_PROVIDER: Record<Motor.Provider, string> = {
   claude: "Claude",
@@ -76,12 +89,14 @@ export interface EntradaJulgamento {
   readonly nonce: string;
   readonly bloco: Bloco;
   readonly fichas: readonly FichaIa[];
+  /** O pedido do bloco; o conteúdo do PPC entregue a cada ficha sai dele e é o alvo dos trechos. */
   readonly pedido: string;
-  /** O PPC normalizado para conferir os trechos (`alvoDosTrechos`). */
-  readonly alvo: string;
+  /** Para as transversais, cujo pedido se monta na hora: o mesmo texto que foi entre as marcas. */
   readonly fontes: ReadonlySet<string>;
   /** Tempo máximo de um turno. */
   readonly tempoTurno: Duration.Duration;
+  /** Grava o uso de cada tentativa assim que ela acaba, mesmo que o bloco não termine. */
+  readonly registrarTentativa?: (tentativa: TentativaIa) => Effect.Effect<void>;
 }
 
 const usoVazio = (): { -readonly [K in keyof UsoRevisaoIa]: UsoRevisaoIa[K] } => ({
@@ -105,6 +120,22 @@ const paraResultado = (r: ResultadoIa): ResultadoFichaIa => ({
   revisaoHumana: r.revisao_humana_obrigatoria,
 });
 
+const falhou = (ficha: string, motivo: string): ResultadoFichaIa => ({
+  ficha,
+  estado: "FALHOU",
+  confianca: 0,
+  justificativa: "",
+  lacunas: [],
+  oQueFazer: "",
+  trechos: [],
+  fontes: [],
+  revisaoHumana: true,
+  motivoFalha: motivo,
+});
+
+export const MOTIVO_FERRAMENTA =
+  "a IA tentou usar uma ferramenta, o que a revisão não permite, e a resposta foi descartada";
+
 export { alvoDosTrechos };
 
 /** Julga um bloco. Devolve o resultado (uma entrada por ficha), o uso somado e os segundos. */
@@ -112,84 +143,133 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
   const motor = yield* Motor.Motor;
   const inicio = yield* Clock.currentTimeMillis;
   const uso = usoVazio();
+  let numero = 0;
+
   /**
    * Uma tentativa: uma sessão nova, numa pasta vazia, com um turno só. A nova tentativa não continua a
    * sessão: no teste real de 16/11/2026, o segundo turno de uma sessão do Claude levou um bloco fixo de
-   * cerca de 158 mil tokens (lido ou gravado no cache), e as três novas tentativas custaram mais que os
-   * cinco blocos; um pedido novo, com os problemas no fim, custa só o pedido.
+   * cerca de 158 mil tokens (lido ou gravado no cache); um pedido novo custa só o pedido.
    */
   const tentativa = Effect.fn("RevisaoIa.tentativa")(function* (texto: string) {
-    const pasta = yield* Effect.acquireRelease(
-      Effect.promise(() => NodeFSP.mkdtemp(NodePath.join(NodeOS.tmpdir(), "simplifica-julgamento-"))).pipe(
-        Effect.flatMap((p) => Effect.promise(() => NodeFSP.realpath(p))),
-      ),
-      (p) => Effect.promise(() => NodeFSP.rm(p, { recursive: true, force: true })),
-    );
-    const sessao = yield* Effect.acquireRelease(
-      motor
-        .iniciarSessao({
-          provider: entrada.provider,
-          pastaTrabalho: pasta,
-          servidoresMcp: [],
-          instrucoes: instrucoesJulgador(entrada.nonce),
-          semFerramentas: true,
-          ...(entrada.modelo ? { modelo: entrada.modelo } : {}),
-        })
-        .pipe(Effect.mapError((erro) => pausaDoErro(entrada.provider, erro.detalhe))),
-      (id) => motor.encerrar(id).pipe(Effect.ignore),
-    );
-    const textos: string[] = [];
-    const erros: string[] = [];
+    numero += 1;
+    const esta = numero;
+    const comeco = yield* Clock.currentTimeMillis;
+    const usoDaTentativa = usoVazio();
+    const ferramentas: string[] = [];
     // O `custoUsd` do Claude é o acumulado da sessão (o `total_cost_usd` do Agent SDK): vale o último.
     let custoDaSessao = 0;
-    yield* motor.enviarMensagem(sessao, texto).pipe(
-      Stream.runForEach((evento) =>
-        Effect.gen(function* () {
-          switch (evento._tag) {
-            case "TextoFinal":
-              textos.push(evento.texto);
-              break;
-            case "UsoTokens":
-              uso.entrada += evento.entrada;
-              uso.saida += evento.saida;
-              uso.cacheLeitura += evento.cacheLeitura ?? 0;
-              uso.cacheEscrita += evento.cacheEscrita ?? 0;
-              custoDaSessao = Math.max(custoDaSessao, evento.custoUsd ?? 0);
-              break;
-            case "Erro":
-              erros.push(evento.mensagem);
-              break;
-            case "PedidoAprovacao":
-              // A política de julgamento já nega sem perguntar; se algo chegar, nega também.
-              yield* motor.responderAprovacao(sessao, evento.id, "negar").pipe(Effect.ignore);
-              break;
-          }
+    const registrar = Effect.suspend(() => {
+      usoDaTentativa.custoUsd = custoDaSessao;
+      for (const k of Object.keys(uso) as (keyof UsoRevisaoIa)[]) uso[k] += usoDaTentativa[k];
+      return Clock.currentTimeMillis.pipe(
+        Effect.flatMap((agora) =>
+          entrada.registrarTentativa
+            ? entrada.registrarTentativa({
+                numero: esta,
+                uso: { ...usoDaTentativa },
+                segundos: Math.round((agora - comeco) / 100) / 10,
+                ferramentas: [...ferramentas],
+              })
+            : Effect.void,
+        ),
+      );
+    });
+    const turno = Effect.gen(function* () {
+      const pasta = yield* Effect.acquireRelease(
+        Effect.promise(() => NodeFSP.mkdtemp(NodePath.join(NodeOS.tmpdir(), "simplifica-julgamento-"))).pipe(
+          Effect.flatMap((p) => Effect.promise(() => NodeFSP.realpath(p))),
+        ),
+        (p) => Effect.promise(() => NodeFSP.rm(p, { recursive: true, force: true })),
+      );
+      const sessao = yield* Effect.acquireRelease(
+        motor
+          .iniciarSessao({
+            provider: entrada.provider,
+            pastaTrabalho: pasta,
+            servidoresMcp: [],
+            instrucoes: instrucoesJulgador(entrada.nonce),
+            semFerramentas: true,
+            ...(entrada.modelo ? { modelo: entrada.modelo } : {}),
+          })
+          .pipe(Effect.mapError((erro) => pausaDoErro(entrada.provider, erro.detalhe))),
+        (id) => motor.encerrar(id).pipe(Effect.ignore),
+      );
+      const textos: string[] = [];
+      const erros: string[] = [];
+      yield* motor.enviarMensagem(sessao, texto).pipe(
+        Stream.runForEach((evento) =>
+          Effect.gen(function* () {
+            switch (evento._tag) {
+              case "TextoFinal":
+                textos.push(evento.texto);
+                break;
+              case "UsoTokens":
+                usoDaTentativa.entrada += evento.entrada;
+                usoDaTentativa.saida += evento.saida;
+                usoDaTentativa.cacheLeitura += evento.cacheLeitura ?? 0;
+                usoDaTentativa.cacheEscrita += evento.cacheEscrita ?? 0;
+                custoDaSessao = Math.max(custoDaSessao, evento.custoUsd ?? 0);
+                break;
+              case "FerramentaIniciada":
+                ferramentas.push(evento.nome.slice(0, 80));
+                break;
+              case "Erro":
+                erros.push(evento.mensagem);
+                break;
+              case "PedidoAprovacao":
+                // A política de julgamento já nega sem perguntar; se algo chegar, nega também.
+                ferramentas.push(evento.ferramenta.slice(0, 80));
+                yield* motor.responderAprovacao(sessao, evento.id, "negar").pipe(Effect.ignore);
+                break;
+            }
+          }),
+        ),
+        Effect.mapError((erro) =>
+          pausaDoErro(entrada.provider, erro._tag === "FalhaProvider" ? erro.detalhe : erro.message),
+        ),
+        Effect.timeoutOrElse({
+          duration: entrada.tempoTurno,
+          orElse: () =>
+            Effect.fail(
+              new PausaRevisao({
+                limite: false,
+                motivo: `O ${NOME_PROVIDER[entrada.provider]} demorou demais para responder um bloco. O que já foi revisado está guardado; retome quando quiser.`,
+              }),
+            ),
         }),
-      ),
-      Effect.mapError((erro) =>
-        pausaDoErro(entrada.provider, erro._tag === "FalhaProvider" ? erro.detalhe : erro.message),
-      ),
-      Effect.timeoutOrElse({
-        duration: entrada.tempoTurno,
-        orElse: () =>
-          Effect.fail(
-            new PausaRevisao({
-              limite: false,
-              motivo: `O ${NOME_PROVIDER[entrada.provider]} demorou demais para responder um bloco. O que já foi revisado está guardado; retome quando quiser.`,
-            }),
-          ),
-      }),
-    );
-    uso.custoUsd += custoDaSessao;
-    if (erros.length) return yield* pausaDoErro(entrada.provider, erros.join("; "));
-    return textos.join("\n");
-  }, Effect.scoped);
+      );
+      if (erros.length && !ferramentas.length) return yield* pausaDoErro(entrada.provider, erros.join("; "));
+      return { texto: textos.join("\n"), ferramentas: [...ferramentas] };
+    }).pipe(Effect.scoped);
+    // O uso fica gravado em qualquer saída: sucesso, pausa, interrupção.
+    return yield* turno.pipe(Effect.onExit(() => registrar));
+  });
 
+  // O alvo dos trechos de cada ficha: o conteúdo do PPC que ela recebeu (sem os recortes das outras).
+  const alvos = new Map(
+    entrada.fichas.map((f) => [f.id, alvoDosTrechos(conteudoDoPpcParaFicha({ pedido: entrada.pedido }, f.id))]),
+  );
   const conferir = (texto: string): Conferencia =>
-    conferirResposta(texto, entrada.bloco, entrada.fichas, { alvo: entrada.alvo, fontes: entrada.fontes });
+    conferirResposta(texto, entrada.bloco, entrada.fichas, {
+      alvoDaFicha: (id) => alvos.get(id) ?? "",
+      fontes: entrada.fontes,
+    });
+  const fim = (resultado: ResultadoBloco) =>
+    Clock.currentTimeMillis.pipe(
+      Effect.map((agora) => ({ resultado, uso: { ...uso }, segundos: Math.round((agora - inicio) / 100) / 10 })),
+    );
+  const descartado = (ferramentas: string[], tentativas: number) =>
+    fim({
+      resultados: entrada.fichas.map((f) => falhou(f.id, MOTIVO_FERRAMENTA)),
+      resumo: null,
+      tentativas,
+      ferramentas,
+    });
 
+  const r1 = yield* tentativa(entrada.pedido);
+  if (r1.ferramentas.length) return yield* descartado(r1.ferramentas, 1);
   let tentativas = 1;
-  const primeira = conferir(yield* tentativa(entrada.pedido));
+  const primeira = conferir(r1.texto);
   let validos = primeira.validos;
   let resumo = primeira.resumo;
   let problemas = primeira.problemas;
@@ -198,7 +278,9 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
   const problemasPrimeira = [...problemas].map(([ficha, erros]) => `${ficha}: ${erros.join("; ")}`);
   if (fichaRecusada) {
     tentativas = 2;
-    const segunda = conferir(yield* tentativa(`${entrada.pedido}\n\n${pedidoDeCorrecao(primeira)}`));
+    const r2 = yield* tentativa(`${entrada.pedido}\n\n${pedidoDeCorrecao(primeira)}`);
+    if (r2.ferramentas.length) return yield* descartado(r2.ferramentas, 2);
+    const segunda = conferir(r2.texto);
     // A segunda resposta vale onde passou; o que só passou na primeira continua valendo.
     validos = new Map([...primeira.validos, ...segunda.validos]);
     resumo = segunda.resumo ?? primeira.resumo;
@@ -207,20 +289,7 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
   const resultados: ResultadoFichaIa[] = entrada.fichas.map((ficha) => {
     const valido = validos.get(ficha.id);
     if (valido) return paraResultado(valido);
-    const erros = problemas.get(ficha.id) ?? problemas.get("*") ?? ["sem resultado"];
-    return {
-      ficha: ficha.id,
-      estado: "FALHOU",
-      confianca: 0,
-      justificativa: "",
-      lacunas: [],
-      oQueFazer: "",
-      trechos: [],
-      fontes: [],
-      revisaoHumana: true,
-      motivoFalha: motivoLegivel(erros),
-    };
+    return falhou(ficha.id, motivoLegivel(problemas.get(ficha.id) ?? problemas.get("*") ?? ["sem resultado"]));
   });
-  const resultado: ResultadoBloco = { resultados, resumo, tentativas, problemasPrimeira };
-  return { resultado, uso: { ...uso }, segundos: Math.round(((yield* Clock.currentTimeMillis) - inicio) / 100) / 10 };
-}, Effect.scoped);
+  return yield* fim({ resultados, resumo, tentativas, problemasPrimeira });
+});

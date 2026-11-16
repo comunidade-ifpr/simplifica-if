@@ -421,8 +421,9 @@ export const ResultadoRevisaoPpc = Schema.Struct({
   criterios: Schema.Array(CriterioRevisao),
   /** Quantos critérios o código conferiu, de quantos a revisão tem. */
   conferidos: Schema.Number,
-  /** Quantos a IA avaliou (0 na pré-conferência) e os títulos dos que ficaram de fora (modo rápido). */
+  /** Quantos a IA decidiu (0 na pré-conferência), quantos foram à IA e ficaram para conferir, e os títulos dos que ficaram de fora (modo rápido). */
   conferidosIa: Schema.Number,
+  paraConferirIa: Schema.Number,
   foraDaRevisao: Schema.Array(Schema.String),
   totalCriterios: Schema.Number,
   /** `data_referencia` da base (AAAA-MM-DD). */
@@ -557,6 +558,8 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
     error: FalhaRevisaoPpc,
     stream: true,
   }),
+  /** Apaga a revisão com IA: o plano (com o texto do PPC), os blocos e o uso de cada tentativa. */
+  Rpc.make("revisaoPpc.apagarIa", { payload: EntradaRevisaoIa }),
   /** As revisões com IA gravadas (sem o resultado), da mais recente para a mais antiga. */
   Rpc.make("revisaoPpc.listarIa", { payload: Schema.Struct({}), success: Schema.Array(EstadoRevisaoIa) }),
 ) {}

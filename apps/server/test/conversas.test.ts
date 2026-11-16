@@ -150,7 +150,7 @@ describe("conversas gravadas", () => {
     }),
   );
 
-  it.effect("migrações: o banco novo fica na versão 2, e reabrir não roda de novo", () =>
+  it.effect("migrações: o banco novo fica na versão 3, e reabrir não roda de novo", () =>
     Effect.gen(function* () {
       const arquivo = novoBanco();
       for (let vez = 0; vez < 2; vez++) {
@@ -163,7 +163,7 @@ describe("conversas gravadas", () => {
             `;
             assert.deepStrictEqual(
               tabelas.map((tabela) => tabela.name),
-              ["blocos_ia", "conversas", "effect_sql_migrations", "eventos", "revisoes_ia"],
+              ["blocos_ia", "conversas", "effect_sql_migrations", "eventos", "revisoes_ia", "tentativas_ia"],
             );
             const migracoes = yield* sql<{ readonly migration_id: number; readonly name: string }>`
               SELECT migration_id, name FROM effect_sql_migrations
@@ -173,6 +173,7 @@ describe("conversas gravadas", () => {
               [
                 [1, "Conversas"],
                 [2, "RevisoesIa"],
+                [3, "TentativasIa"],
               ],
             );
             // A layer já migrou: rodar de novo não executa nada.

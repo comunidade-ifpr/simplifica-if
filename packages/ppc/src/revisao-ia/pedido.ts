@@ -112,7 +112,7 @@ const CONTRATO = (bloco: Bloco, fichas: readonly FichaIa[]) =>
     '  "evidencias": [ { "trecho": "cópia literal de um trecho curto do PPC acima (até 200 caracteres)" } ],',
     '  "lacunas": [ "o que falta, em frase curta" ],',
     '  "o_que_fazer": "o ajuste no PPC, em uma frase (vazio se atende)",',
-    '  "fontes": [ "IDs de fonte do contexto acima, como br/cne-cp/res/2026/2#art29-par2 ou cnct" ],',
+    '  "fontes": [ "IDs exatos de fonte do contexto acima, como br/cne-cp/res/2026/2#art29-par2, a norma sem # ou cnct" ],',
     '  "revisao_humana_obrigatoria": false',
     "} ]" +
       (bloco.tipo === "J"
@@ -120,7 +120,8 @@ const CONTRATO = (bloco: Bloco, fichas: readonly FichaIa[]) =>
         : "") +
       " }",
     "```",
-    "Regras: ATENDE exige ao menos uma evidência literal. Para o que falta no PPC, use NAO_ATENDE com `lacunas` e sem trecho.",
+    "Regras: ATENDE e NAO_ATENDE exigem ao menos uma evidência: cópia literal (ao menos 25 caracteres) do conteúdo entregue a este critério. Para o que falta no PPC, cite o trecho da seção lida onde devia estar e descreva a falta em `lacunas`.",
+    "Limites: justificativa até 600 caracteres, até 5 lacunas de até 200, até 5 evidências.",
     "Cite só fontes que aparecem no contexto acima; sem fonte adequada, deixe `fontes` vazio.",
     "Na dúvida, use INCONCLUSIVO: é melhor pedir conferência do que afirmar um erro.",
   ].join("\n");

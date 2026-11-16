@@ -2,16 +2,22 @@
  * Revisão com IA (M1.11, etapa 4): a conferência em código de toda resposta da IA.
  *
  * Nenhuma resposta entra no resultado sem passar por aqui:
+ * - o tamanho da resposta inteira, antes do `JSON.parse`, e de cada campo (`LIMITES_RESPOSTA`);
  * - o JSON pelo contrato (Effect Schema `ResultadoIa`), com os estados da ficha (`estados_permitidos`);
  * - um resultado para cada ficha do bloco, nenhum de fora;
- * - cada `trecho` citado existe literalmente no PPC (ignorando espaços e marcação; com reticências,
- *   cada pedaço existe);
- * - cada fonte citada estava no contexto entregue ao bloco (`fontesPermitidas`);
- * - ATENDE com ao menos uma evidência; o tema J com o `resumo`.
+ * - cada `trecho` citado existe literalmente no conteúdo do PPC **entregue àquela ficha** (ignorando
+ *   espaços e marcação; com reticências, cada pedaço tem ao menos 15 caracteres, e o trecho, 25);
+ * - cada fonte é o ID exato de uma norma ou de um dispositivo entregue ao bloco (`fontesPermitidas`),
+ *   ou `cnct` quando o CNCT foi entregue;
+ * - ATENDE e NAO_ATENDE com ao menos uma evidência conferida; o tema J com o `resumo`.
  *
  * A conferência é por ficha: uma ficha com problema não derruba as boas do mesmo bloco. O servidor
- * pede uma nova tentativa com os problemas; se falhar de novo, a ficha sai "a conferir", com o motivo
- * (`resultadoAConferir`), nunca com um fato que a conferência recusou.
+ * pede uma nova tentativa com os problemas; se falhar de novo, a ficha sai "a conferir", com o motivo,
+ * nunca com um fato que a conferência recusou.
+ *
+ * Os problemas voltam à IA na nova tentativa, **fora das marcas do PPC**: nunca repetem nada que a IA
+ * escreveu (um ID de ficha inventado, um trecho recusado, a mensagem do `JSON.parse` podem trazer a
+ * instrução escondida). Só IDs das fichas do bloco, IDs de fonte com formato válido e frases fixas.
  */
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
@@ -20,18 +26,33 @@ import { dobrar, type Bloco, type FichaIa } from "./plano.ts";
 export const EstadoIa = Schema.Literals(["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"]);
 export type EstadoIa = typeof EstadoIa.Type;
 
+/** Os tetos da resposta: o texto livre não é conferido contra o PPC, então ele fica curto. */
+export const LIMITES_RESPOSTA = {
+  resposta: 80_000,
+  justificativa: 600,
+  lacunas: 5,
+  lacuna: 200,
+  evidencias: 5,
+  trecho: 400,
+  oQueFazer: 300,
+  fontes: 10,
+  resumo: 800,
+} as const;
+
+const L = LIMITES_RESPOSTA;
 const Texto = Schema.String;
+const ate = (n: number) => Texto.check(Schema.isMaxLength(n));
 
 /** Um resultado de ficha, no contrato da `revisar-ppc` reduzido ao que o app usa. */
 export const ResultadoIa = Schema.Struct({
   ficha_id: Texto,
   estado: EstadoIa,
   confianca: Schema.Number.check(Schema.isBetween({ minimum: 0, maximum: 1 })),
-  justificativa: Texto.check(Schema.isMinLength(1)),
-  evidencias: Schema.Array(Schema.Struct({ trecho: Texto })),
-  lacunas: Schema.Array(Texto),
-  o_que_fazer: Schema.optionalKey(Texto),
-  fontes: Schema.optionalKey(Schema.Array(Texto)),
+  justificativa: ate(L.justificativa).check(Schema.isMinLength(1)),
+  evidencias: Schema.Array(Schema.Struct({ trecho: ate(L.trecho) })).check(Schema.isMaxLength(L.evidencias)),
+  lacunas: Schema.Array(ate(L.lacuna)).check(Schema.isMaxLength(L.lacunas)),
+  o_que_fazer: Schema.optionalKey(ate(L.oQueFazer)),
+  fontes: Schema.optionalKey(Schema.Array(ate(120)).check(Schema.isMaxLength(L.fontes))),
   revisao_humana_obrigatoria: Schema.Boolean,
 });
 export type ResultadoIa = typeof ResultadoIa.Type;
@@ -39,7 +60,7 @@ export type ResultadoIa = typeof ResultadoIa.Type;
 const Casca = Schema.Struct({
   bloco: Schema.optionalKey(Texto),
   resultados: Schema.Array(Schema.Unknown),
-  resumo: Schema.optionalKey(Texto),
+  resumo: Schema.optionalKey(ate(L.resumo)),
 });
 
 const decodificarCasca = Schema.decodeUnknownResult(Casca);
@@ -47,6 +68,7 @@ const decodificarResultado = Schema.decodeUnknownResult(ResultadoIa);
 
 /** O objeto JSON da resposta: do primeiro `{` ao último `}` (com ou sem cerca de código). */
 export function extrairJson(texto: string): unknown {
+  if (texto.length > L.resposta) throw new Error("resposta longa demais");
   const inicio = texto.indexOf("{");
   const fim = texto.lastIndexOf("}");
   if (inicio < 0 || fim <= inicio) throw new Error("a resposta não tem objeto JSON");
@@ -56,22 +78,33 @@ export function extrairJson(texto: string): unknown {
 /** Normalização para a comparação literal: a de `dobrar`, mais aspas tipográficas. */
 const normalizar = (s: string) => dobrar(s.replace(/[“”]/g, '"').replace(/[‘’]/g, "'"));
 
-/** O PPC preparado para a conferência dos trechos (normalize uma vez por revisão). */
-export const alvoDosTrechos = (ppc: string) => normalizar(ppc);
+/** O conteúdo entregue preparado para a conferência dos trechos (normalize uma vez por ficha). */
+export const alvoDosTrechos = (conteudo: string) => normalizar(conteudo);
 
-/** O trecho existe no PPC (com reticências, cada pedaço de 3+ caracteres existe). */
+const PEDACO_MINIMO = 15;
+const TRECHO_MINIMO = 25;
+
+/**
+ * O trecho existe no alvo. Com reticências, cada pedaço tem ao menos 15 caracteres e existe; o trecho
+ * todo soma ao menos 25 (sem isso, "est ... 400" passaria em quase qualquer texto).
+ */
 export function trechoExiste(trecho: string, alvo: string): boolean {
   const pedacos = trecho
     .split(/\s*(?:\.\.\.|…|\[\.\.\.\]|\[…\])\s*/)
     .map(normalizar)
-    .filter((p) => p.length >= 3);
-  return pedacos.length > 0 && pedacos.every((p) => alvo.includes(p));
+    .filter((p) => p.length > 0);
+  if (!pedacos.length || pedacos.some((p) => p.length < PEDACO_MINIMO)) return false;
+  if (pedacos.reduce((t, p) => t + p.length, 0) < TRECHO_MINIMO) return false;
+  return pedacos.every((p) => alvo.includes(p));
 }
+
+/** A fonte é o ID exato de algo entregue: o dispositivo (`ref#disp`), a norma sem `#`, ou `cnct`. */
+export const fonteValida = (fonte: string, fontes: ReadonlySet<string>) => fontes.has(fonte);
 
 export type Conferencia = {
   /** As fichas aprovadas na conferência, com o resultado. */
   validos: Map<string, ResultadoIa>;
-  /** Os problemas de cada ficha recusada (ou `*` para a resposta inteira). */
+  /** Os problemas de cada ficha recusada (ou `*` para a resposta inteira). Só texto do app. */
   problemas: Map<string, string[]>;
   resumo: string | null;
 };
@@ -79,25 +112,28 @@ export type Conferencia = {
 const adicionar = (mapa: Map<string, string[]>, chave: string, problema: string) =>
   mapa.set(chave, [...(mapa.get(chave) ?? []), problema]);
 
+const ID_DE_FONTE = /^[a-z0-9/#._-]{1,80}$/i;
+
 /** Confere a resposta de um bloco. Nunca lança: o que falha vira problema. */
 export function conferirResposta(
   texto: string,
   bloco: Bloco,
   fichas: readonly FichaIa[],
-  entrada: { alvo: string; fontes: ReadonlySet<string> },
+  entrada: { alvoDaFicha: (ficha: string) => string; fontes: ReadonlySet<string> },
 ): Conferencia {
   const validos = new Map<string, ResultadoIa>();
   const problemas = new Map<string, string[]>();
   let bruto: unknown;
   try {
     bruto = extrairJson(texto);
-  } catch (erro) {
-    adicionar(problemas, "*", `JSON inválido: ${erro instanceof Error ? erro.message : String(erro)}`);
+  } catch {
+    // Mensagem fixa: a do `JSON.parse` repete um pedaço da resposta.
+    adicionar(problemas, "*", "a resposta não é um objeto JSON válido (ou passa do tamanho máximo)");
     return { validos, problemas, resumo: null };
   }
   const casca = decodificarCasca(bruto);
   if (Result.isFailure(casca)) {
-    adicionar(problemas, "*", `fora do contrato: ${String(casca.failure.message).slice(0, 300)}`);
+    adicionar(problemas, "*", "a resposta não segue o contrato (`resultados` em lista; `resumo` até 800 caracteres)");
     return { validos, problemas, resumo: null };
   }
   const resumo = casca.success.resumo?.trim() || null;
@@ -105,12 +141,13 @@ export function conferirResposta(
   const porId = new Map(fichas.map((f) => [f.id, f]));
   for (const item of casca.success.resultados) {
     const id = (item as { ficha_id?: unknown } | null)?.ficha_id;
-    const fichaId = typeof id === "string" ? id : "?";
-    const ficha = porId.get(fichaId);
+    const ficha = typeof id === "string" ? porId.get(id) : undefined;
     if (!ficha) {
-      adicionar(problemas, "*", `critério fora do bloco: ${fichaId}`);
+      // O ID que a IA escreveu não volta: pode ser a instrução escondida.
+      adicionar(problemas, "*", "há um resultado com `ficha_id` que não é de nenhum critério deste bloco");
       continue;
     }
+    const fichaId = ficha.id;
     if (validos.has(fichaId) || problemas.has(fichaId)) {
       adicionar(problemas, fichaId, "resultado repetido");
       validos.delete(fichaId);
@@ -118,24 +155,32 @@ export function conferirResposta(
     }
     const decodificado = decodificarResultado(item);
     if (Result.isFailure(decodificado)) {
-      adicionar(problemas, fichaId, `fora do contrato: ${String(decodificado.failure.message).slice(0, 300)}`);
+      adicionar(
+        problemas,
+        fichaId,
+        "fora do contrato: confira os campos, os estados e os limites (justificativa até 600 caracteres, até 5 lacunas de 200 e 5 evidências)",
+      );
       continue;
     }
     const r = decodificado.success;
     const erros: string[] = [];
     if (!ficha.estados_permitidos.includes(r.estado)) erros.push(`estado ${r.estado} não é permitido para a ficha`);
-    // Os problemas voltam à IA na nova tentativa, fora das marcas do PPC: nunca repetem o texto que ela
-    // escreveu (um trecho recusado pode ser a própria instrução escondida), só a posição e IDs válidos.
+    const alvo = entrada.alvoDaFicha(fichaId);
+    let conferidas = 0;
     r.evidencias.forEach((e, i) => {
-      if (e.trecho.trim() && !trechoExiste(e.trecho, entrada.alvo))
-        erros.push(`trecho que não está no PPC (evidência ${i + 1}): copie literalmente ou retire`);
+      if (!e.trecho.trim()) return;
+      if (trechoExiste(e.trecho, alvo)) conferidas += 1;
+      else
+        erros.push(
+          `trecho que não está no conteúdo entregue a este critério (evidência ${i + 1}): copie literalmente, ao menos 25 caracteres, ou retire`,
+        );
     });
     for (const fonte of r.fontes ?? [])
-      if (!entrada.fontes.has(fonte) && !entrada.fontes.has(fonte.split("#")[0]!) && !fonte.startsWith("cnct"))
-        erros.push(
-          `fonte fora do contexto entregue: ${/^[a-z0-9/#._-]{1,80}$/i.test(fonte) ? fonte : "(ID inválido)"}`,
-        );
-    if (r.estado === "ATENDE" && !r.evidencias.some((e) => e.trecho.trim())) erros.push("ATENDE sem trecho do PPC");
+      if (!fonteValida(fonte, entrada.fontes))
+        erros.push(`fonte fora do contexto entregue: ${ID_DE_FONTE.test(fonte) ? fonte : "(ID inválido)"}`);
+    if (r.estado === "ATENDE" && conferidas === 0) erros.push("ATENDE sem trecho do PPC");
+    if (r.estado === "NAO_ATENDE" && conferidas === 0)
+      erros.push("NAO_ATENDE sem trecho do PPC: cite o trecho da seção lida que mostra o problema ou a falta");
     if (erros.length) problemas.set(fichaId, erros);
     else validos.set(fichaId, r);
   }
@@ -152,7 +197,7 @@ export function pedidoDeCorrecao(conferencia: Conferencia): string {
   return [
     "Uma resposta anterior a este mesmo pedido não passou na conferência automática:",
     ...linhas,
-    "Responda de novo só com o JSON completo e corrigido (todos os critérios do bloco). Trechos têm de ser cópia literal do PPC; fontes, só as do contexto.",
+    "Responda de novo só com o JSON completo e corrigido (todos os critérios do bloco). Trechos têm de ser cópia literal do conteúdo entregue a cada critério; fontes, só os IDs do contexto.",
   ].join("\n");
 }
 
@@ -161,5 +206,6 @@ export function motivoLegivel(erros: readonly string[]): string {
   if (erros.some((e) => e.startsWith("trecho"))) return "a IA citou um trecho que não está no documento";
   if (erros.some((e) => e.startsWith("fonte"))) return "a IA citou uma norma que não estava entre as consultadas";
   if (erros.some((e) => e.startsWith("ATENDE"))) return "a IA disse que atende sem mostrar o trecho";
+  if (erros.some((e) => e.startsWith("NAO_ATENDE"))) return "a IA apontou um problema sem mostrar o trecho";
   return "a resposta da IA veio fora do formato esperado";
 }

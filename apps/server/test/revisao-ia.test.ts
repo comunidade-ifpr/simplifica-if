@@ -19,6 +19,7 @@ import { strFromU8, unzipSync } from "fflate";
 import type { EstadoRevisaoIa } from "@simplifica-if/contratos-app";
 import * as Motor from "@simplifica-if/motor";
 import * as Canal from "@simplifica-if/motor/Canal";
+import { conteudoDoPpcParaFicha } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
 import * as Servidor from "../src/servidor.ts";
 import { bancoFixture, cliente, diretorioTemporario, limparTemporarios, TOKEN } from "./apoio.ts";
@@ -66,7 +67,8 @@ function bancoComFichas(): string {
 
 /* ============================================================ driver de teste */
 
-type Resposta = { texto: string } | { erro: string };
+/** `ferramenta`: o provider anuncia uma ferramenta antes do texto (o que a sessão de julgamento não pode ter). */
+type Resposta = { texto: string; ferramenta?: string } | { erro: string };
 
 interface Roteiro {
   /** A resposta ao `turno` (1 ou 2) da sessão cujo primeiro pedido foi `pedido`. */
@@ -76,7 +78,14 @@ interface Roteiro {
   readonly mensagens: string[];
 }
 
-const TRECHO = "O egresso atua na produção agropecuária.";
+/** Um trecho literal do conteúdo entregue à ficha no pedido (a linha mais longa, até 60 caracteres). */
+const trechoDoPedido = (pedido: string, ficha: string) =>
+  conteudoDoPpcParaFicha({ pedido }, ficha)
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => !/^(#|<|\[)/.test(l))
+    .sort((a, b) => b.length - a.length)[0]!
+    .slice(0, 60);
 
 const blocoDo = (pedido: string) => /"bloco": "([^"]+)"/.exec(pedido)?.[1] ?? "?";
 const fichasDo = (pedido: string) =>
@@ -87,7 +96,6 @@ const resultado = (ficha: string, extra: object = {}) => ({
   estado: "ATENDE",
   confianca: 0.9,
   justificativa: "O PPC trata o critério.",
-  evidencias: [{ trecho: TRECHO }],
   lacunas: [],
   o_que_fazer: "",
   fontes: [],
@@ -99,7 +107,9 @@ const resultado = (ficha: string, extra: object = {}) => ({
 const respostaValida = (pedido: string, alterar: (ficha: string) => object = () => ({})) =>
   JSON.stringify({
     bloco: blocoDo(pedido),
-    resultados: fichasDo(pedido).map((f) => resultado(f, alterar(f))),
+    resultados: fichasDo(pedido).map((f) =>
+      resultado(f, { evidencias: [{ trecho: trechoDoPedido(pedido, f) }], ...alterar(f) }),
+    ),
     ...(blocoDo(pedido).startsWith("j-") ? { resumo: "A matriz tem dois componentes." } : {}),
   });
 
@@ -122,6 +132,8 @@ const driver = (provider: Motor.Provider): Motor.Driver => ({
           if (turnos === 1) roteiro.pedidos.push(texto);
           const r = roteiro.responder(primeiro, turnos);
           yield* canal.emitir({ _tag: "UsoTokens", entrada: 10, saida: 5, cacheEscrita: 100 });
+          if ("ferramenta" in r && r.ferramenta)
+            yield* canal.emitir({ _tag: "FerramentaIniciada", id: "f1", nome: r.ferramenta, entrada: {} });
           if ("erro" in r) {
             yield* canal.emitir({ _tag: "Erro", mensagem: r.erro });
             return yield* canal.emitir({ _tag: "FimTurno", motivo: "falha" });
@@ -197,7 +209,6 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
           f === "CT-CURR-04"
             ? {
                 estado: "NAO_ATENDE",
-                evidencias: [],
                 lacunas: ["a matriz não mostra a carga por núcleo"],
                 o_que_fazer: "Mostre a carga por núcleo",
               }
@@ -239,7 +250,6 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       const matriz = r.pendencias.find((p) => p.ficha === "CT-CURR-04")!;
       assert.strictEqual(matriz.origem, "ia");
       assert.strictEqual(matriz.estado, "nao_atende");
-      assert.strictEqual(matriz.noDocumento, "no-inicio");
       assert.isTrue(r.pendencias.some((p) => p.origem === "codigo"));
       assert.match(r.arquivoComentado, /PPC A - revisão prévia \(Simplifica IF\)\.docx$/);
       const texto = comentarios(r.arquivoComentado);
@@ -272,7 +282,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       // A nova tentativa é uma sessão nova, com o pedido inteiro e os problemas no fim.
       const correcoes = roteiro.mensagens.filter((m) => m.includes("não passou na conferência automática"));
       assert.strictEqual(correcoes.length, 2);
-      assert.include(correcoes[0]!, "JSON inválido");
+      assert.include(correcoes[0]!, "não é um objeto JSON válido");
       assert.include(correcoes[0]!, '"bloco": "s-01-1"');
       assert.strictEqual(roteiro.mensagens.length, roteiro.configs.length);
       assert.strictEqual(final.blocos.find((b) => b.id === "s-01-1")!.naoConferidas, 0);
@@ -319,6 +329,8 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       assert.strictEqual(final.situacao, "pausada");
       assert.isTrue(final.limite);
       assert.include(final.motivo ?? "", "limite de uso do seu plano");
+      // O uso da tentativa que bateu no limite não some: 3 tentativas (2 blocos e a do limite).
+      assert.strictEqual(final.uso.entrada, 30);
       assert.deepStrictEqual(
         final.blocos.map((b) => b.estado),
         ["pronto", "pronto", "pendente", "pendente"],
@@ -333,6 +345,46 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       assert.strictEqual(retomada.resultado!.conferidosIa, 5);
       const lista = yield* rpc["revisaoPpc.listarIa"]({});
       assert.isTrue(lista.some((e) => e.id === preparada.id && e.situacao === "concluida"));
+    }),
+  );
+
+  it.effect(
+    "se o provider anunciar uma ferramenta, a resposta do bloco é descartada e as fichas ficam para conferir",
+    () =>
+      Effect.gen(function* () {
+        reiniciar();
+        roteiro.responder = (p) =>
+          blocoDo(p) === "s-01-1" ? { texto: respostaValida(p), ferramenta: "shell" } : { texto: respostaValida(p) };
+        const { final } = yield* rodar(gravar("PPC E.docx", ppcSintetico()));
+        assert.strictEqual(final.situacao, "concluida");
+        const bloco = final.blocos.find((b) => b.id === "s-01-1")!;
+        assert.strictEqual(bloco.naoConferidas, 1);
+        // Sem nova tentativa: uma ferramenta não é erro de formato.
+        assert.strictEqual(roteiro.pedidos.filter((p) => blocoDo(p) === "s-01-1").length, 1);
+        const r = final.resultado!;
+        assert.include(r.pendencias.find((p) => p.ficha === "CT-IDENT-02")!.mensagem, "tentou usar uma ferramenta");
+        assert.strictEqual(r.paraConferirIa, 1);
+        assert.strictEqual(r.conferidosIa, 4);
+      }),
+  );
+
+  it.effect("preparar de novo o mesmo arquivo substitui a preparada; apagar tira a revisão do banco", () =>
+    Effect.gen(function* () {
+      reiniciar();
+      const { urlRpc } = yield* Servidor.ServidorApp;
+      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+      const arquivo = gravar("PPC F.docx", ppcSintetico());
+      const primeira = yield* rpc["revisaoPpc.prepararIa"]({ arquivo, provider: "claude", modo: "rapido" });
+      const segunda = yield* rpc["revisaoPpc.prepararIa"]({ arquivo, provider: "claude", modo: "rapido" });
+      const ids = (yield* rpc["revisaoPpc.listarIa"]({})).map((e) => e.id);
+      assert.notInclude(ids, primeira.id);
+      assert.include(ids, segunda.id);
+      yield* rpc["revisaoPpc.apagarIa"]({ revisao: segunda.id });
+      assert.notInclude(
+        (yield* rpc["revisaoPpc.listarIa"]({})).map((e) => e.id),
+        segunda.id,
+      );
+      assert.strictEqual(roteiro.pedidos.length, 0);
     }),
   );
 });

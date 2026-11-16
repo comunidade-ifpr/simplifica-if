@@ -166,6 +166,37 @@ export function criarNormalizadorAntigravity(
 /** Ferramentas de web do `agy` 1.5.x, desligadas no `_meta.antigravity.disabledTools` sem busca web. */
 export const FERRAMENTAS_WEB_ANTIGRAVITY = ["search_web", "read_url_content", "browser_subagent"] as const;
 
+/**
+ * Todas as ferramentas do `agy` 1.5.9 que se conhecem (as `strings` do binário e as gravações em
+ * `test/fixtures/`), desligadas no `_meta.antigravity.disabledTools` numa sessão `semFerramentas`. Nome
+ * que a versão não tem não atrapalha; nome novo que falte aqui ainda passa pela política de
+ * julgamento (nega sem perguntar) e pelo julgamento, que descarta o bloco que tentar ferramenta.
+ */
+export const FERRAMENTAS_ANTIGRAVITY = [
+  ...FERRAMENTAS_WEB_ANTIGRAVITY,
+  "read_file",
+  "view_file",
+  "list_dir",
+  "list_directory",
+  "glob",
+  "grep_search",
+  "view_code_item",
+  "run_command",
+  "command_status",
+  "write_file",
+  "write_to_file",
+  "replace",
+  "read_resource",
+  "plan",
+  "teamwork",
+  "schedule",
+  "learn",
+  "goal",
+  "compact",
+  "browser",
+  "boost",
+] as const;
+
 const CHAVE_DE_CAMINHO = /path|file|dir|cwd/i;
 
 /**
@@ -560,7 +591,11 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
     const meta = antigravitySessionMeta(
       aberto.inicio,
       config.instrucoes,
-      buscaWebLigada(politica, config.buscaWeb) ? [] : FERRAMENTAS_WEB_ANTIGRAVITY,
+      config.semFerramentas === true
+        ? FERRAMENTAS_ANTIGRAVITY
+        : buscaWebLigada(politica, config.buscaWeb)
+          ? []
+          : FERRAMENTAS_WEB_ANTIGRAVITY,
     );
     const pedidoSessao = { cwd: config.pastaTrabalho, mcpServers, ...(meta === undefined ? {} : { _meta: meta }) };
     const sessao =

@@ -238,6 +238,24 @@ export const CONTEXTO_CODEX: Readonly<Record<string, Schema.Json>> = {
   include_collaboration_mode_instructions: false,
 };
 
+/**
+ * Uma thread de julgamento (`ConfigSessao.semFerramentas`) sem ferramenta nenhuma. Com sandbox
+ * `read-only` e `on-request`, o Codex roda comandos de leitura **sem pedir aprovação** (o sandbox
+ * permite ler o disco inteiro), então a política nunca seria consultada: uma injeção que escapasse ao
+ * filtro poderia ler `~/.ssh` e pôr o conteúdo no texto da resposta. As chaves são as de
+ * `codex features list` do codex-cli 0.169.0: o shell (`shell_tool`, `unified_exec`), a leitura de
+ * imagem, os subagentes, o `apply_patch` e a busca web.
+ */
+export const SEM_FERRAMENTAS_CODEX: Readonly<Record<string, Schema.Json>> = {
+  "features.shell_tool": false,
+  "features.unified_exec": false,
+  "features.view_image": false,
+  "features.multi_agent": false,
+  "features.multi_agent_v2": false,
+  include_apply_patch_tool: false,
+  web_search: "disabled",
+};
+
 /** Classifica o pedido de comando: o `cwd` e os caminhos citados; com rede, é `web`. */
 /**
  * A falha da queda do `codex app-server`, em português, como a do `agy`: a mensagem do transporte
@@ -438,7 +456,11 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
         ...CONTEXTO_CODEX,
         ...configMcpCodex(config, politica),
         ...(buscaWebLigada(politica, config.buscaWeb) ? {} : { web_search: "disabled" }),
+        ...(config.semFerramentas === true ? SEM_FERRAMENTAS_CODEX : {}),
       },
+      // A thread de julgamento não é retomada (a retomada é por bloco, no servidor): não fica no
+      // histórico do Codex do usuário.
+      ...(config.semFerramentas === true ? { ephemeral: true } : {}),
       ...(config.instrucoes === undefined ? {} : { developerInstructions: config.instrucoes }),
       ...(modelo ? { model: modelo } : {}),
     } as const;
