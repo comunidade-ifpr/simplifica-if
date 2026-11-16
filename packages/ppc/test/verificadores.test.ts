@@ -239,7 +239,10 @@ describe("regras de prudência", () => {
   });
 
   test("sem a legislação profissional, mas com o conselho, fica a conferir", () => {
-    const ppc = PPC_RUIM.replace("## 5 REFERÊNCIAS", "O egresso se registra no Conselho Regional dos Técnicos Agrícolas.\n\n## 5 REFERÊNCIAS");
+    const ppc = PPC_RUIM.replace(
+      "## 5 REFERÊNCIAS",
+      "O egresso se registra no Conselho Regional dos Técnicos Agrícolas.\n\n## 5 REFERÊNCIAS",
+    );
     expect(estado(preConferir(ppc, base("integrado")), "CT-SUP-21")).toBe("a_conferir");
   });
 
@@ -251,7 +254,8 @@ describe("regras de prudência", () => {
 
   test("sem CNCT, as fichas que dependem dele ficam a conferir", () => {
     const resultado = preConferir(PPC_BOM, base("integrado", null));
-    for (const ficha of ["CT-IDENT-01", "CT-IDENT-13", "CT-SUP-21"]) expect(estado(resultado, ficha)).toBe("a_conferir");
+    for (const ficha of ["CT-IDENT-01", "CT-IDENT-13", "CT-SUP-21"])
+      expect(estado(resultado, ficha)).toBe("a_conferir");
   });
 
   test("escolaridade de ingresso: por forma no CNCT, única no CNCT, ou a do art. 18", () => {

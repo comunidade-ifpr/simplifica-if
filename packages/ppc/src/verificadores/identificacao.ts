@@ -70,7 +70,12 @@ export const eixoCnct: Verificador = {
     const linhaJanela = ppc.linhas.findIndex(
       (linha, i) =>
         /\beixo\b/.test(chave(linha)) &&
-        chave(ppc.linhas.slice(i, i + 4).join(" ").replace(/[*|]/g, " ")).includes(eixoEsperado),
+        chave(
+          ppc.linhas
+            .slice(i, i + 4)
+            .join(" ")
+            .replace(/[*|]/g, " "),
+        ).includes(eixoEsperado),
     );
     if (compativel || linhaJanela >= 0) {
       const evidencia = compativel

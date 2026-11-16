@@ -403,9 +403,7 @@ export function validarExecucaoFichas(
     ficha && ehObjeto(ficha.execucao) ? textoOuVazio(ficha.execucao.modo) : "";
   for (const [id, ficha] of fichasPorId)
     if (modo(ficha) === "D" && !verificadores.has(id))
-      erros.push(
-        `${id}: execucao.modo D sem verificador registrado em packages/ppc/src/verificadores/registro.ts`,
-      );
+      erros.push(`${id}: execucao.modo D sem verificador registrado em packages/ppc/src/verificadores/registro.ts`);
   for (const [id, verificador] of verificadores)
     if (modo(fichasPorId.get(id)) !== "D")
       erros.push(

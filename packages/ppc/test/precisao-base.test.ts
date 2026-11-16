@@ -32,9 +32,11 @@ describe("pré-conferência nos PPCs técnicos da base", () => {
   const resultados = ppcs.map((ppc) => preConferir(lerPpc(ppc), { ...comum, cnct: ppc.cnct, forma: ppc.forma }));
 
   test("a amostra: 110 PPCs técnicos, 82 integrados, 1 sem CNCT", () => {
-    expect([ppcs.length, ppcs.filter((p) => p.forma === "integrado").length, ppcs.filter((p) => !p.cnct).length]).toEqual(
-      [110, 82, 1],
-    );
+    expect([
+      ppcs.length,
+      ppcs.filter((p) => p.forma === "integrado").length,
+      ppcs.filter((p) => !p.cnct).length,
+    ]).toEqual([110, 82, 1]);
   });
 
   test("os números por ficha são os de PRECISAO.md", () => {

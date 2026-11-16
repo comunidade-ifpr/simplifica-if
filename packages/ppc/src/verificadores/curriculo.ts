@@ -158,7 +158,8 @@ export function escolaridadeExigida(preRequisitos: string | null | undefined, fo
 }
 
 /** Linha que fala de ingresso: requisito, acesso, candidato, matrícula, público-alvo. */
-const RE_CONTEXTO_INGRESSO = /ingress|acesso|requisit|candidat|processo seletivo|publico[- ]alvo|destina-se|destinado|inscri/;
+const RE_CONTEXTO_INGRESSO =
+  /ingress|acesso|requisit|candidat|processo seletivo|publico[- ]alvo|destina-se|destinado|inscri/;
 
 export const requisitoIngresso: Verificador = {
   id: "d-requisito-ingresso",
@@ -195,7 +196,10 @@ export const requisitoIngresso: Verificador = {
       // Valor na linha seguinte a um rótulo de requisito.
       if (RE_ROTULO_INGRESSO.test(chave(linha))) {
         const seguinte = ppc.linhas.findIndex((l, i) => i > indice && l.trim() !== "");
-        const escolaridade = seguinte > 0 && seguinte - indice <= 2 ? escolaridadeNoInicio(chave(ppc.linhas[seguinte]!.replace(/\*/g, ""))) : null;
+        const escolaridade =
+          seguinte > 0 && seguinte - indice <= 2
+            ? escolaridadeNoInicio(chave(ppc.linhas[seguinte]!.replace(/\*/g, "")))
+            : null;
         if (escolaridade) achados.push({ escolaridade, trecho: trecho(ppc, seguinte + 1) });
       }
     });
@@ -273,7 +277,8 @@ function linhasDeComponentes(ppc: PpcPreparado): number[] {
     const aparada = linha.trimStart();
     if (
       (aparada.startsWith("|") && !foraDoCurriculo.has(indice + 1)) ||
-      (ementas.has(indice + 1) && (aparada.startsWith("#") || /componente curricular|disciplina|unidade curricular/i.test(linha)))
+      (ementas.has(indice + 1) &&
+        (aparada.startsWith("#") || /componente curricular|disciplina|unidade curricular/i.test(linha)))
     )
       saida.push(indice + 1);
   });
@@ -339,9 +344,7 @@ export const aeeComoComponente: Verificador = {
     for (const n of linhasDasSecoes(ppc, SECOES_CURRICULARES)) {
       const linha = ppc.linhas[n - 1] ?? "";
       if (!linha.trimStart().startsWith("|")) continue;
-      const nomeiaAee = linha
-        .split("|")
-        .some((c) => RE_CELULA_AEE.test(c.replace(/\*/g, "").trim()));
+      const nomeiaAee = linha.split("|").some((c) => RE_CELULA_AEE.test(c.replace(/\*/g, "").trim()));
       const aee = nomeiaAee && /atendimento\s*educacional\s*especializado|\bAEE\b/i.exec(linha);
       if (aee) trechos.push(trecho(ppc, n, aee[0]));
     }

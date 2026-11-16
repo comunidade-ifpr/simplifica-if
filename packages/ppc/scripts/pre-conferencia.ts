@@ -57,7 +57,10 @@ if (values.base) {
     for (const { ppc, f } of itens.filter((_, i) => i % passo === 0).slice(0, n))
       console.log(
         `- ${ppc.id} (${ppc.forma}) | ${f.mensagem.slice(0, 120)}` +
-          f.evidencias.slice(0, 2).map((t) => `\n    L${t.linha} [${t.secao ?? "-"}]: ${t.texto.slice(0, 160)}`).join(""),
+          f.evidencias
+            .slice(0, 2)
+            .map((t) => `\n    L${t.linha} [${t.secao ?? "-"}]: ${t.texto.slice(0, 160)}`)
+            .join(""),
       );
   } else if (values.amostra) {
     const itens = resultados.flatMap(({ ppc, resultado }) =>
@@ -79,8 +82,12 @@ if (values.base) {
           item.trechos.map((t) => `\n    L${t.linha} [${t.secao ?? "-"}]: ${t.texto.slice(0, 140)}`).join(""),
       );
   } else {
-    console.log(`${ppcs.length} PPCs técnicos em ${(ms / 1000).toFixed(1)} s (${(ms / ppcs.length).toFixed(0)} ms por PPC)`);
-    console.log("ficha | atende | não atende | a conferir | não se aplica | apontamentos nao_atende | apontamentos a_conferir");
+    console.log(
+      `${ppcs.length} PPCs técnicos em ${(ms / 1000).toFixed(1)} s (${(ms / ppcs.length).toFixed(0)} ms por PPC)`,
+    );
+    console.log(
+      "ficha | atende | não atende | a conferir | não se aplica | apontamentos nao_atende | apontamentos a_conferir",
+    );
     for (const [ficha, c] of Object.entries(contarPorFicha(resultados.map((r) => r.resultado))))
       console.log(
         `${ficha} | ${c.atende} | ${c.nao_atende} | ${c.a_conferir} | ${c.nao_se_aplica} | ${c.apontamentos_nao_atende} | ${c.apontamentos_a_conferir}`,
@@ -109,7 +116,9 @@ if (values.base) {
     { data: new Date().toISOString() },
   );
   NodeFS.writeFileSync(values.saida, comentado.docx);
-  console.log(JSON.stringify({ resultado, ancoradas: comentado.ancoradas, naoAncoradas: comentado.naoAncoradas }, null, 2));
+  console.log(
+    JSON.stringify({ resultado, ancoradas: comentado.ancoradas, naoAncoradas: comentado.naoAncoradas }, null, 2),
+  );
 } else {
   console.error(
     "Uso: --base [--amostra <ficha> [--estado <estado>] [--n <n>]] | --docx <arquivo> --cnct <slug> [--forma <forma>] --saida <arquivo>",
