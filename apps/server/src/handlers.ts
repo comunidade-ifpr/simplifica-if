@@ -1,6 +1,6 @@
 /**
  * Os handlers do `GrupoApp`: casca fina sobre o `Motor` (providers), as `Conversas` (conversa), o
- * `CatalogoSkills` (skills), a `AnalisePpc` (revisão prévia de PPC) e o `Leitura` do `simplifica-mcp`
+ * `CatalogoSkills` (skills), a `ListaViva` e a `RevisaoIa` (revisão prévia de PPC) e o `Leitura` do `simplifica-mcp`
  * (leitura, os mesmos handlers de `@simplifica-if/mcp/rpc`).
  *
  * A conversa não pertence à conexão: os métodos de conversa recebem só o id dela (`sessao`), e uma
@@ -18,7 +18,7 @@ import { layerHandlersRpc } from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
 import { CatalogoSkills } from "./CatalogoSkills.ts";
 import * as Conversas from "./Conversas.ts";
-import { AnalisePpc } from "./revisao-ppc/AnalisePpc.ts";
+import { ListaViva } from "./revisao-ppc/ListaViva.ts";
 import { RevisaoIa } from "./revisao-ppc/RevisaoIa.ts";
 
 const ehFalhaProvider = Schema.is(Motor.FalhaProvider);
@@ -80,18 +80,32 @@ const layerSkills = GrupoSkills.toLayer(
 
 const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
   Effect.gen(function* () {
-    const analise = yield* AnalisePpc;
     const ia = yield* RevisaoIa;
+    const viva = yield* ListaViva;
     const registrar = <A, E, R>(efeito: Effect.Effect<A, E, R>) =>
       efeito.pipe(Effect.tapError((erro) => Effect.logWarning("revisão de PPC falhou", erro)));
     return GrupoRevisaoPpc.of({
-      "revisaoPpc.analisar": (entrada) => analise.analisar(entrada).pipe(registrar),
+      "revisaoPpc.analisar": (entrada) => viva.analisar(entrada).pipe(registrar),
       "revisaoPpc.prepararIa": (entrada) => ia.preparar(entrada).pipe(registrar),
       "revisaoPpc.iniciarIa": ({ revisao }) => ia.iniciar(revisao).pipe(registrar),
       "revisaoPpc.pausarIa": ({ revisao }) => ia.pausar(revisao).pipe(registrar),
       "revisaoPpc.acompanharIa": ({ revisao }) => ia.acompanhar(revisao),
       "revisaoPpc.listarIa": () => ia.listar,
       "revisaoPpc.apagarIa": ({ revisao }) => ia.apagar(revisao),
+      "revisaoPpc.lista": ({ lista }) => viva.lista(lista),
+      "revisaoPpc.ultimaLista": () => viva.ultima,
+      "revisaoPpc.apagarLista": ({ lista }) => viva.apagar(lista),
+      "revisaoPpc.exportarDiscordancias": () => viva.exportarDiscordancias,
+      "revisaoPpc.marcar": ({ lista, chave, situacao }) => viva.marcar(lista, chave, situacao).pipe(registrar),
+      "revisaoPpc.verParada": ({ lista, ordem }) => viva.verParada(lista, ordem),
+      "revisaoPpc.estimarAcao": ({ lista, chave, acao, provider }) =>
+        viva.estimar(lista, chave, acao, provider).pipe(registrar),
+      "revisaoPpc.contestar": ({ lista, chave, motivo, provider }) =>
+        viva.contestar(lista, chave, motivo, provider).pipe(registrar),
+      "revisaoPpc.sugerir": ({ lista, chave, provider }) => viva.sugerir(lista, chave, provider).pipe(registrar),
+      "revisaoPpc.reanalisar": ({ lista, chave, arquivo, provider }) =>
+        viva.reanalisar(lista, chave, arquivo, provider).pipe(registrar),
+      "revisaoPpc.gerarCopia": ({ lista }) => viva.gerarCopia(lista).pipe(registrar),
     });
   }),
 );

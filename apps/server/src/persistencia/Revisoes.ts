@@ -73,7 +73,7 @@ export class Revisoes extends Context.Service<
     readonly emAndamento: Effect.Effect<ReadonlyArray<string>>;
     /** Grava o uso de uma tentativa (mesmo sem o bloco terminar). */
     readonly gravarTentativa: (revisao: string, bloco: string, tentativa: TentativaGravada) => Effect.Effect<void>;
-    /** O uso somado de todas as tentativas da revisão. */
+    /** O uso somado de todas as tentativas da revisão e das ações com IA da lista viva dela. */
     readonly usoTotal: (revisao: string) => Effect.Effect<UsoRevisaoIa>;
     /** Apaga a revisão, o plano (com o texto do PPC), os blocos e as tentativas. */
     readonly apagar: (id: string) => Effect.Effect<void>;
@@ -206,7 +206,12 @@ const make = Effect.gen(function* () {
   }, Effect.orDie);
 
   const usoTotal = Effect.fn("Revisoes.usoTotal")(function* (revisao: string) {
-    const linhas = yield* sql<{ uso: string }>`SELECT uso FROM tentativas_ia WHERE revisao_id = ${revisao}`;
+    // As tentativas do lote e as ações com IA da lista viva que veio dela (etapa 5b).
+    const linhas = yield* sql<{ uso: string }>`
+      SELECT uso FROM tentativas_ia WHERE revisao_id = ${revisao}
+      UNION ALL
+      SELECT a.uso FROM acoes_ia a JOIN listas_pendencias l ON l.id = a.lista_id WHERE l.revisao_id = ${revisao}
+    `;
     const total = { entrada: 0, saida: 0, cacheLeitura: 0, cacheEscrita: 0, custoUsd: 0 };
     for (const l of linhas) {
       const u = lerUso(l.uso);

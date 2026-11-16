@@ -33,7 +33,7 @@ import { FalhaRevisaoPpc, type ResultadoRevisaoPpc, SUFIXO_REVISAO_PREVIA } from
 import { FontesNormativas } from "@simplifica-if/kb/FontesNormativas";
 import * as Sql from "@simplifica-if/kb/db/sql";
 import * as NodeCrypto from "node:crypto";
-import type { BaseRevisaoPrevia, EntradaIa, RevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
+import type { BaseRevisaoPrevia, EntradaIa, MarcaPendencia, RevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
 import type { CursoCnct } from "@simplifica-if/ppc/verificadores/comum";
 import type { PedidoTrabalhador, RespostaTrabalhador } from "./trabalhador.ts";
 
@@ -71,6 +71,8 @@ export interface RevisaoDoArquivo {
 
 export interface EntradaRevisarArquivo extends EntradaAnalise {
   readonly ia?: EntradaIa;
+  /** A situação de cada pendência na lista viva (etapa 5b): a cópia comentada reflete o estado. */
+  readonly situacoes?: Record<string, MarcaPendencia>;
   /** Grava a cópia comentada ao lado do original. */
   readonly gravar: boolean;
   /** Recusa o arquivo se o conteúdo mudou desde a preparação. */
@@ -81,6 +83,8 @@ export class AnalisePpc extends Context.Service<
   AnalisePpc,
   {
     readonly analisar: (entrada: EntradaAnalise) => Effect.Effect<ResultadoRevisaoPpc, FalhaRevisaoPpc>;
+    /** O mesmo `analisar`, com o Markdown e as linhas da triagem (a lista viva guarda o texto do PPC). */
+    readonly analisarCompleto: (entrada: EntradaAnalise) => Effect.Effect<RevisaoDoArquivo, FalhaRevisaoPpc>;
     /**
      * Converte, pré-confere e (com `ia`) junta os resultados da IA; espera a vez em vez de recusar.
      * As mesmas conferências do `analisar` (arquivo liberado, tamanho, Worker com limites).
@@ -295,6 +299,7 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
         cnct: entrada.cnct,
         forma: entrada.forma,
         ia: entrada.ia,
+        situacoes: entrada.situacoes,
       },
       limites,
       url,
@@ -311,11 +316,8 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
     return { revisao: semDocx, sha256, arquivoComentado } satisfies RevisaoDoArquivo;
   });
 
-  const analisarUma = (entrada: EntradaAnalise) =>
-    revisarUm({ ...entrada, gravar: true }).pipe(Effect.map((r) => resultadoParaInterface(entrada.arquivo, r)));
-
-  const analisar = (entrada: EntradaAnalise) =>
-    analisarUma(entrada).pipe(
+  const analisarCompleto = (entrada: EntradaAnalise) =>
+    revisarUm({ ...entrada, gravar: true }).pipe(
       vez.withPermitsIfAvailable(1),
       Effect.flatMap(
         Option.match({
@@ -330,10 +332,12 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
         }),
       ),
     );
+  const analisar = (entrada: EntradaAnalise) =>
+    analisarCompleto(entrada).pipe(Effect.map((r) => resultadoParaInterface(entrada.arquivo, r)));
   const liberar = (arquivo: string) => Effect.sync(() => void liberados.add(NodePath.normalize(arquivo)));
   const revisarArquivo = (entrada: EntradaRevisarArquivo) => revisarUm(entrada).pipe(vez.withPermits(1));
 
-  return AnalisePpc.of({ analisar, liberar, revisarArquivo });
+  return AnalisePpc.of({ analisar, analisarCompleto, liberar, revisarArquivo });
 });
 
 /** O serviço sobre o `FontesNormativas` e o `SqlClient` do `kb.sqlite` (os do `Leitura` do servidor). */

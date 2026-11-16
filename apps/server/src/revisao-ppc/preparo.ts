@@ -251,3 +251,71 @@ export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: Entr
   };
   return plano;
 }, Effect.scoped);
+
+/** O contexto de uma ficha para a conversa por pendência e a reanálise (etapa 5b). */
+export type ContextoDaFicha = {
+  ficha: FichaIa;
+  /** O PPC entregue à ficha: o comum (quadro, matriz, ementário, quando a ficha pede) e o recorte dela. */
+  recorte: string;
+  /** As duas partes, para o `pedidoS` da reanálise. */
+  comum: string;
+  proprio: { achou: boolean; texto: string };
+  contexto: ContextoNormativo;
+  fontes: string[];
+};
+
+export interface EntradaContextoFicha {
+  readonly markdown: string;
+  readonly linhasTextoParaIa: readonly number[];
+  readonly cnct: string | null;
+  readonly curso: string | null;
+  readonly ficha: string;
+}
+
+/**
+ * O recorte e o contexto normativo de uma ficha só, pelo mesmo caminho do lote S (`recorteDaFicha` com o
+ * comum do bloco): vale para as fichas D, S e J. `null` se a ficha não está na base (a triagem).
+ */
+export const contextoDaFicha = Effect.fn("RevisaoIa.contextoDaFicha")(function* (entrada: EntradaContextoFicha) {
+  const fontes = yield* FontesNormativas;
+  const json = (yield* fichasDoBanco()).find((f) => f.id === entrada.ficha);
+  if (!json) return null;
+  const ficha = fichaIa(json as Record<string, unknown>);
+  const limpo = retirarTextoParaIa(entrada.markdown, entrada.linhasTextoParaIa);
+  const campi = palavrasDeCampi(yield* nomesDeCampiDoBanco());
+  const todas = segmentarPpc(limpo, "tecnico", campi);
+  const fatos = extrairFatosPpc(
+    limpo,
+    todas.map((x) => ({ tipo: x.tipo, linha_inicio: x.linhaInicio, linha_fim: x.linhaFim })),
+  );
+  const estrutura = estruturaDoPpc(
+    limpo,
+    todas.map((x) => ({
+      titulo: x.titulo,
+      linhaInicio: x.linhaInicio,
+      linhaFim: x.linhaFim,
+      texto: x.texto,
+      tipo: x.tipo,
+    })),
+    fatos.map((f) => ({ fato: f.fato, valor: f.valor })),
+  );
+  const db = yield* Effect.acquireRelease(
+    Effect.sync(() =>
+      bancoDoPpcAvulso(limpo, { registro: fontes.registro, palavrasCampi: campi, sinonimos: fontes.sinonimos }),
+    ),
+    (banco) => Effect.sync(() => banco.close()),
+  );
+  const pacote = yield* pacoteContextoAvulso(db, [json], { cnctId: entrada.cnct, buscasPorFicha: 1 });
+  const contexto = contextoDoPacote(pacote, fontes.dataReferencia, entrada.curso);
+  const comum = comumDoBloco([ficha], estrutura);
+  const r = recorteDaFicha(ficha, secoesTexto(pacote, false), comum);
+  const recorte = [comum.texto, r.texto].filter(Boolean).join("\n\n");
+  return {
+    ficha,
+    recorte,
+    comum: comum.texto,
+    proprio: r,
+    contexto,
+    fontes: [...fontesPermitidas(contexto)],
+  } satisfies ContextoDaFicha;
+}, Effect.scoped);

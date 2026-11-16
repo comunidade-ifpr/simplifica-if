@@ -23,6 +23,7 @@ import * as NodeSqliteClient from "@simplifica-if/kb/db/nodeSqliteClient";
 import Migracao0001 from "./migracoes/0001_Conversas.ts";
 import Migracao0002 from "./migracoes/0002_RevisoesIa.ts";
 import Migracao0003 from "./migracoes/0003_TentativasIa.ts";
+import Migracao0004 from "./migracoes/0004_ListasPendencias.ts";
 
 /** O nome do arquivo do banco na pasta de estado do app. */
 export const ARQUIVO_BANCO = "conversas.sqlite";
@@ -32,6 +33,7 @@ const MIGRACOES = [
   [1, "Conversas", Migracao0001],
   [2, "RevisoesIa", Migracao0002],
   [3, "TentativasIa", Migracao0003],
+  [4, "ListasPendencias", Migracao0004],
 ] as const;
 
 const carregador = (ate: number) =>

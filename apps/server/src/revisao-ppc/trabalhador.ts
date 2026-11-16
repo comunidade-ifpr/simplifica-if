@@ -13,6 +13,7 @@ import { ErroDocx } from "@simplifica-if/docx/erro";
 import {
   type BaseRevisaoPrevia,
   type EntradaIa,
+  type MarcaPendencia,
   revisarDocx,
   type RevisaoPrevia,
 } from "@simplifica-if/ppc/revisao-previa";
@@ -27,6 +28,8 @@ export type PedidoTrabalhador = {
   forma?: string | undefined;
   /** Os resultados conferidos da revisão com IA (etapa 4), para a mesma lista e o mesmo DOCX. */
   ia?: EntradaIa | undefined;
+  /** A situação de cada pendência na lista viva (etapa 5b), para a cópia comentada com o estado. */
+  situacoes?: Record<string, MarcaPendencia> | undefined;
 };
 
 export type RespostaTrabalhador =
@@ -43,6 +46,7 @@ if (porta !== null)
         cnct: pedido.cnct,
         forma: pedido.forma,
         ia: pedido.ia,
+        situacoes: pedido.situacoes,
       });
       porta.postMessage({ ok: true, revisao } satisfies RespostaTrabalhador, [revisao.docx.buffer as ArrayBuffer]);
       return;

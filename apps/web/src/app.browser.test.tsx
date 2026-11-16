@@ -141,7 +141,12 @@ it("Analisar um PPC: do Início à lista de pendências por tema e à cópia com
   await expect.element(page.getByText(/Não identificamos o curso no Catálogo Nacional/)).toBeVisible();
   await expect.element(page.getByText("PPC de teste - revisão prévia (Simplifica IF).docx")).toBeVisible();
 
-  // Os temas na ordem do parecer, com estados em linguagem comum.
+  // O roteiro: uma parada por vez, com o aviso do que ainda não foi visto.
+  await expect.element(page.getByRole("heading", { name: /^Parada 1 de \d+ · / })).toBeVisible();
+  await expect.element(page.getByText(/Ainda não viu:/)).toBeVisible();
+
+  // Tudo de uma vez: os temas na ordem do parecer, com estados em linguagem comum.
+  await page.getByRole("button", { name: "Ver tudo de uma vez" }).click();
   const temas = [...document.querySelectorAll("section[aria-label] > h3")].map((h) => h.textContent);
   expect(temas.indexOf("Matriz e estrutura curricular")).toBeLessThan(temas.indexOf("Fundamentos legais e normativos"));
   const aee = page.getByRole("region", { name: "Acesso, permanência, AEE e inclusão" });
@@ -160,6 +165,18 @@ it("Analisar um PPC: do Início à lista de pendências por tema e à cópia com
   abrirDocumento.mockRejectedValueOnce(new Error("a cópia comentada não foi encontrada"));
   await page.getByRole("button", { name: "Abrir o documento comentado" }).click();
   await expect.element(page.getByText(/Não foi possível abrir a cópia comentada/)).toBeVisible();
+
+  // Apagar a lista pede confirmação: cancelar não apaga; confirmar volta à escolha do arquivo.
+  await page.getByRole("button", { name: "Apagar esta lista" }).click();
+  const confirmacao = page.getByRole("group", { name: "Apagar esta lista?" });
+  await expect.element(confirmacao).toBeVisible();
+  await confirmacao.getByRole("button", { name: "Cancelar" }).click();
+  await expect.element(confirmacao).not.toBeInTheDocument();
+  await expect.element(resultado).toBeVisible();
+  await page.getByRole("button", { name: "Apagar esta lista" }).click();
+  await page.getByRole("button", { name: "Apagar a lista" }).click();
+  await expect.element(resultado).not.toBeInTheDocument();
+  await expect.element(page.getByRole("button", { name: "Escolher o PPC (.docx)…" })).toBeVisible();
 });
 
 it("Analisar um PPC: arquivo que não existe, com a mensagem do servidor em português", async () => {

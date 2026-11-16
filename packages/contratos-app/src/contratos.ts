@@ -428,6 +428,8 @@ export const ResultadoRevisaoPpc = Schema.Struct({
   totalCriterios: Schema.Number,
   /** `data_referencia` da base (AAAA-MM-DD). */
   dataBase: Schema.String,
+  /** A lista viva destas pendências no servidor (etapa 5b); ausente nos resultados gravados antes dela. */
+  lista: Schema.optionalKey(Schema.String),
 });
 export type ResultadoRevisaoPpc = typeof ResultadoRevisaoPpc.Type;
 
@@ -516,6 +518,100 @@ export type EstadoRevisaoIa = typeof EstadoRevisaoIa.Type;
 
 const EntradaRevisaoIa = Schema.Struct({ revisao: Schema.String });
 
+/* ---------------------------------------------------------------- lista viva e conversa (etapa 5b) */
+
+/**
+ * A situação de uma pendência na lista viva: `aberta`; `vou_ajustar` e `resolvida` (a pessoa marca, ou
+ * a reanálise do arquivo novo decide); `contestada_aceita` (retirada: a resposta da IA trouxe trecho ou
+ * norma que o app conferiu) e `contestada_mantida` (a discordância fica registrada).
+ */
+export const SituacaoPendencia = Schema.Literals([
+  "aberta",
+  "vou_ajustar",
+  "resolvida",
+  "contestada_aceita",
+  "contestada_mantida",
+]);
+export type SituacaoPendencia = typeof SituacaoPendencia.Type;
+
+export const AcaoPendencia = Schema.Literals(["marcar", "contestar", "sugerir", "reanalisar"]);
+export type AcaoPendencia = typeof AcaoPendencia.Type;
+
+/** Um passo do histórico de uma pendência, com o uso da IA quando houve. */
+export const EventoPendencia = Schema.Struct({
+  em: Schema.String,
+  acao: AcaoPendencia,
+  situacao: SituacaoPendencia,
+  /** A frase para a pessoa (o que mudou e por quê). */
+  texto: Schema.String,
+  /** O motivo escrito pela pessoa, na contestação. */
+  motivo: Schema.NullOr(Schema.String),
+  uso: Schema.NullOr(UsoRevisaoIa),
+});
+export type EventoPendencia = typeof EventoPendencia.Type;
+
+/** A redação sugerida pela IA, com os fatos que o app não conferiu. Nunca aplicada ao documento. */
+export const SugestaoTexto = Schema.Struct({
+  texto: Schema.String,
+  observacao: Schema.String,
+  completar: Schema.Array(Schema.String),
+  naoConferidos: Schema.Array(
+    Schema.Struct({ fato: Schema.String, tipo: Schema.Literals(["numero", "norma", "nome", "sigla", "data"]) }),
+  ),
+});
+export type SugestaoTexto = typeof SugestaoTexto.Type;
+
+export const PendenciaViva = Schema.Struct({
+  chave: Schema.String,
+  pendencia: PendenciaRevisao,
+  situacao: SituacaoPendencia,
+  /** Quem decidiu a `resolvida`: a palavra da pessoa ou a reanálise do arquivo novo. */
+  resolvidaPor: Schema.NullOr(Schema.Literals(["pessoa", "reanalise"])),
+  historico: Schema.Array(EventoPendencia),
+  sugestao: Schema.NullOr(SugestaoTexto),
+  /** "Discordo…" e "Sugerir texto" valem para fichas da revisão (não para a triagem). */
+  aceitaIa: Schema.Boolean,
+});
+export type PendenciaViva = typeof PendenciaViva.Type;
+
+/** Uma parada do roteiro: um tema, na ordem do parecer da PROENS. */
+export const ParadaRoteiro = Schema.Struct({
+  ordem: Schema.Number,
+  tema: Schema.String,
+  vista: Schema.Boolean,
+});
+export type ParadaRoteiro = typeof ParadaRoteiro.Type;
+
+export const ListaPendencias = Schema.Struct({
+  id: Schema.String,
+  arquivoOriginal: Schema.String,
+  /** A revisão com IA de onde a lista veio, ou nulo (só a pré-conferência). */
+  revisao: Schema.NullOr(Schema.String),
+  provider: Schema.NullOr(Provider),
+  resultado: ResultadoRevisaoPpc,
+  pendencias: Schema.Array(PendenciaViva),
+  paradas: Schema.Array(ParadaRoteiro),
+  /** A parada em que a pessoa estava (ordem do tema). */
+  paradaAtual: Schema.Number,
+  /** O uso somado das ações com IA desta lista. */
+  uso: UsoRevisaoIa,
+  criadaEm: Schema.String,
+  atualizadaEm: Schema.String,
+});
+export type ListaPendencias = typeof ListaPendencias.Type;
+
+/** A estimativa de uma ação com IA, mostrada antes de confirmar. */
+export const EstimativaAcao = Schema.Struct({
+  provider: Provider,
+  tokensEntrada: Schema.Number,
+  tokensSaida: Schema.Number,
+  segundos: Schema.Number,
+  custoUsd: Schema.NullOr(Schema.Number),
+});
+export type EstimativaAcao = typeof EstimativaAcao.Type;
+
+const EntradaLista = Schema.Struct({ lista: Schema.String });
+
 export class GrupoRevisaoPpc extends RpcGroup.make(
   /**
    * Revisão prévia sem IA de um PPC em DOCX (M1.11, etapa 3): conversão, pré-conferência das fichas D
@@ -562,6 +658,77 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
   Rpc.make("revisaoPpc.apagarIa", { payload: EntradaRevisaoIa }),
   /** As revisões com IA gravadas (sem o resultado), da mais recente para a mais antiga. */
   Rpc.make("revisaoPpc.listarIa", { payload: Schema.Struct({}), success: Schema.Array(EstadoRevisaoIa) }),
+  /** A lista viva (etapa 5b): as pendências com a situação, o histórico e as paradas do roteiro. */
+  Rpc.make("revisaoPpc.lista", { payload: EntradaLista, success: ListaPendencias, error: FalhaRevisaoPpc }),
+  /** A lista viva mais recente, para continuar depois de fechar o app (nula se não há). */
+  Rpc.make("revisaoPpc.ultimaLista", { payload: Schema.Struct({}), success: Schema.NullOr(ListaPendencias) }),
+  /**
+   * As discordâncias registradas contra pendências do código (a conferência automática), em CSV, para a
+   * curadoria das regras: se o verificador errou, é defeito da regra. Leva o trecho e o motivo da pessoa.
+   */
+  Rpc.make("revisaoPpc.exportarDiscordancias", { payload: Schema.Struct({}), success: Schema.String }),
+  /** Apaga a lista viva (com o texto do PPC que ela guarda). */
+  Rpc.make("revisaoPpc.apagarLista", { payload: EntradaLista }),
+  /** "Vou ajustar", "Já resolvi" (pela palavra da pessoa) ou "Reabrir": só muda a situação, sem IA. */
+  Rpc.make("revisaoPpc.marcar", {
+    payload: Schema.Struct({
+      lista: Schema.String,
+      chave: Schema.String,
+      situacao: Schema.Literals(["aberta", "vou_ajustar", "resolvida"]),
+    }),
+    success: ListaPendencias,
+    error: FalhaRevisaoPpc,
+  }),
+  /** A pessoa chegou a uma parada do roteiro (fica vista; a lista lembra onde ela estava). */
+  Rpc.make("revisaoPpc.verParada", {
+    payload: Schema.Struct({ lista: Schema.String, ordem: Schema.Number }),
+    success: ListaPendencias,
+    error: FalhaRevisaoPpc,
+  }),
+  /** Quanto uma ação com IA deve gastar, antes de confirmar. */
+  Rpc.make("revisaoPpc.estimarAcao", {
+    payload: Schema.Struct({
+      lista: Schema.String,
+      chave: Schema.String,
+      acao: Schema.Literals(["contestar", "sugerir", "reanalisar"]),
+      provider: Schema.optionalKey(Provider),
+    }),
+    success: EstimativaAcao,
+    error: FalhaRevisaoPpc,
+  }),
+  /** "Discordo…": a IA reavalia com o motivo da pessoa; o código decide se retira. */
+  Rpc.make("revisaoPpc.contestar", {
+    payload: Schema.Struct({
+      lista: Schema.String,
+      chave: Schema.String,
+      motivo: Schema.String,
+      provider: Schema.optionalKey(Provider),
+    }),
+    success: ListaPendencias,
+    error: FalhaRevisaoPpc,
+  }),
+  /** "Sugerir texto": a redação proposta, com os fatos conferidos; nunca aplicada ao documento. */
+  Rpc.make("revisaoPpc.sugerir", {
+    payload: Schema.Struct({ lista: Schema.String, chave: Schema.String, provider: Schema.optionalKey(Provider) }),
+    success: ListaPendencias,
+    error: FalhaRevisaoPpc,
+  }),
+  /**
+   * "Já resolvi" com o arquivo atualizado: reconfere só a ficha da pendência no `.docx` novo (o código e,
+   * nas fichas da IA, um lote pequeno); a situação sai do resultado, nunca da palavra da pessoa.
+   */
+  Rpc.make("revisaoPpc.reanalisar", {
+    payload: Schema.Struct({
+      lista: Schema.String,
+      chave: Schema.String,
+      arquivo: Schema.String,
+      provider: Schema.optionalKey(Provider),
+    }),
+    success: ListaPendencias,
+    error: FalhaRevisaoPpc,
+  }),
+  /** Gera de novo a cópia comentada do original, com a situação de cada pendência no comentário e no aviso. */
+  Rpc.make("revisaoPpc.gerarCopia", { payload: EntradaLista, success: ListaPendencias, error: FalhaRevisaoPpc }),
 ) {}
 
 /* ================================================================== app */
