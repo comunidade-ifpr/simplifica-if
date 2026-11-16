@@ -114,13 +114,13 @@ O app abre arquivos do usuário. O leitor recusa, com `ErroDocx` e mensagem em p
 
 - o que não é ZIP, o `.doc` renomeado e o DOCX protegido por senha (contêiner OLE: "arquivo do Word 97-2003 (.doc) ou um DOCX protegido por senha");
 - ZIP truncado, com entrada cifrada ou com mais de 10 mil entradas;
-- parte de mais de 100 MB descompactada, mais de 300 MB no total das partes lidas, ou parte de mais de 10 MB com compressão acima de 200:1. As partes são descompactadas sob demanda, em pedaços, e o limite vale para o que de fato saiu, não para o tamanho declarado no ZIP; o que a conversão não lê (fontes, imagens, `customXml`) não é descompactado;
-- XML malformado ou truncado (antes virava um `PPC.md` pela metade, sem aviso) e XML com mais de 256 níveis de aninhamento (antes, `RangeError`);
-- linha de tabela com mais de 1.024 células e tabela com mais de 2 milhões de posições; `gridSpan` e `gridBefore` ficam presos à faixa do Word (até 63 colunas);
+- parte de mais de 100 MB descompactada, mais de 300 MB no total das partes lidas, ou parte de mais de 10 MB com compressão acima de 200:1. As partes são descompactadas sob demanda, em pedaços, e os limites (tamanho e razão) valem para o que de fato saiu, não para o tamanho declarado no ZIP; o que a conversão não lê (fontes, imagens, `customXml`) não é descompactado;
+- XML malformado ou truncado (antes virava um `PPC.md` pela metade, sem aviso), XML com mais de 256 níveis de aninhamento (antes, `RangeError`) e parte XML com mais de 1 milhão de elementos (o maior `document.xml` do corpus tem 104 mil; a árvore custa cerca de meio kilobyte por elemento);
+- linha de tabela com mais de 1.024 células, tabela com mais de 2 milhões de posições e tabela cujo texto, repetido pelas mesclas, passa de 16 milhões de caracteres; `gridSpan` e `gridBefore` ficam presos à faixa do Word (até 63 colunas);
 - documento sem texto nenhum (vazio, ou PPC digitalizado como imagem);
 - arquivo de mais de 100 MB, conferido antes da leitura.
 
-Entidades declaradas no XML não são expandidas nem buscadas, e uma relação que aponta para fora do pacote resolve dentro dele. No `PPC.md`, só endereços `http`, `https` e `mailto` viram link, com parênteses e espaços escapados.
+Entidades declaradas no XML não são expandidas nem buscadas, e uma relação que aponta para fora do pacote resolve dentro dele. No `PPC.md`, só endereços `http`, `https` e `mailto` viram link, com parênteses e espaços escapados no endereço e `]` e `\` no texto. A consolidação de parágrafos do normalizador é linear no tamanho do texto.
 
 A conversão é síncrona e a árvore do XML fica inteira na memória: quem a chama a partir de um servidor deve isolá-la (veja o M1.11 em `docs/plans/app-simplifica-if.md`).
 
@@ -142,7 +142,12 @@ Fora das regras, valem nos dois modos:
 - **Robustez.** Mescla vertical malformada e imagem com relação externa não abortam mais. O prefixo de namespace do XML é livre, e o DOCX salvo como "Strict Open XML" é lido.
 - **Referências do ementário.** A busca aproximada de locais usa sempre a medida do `rapidfuzz`. A conversão antiga, sem ele instalado, caía num cálculo com `difflib`, com escores diferentes.
 
-O que continua como na conversão antiga: o texto de uma tabela aninhada não entra na célula que a contém; o que vem antes do primeiro título (capa) fica fora do Markdown; o número da lista automática não é calculado (o item sai como `1.`, e o Markdown numera).
+O que continua como na conversão antiga: o texto de uma tabela aninhada não entra na célula que a contém; o que vem antes do primeiro título (capa) fica fora do Markdown.
+
+Limitações das listas automáticas:
+
+- o número não é calculado: todo item numerado sai como `1.` (o Markdown numera na exibição), e a lista que no Word começa em 5 (`w:start`) ou usa letras ou romanos perde o rótulo;
+- o nível (`w:ilvl`) vai para o Markdown bruto como recuo, mas o normalizador tira o recuo de toda linha, como sempre fez: no `PPC.md`, o subitem fica no nível do item. Preservar o recuo muda a normalização também da entrada `.md` e ficou fora desta trilha.
 
 ### Diferencial contra a conversão em Python
 
