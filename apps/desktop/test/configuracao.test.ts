@@ -8,12 +8,14 @@ import { ORIGEM_APP, resolverConfiguracao, URL_APP, type Entrada } from "../src/
 import * as NodeCrypto from "node:crypto";
 import {
   CAMINHO_LIBERAR_ARQUIVO as LIBERAR_CONTRATO,
+  EXTENSOES_DOCUMENTO as EXTENSOES_CONTRATO,
   SUFIXO_REVISAO_PREVIA as SUFIXO_CONTRATO,
 } from "@simplifica-if/contratos-app";
 import {
   anexoEscolhido,
   arquivoDeTarefaPermitido,
   copiaComentadaPermitida,
+  EXTENSOES_DOCUMENTO,
   extensoesAnexo,
   docxEscolhido,
   hashesScriptsInline,
@@ -228,6 +230,12 @@ describe("revisão prévia: o que a interface pode abrir", () => {
 describe("pasta das tarefas (M1.9): o que a interface pode anexar, abrir e mostrar", () => {
   const raiz = "/Users/x/Documents/Simplifica IF";
 
+  test("a lista de extensões é a do contrato, sem os formatos com macro", () => {
+    expect([...EXTENSOES_DOCUMENTO]).toEqual([...EXTENSOES_CONTRATO]);
+    expect(EXTENSOES_DOCUMENTO).not.toContain(".doc");
+    expect(EXTENSOES_DOCUMENTO).not.toContain(".xls");
+  });
+
   test("anexo: só as extensões de documento pedidas; sem pedido, todas as de documento", () => {
     expect(extensoesAnexo([".md", ".TXT", ".exe", 3])).toEqual([".md", ".txt"]);
     expect(extensoesAnexo(undefined)).toContain(".docx");
@@ -245,6 +253,10 @@ describe("pasta das tarefas (M1.9): o que a interface pode anexar, abrir e mostr
     for (const recusado of [
       `${raiz}/Tarefa/rodar.command`,
       `${raiz}/Tarefa/pagina.html`,
+      `${raiz}/Tarefa/antigo.doc`,
+      `${raiz}/Tarefa/planilha.xls`,
+      `${raiz}/Tarefa/a.md:oculto`,
+      `${raiz}/Tarefa/a.md:oculto.md`,
       `${raiz}/solto.md`,
       `${raiz}/Tarefa/.simplifica/skills/x/SKILL.md`,
       `${raiz}/Tarefa/../../segredo.md`,

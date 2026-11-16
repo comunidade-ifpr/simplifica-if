@@ -54,6 +54,11 @@ describe("nomes", () => {
     assert.strictEqual(nomeSeguro("Conferir: base/legal?  do PPC*"), "Conferir base legal do PPC");
     assert.strictEqual(nomeSeguro("  ..oculta.  "), "oculta");
     assert.strictEqual(nomeSeguro("CON"), "Tarefa");
+    assert.strictEqual(nomeSeguro("con.txt"), "Tarefa");
+    assert.strictEqual(nomeSeguro("NUL.x"), "Tarefa");
+    assert.strictEqual(nomeSeguro("COM¹"), "Tarefa");
+    assert.strictEqual(nomeSeguro("LPT9.doc"), "Tarefa");
+    assert.strictEqual(nomeSeguro("Console"), "Console");
     assert.strictEqual(nomeSeguro(""), "Tarefa");
     assert.isAtMost(nomeSeguro("a".repeat(200)).length, 60);
   });
@@ -124,6 +129,17 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       assert.deepInclude(anexado, { nome: "entrada.md", origem: "anexado" });
       const repetido = yield* rpc["pasta.anexar"]({ pasta, arquivo: original });
       assert.strictEqual(repetido.nome, "entrada (2).md");
+      // Só documento, também sem a liberação do desktop.
+      const script = NodePath.join(fora, "rodar.command");
+      NodeFS.writeFileSync(script, "echo oi\n");
+      yield* pedirHttp(urlRpc.replace(/\/rpc$/, CAMINHO_LIBERAR_ARQUIVO), {
+        metodo: "POST",
+        cabecalhos: { authorization: `Bearer ${TOKEN_DESKTOP}`, "content-type": "application/json" },
+        corpo: JSON.stringify({ arquivo: script }),
+      });
+      const naoDocumento = yield* Effect.exit(rpc["pasta.anexar"]({ pasta, arquivo: script }));
+      assert.isTrue(Exit.isFailure(naoDocumento));
+      assert.match(JSON.stringify(naoDocumento), /Anexe um documento/);
       // Só em pasta de tarefa do app.
       const foraDaRaiz = yield* Effect.exit(rpc["pasta.anexar"]({ pasta: fora, arquivo: original }));
       assert.isTrue(Exit.isFailure(foraDaRaiz));

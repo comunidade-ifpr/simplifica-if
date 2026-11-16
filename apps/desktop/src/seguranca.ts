@@ -190,11 +190,11 @@ export function copiaComentadaPermitida(caminho: unknown, escolhidos: ReadonlySe
 /**
  * As extensões que "Anexar arquivo…" aceita e que "Abrir" abre no programa padrão (M1.9): documentos,
  * planilhas, texto e imagens. Nada que o sistema execute (`.app`, `.exe`, `.command`, `.sh`, `.bat`,
- * `.html`…): a IA escreve na pasta, e "Abrir" não pode virar "rodar".
+ * `.html`…) nem os formatos antigos com macro (`.doc`, `.xls`): a IA escreve na pasta, e "Abrir" não
+ * pode virar "rodar". Cópia de `EXTENSOES_DOCUMENTO` do `@simplifica-if/contratos-app` (o teste confere).
  */
 export const EXTENSOES_DOCUMENTO = [
   ".docx",
-  ".doc",
   ".odt",
   ".rtf",
   ".pdf",
@@ -202,7 +202,6 @@ export const EXTENSOES_DOCUMENTO = [
   ".txt",
   ".csv",
   ".xlsx",
-  ".xls",
   ".ods",
   ".pptx",
   ".odp",
@@ -240,6 +239,9 @@ export function anexoEscolhido(caminho: unknown, aceitas: ReadonlyArray<string>)
 export function arquivoDeTarefaPermitido(caminho: unknown, raiz: string, abrir: boolean): string | undefined {
   if (typeof caminho !== "string" || !NodePath.isAbsolute(caminho)) return undefined;
   if (NodePath.normalize(caminho) !== caminho) return undefined;
+  // `:` só na unidade do Windows (`C:\`); fora dela, é fluxo alternativo do NTFS (`arquivo.md:oculto`).
+  const semUnidade = /^[A-Za-z]:[\\/]/.test(caminho) ? caminho.slice(2) : caminho;
+  if (semUnidade.includes(":")) return undefined;
   const relativo = NodePath.relative(raiz, caminho);
   if (relativo === "" || relativo.startsWith("..") || NodePath.isAbsolute(relativo)) return undefined;
   const partes = relativo.split(NodePath.sep);

@@ -31,7 +31,13 @@ import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
-import { type ArquivoPasta, FalhaPasta, type PastaConversa, type PrevisaoDesfazer } from "@simplifica-if/contratos-app";
+import {
+  type ArquivoPasta,
+  ehExtensaoDocumento,
+  FalhaPasta,
+  type PastaConversa,
+  type PrevisaoDesfazer,
+} from "@simplifica-if/contratos-app";
 import { Historico } from "./persistencia/Historico.ts";
 import { AnalisePpc } from "./revisao-ppc/AnalisePpc.ts";
 
@@ -84,7 +90,8 @@ export class PastasTrabalho extends Context.Service<
 
 /* ================================================================== funções puras e de arquivo */
 
-const RESERVADOS_WINDOWS = /^(con|prn|aux|nul|com\d|lpt\d)$/i;
+/** Os nomes que o Windows reserva, com ou sem extensão (`CON.txt`, `nul.x`, `COM¹`). */
+const RESERVADOS_WINDOWS = /^(con|prn|aux|nul|com[0-9¹²³]|lpt[0-9¹²³])(\..*)?$/i;
 
 /** Um nome de pasta seguro no macOS e no Windows, a partir do título da tarefa. */
 export function nomeSeguro(titulo: string): string {
@@ -434,6 +441,9 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     if (real === undefined) return yield* falha("Só é possível anexar na pasta de uma tarefa do app.");
     if (!NodePath.isAbsolute(arquivo) || !(yield* analise.liberado(arquivo)))
       return yield* falha('Escolha o arquivo pelo botão "Anexar arquivo…" do app.');
+    // A mesma lista do diálogo do desktop, também quando o servidor não exige a liberação (web, dev).
+    if (!ehExtensaoDocumento(NodePath.basename(arquivo)))
+      return yield* falha("Anexe um documento (Word, PDF, texto, planilha, apresentação ou imagem).");
     const info = yield* tentar(() => NodeFSP.lstat(arquivo), "O arquivo não foi encontrado ou não pode ser lido.");
     if (!info.isFile()) return yield* falha("Escolha um arquivo (não uma pasta nem um atalho).");
     if (info.size > limites.anexoBytes)
