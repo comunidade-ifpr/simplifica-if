@@ -141,9 +141,22 @@ export function fichasForaDoModo(fichas: readonly FichaIa[], modo: ModoRevisaoIa
 /* ============================================================ recortes */
 
 /** Uma seção do PPC, com o texto e as linhas (1-based) no Markdown. */
-export type SecaoTexto = { titulo: string; linhaInicio: number; linhaFim: number; texto: string };
+export type SecaoTexto = {
+  titulo: string;
+  linhaInicio: number;
+  linhaFim: number;
+  texto: string;
+  /** O tipo de seção do `kb` (taxonomia `tecnico`), quando se sabe. */
+  tipo?: string | undefined;
+  /** A seção veio pelo tópico da ficha (`topicos-secoes.yaml`), não só pela busca. */
+  doTopico?: boolean | undefined;
+};
 
-export const LIMITE_RECORTE_S = 3000;
+/**
+ * Teto do recorte de uma ficha S. Era 3 mil, por parágrafos com termos; o diagnóstico do teste real
+ * mostrou que trazer a seção certa inteira vale mais (veja `recorteDaFicha`).
+ */
+export const LIMITE_RECORTE_S = 4500;
 export const LIMITE_SECOES_J = 30_000;
 const LIMITE_PARAGRAFO = 2500;
 
@@ -172,62 +185,141 @@ export function retirarTextoParaIa(markdown: string, linhas: readonly number[]):
     .join("\n");
 }
 
-type Paragrafo = { secao: SecaoTexto; ordem: number; texto: string; pontos: number };
-
-function paragrafos(secao: SecaoTexto): string[] {
-  return secao.texto
+function paragrafos(texto: string): string[] {
+  return texto
     .split(/\n\s*\n/)
     .map((p) => p.trim())
     .filter((p) => p.length > 0)
     .map((p) => (p.length > LIMITE_PARAGRAFO ? `${p.slice(0, LIMITE_PARAGRAFO)} […]` : p));
 }
 
+const contar = (termos: readonly string[], texto: string) => {
+  const dobrado = ` ${dobrar(texto)} `;
+  return termos.filter((t) => dobrado.includes(` ${t}`)).length;
+};
+
+/** O texto da seção sem as linhas de tabela (quando a matriz vai à parte, em TSV). */
+const semTabela = (texto: string) =>
+  texto
+    .split("\n")
+    .filter((l) => !l.trim().startsWith("|"))
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+
+export type OpcoesRecorte = {
+  limite?: number;
+  /** Seções (pela linha do título) que o comum do bloco já traz inteiras (o quadro): ficam de fora aqui. */
+  excluirLinhas?: ReadonlySet<number>;
+  /** Tira as linhas de tabela das seções destes tipos (a matriz, que vai à parte em TSV). */
+  semTabelaEm?: ReadonlySet<string>;
+};
+
+const LIMITE_PRIMEIRO_PARAGRAFO = 1200;
+const FIGURA = "(seção sem texto no documento convertido: provavelmente só uma figura, que a conversão não lê)";
+
 /**
- * O recorte de uma ficha S: os parágrafos das seções dadas com mais termos da ficha, na ordem do
- * documento, até `limite` caracteres, sob o título da seção. Sem termo achado, o começo da primeira
- * seção (`achou: false`: a IA é avisada de que o código não localizou o trecho).
+ * O recorte de uma ficha, guiado pela estrutura. As seções vêm pelo tópico da ficha ou pela busca e
+ * são pontuadas pelos termos dela **no título** (peso 3: num quadro de identificação, o rótulo está no
+ * título e o valor no corpo) e no corpo, mais 1 se vieram pelo tópico.
+ *
+ * 1. Cobertura: cada tipo de seção dos tópicos da ficha entra com o primeiro parágrafo da sua seção
+ *    mais pontuada (uma transversal precisa de objetivos **e** perfil **e** avaliação, não de três
+ *    pedaços da maior seção).
+ * 2. Preenchimento: as seções entram inteiras, da mais pontuada à menos, enquanto cabem em `limite`; a
+ *    que não cabe entra com o primeiro parágrafo e os de mais termos. Uma seção que não cabe não para a
+ *    escolha: uma menor, mais abaixo, ainda pode caber.
+ *
+ * Sem nenhuma seção pontuada, o começo da primeira (`achou: false`).
  */
-export function recorteDaFicha(ficha: FichaIa, secoes: readonly SecaoTexto[], limite = LIMITE_RECORTE_S) {
+export function recorteDaFicha(ficha: FichaIa, secoes: readonly SecaoTexto[], opcoes: OpcoesRecorte = {}) {
+  const limite = opcoes.limite ?? LIMITE_RECORTE_S;
   const termos = [...new Set(ficha.termos.map(dobrar).filter((t) => t.length >= 4))];
-  const candidatos: Paragrafo[] = [];
-  let ordem = 0;
-  for (const secao of secoes)
-    for (const texto of paragrafos(secao)) {
-      const dobrado = ` ${dobrar(texto)} `;
-      const pontos = termos.filter((t) => dobrado.includes(` ${t}`)).length;
-      candidatos.push({ secao, ordem: ordem++, texto, pontos });
-    }
-  const comTermo = candidatos.filter((p) => p.pontos > 0).sort((a, b) => b.pontos - a.pontos || a.ordem - b.ordem);
-  const escolhidos: Paragrafo[] = [];
+  const candidatas = secoes
+    .filter((s) => !opcoes.excluirLinhas?.has(s.linhaInicio))
+    .map((s, ordem) => {
+      const texto = s.tipo && opcoes.semTabelaEm?.has(s.tipo) ? semTabela(s.texto) : s.texto;
+      // Seção sem corpo (o título e uma figura, como a representação gráfica): entra com a nota.
+      const corpo = texto.trim() ? texto : FIGURA;
+      return {
+        s,
+        ordem,
+        texto: corpo,
+        pontos: 3 * contar(termos, s.titulo) + contar(termos, texto) + (s.doTopico ? 1 : 0),
+      };
+    });
+  const pontuadas = candidatas.filter((c) => c.pontos > 0).sort((a, b) => b.pontos - a.pontos || a.ordem - b.ordem);
+  const escolhidas = new Map<number, { ordem: number; texto: string; s: SecaoTexto }>();
   let tamanho = 0;
-  for (const p of comTermo) {
-    if (tamanho + p.texto.length > limite && escolhidos.length) continue;
-    escolhidos.push(p);
-    tamanho += p.texto.length;
+  const por = (ordem: number, s: SecaoTexto, texto: string) => {
+    tamanho += texto.length - (escolhidas.get(ordem)?.texto.length ?? 0);
+    escolhidas.set(ordem, { ordem, texto, s });
+  };
+
+  const tiposVistos = new Set<string>();
+  for (const c of pontuadas) {
+    if (!c.s.doTopico || !c.s.tipo || tiposVistos.has(c.s.tipo)) continue;
+    tiposVistos.add(c.s.tipo);
+    const primeiro = paragrafos(c.texto)[0] ?? "";
+    const texto =
+      primeiro.length > LIMITE_PRIMEIRO_PARAGRAFO ? `${primeiro.slice(0, LIMITE_PRIMEIRO_PARAGRAFO)} […]` : primeiro;
+    const final = texto.length < c.texto.length ? `${texto}\n[… seção encurtada …]` : texto;
+    if (tamanho + final.length <= limite) por(c.ordem, c.s, final);
   }
-  const achou = escolhidos.length > 0;
-  if (!achou && secoes[0]) {
-    const primeira = secoes[0];
+
+  for (const c of pontuadas) {
+    const atual = escolhidas.get(c.ordem)?.texto.length ?? 0;
+    const sobra = limite - tamanho + atual;
+    if (c.texto.length <= sobra) {
+      por(c.ordem, c.s, c.texto);
+      continue;
+    }
+    if (sobra - atual < 400) continue;
+    // A seção não cabe: o primeiro parágrafo e os de mais termos, na ordem do documento.
+    const ps = paragrafos(c.texto).map((texto, i) => ({
+      texto,
+      i,
+      pontos: i === 0 ? Infinity : contar(termos, texto),
+    }));
+    const dentro: typeof ps = [];
+    let usado = 0;
+    for (const p of [...ps].sort((a, b) => b.pontos - a.pontos || a.i - b.i)) {
+      if (p.pontos === 0) break;
+      if (usado + p.texto.length > sobra) continue;
+      dentro.push(p);
+      usado += p.texto.length;
+    }
+    if (!dentro.length) continue;
+    dentro.sort((a, b) => a.i - b.i);
+    por(c.ordem, c.s, `${dentro.map((p) => p.texto).join("\n\n")}\n[… seção encurtada …]`);
+  }
+
+  const achou = escolhidas.size > 0;
+  if (!achou && candidatas[0]) {
+    const primeira = candidatas[0];
     return {
       achou,
-      texto: `### ${primeira.titulo} (linhas ${primeira.linhaInicio}–${primeira.linhaFim})\n${primeira.texto.slice(0, Math.floor(limite / 2))}`,
+      texto: `### ${primeira.s.titulo} (linhas ${primeira.s.linhaInicio}–${primeira.s.linhaFim})\n${primeira.texto.slice(0, Math.floor(limite / 2))}`,
     };
   }
-  escolhidos.sort((a, b) => a.ordem - b.ordem);
-  const partes: string[] = [];
-  let secaoAtual: SecaoTexto | null = null;
-  for (const p of escolhidos) {
-    if (p.secao !== secaoAtual) {
-      partes.push(`### ${p.secao.titulo} (linhas ${p.secao.linhaInicio}–${p.secao.linhaFim})`);
-      secaoAtual = p.secao;
-    }
-    partes.push(p.texto);
-  }
-  return { achou, texto: partes.join("\n\n") };
+  return {
+    achou,
+    texto: [...escolhidas.values()]
+      .sort((a, b) => a.ordem - b.ordem)
+      .map((e) => `### ${e.s.titulo} (linhas ${e.s.linhaInicio}–${e.s.linhaFim})\n${e.texto}`)
+      .join("\n\n"),
+  };
 }
 
 /** As seções de um tema J, inteiras até `limite`; acima disso, cada uma encurtada na proporção. */
-export function secoesDoTema(secoes: readonly SecaoTexto[], limite = LIMITE_SECOES_J): string {
+export function secoesDoTema(
+  secoesOriginais: readonly SecaoTexto[],
+  limite = LIMITE_SECOES_J,
+  semTabelaEm?: ReadonlySet<string>,
+): string {
+  const secoes = secoesOriginais
+    .map((s) => (s.tipo && semTabelaEm?.has(s.tipo) ? { ...s, texto: semTabela(s.texto) } : s))
+    .filter((s) => s.texto.length > 0);
   const total = secoes.reduce((t, s) => t + s.texto.length, 0);
   const fator = total > limite ? limite / total : 1;
   return secoes

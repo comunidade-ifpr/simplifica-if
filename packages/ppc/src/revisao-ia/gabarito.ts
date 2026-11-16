@@ -50,7 +50,7 @@ export const GABARITO: Readonly<Record<string, readonly Requisito[]>> = {
   "CT-IDENT-17": [p(/reserva de vagas|cotas|12\.?711|acoes afirmativas/, "reserva de vagas")],
   "CT-CURR-01": [MATRIZ],
   "CT-CURR-03": [MATRIZ],
-  "CT-CURR-10": [p(/fluxograma|representacao grafica/, "representação gráfica")],
+  "CT-CURR-10": [p(/representacao grafica/, 'representação gráfica (a seção; "fluxograma" aparece em ementas)')],
   "CT-CURR-04": [MATRIZ, p(/perfil (do egresso|profissional)/, "perfil")],
   "CT-CURR-07": [MATRIZ],
   "CT-CURR-12": [MATRIZ],

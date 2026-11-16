@@ -132,8 +132,9 @@ export function pedidoS(
   recortes: ReadonlyMap<string, { achou: boolean; texto: string }>,
   contexto: ContextoNormativo,
   nonce: string,
+  comum = "",
 ): string {
-  const ppc = fichas
+  const recortesTexto = fichas
     .map((f) => {
       const r = recortes.get(f.id);
       const aviso = r?.achou
@@ -142,6 +143,7 @@ export function pedidoS(
       return `## Recorte para ${f.id}\n${aviso}${r?.texto || "(nenhuma seção do PPC corresponde a este critério)"}`;
     })
     .join("\n\n");
+  const ppc = [comum, recortesTexto].filter(Boolean).join("\n\n");
   return [
     `# Bloco ${bloco.id}: ${bloco.tema} (confirmação de critérios sobre recortes)`,
     "",
@@ -168,6 +170,7 @@ export function pedidoJ(
   secoes: string,
   contexto: ContextoNormativo,
   nonce: string,
+  comum = "",
 ): string {
   return [
     `# Tema ${bloco.id}: ${bloco.tema} (julgamento sobre as seções do tema)`,
@@ -182,7 +185,12 @@ export function pedidoJ(
     "",
     "## Seções do PPC deste tema (documento da pessoa)",
     "",
-    entreMarcas(secoes || "(nenhuma seção do PPC foi classificada neste tema)", nonce),
+    entreMarcas(
+      [comum, secoes ? `## Seções do tema\n\n${secoes}` : "(nenhuma seção do PPC foi classificada neste tema)"]
+        .filter(Boolean)
+        .join("\n\n"),
+      nonce,
+    ),
     "",
     CONTRATO(bloco, fichas),
   ].join("\n");
@@ -205,13 +213,13 @@ export function pedidoT(
     "## Resumos dos temas",
     ...resumos.map((r) => `- ${r.tema}: ${r.resumo}`),
     "",
-    "## Trechos das seções destes critérios",
-    trechos || "(nenhum)",
+    "",
+    trechos || "(nenhum trecho)",
   ].join("\n");
   return [
     `# Bloco ${bloco.id}: coerência do conjunto (critérios transversais)`,
     "",
-    "Você não recebe o PPC inteiro: avalie pelos resumos dos temas, pelos resultados já conferidos e pelos trechos.",
+    "Você não recebe o PPC inteiro: avalie pelos resumos dos temas, pelos resultados já conferidos, pelas partes extraídas pelo código e pelos recortes de cada critério.",
     "O que não puder ser decidido assim é INCONCLUSIVO.",
     "",
     "## Critérios",

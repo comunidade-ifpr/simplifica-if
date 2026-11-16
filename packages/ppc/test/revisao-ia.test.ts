@@ -12,7 +12,23 @@ import { describe, expect, test } from "vite-plus/test";
 import { baseRevisaoDeArquivos } from "../scripts/base-tecnica.ts";
 import { conferirResposta, motivoLegivel, alvoDosTrechos, trechoExiste } from "../src/revisao-ia/conferencia.ts";
 import { estimar } from "../src/revisao-ia/estimativa.ts";
-import { type ContextoNormativo, fontesPermitidas, instrucoesJulgador, pedidoS } from "../src/revisao-ia/pedido.ts";
+import {
+  componentesDaMatriz,
+  componentesDoEmentario,
+  comumDoBloco,
+  estruturaDoPpc,
+  indiceDoEmentario,
+  matrizEmTsv,
+  quadroDeIdentificacao,
+} from "../src/revisao-ia/estrutura.ts";
+import { avaliarRecorte } from "../src/revisao-ia/gabarito.ts";
+import {
+  type ContextoNormativo,
+  conteudoDoPpcParaFicha,
+  fontesPermitidas,
+  instrucoesJulgador,
+  pedidoS,
+} from "../src/revisao-ia/pedido.ts";
 import {
   fichaIa,
   fichasDoModo,
@@ -69,15 +85,27 @@ describe("recortes e texto dirigido a IA", () => {
         "Introdução sem nada.\n\nO núcleo básico soma 400 horas e a formação técnica 800 horas.\n\nOutro parágrafo.",
     },
   ];
-  test("o recorte da ficha S traz o parágrafo com os termos dela, sob o título da seção", () => {
+  test("a seção da ficha que cabe entra inteira, sob o título", () => {
     const recorte = recorteDaFicha(porId.get("CT-CURR-03")!, secoes);
     expect(recorte.achou).toBe(true);
     expect(recorte.texto).toContain("### 4 ORGANIZAÇÃO CURRICULAR (linhas 10–20)");
     expect(recorte.texto).toContain("núcleo básico soma 400 horas");
-    expect(recorte.texto).not.toContain("Introdução sem nada");
+    expect(recorte.texto).toContain("Introdução sem nada");
+  });
+  test("a seção que não cabe entra com o primeiro parágrafo e os de mais termos", () => {
+    const longa = {
+      ...secoes[0]!,
+      texto: `Introdução.\n\n${"Texto sem nada. ".repeat(300)}\n\nO núcleo básico soma 400 horas.`,
+    };
+    const recorte = recorteDaFicha(porId.get("CT-CURR-03")!, [longa], { limite: 1000 });
+    expect(recorte.texto).toContain("Introdução.");
+    expect(recorte.texto).toContain("núcleo básico soma 400 horas");
+    expect(recorte.texto).toContain("[… seção encurtada …]");
   });
   test("sem termo achado, avisa e manda o começo da seção", () => {
-    const recorte = recorteDaFicha(porId.get("CT-CURR-03")!, [{ ...secoes[0]!, texto: "Nada a ver." }]);
+    const recorte = recorteDaFicha(porId.get("CT-CURR-03")!, [
+      { ...secoes[0]!, titulo: "9 OUTROS", texto: "Nada a ver." },
+    ]);
     expect(recorte.achou).toBe(false);
   });
   test("o tema J encurta as seções acima do limite", () => {
@@ -293,5 +321,138 @@ describe("os resultados da IA no DOCX comentado", () => {
     expect(revisao.aviso).toContain(
       "No modo rápido, ficaram de fora 1 critério, que exigem leitura, dos temas: Corpo docente, gestão e infraestrutura.",
     );
+  });
+});
+
+describe("recortes guiados pela estrutura", () => {
+  const quadro = [
+    { titulo: "1.1.5 Modalidade", linhaInicio: 100, linhaFim: 101, texto: "Presencial", tipo: "identificacao" },
+    {
+      titulo: "1.1.6 Forma de Oferta",
+      linhaInicio: 104,
+      linhaFim: 105,
+      texto: "Subsequente ao Ensino Médio",
+      tipo: "formato_oferta",
+    },
+  ];
+  const matriz = {
+    titulo: "6.5 MATRIZ CURRICULAR",
+    linhaInicio: 200,
+    linhaFim: 220,
+    tipo: "matriz_curricular",
+    texto: [
+      "A matriz a seguir.",
+      "",
+      "|Módulo|Componente curricular|Aulas|Horas|",
+      "|---|---|---|---|",
+      "|1|**Anatomia e Fisiologia**|96|80|",
+      "|1|Biossegurança<br>nos Serviços|48|40|",
+      "|2|Noções de Farmacologia|48|40|",
+      "|2|Cuidado Clínico I|120|100|",
+      "|3|Saúde Coletiva|72|60|",
+      "|Total||384|320|",
+    ].join("\n"),
+  };
+  const ementario = [
+    "## COMPONENTE CURRICULAR: Anatomia e Fisiologia",
+    "## EMENTA:",
+    "Estudo dos sistemas do corpo humano.",
+    "## BIBLIOGRAFIA BÁSICA:",
+    "- AUTOR, A. Livro um. 2020.",
+    "- AUTOR, B. Livro dois. 2021.",
+    "## BIBLIOGRAFIA COMPLEMENTAR:",
+    "- AUTOR, C. Livro três. 2019.",
+    "## COMPONENTE CURRICULAR: Noções de Farmacologia",
+    "## BIBLIOGRAFIA BÁSICA:",
+    "- AUTOR, D. Livro quatro. 2018.",
+  ].join("\n");
+
+  test("o quadro de identificação traz o rótulo do título e o valor do corpo, e diz quais seções vieram inteiras", () => {
+    const q = quadroDeIdentificacao([...quadro, matriz], [{ fato: "carga_horaria_total_h", valor: "1600" }]);
+    expect(q.texto).toContain("- 1.1.5 Modalidade: Presencial");
+    expect(q.texto).toContain("(extraído pelo código) carga_horaria_total_h: 1600");
+    expect([...q.inteiras]).toEqual([100, 104]);
+  });
+
+  test("a matriz vai em TSV, sem marcação, e os componentes se reconhecem", () => {
+    const tsv = matrizEmTsv([matriz]);
+    expect(tsv.split("\n")[0]).toBe("Módulo\tComponente curricular\tAulas\tHoras");
+    expect(tsv).toContain("1\tBiossegurança nos Serviços\t48\t40");
+    expect(tsv).not.toContain("|");
+    expect(componentesDaMatriz([matriz])).toEqual([
+      "Anatomia e Fisiologia",
+      "Biossegurança nos Serviços",
+      "Noções de Farmacologia",
+      "Cuidado Clínico I",
+      "Saúde Coletiva",
+    ]);
+  });
+
+  test("o índice do ementário conta as referências e aponta a ementa que falta", () => {
+    expect(componentesDoEmentario(ementario)).toEqual([
+      { nome: "Anatomia e Fisiologia", ementa: "Estudo dos sistemas do corpo humano. ", basicas: 2, complementares: 1 },
+      { nome: "Noções de Farmacologia", ementa: "", basicas: 1, complementares: 0 },
+    ]);
+    expect(indiceDoEmentario(ementario)).toContain("Noções de Farmacologia\t(sem ementa)\t1\t0");
+  });
+
+  test("o comum do bloco leva o quadro sempre e a matriz só às fichas de matriz", () => {
+    const e = estruturaDoPpc(ementario, [...quadro, matriz]);
+    const deMatriz = comumDoBloco([porId.get("CT-CURR-01")!], e);
+    expect(deMatriz.texto).toContain("### Quadro de identificação");
+    expect(deMatriz.texto).toContain("### Matriz curricular (tabela em TSV");
+    expect([...deMatriz.excluirLinhas]).toEqual([100, 104]);
+    const deIdentificacao = comumDoBloco([porId.get("CT-IDENT-16")!], e);
+    expect(deIdentificacao.texto).not.toContain("### Matriz curricular");
+    expect(comumDoBloco([porId.get("CT-CURR-05")!], e).texto).toContain("### Índice do ementário");
+  });
+
+  test("o recorte pontua o título (o rótulo do quadro) e cobre cada tipo de seção do tópico", () => {
+    const ficha = porId.get("CT-IDENT-09")!;
+    const r = recorteDaFicha(
+      ficha,
+      quadro.map((s) => ({ ...s, doTopico: true })),
+    );
+    expect(r.texto).toContain("Presencial");
+    expect(r.texto).toContain("Subsequente ao Ensino Médio");
+    // A seção que o quadro já traz inteira não se repete no recorte.
+    const semQuadro = recorteDaFicha(
+      ficha,
+      quadro.map((s) => ({ ...s, doTopico: true })),
+      { excluirLinhas: new Set([100]) },
+    );
+    expect(semQuadro.texto).not.toContain("Presencial");
+  });
+
+  test("a seção que é só uma figura entra com a nota, e a matriz sai do recorte quando vai em TSV", () => {
+    const figura = {
+      titulo: "6.4 REPRESENTAÇÃO GRÁFICA DO PROCESSO FORMATIVO",
+      linhaInicio: 190,
+      linhaFim: 190,
+      texto: "",
+      tipo: "itinerario_formativo",
+      doTopico: true,
+    };
+    const r = recorteDaFicha(porId.get("CT-CURR-10")!, [figura, { ...matriz, doTopico: true }], {
+      semTabelaEm: new Set(["matriz_curricular"]),
+    });
+    expect(r.texto).toContain("provavelmente só uma figura");
+    expect(r.texto).not.toContain("Anatomia e Fisiologia");
+  });
+
+  test("o gabarito só conta o PPC que tem a evidência, e o conteúdo da ficha exclui os recortes das outras", () => {
+    const ppc = { markdown: "## 1.1.5 Modalidade\nPresencial\n## 1.1.6 Forma de Oferta\nSubsequente", secoes: quadro };
+    expect(avaliarRecorte("CT-IDENT-09", "Modalidade: Presencial. Forma de oferta: subsequente", ppc)).toEqual({
+      noPpc: true,
+      noRecorte: true,
+    });
+    expect(avaliarRecorte("CT-IDENT-09", "nada", ppc)).toEqual({ noPpc: true, noRecorte: false });
+    expect(avaliarRecorte("CT-IDENT-16", "processo seletivo", ppc).noPpc).toBe(false);
+    const pedido =
+      "<ppc-abc>\n## Partes do PPC extraídas pelo código\nQUADRO\n\n## Recorte para CT-A\nAAA\n\n## Recorte para CT-B\nBBB\n</ppc-abc>";
+    const conteudo = conteudoDoPpcParaFicha({ pedido }, "CT-B");
+    expect(conteudo).toContain("QUADRO");
+    expect(conteudo).toContain("BBB");
+    expect(conteudo).not.toContain("AAA");
   });
 });

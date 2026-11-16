@@ -21,7 +21,7 @@ export const TIPOS_QUADRO = new Set([
 const LIMITE_CAMPO_QUADRO = 450;
 export const LIMITE_QUADRO = 3500;
 export const LIMITE_MATRIZ = 12_000;
-export const LIMITE_EMENTARIO = 8000;
+export const LIMITE_EMENTARIO = 10_000;
 
 const limparCelula = (c: string) =>
   c
@@ -40,8 +40,9 @@ const ehSeparador = (linha: string) => /^\|?[\s:|-]+\|?\s*$/.test(linha) && linh
 export function quadroDeIdentificacao(
   secoes: readonly (SecaoTexto & { tipo: string })[],
   fatos: readonly { fato: string; valor: string }[] = [],
-): string {
+): { texto: string; inteiras: Set<number> } {
   const linhas: string[] = [];
+  const inteiras = new Set<number>();
   let tamanho = 0;
   for (const s of secoes) {
     if (!TIPOS_QUADRO.has(s.tipo)) continue;
@@ -51,14 +52,17 @@ export function quadroDeIdentificacao(
       .map((l) => (l.startsWith("|") ? celulas(l).filter(Boolean).join(" · ") : limparCelula(l)))
       .filter(Boolean)
       .join(" ");
-    const valor = corpo.length > LIMITE_CAMPO_QUADRO ? `${corpo.slice(0, LIMITE_CAMPO_QUADRO)} […]` : corpo;
+    const cortado = corpo.length > LIMITE_CAMPO_QUADRO;
+    const valor = cortado ? `${corpo.slice(0, LIMITE_CAMPO_QUADRO)} […]` : corpo;
     const linha = `- ${limparCelula(s.titulo)}: ${valor || "(vazio)"}`;
     if (tamanho + linha.length > LIMITE_QUADRO) break;
     linhas.push(linha);
     tamanho += linha.length;
+    // Só a seção que coube inteira sai dos recortes; a cortada continua disponível para eles.
+    if (!cortado) inteiras.add(s.linhaInicio);
   }
   for (const f of fatos) linhas.push(`- (extraído pelo código) ${f.fato}: ${f.valor}`);
-  return linhas.join("\n");
+  return { texto: linhas.join("\n"), inteiras };
 }
 
 const NUMERO = /^\d+([.,]\d+)?\s*(h|horas|ha)?$/i;
@@ -168,7 +172,7 @@ export function indiceDoEmentario(markdown: string): string {
   let tamanho = linhas[0]!.length;
   for (const c of componentesDoEmentario(markdown)) {
     const ementa = c.ementa.trim()
-      ? `${c.ementa.trim().slice(0, 140)}${c.ementa.length > 140 ? "…" : ""}`
+      ? `${c.ementa.trim().slice(0, 90)}${c.ementa.trim().length > 90 ? "…" : ""}`
       : "(sem ementa)";
     const linha = `${c.nome}\t${ementa}\t${c.basicas}\t${c.complementares}`;
     if (tamanho + linha.length > LIMITE_EMENTARIO) {
@@ -186,4 +190,65 @@ export function fracaoPresente(nomes: readonly string[], texto: string): number 
   if (!nomes.length) return 0;
   const alvo = dobrar(texto);
   return nomes.filter((n) => alvo.includes(dobrar(n))).length / nomes.length;
+}
+
+const LIMITE_REFERENCIAS = 3000;
+
+/** O que o código extrai de um PPC uma vez, para todos os blocos. */
+export type EstruturaPpc = {
+  quadro: string;
+  /** Linhas de título das seções que o quadro traz inteiras (os recortes não as repetem). */
+  quadroInteiras: number[];
+  matriz: string;
+  ementario: string;
+  referencias: string;
+};
+
+export function estruturaDoPpc(
+  markdown: string,
+  secoes: readonly (SecaoTexto & { tipo: string })[],
+  fatos: readonly { fato: string; valor: string }[] = [],
+): EstruturaPpc {
+  // A seção de referências mais longa (a do fim do PPC, não a de um componente).
+  const referencias = secoes.filter((s) => s.tipo === "referencias").sort((a, b) => b.texto.length - a.texto.length)[0];
+  const quadro = quadroDeIdentificacao(secoes, fatos);
+  return {
+    quadro: quadro.texto,
+    quadroInteiras: [...quadro.inteiras],
+    matriz: matrizEmTsv(secoes),
+    ementario: indiceDoEmentario(markdown),
+    referencias: referencias
+      ? `${referencias.texto.slice(0, LIMITE_REFERENCIAS)}${referencias.texto.length > LIMITE_REFERENCIAS ? "\n[… seção encurtada …]" : ""}`
+      : "",
+  };
+}
+
+/** Tipos de seção da matriz, cuja tabela vai à parte em TSV. */
+export const TIPOS_MATRIZ = new Set(["matriz_curricular", "organizacao_curricular"]);
+
+/**
+ * O comum de um bloco: as partes estruturais que as fichas dele pedem, uma vez por pedido. O quadro
+ * vai sempre (curso, forma, formato, carga horária, vagas: a falta dele deixou 5 critérios
+ * inconclusivos no teste real); a matriz, quando alguma ficha é de matriz; o índice do ementário,
+ * quando alguma é de ementário; o começo das referências, quando alguma confere o padrão ABNT.
+ * Devolve também o que os recortes por ficha deixam de repetir.
+ */
+export function comumDoBloco(
+  fichas: readonly { topicos: readonly string[]; termos: readonly string[] }[],
+  e: EstruturaPpc,
+): { texto: string; excluirLinhas: ReadonlySet<number>; semTabelaEm: ReadonlySet<string> } {
+  const termos = new Set(fichas.flatMap((f) => f.termos.map(dobrar)));
+  const topicos = new Set(fichas.flatMap((f) => f.topicos));
+  const partes: string[] = [];
+  if (e.quadro) partes.push(`### Quadro de identificação\n${e.quadro}`);
+  const comMatriz = Boolean(e.matriz) && (topicos.has("matriz_curricular") || termos.has("matriz curricular"));
+  if (comMatriz) partes.push(`### Matriz curricular (tabela em TSV, colunas separadas por tabulação)\n${e.matriz}`);
+  if (e.ementario && topicos.has("ementario_bibliografias"))
+    partes.push(`### Índice do ementário (contagens feitas pelo código; confira no texto)\n${e.ementario}`);
+  if (e.referencias && termos.has("abnt")) partes.push(`### Referências do PPC (começo da seção)\n${e.referencias}`);
+  return {
+    texto: partes.length ? `## Partes do PPC extraídas pelo código\n\n${partes.join("\n\n")}` : "",
+    excluirLinhas: new Set(e.quadro ? e.quadroInteiras : []),
+    semTabelaEm: comMatriz ? TIPOS_MATRIZ : new Set(),
+  };
 }

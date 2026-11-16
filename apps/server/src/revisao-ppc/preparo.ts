@@ -22,7 +22,9 @@ import {
   pacoteContextoAvulso,
   type PacoteAvulso,
 } from "@simplifica-if/kb/db/pacote-contexto";
-import { palavrasDeCampi } from "@simplifica-if/kb/ppcs/secoes";
+import { extrairFatosPpc } from "@simplifica-if/kb/fatos/ppc";
+import { palavrasDeCampi, segmentarPpc } from "@simplifica-if/kb/ppcs/secoes";
+import { comumDoBloco, estruturaDoPpc } from "@simplifica-if/ppc/revisao-ia/estrutura";
 import {
   type ContextoNormativo,
   fontesPermitidas,
@@ -114,7 +116,17 @@ function contextoDoPacote(pacote: PacoteAvulso, dataBase: string, curso: string 
 const secoesTexto = (pacote: PacoteAvulso, soTopicos: boolean): SecaoTexto[] =>
   pacote.secoes
     .filter((s) => !soTopicos || s.motivo.some((m) => m.startsWith("topico:")))
-    .map((s) => ({ titulo: s.titulo, linhaInicio: s.linha_inicio, linhaFim: s.linha_fim, texto: s.texto }));
+    .map((s) => ({
+      titulo: s.titulo,
+      linhaInicio: s.linha_inicio,
+      linhaFim: s.linha_fim,
+      texto: s.texto,
+      tipo: s.tipo,
+      doTopico: s.motivo.some((m) => m.startsWith("topico:")),
+    }));
+
+/** Teto do recorte de cada transversal (as seções dos tópicos dela, guiadas pela estrutura). */
+const LIMITE_RECORTE_T = 6000;
 
 export interface EntradaPreparo {
   readonly markdown: string;
@@ -135,6 +147,24 @@ export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: Entr
   const jsonPorId = new Map(fichasJson.map((f) => [f.id, f]));
   const limpo = retirarTextoParaIa(entrada.markdown, entrada.linhasTextoParaIa);
   const campi = palavrasDeCampi(yield* nomesDeCampiDoBanco());
+  // A estrutura do PPC, uma vez: o quadro de identificação com os fatos do `kb`, a matriz em TSV, o
+  // índice do ementário e o começo das referências.
+  const todas = segmentarPpc(limpo, "tecnico", campi);
+  const fatos = extrairFatosPpc(
+    limpo,
+    todas.map((x) => ({ tipo: x.tipo, linha_inicio: x.linhaInicio, linha_fim: x.linhaFim })),
+  );
+  const estrutura = estruturaDoPpc(
+    limpo,
+    todas.map((x) => ({
+      titulo: x.titulo,
+      linhaInicio: x.linhaInicio,
+      linhaFim: x.linhaFim,
+      texto: x.texto,
+      tipo: x.tipo,
+    })),
+    fatos.map((f) => ({ fato: f.fato, valor: f.valor })),
+  );
   const db = yield* Effect.acquireRelease(
     Effect.sync(() =>
       bancoDoPpcAvulso(limpo, { registro: fontes.registro, palavrasCampi: campi, sinonimos: fontes.sinonimos }),
@@ -155,22 +185,43 @@ export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: Entr
     if (bloco.tipo === "S") {
       const geral = yield* pacote(bloco.fichas, 0);
       const contexto = contextoDoPacote(geral, fontes.dataReferencia, entrada.curso);
+      const comum = comumDoBloco(doBloco, estrutura);
       const recortes = new Map<string, { achou: boolean; texto: string }>();
       for (const ficha of doBloco) {
         const proprio = yield* pacote([ficha.id], 1);
-        recortes.set(ficha.id, recorteDaFicha(ficha, secoesTexto(proprio, false)));
+        recortes.set(ficha.id, recorteDaFicha(ficha, secoesTexto(proprio, false), comum));
       }
-      const pedido = pedidoS(bloco, doBloco, recortes, contexto, entrada.nonce);
+      const pedido = pedidoS(bloco, doBloco, recortes, contexto, entrada.nonce, comum.texto);
       blocos.push({ ...bloco, pedido, caracteres: pedido.length, fontes: [...fontesPermitidas(contexto)] });
     } else if (bloco.tipo === "J") {
       const p = yield* pacote(bloco.fichas, 0);
       const contexto = contextoDoPacote(p, fontes.dataReferencia, entrada.curso);
-      const pedido = pedidoJ(bloco, doBloco, secoesDoTema(secoesTexto(p, true)), contexto, entrada.nonce);
+      const comum = comumDoBloco(doBloco, estrutura);
+      const secoes = secoesTexto(p, true).filter((x) => !comum.excluirLinhas.has(x.linhaInicio));
+      const pedido = pedidoJ(
+        bloco,
+        doBloco,
+        secoesDoTema(secoes, undefined, comum.semTabelaEm),
+        contexto,
+        entrada.nonce,
+        comum.texto,
+      );
       blocos.push({ ...bloco, pedido, caracteres: pedido.length, fontes: [...fontesPermitidas(contexto)] });
     } else {
       const p = yield* pacote(bloco.fichas, 0);
       const contexto = contextoDoPacote(p, fontes.dataReferencia, entrada.curso);
-      const trechos = secoesDoTema(secoesTexto(p, true), 8_000);
+      // Cada transversal com o recorte das seções dos tópicos dela, e o comum do bloco (quadro,
+      // matriz, ementário): no modo rápido há poucos temas J, e os resumos sozinhos não bastavam.
+      const comum = comumDoBloco(doBloco, estrutura);
+      const recortes: string[] = [];
+      for (const ficha of doBloco) {
+        const proprio = yield* pacote([ficha.id], 0);
+        const r = recorteDaFicha(ficha, secoesTexto(proprio, true), { ...comum, limite: LIMITE_RECORTE_T });
+        recortes.push(
+          `## Recorte para ${ficha.id}\n${r.texto || "(nenhuma seção do PPC corresponde a este critério)"}`,
+        );
+      }
+      const trechos = [comum.texto, ...recortes].filter(Boolean).join("\n\n");
       transversais = { contexto, trechos };
       // Os resumos (até 600 caracteres por tema) e os resultados entram na hora.
       const caracteres = trechos.length + 6_000 + formatarContexto(contexto).length;
