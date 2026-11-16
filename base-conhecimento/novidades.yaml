@@ -1,0 +1,25 @@
+# Novidades da base de conhecimento, por versão publicada (M1.10).
+#
+# Registro só de acréscimos: uma versão publicada nunca muda nem sai daqui; a fábrica recusa
+# publicar se uma entrada antiga foi alterada. A fábrica leva os itens da versão ao manifesto do
+# canal, e o app os mostra no aviso "Base atualizada".
+#
+# Para propor as entradas de uma versão nova, pela diferença entre duas bases:
+#
+#   node scripts/fabrica_atualizacao.ts propor-novidades --de <kb anterior> --para <kb nova> --versao AAAA.MM.DD
+#
+# A proposta sai no terminal; a curadoria revisa o texto (título em linguagem de quem usa o app, sem
+# códigos internos) e cola o bloco no fim de `versoes`.
+#
+# Formato de cada versão:
+#
+#   - versao: "2026.11.20"        # a versão da base (meta.versao), AAAA.MM.DD
+#     data: "2026-11-20"          # data da publicação
+#     itens:
+#       - tipo: norma-nova        # norma-nova, norma-retirada, revogacao, vigencia, ppc-novo,
+#                                 # ppc-atualizado, ppc-retirado, curso-novo, curso-retirado, outro
+#         titulo: "Resolução CNE/CP nº 2/2026 entrou na base"
+#         detalhe: "Novas Diretrizes da Educação Profissional e Tecnológica."   # opcional
+#         refs: [br/cne-cp/res/2026/2]   # opcional: IDs da base
+#         afeta: [curitiba/tecnico-em-enfermagem]   # opcional: cursos ou campi afetados
+versoes: []

@@ -23,7 +23,10 @@ export const compilar = Command.make(
     destino: flagTexto("destino", "arquivo do banco (padrão: KB_SQLITE ou tmp/kb.sqlite)"),
     versao: flagTexto("versao", "versão do build gravada em meta, como 2026.11.13"),
     commit: flagTexto("commit", "SHA das fontes gravado em meta"),
-    canal: flagTexto("canal", "canal de distribuição gravado em meta (piloto, estavel, dev)"),
+    canal: flagTexto(
+      "canal",
+      "canal de distribuição gravado em meta (beta, estavel, dev; piloto, o nome antigo do beta)",
+    ),
   },
   Effect.fn("kb.compilar")(
     function* ({ destino, versao, commit, canal }) {

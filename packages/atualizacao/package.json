@@ -9,12 +9,15 @@
   },
   "scripts": {
     "test": "vp test run --config ../../vite.config.ts --dir .",
-    "typecheck": "effect-tsgo tsrs --noEmit"
+    "typecheck": "effect-tsgo tsrs --noEmit",
+    "fabrica": "node scripts/fabrica.ts"
   },
   "dependencies": {
     "@noble/hashes": "1.8.0",
     "@simplifica-if/contratos-app": "workspace:*",
-    "@simplifica-if/kb": "workspace:*"
+    "@simplifica-if/kb": "workspace:*",
+    "yaml": "2.9.1",
+    "@simplifica-if/mcp": "workspace:*"
   },
   "peerDependencies": {
     "@effect/platform-node": "catalog:",
