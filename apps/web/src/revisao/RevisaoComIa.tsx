@@ -6,7 +6,7 @@
  * pré-conferência na tela.
  */
 import type { EstadoRevisaoIa, ModoRevisaoIa, Provider, ResultadoRevisaoPpc } from "@simplifica-if/contratos-app";
-import { CheckIcon, PauseIcon, PlayIcon, SparklesIcon } from "lucide-react";
+import { CheckIcon, PauseIcon, PlayIcon, SparklesIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { AvisoErro } from "../components/AvisoErro.tsx";
 import { Alert, AlertDescription } from "../components/ui/alert.tsx";
@@ -90,6 +90,19 @@ export function RevisaoComIa({
       () => acompanhar(id),
     );
   const pausar = (id: string) => chamar(() => api.chamar((c) => c["revisaoPpc.pausarIa"]({ revisao: id })));
+  const apagar = async (id: string) => {
+    setOcupada(true);
+    setErro(undefined);
+    try {
+      acompanhamento.current?.cancelar();
+      await api.chamar((c) => c["revisaoPpc.apagarIa"]({ revisao: id }));
+      setEstado(undefined);
+    } catch (motivo) {
+      setErro(explicarErro(motivo));
+    } finally {
+      setOcupada(false);
+    }
+  };
 
   return (
     <section aria-labelledby="titulo-ia" className="flex flex-col gap-3 rounded-lg border p-4">
@@ -143,6 +156,7 @@ export function RevisaoComIa({
           aoIniciar={() => void iniciar(estado.id)}
           aoPausar={() => void pausar(estado.id)}
           aoVoltar={() => setEstado(undefined)}
+          aoApagar={() => void apagar(estado.id)}
         />
       )}
       {erro === undefined ? null : <AvisoErro erro={erro} />}
@@ -156,12 +170,14 @@ function Andamento({
   aoIniciar,
   aoPausar,
   aoVoltar,
+  aoApagar,
 }: {
   readonly estado: EstadoRevisaoIa;
   readonly ocupada: boolean;
   readonly aoIniciar: () => void;
   readonly aoPausar: () => void;
   readonly aoVoltar: () => void;
+  readonly aoApagar: () => void;
 }) {
   const nome = DESCRICOES[estado.provider].nome;
   return (
@@ -174,8 +190,9 @@ function Andamento({
         <>
           <p className="text-sm">{textoEstimativa(estado.estimativa)}</p>
           <p className="text-muted-foreground text-xs">
-            Estimativa a partir de medições reais; o uso de verdade aparece ao longo da revisão. Você pode pausar a
-            qualquer momento, e o que já foi revisado fica guardado.
+            Estimativa aproximada. Os tokens por critério vêm de medições reais; a fração da janela é uma referência
+            provisória, porque os providers não publicam o tamanho da janela do plano. O uso de verdade aparece ao longo
+            da revisão. Você pode pausar a qualquer momento, e o que já foi revisado fica guardado.
           </p>
           <div className="flex flex-wrap gap-2">
             <Button disabled={ocupada} onClick={aoIniciar}>
@@ -231,7 +248,20 @@ function Andamento({
                 <PlayIcon /> Retomar
               </Button>
             ) : null}
+            {estado.situacao === "falhou" ? (
+              <Button disabled={ocupada} onClick={aoVoltar}>
+                Preparar de novo com o arquivo atual
+              </Button>
+            ) : null}
+            {estado.situacao !== "em_andamento" ? (
+              <Button variant="outline" disabled={ocupada} onClick={aoApagar}>
+                <Trash2Icon /> Apagar esta revisão
+              </Button>
+            ) : null}
           </div>
+          <p className="text-muted-foreground text-xs">
+            O app guarda no seu computador o texto do PPC e o resultado desta revisão até você apagá-la.
+          </p>
         </>
       )}
     </div>

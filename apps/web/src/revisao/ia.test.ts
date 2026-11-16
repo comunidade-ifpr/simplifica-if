@@ -17,7 +17,7 @@ const estimativa = {
 describe("revisão com IA na tela", () => {
   test("a estimativa em linguagem de quem usa o plano", () => {
     expect(textoEstimativa(estimativa)).toBe(
-      "20 critérios em 6 etapas. Deve usar cerca de 5% de uma janela de 5 horas do plano Pro (uns 67 mil tokens) e levar uns 3 min. Na API, isso custaria cerca de US$ 0,33.",
+      "20 critérios em 6 etapas. Estimativa aproximada: uns 67 mil tokens, cerca de 3 min e algo como 5% de uma janela de 5 horas do plano Pro (referência provisória: os providers não publicam o tamanho da janela). Na API, isso custaria cerca de US$ 0,33.",
     );
   });
 

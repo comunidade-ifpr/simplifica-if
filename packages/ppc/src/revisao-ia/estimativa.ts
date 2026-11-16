@@ -4,8 +4,9 @@
  * Método: o plano já tem o texto de cada pedido (o servidor o monta antes de perguntar), então a
  * entrada é medida em caracteres e convertida pela densidade medida; a saída, o tempo por bloco e o
  * custo de sistema de cada sessão vêm das medições reais registradas no plano do app (M1.11, etapa 4).
- * A fração da janela do plano usa uma referência provisória por provider (`JANELA_REFERENCIA`), a
- * calibrar no piloto: os providers não publicam o tamanho da janela em tokens.
+ * A fração da janela do plano **não é medida**: usa uma referência provisória por provider
+ * (`janelaReferencia`), a calibrar no piloto, porque os providers não publicam o tamanho da janela em
+ * tokens. A tela diz isso ("estimativa aproximada… referência provisória").
  */
 import type { Provider } from "./tipos.ts";
 

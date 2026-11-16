@@ -6,11 +6,14 @@ import type { EstadoRevisaoIa, EstimativaRevisaoIa, ResultadoRevisaoPpc } from "
 
 const milhares = (n: number) => (n >= 1000 ? `${Math.round(n / 1000).toLocaleString("pt-BR")} mil` : String(n));
 
-/** "Deve usar cerca de 4% de uma janela de 5 horas do plano Pro (≈ 60 mil tokens), em uns 3 min." */
+/**
+ * "Estimativa aproximada: cerca de 14% de uma janela de 5 horas do plano Pro (referência provisória)…".
+ * Os tokens por critério são medidos; a janela, não (os providers não publicam o tamanho dela).
+ */
 export function textoEstimativa(e: EstimativaRevisaoIa): string {
   const custo =
     e.custoUsd === null ? "" : ` Na API, isso custaria cerca de US$ ${e.custoUsd.toFixed(2).replace(".", ",")}.`;
-  return `${e.fichas} critérios em ${e.blocos} etapas. Deve usar cerca de ${e.percentualJanela}% de ${e.nomeJanela} (uns ${milhares(e.tokensEntrada + e.tokensSaida)} tokens) e levar uns ${e.minutos} min.${custo}`;
+  return `${e.fichas} critérios em ${e.blocos} etapas. Estimativa aproximada: uns ${milhares(e.tokensEntrada + e.tokensSaida)} tokens, cerca de ${e.minutos} min e algo como ${e.percentualJanela}% de ${e.nomeJanela} (referência provisória: os providers não publicam o tamanho da janela).${custo}`;
 }
 
 export interface TemaAndamento {
