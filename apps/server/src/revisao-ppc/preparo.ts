@@ -42,7 +42,10 @@ export type BlocoPlano = Bloco & { pedido: string; caracteres: number; fontes: s
 
 /** O plano gravado com a revisão (`revisoes_ia.plano`). */
 export type PlanoRevisaoIa = {
-  /** O Markdown convertido, sem tirar nada: a conferência dos trechos é contra ele. */
+  /**
+   * O Markdown convertido sem as linhas de texto dirigido a IA: a conferência dos trechos é contra ele,
+   * e um trecho que cite a própria instrução escondida não passa.
+   */
   markdown: string;
   nonce: string;
   cnct: string | null;
@@ -155,7 +158,7 @@ export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: Entr
     }
   }
   const plano: PlanoRevisaoIa = {
-    markdown: entrada.markdown,
+    markdown: limpo,
     nonce: entrada.nonce,
     cnct: entrada.cnct,
     fichas: fichas.filter((f) => blocos.some((b) => b.fichas.includes(f.id))),
