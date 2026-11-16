@@ -8,7 +8,7 @@
 import { escape, search } from "@simplifica-if/kb/python/re";
 import { aparar } from "@simplifica-if/kb/texto";
 import type { Figura } from "./elementos.ts";
-import type { PacoteOoxml } from "./ooxml/pacote.ts";
+import type { PacoteOoxml } from "@simplifica-if/docx/pacote";
 import { type Secao, tituloCompleto } from "./secoes.ts";
 
 const r = String.raw;

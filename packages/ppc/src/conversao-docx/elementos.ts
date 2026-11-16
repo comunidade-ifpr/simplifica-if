@@ -14,7 +14,7 @@ import {
   runsDoParagrafo,
   type TabelaOoxml,
   textoDoParagrafo,
-} from "./ooxml/modelo.ts";
+} from "@simplifica-if/docx/modelo";
 
 const r = String.raw;
 

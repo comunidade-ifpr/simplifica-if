@@ -32,9 +32,9 @@ import {
   pontuarMatriz,
   substituirMatrizNoMarkdown,
 } from "./matriz.ts";
-import { type Fidelidade, lerPacote } from "./ooxml/leitor.ts";
-import type { PropriedadesOoxml } from "./ooxml/modelo.ts";
-import { PacoteOoxml } from "./ooxml/pacote.ts";
+import { type Fidelidade, lerPacote } from "@simplifica-if/docx/leitor";
+import type { PropriedadesOoxml } from "@simplifica-if/docx/modelo";
+import { PacoteOoxml } from "@simplifica-if/docx/pacote";
 import { detectarSecoes, dicasDeIdentificacao, listarSecoes, type Secao } from "./secoes.ts";
 import { colunasDaTabela, normalizarTabela } from "./tabelas.ts";
 

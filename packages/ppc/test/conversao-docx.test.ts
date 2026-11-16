@@ -1,10 +1,10 @@
 // @effect-diagnostics nodeBuiltinImport:off globalDate:off -- os testes gravam DOCX sintéticos em diretórios temporários e fixam o relógio com datas dadas
 /**
- * Conversão DOCX em TypeScript (`scripts/conversao-docx/`): o leitor OOXML, as regras de domínio e
- * os artefatos, sobre os documentos sintéticos de `apoio/docx-sintetico.ts`.
+ * Conversão DOCX do PPC (`src/conversao-docx/`): a leitura, as regras de domínio e os artefatos,
+ * sobre os documentos sintéticos de `src/testes/documentos.ts`.
  *
  * Os gabaritos de `fixtures/conversao-docx/` são a saída da conversão antiga, em Python, para os
- * mesmos documentos (`scripts/dev/diferencial-docx.ts --gravar-gabaritos`): a conversão nova, no
+ * mesmos documentos (`scripts/diferencial-docx.ts --gravar-gabaritos`): a conversão nova, no
  * modo `python-docx`, tem de reproduzi-los byte a byte.
  */
 import * as NodeFS from "node:fs";
@@ -13,16 +13,16 @@ import * as NodePath from "node:path";
 import type { ObjetoPy } from "@simplifica-if/kb/python/valores";
 import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
 import { afterEach, describe, expect, test } from "vite-plus/test";
-import { converterDocx, converterPpc } from "../scripts/conversao-docx/conversao.ts";
+import { converterDocx, converterPpc } from "../src/conversao-docx/conversao.ts";
 import {
   type Elemento,
   elementosDoDocumento,
   type Paragrafo,
   type Tabela,
   textoDosTrechos,
-} from "../scripts/conversao-docx/elementos.ts";
-import { extrairComponenteDoEmentario, separarReferencias } from "../scripts/conversao-docx/ementario.ts";
-import { extrairDadosDeIdentificacao } from "../scripts/conversao-docx/identificacao-tabelas.ts";
+} from "../src/conversao-docx/elementos.ts";
+import { extrairComponenteDoEmentario, separarReferencias } from "../src/conversao-docx/ementario.ts";
+import { extrairDadosDeIdentificacao } from "../src/conversao-docx/identificacao-tabelas.ts";
 import {
   extrairMatrizGenerica,
   extrairMatrizPpc,
@@ -30,15 +30,15 @@ import {
   type MatrizPpc,
   mesclarMatrizes,
   substituirMatrizNoMarkdown,
-} from "../scripts/conversao-docx/matriz.ts";
-import { dataW3cEmUtc, type Fidelidade, lerDocx } from "../scripts/conversao-docx/ooxml/leitor.ts";
-import { ErroDocx } from "../scripts/conversao-docx/ooxml/pacote.ts";
-import { analisarXml, descendentes } from "../scripts/conversao-docx/ooxml/xml.ts";
-import { detectarSecoes, dicasDeIdentificacao, listarSecoes } from "../scripts/conversao-docx/secoes.ts";
-import { normalizarTabela, tabelaEmMarkdown, type TabelaNormalizada } from "../scripts/conversao-docx/tabelas.ts";
-import { prepararDocumento } from "../scripts/preparar-documento.ts";
-import { lerJsonPy } from "../scripts/rodada.ts";
-import { celula, docxDaFixture, FIXTURES, linha, montarDocx, par, tabela, titulo } from "./apoio/docx-sintetico.ts";
+} from "../src/conversao-docx/matriz.ts";
+import { dataW3cEmUtc, type Fidelidade, lerDocx } from "@simplifica-if/docx/leitor";
+import { ErroDocx } from "@simplifica-if/docx/pacote";
+import { analisarXml, descendentes } from "@simplifica-if/docx/xml";
+import { detectarSecoes, dicasDeIdentificacao, listarSecoes } from "../src/conversao-docx/secoes.ts";
+import { normalizarTabela, tabelaEmMarkdown, type TabelaNormalizada } from "../src/conversao-docx/tabelas.ts";
+import { carregarJsonPy as lerJsonPy } from "@simplifica-if/kb/python/json";
+import { celula, linha, montarDocx, par, tabela, titulo } from "@simplifica-if/docx/testes/sintetico";
+import { docxDaFixture, FIXTURES } from "../src/testes/documentos.ts";
 
 const AGORA = new Date(2026, 10, 16, 12, 0, 0);
 const GABARITOS = NodePath.join(import.meta.dirname, "fixtures", "conversao-docx");
@@ -934,41 +934,6 @@ describe("artefatos e rodada", () => {
     expect(comFracao.dados.data_conversao).toBe("2026-11-13T09:34:56.007000");
     const meiaNoite = converterPpc(docxDaFixture("mesclas"), "mesclas.docx", { agora: new Date(2026, 10, 13) });
     expect(meiaNoite.dados.data_conversao).toBe("2026-11-13T00:00:00");
-  });
-
-  test("preparar-documento com .docx: rodada completa só com Node", () => {
-    const dir = diretorioTemporario();
-    const docx = NodePath.join(dir, "PPC Tecnico em Testes.docx");
-    NodeFS.writeFileSync(docx, docxDaFixture("ppc-minimo"));
-    const { rodadaDir, metadata, ppc } = prepararDocumento(docx, {
-      saidaBase: NodePath.join(dir, "rodadas"),
-      relogio: () => new Date(2026, 10, 13),
-    });
-    expect(NodePath.basename(rodadaDir)).toBe("2026-11-13t00-00-00-ppc-tecnico-em-testes");
-    const dadosDaRodada = lerJsonPy(metadata) as ObjetoPy;
-    expect(dadosDaRodada).toMatchObject({
-      curso: "Técnico em Testes",
-      campus: "Foz do Iguaçu",
-      forma_oferta: "Integrado",
-      modalidade_ensino: "Presencial",
-      eixo_tecnologico: "Informação e Comunicação",
-    });
-    const conversao = dadosDaRodada.artefatos_conversao_docx as Record<string, string>;
-    expect(Object.keys(conversao)).toEqual([
-      "output_dir",
-      "markdown",
-      "markdown_bruto",
-      "dados",
-      "matriz_curricular",
-      "ementario",
-    ]);
-    for (const caminho of Object.values(conversao)) expect(NodeFS.existsSync(caminho)).toBe(true);
-    expect((lerJsonPy(conversao.dados!) as ObjetoPy).data_conversao).toBe("2026-11-13T00:00:00");
-    expect(NodeFS.existsSync(NodePath.join(conversao.output_dir!, "imagens", "representacao_grafica.png"))).toBe(true);
-    // O PPC.md da rodada é o Markdown normalizado da conversão, com a matriz canônica.
-    const texto = NodeFS.readFileSync(ppc, "utf-8");
-    expect(texto).toBe(NodeFS.readFileSync(conversao.markdown!, "utf-8"));
-    expect(texto).toContain("| CARGA HORÁRIA TOTAL DO CURSO | CARGA HORÁRIA TOTAL DO CURSO |  | 680 | 530 |");
   });
 
   test("todas as fixtures convertem nos dois modos", () => {

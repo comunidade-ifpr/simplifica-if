@@ -1,6 +1,6 @@
 // @effect-diagnostics nodeBuiltinImport:off globalConsole:off globalDate:off -- ferramenta de desenvolvimento, síncrona: subprocessos (git, uv, diff), arquivos em tmp/, saída no console e relógio fixo
 /**
- * Diferencial da conversão DOCX: compara a conversão em TypeScript (`../conversao-docx/`) com a
+ * Diferencial da conversão DOCX: compara a conversão em TypeScript (`../src/conversao-docx/`) com a
  * conversão em Python que ela substituiu, extraída do git num commit fixo.
  *
  * Ferramenta de desenvolvimento, fora do app e da skill: precisa de `git`, `uv` e `diff`. O Python
@@ -9,16 +9,16 @@
  *
  * Uso, a partir da raiz do repositório:
  *
- *   KB_CORPUS_DOCX="/pasta/com/ppcs" node .agents/skills/revisar-ppc/scripts/dev/diferencial-docx.ts
+ *   KB_CORPUS_DOCX="/pasta/com/ppcs" node packages/ppc/scripts/diferencial-docx.ts
  *
  * Sem `KB_CORPUS_DOCX` (ou `--corpus <pasta>`), compara só os documentos sintéticos de
- * `tests/apoio/docx-sintetico.ts`. A saída vai para `tmp/diferencial-docx/` (`--saida` muda):
+ * `src/testes/documentos.ts`. A saída vai para `tmp/diferencial-docx/` (`--saida` muda):
  * os artefatos das duas conversões, os `.diff` e `relatorio.md`. O código de saída é 1 se sobrar
  * diferença não aceita.
  *
  * Com `--gravar-gabaritos`, regrava os gabaritos versionados dos testes a partir do oráculo:
- * `tests/fixtures/conversao-docx/` (a saída do Python para os documentos sintéticos em que não há
- * diferença aceita) e `tests/fixtures/partial-ratio-rapidfuzz.json` (escores do `rapidfuzz`).
+ * `test/fixtures/conversao-docx/` (a saída do Python para os documentos sintéticos em que não há
+ * diferença aceita) e `test/fixtures/partial-ratio-rapidfuzz.json` (escores do `rapidfuzz`).
  *
  * Para cada documento são comparados:
  * 1. a camada de elementos (títulos, parágrafos com runs, tabelas com células, figuras), lida
@@ -31,9 +31,10 @@
 import * as NodeChildProcess from "node:child_process";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { converterDocx, converterPpc } from "../conversao-docx/conversao.ts";
-import type { Elemento } from "../conversao-docx/elementos.ts";
-import { FIXTURES, montarDocx } from "../../tests/apoio/docx-sintetico.ts";
+import { converterDocx, converterPpc } from "../src/conversao-docx/conversao.ts";
+import type { Elemento } from "../src/conversao-docx/elementos.ts";
+import { montarDocx } from "@simplifica-if/docx/testes/sintetico";
+import { FIXTURES } from "../src/testes/documentos.ts";
 
 /** Último commit com a conversão em Python (`conversao_docx/` e `converter_docx.py`). */
 export const COMMIT_PYTHON = "c0d6f0728793024dbee52556590a14c8ac5a8aad";
@@ -298,7 +299,7 @@ print("[\n" + ",\n".join(linhas) + "\n]")
 
 /** Regrava os gabaritos versionados dos testes a partir da saída do oráculo. */
 function gravarGabaritos(raiz: string, saida: string, resultados: Resultado[]): void {
-  const fixtures = NodePath.join(raiz, ".agents/skills/revisar-ppc/tests/fixtures");
+  const fixtures = NodePath.join(raiz, "packages/ppc/test/fixtures");
   const destino = NodePath.join(fixtures, "conversao-docx");
   NodeFS.rmSync(destino, { recursive: true, force: true });
   for (const item of resultados) {

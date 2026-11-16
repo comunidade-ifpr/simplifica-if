@@ -32,7 +32,9 @@
   "dependencies": {
     "@effect/platform-node": "catalog:",
     "@notionhq/client": "5.31.1",
+    "@simplifica-if/docx": "workspace:*",
     "@simplifica-if/kb": "workspace:*",
+    "@simplifica-if/ppc": "workspace:*",
     "@simplifica-if/mcp": "workspace:*",
     "@simplifica-if/motor": "workspace:*",
     "ajv": "8.20.0",
@@ -41,7 +43,6 @@
     "dotenv": "18.0.10",
     "effect": "catalog:",
     "entities": "8.1.0",
-    "fflate": "0.8.3",
     "htmlparser2": "12.0.0",
     "sei-cli": "workspace:*",
     "yaml": "2.9.1"

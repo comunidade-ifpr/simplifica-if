@@ -7,7 +7,7 @@
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { describe, expect, test } from "vite-plus/test";
-import { partialRatio } from "../scripts/conversao-docx/similaridade.ts";
+import { partialRatio } from "../src/conversao-docx/similaridade.ts";
 
 const GABARITO = JSON.parse(
   NodeFS.readFileSync(NodePath.join(import.meta.dirname, "fixtures", "partial-ratio-rapidfuzz.json"), "utf-8"),

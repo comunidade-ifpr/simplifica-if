@@ -27,7 +27,7 @@ import {
   nucleoCurso,
 } from "../scripts/medicao-identificacao.ts";
 import { prepararDocumento } from "../scripts/preparar-documento.ts";
-import { montarDocx, par, tabelaDeTextos } from "./apoio/docx-sintetico.ts";
+import { montarDocx, par, tabelaDeTextos } from "@simplifica-if/docx/testes/sintetico";
 import { lerJsonPy } from "../scripts/rodada.ts";
 
 const temporarios: string[] = [];

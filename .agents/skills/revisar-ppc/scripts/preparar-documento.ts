@@ -11,7 +11,7 @@ import * as NodePath from "node:path";
 import { corpoPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import { type ObjetoPy, verdadeiro } from "@simplifica-if/kb/python/valores";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
-import { type ArtefatosDocx, converterDocx } from "./conversao-docx/conversao.ts";
+import { type ArtefatosDocx, converterDocx } from "@simplifica-if/ppc/conversao-docx/conversao";
 import {
   extrairIdentificacao,
   extrairIdentificacaoDaConversao,
@@ -20,7 +20,7 @@ import {
   type IdentificacaoComFontes,
   valorIdentificacaoPreenchido,
 } from "./identificacao.ts";
-import { normalizarMarkdown } from "./normalizador-markdown.ts";
+import { normalizarMarkdown } from "@simplifica-if/ppc/normalizador-markdown";
 import {
   agoraIso,
   atualizarManifestoBase,
