@@ -69,19 +69,25 @@ const SECOES_ESPERADAS: Record<string, string> = {
  */
 const TEXTO_PARA_IA = new RegExp(
   [
+    // Ordens para descartar as instruções ou as regras da revisão.
     "(ignore|desconsidere|esqueca) (as |todas as |quaisquer |estas )?(instrucoes|regras|orientacoes|criterios|fichas)",
     "(ignore|disregard|forget) (all |any |the )?(previous |prior |above |earlier )?(instructions|rules|prompts?)",
+    // Troca de papel ou de regra "a partir de agora".
     "a partir de agora,? (voce|responda|considere|aja|atue)",
-    "(voce|tu) (e|eh|sera|agora e) (um|uma|o|a) (assistente|modelo|ia|avaliador|revisor|sistema)",
-    "you are (now )?(a|an|the) (assistant|ai|model|reviewer|grader)",
-    "(^|[\\s<\\[(])(system|assistant|developer) ?(:|>|\\])",
-    "system prompt|prompt de sistema|instrucao de sistema",
-    "sistema de revisao autom|revisao automatica",
-    "registre (como|que)? ?(atende|conforme|aprovad)",
-    "marque (todas as fichas|todos os criterios|como atende|como conforme)",
-    "declare (o ppc |este ppc |o curso )?(aprovado|apto|conforme)",
-    "(para|ao|a) (o |a )?(modelo|assistente|sistema|agente) de (ia|inteligencia artificial)",
-    "\\b(ai|llm|chatgpt|claude|gemini)\\b.{0,20}\\b(must|should|deve|devera)\\b",
+    "(voce|tu) (e|eh|sera|agora e) (um|uma|o|a) (assistente|modelo|ia|avaliador|revisor)\\b",
+    "you are (now )?(a|an|the) (assistant|ai|model|reviewer|grader)\\b",
+    // Marcador de papel de conversa: só no começo da linha, sem nada antes ("Linear system: theory" não).
+    "^(system|assistant|developer)\\s*:",
+    "<\\/?(system|assistant|developer)\\b",
+    // O resultado da revisão ditado ao avaliador.
+    "registre (como|que) (atende|aprovad)",
+    "registre (todos os criterios|todas as fichas)",
+    "marque (todas as fichas|todos os criterios|como atende)",
+    "declare (o ppc|este ppc|o curso|o documento|este documento) (como )?(aprovado|apto|conforme)",
+    // Mensagem endereçada a um sistema de revisão ou a um modelo pelo nome (vocativo + imperativo).
+    "(ao|para o|caro|prezado) (sistema|modelo|assistente|agente) (de revisao|revisor|de ia|de inteligencia artificial)\\s*[:,]",
+    "^(nota|atencao|aviso|instrucao) (ao|para o|para a) (sistema|modelo|assistente|agente|ia)\\b",
+    "\\b(chatgpt|claude|gemini|copilot|gpt|llm)\\s*[,:]\\s*(ignore|desconsidere|registre|marque|declare|responda|considere|aprove)\\b",
   ].join("|"),
 );
 
