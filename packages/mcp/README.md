@@ -86,6 +86,7 @@ args = ["--banco", "~/SimplificaIF/kb.sqlite"]
 ```
 
 - **Gemini CLI:** a mesma estrutura de `mcpServers`, em `~/.gemini/settings.json`.
+- **Atualização da base (opcional, M1.10):** com `--pasta-atualizacao <pasta>`, `--feed-atualizacao <url com {canal}>` e `--chave-atualizacao <linha base64 da chave pública>` (ou `SIMPLIFICA_ATUALIZACAO_PASTA`, `_FEED`, `_CHAVE`; canal em `--canal-atualizacao`, padrão `beta`), o servidor usa o mesmo mecanismo do app, só para a base (`src/atualizacao.ts`): na abertura, atende a troca pendente e abre a mais nova entre a baixada e a do `--banco` (que passa a ser opcional; sem base nenhuma, baixa antes de abrir), e confere o feed em segundo plano na abertura e a cada 24 h. A base nova entra na próxima vez que o cliente MCP iniciar o servidor. Fora do app não há política embutida: o feed e a chave vêm dos argumentos.
 - **Caminho:** use caminhos absolutos no comando. O servidor expande `~/` nos próprios argumentos, mas nem todo cliente expande o `~` do nome do programa.
 
 ## Estrutura

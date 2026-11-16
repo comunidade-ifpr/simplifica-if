@@ -73,7 +73,14 @@ O `dist` acrescenta a base (`dist/recursos/base/kb.sqlite`, de `SIMPLIFICA_KB` o
 
 ## A base no app empacotado (decisão)
 
-A ordem é `SIMPLIFICA_KB`, depois `<pasta do app>/base/kb.sqlite`, se existir, e por fim a base empacotada (`Resources/base/kb.sqlite`). Por enquanto o instalador leva a base inteira (cerca de 140 MB). A pasta do app é onde a atualização da base (M1.10) vai gravar as versões novas, sem reinstalar o app.
+A ordem é `SIMPLIFICA_KB`, depois a mais nova entre `<pasta do app>/base/kb.sqlite` (a baixada) e a base empacotada (`Resources/base/kb.sqlite`). O desktop passa a empacotada em `--banco` e a pasta do app em `--pasta-atualizacao`; quem escolhe é o servidor, na abertura, depois de atender a troca pendente (um app novo pode trazer uma base mais nova que a baixada). Com `SIMPLIFICA_KB`, a atualização fica desligada. O instalador leva a base inteira (cerca de 140 MB).
+
+## Atualização (M1.10)
+
+- **Base e skills:** o servidor (`packages/atualizacao/README.md`). O desktop só passa `--pasta-atualizacao` e `--versao-app` e oferece `reiniciarServidor`, porque a troca do arquivo só acontece na abertura do servidor (no Windows, um arquivo aberto não se renomeia). No desenvolvimento, a atualização liga só com `SIMPLIFICA_ATUALIZACAO_FEED` (com `SIMPLIFICA_ATUALIZACAO_CHAVE`), para testar contra um feed local.
+- **App** (`src/atualizacaoApp.ts`): o `electron-updater` 6.8.9 (a versão do T3) com feed `generic` no release fixo do canal (`…/releases/download/canal-beta/`), nunca o provider `github`, que consulta a API. Baixa em segundo plano, instala ao sair ou em "Reiniciar para atualizar" (que encerra o servidor antes, como o T3 para os backends). Procura na abertura e a cada 24 h.
+- **Desligada** quando: fora do app empacotado, sem feed na política, com `SIMPLIFICA_SEM_ATUALIZACAO_APP`, fora do macOS e do Windows e, enquanto a política diz `se-assinado`, num app sem assinatura de código. O empacotamento grava `Resources/assinatura.json` (`{"assinado": false}` enquanto `mac.identity` é `null`). O macOS não instala atualização de um app sem Developer ID: o Squirrel.Mac confere a assinatura do app novo contra a do instalado. A seção "Atualizações" diz o motivo.
+- O `empacotar.ts` põe um feed `generic` no `publish` só para o electron-builder gerar o `app-update.yml` e os `latest*.yml` (não com `--dir`); a fábrica os publica (`pnpm fabrica publicar-app`).
 
 ## Preload (`window.simplifica`)
 
@@ -85,6 +92,10 @@ interface PonteDesktop {
   escolherDocx?(): Promise<string | null>;                     // diálogo de arquivo, só .docx; null se cancelar
   abrirDocumento?(caminho: string): Promise<void>;             // abre no Word a cópia comentada (só ela)
   mostrarNaPasta?(caminho: string): Promise<void>;             // mostra a cópia comentada no Finder/Explorador
+  reiniciarServidor?(): Promise<void>;                          // reinicia o servidor (troca da base, M1.10)
+  atualizacaoApp?(): Promise<EstadoAtualizacaoApp>;             // estado do electron-updater
+  procurarAtualizacaoApp?(): Promise<EstadoAtualizacaoApp>;
+  instalarAtualizacaoApp?(): Promise<void>;                     // "Reiniciar para atualizar"
 }
 ```
 
@@ -133,6 +144,7 @@ pnpm --filter @simplifica-if/desktop test
 - `test/integracao.test.ts`: o servidor de verdade (`apps/server`, banco de fixture, nenhum provider chamado), iniciado como o app o inicia: a linha de partida, o `POST /ingresso` com o token e a origem da janela, as recusas e o encerramento pelo stdin. Se o bundle (`build`) e o Electron existirem, repete com o Electron como Node sobre o bundle.
 - `test/empacotar.test.ts`: a identidade e os alvos do electron-builder, e a cópia das skills do app (só as elegíveis, só os arquivos listados; uma inválida faz o build falhar).
 - `test/registro.test.ts`: o arquivo de log (pasta criada, acréscimo, giro no limite, falha sem derrubar o app).
+- `test/atualizacao-app.test.ts`: quando o `electron-updater` fica desligado, o feed do canal e o ciclo procurar, baixar, pronta e instalar (com o servidor encerrado antes), com um atualizador falso.
 
 Nenhum teste abre janela. O T3 tem um smoke do app empacotado (`scripts/smoke-desktop-app.ts`, Playwright com `_electron`) que roda nos jobs de release; aqui ele fica como pendência do CI. Para conferir o app de verdade, empacote com `--dir` e abra o `.app`; com `--remote-debugging-port`, a página pode ser lida pelo CDP.
 
@@ -142,5 +154,5 @@ Nenhum teste abre janela. O T3 tem um smoke do app empacotado (`scripts/smoke-de
 - **Ícone final** pela identidade visual do IFPR (skill `ifpr-design`); o de `recursos/icone.png` é provisório.
 - **Instaladores no CI** (macOS e Windows), com o `kb.sqlite` da fábrica e um smoke do app empacotado, como o `smoke-desktop-app.ts` do T3.
 - **Windows:** o `dist --win` e o app no Windows ainda não foram testados; ali o cordão do servidor é só o stdin (o `awaitLauncherLoss` do T3 não age no Windows).
-- **Atualização do app** (`electron-updater`, M1.10) e da base na pasta do app.
+- **Atualização do app ligada:** depende da assinatura de código (acima) e do feed na política (repositório público); ver `packages/atualizacao/README.md`, "O que falta para ligar em produção".
 - **Tamanho:** o instalador leva a base inteira e o Electron com as línguas pt-BR e en-US.
