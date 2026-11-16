@@ -81,14 +81,14 @@ describe("preparar-documento com .docx", () => {
     expect(NodeFS.existsSync(rodadas)).toBe(false);
   });
 
-  test("arquivo de mais de 100 MB é recusado antes de ser lido", () => {
+  test("arquivo de mais de 20 MB é recusado antes de ser lido", () => {
     const dir = diretorioTemporario();
     const arquivo = NodePath.join(dir, "enorme.docx");
     // Arquivo esparso: tem o tamanho, sem ocupar o disco.
     NodeFS.closeSync(NodeFS.openSync(arquivo, "w"));
-    NodeFS.truncateSync(arquivo, 101 * 1024 * 1024);
+    NodeFS.truncateSync(arquivo, 21 * 1024 * 1024);
     expect(() => prepararDocumento(arquivo, { saidaBase: NodePath.join(dir, "rodadas") })).toThrow(
-      /grande demais \(101 MB; o limite é de 100 MB\)/,
+      /tem 21 MB, e o limite é de 20 MB\. Um PPC raramente passa disso.*Arquivo › Compactar imagens/,
     );
     expect(NodeFS.existsSync(NodePath.join(dir, "rodadas"))).toBe(false);
   });

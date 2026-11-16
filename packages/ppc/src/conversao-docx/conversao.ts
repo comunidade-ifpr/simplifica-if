@@ -23,11 +23,12 @@ import * as NodePath from "node:path";
 import { dumpsPy } from "@simplifica-if/kb/python/json";
 import { ORDEM_CHAVES, type ObjetoPy } from "@simplifica-if/kb/python/valores";
 import { normalizarMarkdown } from "../normalizador-markdown.ts";
-import { type Elemento, elementosDoDocumento } from "./elementos.ts";
+import { type Elemento, elementosDoDocumento, type Tabela } from "./elementos.ts";
 import { type ComponenteDoEmentario, extrairComponenteDoEmentario } from "./ementario.ts";
 import { inserirBlocoNaSecao, type RepresentacaoGrafica, resolverRepresentacaoGrafica } from "./figura.ts";
 import { extrairDadosDeIdentificacao } from "./identificacao-tabelas.ts";
-import { escreverMarkdown } from "./markdown.ts";
+import { escreverMarkdown, type NormalizarTabela } from "./markdown.ts";
+import { type LimitesDeTexto, Orcamento } from "./orcamento.ts";
 import {
   extrairMatrizGenerica,
   extrairMatrizPpc,
@@ -40,10 +41,10 @@ import {
 import { ErroDocx } from "@simplifica-if/docx/erro";
 import { type Fidelidade, lerPacote } from "@simplifica-if/docx/leitor";
 import type { PropriedadesOoxml } from "@simplifica-if/docx/modelo";
-import { type LimitesDoPacote, PacoteOoxml } from "@simplifica-if/docx/pacote";
+import { arquivoGrandeDemais, LIMITES_PADRAO, type LimitesDoPacote, PacoteOoxml } from "@simplifica-if/docx/pacote";
 import { REGRAS_DO_DOCUMENTO, REGRAS_DO_PYTHON, type Regras } from "./regras.ts";
 import { detectarSecoes, dicasDeIdentificacao, listarSecoes, type Secao } from "./secoes.ts";
-import { colunasDaTabela, normalizarTabela } from "./tabelas.ts";
+import { colunasDaTabela, normalizarTabela, type TabelaNormalizada } from "./tabelas.ts";
 
 export type OpcoesConversao = {
   /** Instante da conversão (`data_conversao`); quem chama passa o relógio da rodada. */
@@ -55,12 +56,11 @@ export type OpcoesConversao = {
   fidelidade?: Fidelidade;
   /** Liga ou desliga regras uma a uma, sobre as da `fidelidade`. Só o diferencial usa. */
   regras?: Partial<Regras>;
-  /** Limites de leitura do pacote; padrão: os de `@simplifica-if/docx/pacote`. */
+  /** Limites de leitura do pacote; padrão: `LIMITES_PADRAO` de `@simplifica-if/docx/pacote`. */
   limites?: Partial<LimitesDoPacote>;
+  /** Orçamento de texto do documento; padrão: `LIMITES_DE_TEXTO` de `orcamento.ts`. */
+  limitesDeTexto?: Partial<LimitesDeTexto>;
 };
-
-/** Tamanho máximo de um `.docx` aceito, conferido antes de ler o arquivo. */
-export const TAMANHO_MAXIMO_DO_ARQUIVO = 100 * 1024 * 1024;
 
 /** Resultado da conversão em memória, antes de gravar. */
 export type Conversao = {
@@ -142,14 +142,19 @@ type DadosExtraidos = {
   ementario: ComponenteDoEmentario[];
 };
 
-function extrairDados(elementos: Elemento[], secoes: Secao[], regras: Regras): DadosExtraidos {
+function extrairDados(
+  elementos: Elemento[],
+  secoes: Secao[],
+  regras: Regras,
+  normalizar: NormalizarTabela,
+): DadosExtraidos {
   const identificacao = dicasDeIdentificacao(secoes);
   const ementario: ComponenteDoEmentario[] = [];
   let matriz: Matriz | null = null;
   const genericas: MatrizGenerica[] = [];
   for (const elemento of elementos) {
     if (elemento.tipo !== "tabela") continue;
-    const tabela = normalizarTabela(elemento);
+    const tabela = normalizar(elemento);
     const componente = extrairComponenteDoEmentario(tabela);
     if (componente) {
       ementario.push(componente);
@@ -254,8 +259,20 @@ export function converterPpc(bytes: Uint8Array, nomeDoArquivo: string, opcoes: O
         "A revisão precisa do documento de texto original.",
     );
   }
+  const orcamento = new Orcamento(opcoes.limitesDeTexto);
+  orcamento.conferirElementos(elementos);
+  // Cada tabela é normalizada uma vez (a extração dos dados e o Markdown usam a mesma grade), e o
+  // texto dela, com as repetições das mesclas, sai do orçamento do documento.
+  const normalizadas = new Map<Tabela, TabelaNormalizada>();
+  const normalizarTabelaUmaVez: NormalizarTabela = (tabela) => {
+    let normalizada = normalizadas.get(tabela);
+    if (!normalizada) {
+      normalizadas.set(tabela, (normalizada = normalizarTabela(tabela, (caracteres) => orcamento.gastar(caracteres))));
+    }
+    return normalizada;
+  };
   const secoes = detectarSecoes(elementos);
-  const extraidos = extrairDados(elementos, secoes, regras);
+  const extraidos = extrairDados(elementos, secoes, regras, normalizarTabelaUmaVez);
   const representacaoGrafica = resolverRepresentacaoGrafica(secoes, pacote);
 
   const normalizar = (bruto: string) => {
@@ -265,7 +282,10 @@ export function converterPpc(bytes: Uint8Array, nomeDoArquivo: string, opcoes: O
       : resultado.markdownNormalizado;
     return { markdownBruto: resultado.markdownBruto, markdown };
   };
-  let textos = normalizar(escreverMarkdown(elementos, secoes, regras));
+  const bruto = escreverMarkdown(elementos, secoes, regras, normalizarTabelaUmaVez);
+  // O Markdown gerado também sai do orçamento, antes de ser normalizado.
+  new Orcamento(opcoes.limitesDeTexto).gastar(bruto.length);
+  let textos = normalizar(bruto);
   // A imagem (ou o aviso) entra no Markdown bruto já limpo, e a normalização é refeita.
   if (representacaoGrafica) textos = normalizar(inserirBlocoNaSecao(textos.markdownBruto, representacaoGrafica));
 
@@ -339,17 +359,12 @@ function dadosPrincipais(
  * Lê um `.docx` do disco para a conversão. O tamanho é conferido antes da leitura: um arquivo de
  * gigabytes não chega à memória.
  */
-export function lerArquivoDocx(arquivoDocx: string): Uint8Array {
+export function lerArquivoDocx(arquivoDocx: string, limite = LIMITES_PADRAO.bytesDoArquivo): Uint8Array {
   const arquivo = NodePath.resolve(arquivoDocx);
   if (!NodeFS.existsSync(arquivo)) throw new Error(`Arquivo não encontrado: ${arquivo}`);
   if (NodePath.extname(arquivo).toLowerCase() !== ".docx") throw new Error(`O arquivo deve ser .docx: ${arquivo}`);
   const tamanho = NodeFS.statSync(arquivo).size;
-  if (tamanho > TAMANHO_MAXIMO_DO_ARQUIVO) {
-    throw new ErroDocx(
-      `O arquivo DOCX é grande demais (${Math.round(tamanho / (1024 * 1024))} MB; o limite é de ` +
-        `${TAMANHO_MAXIMO_DO_ARQUIVO / (1024 * 1024)} MB).`,
-    );
-  }
+  if (tamanho > limite) throw arquivoGrandeDemais(tamanho, limite);
   return NodeFS.readFileSync(arquivo);
 }
 
@@ -398,6 +413,7 @@ export function gravarArtefatos(conversao: Conversao, arquivoDocx: string, saida
 
 /** Converte `arquivoDocx` e grava os artefatos em `saida`. Nada é gravado se a conversão falha. */
 export function converterDocx(arquivoDocx: string, saida: string, opcoes: OpcoesConversao): ArtefatosDocx {
-  const conversao = converterPpc(lerArquivoDocx(arquivoDocx), NodePath.basename(arquivoDocx), opcoes);
+  const bytes = lerArquivoDocx(arquivoDocx, opcoes.limites?.bytesDoArquivo);
+  const conversao = converterPpc(bytes, NodePath.basename(arquivoDocx), opcoes);
   return gravarArtefatos(conversao, arquivoDocx, saida);
 }

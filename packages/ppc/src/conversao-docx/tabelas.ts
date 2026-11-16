@@ -46,7 +46,7 @@ function limparTextoDaCelula(texto: string): string {
  * Expande as mesclas: a célula de várias colunas deixa o texto na primeira e vazias as demais, e a
  * continuação vazia de uma mescla vertical recebe o texto da célula de cima.
  */
-function expandirMesclas(linhas: CelulaTabela[][], colunas: number): string[][] {
+function expandirMesclas(linhas: CelulaTabela[][], colunas: number, gastar?: (caracteres: number) => void): string[][] {
   // O texto de uma célula mesclada se repete na grade: é limpo uma vez só.
   const limpos = new Map<string, string>();
   const limpar = (texto: string) => {
@@ -72,17 +72,18 @@ function expandirMesclas(linhas: CelulaTabela[][], colunas: number): string[][] 
     }
   }
   // A mescla multiplica o texto: uma célula de 1 MB repetida em 2 mil linhas daria uma tabela de
-  // 2 GB no Markdown.
+  // 2 GB no Markdown. O total vai para o orçamento do documento (`orcamento.ts`), quando há um.
   let caracteres = 0;
   for (const linha of grade) for (const celula of linha) caracteres += celula.texto.length;
   if (caracteres > TEXTO_MAXIMO) {
     throw new ErroDocx("O arquivo DOCX não pôde ser lido: há uma tabela com texto demais nas células mescladas.");
   }
+  gastar?.(caracteres);
   return grade.map((linha) => linha.map((celula) => celula.texto));
 }
 
 /** Tabela do documento em grade regular. */
-export function normalizarTabela(tabela: Tabela): TabelaNormalizada {
+export function normalizarTabela(tabela: Tabela, gastar?: (caracteres: number) => void): TabelaNormalizada {
   if (!tabela.linhas.length) return { cabecalho: [], linhas: [] };
   let colunas = 0;
   for (const linha of tabela.linhas) {
@@ -96,7 +97,7 @@ export function normalizarTabela(tabela: Tabela): TabelaNormalizada {
   if (colunas * tabela.linhas.length > CELULAS_MAXIMAS) {
     throw new ErroDocx(`O arquivo DOCX não pôde ser lido: há uma tabela com mais de ${CELULAS_MAXIMAS} células.`);
   }
-  const [cabecalho = [], ...linhas] = expandirMesclas(tabela.linhas, colunas);
+  const [cabecalho = [], ...linhas] = expandirMesclas(tabela.linhas, colunas, gastar);
   return { cabecalho, linhas };
 }
 

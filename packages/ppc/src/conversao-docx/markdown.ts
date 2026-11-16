@@ -4,10 +4,10 @@
  */
 import { match, sub } from "@simplifica-if/kb/python/re";
 import { aparar, apararFim, apararInicio, ESPACOS } from "@simplifica-if/kb/texto";
-import { type Elemento, type Paragrafo, textoDosTrechos, type Trecho } from "./elementos.ts";
+import { type Elemento, type Paragrafo, type Tabela, textoDosTrechos, type Trecho } from "./elementos.ts";
 import { REGRAS_DO_DOCUMENTO, type Regras } from "./regras.ts";
 import { type Secao, tituloCompleto } from "./secoes.ts";
-import { normalizarTabela, tabelaEmMarkdown } from "./tabelas.ts";
+import { normalizarTabela, type TabelaNormalizada, tabelaEmMarkdown } from "./tabelas.ts";
 
 const r = String.raw;
 
@@ -92,12 +92,17 @@ function formatarTrechos(trechos: Trecho[], regras: Regras): string {
  * Escritor com o estado da lista corrente: o primeiro bloco depois de uma lista ganha uma linha em
  * branco antes, para a lista não engolir o parágrafo seguinte.
  */
+/** Tabela em grade regular; a conversão passa uma função com memória, que normaliza cada tabela uma vez. */
+export type NormalizarTabela = (tabela: Tabela) => TabelaNormalizada;
+
 class Escritor {
   readonly #regras: Regras;
+  readonly #normalizar: NormalizarTabela;
   #emLista = false;
 
-  constructor(regras: Regras) {
+  constructor(regras: Regras, normalizar: NormalizarTabela) {
     this.#regras = regras;
+    this.#normalizar = normalizar;
   }
 
   #sairDaLista(): string {
@@ -133,7 +138,7 @@ class Escritor {
   elemento(elemento: Elemento): string {
     if (elemento.tipo === "titulo")
       return `${this.#sairDaLista()}${"#".repeat(Math.min(elemento.nivel, 6))} ${elemento.texto}`;
-    if (elemento.tipo === "tabela") return this.#sairDaLista() + tabelaEmMarkdown(normalizarTabela(elemento));
+    if (elemento.tipo === "tabela") return this.#sairDaLista() + tabelaEmMarkdown(this.#normalizar(elemento));
     if (elemento.tipo === "paragrafo") return this.#paragrafo(elemento);
     // A figura não tem texto; a da representação gráfica entra depois, pela seção (`figura.ts`).
     return "";
@@ -167,8 +172,13 @@ class Escritor {
 }
 
 /** Markdown bruto do documento: por seções quando há títulos, senão os elementos em sequência. */
-export function escreverMarkdown(elementos: Elemento[], secoes: Secao[], regras: Regras = REGRAS_DO_DOCUMENTO): string {
-  const escritor = new Escritor(regras);
+export function escreverMarkdown(
+  elementos: Elemento[],
+  secoes: Secao[],
+  regras: Regras = REGRAS_DO_DOCUMENTO,
+  normalizar: NormalizarTabela = normalizarTabela,
+): string {
+  const escritor = new Escritor(regras, normalizar);
   if (!secoes.length) return escritor.elementos(elementos);
   return secoes.map((secao) => escritor.secao(secao)).join("\n");
 }
