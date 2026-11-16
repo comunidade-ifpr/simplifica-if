@@ -14,6 +14,8 @@
  *   - o `undici`, que o `effect` carrega com `import()` dinâmico e usa pelos exports nomeados de um
  *     módulo CommonJS, que o bundle não reproduz (`_.Agent is not a constructor`). Vai copiado em
  *     `servidor/node_modules/undici`, como o T3 deixa o `undici` fora do bundle da CLI.
+ * - `dist/recursos/skills/`: as skills do app (`skills.ts`): só as de `.agents/skills` com bloco
+ *   `simplifica:` válido e só os arquivos listados nele; o servidor empacotado as lê por `--pasta-skills`.
  *
  *   node scripts/construir.ts                       # tudo
  *   node scripts/construir.ts --so-processo-principal   # só main e preload (o `dev` usa)
@@ -25,6 +27,7 @@ import * as NodeModule from "node:module";
 import * as NodePath from "node:path";
 import * as NodeUtil from "node:util";
 import { build as empacotar } from "vite-plus/pack";
+import { copiarSkills } from "./skills.ts";
 
 export const PACOTE = NodePath.resolve(import.meta.dirname, "..");
 export const RAIZ = NodePath.resolve(PACOTE, "../..");
@@ -143,8 +146,11 @@ export async function construir(opcoes: { readonly soProcessoPrincipal: boolean;
   escreverManifesto();
   if (opcoes.soProcessoPrincipal) return;
   await construirServidor();
+  const skills = await copiarSkills(NodePath.join(RAIZ, ".agents", "skills"), NodePath.join(DIST_RECURSOS, "skills"));
   const web = copiarWeb(opcoes.web);
-  process.stderr.write(`bundles em ${NodePath.relative(RAIZ, DIST)} (interface: ${web})\n`);
+  process.stderr.write(
+    `bundles em ${NodePath.relative(RAIZ, DIST)} (interface: ${web}; skills: ${skills.join(", ") || "nenhuma"})\n`,
+  );
 }
 
 if (import.meta.main) {

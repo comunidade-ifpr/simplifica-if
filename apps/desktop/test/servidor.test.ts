@@ -116,6 +116,13 @@ describe("montarInicio", () => {
     const inicio = montarInicio({ ...base, executor: { tipo: "electron", electron, bundle } });
     expect(inicio.comando).toBe(electron);
     expect(inicio.argumentos[0]).toBe(bundle);
+    expect(inicio.argumentos).not.toContain("--pasta-skills");
+    const comSkills = montarInicio({
+      ...base,
+      executor: { tipo: "electron", electron, bundle },
+      pastaSkills: "/r/skills",
+    });
+    expect(comSkills.argumentos.slice(-2)).toEqual(["--pasta-skills", "/r/skills"]);
     expect(inicio.ambiente.ELECTRON_RUN_AS_NODE).toBe("1");
   });
 

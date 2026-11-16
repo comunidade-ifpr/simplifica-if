@@ -46,6 +46,15 @@ describe("resolverConfiguracao", () => {
     expect(config.urlJanela).toBe("http://localhost:5190/");
     expect(config.origens).toEqual(["http://localhost:5190"]);
     expect(config.cwd).toBe("/repo");
+    // Sem a pasta, nada de --pasta-skills.
+    expect(config.pastaSkills).toBeUndefined();
+  });
+
+  test("skills: .agents/skills do repositório no desenvolvimento, <Resources>/skills no app empacotado", () => {
+    expect(resolverConfiguracao({ ...dev, existe: () => true }).pastaSkills).toBe("/repo/.agents/skills");
+    expect(resolverConfiguracao({ ...empacotado, existe: () => true }).pastaSkills).toBe(
+      "/Applications/Simplifica IF.app/Contents/Resources/skills",
+    );
   });
 
   test("desenvolvimento sem SIMPLIFICA_WEB_URL: o build da interface pelo protocolo próprio", () => {
