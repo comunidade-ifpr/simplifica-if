@@ -249,6 +249,8 @@ describe("re", () => {
     ]);
     expect(split(",", "a,b,,c")).toEqual(["a", "b", "", "c"]);
     expect(split("x", "abc")).toEqual(["abc"]);
+    expect(() => split("(,)", "a,b")).toThrow(/grupos de captura/);
+    expect(split("(?:,|;)(?=b)", "a,b;c")).toEqual(["a", "b;c"]);
     expect(finditer("\\d+", "a1b22c٣").map((m) => [m.index, m[0]])).toEqual([
       [1, "1"],
       [3, "22"],

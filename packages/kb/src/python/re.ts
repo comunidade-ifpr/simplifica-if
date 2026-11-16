@@ -144,11 +144,20 @@ export function sub(
   return saida + texto.slice(ultimo);
 }
 
-/** `re.split(padrao, texto)` para padrões sem grupos de captura. */
+/**
+ * `re.split(padrao, texto)` para padrões sem grupos de captura. Com grupos, o Python intercala o
+ * que eles capturam no resultado; isso não está implementado, e o padrão é recusado para não dar
+ * um resultado diferente em silêncio.
+ */
 export function split(padrao: string, texto: string, flags: FlagsPy = {}): string[] {
+  const re = compilar(padrao, "search", flags, true);
+  // Casar com o texto vazio revela quantos grupos o padrão tem.
+  if (new RegExp(`${re.source}|`, re.flags.replace("g", "")).exec("")!.length > 1) {
+    throw new SyntaxError(`split não aceita padrão com grupos de captura: ${padrao}`);
+  }
   const partes: string[] = [];
   let ultimo = 0;
-  for (const m of texto.matchAll(compilar(padrao, "search", flags, true))) {
+  for (const m of texto.matchAll(re)) {
     partes.push(texto.slice(ultimo, m.index));
     ultimo = m.index + m[0].length;
   }
