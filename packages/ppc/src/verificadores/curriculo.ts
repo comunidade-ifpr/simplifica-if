@@ -294,24 +294,33 @@ export const aeeComoComponente: Verificador = {
   id: "d-aee-componente",
   ficha: "CT-CURR-22",
   descricao:
-    "“Atendimento Educacional Especializado” ou “AEE” numa linha de tabela das seções de matriz, organização curricular, carga horária ou ementário: o AEE é serviço, não componente (NT PROENS nº 1/2025).",
+    "Célula curta (até 80 caracteres) de tabela das seções de matriz, organização curricular, carga horária ou ementário que nomeia o “Atendimento Educacional Especializado” ou “AEE” (linha da matriz, “Componente curricular: AEE”): o AEE é serviço, não componente (NT PROENS nº 1/2025). Menção em texto de ementa ou bibliografia não conta.",
   verificar(ppc) {
     const fontes = [linkNorma("ifpr/proens/nt/2025/1")];
-    const apontamentos: Apontamento[] = [];
+    const trechos: Trecho[] = [];
     for (const n of linhasDasSecoes(ppc, SECOES_CURRICULARES)) {
       const linha = ppc.linhas[n - 1] ?? "";
-      const aee = /atendimento educacional especializado|\bAEE\b/i.exec(linha);
-      if (linha.trimStart().startsWith("|") && aee)
-        apontamentos.push({
-          estado: "nao_atende",
-          mensagem: "O AEE aparece como linha da matriz ou do quadro de componentes; ele é serviço, não componente.",
-          trechos: [trecho(ppc, n, aee[0])],
-          fontes,
-        });
+      if (!linha.trimStart().startsWith("|")) continue;
+      const celula = linha
+        .split("|")
+        .map((c) => c.replace(/\*/g, "").trim())
+        .find((c) => c.length <= 80 && /atendimento\s*educacional\s*especializado|\bAEE\b/i.test(c));
+      const aee = celula && /atendimento\s*educacional\s*especializado|\bAEE\b/i.exec(linha);
+      if (aee) trechos.push(trecho(ppc, n, aee[0]));
     }
+    const apontamentos: Apontamento[] = trechos.length
+      ? [
+          {
+            estado: "nao_atende",
+            mensagem: `O AEE aparece como componente na matriz ou no quadro de componentes (${trechos.length} linha(s)); ele é serviço, não componente.`,
+            trechos: trechos.slice(0, 3),
+            fontes,
+          },
+        ]
+      : [];
     return resultado(this, apontamentos, {
       estado: "atende",
-      mensagem: "O AEE não aparece como linha de tabela da matriz, do ementário ou da organização curricular.",
+      mensagem: "O AEE não aparece como componente nas tabelas da matriz, do ementário ou da organização curricular.",
       fontes,
     });
   },

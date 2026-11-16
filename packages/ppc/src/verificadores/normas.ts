@@ -14,6 +14,7 @@ import {
   type Apontamento,
   apontamentoRevogada,
   type BaseVerificacao,
+  chave,
   citacaoSegura,
   citacoesPorAto,
   linkCnct,
@@ -179,15 +180,14 @@ export const marcosNasReferencias: Verificador = {
 
 /* ------------------------------------------------------------------ CT-SUP-14 */
 
-const RE_CNCT = /cat[áa]logo nacional de cursos t[ée]cnicos|\bCNCT\b/i;
+/** Sobre o texto sem acento e sem negrito (`chave`): "Catálogo Nacional dos Cursos Técnicos" também vale. */
+const RE_CNCT = /catalogo nacional d[eo]s? cursos tecnicos|\bcnct\b/;
 const RE_INSTITUCIONAL =
-  /plano de desenvolvimento institucional|\bPDI\b|projeto pol[íi]tico[- ]pedag[óo]gico institucional|projeto pedag[óo]gico institucional|\bPPI\b|regimento geral|estatuto do (ifpr|instituto federal)/i;
+  /plano de desenvolvimento institucional|\bpdi\b|projeto (politico[- ])?pedagogico institucional|\bppi\b|regimento geral|estatuto do (ifpr|instituto federal)/;
 
 function primeiraLinha(ppc: PpcPreparado, padrao: RegExp): Trecho | null {
-  for (const [indice, linha] of ppc.linhas.entries()) {
-    const achado = padrao.exec(linha);
-    if (achado) return trecho(ppc, indice + 1, achado[0]);
-  }
+  for (const [indice, linha] of ppc.linhas.entries())
+    if (padrao.test(chave(linha.replace(/\*/g, "")))) return trecho(ppc, indice + 1);
   return null;
 }
 
@@ -210,14 +210,26 @@ export const marcosInstitucionais: Verificador = {
         fontes,
       });
     const institucional = primeiraLinha(ppc, RE_INSTITUCIONAL);
+    // A rubrica aceita "norma institucional equivalente": citar resoluções do CONSUP deixa a conferir.
+    const consup = ppc.citacoes.find((c) => c.id?.startsWith("ifpr/consup/") && citacaoSegura(c));
     if (institucional) evidencias.push(institucional);
     else
-      apontamentos.push({
-        estado: "nao_atende",
-        mensagem: "O PPC não menciona os marcos institucionais do IFPR (PDI, PPI, Regimento Geral ou Estatuto).",
-        trechos: [],
-        fontes: [],
-      });
+      apontamentos.push(
+        consup
+          ? {
+              estado: "a_conferir",
+              mensagem:
+                "O PPC cita normas do IFPR, mas não menciona o PDI, o PPI, o Regimento Geral nem o Estatuto. Confira se os marcos institucionais estão referenciados.",
+              trechos: [trecho(ppc, consup.linha, consup.trecho)],
+              fontes: [],
+            }
+          : {
+              estado: "nao_atende",
+              mensagem: "O PPC não menciona os marcos institucionais do IFPR (PDI, PPI, Regimento Geral ou Estatuto).",
+              trechos: [],
+              fontes: [],
+            },
+      );
     return resultado(this, apontamentos, {
       estado: "atende",
       mensagem: "O PPC menciona o CNCT e os marcos institucionais do IFPR.",
@@ -228,6 +240,10 @@ export const marcosInstitucionais: Verificador = {
 };
 
 /* ------------------------------------------------------------------ CT-SUP-21 */
+
+/** Conselho de fiscalização profissional (sobre o texto sem acento, em minúsculas). */
+const RE_CONSELHO =
+  /conselho (regional|federal)|sistema confea|\b(cft|crt|cra|crea|confea|coren|cofen|crq|cfq|crf|cff|crmv|cfmv|crbio|cro|cfo|crn|cfn|crtr|conter|cref|confef)\b/;
 
 export const legislacaoProfissional: Verificador = {
   id: "d-legislacao-profissional",
@@ -271,19 +287,30 @@ export const legislacaoProfissional: Verificador = {
         { estado: "a_conferir", mensagem: "" },
       );
     const citadas = ppc.citacoes.filter((c) => c.id !== null && ids.has(c.id));
-    if (!citadas.length)
+    if (!citadas.length) {
+      // Sem a lei, mas com o conselho profissional e as atribuições: pode ser "incorporar" a legislação
+      // (a rubrica aceita), e na base 5 de 6 casos eram assim. Fica a conferir.
+      const conselho = primeiraLinha(ppc, RE_CONSELHO);
       return resultado(
         this,
         [
-          {
-            estado: "nao_atende",
-            mensagem: `O PPC não cita a legislação profissional que o CNCT indica para o curso: ${legislacao.join("; ")}.`,
-            trechos: [],
-            fontes,
-          },
+          conselho
+            ? {
+                estado: "a_conferir",
+                mensagem: `O PPC menciona o conselho profissional, mas não cita a legislação profissional que o CNCT indica: ${legislacao.join("; ")}. Confira se ela é tratada de modo reconhecível.`,
+                trechos: [conselho],
+                fontes,
+              }
+            : {
+                estado: "nao_atende",
+                mensagem: `O PPC não cita a legislação profissional que o CNCT indica para o curso: ${legislacao.join("; ")}.`,
+                trechos: [],
+                fontes,
+              },
         ],
-        { estado: "nao_atende", mensagem: "" },
+        { estado: "a_conferir", mensagem: "" },
       );
+    }
     return resultado(this, [], {
       estado: "atende",
       mensagem: `O PPC cita ${new Set(citadas.map((c) => c.id)).size} dos ${ids.size} atos de legislação profissional do CNCT.`,

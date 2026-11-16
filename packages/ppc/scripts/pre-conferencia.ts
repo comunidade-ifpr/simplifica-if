@@ -59,7 +59,10 @@ if (values.base) {
     const passo = Math.max(1, Math.floor(itens.length / n));
     console.log(`${itens.length} apontamentos de ${values.amostra}${values.estado ? ` (${values.estado})` : ""}`);
     for (const item of itens.filter((_, i) => i % passo === 0).slice(0, n))
-      console.log(JSON.stringify(item, null, 1));
+      console.log(
+        `- ${item.ppc} (${item.forma}) | ${item.estado} | ${item.mensagem.slice(0, 160)}` +
+          item.trechos.map((t) => `\n    L${t.linha} [${t.secao ?? "-"}]: ${t.texto.slice(0, 140)}`).join(""),
+      );
   } else {
     console.log(`${ppcs.length} PPCs técnicos em ${(ms / 1000).toFixed(1)} s (${(ms / ppcs.length).toFixed(0)} ms por PPC)`);
     console.log("ficha | atende | não atende | a conferir | não se aplica | apontamentos nao_atende | apontamentos a_conferir");
