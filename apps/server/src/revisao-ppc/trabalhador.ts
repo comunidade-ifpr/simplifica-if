@@ -8,7 +8,7 @@
  * esperado (`ErroDocx`: arquivo protegido, corrompido, grande demais, sem texto, com a mensagem em
  * português) do defeito.
  */
-import * as NodeWorker from "node:worker_threads";
+import * as NodeWorkerThreads from "node:worker_threads";
 import { ErroDocx } from "@simplifica-if/docx/erro";
 import { type BaseRevisaoPrevia, revisarDocx, type RevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
 
@@ -26,7 +26,7 @@ export type RespostaTrabalhador =
   | { ok: true; revisao: RevisaoPrevia }
   | { ok: false; arquivoInvalido: boolean; mensagem: string };
 
-const porta = NodeWorker.parentPort;
+const porta = NodeWorkerThreads.parentPort;
 if (porta !== null)
   porta.once("message", (pedido: PedidoTrabalhador) => {
     let resposta: RespostaTrabalhador;
@@ -45,5 +45,6 @@ if (porta !== null)
         mensagem: erro instanceof Error ? erro.message : String(erro),
       };
     }
+    // oxlint-disable-next-line unicorn/require-post-message-target-origin -- porta de Worker, não janela
     porta.postMessage(resposta);
   });

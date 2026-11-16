@@ -52,14 +52,25 @@ const pasta = diretorioTemporario("simplifica-web-pasta-");
 inserirNormas(banco);
 // A taxonomia de tópicos das fichas da `revisar-ppc`, para a revisão prévia agrupar por tema.
 {
-  const arquivo = NodePath.resolve(import.meta.dirname, "../../../.agents/skills/revisar-ppc/base-analise/topicos-fichas.json");
-  const { topicos } = JSON.parse(NodeFS.readFileSync(arquivo, "utf8")) as { topicos: Array<{ id: string; titulo: string }> };
+  const arquivo = NodePath.resolve(
+    import.meta.dirname,
+    "../../../.agents/skills/revisar-ppc/base-analise/topicos-fichas.json",
+  );
+  const { topicos } = JSON.parse(NodeFS.readFileSync(arquivo, "utf8")) as {
+    topicos: Array<{ id: string; titulo: string }>;
+  };
   const db = new NodeSqlite.DatabaseSync(banco);
   const inserir = db.prepare(
     "INSERT INTO topicos (id, ordem, titulo, termos_json, path, dados_json) VALUES (?, ?, ?, '[]', ?, ?)",
   );
   topicos.forEach((topico, ordem) =>
-    inserir.run(topico.id, ordem, topico.titulo, ".agents/skills/revisar-ppc/base-analise/topicos-fichas.json", JSON.stringify(topico)),
+    inserir.run(
+      topico.id,
+      ordem,
+      topico.titulo,
+      ".agents/skills/revisar-ppc/base-analise/topicos-fichas.json",
+      JSON.stringify(topico),
+    ),
   );
   db.close();
 }
@@ -80,7 +91,9 @@ const camada = Servidor.layer({
 const programa = Effect.gen(function* () {
   yield* Effect.addFinalizer(() => Effect.sync(limparTemporarios));
   const app = yield* Servidor.ServidorApp;
-  yield* Console.log(JSON.stringify({ porta: app.porta, urlServidor: `http://127.0.0.1:${app.porta}`, token, pasta, ppc }));
+  yield* Console.log(
+    JSON.stringify({ porta: app.porta, urlServidor: `http://127.0.0.1:${app.porta}`, token, pasta, ppc }),
+  );
   return yield* Effect.never;
 }).pipe(Effect.scoped, Effect.provide(camada), Effect.provideService(Logger.LogToStderr, true));
 

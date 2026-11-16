@@ -2,7 +2,12 @@ import { describe, expect, test } from "vite-plus/test";
 import type { PendenciaRevisao, ResultadoRevisaoPpc } from "@simplifica-if/contratos-app";
 import { agruparPorTema, descreverCurso } from "./agrupar.ts";
 
-const pendencia = (ficha: string, ordemTema: number, tema: string, estado: PendenciaRevisao["estado"]): PendenciaRevisao => ({
+const pendencia = (
+  ficha: string,
+  ordemTema: number,
+  tema: string,
+  estado: PendenciaRevisao["estado"],
+): PendenciaRevisao => ({
   ficha,
   tituloFicha: ficha,
   tema,
@@ -19,16 +24,41 @@ const pendencia = (ficha: string, ordemTema: number, tema: string, estado: Pende
 const resultado: ResultadoRevisaoPpc = {
   arquivoOriginal: "/a/PPC.docx",
   arquivoComentado: "/a/PPC - revisão prévia (Simplifica IF).docx",
-  curso: { cnct: { slug: "tecnico-em-agropecuaria", denominacao: "Técnico em Agropecuária" }, forma: "integrado", origem: "documento" },
+  curso: {
+    cnct: { slug: "tecnico-em-agropecuaria", denominacao: "Técnico em Agropecuária" },
+    forma: "integrado",
+    origem: "documento",
+  },
   pendencias: [
     pendencia("CT-SUP-12", 5, "Fundamentos legais e normativos", "a_conferir"),
     pendencia("CT-SUP-09", 5, "Fundamentos legais e normativos", "nao_atende"),
     pendencia("CT-IDENT-01", 1, "Identificação e oferta", "nao_atende"),
   ],
   criterios: [
-    { ficha: "CT-IDENT-13", titulo: "Eixo", tema: "Identificação e oferta", ordemTema: 1, estado: "atende", mensagem: "" },
-    { ficha: "CT-CURR-18", titulo: "FGB", tema: "Matriz e estrutura curricular", ordemTema: 2, estado: "nao_se_aplica", mensagem: "" },
-    { ficha: "CT-SUP-09", titulo: "Ref.", tema: "Fundamentos legais e normativos", ordemTema: 5, estado: "nao_atende", mensagem: "" },
+    {
+      ficha: "CT-IDENT-13",
+      titulo: "Eixo",
+      tema: "Identificação e oferta",
+      ordemTema: 1,
+      estado: "atende",
+      mensagem: "",
+    },
+    {
+      ficha: "CT-CURR-18",
+      titulo: "FGB",
+      tema: "Matriz e estrutura curricular",
+      ordemTema: 2,
+      estado: "nao_se_aplica",
+      mensagem: "",
+    },
+    {
+      ficha: "CT-SUP-09",
+      titulo: "Ref.",
+      tema: "Fundamentos legais e normativos",
+      ordemTema: 5,
+      estado: "nao_atende",
+      mensagem: "",
+    },
   ],
   conferidos: 12,
   totalCriterios: 80,
@@ -50,7 +80,9 @@ describe("agruparPorTema", () => {
   });
 
   test("o curso, em palavras", () => {
-    expect(descreverCurso(resultado.curso)).toBe("Técnico em Agropecuária, integrado ao ensino médio (identificado no documento).");
+    expect(descreverCurso(resultado.curso)).toBe(
+      "Técnico em Agropecuária, integrado ao ensino médio (identificado no documento).",
+    );
     expect(descreverCurso({ cnct: null, forma: null, origem: "documento" })).toMatch(/^Não identificamos o curso/);
   });
 });

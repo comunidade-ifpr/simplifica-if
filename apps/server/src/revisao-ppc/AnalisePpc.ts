@@ -17,9 +17,9 @@
  * No app empacotado, o Worker é o `trabalhador-ppc.mjs` do bundle, ao lado do `bin.mjs`
  * (`apps/desktop/scripts/construir.ts`); no desenvolvimento, o `trabalhador.ts`.
  */
-import * as NodeFS from "node:fs/promises";
+import * as NodeFSP from "node:fs/promises";
 import * as NodePath from "node:path";
-import * as NodeWorker from "node:worker_threads";
+import * as NodeWorkerThreads from "node:worker_threads";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Duration from "effect/Duration";
@@ -61,7 +61,6 @@ export class AnalisePpc extends Context.Service<
   AnalisePpc,
   { readonly analisar: (entrada: EntradaAnalise) => Effect.Effect<ResultadoRevisaoPpc, FalhaRevisaoPpc> }
 >()("@simplifica-if/server/revisao-ppc/AnalisePpc") {}
-
 
 /** O script do Worker: o `.ts` ao lado deste no desenvolvimento, o `trabalhador-ppc.mjs` no bundle. */
 export const URL_TRABALHADOR = import.meta.url.endsWith(".ts")
@@ -116,7 +115,7 @@ function rodarNoTrabalhador(
   falha: (motivo: string) => FalhaRevisaoPpc,
 ): Effect.Effect<Revisao, FalhaRevisaoPpc> {
   const rodar = Effect.callback<Revisao, FalhaRevisaoPpc>((resume) => {
-    const trabalhador = new NodeWorker.Worker(url, {
+    const trabalhador = new NodeWorkerThreads.Worker(url, {
       resourceLimits: { maxOldGenerationSizeMb: Math.max(MEMORIA_MINIMA_MB, limites.memoriaMb) },
       stdout: true,
       stderr: false,
@@ -183,7 +182,7 @@ async function gravarCopia(original: string, bytes: Uint8Array): Promise<string>
   for (let n = 1; n <= 99; n += 1) {
     const destino = NodePath.join(pasta, `${nome}${SUFIXO_REVISAO_PREVIA}${n === 1 ? "" : ` (${n})`}.docx`);
     try {
-      await NodeFS.writeFile(destino, bytes, { flag: "wx" });
+      await NodeFSP.writeFile(destino, bytes, { flag: "wx" });
       return destino;
     } catch (erro) {
       if ((erro as { code?: string }).code !== "EEXIST") throw erro;
@@ -200,62 +199,62 @@ export interface OpcoesAnalise {
 }
 
 export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalise = {}) {
-    const limites = { ...LIMITES, ...opcoes.limites };
-    const url = opcoes.trabalhador ?? URL_TRABALHADOR;
-    const contexto = yield* Effect.context<FontesNormativas | SqlClient.SqlClient>();
-    // A base é montada na primeira análise e reaproveitada (o banco é só de leitura).
-    const base = yield* Effect.cached(
-      montarBase.pipe(
-        Effect.provideContext(contexto),
-        Effect.tapError((erro) => Effect.logError("revisão prévia: base indisponível", erro)),
-      ),
-    );
+  const limites = { ...LIMITES, ...opcoes.limites };
+  const url = opcoes.trabalhador ?? URL_TRABALHADOR;
+  const contexto = yield* Effect.context<FontesNormativas | SqlClient.SqlClient>();
+  // A base é montada na primeira análise e reaproveitada (o banco é só de leitura).
+  const base = yield* Effect.cached(
+    montarBase.pipe(
+      Effect.provideContext(contexto),
+      Effect.tapError((erro) => Effect.logError("revisão prévia: base indisponível", erro)),
+    ),
+  );
 
-    const analisar = Effect.fn("AnalisePpc.analisar")(function* (entrada: EntradaAnalise) {
-      const arquivo = entrada.arquivo;
-      const falha = (motivo: string) => new FalhaRevisaoPpc({ arquivo, motivo });
-      if (!NodePath.isAbsolute(arquivo) || NodePath.extname(arquivo).toLowerCase() !== ".docx")
-        return yield* falha("Escolha um arquivo do Word (.docx).");
-      const info = yield* Effect.tryPromise({
-        try: () => NodeFS.stat(arquivo),
-        catch: () => falha("O arquivo não foi encontrado ou não pode ser lido."),
-      });
-      if (!info.isFile()) return yield* falha("Escolha um arquivo do Word (.docx).");
-      if (info.size > limites.bytesDoArquivo)
-        return yield* falha(
-          `O arquivo tem ${megabytes(info.size)}, acima do limite de ${megabytes(limites.bytesDoArquivo)}. Compacte as imagens no Word (Arquivo > Compactar imagens) e tente de novo.`,
-        );
-      const bytes = yield* Effect.tryPromise({
-        try: () => NodeFS.readFile(arquivo),
-        catch: () => falha("O arquivo não pode ser lido."),
-      });
-      const dados = yield* base.pipe(
-        Effect.mapError(() => falha("A base de normas do Simplifica IF não pôde ser lida. Reinicie o app.")),
-      );
-      const revisao = yield* rodarNoTrabalhador(
-        {
-          // Cópia própria: o buffer é transferido ao Worker, e um `Buffer` do Node pode ser fatia de um pool.
-          bytes: new Uint8Array(bytes),
-          nome: NodePath.basename(arquivo),
-          base: dados,
-          agora: DateTime.formatIso(yield* DateTime.now),
-          cnct: entrada.cnct,
-          forma: entrada.forma,
-        },
-        limites,
-        url,
-        falha,
-      );
-      const arquivoComentado = yield* Effect.tryPromise({
-        try: () => gravarCopia(arquivo, revisao.docx),
-        catch: () =>
-          falha("Não foi possível gravar a cópia comentada na pasta do arquivo. Confira se a pasta aceita gravação."),
-      });
-      const { docx: _, aviso: __, ...resto } = revisao;
-      return { arquivoOriginal: arquivo, arquivoComentado, ...resto } satisfies ResultadoRevisaoPpc;
+  const analisar = Effect.fn("AnalisePpc.analisar")(function* (entrada: EntradaAnalise) {
+    const arquivo = entrada.arquivo;
+    const falha = (motivo: string) => new FalhaRevisaoPpc({ arquivo, motivo });
+    if (!NodePath.isAbsolute(arquivo) || NodePath.extname(arquivo).toLowerCase() !== ".docx")
+      return yield* falha("Escolha um arquivo do Word (.docx).");
+    const info = yield* Effect.tryPromise({
+      try: () => NodeFSP.stat(arquivo),
+      catch: () => falha("O arquivo não foi encontrado ou não pode ser lido."),
     });
+    if (!info.isFile()) return yield* falha("Escolha um arquivo do Word (.docx).");
+    if (info.size > limites.bytesDoArquivo)
+      return yield* falha(
+        `O arquivo tem ${megabytes(info.size)}, acima do limite de ${megabytes(limites.bytesDoArquivo)}. Compacte as imagens no Word (Arquivo > Compactar imagens) e tente de novo.`,
+      );
+    const bytes = yield* Effect.tryPromise({
+      try: () => NodeFSP.readFile(arquivo),
+      catch: () => falha("O arquivo não pode ser lido."),
+    });
+    const dados = yield* base.pipe(
+      Effect.mapError(() => falha("A base de normas do Simplifica IF não pôde ser lida. Reinicie o app.")),
+    );
+    const revisao = yield* rodarNoTrabalhador(
+      {
+        // Cópia própria: o buffer é transferido ao Worker, e um `Buffer` do Node pode ser fatia de um pool.
+        bytes: new Uint8Array(bytes),
+        nome: NodePath.basename(arquivo),
+        base: dados,
+        agora: DateTime.formatIso(yield* DateTime.now),
+        cnct: entrada.cnct,
+        forma: entrada.forma,
+      },
+      limites,
+      url,
+      falha,
+    );
+    const arquivoComentado = yield* Effect.tryPromise({
+      try: () => gravarCopia(arquivo, revisao.docx),
+      catch: () =>
+        falha("Não foi possível gravar a cópia comentada na pasta do arquivo. Confira se a pasta aceita gravação."),
+    });
+    const { docx: _, aviso: __, ...resto } = revisao;
+    return { arquivoOriginal: arquivo, arquivoComentado, ...resto } satisfies ResultadoRevisaoPpc;
+  });
 
-    return AnalisePpc.of({ analisar });
+  return AnalisePpc.of({ analisar });
 });
 
 /** O serviço sobre o `FontesNormativas` e o `SqlClient` do `kb.sqlite` (os do `Leitura` do servidor). */

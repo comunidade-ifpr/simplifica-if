@@ -49,9 +49,9 @@ function RevisaoPpc() {
         <section className="flex flex-col gap-2">
           <h1 className="font-bold text-2xl tracking-tight">Analisar um PPC</h1>
           <p className="max-w-prose text-muted-foreground">
-            Revisão prévia, sem IA: o Simplifica IF confere no seu PPC os critérios que dá para conferir
-            automaticamente e devolve uma cópia do arquivo com comentários do Word nos trechos. O seu arquivo não é
-            alterado. Não é parecer da PROENS.
+            Revisão prévia, sem IA: o Simplifica IF confere no seu PPC os critérios que dá para conferir automaticamente
+            e devolve uma cópia do arquivo com comentários do Word nos trechos. O seu arquivo não é alterado. Não é
+            parecer da PROENS.
           </p>
         </section>
         <Escolha ocupada={estado.fase === "analisando"} aoEscolher={analisar} />
@@ -67,7 +67,13 @@ function RevisaoPpc() {
   );
 }
 
-function Escolha({ ocupada, aoEscolher }: { readonly ocupada: boolean; readonly aoEscolher: (arquivo: string) => void }) {
+function Escolha({
+  ocupada,
+  aoEscolher,
+}: {
+  readonly ocupada: boolean;
+  readonly aoEscolher: (arquivo: string) => void;
+}) {
   const escolherDocx = ponteDesktop()?.escolherDocx;
   const [caminho, setCaminho] = useState("");
   if (escolherDocx !== undefined)
@@ -162,8 +168,11 @@ function Resultado({ resultado }: { readonly resultado: ResultadoRevisaoPpc }) {
           <h3 className="font-semibold">{grupo.tema}</h3>
           {grupo.pendencias.length ? (
             <ul className="flex flex-col gap-3">
-              {grupo.pendencias.map((pendencia, indice) => (
-                <ItemPendencia key={`${pendencia.ficha}-${indice}`} pendencia={pendencia} />
+              {grupo.pendencias.map((pendencia) => (
+                <ItemPendencia
+                  key={`${pendencia.ficha}|${pendencia.mensagem}|${pendencia.trecho ?? ""}`}
+                  pendencia={pendencia}
+                />
               ))}
             </ul>
           ) : null}
@@ -186,7 +195,9 @@ function ItemPendencia({ pendencia }: { readonly pendencia: PendenciaRevisao }) 
   return (
     <li className="flex flex-col gap-1.5 rounded-lg border p-3">
       <div className="flex flex-wrap items-center gap-2">
-        <Badge variant={pendencia.estado === "nao_atende" ? "warning" : "info"}>{ROTULO_ESTADO[pendencia.estado]}</Badge>
+        <Badge variant={pendencia.estado === "nao_atende" ? "warning" : "info"}>
+          {ROTULO_ESTADO[pendencia.estado]}
+        </Badge>
         <span className="text-muted-foreground text-xs">{pendencia.tituloFicha}</span>
       </div>
       <p>{pendencia.mensagem}</p>

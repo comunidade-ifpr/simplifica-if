@@ -150,11 +150,20 @@ const O_QUE_FAZER: Record<string, string> = {
 
 /* ============================================================ curso */
 
-const dentroDoInicio = (markdown: string) => chave(markdown.split("\n").slice(0, 200).join(" ").replace(/[*_#|]/g, " "));
+const dentroDoInicio = (markdown: string) =>
+  chave(
+    markdown
+      .split("\n")
+      .slice(0, 200)
+      .join(" ")
+      .replace(/[*_#|]/g, " "),
+  );
 
 /** O curso do CNCT cuja denominação aparece no início do PPC (a mais longa, se houver várias). */
 export function identificarCnct(markdown: string, cncts: readonly CursoCnct[]): CursoCnct | null {
-  const inicio = ` ${dentroDoInicio(markdown).replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ")} `;
+  const inicio = ` ${dentroDoInicio(markdown)
+    .replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")} `;
   let melhor: CursoCnct | null = null;
   for (const curso of cncts) {
     const alvo = chave(curso.denominacao)
@@ -242,9 +251,11 @@ type ItemInterno = Omit<PendenciaRevisao, "noDocumento"> & { trechos: string[] }
 
 function itensDaPreConferencia(resultado: PreConferencia, registro: Registro, base: BaseRevisaoPrevia): ItemInterno[] {
   const fontes = (links: readonly Fonte[]) =>
-    links.flatMap((link) => fonteLegivel(link, registro, base) ?? []).filter((f, i, todas) => {
-      return todas.findIndex((g) => g.rotulo === f.rotulo) === i;
-    });
+    links
+      .flatMap((link) => fonteLegivel(link, registro, base) ?? [])
+      .filter((f, i, todas) => {
+        return todas.findIndex((g) => g.rotulo === f.rotulo) === i;
+      });
   const itens: ItemInterno[] = resultado.triagem.map((achado) => ({
     ficha: "TRIAGEM",
     tituloFicha: achado.regra === "texto-dirigido-a-ia" ? "Texto dirigido a IA" : "Seções do modelo",
@@ -280,7 +291,11 @@ function itensDaPreConferencia(resultado: PreConferencia, registro: Registro, ba
       });
     }
     // Ficha sem apontamento mas sem "atende" (o curso não foi identificado no CNCT): um item só.
-    if (!ficha.apontamentos.length && (ficha.estado === "a_conferir" || ficha.estado === "nao_atende") && ficha.mensagem)
+    if (
+      !ficha.apontamentos.length &&
+      (ficha.estado === "a_conferir" || ficha.estado === "nao_atende") &&
+      ficha.mensagem
+    )
       itens.push({
         ...comum,
         estado: ficha.estado,
@@ -295,7 +310,9 @@ function itensDaPreConferencia(resultado: PreConferencia, registro: Registro, ba
 }
 
 /** Texto do comentário de uma pendência, para quem lê no Word. */
-export function textoDoComentario(item: Pick<PendenciaRevisao, "estado" | "mensagem" | "oQueFazer" | "fontes" | "ficha">) {
+export function textoDoComentario(
+  item: Pick<PendenciaRevisao, "estado" | "mensagem" | "oQueFazer" | "fontes" | "ficha">,
+) {
   const linhas = [
     item.estado === "nao_atende" ? `Pendência: ${item.mensagem}` : `Confira: ${item.mensagem}`,
     item.estado === "nao_atende" ? `O que fazer: ${item.oQueFazer}` : `Se for o caso: ${item.oQueFazer}`,
@@ -378,7 +395,14 @@ export function revisarDocx(
     ...item,
     noDocumento: !ancoradas.has(indice) ? "so-na-lista" : ancoradas.get(indice) ? "no-inicio" : "no-trecho",
   }));
-  const aviso = textoDoAviso({ agora: opcoes.agora, dataBase: base.dataBase, conferidos, totalCriterios, curso, pendencias });
+  const aviso = textoDoAviso({
+    agora: opcoes.agora,
+    dataBase: base.dataBase,
+    conferidos,
+    totalCriterios,
+    curso,
+    pendencias,
+  });
   const final = comentarDocx(comentado.docx, [{ trechos: [], texto: aviso, noInicioSeAusente: true }], comentar);
   const criterios: CriterioConferido[] = resultado.fichas.map((ficha) => {
     const ordemTema = temaDaFicha(ficha.ficha, base);

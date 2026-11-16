@@ -54,12 +54,18 @@ describe("revisarDocx", () => {
     const ordem = revisao.pendencias.map((p) => p.ordemTema);
     expect(ordem).toEqual([...ordem].sort((a, b) => a - b));
     const revogada = revisao.pendencias.find((p) => p.ficha === "CT-SUP-12")!;
-    expect(revogada).toMatchObject({ estado: "nao_atende", noDocumento: "no-trecho", trecho: "Resolução CNE/CP nº 1/2021" });
+    expect(revogada).toMatchObject({
+      estado: "nao_atende",
+      noDocumento: "no-trecho",
+      trecho: "Resolução CNE/CP nº 1/2021",
+    });
     expect(revogada.tema).toBe("Fundamentos legais e normativos");
     const aee = revisao.pendencias.find((p) => p.ficha === "CT-CURR-22")!;
     expect(aee).toMatchObject({ noDocumento: "no-trecho", trecho: "Atendimento Educacional Especializado" });
     // Ausência (sem trecho): no início do documento.
-    expect(revisao.pendencias.find((p) => p.mensagem.includes("não menciona o Catálogo"))!.noDocumento).toBe("no-inicio");
+    expect(revisao.pendencias.find((p) => p.mensagem.includes("não menciona o Catálogo"))!.noDocumento).toBe(
+      "no-inicio",
+    );
   });
 
   test("os comentários: autor, aviso no título, 'Confira:' para o que é a conferir, fontes legíveis no Word", () => {

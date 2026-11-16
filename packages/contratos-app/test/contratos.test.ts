@@ -1,5 +1,5 @@
 /**
- * O contrato do app: os métodos do `GrupoApp` (os quatro grupos, sem colisão de nome) e os envelopes da
+ * O contrato do app: os métodos do `GrupoApp` (os cinco grupos, sem colisão de nome) e os envelopes da
  * partida do servidor.
  */
 import { assert, describe, it } from "@effect/vitest";
@@ -12,15 +12,16 @@ import {
   GrupoConversa,
   GrupoLeitura,
   GrupoProviders,
+  GrupoRevisaoPpc,
   GrupoSkills,
 } from "../src/contratos.ts";
 
 const decodificarEnvelope = Schema.decodeUnknownEffect(Schema.fromJsonString(EnvelopePartida));
 
 describe("contratos do app", () => {
-  it("o GrupoApp tem os métodos dos quatro grupos", () => {
+  it("o GrupoApp tem os métodos dos cinco grupos", () => {
     const metodos = [...GrupoApp.requests.keys()];
-    const partes = [GrupoProviders, GrupoConversa, GrupoSkills, GrupoLeitura].map((grupo) => [
+    const partes = [GrupoProviders, GrupoConversa, GrupoSkills, GrupoRevisaoPpc, GrupoLeitura].map((grupo) => [
       ...grupo.requests.keys(),
     ]);
     assert.strictEqual(metodos.length, partes.flat().length);
@@ -34,6 +35,7 @@ describe("contratos do app", () => {
       "conversa.interromper",
       "conversa.encerrar",
       "skills.listar",
+      "revisaoPpc.analisar",
       "fichaNorma",
       "sobreABase",
     ]);

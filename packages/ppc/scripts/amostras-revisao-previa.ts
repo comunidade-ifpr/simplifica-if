@@ -40,13 +40,20 @@ const casos: Array<[string, Uint8Array]> = [
   ["2 Controle de alterações", ppcSintetico({ controleDeAlteracoes: true })],
   [
     "3 Já comentado por outra pessoa",
-    comentarDocx(ppcSintetico(), [{ trechos: ["Formar técnicos em agropecuária"], texto: "Rever a redação do objetivo." }], {
-      data: "2026-11-10T09:00:00Z",
-      autor: "Maria Coordenadora",
-      iniciais: "MC",
-    }).docx,
+    comentarDocx(
+      ppcSintetico(),
+      [{ trechos: ["Formar técnicos em agropecuária"], texto: "Rever a redação do objetivo." }],
+      {
+        data: "2026-11-10T09:00:00Z",
+        autor: "Maria Coordenadora",
+        iniciais: "MC",
+      },
+    ).docx,
   ],
-  ["4 Caixa de texto com instrução para IA", montarDocx({ corpo: corpoPpcSintetico() + tabela([linha([celula(caixa)])]) })],
+  [
+    "4 Caixa de texto com instrução para IA",
+    montarDocx({ corpo: corpoPpcSintetico() + tabela([linha([celula(caixa)])]) }),
+  ],
 ];
 
 for (const [nome, original] of casos) {

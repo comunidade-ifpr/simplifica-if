@@ -162,7 +162,12 @@ describe("comentarDocx", () => {
           '<w:ins w:id="91" w:author="Ana" w:date="2026-11-01T10:00:00Z"><w:r><w:t>Resolução CNE/CP nº 1/2021</w:t></w:r></w:ins>' +
           run(" e o CNCT."),
       ) +
-      par(run("Ver a ") + run("Resolução CNE/CP", { negrito: true }) + hyperlink(" nº 2/2026", 'r:id="rId9"') + run(" e anexos.")) +
+      par(
+        run("Ver a ") +
+          run("Resolução CNE/CP", { negrito: true }) +
+          hyperlink(" nº 2/2026", 'r:id="rId9"') +
+          run(" e anexos."),
+      ) +
       par("Lei nº\u00a09.394 – LDB, com as alterações."),
   });
 
@@ -220,7 +225,7 @@ describe("comentarDocx", () => {
   test("documento com comentários de outra pessoa (partes do Word moderno): os dela ficam intactos", () => {
     const partes = unzipSync(PPC);
     const documento = strFromU8(partes["word/document.xml"]!).replace(
-      "<w:t xml:space=\"preserve\">Consulte o </w:t>",
+      '<w:t xml:space="preserve">Consulte o </w:t>',
       '<w:t xml:space="preserve">Consulte o </w:t></w:r><w:commentRangeStart w:id="7"/><w:r><w:t xml:space="preserve">perfil</w:t></w:r><w:commentRangeEnd w:id="7"/><w:r><w:commentReference w:id="7"/>',
     );
     const W14 = 'xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"';

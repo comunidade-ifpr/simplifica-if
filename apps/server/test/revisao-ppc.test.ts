@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off -- teste: arquivos temporários, o banco de fixture e o relógio do laço de eventos
+// @effect-diagnostics nodeBuiltinImport:off globalTimersInEffect:off -- teste: arquivos temporários, o banco de fixture e o relógio do laço de eventos do Node (o que o Worker não pode bloquear)
 /**
  * A revisão prévia sem IA no servidor (M1.11, etapa 3): o RPC `revisaoPpc.analisar` de ponta a ponta,
  * com o Worker de verdade, sobre o banco de fixture (a base vem só do `kb.sqlite`, nada do checkout):
@@ -141,7 +141,11 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.analisar", (it) => {
     Effect.gen(function* () {
       const { urlRpc } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
-      for (const arquivo of ["relativo.docx", gravar("notas.txt", strToU8("x")), NodePath.join(pasta, "nao-existe.docx")]) {
+      for (const arquivo of [
+        "relativo.docx",
+        gravar("notas.txt", strToU8("x")),
+        NodePath.join(pasta, "nao-existe.docx"),
+      ]) {
         const erro = yield* Effect.flip(rpc["revisaoPpc.analisar"]({ arquivo }));
         assert.isTrue(ehFalhaRevisaoPpc(erro));
       }
@@ -167,9 +171,7 @@ const analisarCom = (limites: Partial<AnalisePpc.Limites>, arquivo: string) =>
     const analise = yield* AnalisePpc.AnalisePpc;
     return yield* Effect.flip(analise.analisar({ arquivo }));
   }).pipe(
-    Effect.provide(
-      AnalisePpc.layer({ limites }).pipe(Layer.provide(Layers.layerSomenteLeitura({ caminho: banco }))),
-    ),
+    Effect.provide(AnalisePpc.layer({ limites }).pipe(Layer.provide(Layers.layerSomenteLeitura({ caminho: banco })))),
   );
 
 layer(NodeServices.layer, { excludeTestServices: true })("limites do Worker", (it) => {
@@ -180,21 +182,23 @@ layer(NodeServices.layer, { excludeTestServices: true })("limites do Worker", (i
     }),
   );
 
-  it.effect("estouro de memória do Worker vira mensagem, e outra análise funciona depois", () =>
-    Effect.gen(function* () {
-      // 60 mil parágrafos (170 kB compactados) não cabem em 64 MB de heap; cabem nos 512 MB do padrão.
-      const extenso = Array.from({ length: 60_000 }, (_, i) => par(`Parágrafo ${i} do texto do curso.`)).join("");
-      const grande = gravar("memoria.docx", montarDocx({ corpo: corpoPpcSintetico() + extenso }));
-      // Abaixo do piso (2 MB abortaria o processo inteiro): vale o piso de 64 MB.
-      const erro = yield* analisarCom({ memoriaMb: 2 }, grande);
-      assert.match(erro.message, /memória demais/);
-      const arquivo = gravar("normal.docx", ppcSintetico());
-      const ok = yield* AnalisePpc.AnalisePpc.pipe(
-        Effect.flatMap((analise) => analise.analisar({ arquivo })),
-        Effect.provide(AnalisePpc.layer().pipe(Layer.provide(Layers.layerSomenteLeitura({ caminho: banco })))),
-      );
-      assert.isAbove(ok.pendencias.length, 0);
-    }),
+  it.effect(
+    "estouro de memória do Worker vira mensagem, e outra análise funciona depois",
+    () =>
+      Effect.gen(function* () {
+        // 60 mil parágrafos (170 kB compactados) não cabem em 64 MB de heap; cabem nos 512 MB do padrão.
+        const extenso = Array.from({ length: 60_000 }, (_, i) => par(`Parágrafo ${i} do texto do curso.`)).join("");
+        const grande = gravar("memoria.docx", montarDocx({ corpo: corpoPpcSintetico() + extenso }));
+        // Abaixo do piso (2 MB abortaria o processo inteiro): vale o piso de 64 MB.
+        const erro = yield* analisarCom({ memoriaMb: 2 }, grande);
+        assert.match(erro.message, /memória demais/);
+        const arquivo = gravar("normal.docx", ppcSintetico());
+        const ok = yield* AnalisePpc.AnalisePpc.pipe(
+          Effect.flatMap((analise) => analise.analisar({ arquivo })),
+          Effect.provide(AnalisePpc.layer().pipe(Layer.provide(Layers.layerSomenteLeitura({ caminho: banco })))),
+        );
+        assert.isAbove(ok.pendencias.length, 0);
+      }),
     60_000,
   );
 

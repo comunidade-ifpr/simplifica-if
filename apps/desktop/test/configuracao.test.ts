@@ -191,8 +191,12 @@ describe("revisão prévia: o que a interface pode abrir", () => {
   test("abre a cópia comentada de um arquivo escolhido, e nada mais", () => {
     const pasta = "/Users/ana/PPCs/";
     expect(copiaComentadaPermitida(`${pasta}PPC Agro - revisão prévia (Simplifica IF).docx`, escolhidos)).toBeDefined();
-    expect(copiaComentadaPermitida(`${pasta}PPC Agro - revisão prévia (Simplifica IF) (2).docx`, escolhidos)).toBeDefined();
-    expect(copiaComentadaPermitida(`${pasta}PPC Agro - revisão prévia (Simplifica IF) (99).docx`, escolhidos)).toBeDefined();
+    expect(
+      copiaComentadaPermitida(`${pasta}PPC Agro - revisão prévia (Simplifica IF) (2).docx`, escolhidos),
+    ).toBeDefined();
+    expect(
+      copiaComentadaPermitida(`${pasta}PPC Agro - revisão prévia (Simplifica IF) (99).docx`, escolhidos),
+    ).toBeDefined();
     for (const recusado of [
       `${pasta}PPC Agro.docx`, // o original
       `${pasta}PPC Agro - revisão prévia (Simplifica IF) (1).docx`,

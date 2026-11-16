@@ -78,7 +78,10 @@ export function baseRevisaoDeArquivos(raiz: string = raizRepositorio()): BaseRev
   ).topicos.map((t) => ({ id: t.id, fichas: t.fichas ?? [] }));
   const vigencia = NodeFS.readFileSync(NodePath.join(raiz, "base-conhecimento/config/vigencia.yaml"), "utf8");
   const urls: Record<string, string> = {};
-  for (const entrada of lerJson(NodePath.join(raiz, "base-conhecimento/manifest.json")) as { id: string; fonte?: string }[])
+  for (const entrada of lerJson(NodePath.join(raiz, "base-conhecimento/manifest.json")) as {
+    id: string;
+    fonte?: string;
+  }[])
     if (entrada.fonte?.startsWith("http")) urls[entrada.id] = entrada.fonte;
   return {
     normas: registro.entradas,
