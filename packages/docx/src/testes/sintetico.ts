@@ -43,12 +43,22 @@ export function run(texto: string, formato: Formato = {}): string {
   return `<w:r>${propriedades ? `<w:rPr>${propriedades}</w:rPr>` : ""}${conteudo}</w:r>`;
 }
 
-export type OpcoesParagrafo = Formato & { estilo?: string; recuo?: number };
+export type OpcoesParagrafo = Formato & {
+  estilo?: string;
+  recuo?: number;
+  /** Numeração automática (`w:numPr`): id da numeração (veja `NUMERACAO_PADRAO`) e nível. */
+  numeracao?: { id: number; nivel?: number };
+};
 
 /** Parágrafo de um texto só (com a formatação dada) ou de XML de runs já montado. */
 export function par(conteudo: string, opcoes: OpcoesParagrafo = {}): string {
-  const { estilo, recuo, ...formato } = opcoes;
-  const propriedades = (estilo ? `<w:pStyle w:val="${estilo}"/>` : "") + (recuo ? `<w:ind w:left="${recuo}"/>` : "");
+  const { estilo, recuo, numeracao, ...formato } = opcoes;
+  const propriedades =
+    (estilo ? `<w:pStyle w:val="${estilo}"/>` : "") +
+    (numeracao
+      ? `<w:numPr><w:ilvl w:val="${numeracao.nivel ?? 0}"/><w:numId w:val="${numeracao.id}"/></w:numPr>`
+      : "") +
+    (recuo ? `<w:ind w:left="${recuo}"/>` : "");
   const runs = conteudo.startsWith("<") ? conteudo : run(conteudo, formato);
   return `<w:p>${propriedades ? `<w:pPr>${propriedades}</w:pPr>` : ""}${runs}</w:p>`;
 }
@@ -114,6 +124,22 @@ const ESTILOS_PADRAO =
   `<w:style w:type="character" w:styleId="Forte"><w:name w:val="Strong"/></w:style>` +
   `</w:styles>`;
 
+const nivelDeNumeracao = (nivel: number, formato: string, texto: string) =>
+  `<w:lvl w:ilvl="${nivel}"><w:start w:val="1"/><w:numFmt w:val="${formato}"/><w:lvlText w:val="${texto}"/></w:lvl>`;
+
+/**
+ * `word/numbering.xml` para os testes: numeração 1 com marcadores, 2 decimal com alíneas no segundo
+ * nível, 3 em romanos e 4 que redefine o primeiro nível da 2 como marcador (`w:lvlOverride`).
+ */
+export const NUMERACAO_PADRAO =
+  `<w:abstractNum w:abstractNumId="0">${nivelDeNumeracao(0, "bullet", "●")}${nivelDeNumeracao(1, "bullet", "○")}</w:abstractNum>` +
+  `<w:abstractNum w:abstractNumId="1">${nivelDeNumeracao(0, "decimal", "%1.")}${nivelDeNumeracao(1, "lowerLetter", "%2)")}</w:abstractNum>` +
+  `<w:abstractNum w:abstractNumId="2">${nivelDeNumeracao(0, "upperRoman", "%1.")}</w:abstractNum>` +
+  `<w:num w:numId="1"><w:abstractNumId w:val="0"/></w:num>` +
+  `<w:num w:numId="2"><w:abstractNumId w:val="1"/></w:num>` +
+  `<w:num w:numId="3"><w:abstractNumId w:val="2"/></w:num>` +
+  `<w:num w:numId="4"><w:abstractNumId w:val="1"/><w:lvlOverride w:ilvl="0">${nivelDeNumeracao(0, "bullet", "–")}</w:lvlOverride></w:num>`;
+
 const PROPRIEDADES_PADRAO =
   `<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" ` +
   `xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" ` +
@@ -134,6 +160,8 @@ export type PartesDocx = {
   midia?: Record<string, Uint8Array>;
   /** `false` omite o `docProps/core.xml` (como o Google Docs). */
   propriedades?: boolean;
+  /** Conteúdo de `word/numbering.xml` (por exemplo `NUMERACAO_PADRAO`); sem ele, a parte não existe. */
+  numeracao?: string;
 };
 
 /** Empacota o documento num `.docx`. */
@@ -156,6 +184,9 @@ export function montarDocx(partes: PartesDocx): Uint8Array {
         (comPropriedades
           ? `<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>`
           : "") +
+        (partes.numeracao
+          ? `<Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>`
+          : "") +
         `</Types>`,
     ),
     "_rels/.rels": relacoes([
@@ -168,6 +199,7 @@ export function montarDocx(partes: PartesDocx): Uint8Array {
     "word/styles.xml": xml(ESTILOS_PADRAO),
     "word/_rels/document.xml.rels": relacoes([
       `<Relationship Id="rIdEstilos" Type="${REL}/styles" Target="styles.xml"/>`,
+      partes.numeracao ? `<Relationship Id="rIdNumeracao" Type="${REL}/numbering" Target="numbering.xml"/>` : "",
       ...(partes.relacoes ?? []).map(
         (item) =>
           `<Relationship Id="${item.id}" Type="${REL}/${item.tipo}" Target="${escaparXml(item.alvo)}"${item.externa ? ' TargetMode="External"' : ""}/>`,
@@ -175,6 +207,7 @@ export function montarDocx(partes: PartesDocx): Uint8Array {
     ]),
   };
   if (comPropriedades) arquivos["docProps/core.xml"] = xml(PROPRIEDADES_PADRAO);
+  if (partes.numeracao) arquivos["word/numbering.xml"] = xml(`<w:numbering ${NS}>${partes.numeracao}</w:numbering>`);
   for (const [nome, bytes] of Object.entries(partes.midia ?? {})) arquivos[`word/media/${nome}`] = bytes;
   // Data fixa nas entradas do ZIP, para o mesmo documento dar sempre os mesmos bytes.
   return zipSync(arquivos, { mtime: "2026-01-01T12:00:00Z" });

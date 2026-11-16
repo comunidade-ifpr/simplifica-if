@@ -10,8 +10,16 @@
  * As URIs do formato "Strict Open XML" (a outra opção de DOCX do "Salvar como" do Word) levam aos
  * mesmos prefixos: o conteúdo é o mesmo, só o namespace muda.
  */
-import { type ChildNode, Element, isCDATA, isTag, isText } from "domhandler";
-import { parseDocument } from "htmlparser2";
+import { type ChildNode, DomHandler, Element, isCDATA, isTag, isText } from "domhandler";
+import { Parser } from "htmlparser2";
+import { ErroDocx } from "./erro.ts";
+
+/**
+ * Profundidade máxima de elementos. Um documento real fica na casa das dezenas (tabela em caixa
+ * de texto em tabela); o limite protege as funções recursivas deste leitor de um arquivo montado
+ * para estourar a pilha.
+ */
+export const PROFUNDIDADE_MAXIMA = 256;
 
 const PREFIXO_DA_URI: Record<string, string> = {
   "http://schemas.openxmlformats.org/wordprocessingml/2006/main": "w",
@@ -78,11 +86,48 @@ function decodificar(bytes: Uint8Array): string {
   return new TextDecoder("utf-8").decode(bytes);
 }
 
-/** Elemento raiz de um XML, com nomes canônicos; `null` quando não há elemento. */
-export function analisarXml(fonte: Uint8Array | string): Element | null {
+/**
+ * Elemento raiz de um XML, com nomes canônicos; `null` quando não há elemento. `parte` é o nome
+ * usado nas mensagens de erro.
+ *
+ * O `htmlparser2` é tolerante: fecha sozinho o que ficou aberto e segue em frente. Aqui isso é
+ * erro (`ErroDocx`): um XML truncado viraria um documento pela metade, convertido sem aviso.
+ * Entidades declaradas no próprio arquivo (`<!ENTITY …>`) não são expandidas nem buscadas.
+ */
+export function analisarXml(fonte: Uint8Array | string, parte = "XML"): Element | null {
   const texto = typeof fonte === "string" ? fonte : decodificar(fonte);
-  const documento = parseDocument(texto, { xmlMode: true, decodeEntities: true });
-  const raiz = documento.children.find((no): no is Element => isTag(no));
+  const arvore = new DomHandler();
+  let profundidade = 0;
+  const analisador: Parser = new Parser(
+    {
+      onparserinit: (parser) => arvore.onparserinit(parser),
+      onopentag: (nome, atributos) => {
+        profundidade += 1;
+        if (profundidade > PROFUNDIDADE_MAXIMA) {
+          throw new ErroDocx(`O arquivo DOCX não pôde ser lido: ${parte} tem elementos aninhados demais.`);
+        }
+        arvore.onopentag(nome, atributos);
+      },
+      onclosetag: (_nome, implicito) => {
+        // O analisador marca como implícito o fechamento da tag autofechada (`<w:b/>`), o do
+        // elemento que ficou aberto até o fim e o do que foi fechado pela tag de um ancestral. Só
+        // o primeiro é XML bem formado, e é o único que termina em `/>`.
+        const autofechada = texto[analisador.endIndex] === ">" && texto[analisador.endIndex - 1] === "/";
+        if (implicito && !autofechada) {
+          throw new ErroDocx(`O arquivo DOCX está corrompido: ${parte} não é um XML bem formado.`);
+        }
+        profundidade -= 1;
+        arvore.onclosetag();
+      },
+      ontext: (dados) => arvore.ontext(dados),
+      oncdatastart: () => arvore.oncdatastart(),
+      oncdataend: () => arvore.oncdataend(),
+      onend: () => arvore.onend(),
+    },
+    { xmlMode: true, decodeEntities: true },
+  );
+  analisador.end(texto);
+  const raiz = arvore.root.children.find((no): no is Element => isTag(no));
   if (!raiz) return null;
   canonizar(raiz, ESCOPO_INICIAL);
   return raiz;

@@ -13,7 +13,7 @@
  * O que ele lê diferente, de propósito, está em `Fidelidade`.
  */
 import { aparar } from "@simplifica-if/kb/texto";
-import type { Element } from "domhandler";
+import { Element as ElementoDom, type Element } from "domhandler";
 import * as DateTime from "effect/DateTime";
 import type {
   BlocoOoxml,
@@ -29,9 +29,11 @@ import type {
 } from "./modelo.ts";
 import {
   ErroDocx,
+  type LimitesDoPacote,
   PacoteOoxml,
   RELACAO_DOCUMENTO,
   RELACAO_ESTILOS,
+  RELACAO_NUMERACAO,
   RELACAO_PROPRIEDADES,
   type Relacao,
 } from "./pacote.ts";
@@ -51,7 +53,11 @@ import { atributo, descendente, descendentes, filho, filhos, filhosElementos, te
  */
 export type Fidelidade = "documento" | "python-docx";
 
-export type OpcoesLeitura = { fidelidade?: Fidelidade };
+export type OpcoesLeitura = {
+  fidelidade?: Fidelidade;
+  /** Limites de leitura do pacote; padrão: `LIMITES_PADRAO`. */
+  limites?: Partial<LimitesDoPacote>;
+};
 
 /** Elementos que só embrulham conteúdo em linha; o conteúdo de `w:sdt` fica em `w:sdtContent`. */
 const ENVOLTORIOS = new Set(["w:ins", "w:moveTo", "w:smartTag", "w:sdt", "w:sdtContent", "w:fldSimple", "w:customXml"]);
@@ -73,18 +79,26 @@ const EMU_POR_UNIDADE: Record<string, number> = {
   pi: 152400,
 };
 
+/** Arredonda para o inteiro mais próximo, com o meio indo para o par (como o `round` do Python). */
+function arredondar(valor: number): number {
+  const piso = Math.floor(valor);
+  const resto = valor - piso;
+  if (resto !== 0.5) return Math.round(valor);
+  return piso % 2 === 0 ? piso : piso + 1;
+}
+
 /** Medida com unidade (`0.5in`, `12pt`) em EMU. */
 function emuDeMedida(valor: string): number | null {
   const fator = EMU_POR_UNIDADE[valor.slice(-2)];
   const quantidade = Number(valor.slice(0, -2));
-  return fator === undefined || Number.isNaN(quantidade) ? null : Math.round(quantidade * fator);
+  return fator === undefined || Number.isNaN(quantidade) ? null : arredondar(quantidade * fator);
 }
 
 /** `w:ind/@w:left`: vigésimos de ponto, ou medida com unidade. */
 function emuDeTwips(valor: string): number | null {
   if (/[imp]/.test(valor)) return emuDeMedida(valor);
   const twips = Number(valor);
-  return Number.isNaN(twips) ? null : Math.trunc(Math.round(twips) * 635);
+  return Number.isNaN(twips) ? null : Math.trunc(arredondar(twips) * 635);
 }
 
 /** `w:sz/@w:val`: meios pontos, ou medida com unidade; devolve pontos. */
@@ -96,6 +110,21 @@ function pontosDeMeiosPontos(valor: string): number | null {
 function inteiro(valor: string | null, padrao: number): number {
   const numero = valor === null ? Number.NaN : Number.parseInt(valor, 10);
   return Number.isNaN(numero) ? padrao : numero;
+}
+
+/** Colunas de uma tabela do Word: o formato não admite mais que 63. */
+const COLUNAS_MAXIMAS = 63;
+/** Células numa linha, contadas as de tabelas aninhadas. Acima disso o arquivo não é um documento. */
+const CELULAS_MAXIMAS_POR_LINHA = 1024;
+/** Posições da grade de uma tabela (células vezes colunas ocupadas). */
+const GRADE_MAXIMA = 2_000_000;
+
+/**
+ * Número de colunas lido do arquivo, preso à faixa válida. Um `gridSpan` de dois bilhões num
+ * arquivo de menos de 1 KB faria a grade da tabela esgotar a memória.
+ */
+function colunasValidas(valor: string | null, padrao: number, minimo: number): number {
+  return Math.min(Math.max(inteiro(valor, padrao), minimo), COLUNAS_MAXIMAS);
 }
 
 /** Propriedade liga/desliga (`w:b`, `w:i`, `w:strike`): presente sem valor é ligada. */
@@ -113,7 +142,76 @@ type Contexto = {
   estilos: Map<string, string | null>;
   /** Nome do estilo de parágrafo padrão; `undefined` quando o documento não define um. */
   estiloPadrao: string | null | undefined;
+  /** Formato do marcador (`w:numFmt`) de cada nível de cada numeração (`w:num`), por id. */
+  numeracoes: Map<string, Map<number, string>>;
 };
+
+/** Alterações controladas que removem conteúdo: ficam fora do texto que o Word mostra. */
+const REMOVIDOS = new Set(["w:del", "w:moveFrom"]);
+/** Envoltórios de blocos (parágrafos, linhas e células). */
+const ENVOLTORIOS_DE_BLOCO = new Set(["w:sdt", "w:sdtContent", "w:customXml"]);
+
+/** Descendentes com o nome dado, sem entrar nas subárvores dos elementos de `barrados`. */
+function descendentesFora(elemento: Element, nome: string, barrados: ReadonlySet<string>): Element[] {
+  const saida: Element[] = [];
+  const visitar = (no: Element): void => {
+    for (const item of filhosElementos(no)) {
+      if (barrados.has(item.name)) continue;
+      if (item.name === nome) saida.push(item);
+      visitar(item);
+    }
+  };
+  visitar(elemento);
+  return saida;
+}
+
+/** Filhos com o nome dado, contando os que estão dentro de envoltórios de bloco. */
+function filhosComEnvoltorios(elemento: Element, nome: string): Element[] {
+  const saida: Element[] = [];
+  for (const item of filhosElementos(elemento)) {
+    if (item.name === nome) saida.push(item);
+    else if (ENVOLTORIOS_DE_BLOCO.has(item.name)) saida.push(...filhosComEnvoltorios(item, nome));
+  }
+  return saida;
+}
+
+// ---------------------------------------------------------------- numeração
+
+function lerNumeracoes(raiz: Element | null): Map<string, Map<number, string>> {
+  const niveis = (recipiente: Element, base?: Map<number, string>) => {
+    const mapa = new Map(base);
+    for (const nivel of descendentesFora(recipiente, "w:lvl", new Set())) {
+      const formato = filho(nivel, "w:numFmt");
+      const valor = formato ? atributo(formato, "w:val") : null;
+      if (valor) mapa.set(inteiro(atributo(nivel, "w:ilvl"), 0), valor);
+    }
+    return mapa;
+  };
+  const abstratas = new Map<string, Map<number, string>>();
+  for (const abstrata of raiz ? filhos(raiz, "w:abstractNum") : []) {
+    abstratas.set(atributo(abstrata, "w:abstractNumId") ?? "", niveis(abstrata));
+  }
+  const numeracoes = new Map<string, Map<number, string>>();
+  for (const numeracao of raiz ? filhos(raiz, "w:num") : []) {
+    const referencia = filho(numeracao, "w:abstractNumId");
+    const base = abstratas.get((referencia && atributo(referencia, "w:val")) ?? "");
+    // Os níveis redefinidos na própria numeração (`w:lvlOverride`) prevalecem sobre os da abstrata.
+    numeracoes.set(atributo(numeracao, "w:numId") ?? "", niveis(numeracao, base));
+  }
+  return numeracoes;
+}
+
+function lerNumeracao(propriedades: Element | null, contexto: Contexto): ParagrafoOoxml["numeracao"] {
+  const numeracao = contexto.fidelidade === "documento" && propriedades ? filho(propriedades, "w:numPr") : null;
+  if (!numeracao) return null;
+  const id = filho(numeracao, "w:numId");
+  const nivel = filho(numeracao, "w:ilvl");
+  // `numId` 0 desliga a numeração herdada do estilo.
+  const niveis = contexto.numeracoes.get((id && atributo(id, "w:val")) ?? "0");
+  if (!niveis) return null;
+  const indice = nivel ? inteiro(atributo(nivel, "w:val"), 0) : 0;
+  return { nivel: indice, formato: niveis.get(indice) ?? "decimal" };
+}
 
 // ---------------------------------------------------------------- estilos
 
@@ -226,7 +324,12 @@ function imagemVml(recipiente: Element, contexto: Contexto): FiguraOoxml | null 
 }
 
 function lerFigura(paragrafo: Element, contexto: Contexto): FiguraOoxml | null {
-  const desenho = descendente(paragrafo, "w:drawing");
+  // No modo `documento`, a figura apagada com o controle de alterações ligado não conta.
+  const achar = (nome: string) =>
+    contexto.fidelidade === "documento"
+      ? (descendentesFora(paragrafo, nome, REMOVIDOS)[0] ?? null)
+      : descendente(paragrafo, nome);
+  const desenho = achar("w:drawing");
   if (desenho) {
     const blip = descendente(desenho, "a:blip");
     if (!blip) return { tipo: "forma", origem: "drawing" };
@@ -249,13 +352,13 @@ function lerFigura(paragrafo: Element, contexto: Contexto): FiguraOoxml | null {
       alturaEmu: medida("cy"),
     };
   }
-  const legado = descendente(paragrafo, "w:pict");
+  const legado = achar("w:pict");
   if (legado) {
     const imagem = contexto.fidelidade === "documento" ? imagemVml(legado, contexto) : null;
     return imagem ?? { tipo: "forma", origem: "vml" };
   }
   // Objeto embutido (OLE): a prévia é uma imagem legada, em geral EMF ou WMF.
-  const objeto = contexto.fidelidade === "documento" ? descendente(paragrafo, "w:object") : null;
+  const objeto = contexto.fidelidade === "documento" ? achar("w:object") : null;
   return objeto ? imagemVml(objeto, contexto) : null;
 }
 
@@ -272,45 +375,90 @@ function lerParagrafo(paragrafo: Element, contexto: Contexto, emControle: boolea
     estilo: (conhecido ? contexto.estilos.get(idEstilo!) : contexto.estiloPadrao) ?? null,
     recuoEsquerdoEmu: esquerda === null ? null : emuDeTwips(esquerda),
     itens: lerItens(paragrafo, contexto),
+    numeracao: lerNumeracao(propriedades, contexto),
     figura: emControle ? null : lerFigura(paragrafo, contexto),
   };
 }
 
 // ---------------------------------------------------------------- tabelas
 
+/** O que não entra no texto profundo no modo `documento`: o removido e a versão de compatibilidade. */
+const FORA_DO_TEXTO = new Set([...REMOVIDOS, "mc:Fallback"]);
+
+/** Parágrafos não vazios de toda a célula (com os de tabelas aninhadas e caixas de texto). */
+function textoProfundo(celula: Element, contexto: Contexto): string {
+  const documento = contexto.fidelidade === "documento";
+  const paragrafos = documento ? descendentesFora(celula, "w:p", FORA_DO_TEXTO) : descendentes(celula, "w:p");
+  const textos: string[] = [];
+  for (const paragrafo of paragrafos) {
+    const texto = aparar(
+      documento
+        ? textoDosItens(paragrafo, contexto)
+        : descendentes(paragrafo, "w:t")
+            .map((item) => textoInicial(item))
+            .join(""),
+    );
+    if (texto) textos.push(texto);
+  }
+  return textos.join("\n");
+}
+
+/** A célula é da linha, só que embrulhada: entre as duas há apenas envoltórios de bloco. */
+function ehEmbrulhada(celula: Element, linha: Element): boolean {
+  let pai = celula.parent;
+  if (pai === linha) return false;
+  while (pai && pai !== linha) {
+    if (!(pai instanceof ElementoDom) || !ENVOLTORIOS_DE_BLOCO.has(pai.name)) return false;
+    pai = pai.parent;
+  }
+  return pai === linha;
+}
+
 function lerCelula(celula: Element, linha: Element, contexto: Contexto): CelulaOoxml {
+  const documento = contexto.fidelidade === "documento";
   const propriedades = filho(celula, "w:tcPr");
   const vertical = propriedades ? filho(propriedades, "w:vMerge") : null;
   const horizontal = propriedades ? filho(propriedades, "w:gridSpan") : null;
-  const profundo: string[] = [];
-  for (const paragrafo of descendentes(celula, "w:p")) {
-    const texto = aparar(
-      descendentes(paragrafo, "w:t")
-        .map((item) => textoInicial(item))
-        .join(""),
-    );
-    if (texto) profundo.push(texto);
-  }
+  // No modo `documento` entram também os parágrafos embrulhados em `w:sdt` dentro da célula.
+  const paragrafos = documento ? filhosComEnvoltorios(celula, "w:p") : filhos(celula, "w:p");
   return {
     direta: celula.parent === linha,
-    colunas: horizontal ? inteiro(atributo(horizontal, "w:val"), 1) : 1,
+    embrulhada: documento && ehEmbrulhada(celula, linha),
+    colunas: horizontal ? colunasValidas(atributo(horizontal, "w:val"), 1, 1) : 1,
     // `w:vMerge` sem valor é continuação.
     mesclaVertical: !vertical ? null : atributo(vertical, "w:val") === "restart" ? "inicio" : "continuacao",
-    texto: filhos(celula, "w:p")
-      .map((paragrafo) => textoDosItens(paragrafo, contexto))
-      .join("\n"),
-    textoProfundo: profundo.join("\n"),
+    texto: paragrafos.map((paragrafo) => textoDosItens(paragrafo, contexto)).join("\n"),
+    textoProfundo: textoProfundo(celula, contexto),
   };
 }
 
+/** Linha removida com o controle de alterações ligado (`w:trPr/w:del`). */
+function linhaRemovida(linha: Element): boolean {
+  const propriedades = filho(linha, "w:trPr");
+  return propriedades !== null && filho(propriedades, "w:del") !== null;
+}
+
 function lerTabela(tabela: Element, contexto: Contexto, emControle: boolean): TabelaOoxml {
-  const linhas = filhos(tabela, "w:tr").map((linha): LinhaOoxml => {
+  // No modo `documento` entram as linhas embrulhadas em `w:sdt` (que o `python-docx` não vê e que,
+  // numa matriz, são componentes que somem) e saem as removidas na revisão.
+  const elementos =
+    contexto.fidelidade === "documento"
+      ? filhosComEnvoltorios(tabela, "w:tr").filter((linha) => !linhaRemovida(linha))
+      : filhos(tabela, "w:tr");
+  let grade = 0;
+  const linhas = elementos.map((linha): LinhaOoxml => {
     const propriedades = filho(linha, "w:trPr");
     const antes = propriedades ? filho(propriedades, "w:gridBefore") : null;
-    return {
-      colunasAntes: antes ? inteiro(atributo(antes, "w:val"), 0) : 0,
-      celulas: descendentes(linha, "w:tc").map((celula) => lerCelula(celula, linha, contexto)),
-    };
+    const celulas = descendentes(linha, "w:tc");
+    if (celulas.length > CELULAS_MAXIMAS_POR_LINHA) {
+      throw new ErroDocx(
+        `O arquivo DOCX não pôde ser lido: há uma tabela com mais de ${CELULAS_MAXIMAS_POR_LINHA} células numa linha.`,
+      );
+    }
+    const lidas = celulas.map((celula) => lerCelula(celula, linha, contexto));
+    for (const celula of lidas) grade += celula.colunas;
+    if (grade > GRADE_MAXIMA) throw new ErroDocx("O arquivo DOCX não pôde ser lido: há uma tabela grande demais.");
+    return { colunasAntes: antes ? colunasValidas(atributo(antes, "w:val"), 0, 0) : 0, celulas: lidas };
   });
   return { tipo: "tabela", emControle, linhas };
 }
@@ -392,13 +540,17 @@ export function lerPacote(pacote: PacoteOoxml, opcoes: OpcoesLeitura = {}): Docu
   const principal = pacote.partePorTipo("", RELACAO_DOCUMENTO);
   const raiz = principal ? pacote.xml(principal) : null;
   const corpo = raiz ? filho(raiz, "w:body") : null;
-  if (!principal || !corpo) throw new ErroDocx("Erro ao abrir documento DOCX: o pacote não tem documento principal.");
+  if (!principal || !corpo) {
+    throw new ErroDocx("O arquivo não é um documento do Word: o pacote não tem documento principal.");
+  }
+  const parteNumeracao = pacote.partePorTipo(principal, RELACAO_NUMERACAO);
   const parteEstilos = pacote.partePorTipo(principal, RELACAO_ESTILOS);
   const partePropriedades = pacote.partePorTipo("", RELACAO_PROPRIEDADES);
   const contexto: Contexto = {
     fidelidade: opcoes.fidelidade ?? "documento",
     relacoes: pacote.relacoes(principal),
     ...lerEstilos(parteEstilos ? pacote.xml(parteEstilos) : null),
+    numeracoes: lerNumeracoes(parteNumeracao ? pacote.xml(parteNumeracao) : null),
   };
   const blocos: BlocoOoxml[] = [];
   lerBlocos(corpo, contexto, false, blocos);
@@ -407,5 +559,5 @@ export function lerPacote(pacote: PacoteOoxml, opcoes: OpcoesLeitura = {}): Docu
 
 /** Lê os bytes de um `.docx`. */
 export function lerDocx(bytes: Uint8Array, opcoes: OpcoesLeitura = {}): DocumentoOoxml {
-  return lerPacote(new PacoteOoxml(bytes), opcoes);
+  return lerPacote(new PacoteOoxml(bytes, opcoes.limites), opcoes);
 }
