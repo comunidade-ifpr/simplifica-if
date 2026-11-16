@@ -32,6 +32,8 @@ export class PartidaInvalida extends Schema.TaggedError<PartidaInvalida>()("Part
 export interface Partida {
   readonly token: Redacted.Redacted<string>;
   readonly origens: ReadonlyArray<string>;
+  /** O segredo do processo principal do desktop (`EnvelopePartida.tokenDesktop`), só pelo stdin. */
+  readonly tokenDesktop?: Redacted.Redacted<string>;
   /** `stdin`: o token veio no envelope, e o stdin é o cordão do pai. */
   readonly via: "ambiente" | "stdin";
 }
@@ -73,7 +75,7 @@ const decodificarEnvelope = Schema.decodeUnknownEffect(Schema.fromJsonString(Env
 export const lerPartida = Effect.fn("partida.lerPartida")(function* (
   ambiente: Readonly<Record<string, string | undefined>>,
   cordao: Cordao,
-) {
+): Effect.fn.Return<Partida, PartidaInvalida> {
   const doAmbiente = ambiente[VARIAVEL_TOKEN];
   if (doAmbiente !== undefined && doAmbiente !== "") {
     if (doAmbiente.length < TAMANHO_MINIMO_TOKEN) {
@@ -99,5 +101,10 @@ export const lerPartida = Effect.fn("partida.lerPartida")(function* (
         }),
     ),
   );
-  return { token: Redacted.make(envelope.token), origens: envelope.origens ?? [], via: "stdin" } satisfies Partida;
+  return {
+    token: Redacted.make(envelope.token),
+    origens: envelope.origens ?? [],
+    ...(envelope.tokenDesktop === undefined ? {} : { tokenDesktop: Redacted.make(envelope.tokenDesktop) }),
+    via: "stdin",
+  } satisfies Partida;
 });

@@ -16,7 +16,7 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
 import { strToU8, zipSync } from "fflate";
-import { ehFalhaRevisaoPpc } from "@simplifica-if/contratos-app";
+import { CAMINHO_LIBERAR_ARQUIVO, ehFalhaRevisaoPpc } from "@simplifica-if/contratos-app";
 import * as Layers from "@simplifica-if/kb/layers";
 import { montarDocx, par } from "@simplifica-if/docx/testes/sintetico";
 import { corpoPpcSintetico, ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
@@ -29,6 +29,7 @@ import {
   layerDriversFalsos,
   limparTemporarios,
   novoRegistro,
+  pedirHttp,
   TOKEN,
 } from "./apoio.ts";
 
@@ -206,6 +207,72 @@ layer(NodeServices.layer, { excludeTestServices: true })("limites do Worker", (i
     Effect.gen(function* () {
       const erro = yield* analisarCom({ tempoMs: 1 }, gravar("tempo.docx", ppcSintetico()));
       assert.match(erro.message, /passou do tempo máximo/);
+    }),
+  );
+});
+
+layer(NodeServices.layer, { excludeTestServices: true })("uma análise por vez", (it) => {
+  it.effect("a segunda análise simultânea é recusada com a mensagem, e a primeira termina", () =>
+    Effect.gen(function* () {
+      const arquivo = gravar("simultanea.docx", ppcSintetico());
+      const [primeira, segunda] = yield* Effect.gen(function* () {
+        const analise = yield* AnalisePpc.AnalisePpc;
+        return yield* Effect.all(
+          [Effect.result(analise.analisar({ arquivo })), Effect.result(analise.analisar({ arquivo }))],
+          {
+            concurrency: 2,
+          },
+        );
+      }).pipe(Effect.provide(AnalisePpc.layer().pipe(Layer.provide(Layers.layerSomenteLeitura({ caminho: banco })))));
+      const resultados = [primeira, segunda];
+      const falhas = resultados.filter((r) => r._tag === "Failure");
+      assert.strictEqual(falhas.length, 1);
+      assert.strictEqual(
+        falhas[0]!._tag === "Failure" ? falhas[0]!.failure.message : "",
+        "Já há uma análise em andamento. Espere ela terminar e tente de novo.",
+      );
+      assert.strictEqual(resultados.filter((r) => r._tag === "Success").length, 1);
+    }),
+  );
+});
+
+/** O servidor com o segredo do desktop: só os arquivos liberados pelo processo principal. */
+const TOKEN_DESKTOP = "segredo-do-processo-principal-0123456789";
+const camadaDesktop = Servidor.layer({
+  banco,
+  token: Redacted.make(TOKEN),
+  tokenDesktop: Redacted.make(TOKEN_DESKTOP),
+}).pipe(Layer.provide(layerDriversFalsos(novoRegistro())), Layer.provide(NodeServices.layer));
+
+layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", (it) => {
+  it.effect("sem liberação, recusa; a rota exige o segredo do desktop, sem Origin; liberado, analisa", () =>
+    Effect.gen(function* () {
+      const { urlRpc, porta } = yield* Servidor.ServidorApp;
+      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+      const arquivo = gravar("liberado.docx", ppcSintetico());
+      const recusa = yield* Effect.flip(rpc["revisaoPpc.analisar"]({ arquivo }));
+      assert.match(recusa.message, /Escolha o arquivo pelo botão/);
+
+      const url = `http://127.0.0.1:${porta}${CAMINHO_LIBERAR_ARQUIVO}`;
+      const liberar = (cabecalhos: Record<string, string>) =>
+        pedirHttp(url, {
+          metodo: "POST",
+          cabecalhos: { "content-type": "application/json", ...cabecalhos },
+          corpo: JSON.stringify({ arquivo }),
+        });
+      // O token do RPC (que a janela tem) não serve; o navegador (com Origin) também não.
+      assert.strictEqual((yield* liberar({ authorization: `Bearer ${TOKEN}` })).status, 401);
+      assert.strictEqual(
+        (yield* liberar({ authorization: `Bearer ${TOKEN_DESKTOP}`, origin: "app://simplifica" })).status,
+        403,
+      );
+      assert.strictEqual((yield* liberar({ authorization: `Bearer ${TOKEN_DESKTOP}` })).status, 204);
+
+      const resultado = yield* rpc["revisaoPpc.analisar"]({ arquivo });
+      assert.isAbove(resultado.pendencias.length, 0);
+      // Outro arquivo da mesma pasta continua recusado.
+      const outro = gravar("outro.docx", ppcSintetico());
+      assert.match((yield* Effect.flip(rpc["revisaoPpc.analisar"]({ arquivo: outro }))).message, /Escolha o arquivo/);
     }),
   );
 });

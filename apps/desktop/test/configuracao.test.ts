@@ -6,7 +6,10 @@
 import { describe, expect, test } from "vite-plus/test";
 import { ORIGEM_APP, resolverConfiguracao, URL_APP, type Entrada } from "../src/configuracao.ts";
 import * as NodeCrypto from "node:crypto";
-import { SUFIXO_REVISAO_PREVIA as SUFIXO_CONTRATO } from "@simplifica-if/contratos-app";
+import {
+  CAMINHO_LIBERAR_ARQUIVO as LIBERAR_CONTRATO,
+  SUFIXO_REVISAO_PREVIA as SUFIXO_CONTRATO,
+} from "@simplifica-if/contratos-app";
 import {
   copiaComentadaPermitida,
   docxEscolhido,
@@ -15,6 +18,7 @@ import {
   politicaConteudo,
   resolverArquivo,
   tipoConteudo,
+  CAMINHO_LIBERAR_ARQUIVO,
   SUFIXO_REVISAO_PREVIA,
   urlExternaSegura,
 } from "../src/seguranca.ts";
@@ -179,6 +183,7 @@ describe("revisão prévia: o que a interface pode abrir", () => {
 
   test("o sufixo é o do contrato", () => {
     expect(SUFIXO_REVISAO_PREVIA).toBe(SUFIXO_CONTRATO);
+    expect(CAMINHO_LIBERAR_ARQUIVO).toBe(LIBERAR_CONTRATO);
   });
 
   test("só .docx com caminho absoluto sai do diálogo", () => {

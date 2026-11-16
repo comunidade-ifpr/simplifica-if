@@ -25,7 +25,9 @@ import * as DateTime from "effect/DateTime";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
+import * as Semaphore from "effect/Semaphore";
 import type * as SqlClient from "effect/sql/SqlClient";
 import { FalhaRevisaoPpc, type ResultadoRevisaoPpc, SUFIXO_REVISAO_PREVIA } from "@simplifica-if/contratos-app";
 import { FontesNormativas } from "@simplifica-if/kb/FontesNormativas";
@@ -59,7 +61,11 @@ export interface EntradaAnalise {
 
 export class AnalisePpc extends Context.Service<
   AnalisePpc,
-  { readonly analisar: (entrada: EntradaAnalise) => Effect.Effect<ResultadoRevisaoPpc, FalhaRevisaoPpc> }
+  {
+    readonly analisar: (entrada: EntradaAnalise) => Effect.Effect<ResultadoRevisaoPpc, FalhaRevisaoPpc>;
+    /** Libera um arquivo escolhido no diálogo do desktop (`CAMINHO_LIBERAR_ARQUIVO`). */
+    readonly liberar: (arquivo: string) => Effect.Effect<void>;
+  }
 >()("@simplifica-if/server/revisao-ppc/AnalisePpc") {}
 
 /** O script do Worker: o `.ts` ao lado deste no desenvolvimento, o `trabalhador-ppc.mjs` no bundle. */
@@ -199,6 +205,11 @@ async function gravarCopia(original: string, bytes: Uint8Array): Promise<string>
 export interface OpcoesAnalise {
   readonly limites?: Partial<Limites>;
   readonly trabalhador?: URL;
+  /**
+   * Só analisa arquivos liberados por `liberar` (o desktop, com o `tokenDesktop`, os escolhidos no
+   * diálogo): um cliente do RPC não manda o servidor ler um `.docx` qualquer nem gravar ao lado dele.
+   */
+  readonly exigirLiberacao?: boolean;
 }
 
 export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalise = {}) {
@@ -213,11 +224,17 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
     ),
   );
 
-  const analisar = Effect.fn("AnalisePpc.analisar")(function* (entrada: EntradaAnalise) {
+  const liberados = new Set<string>();
+  // Uma análise por vez: cada Worker pode usar até `memoriaMb` de heap.
+  const vez = yield* Semaphore.make(1);
+
+  const analisarUma = Effect.fn("AnalisePpc.analisar")(function* (entrada: EntradaAnalise) {
     const arquivo = entrada.arquivo;
     const falha = (motivo: string) => new FalhaRevisaoPpc({ arquivo, motivo });
     if (!NodePath.isAbsolute(arquivo) || NodePath.extname(arquivo).toLowerCase() !== ".docx")
       return yield* falha("Escolha um arquivo do Word (.docx).");
+    if (opcoes.exigirLiberacao && !liberados.has(NodePath.normalize(arquivo)))
+      return yield* falha('Escolha o arquivo pelo botão "Escolher o PPC (.docx)…" do app.');
     const info = yield* Effect.tryPromise({
       try: () => NodeFSP.stat(arquivo),
       catch: () => falha("O arquivo não foi encontrado ou não pode ser lido."),
@@ -257,7 +274,25 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
     return { arquivoOriginal: arquivo, arquivoComentado, ...resto } satisfies ResultadoRevisaoPpc;
   });
 
-  return AnalisePpc.of({ analisar });
+  const analisar = (entrada: EntradaAnalise) =>
+    analisarUma(entrada).pipe(
+      vez.withPermitsIfAvailable(1),
+      Effect.flatMap(
+        Option.match({
+          onSome: (resultado) => Effect.succeed(resultado),
+          onNone: () =>
+            Effect.fail(
+              new FalhaRevisaoPpc({
+                arquivo: entrada.arquivo,
+                motivo: "Já há uma análise em andamento. Espere ela terminar e tente de novo.",
+              }),
+            ),
+        }),
+      ),
+    );
+  const liberar = (arquivo: string) => Effect.sync(() => void liberados.add(NodePath.normalize(arquivo)));
+
+  return AnalisePpc.of({ analisar, liberar });
 });
 
 /** O serviço sobre o `FontesNormativas` e o `SqlClient` do `kb.sqlite` (os do `Leitura` do servidor). */

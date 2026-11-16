@@ -154,6 +154,9 @@ export function resolverArquivo(input: {
   return { tipo: "arquivo", caminho: NodePath.join(root, "index.html") };
 }
 
+/** `CAMINHO_LIBERAR_ARQUIVO` do `@simplifica-if/contratos-app` (o teste confere que são iguais). */
+export const CAMINHO_LIBERAR_ARQUIVO = "/revisao-ppc/liberar";
+
 /** `SUFIXO_REVISAO_PREVIA` do `@simplifica-if/contratos-app` (o teste confere que são iguais). */
 export const SUFIXO_REVISAO_PREVIA = " - revisão prévia (Simplifica IF)";
 

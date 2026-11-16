@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off globalTimers:off globalDate:off -- processo principal do Electron, sem runtime Effect (ver README)
+// @effect-diagnostics nodeBuiltinImport:off globalTimers:off globalDate:off globalFetch:off -- processo principal do Electron, sem runtime Effect (ver README)
 /**
  * O processo principal do Simplifica IF (Electron). Desenho do `apps/desktop` do T3 Code, reduzido ao
  * que o app faz:
@@ -33,6 +33,7 @@ import { ESQUEMA, HOST_APP, resolverConfiguracao, type Configuracao } from "./co
 import { CANAIS, type Conexao } from "./ponteDesktop.ts";
 import { abrirLog } from "./registro.ts";
 import {
+  CAMINHO_LIBERAR_ARQUIVO,
   copiaComentadaPermitida,
   docxEscolhido,
   hashesScriptsInline,
@@ -112,7 +113,10 @@ function descreverSaida(saida: Saida): string {
 /** Inicia o servidor e guarda a conexão. A janela recebe a conexão quando ele fica pronto. */
 function subirServidor(): Promise<Conexao> {
   const token = gerarToken();
+  // Só do processo principal: a janela recebe o `token`, nunca este.
+  tokenDesktop = gerarToken();
   const inicio = montarInicio({
+    tokenDesktop,
     executor: configuracao.executor,
     banco: configuracao.banco,
     pastaEstado: configuracao.pastaEstado,
@@ -307,6 +311,21 @@ ipcMain.handle(CANAIS.escolherPasta, async (evento) => {
 /** Os `.docx` escolhidos no diálogo nesta execução: só as cópias comentadas deles abrem pelo app. */
 const docxEscolhidos = new Set<string>();
 
+/** O segredo do processo principal com o servidor desta execução (`EnvelopePartida.tokenDesktop`). */
+let tokenDesktop: string | undefined;
+
+/** Libera no servidor o arquivo escolhido: sem isso, a revisão prévia o recusa. */
+async function liberarNoServidor(arquivo: string): Promise<void> {
+  if (conexaoAtual === undefined || tokenDesktop === undefined) throw new Error("o servidor local não está pronto");
+  const { urlServidor } = await conexaoAtual;
+  const resposta = await fetch(`${urlServidor}${CAMINHO_LIBERAR_ARQUIVO}`, {
+    method: "POST",
+    headers: { authorization: `Bearer ${tokenDesktop}`, "content-type": "application/json" },
+    body: JSON.stringify({ arquivo }),
+  });
+  if (resposta.status !== 204) throw new Error(`o servidor não liberou o arquivo (${resposta.status})`);
+}
+
 ipcMain.handle(CANAIS.escolherDocx, async (evento) => {
   if (!remetenteConfiavel(evento) || janela === undefined) throw new Error("pedido recusado");
   const escolha = await dialog.showOpenDialog(janela, {
@@ -319,6 +338,7 @@ ipcMain.handle(CANAIS.escolherDocx, async (evento) => {
   const arquivo = escolha.canceled ? undefined : docxEscolhido(escolha.filePaths[0]);
   if (arquivo === undefined) return null;
   docxEscolhidos.add(arquivo);
+  await liberarNoServidor(arquivo);
   return arquivo;
 });
 

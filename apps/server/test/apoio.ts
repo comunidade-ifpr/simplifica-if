@@ -186,7 +186,7 @@ export const pedirUpgrade = (url: string, cabecalhos: Record<string, string>) =>
 /** Uma requisição HTTP crua: o status, os cabeçalhos e o corpo da resposta. */
 export const pedirHttp = (
   url: string,
-  opcoes: { readonly metodo: string; readonly cabecalhos?: Record<string, string> },
+  opcoes: { readonly metodo: string; readonly cabecalhos?: Record<string, string>; readonly corpo?: string },
 ) =>
   Effect.callback<{ status: number; cabecalhos: NodeHttp.IncomingHttpHeaders; corpo: string }>((resume) => {
     const requisicao = NodeHttp.request(url.replace(/^ws:/, "http:"), {
@@ -202,7 +202,7 @@ export const pedirHttp = (
       );
     });
     requisicao.on("error", (erro) => resume(Effect.die(erro)));
-    requisicao.end();
+    requisicao.end(opcoes.corpo);
     return Effect.sync(() => requisicao.destroy());
   });
 

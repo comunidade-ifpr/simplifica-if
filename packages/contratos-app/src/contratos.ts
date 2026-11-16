@@ -83,8 +83,17 @@ export const EnvelopePartida = Schema.Struct({
    * mandam `Origin` (o Node, o processo principal do Electron) se conectam.
    */
   origens: Schema.optionalKey(Schema.Array(Schema.String)),
+  /**
+   * O segredo do processo principal do desktop, que a janela nunca recebe. Com ele, a revisão prévia
+   * só analisa arquivos que o processo principal liberou (`CAMINHO_LIBERAR_ARQUIVO`), os escolhidos no
+   * diálogo do sistema; sem ele (desenvolvimento, navegador), aceita qualquer `.docx`.
+   */
+  tokenDesktop: Schema.optionalKey(TokenServidor),
 });
 export type EnvelopePartida = typeof EnvelopePartida.Type;
+
+/** `POST` com `Authorization: Bearer <tokenDesktop>` e `{ "arquivo": "<caminho absoluto>" }`: libera o arquivo. */
+export const CAMINHO_LIBERAR_ARQUIVO = "/revisao-ppc/liberar";
 
 /** A linha JSON que o servidor imprime no stdout quando está pronto; é a única coisa no stdout. */
 export const LinhaPartida = Schema.Struct({
