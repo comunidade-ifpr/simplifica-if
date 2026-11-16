@@ -28,6 +28,11 @@ import * as Listas from "../src/persistencia/Listas.ts";
 import * as Revisoes from "../src/persistencia/Revisoes.ts";
 import * as AnalisePpc from "../src/revisao-ppc/AnalisePpc.ts";
 import * as ListaViva from "../src/revisao-ppc/ListaViva.ts";
+import { julgarBloco } from "../src/revisao-ppc/julgamento.ts";
+import { contextoDaFicha } from "../src/revisao-ppc/preparo.ts";
+import { pedidoS } from "@simplifica-if/ppc/revisao-ia/pedido";
+import { MODELO_PADRAO } from "@simplifica-if/ppc/revisao-ia/tipos";
+import type { ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 
 const RAIZ = NodePath.resolve(import.meta.dirname, "../../..");
 const args = process.argv.slice(2);
@@ -95,6 +100,83 @@ const programa = Effect.gen(function* () {
           p.pendencia.tituloFicha,
           p.pendencia.mensagem.slice(0, 220),
         ].join(" | "),
+      );
+    return;
+  }
+  const soRecorte = depois("--recorte")?.[0];
+  if (soRecorte !== undefined) {
+    // Sem IA: os títulos e o tamanho da seção do critério (onde a prova de leitura tem de estar).
+    const analise = yield* AnalisePpc.AnalisePpc;
+    NodeFS.writeFileSync(arquivo, docxDoMarkdown(NodeFS.readFileSync(ppcMd, "utf8")));
+    const base = yield* analise.revisarArquivo({ arquivo, gravar: false });
+    const ctx = (yield* contextoDaFicha({
+      markdown: base.revisao.markdown,
+      linhasTextoParaIa: base.revisao.linhasTextoParaIa,
+      cnct: base.revisao.curso.cnct?.slug ?? null,
+      curso: null,
+      ficha: soRecorte,
+    }))!;
+    console.log(
+      args.includes("--inteiro")
+        ? ctx.proprio.texto
+        : ctx.proprio.texto
+            .split("\n")
+            .filter((l) => l.startsWith("#"))
+            .join("\n"),
+      ctx.proprio.texto.length,
+    );
+    return;
+  }
+  const fichasIa = depois("--ia")?.[0];
+  if (fichasIa !== undefined) {
+    // Uma lista com pendências da IA, sem pagar o relatório inteiro: cada ficha num lote de uma (como
+    // na reanálise), e a lista montada com esses resultados.
+    NodeFS.writeFileSync(arquivo, docxDoMarkdown(NodeFS.readFileSync(ppcMd, "utf8")));
+    const analise = yield* AnalisePpc.AnalisePpc;
+    const base = yield* analise.revisarArquivo({ arquivo, gravar: false });
+    const resultados: ResultadoFichaIa[] = [];
+    for (const ficha of fichasIa.split(",")) {
+      const ctx = (yield* contextoDaFicha({
+        markdown: base.revisao.markdown,
+        linhasTextoParaIa: base.revisao.linhasTextoParaIa,
+        cnct: base.revisao.curso.cnct?.slug ?? null,
+        curso: base.revisao.curso.cnct
+          ? `${base.revisao.curso.cnct.denominacao}, forma de oferta ${base.revisao.curso.forma ?? "não identificada"}`
+          : null,
+        ficha,
+      }))!;
+      const bloco = { id: `s-${ficha.toLowerCase()}`, tipo: "S" as const, tema: "", ordemTema: 0, fichas: [ficha] };
+      const nonce = "a1b2c3d4e5f60718";
+      const julgado = yield* julgarBloco({
+        provider: "claude",
+        modelo: MODELO_PADRAO.claude ?? null,
+        nonce,
+        bloco,
+        fichas: [ctx.ficha],
+        pedido: pedidoS(bloco, [ctx.ficha], new Map([[ficha, ctx.proprio]]), ctx.contexto, nonce, ctx.comum),
+        fontes: new Set(ctx.fontes),
+        tempoTurno: ListaViva.TEMPO_ACAO,
+      });
+      console.error(
+        ficha,
+        julgado.resultado.resultados[0]!.estado,
+        JSON.stringify(julgado.uso),
+        `${julgado.segundos} s`,
+      );
+      resultados.push(...julgado.resultado.resultados);
+    }
+    const final = yield* analise.revisarArquivo({ arquivo, gravar: true, ia: { resultados, fora: [] } });
+    const r = yield* ListaViva.criarLista({
+      arquivo,
+      analisado: final,
+      revisao: null,
+      provider: "claude",
+      modelo: MODELO_PADRAO.claude ?? null,
+    });
+    const lista = yield* viva.lista(r.lista!);
+    for (const p of lista.pendencias.filter((x) => x.pendencia.origem === "ia"))
+      console.log(
+        [p.chave, p.pendencia.estado, p.pendencia.tituloFicha, p.pendencia.mensagem.slice(0, 300)].join(" | "),
       );
     return;
   }
