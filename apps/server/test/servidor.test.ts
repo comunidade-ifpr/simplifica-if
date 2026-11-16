@@ -1,12 +1,14 @@
 /**
  * O servidor local de verdade, em portas efêmeras de `127.0.0.1`, com drivers falsos no motor e o banco
  * de fixture: a autenticação do WebSocket (token, `Host`, `Origin`), o cliente `effect/rpc` (o mesmo
- * que a interface vai usar) nos três grupos, a conversa com pedido de aprovação respondido pelo RPC, e
+ * que a interface vai usar) nos quatro grupos (as skills do app vêm do `.agents/skills` do checkout), a conversa com pedido de aprovação respondido pelo RPC, e
  * o MCP HTTP ligado a cada sessão com token próprio, revogado ao encerrar.
  *
  * Sem os serviços de teste (`excludeTestServices`), como o teste HTTP do MCP: o cliente sobre
  * WebSocket usa o relógio (prazo de abertura e ping), que no `TestClock` não anda.
  */
+// @effect-diagnostics nodeBuiltinImport:off -- teste: o caminho do `.agents/skills` do checkout
+import * as NodePath from "node:path";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { afterAll, assert, layer } from "@effect/vitest";
 import * as Effect from "effect/Effect";
@@ -42,6 +44,7 @@ const camada = Servidor.layer({
   banco: bancoFixture(),
   token: Redacted.make(TOKEN),
   origens: [ORIGEM],
+  pastaSkills: NodePath.resolve(import.meta.dirname, "../../../.agents/skills"),
 }).pipe(Layer.provide(layerDriversFalsos(registro)), Layer.provide(NodeServices.layer));
 
 const decodificarIngresso = Schema.decodeEffect(Schema.fromJsonString(Ingresso));
@@ -57,6 +60,23 @@ layer(camada, { excludeTestServices: true })("servidor local", (it) => {
       assert.match(app.urlMcp, /^http:\/\/127\.0\.0\.1:\d+\/mcp$/);
       assert.notStrictEqual(app.urlMcp, `http://127.0.0.1:${app.porta}/mcp`);
     }),
+  );
+
+  it.effect("skills.listar: as skills do app do checkout, com título, resumo e área", () =>
+    Effect.gen(function* () {
+      const { urlRpc } = yield* Servidor.ServidorApp;
+      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+      const skills = yield* rpc["skills.listar"]({});
+      assert.deepStrictEqual(
+        skills.map((skill) => skill.nome),
+        ["verificar-calendario", "verificar-fundamentacao-normativa"],
+      );
+      for (const skill of skills) {
+        assert.isNotEmpty(skill.titulo);
+        assert.isNotEmpty(skill.resumo);
+        assert.strictEqual(skill.area, "ensino");
+      }
+    }).pipe(Effect.scoped),
   );
 
   it.effect("recusa o upgrade sem credencial, com credencial errada, com Host ou Origin de fora", () =>

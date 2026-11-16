@@ -4,7 +4,7 @@
  * desktop importam daqui; nada aqui depende do Node, e importar o pacote não carrega o `kb`, a leitura
  * do MCP nem os drivers do motor (`test/sem-servidor.test.ts` confere o grafo de imports).
  *
- * - `GrupoApp`: a API RPC (`effect/rpc`) por WebSocket. Três grupos: providers, conversa e leitura (o
+ * - `GrupoApp`: a API RPC (`effect/rpc`) por WebSocket. Quatro grupos: providers, conversa, skills e leitura (o
  *   `GrupoLeitura` de `@simplifica-if/mcp/grupo-leitura`, só as definições, sem duplicar; os handlers
  *   ficam em `@simplifica-if/mcp/rpc`, que este pacote não importa). Os métodos de providers e de conversa
  *   têm nome com prefixo, como os `WS_METHODS` do T3: `cliente["conversa.enviar"]({ … })`.
@@ -324,7 +324,26 @@ export class GrupoConversa extends RpcGroup.make(
   }),
 ) {}
 
+/* ================================================================== skills */
+
+/**
+ * Uma skill do app no catálogo do servidor: o que os futuros cartões da tela inicial mostram. Vem do
+ * `name` e do bloco `simplifica:` do `SKILL.md` (`@simplifica-if/mcp/skills`).
+ */
+export const ResumoSkill = Schema.Struct({
+  nome: Schema.String,
+  titulo: Schema.String,
+  resumo: Schema.String,
+  area: Schema.String,
+});
+export type ResumoSkill = typeof ResumoSkill.Type;
+
+export class GrupoSkills extends RpcGroup.make(
+  /** As skills do catálogo do servidor, em ordem alfabética do nome; todas vão para toda conversa. */
+  Rpc.make("skills.listar", { payload: Schema.Struct({}), success: Schema.Array(ResumoSkill) }),
+) {}
+
 /* ================================================================== app */
 
-/** A API inteira do servidor local: providers, conversa e leitura. */
-export class GrupoApp extends GrupoProviders.merge(GrupoConversa, GrupoLeitura) {}
+/** A API inteira do servidor local: providers, conversa, skills e leitura. */
+export class GrupoApp extends GrupoProviders.merge(GrupoConversa, GrupoSkills, GrupoLeitura) {}

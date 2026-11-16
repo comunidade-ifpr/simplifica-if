@@ -12,6 +12,8 @@
  *   sessão do provider liberada ociosa e reaberta por retomada (`Conversas.ts`).
  * - **Motor** (`@simplifica-if/motor`) sobre os `Drivers` do ambiente: os reais (`Drivers.layerNode`,
  *   na CLI) ou drivers de teste.
+ * - **Skills do app** (`CatalogoSkills.ts`): as da pasta `pastaSkills` com bloco `simplifica:` válido,
+ *   entregues a toda conversa e listadas por `skills.listar`.
  * - **Leitura** (`GrupoLeitura`) sobre o `kb.sqlite`, só leitura: o mesmo serviço `Leitura` (uma
  *   conexão só ao banco) atende o RPC e o MCP HTTP (`McpHttp.layerSobreLeitura`).
  *
@@ -37,6 +39,7 @@ import * as McpHttp from "@simplifica-if/mcp/http";
 import { layerLeitura } from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
 import * as Autenticacao from "./Autenticacao.ts";
+import * as CatalogoSkills from "./CatalogoSkills.ts";
 import * as Conversas from "./Conversas.ts";
 import * as Handlers from "./handlers.ts";
 import * as Banco from "./persistencia/Banco.ts";
@@ -64,6 +67,11 @@ export interface Opcoes {
   readonly ociosidade?: Duration.Duration;
   /** Quanto se espera pelo fim do turno interrompido antes de liberar a sessão (`Conversas.PRAZO_INTERRUPCAO`). */
   readonly prazoInterrupcao?: Duration.Duration;
+  /**
+   * A pasta das skills do app (`CatalogoSkills.ts`): `.agents/skills` do checkout no desenvolvimento,
+   * `<Resources>/skills` no app empacotado. Sem ela, as conversas não recebem skills.
+   */
+  readonly pastaSkills?: string;
 }
 
 /** O servidor do RPC não abriu: porta ocupada, sem permissão ou interface indisponível. */
@@ -144,6 +152,9 @@ export const layer = (opcoes: Opcoes) => {
   }).pipe(
     Layer.provideMerge(Motor.layer),
     Layer.provideMerge(Historico.layer.pipe(Layer.provide(banco))),
+    Layer.provideMerge(
+      opcoes.pastaSkills === undefined ? CatalogoSkills.layerVazio : CatalogoSkills.layer(opcoes.pastaSkills),
+    ),
     Layer.provideMerge(mcp),
     Layer.provideMerge(leitura),
   );

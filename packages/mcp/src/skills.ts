@@ -38,23 +38,20 @@ const slug = Schema.String.check(Schema.isPattern(SLUG, { message: "esperava let
 
 /** Um caminho relativo dentro da pasta da skill, fora de `scripts/`, `tests/` e `agents/`. */
 const caminhoArquivo = Schema.String.check(
-  Schema.makeFilter(
-    (caminho: string) => {
-      const partes = caminho.split("/");
-      if (caminho === "" || caminho.startsWith("/") || caminho.includes("\\") || /^[A-Za-z]:/.test(caminho)) {
-        return "esperava um caminho relativo à pasta da skill, com /";
-      }
-      if (partes.some((parte) => parte === "" || parte === "." || parte === "..")) {
-        return "o caminho não pode ter partes vazias, . ou ..";
-      }
-      if ((PASTAS_FORA_DO_APP as ReadonlyArray<string>).includes(partes[0]!)) {
-        return `${partes[0]}/ não vai para o app (só roda no repositório)`;
-      }
-      if (caminho === "SKILL.md") return "o SKILL.md vai sempre; não o liste";
-      return true;
-    },
-    { message: "caminho inválido" },
-  ),
+  Schema.makeFilter((caminho: string) => {
+    const partes = caminho.split("/");
+    if (caminho === "" || caminho.startsWith("/") || caminho.includes("\\") || /^[A-Za-z]:/.test(caminho)) {
+      return "esperava um caminho relativo à pasta da skill, com /";
+    }
+    if (partes.some((parte) => parte === "" || parte === "." || parte === "..")) {
+      return "o caminho não pode ter partes vazias, . ou ..";
+    }
+    if ((PASTAS_FORA_DO_APP as ReadonlyArray<string>).includes(partes[0]!)) {
+      return `${partes[0]}/ não vai para o app (só roda no repositório)`;
+    }
+    if (caminho === "SKILL.md") return "o SKILL.md vai sempre; não o liste";
+    return true;
+  }),
 );
 
 const nomeFerramenta = Schema.String.check(
@@ -62,7 +59,6 @@ const nomeFerramenta = Schema.String.check(
     (nome: string) =>
       (NOMES_FERRAMENTAS as ReadonlyArray<string>).includes(nome) ||
       `"${nome}" não é ferramenta do simplifica-mcp (${NOMES_FERRAMENTAS.join(", ")})`,
-    { message: "ferramenta inexistente" },
   ),
 );
 
@@ -112,8 +108,9 @@ const FrontMatterSkill = Schema.Struct({
   simplifica: Schema.optionalKey(Schema.Unknown),
 });
 
-const decodificarFrontMatter = Schema.decodeUnknownResult(FrontMatterSkill);
-const decodificarManifesto = Schema.decodeUnknownResult(ManifestoSkill);
+// Todos os problemas de uma vez: quem corrige o bloco vê a lista inteira.
+const decodificarFrontMatter = Schema.decodeUnknownResult(FrontMatterSkill, { errors: "all" });
+const decodificarManifesto = Schema.decodeUnknownResult(ManifestoSkill, { errors: "all" });
 
 /** Uma skill que não pode ir para o app: bloco inválido, arquivo listado que falta, `SKILL.md` ilegível. */
 export class ErroSkill extends Schema.TaggedError<ErroSkill>()("ErroSkill", {

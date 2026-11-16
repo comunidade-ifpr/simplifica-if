@@ -4,8 +4,8 @@
  * fixture e o banco das conversas num arquivo temporário, com o `TestClock`: a gravação e a lista, as
  * migrações, a retomada depois de fechar (outra layer com o mesmo banco), a conversa que uma execução
  * anterior deixou aberta, a retomada recusada (o histórico como contexto), a queda do processo do
- * provider no meio do turno e fora dele, a ociosidade, a interrupção e o acompanhar de um turno em
- * andamento.
+ * provider no meio do turno e fora dele, a ociosidade, a interrupção, o acompanhar de um turno em
+ * andamento e as skills do catálogo em toda sessão aberta (nova, retomada, recomeçada).
  */
 import * as NodeFS from "node:fs";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
@@ -24,6 +24,8 @@ import * as TestClock from "effect/testing/TestClock";
 import type { ItemConversa } from "@simplifica-if/contratos-app";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
+import type { SkillDoApp } from "@simplifica-if/mcp/skills";
+import * as CatalogoSkills from "../src/CatalogoSkills.ts";
 import * as Conversas from "../src/Conversas.ts";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Historico from "../src/persistencia/Historico.ts";
@@ -46,9 +48,26 @@ const PRAZO = Duration.seconds(15);
 let contador = 0;
 const novoBanco = () => `${diretorioTemporario("simplifica-banco-")}/conversas-${++contador}.sqlite`;
 
+/** Uma skill do catálogo de teste, já lida (o `CatalogoSkills` a passa ao motor sem o manifesto). */
+const SKILL: SkillDoApp = {
+  nome: "skill-de-teste",
+  descricao: "Use para testar a entrega das skills.",
+  instrucoes: "# Skill de teste\n\nLeia `referencia.md`.",
+  arquivos: [{ caminho: "referencia.md", conteudo: "referência" }],
+  manifesto: {
+    titulo: "Teste",
+    resumo: "Uma skill de teste.",
+    area: "ensino",
+    ferramentas: [],
+    arquivos: ["referencia.md"],
+  },
+  pasta: "/nao/usada",
+};
+
 const camada = (arquivo: string, registro: Registro) =>
   Conversas.layer({ prazoInterrupcao: PRAZO }).pipe(
     Layer.provideMerge(Motor.layer),
+    Layer.provideMerge(CatalogoSkills.layerFixo([SKILL])),
     Layer.provideMerge(Historico.layer),
     Layer.provideMerge(Banco.layerArquivo(arquivo)),
     Layer.provide(McpHttp.layer({ banco: kb })),
@@ -343,6 +362,37 @@ describe("ciclo de vida da sessão do provider", () => {
       const retomada = yield* conversas.retomar(id);
       assert.strictEqual(retomada.estado, "pronta");
       assert.strictEqual(registro.configs.length, 3);
+      yield* fechar;
+    }),
+  );
+
+  it.effect("skills do catálogo: a sessão nova, a retomada e a recomeçada recebem todas", () =>
+    Effect.gen(function* () {
+      const registro = novoRegistro();
+      const { conversas, fechar } = yield* abrir(novoBanco(), registro);
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const esperadas: ReadonlyArray<Motor.Skill> = [
+        { nome: SKILL.nome, descricao: SKILL.descricao, instrucoes: SKILL.instrucoes, arquivos: SKILL.arquivos },
+      ];
+      assert.deepStrictEqual(registro.configs[0]?.skills, esperadas);
+      // O motor gravou o SKILL.md e o arquivo listado na pasta de trabalho, e as instruções as listam.
+      const pastaSkill = `${NodeFS.realpathSync(pasta)}/.simplifica/skills/${SKILL.nome}`;
+      assert.include(NodeFS.readFileSync(`${pastaSkill}/SKILL.md`, "utf8"), "Leia `referencia.md`.");
+      assert.strictEqual(NodeFS.readFileSync(`${pastaSkill}/referencia.md`, "utf8"), "referência");
+      assert.include(registro.configs[0]?.instrucoes ?? "", `\`${SKILL.nome}\``);
+
+      // Retomada pelo provider.
+      yield* conversas.encerrar(id);
+      yield* conversas.retomar(id);
+      assert.strictEqual(registro.configs.at(-1)?.retomar, "nativo-1");
+      assert.deepStrictEqual(registro.configs.at(-1)?.skills, esperadas);
+
+      // Retomada recusada: a sessão recomeçada também as recebe.
+      yield* conversas.encerrar(id);
+      registro.recusarRetomada = true;
+      yield* conversas.retomar(id);
+      assert.isUndefined(registro.configs.at(-1)?.retomar);
+      assert.deepStrictEqual(registro.configs.at(-1)?.skills, esperadas);
       yield* fechar;
     }),
   );

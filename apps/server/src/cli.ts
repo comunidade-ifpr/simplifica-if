@@ -2,7 +2,7 @@
  * A CLI do servidor local (`effect/cli`), carregada pelo `bin.ts` fora do caminho rápido da ponte MCP.
  *
  *   node apps/server/src/bin.ts --banco tmp/kb.sqlite [--porta 0] [--porta-mcp 0] [--pasta-estado <dir>]
- *        [--origem app://simplifica]… [--canal dev|beta|estavel]
+ *        [--origem app://simplifica]… [--canal dev|beta|estavel] [--pasta-skills <dir>]
  *
  * O token chega por `SIMPLIFICA_SERVIDOR_TOKEN` ou pelo envelope no stdin (`partida.ts`). Pronto o
  * servidor, a única linha do stdout é a `LinhaPartida` em JSON; os logs vão para o stderr.
@@ -19,6 +19,7 @@ import * as Config from "effect/Config";
 import * as Console from "effect/Console";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Logger from "effect/Logger";
 import * as Option from "effect/Option";
@@ -51,6 +52,20 @@ const pastaEstadoPadrao = Effect.gen(function* () {
     : path.join(home, ".simplifica-if");
 });
 
+/**
+ * A pasta de skills quando nem `--pasta-skills` nem `SIMPLIFICA_SKILLS` a dão: no desenvolvimento
+ * (este módulo rodando do código-fonte, `apps/server/src/cli.ts`), o `.agents/skills` do checkout; no
+ * bundle do app, nenhuma (o desktop passa `<Resources>/skills`).
+ */
+const pastaSkillsPadrao = Effect.gen(function* () {
+  const path = yield* Path.Path;
+  const fs = yield* FileSystem.FileSystem;
+  const aqui = import.meta.filename;
+  if (aqui === undefined || path.basename(aqui) !== "cli.ts") return undefined;
+  const pasta = path.resolve(path.dirname(aqui), "..", "..", "..", ".agents", "skills");
+  return (yield* fs.exists(pasta).pipe(Effect.orElseSucceed(() => false))) ? pasta : undefined;
+});
+
 const servidor = Command.make(
   "simplifica-servidor",
   {
@@ -78,6 +93,13 @@ const servidor = Command.make(
       Flag.withDescription("canal da base quando o banco não registra um"),
       Flag.withDefault("dev"),
     ),
+    pastaSkills: Flag.String("pasta-skills").pipe(
+      Flag.withDescription(
+        "pasta das skills do app (as com bloco simplifica: no SKILL.md); padrão no desenvolvimento: .agents/skills do checkout (ou SIMPLIFICA_SKILLS)",
+      ),
+      Flag.withFallbackConfig(Config.String("SIMPLIFICA_SKILLS")),
+      Flag.optional,
+    ),
   },
   (opcoes) =>
     Effect.gen(function* () {
@@ -95,6 +117,9 @@ const servidor = Command.make(
         Option.getOrUndefined(opcoes.pastaEstado) ?? (yield* pastaEstadoPadrao),
       );
       const banco = path.resolve(yield* expandHomePath(opcoes.banco));
+      const pastaSkillsDada = Option.getOrUndefined(opcoes.pastaSkills);
+      const pastaSkills =
+        pastaSkillsDada === undefined ? yield* pastaSkillsPadrao : path.resolve(yield* expandHomePath(pastaSkillsDada));
       const drivers = Drivers.layerNode({
         ambiente,
         pastaEstado,
@@ -111,6 +136,7 @@ const servidor = Command.make(
           origens: [...opcoes.origens, ...partida.origens],
           canal: opcoes.canal,
           bancoConversas: path.join(pastaEstado, Banco.ARQUIVO_BANCO),
+          ...(pastaSkills === undefined ? {} : { pastaSkills }),
         }).pipe(Layer.provide(drivers)),
       );
       const app = Context.get(contexto, Servidor.ServidorApp);

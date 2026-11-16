@@ -1,6 +1,7 @@
 /**
- * Os handlers do `GrupoApp`: casca fina sobre o `Motor` (providers), as `Conversas` (conversa) e o
- * `Leitura` do `simplifica-mcp` (leitura, os mesmos handlers de `@simplifica-if/mcp/rpc`).
+ * Os handlers do `GrupoApp`: casca fina sobre o `Motor` (providers), as `Conversas` (conversa), o
+ * `CatalogoSkills` (skills) e o `Leitura` do `simplifica-mcp` (leitura, os mesmos handlers de
+ * `@simplifica-if/mcp/rpc`).
  *
  * A conversa não pertence à conexão: os métodos de conversa recebem só o id dela (`sessao`), e uma
  * interface que recarrega volta à mesma conversa por `conversa.carregar` e `conversa.acompanhar`.
@@ -12,9 +13,10 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
-import { GrupoConversa, GrupoProviders } from "@simplifica-if/contratos-app";
+import { GrupoConversa, GrupoProviders, GrupoSkills } from "@simplifica-if/contratos-app";
 import { layerHandlersRpc } from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
+import { CatalogoSkills } from "./CatalogoSkills.ts";
 import * as Conversas from "./Conversas.ts";
 
 const ehFalhaProvider = Schema.is(Motor.FalhaProvider);
@@ -67,5 +69,12 @@ const layerConversa = GrupoConversa.toLayer(
   }),
 );
 
-/** Os handlers dos três grupos; pede o `Motor`, as `Conversas` e o `Leitura`. */
-export const layer = Layer.mergeAll(layerProviders, layerConversa, layerHandlersRpc);
+const layerSkills = GrupoSkills.toLayer(
+  Effect.gen(function* () {
+    const catalogo = yield* CatalogoSkills;
+    return GrupoSkills.of({ "skills.listar": () => Effect.succeed(catalogo.resumos) });
+  }),
+);
+
+/** Os handlers dos quatro grupos; pede o `Motor`, as `Conversas`, o `CatalogoSkills` e o `Leitura`. */
+export const layer = Layer.mergeAll(layerProviders, layerConversa, layerSkills, layerHandlersRpc);

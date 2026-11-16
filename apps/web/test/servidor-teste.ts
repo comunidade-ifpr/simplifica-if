@@ -61,6 +61,6 @@ const programa = Effect.gen(function* () {
   const app = yield* Servidor.ServidorApp;
   yield* Console.log(JSON.stringify({ porta: app.porta, urlServidor: `http://127.0.0.1:${app.porta}`, token, pasta }));
   return yield* Effect.never;
-}).pipe(Effect.scoped, Effect.provide(camada), Effect.provide(Layer.succeed(Logger.LogToStderr, true)));
+}).pipe(Effect.scoped, Effect.provide(camada), Effect.provideService(Logger.LogToStderr, true));
 
 NodeRuntime.runMain(programa);
