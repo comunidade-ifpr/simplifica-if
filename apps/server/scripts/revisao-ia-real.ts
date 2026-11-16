@@ -198,7 +198,7 @@ const programa = Effect.gen(function* () {
 
 const pastaEstado =
   process.env["SIMPLIFICA_ESTADO"] ??
-  (process.platform === "darwin"
+  (NodeOS.platform() === "darwin"
     ? NodePath.join(NodeOS.homedir(), "Library", "Application Support", "simplifica-if-poc")
     : NodePath.join(NodeOS.homedir(), ".simplifica-if-poc"));
 const drivers = Drivers.layerNode({ ambiente: process.env, pastaEstado });

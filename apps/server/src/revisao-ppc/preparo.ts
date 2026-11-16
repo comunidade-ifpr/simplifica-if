@@ -87,9 +87,10 @@ function cnctEmTexto(cnct: unknown): string | null {
   return linhas.join("\n");
 }
 
-function contextoDoPacote(pacote: PacoteAvulso, dataBase: string): ContextoNormativo {
+function contextoDoPacote(pacote: PacoteAvulso, dataBase: string, curso: string | null): ContextoNormativo {
   return {
     dataBase,
+    curso: curso ?? undefined,
     cnct: cnctEmTexto(pacote.cnct),
     normas: pacote.normas.map((n) => ({
       ref: n.ref,
@@ -119,6 +120,8 @@ export interface EntradaPreparo {
   readonly markdown: string;
   readonly linhasTextoParaIa: readonly number[];
   readonly cnct: string | null;
+  /** O curso identificado (denominação e forma), em texto, para todo pedido. */
+  readonly curso: string | null;
   readonly modo: ModoRevisaoIa;
   readonly nonce: string;
 }
@@ -151,7 +154,7 @@ export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: Entr
     const doBloco = bloco.fichas.map((id) => porId.get(id)!);
     if (bloco.tipo === "S") {
       const geral = yield* pacote(bloco.fichas, 0);
-      const contexto = contextoDoPacote(geral, fontes.dataReferencia);
+      const contexto = contextoDoPacote(geral, fontes.dataReferencia, entrada.curso);
       const recortes = new Map<string, { achou: boolean; texto: string }>();
       for (const ficha of doBloco) {
         const proprio = yield* pacote([ficha.id], 1);
@@ -161,12 +164,12 @@ export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: Entr
       blocos.push({ ...bloco, pedido, caracteres: pedido.length, fontes: [...fontesPermitidas(contexto)] });
     } else if (bloco.tipo === "J") {
       const p = yield* pacote(bloco.fichas, 0);
-      const contexto = contextoDoPacote(p, fontes.dataReferencia);
+      const contexto = contextoDoPacote(p, fontes.dataReferencia, entrada.curso);
       const pedido = pedidoJ(bloco, doBloco, secoesDoTema(secoesTexto(p, true)), contexto, entrada.nonce);
       blocos.push({ ...bloco, pedido, caracteres: pedido.length, fontes: [...fontesPermitidas(contexto)] });
     } else {
       const p = yield* pacote(bloco.fichas, 0);
-      const contexto = contextoDoPacote(p, fontes.dataReferencia);
+      const contexto = contextoDoPacote(p, fontes.dataReferencia, entrada.curso);
       const trechos = secoesDoTema(secoesTexto(p, true), 8_000);
       transversais = { contexto, trechos };
       // Os resumos (até 600 caracteres por tema) e os resultados entram na hora.

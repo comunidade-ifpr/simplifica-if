@@ -540,6 +540,8 @@ function textoDoAviso(entrada: {
   conferidos: number;
   conferidosIa: number;
   foraDaRevisao: readonly string[];
+  /** Os temas das fichas de fora, na ordem do parecer. */
+  temasForaDaRevisao: readonly string[];
   totalCriterios: number;
   curso: CursoIdentificado;
   pendencias: readonly PendenciaRevisao[];
@@ -553,7 +555,7 @@ function textoDoAviso(entrada: {
     entrada.conferidosIa > 0
       ? `${vistos} de ${entrada.totalCriterios} critérios conferidos: ${entrada.conferidos} pelo código, com a base de normas, e ${entrada.conferidosIa} pela IA, com cada trecho e cada norma citados conferidos pelo app. ${
           entrada.foraDaRevisao.length
-            ? `Ficaram de fora (modo rápido): ${entrada.foraDaRevisao.join("; ")}.`
+            ? `No modo rápido, ficaram de fora ${plural(entrada.foraDaRevisao.length, "critério", "critérios")}, que exigem leitura, dos temas: ${entrada.temasForaDaRevisao.join("; ")}.`
             : vistos < entrada.totalCriterios
               ? "Os demais exigem leitura."
               : ""
@@ -646,6 +648,9 @@ export function revisarDocx(
     conferidos,
     conferidosIa,
     foraDaRevisao,
+    temasForaDaRevisao: [...new Set((opcoes.ia?.fora ?? []).map((f) => temaDaFicha(f, base)))]
+      .sort((a, b) => a - b)
+      .map((i) => TEMAS[i]!.titulo),
     totalCriterios,
     curso,
     pendencias,

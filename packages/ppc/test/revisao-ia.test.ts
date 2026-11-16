@@ -290,6 +290,8 @@ describe("os resultados da IA no DOCX comentado", () => {
     expect(revisao.conferidosIa).toBe(3);
     expect(revisao.aviso).toContain("15 de 80 critérios conferidos: 12 pelo código");
     expect(revisao.aviso).toContain("e 3 pela IA");
-    expect(revisao.aviso).toContain(`Ficaram de fora (modo rápido): ${base.fichas["CT-SUP-05"]}`);
+    expect(revisao.aviso).toContain(
+      "No modo rápido, ficaram de fora 1 critério, que exigem leitura, dos temas: Corpo docente, gestão e infraestrutura.",
+    );
   });
 });

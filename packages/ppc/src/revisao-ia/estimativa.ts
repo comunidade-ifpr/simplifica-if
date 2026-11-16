@@ -25,18 +25,23 @@ export type ParametrosProvider = {
   precoSaida?: number;
 };
 
-/** Densidade medida: entre 1,4 (JSON acentuado, B) e 2,0 (texto, A); o pedido é texto com tabelas. */
-export const CARACTERES_POR_TOKEN = 1.7;
-/** Saída média por critério (JSON com justificativa, evidências e lacunas). */
-export const SAIDA_POR_FICHA = 330;
+/**
+ * Densidade medida no teste real (Claude Sonnet, modo rápido, 16/11/2026): 164 mil caracteres de
+ * pedido viraram 81 mil tokens gravados no cache, 2,0 caracteres por token (o pedido é texto, não JSON).
+ */
+export const CARACTERES_POR_TOKEN = 2.0;
+/** Saída média por critério, medida no mesmo teste: 15,1 mil tokens para 22 critérios. */
+export const SAIDA_POR_FICHA = 690;
 /** Folga para as novas tentativas depois de uma conferência que falhou. */
 export const FOLGA_TENTATIVAS = 1.1;
 
 export const PARAMETROS: Record<Provider, ParametrosProvider> = {
   claude: {
-    sistemaPorSessao: 1_500,
-    segundosPorSessao: 6,
-    saidaPorSegundo: 55,
+    // Medido: com `tools: []` e o prompt de sistema só do app, o sistema some na conta (2 tokens fora do cache).
+    sistemaPorSessao: 500,
+    segundosPorSessao: 3,
+    // Medido: de 120 a 155 tokens de saída por segundo nos cinco blocos.
+    saidaPorSegundo: 140,
     janelaReferencia: 2_000_000,
     nomeJanela: "uma janela de 5 horas do plano Pro",
     // Sonnet: entrada gravada no cache a US$ 3,75/M (o Claude Code grava todo o pedido), saída a US$ 15/M.

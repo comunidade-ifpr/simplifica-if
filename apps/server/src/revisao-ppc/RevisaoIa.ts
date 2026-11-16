@@ -38,7 +38,7 @@ import * as Motor from "@simplifica-if/motor";
 import { estimar } from "@simplifica-if/ppc/revisao-ia/estimativa";
 import { pedidoT } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { MODELO_PADRAO } from "@simplifica-if/ppc/revisao-ia/tipos";
-import type { ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
+import { NOME_DA_FORMA, type ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 import { type RegistroRevisaoIa, Revisoes } from "../persistencia/Revisoes.ts";
 import { AnalisePpc, resultadoParaInterface } from "./AnalisePpc.ts";
 import { alvoDosTrechos, julgarBloco, type PausaRevisao, type ResultadoBloco } from "./julgamento.ts";
@@ -166,6 +166,9 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
       markdown: analisado.revisao.markdown,
       linhasTextoParaIa: analisado.revisao.linhasTextoParaIa,
       cnct: curso.cnct?.slug ?? null,
+      curso: curso.cnct
+        ? `${curso.cnct.denominacao}${curso.forma ? `, forma de oferta ${NOME_DA_FORMA[curso.forma] ?? curso.forma}` : ", forma de oferta não identificada"}`
+        : null,
       modo: entrada.modo,
       nonce,
     }).pipe(

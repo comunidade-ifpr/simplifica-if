@@ -26,6 +26,11 @@ export type NormaContexto = {
 /** O contexto normativo de um bloco, buscado no `kb.sqlite` pelo servidor (confiável). */
 export type ContextoNormativo = {
   dataBase: string;
+  /**
+   * O curso como o código o identificou no documento (denominação do CNCT e forma de oferta): sem
+   * isso, um lote S não sabe a forma, que costuma estar fora do recorte (medido no teste real).
+   */
+  curso?: string | undefined;
   /** O curso do CNCT, já em linhas `campo: valor`, ou nulo. */
   cnct: string | null;
   normas: NormaContexto[];
@@ -74,6 +79,7 @@ const formatarFicha = (f: FichaIa) =>
 
 export function formatarContexto(contexto: ContextoNormativo): string {
   const partes = [`Data da base de normas: ${contexto.dataBase}.`];
+  if (contexto.curso) partes.push(`Curso identificado pelo código no documento: ${contexto.curso}.`);
   if (contexto.cnct) partes.push(`### Curso no CNCT (fonte: cnct)\n${contexto.cnct}`);
   for (const norma of contexto.normas) {
     const cabeca = `### ${norma.titulo} (fonte: ${norma.ref}${norma.situacao ? `; situação: ${norma.situacao}` : ""})`;
