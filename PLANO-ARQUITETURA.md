@@ -787,7 +787,7 @@ Em aberto:
   - `LEI_BR_12711-2012_cotas.md` também parece paráfrase;
   - uma "IN nº 1/2021" sem data, em contexto IFPR, ainda vai para a IN da Reitoria.
 
-**Trilha T, passo T3 concluído em 16/11/2026** (branch `t3/3e871bcd`, sem merge: aguarda duas revisões independentes).
+**Trilha T, passo T3 concluído em 16/11/2026** (branch `t3/typescript-docx-conversion`, sem merge: aguarda duas revisões independentes).
 
 - A conversão DOCX da `revisar-ppc` está em TypeScript, em `scripts/conversao-docx/`; `preparar-documento` a chama direto, e a skill com entrada `.docx` roda só com Node (sem Python, MS Word ou poppler).
 - Não é transcrição do Python. Duas camadas:
