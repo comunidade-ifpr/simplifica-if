@@ -124,12 +124,17 @@ export function conferirResposta(
     const r = decodificado.success;
     const erros: string[] = [];
     if (!ficha.estados_permitidos.includes(r.estado)) erros.push(`estado ${r.estado} não é permitido para a ficha`);
-    for (const e of r.evidencias)
+    // Os problemas voltam à IA na nova tentativa, fora das marcas do PPC: nunca repetem o texto que ela
+    // escreveu (um trecho recusado pode ser a própria instrução escondida), só a posição e IDs válidos.
+    r.evidencias.forEach((e, i) => {
       if (e.trecho.trim() && !trechoExiste(e.trecho, entrada.alvo))
-        erros.push(`trecho que não está no PPC: "${e.trecho.slice(0, 120)}"`);
+        erros.push(`trecho que não está no PPC (evidência ${i + 1}): copie literalmente ou retire`);
+    });
     for (const fonte of r.fontes ?? [])
       if (!entrada.fontes.has(fonte) && !entrada.fontes.has(fonte.split("#")[0]!) && !fonte.startsWith("cnct"))
-        erros.push(`fonte fora do contexto entregue: ${fonte}`);
+        erros.push(
+          `fonte fora do contexto entregue: ${/^[a-z0-9/#._-]{1,80}$/i.test(fonte) ? fonte : "(ID inválido)"}`,
+        );
     if (r.estado === "ATENDE" && !r.evidencias.some((e) => e.trecho.trim())) erros.push("ATENDE sem trecho do PPC");
     if (erros.length) problemas.set(fichaId, erros);
     else validos.set(fichaId, r);
@@ -139,13 +144,13 @@ export function conferirResposta(
   return { validos, problemas, resumo };
 }
 
-/** A mensagem de nova tentativa: só os problemas, para a IA corrigir na mesma sessão. */
+/** Os problemas de uma resposta, para o fim do pedido da nova tentativa (numa sessão nova). */
 export function pedidoDeCorrecao(conferencia: Conferencia): string {
   const linhas = [...conferencia.problemas].map(
     ([ficha, erros]) => `- ${ficha === "*" ? "resposta" : ficha}: ${erros.join("; ")}`,
   );
   return [
-    "A resposta não passou na conferência automática:",
+    "Uma resposta anterior a este mesmo pedido não passou na conferência automática:",
     ...linhas,
     "Responda de novo só com o JSON completo e corrigido (todos os critérios do bloco). Trechos têm de ser cópia literal do PPC; fontes, só as do contexto.",
   ].join("\n");

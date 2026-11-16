@@ -251,10 +251,11 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
   it.effect('confere toda resposta: nova tentativa com o erro, e o que falha de novo sai "a conferir"', () =>
     Effect.gen(function* () {
       reiniciar();
-      roteiro.responder = (p, turno) => {
+      roteiro.responder = (p) => {
         const bloco = blocoDo(p);
         // S da identificação: JSON inválido, depois válido.
-        if (bloco === "s-01-1") return { texto: turno === 1 ? "Aqui está: {quebrado" : respostaValida(p) };
+        const nova = p.includes("não passou na conferência automática");
+        if (bloco === "s-01-1") return { texto: !nova ? "Aqui está: {quebrado" : respostaValida(p) };
         // J da matriz: CT-CURR-04 com trecho inventado e CT-CURR-07 com norma fora do contexto, duas vezes.
         if (bloco === "j-02")
           return {
@@ -268,9 +269,12 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       };
       const { final } = yield* rodar(gravar("PPC B.docx", ppcSintetico()));
       assert.strictEqual(final.situacao, "concluida");
-      const correcoes = roteiro.mensagens.filter((m) => m.startsWith("A resposta não passou na conferência"));
+      // A nova tentativa é uma sessão nova, com o pedido inteiro e os problemas no fim.
+      const correcoes = roteiro.mensagens.filter((m) => m.includes("não passou na conferência automática"));
       assert.strictEqual(correcoes.length, 2);
       assert.include(correcoes[0]!, "JSON inválido");
+      assert.include(correcoes[0]!, '"bloco": "s-01-1"');
+      assert.strictEqual(roteiro.mensagens.length, roteiro.configs.length);
       assert.strictEqual(final.blocos.find((b) => b.id === "s-01-1")!.naoConferidas, 0);
       assert.strictEqual(final.blocos.find((b) => b.id === "j-02")!.naoConferidas, 2);
       const r = final.resultado!;

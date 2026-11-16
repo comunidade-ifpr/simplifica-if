@@ -37,7 +37,13 @@ export class PausaRevisao extends Schema.TaggedError<PausaRevisao>()("PausaRevis
 }) {}
 
 /** O resultado gravado de um bloco (`blocos_ia.resultado`). */
-export type ResultadoBloco = { resultados: ResultadoFichaIa[]; resumo: string | null; tentativas: number };
+export type ResultadoBloco = {
+  resultados: ResultadoFichaIa[];
+  resumo: string | null;
+  tentativas: number;
+  /** Os problemas da primeira resposta (por que houve nova tentativa), para o diagnóstico. */
+  problemasPrimeira?: string[];
+};
 
 export const NOME_PROVIDER: Record<Motor.Provider, string> = {
   claude: "Claude",
@@ -106,29 +112,36 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
   const motor = yield* Motor.Motor;
   const inicio = yield* Clock.currentTimeMillis;
   const uso = usoVazio();
-  const pasta = yield* Effect.acquireRelease(
-    Effect.promise(() => NodeFSP.mkdtemp(NodePath.join(NodeOS.tmpdir(), "simplifica-julgamento-"))).pipe(
-      Effect.flatMap((p) => Effect.promise(() => NodeFSP.realpath(p))),
-    ),
-    (p) => Effect.promise(() => NodeFSP.rm(p, { recursive: true, force: true })),
-  );
-  const sessao = yield* Effect.acquireRelease(
-    motor
-      .iniciarSessao({
-        provider: entrada.provider,
-        pastaTrabalho: pasta,
-        servidoresMcp: [],
-        instrucoes: instrucoesJulgador(entrada.nonce),
-        semFerramentas: true,
-        ...(entrada.modelo ? { modelo: entrada.modelo } : {}),
-      })
-      .pipe(Effect.mapError((erro) => pausaDoErro(entrada.provider, erro.detalhe))),
-    (id) => motor.encerrar(id).pipe(Effect.ignore),
-  );
-
-  const turno = Effect.fn("RevisaoIa.turno")(function* (texto: string) {
+  /**
+   * Uma tentativa: uma sessão nova, numa pasta vazia, com um turno só. A nova tentativa não continua a
+   * sessão: no teste real de 16/11/2026, o segundo turno de uma sessão do Claude levou um bloco fixo de
+   * cerca de 158 mil tokens (lido ou gravado no cache), e as três novas tentativas custaram mais que os
+   * cinco blocos; um pedido novo, com os problemas no fim, custa só o pedido.
+   */
+  const tentativa = Effect.fn("RevisaoIa.tentativa")(function* (texto: string) {
+    const pasta = yield* Effect.acquireRelease(
+      Effect.promise(() => NodeFSP.mkdtemp(NodePath.join(NodeOS.tmpdir(), "simplifica-julgamento-"))).pipe(
+        Effect.flatMap((p) => Effect.promise(() => NodeFSP.realpath(p))),
+      ),
+      (p) => Effect.promise(() => NodeFSP.rm(p, { recursive: true, force: true })),
+    );
+    const sessao = yield* Effect.acquireRelease(
+      motor
+        .iniciarSessao({
+          provider: entrada.provider,
+          pastaTrabalho: pasta,
+          servidoresMcp: [],
+          instrucoes: instrucoesJulgador(entrada.nonce),
+          semFerramentas: true,
+          ...(entrada.modelo ? { modelo: entrada.modelo } : {}),
+        })
+        .pipe(Effect.mapError((erro) => pausaDoErro(entrada.provider, erro.detalhe))),
+      (id) => motor.encerrar(id).pipe(Effect.ignore),
+    );
     const textos: string[] = [];
     const erros: string[] = [];
+    // O `custoUsd` do Claude é o acumulado da sessão (o `total_cost_usd` do Agent SDK): vale o último.
+    let custoDaSessao = 0;
     yield* motor.enviarMensagem(sessao, texto).pipe(
       Stream.runForEach((evento) =>
         Effect.gen(function* () {
@@ -141,7 +154,7 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
               uso.saida += evento.saida;
               uso.cacheLeitura += evento.cacheLeitura ?? 0;
               uso.cacheEscrita += evento.cacheEscrita ?? 0;
-              uso.custoUsd += evento.custoUsd ?? 0;
+              custoDaSessao = Math.max(custoDaSessao, evento.custoUsd ?? 0);
               break;
             case "Erro":
               erros.push(evento.mensagem);
@@ -167,21 +180,25 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
           ),
       }),
     );
+    uso.custoUsd += custoDaSessao;
     if (erros.length) return yield* pausaDoErro(entrada.provider, erros.join("; "));
     return textos.join("\n");
-  });
+  }, Effect.scoped);
 
   const conferir = (texto: string): Conferencia =>
     conferirResposta(texto, entrada.bloco, entrada.fichas, { alvo: entrada.alvo, fontes: entrada.fontes });
 
   let tentativas = 1;
-  const primeira = conferir(yield* turno(entrada.pedido));
+  const primeira = conferir(yield* tentativa(entrada.pedido));
   let validos = primeira.validos;
   let resumo = primeira.resumo;
   let problemas = primeira.problemas;
-  if (problemas.size > 0) {
+  // Só o resumo do tema faltando não justifica pagar o pedido de novo: as transversais seguem sem ele.
+  const fichaRecusada = [...problemas.keys()].some((k) => k !== "*") || (problemas.has("*") && validos.size === 0);
+  const problemasPrimeira = [...problemas].map(([ficha, erros]) => `${ficha}: ${erros.join("; ")}`);
+  if (fichaRecusada) {
     tentativas = 2;
-    const segunda = conferir(yield* turno(pedidoDeCorrecao(primeira)));
+    const segunda = conferir(yield* tentativa(`${entrada.pedido}\n\n${pedidoDeCorrecao(primeira)}`));
     // A segunda resposta vale onde passou; o que só passou na primeira continua valendo.
     validos = new Map([...primeira.validos, ...segunda.validos]);
     resumo = segunda.resumo ?? primeira.resumo;
@@ -204,6 +221,6 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
       motivoFalha: motivoLegivel(erros),
     };
   });
-  const resultado: ResultadoBloco = { resultados, resumo, tentativas };
+  const resultado: ResultadoBloco = { resultados, resumo, tentativas, problemasPrimeira };
   return { resultado, uso: { ...uso }, segundos: Math.round(((yield* Clock.currentTimeMillis) - inicio) / 100) / 10 };
 }, Effect.scoped);
