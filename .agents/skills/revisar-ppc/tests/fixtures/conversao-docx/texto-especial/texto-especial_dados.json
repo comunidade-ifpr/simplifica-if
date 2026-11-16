@@ -1,0 +1,33 @@
+{
+  "arquivo_origem": "texto-especial.docx",
+  "data_conversao": "2026-11-16T12:00:00",
+  "metadata_documento": {
+    "title": "PPC fictício",
+    "author": "Autora de Teste",
+    "created": "2026-03-05T10:38:00+00:00",
+    "modified": "2026-04-22T03:06:00+00:00",
+    "last_modified_by": "Revisor de Teste"
+  },
+  "dados_extraidos": {
+    "depois_de_paragrafo": "tabela",
+    "depois_de_lista": "tabela"
+  },
+  "estrutura": {
+    "secoes_detectadas": [
+      "Título pelo estilo",
+      "Subtítulo pelo estilo",
+      "2.1 Numerado em negrito",
+      "2.1.1 Com ponto final",
+      "2024 Número solto em negrito vira título",
+      "Grande de 18",
+      "Médio de 16",
+      "Pequeno de 14"
+    ],
+    "total_elementos": 30,
+    "total_tabelas": 2
+  },
+  "arquivos_relacionados": {
+    "markdown_normalizado": "texto-especial.md",
+    "markdown_bruto": "texto-especial-bruto.md"
+  }
+}
