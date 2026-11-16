@@ -17,7 +17,8 @@
  *
  * Os problemas voltam à IA na nova tentativa, **fora das marcas do PPC**: nunca repetem nada que a IA
  * escreveu (um ID de ficha inventado, um trecho recusado, a mensagem do `JSON.parse` podem trazer a
- * instrução escondida). Só IDs das fichas do bloco, IDs de fonte com formato válido e frases fixas.
+ * instrução escondida). Só IDs das fichas do bloco, IDs canônicos de dispositivo de uma norma entregue
+ * e frases fixas.
  */
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
@@ -85,8 +86,8 @@ const PEDACO_MINIMO = 15;
 const TRECHO_MINIMO = 25;
 
 /**
- * O trecho existe no alvo. Com reticências, cada pedaço tem ao menos 15 caracteres e existe; o trecho
- * todo soma ao menos 25 (sem isso, "est ... 400" passaria em quase qualquer texto).
+ * O trecho existe no alvo. Com reticências, cada pedaço tem ao menos 15 caracteres e existe, na ordem
+ * do texto; o trecho todo soma ao menos 25 (sem isso, "est ... 400" passaria em quase qualquer texto).
  */
 export function trechoExiste(trecho: string, alvo: string): boolean {
   const pedacos = trecho
@@ -95,7 +96,14 @@ export function trechoExiste(trecho: string, alvo: string): boolean {
     .filter((p) => p.length > 0);
   if (!pedacos.length || pedacos.some((p) => p.length < PEDACO_MINIMO)) return false;
   if (pedacos.reduce((t, p) => t + p.length, 0) < TRECHO_MINIMO) return false;
-  return pedacos.every((p) => alvo.includes(p));
+  // Na ordem do texto: cada pedaço depois do anterior (reticências não reordenam o PPC).
+  let desde = 0;
+  for (const p of pedacos) {
+    const onde = alvo.indexOf(p, desde);
+    if (onde < 0) return false;
+    desde = onde + p.length;
+  }
+  return true;
 }
 
 /** A fonte é o ID exato de algo entregue: o dispositivo (`ref#disp`), a norma sem `#`, ou `cnct`. */
@@ -112,7 +120,17 @@ export type Conferencia = {
 const adicionar = (mapa: Map<string, string[]>, chave: string, problema: string) =>
   mapa.set(chave, [...(mapa.get(chave) ?? []), problema]);
 
-const ID_DE_FONTE = /^[a-z0-9/#._-]{1,80}$/i;
+/** A forma dos IDs canônicos das normas (`br/lei/1996/9394`, `ifpr/consup/res/2024/190#art5-par1`). */
+const ID_CANONICO = /^(br|ifpr)(\/[a-z0-9-]{1,20}){2,5}(#[a-z0-9-]{1,40})?$/;
+
+/**
+ * A fonte recusada, como volta à IA: só um ID na forma canônica cuja norma (sem o `#`) foi entregue
+ * ao bloco (o dispositivo é que não foi); qualquer outra coisa pode ser texto da IA e vira frase fixa.
+ */
+const fonteParaCorrecao = (fonte: string, fontes: ReadonlySet<string>) =>
+  ID_CANONICO.test(fonte) && fontes.has(fonte.split("#")[0]!)
+    ? `fonte fora do contexto entregue: ${fonte} (cite a norma sem o # ou um dispositivo da lista)`
+    : "fonte fora do contexto entregue: use só os IDs listados no contexto";
 
 /** Confere a resposta de um bloco. Nunca lança: o que falha vira problema. */
 export function conferirResposta(
@@ -176,8 +194,7 @@ export function conferirResposta(
         );
     });
     for (const fonte of r.fontes ?? [])
-      if (!fonteValida(fonte, entrada.fontes))
-        erros.push(`fonte fora do contexto entregue: ${ID_DE_FONTE.test(fonte) ? fonte : "(ID inválido)"}`);
+      if (!fonteValida(fonte, entrada.fontes)) erros.push(fonteParaCorrecao(fonte, entrada.fontes));
     if (r.estado === "ATENDE" && conferidas === 0) erros.push("ATENDE sem trecho do PPC");
     if (r.estado === "NAO_ATENDE" && conferidas === 0)
       erros.push("NAO_ATENDE sem trecho do PPC: cite o trecho da seção lida que mostra o problema ou a falta");

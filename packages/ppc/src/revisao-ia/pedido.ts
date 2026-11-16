@@ -245,13 +245,15 @@ export function pedidoT(
 }
 
 /**
- * O conteúdo do PPC que a IA recebe para uma ficha num pedido (a medição dos recortes): o que está
- * entre as marcas do nonce, sem os recortes das outras fichas do lote (o comum do bloco fica).
+ * O conteúdo do PPC que a IA recebe para uma ficha num pedido (o alvo dos trechos e a medição dos
+ * recortes): o que está entre as marcas do nonce, sem os recortes das outras fichas do lote (o comum
+ * do bloco fica) e sem os resumos dos temas, que a IA escreveu.
  * `reserva` é o que vale quando o pedido ainda não existe (as transversais, montadas na hora).
  */
 export function conteudoDoPpcParaFicha(bloco: { pedido: string }, ficha: string, reserva = ""): string {
   const marcas = /<ppc-[0-9a-z]+>\n([\s\S]*)\n<\/ppc-[0-9a-z]+>/.exec(bloco.pedido);
-  const ppc = marcas ? marcas[1]! : reserva;
+  // Os resumos dos temas (nas transversais) foram escritos pela IA: não são PPC, nunca são alvo.
+  const ppc = (marcas ? marcas[1]! : reserva).replace(/^## Resumos dos temas\n[\s\S]*?(?=^## |(?![\s\S]))/m, "");
   const partes = ppc.split(/^(?=## Recorte para \S+$)/m);
   return partes
     .filter((parte) => {
