@@ -88,7 +88,8 @@ const layerPasta = GrupoPasta.toLayer(
       "pasta.criar": ({ titulo }) => registrarEMapear(pastas.criar(titulo)).pipe(Effect.map((pasta) => ({ pasta }))),
       "pasta.anexar": ({ pasta, arquivo }) => registrarEMapear(pastas.anexar(pasta, arquivo)),
       "pasta.ver": ({ sessao }) => conversas.pasta(sessao),
-      "pasta.desfazer": ({ sessao }) => registrarEMapear(conversas.desfazer(sessao)),
+      "pasta.desfazer": ({ sessao, incluirForaDaConversa }) =>
+        registrarEMapear(conversas.desfazer(sessao, incluirForaDaConversa === true)),
     });
   }),
 );

@@ -107,10 +107,13 @@ function ConfirmarDesfazer({
 }: {
   readonly vista: PastaConversa;
   readonly ocupado: boolean;
-  readonly aoConfirmar: () => void;
+  readonly aoConfirmar: (incluirForaDaConversa: boolean) => void;
   readonly aoCancelar: () => void;
 }) {
-  const { criados, alterados, apagados, copiaEm } = vista.desfazer;
+  const { criados, alterados, apagados, copiaEm, foraDaConversa } = vista.desfazer;
+  const [incluir, setIncluir] = useState(false);
+  const fora = new Set(foraDaConversa);
+  const lista = (nomes: ReadonlyArray<string>) => nomes.filter((nome) => incluir || !fora.has(nome)).join(", ");
   return (
     <div
       role="group"
@@ -119,16 +122,33 @@ function ConfirmarDesfazer({
     >
       <p className="font-semibold">Desfazer o que a IA fez nesta pasta?</p>
       <p className="text-muted-foreground">
-        A pasta volta a ser como era {copiaEm === undefined ? "antes" : `em ${FORMATO_HORA.format(new Date(copiaEm))}`},
-        antes da mensagem que a mudou. A conversa não muda.
+        Volta o que a IA mudou na mensagem {copiaEm === undefined ? "" : `de ${FORMATO_HORA.format(new Date(copiaEm))}`}
+        . A conversa não muda.
       </p>
       <ul className="my-2 list-disc pl-5">
-        {criados.length === 0 ? null : <li>Saem: {criados.join(", ")}</li>}
-        {alterados.length === 0 ? null : <li>Voltam ao que eram: {alterados.join(", ")}</li>}
-        {apagados.length === 0 ? null : <li>Voltam para a pasta: {apagados.join(", ")}</li>}
+        {lista(criados) === "" ? null : <li>Saem: {lista(criados)}</li>}
+        {lista(alterados) === "" ? null : <li>Voltam ao que eram: {lista(alterados)}</li>}
+        {lista(apagados) === "" ? null : <li>Voltam para a pasta: {lista(apagados)}</li>}
       </ul>
+      {foraDaConversa.length === 0 ? null : (
+        <div className="mb-2 flex flex-col gap-1.5">
+          <p>
+            {foraDaConversa.length === 1 ? "Este arquivo também foi mudado" : "Estes arquivos também foram mudados"}{" "}
+            fora da conversa depois: {foraDaConversa.join(", ")}. Sem marcar abaixo, eles ficam como estão.
+          </p>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              className="accent-primary"
+              checked={incluir}
+              onChange={(evento) => setIncluir(evento.currentTarget.checked)}
+            />
+            Desfazer também esses arquivos (a mudança feita fora da conversa se perde)
+          </label>
+        </div>
+      )}
       <div className="flex gap-2">
-        <Button size="sm" variant="destructive" disabled={ocupado} onClick={aoConfirmar}>
+        <Button size="sm" variant="destructive" disabled={ocupado} onClick={() => aoConfirmar(incluir)}>
           {ocupado ? <Spinner /> : <RotateCcwIcon />} Desfazer
         </Button>
         <Button size="sm" variant="outline" disabled={ocupado} onClick={aoCancelar}>
@@ -175,10 +195,10 @@ export function PainelPasta({
     // oxlint-disable-next-line react/exhaustive-effect-dependencies
   }, [api, sessao, atualizar]);
 
-  const desfazer = async () => {
+  const desfazer = async (incluirForaDaConversa: boolean) => {
     setOcupado(true);
     try {
-      setVista(await api.chamar((cliente) => cliente["pasta.desfazer"]({ sessao })));
+      setVista(await api.chamar((cliente) => cliente["pasta.desfazer"]({ sessao, incluirForaDaConversa })));
       setDesfeito(true);
     } catch (falha) {
       setErro(explicarErro(falha));
@@ -261,7 +281,7 @@ export function PainelPasta({
               <ConfirmarDesfazer
                 vista={vista}
                 ocupado={ocupado}
-                aoConfirmar={() => void desfazer()}
+                aoConfirmar={(incluir) => void desfazer(incluir)}
                 aoCancelar={() => setConfirmando(false)}
               />
             ) : (

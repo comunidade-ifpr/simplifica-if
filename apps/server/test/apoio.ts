@@ -120,6 +120,18 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
             NodeFS.writeFileSync(NodePath.join(config.pastaTrabalho, "resultado.md"), `# Resultado\n\n${texto}\n`);
             const entrada = NodePath.join(config.pastaTrabalho, "entrada.md");
             if (NodeFS.existsSync(entrada)) NodeFS.writeFileSync(entrada, "alterado pela IA\n");
+            // "link:<alvo>": troca `x.txt` por um link para <alvo> e muda `sub/a.txt` (o Desfazer não segue links).
+            const link = /link:(\S+)/.exec(texto)?.[1];
+            if (link !== undefined) {
+              NodeFS.rmSync(NodePath.join(config.pastaTrabalho, "x.txt"), { force: true });
+              NodeFS.symlinkSync(link, NodePath.join(config.pastaTrabalho, "x.txt"));
+              NodeFS.writeFileSync(NodePath.join(config.pastaTrabalho, "sub", "a.txt"), "mudado pela IA\n");
+            }
+            // "subpasta": também cria `novo/sub/x.md` (pastas novas que o Desfazer tira).
+            if (texto.includes("subpasta")) {
+              NodeFS.mkdirSync(NodePath.join(config.pastaTrabalho, "novo", "sub"), { recursive: true });
+              NodeFS.writeFileSync(NodePath.join(config.pastaTrabalho, "novo", "sub", "x.md"), "x\n");
+            }
           }
           yield* canal.emitir({ _tag: "TextoFinal", texto: decisao === "permitir" ? "Gravei." : "Não gravei." });
           yield* canal.emitir({ _tag: "FimTurno", motivo: "end_turn" });

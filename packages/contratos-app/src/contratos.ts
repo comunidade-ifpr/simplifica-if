@@ -807,7 +807,11 @@ export const ArquivoPasta = Schema.Struct({
 });
 export type ArquivoPasta = typeof ArquivoPasta.Type;
 
-/** O que "Desfazer o que a IA fez nesta pasta" faria agora. */
+/**
+ * O que "Desfazer o que a IA fez nesta pasta" faria agora: só o que mudou **dentro** do turno mais
+ * recente que mudou a pasta (o retrato de antes e o de depois do turno), não as mudanças feitas fora da
+ * conversa depois dele.
+ */
 export const PrevisaoDesfazer = Schema.Struct({
   /** Há uma cópia diferente do estado atual para restaurar. */
   disponivel: Schema.Boolean,
@@ -821,6 +825,11 @@ export const PrevisaoDesfazer = Schema.Struct({
   alterados: Schema.Array(Schema.String),
   /** Arquivos que voltariam (apagados depois da cópia). */
   apagados: Schema.Array(Schema.String),
+  /**
+   * Dos arquivos acima, os que também mudaram fora da conversa depois do turno (a pessoa os editou no
+   * Word, por exemplo). Sem `incluirForaDaConversa`, o Desfazer os deixa como estão.
+   */
+  foraDaConversa: Schema.Array(Schema.String),
   /** Por que não há cópia de algum turno (pasta grande demais), em linguagem simples. */
   aviso: Schema.optionalKey(Schema.String),
 });
@@ -866,7 +875,11 @@ export class GrupoPasta extends RpcGroup.make(
    * pasta depois. Recusa com turno em andamento.
    */
   Rpc.make("pasta.desfazer", {
-    payload: EntradaSessao,
+    payload: Schema.Struct({
+      sessao: Schema.String,
+      /** Desfazer também os arquivos de `foraDaConversa` (perde a mudança feita fora da conversa). */
+      incluirForaDaConversa: Schema.optionalKey(Schema.Boolean),
+    }),
     success: PastaConversa,
     error: Schema.Union([FalhaPasta, SessaoDesconhecida, TurnoEmAndamento]),
   }),

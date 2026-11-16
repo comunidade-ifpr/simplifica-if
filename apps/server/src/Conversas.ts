@@ -114,6 +114,7 @@ export class Conversas extends Context.Service<
     /** Restaura a cópia da pasta de antes do último turno que a mudou; recusa com turno em andamento. */
     readonly desfazer: (
       sessao: string,
+      incluirForaDaConversa: boolean,
     ) => Effect.Effect<PastaConversa, Motor.SessaoDesconhecida | Motor.TurnoEmAndamento | FalhaPasta>;
   }
 >()("@simplifica-if/server/Conversas") {}
@@ -477,7 +478,14 @@ const make = Effect.fnUntraced(function* (opcoes: {
           yield* registrarEvento(viva, { _tag: "FimTurno", motivo: "falha" });
         }),
       ),
-      Effect.ensuring(Effect.suspend(() => fecharTurno(viva, turno))),
+      // O retrato do fim do turno (o Desfazer separa o que a IA fez do que mudou depois), antes de fechá-lo.
+      Effect.ensuring(
+        Effect.suspend(() =>
+          pastas
+            .fecharTurno(viva.id, turno.numero, viva.registro.pastaTrabalho)
+            .pipe(Effect.andThen(fecharTurno(viva, turno))),
+        ),
+      ),
     );
 
   /** Começa o turno e devolve a inscrição nos itens dele (no escopo de quem chama). */
@@ -740,12 +748,12 @@ const make = Effect.fnUntraced(function* (opcoes: {
     return yield* pastas.ver(id, viva.registro.pastaTrabalho);
   });
 
-  const desfazer = Effect.fn("Conversas.desfazer")(function* (id: string) {
+  const desfazer = Effect.fn("Conversas.desfazer")(function* (id: string, incluirForaDaConversa: boolean) {
     const viva = yield* obter(id);
     return yield* viva.trava.withPermits(1)(
       Effect.gen(function* () {
         if (viva.turno !== undefined) return yield* new Motor.TurnoEmAndamento();
-        return yield* pastas.desfazer(id, viva.registro.pastaTrabalho);
+        return yield* pastas.desfazer(id, viva.registro.pastaTrabalho, incluirForaDaConversa);
       }),
     );
   });

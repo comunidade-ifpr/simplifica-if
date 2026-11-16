@@ -10,7 +10,7 @@
 import { afterAll, afterEach, beforeAll, expect, it, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 import type { ServidorTeste } from "../vite.config.ts";
-import { iniciarServidorTeste, montarApp, pararServidoresTeste } from "../test/navegador.tsx";
+import { editarArquivoDeTarefa, iniciarServidorTeste, montarApp, pararServidoresTeste } from "../test/navegador.tsx";
 import type { PonteDesktop } from "./ponte-desktop.ts";
 
 let servidor: ServidorTeste;
@@ -297,7 +297,18 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   await capturar("05-desfazer");
   await confirmacao.getByRole("button", { name: "Cancelar" }).click();
   await expect.element(mudados.getByText("relatorio.md")).toBeVisible();
+  // A pessoa edita o relatório fora da conversa: a confirmação avisa e só o desfaz se ela marcar.
+  const relatorio = abrirArquivoTarefa.mock.calls[0]![0];
+  await editarArquivoDeTarefa(relatorio, "# Relatório\n\nCom a minha revisão.\n");
+  await pasta.getByRole("button", { name: "Fechar a pasta da tarefa" }).click();
+  await page.getByRole("button", { name: "Pasta da tarefa" }).click();
   await pasta.getByRole("button", { name: "Desfazer o que a IA fez nesta pasta" }).click();
+  await expect
+    .element(confirmacao.getByText(/Este arquivo também foi mudado fora da conversa depois: relatorio\.md/))
+    .toBeVisible();
+  await expect.element(confirmacao.getByText("Saem: relatorio.md")).not.toBeInTheDocument();
+  await confirmacao.getByRole("checkbox", { name: /Desfazer também esses arquivos/ }).click();
+  await expect.element(confirmacao.getByText("Saem: relatorio.md")).toBeVisible();
   await pasta.getByRole("button", { name: "Desfazer", exact: true }).click();
   await expect.element(pasta.getByText("Pronto: a pasta voltou ao que era antes da mensagem.")).toBeVisible();
   await expect.element(mudados).not.toBeInTheDocument();

@@ -180,13 +180,16 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       assert.isTrue(NodeFS.existsSync(NodePath.join(pasta, ".simplifica", "oculto.md")));
       assert.isFalse(desfeita.desfazer.disponivel);
 
-      // A pessoa apaga um arquivo e a IA grava de novo: o Desfazer devolve o arquivo apagado no turno.
+      // A IA grava de novo, e a pessoa apaga o resultado depois do turno: o Desfazer volta a entrada e
+      // avisa que o resultado mudou fora da conversa.
       yield* turno("grave de novo");
       NodeFS.rmSync(NodePath.join(pasta, "resultado.md"));
       vista = yield* rpc["pasta.ver"]({ sessao });
-      assert.deepInclude(vista.desfazer, { disponivel: true, alterados: ["entrada.md"], criados: [] });
+      assert.deepInclude(vista.desfazer, { disponivel: true, alterados: ["entrada.md"], criados: ["resultado.md"] });
+      assert.deepStrictEqual(vista.desfazer.foraDaConversa, ["resultado.md"]);
       yield* rpc["pasta.desfazer"]({ sessao });
       assert.strictEqual(NodeFS.readFileSync(NodePath.join(pasta, "entrada.md"), "utf8"), "original\n");
+      assert.isFalse(NodeFS.existsSync(NodePath.join(pasta, "resultado.md")));
 
       // As cópias: só as 3 mais recentes da conversa.
       for (const texto of ["a", "b", "c", "d"]) yield* turno(texto);
@@ -201,6 +204,55 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       assert.deepStrictEqual(gravada.avaliacoes, [{ turno: 1, nota: "util" }]);
       assert.strictEqual(gravada.conversa.tarefa, "teste");
       assert.deepInclude(gravada.itens[0], { _tag: "Mensagem", texto: "oi" });
+    }).pipe(Effect.scoped),
+  );
+
+  it.effect("Desfazer volta só o que a IA mudou no turno; a edição da pessoa depois só sai se ela escolher", () =>
+    Effect.gen(function* () {
+      const { urlRpc } = yield* Servidor.ServidorApp;
+      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+      const { pasta } = yield* rpc["pasta.criar"]({ titulo: "Edições da pessoa" });
+      NodeFS.writeFileSync(NodePath.join(pasta, "entrada.md"), "original\n");
+      NodeFS.writeFileSync(NodePath.join(pasta, "nota.md"), "nota\n");
+      const { sessao } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
+      yield* rpc["conversa.enviar"]({ sessao, texto: "grave com subpasta" }).pipe(
+        Stream.tap((evento) =>
+          evento._tag === "PedidoAprovacao"
+            ? rpc["conversa.responderAprovacao"]({ sessao, aprovacao: evento.id, decisao: "permitir" })
+            : Effect.void,
+        ),
+        Stream.runDrain,
+      );
+      // Depois do turno, a pessoa edita no Word a entrada (mudada pela IA) e a nota (que a IA não tocou).
+      NodeFS.writeFileSync(NodePath.join(pasta, "entrada.md"), "editado pela pessoa\n");
+      NodeFS.writeFileSync(NodePath.join(pasta, "nota.md"), "nota editada\n");
+      const vista = yield* rpc["pasta.ver"]({ sessao });
+      assert.deepStrictEqual([...vista.desfazer.criados].sort(), ["novo/sub/x.md", "resultado.md"]);
+      assert.deepStrictEqual(vista.desfazer.alterados, ["entrada.md"]);
+      assert.deepStrictEqual(vista.desfazer.foraDaConversa, ["entrada.md"]);
+
+      // Sem escolher: sai o que a IA criou (com as pastas vazias), e as edições da pessoa ficam.
+      yield* rpc["pasta.desfazer"]({ sessao });
+      assert.isFalse(NodeFS.existsSync(NodePath.join(pasta, "resultado.md")));
+      assert.isFalse(NodeFS.existsSync(NodePath.join(pasta, "novo")));
+      assert.strictEqual(NodeFS.readFileSync(NodePath.join(pasta, "entrada.md"), "utf8"), "editado pela pessoa\n");
+      assert.strictEqual(NodeFS.readFileSync(NodePath.join(pasta, "nota.md"), "utf8"), "nota editada\n");
+
+      // Escolhendo incluir: a entrada volta ao que era antes do turno; a nota continua da pessoa.
+      const { sessao: outra } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
+      yield* rpc["conversa.enviar"]({ sessao: outra, texto: "grave" }).pipe(
+        Stream.tap((evento) =>
+          evento._tag === "PedidoAprovacao"
+            ? rpc["conversa.responderAprovacao"]({ sessao: outra, aprovacao: evento.id, decisao: "permitir" })
+            : Effect.void,
+        ),
+        Stream.runDrain,
+      );
+      NodeFS.writeFileSync(NodePath.join(pasta, "entrada.md"), "de novo pela pessoa\n");
+      yield* rpc["pasta.desfazer"]({ sessao: outra, incluirForaDaConversa: true });
+      assert.strictEqual(NodeFS.readFileSync(NodePath.join(pasta, "entrada.md"), "utf8"), "editado pela pessoa\n");
+      assert.strictEqual(NodeFS.readFileSync(NodePath.join(pasta, "nota.md"), "utf8"), "nota editada\n");
+      assert.isFalse(NodeFS.existsSync(NodePath.join(pasta, "resultado.md")));
     }).pipe(Effect.scoped),
   );
 
@@ -245,16 +297,12 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
         NodeFS.mkdirSync(NodePath.join(pasta, "sub"));
         NodeFS.writeFileSync(NodePath.join(pasta, "sub", "a.txt"), "A\n");
         const { sessao } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
-        // O turno "da IA": troca x.txt por link para fora e muda sub/a.txt (a cópia de antes já está guardada).
-        yield* rpc["conversa.enviar"]({ sessao, texto: "oi" }).pipe(
-          Stream.tap(() =>
-            Effect.sync(() => {
-              if (NodeFS.lstatSync(NodePath.join(pasta, "x.txt")).isFile()) {
-                NodeFS.rmSync(NodePath.join(pasta, "x.txt"));
-                NodeFS.symlinkSync(NodePath.join(alvoFora, "alvo.txt"), NodePath.join(pasta, "x.txt"));
-                NodeFS.writeFileSync(NodePath.join(pasta, "sub", "a.txt"), "mudado pela IA\n");
-              }
-            }),
+        // O turno "da IA": troca x.txt por link para fora e muda sub/a.txt.
+        yield* rpc["conversa.enviar"]({ sessao, texto: `grave link:${NodePath.join(alvoFora, "alvo.txt")}` }).pipe(
+          Stream.tap((evento) =>
+            evento._tag === "PedidoAprovacao"
+              ? rpc["conversa.responderAprovacao"]({ sessao, aprovacao: evento.id, decisao: "permitir" })
+              : Effect.void,
           ),
           Stream.runDrain,
         );
@@ -263,7 +311,8 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
         // Entre a previsão e o Desfazer, a pasta vira link para fora.
         NodeFS.rmSync(NodePath.join(pasta, "sub"), { recursive: true });
         NodeFS.symlinkSync(alvoFora, NodePath.join(pasta, "sub"));
-        yield* rpc["pasta.desfazer"]({ sessao });
+        // A pasta mudou depois do turno (fora da conversa): só com a escolha da pessoa o Desfazer a toca.
+        yield* rpc["pasta.desfazer"]({ sessao, incluirForaDaConversa: true });
         assert.strictEqual(NodeFS.readFileSync(NodePath.join(alvoFora, "alvo.txt"), "utf8"), "ARQUIVO DE FORA\n");
         assert.isFalse(NodeFS.existsSync(NodePath.join(alvoFora, "a.txt")));
         assert.isTrue(NodeFS.lstatSync(NodePath.join(pasta, "x.txt")).isFile());

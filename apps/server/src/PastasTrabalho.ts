@@ -16,8 +16,11 @@
  *   sem estado escondido dentro da pasta da pessoa. Limites: pasta de até `LIMITES.bytes` e
  *   `LIMITES.arquivos` (acima disso o turno fica sem cópia, com aviso), e as `LIMITES.copias` mais
  *   recentes por conversa.
- * - **Desfazer:** restaura a cópia mais recente que difere da pasta agora (o estado de antes do turno
- *   que mudou a pasta), apaga as cópias desse turno em diante e devolve a pasta. Arquivos e pastas que
+ * - **Desfazer:** no fim de cada turno, um retrato da pasta (`fim.json`) separa o que mudou dentro do
+ *   turno do que a pessoa mudou depois. O Desfazer volta só os arquivos que o turno mais recente mudou;
+ *   os que mudaram de novo fora da conversa ficam como estão, salvo se a pessoa escolher incluí-los. As
+ *   pastas que o turno criou e ficaram vazias saem. A restauração não segue links (`gravarSemSeguirLinks`).
+ *   Depois, as cópias desse turno em diante saem, e o próximo Desfazer volta mais um turno. Arquivos e pastas que
  *   começam com `.` (o `.simplifica/` das skills) e links simbólicos ficam de fora de tudo.
  */
 import * as NodeCrypto from "node:crypto";
@@ -69,7 +72,13 @@ export class PastasTrabalho extends Context.Service<
     readonly ver: (conversa: string, pasta: string) => Effect.Effect<PastaConversa, FalhaPasta>;
     /** A cópia de antes do turno; nunca falha (o erro vai para o log, e o turno segue sem cópia). */
     readonly guardarCopia: (conversa: string, turno: number, pasta: string) => Effect.Effect<void>;
-    readonly desfazer: (conversa: string, pasta: string) => Effect.Effect<PastaConversa, FalhaPasta>;
+    /** O retrato do fim do turno, ao lado da cópia; nunca falha. */
+    readonly fecharTurno: (conversa: string, turno: number, pasta: string) => Effect.Effect<void>;
+    readonly desfazer: (
+      conversa: string,
+      pasta: string,
+      incluirForaDaConversa: boolean,
+    ) => Effect.Effect<PastaConversa, FalhaPasta>;
   }
 >()("@simplifica-if/server/PastasTrabalho") {}
 
@@ -163,6 +172,14 @@ interface Manifesto {
   /** As subpastas de antes do turno. */
   readonly pastas?: ReadonlyArray<string>;
   readonly aviso?: string;
+  /** O retrato do fim do turno (`fim.json`); ausente se o turno não fechou (o app caiu no meio). */
+  readonly fim?: RetratoFim;
+}
+
+/** A pasta no fim do turno: o que separa o que a IA fez do que mudou depois, fora da conversa. */
+interface RetratoFim {
+  readonly arquivos: Retrato;
+  readonly pastas: ReadonlyArray<string>;
 }
 
 async function retratar(pasta: string, varredura: Pick<Varredura, "arquivos" | "links">): Promise<Retrato> {
@@ -288,7 +305,14 @@ async function lerManifestos(pastaCopias: string): Promise<Array<Manifesto>> {
   for (const nome of nomes) {
     if (!/^\d+$/.test(nome)) continue;
     try {
-      manifestos.push(JSON.parse(await NodeFSP.readFile(NodePath.join(pastaCopias, nome, "manifesto.json"), "utf8")));
+      const manifesto = JSON.parse(
+        await NodeFSP.readFile(NodePath.join(pastaCopias, nome, "manifesto.json"), "utf8"),
+      ) as Manifesto;
+      const fim = await NodeFSP.readFile(NodePath.join(pastaCopias, nome, "fim.json"), "utf8").then(
+        (texto) => JSON.parse(texto) as RetratoFim,
+        () => undefined,
+      );
+      manifestos.push(fim === undefined ? manifesto : { ...manifesto, fim });
     } catch {
       // Cópia pela metade (o app fechou no meio): não conta.
     }
@@ -337,7 +361,27 @@ async function copiarTurno(real: string, copias: string, turno: number, criadaEm
   }
 }
 
-const SEM_DESFAZER: PrevisaoDesfazer = { disponivel: false, criados: [], alterados: [], apagados: [] };
+/** Grava o retrato do fim do turno ao lado da cópia de antes dele (se houver cópia completa). */
+async function retratarFim(real: string, copias: string, turno: number, limites: Limites) {
+  const destino = NodePath.join(copias, String(turno));
+  const manifesto = await NodeFSP.readFile(NodePath.join(destino, "manifesto.json"), "utf8").then(
+    (texto) => JSON.parse(texto) as Manifesto,
+    () => undefined,
+  );
+  if (manifesto?.arquivos === undefined) return;
+  const varredura = await varrer(real, limites.arquivos);
+  if (varredura.arquivos.length > limites.arquivos) return;
+  const fim: RetratoFim = { arquivos: await retratar(real, varredura), pastas: varredura.pastas };
+  await NodeFSP.writeFile(NodePath.join(destino, "fim.json"), JSON.stringify(fim));
+}
+
+const SEM_DESFAZER: PrevisaoDesfazer = {
+  disponivel: false,
+  criados: [],
+  alterados: [],
+  apagados: [],
+  foraDaConversa: [],
+};
 
 /* ================================================================== serviço */
 
@@ -418,29 +462,39 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     } satisfies ArquivoPasta;
   });
 
-  /** A cópia a restaurar e a diferença para a pasta agora. */
+  /**
+   * O turno a desfazer: o mais recente cuja pasta mudou **dentro** dele (o retrato de antes × o do fim
+   * do turno). Sem o retrato do fim (o app caiu no meio do turno), vale o de antes do turno seguinte ou,
+   * no último, a pasta agora. Os arquivos mudados no turno que mudaram de novo depois (fora da conversa)
+   * vão em `foraDaConversa`.
+   */
   const prever = async (conversa: string, real: string) => {
     const manifestos = await lerManifestos(pastaCopias(conversa));
     const aviso = manifestos[0]?.aviso;
     // Sem a cópia do turno mais recente, voltar a uma mais antiga desfaria também o que veio depois dela.
     if (aviso !== undefined) return { previsao: { ...SEM_DESFAZER, aviso } };
-    const agora = await varrer(real, limites.arquivos);
-    if (agora.arquivos.length > limites.arquivos) return { previsao: { ...SEM_DESFAZER, ...(aviso ? { aviso } : {}) } };
-    const retrato = await retratar(real, agora);
-    for (const manifesto of manifestos) {
-      if (manifesto.arquivos === undefined) continue;
-      const mudancas = diferenca(manifesto.arquivos, retrato);
-      if (mudancas.criados.length + mudancas.alterados.length + mudancas.apagados.length === 0) continue;
+    const varredura = await varrer(real, limites.arquivos);
+    if (varredura.arquivos.length > limites.arquivos) return { previsao: SEM_DESFAZER };
+    const agora: RetratoFim = { arquivos: await retratar(real, varredura), pastas: varredura.pastas };
+    for (const [indice, manifesto] of manifestos.entries()) {
+      if (manifesto.arquivos === undefined) break;
+      const seguinte = manifestos[indice - 1];
+      const fim =
+        manifesto.fim ??
+        (seguinte?.arquivos === undefined ? agora : { arquivos: seguinte.arquivos, pastas: seguinte.pastas ?? [] });
+      const mudancas = diferenca(manifesto.arquivos, fim.arquivos);
+      const mudados = [...mudancas.criados, ...mudancas.alterados, ...mudancas.apagados];
+      if (mudados.length === 0) continue;
       const previsao: PrevisaoDesfazer = {
         disponivel: true,
         turno: manifesto.turno,
         copiaEm: manifesto.criadaEm,
         ...mudancas,
-        ...(aviso ? { aviso } : {}),
+        foraDaConversa: mudados.filter((nome) => agora.arquivos[nome] !== fim.arquivos[nome]),
       };
-      return { previsao, manifesto };
+      return { previsao, manifesto, fim };
     }
-    return { previsao: { ...SEM_DESFAZER, ...(aviso ? { aviso } : {}) } };
+    return { previsao: SEM_DESFAZER };
   };
 
   const listar = async (real: string, anexos: ReadonlySet<string>) =>
@@ -481,16 +535,46 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     );
   });
 
-  const desfazer = Effect.fn("PastasTrabalho.desfazer")(function* (conversa: string, pasta: string) {
+  const fecharTurno = Effect.fn("PastasTrabalho.fecharTurno")(function* (
+    conversa: string,
+    turno: number,
+    pasta: string,
+  ) {
+    yield* Effect.tryPromise({
+      try: async () => {
+        const real = await gerida(pasta);
+        if (real !== undefined) await retratarFim(real, pastaCopias(conversa), turno, limites);
+      },
+      catch: (erro) => new FalhaPasta({ motivo: String(erro) }),
+    }).pipe(
+      Effect.catch((erro) => Effect.logWarning(`conversa ${conversa}: sem retrato do fim do turno ${turno}`, erro)),
+    );
+  });
+
+  const desfazer = Effect.fn("PastasTrabalho.desfazer")(function* (
+    conversa: string,
+    pasta: string,
+    incluirForaDaConversa: boolean,
+  ) {
     const real = yield* Effect.promise(() => gerida(pasta));
     if (real === undefined) return yield* falha("Esta conversa não tem uma pasta de tarefa do app.");
     yield* tentar(async () => {
-      const { previsao, manifesto } = await prever(conversa, real);
-      if (!previsao.disponivel || manifesto === undefined) return;
+      const { previsao, manifesto, fim } = await prever(conversa, real);
+      if (!previsao.disponivel || manifesto === undefined || fim === undefined) return;
       const copia = NodePath.join(pastaCopias(conversa), String(manifesto.turno), "arquivos");
       const antes = manifesto.arquivos ?? {};
-      for (const nome of previsao.criados) await removerSemSeguirLinks(real, nome);
-      for (const nome of [...previsao.alterados, ...previsao.apagados]) {
+      const pular = new Set(incluirForaDaConversa ? [] : previsao.foraDaConversa);
+      for (const nome of previsao.criados) if (!pular.has(nome)) await removerSemSeguirLinks(real, nome);
+      // As pastas que o turno criou e ficaram vazias saem também (as mais fundas primeiro).
+      const pastasAntes = new Set(manifesto.pastas ?? []);
+      const criadasNoTurno = fim.pastas
+        .filter((nome) => !pastasAntes.has(nome))
+        .sort((a, b) => b.split("/").length - a.split("/").length);
+      for (const nome of criadasNoTurno) {
+        const caminho = await pastaSemLinks(real, partesSeguras(nome), false).catch(() => undefined);
+        if (caminho !== undefined && (await NodeFSP.readdir(caminho)).length === 0) await NodeFSP.rmdir(caminho);
+      }
+      for (const nome of [...previsao.alterados, ...previsao.apagados].filter((nome) => !pular.has(nome))) {
         // Um link de antes do turno não se restaura (a cópia não o tem); o que está no lugar sai.
         if (antes[nome] === LINK) await removerSemSeguirLinks(real, nome);
         else await gravarSemSeguirLinks(real, nome, await NodeFSP.readFile(dentro(copia, nome)));
@@ -505,7 +589,7 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     return yield* ver(conversa, real);
   });
 
-  return PastasTrabalho.of({ raiz, criar, anexar, ver, guardarCopia, desfazer });
+  return PastasTrabalho.of({ raiz, criar, anexar, ver, guardarCopia, fecharTurno, desfazer });
 });
 
 /**
@@ -529,6 +613,9 @@ export const layerSemPastas = Layer.sync(PastasTrabalho, () => {
       } satisfies PastaConversa);
     }),
     guardarCopia: Effect.fn("PastasTrabalho.guardarCopia")(function* () {
+      yield* Effect.void;
+    }),
+    fecharTurno: Effect.fn("PastasTrabalho.fecharTurno")(function* () {
       yield* Effect.void;
     }),
     desfazer: recusa,
