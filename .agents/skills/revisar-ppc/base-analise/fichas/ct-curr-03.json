@@ -3,6 +3,10 @@
   "titulo": "Distribuição entre formação geral e formação técnica",
   "dominio": "curriculo",
   "criticidade": "BLOQ",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: somas por núcleo na matriz; a IA confirma o rótulo dos núcleos."
+  },
   "topicos_tematicos": [
     "matriz_curricular"
   ],

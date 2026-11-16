@@ -49,6 +49,23 @@ const inteiroPositivo = Schema.Number.check(
 );
 
 const ESTADOS = ["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"] as const;
+
+/** Modo de execução da ficha na revisão do app (M1.11, classificação da proposta C). */
+export const MODOS_EXECUCAO = ["D", "S", "J"] as const;
+export type ModoExecucao = (typeof MODOS_EXECUCAO)[number];
+
+const execucao = Schema.Struct({
+  modo: Schema.Literals(MODOS_EXECUCAO).annotate({
+    description:
+      "D: o código decide com a base (verificador em packages/ppc, sem IA); S: o código acha o trecho e a IA confirma em resposta curta; J: julgamento da IA sobre as seções",
+  }),
+  justificativa: Schema.String.check(Schema.isMinLength(1)).annotate({
+    description: "Por que a ficha está nesse modo: o que o código usa e o que sobra para a IA",
+  }),
+}).annotate({
+  description:
+    "Como a ficha é executada na revisão do app; uma ficha D precisa de verificador registrado em packages/ppc/src/verificadores",
+});
 const textos = Schema.Array(Schema.String);
 
 export const esquemaFicha = Schema.Struct({
@@ -56,6 +73,7 @@ export const esquemaFicha = Schema.Struct({
   titulo: Schema.String,
   dominio: Schema.Literals(["identidade", "curriculo", "suporte", "transversal"]),
   criticidade: Schema.Literals(["BLOQ", "OBRIG", "REC"]),
+  execucao,
   topicos_tematicos: textos,
   tipo_escopo: Schema.Literals(["tematico", "multitematico", "transversal", "condicional"]),
   ancoras_semanticas: textos,

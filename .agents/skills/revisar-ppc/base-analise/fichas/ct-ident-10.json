@@ -3,6 +3,10 @@
   "titulo": "Competências do egresso alinhadas à habilitação profissional",
   "dominio": "identidade",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: competências × perfil do CNCT."
+  },
   "topicos_tematicos": [
     "perfil_egresso_mundo_trabalho"
   ],

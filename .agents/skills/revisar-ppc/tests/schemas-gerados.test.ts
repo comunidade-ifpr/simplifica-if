@@ -4,7 +4,8 @@
  * no schema anterior ao C3 (cópia congelada em `fixtures/schemas-anteriores/`), e no gerado hoje
  * de `scripts/esquemas.ts`. O arquivo pode mudar de forma (ordem das chaves, `$defs`); o que não
  * pode mudar é o que se aceita e o que se recusa, as mensagens do validador e as descrições, que os
- * sub-agentes da revisão leem.
+ * sub-agentes da revisão leem. A cópia congelada só recebeu, depois do C3, o campo `execucao` (M1.11,
+ * etapa 2), igual ao gerado.
  */
 import * as NodePath from "node:path";
 import { describe, expect, test } from "vite-plus/test";
@@ -47,6 +48,10 @@ const FICHAS_INVALIDAS: Array<Mutacao<ObjetoJson & { referencias_normativas: Obj
   ["dominio fora do enum", (f) => void (f.dominio = "outro")],
   ["criticidade fora do enum", (f) => void (f.criticidade = "bloq")],
   ["tipo_escopo fora do enum", (f) => void (f.tipo_escopo = "geral")],
+  ["execucao ausente", (f) => void delete f.execucao],
+  ["execucao com modo fora do enum", (f) => void (f.execucao = { modo: "X", justificativa: "a" })],
+  ["execucao sem justificativa", (f) => void (f.execucao = { modo: "D" })],
+  ["execucao com justificativa vazia", (f) => void (f.execucao = { modo: "J", justificativa: "" })],
   ["topicos_tematicos como texto", (f) => void (f.topicos_tematicos = "estagio")],
   ["item de topicos_tematicos numérico", (f) => void (f.topicos_tematicos = [1])],
   ["consultas como objeto", (f) => void (f.consultas = {})],

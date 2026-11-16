@@ -3,6 +3,10 @@
   "titulo": "Temas transversais e formação cidadã no currículo",
   "dominio": "curriculo",
   "criticidade": "REC",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: termos dos temas transversais legais nas ementas."
+  },
   "topicos_tematicos": [
     "temas_transversais_cidadania"
   ],

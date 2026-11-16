@@ -3,6 +3,10 @@
   "titulo": "Dimensionamento de vagas compatível com infraestrutura e interesse público",
   "dominio": "transversal",
   "criticidade": "REC",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento transversal sobre os resumos dos temas: vagas × infraestrutura e interesse público."
+  },
   "topicos_tematicos": [
     "identificacao_oferta",
     "infraestrutura",

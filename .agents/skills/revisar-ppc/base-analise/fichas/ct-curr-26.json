@@ -3,6 +3,10 @@
   "titulo": "Educação política e direitos da cidadania no currículo",
   "dominio": "curriculo",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: termos de educação política e cidadania nas ementas (integrado)."
+  },
   "topicos_tematicos": [
     "temas_transversais_cidadania"
   ],

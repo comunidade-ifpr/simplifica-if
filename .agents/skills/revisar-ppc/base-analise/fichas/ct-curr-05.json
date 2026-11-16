@@ -3,6 +3,10 @@
   "titulo": "Ementas completas e auditáveis",
   "dominio": "curriculo",
   "criticidade": "BLOQ",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: cada componente da matriz tem ementa (pareamento de nomes); suficiência por amostra."
+  },
   "topicos_tematicos": [
     "ementario_bibliografias"
   ],

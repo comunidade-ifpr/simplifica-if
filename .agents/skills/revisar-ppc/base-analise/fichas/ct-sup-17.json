@@ -3,6 +3,10 @@
   "titulo": "Formação pedagógica e desenvolvimento docente previstos",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: formação pedagógica."
+  },
   "topicos_tematicos": [
     "corpo_docente_gestao"
   ],

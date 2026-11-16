@@ -3,6 +3,10 @@
   "titulo": "Progressão formativa explicitada na organização curricular",
   "dominio": "curriculo",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: progressão explicitada."
+  },
   "topicos_tematicos": [
     "matriz_curricular"
   ],

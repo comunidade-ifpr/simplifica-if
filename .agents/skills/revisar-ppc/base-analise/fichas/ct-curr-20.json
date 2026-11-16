@@ -3,6 +3,10 @@
   "titulo": "Decisão sobre estágio e carga horária compatíveis com o CNCT",
   "dominio": "curriculo",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: estagio_obrigatorio/estagio_carga_h + CNCT e legislação profissional; a IA confirma o requisito de aprovação."
+  },
   "topicos_tematicos": [
     "estagio"
   ],

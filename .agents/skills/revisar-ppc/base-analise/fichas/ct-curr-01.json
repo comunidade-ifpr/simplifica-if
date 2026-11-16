@@ -3,6 +3,10 @@
   "titulo": "Matriz curricular estruturada e legível",
   "dominio": "curriculo",
   "criticidade": "BLOQ",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: tabela da matriz convertida (componentes, períodos, CH); a IA só olha se a matriz não for reconhecida."
+  },
   "topicos_tematicos": [
     "matriz_curricular"
   ],

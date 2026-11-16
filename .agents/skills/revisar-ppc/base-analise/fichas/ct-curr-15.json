@@ -3,6 +3,10 @@
   "titulo": "Certificação de conhecimentos anteriores tratada, quando aplicável",
   "dominio": "curriculo",
   "criticidade": "REC",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: aplicabilidade e trecho de certificação de conhecimentos."
+  },
   "topicos_tematicos": [
     "aproveitamento_certificacao_tfc"
   ],

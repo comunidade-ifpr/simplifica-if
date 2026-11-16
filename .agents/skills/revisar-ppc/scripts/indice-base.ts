@@ -16,6 +16,7 @@ import { ordenarTextos } from "@simplifica-if/kb/texto";
 import { agoraUtc, escreverTexto, lerJson, listarArquivos } from "./arquivos.ts";
 import type { UniversoReferencias } from "@simplifica-if/kb/normas/referencia-estruturada";
 import { carregarMarcos } from "./validacao-base.ts";
+import { MODOS_EXECUCAO } from "./esquemas.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { marcoLegivel, normasCitadas, referenciasLegiveisDaFicha, universoOuVazio } from "./referencias-fichas.ts";
 
@@ -59,6 +60,7 @@ function itemFicha(caminhos: CaminhosAnalise, arquivo: string, universo: Univers
     titulo: exigir(payload, "titulo", arquivo),
     dominio: obter(payload, "dominio", ""),
     criticidade: exigir(payload, "criticidade", arquivo),
+    execucao: exigir(payload, "execucao", arquivo),
     topicos_tematicos: lista(payload.topicos_tematicos),
     tipo_escopo: textoOuVazio(payload.tipo_escopo),
     ancoras_semanticas: lista(payload.ancoras_semanticas),
@@ -171,6 +173,12 @@ export function gerarIndice(geradoEm?: string, caminhos: CaminhosAnalise = camin
     gerado_em: geradoEm || agoraUtc(),
     resumo: {
       total_fichas: fichas.length,
+      fichas_por_execucao: Object.fromEntries(
+        MODOS_EXECUCAO.map((modo) => [
+          modo,
+          fichas.filter((item) => ehObjeto(item.execucao) && item.execucao.modo === modo).length,
+        ]),
+      ),
       total_validacoes_cruzadas: validacoes.length,
       total_topicos_fichas: topicos.length,
       total_marcos_normativos: marcos.length,

@@ -3,6 +3,10 @@
   "titulo": "Referências institucionais e referenciais essenciais do curso",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "D",
+    "justificativa": "CNCT, DCN da EPT (e DCNEM no integrado), PDI, PPI ou Regimento e a legislação profissional do CNCT entre as citações e menções do PPC."
+  },
   "topicos_tematicos": [
     "referencias_normativas"
   ],

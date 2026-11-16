@@ -3,6 +3,10 @@
   "titulo": "Políticas transversais de atendimento e diversidade",
   "dominio": "suporte",
   "criticidade": "REC",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: NEABI, NAPNE, NUGEDIS e afins (termos)."
+  },
   "topicos_tematicos": [
     "aee_acessibilidade_inclusao",
     "temas_transversais_cidadania"

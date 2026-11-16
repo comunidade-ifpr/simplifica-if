@@ -3,6 +3,10 @@
   "titulo": "Coordenação do curso com atribuições, regime e participação institucional explicitados",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: \"Manual de Competências\", regime de trabalho, participação (termos)."
+  },
   "topicos_tematicos": [
     "corpo_docente_gestao"
   ],

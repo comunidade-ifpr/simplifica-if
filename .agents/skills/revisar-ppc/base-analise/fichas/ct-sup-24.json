@@ -3,6 +3,10 @@
   "titulo": "Política de assistência estudantil adequada à Resolução CONSUP/IFPR nº 239/2025",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "D",
+    "justificativa": "Res. CONSUP/IFPR nº 239/2025 citada, e as Res. nº 11/2009 e nº 53/2011, revogadas por ela, citadas sem ela."
+  },
   "topicos_tematicos": [
     "assistencia_estudantil_permanencia",
     "referencias_normativas"

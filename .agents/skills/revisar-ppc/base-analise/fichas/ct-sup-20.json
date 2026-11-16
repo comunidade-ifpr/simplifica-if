@@ -3,6 +3,10 @@
   "titulo": "Recursos de acessibilidade e medidas de permanência estão previstos",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: recursos de acessibilidade e permanência."
+  },
   "topicos_tematicos": [
     "aee_acessibilidade_inclusao"
   ],

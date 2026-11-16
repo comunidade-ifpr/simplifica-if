@@ -3,6 +3,10 @@
   "titulo": "Biblioteca descrita com acessibilidade física e condições de acesso",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: biblioteca: andar, piso, acessibilidade (termos)."
+  },
   "topicos_tematicos": [
     "aee_acessibilidade_inclusao",
     "infraestrutura"

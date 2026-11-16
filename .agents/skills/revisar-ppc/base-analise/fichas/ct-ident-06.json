@@ -3,6 +3,10 @@
   "titulo": "Formação integral e princípios norteadores",
   "dominio": "identidade",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: formação integral."
+  },
   "topicos_tematicos": [
     "concepcao_metodologias"
   ],

@@ -3,6 +3,10 @@
   "titulo": "Coerência interna entre ementas e bibliografias do currículo",
   "dominio": "transversal",
   "criticidade": "BLOQ",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento transversal sobre os resumos dos temas: coerência entre ementas e bibliografias."
+  },
   "topicos_tematicos": [
     "ementario_bibliografias",
     "matriz_curricular",

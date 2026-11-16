@@ -3,6 +3,10 @@
   "titulo": "Eixo tecnológico compatível com o CNCT",
   "dominio": "identidade",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "D",
+    "justificativa": "Eixo tecnológico declarado contra o do CNCT; a divergência sai a conferir (abreviações e texto colado pela conversão)."
+  },
   "topicos_tematicos": [
     "identificacao_oferta"
   ],

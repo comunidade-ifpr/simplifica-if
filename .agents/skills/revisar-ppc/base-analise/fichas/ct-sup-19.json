@@ -3,6 +3,10 @@
   "titulo": "AEE tratado com procedimentos e público-alvo compatíveis, quando aplicável",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: AEE: procedimentos e público."
+  },
   "topicos_tematicos": [
     "aee_acessibilidade_inclusao"
   ],

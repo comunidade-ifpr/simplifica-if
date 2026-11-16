@@ -3,6 +3,10 @@
   "titulo": "Objetivos formativos claros e operacionais",
   "dominio": "identidade",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: objetivos."
+  },
   "topicos_tematicos": [
     "justificativa_objetivos"
   ],

@@ -3,6 +3,10 @@
   "titulo": "Habilitação docente compatível com os componentes da oferta",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: habilitação docente × componentes."
+  },
   "topicos_tematicos": [
     "corpo_docente_gestao"
   ],

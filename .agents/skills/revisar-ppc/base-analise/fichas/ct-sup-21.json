@@ -3,6 +3,10 @@
   "titulo": "Legislação profissional CNCT tratada quando aplicável",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "D",
+    "justificativa": "Atos de legislação profissional que o CNCT indica para o curso contra as citações resolvidas do PPC."
+  },
   "topicos_tematicos": [
     "perfil_egresso_mundo_trabalho",
     "referencias_normativas"

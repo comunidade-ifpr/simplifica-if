@@ -3,6 +3,10 @@
   "titulo": "Coerência entre objetivos, perfil do egresso e matriz",
   "dominio": "transversal",
   "criticidade": "BLOQ",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento transversal sobre os resumos dos temas: coerência entre objetivos, perfil do egresso e matriz."
+  },
   "topicos_tematicos": [
     "justificativa_objetivos",
     "perfil_egresso_mundo_trabalho",

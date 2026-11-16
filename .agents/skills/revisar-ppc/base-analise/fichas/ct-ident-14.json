@@ -3,6 +3,10 @@
   "titulo": "Ocupações CBO compatíveis com a identidade profissional",
   "dominio": "identidade",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: códigos e ocupações CBO do CNCT no PPC."
+  },
   "topicos_tematicos": [
     "perfil_egresso_mundo_trabalho"
   ],

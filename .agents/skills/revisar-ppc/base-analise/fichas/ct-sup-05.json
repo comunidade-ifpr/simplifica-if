@@ -3,6 +3,10 @@
   "titulo": "Corpo docente compatível com a oferta formativa",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: corpo docente × oferta."
+  },
   "topicos_tematicos": [
     "corpo_docente_gestao"
   ],

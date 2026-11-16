@@ -1,8 +1,13 @@
 {
   "base_analise_dir": "revisar-ppc/base-analise",
-  "gerado_em": "2026-11-14T01:06:55+00:00",
+  "gerado_em": "2026-11-16T15:42:33+00:00",
   "resumo": {
     "total_fichas": 80,
+    "fichas_por_execucao": {
+      "D": 12,
+      "S": 38,
+      "J": 30
+    },
     "total_validacoes_cruzadas": 29,
     "total_topicos_fichas": 17,
     "total_marcos_normativos": 4,
@@ -17,6 +22,10 @@
       "titulo": "Matriz curricular estruturada e legível",
       "dominio": "curriculo",
       "criticidade": "BLOQ",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: tabela da matriz convertida (componentes, períodos, CH); a IA só olha se a matriz não for reconhecida."
+      },
       "topicos_tematicos": [
         "matriz_curricular"
       ],
@@ -48,6 +57,10 @@
       "titulo": "Carga horária total apresentada com consistência",
       "dominio": "curriculo",
       "criticidade": "BLOQ",
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Carga horária total extraída do PPC contra o mínimo do CNCT e o da forma integrada (3.000 h, Res. CNE/CP nº 2/2026, art. 29); como a extração não tem revisão humana, a divergência sai a conferir."
+      },
       "topicos_tematicos": [
         "identificacao_oferta",
         "matriz_curricular"
@@ -108,6 +121,10 @@
       "titulo": "Distribuição entre formação geral e formação técnica",
       "dominio": "curriculo",
       "criticidade": "BLOQ",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: somas por núcleo na matriz; a IA confirma o rótulo dos núcleos."
+      },
       "topicos_tematicos": [
         "matriz_curricular"
       ],
@@ -154,6 +171,10 @@
       "titulo": "Componentes curriculares alinhados ao perfil profissional",
       "dominio": "curriculo",
       "criticidade": "BLOQ",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: componentes × perfil."
+      },
       "topicos_tematicos": [
         "matriz_curricular",
         "perfil_egresso_mundo_trabalho"
@@ -198,6 +219,10 @@
       "titulo": "Ementas completas e auditáveis",
       "dominio": "curriculo",
       "criticidade": "BLOQ",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: cada componente da matriz tem ementa (pareamento de nomes); suficiência por amostra."
+      },
       "topicos_tematicos": [
         "ementario_bibliografias"
       ],
@@ -227,6 +252,10 @@
       "titulo": "Bibliografia básica e complementar minimamente suficiente",
       "dominio": "curriculo",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: contagem de básica/complementar por componente no ementário."
+      },
       "topicos_tematicos": [
         "ementario_bibliografias"
       ],
@@ -263,6 +292,10 @@
       "titulo": "Progressão formativa e organização por períodos",
       "dominio": "curriculo",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: progressão formativa."
+      },
       "topicos_tematicos": [
         "matriz_curricular"
       ],
@@ -299,6 +332,10 @@
       "titulo": "Metodologias e integração curricular compatíveis com a proposta",
       "dominio": "curriculo",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: metodologias."
+      },
       "topicos_tematicos": [
         "concepcao_metodologias"
       ],
@@ -335,6 +372,10 @@
       "titulo": "Inclusão, AEE e flexibilização curricular articulados ao currículo",
       "dominio": "curriculo",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: inclusão no currículo."
+      },
       "topicos_tematicos": [
         "aee_acessibilidade_inclusao"
       ],
@@ -375,6 +416,10 @@
       "titulo": "Representação gráfica coerente com a organização curricular",
       "dominio": "curriculo",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: presença da representação gráfica (a conversão a detecta); a coerência fica com a pessoa (imagem)."
+      },
       "topicos_tematicos": [
         "matriz_curricular"
       ],
@@ -409,6 +454,10 @@
       "titulo": "Temas transversais e formação cidadã no currículo",
       "dominio": "curriculo",
       "criticidade": "REC",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: termos dos temas transversais legais nas ementas."
+      },
       "topicos_tematicos": [
         "temas_transversais_cidadania"
       ],
@@ -451,6 +500,10 @@
       "titulo": "Progressão formativa explicitada na organização curricular",
       "dominio": "curriculo",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: progressão explicitada."
+      },
       "topicos_tematicos": [
         "matriz_curricular"
       ],
@@ -489,6 +542,10 @@
       "titulo": "Aproveitamento de estudos com critérios e procedimento definidos",
       "dominio": "curriculo",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: seção aproveitamento_estudos; a IA confirma critérios e procedimento no trecho."
+      },
       "topicos_tematicos": [
         "aproveitamento_certificacao_tfc"
       ],
@@ -530,6 +587,10 @@
       "titulo": "Projeto final, TCC/TFC ou componente equivalente disciplinado quando previsto",
       "dominio": "curriculo",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: aplicabilidade em código (PFI/TCC na matriz); caracterização é julgamento."
+      },
       "topicos_tematicos": [
         "aproveitamento_certificacao_tfc"
       ],
@@ -575,6 +636,10 @@
       "titulo": "Certificação de conhecimentos anteriores tratada, quando aplicável",
       "dominio": "curriculo",
       "criticidade": "REC",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: aplicabilidade e trecho de certificação de conhecimentos."
+      },
       "topicos_tematicos": [
         "aproveitamento_certificacao_tfc"
       ],
@@ -610,6 +675,10 @@
       "titulo": "Pré-requisitos de ingresso compatíveis com o CNCT",
       "dominio": "curriculo",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Requisito de escolaridade de ingresso no texto do PPC contra o que o CNCT exige para a forma de oferta declarada; texto não encontrado sai a conferir."
+      },
       "topicos_tematicos": [
         "identificacao_oferta",
         "matriz_curricular"
@@ -672,6 +741,10 @@
       "titulo": "Itinerários formativos coerentes com o CNCT",
       "dominio": "curriculo",
       "criticidade": "REC",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: itinerários do CNCT × termos do PPC."
+      },
       "topicos_tematicos": [
         "aproveitamento_certificacao_tfc"
       ],
@@ -711,6 +784,10 @@
       "titulo": "Componentes obrigatórios e conteúdos legais da FGB contemplados",
       "dominio": "curriculo",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Componentes obrigatórios da Formação Geral Básica procurados pelo nome nas tabelas da matriz e do ementário; só se aplica ao integrado."
+      },
       "topicos_tematicos": [
         "matriz_curricular"
       ],
@@ -771,6 +848,10 @@
       "titulo": "Integração curricular e práticas profissionais articuladas",
       "dominio": "curriculo",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: integração teoria-prática."
+      },
       "topicos_tematicos": [
         "matriz_curricular"
       ],
@@ -830,6 +911,10 @@
       "titulo": "Decisão sobre estágio e carga horária compatíveis com o CNCT",
       "dominio": "curriculo",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: estagio_obrigatorio/estagio_carga_h + CNCT e legislação profissional; a IA confirma o requisito de aprovação."
+      },
       "topicos_tematicos": [
         "estagio"
       ],
@@ -878,6 +963,10 @@
       "titulo": "Convênios e trâmites de estágio descritos quando houver estágio",
       "dominio": "curriculo",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: aplicabilidade (estágio) + termos (convênio, termo de compromisso, seguro)."
+      },
       "topicos_tematicos": [
         "estagio"
       ],
@@ -933,6 +1022,10 @@
       "titulo": "AEE não incorporado como componente curricular da matriz ou do histórico",
       "dominio": "curriculo",
       "criticidade": "BLOQ",
+      "execucao": {
+        "modo": "D",
+        "justificativa": "AEE numa linha de tabela da matriz, do ementário ou da organização curricular: é serviço, não componente."
+      },
       "topicos_tematicos": [
         "aee_acessibilidade_inclusao"
       ],
@@ -977,6 +1070,10 @@
       "titulo": "Distribuição semanal das aulas e contraturnos explicitada",
       "dominio": "curriculo",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: CH semanal da matriz × turno; a IA confirma o contraturno no trecho."
+      },
       "topicos_tematicos": [
         "identificacao_oferta",
         "matriz_curricular"
@@ -1029,6 +1126,10 @@
       "titulo": "Organização pedagógica e orientação do estágio obrigatório",
       "dominio": "curriculo",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: organização pedagógica do estágio."
+      },
       "topicos_tematicos": [
         "estagio"
       ],
@@ -1080,6 +1181,10 @@
       "titulo": "Campos de estágio e equivalência coerentes com o perfil profissional",
       "dominio": "curriculo",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: campos de estágio × perfil."
+      },
       "topicos_tematicos": [
         "estagio",
         "perfil_egresso_mundo_trabalho"
@@ -1141,6 +1246,10 @@
       "titulo": "Educação política e direitos da cidadania no currículo",
       "dominio": "curriculo",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: termos de educação política e cidadania nas ementas (integrado)."
+      },
       "topicos_tematicos": [
         "temas_transversais_cidadania"
       ],
@@ -1184,6 +1293,10 @@
       "titulo": "Formato de oferta e carga horária não presencial compatíveis com as DCN da EPT",
       "dominio": "curriculo",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: formato declarado e CH não presencial da matriz × limites das DCN."
+      },
       "topicos_tematicos": [
         "identificacao_oferta",
         "matriz_curricular"
@@ -1229,6 +1342,10 @@
       "titulo": "Denominação do curso alinhada ao CNCT",
       "dominio": "identidade",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Denominação do curso no início do PPC contra a do CNCT."
+      },
       "topicos_tematicos": [
         "identificacao_oferta"
       ],
@@ -1272,6 +1389,10 @@
       "titulo": "Coerência da apresentação institucional do curso",
       "dominio": "identidade",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: campus, forma, CH, duração e prazo em vários pontos × dados institucionais."
+      },
       "topicos_tematicos": [
         "identificacao_oferta"
       ],
@@ -1312,6 +1433,10 @@
       "titulo": "Justificativa baseada em demanda territorial e formativa",
       "dominio": "identidade",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: justificativa territorial."
+      },
       "topicos_tematicos": [
         "justificativa_objetivos"
       ],
@@ -1344,6 +1469,10 @@
       "titulo": "Objetivos formativos claros e operacionais",
       "dominio": "identidade",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: objetivos."
+      },
       "topicos_tematicos": [
         "justificativa_objetivos"
       ],
@@ -1372,6 +1501,10 @@
       "titulo": "Concepção de EPT explicitada",
       "dominio": "identidade",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: concepção de EPT."
+      },
       "topicos_tematicos": [
         "concepcao_metodologias"
       ],
@@ -1410,6 +1543,10 @@
       "titulo": "Formação integral e princípios norteadores",
       "dominio": "identidade",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: formação integral."
+      },
       "topicos_tematicos": [
         "concepcao_metodologias"
       ],
@@ -1443,6 +1580,10 @@
       "titulo": "Perfil do egresso descrito com competências e atuação",
       "dominio": "identidade",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: perfil do egresso."
+      },
       "topicos_tematicos": [
         "perfil_egresso_mundo_trabalho"
       ],
@@ -1473,6 +1614,10 @@
       "titulo": "Base legal atualizada nas seções de identidade",
       "dominio": "identidade",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Normas citadas nas seções de identidade com status revogada no registro, e se a sucessora vigente também é citada."
+      },
       "topicos_tematicos": [
         "referencias_normativas"
       ],
@@ -1524,6 +1669,10 @@
       "titulo": "Modalidade coerente com a narrativa do PPC",
       "dominio": "identidade",
       "criticidade": "REC",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: modalidade declarada × menções a EaD/AVA."
+      },
       "topicos_tematicos": [
         "identificacao_oferta"
       ],
@@ -1560,6 +1709,10 @@
       "titulo": "Competências do egresso alinhadas à habilitação profissional",
       "dominio": "identidade",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: competências × perfil do CNCT."
+      },
       "topicos_tematicos": [
         "perfil_egresso_mundo_trabalho"
       ],
@@ -1591,6 +1744,10 @@
       "titulo": "Campos de atuação profissional do egresso estão explicitados",
       "dominio": "identidade",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: campo de atuação do CNCT × termos do PPC; a IA confirma equivalências."
+      },
       "topicos_tematicos": [
         "perfil_egresso_mundo_trabalho"
       ],
@@ -1622,6 +1779,10 @@
       "titulo": "Perfil do egresso redigido com clareza e especificidade",
       "dominio": "identidade",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: clareza do perfil."
+      },
       "topicos_tematicos": [
         "perfil_egresso_mundo_trabalho"
       ],
@@ -1653,6 +1814,10 @@
       "titulo": "Eixo tecnológico compatível com o CNCT",
       "dominio": "identidade",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Eixo tecnológico declarado contra o do CNCT; a divergência sai a conferir (abreviações e texto colado pela conversão)."
+      },
       "topicos_tematicos": [
         "identificacao_oferta"
       ],
@@ -1693,6 +1858,10 @@
       "titulo": "Ocupações CBO compatíveis com a identidade profissional",
       "dominio": "identidade",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: códigos e ocupações CBO do CNCT no PPC."
+      },
       "topicos_tematicos": [
         "perfil_egresso_mundo_trabalho"
       ],
@@ -1729,6 +1898,10 @@
       "titulo": "Diploma técnico explicita habilitação profissional e eixo tecnológico",
       "dominio": "identidade",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: \"Técnico em X\" e eixo na seção de diplomas; a IA confirma certificado × diploma."
+      },
       "topicos_tematicos": [
         "perfil_egresso_mundo_trabalho"
       ],
@@ -1775,6 +1948,10 @@
       "titulo": "Forma de ingresso e política institucional de acesso explicitadas",
       "dominio": "identidade",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: termos de processo seletivo, reserva de vagas, Res. 190/2024."
+      },
       "topicos_tematicos": [
         "identificacao_oferta"
       ],
@@ -1825,6 +2002,10 @@
       "titulo": "Política de cotas referenciada sem desatualização ou erro material",
       "dominio": "identidade",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: citação da lei de cotas e alteração (registro); a IA confere a regra reproduzida."
+      },
       "topicos_tematicos": [
         "assistencia_estudantil_permanencia",
         "identificacao_oferta"
@@ -1889,6 +2070,10 @@
       "titulo": "Acompanhamento de egressos previsto com finalidade formativa",
       "dominio": "identidade",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: seção acompanhamento_egresso; a IA confirma responsáveis e instrumentos."
+      },
       "topicos_tematicos": [
         "avaliacao_ppc_egressos",
         "perfil_egresso_mundo_trabalho"
@@ -1936,6 +2121,10 @@
       "titulo": "Registro profissional descrito com conselho e base aplicável",
       "dominio": "identidade",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: conselho do CNCT citado; a IA confere \"promessa automática\" de registro."
+      },
       "topicos_tematicos": [
         "perfil_egresso_mundo_trabalho",
         "referencias_normativas"
@@ -2001,6 +2190,10 @@
       "titulo": "Sistema de avaliação coerente com o IFPR",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: norma de avaliação do IFPR citada + escala de conceitos."
+      },
       "topicos_tematicos": [
         "avaliacao_aprendizagem"
       ],
@@ -2039,6 +2232,10 @@
       "titulo": "Frequência mínima e recuperação da aprendizagem",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: percentual de frequência + termos de recuperação/recomposição."
+      },
       "topicos_tematicos": [
         "avaliacao_aprendizagem"
       ],
@@ -2074,6 +2271,10 @@
       "titulo": "Política de assistência estudantil e acompanhamento",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: trecho de assistência estudantil."
+      },
       "topicos_tematicos": [
         "assistencia_estudantil_permanencia"
       ],
@@ -2105,6 +2306,10 @@
       "titulo": "Inclusão, acessibilidade e AEE na política de atendimento",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: trecho de AEE e acessibilidade na política de atendimento."
+      },
       "topicos_tematicos": [
         "aee_acessibilidade_inclusao"
       ],
@@ -2144,6 +2349,10 @@
       "titulo": "Corpo docente compatível com a oferta formativa",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: corpo docente × oferta."
+      },
       "topicos_tematicos": [
         "corpo_docente_gestao"
       ],
@@ -2177,6 +2386,10 @@
       "titulo": "Governança acadêmica do curso",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: coordenação, colegiado, NDE (termos e seção)."
+      },
       "topicos_tematicos": [
         "corpo_docente_gestao"
       ],
@@ -2209,6 +2422,10 @@
       "titulo": "Infraestrutura compatível com os componentes formativos",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: infraestrutura × proposta."
+      },
       "topicos_tematicos": [
         "infraestrutura"
       ],
@@ -2244,6 +2461,10 @@
       "titulo": "Avaliação periódica do PPC e acompanhamento de egressos",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: seção avaliacao_curso + Res. CONSUP 64/2022; a IA confirma periodicidade e responsáveis."
+      },
       "topicos_tematicos": [
         "avaliacao_ppc_egressos"
       ],
@@ -2289,6 +2510,10 @@
       "titulo": "Referências com vigência normativa observável",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Marcos centrais vigentes (DCN da EPT; no integrado, DCNEM, LDB e Lei nº 14.945/2024) entre as citações resolvidas da seção de referências, e normas revogadas nela sem a sucessora."
+      },
       "topicos_tematicos": [
         "referencias_normativas"
       ],
@@ -2336,6 +2561,10 @@
       "titulo": "Políticas transversais de atendimento e diversidade",
       "dominio": "suporte",
       "criticidade": "REC",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: NEABI, NAPNE, NUGEDIS e afins (termos)."
+      },
       "topicos_tematicos": [
         "aee_acessibilidade_inclusao",
         "temas_transversais_cidadania"
@@ -2376,6 +2605,10 @@
       "titulo": "Acessibilidade física e arquitetônica",
       "dominio": "suporte",
       "criticidade": "REC",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: termos de acessibilidade física."
+      },
       "topicos_tematicos": [
         "aee_acessibilidade_inclusao",
         "infraestrutura"
@@ -2418,6 +2651,10 @@
       "titulo": "Referências com vigência normativa atualizada",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Normas citadas em todo o PPC com status revogada no registro; sem a sucessora vigente citada, é pendência; com ela, a pessoa confere se a citação é histórica."
+      },
       "topicos_tematicos": [
         "referencias_normativas"
       ],
@@ -2468,6 +2705,10 @@
       "titulo": "Referências com aderência formal mínima à ABNT",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: padrões ABNT por expressão regular; a IA olha só as linhas fora do padrão."
+      },
       "topicos_tematicos": [
         "ementario_bibliografias",
         "referencias_normativas"
@@ -2520,6 +2761,10 @@
       "titulo": "Referências institucionais e referenciais essenciais do curso",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "D",
+        "justificativa": "CNCT, DCN da EPT (e DCNEM no integrado), PDI, PPI ou Regimento e a legislação profissional do CNCT entre as citações e menções do PPC."
+      },
       "topicos_tematicos": [
         "referencias_normativas"
       ],
@@ -2578,6 +2823,10 @@
       "titulo": "Habilitação docente compatível com os componentes da oferta",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: habilitação docente × componentes."
+      },
       "topicos_tematicos": [
         "corpo_docente_gestao"
       ],
@@ -2615,6 +2864,10 @@
       "titulo": "Quantitativo e disponibilidade docente sustentam a oferta",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: contagem do quadro docente × CH da matriz."
+      },
       "topicos_tematicos": [
         "corpo_docente_gestao"
       ],
@@ -2649,6 +2902,10 @@
       "titulo": "Formação pedagógica e desenvolvimento docente previstos",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: formação pedagógica."
+      },
       "topicos_tematicos": [
         "corpo_docente_gestao"
       ],
@@ -2696,6 +2953,10 @@
       "titulo": "Política institucional de inclusão com papéis e normativas definidos",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: instâncias e normas de inclusão (termos + registro)."
+      },
       "topicos_tematicos": [
         "aee_acessibilidade_inclusao"
       ],
@@ -2731,6 +2992,10 @@
       "titulo": "AEE tratado com procedimentos e público-alvo compatíveis, quando aplicável",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: AEE: procedimentos e público."
+      },
       "topicos_tematicos": [
         "aee_acessibilidade_inclusao"
       ],
@@ -2775,6 +3040,10 @@
       "titulo": "Recursos de acessibilidade e medidas de permanência estão previstos",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: recursos de acessibilidade e permanência."
+      },
       "topicos_tematicos": [
         "aee_acessibilidade_inclusao"
       ],
@@ -2815,6 +3084,10 @@
       "titulo": "Legislação profissional CNCT tratada quando aplicável",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Atos de legislação profissional que o CNCT indica para o curso contra as citações resolvidas do PPC."
+      },
       "topicos_tematicos": [
         "perfil_egresso_mundo_trabalho",
         "referencias_normativas"
@@ -2870,6 +3143,10 @@
       "titulo": "Infraestrutura mínima CNCT atendida ou justificada",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: itens de infraestrutura mínima do CNCT × seção de infraestrutura; a IA confirma equivalências."
+      },
       "topicos_tematicos": [
         "infraestrutura"
       ],
@@ -2905,6 +3182,10 @@
       "titulo": "Coordenação do curso com atribuições, regime e participação institucional explicitados",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: \"Manual de Competências\", regime de trabalho, participação (termos)."
+      },
       "topicos_tematicos": [
         "corpo_docente_gestao"
       ],
@@ -2945,6 +3226,10 @@
       "titulo": "Política de assistência estudantil adequada à Resolução CONSUP/IFPR nº 239/2025",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Res. CONSUP/IFPR nº 239/2025 citada, e as Res. nº 11/2009 e nº 53/2011, revogadas por ela, citadas sem ela."
+      },
       "topicos_tematicos": [
         "assistencia_estudantil_permanencia",
         "referencias_normativas"
@@ -3003,6 +3288,10 @@
       "titulo": "Biblioteca descrita com acessibilidade física e condições de acesso",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: biblioteca: andar, piso, acessibilidade (termos)."
+      },
       "topicos_tematicos": [
         "aee_acessibilidade_inclusao",
         "infraestrutura"
@@ -3053,6 +3342,10 @@
       "titulo": "Progressão parcial e dependência descritas conforme a forma de oferta",
       "dominio": "suporte",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: progressão parcial e dependência × forma; a IA confirma a operacionalidade."
+      },
       "topicos_tematicos": [
         "avaliacao_aprendizagem"
       ],
@@ -3091,6 +3384,10 @@
       "titulo": "Coerência entre objetivos, perfil do egresso e matriz",
       "dominio": "transversal",
       "criticidade": "BLOQ",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento transversal sobre os resumos dos temas: coerência entre objetivos, perfil do egresso e matriz."
+      },
       "topicos_tematicos": [
         "justificativa_objetivos",
         "perfil_egresso_mundo_trabalho",
@@ -3144,6 +3441,10 @@
       "titulo": "Coerência entre concepção, metodologias e avaliação",
       "dominio": "transversal",
       "criticidade": "BLOQ",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento transversal sobre os resumos dos temas: coerência entre concepção, metodologias e avaliação."
+      },
       "topicos_tematicos": [
         "avaliacao_aprendizagem",
         "concepcao_metodologias",
@@ -3204,6 +3505,10 @@
       "titulo": "Coerência interna entre ementas e bibliografias do currículo",
       "dominio": "transversal",
       "criticidade": "BLOQ",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento transversal sobre os resumos dos temas: coerência entre ementas e bibliografias."
+      },
       "topicos_tematicos": [
         "ementario_bibliografias",
         "matriz_curricular",
@@ -3261,6 +3566,10 @@
       "titulo": "Coerência entre currículo, corpo docente e infraestrutura",
       "dominio": "transversal",
       "criticidade": "BLOQ",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento transversal sobre os resumos dos temas: currículo, corpo docente e infraestrutura."
+      },
       "topicos_tematicos": [
         "corpo_docente_gestao",
         "infraestrutura",
@@ -3329,6 +3638,10 @@
       "titulo": "Riscos globais e ajustes prioritários",
       "dominio": "transversal",
       "criticidade": "BLOQ",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Síntese da IA sobre os resultados das demais fichas: riscos globais e ajustes prioritários."
+      },
       "topicos_tematicos": [
         "avaliacao_ppc_egressos",
         "justificativa_objetivos",
@@ -3383,6 +3696,10 @@
       "titulo": "Síntese argumentativa para a conclusão da revisão",
       "dominio": "transversal",
       "criticidade": "REC",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Síntese da IA sobre os resultados das demais fichas, para a conclusão da revisão."
+      },
       "topicos_tematicos": [
         "referencias_normativas",
         "sintese_transversal_revisao"
@@ -3431,6 +3748,10 @@
       "titulo": "Dimensionamento de vagas compatível com infraestrutura e interesse público",
       "dominio": "transversal",
       "criticidade": "REC",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento transversal sobre os resumos dos temas: vagas × infraestrutura e interesse público."
+      },
       "topicos_tematicos": [
         "identificacao_oferta",
         "infraestrutura",
@@ -3494,6 +3815,10 @@
       "titulo": "Coerência teórico-prática entre concepção, perfil e matriz",
       "dominio": "transversal",
       "criticidade": "OBRIG",
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento transversal sobre os resumos dos temas: coerência teórico-prática entre concepção, perfil e matriz."
+      },
       "topicos_tematicos": [
         "concepcao_metodologias",
         "perfil_egresso_mundo_trabalho",
@@ -4589,6 +4914,7 @@
         "dominio",
         "estados_permitidos",
         "evidencia_minima",
+        "execucao",
         "feedback_autores",
         "id",
         "ma_evidencia",

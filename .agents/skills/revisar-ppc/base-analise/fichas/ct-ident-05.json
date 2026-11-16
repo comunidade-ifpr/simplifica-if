@@ -3,6 +3,10 @@
   "titulo": "Concepção de EPT explicitada",
   "dominio": "identidade",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "J",
+    "justificativa": "Julgamento da IA: concepção de EPT."
+  },
   "topicos_tematicos": [
     "concepcao_metodologias"
   ],

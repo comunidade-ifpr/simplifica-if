@@ -3,6 +3,10 @@
   "titulo": "Progressão parcial e dependência descritas conforme a forma de oferta",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: progressão parcial e dependência × forma; a IA confirma a operacionalidade."
+  },
   "topicos_tematicos": [
     "avaliacao_aprendizagem"
   ],

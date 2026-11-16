@@ -3,6 +3,10 @@
   "titulo": "Sistema de avaliação coerente com o IFPR",
   "dominio": "suporte",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "S",
+    "justificativa": "Código localiza e extrai, IA confirma: norma de avaliação do IFPR citada + escala de conceitos."
+  },
   "topicos_tematicos": [
     "avaliacao_aprendizagem"
   ],

@@ -3,6 +3,10 @@
   "titulo": "Denominação do curso alinhada ao CNCT",
   "dominio": "identidade",
   "criticidade": "OBRIG",
+  "execucao": {
+    "modo": "D",
+    "justificativa": "Denominação do curso no início do PPC contra a do CNCT."
+  },
   "topicos_tematicos": [
     "identificacao_oferta"
   ],
