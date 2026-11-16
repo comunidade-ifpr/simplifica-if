@@ -232,6 +232,8 @@ Cada ficha declara `execucao: { modo, justificativa }`, a classificação da rev
 
 Os verificadores, o que cada um confere, o estado `a_conferir` para tudo o que depende de extração e a precisão medida nos 110 PPCs técnicos da base estão no [README do `packages/ppc`](../../../packages/ppc/README.md#pré-conferência-sem-ia-fichas-d) e em [`PRECISAO.md`](../../../packages/ppc/PRECISAO.md). Mudar uma ficha para D é uma edição versionada: o verificador, o registro, os casos de teste e a medição na base entram juntos. A revisão por sub-agentes desta skill continua a avaliar todas as 80 fichas; o modo só muda a revisão no app.
 
+No app (M1.11, etapa 4), as fichas S e J vão à IA conduzidas pelo servidor, não pela skill: lotes S com o recorte que o código acha pelos `consultas` e `ancoras_semanticas` da ficha, um bloco por tema J com as seções dos `topicos_tematicos` e as transversais sobre os resumos dos temas (`packages/ppc/src/revisao-ia/`, descrito no README do `packages/ppc`). O contrato de resposta é o desta skill reduzido (`ficha_id`, `estado` entre os `estados_permitidos` da ficha, `confianca`, `justificativa`, `evidencias[].trecho`, `lacunas`, `revisao_humana_obrigatoria`, mais `o_que_fazer` e `fontes` com os IDs canônicos), conferido em código. Por isso, editar `pergunta`, `rubrica`, `boa_evidencia`, `ma_evidencia`, `escalonar_quando`, `consultas`, `ancoras_semanticas` ou `topicos_tematicos` de uma ficha S ou J muda o que a IA recebe no app; mudar o `modo` de uma ficha muda o bloco em que ela vai.
+
 ## Manutenção de fichas
 
 Ao criar, atualizar ou corrigir uma ficha em `base-analise/fichas/`:

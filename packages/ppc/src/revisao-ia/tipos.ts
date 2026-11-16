@@ -1,0 +1,17 @@
+/** Os providers do app (o mesmo `Provider` do motor, aqui sem depender dele). */
+export type Provider = "claude" | "codex" | "antigravity";
+
+/**
+ * O modelo padrão da revisão com IA, por provider: o intermediário de cada um, que julga bem
+ * critérios com rubrica e custa menos que o maior. `undefined`: o padrão da conta.
+ *
+ * - Claude: Sonnet (`claude-sonnet-5-5`), o modelo das PoCs de A e B;
+ * - Codex: o padrão da conta (`model/list`): numa conta ChatGPT, o modelo do `config.toml` pode não
+ *   valer (armadilha registrada no motor), e o Codex não expõe um "intermediário" estável por nome;
+ * - Antigravity: o padrão da conta (o `agy` 1.5.9 não aceita escolher o modelo pela sessão ACP).
+ */
+export const MODELO_PADRAO: Record<Provider, string | undefined> = {
+  claude: "claude-sonnet-5-5",
+  codex: undefined,
+  antigravity: undefined,
+};

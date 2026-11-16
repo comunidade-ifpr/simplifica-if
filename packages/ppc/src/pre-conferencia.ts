@@ -61,20 +61,64 @@ const SECOES_ESPERADAS: Record<string, string> = {
   referencias: "Referências",
 };
 
-/** Frases típicas de instrução dirigida a um modelo de IA, num documento que não deveria ter nenhuma. */
-const TEXTO_PARA_IA =
-  /(ignore (as|todas as) instru[cç][oõ]es|ignore (all|previous) instructions|voc[eê] [eé] um (assistente|modelo)|sistema de revis[aã]o autom|registre (como|que) (atende|conforme)|marque (todas as fichas|como atende)|system prompt)/i;
+/**
+ * Frases típicas de instrução dirigida a um modelo de IA, num documento que não deveria ter nenhuma.
+ * Casam sobre a linha normalizada (`paraTriagem`): NFKC, sem caracteres de largura zero nem hífen
+ * invisível, sem marcação nem acento, em minúsculas. Valem para qualquer linha da conversão, inclusive
+ * as de tabela e as de caixa de texto (a conversão as escreve como linhas do Markdown).
+ */
+const TEXTO_PARA_IA = new RegExp(
+  [
+    // Ordens para descartar as instruções ou as regras da revisão.
+    "(ignore|desconsidere|esqueca) (as |todas as |quaisquer |estas )?(instrucoes|regras|orientacoes|criterios|fichas)",
+    "(ignore|disregard|forget) (all |any |the )?(previous |prior |above |earlier )?(instructions|rules|prompts?)",
+    // Troca de papel ou de regra "a partir de agora".
+    "a partir de agora,? (voce|responda|considere|aja|atue)",
+    "(voce|tu) (e|eh|sera|agora e) (um|uma|o|a) (assistente|modelo|ia|avaliador|revisor)\\b",
+    "you are (now )?(a|an|the) (assistant|ai|model|reviewer|grader)\\b",
+    // Marcador de papel de conversa: só no começo da linha, sem nada antes ("Linear system: theory" não).
+    "^(system|assistant|developer)\\s*:",
+    "<\\/?(system|assistant|developer)\\b",
+    // O resultado da revisão ditado ao avaliador.
+    "registre (como|que) (atende|aprovad)",
+    "registre (todos os criterios|todas as fichas)",
+    "marque (todas as fichas|todos os criterios|como atende)",
+    "declare (o ppc|este ppc|o curso|o documento|este documento) (como )?(aprovado|apto|conforme)",
+    // Mensagem endereçada a um sistema de revisão ou a um modelo pelo nome (vocativo + imperativo).
+    "(ao|para o|caro|prezado) (sistema|modelo|assistente|agente) (de revisao|revisor|de ia|de inteligencia artificial)\\s*[:,]",
+    "^(nota|atencao|aviso|instrucao) (ao|para o|para a) (sistema|modelo|assistente|agente|ia)\\b",
+    "\\b(chatgpt|claude|gemini|copilot|gpt|llm)\\s*[,:]\\s*(ignore|desconsidere|registre|marque|declare|responda|considere|aprove)\\b",
+  ].join("|"),
+);
+
+const LARGURA_ZERO = /[\u200B-\u200F\u2060-\u2064\uFEFF\u00AD\u180E]|\u034F/g;
+
+/** A linha como a triagem a lê: o disfarce (largura zero, formas compatíveis, marcação, acento) sai. */
+export const paraTriagem = (linha: string) =>
+  linha
+    .normalize("NFKC")
+    .replace(LARGURA_ZERO, "")
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/[*_`|#>~]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+/** A linha traz texto dirigido a uma IA (depois de tirado o disfarce). */
+export const dirigidoAIa = (linha: string) => TEXTO_PARA_IA.test(paraTriagem(linha));
 
 export function triar(ppc: PpcPreparado): AchadoTriagem[] {
   const achados: AchadoTriagem[] = [];
   ppc.linhas.forEach((linha, indice) => {
-    const achado = TEXTO_PARA_IA.exec(linha);
+    const achado = dirigidoAIa(linha);
     if (achado)
       achados.push({
         regra: "texto-dirigido-a-ia",
         estado: "nao_atende",
         mensagem: "Texto dirigido a um sistema de IA dentro do PPC. Remova antes de submeter.",
-        trechos: [trecho(ppc, indice + 1, achado[0])],
+        // A linha inteira: o trecho normalizado não é literal no documento.
+        trechos: [trecho(ppc, indice + 1)],
       });
   });
   const tipos = new Set(ppc.secoes.map((s) => s.tipo));

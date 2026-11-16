@@ -20,6 +20,7 @@ const pendencia = (
   fontes: [],
   tambemEm: [],
   noDocumento: "no-inicio",
+  origem: "codigo",
 });
 
 const resultado: ResultadoRevisaoPpc = {
@@ -43,6 +44,7 @@ const resultado: ResultadoRevisaoPpc = {
       ordemTema: 1,
       estado: "atende",
       mensagem: "",
+      origem: "codigo",
     },
     {
       ficha: "CT-CURR-18",
@@ -51,6 +53,7 @@ const resultado: ResultadoRevisaoPpc = {
       ordemTema: 2,
       estado: "nao_se_aplica",
       mensagem: "",
+      origem: "codigo",
     },
     {
       ficha: "CT-SUP-09",
@@ -59,9 +62,13 @@ const resultado: ResultadoRevisaoPpc = {
       ordemTema: 5,
       estado: "nao_atende",
       mensagem: "",
+      origem: "codigo",
     },
   ],
   conferidos: 12,
+  conferidosIa: 0,
+  paraConferirIa: 0,
+  foraDaRevisao: [],
   totalCriterios: 80,
   dataBase: "2026-11-13",
 };

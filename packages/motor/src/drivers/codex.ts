@@ -46,7 +46,7 @@ const registro = (valor: unknown): Registro => (typeof valor === "object" && val
 const texto = (valor: unknown): string => (typeof valor === "string" ? valor : "");
 
 /** Nome e entrada de uma ferramenta do Codex, a partir do item `ThreadItem`. */
-function ferramentaDoItem(item: Registro): { readonly nome: string; readonly entrada: unknown } | undefined {
+export function ferramentaDoItem(item: Registro): { readonly nome: string; readonly entrada: unknown } | undefined {
   switch (item.type) {
     case "mcpToolCall":
       return { nome: `${texto(item.server)}.${texto(item.tool)}`, entrada: item.arguments };
@@ -62,9 +62,17 @@ function ferramentaDoItem(item: Registro): { readonly nome: string; readonly ent
     case "webSearch":
       return { nome: "busca_web", entrada: { consulta: item.query } };
     default:
-      return undefined;
+      // No lado seguro: todo item que não é mensagem, raciocínio ou a mensagem da pessoa conta como
+      // ferramenta (`imageView`, `collabAgentToolCall`, `imageGeneration`, `openPage`, tipos novos…).
+      // Numa sessão de julgamento, isso descarta o bloco.
+      return ITENS_SEM_FERRAMENTA.has(texto(item.type))
+        ? undefined
+        : { nome: `item.${texto(item.type) || "desconhecido"}`, entrada: {} };
   }
 }
+
+/** Os itens do Codex que não são ferramenta. */
+const ITENS_SEM_FERRAMENTA = new Set(["agentMessage", "reasoning", "userMessage"]);
 
 function resultadoDoItem(item: Registro): { readonly resumo: string; readonly falhou: boolean } {
   switch (item.type) {
@@ -236,6 +244,24 @@ export const CONTEXTO_CODEX: Readonly<Record<string, Schema.Json>> = {
   include_skills_usage_instructions: false,
   include_apps_instructions: false,
   include_collaboration_mode_instructions: false,
+};
+
+/**
+ * Uma thread de julgamento (`ConfigSessao.semFerramentas`) sem ferramenta nenhuma. Com sandbox
+ * `read-only` e `on-request`, o Codex roda comandos de leitura **sem pedir aprovação** (o sandbox
+ * permite ler o disco inteiro), então a política nunca seria consultada: uma injeção que escapasse ao
+ * filtro poderia ler `~/.ssh` e pôr o conteúdo no texto da resposta. As chaves são as de
+ * `codex features list` do codex-cli 0.169.0: o shell (`shell_tool`, `unified_exec`), a leitura de
+ * imagem, os subagentes, o `apply_patch` e a busca web.
+ */
+export const SEM_FERRAMENTAS_CODEX: Readonly<Record<string, Schema.Json>> = {
+  "features.shell_tool": false,
+  "features.unified_exec": false,
+  "features.view_image": false,
+  "features.multi_agent": false,
+  "features.multi_agent_v2": false,
+  include_apply_patch_tool: false,
+  web_search: "disabled",
 };
 
 /** Classifica o pedido de comando: o `cwd` e os caminhos citados; com rede, é `web`. */
@@ -438,7 +464,11 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
         ...CONTEXTO_CODEX,
         ...configMcpCodex(config, politica),
         ...(buscaWebLigada(politica, config.buscaWeb) ? {} : { web_search: "disabled" }),
+        ...(config.semFerramentas === true ? SEM_FERRAMENTAS_CODEX : {}),
       },
+      // A thread de julgamento não é retomada (a retomada é por bloco, no servidor): não fica no
+      // histórico do Codex do usuário.
+      ...(config.semFerramentas === true ? { ephemeral: true } : {}),
       ...(config.instrucoes === undefined ? {} : { developerInstructions: config.instrucoes }),
       ...(modelo ? { model: modelo } : {}),
     } as const;

@@ -10,7 +10,12 @@
  */
 import * as NodeWorkerThreads from "node:worker_threads";
 import { ErroDocx } from "@simplifica-if/docx/erro";
-import { type BaseRevisaoPrevia, revisarDocx, type RevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
+import {
+  type BaseRevisaoPrevia,
+  type EntradaIa,
+  revisarDocx,
+  type RevisaoPrevia,
+} from "@simplifica-if/ppc/revisao-previa";
 
 export type PedidoTrabalhador = {
   bytes: Uint8Array;
@@ -20,6 +25,8 @@ export type PedidoTrabalhador = {
   agora: string;
   cnct?: string | undefined;
   forma?: string | undefined;
+  /** Os resultados conferidos da revisão com IA (etapa 4), para a mesma lista e o mesmo DOCX. */
+  ia?: EntradaIa | undefined;
 };
 
 export type RespostaTrabalhador =
@@ -35,6 +42,7 @@ if (porta !== null)
         agora: new Date(pedido.agora),
         cnct: pedido.cnct,
         forma: pedido.forma,
+        ia: pedido.ia,
       });
       porta.postMessage({ ok: true, revisao } satisfies RespostaTrabalhador, [revisao.docx.buffer as ArrayBuffer]);
       return;

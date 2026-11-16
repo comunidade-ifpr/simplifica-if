@@ -19,6 +19,7 @@ import * as Motor from "@simplifica-if/motor";
 import { CatalogoSkills } from "./CatalogoSkills.ts";
 import * as Conversas from "./Conversas.ts";
 import { AnalisePpc } from "./revisao-ppc/AnalisePpc.ts";
+import { RevisaoIa } from "./revisao-ppc/RevisaoIa.ts";
 
 const ehFalhaProvider = Schema.is(Motor.FalhaProvider);
 
@@ -80,15 +81,23 @@ const layerSkills = GrupoSkills.toLayer(
 const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
   Effect.gen(function* () {
     const analise = yield* AnalisePpc;
+    const ia = yield* RevisaoIa;
+    const registrar = <A, E, R>(efeito: Effect.Effect<A, E, R>) =>
+      efeito.pipe(Effect.tapError((erro) => Effect.logWarning("revisão de PPC falhou", erro)));
     return GrupoRevisaoPpc.of({
-      "revisaoPpc.analisar": (entrada) =>
-        analise.analisar(entrada).pipe(Effect.tapError((erro) => Effect.logWarning("revisão prévia falhou", erro))),
+      "revisaoPpc.analisar": (entrada) => analise.analisar(entrada).pipe(registrar),
+      "revisaoPpc.prepararIa": (entrada) => ia.preparar(entrada).pipe(registrar),
+      "revisaoPpc.iniciarIa": ({ revisao }) => ia.iniciar(revisao).pipe(registrar),
+      "revisaoPpc.pausarIa": ({ revisao }) => ia.pausar(revisao).pipe(registrar),
+      "revisaoPpc.acompanharIa": ({ revisao }) => ia.acompanhar(revisao),
+      "revisaoPpc.listarIa": () => ia.listar,
+      "revisaoPpc.apagarIa": ({ revisao }) => ia.apagar(revisao),
     });
   }),
 );
 
 /**
- * Os handlers dos cinco grupos; pede o `Motor`, as `Conversas`, o `CatalogoSkills`, a `AnalisePpc` e o
- * `Leitura`.
+ * Os handlers dos cinco grupos; pede o `Motor`, as `Conversas`, o `CatalogoSkills`, a `AnalisePpc`, a
+ * `RevisaoIa` e o `Leitura`.
  */
 export const layer = Layer.mergeAll(layerProviders, layerConversa, layerSkills, layerRevisaoPpc, layerHandlersRpc);

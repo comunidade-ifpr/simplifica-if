@@ -391,6 +391,8 @@ export const PendenciaRevisao = Schema.Struct({
   tambemEm: Schema.Array(Schema.Struct({ ficha: Schema.String, titulo: Schema.String })),
   /** `no-inicio`: algo que falta, listado no comentário do título junto ao aviso. */
   noDocumento: LocalNoDocumento,
+  /** `codigo`: conferido pela base; `ia`: avaliação da IA, com trechos e normas conferidos pelo app. */
+  origem: Schema.Literals(["codigo", "ia"]),
 });
 export type PendenciaRevisao = typeof PendenciaRevisao.Type;
 
@@ -402,6 +404,7 @@ export const CriterioRevisao = Schema.Struct({
   ordemTema: Schema.Number,
   estado: Schema.Literals(["atende", "nao_atende", "a_conferir", "nao_se_aplica"]),
   mensagem: Schema.String,
+  origem: Schema.Literals(["codigo", "ia"]),
 });
 export type CriterioRevisao = typeof CriterioRevisao.Type;
 
@@ -418,6 +421,10 @@ export const ResultadoRevisaoPpc = Schema.Struct({
   criterios: Schema.Array(CriterioRevisao),
   /** Quantos critérios o código conferiu, de quantos a revisão tem. */
   conferidos: Schema.Number,
+  /** Quantos a IA decidiu (0 na pré-conferência), quantos foram à IA e ficaram para conferir, e os títulos dos que ficaram de fora (modo rápido). */
+  conferidosIa: Schema.Number,
+  paraConferirIa: Schema.Number,
+  foraDaRevisao: Schema.Array(Schema.String),
   totalCriterios: Schema.Number,
   /** `data_referencia` da base (AAAA-MM-DD). */
   dataBase: Schema.String,
@@ -436,6 +443,79 @@ export class FalhaRevisaoPpc extends Schema.TaggedError<FalhaRevisaoPpc>()("Falh
 
 export const ehFalhaRevisaoPpc = Schema.is(FalhaRevisaoPpc);
 
+/* ---------------------------------------------------------------- revisão com IA (etapa 4) */
+
+/** `rapido`: as fichas que bloqueiam a submissão e os temas que mais devolvem; `completo`: as 68 S e J. */
+export const ModoRevisaoIa = Schema.Literals(["rapido", "completo"]);
+export type ModoRevisaoIa = typeof ModoRevisaoIa.Type;
+
+/** O que a revisão deve gastar, mostrado antes de começar (método no `estimativa.ts` do `packages/ppc`). */
+export const EstimativaRevisaoIa = Schema.Struct({
+  provider: Provider,
+  blocos: Schema.Number,
+  fichas: Schema.Number,
+  tokensEntrada: Schema.Number,
+  tokensSaida: Schema.Number,
+  minutos: Schema.Number,
+  /** US$ equivalentes na API, quando o preço do modelo é conhecido (Claude). */
+  custoUsd: Schema.NullOr(Schema.Number),
+  percentualJanela: Schema.Number,
+  nomeJanela: Schema.String,
+});
+export type EstimativaRevisaoIa = typeof EstimativaRevisaoIa.Type;
+
+export const UsoRevisaoIa = Schema.Struct({
+  entrada: Schema.Number,
+  saida: Schema.Number,
+  cacheLeitura: Schema.Number,
+  cacheEscrita: Schema.Number,
+  custoUsd: Schema.Number,
+});
+export type UsoRevisaoIa = typeof UsoRevisaoIa.Type;
+
+/** Um bloco da revisão: um lote S, um tema J ou as transversais, numa sessão curta do provider. */
+export const BlocoRevisaoIa = Schema.Struct({
+  id: Schema.String,
+  tipo: Schema.Literals(["S", "J", "T"]),
+  tema: Schema.String,
+  ordemTema: Schema.Number,
+  fichas: Schema.Number,
+  estado: Schema.Literals(["pendente", "em_andamento", "pronto"]),
+  /** Fichas que ficaram "a conferir" porque a resposta não passou na conferência. */
+  naoConferidas: Schema.Number,
+  segundos: Schema.NullOr(Schema.Number),
+});
+export type BlocoRevisaoIa = typeof BlocoRevisaoIa.Type;
+
+/**
+ * - `preparada`: o plano e a estimativa prontos, esperando a confirmação;
+ * - `em_andamento`, `pausada` (limite de taxa, cota, provider caído, app fechado ou a pedido; `motivo`
+ *   diz qual), `concluida` (com `resultado`) ou `falhou` (`motivo`).
+ */
+export const SituacaoRevisaoIa = Schema.Literals(["preparada", "em_andamento", "pausada", "concluida", "falhou"]);
+export type SituacaoRevisaoIa = typeof SituacaoRevisaoIa.Type;
+
+export const EstadoRevisaoIa = Schema.Struct({
+  id: Schema.String,
+  arquivoOriginal: Schema.String,
+  provider: Provider,
+  modelo: Schema.NullOr(Schema.String),
+  modo: ModoRevisaoIa,
+  situacao: SituacaoRevisaoIa,
+  motivo: Schema.NullOr(Schema.String),
+  /** A pausa veio de limite de taxa ou de cota (a pessoa espera e retoma). */
+  limite: Schema.Boolean,
+  blocos: Schema.Array(BlocoRevisaoIa),
+  estimativa: EstimativaRevisaoIa,
+  uso: UsoRevisaoIa,
+  resultado: Schema.NullOr(ResultadoRevisaoPpc),
+  criadaEm: Schema.String,
+  atualizadaEm: Schema.String,
+});
+export type EstadoRevisaoIa = typeof EstadoRevisaoIa.Type;
+
+const EntradaRevisaoIa = Schema.Struct({ revisao: Schema.String });
+
 export class GrupoRevisaoPpc extends RpcGroup.make(
   /**
    * Revisão prévia sem IA de um PPC em DOCX (M1.11, etapa 3): conversão, pré-conferência das fichas D
@@ -451,6 +531,37 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
     success: ResultadoRevisaoPpc,
     error: FalhaRevisaoPpc,
   }),
+  /**
+   * Prepara a revisão com IA (etapa 4) do arquivo já analisado: converte de novo, monta os blocos e
+   * os pedidos (o contexto normativo vem do `kb.sqlite`) e estima o custo. Nada vai ao provider.
+   */
+  Rpc.make("revisaoPpc.prepararIa", {
+    payload: Schema.Struct({
+      arquivo: Schema.String,
+      provider: Provider,
+      modo: ModoRevisaoIa,
+      modelo: Schema.optionalKey(Schema.String),
+      cnct: Schema.optionalKey(Schema.String),
+      forma: Schema.optionalKey(Schema.String),
+    }),
+    success: EstadoRevisaoIa,
+    error: FalhaRevisaoPpc,
+  }),
+  /** Começa ou retoma a revisão preparada (ou pausada); só os blocos pendentes vão ao provider. */
+  Rpc.make("revisaoPpc.iniciarIa", { payload: EntradaRevisaoIa, success: EstadoRevisaoIa, error: FalhaRevisaoPpc }),
+  /** Pausa: os blocos em andamento param e voltam a pendentes; os prontos ficam gravados. */
+  Rpc.make("revisaoPpc.pausarIa", { payload: EntradaRevisaoIa, success: EstadoRevisaoIa, error: FalhaRevisaoPpc }),
+  /** O estado agora e a cada mudança (bloco pronto, pausa, fim); termina quando a revisão termina. */
+  Rpc.make("revisaoPpc.acompanharIa", {
+    payload: EntradaRevisaoIa,
+    success: EstadoRevisaoIa,
+    error: FalhaRevisaoPpc,
+    stream: true,
+  }),
+  /** Apaga a revisão com IA: o plano (com o texto do PPC), os blocos e o uso de cada tentativa. */
+  Rpc.make("revisaoPpc.apagarIa", { payload: EntradaRevisaoIa }),
+  /** As revisões com IA gravadas (sem o resultado), da mais recente para a mais antiga. */
+  Rpc.make("revisaoPpc.listarIa", { payload: Schema.Struct({}), success: Schema.Array(EstadoRevisaoIa) }),
 ) {}
 
 /* ================================================================== app */

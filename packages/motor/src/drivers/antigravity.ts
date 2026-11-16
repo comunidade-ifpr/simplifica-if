@@ -89,6 +89,7 @@ function entradaFerramenta(atualizacao: Registro): unknown {
  */
 export function criarNormalizadorAntigravity(
   servidores: ReadonlyArray<string> = [],
+  opcoes: { readonly semFerramentas?: boolean } = {},
 ): (entrada: EntradaAcp) => ReadonlyArray<Evento> {
   const nomes = new Map<string, string>();
   const iniciadas = new Set<string>();
@@ -157,14 +158,92 @@ export function criarNormalizadorAntigravity(
         }
         return eventos;
       }
-      default:
-        return [];
+      default: {
+        // No lado seguro: numa sessão de julgamento, atualização fora das benignas conhecidas conta
+        // como ferramenta (e descarta o bloco).
+        const tipo = texto(atualizacao.sessionUpdate);
+        return opcoes.semFerramentas === true && !ATUALIZACOES_SEM_FERRAMENTA.has(tipo)
+          ? [
+              {
+                _tag: "FerramentaIniciada",
+                id: `atualizacao-${tipo}`,
+                nome: `atualizacao.${tipo || "desconhecida"}`,
+                entrada: {},
+              },
+            ]
+          : [];
+      }
     }
   };
 }
 
+/**
+ * As atualizações do ACP que não são ferramenta: as vistas nas gravações reais do `agy` 1.5.x
+ * (`test/fixtures/antigravity-*.jsonl`) e as de estado da sessão do protocolo.
+ */
+const ATUALIZACOES_SEM_FERRAMENTA = new Set([
+  "agent_message_chunk",
+  "agent_message",
+  "agent_thought_chunk",
+  "user_message_chunk",
+  "available_commands_update",
+  "session_info_update",
+  "current_mode_update",
+  "usage_update",
+  "plan",
+]);
+
 /** Ferramentas de web do `agy` 1.5.x, desligadas no `_meta.antigravity.disabledTools` sem busca web. */
 export const FERRAMENTAS_WEB_ANTIGRAVITY = ["search_web", "read_url_content", "browser_subagent"] as const;
+
+/**
+ * Todas as ferramentas do `agy` 1.5.9 que se conhecem (as `strings` do binário e as gravações em
+ * `test/fixtures/`), desligadas no `_meta.antigravity.disabledTools` numa sessão `semFerramentas`. Nome
+ * que a versão não tem não atrapalha; nome novo que falte aqui ainda passa pela política de
+ * julgamento (nega sem perguntar) e pelo julgamento, que descarta o bloco que tentar ferramenta.
+ */
+export const FERRAMENTAS_ANTIGRAVITY = [
+  ...FERRAMENTAS_WEB_ANTIGRAVITY,
+  "read_file",
+  "view_file",
+  "list_dir",
+  "list_directory",
+  "glob",
+  "grep_search",
+  "view_code_item",
+  "run_command",
+  "command_status",
+  "write_file",
+  "write_to_file",
+  "replace",
+  "read_resource",
+  "plan",
+  "teamwork",
+  "schedule",
+  "learn",
+  "goal",
+  "compact",
+  "browser",
+  "boost",
+] as const;
+
+/** Os arquivos que o `agy` 1.5.9 grava por sessão no perfil (`<perfil>/antigravity-acp/…`). */
+export function arquivosDaSessaoAntigravity(
+  juntar: (...partes: string[]) => string,
+  perfil: string,
+  sessionId: string,
+): string[] {
+  // Só um id com cara de UUID: o nome entra num caminho que se apaga.
+  if (!/^[0-9a-f-]{8,64}$/i.test(sessionId)) return [];
+  const acp = juntar(perfil, "antigravity-acp");
+  return [
+    juntar(acp, "conversations", `${sessionId}.db`),
+    juntar(acp, "conversations", `${sessionId}.db-wal`),
+    juntar(acp, "conversations", `${sessionId}.db-shm`),
+    juntar(acp, "brain", sessionId),
+    juntar(acp, "annotations", `${sessionId}.pbtxt`),
+  ];
+}
 
 const CHAVE_DE_CAMINHO = /path|file|dir|cwd/i;
 
@@ -500,6 +579,21 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
     const canal = yield* Canal.comPolitica(politica, config.pastaTrabalho);
     const gravar = yield* Gravador;
     const escopo = yield* Effect.scope;
+    // Julgamento: o `agy` guarda a conversa no perfil próprio do app (`conversations/<id>.db`,
+    // `brain/<id>/`, `annotations/<id>.pbtxt`, conferido no 1.5.9), com o texto do pedido. A sessão de
+    // julgamento não é retomada, então esses arquivos se apagam no fim. Registrado antes de abrir o
+    // processo, o finalizador roda depois que ele termina.
+    let idDaSessao: string | undefined;
+    if (config.semFerramentas === true)
+      yield* Effect.addFinalizer(() =>
+        idDaSessao === undefined
+          ? Effect.void
+          : Effect.forEach(
+              arquivosDaSessaoAntigravity(path.join, pastas.profile, idDaSessao),
+              (alvo) => fs.remove(alvo, { recursive: true, force: true }).pipe(Effect.ignore),
+              { discard: true },
+            ),
+      );
     const aberto = yield* abrir(config.pastaTrabalho);
     if (!aberto.login) {
       return yield* new FalhaProvider({
@@ -513,7 +607,10 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
     if (recusa !== undefined) {
       return yield* new FalhaProvider({ provider: PROVIDER, operacao: "session/new", detalhe: recusa });
     }
-    const normalizar = criarNormalizadorAntigravity(config.servidoresMcp.map((servidor) => servidor.nome));
+    const normalizar = criarNormalizadorAntigravity(
+      config.servidoresMcp.map((servidor) => servidor.nome),
+      { semFerramentas: config.semFerramentas === true },
+    );
     // Fora de um turno (o histórico que o `session/load` repete), as atualizações não viram eventos.
     let emTurno = false;
     const servidoresApp = config.servidoresMcp.filter((servidor) => servidor.preAprovado).map((s) => s.nome);
@@ -560,7 +657,11 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
     const meta = antigravitySessionMeta(
       aberto.inicio,
       config.instrucoes,
-      buscaWebLigada(politica, config.buscaWeb) ? [] : FERRAMENTAS_WEB_ANTIGRAVITY,
+      config.semFerramentas === true
+        ? FERRAMENTAS_ANTIGRAVITY
+        : buscaWebLigada(politica, config.buscaWeb)
+          ? []
+          : FERRAMENTAS_WEB_ANTIGRAVITY,
     );
     const pedidoSessao = { cwd: config.pastaTrabalho, mcpServers, ...(meta === undefined ? {} : { _meta: meta }) };
     const sessao =
@@ -568,6 +669,7 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
         ? yield* cliente.agent.createSession(pedidoSessao).pipe(Effect.mapError(Canal.falhaDe(PROVIDER, "session/new")))
         : yield* retomarSessao(aberto.inicio, cliente, { ...pedidoSessao, sessionId: config.retomar });
     const sessionId = sessao.sessionId;
+    idDaSessao = sessionId;
 
     // Quando o processo do `agy` acaba sozinho (queda), o turno corrente falha e a sessão recusa os
     // próximos. No encerramento da sessão, o fiber é interrompido antes de o processo morrer.

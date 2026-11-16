@@ -111,6 +111,29 @@ export const POLITICA_FABRICA: Politica = congelar(
   }),
 );
 
+/**
+ * A política das sessões de julgamento (`ConfigSessao.semFerramentas`, a revisão de PPC do M1.11):
+ * o contexto vai pronto na mensagem, e qualquer ferramenta se nega sem perguntar, dentro ou fora da
+ * pasta. Os providers e o isolamento são os de fábrica.
+ */
+export const POLITICA_JULGAMENTO: Politica = congelar(
+  Schema.decodeSync(Politica)({
+    providers: ["claude", "codex", "antigravity"],
+    ferramentas: {
+      leitura: { dentro: "negar", fora: "negar" },
+      escrita: { dentro: "negar", fora: "negar" },
+      comando: { dentro: "negar", fora: "negar" },
+      mcpApp: "negar",
+      mcpOutro: "negar",
+      web: "negar",
+      outra: "negar",
+    },
+    codex: { sandbox: "read-only", aprovacao: "on-request" },
+    isolamento: { configuracaoDoUsuario: "desligada", buscaWeb: "desligada" },
+    telemetria: "desligada",
+  }),
+);
+
 /** A busca web vale nesta sessão: pedida na sessão e permitida pela política. */
 export const buscaWebLigada = (politica: Politica, pedida: boolean | undefined): boolean =>
   pedida === true && politica.isolamento.buscaWeb === "a-pedido" && politica.ferramentas.web !== "negar";

@@ -59,11 +59,16 @@ export function nomeFerramentaClaude(nome: string): string {
   return partes ? `${partes[1]}.${partes[2]}` : nome;
 }
 
+/** Os blocos de conteúdo do Claude que não são ferramenta. */
+const BLOCOS_SEM_FERRAMENTA = new Set<string>(["text", "thinking", "redacted_thinking"]);
+
 /**
  * Traduz as mensagens do Agent SDK em eventos. Guarda o nome de cada `tool_use` para o resultado,
  * que só traz o id.
  */
-export function criarNormalizadorClaude(): (mensagem: SDKMessage) => ReadonlyArray<Evento> {
+export function criarNormalizadorClaude(
+  opcoes: { readonly semFerramentas?: boolean } = {},
+): (mensagem: SDKMessage) => ReadonlyArray<Evento> {
   const nomes = new Map<string, string>();
   return (mensagem) => {
     switch (mensagem.type) {
@@ -87,6 +92,15 @@ export function criarNormalizadorClaude(): (mensagem: SDKMessage) => ReadonlyArr
             const nome = nomeFerramentaClaude(bloco.name);
             nomes.set(bloco.id, nome);
             eventos.push({ _tag: "FerramentaIniciada", id: bloco.id, nome, entrada: bloco.input });
+          } else if (opcoes.semFerramentas === true && !BLOCOS_SEM_FERRAMENTA.has(bloco.type)) {
+            // No lado seguro: numa sessão de julgamento, bloco que não é texto nem raciocínio
+            // (`server_tool_use`, resultados de ferramentas do servidor, tipos novos) conta como ferramenta.
+            eventos.push({
+              _tag: "FerramentaIniciada",
+              id: `bloco-${eventos.length}`,
+              nome: `bloco.${bloco.type}`,
+              entrada: {},
+            });
           }
         }
         return eventos;
@@ -311,7 +325,15 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
         ...(config.retomar === undefined
           ? {}
           : { env: { ...limparAmbiente(opcoes.ambiente), MCP_CONNECTION_NONBLOCKING: "0" } }),
-        persistSession: true,
+        // Julgamento: um turno por sessão, então gravar o pedido no cache (1,25× o preço da entrada) não
+        // tem retorno; no teste real, 343 mil tokens foram gravados no cache sem nenhuma leitura útil.
+        ...(config.semFerramentas === true
+          ? {
+              env: { ...ambienteSemTelemetria(PROVIDER, limparAmbiente(opcoes.ambiente)), DISABLE_PROMPT_CACHING: "1" },
+            }
+          : {}),
+        // Julgamento: a sessão não é retomada, e o PPC não fica na transcrição do `~/.claude/projects/`.
+        persistSession: config.semFerramentas !== true,
         ...(config.retomar === undefined ? { sessionId: idNativo } : { resume: config.retomar }),
         abortController: abortar,
         cwd: config.pastaTrabalho,
@@ -319,12 +341,17 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
         // As ferramentas do app passam sem `canUseTool` quando a política as permite.
         allowedTools: politica.ferramentas.mcpApp === "permitir" ? servidoresApp.map((nome) => `mcp__${nome}`) : [],
         ...(buscaWebLigada(politica, config.buscaWeb) ? {} : { disallowedTools: ["WebSearch", "WebFetch"] }),
-        permissionMode: "default",
+        // Julgamento: nenhuma ferramenta no contexto e nenhuma pergunta (`dontAsk` nega o que não foi
+        // pré-aprovado); o prompt de sistema é só o do app.
+        permissionMode: config.semFerramentas === true ? "dontAsk" : "default",
+        ...(config.semFerramentas === true ? { tools: [] } : {}),
         canUseTool,
         includePartialMessages: true,
         ...(config.instrucoes === undefined
           ? {}
-          : { systemPrompt: { type: "preset" as const, preset: "claude_code" as const, append: config.instrucoes } }),
+          : config.semFerramentas === true
+            ? { systemPrompt: config.instrucoes }
+            : { systemPrompt: { type: "preset" as const, preset: "claude_code" as const, append: config.instrucoes } }),
         ...(config.modelo ? { model: config.modelo } : {}),
       },
     });
@@ -335,7 +362,7 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
       }),
     );
 
-    const normalizar = criarNormalizadorClaude();
+    const normalizar = criarNormalizadorClaude({ semFerramentas: config.semFerramentas === true });
     // Interrompido, o turno do Claude termina com `error_during_execution` (medido com o SDK 0.3.321):
     // não é erro para a pessoa, e o fim do turno sai como interrupção.
     let interrompendo = false;

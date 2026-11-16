@@ -33,7 +33,7 @@ import {
 } from "./Driver.ts";
 import { SessaoDesconhecida } from "./erros.ts";
 import type { Evento, Provider } from "./eventos.ts";
-import { buscaWebLigada, type Politica, POLITICA_FABRICA } from "./politica.ts";
+import { buscaWebLigada, type Politica, POLITICA_FABRICA, POLITICA_JULGAMENTO } from "./politica.ts";
 import * as Resultados from "./resultados.ts";
 import * as Skills from "./skills.ts";
 
@@ -114,6 +114,13 @@ const make = Effect.fnUntraced(function* (politica: Politica) {
         detalhe: "a política do app não permite este provider",
       });
     }
+    if (pedida.semFerramentas === true && (pedida.servidoresMcp.length > 0 || (pedida.skills?.length ?? 0) > 0)) {
+      return yield* new FalhaProvider({
+        provider: pedida.provider,
+        operacao: "iniciar",
+        detalhe: "uma sessão sem ferramentas não recebe MCP nem skills",
+      });
+    }
     let pastaSkills = "";
     if (pedida.skills !== undefined && pedida.skills.length > 0) {
       if (Option.isNone(fs) || Option.isNone(path)) {
@@ -136,7 +143,8 @@ const make = Effect.fnUntraced(function* (politica: Politica) {
       ...(instrucoes === undefined ? {} : { instrucoes }),
     };
     const escopo = yield* Scope.make();
-    const driver = yield* drivers[config.provider].iniciar(config, politica).pipe(
+    const politicaSessao = config.semFerramentas === true ? POLITICA_JULGAMENTO : politica;
+    const driver = yield* drivers[config.provider].iniciar(config, politicaSessao).pipe(
       Scope.provide(escopo),
       Effect.onError(() => Scope.close(escopo, Exit.void)),
     );

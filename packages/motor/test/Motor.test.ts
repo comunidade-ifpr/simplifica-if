@@ -299,6 +299,34 @@ describe("Motor: política e skills", () => {
     }).pipe(Effect.provide(camadaComPolitica([]))),
   );
 
+  it.effect("sessão de julgamento: política que nega tudo sem perguntar, e nunca com MCP ou skills", () => {
+    const configs: Array<{ config: Motor.ConfigSessao; politica: Motor.Politica }> = [];
+    return Effect.gen(function* () {
+      const motor = yield* Motor.Motor;
+      const sessao = yield* motor.iniciarSessao({
+        ...CONFIG,
+        pastaTrabalho: "/Users/servidor/tarefa",
+        semFerramentas: true,
+      });
+      assert.strictEqual(configs[0]?.politica, Motor.POLITICA_JULGAMENTO);
+      const eventos = yield* turnoRespondendo(sessao, "permitir");
+      // Nenhum pedido chega à interface: o ifpr, a escrita fora e a escrita dentro se negam sozinhos.
+      assert.isFalse(eventos.some((evento) => evento._tag === "PedidoAprovacao"));
+      assert.deepStrictEqual(
+        eventos.flatMap((evento) => (evento._tag === "FerramentaConcluida" ? [evento.falhou] : [])),
+        [true, true, true],
+      );
+      const comMcp = yield* Effect.exit(
+        motor.iniciarSessao({
+          ...CONFIG,
+          semFerramentas: true,
+          servidoresMcp: [{ nome: "ifpr", tipo: "stdio", comando: "x", argumentos: [], preAprovado: true }],
+        }),
+      );
+      assert.isTrue(Exit.hasFails(comMcp));
+    }).pipe(Effect.provide(camadaComPolitica(configs)));
+  });
+
   it.effect("provider fora da política não abre sessão; busca web desligada pela de fábrica", () => {
     const configs: Array<{ config: Motor.ConfigSessao; politica: Motor.Politica }> = [];
     const soClaude = { ...Motor.POLITICA_FABRICA, providers: ["claude" as const] };

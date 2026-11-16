@@ -32,7 +32,8 @@ import type * as SqlClient from "effect/sql/SqlClient";
 import { FalhaRevisaoPpc, type ResultadoRevisaoPpc, SUFIXO_REVISAO_PREVIA } from "@simplifica-if/contratos-app";
 import { FontesNormativas } from "@simplifica-if/kb/FontesNormativas";
 import * as Sql from "@simplifica-if/kb/db/sql";
-import type { BaseRevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
+import * as NodeCrypto from "node:crypto";
+import type { BaseRevisaoPrevia, EntradaIa, RevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
 import type { CursoCnct } from "@simplifica-if/ppc/verificadores/comum";
 import type { PedidoTrabalhador, RespostaTrabalhador } from "./trabalhador.ts";
 
@@ -59,10 +60,32 @@ export interface EntradaAnalise {
   readonly forma?: string;
 }
 
+/** A revisão de um arquivo, para a revisão com IA (`RevisaoIa.ts`): sem os bytes do DOCX. */
+export interface RevisaoDoArquivo {
+  readonly revisao: Omit<RevisaoPrevia, "docx">;
+  /** sha256 do `.docx` lido. */
+  readonly sha256: string;
+  /** A cópia comentada gravada, quando pedida. */
+  readonly arquivoComentado: string | null;
+}
+
+export interface EntradaRevisarArquivo extends EntradaAnalise {
+  readonly ia?: EntradaIa;
+  /** Grava a cópia comentada ao lado do original. */
+  readonly gravar: boolean;
+  /** Recusa o arquivo se o conteúdo mudou desde a preparação. */
+  readonly sha256?: string;
+}
+
 export class AnalisePpc extends Context.Service<
   AnalisePpc,
   {
     readonly analisar: (entrada: EntradaAnalise) => Effect.Effect<ResultadoRevisaoPpc, FalhaRevisaoPpc>;
+    /**
+     * Converte, pré-confere e (com `ia`) junta os resultados da IA; espera a vez em vez de recusar.
+     * As mesmas conferências do `analisar` (arquivo liberado, tamanho, Worker com limites).
+     */
+    readonly revisarArquivo: (entrada: EntradaRevisarArquivo) => Effect.Effect<RevisaoDoArquivo, FalhaRevisaoPpc>;
     /** Libera um arquivo escolhido no diálogo do desktop (`CAMINHO_LIBERAR_ARQUIVO`). */
     readonly liberar: (arquivo: string) => Effect.Effect<void>;
   }
@@ -202,6 +225,12 @@ async function gravarCopia(original: string, bytes: Uint8Array): Promise<string>
 
 /* ============================================================ serviço */
 
+/** O resultado para a interface (sem o Markdown, o aviso e as linhas da triagem). */
+export const resultadoParaInterface = (arquivo: string, r: RevisaoDoArquivo): ResultadoRevisaoPpc => {
+  const { aviso: _, markdown: __, linhasTextoParaIa: ___, ...resto } = r.revisao;
+  return { arquivoOriginal: arquivo, arquivoComentado: r.arquivoComentado ?? "", ...resto };
+};
+
 export interface OpcoesAnalise {
   readonly limites?: Partial<Limites>;
   readonly trabalhador?: URL;
@@ -228,7 +257,7 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
   // Uma análise por vez: cada Worker pode usar até `memoriaMb` de heap.
   const vez = yield* Semaphore.make(1);
 
-  const analisarUma = Effect.fn("AnalisePpc.analisar")(function* (entrada: EntradaAnalise) {
+  const revisarUm = Effect.fn("AnalisePpc.revisarArquivo")(function* (entrada: EntradaRevisarArquivo) {
     const arquivo = entrada.arquivo;
     const falha = (motivo: string) => new FalhaRevisaoPpc({ arquivo, motivo });
     if (!NodePath.isAbsolute(arquivo) || NodePath.extname(arquivo).toLowerCase() !== ".docx")
@@ -248,6 +277,11 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
       try: () => NodeFSP.readFile(arquivo),
       catch: () => falha("O arquivo não pode ser lido."),
     });
+    const sha256 = NodeCrypto.createHash("sha256").update(bytes).digest("hex");
+    if (entrada.sha256 !== undefined && entrada.sha256 !== sha256)
+      return yield* falha(
+        "O arquivo mudou depois que a revisão começou. Analise o arquivo de novo para começar outra revisão.",
+      );
     const dados = yield* base.pipe(
       Effect.mapError(() => falha("A base de normas do Simplifica IF não pôde ser lida. Reinicie o app.")),
     );
@@ -260,19 +294,25 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
         agora: DateTime.formatIso(yield* DateTime.now),
         cnct: entrada.cnct,
         forma: entrada.forma,
+        ia: entrada.ia,
       },
       limites,
       url,
       falha,
     );
-    const arquivoComentado = yield* Effect.tryPromise({
-      try: () => gravarCopia(arquivo, revisao.docx),
-      catch: () =>
-        falha("Não foi possível gravar a cópia comentada na pasta do arquivo. Confira se a pasta aceita gravação."),
-    });
-    const { docx: _, aviso: __, ...resto } = revisao;
-    return { arquivoOriginal: arquivo, arquivoComentado, ...resto } satisfies ResultadoRevisaoPpc;
+    const arquivoComentado = entrada.gravar
+      ? yield* Effect.tryPromise({
+          try: () => gravarCopia(arquivo, revisao.docx),
+          catch: () =>
+            falha("Não foi possível gravar a cópia comentada na pasta do arquivo. Confira se a pasta aceita gravação."),
+        })
+      : null;
+    const { docx: _, ...semDocx } = revisao;
+    return { revisao: semDocx, sha256, arquivoComentado } satisfies RevisaoDoArquivo;
   });
+
+  const analisarUma = (entrada: EntradaAnalise) =>
+    revisarUm({ ...entrada, gravar: true }).pipe(Effect.map((r) => resultadoParaInterface(entrada.arquivo, r)));
 
   const analisar = (entrada: EntradaAnalise) =>
     analisarUma(entrada).pipe(
@@ -291,8 +331,9 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
       ),
     );
   const liberar = (arquivo: string) => Effect.sync(() => void liberados.add(NodePath.normalize(arquivo)));
+  const revisarArquivo = (entrada: EntradaRevisarArquivo) => revisarUm(entrada).pipe(vez.withPermits(1));
 
-  return AnalisePpc.of({ analisar, liberar });
+  return AnalisePpc.of({ analisar, liberar, revisarArquivo });
 });
 
 /** O serviço sobre o `FontesNormativas` e o `SqlClient` do `kb.sqlite` (os do `Leitura` do servidor). */
