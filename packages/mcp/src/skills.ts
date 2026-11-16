@@ -137,33 +137,34 @@ const RE_FRONT_MATTER = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/;
  * Lê o texto de um `SKILL.md`. Sem bloco `simplifica:`, `manifesto` fica `undefined`; com bloco
  * inválido, falha com cada problema numa linha (`ferramentas.0: …`).
  */
-export function lerSkillMd(textoSkill: string, skill: string): Effect.Effect<SkillMd, ErroSkill> {
-  return Effect.gen(function* () {
-    const erro = (detalhe: string) => new ErroSkill({ skill, detalhe });
-    const casamento = RE_FRONT_MATTER.exec(textoSkill);
-    if (casamento === null) return yield* erro("o SKILL.md não começa com front matter (---)");
-    const yaml = yield* Effect.try({
-      try: () => parse(casamento[1]!) as unknown,
-      catch: (causa) => erro(`front matter não é YAML válido: ${causa instanceof Error ? causa.message : causa}`),
-    });
-    const meta = decodificarFrontMatter(yaml);
-    if (meta._tag === "Failure") return yield* erro(formatarErro(meta.failure));
-    const corpo = textoSkill.slice(casamento[0].length).trim();
-    if (meta.success.simplifica === undefined) {
-      return { nome: meta.success.name, descricao: meta.success.description, manifesto: undefined, corpo };
-    }
-    const manifesto = decodificarManifesto(meta.success.simplifica);
-    if (manifesto._tag === "Failure") {
-      return yield* erro(
-        `bloco simplifica: inválido\n${formatarErro(manifesto.failure)
-          .split("\n")
-          .map((linha) => `  simplifica.${linha}`)
-          .join("\n")}`,
-      );
-    }
-    return { nome: meta.success.name, descricao: meta.success.description, manifesto: manifesto.success, corpo };
+export const lerSkillMd = Effect.fn("skills.lerSkillMd")(function* (
+  textoSkill: string,
+  skill: string,
+): Effect.fn.Return<SkillMd, ErroSkill> {
+  const erro = (detalhe: string) => new ErroSkill({ skill, detalhe });
+  const casamento = RE_FRONT_MATTER.exec(textoSkill);
+  if (casamento === null) return yield* erro("o SKILL.md não começa com front matter (---)");
+  const yaml = yield* Effect.try({
+    try: () => parse(casamento[1]!) as unknown,
+    catch: (causa) => erro(`front matter não é YAML válido: ${causa instanceof Error ? causa.message : causa}`),
   });
-}
+  const meta = decodificarFrontMatter(yaml);
+  if (meta._tag === "Failure") return yield* erro(formatarErro(meta.failure));
+  const corpo = textoSkill.slice(casamento[0].length).trim();
+  if (meta.success.simplifica === undefined) {
+    return { nome: meta.success.name, descricao: meta.success.description, manifesto: undefined, corpo };
+  }
+  const manifesto = decodificarManifesto(meta.success.simplifica);
+  if (manifesto._tag === "Failure") {
+    return yield* erro(
+      `bloco simplifica: inválido\n${formatarErro(manifesto.failure)
+        .split("\n")
+        .map((linha) => `  simplifica.${linha}`)
+        .join("\n")}`,
+    );
+  }
+  return { nome: meta.success.name, descricao: meta.success.description, manifesto: manifesto.success, corpo };
+});
 
 /** Uma skill do app pronta para o motor: o `Motor.Skill` (nome, descrição, instruções, arquivos) e o manifesto. */
 export interface SkillDoApp {

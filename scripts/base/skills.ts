@@ -16,19 +16,22 @@ export interface ResultadoSkills {
   readonly doApp: ReadonlyArray<string>;
 }
 
+const validar = Effect.fn("skills.validarSkillsDoApp")(function* (raizProjeto: string) {
+  const path = yield* Path.Path;
+  const pasta = yield* lerPastaSkills(path.join(raizProjeto, ".agents", "skills"));
+  return {
+    erros: pasta.invalidas.map((erro) => erro.message),
+    doApp: pasta.skills.map((skill) => skill.nome),
+  };
+});
+
 /** Confere as skills de `<raiz>/.agents/skills`. */
 export function validarSkillsDoApp(raizProjeto: string = RAIZ_PROJETO): Promise<ResultadoSkills> {
-  return Effect.gen(function* () {
-    const path = yield* Path.Path;
-    const pasta = yield* lerPastaSkills(path.join(raizProjeto, ".agents", "skills"));
-    return {
-      erros: pasta.invalidas.map((erro) => erro.message),
-      doApp: pasta.skills.map((skill) => skill.nome),
-    };
-  }).pipe(
-    Effect.catchTag("PlatformError", (erro) =>
-      Effect.succeed({ erros: [`skills: não foi possível ler .agents/skills (${erro.message})`], doApp: [] }),
-    ),
+  return validar(raizProjeto).pipe(
+    Effect.catchTags({
+      PlatformError: (erro) =>
+        Effect.succeed({ erros: [`skills: não foi possível ler .agents/skills (${erro.message})`], doApp: [] }),
+    }),
     Effect.provide(NodeServices.layer),
     Effect.runPromise,
   );

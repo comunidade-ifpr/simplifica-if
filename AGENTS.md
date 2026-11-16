@@ -129,6 +129,8 @@ pnpm test
 
 As ferramentas são as do T3 Code, configuradas em `vite.config.ts`: `pnpm fmt` aplica o `vp fmt` (oxfmt, largura 120), `pnpm lint` o `vp lint` (oxlint), `pnpm test` o `vp test` (vitest) na raiz e em cada pacote, e `pnpm typecheck` o `effect-tsgo`. A formatação deixa de fora Markdown, JSON, YAML e Python, e as pastas de dados (`base-conhecimento/`, `dados/`, `avaliacao/`, `site/`, `tmp/`, `outputs/`, `.repos/` e as pastas de dados das skills): são textos normativos, saídas de geradores ou insumos, e não devem ser reformatados. Use sempre `pnpm fmt`, nunca o oxfmt ou o prettier direto sobre a raiz. O código de referência do Effect fica em `.repos/effect`, fora do git, trazido na versão do catalog por `pnpm sync:repos`.
 
+As skills com bloco `simplifica:` no front matter do `SKILL.md` (hoje `verificar-calendario` e `verificar-fundamentacao-normativa`) também vão para o app desktop, que não tem o repositório: só as ferramentas MCP `ifpr` e os arquivos listados em `simplifica.arquivos`. Ao editá-las, mantenha as ferramentas `ifpr` como caminho principal e a CLI e os scripts como alternativa "dentro do repositório", e acrescente a `simplifica.arquivos` todo arquivo novo que o texto cite; `node scripts/validar_base.ts` confere o bloco (Effect Schema em `@simplifica-if/mcp/skills`) e os arquivos.
+
 Depois de alterar skills, rode os testes ou validações da skill afetada. Para a skill `revisar-ppc`, use:
 
 ```bash

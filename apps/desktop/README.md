@@ -49,12 +49,13 @@ O `build` gera:
 | `dist/app/main.cjs`, `dist/app/preload.cjs` | o processo principal e o preload, em CommonJS; só o `electron` fica de fora |
 | `dist/app/web/` | o build do `apps/web` (`pnpm --filter @simplifica-if/web build`); sem ele, a página provisória de `src/provisoria/`, que confere a ponte e o servidor |
 | `dist/app/package.json` | o manifesto do app, sem dependências |
+| `dist/recursos/skills/` | as skills do app (`scripts/skills.ts`): só as de `.agents/skills` com bloco `simplifica:` válido e, de cada uma, só o `SKILL.md` e os arquivos listados em `simplifica.arquivos` (nada de `scripts/`, `tests/`, `agents/` ou `README.md`); uma skill do app inválida faz o build falhar |
 | `dist/recursos/servidor/` | o servidor (`apps/server/src/bin.ts`) em ESM, com as dependências dentro, menos `bufferutil` e `utf-8-validate` (opcionais do `ws`, que segue sem eles) e o `undici`, copiado em `node_modules/` ao lado (o `effect` o carrega por `import()` e usa os exports nomeados do CommonJS, que o bundle não reproduz) |
 
 O `dist` acrescenta a base (`dist/recursos/base/kb.sqlite`, de `SIMPLIFICA_KB` ou `tmp/kb.sqlite`) e chama o electron-builder (`scripts/empacotar.ts`), sem assinatura e sem publicação:
 
 - macOS: dmg e zip; Windows: NSIS por usuário (`oneClick`, sem pedir administrador);
-- o processo principal, o preload e a interface vão no `app.asar`; o servidor e a base vão fora dele, em `Resources/servidor` e `Resources/base`: o servidor roda no Node do Electron como módulos ES, e o SQLite precisa de um arquivo de verdade;
+- o processo principal, o preload e a interface vão no `app.asar`; o servidor, a base e as skills vão fora dele, em `Resources/servidor`, `Resources/base` e `Resources/skills`: o servidor roda no Node do Electron como módulos ES, e o SQLite precisa de um arquivo de verdade;
 - o ícone é `recursos/icone.png` (`node scripts/gerar-icone.ts`), provisório.
 
 ## Partida e encerramento
@@ -62,7 +63,7 @@ O `dist` acrescenta a base (`dist/recursos/base/kb.sqlite`, de `SIMPLIFICA_KB` o
 1. O processo principal gera um token (32 bytes aleatórios, base64url) e inicia o servidor como processo filho (`src/servidor.ts`):
    - em desenvolvimento, `node apps/server/src/bin.ts`;
    - no app empacotado, o próprio executável com `ELECTRON_RUN_AS_NODE=1` sobre `Resources/servidor/bin.mjs`;
-   - com `--banco` e `--pasta-estado`; o token e a origem da janela vão no `EnvelopePartida`, na primeira linha do stdin. Nunca na linha de comando nem no ambiente (o `SIMPLIFICA_SERVIDOR_TOKEN` herdado sai do ambiente do filho).
+   - com `--banco`, `--pasta-estado` e `--pasta-skills` (no desenvolvimento, `.agents/skills` do checkout, de onde o servidor aceita só as skills com bloco `simplifica:`; no app empacotado, `Resources/skills`; sem a pasta, o servidor sobe sem skills); o token e a origem da janela vão no `EnvelopePartida`, na primeira linha do stdin. Nunca na linha de comando nem no ambiente (o `SIMPLIFICA_SERVIDOR_TOKEN` herdado sai do ambiente do filho).
 2. Lê a `LinhaPartida` do stdout (prazo de 60 s) e abre a janela. O stderr do servidor (os logs) passa ao stderr do app e ao arquivo de log, junto com o que o processo principal registra (`src/registro.ts`): `simplifica-if.log` em `~/Library/Logs/Simplifica IF` no macOS e em `<pasta do app>\logs` no Windows (no desenvolvimento, em `<pasta do app>/logs`); passando de 5 MB, o arquivo vira `simplifica-if.log.1` e outro começa.
 3. A interface pede a conexão pelo preload: `window.simplifica.conexao()` devolve `{ urlServidor: "http://127.0.0.1:<porta>", token }`. O processo principal só responde ao quadro principal da janela do app, na origem da interface.
 4. Ao sair (fechar a janela, Cmd+Q, SIGINT ou SIGTERM), fecha o stdin do servidor e espera 5 s; se ele não sair, SIGTERM e, 2 s depois, SIGKILL. Se o app morrer, o servidor sai sozinho: o stdin fecha e o processo pai muda (`launcherWatch.ts`).
@@ -105,11 +106,11 @@ No desenvolvimento, a janela carrega o dev server sem CSP: o Vite precisa de scr
 
 - `src/main.ts`: o processo principal (servidor, janela, IPC, protocolo, menu em pt-BR, ciclo de vida).
 - `src/servidor.ts`: o token, a montagem do comando, a linha de partida e o encerramento; sem Electron.
-- `src/configuracao.ts`: de onde vêm o servidor, a base, a interface e a pasta de estado; sem Electron.
+- `src/configuracao.ts`: de onde vêm o servidor, a base, a interface, a pasta de estado e a de skills; sem Electron.
 - `src/seguranca.ts`: CSP, navegação, links externos e arquivos do protocolo; sem Electron.
 - `src/registro.ts`: o arquivo de log, com o giro em 5 MB; sem Electron.
 - `src/preload.ts`, `src/ponteDesktop.ts`: a ponte e o contrato.
-- `scripts/construir.ts`, `scripts/empacotar.ts`, `scripts/dev.ts`, `scripts/gerar-icone.ts`.
+- `scripts/construir.ts`, `scripts/empacotar.ts`, `scripts/skills.ts` (as skills do app no pacote), `scripts/dev.ts`, `scripts/gerar-icone.ts`.
 - `scripts/t3/`: cópia do T3 (`ensure-electron-runtime.mjs`), com `NOTICE`.
 
 O processo principal não usa Effect: as APIs do Electron são de callback, e o `main.cjs` fica pequeno, sem runtime. O servidor, que é Effect, roda noutro processo.
@@ -123,7 +124,7 @@ pnpm --filter @simplifica-if/desktop test
 - `test/servidor.test.ts`: o token, a linha de partida, os argumentos e o ambiente (sem o token na linha de comando) e o encerramento (stdin, SIGTERM, SIGKILL, saída antes de ficar pronto), com processos Node falsos.
 - `test/configuracao.test.ts`: os caminhos no desenvolvimento e no app empacotado, a CSP, a navegação, os links externos e os arquivos do protocolo.
 - `test/integracao.test.ts`: o servidor de verdade (`apps/server`, banco de fixture, nenhum provider chamado), iniciado como o app o inicia: a linha de partida, o `POST /ingresso` com o token e a origem da janela, as recusas e o encerramento pelo stdin. Se o bundle (`build`) e o Electron existirem, repete com o Electron como Node sobre o bundle.
-- `test/empacotar.test.ts`: a identidade e os alvos do electron-builder.
+- `test/empacotar.test.ts`: a identidade e os alvos do electron-builder, e a cópia das skills do app (só as elegíveis, só os arquivos listados; uma inválida faz o build falhar).
 - `test/registro.test.ts`: o arquivo de log (pasta criada, acréscimo, giro no limite, falha sem derrubar o app).
 
 Nenhum teste abre janela. O T3 tem um smoke do app empacotado (`scripts/smoke-desktop-app.ts`, Playwright com `_electron`) que roda nos jobs de release; aqui ele fica como pendência do CI. Para conferir o app de verdade, empacote com `--dir` e abra o `.app`; com `--remote-debugging-port`, a página pode ser lida pelo CDP.

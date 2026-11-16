@@ -310,7 +310,8 @@ simplifica:
     - { id: matriz, rotulo: "Conferir carga horária com a matriz da base" }
     - { id: fichas, rotulo: "Verificar os critérios das fichas", progresso: true }
     - { id: parecer, rotulo: "Montar o parecer anotado" }
-  ferramentas: [kb.pacote_contexto, kb.ppc_fatos]
+  ferramentas: [pacote_contexto, fatos_ppc]
+  arquivos: [fichas/indice.json, referencias/criterios.md]
   base_minima: 2026.11.01
   app_minimo: 0.1.0
   duracao_estimada: 20min
@@ -319,11 +320,13 @@ simplifica:
 ```
 
 - **Regras do manifesto:**
-  - `ferramentas` lista só ferramentas do `simplifica-mcp`. A skill no app não chama comandos do repositório;
+  - `ferramentas` lista só ferramentas do `simplifica-mcp`, pelo nome do Toolkit (`buscar_norma`, `pacote_contexto`…). A skill no app não chama comandos do repositório;
+  - `arquivos` lista, um a um, os arquivos da pasta da skill que vão para o app com o `SKILL.md`; `scripts/`, `tests/` e `agents/` nunca vão;
   - skill que precise de SUAP, SEI ou outro sistema com login não entra no app. Ela continua no repositório, para os curadores;
   - `donos` vira entrada no CODEOWNERS.
 - **Etapas:** a skill marca o avanço com uma ferramenta `etapa(id, progresso?)` do `simplifica-mcp`, que o app transforma no indicador de etapas.
 - **Validação:** um Effect Schema valida o bloco no `validar_base.ts`.
+- **Feito em 16/11/2026:** o schema fica em `@simplifica-if/mcp/skills` (`ManifestoSkill`, `lerPastaSkills`), porque confere `ferramentas` contra o Toolkit; o `validar_base.ts`, o servidor e o build do desktop o importam. Obrigatórios por enquanto: `titulo`, `resumo`, `area`, `ferramentas` e `arquivos`; `publico`, `entradas`, `etapas`, `base_minima`, `app_minimo`, `duracao_estimada` e `donos` são opcionais até a interface e a atualização os usarem.
 
 ## Atualização: três ritmos
 
@@ -408,6 +411,7 @@ simplifica:
   - Bloco `simplifica:` no front matter das skills, com validação.
   - As skills passam a citar ferramentas MCP quando estiverem disponíveis e mantêm a CLI como alternativa dentro do repositório.
   - Primeiras skills: `verificar-fundamentacao-normativa`, `verificar-calendario` e `revisar-ppc` com entrada `.md`.
+  - **Andamento em 16/11/2026:** bloco e validação feitos (ver [Manifesto de skill](#manifesto-de-skill)). `verificar-fundamentacao-normativa` e `verificar-calendario` portáteis: o texto usa as ferramentas `ifpr` como caminho principal e a CLI `kb` e os scripts como alternativa dentro do repositório; no app, o calendário entrega só o relatório em Markdown (o PDF por script fica no repositório). Falta a `revisar-ppc` com entrada `.md`.
 - **M0.5 — Avaliação em três IAs.**
   - O harness da fase 1 roda via MCP com Claude, GPT e Gemini, com o mesmo conjunto de perguntas.
   - Registra acerto, tokens e tempo por provider.
@@ -473,7 +477,7 @@ Lacunas: MCP por HTTP local, recursos `ifpr://`, isolamento (`~/.codex` e `~/.ge
     - contexto do Codex cortado por thread (`CONTEXTO_CODEX` e o isolamento de skills, hooks e `AGENTS.md`): um turno sem ferramenta abaixo de 12 mil tokens de entrada, contra 14 mil antes;
     - skills do app pelo motor (`.simplifica/skills/` na pasta e instruções da sessão);
     - teste real do ciclo (`apps/server/test/ciclo-real.test.ts`) com o Claude: três turnos, escrita fora da pasta negada pela política, interromper, retomada depois de fechar e depois de SIGKILL, tudo verde.
-  - **Falta:** o ciclo real no Codex e no Antigravity (o critério pede os três); a medida dos 267 mil tokens na pergunta de referência, depois do corte; o servidor passar as skills às conversas (com o M1.11).
+  - **Falta:** o ciclo real no Codex e no Antigravity (o critério pede os três); a medida dos 267 mil tokens na pergunta de referência, depois do corte.
 - **M1.3 — Providers no computador do servidor.**
   - **Detecção** de instalação, versão, login e plano, como o `--detectar` da PoC (cerca de 4 s para os três).
   - **Instalação e login copiados do T3, não escritos do zero.** O porte está em andamento no branch `t3/motor-porte-t3`, com registro em [upstream-t3.md](../upstream-t3.md).
@@ -518,6 +522,8 @@ Lacunas: MCP por HTTP local, recursos `ifpr://`, isolamento (`~/.codex` e `~/.ge
   - `verificar-fundamentacao-normativa`.
 
   Os resultados abrem no visualizador e podem ser exportados.
+
+  **Andamento em 16/11/2026:** o servidor entrega as skills às conversas. O `CatalogoSkills` (`apps/server`) lê a `--pasta-skills` (no desenvolvimento, `.agents/skills`; no app empacotado, `Resources/skills`, que o build gera só com as skills elegíveis e os arquivos listados), aceita só as de bloco `simplifica:` válido e passa todas a toda conversa nova ou retomada (`ConfigSessao.skills`); o RPC `skills.listar` devolve nome, título, resumo e área para os futuros cartões. `verificar-calendario` e `verificar-fundamentacao-normativa` estão no catálogo; teste real com o Claude verde (a IA lê o `SKILL.md` sem pedido de aprovação). Falta: a `revisar-ppc` (depende da conversão DOCX em TypeScript), o teste real das skills no Codex e no Antigravity, os cartões e o indicador de etapas na interface (M1.9) e o visualizador dos resultados.
 - **M1.12 — "Isto está errado".**
   - **Pacote do relato:** pergunta, resposta, citações, versões da base, da skill e do app, e provider.
   - **Consentimento:** o servidor vê exatamente o que será enviado antes de enviar e pode retirar trechos.
@@ -703,3 +709,4 @@ Só métricas agregadas e com opt-in saem do computador. O padrão é não envia
 - 14/11/2026: **direção revista: app próprio no monorepo, sem fork** (decisões 5 e 7). Stack do T3 também na interface, com as versões do T3 `a6d9140972`; código do T3 copiado e registrado em [upstream-t3.md](../upstream-t3.md), sincronizado caso a caso. Interface em pt-BR direto, sem `gt-react`. Marco 1 refeito com o que a PoC ensinou: motor de produção, providers no computador do servidor, MCP HTTP local, recursos `ifpr://`, política de fábrica mínima e meta de latência.
 - 14/11/2026: correção vinda da PoC. A instalação e o login das CLIs vêm do T3, não são escritos do zero: instalação gerenciada do Codex e do Antigravity (`CodexInstallation.ts`, `AntigravityInstallation.ts`), `ClaudeExecutable`, `ClaudeHome` e `fixPath`, em porte no branch `t3/motor-porte-t3`. O Claude é a exceção: passo guiado nas boas-vindas. O M1.4 registra os motivos do MCP HTTP local e que falta testá-lo no Codex e no `agy`.
 - 15/11/2026: **M1.2 (motor de produção) e M1.7 (política de fábrica mínima)** integrados em `main`: conversas gravadas e retomadas pelo provider, lista de conversas e reabertura na interface, queda do processo e interromper com estado claro, política por tipo de ferramenta nos três drivers, skills do app pelo motor e contexto do Codex reduzido. Teste real do ciclo de vida verde com o Claude; faltam o Codex e o Antigravity.
+- 16/11/2026: **skills do app nas conversas** (M0.4 e M1.11, em parte). Manifesto `simplifica:` com Effect Schema em `@simplifica-if/mcp/skills`, validado no `validar_base.ts`; `verificar-fundamentacao-normativa` e `verificar-calendario` portáteis (ferramentas `ifpr` primeiro, CLI e scripts no repositório); `CatalogoSkills` no servidor, com `--pasta-skills` e o RPC `skills.listar`; o desktop passa a pasta e empacota só as skills elegíveis. Teste real com o Claude verde; faltam a `revisar-ppc`, o Codex e o Antigravity e a interface.
