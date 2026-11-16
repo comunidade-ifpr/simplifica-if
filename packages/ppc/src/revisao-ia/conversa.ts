@@ -18,7 +18,16 @@
  */
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
-import { alvoDosTrechos, EstadoIa, extrairJson, fonteValida, trechoConferivel, trechoExiste } from "./conferencia.ts";
+import {
+  alvoDosTrechos,
+  EstadoIa,
+  extrairJson,
+  fonteValida,
+  tamanhoConferivel,
+  trechoConferivel,
+  trechoExiste,
+} from "./conferencia.ts";
+import { dirigidoAIa } from "../pre-conferencia.ts";
 import { type ContextoNormativo, formatarContexto } from "./pedido.ts";
 import { dobrar, type FichaIa } from "./plano.ts";
 
@@ -59,9 +68,11 @@ export const instrucoesConversa = (nonce: string) =>
 
 /** O texto não confiável entre as marcas; qualquer marca do nonce dentro dele (do PPC ou do motivo) some. */
 const marcas = (nome: string, texto: string, nonce: string) =>
-  [`<${nome}-${nonce}>`, texto.replace(new RegExp(`</?(?:ppc|motivo)-${nonce}>`, "g"), ""), `</${nome}-${nonce}>`].join(
-    "\n",
-  );
+  [
+    `<${nome}-${nonce}>`,
+    texto.replace(new RegExp(`<\\s*/?\\s*(?:ppc|motivo)-${nonce}\\s*>`, "gi"), ""),
+    `</${nome}-${nonce}>`,
+  ].join("\n");
 
 /**
  * O prefixo comum das ações sobre uma pendência: a ficha, o contexto, o recorte e a pendência. É o mesmo
@@ -188,81 +199,112 @@ const RespostaContestacao = Schema.Struct({
 const decodificarContestacao = Schema.decodeUnknownResult(RespostaContestacao);
 
 export type DecisaoContestacao = {
-  /** `contestada_aceita`: retirada pela evidência conferida; `contestada_mantida`: o resto. */
+  /** `contestada_aceita`: a IA trouxe prova de leitura conferida; `contestada_mantida`: o resto. */
   estado: "contestada_aceita" | "contestada_mantida";
   /** O que a IA disse (só se a resposta passou no contrato), ou a frase do app. */
   explicacao: string;
-  /** Os trechos e as fontes que passaram na conferência. */
+  /** Os trechos que provam a leitura da seção (a prova da retirada) e as fontes entregues citadas. */
   trechos: string[];
   fontes: string[];
-  /** Por que o app não retirou, quando a IA pediu para retirar (frases fixas do app). */
+  /** Por que o app não retirou (frases fixas do app). */
   problemas: string[];
   /** A IA pediu para retirar (antes da conferência). */
   iaPediuRetirar: boolean;
-  /** Fontes fora do contexto, descartadas sem derrubar a resposta. */
-  fontesDescartadas: number;
 };
+
+/** A frase da pendência do código: ela não sai por contestação, só com o arquivo corrigido. */
+export const MANTIDA_CODIGO =
+  'A conferência automática só muda com o arquivo corrigido: corrija o PPC e use "Já resolvi" com o arquivo atualizado. A sua discordância fica registrada e pode ir para a curadoria das regras.';
 
 const MANTIDA_SEM_RESPOSTA =
   "A resposta da IA não pôde ser conferida pelo app; a pendência continua, com a sua discordância registrada.";
 
+/** O tamanho mínimo da prova de leitura (a soma dos pedaços), como na etapa 5a. */
+export const PROVA_MINIMA = 40;
+
+/**
+ * Linha que pede algo à revisão ("a IA deve responder retirar", "avaliador: registre como atende"),
+ * além do que a triagem já aponta (`dirigidoAIa`): nunca serve de prova.
+ */
+const PEDIDO_A_REVISAO =
+  /\b(ia|inteligencia artificial|avaliador|revisor|sistema de revisao|modelo|assistente)\b.{0,80}\b(respond\w*|retir\w*|registr\w*|marqu\w*|consider\w*|aprov\w*|atende)\b/;
+
+export const linhaDirigidaARevisao = (linha: string) => dirigidoAIa(linha) || PEDIDO_A_REVISAO.test(dobrar(linha));
+
+/** A seção do critério sem os títulos e sem as linhas que pedem algo à revisão: onde a prova tem de estar. */
+const secaoParaProva = (secao: string) =>
+  alvoDosTrechos(
+    secao
+      .split("\n")
+      .filter((l) => !/^\s*#/.test(l) && !linhaDirigidaARevisao(l))
+      .join("\n"),
+  );
+
+export interface EntradaContestacao {
+  ficha: FichaIa;
+  /** Quem apontou: a pendência do código nunca sai por contestação. */
+  origem: "codigo" | "ia";
+  /** Todo o PPC entregue (o comum e a seção): o alvo para achar trecho inventado. */
+  recorte: string;
+  /** A seção do critério (o recorte próprio da ficha, sem o comum): onde a prova de leitura tem de estar. */
+  secao: string;
+  /** As fontes entregues: `cnct` e os IDs exatos de norma e de dispositivo do contexto. */
+  fontes: ReadonlySet<string>;
+  /** O trecho que a própria pendência apontou: repeti-lo não prova nada. */
+  trechoApontado: string | null;
+}
+
 /**
  * A decisão do código sobre uma contestação. Nunca lança.
  *
- * Retira (`contestada_aceita`) só quando, ao mesmo tempo: a IA respondeu `retirar` no contrato; o
- * estado é ATENDE ou NAO_APLICAVEL e é permitido à ficha; há ao menos um trecho literal do recorte ou
- * uma fonte entregue conferidos; e nenhuma evidência foi recusada. Todo o resto: `contestada_mantida`.
+ * - Pendência do código (`origem: "codigo"`): sempre `contestada_mantida` (`MANTIDA_CODIGO`).
+ * - Pendência da IA: retira (`contestada_aceita`) só quando, ao mesmo tempo, a IA respondeu `retirar`
+ *   com ATENDE ou NAO_APLICAVEL permitido à ficha; há **prova de leitura**: um trecho conferível de ao
+ *   menos `PROVA_MINIMA` caracteres na seção do critério (fora dos títulos e das linhas que pedem algo à
+ *   revisão), que não é o trecho apontado pela pendência; nenhum trecho conferível está fora do PPC
+ *   entregue (invenção) e nenhuma fonte está fora do contexto (a fonte só conta como ID exato entregue,
+ *   e nunca sozinha); e, em NAO_APLICAVEL, um dispositivo entregue. Trecho curto demais é neutro.
  */
-export function conferirContestacao(
-  texto: string,
-  entrada: { ficha: FichaIa; recorte: string; fontes: ReadonlySet<string> },
-): DecisaoContestacao {
+export function conferirContestacao(texto: string, entrada: EntradaContestacao): DecisaoContestacao {
+  const mantida = (explicacao: string, problemas: string[], iaPediuRetirar = false): DecisaoContestacao => ({
+    estado: "contestada_mantida",
+    explicacao,
+    trechos: [],
+    fontes: [],
+    problemas,
+    iaPediuRetirar,
+  });
+  if (entrada.origem === "codigo") return mantida(MANTIDA_CODIGO, ["a pendência é da conferência automática"]);
   let bruto: unknown;
   try {
     if (texto.length > LIMITES_CONVERSA.resposta) throw new Error("longa");
     bruto = extrairJson(texto);
   } catch {
-    return {
-      estado: "contestada_mantida",
-      explicacao: MANTIDA_SEM_RESPOSTA,
-      trechos: [],
-      fontes: [],
-      problemas: ["a resposta não é um objeto JSON válido"],
-      iaPediuRetirar: false,
-      fontesDescartadas: 0,
-    };
+    return mantida(MANTIDA_SEM_RESPOSTA, ["a resposta não é um objeto JSON válido"]);
   }
   const r = decodificarContestacao(bruto);
-  if (Result.isFailure(r))
-    return {
-      estado: "contestada_mantida",
-      explicacao: MANTIDA_SEM_RESPOSTA,
-      trechos: [],
-      fontes: [],
-      problemas: ["a resposta não segue o contrato"],
-      iaPediuRetirar: false,
-      fontesDescartadas: 0,
-    };
+  if (Result.isFailure(r)) return mantida(MANTIDA_SEM_RESPOSTA, ["a resposta não segue o contrato"]);
   const resposta = r.success;
   const alvo = alvoDosTrechos(entrada.recorte);
-  const trechos: string[] = [];
+  const secao = secaoParaProva(entrada.secao);
+  const apontado = entrada.trechoApontado ? dobrar(entrada.trechoApontado) : "";
+  const provas: string[] = [];
   const problemas: string[] = [];
-  // Trecho curto demais para conferir (um número de processo, uma data) não conta a favor nem contra;
-  // trecho conferível que não está no recorte é invenção e derruba a retirada.
   for (const e of resposta.evidencias) {
     if (!e.trecho.trim() || !trechoConferivel(e.trecho)) continue;
-    if (trechoExiste(e.trecho, alvo)) trechos.push(e.trecho);
-    else problemas.push("a IA citou um trecho que não está no documento");
+    if (!trechoExiste(e.trecho, alvo)) {
+      problemas.push("a IA citou um trecho que não está no documento");
+      continue;
+    }
+    const t = dobrar(e.trecho);
+    const repeteApontado = apontado.length >= 15 && (apontado.includes(t) || t.includes(apontado));
+    if (tamanhoConferivel(e.trecho) >= PROVA_MINIMA && trechoExiste(e.trecho, secao) && !repeteApontado)
+      provas.push(e.trecho);
   }
-  // Fonte fora do contexto não é fato sobre o documento: é descartada, sem derrubar a resposta. O
-  // dispositivo não entregue de uma norma entregue conta como a norma.
   const fontes: string[] = [];
-  let fontesDescartadas = 0;
   for (const f of resposta.fontes ?? []) {
-    const norma = f.split("#")[0]!;
     if (fonteValida(f, entrada.fontes)) fontes.push(f);
-    else if (f.includes("#") && fonteValida(norma, entrada.fontes)) fontes.push(norma);
-    else fontesDescartadas += 1;
+    else problemas.push("a IA citou uma norma ou um dispositivo que não estava entre os consultados");
   }
   const retirar = resposta.decisao === "retirar";
   if (retirar) {
@@ -270,18 +312,21 @@ export function conferirContestacao(
       problemas.push("a IA pediu para retirar sem dizer que o critério é atendido ou não se aplica");
     else if (!entrada.ficha.estados_permitidos.includes(resposta.estado))
       problemas.push("o estado da resposta não é permitido para este critério");
-    if (!trechos.length && !fontes.length)
-      problemas.push("a IA pediu para retirar sem um trecho do documento ou uma norma que o app pudesse conferir");
+    if (!provas.length)
+      problemas.push(
+        `a IA pediu para retirar sem um trecho da seção do critério (ao menos ${PROVA_MINIMA} caracteres, que não seja o título nem o trecho apontado) que o app pudesse conferir`,
+      );
+    if (resposta.estado === "NAO_APLICAVEL" && !fontes.some((f) => f.includes("#")))
+      problemas.push("a IA disse que não se aplica sem citar o dispositivo entregue que afasta a exigência");
   }
   const aceita = retirar && problemas.length === 0;
   return {
     estado: aceita ? "contestada_aceita" : "contestada_mantida",
     explicacao: resposta.explicacao.trim(),
-    trechos,
+    trechos: provas,
     fontes,
     problemas: [...new Set(problemas)],
     iaPediuRetirar: retirar,
-    fontesDescartadas,
   };
 }
 
@@ -293,33 +338,117 @@ const RespostaSugestao = Schema.Struct({
 });
 const decodificarSugestao = Schema.decodeUnknownResult(RespostaSugestao);
 
-export type FatoSugestao = { fato: string; tipo: "numero" | "norma" | "nome" };
+export type FatoSugestao = { fato: string; tipo: "numero" | "norma" | "nome" | "sigla" | "data" };
 
 export type SugestaoConferida = {
   texto: string;
   observacao: string;
   /** Os `[completar: …]` da redação, na ordem. */
   completar: string[];
-  /** Fatos da redação que o app não achou no recorte, no CNCT nem nas normas entregues. */
+  /** Fatos da redação que o app não achou no recorte, no CNCT, nas normas entregues nem na pendência. */
   naoConferidos: FatoSugestao[];
 };
 
 const COMPLETAR = /\[completar:?\s*([^\]]{0,300})\]/gi;
 
-/** Citação de norma: tipo, até 60 caracteres e o número com ano (`Lei nº 9.394/1996`, `Resolução CNE/CP nº 2/2026`). */
+/**
+ * Citação de norma: o tipo (por extenso ou abreviado, "Res.", "Resol."), até 60 caracteres e o número
+ * com ano (`Lei nº 9.394/1996`, `Res. CNE/CP nº 2/2026`, `Decreto 5.154/04`).
+ */
 const NORMA =
-  /\b(Lei(?: Complementar)?|Decreto(?:-Lei)?|Resolu[çc][ãa]o|Portaria|Parecer|Instru[çc][ãa]o Normativa|Nota T[ée]cnica|Medida Provis[óo]ria)\b[^.;\n]{0,60}?n?[º°o.]*\s*(\d[\d.]*)\s*(?:,\s*de\s+[^.;\n]{0,30}?)?\/?\s*(\d{4}|\d{2})?\b/giu;
+  /(?:\b(?:Lei(?: Complementar)?|Decreto(?:-Lei)?|Resolu[çc][ãa]o|Portaria|Parecer|Instru[çc][ãa]o Normativa|Nota T[ée]cnica|Medida Provis[óo]ria)\b|\bRes(?:ol)?\.)[^.;\n]{0,60}?n?[º°o.]*\s*(\d[\d.]*)\s*(?:,\s*de\s+[^.;\n]{0,30}?)?\/?\s*(\d{4}|\d{2})?\b/giu;
 
-/** Números que contam como fato: dois dígitos ou mais, ou com unidade (`h`, `%`, `horas`). */
-const NUMERO = /\b\d[\d.,]*\s*(?:h\b|horas\b|%|anos?\b|semestres?\b|vagas\b)?/giu;
+const UNIDADE = String.raw`(h\b|horas?\b|%|por cento\b|anos?\b|semestres?\b|vagas?\b|meses\b|mes\b|dias?\b)`;
+/** Números (em texto já dobrado): dois dígitos ou mais, ou com unidade. */
+const NUMERO = new RegExp(String.raw`\b(\d[\d.]*(?:,\d+)?)\s*${UNIDADE}?`, "g");
 
+const EXTENSO: Record<string, number> = {
+  um: 1,
+  uma: 1,
+  dois: 2,
+  duas: 2,
+  tres: 3,
+  quatro: 4,
+  cinco: 5,
+  seis: 6,
+  sete: 7,
+  oito: 8,
+  nove: 9,
+  dez: 10,
+  onze: 11,
+  doze: 12,
+  treze: 13,
+  quatorze: 14,
+  catorze: 14,
+  quinze: 15,
+  dezesseis: 16,
+  dezessete: 17,
+  dezoito: 18,
+  dezenove: 19,
+  vinte: 20,
+  trinta: 30,
+  quarenta: 40,
+  cinquenta: 50,
+  sessenta: 60,
+  setenta: 70,
+  oitenta: 80,
+  noventa: 90,
+  cem: 100,
+  cento: 100,
+  duzentos: 200,
+  duzentas: 200,
+  trezentos: 300,
+  trezentas: 300,
+  quatrocentos: 400,
+  quatrocentas: 400,
+  quinhentos: 500,
+  quinhentas: 500,
+  seiscentos: 600,
+  seiscentas: 600,
+  setecentos: 700,
+  setecentas: 700,
+  oitocentos: 800,
+  oitocentas: 800,
+  novecentos: 900,
+  novecentas: 900,
+  mil: 1000,
+};
+const PALAVRA_NUMERO = `(?:${Object.keys(EXTENSO).join("|")})`;
+/** Número por extenso com unidade, em texto dobrado ("quatrocentas horas", "mil e duzentas horas"). */
+const NUMERO_EXTENSO = new RegExp(
+  String.raw`\b(${PALAVRA_NUMERO}(?:\s+(?:e\s+)?${PALAVRA_NUMERO})*)\s+${UNIDADE}`,
+  "g",
+);
+const MESES = [
+  "janeiro",
+  "fevereiro",
+  "marco",
+  "abril",
+  "maio",
+  "junho",
+  "julho",
+  "agosto",
+  "setembro",
+  "outubro",
+  "novembro",
+  "dezembro",
+];
+/** Datas inteiras, em texto dobrado: "1º de março de 2027", "15/03/2027". */
+const DATA_EXTENSO = new RegExp(String.raw`\b(\d{1,2})\s*[ºo°]?\s+de\s+(${MESES.join("|")})\s+de\s+(\d{4})\b`, "g");
+const DATA_NUMERICA = /\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/g;
+
+/** Siglas (no texto original): LDB, PROENS, CONSUP, EaD. Numerais romanos ficam de fora. */
+const SIGLA = /\b(?:[A-Z]{2,}[A-Za-z]*|[A-Z][a-z][A-Z])\b/g;
 /** Nomes próprios: duas ou mais palavras com maiúscula, ligadas por de/da/do/dos/das/e. */
 const NOME =
   /\b[A-ZÁÉÍÓÚÂÊÔÃÕÇ][\p{L}]+(?:\s+(?:d[aeo]s?|e)\s+[A-ZÁÉÍÓÚÂÊÔÃÕÇ][\p{L}]+|\s+[A-ZÁÉÍÓÚÂÊÔÃÕÇ][\p{L}]+)+/gu;
+/** Nome depois de título ou lugar ("Profa. Maria", "campus de Ponta Grossa"), mesmo de uma palavra só. */
+const NOME_APOS =
+  /\b(?:Prof(?:a|essora?)?\.?|Dr[a]?\.|c[âa]mpus(?:\s+d[aeo])?|munic[íi]pio\s+d[aeo]|cidade\s+d[aeo])\s+([A-ZÁÉÍÓÚÂÊÔÃÕÇ][\p{L}]+(?:\s+(?:d[aeo]s?\s+)?[A-ZÁÉÍÓÚÂÊÔÃÕÇ][\p{L}]+)*)/giu;
 
 const soDigitos = (s: string) => s.replace(/\D/g, "");
 
-/** Nomes do vocabulário da revisão que não precisam estar no recorte para conferir. */
+/** Nomes e siglas do vocabulário da revisão que não precisam estar no recorte para conferir. */
 const NOMES_DO_DOMINIO = [
   "Catálogo Nacional de Cursos Técnicos",
   "Classificação Brasileira de Ocupações",
@@ -328,11 +457,20 @@ const NOMES_DO_DOMINIO = [
   "Projeto Pedagógico do Curso",
   "Conselho Superior",
   "Pró-Reitoria de Ensino",
+  "IFPR",
+  "PPC",
+  "CNCT",
+  "MEC",
+  "PROENS",
+  "EPT",
+  "CBO",
 ];
 
-/** A assinatura numérica de uma norma: `9394/1996`, `2/2026` (sem pontos). */
-const assinatura = (numero: string, ano: string | undefined) =>
-  `${soDigitos(numero).replace(/^0+/, "")}/${ano && ano.length === 2 ? `20${ano}` : (ano ?? "")}`;
+/** A assinatura numérica de uma norma: `9394/1996`, `2/2026` (sem pontos; ano de dois dígitos vira 19xx/20xx). */
+const assinatura = (numero: string, ano: string | undefined) => {
+  const a = ano && ano.length === 2 ? `${Number(ano) > 50 ? "19" : "20"}${ano}` : (ano ?? "");
+  return `${soDigitos(numero).replace(/^0+/, "")}/${a}`;
+};
 
 /** As assinaturas das normas entregues (dos IDs canônicos, `br/lei/1996/9394` → `9394/1996`) e as citadas no texto. */
 export function assinaturasDeNormas(fontes: Iterable<string>, textos: readonly string[]): Set<string> {
@@ -343,46 +481,110 @@ export function assinaturasDeNormas(fontes: Iterable<string>, textos: readonly s
     const numero = partes.at(-1);
     if (ano && numero && /^\d[\d-]*$/.test(numero)) conjunto.add(assinatura(numero, ano));
   }
-  for (const t of textos) for (const m of t.matchAll(NORMA)) if (m[3]) conjunto.add(assinatura(m[2]!, m[3]));
+  for (const t of textos) for (const m of t.matchAll(NORMA)) if (m[2]) conjunto.add(assinatura(m[1]!, m[2]));
   return conjunto;
+}
+
+const unidade = (u: string | undefined) => {
+  if (!u) return "";
+  if (u === "h" || u.startsWith("hora")) return "h";
+  if (u === "%" || u === "por cento") return "%";
+  if (u.startsWith("ano")) return "ano";
+  if (u.startsWith("semestre")) return "semestre";
+  if (u.startsWith("vaga")) return "vaga";
+  if (u.startsWith("mes")) return "mes";
+  return "dia";
+};
+
+function porExtenso(texto: string): number {
+  let total = 0;
+  let atual = 0;
+  for (const p of texto.split(/\s+/)) {
+    if (p === "e" || !p) continue;
+    if (p === "mil") {
+      total += (atual || 1) * 1000;
+      atual = 0;
+    } else atual += EXTENSO[p] ?? 0;
+  }
+  return total + atual;
+}
+
+const numeroDe = (digitos: string) => Number(digitos.replace(/\./g, "").replace(",", "."));
+
+/** As datas de um texto dobrado, como `d/m/aaaa`. */
+function datas(dobrado: string): { fato: string; data: string }[] {
+  const lista: { fato: string; data: string }[] = [];
+  for (const m of dobrado.matchAll(DATA_EXTENSO))
+    lista.push({ fato: m[0], data: `${Number(m[1])}/${MESES.indexOf(m[2]!) + 1}/${m[3]}` });
+  for (const m of dobrado.matchAll(DATA_NUMERICA))
+    lista.push({ fato: m[0], data: `${Number(m[1])}/${Number(m[2])}/${m[3]}` });
+  return lista;
+}
+
+/** Os números com unidade de um texto dobrado (por algarismos ou por extenso), como `n|unidade`. */
+function numerosComUnidade(dobrado: string): { fato: string; chave: string }[] {
+  const lista: { fato: string; chave: string }[] = [];
+  for (const m of dobrado.matchAll(NUMERO))
+    if (m[2]) lista.push({ fato: m[0].trim(), chave: `${numeroDe(m[1]!)}|${unidade(m[2])}` });
+  for (const m of dobrado.matchAll(NUMERO_EXTENSO))
+    lista.push({ fato: m[0].trim(), chave: `${porExtenso(m[1]!)}|${unidade(m[2])}` });
+  // Campos do CNCT: "carga_horaria_minima_horas: 1200".
+  for (const m of dobrado.matchAll(/horas?\s*:\s*(\d[\d.]*)/g))
+    lista.push({ fato: m[0], chave: `${numeroDe(m[1]!)}|h` });
+  return lista;
 }
 
 /** Os fatos de uma redação, fora dos `[completar: …]`. Puro, para o teste. */
 export function fatosDaRedacao(texto: string): FatoSugestao[] {
-  const semCompletar = texto.replace(COMPLETAR, " ");
+  let resto = texto.replace(COMPLETAR, " ");
   const fatos: FatoSugestao[] = [];
-  const normas = new Set<string>();
-  for (const m of semCompletar.matchAll(NORMA)) {
-    fatos.push({ fato: m[0].trim(), tipo: "norma" });
-    normas.add(m[0]);
-  }
-  let resto = semCompletar;
-  for (const n of normas) resto = resto.replaceAll(n, " ");
-  for (const m of resto.matchAll(NUMERO)) {
-    const valor = m[0].trim();
-    if (soDigitos(valor).length >= 2 || /h|%|hora|ano|semestre|vaga/i.test(valor))
-      fatos.push({ fato: valor, tipo: "numero" });
-  }
+  for (const m of resto.matchAll(NORMA)) fatos.push({ fato: m[0].trim(), tipo: "norma" });
+  resto = resto.replace(NORMA, " ");
+  for (const m of resto.matchAll(NOME_APOS)) fatos.push({ fato: m[1]!.trim(), tipo: "nome" });
   for (const m of resto.matchAll(NOME)) fatos.push({ fato: m[0].trim(), tipo: "nome" });
+  for (const m of resto.matchAll(SIGLA)) if (!/^[IVXLCDM]+$/.test(m[0])) fatos.push({ fato: m[0], tipo: "sigla" });
+  let dobrado = dobrar(resto);
+  for (const d of datas(dobrado)) fatos.push({ fato: d.fato, tipo: "data" });
+  dobrado = dobrado.replace(DATA_EXTENSO, " ").replace(DATA_NUMERICA, " ");
+  for (const n of numerosComUnidade(dobrado)) fatos.push({ fato: n.fato, tipo: "numero" });
+  dobrado = dobrado.replace(NUMERO_EXTENSO, " ");
+  for (const m of dobrado.matchAll(NUMERO))
+    if (!m[2] && soDigitos(m[1]!).length >= 2) fatos.push({ fato: m[1]!, tipo: "numero" });
   return fatos;
 }
 
-/** O fato está no material entregue (recorte, CNCT, normas do contexto)? */
-function fatoConfere(fato: FatoSugestao, permitido: string, assinaturas: ReadonlySet<string>): boolean {
-  if (fato.tipo === "norma") {
-    const m = [...fato.fato.matchAll(NORMA)][0];
-    if (!m) return false;
-    if (m[3]) return assinaturas.has(assinatura(m[2]!, m[3]));
-    // Sem ano: o número tem de aparecer como número de alguma norma entregue.
-    const numero = soDigitos(m[2]!).replace(/^0+/, "");
-    return [...assinaturas].some((a) => a.startsWith(`${numero}/`));
+type Material = {
+  dobrado: string;
+  assinaturas: ReadonlySet<string>;
+  numeros: ReadonlySet<string>;
+  datas: ReadonlySet<string>;
+};
+
+/** O fato está no material entregue (recorte, CNCT, normas do contexto, pendência)? */
+function fatoConfere(fato: FatoSugestao, m: Material): boolean {
+  switch (fato.tipo) {
+    case "norma": {
+      const c = [...fato.fato.matchAll(NORMA)][0];
+      if (!c) return false;
+      if (c[2]) return m.assinaturas.has(assinatura(c[1]!, c[2]));
+      // Sem ano: o número tem de aparecer como número de alguma norma entregue.
+      const numero = soDigitos(c[1]!).replace(/^0+/, "");
+      return [...m.assinaturas].some((a) => a.startsWith(`${numero}/`));
+    }
+    case "data":
+      return datas(dobrar(fato.fato)).every((d) => m.datas.has(d.data));
+    case "numero": {
+      const comUnidade = numerosComUnidade(dobrar(fato.fato));
+      // Com unidade, o número tem de estar no material com a mesma unidade ("25%" não passa por "25 de setembro").
+      if (comUnidade.length) return comUnidade.every((n) => m.numeros.has(n.chave));
+      const digitos = soDigitos(fato.fato);
+      return new RegExp(`(^|\\D)${digitos.split("").join("[.]?")}(\\D|$)`).test(m.dobrado);
+    }
+    case "sigla":
+      return new RegExp(`\\b${dobrar(fato.fato)}\\b`).test(m.dobrado);
+    case "nome":
+      return m.dobrado.includes(dobrar(fato.fato));
   }
-  if (fato.tipo === "numero") {
-    const digitos = soDigitos(fato.fato);
-    // O número, com ou sem pontos de milhar, entre não dígitos no material entregue.
-    return new RegExp(`(^|\\D)${digitos.split("").join("[.]?")}(\\D|$)`).test(permitido);
-  }
-  return permitido.includes(dobrar(fato.fato));
 }
 
 /**
@@ -408,10 +610,14 @@ export function conferirSugestao(
   }
   const r = decodificarSugestao(bruto);
   if (Result.isFailure(r)) return null;
-  const contexto = formatarContexto(entrada.contexto);
-  const material = [entrada.recorte, contexto, entrada.pendencia ?? "", ...NOMES_DO_DOMINIO];
-  const permitido = dobrar(material.join("\n"));
-  const assinaturas = assinaturasDeNormas(entrada.fontes, material);
+  const textos = [entrada.recorte, formatarContexto(entrada.contexto), entrada.pendencia ?? "", ...NOMES_DO_DOMINIO];
+  const dobrado = dobrar(textos.join("\n"));
+  const material: Material = {
+    dobrado,
+    assinaturas: assinaturasDeNormas(entrada.fontes, textos),
+    numeros: new Set(numerosComUnidade(dobrado).map((n) => n.chave)),
+    datas: new Set(datas(dobrado).map((d) => d.data)),
+  };
   const redacao = r.success.texto.trim();
   const completar = [...redacao.matchAll(COMPLETAR)].map((m) => m[1]!.trim()).slice(0, LIMITES_CONVERSA.completar);
   const vistos = new Set<string>();
@@ -419,7 +625,7 @@ export function conferirSugestao(
     const chave = `${f.tipo}|${f.fato}`;
     if (vistos.has(chave)) return false;
     vistos.add(chave);
-    return !fatoConfere(f, permitido, assinaturas);
+    return !fatoConfere(f, material);
   });
   return { texto: redacao, observacao: r.success.observacao?.trim() ?? "", completar, naoConferidos };
 }

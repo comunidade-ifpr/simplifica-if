@@ -114,6 +114,10 @@ export function trechoConferivel(trecho: string): boolean {
   );
 }
 
+/** O tamanho conferível do trecho (a soma dos pedaços normalizados), ou 0 se ele não tem a forma. */
+export const tamanhoConferivel = (trecho: string) =>
+  trechoConferivel(trecho) ? pedacosDoTrecho(trecho).reduce((t, p) => t + p.length, 0) : 0;
+
 export function trechoExiste(trecho: string, alvo: string): boolean {
   const pedacos = pedacosDoTrecho(trecho);
   if (!trechoConferivel(trecho)) return false;
