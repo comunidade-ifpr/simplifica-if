@@ -224,6 +224,9 @@ importers:
       '@simplifica-if/mcp':
         specifier: workspace:*
         version: link:packages/mcp
+      '@simplifica-if/motor':
+        specifier: workspace:*
+        version: link:packages/motor
       ajv:
         specifier: 8.20.0
         version: 8.20.0
