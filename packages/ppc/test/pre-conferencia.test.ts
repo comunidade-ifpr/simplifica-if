@@ -1,3 +1,4 @@
+// @effect-diagnostics globalDate:off -- o teste ponta a ponta fixa o relógio da conversão com uma data dada
 /** Pré-conferência sem IA (PoC da proposta C do M1.11), sobre um PPC fictício e o registro de normas da base. */
 import { carregarRegistro } from "@simplifica-if/kb/normas/registro";
 import { describe, expect, test } from "vite-plus/test";
@@ -5,6 +6,8 @@ import { montarDocx, par, titulo } from "@simplifica-if/docx/testes/sintetico";
 import { segmentarPpc } from "@simplifica-if/kb/ppcs/secoes";
 import { converterPpc } from "../src/conversao-docx/conversao.ts";
 import { preConferir, type CursoCnct } from "../src/pre-conferencia.ts";
+
+const AGORA = new Date(2026, 10, 16, 12, 0, 0);
 
 const CNCT: CursoCnct = {
   slug: "tecnico-em-agropecuaria",
@@ -67,7 +70,6 @@ describe("preConferir", () => {
     expect(ausentes[0]!.mensagem).toContain("Acompanhamento de egressos");
     expect(ausentes[0]!.mensagem).not.toContain("Matriz curricular");
   });
-
 });
 
 /** Seções do modelo em DOCX, como os PPCs costumam vir: título numerado em negrito, subseção com estilo. */
@@ -94,7 +96,7 @@ describe("ponta a ponta: DOCX → PPC.md → seções do kb → pré-conferênci
     SECOES_DOCX.map(([nome, texto]) =>
       [nome.includes(".") ? par(nome, { estilo: "Heading2" }) : titulo(nome), par(texto)].join(""),
     ).join("");
-  const conversao = converterPpc(montarDocx({ corpo }), "ppc.docx", { agora: new Date(2026, 10, 16, 12) });
+  const conversao = converterPpc(montarDocx({ corpo }), "ppc.docx", { agora: AGORA });
 
   test("a conversão escreve as seções a partir de `##`, como os PPCs da base", () => {
     expect(conversao.markdown).toMatch(/^## 1 JUSTIFICATIVA$/m);
@@ -112,7 +114,7 @@ describe("ponta a ponta: DOCX → PPC.md → seções do kb → pré-conferênci
 
   test("no modo `python-docx` (conversão antiga), as seções de primeiro nível ficam em `#`", () => {
     const antiga = converterPpc(montarDocx({ corpo }), "ppc.docx", {
-      agora: new Date(2026, 10, 16, 12),
+      agora: AGORA,
       fidelidade: "python-docx",
     });
     expect(antiga.markdown).toMatch(/^# 1 JUSTIFICATIVA$/m);

@@ -89,7 +89,7 @@ export const REGRAS_DO_MODO_DOCUMENTO: Array<{ regra: keyof Regras; descricao: s
   {
     regra: "secoesNoNivel2",
     descricao:
-      "as seções começam em `##` (a \"1\" é `##`, a \"1.1\" é `###`) e `#` fica para o título do documento, como nos PPCs " +
+      'as seções começam em `##` (a "1" é `##`, a "1.1" é `###`) e `#` fica para o título do documento, como nos PPCs ' +
       "da base e na segmentação do `kb`",
   },
 ];
