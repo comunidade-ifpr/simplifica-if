@@ -172,6 +172,9 @@ export const dobrar = (texto: string) =>
 
 const MARCA_RETIRADA = "[trecho retirado pelo Simplifica IF: texto dirigido a sistemas de IA]";
 
+/** A triagem retirou texto dirigido a IA deste Markdown (a revisão humana fica obrigatória). */
+export const teveTextoParaIa = (markdown: string) => markdown.includes(MARCA_RETIRADA);
+
 /**
  * O Markdown com as linhas de texto dirigido a IA (a triagem da pré-conferência) trocadas por uma
  * marca. As linhas não mudam de número: a seção e a conferência dos trechos continuam valendo.

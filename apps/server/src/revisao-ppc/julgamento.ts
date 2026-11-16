@@ -33,7 +33,12 @@ import {
   pedidoDeCorrecao,
   type ResultadoIa,
 } from "@simplifica-if/ppc/revisao-ia/conferencia";
-import { conteudoDoPpcParaFicha, instrucoesJulgador } from "@simplifica-if/ppc/revisao-ia/pedido";
+import {
+  conteudoDoPpcParaFicha,
+  type CriterioInconclusivo,
+  instrucoesJulgador,
+  secaoDaFicha,
+} from "@simplifica-if/ppc/revisao-ia/pedido";
 import type { Bloco, FichaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import type { ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 
@@ -102,6 +107,15 @@ export interface EntradaJulgamento {
   readonly tempoTurno: Duration.Duration;
   /** Grava o uso de cada tentativa assim que ela acaba, mesmo que o bloco não termine. */
   readonly registrarTentativa?: (tentativa: TentativaIa) => Effect.Effect<void>;
+  /** O critério do INCONCLUSIVO com que o pedido foi montado (padrão: `conservador`). */
+  readonly criterio?: CriterioInconclusivo;
+  /** A triagem achou texto dirigido a IA no PPC: a revisão humana é obrigatória (decisão do código). */
+  readonly revisaoHumana?: boolean;
+  /**
+   * Recebe o texto bruto de cada tentativa, como a IA respondeu (só o script de avaliação usa, para
+   * reavaliar a conferência sem nova chamada). O app não grava o texto bruto.
+   */
+  readonly registrarTexto?: (numero: number, texto: string) => Effect.Effect<void>;
 }
 
 const usoVazio = (): { -readonly [K in keyof UsoRevisaoIa]: UsoRevisaoIa[K] } => ({
@@ -113,7 +127,7 @@ const usoVazio = (): { -readonly [K in keyof UsoRevisaoIa]: UsoRevisaoIa[K] } =>
 });
 
 /** Converte o resultado conferido no do contrato da revisão prévia. */
-const paraResultado = (r: ResultadoIa): ResultadoFichaIa => ({
+const paraResultado = (r: ResultadoIa, revisaoHumana: boolean): ResultadoFichaIa => ({
   ficha: r.ficha_id,
   estado: r.estado,
   confianca: r.confianca,
@@ -122,7 +136,8 @@ const paraResultado = (r: ResultadoIa): ResultadoFichaIa => ({
   oQueFazer: r.o_que_fazer ?? "",
   trechos: r.evidencias.map((e) => e.trecho).filter((t) => t.trim().length > 0),
   fontes: [...(r.fontes ?? [])],
-  revisaoHumana: r.revisao_humana_obrigatoria,
+  revisaoHumana,
+  ...(r.tipo_achado ? { tipoAchado: r.tipo_achado } : {}),
 });
 
 const falhou = (ficha: string, motivo: string): ResultadoFichaIa => ({
@@ -244,28 +259,14 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
         }),
       );
       if (erros.length && !ferramentas.length) return yield* pausaDoErro(entrada.provider, erros.join("; "));
+      if (entrada.registrarTexto) yield* entrada.registrarTexto(esta, textos.join("\n"));
       return { texto: textos.join("\n"), ferramentas: [...ferramentas] };
     }).pipe(Effect.scoped);
     // O uso fica gravado em qualquer saída: sucesso, pausa, interrupção.
     return yield* turno.pipe(Effect.onExit(() => registrar));
   });
 
-  // O alvo dos trechos de cada ficha: o conteúdo do PPC que ela recebeu (sem os recortes das outras).
-  const alvos = new Map(
-    entrada.fichas.map((f) => [
-      f.id,
-      alvoDosTrechos(
-        entrada.conteudoPpc === undefined
-          ? conteudoDoPpcParaFicha({ pedido: entrada.pedido }, f.id)
-          : conteudoDoPpcParaFicha({ pedido: "" }, f.id, entrada.conteudoPpc),
-      ),
-    ]),
-  );
-  const conferir = (texto: string): Conferencia =>
-    conferirResposta(texto, entrada.bloco, entrada.fichas, {
-      alvoDaFicha: (id) => alvos.get(id) ?? "",
-      fontes: entrada.fontes,
-    });
+  const conferir = conferidorDoBloco(entrada);
   const fim = (resultado: ResultadoBloco) =>
     Clock.currentTimeMillis.pipe(
       Effect.map((agora) => ({ resultado, uso: { ...uso }, segundos: Math.round((agora - inicio) / 100) / 10 })),
@@ -280,28 +281,70 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
 
   const r1 = yield* tentativa(entrada.pedido);
   if (r1.ferramentas.length) return yield* descartado(r1.ferramentas, 1);
-  let tentativas = 1;
   const primeira = conferir(r1.texto);
-  let validos = primeira.validos;
-  let resumo = primeira.resumo;
-  let problemas = primeira.problemas;
-  // Só o resumo do tema faltando não justifica pagar o pedido de novo: as transversais seguem sem ele.
-  const fichaRecusada = [...problemas.keys()].some((k) => k !== "*") || (problemas.has("*") && validos.size === 0);
-  const problemasPrimeira = [...problemas].map(([ficha, erros]) => `${ficha}: ${erros.join("; ")}`);
-  if (fichaRecusada) {
-    tentativas = 2;
+  let segunda: Conferencia | null = null;
+  if (precisaNovaTentativa(primeira)) {
     const r2 = yield* tentativa(`${entrada.pedido}\n\n${pedidoDeCorrecao(primeira)}`);
     if (r2.ferramentas.length) return yield* descartado(r2.ferramentas, 2);
-    const segunda = conferir(r2.texto);
-    // A segunda resposta vale onde passou; o que só passou na primeira continua valendo.
-    validos = new Map([...primeira.validos, ...segunda.validos]);
-    resumo = segunda.resumo ?? primeira.resumo;
-    problemas = segunda.problemas;
+    segunda = conferir(r2.texto);
   }
-  const resultados: ResultadoFichaIa[] = entrada.fichas.map((ficha) => {
+  return yield* fim(resultadoDoBloco(entrada.fichas, primeira, segunda, entrada.revisaoHumana ?? false));
+});
+
+/**
+ * A conferência de uma resposta deste bloco: o alvo dos trechos de cada ficha é o conteúdo do PPC que
+ * ela recebeu (sem os recortes das outras), e a prova de leitura de uma ausência, a seção dela.
+ * Puro: o script de avaliação reconfere com ele as respostas gravadas.
+ */
+export function conferidorDoBloco(
+  entrada: Pick<EntradaJulgamento, "bloco" | "fichas" | "pedido" | "fontes" | "conteudoPpc" | "criterio">,
+): (texto: string) => Conferencia {
+  // Nas transversais, o PPC entregue é o `conteudoPpc` (sem os resumos escritos pela IA).
+  const pedido = { pedido: entrada.conteudoPpc === undefined ? entrada.pedido : "" };
+  const reserva = entrada.conteudoPpc ?? "";
+  const alvos = new Map(
+    entrada.fichas.map((f) => [f.id, alvoDosTrechos(conteudoDoPpcParaFicha(pedido, f.id, reserva))]),
+  );
+  const secoes = new Map(
+    entrada.fichas.map((f) => {
+      const secao = secaoDaFicha(pedido, f.id, reserva);
+      return [f.id, secao === null ? null : alvoDosTrechos(secao)];
+    }),
+  );
+  return (texto) =>
+    conferirResposta(texto, entrada.bloco, entrada.fichas, {
+      alvoDaFicha: (id) => alvos.get(id) ?? "",
+      secaoDaFicha: (id) => secoes.get(id) ?? null,
+      fontes: entrada.fontes,
+      criterio: entrada.criterio,
+    });
+}
+
+/** Só o resumo do tema faltando não justifica pagar o pedido de novo: as transversais seguem sem ele. */
+export const precisaNovaTentativa = (c: Conferencia) =>
+  [...c.problemas.keys()].some((k) => k !== "*") || (c.problemas.has("*") && c.validos.size === 0);
+
+/**
+ * O resultado do bloco a partir das conferências (puro): a segunda resposta vale onde passou, o que só
+ * passou na primeira continua valendo, e o resto sai "a conferir" com o motivo legível.
+ */
+export function resultadoDoBloco(
+  fichas: readonly FichaIa[],
+  primeira: Conferencia,
+  segunda: Conferencia | null,
+  revisaoHumana: boolean,
+): ResultadoBloco {
+  const validos = segunda ? new Map([...primeira.validos, ...segunda.validos]) : primeira.validos;
+  const problemas = (segunda ?? primeira).problemas;
+  const resultados: ResultadoFichaIa[] = fichas.map((ficha) => {
     const valido = validos.get(ficha.id);
-    if (valido) return paraResultado(valido);
+    if (valido) return paraResultado(valido, revisaoHumana);
     return falhou(ficha.id, motivoLegivel(problemas.get(ficha.id) ?? problemas.get("*") ?? ["sem resultado"]));
   });
-  return yield* fim({ resultados, resumo, tentativas, problemasPrimeira });
-});
+  return {
+    resultados,
+    resumo: segunda?.resumo ?? primeira.resumo,
+    tentativas: segunda ? 2 : 1,
+    problemasPrimeira: [...primeira.problemas].map(([ficha, erros]) => `${ficha}: ${erros.join("; ")}`),
+  };
+}

@@ -38,6 +38,8 @@ overrides:
   "@effect/vitest>vitest": "-"
   "@types/node": "catalog:"
   effect: "catalog:"
+  # O exceljs (só dev, scripts de avaliação) traz o uuid 8, com aviso no `pnpm audit` (GHSA, < 11.1.1).
+  "exceljs>uuid": "^11.1.1"
   vite: "catalog:"
   vite-plus: "catalog:"
 
