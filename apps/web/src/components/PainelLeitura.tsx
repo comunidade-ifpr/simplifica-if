@@ -9,6 +9,7 @@ import { ArrowLeftIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { mensagemDeErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
+import { nomeCurtoLink } from "../tarefas/textos.ts";
 import { Markdown } from "./Markdown.tsx";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert.tsx";
 import { Button } from "./ui/button.tsx";
@@ -98,9 +99,9 @@ export function PainelLeitura({
             <ArrowLeftIcon />
           </Button>
         ) : null}
-        <p className="min-w-0 flex-1 truncate font-mono text-muted-foreground text-xs" title={link}>
-          {link}
-        </p>
+        {/* M1.6: o leitor completo (dispositivo destacado, selo de vigência, relações, regras de transição e
+            "copiar citação") entra neste painel; hoje ele mostra o texto literal lido pelo `lerLink`. */}
+        <p className="min-w-0 flex-1 truncate font-semibold text-sm">{nomeCurtoLink(link)}</p>
         <Button variant="ghost" size="icon-sm" aria-label="Fechar o painel de leitura" onClick={aoFechar}>
           <XIcon />
         </Button>

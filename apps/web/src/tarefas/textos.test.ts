@@ -85,7 +85,11 @@ describe("etapas", () => {
   it("a última marcada em andamento, com o progresso; as anteriores feitas", () => {
     const vistas = etapasVistas(
       declaradas,
-      [marca("a", { id: "ler" }), marca("b", { id: "fontes", progresso: { feito: 2, total: 5 } }), marca("c", { id: "x" })],
+      [
+        marca("a", { id: "ler" }),
+        marca("b", { id: "fontes", progresso: { feito: 2, total: 5 } }),
+        marca("c", { id: "x" }),
+      ],
       true,
     );
     expect(vistas.map((e) => e.situacao)).toEqual(["feita", "atual", "pendente"]);
@@ -100,6 +104,9 @@ describe("etapas", () => {
   });
   it("entrada inválida não marca", () => {
     expect(marcaDaEntrada({ id: 3 })).toBeUndefined();
-    expect(marcaDaEntrada({ id: "a", progresso: { feito: 9, total: 3 } })).toEqual({ id: "a", progresso: { feito: 3, total: 3 } });
+    expect(marcaDaEntrada({ id: "a", progresso: { feito: 9, total: 3 } })).toEqual({
+      id: "a",
+      progresso: { feito: 3, total: 3 },
+    });
   });
 });

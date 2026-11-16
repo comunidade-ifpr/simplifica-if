@@ -1,7 +1,11 @@
 /**
- * Conversa: escolher o provider e a pasta de trabalho, conversar, aprovar ou negar o que a IA pede,
- * interromper e começar outra. Os links `ifpr://` das respostas abrem o painel de leitura ao lado.
- * As etapas declaradas pela skill e "detalhes técnicos" chegam no M1.9.
+ * Conversa: conversar, aprovar ou negar o que a IA pede, interromper e começar outra. As citações
+ * `ifpr://` das respostas são chips que abrem o painel de leitura ao lado.
+ *
+ * Modo Servidor (M1.9): a conversa de uma tarefa mostra as etapas da skill (✓ ◐ ○), as chamadas de
+ * ferramenta ficam recolhidas em "Detalhes técnicos", cada resposta tem 👍/👎 e "Isto está errado", e o
+ * painel "Pasta da tarefa" mostra os arquivos e o "Desfazer". Sem conversa aberta, a tela é a conversa
+ * com uma pasta escolhida à mão (a tela técnica de antes, que as Configurações abrem em "Avançado").
  *
  * As conversas ficam gravadas no servidor: a barra lateral as lista, e a conversa aberta fica na URL
  * (`/conversa?id=…`). Ao recarregar a tela ou reabrir o app numa conversa, ela volta com o histórico
@@ -9,10 +13,16 @@
  */
 import type { Provider } from "@simplifica-if/contratos-app";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { FolderOpenIcon, PlusIcon, SendHorizontalIcon, SquareIcon } from "lucide-react";
+import { FolderIcon, FolderOpenIcon, PlusIcon, SendHorizontalIcon, SquareIcon, WrenchIcon } from "lucide-react";
 import { type FormEvent, type KeyboardEvent, type ReactNode, useEffect, useRef, useState } from "react";
+import { Avaliacao } from "../components/Avaliacao.tsx";
 import { AvisoErro } from "../components/AvisoErro.tsx";
+import { IndicadorEtapas } from "../components/IndicadorEtapas.tsx";
 import { ItemConversa } from "../components/ItemConversa.tsx";
+import { PainelPasta } from "../components/PainelPasta.tsx";
+import { etapasVistas } from "../conversa/etapas.ts";
+import { type Item, rotuloFerramenta } from "../conversa/estado.ts";
+import { useCatalogo } from "../tarefas/catalogo.ts";
 import { ListaConversas } from "../components/ListaConversas.tsx";
 import { PainelLeitura } from "../components/PainelLeitura.tsx";
 import { Button } from "../components/ui/button.tsx";
@@ -110,8 +120,10 @@ function FormularioInicio() {
   return (
     <form onSubmit={aoEnviar} className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-6" aria-label="Nova conversa">
       <div>
-        <h1 className="font-bold text-2xl tracking-tight">Nova conversa</h1>
-        <p className="text-muted-foreground">A IA consulta a base do IFPR pelo app e cita as fontes.</p>
+        <h1 className="font-bold text-2xl tracking-tight">Conversa com uma pasta escolhida</h1>
+        <p className="text-muted-foreground">
+          A IA consulta a base do IFPR pelo app e cita as fontes. Para começar por uma tarefa, volte ao Início.
+        </p>
       </div>
       <EscolhaProvider />
       <EscolhaPasta />
@@ -185,32 +197,124 @@ function RolarParaOFim({ sinal }: { readonly sinal: string }) {
   return <div ref={fim} />;
 }
 
-function Conversa({ aoAbrirLink }: { readonly aoAbrirLink: (link: string) => void }) {
+type Bloco =
+  | { readonly tipo: "item"; readonly item: Item; readonly turno: number }
+  | {
+      readonly tipo: "ferramentas";
+      readonly chave: string;
+      readonly itens: ReadonlyArray<Extract<Item, { tipo: "ferramenta" }>>;
+    }
+  | { readonly tipo: "avaliacao"; readonly chave: string; readonly turno: number };
+
+/**
+ * Os itens em blocos para a tela: as chamadas de ferramenta seguidas viram um grupo (os "detalhes
+ * técnicos"), e depois da última resposta de cada turno fechado vem a avaliação.
+ */
+function emBlocos(itens: ReadonlyArray<Item>, turnoAberto: number | undefined): ReadonlyArray<Bloco> {
+  const ultimaResposta = new Map<number, string>();
+  let turno = 0;
+  for (const item of itens) {
+    if (item.tipo === "pessoa") turno++;
+    else if (item.tipo === "resposta") ultimaResposta.set(turno, item.chave);
+  }
+  const blocos: Array<Bloco> = [];
+  turno = 0;
+  for (const item of itens) {
+    if (item.tipo === "pessoa") turno++;
+    const anterior = blocos.at(-1);
+    if (item.tipo === "ferramenta") {
+      if (anterior?.tipo === "ferramentas")
+        blocos[blocos.length - 1] = { ...anterior, itens: [...anterior.itens, item] };
+      else blocos.push({ tipo: "ferramentas", chave: item.chave, itens: [item] });
+      continue;
+    }
+    blocos.push({ tipo: "item", item, turno });
+    if (item.tipo === "resposta" && ultimaResposta.get(turno) === item.chave && turno !== turnoAberto) {
+      blocos.push({ tipo: "avaliacao", chave: `avaliacao-${turno}`, turno });
+    }
+  }
+  return blocos;
+}
+
+/** As chamadas de ferramenta de um trecho do turno, recolhidas; enquanto uma roda, o nome dela à vista. */
+function DetalhesTecnicos({
+  itens,
+  aoAbrirLink,
+}: {
+  readonly itens: ReadonlyArray<Extract<Item, { tipo: "ferramenta" }>>;
+  readonly aoAbrirLink: (link: string) => void;
+}) {
+  const rodando = itens.find((item) => item.situacao === "andamento");
+  const consultas = itens.length === 1 ? "1 consulta" : `${itens.length} consultas`;
+  return (
+    <details className="group text-sm" data-detalhes-tecnicos>
+      <summary className="flex w-fit cursor-pointer list-none items-center gap-2 rounded-md px-1 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        {rodando === undefined ? <WrenchIcon aria-hidden className="size-3.5" /> : <Spinner size="sm" tone="muted" />}
+        {rodando === undefined
+          ? `Detalhes técnicos · ${consultas}`
+          : `Consultando a base: ${rotuloFerramenta(rodando.nome)}…`}
+      </summary>
+      <div className="mt-2 flex flex-col gap-2 border-border border-l-2 pl-3">
+        {itens.map((item) => (
+          <ItemConversa key={item.chave} item={item} aoAbrirLink={aoAbrirLink} />
+        ))}
+      </div>
+    </details>
+  );
+}
+
+function Conversa({
+  aoAbrirLink,
+  pastaAberta,
+  aoAlternarPasta,
+}: {
+  readonly aoAbrirLink: (link: string) => void;
+  readonly pastaAberta: boolean;
+  readonly aoAlternarPasta: () => void;
+}) {
   const [estado, conversa] = useConversa();
+  const catalogo = useCatalogo();
+  const navegar = useNavigate();
   const ultimo = estado.itens.at(-1);
   const tamanhoUltimo = ultimo?.tipo === "resposta" ? ultimo.texto.length : 0;
+  const emTurno = estado.fase === "respondendo" || estado.fase === "interrompendo";
+  const turnoAberto = emTurno ? estado.itens.filter((item) => item.tipo === "pessoa").length : undefined;
+  const skill =
+    catalogo.fase === "pronto" && estado.tarefa !== undefined
+      ? catalogo.skills.find((candidata) => candidata.nome === estado.tarefa)
+      : undefined;
+  const etapas =
+    skill === undefined || skill.etapas.length === 0 ? undefined : etapasVistas(skill.etapas, estado.itens, emTurno);
+  const deTarefa = estado.tarefa !== undefined;
 
   return (
     <div className="flex h-full min-w-0 flex-1 flex-col">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-border border-b px-4 py-2 text-sm">
-        <p>
-          <span className="font-semibold">{DESCRICOES[estado.provider].nome}</span>
-          <span className="text-muted-foreground"> · pasta </span>
-          <span className="font-mono text-xs">{estado.pastaTrabalho}</span>
+        <p className="min-w-0 truncate">
+          <span className="font-semibold">{skill?.titulo ?? estado.titulo ?? "Conversa"}</span>
+          <span className="text-muted-foreground"> · {DESCRICOES[estado.provider].nome}</span>
         </p>
-        {estado.titulo ? <p className="font-semibold">{estado.titulo}</p> : null}
-        {estado.uso === undefined ? null : (
-          <p className="text-muted-foreground text-xs">
-            {estado.uso.entrada.toLocaleString("pt-BR")} tokens de entrada · {estado.uso.saida.toLocaleString("pt-BR")}{" "}
-            de saída
-          </p>
-        )}
-        <Button className="ml-auto" variant="outline" size="sm" onClick={() => conversa.nova()}>
-          <PlusIcon /> Nova conversa
-        </Button>
+        <div className="ml-auto flex gap-2">
+          <Button variant="outline" size="sm" aria-pressed={pastaAberta} onClick={aoAlternarPasta}>
+            {pastaAberta ? <FolderOpenIcon /> : <FolderIcon />} Pasta da tarefa
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              conversa.nova();
+              if (deTarefa) void navegar({ to: "/" });
+            }}
+          >
+            <PlusIcon /> {deTarefa ? "Nova tarefa" : "Nova conversa"}
+          </Button>
+        </div>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-6" role="log" aria-label="Mensagens">
+          {etapas === undefined || skill === undefined ? null : (
+            <IndicadorEtapas titulo={skill.titulo} etapas={etapas} />
+          )}
           {estado.itens.length === 0 ? (
             <p className="text-center text-muted-foreground">Conversa aberta. Escreva sua pergunta abaixo.</p>
           ) : null}
@@ -219,9 +323,20 @@ function Conversa({ aoAbrirLink }: { readonly aoAbrirLink: (link: string) => voi
               A IA parou de funcionar na última resposta. A próxima mensagem retoma a conversa de onde parou.
             </p>
           ) : null}
-          {estado.itens.map((item) => (
-            <ItemConversa key={item.chave} item={item} aoAbrirLink={aoAbrirLink} />
-          ))}
+          {emBlocos(estado.itens, turnoAberto).map((bloco) =>
+            bloco.tipo === "item" ? (
+              <ItemConversa key={bloco.item.chave} item={bloco.item} aoAbrirLink={aoAbrirLink} />
+            ) : bloco.tipo === "ferramentas" ? (
+              <DetalhesTecnicos key={bloco.chave} itens={bloco.itens} aoAbrirLink={aoAbrirLink} />
+            ) : (
+              <Avaliacao
+                key={bloco.chave}
+                turno={bloco.turno}
+                nota={estado.avaliacoes[bloco.turno]}
+                aoAvaliar={(turno, nota) => void conversa.avaliar(turno, nota)}
+              />
+            ),
+          )}
           {estado.fase === "respondendo" && ultimo?.tipo === "pessoa" ? (
             <p className="flex items-center gap-2 text-muted-foreground text-sm">
               <Spinner size="sm" /> Pensando…
@@ -253,17 +368,30 @@ function TelaConversa() {
   const [estado, conversa] = useConversa();
   const { id } = Route.useSearch();
   const navegar = useNavigate({ from: "/conversa" });
-  // O painel de leitura é da conversa em que foi aberto: trocar de conversa o esvazia.
-  const [painel, setPainel] = useState<{ readonly sessao?: string; readonly links: ReadonlyArray<string> }>({
-    links: [],
-  });
-  const leitura = painel.sessao === estado.sessao ? painel.links : [];
-  const setLeitura = (mudar: (links: ReadonlyArray<string>) => ReadonlyArray<string>) =>
+  // O painel ao lado (leitura ou pasta) é da conversa em que foi aberto: trocar de conversa o fecha.
+  const [painel, setPainel] = useState<{
+    readonly sessao?: string;
+    readonly links: ReadonlyArray<string>;
+    readonly pasta: boolean;
+  }>({ links: [], pasta: false });
+  const daConversa = painel.sessao === estado.sessao;
+  const leitura = daConversa ? painel.links : [];
+  const pastaAberta = daConversa && painel.pasta && leitura.length === 0;
+  const mudarPainel = (
+    mudar: (atual: { links: ReadonlyArray<string>; pasta: boolean }) => {
+      links: ReadonlyArray<string>;
+      pasta: boolean;
+    },
+  ) =>
     setPainel((anterior) => ({
       ...(estado.sessao === undefined ? {} : { sessao: estado.sessao }),
-      links: mudar(anterior.sessao === estado.sessao ? anterior.links : []),
+      ...mudar(anterior.sessao === estado.sessao ? anterior : { links: [], pasta: false }),
     }));
+  const setLeitura = (mudar: (links: ReadonlyArray<string>) => ReadonlyArray<string>) =>
+    mudarPainel((atual) => ({ ...atual, links: mudar(atual.links) }));
   const abrirLink = (link: string) => setLeitura((historico) => [...historico, link]);
+  const alternarPasta = () =>
+    mudarPainel((atual) => ({ links: [], pasta: !(atual.pasta && atual.links.length === 0) }));
 
   // A URL manda: um id que não é o da conversa corrente abre aquela conversa.
   useEffect(() => {
@@ -294,7 +422,17 @@ function TelaConversa() {
   } else {
     conteudo = (
       <>
-        <Conversa aoAbrirLink={abrirLink} />
+        <Conversa aoAbrirLink={abrirLink} pastaAberta={pastaAberta} aoAlternarPasta={alternarPasta} />
+        {pastaAberta && estado.sessao !== undefined ? (
+          <div className="h-full w-[min(26rem,45vw)] shrink-0">
+            <PainelPasta
+              sessao={estado.sessao}
+              atualizar={`${estado.fase}:${estado.itens.length}`}
+              emTurno={estado.fase === "respondendo" || estado.fase === "interrompendo"}
+              aoFechar={alternarPasta}
+            />
+          </div>
+        ) : null}
         {leitura.length === 0 ? null : (
           <div className="h-full w-[min(32rem,45vw)] shrink-0">
             <PainelLeitura

@@ -52,7 +52,10 @@ const milhar = (numero: string) => (/^\d{4,}$/.test(numero) ? Number(numero).toL
 
 /** Um slug (`tecnico-em-enfermagem`) legível: "Técnico em enfermagem". */
 export function slugLegivel(slug: string): string {
-  const texto = slug.replace(/[-_]+/g, " ").replace(/\btecnico\b/g, "técnico").trim();
+  const texto = slug
+    .replace(/[-_]+/g, " ")
+    .replace(/\btecnico\b/g, "técnico")
+    .trim();
   return texto.length === 0 ? slug : `${texto[0]!.toUpperCase()}${texto.slice(1)}`;
 }
 
@@ -133,7 +136,9 @@ export type Valores = Readonly<Record<string, string>>;
 
 /** A frase da entrada no pedido: "Documento a conferir: parecer.md (está na pasta da tarefa)". */
 function linhaEntrada(entrada: EntradaTarefa, valor: string): string {
-  return entrada.tipo === "arquivo" ? `${entrada.rotulo}: ${valor} (está na pasta da tarefa).` : `${entrada.rotulo}: ${valor}.`;
+  return entrada.tipo === "arquivo"
+    ? `${entrada.rotulo}: ${valor} (está na pasta da tarefa).`
+    : `${entrada.rotulo}: ${valor}.`;
 }
 
 /** O pedido montado pelo formulário: o título da tarefa e cada entrada preenchida. A pessoa pode editá-lo. */
@@ -147,7 +152,9 @@ export function montarPedido(skill: Pick<ResumoSkill, "titulo" | "entradas">, va
 
 /** As entradas obrigatórias que faltam, pelo rótulo. */
 export function faltando(entradas: ReadonlyArray<EntradaTarefa>, valores: Valores): ReadonlyArray<string> {
-  return entradas.filter((entrada) => !entrada.opcional && (valores[entrada.id]?.trim() ?? "") === "").map((e) => e.rotulo);
+  return entradas
+    .filter((entrada) => !entrada.opcional && (valores[entrada.id]?.trim() ?? "") === "")
+    .map((e) => e.rotulo);
 }
 
 /** O título da pasta de uma conversa livre: as primeiras palavras do pedido. */

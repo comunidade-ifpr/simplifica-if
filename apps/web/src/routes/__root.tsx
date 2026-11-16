@@ -50,8 +50,8 @@ function Moldura() {
           <Link to="/" className={classeAba} activeOptions={{ exact: true }}>
             Início
           </Link>
-          <Link to="/conversa" className={classeAba}>
-            Conversa
+          <Link to="/configuracoes" className={classeAba}>
+            Configurações
           </Link>
         </nav>
         <div className="ml-auto flex items-center gap-3 rounded-full bg-black/25 px-3 py-1 text-white">

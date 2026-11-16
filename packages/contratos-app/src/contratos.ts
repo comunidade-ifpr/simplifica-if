@@ -856,7 +856,11 @@ export class GrupoPasta extends RpcGroup.make(
     error: FalhaPasta,
   }),
   /** Os arquivos da pasta da conversa e o que "Desfazer" faria. */
-  Rpc.make("pasta.ver", { payload: EntradaSessao, success: PastaConversa, error: Schema.Union([FalhaPasta, SessaoDesconhecida]) }),
+  Rpc.make("pasta.ver", {
+    payload: EntradaSessao,
+    success: PastaConversa,
+    error: Schema.Union([FalhaPasta, SessaoDesconhecida]),
+  }),
   /**
    * Restaura a cópia da pasta do turno mais recente que a IA mudou (a de antes do turno) e devolve a
    * pasta depois. Recusa com turno em andamento.

@@ -28,12 +28,7 @@ import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
-import {
-  type ArquivoPasta,
-  FalhaPasta,
-  type PastaConversa,
-  type PrevisaoDesfazer,
-} from "@simplifica-if/contratos-app";
+import { type ArquivoPasta, FalhaPasta, type PastaConversa, type PrevisaoDesfazer } from "@simplifica-if/contratos-app";
 import { Historico } from "./persistencia/Historico.ts";
 import { AnalisePpc } from "./revisao-ppc/AnalisePpc.ts";
 
@@ -329,19 +324,18 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
   };
 
   const listar = async (real: string, anexos: ReadonlySet<string>) =>
-    (await listarArvore(real, limites.arquivos)).slice(0, limites.arquivos).map(
-      (entrada): ArquivoPasta => ({
-        nome: entrada.nome,
-        caminho: NodePath.join(real, entrada.nome),
-        tamanho: entrada.tamanho,
-        alteradoEm: entrada.alteradoEm.toISOString(),
-        origem: anexos.has(entrada.nome) ? "anexado" : "pasta",
-      }),
-    );
+    (await listarArvore(real, limites.arquivos)).slice(0, limites.arquivos).map((entrada): ArquivoPasta => ({
+      nome: entrada.nome,
+      caminho: NodePath.join(real, entrada.nome),
+      tamanho: entrada.tamanho,
+      alteradoEm: entrada.alteradoEm.toISOString(),
+      origem: anexos.has(entrada.nome) ? "anexado" : "pasta",
+    }));
 
   const ver = Effect.fn("PastasTrabalho.ver")(function* (conversa: string, pasta: string) {
     const real = yield* Effect.promise(() => gerida(pasta));
-    if (real === undefined) return { pasta, gerida: false, arquivos: [], desfazer: SEM_DESFAZER } satisfies PastaConversa;
+    if (real === undefined)
+      return { pasta, gerida: false, arquivos: [], desfazer: SEM_DESFAZER } satisfies PastaConversa;
     const anexos = yield* historico.anexos(real);
     const [arquivos, { previsao }] = yield* tentar(
       () => Promise.all([listar(real, anexos), prever(conversa, real)]),
@@ -350,20 +344,22 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     return { pasta: real, gerida: true, arquivos, desfazer: previsao } satisfies PastaConversa;
   });
 
-  const guardarCopia = (conversa: string, turno: number, pasta: string) =>
-    Effect.gen(function* () {
-      const criadaEm = DateTime.formatIso(yield* DateTime.now);
-      yield* Effect.tryPromise({
-        try: async () => {
-          const real = await gerida(pasta);
-          if (real !== undefined) await copiarTurno(real, pastaCopias(conversa), turno, criadaEm, limites);
-        },
-        catch: (erro) => new FalhaPasta({ motivo: String(erro) }),
-      });
+  const guardarCopia = Effect.fn("PastasTrabalho.guardarCopia")(function* (
+    conversa: string,
+    turno: number,
+    pasta: string,
+  ) {
+    const criadaEm = DateTime.formatIso(yield* DateTime.now);
+    yield* Effect.tryPromise({
+      try: async () => {
+        const real = await gerida(pasta);
+        if (real !== undefined) await copiarTurno(real, pastaCopias(conversa), turno, criadaEm, limites);
+      },
+      catch: (erro) => new FalhaPasta({ motivo: String(erro) }),
     }).pipe(
       Effect.catch((erro) => Effect.logWarning(`conversa ${conversa}: sem cópia da pasta no turno ${turno}`, erro)),
-      Effect.withSpan("PastasTrabalho.guardarCopia"),
     );
+  });
 
   const desfazer = Effect.fn("PastasTrabalho.desfazer")(function* (conversa: string, pasta: string) {
     const real = yield* Effect.promise(() => gerida(pasta));
@@ -407,9 +403,16 @@ export const layerSemPastas = Layer.sync(PastasTrabalho, () => {
     criar: recusa,
     anexar: recusa,
     ver: Effect.fn("PastasTrabalho.ver")(function* (_conversa: string, pasta: string) {
-      return { pasta, gerida: false, arquivos: [], desfazer: SEM_DESFAZER } satisfies PastaConversa;
+      return yield* Effect.succeed({
+        pasta,
+        gerida: false,
+        arquivos: [],
+        desfazer: SEM_DESFAZER,
+      } satisfies PastaConversa);
     }),
-    guardarCopia: Effect.fn("PastasTrabalho.guardarCopia")(function* () {}),
+    guardarCopia: Effect.fn("PastasTrabalho.guardarCopia")(function* () {
+      yield* Effect.void;
+    }),
     desfazer: recusa,
   });
 });
