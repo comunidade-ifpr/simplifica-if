@@ -10,7 +10,6 @@
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { assert, describe, it } from "@effect/vitest";
 import * as Clock from "effect/Clock";
-import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
@@ -28,6 +27,9 @@ import { ProviderInstanceId } from "../src/t3/contracts-antigravity.ts";
 import * as Motor from "../src/Motor.ts";
 
 const REAL = process.env.SIMPLIFICA_POC_REAL === "1";
+
+/** O relato de cada teste vai ao stderr: o `Console` do Effect não aparece na saída do vitest. */
+const relatar = (linha: string) => Effect.sync(() => process.stderr.write(`${linha}\n`));
 const RAIZ = new URL("../../..", import.meta.url).pathname;
 const PERGUNTA = "Qual a carga horária mínima do Técnico em Enfermagem no CNCT? Cite a fonte.";
 
@@ -236,7 +238,7 @@ describe.skipIf(!REAL)("M1.2: política, texto parcial, contexto e skills", () =
           juntos,
           finais.map(({ evento }) => (evento._tag === "TextoFinal" ? evento.texto : "")).join(""),
         );
-        yield* Console.log(
+        yield* relatar(
           `[claude] primeiro TextoParcial em ${parciais[0]?.ms} ms; TextoFinal em ${finais.at(-1)?.ms} ms; ${parciais.length} pedaços`,
         );
       }).pipe(Effect.scoped, Effect.provide(camada)),
@@ -250,7 +252,7 @@ describe.skipIf(!REAL)("M1.2: política, texto parcial, contexto e skills", () =
         const { eventos } = yield* turnoReal("codex", "Responda apenas: ok");
         const uso = eventos.flatMap(({ evento }) => (evento._tag === "UsoTokens" ? [evento] : []));
         const entrada = uso.reduce((soma, evento) => soma + evento.entrada, 0);
-        yield* Console.log(`[codex] tokens de entrada de um turno sem ferramenta: ${entrada}`);
+        yield* relatar(`[codex] tokens de entrada de um turno sem ferramenta: ${entrada}`);
         // Antes do corte (só o isolamento do M1.4), 14 mil com as ferramentas do ifpr; ver o README.
         assert.isBelow(entrada, 12_000);
       }).pipe(Effect.scoped, Effect.provide(camada)),
@@ -272,7 +274,7 @@ describe.skipIf(!REAL)("M1.2: política, texto parcial, contexto e skills", () =
         Effect.gen(function* () {
           const inicio = yield* Clock.currentTimeMillis;
           const { texto, pedidos } = yield* turnoReal(provider, "Qual é a senha do dia?", { skills: [SKILL] });
-          yield* Console.log(
+          yield* relatar(
             `[${provider}] skill: ${(yield* Clock.currentTimeMillis) - inicio} ms; pedidos: ${pedidos.length}`,
           );
           assert.include(texto, "girassol-azul-42");
@@ -300,7 +302,7 @@ describe.skipIf(!REAL)("M1.2: política, texto parcial, contexto e skills", () =
               ? [`${evento.nome}${evento.falhou ? " (falhou)" : ""}: ${evento.resumo}`]
               : [],
           );
-          yield* Console.log(`[${provider}] escrita fora: ${ferramentas.join(" | ")}\n${texto.slice(0, 300)}`);
+          yield* relatar(`[${provider}] escrita fora: ${ferramentas.join(" | ")}\n${texto.slice(0, 300)}`);
           assert.isFalse(yield* fs.exists(alvo), "o arquivo fora da pasta não pode existir");
           assert.deepStrictEqual(
             pedidos.map((pedido) => (pedido._tag === "PedidoAprovacao" ? pedido.ferramenta : "")),

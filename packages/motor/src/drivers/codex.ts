@@ -18,6 +18,7 @@
  * - Telemetria: `TELEMETRIA_CODEX_ARGS` no `codex app-server` (analytics, feedback e OpenTelemetry).
  */
 import * as CodexClient from "@simplifica-if/effect-codex-app-server/client";
+import type { CodexAppServerError } from "@simplifica-if/effect-codex-app-server/errors";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -238,6 +239,21 @@ export const CONTEXTO_CODEX: Readonly<Record<string, Schema.Json>> = {
 };
 
 /** Classifica o pedido de comando: o `cwd` e os caminhos citados; com rede, é `web`. */
+/**
+ * A falha da queda do `codex app-server`, em português, como a do `agy`: a mensagem do transporte
+ * (em inglês, "Codex App Server transport operation 'read-process-exit-status' failed.") chegaria ao
+ * `Erro` que a interface mostra. O erro original fica em `cause`.
+ */
+export function falhaQuedaCodex(erro: CodexAppServerError): FalhaProvider {
+  const codigo = erro._tag === "CodexAppServerProcessExitedError" ? erro.code : undefined;
+  return new FalhaProvider({
+    provider: PROVIDER,
+    operacao: "sessão",
+    detalhe: codigo === undefined ? "o processo do codex encerrou" : `o processo do codex encerrou (código ${codigo})`,
+    cause: erro,
+  });
+}
+
 export function classificarComandoCodex(p: {
   readonly command?: string | null;
   readonly cwd?: string | null;
@@ -443,7 +459,7 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
     const queda = yield* Deferred.make<FalhaProvider>();
     yield* cliente.awaitTermination.pipe(
       Effect.catch((erro) => {
-        const falha = Canal.falhaDe(PROVIDER, "app-server encerrou")(erro);
+        const falha = falhaQuedaCodex(erro);
         return Deferred.succeed(queda, falha).pipe(Effect.andThen(canal.morrer(falha)), Effect.uninterruptible);
       }),
       Effect.forkScoped,
