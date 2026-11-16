@@ -339,7 +339,10 @@ function itensDaIa(ia: EntradaIa, registro: Registro, base: BaseRevisaoPrevia, c
     const mensagem =
       r.estado === "FALHOU"
         ? `Não foi possível conferir este critério com a IA (${r.motivoFalha ?? "resposta fora do formato"}). Confira na leitura: ${base.fichas[r.ficha] ?? r.ficha}.`
-        : [ponto(r.justificativa), r.lacunas.length ? `Falta: ${r.lacunas.map((l) => l.replace(/[.;]\s*$/, "")).join("; ")}.` : ""]
+        : [
+            ponto(r.justificativa),
+            r.lacunas.length ? `Falta: ${r.lacunas.map((l) => l.replace(/[.;]\s*$/, "")).join("; ")}.` : "",
+          ]
             .filter(Boolean)
             .join(" ");
     const trechos = r.trechos.map(comoNoDocumento).filter(Boolean);

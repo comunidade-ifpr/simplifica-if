@@ -233,7 +233,8 @@ export function secoesDoTema(secoes: readonly SecaoTexto[], limite = LIMITE_SECO
   return secoes
     .map((s) => {
       const corte = Math.floor(s.texto.length * fator);
-      const texto = corte < s.texto.length ? `${s.texto.slice(0, corte)}\n[… seção encurtada pelo Simplifica IF …]` : s.texto;
+      const texto =
+        corte < s.texto.length ? `${s.texto.slice(0, corte)}\n[… seção encurtada pelo Simplifica IF …]` : s.texto;
       return `### ${s.titulo} (linhas ${s.linhaInicio}–${s.linhaFim})\n${texto}`;
     })
     .join("\n\n");

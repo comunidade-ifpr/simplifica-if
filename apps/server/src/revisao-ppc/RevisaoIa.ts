@@ -99,7 +99,9 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
       .buscar(id)
       .pipe(
         Effect.flatMap((r) =>
-          r === null ? Effect.fail(falha("", "Esta revisão não existe mais.")) : Effect.succeed(r as RegistroRevisaoIa<PlanoRevisaoIa | null>),
+          r === null
+            ? Effect.fail(falha("", "Esta revisão não existe mais."))
+            : Effect.succeed(r as RegistroRevisaoIa<PlanoRevisaoIa | null>),
         ),
       );
 
@@ -169,7 +171,9 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     }).pipe(
       Effect.provideContext(contextoKb),
       Effect.tapError((erro) => Effect.logError("revisão com IA: preparo falhou", erro)),
-      Effect.mapError(() => falha(entrada.arquivo, "Não foi possível preparar a revisão com IA. Reinicie o app e tente de novo.")),
+      Effect.mapError(() =>
+        falha(entrada.arquivo, "Não foi possível preparar a revisão com IA. Reinicie o app e tente de novo."),
+      ),
     );
     const estimativa = estimar(
       plano.blocos.map((b) => ({ caracteres: b.caracteres, fichas: b.fichas.length })),
@@ -202,12 +206,10 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     const porId = new Map(plano.fichas.map((f) => [f.id, f]));
     const andando = new Set<string>();
     emAndamento.set(id, andando);
-    const prontos = new Map(
-      (yield* revisoes.blocos(id)).map((b) => [b.bloco, b.resultado as ResultadoBloco] as const),
-    );
+    const prontos = new Map((yield* revisoes.blocos(id)).map((b) => [b.bloco, b.resultado as ResultadoBloco] as const));
 
-    const rodarBloco = (bloco: PlanoRevisaoIa["blocos"][number], pedido: string) =>
-      Effect.gen(function* () {
+    const rodarBloco = Effect.fn("RevisaoIa.rodarBloco")(
+      function* (bloco: PlanoRevisaoIa["blocos"][number], pedido: string) {
         andando.add(bloco.id);
         yield* avisar(id);
         const julgado = yield* julgarBloco({
@@ -228,10 +230,13 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
           segundos: julgado.segundos,
         });
         prontos.set(bloco.id, julgado.resultado);
-      }).pipe(
-        Effect.ensuring(Effect.suspend(() => (andando.delete(bloco.id), avisar(id)))),
-        Effect.provideContext(contextoMotor),
-      );
+      },
+      (efeito, bloco) =>
+        efeito.pipe(
+          Effect.ensuring(Effect.suspend(() => (andando.delete(bloco.id), avisar(id)))),
+          Effect.provideContext(contextoMotor),
+        ),
+    );
 
     const comuns = plano.blocos.filter((b) => b.tipo !== "T" && !prontos.has(b.id));
     yield* Effect.forEach(comuns, (b) => rodarBloco(b, b.pedido), { concurrency: paralelismo, discard: true });
@@ -275,15 +280,15 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
       Effect.catchTags({
         PausaRevisao: (pausa: PausaRevisao) =>
           revisoes.alterar(id, { situacao: "pausada", motivo: pausa.motivo, limite: pausa.limite }),
-        FalhaRevisaoPpc: (erro: FalhaRevisaoPpc) =>
-          revisoes.alterar(id, { situacao: "falhou", motivo: erro.motivo }),
+        FalhaRevisaoPpc: (erro: FalhaRevisaoPpc) => revisoes.alterar(id, { situacao: "falhou", motivo: erro.motivo }),
       }),
       Effect.catchCause((causa) =>
         Effect.logError("revisão com IA: defeito", causa).pipe(
           Effect.andThen(
             revisoes.alterar(id, {
               situacao: "pausada",
-              motivo: "A revisão parou por um erro interno do Simplifica IF. O que já foi revisado está guardado; tente retomar.",
+              motivo:
+                "A revisão parou por um erro interno do Simplifica IF. O que já foi revisado está guardado; tente retomar.",
             }),
           ),
         ),
@@ -295,7 +300,8 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     const registro = yield* buscar(id);
     if (registro.situacao === "concluida") return yield* estado(registro);
     if (yield* FiberMap.has(execucoes, id)) return yield* estado(registro);
-    if (registro.plano === null) return yield* falha(registro.arquivo, "Esta revisão não tem plano. Prepare-a de novo.");
+    if (registro.plano === null)
+      return yield* falha(registro.arquivo, "Esta revisão não tem plano. Prepare-a de novo.");
     yield* revisoes.alterar(id, { situacao: "em_andamento" });
     yield* FiberMap.run(execucoes, id, executarComPausa(id), { onlyIfMissing: true });
     yield* avisar(id);

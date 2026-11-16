@@ -130,8 +130,7 @@ export function conferirResposta(
     for (const fonte of r.fontes ?? [])
       if (!entrada.fontes.has(fonte) && !entrada.fontes.has(fonte.split("#")[0]!) && !fonte.startsWith("cnct"))
         erros.push(`fonte fora do contexto entregue: ${fonte}`);
-    if (r.estado === "ATENDE" && !r.evidencias.some((e) => e.trecho.trim()))
-      erros.push("ATENDE sem trecho do PPC");
+    if (r.estado === "ATENDE" && !r.evidencias.some((e) => e.trecho.trim())) erros.push("ATENDE sem trecho do PPC");
     if (erros.length) problemas.set(fichaId, erros);
     else validos.set(fichaId, r);
   }
@@ -142,7 +141,9 @@ export function conferirResposta(
 
 /** A mensagem de nova tentativa: só os problemas, para a IA corrigir na mesma sessão. */
 export function pedidoDeCorrecao(conferencia: Conferencia): string {
-  const linhas = [...conferencia.problemas].map(([ficha, erros]) => `- ${ficha === "*" ? "resposta" : ficha}: ${erros.join("; ")}`);
+  const linhas = [...conferencia.problemas].map(
+    ([ficha, erros]) => `- ${ficha === "*" ? "resposta" : ficha}: ${erros.join("; ")}`,
+  );
   return [
     "A resposta não passou na conferência automática:",
     ...linhas,

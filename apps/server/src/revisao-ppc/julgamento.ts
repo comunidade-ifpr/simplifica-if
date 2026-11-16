@@ -46,7 +46,8 @@ export const NOME_PROVIDER: Record<Motor.Provider, string> = {
 };
 
 /** Mensagens de limite de taxa e de cota dos três providers (em inglês, como chegam). */
-const LIMITE = /rate.?limit|429|too many requests|usage limit|limit reached|hit your limit|quota|resource.?exhausted|overloaded|529|exceeded your|try again (at|in)/i;
+const LIMITE =
+  /rate.?limit|429|too many requests|usage limit|limit reached|hit your limit|quota|resource.?exhausted|overloaded|529|exceeded your|try again (at|in)/i;
 
 export const ehLimite = (mensagem: string) => LIMITE.test(mensagem);
 
@@ -126,48 +127,48 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
   );
 
   const turno = Effect.fn("RevisaoIa.turno")(function* (texto: string) {
-      const textos: string[] = [];
-      const erros: string[] = [];
-      yield* motor.enviarMensagem(sessao, texto).pipe(
-        Stream.runForEach((evento) =>
-          Effect.gen(function* () {
-            switch (evento._tag) {
-              case "TextoFinal":
-                textos.push(evento.texto);
-                break;
-              case "UsoTokens":
-                uso.entrada += evento.entrada;
-                uso.saida += evento.saida;
-                uso.cacheLeitura += evento.cacheLeitura ?? 0;
-                uso.cacheEscrita += evento.cacheEscrita ?? 0;
-                uso.custoUsd += evento.custoUsd ?? 0;
-                break;
-              case "Erro":
-                erros.push(evento.mensagem);
-                break;
-              case "PedidoAprovacao":
-                // A política de julgamento já nega sem perguntar; se algo chegar, nega também.
-                yield* motor.responderAprovacao(sessao, evento.id, "negar").pipe(Effect.ignore);
-                break;
-            }
-          }),
-        ),
-        Effect.mapError((erro) =>
-          pausaDoErro(entrada.provider, erro._tag === "FalhaProvider" ? erro.detalhe : erro.message),
-        ),
-        Effect.timeoutOrElse({
-          duration: entrada.tempoTurno,
-          orElse: () =>
-            Effect.fail(
-              new PausaRevisao({
-                limite: false,
-                motivo: `O ${NOME_PROVIDER[entrada.provider]} demorou demais para responder um bloco. O que já foi revisado está guardado; retome quando quiser.`,
-              }),
-            ),
+    const textos: string[] = [];
+    const erros: string[] = [];
+    yield* motor.enviarMensagem(sessao, texto).pipe(
+      Stream.runForEach((evento) =>
+        Effect.gen(function* () {
+          switch (evento._tag) {
+            case "TextoFinal":
+              textos.push(evento.texto);
+              break;
+            case "UsoTokens":
+              uso.entrada += evento.entrada;
+              uso.saida += evento.saida;
+              uso.cacheLeitura += evento.cacheLeitura ?? 0;
+              uso.cacheEscrita += evento.cacheEscrita ?? 0;
+              uso.custoUsd += evento.custoUsd ?? 0;
+              break;
+            case "Erro":
+              erros.push(evento.mensagem);
+              break;
+            case "PedidoAprovacao":
+              // A política de julgamento já nega sem perguntar; se algo chegar, nega também.
+              yield* motor.responderAprovacao(sessao, evento.id, "negar").pipe(Effect.ignore);
+              break;
+          }
         }),
-      );
-      if (erros.length) return yield* pausaDoErro(entrada.provider, erros.join("; "));
-      return textos.join("\n");
+      ),
+      Effect.mapError((erro) =>
+        pausaDoErro(entrada.provider, erro._tag === "FalhaProvider" ? erro.detalhe : erro.message),
+      ),
+      Effect.timeoutOrElse({
+        duration: entrada.tempoTurno,
+        orElse: () =>
+          Effect.fail(
+            new PausaRevisao({
+              limite: false,
+              motivo: `O ${NOME_PROVIDER[entrada.provider]} demorou demais para responder um bloco. O que já foi revisado está guardado; retome quando quiser.`,
+            }),
+          ),
+      }),
+    );
+    if (erros.length) return yield* pausaDoErro(entrada.provider, erros.join("; "));
+    return textos.join("\n");
   });
 
   const conferir = (texto: string): Conferencia =>

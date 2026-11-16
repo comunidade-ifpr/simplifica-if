@@ -108,7 +108,11 @@ const CONTRATO = (bloco: Bloco, fichas: readonly FichaIa[]) =>
     '  "o_que_fazer": "o ajuste no PPC, em uma frase (vazio se atende)",',
     '  "fontes": [ "IDs de fonte do contexto acima, como br/cne-cp/res/2026/2#art29-par2 ou cnct" ],',
     '  "revisao_humana_obrigatoria": false',
-    "} ]" + (bloco.tipo === "J" ? ', "resumo": "até 600 caracteres: o que o PPC diz neste tema, para a coerência do conjunto"' : "") + " }",
+    "} ]" +
+      (bloco.tipo === "J"
+        ? ', "resumo": "até 600 caracteres: o que o PPC diz neste tema, para a coerência do conjunto"'
+        : "") +
+      " }",
     "```",
     "Regras: ATENDE exige ao menos uma evidência literal. Para o que falta no PPC, use NAO_ATENDE com `lacunas` e sem trecho.",
     "Cite só fontes que aparecem no contexto acima; sem fonte adequada, deixe `fontes` vazio.",
@@ -126,7 +130,9 @@ export function pedidoS(
   const ppc = fichas
     .map((f) => {
       const r = recortes.get(f.id);
-      const aviso = r?.achou ? "" : "(o código não localizou trecho com os termos deste critério; abaixo, o começo da seção mais provável)\n";
+      const aviso = r?.achou
+        ? ""
+        : "(o código não localizou trecho com os termos deste critério; abaixo, o começo da seção mais provável)\n";
       return `## Recorte para ${f.id}\n${aviso}${r?.texto || "(nenhuma seção do PPC corresponde a este critério)"}`;
     })
     .join("\n\n");

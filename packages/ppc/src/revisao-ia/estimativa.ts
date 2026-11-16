@@ -85,7 +85,10 @@ export function estimar(
     blocos.reduce((t, b) => t + b.caracteres / CARACTERES_POR_TOKEN + p.sistemaPorSessao, 0) * FOLGA_TENTATIVAS,
   );
   const saida = Math.round(fichas * SAIDA_POR_FICHA * FOLGA_TENTATIVAS);
-  const segundos = blocos.reduce((t, b) => t + p.segundosPorSessao + (b.fichas * SAIDA_POR_FICHA) / p.saidaPorSegundo, 0);
+  const segundos = blocos.reduce(
+    (t, b) => t + p.segundosPorSessao + (b.fichas * SAIDA_POR_FICHA) / p.saidaPorSegundo,
+    0,
+  );
   const custo =
     p.precoEntrada !== undefined && p.precoSaida !== undefined
       ? (entrada * p.precoEntrada + saida * p.precoSaida) / 1_000_000

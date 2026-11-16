@@ -1,4 +1,4 @@
-// @effect-diagnostics globalDate:off -- o teste fixa o relógio da rodada com uma data dada
+// @effect-diagnostics globalDate:off nodeBuiltinImport:off -- o teste fixa o relógio e lê as fichas da skill
 /**
  * Revisão com IA (M1.11, etapa 4), as partes puras: o plano dos blocos sobre as 80 fichas reais, os
  * recortes, a retirada do texto dirigido a IA, o pedido com o nonce, a conferência de cada resposta
@@ -65,7 +65,8 @@ describe("recortes e texto dirigido a IA", () => {
       titulo: "4 ORGANIZAÇÃO CURRICULAR",
       linhaInicio: 10,
       linhaFim: 20,
-      texto: "Introdução sem nada.\n\nO núcleo básico soma 400 horas e a formação técnica 800 horas.\n\nOutro parágrafo.",
+      texto:
+        "Introdução sem nada.\n\nO núcleo básico soma 400 horas e a formação técnica 800 horas.\n\nOutro parágrafo.",
     },
   ];
   test("o recorte da ficha S traz o parágrafo com os termos dela, sob o título da seção", () => {
@@ -114,12 +115,22 @@ describe("pedido", () => {
     expect(pedido.match(/<\/ppc-abc123>/g)).toHaveLength(1);
     expect(pedido).toContain("br/cne-cp/res/2026/2#art29-par2");
     expect(instrucoesJulgador("abc123")).toContain("<ppc-abc123>");
-    expect([...fontesPermitidas(contexto)].sort()).toEqual(["br/cne-cp/res/2026/2", "br/cne-cp/res/2026/2#art29-par2", "cnct"]);
+    expect([...fontesPermitidas(contexto)].sort()).toEqual([
+      "br/cne-cp/res/2026/2",
+      "br/cne-cp/res/2026/2#art29-par2",
+      "cnct",
+    ]);
   });
 });
 
 describe("conferência da resposta", () => {
-  const bloco = { id: "s-02-1", tipo: "S" as const, tema: "Matriz", ordemTema: 2, fichas: ["CT-CURR-03", "CT-CURR-10"] };
+  const bloco = {
+    id: "s-02-1",
+    tipo: "S" as const,
+    tema: "Matriz",
+    ordemTema: 2,
+    fichas: ["CT-CURR-03", "CT-CURR-10"],
+  };
   const doBloco = bloco.fichas.map((id) => porId.get(id)!);
   const ppc = "## 4 ORGANIZAÇÃO\nO **núcleo básico** soma 400 horas e a formação técnica 800 horas.\n";
   const entrada = { alvo: alvoDosTrechos(ppc), fontes: fontesPermitidas(contexto) };
@@ -138,7 +149,10 @@ describe("conferência da resposta", () => {
 
   test("aceita a resposta válida, com cerca de código, marcação e reticências", () => {
     const c = conferirResposta(
-      resposta(resultado("CT-CURR-03"), resultado("CT-CURR-10", { evidencias: [{ trecho: "núcleo básico … 800 horas" }] })),
+      resposta(
+        resultado("CT-CURR-03"),
+        resultado("CT-CURR-10", { evidencias: [{ trecho: "núcleo básico … 800 horas" }] }),
+      ),
       bloco,
       doBloco,
       entrada,
@@ -193,8 +207,16 @@ describe("estimativa", () => {
     expect(grande.tokensEntrada).toBeGreaterThan(pequeno.tokensEntrada);
     expect(grande.custoUsd).toBeGreaterThan(pequeno.custoUsd!);
     expect(estimar([{ caracteres: 10_000, fichas: 5 }], "codex", 1).custoUsd).toBeNull();
-    const paralelo = estimar(Array.from({ length: 6 }, () => ({ caracteres: 10_000, fichas: 6 })), "claude", 3);
-    const serial = estimar(Array.from({ length: 6 }, () => ({ caracteres: 10_000, fichas: 6 })), "claude", 1);
+    const paralelo = estimar(
+      Array.from({ length: 6 }, () => ({ caracteres: 10_000, fichas: 6 })),
+      "claude",
+      3,
+    );
+    const serial = estimar(
+      Array.from({ length: 6 }, () => ({ caracteres: 10_000, fichas: 6 })),
+      "claude",
+      1,
+    );
     expect(paralelo.minutos).toBeLessThan(serial.minutos);
   });
 });
@@ -249,12 +271,14 @@ describe("os resultados da IA no DOCX comentado", () => {
     expect(problemasOoxml(revisao.docx)).toEqual([]);
     const perfil = revisao.pendencias.find((p) => p.ficha === "CT-IDENT-07")!;
     expect(perfil).toMatchObject({ estado: "nao_atende", origem: "ia", noDocumento: "no-trecho" });
-    expect(perfil.mensagem).toBe("O perfil é genérico e não traz as atribuições do CNCT. Falta: atribuições do técnico.");
+    expect(perfil.mensagem).toBe(
+      "O perfil é genérico e não traz as atribuições do CNCT. Falta: atribuições do técnico.",
+    );
     expect(perfil.fontes[0]!.rotulo).toContain("Catálogo Nacional de Cursos Técnicos");
     expect(comentarios).toContain("avaliação da IA conferida pelo app");
   });
 
-  test("a ficha que falhou na conferência sai \"Confira:\" com o motivo, e a que atende não vira pendência", () => {
+  test('a ficha que falhou na conferência sai "Confira:" com o motivo, e a que atende não vira pendência', () => {
     const falhou = revisao.pendencias.find((p) => p.ficha === "CT-CURR-03")!;
     expect(falhou.estado).toBe("a_conferir");
     expect(falhou.mensagem).toContain("a IA citou um trecho que não está no documento");

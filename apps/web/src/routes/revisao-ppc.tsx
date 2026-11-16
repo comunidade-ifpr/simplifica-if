@@ -1,5 +1,6 @@
 /**
- * "Analisar um PPC" (M1.11, etapa 3): a revisão prévia sem IA. A pessoa escolhe o `.docx` no diálogo
+ * "Analisar um PPC" (M1.11, etapas 3 e 4): a revisão prévia sem IA e, depois dela, a revisão completa
+ * com a IA da conta da pessoa (`RevisaoComIa`), cujo resultado substitui o da pré-conferência. A pessoa escolhe o `.docx` no diálogo
  * do sistema; o servidor converte, confere os critérios que o código decide e grava uma cópia com
  * comentários do Word ao lado do original. A tela mostra o andamento, a lista de pendências por tema
  * (na ordem do parecer da PROENS) e os botões para abrir a cópia comentada e mostrá-la na pasta.
@@ -20,6 +21,8 @@ import { explicarErro, mensagemDeErro, type MensagemErro } from "../conexao/erro
 import { useApi } from "../contexto.tsx";
 import { abrirExterno, ponteDesktop } from "../ponte-desktop.ts";
 import { agruparPorTema, dataBrasileira, descreverCurso, ROTULO_ESTADO, ROTULO_LOCAL } from "../revisao/agrupar.ts";
+import { textoCobertura } from "../revisao/ia.ts";
+import { RevisaoComIa } from "../revisao/RevisaoComIa.tsx";
 
 export const Route = createFileRoute("/revisao-ppc")({ component: RevisaoPpc });
 
@@ -73,7 +76,18 @@ function RevisaoPpc() {
           </div>
         ) : null}
         {estado.fase === "erro" ? <AvisoErro erro={estado.erro} icone /> : null}
-        {estado.fase === "pronta" ? <Resultado resultado={estado.resultado} /> : null}
+        {estado.fase === "pronta" ? (
+          <>
+            {estado.resultado.conferidosIa === 0 ? (
+              <RevisaoComIa
+                key={estado.resultado.arquivoComentado}
+                arquivo={estado.resultado.arquivoOriginal}
+                aoConcluir={(resultado) => setEstado({ fase: "pronta", resultado })}
+              />
+            ) : null}
+            <Resultado resultado={estado.resultado} />
+          </>
+        ) : null}
       </div>
     </div>
   );
@@ -162,10 +176,8 @@ function Resultado({ resultado }: { readonly resultado: ResultadoRevisaoPpc }) {
         </h2>
         <p className="text-sm">Curso: {descreverCurso(resultado.curso)}</p>
         <p className="text-muted-foreground text-sm">
-          {resultado.totalCriterios > resultado.conferidos
-            ? `${resultado.conferidos} de ${resultado.totalCriterios} critérios conferidos automaticamente; os demais exigem leitura.`
-            : `${resultado.conferidos} critérios conferidos automaticamente; os demais exigem leitura.`}{" "}
-          Base de normas de {dataBrasileira(resultado.dataBase)}. Uma revisão prévia sem pendências não é PPC aprovado.
+          {textoCobertura(resultado)} Base de normas de {dataBrasileira(resultado.dataBase)}. Uma revisão prévia sem
+          pendências não é PPC aprovado.
         </p>
         <p className="text-sm">
           Cópia comentada: <span className="font-medium">{nomeDoArquivo(resultado.arquivoComentado)}</span>, na pasta do
@@ -192,7 +204,7 @@ function Resultado({ resultado }: { readonly resultado: ResultadoRevisaoPpc }) {
       {resultado.pendencias.length === 0 ? (
         <Alert variant="success">
           <AlertDescription>
-            Nenhuma pendência nos critérios conferidos automaticamente. Os demais critérios ainda exigem leitura.
+            Nenhuma pendência nos critérios conferidos. Uma revisão prévia sem pendências não é PPC aprovado.
           </AlertDescription>
         </Alert>
       ) : null}
@@ -231,7 +243,10 @@ function ItemPendencia({ pendencia }: { readonly pendencia: PendenciaRevisao }) 
         <Badge variant={pendencia.estado === "nao_atende" ? "warning" : "info"}>
           {ROTULO_ESTADO[pendencia.estado]}
         </Badge>
-        <span className="text-muted-foreground text-xs">{pendencia.tituloFicha}</span>
+        <span className="text-muted-foreground text-xs">
+          {pendencia.tituloFicha}
+          {pendencia.origem === "ia" ? " · avaliação da IA" : " · conferido pela base"}
+        </span>
       </div>
       <p className="whitespace-pre-line">{pendencia.mensagem}</p>
       <p className="text-sm">

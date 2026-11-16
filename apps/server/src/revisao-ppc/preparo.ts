@@ -23,7 +23,13 @@ import {
   type PacoteAvulso,
 } from "@simplifica-if/kb/db/pacote-contexto";
 import { palavrasDeCampi } from "@simplifica-if/kb/ppcs/secoes";
-import { type ContextoNormativo, fontesPermitidas, formatarContexto, pedidoJ, pedidoS } from "@simplifica-if/ppc/revisao-ia/pedido";
+import {
+  type ContextoNormativo,
+  fontesPermitidas,
+  formatarContexto,
+  pedidoJ,
+  pedidoS,
+} from "@simplifica-if/ppc/revisao-ia/pedido";
 import {
   type Bloco,
   type FichaIa,
@@ -66,8 +72,17 @@ function cnctEmTexto(cnct: unknown): string | null {
   const linhas: string[] = [];
   for (const [campo, valor] of Object.entries(cnct as Record<string, unknown>)) {
     if (CAMPOS_FORA_CNCT.has(campo) || valor === null || valor === "") continue;
-    const texto = Array.isArray(valor) ? valor.join("; ") : typeof valor === "object" ? JSON.stringify(valor) : String(valor);
-    linhas.push(`${campo}: ${texto.length > LIMITE_CAMPO_CNCT ? `${texto.slice(0, LIMITE_CAMPO_CNCT)} […]` : texto}`.replace(/\s+/g, " "));
+    const texto = Array.isArray(valor)
+      ? valor.join("; ")
+      : typeof valor === "object"
+        ? JSON.stringify(valor)
+        : String(valor);
+    linhas.push(
+      `${campo}: ${texto.length > LIMITE_CAMPO_CNCT ? `${texto.slice(0, LIMITE_CAMPO_CNCT)} […]` : texto}`.replace(
+        /\s+/g,
+        " ",
+      ),
+    );
   }
   return linhas.join("\n");
 }
@@ -84,10 +99,12 @@ function contextoDoPacote(pacote: PacoteAvulso, dataBase: string): ContextoNorma
     })),
     notas: [
       ...pacote.marcos.map(
-        (m) => `Marco "${m.tema}": norma vigente ${m.vigente}.${m.orientacao_analise ? ` ${m.orientacao_analise}` : ""}`,
+        (m) =>
+          `Marco "${m.tema}": norma vigente ${m.vigente}.${m.orientacao_analise ? ` ${m.orientacao_analise}` : ""}`,
       ),
       ...pacote.transicoes.map(
-        (t) => `Transição ${t.norma_id}${t.dispositivo} (${t.situacao} em ${dataBase}): ${t.regra}. Aplica-se a: ${t.aplica_a}.`,
+        (t) =>
+          `Transição ${t.norma_id}${t.dispositivo} (${t.situacao} em ${dataBase}): ${t.regra}. Aplica-se a: ${t.aplica_a}.`,
       ),
     ],
   };

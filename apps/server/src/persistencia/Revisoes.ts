@@ -162,14 +162,12 @@ const make = Effect.gen(function* () {
     const linhas = yield* sql<{ bloco_id: string; resultado: string; uso: string; segundos: number }>`
       SELECT bloco_id, resultado, uso, segundos FROM blocos_ia WHERE revisao_id = ${revisao}
     `;
-    return linhas.map(
-      (l): RegistroBlocoIa => ({
-        bloco: l.bloco_id,
-        resultado: JSON.parse(l.resultado),
-        uso: JSON.parse(l.uso) as UsoRevisaoIa,
-        segundos: l.segundos,
-      }),
-    );
+    return linhas.map((l): RegistroBlocoIa => ({
+      bloco: l.bloco_id,
+      resultado: JSON.parse(l.resultado),
+      uso: JSON.parse(l.uso) as UsoRevisaoIa,
+      segundos: l.segundos,
+    }));
   }, Effect.orDie);
 
   const emAndamento = sql<{ id: string }>`SELECT id FROM revisoes_ia WHERE situacao = 'em_andamento'`.pipe(
