@@ -9,6 +9,7 @@ Conjunto de avaliação e harness da fase 1 do [plano de arquitetura](../PLANO-A
 | `gabaritos/` | conjuntos esperados e universos, **gerados** (não edite à mão) |
 | `resolvedor/` | citações anotadas em 20 PPCs para medir o resolvedor de citações (rascunho) |
 | `ppcs-ouro/` | achados esperados por ficha da `revisar-ppc` em 3 PPCs técnicos (rascunho) |
+| `skills/` | casos de avaliação das skills do app, com e sem a skill (ver [Skills do app](#skills-do-app)) |
 | `resultados/` | rodadas do harness (fora do git) |
 
 O código fica em `scripts/avaliacao/` e o entrypoint é `scripts/avaliar.ts`.
@@ -50,6 +51,29 @@ O resolvedor tem conjunto anotado próprio em `resolvedor/citacoes-anotadas.yaml
 ## PPCs-ouro
 
 Os três arquivos de `ppcs-ouro/` (Enfermagem subsequente de Curitiba, Agropecuária integrado de Ivaiporã e Manutenção e Suporte em Informática PROEJA de União da Vitória) trazem, para 10 fichas objetivas cada, o estado esperado, a justificativa e o trecho do PPC como evidência. O contrato é `esquemaPpcOuro` (Effect Schema) em `scripts/avaliacao/esquema.ts`. Estão em `status: rascunho`: precisam de revisão humana antes de servir de referência. Quem revisar preenche `revisado_por` e troca o status para `revisado`.
+
+## Skills do app
+
+Mede se uma skill do app melhora o resultado em relação a só o MCP `ifpr` (M0.5 e M1.11 do [plano do app](../docs/plans/app-simplifica-if.md)). Cada caso fica em `skills/<skill>/caso.yaml`, com documentos sintéticos curtos em `documentos/` e, por documento, as alegações com erro plantado ou corretas: o trecho literal do documento, a fonte na base (arquivo e trecho, conferidos pelo teste), os status aceitos e as regex de conferência. O contrato e a pontuação ficam em `scripts/avaliacao/skills.ts`; o runner é `scripts/avaliar_skill.ts`.
+
+Diferente do `avaliar.ts`, o runner usa o motor do app (`@simplifica-if/motor`), como o app usa: cada documento vai para uma pasta de trabalho temporária e vazia, com o MCP `ifpr` deste checkout por HTTP local, sem as configurações, skills e MCP do usuário, e com o mesmo pedido em cada condição:
+
+- `sem-skill`: só o MCP (as instruções do servidor);
+- `skill`: o MCP e a skill da árvore de trabalho, entregue como o app entrega (`.simplifica/skills/` e a lista nas instruções da sessão);
+- `skill-antiga`: o MCP e a skill no commit `rev_skill_antiga` do caso.
+
+```bash
+pnpm avaliacao:skill --dry-run                         # sessões, pedidos e tamanho de cada skill, sem custo
+pnpm avaliacao:skill                                   # Claude, as três condições, com juiz
+pnpm avaliacao:skill --provider codex                  # ou antigravity (login pelo pnpm motor:poc)
+pnpm avaliacao:skill --condicao skill --documento ppc-enfermagem --sem-juiz
+pnpm avaliacao:skill --pontuar avaliacao/resultados/skills/<rodada>/relatorio.json
+pnpm exec vp test run scripts/avaliacao/skills.test.ts
+```
+
+Precisa do `tmp/kb.sqlite` (`pnpm kb:compilar`) e do login do provider (`pnpm motor:poc --detectar`). A rodada grava `relatorio.json`, `resumo.md` e as respostas em `resultados/skills/<data>-<skill>-<provider>/`.
+
+**Pontuação.** Automática, sem modelo: alegações tratadas e problema certo apontado (regex do gabarito sobre o relatório normalizado), links `ifpr://` distintos, rótulos da classificação da skill e seções do formato do relatório. Juiz: uma sessão do mesmo provider, sem MCP, com a rubrica de `promptJuiz` (o documento, o gabarito e o relatório); ele diz, por alegação, se ela foi tratada, que status o relatório lhe deu (um dos sete da skill, traduzindo quando o relatório usa outras palavras) e se o problema plantado foi identificado. O acerto de status é calculado pelo script (`status ∈ status_aceitos`); alegação correta com problema apontado ou status fora dos aceitos conta como falso alarme. Com uma execução por condição, a diferença de uma ou duas alegações está dentro da variância do agente.
 
 ## Custos
 

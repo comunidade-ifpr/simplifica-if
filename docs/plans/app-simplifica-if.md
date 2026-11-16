@@ -416,6 +416,7 @@ simplifica:
   - O harness da fase 1 roda via MCP com Claude, GPT e Gemini, com o mesmo conjunto de perguntas.
   - Registra acerto, tokens e tempo por provider.
   - É a linha de base dos marcos seguintes.
+  - **Andamento em 16/11/2026:** primeiro caso de skill do app, com e sem a skill: `pnpm avaliacao:skill` (`scripts/avaliar_skill.ts`, caso em `avaliacao/skills/verificar-fundamentacao-normativa/`, ver `avaliacao/README.md`). Roda pelo motor do app com o MCP `ifpr` por HTTP local, nos três providers; dois documentos sintéticos (minuta de PPC de Enfermagem e parecer de Informática integrado) com 12 alegações, 7 com erro plantado (artigo errado, "deve" onde a norma diz "pode", lei revogada como vigente, regra do estágio obrigatório generalizada, carga horária sem norma e errada, PPC de outro campus como obrigação, "obrigatório em todos"); pontuação por regex e por juiz (LLM, rubrica explícita). Rodado uma vez só com o Claude (assinatura, modelo padrão da conta); Codex e Antigravity prontos, não rodados.
 - **M0.6 — Piloto zero.**
   - 3 a 5 pessoas da PROENS/DENS usam o `simplifica-mcp` no app que já têm.
   - As perguntas reais delas viram casos do conjunto de avaliação.
@@ -525,6 +526,22 @@ Lacunas: MCP por HTTP local, recursos `ifpr://`, isolamento (`~/.codex` e `~/.ge
   Os resultados abrem no visualizador e podem ser exportados.
 
   **Andamento em 16/11/2026:** o servidor entrega as skills às conversas. O `CatalogoSkills` (`apps/server`) lê a `--pasta-skills` (no desenvolvimento, `.agents/skills`; no app empacotado, `Resources/skills`, que o build gera só com as skills elegíveis e os arquivos listados), aceita só as de bloco `simplifica:` válido e passa todas a toda conversa nova ou retomada (`ConfigSessao.skills`); o RPC `skills.listar` devolve nome, título, resumo e área para os futuros cartões. `verificar-fundamentacao-normativa` está no catálogo (a `verificar-calendario` esteve até ser apagada, no mesmo dia); teste real com o Claude verde (a IA lê o `SKILL.md` sem pedido de aprovação). Falta: a `revisar-ppc` (depende da conversão DOCX em TypeScript), o teste real das skills no Codex e no Antigravity, os cartões e o indicador de etapas na interface (M1.9) e o visualizador dos resultados.
+
+  **Andamento em 16/11/2026 (skill com e sem):** a `verificar-fundamentacao-normativa` foi enxugada para o método (de 833 para 501 palavras no corpo do `SKILL.md`): as regras de citação, vigência, confiança e PPC como exemplo saíram, porque as instruções do servidor MCP já as dão; ficaram a extração das alegações explícitas e implícitas, o checklist por alegação, os sete status, os critérios por tema e o formato do relatório. Avaliação com o Claude (M0.5), 2 documentos × 3 condições, juiz Claude:
+
+  | Métrica | só MCP | MCP + skill enxuta | MCP + skill antiga |
+  |---|---|---|---|
+  | Alegações tratadas | 12/12 | 12/12 | 12/12 |
+  | Status corretos | 12/12 | 12/12 | 12/12 |
+  | Erros plantados detectados | 7/7 | 7/7 | 7/7 |
+  | Falsos alarmes (5 corretas) | 0 | 0 | 0 |
+  | Rótulos da classificação usados | 0/14 | 10/14 | 11/14 |
+  | Seções do formato do relatório | 0/12 | 11/12 | 10/12 |
+  | Links `ifpr://` distintos | 12 | 11 | 15 |
+  | Tokens de entrada / saída | 344 mil / 6,6 mil | 480 mil / 12,0 mil | 427 mil / 10,6 mil |
+  | Custo e tempo | US$ 0,85, 65 s | US$ 1,15, 104 s | US$ 1,12, 92 s |
+
+  Só com o MCP, o Claude já acerta tudo neste caso (efeito teto): o ganho da skill não é de acerto, é de forma, com a classificação fixa e o relatório no formato padrão, ao custo de cerca de 35% mais tokens e 60% mais tempo. O enxugamento não perdeu nada mensurável. **Recomendação: a skill fica**, porque o cartão do app precisa de uma tarefa com entrega padronizada e auditável (um status por alegação, o mesmo formato entre pessoas e providers), e esse é o efeito medido; mas não se deve atribuir a ela ganho de acerto. Antes de outra skill de conferência, o caso precisa de erros mais sutis (dispositivo vizinho que quase sustenta, condicionante omitida, norma institucional desatualizada) e de rodadas no Codex e no Antigravity, onde as instruções do servidor podem pesar menos.
 - **M1.12 — "Isto está errado".**
   - **Pacote do relato:** pergunta, resposta, citações, versões da base, da skill e do app, e provider.
   - **Consentimento:** o servidor vê exatamente o que será enviado antes de enviar e pode retirar trechos.

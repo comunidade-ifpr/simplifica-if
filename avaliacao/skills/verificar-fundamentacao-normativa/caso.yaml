@@ -155,7 +155,7 @@ documentos:
         explicacao: A Lei nº 6.494/1977 foi revogada pela Lei nº 11.788/2008, art. 22.
         status_aceitos: [CONTRADITÓRIA, IMPRECISA, SEM SUPORTE NA FONTE]
         padroes_alegacao: ['6\.?494']
-        padroes_problema: ['revogad']
+        padroes_problema: ['revog(?:ad|ou)', 'nao (?:esta|se encontra) (?:mais )?(?:em vigor|vigente)']
       - id: e7-artigo-errado
         tipo: erro
         erro_plantado: artigo errado de norma certa
