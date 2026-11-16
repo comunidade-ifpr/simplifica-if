@@ -1,10 +1,11 @@
 /**
  * Início: os três providers, com a detecção e os botões de instalar e entrar, e as conversas recentes
- * (gravadas no servidor; cada uma abre com o histórico). As tarefas e o "Para você" do Modo Servidor
+ * (gravadas no servidor; cada uma abre com o histórico), e o botão provisório "Analisar um PPC" (a
+ * revisão prévia sem IA, M1.11), até os cartões de tarefa. As tarefas e o "Para você" do Modo Servidor
  * chegam no M1.9.
  */
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { MessageSquareTextIcon } from "lucide-react";
+import { FileSearchIcon, MessageSquareTextIcon } from "lucide-react";
 import { CartaoProvider } from "../components/CartaoProvider.tsx";
 import { ListaConversas } from "../components/ListaConversas.tsx";
 import { buttonVariants } from "../components/ui/button.tsx";
@@ -26,9 +27,15 @@ function Inicio() {
               começar.
             </p>
           </div>
-          <Link to="/conversa" className={buttonVariants({ size: "lg" })}>
-            <MessageSquareTextIcon /> Ir para a conversa
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            {/* Provisório até os cartões de tarefa do M1.9. */}
+            <Link to="/revisao-ppc" className={buttonVariants({ size: "lg", variant: "outline" })}>
+              <FileSearchIcon /> Analisar um PPC
+            </Link>
+            <Link to="/conversa" className={buttonVariants({ size: "lg" })}>
+              <MessageSquareTextIcon /> Ir para a conversa
+            </Link>
+          </div>
         </section>
         {conexao.fase === "sem-servidor" ? null : (
           <>

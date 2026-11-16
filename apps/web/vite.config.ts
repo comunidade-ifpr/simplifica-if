@@ -33,6 +33,8 @@ export interface ServidorTeste {
   readonly token: string;
   /** Uma pasta de trabalho temporária, que existe. */
   readonly pasta: string;
+  /** Um PPC sintético em DOCX, dentro de `pasta`. */
+  readonly ppc: string;
 }
 
 /** Os servidores de teste abertos pelos testes de navegador, por origem do pedido. */

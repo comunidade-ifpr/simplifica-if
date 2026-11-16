@@ -9,9 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RevisaoPpcRouteImport } from './routes/revisao-ppc'
 import { Route as ConversaRouteImport } from './routes/conversa'
 import { Route as IndexRouteImport } from './routes/index'
 
+const RevisaoPpcRoute = RevisaoPpcRouteImport.update({
+  id: '/revisao-ppc',
+  path: '/revisao-ppc',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ConversaRoute = ConversaRouteImport.update({
   id: '/conversa',
   path: '/conversa',
@@ -26,31 +32,42 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/conversa': typeof ConversaRoute
+  '/revisao-ppc': typeof RevisaoPpcRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/conversa': typeof ConversaRoute
+  '/revisao-ppc': typeof RevisaoPpcRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/conversa': typeof ConversaRoute
+  '/revisao-ppc': typeof RevisaoPpcRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/conversa'
+  fullPaths: '/' | '/conversa' | '/revisao-ppc'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/conversa'
-  id: '__root__' | '/' | '/conversa'
+  to: '/' | '/conversa' | '/revisao-ppc'
+  id: '__root__' | '/' | '/conversa' | '/revisao-ppc'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ConversaRoute: typeof ConversaRoute
+  RevisaoPpcRoute: typeof RevisaoPpcRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/revisao-ppc': {
+      id: '/revisao-ppc'
+      path: '/revisao-ppc'
+      fullPath: '/revisao-ppc'
+      preLoaderRoute: typeof RevisaoPpcRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/conversa': {
       id: '/conversa'
       path: '/conversa'
@@ -71,6 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ConversaRoute: ConversaRoute,
+  RevisaoPpcRoute: RevisaoPpcRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
