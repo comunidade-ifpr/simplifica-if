@@ -1,7 +1,7 @@
 /**
  * Os handlers do `GrupoApp`: casca fina sobre o `Motor` (providers), as `Conversas` (conversa), o
- * `CatalogoSkills` (skills) e o `Leitura` do `simplifica-mcp` (leitura, os mesmos handlers de
- * `@simplifica-if/mcp/rpc`).
+ * `CatalogoSkills` (skills), a `AnalisePpc` (revisão prévia de PPC) e o `Leitura` do `simplifica-mcp`
+ * (leitura, os mesmos handlers de `@simplifica-if/mcp/rpc`).
  *
  * A conversa não pertence à conexão: os métodos de conversa recebem só o id dela (`sessao`), e uma
  * interface que recarrega volta à mesma conversa por `conversa.carregar` e `conversa.acompanhar`.
@@ -13,11 +13,12 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
-import { GrupoConversa, GrupoProviders, GrupoSkills } from "@simplifica-if/contratos-app";
+import { GrupoConversa, GrupoProviders, GrupoRevisaoPpc, GrupoSkills } from "@simplifica-if/contratos-app";
 import { layerHandlersRpc } from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
 import { CatalogoSkills } from "./CatalogoSkills.ts";
 import * as Conversas from "./Conversas.ts";
+import { AnalisePpc } from "./revisao-ppc/AnalisePpc.ts";
 
 const ehFalhaProvider = Schema.is(Motor.FalhaProvider);
 
@@ -76,5 +77,18 @@ const layerSkills = GrupoSkills.toLayer(
   }),
 );
 
-/** Os handlers dos quatro grupos; pede o `Motor`, as `Conversas`, o `CatalogoSkills` e o `Leitura`. */
-export const layer = Layer.mergeAll(layerProviders, layerConversa, layerSkills, layerHandlersRpc);
+const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
+  Effect.gen(function* () {
+    const analise = yield* AnalisePpc;
+    return GrupoRevisaoPpc.of({
+      "revisaoPpc.analisar": (entrada) =>
+        analise.analisar(entrada).pipe(Effect.tapError((erro) => Effect.logWarning("revisão prévia falhou", erro))),
+    });
+  }),
+);
+
+/**
+ * Os handlers dos cinco grupos; pede o `Motor`, as `Conversas`, o `CatalogoSkills`, a `AnalisePpc` e o
+ * `Leitura`.
+ */
+export const layer = Layer.mergeAll(layerProviders, layerConversa, layerSkills, layerRevisaoPpc, layerHandlersRpc);

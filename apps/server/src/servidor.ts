@@ -14,6 +14,8 @@
  *   na CLI) ou drivers de teste.
  * - **Skills do app** (`CatalogoSkills.ts`): as da pasta `pastaSkills` com bloco `simplifica:` válido,
  *   entregues a toda conversa e listadas por `skills.listar`.
+ * - **Revisão prévia de PPC** (`revisao-ppc/AnalisePpc.ts`): DOCX → pendências e cópia comentada, sem
+ *   IA, num `Worker` com limite de memória e de tempo, sobre a base do mesmo `kb.sqlite`.
  * - **Leitura** (`GrupoLeitura`) sobre o `kb.sqlite`, só leitura: o mesmo serviço `Leitura` (uma
  *   conexão só ao banco) atende o RPC e o MCP HTTP (`McpHttp.layerSobreLeitura`).
  *
@@ -44,6 +46,7 @@ import * as Conversas from "./Conversas.ts";
 import * as Handlers from "./handlers.ts";
 import * as Banco from "./persistencia/Banco.ts";
 import * as Historico from "./persistencia/Historico.ts";
+import * as AnalisePpc from "./revisao-ppc/AnalisePpc.ts";
 
 export interface Opcoes {
   /** O `kb.sqlite` servido pelo MCP e pela leitura. */
@@ -72,6 +75,8 @@ export interface Opcoes {
    * `<Resources>/skills` no app empacotado. Sem ela, as conversas não recebem skills.
    */
   readonly pastaSkills?: string;
+  /** Limites e script do Worker da revisão prévia (`AnalisePpc.LIMITES`); os testes os apertam. */
+  readonly revisaoPpc?: AnalisePpc.OpcoesAnalise;
 }
 
 /** O servidor do RPC não abriu: porta ocupada, sem permissão ou interface indisponível. */
@@ -150,6 +155,7 @@ export const layer = (opcoes: Opcoes) => {
     ...(opcoes.ociosidade === undefined ? {} : { ociosidade: opcoes.ociosidade }),
     ...(opcoes.prazoInterrupcao === undefined ? {} : { prazoInterrupcao: opcoes.prazoInterrupcao }),
   }).pipe(
+    Layer.provideMerge(AnalisePpc.layer(opcoes.revisaoPpc)),
     Layer.provideMerge(Motor.layer),
     Layer.provideMerge(Historico.layer.pipe(Layer.provide(banco))),
     Layer.provideMerge(
