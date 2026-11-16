@@ -19,7 +19,7 @@
  * checkout.
  *
  * `publicar` mostra (ou, com `--executar`, roda) os comandos `gh release` da hospedagem decidida
- * (GitHub Releases do próprio repositório; ver `src/hospedagem.ts`). O `gh` é ferramenta de quem
+ * (GitHub Releases do próprio repositório; ver `packages/atualizacao/src/hospedagem.ts`). O `gh` é ferramenta de quem
  * publica; o app só baixa pelos links diretos.
  */
 import * as NodeChild from "node:child_process";
@@ -31,33 +31,35 @@ import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Effect from "effect/Effect";
 import { arquivosFonte } from "@simplifica-if/kb/db/fontes";
 import { lerPastaSkills } from "@simplifica-if/mcp/skills";
-import { gerarCanal, type SkillDaFabrica } from "../src/fabrica.ts";
-import { TAG_BASE, TAG_CANAL, urlPacoteBase, validarRepositorio } from "../src/hospedagem.ts";
-import { lerInfoBanco } from "../src/local.ts";
-import { arquivoManifesto, type Canal, CANAIS, compararVersoes, SUFIXO_ASSINATURA } from "../src/manifesto.ts";
-import { escreverChavePublica, escreverChaveSecreta, gerarChaves, lerChaveSecreta } from "../src/minisign.ts";
-import { lerNovidades, novidadesDaVersao, proporNovidades, proposta, soAcrescimos } from "../src/novidades.ts";
+import { gerarCanal, type SkillDaFabrica } from "@simplifica-if/atualizacao/fabrica";
+import { TAG_BASE, TAG_CANAL, urlPacoteBase, validarRepositorio } from "@simplifica-if/atualizacao/hospedagem";
+import { fontesNaoClassificadas } from "@simplifica-if/atualizacao/fontes";
+import { lerInfoBanco } from "@simplifica-if/atualizacao/local";
+import {
+  arquivoManifesto,
+  type Canal,
+  CANAIS,
+  compararVersoes,
+  SUFIXO_ASSINATURA,
+} from "@simplifica-if/atualizacao/manifesto";
+import {
+  escreverChavePublica,
+  escreverChaveSecreta,
+  gerarChaves,
+  lerChaveSecreta,
+} from "@simplifica-if/atualizacao/minisign";
+import {
+  lerNovidades,
+  novidadesDaVersao,
+  proporNovidades,
+  proposta,
+  soAcrescimos,
+} from "@simplifica-if/atualizacao/novidades";
 
-const RAIZ = NodePath.resolve(import.meta.dirname, "..", "..", "..");
+const RAIZ = NodePath.resolve(import.meta.dirname, "..");
 const PASTA_FABRICA = NodePath.join(RAIZ, "tmp", "fabrica");
 const PASTA_BASES = NodePath.join(PASTA_FABRICA, "bases");
 const NOVIDADES = NodePath.join(RAIZ, "base-conhecimento", "novidades.yaml");
-
-/**
- * Fontes classificadas como publicáveis: o `kb.sqlite` do pacote só pode vir delas. Uma fonte nova
- * do compilador fora desta lista faz a fábrica falhar até alguém classificá-la aqui.
- */
-export const FONTES_PUBLICAVEIS = [
-  "base-conhecimento/",
-  "dados/institucional/",
-  ".agents/skills/revisar-ppc/base-analise/",
-  "packages/kb/dados/",
-  "packages/kb/src/",
-] as const;
-
-export function fontesNaoClassificadas(fontes: ReadonlyArray<string>): ReadonlyArray<string> {
-  return fontes.filter((fonte) => !FONTES_PUBLICAVEIS.some((prefixo) => fonte.startsWith(prefixo)));
-}
 
 const falhar = (mensagem: string): never => {
   console.error(`fábrica: ${mensagem}`);

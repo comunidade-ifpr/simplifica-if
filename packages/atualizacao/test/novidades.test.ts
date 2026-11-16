@@ -4,7 +4,7 @@ import * as NodePath from "node:path";
 import * as NodeSqlite from "node:sqlite";
 import { afterEach, describe, expect, it } from "@effect/vitest";
 import { arquivosFonte } from "@simplifica-if/kb/db/fontes";
-import { fontesNaoClassificadas } from "../scripts/fabrica.ts";
+import { fontesNaoClassificadas } from "../src/fontes.ts";
 import { lerNovidades, novidadesDaVersao, proporNovidades, soAcrescimos } from "../src/novidades.ts";
 import { limparTemporarios, pastaTemporaria } from "./apoio.ts";
 

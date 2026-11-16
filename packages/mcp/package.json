@@ -20,6 +20,7 @@
     "typecheck": "effect-tsgo tsrs --noEmit"
   },
   "dependencies": {
+    "@simplifica-if/atualizacao": "workspace:*",
     "@simplifica-if/kb": "workspace:*",
     "yaml": "2.9.1"
   },

@@ -219,6 +219,9 @@ importers:
       '@notionhq/client':
         specifier: 5.31.1
         version: 5.31.1
+      '@simplifica-if/atualizacao':
+        specifier: workspace:*
+        version: link:packages/atualizacao
       '@simplifica-if/docx':
         specifier: workspace:*
         version: link:packages/docx
@@ -462,9 +465,6 @@ importers:
       '@simplifica-if/kb':
         specifier: workspace:*
         version: link:../kb
-      '@simplifica-if/mcp':
-        specifier: workspace:*
-        version: link:../mcp
       yaml:
         specifier: 2.9.1
         version: 2.9.1
@@ -618,6 +618,9 @@ importers:
 
   packages/mcp:
     dependencies:
+      '@simplifica-if/atualizacao':
+        specifier: workspace:*
+        version: link:../atualizacao
       '@simplifica-if/kb':
         specifier: workspace:*
         version: link:../kb

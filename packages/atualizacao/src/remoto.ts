@@ -122,6 +122,8 @@ export interface Contexto {
   /** As versões das skills já disponíveis (empacotadas ou baixadas), por nome. */
   readonly versoesSkills: Readonly<Record<string, string>>;
   readonly baixar: Baixar;
+  /** Baixar também as skills (padrão: sim; o `simplifica-mcp` fora do app só quer a base). */
+  readonly comSkills?: boolean;
 }
 
 export type Resultado =
@@ -161,7 +163,7 @@ export async function baixarAtualizacao(
   }
 
   // Skills: as elegíveis (app e base mínimos) e mais novas que as disponíveis.
-  const novas = manifesto.skills.filter(
+  const novas = (ctx.comSkills === false ? [] : manifesto.skills).filter(
     (skill) =>
       compararVersoes(skill.app_minimo, ctx.versaoApp) <= 0 &&
       compararVersoes(skill.base_minima, versaoBase) <= 0 &&
@@ -250,4 +252,26 @@ async function baixarBase(manifesto: Manifesto, urlDoManifesto: string, ctx: Con
     pendente: { versao: manifesto.versao, sha256: base.sha256_banco, novidades: manifesto.novidades ?? [] },
   });
   return via;
+}
+
+/**
+ * Confere o manifesto e baixa o que for novo, uma vez, gravando a hora da conferência. O `Atualizador`
+ * do servidor e o `simplifica-mcp` fora do app usam o mesmo caminho.
+ */
+export async function atualizarUmaVez(opcoes: {
+  readonly feed: string;
+  readonly canal: Canal;
+  readonly chave: ChavePublica;
+  readonly agora: string;
+  readonly contexto: Contexto;
+}): Promise<Resultado> {
+  const url = urlManifesto(opcoes.feed, opcoes.canal);
+  const manifesto = await conferirManifesto({
+    urlManifesto: url,
+    canal: opcoes.canal,
+    chave: opcoes.chave,
+    baixar: opcoes.contexto.baixar,
+  });
+  gravarEstado(opcoes.contexto.pasta, { ...lerEstado(opcoes.contexto.pasta), ultimaConferencia: opcoes.agora });
+  return baixarAtualizacao(manifesto, url, opcoes.contexto);
 }

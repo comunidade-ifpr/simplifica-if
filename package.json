@@ -13,7 +13,7 @@
     "mcp": "node packages/mcp/src/cli.ts",
     "mcp:instrucoes": "node packages/mcp/scripts/gerar-instrucoes.ts",
     "mcp:executavel": "node packages/mcp/scripts/construir-executavel.ts",
-    "fabrica": "node packages/atualizacao/scripts/fabrica.ts",
+    "fabrica": "node scripts/fabrica_atualizacao.ts",
     "motor:poc": "node packages/motor/scripts/poc.ts",
     "app:dev": "pnpm --filter @simplifica-if/desktop dev",
     "mcp:smoke": "cd packages/mcp && SIMPLIFICA_SMOKE=1 vp test run --config ../../vite.config.ts --dir . test/transversal",
@@ -33,6 +33,7 @@
   "dependencies": {
     "@effect/platform-node": "catalog:",
     "@notionhq/client": "5.31.1",
+    "@simplifica-if/atualizacao": "workspace:*",
     "@simplifica-if/docx": "workspace:*",
     "@simplifica-if/kb": "workspace:*",
     "@simplifica-if/ppc": "workspace:*",

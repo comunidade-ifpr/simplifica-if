@@ -28,7 +28,7 @@ import type {
 import type { Abertura } from "./local.ts";
 import { caminhos, gravarEstado, lerEstado, lerInfoBanco } from "./local.ts";
 import type { ChavePublica } from "./minisign.ts";
-import { type Baixar, baixarAtualizacao, baixarComFetch, conferirManifesto, urlManifesto } from "./remoto.ts";
+import { atualizarUmaVez, type Baixar, baixarComFetch } from "./remoto.ts";
 
 export interface Opcoes {
   /** `null`: atualização desligada, com o motivo. */
@@ -122,22 +122,25 @@ export const make = Effect.fn("Atualizador.make")(function* (opcoes: Opcoes) {
   const conferir = Effect.gen(function* () {
     if (opcoes.desligada !== null || opcoes.feed === null || opcoes.chave === null) return;
     const canal = canalAtual();
-    const url = urlManifesto(opcoes.feed, canal);
+    const feed = opcoes.feed;
     const chave = opcoes.chave;
     yield* Ref.set(memoria, { situacao: "conferindo", erro: null, aviso: null });
     const agora = DateTime.formatIso(yield* DateTime.now);
     const resultado = yield* Effect.tryPromise({
-      try: async () => {
-        const manifesto = await conferirManifesto({ urlManifesto: url, canal, chave, baixar });
-        gravarEstado(opcoes.pasta, { ...lerEstado(opcoes.pasta), ultimaConferencia: agora });
-        return baixarAtualizacao(manifesto, url, {
-          pasta: opcoes.pasta,
-          versaoApp: opcoes.versaoApp,
-          baseEmUso: { caminho: opcoes.abertura.banco, info: opcoes.abertura.info },
-          versoesSkills: opcoes.versoesSkills,
-          baixar,
-        });
-      },
+      try: () =>
+        atualizarUmaVez({
+          feed,
+          canal,
+          chave,
+          agora,
+          contexto: {
+            pasta: opcoes.pasta,
+            versaoApp: opcoes.versaoApp,
+            baseEmUso: { caminho: opcoes.abertura.banco, info: opcoes.abertura.info },
+            versoesSkills: opcoes.versoesSkills,
+            baixar,
+          },
+        }),
       catch: mensagem,
     }).pipe(Effect.result);
     if (resultado._tag === "Failure") {
