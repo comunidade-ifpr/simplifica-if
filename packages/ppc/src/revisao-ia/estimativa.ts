@@ -30,10 +30,17 @@ export type ParametrosProvider = {
  * pedido viraram 81 mil tokens gravados no cache, 2,0 caracteres por token (o pedido é texto, não JSON).
  */
 export const CARACTERES_POR_TOKEN = 2.0;
-/** Saída média por critério, medida no mesmo teste: 15,1 mil tokens para 22 critérios. */
-export const SAIDA_POR_FICHA = 690;
-/** Folga para as novas tentativas depois de uma conferência que falhou. */
-export const FOLGA_TENTATIVAS = 1.1;
+/**
+ * Saída média por critério. Primeira execução real: 690 tokens (15,1 mil para 22 critérios). Segunda,
+ * com os recortes estruturados (mais evidência, justificativas mais longas): 930 nos blocos de um turno
+ * só (8,4 mil para 9 critérios). Fica a segunda.
+ */
+export const SAIDA_POR_FICHA = 900;
+/**
+ * Folga para as novas tentativas. Cada uma é uma sessão nova com o pedido inteiro; nas duas execuções
+ * reais, 0 de 5 e 3 de 5 blocos precisaram dela.
+ */
+export const FOLGA_TENTATIVAS = 1.25;
 
 export const PARAMETROS: Record<Provider, ParametrosProvider> = {
   claude: {

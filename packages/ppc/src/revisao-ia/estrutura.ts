@@ -130,14 +130,13 @@ export function componentesDoEmentario(markdown: string): ComponenteDoEmentario[
     const linha = bruta.trim();
     const componente = COMPONENTE.exec(linha);
     if (componente) {
-      atual = {
-        nome: limparCelula(componente[1]!).replace(/\|.*$/, "").trim(),
-        ementa: "",
-        basicas: 0,
-        complementares: 0,
-      };
+      // O rótulo da carga horária ou a ementa podem vir na mesma linha do nome (comum no DOCX convertido).
+      const resto = limparCelula(componente[1]!).replace(/\|.*$/, "");
+      const ementaNaLinha = /\bementa\s*:?\s*(.*)$/i.exec(resto);
+      const nome = resto.replace(/\s+(carga hor[aá]ria|ementa|c[oó]digo|per[ií]odo|m[oó]dulo)\b.*$/i, "").trim();
+      atual = { nome, ementa: ementaNaLinha?.[1] ? `${ementaNaLinha[1]} ` : "", basicas: 0, complementares: 0 };
       saida.push(atual);
-      parte = null;
+      parte = ementaNaLinha ? "ementa" : null;
       continue;
     }
     if (!atual || !linha) continue;

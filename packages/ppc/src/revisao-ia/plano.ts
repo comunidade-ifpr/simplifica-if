@@ -216,6 +216,7 @@ export type OpcoesRecorte = {
 };
 
 const LIMITE_PRIMEIRO_PARAGRAFO = 1200;
+const FIGURA_NO_TITULO = /representacao grafica|fluxograma|figura|organograma|imagem/;
 const FIGURA = "(seção sem texto no documento convertido: provavelmente só uma figura, que a conversão não lê)";
 
 /**
@@ -239,8 +240,9 @@ export function recorteDaFicha(ficha: FichaIa, secoes: readonly SecaoTexto[], op
     .filter((s) => !opcoes.excluirLinhas?.has(s.linhaInicio))
     .map((s, ordem) => {
       const texto = s.tipo && opcoes.semTabelaEm?.has(s.tipo) ? semTabela(s.texto) : s.texto;
-      // Seção sem corpo (o título e uma figura, como a representação gráfica): entra com a nota.
-      const corpo = texto.trim() ? texto : FIGURA;
+      // Seção de figura sem corpo (a representação gráfica): entra com a nota. Outro título vazio (um
+      // subtítulo da matriz) não entra: no teste real, a nota num subtítulo virou "falta o 3º semestre".
+      const corpo = texto.trim() ? texto : FIGURA_NO_TITULO.test(dobrar(s.titulo)) ? FIGURA : "";
       return {
         s,
         ordem,

@@ -456,3 +456,30 @@ describe("recortes guiados pela estrutura", () => {
     expect(conteudo).not.toContain("AAA");
   });
 });
+
+describe("ajustes da segunda execução real", () => {
+  test("o nome do componente para antes da carga horária, e a ementa na mesma linha conta", () => {
+    const c = componentesDoEmentario(
+      "### COMPONENTE CURRICULAR: Enfermagem em Cuidado Cirúrgico II CARGA HORÁRIA: 40 h EMENTA: Cuidados no perioperatório.",
+    );
+    expect(c).toEqual([
+      {
+        nome: "Enfermagem em Cuidado Cirúrgico II",
+        ementa: "Cuidados no perioperatório. ",
+        basicas: 0,
+        complementares: 0,
+      },
+    ]);
+  });
+  test("subtítulo vazio não entra com a nota de figura", () => {
+    const vazio = {
+      titulo: "3º SEMESTRE",
+      linhaInicio: 5,
+      linhaFim: 5,
+      texto: "",
+      tipo: "matriz_curricular",
+      doTopico: true,
+    };
+    expect(recorteDaFicha(porId.get("CT-CURR-01")!, [vazio]).texto).not.toContain("figura");
+  });
+});
