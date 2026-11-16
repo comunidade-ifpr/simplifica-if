@@ -118,6 +118,8 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
         );
 
       yield* turno("oi"); // turno 1: não muda nada
+      // O primeiro turno da tarefa indica a skill à IA; o histórico guarda só o que a pessoa escreveu.
+      assert.match(registro.textos.at(-1) ?? "", /^Siga a skill `teste`[\s\S]*\n\noi$/);
       let vista = yield* rpc["pasta.ver"]({ sessao });
       assert.isTrue(vista.gerida);
       assert.deepStrictEqual(
@@ -165,6 +167,7 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       const gravada = yield* rpc["conversa.carregar"]({ sessao });
       assert.deepStrictEqual(gravada.avaliacoes, [{ turno: 1, nota: "util" }]);
       assert.strictEqual(gravada.conversa.tarefa, "teste");
+      assert.deepInclude(gravada.itens[0], { _tag: "Mensagem", texto: "oi" });
     }).pipe(Effect.scoped),
   );
 

@@ -71,6 +71,9 @@ import { type Alteracao, Historico, type RegistroConversa } from "./persistencia
 /** O nome do servidor MCP na sessão do provider: as ferramentas chegam como `ifpr.<ferramenta>`. */
 export const NOME_MCP = "ifpr";
 
+/** A tarefa da caixa livre do Início ("O que você precisa hoje?"): conversa sem skill indicada. */
+export const TAREFA_CONVERSA = "conversa";
+
 /** Depois de quanto tempo sem turno a sessão do provider se libera (o T3 usa 30 minutos). */
 export const OCIOSIDADE = Duration.minutes(30);
 
@@ -506,11 +509,18 @@ const make = Effect.fnUntraced(function* (opcoes: {
         });
         const contexto = viva.contexto;
         viva.contexto = undefined;
+        // A tarefa de uma skill (M1.9): o primeiro turno diz à IA qual skill seguir. Só vai ao provider;
+        // o histórico guarda a mensagem como a pessoa a escreveu.
+        const tarefa = viva.registro.tarefa;
+        const pedido =
+          numero === 1 && tarefa !== undefined && tarefa !== TAREFA_CONVERSA
+            ? `Siga a skill \`${tarefa}\` (SKILL.md em .simplifica/skills/${tarefa}/) para este pedido.\n\n${texto}`
+            : texto;
         turno.fibra = yield* bombear(
           viva,
           turno,
           sessao,
-          contexto === undefined ? texto : `${contexto}\n\n${texto}`,
+          contexto === undefined ? pedido : `${contexto}\n\n${pedido}`,
         ).pipe(Effect.forkIn(escopoDaLayer));
         return { inscricao, turno };
       }),
