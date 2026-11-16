@@ -72,7 +72,13 @@ function normalizar(texto: string): string {
   return saida.trimEnd();
 }
 
-type RunLido = { elemento: Element; texto: string; simples: boolean };
+/**
+ * `envoltorio`: o filho do parágrafo que contém o run, quando o run não é filho direto (inserção do
+ * controle de alterações, hiperlink, campo, controle de conteúdo). As marcas do comentário ficam
+ * sempre como filhas diretas do parágrafo, por fora dele: dentro de um `w:ins`, rejeitar as alterações
+ * apagaria a referência e deixaria o comentário órfão.
+ */
+type RunLido = { elemento: Element; texto: string; simples: boolean; envoltorio: Element | null };
 type ParagrafoLido = { elemento: Element; runs: RunLido[]; texto: string };
 
 const IGNORADOS = new Set(["w:del", "w:moveFrom", "mc:Fallback", "w:txbxContent"]);
@@ -80,11 +86,11 @@ const IGNORADOS = new Set(["w:del", "w:moveFrom", "mc:Fallback", "w:txbxContent"
 /** Runs do parágrafo (inclusive dentro de hiperlinks, campos e inserções), sem os de parágrafos aninhados. */
 function runsDoParagrafo(paragrafo: Element): RunLido[] {
   const saida: RunLido[] = [];
-  const visitar = (no: Element) => {
+  const visitar = (no: Element, envoltorio: Element | null) => {
     for (const item of filhosElementos(no)) {
       if (IGNORADOS.has(item.name) || item.name === "w:p") continue;
       if (item.name !== "w:r") {
-        visitar(item);
+        visitar(item, envoltorio ?? item);
         continue;
       }
       let texto = "";
@@ -95,10 +101,15 @@ function runsDoParagrafo(paragrafo: Element): RunLido[] {
         else if (parte.name === "w:noBreakHyphen") texto += "-";
       }
       const partes = filhosElementos(item).filter((parte) => parte.name !== "w:rPr");
-      saida.push({ elemento: item, texto, simples: partes.length === 1 && partes[0]!.name === "w:t" });
+      saida.push({
+        elemento: item,
+        texto,
+        simples: envoltorio === null && partes.length === 1 && partes[0]!.name === "w:t",
+        envoltorio,
+      });
     }
   };
-  visitar(paragrafo);
+  visitar(paragrafo, null);
   return saida;
 }
 
@@ -167,31 +178,35 @@ function marcar(xml: string, paragrafo: ParagrafoLido, inicio: Local, fim: Local
   for (const run of [runInicio, runFim]) if (!abertura(xml, run.elemento).startsWith("<w:r")) return null;
 
   // Run que não é só texto (tem tabulação, quebra, campo) não é dividido: a marca vai na borda dele.
+  // Run dentro de um invólucro (`w:ins`, hiperlink…) também não: a marca vai na borda do invólucro.
   const corteInicio = runInicio.simples ? inicio.deslocamento : 0;
   const corteFim = runFim.simples ? fim.deslocamento + 1 : runFim.texto.length;
-  const intervalo = (run: RunLido) => ({ inicio: run.elemento.startIndex!, fim: run.elemento.endIndex! + 1 });
+  const elementoDe = (run: RunLido) => run.envoltorio ?? run.elemento;
+  const intervalo = (run: RunLido) => ({ inicio: elementoDe(run).startIndex!, fim: elementoDe(run).endIndex! + 1 });
+  const inteiro = (run: RunLido) => trechoXml(xml, elementoDe(run));
 
-  if (runInicio === runFim) {
+  if (elementoDe(runInicio) === elementoDe(runFim)) {
     const run = runInicio;
-    const corpo = run.simples
-      ? runCom(xml, run.elemento, run.texto.slice(0, corteInicio)) +
-        marcaInicio +
-        runCom(xml, run.elemento, run.texto.slice(corteInicio, corteFim)) +
-        marcaFim +
-        runCom(xml, run.elemento, run.texto.slice(corteFim))
-      : marcaInicio + trechoXml(xml, run.elemento) + marcaFim;
+    const corpo =
+      run === runFim && run.simples
+        ? runCom(xml, run.elemento, run.texto.slice(0, corteInicio)) +
+          marcaInicio +
+          runCom(xml, run.elemento, run.texto.slice(corteInicio, corteFim)) +
+          marcaFim +
+          runCom(xml, run.elemento, run.texto.slice(corteFim))
+        : marcaInicio + inteiro(run) + marcaFim;
     return [{ ...intervalo(run), texto: corpo }];
   }
   const primeiro = runInicio.simples
     ? runCom(xml, runInicio.elemento, runInicio.texto.slice(0, corteInicio)) +
       marcaInicio +
       runCom(xml, runInicio.elemento, runInicio.texto.slice(corteInicio))
-    : marcaInicio + trechoXml(xml, runInicio.elemento);
+    : marcaInicio + inteiro(runInicio);
   const ultimo = runFim.simples
     ? runCom(xml, runFim.elemento, runFim.texto.slice(0, corteFim)) +
       marcaFim +
       runCom(xml, runFim.elemento, runFim.texto.slice(corteFim))
-    : trechoXml(xml, runFim.elemento) + marcaFim;
+    : inteiro(runFim) + marcaFim;
   return [
     { ...intervalo(runInicio), texto: primeiro },
     { ...intervalo(runFim), texto: ultimo },
