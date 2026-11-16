@@ -3,6 +3,11 @@
  *
  *   node apps/server/src/bin.ts --banco tmp/kb.sqlite [--porta 0] [--porta-mcp 0] [--pasta-estado <dir>]
  *        [--origem app://simplifica]… [--canal dev|beta|estavel] [--pasta-skills <dir>]
+ *        [--pasta-atualizacao <dir>] [--feed-atualizacao <url>] [--chave-atualizacao <base64>] [--versao-app 0.1.0]
+ *
+ * Com `--pasta-atualizacao` (M1.10), antes de abrir a base, o servidor atende a troca pendente na pasta
+ * (`prepararAbertura`) e abre a base mais nova entre a baixada e a do `--banco` (a empacotada); depois,
+ * confere o feed da política na abertura e a cada 24 h.
  *
  * O token chega por `SIMPLIFICA_SERVIDOR_TOKEN` ou pelo envelope no stdin (`partida.ts`). Pronto o
  * servidor, a única linha do stdout é a `LinhaPartida` em JSON; os logs vão para o stderr.
@@ -28,7 +33,10 @@ import * as Runtime from "effect/Runtime";
 import * as Schema from "effect/Schema";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
+import { prepararAbertura } from "@simplifica-if/atualizacao/local";
+import { lerChavePublica } from "@simplifica-if/atualizacao/minisign";
 import { LinhaPartida, VARIAVEL_TOKEN } from "@simplifica-if/contratos-app";
+import { POLITICA_FABRICA } from "@simplifica-if/motor/politica";
 import * as Drivers from "@simplifica-if/motor/drivers";
 import * as HostProcess from "@simplifica-if/motor/t3/HostProcess";
 import { expandHomePath, fixPath } from "@simplifica-if/motor/t3/os-jank";
@@ -100,6 +108,29 @@ const servidor = Command.make(
       Flag.withFallbackConfig(Config.String("SIMPLIFICA_SKILLS")),
       Flag.optional,
     ),
+    pastaAtualizacao: Flag.String("pasta-atualizacao").pipe(
+      Flag.withDescription(
+        "liga a atualização da base e das skills, gravando nesta pasta (a do app); sem ela, a base é só a do --banco (ou SIMPLIFICA_ATUALIZACAO_PASTA)",
+      ),
+      Flag.withFallbackConfig(Config.String("SIMPLIFICA_ATUALIZACAO_PASTA")),
+      Flag.optional,
+    ),
+    feedAtualizacao: Flag.String("feed-atualizacao").pipe(
+      Flag.withDescription("feed no lugar do da política, com {canal} (ou SIMPLIFICA_ATUALIZACAO_FEED)"),
+      Flag.withFallbackConfig(Config.String("SIMPLIFICA_ATUALIZACAO_FEED")),
+      Flag.optional,
+    ),
+    chaveAtualizacao: Flag.String("chave-atualizacao").pipe(
+      Flag.withDescription(
+        "chave pública minisign no lugar da da política, a linha base64 (ou SIMPLIFICA_ATUALIZACAO_CHAVE)",
+      ),
+      Flag.withFallbackConfig(Config.String("SIMPLIFICA_ATUALIZACAO_CHAVE")),
+      Flag.optional,
+    ),
+    versaoApp: Flag.String("versao-app").pipe(
+      Flag.withDescription("versão do app, comparada ao app_minimo do manifesto"),
+      Flag.withDefault(VERSAO),
+    ),
   },
   (opcoes) =>
     Effect.gen(function* () {
@@ -116,7 +147,23 @@ const servidor = Command.make(
       const pastaEstado = yield* expandHomePath(
         Option.getOrUndefined(opcoes.pastaEstado) ?? (yield* pastaEstadoPadrao),
       );
-      const banco = path.resolve(yield* expandHomePath(opcoes.banco));
+      const bancoDado = path.resolve(yield* expandHomePath(opcoes.banco));
+      const pastaAtualizacao = Option.getOrUndefined(opcoes.pastaAtualizacao);
+      const atualizacao =
+        pastaAtualizacao === undefined
+          ? undefined
+          : montarAtualizacao({
+              pasta: path.resolve(yield* expandHomePath(pastaAtualizacao)),
+              bancoEmpacotado: bancoDado,
+              feed: Option.getOrUndefined(opcoes.feedAtualizacao),
+              chave: Option.getOrUndefined(opcoes.chaveAtualizacao),
+              versaoApp: opcoes.versaoApp,
+            });
+      if (atualizacao !== undefined) {
+        for (const evento of atualizacao.abertura.eventos) yield* Effect.logInfo(`atualização: ${evento}`);
+        if (atualizacao.desligada !== null) yield* Effect.logInfo(`atualização desligada: ${atualizacao.desligada}`);
+      }
+      const banco = atualizacao?.abertura.banco ?? bancoDado;
       const pastaSkillsDada = Option.getOrUndefined(opcoes.pastaSkills);
       const pastaSkills =
         pastaSkillsDada === undefined ? yield* pastaSkillsPadrao : path.resolve(yield* expandHomePath(pastaSkillsDada));
@@ -138,6 +185,7 @@ const servidor = Command.make(
           canal: opcoes.canal,
           bancoConversas: path.join(pastaEstado, Banco.ARQUIVO_BANCO),
           ...(pastaSkills === undefined ? {} : { pastaSkills }),
+          ...(atualizacao === undefined ? {} : { atualizacao }),
         }).pipe(Layer.provide(drivers)),
       );
       const app = Context.get(contexto, Servidor.ServidorApp);
@@ -163,6 +211,44 @@ const servidor = Command.make(
 ).pipe(
   Command.withDescription(`servidor local do Simplifica IF; \`${SUBCOMANDO_PONTE}\` roda a ponte MCP stdio → HTTP`),
 );
+
+/**
+ * As opções da atualização: a troca pendente atendida agora (antes de abrir a base), o feed e a chave da
+ * política ou dos argumentos, e o motivo quando falta um deles.
+ */
+function montarAtualizacao(entrada: {
+  readonly pasta: string;
+  readonly bancoEmpacotado: string;
+  readonly feed: string | undefined;
+  readonly chave: string | undefined;
+  readonly versaoApp: string;
+}): Servidor.OpcoesAtualizacao {
+  const politica = POLITICA_FABRICA.atualizacao;
+  const abertura = prepararAbertura({ pasta: entrada.pasta, bancoEmpacotado: entrada.bancoEmpacotado });
+  const feed = entrada.feed ?? politica.feed;
+  const textoChave = entrada.chave ?? politica.chavePublica;
+  let chave: ReturnType<typeof lerChavePublica> | null = null;
+  let problemaChave: string | null = null;
+  try {
+    chave = textoChave === null ? null : lerChavePublica(textoChave);
+  } catch (erro) {
+    problemaChave = `a chave pública da atualização é inválida (${(erro as Error).message})`;
+  }
+  const desligada =
+    feed === null
+      ? "o endereço das atualizações ainda não está no app (hospedagem a configurar)"
+      : (problemaChave ?? (chave === null ? "a chave pública da fábrica ainda não está no app" : null));
+  return {
+    desligada,
+    feed,
+    chave,
+    canalPadrao: politica.canal,
+    pasta: entrada.pasta,
+    bancoEmpacotado: entrada.bancoEmpacotado,
+    versaoApp: entrada.versaoApp,
+    abertura,
+  };
+}
 
 /** Sem cordão (token pelo ambiente): não há envelope a ler nem fim a esperar. */
 const semCordao: Partida.Cordao = { primeiraLinha: Effect.succeedNone, fim: Effect.never };

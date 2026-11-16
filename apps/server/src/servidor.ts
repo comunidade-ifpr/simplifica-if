@@ -41,6 +41,9 @@ import type { Canal } from "@simplifica-if/mcp/contratos";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import { layerLeitura } from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
+import * as Atualizador from "@simplifica-if/atualizacao/Atualizador";
+import type { Abertura } from "@simplifica-if/atualizacao/local";
+import type { ChavePublica } from "@simplifica-if/atualizacao/minisign";
 import * as Autenticacao from "./Autenticacao.ts";
 import * as CatalogoSkills from "./CatalogoSkills.ts";
 import * as Conversas from "./Conversas.ts";
@@ -91,7 +94,57 @@ export interface Opcoes {
    * prévia só analisa arquivos liberados em `CAMINHO_LIBERAR_ARQUIVO`.
    */
   readonly tokenDesktop?: Redacted.Redacted<string>;
+  /**
+   * Atualização da base e das skills (M1.10), montada pela CLI depois de `prepararAbertura`. Sem ela,
+   * o serviço responde como desligado (`atualizacao.estado`), com o motivo.
+   */
+  readonly atualizacao?: OpcoesAtualizacao;
 }
+
+export interface OpcoesAtualizacao {
+  readonly desligada: string | null;
+  readonly feed: string | null;
+  readonly chave: ChavePublica | null;
+  readonly canalPadrao: "beta" | "estavel";
+  readonly pasta: string;
+  readonly bancoEmpacotado: string;
+  readonly versaoApp: string;
+  readonly abertura: Abertura;
+  readonly automatico?: boolean;
+}
+
+/** O serviço de atualização sobre as análises e conversas em curso (a troca espera) e as skills do catálogo. */
+const layerAtualizador = (opcoes: Opcoes) =>
+  Layer.effect(
+    Atualizador.Atualizador,
+    Effect.gen(function* () {
+      const analise = yield* AnalisePpc.AnalisePpc;
+      const ia = yield* RevisaoIa.RevisaoIa;
+      const conversas = yield* Conversas.Conversas;
+      const catalogo = yield* CatalogoSkills.CatalogoSkills;
+      const ocupado = Effect.gen(function* () {
+        if (yield* analise.ocupada) return true;
+        if ((yield* ia.listar).some((revisao) => revisao.situacao === "em_andamento")) return true;
+        return (yield* conversas.listar).some((conversa) => conversa.estado === "respondendo");
+      });
+      const a = opcoes.atualizacao;
+      return yield* Atualizador.make({
+        ...(a ?? {
+          desligada: "a atualização não foi configurada neste servidor",
+          feed: null,
+          chave: null,
+          canalPadrao: "beta",
+          pasta: "",
+          bancoEmpacotado: opcoes.banco,
+          versaoApp: "0.0.0",
+          abertura: { banco: opcoes.banco, origem: "empacotada", info: null, pastasSkills: [], eventos: [] },
+          automatico: false,
+        }),
+        versoesSkills: catalogo.versoes,
+        ocupado,
+      });
+    }),
+  );
 
 /** O servidor do RPC não abriu: porta ocupada, sem permissão ou interface indisponível. */
 export class ServidorNaoAbriu extends Schema.TaggedError<ServidorNaoAbriu>()("ServidorNaoAbriu", {
@@ -194,12 +247,15 @@ export const layer = (opcoes: Opcoes) => {
     Layer.provideMerge(Motor.layer),
     Layer.provideMerge(Historico.layer.pipe(Layer.provide(banco))),
     Layer.provideMerge(
-      opcoes.pastaSkills === undefined ? CatalogoSkills.layerVazio : CatalogoSkills.layer(opcoes.pastaSkills),
+      opcoes.pastaSkills === undefined
+        ? CatalogoSkills.layerVazio
+        : CatalogoSkills.layer(opcoes.pastaSkills, opcoes.atualizacao?.abertura.pastasSkills ?? []),
     ),
     Layer.provideMerge(mcp),
     Layer.provideMerge(leitura),
   );
-  const handlers = Handlers.layer.pipe(Layer.provide(nucleo));
+  const comAtualizacao = layerAtualizador(opcoes).pipe(Layer.provideMerge(nucleo));
+  const handlers = Handlers.layer.pipe(Layer.provide(comAtualizacao));
   const servir = HttpRouter.serve(layerRotaRpc, { disableLogger: true, disableListenLog: true });
   // Sem o fechamento preventivo: ele espera as conexões abertas antes de interromper os fibers que as
   // fecham, e um WebSocket conectado segurava o encerramento pelos 20 s do prazo. Assim, as conexões

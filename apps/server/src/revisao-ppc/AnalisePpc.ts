@@ -92,6 +92,8 @@ export class AnalisePpc extends Context.Service<
     readonly revisarArquivo: (entrada: EntradaRevisarArquivo) => Effect.Effect<RevisaoDoArquivo, FalhaRevisaoPpc>;
     /** Libera um arquivo escolhido no diálogo do desktop (`CAMINHO_LIBERAR_ARQUIVO`). */
     readonly liberar: (arquivo: string) => Effect.Effect<void>;
+    /** Uma análise está rodando agora? (a troca da base espera, M1.10) */
+    readonly ocupada: Effect.Effect<boolean>;
   }
 >()("@simplifica-if/server/revisao-ppc/AnalisePpc") {}
 
@@ -337,7 +339,8 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
   const liberar = (arquivo: string) => Effect.sync(() => void liberados.add(NodePath.normalize(arquivo)));
   const revisarArquivo = (entrada: EntradaRevisarArquivo) => revisarUm(entrada).pipe(vez.withPermits(1));
 
-  return AnalisePpc.of({ analisar, analisarCompleto, liberar, revisarArquivo });
+  const ocupada = vez.withPermitsIfAvailable(1)(Effect.void).pipe(Effect.map(Option.isNone));
+  return AnalisePpc.of({ analisar, analisarCompleto, liberar, revisarArquivo, ocupada });
 });
 
 /** O serviço sobre o `FontesNormativas` e o `SqlClient` do `kb.sqlite` (os do `Leitura` do servidor). */
