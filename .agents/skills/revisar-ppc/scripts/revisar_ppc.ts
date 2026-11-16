@@ -3,7 +3,7 @@
  * Ponto de entrada único da skill revisar-ppc, em `effect/cli`.
  *
  * Todos os subcomandos rodam em TypeScript, inclusive a conversão de `.docx`
- * em `preparar-documento` (`conversao-docx/`): a skill só precisa do Node.
+ * em `preparar-documento` (pacote `@simplifica-if/ppc`): a skill só precisa do Node.
  *
  * `REVISAR_PPC_AGORA` (data ISO 8601) fixa o relógio, para testes e
  * diferenciais.

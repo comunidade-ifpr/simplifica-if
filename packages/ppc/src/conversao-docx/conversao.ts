@@ -4,14 +4,19 @@
  * bruto, `_dados.json`, matriz curricular, ementário e a figura da representação gráfica.
  *
  * Substitui a conversão em Python (`conversao_docx/`, sobre `python-docx`), removida na trilha T3
- * do `PLANO-ARQUITETURA.md`. A saída é a mesma, salvo as diferenças documentadas no README da
- * skill; `scripts/dev/diferencial-docx.ts` compara as duas.
+ * do `PLANO-ARQUITETURA.md`. Com `fidelidade: "python-docx"` a saída é a dela, byte a byte; o
+ * padrão aplica as regras de `regras.ts`. As diferenças estão no README da skill `revisar-ppc`, e
+ * `scripts/diferencial-docx.ts` compara as duas conversões.
  *
  * Camadas, de baixo para cima:
- * - `ooxml/`: o DOCX como modelo intermediário (pacote ZIP, XML, parágrafos, tabelas, figuras);
+ * - `@simplifica-if/docx`: o DOCX como modelo intermediário (pacote ZIP, XML, parágrafos, tabelas,
+ *   figuras), com os limites contra arquivo hostil;
  * - `elementos.ts`, `secoes.ts`, `tabelas.ts`: os elementos e as seções do PPC;
  * - `matriz.ts`, `ementario.ts`, `identificacao-tabelas.ts`, `figura.ts`: os dados extraídos;
  * - `markdown.ts` e este módulo: o Markdown e os arquivos.
+ *
+ * `converterPpc` é síncrona e trabalha em memória; quem a chama num servidor deve rodá-la fora do
+ * laço de eventos, com limite de memória e de tempo.
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";

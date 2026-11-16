@@ -3,7 +3,7 @@
  * Cria a rodada de análise e o `PPC.md` canônico (porte de `preparar_documento.py`).
  *
  * Entrada `.md`: o Markdown é normalizado. Entrada `.docx`: a conversão em artefatos é a de
- * `conversao-docx/` (leitor OOXML próprio, sem Python nem Word); a normalização do Markdown, a
+ * `@simplifica-if/ppc` (leitor OOXML próprio, sem Python nem Word), feita em memória antes de a rodada existir; a normalização do Markdown, a
  * identificação e os arquivos da rodada são feitos aqui.
  */
 import * as NodeFS from "node:fs";

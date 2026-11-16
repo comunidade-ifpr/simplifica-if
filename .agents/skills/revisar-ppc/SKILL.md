@@ -44,4 +44,4 @@ Execute os comandos a partir da raiz deste repositório:
 node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts --help
 ```
 
-O ponto de entrada é `scripts/revisar_ppc.ts` (Node), e todos os subcomandos rodam em TypeScript, inclusive `gerar-relatorio-html`, a publicação no Surge e a conversão de entrada `.docx` em `preparar-documento` (`scripts/conversao-docx/`, com leitor OOXML próprio). A skill só precisa do Node: não usa Python, MS Word nem poppler.
+O ponto de entrada é `scripts/revisar_ppc.ts` (Node), e todos os subcomandos rodam em TypeScript, inclusive `gerar-relatorio-html`, a publicação no Surge e a conversão de entrada `.docx` em `preparar-documento` (pacotes `@simplifica-if/ppc` e `@simplifica-if/docx` do workspace, com leitor OOXML próprio). A skill só precisa do Node: não usa Python, MS Word nem poppler.

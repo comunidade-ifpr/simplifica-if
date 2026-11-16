@@ -22,7 +22,7 @@
  * agulhas de até 14.
  *
  * O resultado é o mesmo `double` do `rapidfuzz`, feito com as mesmas operações (a comparação com
- * o limiar 85 não pode divergir por arredondamento); `tests/similaridade.test.ts` confere contra
+ * o limiar 85 não pode divergir por arredondamento); `test/similaridade.test.ts` confere contra
  * escores gerados por ele.
  */
 

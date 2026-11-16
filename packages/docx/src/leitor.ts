@@ -42,14 +42,19 @@ import { atributo, descendente, descendentes, filho, filhos, filhosElementos, te
 /**
  * Como tratar o que o `python-docx` não enxerga:
  *
- * - `documento` (padrão): lê o texto que o Word mostra. Entram os runs embrulhados em `w:ins` e
- *   `w:moveTo` (inserções de alterações controladas ainda não aceitas), `w:smartTag`, `w:sdt` em
- *   linha, `w:fldSimple` e `w:customXml`; `w:del` e `w:moveFrom` continuam de fora. Uma imagem
- *   legada (`v:imagedata` em `w:pict` ou `w:object`) é reconhecida como imagem, não como forma.
+ * - `documento` (padrão): lê o texto que o Word mostra.
+ *   - Entram os runs embrulhados em `w:ins` e `w:moveTo` (inserções de alterações controladas ainda
+ *     não aceitas), `w:smartTag`, `w:sdt` em linha, `w:fldSimple` e `w:customXml`. O removido
+ *     (`w:del`, `w:moveFrom`) fica de fora: o texto, a figura e a linha de tabela.
+ *   - Entram as linhas, as células e os parágrafos de tabela embrulhados em `w:sdt`.
+ *   - O texto profundo da célula é lido como os parágrafos do corpo, sem a versão de
+ *     compatibilidade (`mc:Fallback`) das caixas de texto.
+ *   - A numeração automática do parágrafo (`w:numPr`) é lida.
+ *   - Uma imagem legada (`v:imagedata` em `w:pict` ou `w:object`) é imagem, não forma.
  * - `python-docx`: reproduz o `python-docx`, que só lê os runs filhos diretos do parágrafo e do
- *   hyperlink e trata todo `w:pict` como forma. Existe para o diferencial contra a conversão
- *   antiga (`scripts/dev/diferencial-docx.ts`): uma minuta com alterações controladas perde, nesse
- *   modo, todo o texto inserido.
+ *   hyperlink, as linhas e células filhas diretas, e trata todo `w:pict` como forma. Existe para o
+ *   diferencial contra a conversão antiga (`packages/ppc/scripts/diferencial-docx.ts`): uma minuta
+ *   com alterações controladas perde, nesse modo, todo o texto inserido.
  */
 export type Fidelidade = "documento" | "python-docx";
 
