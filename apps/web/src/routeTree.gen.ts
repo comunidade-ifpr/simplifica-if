@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RevisaoPpcRouteImport } from './routes/revisao-ppc'
 import { Route as ConversaRouteImport } from './routes/conversa'
+import { Route as AtualizacoesRouteImport } from './routes/atualizacoes'
 import { Route as IndexRouteImport } from './routes/index'
 
 const RevisaoPpcRoute = RevisaoPpcRouteImport.update({
@@ -23,6 +24,11 @@ const ConversaRoute = ConversaRouteImport.update({
   path: '/conversa',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AtualizacoesRoute = AtualizacoesRouteImport.update({
+  id: '/atualizacoes',
+  path: '/atualizacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,30 +37,34 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/atualizacoes': typeof AtualizacoesRoute
   '/conversa': typeof ConversaRoute
   '/revisao-ppc': typeof RevisaoPpcRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/atualizacoes': typeof AtualizacoesRoute
   '/conversa': typeof ConversaRoute
   '/revisao-ppc': typeof RevisaoPpcRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/atualizacoes': typeof AtualizacoesRoute
   '/conversa': typeof ConversaRoute
   '/revisao-ppc': typeof RevisaoPpcRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/conversa' | '/revisao-ppc'
+  fullPaths: '/' | '/atualizacoes' | '/conversa' | '/revisao-ppc'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/conversa' | '/revisao-ppc'
-  id: '__root__' | '/' | '/conversa' | '/revisao-ppc'
+  to: '/' | '/atualizacoes' | '/conversa' | '/revisao-ppc'
+  id: '__root__' | '/' | '/atualizacoes' | '/conversa' | '/revisao-ppc'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AtualizacoesRoute: typeof AtualizacoesRoute
   ConversaRoute: typeof ConversaRoute
   RevisaoPpcRoute: typeof RevisaoPpcRoute
 }
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConversaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/atualizacoes': {
+      id: '/atualizacoes'
+      path: '/atualizacoes'
+      fullPath: '/atualizacoes'
+      preLoaderRoute: typeof AtualizacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AtualizacoesRoute: AtualizacoesRoute,
   ConversaRoute: ConversaRoute,
   RevisaoPpcRoute: RevisaoPpcRoute,
 }

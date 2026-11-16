@@ -4,6 +4,7 @@
  */
 import { createRootRoute, type ErrorComponentProps, Link, Outlet } from "@tanstack/react-router";
 import { AvisoConexao } from "../components/AvisoConexao.tsx";
+import { AvisoBaseAtualizada } from "../configuracoes/AvisoBaseAtualizada.tsx";
 import { IndicadorConexao } from "../components/IndicadorConexao.tsx";
 import { SeletorTema } from "../components/SeletorTema.tsx";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx";
@@ -61,6 +62,7 @@ function Moldura() {
       </header>
       <div className="px-4 pt-3 empty:hidden">
         <AvisoConexao />
+        <AvisoBaseAtualizada />
       </div>
       <main className="min-h-0 flex-1">
         <Outlet />

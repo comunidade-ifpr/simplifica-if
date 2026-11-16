@@ -27,6 +27,24 @@ export interface PonteDesktop {
   abrirDocumento?(caminho: string): Promise<void>;
   /** Mostra a cópia comentada na pasta (mesma regra de `abrirDocumento`). */
   mostrarNaPasta?(caminho: string): Promise<void>;
+  /** Reinicia o servidor local; a janela recarrega. A troca da base (M1.10) acontece na abertura dele. */
+  reiniciarServidor?(): Promise<void>;
+  /** O estado da atualização do app (`electron-updater`). */
+  atualizacaoApp?(): Promise<EstadoAtualizacaoApp>;
+  procurarAtualizacaoApp?(): Promise<EstadoAtualizacaoApp>;
+  /** "Reiniciar para atualizar". */
+  instalarAtualizacaoApp?(): Promise<void>;
+}
+
+/** O estado da atualização do app, como o desktop o informa (`apps/desktop/src/ponteDesktop.ts`). */
+export interface EstadoAtualizacaoApp {
+  readonly versao: string;
+  /** `null`: ligada; senão, o motivo. */
+  readonly desligada: string | null;
+  readonly situacao: "parada" | "procurando" | "baixando" | "pronta" | "em-dia" | "erro";
+  readonly nova: string | null;
+  readonly progresso: number | null;
+  readonly erro: string | null;
 }
 
 declare global {
