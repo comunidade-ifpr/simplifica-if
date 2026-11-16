@@ -10,6 +10,7 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { carregarRegistro, raizRepositorio } from "@simplifica-if/kb/normas/registro";
 import { carregarRelacoes } from "@simplifica-if/kb/normas/relacoes";
+import { carregarDatas, carregarTransicoes, dataReferencia } from "@simplifica-if/kb/normas/vigencia";
 import type { BaseRevisaoPrevia } from "../src/revisao-previa.ts";
 import type { BaseVerificacao, CursoCnct } from "../src/verificadores/comum.ts";
 
@@ -76,7 +77,6 @@ export function baseRevisaoDeArquivos(raiz: string = raizRepositorio()): BaseRev
       topicos: { id: string; fichas?: string[] }[];
     }
   ).topicos.map((t) => ({ id: t.id, fichas: t.fichas ?? [] }));
-  const vigencia = NodeFS.readFileSync(NodePath.join(raiz, "base-conhecimento/config/vigencia.yaml"), "utf8");
   const urls: Record<string, string> = {};
   for (const entrada of lerJson(NodePath.join(raiz, "base-conhecimento/manifest.json")) as {
     id: string;
@@ -86,10 +86,12 @@ export function baseRevisaoDeArquivos(raiz: string = raizRepositorio()): BaseRev
   return {
     normas: registro.entradas,
     relacoes,
+    datas: carregarDatas(raiz, registro),
+    transicoes: carregarTransicoes(raiz),
     cncts,
     urls,
     fichas,
     topicos,
-    dataBase: /data_referencia:\s*"?(\d{4}-\d{2}-\d{2})/.exec(vigencia)?.[1] ?? "",
+    dataBase: dataReferencia(raiz),
   };
 }

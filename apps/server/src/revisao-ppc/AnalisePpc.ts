@@ -5,7 +5,7 @@
  *
  * 1. Confere o pedido: caminho absoluto de um `.docx` que existe, até 20 MB (recusado antes de ler).
  * 2. Monta a base uma vez, do `kb.sqlite` que o servidor já serve (`FontesNormativas` e as tabelas
- *    `cnct`, `normas`, `fichas` e `meta`): nada vem de arquivos do repositório, e o app empacotado,
+ *    `cnct`, `normas`, `fichas` e `meta`, inclusive as datas e as transições da vigência): nada vem de arquivos do repositório, e o app empacotado,
  *    sem o checkout, faz a mesma análise.
  * 3. Roda `revisarDocx` num `Worker` (`trabalhador.ts`), com `resourceLimits` (512 MB de heap) e
  *    tempo máximo (30 s, depois `terminate()`): a conversão é síncrona e mantém o XML na memória, e o
@@ -88,6 +88,9 @@ export const montarBase = Effect.gen(function* () {
     // Cópias planas: o `postMessage` não clona protótipos nem readonly profundos.
     normas: fontes.registro.entradas.map((entrada) => ({ ...entrada, aliases: [...entrada.aliases] })),
     relacoes: fontes.relacoes.map((relacao) => structuredClone(relacao)),
+    // A vigência vem do banco, como o resto: sem ela, os verificadores leriam a do checkout.
+    datas: new Map(fontes.datas),
+    transicoes: fontes.transicoes.map((transicao) => structuredClone(transicao)),
     cncts,
     urls,
     fichas,

@@ -232,6 +232,11 @@ function ItemPendencia({ pendencia }: { readonly pendencia: PendenciaRevisao }) 
           ))}
         </p>
       ) : null}
+      {pendencia.tambemEm.length ? (
+        <p className="text-muted-foreground text-sm">
+          Também em: {pendencia.tambemEm.map((t) => t.titulo).join("; ")}.
+        </p>
+      ) : null}
       <p className="text-muted-foreground text-xs">{ROTULO_LOCAL[pendencia.noDocumento]}</p>
     </li>
   );

@@ -18,10 +18,12 @@ import { comentarDocx } from "@simplifica-if/docx/comentarios";
 import type { EntradaRegistro } from "@simplifica-if/kb/normas/registro";
 import { Registro } from "@simplifica-if/kb/normas/registro";
 import type { Relacao } from "@simplifica-if/kb/normas/relacoes";
+import type { DatasNorma, Transicao } from "@simplifica-if/kb/normas/vigencia";
 import { converterPpc } from "./conversao-docx/conversao.ts";
-import { type PreConferencia, preConferir } from "./pre-conferencia.ts";
+import { achadosParaComentarios, type PreConferencia, preConferir } from "./pre-conferencia.ts";
 import { chave, type CursoCnct, type Fonte } from "./verificadores/comum.ts";
 import { comoNoDocumento } from "./verificadores/curriculo.ts";
+import { vigenciaDeDados } from "./verificadores/vigencia.ts";
 
 /** A base da revisão prévia, só com dados planos (atravessa o `postMessage` do Worker). */
 export type BaseRevisaoPrevia = {
@@ -35,7 +37,11 @@ export type BaseRevisaoPrevia = {
   fichas: Readonly<Record<string, string>>;
   /** Tópicos das fichas (`topicos-fichas.json`), na ordem da taxonomia. */
   topicos: readonly { id: string; fichas: readonly string[] }[];
-  /** `data_referencia` da base (AAAA-MM-DD). */
+  /** Datas dos atos (publicação, início da vigência), para a vigência na data da base. */
+  datas: ReadonlyMap<string, DatasNorma>;
+  /** Regras de transição (`transicoes.yaml`). */
+  transicoes: readonly Transicao[];
+  /** `data_referencia` da base (AAAA-MM-DD): a data em que a vigência é calculada. */
   dataBase: string;
 };
 
@@ -65,6 +71,8 @@ export type PendenciaRevisao = {
   trecho: string | null;
   secao: string | null;
   fontes: FonteLegivel[];
+  /** Outras fichas que apontam o mesmo trecho ou a mesma norma ausente (`ItemComentario.fichas`). */
+  tambemEm: { ficha: string; titulo: string }[];
   noDocumento: LocalNoDocumento;
 };
 
@@ -249,13 +257,34 @@ function temaDaFicha(ficha: string, base: BaseRevisaoPrevia): number {
 
 type ItemInterno = Omit<PendenciaRevisao, "noDocumento"> & { trechos: string[] };
 
+/**
+ * A mensagem do verificador para quem lê no Word: os dispositivos citados como ID (`art70`,
+ * `art29-par2`) por extenso, e a transição e a orientação sobre a data do PPC em linhas próprias.
+ */
+export const legivel = (mensagem: string) =>
+  mensagem
+    .replace(/, ((?:art|anexo)\d[0-9a-z-]*)\)/gi, (_, dispositivo: string) => `, ${rotuloDispositivo(dispositivo)})`)
+    .replace(/ (Transição: )/, "\n$1")
+    .replace(/ (PPC elaborado antes da vigência)/, "\n$1");
+
+/** O sufixo que `achadosParaComentarios` põe na mensagem; aqui as outras fichas vão em `tambemEm`. */
+const SUFIXO_TAMBEM = / \(Também em [^)]*\.\)$/;
+
 function itensDaPreConferencia(resultado: PreConferencia, registro: Registro, base: BaseRevisaoPrevia): ItemInterno[] {
   const fontes = (links: readonly Fonte[]) =>
     links
       .flatMap((link) => fonteLegivel(link, registro, base) ?? [])
-      .filter((f, i, todas) => {
-        return todas.findIndex((g) => g.rotulo === f.rotulo) === i;
-      });
+      .filter((f, i, todas) => todas.findIndex((g) => g.rotulo === f.rotulo) === i);
+  const dadosDaFicha = (ficha: string) => {
+    const ordemTema = temaDaFicha(ficha, base);
+    return {
+      ficha,
+      tituloFicha: base.fichas[ficha] ?? ficha,
+      tema: TEMAS[ordemTema]!.titulo,
+      ordemTema,
+      oQueFazer: O_QUE_FAZER[ficha] ?? "Confira o critério no PPC.",
+    };
+  };
   const itens: ItemInterno[] = resultado.triagem.map((achado) => ({
     ficha: "TRIAGEM",
     tituloFicha: achado.regra === "texto-dirigido-a-ia" ? "Texto dirigido a IA" : "Seções do modelo",
@@ -268,63 +297,79 @@ function itensDaPreConferencia(resultado: PreConferencia, registro: Registro, ba
     secao: achado.trechos[0]?.secao ?? null,
     trechos: achado.trechos.map((t) => comoNoDocumento(t.texto)).filter(Boolean),
     fontes: [],
+    tambemEm: [],
   }));
-  for (const ficha of resultado.fichas) {
-    const ordemTema = temaDaFicha(ficha.ficha, base);
-    const comum = {
-      ficha: ficha.ficha,
-      tituloFicha: base.fichas[ficha.ficha] ?? ficha.ficha,
-      tema: TEMAS[ordemTema]!.titulo,
-      ordemTema,
-      oQueFazer: O_QUE_FAZER[ficha.ficha] ?? "Confira o critério no PPC.",
-    };
-    for (const apontamento of ficha.apontamentos) {
-      const trechos = apontamento.trechos.map((t) => comoNoDocumento(t.texto)).filter(Boolean);
-      itens.push({
-        ...comum,
-        estado: apontamento.estado,
-        mensagem: apontamento.mensagem,
-        trecho: trechos[0] ?? null,
-        secao: apontamento.trechos[0]?.secao ?? null,
-        trechos,
-        fontes: fontes(apontamento.fontes),
-      });
-    }
-    // Ficha sem apontamento mas sem "atende" (o curso não foi identificado no CNCT): um item só.
+  // A seção de cada trecho (o item agrupado traz só o texto como no documento).
+  const secoes = new Map<string, string | null>();
+  for (const ficha of resultado.fichas)
+    for (const apontamento of ficha.apontamentos)
+      for (const t of apontamento.trechos) secoes.set(comoNoDocumento(t.texto), t.secao);
+  // Um item por trecho (ou por norma ausente), com a ficha que define a gravidade e as demais.
+  for (const item of achadosParaComentarios(resultado)) {
+    if (item.ficha === "TRIAGEM") continue;
+    itens.push({
+      ...dadosDaFicha(item.ficha),
+      estado: item.estado,
+      mensagem: legivel(item.mensagem.replace(SUFIXO_TAMBEM, "")),
+      trecho: item.trechos[0] ?? null,
+      secao: item.trechos[0] ? (secoes.get(item.trechos[0]) ?? null) : null,
+      trechos: item.trechos,
+      fontes: fontes(item.fontes),
+      tambemEm: item.fichas.slice(1).map((ficha) => ({ ficha, titulo: base.fichas[ficha] ?? ficha })),
+    });
+  }
+  // Ficha sem apontamento mas sem "atende" (o curso não foi identificado no CNCT): um item só.
+  for (const ficha of resultado.fichas)
     if (
       !ficha.apontamentos.length &&
       (ficha.estado === "a_conferir" || ficha.estado === "nao_atende") &&
       ficha.mensagem
     )
       itens.push({
-        ...comum,
+        ...dadosDaFicha(ficha.ficha),
         estado: ficha.estado,
-        mensagem: ficha.mensagem,
+        mensagem: legivel(ficha.mensagem),
         trecho: null,
         secao: null,
         trechos: [],
         fontes: fontes(ficha.fontes),
+        tambemEm: [],
       });
-  }
   return itens.sort((a, b) => a.ordemTema - b.ordemTema);
 }
 
-/** Texto do comentário de uma pendência, para quem lê no Word. */
-export function textoDoComentario(
-  item: Pick<PendenciaRevisao, "estado" | "mensagem" | "oQueFazer" | "fontes" | "ficha">,
-) {
+type ItemDoComentario = Pick<PendenciaRevisao, "estado" | "mensagem" | "oQueFazer" | "fontes" | "ficha" | "tambemEm">;
+
+const linhaFontes = (fontes: readonly FonteLegivel[]) =>
+  `Fonte: ${fontes.map((f) => (f.url ? `${f.rotulo} (${f.url})` : f.rotulo)).join("; ")}.`;
+
+const linhaTambem = (item: ItemDoComentario) =>
+  `Também apontado em: ${item.tambemEm.map((t) => `${t.titulo} (${t.ficha})`).join("; ")}.`;
+
+/** As linhas de uma pendência: o problema, o que fazer, a fonte e as outras fichas. */
+function linhasDaPendencia(item: ItemDoComentario): string[] {
   const linhas = [
     item.estado === "nao_atende" ? `Pendência: ${item.mensagem}` : `Confira: ${item.mensagem}`,
     item.estado === "nao_atende" ? `O que fazer: ${item.oQueFazer}` : `Se for o caso: ${item.oQueFazer}`,
   ];
-  if (item.fontes.length)
-    linhas.push(`Fonte: ${item.fontes.map((f) => (f.url ? `${f.rotulo} (${f.url})` : f.rotulo)).join("; ")}.`);
+  if (item.fontes.length) linhas.push(linhaFontes(item.fontes));
+  if (item.tambemEm.length) linhas.push(linhaTambem(item));
+  return linhas;
+}
+
+/** Texto do comentário de uma pendência ancorada num trecho, para quem lê no Word. */
+export function textoDoComentario(item: ItemDoComentario) {
   const criterio = item.ficha === "TRIAGEM" ? "Triagem" : `Critério ${item.ficha}`;
-  return `${linhas.join("\n")}\n\n${criterio} da revisão prévia do Simplifica IF.`;
+  return `${linhasDaPendencia(item).join("\n")}\n\n${criterio} da revisão prévia do Simplifica IF.`;
 }
 
 const dataBr = (iso: string) => iso.slice(0, 10).split("-").reverse().join("/");
 
+/**
+ * O comentário do título: o aviso de revisão prévia, o que foi conferido, as ausências (o que falta
+ * no documento não tem trecho onde comentar: vai aqui, numa lista, em vez de vários comentários
+ * empilhados no título) e os itens não localizados no texto.
+ */
 function textoDoAviso(entrada: {
   agora: Date;
   dataBase: string;
@@ -342,15 +387,20 @@ function textoDoAviso(entrada: {
   const curso = entrada.curso.cnct
     ? `Curso considerado: ${entrada.curso.cnct.denominacao} (CNCT)${entrada.curso.forma ? `, forma ${entrada.curso.forma}` : ""}.`
     : "O curso não foi identificado no CNCT: os critérios que dependem dele ficaram para conferir.";
-  const fora = entrada.pendencias.filter((p) => p.noDocumento === "so-na-lista");
   const partes = [
     `Revisão prévia do Simplifica IF, de ${dataBr(entrada.agora.toISOString())}, com a base de normas de ${dataBr(entrada.dataBase)}. Não é parecer da PROENS e não substitui a análise oficial.`,
     `${total} ${curso}`,
     `Resultado: ${naoAtende} pendência(s) e ${aConferir} ponto(s) para conferir.`,
   ];
+  const ausentes = entrada.pendencias.filter((p) => p.noDocumento === "no-inicio");
+  if (ausentes.length)
+    partes.push(
+      `O que falta no documento (sem trecho onde comentar):\n${ausentes.map((p) => `- ${linhasDaPendencia(p).join(" ")}`).join("\n")}`,
+    );
+  const fora = entrada.pendencias.filter((p) => p.noDocumento === "so-na-lista");
   if (fora.length)
     partes.push(
-      `Não localizados no texto (sem marca no documento):\n${fora.map((p) => `- ${p.estado === "nao_atende" ? "Pendência" : "Confira"}: ${p.mensagem}`).join("\n")}`,
+      `Não localizados no texto (sem marca no documento):\n${fora.map((p) => `- ${linhasDaPendencia(p).join(" ")}`).join("\n")}`,
     );
   return partes.join("\n\n");
 }
@@ -377,23 +427,26 @@ export function revisarDocx(
     forma: forma ?? "",
     registro,
     relacoes: base.relacoes,
+    // Sempre da base recebida: sem ela, os verificadores leriam a vigência do checkout, que o app não tem.
+    vigencia: vigenciaDeDados(base, base.dataBase),
   });
   const itens = itensDaPreConferencia(resultado, registro, base);
   const conferidos = resultado.fichas.length;
   const totalCriterios = Math.max(Object.keys(base.fichas).length, conferidos);
 
-  // Duas passadas: as pendências, e depois o aviso no título, cujo texto depende de onde elas ficaram.
+  // Duas passadas: as pendências com trecho, e depois o aviso no título, com as ausências e o que
+  // não foi localizado.
   const comentar = { data: opcoes.agora.toISOString(), autor: AUTOR_COMENTARIOS };
-  const anotacoes = itens.map((item) => ({
-    trechos: item.trechos,
-    texto: textoDoComentario(item),
-    noInicioSeAusente: item.trechos.length === 0,
-  }));
-  const comentado = comentarDocx(bytes, anotacoes, comentar);
-  const ancoradas = new Map(comentado.ancoradas.map((a) => [a.indice, a.noInicio]));
-  const pendencias: PendenciaRevisao[] = itens.map(({ trechos: _, ...item }, indice) => ({
+  const comTrecho = itens.flatMap((item, indice) => (item.trechos.length ? [indice] : []));
+  const comentado = comentarDocx(
+    bytes,
+    comTrecho.map((indice) => ({ trechos: itens[indice]!.trechos, texto: textoDoComentario(itens[indice]!) })),
+    comentar,
+  );
+  const ancoradas = new Set(comentado.ancoradas.map((a) => comTrecho[a.indice]!));
+  const pendencias: PendenciaRevisao[] = itens.map(({ trechos, ...item }, indice) => ({
     ...item,
-    noDocumento: !ancoradas.has(indice) ? "so-na-lista" : ancoradas.get(indice) ? "no-inicio" : "no-trecho",
+    noDocumento: !trechos.length ? "no-inicio" : ancoradas.has(indice) ? "no-trecho" : "so-na-lista",
   }));
   const aviso = textoDoAviso({
     agora: opcoes.agora,

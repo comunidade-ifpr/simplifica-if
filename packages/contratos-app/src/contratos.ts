@@ -378,6 +378,9 @@ export const PendenciaRevisao = Schema.Struct({
   trecho: Schema.NullOr(Schema.String),
   secao: Schema.NullOr(Schema.String),
   fontes: Schema.Array(FonteRevisao),
+  /** Outras fichas que apontam o mesmo trecho ou a mesma norma ausente ("Também em …"). */
+  tambemEm: Schema.Array(Schema.Struct({ ficha: Schema.String, titulo: Schema.String })),
+  /** `no-inicio`: algo que falta, listado no comentário do título junto ao aviso. */
   noDocumento: LocalNoDocumento,
 });
 export type PendenciaRevisao = typeof PendenciaRevisao.Type;

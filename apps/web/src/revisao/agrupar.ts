@@ -47,7 +47,7 @@ export const ROTULO_ESTADO = {
 
 export const ROTULO_LOCAL = {
   "no-trecho": "Comentado no trecho, na cópia do documento.",
-  "no-inicio": "Comentado no título, na cópia do documento (o problema é algo que falta).",
+  "no-inicio": "Listado no comentário do título, na cópia do documento (o problema é algo que falta).",
   "so-na-lista": "Só nesta lista: o trecho não foi localizado no arquivo, então não há comentário nele.",
 } as const;
 

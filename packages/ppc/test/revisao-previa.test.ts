@@ -53,16 +53,21 @@ describe("revisarDocx", () => {
   test("pendências na ordem dos temas, ancoradas no trecho (inclusive em tabela) ou no início", () => {
     const ordem = revisao.pendencias.map((p) => p.ordemTema);
     expect(ordem).toEqual([...ordem].sort((a, b) => a - b));
-    const revogada = revisao.pendencias.find((p) => p.ficha === "CT-SUP-12")!;
-    expect(revogada).toMatchObject({
-      estado: "nao_atende",
-      noDocumento: "no-trecho",
-      trecho: "Resolução CNE/CP nº 1/2021",
-    });
+    // Um item por trecho: a citação da revogada junta CT-IDENT-08 e CT-SUP-12. A revogação depende da
+    // vigência da Res. CNE/CP nº 2/2026, ainda a confirmar: "a conferir", com a transição.
+    const revogada = revisao.pendencias.find((p) => p.trecho === "Resolução CNE/CP nº 1/2021")!;
+    expect(revogada).toMatchObject({ estado: "a_conferir", noDocumento: "no-trecho" });
+    expect([revogada.ficha, ...revogada.tambemEm.map((t) => t.ficha)].sort()).toEqual(["CT-IDENT-08", "CT-SUP-12"]);
+    expect(revisao.pendencias.filter((p) => p.trecho === "Resolução CNE/CP nº 1/2021")).toHaveLength(1);
+    expect(revogada.mensagem).toMatch(/\nTransição: .*\(Resolução CNE\/CP nº 2\/2026, art\. 70\)/);
+    expect(revogada.mensagem).not.toMatch(/\bart\d/);
+    // Norma "a confirmar": a ausência da DCN vigente não é mais "precisa de ajuste".
+    for (const ficha of ["CT-IDENT-08", "CT-SUP-09"])
+      expect(revisao.pendencias.filter((p) => p.ficha === ficha && p.estado === "nao_atende")).toEqual([]);
     expect(revogada.tema).toBe("Fundamentos legais e normativos");
     const aee = revisao.pendencias.find((p) => p.ficha === "CT-CURR-22")!;
     expect(aee).toMatchObject({ noDocumento: "no-trecho", trecho: "Atendimento Educacional Especializado" });
-    // Ausência (sem trecho): no início do documento.
+    // Ausência (sem trecho): no comentário do título.
     expect(revisao.pendencias.find((p) => p.mensagem.includes("não menciona o Catálogo"))!.noDocumento).toBe(
       "no-inicio",
     );
@@ -81,9 +86,15 @@ describe("revisarDocx", () => {
     const aConferir = revisao.pendencias.find((p) => p.estado === "a_conferir")!;
     expect(textoDoComentario(aConferir)).toMatch(/^Confira: /);
     expect(textoDoComentario(aConferir)).not.toMatch(/Pendência/);
-    // O texto marcado de cada comentário ancorado no trecho é o trecho, e o documento não muda.
+    expect(comentarios).toContain("Também apontado em: Referências com vigência normativa atualizada (CT-SUP-12).");
+    expect(comentarios).not.toMatch(/\bart\d|nao_atende|a_conferir/);
+    // Um comentário por pendência com trecho e um no título; as ausências vão juntas no do título.
     const ids = [...comentarios.matchAll(/<w:comment w:id="(\d+)"/g)].map((m) => m[1]!);
-    expect(ids).toHaveLength(revisao.pendencias.length + 1);
+    expect(ids).toHaveLength(revisao.pendencias.filter((p) => p.noDocumento === "no-trecho").length + 1);
+    const ausentes = revisao.pendencias.filter((p) => p.noDocumento === "no-inicio");
+    expect(ausentes.length).toBeGreaterThan(3);
+    expect(revisao.aviso).toContain("O que falta no documento (sem trecho onde comentar):");
+    for (const ausente of ausentes) expect(revisao.aviso).toContain(ausente.mensagem);
     expect(marcado(documento, ids.at(-1)!)).toBe("PROJETO PEDAGÓGICO DO CURSO TÉCNICO EM AGROPECUÁRIA");
     const ancoradas = revisao.pendencias.filter((p) => p.noDocumento === "no-trecho");
     for (const pendencia of ancoradas)
@@ -94,7 +105,9 @@ describe("revisarDocx", () => {
   test("controle de alterações no trecho: ancora por fora da inserção e não muda o texto", () => {
     const original = ppcSintetico({ controleDeAlteracoes: true });
     const comAlteracao = revisarDocx(original, "ppc.docx", base, { agora: AGORA });
-    expect(comAlteracao.pendencias.find((p) => p.ficha === "CT-SUP-12")!.noDocumento).toBe("no-trecho");
+    expect(comAlteracao.pendencias.find((p) => p.trecho === "Resolução CNE/CP nº 1/2021")!.noDocumento).toBe(
+      "no-trecho",
+    );
     const { documento } = partes(comAlteracao.docx);
     for (const alteracao of documento.match(/<w:(ins|del) [^>]*>.*?<\/w:\1>/g) ?? [])
       expect(alteracao).not.toMatch(/comment/);
@@ -113,7 +126,9 @@ describe("revisarDocx", () => {
     expect(triagem).toMatchObject({ estado: "nao_atende", noDocumento: "so-na-lista", ordemTema: 0 });
     expect(resultado.aviso).toContain("Não localizados no texto");
     expect(resultado.aviso).toContain("Texto dirigido a um sistema de IA");
-    expect(partes(resultado.docx).comentarios.match(/<w:comment /g)).toHaveLength(resultado.pendencias.length);
+    expect(partes(resultado.docx).comentarios.match(/<w:comment /g)).toHaveLength(
+      resultado.pendencias.filter((p) => p.noDocumento === "no-trecho").length + 1,
+    );
   });
 
   test("curso escolhido pela pessoa e curso não identificado", () => {

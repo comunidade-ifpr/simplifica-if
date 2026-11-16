@@ -18,6 +18,7 @@ const pendencia = (
   trecho: null,
   secao: null,
   fontes: [],
+  tambemEm: [],
   noDocumento: "no-inicio",
 });
 
