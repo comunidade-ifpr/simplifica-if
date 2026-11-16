@@ -47,10 +47,6 @@ export function RevisaoComIa({
   const concluiu = useRef(false);
 
   useEffect(() => () => acompanhamento.current?.cancelar(), []);
-  // Reencontrada: o acompanhamento traz o estado completo (a lista vem sem os blocos).
-  useEffect(() => {
-    if (retomada !== undefined) acompanhar(retomada.id);
-  }, []);
 
   const acompanhar = (id: string) => {
     acompanhamento.current?.cancelar();
@@ -66,6 +62,12 @@ export function RevisaoComIa({
     );
     acompanhamento.current.fim.catch((motivo: unknown) => setErro(explicarErro(motivo)));
   };
+
+  // Reencontrada depois de recarregar: o acompanhamento traz o estado completo (a lista vem sem os blocos).
+  useEffect(() => {
+    if (retomada !== undefined) acompanhar(retomada.id);
+    // oxlint-disable-next-line react/exhaustive-effect-dependencies -- só na montagem: o `key` do componente é a revisão
+  }, []);
 
   const chamar = async (acao: () => Promise<EstadoRevisaoIa>, depois?: (e: EstadoRevisaoIa) => void) => {
     setOcupada(true);
