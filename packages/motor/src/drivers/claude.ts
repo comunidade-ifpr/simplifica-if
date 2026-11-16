@@ -327,9 +327,13 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
           : { env: { ...limparAmbiente(opcoes.ambiente), MCP_CONNECTION_NONBLOCKING: "0" } }),
         // Julgamento: um turno por sessão, então gravar o pedido no cache (1,25× o preço da entrada) não
         // tem retorno; no teste real, 343 mil tokens foram gravados no cache sem nenhuma leitura útil.
+        // A conversa por pendência (`manterCache`) começa cada ação pelo mesmo prefixo: aí o cache rende.
         ...(config.semFerramentas === true
           ? {
-              env: { ...ambienteSemTelemetria(PROVIDER, limparAmbiente(opcoes.ambiente)), DISABLE_PROMPT_CACHING: "1" },
+              env: {
+                ...ambienteSemTelemetria(PROVIDER, limparAmbiente(opcoes.ambiente)),
+                ...(config.manterCache === true ? {} : { DISABLE_PROMPT_CACHING: "1" }),
+              },
             }
           : {}),
         // Julgamento: a sessão não é retomada, e o PPC não fica na transcrição do `~/.claude/projects/`.

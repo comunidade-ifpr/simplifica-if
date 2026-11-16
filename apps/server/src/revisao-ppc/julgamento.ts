@@ -167,6 +167,8 @@ export interface EntradaTurno {
   readonly tempoTurno: Duration.Duration;
   /** O número da tentativa (para o registro do uso). */
   readonly numero: number;
+  /** Mantém o cache de prompt (a conversa por pendência; o julgamento do lote não). */
+  readonly manterCache?: boolean;
   /** Grava o uso assim que o turno acaba, em qualquer saída (sucesso, pausa, interrupção). */
   readonly registrarTentativa?: ((tentativa: TentativaIa) => Effect.Effect<void>) | undefined;
   readonly registrarTexto?: ((numero: number, texto: string) => Effect.Effect<void>) | undefined;
@@ -214,6 +216,7 @@ export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (entra
           servidoresMcp: [],
           instrucoes: entrada.instrucoes,
           semFerramentas: true,
+          ...(entrada.manterCache === true ? { manterCache: true } : {}),
           ...(entrada.modelo ? { modelo: entrada.modelo } : {}),
         })
         .pipe(Effect.mapError((erro) => pausaDoErro(entrada.provider, erro.detalhe))),

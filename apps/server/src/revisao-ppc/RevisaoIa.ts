@@ -41,7 +41,9 @@ import { teveTextoParaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import { MODELO_PADRAO } from "@simplifica-if/ppc/revisao-ia/tipos";
 import { NOME_DA_FORMA, type ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 import { type RegistroRevisaoIa, Revisoes } from "../persistencia/Revisoes.ts";
-import { AnalisePpc, resultadoParaInterface } from "./AnalisePpc.ts";
+import type { Listas } from "../persistencia/Listas.ts";
+import { AnalisePpc } from "./AnalisePpc.ts";
+import { criarLista } from "./ListaViva.ts";
 import { julgarBloco, type PausaRevisao, type ResultadoBloco } from "./julgamento.ts";
 import { type PlanoRevisaoIa, preparar } from "./preparo.ts";
 
@@ -95,6 +97,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   const analise = yield* AnalisePpc;
   const contextoKb = yield* Effect.context<FontesNormativas | SqlClient.SqlClient>();
   const contextoMotor = yield* Effect.context<Motor.Motor>();
+  const contextoListas = yield* Effect.context<Listas>();
   const execucoes = yield* FiberMap.make<string>();
   const expirar = DateTime.now.pipe(
     Effect.map((agora) => DateTime.formatIso(DateTime.subtract(agora, { days: DIAS_PREPARADA }))),
@@ -294,7 +297,15 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
       ...(registro.forma === null ? {} : { forma: registro.forma }),
       ia: { resultados: resultadosIa, fora: plano.fora },
     });
-    yield* revisoes.alterar(id, { situacao: "concluida", resultado: resultadoParaInterface(registro.arquivo, final) });
+    // A lista viva (etapa 5b) desta revisão: a situação marcada na pré-conferência do mesmo arquivo passa a ela.
+    const resultado = yield* criarLista({
+      arquivo: registro.arquivo,
+      analisado: final,
+      revisao: id,
+      provider: registro.provider,
+      modelo: registro.modelo,
+    }).pipe(Effect.provideContext(contextoListas));
+    yield* revisoes.alterar(id, { situacao: "concluida", resultado });
   });
 
   const executarComPausa = (id: string) =>

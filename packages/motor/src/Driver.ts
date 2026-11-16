@@ -107,6 +107,13 @@ export interface ConfigSessao {
    * tokens por sessão).
    */
   readonly semFerramentas?: boolean;
+  /**
+   * Numa sessão `semFerramentas`, mantém o cache de prompt do provider. O padrão (desligado no Claude,
+   * `DISABLE_PROMPT_CACHING`) serve ao julgamento do lote, um turno sem leitura posterior. A conversa por
+   * pendência (M1.11, etapa 5b) liga: as ações sobre a mesma pendência começam pelo mesmo prefixo e o
+   * segundo turno o lê do cache.
+   */
+  readonly manterCache?: boolean;
 }
 
 /** O que o driver detecta: instalado, versão e login. Nunca traz e-mail nem credencial. */

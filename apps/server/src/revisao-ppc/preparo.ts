@@ -257,6 +257,9 @@ export type ContextoDaFicha = {
   ficha: FichaIa;
   /** O PPC entregue à ficha: o comum (quadro, matriz, ementário, quando a ficha pede) e o recorte dela. */
   recorte: string;
+  /** As duas partes, para o `pedidoS` da reanálise. */
+  comum: string;
+  proprio: { achou: boolean; texto: string };
   contexto: ContextoNormativo;
   fontes: string[];
 };
@@ -301,5 +304,12 @@ export const contextoDaFicha = Effect.fn("RevisaoIa.contextoDaFicha")(function* 
   const comum = comumDoBloco([ficha], estrutura);
   const r = recorteDaFicha(ficha, secoesTexto(pacote, false), comum);
   const recorte = [comum.texto, r.texto].filter(Boolean).join("\n\n");
-  return { ficha, recorte, contexto, fontes: [...fontesPermitidas(contexto)] } satisfies ContextoDaFicha;
+  return {
+    ficha,
+    recorte,
+    comum: comum.texto,
+    proprio: r,
+    contexto,
+    fontes: [...fontesPermitidas(contexto)],
+  } satisfies ContextoDaFicha;
 }, Effect.scoped);
