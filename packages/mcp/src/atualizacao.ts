@@ -38,7 +38,11 @@ const avisar = (texto: string) => Console.error(`simplifica-mcp: ${texto}`);
 
 /** Uma conferência: baixa o que houver de novo (só a base) e deixa pendente. */
 const conferir = Effect.fn("simplifica-mcp.conferirAtualizacao")(
-  function* (opcoes: OpcoesAtualizacaoMcp, abertura: Abertura) {
+  function* (
+    opcoes: OpcoesAtualizacaoMcp,
+    abertura: Abertura,
+    quando = "; entra na próxima vez que o servidor iniciar",
+  ) {
     if (opcoes.feed === undefined || opcoes.chave === undefined) return;
     const feed = opcoes.feed;
     const textoChave = opcoes.chave;
@@ -62,7 +66,7 @@ const conferir = Effect.fn("simplifica-mcp.conferirAtualizacao")(
       catch: (erro) => (erro instanceof Error ? erro.message : String(erro)),
     });
     if (resultado.tipo === "baixada") {
-      yield* avisar(`base ${resultado.versao} baixada (${resultado.via}); entra na próxima vez que o servidor iniciar`);
+      yield* avisar(`base ${resultado.versao} baixada (${resultado.via})${quando}`);
     } else if (resultado.tipo === "app-desatualizado") {
       yield* avisar(`a base ${resultado.versao} pede o simplifica-mcp ${resultado.appMinimo} ou mais novo`);
     }
@@ -82,7 +86,7 @@ export const prepararAtualizacao = Effect.fn("simplifica-mcp.prepararAtualizacao
   for (const evento of abertura.eventos) yield* avisar(`atualização: ${evento}`);
   if (abertura.info === null && opcoes.feed !== undefined && opcoes.chave !== undefined) {
     yield* avisar("nenhuma base instalada; baixando a do canal antes de abrir…");
-    yield* conferir(opcoes, abertura);
+    yield* conferir(opcoes, abertura, "");
     abertura = prepararAbertura({ pasta: opcoes.pasta, bancoEmpacotado: empacotada });
   }
   const umaVez = conferir(opcoes, abertura);
