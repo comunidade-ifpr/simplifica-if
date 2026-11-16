@@ -48,7 +48,12 @@ if (values.base) {
   const inicio = performance.now();
   const resultados = ppcs.map((ppc) => ({
     ppc,
-    resultado: preConferir(lerPpc(ppc), { ...comum, cnct: ppc.cnct, forma: ppc.forma }),
+    resultado: preConferir(lerPpc(ppc), {
+      ...comum,
+      cnct: ppc.cnct,
+      forma: ppc.forma,
+      dataPpc: ppc.ano === null ? null : String(ppc.ano),
+    }),
   }));
   const ms = performance.now() - inicio;
   if (values.amostra && values.evidencias) {

@@ -14,7 +14,14 @@ import { carregarDatas, carregarTransicoes, dataReferencia } from "@simplifica-i
 import type { BaseRevisaoPrevia } from "../src/revisao-previa.ts";
 import type { BaseVerificacao, CursoCnct } from "../src/verificadores/comum.ts";
 
-export type PpcDaBase = { id: string; caminho: string; forma: string; cnct: CursoCnct | null };
+export type PpcDaBase = {
+  id: string;
+  caminho: string;
+  forma: string;
+  cnct: CursoCnct | null;
+  /** `ppc.ano_documento` do curso: a data do PPC para a regra da revogação recente (`dataPpc`). */
+  ano: number | null;
+};
 
 const lerJson = (arquivo: string): unknown => JSON.parse(NodeFS.readFileSync(arquivo, "utf8"));
 
@@ -32,7 +39,7 @@ export function ppcsTecnicos(raiz: string = raizRepositorio()): PpcDaBase[] {
         nivel?: string;
         forma_oferta?: string;
         cnct_id?: string | null;
-        ppc?: { markdown_path?: string };
+        ppc?: { markdown_path?: string; ano_documento?: number | null };
       };
       const markdown = curso.ppc?.markdown_path;
       if (curso.nivel !== "médio" || !markdown) continue;
@@ -43,6 +50,7 @@ export function ppcsTecnicos(raiz: string = raizRepositorio()): PpcDaBase[] {
         caminho,
         forma: curso.forma_oferta ?? "",
         cnct: curso.cnct_id ? cnct(curso.cnct_id.replace(/^cnct:/, "")) : null,
+        ano: curso.ppc?.ano_documento ?? null,
       });
     }
   // Um PPC pode servir a mais de um curso: fica o primeiro.

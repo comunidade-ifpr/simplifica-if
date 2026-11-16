@@ -24,7 +24,15 @@ describe("pré-conferência nos PPCs técnicos da base: invariantes", () => {
   const comum = { ...baseComum(raiz), vigencia: carregarVigencia(raiz) };
   const resultados = ppcs.map((ppc) => {
     const markdown = lerPpc(ppc);
-    return { markdown, resultado: preConferir(markdown, { ...comum, cnct: ppc.cnct, forma: ppc.forma }) };
+    return {
+      markdown,
+      resultado: preConferir(markdown, {
+        ...comum,
+        cnct: ppc.cnct,
+        forma: ppc.forma,
+        dataPpc: ppc.ano === null ? null : String(ppc.ano),
+      }),
+    };
   });
   const apontamentos = resultados.flatMap(({ markdown, resultado }) =>
     resultado.fichas.flatMap((f) => f.apontamentos.map((a) => ({ markdown, ficha: f.ficha, ...a }))),

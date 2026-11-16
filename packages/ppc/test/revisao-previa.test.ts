@@ -60,7 +60,9 @@ describe("revisarDocx", () => {
     expect([revogada.ficha, ...revogada.tambemEm.map((t) => t.ficha)].sort()).toEqual(["CT-IDENT-08", "CT-SUP-12"]);
     expect(revisao.pendencias.filter((p) => p.trecho === "Resolução CNE/CP nº 1/2021")).toHaveLength(1);
     expect(revogada.mensagem).toMatch(/\nRegras de transição: .*\(Resolução CNE\/CP nº 2\/2026, art\. 70\)/);
-    expect(revogada.mensagem).toMatch(/\nSe o PPC foi elaborado antes de a nova norma passar a valer, pode manter a citação/);
+    expect(revogada.mensagem).toMatch(
+      /\nSe o PPC foi elaborado antes de a nova norma passar a valer, pode manter a citação/,
+    );
     expect(revogada.mensagem).not.toMatch(/a confirmar na base|revogada|marco/);
     // A fonte da mesma norma vai junta.
     expect(revogada.fontes.map((f) => f.rotulo)).toContain("Resolução CNE/CP nº 2/2026, arts. 70 e 71");
@@ -93,7 +95,9 @@ describe("revisarDocx", () => {
     expect(comentarios).toContain("Também apontado em: Referências com vigência normativa atualizada.");
     // Os códigos das fichas só na referência discreta do fim; nenhum jargão da base.
     expect(comentarios).toContain("Revisão prévia do Simplifica IF (ref. CT-IDENT-08, CT-SUP-12).");
-    expect(comentarios.replace(/\(ref\. [^)]*\)/g, "")).not.toMatch(/CT-[A-Z]+-\d|\bart\d|nao_atende|a_conferir|a confirmar na base|do marco|Registrado aqui/);
+    expect(comentarios.replace(/\(ref\. [^)]*\)/g, "")).not.toMatch(
+      /CT-[A-Z]+-\d|\bart\d|nao_atende|a_conferir|a confirmar na base|do marco|Registrado aqui/,
+    );
     expect(comentarios).toMatch(/Resultado: \d+ pendências? e \d+ pontos? para conferir\./);
     expect(comentarios).toContain("forma de oferta: Subsequente");
     // Um comentário por pendência com trecho e um no título; as ausências vão juntas no do título.

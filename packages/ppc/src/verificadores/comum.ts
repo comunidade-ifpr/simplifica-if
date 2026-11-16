@@ -17,7 +17,13 @@ import type { Relacao } from "@simplifica-if/kb/normas/relacoes";
 import { type Citacao, extrairCitacoes } from "@simplifica-if/kb/normas/resolver";
 import { removerAcentos, type SecaoPpc, segmentarPpc } from "@simplifica-if/kb/ppcs/secoes";
 import { rotuloDispositivo } from "./dispositivos.ts";
-import { type ConsultaVigencia, fichaResponsavel, sucessorasEmCadeia, vigenciaPadrao } from "./vigencia.ts";
+import {
+  type ConsultaVigencia,
+  fichaResponsavel,
+  revogacaoRecente,
+  sucessorasEmCadeia,
+  vigenciaPadrao,
+} from "./vigencia.ts";
 
 export { sucessorasEmCadeia } from "./vigencia.ts";
 
@@ -45,6 +51,12 @@ export type BaseVerificacao = {
    * sem ela, vale a da base do checkout, carregada na primeira chamada (`vigenciaPadrao`).
    */
   vigencia?: ConsultaVigencia;
+  /**
+   * Data do PPC (AAAA ou AAAA-MM-DD), quando conhecida (o `ano_documento` da base). Decide se uma
+   * revogação sem regra de transição é posterior ao PPC (`revogacaoRecente`); sem ela, conta a idade
+   * da revogação na data de referência.
+   */
+  dataPpc?: string | null;
 };
 
 export const vigenciaDe = (base: BaseVerificacao): ConsultaVigencia => base.vigencia ?? vigenciaPadrao();
@@ -277,6 +289,14 @@ export function apontamentoRevogada(
     return conferir(
       `Cita ${norma.titulo}, revogada (sem norma sucessora registrada na base). Confira se a citação ainda é pertinente.`,
     );
+  // Revogação recente, sem regra de transição: o PPC pode ser anterior a ela. Não é fato, é a conferir.
+  const consulta = vigencia;
+  if (revogacaoRecente(situacao.revogadaEm, base.dataPpc, consulta.data)) {
+    const em = situacao.revogadaEm!.split("-").reverse().join("/");
+    return conferir(
+      `Cita ${norma.titulo}, revogada em ${em} pela ${nomeSucessora}. Se o PPC foi elaborado antes dessa data, pode manter a citação; recomenda-se atualizar. Confira a data do PPC (capa, histórico ou processo).`,
+    );
+  }
   const responsavel = fichaResponsavel(norma.id, base.relacoes);
   if (responsavel !== ficha)
     return conferir(

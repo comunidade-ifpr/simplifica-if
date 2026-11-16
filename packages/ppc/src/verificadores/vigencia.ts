@@ -36,9 +36,12 @@ export type VigenciaNorma = {
   certo: boolean;
   /** Regras de transição em curso (ou a confirmar) que preservam a norma: prazo de adequação, ressalva de revogação, faculdade de adequação. */
   transicoes: TransicaoVigente[];
+  /** Quando a revogação total passou a valer (AAAA-MM-DD), se a base registra; só para `revogada`. */
+  revogadaEm?: string | null;
 };
 
-export type ConsultaVigencia = (id: string) => VigenciaNorma;
+/** A consulta, com a data em que a vigência é calculada (as consultas montadas aqui a trazem). */
+export type ConsultaVigencia = ((id: string) => VigenciaNorma) & { readonly data?: string };
 
 /** Tipos de transição que deixam citar a norma revogada sem desconformidade (o direito de conclusão é dos estudantes, não do PPC). */
 const TIPOS_QUE_PRESERVAM = new Set(["prazo-de-adequacao", "ressalva-de-revogacao", "faculdade-de-adequacao"]);
@@ -105,7 +108,7 @@ export function vigenciaDeDados(dados: DadosVigencia, data: string): ConsultaVig
 export function consultarVigencia(fonte: FonteVigencia, data: string): ConsultaVigencia {
   const cache = new Map<string, VigenciaNorma>();
   const limite = diasAntes(data, DIAS_PRESUNCAO);
-  return (id) => {
+  const consulta = (id: string): VigenciaNorma => {
     const salvo = cache.get(id);
     if (salvo) return salvo;
     const status = statusEm(id, data, fonte);
@@ -118,10 +121,41 @@ export function consultarVigencia(fonte: FonteVigencia, data: string): ConsultaV
           t.situacao !== "a-iniciar",
       )
       .map((t) => ({ id: t.id, norma: t.norma, dispositivo: t.dispositivo, regra: t.regra }));
-    const vigencia = { status: status.status, certo: status.certo || presumidaHaTempo(status, limite), transicoes };
+    const revogacoes = status.eventos
+      .filter((e) => e.tipo === "revoga" && !e.parcial && e.ocorreu !== false)
+      .map((e) => e.efeito_de ?? e.efeito_minimo)
+      .filter((d): d is string => d !== null)
+      .sort();
+    const vigencia: VigenciaNorma = {
+      status: status.status,
+      certo: status.certo || presumidaHaTempo(status, limite),
+      transicoes,
+      revogadaEm: status.status === "revogada" ? (revogacoes[0] ?? null) : null,
+    };
     cache.set(id, vigencia);
     return vigencia;
   };
+  return Object.assign(consulta, { data });
+}
+
+/** Meses em que uma revogação conta como recente quando a data do PPC não é conhecida. */
+export const MESES_REVOGACAO_RECENTE = 12;
+
+/**
+ * Revogação recente (menos de `MESES_REVOGACAO_RECENTE` meses na data de referência) que pode ser
+ * posterior ao PPC: posterior à data dele, quando conhecida (só o ano: o fim do ano); sem ela, basta
+ * ser recente. Revogação antiga não entra: o PPC revisto agora já devia citar a sucessora. Sem a data
+ * da revogação ou a de referência, não.
+ */
+export function revogacaoRecente(
+  revogadaEm: string | null | undefined,
+  dataPpc: string | null | undefined,
+  referencia: string | undefined,
+): boolean {
+  if (!revogadaEm || !referencia) return false;
+  if (revogadaEm <= diasAntes(referencia, Math.round(MESES_REVOGACAO_RECENTE * 30.44))) return false;
+  if (dataPpc) return revogadaEm > (/^\d{4}$/.test(dataPpc) ? `${dataPpc}-12-31` : dataPpc);
+  return true;
 }
 
 let padrao: ConsultaVigencia | undefined;
