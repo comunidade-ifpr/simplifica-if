@@ -14,6 +14,7 @@ import {
   type Trecho,
   trecho,
   type Verificador,
+  vigenciaDe,
 } from "./comum.ts";
 
 /** Trecho de uma linha do Markdown como aparece no DOCX: sem negrito, barras de tabela nem marcador de lista. */
@@ -33,8 +34,12 @@ export const cargaHorariaTotal: Verificador = {
   ficha: "CT-CURR-02",
   descricao:
     "A carga horária total extraída do PPC (fato `extraido` do kb) contra o mínimo do CNCT e, no integrado (fora o PROEJA), as 3.000 h da Res. CNE/CP nº 2/2026, art. 29, § 2º; valor abaixo do mínimo, outro total de 800 h ou mais no texto ou valor não encontrado saem a conferir.",
-  verificar(ppc, { cnct, forma }) {
+  verificar(ppc, base) {
+    const { cnct, forma } = base;
     const total = ppc.fatos.find((f) => f.fato === "carga_horaria_total_h");
+    const art29 = vigenciaDe(base)("br/cne-cp/res/2026/2").certo
+      ? "Res. CNE/CP nº 2/2026, art. 29, § 2º"
+      : "Res. CNE/CP nº 2/2026, art. 29, § 2º, com vigência ainda a confirmar na base";
     // PROEJA cadastrado como integrado: a EJA articulada tem a carga horária do art. 30, não as 3.000 h.
     const eja = /proeja|educa[cç][aã]o de jovens e adultos/i.test(ppc.linhas.slice(0, 120).join("\n"));
     const minimoForma = forma === "integrado" && !eja ? MINIMO_INTEGRADO : 0;
@@ -60,7 +65,7 @@ export const cargaHorariaTotal: Verificador = {
         [
           {
             estado: "a_conferir",
-            mensagem: `Carga horária total de ${total.valor_num} h, abaixo do mínimo de ${minimo} h (${minimoForma > minimoCnct ? "forma integrada, Res. CNE/CP nº 2/2026, art. 29, § 2º" : "CNCT"}).`,
+            mensagem: `Carga horária total de ${total.valor_num} h, abaixo do mínimo de ${minimo} h (${minimoForma > minimoCnct ? `forma integrada, ${art29}` : "CNCT"}).`,
             trechos: [evidencia],
             fontes: minimoForma > minimoCnct ? [ART29_PAR2] : fontes,
           },

@@ -97,9 +97,17 @@ export function preConferir(markdown: string, base: BaseVerificacao): PreConfere
   return { fichas: VERIFICADORES.map((v) => v.verificar(ppc, base)), triagem: triar(ppc) };
 }
 
-/** Item para `comentarDocx`: um por apontamento (e por achado da triagem), com os trechos como no DOCX. */
+/**
+ * Item para `comentarDocx`. As fichas se sobrepõem (CT-IDENT-08, CT-SUP-09 e CT-SUP-12 registram os
+ * mesmos fatos de vigência; CT-SUP-12 e CT-SUP-24 a Res. CONSUP/IFPR nº 11/2009 e nº 53/2011;
+ * CT-SUP-12 e CT-SUP-14 a mesma citação), por isso os apontamentos sobre o mesmo trecho (ou, sem
+ * trecho, sobre a mesma norma ausente) viram um item só: `ficha` é a que define a gravidade (a que
+ * dá `nao_atende`, que é a responsável pelo marco), e `fichas`, todas as envolvidas.
+ */
 export type ItemComentario = {
   ficha: string;
+  /** Todas as fichas com apontamento neste trecho, a de `ficha` primeiro. */
+  fichas: string[];
   estado: "nao_atende" | "a_conferir";
   mensagem: string;
   /** Trechos como aparecem no documento (sem a marcação do Markdown), do mais específico ao mais geral. */
@@ -110,19 +118,40 @@ export type ItemComentario = {
 export function achadosParaComentarios(resultado: PreConferencia): ItemComentario[] {
   const itens: ItemComentario[] = resultado.triagem.map((a) => ({
     ficha: "TRIAGEM",
+    fichas: ["TRIAGEM"],
     estado: a.estado,
     mensagem: a.mensagem,
     trechos: a.trechos.map((t) => comoNoDocumento(t.texto)),
     fontes: [],
   }));
+  const grupos = new Map<string, ItemComentario[]>();
+  let semChave = 0;
   for (const ficha of resultado.fichas)
-    for (const apontamento of ficha.apontamentos)
-      itens.push({
+    for (const apontamento of ficha.apontamentos) {
+      const item: ItemComentario = {
         ficha: ficha.ficha,
+        fichas: [ficha.ficha],
         estado: apontamento.estado,
         mensagem: apontamento.mensagem,
         trechos: apontamento.trechos.map((t) => comoNoDocumento(t.texto)).filter(Boolean),
         fontes: apontamento.fontes,
-      });
+      };
+      const chave = item.trechos[0]
+        ? `trecho:${item.trechos[0]}`
+        : item.fontes[0]?.startsWith("ifpr://norma/")
+          ? `ausente:${item.fontes[0]}`
+          : `item:${(semChave += 1)}`;
+      grupos.set(chave, [...(grupos.get(chave) ?? []), item]);
+    }
+  for (const grupo of grupos.values()) {
+    const principal = grupo.find((i) => i.estado === "nao_atende") ?? grupo[0]!;
+    const outras = [...new Set(grupo.map((i) => i.ficha).filter((f) => f !== principal.ficha))];
+    itens.push({
+      ...principal,
+      fichas: [principal.ficha, ...outras],
+      mensagem: outras.length ? `${principal.mensagem} (Também em ${outras.join(", ")}.)` : principal.mensagem,
+      fontes: [...new Set(grupo.flatMap((i) => i.fontes))],
+    });
+  }
   return itens;
 }

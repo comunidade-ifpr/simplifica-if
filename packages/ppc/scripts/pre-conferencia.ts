@@ -108,7 +108,7 @@ if (values.base) {
   const resultado = preConferir(conversao.markdown, { ...comum, cnct, forma: values.forma });
   const itens = achadosParaComentarios(resultado);
   const texto = (i: (typeof itens)[number]) =>
-    `${i.estado === "nao_atende" ? "Pendência" : "A conferir"} (${i.ficha}): ${i.mensagem}\n\n` +
+    `${i.estado === "nao_atende" ? "Pendência" : "A conferir"} (${i.fichas.join(", ")}): ${i.mensagem}\n\n` +
     `${i.fontes.length ? `Fonte: ${i.fontes.join(", ")}. ` : ""}Revisão prévia do Simplifica IF; não substitui a análise da PROENS.`;
   const comentado = comentarDocx(
     bytes,
