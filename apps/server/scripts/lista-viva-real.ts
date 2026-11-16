@@ -106,6 +106,7 @@ const programa = Effect.gen(function* () {
     chave: string,
     acao: Effect.Effect<unknown, unknown>,
   ) {
+    const estimativa = yield* viva.estimar(id, chave, rotulo === "sugerir" ? "sugerir" : "contestar", "claude");
     const inicio = Date.now();
     const resultado = yield* Effect.result(acao);
     const segundos = Math.round((Date.now() - inicio) / 100) / 10;
@@ -116,6 +117,7 @@ const programa = Effect.gen(function* () {
       rotulo,
       chave,
       segundos,
+      estimativa,
       ok: resultado._tag === "Success",
       erro: resultado._tag === "Failure" ? String(resultado.failure) : null,
       situacao: p.situacao,
