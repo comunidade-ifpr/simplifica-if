@@ -63,6 +63,7 @@ export function ListaViva({ lista: id, aoApagar }: { readonly lista: string; rea
   const [indice, setIndice] = useState(0);
   const [erro, setErro] = useState<MensagemErro | undefined>(undefined);
   const [gerando, setGerando] = useState(false);
+  const [confirmarApagar, setConfirmarApagar] = useState(false);
 
   useEffect(() => {
     let ativo = true;
@@ -177,11 +178,21 @@ export function ListaViva({ lista: id, aoApagar }: { readonly lista: string; rea
             </Button>
           ) : null}
           {aoApagar === undefined ? null : (
-            <Button variant="ghost" size="sm" onClick={() => void apagar()}>
+            <Button variant="ghost" size="sm" onClick={() => setConfirmarApagar(true)}>
               <Trash2Icon /> Apagar esta lista
             </Button>
           )}
         </div>
+        {confirmarApagar ? (
+          <Confirmar
+            titulo="Apagar esta lista?"
+            descricao="Some do seu computador a lista, com o texto do PPC convertido, as situações marcadas, o histórico e o que você escreveu em “Discordo…”. A cópia comentada e o arquivo original ficam."
+            botao="Apagar a lista"
+            aoConfirmar={() => void apagar()}
+            aoFechar={() => setConfirmarApagar(false)}
+            ocupada={false}
+          />
+        ) : null}
         <p className="text-muted-foreground text-xs">
           A lista guarda no seu computador o texto do PPC convertido e o que você escrever em "Discordo…" até você
           apagá-la (ou 30 dias sem uso).
@@ -392,6 +403,7 @@ function CartaoPendencia({
       {painel.tipo === "sugerir" ? (
         <Confirmar
           titulo="Pedir à IA uma redação para este ponto"
+          descricao="A IA usa só o trecho do PPC, o CNCT e as normas deste critério; o que o PPC não informa vem como [completar: …]."
           botao="Pedir sugestão"
           estimar={() => api.chamar((c) => c["revisaoPpc.estimarAcao"]({ ...base, acao: "sugerir", provider }))}
           aoConfirmar={() =>
@@ -437,10 +449,11 @@ function CartaoPendencia({
 }
 
 /** A estimativa, buscada ao abrir o painel. */
-function useEstimativa(estimar: () => Promise<EstimativaAcao>) {
+function useEstimativa(estimar: (() => Promise<EstimativaAcao>) | undefined) {
   const [estimativa, setEstimativa] = useState<EstimativaAcao | undefined>(undefined);
   useEffect(() => {
     let ativo = true;
+    if (estimar === undefined) return;
     estimar()
       .then((e) => ativo && setEstimativa(e))
       .catch(() => undefined);
@@ -506,8 +519,10 @@ function Discordar({
   );
 }
 
+/** Confirma uma ação: as ações com IA mostram a estimativa; apagar a lista diz o que some. */
 function Confirmar({
   titulo,
+  descricao,
   botao,
   estimar,
   aoConfirmar,
@@ -515,18 +530,19 @@ function Confirmar({
   ocupada,
 }: {
   readonly titulo: string;
+  readonly descricao: string;
   readonly botao: string;
-  readonly estimar: () => Promise<EstimativaAcao>;
+  readonly estimar?: () => Promise<EstimativaAcao>;
   readonly aoConfirmar: () => void;
   readonly aoFechar: () => void;
   readonly ocupada: boolean;
 }) {
   const estimativa = useEstimativa(estimar);
   return (
-    <div className="flex flex-col gap-2 rounded-md border bg-muted/30 p-3 text-sm">
+    <div role="group" aria-label={titulo} className="flex flex-col gap-2 rounded-md border bg-muted/30 p-3 text-sm">
       <p className="font-medium">{titulo}</p>
       <p className="text-muted-foreground text-xs">
-        A IA usa só o trecho do PPC, o CNCT e as normas deste critério; o que o PPC não informa vem como [completar: …].
+        {descricao}
         {estimativa === undefined ? "" : ` ${textoEstimativaAcao(estimativa)}`}
       </p>
       <div className="flex gap-2">

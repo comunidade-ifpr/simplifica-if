@@ -165,6 +165,18 @@ it("Analisar um PPC: do Início à lista de pendências por tema e à cópia com
   abrirDocumento.mockRejectedValueOnce(new Error("a cópia comentada não foi encontrada"));
   await page.getByRole("button", { name: "Abrir o documento comentado" }).click();
   await expect.element(page.getByText(/Não foi possível abrir a cópia comentada/)).toBeVisible();
+
+  // Apagar a lista pede confirmação: cancelar não apaga; confirmar volta à escolha do arquivo.
+  await page.getByRole("button", { name: "Apagar esta lista" }).click();
+  const confirmacao = page.getByRole("group", { name: "Apagar esta lista?" });
+  await expect.element(confirmacao).toBeVisible();
+  await confirmacao.getByRole("button", { name: "Cancelar" }).click();
+  await expect.element(confirmacao).not.toBeInTheDocument();
+  await expect.element(resultado).toBeVisible();
+  await page.getByRole("button", { name: "Apagar esta lista" }).click();
+  await page.getByRole("button", { name: "Apagar a lista" }).click();
+  await expect.element(resultado).not.toBeInTheDocument();
+  await expect.element(page.getByRole("button", { name: "Escolher o PPC (.docx)…" })).toBeVisible();
 });
 
 it("Analisar um PPC: arquivo que não existe, com a mensagem do servidor em português", async () => {
