@@ -9,7 +9,7 @@
  */
 import { fullmatch, match, search, sub } from "@simplifica-if/kb/python/re";
 import { casefold } from "@simplifica-if/kb/python/texto";
-import { aparar, apararCaracteres, apararFim, contarCaracteres } from "@simplifica-if/kb/texto";
+import { aparar, apararCaracteres, apararFim, contarCaracteres, ESPACOS } from "@simplifica-if/kb/texto";
 
 const r = String.raw;
 
@@ -369,7 +369,103 @@ function removerBlocosDuplicados(linhas: string[]): string[] {
   return deduplicadas;
 }
 
-function consolidarParagrafos(linhas: string[]): string[] {
+/**
+ * Acima deste tamanho, o parágrafo em consolidação é avaliado pelo começo e pelo fim, sem remontar
+ * o texto inteiro a cada linha.
+ */
+const LIMITE_DE_REMONTAGEM = 2048;
+const RE_SO_NUMERACAO = new RegExp(`^[\\p{Nd}.)${ESPACOS}]*$`, "u");
+
+/**
+ * Parágrafo que vai recebendo as linhas seguintes. Guarda as partes, e não o texto montado:
+ * `ehParagrafoContinuavel` sobre o texto acumulado, a cada linha, custava o quadrado do tamanho (2
+ * milhões de parágrafos curtos sem pontuação não terminavam em 10 minutos). As respostas são as
+ * mesmas de antes: as condições só olham o começo do texto, o último caractere e se ele passa de
+ * 120 caracteres.
+ */
+class ParagrafoEmConsolidacao {
+  readonly #partes: string[];
+  #comprimento: number;
+  #inicio: string | null = null;
+
+  /** `texto` já aparado e não vazio. */
+  constructor(texto: string) {
+    this.#partes = [texto];
+    this.#comprimento = texto.length;
+  }
+
+  texto(): string {
+    return this.#partes.join("");
+  }
+
+  #ultimoCaractere(): string {
+    return this.#partes.at(-1)?.at(-1) ?? "";
+  }
+
+  /** Tira do fim `quantos` caracteres e, depois, os espaços que sobrarem no fim. */
+  #cortarFim(quantos: number): void {
+    const ultima = this.#partes.pop()!;
+    let resto = ultima.slice(0, ultima.length - quantos);
+    this.#comprimento -= ultima.length;
+    for (;;) {
+      resto = apararFim(resto);
+      if (resto || !this.#partes.length) break;
+      resto = this.#partes.pop()!;
+      this.#comprimento -= resto.length;
+    }
+    if (resto) {
+      this.#partes.push(resto);
+      this.#comprimento += resto.length;
+    }
+    if (this.#comprimento <= LIMITE_DE_REMONTAGEM) this.#inicio = null;
+  }
+
+  /** Junta a linha seguinte (aparada): colada, se o parágrafo termina em hífen; senão, com um espaço. */
+  unir(proxima: string): void {
+    if (this.#ultimoCaractere() === "-") this.#cortarFim(1);
+    else {
+      this.#partes.push(" ");
+      this.#comprimento += 1;
+    }
+    this.#partes.push(proxima);
+    this.#comprimento += proxima.length;
+  }
+
+  /** `ehParagrafoContinuavel` do texto acumulado. */
+  #continuavel(): boolean {
+    if (this.#comprimento <= LIMITE_DE_REMONTAGEM) return ehParagrafoContinuavel(this.texto());
+    if (this.#inicio === null) {
+      let inicio = "";
+      for (const parte of this.#partes) {
+        inicio += parte;
+        if (inicio.length >= LIMITE_DE_REMONTAGEM) break;
+      }
+      this.#inicio = inicio.slice(0, LIMITE_DE_REMONTAGEM);
+    }
+    const inicio = this.#inicio;
+    // Começo feito só de numeração: a lista e o número de seção não se decidem por ele.
+    if (RE_SO_NUMERACAO.test(inicio)) return ehParagrafoContinuavel(this.texto());
+    if (["#", ">", "![", "<", "|", "```"].some((prefixo) => inicio.startsWith(prefixo))) return false;
+    if (this.#ultimoCaractere() === "|") return false;
+    // Lista e número de seção se decidem no começo; o resto de `pareceHeading` não vale para um
+    // texto de mais de 120 caracteres.
+    return !match(LISTA, inicio) && !match(NUMERO_SECAO, inicio);
+  }
+
+  /** `deveUnirLinhas` entre o texto acumulado e a linha seguinte. */
+  deveUnir(proximaOriginal: string): boolean {
+    const proxima = aparar(proximaOriginal);
+    if (!proxima || !this.#comprimento) return false;
+    if (!this.#continuavel() || !ehParagrafoContinuavel(proxima)) return false;
+    const ultimo = this.#ultimoCaractere();
+    if (ultimo === "." || ultimo === "!" || ultimo === "?") return false;
+    if (ultimo === "-") return true;
+    return Boolean(match("^[a-zà-ÿ0-9(]", proxima));
+  }
+}
+
+/** Une ao parágrafo as linhas seguintes que o continuam (texto partido pela conversão). */
+export function consolidarParagrafos(linhas: string[]): string[] {
   const resultado: string[] = [];
   let indice = 0;
   while (indice < linhas.length) {
@@ -379,15 +475,12 @@ function consolidarParagrafos(linhas: string[]): string[] {
       indice += 1;
       continue;
     }
-    let consolidado = aparar(atual);
-    while (indice + 1 < linhas.length && deveUnirLinhas(consolidado, linhas[indice + 1]!)) {
-      const proxima = aparar(linhas[indice + 1]!);
-      consolidado = consolidado.endsWith("-")
-        ? apararFim(consolidado.slice(0, -1)) + proxima
-        : `${consolidado} ${proxima}`;
+    const consolidado = new ParagrafoEmConsolidacao(aparar(atual));
+    while (indice + 1 < linhas.length && consolidado.deveUnir(linhas[indice + 1]!)) {
+      consolidado.unir(aparar(linhas[indice + 1]!));
       indice += 1;
     }
-    resultado.push(consolidado);
+    resultado.push(consolidado.texto());
     indice += 1;
   }
   return resultado;
@@ -428,7 +521,8 @@ function normalizarTabelasPipe(linhas: string[]): string[] {
   return normalizadas;
 }
 
-function ehParagrafoContinuavel(linha: string): boolean {
+/** Linha de texto corrido, que pode continuar na seguinte: não é título, lista, tabela, citação, imagem nem bloco de código. */
+export function ehParagrafoContinuavel(linha: string): boolean {
   const conteudo = aparar(linha);
   if (!conteudo) return false;
   if (["#", ">", "![", "<"].some((prefixo) => conteudo.startsWith(prefixo))) return false;
@@ -444,16 +538,6 @@ function devePromoverAHeading(conteudo: string, anterior: string): boolean {
   if (match(NUMERO_SECAO, conteudo)) return true;
   if (aparar(anterior)) return false;
   return pareceHeading(conteudo);
-}
-
-function deveUnirLinhas(atualOriginal: string, proximaOriginal: string): boolean {
-  const atual = aparar(atualOriginal);
-  const proxima = aparar(proximaOriginal);
-  if (!atual || !proxima) return false;
-  if (!ehParagrafoContinuavel(atual) || !ehParagrafoContinuavel(proxima)) return false;
-  if (search("[.!?]$", atual)) return false;
-  if (atual.endsWith("-")) return true;
-  return Boolean(match("^[a-zà-ÿ0-9(]", proxima));
 }
 
 function ehLinhaTabelaPipe(linha: string): boolean {
