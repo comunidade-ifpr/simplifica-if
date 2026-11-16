@@ -276,7 +276,7 @@ export function converterPpc(bytes: Uint8Array, nomeDoArquivo: string, opcoes: O
   const representacaoGrafica = resolverRepresentacaoGrafica(secoes, pacote);
 
   const normalizar = (bruto: string) => {
-    const resultado = normalizarMarkdown(bruto);
+    const resultado = normalizarMarkdown(bruto, { nivelDaSecao: regras.secoesNoNivel2 ? 2 : 1 });
     const markdown = extraidos.matriz
       ? substituirMatrizNoMarkdown(resultado.markdownNormalizado, extraidos.matriz)
       : resultado.markdownNormalizado;

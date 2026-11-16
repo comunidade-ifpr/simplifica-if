@@ -43,6 +43,12 @@ export type Regras = {
    * calculados só sobre a última parte e os dois campos do resumo zerados.
    */
   totaisDaMatriz: boolean;
+  /**
+   * As seções começam em `##` (a seção "1" é `##`, a "1.1" é `###`), e `#` fica para o título do
+   * documento: a convenção dos PPCs da base e da segmentação de seções do `kb`. Desligada, a seção
+   * de primeiro nível sai como `#`, e o `kb` não a reconhece.
+   */
+  secoesNoNivel2: boolean;
 };
 
 export const REGRAS_DO_DOCUMENTO: Regras = {
@@ -52,6 +58,7 @@ export const REGRAS_DO_DOCUMENTO: Regras = {
   negritoUnido: true,
   linksSeguros: true,
   totaisDaMatriz: true,
+  secoesNoNivel2: true,
 };
 
 /** Reproduz a conversão em Python, com os defeitos dela. Só para o diferencial. */
@@ -62,4 +69,5 @@ export const REGRAS_DO_PYTHON: Regras = {
   negritoUnido: false,
   linksSeguros: false,
   totaisDaMatriz: false,
+  secoesNoNivel2: false,
 };

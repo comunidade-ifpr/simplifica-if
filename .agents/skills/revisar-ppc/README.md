@@ -156,6 +156,7 @@ Regras do modo `documento` (`regras.ts`); cada uma pode ser desligada à parte, 
 - **`negritoUnido`.** Runs seguidos de mesma formatação saem num marcador só, com os espaços das pontas fora dele: `**Pró-Reitoria de Ensino**`, não `**Pró-Reitoria** de Ensino**`.
 - **`linksSeguros`.** Descrita acima.
 - **`totaisDaMatriz`.** Na matriz dividida em várias tabelas, o total que nenhuma delas declara é recalculado sobre todas as partes (antes ficava a soma da última: 160 h-a de um 2º ano no lugar das 400 do curso), e `resumo_matriz_curricular.total_ha` e `total_hr` são a soma dos componentes (antes, sempre 0).
+- **`secoesNoNivel2`.** As seções começam em `##` (a seção "1" é `##`, a "1.1" é `###`), e `#` fica para o título do documento, como nos PPCs convertidos da base (`##` em todas as seções) e na segmentação de seções do `kb`, que só toma `##` em diante. O Python escrevia a seção de primeiro nível como `#`, e o `kb` não a reconhecia: a pré-conferência via todas as seções do modelo "ausentes". O normalizador (`normalizarMarkdown`, também usado na entrada `.md`) segue a mesma convenção pela numeração; sem número, o título mantém o nível que tinha. Incluída em 16/11/2026, depois da medição abaixo: nos 14 sintéticos, muda de 2 a 18 linhas por documento, só marcadores de título.
 
 Fora das regras, valem nos dois modos:
 

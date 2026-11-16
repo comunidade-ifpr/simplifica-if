@@ -75,10 +75,8 @@ export function preConferir(
   contexto: { cnct: CursoCnct | null; forma: FormaOferta; registro: Registro },
 ): Achado[] {
   const achados: Achado[] = [];
-  // A conversão DOCX deste pacote escreve as seções como `#`; o `kb` só toma `##` em diante como seção
-  // (nos PPCs da base, `#` é o título do documento). As linhas não mudam, só o nível.
-  const paraSegmentar = /^## /m.test(markdown) ? markdown : markdown.replace(/^# /gm, "## ");
-  const secoes = segmentarPpc(paraSegmentar, "tecnico");
+  // Seções a partir de `##`, a convenção da base, do `kb` e da conversão DOCX (`secoesNoNivel2`).
+  const secoes = segmentarPpc(markdown, "tecnico");
   const secoesFatos: SecaoDoPpc[] = secoes.map((s) => ({
     tipo: s.tipo,
     linha_inicio: s.linhaInicio,

@@ -56,15 +56,26 @@ function celulasSimples(texto: string, semVazias = true): string[] {
   return semVazias ? celulas.filter(Boolean) : celulas;
 }
 
+export type OpcoesNormalizacao = {
+  /**
+   * Nível do título de uma seção de primeiro nível numerada ("1 JUSTIFICATIVA"); a subseção "1.1" fica
+   * um abaixo. O padrão é 2 (`##`), a convenção dos PPCs da base e do `kb`: `#` fica para o título do
+   * documento, e a segmentação de seções do `kb` só toma `##` em diante. A conversão em Python usava 1
+   * (`REGRAS_DO_PYTHON`, só para o diferencial).
+   */
+  nivelDaSecao?: 1 | 2;
+};
+
 /** Normaliza o Markdown (`MarkdownNormalizer().normalize`). */
-export function normalizarMarkdown(markdown: string): ResultadoNormalizacao {
+export function normalizarMarkdown(markdown: string, opcoes: OpcoesNormalizacao = {}): ResultadoNormalizacao {
+  const nivelDaSecao = opcoes.nivelDaSecao ?? 2;
   const bruto = markdown.replaceAll("\r\n", "\n").replaceAll("\r", "\n").replaceAll(" ", " ").replaceAll("\t", "    ");
   let linhas = bruto.split("\n");
   linhas = corrigirHeadingQuebrado(linhas);
   linhas = linhas.map(limparLinha);
   linhas = removerRuidos(linhas);
   linhas = removerSumario(linhas);
-  linhas = normalizarHeadings(linhas);
+  linhas = normalizarHeadings(linhas, nivelDaSecao);
   linhas = removerBlocosDuplicados(linhas);
   linhas = consolidarParagrafos(linhas);
   linhas = normalizarTabelasPipe(linhas);
@@ -328,7 +339,7 @@ function ehContinuacaoTituloSumario(conteudo: string): boolean {
   return Boolean(fullmatch(r`[A-ZÁÀÂÃÉÊÍÓÔÕÚÜÇ0-9 ,;:/()–-]{8,}`, texto));
 }
 
-function normalizarHeadings(linhas: string[]): string[] {
+function normalizarHeadings(linhas: string[], nivelDaSecao: number): string[] {
   const normalizadas: string[] = [];
   let anterior = "";
   for (const linha of linhas) {
@@ -341,13 +352,13 @@ function normalizarHeadings(linhas: string[]): string[] {
     const heading = match(HEADING, conteudo);
     if (heading) {
       const titulo = aparar(heading[2]!);
-      const nivel = nivelHeading(titulo, heading[1]!.length);
+      const nivel = nivelHeading(titulo, nivelDaSecao, heading[1]!.length);
       normalizadas.push(`${"#".repeat(nivel)} ${titulo}`);
       anterior = conteudo;
       continue;
     }
     if (devePromoverAHeading(conteudo, anterior)) {
-      normalizadas.push(`${"#".repeat(nivelHeading(conteudo))} ${conteudo}`);
+      normalizadas.push(`${"#".repeat(nivelHeading(conteudo, nivelDaSecao))} ${conteudo}`);
       anterior = conteudo;
       continue;
     }
@@ -655,9 +666,10 @@ function pareceHeading(conteudo: string): boolean {
   return conteudo === conteudo.toUpperCase() && contarCaracteres(letras) >= 6;
 }
 
-function nivelHeading(titulo: string, reserva = 2): number {
+/** Nível pela numeração (`1.2` é a profundidade 2); sem numeração, o que o título já tinha (`reserva`). */
+function nivelHeading(titulo: string, nivelDaSecao: number, reserva = 2): number {
   const m = match(NUMERO_SECAO, titulo);
   if (!m) return Math.max(1, Math.min(reserva, 6));
   const profundidade = contar(m[1]!, ".") + 1;
-  return Math.max(1, Math.min(profundidade, 6));
+  return Math.max(1, Math.min(profundidade + nivelDaSecao - 1, 6));
 }

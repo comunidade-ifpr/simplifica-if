@@ -300,7 +300,7 @@ describe("normalizador de Markdown", () => {
 
 Texto do corpo.
 `),
-    ).toBe("# CAPA\n\n# 1 APRESENTAÇÃO DO PROJETO\n\n## 1.1 IDENTIFICAÇÃO\n\nTexto do corpo.\n");
+    ).toBe("# CAPA\n\n## 1 APRESENTAÇÃO DO PROJETO\n\n### 1.1 IDENTIFICAÇÃO\n\nTexto do corpo.\n");
   });
 
   test("remove sumário em tabela sem título", () => {
@@ -723,7 +723,7 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupos por tópico num PPC fora da base", (i
       const secaoEstagio = secoes("estagio").find((s) => s.tipo === "estagio_praticas")!;
       expect(secaoEstagio.id).toBe("estagio_praticas-1");
       expect(NodeFS.readFileSync(c.ppc, "utf-8").split("\n")[Number(secaoEstagio.linha_inicio) - 1]).toBe(
-        "# 3. ESTÁGIO CURRICULAR",
+        "## 3. ESTÁGIO CURRICULAR",
       );
 
       const transversal = porTopico.get("transversal")!;

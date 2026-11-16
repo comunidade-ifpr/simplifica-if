@@ -1,6 +1,9 @@
 /** Pré-conferência sem IA (PoC da proposta C do M1.11), sobre um PPC fictício e o registro de normas da base. */
 import { carregarRegistro } from "@simplifica-if/kb/normas/registro";
 import { describe, expect, test } from "vite-plus/test";
+import { montarDocx, par, titulo } from "@simplifica-if/docx/testes/sintetico";
+import { segmentarPpc } from "@simplifica-if/kb/ppcs/secoes";
+import { converterPpc } from "../src/conversao-docx/conversao.ts";
 import { preConferir, type CursoCnct } from "../src/pre-conferencia.ts";
 
 const CNCT: CursoCnct = {
@@ -65,10 +68,53 @@ describe("preConferir", () => {
     expect(ausentes[0]!.mensagem).not.toContain("Matriz curricular");
   });
 
-  test("seções em `#`, como a conversão DOCX escreve, também são reconhecidas", () => {
-    const comoConvertido = PPC.replace(/^# .*\n\n/, "").replace(/^## /gm, "# ");
-    const outros = preConferir(comoConvertido, { cnct: CNCT, forma: "integrado", registro: carregarRegistro() });
-    expect(outros.filter((a) => a.ficha === "CT-CURR-22")).toHaveLength(1);
-    expect(outros.find((a) => a.fonte === "regra:secoes-do-modelo")?.mensagem).not.toContain("Justificativa");
+});
+
+/** Seções do modelo em DOCX, como os PPCs costumam vir: título numerado em negrito, subseção com estilo. */
+const SECOES_DOCX: Array<[string, string]> = [
+  ["1 JUSTIFICATIVA", "O curso atende à demanda regional por técnicos."],
+  ["2 OBJETIVOS", "Formar técnicos em agropecuária."],
+  ["3 PERFIL PROFISSIONAL DE CONCLUSÃO", "O egresso atua na produção agropecuária."],
+  ["4 ORGANIZAÇÃO CURRICULAR", "O curso se organiza em três anos."],
+  ["4.1 MATRIZ CURRICULAR", "A matriz está no quadro a seguir."],
+  ["4.2 EMENTÁRIO", "Ementas dos componentes."],
+  ["4.3 AVALIAÇÃO DA APRENDIZAGEM", "A avaliação é contínua."],
+  ["4.4 APROVEITAMENTO DE ESTUDOS ANTERIORES", "O aproveitamento segue a resolução."],
+  ["4.5 CERTIFICADOS E DIPLOMAS", "O diploma é expedido ao concluinte."],
+  ["5 CORPO DOCENTE", "Docentes do campus."],
+  ["6 INFRAESTRUTURA", "Laboratórios e biblioteca."],
+  ["7 ACOMPANHAMENTO DE EGRESSOS", "Pesquisa anual com os egressos."],
+  ["8 AVALIAÇÃO DO CURSO", "A comissão avalia o PPC."],
+  ["9 REFERÊNCIAS", "BRASIL. Lei nº 9.394, de 20 de dezembro de 1996."],
+];
+
+describe("ponta a ponta: DOCX → PPC.md → seções do kb → pré-conferência", () => {
+  const corpo =
+    par("PROJETO PEDAGÓGICO DO CURSO TÉCNICO EM AGROPECUÁRIA", { negrito: true, tamanho: 14 }) +
+    SECOES_DOCX.map(([nome, texto]) =>
+      [nome.includes(".") ? par(nome, { estilo: "Heading2" }) : titulo(nome), par(texto)].join(""),
+    ).join("");
+  const conversao = converterPpc(montarDocx({ corpo }), "ppc.docx", { agora: new Date(2026, 10, 16, 12) });
+
+  test("a conversão escreve as seções a partir de `##`, como os PPCs da base", () => {
+    expect(conversao.markdown).toMatch(/^## 1 JUSTIFICATIVA$/m);
+    expect(conversao.markdown).toMatch(/^### 4\.1 MATRIZ CURRICULAR$/m);
+    expect(conversao.markdown).not.toMatch(/^# /m);
+  });
+
+  test("o kb reconhece todas as seções do modelo, e nenhuma sai ausente", () => {
+    const tipos = new Set(segmentarPpc(conversao.markdown, "tecnico").map((s) => s.tipo));
+    for (const tipo of ["justificativa", "matriz_curricular", "ementas", "acompanhamento_egresso", "referencias"])
+      expect(tipos).toContain(tipo);
+    const achados = preConferir(conversao.markdown, { cnct: CNCT, forma: "subsequente", registro: carregarRegistro() });
+    expect(achados.filter((a) => a.fonte === "regra:secoes-do-modelo")).toEqual([]);
+  });
+
+  test("no modo `python-docx` (conversão antiga), as seções de primeiro nível ficam em `#`", () => {
+    const antiga = converterPpc(montarDocx({ corpo }), "ppc.docx", {
+      agora: new Date(2026, 10, 16, 12),
+      fidelidade: "python-docx",
+    });
+    expect(antiga.markdown).toMatch(/^# 1 JUSTIFICATIVA$/m);
   });
 });

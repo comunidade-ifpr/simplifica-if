@@ -86,6 +86,12 @@ export const REGRAS_DO_MODO_DOCUMENTO: Array<{ regra: keyof Regras; descricao: s
     descricao:
       "total não declarado da matriz dividida em tabelas é recalculado; `total_ha` e `total_hr` do resumo são somados",
   },
+  {
+    regra: "secoesNoNivel2",
+    descricao:
+      "as seções começam em `##` (a \"1\" é `##`, a \"1.1\" é `###`) e `#` fica para o título do documento, como nos PPCs " +
+      "da base e na segmentação do `kb`",
+  },
 ];
 
 /** Script Python: converte cada documento e despeja a camada de elementos do `DocxReader`. */
