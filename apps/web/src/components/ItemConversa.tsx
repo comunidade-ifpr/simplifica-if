@@ -4,7 +4,7 @@
  */
 import { CheckIcon, CircleAlertIcon, InfoIcon, ShieldQuestionIcon, XIcon } from "lucide-react";
 import { useConversa } from "../contexto.tsx";
-import { type Item, rotuloFerramenta } from "../conversa/estado.ts";
+import { type Item, rotuloAprovacao, rotuloFerramenta } from "../conversa/estado.ts";
 import { AvisoErro } from "./AvisoErro.tsx";
 import { Markdown } from "./Markdown.tsx";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert.tsx";
@@ -23,7 +23,7 @@ function Aprovacao({ item }: { readonly item: Extract<Item, { tipo: "aprovacao" 
   return (
     <Alert variant="warning" data-aprovacao={item.id}>
       <ShieldQuestionIcon />
-      <AlertTitle>A IA pede permissão: {rotuloFerramenta(item.ferramenta)}</AlertTitle>
+      <AlertTitle>A IA pede permissão: {rotuloAprovacao(item.ferramenta)}</AlertTitle>
       <AlertDescription>
         <p>{item.descricao}</p>
         {item.situacao === "pendente" ? (

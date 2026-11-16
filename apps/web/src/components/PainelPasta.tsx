@@ -4,7 +4,7 @@
  * arquivos das pastas de tarefa), "Anexar arquivo…" e "Desfazer o que a IA fez nesta pasta", que
  * pede confirmação e diz o que vai mudar.
  */
-import type { ArquivoPasta, PastaConversa } from "@simplifica-if/contratos-app";
+import { type ArquivoPasta, ehExtensaoDocumento, type PastaConversa } from "@simplifica-if/contratos-app";
 import { ExternalLinkIcon, FileIcon, FolderOpenIcon, PaperclipIcon, RotateCcwIcon, XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
@@ -53,7 +53,8 @@ function Arquivo({
       <span className="text-muted-foreground text-xs">
         {tamanho(arquivo.tamanho)} · {FORMATO_HORA.format(new Date(arquivo.alteradoEm))}
       </span>
-      {ponte?.abrirArquivoTarefa === undefined ? null : (
+      {/* "Abrir" só para documento (a lista do contrato); o resto, só "Mostrar na pasta". */}
+      {ponte?.abrirArquivoTarefa === undefined || !ehExtensaoDocumento(arquivo.nome) ? null : (
         <Button
           variant="ghost"
           size="sm"

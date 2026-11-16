@@ -56,7 +56,7 @@ export function Avaliacao({
         </Button>
       </div>
       {emBreve ? (
-        <p role="status" className="text-muted-foreground text-xs">
+        <p role="status" className="text-foreground text-xs">
           Em breve você vai poder apontar o trecho errado e a fonte, e o aviso vai para a equipe que cuida da base. Por
           enquanto, use o 👎.
         </p>

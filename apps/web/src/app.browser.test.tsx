@@ -94,7 +94,7 @@ it("Conversa: aprovação, link ifpr:// no painel, interromper e nova conversa",
   await userEvent.keyboard("{Enter}");
   const mensagens = page.getByRole("log", { name: "Mensagens" });
   await expect.element(mensagens.getByText("Pode escrever um resumo da DCN?")).toBeVisible();
-  await expect.element(page.getByText("A IA pede permissão: Escrever arquivo")).toBeVisible();
+  await expect.element(page.getByText("A IA pede permissão: Gravar arquivo")).toBeVisible();
   // As chamadas de ferramenta ficam recolhidas em "Detalhes técnicos".
   await page.getByText("Detalhes técnicos · 1 consulta").click();
   await expect.element(page.getByText("Buscar norma")).toBeVisible();
@@ -255,11 +255,14 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
     .element(mensagens.getByText("Conferir a fundamentação normativa do parecer.md, com atenção ao estágio."))
     .toBeVisible();
   expect(mensagens.element().textContent).not.toMatch(/Siga a skill|verificar-fundamentacao-normativa/);
+  await expect.element(mensagens.getByText("A IA pede permissão: Gravar arquivo")).toBeVisible();
+  expect((mensagens.element() as HTMLElement).innerText).not.toMatch(/\bWrite\b/);
   await page.getByRole("button", { name: "Permitir" }).click();
 
   // As etapas: todas feitas no fim; as chamadas, recolhidas.
   const etapas = page.getByRole("region", { name: "Etapas: Conferir a fundamentação normativa" });
   await expect.element(etapas.getByText("Ler a fonte de cada alegação")).toBeVisible();
+  await expect.element(etapas.getByText("Andamento informado pela IA.")).toBeVisible();
   await expect.element(mensagens.getByRole("button", { name: "Res. CNE/CP nº 1/2021" })).toBeVisible();
   await expect.element(etapas.getByText("(feita)").nth(3)).toBeInTheDocument();
   await expect.element(mensagens.getByText(/^Detalhes técnicos · \d+ consultas$/)).toBeVisible();
@@ -283,6 +286,15 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   const mudados = pasta.getByRole("region", { name: "Criados ou mudados na conversa" });
   await expect.element(mudados.getByText("relatorio.md")).toBeVisible();
   await pasta.getByRole("button", { name: "Abrir relatorio.md" }).click();
+  // Um arquivo que não é documento só tem "Mostrar na pasta".
+  await editarArquivoDeTarefa(
+    `${servidor.pastaTrabalhos}/Conferir a fundamentação normativa/rodar.command`,
+    "echo oi\n",
+  );
+  await pasta.getByRole("button", { name: "Fechar a pasta da tarefa" }).click();
+  await page.getByRole("button", { name: "Pasta da tarefa" }).click();
+  await expect.element(pasta.getByRole("button", { name: "Mostrar rodar.command na pasta" })).toBeVisible();
+  await expect.element(pasta.getByRole("button", { name: "Abrir rodar.command" })).not.toBeInTheDocument();
   await pasta.getByRole("button", { name: "Mostrar relatorio.md na pasta" }).click();
   expect(abrirArquivoTarefa).toHaveBeenCalledWith(
     expect.stringMatching(/Simplifica IF\/Conferir a fundamentação normativa\/relatorio\.md$/),
@@ -311,7 +323,9 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   await expect.element(confirmacao.getByText("Saem: relatorio.md")).toBeVisible();
   await pasta.getByRole("button", { name: "Desfazer", exact: true }).click();
   await expect.element(pasta.getByText("Pronto: a pasta voltou ao que era antes da mensagem.")).toBeVisible();
-  await expect.element(mudados).not.toBeInTheDocument();
+  // Sai o que a IA criou; o arquivo posto na pasta fora da conversa fica.
+  await expect.element(mudados.getByText("relatorio.md")).not.toBeInTheDocument();
+  await expect.element(mudados.getByText("rodar.command")).toBeVisible();
   await expect.element(trouxe.getByText("parecer.md")).toBeVisible();
   semIngles();
 

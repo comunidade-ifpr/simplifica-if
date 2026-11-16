@@ -396,22 +396,61 @@ const ROTULOS_FERRAMENTA: Readonly<Record<string, string>> = {
   Read: "Ler arquivo",
   Glob: "Procurar arquivos",
   Grep: "Procurar nos arquivos",
-  Bash: "Rodar um comando",
+  Bash: "Rodar comando",
   apply_patch: "Alterar arquivo",
   write_file: "Gravar arquivo",
   read_file: "Ler arquivo",
-  run_command: "Rodar um comando",
-  shell: "Rodar um comando",
+  run_command: "Rodar comando",
+  shell: "Rodar comando",
+  // Os nomes do Codex e os `kind` do ACP (Antigravity).
+  comando: "Rodar comando",
+  editar_arquivos: "Alterar arquivos",
+  edit: "Alterar arquivo",
+  delete: "Apagar arquivo",
+  move: "Mover arquivo",
+  execute: "Rodar comando",
+  read: "Ler arquivo",
+  search: "Procurar nos arquivos",
+  fetch: "Consultar a internet",
+  WebFetch: "Consultar a internet",
+  WebSearch: "Consultar a internet",
 };
 
+/** Pelo jeito do nome, quando a ferramenta não está na lista (as nativas mudam de nome entre versões). */
+const ROTULOS_POR_PADRAO: ReadonlyArray<readonly [RegExp, string]> = [
+  [/write|create.?file|save|gravar|escrev/i, "Gravar arquivo"],
+  [/edit|patch|replace|alter|change/i, "Alterar arquivo"],
+  [/delete|remove|unlink|apagar/i, "Apagar arquivo"],
+  [/bash|shell|command|exec|terminal|run/i, "Rodar comando"],
+  [/web|fetch|browse|http|url/i, "Consultar a internet"],
+  [/read|view|open|cat|ler/i, "Ler arquivo"],
+  [/grep|glob|search|find|list/i, "Procurar nos arquivos"],
+];
+
 /**
- * O nome de uma ferramenta para a pessoa: as do MCP `ifpr` (`ifpr.buscar_norma`, `mcp__ifpr__…`) pelo
- * rótulo; as outras, sem o servidor e com espaços no lugar de `_`.
+ * O nome de uma ferramenta para a pessoa: as do MCP `ifpr` (`ifpr.buscar_norma`, `mcp__ifpr__…`) e as
+ * nativas mais comuns pelo rótulo; as nativas desconhecidas pelo padrão do nome ("Gravar arquivo",
+ * "Rodar comando"); o resto, sem o servidor e com espaços no lugar de `_`.
  */
+
+/**
+ * O nome de uma ação no pedido de permissão: o rótulo, ou "uma ação no computador" quando o nome não
+ * diz nada à pessoa (nunca o nome técnico).
+ */
+export function rotuloAprovacao(nome: string): string {
+  const semServidor = nome.replace(/^mcp__[^_]+__/, "").replace(/^[\w-]+\./, "");
+  if (ROTULOS_FERRAMENTA[semServidor] !== undefined) return ROTULOS_FERRAMENTA[semServidor]!;
+  return ROTULOS_POR_PADRAO.find(([regra]) => regra.test(semServidor))?.[1] ?? "uma ação no computador";
+}
+
 export function rotuloFerramenta(nome: string): string {
   const semServidor = nome.replace(/^mcp__[^_]+__/, "").replace(/^[\w-]+\./, "");
   const conhecido = ROTULOS_FERRAMENTA[semServidor];
   if (conhecido !== undefined) return conhecido;
+  // As do `ifpr` sem rótulo e as de outros servidores ficam legíveis; as nativas, pelo padrão do nome.
+  const nativa = !/^mcp__|^[\w-]+\./.test(nome);
+  const padrao = nativa ? ROTULOS_POR_PADRAO.find(([regra]) => regra.test(semServidor))?.[1] : undefined;
+  if (padrao !== undefined) return padrao;
   const legivel = semServidor.replace(/[_-]+/g, " ").trim();
   return legivel.length === 0 ? nome : `${legivel[0]!.toUpperCase()}${legivel.slice(1)}`;
 }
