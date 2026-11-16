@@ -25,6 +25,7 @@ import { montarDocx, par } from "@simplifica-if/docx/testes/sintetico";
 import { ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Listas from "../src/persistencia/Listas.ts";
+import { comparacaoComOriginal, SEMELHANCA_MINIMA, TAMANHO_MINIMO } from "../src/revisao-ppc/ListaViva.ts";
 import * as Servidor from "../src/servidor.ts";
 import { bancoFixture, cliente, diretorioTemporario, limparTemporarios, TOKEN } from "./apoio.ts";
 
@@ -374,6 +375,11 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
       assert.include(csv, "A regra errou: o PPC cita a norma vigente.");
       assert.include(csv, codigo.pendencia.ficha);
       assert.notInclude(csv, "A matriz traz a carga de cada componente.");
+      // Texto que começa como fórmula de planilha ganha um apóstrofo (o CSV não executa nada no Excel).
+      yield* c["revisaoPpc.contestar"]({ lista: lista.id, chave: codigo.chave, motivo: "=SOMA(A1:A2) e @nome" });
+      const csv2 = yield* c["revisaoPpc.exportarDiscordancias"]({});
+      assert.include(csv2, `"'=SOMA(A1:A2) e @nome"`);
+      assert.notInclude(csv2, `"=SOMA`);
     }),
   );
 
@@ -449,6 +455,32 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
       }).pipe(Effect.flip);
       assert.include(recusa.message, "parece outro documento");
 
+      // Uma versão quase vazia, com o mesmo curso e um título do original: incompleta, não resolve nada.
+      const quaseVazio = gravar(
+        "PPC quase vazio.docx",
+        montarDocx({
+          corpo: [
+            par("PROJETO PEDAGÓGICO DO CURSO TÉCNICO EM AGROPECUÁRIA"),
+            par("Forma de oferta: subsequente ao ensino médio. Eixo Tecnológico: Recursos Naturais."),
+            par("4 ORGANIZAÇÃO CURRICULAR", { estilo: "Heading1" }),
+            par("O curso se organiza em quatro semestres."),
+          ].join(""),
+        }),
+      );
+      const antes = (yield* c["revisaoPpc.lista"]({ lista: pre.lista! })).pendencias.find(
+        (x) => x.chave === triagem.chave,
+      )!;
+      const incompleto = yield* c["revisaoPpc.reanalisar"]({
+        lista: pre.lista!,
+        chave: triagem.chave,
+        arquivo: quaseVazio,
+      }).pipe(Effect.flip);
+      assert.include(incompleto.message, "versão incompleta");
+      const depois = (yield* c["revisaoPpc.lista"]({ lista: pre.lista! })).pendencias.find(
+        (x) => x.chave === triagem.chave,
+      )!;
+      assert.deepStrictEqual(depois, antes);
+
       // A triagem nova do arquivo da reanálise entra na lista.
       const semInjecao = yield* c["revisaoPpc.analisar"]({ arquivo: gravar("PPC limpo.docx", ppcSintetico()) });
       const limpa = yield* c["revisaoPpc.lista"]({ lista: semInjecao.lista! });
@@ -490,6 +522,32 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
 });
 
 layer(NodeServices.layer)("lista viva no banco", (it) => {
+  it.effect("a reanálise se compara com o analisado: um título só do original não basta", () =>
+    Effect.sync(() => {
+      const original = [
+        "# 1 Identificação",
+        "# 2 Justificativa",
+        "# 3 Objetivos",
+        "# 4 Perfil do egresso",
+        "# 5 Requisitos e formas de acesso",
+        "# 6 Organização curricular",
+        "# 7 Estágio",
+        "# 8 Avaliação",
+      ].join("\ntexto\n");
+      const umTitulo = comparacaoComOriginal(
+        original,
+        "# 5 Requisitos e formas de acesso\nCurso Técnico em Agropecuária subsequente",
+      );
+      assert.isBelow(umTitulo.titulosEmComum, SEMELHANCA_MINIMA);
+      assert.isBelow(umTitulo.secoes, TAMANHO_MINIMO);
+      assert.isBelow(umTitulo.linhas, TAMANHO_MINIMO);
+      assert.strictEqual(comparacaoComOriginal(original, "Curso").titulosEmComum, 0);
+      const igual = comparacaoComOriginal(original, `${original}\nmais um parágrafo`);
+      assert.strictEqual(igual.titulosEmComum, 1);
+      assert.isAtLeast(igual.linhas, 1);
+    }),
+  );
+
   it.effect("sobrevive a fechar e reabrir o banco das conversas", () =>
     Effect.gen(function* () {
       const arquivo = NodePath.join(diretorioTemporario("simplifica-lista-banco-"), "conversas.sqlite");

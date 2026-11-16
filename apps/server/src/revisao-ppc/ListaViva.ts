@@ -168,18 +168,27 @@ const titulos = (markdown: string) =>
       .filter((t) => t.length >= 4),
   );
 
-/** Quanto dos títulos do menor documento está no outro (0 a 1). */
-export function semelhancaDeTitulos(a: string, b: string): number {
-  const ta = titulos(a);
-  const tb = titulos(b);
-  const menor = ta.size <= tb.size ? ta : tb;
-  const maior = menor === ta ? tb : ta;
-  if (!menor.size) return 0;
-  return [...menor].filter((t) => maior.has(t)).length / menor.size;
+/** Linhas com texto de um Markdown. */
+const linhasComTexto = (markdown: string) => markdown.split("\n").filter((l) => l.trim()).length;
+
+/**
+ * O arquivo da reanálise comparado com o analisado: a fração dos títulos de seção **do analisado** que
+ * estão no novo, e o tamanho do novo (títulos e linhas com texto) em relação ao analisado. Um arquivo
+ * quase vazio, com um título só do original, não passa: tem poucas seções e poucas linhas.
+ */
+export function comparacaoComOriginal(original: string, novo: string) {
+  const to = titulos(original);
+  const tn = titulos(novo);
+  return {
+    titulosEmComum: to.size ? [...to].filter((t) => tn.has(t)).length / to.size : 0,
+    secoes: to.size ? tn.size / to.size : 0,
+    linhas: linhasComTexto(original) ? linhasComTexto(novo) / linhasComTexto(original) : 0,
+  };
 }
 
-/** O arquivo da reanálise tem de ter ao menos esta fração dos títulos de seção em comum com o analisado. */
+/** O arquivo da reanálise tem de ter ao menos esta fração dos títulos do analisado, das seções e das linhas. */
 export const SEMELHANCA_MINIMA = 0.6;
+export const TAMANHO_MINIMO = 0.7;
 
 /** Dias sem uso que uma lista fica guardada (com o texto do PPC e os motivos). */
 export const DIAS_LISTA = 30;
@@ -595,19 +604,19 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       // Parece outro documento: outro curso (CNCT, forma) ou poucos títulos de seção em comum. Não marca nada.
       const antes = registro.resultado.curso;
       const depois = novo.revisao.curso;
-      const semelhanca = semelhancaDeTitulos(registro.markdown, novo.revisao.markdown);
-      if (
-        (antes.cnct?.slug ?? null) !== (depois.cnct?.slug ?? null) ||
-        antes.forma !== depois.forma ||
-        semelhanca < SEMELHANCA_MINIMA
-      )
+      const comparacao = comparacaoComOriginal(registro.markdown, novo.revisao.markdown);
+      const outroCurso = (antes.cnct?.slug ?? null) !== (depois.cnct?.slug ?? null) || antes.forma !== depois.forma;
+      const motivo = outroCurso
+        ? "outro curso ou outra forma de oferta"
+        : comparacao.titulosEmComum < SEMELHANCA_MINIMA
+          ? `só ${Math.round(comparacao.titulosEmComum * 100)}% dos títulos de seção do analisado`
+          : comparacao.secoes < TAMANHO_MINIMO || comparacao.linhas < TAMANHO_MINIMO
+            ? `${Math.round(Math.min(comparacao.secoes, comparacao.linhas) * 100)}% do tamanho do analisado`
+            : null;
+      if (motivo !== null)
         return yield* falha(
           arquivo,
-          `${nome} parece outro documento (${
-            semelhanca < SEMELHANCA_MINIMA
-              ? `só ${Math.round(semelhanca * 100)}% dos títulos de seção em comum`
-              : "outro curso ou outra forma de oferta"
-          }). Escolha a versão atualizada deste PPC; a pendência não foi marcada como resolvida.`,
+          `${nome} parece outro documento ou uma versão incompleta (${motivo}). Escolha a versão atualizada e completa deste PPC; a pendência não foi marcada como resolvida.`,
         );
       // O que a triagem do arquivo novo aponta (texto dirigido a IA, seções ausentes) e a lista não tem entra nela.
       const existentes = new Set((yield* listas.pendencias(id)).map((x) => x.chave));
@@ -739,7 +748,12 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   /** As discordâncias contra pendências do código, em CSV (separado por ponto e vírgula, como o Excel em português lê). */
   const exportarDiscordancias = listas.contestacoes.pipe(
     Effect.map((linhas) => {
-      const campo = (t: string) => `"${t.replace(/"/g, '""').replace(/\s+/g, " ").trim()}"`;
+      // Texto da pessoa e do PPC: o que começa como fórmula de planilha ganha um apóstrofo na frente.
+      const campo = (t: string) => {
+        const formula = /^[\t\r]/.test(t) || /^[=+\-@]/.test(t.trimStart());
+        const limpo = t.replace(/"/g, '""').replace(/\s+/g, " ").trim();
+        return `"${formula ? "'" : ""}${limpo}"`;
+      };
       const cabeca = ["data", "arquivo", "ficha", "critério", "apontamento", "trecho", "motivo da coordenação"];
       const corpo = linhas
         .filter((l) => l.pendencia.origem === "codigo")
