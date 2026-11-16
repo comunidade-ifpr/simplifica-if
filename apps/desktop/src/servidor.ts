@@ -93,6 +93,8 @@ export interface OpcoesInicio {
   readonly pastaEstado: string;
   /** `--pasta-skills`: as skills do app; sem ela, o servidor sobe sem skills. */
   readonly pastaSkills?: string | undefined;
+  /** `--pasta-trabalhos`: a raiz das pastas de tarefa (`Documentos/Simplifica IF`). */
+  readonly pastaTrabalhos?: string | undefined;
   /** Origens da janela aceitas no WebSocket e no `POST /ingresso`. */
   readonly origens: ReadonlyArray<string>;
   readonly token: string;
@@ -136,6 +138,7 @@ export function montarInicio(opcoes: OpcoesInicio): Inicio {
       "--pasta-estado",
       opcoes.pastaEstado,
       ...(opcoes.pastaSkills === undefined ? [] : ["--pasta-skills", opcoes.pastaSkills]),
+      ...(opcoes.pastaTrabalhos === undefined ? [] : ["--pasta-trabalhos", opcoes.pastaTrabalhos]),
     ],
     ambiente,
     cwd: opcoes.cwd,

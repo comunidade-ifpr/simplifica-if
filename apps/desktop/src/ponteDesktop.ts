@@ -27,6 +27,16 @@ export interface PonteDesktop {
   abrirDocumento?(caminho: string): Promise<void>;
   /** Mostra a cópia comentada na pasta (Finder, Explorador); mesma regra de `abrirDocumento`. */
   mostrarNaPasta?(caminho: string): Promise<void>;
+  /**
+   * O diálogo de arquivo para anexar à tarefa (M1.9), filtrado por `extensoes` (só documentos; ver
+   * `EXTENSOES_DOCUMENTO`); o processo principal libera o arquivo escolhido no servidor, que o copia
+   * para a pasta da tarefa. `null` se a pessoa cancelar.
+   */
+  escolherAnexo?(extensoes?: ReadonlyArray<string>): Promise<string | null>;
+  /** Abre no programa padrão um documento da pasta de uma tarefa (`Documentos/Simplifica IF/<tarefa>/`). */
+  abrirArquivoTarefa?(caminho: string): Promise<void>;
+  /** Mostra no Finder ou no Explorador um arquivo da pasta de uma tarefa. */
+  mostrarArquivoTarefa?(caminho: string): Promise<void>;
 }
 
 /** O nome em `window`. */
@@ -40,4 +50,7 @@ export const CANAIS = {
   escolherDocx: "simplifica:escolher-docx",
   abrirDocumento: "simplifica:abrir-documento",
   mostrarNaPasta: "simplifica:mostrar-na-pasta",
+  escolherAnexo: "simplifica:escolher-anexo",
+  abrirArquivoTarefa: "simplifica:abrir-arquivo-tarefa",
+  mostrarArquivoTarefa: "simplifica:mostrar-arquivo-tarefa",
 } as const;

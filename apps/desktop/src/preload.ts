@@ -19,6 +19,14 @@ const ponte: PonteDesktop = {
   mostrarNaPasta: async (caminho: string) => {
     await ipcRenderer.invoke(CANAIS.mostrarNaPasta, caminho);
   },
+  escolherAnexo: (extensoes?: ReadonlyArray<string>) =>
+    ipcRenderer.invoke(CANAIS.escolherAnexo, extensoes === undefined ? [] : [...extensoes]) as Promise<string | null>,
+  abrirArquivoTarefa: async (caminho: string) => {
+    await ipcRenderer.invoke(CANAIS.abrirArquivoTarefa, caminho);
+  },
+  mostrarArquivoTarefa: async (caminho: string) => {
+    await ipcRenderer.invoke(CANAIS.mostrarArquivoTarefa, caminho);
+  },
 };
 
 contextBridge.exposeInMainWorld(NOME_PONTE, ponte);

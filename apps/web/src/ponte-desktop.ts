@@ -27,6 +27,15 @@ export interface PonteDesktop {
   abrirDocumento?(caminho: string): Promise<void>;
   /** Mostra a cópia comentada na pasta (mesma regra de `abrirDocumento`). */
   mostrarNaPasta?(caminho: string): Promise<void>;
+  /**
+   * O diálogo para anexar um documento à tarefa (só as `extensoes` de documento); o desktop libera o
+   * arquivo no servidor, e `pasta.anexar` o copia para a pasta da tarefa. `null` se a pessoa cancelou.
+   */
+  escolherAnexo?(extensoes?: ReadonlyArray<string>): Promise<string | null>;
+  /** Abre no programa padrão um documento da pasta de uma tarefa (o desktop recusa outro arquivo). */
+  abrirArquivoTarefa?(caminho: string): Promise<void>;
+  /** Mostra no Finder ou no Explorador um arquivo da pasta de uma tarefa. */
+  mostrarArquivoTarefa?(caminho: string): Promise<void>;
 }
 
 declare global {
