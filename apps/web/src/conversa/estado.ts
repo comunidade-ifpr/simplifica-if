@@ -16,9 +16,11 @@ import type {
   EstadoConversa as EstadoGravado,
   Evento,
   ItemConversa,
+  NotaResposta,
   Provider,
 } from "@simplifica-if/contratos-app";
 import { explicarErroDoTurno, type MensagemErro } from "../conexao/erros.ts";
+import { ehFerramentaEtapa, type MarcaEtapa, marcaDaEntrada } from "./etapas.ts";
 
 /**
  * Um item da conversa. `chave` é da interface e única na conversa (a chave do React); `id`, nas
@@ -34,6 +36,8 @@ export type Item =
       readonly nome: string;
       readonly situacao: "andamento" | "concluida" | "falhou";
       readonly resumo?: string;
+      /** A marca da ferramenta `etapa` (o indicador de etapas da tarefa). */
+      readonly etapa?: MarcaEtapa;
     }
   | {
       readonly tipo: "aprovacao";
@@ -89,6 +93,10 @@ export interface EstadoConversa {
   readonly uso?: UsoTokens;
   /** Contador das chaves dos itens. */
   readonly proximoId: number;
+  /** A tarefa da conversa (o nome da skill, ou `conversa`), quando ela nasceu de uma. */
+  readonly tarefa?: string;
+  /** As avaliações (👍/👎) das respostas, por turno. */
+  readonly avaliacoes: Readonly<Record<number, NotaResposta>>;
 }
 
 export const estadoInicial = (provider: Provider = "claude", pastaTrabalho = ""): EstadoConversa => ({
@@ -98,12 +106,15 @@ export const estadoInicial = (provider: Provider = "claude", pastaTrabalho = "")
   ordem: 0,
   itens: [],
   proximoId: 1,
+  avaliacoes: {},
 });
 
 export type Acao =
   | { readonly tipo: "escolher"; readonly provider?: Provider; readonly pastaTrabalho?: string }
   | { readonly tipo: "iniciando" }
-  | { readonly tipo: "iniciada"; readonly sessao: string }
+  | { readonly tipo: "iniciada"; readonly sessao: string; readonly tarefa?: string }
+  /** 👍/👎 na resposta do turno (`null` retira). */
+  | { readonly tipo: "avaliada"; readonly turno: number; readonly nota: NotaResposta | null }
   | { readonly tipo: "naoIniciou"; readonly erro: MensagemErro }
   | { readonly tipo: "enviada"; readonly texto: string }
   | { readonly tipo: "evento"; readonly evento: Evento }
@@ -188,16 +199,21 @@ export function aplicarEvento(estado: EstadoConversa, evento: Evento): EstadoCon
       const item = estado.itens[aberta] as Extract<Item, { tipo: "resposta" }>;
       return trocar(estado, aberta, { ...item, texto: evento.texto, final: true });
     }
-    case "FerramentaIniciada":
+    case "FerramentaIniciada": {
+      const etapa = ehFerramentaEtapa(evento.nome) ? marcaDaEntrada(evento.entrada) : undefined;
       return comItem(estado, (chave) => ({
         tipo: "ferramenta",
         chave,
         id: evento.id,
         nome: evento.nome,
         situacao: "andamento",
+        ...(etapa === undefined ? {} : { etapa }),
       }));
+    }
     case "FerramentaConcluida": {
       const indice = estado.itens.findLastIndex((item) => item.tipo === "ferramenta" && item.id === evento.id);
+      const anterior = estado.itens[indice];
+      const etapa = anterior?.tipo === "ferramenta" ? anterior.etapa : undefined;
       const concluida = (chave: string): Item => ({
         tipo: "ferramenta",
         chave,
@@ -205,6 +221,7 @@ export function aplicarEvento(estado: EstadoConversa, evento: Evento): EstadoCon
         nome: evento.nome,
         situacao: evento.falhou ? "falhou" : "concluida",
         resumo: evento.resumo,
+        ...(etapa === undefined ? {} : { etapa }),
       });
       return indice < 0 ? comItem(estado, concluida) : trocar(estado, indice, concluida(estado.itens[indice]!.chave));
     }
@@ -268,6 +285,8 @@ export function estadoDaConversa(gravada: ConversaGravada): EstadoConversa {
     sessao: conversa.id,
     titulo: conversa.titulo,
     estadoServidor: conversa.estado,
+    ...(conversa.tarefa === undefined ? {} : { tarefa: conversa.tarefa }),
+    avaliacoes: Object.fromEntries(gravada.avaliacoes.map((avaliacao) => [avaliacao.turno, avaliacao.nota])),
   };
   const montado = gravada.itens.reduce(aplicarItem, inicial);
   if (conversa.estado === "respondendo") return { ...montado, fase: "respondendo" };
@@ -298,7 +317,16 @@ export function reduzir(estado: EstadoConversa, acao: Acao): EstadoConversa {
       return { ...resto, fase: "iniciando" };
     }
     case "iniciada":
-      return { ...estado, fase: "pronta", sessao: acao.sessao };
+      return {
+        ...estado,
+        fase: "pronta",
+        sessao: acao.sessao,
+        ...(acao.tarefa === undefined ? {} : { tarefa: acao.tarefa }),
+      };
+    case "avaliada": {
+      const { [acao.turno]: _anterior, ...outras } = estado.avaliacoes;
+      return { ...estado, avaliacoes: acao.nota === null ? outras : { ...outras, [acao.turno]: acao.nota } };
+    }
     case "abrindo":
       return { ...estadoInicial(estado.provider, estado.pastaTrabalho), fase: "carregando", sessao: acao.sessao };
     case "carregada":
