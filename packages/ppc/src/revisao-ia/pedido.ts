@@ -233,3 +233,20 @@ export function pedidoT(
     CONTRATO(bloco, fichas),
   ].join("\n");
 }
+
+/**
+ * O conteúdo do PPC que a IA recebe para uma ficha num pedido (a medição dos recortes): o que está
+ * entre as marcas do nonce, sem os recortes das outras fichas do lote (o comum do bloco fica).
+ * `reserva` é o que vale quando o pedido ainda não existe (as transversais, montadas na hora).
+ */
+export function conteudoDoPpcParaFicha(bloco: { pedido: string }, ficha: string, reserva = ""): string {
+  const marcas = /<ppc-[0-9a-z]+>\n([\s\S]*)\n<\/ppc-[0-9a-z]+>/.exec(bloco.pedido);
+  const ppc = marcas ? marcas[1]! : reserva;
+  const partes = ppc.split(/^(?=## Recorte para \S+$)/m);
+  return partes
+    .filter((parte) => {
+      const dono = /^## Recorte para (\S+)$/m.exec(parte.split("\n")[0] ?? "");
+      return !dono || dono[1] === ficha;
+    })
+    .join("\n");
+}
