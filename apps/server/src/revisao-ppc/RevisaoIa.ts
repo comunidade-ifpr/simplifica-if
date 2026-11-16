@@ -218,7 +218,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     const prontos = new Map((yield* revisoes.blocos(id)).map((b) => [b.bloco, b.resultado as ResultadoBloco] as const));
 
     const rodarBloco = Effect.fn("RevisaoIa.rodarBloco")(
-      function* (bloco: PlanoRevisaoIa["blocos"][number], pedido: string) {
+      function* (bloco: PlanoRevisaoIa["blocos"][number], pedido: string, conteudoPpc?: string) {
         andando.add(bloco.id);
         yield* avisar(id);
         const julgado = yield* julgarBloco({
@@ -228,6 +228,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
           bloco,
           fichas: bloco.fichas.map((f) => porId.get(f)!),
           pedido,
+          ...(conteudoPpc === undefined ? {} : { conteudoPpc }),
           fontes: new Set(bloco.fontes),
           tempoTurno,
           registrarTentativa: (t) => revisoes.gravarTentativa(id, bloco.id, t),
@@ -268,7 +269,8 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
         plano.transversais.contexto,
         plano.nonce,
       );
-      yield* rodarBloco(transversal, pedido);
+      // O alvo dos trechos das transversais é só o PPC entregue (`trechos`), nunca os resumos da IA.
+      yield* rodarBloco(transversal, pedido, plano.transversais.trechos);
     }
 
     // Concluir: a pré-conferência de novo, com os resultados conferidos da IA, no mesmo DOCX.

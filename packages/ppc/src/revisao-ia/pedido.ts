@@ -221,6 +221,7 @@ export function pedidoT(
     `# Bloco ${bloco.id}: coerência do conjunto (critérios transversais)`,
     "",
     "Você não recebe o PPC inteiro: avalie pelos resumos dos temas, pelos resultados já conferidos, pelas partes extraídas pelo código e pelos recortes de cada critério.",
+    "Os resumos foram escritos por IA a partir do PPC: orientam, mas não são evidência. Toda evidência é cópia literal das partes extraídas ou dos recortes; se a conclusão só se apoia nos resumos, responda INCONCLUSIVO.",
     "O que não puder ser decidido assim é INCONCLUSIVO.",
     "",
     "## Critérios",

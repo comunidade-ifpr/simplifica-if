@@ -91,8 +91,13 @@ export interface EntradaJulgamento {
   readonly fichas: readonly FichaIa[];
   /** O pedido do bloco; o conteúdo do PPC entregue a cada ficha sai dele e é o alvo dos trechos. */
   readonly pedido: string;
-  /** Para as transversais, cujo pedido se monta na hora: o mesmo texto que foi entre as marcas. */
   readonly fontes: ReadonlySet<string>;
+  /**
+   * O texto do PPC entregue, quando o pedido traz entre as marcas mais do que o PPC: nas
+   * transversais, os resumos dos temas (escritos pela IA) vão junto, e o alvo dos trechos tem de ser
+   * só as partes extraídas e os recortes. Sem ele, o alvo sai do pedido.
+   */
+  readonly conteudoPpc?: string;
   /** Tempo máximo de um turno. */
   readonly tempoTurno: Duration.Duration;
   /** Grava o uso de cada tentativa assim que ela acaba, mesmo que o bloco não termine. */
@@ -247,7 +252,14 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
 
   // O alvo dos trechos de cada ficha: o conteúdo do PPC que ela recebeu (sem os recortes das outras).
   const alvos = new Map(
-    entrada.fichas.map((f) => [f.id, alvoDosTrechos(conteudoDoPpcParaFicha({ pedido: entrada.pedido }, f.id))]),
+    entrada.fichas.map((f) => [
+      f.id,
+      alvoDosTrechos(
+        entrada.conteudoPpc === undefined
+          ? conteudoDoPpcParaFicha({ pedido: entrada.pedido }, f.id)
+          : conteudoDoPpcParaFicha({ pedido: "" }, f.id, entrada.conteudoPpc),
+      ),
+    ]),
   );
   const conferir = (texto: string): Conferencia =>
     conferirResposta(texto, entrada.bloco, entrada.fichas, {

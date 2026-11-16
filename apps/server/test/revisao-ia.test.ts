@@ -81,6 +81,8 @@ interface Roteiro {
 /** Um trecho literal do conteúdo entregue à ficha no pedido (a linha mais longa, até 60 caracteres). */
 const trechoDoPedido = (pedido: string, ficha: string) =>
   conteudoDoPpcParaFicha({ pedido }, ficha)
+    // Nas transversais, os resumos (da IA) não são PPC: ficam de fora da escolha.
+    .replace(/## Resumos dos temas[\s\S]*?(?=\n## )/, "")
     .split("\n")
     .map((l) => l.trim())
     .filter((l) => !/^(#|<|\[)/.test(l))
@@ -385,6 +387,26 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
         segunda.id,
       );
       assert.strictEqual(roteiro.pedidos.length, 0);
+    }),
+  );
+
+  it.effect("transversais: o trecho tem de estar no PPC entregue, não no resumo do tema escrito pela IA", () =>
+    Effect.gen(function* () {
+      reiniciar();
+      // O resumo do tema J é "A matriz tem dois componentes."; a transversal o cita como evidência.
+      roteiro.responder = (p) =>
+        blocoDo(p) === "t"
+          ? { texto: respostaValida(p, () => ({ evidencias: [{ trecho: "A matriz tem dois componentes." }] })) }
+          : { texto: respostaValida(p) };
+      const { final } = yield* rodar(gravar("PPC G.docx", ppcSintetico()));
+      assert.include(
+        roteiro.pedidos.find((p) => blocoDo(p) === "t")!,
+        "A matriz tem dois componentes.",
+      );
+      const t = final.blocos.find((b) => b.id === "t")!;
+      assert.strictEqual(t.naoConferidas, 1);
+      const pendencia = final.resultado!.pendencias.find((p) => p.ficha === "CT-TRANS-03")!;
+      assert.include(pendencia.mensagem, "a IA citou um trecho que não está no documento");
     }),
   );
 });
