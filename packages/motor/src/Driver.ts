@@ -100,6 +100,13 @@ export interface ConfigSessao {
   readonly instrucoes?: string;
   /** Skills do app para esta sessão; o `Motor` grava os arquivos e as junta às `instrucoes`. */
   readonly skills?: ReadonlyArray<Skill>;
+  /**
+   * Sessão de julgamento (a revisão de PPC): sem MCP, sem skills e sem ferramentas. O `Motor` aplica
+   * `POLITICA_JULGAMENTO` (nega tudo sem perguntar) em vez da política do app; o Claude recebe
+   * `tools: []` e só as `instrucoes` como prompt de sistema (sem o do Claude Code, cerca de 10 mil
+   * tokens por sessão).
+   */
+  readonly semFerramentas?: boolean;
 }
 
 /** O que o driver detecta: instalado, versão e login. Nunca traz e-mail nem credencial. */

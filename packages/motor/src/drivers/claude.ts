@@ -319,12 +319,17 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
         // As ferramentas do app passam sem `canUseTool` quando a política as permite.
         allowedTools: politica.ferramentas.mcpApp === "permitir" ? servidoresApp.map((nome) => `mcp__${nome}`) : [],
         ...(buscaWebLigada(politica, config.buscaWeb) ? {} : { disallowedTools: ["WebSearch", "WebFetch"] }),
-        permissionMode: "default",
+        // Julgamento: nenhuma ferramenta no contexto e nenhuma pergunta (`dontAsk` nega o que não foi
+        // pré-aprovado); o prompt de sistema é só o do app.
+        permissionMode: config.semFerramentas === true ? "dontAsk" : "default",
+        ...(config.semFerramentas === true ? { tools: [] } : {}),
         canUseTool,
         includePartialMessages: true,
         ...(config.instrucoes === undefined
           ? {}
-          : { systemPrompt: { type: "preset" as const, preset: "claude_code" as const, append: config.instrucoes } }),
+          : config.semFerramentas === true
+            ? { systemPrompt: config.instrucoes }
+            : { systemPrompt: { type: "preset" as const, preset: "claude_code" as const, append: config.instrucoes } }),
         ...(config.modelo ? { model: config.modelo } : {}),
       },
     });
