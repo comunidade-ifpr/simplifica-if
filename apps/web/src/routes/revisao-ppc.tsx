@@ -143,7 +143,13 @@ function RevisaoPpc() {
                 aoConcluir={(resultado) => setEstado({ fase: "pronta", resultado })}
               />
             ) : null}
-            <Resultado resultado={estado.resultado} />
+            <Resultado
+              resultado={estado.resultado}
+              aoApagar={() => {
+                setUltima(null);
+                setEstado({ fase: "escolha" });
+              }}
+            />
           </>
         ) : null}
       </div>
@@ -206,9 +212,16 @@ function Escolha({
   );
 }
 
-function Resultado({ resultado }: { readonly resultado: ResultadoRevisaoPpc }) {
+function Resultado({
+  resultado,
+  aoApagar,
+}: {
+  readonly resultado: ResultadoRevisaoPpc;
+  readonly aoApagar?: () => void;
+}) {
   // A lista viva (etapa 5b): o roteiro, as situações e as ações em cada pendência.
-  if (resultado.lista !== undefined) return <ListaViva key={resultado.lista} lista={resultado.lista} />;
+  if (resultado.lista !== undefined)
+    return <ListaViva key={resultado.lista} lista={resultado.lista} {...(aoApagar ? { aoApagar } : {})} />;
   const precisam = resultado.pendencias.filter((p) => p.estado === "nao_atende").length;
   const conferir = resultado.pendencias.length - precisam;
   const grupos = agruparPorTema(resultado);

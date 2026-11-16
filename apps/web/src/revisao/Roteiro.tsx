@@ -22,11 +22,13 @@ import {
   ArrowRightIcon,
   CheckIcon,
   ClipboardCopyIcon,
+  DownloadIcon,
   FileCheckIcon,
   ListIcon,
   MessageSquareWarningIcon,
   RouteIcon,
   SparklesIcon,
+  Trash2Icon,
   WrenchIcon,
 } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
@@ -54,7 +56,7 @@ import {
 
 type Chamar = (acao: () => Promise<ListaPendencias>) => Promise<boolean>;
 
-export function ListaViva({ lista: id }: { readonly lista: string }) {
+export function ListaViva({ lista: id, aoApagar }: { readonly lista: string; readonly aoApagar?: () => void }) {
   const api = useApi();
   const [lista, setLista] = useState<ListaPendencias | undefined>(undefined);
   const [modo, setModo] = useState<"roteiro" | "tudo">("roteiro");
@@ -108,6 +110,15 @@ export function ListaViva({ lista: id }: { readonly lista: string }) {
       <AvisoErro erro={erro} />
     );
 
+  const apagar = async () => {
+    setErro(undefined);
+    try {
+      await api.chamar((c) => c["revisaoPpc.apagarLista"]({ lista: id }));
+      aoApagar?.();
+    } catch (motivo) {
+      setErro(explicarErro(motivo));
+    }
+  };
   const gerarCopia = async () => {
     setGerando(true);
     await chamar(() => api.chamar((c) => c["revisaoPpc.gerarCopia"]({ lista: id })));
@@ -116,12 +127,29 @@ export function ListaViva({ lista: id }: { readonly lista: string }) {
   const aviso = avisoCobertura(lista);
   const r = lista.resultado;
   const uso = lista.uso.entrada + lista.uso.saida + lista.uso.cacheLeitura + lista.uso.cacheEscrita;
+  const precisam = lista.pendencias.filter((p) => p.pendencia.estado === "nao_atende").length;
+  const conferir = lista.pendencias.length - precisam;
+  const exportar = async () => {
+    setErro(undefined);
+    try {
+      const csv = await api.chamar((c) => c["revisaoPpc.exportarDiscordancias"]({}));
+      const url = URL.createObjectURL(new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8" }));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "discordancias-das-regras (Simplifica IF).csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (motivo) {
+      setErro(explicarErro(motivo));
+    }
+  };
 
   return (
     <section aria-labelledby="titulo-lista" className="flex flex-col gap-5">
       <div className="flex flex-col gap-2 rounded-lg border p-4">
         <h2 id="titulo-lista" className="font-semibold text-lg">
-          {lista.pendencias.length} {lista.pendencias.length === 1 ? "pendência" : "pendências"} na sua lista
+          {precisam} {precisam === 1 ? "ponto precisa" : "pontos precisam"} de ajuste e {conferir}{" "}
+          {conferir === 1 ? "é para conferir" : "são para conferir"}
         </h2>
         <p className="text-sm">{resumoSituacoes(lista)}</p>
         <p className="text-sm">Curso: {descreverCurso(r.curso)}</p>
@@ -137,11 +165,27 @@ export function ListaViva({ lista: id }: { readonly lista: string }) {
           </p>
         ) : null}
         <CopiaComentada arquivo={r.arquivoComentado} />
-        <div>
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" disabled={gerando} onClick={() => void gerarCopia()}>
             {gerando ? <Spinner /> : <FileCheckIcon />} Gerar a cópia comentada com a situação atual
           </Button>
+          {lista.pendencias.some(
+            (p) => p.pendencia.origem === "codigo" && p.historico.some((e) => e.acao === "contestar"),
+          ) ? (
+            <Button variant="outline" size="sm" onClick={() => void exportar()}>
+              <DownloadIcon /> Exportar discordâncias das regras (CSV)
+            </Button>
+          ) : null}
+          {aoApagar === undefined ? null : (
+            <Button variant="ghost" size="sm" onClick={() => void apagar()}>
+              <Trash2Icon /> Apagar esta lista
+            </Button>
+          )}
         </div>
+        <p className="text-muted-foreground text-xs">
+          A lista guarda no seu computador o texto do PPC convertido e o que você escrever em "Discordo…" até você
+          apagá-la (ou 30 dias sem uso).
+        </p>
       </div>
 
       <div className="flex flex-wrap gap-2" role="group" aria-label="Como ver a lista">
@@ -333,6 +377,7 @@ function CartaoPendencia({
       {painel.tipo === "discordar" ? (
         <Discordar
           provider={provider}
+          doCodigo={p.origem === "codigo"}
           estimar={() => api.chamar((c) => c["revisaoPpc.estimarAcao"]({ ...base, acao: "contestar", provider }))}
           aoEnviar={(motivo) =>
             executar(
@@ -409,12 +454,15 @@ function useEstimativa(estimar: () => Promise<EstimativaAcao>) {
 
 function Discordar({
   provider,
+  doCodigo,
   estimar,
   aoEnviar,
   aoFechar,
   ocupada,
 }: {
   readonly provider: Provider;
+  /** Pendência da conferência automática: não vai à IA, só registra a discordância. */
+  readonly doCodigo: boolean;
   readonly estimar: () => Promise<EstimativaAcao>;
   readonly aoEnviar: (motivo: string) => void;
   readonly aoFechar: () => void;
@@ -432,14 +480,23 @@ function Discordar({
         Por que você discorda? Um trecho do PPC ou uma norma ajudam.
       </label>
       <Textarea id="motivo" value={motivo} maxLength={1500} onChange={(e) => setMotivo(e.currentTarget.value)} />
-      <p className="text-muted-foreground text-xs">
-        A IA ({provider === "claude" ? "Claude" : provider}) reavalia, mas quem retira é o app: só com um trecho do PPC
-        ou uma norma que ele consiga conferir. Costume ou "a PROENS sempre aceitou" não retiram; a sua discordância fica
-        registrada. {estimativa === undefined ? "" : textoEstimativaAcao(estimativa)}
-      </p>
+      {doCodigo ? (
+        <p className="text-muted-foreground text-xs">
+          Este ponto vem da conferência automática, que só muda com o arquivo corrigido: corrija o PPC e use "Já
+          resolvi" com o arquivo atualizado. A sua discordância fica registrada e pode ser exportada para a curadoria
+          das regras. Não vai à IA.
+        </p>
+      ) : (
+        <p className="text-muted-foreground text-xs">
+          A IA ({provider === "claude" ? "Claude" : provider}) reavalia, mas quem decide é o app: só aceita com um
+          trecho da seção do PPC que ele consiga conferir. Costume ou "a PROENS sempre aceitou" não bastam. Mesmo
+          aceita, a contestação fica "para conferir" na cópia comentada.{" "}
+          {estimativa === undefined ? "" : textoEstimativaAcao(estimativa)}
+        </p>
+      )}
       <div className="flex gap-2">
         <Button type="submit" size="sm" disabled={ocupada || !motivo.trim()}>
-          {ocupada ? <Spinner /> : null} Enviar à IA
+          {ocupada ? <Spinner /> : null} {doCodigo ? "Registrar a discordância" : "Enviar à IA"}
         </Button>
         <Button type="button" size="sm" variant="ghost" onClick={aoFechar}>
           Cancelar
@@ -552,7 +609,7 @@ function Sugestao({ sugestao }: { readonly sugestao: SugestaoTexto }) {
         </p>
       ) : (
         <p className="text-muted-foreground text-xs">
-          Os números, normas e nomes da redação estão no PPC, no CNCT ou nas normas consultadas.
+          O app não achou fatos fora do material; números por extenso e siglas podem não ter sido conferidos.
         </p>
       )}
       {sugestao.completar.length ? (

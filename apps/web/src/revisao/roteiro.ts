@@ -9,7 +9,7 @@ export const ROTULO_SITUACAO_PENDENCIA: Record<SituacaoPendencia, string> = {
   aberta: "Aberta",
   vou_ajustar: "Vou ajustar",
   resolvida: "Resolvida",
-  contestada_aceita: "Retirada após contestação",
+  contestada_aceita: "Contestada com evidência (confira)",
   contestada_mantida: "Mantida, com a sua discordância",
 };
 
@@ -41,7 +41,7 @@ export function resumoSituacoes(lista: ListaPendencias): string {
   n("vou_ajustar", "que você vai ajustar", "que você vai ajustar");
   n("resolvida", "resolvida", "resolvidas");
   n("contestada_mantida", "mantida com a sua discordância", "mantidas com a sua discordância");
-  n("contestada_aceita", "retirada após contestação", "retiradas após contestação");
+  n("contestada_aceita", "contestada com evidência, para conferir", "contestadas com evidência, para conferir");
   return partes.length ? `${partes.join(" · ")}.` : "Nenhuma pendência.";
 }
 

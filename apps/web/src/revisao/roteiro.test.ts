@@ -42,7 +42,7 @@ describe("roteiro na tela", () => {
 
   test("o resumo das situações e a estimativa de uma ação", () => {
     expect(resumoSituacoes(lista([viva(1, "aberta"), viva(2, "aberta"), viva(2, "contestada_aceita")], []))).toBe(
-      "2 abertas · 1 retirada após contestação.",
+      "2 abertas · 1 contestada com evidência, para conferir.",
     );
     expect(
       textoEstimativaAcao({ provider: "claude", tokensEntrada: 6000, tokensSaida: 450, segundos: 6, custoUsd: 0.025 }),
