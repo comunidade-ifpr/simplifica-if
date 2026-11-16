@@ -52,6 +52,11 @@ SIMPLIFICA_SERVIDOR_TOKEN=$(openssl rand -base64 32) \
 | | `revisaoPpc.iniciarIa({ revisao })`, `revisaoPpc.pausarIa({ revisao })` | começa ou retoma (só os blocos pendentes); pausa (os prontos ficam gravados) |
 | | `revisaoPpc.acompanharIa({ revisao })` (stream) | o estado agora e a cada bloco pronto, pausa ou fim; termina em `concluida` (com o `ResultadoRevisaoPpc` unificado) ou `falhou` |
 | | `revisaoPpc.listarIa({})` | as revisões gravadas, sem o plano |
+| lista viva (etapa 5b) | `revisaoPpc.lista({ lista })`, `revisaoPpc.ultimaLista({})`, `revisaoPpc.apagarLista({ lista })` | `ListaPendencias`: cada pendência com a situação, o histórico e a sugestão, as paradas do roteiro (vistas ou não), onde a pessoa estava e o uso das ações com IA. `analisar` e a revisão com IA concluída devolvem o `lista` no resultado |
+| | `revisaoPpc.marcar({ lista, chave, situacao })`, `revisaoPpc.verParada({ lista, ordem })` | "Vou ajustar", "Já resolvi" e "Reabrir" (sem IA); a parada vista |
+| | `revisaoPpc.estimarAcao({ lista, chave, acao, provider? })` | tokens, segundos e US$ equivalentes de "Discordo…", "Sugerir texto" ou a reanálise (0 numa ficha do código) |
+| | `revisaoPpc.contestar({ lista, chave, motivo, provider? })`, `revisaoPpc.sugerir(…)`, `revisaoPpc.reanalisar({ lista, chave, arquivo, provider? })` | a lista depois da ação; a situação sai da conferência em código, nunca da resposta da IA nem da palavra da pessoa |
+| | `revisaoPpc.gerarCopia({ lista })` | uma nova cópia comentada do original com a situação marcada em cada comentário e no aviso do título |
 | leitura | o `GrupoLeitura` de `@simplifica-if/mcp/grupo-leitura`, com os handlers de `@simplifica-if/mcp/rpc` (`lerLink` para qualquer link `ifpr://`, `fichaNorma`, `lerDispositivos`, `buscarNorma`, `fichaCurso`, `lerSecao`, `buscarSecoes`, `listarCursos`, `sobreABase`, `lerPpc`, `lerCnct`, `lerCampus`, `lerFicha` e o que ele ganhar) | as respostas das ferramentas MCP de mesmo nome |
 
 **Conversas gravadas (M1.2).** A conversa tem id próprio, fica no banco `conversas.sqlite` da pasta de estado (`effect/sql` sobre `node:sqlite`, migrações em `src/persistencia/migracoes/`) e não depende da conexão: a interface que recarrega volta por `carregar` e, com turno em andamento, por `acompanhar`. Os eventos de cada turno passam por um fiber do servidor, que os grava e os publica; o `TextoParcial` não se grava (o texto parcial sem `TextoFinal` vira um `TextoFinal` no fim do turno). Estados: `pronta`, `respondendo`, `liberada` (sem processo do provider) e `caiu`.
@@ -130,6 +135,25 @@ A taxa é a fração dos pares (PPC, ficha) em que o conteúdo que a IA recebe c
 
 O script converte um PPC da base (Markdown público; padrão: Técnico em Enfermagem, Curitiba) em DOCX, planta a instrução escondida na seção 5.1 e imprime as medidas (`--saida` para a pasta). Uma execução por medição.
 
+## Lista viva e conversa por pendência (M1.11, etapa 5b)
+
+`src/revisao-ppc/ListaViva.ts`, sobre `persistencia/Listas.ts` (migração 4 do `conversas.sqlite`: `listas_pendencias`, `pendencias_vivas`, `eventos_pendencia`, `acoes_ia`).
+
+- **A lista** nasce de cada `analisar` (a pré-conferência) e de cada revisão com IA concluída (`criarLista`, chamada pela `RevisaoIa`), com o texto do PPC convertido que as ações usam. Cada pendência tem uma chave estável (`chavePendencia` do `packages/ppc`: a ficha e um hash da origem, do trecho e da mensagem); a situação, o histórico e a sugestão passam da lista mais recente do mesmo arquivo com o mesmo sha256 (o "Vou ajustar" da pré-conferência continua na lista da revisão com IA). Situações: `aberta`, `vou_ajustar`, `resolvida` (com `resolvidaPor`: a pessoa ou a reanálise), `contestada_aceita`, `contestada_mantida`. Uma lista de revisão com IA some com ela (`ON DELETE CASCADE`).
+- **O roteiro:** as paradas são os temas com pendência ou critério conferido, na ordem do parecer; a lista guarda as vistas e a atual.
+- **"Discordo…"** (`contestar`): uma sessão nova sem ferramentas (`turnoSemFerramentas` do `julgamento.ts`, a mesma do lote) com `instrucoesConversa`, a ficha, o contexto normativo e o recorte da ficha (`contextoDaFicha` do `preparo.ts`, o caminho do lote S, para fichas D, S e J), a pendência e o motivo da pessoa entre `<motivo-NONCE>`. A decisão é do código (`conferirContestacao`): retira só se a IA respondeu `retirar` com ATENDE ou NAO_APLICAVEL permitido à ficha, com ao menos um trecho literal do recorte ou uma fonte entregue conferidos, e sem trecho conferível que não está no recorte (invenção). Fonte fora do contexto é descartada sem derrubar; dispositivo não entregue de norma entregue conta como a norma; trecho curto demais para conferir não conta. O resto é `contestada_mantida`, com a explicação e, quando a IA pediu para retirar, o porquê do app.
+- **"Sugerir texto"** (`sugerir`): a redação em JSON; o código extrai da própria redação os números, as normas citadas e os nomes próprios e marca os que não estão no recorte, no contexto normativo, no CNCT ou no texto da pendência (`conferirSugestao`); `[completar: …]` não é fato. Fica na pendência; nunca vai ao documento.
+- **"Já resolvi" com o arquivo novo** (`reanalisar`): o `.docx` novo (liberado pelo desktop, sha256 diferente do analisado) é convertido e pré-conferido; numa pendência do código, ela fica `resolvida` só se a ficha não aponta mais nada; numa da IA, um lote S de uma ficha, conferido como no julgamento, decide (`estadoDaIa` nulo → `resolvida`; senão `aberta`, com o que ainda aponta).
+- **Uso e vez:** uma ação com IA por vez (`withPermitsIfAvailable`); a pausa do provider vira a frase para a pessoa; o uso de cada ação fica em `acoes_ia` e soma ao `usoTotal` da revisão com IA de onde a lista veio. Os turnos seguintes da mesma pendência levam o histórico em frases fixas do app, nunca o texto da IA.
+- **Cache:** cada ação é uma sessão nova, com o cache de prompt desligado como no lote. Medido em 16/11/2026: manter a sessão da pendência aberta e mandar a ação seguinte como novo turno gravou 170 mil tokens no cache no segundo turno e não leu nada (o mesmo bloco fixo da etapa 4), e uma sessão nova com uma mensagem só não tem ponto de leitura no prefixo comum. O reaproveitamento fica para depois (ver Pendências).
+
+```bash
+node apps/server/scripts/lista-viva-real.ts --listar                # pré-conferência de um PPC da base em DOCX, sem IA; imprime as chaves
+node apps/server/scripts/lista-viva-real.ts --fundamentada <chave> "<motivo>" --sem-fundamento <chave> "<motivo>" --sugerir <chave>
+```
+
+Números da execução real no plano do app (M1.11, etapa 5b).
+
 ## Segurança
 
 - O RPC e o MCP escutam só em `127.0.0.1`, em portas escolhidas na abertura.
@@ -145,7 +169,7 @@ O script converte um PPC da base (Markdown público; padrão: Técnico em Enferm
 - `src/partida.ts`: o token (ambiente ou envelope no stdin) e o cordão do stdin.
 - `src/ponte.ts`: o comando da ponte MCP (`ponte-mcp`) para o driver do Antigravity.
 - `src/servidor.ts`: a layer do servidor inteiro (`layer(opcoes)`, que pede os `Drivers`) e a rota `/rpc`.
-- `src/revisao-ppc/`: `AnalisePpc.ts` (o serviço da revisão prévia: pedido, base do `kb.sqlite`, Worker, cópia), `trabalhador.ts` (o Worker), `RevisaoIa.ts` (a revisão com IA: preparar, executar, pausar, retomar, acompanhar), `preparo.ts` (o plano e os pedidos) e `julgamento.ts` (a sessão de um bloco, a conferência e a nova tentativa).
+- `src/revisao-ppc/`: `AnalisePpc.ts` (o serviço da revisão prévia: pedido, base do `kb.sqlite`, Worker, cópia), `trabalhador.ts` (o Worker), `RevisaoIa.ts` (a revisão com IA: preparar, executar, pausar, retomar, acompanhar), `preparo.ts` (o plano e os pedidos) e `julgamento.ts` (a sessão de um bloco, a conferência e a nova tentativa; `turnoSemFerramentas`, a sessão de um turno que as ações da lista viva também usam) e `ListaViva.ts` (a lista viva, o roteiro e as ações por pendência); `persistencia/Listas.ts`, a lista no banco.
 - `src/Autenticacao.ts`, `src/Conversas.ts` (motor + MCP por conversa, gravação, retomada e ciclo de vida da sessão), `src/CatalogoSkills.ts` (as skills do app), `src/handlers.ts`.
 - `src/persistencia/`: `Banco.ts` (o `node:sqlite` com os `PRAGMA` e as migrações do T3), `Historico.ts` (conversas e itens), `Revisoes.ts` (as revisões com IA e os blocos) e `migracoes/`.
 - `src/t3/`: cópia do T3 (`launcherWatch.ts`), com `NOTICE`; registro em `docs/upstream-t3.md`.
@@ -153,7 +177,7 @@ O script converte um PPC da base (Markdown público; padrão: Técnico em Enferm
 ## Testes
 
 ```bash
-pnpm --filter @simplifica-if/server test        # servidor em portas efêmeras com drivers falsos; o bin.ts como processo; a revisão prévia com o Worker de verdade (revisao-ppc.test.ts: cópia, recusas, bomba ZIP, estouro de memória e de tempo, laço de eventos livre); a revisão com IA com um driver de teste (revisao-ia.test.ts: sessões sem ferramentas, JSON inválido, trecho inventado, norma fora do contexto, injeção, limite de taxa no meio e retomada)
+pnpm --filter @simplifica-if/server test        # servidor em portas efêmeras com drivers falsos; o bin.ts como processo; a revisão prévia com o Worker de verdade (revisao-ppc.test.ts: cópia, recusas, bomba ZIP, estouro de memória e de tempo, laço de eventos livre); a revisão com IA com um driver de teste (revisao-ia.test.ts: sessões sem ferramentas, JSON inválido, trecho inventado, norma fora do contexto, injeção, limite de taxa no meio e retomada); a lista viva com o mesmo driver (lista-viva.test.ts: a situação que passa da pré-conferência para a revisão com IA, paradas, contestação com evidência, autoridade, trecho inventado e injeção no motivo e no PPC, sugestão com fato inventado, reanálise pelo arquivo novo, cópia com a situação, uso somado à revisão, lista que sobrevive a reabrir o banco)
 SIMPLIFICA_POC_REAL=1 SIMPLIFICA_PROVIDER=claude pnpm --filter @simplifica-if/server test real   # provider real, pelo RPC
 SIMPLIFICA_POC_REAL=1 SIMPLIFICA_PROVIDER=claude pnpm --filter @simplifica-if/server test ciclo-real   # ciclo de vida da conversa
 SIMPLIFICA_POC_REAL=1 SIMPLIFICA_PROVIDER=codex pnpm --filter @simplifica-if/server test skills-real   # uma skill do app numa conversa real
@@ -192,6 +216,7 @@ O teste real gasta a assinatura do usuário e usa a pasta de estado do harness d
 
 - ~~**Ciclo real no Codex e no Antigravity.**~~ Resolvida em 16/11/2026: passou nos dois, com retomada nativa. O `agy` 1.5.9 anuncia `loadSession` (e `sessionCapabilities.resume`); se uma versão deixar de anunciar, a conversa recomeça com o histórico como contexto.
 - ~~**Skills do app nas conversas.**~~ Resolvida: o `CatalogoSkills` as passa a toda conversa (ver [Skills do app](#skills-do-app)), com teste real verde nos três providers. A `revisar-ppc` entra pela revisão prévia (`revisaoPpc.analisar`); as etapas com IA são as 4 e 5 do M1.11.
+- **Lista viva (etapa 5b):** o cache entre as ações da mesma pendência não é reaproveitado (ver a seção); dois caminhos a medir: o prefixo comum no prompt de sistema (lido do cache entre sessões, mas põe o PPC no sistema) ou um `cache_control` no meio da mensagem, se o Agent SDK passar a aceitar. A abertura da parada com IA e a pré-busca da seguinte (a proposta B) não foram feitas: o roteiro percorre a lista que a pré-conferência e o relatório com IA produziram. O recorte da ficha D não traz sempre o trecho apontado pelo código (no teste real, a citação da Res. 54/2011 ficou fora do recorte da CT-SUP-12, e a IA disse isso).
 - **Revisão prévia:** a análise é uma chamada só, sem andamento por etapa (a conversão e a pré-conferência levam menos de 1 s nos PPCs de teste); a interface não deixa escolher o curso quando a identificação falha (o RPC já aceita `cnct` e `forma`); a comparação da base do `kb.sqlite` com a dos arquivos virou teste (`revisao-ppc-base.test.ts`).
 
 - ~~**Ponte no app empacotado.**~~ Resolvida com o `apps/desktop`: o comando da ponte sai do `argv` do processo (`src/ponte.ts`), e o bundle roda a ponte com o Electron como Node (conferido no app empacotado).

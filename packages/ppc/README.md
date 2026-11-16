@@ -94,3 +94,11 @@ As partes puras da revisão das fichas S e J pela IA, que o servidor do app cond
 
 Testes em `test/revisao-ia.test.ts` (o plano sobre as 80 fichas reais, recortes, pedido com nonce, conferência, estimativa e o DOCX com a IA).
 
+## Conversa por pendência e lista viva (M1.11, etapa 5b)
+
+- **`revisao-ia/conversa.ts`:** `instrucoesConversa` (o PPC entre `<ppc-NONCE>` e o texto da pessoa entre `<motivo-NONCE>` são dado; qualquer marca do nonce dentro deles some), `prefixoConversa` (a ficha, o contexto normativo, o recorte e a pendência), `pedidoContestacao` e `pedidoSugestao` (o prefixo, os turnos anteriores em frases do app e a tarefa). `conferirContestacao` é a decisão do código: retira só com `retirar`, estado ATENDE ou NAO_APLICAVEL permitido à ficha, ao menos um trecho literal do recorte ou uma fonte entregue conferidos e nenhum trecho conferível fora do recorte; fonte fora do contexto é descartada, dispositivo de norma entregue vale como a norma, trecho curto demais (`trechoConferivel` da `conferencia.ts`) não conta. `conferirSugestao` extrai da redação os números, as normas (`9.394/1996` ↔ `br/lei/1996/9394`) e os nomes próprios e marca os que não estão no recorte, no contexto, no texto da pendência ou no vocabulário fixo da revisão; `[completar: …]` não é fato.
+- **`revisao-previa.ts`:** `chavePendencia` (a ficha e um FNV-1a da origem, do trecho e da mensagem) e `OpcoesRevisaoPrevia.situacoes`: a cópia comentada tira a pendência retirada depois de contestação, põe a situação no comentário das outras e conta tudo no aviso do título ("Situação marcada no app: …").
+- **`revisao-ia/estimativa.ts`:** `estimarAcao` (uma ação: um pedido, uma sessão; a reanálise com a folga da nova tentativa).
+
+Testes em `test/revisao-ia-conversa.test.ts`.
+
