@@ -93,6 +93,10 @@ export interface OpcoesInicio {
   readonly pastaEstado: string;
   /** `--pasta-skills`: as skills do app; sem ela, o servidor sobe sem skills. */
   readonly pastaSkills?: string | undefined;
+  /** `--pasta-atualizacao`: liga a atualização da base e das skills (M1.10). */
+  readonly pastaAtualizacao?: string | undefined;
+  /** `--versao-app`: a versão do app, para o `app_minimo` do manifesto. */
+  readonly versaoApp?: string | undefined;
   /** Origens da janela aceitas no WebSocket e no `POST /ingresso`. */
   readonly origens: ReadonlyArray<string>;
   readonly token: string;
@@ -136,6 +140,8 @@ export function montarInicio(opcoes: OpcoesInicio): Inicio {
       "--pasta-estado",
       opcoes.pastaEstado,
       ...(opcoes.pastaSkills === undefined ? [] : ["--pasta-skills", opcoes.pastaSkills]),
+      ...(opcoes.pastaAtualizacao === undefined ? [] : ["--pasta-atualizacao", opcoes.pastaAtualizacao]),
+      ...(opcoes.versaoApp === undefined ? [] : ["--versao-app", opcoes.versaoApp]),
     ],
     ambiente,
     cwd: opcoes.cwd,

@@ -16,6 +16,8 @@ import * as NodeModule from "node:module";
 import * as NodePath from "node:path";
 import * as NodeUtil from "node:util";
 import { build, type Configuration, Platform } from "electron-builder";
+import { ATUALIZACAO_FABRICA } from "@simplifica-if/motor/politica-atualizacao";
+import { ARQUIVO_ASSINATURA, feedDoCanal } from "../src/atualizacaoApp.ts";
 import { construir, DIST, DIST_RECURSOS, PACOTE, RAIZ } from "./construir.ts";
 
 export const APP_ID = "br.edu.ifpr.simplifica";
@@ -27,7 +29,18 @@ const versaoElectron = (): string => {
     .version;
 };
 
-/** A configuração do electron-builder (sem assinatura, sem publicação). */
+/**
+ * O feed `generic` que vai no `app-update.yml` (o processo principal o troca pelo do canal com
+ * `setFeedURL`). Com ele, o electron-builder também escreve o `latest-mac.yml` e o `latest.yml` ao lado
+ * dos instaladores, que a fábrica publica no release do canal (`pnpm fabrica publicar-app`). Sem feed
+ * na política, um endereço que não resolve: o app não procura (ver `motivoDesligado`).
+ */
+export const FEED_EMPACOTADO = feedDoCanal(
+  ATUALIZACAO_FABRICA.feed ?? "https://feed-a-configurar.invalid/{canal}/",
+  ATUALIZACAO_FABRICA.canal,
+);
+
+/** A configuração do electron-builder (sem assinatura; a publicação é da fábrica). */
 export function configuracaoBuilder(opcoes: { readonly dir: boolean }): Configuration {
   return {
     appId: APP_ID,
@@ -47,6 +60,8 @@ export function configuracaoBuilder(opcoes: { readonly dir: boolean }): Configur
       { from: "dist/recursos/base", to: "base", filter: ["kb.sqlite"] },
       // Só o que o build copiou (`skills.ts`): as skills do app e os arquivos listados no manifesto.
       { from: "dist/recursos/skills", to: "skills" },
+      // Se este app tem assinatura de código: sem ela, o `electron-updater` fica desligado (M1.10).
+      { from: `dist/recursos/${ARQUIVO_ASSINATURA}`, to: ARQUIVO_ASSINATURA },
     ],
     afterPack: async (contexto) => {
       const recursos =
@@ -67,7 +82,8 @@ export function configuracaoBuilder(opcoes: { readonly dir: boolean }): Configur
     // Tudo vai nos bundles: nada a instalar nem a recompilar.
     npmRebuild: false,
     nodeGypRebuild: false,
-    publish: null,
+    // Só para gerar o `app-update.yml` e os `latest*.yml`; nada se publica daqui (`build` sem `publish`).
+    publish: [{ provider: "generic", url: FEED_EMPACOTADO }],
     mac: {
       target: opcoes.dir ? ["dir"] : ["dmg", "zip"],
       icon: "icone.png",
@@ -99,6 +115,13 @@ export function configuracaoBuilder(opcoes: { readonly dir: boolean }): Configur
   };
 }
 
+/** O marcador de assinatura: `false` enquanto `mac.identity` for `null` e não houver certificado do Windows. */
+function gravarAssinatura(): void {
+  const assinado = configuracaoBuilder({ dir: false }).mac?.identity !== null && Boolean(process.env.CSC_LINK);
+  NodeFS.mkdirSync(DIST_RECURSOS, { recursive: true });
+  NodeFS.writeFileSync(NodePath.join(DIST_RECURSOS, ARQUIVO_ASSINATURA), `${JSON.stringify({ assinado })}\n`);
+}
+
 function copiarBase(): void {
   const origem = process.env.SIMPLIFICA_KB?.trim() || NodePath.join(RAIZ, "tmp", "kb.sqlite");
   if (!NodeFS.existsSync(origem)) {
@@ -120,6 +143,7 @@ if (import.meta.main) {
   });
   await construir({ soProcessoPrincipal: false, web: values["sem-web"] !== true });
   copiarBase();
+  gravarAssinatura();
   const plataformas = [...(values.mac ? [Platform.MAC] : []), ...(values.win ? [Platform.WINDOWS] : [])];
   const alvos = (plataformas.length > 0 ? plataformas : [Platform.current()]).map((plataforma) =>
     plataforma.createTarget(),

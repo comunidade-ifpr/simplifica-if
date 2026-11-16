@@ -12,6 +12,7 @@
  * Fica para depois (decisão em aberto 9): um arquivo de política da máquina, gerido pela DTI, que só
  * restringe esta.
  */
+import { ATUALIZACAO_FABRICA } from "./politica-atualizacao.ts";
 import * as NodePath from "node:path";
 import * as Schema from "effect/Schema";
 import { Provider } from "./eventos.ts";
@@ -77,18 +78,7 @@ export const Politica = Schema.Struct({
   }),
   /** Telemetria dos providers: desligada; nada sai além do que a conversa precisa. */
   telemetria: Schema.Literals(["desligada"]),
-  /**
-   * Atualização (M1.10): o app só aceita pacote assinado do feed próprio.
-   *
-   * - `feed`: a pasta do manifesto do canal, com `{canal}` (`beta`, `estavel`). Hospedagem decidida
-   *   em 16/11/2026: GitHub Releases do próprio repositório, por link direto, sem a API
-   *   (`feedGitHub` de `@simplifica-if/atualizacao/hospedagem`). `null` enquanto o repositório não é
-   *   público: a atualização fica desligada, salvo `SIMPLIFICA_ATUALIZACAO_FEED`.
-   * - `chavePublica`: a linha base64 da chave pública minisign da fábrica; `null` até a chave de
-   *   produção ser gerada (o passo está no README de `packages/atualizacao`).
-   * - `app`: o `electron-updater`; `se-assinado` liga só num app com assinatura de código (o
-   *   macOS recusa atualizar um app sem ela), e ainda não há certificado (decisão em aberto 1).
-   */
+  /** Atualização (M1.10): o app só aceita pacote assinado do feed próprio. Ver `politica-atualizacao.ts`. */
   atualizacao: Schema.Struct({
     feed: Schema.NullOr(Schema.String),
     canal: Schema.Literals(["beta", "estavel"]),
@@ -105,9 +95,6 @@ const congelar = <A>(valor: A): A => {
   }
   return valor;
 };
-
-/** A atualização de fábrica: canal `beta` no piloto; feed e chave a preencher (ver `Politica.atualizacao`). */
-const ATUALIZACAO_FABRICA = { feed: null, canal: "beta", chavePublica: null, app: "se-assinado" } as const;
 
 /**
  * A política de fábrica. As ferramentas `ifpr` passam sem perguntar (só leitura, sobre dado

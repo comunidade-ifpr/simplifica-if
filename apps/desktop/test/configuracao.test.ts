@@ -87,13 +87,23 @@ describe("resolverConfiguracao", () => {
     expect(config.cwd).toBe("/Users/x");
   });
 
-  test("app empacotado: a base atualizada na pasta do app vence a empacotada; SIMPLIFICA_KB vence as duas", () => {
-    const atualizada = "/Users/x/Library/Application Support/Simplifica IF/base/kb.sqlite";
-    expect(resolverConfiguracao({ ...empacotado, existe: (c) => c === atualizada }).banco).toBe(atualizada);
-    expect(
-      resolverConfiguracao({ ...empacotado, ambiente: { SIMPLIFICA_KB: "/outra/kb.sqlite" }, existe: () => true })
-        .banco,
-    ).toBe("/outra/kb.sqlite");
+  test("app empacotado: a base empacotada no --banco e a pasta do app para a atualização; SIMPLIFICA_KB desliga", () => {
+    const config = resolverConfiguracao({ ...empacotado, existe: () => true });
+    expect(config.banco).toBe("/Applications/Simplifica IF.app/Contents/Resources/base/kb.sqlite");
+    expect(config.pastaAtualizacao).toBe(empacotado.pastaApp);
+    const externa = resolverConfiguracao({ ...empacotado, ambiente: { SIMPLIFICA_KB: "/outra/kb.sqlite" } });
+    expect(externa.banco).toBe("/outra/kb.sqlite");
+    expect(externa.pastaAtualizacao).toBeUndefined();
+  });
+
+  test("desenvolvimento: a atualização só com SIMPLIFICA_ATUALIZACAO_FEED (um feed local de teste)", () => {
+    expect(resolverConfiguracao(dev).pastaAtualizacao).toBeUndefined();
+    const comFeed = resolverConfiguracao({
+      ...dev,
+      ambiente: { ...dev.ambiente, SIMPLIFICA_ATUALIZACAO_FEED: "http://127.0.0.1:8080/{canal}/" },
+    });
+    expect(comFeed.pastaAtualizacao).toBe(dev.pastaApp);
+    expect(comFeed.banco).toBe("/repo/tmp/kb.sqlite");
   });
 
   test("o dev server tem de ser http(s) nesta máquina", () => {

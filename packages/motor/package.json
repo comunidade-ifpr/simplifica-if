@@ -9,6 +9,7 @@
     "./erros": "./src/erros.ts",
     "./Canal": "./src/Canal.ts",
     "./politica": "./src/politica.ts",
+    "./politica-atualizacao": "./src/politica-atualizacao.ts",
     "./drivers": "./src/drivers/index.ts",
     "./t3/*": "./src/t3/*.ts"
   },

@@ -18,11 +18,13 @@
     "@effect/vitest": "catalog:",
     "@simplifica-if/contratos-app": "workspace:*",
     "@simplifica-if/mcp": "workspace:*",
+    "@simplifica-if/motor": "workspace:*",
     "@simplifica-if/server": "workspace:*",
     "@types/node": "catalog:",
     "effect": "catalog:",
     "electron": "44.10.1",
     "electron-builder": "26.16.1",
+    "electron-updater": "6.8.9",
     "vite-plus": "catalog:"
   },
   "productName": "Simplifica IF"
