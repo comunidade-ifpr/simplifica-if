@@ -15,6 +15,7 @@
  * em lugar nenhum: fica na lista e no aviso do título.
  */
 import { comentarDocx } from "@simplifica-if/docx/comentarios";
+import { strFromU8, unzipSync } from "fflate";
 import type { EntradaRegistro } from "@simplifica-if/kb/normas/registro";
 import { Registro } from "@simplifica-if/kb/normas/registro";
 import type { Relacao } from "@simplifica-if/kb/normas/relacoes";
@@ -23,7 +24,10 @@ import { converterPpc } from "./conversao-docx/conversao.ts";
 import { achadosParaComentarios, type PreConferencia, preConferir } from "./pre-conferencia.ts";
 import { chave, type CursoCnct, type Fonte } from "./verificadores/comum.ts";
 import { comoNoDocumento } from "./verificadores/curriculo.ts";
+import { rotuloDispositivo } from "./verificadores/dispositivos.ts";
 import { vigenciaDeDados } from "./verificadores/vigencia.ts";
+
+export { rotuloDispositivo };
 
 /** A base da revisão prévia, só com dados planos (atravessa o `postMessage` do Worker). */
 export type BaseRevisaoPrevia = {
@@ -200,29 +204,6 @@ export function identificarForma(markdown: string): string | null {
 
 /* ============================================================ fontes */
 
-const ROMANOS = /^(?=[ivxlc]+$)c{0,3}(xc|xl|l?x{0,3})(ix|iv|v?i{0,3})$/;
-const ordinal = (n: string) => (Number(n) <= 9 ? `${n}º` : n);
-
-/** `art29-par2` → "art. 29, § 2º"; `art28-xviii` → "art. 28, inciso XVIII"; `anexo1-art5` → "Anexo 1, art. 5º". */
-export function rotuloDispositivo(dispositivo: string): string {
-  return dispositivo
-    .split("-")
-    .map((parte) => {
-      let m = /^art(\d+)([a-z]?)$/i.exec(parte);
-      if (m) return `art. ${ordinal(m[1]!)}${m[2] ? `-${m[2].toUpperCase()}` : ""}`;
-      if (parte === "parunico") return "parágrafo único";
-      m = /^par(\d+)$/.exec(parte);
-      if (m) return `§ ${ordinal(m[1]!)}`;
-      m = /^anexo(\d*)$/.exec(parte);
-      if (m) return `Anexo${m[1] ? ` ${m[1]}` : ""}`;
-      // Letra só é alínea, salvo i, v e x, que são incisos (c e l, em romanos, seriam 100 e 50).
-      if (/^[a-z]$/.test(parte) && !"ivx".includes(parte)) return `alínea ${parte}`;
-      if (ROMANOS.test(parte)) return `inciso ${parte.toUpperCase()}`;
-      return parte;
-    })
-    .join(", ");
-}
-
 function fonteLegivel(link: Fonte, registro: Registro, base: BaseRevisaoPrevia): FonteLegivel | null {
   const norma = /^ifpr:\/\/norma\/([^#]+)(?:#(.+))?$/.exec(link);
   if (norma) {
@@ -246,6 +227,44 @@ function fonteLegivel(link: Fonte, registro: Registro, base: BaseRevisaoPrevia):
   return null; // ifpr://ficha/… é interno: não vai ao Word.
 }
 
+/**
+ * As fontes legíveis, uma por norma: os dispositivos da mesma norma vão juntos ("Resolução CNE/CP
+ * nº 2/2026, arts. 70 e 71"), e a norma citada inteira some quando também há dispositivo dela.
+ */
+export function agruparFontes(links: readonly Fonte[], registro: Registro, base: BaseRevisaoPrevia): FonteLegivel[] {
+  const grupos = new Map<string, { primeira: FonteLegivel; titulo: string; dispositivos: string[] }>();
+  for (const link of links) {
+    const legivel = fonteLegivel(link, registro, base);
+    if (!legivel) continue;
+    const norma = /^ifpr:\/\/norma\/([^#]+)(?:#(.+))?$/.exec(link);
+    const chaveGrupo = norma ? `norma:${norma[1]}` : `outro:${legivel.rotulo}`;
+    const grupo = grupos.get(chaveGrupo) ?? {
+      primeira: legivel,
+      titulo: norma ? (registro.obter(norma[1]!)?.title ?? norma[1]!) : legivel.rotulo,
+      dispositivos: [],
+    };
+    if (norma?.[2]) {
+      const rotulo = rotuloDispositivo(norma[2]);
+      if (!grupo.dispositivos.includes(rotulo)) grupo.dispositivos.push(rotulo);
+    }
+    grupos.set(chaveGrupo, grupo);
+  }
+  return [...grupos.values()].map(({ primeira, titulo, dispositivos }) => {
+    if (!dispositivos.length) return { ...primeira, rotulo: primeira.rotulo };
+    const soArtigos = dispositivos.every((d) => /^art\. [^,]+$/.test(d));
+    const juntos =
+      dispositivos.length === 1
+        ? dispositivos[0]!
+        : soArtigos
+          ? `arts. ${dispositivos
+              .map((d) => d.slice(5))
+              .join(", ")
+              .replace(/, ([^,]+)$/, " e $1")}`
+          : dispositivos.join("; ");
+    return { ...primeira, rotulo: `${titulo}, ${juntos}` };
+  });
+}
+
 /* ============================================================ pendências e comentários */
 
 function temaDaFicha(ficha: string, base: BaseRevisaoPrevia): number {
@@ -264,17 +283,16 @@ type ItemInterno = Omit<PendenciaRevisao, "noDocumento"> & { trechos: string[] }
 export const legivel = (mensagem: string) =>
   mensagem
     .replace(/, ((?:art|anexo)\d[0-9a-z-]*)\)/gi, (_, dispositivo: string) => `, ${rotuloDispositivo(dispositivo)})`)
-    .replace(/ (Transição: )/, "\n$1")
-    .replace(/ (PPC elaborado antes da vigência)/, "\n$1");
+    // A nota interna de que outra ficha é a responsável (as fichas vão em "Também apontado em").
+    .replace(/ Registrado aqui; a pendência é da [A-Z]+-[A-Z]+-\d+\./g, "")
+    .replace(/ (Regras de transição: )/, "\n$1")
+    .replace(/ (Se o PPC foi elaborado antes de a nova norma)/, "\n$1");
 
 /** O sufixo que `achadosParaComentarios` põe na mensagem; aqui as outras fichas vão em `tambemEm`. */
 const SUFIXO_TAMBEM = / \(Também em [^)]*\.\)$/;
 
 function itensDaPreConferencia(resultado: PreConferencia, registro: Registro, base: BaseRevisaoPrevia): ItemInterno[] {
-  const fontes = (links: readonly Fonte[]) =>
-    links
-      .flatMap((link) => fonteLegivel(link, registro, base) ?? [])
-      .filter((f, i, todas) => todas.findIndex((g) => g.rotulo === f.rotulo) === i);
+  const fontes = (links: readonly Fonte[]) => agruparFontes(links, registro, base);
   const dadosDaFicha = (ficha: string) => {
     const ordemTema = temaDaFicha(ficha, base);
     return {
@@ -291,7 +309,8 @@ function itensDaPreConferencia(resultado: PreConferencia, registro: Registro, ba
     tema: TEMAS[0]!.titulo,
     ordemTema: 0,
     estado: achado.estado,
-    mensagem: achado.mensagem,
+    // A ação vai em "O que fazer"; a mensagem da triagem a repetia.
+    mensagem: achado.mensagem.replace(/ Remova antes de submeter\.$/, ""),
     oQueFazer: O_QUE_FAZER[achado.regra]!,
     trecho: achado.trechos[0] ? comoNoDocumento(achado.trechos[0].texto) : null,
     secao: achado.trechos[0]?.secao ?? null,
@@ -343,8 +362,7 @@ type ItemDoComentario = Pick<PendenciaRevisao, "estado" | "mensagem" | "oQueFaze
 const linhaFontes = (fontes: readonly FonteLegivel[]) =>
   `Fonte: ${fontes.map((f) => (f.url ? `${f.rotulo} (${f.url})` : f.rotulo)).join("; ")}.`;
 
-const linhaTambem = (item: ItemDoComentario) =>
-  `Também apontado em: ${item.tambemEm.map((t) => `${t.titulo} (${t.ficha})`).join("; ")}.`;
+const linhaTambem = (item: ItemDoComentario) => `Também apontado em: ${item.tambemEm.map((t) => t.titulo).join("; ")}.`;
 
 /** As linhas de uma pendência: o problema, o que fazer, a fonte e as outras fichas. */
 function linhasDaPendencia(item: ItemDoComentario): string[] {
@@ -359,11 +377,49 @@ function linhasDaPendencia(item: ItemDoComentario): string[] {
 
 /** Texto do comentário de uma pendência ancorada num trecho, para quem lê no Word. */
 export function textoDoComentario(item: ItemDoComentario) {
-  const criterio = item.ficha === "TRIAGEM" ? "Triagem" : `Critério ${item.ficha}`;
-  return `${linhasDaPendencia(item).join("\n")}\n\n${criterio} da revisão prévia do Simplifica IF.`;
+  // Os códigos das fichas só numa referência discreta no fim, para quem cruza com a lista do app.
+  const codigos =
+    item.ficha === "TRIAGEM" ? "" : ` (ref. ${[item.ficha, ...item.tambemEm.map((t) => t.ficha)].join(", ")})`;
+  return `${linhasDaPendencia(item).join("\n")}\n\nRevisão prévia do Simplifica IF${codigos}.`;
 }
 
 const dataBr = (iso: string) => iso.slice(0, 10).split("-").reverse().join("/");
+
+/** A forma de oferta como a pessoa a escreve (o slug fica na API). */
+export const NOME_DA_FORMA: Record<string, string> = {
+  integrado: "Integrado",
+  subsequente: "Subsequente",
+  concomitante: "Concomitante",
+  proeja: "PROEJA",
+};
+
+const plural = (n: number, um: string, varios: string) => `${n} ${n === 1 ? um : varios}`;
+
+const ONDE_DESCONHECIDO = "que pode estar dividido entre parágrafos ou escrito de outro jeito no arquivo";
+
+/** O começo do trecho, com reticências, para citá-lo num comentário. */
+const resumir = (trecho: string, limite = 80) =>
+  trecho.length <= limite ? trecho : `${trecho.slice(0, limite).replace(/\s+\S*$/, "")}…`;
+
+const normalizarTexto = (texto: string) => texto.normalize("NFC").toLowerCase().replace(/\s+/g, " ").trim();
+
+/**
+ * Onde provavelmente está um trecho que não se achou num parágrafo do corpo: numa caixa de texto ou
+ * forma (a conversão lê o texto delas; o comentário do Word não as alcança), ou, sem isso, dividido
+ * entre parágrafos ou escrito de outro jeito.
+ */
+export function ondeNoArquivo(docx: Uint8Array, trecho: string): string {
+  const alvo = normalizarTexto(trecho);
+  if (!alvo) return ONDE_DESCONHECIDO;
+  const documento = unzipSync(docx, { filter: (f) => f.name === "word/document.xml" })["word/document.xml"];
+  if (!documento) return ONDE_DESCONHECIDO;
+  for (const caixa of strFromU8(documento).matchAll(/<w:txbxContent\b[\s\S]*?<\/w:txbxContent>/g)) {
+    const texto = [...caixa[0].matchAll(/<w:t(?:\s[^>]*)?>([^<]*)<\/w:t>/g)].map((m) => m[1]).join(" ");
+    if (normalizarTexto(texto).includes(alvo))
+      return "provavelmente numa caixa de texto ou forma, onde o comentário do Word não alcança";
+  }
+  return ONDE_DESCONHECIDO;
+}
 
 /**
  * O comentário do título: o aviso de revisão prévia, o que foi conferido, as ausências (o que falta
@@ -377,6 +433,8 @@ function textoDoAviso(entrada: {
   totalCriterios: number;
   curso: CursoIdentificado;
   pendencias: readonly PendenciaRevisao[];
+  /** Onde o trecho não localizado provavelmente está (`ondeNoArquivo`). */
+  onde: ReadonlyMap<PendenciaRevisao, string>;
 }): string {
   const naoAtende = entrada.pendencias.filter((p) => p.estado === "nao_atende").length;
   const aConferir = entrada.pendencias.length - naoAtende;
@@ -385,12 +443,12 @@ function textoDoAviso(entrada: {
       ? `${entrada.conferidos} de ${entrada.totalCriterios} critérios conferidos automaticamente; os demais exigem leitura.`
       : `${entrada.conferidos} critérios conferidos automaticamente; os demais exigem leitura.`;
   const curso = entrada.curso.cnct
-    ? `Curso considerado: ${entrada.curso.cnct.denominacao} (CNCT)${entrada.curso.forma ? `, forma ${entrada.curso.forma}` : ""}.`
+    ? `Curso considerado: ${entrada.curso.cnct.denominacao} (CNCT)${entrada.curso.forma ? `, forma de oferta: ${NOME_DA_FORMA[entrada.curso.forma] ?? entrada.curso.forma}` : ""}.`
     : "O curso não foi identificado no CNCT: os critérios que dependem dele ficaram para conferir.";
   const partes = [
     `Revisão prévia do Simplifica IF, de ${dataBr(entrada.agora.toISOString())}, com a base de normas de ${dataBr(entrada.dataBase)}. Não é parecer da PROENS e não substitui a análise oficial.`,
     `${total} ${curso}`,
-    `Resultado: ${naoAtende} pendência(s) e ${aConferir} ponto(s) para conferir.`,
+    `Resultado: ${plural(naoAtende, "pendência", "pendências")} e ${plural(aConferir, "ponto para conferir", "pontos para conferir")}.`,
   ];
   const ausentes = entrada.pendencias.filter((p) => p.noDocumento === "no-inicio");
   if (ausentes.length)
@@ -400,7 +458,13 @@ function textoDoAviso(entrada: {
   const fora = entrada.pendencias.filter((p) => p.noDocumento === "so-na-lista");
   if (fora.length)
     partes.push(
-      `Não localizados no texto (sem marca no documento):\n${fora.map((p) => `- ${linhasDaPendencia(p).join(" ")}`).join("\n")}`,
+      `Não localizados no texto (sem marca no documento):\n${fora
+        .map((p) => {
+          const [problema, ...resto] = linhasDaPendencia(p);
+          const onde = entrada.onde.get(p) ?? ONDE_DESCONHECIDO;
+          return `- ${problema} Trecho: "${resumir(p.trecho ?? "")}", ${onde}. ${resto.join(" ")}`;
+        })
+        .join("\n")}`,
     );
   return partes.join("\n\n");
 }
@@ -448,7 +512,11 @@ export function revisarDocx(
     ...item,
     noDocumento: !trechos.length ? "no-inicio" : ancoradas.has(indice) ? "no-trecho" : "so-na-lista",
   }));
+  const onde = new Map(
+    pendencias.filter((p) => p.noDocumento === "so-na-lista").map((p) => [p, ondeNoArquivo(bytes, p.trecho ?? "")]),
+  );
   const aviso = textoDoAviso({
+    onde,
     agora: opcoes.agora,
     dataBase: base.dataBase,
     conferidos,

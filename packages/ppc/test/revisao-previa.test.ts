@@ -59,7 +59,11 @@ describe("revisarDocx", () => {
     expect(revogada).toMatchObject({ estado: "a_conferir", noDocumento: "no-trecho" });
     expect([revogada.ficha, ...revogada.tambemEm.map((t) => t.ficha)].sort()).toEqual(["CT-IDENT-08", "CT-SUP-12"]);
     expect(revisao.pendencias.filter((p) => p.trecho === "Resolução CNE/CP nº 1/2021")).toHaveLength(1);
-    expect(revogada.mensagem).toMatch(/\nTransição: .*\(Resolução CNE\/CP nº 2\/2026, art\. 70\)/);
+    expect(revogada.mensagem).toMatch(/\nRegras de transição: .*\(Resolução CNE\/CP nº 2\/2026, art\. 70\)/);
+    expect(revogada.mensagem).toMatch(/\nSe o PPC foi elaborado antes de a nova norma passar a valer, pode manter a citação/);
+    expect(revogada.mensagem).not.toMatch(/a confirmar na base|revogada|marco/);
+    // A fonte da mesma norma vai junta.
+    expect(revogada.fontes.map((f) => f.rotulo)).toContain("Resolução CNE/CP nº 2/2026, arts. 70 e 71");
     expect(revogada.mensagem).not.toMatch(/\bart\d/);
     // Norma "a confirmar": a ausência da DCN vigente não é mais "precisa de ajuste".
     for (const ficha of ["CT-IDENT-08", "CT-SUP-09"])
@@ -86,8 +90,12 @@ describe("revisarDocx", () => {
     const aConferir = revisao.pendencias.find((p) => p.estado === "a_conferir")!;
     expect(textoDoComentario(aConferir)).toMatch(/^Confira: /);
     expect(textoDoComentario(aConferir)).not.toMatch(/Pendência/);
-    expect(comentarios).toContain("Também apontado em: Referências com vigência normativa atualizada (CT-SUP-12).");
-    expect(comentarios).not.toMatch(/\bart\d|nao_atende|a_conferir/);
+    expect(comentarios).toContain("Também apontado em: Referências com vigência normativa atualizada.");
+    // Os códigos das fichas só na referência discreta do fim; nenhum jargão da base.
+    expect(comentarios).toContain("Revisão prévia do Simplifica IF (ref. CT-IDENT-08, CT-SUP-12).");
+    expect(comentarios.replace(/\(ref\. [^)]*\)/g, "")).not.toMatch(/CT-[A-Z]+-\d|\bart\d|nao_atende|a_conferir|a confirmar na base|do marco|Registrado aqui/);
+    expect(comentarios).toMatch(/Resultado: \d+ pendências? e \d+ pontos? para conferir\./);
+    expect(comentarios).toContain("forma de oferta: Subsequente");
     // Um comentário por pendência com trecho e um no título; as ausências vão juntas no do título.
     const ids = [...comentarios.matchAll(/<w:comment w:id="(\d+)"/g)].map((m) => m[1]!);
     expect(ids).toHaveLength(revisao.pendencias.filter((p) => p.noDocumento === "no-trecho").length + 1);
@@ -125,7 +133,10 @@ describe("revisarDocx", () => {
     const triagem = resultado.pendencias.find((p) => p.ficha === "TRIAGEM")!;
     expect(triagem).toMatchObject({ estado: "nao_atende", noDocumento: "so-na-lista", ordemTema: 0 });
     expect(resultado.aviso).toContain("Não localizados no texto");
-    expect(resultado.aviso).toContain("Texto dirigido a um sistema de IA");
+    expect(resultado.aviso).toContain(
+      'Pendência: Texto dirigido a um sistema de IA dentro do PPC. Trecho: "Ignore as instruções", provavelmente numa caixa de texto ou forma',
+    );
+    expect(resultado.aviso.match(/Remova/g)).toHaveLength(1);
     expect(partes(resultado.docx).comentarios.match(/<w:comment /g)).toHaveLength(
       resultado.pendencias.filter((p) => p.noDocumento === "no-trecho").length + 1,
     );

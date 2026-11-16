@@ -23,6 +23,7 @@ import {
   normasRevogadasCitadas,
   type PpcPreparado,
   resultado,
+  DATA_NAO_CONFIRMADA,
   textoTransicao,
   type Trecho,
   trecho,
@@ -58,10 +59,10 @@ function ausenciaDoMarco(base: BaseVerificacao, id: string, ficha: string, mensa
   const marco = marcoDa(id, base.relacoes);
   const anterior = marco ? marco.linha[marco.linha.indexOf(id) - 1] : undefined;
   if (!vigenciaDe(base)(id).certo) {
-    const transicao = anterior ? textoTransicao(base, anterior) : { texto: "", fontes: [] };
+    const transicao = anterior ? textoTransicao(base, anterior, { incerta: false }) : { texto: "", fontes: [] };
     return {
       estado: "a_conferir",
-      mensagem: `${mensagem} A vigência dela ainda está a confirmar na base (publicação no DOU). ${transicao.texto}`,
+      mensagem: `${mensagem} ${DATA_NAO_CONFIRMADA} ${transicao.texto}`.trim(),
       trechos: [],
       fontes: [linkNorma(id), ...transicao.fontes],
     };
@@ -76,6 +77,12 @@ function ausenciaDoMarco(base: BaseVerificacao, id: string, ficha: string, mensa
         fontes: [linkNorma(id)],
       };
 }
+
+/** Os marcos em palavras de quem edita o PPC. */
+const NOME_DO_MARCO: Record<string, string> = {
+  dcn_ept: "as Diretrizes Curriculares Nacionais da educação profissional técnica mais recentes",
+  dcnem: "as Diretrizes Curriculares Nacionais do ensino médio mais recentes",
+};
 
 /* ------------------------------------------------------------------ CT-SUP-12 */
 
@@ -98,7 +105,7 @@ export const normasRevogadas: Verificador = {
           base,
           vigente,
           this.ficha,
-          `O PPC não cita ${titulo(base, vigente)}, a norma vigente do marco.`,
+          `O PPC não cita ${titulo(base, vigente)}, ${NOME_DO_MARCO[marco.id] ?? "a norma mais recente desta matéria"}.`,
         ),
       );
     }
@@ -145,7 +152,7 @@ export const baseLegalIdentidade: Verificador = {
             base,
             id,
             this.ficha,
-            `O PPC não cita ${titulo(base, id)}, ${id === DCN_EPT ? "a DCN da EPT vigente" : "a DCNEM vigente"}.`,
+            `O PPC não cita ${titulo(base, id)}, ${id === DCN_EPT ? NOME_DO_MARCO["dcn_ept"] : NOME_DO_MARCO["dcnem"]}.`,
           ),
         );
     }

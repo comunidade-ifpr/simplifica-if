@@ -248,7 +248,9 @@ describe("regras de prudência", () => {
     );
     const apontamento = da(preConferir(ppc, base("integrado")), "CT-SUP-12").apontamentos[0]!;
     expect(apontamento).toMatchObject({ estado: "a_conferir", trechos: [{ linha: 10 }] });
-    expect(apontamento.mensagem).toMatch(/a confirmar/);
+    expect(apontamento.mensagem).toMatch(/ainda não foi confirmada/);
+    expect(apontamento.mensagem).toMatch(/pode manter a citação; recomenda-se atualizar/);
+    expect(apontamento.mensagem).not.toMatch(/a confirmar na base|art\d/);
     expect(apontamento.mensagem).toMatch(/dois anos/);
     expect(apontamento.fontes).toContain("ifpr://norma/br/cne-cp/res/2026/2#art71");
   });

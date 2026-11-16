@@ -16,6 +16,7 @@ import type { Registro } from "@simplifica-if/kb/normas/registro";
 import type { Relacao } from "@simplifica-if/kb/normas/relacoes";
 import { type Citacao, extrairCitacoes } from "@simplifica-if/kb/normas/resolver";
 import { removerAcentos, type SecaoPpc, segmentarPpc } from "@simplifica-if/kb/ppcs/secoes";
+import { rotuloDispositivo } from "./dispositivos.ts";
 import { type ConsultaVigencia, fichaResponsavel, sucessorasEmCadeia, vigenciaPadrao } from "./vigencia.ts";
 
 export { sucessorasEmCadeia } from "./vigencia.ts";
@@ -195,19 +196,30 @@ export function normasRevogadasCitadas(
   return saida;
 }
 
-/** Texto e fontes das regras de transição de uma revogação (vazio quando não há). */
-export function textoTransicao(base: BaseVerificacao, id: string): { texto: string; fontes: Fonte[] } {
+/** A frase da data incerta, em linguagem de quem edita o PPC (sem "vigência a confirmar na base"). */
+export const DATA_NAO_CONFIRMADA = "A data em que a nova norma passa a valer ainda não foi confirmada.";
+
+/**
+ * Texto e fontes das regras de transição de uma revogação, para quem edita o PPC: a data incerta
+ * (salvo `incerta: false`, quando quem chama já a disse), as regras e o que fazer conforme a data do
+ * PPC (manter a citação é admitido; atualizar é o recomendado).
+ */
+export function textoTransicao(
+  base: BaseVerificacao,
+  id: string,
+  opcoes: { incerta?: boolean } = {},
+): { texto: string; fontes: Fonte[] } {
   const vigencia = vigenciaDe(base)(id);
   const titulo = (n: string) => base.registro.obter(n)?.title ?? n;
-  const regras = vigencia.transicoes.map((t) => `${t.regra} (${titulo(t.norma)}, ${t.dispositivo.replace(/^#/, "")})`);
-  const incerta = vigencia.certo
-    ? ""
-    : "A revogação depende de data ainda a confirmar na base (a vigência da norma que a revogou). ";
+  const regras = vigencia.transicoes.map(
+    (t) => `${t.regra} (${titulo(t.norma)}, ${rotuloDispositivo(t.dispositivo.replace(/^#/, ""))})`,
+  );
+  const incerta = vigencia.certo || opcoes.incerta === false ? "" : `${DATA_NAO_CONFIRMADA} `;
   return {
     texto:
       incerta +
-      (regras.length ? `Transição: ${regras.join(" ")} ` : "") +
-      "PPC elaborado antes da vigência da nova norma atende, com recomendação de atualização; confira a data do PPC (capa, histórico ou processo).",
+      (regras.length ? `Regras de transição: ${regras.join(" ")} ` : "") +
+      "Se o PPC foi elaborado antes de a nova norma passar a valer, pode manter a citação; recomenda-se atualizar. Confira a data do PPC (capa, histórico ou processo).",
     fontes: vigencia.transicoes.map((t) => linkNorma(`${t.norma}${t.dispositivo}`)),
   };
 }
@@ -257,7 +269,7 @@ export function apontamentoRevogada(
   if (!situacao.certo || situacao.transicoes.length) {
     const transicao = textoTransicao(base, norma.id);
     return conferir(
-      `Cita ${norma.titulo}, revogada${direta ? ` pela ${nomeSucessora}` : ""}. ${transicao.texto}`,
+      `Cita ${norma.titulo}, substituída${direta ? ` pela ${nomeSucessora}` : ""}. ${transicao.texto}`,
       transicao.fontes,
     );
   }
