@@ -41,6 +41,7 @@ Use este formato quando o usuário pedir revisão de documento, PPC, parecer, mi
 - Para PPC de curso técnico, confira CNCT quando a alegação envolver denominação, eixo tecnológico, carga horária mínima, perfil profissional, campo de atuação, infraestrutura mínima, itinerários formativos ou legislação profissional.
 - Para fluxos de abertura, ajuste, atualização, suspensão, reversão ou extinção de curso, confira a Portaria PROENS/IFPR nº 121/2024 e registre o fluxo aplicável.
 - Para afirmações sobre avaliação, assistência estudantil, acessibilidade, adaptação/flexibilização curricular ou calendário, confira a norma específica antes de concluir.
+- Para alegação sem norma citada (carga horária, obrigação, prazo), localize a norma que trata do tema: se ela confirma, marque `CONFIRMADA COM RESSALVA` e sugira a citação; se diverge, `CONTRADITÓRIA`; se nenhuma trata do tema, `SEM SUPORTE NA FONTE`.
 - PPCs convertidos, processos anteriores e práticas de campus podem apoiar comparação ou repertório, mas não bastam para afirmar obrigação normativa.
 
 ## Sinais de Risco
@@ -52,5 +53,5 @@ Marque ao menos como `CONFIRMADA COM RESSALVA`, `IMPRECISA` ou pior quando houve
 - artigo ou inciso citado sem relação clara com a afirmação;
 - uso de `deve` ou `obrigatório` quando a fonte usa faculdade, orientação ou possibilidade;
 - generalização de regra restrita a curso técnico, graduação, ensino médio integrado, estágio obrigatório, estágio não obrigatório, campus ou processo específico;
-- afirmação de vigência, revogação ou alteração sem consulta atualizada;
+- afirmação de vigência, revogação ou alteração sem consulta atualizada, ou norma revogada citada como vigente;
 - cópia de redação de PPC antigo como se fosse exigência normativa.
