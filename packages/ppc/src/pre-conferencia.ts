@@ -85,7 +85,7 @@ const TEXTO_PARA_IA = new RegExp(
   ].join("|"),
 );
 
-const LARGURA_ZERO = /[\u200B-\u200F\u2060-\u2064\uFEFF\u00AD\u034F\u180E]/g;
+const LARGURA_ZERO = /[\u200B-\u200F\u2060-\u2064\uFEFF\u00AD\u180E]|\u034F/g;
 
 /** A linha como a triagem a lê: o disfarce (largura zero, formas compatíveis, marcação, acento) sai. */
 export const paraTriagem = (linha: string) =>
