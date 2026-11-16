@@ -6,7 +6,8 @@
  *     roda os verificadores D nos PPCs técnicos da base e conta, por ficha, os estados e os PPCs
  *     com apontamento (a tabela de `PRECISAO.md`);
  *   node packages/ppc/scripts/pre-conferencia.ts --base --amostra CT-SUP-24 [--estado nao_atende] [--n 8]
- *     mostra uma amostra dos apontamentos da ficha, com o trecho, para conferir à mão;
+ *     mostra uma amostra dos apontamentos da ficha, com o trecho, para conferir à mão (com
+ *     `--evidencias`, os resultados `atende` e os trechos que os sustentam);
  *   node packages/ppc/scripts/pre-conferencia.ts --docx <PPC.docx> --cnct <slug> --forma <forma> --saida <PPC-comentado.docx>
  *     converte o DOCX, pré-confere e devolve o próprio DOCX com um comentário do Word por apontamento.
  */
@@ -26,6 +27,7 @@ const { values } = NodeUtil.parseArgs({
     base: { type: "boolean" },
     amostra: { type: "string" },
     estado: { type: "string" },
+    evidencias: { type: "boolean" },
     n: { type: "string", default: "8" },
     docx: { type: "string" },
     cnct: { type: "string" },
@@ -44,7 +46,20 @@ if (values.base) {
     resultado: preConferir(lerPpc(ppc), { ...comum, cnct: ppc.cnct, forma: ppc.forma }),
   }));
   const ms = performance.now() - inicio;
-  if (values.amostra) {
+  if (values.amostra && values.evidencias) {
+    // Evidências dos resultados `atende` (o que sustenta a afirmação), espalhadas pela lista.
+    const itens = resultados.flatMap(({ ppc, resultado }) =>
+      resultado.fichas.filter((f) => f.ficha === values.amostra && f.estado === "atende").map((f) => ({ ppc, f })),
+    );
+    const n = Number(values.n);
+    const passo = Math.max(1, Math.floor(itens.length / n));
+    console.log(`${itens.length} resultados atende de ${values.amostra}`);
+    for (const { ppc, f } of itens.filter((_, i) => i % passo === 0).slice(0, n))
+      console.log(
+        `- ${ppc.id} (${ppc.forma}) | ${f.mensagem.slice(0, 120)}` +
+          f.evidencias.slice(0, 2).map((t) => `\n    L${t.linha} [${t.secao ?? "-"}]: ${t.texto.slice(0, 160)}`).join(""),
+      );
+  } else if (values.amostra) {
     const itens = resultados.flatMap(({ ppc, resultado }) =>
       resultado.fichas
         .filter((f) => f.ficha === values.amostra)

@@ -66,12 +66,20 @@ export const eixoCnct: Verificador = {
     const eixos = [...ppc.markdown.matchAll(/Eixo\s+Tecnol[óo]gico\s*\**\s*[:\-–|]\s*\**\s*([^\n|*]+)/gi)];
     const eixoEsperado = chave(cnct.eixo_tecnologico);
     const compativel = eixos.find((eixo) => chave(eixo[1]!).includes(eixoEsperado));
-    if (compativel) {
-      const linha = linhaDe(ppc.markdown, compativel.index);
+    // O valor também pode vir sem separador ou na linha seguinte (célula de tabela, "Eixo Tecnológico**" ↵ valor).
+    const linhaJanela = ppc.linhas.findIndex(
+      (linha, i) =>
+        /\beixo\b/.test(chave(linha)) &&
+        chave(ppc.linhas.slice(i, i + 4).join(" ").replace(/[*|]/g, " ")).includes(eixoEsperado),
+    );
+    if (compativel || linhaJanela >= 0) {
+      const evidencia = compativel
+        ? trecho(ppc, linhaDe(ppc.markdown, compativel.index), compativel[1]!.trim())
+        : trecho(ppc, linhaJanela + 1);
       return resultado(this, [], {
         estado: "atende",
         mensagem: `O eixo declarado corresponde ao do CNCT: "${cnct.eixo_tecnologico}".`,
-        evidencias: [trecho(ppc, linha, compativel[1]!.trim())],
+        evidencias: [evidencia],
         fontes,
       });
     }

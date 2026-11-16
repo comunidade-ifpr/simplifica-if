@@ -204,8 +204,8 @@ export function normasRevogadasCitadas(
 /**
  * Apontamento de norma revogada citada: `nao_atende` quando o PPC não cita nenhuma sucessora em
  * vigor (a citação sustenta o texto sozinha) e a citação é segura; `a_conferir` quando cita a
- * sucessora (pode ser histórica ou de transição), quando não há sucessora registrada, ou quando a
- * citação foi resolvida por regra de confiança menor.
+ * sucessora (pode ser histórica ou de transição), quando a citação está numa seção de histórico,
+ * quando não há sucessora registrada, ou quando a citação foi resolvida por regra de confiança menor.
  */
 export function apontamentoRevogada(ppc: PpcPreparado, base: BaseVerificacao, norma: NormaRevogadaCitada): Apontamento {
   const segura = norma.citacoes.find(citacaoSegura);
@@ -224,6 +224,13 @@ export function apontamentoRevogada(ppc: PpcPreparado, base: BaseVerificacao, no
     return {
       estado: "a_conferir",
       mensagem: `Cita ${norma.titulo}, revogada, e também ${nomeSucessora(norma.sucessoraCitada)}. Confira se a citação da revogada é só histórica ou de transição.`,
+      trechos,
+      fontes,
+    };
+  if (/hist[óo]ric/i.test(trechos[0]!.secao ?? ""))
+    return {
+      estado: "a_conferir",
+      mensagem: `Cita ${norma.titulo}, revogada, numa seção de histórico. Confira se a citação é só histórica ou se ainda sustenta o texto.`,
       trechos,
       fontes,
     };
@@ -257,7 +264,10 @@ export function resultado(
     return {
       ...base,
       estado: "nao_atende",
-      mensagem: apontamentos.length === 1 ? apontamentos[0]!.mensagem : `${n} pendência(s): ${apontamentos[0]!.mensagem}`,
+      mensagem:
+        apontamentos.length === 1
+          ? apontamentos[0]!.mensagem
+          : `${n} pendência(s); a primeira: ${apontamentos.find((a) => a.estado === "nao_atende")!.mensagem}`,
       evidencias,
     };
   }
