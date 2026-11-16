@@ -33,7 +33,11 @@ import {
   pedidoDeCorrecao,
   type ResultadoIa,
 } from "@simplifica-if/ppc/revisao-ia/conferencia";
-import { conteudoDoPpcParaFicha, instrucoesJulgador } from "@simplifica-if/ppc/revisao-ia/pedido";
+import {
+  conteudoDoPpcParaFicha,
+  type CriterioInconclusivo,
+  instrucoesJulgador,
+} from "@simplifica-if/ppc/revisao-ia/pedido";
 import type { Bloco, FichaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import type { ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 
@@ -102,6 +106,13 @@ export interface EntradaJulgamento {
   readonly tempoTurno: Duration.Duration;
   /** Grava o uso de cada tentativa assim que ela acaba, mesmo que o bloco não termine. */
   readonly registrarTentativa?: (tentativa: TentativaIa) => Effect.Effect<void>;
+  /** O critério do INCONCLUSIVO com que o pedido foi montado (padrão: `conservador`). */
+  readonly criterio?: CriterioInconclusivo;
+  /**
+   * Recebe o texto bruto de cada tentativa, como a IA respondeu (só o script de avaliação usa, para
+   * reavaliar a conferência sem nova chamada). O app não grava o texto bruto.
+   */
+  readonly registrarTexto?: (numero: number, texto: string) => Effect.Effect<void>;
 }
 
 const usoVazio = (): { -readonly [K in keyof UsoRevisaoIa]: UsoRevisaoIa[K] } => ({
@@ -123,6 +134,7 @@ const paraResultado = (r: ResultadoIa): ResultadoFichaIa => ({
   trechos: r.evidencias.map((e) => e.trecho).filter((t) => t.trim().length > 0),
   fontes: [...(r.fontes ?? [])],
   revisaoHumana: r.revisao_humana_obrigatoria,
+  ...(r.tipo_achado ? { tipoAchado: r.tipo_achado } : {}),
 });
 
 const falhou = (ficha: string, motivo: string): ResultadoFichaIa => ({
@@ -244,6 +256,7 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
         }),
       );
       if (erros.length && !ferramentas.length) return yield* pausaDoErro(entrada.provider, erros.join("; "));
+      if (entrada.registrarTexto) yield* entrada.registrarTexto(esta, textos.join("\n"));
       return { texto: textos.join("\n"), ferramentas: [...ferramentas] };
     }).pipe(Effect.scoped);
     // O uso fica gravado em qualquer saída: sucesso, pausa, interrupção.
@@ -265,6 +278,7 @@ export const julgarBloco = Effect.fn("RevisaoIa.julgarBloco")(function* (entrada
     conferirResposta(texto, entrada.bloco, entrada.fichas, {
       alvoDaFicha: (id) => alvos.get(id) ?? "",
       fontes: entrada.fontes,
+      criterio: entrada.criterio,
     });
   const fim = (resultado: ResultadoBloco) =>
     Clock.currentTimeMillis.pipe(

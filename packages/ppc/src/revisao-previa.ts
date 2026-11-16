@@ -66,6 +66,11 @@ export type ResultadoFichaIa = {
   fontes: string[];
   revisaoHumana: boolean;
   motivoFalha?: string | undefined;
+  /**
+   * O tipo do NAO_ATENDE, só no critério `ausencia` da revisão com IA (etapa 5):
+   * `ausencia_em_secao_presente`, `contradicao` ou `merito`.
+   */
+  tipoAchado?: "ausencia_em_secao_presente" | "contradicao" | "merito" | undefined;
 };
 
 /** O que a revisão com IA acrescenta: os resultados conferidos e as fichas que ficaram de fora. */
@@ -322,10 +327,20 @@ type ItemInterno = Omit<PendenciaRevisao, "noDocumento"> & { trechos: string[] }
 const linkDaFonte = (fonte: string, cnct: string | null): Fonte | null =>
   fonte.startsWith("cnct") ? (cnct ? `ifpr://cnct/${cnct}` : null) : `ifpr://norma/${fonte}`;
 
-/** O estado da lista para um resultado da IA, ou nulo quando não há pendência. */
-function estadoDaIa(r: ResultadoFichaIa): "nao_atende" | "a_conferir" | null {
+/**
+ * O estado da lista para um resultado da IA, ou nulo quando não há pendência.
+ *
+ * No critério conservador (sem `tipoAchado`), NAO_ATENDE com confiança abaixo de 0,6 vira "a conferir".
+ * No critério `ausencia`, a ausência numa seção presente e a contradição já vêm com o trecho conferido
+ * no conteúdo entregue (a prova do achado): a confiança não as rebaixa. O de mérito segue o limiar.
+ */
+export function estadoDaIa(r: ResultadoFichaIa): "nao_atende" | "a_conferir" | null {
   if (r.estado === "FALHOU" || r.estado === "INCONCLUSIVO") return "a_conferir";
-  if (r.estado === "NAO_ATENDE") return r.confianca >= 0.6 && !r.revisaoHumana ? "nao_atende" : "a_conferir";
+  if (r.estado === "NAO_ATENDE") {
+    if (r.revisaoHumana) return "a_conferir";
+    if (r.tipoAchado === "ausencia_em_secao_presente" || r.tipoAchado === "contradicao") return "nao_atende";
+    return r.confianca >= 0.6 ? "nao_atende" : "a_conferir";
+  }
   if (r.revisaoHumana && r.lacunas.length) return "a_conferir";
   return null;
 }

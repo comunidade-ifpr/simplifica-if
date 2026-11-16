@@ -36,7 +36,7 @@ import {
 import type { FontesNormativas } from "@simplifica-if/kb/FontesNormativas";
 import * as Motor from "@simplifica-if/motor";
 import { estimar } from "@simplifica-if/ppc/revisao-ia/estimativa";
-import { pedidoT } from "@simplifica-if/ppc/revisao-ia/pedido";
+import { CRITERIO_PADRAO, type CriterioInconclusivo, pedidoT } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { MODELO_PADRAO } from "@simplifica-if/ppc/revisao-ia/tipos";
 import { NOME_DA_FORMA, type ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 import { type RegistroRevisaoIa, Revisoes } from "../persistencia/Revisoes.ts";
@@ -73,6 +73,11 @@ export class RevisaoIa extends Context.Service<
 export interface OpcoesRevisaoIa {
   readonly paralelismo?: number;
   readonly tempoTurno?: Duration.Duration;
+  /**
+   * O critério do INCONCLUSIVO das revisões novas (`pedido.ts`): `conservador`, o padrão, ou
+   * `ausencia`, em avaliação (M1.11, etapa 5). A revisão grava o seu no plano; a retomada usa o dela.
+   */
+  readonly criterio?: CriterioInconclusivo;
 }
 
 /** Dias que uma revisão `preparada` e nunca iniciada fica guardada. */
@@ -84,6 +89,7 @@ const MOTIVO_PAUSA = "Pausada por você. O que já foi revisado está guardado."
 export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisaoIa = {}) {
   const paralelismo = Math.max(1, opcoes.paralelismo ?? PARALELISMO);
   const tempoTurno = opcoes.tempoTurno ?? TEMPO_TURNO;
+  const criterio = opcoes.criterio ?? CRITERIO_PADRAO;
   const revisoes = yield* Revisoes;
   const analise = yield* AnalisePpc;
   const contextoKb = yield* Effect.context<FontesNormativas | SqlClient.SqlClient>();
@@ -176,6 +182,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
         : null,
       modo: entrada.modo,
       nonce,
+      criterio,
     }).pipe(
       Effect.provideContext(contextoKb),
       Effect.tapError((erro) => Effect.logError("revisão com IA: preparo falhou", erro)),
@@ -231,6 +238,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
           ...(conteudoPpc === undefined ? {} : { conteudoPpc }),
           fontes: new Set(bloco.fontes),
           tempoTurno,
+          criterio: plano.criterio ?? CRITERIO_PADRAO,
           registrarTentativa: (t) => revisoes.gravarTentativa(id, bloco.id, t),
         });
         yield* revisoes.gravarBloco(id, {
@@ -268,6 +276,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
         plano.transversais.trechos,
         plano.transversais.contexto,
         plano.nonce,
+        plano.criterio ?? CRITERIO_PADRAO,
       );
       // O alvo dos trechos das transversais é só o PPC entregue (`trechos`), nunca os resumos da IA.
       yield* rodarBloco(transversal, pedido, plano.transversais.trechos);

@@ -46,7 +46,7 @@ import {
   secoesDoTema,
 } from "../src/revisao-ia/plano.ts";
 import { dirigidoAIa } from "../src/pre-conferencia.ts";
-import { revisarDocx } from "../src/revisao-previa.ts";
+import { estadoDaIa, revisarDocx } from "../src/revisao-previa.ts";
 import { ppcSintetico } from "../src/testes/revisao-previa.ts";
 
 const PASTA_FICHAS = NodePath.join(import.meta.dirname, "../../../.agents/skills/revisar-ppc/base-analise/fichas");
@@ -151,6 +151,17 @@ describe("pedido", () => {
     expect(pedido.match(/<\/ppc-abc123>/g)).toHaveLength(1);
     expect(pedido).toContain("br/cne-cp/res/2026/2#art29-par2");
     expect(instrucoesJulgador("abc123")).toContain("<ppc-abc123>");
+    // Os dois critérios: o mesmo contrato com exemplo e limites; muda a regra de decisão.
+    const ausencia = pedidoS(bloco, [porId.get("CT-CURR-03")!], recortes, contexto, "abc123", "", "ausencia");
+    for (const p of [pedido, ausencia]) {
+      expect(p).toContain("Exemplo mínimo de resposta válida");
+      expect(p).toContain('justificativa": até 600');
+      expect(p).not.toMatch(/^```/m);
+    }
+    expect(pedido).toContain("Na dúvida, use INCONCLUSIVO");
+    expect(pedido).not.toContain("tipo_achado");
+    expect(ausencia).not.toContain("Na dúvida");
+    expect(ausencia).toContain('"tipo_achado":"ausencia_em_secao_presente"');
     expect([...fontesPermitidas(contexto)].sort()).toEqual([
       "br/cne-cp/res/2026/2",
       "br/cne-cp/res/2026/2#art29-par2",
@@ -253,6 +264,39 @@ describe("conferência da resposta", () => {
     expect(sem("ATENDE").problemas.get("CT-CURR-10")).toEqual(["sem resultado na resposta"]);
     const estado = conferirResposta(resposta(resultado("CT-CURR-03", { estado: "APROVADO" })), bloco, doBloco, entrada);
     expect(estado.problemas.get("CT-CURR-03")![0]).toContain("fora do contrato");
+  });
+
+  test("critério ausencia: NAO_ATENDE pede o tipo, e a ausência pede as lacunas; o conservador ignora o tipo", () => {
+    const ausencia = { ...entrada, criterio: "ausencia" as const };
+    const nao = (extra: object, e = ausencia) =>
+      conferirResposta(
+        resposta(resultado("CT-CURR-03", { estado: "NAO_ATENDE", ...extra }), resultado("CT-CURR-10")),
+        bloco,
+        doBloco,
+        e,
+      );
+    expect(nao({}).problemas.get("CT-CURR-03")![0]).toContain("sem `tipo_achado`");
+    expect(motivoLegivel(nao({}).problemas.get("CT-CURR-03")!)).toBe(
+      "a IA apontou um problema sem dizer o tipo ou o que falta",
+    );
+    expect(nao({ tipo_achado: "ausencia_em_secao_presente" }).problemas.get("CT-CURR-03")![0]).toContain(
+      "sem `lacunas`",
+    );
+    const valido = nao({ tipo_achado: "ausencia_em_secao_presente", lacunas: ["a carga horária de estágio"] });
+    expect(valido.problemas.size).toBe(0);
+    expect(valido.validos.get("CT-CURR-03")!.tipo_achado).toBe("ausencia_em_secao_presente");
+    expect(nao({ tipo_achado: "inventado" }).problemas.get("CT-CURR-03")![0]).toContain("fora do contrato");
+    // A prova de leitura é o trecho conferido no conteúdo da ficha: fora dele, recusa.
+    const fora = nao({
+      tipo_achado: "ausencia_em_secao_presente",
+      lacunas: ["x"],
+      evidencias: [{ trecho: "representação gráfica do processo formativo" }],
+    });
+    expect(fora.problemas.get("CT-CURR-03")!.join(" ")).toContain("não está no conteúdo entregue");
+    // No conservador, o tipo não é exigido e não entra no resultado.
+    const conservador = nao({ tipo_achado: "contradicao" }, entrada);
+    expect(conservador.problemas.size).toBe(0);
+    expect(conservador.validos.get("CT-CURR-03")!.tipo_achado).toBeUndefined();
   });
 
   test("limites de tamanho por campo e da resposta inteira", () => {
@@ -360,6 +404,29 @@ describe("estimativa", () => {
       1,
     );
     expect(paralelo.minutos).toBeLessThan(serial.minutos);
+  });
+});
+
+describe("estado da lista para o resultado da IA", () => {
+  const r = (extra: object) => ({
+    ficha: "CT-CURR-03",
+    estado: "NAO_ATENDE" as const,
+    confianca: 0.4,
+    justificativa: "j",
+    lacunas: ["l"],
+    oQueFazer: "",
+    trechos: ["t"],
+    fontes: [],
+    revisaoHumana: false,
+    ...extra,
+  });
+  test("conservador rebaixa a confiança baixa; ausência e contradição conferidas não; mérito segue o limiar", () => {
+    expect(estadoDaIa(r({}))).toBe("a_conferir");
+    expect(estadoDaIa(r({ confianca: 0.6 }))).toBe("nao_atende");
+    expect(estadoDaIa(r({ tipoAchado: "ausencia_em_secao_presente" }))).toBe("nao_atende");
+    expect(estadoDaIa(r({ tipoAchado: "contradicao" }))).toBe("nao_atende");
+    expect(estadoDaIa(r({ tipoAchado: "merito" }))).toBe("a_conferir");
+    expect(estadoDaIa(r({ tipoAchado: "ausencia_em_secao_presente", revisaoHumana: true }))).toBe("a_conferir");
   });
 });
 

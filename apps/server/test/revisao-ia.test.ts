@@ -89,7 +89,7 @@ const trechoDoPedido = (pedido: string, ficha: string) =>
     .sort((a, b) => b.length - a.length)[0]!
     .slice(0, 60);
 
-const blocoDo = (pedido: string) => /"bloco": "([^"]+)"/.exec(pedido)?.[1] ?? "?";
+const blocoDo = (pedido: string) => /"bloco": ?"([^"]+)"/.exec(pedido)?.[1] ?? "?";
 const fichasDo = (pedido: string) =>
   (/exatamente um resultado para cada critério: ([^.]+)\./.exec(pedido)?.[1] ?? "").split(", ").filter(Boolean);
 
@@ -285,7 +285,7 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       const correcoes = roteiro.mensagens.filter((m) => m.includes("não passou na conferência automática"));
       assert.strictEqual(correcoes.length, 2);
       assert.include(correcoes[0]!, "não é um objeto JSON válido");
-      assert.include(correcoes[0]!, '"bloco": "s-01-1"');
+      assert.include(correcoes[0]!, '"bloco":"s-01-1"');
       assert.strictEqual(roteiro.mensagens.length, roteiro.configs.length);
       assert.strictEqual(final.blocos.find((b) => b.id === "s-01-1")!.naoConferidas, 0);
       assert.strictEqual(final.blocos.find((b) => b.id === "j-02")!.naoConferidas, 2);

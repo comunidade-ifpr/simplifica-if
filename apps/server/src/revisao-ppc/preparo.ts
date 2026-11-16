@@ -27,6 +27,8 @@ import { palavrasDeCampi, segmentarPpc } from "@simplifica-if/kb/ppcs/secoes";
 import { comumDoBloco, estruturaDoPpc } from "@simplifica-if/ppc/revisao-ia/estrutura";
 import {
   type ContextoNormativo,
+  CRITERIO_PADRAO,
+  type CriterioInconclusivo,
   fontesPermitidas,
   formatarContexto,
   pedidoJ,
@@ -63,6 +65,8 @@ export type PlanoRevisaoIa = {
   blocos: BlocoPlano[];
   /** As transversais: o contexto normativo e os trechos das seções delas. */
   transversais: { contexto: ContextoNormativo; trechos: string } | null;
+  /** O critério do INCONCLUSIVO dos pedidos (ausente nos planos da etapa 4: `conservador`). */
+  criterio?: CriterioInconclusivo;
 };
 
 const LIMITE_CAMPO_CNCT = 700;
@@ -136,13 +140,19 @@ export interface EntradaPreparo {
   readonly curso: string | null;
   readonly modo: ModoRevisaoIa;
   readonly nonce: string;
+  /** O critério do INCONCLUSIVO (padrão: `conservador`). */
+  readonly criterio?: CriterioInconclusivo;
+  /** Só estas fichas (o script de avaliação); sem ele, as do modo. */
+  readonly soFichas?: readonly string[];
 }
 
 /** O plano da revisão: fichas, blocos e pedidos. Pede o `kb.sqlite` (`SqlClient`) e as `FontesNormativas`. */
 export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: EntradaPreparo) {
   const fontes = yield* FontesNormativas;
   const fichasJson = yield* fichasDoBanco();
-  const fichas = fichasJson.map((f) => fichaIa(f as Record<string, unknown>));
+  const criterio = entrada.criterio ?? CRITERIO_PADRAO;
+  const todasFichas = fichasJson.map((f) => fichaIa(f as Record<string, unknown>));
+  const fichas = entrada.soFichas ? todasFichas.filter((f) => entrada.soFichas!.includes(f.id)) : todasFichas;
   const porId = new Map(fichas.map((f) => [f.id, f]));
   const jsonPorId = new Map(fichasJson.map((f) => [f.id, f]));
   const limpo = retirarTextoParaIa(entrada.markdown, entrada.linhasTextoParaIa);
@@ -191,7 +201,7 @@ export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: Entr
         const proprio = yield* pacote([ficha.id], 1);
         recortes.set(ficha.id, recorteDaFicha(ficha, secoesTexto(proprio, false), comum));
       }
-      const pedido = pedidoS(bloco, doBloco, recortes, contexto, entrada.nonce, comum.texto);
+      const pedido = pedidoS(bloco, doBloco, recortes, contexto, entrada.nonce, comum.texto, criterio);
       blocos.push({ ...bloco, pedido, caracteres: pedido.length, fontes: [...fontesPermitidas(contexto)] });
     } else if (bloco.tipo === "J") {
       const p = yield* pacote(bloco.fichas, 0);
@@ -205,6 +215,7 @@ export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: Entr
         contexto,
         entrada.nonce,
         comum.texto,
+        criterio,
       );
       blocos.push({ ...bloco, pedido, caracteres: pedido.length, fontes: [...fontesPermitidas(contexto)] });
     } else {
@@ -236,6 +247,7 @@ export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: Entr
     fora: fichasForaDoModo(fichas, entrada.modo).map((f) => f.id),
     blocos,
     transversais,
+    criterio,
   };
   return plano;
 }, Effect.scoped);
