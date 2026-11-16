@@ -92,6 +92,11 @@ export class AnalisePpc extends Context.Service<
     readonly revisarArquivo: (entrada: EntradaRevisarArquivo) => Effect.Effect<RevisaoDoArquivo, FalhaRevisaoPpc>;
     /** Libera um arquivo escolhido no diálogo do desktop (`CAMINHO_LIBERAR_ARQUIVO`). */
     readonly liberar: (arquivo: string) => Effect.Effect<void>;
+    /**
+     * O arquivo foi liberado pelo desktop, ou o servidor não exige liberação (sem `tokenDesktop`). O
+     * "Anexar" da pasta de trabalho usa a mesma regra.
+     */
+    readonly liberado: (arquivo: string) => Effect.Effect<boolean>;
   }
 >()("@simplifica-if/server/revisao-ppc/AnalisePpc") {}
 
@@ -337,7 +342,10 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
   const liberar = (arquivo: string) => Effect.sync(() => void liberados.add(NodePath.normalize(arquivo)));
   const revisarArquivo = (entrada: EntradaRevisarArquivo) => revisarUm(entrada).pipe(vez.withPermits(1));
 
-  return AnalisePpc.of({ analisar, analisarCompleto, liberar, revisarArquivo });
+  const liberado = (arquivo: string) =>
+    Effect.sync(() => !opcoes.exigirLiberacao || liberados.has(NodePath.normalize(arquivo)));
+
+  return AnalisePpc.of({ analisar, analisarCompleto, liberar, liberado, revisarArquivo });
 });
 
 /** O serviço sobre o `FontesNormativas` e o `SqlClient` do `kb.sqlite` (os do `Leitura` do servidor). */

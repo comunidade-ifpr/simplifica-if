@@ -28,6 +28,7 @@ import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
 import * as Drivers from "@simplifica-if/motor/drivers";
 import * as CatalogoSkills from "../src/CatalogoSkills.ts";
+import * as PastasTrabalho from "../src/PastasTrabalho.ts";
 import * as Conversas from "../src/Conversas.ts";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Historico from "../src/persistencia/Historico.ts";
@@ -53,6 +54,7 @@ const camada = Conversas.layer().pipe(
   Layer.provideMerge(Motor.layer),
   Layer.provide(Historico.layer),
   Layer.provide(CatalogoSkills.layer(NodePath.join(RAIZ, ".agents", "skills"))),
+  Layer.provide(PastasTrabalho.layerSemPastas),
   Layer.provide(Banco.layerMemoria),
   Layer.provide(McpHttp.layer({ banco: NodePath.join(RAIZ, "tmp", "kb.sqlite") })),
   Layer.provide(Drivers.layerNode({ ambiente: process.env, pastaEstado: PASTA_ESTADO, ponteMcp: PONTE_MCP })),

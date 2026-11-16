@@ -56,6 +56,10 @@ const paraResumo = (skill: SkillDoApp): ResumoSkill => ({
   titulo: skill.manifesto.titulo,
   resumo: skill.manifesto.resumo,
   area: skill.manifesto.area,
+  publico: skill.manifesto.publico ?? [],
+  entradas: skill.manifesto.entradas ?? [],
+  etapas: skill.manifesto.etapas ?? [],
+  ...(skill.manifesto.duracao_estimada === undefined ? {} : { duracaoEstimada: skill.manifesto.duracao_estimada }),
 });
 
 /** O catálogo a partir de skills já lidas (o `layer` e os testes). */

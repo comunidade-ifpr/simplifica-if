@@ -13,11 +13,12 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
-import { GrupoConversa, GrupoProviders, GrupoRevisaoPpc, GrupoSkills } from "@simplifica-if/contratos-app";
+import { GrupoConversa, GrupoPasta, GrupoProviders, GrupoRevisaoPpc, GrupoSkills } from "@simplifica-if/contratos-app";
 import { layerHandlersRpc } from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
 import { CatalogoSkills } from "./CatalogoSkills.ts";
 import * as Conversas from "./Conversas.ts";
+import { PastasTrabalho } from "./PastasTrabalho.ts";
 import { ListaViva } from "./revisao-ppc/ListaViva.ts";
 import { RevisaoIa } from "./revisao-ppc/RevisaoIa.ts";
 
@@ -67,6 +68,7 @@ const layerConversa = GrupoConversa.toLayer(
       "conversa.carregar": ({ sessao }) => conversas.carregar(sessao),
       "conversa.acompanhar": ({ sessao, depois }) => conversas.acompanhar(sessao, depois),
       "conversa.retomar": ({ sessao }) => registrarEMapear(conversas.retomar(sessao)),
+      "conversa.avaliar": ({ sessao, turno, nota }) => conversas.avaliar(sessao, turno, nota),
     });
   }),
 );
@@ -75,6 +77,19 @@ const layerSkills = GrupoSkills.toLayer(
   Effect.gen(function* () {
     const catalogo = yield* CatalogoSkills;
     return GrupoSkills.of({ "skills.listar": () => Effect.succeed(catalogo.resumos) });
+  }),
+);
+
+const layerPasta = GrupoPasta.toLayer(
+  Effect.gen(function* () {
+    const pastas = yield* PastasTrabalho;
+    const conversas = yield* Conversas.Conversas;
+    return GrupoPasta.of({
+      "pasta.criar": ({ titulo }) => registrarEMapear(pastas.criar(titulo)).pipe(Effect.map((pasta) => ({ pasta }))),
+      "pasta.anexar": ({ pasta, arquivo }) => registrarEMapear(pastas.anexar(pasta, arquivo)),
+      "pasta.ver": ({ sessao }) => conversas.pasta(sessao),
+      "pasta.desfazer": ({ sessao }) => registrarEMapear(conversas.desfazer(sessao)),
+    });
   }),
 );
 
@@ -114,4 +129,11 @@ const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
  * Os handlers dos cinco grupos; pede o `Motor`, as `Conversas`, o `CatalogoSkills`, a `AnalisePpc`, a
  * `RevisaoIa` e o `Leitura`.
  */
-export const layer = Layer.mergeAll(layerProviders, layerConversa, layerSkills, layerRevisaoPpc, layerHandlersRpc);
+export const layer = Layer.mergeAll(
+  layerProviders,
+  layerConversa,
+  layerSkills,
+  layerPasta,
+  layerRevisaoPpc,
+  layerHandlersRpc,
+);

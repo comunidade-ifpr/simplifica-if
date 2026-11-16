@@ -4,7 +4,9 @@
  * motor, o cliente RPC (o `effect/rpc` sobre WebSocket, como a interface vai usar) e requisições cruas
  * para conferir as recusas.
  */
+import * as NodeFS from "node:fs";
 import * as NodeHttp from "node:http";
+import * as NodePath from "node:path";
 import * as NodeSocket from "@effect/platform-node/NodeSocket";
 import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
@@ -105,9 +107,27 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
           yield* canal.emitir({ _tag: "TextoFinal", texto: `Vou ${decisao}` });
           yield* canal.emitir({ _tag: "FimTurno", motivo: "end_turn" });
         });
+      // "grav": pede aprovação e, permitido, cria `resultado.md` e altera `entrada.md` na pasta (o Desfazer).
+      const gravar = (texto: string) =>
+        Effect.gen(function* () {
+          const decisao = yield* canal.pedirAprovacao({
+            id: "g1",
+            ferramenta: "Write",
+            descricao: "gravar resultado.md",
+            entrada: { texto },
+          });
+          if (decisao === "permitir") {
+            NodeFS.writeFileSync(NodePath.join(config.pastaTrabalho, "resultado.md"), `# Resultado\n\n${texto}\n`);
+            const entrada = NodePath.join(config.pastaTrabalho, "entrada.md");
+            if (NodeFS.existsSync(entrada)) NodeFS.writeFileSync(entrada, "alterado pela IA\n");
+          }
+          yield* canal.emitir({ _tag: "TextoFinal", texto: decisao === "permitir" ? "Gravei." : "Não gravei." });
+          yield* canal.emitir({ _tag: "FimTurno", motivo: "end_turn" });
+        });
       const responder = (texto: string) =>
         Effect.gen(function* () {
           registro.textos.push(texto);
+          if (texto.includes("grav")) return yield* gravar(texto);
           if (texto.includes("escrev")) return yield* escrever(texto);
           if (texto.includes("demor")) {
             yield* canal.emitir({ _tag: "TextoParcial", texto: "Pensando " });

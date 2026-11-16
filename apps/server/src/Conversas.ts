@@ -55,13 +55,17 @@ import {
   type ConversaGravada,
   type EntradaIniciar,
   type EstadoConversa,
+  type FalhaPasta,
   type ItemConversa,
+  type NotaResposta,
+  type PastaConversa,
   PastaTrabalhoInvalida,
   type ResumoConversa,
 } from "@simplifica-if/contratos-app";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
 import { CatalogoSkills } from "./CatalogoSkills.ts";
+import { PastasTrabalho } from "./PastasTrabalho.ts";
 import { type Alteracao, Historico, type RegistroConversa } from "./persistencia/Historico.ts";
 
 /** O nome do servidor MCP na sessão do provider: as ferramentas chegam como `ifpr.<ferramenta>`. */
@@ -96,6 +100,18 @@ export class Conversas extends Context.Service<
     readonly carregar: (sessao: string) => Effect.Effect<ConversaGravada, Motor.SessaoDesconhecida>;
     readonly acompanhar: (sessao: string, depois: number) => Stream.Stream<ItemConversa, Motor.SessaoDesconhecida>;
     readonly retomar: (sessao: string) => Effect.Effect<ResumoConversa, Motor.FalhaProvider | Motor.SessaoDesconhecida>;
+    /** 👍/👎 na resposta do turno; `null` retira. */
+    readonly avaliar: (
+      sessao: string,
+      turno: number,
+      nota: NotaResposta | null,
+    ) => Effect.Effect<void, Motor.SessaoDesconhecida>;
+    /** A pasta de trabalho da conversa: os arquivos e a previsão do Desfazer. */
+    readonly pasta: (sessao: string) => Effect.Effect<PastaConversa, Motor.SessaoDesconhecida | FalhaPasta>;
+    /** Restaura a cópia da pasta de antes do último turno que a mudou; recusa com turno em andamento. */
+    readonly desfazer: (
+      sessao: string,
+    ) => Effect.Effect<PastaConversa, Motor.SessaoDesconhecida | Motor.TurnoEmAndamento | FalhaPasta>;
   }
 >()("@simplifica-if/server/Conversas") {}
 
@@ -186,6 +202,7 @@ const make = Effect.fnUntraced(function* (opcoes: {
   const mcp = yield* McpHttp.ServidorMcpHttp;
   const historico = yield* Historico;
   const catalogo = yield* CatalogoSkills;
+  const pastas = yield* PastasTrabalho;
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
   const aleatorio = yield* SecureRandom.SecureRandom;
@@ -205,6 +222,7 @@ const make = Effect.fnUntraced(function* (opcoes: {
     turnos: registro.turnos,
     criadaEm: registro.criadaEm,
     atualizadaEm: registro.atualizadaEm,
+    ...(registro.tarefa === undefined ? {} : { tarefa: registro.tarefa }),
   });
 
   const alterar = Effect.fnUntraced(function* (viva: Viva, alteracao: Alteracao) {
@@ -468,6 +486,8 @@ const make = Effect.fnUntraced(function* (opcoes: {
         yield* cancelarOciosidade(viva);
         const inscricao = yield* PubSub.subscribe(viva.aoVivo);
         const numero = viva.registro.turnos + 1;
+        // Antes de a IA poder escrever na pasta: a cópia que o "Desfazer" restaura (só pastas de tarefa).
+        yield* pastas.guardarCopia(viva.id, numero, viva.registro.pastaTrabalho);
         const turno: TurnoAberto = {
           numero,
           fibra: undefined,
@@ -554,6 +574,7 @@ const make = Effect.fnUntraced(function* (opcoes: {
       pastaTrabalho: pasta,
       ...(entrada.modelo === undefined ? {} : { modelo: entrada.modelo }),
       ...(entrada.buscaWeb === undefined ? {} : { buscaWeb: entrada.buscaWeb }),
+      ...(entrada.tarefa === undefined ? {} : { tarefa: entrada.tarefa }),
       estado: "liberada",
     });
     const registro = yield* historico.buscar(id).pipe(Effect.flatMap(Effect.fromOption), Effect.orDie);
@@ -641,7 +662,11 @@ const make = Effect.fnUntraced(function* (opcoes: {
 
   const carregar = Effect.fn("Conversas.carregar")(function* (id: string) {
     const viva = yield* obter(id);
-    return { conversa: resumo(viva.registro), itens: yield* historico.itens(id) } satisfies ConversaGravada;
+    return {
+      conversa: resumo(viva.registro),
+      itens: yield* historico.itens(id),
+      avaliacoes: yield* historico.avaliacoes(id),
+    } satisfies ConversaGravada;
   });
 
   const acompanhar = (id: string, depois: number) =>
@@ -695,7 +720,30 @@ const make = Effect.fnUntraced(function* (opcoes: {
     return resumo(viva.registro);
   });
 
+  const avaliar = Effect.fn("Conversas.avaliar")(function* (id: string, turno: number, nota: NotaResposta | null) {
+    yield* obter(id);
+    yield* historico.avaliar(id, turno, nota);
+  });
+
+  const pasta = Effect.fn("Conversas.pasta")(function* (id: string) {
+    const viva = yield* obter(id);
+    return yield* pastas.ver(id, viva.registro.pastaTrabalho);
+  });
+
+  const desfazer = Effect.fn("Conversas.desfazer")(function* (id: string) {
+    const viva = yield* obter(id);
+    return yield* viva.trava.withPermits(1)(
+      Effect.gen(function* () {
+        if (viva.turno !== undefined) return yield* new Motor.TurnoEmAndamento();
+        return yield* pastas.desfazer(id, viva.registro.pastaTrabalho);
+      }),
+    );
+  });
+
   return Conversas.of({
+    avaliar,
+    pasta,
+    desfazer,
     iniciar,
     enviar,
     responderAprovacao,
