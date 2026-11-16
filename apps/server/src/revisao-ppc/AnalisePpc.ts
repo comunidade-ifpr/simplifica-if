@@ -33,7 +33,7 @@ import { FalhaRevisaoPpc, type ResultadoRevisaoPpc, SUFIXO_REVISAO_PREVIA } from
 import { FontesNormativas } from "@simplifica-if/kb/FontesNormativas";
 import * as Sql from "@simplifica-if/kb/db/sql";
 import * as NodeCrypto from "node:crypto";
-import type { BaseRevisaoPrevia, EntradaIa, RevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
+import type { BaseRevisaoPrevia, EntradaIa, MarcaPendencia, RevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
 import type { CursoCnct } from "@simplifica-if/ppc/verificadores/comum";
 import type { PedidoTrabalhador, RespostaTrabalhador } from "./trabalhador.ts";
 
@@ -71,6 +71,8 @@ export interface RevisaoDoArquivo {
 
 export interface EntradaRevisarArquivo extends EntradaAnalise {
   readonly ia?: EntradaIa;
+  /** A situação de cada pendência na lista viva (etapa 5b): a cópia comentada reflete o estado. */
+  readonly situacoes?: Record<string, MarcaPendencia>;
   /** Grava a cópia comentada ao lado do original. */
   readonly gravar: boolean;
   /** Recusa o arquivo se o conteúdo mudou desde a preparação. */
@@ -295,6 +297,7 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
         cnct: entrada.cnct,
         forma: entrada.forma,
         ia: entrada.ia,
+        situacoes: entrada.situacoes,
       },
       limites,
       url,

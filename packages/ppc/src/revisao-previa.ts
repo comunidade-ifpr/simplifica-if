@@ -93,6 +93,12 @@ export type OpcoesRevisaoPrevia = {
   cnct?: string | undefined;
   /** Forma de oferta escolhida pela pessoa; sem ela, identificada no documento. */
   forma?: string | undefined;
+  /**
+   * A situação de cada pendência na lista viva (etapa 5b), pela `chavePendencia`: a retirada depois de
+   * contestação conferida sai do documento; as outras levam a situação no comentário; o aviso do
+   * título conta tudo.
+   */
+  situacoes?: Readonly<Record<string, MarcaPendencia>> | undefined;
 };
 
 export type FonteLegivel = { rotulo: string; url: string | null; link: Fonte };
@@ -118,6 +124,51 @@ export type PendenciaRevisao = {
   /** `codigo`: conferido pela base (fichas D e triagem); `ia`: avaliação da IA, conferida em código. */
   origem: "codigo" | "ia";
 };
+
+/** A situação de uma pendência na lista viva (M1.11, etapa 5b), mantida pelo servidor. */
+export type SituacaoPendencia = "aberta" | "vou_ajustar" | "resolvida" | "contestada_aceita" | "contestada_mantida";
+
+/** A situação e, quando há, a nota que vai ao comentário (quem resolveu, o que a revisão manteve). */
+export type MarcaPendencia = { situacao: SituacaoPendencia; nota?: string | undefined };
+
+/**
+ * A chave estável de uma pendência: a ficha e um hash (FNV-1a) da origem, do trecho e da mensagem. As do
+ * código são determinísticas, e a mesma pendência da pré-conferência tem a mesma chave depois da
+ * revisão com IA (a situação marcada passa de uma lista para a outra).
+ */
+export function chavePendencia(p: Pick<PendenciaRevisao, "ficha" | "origem" | "trecho" | "mensagem">): string {
+  const texto = [p.ficha, p.origem, p.trecho ?? "", p.mensagem].map((t) => t.replace(/\s+/g, " ").trim()).join("|");
+  let h = 0x811c9dc5;
+  for (const c of texto) {
+    h ^= c.codePointAt(0)!;
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return `${p.ficha}:${h.toString(16).padStart(8, "0")}`;
+}
+
+const NOTA_SITUACAO: Record<SituacaoPendencia, string> = {
+  aberta: "",
+  vou_ajustar: "Situação no app: a coordenação vai ajustar.",
+  resolvida: "Situação no app: marcada como resolvida.",
+  contestada_aceita: "",
+  contestada_mantida: "Situação no app: a coordenação discordou, e a revisão manteve o apontamento.",
+};
+
+/** O parágrafo do aviso com as situações marcadas no app (vazio se nenhuma foi marcada). */
+function textoDasSituacoes(marcas: readonly MarcaPendencia[]): string {
+  const conta = (s: SituacaoPendencia) => marcas.filter((m) => m.situacao === s).length;
+  const partes = [
+    conta("resolvida") ? plural(conta("resolvida"), "marcada como resolvida", "marcadas como resolvidas") : "",
+    conta("vou_ajustar") ? plural(conta("vou_ajustar"), "que a coordenação vai ajustar", "que a coordenação vai ajustar") : "",
+    conta("contestada_mantida")
+      ? plural(conta("contestada_mantida"), "contestada e mantida pela revisão", "contestadas e mantidas pela revisão")
+      : "",
+    conta("contestada_aceita")
+      ? `${plural(conta("contestada_aceita"), "retirada", "retiradas")} depois de contestação com trecho ou norma conferidos pelo app (sem comentário no documento)`
+      : "",
+  ].filter(Boolean);
+  return partes.length ? `Situação marcada no app: ${partes.join("; ")}. Os comentários deste documento são sobre o arquivo original.` : "";
+}
 
 export type CriterioConferido = {
   ficha: string;
@@ -570,6 +621,8 @@ function textoDoAviso(entrada: {
   pendencias: readonly PendenciaRevisao[];
   /** Onde o trecho não localizado provavelmente está (`ondeNoArquivo`). */
   onde: ReadonlyMap<PendenciaRevisao, string>;
+  /** As situações marcadas no app (etapa 5b). */
+  situacoes?: readonly MarcaPendencia[];
 }): string {
   const naoAtende = entrada.pendencias.filter((p) => p.estado === "nao_atende").length;
   const aConferir = entrada.pendencias.length - naoAtende;
@@ -600,6 +653,8 @@ function textoDoAviso(entrada: {
     `${total} ${curso}`,
     `Resultado: ${plural(naoAtende, "pendência", "pendências")} e ${plural(aConferir, "ponto para conferir", "pontos para conferir")}.`,
   ];
+  const situacoes = textoDasSituacoes(entrada.situacoes ?? []);
+  if (situacoes) partes.push(situacoes);
   const ausentes = entrada.pendencias.filter((p) => p.noDocumento === "no-inicio");
   if (ausentes.length)
     partes.push(
@@ -659,10 +714,18 @@ export function revisarDocx(
   // Duas passadas: as pendências com trecho, e depois o aviso no título, com as ausências e o que
   // não foi localizado.
   const comentar = { data: opcoes.agora.toISOString(), autor: AUTOR_COMENTARIOS };
-  const comTrecho = itens.flatMap((item, indice) => (item.trechos.length ? [indice] : []));
+  const marcas = itens.map((item) => opcoes.situacoes?.[chavePendencia(item)]);
+  // A retirada depois de contestação conferida não vai ao documento; as outras levam a situação.
+  const retirada = (indice: number) => marcas[indice]?.situacao === "contestada_aceita";
+  const comSituacao = (indice: number) => {
+    const marca = marcas[indice];
+    const nota = marca ? [NOTA_SITUACAO[marca.situacao], marca.nota ?? ""].filter(Boolean).join(" ") : "";
+    return nota ? `${nota}\n${textoDoComentario(itens[indice]!)}` : textoDoComentario(itens[indice]!);
+  };
+  const comTrecho = itens.flatMap((item, indice) => (item.trechos.length && !retirada(indice) ? [indice] : []));
   const comentado = comentarDocx(
     bytes,
-    comTrecho.map((indice) => ({ trechos: itens[indice]!.trechos, texto: textoDoComentario(itens[indice]!) })),
+    comTrecho.map((indice) => ({ trechos: itens[indice]!.trechos, texto: comSituacao(indice) })),
     comentar,
   );
   const ancoradas = new Set(comentado.ancoradas.map((a) => comTrecho[a.indice]!));
@@ -686,7 +749,8 @@ export function revisarDocx(
       .map((i) => TEMAS[i]!.titulo),
     totalCriterios,
     curso,
-    pendencias,
+    pendencias: pendencias.filter((_, indice) => !retirada(indice)),
+    situacoes: marcas.filter((m): m is MarcaPendencia => m !== undefined),
   });
   const final = comentarDocx(comentado.docx, [{ trechos: [], texto: aviso, noInicioSeAusente: true }], comentar);
   const criterios: CriterioConferido[] = resultado.fichas.map((ficha) => {
