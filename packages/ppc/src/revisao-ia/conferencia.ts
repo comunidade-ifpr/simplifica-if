@@ -57,11 +57,15 @@ export const ResultadoIa = Schema.Struct({
   lacunas: Schema.Array(ate(L.lacuna)).check(Schema.isMaxLength(L.lacunas)),
   o_que_fazer: Schema.optionalKey(ate(L.oQueFazer)),
   fontes: Schema.optionalKey(Schema.Array(ate(120)).check(Schema.isMaxLength(L.fontes))),
-  revisao_humana_obrigatoria: Schema.Boolean,
+  /**
+   * Fora do contrato desde a revisão da etapa 5: quem decide a revisão humana é o código (a triagem do
+   * texto dirigido a IA). Aceito e descartado, para reconferir as respostas gravadas antes.
+   */
+  revisao_humana_obrigatoria: Schema.optionalKey(Schema.Boolean),
   /** Só no critério `ausencia`: o tipo do NAO_ATENDE. */
   tipo_achado: Schema.optionalKey(Schema.Literals(TIPOS_ACHADO)),
 });
-export type ResultadoIa = typeof ResultadoIa.Type;
+export type ResultadoIa = Omit<typeof ResultadoIa.Type, "revisao_humana_obrigatoria">;
 
 const Casca = Schema.Struct({
   bloco: Schema.optionalKey(Texto),
@@ -146,6 +150,11 @@ export function conferirResposta(
     alvoDaFicha: (ficha: string) => string;
     fontes: ReadonlySet<string>;
     criterio?: CriterioInconclusivo | undefined;
+    /**
+     * A seção do critério já normalizada (`alvoDosTrechos(secaoDaFicha(…))`), ou `null` sem seção: a
+     * prova de leitura da ausência. Sem a função, a ausência só confere o trecho no conteúdo da ficha.
+     */
+    secaoDaFicha?: (ficha: string) => string | null;
   },
 ): Conferencia {
   const criterio = entrada.criterio ?? CRITERIO_PADRAO;
@@ -192,16 +201,23 @@ export function conferirResposta(
     }
     // No critério conservador, o `tipo_achado` não foi pedido: não entra no resultado (o rebaixamento
     // por confiança continua valendo como na etapa 4).
-    const { tipo_achado: tipoAchado, ...semTipo } = decodificado.success;
-    const r: ResultadoIa = criterio === "ausencia" && tipoAchado ? { ...semTipo, tipo_achado: tipoAchado } : semTipo;
+    // O `tipo_achado` só vale no critério `ausencia` e num NAO_ATENDE; a revisão humana não vem da IA.
+    const { tipo_achado: tipoAchado, revisao_humana_obrigatoria: _ignorada, ...semTipo } = decodificado.success;
+    const r: ResultadoIa =
+      criterio === "ausencia" && tipoAchado && semTipo.estado === "NAO_ATENDE"
+        ? { ...semTipo, tipo_achado: tipoAchado }
+        : semTipo;
     const erros: string[] = [];
     if (!ficha.estados_permitidos.includes(r.estado)) erros.push(`estado ${r.estado} não é permitido para a ficha`);
     const alvo = entrada.alvoDaFicha(fichaId);
     let conferidas = 0;
+    const conferidosNoAlvo: string[] = [];
     r.evidencias.forEach((e, i) => {
       if (!e.trecho.trim()) return;
-      if (trechoExiste(e.trecho, alvo)) conferidas += 1;
-      else
+      if (trechoExiste(e.trecho, alvo)) {
+        conferidas += 1;
+        conferidosNoAlvo.push(e.trecho);
+      } else
         erros.push(
           `trecho que não está no conteúdo entregue a este critério (evidência ${i + 1}): copie literalmente, ao menos 25 caracteres, ou retire`,
         );
@@ -214,8 +230,25 @@ export function conferirResposta(
     if (criterio === "ausencia" && r.estado === "NAO_ATENDE") {
       if (!r.tipo_achado)
         erros.push("NAO_ATENDE sem `tipo_achado`: use ausencia_em_secao_presente, contradicao ou merito");
-      else if (r.tipo_achado === "ausencia_em_secao_presente" && !r.lacunas.some((l) => l.trim()))
-        erros.push("NAO_ATENDE por ausência sem `lacunas`: diga o que falta na seção lida");
+      else if (r.tipo_achado === "ausencia_em_secao_presente") {
+        if (!r.lacunas.some((l) => l.trim()))
+          erros.push("NAO_ATENDE por ausência sem `lacunas`: diga o que falta na seção lida");
+        // A prova de leitura é da seção do critério, não do comum do bloco (quadro, matriz) nem de um
+        // aviso de seção não achada: sem a seção no recorte, a ausência não se prova.
+        const secao = entrada.secaoDaFicha?.(fichaId);
+        if (secao === null)
+          erros.push(
+            "NAO_ATENDE por ausência sem a seção no recorte: o código não achou a seção deste critério; use INCONCLUSIVO",
+          );
+        else if (
+          secao !== undefined &&
+          conferidosNoAlvo.length &&
+          !conferidosNoAlvo.some((t) => trechoExiste(t, secao))
+        )
+          erros.push(
+            "NAO_ATENDE por ausência com trecho fora da seção do critério: cite a seção lida (o recorte deste critério ou as seções do tema), não o quadro de identificação nem a matriz",
+          );
+      }
     }
     if (erros.length) problemas.set(fichaId, erros);
     else validos.set(fichaId, r);
@@ -242,6 +275,8 @@ export function motivoLegivel(erros: readonly string[]): string {
   if (erros.some((e) => e.startsWith("trecho"))) return "a IA citou um trecho que não está no documento";
   if (erros.some((e) => e.startsWith("fonte"))) return "a IA citou uma norma que não estava entre as consultadas";
   if (erros.some((e) => e.startsWith("ATENDE"))) return "a IA disse que atende sem mostrar o trecho";
+  if (erros.some((e) => e.startsWith("NAO_ATENDE por ausência sem a seção") || e.includes("fora da seção do critério")))
+    return "a IA apontou uma falta sem mostrar a seção do documento onde ela devia estar";
   if (erros.some((e) => e.startsWith("NAO_ATENDE sem `tipo_achado`") || e.startsWith("NAO_ATENDE por ausência")))
     return "a IA apontou um problema sem dizer o tipo ou o que falta";
   if (erros.some((e) => e.startsWith("NAO_ATENDE"))) return "a IA apontou um problema sem mostrar o trecho";

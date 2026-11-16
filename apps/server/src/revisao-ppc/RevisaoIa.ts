@@ -37,6 +37,7 @@ import type { FontesNormativas } from "@simplifica-if/kb/FontesNormativas";
 import * as Motor from "@simplifica-if/motor";
 import { estimar } from "@simplifica-if/ppc/revisao-ia/estimativa";
 import { CRITERIO_PADRAO, type CriterioInconclusivo, pedidoT } from "@simplifica-if/ppc/revisao-ia/pedido";
+import { teveTextoParaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import { MODELO_PADRAO } from "@simplifica-if/ppc/revisao-ia/tipos";
 import { NOME_DA_FORMA, type ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 import { type RegistroRevisaoIa, Revisoes } from "../persistencia/Revisoes.ts";
@@ -239,6 +240,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
           fontes: new Set(bloco.fontes),
           tempoTurno,
           criterio: plano.criterio ?? CRITERIO_PADRAO,
+          revisaoHumana: teveTextoParaIa(plano.markdown),
           registrarTentativa: (t) => revisoes.gravarTentativa(id, bloco.id, t),
         });
         yield* revisoes.gravarBloco(id, {

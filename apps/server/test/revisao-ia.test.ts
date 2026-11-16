@@ -101,7 +101,7 @@ const resultado = (ficha: string, extra: object = {}) => ({
   lacunas: [],
   o_que_fazer: "",
   fontes: [],
-  revisao_humana_obrigatoria: false,
+
   ...extra,
 });
 

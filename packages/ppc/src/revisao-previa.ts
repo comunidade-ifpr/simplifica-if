@@ -64,6 +64,10 @@ export type ResultadoFichaIa = {
   trechos: string[];
   /** IDs de fonte conferidos (`br/cne-cp/res/2026/2#art29`, `cnct`). */
   fontes: string[];
+  /**
+   * Revisão humana obrigatória, decidida pelo código: a triagem achou texto dirigido a IA no PPC
+   * (desde a revisão da etapa 5, a IA não responde mais este campo).
+   */
   revisaoHumana: boolean;
   motivoFalha?: string | undefined;
   /**
@@ -332,12 +336,13 @@ const linkDaFonte = (fonte: string, cnct: string | null): Fonte | null =>
  *
  * No critério conservador (sem `tipoAchado`), NAO_ATENDE com confiança abaixo de 0,6 vira "a conferir".
  * No critério `ausencia`, a ausência numa seção presente e a contradição já vêm com o trecho conferido
- * no conteúdo entregue (a prova do achado): a confiança não as rebaixa. O de mérito segue o limiar.
+ * na seção do critério (a prova do achado): a confiança não as rebaixa. O de mérito segue o limiar.
+ * `revisaoHumana` (decidida pelo código: a triagem achou texto dirigido a IA) nunca rebaixa um
+ * NAO_ATENDE, porque o risco da injeção é empurrar para ATENDE; ela segura o ATENDE com lacunas.
  */
 export function estadoDaIa(r: ResultadoFichaIa): "nao_atende" | "a_conferir" | null {
   if (r.estado === "FALHOU" || r.estado === "INCONCLUSIVO") return "a_conferir";
   if (r.estado === "NAO_ATENDE") {
-    if (r.revisaoHumana) return "a_conferir";
     if (r.tipoAchado === "ausencia_em_secao_presente" || r.tipoAchado === "contradicao") return "nao_atende";
     return r.confianca >= 0.6 ? "nao_atende" : "a_conferir";
   }

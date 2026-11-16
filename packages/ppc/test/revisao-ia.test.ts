@@ -35,6 +35,7 @@ import {
   instrucoesJulgador,
   pedidoS,
   pedidoT,
+  secaoDaFicha,
 } from "../src/revisao-ia/pedido.ts";
 import {
   fichaIa,
@@ -199,7 +200,6 @@ describe("conferência da resposta", () => {
     ],
     lacunas: [],
     fontes: ["br/cne-cp/res/2026/2#art29-par2"],
-    revisao_humana_obrigatoria: false,
     ...extra,
   });
   const resposta = (...resultados: object[]) => "```json\n" + JSON.stringify({ bloco: "s-02-1", resultados }) + "\n```";
@@ -297,6 +297,65 @@ describe("conferência da resposta", () => {
     const conservador = nao({ tipo_achado: "contradicao" }, entrada);
     expect(conservador.problemas.size).toBe(0);
     expect(conservador.validos.get("CT-CURR-03")!.tipo_achado).toBeUndefined();
+  });
+
+  test("critério ausencia: a prova de leitura é da seção do critério, não do comum nem de um aviso", () => {
+    const um = { ...bloco, fichas: ["CT-CURR-03"] };
+    const comum =
+      "## Quadro de identificação\nDenominação do curso: Técnico em Informática para Internet, forma subsequente";
+    const pedido = (recorte: string) =>
+      `x\n<ppc-abc123>\n${comum}\n\n## Recorte para CT-CURR-03\n${recorte}\n</ppc-abc123>\ny`;
+    const conferir = (p: string, trecho: string, extra: object = {}) => {
+      const secao = secaoDaFicha({ pedido: p }, "CT-CURR-03");
+      return conferirResposta(
+        resposta(
+          resultado("CT-CURR-03", {
+            estado: "NAO_ATENDE",
+            confianca: 0.3,
+            tipo_achado: "ausencia_em_secao_presente",
+            lacunas: ["o item"],
+            evidencias: [{ trecho }],
+            ...extra,
+          }),
+        ),
+        um,
+        [porId.get("CT-CURR-03")!],
+        {
+          alvoDaFicha: () => alvoDosTrechos(conteudoDoPpcParaFicha({ pedido: p }, "CT-CURR-03")),
+          secaoDaFicha: () => (secao === null ? null : alvoDosTrechos(secao)),
+          fontes: fontesPermitidas(contexto),
+          criterio: "ausencia",
+        },
+      ).problemas.get("CT-CURR-03");
+    };
+    const doQuadro = "Técnico em Informática para Internet, forma subsequente";
+    // A reprodução da revisão: recorte sem seção e trecho do quadro.
+    expect(conferir(pedido("(nenhuma seção do PPC corresponde a este critério)"), doQuadro)!.join(" ")).toContain(
+      "sem a seção no recorte",
+    );
+    expect(
+      conferir(
+        pedido(
+          "(o código não localizou trecho com os termos deste critério; abaixo, o começo da seção mais provável)\nA matriz curricular do curso soma 1200 horas.",
+        ),
+        "A matriz curricular do curso soma 1200 horas",
+      )!.join(" "),
+    ).toContain("sem a seção no recorte");
+    const comSecao = pedido("## 4.2 Matriz\nA matriz curricular do curso soma 1200 horas em três semestres.");
+    expect(conferir(comSecao, doQuadro)!.join(" ")).toContain("fora da seção do critério");
+    expect(conferir(comSecao, "A matriz curricular do curso soma 1200 horas")).toBeUndefined();
+    // No J, a seção é a das "Seções do tema".
+    const j = `<ppc-abc123>\n${comum}\n\n## Seções do tema\n\n## 5 Estágio\nO estágio não é obrigatório.\n</ppc-abc123>`;
+    expect(secaoDaFicha({ pedido: j }, "CT-CURR-03")).toContain("O estágio não é obrigatório.");
+    expect(secaoDaFicha({ pedido: j }, "CT-CURR-03")).not.toContain("Quadro");
+    // B2: o tipo fora de NAO_ATENDE é descartado.
+    const inconclusivo = conferirResposta(
+      resposta(resultado("CT-CURR-03", { estado: "INCONCLUSIVO", tipo_achado: "merito" }), resultado("CT-CURR-10")),
+      bloco,
+      doBloco,
+      { ...entrada, criterio: "ausencia" },
+    );
+    expect(inconclusivo.validos.get("CT-CURR-03")!.tipo_achado).toBeUndefined();
   });
 
   test("limites de tamanho por campo e da resposta inteira", () => {
@@ -426,7 +485,10 @@ describe("estado da lista para o resultado da IA", () => {
     expect(estadoDaIa(r({ tipoAchado: "ausencia_em_secao_presente" }))).toBe("nao_atende");
     expect(estadoDaIa(r({ tipoAchado: "contradicao" }))).toBe("nao_atende");
     expect(estadoDaIa(r({ tipoAchado: "merito" }))).toBe("a_conferir");
-    expect(estadoDaIa(r({ tipoAchado: "ausencia_em_secao_presente", revisaoHumana: true }))).toBe("a_conferir");
+    // A revisão humana (do código, pela triagem) nunca rebaixa um NAO_ATENDE; segura o ATENDE com lacunas.
+    expect(estadoDaIa(r({ tipoAchado: "ausencia_em_secao_presente", revisaoHumana: true }))).toBe("nao_atende");
+    expect(estadoDaIa(r({ confianca: 0.9, revisaoHumana: true }))).toBe("nao_atende");
+    expect(estadoDaIa(r({ estado: "ATENDE", revisaoHumana: true }))).toBe("a_conferir");
   });
 });
 
