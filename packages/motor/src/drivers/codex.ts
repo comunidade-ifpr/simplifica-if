@@ -46,7 +46,7 @@ const registro = (valor: unknown): Registro => (typeof valor === "object" && val
 const texto = (valor: unknown): string => (typeof valor === "string" ? valor : "");
 
 /** Nome e entrada de uma ferramenta do Codex, a partir do item `ThreadItem`. */
-function ferramentaDoItem(item: Registro): { readonly nome: string; readonly entrada: unknown } | undefined {
+export function ferramentaDoItem(item: Registro): { readonly nome: string; readonly entrada: unknown } | undefined {
   switch (item.type) {
     case "mcpToolCall":
       return { nome: `${texto(item.server)}.${texto(item.tool)}`, entrada: item.arguments };
@@ -62,9 +62,17 @@ function ferramentaDoItem(item: Registro): { readonly nome: string; readonly ent
     case "webSearch":
       return { nome: "busca_web", entrada: { consulta: item.query } };
     default:
-      return undefined;
+      // No lado seguro: todo item que não é mensagem, raciocínio ou a mensagem da pessoa conta como
+      // ferramenta (`imageView`, `collabAgentToolCall`, `imageGeneration`, `openPage`, tipos novos…).
+      // Numa sessão de julgamento, isso descarta o bloco.
+      return ITENS_SEM_FERRAMENTA.has(texto(item.type))
+        ? undefined
+        : { nome: `item.${texto(item.type) || "desconhecido"}`, entrada: {} };
   }
 }
+
+/** Os itens do Codex que não são ferramenta. */
+const ITENS_SEM_FERRAMENTA = new Set(["agentMessage", "reasoning", "userMessage"]);
 
 function resultadoDoItem(item: Registro): { readonly resumo: string; readonly falhou: boolean } {
   switch (item.type) {

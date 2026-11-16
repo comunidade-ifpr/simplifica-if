@@ -59,11 +59,16 @@ export function nomeFerramentaClaude(nome: string): string {
   return partes ? `${partes[1]}.${partes[2]}` : nome;
 }
 
+/** Os blocos de conteúdo do Claude que não são ferramenta. */
+const BLOCOS_SEM_FERRAMENTA = new Set<string>(["text", "thinking", "redacted_thinking"]);
+
 /**
  * Traduz as mensagens do Agent SDK em eventos. Guarda o nome de cada `tool_use` para o resultado,
  * que só traz o id.
  */
-export function criarNormalizadorClaude(): (mensagem: SDKMessage) => ReadonlyArray<Evento> {
+export function criarNormalizadorClaude(
+  opcoes: { readonly semFerramentas?: boolean } = {},
+): (mensagem: SDKMessage) => ReadonlyArray<Evento> {
   const nomes = new Map<string, string>();
   return (mensagem) => {
     switch (mensagem.type) {
@@ -87,6 +92,15 @@ export function criarNormalizadorClaude(): (mensagem: SDKMessage) => ReadonlyArr
             const nome = nomeFerramentaClaude(bloco.name);
             nomes.set(bloco.id, nome);
             eventos.push({ _tag: "FerramentaIniciada", id: bloco.id, nome, entrada: bloco.input });
+          } else if (opcoes.semFerramentas === true && !BLOCOS_SEM_FERRAMENTA.has(bloco.type)) {
+            // No lado seguro: numa sessão de julgamento, bloco que não é texto nem raciocínio
+            // (`server_tool_use`, resultados de ferramentas do servidor, tipos novos) conta como ferramenta.
+            eventos.push({
+              _tag: "FerramentaIniciada",
+              id: `bloco-${eventos.length}`,
+              nome: `bloco.${bloco.type}`,
+              entrada: {},
+            });
           }
         }
         return eventos;
@@ -348,7 +362,7 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
       }),
     );
 
-    const normalizar = criarNormalizadorClaude();
+    const normalizar = criarNormalizadorClaude({ semFerramentas: config.semFerramentas === true });
     // Interrompido, o turno do Claude termina com `error_during_execution` (medido com o SDK 0.3.321):
     // não é erro para a pessoa, e o fim do turno sai como interrupção.
     let interrompendo = false;

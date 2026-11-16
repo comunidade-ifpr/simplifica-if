@@ -325,3 +325,45 @@ describe("queda do codex app-server", () => {
     assert.strictEqual(falha.detalhe, "o processo do codex encerrou (código 1)");
   });
 });
+
+describe("sessão de julgamento: tipo desconhecido conta como ferramenta", () => {
+  it("Codex: imageView, collabAgentToolCall, imageGeneration e um tipo novo viram FerramentaIniciada; mensagem e raciocínio não", () => {
+    const normalizar = criarNormalizadorCodex();
+    const tipos = (tipo: string) =>
+      normalizar("item/started", { item: { type: tipo, id: `i-${tipo}` } }).map((e) => e._tag);
+    for (const tipo of ["imageView", "collabAgentToolCall", "imageGeneration", "algoNovo"])
+      assert.deepStrictEqual(tipos(tipo), ["FerramentaIniciada"]);
+    for (const tipo of ["agentMessage", "reasoning", "userMessage"]) assert.deepStrictEqual(tipos(tipo), []);
+  });
+
+  it("Claude: bloco que não é texto nem raciocínio vira ferramenta só na sessão de julgamento", () => {
+    const mensagem = {
+      type: "assistant",
+      parent_tool_use_id: null,
+      message: {
+        content: [
+          { type: "server_tool_use", id: "s1", name: "web_search", input: {} },
+          { type: "thinking", thinking: "…" },
+        ],
+      },
+    } as unknown as Parameters<ReturnType<typeof criarNormalizadorClaude>>[0];
+    assert.deepStrictEqual(
+      criarNormalizadorClaude({ semFerramentas: true })(mensagem).map((e) => e._tag),
+      ["FerramentaIniciada"],
+    );
+    assert.deepStrictEqual(criarNormalizadorClaude()(mensagem), []);
+  });
+
+  it("Antigravity: atualização desconhecida vira ferramenta só na sessão de julgamento; as benignas não", () => {
+    const entrada = (sessionUpdate: string) =>
+      ({ tipo: "session/update", notificacao: { update: { sessionUpdate } } }) as unknown as EntradaAcp;
+    const julgamento = criarNormalizadorAntigravity([], { semFerramentas: true });
+    assert.deepStrictEqual(
+      julgamento(entrada("terminal_output")).map((e) => e._tag),
+      ["FerramentaIniciada"],
+    );
+    assert.deepStrictEqual(julgamento(entrada("available_commands_update")), []);
+    assert.deepStrictEqual(julgamento(entrada("agent_thought_chunk")), []);
+    assert.deepStrictEqual(criarNormalizadorAntigravity()(entrada("terminal_output")), []);
+  });
+});

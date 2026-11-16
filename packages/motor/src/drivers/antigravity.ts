@@ -89,6 +89,7 @@ function entradaFerramenta(atualizacao: Registro): unknown {
  */
 export function criarNormalizadorAntigravity(
   servidores: ReadonlyArray<string> = [],
+  opcoes: { readonly semFerramentas?: boolean } = {},
 ): (entrada: EntradaAcp) => ReadonlyArray<Evento> {
   const nomes = new Map<string, string>();
   const iniciadas = new Set<string>();
@@ -157,11 +158,40 @@ export function criarNormalizadorAntigravity(
         }
         return eventos;
       }
-      default:
-        return [];
+      default: {
+        // No lado seguro: numa sessão de julgamento, atualização fora das benignas conhecidas conta
+        // como ferramenta (e descarta o bloco).
+        const tipo = texto(atualizacao.sessionUpdate);
+        return opcoes.semFerramentas === true && !ATUALIZACOES_SEM_FERRAMENTA.has(tipo)
+          ? [
+              {
+                _tag: "FerramentaIniciada",
+                id: `atualizacao-${tipo}`,
+                nome: `atualizacao.${tipo || "desconhecida"}`,
+                entrada: {},
+              },
+            ]
+          : [];
+      }
     }
   };
 }
+
+/**
+ * As atualizações do ACP que não são ferramenta: as vistas nas gravações reais do `agy` 1.5.x
+ * (`test/fixtures/antigravity-*.jsonl`) e as de estado da sessão do protocolo.
+ */
+const ATUALIZACOES_SEM_FERRAMENTA = new Set([
+  "agent_message_chunk",
+  "agent_message",
+  "agent_thought_chunk",
+  "user_message_chunk",
+  "available_commands_update",
+  "session_info_update",
+  "current_mode_update",
+  "usage_update",
+  "plan",
+]);
 
 /** Ferramentas de web do `agy` 1.5.x, desligadas no `_meta.antigravity.disabledTools` sem busca web. */
 export const FERRAMENTAS_WEB_ANTIGRAVITY = ["search_web", "read_url_content", "browser_subagent"] as const;
@@ -577,7 +607,10 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
     if (recusa !== undefined) {
       return yield* new FalhaProvider({ provider: PROVIDER, operacao: "session/new", detalhe: recusa });
     }
-    const normalizar = criarNormalizadorAntigravity(config.servidoresMcp.map((servidor) => servidor.nome));
+    const normalizar = criarNormalizadorAntigravity(
+      config.servidoresMcp.map((servidor) => servidor.nome),
+      { semFerramentas: config.semFerramentas === true },
+    );
     // Fora de um turno (o histórico que o `session/load` repete), as atualizações não viram eventos.
     let emTurno = false;
     const servidoresApp = config.servidoresMcp.filter((servidor) => servidor.preAprovado).map((s) => s.nome);
