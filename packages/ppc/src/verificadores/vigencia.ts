@@ -91,7 +91,12 @@ export function vigenciaDeDados(dados: DadosVigencia, data: string): ConsultaVig
   const registro = new Registro(dados.normas);
   const datas = new Map(dados.datas);
   return consultarVigencia(
-    { registro: () => registro, datas: () => datas, relacoes: () => dados.relacoes, transicoes: () => dados.transicoes },
+    {
+      registro: () => registro,
+      datas: () => datas,
+      relacoes: () => dados.relacoes,
+      transicoes: () => dados.transicoes,
+    },
     data,
   );
 }

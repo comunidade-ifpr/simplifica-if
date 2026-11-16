@@ -15,8 +15,10 @@ import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import * as NodeServices from "@effect/platform-node/NodeServices";
+import { describe, expect, layer } from "@effect/vitest";
+import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
-import { afterAll, beforeAll, describe, expect, test } from "vite-plus/test";
+import * as Layer from "effect/Layer";
 import * as Compilador from "@simplifica-if/kb/Compilador";
 import * as Layers from "@simplifica-if/kb/layers";
 import { revisarDocx, type BaseRevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
@@ -25,24 +27,33 @@ import { baseRevisaoDeArquivos } from "../../../packages/ppc/scripts/base-tecnic
 import { montarBase } from "../src/revisao-ppc/AnalisePpc.ts";
 
 const raiz = NodePath.resolve(import.meta.dirname, "../../..");
-const pasta = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "simplifica-base-revisao-"));
-const banco = NodePath.join(pasta, "kb.sqlite");
 const AGORA = new Date("2026-11-16T12:00:00Z");
-let doBanco: BaseRevisaoPrevia;
-let dosArquivos: BaseRevisaoPrevia;
 
-beforeAll(async () => {
-  await Effect.runPromise(
-    Effect.gen(function* () {
-      const compilador = yield* Compilador.Compilador;
-      yield* compilador.compilar({ raiz, destino: banco });
-    }).pipe(Effect.provide(Compilador.layer), Effect.provide(NodeServices.layer)),
-  );
-  doBanco = await Effect.runPromise(montarBase.pipe(Effect.provide(Layers.layerSomenteLeitura({ caminho: banco }))));
-  dosArquivos = baseRevisaoDeArquivos(raiz);
-}, 180_000);
+/** A base real compilada num diretório temporário, e as duas bases da revisão prévia. */
+class Bases extends Context.Service<
+  Bases,
+  {
+    readonly pasta: string;
+    readonly banco: string;
+    readonly doBanco: BaseRevisaoPrevia;
+    readonly dosArquivos: BaseRevisaoPrevia;
+  }
+>()("@simplifica-if/server/test/revisao-ppc-base.test/Bases") {}
 
-afterAll(() => NodeFS.rmSync(pasta, { recursive: true, force: true }));
+const layerBases = Layer.effect(
+  Bases,
+  Effect.gen(function* () {
+    const pasta = yield* Effect.acquireRelease(
+      Effect.sync(() => NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "simplifica-base-revisao-"))),
+      (dir) => Effect.sync(() => NodeFS.rmSync(dir, { recursive: true, force: true })),
+    );
+    const banco = NodePath.join(pasta, "kb.sqlite");
+    const compilador = yield* Compilador.Compilador;
+    yield* compilador.compilar({ raiz, destino: banco });
+    const doBanco = yield* montarBase.pipe(Effect.provide(Layers.layerSomenteLeitura({ caminho: banco })));
+    return Bases.of({ pasta, banco, doBanco, dosArquivos: baseRevisaoDeArquivos(raiz) });
+  }),
+).pipe(Layer.provide(Compilador.layer.pipe(Layer.provide(NodeServices.layer))));
 
 /** As normas por id, sem as chaves ausentes (o banco e os arquivos as omitem de modos diferentes). */
 const porId = <T extends { id: string }>(lista: readonly T[]) =>
@@ -52,54 +63,65 @@ const porId = <T extends { id: string }>(lista: readonly T[]) =>
       .map((item) => [item.id, JSON.parse(JSON.stringify(item)) as unknown]),
   );
 
-describe("base da revisão prévia: kb.sqlite × arquivos", () => {
-  test("mesmos registros, relações, datas, transições, CNCT, fichas, tópicos, endereços e data", () => {
-    expect(porId(doBanco.normas)).toEqual(porId(dosArquivos.normas));
-    expect(doBanco.relacoes).toEqual(dosArquivos.relacoes);
-    expect(new Map(doBanco.datas)).toEqual(new Map(dosArquivos.datas));
-    expect(doBanco.transicoes).toEqual(dosArquivos.transicoes);
-    expect(Object.fromEntries(doBanco.cncts.map((c) => [c.slug, c]))).toEqual(
-      Object.fromEntries(dosArquivos.cncts.map((c) => [c.slug, c])),
+layer(layerBases, { timeout: "300 seconds", excludeTestServices: true })("base da revisão prévia", (it) => {
+  describe("kb.sqlite × arquivos", () => {
+    it.effect("mesmos registros, relações, datas, transições, CNCT, fichas, tópicos, endereços e data", () =>
+      Effect.gen(function* () {
+        const { doBanco, dosArquivos } = yield* Bases;
+        expect(porId(doBanco.normas)).toEqual(porId(dosArquivos.normas));
+        expect(doBanco.relacoes).toEqual(dosArquivos.relacoes);
+        expect(new Map(doBanco.datas)).toEqual(new Map(dosArquivos.datas));
+        expect(doBanco.transicoes).toEqual(dosArquivos.transicoes);
+        expect(Object.fromEntries(doBanco.cncts.map((c) => [c.slug, c]))).toEqual(
+          Object.fromEntries(dosArquivos.cncts.map((c) => [c.slug, c])),
+        );
+        expect(doBanco.fichas).toEqual(dosArquivos.fichas);
+        expect(doBanco.topicos).toEqual(dosArquivos.topicos);
+        // O banco tem também os endereços dos stubs; os da base publicada são os mesmos.
+        for (const [id, url] of Object.entries(dosArquivos.urls)) expect(doBanco.urls[id], id).toBe(url);
+        expect(doBanco.dataBase).toBe(dosArquivos.dataBase);
+        expect(doBanco.normas.length).toBeGreaterThan(100);
+        expect(doBanco.transicoes.length).toBeGreaterThan(0);
+      }),
     );
-    expect(doBanco.fichas).toEqual(dosArquivos.fichas);
-    expect(doBanco.topicos).toEqual(dosArquivos.topicos);
-    // O banco tem também os endereços dos stubs; os da base publicada são os mesmos.
-    for (const [id, url] of Object.entries(dosArquivos.urls)) expect(doBanco.urls[id], id).toBe(url);
-    expect(doBanco.dataBase).toBe(dosArquivos.dataBase);
-    expect(doBanco.normas.length).toBeGreaterThan(100);
-    expect(doBanco.transicoes.length).toBeGreaterThan(0);
+
+    it.effect("a revisão prévia dá o mesmo resultado com as duas bases", () =>
+      Effect.gen(function* () {
+        const { doBanco, dosArquivos } = yield* Bases;
+        for (const docx of [ppcSintetico(), ppcSintetico({ controleDeAlteracoes: true })]) {
+          const a = revisarDocx(docx, "ppc.docx", doBanco, { agora: AGORA });
+          const b = revisarDocx(docx, "ppc.docx", dosArquivos, { agora: AGORA });
+          expect(a.pendencias).toEqual(b.pendencias);
+          expect(a.criterios).toEqual(b.criterios);
+          expect(a.aviso).toEqual(b.aviso);
+        }
+      }),
+    );
   });
 
-  test("a revisão prévia dá o mesmo resultado com as duas bases", () => {
-    for (const docx of [ppcSintetico(), ppcSintetico({ controleDeAlteracoes: true })]) {
-      const a = revisarDocx(docx, "ppc.docx", doBanco, { agora: AGORA });
-      const b = revisarDocx(docx, "ppc.docx", dosArquivos, { agora: AGORA });
-      expect(a.pendencias).toEqual(b.pendencias);
-      expect(a.criterios).toEqual(b.criterios);
-      expect(a.aviso).toEqual(b.aviso);
-    }
-  });
-});
-
-test("sem o repositório: a revisão prévia só com o kb.sqlite, e o controle esbarra no bloqueio", () => {
-  const docx = NodePath.join(pasta, "PPC.docx");
-  NodeFS.writeFileSync(docx, ppcSintetico());
-  const saida = NodeChildProcess.execFileSync(
-    process.execPath,
-    [NodePath.join(import.meta.dirname, "sem-repositorio.ts"), banco, docx],
-    { encoding: "utf8", cwd: pasta },
+  it.effect("sem o repositório: a revisão prévia só com o kb.sqlite, e o controle esbarra no bloqueio", () =>
+    Effect.gen(function* () {
+      const { pasta, banco, doBanco } = yield* Bases;
+      const docx = NodePath.join(pasta, "PPC.docx");
+      NodeFS.writeFileSync(docx, ppcSintetico());
+      const saida = NodeChildProcess.execFileSync(
+        process.execPath,
+        [NodePath.join(import.meta.dirname, "sem-repositorio.ts"), banco, docx],
+        { encoding: "utf8", cwd: pasta },
+      );
+      const resultado = JSON.parse(saida.trim().split("\n").at(-1)!) as {
+        leiturasDaRevisao: number;
+        controle: string;
+        pendencias: { ficha: string; estado: string; mensagem: string }[];
+      };
+      expect(resultado.leiturasDaRevisao).toBe(0);
+      expect(resultado.controle).toBe("bloqueado");
+      const esperado = revisarDocx(ppcSintetico(), "ppc.docx", doBanco, { agora: AGORA }).pendencias.map((p) => ({
+        ficha: p.ficha,
+        estado: p.estado,
+        mensagem: p.mensagem,
+      }));
+      expect(resultado.pendencias).toEqual(esperado);
+    }),
   );
-  const resultado = JSON.parse(saida.trim().split("\n").at(-1)!) as {
-    leiturasDaRevisao: number;
-    controle: string;
-    pendencias: { ficha: string; estado: string; mensagem: string }[];
-  };
-  expect(resultado.leiturasDaRevisao).toBe(0);
-  expect(resultado.controle).toBe("bloqueado");
-  const esperado = revisarDocx(ppcSintetico(), "ppc.docx", doBanco, { agora: AGORA }).pendencias.map((p) => ({
-    ficha: p.ficha,
-    estado: p.estado,
-    mensagem: p.mensagem,
-  }));
-  expect(resultado.pendencias).toEqual(esperado);
-}, 60_000);
+});
