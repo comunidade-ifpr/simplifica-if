@@ -113,6 +113,7 @@ export function criarNormalizadorClaude(): (mensagem: SDKMessage) => ReadonlyArr
             entrada: mensagem.usage.input_tokens,
             saida: mensagem.usage.output_tokens,
             cacheLeitura: mensagem.usage.cache_read_input_tokens ?? 0,
+            cacheEscrita: mensagem.usage.cache_creation_input_tokens ?? 0,
             custoUsd: mensagem.total_cost_usd,
           },
         ];

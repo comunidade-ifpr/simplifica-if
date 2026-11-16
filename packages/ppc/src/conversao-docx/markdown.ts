@@ -105,6 +105,11 @@ class Escritor {
     this.#normalizar = normalizar;
   }
 
+  /** Marcador do título: o nível do documento, um abaixo com `secoesNoNivel2` (`#` é o título do documento). */
+  #cerquilhas(nivel: number): string {
+    return "#".repeat(Math.min(nivel + (this.#regras.secoesNoNivel2 ? 1 : 0), 6));
+  }
+
   #sairDaLista(): string {
     if (!this.#emLista) return "";
     this.#emLista = false;
@@ -137,7 +142,7 @@ class Escritor {
 
   elemento(elemento: Elemento): string {
     if (elemento.tipo === "titulo")
-      return `${this.#sairDaLista()}${"#".repeat(Math.min(elemento.nivel, 6))} ${elemento.texto}`;
+      return `${this.#sairDaLista()}${this.#cerquilhas(elemento.nivel)} ${elemento.texto}`;
     if (elemento.tipo === "tabela") return this.#sairDaLista() + tabelaEmMarkdown(this.#normalizar(elemento));
     if (elemento.tipo === "paragrafo") return this.#paragrafo(elemento);
     // A figura não tem texto; a da representação gráfica entra depois, pela seção (`figura.ts`).
@@ -159,7 +164,7 @@ class Escritor {
   }
 
   secao(secao: Secao): string {
-    const linhas = [`${"#".repeat(Math.min(secao.nivel, 6))} ${tituloCompleto(secao)}`, ""];
+    const linhas = [`${this.#cerquilhas(secao.nivel)} ${tituloCompleto(secao)}`, ""];
     for (const elemento of secao.elementos) {
       const texto = this.elemento(elemento);
       if (!texto) continue;

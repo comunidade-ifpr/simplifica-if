@@ -93,7 +93,16 @@ describe("normalização", () => {
         assert.match(finais[0]?.texto ?? "", /1\.200 horas/);
         assert.match(finais[0]?.texto ?? "", /ifpr:\/\/cnct\/tecnico-em-enfermagem/);
         const [uso, fim] = eventos.slice(-2);
-        assert.strictEqual(uso?._tag, "UsoTokens");
+        // A entrada que vai para o cache (`cache_creation_input_tokens`) fica fora de `input_tokens`:
+        // sem `cacheEscrita`, este turno pareceria ter consumido 8 tokens de entrada.
+        assert.deepStrictEqual(uso, {
+          _tag: "UsoTokens",
+          entrada: 8,
+          saida: 1016,
+          cacheLeitura: 105281,
+          cacheEscrita: 48330,
+          custoUsd: 0.42818280000000003,
+        });
         assert.deepStrictEqual(fim, { _tag: "FimTurno", motivo: "end_turn" });
       }),
     );

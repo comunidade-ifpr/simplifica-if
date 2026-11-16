@@ -74,7 +74,7 @@ function canonizar(elemento: Element, herdado: Escopo): void {
 }
 
 /** Decodifica o XML de uma parte: UTF-16 quando há BOM, senão UTF-8. */
-function decodificar(bytes: Uint8Array): string {
+export function decodificarXml(bytes: Uint8Array): string {
   if (bytes[0] === 0xff && bytes[1] === 0xfe) return new TextDecoder("utf-16le").decode(bytes);
   if (bytes[0] === 0xfe && bytes[1] === 0xff) return new TextDecoder("utf-16be").decode(bytes);
   return new TextDecoder("utf-8").decode(bytes);
@@ -92,9 +92,14 @@ export function analisarXml(
   fonte: Uint8Array | string,
   parte = "XML",
   limites: Pick<LimitesDoPacote, "elementosPorParte" | "profundidadeDoXml"> = LIMITES_PADRAO,
+  opcoes: { indices?: boolean } = {},
 ): Element | null {
-  const texto = typeof fonte === "string" ? fonte : decodificar(fonte);
-  const arvore = new DomHandler();
+  const texto = typeof fonte === "string" ? fonte : decodificarXml(fonte);
+  // Com `indices`, cada elemento guarda `startIndex` e `endIndex` no texto de entrada: quem edita o
+  // XML (os comentários) insere marcas nessas posições sem regravar o resto da parte.
+  const arvore = opcoes.indices
+    ? new DomHandler(undefined, { withStartIndices: true, withEndIndices: true })
+    : new DomHandler();
   let profundidade = 0;
   let elementos = 0;
   const analisador: Parser = new Parser(

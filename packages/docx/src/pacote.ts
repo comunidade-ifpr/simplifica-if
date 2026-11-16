@@ -220,6 +220,11 @@ export class PacoteOoxml {
     return conteudo;
   }
 
+  /** Nomes das partes do ZIP, na ordem do diretório central. */
+  nomes(): string[] {
+    return [...this.#entradas.keys()];
+  }
+
   /** Raiz do XML de uma parte, ou `null` quando a parte não existe. */
   xml(parte: string): Element | null {
     const bytes = this.#ler(parte);

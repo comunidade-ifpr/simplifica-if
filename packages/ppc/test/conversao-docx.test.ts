@@ -35,7 +35,7 @@ import {
 import { dataW3cEmUtc, type Fidelidade, lerDocx } from "@simplifica-if/docx/leitor";
 import { ErroDocx } from "@simplifica-if/docx/pacote";
 import { analisarXml, descendentes } from "@simplifica-if/docx/xml";
-import { REGRAS_DO_DOCUMENTO, REGRAS_DO_PYTHON } from "../src/conversao-docx/regras.ts";
+import { REGRAS_DO_DOCUMENTO, REGRAS_DO_PYTHON, type Regras } from "../src/conversao-docx/regras.ts";
 import { detectarSecoes, dicasDeIdentificacao, listarSecoes } from "../src/conversao-docx/secoes.ts";
 import { normalizarTabela, tabelaEmMarkdown, type TabelaNormalizada } from "../src/conversao-docx/tabelas.ts";
 import { carregarJsonPy as lerJsonPy } from "@simplifica-if/kb/python/json";
@@ -66,11 +66,15 @@ const paragrafos = (itens: Elemento[]) => itens.filter((item): item is Paragrafo
 const textos = (tabelaLida: Tabela) => tabelaLida.linhas.map((celulas) => celulas.map((item) => item.texto));
 
 /** Converte a fixture para um diretório e devolve o conteúdo dos arquivos gravados, por nome. */
-function arquivosConvertidos(nome: string, fidelidade: Fidelidade = "documento"): Record<string, string> {
+function arquivosConvertidos(
+  nome: string,
+  fidelidade: Fidelidade = "documento",
+  regras: Partial<Regras> = {},
+): Record<string, string> {
   const dir = diretorioTemporario();
   const docx = NodePath.join(dir, `${nome}.docx`);
   NodeFS.writeFileSync(docx, docxDaFixture(nome));
-  converterDocx(docx, NodePath.join(dir, "saida"), { agora: AGORA, fidelidade });
+  converterDocx(docx, NodePath.join(dir, "saida"), { agora: AGORA, fidelidade, regras });
   const saida = NodePath.join(dir, "saida");
   return Object.fromEntries(
     NodeFS.readdirSync(saida, { recursive: true, encoding: "utf-8" })
@@ -784,7 +788,9 @@ describe("gabaritos da conversão em Python", () => {
   });
 
   test("documento sem nada do que as regras mudam sai igual nos dois modos", () => {
-    expect(arquivosConvertidos("mesclas")).toEqual(arquivosConvertidos("mesclas", "python-docx"));
+    // Fora a regra `secoesNoNivel2`, que muda todo documento com seções.
+    const comoNoPython = arquivosConvertidos("mesclas", "python-docx", { secoesNoNivel2: true });
+    expect(arquivosConvertidos("mesclas")).toEqual(comoNoPython);
   });
 });
 
