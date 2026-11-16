@@ -60,3 +60,11 @@ export const ROTULO_SITUACAO: Record<EstadoRevisaoIa["situacao"], string> = {
   concluida: "Concluída",
   falhou: "Não concluída",
 };
+
+/**
+ * A revisão com IA a reencontrar depois de recarregar a tela: a mais recente que ainda não terminou
+ * (em andamento, pausada ou preparada; `revisaoPpc.listarIa` vem da mais recente para a mais antiga).
+ */
+export function revisaoParaRetomar(lista: ReadonlyArray<EstadoRevisaoIa>): EstadoRevisaoIa | undefined {
+  return lista.find((e) => e.situacao === "em_andamento" || e.situacao === "pausada" || e.situacao === "preparada");
+}

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vite-plus/test";
 import type { EstadoRevisaoIa } from "@simplifica-if/contratos-app";
-import { andamentoPorTema, textoEstimativa } from "./ia.ts";
+import { andamentoPorTema, revisaoParaRetomar, textoEstimativa } from "./ia.ts";
 
 const estimativa = {
   provider: "claude" as const,
@@ -43,5 +43,11 @@ describe("revisão com IA na tela", () => {
       { ordem: 1, tema: "Identificação", prontos: 0, total: 1, emAndamento: true, naoConferidas: 0 },
       { ordem: 2, tema: "Matriz", prontos: 2, total: 2, emAndamento: false, naoConferidas: 1 },
     ]);
+  });
+
+  test("depois de recarregar, reencontra a revisão mais recente que não terminou", () => {
+    const e = (id: string, situacao: EstadoRevisaoIa["situacao"]) => ({ id, situacao }) as EstadoRevisaoIa;
+    expect(revisaoParaRetomar([e("a", "concluida"), e("b", "pausada"), e("c", "em_andamento")])?.id).toBe("b");
+    expect(revisaoParaRetomar([e("a", "concluida"), e("d", "falhou")])).toBeUndefined();
   });
 });

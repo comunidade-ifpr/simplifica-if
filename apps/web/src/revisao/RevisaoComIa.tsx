@@ -30,20 +30,27 @@ const MODOS: ReadonlyArray<{ readonly modo: ModoRevisaoIa; readonly titulo: stri
 export function RevisaoComIa({
   arquivo,
   aoConcluir,
+  retomada,
 }: {
   readonly arquivo: string;
   readonly aoConcluir: (resultado: ResultadoRevisaoPpc) => void;
+  /** Uma revisão reencontrada depois de recarregar a tela (`revisaoPpc.listarIa`): volta a acompanhá-la. */
+  readonly retomada?: EstadoRevisaoIa;
 }) {
   const api = useApi();
   const [provider, setProvider] = useState<Provider>("claude");
   const [modo, setModo] = useState<ModoRevisaoIa>("rapido");
-  const [estado, setEstado] = useState<EstadoRevisaoIa | undefined>(undefined);
+  const [estado, setEstado] = useState<EstadoRevisaoIa | undefined>(retomada);
   const [ocupada, setOcupada] = useState(false);
   const [erro, setErro] = useState<MensagemErro | undefined>(undefined);
   const acompanhamento = useRef<Acompanhamento | undefined>(undefined);
   const concluiu = useRef(false);
 
   useEffect(() => () => acompanhamento.current?.cancelar(), []);
+  // Reencontrada: o acompanhamento traz o estado completo (a lista vem sem os blocos).
+  useEffect(() => {
+    if (retomada !== undefined) acompanhar(retomada.id);
+  }, []);
 
   const acompanhar = (id: string) => {
     acompanhamento.current?.cancelar();

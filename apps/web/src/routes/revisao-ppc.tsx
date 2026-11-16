@@ -7,10 +7,10 @@
  *
  * No navegador (sem o desktop), o caminho do arquivo é digitado: é o modo de desenvolvimento.
  */
-import type { PendenciaRevisao, ResultadoRevisaoPpc } from "@simplifica-if/contratos-app";
+import type { EstadoRevisaoIa, PendenciaRevisao, ResultadoRevisaoPpc } from "@simplifica-if/contratos-app";
 import { createFileRoute } from "@tanstack/react-router";
 import { ExternalLinkIcon, FileSearchIcon, FileTextIcon, FolderOpenIcon } from "lucide-react";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { AvisoErro } from "../components/AvisoErro.tsx";
 import { Alert, AlertDescription } from "../components/ui/alert.tsx";
 import { Badge } from "../components/ui/badge.tsx";
@@ -21,7 +21,7 @@ import { explicarErro, mensagemDeErro, type MensagemErro } from "../conexao/erro
 import { useApi } from "../contexto.tsx";
 import { abrirExterno, ponteDesktop } from "../ponte-desktop.ts";
 import { agruparPorTema, dataBrasileira, descreverCurso, ROTULO_ESTADO, ROTULO_LOCAL } from "../revisao/agrupar.ts";
-import { textoCobertura } from "../revisao/ia.ts";
+import { revisaoParaRetomar, textoCobertura } from "../revisao/ia.ts";
 import { RevisaoComIa } from "../revisao/RevisaoComIa.tsx";
 
 export const Route = createFileRoute("/revisao-ppc")({ component: RevisaoPpc });
@@ -30,13 +30,30 @@ type Estado =
   | { readonly fase: "escolha" }
   | { readonly fase: "analisando"; readonly arquivo: string }
   | { readonly fase: "erro"; readonly erro: MensagemErro }
-  | { readonly fase: "pronta"; readonly resultado: ResultadoRevisaoPpc };
+  | { readonly fase: "pronta"; readonly resultado: ResultadoRevisaoPpc }
+  /** Uma revisão com IA não concluída, reencontrada depois de recarregar a tela. */
+  | { readonly fase: "retomando"; readonly revisao: EstadoRevisaoIa };
 
 const nomeDoArquivo = (caminho: string) => caminho.split(/[\\/]/).at(-1) ?? caminho;
 
 function RevisaoPpc() {
   const api = useApi();
   const [estado, setEstado] = useState<Estado>({ fase: "escolha" });
+  // Depois de recarregar a tela, a revisão com IA que não terminou volta (o servidor a guarda).
+  useEffect(() => {
+    let ativo = true;
+    api
+      .chamar((cliente) => cliente["revisaoPpc.listarIa"]({}))
+      .then((lista) => {
+        const revisao = revisaoParaRetomar(lista);
+        if (ativo && revisao !== undefined)
+          setEstado((atual) => (atual.fase === "escolha" ? { fase: "retomando", revisao } : atual));
+      })
+      .catch(() => undefined);
+    return () => {
+      ativo = false;
+    };
+  }, [api]);
   const analisar = async (arquivo: string) => {
     setEstado({ fase: "analisando", arquivo });
     try {
@@ -76,6 +93,20 @@ function RevisaoPpc() {
           </div>
         ) : null}
         {estado.fase === "erro" ? <AvisoErro erro={estado.erro} icone /> : null}
+        {estado.fase === "retomando" ? (
+          <>
+            <p className="text-sm">
+              Revisão com IA de <span className="font-medium">{nomeDoArquivo(estado.revisao.arquivoOriginal)}</span>{" "}
+              ainda não terminou.
+            </p>
+            <RevisaoComIa
+              key={estado.revisao.id}
+              arquivo={estado.revisao.arquivoOriginal}
+              retomada={estado.revisao}
+              aoConcluir={(resultado) => setEstado({ fase: "pronta", resultado })}
+            />
+          </>
+        ) : null}
         {estado.fase === "pronta" ? (
           <>
             {estado.resultado.conferidosIa === 0 ? (
