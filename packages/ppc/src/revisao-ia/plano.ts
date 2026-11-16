@@ -145,7 +145,7 @@ export type SecaoTexto = { titulo: string; linhaInicio: number; linhaFim: number
 
 export const LIMITE_RECORTE_S = 3000;
 export const LIMITE_SECOES_J = 30_000;
-const LIMITE_PARAGRAFO = 1200;
+const LIMITE_PARAGRAFO = 2500;
 
 /** Minúsculas, sem acento e sem marcação, com espaços simples. */
 export const dobrar = (texto: string) =>
