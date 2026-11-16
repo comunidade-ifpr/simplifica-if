@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off globalDate:off -- os testes leem fixtures, chamam o Python por processo e fixam o relógio com datas dadas
+// @effect-diagnostics nodeBuiltinImport:off globalDate:off -- os testes leem e gravam fixtures e fixam o relógio com datas dadas
 /**
  * Identificação do curso (curso, campus, forma de oferta, modalidade e eixo)
  * em PPCs Markdown e nos dados da conversão DOCX, mais a medição contra
@@ -7,7 +7,6 @@
  * Os trechos são mínimos e anonimizados, reproduzindo os formatos observados
  * nos PPCs da base.
  */
-import * as NodeChildProcess from "node:child_process";
 import { afterEach, describe, expect, test } from "vite-plus/test";
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
@@ -28,6 +27,7 @@ import {
   nucleoCurso,
 } from "../scripts/medicao-identificacao.ts";
 import { prepararDocumento } from "../scripts/preparar-documento.ts";
+import { montarDocx, par, tabelaDeTextos } from "./apoio/docx-sintetico.ts";
 import { lerJsonPy } from "../scripts/rodada.ts";
 
 const temporarios: string[] = [];
@@ -310,40 +310,30 @@ describe("preparar-documento", () => {
     });
   });
 
-  const python = [process.env.REVISAR_PPC_PYTHON, "python3.14", "python3"].find(
-    (candidato) =>
-      candidato && NodeChildProcess.spawnSync(candidato, ["-c", "import docx"], { stdio: "ignore" }).status === 0,
-  );
-
-  test.skipIf(!python)("DOCX: base legal numa tabela não vira nome do curso", () => {
+  test("DOCX: base legal numa tabela não vira nome do curso", () => {
     const dir = diretorioTemporario();
     const arquivo = NodePath.join(dir, "ppc-sintetico.docx");
-    const script = `
-import sys
-from docx import Document
-d = Document()
-d.add_heading("PROJETO PEDAGÓGICO DE CURSO", 0)
-d.add_heading("1 IDENTIFICAÇÃO", 1)
-t = d.add_table(rows=0, cols=2)
-for campo, valor in [
-    ("Base legal específica do curso", "Resolução CNE/CP nº 1/2021"),
-    ("Coordenador do curso", "Fulano de Tal"),
-    ("Denominação do curso", "Curso Técnico em Enfermagem"),
-    ("Campus", "Curitiba"),
-    ("Forma de oferta", "Subsequente"),
-    ("Modalidade", "Presencial"),
-]:
-    linha = t.add_row().cells
-    linha[0].text = campo
-    linha[1].text = valor
-d.add_paragraph("Base legal específica do curso: Resolução CNE/CP nº 1/2021")
-d.save(sys.argv[1])
-`;
-    expect(NodeChildProcess.spawnSync(python!, ["-c", script, arquivo]).status).toBe(0);
+    NodeFS.writeFileSync(
+      arquivo,
+      montarDocx({
+        corpo: [
+          par("PROJETO PEDAGÓGICO DE CURSO", { estilo: "Ttulo" }),
+          par("1 IDENTIFICAÇÃO", { estilo: "Ttulo1" }),
+          tabelaDeTextos([
+            ["Base legal específica do curso", "Resolução CNE/CP nº 1/2021"],
+            ["Coordenador do curso", "Fulano de Tal"],
+            ["Denominação do curso", "Curso Técnico em Enfermagem"],
+            ["Campus", "Curitiba"],
+            ["Forma de oferta", "Subsequente"],
+            ["Modalidade", "Presencial"],
+          ]),
+          par("Base legal específica do curso: Resolução CNE/CP nº 1/2021"),
+        ].join(""),
+      }),
+    );
     const { metadata } = prepararDocumento(arquivo, {
       saidaBase: dir,
       relogio: () => new Date(2026, 10, 13),
-      python: python!,
     });
     expect(lerJsonPy(metadata) as ObjetoPy).toMatchObject({
       curso: "Técnico em Enfermagem",

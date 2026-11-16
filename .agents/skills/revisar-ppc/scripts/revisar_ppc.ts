@@ -2,10 +2,8 @@
 /**
  * Ponto de entrada único da skill revisar-ppc, em `effect/cli`.
  *
- * Todos os subcomandos rodam em TypeScript. Em `preparar-documento`, só a
- * conversão de `.docx` em artefatos ainda é feita pelo Python
- * (`converter_docx.py`), até a trilha T3; `REVISAR_PPC_PYTHON` escolhe o
- * interpretador.
+ * Todos os subcomandos rodam em TypeScript, inclusive a conversão de `.docx`
+ * em `preparar-documento` (`conversao-docx/`): a skill só precisa do Node.
  *
  * `REVISAR_PPC_AGORA` (data ISO 8601) fixa o relógio, para testes e
  * diferenciais.
