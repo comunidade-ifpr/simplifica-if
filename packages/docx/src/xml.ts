@@ -21,6 +21,13 @@ import { ErroDocx } from "./erro.ts";
  */
 export const PROFUNDIDADE_MAXIMA = 256;
 
+/**
+ * Elementos numa parte XML. O maior `document.xml` dos PPCs reais conferidos tem 104 mil; a árvore
+ * custa cerca de meio kilobyte por elemento, e um arquivo honesto de 88 MB com 3,4 milhões de
+ * parágrafos levava o processo a 1,9 GB.
+ */
+export const ELEMENTOS_MAXIMOS = 1_000_000;
+
 const PREFIXO_DA_URI: Record<string, string> = {
   "http://schemas.openxmlformats.org/wordprocessingml/2006/main": "w",
   "http://schemas.openxmlformats.org/officeDocument/2006/relationships": "r",
@@ -98,11 +105,18 @@ export function analisarXml(fonte: Uint8Array | string, parte = "XML"): Element 
   const texto = typeof fonte === "string" ? fonte : decodificar(fonte);
   const arvore = new DomHandler();
   let profundidade = 0;
+  let elementos = 0;
   const analisador: Parser = new Parser(
     {
       onparserinit: (parser) => arvore.onparserinit(parser),
       onopentag: (nome, atributos) => {
         profundidade += 1;
+        elementos += 1;
+        if (elementos > ELEMENTOS_MAXIMOS) {
+          throw new ErroDocx(
+            `O arquivo DOCX é grande demais para ser lido: ${parte} tem mais de ${ELEMENTOS_MAXIMOS / 1_000_000} milhão de elementos.`,
+          );
+        }
         if (profundidade > PROFUNDIDADE_MAXIMA) {
           throw new ErroDocx(`O arquivo DOCX não pôde ser lido: ${parte} tem elementos aninhados demais.`);
         }

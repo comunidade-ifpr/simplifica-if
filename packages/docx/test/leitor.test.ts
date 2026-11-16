@@ -23,7 +23,7 @@ import {
   run,
   tabela,
 } from "../src/testes/sintetico.ts";
-import { analisarXml, descendentes, PROFUNDIDADE_MAXIMA } from "../src/xml.ts";
+import { analisarXml, descendentes, ELEMENTOS_MAXIMOS, PROFUNDIDADE_MAXIMA } from "../src/xml.ts";
 
 const W =
   'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
@@ -206,6 +206,28 @@ describe("limites contra arquivos montados para esgotar recursos", () => {
     expect(performance.now() - inicio).toBeLessThan(500);
     // E a parte, se pedida, é recusada.
     esperarErroDocx(() => new PacoteOoxml(zip).binario("customXml/item1.xml"), /compressão anormal/);
+  });
+
+  test("bomba com tamanho declarado mentiroso: a razão vale para o que de fato saiu", () => {
+    // 15 MB de `<w:p/>` num ZIP de poucos kilobytes, declarados como 100 bytes: a conferência pelo
+    // tamanho declarado não vê nada, e a árvore de milhões de nós esgotaria a memória.
+    const zip = pacoteCru({ "word/document.xml": documento(p("x") + "<w:p/>".repeat(2_500_000)) });
+    expect(zip.length).toBeLessThan(64 * 1024);
+    new DataView(zip.buffer).setUint32(entradaNoDiretorio(zip, "word/document.xml") + 24, 100, true);
+    const inicio = performance.now();
+    esperarErroDocx(() => lerDocx(zip), /word\/document\.xml tem compressão anormal/);
+    expect(performance.now() - inicio).toBeLessThan(2000);
+  });
+
+  test("teto de elementos por parte XML", () => {
+    const zip = pacoteCru({ "word/document.xml": documento(p("x") + "<w:p/>".repeat(ELEMENTOS_MAXIMOS)) });
+    esperarErroDocx(
+      () => lerDocx(zip, { limites: { razaoDeCompressao: 1_000_000 } }),
+      /word\/document\.xml tem mais de 1 milhão de elementos/,
+    );
+    // Dez vezes o maior PPC real conferido passa.
+    const grande = pacoteCru({ "word/document.xml": documento(p("x").repeat(300_000)) });
+    expect(lerDocx(grande, { limites: { razaoDeCompressao: 1_000_000 } }).blocos).toHaveLength(300_000);
   });
 
   test("entradas demais no ZIP", () => {

@@ -175,10 +175,12 @@ export class PacoteOoxml {
       );
     const corrompido = () => new ErroDocx(`O arquivo DOCX está corrompido: a parte ${nome} não pôde ser lida.`);
     const cabe = (tamanho: number) => tamanho <= bytesPorParte && this.#bytesLidos + tamanho <= bytesNoTotal;
+    const anormal = (descompactado: number, compactado: number) =>
+      descompactado > 10 * 1024 * 1024 && descompactado > compactado * razaoDeCompressao;
+    const compressaoAnormal = () =>
+      new ErroDocx(`O arquivo DOCX não pôde ser lido: a parte ${nome} tem compressão anormal.`);
     if (!cabe(entrada.descompactado)) throw grandeDemais();
-    if (entrada.descompactado > 10 * 1024 * 1024 && entrada.descompactado > entrada.compactado * razaoDeCompressao) {
-      throw new ErroDocx(`O arquivo DOCX não pôde ser lido: a parte ${nome} tem compressão anormal.`);
-    }
+    if (anormal(entrada.descompactado, entrada.compactado)) throw compressaoAnormal();
 
     const local = entrada.cabecalhoLocal;
     const vista = new DataView(this.#bytes.buffer, this.#bytes.byteOffset, this.#bytes.byteLength);
@@ -202,8 +204,12 @@ export class PacoteOoxml {
       });
       try {
         for (let i = inicio; i < fim || i === inicio; i += PEDACO) {
-          descompactador.push(this.#bytes.subarray(i, Math.min(i + PEDACO, fim)), i + PEDACO >= fim);
+          const proximo = Math.min(i + PEDACO, fim);
+          descompactador.push(this.#bytes.subarray(i, proximo), i + PEDACO >= fim);
           if (!cabe(tamanho)) throw grandeDemais();
+          // A razão é conferida de novo com o que saiu e o que entrou até aqui: o tamanho declarado
+          // (100 bytes para 96 MB de `<w:p/>`, num ZIP de 142 KB) escaparia da conferência acima.
+          if (anormal(tamanho, proximo - inicio)) throw compressaoAnormal();
         }
       } catch (erro) {
         throw erro instanceof ErroDocx ? erro : corrompido();
