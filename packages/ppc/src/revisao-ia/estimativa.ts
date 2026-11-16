@@ -49,16 +49,18 @@ export const PARAMETROS: Record<Provider, ParametrosProvider> = {
     precoSaida: 15,
   },
   codex: {
-    sistemaPorSessao: 11_000,
-    segundosPorSessao: 5,
-    saidaPorSegundo: 70,
+    // Medido num lote S de 3 fichas (21,6 mil caracteres): 16,6 mil tokens de entrada, 923 de saída, 21,8 s.
+    sistemaPorSessao: 6_000,
+    segundosPorSessao: 4,
+    saidaPorSegundo: 50,
     janelaReferencia: 2_000_000,
     nomeJanela: "uma janela de 5 horas do plano Plus",
   },
   antigravity: {
-    sistemaPorSessao: 8_000,
-    segundosPorSessao: 15,
-    saidaPorSegundo: 40,
+    // Medido no mesmo lote: 16,3 mil tokens de entrada, 985 de saída, 22,2 s.
+    sistemaPorSessao: 5_500,
+    segundosPorSessao: 3,
+    saidaPorSegundo: 50,
     janelaReferencia: 3_000_000,
     nomeJanela: "a cota diária do plano gratuito",
   },
