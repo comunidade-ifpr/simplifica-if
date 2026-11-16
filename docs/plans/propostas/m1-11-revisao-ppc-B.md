@@ -1,6 +1,6 @@
 # M1.11 — "Analisar um PPC" no app: proposta B (roteiro conversacional com lista viva de pendências)
 
-> **Registro (16/11/2026).** A síntese aprovada está no plano (`docs/plans/app-simplifica-if.md`, M1.11). A PoC desta proposta (`apps/server/src/revisao-ppc/parada.ts`, `apps/server/scripts/poc-revisao-ppc-conversa.ts` e os testes) ficou só na branch `t3/revisao-ppc-conversacional`, como referência.
+> **Registro (16/11/2026).** A síntese aprovada está no plano (`docs/plans/app-simplifica-if.md`, M1.11). A PoC desta proposta (`apps/server/src/revisao-ppc/parada.ts`, `apps/server/scripts/poc-revisao-ppc-conversa.ts` e os testes) ficou só na branch `refs/arquivo/m1-11-proposta-B`, como referência.
 
 Proposta de desenho, 16/11/2026. Uma de três (A, B, C). O ponto de partida desta era a hipótese de que a pessoa e a IA percorrem o PPC juntas, tema a tema, em vez de receber um lote de dezenas de achados. A conclusão é que **a conversa pura não serve a quem tem prazo, mas um roteiro guiado serve**: a triagem sem IA vem primeiro, depois um roteiro de paradas ordenadas pelo que de fato faz a PROENS devolver PPC, e cada parada abre já com o resultado pronto. A conversa fica para onde a pessoa quer aprofundar: discordar, pedir uma redação, marcar como resolvido. O resultado é uma lista de pendências que a pessoa mantém, na mesma ordem do parecer da PROENS.
 

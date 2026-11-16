@@ -1,6 +1,6 @@
 # M1.11 — "Analisar um PPC" no app: proposta A (revisão orquestrada pelo servidor)
 
-> **Registro (16/11/2026).** A síntese aprovada está no plano (`docs/plans/app-simplifica-if.md`, M1.11). A PoC desta proposta (`apps/server/src/revisao-ppc/julgamento.ts`, `apps/server/scripts/poc-revisao-ppc.ts` e os testes) ficou só na branch `t3/revisao-ppc-orquestrada-app`, como referência; a correção `cacheEscrita` do motor entrou em `main`.
+> **Registro (16/11/2026).** A síntese aprovada está no plano (`docs/plans/app-simplifica-if.md`, M1.11). A PoC desta proposta (`apps/server/src/revisao-ppc/julgamento.ts`, `apps/server/scripts/poc-revisao-ppc.ts` e os testes) ficou só na branch `refs/arquivo/m1-11-proposta-A`, como referência; a correção `cacheEscrita` do motor entrou em `main`.
 
 Proposta de desenho, 16/11/2026. Uma de três (A, B, C), cada uma com um ponto de partida diferente. Esta parte da hipótese de que **o servidor do app, e não a IA, conduz a revisão**. A conclusão é que a hipótese se sustenta, com três correções que a prova de conceito revelou: o tamanho real dos pedidos (2 caracteres por token, não 4), o grupo transversal que não cabe numa janela de 200 mil tokens e o custo, que pede um modelo intermediário por padrão.
 
