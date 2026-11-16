@@ -94,17 +94,18 @@ export const normasRevogadas: Verificador = {
       const vigente = marco.linha.at(-1)!;
       if (marco.linha.some((n) => citadas.has(n))) continue;
       apontamentos.push(
-        ausenciaDoMarco(base, vigente, this.ficha, `O PPC não cita ${titulo(base, vigente)}, a norma vigente do marco.`),
+        ausenciaDoMarco(
+          base,
+          vigente,
+          this.ficha,
+          `O PPC não cita ${titulo(base, vigente)}, a norma vigente do marco.`,
+        ),
       );
     }
-    return resultado(
-      this,
-      apontamentos,
-      {
-        estado: "atende",
-        mensagem: `Nenhuma norma revogada entre as ${citacoesPorAto(ppc.citacoes).size} normas citadas reconhecidas, e os marcos vigentes são citados.`,
-      },
-    );
+    return resultado(this, apontamentos, {
+      estado: "atende",
+      mensagem: `Nenhuma norma revogada entre as ${citacoesPorAto(ppc.citacoes).size} normas citadas reconhecidas, e os marcos vigentes são citados.`,
+    });
   },
 };
 

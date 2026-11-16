@@ -57,9 +57,10 @@ describe("pré-conferência nos PPCs técnicos da base: invariantes", () => {
       const [, tipo, id] = /^ifpr:\/\/(norma|cnct)\/([^#]+)/.exec(fonte) ?? [];
       if (tipo === "norma") expect(comum.registro.obter(id!), fonte).toBeDefined();
       else if (tipo === "cnct")
-        expect(NodeFS.existsSync(NodePath.join(raiz, "base-conhecimento/catalogos/cnct/cursos", `${id}.json`)), fonte).toBe(
-          true,
-        );
+        expect(
+          NodeFS.existsSync(NodePath.join(raiz, "base-conhecimento/catalogos/cnct/cursos", `${id}.json`)),
+          fonte,
+        ).toBe(true);
       else throw new Error(`fonte fora do formato: ${fonte}`);
     }
   });

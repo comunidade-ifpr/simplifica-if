@@ -242,7 +242,10 @@ describe("verificadores no PPC com problemas", () => {
 
 describe("regras de prudência", () => {
   test("a 1/2021 (revogação pela 2/2026, de vigência a confirmar) fica a conferir, com a transição", () => {
-    const ppc = PPC_RUIM.replace("Resolução CNE/CEB nº 6, de 20 de setembro de 2012", "Resolução CNE/CP nº 1, de 5 de janeiro de 2021");
+    const ppc = PPC_RUIM.replace(
+      "Resolução CNE/CEB nº 6, de 20 de setembro de 2012",
+      "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+    );
     const apontamento = da(preConferir(ppc, base("integrado")), "CT-SUP-12").apontamentos[0]!;
     expect(apontamento).toMatchObject({ estado: "a_conferir", trechos: [{ linha: 10 }] });
     expect(apontamento.mensagem).toMatch(/a confirmar/);
@@ -251,7 +254,10 @@ describe("regras de prudência", () => {
   });
 
   test("a ausência da 2/2026 (vigência a confirmar) nunca é pendência", () => {
-    const ppc = PPC_BOM.replaceAll("Resolução CNE/CP nº 2, de 11 de novembro de 2026", "Lei nº 9.394, de 20 de dezembro de 1996");
+    const ppc = PPC_BOM.replaceAll(
+      "Resolução CNE/CP nº 2, de 11 de novembro de 2026",
+      "Lei nº 9.394, de 20 de dezembro de 1996",
+    );
     const resultado = preConferir(ppc, base("integrado"));
     for (const ficha of ["CT-IDENT-08", "CT-SUP-09", "CT-SUP-12"]) {
       expect(estado(resultado, ficha)).toBe("a_conferir");
@@ -273,7 +279,10 @@ describe("regras de prudência", () => {
   });
 
   test("a 3/2018 tem a transição do art. 42 da 2/2024: a conferir", () => {
-    const ppc = PPC_RUIM.replace("Resolução CNE/CEB nº 6, de 20 de setembro de 2012", "Resolução CNE/CEB nº 3, de 21 de novembro de 2018");
+    const ppc = PPC_RUIM.replace(
+      "Resolução CNE/CEB nº 6, de 20 de setembro de 2012",
+      "Resolução CNE/CEB nº 3, de 21 de novembro de 2018",
+    );
     const apontamento = da(preConferir(ppc, base("integrado")), "CT-SUP-12").apontamentos[0]!;
     expect(apontamento.estado).toBe("a_conferir");
     expect(apontamento.fontes).toContain("ifpr://norma/br/cne-ceb/res/2024/2#art42");

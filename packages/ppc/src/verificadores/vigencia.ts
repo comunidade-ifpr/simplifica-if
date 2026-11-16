@@ -57,7 +57,10 @@ function presumidaHaTempo(status: ResultadoVigencia, limite: string): boolean {
 }
 
 /** Consulta memorizada da vigência na data (padrão: a `data_referencia` de `config/vigencia.yaml`). */
-export function carregarVigencia(raiz: string = raizRepositorio(), data: string = dataReferencia(raiz)): ConsultaVigencia {
+export function carregarVigencia(
+  raiz: string = raizRepositorio(),
+  data: string = dataReferencia(raiz),
+): ConsultaVigencia {
   const uma = <T>(carregar: () => T) => {
     let valor: T | undefined;
     return () => (valor ??= carregar());
@@ -99,8 +102,16 @@ export type Marco = { id: string; linha: readonly string[]; responsavel: string 
 
 /** Linhas normativas e ficha responsável, de `base-analise/marcos-normativos.json` (conferido em teste). */
 export const MARCOS: readonly Marco[] = [
-  { id: "dcn_ept", linha: ["br/cne-ceb/res/2012/6", "br/cne-cp/res/2021/1", "br/cne-cp/res/2026/2"], responsavel: "CT-SUP-12" },
-  { id: "dcnem", linha: ["br/cne-ceb/res/2012/2", "br/cne-ceb/res/2018/3", "br/cne-ceb/res/2024/2"], responsavel: "CT-SUP-12" },
+  {
+    id: "dcn_ept",
+    linha: ["br/cne-ceb/res/2012/6", "br/cne-cp/res/2021/1", "br/cne-cp/res/2026/2"],
+    responsavel: "CT-SUP-12",
+  },
+  {
+    id: "dcnem",
+    linha: ["br/cne-ceb/res/2012/2", "br/cne-ceb/res/2018/3", "br/cne-ceb/res/2024/2"],
+    responsavel: "CT-SUP-12",
+  },
   { id: "eja", linha: ["br/cne-ceb/res/2021/1", "br/cne-ceb/res/2025/3"], responsavel: "CT-CURR-02" },
   {
     id: "assistencia_estudantil_ifpr",

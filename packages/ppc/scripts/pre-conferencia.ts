@@ -106,7 +106,9 @@ if (values.base) {
           `${ficha}: registrado ${JSON.stringify(esperado.fichas[ficha])}\n  agora ${JSON.stringify(atual.fichas[ficha])}`,
         );
       if (diferencas.length || esperado.ppcs !== atual.ppcs) {
-        console.log("Os números mudaram: confira uma amostra (--amostra) e atualize PRECISAO.md e precisao-base.json (--gravar).");
+        console.log(
+          "Os números mudaram: confira uma amostra (--amostra) e atualize PRECISAO.md e precisao-base.json (--gravar).",
+        );
         process.exitCode = 1;
       } else console.log(`OK: ${atual.ppcs} PPCs, os números de PRECISAO.md`);
     }
