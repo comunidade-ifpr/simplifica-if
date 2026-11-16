@@ -196,7 +196,12 @@ export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (entra
       Effect.flatMap((agora) => {
         segundos = Math.round((agora - comeco) / 100) / 10;
         return entrada.registrarTentativa
-          ? entrada.registrarTentativa({ numero: entrada.numero, uso: { ...uso }, segundos, ferramentas: [...ferramentas] })
+          ? entrada.registrarTentativa({
+              numero: entrada.numero,
+              uso: { ...uso },
+              segundos,
+              ferramentas: [...ferramentas],
+            })
           : Effect.void;
       }),
     );

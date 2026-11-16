@@ -107,7 +107,7 @@ export function RevisaoComIa({
   return (
     <section aria-labelledby="titulo-ia" className="flex flex-col gap-3 rounded-lg border p-4">
       <h2 id="titulo-ia" className="flex items-center gap-2 font-semibold text-lg">
-        <SparklesIcon className="size-5" aria-hidden /> Revisão completa com IA
+        <SparklesIcon className="size-5" aria-hidden /> Gerar relatório com IA (revisão completa)
       </h2>
       {estado === undefined ? (
         <>

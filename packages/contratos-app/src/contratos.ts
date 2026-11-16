@@ -555,7 +555,9 @@ export const SugestaoTexto = Schema.Struct({
   texto: Schema.String,
   observacao: Schema.String,
   completar: Schema.Array(Schema.String),
-  naoConferidos: Schema.Array(Schema.Struct({ fato: Schema.String, tipo: Schema.Literals(["numero", "norma", "nome"]) })),
+  naoConferidos: Schema.Array(
+    Schema.Struct({ fato: Schema.String, tipo: Schema.Literals(["numero", "norma", "nome"]) }),
+  ),
 });
 export type SugestaoTexto = typeof SugestaoTexto.Type;
 

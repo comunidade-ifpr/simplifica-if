@@ -290,7 +290,13 @@ export const contextoDaFicha = Effect.fn("RevisaoIa.contextoDaFicha")(function* 
   );
   const estrutura = estruturaDoPpc(
     limpo,
-    todas.map((x) => ({ titulo: x.titulo, linhaInicio: x.linhaInicio, linhaFim: x.linhaFim, texto: x.texto, tipo: x.tipo })),
+    todas.map((x) => ({
+      titulo: x.titulo,
+      linhaInicio: x.linhaInicio,
+      linhaFim: x.linhaFim,
+      texto: x.texto,
+      tipo: x.tipo,
+    })),
     fatos.map((f) => ({ fato: f.fato, valor: f.valor })),
   );
   const db = yield* Effect.acquireRelease(

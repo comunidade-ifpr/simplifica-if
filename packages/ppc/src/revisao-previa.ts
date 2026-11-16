@@ -159,7 +159,9 @@ function textoDasSituacoes(marcas: readonly MarcaPendencia[]): string {
   const conta = (s: SituacaoPendencia) => marcas.filter((m) => m.situacao === s).length;
   const partes = [
     conta("resolvida") ? plural(conta("resolvida"), "marcada como resolvida", "marcadas como resolvidas") : "",
-    conta("vou_ajustar") ? plural(conta("vou_ajustar"), "que a coordenação vai ajustar", "que a coordenação vai ajustar") : "",
+    conta("vou_ajustar")
+      ? plural(conta("vou_ajustar"), "que a coordenação vai ajustar", "que a coordenação vai ajustar")
+      : "",
     conta("contestada_mantida")
       ? plural(conta("contestada_mantida"), "contestada e mantida pela revisão", "contestadas e mantidas pela revisão")
       : "",
@@ -167,7 +169,9 @@ function textoDasSituacoes(marcas: readonly MarcaPendencia[]): string {
       ? `${plural(conta("contestada_aceita"), "retirada", "retiradas")} depois de contestação com trecho ou norma conferidos pelo app (sem comentário no documento)`
       : "",
   ].filter(Boolean);
-  return partes.length ? `Situação marcada no app: ${partes.join("; ")}. Os comentários deste documento são sobre o arquivo original.` : "";
+  return partes.length
+    ? `Situação marcada no app: ${partes.join("; ")}. Os comentários deste documento são sobre o arquivo original.`
+    : "";
 }
 
 export type CriterioConferido = {

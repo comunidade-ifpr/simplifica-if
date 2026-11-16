@@ -7,9 +7,9 @@
  *
  * No navegador (sem o desktop), o caminho do arquivo é digitado: é o modo de desenvolvimento.
  */
-import type { EstadoRevisaoIa, PendenciaRevisao, ResultadoRevisaoPpc } from "@simplifica-if/contratos-app";
+import type { EstadoRevisaoIa, ListaPendencias, ResultadoRevisaoPpc } from "@simplifica-if/contratos-app";
 import { createFileRoute } from "@tanstack/react-router";
-import { ExternalLinkIcon, FileSearchIcon, FileTextIcon, FolderOpenIcon } from "lucide-react";
+import { FileSearchIcon, HistoryIcon } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
 import { AvisoErro } from "../components/AvisoErro.tsx";
 import { Alert, AlertDescription } from "../components/ui/alert.tsx";
@@ -19,10 +19,12 @@ import { Input } from "../components/ui/input.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
 import { explicarErro, mensagemDeErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
-import { abrirExterno, ponteDesktop } from "../ponte-desktop.ts";
-import { agruparPorTema, dataBrasileira, descreverCurso, ROTULO_ESTADO, ROTULO_LOCAL } from "../revisao/agrupar.ts";
+import { ponteDesktop } from "../ponte-desktop.ts";
+import { agruparPorTema, dataBrasileira, descreverCurso, ROTULO_ESTADO } from "../revisao/agrupar.ts";
+import { CopiaComentada, DetalhesPendencia, nomeDoArquivo } from "../revisao/componentes.tsx";
 import { revisaoParaRetomar, textoCobertura } from "../revisao/ia.ts";
 import { RevisaoComIa } from "../revisao/RevisaoComIa.tsx";
+import { ListaViva } from "../revisao/Roteiro.tsx";
 
 export const Route = createFileRoute("/revisao-ppc")({ component: RevisaoPpc });
 
@@ -34,11 +36,21 @@ type Estado =
   /** Uma revisão com IA não concluída, reencontrada depois de recarregar a tela. */
   | { readonly fase: "retomando"; readonly revisao: EstadoRevisaoIa };
 
-const nomeDoArquivo = (caminho: string) => caminho.split(/[\\/]/).at(-1) ?? caminho;
-
 function RevisaoPpc() {
   const api = useApi();
   const [estado, setEstado] = useState<Estado>({ fase: "escolha" });
+  // A lista viva mais recente (etapa 5b): continuar de onde parou, depois de fechar o app.
+  const [ultima, setUltima] = useState<ListaPendencias | null>(null);
+  useEffect(() => {
+    let ativo = true;
+    api
+      .chamar((cliente) => cliente["revisaoPpc.ultimaLista"]({}))
+      .then((lista) => ativo && setUltima(lista))
+      .catch(() => undefined);
+    return () => {
+      ativo = false;
+    };
+  }, [api]);
   // Depois de recarregar a tela, a revisão com IA que não terminou volta (o servidor a guarda).
   useEffect(() => {
     let ativo = true;
@@ -87,6 +99,21 @@ function RevisaoPpc() {
             })
           }
         />
+        {estado.fase === "escolha" && ultima !== null ? (
+          <div className="flex flex-wrap items-center gap-3 rounded-lg border p-3 text-sm">
+            <span>
+              Sua lista de <span className="font-medium">{nomeDoArquivo(ultima.arquivoOriginal)}</span> está guardada (
+              {dataBrasileira(ultima.atualizadaEm)}).
+            </span>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setEstado({ fase: "pronta", resultado: ultima.resultado })}
+            >
+              <HistoryIcon /> Continuar de onde parei
+            </Button>
+          </div>
+        ) : null}
         {estado.fase === "analisando" ? (
           <div role="status" className="flex items-center gap-2 text-muted-foreground">
             <Spinner /> Analisando {nomeDoArquivo(estado.arquivo)}: convertendo o documento e conferindo os critérios…
@@ -180,21 +207,8 @@ function Escolha({
 }
 
 function Resultado({ resultado }: { readonly resultado: ResultadoRevisaoPpc }) {
-  const ponte = ponteDesktop();
-  const [erroCopia, setErroCopia] = useState<MensagemErro | undefined>(undefined);
-  /** Abre ou mostra a cópia; se ela foi movida ou apagada, a mensagem fica na tela. */
-  const usarCopia = async (acao: ((caminho: string) => Promise<void>) | undefined) => {
-    setErroCopia(undefined);
-    try {
-      await acao?.(resultado.arquivoComentado);
-    } catch (erro) {
-      setErroCopia({
-        texto:
-          "Não foi possível abrir a cópia comentada. Ela pode ter sido movida, renomeada ou apagada; analise o PPC de novo para gerar outra.",
-        detalhe: mensagemDeErro(erro),
-      });
-    }
-  };
+  // A lista viva (etapa 5b): o roteiro, as situações e as ações em cada pendência.
+  if (resultado.lista !== undefined) return <ListaViva key={resultado.lista} lista={resultado.lista} />;
   const precisam = resultado.pendencias.filter((p) => p.estado === "nao_atende").length;
   const conferir = resultado.pendencias.length - precisam;
   const grupos = agruparPorTema(resultado);
@@ -210,27 +224,7 @@ function Resultado({ resultado }: { readonly resultado: ResultadoRevisaoPpc }) {
           {textoCobertura(resultado)} Base de normas de {dataBrasileira(resultado.dataBase)}. Uma revisão prévia sem
           pendências não é PPC aprovado.
         </p>
-        <p className="text-sm">
-          Cópia comentada: <span className="font-medium">{nomeDoArquivo(resultado.arquivoComentado)}</span>, na pasta do
-          original.
-        </p>
-        {ponte?.abrirDocumento === undefined && ponte?.mostrarNaPasta === undefined ? (
-          <p className="break-all font-mono text-muted-foreground text-xs">{resultado.arquivoComentado}</p>
-        ) : (
-          <div className="flex flex-wrap gap-2">
-            {ponte.abrirDocumento === undefined ? null : (
-              <Button onClick={() => void usarCopia(ponte.abrirDocumento)}>
-                <FileTextIcon /> Abrir o documento comentado
-              </Button>
-            )}
-            {ponte.mostrarNaPasta === undefined ? null : (
-              <Button variant="outline" onClick={() => void usarCopia(ponte.mostrarNaPasta)}>
-                <FolderOpenIcon /> Mostrar na pasta
-              </Button>
-            )}
-          </div>
-        )}
-        {erroCopia === undefined ? null : <AvisoErro erro={erroCopia} />}
+        <CopiaComentada arquivo={resultado.arquivoComentado} />
       </div>
       {resultado.pendencias.length === 0 ? (
         <Alert variant="success">
@@ -245,10 +239,21 @@ function Resultado({ resultado }: { readonly resultado: ResultadoRevisaoPpc }) {
           {grupo.pendencias.length ? (
             <ul className="flex flex-col gap-3">
               {grupo.pendencias.map((pendencia) => (
-                <ItemPendencia
+                <li
                   key={`${pendencia.ficha}|${pendencia.mensagem}|${pendencia.trecho ?? ""}`}
-                  pendencia={pendencia}
-                />
+                  className="flex flex-col gap-1.5 rounded-lg border p-3"
+                >
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant={pendencia.estado === "nao_atende" ? "warning" : "info"}>
+                      {ROTULO_ESTADO[pendencia.estado]}
+                    </Badge>
+                    <span className="text-muted-foreground text-xs">
+                      {pendencia.tituloFicha}
+                      {pendencia.origem === "ia" ? " · avaliação da IA" : " · conferido pela base"}
+                    </span>
+                  </div>
+                  <DetalhesPendencia pendencia={pendencia} />
+                </li>
               ))}
             </ul>
           ) : null}
@@ -264,59 +269,5 @@ function Resultado({ resultado }: { readonly resultado: ResultadoRevisaoPpc }) {
         </section>
       ))}
     </section>
-  );
-}
-
-function ItemPendencia({ pendencia }: { readonly pendencia: PendenciaRevisao }) {
-  return (
-    <li className="flex flex-col gap-1.5 rounded-lg border p-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <Badge variant={pendencia.estado === "nao_atende" ? "warning" : "info"}>
-          {ROTULO_ESTADO[pendencia.estado]}
-        </Badge>
-        <span className="text-muted-foreground text-xs">
-          {pendencia.tituloFicha}
-          {pendencia.origem === "ia" ? " · avaliação da IA" : " · conferido pela base"}
-        </span>
-      </div>
-      <p className="whitespace-pre-line">{pendencia.mensagem}</p>
-      <p className="text-sm">
-        <span className="font-medium">{pendencia.estado === "nao_atende" ? "O que fazer: " : "Se for o caso: "}</span>
-        {pendencia.oQueFazer}
-      </p>
-      {pendencia.trecho === null ? null : (
-        <blockquote className="border-l-2 pl-3 text-muted-foreground text-sm">
-          “{pendencia.trecho}”{pendencia.secao === null ? null : <span> — seção {pendencia.secao}</span>}
-        </blockquote>
-      )}
-      {pendencia.fontes.length ? (
-        <p className="text-sm">
-          <span className="font-medium">Fonte: </span>
-          {pendencia.fontes.map((fonte, indice) => (
-            <span key={fonte.link}>
-              {indice > 0 ? "; " : null}
-              {fonte.url === null ? (
-                fonte.rotulo
-              ) : (
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 underline underline-offset-2"
-                  onClick={() => void abrirExterno(fonte.url!)}
-                >
-                  {fonte.rotulo}
-                  <ExternalLinkIcon className="size-3" aria-hidden />
-                </button>
-              )}
-            </span>
-          ))}
-        </p>
-      ) : null}
-      {pendencia.tambemEm.length ? (
-        <p className="text-muted-foreground text-sm">
-          Também em: {pendencia.tambemEm.map((t) => t.titulo).join("; ")}.
-        </p>
-      ) : null}
-      <p className="text-muted-foreground text-xs">{ROTULO_LOCAL[pendencia.noDocumento]}</p>
-    </li>
   );
 }

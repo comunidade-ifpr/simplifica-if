@@ -93,7 +93,11 @@ export class ListaViva extends Context.Service<
       motivo: string,
       provider?: Provider,
     ) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc>;
-    readonly sugerir: (id: string, chave: string, provider?: Provider) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc>;
+    readonly sugerir: (
+      id: string,
+      chave: string,
+      provider?: Provider,
+    ) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc>;
     readonly reanalisar: (
       id: string,
       chave: string,
@@ -251,11 +255,24 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: { readonly te
       : null;
   };
 
-  const contextoPara = (registro: RegistroLista, ficha: string, markdown = registro.markdown, linhas = registro.linhasTextoParaIa) =>
-    contextoDaFicha({ markdown, linhasTextoParaIa: linhas, cnct: registro.cnct, curso: cursoEmTexto(registro), ficha }).pipe(
+  const contextoPara = (
+    registro: RegistroLista,
+    ficha: string,
+    markdown = registro.markdown,
+    linhas = registro.linhasTextoParaIa,
+  ) =>
+    contextoDaFicha({
+      markdown,
+      linhasTextoParaIa: linhas,
+      cnct: registro.cnct,
+      curso: cursoEmTexto(registro),
+      ficha,
+    }).pipe(
       Effect.provideContext(contextoKb),
       Effect.tapError((erro) => Effect.logError("lista viva: contexto da ficha falhou", erro)),
-      Effect.mapError(() => falha(registro.arquivo, "Não foi possível montar o contexto deste critério. Reinicie o app e tente de novo.")),
+      Effect.mapError(() =>
+        falha(registro.arquivo, "Não foi possível montar o contexto deste critério. Reinicie o app e tente de novo."),
+      ),
       Effect.filterOrFail(
         (c) => c !== null,
         () => falha(registro.arquivo, "Este apontamento não tem critério para a IA reavaliar."),
@@ -265,7 +282,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: { readonly te
   /** Uma ação com IA por vez; a pausa do provider (limite, cota, queda) vira a frase para a pessoa. */
   const comIa = <A, R>(arquivo: string, efeito: Effect.Effect<A, FalhaRevisaoPpc | PausaRevisao, R>) =>
     efeito.pipe(
-      Effect.catchTag("PausaRevisao", (pausa: PausaRevisao) => Effect.fail(falha(arquivo, pausa.motivo))),
+      Effect.catchTags({ PausaRevisao: (pausa: PausaRevisao) => Effect.fail(falha(arquivo, pausa.motivo)) }),
       vez.withPermitsIfAvailable(1),
       Effect.flatMap((o) =>
         o._tag === "Some"
@@ -294,7 +311,12 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: { readonly te
   ) {
     const registro = yield* buscar(id);
     yield* pendenciaDe(registro, chave);
-    yield* listas.mudar(id, chave, { situacao, resolvidaPor: "pessoa" }, { acao: "marcar", situacao, texto: ROTULO_ACAO[situacao] });
+    yield* listas.mudar(
+      id,
+      chave,
+      { situacao, resolvidaPor: "pessoa" },
+      { acao: "marcar", situacao, texto: ROTULO_ACAO[situacao] },
+    );
     return yield* lista(id);
   });
 
@@ -326,7 +348,11 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: { readonly te
         : acao === "sugerir"
           ? pedidoSugestao(prefixo, [])
           : prefixo;
-    return estimarAcao(texto.length + instrucoesConversa(registro.nonce).length, acao, provider) satisfies EstimativaAcao;
+    return estimarAcao(
+      texto.length + instrucoesConversa(registro.nonce).length,
+      acao,
+      provider,
+    ) satisfies EstimativaAcao;
   });
 
   /* ------------------------------------------------------------ contestar */
@@ -336,11 +362,18 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: { readonly te
       const registro = yield* buscar(id);
       const p = yield* pendenciaDe(registro, chave);
       if (!p.pendencia.ficha || p.pendencia.ficha === "TRIAGEM")
-        return yield* falha(registro.arquivo, "Este apontamento é da triagem: remova o trecho ou marque como resolvido.");
+        return yield* falha(
+          registro.arquivo,
+          "Este apontamento é da triagem: remova o trecho ou marque como resolvido.",
+        );
       const limpo = motivo.trim();
-      if (!limpo) return yield* falha(registro.arquivo, "Escreva por que você discorda. Um trecho do PPC ou uma norma ajudam.");
+      if (!limpo)
+        return yield* falha(registro.arquivo, "Escreva por que você discorda. Um trecho do PPC ou uma norma ajudam.");
       if (limpo.length > LIMITE_MOTIVO)
-        return yield* falha(registro.arquivo, `Escreva o motivo em até ${LIMITE_MOTIVO.toLocaleString("pt-BR")} caracteres.`);
+        return yield* falha(
+          registro.arquivo,
+          `Escreva o motivo em até ${LIMITE_MOTIVO.toLocaleString("pt-BR")} caracteres.`,
+        );
       const { provider, modelo } = provedor(registro, pedido);
       const ctx = yield* contextoPara(registro, p.pendencia.ficha);
       const eventos = (yield* listas.eventos(id)).filter((e) => e.chave === chave);
@@ -409,9 +442,17 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: { readonly te
           id,
           chave,
           { situacao: p.situacao, resolvidaPor: p.resolvidaPor },
-          { acao: "sugerir", situacao: p.situacao, texto: "A IA não devolveu uma redação que o app pudesse conferir.", uso: turno.uso },
+          {
+            acao: "sugerir",
+            situacao: p.situacao,
+            texto: "A IA não devolveu uma redação que o app pudesse conferir.",
+            uso: turno.uso,
+          },
         );
-        return yield* falha(registro.arquivo, "A IA não devolveu uma redação que o app pudesse conferir. Tente de novo.");
+        return yield* falha(
+          registro.arquivo,
+          "A IA não devolveu uma redação que o app pudesse conferir. Tente de novo.",
+        );
       }
       const n = sugestao.naoConferidos.length;
       yield* listas.mudar(
@@ -443,7 +484,10 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: { readonly te
         ...(registro.forma === null ? {} : { forma: registro.forma }),
       });
       if (novo.sha256 === registro.sha256)
-        return yield* falha(arquivo, "É o mesmo arquivo analisado. Salve as mudanças no Word e escolha o arquivo atualizado.");
+        return yield* falha(
+          arquivo,
+          "É o mesmo arquivo analisado. Salve as mudanças no Word e escolha o arquivo atualizado.",
+        );
       const ficha = p.pendencia.ficha;
       const nome = arquivo.split(/[\\/]/).at(-1) ?? arquivo;
       let resolvida: boolean;
@@ -466,7 +510,14 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: { readonly te
           ordemTema: p.pendencia.ordemTema,
           fichas: [ficha],
         };
-        const pedidoTexto = pedidoS(bloco, [ctx.ficha], new Map([[ficha, ctx.proprio]]), ctx.contexto, registro.nonce, ctx.comum);
+        const pedidoTexto = pedidoS(
+          bloco,
+          [ctx.ficha],
+          new Map([[ficha, ctx.proprio]]),
+          ctx.contexto,
+          registro.nonce,
+          ctx.comum,
+        );
         const julgado = yield* julgarBloco({
           provider,
           modelo,
@@ -489,7 +540,12 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: { readonly te
             : `A reanálise de ${nome} ainda aponta: ${ponto(r.justificativa)}`;
       }
       const situacao: SituacaoPendencia = resolvida ? "resolvida" : "aberta";
-      yield* listas.mudar(id, chave, { situacao, resolvidaPor: "reanalise" }, { acao: "reanalisar", situacao, texto, uso });
+      yield* listas.mudar(
+        id,
+        chave,
+        { situacao, resolvidaPor: "reanalise" },
+        { acao: "reanalisar", situacao, texto, uso },
+      );
       return yield* lista(id);
     },
     (e, _id, _chave, arquivo) => comIa(arquivo, e),

@@ -96,7 +96,9 @@ export function prefixoConversa(entrada: {
     `Apontamento: ${pendencia.mensagem}`,
     `O que fazer: ${pendencia.oQueFazer}`,
     // O trecho já foi conferido no documento (é PPC): fica entre as marcas também.
-    pendencia.trecho ? `Trecho apontado:\n${marcas("ppc", pendencia.trecho, entrada.nonce)}` : "Trecho apontado: nenhum (algo que falta).",
+    pendencia.trecho
+      ? `Trecho apontado:\n${marcas("ppc", pendencia.trecho, entrada.nonce)}`
+      : "Trecho apontado: nenhum (algo que falta).",
   ].join("\n");
 }
 
@@ -213,11 +215,25 @@ export function conferirContestacao(
     if (texto.length > LIMITES_CONVERSA.resposta) throw new Error("longa");
     bruto = extrairJson(texto);
   } catch {
-    return { estado: "contestada_mantida", explicacao: MANTIDA_SEM_RESPOSTA, trechos: [], fontes: [], problemas: ["a resposta não é um objeto JSON válido"], iaPediuRetirar: false };
+    return {
+      estado: "contestada_mantida",
+      explicacao: MANTIDA_SEM_RESPOSTA,
+      trechos: [],
+      fontes: [],
+      problemas: ["a resposta não é um objeto JSON válido"],
+      iaPediuRetirar: false,
+    };
   }
   const r = decodificarContestacao(bruto);
   if (Result.isFailure(r))
-    return { estado: "contestada_mantida", explicacao: MANTIDA_SEM_RESPOSTA, trechos: [], fontes: [], problemas: ["a resposta não segue o contrato"], iaPediuRetirar: false };
+    return {
+      estado: "contestada_mantida",
+      explicacao: MANTIDA_SEM_RESPOSTA,
+      trechos: [],
+      fontes: [],
+      problemas: ["a resposta não segue o contrato"],
+      iaPediuRetirar: false,
+    };
   const resposta = r.success;
   const alvo = alvoDosTrechos(entrada.recorte);
   const trechos: string[] = [];
@@ -299,8 +315,7 @@ export function assinaturasDeNormas(fontes: Iterable<string>, textos: readonly s
     const numero = partes.at(-1);
     if (ano && numero && /^\d[\d-]*$/.test(numero)) conjunto.add(assinatura(numero, ano));
   }
-  for (const t of textos)
-    for (const m of t.matchAll(NORMA)) if (m[3]) conjunto.add(assinatura(m[2]!, m[3]));
+  for (const t of textos) for (const m of t.matchAll(NORMA)) if (m[3]) conjunto.add(assinatura(m[2]!, m[3]));
   return conjunto;
 }
 
@@ -317,7 +332,8 @@ export function fatosDaRedacao(texto: string): FatoSugestao[] {
   for (const n of normas) resto = resto.replace(n, " ");
   for (const m of resto.matchAll(NUMERO)) {
     const valor = m[0].trim();
-    if (soDigitos(valor).length >= 2 || /h|%|hora|ano|semestre|vaga/i.test(valor)) fatos.push({ fato: valor, tipo: "numero" });
+    if (soDigitos(valor).length >= 2 || /h|%|hora|ano|semestre|vaga/i.test(valor))
+      fatos.push({ fato: valor, tipo: "numero" });
   }
   for (const m of resto.matchAll(NOME)) fatos.push({ fato: m[0].trim(), tipo: "nome" });
   return fatos;

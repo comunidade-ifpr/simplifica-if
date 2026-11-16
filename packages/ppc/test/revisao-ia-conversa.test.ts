@@ -147,8 +147,7 @@ describe("contestação: quem decide é o código", () => {
 });
 
 describe("sugestão: fatos conferidos contra o material entregue", () => {
-  const conferir = (texto: string) =>
-    conferirSugestao(json({ texto, observacao: "" }), { recorte, contexto, fontes })!;
+  const conferir = (texto: string) => conferirSugestao(json({ texto, observacao: "" }), { recorte, contexto, fontes })!;
 
   test("fatos do recorte, do CNCT e das normas conferem; [completar] não é fato", () => {
     const s = conferir(

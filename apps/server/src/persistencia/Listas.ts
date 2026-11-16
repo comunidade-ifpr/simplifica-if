@@ -74,7 +74,10 @@ export class Listas extends Context.Service<
      * mais recente do mesmo arquivo com o mesmo conteúdo (o "Vou ajustar" da pré-conferência continua
      * valendo depois da revisão com IA).
      */
-    readonly criar: (lista: NovaLista, pendencias: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>) => Effect.Effect<void>;
+    readonly criar: (
+      lista: NovaLista,
+      pendencias: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>,
+    ) => Effect.Effect<void>;
     readonly buscar: (id: string) => Effect.Effect<RegistroLista | null>;
     readonly ultima: Effect.Effect<string | null>;
     readonly pendencias: (id: string) => Effect.Effect<ReadonlyArray<RegistroPendencia>>;
@@ -119,7 +122,8 @@ const ler = <T>(texto: string): T => JSON.parse(texto) as T;
 
 const make = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
-  const tocar = (id: string, data: string) => sql`UPDATE listas_pendencias SET atualizada_em = ${data} WHERE id = ${id}`;
+  const tocar = (id: string, data: string) =>
+    sql`UPDATE listas_pendencias SET atualizada_em = ${data} WHERE id = ${id}`;
 
   const criar = Effect.fn("Listas.criar")(function* (
     l: NovaLista,
@@ -201,16 +205,14 @@ const make = Effect.gen(function* () {
       resolvida_por: string | null;
       sugestao: string | null;
     }>`SELECT chave, ordem, pendencia, situacao, resolvida_por, sugestao FROM pendencias_vivas WHERE lista_id = ${id} ORDER BY ordem`;
-    return linhas.map(
-      (l): RegistroPendencia => ({
-        chave: l.chave,
-        ordem: l.ordem,
-        pendencia: ler<PendenciaRevisao>(l.pendencia),
-        situacao: l.situacao as SituacaoPendencia,
-        resolvidaPor: l.resolvida_por as RegistroPendencia["resolvidaPor"],
-        sugestao: l.sugestao === null ? null : (ler<SugestaoTexto>(l.sugestao)),
-      }),
-    );
+    return linhas.map((l): RegistroPendencia => ({
+      chave: l.chave,
+      ordem: l.ordem,
+      pendencia: ler<PendenciaRevisao>(l.pendencia),
+      situacao: l.situacao as SituacaoPendencia,
+      resolvidaPor: l.resolvida_por as RegistroPendencia["resolvidaPor"],
+      sugestao: l.sugestao === null ? null : ler<SugestaoTexto>(l.sugestao),
+    }));
   }, Effect.orDie);
 
   const eventos = Effect.fn("Listas.eventos")(function* (id: string) {
@@ -230,7 +232,7 @@ const make = Effect.gen(function* () {
       situacao: l.situacao as SituacaoPendencia,
       texto: l.texto,
       motivo: l.motivo,
-      uso: l.uso === null ? null : (ler<UsoRevisaoIa>(l.uso)),
+      uso: l.uso === null ? null : ler<UsoRevisaoIa>(l.uso),
     }));
   }, Effect.orDie);
 
@@ -262,7 +264,9 @@ const make = Effect.gen(function* () {
 
   const verParada = Effect.fn("Listas.verParada")(function* (id: string, ordem: number) {
     const data = yield* agora;
-    const linha = (yield* sql<{ paradas_vistas: string }>`SELECT paradas_vistas FROM listas_pendencias WHERE id = ${id}`)[0];
+    const linha = (yield* sql<{
+      paradas_vistas: string;
+    }>`SELECT paradas_vistas FROM listas_pendencias WHERE id = ${id}`)[0];
     if (!linha) return;
     const vistas = new Set(ler<number[]>(linha.paradas_vistas));
     vistas.add(ordem);
