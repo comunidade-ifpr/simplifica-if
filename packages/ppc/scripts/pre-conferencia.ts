@@ -8,6 +8,8 @@
  *   node packages/ppc/scripts/pre-conferencia.ts --base --amostra CT-SUP-24 [--estado nao_atende] [--n 8]
  *     mostra uma amostra dos apontamentos da ficha, com o trecho, para conferir à mão (com
  *     `--evidencias`, os resultados `atende` e os trechos que os sustentam);
+ *   node packages/ppc/scripts/pre-conferencia.ts --base --check   (--gravar para registrar)
+ *     confere os números por ficha com os de `precisao-base.json` (fora do `pnpm test`: dependem da base);
  *   node packages/ppc/scripts/pre-conferencia.ts --docx <PPC.docx> --cnct <slug> --forma <forma> --saida <PPC-comentado.docx>
  *     converte o DOCX, pré-confere e devolve o próprio DOCX com um comentário do Word por apontamento.
  */
@@ -28,6 +30,8 @@ const { values } = NodeUtil.parseArgs({
     amostra: { type: "string" },
     estado: { type: "string" },
     evidencias: { type: "boolean" },
+    check: { type: "boolean" },
+    gravar: { type: "boolean" },
     n: { type: "string", default: "8" },
     docx: { type: "string" },
     cnct: { type: "string" },
@@ -81,6 +85,28 @@ if (values.base) {
         `- ${item.ppc} (${item.forma}) | ${item.estado} | ${item.mensagem.slice(0, 160)}` +
           item.trechos.map((t) => `\n    L${t.linha} [${t.secao ?? "-"}]: ${t.texto.slice(0, 140)}`).join(""),
       );
+  } else if (values.check || values.gravar) {
+    // Números agregados por ficha contra os registrados em `precisao-base.json` (a tabela de PRECISAO.md).
+    const arquivo = NodePath.join(import.meta.dirname, "precisao-base.json");
+    const atual = { ppcs: ppcs.length, fichas: contarPorFicha(resultados.map((r) => r.resultado)) };
+    if (values.gravar) {
+      NodeFS.writeFileSync(arquivo, `${JSON.stringify(atual, null, 2)}\n`);
+      console.log(`gravado: ${arquivo}`);
+    } else {
+      const esperado = JSON.parse(NodeFS.readFileSync(arquivo, "utf8")) as typeof atual;
+      const diferencas = Object.keys({ ...esperado.fichas, ...atual.fichas }).filter(
+        (ficha) => JSON.stringify(esperado.fichas[ficha]) !== JSON.stringify(atual.fichas[ficha]),
+      );
+      if (esperado.ppcs !== atual.ppcs) console.log(`PPCs: registrado ${esperado.ppcs}, agora ${atual.ppcs}`);
+      for (const ficha of diferencas)
+        console.log(
+          `${ficha}: registrado ${JSON.stringify(esperado.fichas[ficha])}\n  agora ${JSON.stringify(atual.fichas[ficha])}`,
+        );
+      if (diferencas.length || esperado.ppcs !== atual.ppcs) {
+        console.log("Os números mudaram: confira uma amostra (--amostra) e atualize PRECISAO.md e precisao-base.json (--gravar).");
+        process.exitCode = 1;
+      } else console.log(`OK: ${atual.ppcs} PPCs, os números de PRECISAO.md`);
+    }
   } else {
     console.log(
       `${ppcs.length} PPCs técnicos em ${(ms / 1000).toFixed(1)} s (${(ms / ppcs.length).toFixed(0)} ms por PPC)`,

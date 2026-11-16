@@ -398,7 +398,7 @@ export const politicaAssistenciaEstudantil: Verificador = {
             estado: "nao_atende",
             mensagem: `O PPC cita ${nomesAntigas}, revogada(s) pela ${titulo(base, PAE)}, sem citar a política vigente.`,
             trechos: trechosAntigas,
-            fontes,
+            fontes: [...antigas.map((a) => linkNorma(a.id)), ...fontes],
           }
         : {
             estado: "a_conferir",
