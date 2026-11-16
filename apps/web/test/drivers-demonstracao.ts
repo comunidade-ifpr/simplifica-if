@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- driver de teste: grava o relatório na pasta da tarefa
 /**
  * Drivers de demonstração do motor, para rodar a interface contra o `apps/server` sem chamar provider
  * real (testes de navegador e `pnpm --filter @simplifica-if/web servidor:teste`). Cobrem as telas:
