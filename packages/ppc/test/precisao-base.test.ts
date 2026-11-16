@@ -16,7 +16,7 @@ const ESPERADO: Record<string, [number, number, number, number, number, number]>
   "CT-IDENT-08": [0, 110, 0, 0, 273, 48],
   "CT-IDENT-13": [106, 0, 4, 0, 0, 3],
   "CT-CURR-02": [90, 0, 20, 0, 0, 19],
-  "CT-CURR-16": [102, 0, 8, 0, 0, 8],
+  "CT-CURR-16": [106, 0, 4, 0, 0, 4],
   "CT-CURR-18": [73, 0, 9, 28, 0, 9],
   "CT-CURR-22": [107, 3, 0, 0, 3, 0],
   "CT-SUP-09": [0, 87, 23, 0, 142, 91],

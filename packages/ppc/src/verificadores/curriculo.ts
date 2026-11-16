@@ -111,7 +111,7 @@ function escolaridadeDe(texto: string): Escolaridade | null {
   if (/cursando o ensino medio|matriculad[oa]s? (no|na|em) .{0,25}ensino medio/.test(texto)) return "cursando_medio";
   const nivel = (n: string) =>
     new RegExp(
-      `(conclu[ií]d[oa]s?|conclus[aã]o|concluir|concluintes?|egress[oa]s?)( (o|a|do|da|de))? ensino ${n}|ensino ${n}\\W{0,3}(anos finais |ii )?(complet|conclu)|(escolaridade|requisito)[^.]{0,60}: ?ensino ${n}\\b`,
+      `(conclu[ií]d[oa]s?|conclus[aã]o|concluir|concluintes?|egress[oa]s?|termino|formacao complet[ao] n[oa])( (o|a|do|da|de))? ensino ${n}|ensino ${n}\\W{0,3}(anos finais |ii )?(complet|conclu)|(escolaridade|requisito)[^.]{0,60}(: ?|\\be o |exigencia de )ensino ${n}\\b`,
     );
   if (nivel("fundamental").test(texto)) return "fundamental";
   if (nivel("medio").test(texto)) return "medio";
