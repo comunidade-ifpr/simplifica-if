@@ -32,7 +32,9 @@
   "dependencies": {
     "@effect/platform-node": "catalog:",
     "@notionhq/client": "5.31.1",
+    "@simplifica-if/docx": "workspace:*",
     "@simplifica-if/kb": "workspace:*",
+    "@simplifica-if/ppc": "workspace:*",
     "@simplifica-if/mcp": "workspace:*",
     "@simplifica-if/motor": "workspace:*",
     "ajv": "8.20.0",

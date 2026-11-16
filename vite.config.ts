@@ -172,6 +172,8 @@ export default defineConfig({
           "packages/mcp/**",
           "packages/motor/**",
           "packages/contratos-app/**",
+          "packages/docx/**",
+          "packages/ppc/**",
           "apps/server/**",
           "apps/web/**",
           ...ARQUIVOS_C3,

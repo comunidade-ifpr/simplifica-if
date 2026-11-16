@@ -4,17 +4,13 @@
 
 Esta skill faz a revisão prévia de um PPC técnico do IFPR, antes da submissão à PROENS, por sub-agentes dentro da conversa. O produto é um relatório de revisão para quem elabora ou acompanha o PPC: não é parecer e não substitui a análise oficial da PROENS. Ao relatar o resultado, use esse vocabulário (revisão, relatório de revisão, ajustes) e não fale em aprovação, diligência ou reprovação. Os scripts são deliberadamente pequenos: convertem o documento para `PPC.md`, montam grupos de fichas e renderizam o PPC HTML anotado a partir do JSON coletado dos sub-agentes.
 
-O ponto de entrada é `scripts/revisar_ppc.ts` (Node), e todos os subcomandos rodam em TypeScript, inclusive `gerar-relatorio-html` e a publicação no Surge. Só a conversão de entrada `.docx` em `preparar-documento` ainda depende de Python: `scripts/converter_docx.py` (`python-docx`), chamado por subprocesso até a trilha T3 do `PLANO-ARQUITETURA.md`. Com PPC em `.md`, a skill inteira dispensa Python. `REVISAR_PPC_PYTHON` escolhe o interpretador da conversão DOCX (padrão `python3`).
+O ponto de entrada é `scripts/revisar_ppc.ts` (Node), e todos os subcomandos rodam em TypeScript, inclusive `gerar-relatorio-html`, a publicação no Surge e a conversão de entrada `.docx` em `preparar-documento` (pacotes `@simplifica-if/ppc` e `@simplifica-if/docx` do workspace, com leitor OOXML próprio). A skill só precisa do Node: não usa Python, MS Word nem poppler.
 
 O output padrão fica em `.agents/skills/revisar-ppc/output/<rodada>/`. O relatório de revisão fica em `relatorio-revisao.html`; os assets do leitor ficam em `assets/`; os artefatos de suporte ficam em `arquivos-suporte/`.
 
 ## Dependências
 
-Rode `pnpm install` na raiz do repositório (o ponto de entrada usa `effect` (`effect/cli`), `htmlparser2` e `@simplifica-if/kb`). Só a entrada `.docx` ainda usa Python; para ela, instale também as dependências Python, a partir da raiz do projeto onde a skill está instalada:
-
-```bash
-python3 -m pip install -r .agents/skills/revisar-ppc/requirements.txt
-```
+Rode `pnpm install` na raiz do repositório (o ponto de entrada usa `effect` (`effect/cli`), `htmlparser2` e os pacotes `@simplifica-if/kb`, `@simplifica-if/ppc` e `@simplifica-if/docx` do workspace). Não há dependência fora do Node, nem para a entrada `.docx`.
 
 ## Fluxo recomendado
 
@@ -198,10 +194,7 @@ node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-mapa
 node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-indice
 node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
 pnpm exec vp test run .agents/skills/revisar-ppc
-python3 -m pytest .agents/skills/revisar-ppc/tests
 ```
-
-O `pytest` cobre só os extratores da conversão DOCX, que ainda é Python.
 
 ## Situação da revisão
 

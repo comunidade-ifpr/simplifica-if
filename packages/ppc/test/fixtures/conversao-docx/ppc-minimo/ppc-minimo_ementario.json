@@ -1,0 +1,50 @@
+{
+  "tipo": "ementario_ppc",
+  "componentes": [
+    {
+      "nome": "Língua Portuguesa",
+      "periodo_letivo": "1º Ano",
+      "carga_horaria_aula": 120,
+      "ementa": "Leitura e produção de textos.<br>Gêneros textuais.",
+      "bibliografia_basica": [
+        "SILVA, Maria. Gramática de teste. Sao Paulo: Editora Fictícia, 2020.",
+        "- SOUZA, João de. Redação. 2. ed. Curitiba: Exemplo, 2019. ISBN 978-85-0000-000-0."
+      ],
+      "bibliografia_complementar": [
+        "COSTA, Ana. Leitura. Rio de Janeiro: Teste, 2013.",
+        "PEREIRA, Carlos. Texto e contexto. Porto Alegre: Modelo, 2018. v. 2.",
+        "OLIVEIRA, Rita. Escrita. Campinas: Amostra, 2021.",
+        "BRASIL. Lei nº 9.394, de 20 de dezembro de 1996. Disponível em: https://exemplo.gov.br. Acesso em: 1 jan. 2026."
+      ]
+    },
+    {
+      "nome": "Banco de Dados",
+      "periodo_letivo": "2º Ano",
+      "carga_horaria_aula": 160,
+      "ementa": "Modelagem de dados.",
+      "bibliografia_basica": [
+        "DATE, Christopher. Introdução a sistemas de bancos de dados. Rio de Janeiro: Elsevier, 2004."
+      ],
+      "bibliografia_complementar": [
+        "ELMASRI, Ramez; NAVATHE, Shamkant. Sistemas de banco de dados. São Paulo: Pearson, 2011."
+      ]
+    }
+  ],
+  "por_ano": {
+    "1º Ano": [
+      "Língua Portuguesa"
+    ],
+    "2º Ano": [
+      "Banco de Dados"
+    ]
+  },
+  "total_componentes": 2,
+  "estatisticas": {
+    "total_por_ano": {
+      "1º Ano": 1,
+      "2º Ano": 1
+    },
+    "total_referencias_basicas": 3,
+    "total_referencias_complementares": 5
+  }
+}

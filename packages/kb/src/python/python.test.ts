@@ -5,7 +5,7 @@
 import { describe, expect, test } from "vite-plus/test";
 import { SequenceMatcher } from "./difflib.ts";
 import { copiarProfundoPy, dumpsPy, jsonIndentadoPy, loadsPy } from "./json.ts";
-import { escape, fullmatch, match, search, sub } from "./re.ts";
+import { escape, finditer, fullmatch, match, search, split, sub } from "./re.ts";
 import { casefold, colapsarEspacos, semMarcas, somenteDigitos } from "./texto.ts";
 import { chavesPy, FloatPy, intPy, ou, reprFloat, roundPy, strPy, verdadeiro } from "./valores.ts";
 
@@ -228,5 +228,33 @@ describe("re", () => {
   test("sub com referências e escape", () => {
     expect(sub("\\*\\*\\s+([^*]+?)\\s+\\*\\*", "**\\1**", "a ** negrito ** b $1")).toBe("a **negrito** b $1");
     expect(search(`(^|\\s)${escape("sao jose")}($|\\s)`, "campus sao jose dos pinhais")).not.toBeNull();
+  });
+
+  test("DOTALL: o ponto casa a quebra de linha", () => {
+    expect(
+      search("ementa:(.+?)(?=bibliografia|$)", "Ementa: a\nb\nBibliografia", { ignoreCase: true })?.[1],
+    ).toBeUndefined();
+    expect(
+      search("ementa:(.+?)(?=bibliografia|$)", "Ementa: a\nb\nBibliografia", { ignoreCase: true, dotAll: true })?.[1],
+    ).toBe(" a\nb\n");
+    // Sem a flag, o mesmo padrão continua parando na quebra (os dois ficam no cache separados).
+    expect(search("a(.+)", "a1\n2")?.[1]).toBe("1");
+    expect(search("a(.+)", "a1\n2", { dotAll: true })?.[1]).toBe("1\n2");
+  });
+
+  test("split e finditer", () => {
+    expect(split("(?<=[.!?])\\s+(?=[A-Z]{2,},)", "SILVA, A. Um. SOUZA, B. Dois. e fim")).toEqual([
+      "SILVA, A. Um.",
+      "SOUZA, B. Dois. e fim",
+    ]);
+    expect(split(",", "a,b,,c")).toEqual(["a", "b", "", "c"]);
+    expect(split("x", "abc")).toEqual(["abc"]);
+    expect(() => split("(,)", "a,b")).toThrow(/grupos de captura/);
+    expect(split("(?:,|;)(?=b)", "a,b;c")).toEqual(["a", "b;c"]);
+    expect(finditer("\\d+", "a1b22c٣").map((m) => [m.index, m[0]])).toEqual([
+      [1, "1"],
+      [3, "22"],
+      [6, "٣"],
+    ]);
   });
 });

@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off globalDate:off -- arquivos da rodada lidos e gravados de forma síncrona; o relógio da rodada é REVISAR_PPC_AGORA ou o do sistema, como no conversor Python
+// @effect-diagnostics nodeBuiltinImport:off globalDate:off -- arquivos da rodada lidos e gravados de forma síncrona; o relógio da rodada é REVISAR_PPC_AGORA ou o do sistema
 /**
  * Rodada de análise: caminhos, relógio, hashes e leitura e escrita de JSON
  * (porte de `common.py`). A identificação do curso fica em `identificacao.ts`.
@@ -27,7 +27,7 @@ export const TAMANHO_GRUPO_PADRAO = TAMANHO_MAXIMO_GRUPO;
 export type Relogio = () => Date;
 
 /**
- * Formato aceito em `REVISAR_PPC_AGORA`, o mesmo de `_fixar_relogio` em `converter_docx.py`:
+ * Formato aceito em `REVISAR_PPC_AGORA`:
  * `AAAA-MM-DD`, ou `AAAA-MM-DDTHH:MM[:SS[.ffffff]]` com fuso opcional (`Z` ou `±HH:MM`).
  */
 const RE_AGORA = /^(\d{4})-(\d{2})-(\d{2})(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,6})?)?(?:Z|[+-]\d{2}:\d{2})?)?$/;

@@ -19,7 +19,7 @@ import { FloatPy, type ObjetoPy } from "@simplifica-if/kb/python/valores";
 import { caminhosPadrao } from "../scripts/caminhos.ts";
 import { compararPpcComCnct } from "../scripts/cnct-catalogo.ts";
 import { extrairIdentificacaoDaConversao, inferirIdentificacaoDoMarkdown } from "../scripts/identificacao.ts";
-import { normalizarMarkdown } from "../scripts/normalizador-markdown.ts";
+import { normalizarMarkdown } from "@simplifica-if/ppc/normalizador-markdown";
 import { mesclarIdentificacaoPreferindoPreenchidos, prepararDocumento } from "../scripts/preparar-documento.ts";
 import { referenciasLegiveisDaFicha, universoOuVazio } from "../scripts/referencias-fichas.ts";
 import { ErroResultadosSubagents, mesclarResultadosAvulsos, validarResultadosRodada } from "../scripts/resultados.ts";

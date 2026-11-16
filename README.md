@@ -56,7 +56,7 @@ node scripts/gerar_indice_ppcs.ts --check
 node scripts/validar_base.ts
 node scripts/gerar_site.ts --check
 node scripts/gerar_tipos_schemas.ts --check
-python3 -m pytest .agents/skills/revisar-ppc/tests
+pnpm exec vp test run .agents/skills/revisar-ppc
 ```
 
 Os JSON Schemas de `base-conhecimento/schemas/` são a fonte do formato dos JSONs institucionais e de catálogos. O validador os aplica com o ajv, e os tipos TypeScript usados pelo exportador e pelo validador ficam em `scripts/base/tipos-schemas.ts`, gerado a partir deles. Depois de alterar um schema, rode `node scripts/gerar_tipos_schemas.ts` e `pnpm typecheck`.

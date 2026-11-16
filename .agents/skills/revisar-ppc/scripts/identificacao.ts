@@ -28,7 +28,7 @@ import { escape, search, sub } from "@simplifica-if/kb/python/re";
 import { casefold, colapsarEspacos, semMarcas } from "@simplifica-if/kb/python/texto";
 import { ehObjetoPy, itensPy, type ObjetoPy, strPy, verdadeiro } from "@simplifica-if/kb/python/valores";
 import { chavesDoMapaYaml } from "@simplifica-if/kb/ppcs/front-matter";
-import { aparar, dividirLinhas } from "@simplifica-if/kb/texto";
+import { aparar, apararFimEnquanto, dividirLinhas } from "@simplifica-if/kb/texto";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { lerJsonPy } from "./rodada.ts";
 
@@ -315,7 +315,7 @@ const PREPOSICAO_ANTES = /\b(?:d[aeo]s?|n[ao]s?|a[os]?|pel[ao]s?|em|para|e)\s*$/
  */
 function rotuloAceito(unidade: Unidade, inicio: number, fim: number): boolean {
   const antes = unidade.dobrado.slice(0, inicio);
-  const antesSemMarca = antes.replace(/[\s\u0001]+$/, "");
+  const antesSemMarca = apararFimEnquanto(antes, (caractere) => /[\s\u0001]/.test(caractere));
   if (!antesSemMarca || antes.endsWith(MARCA) || /\u0001\s*$/.test(antes)) return true;
   if (NUMERACAO.test(antes) && !antes.replace(NUMERACAO, "").trim()) return true;
   if (/[/|]\s*$/.test(antes)) return true;
@@ -346,10 +346,8 @@ function fimDoValor(unidade: Unidade, inicio: number): number {
 }
 
 function limparValor(valor: string): string {
-  return colapsarEspacos(valor.replaceAll(MARCA, " "))
-    .replace(/^[\s:–—-]+/, "")
-    .replace(/[\s.;,:–—-]+$/, "")
-    .trim();
+  const semInicio = colapsarEspacos(valor.replaceAll(MARCA, " ")).replace(/^[\s:–—-]+/, "");
+  return apararFimEnquanto(semInicio, (caractere) => /[\s.;,:–—-]/.test(caractere)).trim();
 }
 
 type Candidato = { campo: Campo; valor: string; fonte: "rotulo" };

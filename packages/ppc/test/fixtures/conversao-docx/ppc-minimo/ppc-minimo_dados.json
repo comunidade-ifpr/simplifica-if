@@ -1,0 +1,74 @@
+{
+  "arquivo_origem": "ppc-minimo.docx",
+  "data_conversao": "2026-11-16T12:00:00",
+  "metadata_documento": {
+    "title": "PPC fictício",
+    "author": "Autora de Teste",
+    "created": "2026-03-05T10:38:00+00:00",
+    "modified": "2026-04-22T03:06:00+00:00",
+    "last_modified_by": "Revisor de Teste"
+  },
+  "dados_extraidos": {
+    "nome_curso": "Curso Técnico em Testes",
+    "modalidade": "Presencial",
+    "eixo_tecnologico": "Informação e Comunicação",
+    "turno": "Matutino e vespertino",
+    "carga_horaria_total": "3.200 horas<br>Distribuídas em três anos.",
+    "nome_do_curso": "Curso Técnico em Testes",
+    "forma_de_oferta": "Integrado",
+    "campus": "Campus Foz do Iguaçu",
+    "total_de_vagas": "40 vagas anuais",
+    "base_legal_especifica_do_curso": "Resolução fictícia nº 1/2026 \\| CNCT",
+    "2026": "Ano de início",
+    "tipo_matricula": "Por componente curricular",
+    "periodicidade": "Anual"
+  },
+  "estrutura": {
+    "secoes_detectadas": [
+      "1 APRESENTAÇÃO",
+      "1.1 JUSTIFICATIVA",
+      "5 ORGANIZAÇÃO CURRICULAR",
+      "5.6 MATRIZ CURRICULAR",
+      "5.7 EMENTÁRIO",
+      "5.11 REPRESENTAÇÃO GRÁFICA DO PROCESSO FORMATIVO",
+      "6 REFERÊNCIAS"
+    ],
+    "total_elementos": 26,
+    "total_tabelas": 5
+  },
+  "arquivos_relacionados": {
+    "markdown_normalizado": "ppc-minimo.md",
+    "markdown_bruto": "ppc-minimo-bruto.md",
+    "matriz_curricular": "ppc-minimo_matriz_curricular.json",
+    "ementario": "ppc-minimo_ementario.json",
+    "representacao_grafica": "imagens/representacao_grafica.png"
+  },
+  "representacao_grafica": {
+    "encontrada": true,
+    "secao": "5.11 REPRESENTAÇÃO GRÁFICA DO PROCESSO FORMATIVO",
+    "tem_bitmap": true,
+    "tem_desenhos_vetoriais": false,
+    "extraida": true,
+    "metodo": "bitmap",
+    "caminho": "imagens/representacao_grafica.png"
+  },
+  "resumo_matriz_curricular": {
+    "total_anos": 2,
+    "total_componentes": 3,
+    "total_ha": 0,
+    "total_hr": 0,
+    "totais": {
+      "ch_total_hora_aula": 680,
+      "ch_total_hora_relogio": 530
+    }
+  },
+  "resumo_ementario": {
+    "total_componentes": 2,
+    "total_referencias_basicas": 3,
+    "total_referencias_complementares": 5,
+    "total_por_ano": {
+      "1º Ano": 1,
+      "2º Ano": 1
+    }
+  }
+}

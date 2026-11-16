@@ -17,7 +17,14 @@
  * em que aparecem. Tudo o que vem antes do primeiro título numerado (ou, sem numeração, do primeiro
  * título reconhecido) é `pretextual`: capa, dirigentes, comissão.
  */
-import { aparar, apararCaracteres, contarCaracteres, ESPACOS, prefixo as prefixoTexto } from "../texto.ts";
+import {
+  aparar,
+  apararCaracteres,
+  apararFimEnquanto,
+  contarCaracteres,
+  ESPACOS,
+  prefixo as prefixoTexto,
+} from "../texto.ts";
 import { linhasFrontMatter } from "./front-matter.ts";
 
 /* ------------------------------------------------------------------ títulos */
@@ -91,11 +98,11 @@ export function numeracaoDoTitulo(titulo: string): { numeracao: string | null; r
 /** Título em minúsculas, sem acentos, sem numeração e com espaços simples. */
 export function normalizarTitulo(titulo: string): string {
   const { resto } = numeracaoDoTitulo(titulo);
-  return removerAcentos(resto)
-    .toLowerCase()
-    .replace(RE_ESPACOS, " ")
-    .replace(/[:;.]+$/u, "")
-    .trim();
+  const semAcentos = removerAcentos(resto).toLowerCase().replace(RE_ESPACOS, " ");
+  return apararFimEnquanto(
+    semAcentos,
+    (caractere) => caractere === ":" || caractere === ";" || caractere === ".",
+  ).trim();
 }
 
 /* -------------------------------------------------------------- taxonomias */

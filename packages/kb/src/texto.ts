@@ -18,23 +18,57 @@ import * as NodePath from "node:path";
 
 /** Classe de caracteres (para usar dentro de `[...]`) com todos os espaços Unicode reconhecidos. */
 export const ESPACOS = "\\t\\n\\v\\f\\r \\x1c-\\x1f\\x85\\xa0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000";
-const RE_ESPACO_INICIAL = new RegExp(`^[${ESPACOS}]+`);
-const RE_ESPACO_FINAL = new RegExp(`[${ESPACOS}]+$`);
 export const RE_TEM_ESPACO = new RegExp(`[${ESPACOS}]`);
+
+/** O código de unidade UTF-16 é de um espaço do conjunto `ESPACOS`. */
+function ehEspaco(codigo: number): boolean {
+  if (codigo <= 0x20)
+    return codigo === 0x20 || (codigo >= 0x09 && codigo <= 0x0d) || (codigo >= 0x1c && codigo <= 0x1f);
+  if (codigo < 0x85) return false;
+  return (
+    codigo === 0x85 ||
+    codigo === 0xa0 ||
+    codigo === 0x1680 ||
+    (codigo >= 0x2000 && codigo <= 0x200a) ||
+    codigo === 0x2028 ||
+    codigo === 0x2029 ||
+    codigo === 0x202f ||
+    codigo === 0x205f ||
+    codigo === 0x3000
+  );
+}
+
+// O aparo é feito com laços, e não com expressões regulares: `[espaços]+$` recomeça a busca em
+// cada espaço de uma sequência longa que não está no fim, e custa o quadrado do tamanho dela (80
+// mil tabulações no meio de um parágrafo de um DOCX de 3 KB levavam 89 s).
 
 /** Remove espaços (conjunto `ESPACOS`) do início e do fim. */
 export function aparar(texto: string): string {
-  return apararInicio(texto).replace(RE_ESPACO_FINAL, "");
+  return apararFim(apararInicio(texto));
 }
 
 /** Remove espaços (conjunto `ESPACOS`) do fim. */
 export function apararFim(texto: string): string {
-  return texto.replace(RE_ESPACO_FINAL, "");
+  let fim = texto.length;
+  while (fim > 0 && ehEspaco(texto.charCodeAt(fim - 1))) fim -= 1;
+  return fim === texto.length ? texto : texto.slice(0, fim);
 }
 
 /** Remove espaços (conjunto `ESPACOS`) do início. */
 export function apararInicio(texto: string): string {
-  return texto.replace(RE_ESPACO_INICIAL, "");
+  let inicio = 0;
+  while (inicio < texto.length && ehEspaco(texto.charCodeAt(inicio))) inicio += 1;
+  return inicio === 0 ? texto : texto.slice(inicio);
+}
+
+/**
+ * Remove do fim os caracteres que `pertence` aceita. É o `texto.replace(/[classe]+$/, "")` sem o
+ * custo quadrático da expressão regular numa sequência longa que não está no fim.
+ */
+export function apararFimEnquanto(texto: string, pertence: (caractere: string) => boolean): string {
+  let fim = texto.length;
+  while (fim > 0 && pertence(texto[fim - 1]!)) fim -= 1;
+  return fim === texto.length ? texto : texto.slice(0, fim);
 }
 
 /** Remove das pontas qualquer caractere presente em `caracteres`. */

@@ -383,7 +383,7 @@ Corre em paralelo às fases 1 a 7. Cada passo troca uma implementação por baix
 - Portar `publicar_surge.py`, que só chama a CLI `surge` por `Bun.spawn`.
 - Diferencial: HTML idêntico para as mesmas entradas.
 
-**T3. Conversão DOCX**
+**T3. Conversão DOCX** (concluído em 16/11/2026; veja [Andamento](#andamento))
 
 - **Leitor OOXML** com `fflate` (`^0.8.2`, a mesma faixa do `sei-cli`) e `htmlparser2` em `xmlMode` com `domutils`, que preservam a ordem do conteúdo misto. Ele precisa reproduzir esta semântica do `python-docx`:
   - `style.name`, com o mapeamento de nomes internos (`heading 1` → `Heading 1`);
@@ -393,7 +393,7 @@ Corre em paralelo às fases 1 a 7. Cada passo troca uma implementação por baix
 - **Extratores** de seções, matriz, ementário, identificação e imagens, além do escritor de Markdown.
 - **Fallback "rendered"** de figuras vetoriais, que hoje depende de MS Word e poppler. Decidir entre:
   - `soffice --convert-to pdf` seguido de rasterização;
-  - remover o fallback e emitir um alerta no `PPC.md`.
+  - remover o fallback e emitir um alerta no `PPC.md` (decidido em 16/11/2026: o app não pode depender de programa externo).
 - **Corpus** em `~/Library/CloudStorage/OneDrive-Pessoal/PPCs Dentec/`:
   - cerca de 12 DOCX, com versões sucessivas do mesmo PPC;
   - fica fora do git, porque são minutas com nomes de revisores;
@@ -494,14 +494,14 @@ Decididas:
 - núcleo em `packages/kb`;
 - corpus DOCX na pasta `PPCs Dentec` do OneDrive;
 - Movimentações fora do escopo;
-- política de versão de PPC: só o vigente, com o histórico no git e ID `ppc:<campus_id>/<curso_slug>` sem versão (13/11/2026, fase 4).
+- política de versão de PPC: só o vigente, com o histórico no git e ID `ppc:<campus_id>/<curso_slug>` sem versão (13/11/2026, fase 4);
+- fallback "rendered" de figuras na conversão DOCX: removido, com aviso no `PPC.md` (16/11/2026, T3). Nos 12 PPCs do corpus, a figura vetorial é o fluxograma da representação gráfica, desenhado com formas do Word.
 
 Em aberto:
 
-1. **Fallback "rendered" de figuras na conversão DOCX:** `soffice` ou remover com alerta (T3).
-2. **Conversor de PDF de PPCs:** porte ou exceção Python, conforme a medição de T5.
-3. **Modelo e orçamento do harness de avaliação:** modelo fixado e número de execuções por pergunta (fase 1).
-4. **Data do DOU e URL oficial da Res. CNE/CP 2/2026:** necessárias para `publicada_em` e `vigente_de`; até lá, a vigência dela e a revogação da 1/2021 saem como "a confirmar" (fase 5).
+1. **Conversor de PDF de PPCs:** porte ou exceção Python, conforme a medição de T5.
+2. **Modelo e orçamento do harness de avaliação:** modelo fixado e número de execuções por pergunta (fase 1).
+3. **Data do DOU e URL oficial da Res. CNE/CP 2/2026:** necessárias para `publicada_em` e `vigente_de`; até lá, a vigência dela e a revogação da 1/2021 saem como "a confirmar" (fase 5).
 
 ## Andamento
 
@@ -786,6 +786,61 @@ Em aberto:
   - conferir as duas IN na fonte oficial;
   - `LEI_BR_12711-2012_cotas.md` também parece paráfrase;
   - uma "IN nº 1/2021" sem data, em contexto IFPR, ainda vai para a IN da Reitoria.
+
+**Trilha T, passo T3 concluído em 16/11/2026** (branch `t3/typescript-docx-conversion`). Esta entrada registra a primeira entrega; a seguinte, as correções das duas revisões, que mudaram o lugar do código e os defeitos mantidos.
+
+- A conversão DOCX da `revisar-ppc` está em TypeScript (na primeira entrega, em `scripts/conversao-docx/` da skill); `preparar-documento` a chama direto, e a skill com entrada `.docx` roda só com Node (sem Python, MS Word ou poppler).
+- Não é transcrição do Python. Duas camadas:
+  - `ooxml/`: leitor próprio sobre `fflate` e `htmlparser2`, com um modelo intermediário do documento (parágrafos com runs e formatação direta, hyperlinks, tabelas com `gridSpan` e `vMerge`, figuras, propriedades) e nomes resolvidos pela URI do namespace;
+  - domínio do PPC: `elementos.ts` (título, lista, grade de tabela), `secoes.ts`, `tabelas.ts`, `matriz.ts`, `ementario.ts`, `similaridade.ts`, `identificacao-tabelas.ts`, `figura.ts`, `markdown.ts` e `conversao.ts`.
+- `similaridade.ts` reimplementa o `fuzz.partial_ratio` do `rapidfuzz` com LCS de bits paralelos: 992 escores iguais bit a bit aos dele (`tests/fixtures/partial-ratio-rapidfuzz.json`).
+- Diferencial contra o Python do commit `c0d6f07`, com `python-docx` 1.2.0 e `rapidfuzz` 3.14.6 em ambiente temporário do `uv` (`scripts/dev/diferencial-docx.ts`, descrito no README da skill):
+  - 23 documentos: os 12 PPCs técnicos reais de `KB_CORPUS_DOCX` e 11 sintéticos;
+  - camada de elementos (o que o `DocxReader` lia) e artefatos finais (`.md`, `-bruto.md`, `_dados.json`, matriz, ementário, imagem): idênticos nos 23, no modo `python-docx` do leitor;
+  - diferenças aceitas, neutralizadas e relatadas por documento: `propriedades-inventadas` (4 PPCs sem `docProps/core.xml`, em que o `python-docx` inventava título, autor e data) e `figura-nao-renderizada` (3 PPCs com o fluxograma em formas do Word).
+- Diferenças deliberadas do modo padrão (`documento`), todas no README da skill:
+  - o texto inserido com controle de alterações (`w:ins`) e os runs em `w:moveTo`, `w:smartTag`, `w:sdt` em linha, `w:fldSimple` e `w:customXml` entram no `PPC.md`; o `python-docx` os descartava, e 3 PPCs do corpus perdiam trechos (34, 89 e 131 linhas mudam);
+  - a figura vetorial não é renderizada: `metodo: "vetorial_nao_renderizada"` e um aviso no `PPC.md`; EMF e WMF embutidos são copiados como estão; a imagem sai com a extensão dela;
+  - `metadata_documento` vazio sem `core.xml`; mescla vertical malformada e imagem externa não abortam; o DOCX em "Strict Open XML" é lido.
+- Defeitos da conversão antiga mantidos nesta entrega, e corrigidos na seguinte: negrito colado (`**a**b**`), numeração automática do Word ignorada, alíneas como `1. a)`, `total_ha` e `total_hr` zerados no resumo da matriz.
+- Desempenho no corpus: de 0,11 a 0,26 s por PPC, contra 0,85 a 2,2 s do Python; `preparar-documento` inteiro em 0,44 s.
+- Removidos: `conversao_docx/` (12 arquivos, cerca de 5.000 linhas), `converter_docx.py`, os 4 arquivos de `pytest` e o `requirements.txt` da skill; a opção `python` e a variável `REVISAR_PPC_PYTHON`.
+- Testes: `conversao-docx.test.ts` (50 casos: leitor, regras de domínio, os casos dos 4 arquivos de `pytest`, gabaritos do oráculo e figura) e `similaridade.test.ts` (4 casos); a skill tem 257 casos. O teste DOCX da identificação deixou de depender do `python-docx`.
+- Python que continua: só `scripts/converter_ppcs_markdown.py` (T5).
+- Verificação, no Node 26.12.1 e com o `main` de 16/11/2026 (`67054eb`) incorporado à branch: `pnpm fmt:check`, `pnpm lint`, `pnpm typecheck` e `pnpm test` sem erro (658 casos na raiz e nas skills); `validar-base` e `gerar-schemas`, `gerar-mapa` e `gerar-indice --check` da skill sem erro.
+
+**Revisão do T3 e correções em 16/11/2026** (mesma branch, sem merge: aguarda a re-verificação). Duas revisões independentes reproduziram o diferencial e não bloquearam o merge; apontaram robustez com arquivo hostil, quatro perdas de fidelidade e o lugar do código.
+
+- **Lugar do código.** A conversão saiu da skill para dois pacotes do workspace, que o `apps/server` pode importar: `packages/docx` (`@simplifica-if/docx`, o leitor OOXML genérico) e `packages/ppc` (`@simplifica-if/ppc`, a conversão do PPC, o normalizador de Markdown, os documentos sintéticos e o diferencial). A skill fica com a CLI. Dois pacotes, e não um: o leitor não sabe o que é PPC e serve a outros documentos; o `kb` não ganha `fflate` nem regras de PPC. Dentro da skill a conversão dependia do `node_modules` da raiz, e o app, que leva a skill só com os arquivos do manifesto, não a executaria.
+- **Arquivo hostil** (o app abre arquivos do usuário), tudo com `ErroDocx` em português e teste versionado (`packages/docx/test/leitor.test.ts`):
+  - o ZIP é lido no próprio pacote: diretório central sem descompactar, partes sob demanda e em pedaços, com limite de 100 MB por parte e de 300 MB no total sobre a saída real (o tamanho declarado pode mentir), 10 mil entradas e razão de compressão de 200:1 nas partes de mais de 10 MB;
+  - contêiner OLE (`.doc` renomeado ou DOCX com senha), arquivo que não é ZIP, ZIP truncado e entrada cifrada têm mensagem própria;
+  - XML malformado ou truncado e aninhamento de mais de 256 níveis são recusados (antes: `PPC.md` pela metade e `RangeError`);
+  - depois da re-verificação: a razão de compressão vale também para a saída real (96 MB de `<w:p/>` num ZIP de 142 KB com tamanho declarado de 100 bytes passavam e esgotavam a memória), teto de 1 milhão de elementos por parte XML, texto de tabela multiplicado pela mescla limitado a 16 milhões de caracteres e consolidação de parágrafos do normalizador em tempo linear (era quadrática: 40 mil parágrafos curtos, 19 s), com a mesma saída;
+  - depois da segunda re-verificação: limites reunidos em `packages/docx/src/limites.ts` e apertados ao que os PPCs reais usam (arquivo de 20 MB, 25 MB por parte, 60 MB no total, 500 mil elementos por parte XML); orçamento de texto por documento em `packages/ppc/src/conversao-docx/orcamento.ts` (8 milhões de caracteres, 50 mil por parágrafo ou célula, mil caracteres seguidos sem letra nem dígito), porque os tetos por item deixavam passar sessenta tabelas logo abaixo do teto; aparo de espaços do `kb` sem expressão regular (`[espaços]+$` custava o quadrado de uma sequência longa: 89 s para 80 mil tabulações num ZIP de 3 KB); decisão do normalizador pelo começo estável do parágrafo, tomada uma vez. Pior caso honesto dentro dos limites: 1,5 s e cerca de 690 MB de memória residente, com heap de 512 MB;
+  - `gridSpan` e `gridBefore` presos à faixa do Word (um `gridSpan` de 2 bilhões num arquivo de 879 bytes esgotava a memória), 1.024 células por linha e 2 milhões de posições por tabela; mescla vertical resolvida numa passada, sem recursão; arrays grandes sem espalhamento em chamadas;
+  - documento sem texto e arquivo de mais de 100 MB são recusados; só `http`, `https` e `mailto` viram link no Markdown;
+  - `preparar-documento` converte em memória antes de criar a rodada.
+- **Regras do modo `documento`** (`packages/ppc/src/conversao-docx/regras.ts`): cada diferença em relação ao Python é uma regra nomeada, e todas desligadas reproduzem o Python. Além da leitura das alterações controladas, entraram:
+  - `leitura`: linhas, células e parágrafos de tabela embrulhados em `w:sdt` (numa matriz, sumiam sem aviso), linha e figura removidas na revisão ficam de fora, e a célula das tabelas em `w:sdt` é lida como os parágrafos do corpo;
+  - `titulosDeCorpo`: texto de corpo com estilo de título sai como parágrafo (num PPC do corpus, `## 5.9 ESTÁGIO CURRICULAR` ficava vazia e cinco frases viravam seções);
+  - `listas`: a numeração automática do Word faz itens de lista, o número digitado fica e a alínea sai como `- a)`;
+  - `negritoUnido`: `**Pró-Reitoria de Ensino**`, não `**Pró-Reitoria** de Ensino**`;
+  - `linksSeguros`;
+  - `totaisDaMatriz`: o total que nenhuma tabela declara é recalculado sobre todas as partes da matriz (antes ficava a soma da última), e `total_ha` e `total_hr` do resumo são somados.
+- Dos defeitos que a primeira entrega mantinha por paridade, saíram o negrito colado, a numeração automática ignorada, as alíneas como `1. a)` e `total_ha`/`total_hr` zerados. Continuam: o texto de tabela aninhada fora da célula, a capa fora do Markdown e o número da lista automática não calculado (o item sai como `1.`).
+- **Diferencial**, refeito com 12 PPCs reais e 14 documentos sintéticos (3 novos: títulos de corpo, listas automáticas, tabelas em `w:sdt`):
+  - modo `python-docx`: elementos e artefatos idênticos nos 26; diferenças aceitas inalteradas (`propriedades-inventadas` em 4 PPCs, `figura-nao-renderizada` em 3);
+  - modo `documento`: de 239 a 697 linhas mudam por PPC (contadas as duas versões de cada linha), medidas por regra na tabela do README da skill; a maior parte são itens de lista (de 73 a 220 novos por PPC) e negrito;
+  - `titulosDeCorpo` tira de 2 a 33 falsas seções em 4 PPCs; `negritoUnido` não muda o número de títulos em nenhum;
+  - `totaisDaMatriz`: os totais da matriz não mudam em nenhum dos 12 (todos declaram a linha de total do curso); `total_ha` e `total_hr` mudam nos 12;
+  - tempo por PPC: de 0,11 a 0,26 s.
+- Testes: `packages/docx` 26 casos, `packages/ppc` 73, skill `revisar-ppc` 206 (os da conversão foram para os pacotes), `kb` 413; `pnpm fmt`, `pnpm lint`, `pnpm typecheck` (raiz e os 12 pacotes e apps) e `pnpm test` sem erro no Node 26.12.1; `validar-base` e os `--check` da skill sem erro.
+- Pendências:
+  - a re-verificação e o merge;
+  - no servidor (M1.11 do plano do app): rodar a conversão num `Worker` com limite de memória e de tempo, sem bloquear o laço de eventos; a conversão é síncrona e mantém a árvore do XML na memória;
+  - o Strict Open XML foi testado só por troca de namespace num documento sintético;
+  - listas automáticas: o número (`w:start`, letras, romanos) não é calculado, e o nível do subitem se perde no normalizador, que tira o recuo das linhas (limitações registradas no README da skill).
 
 ## Histórico de revisões
 
