@@ -10,6 +10,7 @@
 import type { Element } from "domhandler";
 import { Inflate } from "fflate";
 import { ErroDocx } from "./erro.ts";
+import { LIMITES_PADRAO, type LimitesDoPacote } from "./limites.ts";
 import { analisarXml, atributo, filhos } from "./xml.ts";
 
 /** Bases dos tipos de relação: a do formato de transição (o comum) e a do Strict Open XML. */
@@ -34,30 +35,7 @@ export type Relacao = {
   parte: string | null;
 };
 
-export { ErroDocx };
-
-/** Limites de leitura do pacote. Os padrões folgam para qualquer PPC real (alguns megabytes). */
-export type LimitesDoPacote = {
-  /** Entradas no ZIP. */
-  entradas: number;
-  /** Bytes descompactados de uma parte. */
-  bytesPorParte: number;
-  /** Bytes descompactados de todas as partes lidas. */
-  bytesNoTotal: number;
-  /**
-   * Razão entre o tamanho descompactado e o compactado, conferida nas partes de mais de 10 MB. Abaixo
-   * disso não há bomba, e um trecho repetitivo legítimo (uma tabela de linhas iguais) passa de 200:1.
-   */
-  razaoDeCompressao: number;
-};
-
-export const LIMITES_PADRAO: LimitesDoPacote = {
-  entradas: 10_000,
-  bytesPorParte: 100 * 1024 * 1024,
-  bytesNoTotal: 300 * 1024 * 1024,
-  // O DEFLATE não passa de 1032:1; XML de documento fica na casa de 10:1 a 30:1.
-  razaoDeCompressao: 200,
-};
+export { ErroDocx, LIMITES_PADRAO, type LimitesDoPacote };
 
 type Entrada = {
   /** 0 (armazenado) ou 8 (DEFLATE). */
@@ -69,6 +47,14 @@ type Entrada = {
 };
 
 const megabytes = (bytes: number) => `${Math.round(bytes / (1024 * 1024))} MB`;
+
+/** Erro do arquivo acima do limite; quem lê do disco confere o tamanho antes, com a mesma mensagem. */
+export function arquivoGrandeDemais(tamanho: number, limite = LIMITES_PADRAO.bytesDoArquivo): ErroDocx {
+  return new ErroDocx(
+    `O arquivo DOCX tem ${megabytes(tamanho)}, e o limite é de ${megabytes(limite)}. Um PPC raramente passa disso: ` +
+      "em geral são as imagens. No Word, use Arquivo › Compactar imagens e salve de novo.",
+  );
+}
 
 const ASSINATURA_OLE = [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1];
 const FIM_DO_DIRETORIO = 0x06054b50;
@@ -158,7 +144,14 @@ export class PacoteOoxml {
   constructor(bytes: Uint8Array, limites: Partial<LimitesDoPacote> = {}) {
     this.#bytes = bytes;
     this.#limites = { ...LIMITES_PADRAO, ...limites };
+    if (bytes.length > this.#limites.bytesDoArquivo)
+      throw arquivoGrandeDemais(bytes.length, this.#limites.bytesDoArquivo);
     this.#entradas = lerDiretorio(bytes, this.#limites);
+  }
+
+  /** Os limites em vigor (os padrões, com o que foi passado na abertura). */
+  get limites(): LimitesDoPacote {
+    return this.#limites;
   }
 
   /** Descompacta uma parte, sob os limites; `null` quando ela não existe no pacote. */
@@ -230,7 +223,7 @@ export class PacoteOoxml {
   /** Raiz do XML de uma parte, ou `null` quando a parte não existe. */
   xml(parte: string): Element | null {
     const bytes = this.#ler(parte);
-    return bytes ? analisarXml(bytes, parte) : null;
+    return bytes ? analisarXml(bytes, parte, this.#limites) : null;
   }
 
   /** Relações de uma parte, por id; `""` é o próprio pacote (`_rels/.rels`). */

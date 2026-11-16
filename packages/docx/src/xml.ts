@@ -13,20 +13,7 @@
 import { type ChildNode, DomHandler, Element, isCDATA, isTag, isText } from "domhandler";
 import { Parser } from "htmlparser2";
 import { ErroDocx } from "./erro.ts";
-
-/**
- * Profundidade máxima de elementos. Um documento real fica na casa das dezenas (tabela em caixa
- * de texto em tabela); o limite protege as funções recursivas deste leitor de um arquivo montado
- * para estourar a pilha.
- */
-export const PROFUNDIDADE_MAXIMA = 256;
-
-/**
- * Elementos numa parte XML. O maior `document.xml` dos PPCs reais conferidos tem 104 mil; a árvore
- * custa cerca de meio kilobyte por elemento, e um arquivo honesto de 88 MB com 3,4 milhões de
- * parágrafos levava o processo a 1,9 GB.
- */
-export const ELEMENTOS_MAXIMOS = 1_000_000;
+import { LIMITES_PADRAO, type LimitesDoPacote } from "./limites.ts";
 
 const PREFIXO_DA_URI: Record<string, string> = {
   "http://schemas.openxmlformats.org/wordprocessingml/2006/main": "w",
@@ -101,7 +88,11 @@ function decodificar(bytes: Uint8Array): string {
  * erro (`ErroDocx`): um XML truncado viraria um documento pela metade, convertido sem aviso.
  * Entidades declaradas no próprio arquivo (`<!ENTITY …>`) não são expandidas nem buscadas.
  */
-export function analisarXml(fonte: Uint8Array | string, parte = "XML"): Element | null {
+export function analisarXml(
+  fonte: Uint8Array | string,
+  parte = "XML",
+  limites: Pick<LimitesDoPacote, "elementosPorParte" | "profundidadeDoXml"> = LIMITES_PADRAO,
+): Element | null {
   const texto = typeof fonte === "string" ? fonte : decodificar(fonte);
   const arvore = new DomHandler();
   let profundidade = 0;
@@ -112,12 +103,12 @@ export function analisarXml(fonte: Uint8Array | string, parte = "XML"): Element 
       onopentag: (nome, atributos) => {
         profundidade += 1;
         elementos += 1;
-        if (elementos > ELEMENTOS_MAXIMOS) {
+        if (elementos > limites.elementosPorParte) {
           throw new ErroDocx(
-            `O arquivo DOCX é grande demais para ser lido: ${parte} tem mais de ${ELEMENTOS_MAXIMOS / 1_000_000} milhão de elementos.`,
+            `O arquivo DOCX é grande demais para ser lido: ${parte} tem mais de ${limites.elementosPorParte / 1000} mil elementos.`,
           );
         }
-        if (profundidade > PROFUNDIDADE_MAXIMA) {
+        if (profundidade > limites.profundidadeDoXml) {
           throw new ErroDocx(`O arquivo DOCX não pôde ser lido: ${parte} tem elementos aninhados demais.`);
         }
         arvore.onopentag(nome, atributos);

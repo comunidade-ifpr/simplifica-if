@@ -23,7 +23,8 @@ import {
   run,
   tabela,
 } from "../src/testes/sintetico.ts";
-import { analisarXml, descendentes, ELEMENTOS_MAXIMOS, PROFUNDIDADE_MAXIMA } from "../src/xml.ts";
+import { analisarXml, descendentes } from "../src/xml.ts";
+import { LIMITES_PADRAO } from "../src/limites.ts";
 
 const W =
   'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
@@ -140,7 +141,7 @@ describe("limites contra arquivos montados para esgotar recursos", () => {
     ];
     for (const corpo of casos) esperarErroDocx(() => lerCorpo(corpo), /elementos aninhados demais/);
     // No limite, o documento é lido.
-    const niveis = (PROFUNDIDADE_MAXIMA - 6) / 2;
+    const niveis = (LIMITES_PADRAO.profundidadeDoXml - 6) / 2;
     expect(
       textos(lerCorpo(fundo("<w:sdt><w:sdtContent>", "</w:sdtContent></w:sdt>", niveis, p("fundo"))).blocos),
     ).toEqual(["fundo"]);
@@ -220,14 +221,30 @@ describe("limites contra arquivos montados para esgotar recursos", () => {
   });
 
   test("teto de elementos por parte XML", () => {
-    const zip = pacoteCru({ "word/document.xml": documento(p("x") + "<w:p/>".repeat(ELEMENTOS_MAXIMOS)) });
+    const zip = pacoteCru({
+      "word/document.xml": documento(p("x") + "<w:p/>".repeat(LIMITES_PADRAO.elementosPorParte)),
+    });
     esperarErroDocx(
       () => lerDocx(zip, { limites: { razaoDeCompressao: 1_000_000 } }),
-      /word\/document\.xml tem mais de 1 milhão de elementos/,
+      /word\/document\.xml tem mais de 500 mil elementos/,
     );
-    // Dez vezes o maior PPC real conferido passa.
-    const grande = pacoteCru({ "word/document.xml": documento(p("x").repeat(300_000)) });
-    expect(lerDocx(grande, { limites: { razaoDeCompressao: 1_000_000 } }).blocos).toHaveLength(300_000);
+    // Quatro vezes o maior PPC real conferido passa.
+    const grande = pacoteCru({ "word/document.xml": documento(p("x").repeat(140_000)) });
+    expect(lerDocx(grande, { limites: { razaoDeCompressao: 1_000_000 } }).blocos).toHaveLength(140_000);
+  });
+
+  test("arquivo acima do limite de tamanho, com a orientação de compactar as imagens", () => {
+    esperarErroDocx(
+      () => lerDocx(new Uint8Array(LIMITES_PADRAO.bytesDoArquivo + 1)),
+      /tem 20 MB, e o limite é de 20 MB\. Um PPC raramente passa disso: em geral são as imagens\. No Word, use Arquivo › Compactar imagens/,
+    );
+    const zip = pacoteCru({ "word/document.xml": documento(p("a")) });
+    esperarErroDocx(() => lerDocx(zip, { limites: { bytesDoArquivo: 100 } }), /o limite é de 0 MB/);
+    expect(LIMITES_PADRAO).toMatchObject({
+      bytesDoArquivo: 20 * 1024 * 1024,
+      bytesPorParte: 25 * 1024 * 1024,
+      bytesNoTotal: 60 * 1024 * 1024,
+    });
   });
 
   test("entradas demais no ZIP", () => {

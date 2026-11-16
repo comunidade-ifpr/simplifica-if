@@ -60,7 +60,7 @@ export type Fidelidade = "documento" | "python-docx";
 
 export type OpcoesLeitura = {
   fidelidade?: Fidelidade;
-  /** Limites de leitura do pacote; padrão: `LIMITES_PADRAO`. */
+  /** Limites de leitura; padrão: `LIMITES_PADRAO` de `limites.ts`. */
   limites?: Partial<LimitesDoPacote>;
 };
 
@@ -119,10 +119,6 @@ function inteiro(valor: string | null, padrao: number): number {
 
 /** Colunas de uma tabela do Word: o formato não admite mais que 63. */
 const COLUNAS_MAXIMAS = 63;
-/** Células numa linha, contadas as de tabelas aninhadas. Acima disso o arquivo não é um documento. */
-const CELULAS_MAXIMAS_POR_LINHA = 1024;
-/** Posições da grade de uma tabela (células vezes colunas ocupadas). */
-const GRADE_MAXIMA = 2_000_000;
 
 /**
  * Número de colunas lido do arquivo, preso à faixa válida. Um `gridSpan` de dois bilhões num
@@ -147,6 +143,7 @@ type Contexto = {
   estilos: Map<string, string | null>;
   /** Nome do estilo de parágrafo padrão; `undefined` quando o documento não define um. */
   estiloPadrao: string | null | undefined;
+  limites: LimitesDoPacote;
   /** Formato do marcador (`w:numFmt`) de cada nível de cada numeração (`w:num`), por id. */
   numeracoes: Map<string, Map<number, string>>;
 };
@@ -457,14 +454,15 @@ function lerTabela(tabela: Element, contexto: Contexto, emControle: boolean): Ta
     const propriedades = filho(linha, "w:trPr");
     const antes = propriedades ? filho(propriedades, "w:gridBefore") : null;
     const celulas = descendentes(linha, "w:tc");
-    if (celulas.length > CELULAS_MAXIMAS_POR_LINHA) {
+    if (celulas.length > contexto.limites.celulasPorLinha) {
       throw new ErroDocx(
-        `O arquivo DOCX não pôde ser lido: há uma tabela com mais de ${CELULAS_MAXIMAS_POR_LINHA} células numa linha.`,
+        `O arquivo DOCX não pôde ser lido: há uma tabela com mais de ${contexto.limites.celulasPorLinha} células numa linha.`,
       );
     }
     const lidas = celulas.map((celula) => lerCelula(celula, linha, contexto));
     for (const celula of lidas) grade += celula.colunas;
-    if (grade > GRADE_MAXIMA) throw new ErroDocx("O arquivo DOCX não pôde ser lido: há uma tabela grande demais.");
+    if (grade > contexto.limites.posicoesPorTabela)
+      throw new ErroDocx("O arquivo DOCX não pôde ser lido: há uma tabela grande demais.");
     return { colunasAntes: antes ? colunasValidas(atributo(antes, "w:val"), 0, 0) : 0, celulas: lidas };
   });
   return { tipo: "tabela", emControle, linhas };
@@ -556,6 +554,7 @@ export function lerPacote(pacote: PacoteOoxml, opcoes: OpcoesLeitura = {}): Docu
   const contexto: Contexto = {
     fidelidade: opcoes.fidelidade ?? "documento",
     relacoes: pacote.relacoes(principal),
+    limites: pacote.limites,
     ...lerEstilos(parteEstilos ? pacote.xml(parteEstilos) : null),
     numeracoes: lerNumeracoes(parteNumeracao ? pacote.xml(parteNumeracao) : null),
   };
