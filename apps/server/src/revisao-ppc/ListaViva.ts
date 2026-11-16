@@ -23,7 +23,9 @@ import * as NodeCrypto from "node:crypto";
 import * as Context from "effect/Context";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
+import * as Exit from "effect/Exit";
 import * as Layer from "effect/Layer";
+import * as Scope from "effect/Scope";
 import * as Semaphore from "effect/Semaphore";
 import type * as SqlClient from "effect/sql/SqlClient";
 import {
@@ -44,6 +46,8 @@ import {
   pedidoContestacao,
   pedidoSugestao,
   prefixoConversa,
+  tarefaContestacao,
+  tarefaSugestao,
   type TurnoAnterior,
 } from "@simplifica-if/ppc/revisao-ia/conversa";
 import { estimarAcao } from "@simplifica-if/ppc/revisao-ia/estimativa";
@@ -61,7 +65,7 @@ import {
 import { Listas, type RegistroLista } from "../persistencia/Listas.ts";
 import { Revisoes } from "../persistencia/Revisoes.ts";
 import { AnalisePpc, type EntradaAnalise, type RevisaoDoArquivo, resultadoParaInterface } from "./AnalisePpc.ts";
-import { julgarBloco, PausaRevisao, turnoSemFerramentas } from "./julgamento.ts";
+import { abrirSessaoSemFerramentas, julgarBloco, PausaRevisao, turnoSemFerramentas } from "./julgamento.ts";
 import { contextoDaFicha, type PlanoRevisaoIa } from "./preparo.ts";
 
 export const TEMPO_ACAO = Duration.minutes(4);
@@ -181,8 +185,37 @@ const ponto = (t: string) => (/[.!?]$/.test(t.trim()) ? t.trim() : `${t.trim()}.
 
 /* ============================================================ serviço */
 
-export const make = Effect.fn("ListaViva.make")(function* (opcoes: { readonly tempoAcao?: Duration.Duration } = {}) {
+export interface OpcoesListaViva {
+  readonly tempoAcao?: Duration.Duration;
+  /** Quanto a sessão de conversa de uma pendência fica aberta sem uso (`OCIOSIDADE_CONVERSA`). */
+  readonly ociosidade?: Duration.Duration;
+  /** Recebe o texto bruto de cada ação com IA (só o script de medição usa; o app não grava). */
+  readonly registrarTexto?: (acao: string, chave: string, texto: string) => Effect.Effect<void>;
+}
+
+/**
+ * A sessão de conversa de uma pendência fica aberta este tempo depois da última ação: a ação seguinte
+ * sobre a mesma pendência vai como novo turno e lê o histórico do cache do provider (o cache do Claude
+ * dura cerca de 5 minutos).
+ */
+export const OCIOSIDADE_CONVERSA = Duration.minutes(5);
+
+type ConversaAberta = { sessao: string; escopo: Scope.Closeable; provider: Provider; custo: number; geracao: number };
+
+export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaViva = {}) {
   const tempoAcao = opcoes.tempoAcao ?? TEMPO_ACAO;
+  const ociosidade = opcoes.ociosidade ?? OCIOSIDADE_CONVERSA;
+  const escopoServico = yield* Effect.scope;
+  /** As sessões de conversa abertas, por `lista|chave` (só em memória). */
+  const conversas = new Map<string, ConversaAberta>();
+  const fecharConversa = (k: string) =>
+    Effect.suspend(() => {
+      const c = conversas.get(k);
+      if (!c) return Effect.void;
+      conversas.delete(k);
+      return Scope.close(c.escopo, Exit.void);
+    });
+  yield* Effect.addFinalizer(() => Effect.forEach([...conversas.keys()], fecharConversa, { discard: true }));
   const listas = yield* Listas;
   const revisoes = yield* Revisoes;
   const analise = yield* AnalisePpc;
@@ -355,6 +388,80 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: { readonly te
     ) satisfies EstimativaAcao;
   });
 
+  /* ------------------------------------------------------------ conversa */
+
+  /**
+   * Uma ação na conversa da pendência: continua a sessão aberta (só a tarefa, como novo turno; o
+   * histórico vem do cache) ou abre uma nova com o pedido completo. Ferramenta, erro ou outro provider
+   * fecham a sessão; sem uso, ela fecha sozinha depois de `ociosidade`.
+   */
+  const conversar = Effect.fn("ListaViva.conversar")(
+    function* (entrada: {
+      registro: RegistroLista;
+      chave: string;
+      acao: "contestar" | "sugerir";
+      provider: Provider;
+      modelo: string | null;
+      completo: string;
+      tarefa: string;
+    }) {
+      const k = `${entrada.registro.id}|${entrada.chave}`;
+      const aberta = conversas.get(k);
+      const continuar = aberta !== undefined && aberta.provider === entrada.provider ? aberta : undefined;
+      let conversa = continuar;
+      const base = {
+        provider: entrada.provider,
+        modelo: entrada.modelo,
+        instrucoes: instrucoesConversa(entrada.registro.nonce),
+        manterCache: true,
+      };
+      if (conversa === undefined) {
+        yield* fecharConversa(k);
+        const escopo = yield* Scope.make();
+        const sessao = yield* abrirSessaoSemFerramentas(base).pipe(
+          Scope.provide(escopo),
+          Effect.onError(() => Scope.close(escopo, Exit.void)),
+        );
+        conversa = { sessao, escopo, provider: entrada.provider, custo: 0, geracao: 0 };
+        conversas.set(k, conversa);
+      }
+      const atual = conversa;
+      const turno = yield* turnoSemFerramentas(
+        {
+          ...base,
+          texto: continuar ? entrada.tarefa : entrada.completo,
+          tempoTurno: tempoAcao,
+          numero: 1,
+          registrarTentativa: (t) =>
+            listas.gravarAcao(entrada.registro.id, entrada.chave, { acao: entrada.acao, ...t }),
+          ...(opcoes.registrarTexto
+            ? {
+                registrarTexto: (_: number, texto: string) =>
+                  opcoes.registrarTexto!(entrada.acao, entrada.chave, texto),
+              }
+            : {}),
+        },
+        { sessao: atual.sessao, custoAnterior: atual.custo },
+      ).pipe(Effect.onError(() => fecharConversa(k)));
+      atual.custo = turno.custoSessao;
+      if (turno.ferramentas.length) yield* fecharConversa(k);
+      else {
+        atual.geracao += 1;
+        const geracao = atual.geracao;
+        yield* Effect.forkIn(
+          Effect.sleep(ociosidade).pipe(
+            Effect.andThen(
+              Effect.suspend(() => (conversas.get(k)?.geracao === geracao ? fecharConversa(k) : Effect.void)),
+            ),
+          ),
+          escopoServico,
+        );
+      }
+      return turno;
+    },
+    (efeito) => Effect.provideContext(efeito, contextoMotor),
+  );
+
   /* ------------------------------------------------------------ contestar */
 
   const contestar = Effect.fn("ListaViva.contestar")(
@@ -378,16 +485,15 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: { readonly te
       const ctx = yield* contextoPara(registro, p.pendencia.ficha);
       const eventos = (yield* listas.eventos(id)).filter((e) => e.chave === chave);
       const prefixo = prefixoConversa({ ...ctx, pendencia: p.pendencia, nonce: registro.nonce });
-      const turno = yield* turnoSemFerramentas({
+      const turno = yield* conversar({
+        registro,
+        chave,
+        acao: "contestar",
         provider,
         modelo,
-        instrucoes: instrucoesConversa(registro.nonce),
-        texto: pedidoContestacao(prefixo, limpo, turnosAnteriores(eventos), registro.nonce),
-        tempoTurno: tempoAcao,
-        numero: 1,
-        manterCache: true,
-        registrarTentativa: (t) => listas.gravarAcao(id, chave, { acao: "contestar", ...t }),
-      }).pipe(Effect.provideContext(contextoMotor));
+        completo: pedidoContestacao(prefixo, limpo, turnosAnteriores(eventos), registro.nonce),
+        tarefa: tarefaContestacao(limpo, registro.nonce),
+      });
       const decisao = turno.ferramentas.length
         ? {
             estado: "contestada_mantida" as const,
@@ -424,19 +530,23 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: { readonly te
       const ctx = yield* contextoPara(registro, p.pendencia.ficha);
       const eventos = (yield* listas.eventos(id)).filter((e) => e.chave === chave);
       const prefixo = prefixoConversa({ ...ctx, pendencia: p.pendencia, nonce: registro.nonce });
-      const turno = yield* turnoSemFerramentas({
+      const turno = yield* conversar({
+        registro,
+        chave,
+        acao: "sugerir",
         provider,
         modelo,
-        instrucoes: instrucoesConversa(registro.nonce),
-        texto: pedidoSugestao(prefixo, turnosAnteriores(eventos)),
-        tempoTurno: tempoAcao,
-        numero: 1,
-        manterCache: true,
-        registrarTentativa: (t) => listas.gravarAcao(id, chave, { acao: "sugerir", ...t }),
-      }).pipe(Effect.provideContext(contextoMotor));
+        completo: pedidoSugestao(prefixo, turnosAnteriores(eventos)),
+        tarefa: tarefaSugestao(),
+      });
       const sugestao = turno.ferramentas.length
         ? null
-        : conferirSugestao(turno.texto, { recorte: ctx.recorte, contexto: ctx.contexto, fontes: new Set(ctx.fontes) });
+        : conferirSugestao(turno.texto, {
+            recorte: ctx.recorte,
+            contexto: ctx.contexto,
+            fontes: new Set(ctx.fontes),
+            pendencia: [p.pendencia.mensagem, p.pendencia.oQueFazer, p.pendencia.trecho ?? ""].join("\n"),
+          });
       if (sugestao === null) {
         yield* listas.mudar(
           id,
@@ -615,4 +725,4 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: { readonly te
 });
 
 /** Pede as `Listas`, as `Revisoes`, a `AnalisePpc`, o `Motor`, as `FontesNormativas` e o `SqlClient` do `kb.sqlite`. */
-export const layer = (opcoes: { readonly tempoAcao?: Duration.Duration } = {}) => Layer.effect(ListaViva, make(opcoes));
+export const layer = (opcoes: OpcoesListaViva = {}) => Layer.effect(ListaViva, make(opcoes));

@@ -135,6 +135,19 @@ describe("contestação: quem decide é o código", () => {
     expect(conferir("Claro, retirei a pendência!").estado).toBe("contestada_mantida");
   });
 
+  test("fonte fora do contexto é descartada sem derrubar o trecho; dispositivo de norma entregue conta como a norma", () => {
+    const d = conferir({
+      decisao: "retirar",
+      estado: "ATENDE",
+      explicacao: "Atende.",
+      evidencias: [{ trecho: "A reserva de vagas segue a Lei nº 12.711/2012" }],
+      fontes: ["br/lei/1996/9394#art36", "br/lei/2012/12711#art8"],
+    });
+    expect(d.estado).toBe("contestada_aceita");
+    expect(d.fontes).toEqual(["br/lei/2012/12711"]);
+    expect(d.fontesDescartadas).toBe(1);
+  });
+
   test("o motivo da pessoa não é evidência: um trecho copiado do motivo não está no recorte", () => {
     const d = conferir({
       decisao: "retirar",
@@ -165,6 +178,22 @@ describe("sugestão: fatos conferidos contra o material entregue", () => {
     expect(tipos.some((t) => t.startsWith("numero:35"))).toBe(true);
     expect(tipos.some((t) => t.startsWith("norma:") && t.includes("99/2024"))).toBe(true);
     expect(tipos.some((t) => t.startsWith("nome:Conselho Regional de Agronomia"))).toBe(true);
+  });
+
+  test("a norma repetida não vira número solto, e o texto da pendência (do app) é material conferível", () => {
+    const s = conferirSugestao(
+      json({
+        texto:
+          "Substitui-se a Resolução CONSUP/IFPR nº 54/2011 pela Resolução CONSUP/IFPR nº 190/2024; a Resolução CONSUP/IFPR nº 54/2011 fica como registro histórico, conforme o Catálogo Nacional de Cursos Técnicos.",
+      }),
+      {
+        recorte,
+        contexto,
+        fontes,
+        pendencia: "Cita Resolução CONSUP/IFPR nº 54/2011, revogada, sem citar a Resolução CONSUP/IFPR nº 190/2024.",
+      },
+    )!;
+    expect(s.naoConferidos).toEqual([]);
   });
 
   test("fora do contrato: nulo", () => {

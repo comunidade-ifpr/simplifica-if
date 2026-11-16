@@ -174,24 +174,54 @@ export interface EntradaTurno {
   readonly registrarTexto?: ((numero: number, texto: string) => Effect.Effect<void>) | undefined;
 }
 
-export type Turno = { texto: string; ferramentas: string[]; uso: UsoRevisaoIa; segundos: number };
+/** Uma sessão sem MCP e sem ferramentas, numa pasta vazia que some com o escopo. */
+export const abrirSessaoSemFerramentas = Effect.fn("RevisaoIa.abrirSessao")(function* (
+  entrada: Pick<EntradaTurno, "provider" | "modelo" | "instrucoes" | "manterCache">,
+) {
+  const motor = yield* Motor.Motor;
+  const pasta = yield* Effect.acquireRelease(
+    Effect.promise(() => NodeFSP.mkdtemp(NodePath.join(NodeOS.tmpdir(), "simplifica-julgamento-"))).pipe(
+      Effect.flatMap((p) => Effect.promise(() => NodeFSP.realpath(p))),
+    ),
+    (p) => Effect.promise(() => NodeFSP.rm(p, { recursive: true, force: true })),
+  );
+  return yield* Effect.acquireRelease(
+    motor
+      .iniciarSessao({
+        provider: entrada.provider,
+        pastaTrabalho: pasta,
+        servidoresMcp: [],
+        instrucoes: entrada.instrucoes,
+        semFerramentas: true,
+        ...(entrada.manterCache === true ? { manterCache: true } : {}),
+        ...(entrada.modelo ? { modelo: entrada.modelo } : {}),
+      })
+      .pipe(Effect.mapError((erro) => pausaDoErro(entrada.provider, erro.detalhe))),
+    (id) => motor.encerrar(id).pipe(Effect.ignore),
+  );
+});
 
 /**
- * Um turno numa sessão nova, sem MCP e sem ferramentas, numa pasta vazia que some no fim: o julgamento
- * de um bloco e as ações da conversa por pendência (etapa 5b) passam por aqui. Ferramenta anunciada
- * ou pedido de aprovação vão em `ferramentas` (quem chama descarta a resposta); erro, limite e tempo
- * viram `PausaRevisao`.
+ * Um turno: numa sessão nova (`sessao` ausente; a pasta e a sessão somem no fim) ou numa sessão que
+ * continua (a conversa por pendência, etapa 5b: o histórico vem do cache). O julgamento de um bloco e
+ * as ações da conversa passam por aqui. Ferramenta anunciada ou pedido de aprovação vão em
+ * `ferramentas` (quem chama descarta a resposta); erro, limite e tempo viram `PausaRevisao`.
+ *
+ * `custoAnterior`: o `custoUsd` do Claude é o acumulado da sessão (o `total_cost_usd` do Agent SDK);
+ * numa sessão que continua, o custo do turno é a diferença. `custoSessao` volta para o próximo turno.
  */
-export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (entrada: EntradaTurno) {
+export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (
+  entrada: EntradaTurno,
+  continuar?: { readonly sessao: string; readonly custoAnterior: number },
+) {
   const motor = yield* Motor.Motor;
   const comeco = yield* Clock.currentTimeMillis;
   const uso = usoVazio();
   const ferramentas: string[] = [];
-  // O `custoUsd` do Claude é o acumulado da sessão (o `total_cost_usd` do Agent SDK): vale o último.
-  let custoDaSessao = 0;
+  let custoDaSessao = continuar?.custoAnterior ?? 0;
   let segundos = 0;
   const registrar = Effect.suspend(() => {
-    uso.custoUsd = custoDaSessao;
+    uso.custoUsd = Math.max(0, custoDaSessao - (continuar?.custoAnterior ?? 0));
     return Clock.currentTimeMillis.pipe(
       Effect.flatMap((agora) => {
         segundos = Math.round((agora - comeco) / 100) / 10;
@@ -207,26 +237,7 @@ export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (entra
     );
   });
   const turno = Effect.gen(function* () {
-    const pasta = yield* Effect.acquireRelease(
-      Effect.promise(() => NodeFSP.mkdtemp(NodePath.join(NodeOS.tmpdir(), "simplifica-julgamento-"))).pipe(
-        Effect.flatMap((p) => Effect.promise(() => NodeFSP.realpath(p))),
-      ),
-      (p) => Effect.promise(() => NodeFSP.rm(p, { recursive: true, force: true })),
-    );
-    const sessao = yield* Effect.acquireRelease(
-      motor
-        .iniciarSessao({
-          provider: entrada.provider,
-          pastaTrabalho: pasta,
-          servidoresMcp: [],
-          instrucoes: entrada.instrucoes,
-          semFerramentas: true,
-          ...(entrada.manterCache === true ? { manterCache: true } : {}),
-          ...(entrada.modelo ? { modelo: entrada.modelo } : {}),
-        })
-        .pipe(Effect.mapError((erro) => pausaDoErro(entrada.provider, erro.detalhe))),
-      (id) => motor.encerrar(id).pipe(Effect.ignore),
-    );
+    const sessao = continuar?.sessao ?? (yield* abrirSessaoSemFerramentas(entrada));
     const textos: string[] = [];
     const erros: string[] = [];
     yield* motor.enviarMensagem(sessao, entrada.texto).pipe(
@@ -277,7 +288,7 @@ export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (entra
   }).pipe(Effect.scoped);
   // O uso fica gravado em qualquer saída: sucesso, pausa, interrupção.
   const texto = yield* turno.pipe(Effect.onExit(() => registrar));
-  return { texto, ferramentas: [...ferramentas], uso: { ...uso }, segundos } satisfies Turno;
+  return { texto, ferramentas: [...ferramentas], uso: { ...uso }, segundos, custoSessao: custoDaSessao };
 });
 
 /** Julga um bloco. Devolve o resultado (uma entrada por ficha), o uso somado e os segundos. */
