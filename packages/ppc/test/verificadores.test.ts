@@ -11,6 +11,7 @@ import { achadosParaComentarios, preConferir } from "../src/pre-conferencia.ts";
 import type { BaseVerificacao, CursoCnct, EstadoVerificacao } from "../src/verificadores/comum.ts";
 import { escolaridadeExigida } from "../src/verificadores/curriculo.ts";
 import { FICHAS_D, VERIFICADOR_POR_FICHA, VERIFICADORES } from "../src/verificadores/registro.ts";
+import { carregarVigencia, type ConsultaVigencia } from "../src/verificadores/vigencia.ts";
 
 const CNCT: CursoCnct = {
   slug: "tecnico-em-agropecuaria",
@@ -26,7 +27,20 @@ const CNCT: CursoCnct = {
 
 const registro = carregarRegistro();
 const relacoes = carregarRelacoes();
-const base = (forma: string, cnct: CursoCnct | null = CNCT): BaseVerificacao => ({ cnct, forma, registro, relacoes });
+/**
+ * Vigência da base, com a situação de hoje fixada: a 2/2026 e a revogação da 1/2021 por ela "a
+ * confirmar" (sem a publicação no DOU). Assim o teste não quebra quando a data for registrada.
+ */
+const daBase = carregarVigencia();
+const A_CONFIRMAR = new Set(["br/cne-cp/res/2026/2", "br/cne-cp/res/2021/1", "br/cne-ceb/res/2014/1"]);
+const vigencia: ConsultaVigencia = (id) => (A_CONFIRMAR.has(id) ? { ...daBase(id), certo: false } : daBase(id));
+const base = (forma: string, cnct: CursoCnct | null = CNCT): BaseVerificacao => ({
+  cnct,
+  forma,
+  registro,
+  relacoes,
+  vigencia,
+});
 
 const FGB = [
   "Língua Portuguesa e Literatura",
@@ -118,13 +132,13 @@ const da = (resultado: typeof bom, ficha: string) => resultado.fichas.find((f) =
 /** Estado esperado por ficha, no PPC bom e no ruim. */
 const ESPERADO: Record<string, [bom: EstadoVerificacao, ruim: EstadoVerificacao]> = {
   "CT-IDENT-01": ["atende", "nao_atende"],
-  "CT-IDENT-08": ["atende", "nao_atende"],
+  "CT-IDENT-08": ["atende", "a_conferir"],
   "CT-IDENT-13": ["atende", "a_conferir"],
   "CT-CURR-02": ["atende", "a_conferir"],
   "CT-CURR-16": ["atende", "a_conferir"],
   "CT-CURR-18": ["atende", "a_conferir"],
   "CT-CURR-22": ["atende", "nao_atende"],
-  "CT-SUP-09": ["atende", "nao_atende"],
+  "CT-SUP-09": ["atende", "a_conferir"],
   "CT-SUP-12": ["atende", "nao_atende"],
   "CT-SUP-14": ["atende", "nao_atende"],
   "CT-SUP-21": ["atende", "nao_atende"],
@@ -181,19 +195,23 @@ describe("verificadores no PPC com problemas", () => {
       for (const fonte of ficha.fontes) expect(fonte).toMatch(/^ifpr:\/\/(norma|cnct|ficha)\/\S+$/);
   });
 
-  test("norma revogada sem a sucessora é pendência, com a sucessora na fonte", () => {
+  test("norma revogada sem a sucessora é pendência só na ficha responsável pelo marco", () => {
     expect(da(ruim, "CT-SUP-12").apontamentos).toMatchObject([
       {
         estado: "nao_atende",
         trechos: [{ linha: 10, secao: "2 JUSTIFICATIVA" }],
-        fontes: ["ifpr://norma/br/cne-ceb/res/2012/6", "ifpr://norma/br/cne-cp/res/2026/2"],
+        fontes: ["ifpr://norma/br/cne-ceb/res/2012/6", "ifpr://norma/br/cne-cp/res/2021/1"],
       },
-      {
-        estado: "nao_atende",
-        trechos: [{ linha: 24, secao: "4 ATENDIMENTO AO ESTUDANTE" }],
-        fontes: ["ifpr://norma/ifpr/consup/res/2009/11", "ifpr://norma/ifpr/consup/res/2025/239"],
-      },
+      // A 11/2009 é do marco de assistência estudantil: a pendência é da CT-SUP-24.
+      { estado: "a_conferir", trechos: [{ linha: 24 }], mensagem: expect.stringContaining("CT-SUP-24") },
+      // Sem nenhuma norma da linha da DCNEM: a vigente (2/2024, de vigência certa) não citada.
+      { estado: "nao_atende", trechos: [], fontes: ["ifpr://norma/br/cne-ceb/res/2024/2"] },
     ]);
+    // A mesma revogada na identidade é registrada, sem elevar.
+    expect(da(ruim, "CT-IDENT-08").apontamentos[0]).toMatchObject({
+      estado: "a_conferir",
+      mensagem: expect.stringContaining("CT-SUP-12"),
+    });
   });
 
   test("CH abaixo das 3.000 h do integrado fica a conferir, com o § 2º do art. 29", () => {
@@ -223,6 +241,74 @@ describe("verificadores no PPC com problemas", () => {
 });
 
 describe("regras de prudência", () => {
+  test("a 1/2021 (revogação pela 2/2026, de vigência a confirmar) fica a conferir, com a transição", () => {
+    const ppc = PPC_RUIM.replace(
+      "Resolução CNE/CEB nº 6, de 20 de setembro de 2012",
+      "Resolução CNE/CP nº 1, de 5 de janeiro de 2021",
+    );
+    const apontamento = da(preConferir(ppc, base("integrado")), "CT-SUP-12").apontamentos[0]!;
+    expect(apontamento).toMatchObject({ estado: "a_conferir", trechos: [{ linha: 10 }] });
+    expect(apontamento.mensagem).toMatch(/a confirmar/);
+    expect(apontamento.mensagem).toMatch(/dois anos/);
+    expect(apontamento.fontes).toContain("ifpr://norma/br/cne-cp/res/2026/2#art71");
+  });
+
+  test("a ausência da 2/2026 (vigência a confirmar) nunca é pendência", () => {
+    const ppc = PPC_BOM.replaceAll(
+      "Resolução CNE/CP nº 2, de 11 de novembro de 2026",
+      "Lei nº 9.394, de 20 de dezembro de 1996",
+    );
+    const resultado = preConferir(ppc, base("integrado"));
+    for (const ficha of ["CT-IDENT-08", "CT-SUP-09", "CT-SUP-12"]) {
+      expect(estado(resultado, ficha)).toBe("a_conferir");
+      expect(da(resultado, ficha).apontamentos.every((a) => a.estado === "a_conferir")).toBe(true);
+    }
+  });
+
+  test("a cadeia conta: 6/2012 com a 1/2021 citada não é pendência, nem diz que falta a 2/2026", () => {
+    const ppc = PPC_RUIM.replace(
+      "e atende à demanda",
+      "e na Resolução CNE/CP nº 1, de 5 de janeiro de 2021, e atende à demanda",
+    );
+    const seisDe2012 = da(preConferir(ppc, base("integrado")), "CT-SUP-12").apontamentos.find((a) =>
+      a.fontes.includes("ifpr://norma/br/cne-ceb/res/2012/6"),
+    )!;
+    expect(seisDe2012.estado).toBe("a_conferir");
+    expect(seisDe2012.mensagem).toContain("Resolução CNE/CP nº 1/2021");
+    expect(seisDe2012.mensagem).not.toContain("sem citar");
+  });
+
+  test("a 3/2018 tem a transição do art. 42 da 2/2024: a conferir", () => {
+    const ppc = PPC_RUIM.replace(
+      "Resolução CNE/CEB nº 6, de 20 de setembro de 2012",
+      "Resolução CNE/CEB nº 3, de 21 de novembro de 2018",
+    );
+    const apontamento = da(preConferir(ppc, base("integrado")), "CT-SUP-12").apontamentos[0]!;
+    expect(apontamento.estado).toBe("a_conferir");
+    expect(apontamento.fontes).toContain("ifpr://norma/br/cne-ceb/res/2024/2#art42");
+  });
+
+  test("CNCT com as palavras grudadas pela conversão", () => {
+    const ppc = PPC_BOM.replace("Catálogo Nacional de Cursos Técnicos", "CatalogoNacional dosCursosTécnicos");
+    expect(estado(preConferir(ppc, base("integrado")), "CT-SUP-14")).toBe("atende");
+  });
+
+  test("um comentário por trecho, com as fichas envolvidas e a gravidade da responsável", () => {
+    const itens = achadosParaComentarios(ruim);
+    const chaves = itens.map((i) => i.trechos[0] ?? `${i.ficha}:${i.mensagem}`);
+    expect(new Set(chaves).size).toBe(chaves.length);
+    expect(itens.find((i) => i.trechos[0]?.includes("nº 6, de 20 de setembro de 2012"))).toMatchObject({
+      ficha: "CT-SUP-12",
+      fichas: ["CT-SUP-12", "CT-IDENT-08"],
+      estado: "nao_atende",
+    });
+    expect(itens.find((i) => i.trechos[0]?.includes("nº 11, de 21 de dezembro de 2009"))).toMatchObject({
+      ficha: "CT-SUP-24",
+      estado: "nao_atende",
+      fichas: expect.arrayContaining(["CT-SUP-24", "CT-SUP-12", "CT-SUP-14"]),
+    });
+  });
+
   test("revogada citada junto da sucessora fica a conferir", () => {
     const ppc = `${PPC_BOM}\nBRASIL. Resolução CNE/CEB nº 6, de 20 de setembro de 2012.\n`;
     const resultado = da(preConferir(ppc, base("integrado")), "CT-SUP-12");

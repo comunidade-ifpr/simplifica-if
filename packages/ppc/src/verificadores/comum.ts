@@ -13,9 +13,12 @@
  */
 import { extrairFatosPpc, type FatoPpc } from "@simplifica-if/kb/fatos/ppc";
 import type { Registro } from "@simplifica-if/kb/normas/registro";
-import { sucessorasDe, type Relacao } from "@simplifica-if/kb/normas/relacoes";
+import type { Relacao } from "@simplifica-if/kb/normas/relacoes";
 import { type Citacao, extrairCitacoes } from "@simplifica-if/kb/normas/resolver";
 import { removerAcentos, type SecaoPpc, segmentarPpc } from "@simplifica-if/kb/ppcs/secoes";
+import { type ConsultaVigencia, fichaResponsavel, sucessorasEmCadeia, vigenciaPadrao } from "./vigencia.ts";
+
+export { sucessorasEmCadeia } from "./vigencia.ts";
 
 export type CursoCnct = {
   slug: string;
@@ -36,7 +39,14 @@ export type BaseVerificacao = {
   registro: Registro;
   /** Relações de `base-conhecimento/relacoes.yaml` (`carregarRelacoes`), para achar a norma sucessora. */
   relacoes: readonly Relacao[];
+  /**
+   * Vigência na data de referência (`carregarVigencia`): status, se é certo e as transições. Opcional:
+   * sem ela, vale a da base do checkout, carregada na primeira chamada (`vigenciaPadrao`).
+   */
+  vigencia?: ConsultaVigencia;
 };
+
+export const vigenciaDe = (base: BaseVerificacao): ConsultaVigencia => base.vigencia ?? vigenciaPadrao();
 
 /** O PPC convertido e segmentado, com os fatos e as citações já extraídos (uma vez por PPC). */
 export type PpcPreparado = {
@@ -149,33 +159,19 @@ export function citacoesPorAto(citacoes: readonly Citacao[]): Map<string, Citaca
   return porId;
 }
 
-/** Todas as normas que sucedem `id` por revogação total, em cadeia (6/2012 → 1/2021 → 2/2026). */
-export function sucessorasEmCadeia(id: string, relacoes: readonly Relacao[]): string[] {
-  const vistas = new Set<string>();
-  const fila = [id];
-  while (fila.length) {
-    for (const sucessora of sucessorasDe(fila.shift()!, relacoes))
-      if (!vistas.has(sucessora)) {
-        vistas.add(sucessora);
-        fila.push(sucessora);
-      }
-  }
-  return [...vistas];
-}
-
 export type NormaRevogadaCitada = {
   id: string;
   titulo: string;
   citacoes: Citacao[];
-  /** Sucessoras não revogadas (vigentes, alteradas ou parcialmente revogadas). */
+  /** Sucessoras por revogação total, em cadeia e na ordem (a direta primeiro), sem filtro de status. */
   sucessoras: string[];
-  /** Sucessora não revogada citada em algum ponto do PPC, se houver. */
+  /** Alguma sucessora da cadeia citada em algum ponto do PPC (a 1/2021 conta para a 6/2012), se houver. */
   sucessoraCitada: string | null;
 };
 
 /**
- * Normas com `status_vigencia: revogada` no registro entre as citações dadas, e se o PPC também
- * cita (em qualquer ponto) uma sucessora em vigor.
+ * Normas revogadas na data de referência (vigência do `kb`, inclusive as de revogação "a confirmar")
+ * entre as citações dadas, e se o PPC também cita (em qualquer ponto) uma sucessora da cadeia.
  */
 export function normasRevogadasCitadas(
   citacoes: readonly Citacao[],
@@ -183,16 +179,14 @@ export function normasRevogadasCitadas(
   base: BaseVerificacao,
 ): NormaRevogadaCitada[] {
   const citadas = new Set(todasAsCitacoes.map((c) => c.id).filter((id): id is string => id !== null));
+  const vigencia = vigenciaDe(base);
   const saida: NormaRevogadaCitada[] = [];
   for (const [id, lista] of citacoesPorAto(citacoes)) {
-    const entrada = base.registro.obter(id);
-    if (entrada?.status_vigencia !== "revogada") continue;
-    const sucessoras = sucessorasEmCadeia(id, base.relacoes).filter(
-      (s) => base.registro.obter(s)?.status_vigencia !== "revogada",
-    );
+    if (base.registro.obter(id)?.situacao === "externo" || vigencia(id).status !== "revogada") continue;
+    const sucessoras = sucessorasEmCadeia(id, base.relacoes);
     saida.push({
       id,
-      titulo: entrada.title,
+      titulo: base.registro.obter(id)?.title ?? id,
       citacoes: lista,
       sucessoras,
       sucessoraCitada: sucessoras.find((s) => citadas.has(s)) ?? null,
@@ -201,49 +195,84 @@ export function normasRevogadasCitadas(
   return saida;
 }
 
+/** Texto e fontes das regras de transição de uma revogação (vazio quando não há). */
+export function textoTransicao(base: BaseVerificacao, id: string): { texto: string; fontes: Fonte[] } {
+  const vigencia = vigenciaDe(base)(id);
+  const titulo = (n: string) => base.registro.obter(n)?.title ?? n;
+  const regras = vigencia.transicoes.map((t) => `${t.regra} (${titulo(t.norma)}, ${t.dispositivo.replace(/^#/, "")})`);
+  const incerta = vigencia.certo
+    ? ""
+    : "A revogação depende de data ainda a confirmar na base (a vigência da norma que a revogou). ";
+  return {
+    texto:
+      incerta +
+      (regras.length ? `Transição: ${regras.join(" ")} ` : "") +
+      "PPC elaborado antes da vigência da nova norma atende, com recomendação de atualização; confira a data do PPC (capa, histórico ou processo).",
+    fontes: vigencia.transicoes.map((t) => linkNorma(`${t.norma}${t.dispositivo}`)),
+  };
+}
+
 /**
- * Apontamento de norma revogada citada: `nao_atende` quando o PPC não cita nenhuma sucessora em
- * vigor (a citação sustenta o texto sozinha) e a citação é segura; `a_conferir` quando cita a
- * sucessora (pode ser histórica ou de transição), quando a citação está numa seção de histórico,
- * quando não há sucessora registrada, ou quando a citação foi resolvida por regra de confiança menor.
+ * Apontamento de norma revogada citada, pela ficha `ficha`. Só a ficha responsável pelo marco da norma
+ * (`marcos-normativos.json`; fora de marco, CT-SUP-12) dá `nao_atende`, e só quando a citação é segura,
+ * fora de seção de histórico, a revogação é certa e sem transição em curso, e o PPC não cita nenhuma
+ * sucessora da cadeia. Nos outros casos, `a_conferir`, com o motivo.
  */
-export function apontamentoRevogada(ppc: PpcPreparado, base: BaseVerificacao, norma: NormaRevogadaCitada): Apontamento {
+export function apontamentoRevogada(
+  ppc: PpcPreparado,
+  base: BaseVerificacao,
+  norma: NormaRevogadaCitada,
+  ficha: string,
+): Apontamento {
   const segura = norma.citacoes.find(citacaoSegura);
   const citacao = segura ?? norma.citacoes[0]!;
-  const nomeSucessora = (id: string) => base.registro.obter(id)?.title ?? id;
+  const titulo = (id: string) => base.registro.obter(id)?.title ?? id;
   const trechos = [trecho(ppc, citacao.linha, citacao.trecho)];
-  const fontes = [linkNorma(norma.id), ...norma.sucessoras.slice(0, 1).map(linkNorma)];
+  const vigencia = vigenciaDe(base);
+  const direta = norma.sucessoras[0];
+  const atual = [...norma.sucessoras].reverse().find((s) => vigencia(s).status !== "revogada") ?? direta;
+  const fontes = [linkNorma(norma.id), ...(direta ? [linkNorma(direta)] : [])];
+  const conferir = (mensagem: string, extras: Fonte[] = []): Apontamento => ({
+    estado: "a_conferir",
+    mensagem,
+    trechos,
+    fontes: [...new Set([...fontes, ...extras])],
+  });
   if (!segura)
-    return {
-      estado: "a_conferir",
-      mensagem: `Parece citar ${norma.titulo}, revogada; a citação foi identificada com confiança menor. Confira a norma citada e as regras de transição.`,
-      trechos,
-      fontes,
-    };
+    return conferir(
+      `Parece citar ${norma.titulo}, revogada; a citação foi identificada com confiança menor. Confira a norma citada e as regras de transição.`,
+    );
   if (norma.sucessoraCitada)
-    return {
-      estado: "a_conferir",
-      mensagem: `Cita ${norma.titulo}, revogada, e também ${nomeSucessora(norma.sucessoraCitada)}. Confira se a citação da revogada é só histórica ou de transição.`,
-      trechos,
-      fontes,
-    };
+    return conferir(
+      `Cita ${norma.titulo}, revogada, e também ${titulo(norma.sucessoraCitada)}, que a sucedeu. Confira se a citação da revogada é só histórica ou de transição.`,
+    );
   if (/hist[óo]ric/i.test(trechos[0]!.secao ?? ""))
-    return {
-      estado: "a_conferir",
-      mensagem: `Cita ${norma.titulo}, revogada, numa seção de histórico. Confira se a citação é só histórica ou se ainda sustenta o texto.`,
-      trechos,
-      fontes,
-    };
-  if (!norma.sucessoras.length)
-    return {
-      estado: "a_conferir",
-      mensagem: `Cita ${norma.titulo}, revogada (sem norma sucessora registrada na base). Confira se a citação ainda é pertinente.`,
-      trechos,
-      fontes,
-    };
+    return conferir(
+      `Cita ${norma.titulo}, revogada, numa seção de histórico. Confira se a citação é só histórica ou se ainda sustenta o texto.`,
+    );
+  const nomeSucessora = direta
+    ? `${titulo(direta)}${atual && atual !== direta ? `, hoje sucedida pela ${titulo(atual)}` : ""}`
+    : "";
+  const situacao = vigencia(norma.id);
+  if (!situacao.certo || situacao.transicoes.length) {
+    const transicao = textoTransicao(base, norma.id);
+    return conferir(
+      `Cita ${norma.titulo}, revogada${direta ? ` pela ${nomeSucessora}` : ""}. ${transicao.texto}`,
+      transicao.fontes,
+    );
+  }
+  if (!direta)
+    return conferir(
+      `Cita ${norma.titulo}, revogada (sem norma sucessora registrada na base). Confira se a citação ainda é pertinente.`,
+    );
+  const responsavel = fichaResponsavel(norma.id, base.relacoes);
+  if (responsavel !== ficha)
+    return conferir(
+      `Cita ${norma.titulo}, revogada, sem citar a ${nomeSucessora}. Registrado aqui; a pendência é da ${responsavel}.`,
+    );
   return {
     estado: "nao_atende",
-    mensagem: `Cita ${norma.titulo}, revogada, sem citar a norma que a substituiu (${nomeSucessora(norma.sucessoras[0]!)}). Atualize a fundamentação e confira as regras de transição.`,
+    mensagem: `Cita ${norma.titulo}, revogada, sem citar a norma que a substituiu (${nomeSucessora}). Atualize a fundamentação e confira as regras de transição.`,
     trechos,
     fontes,
   };
