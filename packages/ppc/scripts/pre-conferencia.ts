@@ -33,6 +33,7 @@ const { values } = NodeUtil.parseArgs({
     check: { type: "boolean" },
     gravar: { type: "boolean" },
     n: { type: "string", default: "8" },
+    deslocamento: { type: "string", default: "0" },
     docx: { type: "string" },
     cnct: { type: "string" },
     forma: { type: "string", default: "subsequente" },
@@ -58,7 +59,8 @@ if (values.base) {
     const n = Number(values.n);
     const passo = Math.max(1, Math.floor(itens.length / n));
     console.log(`${itens.length} resultados atende de ${values.amostra}`);
-    for (const { ppc, f } of itens.filter((_, i) => i % passo === 0).slice(0, n))
+    const deslocamento = Number(values.deslocamento) % passo;
+    for (const { ppc, f } of itens.filter((_, i) => i % passo === deslocamento).slice(0, n))
       console.log(
         `- ${ppc.id} (${ppc.forma}) | ${f.mensagem.slice(0, 120)}` +
           f.evidencias
@@ -80,7 +82,8 @@ if (values.base) {
     const n = Number(values.n);
     const passo = Math.max(1, Math.floor(itens.length / n));
     console.log(`${itens.length} apontamentos de ${values.amostra}${values.estado ? ` (${values.estado})` : ""}`);
-    for (const item of itens.filter((_, i) => i % passo === 0).slice(0, n))
+    const deslocamento = Number(values.deslocamento) % passo;
+    for (const item of itens.filter((_, i) => i % passo === deslocamento).slice(0, n))
       console.log(
         `- ${item.ppc} (${item.forma}) | ${item.estado} | ${item.mensagem.slice(0, 160)}` +
           item.trechos.map((t) => `\n    L${t.linha} [${t.secao ?? "-"}]: ${t.texto.slice(0, 140)}`).join(""),
