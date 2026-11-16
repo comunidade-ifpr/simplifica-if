@@ -11,7 +11,11 @@ import * as Path from "effect/Path";
 import * as Schema from "effect/Schema";
 import { criarNormalizadorAntigravity, type EntradaAcp } from "../src/drivers/antigravity.ts";
 import { criarNormalizadorClaude } from "../src/drivers/claude.ts";
-import { criarNormalizadorCodex } from "../src/drivers/codex.ts";
+import {
+  CodexAppServerProcessExitedError,
+  CodexAppServerTransportError,
+} from "@simplifica-if/effect-codex-app-server/errors";
+import { criarNormalizadorCodex, falhaQuedaCodex } from "../src/drivers/codex.ts";
 import { Evento } from "../src/eventos.ts";
 
 const Linha = Schema.Struct({
@@ -296,5 +300,19 @@ describe("normalização", () => {
         assert.strictEqual(deTipo(eventos, "FimTurno").length, 2);
       }),
     );
+  });
+});
+
+describe("queda do codex app-server", () => {
+  it("SIGKILL (sem código de saída): mensagem em português, erro do transporte em cause", () => {
+    const erro = new CodexAppServerTransportError({ operation: "read-process-exit-status", pid: 1, cause: "morto" });
+    const falha = falhaQuedaCodex(erro);
+    assert.strictEqual(falha.message, "codex: falha em sessão: o processo do codex encerrou");
+    assert.strictEqual(falha.cause, erro);
+  });
+
+  it("saída com código: o código vai na mensagem", () => {
+    const falha = falhaQuedaCodex(new CodexAppServerProcessExitedError({ code: 1, pid: 1 }));
+    assert.strictEqual(falha.detalhe, "o processo do codex encerrou (código 1)");
   });
 });

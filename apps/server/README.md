@@ -102,19 +102,40 @@ Hoje é uma: `verificar-fundamentacao-normativa`.
 pnpm --filter @simplifica-if/server test        # servidor em portas efêmeras com drivers falsos; o bin.ts como processo
 SIMPLIFICA_POC_REAL=1 SIMPLIFICA_PROVIDER=claude pnpm --filter @simplifica-if/server test real   # provider real, pelo RPC
 SIMPLIFICA_POC_REAL=1 SIMPLIFICA_PROVIDER=claude pnpm --filter @simplifica-if/server test ciclo-real   # ciclo de vida da conversa
-SIMPLIFICA_POC_REAL=1 pnpm --filter @simplifica-if/server test skills-real   # uma skill do app numa conversa real (só Claude)
+SIMPLIFICA_POC_REAL=1 SIMPLIFICA_PROVIDER=codex pnpm --filter @simplifica-if/server test skills-real   # uma skill do app numa conversa real
 ```
 
-O `skills-real` abre uma conversa com o Claude sobre o catálogo do `.agents/skills` e pergunta pelos rótulos de classificação da `verificar-fundamentacao-normativa`. Em 16/11/2026 (Claude Pro) passou em 4,2 s: um `Read` do `.simplifica/skills/verificar-fundamentacao-normativa/SKILL.md` gravado na pasta de trabalho, nenhum pedido de aprovação e os sete rótulos na resposta.
+O filtro do vitest casa com o nome do arquivo por substring: `test real` roda também o `ciclo-real` e o `skills-real`, e `test real.test` também. Para rodar só um, use o nome inteiro (`test test/real.test.ts`).
 
-O `ciclo-real` roda as `Conversas` sobre os drivers reais e um banco temporário: três turnos (o terceiro com uma ferramenta `ifpr`), escrita fora da pasta de trabalho negada pela política sem perguntar, interromper depois da primeira ferramenta e um turno em seguida, retomada depois de fechar a layer (lembrando a primeira palavra), SIGKILL no processo do provider no meio de um turno (`caiu`) e um turno depois, que o reabre. Sem `SIMPLIFICA_PROVIDER`, roda os três. Em 15/11/2026, com o Claude (Pro, Claude Code 2.1.325), tudo passou: turnos de 1 a 3 s, retomada nativa nas duas vezes, o turno da queda fechado 0,1 s depois do SIGKILL.
+O `skills-real` abre uma conversa sobre o catálogo do `.agents/skills` e pergunta pelos rótulos de classificação da `verificar-fundamentacao-normativa`. Sem `SIMPLIFICA_PROVIDER`, roda os três. Em 16/11/2026 passou nos três, sempre com a leitura do `.simplifica/skills/verificar-fundamentacao-normativa/SKILL.md` gravado na pasta de trabalho, nenhum pedido de aprovação e os sete rótulos na resposta:
+
+| Provider | Tempo | Leitura do `SKILL.md` |
+|---|---|---|
+| Claude (Pro) | 4,2 s | `Read` |
+| Codex (0.169.0) | 7,3 s | `cat` pelo shell, dentro do sandbox `read-only`, sem aprovação |
+| Antigravity (`agy` 1.5.9) | 19,6 s | `read_file` |
+
+O `ciclo-real` roda as `Conversas` sobre os drivers reais e um banco temporário: três turnos (o terceiro com uma ferramenta `ifpr`), escrita fora da pasta de trabalho negada pela política sem perguntar, interromper depois da primeira ferramenta e um turno em seguida, retomada depois de fechar a layer (lembrando a primeira palavra), SIGKILL no processo do provider no meio de um turno (`caiu`) e um turno depois, que o reabre. Sem `SIMPLIFICA_PROVIDER`, roda os três. Em 15/11/2026, com o Claude (Pro, Claude Code 2.1.325), tudo passou: turnos de 1 a 3 s, retomada nativa nas duas vezes, o turno da queda fechado 0,1 s depois do SIGKILL. Em 16/11/2026 passou também nos outros dois:
+
+| | Codex (codex-cli 0.169.0) | Antigravity (`agy` 1.5.9) |
+|---|---|---|
+| teste inteiro | 27 s | 92 s |
+| sessão aberta | 0,6 s | 1,5 s |
+| turnos simples | 1 a 3 s | 4 a 10 s |
+| turno com `ifpr` | 6 s | 21 s |
+| escrita fora da pasta | negada sem pergunta; o modelo explica em uma frase | negada sem pergunta; o modelo encerra o turno **sem texto** |
+| interromper | `interrupted`, fechado na hora | `cancelled`, fechado na hora |
+| retomada depois de fechar e depois da queda | nativa (`thread/resume`) | nativa (`session/load`) |
+| queda (SIGKILL) | `Erro` "o processo do codex encerrou", `caiu`, reaberta | `Erro` "o processo do agy encerrou", `caiu`, reaberta |
+
+Até 16/11/2026, a queda do Codex mostrava a mensagem do transporte em inglês ("Codex App Server transport operation 'read-process-exit-status' failed."); o driver agora monta a frase em português (`falhaQuedaCodex`). A resposta vazia do Antigravity depois da negação é comportamento do `agy`: a interface mostra a ferramenta que falhou, e o turno fecha normalmente.
 
 O teste real gasta a assinatura do usuário e usa a pasta de estado do harness do motor (`SIMPLIFICA_ESTADO` ou `~/Library/Application Support/simplifica-if-poc`). Ele imprime no stderr, por turno, as ferramentas (nome, entrada, resumo), o tempo e os links `ifpr://` da resposta; no Antigravity, um segundo turno confere que o `read_resource` de um link `ifpr://` sai com o resumo que o servidor viu.
 
 ## Pendências
 
-- **Ciclo real no Codex e no Antigravity:** o `ciclo-real` só rodou com o Claude. O `agy` 1.5.9 precisa anunciar `loadSession` para a retomada nativa; sem isso, a conversa recomeça com o histórico como contexto.
-- ~~**Skills do app nas conversas.**~~ Resolvida: o `CatalogoSkills` as passa a toda conversa (ver [Skills do app](#skills-do-app)). Falta a `revisar-ppc` (depende da conversão DOCX em TypeScript) e o teste real no Codex e no Antigravity.
+- ~~**Ciclo real no Codex e no Antigravity.**~~ Resolvida em 16/11/2026: passou nos dois, com retomada nativa. O `agy` 1.5.9 anuncia `loadSession` (e `sessionCapabilities.resume`); se uma versão deixar de anunciar, a conversa recomeça com o histórico como contexto.
+- ~~**Skills do app nas conversas.**~~ Resolvida: o `CatalogoSkills` as passa a toda conversa (ver [Skills do app](#skills-do-app)), com teste real verde nos três providers. Falta a `revisar-ppc` (depende da conversão DOCX em TypeScript).
 
 - ~~**Ponte no app empacotado.**~~ Resolvida com o `apps/desktop`: o comando da ponte sai do `argv` do processo (`src/ponte.ts`), e o bundle roda a ponte com o Electron como Node (conferido no app empacotado).
 - **Windows:** o `awaitLauncherLoss` do T3 não age no Windows; ali o cordão é só o stdin.
