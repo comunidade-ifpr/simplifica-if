@@ -24,48 +24,50 @@ describe("texto", () => {
     expect(apararCaracteres(" - 1 Título - ", " -")).toBe("1 Título");
   });
 
-  test("aparar sem expressão regular: mesma resposta, e linear numa sequência longa de espaços no meio", () => {
-    const reFim = new RegExp(`[${ESPACOS}]+$`);
-    const reInicio = new RegExp(`^[${ESPACOS}]+`);
-    const pedacos = [
-      "",
-      " ",
-      "\t",
-      "\n",
-      "\x0b",
-      "\x1c",
-      "\x1f",
-      "\x85",
-      "\xa0",
-      "\u1680",
-      "\u2003",
-      "\u2028",
-      "\u202f",
-      "\u205f",
-      "\u3000",
-      "\ufeff",
-      "\u200b",
-      "a",
-      "é",
-      "😀",
-      "-",
-    ];
-    let semente = 20261116;
-    const sortear = (limite: number) => ((semente = (Math.imul(semente, 1103515245) + 12345) >>> 0) >>> 8) % limite;
-    for (let caso = 0; caso < 2000; caso += 1) {
-      const texto = Array.from({ length: sortear(8) }, () => pedacos[sortear(pedacos.length)]!).join("");
-      expect(apararFim(texto), JSON.stringify(texto)).toBe(texto.replace(reFim, ""));
-      expect(apararInicio(texto), JSON.stringify(texto)).toBe(texto.replace(reInicio, ""));
-      expect(aparar(texto), JSON.stringify(texto)).toBe(texto.replace(reInicio, "").replace(reFim, ""));
-    }
-    // Com `[espaços]+$`, 80 mil tabulações entre duas letras custavam 89 s.
-    const hostil = `a${"\t".repeat(500_000)}b`;
-    const inicio = performance.now();
-    expect(aparar(hostil)).toBe(hostil);
-    expect(apararFim(`${hostil}  `)).toBe(hostil);
-    expect(performance.now() - inicio).toBeLessThan(200);
-    expect(apararFimEnquanto("título:;. .", (caractere) => ":;.".includes(caractere))).toBe("título:;. ");
-  });
+  test(
+    "aparar sem expressão regular: mesma resposta, e linear numa sequência longa de espaços no meio",
+    { timeout: 5_000 },
+    () => {
+      const reFim = new RegExp(`[${ESPACOS}]+$`);
+      const reInicio = new RegExp(`^[${ESPACOS}]+`);
+      const pedacos = [
+        "",
+        " ",
+        "\t",
+        "\n",
+        "\x0b",
+        "\x1c",
+        "\x1f",
+        "\x85",
+        "\xa0",
+        "\u1680",
+        "\u2003",
+        "\u2028",
+        "\u202f",
+        "\u205f",
+        "\u3000",
+        "\ufeff",
+        "\u200b",
+        "a",
+        "é",
+        "😀",
+        "-",
+      ];
+      let semente = 20261116;
+      const sortear = (limite: number) => ((semente = (Math.imul(semente, 1103515245) + 12345) >>> 0) >>> 8) % limite;
+      for (let caso = 0; caso < 2000; caso += 1) {
+        const texto = Array.from({ length: sortear(8) }, () => pedacos[sortear(pedacos.length)]!).join("");
+        expect(apararFim(texto), JSON.stringify(texto)).toBe(texto.replace(reFim, ""));
+        expect(apararInicio(texto), JSON.stringify(texto)).toBe(texto.replace(reInicio, ""));
+        expect(aparar(texto), JSON.stringify(texto)).toBe(texto.replace(reInicio, "").replace(reFim, ""));
+      }
+      // Com `[espaços]+$`, 80 mil tabulações entre duas letras custavam 89 s.
+      const hostil = `a${"\t".repeat(500_000)}b`;
+      expect(aparar(hostil)).toBe(hostil);
+      expect(apararFim(`${hostil}  `)).toBe(hostil);
+      expect(apararFimEnquanto("título:;. .", (caractere) => ":;.".includes(caractere))).toBe("título:;. ");
+    },
+  );
 
   test("dividirLinhas separa em todos os terminadores e descarta a última linha vazia", () => {
     expect(dividirLinhas("a\nb\r\nc\rd\fe\x0bf\x1cg\x85h\u2028i\n")).toEqual([

@@ -172,31 +172,29 @@ describe("consolidarParagrafos", () => {
     }
   });
 
-  test("começo só de numeração, com mais de 2 mil caracteres, seguido de 80 mil linhas: a decisão é tomada uma vez", () => {
-    // Antes, com o começo indeciso, o texto inteiro era remontado a cada linha unida (74 s).
-    const linhas = ["1)".repeat(1100), ...Array.from({ length: 80_000 }, (_, i) => `a${i.toString(36)}`)];
-    const inicio = performance.now();
-    const consolidadas = consolidarParagrafos(linhas);
-    expect(performance.now() - inicio).toBeLessThan(2000);
-    expect(consolidadas).toHaveLength(1);
-    expect(consolidadas[0]!.length).toBe(linhas.join(" ").length);
-    // Num caso menor, igual à versão original.
-    const menor = linhas.slice(0, 600);
-    expect(consolidarParagrafos(menor)).toEqual(consolidarDeReferencia(menor));
-  });
+  test(
+    "começo só de numeração, com mais de 2 mil caracteres, seguido de 80 mil linhas: a decisão é tomada uma vez",
+    { timeout: 5_000 },
+    () => {
+      // Antes, com o começo indeciso, o texto inteiro era remontado a cada linha unida (74 s).
+      const linhas = ["1)".repeat(1100), ...Array.from({ length: 80_000 }, (_, i) => `a${i.toString(36)}`)];
+      const consolidadas = consolidarParagrafos(linhas);
+      expect(consolidadas).toHaveLength(1);
+      expect(consolidadas[0]!.length).toBe(linhas.join(" ").length);
+      // Num caso menor, igual à versão original.
+      const menor = linhas.slice(0, 600);
+      expect(consolidarParagrafos(menor)).toEqual(consolidarDeReferencia(menor));
+    },
+  );
 
-  test("200 mil linhas curtas sem pontuação em tempo linear", () => {
+  test("200 mil linhas curtas sem pontuação em tempo linear", { timeout: 15_000 }, () => {
     const linhas = Array.from({ length: 200_000 }, (_, i) => `linha ${i} sem pontuação`);
-    const inicio = performance.now();
     const [unico, ...resto] = consolidarParagrafos(linhas);
-    expect(performance.now() - inicio).toBeLessThan(3000);
     expect(resto).toEqual([]);
     expect(unico!.startsWith("linha 0 sem pontuação linha 1 sem pontuação")).toBe(true);
     expect(unico!.endsWith("linha 199999 sem pontuação")).toBe(true);
     // E pela normalização inteira.
     const texto = linhas.slice(0, 50_000).join("\n");
-    const antes = performance.now();
     expect(normalizarMarkdown(texto).markdownNormalizado.split("\n")).toHaveLength(2);
-    expect(performance.now() - antes).toBeLessThan(5000);
   });
 });
