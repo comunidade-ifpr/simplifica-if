@@ -7,10 +7,18 @@
  */
 import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
 import { describe, expect, test } from "vite-plus/test";
-import { comentarDocx } from "../src/comentarios.ts";
+import { comentarDocx as comentarSemConferir } from "../src/comentarios.ts";
 import { lerDocx } from "../src/leitor.ts";
 import { textoDoParagrafo, type BlocoOoxml } from "../src/modelo.ts";
-import { hyperlink, montarDocx, par, run, tabelaDeTextos } from "../src/testes/sintetico.ts";
+import { hyperlink, linkExterno, montarDocx, par, run, tabelaDeTextos } from "../src/testes/sintetico.ts";
+import { problemasOoxml } from "../src/testes/validar-ooxml.ts";
+
+/** Toda saída de `comentarDocx` passa pelo validador estrutural: o Word tem de abri-la sem reparo. */
+const comentarDocx: typeof comentarSemConferir = (...argumentos) => {
+  const resultado = comentarSemConferir(...argumentos);
+  expect(problemasOoxml(resultado.docx)).toEqual([]);
+  return resultado;
+};
 import { analisarXml } from "../src/xml.ts";
 
 const DATA = "2026-11-16T12:00:00Z";
@@ -69,6 +77,7 @@ const PPC = montarDocx({
       ["Componente", "Carga horária"],
       ["Atendimento Educacional Especializado", "40 h"],
     ]),
+  relacoes: [linkExterno("rId9")],
 });
 
 describe("comentarDocx", () => {
@@ -169,6 +178,7 @@ describe("comentarDocx", () => {
           run(" e anexos."),
       ) +
       par("Lei nº\u00a09.394 – LDB, com as alterações."),
+    relacoes: [linkExterno("rId9")],
   });
 
   test("controle de alterações: a marca fica por fora do w:ins, e o texto apagado não ancora", () => {
