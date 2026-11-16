@@ -90,6 +90,24 @@ const PEDACOS = [
   "x".repeat(2100),
   "٣ algarismo árabe",
   "termina em exclamação!",
+  "1)".repeat(1100),
+  "1.".repeat(1100),
+  "12-",
+  "1)-",
+  "1.2-",
+  "9".repeat(2100) + "-",
+  "9".repeat(2100) + ")",
+  "9".repeat(2100) + ".",
+  "0",
+  "(",
+  ")",
+  ".",
+  "1.2.3." + "4".repeat(2100),
+  "-" + "9".repeat(2100),
+  "* " + "9".repeat(2100),
+  "7 " + "x".repeat(2100),
+  "7. " + "x".repeat(2100),
+  "7.x" + "y".repeat(2100),
 ];
 
 describe("consolidarParagrafos", () => {
@@ -126,6 +144,20 @@ describe("consolidarParagrafos", () => {
       "!-",
       "TEXTO",
       "٣".repeat(2100),
+      "1)".repeat(1100),
+      "1.".repeat(1100),
+      "9".repeat(2100) + "-",
+      "9".repeat(2100) + ")",
+      "1.2.3." + "4".repeat(2100),
+      "12-",
+      "1)-",
+      "#-",
+      ">-",
+      "|-",
+      "<-",
+      "``-",
+      "*-",
+      "+-",
     ]) {
       for (const fim of ["termina com ponto.", "| célula |", "termina em barra |", "# título", "Maiúscula", ""]) {
         const linhas = [
@@ -138,6 +170,19 @@ describe("consolidarParagrafos", () => {
         expect(consolidarParagrafos(linhas), `${inicio.slice(0, 20)} … ${fim}`).toEqual(consolidarDeReferencia(linhas));
       }
     }
+  });
+
+  test("começo só de numeração, com mais de 2 mil caracteres, seguido de 80 mil linhas: a decisão é tomada uma vez", () => {
+    // Antes, com o começo indeciso, o texto inteiro era remontado a cada linha unida (74 s).
+    const linhas = ["1)".repeat(1100), ...Array.from({ length: 80_000 }, (_, i) => `a${i.toString(36)}`)];
+    const inicio = performance.now();
+    const consolidadas = consolidarParagrafos(linhas);
+    expect(performance.now() - inicio).toBeLessThan(2000);
+    expect(consolidadas).toHaveLength(1);
+    expect(consolidadas[0]!.length).toBe(linhas.join(" ").length);
+    // Num caso menor, igual à versão original.
+    const menor = linhas.slice(0, 600);
+    expect(consolidarParagrafos(menor)).toEqual(consolidarDeReferencia(menor));
   });
 
   test("200 mil linhas curtas sem pontuação em tempo linear", () => {

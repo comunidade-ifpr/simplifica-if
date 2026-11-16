@@ -9,7 +9,7 @@
  */
 import { fullmatch, match, search, sub } from "@simplifica-if/kb/python/re";
 import { casefold } from "@simplifica-if/kb/python/texto";
-import { aparar, apararCaracteres, apararFim, contarCaracteres, ESPACOS } from "@simplifica-if/kb/texto";
+import { aparar, apararCaracteres, apararFim, contarCaracteres, RE_TEM_ESPACO } from "@simplifica-if/kb/texto";
 
 const r = String.raw;
 
@@ -374,28 +374,53 @@ function removerBlocosDuplicados(linhas: string[]): string[] {
  * o texto inteiro a cada linha.
  */
 const LIMITE_DE_REMONTAGEM = 2048;
-const RE_SO_NUMERACAO = new RegExp(`^[\\p{Nd}.)${ESPACOS}]*$`, "u");
+/** Primeiro caractere que não é de numeração (`12`, `1.2.`, `3)`). */
+const RE_FORA_DA_NUMERACAO = /[^\p{Nd}.)]/u;
+const RE_NUMERO_DE_SECAO = /^\p{Nd}+(?:\.\p{Nd}+)*[.)]?$/u;
+const RE_NUMERO_DE_LISTA = /^\p{Nd}+[.)]$/u;
+const ehEspaco = (caractere: string | undefined) => caractere !== undefined && RE_TEM_ESPACO.test(caractere);
 
 /**
  * Parágrafo que vai recebendo as linhas seguintes. Guarda as partes, e não o texto montado:
  * `ehParagrafoContinuavel` sobre o texto acumulado, a cada linha, custava o quadrado do tamanho (2
- * milhões de parágrafos curtos sem pontuação não terminavam em 10 minutos). As respostas são as
- * mesmas de antes: as condições só olham o começo do texto, o último caractere e se ele passa de
- * 120 caracteres.
+ * milhões de parágrafos curtos sem pontuação não terminavam em 10 minutos).
+ *
+ * As respostas são as mesmas de antes. Num texto longo (mais de 120 caracteres, aparado e sem
+ * quebra de linha), `ehParagrafoContinuavel` só depende do último caractere e do começo: os
+ * prefixos de título, citação, imagem, tabela e bloco de código, e a numeração inicial com o
+ * caractere que vem depois dela, que decidem se o texto é item de lista (`1. texto`) ou título
+ * numerado (`1.2 texto`). Esse começo é estável: linhas unidas ao fim não o mudam, e a decisão é
+ * tomada uma vez.
  */
 class ParagrafoEmConsolidacao {
   readonly #partes: string[];
-  #comprimento: number;
-  #inicio: string | null = null;
+  #comprimento = 0;
+  /** Posição do primeiro caractere fora da numeração inicial; -1 enquanto o texto todo é numeração. */
+  #fimDaNumeracao = -1;
+  /** O começo do texto não é de lista, título numerado nem de outro bloco; `null` enquanto não decidido. */
+  #comecoContinuavel: boolean | null = null;
 
   /** `texto` já aparado e não vazio. */
   constructor(texto: string) {
-    this.#partes = [texto];
-    this.#comprimento = texto.length;
+    this.#partes = [];
+    this.#acrescentar(texto);
   }
 
   texto(): string {
     return this.#partes.join("");
+  }
+
+  #acrescentar(parte: string): void {
+    if (this.#fimDaNumeracao < 0) {
+      const fora = parte.search(RE_FORA_DA_NUMERACAO);
+      if (fora >= 0) this.#fimDaNumeracao = this.#comprimento + fora;
+    }
+    this.#partes.push(parte);
+    this.#comprimento += parte.length;
+    // O caractere seguinte ao fim da numeração pode ter acabado de chegar.
+    if (this.#comecoContinuavel !== null && this.#comprimento - parte.length <= this.#fimDaNumeracao + 1) {
+      this.#comecoContinuavel = null;
+    }
   }
 
   #ultimoCaractere(): string {
@@ -417,39 +442,49 @@ class ParagrafoEmConsolidacao {
       this.#partes.push(resto);
       this.#comprimento += resto.length;
     }
-    if (this.#comprimento <= LIMITE_DE_REMONTAGEM) this.#inicio = null;
+    // O corte chegou ao começo estável: o que sobrou antes dele é só numeração, já conferida.
+    if (this.#comprimento <= this.#fimDaNumeracao) {
+      this.#fimDaNumeracao = -1;
+      this.#comecoContinuavel = null;
+    } else if (this.#comprimento <= this.#fimDaNumeracao + 2) this.#comecoContinuavel = null;
   }
 
   /** Junta a linha seguinte (aparada): colada, se o parágrafo termina em hífen; senão, com um espaço. */
   unir(proxima: string): void {
     if (this.#ultimoCaractere() === "-") this.#cortarFim(1);
-    else {
-      this.#partes.push(" ");
-      this.#comprimento += 1;
+    else this.#acrescentar(" ");
+    this.#acrescentar(proxima);
+  }
+
+  /** Os primeiros `quantos` caracteres do texto. */
+  #comeco(quantos: number): string {
+    let comeco = "";
+    for (const parte of this.#partes) {
+      if (comeco.length >= quantos) break;
+      comeco += parte.length > quantos ? parte.slice(0, quantos) : parte;
     }
-    this.#partes.push(proxima);
-    this.#comprimento += proxima.length;
+    return comeco.slice(0, quantos);
+  }
+
+  #decidirComeco(): boolean {
+    const numeracao = this.#fimDaNumeracao;
+    // Só numeração, sem espaço: não é lista nem título numerado (os dois pedem um espaço depois).
+    if (numeracao < 0) return true;
+    const comeco = this.#comeco(Math.max(numeracao + 2, 3));
+    if (["#", ">", "![", "<", "|", "```"].some((prefixo) => comeco.startsWith(prefixo))) return false;
+    const numero = comeco.slice(0, numeracao);
+    const depois = comeco[numeracao];
+    if (!numero) return !("-*+".includes(depois ?? " ") && ehEspaco(comeco[numeracao + 1]));
+    if (!ehEspaco(depois)) return true;
+    return !RE_NUMERO_DE_LISTA.test(numero) && !RE_NUMERO_DE_SECAO.test(numero);
   }
 
   /** `ehParagrafoContinuavel` do texto acumulado. */
   #continuavel(): boolean {
     if (this.#comprimento <= LIMITE_DE_REMONTAGEM) return ehParagrafoContinuavel(this.texto());
-    if (this.#inicio === null) {
-      let inicio = "";
-      for (const parte of this.#partes) {
-        inicio += parte;
-        if (inicio.length >= LIMITE_DE_REMONTAGEM) break;
-      }
-      this.#inicio = inicio.slice(0, LIMITE_DE_REMONTAGEM);
-    }
-    const inicio = this.#inicio;
-    // Começo feito só de numeração: a lista e o número de seção não se decidem por ele.
-    if (RE_SO_NUMERACAO.test(inicio)) return ehParagrafoContinuavel(this.texto());
-    if (["#", ">", "![", "<", "|", "```"].some((prefixo) => inicio.startsWith(prefixo))) return false;
     if (this.#ultimoCaractere() === "|") return false;
-    // Lista e número de seção se decidem no começo; o resto de `pareceHeading` não vale para um
-    // texto de mais de 120 caracteres.
-    return !match(LISTA, inicio) && !match(NUMERO_SECAO, inicio);
+    this.#comecoContinuavel ??= this.#decidirComeco();
+    return this.#comecoContinuavel;
   }
 
   /** `deveUnirLinhas` entre o texto acumulado e a linha seguinte. */
