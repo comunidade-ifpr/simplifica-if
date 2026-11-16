@@ -197,6 +197,24 @@ export const FERRAMENTAS_ANTIGRAVITY = [
   "boost",
 ] as const;
 
+/** Os arquivos que o `agy` 1.5.9 grava por sessão no perfil (`<perfil>/antigravity-acp/…`). */
+export function arquivosDaSessaoAntigravity(
+  juntar: (...partes: string[]) => string,
+  perfil: string,
+  sessionId: string,
+): string[] {
+  // Só um id com cara de UUID: o nome entra num caminho que se apaga.
+  if (!/^[0-9a-f-]{8,64}$/i.test(sessionId)) return [];
+  const acp = juntar(perfil, "antigravity-acp");
+  return [
+    juntar(acp, "conversations", `${sessionId}.db`),
+    juntar(acp, "conversations", `${sessionId}.db-wal`),
+    juntar(acp, "conversations", `${sessionId}.db-shm`),
+    juntar(acp, "brain", sessionId),
+    juntar(acp, "annotations", `${sessionId}.pbtxt`),
+  ];
+}
+
 const CHAVE_DE_CAMINHO = /path|file|dir|cwd/i;
 
 /**
@@ -531,6 +549,21 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
     const canal = yield* Canal.comPolitica(politica, config.pastaTrabalho);
     const gravar = yield* Gravador;
     const escopo = yield* Effect.scope;
+    // Julgamento: o `agy` guarda a conversa no perfil próprio do app (`conversations/<id>.db`,
+    // `brain/<id>/`, `annotations/<id>.pbtxt`, conferido no 1.5.9), com o texto do pedido. A sessão de
+    // julgamento não é retomada, então esses arquivos se apagam no fim. Registrado antes de abrir o
+    // processo, o finalizador roda depois que ele termina.
+    let idDaSessao: string | undefined;
+    if (config.semFerramentas === true)
+      yield* Effect.addFinalizer(() =>
+        idDaSessao === undefined
+          ? Effect.void
+          : Effect.forEach(
+              arquivosDaSessaoAntigravity(path.join, pastas.profile, idDaSessao),
+              (alvo) => fs.remove(alvo, { recursive: true, force: true }).pipe(Effect.ignore),
+              { discard: true },
+            ),
+      );
     const aberto = yield* abrir(config.pastaTrabalho);
     if (!aberto.login) {
       return yield* new FalhaProvider({
@@ -603,6 +636,7 @@ export const make = Effect.fn("DriverAntigravity.make")(function* (opcoes: {
         ? yield* cliente.agent.createSession(pedidoSessao).pipe(Effect.mapError(Canal.falhaDe(PROVIDER, "session/new")))
         : yield* retomarSessao(aberto.inicio, cliente, { ...pedidoSessao, sessionId: config.retomar });
     const sessionId = sessao.sessionId;
+    idDaSessao = sessionId;
 
     // Quando o processo do `agy` acaba sozinho (queda), o turno corrente falha e a sessão recusa os
     // próximos. No encerramento da sessão, o fiber é interrompido antes de o processo morrer.

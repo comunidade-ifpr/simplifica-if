@@ -8,7 +8,8 @@ import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Path from "effect/Path";
 import * as Schema from "effect/Schema";
-import { classificarAcp } from "../src/drivers/antigravity.ts";
+import { arquivosDaSessaoAntigravity, classificarAcp, FERRAMENTAS_ANTIGRAVITY } from "../src/drivers/antigravity.ts";
+import { SEM_FERRAMENTAS_CODEX } from "../src/drivers/codex.ts";
 import { classificarClaude } from "../src/drivers/claude.ts";
 import { classificarComandoCodex } from "../src/drivers/codex.ts";
 import {
@@ -213,5 +214,29 @@ describe("classificação por provider", () => {
         }
       }),
     );
+  });
+});
+
+describe("sessão de julgamento nos drivers", () => {
+  it("Codex: shell, leitura de imagem, subagentes, apply_patch e busca web desligados", () => {
+    assert.deepStrictEqual(
+      Object.entries(SEM_FERRAMENTAS_CODEX).filter(([, v]) => v === false || v === "disabled").length,
+      Object.keys(SEM_FERRAMENTAS_CODEX).length,
+    );
+    assert.strictEqual(SEM_FERRAMENTAS_CODEX["features.shell_tool"], false);
+    assert.strictEqual(SEM_FERRAMENTAS_CODEX["features.unified_exec"], false);
+  });
+  it("Antigravity: as ferramentas de leitura e de comando vão para disabledTools, e os arquivos da sessão saem do perfil", () => {
+    for (const nome of ["read_file", "view_file", "list_dir", "grep_search", "run_command"])
+      assert.include(FERRAMENTAS_ANTIGRAVITY as ReadonlyArray<string>, nome);
+    const juntar = (...p: string[]) => p.join("/");
+    assert.deepStrictEqual(arquivosDaSessaoAntigravity(juntar, "/perfil", "d830e70b-6578-4b2c-b1af-20dc2ecadd41"), [
+      "/perfil/antigravity-acp/conversations/d830e70b-6578-4b2c-b1af-20dc2ecadd41.db",
+      "/perfil/antigravity-acp/conversations/d830e70b-6578-4b2c-b1af-20dc2ecadd41.db-wal",
+      "/perfil/antigravity-acp/conversations/d830e70b-6578-4b2c-b1af-20dc2ecadd41.db-shm",
+      "/perfil/antigravity-acp/brain/d830e70b-6578-4b2c-b1af-20dc2ecadd41",
+      "/perfil/antigravity-acp/annotations/d830e70b-6578-4b2c-b1af-20dc2ecadd41.pbtxt",
+    ]);
+    assert.deepStrictEqual(arquivosDaSessaoAntigravity(juntar, "/perfil", "../../etc"), []);
   });
 });
