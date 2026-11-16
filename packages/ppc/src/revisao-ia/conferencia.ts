@@ -114,9 +114,9 @@ export function trechoConferivel(trecho: string): boolean {
   );
 }
 
-/** O tamanho conferível do trecho (a soma dos pedaços normalizados), ou 0 se ele não tem a forma. */
-export const tamanhoConferivel = (trecho: string) =>
-  trechoConferivel(trecho) ? pedacosDoTrecho(trecho).reduce((t, p) => t + p.length, 0) : 0;
+/** O maior pedaço contínuo do trecho (entre reticências), normalizado, ou 0 se o trecho não tem a forma. */
+export const maiorPedaco = (trecho: string) =>
+  trechoConferivel(trecho) ? Math.max(...pedacosDoTrecho(trecho).map((p) => p.length)) : 0;
 
 export function trechoExiste(trecho: string, alvo: string): boolean {
   const pedacos = pedacosDoTrecho(trecho);
