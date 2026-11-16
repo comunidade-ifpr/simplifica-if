@@ -270,7 +270,7 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
       catch: () =>
         falha("Não foi possível gravar a cópia comentada na pasta do arquivo. Confira se a pasta aceita gravação."),
     });
-    const { docx: _, aviso: __, ...resto } = revisao;
+    const { docx: _, aviso: __, markdown: ___, linhasTextoParaIa: ____, ...resto } = revisao;
     return { arquivoOriginal: arquivo, arquivoComentado, ...resto } satisfies ResultadoRevisaoPpc;
   });
 

@@ -49,9 +49,37 @@ export type BaseRevisaoPrevia = {
   dataBase: string;
 };
 
+/**
+ * O resultado de uma ficha S ou J avaliada pela IA e já conferido em código (`revisao-ia/`). `FALHOU`:
+ * a resposta não passou na conferência duas vezes; a ficha sai "a conferir", com `motivoFalha`.
+ */
+export type ResultadoFichaIa = {
+  ficha: string;
+  estado: "ATENDE" | "NAO_ATENDE" | "INCONCLUSIVO" | "NAO_APLICAVEL" | "FALHOU";
+  confianca: number;
+  justificativa: string;
+  lacunas: string[];
+  oQueFazer: string;
+  /** Trechos literais do PPC (Markdown), conferidos. */
+  trechos: string[];
+  /** IDs de fonte conferidos (`br/cne-cp/res/2026/2#art29`, `cnct`). */
+  fontes: string[];
+  revisaoHumana: boolean;
+  motivoFalha?: string | undefined;
+};
+
+/** O que a revisão com IA acrescenta: os resultados conferidos e as fichas que ficaram de fora. */
+export type EntradaIa = {
+  resultados: ResultadoFichaIa[];
+  /** Fichas S e J fora da revisão (modo rápido), para o aviso do título. */
+  fora: string[];
+};
+
 export type OpcoesRevisaoPrevia = {
   /** Relógio da rodada (data dos comentários e do aviso). */
   agora: Date;
+  /** Os resultados da revisão com IA, para juntar à lista e aos comentários (etapa 4). */
+  ia?: EntradaIa | undefined;
   /** CNCT escolhido pela pessoa (slug); sem ele, o curso é identificado no documento. */
   cnct?: string | undefined;
   /** Forma de oferta escolhida pela pessoa; sem ela, identificada no documento. */
@@ -78,6 +106,8 @@ export type PendenciaRevisao = {
   /** Outras fichas que apontam o mesmo trecho ou a mesma norma ausente (`ItemComentario.fichas`). */
   tambemEm: { ficha: string; titulo: string }[];
   noDocumento: LocalNoDocumento;
+  /** `codigo`: conferido pela base (fichas D e triagem); `ia`: avaliação da IA, conferida em código. */
+  origem: "codigo" | "ia";
 };
 
 export type CriterioConferido = {
@@ -87,6 +117,7 @@ export type CriterioConferido = {
   ordemTema: number;
   estado: "atende" | "nao_atende" | "a_conferir" | "nao_se_aplica";
   mensagem: string;
+  origem: "codigo" | "ia";
 };
 
 export type CursoIdentificado = {
@@ -101,11 +132,20 @@ export type RevisaoPrevia = {
   curso: CursoIdentificado;
   pendencias: PendenciaRevisao[];
   criterios: CriterioConferido[];
+  /** Critérios conferidos pelo código (fichas D). */
   conferidos: number;
+  /** Critérios avaliados pela IA (fichas S e J), 0 sem a revisão com IA. */
+  conferidosIa: number;
+  /** Títulos dos critérios que ficaram de fora (o modo rápido), vazio sem IA ou no completo. */
+  foraDaRevisao: string[];
   totalCriterios: number;
   dataBase: string;
   /** Texto do comentário-aviso no título. */
   aviso: string;
+  /** O PPC convertido (a revisão com IA monta os recortes dele). */
+  markdown: string;
+  /** Linhas do Markdown com texto dirigido a IA (a triagem): retiradas do que a IA recebe. */
+  linhasTextoParaIa: number[];
 };
 
 export const AUTOR_COMENTARIOS = "Simplifica IF (revisão prévia)";
@@ -276,6 +316,64 @@ function temaDaFicha(ficha: string, base: BaseRevisaoPrevia): number {
 
 type ItemInterno = Omit<PendenciaRevisao, "noDocumento"> & { trechos: string[] };
 
+/** A fonte de um resultado da IA como link `ifpr://` (a base dá o rótulo legível). */
+const linkDaFonte = (fonte: string, cnct: string | null): Fonte | null =>
+  fonte.startsWith("cnct") ? (cnct ? `ifpr://cnct/${cnct}` : null) : `ifpr://norma/${fonte}`;
+
+/** O estado da lista para um resultado da IA, ou nulo quando não há pendência. */
+function estadoDaIa(r: ResultadoFichaIa): "nao_atende" | "a_conferir" | null {
+  if (r.estado === "FALHOU" || r.estado === "INCONCLUSIVO") return "a_conferir";
+  if (r.estado === "NAO_ATENDE") return r.confianca >= 0.6 && !r.revisaoHumana ? "nao_atende" : "a_conferir";
+  if (r.revisaoHumana && r.lacunas.length) return "a_conferir";
+  return null;
+}
+
+const ponto = (texto: string) => (/[.!?]$/.test(texto.trim()) ? texto.trim() : `${texto.trim()}.`);
+
+function itensDaIa(ia: EntradaIa, registro: Registro, base: BaseRevisaoPrevia, cnct: string | null): ItemInterno[] {
+  const itens: ItemInterno[] = [];
+  for (const r of ia.resultados) {
+    const estado = estadoDaIa(r);
+    if (!estado) continue;
+    const ordemTema = temaDaFicha(r.ficha, base);
+    const mensagem =
+      r.estado === "FALHOU"
+        ? `Não foi possível conferir este critério com a IA (${r.motivoFalha ?? "resposta fora do formato"}). Confira na leitura: ${base.fichas[r.ficha] ?? r.ficha}.`
+        : [ponto(r.justificativa), r.lacunas.length ? `Falta: ${r.lacunas.map((l) => l.replace(/[.;]\s*$/, "")).join("; ")}.` : ""]
+            .filter(Boolean)
+            .join(" ");
+    const trechos = r.trechos.map(comoNoDocumento).filter(Boolean);
+    itens.push({
+      ficha: r.ficha,
+      tituloFicha: base.fichas[r.ficha] ?? r.ficha,
+      tema: TEMAS[ordemTema]!.titulo,
+      ordemTema,
+      estado,
+      mensagem,
+      oQueFazer: r.oQueFazer.trim() ? ponto(r.oQueFazer) : "Confira o critério no PPC.",
+      trecho: trechos[0] ?? null,
+      secao: null,
+      trechos: trechos.slice(0, 1),
+      fontes: agruparFontes(
+        r.fontes.map((f) => linkDaFonte(f, cnct)).filter((f): f is Fonte => f !== null),
+        registro,
+        base,
+      ),
+      tambemEm: [],
+      origem: "ia",
+    });
+  }
+  return itens;
+}
+
+const ESTADO_CRITERIO_IA: Record<ResultadoFichaIa["estado"], CriterioConferido["estado"]> = {
+  ATENDE: "atende",
+  NAO_ATENDE: "nao_atende",
+  INCONCLUSIVO: "a_conferir",
+  NAO_APLICAVEL: "nao_se_aplica",
+  FALHOU: "a_conferir",
+};
+
 /**
  * A mensagem do verificador para quem lê no Word: os dispositivos citados como ID (`art70`,
  * `art29-par2`) por extenso, e a transição e a orientação sobre a data do PPC em linhas próprias.
@@ -317,6 +415,7 @@ function itensDaPreConferencia(resultado: PreConferencia, registro: Registro, ba
     trechos: achado.trechos.map((t) => comoNoDocumento(t.texto)).filter(Boolean),
     fontes: [],
     tambemEm: [],
+    origem: "codigo" as const,
   }));
   // A seção de cada trecho (o item agrupado traz só o texto como no documento).
   const secoes = new Map<string, string | null>();
@@ -335,6 +434,7 @@ function itensDaPreConferencia(resultado: PreConferencia, registro: Registro, ba
       trechos: item.trechos,
       fontes: fontes(item.fontes),
       tambemEm: item.fichas.slice(1).map((ficha) => ({ ficha, titulo: base.fichas[ficha] ?? ficha })),
+      origem: "codigo",
     });
   }
   // Ficha sem apontamento mas sem "atende" (o curso não foi identificado no CNCT): um item só.
@@ -353,11 +453,15 @@ function itensDaPreConferencia(resultado: PreConferencia, registro: Registro, ba
         trechos: [],
         fontes: fontes(ficha.fontes),
         tambemEm: [],
+        origem: "codigo",
       });
   return itens.sort((a, b) => a.ordemTema - b.ordemTema);
 }
 
-type ItemDoComentario = Pick<PendenciaRevisao, "estado" | "mensagem" | "oQueFazer" | "fontes" | "ficha" | "tambemEm">;
+type ItemDoComentario = Pick<
+  PendenciaRevisao,
+  "estado" | "mensagem" | "oQueFazer" | "fontes" | "ficha" | "tambemEm" | "origem"
+>;
 
 const linhaFontes = (fontes: readonly FonteLegivel[]) =>
   `Fonte: ${fontes.map((f) => (f.url ? `${f.rotulo} (${f.url})` : f.rotulo)).join("; ")}.`;
@@ -380,7 +484,8 @@ export function textoDoComentario(item: ItemDoComentario) {
   // Os códigos das fichas só numa referência discreta no fim, para quem cruza com a lista do app.
   const codigos =
     item.ficha === "TRIAGEM" ? "" : ` (ref. ${[item.ficha, ...item.tambemEm.map((t) => t.ficha)].join(", ")})`;
-  return `${linhasDaPendencia(item).join("\n")}\n\nRevisão prévia do Simplifica IF${codigos}.`;
+  const quem = item.origem === "ia" ? ", avaliação da IA conferida pelo app" : "";
+  return `${linhasDaPendencia(item).join("\n")}\n\nRevisão prévia do Simplifica IF${quem}${codigos}.`;
 }
 
 const dataBr = (iso: string) => iso.slice(0, 10).split("-").reverse().join("/");
@@ -430,6 +535,8 @@ function textoDoAviso(entrada: {
   agora: Date;
   dataBase: string;
   conferidos: number;
+  conferidosIa: number;
+  foraDaRevisao: readonly string[];
   totalCriterios: number;
   curso: CursoIdentificado;
   pendencias: readonly PendenciaRevisao[];
@@ -438,10 +545,19 @@ function textoDoAviso(entrada: {
 }): string {
   const naoAtende = entrada.pendencias.filter((p) => p.estado === "nao_atende").length;
   const aConferir = entrada.pendencias.length - naoAtende;
+  const vistos = entrada.conferidos + entrada.conferidosIa;
   const total =
-    entrada.totalCriterios > entrada.conferidos
-      ? `${entrada.conferidos} de ${entrada.totalCriterios} critérios conferidos automaticamente; os demais exigem leitura.`
-      : `${entrada.conferidos} critérios conferidos automaticamente; os demais exigem leitura.`;
+    entrada.conferidosIa > 0
+      ? `${vistos} de ${entrada.totalCriterios} critérios conferidos: ${entrada.conferidos} pelo código, com a base de normas, e ${entrada.conferidosIa} pela IA, com cada trecho e cada norma citados conferidos pelo app. ${
+          entrada.foraDaRevisao.length
+            ? `Ficaram de fora (modo rápido): ${entrada.foraDaRevisao.join("; ")}.`
+            : vistos < entrada.totalCriterios
+              ? "Os demais exigem leitura."
+              : ""
+        }`.trim()
+      : entrada.totalCriterios > entrada.conferidos
+        ? `${entrada.conferidos} de ${entrada.totalCriterios} critérios conferidos automaticamente; os demais exigem leitura.`
+        : `${entrada.conferidos} critérios conferidos automaticamente; os demais exigem leitura.`;
   const curso = entrada.curso.cnct
     ? `Curso considerado: ${entrada.curso.cnct.denominacao} (CNCT)${entrada.curso.forma ? `, forma de oferta: ${NOME_DA_FORMA[entrada.curso.forma] ?? entrada.curso.forma}` : ""}.`
     : "O curso não foi identificado no CNCT: os critérios que dependem dele ficaram para conferir.";
@@ -494,8 +610,13 @@ export function revisarDocx(
     // Sempre da base recebida: sem ela, os verificadores leriam a vigência do checkout, que o app não tem.
     vigencia: vigenciaDeDados(base, base.dataBase),
   });
-  const itens = itensDaPreConferencia(resultado, registro, base);
+  const itens = [
+    ...itensDaPreConferencia(resultado, registro, base),
+    ...(opcoes.ia ? itensDaIa(opcoes.ia, registro, base, cnct?.slug ?? null) : []),
+  ].sort((a, b) => a.ordemTema - b.ordemTema);
   const conferidos = resultado.fichas.length;
+  const conferidosIa = opcoes.ia?.resultados.length ?? 0;
+  const foraDaRevisao = (opcoes.ia?.fora ?? []).map((f) => base.fichas[f] ?? f);
   const totalCriterios = Math.max(Object.keys(base.fichas).length, conferidos);
 
   // Duas passadas: as pendências com trecho, e depois o aviso no título, com as ausências e o que
@@ -520,6 +641,8 @@ export function revisarDocx(
     agora: opcoes.agora,
     dataBase: base.dataBase,
     conferidos,
+    conferidosIa,
+    foraDaRevisao,
     totalCriterios,
     curso,
     pendencias,
@@ -534,16 +657,35 @@ export function revisarDocx(
       ordemTema,
       estado: ficha.estado,
       mensagem: ficha.mensagem,
+      origem: "codigo" as const,
     };
   });
+  for (const r of opcoes.ia?.resultados ?? []) {
+    const ordemTema = temaDaFicha(r.ficha, base);
+    criterios.push({
+      ficha: r.ficha,
+      titulo: base.fichas[r.ficha] ?? r.ficha,
+      tema: TEMAS[ordemTema]!.titulo,
+      ordemTema,
+      estado: ESTADO_CRITERIO_IA[r.estado],
+      mensagem: r.estado === "FALHOU" ? `Não conferido: ${r.motivoFalha ?? ""}` : r.justificativa,
+      origem: "ia",
+    });
+  }
   return {
     docx: final.docx,
     curso,
     pendencias,
     criterios,
     conferidos,
+    conferidosIa,
+    foraDaRevisao,
     totalCriterios,
     dataBase: base.dataBase,
     aviso,
+    markdown: conversao.markdown,
+    linhasTextoParaIa: resultado.triagem
+      .filter((a) => a.regra === "texto-dirigido-a-ia")
+      .flatMap((a) => a.trechos.map((t) => t.linha)),
   };
 }

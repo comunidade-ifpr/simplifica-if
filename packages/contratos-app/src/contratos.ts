@@ -391,6 +391,8 @@ export const PendenciaRevisao = Schema.Struct({
   tambemEm: Schema.Array(Schema.Struct({ ficha: Schema.String, titulo: Schema.String })),
   /** `no-inicio`: algo que falta, listado no comentário do título junto ao aviso. */
   noDocumento: LocalNoDocumento,
+  /** `codigo`: conferido pela base; `ia`: avaliação da IA, com trechos e normas conferidos pelo app. */
+  origem: Schema.Literals(["codigo", "ia"]),
 });
 export type PendenciaRevisao = typeof PendenciaRevisao.Type;
 
@@ -402,6 +404,7 @@ export const CriterioRevisao = Schema.Struct({
   ordemTema: Schema.Number,
   estado: Schema.Literals(["atende", "nao_atende", "a_conferir", "nao_se_aplica"]),
   mensagem: Schema.String,
+  origem: Schema.Literals(["codigo", "ia"]),
 });
 export type CriterioRevisao = typeof CriterioRevisao.Type;
 
@@ -418,6 +421,9 @@ export const ResultadoRevisaoPpc = Schema.Struct({
   criterios: Schema.Array(CriterioRevisao),
   /** Quantos critérios o código conferiu, de quantos a revisão tem. */
   conferidos: Schema.Number,
+  /** Quantos a IA avaliou (0 na pré-conferência) e os títulos dos que ficaram de fora (modo rápido). */
+  conferidosIa: Schema.Number,
+  foraDaRevisao: Schema.Array(Schema.String),
   totalCriterios: Schema.Number,
   /** `data_referencia` da base (AAAA-MM-DD). */
   dataBase: Schema.String,
