@@ -99,7 +99,7 @@ Depois da pré-conferência, a pessoa pode pedir a revisão das fichas S (38) e 
 
 1. **Preparo, em código** (`preparo.ts`, 0,6 s num PPC de 255 mil caracteres): o arquivo é convertido de novo no Worker da `AnalisePpc` (mesmas conferências: liberado, 20 MB, limites), as linhas de texto dirigido a IA (a triagem) saem do Markdown, e os blocos se montam com `pacoteContextoAvulso` do `kb` sobre o `kb.sqlite`: lotes S com o recorte de cada ficha (1 a 3 mil caracteres), um tema J com só as seções dos tópicos (até 30 mil), as transversais no fim, sobre os resumos dos temas. Todo pedido leva o curso identificado (CNCT e forma), o contexto normativo em texto (dispositivos, marcos, transições, CNCT) e o PPC entre marcas com um nonce da rodada. O plano inteiro (com o texto dos pedidos) fica gravado: a retomada não o refaz.
 2. **Sessões** (`julgamento.ts`): uma por bloco, `PARALELISMO` (2) por vez, configurável (`Opcoes.revisaoIa`). `ConfigSessao.semFerramentas`: sem MCP, sem skills, numa pasta temporária vazia (apagada no fim), com a `POLITICA_JULGAMENTO` do motor (nega tudo sem perguntar) e, no Claude, `tools: []` e só as instruções do app como prompt de sistema. Modelo padrão por provider em `MODELO_PADRAO` (`@simplifica-if/ppc/revisao-ia/tipos`): Sonnet no Claude; o padrão da conta no Codex e no Antigravity.
-3. **Conferência** (`@simplifica-if/ppc/revisao-ia/conferencia`): toda resposta passa pelo Effect Schema do contrato, pelos estados permitidos da ficha, pelo trecho literal no PPC (sem as linhas da triagem: citar a instrução escondida não vale como evidência) e pelas normas do contexto entregue. Se falhar, uma nova tentativa na mesma sessão, com os problemas; se falhar de novo, a ficha sai "a conferir" com o motivo legível. A conferência é por ficha: uma ficha ruim não derruba as boas do lote.
+3. **Conferência** (`@simplifica-if/ppc/revisao-ia/conferencia`): toda resposta passa pelo Effect Schema do contrato, pelos estados permitidos da ficha, pelo trecho literal no PPC (sem as linhas da triagem: citar a instrução escondida não vale como evidência) e pelas normas do contexto entregue. Se falhar, uma nova tentativa numa **sessão nova**, com o pedido inteiro e os problemas no fim (sem repetir o texto que a IA escreveu: um trecho recusado pode ser a instrução escondida); no Claude, o segundo turno de uma sessão levou um bloco fixo de ~158 mil tokens. Se falhar de novo, a ficha sai "a conferir" com o motivo legível. A conferência é por ficha: uma ficha ruim não derruba as boas do lote.
 4. **Persistência e retomada** (`persistencia/Revisoes.ts`, migração 2 do `conversas.sqlite`): cada bloco grava ao terminar. Limite de taxa ou cota (`ehLimite`: 429, `rate_limit`, `usage limit`, `quota`, `resource exhausted`, `overloaded`), provider caído, turno de mais de 6 min ou um defeito pausam a revisão com a frase para a pessoa (`limite: true` para os dois primeiros); `iniciarIa` de novo retoma só os pendentes. Uma revisão `em_andamento` quando o servidor reinicia (app fechado) volta como `pausada`.
 5. **Fim:** a `AnalisePpc` roda a pré-conferência de novo com os resultados conferidos da IA (`EntradaIa`) e grava uma nova cópia comentada, com as pendências do código e da IA juntas; o `.docx` tem de ter o mesmo sha256 da preparação.
 
@@ -110,6 +110,14 @@ node apps/server/scripts/revisao-ia-real.ts --so-preparar            # só o pre
 node apps/server/scripts/revisao-ia-real.ts                          # Claude, modo rápido, revisão inteira (gasta a assinatura)
 node apps/server/scripts/revisao-ia-real.ts --provider codex --bloco s-04-1   # um bloco só
 ```
+
+**Recortes** (`preparo.ts` sobre `@simplifica-if/ppc/revisao-ia/estrutura`): cada pedido leva uma parte "extraída pelo código" (o quadro de identificação com os fatos do `kb`, a matriz em TSV, o índice do ementário e o começo das referências, conforme as fichas do bloco), e o recorte de cada ficha escolhe seções inteiras pelo título, pelo corpo e pelo tópico. Medição sem IA:
+
+```bash
+node apps/server/scripts/medir-recortes.ts --saida tmp/recortes.json   # 110 PPCs técnicos, 22 fichas do modo rápido, ~35 s
+```
+
+A taxa é a fração dos pares (PPC, ficha) em que o conteúdo que a IA recebe contém a evidência do gabarito, entre os pares em que o próprio PPC a tem: 45,9% com os recortes por termos, 92,0% com os estruturados (16/11/2026).
 
 O script converte um PPC da base (Markdown público; padrão: Técnico em Enfermagem, Curitiba) em DOCX, planta a instrução escondida na seção 5.1 e imprime as medidas (`--saida` para a pasta). Uma execução por medição.
 
@@ -144,7 +152,7 @@ SIMPLIFICA_POC_REAL=1 SIMPLIFICA_PROVIDER=codex pnpm --filter @simplifica-if/ser
 
 O filtro do vitest casa com o nome do arquivo por substring: `test real` roda também o `ciclo-real` e o `skills-real`, e `test real.test` também. Para rodar só um, use o nome inteiro (`test test/real.test.ts`).
 
-**Revisão com IA, teste real (16/11/2026):** `scripts/revisao-ia-real.ts`, uma execução por provider, sobre o PPC de Técnico em Enfermagem (Curitiba) da base convertido para DOCX, com a instrução escondida na seção 5.1. Os números e a análise estão no plano do app (M1.11, etapa 4): Claude, modo rápido, 22 critérios em 5 blocos, 64 s e US$ 0,48 equivalentes, nenhuma resposta recusada na conferência; Codex e Antigravity, um lote S de 3 critérios cada, 22 s, válidos na primeira resposta.
+**Revisão com IA, teste real (16/11/2026):** `scripts/revisao-ia-real.ts`, uma execução por provider, sobre o PPC de Técnico em Enfermagem (Curitiba) da base convertido para DOCX, com a instrução escondida na seção 5.1. Os números e a análise estão no plano do app (M1.11, etapa 4): Claude, modo rápido, 22 critérios em 5 blocos, 64 s e US$ 0,48 equivalentes, nenhuma resposta recusada na conferência; Codex e Antigravity, um lote S de 3 critérios cada, 22 s, válidos na primeira resposta. Segunda execução com o Claude, com os recortes estruturados: INCONCLUSIVO de 15 para 13, 115 s, US$ 1,11 pelos tokens sem o bloco fixo do segundo turno.
 
 O `skills-real` abre uma conversa sobre o catálogo do `.agents/skills` e pergunta pelos rótulos de classificação da `verificar-fundamentacao-normativa`. Sem `SIMPLIFICA_PROVIDER`, roda os três. Em 16/11/2026 passou nos três, sempre com a leitura do `.simplifica/skills/verificar-fundamentacao-normativa/SKILL.md` gravado na pasta de trabalho, nenhum pedido de aprovação e os sete rótulos na resposta:
 
