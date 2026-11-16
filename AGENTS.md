@@ -137,7 +137,6 @@ node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-schemas --check
 node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-mapa --check
 node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-indice --check
 pnpm exec vp test run .agents/skills/revisar-ppc
-python3 -m pytest .agents/skills/revisar-ppc/tests
 ```
 
-Sem `--check`, `gerar-schemas`, `gerar-mapa` e `gerar-indice` regeneram os JSON Schemas de ficha e marcos (gerados do Effect Schema de `scripts/esquemas.ts`), `mapa-fichas.md` e `indice.json` da base de análise. O `revisar_ppc.ts` é o ponto de entrada único da skill, e todos os subcomandos rodam em TypeScript; só a conversão de entrada `.docx` ainda chama Python (`converter_docx.py`), e o `pytest` cobre só os extratores dessa conversão.
+Sem `--check`, `gerar-schemas`, `gerar-mapa` e `gerar-indice` regeneram os JSON Schemas de ficha e marcos (gerados do Effect Schema de `scripts/esquemas.ts`), `mapa-fichas.md` e `indice.json` da base de análise. O `revisar_ppc.ts` é o ponto de entrada único da skill, e todos os subcomandos rodam em TypeScript, inclusive a conversão de entrada `.docx` (`scripts/conversao-docx/`): a skill só precisa do Node. Depois de alterar a conversão DOCX, rode também o diferencial contra a conversão antiga em Python, descrito no `README.md` da skill (ferramenta de desenvolvimento; precisa de `uv`).

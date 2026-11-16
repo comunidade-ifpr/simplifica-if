@@ -383,7 +383,7 @@ Corre em paralelo às fases 1 a 7. Cada passo troca uma implementação por baix
 - Portar `publicar_surge.py`, que só chama a CLI `surge` por `Bun.spawn`.
 - Diferencial: HTML idêntico para as mesmas entradas.
 
-**T3. Conversão DOCX**
+**T3. Conversão DOCX** (concluído em 16/11/2026; veja [Andamento](#andamento))
 
 - **Leitor OOXML** com `fflate` (`^0.8.2`, a mesma faixa do `sei-cli`) e `htmlparser2` em `xmlMode` com `domutils`, que preservam a ordem do conteúdo misto. Ele precisa reproduzir esta semântica do `python-docx`:
   - `style.name`, com o mapeamento de nomes internos (`heading 1` → `Heading 1`);
@@ -393,7 +393,7 @@ Corre em paralelo às fases 1 a 7. Cada passo troca uma implementação por baix
 - **Extratores** de seções, matriz, ementário, identificação e imagens, além do escritor de Markdown.
 - **Fallback "rendered"** de figuras vetoriais, que hoje depende de MS Word e poppler. Decidir entre:
   - `soffice --convert-to pdf` seguido de rasterização;
-  - remover o fallback e emitir um alerta no `PPC.md`.
+  - remover o fallback e emitir um alerta no `PPC.md` (decidido em 16/11/2026: o app não pode depender de programa externo).
 - **Corpus** em `~/Library/CloudStorage/OneDrive-Pessoal/PPCs Dentec/`:
   - cerca de 12 DOCX, com versões sucessivas do mesmo PPC;
   - fica fora do git, porque são minutas com nomes de revisores;
@@ -494,14 +494,14 @@ Decididas:
 - núcleo em `packages/kb`;
 - corpus DOCX na pasta `PPCs Dentec` do OneDrive;
 - Movimentações fora do escopo;
-- política de versão de PPC: só o vigente, com o histórico no git e ID `ppc:<campus_id>/<curso_slug>` sem versão (13/11/2026, fase 4).
+- política de versão de PPC: só o vigente, com o histórico no git e ID `ppc:<campus_id>/<curso_slug>` sem versão (13/11/2026, fase 4);
+- fallback "rendered" de figuras na conversão DOCX: removido, com aviso no `PPC.md` (16/11/2026, T3). Nos 12 PPCs do corpus, a figura vetorial é o fluxograma da representação gráfica, desenhado com formas do Word.
 
 Em aberto:
 
-1. **Fallback "rendered" de figuras na conversão DOCX:** `soffice` ou remover com alerta (T3).
-2. **Conversor de PDF de PPCs:** porte ou exceção Python, conforme a medição de T5.
-3. **Modelo e orçamento do harness de avaliação:** modelo fixado e número de execuções por pergunta (fase 1).
-4. **Data do DOU e URL oficial da Res. CNE/CP 2/2026:** necessárias para `publicada_em` e `vigente_de`; até lá, a vigência dela e a revogação da 1/2021 saem como "a confirmar" (fase 5).
+1. **Conversor de PDF de PPCs:** porte ou exceção Python, conforme a medição de T5.
+2. **Modelo e orçamento do harness de avaliação:** modelo fixado e número de execuções por pergunta (fase 1).
+3. **Data do DOU e URL oficial da Res. CNE/CP 2/2026:** necessárias para `publicada_em` e `vigente_de`; até lá, a vigência dela e a revogação da 1/2021 saem como "a confirmar" (fase 5).
 
 ## Andamento
 
@@ -786,6 +786,31 @@ Em aberto:
   - conferir as duas IN na fonte oficial;
   - `LEI_BR_12711-2012_cotas.md` também parece paráfrase;
   - uma "IN nº 1/2021" sem data, em contexto IFPR, ainda vai para a IN da Reitoria.
+
+**Trilha T, passo T3 concluído em 16/11/2026** (branch `t3/3e871bcd`, sem merge: aguarda duas revisões independentes).
+
+- A conversão DOCX da `revisar-ppc` está em TypeScript, em `scripts/conversao-docx/`; `preparar-documento` a chama direto, e a skill com entrada `.docx` roda só com Node (sem Python, MS Word ou poppler).
+- Não é transcrição do Python. Duas camadas:
+  - `ooxml/`: leitor próprio sobre `fflate` e `htmlparser2`, com um modelo intermediário do documento (parágrafos com runs e formatação direta, hyperlinks, tabelas com `gridSpan` e `vMerge`, figuras, propriedades) e nomes resolvidos pela URI do namespace;
+  - domínio do PPC: `elementos.ts` (título, lista, grade de tabela), `secoes.ts`, `tabelas.ts`, `matriz.ts`, `ementario.ts`, `similaridade.ts`, `identificacao-tabelas.ts`, `figura.ts`, `markdown.ts` e `conversao.ts`.
+- `similaridade.ts` reimplementa o `fuzz.partial_ratio` do `rapidfuzz` com LCS de bits paralelos: 992 escores iguais bit a bit aos dele (`tests/fixtures/partial-ratio-rapidfuzz.json`).
+- Diferencial contra o Python do commit `c0d6f07`, com `python-docx` 1.2.0 e `rapidfuzz` 3.14.6 em ambiente temporário do `uv` (`scripts/dev/diferencial-docx.ts`, descrito no README da skill):
+  - 23 documentos: os 12 PPCs técnicos reais de `KB_CORPUS_DOCX` e 11 sintéticos;
+  - camada de elementos (o que o `DocxReader` lia) e artefatos finais (`.md`, `-bruto.md`, `_dados.json`, matriz, ementário, imagem): idênticos nos 23, no modo `python-docx` do leitor;
+  - diferenças aceitas, neutralizadas e relatadas por documento: `propriedades-inventadas` (4 PPCs sem `docProps/core.xml`, em que o `python-docx` inventava título, autor e data) e `figura-nao-renderizada` (3 PPCs com o fluxograma em formas do Word).
+- Diferenças deliberadas do modo padrão (`documento`), todas no README da skill:
+  - o texto inserido com controle de alterações (`w:ins`) e os runs em `w:moveTo`, `w:smartTag`, `w:sdt` em linha, `w:fldSimple` e `w:customXml` entram no `PPC.md`; o `python-docx` os descartava, e 3 PPCs do corpus perdiam trechos (34, 89 e 131 linhas mudam);
+  - a figura vetorial não é renderizada: `metodo: "vetorial_nao_renderizada"` e um aviso no `PPC.md`; EMF e WMF embutidos são copiados como estão; a imagem sai com a extensão dela;
+  - `metadata_documento` vazio sem `core.xml`; mescla vertical malformada e imagem externa não abortam.
+- Defeitos da conversão antiga mantidos, para a saída não mudar (listados no README): negrito colado (`**a**b**`), numeração automática do Word ignorada, alíneas como `1. a)`, `total_ha` e `total_hr` zerados no resumo da matriz.
+- Desempenho no corpus: de 0,11 a 0,26 s por PPC, contra 0,85 a 2,2 s do Python; `preparar-documento` inteiro em 0,44 s.
+- Removidos: `conversao_docx/` (12 arquivos, cerca de 5.000 linhas), `converter_docx.py`, os 4 arquivos de `pytest` e o `requirements.txt` da skill; a opção `python` e a variável `REVISAR_PPC_PYTHON`.
+- Testes: `conversao-docx.test.ts` (49 casos: leitor, regras de domínio, os casos dos 4 arquivos de `pytest`, gabaritos do oráculo e figura) e `similaridade.test.ts` (4 casos); a skill tem 256 casos. O teste DOCX da identificação deixou de depender do `python-docx`.
+- Python que continua: só `scripts/converter_ppcs_markdown.py` (T5).
+- Pendências:
+  - as duas revisões independentes e o merge;
+  - decidir se os defeitos mantidos são corrigidos (o diferencial e os gabaritos servem de rede);
+  - `pnpm typecheck` falha em `packages/motor/test/Motor.test.ts` (aviso `multipleEffectProvide`), em arquivo que este passo não tocou.
 
 ## Histórico de revisões
 

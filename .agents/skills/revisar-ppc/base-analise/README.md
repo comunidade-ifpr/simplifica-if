@@ -90,7 +90,6 @@ node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-mapa
 node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-indice
 node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts validar-base
 pnpm exec vp test run .agents/skills/revisar-ppc
-python3 -m pytest .agents/skills/revisar-ppc/tests
 ```
 
-O `pnpm exec vp test run .agents/skills/revisar-ppc` cobre a validação da base, a orquestração da análise, o relatório HTML e a publicação no Surge, em TypeScript; o `pytest` cobre só o que ainda é Python (extratores da conversão DOCX).
+O `pnpm exec vp test run .agents/skills/revisar-ppc` cobre a validação da base, a orquestração da análise, a conversão DOCX, o relatório HTML e a publicação no Surge.

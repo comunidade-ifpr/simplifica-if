@@ -513,7 +513,7 @@ Lacunas: MCP por HTTP local, recursos `ifpr://`, isolamento (`~/.codex` e `~/.ge
 - **M1.9 — Modo Servidor.** Início, tarefa, conversa com etapas, pasta de trabalho e "Desfazer".
 - **M1.10 — Atualização.** App, base e skills, nos três ritmos, com o aviso "Base atualizada", a lista de novidades e a opção de voltar uma versão.
 - **M1.11 — Skills no app:**
-  - `revisar-ppc`, com entrada `.docx`. Depende do passo T3 da trilha do PLANO-ARQUITETURA, a conversão DOCX em TypeScript, que vira pré-requisito deste marco;
+  - `revisar-ppc`, com entrada `.docx`. O pré-requisito era o passo T3 da trilha do PLANO-ARQUITETURA, a conversão DOCX em TypeScript, atendido em 16/11/2026 (branch `t3/3e871bcd`, aguardando revisão e merge): a skill converte o `.docx` só com Node, sem Python, MS Word ou poppler, e o fluxograma desenhado com formas do Word vira um aviso no `PPC.md`;
   - `verificar-calendario`;
   - `verificar-fundamentacao-normativa`.
 
@@ -703,3 +703,4 @@ Só métricas agregadas e com opt-in saem do computador. O padrão é não envia
 - 14/11/2026: **direção revista: app próprio no monorepo, sem fork** (decisões 5 e 7). Stack do T3 também na interface, com as versões do T3 `a6d9140972`; código do T3 copiado e registrado em [upstream-t3.md](../upstream-t3.md), sincronizado caso a caso. Interface em pt-BR direto, sem `gt-react`. Marco 1 refeito com o que a PoC ensinou: motor de produção, providers no computador do servidor, MCP HTTP local, recursos `ifpr://`, política de fábrica mínima e meta de latência.
 - 14/11/2026: correção vinda da PoC. A instalação e o login das CLIs vêm do T3, não são escritos do zero: instalação gerenciada do Codex e do Antigravity (`CodexInstallation.ts`, `AntigravityInstallation.ts`), `ClaudeExecutable`, `ClaudeHome` e `fixPath`, em porte no branch `t3/motor-porte-t3`. O Claude é a exceção: passo guiado nas boas-vindas. O M1.4 registra os motivos do MCP HTTP local e que falta testá-lo no Codex e no `agy`.
 - 15/11/2026: **M1.2 (motor de produção) e M1.7 (política de fábrica mínima)** integrados em `main`: conversas gravadas e retomadas pelo provider, lista de conversas e reabertura na interface, queda do processo e interromper com estado claro, política por tipo de ferramenta nos três drivers, skills do app pelo motor e contexto do Codex reduzido. Teste real do ciclo de vida verde com o Claude; faltam o Codex e o Antigravity.
+- 16/11/2026: **pré-requisito do M1.11 atendido.** A conversão DOCX da `revisar-ppc` passou para TypeScript (passo T3 do PLANO-ARQUITETURA, branch `t3/3e871bcd`, aguardando revisão e merge): a skill roda só com Node, sem Python, MS Word ou poppler. Diferencial contra a conversão em Python sem diferenças em 12 PPCs reais.
