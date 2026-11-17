@@ -12,14 +12,18 @@
  * duas). `lerLink` lê qualquer link `ifpr://` pela mesma resolução do `resources/read` e devolve um
  * `LinkLido`; `lerPpc`, `lerCnct`, `lerCampus` e `lerFicha` são os conteúdos que só existem como
  * recurso. `lerDocumento` traz o Markdown inteiro de uma norma ou de um PPC, com as âncoras, para o
- * leitor do app gerar o HTML (M1.6); não tem ferramenta MCP.
+ * leitor do app gerar o HTML (M1.6); não tem ferramenta MCP. `explorarIndice` e `explorarBuscar` são o
+ * Explorar do app (as coleções e a paleta de busca, `explorar.ts`); também sem ferramenta MCP.
  */
 import { Rpc, RpcGroup } from "effect/rpc";
 import * as Schema from "effect/Schema";
 import { ErroDeLeitura } from "./contratos.ts";
 import { EntradaDocumento, SaidaDocumento } from "./documento.ts";
+import { EntradaBusca, EntradaIndice, SaidaBusca, SaidaIndice } from "./explorar.ts";
 
 export type { Ancora, DadosDocumento, DatasDoAto } from "./documento.ts";
+export type * from "./explorar.ts";
+export { ROTULOS_INDICADOR } from "./ferramentas/ficha-curso.ts";
 import { buscarNorma } from "./ferramentas/buscar-norma.ts";
 import { buscarSecoes } from "./ferramentas/buscar-secoes.ts";
 import { fichaCurso } from "./ferramentas/ficha-curso.ts";
@@ -79,4 +83,6 @@ export class GrupoLeitura extends RpcGroup.make(
   Rpc.make("lerCampus", { payload: Conteudos.EntradaCampus, success: Conteudos.SaidaCampus, error: ErroDeLeitura }),
   Rpc.make("lerFicha", { payload: Conteudos.EntradaFicha, success: Conteudos.SaidaFicha, error: ErroDeLeitura }),
   Rpc.make("lerDocumento", { payload: EntradaDocumento, success: SaidaDocumento, error: ErroDeLeitura }),
+  Rpc.make("explorarIndice", { payload: EntradaIndice, success: SaidaIndice, error: ErroDeLeitura }),
+  Rpc.make("explorarBuscar", { payload: EntradaBusca, success: SaidaBusca, error: ErroDeLeitura }),
 ) {}

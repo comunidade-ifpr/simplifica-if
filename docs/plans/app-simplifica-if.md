@@ -280,7 +280,7 @@ Cada conversa ganha uma pasta em `Documentos/Simplifica IF/<tarefa>/`. O servido
 ### Leitor e Explorar
 
 - **Leitor:** painel lateral aberto por um link `ifpr://`. Mostra o texto literal, o dispositivo destacado, o selo de vigência (vigente, revogada, a confirmar), as relações, as regras de transição e "copiar citação". Lê do `kb` por `effect/rpc`, no próprio servidor do app, sem passar pela IA.
-- **Explorar (Marco 2):** busca (`Ctrl/Cmd+K`) e navegação por normas, cursos, PPCs, campi e CNCT. É instantâneo, funciona offline e não gasta token. Cada página tem "Perguntar à IA sobre isto".
+- **Explorar (Marco 1, M1.15; antes M2.1):** busca (`Ctrl/Cmd+K`) e navegação por normas, cursos, PPCs, campi, CNCT e Consepe. É instantâneo, funciona offline e não gasta token. Cada página tem "Perguntar à IA sobre isto".
 
 ### Configurações do Modo Servidor
 
@@ -380,8 +380,8 @@ simplifica:
 | Marco | Entrega | Para quem | Esforço | Depende de |
 |---|---|---|---|---|
 | 0 | Cérebro portátil: `simplifica-mcp`, pacote da base, skills portáteis, avaliação em 3 IAs | 3 a 5 pessoas da PROENS/DENS, em apps existentes | Médio | Fases 5 e 6 do PLANO-ARQUITETURA |
-| 1 | App beta: app próprio com a stack do T3, motor de produção, Modo Servidor, leitor, atualização, três skills | cerca de 20 pessoas: PROENS/DENS e coordenações de alguns campi | Alto | 0, M1.0 (PoC do motor), trilha T3 (DOCX) |
-| 2 | A base vai até o servidor: Explorar, "Para você", superpoderes, contribuição | piloto ampliado: coordenações de todos os campi | Médio a alto | 1 |
+| 1 | App beta: app próprio com a stack do T3, motor de produção, Modo Servidor, leitor, Explorar, atualização, três skills | cerca de 20 pessoas: PROENS/DENS e coordenações de alguns campi | Alto | 0, M1.0 (PoC do motor), trilha T3 (DOCX) |
+| 2 | A base vai até o servidor: "Para você", superpoderes, contribuição | piloto ampliado: coordenações de todos os campi | Médio a alto | 1 |
 
 ---
 
@@ -530,7 +530,7 @@ Lacunas: MCP por HTTP local, recursos `ifpr://`, isolamento (`~/.codex` e `~/.ge
   - **Desempenho:** renderização por blocos de cerca de 8 mil caracteres, cortados antes de cabeçalho; o do trecho primeiro, os outros no tempo ocioso, com ancoragem de rolagem e `content-visibility`. No maior PPC (720 mil caracteres), 10 ms até o trecho, contra 351 ms bloqueando de uma vez; a LDB, 12 ms.
   - **Testes:** o plugin e os blocos (unidade, pelo mesmo `react-markdown`), histórico, selos e citação; o RPC `lerDocumento` (norma, PPC, fragmento inexistente, stub e link errado); no navegador, do chip ao inciso destacado e à vista, "Copiar citação", relações com voltar e avançar e o PPC na seção, sem o HTML cru do arquivo.
   - **Revisão independente (17/11/2026), corrigido:** base baixada de outro esquema não vence a empacotada (na abertura e depois de "Voltar"), e a fábrica recusa base de esquema novo sem `--app-minimo` (ver M1.10); redação não vigente e texto fora do ato em bloco esmaecido e rotulado, fora do destaque; "Ato de …" e a publicação só quando registrada; selos com o estado "na data da base" e a data do evento à parte; `<br>` dos PPCs como quebra de linha; corte de blocos também em linha em branco (o maior caiu de 222 mil para 60 mil caracteres); corrida do `useCarga`; "[…]" em cada salto da citação e corte sem partir palavra; seção que começa sem elemento próprio ancorada no anterior; foco no painel, anúncio oculto do trecho e `status` na espera; links `#âncora`, `mailto:` e relativos sem rejeição solta; "Anexo I, art. 5º" e "seção de avaliação" nos nomes curtos; testes de navegador do documento em blocos, da imagem e dos links. Gabaritos do kb, do MCP e do banco atualizados também pelo campo `execucao` das fichas, que já divergia no `main`.
-  - **Fica para depois:** telas próprias de curso, CNCT, campus e ficha (hoje o texto do `lerLink`; a ficha do curso é do Explorar, Marco 2); busca dentro do documento; exportar em PDF ou DOCX (hoje, "Salvar como PDF" no diálogo de impressão); o campo `urn_lexml` e o TSV para a IA; a impressão de um PPC grande monta tudo de uma vez (cerca de 1 s). Os gabaritos `banco.txt` e `mcp.json` foram atualizados nas linhas do esquema 4 e, na revisão, também nas diferenças que já estavam no `main` (ver `testes-gabarito/README.md`).
+  - **Fica para depois:** ~~telas próprias de curso, CNCT, campus e ficha~~ (feitas no Explorar, M1.15); busca dentro do documento; exportar em PDF ou DOCX (hoje, "Salvar como PDF" no diálogo de impressão); o campo `urn_lexml` e o TSV para a IA; a impressão de um PPC grande monta tudo de uma vez (cerca de 1 s). Os gabaritos `banco.txt` e `mcp.json` foram atualizados nas linhas do esquema 4 e, na revisão, também nas diferenças que já estavam no `main` (ver `testes-gabarito/README.md`).
 - **M1.7 — Política de fábrica.** Ver [Política de fábrica](#política-de-fábrica) abaixo. **Versão mínima feita em 15/11/2026**, no motor (`packages/motor/src/politica.ts`), aplicada nos três drivers: cada pedido nativo se classifica por tipo de ferramenta e lugar; `ifpr` passa sem perguntar, escrita e comandos perguntam dentro da pasta de trabalho e se negam fora, leitura fora da pasta, outros MCP e web se negam; telemetria desligada nos três. O atributo de atualização (feed, canal, chave minisign e a regra do app, `se-assinado`) entrou com o M1.10, em `packages/motor/src/politica-atualizacao.ts`; o feed e a chave de produção ficam `null` até o repositório abrir e a chave ser gerada.
 - **M1.8 — Primeiro uso.**
   - **Boas-vindas em três passos:** conectar a IA (M1.3), preencher o perfil (campus, função, cursos) e fazer uma tarefa de exemplo.
@@ -721,6 +721,17 @@ Lacunas: MCP por HTTP local, recursos `ifpr://`, isolamento (`~/.codex` e `~/.ge
   - **Diálogos de arquivo do Windows: limite aceito.** O Electron não tem opção para a língua dos diálogos do sistema (o `--lang` vale só para o Chromium e não há `app.setLocale`); o app já põe em português o título, o botão de confirmar e o nome do filtro (`title`, `buttonLabel`, `filters`), e o resto ("Cancelar", "Nome do arquivo") segue a língua do Windows.
   - **Fica:** o detector continua uma lista de palavras; o macOS em inglês não foi conferido visualmente.
 
+- **M1.15 — Explorar.** Antes M2.1; trazido ao Marco 1 por decisão do usuário em 17/11/2026. Navegar pela base inteira sem IA, offline e instantâneo: busca `Ctrl/Cmd+K` e páginas de norma, curso, PPC, campus, CNCT, Consepe e ficha de análise, cada uma com "Perguntar à IA sobre isto". Tudo vem do `kb` por `effect/rpc`, sem IA.
+
+  **Feito em 17/11/2026** (branch `t3/193dc05a`, aguardando revisão; sem merge). Detalhes em `apps/web/README.md`, "Explorar", e `packages/mcp/README.md`:
+  - **Base (esquema 5):** o `kb.sqlite` ganhou as reuniões do Consepe (`conselhos`, `conselhos_reunioes`, `conselhos_documentos`, `conselhos_itens`, de `institucional/ifpr/conselhos/`, com o curso e o campus de cada item de pauta) e, em `campi`, o calendário acadêmico e a página dos horários de aula. O app antigo não lê o esquema 5: o app sobe para **0.2.0** (`apps/desktop`, `apps/server`, `apps/web`), e a primeira base do esquema 5 sai pela fábrica com `--app-minimo 0.2.0`, como pede `packages/atualizacao/README.md` (o `APP_MINIMO_PADRAO` continua 0.1.0, e a fábrica recusa a base do esquema 5 sem o `--app-minimo`; teste em `packages/atualizacao`). Nenhuma base do esquema 4 foi publicada: o feed de produção ainda é `null` e nada saiu pela fábrica.
+  - **RPC:** dois métodos novos no `GrupoLeitura`, sem ferramenta MCP (a IA já tem `buscar_norma`, `listar_cursos`, `buscar_secoes` e as fichas, com o texto no orçamento dela; o índice inteiro e a paleta servem à tela): `explorarIndice` (as coleções inteiras, cerca de 340 KB, montadas na primeira chamada e guardadas, porque o banco não muda com o servidor no ar) e `explorarBuscar` (os resultados por tipo: a citação reconhecida pela regra do `buscar_norma` primeiro, as coleções pequenas na memória por começo de palavra sem acento, as seções dos PPCs pelo FTS). As páginas de curso, campus, CNCT e ficha usam os RPCs que já existiam (`fichaCurso`, `lerCampus`, `lerCnct`, `lerFicha`) e completam com o índice.
+  - **Tempo, no `kb.sqlite` real** (`node packages/mcp/scripts/medir-explorar.ts`, 12 consultas de referência, 20 vezes cada, num Apple M5): índice em 5 a 21 ms na primeira chamada; buscas com mediana de 1 a 12 ms e máximo de 7 a 54 ms com a máquina em repouso (sob carga de outros processos, picos de até 137 ms). A primeira medição da busca de "curso" deu 210 ms: a junção com o texto das seções antes de ordenar lia milhares de linhas; ranquear só no FTS e juntar depois a levou a 5 ms. O script falha acima de 200 ms. O computador mais modesto do piloto não foi medido.
+  - **Interface:** a aba "Explorar" no cabeçalho (entre Início e Configurações) e "Buscar" com o atalho; a paleta é um combobox (setas, Enter, Esc devolve o foco, contagem anunciada); as coleções Normas (órgão, tipo, ano, situação de vigência, inclusive "Vigência a confirmar"), Cursos (campus, nível, eixo, forma, turno, processo seletivo), PPCs, Campi, CNCT ("Só os que o IFPR oferta"), Consepe (tipo de demanda, campus) e Fichas, com os filtros na URL. Normas e PPCs abrem no leitor do M1.6 (o mesmo `ConteudoLink`); curso, campus, CNCT e ficha ganharam telas próprias (`apps/web/src/leitor/Fichas.tsx`), que valem também no painel da conversa. A ficha do curso marca cada divergência PPC × SUAP como "Extraído, conferir" quando o valor do PPC saiu do texto por regra, com o trecho e a linha de origem. "Perguntar à IA sobre isto" leva ao Início com a caixa já escrita (o nome da página e o link `ifpr://`) e o foco no fim, sem enviar; o aviso de uso continua valendo.
+  - **Testes:** unidade da busca na memória, do RPC no banco de fixture (`packages/mcp/test/fixture-explorar.ts`) e na base real (quando o `tmp/kb.sqlite` é do esquema 5; sem relógio, pela regra do lint), dos filtros e textos da interface; navegador (`apps/web/src/explorar/explorar.browser.test.tsx`): a citação que cai no dispositivo destacado, o curso que abre a ficha (divergência, CNCT, Consepe, "Perguntar à IA" sem enviar) e as coleções com filtros, com o `achadosDaTela` do M1.14 em cada tela nova. Gabaritos: `banco.txt` nas linhas do esquema 5 e `mcp.json` nas contagens do `sobre_a_base` (ver `testes-gabarito/README.md`); a CLI `kb` não mudou.
+  - **Revisão independente (17/11/2026), corrigido:** o título do dispositivo na paleta traz o caminho inteiro ("…, art. 28, XVIII"; "…, Anexo 1, art. 21, § 1º"), por `textoDispositivos`; consulta colada com mais de 300 caracteres é cortada no campo, sem erro técnico; a ficha do curso marca "Precisa de revisão" nas divergências de fato com outro status que não "Revisado" (como o ano do documento dos dados institucionais), além de "Extraído, conferir"; os itens de pauta gravam a `ordem` oficial da pauta (a reunião de 28/05/2026 começa no 12); "Perguntar à IA" com o primeiro uso por fazer leva o pedido pelas boas-vindas e o devolve ao Início; o índice guardado na interface é esquecido quando a conexão cai (o servidor pode voltar com outra base); singular em "1 item de pauta"; o teste de navegador visita também os PPCs e confere que "Perguntar à IA" não cria conversa.
+  - **Fica para depois:** na ficha do curso, as normas que afetam o curso por `impacto` e os prazos por perfil (com o "Para você", M2.2); paginação das coleções (a maior tem 225 itens); sinônimos na busca das coleções e o léxico do `buscar_secoes` na das seções; link `ifpr://` e recurso MCP para o Consepe (hoje "Perguntar à IA" numa reunião leva os links dos cursos da pauta e a página da pauta); guardar a rolagem ao voltar; medir no computador mais modesto do piloto.
+
 #### Política de fábrica
 
 O T3 tem uma política gerenciada (`ManagedPolicy`) com dezenas de travas. No app próprio, a política só precisa cobrir o que o app faz. **Versão mínima:**
@@ -757,20 +768,18 @@ O T3 tem uma política gerenciada (`ManagedPolicy`) com dezenas de travas. No ap
 - **Atualização:** uma nova versão da base chega a 90% dos computadores ativos do piloto em até 48 horas.
 - **Fontes:** em pelo menos 60% das conversas com resposta normativa, o servidor abre ao menos uma citação. É a medida de que a fonte está a um clique.
 - **Português:** nenhum texto em inglês nas telas, conferido pelo teste de navegador do M1.14.
+- **Explorar:** responde em menos de 200 ms por consulta no computador mais modesto do piloto (movido do Marco 2 com o M1.15).
 - **Código do T3:** toda parte copiada está em [upstream-t3.md](../upstream-t3.md), e `pnpm upstream:t3 status` roda sem erro.
 
 ---
 
 ### Marco 2 — A base vai até o servidor
 
-**Objetivo.** O app avisa cada servidor do que o afeta, permite explorar a base sem IA e recebe contribuições.
+**Objetivo.** O app avisa cada servidor do que o afeta e recebe contribuições. (Explorar a base sem IA passou ao Marco 1, M1.15.)
 
 **Entregas**
 
-- **M2.1 — Explorar.**
-  - Busca `Ctrl/Cmd+K` e páginas de norma, curso, PPC, campus e CNCT.
-  - A página do curso reúne o PPC vigente, as ofertas, o CNCT, as divergências entre o PPC e os dados do SUAP publicados na base (`kb ppc-fatos`), as normas que o afetam (`kb citacoes`, `kb impacto`) e os prazos.
-  - Tudo vem do `kb` por `effect/rpc`, sem IA.
+- **M2.1 — Explorar.** Movido ao Marco 1 (M1.15) em 17/11/2026 e feito no mesmo dia. Fica aqui o que dele depende do "Para você": na página do curso, as normas que o afetam por `kb impacto` e os prazos por perfil.
 - **M2.2 — Motor "Para você".** Determinístico e local:
   - **Entradas:** `novidades.yaml` com os afetados já calculados, `transicoes.yaml` (prazos), divergências de `ppc-fatos` e o perfil local.
   - **Tipos de aviso:**
@@ -803,7 +812,6 @@ O T3 tem uma política gerenciada (`ManagedPolicy`) com dezenas de travas. No ap
 - **"Para você":**
   - nenhum aviso falso nos casos de teste (afetados conferidos à mão para 3 novidades reais);
   - pelo menos 30% dos avisos abertos pelo piloto.
-- **Explorar:** responde em menos de 200 ms por consulta no computador mais modesto do piloto.
 - **Contribuição:** pelo menos uma norma proposta pelo app chega a `main` depois da revisão da curadoria.
 
 ---
@@ -815,7 +823,7 @@ O T3 tem uma política gerenciada (`ManagedPolicy`) com dezenas de travas. No ap
 | Base e `kb` (PLANO-ARQUITETURA) | concluir fases 5 e 6; pacote publicável | T3 (DOCX em TS) | `novidades.yaml`; afetados por novidade |
 | Stack ([consolidação](consolidacao-stack-t3.md)) | C0 a C3 (concluídos) | interface e desktop no catalog | — |
 | `simplifica-mcp` | ferramentas, executável, modo pacote | MCP HTTP local, recursos `ifpr://`, RPC de leitura no servidor local, atualização | validação local de norma |
-| App | — | shell, política, Modo Servidor, leitor, interface em português | Explorar, "Para você", contribuição |
+| App | — | shell, política, Modo Servidor, leitor, Explorar, interface em português | "Para você", contribuição |
 | Motor e providers | PoC (M1.0) | motor de produção, instalação, login e isolamento das CLIs | — |
 | Código do T3 | `effect-acp`, `effect-codex-app-server`, cliente SQLite, lint | componentes do shell e do motor, registrados em [upstream-t3.md](../upstream-t3.md) | sincronização caso a caso |
 | Skills | manifesto, 3 skills portáteis | skills no app | `explicar-novidade` |
@@ -926,4 +934,5 @@ Só métricas agregadas e com opt-in saem do computador. O padrão é não envia
 - 17/11/2026: **M1.6, leitor `ifpr://`** (revisado; merge em `main` em 17/11/2026). Painel nativo para os seis tipos de link, lendo do `kb` pelo `GrupoLeitura` (`lerDocumento` novo, base no esquema 4 com o Markdown inteiro): selos de vigência, transições, relações navegáveis, dispositivo destacado e à vista, PPC ancorado nas seções, "Copiar citação", voltar e avançar, impressão. HTML gerado na hora pelo `react-markdown` com o plugin `rehypeDispositivos`, sem HTML cru; renderização por blocos (10 ms até o trecho no maior PPC).
 - 17/11/2026: **M1.12 ("Isto está errado")** (revisado; merge em `main` em 17/11/2026, `ccefae5`). Relato montado pelo servidor da conversa gravada, com retirada de trechos, fontes (da lista e do texto) e versões, prévia exata com `@` e `#` entre crases e o rótulo, texto fixo de issue pública e destino pela política (`curadoria.repositorio`, `null` até o repositório abrir): registro local (migração 7) e então `issues/new` no navegador, sem token; ou salvar em `Relatos de erro`, fora do alcance da IA, e copiar; 👎. **M1.13 (aviso ao anexar) retirado no mesmo dia por decisão do usuário,** depois de feito e medido (17,3% dos PPCs teriam aviso; 61,4% com o telefone fixo); a varredura achou CPF e RG em PPCs da base, a tratar na abertura do repositório.
 - 17/11/2026: **M1.14, interface em português** (branch `t3/724f1985`, aguardando revisão; sem merge). Erros dos providers explicados por tipo (cota, rede e proxy, versão antiga, recusa por regras de uso, serviço fora do ar e os de antes), com o texto técnico só em "Detalhes técnicos"; teste de navegador que falha com inglês ou jargão nas telas principais, inclusive nos atributos acessíveis, com lista de exceções explícita; textos com "token", "provider", "issue", "skills", "commit" e "pasta de trabalho" trocados; desktop com o Chromium em pt-BR, o pacote do macOS só em pt-BR e o instalador NSIS em português.
-- 17/11/2026: **sobras do M1.14** (branch `t3/be9599fa`, aguardando revisão; sem merge). Moeda, números e datas num utilitário único pelo `Intl` em pt-BR; conexão sem "servidor local" (o técnico em "Detalhes técnicos"); "revisão da base" ao lado do `commit` do relato; teste que lista o destino de cada frase do código copiado do T3 e acusa frase nova; detector com as palavras inglesas mais comuns de interface e mais telas; diálogos de arquivo do Windows registrados como limite aceito.
+- 17/11/2026: **sobras do M1.14** (merge em `main`). Moeda, números e datas num utilitário único pelo `Intl` em pt-BR; conexão sem "servidor local" (o técnico em "Detalhes técnicos"); "revisão da base" ao lado do `commit` do relato; teste que lista o destino de cada frase do código copiado do T3 e acusa frase nova; detector com as palavras inglesas mais comuns de interface e mais telas; diálogos de arquivo do Windows registrados como limite aceito.
+- 17/11/2026: **M1.15, Explorar** (antes M2.1, trazido ao Marco 1 por decisão do usuário; branch `t3/193dc05a`, aguardando revisão; sem merge). Busca `Ctrl/Cmd+K` com a citação resolvida ao dispositivo, coleções com filtros (normas, cursos, PPCs, campi, CNCT, Consepe, fichas), telas próprias de curso (com as divergências PPC × SUAP marcadas "Extraído, conferir"), campus, CNCT e ficha, também no painel da conversa, e "Perguntar à IA sobre isto" com o pedido escrito e sem envio. Base no esquema 5 (Consepe e horários dos campi; publicar exige `--app-minimo`), dois RPCs no `GrupoLeitura` sem ferramenta MCP; buscas com mediana de 1 a 12 ms no `kb.sqlite` real.

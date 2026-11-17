@@ -7,7 +7,8 @@ import * as NodeFS from "node:fs";
 import * as NodeHttp from "node:http";
 import * as NodePath from "node:path";
 import { afterEach, describe, expect, it } from "@effect/vitest";
-import { conferirEsquema, type SkillDaFabrica } from "../src/fabrica.ts";
+import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
+import { APP_MINIMO_PADRAO, conferirEsquema, type SkillDaFabrica } from "../src/fabrica.ts";
 import {
   ARQUIVO_TRAVA,
   caminhos,
@@ -17,6 +18,7 @@ import {
   prepararAbertura,
   tomarTrava,
 } from "../src/local.ts";
+import { compararVersoes } from "../src/manifesto.ts";
 import { validarBancoEmWorker } from "../src/pesado.ts";
 import { baixarComFetch } from "../src/remoto.ts";
 import { gerarChaves } from "../src/minisign.ts";
@@ -290,16 +292,22 @@ describe("revisão: skills, trava, proxy, temporários e Worker", () => {
 });
 
 describe("esquema da base na abertura e na fábrica", () => {
+  // o esquema deste app e o anterior (a base baixada pelo app antigo)
+  const ATUAL = VERSAO_ESQUEMA;
+  const ANTIGO = VERSAO_ESQUEMA - 1;
+
   it("base baixada de outro esquema, mesmo mais nova, não vence a empacotada", () => {
     const pasta = pastaTemporaria();
     const empacotada = criarBanco(NodePath.join(pasta, "Resources", "kb.sqlite"), "2026.11.10");
-    criarBanco(caminhos(pasta).atual, "2026.11.20", { esquema: 3 });
-    const abertura = prepararAbertura({ pasta, bancoEmpacotado: empacotada, versaoEsquema: 4 });
+    criarBanco(caminhos(pasta).atual, "2026.11.20", { esquema: ANTIGO });
+    const abertura = prepararAbertura({ pasta, bancoEmpacotado: empacotada, versaoEsquema: ATUAL });
     // a empacotada é do esquema deste app (criarBanco grava o VERSAO_ESQUEMA do kb)
-    expect(lerInfoBanco(empacotada)?.versaoEsquema).toBe(4);
+    expect(lerInfoBanco(empacotada)?.versaoEsquema).toBe(ATUAL);
     expect(abertura.origem).toBe("empacotada");
     expect(abertura.info?.versao).toBe("2026.11.10");
-    expect(abertura.eventos).toContain("base baixada 2026.11.20 é do esquema 3, e este app lê o 4: abre a empacotada");
+    expect(abertura.eventos).toContain(
+      `base baixada 2026.11.20 é do esquema ${ANTIGO}, e este app lê o ${ATUAL}: abre a empacotada`,
+    );
   });
 
   it('"Voltar" para uma anterior de outro esquema cai na empacotada', () => {
@@ -307,14 +315,32 @@ describe("esquema da base na abertura e na fábrica", () => {
     const empacotada = criarBanco(NodePath.join(pasta, "Resources", "kb.sqlite"), "2026.11.10");
     const c = caminhos(pasta);
     criarBanco(c.atual, "2026.11.20");
-    criarBanco(c.anterior, "2026.11.15", { esquema: 3 });
+    criarBanco(c.anterior, "2026.11.15", { esquema: ANTIGO });
     NodeFS.writeFileSync(NodePath.join(pasta, "atualizacao.json"), JSON.stringify({ voltar: true }));
-    const abertura = prepararAbertura({ pasta, bancoEmpacotado: empacotada, versaoEsquema: 4 });
+    const abertura = prepararAbertura({ pasta, bancoEmpacotado: empacotada, versaoEsquema: ATUAL });
     expect(abertura.origem).toBe("empacotada");
-    expect(abertura.eventos.some((e) => e.startsWith("base baixada 2026.11.15 é do esquema 3"))).toBe(true);
+    expect(abertura.eventos.some((e) => e.startsWith(`base baixada 2026.11.15 é do esquema ${ANTIGO}`))).toBe(true);
     // a mesma base, no esquema certo, vence a empacotada mais velha
-    const certa = prepararAbertura({ pasta, bancoEmpacotado: empacotada, versaoEsquema: 3 });
+    const certa = prepararAbertura({ pasta, bancoEmpacotado: empacotada, versaoEsquema: ANTIGO });
     expect(certa.origem).toBe("baixada");
+  });
+
+  it("o app atual (apps/desktop) passa na regra da fábrica para a primeira base do esquema que ele lê", () => {
+    const pacote = JSON.parse(
+      NodeFS.readFileSync(NodePath.resolve(import.meta.dirname, "../../../apps/desktop/package.json"), "utf8"),
+    ) as { version: string };
+    // 0.2.0 é o primeiro app que lê o esquema 5 (o Explorar, M1.15): a primeira base do esquema 5 sai
+    // com --app-minimo 0.2.0, e o padrão da fábrica continua a primeira versão, 0.1.0
+    expect(VERSAO_ESQUEMA).toBe(5);
+    expect(pacote.version).toBe("0.2.0");
+    expect(APP_MINIMO_PADRAO).toBe("0.1.0");
+    expect(compararVersoes(pacote.version, APP_MINIMO_PADRAO)).toBeGreaterThan(0);
+    const pasta = pastaTemporaria();
+    const anterior = criarBanco(NodePath.join(pasta, "antiga.sqlite"), "2026.11.10", { esquema: ANTIGO });
+    const nova = lerInfoBanco(criarBanco(NodePath.join(pasta, "nova.sqlite"), "2026.11.20"))!;
+    expect(nova.versaoEsquema).toBe(VERSAO_ESQUEMA);
+    expect(() => conferirEsquema(nova, [anterior], APP_MINIMO_PADRAO)).toThrow("informe --app-minimo");
+    expect(() => conferirEsquema(nova, [anterior], pacote.version)).not.toThrow();
   });
 
   it("fábrica: base que sobe o esquema só sai com --app-minimo", () => {

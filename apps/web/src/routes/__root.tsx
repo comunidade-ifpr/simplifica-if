@@ -1,9 +1,10 @@
 /**
- * A moldura das telas: o cabeçalho com o nome do app, a navegação, o estado da conexão e o tema; o
- * aviso de conexão; e a tela da rota. No desktop, o cabeçalho é a barra de título da janela
- * (`barra-titulo.ts`).
+ * A moldura das telas: o cabeçalho com o nome do app, a navegação (Início, Explorar, Configurações), a
+ * busca na base (Ctrl/Cmd+K, a paleta do Explorar), o estado da conexão e o tema; o aviso de conexão; e
+ * a tela da rota. No desktop, o cabeçalho é a barra de título da janela (`barra-titulo.ts`).
  */
 import { createRootRoute, type ErrorComponentProps, Link, Outlet } from "@tanstack/react-router";
+import { SearchIcon } from "lucide-react";
 import { type BarraTitulo, useBarraTitulo } from "../barra-titulo.ts";
 import { AvisoConexao } from "../components/AvisoConexao.tsx";
 import { IndicadorConexao } from "../components/IndicadorConexao.tsx";
@@ -12,6 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx"
 import { Button } from "../components/ui/button.tsx";
 import { DetalhesTecnicos } from "../components/AvisoErro.tsx";
 import { explicarErro } from "../conexao/erros.ts";
+import { atalhoPaleta, ProvedorPaleta, usePaleta } from "../explorar/Paleta.tsx";
 
 export const Route = createRootRoute({
   component: Moldura,
@@ -61,7 +63,34 @@ function ErroDaTela({ error, reset }: ErrorComponentProps) {
 const classeAba =
   "rounded-md px-3 py-1.5 font-semibold text-sm text-white/85 hover:bg-white/10 hover:text-white data-[status=active]:bg-white/15 data-[status=active]:text-white";
 
+/** O botão da busca no cabeçalho, com o atalho. */
+function BotaoBuscar() {
+  const { abrir } = usePaleta();
+  const atalho = atalhoPaleta();
+  return (
+    <button
+      type="button"
+      onClick={() => abrir()}
+      aria-keyshortcuts={atalho === "⌘K" ? "Meta+K" : "Control+K"}
+      title={`Buscar na base (${atalho})`}
+      className="flex items-center gap-2 rounded-md bg-white/10 px-2.5 py-1 text-sm text-white/85 hover:bg-white/20 hover:text-white"
+    >
+      <SearchIcon aria-hidden className="size-3.5" />
+      <span>Buscar</span>
+      <kbd className="hidden rounded bg-black/20 px-1 font-sans text-white/75 text-xs sm:inline">{atalho}</kbd>
+    </button>
+  );
+}
+
 function Moldura() {
+  return (
+    <ProvedorPaleta>
+      <MolduraComPaleta />
+    </ProvedorPaleta>
+  );
+}
+
+function MolduraComPaleta() {
   const barra = useBarraTitulo();
   return (
     <div className="flex h-dvh flex-col bg-background text-foreground">
@@ -81,10 +110,14 @@ function Moldura() {
           <Link to="/" className={classeAba} activeOptions={{ exact: true }}>
             Início
           </Link>
+          <Link to="/explorar" className={classeAba}>
+            Explorar
+          </Link>
           <Link to="/configuracoes" className={classeAba}>
             Configurações
           </Link>
         </nav>
+        <BotaoBuscar />
         <div className="ml-auto flex items-center gap-3 rounded-full bg-black/25 px-3 py-1 text-white">
           <IndicadorConexao />
         </div>

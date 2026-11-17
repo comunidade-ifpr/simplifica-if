@@ -19,7 +19,27 @@
  * usa uma vez, em até `VALIDADE_INGRESSO_MS`. O token, que vale enquanto o servidor viver, nunca vai
  * na URL.
  */
-import { type Ancora, type DadosDocumento, GrupoLeitura, type LinkLido } from "@simplifica-if/mcp/grupo-leitura";
+import {
+  type Ancora,
+  type CampusDoIndice,
+  type CnctDoIndice,
+  type CursoDoIndice,
+  type DadosBusca,
+  type DadosDocumento,
+  type DadosIndice,
+  type DocumentoConselho,
+  type FichaDoIndice,
+  GrupoLeitura,
+  type GrupoBusca,
+  ROTULOS_INDICADOR,
+  type ItemDePauta,
+  type LinkLido,
+  type NormaDoIndice,
+  type PpcDoIndice,
+  type ResultadoBusca,
+  type ReuniaoDoIndice,
+  type TipoResultado,
+} from "@simplifica-if/mcp/grupo-leitura";
 import type {
   EstadoInstalacao as EstadoInstalacaoMotor,
   EstadoLogin as EstadoLoginMotor,
@@ -41,8 +61,24 @@ import { GrupoRelato } from "./relato.ts";
 
 export { AprovacaoDesconhecida, Decisao, FalhaProvider, OperacaoNaoSuportada, SessaoDesconhecida, TurnoEmAndamento };
 export { Evento, Provider };
-export { GrupoLeitura };
+export { GrupoLeitura, ROTULOS_INDICADOR };
 export type { Ancora, DadosDocumento, LinkLido };
+export type {
+  CampusDoIndice,
+  CnctDoIndice,
+  CursoDoIndice,
+  DadosBusca,
+  DadosIndice,
+  DocumentoConselho,
+  FichaDoIndice,
+  GrupoBusca,
+  ItemDePauta,
+  NormaDoIndice,
+  PpcDoIndice,
+  ResultadoBusca,
+  ReuniaoDoIndice,
+  TipoResultado,
+};
 export * from "./preferencias.ts";
 export * from "./relato.ts";
 

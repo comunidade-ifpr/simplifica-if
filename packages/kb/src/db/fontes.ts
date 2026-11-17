@@ -33,7 +33,7 @@ const FONTES_DADOS: readonly { caminho: string; extensoes: readonly string[] }[]
   { caminho: "base-conhecimento/normas", extensoes: [".md", ".yaml"] },
   { caminho: "base-conhecimento/institucional/ifpr/ppcs", extensoes: [".md", ".json", ".jsonl"] },
   { caminho: "base-conhecimento/catalogos/cnct", extensoes: [".json"] },
-  ...["campi", "cursos", "processos-seletivos", "editais", "ofertas"].map((colecao) => ({
+  ...["campi", "cursos", "processos-seletivos", "editais", "ofertas", "conselhos"].map((colecao) => ({
     caminho: `base-conhecimento/institucional/ifpr/${colecao}`,
     extensoes: [".json"],
   })),

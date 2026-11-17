@@ -11,11 +11,22 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TarefasRouteImport } from './routes/tarefas'
 import { Route as RevisaoPpcRouteImport } from './routes/revisao-ppc'
+import { Route as ExplorarRouteImport } from './routes/explorar'
 import { Route as ConversaRouteImport } from './routes/conversa'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as BoasVindasRouteImport } from './routes/boas-vindas'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ExplorarIndexRouteImport } from './routes/explorar/index'
 import { Route as TarefaNomeRouteImport } from './routes/tarefa/$nome'
+import { Route as ExplorarVerRouteImport } from './routes/explorar/ver'
+import { Route as ExplorarReuniaoRouteImport } from './routes/explorar/reuniao'
+import { Route as ExplorarPpcsRouteImport } from './routes/explorar/ppcs'
+import { Route as ExplorarNormasRouteImport } from './routes/explorar/normas'
+import { Route as ExplorarFichasRouteImport } from './routes/explorar/fichas'
+import { Route as ExplorarCursosRouteImport } from './routes/explorar/cursos'
+import { Route as ExplorarConsepeRouteImport } from './routes/explorar/consepe'
+import { Route as ExplorarCnctRouteImport } from './routes/explorar/cnct'
+import { Route as ExplorarCampiRouteImport } from './routes/explorar/campi'
 
 const TarefasRoute = TarefasRouteImport.update({
   id: '/tarefas',
@@ -25,6 +36,11 @@ const TarefasRoute = TarefasRouteImport.update({
 const RevisaoPpcRoute = RevisaoPpcRouteImport.update({
   id: '/revisao-ppc',
   path: '/revisao-ppc',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExplorarRoute = ExplorarRouteImport.update({
+  id: '/explorar',
+  path: '/explorar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConversaRoute = ConversaRouteImport.update({
@@ -47,10 +63,60 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExplorarIndexRoute = ExplorarIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ExplorarRoute,
+} as any)
 const TarefaNomeRoute = TarefaNomeRouteImport.update({
   id: '/tarefa/$nome',
   path: '/tarefa/$nome',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ExplorarVerRoute = ExplorarVerRouteImport.update({
+  id: '/ver',
+  path: '/ver',
+  getParentRoute: () => ExplorarRoute,
+} as any)
+const ExplorarReuniaoRoute = ExplorarReuniaoRouteImport.update({
+  id: '/reuniao',
+  path: '/reuniao',
+  getParentRoute: () => ExplorarRoute,
+} as any)
+const ExplorarPpcsRoute = ExplorarPpcsRouteImport.update({
+  id: '/ppcs',
+  path: '/ppcs',
+  getParentRoute: () => ExplorarRoute,
+} as any)
+const ExplorarNormasRoute = ExplorarNormasRouteImport.update({
+  id: '/normas',
+  path: '/normas',
+  getParentRoute: () => ExplorarRoute,
+} as any)
+const ExplorarFichasRoute = ExplorarFichasRouteImport.update({
+  id: '/fichas',
+  path: '/fichas',
+  getParentRoute: () => ExplorarRoute,
+} as any)
+const ExplorarCursosRoute = ExplorarCursosRouteImport.update({
+  id: '/cursos',
+  path: '/cursos',
+  getParentRoute: () => ExplorarRoute,
+} as any)
+const ExplorarConsepeRoute = ExplorarConsepeRouteImport.update({
+  id: '/consepe',
+  path: '/consepe',
+  getParentRoute: () => ExplorarRoute,
+} as any)
+const ExplorarCnctRoute = ExplorarCnctRouteImport.update({
+  id: '/cnct',
+  path: '/cnct',
+  getParentRoute: () => ExplorarRoute,
+} as any)
+const ExplorarCampiRoute = ExplorarCampiRouteImport.update({
+  id: '/campi',
+  path: '/campi',
+  getParentRoute: () => ExplorarRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -58,9 +124,20 @@ export interface FileRoutesByFullPath {
   '/boas-vindas': typeof BoasVindasRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/conversa': typeof ConversaRoute
+  '/explorar': typeof ExplorarRouteWithChildren
   '/revisao-ppc': typeof RevisaoPpcRoute
   '/tarefas': typeof TarefasRoute
+  '/explorar/campi': typeof ExplorarCampiRoute
+  '/explorar/cnct': typeof ExplorarCnctRoute
+  '/explorar/consepe': typeof ExplorarConsepeRoute
+  '/explorar/cursos': typeof ExplorarCursosRoute
+  '/explorar/fichas': typeof ExplorarFichasRoute
+  '/explorar/normas': typeof ExplorarNormasRoute
+  '/explorar/ppcs': typeof ExplorarPpcsRoute
+  '/explorar/reuniao': typeof ExplorarReuniaoRoute
+  '/explorar/ver': typeof ExplorarVerRoute
   '/tarefa/$nome': typeof TarefaNomeRoute
+  '/explorar/': typeof ExplorarIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -69,7 +146,17 @@ export interface FileRoutesByTo {
   '/conversa': typeof ConversaRoute
   '/revisao-ppc': typeof RevisaoPpcRoute
   '/tarefas': typeof TarefasRoute
+  '/explorar/campi': typeof ExplorarCampiRoute
+  '/explorar/cnct': typeof ExplorarCnctRoute
+  '/explorar/consepe': typeof ExplorarConsepeRoute
+  '/explorar/cursos': typeof ExplorarCursosRoute
+  '/explorar/fichas': typeof ExplorarFichasRoute
+  '/explorar/normas': typeof ExplorarNormasRoute
+  '/explorar/ppcs': typeof ExplorarPpcsRoute
+  '/explorar/reuniao': typeof ExplorarReuniaoRoute
+  '/explorar/ver': typeof ExplorarVerRoute
   '/tarefa/$nome': typeof TarefaNomeRoute
+  '/explorar': typeof ExplorarIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,9 +164,20 @@ export interface FileRoutesById {
   '/boas-vindas': typeof BoasVindasRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/conversa': typeof ConversaRoute
+  '/explorar': typeof ExplorarRouteWithChildren
   '/revisao-ppc': typeof RevisaoPpcRoute
   '/tarefas': typeof TarefasRoute
+  '/explorar/campi': typeof ExplorarCampiRoute
+  '/explorar/cnct': typeof ExplorarCnctRoute
+  '/explorar/consepe': typeof ExplorarConsepeRoute
+  '/explorar/cursos': typeof ExplorarCursosRoute
+  '/explorar/fichas': typeof ExplorarFichasRoute
+  '/explorar/normas': typeof ExplorarNormasRoute
+  '/explorar/ppcs': typeof ExplorarPpcsRoute
+  '/explorar/reuniao': typeof ExplorarReuniaoRoute
+  '/explorar/ver': typeof ExplorarVerRoute
   '/tarefa/$nome': typeof TarefaNomeRoute
+  '/explorar/': typeof ExplorarIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -88,9 +186,20 @@ export interface FileRouteTypes {
     | '/boas-vindas'
     | '/configuracoes'
     | '/conversa'
+    | '/explorar'
     | '/revisao-ppc'
     | '/tarefas'
+    | '/explorar/campi'
+    | '/explorar/cnct'
+    | '/explorar/consepe'
+    | '/explorar/cursos'
+    | '/explorar/fichas'
+    | '/explorar/normas'
+    | '/explorar/ppcs'
+    | '/explorar/reuniao'
+    | '/explorar/ver'
     | '/tarefa/$nome'
+    | '/explorar/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -99,16 +208,37 @@ export interface FileRouteTypes {
     | '/conversa'
     | '/revisao-ppc'
     | '/tarefas'
+    | '/explorar/campi'
+    | '/explorar/cnct'
+    | '/explorar/consepe'
+    | '/explorar/cursos'
+    | '/explorar/fichas'
+    | '/explorar/normas'
+    | '/explorar/ppcs'
+    | '/explorar/reuniao'
+    | '/explorar/ver'
     | '/tarefa/$nome'
+    | '/explorar'
   id:
     | '__root__'
     | '/'
     | '/boas-vindas'
     | '/configuracoes'
     | '/conversa'
+    | '/explorar'
     | '/revisao-ppc'
     | '/tarefas'
+    | '/explorar/campi'
+    | '/explorar/cnct'
+    | '/explorar/consepe'
+    | '/explorar/cursos'
+    | '/explorar/fichas'
+    | '/explorar/normas'
+    | '/explorar/ppcs'
+    | '/explorar/reuniao'
+    | '/explorar/ver'
     | '/tarefa/$nome'
+    | '/explorar/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -116,6 +246,7 @@ export interface RootRouteChildren {
   BoasVindasRoute: typeof BoasVindasRoute
   ConfiguracoesRoute: typeof ConfiguracoesRoute
   ConversaRoute: typeof ConversaRoute
+  ExplorarRoute: typeof ExplorarRouteWithChildren
   RevisaoPpcRoute: typeof RevisaoPpcRoute
   TarefasRoute: typeof TarefasRoute
   TarefaNomeRoute: typeof TarefaNomeRoute
@@ -135,6 +266,13 @@ declare module '@tanstack/react-router' {
       path: '/revisao-ppc'
       fullPath: '/revisao-ppc'
       preLoaderRoute: typeof RevisaoPpcRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explorar': {
+      id: '/explorar'
+      path: '/explorar'
+      fullPath: '/explorar'
+      preLoaderRoute: typeof ExplorarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/conversa': {
@@ -165,6 +303,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/explorar/': {
+      id: '/explorar/'
+      path: '/'
+      fullPath: '/explorar/'
+      preLoaderRoute: typeof ExplorarIndexRouteImport
+      parentRoute: typeof ExplorarRoute
+    }
     '/tarefa/$nome': {
       id: '/tarefa/$nome'
       path: '/tarefa/$nome'
@@ -172,14 +317,108 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TarefaNomeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/explorar/ver': {
+      id: '/explorar/ver'
+      path: '/ver'
+      fullPath: '/explorar/ver'
+      preLoaderRoute: typeof ExplorarVerRouteImport
+      parentRoute: typeof ExplorarRoute
+    }
+    '/explorar/reuniao': {
+      id: '/explorar/reuniao'
+      path: '/reuniao'
+      fullPath: '/explorar/reuniao'
+      preLoaderRoute: typeof ExplorarReuniaoRouteImport
+      parentRoute: typeof ExplorarRoute
+    }
+    '/explorar/ppcs': {
+      id: '/explorar/ppcs'
+      path: '/ppcs'
+      fullPath: '/explorar/ppcs'
+      preLoaderRoute: typeof ExplorarPpcsRouteImport
+      parentRoute: typeof ExplorarRoute
+    }
+    '/explorar/normas': {
+      id: '/explorar/normas'
+      path: '/normas'
+      fullPath: '/explorar/normas'
+      preLoaderRoute: typeof ExplorarNormasRouteImport
+      parentRoute: typeof ExplorarRoute
+    }
+    '/explorar/fichas': {
+      id: '/explorar/fichas'
+      path: '/fichas'
+      fullPath: '/explorar/fichas'
+      preLoaderRoute: typeof ExplorarFichasRouteImport
+      parentRoute: typeof ExplorarRoute
+    }
+    '/explorar/cursos': {
+      id: '/explorar/cursos'
+      path: '/cursos'
+      fullPath: '/explorar/cursos'
+      preLoaderRoute: typeof ExplorarCursosRouteImport
+      parentRoute: typeof ExplorarRoute
+    }
+    '/explorar/consepe': {
+      id: '/explorar/consepe'
+      path: '/consepe'
+      fullPath: '/explorar/consepe'
+      preLoaderRoute: typeof ExplorarConsepeRouteImport
+      parentRoute: typeof ExplorarRoute
+    }
+    '/explorar/cnct': {
+      id: '/explorar/cnct'
+      path: '/cnct'
+      fullPath: '/explorar/cnct'
+      preLoaderRoute: typeof ExplorarCnctRouteImport
+      parentRoute: typeof ExplorarRoute
+    }
+    '/explorar/campi': {
+      id: '/explorar/campi'
+      path: '/campi'
+      fullPath: '/explorar/campi'
+      preLoaderRoute: typeof ExplorarCampiRouteImport
+      parentRoute: typeof ExplorarRoute
+    }
   }
 }
+
+interface ExplorarRouteChildren {
+  ExplorarCampiRoute: typeof ExplorarCampiRoute
+  ExplorarCnctRoute: typeof ExplorarCnctRoute
+  ExplorarConsepeRoute: typeof ExplorarConsepeRoute
+  ExplorarCursosRoute: typeof ExplorarCursosRoute
+  ExplorarFichasRoute: typeof ExplorarFichasRoute
+  ExplorarNormasRoute: typeof ExplorarNormasRoute
+  ExplorarPpcsRoute: typeof ExplorarPpcsRoute
+  ExplorarReuniaoRoute: typeof ExplorarReuniaoRoute
+  ExplorarVerRoute: typeof ExplorarVerRoute
+  ExplorarIndexRoute: typeof ExplorarIndexRoute
+}
+
+const ExplorarRouteChildren: ExplorarRouteChildren = {
+  ExplorarCampiRoute: ExplorarCampiRoute,
+  ExplorarCnctRoute: ExplorarCnctRoute,
+  ExplorarConsepeRoute: ExplorarConsepeRoute,
+  ExplorarCursosRoute: ExplorarCursosRoute,
+  ExplorarFichasRoute: ExplorarFichasRoute,
+  ExplorarNormasRoute: ExplorarNormasRoute,
+  ExplorarPpcsRoute: ExplorarPpcsRoute,
+  ExplorarReuniaoRoute: ExplorarReuniaoRoute,
+  ExplorarVerRoute: ExplorarVerRoute,
+  ExplorarIndexRoute: ExplorarIndexRoute,
+}
+
+const ExplorarRouteWithChildren = ExplorarRoute._addFileChildren(
+  ExplorarRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BoasVindasRoute: BoasVindasRoute,
   ConfiguracoesRoute: ConfiguracoesRoute,
   ConversaRoute: ConversaRoute,
+  ExplorarRoute: ExplorarRouteWithChildren,
   RevisaoPpcRoute: RevisaoPpcRoute,
   TarefasRoute: TarefasRoute,
   TarefaNomeRoute: TarefaNomeRoute,

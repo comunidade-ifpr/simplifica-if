@@ -27,6 +27,7 @@ import * as Logger from "effect/Logger";
 import * as Redacted from "effect/Redacted";
 import * as Servidor from "@simplifica-if/server";
 import { criarBancoFixture, diretorioTemporario, limparTemporarios } from "../../../packages/mcp/test/fixture.ts";
+import { inserirExplorar } from "../../../packages/mcp/test/fixture-explorar.ts";
 import { inserirNormas } from "../../../packages/mcp/test/fixture-normas.ts";
 import { ppcSintetico } from "../../../packages/ppc/src/testes/revisao-previa.ts";
 import * as Demonstracao from "./drivers-demonstracao.ts";
@@ -57,6 +58,8 @@ const banco = criarBancoFixture();
 /** Uma pasta de trabalho que existe, para as conversas dos testes de navegador. */
 const pasta = diretorioTemporario("simplifica-web-pasta-");
 inserirNormas(banco);
+// O que o Explorar mostra além das normas: CNCT, ofertas, horários de campus, Consepe, ficha e fatos do PPC.
+inserirExplorar(banco);
 // A taxonomia de tópicos das fichas da `revisar-ppc`, para a revisão prévia agrupar por tema.
 {
   const arquivo = NodePath.resolve(

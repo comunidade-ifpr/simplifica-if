@@ -52,6 +52,8 @@ export const layerHandlersRpc = GrupoLeitura.toLayer(
       lerCampus: leitura.lerCampus,
       lerFicha: leitura.lerFicha,
       lerDocumento: leitura.lerDocumento,
+      explorarIndice: leitura.explorarIndice,
+      explorarBuscar: leitura.explorarBuscar,
     });
   }),
 );

@@ -15,7 +15,7 @@
  *   `rowid` do FTS é o da tabela de origem.
  */
 
-export const VERSAO_ESQUEMA = 4;
+export const VERSAO_ESQUEMA = 5;
 
 const TOKENIZADOR = `tokenize="unicode61 remove_diacritics 2"`;
 
@@ -68,6 +68,10 @@ CREATE TABLE campi (
   campus_id TEXT NOT NULL UNIQUE,
   nome TEXT NOT NULL,
   site TEXT,
+  -- páginas públicas do campus (esquema 5, para a ficha do campus no Explorar do app)
+  calendario_academico TEXT,
+  horarios_url TEXT,
+  horarios_coletado_em TEXT,
   path TEXT NOT NULL
 );
 
@@ -179,6 +183,67 @@ CREATE TABLE ofertas_cursos (
   PRIMARY KEY (oferta_id, curso_id)
 ) WITHOUT ROWID;
 CREATE INDEX ofertas_cursos_curso ON ofertas_cursos(curso_id);
+
+-- Conselhos superiores (institucional/ifpr/conselhos/, esquema 5): o conselho, as reuniões, os documentos
+-- publicados (pauta, pareceres) e os itens de pauta, na ordem do arquivo. Sem dado de pessoa. curso_id
+-- e campus_id dos itens: os IDs do registro (campus/curso e campus), quando a curadoria os ligou.
+CREATE TABLE conselhos (
+  id TEXT PRIMARY KEY,
+  sigla TEXT NOT NULL,
+  nome TEXT NOT NULL,
+  situacao TEXT,
+  pagina_oficial TEXT,
+  path TEXT NOT NULL
+);
+
+CREATE TABLE conselhos_reunioes (
+  id TEXT PRIMARY KEY,
+  conselho_id TEXT NOT NULL REFERENCES conselhos(id),
+  data TEXT NOT NULL,
+  titulo TEXT NOT NULL,
+  tipo TEXT,
+  situacao TEXT,
+  fonte TEXT,
+  path TEXT NOT NULL
+);
+
+CREATE TABLE conselhos_documentos (
+  reuniao_id TEXT NOT NULL REFERENCES conselhos_reunioes(id),
+  ordem INTEGER NOT NULL,
+  documento_id TEXT NOT NULL,
+  tipo TEXT NOT NULL,
+  titulo TEXT NOT NULL,
+  numero TEXT,
+  ano INTEGER,
+  data TEXT,
+  resumo TEXT,
+  url TEXT,
+  path TEXT NOT NULL,
+  linha INTEGER NOT NULL,
+  PRIMARY KEY (reuniao_id, ordem)
+) WITHOUT ROWID;
+
+CREATE TABLE conselhos_itens (
+  reuniao_id TEXT NOT NULL REFERENCES conselhos_reunioes(id),
+  ordem INTEGER NOT NULL,
+  item_id TEXT NOT NULL,
+  titulo TEXT NOT NULL,
+  resumo TEXT,
+  tipo_demanda TEXT,
+  resultado TEXT,
+  documento_id TEXT,
+  processo_sei TEXT,
+  campus_texto TEXT,
+  campus_id TEXT,
+  curso_texto TEXT,
+  curso_id TEXT,
+  palavras_chave_json TEXT NOT NULL,
+  path TEXT NOT NULL,
+  linha INTEGER NOT NULL,
+  PRIMARY KEY (reuniao_id, ordem)
+) WITHOUT ROWID;
+CREATE INDEX conselhos_itens_curso ON conselhos_itens(curso_id);
+CREATE INDEX conselhos_itens_campus ON conselhos_itens(campus_id);
 
 -- PPCs convertidos (index.json + front matter de proveniência).
 CREATE TABLE ppcs (
