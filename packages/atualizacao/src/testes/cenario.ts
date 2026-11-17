@@ -33,7 +33,10 @@ export interface Cenario {
     readonly pastaCanal?: Canal;
   }): { readonly banco: string };
   /** Confere o manifesto e baixa, como o serviço faz. */
-  atualizar(canal?: Canal): Promise<Awaited<ReturnType<typeof baixarAtualizacao>>>;
+  atualizar(
+    canal?: Canal,
+    versoesSkills?: Readonly<Record<string, string>>,
+  ): Promise<Awaited<ReturnType<typeof baixarAtualizacao>>>;
   fechar(): Promise<void>;
 }
 
@@ -75,7 +78,7 @@ export async function cenario(): Promise<Cenario> {
       });
       return { banco };
     },
-    atualizar: async (canal = "beta") => {
+    atualizar: async (canal = "beta", versoesSkills = {}) => {
       const abertura = prepararAbertura({ pasta: pastaApp, bancoEmpacotado: empacotada });
       const url = urlManifesto(feed, canal);
       const manifesto = await conferirManifesto({ urlManifesto: url, canal, chave, baixar });
@@ -83,7 +86,7 @@ export async function cenario(): Promise<Cenario> {
         pasta: pastaApp,
         versaoApp: VERSAO_APP,
         baseEmUso: { caminho: abertura.banco, info: abertura.info },
-        versoesSkills: {},
+        versoesSkills,
         baixar,
       });
     },

@@ -4,12 +4,23 @@
  * (`gerarCanal`) e assinados por um par descartável. Nada sai para a rede.
  */
 import * as NodeFS from "node:fs";
+import * as NodeHttp from "node:http";
 import * as NodePath from "node:path";
 import { afterEach, describe, expect, it } from "@effect/vitest";
 import type { SkillDaFabrica } from "../src/fabrica.ts";
-import { caminhos, lerEstado, lerInfoBanco, prepararAbertura } from "../src/local.ts";
+import {
+  ARQUIVO_TRAVA,
+  caminhos,
+  escreverAtomico,
+  lerEstado,
+  lerInfoBanco,
+  prepararAbertura,
+  tomarTrava,
+} from "../src/local.ts";
+import { validarBancoEmWorker } from "../src/pesado.ts";
+import { baixarComFetch } from "../src/remoto.ts";
 import { gerarChaves } from "../src/minisign.ts";
-import { criarBanco, limparTemporarios } from "../src/testes/apoio.ts";
+import { criarBanco, limparTemporarios, pastaTemporaria } from "../src/testes/apoio.ts";
 import { type Cenario, cenario } from "../src/testes/cenario.ts";
 
 afterEach(limparTemporarios);
@@ -177,5 +188,103 @@ describe("atualização da base", () => {
     } finally {
       await c.fechar();
     }
+  });
+});
+
+describe("revisão: skills, trava, proxy, temporários e Worker", () => {
+  const skill = (nome: string, versao: string): SkillDaFabrica => ({
+    nome,
+    versao,
+    appMinimo: "0.1.0",
+    baseMinima: "2026.11.01",
+    arquivos: [{ caminho: "SKILL.md", conteudo: Buffer.from(`---\nname: ${nome}\n---\n${versao}\n`) }],
+  });
+
+  it("skill baixada antes continua quando chega outra numa versão seguinte", async () => {
+    const c = await cenario();
+    try {
+      c.publicar({ versao: "2026.11.13", skills: [skill("conferir-a", "1.1.0")] });
+      await c.atualizar();
+      const primeira = prepararAbertura({ pasta: c.pastaApp, bancoEmpacotado: c.empacotada });
+      expect(NodeFS.readdirSync(primeira.pastasSkills[0]!)).toEqual(["conferir-a"]);
+      // No servidor, o catálogo já tem a A 1.1.0 baixada: só a B é nova.
+      c.publicar({ versao: "2026.11.14", skills: [skill("conferir-a", "1.1.0"), skill("conferir-b", "1.0.0")] });
+      expect(await c.atualizar("beta", { "conferir-a": "1.1.0" })).toMatchObject({ tipo: "baixada", skills: 1 });
+      const segunda = prepararAbertura({ pasta: c.pastaApp, bancoEmpacotado: c.empacotada });
+      expect(segunda.pastasSkills).toEqual([NodePath.join(c.pastaApp, "skills", "2026.11.14")]);
+      expect(NodeFS.readdirSync(segunda.pastasSkills[0]!).sort()).toEqual(["conferir-a", "conferir-b"]);
+    } finally {
+      await c.fechar();
+    }
+  });
+
+  it("trava: outro processo vivo segura a pasta; trava de processo morto se retoma", () => {
+    const pasta = pastaTemporaria();
+    const empacotada = criarBanco(NodePath.join(pasta, "emp", "kb.sqlite"), "2026.11.10");
+    NodeFS.writeFileSync(NodePath.join(pasta, ARQUIVO_TRAVA), String(process.ppid));
+    expect(tomarTrava(pasta)).toBeNull();
+    const abertura = prepararAbertura({ pasta, bancoEmpacotado: empacotada });
+    expect(abertura.eventos).toContain(
+      "outro processo usa esta pasta de atualização; a troca fica para a próxima abertura",
+    );
+    NodeFS.writeFileSync(NodePath.join(pasta, ARQUIVO_TRAVA), "999999999");
+    const soltar = tomarTrava(pasta);
+    expect(soltar).not.toBeNull();
+    expect(NodeFS.readFileSync(NodePath.join(pasta, ARQUIVO_TRAVA), "utf8")).toBe(String(process.pid));
+    soltar?.();
+    expect(NodeFS.existsSync(NodePath.join(pasta, ARQUIVO_TRAVA))).toBe(false);
+  });
+
+  it("proxy: o download passa pela proxy HTTP dada (como a do Electron ou a de HTTP_PROXY)", async () => {
+    const c = await cenario();
+    const vistos: string[] = [];
+    const proxy = NodeHttp.createServer((pedido, resposta) => {
+      vistos.push(pedido.url ?? "");
+      const alvo = new URL(pedido.url ?? "");
+      NodeHttp.get(alvo, { agent: new NodeHttp.Agent() }, (r) => {
+        resposta.writeHead(r.statusCode ?? 502, r.headers);
+        r.pipe(resposta);
+      });
+    });
+    await new Promise<void>((pronto) => proxy.listen(0, "127.0.0.1", pronto));
+    try {
+      c.publicar({ versao: "2026.11.13" });
+      const url = `${c.servidor.url}beta/beta.json`;
+      const porta = (proxy.address() as { port: number }).port;
+      const dados = await baixarComFetch(5000, { httpProxy: `http://127.0.0.1:${porta}` })(url, 1024 * 1024);
+      expect(Buffer.from(dados).toString("utf8")).toContain('"canal": "beta"');
+      expect(vistos).toEqual([url]);
+      // NO_PROXY tira o endereço da proxy.
+      await baixarComFetch(5000, { httpProxy: `http://127.0.0.1:${porta}`, noProxy: "127.0.0.1" })(url, 1024 * 1024);
+      expect(vistos).toHaveLength(1);
+    } finally {
+      proxy.closeAllConnections();
+      proxy.close();
+      await c.fechar();
+    }
+  });
+
+  it("temporários: falha na escrita não deixa .tmp, e a abertura apaga sobras", () => {
+    const pasta = pastaTemporaria();
+    const destino = NodePath.join(pasta, "base", "ocupado");
+    NodeFS.mkdirSync(NodePath.join(destino, "dentro"), { recursive: true });
+    expect(() => escreverAtomico(destino, Buffer.from("x"))).toThrow();
+    expect(NodeFS.readdirSync(NodePath.join(pasta, "base")).filter((nome) => nome.endsWith(".tmp"))).toEqual([]);
+    NodeFS.writeFileSync(NodePath.join(pasta, "atualizacao.json.123.tmp"), "{");
+    NodeFS.writeFileSync(NodePath.join(pasta, "base", "baixando.sqlite"), "x");
+    NodeFS.mkdirSync(NodePath.join(pasta, "skills", "2026.11.20.baixando"), { recursive: true });
+    const empacotada = criarBanco(NodePath.join(pasta, "emp", "kb.sqlite"), "2026.11.10");
+    const abertura = prepararAbertura({ pasta, bancoEmpacotado: empacotada });
+    expect(abertura.eventos.filter((e) => e.startsWith("sobra apagada")).length).toBe(3);
+    expect(NodeFS.existsSync(NodePath.join(pasta, "atualizacao.json.123.tmp"))).toBe(false);
+  });
+
+  it("Worker: confere o banco fora do event loop, com as mesmas recusas", async () => {
+    const pasta = pastaTemporaria();
+    const bom = criarBanco(NodePath.join(pasta, "bom.sqlite"), "2026.11.20");
+    await expect(validarBancoEmWorker(bom, { versao: "2026.11.20" })).resolves.toMatchObject({ versao: "2026.11.20" });
+    await expect(validarBancoEmWorker(bom, { versao: "2026.11.21" })).rejects.toThrow("diz ser a versão 2026.11.20");
+    const ruim = criarBanco(NodePath.join(pasta, "ruim.sqlite"), "2026.11.20", { esquema: 999 });
+    await expect(validarBancoEmWorker(ruim, { versao: "2026.11.20" })).rejects.toThrow("outro esquema");
   });
 });

@@ -40,6 +40,8 @@ export interface EstadoGravado {
   /** O conjunto de skills baixado em uso (`skills/<versao>`) e o que entra na próxima abertura. */
   skills?: string;
   skillsPendentes?: string;
+  /** O `gerado_em` do último manifesto conferido: mais de 14 dias, e a tela avisa que não confirmou a base. */
+  manifestoGeradoEm?: string;
 }
 
 export const caminhos = (pasta: string) => ({
@@ -67,8 +69,58 @@ export function gravarEstado(pasta: string, estado: EstadoGravado): void {
   const destino = caminhos(pasta).estado;
   NodeFS.mkdirSync(pasta, { recursive: true });
   const temporario = `${destino}.${process.pid}.tmp`;
-  NodeFS.writeFileSync(temporario, `${JSON.stringify(estado, null, 2)}\n`);
-  NodeFS.renameSync(temporario, destino);
+  try {
+    NodeFS.writeFileSync(temporario, `${JSON.stringify(estado, null, 2)}\n`);
+    NodeFS.renameSync(temporario, destino);
+  } catch (erro) {
+    NodeFS.rmSync(temporario, { force: true });
+    throw erro;
+  }
+}
+
+/* ------------------------------------------------------------------ trava */
+
+export const ARQUIVO_TRAVA = "atualizacao.trava";
+
+const vivo = (pid: number) => {
+  if (!Number.isInteger(pid) || pid <= 0 || pid === process.pid) return false;
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (erro) {
+    // EPERM: o processo existe, de outro usuário.
+    return (erro as NodeJS.ErrnoException).code === "EPERM";
+  }
+};
+
+/**
+ * Toma a trava da pasta (`atualizacao.trava`, criada com `wx` e o pid dentro), para dois processos não
+ * mexerem na mesma pasta ao mesmo tempo. Uma trava de processo que já morreu (ou deste mesmo pid,
+ * sobra de uma execução anterior) é velha e se retoma. Devolve a função que solta, ou `null` se outro
+ * processo vivo a tem. O app e o `simplifica-mcp` usam pastas próprias; a trava é a rede de proteção.
+ */
+export function tomarTrava(pasta: string): (() => void) | null {
+  NodeFS.mkdirSync(pasta, { recursive: true });
+  const arquivo = NodePath.join(pasta, ARQUIVO_TRAVA);
+  for (let tentativa = 0; tentativa < 2; tentativa += 1) {
+    try {
+      const descritor = NodeFS.openSync(arquivo, "wx");
+      NodeFS.writeSync(descritor, String(process.pid));
+      NodeFS.closeSync(descritor);
+      return () => NodeFS.rmSync(arquivo, { force: true });
+    } catch (erro) {
+      if ((erro as NodeJS.ErrnoException).code !== "EEXIST") throw erro;
+      let dono = Number.NaN;
+      try {
+        dono = Number.parseInt(NodeFS.readFileSync(arquivo, "utf8"), 10);
+      } catch {
+        // sumiu entre o open e a leitura: tenta de novo
+      }
+      if (vivo(dono)) return null;
+      NodeFS.rmSync(arquivo, { force: true });
+    }
+  }
+  return null;
 }
 
 /* ------------------------------------------------------------------ o banco */
@@ -106,11 +158,18 @@ export function lerInfoBanco(caminho: string): InfoBanco | null {
 /**
  * Confere um banco baixado antes de ele virar pendente: abre, `quick_check`, versão do esquema igual à
  * deste app, versão e data de referência iguais às do manifesto. Lança com o motivo em português.
+ *
+ * Só usa os parâmetros e globais: o `Worker` (`validarBancoEmWorker`) roda o texto desta função.
  */
-export function validarBanco(caminho: string, esperado: { versao: string; dataReferencia?: string }): InfoBanco {
+export function validarBancoNucleo(
+  sqlite: typeof NodeSqlite,
+  versaoEsquema: number,
+  caminho: string,
+  esperado: { versao: string; dataReferencia?: string },
+): InfoBanco {
   let db: NodeSqlite.DatabaseSync;
   try {
-    db = new NodeSqlite.DatabaseSync(caminho, { readOnly: true });
+    db = new sqlite.DatabaseSync(caminho, { readOnly: true });
   } catch (erro) {
     throw new Error(`a base baixada não abre: ${String(erro)}`, { cause: erro });
   }
@@ -124,9 +183,9 @@ export function validarBanco(caminho: string, esperado: { versao: string; dataRe
         .all()
         .map((linha) => [String(linha["chave"]), String(linha["valor"])]),
     );
-    if (meta.get("versao_esquema") !== String(VERSAO_ESQUEMA)) {
+    if (meta.get("versao_esquema") !== String(versaoEsquema)) {
       throw new Error(
-        `a base baixada é de outro esquema (${meta.get("versao_esquema") ?? "sem versão"}; este app lê o ${VERSAO_ESQUEMA})`,
+        `a base baixada é de outro esquema (${meta.get("versao_esquema") ?? "sem versão"}; este app lê o ${versaoEsquema})`,
       );
     }
     if (meta.get("versao") !== esperado.versao) {
@@ -150,6 +209,9 @@ export function validarBanco(caminho: string, esperado: { versao: string; dataRe
   }
 }
 
+export const validarBanco = (caminho: string, esperado: { versao: string; dataReferencia?: string }): InfoBanco =>
+  validarBancoNucleo(NodeSqlite, VERSAO_ESQUEMA, caminho, esperado);
+
 export function sha256Arquivo(caminho: string): string {
   const hash = NodeCrypto.createHash("sha256");
   const descritor = NodeFS.openSync(caminho, "r");
@@ -172,14 +234,37 @@ const remover = (caminho: string) => NodeFS.rmSync(caminho, { force: true, recur
 export function escreverAtomico(destino: string, dados: Uint8Array): void {
   NodeFS.mkdirSync(NodePath.dirname(destino), { recursive: true });
   const temporario = `${destino}.${process.pid}.tmp`;
-  const descritor = NodeFS.openSync(temporario, "w");
   try {
-    NodeFS.writeSync(descritor, dados);
-    NodeFS.fsyncSync(descritor);
-  } finally {
-    NodeFS.closeSync(descritor);
+    const descritor = NodeFS.openSync(temporario, "w");
+    try {
+      NodeFS.writeSync(descritor, dados);
+      NodeFS.fsyncSync(descritor);
+    } finally {
+      NodeFS.closeSync(descritor);
+    }
+    NodeFS.renameSync(temporario, destino);
+  } catch (erro) {
+    NodeFS.rmSync(temporario, { force: true });
+    throw erro;
   }
-  NodeFS.renameSync(temporario, destino);
+}
+
+/** Sobras de uma execução que caiu: `*.tmp` da pasta e de `base/`, `baixando.sqlite` e `skills/*.baixando`. */
+export function limparSobras(pasta: string): ReadonlyArray<string> {
+  const c = caminhos(pasta);
+  const sobras: string[] = [];
+  const varrer = (dir: string, teste: (nome: string) => boolean) => {
+    if (!NodeFS.existsSync(dir)) return;
+    for (const nome of NodeFS.readdirSync(dir)) {
+      if (!teste(nome)) continue;
+      NodeFS.rmSync(NodePath.join(dir, nome), { recursive: true, force: true });
+      sobras.push(NodePath.relative(pasta, NodePath.join(dir, nome)));
+    }
+  };
+  varrer(pasta, (nome) => nome.endsWith(".tmp"));
+  varrer(c.base, (nome) => nome.endsWith(".tmp") || nome === "baixando.sqlite");
+  varrer(c.skills, (nome) => nome.endsWith(".baixando"));
+  return sobras;
 }
 
 /* ------------------------------------------------------------------ abertura */
@@ -205,53 +290,63 @@ export function prepararAbertura(opcoes: { readonly pasta: string; readonly banc
   const estado = lerEstado(opcoes.pasta);
   const eventos: string[] = [];
   NodeFS.mkdirSync(c.base, { recursive: true });
-  remover(c.baixando);
+  // A troca só com a trava: outro processo baixando na mesma pasta não vê os arquivos mudando de nome.
+  const soltar = tomarTrava(opcoes.pasta);
+  if (soltar === null) {
+    eventos.push("outro processo usa esta pasta de atualização; a troca fica para a próxima abertura");
+  } else {
+    try {
+      for (const sobra of limparSobras(opcoes.pasta)) eventos.push(`sobra apagada: ${sobra}`);
 
-  if (estado.voltar === true) {
-    const saindo = lerInfoBanco(c.atual);
-    if (NodeFS.existsSync(c.anterior)) {
-      remover(c.recusada);
-      if (NodeFS.existsSync(c.atual)) NodeFS.renameSync(c.atual, c.recusada);
-      NodeFS.renameSync(c.anterior, c.atual);
-      if (NodeFS.existsSync(c.recusada)) NodeFS.renameSync(c.recusada, c.anterior);
-    } else if (NodeFS.existsSync(c.atual)) {
-      // Sem anterior baixada: volta para a empacotada, guardando a que sai.
-      NodeFS.renameSync(c.atual, c.anterior);
-    }
-    if (saindo !== null) estado.recusada = saindo.versao;
-    delete estado.voltar;
-    delete estado.novidades;
-    if (estado.pendente !== undefined) {
-      remover(c.pendente);
-      delete estado.pendente;
-    }
-    eventos.push(`voltou da base ${saindo?.versao ?? "?"} para a anterior`);
-  } else if (estado.pendente !== undefined) {
-    const pendente = estado.pendente;
-    if (NodeFS.existsSync(c.pendente) && sha256Arquivo(c.pendente) === pendente.sha256) {
-      if (NodeFS.existsSync(c.atual)) NodeFS.renameSync(c.atual, c.anterior);
-      NodeFS.renameSync(c.pendente, c.atual);
-      estado.novidades = { versao: pendente.versao, itens: pendente.novidades, vista: false };
-      eventos.push(`base ${pendente.versao} aplicada`);
-    } else {
-      remover(c.pendente);
-      eventos.push(`base pendente ${pendente.versao} descartada (arquivo ausente ou alterado)`);
-    }
-    delete estado.pendente;
-  }
-
-  if (estado.skillsPendentes !== undefined) {
-    const anterior = estado.skills;
-    estado.skills = estado.skillsPendentes;
-    delete estado.skillsPendentes;
-    eventos.push(`skills ${estado.skills} aplicadas`);
-    if (NodeFS.existsSync(c.skills)) {
-      for (const pasta of NodeFS.readdirSync(c.skills)) {
-        if (pasta !== estado.skills && pasta !== anterior) remover(NodePath.join(c.skills, pasta));
+      if (estado.voltar === true) {
+        const saindo = lerInfoBanco(c.atual);
+        if (NodeFS.existsSync(c.anterior)) {
+          remover(c.recusada);
+          if (NodeFS.existsSync(c.atual)) NodeFS.renameSync(c.atual, c.recusada);
+          NodeFS.renameSync(c.anterior, c.atual);
+          if (NodeFS.existsSync(c.recusada)) NodeFS.renameSync(c.recusada, c.anterior);
+        } else if (NodeFS.existsSync(c.atual)) {
+          // Sem anterior baixada: volta para a empacotada, guardando a que sai.
+          NodeFS.renameSync(c.atual, c.anterior);
+        }
+        if (saindo !== null) estado.recusada = saindo.versao;
+        delete estado.voltar;
+        delete estado.novidades;
+        if (estado.pendente !== undefined) {
+          remover(c.pendente);
+          delete estado.pendente;
+        }
+        eventos.push(`voltou da base ${saindo?.versao ?? "?"} para a anterior`);
+      } else if (estado.pendente !== undefined) {
+        const pendente = estado.pendente;
+        if (NodeFS.existsSync(c.pendente) && sha256Arquivo(c.pendente) === pendente.sha256) {
+          if (NodeFS.existsSync(c.atual)) NodeFS.renameSync(c.atual, c.anterior);
+          NodeFS.renameSync(c.pendente, c.atual);
+          estado.novidades = { versao: pendente.versao, itens: pendente.novidades, vista: false };
+          eventos.push(`base ${pendente.versao} aplicada`);
+        } else {
+          remover(c.pendente);
+          eventos.push(`base pendente ${pendente.versao} descartada (arquivo ausente ou alterado)`);
+        }
+        delete estado.pendente;
       }
+
+      if (estado.skillsPendentes !== undefined) {
+        const anterior = estado.skills;
+        estado.skills = estado.skillsPendentes;
+        delete estado.skillsPendentes;
+        eventos.push(`skills ${estado.skills} aplicadas`);
+        if (NodeFS.existsSync(c.skills)) {
+          for (const pasta of NodeFS.readdirSync(c.skills)) {
+            if (pasta !== estado.skills && pasta !== anterior) remover(NodePath.join(c.skills, pasta));
+          }
+        }
+      }
+      gravarEstado(opcoes.pasta, estado);
+    } finally {
+      soltar();
     }
   }
-  gravarEstado(opcoes.pasta, estado);
 
   const baixada = lerInfoBanco(c.atual);
   const empacotada = lerInfoBanco(opcoes.bancoEmpacotado);

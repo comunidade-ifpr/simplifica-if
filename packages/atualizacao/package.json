@@ -14,6 +14,7 @@
   "dependencies": {
     "@noble/hashes": "1.8.0",
     "@simplifica-if/kb": "workspace:*",
+    "undici": "8.12.4",
     "yaml": "2.9.1"
   },
   "peerDependencies": {

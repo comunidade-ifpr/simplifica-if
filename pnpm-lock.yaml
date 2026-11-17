@@ -462,6 +462,9 @@ importers:
       '@simplifica-if/kb':
         specifier: workspace:*
         version: link:../kb
+      undici:
+        specifier: 8.12.4
+        version: 8.12.4
       yaml:
         specifier: 2.9.1
         version: 2.9.1
