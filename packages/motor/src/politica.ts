@@ -13,6 +13,7 @@
  * restringe esta.
  */
 import { ATUALIZACAO_FABRICA } from "./politica-atualizacao.ts";
+import { CURADORIA_FABRICA } from "./politica-curadoria.ts";
 import * as NodePath from "node:path";
 import * as Schema from "effect/Schema";
 import { Provider } from "./eventos.ts";
@@ -85,6 +86,11 @@ export const Politica = Schema.Struct({
     chavePublica: Schema.NullOr(Schema.String),
     app: Schema.Literals(["se-assinado", "nunca"]),
   }),
+  /** "Isto está errado" (M1.12): o repositório da curadoria (`dono/repo`), `null` até ele abrir. Ver `politica-curadoria.ts`. */
+  curadoria: Schema.Struct({
+    repositorio: Schema.NullOr(Schema.String.check(Schema.isPattern(/^[A-Za-z0-9-]+\/[A-Za-z0-9._-]+$/))),
+    rotulos: Schema.Array(Schema.String),
+  }),
 });
 export type Politica = typeof Politica.Type;
 
@@ -117,6 +123,7 @@ export const POLITICA_FABRICA: Politica = congelar(
     isolamento: { configuracaoDoUsuario: "desligada", buscaWeb: "desligada" },
     telemetria: "desligada",
     atualizacao: ATUALIZACAO_FABRICA,
+    curadoria: CURADORIA_FABRICA,
   }),
 );
 
@@ -141,6 +148,7 @@ export const POLITICA_JULGAMENTO: Politica = congelar(
     isolamento: { configuracaoDoUsuario: "desligada", buscaWeb: "desligada" },
     telemetria: "desligada",
     atualizacao: ATUALIZACAO_FABRICA,
+    curadoria: CURADORIA_FABRICA,
   }),
 );
 

@@ -4,7 +4,7 @@
  * desktop importam daqui; nada aqui depende do Node, e importar o pacote não carrega o `kb`, a leitura
  * do MCP nem os drivers do motor (`test/sem-servidor.test.ts` confere o grafo de imports).
  *
- * - `GrupoApp`: a API RPC (`effect/rpc`) por WebSocket. Oito grupos: providers, conversa, skills, pasta de trabalho, revisão de PPC, atualização, preferências (o primeiro uso, `preferencias.ts`) e leitura (o
+ * - `GrupoApp`: a API RPC (`effect/rpc`) por WebSocket. Nove grupos: providers, conversa, relato de erro (`relato.ts`), skills, pasta de trabalho, revisão de PPC, atualização, preferências (o primeiro uso, `preferencias.ts`) e leitura (o
  *   `GrupoLeitura` de `@simplifica-if/mcp/grupo-leitura`, só as definições, sem duplicar; os handlers
  *   ficam em `@simplifica-if/mcp/rpc`, que este pacote não importa). Os métodos de providers e de conversa
  *   têm nome com prefixo, como os `WS_METHODS` do T3: `cliente["conversa.enviar"]({ … })`.
@@ -37,12 +37,14 @@ import { Evento, Provider } from "@simplifica-if/motor/eventos";
 import * as Schema from "effect/Schema";
 import { Rpc, RpcGroup } from "effect/rpc";
 import { AvisoNaoAceito, GrupoPreferencias } from "./preferencias.ts";
+import { GrupoRelato } from "./relato.ts";
 
 export { AprovacaoDesconhecida, Decisao, FalhaProvider, OperacaoNaoSuportada, SessaoDesconhecida, TurnoEmAndamento };
 export { Evento, Provider };
 export { GrupoLeitura };
 export type { LinkLido };
 export * from "./preferencias.ts";
+export * from "./relato.ts";
 
 /* ================================================================== partida */
 
@@ -891,6 +893,28 @@ export const PastaConversa = Schema.Struct({
 });
 export type PastaConversa = typeof PastaConversa.Type;
 
+/** Os tipos de dado pessoal que o detector do anexo procura (M1.13, `@simplifica-if/dados-pessoais`). */
+export const TipoDadoPessoal = Schema.Literals(["cpf", "rg", "telefone", "email"]);
+export type TipoDadoPessoal = typeof TipoDadoPessoal.Type;
+
+/**
+ * O que o detector local achou num arquivo escolhido para anexar, antes de ele ir para a pasta da
+ * tarefa (e, de lá, para a IA). Só formas mascaradas: o dado não volta inteiro à interface.
+ */
+export const ConferenciaAnexo = Schema.Union([
+  Schema.Struct({
+    arquivo: Schema.String,
+    situacao: Schema.Literal("conferido"),
+    total: Schema.Number,
+    porTipo: Schema.Struct({ cpf: Schema.Number, rg: Schema.Number, telefone: Schema.Number, email: Schema.Number }),
+    /** Os primeiros achados: o tipo, o lugar (`linha 12`, `parágrafo 40`) e o trecho com os dados mascarados. */
+    exemplos: Schema.Array(Schema.Struct({ tipo: TipoDadoPessoal, onde: Schema.String, trecho: Schema.String })),
+  }),
+  /** O arquivo não foi conferido (PDF, imagem, planilha, `.docx` ilegível): a interface diz isso. */
+  Schema.Struct({ arquivo: Schema.String, situacao: Schema.Literal("nao-conferido"), motivo: Schema.String }),
+]);
+export type ConferenciaAnexo = typeof ConferenciaAnexo.Type;
+
 export class GrupoPasta extends RpcGroup.make(
   /**
    * Cria a pasta de uma tarefa em `Documentos/Simplifica IF/<titulo>` (nome seguro, sem colisão:
@@ -908,6 +932,15 @@ export class GrupoPasta extends RpcGroup.make(
   Rpc.make("pasta.anexar", {
     payload: Schema.Struct({ pasta: Schema.String, arquivo: Schema.String }),
     success: ArquivoPasta,
+    error: FalhaPasta,
+  }),
+  /**
+   * Procura CPF, RG, celular e e-mail fora do IFPR num arquivo liberado pelo desktop, antes de anexar
+   * (M1.13): no servidor local, num `Worker` com limites, sem rede e sem IA. Não bloqueia o anexo.
+   */
+  Rpc.make("pasta.conferirAnexo", {
+    payload: Schema.Struct({ arquivo: Schema.String }),
+    success: ConferenciaAnexo,
     error: FalhaPasta,
   }),
   /** Os arquivos da pasta da conversa e o que "Desfazer" faria. */
@@ -1014,9 +1047,10 @@ export class GrupoAtualizacao extends RpcGroup.make(
 
 /* ================================================================== app */
 
-/** A API inteira do servidor local: providers, conversa, skills, pasta, revisão de PPC, atualização, leitura e preferências. */
+/** A API inteira do servidor local: providers, conversa, relato, skills, pasta, revisão de PPC, atualização, leitura e preferências. */
 export class GrupoApp extends GrupoProviders.merge(
   GrupoConversa,
+  GrupoRelato,
   GrupoPreferencias,
   GrupoSkills,
   GrupoPasta,
