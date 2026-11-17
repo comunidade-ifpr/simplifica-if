@@ -165,6 +165,41 @@
   }
 }
 
+/*
+ * A barra de título do desktop (`barra-titulo.ts`): o cabeçalho arrasta a janela, e o duplo clique nele
+ * maximiza (Windows, Linux) ou faz o zoom (macOS), como na barra do sistema.
+ * T3: apps/web/src/index.css (.drag-region) — o Electron 44 herda o `app-region`: os filhos voltam a
+ * `initial` (sem retângulo próprio; `none` valeria como `no-drag` e quebraria o arrasto), e os
+ * controles ficam `no-drag` para receber o clique.
+ */
+.drag-region {
+  -webkit-app-region: drag;
+}
+
+@layer base {
+  .drag-region > * {
+    -webkit-app-region: initial;
+  }
+}
+
+.drag-region button,
+.drag-region input,
+.drag-region textarea,
+.drag-region select,
+.drag-region a {
+  -webkit-app-region: no-drag;
+}
+
+/* O lugar dos botões do sistema: os semáforos à esquerda no macOS (fora da tela cheia, em que somem)… */
+.barra-titulo[data-botoes="semaforos"]:not([data-tela-cheia]) {
+  padding-left: 78px;
+}
+
+/* …e o overlay à direita no Windows e no Linux, pela área livre que o Electron informa. */
+.barra-titulo[data-botoes="overlay"] {
+  padding-right: calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, calc(100vw - 138px)) + 0.75rem);
+}
+
 /* O texto em Markdown das respostas e do painel de leitura. */
 .markdown {
   line-height: 1.6;
@@ -287,5 +322,113 @@
 @media (prefers-reduced-motion: reduce) {
   .cursor-resposta {
     animation: none;
+  }
+}
+
+/* O leitor `ifpr://` (M1.6): o texto da norma ou do PPC, em blocos montados aos poucos. */
+.documento-leitor {
+  font-size: 0.9375rem;
+
+  & [id] {
+    scroll-margin-top: 0.75rem;
+  }
+  & h1,
+  & h2,
+  & h3,
+  & h4,
+  & h5,
+  & h6 {
+    margin-top: 1.25em;
+  }
+  & .bloco-documento + .bloco-documento,
+  & .espaco-reservado + .bloco-documento,
+  & .bloco-documento + .espaco-reservado {
+    margin-top: 0.75em;
+  }
+}
+
+/* O navegador só desenha o bloco que está à vista (o PPC chega a dezenas de milhares de elementos). */
+.bloco-documento {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 40em;
+}
+
+/* O bloco do trecho citado sempre desenhado: a rolagem até ele precisa do tamanho real. */
+.bloco-alvo {
+  content-visibility: visible;
+}
+
+/* O espaço de um bloco que ainda não se montou: fora da ancoragem de rolagem, que fica no texto. */
+.espaco-reservado {
+  overflow-anchor: none;
+}
+
+/* Redação anterior, não vigente, e texto fora do ato publicado (`leitor/remarkLeitor.ts`): esmaecidos, com o rótulo. */
+.regiao-marcada {
+  border-left: 3px dashed var(--border);
+  color: var(--muted-foreground);
+  opacity: 0.8;
+  padding-left: 0.75em;
+
+  & > * + * {
+    margin-top: 0.5em;
+  }
+  & .rotulo-regiao {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  & s,
+  & del {
+    text-decoration: line-through;
+  }
+}
+
+/* O trecho citado, destacado. */
+mark.trecho-citado {
+  background: color-mix(in srgb, #ffd54f 55%, transparent);
+  border-radius: 0.125rem;
+  box-decoration-break: clone;
+  color: inherit;
+  padding: 0 0.0625rem;
+}
+
+.dark mark.trecho-citado {
+  background: color-mix(in srgb, #ffd54f 35%, transparent);
+}
+
+/*
+ * Impressão do leitor: só o artigo aberto no painel (`.leitor-impressao`), com o texto inteiro (o
+ * `Documento` monta todos os blocos no `beforeprint`). O que está em volta some, e os contêineres
+ * acima do artigo perdem a altura fixa e a rolagem, para o texto correr pelas páginas.
+ */
+@media print {
+  body:has(.leitor-impressao) *:not(:has(.leitor-impressao)):not(.leitor-impressao):not(.leitor-impressao *) {
+    display: none !important;
+  }
+  body:has(.leitor-impressao) :has(.leitor-impressao) {
+    border: 0 !important;
+    display: block !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    position: static !important;
+    width: auto !important;
+  }
+  .leitor-impressao {
+    color: #000;
+    font-size: 11pt;
+  }
+  .leitor-impressao .nao-imprimir {
+    display: none !important;
+  }
+  .bloco-documento {
+    content-visibility: visible;
+  }
+  mark.trecho-citado {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 }

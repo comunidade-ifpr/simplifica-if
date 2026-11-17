@@ -25,6 +25,7 @@ import {
 
 const PASTA = "/Users/servidor/Documentos/tarefa";
 const decodificarPolitica = Schema.decodeSync(Politica);
+const decodificarPoliticaExit = Schema.decodeExit(Politica);
 const regra = (classe: ClassePedido, pasta = PASTA) => avaliar(POLITICA_FABRICA, classe, pasta).regra;
 
 const lerLinhas = Effect.fn("teste.lerLinhas")(function* (nome: string) {
@@ -45,6 +46,16 @@ describe("política de fábrica", () => {
     assert.isTrue(Object.isFrozen(POLITICA_FABRICA.ferramentas.escrita));
     assert.deepStrictEqual(POLITICA_FABRICA.codex, { sandbox: "read-only", aprovacao: "on-request" });
     assert.strictEqual(POLITICA_FABRICA.telemetria, "desligada");
+  });
+
+  it("curadoria (M1.12): null de fábrica; o repositório é dono/repo, sem `.` nem `..`", () => {
+    assert.deepStrictEqual(POLITICA_FABRICA.curadoria, { repositorio: null, rotulos: ["relato-do-app"] });
+    const comRepositorio = (repositorio: string) =>
+      decodificarPoliticaExit({ ...POLITICA_FABRICA, curadoria: { repositorio, rotulos: [] } })._tag;
+    assert.strictEqual(comRepositorio("ifpr/simplifica-if"), "Success");
+    assert.strictEqual(comRepositorio("dono/repo.site"), "Success");
+    for (const invalido of ["dono/..", "dono/.", "../repo", "dono/repo/issues", "dono", "https://x/y", "do.no/repo"])
+      assert.strictEqual(comRepositorio(invalido), "Failure", invalido);
   });
 
   it("busca web: desligada na de fábrica mesmo pedida; a pedido numa política que permite", () => {

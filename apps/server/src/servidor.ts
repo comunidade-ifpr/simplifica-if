@@ -51,6 +51,7 @@ import * as CatalogoSkills from "./CatalogoSkills.ts";
 import * as Conversas from "./Conversas.ts";
 import * as Handlers from "./handlers.ts";
 import * as PastasTrabalho from "./PastasTrabalho.ts";
+import * as Relatos from "./Relatos.ts";
 import * as Banco from "./persistencia/Banco.ts";
 import * as Historico from "./persistencia/Historico.ts";
 import * as Preferencias from "./persistencia/Preferencias.ts";
@@ -110,6 +111,8 @@ export interface Opcoes {
   readonly pastaCopias?: string;
   /** Limites das cópias e dos anexos (`PastasTrabalho.LIMITES`); os testes os apertam. */
   readonly limitesPasta?: Partial<PastasTrabalho.Limites>;
+  /** "Isto está errado" (M1.12): o repositório da curadoria (padrão: o da política de fábrica). */
+  readonly relatos?: Relatos.OpcoesRelatos;
   /** Aviso de uso aceito e boas-vindas feitas ao abrir (M1.8): os testes que não passam por elas. */
   readonly primeiroUsoFeito?: boolean;
   /**
@@ -319,7 +322,8 @@ export const layer = (opcoes: Opcoes) => {
     Layer.provideMerge(leitura),
   );
   const comAtualizacao = layerAtualizador(opcoes).pipe(Layer.provideMerge(nucleo));
-  const handlers = Handlers.layer.pipe(Layer.provide(comAtualizacao));
+  const comRelatos = Relatos.layer(opcoes.relatos).pipe(Layer.provideMerge(comAtualizacao));
+  const handlers = Handlers.layer.pipe(Layer.provide(comRelatos));
   const servir = HttpRouter.serve(layerRotaRpc, { disableLogger: true, disableListenLog: true });
   // Sem o fechamento preventivo: ele espera as conexões abertas antes de interromper os fibers que as
   // fecham, e um WebSocket conectado segurava o encerramento pelos 20 s do prazo. Assim, as conexões

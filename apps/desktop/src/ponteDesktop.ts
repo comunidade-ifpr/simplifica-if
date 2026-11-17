@@ -48,6 +48,21 @@ export interface PonteDesktop {
   procurarAtualizacaoApp?(): Promise<EstadoAtualizacaoApp>;
   /** "Reiniciar para atualizar": fecha o app e instala a versão baixada. */
   instalarAtualizacaoApp?(): Promise<void>;
+  /**
+   * A janela sem a barra de título do sistema (`janela.ts`): a interface transforma o cabeçalho na
+   * barra e reserva o lugar dos botões do sistema. Só existe no desktop.
+   */
+  janela?: JanelaDesktop;
+}
+
+/** O que a interface precisa saber da janela para desenhar a barra de título. */
+export interface JanelaDesktop {
+  /** `process.platform`: no `darwin`, os semáforos à esquerda; nos outros, os botões à direita. */
+  readonly plataforma: string;
+  /** Se a janela está em tela cheia agora (no macOS, os semáforos somem). */
+  telaCheia(): Promise<boolean>;
+  /** Avisa quando a janela entra ou sai da tela cheia; devolve a função que para de avisar. */
+  aoMudarTelaCheia(ouvinte: (telaCheia: boolean) => void): () => void;
 }
 
 /** O estado da atualização do app, como a seção "Atualizações" mostra. */
@@ -80,4 +95,7 @@ export const CANAIS = {
   escolherAnexo: "simplifica:escolher-anexo",
   abrirArquivoTarefa: "simplifica:abrir-arquivo-tarefa",
   mostrarArquivoTarefa: "simplifica:mostrar-arquivo-tarefa",
+  telaCheia: "simplifica:tela-cheia",
+  /** Do processo principal para a janela: entrou (`true`) ou saiu (`false`) da tela cheia. */
+  telaCheiaMudou: "simplifica:tela-cheia-mudou",
 } as const;

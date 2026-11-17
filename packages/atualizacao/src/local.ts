@@ -129,6 +129,13 @@ export interface InfoBanco {
   readonly versao: string;
   readonly dataReferencia: string | null;
   readonly commit: string | null;
+  /** `meta.versao_esquema`; `null` se o banco não o grava. */
+  readonly versaoEsquema: number | null;
+}
+
+function esquemaDoMeta(meta: ReadonlyMap<string, string>): number | null {
+  const valor = Number(meta.get("versao_esquema"));
+  return Number.isInteger(valor) ? valor : null;
 }
 
 /** A versão de um `kb.sqlite` pelo `meta` (`versao`, ou a data de referência); `null` se não abrir. */
@@ -146,7 +153,7 @@ export function lerInfoBanco(caminho: string): InfoBanco | null {
       const data = meta.get("data_referencia") ?? null;
       const versao = meta.get("versao") ?? (data === null ? null : versaoDeData(data));
       if (versao === null) return null;
-      return { versao, dataReferencia: data, commit: meta.get("commit") ?? null };
+      return { versao, dataReferencia: data, commit: meta.get("commit") ?? null, versaoEsquema: esquemaDoMeta(meta) };
     } finally {
       db.close();
     }
@@ -200,6 +207,7 @@ export function validarBancoNucleo(
       versao: esperado.versao,
       dataReferencia: meta.get("data_referencia") ?? null,
       commit: meta.get("commit") ?? null,
+      versaoEsquema,
     };
   } catch (erro) {
     if (erro instanceof Error && erro.message.startsWith("a base baixada")) throw erro;
@@ -284,8 +292,18 @@ export interface Abertura {
  * Na abertura do servidor, antes de abrir a base: atende o pedido de voltar, põe a pendente no lugar
  * (guardando a atual como anterior), passa as skills pendentes a atuais e escolhe a base mais nova
  * entre a baixada e a empacotada (um app novo pode trazer uma base mais nova que a baixada).
+ *
+ * Só concorre a base baixada do esquema que este app lê (`versaoEsquema`, padrão `VERSAO_ESQUEMA`): o
+ * app novo, de esquema novo, pode achar na pasta uma base baixada pelo app antigo, de versão mais nova
+ * mas de outro esquema, que o servidor recusaria inteira; o mesmo depois de "voltar" para uma anterior
+ * de outro esquema. Nesses casos abre a empacotada.
  */
-export function prepararAbertura(opcoes: { readonly pasta: string; readonly bancoEmpacotado: string }): Abertura {
+export function prepararAbertura(opcoes: {
+  readonly pasta: string;
+  readonly bancoEmpacotado: string;
+  readonly versaoEsquema?: number;
+}): Abertura {
+  const esquema = opcoes.versaoEsquema ?? VERSAO_ESQUEMA;
   const c = caminhos(opcoes.pasta);
   const estado = lerEstado(opcoes.pasta);
   const eventos: string[] = [];
@@ -348,7 +366,13 @@ export function prepararAbertura(opcoes: { readonly pasta: string; readonly banc
     }
   }
 
-  const baixada = lerInfoBanco(c.atual);
+  const lida = lerInfoBanco(c.atual);
+  const baixada = lida !== null && lida.versaoEsquema === esquema ? lida : null;
+  if (lida !== null && baixada === null) {
+    eventos.push(
+      `base baixada ${lida.versao} é do esquema ${lida.versaoEsquema ?? "?"}, e este app lê o ${esquema}: abre a empacotada`,
+    );
+  }
   const empacotada = lerInfoBanco(opcoes.bancoEmpacotado);
   const usarBaixada =
     baixada !== null && (empacotada === null || compararVersoes(baixada.versao, empacotada.versao) >= 0);

@@ -17,6 +17,7 @@ import {
   pararServidoresTeste,
   simularInstalacaoClaude,
 } from "../test/navegador.tsx";
+import { ALTURA_BARRA_TITULO } from "./barra-titulo.ts";
 import type { PonteDesktop } from "./ponte-desktop.ts";
 
 let servidor: ServidorTeste;
@@ -282,12 +283,21 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   // As chamadas da ferramenta `etapa` ficam só nos detalhes técnicos, recolhidos.
   expect((mensagens.element() as HTMLElement).innerText).not.toMatch(/Etapa da tarefa/);
 
-  // Avaliação: 👍 gravado; "Isto está errado" avisa que vem em breve.
+  // Avaliação: 👍 gravado; "Isto está errado" abre o relato. Sem o repositório da curadoria na política
+  // (como na fábrica, até ele abrir), só salvar ou copiar; fechar não muda a avaliação.
   const util = mensagens.getByRole("button", { name: "Resposta útil" });
   await util.click();
   await expect.element(util).toHaveAttribute("aria-pressed", "true");
   await mensagens.getByRole("button", { name: "Isto está errado" }).click();
-  await expect.element(mensagens.getByText(/Em breve você vai poder apontar o trecho errado/)).toBeVisible();
+  const relato = mensagens.getByRole("region", { name: "Relatar um erro nesta resposta" });
+  await expect.element(relato.getByText(/envio direto para a equipe da base ainda não está disponível/)).toBeVisible();
+  await expect.element(relato.getByRole("button", { name: "Abrir no GitHub" })).not.toBeInTheDocument();
+  await expect.element(relato.getByRole("button", { name: "Salvar o relato" })).toBeVisible();
+  await expect.element(relato.getByText("No GitHub, o relato fica público.")).not.toBeInTheDocument();
+  semIngles();
+  await relato.getByRole("button", { name: "Fechar" }).click();
+  await expect.element(relato).not.toBeInTheDocument();
+  await expect.element(util).toHaveAttribute("aria-pressed", "true");
   semIngles();
   await capturar("03-conversa-etapas");
 
@@ -350,6 +360,92 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
     .first()
     .click();
   await expect.element(page.getByRole("button", { name: "Resposta útil" })).toHaveAttribute("aria-pressed", "true");
+});
+
+it("“Isto está errado” (M1.12): do 👎 ao relato revisado, publicado no GitHub, salvo e copiado", async () => {
+  const curadoria = await iniciarServidorTeste({ atrasoLogin: 100, curadoria: "exemplo/simplifica-if" });
+  // A ordem: o relato é registrado no servidor antes de a página do GitHub abrir.
+  const ordem: Array<string> = [];
+  const abrirExterno = vi.fn(async (_url: string) => void ordem.push("abrir"));
+  window.simplifica = {
+    conexao: async () => ({ urlServidor: curadoria.urlServidor, token: curadoria.token }),
+    abrirExterno,
+  } satisfies PonteDesktop;
+  const sendOriginal = WebSocket.prototype.send;
+  WebSocket.prototype.send = function (dados) {
+    if (typeof dados === "string" && dados.includes("relato.registrar")) ordem.push("registrar");
+    return sendOriginal.call(this, dados);
+  };
+  const copiado = vi.fn(async (_texto: string) => {});
+  Object.defineProperty(navigator, "clipboard", { value: { writeText: copiado }, configurable: true });
+  try {
+    await page.viewport(1280, 900);
+    await using _app = await montarApp(curadoria);
+
+    await page
+      .getByRole("textbox", { name: "O que você precisa hoje?" })
+      .fill("O estágio é obrigatório? Pergunte a @coordenacao, como na issue #4.");
+    await page.getByRole("button", { name: "Enviar" }).click();
+
+    const mensagens = page.getByRole("log", { name: "Mensagens" });
+    await expect.element(mensagens.getByRole("button", { name: "Res. CNE/CP nº 1/2021" })).toBeVisible();
+    await mensagens.getByRole("button", { name: "Isto está errado" }).click();
+    const relato = mensagens.getByRole("region", { name: "Relatar um erro nesta resposta" });
+    const previa = relato.getByRole("region", { name: "Prévia do relato" });
+    const textoDaPrevia = () => previa.element().querySelector("pre")?.textContent ?? "";
+    // A pergunta, com a menção e a referência entre crases; as versões; o rótulo da issue.
+    await expect
+      .element(previa.getByText(/> O estágio é obrigatório\? Pergunte a `@coordenacao`, como na issue `#4`\./))
+      .toBeVisible();
+    await expect.element(previa.getByText(/- IA: Claude \(Claude Code\) \(versão 2\.1\.30\)/)).toBeVisible();
+    await expect.element(previa.getByText("relato-do-app", { exact: true })).toBeVisible();
+    // Perto do botão, o texto fixo: a issue é pública.
+    const publica = relato.getByRole("alert", { name: "A issue fica pública" });
+    await expect.element(publica.getByText("No GitHub, o relato fica público.")).toBeVisible();
+    await expect.element(publica.getByText(/Não ponha nome de estudante nem de\s+servidor/)).toBeVisible();
+    // Nenhum aviso de dado pessoal: o app não confere (o aviso de uso basta).
+    await relato.getByLabelText("O que está errado?").fill("A norma citada não trata disso. CPF 529.982.247-25");
+    await expect.element(relato.getByText(/dado pessoal/)).not.toBeInTheDocument();
+    await relato.getByLabelText("O que está errado?").fill("A norma citada não trata do estágio obrigatório.");
+
+    // Retirar o primeiro trecho da resposta, a fonte (da lista e do texto) e as versões.
+    await relato.getByRole("checkbox", { name: "Incluir o trecho 1 de a resposta da ia" }).click();
+    await relato.getByRole("checkbox", { name: "Incluir a fonte ifpr://norma/br/cne-cp/res/2021/1" }).click();
+    await relato.getByRole("checkbox", { name: "Incluir as versões do app, da base, da tarefa e da IA" }).click();
+    await expect.element(previa.getByText(/_\[trecho retirado por quem enviou\]_/)).toBeVisible();
+    expect(textoDaPrevia()).not.toMatch(/Vou consultar a base|## Versões|ifpr:\/\/norma/);
+    expect(textoDaPrevia()).toContain("_[fonte retirada por quem enviou]_");
+    semIngles();
+    await capturar("06-relato");
+
+    // "Abrir no GitHub": registrado antes, depois a página issues/new com o relato da prévia.
+    await relato.getByRole("button", { name: "Abrir no GitHub" }).click();
+    await expect.element(relato.getByText(/Abrimos a página do GitHub no navegador/)).toBeVisible();
+    expect(ordem).toEqual(["registrar", "abrir"]);
+    const url = new URL(abrirExterno.mock.calls[0]![0]);
+    expect(`${url.origin}${url.pathname}`).toBe("https://github.com/exemplo/simplifica-if/issues/new");
+    expect(url.searchParams.get("title")).toBe("Isto está errado: A norma citada não trata do estágio obrigatório.");
+    expect(url.searchParams.get("labels")).toBe("relato-do-app");
+    expect(`# ${url.searchParams.get("title")}\n\n${url.searchParams.get("body")}`).toBe(textoDaPrevia());
+    // O relato enviado marca o 👎.
+    await expect
+      .element(mensagens.getByRole("button", { name: "Resposta não ajudou" }))
+      .toHaveAttribute("aria-pressed", "true");
+
+    // Salvar (fora da pasta da tarefa) e copiar.
+    await relato.getByRole("button", { name: "Salvar o relato" }).click();
+    await expect
+      .element(
+        relato.getByText(/^Relato salvo em Documentos › Simplifica IF › Relatos de erro: .*\.md\. Ele fica fora/),
+      )
+      .toBeVisible();
+    await relato.getByRole("button", { name: "Copiar o relato" }).click();
+    await expect.element(relato.getByText(/^Relato copiado\./)).toBeVisible();
+    expect(copiado).toHaveBeenCalledWith(textoDaPrevia());
+  } finally {
+    WebSocket.prototype.send = sendOriginal;
+    delete (navigator as { clipboard?: unknown }).clipboard;
+  }
 });
 
 it("Modo Servidor: a caixa do Início abre uma conversa numa pasta nova", async () => {
@@ -466,4 +562,157 @@ it('Configurações antes do aviso aceito: sem "Entrar" até o "Entendi"', async
   await aviso.getByRole("button", { name: "Entendi" }).click();
   await expect.element(gemini.getByRole("button", { name: "Entrar" })).toBeVisible();
   await expect.element(aviso.getByRole("button", { name: "Entendi" })).not.toBeInTheDocument();
+});
+
+it("Caixa de pedido: o cartão flutuante no Início e na conversa, Enter, Shift+Enter e o botão redondo", async () => {
+  const escolherAnexo = vi.fn(async (_extensoes?: ReadonlyArray<string>) => servidor.parecer);
+  window.simplifica = {
+    conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
+    escolherAnexo,
+  } satisfies PonteDesktop;
+  await page.viewport(1100, 760);
+  await using _app = await montarApp(servidor);
+  // Troca o tema e espera as transições de cor terminarem, para a captura não sair no meio delas.
+  const escuro = async (ligado: boolean) => {
+    document.documentElement.classList.toggle("dark", ligado);
+    await Promise.all(document.getAnimations().map((animacao) => animacao.finished.catch(() => undefined)));
+  };
+  const nosDoisTemas = async (nome: string) => {
+    await escuro(false);
+    await capturar(`${nome}-claro`);
+    await escuro(true);
+    await capturar(`${nome}-escuro`);
+    await escuro(false);
+  };
+
+  // Início: o campo, o clipe com o lembrete, a IA e o botão de enviar apagado com o campo vazio.
+  const caixa = page.getByRole("textbox", { name: "O que você precisa hoje?" });
+  await expect.element(caixa).toHaveAttribute("placeholder", "O que você precisa hoje?");
+  await expect.element(caixa).toHaveAccessibleDescription(/Enter envia; Shift\+Enter quebra a linha/);
+  const formulario = page.getByRole("form", { name: "O que você precisa hoje?" });
+  const enviar = formulario.getByRole("button", { name: "Enviar" });
+  await expect.element(enviar).toBeDisabled();
+  await expect.element(formulario.getByRole("button", { name: /Anexar arquivo/ })).toBeVisible();
+  await expect.element(formulario.getByText(/Não anexe/)).toBeVisible();
+  await expect.element(formulario.getByLabelText("IA")).toBeVisible();
+  // Shift+Enter quebra a linha, sem enviar; o botão acende.
+  await caixa.click();
+  await userEvent.keyboard("Quais normas tratam{Shift>}{Enter}{/Shift}do estágio?");
+  await expect.element(caixa).toHaveValue("Quais normas tratam\ndo estágio?");
+  await expect.element(enviar).toBeEnabled();
+  await formulario.getByRole("button", { name: /Anexar arquivo/ }).click();
+  await expect.element(formulario.getByRole("list", { name: "Arquivos anexados" })).toBeVisible();
+  semIngles();
+  await nosDoisTemas("caixa-inicio");
+
+  // Enter envia e abre a conversa; a caixa da conversa é o mesmo cartão, com "Mensagem".
+  await caixa.click();
+  await userEvent.keyboard("{Enter}");
+  const mensagens = page.getByRole("log", { name: "Mensagens" });
+  await expect.element(mensagens.getByText(/Quais normas tratam/)).toBeVisible();
+  const mensagem = page.getByRole("textbox", { name: "Mensagem" });
+  await expect.element(mensagem).toHaveAttribute("placeholder", "O que você precisa?");
+  const enviarNaConversa = page.getByRole("button", { name: "Enviar" });
+  await expect.element(enviarNaConversa).toBeVisible();
+  await expect.element(enviarNaConversa).toBeDisabled();
+  for (const pergunta of ["E a carga horária mínima?", "E o estágio no integrado?"]) {
+    await expect.element(page.getByRole("button", { name: "Interromper" })).not.toBeInTheDocument();
+    await mensagem.fill(pergunta);
+    await userEvent.keyboard("{Enter}");
+    await expect.element(mensagens.getByText(pergunta)).toBeVisible();
+  }
+  await expect.element(page.getByRole("button", { name: "Interromper" })).not.toBeInTheDocument();
+  await expect.element(mensagem).toHaveValue("");
+
+  // A conversa rola por baixo do cartão: rolada até o fim, a última mensagem fica acima dele.
+  const cartao = document.querySelector<HTMLElement>("[data-caixa-pedido]")!;
+  const ultima = mensagens.element().lastElementChild!;
+  const rolagem = cartao.closest<HTMLElement>(".overflow-y-auto")!;
+  expect(rolagem.scrollHeight).toBeGreaterThan(rolagem.clientHeight);
+  rolagem.scrollTop = rolagem.scrollHeight;
+  await vi.waitFor(() =>
+    expect(ultima.getBoundingClientRect().bottom).toBeLessThanOrEqual(cartao.getBoundingClientRect().top),
+  );
+  // Flutuante: com margem dos lados e de baixo dentro da coluna.
+  const area = rolagem.getBoundingClientRect();
+  const caixaConversa = cartao.getBoundingClientRect();
+  expect(area.bottom - caixaConversa.bottom).toBeGreaterThanOrEqual(12);
+  expect(caixaConversa.left - area.left).toBeGreaterThanOrEqual(12);
+  semIngles();
+  await nosDoisTemas("caixa-conversa");
+
+  // Na largura mínima da janela (800 × 560), o cartão cabe sem rolagem lateral.
+  await page.viewport(800, 560);
+  await vi.waitFor(() => expect(cartao.getBoundingClientRect().right).toBeLessThanOrEqual(window.innerWidth));
+  expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(window.innerWidth);
+  await nosDoisTemas("caixa-conversa-estreita");
+
+  // Durante a resposta, o botão vira "Interromper".
+  await mensagem.fill("Uma resposta demorada");
+  await userEvent.keyboard("{Enter}");
+  await expect.element(page.getByText(/Esta resposta vai demorar/)).toBeVisible();
+  await page.getByRole("button", { name: "Interromper" }).click();
+  await expect.element(page.getByText("Resposta interrompida.")).toBeVisible();
+  await expect.element(page.getByRole("button", { name: "Enviar" })).toBeVisible();
+});
+
+/* O cabeçalho como barra de título do desktop (sem a barra do sistema; `barra-titulo.ts`). */
+
+function cabecalho(): HTMLElement {
+  return document.querySelector("header")!;
+}
+
+it("Barra de título: no navegador, o cabeçalho não é barra de título", async () => {
+  await using _app = await montarApp(servidor);
+  await expect.element(page.getByRole("link", { name: "Configurações" })).toBeVisible();
+  expect(cabecalho().classList.contains("drag-region")).toBe(false);
+  expect(getComputedStyle(cabecalho()).getPropertyValue("-webkit-app-region")).not.toBe("drag");
+});
+
+it("Barra de título: no desktop (macOS), o cabeçalho arrasta a janela e abre espaço para os semáforos, menos em tela cheia", async () => {
+  let avisar: (telaCheia: boolean) => void = () => {};
+  window.simplifica = {
+    conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
+    janela: {
+      plataforma: "darwin",
+      telaCheia: async () => false,
+      aoMudarTelaCheia: (ouvinte) => {
+        avisar = ouvinte;
+        return () => {
+          avisar = () => {};
+        };
+      },
+    },
+  } satisfies PonteDesktop;
+  await using _app = await montarApp(servidor);
+
+  const configuracoes = page.getByRole("link", { name: "Configurações" });
+  await expect.element(configuracoes).toBeVisible();
+  const header = cabecalho();
+  const estilo = getComputedStyle(header);
+  expect(estilo.getPropertyValue("-webkit-app-region")).toBe("drag");
+  expect(header.getBoundingClientRect().height).toBe(ALTURA_BARRA_TITULO);
+  expect(estilo.paddingLeft).toBe("78px");
+  // Os links recebem o clique e o foco.
+  expect(getComputedStyle(configuracoes.element()).getPropertyValue("-webkit-app-region")).toBe("no-drag");
+  await userEvent.tab();
+  expect(document.activeElement?.textContent).toContain("Simplifica IF");
+
+  avisar(true);
+  await expect.poll(() => getComputedStyle(cabecalho()).paddingLeft).toBe("16px");
+  avisar(false);
+  await expect.poll(() => getComputedStyle(cabecalho()).paddingLeft).toBe("78px");
+});
+
+it("Barra de título: no desktop (Windows e Linux), o cabeçalho deixa a direita para os botões do sistema", async () => {
+  window.simplifica = {
+    conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
+    janela: { plataforma: "win32", telaCheia: async () => false, aoMudarTelaCheia: () => () => {} },
+  } satisfies PonteDesktop;
+  await using _app = await montarApp(servidor);
+  await expect.element(page.getByRole("link", { name: "Configurações" })).toBeVisible();
+  const estilo = getComputedStyle(cabecalho());
+  expect(estilo.paddingLeft).toBe("16px");
+  // Sem o overlay de verdade, vale a largura reservada de 138px, mais a folga.
+  expect(Number.parseFloat(estilo.paddingRight)).toBeGreaterThan(138);
 });

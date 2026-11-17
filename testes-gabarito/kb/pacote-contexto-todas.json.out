@@ -136,6 +136,10 @@
         "matriz_curricular"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: tabela da matriz convertida (componentes, períodos, CH); a IA só olha se a matriz não for reconhecida."
+      },
       "ancoras_semanticas": [
         "Matriz curricular estruturada e legível",
         "Matriz curricular, integralização e componentes",
@@ -207,6 +211,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Carga horária total extraída do PPC contra o mínimo do CNCT e o da forma integrada (3.000 h, Res. CNE/CP nº 2/2026, art. 29); como a extração não tem revisão humana, a divergência sai a conferir."
+      },
       "ancoras_semanticas": [
         "Carga horária total apresentada com consistência",
         "Identificação e características da oferta",
@@ -314,6 +322,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: somas por núcleo na matriz; a IA confirma o rótulo dos núcleos."
+      },
       "ancoras_semanticas": [
         "Distribuição entre formação geral e formação técnica",
         "Matriz curricular, integralização e componentes",
@@ -365,6 +377,10 @@
         "perfil_egresso_mundo_trabalho"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: componentes × perfil."
+      },
       "ancoras_semanticas": [
         "Componentes curriculares alinhados ao perfil profissional",
         "Matriz curricular, integralização e componentes",
@@ -423,6 +439,10 @@
         "ementario_bibliografias"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: cada componente da matriz tem ementa (pareamento de nomes); suficiência por amostra."
+      },
       "ancoras_semanticas": [
         "Ementas completas e auditáveis",
         "Ementário, bibliografias e conteúdos",
@@ -476,6 +496,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: contagem de básica/complementar por componente no ementário."
+      },
       "ancoras_semanticas": [
         "Bibliografia básica e complementar minimamente suficiente",
         "Ementário, bibliografias e conteúdos",
@@ -520,6 +544,10 @@
         "matriz_curricular"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: progressão formativa."
+      },
       "ancoras_semanticas": [
         "Progressão formativa e organização por períodos",
         "Matriz curricular, integralização e componentes",
@@ -583,6 +611,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: metodologias."
+      },
       "ancoras_semanticas": [
         "Metodologias e integração curricular compatíveis com a proposta",
         "Concepção pedagógica e metodologias",
@@ -644,6 +676,10 @@
           "nota": "SEI nº 3881287"
         }
       ],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: inclusão no currículo."
+      },
       "ancoras_semanticas": [
         "Inclusão, AEE e flexibilização curricular articulados ao currículo",
         "AEE, acessibilidade e inclusão",
@@ -693,6 +729,10 @@
         "matriz_curricular"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: presença da representação gráfica (a conversão a detecta); a coerência fica com a pessoa (imagem)."
+      },
       "ancoras_semanticas": [
         "Representação gráfica coerente com a organização curricular",
         "Matriz curricular, integralização e componentes",
@@ -764,6 +804,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: termos dos temas transversais legais nas ementas."
+      },
       "ancoras_semanticas": [
         "Temas transversais e formação cidadã no currículo",
         "Temas transversais, cidadania e direitos humanos",
@@ -829,6 +873,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: progressão explicitada."
+      },
       "ancoras_semanticas": [
         "Progressão formativa explicitada na organização curricular",
         "Matriz curricular, integralização e componentes",
@@ -893,6 +941,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: seção aproveitamento_estudos; a IA confirma critérios e procedimento no trecho."
+      },
       "ancoras_semanticas": [
         "Aproveitamento de estudos com critérios e procedimento definidos",
         "Aproveitamento, certificação intermediária e trabalho final",
@@ -968,6 +1020,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: aplicabilidade em código (PFI/TCC na matriz); caracterização é julgamento."
+      },
       "ancoras_semanticas": [
         "Projeto final, TCC/TFC ou componente equivalente disciplinado quando previsto",
         "Aproveitamento, certificação intermediária e trabalho final",
@@ -1037,6 +1093,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: aplicabilidade e trecho de certificação de conhecimentos."
+      },
       "ancoras_semanticas": [
         "Certificação de conhecimentos anteriores tratada, quando aplicável",
         "Aproveitamento, certificação intermediária e trabalho final",
@@ -1103,6 +1163,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Requisito de escolaridade de ingresso no texto do PPC contra o que o CNCT exige para a forma de oferta declarada; texto não encontrado sai a conferir."
+      },
       "ancoras_semanticas": [
         "Pré-requisitos de ingresso compatíveis com o CNCT",
         "Identificação e características da oferta",
@@ -1206,6 +1270,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: itinerários do CNCT × termos do PPC."
+      },
       "ancoras_semanticas": [
         "Itinerários formativos coerentes com o CNCT",
         "Aproveitamento, certificação intermediária e trabalho final",
@@ -1268,6 +1336,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Componentes obrigatórios da Formação Geral Básica procurados pelo nome nas tabelas da matriz e do ementário; só se aplica ao integrado."
+      },
       "ancoras_semanticas": [
         "Componentes obrigatórios e conteúdos legais da FGB contemplados",
         "Matriz curricular, integralização e componentes",
@@ -1386,6 +1458,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: integração teoria-prática."
+      },
       "ancoras_semanticas": [
         "Integração curricular e práticas profissionais articuladas",
         "Matriz curricular, integralização e componentes",
@@ -1496,6 +1572,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: estagio_obrigatorio/estagio_carga_h + CNCT e legislação profissional; a IA confirma o requisito de aprovação."
+      },
       "ancoras_semanticas": [
         "Decisão sobre estágio e carga horária compatíveis com o CNCT",
         "Estágio curricular",
@@ -1574,6 +1654,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: aplicabilidade (estágio) + termos (convênio, termo de compromisso, seguro)."
+      },
       "ancoras_semanticas": [
         "Convênios e trâmites de estágio descritos quando houver estágio",
         "Estágio curricular",
@@ -1660,6 +1744,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "D",
+        "justificativa": "AEE numa linha de tabela da matriz, do ementário ou da organização curricular: é serviço, não componente."
+      },
       "ancoras_semanticas": [
         "AEE não incorporado como componente curricular da matriz ou do histórico",
         "AEE, acessibilidade e inclusão",
@@ -1717,6 +1805,10 @@
         "matriz_curricular"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: CH semanal da matriz × turno; a IA confirma o contraturno no trecho."
+      },
       "ancoras_semanticas": [
         "Distribuição semanal das aulas e contraturnos explicitada",
         "Identificação e características da oferta",
@@ -1810,6 +1902,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: organização pedagógica do estágio."
+      },
       "ancoras_semanticas": [
         "Organização pedagógica e orientação do estágio obrigatório",
         "Estágio curricular",
@@ -1889,6 +1985,10 @@
           "papel": "complementar"
         }
       ],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: campos de estágio × perfil."
+      },
       "ancoras_semanticas": [
         "Campos de estágio e equivalência coerentes com o perfil profissional",
         "Estágio curricular",
@@ -1980,6 +2080,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: termos de educação política e cidadania nas ementas (integrado)."
+      },
       "ancoras_semanticas": [
         "Educação política e direitos da cidadania no currículo",
         "Temas transversais e formação cidadã no currículo",
@@ -2098,6 +2202,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: formato declarado e CH não presencial da matriz × limites das DCN."
+      },
       "ancoras_semanticas": [
         "Formato de oferta e carga horária não presencial",
         "formato de oferta",
@@ -2162,6 +2270,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Denominação do curso no início do PPC contra a do CNCT."
+      },
       "ancoras_semanticas": [
         "Denominação do curso alinhada ao CNCT",
         "Identificação e características da oferta",
@@ -2241,6 +2353,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: campus, forma, CH, duração e prazo em vários pontos × dados institucionais."
+      },
       "ancoras_semanticas": [
         "Coerência da apresentação institucional do curso",
         "Identificação e características da oferta",
@@ -2301,6 +2417,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: justificativa territorial."
+      },
       "ancoras_semanticas": [
         "Justificativa baseada em demanda territorial e formativa",
         "Justificativa, objetivos e demanda social",
@@ -2344,6 +2464,10 @@
         "justificativa_objetivos"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: objetivos."
+      },
       "ancoras_semanticas": [
         "Objetivos formativos claros e operacionais",
         "Justificativa, objetivos e demanda social",
@@ -2407,6 +2531,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: concepção de EPT."
+      },
       "ancoras_semanticas": [
         "Concepção de EPT explicitada",
         "Concepção pedagógica e metodologias",
@@ -2458,6 +2586,10 @@
         "concepcao_metodologias"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: formação integral."
+      },
       "ancoras_semanticas": [
         "Formação integral e princípios norteadores",
         "Concepção pedagógica e metodologias",
@@ -2506,6 +2638,10 @@
         "perfil_egresso_mundo_trabalho"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: perfil do egresso."
+      },
       "ancoras_semanticas": [
         "Perfil do egresso descrito com competências e atuação",
         "Perfil do egresso, competências e mundo do trabalho",
@@ -2568,6 +2704,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Normas citadas nas seções de identidade com status revogada no registro, e se a sucessora vigente também é citada."
+      },
       "ancoras_semanticas": [
         "Base legal atualizada nas seções de identidade",
         "Referências, base legal e normas institucionais",
@@ -2629,6 +2769,10 @@
         "identificacao_oferta"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: modalidade declarada × menções a EaD/AVA."
+      },
       "ancoras_semanticas": [
         "Modalidade coerente com a narrativa do PPC",
         "Identificação e características da oferta",
@@ -2680,6 +2824,10 @@
         "perfil_egresso_mundo_trabalho"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: competências × perfil do CNCT."
+      },
       "ancoras_semanticas": [
         "Competências do egresso alinhadas à habilitação profissional",
         "Perfil do egresso, competências e mundo do trabalho",
@@ -2728,6 +2876,10 @@
         "perfil_egresso_mundo_trabalho"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: campo de atuação do CNCT × termos do PPC; a IA confirma equivalências."
+      },
       "ancoras_semanticas": [
         "Campos de atuação profissional do egresso estão explicitados",
         "Perfil do egresso, competências e mundo do trabalho",
@@ -2775,6 +2927,10 @@
         "perfil_egresso_mundo_trabalho"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: clareza do perfil."
+      },
       "ancoras_semanticas": [
         "Perfil do egresso redigido com clareza e especificidade",
         "Perfil do egresso, competências e mundo do trabalho",
@@ -2826,6 +2982,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Eixo tecnológico declarado contra o do CNCT; a divergência sai a conferir (abreviações e texto colado pela conversão)."
+      },
       "ancoras_semanticas": [
         "Eixo tecnológico compatível com o CNCT",
         "Identificação e características da oferta",
@@ -2883,6 +3043,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: códigos e ocupações CBO do CNCT no PPC."
+      },
       "ancoras_semanticas": [
         "Ocupações CBO compatíveis com a identidade profissional",
         "Perfil do egresso, competências e mundo do trabalho",
@@ -2951,6 +3115,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: \"Técnico em X\" e eixo na seção de diplomas; a IA confirma certificado × diploma."
+      },
       "ancoras_semanticas": [
         "Diploma técnico explicita habilitação profissional e eixo tecnológico",
         "Perfil do egresso, competências e mundo do trabalho",
@@ -3019,6 +3187,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: termos de processo seletivo, reserva de vagas, Res. 190/2024."
+      },
       "ancoras_semanticas": [
         "Forma de ingresso e política institucional de acesso explicitadas",
         "Identificação e características da oferta",
@@ -3100,6 +3272,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: citação da lei de cotas e alteração (registro); a IA confere a regra reproduzida."
+      },
       "ancoras_semanticas": [
         "Política de cotas referenciada sem desatualização ou erro material",
         "Assistência estudantil, permanência e êxito",
@@ -3200,6 +3376,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: seção acompanhamento_egresso; a IA confirma responsáveis e instrumentos."
+      },
       "ancoras_semanticas": [
         "Acompanhamento de egressos previsto com finalidade formativa",
         "Avaliação do PPC e acompanhamento de egressos",
@@ -3291,6 +3471,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: conselho do CNCT citado; a IA confere \"promessa automática\" de registro."
+      },
       "ancoras_semanticas": [
         "Registro profissional descrito com conselho e base aplicável",
         "Perfil do egresso, competências e mundo do trabalho",
@@ -3381,6 +3565,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: norma de avaliação do IFPR citada + escala de conceitos."
+      },
       "ancoras_semanticas": [
         "Sistema de avaliação coerente com o IFPR",
         "Avaliação do processo de ensino-aprendizagem",
@@ -3445,6 +3633,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: percentual de frequência + termos de recuperação/recomposição."
+      },
       "ancoras_semanticas": [
         "Frequência mínima e recuperação da aprendizagem",
         "Avaliação do processo de ensino-aprendizagem",
@@ -3491,6 +3683,10 @@
         "assistencia_estudantil_permanencia"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: trecho de assistência estudantil."
+      },
       "ancoras_semanticas": [
         "Política de assistência estudantil e acompanhamento",
         "Assistência estudantil, permanência e êxito",
@@ -3556,6 +3752,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: trecho de AEE e acessibilidade na política de atendimento."
+      },
       "ancoras_semanticas": [
         "Inclusão, acessibilidade e AEE na política de atendimento",
         "AEE, acessibilidade e inclusão",
@@ -3603,6 +3803,10 @@
         "corpo_docente_gestao"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: corpo docente × oferta."
+      },
       "ancoras_semanticas": [
         "Corpo docente compatível com a oferta formativa",
         "Corpo docente, equipe técnica e gestão do curso",
@@ -3652,6 +3856,10 @@
         "corpo_docente_gestao"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: coordenação, colegiado, NDE (termos e seção)."
+      },
       "ancoras_semanticas": [
         "Governança acadêmica do curso",
         "Corpo docente, equipe técnica e gestão do curso",
@@ -3715,6 +3923,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: infraestrutura × proposta."
+      },
       "ancoras_semanticas": [
         "Infraestrutura compatível com os componentes formativos",
         "Infraestrutura, laboratórios e acervo",
@@ -3803,6 +4015,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: seção avaliacao_curso + Res. CONSUP 64/2022; a IA confirma periodicidade e responsáveis."
+      },
       "ancoras_semanticas": [
         "Avaliação periódica do PPC e acompanhamento de egressos",
         "Avaliação do PPC e acompanhamento de egressos",
@@ -3882,6 +4098,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Marcos centrais vigentes (DCN da EPT; no integrado, DCNEM, LDB e Lei nº 14.945/2024) entre as citações resolvidas da seção de referências, e normas revogadas nela sem a sucessora."
+      },
       "ancoras_semanticas": [
         "Referências com vigência normativa observável",
         "Referências, base legal e normas institucionais",
@@ -3940,6 +4160,10 @@
         "temas_transversais_cidadania"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: NEABI, NAPNE, NUGEDIS e afins (termos)."
+      },
       "ancoras_semanticas": [
         "Políticas transversais de atendimento e diversidade",
         "AEE, acessibilidade e inclusão",
@@ -3996,6 +4220,10 @@
         "infraestrutura"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: termos de acessibilidade física."
+      },
       "ancoras_semanticas": [
         "Acessibilidade física e arquitetônica",
         "AEE, acessibilidade e inclusão",
@@ -4070,6 +4298,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Normas citadas em todo o PPC com status revogada no registro; sem a sucessora vigente citada, é pendência; com ela, a pessoa confere se a citação é histórica."
+      },
       "ancoras_semanticas": [
         "Referências com vigência normativa atualizada",
         "Referências, base legal e normas institucionais",
@@ -4136,6 +4368,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: padrões ABNT por expressão regular; a IA olha só as linhas fora do padrão."
+      },
       "ancoras_semanticas": [
         "Referências com aderência formal mínima à ABNT",
         "Ementário, bibliografias e conteúdos",
@@ -4223,6 +4459,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "D",
+        "justificativa": "CNCT, DCN da EPT (e DCNEM no integrado), PDI, PPI ou Regimento e a legislação profissional do CNCT entre as citações e menções do PPC."
+      },
       "ancoras_semanticas": [
         "Referências institucionais e referenciais essenciais do curso",
         "Referências, base legal e normas institucionais",
@@ -4321,6 +4561,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: habilitação docente × componentes."
+      },
       "ancoras_semanticas": [
         "Habilitação docente compatível com os componentes da oferta",
         "Corpo docente, equipe técnica e gestão do curso",
@@ -4370,6 +4614,10 @@
         "corpo_docente_gestao"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: contagem do quadro docente × CH da matriz."
+      },
       "ancoras_semanticas": [
         "Quantitativo e disponibilidade docente sustentam a oferta",
         "Corpo docente, equipe técnica e gestão do curso",
@@ -4470,6 +4718,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: formação pedagógica."
+      },
       "ancoras_semanticas": [
         "Formação pedagógica e desenvolvimento docente previstos",
         "Corpo docente, equipe técnica e gestão do curso",
@@ -4534,6 +4786,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: instâncias e normas de inclusão (termos + registro)."
+      },
       "ancoras_semanticas": [
         "Política institucional de inclusão com papéis e normativas definidos",
         "AEE, acessibilidade e inclusão",
@@ -4594,6 +4850,10 @@
           "nota": "SEI nº 3881287"
         }
       ],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: AEE: procedimentos e público."
+      },
       "ancoras_semanticas": [
         "AEE tratado com procedimentos e público-alvo compatíveis, quando aplicável",
         "AEE, acessibilidade e inclusão",
@@ -4683,6 +4943,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: recursos de acessibilidade e permanência."
+      },
       "ancoras_semanticas": [
         "Recursos de acessibilidade e medidas de permanência estão previstos",
         "AEE, acessibilidade e inclusão",
@@ -4742,6 +5006,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Atos de legislação profissional que o CNCT indica para o curso contra as citações resolvidas do PPC."
+      },
       "ancoras_semanticas": [
         "Legislação profissional CNCT tratada quando aplicável",
         "Perfil do egresso, competências e mundo do trabalho",
@@ -4817,6 +5085,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: itens de infraestrutura mínima do CNCT × seção de infraestrutura; a IA confirma equivalências."
+      },
       "ancoras_semanticas": [
         "Infraestrutura mínima CNCT atendida ou justificada",
         "Infraestrutura, laboratórios e acervo",
@@ -4867,6 +5139,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: \"Manual de Competências\", regime de trabalho, participação (termos)."
+      },
       "ancoras_semanticas": [
         "Coordenação do curso com atribuições, regime e participação institucional explicitados",
         "Corpo docente, equipe técnica e gestão do curso",
@@ -4932,6 +5208,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "D",
+        "justificativa": "Res. CONSUP/IFPR nº 239/2025 citada, e as Res. nº 11/2009 e nº 53/2011, revogadas por ela, citadas sem ela."
+      },
       "ancoras_semanticas": [
         "Política de assistência estudantil adequada à Resolução CONSUP/IFPR nº 239/2025",
         "Assistência estudantil, permanência e êxito",
@@ -5010,6 +5290,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: biblioteca: andar, piso, acessibilidade (termos)."
+      },
       "ancoras_semanticas": [
         "Biblioteca descrita com acessibilidade física e condições de acesso",
         "AEE, acessibilidade e inclusão",
@@ -5081,6 +5365,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "S",
+        "justificativa": "Código localiza e extrai, IA confirma: progressão parcial e dependência × forma; a IA confirma a operacionalidade."
+      },
       "ancoras_semanticas": [
         "Progressão parcial e dependência descritas conforme a forma de oferta",
         "Avaliação do processo de ensino-aprendizagem",
@@ -5140,6 +5428,10 @@
         "sintese_transversal_revisao"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento transversal sobre os resumos dos temas: coerência entre objetivos, perfil do egresso e matriz."
+      },
       "ancoras_semanticas": [
         "Coerência entre objetivos, perfil do egresso e matriz",
         "Justificativa, objetivos e demanda social",
@@ -5214,6 +5506,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento transversal sobre os resumos dos temas: coerência entre concepção, metodologias e avaliação."
+      },
       "ancoras_semanticas": [
         "Coerência entre concepção, metodologias e avaliação",
         "Avaliação do processo de ensino-aprendizagem",
@@ -5285,6 +5581,10 @@
         "sintese_transversal_revisao"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento transversal sobre os resumos dos temas: coerência entre ementas e bibliografias."
+      },
       "ancoras_semanticas": [
         "Coerência interna entre ementas e bibliografias do currículo",
         "Ementário, bibliografias e conteúdos",
@@ -5358,6 +5658,10 @@
         "sintese_transversal_revisao"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento transversal sobre os resumos dos temas: currículo, corpo docente e infraestrutura."
+      },
       "ancoras_semanticas": [
         "Coerência entre currículo, corpo docente e infraestrutura",
         "Corpo docente, equipe técnica e gestão do curso",
@@ -5440,6 +5744,10 @@
         "sintese_transversal_revisao"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Síntese da IA sobre os resultados das demais fichas: riscos globais e ajustes prioritários."
+      },
       "ancoras_semanticas": [
         "Riscos globais e ajustes prioritários",
         "Avaliação do PPC e acompanhamento de egressos",
@@ -5509,6 +5817,10 @@
         "sintese_transversal_revisao"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Síntese da IA sobre os resultados das demais fichas, para a conclusão da revisão."
+      },
       "ancoras_semanticas": [
         "Síntese argumentativa para a conclusão da revisão",
         "Referências, base legal e normas institucionais",
@@ -5574,6 +5886,10 @@
         "sintese_transversal_revisao"
       ],
       "referencias_normativas": [],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento transversal sobre os resumos dos temas: vagas × infraestrutura e interesse público."
+      },
       "ancoras_semanticas": [
         "Dimensionamento de vagas compatível com infraestrutura e interesse público",
         "Identificação e características da oferta",
@@ -5689,6 +6005,10 @@
           "nota": "perfil profissional do curso correspondente"
         }
       ],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento transversal sobre os resumos dos temas: coerência teórico-prática entre concepção, perfil e matriz."
+      },
       "ancoras_semanticas": [
         "Coerência teórico-prática entre concepção, perfil e matriz",
         "Concepção pedagógica e metodologias",
@@ -10767,7 +11087,7 @@
     ]
   },
   "tamanho": {
-    "caracteres": 762963,
+    "caracteres": 776444,
     "secoes": 120,
     "caracteres_secoes": 237381,
     "caracteres_ppc_inteiro": 255014

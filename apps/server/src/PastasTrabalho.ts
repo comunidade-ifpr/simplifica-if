@@ -8,6 +8,10 @@
  *   só as geridas têm arquivos listados, anexos e cópias.
  * - **Anexar:** o servidor copia para a pasta o arquivo que o processo principal do desktop liberou
  *   depois do diálogo (a mesma liberação da revisão prévia); o nome repetido ganha ` (2)`.
+ * - **Relato (M1.12):** `gravarRelato` grava o `.md` de "Isto está errado" em `<raiz>/Relatos de erro/`
+ *   (`PASTA_RELATOS`), fora da pasta de qualquer tarefa: a política nega à IA a leitura fora da pasta da
+ *   conversa, e o relato (que pode ter o que a pessoa não quer mandar de volta à IA) não entra nos
+ *   próximos turnos. Nenhuma tarefa ganha esse nome (`criar` o pula), e nada se sobrescreve.
  * - **Cópias (Desfazer):** antes de cada turno, uma cópia simples da pasta vai para
  *   `<copias>/<conversa>/<turno>/`, fora da pasta de trabalho (a IA não a vê nem a altera), com um
  *   `manifesto.json` (tamanho e SHA-256 de cada arquivo). Escolha: **cópia simples, não git oculto**.
@@ -60,6 +64,9 @@ export const LIMITES: Limites = {
   anexoBytes: 50 * 1024 * 1024,
 };
 
+/** Onde "Salvar o relato" grava, dentro da raiz e fora da pasta de qualquer tarefa (M1.12). */
+export const PASTA_RELATOS = "Relatos de erro";
+
 export interface OpcoesPastas {
   /** `Documentos/Simplifica IF`; criada no primeiro `criar`. */
   readonly raiz: string;
@@ -75,6 +82,11 @@ export class PastasTrabalho extends Context.Service<
     /** Cria a pasta da tarefa e devolve o caminho real. */
     readonly criar: (titulo: string) => Effect.Effect<string, FalhaPasta>;
     readonly anexar: (pasta: string, arquivo: string) => Effect.Effect<ArquivoPasta, FalhaPasta>;
+    /**
+     * Grava o relato `nome` (um `.md`) em `<raiz>/Relatos de erro/`, fora do alcance da IA, sem
+     * sobrescrever (` (2)`…), e devolve o caminho.
+     */
+    readonly gravarRelato: (nome: string, conteudo: string) => Effect.Effect<string, FalhaPasta>;
     /** Os arquivos da pasta da conversa e a previsão do Desfazer. */
     readonly ver: (conversa: string, pasta: string) => Effect.Effect<PastaConversa, FalhaPasta>;
     /** A cópia de antes do turno; nunca falha (o erro vai para o log, e o turno segue sem cópia). */
@@ -440,7 +452,8 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     tentar(async () => {
       await NodeFSP.mkdir(raiz, { recursive: true });
       const nome = nomeSeguro(titulo);
-      for (let n = 1; n < 1000; n++) {
+      // A pasta dos relatos não é de tarefa: o título igual a ela começa em " (2)".
+      for (let n = nome.toLowerCase() === PASTA_RELATOS.toLowerCase() ? 2 : 1; n < 1000; n++) {
         const pasta = NodePath.join(raiz, n === 1 ? nome : `${nome} (${n})`);
         try {
           await NodeFSP.mkdir(pasta);
@@ -488,6 +501,26 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
       alteradoEm: copiado.mtime.toISOString(),
       origem: "anexado",
     } satisfies ArquivoPasta;
+  });
+
+  const gravarRelato = Effect.fn("PastasTrabalho.gravarRelato")(function* (nome: string, conteudo: string) {
+    return yield* tentar(async () => {
+      const pasta = NodePath.join(raiz, PASTA_RELATOS);
+      await NodeFSP.mkdir(pasta, { recursive: true });
+      // Um link no lugar da pasta levaria o relato para fora de Documentos/Simplifica IF.
+      if (!(await NodeFSP.lstat(pasta)).isDirectory()) throw new Error("a pasta dos relatos não é uma pasta");
+      const seguro = `${nomeSeguro(NodePath.basename(nome, ".md"))}.md`;
+      for (let n = 1; n < 1000; n++) {
+        const destino = NodePath.join(pasta, comNumero(seguro, n));
+        try {
+          await NodeFSP.writeFile(destino, conteudo, { flag: "wx" });
+          return destino;
+        } catch (erro) {
+          if ((erro as NodeJS.ErrnoException).code !== "EEXIST") throw erro;
+        }
+      }
+      throw new Error("nomes esgotados");
+    }, "Não foi possível gravar o relato em Documentos/Simplifica IF/Relatos de erro.");
   });
 
   /**
@@ -623,6 +656,7 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     raiz,
     criar,
     anexar,
+    gravarRelato,
     ver,
     guardarCopia: Effect.fn("PastasTrabalho.contandoCopia")(function* (conversa: string, turno: number, pasta: string) {
       return yield* contando(guardarCopia(conversa, turno, pasta));
@@ -657,6 +691,7 @@ export const layerSemPastas = Layer.sync(PastasTrabalho, () => {
     raiz: "",
     criar: recusa,
     anexar: recusa,
+    gravarRelato: recusa,
     ver: Effect.fn("PastasTrabalho.ver")(function* (_conversa: string, pasta: string) {
       return yield* Effect.succeed({
         pasta,

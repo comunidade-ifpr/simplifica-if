@@ -30,6 +30,29 @@ export function limparTemporarios(): void {
   for (const dir of temporarios.splice(0)) NodeFS.rmSync(dir, { recursive: true, force: true });
 }
 
+/**
+ * Um Markdown sintético para a tabela `documentos`: um front matter nas linhas 1 a 3 e, em cada linha
+ * dada, o texto dela; as outras ficam em branco. Assim as linhas das âncoras (dispositivos, seções)
+ * são as do texto, como na base real.
+ */
+export function markdownSintetico(id: string, linhas: ReadonlyMap<number, string>): string {
+  const total = Math.max(4, ...linhas.keys()) + 1;
+  const saida = Array.from({ length: total }, (_, i) => linhas.get(i + 1) ?? "");
+  saida.splice(0, 3, "---", `id: ${id}`, "---");
+  return saida.join("\n");
+}
+
+/** O PPC de Enfermagem da fixture: lacunas fora das seções, uma tabela, um link externo e HTML cru (que não pode virar HTML). */
+const LINHAS_PPC_ENFERMAGEM = new Map<number, string>([
+  [5, "# Projeto Pedagógico do Curso Técnico em Enfermagem"],
+  [7, "Campus Curitiba · Forma subsequente"],
+  [9, "| Item | Valor |"],
+  [10, "| --- | --- |"],
+  [11, "| Carga horária | 1.600 horas |"],
+  [13, "Mais informações no [site do IFPR](https://ifpr.edu.br/curitiba)."],
+  [15, '<script>window.__invasao = true</script><img src="x" onerror="window.__invasao = true">'],
+]);
+
 export function criarBancoFixture(opcoes: OpcoesFixture = {}, dir = diretorioTemporario()): string {
   const caminho = NodePath.join(dir, "kb.sqlite");
   const db = new NodeSqlite.DatabaseSync(caminho);
@@ -104,6 +127,8 @@ export function criarBancoFixture(opcoes: OpcoesFixture = {}, dir = diretorioTem
     ["avaliacao-1", "avaliacao", 120],
     ["estagio-2", "estagio_praticas", 220],
   ] as const) {
+    LINHAS_PPC_ENFERMAGEM.set(inicio, `## ${secao}`);
+    LINHAS_PPC_ENFERMAGEM.set(inicio + 2, `Texto da seção ${secao}.`);
     inserirSecao.run(
       `curitiba/tecnico-em-enfermagem#${secao}`,
       "ppc:curitiba/tecnico-em-enfermagem",
@@ -116,6 +141,10 @@ export function criarBancoFixture(opcoes: OpcoesFixture = {}, dir = diretorioTem
       `Texto da seção ${secao}.`,
     );
   }
+  db.prepare("INSERT INTO documentos (path, texto) VALUES (?, ?)").run(
+    md,
+    markdownSintetico("ppc:curitiba/tecnico-em-enfermagem", LINHAS_PPC_ENFERMAGEM),
+  );
   db.close();
   return caminho;
 }

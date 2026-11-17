@@ -619,6 +619,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         keywords_json: json(item.keywords ?? []),
         front_matter_json: json(meta),
       });
+      ins.inserir("documentos", { path: caminhoMd, texto: md });
       blocoMetadados(
         item.id,
         item.title,
@@ -844,6 +845,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         caracteres: bruto.length,
         proveniencia_json: json(item.proveniencia ?? null),
       });
+      ins.inserir("documentos", { path: caminhoMd, texto: markdown });
 
       const secoes = [...(secoesPorPath.get(item.path) ?? [])].sort(
         (a, b) => a.linha_inicio - b.linha_inicio || compararTexto(a.id, b.id),

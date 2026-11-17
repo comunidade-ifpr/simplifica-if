@@ -4,7 +4,7 @@
  * fixture do MCP: a interface conversa com ele por RPC sem chamar provider real e sem `tmp/kb.sqlite`.
  *
  *   node apps/web/test/servidor-teste.ts [--porta 0] [--origem http://localhost:5190]… [--atraso-login 2000]
- *     [--primeiro-uso] [--claude-ausente]
+ *     [--primeiro-uso] [--claude-ausente] [--curadoria dono/repo]
  *
  * Pronto o servidor, imprime uma linha JSON com `porta`, `urlServidor`, `token` (o de
  * `SIMPLIFICA_SERVIDOR_TOKEN` ou um aleatório), `pasta`, uma pasta de trabalho temporária, e `ppc`, um
@@ -40,6 +40,8 @@ const { values: opcoes } = NodeUtil.parseArgs({
     "primeiro-uso": { type: "boolean", default: false },
     // O Claude Code ausente até o arquivo `sinalClaude` existir (o passo guiado das boas-vindas).
     "claude-ausente": { type: "boolean", default: false },
+    // O repositório da curadoria (M1.12, "Isto está errado"); sem a opção, `null`, como na política de fábrica.
+    curadoria: { type: "string" },
   },
 });
 
@@ -100,6 +102,7 @@ const camada = Servidor.layer({
   pastaSkills: NodePath.resolve(import.meta.dirname, "../../../.agents/skills"),
   pastaTrabalhos,
   primeiroUsoFeito: !opcoes["primeiro-uso"],
+  relatos: { curadoria: { repositorio: opcoes.curadoria ?? null, rotulos: ["relato-do-app"] } },
 }).pipe(
   Layer.provide(
     Demonstracao.layer({

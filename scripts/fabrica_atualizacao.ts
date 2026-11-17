@@ -35,7 +35,12 @@ import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Effect from "effect/Effect";
 import { arquivosFonte } from "@simplifica-if/kb/db/fontes";
 import { lerPastaSkills } from "@simplifica-if/mcp/skills";
-import { gerarCanal, promoverManifesto, type SkillDaFabrica } from "@simplifica-if/atualizacao/fabrica";
+import {
+  APP_MINIMO_PADRAO,
+  gerarCanal,
+  promoverManifesto,
+  type SkillDaFabrica,
+} from "@simplifica-if/atualizacao/fabrica";
 import {
   reescreverLatestYml,
   TAG_APP,
@@ -411,7 +416,7 @@ async function principal() {
       versao: { type: "string" },
       repositorio: { type: "string" },
       anterior: { type: "string", multiple: true, default: [] },
-      "app-minimo": { type: "string", default: "0.1.0" },
+      "app-minimo": { type: "string", default: APP_MINIMO_PADRAO },
       executar: { type: "boolean", default: false },
       de: { type: "string" },
       para: { type: "string" },

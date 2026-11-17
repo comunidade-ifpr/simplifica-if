@@ -56,6 +56,8 @@ export interface OpcoesServidorTeste {
   readonly primeiroUso?: boolean;
   /** O Claude Code ausente até o teste simular a instalação (`simularInstalacaoClaude`). */
   readonly claudeAusente?: boolean;
+  /** O repositório da curadoria (`dono/repo`) para "Isto está errado" (M1.12); sem ele, `null`. */
+  readonly curadoria?: string;
 }
 
 /** Sobe o `apps/server` de teste aceitando `origem` e devolve a linha de partida dele. */
@@ -70,6 +72,7 @@ function iniciarServidorTeste(origem: string, opcoes: OpcoesServidorTeste) {
       String(opcoes.atrasoLogin ?? 1500),
       ...(opcoes.primeiroUso === true ? ["--primeiro-uso"] : []),
       ...(opcoes.claudeAusente === true ? ["--claude-ausente"] : []),
+      ...(opcoes.curadoria === undefined ? [] : ["--curadoria", opcoes.curadoria]),
     ],
     { stdio: ["pipe", "pipe", "inherit"] },
   );
