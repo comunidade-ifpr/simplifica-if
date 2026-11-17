@@ -3,6 +3,7 @@
  * andamento por tema (os blocos de cada tema ficando prontos) e a cobertura do resultado.
  */
 import type { EstadoRevisaoIa, EstimativaRevisaoIa, ResultadoRevisaoPpc } from "@simplifica-if/contratos-app";
+import { dolares } from "../lib/formato.ts";
 
 /**
  * "Estimativa aproximada: cerca de 14% de uma janela de 5 horas do plano Pro (referência provisória)…".
@@ -11,8 +12,7 @@ import type { EstadoRevisaoIa, EstimativaRevisaoIa, ResultadoRevisaoPpc } from "
  * janela dizem o mesmo em termos da pessoa.
  */
 export function textoEstimativa(e: EstimativaRevisaoIa): string {
-  const custo =
-    e.custoUsd === null ? "" : ` Pago por uso, isso custaria cerca de US$ ${e.custoUsd.toFixed(2).replace(".", ",")}.`;
+  const custo = e.custoUsd === null ? "" : ` Pago por uso, isso custaria cerca de ${dolares(e.custoUsd)}.`;
   return `${e.fichas} critérios em ${e.blocos} etapas. Estimativa aproximada: cerca de ${e.minutos} min e algo como ${e.percentualJanela}% de ${e.nomeJanela} (referência provisória: as empresas de IA não publicam o tamanho da janela).${custo}`;
 }
 

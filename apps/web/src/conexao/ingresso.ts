@@ -38,23 +38,46 @@ export class FalhaConexao extends Schema.TaggedError<FalhaConexao>()("FalhaConex
   }
 }
 
-/** A explicação de cada motivo, para a pessoa que usa o app. */
+/**
+ * A explicação de cada motivo, para a pessoa que usa o app (M1.14): sem "servidor", "conexão",
+ * "porta" nem "credencial". O que roda no computador ao lado da janela é "a parte do app que roda no
+ * seu computador"; o termo técnico fica em `detalheFalha`, para "Detalhes técnicos".
+ */
 export function mensagemFalha(motivo: MotivoFalha): string {
   switch (motivo) {
     case "sem-servidor":
-      return "Não há servidor do Simplifica IF configurado.";
+      return "O Simplifica IF não achou a parte do app que roda no seu computador.";
     case "ponte":
-      return "O aplicativo não informou onde está o servidor local.";
+      return "O Simplifica IF não conseguiu iniciar a parte do app que roda no seu computador.";
     case "indisponivel":
-      return "O servidor local não respondeu.";
+      return "Não foi possível falar com a parte do app que roda no seu computador. Ela pode estar reiniciando.";
     case "token-recusado":
-      return "O servidor local recusou a credencial desta janela.";
     case "origem-recusada":
-      return "O servidor local não aceita conexões a partir deste endereço.";
+      return "A parte do app que roda no seu computador não reconheceu esta janela.";
     case "conexao-caiu":
-      return "A conexão com o servidor local caiu.";
+      return "O Simplifica IF perdeu o contato com a parte do app que roda no seu computador.";
     case "resposta-invalida":
-      return "O servidor local respondeu de um jeito inesperado.";
+      return "A parte do app que roda no seu computador respondeu de um jeito inesperado.";
+  }
+}
+
+/** O mesmo motivo em termos técnicos, para "Detalhes técnicos" e para quem dá suporte. */
+export function detalheFalha(motivo: MotivoFalha): string {
+  switch (motivo) {
+    case "sem-servidor":
+      return "Sem credenciais do servidor local: nem ponte do desktop, nem ?servidor=<porta>&token=… na URL, nem VITE_SIMPLIFICA_SERVIDOR (ver apps/web/README.md).";
+    case "ponte":
+      return "A ponte do desktop não entregou as credenciais do servidor local.";
+    case "indisponivel":
+      return "O servidor local não respondeu ao POST /ingresso (fora do ar ou porta errada).";
+    case "token-recusado":
+      return "O servidor local recusou o token (HTTP 401).";
+    case "origem-recusada":
+      return "O servidor local recusou a origem da página ou o Host (HTTP 403). Em desenvolvimento, inicie o servidor com --origem igual ao endereço desta página.";
+    case "conexao-caiu":
+      return "O WebSocket do RPC com o servidor local não abriu ou caiu.";
+    case "resposta-invalida":
+      return "O servidor local deu uma resposta inesperada ao POST /ingresso.";
   }
 }
 

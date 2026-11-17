@@ -246,6 +246,7 @@ function Formulario({
           aoMudar={() => mudar({ semVersoes: !escolhas.semVersoes })}
         >
           Versões: app {versoes.app}, base {versoes.base}
+          {versoes.baseCommit === null ? "" : ` (revisão da base ${versoes.baseCommit.slice(0, 12)})`}
           {versoes.tarefa === null ? "" : `, ${versoes.tarefa.titulo} ${versoes.tarefa.versao}`},{" "}
           {NOMES_PROVIDER[versoes.provider]}
           {versoes.versaoProvider === null ? "" : ` ${versoes.versaoProvider}`}
@@ -267,6 +268,13 @@ function Formulario({
         <pre className="max-h-72 overflow-auto whitespace-pre-wrap rounded-md border border-border bg-muted p-3 text-xs">
           {textoCompleto}
         </pre>
+        {/* O texto vai no formato da curadoria, com "commit"; o rótulo da tela fica em português (M1.14). */}
+        {escolhas.semVersoes || versoes.baseCommit === null ? null : (
+          <p className="text-muted-foreground text-xs">
+            No relato, <code>commit</code> é a revisão da base: o código que a equipe da base usa para achar a versão
+            exata.
+          </p>
+        )}
       </section>
       {rascunho.repositorio === null ? (
         <p className="text-muted-foreground text-sm">

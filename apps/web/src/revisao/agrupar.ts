@@ -4,6 +4,7 @@
  * linguagem de quem edita o PPC, não os códigos das fichas.
  */
 import type { CriterioRevisao, PendenciaRevisao, ResultadoRevisaoPpc } from "@simplifica-if/contratos-app";
+import { dataCurta } from "../lib/formato.ts";
 
 export interface GrupoTema {
   readonly tema: string;
@@ -66,4 +67,4 @@ export function descreverCurso(curso: ResultadoRevisaoPpc["curso"]): string {
   return `${curso.cnct.denominacao}${forma}${curso.origem === "documento" ? " (identificado no documento)" : ""}.`;
 }
 
-export const dataBrasileira = (iso: string) => iso.slice(0, 10).split("-").reverse().join("/");
+export const dataBrasileira = dataCurta;

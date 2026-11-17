@@ -9,6 +9,7 @@ import { MessageSquareTextIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi, useEstadoConexao } from "../contexto.tsx";
+import { dataHora } from "../lib/formato.ts";
 import { cn } from "../lib/utils.ts";
 import { DESCRICOES } from "../providers.ts";
 import { AvisoErro } from "./AvisoErro.tsx";
@@ -19,8 +20,6 @@ type Lista =
   | { readonly fase: "carregando" }
   | { readonly fase: "pronta"; readonly conversas: ReadonlyArray<ResumoConversa> }
   | { readonly fase: "falhou"; readonly erro: MensagemErro };
-
-const FORMATO_DATA = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" });
 
 /** O estado da sessão, quando a pessoa precisa saber dele. */
 const ROTULOS_ESTADO: Partial<Record<EstadoConversa, string>> = {
@@ -96,7 +95,7 @@ export function ListaConversas({
               </span>
               <span className="flex flex-wrap items-center gap-x-2 text-muted-foreground text-xs">
                 <span>{DESCRICOES[conversa.provider].nome}</span>
-                <span>{FORMATO_DATA.format(new Date(conversa.atualizadaEm))}</span>
+                <span>{dataHora(conversa.atualizadaEm)}</span>
                 {rotulo === undefined ? null : (
                   <Badge variant={conversa.estado === "caiu" ? "warning" : "info"} size="sm">
                     {rotulo}

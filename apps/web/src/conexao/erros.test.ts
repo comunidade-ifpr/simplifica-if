@@ -8,7 +8,14 @@ import {
   TurnoEmAndamento,
 } from "@simplifica-if/contratos-app";
 import { RpcClientDefect, RpcClientError } from "effect/rpc/RpcClientError";
-import { explicarErro, explicarErroDoTurno, explicarFalhaProvider, mensagemDeErro, tipoFalha } from "./erros.ts";
+import {
+  explicarErro,
+  explicarErroDoTurno,
+  explicarFalhaProvider,
+  mensagemDeErro,
+  PERDEU_CONTATO,
+  tipoFalha,
+} from "./erros.ts";
 
 describe("mensagemDeErro", () => {
   it("usa a mensagem em português dos erros tipados, com maiúscula e ponto", () => {
@@ -20,7 +27,8 @@ describe("mensagemDeErro", () => {
 
   it("explica a queda da conexão e os defeitos", () => {
     const queda = new RpcClientError({ reason: new RpcClientDefect({ message: "socket", cause: undefined }) });
-    assert.strictEqual(mensagemDeErro(queda), "A conexão com o servidor local caiu durante o pedido.");
+    assert.strictEqual(mensagemDeErro(queda), PERDEU_CONTATO);
+    assert.match(explicarErro(queda).detalhe ?? "", /servidor local caiu \(RpcClientError\)/);
     assert.deepStrictEqual(explicarErro(new Error("boom")), {
       texto: "Algo deu errado no app. Tente de novo.",
       detalhe: "boom",

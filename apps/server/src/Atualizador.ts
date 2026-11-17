@@ -199,7 +199,7 @@ export const make = Effect.fn("Atualizador.make")(function* (opcoes: Opcoes) {
     }
     return {
       resultado: "reiniciar",
-      mensagem: "Reiniciando o servidor local para trocar a base.",
+      mensagem: "O Simplifica IF está reiniciando para trocar a base.",
     } satisfies ResultadoTroca;
   });
 

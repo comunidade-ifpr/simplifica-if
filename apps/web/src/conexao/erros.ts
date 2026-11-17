@@ -65,7 +65,12 @@ export type TipoFalha =
  */
 const PADROES: ReadonlyArray<readonly [TipoFalha, RegExp]> = [
   // O processo do provider morreu (o servidor reabre a sessão pela retomada na próxima mensagem).
-  ["queda", /terminated by signal|process (exited|terminated)|processo d[oa] .* encerrou|app-server encerrou/i],
+  // As frases dos protocolos copiados do T3 (`effect-acp`, `effect-codex-app-server`) também: o fim do
+  // stdin/stdout ou do protocolo e a escrita que falhou são o processo que caiu.
+  [
+    "queda",
+    /terminated by signal|process (exited|terminated)|processo d[oa] .* encerrou|app-server encerrou|input stream ended|protocol terminated|failed to send .*protocol message|transport operation.* failed/i,
+  ],
   // O Claude Agent SDK encerra o turno com `error_max_turns` ou `error_max_budget_usd`.
   ["limiteApp", /error_max_(turns|budget_usd|structured_output_retries)|max(imum)? turns/i],
   [
@@ -87,7 +92,7 @@ const PADROES: ReadonlyArray<readonly [TipoFalha, RegExp]> = [
   ],
   [
     "cliAusente",
-    /ENOENT|command not found|no such file|executable not found|ausente|n[ãa]o (está )?instalad|n[ãa]o encontrad|not installed/i,
+    /ENOENT|command not found|no such file|executable not found|failed to spawn|ausente|n[ãa]o (está )?instalad|n[ãa]o encontrad|not installed/i,
   ],
   [
     "versao",
@@ -185,6 +190,13 @@ const ERROS_DO_MOTOR: Readonly<Record<string, string>> = {
   AprovacaoDesconhecida: "Este pedido de permissão não vale mais: a resposta já seguiu sem ele.",
 };
 
+/**
+ * A queda da conexão com o servidor local no meio de um pedido, como a pessoa a lê: sem "servidor",
+ * "conexão" nem "WebSocket" (M1.14); o técnico vai para "Detalhes técnicos".
+ */
+export const PERDEU_CONTATO =
+  "O Simplifica IF perdeu o contato com a parte do app que roda no seu computador. Espere alguns segundos e tente de novo.";
+
 /** O erro que chegou de uma chamada ao servidor, em português. */
 export function explicarErro(erro: unknown): MensagemErro {
   if (typeof erro === "object" && erro !== null) {
@@ -195,7 +207,11 @@ export function explicarErro(erro: unknown): MensagemErro {
       readonly operacao?: unknown;
       readonly detalhe?: unknown;
     };
-    if (registro._tag === "RpcClientError") return { texto: "A conexão com o servidor local caiu durante o pedido." };
+    if (registro._tag === "RpcClientError")
+      return {
+        texto: PERDEU_CONTATO,
+        detalhe: `Conexão com o servidor local caiu (RpcClientError)${typeof registro.message === "string" && registro.message.length > 0 ? `: ${registro.message}` : ""}`,
+      };
     if (
       registro._tag === "FalhaProvider" &&
       typeof registro.provider === "string" &&
