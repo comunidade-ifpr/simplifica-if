@@ -184,7 +184,7 @@ it("coleções: filtros de cursos, normas, CNCT e Consepe; campus e ficha de an�
   await page.getByRole("navigation", { name: "Coleções" }).getByRole("link", { name: "Fichas de análise" }).click();
   await page.getByRole("link", { name: /CT-CURR-12/ }).click();
   const ficha = page.getByRole("article", { name: "Ficha de análise" });
-  await expect.element(ficha.getByText("O PPC explicita a progressão formativa?")).toBeVisible();
+  await expect.element(ficha.getByText(/^A organização curricular deixa clara a progressão formativa/)).toBeVisible();
   await expect.element(ficha.getByText("Obrigatória")).toBeVisible();
   semIngles();
 });

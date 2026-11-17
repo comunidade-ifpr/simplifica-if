@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- fixture de teste: lê a ficha real da revisar-ppc do checkout
 /**
  * O que o Explorar do app precisa além das normas da fixture (`fixture.ts` + `fixture-normas.ts`): o
  * CNCT do Técnico em Enfermagem ligado ao curso, ofertas, os horários e o calendário de um campus,
@@ -5,6 +6,8 @@
  * divergência PPC × SUAP e o índice FTS das seções. É o banco do servidor de teste da interface
  * (`apps/web/test/servidor-teste.ts`) e o dos testes do RPC do Explorar.
  */
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import * as NodeSqlite from "node:sqlite";
 import { radicais } from "@simplifica-if/kb/busca/tokens";
 import { emTransacao } from "@simplifica-if/kb/db/transacao";
@@ -31,26 +34,29 @@ export function inserirExplorar(caminho: string): void {
        WHERE campus_id = 'curitiba'`,
     );
 
-    inserir("cnct", {
-      id: "cnct:tecnico-em-enfermagem",
-      slug: "tecnico-em-enfermagem",
-      denominacao: "Técnico em Enfermagem",
-      eixo_tecnologico: "Ambiente e Saúde",
-      carga_horaria_minima_h: 1200,
-      path: "base-conhecimento/catalogos/cnct/cursos/tecnico-em-enfermagem.json",
-      dados_json: JSON.stringify({
-        perfil_profissional: "Atua na promoção, prevenção, recuperação e reabilitação da saúde.",
-        campo_atuacao: "Hospitais, clínicas e unidades básicas de saúde.",
-      }),
+    // o JSON de cada curso no formato do catálogo: a revisão prévia do servidor de teste o lê inteiro
+    const cursoCnct = (slug: string, denominacao: string, eixo: string, campos: Record<string, string>) =>
+      inserir("cnct", {
+        id: `cnct:${slug}`,
+        slug,
+        denominacao,
+        eixo_tecnologico: eixo,
+        carga_horaria_minima_h: 1200,
+        path: `base-conhecimento/catalogos/cnct/cursos/${slug}.json`,
+        dados_json: JSON.stringify({
+          id: slug,
+          denominacao,
+          denominacao_normalizada: denominacao.toLowerCase().normalize("NFKD").replace(/\p{M}/gu, ""),
+          eixo_tecnologico: eixo,
+          carga_horaria_minima_horas: "1200",
+          ...campos,
+        }),
+      });
+    cursoCnct("tecnico-em-enfermagem", "Técnico em Enfermagem", "Ambiente e Saúde", {
+      perfil_profissional: "Atua na promoção, prevenção, recuperação e reabilitação da saúde.",
+      campo_atuacao: "Hospitais, clínicas e unidades básicas de saúde.",
     });
-    inserir("cnct", {
-      id: "cnct:tecnico-em-agropecuaria",
-      slug: "tecnico-em-agropecuaria",
-      denominacao: "Técnico em Agropecuária",
-      eixo_tecnologico: "Recursos Naturais",
-      carga_horaria_minima_h: 1200,
-      dados_json: "{}",
-    });
+    cursoCnct("tecnico-em-informatica", "Técnico em Informática", "Informação e Comunicação", {});
     db.exec(
       `UPDATE cursos SET forma_oferta = 'subsequente', modalidade = 'presencial', situacao = 'ativo',
          cnct_id = 'cnct:tecnico-em-enfermagem', ppc_id = 'ppc:${CURSO_ENFERMAGEM}', ppc_ano_documento = 2023,
@@ -96,23 +102,23 @@ export function inserirExplorar(caminho: string): void {
       });
     }
 
-    const ficha = {
-      id: "CT-CURR-12",
-      titulo: "Progressão formativa explicitada na organização curricular",
-      dominio: "curriculo",
-      criticidade: "OBRIG",
-      pergunta: "O PPC explicita a progressão formativa?",
-      referencias_normativas: [{ ref: "br/cne-cp/res/2021/1", dispositivo: "#art20", papel: "fundamento" }],
-    };
+    // a ficha real do repositório, como a compilação a grava: a revisão prévia do servidor de teste lê a
+    // tabela `fichas` inteira, e uma ficha incompleta a quebraria
+    const arquivoFicha = ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-12.json";
+    const ficha = JSON.parse(
+      NodeFS.readFileSync(NodePath.resolve(import.meta.dirname, "../../..", arquivoFicha), "utf8"),
+    ) as Record<string, string | null>;
     inserir("fichas", {
-      id: "CT-CURR-12",
-      titulo: "Progressão formativa explicitada na organização curricular",
-      dominio: ficha.dominio,
-      criticidade: ficha.criticidade,
-      pergunta: ficha.pergunta,
-      path: ".agents/skills/revisar-ppc/base-analise/fichas/ct-curr-12.json",
+      id: ficha.id!,
+      titulo: ficha.titulo!,
+      dominio: ficha.dominio ?? null,
+      criticidade: ficha.criticidade ?? null,
+      tipo_escopo: ficha.tipo_escopo ?? null,
+      pergunta: ficha.pergunta ?? null,
+      rubrica: ficha.rubrica ?? null,
+      path: arquivoFicha,
       dados_json: JSON.stringify(ficha),
-      arquivo_json: JSON.stringify(ficha, null, 2),
+      arquivo_json: JSON.stringify(ficha),
     });
 
     /* ---------- fatos do PPC e o cruzamento com o SUAP */

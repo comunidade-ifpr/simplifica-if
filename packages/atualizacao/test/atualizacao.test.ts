@@ -7,6 +7,7 @@ import * as NodeFS from "node:fs";
 import * as NodeHttp from "node:http";
 import * as NodePath from "node:path";
 import { afterEach, describe, expect, it } from "@effect/vitest";
+import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
 import { conferirEsquema, type SkillDaFabrica } from "../src/fabrica.ts";
 import {
   ARQUIVO_TRAVA,
@@ -290,16 +291,22 @@ describe("revisão: skills, trava, proxy, temporários e Worker", () => {
 });
 
 describe("esquema da base na abertura e na fábrica", () => {
+  // o esquema deste app e o anterior (a base baixada pelo app antigo)
+  const ATUAL = VERSAO_ESQUEMA;
+  const ANTIGO = VERSAO_ESQUEMA - 1;
+
   it("base baixada de outro esquema, mesmo mais nova, não vence a empacotada", () => {
     const pasta = pastaTemporaria();
     const empacotada = criarBanco(NodePath.join(pasta, "Resources", "kb.sqlite"), "2026.11.10");
-    criarBanco(caminhos(pasta).atual, "2026.11.20", { esquema: 3 });
-    const abertura = prepararAbertura({ pasta, bancoEmpacotado: empacotada, versaoEsquema: 4 });
+    criarBanco(caminhos(pasta).atual, "2026.11.20", { esquema: ANTIGO });
+    const abertura = prepararAbertura({ pasta, bancoEmpacotado: empacotada, versaoEsquema: ATUAL });
     // a empacotada é do esquema deste app (criarBanco grava o VERSAO_ESQUEMA do kb)
-    expect(lerInfoBanco(empacotada)?.versaoEsquema).toBe(4);
+    expect(lerInfoBanco(empacotada)?.versaoEsquema).toBe(ATUAL);
     expect(abertura.origem).toBe("empacotada");
     expect(abertura.info?.versao).toBe("2026.11.10");
-    expect(abertura.eventos).toContain("base baixada 2026.11.20 é do esquema 3, e este app lê o 4: abre a empacotada");
+    expect(abertura.eventos).toContain(
+      `base baixada 2026.11.20 é do esquema ${ANTIGO}, e este app lê o ${ATUAL}: abre a empacotada`,
+    );
   });
 
   it('"Voltar" para uma anterior de outro esquema cai na empacotada', () => {
@@ -307,13 +314,13 @@ describe("esquema da base na abertura e na fábrica", () => {
     const empacotada = criarBanco(NodePath.join(pasta, "Resources", "kb.sqlite"), "2026.11.10");
     const c = caminhos(pasta);
     criarBanco(c.atual, "2026.11.20");
-    criarBanco(c.anterior, "2026.11.15", { esquema: 3 });
+    criarBanco(c.anterior, "2026.11.15", { esquema: ANTIGO });
     NodeFS.writeFileSync(NodePath.join(pasta, "atualizacao.json"), JSON.stringify({ voltar: true }));
-    const abertura = prepararAbertura({ pasta, bancoEmpacotado: empacotada, versaoEsquema: 4 });
+    const abertura = prepararAbertura({ pasta, bancoEmpacotado: empacotada, versaoEsquema: ATUAL });
     expect(abertura.origem).toBe("empacotada");
-    expect(abertura.eventos.some((e) => e.startsWith("base baixada 2026.11.15 é do esquema 3"))).toBe(true);
+    expect(abertura.eventos.some((e) => e.startsWith(`base baixada 2026.11.15 é do esquema ${ANTIGO}`))).toBe(true);
     // a mesma base, no esquema certo, vence a empacotada mais velha
-    const certa = prepararAbertura({ pasta, bancoEmpacotado: empacotada, versaoEsquema: 3 });
+    const certa = prepararAbertura({ pasta, bancoEmpacotado: empacotada, versaoEsquema: ANTIGO });
     expect(certa.origem).toBe("baixada");
   });
 
