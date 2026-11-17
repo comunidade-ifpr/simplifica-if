@@ -1,114 +1,78 @@
 /**
- * O painel lateral que lê um link `ifpr://` pelo `lerLink` do `GrupoLeitura`, direto da base, sem
- * passar pela IA, e mostra o texto em Markdown. Os links `ifpr://` do próprio texto abrem no painel,
- * com "Voltar". O leitor completo (dispositivo destacado, selo de vigência, relações, "copiar
- * citação") é o M1.6.
+ * O leitor `ifpr://` (M1.6): o painel ao lado da conversa que abre as fontes citadas, direto da base,
+ * pelo `GrupoLeitura` do servidor local, sem passar pela IA. O conteúdo de cada tipo de link está em
+ * `leitor/Leitor.tsx`; aqui ficam o cabeçalho (voltar, avançar, imprimir, fechar), a memória das
+ * leituras do painel e a área de rolagem.
+ *
+ * A área de rolagem é a mesma enquanto o documento é o mesmo: ir de um dispositivo a outro da mesma
+ * norma só rola até ele, sem montar o texto de novo.
  */
-import type { LinkLido } from "@simplifica-if/contratos-app";
-import { ArrowLeftIcon, XIcon } from "lucide-react";
-import { useEffect, useState } from "react";
-import { mensagemDeErro } from "../conexao/erros.ts";
-import { useApi } from "../contexto.tsx";
+import { ArrowLeftIcon, ArrowRightIcon, PrinterIcon, XIcon } from "lucide-react";
+import { useState } from "react";
+import { type Historico, linkAtual, podeAvancar, podeVoltar } from "../leitor/historico.ts";
+import { ContextoMemoria, MemoriaLeitor } from "../leitor/carga.ts";
+import { ConteudoLink } from "../leitor/Leitor.tsx";
 import { nomeCurtoLink } from "../tarefas/textos.ts";
-import { Markdown } from "./Markdown.tsx";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert.tsx";
 import { Button } from "./ui/button.tsx";
-import { Spinner } from "./ui/spinner.tsx";
-
-const TIPOS: Readonly<Record<LinkLido["tipo"], string>> = {
-  norma: "Norma",
-  dispositivo: "Dispositivo de norma",
-  curso: "Curso",
-  ppc: "PPC",
-  secao: "Seção de PPC",
-  cnct: "Catálogo Nacional de Cursos Técnicos",
-  campus: "Campus",
-  ficha: "Ficha de análise",
-};
-
-type Leitura =
-  | { readonly fase: "carregando" }
-  | { readonly fase: "lido"; readonly lido: LinkLido }
-  | { readonly fase: "falhou"; readonly erro: string };
-
-function ConteudoLink({ link, aoAbrirLink }: { readonly link: string; readonly aoAbrirLink: (link: string) => void }) {
-  const api = useApi();
-  const [leitura, setLeitura] = useState<Leitura>({ fase: "carregando" });
-
-  useEffect(() => {
-    let vivo = true;
-    api
-      .chamar((cliente) => cliente.lerLink({ link }))
-      .then(
-        (lido) => vivo && setLeitura({ fase: "lido", lido }),
-        (erro: unknown) => vivo && setLeitura({ fase: "falhou", erro: mensagemDeErro(erro) }),
-      );
-    return () => {
-      vivo = false;
-    };
-  }, [api, link]);
-
-  switch (leitura.fase) {
-    case "carregando":
-      return (
-        <p className="flex items-center gap-2 text-muted-foreground text-sm">
-          <Spinner size="sm" /> Lendo na base…
-        </p>
-      );
-    case "falhou":
-      return (
-        <Alert variant="error">
-          <AlertTitle>Não foi possível ler este link</AlertTitle>
-          <AlertDescription>{leitura.erro}</AlertDescription>
-        </Alert>
-      );
-    case "lido":
-      return (
-        <article aria-label={TIPOS[leitura.lido.tipo]}>
-          <p className="mb-2 font-semibold text-muted-foreground text-xs uppercase tracking-wide">
-            {TIPOS[leitura.lido.tipo]}
-          </p>
-          <Markdown texto={leitura.lido.texto} aoAbrirLink={aoAbrirLink} />
-        </article>
-      );
-  }
-}
 
 export function PainelLeitura({
   historico,
   aoAbrirLink,
   aoVoltar,
+  aoAvancar,
   aoFechar,
 }: {
-  /** Os links abertos, o atual por último. */
-  readonly historico: ReadonlyArray<string>;
+  readonly historico: Historico;
   readonly aoAbrirLink: (link: string) => void;
   readonly aoVoltar: () => void;
+  readonly aoAvancar: () => void;
   readonly aoFechar: () => void;
 }) {
-  const link = historico.at(-1);
+  const [memoria] = useState(() => new MemoriaLeitor());
+  const link = linkAtual(historico);
   if (link === undefined) return null;
+  const documento = link.split("#")[0]!;
   return (
     <aside
       aria-label="Painel de leitura"
-      className="flex h-full w-full flex-col border-border border-l bg-card text-card-foreground"
+      className="painel-leitura flex h-full w-full flex-col border-border border-l bg-card text-card-foreground"
     >
-      <header className="flex items-center gap-1 border-border border-b px-3 py-2">
-        {historico.length > 1 ? (
-          <Button variant="ghost" size="icon-sm" aria-label="Voltar ao link anterior" onClick={aoVoltar}>
-            <ArrowLeftIcon />
-          </Button>
-        ) : null}
-        {/* M1.6: o leitor completo (dispositivo destacado, selo de vigência, relações, regras de transição e
-            "copiar citação") entra neste painel; hoje ele mostra o texto literal lido pelo `lerLink`. */}
-        <p className="min-w-0 flex-1 truncate font-semibold text-sm">{nomeCurtoLink(link)}</p>
+      <header className="nao-imprimir flex items-center gap-1 border-border border-b px-3 py-2">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label="Voltar ao link anterior"
+          title="Voltar"
+          disabled={!podeVoltar(historico)}
+          onClick={aoVoltar}
+        >
+          <ArrowLeftIcon />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label="Avançar para o próximo link"
+          title="Avançar"
+          disabled={!podeAvancar(historico)}
+          onClick={aoAvancar}
+        >
+          <ArrowRightIcon />
+        </Button>
+        <p className="min-w-0 flex-1 truncate font-semibold text-sm" title={nomeCurtoLink(link)}>
+          {nomeCurtoLink(link)}
+        </p>
+        <Button variant="ghost" size="icon-sm" aria-label="Imprimir" title="Imprimir" onClick={() => window.print()}>
+          <PrinterIcon />
+        </Button>
         <Button variant="ghost" size="icon-sm" aria-label="Fechar o painel de leitura" onClick={aoFechar}>
           <XIcon />
         </Button>
       </header>
-      <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
-        <ConteudoLink key={link} link={link} aoAbrirLink={aoAbrirLink} />
-      </div>
+      <ContextoMemoria value={memoria}>
+        <div key={documento} className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
+          <ConteudoLink link={link} aoAbrirLink={aoAbrirLink} />
+        </div>
+      </ContextoMemoria>
     </aside>
   );
 }

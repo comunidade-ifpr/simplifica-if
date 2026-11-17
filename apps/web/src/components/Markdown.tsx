@@ -26,9 +26,10 @@ function abrirFora(evento: MouseEvent<HTMLAnchorElement>, url: string) {
 }
 
 /** Quem abre os links `ifpr://` do texto (o painel de leitura). */
-const AbrirLink = createContext<(link: string) => void>(() => {});
+export const AbrirLink = createContext<(link: string) => void>(() => {});
 
-function LinkMarkdown({ href, children }: ComponentProps<"a">) {
+/** O `a` do Markdown: chip para `ifpr://`, navegador do sistema para o resto. Também o do leitor (`leitor/Documento.tsx`). */
+export function LinkMarkdown({ href, children }: ComponentProps<"a">) {
   const aoAbrirLink = use(AbrirLink);
   if (href !== undefined && ehLinkIfpr(href)) {
     // O chip da citação: o texto do link, ou o nome curto quando a IA deixou o link solto.

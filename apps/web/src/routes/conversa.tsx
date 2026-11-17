@@ -25,6 +25,14 @@ import { type Item, rotuloFerramenta } from "../conversa/estado.ts";
 import { useCatalogo } from "../tarefas/catalogo.ts";
 import { ListaConversas } from "../components/ListaConversas.tsx";
 import { PainelLeitura } from "../components/PainelLeitura.tsx";
+import {
+  abrir as abrirNoHistorico,
+  avancar,
+  HISTORICO_VAZIO,
+  type Historico,
+  linkAtual,
+  voltar,
+} from "../leitor/historico.ts";
 import { Button } from "../components/ui/button.tsx";
 import { Input } from "../components/ui/input.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
@@ -373,27 +381,31 @@ function TelaConversa() {
   // O painel ao lado (leitura ou pasta) é da conversa em que foi aberto: trocar de conversa o fecha.
   const [painel, setPainel] = useState<{
     readonly sessao?: string;
-    readonly links: ReadonlyArray<string>;
+    readonly leitura: Historico;
     readonly pasta: boolean;
-  }>({ links: [], pasta: false });
+  }>({ leitura: HISTORICO_VAZIO, pasta: false });
   const daConversa = painel.sessao === estado.sessao;
-  const leitura = daConversa ? painel.links : [];
-  const pastaAberta = daConversa && painel.pasta && leitura.length === 0;
+  const leitura = daConversa ? painel.leitura : HISTORICO_VAZIO;
+  const leitorAberto = linkAtual(leitura) !== undefined;
+  const pastaAberta = daConversa && painel.pasta && !leitorAberto;
   const mudarPainel = (
-    mudar: (atual: { links: ReadonlyArray<string>; pasta: boolean }) => {
-      links: ReadonlyArray<string>;
+    mudar: (atual: { leitura: Historico; pasta: boolean }) => {
+      leitura: Historico;
       pasta: boolean;
     },
   ) =>
     setPainel((anterior) => ({
       ...(estado.sessao === undefined ? {} : { sessao: estado.sessao }),
-      ...mudar(anterior.sessao === estado.sessao ? anterior : { links: [], pasta: false }),
+      ...mudar(anterior.sessao === estado.sessao ? anterior : { leitura: HISTORICO_VAZIO, pasta: false }),
     }));
-  const setLeitura = (mudar: (links: ReadonlyArray<string>) => ReadonlyArray<string>) =>
-    mudarPainel((atual) => ({ ...atual, links: mudar(atual.links) }));
-  const abrirLink = (link: string) => setLeitura((historico) => [...historico, link]);
+  const setLeitura = (mudar: (historico: Historico) => Historico) =>
+    mudarPainel((atual) => ({ ...atual, leitura: mudar(atual.leitura) }));
+  const abrirLink = (link: string) => setLeitura((historico) => abrirNoHistorico(historico, link));
   const alternarPasta = () =>
-    mudarPainel((atual) => ({ links: [], pasta: !(atual.pasta && atual.links.length === 0) }));
+    mudarPainel((atual) => ({
+      leitura: HISTORICO_VAZIO,
+      pasta: !(atual.pasta && linkAtual(atual.leitura) === undefined),
+    }));
 
   // A URL manda: um id que não é o da conversa corrente abre aquela conversa.
   useEffect(() => {
@@ -435,16 +447,17 @@ function TelaConversa() {
             />
           </div>
         ) : null}
-        {leitura.length === 0 ? null : (
-          <div className="h-full w-[min(32rem,45vw)] shrink-0">
+        {leitorAberto ? (
+          <div className="h-full w-[min(40rem,50vw)] shrink-0">
             <PainelLeitura
               historico={leitura}
               aoAbrirLink={abrirLink}
-              aoVoltar={() => setLeitura((historico) => historico.slice(0, -1))}
-              aoFechar={() => setLeitura(() => [])}
+              aoVoltar={() => setLeitura(voltar)}
+              aoAvancar={() => setLeitura(avancar)}
+              aoFechar={() => setLeitura(() => HISTORICO_VAZIO)}
             />
           </div>
-        )}
+        ) : null}
       </>
     );
   }

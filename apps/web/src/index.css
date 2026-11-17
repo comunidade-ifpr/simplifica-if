@@ -289,3 +289,89 @@
     animation: none;
   }
 }
+
+/* O leitor `ifpr://` (M1.6): o texto da norma ou do PPC, em blocos montados aos poucos. */
+.documento-leitor {
+  font-size: 0.9375rem;
+
+  & [id] {
+    scroll-margin-top: 0.75rem;
+  }
+  & h1,
+  & h2,
+  & h3,
+  & h4,
+  & h5,
+  & h6 {
+    margin-top: 1.25em;
+  }
+  & .bloco-documento + .bloco-documento,
+  & .espaco-reservado + .bloco-documento,
+  & .bloco-documento + .espaco-reservado {
+    margin-top: 0.75em;
+  }
+}
+
+/* O navegador só desenha o bloco que está à vista (o PPC chega a dezenas de milhares de elementos). */
+.bloco-documento {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 40em;
+}
+
+/* O bloco do trecho citado sempre desenhado: a rolagem até ele precisa do tamanho real. */
+.bloco-alvo {
+  content-visibility: visible;
+}
+
+/* O espaço de um bloco que ainda não se montou: fora da ancoragem de rolagem, que fica no texto. */
+.espaco-reservado {
+  overflow-anchor: none;
+}
+
+/* O trecho citado, destacado. */
+mark.trecho-citado {
+  background: color-mix(in srgb, #ffd54f 55%, transparent);
+  border-radius: 0.125rem;
+  box-decoration-break: clone;
+  color: inherit;
+  padding: 0 0.0625rem;
+}
+
+.dark mark.trecho-citado {
+  background: color-mix(in srgb, #ffd54f 35%, transparent);
+}
+
+/*
+ * Impressão do leitor: só o artigo aberto no painel (`.leitor-impressao`), com o texto inteiro (o
+ * `Documento` monta todos os blocos no `beforeprint`). O que está em volta some, e os contêineres
+ * acima do artigo perdem a altura fixa e a rolagem, para o texto correr pelas páginas.
+ */
+@media print {
+  body:has(.leitor-impressao) *:not(:has(.leitor-impressao)):not(.leitor-impressao):not(.leitor-impressao *) {
+    display: none !important;
+  }
+  body:has(.leitor-impressao) :has(.leitor-impressao) {
+    border: 0 !important;
+    display: block !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    position: static !important;
+    width: auto !important;
+  }
+  .leitor-impressao {
+    color: #000;
+    font-size: 11pt;
+  }
+  .leitor-impressao .nao-imprimir {
+    display: none !important;
+  }
+  .bloco-documento {
+    content-visibility: visible;
+  }
+  mark.trecho-citado {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
