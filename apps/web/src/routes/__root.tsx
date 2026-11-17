@@ -73,10 +73,11 @@ function BotaoBuscar() {
       onClick={() => abrir()}
       aria-keyshortcuts={atalho === "⌘K" ? "Meta+K" : "Control+K"}
       title={`Buscar na base (${atalho})`}
-      className="flex items-center gap-2 rounded-md bg-white/10 px-2.5 py-1 text-sm text-white/85 hover:bg-white/20 hover:text-white"
+      className="flex shrink-0 items-center gap-2 rounded-md bg-white/10 px-2.5 py-1 text-sm text-white/85 hover:bg-white/20 hover:text-white"
     >
       <SearchIcon aria-hidden className="size-3.5" />
-      <span>Buscar</span>
+      {/* Em janela estreita, só a lupa; o nome continua para o leitor de tela e na dica. */}
+      <span className="sr-only lg:not-sr-only">Buscar</span>
       <kbd className="hidden rounded bg-black/20 px-1 font-sans text-white/75 text-xs lg:inline">{atalho}</kbd>
     </button>
   );

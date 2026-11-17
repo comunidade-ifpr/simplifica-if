@@ -31,5 +31,12 @@ const MARCAS = { claude: ClaudeAI, codex: OpenAI, antigravity: Gemini } as const
 
 export function MarcaIa({ provider, className }: { readonly provider: Provider; readonly className?: string }) {
   const Marca = MARCAS[provider];
-  return <Marca aria-hidden focusable="false" data-marca-ia={provider} className={cn("size-4 shrink-0", className)} />;
+  return (
+    <Marca
+      aria-hidden
+      focusable="false"
+      data-marca-ia={provider}
+      className={cn("size-4 shrink-0 opacity-100", className)}
+    />
+  );
 }

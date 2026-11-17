@@ -44,7 +44,7 @@ export interface RegistroPendencia {
   readonly ordem: number;
   readonly pendencia: PendenciaRevisao;
   readonly situacao: SituacaoPendencia;
-  readonly resolvidaPor: "pessoa" | "novaRevisao" | null;
+  readonly resolvidaPor: "pessoa" | "revisarDeNovo" | null;
   readonly sugestao: SugestaoTexto | null;
 }
 
@@ -87,7 +87,7 @@ export class Listas extends Context.Service<
       chave: string,
       mudanca: {
         situacao: SituacaoPendencia;
-        resolvidaPor?: "pessoa" | "novaRevisao" | null;
+        resolvidaPor?: "pessoa" | "revisarDeNovo" | null;
         sugestao?: SugestaoTexto;
       },
       evento: Evento,
@@ -262,7 +262,7 @@ const make = Effect.gen(function* () {
   const mudar = Effect.fn("Listas.mudar")(function* (
     id: string,
     chave: string,
-    m: { situacao: SituacaoPendencia; resolvidaPor?: "pessoa" | "novaRevisao" | null; sugestao?: SugestaoTexto },
+    m: { situacao: SituacaoPendencia; resolvidaPor?: "pessoa" | "revisarDeNovo" | null; sugestao?: SugestaoTexto },
     e: Evento,
   ) {
     const data = yield* agora;

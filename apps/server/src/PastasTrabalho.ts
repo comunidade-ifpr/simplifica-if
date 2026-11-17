@@ -711,5 +711,5 @@ export const layerSemPastas = Layer.sync(PastasTrabalho, () => {
   });
 });
 
-/** Pede o `Historico` e a `RevisorPpc` (a liberação dos arquivos escolhidos no desktop). */
+/** Pede o `Historico` e o `RevisorPpc` (a liberação dos arquivos escolhidos no desktop). */
 export const layer = (opcoes: OpcoesPastas) => Layer.effect(PastasTrabalho, make(opcoes));

@@ -23,7 +23,7 @@ function useSegundosAte(instante: number | undefined): number {
 
 type ForaDoNormal = Exclude<EstadoConexao, { readonly fase: "conectada" }>;
 
-export function textoConexao(estado: ForaDoNormal, segundos: number): string {
+function textoConexao(estado: ForaDoNormal, segundos: number): string {
   switch (estado.fase) {
     case "conectando":
       return estado.tentativa === 0 ? "Conectando…" : "Reconectando…";
@@ -39,9 +39,12 @@ export function IndicadorConexao() {
   const api = useApi();
   const segundos = useSegundosAte(estado.fase === "reconectando" ? estado.proximaEm : undefined);
   return (
-    <div className="ml-auto min-w-0" role="status" aria-live="polite" data-fase={estado.fase}>
+    <div className="ml-auto shrink-0 lg:min-w-0 lg:shrink" role="status" aria-live="polite" data-fase={estado.fase}>
       {estado.fase === "conectada" ? null : (
-        <div className="flex min-w-0 items-center gap-2 rounded-full bg-black/25 px-3 py-1 text-sm text-white">
+        <div
+          className="flex min-w-0 items-center gap-2 rounded-full bg-black/25 px-3 py-1 text-sm text-white"
+          title={textoConexao(estado, segundos)}
+        >
           <span
             aria-hidden
             className={cn(
@@ -49,11 +52,16 @@ export function IndicadorConexao() {
               estado.fase === "conectando" ? "bg-warning motion-safe:animate-pulse" : "bg-destructive",
             )}
           />
-          <span className="truncate" title={estado.fase === "reconectando" ? mensagemFalha(estado.motivo) : undefined}>
+          {/* Em janela estreita o cabeçalho não tem lugar para a frase: fica a bolinha, com a frase na dica e
+              no leitor de tela, e o "Tentar agora" inteiro. */}
+          <span
+            className="sr-only lg:not-sr-only lg:truncate"
+            title={estado.fase === "reconectando" ? mensagemFalha(estado.motivo) : undefined}
+          >
             {textoConexao(estado, segundos)}
           </span>
           {estado.fase === "reconectando" ? (
-            <Button size="xs" variant="outline" onClick={api.reconectarAgora}>
+            <Button size="xs" variant="outline" className="shrink-0" onClick={api.reconectarAgora}>
               Tentar agora
             </Button>
           ) : null}

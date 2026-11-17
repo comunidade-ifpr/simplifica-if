@@ -345,7 +345,7 @@ function CartaoPendencia({
           }
         >
           {ROTULO_SITUACAO_PENDENCIA[viva.situacao]}
-          {viva.situacao === "resolvida" && viva.resolvidaPor === "novaRevisao" ? ", conferida no arquivo novo" : ""}
+          {viva.situacao === "resolvida" && viva.resolvidaPor === "revisarDeNovo" ? ", conferida no arquivo novo" : ""}
         </Badge>
         <span className="text-muted-foreground text-xs">
           {p.tituloFicha}

@@ -666,7 +666,7 @@ export const PendenciaViva = Schema.Struct({
   pendencia: PendenciaRevisao,
   situacao: SituacaoPendencia,
   /** Quem decidiu a `resolvida`: a palavra da pessoa ou a revisão do arquivo novo. */
-  resolvidaPor: Schema.NullOr(Schema.Literals(["pessoa", "novaRevisao"])),
+  resolvidaPor: Schema.NullOr(Schema.Literals(["pessoa", "revisarDeNovo"])),
   historico: Schema.Array(EventoPendencia),
   sugestao: Schema.NullOr(SugestaoTexto),
   /** "Discordo…" e "Sugerir texto" valem para fichas da revisão (não para a triagem). */

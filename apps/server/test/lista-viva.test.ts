@@ -435,7 +435,7 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
       let l = yield* c["revisaoPpc.revisarDeNovo"]({ lista: pre.lista!, chave: triagem.chave, arquivo: corrigido });
       let p = l.pendencias.find((x) => x.chave === triagem.chave)!;
       assert.strictEqual(p.situacao, "resolvida");
-      assert.strictEqual(p.resolvidaPor, "novaRevisao");
+      assert.strictEqual(p.resolvidaPor, "revisarDeNovo");
 
       // Outro documento (outros títulos de seção): avisa e não marca nada.
       const outro = gravar(
@@ -517,7 +517,7 @@ layer(camada, { excludeTestServices: true })("lista viva", (it) => {
       l = yield* c["revisaoPpc.revisarDeNovo"]({ lista: lista.id, chave, arquivo: novo });
       p = l.pendencias.find((x) => x.chave === chave)!;
       assert.strictEqual(p.situacao, "resolvida");
-      assert.strictEqual(p.resolvidaPor, "novaRevisao");
+      assert.strictEqual(p.resolvidaPor, "revisarDeNovo");
     }),
   );
 });

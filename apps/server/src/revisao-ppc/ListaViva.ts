@@ -400,7 +400,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
           ? pedidoSugestao(prefixo, [])
           : pedidoS(
               {
-                id: "novaRevisao",
+                id: "revisarDeNovo",
                 tipo: "S",
                 tema: p.pendencia.tema,
                 ordemTema: p.pendencia.ordemTema,
@@ -639,9 +639,9 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       } else {
         const { provider, modelo } = provedor(registro, pedido);
         const ctx = yield* contextoPara(registro, ficha, novo.revisao.markdown, novo.revisao.linhasTextoParaIa);
-        const nonceNovaRevisao = novoNonce();
+        const nonceRevisarDeNovo = novoNonce();
         const bloco = {
-          id: `nova-revisao-${ficha.toLowerCase()}`,
+          id: `revisar-de-novo-${ficha.toLowerCase()}`,
           tipo: "S" as const,
           tema: p.pendencia.tema,
           ordemTema: p.pendencia.ordemTema,
@@ -652,13 +652,13 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
           [ctx.ficha],
           new Map([[ficha, ctx.proprio]]),
           ctx.contexto,
-          nonceNovaRevisao,
+          nonceRevisarDeNovo,
           ctx.comum,
         );
         const julgado = yield* julgarBloco({
           provider,
           modelo,
-          nonce: nonceNovaRevisao,
+          nonce: nonceRevisarDeNovo,
           bloco,
           fichas: [ctx.ficha],
           pedido: pedidoTexto,
@@ -680,7 +680,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       yield* listas.mudar(
         id,
         chave,
-        { situacao, resolvidaPor: "novaRevisao" },
+        { situacao, resolvidaPor: "revisarDeNovo" },
         { acao: "revisarDeNovo", situacao, texto, uso },
       );
       return yield* lista(id);
@@ -701,7 +701,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       const ultimaContestacao = eventos.filter((e) => e.chave === p.chave && e.acao === "contestar").at(-1);
       const nota =
         p.situacao === "resolvida"
-          ? p.resolvidaPor === "novaRevisao"
+          ? p.resolvidaPor === "revisarDeNovo"
             ? "Conferida na nova revisão do arquivo atualizado."
             : "Marcada pela coordenação, sem nova revisão."
           : p.situacao === "contestada_mantida" && ultimo?.acao === "contestar"
@@ -713,7 +713,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         situacao: p.situacao,
         ...(nota ? { nota } : {}),
         // Só a pendência confirmada pela nova revisão sai do documento.
-        ...(p.situacao === "resolvida" && p.resolvidaPor === "novaRevisao" ? { foraDoDocumento: true } : {}),
+        ...(p.situacao === "resolvida" && p.resolvidaPor === "revisarDeNovo" ? { foraDoDocumento: true } : {}),
       };
     }
     // A lista da revisão com IA: os resultados conferidos da IA entram de novo, como na conclusão.
@@ -798,5 +798,5 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   });
 });
 
-/** Pede as `Listas`, as `Revisoes`, a `RevisorPpc`, o `Motor`, as `FontesNormativas` e o `SqlClient` do `kb.sqlite`. */
+/** Pede as `Listas`, as `Revisoes`, o `RevisorPpc`, o `Motor`, as `FontesNormativas` e o `SqlClient` do `kb.sqlite`. */
 export const layer = (opcoes: OpcoesListaViva = {}) => Layer.effect(ListaViva, make(opcoes));

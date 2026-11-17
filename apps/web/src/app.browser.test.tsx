@@ -638,6 +638,23 @@ it("Caixa de pedido: o cartão flutuante no Início e na conversa, Enter, Shift+
   await ia.click();
   await page.getByRole("listbox").getByRole("option", { name: "Claude" }).click();
   await expect.element(ia).toHaveTextContent("Claude");
+  // Pelo teclado: Enter abre a lista, as setas andam, Enter escolhe; Esc fecha e devolve o foco à escolha.
+  (ia.element() as HTMLElement).focus();
+  await userEvent.keyboard("{Enter}");
+  await expect.element(page.getByRole("listbox")).toBeVisible();
+  await userEvent.keyboard("{ArrowDown}{Enter}");
+  await expect.element(ia).toHaveTextContent("ChatGPT");
+  await expect.element(page.getByRole("listbox")).not.toBeInTheDocument();
+  expect(document.activeElement).toBe(ia.element());
+  await userEvent.keyboard("{Enter}");
+  await expect.element(page.getByRole("listbox")).toBeVisible();
+  await userEvent.keyboard("{Escape}");
+  await expect.element(page.getByRole("listbox")).not.toBeInTheDocument();
+  expect(document.activeElement).toBe(ia.element());
+  await expect.element(ia).toHaveTextContent("ChatGPT");
+  await ia.click();
+  await page.getByRole("listbox").getByRole("option", { name: "Claude" }).click();
+  await expect.element(ia).toHaveTextContent("Claude");
   // Shift+Enter quebra a linha, sem enviar; o botão acende.
   await caixa.click();
   await userEvent.keyboard("Quais normas tratam{Shift>}{Enter}{/Shift}do estágio?");
@@ -763,7 +780,7 @@ it("Barra de título: no desktop (Windows e Linux), o cabeçalho deixa a direita
 });
 
 it("Cartão de tarefa: em janela estreita, o texto quebra, sem corte nem rolagem lateral", async () => {
-  /** Cada cartão inteiro dentro da janela, o resumo em mais de uma linha e a página sem rolagem lateral. */
+  /** Cada cartão inteiro dentro da janela, sem conteúdo transbordando, e a página sem rolagem lateral. */
   const conferir = async () => {
     const cartao = page.getByRole("link", { name: /^Revisar um PPC/ }).first();
     await expect.element(cartao).toBeVisible();
@@ -811,6 +828,33 @@ it("Cartão de tarefa: em janela estreita, o texto quebra, sem corte nem rolagem
       expect(cabecalho().scrollWidth).toBeLessThanOrEqual(cabecalho().clientWidth);
       await capturar(`cartao-revisar-ppc-${plataforma}-800${rota === "/" ? "" : "-todas"}`);
     }
+  }
+  // Com a conexão caída, o cabeçalho ganha "Sem conexão…" e "Tentar agora": no Windows, com a folga dos
+  // botões do sistema, ainda cabe na largura mínima.
+  window.simplifica = {
+    conexao: async () => ({ urlServidor: "http://127.0.0.1:9", token: "x" }),
+    janela: { plataforma: "win32", telaCheia: async () => false, aoMudarTelaCheia: () => () => {} },
+  } satisfies PonteDesktop;
+  {
+    await using _app = await montarAppComOrigem(
+      { tipo: "navegador", fonte: "url", credenciais: { urlServidor: "http://127.0.0.1:9", token: "x" } },
+      "/",
+      { atraso: () => 50 },
+    );
+    const tentar = page.getByRole("button", { name: "Tentar agora" });
+    await expect.element(tentar).toBeVisible();
+    // A frase vai para o leitor de tela (e para a dica); o botão fica inteiro, dentro do cabeçalho.
+    expect(cabecalho().querySelector('[role="status"][data-fase]')?.textContent).toMatch(/Sem conexão/);
+    const botao = tentar.element().getBoundingClientRect();
+    expect(tentar.element().scrollWidth).toBeLessThanOrEqual(tentar.element().clientWidth);
+    expect(botao.right).toBeLessThanOrEqual(cabecalho().getBoundingClientRect().right);
+    // Nenhum item do cabeçalho passa por cima do seguinte (o botão sobre a escolha de tema, por exemplo).
+    const itens = [...cabecalho().children].map((item) => item.getBoundingClientRect());
+    itens.slice(1).forEach((item, i) => expect(item.left).toBeGreaterThanOrEqual(itens[i]!.right));
+    expect(botao.right).toBeLessThanOrEqual(itens.at(-1)!.left);
+    expect(cabecalho().scrollWidth).toBeLessThanOrEqual(cabecalho().clientWidth);
+    expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth);
+    await capturar("cabecalho-win32-800-sem-conexao");
   }
   await page.viewport(1100, 760);
 });

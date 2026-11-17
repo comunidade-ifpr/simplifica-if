@@ -3,7 +3,7 @@
  * `RevisaoIa`: a revisão completa de um PPC com a IA da conta da pessoa (M1.11, etapa 4), conduzida
  * pelo servidor, não pelo provider.
  *
- * 1. **Preparar** (`prepararIa`, sem IA): o arquivo é convertido de novo no Worker da `RevisorPpc` (o
+ * 1. **Preparar** (`prepararIa`, sem IA): o arquivo é convertido de novo no Worker do `RevisorPpc` (o
  *    mesmo da pré-conferência), o `preparo.ts` monta os blocos (lotes S, temas J, transversais) e o
  *    texto de cada pedido com o contexto do `kb.sqlite`, e a estimativa sai do tamanho real dos
  *    pedidos. O plano fica gravado (`Revisoes`).
@@ -388,5 +388,5 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   });
 });
 
-/** Pede o `Motor`, a `RevisorPpc`, as `Revisoes`, as `FontesNormativas` e o `SqlClient` do `kb.sqlite`. */
+/** Pede o `Motor`, o `RevisorPpc`, as `Revisoes`, as `FontesNormativas` e o `SqlClient` do `kb.sqlite`. */
 export const layer = (opcoes: OpcoesRevisaoIa = {}) => Layer.effect(RevisaoIa, make(opcoes));
