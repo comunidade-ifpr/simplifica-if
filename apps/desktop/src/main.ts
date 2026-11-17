@@ -482,7 +482,7 @@ ipcMain.handle(CANAIS.escolherDocx, async (evento) => {
   if (!remetenteConfiavel(evento) || janela === undefined) throw new Error("pedido recusado");
   const escolha = await dialog.showOpenDialog(janela, {
     title: "Escolher o PPC (.docx)",
-    buttonLabel: "Analisar",
+    buttonLabel: "Revisar",
     properties: ["openFile"],
     filters: [{ name: "Documento do Word", extensions: ["docx"] }],
   });

@@ -26,7 +26,7 @@ import { fixPath } from "@simplifica-if/motor/t3/os-jank";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Listas from "../src/persistencia/Listas.ts";
 import * as Revisoes from "../src/persistencia/Revisoes.ts";
-import * as AnalisePpc from "../src/revisao-ppc/AnalisePpc.ts";
+import * as RevisorPpc from "../src/revisao-ppc/RevisorPpc.ts";
 import * as ListaViva from "../src/revisao-ppc/ListaViva.ts";
 import { julgarBloco } from "../src/revisao-ppc/julgamento.ts";
 import { contextoDaFicha } from "../src/revisao-ppc/preparo.ts";
@@ -89,7 +89,7 @@ const programa = Effect.gen(function* () {
   const arquivo = NodePath.join(saida, `PPC ${NodePath.basename(ppcMd, ".md")} (base).docx`);
   if (args.includes("--listar")) {
     NodeFS.writeFileSync(arquivo, docxDoMarkdown(NodeFS.readFileSync(ppcMd, "utf8")));
-    const r = yield* viva.analisar({ arquivo });
+    const r = yield* viva.revisar({ arquivo });
     const lista = yield* viva.lista(r.lista!);
     for (const p of lista.pendencias)
       console.log(
@@ -106,9 +106,9 @@ const programa = Effect.gen(function* () {
   const soRecorte = depois("--recorte")?.[0];
   if (soRecorte !== undefined) {
     // Sem IA: os títulos e o tamanho da seção do critério (onde a prova de leitura tem de estar).
-    const analise = yield* AnalisePpc.AnalisePpc;
+    const revisor = yield* RevisorPpc.RevisorPpc;
     NodeFS.writeFileSync(arquivo, docxDoMarkdown(NodeFS.readFileSync(ppcMd, "utf8")));
-    const base = yield* analise.revisarArquivo({ arquivo, gravar: false });
+    const base = yield* revisor.revisarArquivo({ arquivo, gravar: false });
     const ctx = (yield* contextoDaFicha({
       markdown: base.revisao.markdown,
       linhasTextoParaIa: base.revisao.linhasTextoParaIa,
@@ -130,10 +130,10 @@ const programa = Effect.gen(function* () {
   const fichasIa = depois("--ia")?.[0];
   if (fichasIa !== undefined) {
     // Uma lista com pendências da IA, sem pagar o relatório inteiro: cada ficha num lote de uma (como
-    // na reanálise), e a lista montada com esses resultados.
+    // na nova revisão), e a lista montada com esses resultados.
     NodeFS.writeFileSync(arquivo, docxDoMarkdown(NodeFS.readFileSync(ppcMd, "utf8")));
-    const analise = yield* AnalisePpc.AnalisePpc;
-    const base = yield* analise.revisarArquivo({ arquivo, gravar: false });
+    const revisor = yield* RevisorPpc.RevisorPpc;
+    const base = yield* revisor.revisarArquivo({ arquivo, gravar: false });
     const resultados: ResultadoFichaIa[] = [];
     for (const ficha of fichasIa.split(",")) {
       const ctx = (yield* contextoDaFicha({
@@ -165,10 +165,10 @@ const programa = Effect.gen(function* () {
       );
       resultados.push(...julgado.resultado.resultados);
     }
-    const final = yield* analise.revisarArquivo({ arquivo, gravar: true, ia: { resultados, fora: [] } });
+    const final = yield* revisor.revisarArquivo({ arquivo, gravar: true, ia: { resultados, fora: [] } });
     const r = yield* ListaViva.criarLista({
       arquivo,
-      analisado: final,
+      revisado: final,
       revisao: null,
       provider: "claude",
       modelo: MODELO_PADRAO.claude ?? null,
@@ -244,7 +244,7 @@ const registrarTexto = (acao: string, chave: string, texto: string) =>
 const nucleo = ListaViva.layer({ registrarTexto }).pipe(
   Layer.provideMerge(Listas.layer.pipe(Layer.provide(banco))),
   Layer.provideMerge(Revisoes.layer.pipe(Layer.provide(banco))),
-  Layer.provideMerge(AnalisePpc.layer()),
+  Layer.provideMerge(RevisorPpc.layer()),
   Layer.provideMerge(Motor.layer.pipe(Layer.provide(drivers))),
   Layer.provideMerge(layerLeitura({ banco: NodePath.join(RAIZ, "tmp/kb.sqlite"), canal: "dev" })),
 );

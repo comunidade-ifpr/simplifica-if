@@ -43,6 +43,7 @@ import { useConversa } from "../contexto.tsx";
 import { cn } from "../lib/utils.ts";
 import { ponteDesktop } from "../ponte-desktop.ts";
 import { DESCRICOES, PROVIDERS } from "../providers.ts";
+import { MarcaIa } from "../components/MarcaIa.tsx";
 
 /** A busca da rota: o id da conversa aberta, quando há. */
 export interface BuscaConversa {
@@ -76,6 +77,7 @@ function EscolhaProvider() {
               checked={estado.provider === provider}
               onChange={() => conversa.escolher({ provider })}
             />
+            <MarcaIa provider={provider} />
             {DESCRICOES[provider].nome}
           </label>
         ))}

@@ -4,7 +4,7 @@
  *
  * - **Base e skills** (servidor, `atualizacao.*`): versões em uso, canal (beta ou estável), "Procurar
  *   agora", "Usar agora" (reinicia o servidor local, que troca a base na abertura; recusado enquanto
- *   uma análise roda) e "Voltar para a versão anterior da base".
+ *   uma revisão roda) e "Voltar para a versão anterior da base".
  * - **App** (desktop, `electron-updater`): versão, situação e "Reiniciar para atualizar". Fora do
  *   desktop, ou com o app sem assinatura de código, a seção diz por que está desligada.
  */

@@ -44,7 +44,7 @@ export interface RegistroPendencia {
   readonly ordem: number;
   readonly pendencia: PendenciaRevisao;
   readonly situacao: SituacaoPendencia;
-  readonly resolvidaPor: "pessoa" | "reanalise" | null;
+  readonly resolvidaPor: "pessoa" | "revisarDeNovo" | null;
   readonly sugestao: SugestaoTexto | null;
 }
 
@@ -85,7 +85,11 @@ export class Listas extends Context.Service<
     readonly mudar: (
       id: string,
       chave: string,
-      mudanca: { situacao: SituacaoPendencia; resolvidaPor?: "pessoa" | "reanalise" | null; sugestao?: SugestaoTexto },
+      mudanca: {
+        situacao: SituacaoPendencia;
+        resolvidaPor?: "pessoa" | "revisarDeNovo" | null;
+        sugestao?: SugestaoTexto;
+      },
       evento: Evento,
     ) => Effect.Effect<void>;
     readonly verParada: (id: string, ordem: number) => Effect.Effect<void>;
@@ -93,7 +97,7 @@ export class Listas extends Context.Service<
     readonly gravarAcao: (id: string, chave: string, acao: AcaoIaGravada) => Effect.Effect<void>;
     readonly uso: (id: string) => Effect.Effect<UsoRevisaoIa>;
     readonly apagar: (id: string) => Effect.Effect<void>;
-    /** Acrescenta pendências novas (a triagem do arquivo da reanálise), abertas, com o evento. */
+    /** Acrescenta pendências novas (a triagem do arquivo da nova revisão), abertas, com o evento. */
     readonly acrescentar: (
       id: string,
       pendencias: ReadonlyArray<{ chave: string; pendencia: PendenciaRevisao }>,
@@ -258,7 +262,7 @@ const make = Effect.gen(function* () {
   const mudar = Effect.fn("Listas.mudar")(function* (
     id: string,
     chave: string,
-    m: { situacao: SituacaoPendencia; resolvidaPor?: "pessoa" | "reanalise" | null; sugestao?: SugestaoTexto },
+    m: { situacao: SituacaoPendencia; resolvidaPor?: "pessoa" | "revisarDeNovo" | null; sugestao?: SugestaoTexto },
     e: Evento,
   ) {
     const data = yield* agora;
@@ -340,7 +344,7 @@ const make = Effect.gen(function* () {
       `;
       yield* sql`
         INSERT INTO eventos_pendencia (lista_id, chave, em, acao, situacao, texto, motivo, uso)
-        VALUES (${id}, ${p.chave}, ${data}, 'reanalisar', 'aberta', ${texto}, NULL, NULL)
+        VALUES (${id}, ${p.chave}, ${data}, 'revisarDeNovo', 'aberta', ${texto}, NULL, NULL)
       `;
     }
     yield* tocar(id, data);

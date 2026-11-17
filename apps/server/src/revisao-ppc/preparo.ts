@@ -252,12 +252,12 @@ export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: Entr
   return plano;
 }, Effect.scoped);
 
-/** O contexto de uma ficha para a conversa por pendência e a reanálise (etapa 5b). */
+/** O contexto de uma ficha para a conversa por pendência e a nova revisão (etapa 5b). */
 export type ContextoDaFicha = {
   ficha: FichaIa;
   /** O PPC entregue à ficha: o comum (quadro, matriz, ementário, quando a ficha pede) e o recorte dela. */
   recorte: string;
-  /** As duas partes, para o `pedidoS` da reanálise. */
+  /** As duas partes, para o `pedidoS` da nova revisão. */
   comum: string;
   proprio: { achou: boolean; texto: string };
   contexto: ContextoNormativo;

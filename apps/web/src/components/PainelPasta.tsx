@@ -1,7 +1,7 @@
 /**
  * A pasta de trabalho da conversa (M1.9): os arquivos que entraram ("Você trouxe") e os que a conversa
  * criou ou mudou, com "Abrir" e "Mostrar na pasta" (só no app, e o processo principal só aceita
- * arquivos das pastas de tarefa), "Anexar arquivo…" e "Desfazer o que a IA fez nesta pasta", que
+ * arquivos das pastas de tarefa), o clipe de "Anexar arquivo" e "Desfazer o que a IA fez nesta pasta", que
  * pede confirmação e diz o que vai mudar.
  */
 import { type ArquivoPasta, ehExtensaoDocumento, type PastaConversa } from "@simplifica-if/contratos-app";
@@ -261,8 +261,15 @@ export function PainelPasta({
             />
             {anexar === undefined ? null : (
               <div>
-                <Button variant="outline" size="sm" onClick={() => void anexarMais()}>
-                  <PaperclipIcon /> Anexar arquivo…
+                <Button
+                  variant="ghost"
+                  size="icon-sm-pill"
+                  className="text-muted-foreground hover:text-foreground"
+                  aria-label="Anexar arquivo"
+                  title="Anexar arquivo"
+                  onClick={() => void anexarMais()}
+                >
+                  <PaperclipIcon aria-hidden />
                 </Button>
               </div>
             )}

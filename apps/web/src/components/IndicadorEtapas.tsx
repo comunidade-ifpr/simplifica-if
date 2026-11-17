@@ -56,7 +56,6 @@ export function IndicadorEtapas({
           </li>
         ))}
       </ol>
-      <p className="mt-2 text-muted-foreground text-xs">Andamento informado pela IA.</p>
     </section>
   );
 }

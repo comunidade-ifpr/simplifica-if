@@ -87,7 +87,7 @@ async function construirServidor(): Promise<void> {
     define: { "import.meta.main": "false" },
   } as const;
   await empacotar({ ...comum, entry: { bin: NodePath.join(RAIZ, "apps", "server", "src", "bin.ts") }, clean: true });
-  // O Worker da revisão prévia (`AnalisePpc.ts` o procura em `./trabalhador-ppc.mjs`), num bundle à
+  // O Worker da revisão prévia (`RevisorPpc.ts` o procura em `./trabalhador-ppc.mjs`), num bundle à
   // parte, sem pedaços compartilhados com o do servidor.
   await empacotar({
     ...comum,

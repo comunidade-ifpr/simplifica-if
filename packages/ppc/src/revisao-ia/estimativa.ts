@@ -125,15 +125,15 @@ export function estimar(
 }
 
 /** Saída típica de uma ação da conversa por pendência (etapa 5b), em tokens. */
-export const SAIDA_ACAO = { contestar: 450, sugerir: 900, reanalisar: SAIDA_POR_FICHA } as const;
+export const SAIDA_ACAO = { contestar: 450, sugerir: 900, revisarDeNovo: SAIDA_POR_FICHA } as const;
 
 /**
  * A estimativa de uma ação com IA sobre uma pendência (etapa 5b): um pedido, uma sessão, sem nova
- * tentativa (a contestação e a sugestão não repetem; a reanálise pode repetir, com a folga).
+ * tentativa (a contestação e a sugestão não repetem; a nova revisão pode repetir, com a folga).
  */
 export function estimarAcao(caracteres: number, acao: keyof typeof SAIDA_ACAO, provider: Provider) {
   const p = PARAMETROS[provider];
-  const folga = acao === "reanalisar" ? FOLGA_TENTATIVAS : 1;
+  const folga = acao === "revisarDeNovo" ? FOLGA_TENTATIVAS : 1;
   const entrada = Math.round((caracteres / CARACTERES_POR_TOKEN + p.sistemaPorSessao) * folga);
   const saida = Math.round(SAIDA_ACAO[acao] * folga);
   const custo =

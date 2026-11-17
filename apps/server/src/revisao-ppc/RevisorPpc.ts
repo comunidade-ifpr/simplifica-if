@@ -1,12 +1,12 @@
 // @effect-diagnostics nodeBuiltinImport:off -- borda com o sistema de arquivos e o `worker_threads`
 /**
- * `AnalisePpc`: a revisão prévia sem IA de um PPC em DOCX (M1.11, etapa 3), atrás do RPC
- * `revisaoPpc.analisar`.
+ * `RevisorPpc`: a revisão prévia sem IA de um PPC em DOCX (M1.11, etapa 3), atrás do RPC
+ * `revisaoPpc.revisar`.
  *
  * 1. Confere o pedido: caminho absoluto de um `.docx` que existe, até 20 MB (recusado antes de ler).
  * 2. Monta a base uma vez, do `kb.sqlite` que o servidor já serve (`FontesNormativas` e as tabelas
  *    `cnct`, `normas`, `fichas` e `meta`, inclusive as datas e as transições da vigência): nada vem de arquivos do repositório, e o app empacotado,
- *    sem o checkout, faz a mesma análise.
+ *    sem o checkout, faz a mesma revisão.
  * 3. Roda `revisarDocx` num `Worker` (`trabalhador.ts`), com `resourceLimits` (512 MB de heap) e
  *    tempo máximo (30 s, depois `terminate()`): a conversão é síncrona e mantém o XML na memória, e o
  *    laço de eventos do servidor não pode parar. Estouro de memória, de tempo, `ErroDocx` e defeito
@@ -37,7 +37,7 @@ import type { BaseRevisaoPrevia, EntradaIa, MarcaPendencia, RevisaoPrevia } from
 import type { CursoCnct } from "@simplifica-if/ppc/verificadores/comum";
 import type { PedidoTrabalhador, RespostaTrabalhador } from "./trabalhador.ts";
 
-/** Os limites da análise; os testes os apertam para provocar o estouro. */
+/** Os limites da revisão; os testes os apertam para provocar o estouro. */
 export interface Limites {
   /** Tamanho máximo do arquivo, conferido antes de ler (o mesmo de `LIMITES_PADRAO.bytesDoArquivo`). */
   readonly bytesDoArquivo: number;
@@ -54,7 +54,7 @@ export const MEMORIA_MINIMA_MB = 64;
 
 export const LIMITES: Limites = { bytesDoArquivo: 20 * 1024 * 1024, memoriaMb: 512, tempoMs: 30_000 };
 
-export interface EntradaAnalise {
+export interface EntradaRevisao {
   readonly arquivo: string;
   readonly cnct?: string;
   readonly forma?: string;
@@ -69,7 +69,7 @@ export interface RevisaoDoArquivo {
   readonly arquivoComentado: string | null;
 }
 
-export interface EntradaRevisarArquivo extends EntradaAnalise {
+export interface EntradaRevisarArquivo extends EntradaRevisao {
   readonly ia?: EntradaIa;
   /** A situação de cada pendência na lista viva (etapa 5b): a cópia comentada reflete o estado. */
   readonly situacoes?: Record<string, MarcaPendencia>;
@@ -79,15 +79,15 @@ export interface EntradaRevisarArquivo extends EntradaAnalise {
   readonly sha256?: string;
 }
 
-export class AnalisePpc extends Context.Service<
-  AnalisePpc,
+export class RevisorPpc extends Context.Service<
+  RevisorPpc,
   {
-    readonly analisar: (entrada: EntradaAnalise) => Effect.Effect<ResultadoRevisaoPpc, FalhaRevisaoPpc>;
-    /** O mesmo `analisar`, com o Markdown e as linhas da triagem (a lista viva guarda o texto do PPC). */
-    readonly analisarCompleto: (entrada: EntradaAnalise) => Effect.Effect<RevisaoDoArquivo, FalhaRevisaoPpc>;
+    readonly revisar: (entrada: EntradaRevisao) => Effect.Effect<ResultadoRevisaoPpc, FalhaRevisaoPpc>;
+    /** O mesmo `revisar`, com o Markdown e as linhas da triagem (a lista viva guarda o texto do PPC). */
+    readonly revisarCompleto: (entrada: EntradaRevisao) => Effect.Effect<RevisaoDoArquivo, FalhaRevisaoPpc>;
     /**
      * Converte, pré-confere e (com `ia`) junta os resultados da IA; espera a vez em vez de recusar.
-     * As mesmas conferências do `analisar` (arquivo liberado, tamanho, Worker com limites).
+     * As mesmas conferências do `revisar` (arquivo liberado, tamanho, Worker com limites).
      */
     readonly revisarArquivo: (entrada: EntradaRevisarArquivo) => Effect.Effect<RevisaoDoArquivo, FalhaRevisaoPpc>;
     /** Libera um arquivo escolhido no diálogo do desktop (`CAMINHO_LIBERAR_ARQUIVO`). */
@@ -97,10 +97,10 @@ export class AnalisePpc extends Context.Service<
      * "Anexar" da pasta de trabalho usa a mesma regra.
      */
     readonly liberado: (arquivo: string) => Effect.Effect<boolean>;
-    /** Uma análise está rodando agora? (a troca da base espera, M1.10) */
+    /** Uma revisão está rodando agora? (a troca da base espera, M1.10) */
     readonly ocupada: Effect.Effect<boolean>;
   }
->()("@simplifica-if/server/revisao-ppc/AnalisePpc") {}
+>()("@simplifica-if/server/revisao-ppc/RevisorPpc") {}
 
 /** O script do Worker: o `.ts` ao lado deste no desenvolvimento, o `trabalhador-ppc.mjs` no bundle. */
 export const URL_TRABALHADOR = import.meta.url.endsWith(".ts")
@@ -147,7 +147,7 @@ const megabytes = (bytes: number) => `${FORMATO_MB.format(bytes / 1024 / 1024)} 
 
 type Revisao = Extract<RespostaTrabalhador, { ok: true }>["revisao"];
 
-const ERRO_INTERNO = "Não foi possível analisar este arquivo por um erro interno do Simplifica IF.";
+const ERRO_INTERNO = "Não foi possível revisar este arquivo por um erro interno do Simplifica IF.";
 
 /**
  * Roda o pedido no Worker. O tempo máximo e a interrupção (a conexão caiu) encerram o Worker pelo
@@ -190,7 +190,7 @@ function rodarNoTrabalhador(
             Effect.fail(
               falha(
                 erro.code === "ERR_WORKER_OUT_OF_MEMORY"
-                  ? "O arquivo exigiu memória demais para ser analisado. Compacte as imagens no Word (Arquivo > Compactar imagens) ou retire anexos grandes, e tente de novo."
+                  ? "O arquivo exigiu memória demais para ser revisado. Compacte as imagens no Word (Arquivo > Compactar imagens) ou retire anexos grandes, e tente de novo."
                   : ERRO_INTERNO,
               ),
             ),
@@ -198,7 +198,7 @@ function rodarNoTrabalhador(
         ),
       ),
     );
-    trabalhador.once("exit", () => terminar(Effect.fail(falha("A análise parou antes de terminar. Tente de novo."))));
+    trabalhador.once("exit", () => terminar(Effect.fail(falha("A revisão parou antes de terminar. Tente de novo."))));
     trabalhador.postMessage(pedido, [pedido.bytes.buffer as ArrayBuffer]);
     return Effect.sync(() => {
       terminou = true;
@@ -211,7 +211,7 @@ function rodarNoTrabalhador(
       orElse: () =>
         Effect.fail(
           falha(
-            `A análise passou do tempo máximo (${Math.round(limites.tempoMs / 1000)} s) e foi interrompida. O arquivo pode ter estrutura incomum; salve-o de novo no Word como .docx e tente outra vez.`,
+            `A revisão passou do tempo máximo (${Math.round(limites.tempoMs / 1000)} s) e foi interrompida. O arquivo pode ter estrutura incomum; salve-o de novo no Word como .docx e tente outra vez.`,
           ),
         ),
     }),
@@ -244,21 +244,21 @@ export const resultadoParaInterface = (arquivo: string, r: RevisaoDoArquivo): Re
   return { arquivoOriginal: arquivo, arquivoComentado: r.arquivoComentado ?? "", ...resto };
 };
 
-export interface OpcoesAnalise {
+export interface OpcoesRevisao {
   readonly limites?: Partial<Limites>;
   readonly trabalhador?: URL;
   /**
-   * Só analisa arquivos liberados por `liberar` (o desktop, com o `tokenDesktop`, os escolhidos no
+   * Só revisa arquivos liberados por `liberar` (o desktop, com o `tokenDesktop`, os escolhidos no
    * diálogo): um cliente do RPC não manda o servidor ler um `.docx` qualquer nem gravar ao lado dele.
    */
   readonly exigirLiberacao?: boolean;
 }
 
-export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalise = {}) {
+export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisao = {}) {
   const limites = { ...LIMITES, ...opcoes.limites };
   const url = opcoes.trabalhador ?? URL_TRABALHADOR;
   const contexto = yield* Effect.context<FontesNormativas | SqlClient.SqlClient>();
-  // A base é montada na primeira análise e reaproveitada (o banco é só de leitura).
+  // A base é montada na primeira revisão e reaproveitada (o banco é só de leitura).
   const base = yield* Effect.cached(
     montarBase.pipe(
       Effect.provideContext(contexto),
@@ -267,10 +267,10 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
   );
 
   const liberados = new Set<string>();
-  // Uma análise por vez: cada Worker pode usar até `memoriaMb` de heap.
+  // Uma revisão por vez: cada Worker pode usar até `memoriaMb` de heap.
   const vez = yield* Semaphore.make(1);
 
-  const revisarUm = Effect.fn("AnalisePpc.revisarArquivo")(function* (entrada: EntradaRevisarArquivo) {
+  const revisarUm = Effect.fn("RevisorPpc.revisarArquivo")(function* (entrada: EntradaRevisarArquivo) {
     const arquivo = entrada.arquivo;
     const falha = (motivo: string) => new FalhaRevisaoPpc({ arquivo, motivo });
     if (!NodePath.isAbsolute(arquivo) || NodePath.extname(arquivo).toLowerCase() !== ".docx")
@@ -293,7 +293,7 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
     const sha256 = NodeCrypto.createHash("sha256").update(bytes).digest("hex");
     if (entrada.sha256 !== undefined && entrada.sha256 !== sha256)
       return yield* falha(
-        "O arquivo mudou depois que a revisão começou. Analise o arquivo de novo para começar outra revisão.",
+        "O arquivo mudou depois que a revisão começou. Revise o arquivo de novo para começar outra revisão.",
       );
     const dados = yield* base.pipe(
       Effect.mapError(() => falha("A base de normas do Simplifica IF não pôde ser lida. Reinicie o app.")),
@@ -325,7 +325,7 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
     return { revisao: semDocx, sha256, arquivoComentado } satisfies RevisaoDoArquivo;
   });
 
-  const analisarCompleto = (entrada: EntradaAnalise) =>
+  const revisarCompleto = (entrada: EntradaRevisao) =>
     revisarUm({ ...entrada, gravar: true }).pipe(
       vez.withPermitsIfAvailable(1),
       Effect.flatMap(
@@ -335,14 +335,14 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
             Effect.fail(
               new FalhaRevisaoPpc({
                 arquivo: entrada.arquivo,
-                motivo: "Já há uma análise em andamento. Espere ela terminar e tente de novo.",
+                motivo: "Já há uma revisão em andamento. Espere ela terminar e tente de novo.",
               }),
             ),
         }),
       ),
     );
-  const analisar = (entrada: EntradaAnalise) =>
-    analisarCompleto(entrada).pipe(Effect.map((r) => resultadoParaInterface(entrada.arquivo, r)));
+  const revisar = (entrada: EntradaRevisao) =>
+    revisarCompleto(entrada).pipe(Effect.map((r) => resultadoParaInterface(entrada.arquivo, r)));
   const liberar = (arquivo: string) => Effect.sync(() => void liberados.add(NodePath.normalize(arquivo)));
   const revisarArquivo = (entrada: EntradaRevisarArquivo) => revisarUm(entrada).pipe(vez.withPermits(1));
 
@@ -350,8 +350,8 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
     Effect.sync(() => !opcoes.exigirLiberacao || liberados.has(NodePath.normalize(arquivo)));
 
   const ocupada = vez.withPermitsIfAvailable(1)(Effect.void).pipe(Effect.map(Option.isNone));
-  return AnalisePpc.of({ analisar, analisarCompleto, liberar, liberado, revisarArquivo, ocupada });
+  return RevisorPpc.of({ revisar, revisarCompleto, liberar, liberado, revisarArquivo, ocupada });
 });
 
 /** O serviço sobre o `FontesNormativas` e o `SqlClient` do `kb.sqlite` (os do `Leitura` do servidor). */
-export const layer = (opcoes: OpcoesAnalise = {}) => Layer.effect(AnalisePpc, make(opcoes));
+export const layer = (opcoes: OpcoesRevisao = {}) => Layer.effect(RevisorPpc, make(opcoes));

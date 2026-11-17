@@ -27,6 +27,7 @@ import { comecarTarefa } from "../tarefas/comecar.tsx";
 import { type Exemplo, exemplosDoPerfil } from "../tarefas/exemplo.ts";
 import { usePreferencias } from "../tarefas/perfil.ts";
 import { EsperaPreferencias } from "../components/EsperaPreferencias.tsx";
+import { MarcaIa } from "../components/MarcaIa.tsx";
 
 /**
  * A busca da rota: o pedido que veio pronto do Explorar ("Perguntar à IA sobre isto") e foi desviado
@@ -163,6 +164,7 @@ function PassoIa({
             className="flex flex-col items-start gap-0.5 rounded-xl border border-border bg-card p-3 text-left hover:border-primary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring aria-checked:border-primary aria-checked:bg-primary/6"
           >
             <span className="flex items-center gap-1.5 font-semibold">
+              <MarcaIa provider={provider} />
               {DESCRICOES[provider].nome}
               {prontas.has(provider) ? (
                 <CheckCircle2Icon aria-label="conectada" className="size-4 text-success" />
@@ -237,7 +239,7 @@ function CartaoExemplo({
       className={`flex flex-col gap-2 rounded-xl border bg-card p-4 ${principal ? "border-primary/60" : "border-border"}`}
     >
       <h2 className="flex items-center gap-2 font-semibold">
-        {exemplo.tipo === "analisar-ppc" ? (
+        {exemplo.tipo === "revisar-ppc" ? (
           <FileSearchIcon aria-hidden className="size-4 text-primary" />
         ) : (
           <SparklesIcon aria-hidden className="size-4 text-primary" />
@@ -297,7 +299,7 @@ function PassoExemplo({
 
   const fazer = async (exemplo: Exemplo) => {
     await aoTerminar();
-    if (exemplo.tipo === "analisar-ppc") {
+    if (exemplo.tipo === "revisar-ppc") {
       await navegar({ to: "/revisao-ppc" });
       return;
     }

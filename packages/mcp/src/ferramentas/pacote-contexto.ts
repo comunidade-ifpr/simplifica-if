@@ -355,7 +355,7 @@ function blocosDoPacote(d: Dados): Bloco[] {
   if (!daBase && d.escopo === "completo") {
     blocos.push(`## PPC\nEscopo completo: leia o PPC inteiro em \`${d.path}\`; o pacote não traz seções.`);
   } else if (d.secoes.length) {
-    blocos.push("## Seções do PPC (o texto do PPC sob análise)", ...d.secoes.map((s) => blocoSecao(s, daBase)));
+    blocos.push("## Seções do PPC (o texto do PPC sob revisão)", ...d.secoes.map((s) => blocoSecao(s, daBase)));
   }
   return blocos;
 }
@@ -431,7 +431,7 @@ export const AVISO_RESUMIDO: Aviso = {
 
 export const pacoteContexto = definirFerramenta({
   nome: "pacote_contexto",
-  titulo: "Contexto da análise de PPC",
+  titulo: "Contexto da revisão de PPC",
   descricao:
     "Monta o contexto de uma tarefa da skill `revisar-ppc` para um PPC: fichas, CNCT, dispositivos citados nas fichas, marcos, transições, seções relevantes do PPC e fatos. Use dentro da `revisar-ppc`. Aceita um PPC da base ou um arquivo `.md` da pasta de trabalho.",
   entrada: Entrada,

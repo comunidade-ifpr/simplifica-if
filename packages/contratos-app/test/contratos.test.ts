@@ -54,7 +54,7 @@ describe("contratos do app", () => {
       "relato.registrar",
       "pasta.ver",
       "pasta.desfazer",
-      "revisaoPpc.analisar",
+      "revisaoPpc.revisar",
       "atualizacao.estado",
       "preferencias.ler",
       "preferencias.gravarPerfil",

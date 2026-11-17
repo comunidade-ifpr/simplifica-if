@@ -4,7 +4,7 @@
  * base, os cartões e a caixa de pedido; o formulário da tarefa; a conversa com etapas, detalhes
  * técnicos, avaliação e a pasta com o Desfazer), Configurações com os três providers, instalar e
  * entrar, a conversa com aprovação, link `ifpr://` no painel de leitura, interromper e nova conversa, e
- * "Analisar um PPC" (a revisão prévia sem IA, com o Worker de verdade e a ponte do desktop simulada: o
+ * "Revisar um PPC" (a revisão prévia sem IA, com o Worker de verdade e a ponte do desktop simulada: o
  * diálogo devolve o PPC sintético do servidor de teste).
  */
 import { afterAll, afterEach, beforeAll, expect, it, vi } from "vite-plus/test";
@@ -57,11 +57,19 @@ function semIngles() {
 it("Configurações › Sua IA: o aviso de uso, os três providers, instalar, entrar e não usar no app", async () => {
   await using _app = await montarApp(servidor, "/configuracoes");
 
-  await expect.element(page.getByRole("status").getByText("Conectado")).toBeVisible();
+  // Conectado, o cabeçalho não mostra nada: a região de estado fica vazia, à espera de uma queda.
+  await expect.poll(() => cabecalho().querySelector("[role=status]")?.getAttribute("data-fase")).toBe("conectada");
+  expect(cabecalho().querySelector("[role=status]")?.textContent).toBe("");
+  expect(cabecalho().textContent).not.toMatch(/Conectado/);
   await expect.element(page.getByRole("region", { name: "O que vai para a IA" })).toBeVisible();
   const claude = page.getByRole("region", { name: "Claude" });
   await expect.element(claude.getByText("Conectado")).toBeVisible();
   await expect.element(claude.getByText("max")).toBeVisible();
+  // A marca de cada IA ao lado do nome, só decoração.
+  for (const provider of ["claude", "codex", "antigravity"]) {
+    const marca = document.querySelector(`section [data-marca-ia="${provider}"]`);
+    expect(marca?.getAttribute("aria-hidden"), provider).toBe("true");
+  }
   await expect.element(claude.getByText("2.1.30")).toBeVisible();
 
   // Codex: não instalado; "Instalar" mostra a barra de progresso e termina instalado.
@@ -158,7 +166,7 @@ it("Conversa: aprovação, link ifpr:// no painel, interromper e nova conversa",
   await expect.element(mensagens.getByText("Resposta interrompida.")).toBeVisible();
 });
 
-it("Analisar um PPC: do Início à lista de pendências por tema e à cópia comentada", async () => {
+it("Revisar um PPC: do Início à lista de pendências por tema e à cópia comentada", async () => {
   const abrirDocumento = vi.fn(async (_caminho: string) => {});
   const mostrarNaPasta = vi.fn(async (_caminho: string) => {});
   window.simplifica = {
@@ -170,8 +178,8 @@ it("Analisar um PPC: do Início à lista de pendências por tema e à cópia com
   await using _app = await montarApp(servidor);
 
   // O cartão da tarefa nativa leva ao fluxo da revisão prévia.
-  await page.getByRole("link", { name: /^Analisar um PPC/ }).click();
-  await expect.element(page.getByRole("heading", { name: "Analisar um PPC" })).toBeVisible();
+  await page.getByRole("link", { name: /^Revisar um PPC/ }).click();
+  await expect.element(page.getByRole("heading", { name: "Revisar um PPC" })).toBeVisible();
   await page.getByRole("button", { name: "Escolher o PPC (.docx)…" }).click();
 
   // O resumo: contagem em palavras, o curso, o que foi e o que não foi conferido, a cópia.
@@ -221,7 +229,7 @@ it("Analisar um PPC: do Início à lista de pendências por tema e à cópia com
   await expect.element(page.getByRole("button", { name: "Escolher o PPC (.docx)…" })).toBeVisible();
 });
 
-it("Analisar um PPC: arquivo que não existe, com a mensagem do servidor em português", async () => {
+it("Revisar um PPC: arquivo que não existe, com a mensagem do servidor em português", async () => {
   window.simplifica = {
     conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
     escolherDocx: async () => `${servidor.pasta}/não existe.docx`,
@@ -249,7 +257,7 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   await expect.element(page.getByText(/^Base de \d{2}\/\d{2}\/\d{4}$/)).toBeVisible();
   await expect.element(page.getByRole("textbox", { name: "O que você precisa hoje?" })).toBeVisible();
   const tarefas = page.getByRole("region", { name: "Tarefas" });
-  await expect.element(tarefas.getByRole("link", { name: /^Analisar um PPC/ })).toBeVisible();
+  await expect.element(tarefas.getByRole("link", { name: /^Revisar um PPC/ })).toBeVisible();
   const cartao = tarefas.getByRole("link", { name: /^Conferir a fundamentação normativa/ });
   await expect.element(cartao).toBeVisible();
   await expect.element(page.getByRole("heading", { name: "Recentes" })).toBeVisible();
@@ -289,7 +297,7 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   // As etapas: todas feitas no fim; as chamadas, recolhidas.
   const etapas = page.getByRole("region", { name: "Etapas: Conferir a fundamentação normativa" });
   await expect.element(etapas.getByText("Ler a fonte de cada alegação")).toBeVisible();
-  await expect.element(etapas.getByText("Andamento informado pela IA.")).toBeVisible();
+  expect(etapas.element().textContent).not.toMatch(/Andamento informado/);
   await expect.element(mensagens.getByRole("button", { name: "Res. CNE/CP nº 1/2021" })).toBeVisible();
   await expect.element(etapas.getByText("(feita)").nth(3)).toBeInTheDocument();
   await expect.element(mensagens.getByText(/^Detalhes técnicos · \d+ consultas$/)).toBeVisible();
@@ -528,9 +536,9 @@ it("Primeiro uso: aviso, conectar a IA (Claude guiado e Codex), perfil, tarefa d
   await capturar("13-boas-vindas-perfil");
   await page.getByRole("button", { name: "Salvar e continuar" }).click();
 
-  // Passo 3: para a coordenação, analisar o PPC do curso vem primeiro; a conversa de exemplo, depois.
+  // Passo 3: para a coordenação, revisar o PPC do curso vem primeiro; a conversa de exemplo, depois.
   await expect.element(page.getByRole("heading", { name: "Experimente uma tarefa" })).toBeVisible();
-  const ppc = page.getByRole("region", { name: "Analisar o PPC de Técnico em Enfermagem" });
+  const ppc = page.getByRole("region", { name: "Revisar o PPC de Técnico em Enfermagem" });
   await expect.element(ppc.getByText("Sugerida")).toBeVisible();
   await expect.element(ppc.getByText(/não gasta a sua cota/)).toBeVisible();
   const conferir = page.getByRole("region", { name: "Conferir a fundamentação normativa de um trecho" });
@@ -541,12 +549,13 @@ it("Primeiro uso: aviso, conectar a IA (Claude guiado e Codex), perfil, tarefa d
   const mensagens = page.getByRole("log", { name: "Mensagens" });
   await expect.element(mensagens.getByText(/Confira a fundamentação normativa deste trecho de PPC/)).toBeVisible();
 
-  // O Início: a linha do perfil, sem voltar às boas-vindas, e o lembrete ao lado do anexo.
+  // O Início: a linha do perfil, sem voltar às boas-vindas; sem lembrete de dado pessoal ao lado do anexo
+  // (o aviso de uso do primeiro uso basta).
   await app.roteador.navigate({ to: "/" });
   await expect.element(page.getByText("Coordenação de Curso · Campus Curitiba")).toBeVisible();
-  await expect.element(page.getByText("Não anexe documento com dado pessoal ou de acesso restrito.")).toBeVisible();
+  await expect.element(page.getByText(/Não anexe/)).not.toBeInTheDocument();
   const tarefas = page.getByRole("region", { name: "Tarefas" });
-  await expect.element(tarefas.getByRole("link", { name: /Analisar um PPC/ })).toBeVisible();
+  await expect.element(tarefas.getByRole("link", { name: /Revisar um PPC/ })).toBeVisible();
   await expect.element(tarefas.getByRole("link", { name: /Conferir a fundamentação normativa/ })).toBeVisible();
   await capturar("15-inicio-com-perfil");
 
@@ -598,22 +607,60 @@ it("Caixa de pedido: o cartão flutuante no Início e na conversa, Enter, Shift+
     await escuro(false);
   };
 
-  // Início: o campo, o clipe com o lembrete, a IA e o botão de enviar apagado com o campo vazio.
+  // Início: o campo, o clipe (só o ícone, sem lembrete), a IA com a marca e o botão de enviar apagado
+  // com o campo vazio.
   const caixa = page.getByRole("textbox", { name: "O que você precisa hoje?" });
   await expect.element(caixa).toHaveAttribute("placeholder", "O que você precisa hoje?");
   await expect.element(caixa).toHaveAccessibleDescription(/Enter envia; Shift\+Enter quebra a linha/);
   const formulario = page.getByRole("form", { name: "O que você precisa hoje?" });
   const enviar = formulario.getByRole("button", { name: "Enviar" });
   await expect.element(enviar).toBeDisabled();
-  await expect.element(formulario.getByRole("button", { name: /Anexar arquivo/ })).toBeVisible();
-  await expect.element(formulario.getByText(/Não anexe/)).toBeVisible();
-  await expect.element(formulario.getByLabelText("IA")).toBeVisible();
+  const clipe = formulario.getByRole("button", { name: "Anexar arquivo", exact: true });
+  await expect.element(clipe).toBeVisible();
+  await expect.element(clipe).toHaveAttribute("title", "Anexar arquivo");
+  expect(clipe.element().textContent).toBe("");
+  expect(clipe.element().getBoundingClientRect().width).toBe(clipe.element().getBoundingClientRect().height);
+  await expect.element(formulario.getByText(/Não anexe/)).not.toBeInTheDocument();
+  // A escolha da IA: a marca ao lado do nome, no botão e em cada opção; o nome continua em texto.
+  const ia = formulario.getByRole("combobox", { name: "IA" });
+  await expect.element(ia).toHaveTextContent("Claude");
+  expect(ia.element().querySelector('[data-marca-ia="claude"]')?.getAttribute("aria-hidden")).toBe("true");
+  await ia.click();
+  const opcoes = page.getByRole("listbox");
+  await expect.element(opcoes.getByRole("option", { name: "ChatGPT" })).toBeVisible();
+  for (const provider of ["claude", "codex", "antigravity"]) {
+    expect(opcoes.element().querySelector(`[data-marca-ia="${provider}"]`), provider).not.toBeNull();
+  }
+  await nosDoisTemas("escolha-ia");
+  await opcoes.getByRole("option", { name: "ChatGPT" }).click();
+  await expect.element(ia).toHaveTextContent("ChatGPT");
+  expect(ia.element().querySelector('[data-marca-ia="codex"]')).not.toBeNull();
+  await ia.click();
+  await page.getByRole("listbox").getByRole("option", { name: "Claude" }).click();
+  await expect.element(ia).toHaveTextContent("Claude");
+  // Pelo teclado: Enter abre a lista, as setas andam, Enter escolhe; Esc fecha e devolve o foco à escolha.
+  (ia.element() as HTMLElement).focus();
+  await userEvent.keyboard("{Enter}");
+  await expect.element(page.getByRole("listbox")).toBeVisible();
+  await userEvent.keyboard("{ArrowDown}{Enter}");
+  await expect.element(ia).toHaveTextContent("ChatGPT");
+  await expect.element(page.getByRole("listbox")).not.toBeInTheDocument();
+  expect(document.activeElement).toBe(ia.element());
+  await userEvent.keyboard("{Enter}");
+  await expect.element(page.getByRole("listbox")).toBeVisible();
+  await userEvent.keyboard("{Escape}");
+  await expect.element(page.getByRole("listbox")).not.toBeInTheDocument();
+  expect(document.activeElement).toBe(ia.element());
+  await expect.element(ia).toHaveTextContent("ChatGPT");
+  await ia.click();
+  await page.getByRole("listbox").getByRole("option", { name: "Claude" }).click();
+  await expect.element(ia).toHaveTextContent("Claude");
   // Shift+Enter quebra a linha, sem enviar; o botão acende.
   await caixa.click();
   await userEvent.keyboard("Quais normas tratam{Shift>}{Enter}{/Shift}do estágio?");
   await expect.element(caixa).toHaveValue("Quais normas tratam\ndo estágio?");
   await expect.element(enviar).toBeEnabled();
-  await formulario.getByRole("button", { name: /Anexar arquivo/ }).click();
+  await clipe.click();
   await expect.element(formulario.getByRole("list", { name: "Arquivos anexados" })).toBeVisible();
   semIngles();
   await nosDoisTemas("caixa-inicio");
@@ -678,6 +725,8 @@ function cabecalho(): HTMLElement {
 it("Barra de título: no navegador, o cabeçalho não é barra de título", async () => {
   await using _app = await montarApp(servidor);
   await expect.element(page.getByRole("link", { name: "Configurações" })).toBeVisible();
+  // Só o nome, sem o rótulo "IFPR" ao lado.
+  expect(cabecalho().querySelector("a")?.textContent).toBe("Simplifica IF");
   expect(cabecalho().classList.contains("drag-region")).toBe(false);
   expect(getComputedStyle(cabecalho()).getPropertyValue("-webkit-app-region")).not.toBe("drag");
 });
@@ -730,10 +779,90 @@ it("Barra de título: no desktop (Windows e Linux), o cabeçalho deixa a direita
   expect(Number.parseFloat(estilo.paddingRight)).toBeGreaterThan(138);
 });
 
+it("Cartão de tarefa: em janela estreita, o texto quebra, sem corte nem rolagem lateral", async () => {
+  /** Cada cartão inteiro dentro da janela, sem conteúdo transbordando, e a página sem rolagem lateral. */
+  const conferir = async () => {
+    const cartao = page.getByRole("link", { name: /^Revisar um PPC/ }).first();
+    await expect.element(cartao).toBeVisible();
+    await vi.waitFor(() => {
+      for (const elemento of document.querySelectorAll<HTMLElement>("[data-tarefa]")) {
+        const caixa = elemento.getBoundingClientRect();
+        expect(caixa.left).toBeGreaterThanOrEqual(0);
+        expect(caixa.right).toBeLessThanOrEqual(document.documentElement.clientWidth);
+        expect(elemento.scrollWidth).toBeLessThanOrEqual(elemento.clientWidth);
+      }
+    });
+    for (const rolagem of document.querySelectorAll<HTMLElement>(".overflow-y-auto")) {
+      expect(rolagem.scrollWidth).toBeLessThanOrEqual(rolagem.clientWidth);
+    }
+    expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth);
+  };
+  await page.viewport(1100, 760);
+  {
+    await using _app = await montarApp(servidor);
+    await conferir();
+    await capturar("cartao-revisar-ppc-largo");
+    for (const largura of [800, 560, 360]) {
+      await page.viewport(largura, 640);
+      await conferir();
+      await capturar(`cartao-revisar-ppc-${largura}`);
+    }
+  }
+  {
+    await using _app = await montarApp(servidor, "/tarefas");
+    await conferir();
+    await capturar("cartao-revisar-ppc-todas-360");
+  }
+  // No desktop (o cabeçalho é a barra de título e não quebra linha), na largura mínima da janela: com os
+  // semáforos à esquerda (macOS) e com os botões do sistema à direita (Windows e Linux). O cabeçalho mais
+  // largo que a janela dava rolagem lateral à página inteira, que cortava os cartões.
+  await page.viewport(800, 560);
+  for (const plataforma of ["darwin", "win32"] as const) {
+    window.simplifica = {
+      conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
+      janela: { plataforma, telaCheia: async () => false, aoMudarTelaCheia: () => () => {} },
+    } satisfies PonteDesktop;
+    for (const rota of ["/", "/tarefas"] as const) {
+      await using _app = await montarApp(servidor, rota);
+      await conferir();
+      expect(cabecalho().scrollWidth).toBeLessThanOrEqual(cabecalho().clientWidth);
+      await capturar(`cartao-revisar-ppc-${plataforma}-800${rota === "/" ? "" : "-todas"}`);
+    }
+  }
+  // Com a conexão caída, o cabeçalho ganha "Sem conexão…" e "Tentar agora": no Windows, com a folga dos
+  // botões do sistema, ainda cabe na largura mínima.
+  window.simplifica = {
+    conexao: async () => ({ urlServidor: "http://127.0.0.1:9", token: "x" }),
+    janela: { plataforma: "win32", telaCheia: async () => false, aoMudarTelaCheia: () => () => {} },
+  } satisfies PonteDesktop;
+  {
+    await using _app = await montarAppComOrigem(
+      { tipo: "navegador", fonte: "url", credenciais: { urlServidor: "http://127.0.0.1:9", token: "x" } },
+      "/",
+      { atraso: () => 50 },
+    );
+    const tentar = page.getByRole("button", { name: "Tentar agora" });
+    await expect.element(tentar).toBeVisible();
+    // A frase vai para o leitor de tela (e para a dica); o botão fica inteiro, dentro do cabeçalho.
+    expect(cabecalho().querySelector('[role="status"][data-fase]')?.textContent).toMatch(/Sem conexão/);
+    const botao = tentar.element().getBoundingClientRect();
+    expect(tentar.element().scrollWidth).toBeLessThanOrEqual(tentar.element().clientWidth);
+    expect(botao.right).toBeLessThanOrEqual(cabecalho().getBoundingClientRect().right);
+    // Nenhum item do cabeçalho passa por cima do seguinte (o botão sobre a escolha de tema, por exemplo).
+    const itens = [...cabecalho().children].map((item) => item.getBoundingClientRect());
+    itens.slice(1).forEach((item, i) => expect(item.left).toBeGreaterThanOrEqual(itens[i]!.right));
+    expect(botao.right).toBeLessThanOrEqual(itens.at(-1)!.left);
+    expect(cabecalho().scrollWidth).toBeLessThanOrEqual(cabecalho().clientWidth);
+    expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth);
+    await capturar("cabecalho-win32-800-sem-conexao");
+  }
+  await page.viewport(1100, 760);
+});
+
 it("Ver todas as tarefas e os avisos de conexão, sem inglês nem jargão (M1.14)", async () => {
   {
     await using app = await montarApp(servidor, "/tarefas");
-    await expect.element(page.getByRole("link", { name: /^Analisar um PPC/ }).first()).toBeVisible();
+    await expect.element(page.getByRole("link", { name: /^Revisar um PPC/ }).first()).toBeVisible();
     expect(app.roteador.state.location.pathname).toBe("/tarefas");
     semIngles();
   }

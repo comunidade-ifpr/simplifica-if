@@ -523,7 +523,7 @@ export function FichaRevisao({ id, aoAbrirLink }: { readonly id: string; readonl
               ) : null}
             </p>
             <p className="text-muted-foreground text-xs">
-              Critério usado pela análise de PPC do app. Ajuda a revisar; não é norma.
+              Critério usado pela revisão de PPC do app. Ajuda a revisar; não é norma.
             </p>
           </Cabecalho>
           {d.campos.map((campo) => (

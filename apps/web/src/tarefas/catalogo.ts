@@ -1,6 +1,6 @@
 /**
  * O catálogo de tarefas do Início (M1.9): as skills do servidor (`skills.listar`) e as tarefas nativas
- * do app, que não são skill do catálogo. Hoje a nativa é "Analisar um PPC", que leva ao fluxo da
+ * do app, que não são skill do catálogo. Hoje a nativa é "Revisar um PPC", que leva ao fluxo da
  * revisão prévia (`/revisao-ppc`: pré-conferência, roteiro e relatório com IA), sem duplicá-lo.
  *
  * O perfil do primeiro uso (M1.8) ordena e filtra: a função da pessoa vira os públicos do manifesto
@@ -31,8 +31,8 @@ export type Tarefa =
 export const TAREFAS_NATIVAS: ReadonlyArray<Extract<Tarefa, { tipo: "nativa" }>> = [
   {
     tipo: "nativa",
-    nome: "analisar-ppc",
-    titulo: "Analisar um PPC",
+    nome: "revisar-ppc",
+    titulo: "Revisar um PPC",
     resumo:
       "Confere o PPC (.docx) com as normas, o CNCT e a matriz da base, e devolve uma cópia do documento com comentários.",
     area: "ensino",

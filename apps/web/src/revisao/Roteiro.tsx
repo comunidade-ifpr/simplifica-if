@@ -4,7 +4,7 @@
  * pendência:
  *
  * - "Vou ajustar" e "Já resolvi" só mudam a situação; "Já resolvi" oferece conferir no arquivo
- *   atualizado (`revisaoPpc.reanalisar`), e aí quem decide é a reanálise;
+ *   atualizado (`revisaoPpc.revisarDeNovo`), e aí quem decide é a nova revisão;
  * - "Discordo…" manda o motivo à IA, e o app só retira com trecho ou norma conferidos;
  * - "Sugerir texto" mostra a redação da IA, com os fatos que o app não conferiu, para copiar e revisar.
  *
@@ -305,7 +305,7 @@ type Painel =
   | { readonly tipo: "nenhum" }
   | { readonly tipo: "discordar" }
   | { readonly tipo: "sugerir" }
-  | { readonly tipo: "reanalisar" };
+  | { readonly tipo: "revisarDeNovo" };
 
 function CartaoPendencia({
   lista,
@@ -345,7 +345,7 @@ function CartaoPendencia({
           }
         >
           {ROTULO_SITUACAO_PENDENCIA[viva.situacao]}
-          {viva.situacao === "resolvida" && viva.resolvidaPor === "reanalise" ? ", conferida no arquivo novo" : ""}
+          {viva.situacao === "resolvida" && viva.resolvidaPor === "revisarDeNovo" ? ", conferida no arquivo novo" : ""}
         </Badge>
         <span className="text-muted-foreground text-xs">
           {p.tituloFicha}
@@ -364,7 +364,7 @@ function CartaoPendencia({
             size="sm"
             variant="outline"
             disabled={ocupada}
-            onClick={() => void marcar("resolvida", () => setPainel({ tipo: "reanalisar" }))}
+            onClick={() => void marcar("resolvida", () => setPainel({ tipo: "revisarDeNovo" }))}
           >
             <CheckIcon /> Já resolvi
           </Button>
@@ -416,12 +416,12 @@ function CartaoPendencia({
           ocupada={ocupada}
         />
       ) : null}
-      {painel.tipo === "reanalisar" ? (
-        <Reanalisar
-          estimar={() => api.chamar((c) => c["revisaoPpc.estimarAcao"]({ ...base, acao: "reanalisar", provider }))}
+      {painel.tipo === "revisarDeNovo" ? (
+        <RevisarDeNovo
+          estimar={() => api.chamar((c) => c["revisaoPpc.estimarAcao"]({ ...base, acao: "revisarDeNovo", provider }))}
           aoEscolher={(arquivo) =>
             executar(
-              () => api.chamar((c) => c["revisaoPpc.reanalisar"]({ ...base, arquivo, provider })),
+              () => api.chamar((c) => c["revisaoPpc.revisarDeNovo"]({ ...base, arquivo, provider })),
               () => setPainel({ tipo: "nenhum" }),
             )
           }
@@ -557,7 +557,7 @@ function Confirmar({
   );
 }
 
-function Reanalisar({
+function RevisarDeNovo({
   estimar,
   aoEscolher,
   aoFechar,

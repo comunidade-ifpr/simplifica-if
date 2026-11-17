@@ -24,7 +24,7 @@ import * as Layers from "@simplifica-if/kb/layers";
 import { revisarDocx, type BaseRevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
 import { ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
 import { baseRevisaoDeArquivos } from "../../../packages/ppc/scripts/base-tecnica.ts";
-import { montarBase } from "../src/revisao-ppc/AnalisePpc.ts";
+import { montarBase } from "../src/revisao-ppc/RevisorPpc.ts";
 
 const raiz = NodePath.resolve(import.meta.dirname, "../../..");
 const AGORA = new Date("2026-11-16T12:00:00Z");

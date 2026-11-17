@@ -26,7 +26,7 @@ import * as Drivers from "@simplifica-if/motor/drivers";
 import { fixPath } from "@simplifica-if/motor/t3/os-jank";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Revisoes from "../src/persistencia/Revisoes.ts";
-import * as AnalisePpc from "../src/revisao-ppc/AnalisePpc.ts";
+import * as RevisorPpc from "../src/revisao-ppc/RevisorPpc.ts";
 import { alvoDosTrechos, julgarBloco, type ResultadoBloco } from "../src/revisao-ppc/julgamento.ts";
 import type { PlanoRevisaoIa } from "../src/revisao-ppc/preparo.ts";
 import * as RevisaoIa from "../src/revisao-ppc/RevisaoIa.ts";
@@ -206,7 +206,7 @@ const pastaEstado =
 const drivers = Drivers.layerNode({ ambiente: process.env, pastaEstado });
 const nucleo = RevisaoIa.layer({ paralelismo }).pipe(
   Layer.provideMerge(Revisoes.layer.pipe(Layer.provide(Banco.layerMemoria))),
-  Layer.provideMerge(AnalisePpc.layer()),
+  Layer.provideMerge(RevisorPpc.layer()),
   Layer.provideMerge(Motor.layer.pipe(Layer.provide(drivers))),
   Layer.provideMerge(layerLeitura({ banco: NodePath.join(RAIZ, "tmp/kb.sqlite"), canal: "dev" })),
 );

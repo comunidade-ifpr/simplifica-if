@@ -3,14 +3,14 @@
  * `ListaViva`: a lista de pendências que a pessoa mantém (M1.11, etapa 5b), no servidor, e as ações
  * dentro de cada pendência.
  *
- * - **A lista** nasce de cada análise (a pré-conferência, `analisar`) e de cada revisão com IA concluída
+ * - **A lista** nasce de cada revisão (a pré-conferência, `revisar`) e de cada revisão com IA concluída
  *   (`criarLista`, chamada pela `RevisaoIa`). Fica no `conversas.sqlite` (`Listas`), com o texto do PPC
  *   que as ações usam; sobrevive a fechar o app e à cota. A situação marcada passa para a lista nova do
  *   mesmo arquivo com o mesmo conteúdo (chave da pendência igual).
  * - **O roteiro**: as paradas são os temas com pendência ou critério conferido, na ordem do parecer da
  *   PROENS; a lista lembra as paradas vistas e onde a pessoa estava.
  * - **"Vou ajustar" e "Já resolvi"** (`marcar`): só mudam a situação, sem IA.
- * - **"Já resolvi" com o arquivo novo** (`reanalisar`): o servidor converte e pré-confere o `.docx` novo
+ * - **"Já resolvi" com o arquivo novo** (`revisarDeNovo`): o servidor converte e pré-confere o `.docx` novo
  *   e reconfere **só a ficha da pendência**: no código (fichas D e triagem) e, nas da IA, num lote de uma
  *   ficha conferido como no julgamento. A situação sai do resultado: `resolvida` só se a ficha não
  *   aponta mais nada; senão volta a `aberta`, com o que ainda falta.
@@ -62,7 +62,7 @@ import {
 } from "@simplifica-if/ppc/revisao-previa";
 import { Listas, type RegistroLista } from "../persistencia/Listas.ts";
 import { Revisoes } from "../persistencia/Revisoes.ts";
-import { AnalisePpc, type EntradaAnalise, type RevisaoDoArquivo, resultadoParaInterface } from "./AnalisePpc.ts";
+import { RevisorPpc, type EntradaRevisao, type RevisaoDoArquivo, resultadoParaInterface } from "./RevisorPpc.ts";
 import { julgarBloco, PausaRevisao, turnoSemFerramentas } from "./julgamento.ts";
 import { contextoDaFicha, type PlanoRevisaoIa } from "./preparo.ts";
 
@@ -72,8 +72,8 @@ export const LIMITE_MOTIVO = 1500;
 export class ListaViva extends Context.Service<
   ListaViva,
   {
-    /** A pré-conferência (`AnalisePpc.analisar`) com a lista viva gravada: o resultado traz o `lista`. */
-    readonly analisar: (entrada: EntradaAnalise) => Effect.Effect<ResultadoRevisaoPpc, FalhaRevisaoPpc>;
+    /** A pré-conferência (`RevisorPpc.revisar`) com a lista viva gravada: o resultado traz o `lista`. */
+    readonly revisar: (entrada: EntradaRevisao) => Effect.Effect<ResultadoRevisaoPpc, FalhaRevisaoPpc>;
     readonly lista: (id: string) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc>;
     readonly ultima: Effect.Effect<ListaPendencias | null>;
     readonly apagar: (id: string) => Effect.Effect<void>;
@@ -88,7 +88,7 @@ export class ListaViva extends Context.Service<
     readonly estimar: (
       id: string,
       chave: string,
-      acao: "contestar" | "sugerir" | "reanalisar",
+      acao: "contestar" | "sugerir" | "revisarDeNovo",
       provider?: Provider,
     ) => Effect.Effect<EstimativaAcao, FalhaRevisaoPpc>;
     readonly contestar: (
@@ -102,7 +102,7 @@ export class ListaViva extends Context.Service<
       chave: string,
       provider?: Provider,
     ) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc>;
-    readonly reanalisar: (
+    readonly revisarDeNovo: (
       id: string,
       chave: string,
       arquivo: string,
@@ -117,7 +117,7 @@ export class ListaViva extends Context.Service<
 export interface DadosNovaLista {
   readonly id?: string;
   readonly arquivo: string;
-  readonly analisado: RevisaoDoArquivo;
+  readonly revisado: RevisaoDoArquivo;
   readonly revisao: string | null;
   readonly provider: Provider | null;
   readonly modelo: string | null;
@@ -127,7 +127,7 @@ export interface DadosNovaLista {
 export const criarLista = Effect.fn("ListaViva.criarLista")(function* (d: DadosNovaLista) {
   const listas = yield* Listas;
   const id = d.id ?? `lista-${NodeCrypto.randomUUID()}`;
-  const resultado: ResultadoRevisaoPpc = { ...resultadoParaInterface(d.arquivo, d.analisado), lista: id };
+  const resultado: ResultadoRevisaoPpc = { ...resultadoParaInterface(d.arquivo, d.revisado), lista: id };
   const vistas = new Set<string>();
   const pendencias = resultado.pendencias.flatMap((p) => {
     const chave = chavePendencia(p);
@@ -139,14 +139,14 @@ export const criarLista = Effect.fn("ListaViva.criarLista")(function* (d: DadosN
     {
       id,
       arquivo: d.arquivo,
-      sha256: d.analisado.sha256,
+      sha256: d.revisado.sha256,
       revisao: d.revisao,
       provider: d.provider,
       modelo: d.modelo,
       cnct: resultado.curso.cnct?.slug ?? null,
       forma: resultado.curso.forma,
-      markdown: d.analisado.revisao.markdown,
-      linhasTextoParaIa: d.analisado.revisao.linhasTextoParaIa,
+      markdown: d.revisado.revisao.markdown,
+      linhasTextoParaIa: d.revisado.revisao.linhasTextoParaIa,
       nonce: NodeCrypto.randomBytes(8).toString("hex"),
       resultado,
     },
@@ -172,8 +172,8 @@ const titulos = (markdown: string) =>
 const linhasComTexto = (markdown: string) => markdown.split("\n").filter((l) => l.trim()).length;
 
 /**
- * O arquivo da reanálise comparado com o analisado: a fração dos títulos de seção **do analisado** que
- * estão no novo, e o tamanho do novo (títulos e linhas com texto) em relação ao analisado. Um arquivo
+ * O arquivo da nova revisão comparado com o revisado: a fração dos títulos de seção **do revisado** que
+ * estão no novo, e o tamanho do novo (títulos e linhas com texto) em relação ao revisado. Um arquivo
  * quase vazio, com um título só do original, não passa: tem poucas seções e poucas linhas.
  */
 export function comparacaoComOriginal(original: string, novo: string) {
@@ -186,7 +186,7 @@ export function comparacaoComOriginal(original: string, novo: string) {
   };
 }
 
-/** O arquivo da reanálise tem de ter ao menos esta fração dos títulos do analisado, das seções e das linhas. */
+/** O arquivo da nova revisão tem de ter ao menos esta fração dos títulos do revisado, das seções e das linhas. */
 export const SEMELHANCA_MINIMA = 0.6;
 export const TAMANHO_MINIMO = 0.7;
 
@@ -198,7 +198,7 @@ export const DIAS_LISTA = 30;
 const ROTULO_ACAO: Record<"aberta" | "vou_ajustar" | "resolvida", string> = {
   aberta: "Reaberta por você.",
   vou_ajustar: "Você marcou que vai ajustar.",
-  resolvida: "Você marcou como resolvida (sem reanálise do arquivo).",
+  resolvida: "Você marcou como resolvida (sem nova revisão do arquivo).",
 };
 
 /** Os turnos anteriores, em frases fixas do app: o texto da IA não volta fora das marcas. */
@@ -233,7 +233,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   const tempoAcao = opcoes.tempoAcao ?? TEMPO_ACAO;
   const listas = yield* Listas;
   const revisoes = yield* Revisoes;
-  const analise = yield* AnalisePpc;
+  const revisor = yield* RevisorPpc;
   const contextoKb = yield* Effect.context<FontesNormativas | SqlClient.SqlClient>();
   const contextoMotor = yield* Effect.context<Motor.Motor>();
   const contextoListas = yield* Effect.context<Listas>();
@@ -246,7 +246,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     listas.buscar(id).pipe(
       Effect.filterOrFail(
         (l): l is RegistroLista => l !== null,
-        () => falha("", "Esta lista de pendências não existe mais. Analise o PPC de novo."),
+        () => falha("", "Esta lista de pendências não existe mais. Revise o PPC de novo."),
       ),
     );
 
@@ -339,13 +339,13 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       ),
     );
 
-  /* ------------------------------------------------------------ analisar, marcar, paradas */
+  /* ------------------------------------------------------------ revisar, marcar, paradas */
 
-  const analisar = Effect.fn("ListaViva.analisar")(function* (entrada: EntradaAnalise) {
-    const analisado = yield* analise.analisarCompleto(entrada);
+  const revisar = Effect.fn("ListaViva.revisar")(function* (entrada: EntradaRevisao) {
+    const revisado = yield* revisor.revisarCompleto(entrada);
     return yield* criarLista({
       arquivo: entrada.arquivo,
-      analisado,
+      revisado,
       revisao: null,
       provider: null,
       modelo: null,
@@ -379,14 +379,14 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   const estimar = Effect.fn("ListaViva.estimar")(function* (
     id: string,
     chave: string,
-    acao: "contestar" | "sugerir" | "reanalisar",
+    acao: "contestar" | "sugerir" | "revisarDeNovo",
     pedido?: Provider,
   ) {
     const registro = yield* buscar(id);
     const p = yield* pendenciaDe(registro, chave);
     const { provider } = provedor(registro, pedido);
-    // A reanálise de uma ficha do código não usa IA.
-    if (acao === "reanalisar" && p.pendencia.origem === "codigo")
+    // A nova revisão de uma ficha do código não usa IA.
+    if (acao === "revisarDeNovo" && p.pendencia.origem === "codigo")
       return { provider, tokensEntrada: 0, tokensSaida: 0, segundos: 5, custoUsd: 0 } satisfies EstimativaAcao;
     // A contestação de uma pendência do código não vai à IA.
     if (acao === "contestar" && p.pendencia.origem === "codigo")
@@ -400,7 +400,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
           ? pedidoSugestao(prefixo, [])
           : pedidoS(
               {
-                id: "reanalise",
+                id: "revisarDeNovo",
                 tipo: "S",
                 tema: p.pendencia.tema,
                 ordemTema: p.pendencia.ordemTema,
@@ -583,13 +583,13 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     (e) => comIa("", e),
   );
 
-  /* ------------------------------------------------------------ reanalisar */
+  /* ------------------------------------------------------------ revisarDeNovo */
 
-  const reanalisar = Effect.fn("ListaViva.reanalisar")(
+  const revisarDeNovo = Effect.fn("ListaViva.revisarDeNovo")(
     function* (id: string, chave: string, arquivo: string, pedido?: Provider) {
       const registro = yield* buscar(id);
       const p = yield* pendenciaDe(registro, chave);
-      const novo = yield* analise.revisarArquivo({
+      const novo = yield* revisor.revisarArquivo({
         arquivo,
         gravar: false,
         ...(registro.cnct === null ? {} : { cnct: registro.cnct }),
@@ -598,7 +598,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       if (novo.sha256 === registro.sha256)
         return yield* falha(
           arquivo,
-          "É o mesmo arquivo analisado. Salve as mudanças no Word e escolha o arquivo atualizado.",
+          "É o mesmo arquivo revisado. Salve as mudanças no Word e escolha o arquivo atualizado.",
         );
       const nome = arquivo.split(/[\\/]/).at(-1) ?? arquivo;
       // Parece outro documento: outro curso (CNCT, forma) ou poucos títulos de seção em comum. Não marca nada.
@@ -609,9 +609,9 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       const motivo = outroCurso
         ? "outro curso ou outra forma de oferta"
         : comparacao.titulosEmComum < SEMELHANCA_MINIMA
-          ? `só ${Math.round(comparacao.titulosEmComum * 100)}% dos títulos de seção do analisado`
+          ? `só ${Math.round(comparacao.titulosEmComum * 100)}% dos títulos de seção do revisado`
           : comparacao.secoes < TAMANHO_MINIMO || comparacao.linhas < TAMANHO_MINIMO
-            ? `${Math.round(Math.min(comparacao.secoes, comparacao.linhas) * 100)}% do tamanho do analisado`
+            ? `${Math.round(Math.min(comparacao.secoes, comparacao.linhas) * 100)}% do tamanho do revisado`
             : null;
       if (motivo !== null)
         return yield* falha(
@@ -624,7 +624,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         .filter((x) => x.ficha === "TRIAGEM")
         .map((x) => ({ chave: chavePendencia(x), pendencia: x }))
         .filter((x) => !existentes.has(x.chave));
-      if (novasTriagem.length) yield* listas.acrescentar(id, novasTriagem, `Apareceu na reanálise de ${nome}.`);
+      if (novasTriagem.length) yield* listas.acrescentar(id, novasTriagem, `Apareceu na nova revisão de ${nome}.`);
       const ficha = p.pendencia.ficha;
       let resolvida: boolean;
       let texto: string;
@@ -634,14 +634,14 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         const ainda = novo.revisao.pendencias.filter((x) => x.ficha === ficha && x.origem === "codigo");
         resolvida = ainda.length === 0;
         texto = resolvida
-          ? `Conferida na reanálise de ${nome}: o critério não aponta mais nada.`
-          : `A reanálise de ${nome} ainda aponta: ${ponto(ainda[0]!.mensagem.split("\n")[0]!)}`;
+          ? `Conferida na nova revisão de ${nome}: o critério não aponta mais nada.`
+          : `A nova revisão de ${nome} ainda aponta: ${ponto(ainda[0]!.mensagem.split("\n")[0]!)}`;
       } else {
         const { provider, modelo } = provedor(registro, pedido);
         const ctx = yield* contextoPara(registro, ficha, novo.revisao.markdown, novo.revisao.linhasTextoParaIa);
-        const nonceReanalise = novoNonce();
+        const nonceRevisarDeNovo = novoNonce();
         const bloco = {
-          id: `reanalise-${ficha.toLowerCase()}`,
+          id: `revisar-de-novo-${ficha.toLowerCase()}`,
           tipo: "S" as const,
           tema: p.pendencia.tema,
           ordemTema: p.pendencia.ordemTema,
@@ -652,36 +652,36 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
           [ctx.ficha],
           new Map([[ficha, ctx.proprio]]),
           ctx.contexto,
-          nonceReanalise,
+          nonceRevisarDeNovo,
           ctx.comum,
         );
         const julgado = yield* julgarBloco({
           provider,
           modelo,
-          nonce: nonceReanalise,
+          nonce: nonceRevisarDeNovo,
           bloco,
           fichas: [ctx.ficha],
           pedido: pedidoTexto,
           fontes: new Set(ctx.fontes),
           tempoTurno: tempoAcao,
           revisaoHumana: teveTextoParaIa(retirarTextoParaIa(novo.revisao.markdown, novo.revisao.linhasTextoParaIa)),
-          registrarTentativa: (t) => listas.gravarAcao(id, chave, { acao: "reanalisar", ...t }),
+          registrarTentativa: (t) => listas.gravarAcao(id, chave, { acao: "revisarDeNovo", ...t }),
         }).pipe(Effect.provideContext(contextoMotor));
         const r: ResultadoFichaIa = julgado.resultado.resultados[0]!;
         uso = julgado.uso;
         resolvida = r.estado !== "FALHOU" && estadoDaIa(r) === null;
         texto = resolvida
-          ? `Conferida na reanálise de ${nome}: a IA avaliou o critério de novo e o app conferiu o trecho.`
+          ? `Conferida na nova revisão de ${nome}: a IA avaliou o critério de novo e o app conferiu o trecho.`
           : r.estado === "FALHOU"
-            ? `A reanálise de ${nome} não pôde ser conferida (${r.motivoFalha ?? "resposta fora do formato"}); a pendência continua.`
-            : `A reanálise de ${nome} ainda aponta: ${ponto(r.justificativa)}`;
+            ? `A nova revisão de ${nome} não pôde ser conferida (${r.motivoFalha ?? "resposta fora do formato"}); a pendência continua.`
+            : `A nova revisão de ${nome} ainda aponta: ${ponto(r.justificativa)}`;
       }
       const situacao: SituacaoPendencia = resolvida ? "resolvida" : "aberta";
       yield* listas.mudar(
         id,
         chave,
-        { situacao, resolvidaPor: "reanalise" },
-        { acao: "reanalisar", situacao, texto, uso },
+        { situacao, resolvidaPor: "revisarDeNovo" },
+        { acao: "revisarDeNovo", situacao, texto, uso },
       );
       return yield* lista(id);
     },
@@ -701,9 +701,9 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       const ultimaContestacao = eventos.filter((e) => e.chave === p.chave && e.acao === "contestar").at(-1);
       const nota =
         p.situacao === "resolvida"
-          ? p.resolvidaPor === "reanalise"
-            ? "Conferida na reanálise do arquivo atualizado."
-            : "Marcada pela coordenação, sem reanálise."
+          ? p.resolvidaPor === "revisarDeNovo"
+            ? "Conferida na nova revisão do arquivo atualizado."
+            : "Marcada pela coordenação, sem nova revisão."
           : p.situacao === "contestada_mantida" && ultimo?.acao === "contestar"
             ? ultimo.texto.replace(/^Mantida: /, "Resposta da revisão: ")
             : p.situacao === "contestada_aceita" && ultimaContestacao
@@ -712,8 +712,8 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       situacoes[p.chave] = {
         situacao: p.situacao,
         ...(nota ? { nota } : {}),
-        // Só a pendência confirmada pela reanálise sai do documento.
-        ...(p.situacao === "resolvida" && p.resolvidaPor === "reanalise" ? { foraDoDocumento: true } : {}),
+        // Só a pendência confirmada pela nova revisão sai do documento.
+        ...(p.situacao === "resolvida" && p.resolvidaPor === "revisarDeNovo" ? { foraDoDocumento: true } : {}),
       };
     }
     // A lista da revisão com IA: os resultados conferidos da IA entram de novo, como na conclusão.
@@ -727,7 +727,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         fora: plano?.fora ?? [],
       };
     }
-    const final = yield* analise.revisarArquivo({
+    const final = yield* revisor.revisarArquivo({
       arquivo: registro.arquivo,
       gravar: true,
       sha256: registro.sha256,
@@ -783,7 +783,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   yield* expirar;
 
   return ListaViva.of({
-    analisar,
+    revisar,
     lista,
     ultima,
     apagar: listas.apagar,
@@ -793,10 +793,10 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
     estimar,
     contestar,
     sugerir,
-    reanalisar,
+    revisarDeNovo,
     gerarCopia,
   });
 });
 
-/** Pede as `Listas`, as `Revisoes`, a `AnalisePpc`, o `Motor`, as `FontesNormativas` e o `SqlClient` do `kb.sqlite`. */
+/** Pede as `Listas`, as `Revisoes`, o `RevisorPpc`, o `Motor`, as `FontesNormativas` e o `SqlClient` do `kb.sqlite`. */
 export const layer = (opcoes: OpcoesListaViva = {}) => Layer.effect(ListaViva, make(opcoes));

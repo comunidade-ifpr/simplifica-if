@@ -1,6 +1,6 @@
 // @effect-diagnostics nodeBuiltinImport:off globalDate:off -- ponto de entrada do Worker: `worker_threads` e o relógio vindo do pedido
 /**
- * O Worker da revisão prévia (`AnalisePpc.ts`): recebe um pedido, roda `revisarDocx` (conversão,
+ * O Worker da revisão prévia (`RevisorPpc.ts`): recebe um pedido, roda `revisarDocx` (conversão,
  * pré-conferência e comentários, tudo síncrono e com a árvore do XML na memória) e devolve o
  * resultado, com os bytes do DOCX comentado transferidos, não copiados.
  *

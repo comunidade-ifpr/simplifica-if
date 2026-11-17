@@ -147,7 +147,7 @@ type DispositivoTexto = {
 | 11 | `listar_cursos` | Listar cursos | `cursos` | sim |
 | 12 | `ficha_curso` | Ficha do curso | nova, composta | depende de 6 e 8 |
 | 13 | `fatos_ppc` | Fatos do PPC × SUAP | `ppc-fatos` | sim |
-| 14 | `pacote_contexto` | Contexto da análise de PPC | `pacote-contexto` | quase (T0) |
+| 14 | `pacote_contexto` | Contexto da revisão de PPC | `pacote-contexto` | quase (T0) |
 | 15 | `sobre_a_base` | Sobre a base | nova | sim |
 | 16 | `etapa` | Etapa da tarefa | nova | não se aplica |
 

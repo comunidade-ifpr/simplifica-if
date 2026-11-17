@@ -3,7 +3,7 @@
  * `RevisaoIa`: a revisão completa de um PPC com a IA da conta da pessoa (M1.11, etapa 4), conduzida
  * pelo servidor, não pelo provider.
  *
- * 1. **Preparar** (`prepararIa`, sem IA): o arquivo é convertido de novo no Worker da `AnalisePpc` (o
+ * 1. **Preparar** (`prepararIa`, sem IA): o arquivo é convertido de novo no Worker do `RevisorPpc` (o
  *    mesmo da pré-conferência), o `preparo.ts` monta os blocos (lotes S, temas J, transversais) e o
  *    texto de cada pedido com o contexto do `kb.sqlite`, e a estimativa sai do tamanho real dos
  *    pedidos. O plano fica gravado (`Revisoes`).
@@ -42,7 +42,7 @@ import { MODELO_PADRAO } from "@simplifica-if/ppc/revisao-ia/tipos";
 import { NOME_DA_FORMA, type ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 import { type RegistroRevisaoIa, Revisoes } from "../persistencia/Revisoes.ts";
 import type { Listas } from "../persistencia/Listas.ts";
-import { AnalisePpc } from "./AnalisePpc.ts";
+import { RevisorPpc } from "./RevisorPpc.ts";
 import { criarLista } from "./ListaViva.ts";
 import { julgarBloco, type PausaRevisao, type ResultadoBloco } from "./julgamento.ts";
 import { type PlanoRevisaoIa, preparar } from "./preparo.ts";
@@ -94,7 +94,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   const tempoTurno = opcoes.tempoTurno ?? TEMPO_TURNO;
   const criterio = opcoes.criterio ?? CRITERIO_PADRAO;
   const revisoes = yield* Revisoes;
-  const analise = yield* AnalisePpc;
+  const revisor = yield* RevisorPpc;
   const contextoKb = yield* Effect.context<FontesNormativas | SqlClient.SqlClient>();
   const contextoMotor = yield* Effect.context<Motor.Motor>();
   const contextoListas = yield* Effect.context<Listas>();
@@ -169,17 +169,17 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   /* ------------------------------------------------------------ preparar */
 
   const prepararRevisao = Effect.fn("RevisaoIa.preparar")(function* (entrada: EntradaPreparoIa) {
-    const analisado = yield* analise.revisarArquivo({
+    const revisado = yield* revisor.revisarArquivo({
       arquivo: entrada.arquivo,
       gravar: false,
       ...(entrada.cnct === undefined ? {} : { cnct: entrada.cnct }),
       ...(entrada.forma === undefined ? {} : { forma: entrada.forma }),
     });
-    const curso = analisado.revisao.curso;
+    const curso = revisado.revisao.curso;
     const nonce = NodeCrypto.randomBytes(8).toString("hex");
     const plano = yield* preparar({
-      markdown: analisado.revisao.markdown,
-      linhasTextoParaIa: analisado.revisao.linhasTextoParaIa,
+      markdown: revisado.revisao.markdown,
+      linhasTextoParaIa: revisado.revisao.linhasTextoParaIa,
       cnct: curso.cnct?.slug ?? null,
       curso: curso.cnct
         ? `${curso.cnct.denominacao}${curso.forma ? `, forma de oferta ${NOME_DA_FORMA[curso.forma] ?? curso.forma}` : ", forma de oferta não identificada"}`
@@ -205,7 +205,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     yield* revisoes.criar({
       id,
       arquivo: entrada.arquivo,
-      sha256: analisado.sha256,
+      sha256: revisado.sha256,
       provider: entrada.provider,
       modelo: entrada.modelo ?? MODELO_PADRAO[entrada.provider] ?? null,
       modo: entrada.modo,
@@ -289,7 +289,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
 
     // Concluir: a pré-conferência de novo, com os resultados conferidos da IA, no mesmo DOCX.
     const resultadosIa: ResultadoFichaIa[] = [...prontos.values()].flatMap((r) => r.resultados);
-    const final = yield* analise.revisarArquivo({
+    const final = yield* revisor.revisarArquivo({
       arquivo: registro.arquivo,
       gravar: true,
       sha256: registro.sha256,
@@ -300,7 +300,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     // A lista viva (etapa 5b) desta revisão: a situação marcada na pré-conferência do mesmo arquivo passa a ela.
     const resultado = yield* criarLista({
       arquivo: registro.arquivo,
-      analisado: final,
+      revisado: final,
       revisao: id,
       provider: registro.provider,
       modelo: registro.modelo,
@@ -388,5 +388,5 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   });
 });
 
-/** Pede o `Motor`, a `AnalisePpc`, as `Revisoes`, as `FontesNormativas` e o `SqlClient` do `kb.sqlite`. */
+/** Pede o `Motor`, o `RevisorPpc`, as `Revisoes`, as `FontesNormativas` e o `SqlClient` do `kb.sqlite`. */
 export const layer = (opcoes: OpcoesRevisaoIa = {}) => Layer.effect(RevisaoIa, make(opcoes));

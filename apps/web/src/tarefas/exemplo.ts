@@ -2,7 +2,7 @@
  * A tarefa de exemplo do terceiro passo das boas-vindas (M1.8): a mais útil para o perfil, que gaste
  * pouco da cota.
  *
- * - Para quem cuida de PPC (coordenação, pedagogia, direção de ensino, PROENS/DENS): "Analisar um PPC"
+ * - Para quem cuida de PPC (coordenação, pedagogia, direção de ensino, PROENS/DENS): "Revisar um PPC"
  *   com o PPC do próprio curso. A pré-conferência roda no computador, sem IA e sem gastar a cota; a
  *   revisão com IA é opcional e mostra a estimativa antes.
  * - Para os demais, e como segunda opção: "Conferir a fundamentação normativa" de um trecho real e curto
@@ -24,7 +24,7 @@ export const PEDIDO_EXEMPLO = `Confira a fundamentação normativa deste trecho 
 
 export type Exemplo =
   | {
-      readonly tipo: "analisar-ppc";
+      readonly tipo: "revisar-ppc";
       readonly titulo: string;
       readonly frase: string;
       readonly custo: string;
@@ -59,8 +59,8 @@ export function exemplosDoPerfil(
     : [];
   const curso = perfil?.cursos[0]?.nome;
   const ppc: Exemplo = {
-    tipo: "analisar-ppc",
-    titulo: curso === undefined ? "Analisar um PPC" : `Analisar o PPC de ${curso}`,
+    tipo: "revisar-ppc",
+    titulo: curso === undefined ? "Revisar um PPC" : `Revisar o PPC de ${curso}`,
     frase:
       "Escolha o arquivo .docx do PPC. O app o confere com as normas, o CNCT e a matriz da base e devolve uma cópia do documento com comentários.",
     custo: "Alguns segundos. A pré-conferência roda no computador, sem IA: não gasta a sua cota.",

@@ -14,7 +14,7 @@
  *   na CLI) ou drivers de teste.
  * - **Skills do app** (`CatalogoSkills.ts`): as da pasta `pastaSkills` com bloco `simplifica:` válido,
  *   entregues a toda conversa e listadas por `skills.listar`.
- * - **Revisão prévia de PPC** (`revisao-ppc/AnalisePpc.ts`): DOCX → pendências e cópia comentada, sem
+ * - **Revisão prévia de PPC** (`revisao-ppc/RevisorPpc.ts`): DOCX → pendências e cópia comentada, sem
  *   IA, num `Worker` com limite de memória e de tempo, sobre a base do mesmo `kb.sqlite`.
  * - **Leitura** (`GrupoLeitura`) sobre o `kb.sqlite`, só leitura: o mesmo serviço `Leitura` (uma
  *   conexão só ao banco) atende o RPC e o MCP HTTP (`McpHttp.layerSobreLeitura`).
@@ -55,7 +55,7 @@ import * as Relatos from "./Relatos.ts";
 import * as Banco from "./persistencia/Banco.ts";
 import * as Historico from "./persistencia/Historico.ts";
 import * as Preferencias from "./persistencia/Preferencias.ts";
-import * as AnalisePpc from "./revisao-ppc/AnalisePpc.ts";
+import * as RevisorPpc from "./revisao-ppc/RevisorPpc.ts";
 import * as ListaViva from "./revisao-ppc/ListaViva.ts";
 import * as RevisaoIa from "./revisao-ppc/RevisaoIa.ts";
 import * as Listas from "./persistencia/Listas.ts";
@@ -88,15 +88,15 @@ export interface Opcoes {
    * `<Resources>/skills` no app empacotado. Sem ela, as conversas não recebem skills.
    */
   readonly pastaSkills?: string;
-  /** Limites e script do Worker da revisão prévia (`AnalisePpc.LIMITES`); os testes os apertam. */
-  readonly revisaoPpc?: AnalisePpc.OpcoesAnalise;
+  /** Limites e script do Worker da revisão prévia (`RevisorPpc.LIMITES`); os testes os apertam. */
+  readonly revisaoPpc?: RevisorPpc.OpcoesRevisao;
   /** Paralelismo e tempo por turno da revisão com IA (`RevisaoIa.PARALELISMO`); os testes os mudam. */
   readonly revisaoIa?: RevisaoIa.OpcoesRevisaoIa;
   /** Tempo máximo de uma ação com IA sobre uma pendência (`ListaViva.TEMPO_ACAO`). */
   readonly listaViva?: { readonly tempoAcao?: Duration.Duration };
   /**
    * O segredo do processo principal do desktop (`EnvelopePartida.tokenDesktop`). Com ele, a revisão
-   * prévia só analisa arquivos liberados em `CAMINHO_LIBERAR_ARQUIVO`.
+   * prévia só revisa arquivos liberados em `CAMINHO_LIBERAR_ARQUIVO`.
    */
   readonly tokenDesktop?: Redacted.Redacted<string>;
   /**
@@ -134,20 +134,20 @@ export interface OpcoesAtualizacao {
   readonly automatico?: boolean;
 }
 
-/** O serviço de atualização sobre as análises e conversas em curso (a troca espera) e as skills do catálogo. */
+/** O serviço de atualização sobre as revisões e conversas em curso (a troca espera) e as skills do catálogo. */
 const layerAtualizador = (opcoes: Opcoes) =>
   Layer.effect(
     Atualizador.Atualizador,
     Effect.gen(function* () {
-      const analise = yield* AnalisePpc.AnalisePpc;
+      const revisor = yield* RevisorPpc.RevisorPpc;
       const ia = yield* RevisaoIa.RevisaoIa;
       const conversas = yield* Conversas.Conversas;
       const catalogo = yield* CatalogoSkills.CatalogoSkills;
       const pastas = yield* PastasTrabalho.PastasTrabalho;
-      // A troca reinicia o servidor: espera análise, revisão com IA, conversa respondendo (as de
+      // A troca reinicia o servidor: espera a revisão prévia, a revisão com IA, conversa respondendo (as de
       // tarefa do M1.9 incluídas: são conversas com `tarefa`) e o Desfazer ou a cópia da pasta.
       const ocupado = Effect.gen(function* () {
-        if (yield* analise.ocupada) return true;
+        if (yield* revisor.ocupada) return true;
         if (yield* pastas.emAndamento) return true;
         if ((yield* ia.listar).some((revisao) => revisao.situacao === "em_andamento")) return true;
         return (yield* conversas.listar).some((conversa) => conversa.estado === "respondendo");
@@ -225,7 +225,7 @@ export class ServidorApp extends Context.Service<
 const layerRotaRpc = Layer.unwrap(
   Effect.gen(function* () {
     const autenticacao = yield* Autenticacao.Autenticacao;
-    const analise = yield* AnalisePpc.AnalisePpc;
+    const revisor = yield* RevisorPpc.RevisorPpc;
     const { protocol, httpEffect } = yield* RpcServer.makeProtocolWithHttpEffectWebsocket;
     // Como o T3 (`WS_RPC_SERVER_OPTIONS`): um defeito num handler não derruba as outras chamadas. A
     // conexão que cai não encerra conversa: elas não dependem da conexão (`Conversas.ts`).
@@ -256,7 +256,7 @@ const layerRotaRpc = Layer.unwrap(
           const arquivo = Option.isSome(corpo) ? (corpo.value as { arquivo?: unknown } | null)?.arquivo : undefined;
           if (typeof arquivo !== "string" || !NodePath.isAbsolute(arquivo))
             return HttpServerResponse.empty({ status: 400 });
-          yield* analise.liberar(arquivo);
+          yield* revisor.liberar(arquivo);
           return HttpServerResponse.empty({ status: 204 });
         }),
       ),
@@ -305,7 +305,7 @@ export const layer = (opcoes: Opcoes) => {
     Layer.provideMerge(RevisaoIa.layer(opcoes.revisaoIa)),
     Layer.provideMerge(Revisoes.layer.pipe(Layer.provide(banco))),
     Layer.provideMerge(Listas.layer.pipe(Layer.provide(banco))),
-    Layer.provideMerge(AnalisePpc.layer({ ...opcoes.revisaoPpc, exigirLiberacao: opcoes.tokenDesktop !== undefined })),
+    Layer.provideMerge(RevisorPpc.layer({ ...opcoes.revisaoPpc, exigirLiberacao: opcoes.tokenDesktop !== undefined })),
     Layer.provideMerge(Motor.layer),
     Layer.provideMerge(Historico.layer.pipe(Layer.provide(banco))),
     Layer.provideMerge(

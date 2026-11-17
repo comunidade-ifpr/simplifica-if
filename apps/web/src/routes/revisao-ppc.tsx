@@ -1,5 +1,5 @@
 /**
- * "Analisar um PPC" (M1.11, etapas 3 e 4): a revisão prévia sem IA e, depois dela, a revisão completa
+ * "Revisar um PPC" (M1.11, etapas 3 e 4): a revisão prévia sem IA e, depois dela, a revisão completa
  * com a IA da conta da pessoa (`RevisaoComIa`), cujo resultado substitui o da pré-conferência. A pessoa escolhe o `.docx` no diálogo
  * do sistema; o servidor converte, confere os critérios que o código decide e grava uma cópia com
  * comentários do Word ao lado do original. A tela mostra o andamento, a lista de pendências por tema
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/revisao-ppc")({ component: RevisaoPpc });
 
 type Estado =
   | { readonly fase: "escolha" }
-  | { readonly fase: "analisando"; readonly arquivo: string }
+  | { readonly fase: "revisando"; readonly arquivo: string }
   | { readonly fase: "erro"; readonly erro: MensagemErro }
   | { readonly fase: "pronta"; readonly resultado: ResultadoRevisaoPpc }
   /** Uma revisão com IA não concluída, reencontrada depois de recarregar a tela. */
@@ -66,10 +66,10 @@ function RevisaoPpc() {
       ativo = false;
     };
   }, [api]);
-  const analisar = async (arquivo: string) => {
-    setEstado({ fase: "analisando", arquivo });
+  const revisar = async (arquivo: string) => {
+    setEstado({ fase: "revisando", arquivo });
     try {
-      const resultado = await api.chamar((cliente) => cliente["revisaoPpc.analisar"]({ arquivo }));
+      const resultado = await api.chamar((cliente) => cliente["revisaoPpc.revisar"]({ arquivo }));
       setEstado({ fase: "pronta", resultado });
     } catch (erro) {
       setEstado({ fase: "erro", erro: explicarErro(erro) });
@@ -79,7 +79,7 @@ function RevisaoPpc() {
     <div className="h-full overflow-y-auto">
       <div className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
         <section className="flex flex-col gap-2">
-          <h1 className="font-bold text-2xl tracking-tight">Analisar um PPC</h1>
+          <h1 className="font-bold text-2xl tracking-tight">Revisar um PPC</h1>
           <p className="max-w-prose text-muted-foreground">
             Revisão prévia, sem IA: o Simplifica IF confere no seu PPC os critérios que dá para conferir automaticamente
             e devolve uma cópia do arquivo com comentários do Word nos trechos. O seu arquivo não é alterado. Não é
@@ -87,8 +87,8 @@ function RevisaoPpc() {
           </p>
         </section>
         <Escolha
-          ocupada={estado.fase === "analisando"}
-          aoEscolher={analisar}
+          ocupada={estado.fase === "revisando"}
+          aoEscolher={revisar}
           aoFalhar={(erro) =>
             setEstado({
               fase: "erro",
@@ -114,9 +114,9 @@ function RevisaoPpc() {
             </Button>
           </div>
         ) : null}
-        {estado.fase === "analisando" ? (
+        {estado.fase === "revisando" ? (
           <div role="status" className="flex items-center gap-2 text-muted-foreground">
-            <Spinner /> Analisando {nomeDoArquivo(estado.arquivo)}: convertendo o documento e conferindo os critérios…
+            <Spinner /> Revisando {nomeDoArquivo(estado.arquivo)}: convertendo o documento e conferindo os critérios…
           </div>
         ) : null}
         {estado.fase === "erro" ? <AvisoErro erro={estado.erro} icone /> : null}
@@ -205,7 +205,7 @@ function Escolha({
           onChange={(evento) => setCaminho(evento.currentTarget.value)}
         />
         <Button type="submit" disabled={ocupada}>
-          Analisar
+          Revisar
         </Button>
       </div>
     </form>
