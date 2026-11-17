@@ -19,8 +19,10 @@ function main(): number {
 
   const caminhos = criarCaminhos();
   const hoje = dataLocalIso();
-  const atualizadoEm = args.values.check ? dataIndiceAtual(caminhos, hoje) : hoje;
-  const indices = gerarIndices(caminhos, atualizadoEm);
+  // A data só avança quando o conteúdo muda: regenerar sem mudança não deixa diferença no git.
+  const anterior = dataIndiceAtual(caminhos, hoje);
+  let indices = gerarIndices(caminhos, anterior);
+  if (!args.values.check && verificarIndices(caminhos, indices).length) indices = gerarIndices(caminhos, hoje);
   const resumo = `${indices.itensPpc.length} PPCs, ${indices.itensSecao.length} seções.`;
 
   if (args.values.check) {
