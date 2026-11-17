@@ -88,7 +88,7 @@ O `CatalogoSkills` (`src/CatalogoSkills.ts`) lê a `--pasta-skills` uma vez, na 
 - **Quais entram:** só as skills com bloco `simplifica:` válido no front matter do `SKILL.md` (`titulo`, `resumo`, `area`, `ferramentas` só do `simplifica-mcp`, `arquivos`; o resto do manifesto do plano é opcional). Skill sem o bloco fica no repositório, sem aviso. Bloco inválido, `name` diferente da pasta ou arquivo listado que falta: a skill fica de fora, com o erro no log; as outras seguem. A pasta que não pode ser lida impede a abertura (`PastaSkillsInvalida`).
 - **O que vai ao motor:** `Motor.Skill` com o `name`, a `description`, o corpo do `SKILL.md` como instruções e só os arquivos de `simplifica.arquivos`.
 - **Quando:** toda sessão aberta pelas `Conversas` (nova, retomada pelo provider ou recomeçada com o histórico) leva todas as skills do catálogo em `ConfigSessao.skills`. O motor grava `<pasta>/.simplifica/skills/<nome>/` e põe nas instruções da sessão só o nome, a descrição e o caminho de cada `SKILL.md`; o provider o lê quando o pedido combina, e a leitura dentro da pasta de trabalho passa pela política sem perguntar.
-- Uma skill editada só vale depois de reiniciar o servidor. No app, as skills chegam pela atualização (M1.10).
+- Uma skill editada só vale depois de reiniciar o servidor. No app, as skills chegam pela atualização (M1.10): o catálogo lê também a pasta baixada (`<pasta do app>/skills/<versao>/`) e fica, de cada skill, com a de `simplifica.versao` maior; no empate, a empacotada.
 
 Hoje é uma: `verificar-fundamentacao-normativa`.
 
@@ -105,6 +105,19 @@ Hoje é uma: `verificar-fundamentacao-normativa`.
 - **Sem seguir links:** a varredura vê os links (no retrato, como `link`) e nunca os copia. Ao restaurar, cada componente do caminho é conferido com `lstat`; um link no lugar de pasta ou arquivo é removido e trocado, nunca seguido. O arquivo é gravado num temporário novo na mesma pasta (`O_EXCL`, `O_NOFOLLOW`) e trocado por `rename`, com o caminho real conferido antes (`gravarSemSeguirLinks`, `removerSemSeguirLinks`).
 - **Tarefa:** `conversa.iniciar` só aceita uma skill do catálogo ou `conversa` (`TarefaDesconhecida`); o nome entra na instrução do primeiro turno.
 - **Anexar:** só `EXTENSOES_DOCUMENTO` (do contrato), também quando o servidor não exige a liberação.
+
+## Atualização da base e das skills (M1.10)
+
+Com `--pasta-atualizacao <pasta do app>` (o desktop passa no app instalado), a CLI, antes de abrir a base, atende a troca pendente (`prepararAbertura` de `@simplifica-if/atualizacao/local`) e abre a mais nova entre a baixada e a do `--banco`. O serviço `Atualizador` confere o feed da política (`POLITICA_FABRICA.atualizacao`) na abertura e a cada 24 h e responde o grupo `atualizacao.*` (`estado`, `procurar`, `trocarCanal`, `aplicar`, `voltar`, `novidadesVistas`). `aplicar` e `voltar` respondem `adiada` enquanto uma análise de PPC, uma revisão com IA ou uma conversa respondendo roda; senão, `reiniciar`, e a interface pede ao desktop para reiniciar o servidor.
+
+| Argumento | Variável | Uso |
+|---|---|---|
+| `--pasta-atualizacao` | `SIMPLIFICA_ATUALIZACAO_PASTA` | liga a atualização, gravando nesta pasta |
+| `--feed-atualizacao` | `SIMPLIFICA_ATUALIZACAO_FEED` | feed no lugar do da política (com `{canal}`) |
+| `--chave-atualizacao` | `SIMPLIFICA_ATUALIZACAO_CHAVE` | chave pública minisign no lugar da da política |
+| `--versao-app` | | a versão do app, para o `app_minimo` do manifesto |
+
+Sem feed ou sem chave (a política ainda não tem os de produção), o estado diz o motivo e nada sai para a rede. O mecanismo, a fábrica e o passo a passo de produção estão em [`packages/atualizacao`](../../packages/atualizacao/README.md). Teste: `test/atualizacao.test.ts` (o servidor de verdade pelo RPC, com um canal gerado pela fábrica e servido em 127.0.0.1).
 
 ## Revisão prévia de PPC (M1.11, etapa 3)
 

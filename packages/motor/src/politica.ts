@@ -12,6 +12,7 @@
  * Fica para depois (decisão em aberto 9): um arquivo de política da máquina, gerido pela DTI, que só
  * restringe esta.
  */
+import { ATUALIZACAO_FABRICA } from "./politica-atualizacao.ts";
 import * as NodePath from "node:path";
 import * as Schema from "effect/Schema";
 import { Provider } from "./eventos.ts";
@@ -77,6 +78,13 @@ export const Politica = Schema.Struct({
   }),
   /** Telemetria dos providers: desligada; nada sai além do que a conversa precisa. */
   telemetria: Schema.Literals(["desligada"]),
+  /** Atualização (M1.10): o app só aceita pacote assinado do feed próprio. Ver `politica-atualizacao.ts`. */
+  atualizacao: Schema.Struct({
+    feed: Schema.NullOr(Schema.String),
+    canal: Schema.Literals(["beta", "estavel"]),
+    chavePublica: Schema.NullOr(Schema.String),
+    app: Schema.Literals(["se-assinado", "nunca"]),
+  }),
 });
 export type Politica = typeof Politica.Type;
 
@@ -108,6 +116,7 @@ export const POLITICA_FABRICA: Politica = congelar(
     codex: { sandbox: "read-only", aprovacao: "on-request" },
     isolamento: { configuracaoDoUsuario: "desligada", buscaWeb: "desligada" },
     telemetria: "desligada",
+    atualizacao: ATUALIZACAO_FABRICA,
   }),
 );
 
@@ -131,6 +140,7 @@ export const POLITICA_JULGAMENTO: Politica = congelar(
     codex: { sandbox: "read-only", aprovacao: "on-request" },
     isolamento: { configuracaoDoUsuario: "desligada", buscaWeb: "desligada" },
     telemetria: "desligada",
+    atualizacao: ATUALIZACAO_FABRICA,
   }),
 );
 

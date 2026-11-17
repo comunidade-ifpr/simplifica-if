@@ -13,7 +13,15 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
-import { GrupoConversa, GrupoPasta, GrupoProviders, GrupoRevisaoPpc, GrupoSkills } from "@simplifica-if/contratos-app";
+import { Atualizador } from "./Atualizador.ts";
+import {
+  GrupoAtualizacao,
+  GrupoConversa,
+  GrupoPasta,
+  GrupoProviders,
+  GrupoRevisaoPpc,
+  GrupoSkills,
+} from "@simplifica-if/contratos-app";
 import { layerHandlersRpc } from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
 import { CatalogoSkills } from "./CatalogoSkills.ts";
@@ -126,8 +134,22 @@ const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
   }),
 );
 
+const layerAtualizacao = GrupoAtualizacao.toLayer(
+  Effect.gen(function* () {
+    const atualizador = yield* Atualizador;
+    return GrupoAtualizacao.of({
+      "atualizacao.estado": () => atualizador.estado,
+      "atualizacao.procurar": () => atualizador.procurar,
+      "atualizacao.trocarCanal": ({ canal }) => atualizador.trocarCanal(canal),
+      "atualizacao.aplicar": () => atualizador.aplicar,
+      "atualizacao.voltar": () => atualizador.voltar,
+      "atualizacao.novidadesVistas": () => atualizador.novidadesVistas,
+    });
+  }),
+);
+
 /**
- * Os handlers dos cinco grupos; pede o `Motor`, as `Conversas`, o `CatalogoSkills`, a `AnalisePpc`, a
+ * Os handlers dos seis grupos (mais o `Atualizador`); pede o `Motor`, as `Conversas`, o `CatalogoSkills`, a `AnalisePpc`, a
  * `RevisaoIa` e o `Leitura`.
  */
 export const layer = Layer.mergeAll(
@@ -136,5 +158,6 @@ export const layer = Layer.mergeAll(
   layerSkills,
   layerPasta,
   layerRevisaoPpc,
+  layerAtualizacao,
   layerHandlersRpc,
 );

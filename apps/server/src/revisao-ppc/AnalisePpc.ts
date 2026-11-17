@@ -97,6 +97,8 @@ export class AnalisePpc extends Context.Service<
      * "Anexar" da pasta de trabalho usa a mesma regra.
      */
     readonly liberado: (arquivo: string) => Effect.Effect<boolean>;
+    /** Uma análise está rodando agora? (a troca da base espera, M1.10) */
+    readonly ocupada: Effect.Effect<boolean>;
   }
 >()("@simplifica-if/server/revisao-ppc/AnalisePpc") {}
 
@@ -345,7 +347,8 @@ export const make = Effect.fn("AnalisePpc.make")(function* (opcoes: OpcoesAnalis
   const liberado = (arquivo: string) =>
     Effect.sync(() => !opcoes.exigirLiberacao || liberados.has(NodePath.normalize(arquivo)));
 
-  return AnalisePpc.of({ analisar, analisarCompleto, liberar, liberado, revisarArquivo });
+  const ocupada = vez.withPermitsIfAvailable(1)(Effect.void).pipe(Effect.map(Option.isNone));
+  return AnalisePpc.of({ analisar, analisarCompleto, liberar, liberado, revisarArquivo, ocupada });
 });
 
 /** O serviço sobre o `FontesNormativas` e o `SqlClient` do `kb.sqlite` (os do `Leitura` do servidor). */

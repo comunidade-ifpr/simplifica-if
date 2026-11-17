@@ -37,6 +37,29 @@ export interface PonteDesktop {
   abrirArquivoTarefa?(caminho: string): Promise<void>;
   /** Mostra no Finder ou no Explorador um arquivo da pasta de uma tarefa. */
   mostrarArquivoTarefa?(caminho: string): Promise<void>;
+  /**
+   * Reinicia o servidor local (novo token e nova porta; a janela recarrega). A atualização da base usa
+   * para trocar o arquivo: a troca só acontece na abertura do servidor (M1.10).
+   */
+  reiniciarServidor?(): Promise<void>;
+  /** O estado da atualização do app (`electron-updater`). */
+  atualizacaoApp?(): Promise<EstadoAtualizacaoApp>;
+  /** Procura uma versão nova do app agora. */
+  procurarAtualizacaoApp?(): Promise<EstadoAtualizacaoApp>;
+  /** "Reiniciar para atualizar": fecha o app e instala a versão baixada. */
+  instalarAtualizacaoApp?(): Promise<void>;
+}
+
+/** O estado da atualização do app, como a seção "Atualizações" mostra. */
+export interface EstadoAtualizacaoApp {
+  readonly versao: string;
+  /** `null`: ligada; senão, o motivo (sem assinatura de código, sem feed, desenvolvimento). */
+  readonly desligada: string | null;
+  readonly situacao: "parada" | "procurando" | "baixando" | "pronta" | "em-dia" | "erro";
+  /** A versão nova, baixando ou pronta para instalar. */
+  readonly nova: string | null;
+  readonly progresso: number | null;
+  readonly erro: string | null;
 }
 
 /** O nome em `window`. */
@@ -50,6 +73,10 @@ export const CANAIS = {
   escolherDocx: "simplifica:escolher-docx",
   abrirDocumento: "simplifica:abrir-documento",
   mostrarNaPasta: "simplifica:mostrar-na-pasta",
+  reiniciarServidor: "simplifica:reiniciar-servidor",
+  atualizacaoApp: "simplifica:atualizacao-app",
+  procurarAtualizacaoApp: "simplifica:procurar-atualizacao-app",
+  instalarAtualizacaoApp: "simplifica:instalar-atualizacao-app",
   escolherAnexo: "simplifica:escolher-anexo",
   abrirArquivoTarefa: "simplifica:abrir-arquivo-tarefa",
   mostrarArquivoTarefa: "simplifica:mostrar-arquivo-tarefa",

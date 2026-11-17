@@ -40,13 +40,15 @@ describe("configuração do electron-builder", () => {
     expect(config.mac).toMatchObject({ target: ["dmg", "zip"], identity: null });
     expect(config.win).toMatchObject({ target: [{ target: "nsis", arch: ["x64"] }] });
     expect(config.nsis).toMatchObject({ oneClick: true, perMachine: false });
-    expect(config.publish).toBeNull();
+    // Feed generic só para o app-update.yml e os latest*.yml; nunca o provider github (que usa a API).
+    expect(config.publish).toEqual([{ provider: "generic", url: expect.stringMatching(/\/$/) }]);
+    expect(config.extraResources).toContainEqual({ from: "dist/recursos/assinatura.json", to: "assinatura.json" });
     expect(configuracaoBuilder({ dir: true }).mac).toMatchObject({ target: ["dir"] });
   });
 
   test("o servidor, a base e as skills vão fora do asar", () => {
     const destinos = (configuracaoBuilder({ dir: true }).extraResources as Array<{ to: string }>).map((r) => r.to);
-    expect(destinos).toEqual(["servidor", "base", "skills"]);
+    expect(destinos).toEqual(["servidor", "base", "skills", "assinatura.json"]);
   });
 
   test("os opcionais nativos do ws ficam fora do bundle do servidor", () => {

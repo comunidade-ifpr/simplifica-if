@@ -11,6 +11,9 @@
  *   e os arquivos listados em `simplifica.arquivos`, nada mais (nem `scripts/`, nem `tests/`).
  * - **Quando se lê:** uma vez, na abertura do servidor. No app, as skills mudam com a atualização
  *   (M1.10), que reinicia o servidor; no desenvolvimento, reinicie para ver uma skill editada.
+ * - **Skills baixadas (M1.10):** além da pasta empacotada, as pastas que a atualização baixou. De cada
+ *   skill entra a de `simplifica.versao` maior; no empate, a empacotada (um app novo pode trazer uma
+ *   skill mais nova que a baixada).
  *
  * Todas as skills do catálogo vão para toda conversa nova ou retomada (`Conversas.ts`): as instruções
  * da sessão só levam o nome, a descrição e o caminho de cada uma, e o provider lê o `SKILL.md` quando o
@@ -31,6 +34,8 @@ export class CatalogoSkills extends Context.Service<
     readonly skills: ReadonlyArray<Motor.Skill>;
     /** O que `skills.listar` devolve à interface. */
     readonly resumos: ReadonlyArray<ResumoSkill>;
+    /** A versão (`simplifica.versao`, ou `0.0.0`) de cada skill do catálogo, para a atualização. */
+    readonly versoes: Readonly<Record<string, string>>;
   }
 >()("@simplifica-if/server/CatalogoSkills") {}
 
@@ -64,7 +69,36 @@ const paraResumo = (skill: SkillDoApp): ResumoSkill => ({
 
 /** O catálogo a partir de skills já lidas (o `layer` e os testes). */
 export const deSkills = (skills: ReadonlyArray<SkillDoApp>) =>
-  CatalogoSkills.of({ skills: skills.map(paraMotor), resumos: skills.map(paraResumo) });
+  CatalogoSkills.of({
+    skills: skills.map(paraMotor),
+    resumos: skills.map(paraResumo),
+    versoes: Object.fromEntries(skills.map((skill) => [skill.nome, versaoDe(skill)])),
+  });
+
+const versaoDe = (skill: SkillDoApp) => skill.manifesto.versao ?? "0.0.0";
+
+const compararVersoes = (a: string, b: string) => {
+  const pa = a.split(".").map(Number);
+  const pb = b.split(".").map(Number);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i += 1) {
+    const d = (pa[i] ?? 0) - (pb[i] ?? 0);
+    if (d !== 0) return Math.sign(d);
+  }
+  return 0;
+};
+
+/** De cada nome, a skill de versão maior; no empate, a que veio primeiro (a empacotada). */
+export const maisNovas = (grupos: ReadonlyArray<ReadonlyArray<SkillDoApp>>): ReadonlyArray<SkillDoApp> => {
+  const escolhidas = new Map<string, SkillDoApp>();
+  for (const grupo of grupos) {
+    for (const skill of grupo) {
+      const atual = escolhidas.get(skill.nome);
+      if (atual === undefined || compararVersoes(versaoDe(skill), versaoDe(atual)) > 0)
+        escolhidas.set(skill.nome, skill);
+    }
+  }
+  return [...escolhidas.values()].sort((a, b) => (a.nome < b.nome ? -1 : a.nome > b.nome ? 1 : 0));
+};
 
 /** Um catálogo vazio: o servidor sem `--pasta-skills`. */
 export const layerVazio = Layer.succeed(CatalogoSkills, deSkills([]));
@@ -76,21 +110,34 @@ export const layerFixo = (skills: ReadonlyArray<SkillDoApp>) => Layer.succeed(Ca
  * Lê a pasta de skills na abertura. Falha com `PastaSkillsInvalida` se a pasta não puder ser listada;
  * as skills inválidas só vão para o log. Pede `FileSystem` e `Path`.
  */
-export const layer = (pasta: string) =>
+export const layer = (pasta: string, baixadas: ReadonlyArray<string> = []) =>
   Layer.effect(
     CatalogoSkills,
     Effect.gen(function* () {
-      const lida = yield* lerPastaSkills(pasta).pipe(
-        Effect.mapError((erro) => new PastaSkillsInvalida({ pasta, cause: erro })),
-      );
-      for (const invalida of lida.invalidas) {
-        yield* Effect.logError(`skill fora do catálogo: ${invalida.message}`);
+      const grupos: Array<ReadonlyArray<SkillDoApp>> = [];
+      const pastas = [pasta, ...baixadas];
+      for (const [indice, atual] of pastas.entries()) {
+        const tentativa = yield* lerPastaSkills(atual).pipe(
+          Effect.mapError((erro) => new PastaSkillsInvalida({ pasta: atual, cause: erro })),
+          Effect.result,
+        );
+        if (tentativa._tag === "Failure") {
+          // A empacotada que não se lê derruba a abertura; uma baixada só vai ao log (ficam as empacotadas).
+          if (indice === 0) return yield* tentativa.failure;
+          yield* Effect.logError(tentativa.failure.message);
+          continue;
+        }
+        const lida = tentativa.success;
+        for (const invalida of lida.invalidas) {
+          yield* Effect.logError(`skill fora do catálogo: ${invalida.message}`);
+        }
+        yield* Effect.logInfo(
+          lida.skills.length === 0
+            ? `nenhuma skill do app em ${atual}`
+            : `skills do app (${atual}): ${lida.skills.map((skill) => `${skill.nome} ${versaoDe(skill)}`).join(", ")}`,
+        );
+        grupos.push(lida.skills);
       }
-      yield* Effect.logInfo(
-        lida.skills.length === 0
-          ? `nenhuma skill do app em ${pasta}`
-          : `skills do app (${pasta}): ${lida.skills.map((skill) => skill.nome).join(", ")}`,
-      );
-      return deSkills(lida.skills);
+      return deSkills(maisNovas(grupos));
     }),
   );

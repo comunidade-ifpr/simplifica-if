@@ -9,6 +9,7 @@ import * as Schema from "effect/Schema";
 import {
   EnvelopePartida,
   GrupoApp,
+  GrupoAtualizacao,
   GrupoConversa,
   GrupoLeitura,
   GrupoPasta,
@@ -22,9 +23,15 @@ const decodificarEnvelope = Schema.decodeUnknownEffect(Schema.fromJsonString(Env
 describe("contratos do app", () => {
   it("o GrupoApp tem os métodos dos seis grupos", () => {
     const metodos = [...GrupoApp.requests.keys()];
-    const partes = [GrupoProviders, GrupoConversa, GrupoSkills, GrupoPasta, GrupoRevisaoPpc, GrupoLeitura].map(
-      (grupo) => [...grupo.requests.keys()],
-    );
+    const partes = [
+      GrupoProviders,
+      GrupoConversa,
+      GrupoSkills,
+      GrupoPasta,
+      GrupoRevisaoPpc,
+      GrupoAtualizacao,
+      GrupoLeitura,
+    ].map((grupo) => [...grupo.requests.keys()]);
     assert.strictEqual(metodos.length, partes.flat().length);
     assert.includeMembers(metodos, [
       "providers.detectar",
@@ -42,6 +49,9 @@ describe("contratos do app", () => {
       "pasta.ver",
       "pasta.desfazer",
       "revisaoPpc.analisar",
+      "atualizacao.estado",
+      "atualizacao.procurar",
+      "atualizacao.voltar",
       "fichaNorma",
       "sobreABase",
     ]);

@@ -31,6 +31,7 @@ import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as Ref from "effect/Ref";
 import {
   type ArquivoPasta,
   ehExtensaoDocumento,
@@ -85,6 +86,8 @@ export class PastasTrabalho extends Context.Service<
       pasta: string,
       incluirForaDaConversa: boolean,
     ) => Effect.Effect<PastaConversa, FalhaPasta>;
+    /** Um Desfazer, uma cópia ou um retrato está em andamento? (a troca da base espera, M1.10) */
+    readonly emAndamento: Effect.Effect<boolean>;
   }
 >()("@simplifica-if/server/PastasTrabalho") {}
 
@@ -392,6 +395,21 @@ const SEM_DESFAZER: PrevisaoDesfazer = {
 
 /* ================================================================== serviço */
 
+/**
+ * Um contador de operações em andamento: `contando` marca o efeito enquanto ele roda (também se falhar
+ * ou for interrompido), e `emAndamento` diz se há alguma. O `ocupado` da atualização (M1.10) o lê.
+ */
+export const contadorDeAndamento = Effect.gen(function* () {
+  const rodando = yield* Ref.make(0);
+  const contando = <A, E, R>(efeito: Effect.Effect<A, E, R>) =>
+    Effect.acquireUseRelease(
+      Ref.update(rodando, (n) => n + 1),
+      () => efeito,
+      () => Ref.update(rodando, (n) => n - 1),
+    );
+  return { contando, emAndamento: Ref.get(rodando).pipe(Effect.map((n) => n > 0)) };
+});
+
 export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPastas) {
   const limites = { ...LIMITES, ...opcoes.limites };
   const historico = yield* Historico;
@@ -599,7 +617,32 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     return yield* ver(conversa, real);
   });
 
-  return PastasTrabalho.of({ raiz, criar, anexar, ver, guardarCopia, fecharTurno, desfazer });
+  // Quantas operações sobre as pastas estão rodando: a troca da base (M1.10) não reinicia o servidor no meio delas.
+  const { contando, emAndamento } = yield* contadorDeAndamento;
+  return PastasTrabalho.of({
+    raiz,
+    criar,
+    anexar,
+    ver,
+    guardarCopia: Effect.fn("PastasTrabalho.contandoCopia")(function* (conversa: string, turno: number, pasta: string) {
+      return yield* contando(guardarCopia(conversa, turno, pasta));
+    }),
+    fecharTurno: Effect.fn("PastasTrabalho.contandoRetrato")(function* (
+      conversa: string,
+      turno: number,
+      pasta: string,
+    ) {
+      return yield* contando(fecharTurno(conversa, turno, pasta));
+    }),
+    desfazer: Effect.fn("PastasTrabalho.contandoDesfazer")(function* (
+      conversa: string,
+      pasta: string,
+      incluir: boolean,
+    ) {
+      return yield* contando(desfazer(conversa, pasta, incluir));
+    }),
+    emAndamento,
+  });
 });
 
 /**
@@ -629,6 +672,7 @@ export const layerSemPastas = Layer.sync(PastasTrabalho, () => {
       yield* Effect.void;
     }),
     desfazer: recusa,
+    emAndamento: Effect.succeed(false),
   });
 });
 

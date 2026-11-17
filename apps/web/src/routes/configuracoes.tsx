@@ -1,12 +1,14 @@
 /**
  * Configurações do Modo Servidor (M1.9): Sua IA (instalar, entrar e o estado de cada uma), Seu perfil
- * (o primeiro uso, M1.8), Atualizações (M1.10, outra frente: aqui fica só o lugar da seção) e, no fim,
+ * (o primeiro uso, M1.8), Atualizações (M1.10: versões do app, da base e das skills, canal, procurar,
+ * usar a versão nova e voltar a base; `configuracoes/Atualizacoes.tsx`) e, no fim,
  * discreta, a conversa com uma pasta escolhida à mão, a tela técnica de antes do Modo Servidor.
  */
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { FolderCogIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { CartaoProvider } from "../components/CartaoProvider.tsx";
+import { Atualizacoes } from "../configuracoes/Atualizacoes.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { useConversa, useEstadoConexao } from "../contexto.tsx";
 import { PROVIDERS } from "../providers.ts";
@@ -60,10 +62,7 @@ function Configuracoes() {
             O perfil fica só neste computador.
           </p>
         </Secao>
-        <Secao id="atualizacoes" titulo="Atualizações">
-          {/* M1.10: versões do app, da base e das skills; canal (estável ou beta). */}
-          <p className="max-w-prose text-muted-foreground">Em breve: as versões do app e da base, e as novidades.</p>
-        </Secao>
+        {conexao.fase === "sem-servidor" ? null : <Atualizacoes />}
         <Secao id="avancado" titulo="Avançado">
           <p className="max-w-prose text-muted-foreground text-sm">
             Para quem já sabe o que quer: uma conversa numa pasta que você escolhe, sem tarefa.
