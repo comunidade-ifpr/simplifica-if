@@ -1,10 +1,10 @@
 // @effect-diagnostics nodeBuiltinImport:off globalTimersInEffect:off -- teste: arquivos temporários, o banco de fixture e o relógio do laço de eventos do Node (o que o Worker não pode bloquear)
 /**
- * A revisão prévia sem IA no servidor (M1.11, etapa 3): o RPC `revisaoPpc.analisar` de ponta a ponta,
+ * A revisão prévia sem IA no servidor (M1.11, etapa 3): o RPC `revisaoPpc.revisar` de ponta a ponta,
  * com o Worker de verdade, sobre o banco de fixture (a base vem só do `kb.sqlite`, nada do checkout):
  * a cópia comentada ao lado do original (sem sobrescrever, original intacto), as recusas antes de ler,
  * o DOCX hostil, o estouro de memória e de tempo do Worker, o servidor de pé depois de tudo, e o laço
- * de eventos livre durante a análise.
+ * de eventos livre durante a revisão.
  */
 import * as NodeCrypto from "node:crypto";
 import * as NodeFS from "node:fs";
@@ -20,7 +20,7 @@ import { CAMINHO_LIBERAR_ARQUIVO, ehFalhaRevisaoPpc } from "@simplifica-if/contr
 import * as Layers from "@simplifica-if/kb/layers";
 import { par } from "@simplifica-if/docx/testes/sintetico";
 import { ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
-import * as AnalisePpc from "../src/revisao-ppc/AnalisePpc.ts";
+import * as RevisorPpc from "../src/revisao-ppc/RevisorPpc.ts";
 import * as Servidor from "../src/servidor.ts";
 import {
   bancoFixture,
@@ -97,18 +97,18 @@ function docxHostil(): Uint8Array {
   return zip;
 }
 
-layer(camada, { excludeTestServices: true })("revisaoPpc.analisar", (it) => {
-  it.effect("analisa, grava a cópia comentada ao lado do original e não toca no original", () =>
+layer(camada, { excludeTestServices: true })("revisaoPpc.revisar", (it) => {
+  it.effect("revisa, grava a cópia comentada ao lado do original e não toca no original", () =>
     Effect.gen(function* () {
       const { urlRpc } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
       const original = gravar("PPC Agropecuária.docx", ppcSintetico());
       const antes = hash(original);
 
-      // O laço de eventos do servidor anda durante a análise (a conversão roda no Worker).
+      // O laço de eventos do servidor anda durante a revisão (a conversão roda no Worker).
       let voltas = 0;
       const relogio = setInterval(() => (voltas += 1), 5);
-      const resultado = yield* rpc["revisaoPpc.analisar"]({ arquivo: original });
+      const resultado = yield* rpc["revisaoPpc.revisar"]({ arquivo: original });
       clearInterval(relogio);
       assert.isAtLeast(voltas, 5);
 
@@ -129,7 +129,7 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.analisar", (it) => {
       assert.strictEqual(aee?.noDocumento, "no-trecho");
 
       // De novo: não sobrescreve, ganha o sufixo numérico.
-      const segunda = yield* rpc["revisaoPpc.analisar"]({ arquivo: original, cnct: "tecnico-em-agropecuaria" });
+      const segunda = yield* rpc["revisaoPpc.revisar"]({ arquivo: original, cnct: "tecnico-em-agropecuaria" });
       assert.strictEqual(
         segunda.arquivoComentado,
         NodePath.join(pasta, "PPC Agropecuária - revisão prévia (Simplifica IF) (2).docx"),
@@ -147,7 +147,7 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.analisar", (it) => {
         gravar("notas.txt", strToU8("x")),
         NodePath.join(pasta, "nao-existe.docx"),
       ]) {
-        const erro = yield* Effect.flip(rpc["revisaoPpc.analisar"]({ arquivo }));
+        const erro = yield* Effect.flip(rpc["revisaoPpc.revisar"]({ arquivo }));
         assert.isTrue(ehFalhaRevisaoPpc(erro));
       }
     }),
@@ -157,46 +157,46 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.analisar", (it) => {
     Effect.gen(function* () {
       const { urlRpc } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
-      const erro = yield* Effect.flip(rpc["revisaoPpc.analisar"]({ arquivo: gravar("hostil.docx", docxHostil()) }));
+      const erro = yield* Effect.flip(rpc["revisaoPpc.revisar"]({ arquivo: gravar("hostil.docx", docxHostil()) }));
       assert.isTrue(ehFalhaRevisaoPpc(erro));
       assert.match(erro.message, /compressão anormal/);
-      const depois = yield* rpc["revisaoPpc.analisar"]({ arquivo: gravar("depois.docx", ppcSintetico()) });
+      const depois = yield* rpc["revisaoPpc.revisar"]({ arquivo: gravar("depois.docx", ppcSintetico()) });
       assert.isAbove(depois.pendencias.length, 0);
     }),
   );
 });
 
 /** O serviço direto sobre o banco de fixture, com limites apertados para provocar cada estouro. */
-const analisarCom = (limites: Partial<AnalisePpc.Limites>, arquivo: string) =>
+const revisarCom = (limites: Partial<RevisorPpc.Limites>, arquivo: string) =>
   Effect.gen(function* () {
-    const analise = yield* AnalisePpc.AnalisePpc;
-    return yield* Effect.flip(analise.analisar({ arquivo }));
+    const revisor = yield* RevisorPpc.RevisorPpc;
+    return yield* Effect.flip(revisor.revisar({ arquivo }));
   }).pipe(
-    Effect.provide(AnalisePpc.layer({ limites }).pipe(Layer.provide(Layers.layerSomenteLeitura({ caminho: banco })))),
+    Effect.provide(RevisorPpc.layer({ limites }).pipe(Layer.provide(Layers.layerSomenteLeitura({ caminho: banco })))),
   );
 
 layer(NodeServices.layer, { excludeTestServices: true })("limites do Worker", (it) => {
   it.effect("arquivo acima do limite: recusado antes de ler, com a orientação de compactar as imagens", () =>
     Effect.gen(function* () {
-      const erro = yield* analisarCom({ bytesDoArquivo: 1000 }, gravar("grande.docx", ppcSintetico()));
+      const erro = yield* revisarCom({ bytesDoArquivo: 1000 }, gravar("grande.docx", ppcSintetico()));
       assert.match(erro.message, /acima do limite de 0,0 MB\. Compacte as imagens/);
     }),
   );
 
   it.effect(
-    "estouro de memória do Worker vira mensagem, e outra análise funciona depois",
+    "estouro de memória do Worker vira mensagem, e outra revisão funciona depois",
     () =>
       Effect.gen(function* () {
         // 60 mil parágrafos (170 kB compactados) não cabem em 64 MB de heap; cabem nos 512 MB do padrão.
         const extenso = Array.from({ length: 60_000 }, (_, i) => par(`Parágrafo ${i} do texto do curso.`)).join("");
         const grande = gravar("memoria.docx", ppcSintetico({ corpoExtra: extenso }));
         // Abaixo do piso (2 MB abortaria o processo inteiro): vale o piso de 64 MB.
-        const erro = yield* analisarCom({ memoriaMb: 2 }, grande);
+        const erro = yield* revisarCom({ memoriaMb: 2 }, grande);
         assert.match(erro.message, /memória demais/);
         const arquivo = gravar("normal.docx", ppcSintetico());
-        const ok = yield* AnalisePpc.AnalisePpc.pipe(
-          Effect.flatMap((analise) => analise.analisar({ arquivo })),
-          Effect.provide(AnalisePpc.layer().pipe(Layer.provide(Layers.layerSomenteLeitura({ caminho: banco })))),
+        const ok = yield* RevisorPpc.RevisorPpc.pipe(
+          Effect.flatMap((revisor) => revisor.revisar({ arquivo })),
+          Effect.provide(RevisorPpc.layer().pipe(Layer.provide(Layers.layerSomenteLeitura({ caminho: banco })))),
         );
         assert.isAbove(ok.pendencias.length, 0);
       }),
@@ -205,31 +205,31 @@ layer(NodeServices.layer, { excludeTestServices: true })("limites do Worker", (i
 
   it.effect("tempo máximo: o Worker é encerrado e a mensagem diz o limite", () =>
     Effect.gen(function* () {
-      const erro = yield* analisarCom({ tempoMs: 1 }, gravar("tempo.docx", ppcSintetico()));
+      const erro = yield* revisarCom({ tempoMs: 1 }, gravar("tempo.docx", ppcSintetico()));
       assert.match(erro.message, /passou do tempo máximo/);
     }),
   );
 });
 
-layer(NodeServices.layer, { excludeTestServices: true })("uma análise por vez", (it) => {
-  it.effect("a segunda análise simultânea é recusada com a mensagem, e a primeira termina", () =>
+layer(NodeServices.layer, { excludeTestServices: true })("uma revisão por vez", (it) => {
+  it.effect("a segunda revisão simultânea é recusada com a mensagem, e a primeira termina", () =>
     Effect.gen(function* () {
       const arquivo = gravar("simultanea.docx", ppcSintetico());
       const [primeira, segunda] = yield* Effect.gen(function* () {
-        const analise = yield* AnalisePpc.AnalisePpc;
+        const revisor = yield* RevisorPpc.RevisorPpc;
         return yield* Effect.all(
-          [Effect.result(analise.analisar({ arquivo })), Effect.result(analise.analisar({ arquivo }))],
+          [Effect.result(revisor.revisar({ arquivo })), Effect.result(revisor.revisar({ arquivo }))],
           {
             concurrency: 2,
           },
         );
-      }).pipe(Effect.provide(AnalisePpc.layer().pipe(Layer.provide(Layers.layerSomenteLeitura({ caminho: banco })))));
+      }).pipe(Effect.provide(RevisorPpc.layer().pipe(Layer.provide(Layers.layerSomenteLeitura({ caminho: banco })))));
       const resultados = [primeira, segunda];
       const falhas = resultados.filter((r) => r._tag === "Failure");
       assert.strictEqual(falhas.length, 1);
       assert.strictEqual(
         falhas[0]!._tag === "Failure" ? falhas[0]!.failure.message : "",
-        "Já há uma análise em andamento. Espere ela terminar e tente de novo.",
+        "Já há uma revisão em andamento. Espere ela terminar e tente de novo.",
       );
       assert.strictEqual(resultados.filter((r) => r._tag === "Success").length, 1);
     }),
@@ -246,12 +246,12 @@ const camadaDesktop = Servidor.layer({
 }).pipe(Layer.provide(layerDriversFalsos(novoRegistro())), Layer.provide(NodeServices.layer));
 
 layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", (it) => {
-  it.effect("sem liberação, recusa; a rota exige o segredo do desktop, sem Origin; liberado, analisa", () =>
+  it.effect("sem liberação, recusa; a rota exige o segredo do desktop, sem Origin; liberado, revisa", () =>
     Effect.gen(function* () {
       const { urlRpc, porta } = yield* Servidor.ServidorApp;
       const rpc = yield* cliente(urlRpc, AUTORIZACAO);
       const arquivo = gravar("liberado.docx", ppcSintetico());
-      const recusa = yield* Effect.flip(rpc["revisaoPpc.analisar"]({ arquivo }));
+      const recusa = yield* Effect.flip(rpc["revisaoPpc.revisar"]({ arquivo }));
       assert.match(recusa.message, /Escolha o arquivo pelo botão/);
 
       const url = `http://127.0.0.1:${porta}${CAMINHO_LIBERAR_ARQUIVO}`;
@@ -269,11 +269,11 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
       );
       assert.strictEqual((yield* liberar({ authorization: `Bearer ${TOKEN_DESKTOP}` })).status, 204);
 
-      const resultado = yield* rpc["revisaoPpc.analisar"]({ arquivo });
+      const resultado = yield* rpc["revisaoPpc.revisar"]({ arquivo });
       assert.isAbove(resultado.pendencias.length, 0);
       // Outro arquivo da mesma pasta continua recusado.
       const outro = gravar("outro.docx", ppcSintetico());
-      assert.match((yield* Effect.flip(rpc["revisaoPpc.analisar"]({ arquivo: outro }))).message, /Escolha o arquivo/);
+      assert.match((yield* Effect.flip(rpc["revisaoPpc.revisar"]({ arquivo: outro }))).message, /Escolha o arquivo/);
     }),
   );
 });

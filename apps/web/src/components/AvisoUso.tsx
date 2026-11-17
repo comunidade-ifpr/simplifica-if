@@ -7,9 +7,6 @@
 import { ShieldAlertIcon } from "lucide-react";
 import { Button } from "./ui/button.tsx";
 
-/** O lembrete curto, ao lado do botão de anexar. */
-export const LEMBRETE_ANEXO = "Não anexe documento com dado pessoal ou de acesso restrito.";
-
 export function AvisoUso({
   titulo = "O que vai para a IA",
   aoEntender,

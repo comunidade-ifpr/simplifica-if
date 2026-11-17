@@ -15,7 +15,7 @@ function Fichas() {
             Fichas de análise de PPC
           </h2>
           <p className="text-muted-foreground text-sm">
-            Os critérios que a análise de PPC do app confere. Ajudam a revisar; não são normas.
+            Os critérios que a revisão de PPC do app confere. Ajudam a revisar; não são normas.
           </p>
           <p role="status" className="text-muted-foreground text-sm">
             {quantos(d.fichas.length, "ficha", "fichas")}

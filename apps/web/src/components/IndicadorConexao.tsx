@@ -1,6 +1,7 @@
 /**
- * O estado da conexão com o servidor local, no cabeçalho: conectado, conectando, ou a próxima tentativa
- * com o motivo da queda (em termos da pessoa, M1.14) e "Tentar agora".
+ * O estado da conexão com o servidor local, no cabeçalho, só quando foge do normal: conectando, ou a
+ * próxima tentativa com o motivo da queda (em termos da pessoa, M1.14) e "Tentar agora". Conectado, não
+ * mostra nada; a região `status` fica na página, vazia, para o leitor de tela anunciar a queda.
  */
 import { useEffect, useState } from "react";
 import { mensagemFalha } from "../conexao/ingresso.ts";
@@ -20,10 +21,10 @@ function useSegundosAte(instante: number | undefined): number {
   return instante === undefined ? 0 : Math.max(0, Math.ceil((instante - agora) / 1000));
 }
 
-export function textoConexao(estado: EstadoConexao, segundos: number): string {
+type ForaDoNormal = Exclude<EstadoConexao, { readonly fase: "conectada" }>;
+
+export function textoConexao(estado: ForaDoNormal, segundos: number): string {
   switch (estado.fase) {
-    case "conectada":
-      return "Conectado";
     case "conectando":
       return estado.tentativa === 0 ? "Conectando…" : "Reconectando…";
     case "reconectando":
@@ -37,26 +38,27 @@ export function IndicadorConexao() {
   const estado = useEstadoConexao();
   const api = useApi();
   const segundos = useSegundosAte(estado.fase === "reconectando" ? estado.proximaEm : undefined);
-  const cor =
-    estado.fase === "conectada" ? "bg-success" : estado.fase === "conectando" ? "bg-warning" : "bg-destructive";
   return (
-    <div className="flex items-center gap-2 text-sm" role="status" aria-live="polite" data-fase={estado.fase}>
-      <span
-        aria-hidden
-        className={cn(
-          "size-2.5 rounded-full ring-1 ring-white/70",
-          cor,
-          estado.fase === "conectando" && "motion-safe:animate-pulse",
-        )}
-      />
-      <span title={estado.fase === "reconectando" ? mensagemFalha(estado.motivo) : undefined}>
-        {textoConexao(estado, segundos)}
-      </span>
-      {estado.fase === "reconectando" ? (
-        <Button size="xs" variant="outline" onClick={api.reconectarAgora}>
-          Tentar agora
-        </Button>
-      ) : null}
+    <div className="ml-auto min-w-0" role="status" aria-live="polite" data-fase={estado.fase}>
+      {estado.fase === "conectada" ? null : (
+        <div className="flex min-w-0 items-center gap-2 rounded-full bg-black/25 px-3 py-1 text-sm text-white">
+          <span
+            aria-hidden
+            className={cn(
+              "size-2.5 shrink-0 rounded-full ring-1 ring-white/70",
+              estado.fase === "conectando" ? "bg-warning motion-safe:animate-pulse" : "bg-destructive",
+            )}
+          />
+          <span className="truncate" title={estado.fase === "reconectando" ? mensagemFalha(estado.motivo) : undefined}>
+            {textoConexao(estado, segundos)}
+          </span>
+          {estado.fase === "reconectando" ? (
+            <Button size="xs" variant="outline" onClick={api.reconectarAgora}>
+              Tentar agora
+            </Button>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 }

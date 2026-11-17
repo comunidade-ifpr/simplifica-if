@@ -40,7 +40,7 @@ NodeModule.syncBuiltinESMExports();
 
 const Effect = await import("effect/Effect");
 const Layers = await import("@simplifica-if/kb/layers");
-const { montarBase } = await import("../src/revisao-ppc/AnalisePpc.ts");
+const { montarBase } = await import("../src/revisao-ppc/RevisorPpc.ts");
 const { revisarDocx } = await import("@simplifica-if/ppc/revisao-previa");
 const { preConferir } = await import("@simplifica-if/ppc/pre-conferencia");
 const { Registro } = await import("@simplifica-if/kb/normas/registro");

@@ -1,7 +1,7 @@
 // @effect-diagnostics nodeBuiltinImport:off -- teste: canais adulterados e pastas do app em pastas temporárias
 /**
  * O serviço `Atualizador` do servidor (M1.10) contra um servidor HTTP local, com canais gerados pela
- * fábrica e um par minisign descartável: troca adiada durante análise, aplicar, novidades, voltar,
+ * fábrica e um par minisign descartável: troca adiada durante revisão, aplicar, novidades, voltar,
  * canal trocado e desligado sem feed.
  */
 import * as NodeFS from "node:fs";
@@ -33,7 +33,7 @@ describe("Atualizador (serviço)", () => {
       automatico: false,
     });
 
-  it.effect("troca durante análise: adiada, e entra na próxima abertura", () =>
+  it.effect("troca durante revisão: adiada, e entra na próxima abertura", () =>
     Effect.gen(function* () {
       const c = yield* Effect.promise(cenario);
       c.publicar({ versao: "2026.11.13" });
@@ -46,7 +46,7 @@ describe("Atualizador (serviço)", () => {
     }).pipe(Effect.scoped),
   );
 
-  it.effect("sem análise rodando: aplicar pede reinício; o aviso de novidades some depois de visto", () =>
+  it.effect("sem revisão rodando: aplicar pede reinício; o aviso de novidades some depois de visto", () =>
     Effect.gen(function* () {
       const c = yield* Effect.promise(cenario);
       c.publicar({ versao: "2026.11.13" });

@@ -89,7 +89,7 @@ function Entrada() {
               to="/explorar/fichas"
               titulo="Fichas de análise"
               contagem={String(d.fichas.length)}
-              descricao="Os critérios da análise de PPC do app."
+              descricao="Os critérios da revisão de PPC do app."
             />
           </ul>
         </div>

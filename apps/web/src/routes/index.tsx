@@ -1,8 +1,8 @@
 /**
  * Início do Modo Servidor (M1.9): a data da base, a linha do perfil ("Função · Campus", M1.8), a caixa
  * "O que você precisa hoje?" (`CaixaPedido`, com anexo e a escolha da IA), os cartões de tarefa que servem ao perfil
- * (as skills do catálogo e a tarefa nativa "Analisar um PPC"), "Ver todas" e os recentes (conversas e a
- * última análise de PPC). No primeiro uso (aviso não aceito ou boas-vindas por ver), leva às
+ * (as skills do catálogo e a tarefa nativa "Revisar um PPC"), "Ver todas" e os recentes (conversas e a
+ * última revisão de PPC). No primeiro uso (aviso não aceito ou boas-vindas por ver), leva às
  * boas-vindas.
  *
  * "Para você" (as novidades da base que afetam o perfil) é do Marco 2. No Marco 1, as novidades gerais
@@ -188,8 +188,8 @@ function Tarefas() {
   );
 }
 
-/** A análise de PPC mais recente, para continuar de onde parou. */
-function UltimaAnalise() {
+/** A revisão de PPC mais recente, para continuar de onde parou. */
+function UltimaRevisao() {
   const api = useApi();
   const conectado = useEstadoConexao().fase === "conectada";
   const [lista, setLista] = useState<ListaPendencias | null>(null);
@@ -213,7 +213,7 @@ function UltimaAnalise() {
       className="flex items-center gap-1.5 rounded-md px-2 py-1.5 font-medium text-sm hover:bg-accent"
     >
       <FileSearchIcon className="size-3.5 shrink-0 text-muted-foreground" />
-      <span className="truncate">Análise do PPC: {nomeArquivo(lista.arquivoOriginal)}</span>
+      <span className="truncate">Revisão do PPC: {nomeArquivo(lista.arquivoOriginal)}</span>
     </Link>
   );
 }
@@ -261,7 +261,7 @@ function Inicio() {
               <h2 id="titulo-recentes" className="font-semibold text-lg">
                 Recentes
               </h2>
-              <UltimaAnalise />
+              <UltimaRevisao />
               <ListaConversas limite={5} />
             </section>
           </>

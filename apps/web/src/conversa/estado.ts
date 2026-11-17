@@ -385,7 +385,7 @@ const ROTULOS_FERRAMENTA: Readonly<Record<string, string>> = {
   ler_dispositivos: "Ler dispositivos",
   ler_secao: "Ler seção de PPC",
   listar_cursos: "Listar cursos",
-  pacote_contexto: "Contexto da análise de PPC",
+  pacote_contexto: "Contexto da revisão de PPC",
   resolver_citacoes: "Identificar citações",
   sobre_a_base: "Sobre a base",
   // As nativas dos providers que mais aparecem (Claude, Codex, Antigravity).

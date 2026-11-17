@@ -6,7 +6,7 @@
  *   gravado (`atualizacao.json`) ou no padrão da política; "Procurar agora" confere na hora.
  * - **O que faz:** baixa e confere em segundo plano (`@simplifica-if/atualizacao/remoto`) e deixa a base e as skills
  *   pendentes. A troca é na próxima abertura (`local.ts`); "Aplicar agora" e "Voltar" pedem ao
- *   desktop para reiniciar o servidor, e se recusam (adiam) enquanto uma análise ou revisão roda.
+ *   desktop para reiniciar o servidor, e se recusam (adiam) enquanto uma revisão de PPC (prévia ou com IA) roda.
  * - **Desligado** quando a política não tem feed ou chave pública (a hospedagem e a chave de produção
  *   ainda não estão no app) ou quando a base vem de fora (`SIMPLIFICA_KB`): o estado diz o motivo.
  */
@@ -45,7 +45,7 @@ export interface Opcoes {
   readonly abertura: Abertura;
   /** Versões das skills disponíveis (empacotadas e baixadas), por nome. */
   readonly versoesSkills: Readonly<Record<string, string>>;
-  /** Uma análise ou revisão está rodando? (a troca espera) */
+  /** Uma revisão de PPC (prévia ou com IA) está rodando? (a troca espera) */
   readonly ocupado: Effect.Effect<boolean>;
   readonly baixar?: Baixar;
   /** Intervalo entre conferências (padrão: 24 h). */
@@ -194,7 +194,7 @@ export const make = Effect.fn("Atualizador.make")(function* (opcoes: Opcoes) {
     if (yield* opcoes.ocupado) {
       return {
         resultado: "adiada",
-        mensagem: "Uma análise está em andamento. A troca da base fica para quando o app abrir de novo.",
+        mensagem: "Uma revisão está em andamento. A troca da base fica para quando o app abrir de novo.",
       } satisfies ResultadoTroca;
     }
     return {

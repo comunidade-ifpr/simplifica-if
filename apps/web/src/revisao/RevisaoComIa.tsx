@@ -17,6 +17,7 @@ import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
 import { DESCRICOES, PROVIDERS } from "../providers.ts";
 import { andamentoPorTema, ROTULO_SITUACAO, textoEstimativa } from "./ia.ts";
+import { MarcaIa } from "../components/MarcaIa.tsx";
 
 const MODOS: ReadonlyArray<{ readonly modo: ModoRevisaoIa; readonly titulo: string; readonly descricao: string }> = [
   {
@@ -121,6 +122,7 @@ export function RevisaoComIa({
               {PROVIDERS.map((p) => (
                 <label key={p} className="flex items-center gap-2 text-sm">
                   <input type="radio" name="provider-ia" checked={provider === p} onChange={() => setProvider(p)} />
+                  <MarcaIa provider={p} />
                   {DESCRICOES[p].nome}
                 </label>
               ))}

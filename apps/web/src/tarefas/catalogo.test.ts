@@ -25,17 +25,17 @@ const nomes = (tarefas: ReadonlyArray<Parameters<typeof nomeTarefa>[0]>) => tare
 
 describe("cartões pelo perfil", () => {
   it("sem perfil ou com função 'outra': tudo, na ordem do catálogo", () => {
-    const todas = ["analisar-ppc", SKILL_EXEMPLO, "calendario", "geral"];
+    const todas = ["revisar-ppc", SKILL_EXEMPLO, "calendario", "geral"];
     assert.deepStrictEqual(nomes(tarefasDoInicio(SKILLS, undefined)), todas);
     assert.deepStrictEqual(nomes(tarefasDoInicio(SKILLS, perfil("outra"))), todas);
     assert.isUndefined(servePerfil(tarefasDoPerfil(SKILLS, undefined)[0]!, undefined));
   });
 
   it("docente: o Início só com as que servem (e as sem público); Ver todas com o resto depois", () => {
-    // "Analisar um PPC" serve à docência (NDE).
-    assert.deepStrictEqual(nomes(tarefasDoInicio(SKILLS, perfil("docente"))), ["analisar-ppc", "calendario", "geral"]);
+    // "Revisar um PPC" serve à docência (NDE).
+    assert.deepStrictEqual(nomes(tarefasDoInicio(SKILLS, perfil("docente"))), ["revisar-ppc", "calendario", "geral"]);
     assert.deepStrictEqual(nomes(tarefasDoPerfil(SKILLS, perfil("docente"))), [
-      "analisar-ppc",
+      "revisar-ppc",
       "calendario",
       "geral",
       SKILL_EXEMPLO,
@@ -44,7 +44,7 @@ describe("cartões pelo perfil", () => {
 
   it("PROENS/DENS: os dois públicos do manifesto servem", () => {
     assert.deepStrictEqual(nomes(tarefasDoInicio(SKILLS, perfil("proens-dens"))), [
-      "analisar-ppc",
+      "revisar-ppc",
       SKILL_EXEMPLO,
       "geral",
     ]);
@@ -52,20 +52,20 @@ describe("cartões pelo perfil", () => {
 
   it('o Início nunca fica vazio: a nativa serve a toda função, e "outra" vê tudo', () => {
     const soDocente = [skill("calendario", ["docente"])];
-    assert.deepStrictEqual(nomes(tarefasDoInicio(soDocente, perfil("pedagogia"))), ["analisar-ppc"]);
-    assert.deepStrictEqual(nomes(tarefasDoInicio([skill("x", ["dens"])], perfil("outra"))), ["analisar-ppc", "x"]);
+    assert.deepStrictEqual(nomes(tarefasDoInicio(soDocente, perfil("pedagogia"))), ["revisar-ppc"]);
+    assert.deepStrictEqual(nomes(tarefasDoInicio([skill("x", ["dens"])], perfil("outra"))), ["revisar-ppc", "x"]);
   });
 });
 
 describe("tarefa de exemplo das boas-vindas", () => {
-  it("quem cuida de PPC: analisar o PPC do próprio curso primeiro", () => {
+  it("quem cuida de PPC: revisar o PPC do próprio curso primeiro", () => {
     const exemplos = exemplosDoPerfil(
       { funcao: "coordenacao-curso", cursos: [{ id: "curso:curitiba/enf", nome: "Técnico em Enfermagem" }] },
       SKILLS,
     );
     assert.deepStrictEqual(
       exemplos.map((exemplo) => exemplo.titulo),
-      ["Analisar o PPC de Técnico em Enfermagem", "Conferir a fundamentação normativa de um trecho"],
+      ["Revisar o PPC de Técnico em Enfermagem", "Conferir a fundamentação normativa de um trecho"],
     );
     assert.match(exemplos[0]!.custo, /não gasta a sua cota/);
   });
@@ -74,7 +74,7 @@ describe("tarefa de exemplo das boas-vindas", () => {
     assert.strictEqual(exemplosDoPerfil(perfil("docente"), SKILLS)[0]?.tipo, "conversa");
     assert.deepStrictEqual(
       exemplosDoPerfil(undefined, []).map((exemplo) => exemplo.tipo),
-      ["analisar-ppc"],
+      ["revisar-ppc"],
     );
     const conversa = exemplosDoPerfil(undefined, SKILLS)[0];
     assert.strictEqual(conversa?.tipo === "conversa" ? conversa.skill : undefined, SKILL_EXEMPLO);

@@ -30,6 +30,7 @@ import { Alert, AlertDescription } from "./ui/alert.tsx";
 import { Badge } from "./ui/badge.tsx";
 import { Button } from "./ui/button.tsx";
 import { Spinner } from "./ui/spinner.tsx";
+import { MarcaIa } from "./MarcaIa.tsx";
 
 type Deteccao =
   | { readonly fase: "detectando" }
@@ -221,7 +222,8 @@ export function CartaoProvider({
     >
       <header className="flex items-start justify-between gap-2">
         <div>
-          <h2 id={`provider-${provider}`} className="font-semibold text-lg">
+          <h2 id={`provider-${provider}`} className="flex items-center gap-2 font-semibold text-lg">
+            <MarcaIa provider={provider} className="size-5" />
             {descricao.nome}
           </h2>
           <p className="text-muted-foreground text-sm">{descricao.conta}</p>

@@ -1,5 +1,5 @@
 /**
- * Peças da tela "Analisar um PPC" usadas pela lista simples e pelo roteiro (etapa 5b): o corpo de uma
+ * Peças da tela "Revisar um PPC" usadas pela lista simples e pelo roteiro (etapa 5b): o corpo de uma
  * pendência (mensagem, o que fazer, trecho, fontes) e os botões da cópia comentada.
  */
 import type { PendenciaRevisao } from "@simplifica-if/contratos-app";
@@ -70,7 +70,7 @@ export function CopiaComentada({ arquivo }: { readonly arquivo: string }) {
     } catch (motivo) {
       setErro({
         texto:
-          "Não foi possível abrir a cópia comentada. Ela pode ter sido movida, renomeada ou apagada; analise o PPC de novo para gerar outra.",
+          "Não foi possível abrir a cópia comentada. Ela pode ter sido movida, renomeada ou apagada; revise o PPC de novo para gerar outra.",
         detalhe: mensagemDeErro(motivo),
       });
     }

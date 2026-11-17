@@ -125,7 +125,7 @@ export const EnvelopePartida = Schema.Struct({
   origens: Schema.optionalKey(Schema.Array(Schema.String)),
   /**
    * O segredo do processo principal do desktop, que a janela nunca recebe. Com ele, a revisão prévia
-   * só analisa arquivos que o processo principal liberou (`CAMINHO_LIBERAR_ARQUIVO`), os escolhidos no
+   * só revisa arquivos que o processo principal liberou (`CAMINHO_LIBERAR_ARQUIVO`), os escolhidos no
    * diálogo do sistema; sem ele (desenvolvimento, navegador), aceita qualquer `.docx`.
    */
   tokenDesktop: Schema.optionalKey(TokenServidor),
@@ -533,7 +533,7 @@ export const ResultadoRevisaoPpc = Schema.Struct({
 });
 export type ResultadoRevisaoPpc = typeof ResultadoRevisaoPpc.Type;
 
-/** A análise não terminou; `motivo` é a frase para a pessoa (arquivo grande, protegido, corrompido, tempo). */
+/** A revisão não terminou; `motivo` é a frase para a pessoa (arquivo grande, protegido, corrompido, tempo). */
 export class FalhaRevisaoPpc extends Schema.TaggedError<FalhaRevisaoPpc>()("FalhaRevisaoPpc", {
   arquivo: Schema.String,
   motivo: Schema.String,
@@ -622,7 +622,7 @@ const EntradaRevisaoIa = Schema.Struct({ revisao: Schema.String });
 
 /**
  * A situação de uma pendência na lista viva: `aberta`; `vou_ajustar` e `resolvida` (a pessoa marca, ou
- * a reanálise do arquivo novo decide); `contestada_aceita` (retirada: a resposta da IA trouxe trecho ou
+ * a revisão do arquivo novo decide); `contestada_aceita` (retirada: a resposta da IA trouxe trecho ou
  * norma que o app conferiu) e `contestada_mantida` (a discordância fica registrada).
  */
 export const SituacaoPendencia = Schema.Literals([
@@ -634,7 +634,7 @@ export const SituacaoPendencia = Schema.Literals([
 ]);
 export type SituacaoPendencia = typeof SituacaoPendencia.Type;
 
-export const AcaoPendencia = Schema.Literals(["marcar", "contestar", "sugerir", "reanalisar"]);
+export const AcaoPendencia = Schema.Literals(["marcar", "contestar", "sugerir", "revisarDeNovo"]);
 export type AcaoPendencia = typeof AcaoPendencia.Type;
 
 /** Um passo do histórico de uma pendência, com o uso da IA quando houve. */
@@ -665,8 +665,8 @@ export const PendenciaViva = Schema.Struct({
   chave: Schema.String,
   pendencia: PendenciaRevisao,
   situacao: SituacaoPendencia,
-  /** Quem decidiu a `resolvida`: a palavra da pessoa ou a reanálise do arquivo novo. */
-  resolvidaPor: Schema.NullOr(Schema.Literals(["pessoa", "reanalise"])),
+  /** Quem decidiu a `resolvida`: a palavra da pessoa ou a revisão do arquivo novo. */
+  resolvidaPor: Schema.NullOr(Schema.Literals(["pessoa", "novaRevisao"])),
   historico: Schema.Array(EventoPendencia),
   sugestao: Schema.NullOr(SugestaoTexto),
   /** "Discordo…" e "Sugerir texto" valem para fichas da revisão (não para a triagem). */
@@ -718,7 +718,7 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
    * e cópia comentada do DOCX. `arquivo` é o caminho absoluto escolhido no diálogo do sistema; `cnct`
    * (slug) e `forma` substituem o curso identificado no documento.
    */
-  Rpc.make("revisaoPpc.analisar", {
+  Rpc.make("revisaoPpc.revisar", {
     payload: Schema.Struct({
       arquivo: Schema.String,
       cnct: Schema.optionalKey(Schema.String),
@@ -728,7 +728,7 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
     error: FalhaRevisaoPpc,
   }),
   /**
-   * Prepara a revisão com IA (etapa 4) do arquivo já analisado: converte de novo, monta os blocos e
+   * Prepara a revisão com IA (etapa 4) do arquivo já revisado: converte de novo, monta os blocos e
    * os pedidos (o contexto normativo vem do `kb.sqlite`) e estima o custo. Nada vai ao provider.
    */
   Rpc.make("revisaoPpc.prepararIa", {
@@ -794,7 +794,7 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
     payload: Schema.Struct({
       lista: Schema.String,
       chave: Schema.String,
-      acao: Schema.Literals(["contestar", "sugerir", "reanalisar"]),
+      acao: Schema.Literals(["contestar", "sugerir", "revisarDeNovo"]),
       provider: Schema.optionalKey(Provider),
     }),
     success: EstimativaAcao,
@@ -821,7 +821,7 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
    * "Já resolvi" com o arquivo atualizado: reconfere só a ficha da pendência no `.docx` novo (o código e,
    * nas fichas da IA, um lote pequeno); a situação sai do resultado, nunca da palavra da pessoa.
    */
-  Rpc.make("revisaoPpc.reanalisar", {
+  Rpc.make("revisaoPpc.revisarDeNovo", {
     payload: Schema.Struct({
       lista: Schema.String,
       chave: Schema.String,
@@ -1028,7 +1028,7 @@ export type EstadoAtualizacao = typeof EstadoAtualizacao.Type;
 /**
  * Resultado de "aplicar agora" e de "voltar": a troca do arquivo só acontece com o servidor parado
  * (na abertura). `reiniciar`: nada rodando, a interface pede ao desktop para reiniciar o servidor;
- * `adiada`: uma análise ou revisão está rodando, e a troca fica para a próxima abertura; `nada`: não
+ * `adiada`: uma revisão de PPC (prévia ou com IA) está rodando, e a troca fica para a próxima abertura; `nada`: não
  * há o que trocar.
  */
 export const ResultadoTroca = Schema.Struct({

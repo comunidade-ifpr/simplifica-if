@@ -4,14 +4,15 @@
  * conversa com a tarefa e o pedido enviado. E os dois controles do começo: a escolha da IA e os anexos.
  */
 import type { Provider } from "@simplifica-if/contratos-app";
-import { ChevronDownIcon, PaperclipIcon, XIcon } from "lucide-react";
+import { PaperclipIcon, XIcon } from "lucide-react";
 import { useId } from "react";
+import { MarcaIa } from "../components/MarcaIa.tsx";
 import { Button } from "../components/ui/button.tsx";
+import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "../components/ui/select.tsx";
 import type { Api } from "../conexao/api.ts";
 import type { ControleConversa } from "../conversa/ControleConversa.ts";
 import { ponteDesktop } from "../ponte-desktop.ts";
 import { DESCRICOES, PROVIDERS } from "../providers.ts";
-import { LEMBRETE_ANEXO } from "../components/AvisoUso.tsx";
 import { usePreferencias } from "./perfil.ts";
 
 export async function comecarTarefa(
@@ -42,8 +43,9 @@ const NOMES_IA: Readonly<Record<Provider, string>> = {
 };
 
 /**
- * A escolha da IA. `compacta` (na caixa de pedido): só o nome e um chevron, discretos; o `<select>`
- * nativo continua por baixo (teclado, leitor de tela), sem a aparência nativa, e o rótulo "IA" só para o
+ * A escolha da IA, com a marca de cada uma ao lado do nome (no botão e na lista). É o `Select` do Base
+ * UI (combobox com teclado e leitor de tela), não o `<select>` nativo, cujas opções não aceitam ícone.
+ * `compacta` (na caixa de pedido): só a marca, o nome e um chevron, discretos, e o rótulo "IA" só para o
  * leitor de tela.
  */
 export function EscolhaIa({
@@ -59,86 +61,94 @@ export function EscolhaIa({
   // As IAs que a pessoa deixou de usar no app (Configurações › Sua IA) saem da lista, menos a escolhida.
   const desligadas = usePreferencias().preferencias?.iasDesligadas ?? [];
   const opcoes = PROVIDERS.filter((provider) => provider === valor || !desligadas.includes(provider));
-  if (compacta)
-    return (
-      <span className="relative inline-flex items-center text-sm">
-        <label htmlFor={id} className="sr-only">
-          IA
-        </label>
-        <select
-          id={id}
-          value={valor}
-          onChange={(evento) => aoMudar(evento.currentTarget.value as Provider)}
-          className="field-sizing-content h-8 cursor-pointer appearance-none rounded-full bg-transparent py-0 pr-7 pl-2.5 font-medium text-muted-foreground text-sm outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-          title={`IA: ${DESCRICOES[valor].nome}`}
-        >
-          {opcoes.map((provider) => (
-            <option key={provider} value={provider}>
+  const escolha = (
+    <Select
+      value={valor}
+      onValueChange={(provider) => provider !== null && aoMudar(provider)}
+      itemToStringLabel={(provider: Provider) => NOMES_IA[provider]}
+    >
+      <SelectTrigger
+        id={id}
+        variant={compacta ? "ghost" : "default"}
+        size="sm"
+        className={compacta ? "w-auto rounded-full font-medium" : "w-auto min-w-0"}
+        title={`IA: ${DESCRICOES[valor].nome}`}
+        {...(compacta ? { "aria-label": "IA" } : {})}
+      >
+        <SelectValue className="flex items-center gap-1.5">
+          {(provider: Provider) => (
+            <>
+              <MarcaIa provider={provider} />
               {NOMES_IA[provider]}
-            </option>
-          ))}
-        </select>
-        <ChevronDownIcon aria-hidden className="pointer-events-none absolute right-2 size-3.5 text-muted-foreground" />
-      </span>
-    );
+            </>
+          )}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectPopup alignItemWithTrigger={false}>
+        {opcoes.map((provider) => (
+          <SelectItem key={provider} value={provider}>
+            <span className="flex items-center gap-2">
+              <MarcaIa provider={provider} />
+              {NOMES_IA[provider]}
+            </span>
+          </SelectItem>
+        ))}
+      </SelectPopup>
+    </Select>
+  );
+  if (compacta) return escolha;
   return (
     <span className="flex items-center gap-1.5 text-sm">
       <label htmlFor={id} className="text-muted-foreground">
         IA
       </label>
-      <select
-        id={id}
-        value={valor}
-        onChange={(evento) => aoMudar(evento.currentTarget.value as Provider)}
-        className="h-8 rounded-md border border-input bg-background px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        title={DESCRICOES[valor].nome}
-      >
-        {opcoes.map((provider) => (
-          <option key={provider} value={provider}>
-            {NOMES_IA[provider]}
-          </option>
-        ))}
-      </select>
+      {escolha}
     </span>
   );
 }
 
 /**
- * "Anexar arquivo…" (só no app: o diálogo do sistema; o processo principal libera o arquivo no
- * servidor) e a lista dos escolhidos, com "Tirar".
+ * O clipe de "Anexar arquivo" (só no app: o diálogo do sistema; o processo principal libera o arquivo
+ * no servidor), um botão redondo só com o ícone, e a lista dos escolhidos, com "Tirar". Com `rotulo`
+ * (o campo de arquivo do formulário da tarefa), o botão mostra o texto ao lado do clipe.
  */
 export function Anexos({
   anexos,
   aoMudar,
   aceita,
-  rotulo = "Anexar arquivo…",
+  rotulo,
 }: {
   readonly anexos: ReadonlyArray<string>;
   readonly aoMudar: (anexos: ReadonlyArray<string>) => void;
   readonly aceita?: ReadonlyArray<string> | undefined;
-  readonly rotulo?: string;
+  readonly rotulo?: string | undefined;
 }) {
   const escolher = ponteDesktop()?.escolherAnexo;
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex min-w-0 flex-wrap items-center gap-2">
       {escolher === undefined ? (
         <span className="text-muted-foreground text-xs">Para anexar arquivos, use o app no computador.</span>
       ) : (
         <Button
           type="button"
-          variant="outline"
-          size="sm"
+          {...(rotulo === undefined
+            ? ({
+                variant: "ghost",
+                size: "icon-sm-pill",
+                className: "text-muted-foreground hover:text-foreground",
+                "aria-label": "Anexar arquivo",
+                title: "Anexar arquivo",
+              } as const)
+            : ({ variant: "outline", size: "sm" } as const))}
           onClick={async () => {
             const arquivo = await escolher(aceita);
             if (arquivo !== null && !anexos.includes(arquivo)) aoMudar([...anexos, arquivo]);
           }}
         >
-          <PaperclipIcon /> {rotulo}
+          <PaperclipIcon aria-hidden />
+          {rotulo}
         </Button>
       )}
-      <span className="text-muted-foreground text-xs" data-lembrete-anexo>
-        {LEMBRETE_ANEXO}
-      </span>
       {anexos.length === 0 ? null : (
         <ul className="flex flex-wrap gap-1.5" aria-label="Arquivos anexados">
           {anexos.map((arquivo) => (

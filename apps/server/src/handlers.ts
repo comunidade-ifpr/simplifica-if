@@ -148,7 +148,7 @@ const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
     const registrar = <A, E, R>(efeito: Effect.Effect<A, E, R>) =>
       efeito.pipe(Effect.tapError((erro) => Effect.logWarning("revisão de PPC falhou", erro)));
     return GrupoRevisaoPpc.of({
-      "revisaoPpc.analisar": (entrada) => viva.analisar(entrada).pipe(registrar),
+      "revisaoPpc.revisar": (entrada) => viva.revisar(entrada).pipe(registrar),
       "revisaoPpc.prepararIa": (entrada) => comAviso(ia.preparar(entrada).pipe(registrar)),
       "revisaoPpc.iniciarIa": ({ revisao }) => comAviso(ia.iniciar(revisao).pipe(registrar)),
       "revisaoPpc.pausarIa": ({ revisao }) => ia.pausar(revisao).pipe(registrar),
@@ -167,8 +167,8 @@ const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
         comAviso(viva.contestar(lista, chave, motivo, provider).pipe(registrar)),
       "revisaoPpc.sugerir": ({ lista, chave, provider }) =>
         comAviso(viva.sugerir(lista, chave, provider).pipe(registrar)),
-      "revisaoPpc.reanalisar": ({ lista, chave, arquivo, provider }) =>
-        comAviso(viva.reanalisar(lista, chave, arquivo, provider).pipe(registrar)),
+      "revisaoPpc.revisarDeNovo": ({ lista, chave, arquivo, provider }) =>
+        comAviso(viva.revisarDeNovo(lista, chave, arquivo, provider).pipe(registrar)),
       "revisaoPpc.gerarCopia": ({ lista }) => viva.gerarCopia(lista).pipe(registrar),
     });
   }),
@@ -190,7 +190,7 @@ const layerAtualizacao = GrupoAtualizacao.toLayer(
 
 /**
  * Os handlers dos nove grupos; pede o `Motor`, as `Conversas`, os `Relatos`, o `CatalogoSkills`, a
- * `AnalisePpc`, a `RevisaoIa`, o `Atualizador`, as `Preferencias` e o `Leitura`.
+ * `RevisorPpc`, a `RevisaoIa`, o `Atualizador`, as `Preferencias` e o `Leitura`.
  */
 export const layer = Layer.mergeAll(
   layerProviders,
