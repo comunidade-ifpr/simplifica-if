@@ -13,7 +13,7 @@
  * restringe esta.
  */
 import { ATUALIZACAO_FABRICA } from "./politica-atualizacao.ts";
-import { CURADORIA_FABRICA } from "./politica-curadoria.ts";
+import { CURADORIA_FABRICA, RE_REPOSITORIO } from "./politica-curadoria.ts";
 import * as NodePath from "node:path";
 import * as Schema from "effect/Schema";
 import { Provider } from "./eventos.ts";
@@ -88,7 +88,7 @@ export const Politica = Schema.Struct({
   }),
   /** "Isto está errado" (M1.12): o repositório da curadoria (`dono/repo`), `null` até ele abrir. Ver `politica-curadoria.ts`. */
   curadoria: Schema.Struct({
-    repositorio: Schema.NullOr(Schema.String.check(Schema.isPattern(/^[A-Za-z0-9-]+\/[A-Za-z0-9._-]+$/))),
+    repositorio: Schema.NullOr(Schema.String.check(Schema.isPattern(RE_REPOSITORIO))),
     rotulos: Schema.Array(Schema.String),
   }),
 });

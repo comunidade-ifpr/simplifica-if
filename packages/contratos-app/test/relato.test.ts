@@ -7,6 +7,8 @@ import {
   CORPO_PARA_COLAR,
   citacoesDe,
   ESCOLHAS_INICIAIS,
+  FONTE_RETIRADA,
+  neutralizarGithub,
   montarRelato,
   montarUrlIssue,
   type RascunhoRelato,
@@ -37,7 +39,7 @@ const RASCUNHO: RascunhoRelato = {
   },
   repositorio: "exemplo/simplifica-if",
   rotulos: ["relato-do-app"],
-  temPasta: true,
+  podeSalvar: true,
 };
 
 describe("trechos", () => {
@@ -85,7 +87,8 @@ describe("montarRelato", () => {
     expect(corpo).not.toContain("Veja também");
     expect(corpo).toContain("linha 2");
     expect(corpo.split(TRECHO_RETIRADO)).toHaveLength(4);
-    expect(corpo).not.toContain("tecnico-em-enfermagem`");
+    // A fonte retirada sai da lista e do texto da resposta.
+    expect(corpo).not.toContain("tecnico-em-enfermagem");
     expect(corpo).not.toContain("## Versões");
     expect(corpo).not.toContain("2.1.30");
   });
@@ -121,5 +124,42 @@ describe("montarUrlIssue", () => {
   it("recusa repositório que não é dono/repo", () => {
     expect(() => montarUrlIssue("https://evil.example/x", [], relato)).toThrow(/repositório inválido/);
     expect(() => montarUrlIssue("a/b/c", [], relato)).toThrow(/repositório inválido/);
+    expect(() => montarUrlIssue("dono/..", [], relato)).toThrow(/repositório inválido/);
+    expect(() => montarUrlIssue("dono/.", [], relato)).toThrow(/repositório inválido/);
+    expect(montarUrlIssue("dono/.github", [], relato).completa).toBe(true);
+  });
+});
+
+describe("issue pública", () => {
+  it("@menções e #referências entre crases, fora dos blocos de código; e-mail e títulos ficam", () => {
+    expect(neutralizarGithub("Fale com @fulana e @org/equipe sobre #12, dono/repo#3 e GH-7.")).toBe(
+      "Fale com `@fulana` e `@org/equipe` sobre `#12`, `dono/repo#3` e `GH-7`.",
+    );
+    expect(neutralizarGithub("## Pergunta\n> a@b.com.br, `@ja` e C# 7")).toBe(
+      "## Pergunta\n> a@b.com.br, `@ja` e C# 7",
+    );
+    expect(neutralizarGithub("> ```\n> @dentro #1\n> ```\n@fora")).toBe("> ```\n> @dentro #1\n> ```\n`@fora`");
+  });
+
+  it("montarRelato neutraliza título e corpo, e a prévia mostra o mesmo texto que sai", () => {
+    const { titulo, corpo } = montarRelato(
+      { ...RASCUNHO, pergunta: "Pergunte a @coordenacao sobre a issue #4" },
+      { ...ESCOLHAS_INICIAIS, descricao: "Veja #4 com @fulana" },
+    );
+    expect(titulo).toBe("Isto está errado: Veja `#4` com `@fulana`");
+    expect(corpo).toContain("> Pergunte a `@coordenacao` sobre a issue `#4`");
+    const url = new URL(montarUrlIssue("exemplo/simplifica-if", [], { titulo, corpo }).url);
+    expect(url.searchParams.get("body")).toBe(corpo);
+  });
+
+  it("fonte retirada: o link em Markdown fica só com o texto, o solto vira o aviso", () => {
+    const { corpo } = montarRelato(
+      {
+        ...RASCUNHO,
+        resposta: "Ver [Res. 1/2021](ifpr://norma/a#art1) e ifpr://norma/a#art1. Também ifpr://norma/a#art10.",
+      },
+      { ...ESCOLHAS_INICIAIS, retiradasCitacoes: new Set(["ifpr://norma/a#art1"]) },
+    );
+    expect(corpo).toContain(`> Ver Res. 1/2021 ${FONTE_RETIRADA} e ${FONTE_RETIRADA}. Também ifpr://norma/a#art10.`);
   });
 });

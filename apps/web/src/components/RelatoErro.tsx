@@ -3,13 +3,16 @@
  *
  * O servidor monta o rascunho da conversa gravada (`relato.preparar`: pergunta, resposta, fontes,
  * versões e o destino da política). Aqui a pessoa escreve o que está errado, retira os trechos que não
- * quer mandar e vê o relato exatamente como vai sair (`montarRelato`). O detector de dados pessoais
- * (M1.13) confere o relato montado e avisa, sem bloquear. Depois:
+ * quer mandar (trechos, fontes, versões) e vê o relato exatamente como vai sair (`montarRelato`, com
+ * `@menções` e `#referências` entre crases). O app não confere dado pessoal: perto de "Abrir no GitHub",
+ * um texto fixo diz que a issue fica pública e o que não pôr nela. Depois:
  *
  * - **Abrir no GitHub:** com o repositório da curadoria na política, abre `issues/new` já preenchida no
- *   navegador do sistema; a pessoa revisa e envia com a própria conta (o app não guarda token). Relato
- *   grande demais para a URL vai pela área de transferência, com o pedido de colar.
- * - **Salvar o relato:** um `.md` na pasta da tarefa.
+ *   navegador do sistema; a pessoa revisa e envia com a própria conta (o app não guarda token). O
+ *   relato é registrado antes de a página abrir. Relato grande demais para a URL vai pela área de
+ *   transferência, com o pedido de colar.
+ * - **Salvar o relato:** um `.md` em `Documentos/Simplifica IF/Relatos de erro/`, fora da pasta da
+ *   tarefa (a IA não o lê nos próximos turnos).
  * - **Copiar o relato:** o texto, para mandar por e-mail ou mensagem.
  *
  * Cada envio fica registrado no servidor local (`relato.registrar`) e marca o 👎 da resposta.
@@ -24,9 +27,8 @@ import {
   type ViaRelato,
   trechosDe,
 } from "@simplifica-if/contratos-app";
-import { descreverContagem, detectarDadosPessoais, trechoMascarado } from "@simplifica-if/dados-pessoais/detector";
 import { CopyIcon, ExternalLinkIcon, FlagIcon, SaveIcon, TriangleAlertIcon } from "lucide-react";
-import { type ReactNode, useEffect, useId, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useId, useState } from "react";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
 import { abrirExterno } from "../ponte-desktop.ts";
@@ -103,30 +105,6 @@ function Caixa({
   );
 }
 
-/** O aviso de dado pessoal no relato montado (o mesmo detector do anexo). */
-function AvisoDadosRelato({ texto }: { readonly texto: string }) {
-  const achados = useMemo(() => detectarDadosPessoais(texto), [texto]);
-  if (achados.length === 0) return null;
-  const porTipo = { cpf: 0, rg: 0, telefone: 0, email: 0 };
-  for (const achado of achados) porTipo[achado.tipo]++;
-  return (
-    <Alert variant="warning" role="alert" aria-label="Dado pessoal no relato">
-      <TriangleAlertIcon />
-      <AlertTitle>O relato parece ter dado pessoal: {descreverContagem(porTipo)}.</AlertTitle>
-      <AlertDescription>
-        <ul className="flex flex-col gap-0.5">
-          {achados.slice(0, 5).map((achado) => (
-            <li key={achado.inicio} className="font-mono text-xs">
-              {trechoMascarado(texto, achado, achados, 30)}
-            </li>
-          ))}
-        </ul>
-        <p>Retire o trecho que tem o dado, ou apague-o do que você escreveu, antes de enviar.</p>
-      </AlertDescription>
-    </Alert>
-  );
-}
-
 type Envio =
   | { readonly fase: "parado" }
   | { readonly fase: "enviando"; readonly via: ViaRelato }
@@ -162,12 +140,25 @@ function Formulario({
     if (envio.fase !== "enviando") setEnvio({ fase: "parado" });
   };
 
+  const registrar = (via: ViaRelato) =>
+    api.chamar((cliente) =>
+      cliente["relato.registrar"]({
+        sessao: rascunho.sessao,
+        turno: rascunho.turno,
+        via,
+        titulo: relato.titulo,
+        corpo: relato.corpo,
+      }),
+    );
+
   const enviar = async (via: ViaRelato) => {
     setEnvio({ fase: "enviando", via });
     try {
       let mensagem: string;
       if (via === "github") {
         const { url, completa } = montarUrlIssue(rascunho.repositorio ?? "", rascunho.rotulos, relato);
+        // Registrado antes de a página abrir: o registro local não depende de a pessoa enviar.
+        await registrar(via);
         const copiou = completa ? true : await copiar(relato.corpo);
         await abrirExterno(url);
         mensagem = completa
@@ -183,21 +174,14 @@ function Formulario({
           });
           return;
         }
+        await registrar(via);
         mensagem = "Relato copiado. Cole-o no e-mail ou na mensagem para a equipe que cuida da base.";
       } else {
-        mensagem = "";
+        const registrado = await registrar(via);
+        mensagem = `Relato salvo em Documentos › Simplifica IF › Relatos de erro: ${
+          registrado.arquivo?.split(/[\\/]/).at(-1) ?? ""
+        }. Ele fica fora da pasta da tarefa, e a IA não o lê.`;
       }
-      const registrado = await api.chamar((cliente) =>
-        cliente["relato.registrar"]({
-          sessao: rascunho.sessao,
-          turno: rascunho.turno,
-          via,
-          titulo: relato.titulo,
-          corpo: relato.corpo,
-        }),
-      );
-      if (via === "arquivo")
-        mensagem = `Relato salvo na pasta da tarefa: ${registrado.arquivo?.split(/[\\/]/).at(-1) ?? ""}.`;
       setEnvio({ fase: "feito", mensagem });
       aoRegistrado();
     } catch (falha) {
@@ -210,7 +194,7 @@ function Formulario({
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm">
-        O relato vai para a equipe que cuida da base do Simplifica IF. Abaixo está exatamente o que vai: tire o que não
+        O relato é para a equipe que cuida da base do Simplifica IF. Abaixo está exatamente o que vai: tire o que não
         quiser mandar. Anexos e arquivos da pasta da tarefa nunca vão.
       </p>
       <div className="flex flex-col gap-1.5">
@@ -241,6 +225,7 @@ function Formulario({
         {rascunho.citacoes.length === 0 ? null : (
           <fieldset className="flex flex-col gap-1">
             <legend className="mb-1 font-medium text-sm">Fontes citadas</legend>
+            <p className="text-muted-foreground text-xs">Tirar uma fonte a tira da lista e do texto da resposta.</p>
             {rascunho.citacoes.map((link) => (
               <Caixa
                 key={link}
@@ -264,9 +249,19 @@ function Formulario({
           {versoes.versaoProvider === null ? "" : ` ${versoes.versaoProvider}`}
         </Caixa>
       </div>
-      <AvisoDadosRelato texto={textoCompleto} />
       <section aria-label="Prévia do relato" className="flex flex-col gap-1">
         <h4 className="font-medium text-sm">Assim vai o relato</h4>
+        {rascunho.repositorio === null || rascunho.rotulos.length === 0 ? null : (
+          <p className="text-muted-foreground text-xs">
+            Na issue, com {rascunho.rotulos.length === 1 ? "o rótulo" : "os rótulos"}{" "}
+            {rascunho.rotulos.map((rotulo) => (
+              <code key={rotulo} className="rounded bg-muted px-1">
+                {rotulo}
+              </code>
+            ))}
+            . Menções (@) e números de issue (#) vão entre crases, para não avisar ninguém no GitHub.
+          </p>
+        )}
         <pre className="max-h-72 overflow-auto whitespace-pre-wrap rounded-md border border-border bg-muted p-3 text-xs">
           {textoCompleto}
         </pre>
@@ -277,10 +272,20 @@ function Formulario({
           a equipe.
         </p>
       ) : (
-        <p className="text-muted-foreground text-sm">
-          “Abrir no GitHub” abre a página da equipe no navegador, já preenchida; você revisa e envia com a sua conta do
-          GitHub. Sem conta, salve ou copie o relato.
-        </p>
+        <Alert variant="warning" aria-label="A issue fica pública">
+          <TriangleAlertIcon />
+          <AlertTitle>No GitHub, o relato fica público.</AlertTitle>
+          <AlertDescription>
+            <p>
+              Qualquer pessoa na internet pode ler a issue, e os buscadores a indexam. Não ponha nome de estudante nem
+              de servidor, nem conteúdo de documento de acesso restrito: retire esses trechos acima antes de abrir.
+            </p>
+            <p>
+              “Abrir no GitHub” abre a página da equipe no navegador, já preenchida; você revisa e envia com a sua
+              conta. Sem conta, ou para não publicar, salve ou copie o relato e mande à equipe.
+            </p>
+          </AlertDescription>
+        </Alert>
       )}
       <div className="flex flex-wrap gap-2">
         {rascunho.repositorio === null ? null : (
@@ -289,7 +294,7 @@ function Formulario({
             Abrir no GitHub
           </Button>
         )}
-        {rascunho.temPasta ? (
+        {rascunho.podeSalvar ? (
           <Button
             type="button"
             variant={rascunho.repositorio === null ? "default" : "outline"}
@@ -297,7 +302,7 @@ function Formulario({
             onClick={() => void enviar("arquivo")}
           >
             {envio.fase === "enviando" && envio.via === "arquivo" ? <Spinner /> : <SaveIcon />}
-            Salvar o relato na pasta
+            Salvar o relato
           </Button>
         ) : null}
         <Button type="button" variant="outline" disabled={ocupado} onClick={() => void enviar("copia")}>

@@ -7,7 +7,9 @@
  *   da CLI, se a detecção responder em `prazoDeteccao`) e o destino da política de fábrica
  *   (`curadoria.repositorio`). Nunca lê a pasta da tarefa nem os anexos.
  * - `registrar`: grava o relato aprovado (título e corpo, como a pessoa os viu) na tabela `relatos`
- *   e, com `via: "arquivo"`, o `.md` na pasta da tarefa. Nada sai do computador por aqui.
+ *   e, com `via: "arquivo"`, o `.md` em `Documentos/Simplifica IF/Relatos de erro/`, fora da pasta da
+ *   tarefa (a IA não o lê nos próximos turnos). Nada sai do computador por aqui; a interface registra
+ *   antes de abrir a issue no navegador.
  */
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
@@ -102,7 +104,6 @@ export const make = Effect.fn("Relatos.make")(function* (opcoes: OpcoesRelatos =
     const skill =
       registro.tarefa === undefined ? undefined : catalogo.resumos.find((resumo) => resumo.nome === registro.tarefa);
     const deteccao = yield* motor.detectar(registro.provider).pipe(Effect.timeoutOption(prazo));
-    const pasta = yield* pastas.ver(sessao, registro.pastaTrabalho).pipe(Effect.option);
     return {
       sessao,
       turno,
@@ -123,7 +124,7 @@ export const make = Effect.fn("Relatos.make")(function* (opcoes: OpcoesRelatos =
       },
       repositorio: curadoria.repositorio,
       rotulos: [...curadoria.rotulos],
-      temPasta: Option.match(pasta, { onNone: () => false, onSome: (ver) => ver.gerida }),
+      podeSalvar: pastas.raiz !== "",
     } satisfies RascunhoRelato;
   });
 
@@ -138,12 +139,10 @@ export const make = Effect.fn("Relatos.make")(function* (opcoes: OpcoesRelatos =
     let arquivo: string | null = null;
     if (entrada.via === "arquivo") {
       const dia = DateTime.formatIsoDateUtc(yield* DateTime.now);
+      // O nome diz de que tarefa é (a pasta da conversa), e o arquivo fica em "Relatos de erro".
+      const tarefa = registro.pastaTrabalho.split(/[\\/]/).findLast((parte) => parte !== "") ?? "Conversa";
       arquivo = yield* pastas
-        .gravarRelato(
-          registro.pastaTrabalho,
-          `Relato de erro - ${dia} (mensagem ${entrada.turno}).md`,
-          `# ${entrada.titulo}\n\n${entrada.corpo}`,
-        )
+        .gravarRelato(`${tarefa} - ${dia} (mensagem ${entrada.turno}).md`, `# ${entrada.titulo}\n\n${entrada.corpo}`)
         .pipe(Effect.mapError((falha) => new FalhaRelato({ motivo: falha.motivo })));
     }
     const id = yield* historico.registrarRelato({

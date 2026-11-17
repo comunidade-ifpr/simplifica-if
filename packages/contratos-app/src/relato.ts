@@ -5,15 +5,19 @@
  *   tarefa (skill) e a IA. Nunca os anexos nem os arquivos da pasta da tarefa: só o que a pessoa vê na
  *   tela e aprova. O servidor monta o rascunho (`relato.preparar`) a partir da conversa gravada.
  * - **Consentimento:** a interface mostra o relato exatamente como vai sair (`montarRelato`), e a
- *   pessoa retira trechos da pergunta e da resposta, fontes ou as versões antes de enviar.
+ *   pessoa retira trechos da pergunta e da resposta, fontes (da lista e do texto) ou as versões antes de
+ *   enviar. A issue é **pública**: a tela diz isso junto do botão, e `@menções` e `#referências` vão
+ *   entre crases para não avisar ninguém nem ligar outra issue (`neutralizarGithub`).
  * - **Destino:** o repositório da curadoria na política de fábrica (`curadoria.repositorio`). O app não
  *   guarda token do GitHub: abre `issues/new` já preenchida no navegador do sistema (`montarUrlIssue`),
  *   onde a pessoa revisa e envia com a própria conta. Com o repositório `null` (ainda não é público),
- *   ou para quem não tem conta, "Salvar o relato" grava um `.md` na pasta da tarefa e "Copiar" copia
+ *   ou para quem não tem conta, "Salvar o relato" grava um `.md` em `Relatos de erro`, fora da pasta da
+ *   tarefa, e "Copiar" copia
  *   o texto. Cada envio fica registrado no servidor local (`relato.registrar`).
  */
 import { SessaoDesconhecida } from "@simplifica-if/motor/erros";
 import { Provider } from "@simplifica-if/motor/eventos";
+import { RE_REPOSITORIO } from "@simplifica-if/motor/politica-curadoria";
 import * as Schema from "effect/Schema";
 import { Rpc, RpcGroup } from "effect/rpc";
 
@@ -45,8 +49,8 @@ export const RascunhoRelato = Schema.Struct({
   /** O `dono/repo` da curadoria na política de fábrica; `null` enquanto o repositório não é público. */
   repositorio: Schema.NullOr(Schema.String),
   rotulos: Schema.Array(Schema.String),
-  /** A conversa tem pasta de tarefa do app (onde "Salvar o relato" grava). */
-  temPasta: Schema.Boolean,
+  /** Há onde "Salvar o relato" gravar (`Documentos/Simplifica IF/Relatos de erro/`, fora do alcance da IA). */
+  podeSalvar: Schema.Boolean,
 });
 export type RascunhoRelato = typeof RascunhoRelato.Type;
 
@@ -78,8 +82,8 @@ export class GrupoRelato extends RpcGroup.make(
   }),
   /**
    * Registra o relato como a pessoa o aprovou (título e corpo já montados) e, com `via: "arquivo"`,
-   * grava `Relato de erro (turno N).md` na pasta da tarefa. Nada sai do computador por aqui: a issue é
-   * a pessoa quem envia, no navegador.
+   * grava `<tarefa> - <data> (mensagem N).md` em `Documentos/Simplifica IF/Relatos de erro/`, fora da
+   * pasta da tarefa. Nada sai do computador por aqui: a issue é a pessoa quem envia, no navegador.
    */
   Rpc.make("relato.registrar", {
     payload: Schema.Struct({
@@ -143,6 +147,45 @@ export const NOMES_PROVIDER: Readonly<Record<Provider, string>> = {
   antigravity: "Gemini (Antigravity)",
 };
 
+export const FONTE_RETIRADA = "_[fonte retirada por quem enviou]_";
+
+const escaparRegex = (texto: string) => texto.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/** Tira as fontes retiradas também do texto: o link em Markdown fica só com o texto dele, e o solto sai. */
+function semFontes(texto: string, retiradas: ReadonlySet<string>): string {
+  let saida = texto;
+  for (const link of retiradas) {
+    const escapado = escaparRegex(link);
+    saida = saida
+      .replace(new RegExp(String.raw`\[([^\]\n]*)\]\(${escapado}\)`, "g"), `$1 ${FONTE_RETIRADA}`)
+      .replace(new RegExp(`${escapado}(?![A-Za-z0-9._~:/#-]*[A-Za-z0-9_~/#-])`, "g"), FONTE_RETIRADA);
+  }
+  return saida;
+}
+
+/**
+ * A issue fica pública: `@nome` avisaria a pessoa ou a equipe com aquele nome no GitHub, e `#123`
+ * apontaria para outra issue. Os dois vão entre crases (código, que o GitHub não liga), fora dos blocos
+ * de código. É uma mudança visível, e a prévia a mostra.
+ */
+export function neutralizarGithub(texto: string): string {
+  let emCodigo = false;
+  return texto
+    .split("\n")
+    .map((linha) => {
+      if (/^(?:>\s?)*\s*(?:```|~~~)/.test(linha)) {
+        emCodigo = !emCodigo;
+        return linha;
+      }
+      if (emCodigo) return linha;
+      return linha
+        .replace(/(?<![\w`@./])@[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})(?:\/[A-Za-z0-9._-]{1,100})?(?![\w`@])/g, "`$&`")
+        .replace(/(?<![\w`&#/])(?:[A-Za-z0-9-]{1,39}\/[A-Za-z0-9._-]{1,100})?#\d{1,10}(?![\w`])/g, "`$&`")
+        .replace(/(?<![\w`])GH-\d{1,10}(?![\w`])/g, "`$&`");
+    })
+    .join("\n");
+}
+
 /** Um texto em citação de Markdown (`> `), com os trechos retirados trocados pelo aviso. */
 function citar(texto: string, retirados: ReadonlySet<number>): string {
   const trechos = trechosDe(texto);
@@ -190,13 +233,14 @@ export function montarRelato(
 ): { readonly titulo: string; readonly corpo: string } {
   const citacoes = rascunho.citacoes.filter((link) => !escolhas.retiradasCitacoes.has(link));
   const descricao = escolhas.descricao.trim();
+  const retirar = (texto: string) => semFontes(texto, escolhas.retiradasCitacoes);
   const partes = [
     "## O que está errado",
     descricao === "" ? "_(não descrito)_" : descricao,
     "## Pergunta",
-    citar(rascunho.pergunta, escolhas.retiradosPergunta),
+    citar(retirar(rascunho.pergunta), escolhas.retiradosPergunta),
     "## Resposta da IA",
-    citar(rascunho.resposta, escolhas.retiradosResposta),
+    citar(retirar(rascunho.resposta), escolhas.retiradosResposta),
     "## Fontes citadas na resposta",
     citacoes.length === 0
       ? rascunho.citacoes.length === 0
@@ -209,7 +253,7 @@ export function montarRelato(
     "---",
     "_Enviado pelo Simplifica IF (“Isto está errado”). O relato não traz anexos nem arquivos da pasta da tarefa._",
   );
-  return { titulo: tituloRelato(descricao), corpo: `${partes.join("\n\n")}\n` };
+  return { titulo: neutralizarGithub(tituloRelato(descricao)), corpo: neutralizarGithub(`${partes.join("\n\n")}\n`) };
 }
 
 /* ================================================================== issue */
@@ -234,7 +278,7 @@ export function montarUrlIssue(
   relato: { readonly titulo: string; readonly corpo: string },
   limite: number = LIMITE_URL_ISSUE,
 ): { readonly url: string; readonly completa: boolean } {
-  if (!/^[A-Za-z0-9-]+\/[A-Za-z0-9._-]+$/.test(repositorio)) throw new Error(`repositório inválido: ${repositorio}`);
+  if (!RE_REPOSITORIO.test(repositorio)) throw new Error(`repositório inválido: ${repositorio}`);
   const base = `https://github.com/${repositorio}/issues/new`;
   const consulta = (corpo: string) =>
     [

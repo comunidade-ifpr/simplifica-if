@@ -9,6 +9,12 @@
  * - `rotulos`: os rótulos da issue (o GitHub só os aplica se existirem no repositório e se quem envia
  *   puder rotular; senão, ignora).
  */
+/**
+ * O `dono/repo` aceito: dono com letras, dígitos e hífen; repositório com letras, dígitos, `.`, `_` e
+ * `-`, nunca `.` nem `..` (que mudariam o caminho da URL).
+ */
+export const RE_REPOSITORIO = /^[A-Za-z0-9-]+\/(?!\.\.?$)[A-Za-z0-9._-]+$/;
+
 export const CURADORIA_FABRICA = {
   repositorio: null as string | null,
   rotulos: ["relato-do-app"] as ReadonlyArray<string>,
