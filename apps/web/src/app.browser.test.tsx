@@ -17,6 +17,7 @@ import {
   pararServidoresTeste,
   simularInstalacaoClaude,
 } from "../test/navegador.tsx";
+import { ALTURA_BARRA_TITULO } from "./barra-titulo.ts";
 import type { PonteDesktop } from "./ponte-desktop.ts";
 
 let servidor: ServidorTeste;
@@ -466,4 +467,65 @@ it('Configurações antes do aviso aceito: sem "Entrar" até o "Entendi"', async
   await aviso.getByRole("button", { name: "Entendi" }).click();
   await expect.element(gemini.getByRole("button", { name: "Entrar" })).toBeVisible();
   await expect.element(aviso.getByRole("button", { name: "Entendi" })).not.toBeInTheDocument();
+});
+
+/* O cabeçalho como barra de título do desktop (sem a barra do sistema; `barra-titulo.ts`). */
+
+function cabecalho(): HTMLElement {
+  return document.querySelector("header")!;
+}
+
+it("Barra de título: no navegador, o cabeçalho não é barra de título", async () => {
+  await using _app = await montarApp(servidor);
+  await expect.element(page.getByRole("link", { name: "Configurações" })).toBeVisible();
+  expect(cabecalho().classList.contains("drag-region")).toBe(false);
+  expect(getComputedStyle(cabecalho()).getPropertyValue("-webkit-app-region")).not.toBe("drag");
+});
+
+it("Barra de título: no desktop (macOS), o cabeçalho arrasta a janela e abre espaço para os semáforos, menos em tela cheia", async () => {
+  let avisar: (telaCheia: boolean) => void = () => {};
+  window.simplifica = {
+    conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
+    janela: {
+      plataforma: "darwin",
+      telaCheia: async () => false,
+      aoMudarTelaCheia: (ouvinte) => {
+        avisar = ouvinte;
+        return () => {
+          avisar = () => {};
+        };
+      },
+    },
+  } satisfies PonteDesktop;
+  await using _app = await montarApp(servidor);
+
+  const configuracoes = page.getByRole("link", { name: "Configurações" });
+  await expect.element(configuracoes).toBeVisible();
+  const header = cabecalho();
+  const estilo = getComputedStyle(header);
+  expect(estilo.getPropertyValue("-webkit-app-region")).toBe("drag");
+  expect(header.getBoundingClientRect().height).toBe(ALTURA_BARRA_TITULO);
+  expect(estilo.paddingLeft).toBe("78px");
+  // Os links recebem o clique e o foco.
+  expect(getComputedStyle(configuracoes.element()).getPropertyValue("-webkit-app-region")).toBe("no-drag");
+  await userEvent.tab();
+  expect(document.activeElement?.textContent).toContain("Simplifica IF");
+
+  avisar(true);
+  await expect.poll(() => getComputedStyle(cabecalho()).paddingLeft).toBe("16px");
+  avisar(false);
+  await expect.poll(() => getComputedStyle(cabecalho()).paddingLeft).toBe("78px");
+});
+
+it("Barra de título: no desktop (Windows e Linux), o cabeçalho deixa a direita para os botões do sistema", async () => {
+  window.simplifica = {
+    conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
+    janela: { plataforma: "win32", telaCheia: async () => false, aoMudarTelaCheia: () => () => {} },
+  } satisfies PonteDesktop;
+  await using _app = await montarApp(servidor);
+  await expect.element(page.getByRole("link", { name: "Configurações" })).toBeVisible();
+  const estilo = getComputedStyle(cabecalho());
+  expect(estilo.paddingLeft).toBe("16px");
+  // Sem o overlay de verdade, vale a largura reservada de 138px, mais a folga.
+  expect(Number.parseFloat(estilo.paddingRight)).toBeGreaterThan(138);
 });

@@ -22,6 +22,7 @@ import {
   dialog,
   ipcMain,
   Menu,
+  nativeTheme,
   protocol,
   session,
   shell,
@@ -40,6 +41,7 @@ import {
   type ControleAtualizacaoApp,
 } from "./atualizacaoApp.ts";
 import { ESQUEMA, HOST_APP, resolverConfiguracao, VARIAVEIS, type Configuracao } from "./configuracao.ts";
+import { corFundoJanela, opcoesBarraTitulo } from "./janela.ts";
 import { CANAIS, type Conexao } from "./ponteDesktop.ts";
 import { abrirLog } from "./registro.ts";
 import {
@@ -280,7 +282,9 @@ function criarJanela(): void {
     minWidth: 800,
     minHeight: 560,
     show: false,
-    backgroundColor: "#ffffff",
+    // Sem a barra de título do sistema: o cabeçalho verde da interface é a barra (`janela.ts`).
+    ...opcoesBarraTitulo(process.platform),
+    backgroundColor: corFundoJanela(nativeTheme.shouldUseDarkColors),
     webPreferences: {
       preload: NodePath.join(__dirname, "preload.cjs"),
       contextIsolation: true,
@@ -295,6 +299,12 @@ function criarJanela(): void {
   nova.on("closed", () => {
     if (janela === nova) janela = undefined;
   });
+  // No macOS, em tela cheia os semáforos somem: a interface tira o recuo deles.
+  const avisarTelaCheia = (telaCheia: boolean) => {
+    if (!nova.isDestroyed()) nova.webContents.send(CANAIS.telaCheiaMudou, telaCheia);
+  };
+  nova.on("enter-full-screen", () => avisarTelaCheia(true));
+  nova.on("leave-full-screen", () => avisarTelaCheia(false));
 
   tentativasCarga = 0;
   nova.webContents.on("did-fail-load", (_evento, codigo, descricao, url, quadroPrincipal) => {
@@ -320,7 +330,21 @@ function criarJanela(): void {
   void nova.loadURL(configuracao.urlJanela).catch(() => undefined);
 }
 
+// T3: apps/desktop/src/window/DesktopWindow.ts (syncWindowAppearance) — o tema do sistema mudou: o
+// fundo da janela e o overlay dos botões acompanham.
+function sincronizarAparencia(): void {
+  if (janela === undefined || janela.isDestroyed()) return;
+  janela.setBackgroundColor(corFundoJanela(nativeTheme.shouldUseDarkColors));
+  const { titleBarOverlay } = opcoesBarraTitulo(process.platform);
+  if (titleBarOverlay !== undefined) janela.setTitleBarOverlay(titleBarOverlay);
+}
+
 /* ============================================================ IPC */
+
+ipcMain.handle(CANAIS.telaCheia, (evento) => {
+  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
+  return janela?.isFullScreen() ?? false;
+});
 
 ipcMain.handle(CANAIS.conexao, async (evento) => {
   if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
@@ -673,6 +697,7 @@ if (!app.requestSingleInstanceLock()) {
     session.defaultSession.setPermissionCheckHandler((_conteudo, permissao) => permitidas.has(permissao));
     if (configuracao.interface.tipo === "pasta") registrarProtocolo(configuracao.interface.pasta);
     Menu.setApplicationMenu(menuAplicacao());
+    nativeTheme.on("updated", sincronizarAparencia);
     registrar(
       `interface: ${configuracao.urlJanela}; base: ${configuracao.banco}; estado: ${configuracao.pastaEstado}; ` +
         `skills: ${configuracao.pastaSkills ?? "nenhuma"}; atualização: ${configuracao.pastaAtualizacao ?? "desligada"}`,

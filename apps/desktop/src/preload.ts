@@ -35,6 +35,17 @@ const ponte: PonteDesktop = {
   mostrarArquivoTarefa: async (caminho: string) => {
     await ipcRenderer.invoke(CANAIS.mostrarArquivoTarefa, caminho);
   },
+  janela: {
+    plataforma: process.platform,
+    telaCheia: () => ipcRenderer.invoke(CANAIS.telaCheia) as Promise<boolean>,
+    aoMudarTelaCheia: (ouvinte) => {
+      const aoReceber = (_evento: unknown, telaCheia: unknown) => ouvinte(telaCheia === true);
+      ipcRenderer.on(CANAIS.telaCheiaMudou, aoReceber);
+      return () => {
+        ipcRenderer.removeListener(CANAIS.telaCheiaMudou, aoReceber);
+      };
+    },
+  },
 };
 
 contextBridge.exposeInMainWorld(NOME_PONTE, ponte);
