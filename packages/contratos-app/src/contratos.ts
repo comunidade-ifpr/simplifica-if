@@ -152,6 +152,8 @@ export const EstadoLogin = Schema.Struct({
   fase: Schema.Literals(["parado", "iniciando", "aguardando", "verificando", "concluido", "falhou", "cancelado"]),
   url: Schema.optionalKey(Schema.String),
   mensagem: Schema.optionalKey(Schema.String),
+  /** O texto técnico da CLI; a interface o mostra em "Detalhes técnicos". */
+  detalhe: Schema.optionalKey(Schema.String),
 });
 export type EstadoLogin = typeof EstadoLogin.Type;
 
@@ -704,7 +706,11 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
     error: Schema.Union([FalhaRevisaoPpc, AvisoNaoAceito]),
   }),
   /** Começa ou retoma a revisão preparada (ou pausada); só os blocos pendentes vão ao provider. */
-  Rpc.make("revisaoPpc.iniciarIa", { payload: EntradaRevisaoIa, success: EstadoRevisaoIa, error: Schema.Union([FalhaRevisaoPpc, AvisoNaoAceito]) }),
+  Rpc.make("revisaoPpc.iniciarIa", {
+    payload: EntradaRevisaoIa,
+    success: EstadoRevisaoIa,
+    error: Schema.Union([FalhaRevisaoPpc, AvisoNaoAceito]),
+  }),
   /** Pausa: os blocos em andamento param e voltam a pendentes; os prontos ficam gravados. */
   Rpc.make("revisaoPpc.pausarIa", { payload: EntradaRevisaoIa, success: EstadoRevisaoIa, error: FalhaRevisaoPpc }),
   /** O estado agora e a cada mudança (bloco pronto, pausa, fim); termina quando a revisão termina. */

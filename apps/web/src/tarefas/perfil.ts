@@ -9,6 +9,7 @@ import type * as Effect from "effect/Effect";
 import { useEffect, useSyncExternalStore } from "react";
 import type { Api } from "../conexao/api.ts";
 import type { ClienteApp } from "../conexao/Conexao.ts";
+import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi, useEstadoConexao } from "../contexto.tsx";
 
 export { linhaDoPerfil } from "@simplifica-if/contratos-app";
@@ -16,8 +17,14 @@ export type { Perfil };
 
 type Chamada = (cliente: ClienteApp) => Effect.Effect<Preferencias, unknown>;
 
+/** O que a loja tem: as preferências, ou o erro da última leitura (a tela oferece "Tentar de novo"). */
+export interface EstadoPreferencias {
+  readonly valor: Preferencias | undefined;
+  readonly erro: MensagemErro | undefined;
+}
+
 class LojaPreferencias {
-  valor: Preferencias | undefined = undefined;
+  estado: EstadoPreferencias = { valor: undefined, erro: undefined };
   private carregando: Promise<void> | undefined;
   private readonly ouvintes = new Set<() => void>();
 
@@ -31,10 +38,10 @@ class LojaPreferencias {
     this.ouvintes.add(ouvinte);
     return () => void this.ouvintes.delete(ouvinte);
   };
-  readonly obter = () => this.valor;
+  readonly obter = () => this.estado;
 
-  private trocar(valor: Preferencias) {
-    this.valor = valor;
+  private trocar(estado: EstadoPreferencias) {
+    this.estado = estado;
     for (const ouvinte of this.ouvintes) ouvinte();
   }
 
@@ -42,18 +49,24 @@ class LojaPreferencias {
     this.carregando ??= this.api
       .chamar((cliente) => cliente["preferencias.ler"]({}))
       .then(
-        (valor) => this.trocar(valor),
-        () => {
-          // Tenta de novo na próxima tela que pedir.
+        (valor) => this.trocar({ valor, erro: undefined }),
+        (falha: unknown) => {
+          // A tela mostra o erro com "Tentar de novo" (`recarregar`), em vez de girar para sempre.
           this.carregando = undefined;
+          this.trocar({ valor: this.estado.valor, erro: explicarErro(falha) });
         },
       );
     return this.carregando;
   }
 
+  recarregar(): Promise<void> {
+    this.trocar({ valor: this.estado.valor, erro: undefined });
+    return this.carregar();
+  }
+
   async mudar(chamada: Chamada): Promise<Preferencias> {
     const valor = await this.api.chamar(chamada);
-    this.trocar(valor);
+    this.trocar({ valor, erro: undefined });
     return valor;
   }
 }
@@ -66,8 +79,11 @@ const lojaDe = (api: Api): LojaPreferencias => {
 };
 
 export interface UsoPreferencias {
-  /** `undefined` enquanto carrega (ou sem servidor). */
+  /** `undefined` enquanto carrega, sem servidor ou quando a leitura falhou (`erro`). */
   readonly preferencias: Preferencias | undefined;
+  /** A leitura falhou: a tela mostra o erro e "Tentar de novo" (`recarregar`). */
+  readonly erro: MensagemErro | undefined;
+  readonly recarregar: () => void;
   readonly gravarPerfil: (perfil: Perfil) => Promise<Preferencias>;
   readonly apagarPerfil: () => Promise<Preferencias>;
   readonly aceitarAviso: () => Promise<Preferencias>;
@@ -79,12 +95,14 @@ export function usePreferencias(): UsoPreferencias {
   const api = useApi();
   const loja = lojaDe(api);
   const conectado = useEstadoConexao().fase === "conectada";
-  const preferencias = useSyncExternalStore(loja.observar, loja.obter);
+  const { valor: preferencias, erro } = useSyncExternalStore(loja.observar, loja.obter);
   useEffect(() => {
     if (conectado) void loja.carregar();
   }, [loja, conectado]);
   return {
     preferencias,
+    erro,
+    recarregar: () => void loja.recarregar(),
     gravarPerfil: (perfil) => loja.mudar((cliente) => cliente["preferencias.gravarPerfil"]({ perfil })),
     apagarPerfil: () => loja.mudar((cliente) => cliente["preferencias.apagarPerfil"]({})),
     aceitarAviso: () => loja.mudar((cliente) => cliente["preferencias.aceitarAviso"]({})),

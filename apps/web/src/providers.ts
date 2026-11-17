@@ -14,7 +14,7 @@ export interface DescricaoProvider {
 }
 
 export const DESCRICOES: Readonly<Record<Provider, DescricaoProvider>> = {
-  claude: { nome: "Claude", conta: "Conta da Anthropic (Claude Pro ou Max)" },
+  claude: { nome: "Claude", conta: "Conta Claude Pro, Max, Team ou Enterprise (ou chave de API)" },
   codex: { nome: "ChatGPT (Codex)", conta: "Conta da OpenAI (ChatGPT Plus ou Pro)" },
   antigravity: { nome: "Gemini (Antigravity)", conta: "Conta do Google" },
 };

@@ -10,13 +10,13 @@ import { FolderCogIcon, RotateCcwIcon, Trash2Icon } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { AvisoUso } from "../components/AvisoUso.tsx";
 import { FormPerfil } from "../components/FormPerfil.tsx";
-import { Spinner } from "../components/ui/spinner.tsx";
 import { CartaoProvider } from "../components/CartaoProvider.tsx";
 import { Atualizacoes } from "../configuracoes/Atualizacoes.tsx";
 import { Button, buttonVariants } from "../components/ui/button.tsx";
 import { useConversa, useEstadoConexao } from "../contexto.tsx";
 import { PROVIDERS } from "../providers.ts";
 import { linhaDoPerfil, usePreferencias } from "../tarefas/perfil.ts";
+import { EsperaPreferencias } from "../components/EsperaPreferencias.tsx";
 
 export const Route = createFileRoute("/configuracoes")({ component: Configuracoes });
 
@@ -44,7 +44,7 @@ function SeuPerfil() {
   const [gravado, setGravado] = useState(false);
   // Remonta o formulário depois de apagar, para ele voltar vazio.
   const [versao, setVersao] = useState(0);
-  if (preferencias === undefined) return <Spinner />;
+  if (preferencias === undefined) return <EsperaPreferencias telaInteira={false} />;
   const linha = linhaDoPerfil(preferencias.perfil);
   return (
     <div className="flex flex-col gap-4">
@@ -88,7 +88,9 @@ function SeuPerfil() {
 
 function Configuracoes() {
   const conexao = useEstadoConexao();
-  const { preferencias, usarIa } = usePreferencias();
+  const { preferencias, usarIa, aceitarAviso } = usePreferencias();
+  // Enquanto o aviso não foi aceito, ele vem com "Entendi" e os cartões não oferecem "Entrar".
+  const avisoPendente = preferencias !== undefined && preferencias.avisoAceitoEm === undefined;
   const [, conversa] = useConversa();
   const navegar = useNavigate();
   return (
@@ -96,13 +98,14 @@ function Configuracoes() {
       <div className="mx-auto flex max-w-5xl flex-col gap-8 p-6">
         <h1 className="font-bold text-2xl tracking-tight">Configurações</h1>
         <Secao id="ia" titulo="Sua IA">
-          <AvisoUso />
+          <AvisoUso {...(avisoPendente ? { aoEntender: () => void aceitarAviso() } : {})} />
           {conexao.fase === "sem-servidor" ? null : (
             <div className="grid gap-4 md:grid-cols-3">
               {PROVIDERS.map((provider) => (
                 <CartaoProvider
                   key={provider}
                   provider={provider}
+                  avisoPendente={avisoPendente}
                   uso={{
                     usada: !(preferencias?.iasDesligadas ?? []).includes(provider),
                     aoMudar: (usar) => void usarIa(provider, usar),

@@ -99,6 +99,12 @@ function PassoLogin({ estado }: { readonly estado: EstadoLogin }) {
         </a>
       ) : null}
       {estado.mensagem === undefined ? null : <p className="text-muted-foreground text-xs">{estado.mensagem}</p>}
+      {estado.detalhe === undefined ? null : (
+        <details className="text-muted-foreground text-xs">
+          <summary className="cursor-pointer">Detalhes técnicos</summary>
+          <p className="mt-1 font-mono">{estado.detalhe}</p>
+        </details>
+      )}
     </div>
   );
 }
@@ -124,12 +130,15 @@ export function CartaoProvider({
   provider,
   aoMudarEstado,
   uso,
+  avisoPendente = false,
 }: {
   readonly provider: Provider;
   /** Cada detecção concluída (as boas-vindas seguem quando a IA fica pronta). */
   readonly aoMudarEstado?: (estado: EstadoProvider) => void;
   /** Em Configurações: o "Não usar no app" / "Voltar a usar". */
   readonly uso?: UsoNoApp;
+  /** O aviso de uso ainda não foi aceito: sem "Entrar" até lá (M1.8). */
+  readonly avisoPendente?: boolean;
 }) {
   const api = useApi();
   const descricao = DESCRICOES[provider];
@@ -308,10 +317,16 @@ export function CartaoProvider({
             <PassoManual orientacao={orientacao(provider, "instalar")} />
           ) : null}
           {estado.instalado && !estado.autenticado && estado.podeEntrar ? (
-            <Button className="self-start" onClick={entrar} disabled={entrando}>
-              {entrando ? <Spinner /> : null}
-              Entrar
-            </Button>
+            avisoPendente ? (
+              <p className="text-muted-foreground text-sm">
+                Para entrar, leia o aviso de uso acima e clique em "Entendi".
+              </p>
+            ) : (
+              <Button className="self-start" onClick={entrar} disabled={entrando}>
+                {entrando ? <Spinner /> : null}
+                Entrar
+              </Button>
+            )
           ) : null}
           {estado.instalado && !estado.autenticado && !estado.podeEntrar && provider !== "claude" ? (
             <PassoManual orientacao={orientacao(provider, "entrar")} />

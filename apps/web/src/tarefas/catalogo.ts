@@ -36,7 +36,8 @@ export const TAREFAS_NATIVAS: ReadonlyArray<Extract<Tarefa, { tipo: "nativa" }>>
     resumo:
       "Confere o PPC (.docx) com as normas, o CNCT e a matriz da base, e devolve uma cópia do documento com comentários.",
     area: "ensino",
-    publico: ["coordenacao-curso", "pedagogia", "direcao-ensino", "proens", "dens"],
+    // Docentes entram: participam da elaboração do PPC no NDE.
+    publico: ["coordenacao-curso", "pedagogia", "docente", "direcao-ensino", "proens", "dens"],
     rota: "/revisao-ppc",
   },
 ];

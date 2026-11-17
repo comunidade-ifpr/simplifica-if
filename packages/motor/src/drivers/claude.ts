@@ -226,6 +226,14 @@ async function* nuncaEntrega(sinal: AbortSignal): AsyncGenerator<SDKUserMessage>
   await new Promise<void>((resolver) => sinal.addEventListener("abort", () => resolver(), { once: true }));
 }
 
+/**
+ * A versão na primeira linha do `claude --version`, se ela tem a forma do Claude Code
+ * (`2.1.30 (Claude Code)`); senão, `undefined`.
+ */
+export function versaoClaudeValida(linha: string): string | undefined {
+  return /^(\d+\.\d+\.\d+\S*) \(Claude Code\)\s*$/.exec(linha.trim())?.[1];
+}
+
 export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly ambiente: Ambiente }) {
   /**
    * O `claude` do PATH ou, sem ele, o da pasta do instalador oficial (`~/.local/bin`): a pessoa que
@@ -234,28 +242,46 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
    * `claude.exe` do pacote (T3).
    */
   const path = yield* Path.Path;
-  const localizarExecutavel = Effect.gen(function* () {
+  const sistemaArquivos = yield* FileSystem.FileSystem;
+  /** Os candidatos, em ordem: o do PATH e os da pasta do instalador oficial. */
+  const candidatos = Effect.gen(function* () {
     const casa = opcoes.ambiente.HOME ?? opcoes.ambiente.USERPROFILE;
-    let local = yield* localizar("claude", opcoes.ambiente);
-    for (const nome of casa === undefined ? [] : ["claude", "claude.exe"]) {
-      if (Option.isSome(local)) break;
-      local = yield* localizar(path.join(casa!, ".local", "bin", nome), opcoes.ambiente);
+    const achados: Array<string> = [];
+    for (const nome of [
+      "claude",
+      ...(casa === undefined
+        ? []
+        : [path.join(casa, ".local", "bin", "claude"), path.join(casa, ".local", "bin", "claude.exe")]),
+    ]) {
+      const local = yield* localizar(nome, opcoes.ambiente);
+      if (Option.isSome(local) && !achados.includes(local.value)) achados.push(local.value);
     }
-    return Option.isSome(local)
-      ? yield* resolveClaudeSdkExecutablePath(local.value, limparAmbiente(opcoes.ambiente))
-      : undefined;
+    return achados;
+  });
+  /**
+   * O primeiro candidato que responde ao `--version` como o Claude Code (`versaoClaudeValida`): um
+   * arquivo `claude` qualquer no PATH não conta como instalado.
+   */
+  const localizarExecutavel = Effect.gen(function* () {
+    for (const candidato of yield* candidatos) {
+      const resolvido = yield* resolveClaudeSdkExecutablePath(candidato, limparAmbiente(opcoes.ambiente));
+      const linha = yield* primeiraLinha(resolvido, ["--version"], opcoes.ambiente);
+      if (Option.isSome(linha) && versaoClaudeValida(linha.value) !== undefined) return resolvido;
+    }
+    return undefined;
   });
   const servicosLocalizar = yield* Effect.context<Effect.Services<typeof localizarExecutavel>>();
   let executavel = yield* localizarExecutavel;
-  /** O executável achado; enquanto não acha, procura de novo a cada pedido (sem reiniciar o app). */
-  const executavelAtual = Effect.suspend(() =>
-    executavel !== undefined
-      ? Effect.succeed(executavel)
-      : localizarExecutavel.pipe(
-          Effect.provideContext(servicosLocalizar),
-          Effect.tap((achado) => Effect.sync(() => void (executavel = achado))),
-        ),
-  );
+  /**
+   * O executável achado e conferido. Enquanto não acha, ou se o guardado deixou de existir (a pessoa
+   * desinstalou ou trocou de instalação), procura de novo a cada pedido, sem reiniciar o app.
+   */
+  const executavelAtual = Effect.gen(function* () {
+    if (executavel !== undefined && (yield* sistemaArquivos.exists(executavel).pipe(Effect.orElseSucceed(() => false))))
+      return executavel;
+    executavel = yield* localizarExecutavel.pipe(Effect.provideContext(servicosLocalizar));
+    return executavel;
+  });
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
   const fs = yield* FileSystem.FileSystem;
   const aleatorio = yield* SecureRandom.SecureRandom;

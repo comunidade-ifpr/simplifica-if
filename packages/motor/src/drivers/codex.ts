@@ -301,6 +301,37 @@ export function classificarComandoCodex(p: {
   };
 }
 
+/**
+ * Os hosts da página de login que o `codex app-server` devolve na `authUrl` (`codex-cli` 0.169.0, em
+ * 16/11/2026: `https://auth.openai.com/oauth/authorize?…`). Outra URL não vai ao navegador.
+ */
+const HOSTS_LOGIN_CODEX = new Set(["auth.openai.com"]);
+
+/** A `authUrl` é a página oficial de login da OpenAI, em HTTPS? */
+export function authUrlOficialCodex(url: string): boolean {
+  try {
+    const lida = new URL(url);
+    return (
+      lida.protocol === "https:" && HOSTS_LOGIN_CODEX.has(lida.hostname) && lida.username === "" && lida.port === ""
+    );
+  } catch {
+    return false;
+  }
+}
+
+/** O fim do login (`account/login/completed`) como a interface o mostra: a frase e, à parte, o detalhe. */
+export function fimLoginCodex(fim: {
+  readonly success: boolean;
+  readonly error?: string | null | undefined;
+}): Omit<EstadoLogin, "provider"> {
+  if (fim.success) return { fase: "concluido" };
+  return {
+    fase: "falhou",
+    mensagem: "O login não foi concluído. Tente de novo; se continuar, feche o navegador e entre outra vez.",
+    ...(fim.error ? { detalhe: fim.error } : {}),
+  };
+}
+
 export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
   readonly ambiente: Ambiente;
   /**
@@ -550,9 +581,7 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
         Effect.gen(function* () {
           const esperado = yield* Deferred.await(idLogin);
           if (typeof fim.loginId === "string" && fim.loginId !== esperado) return;
-          yield* fim.success
-            ? terminar({ fase: "concluido" })
-            : terminar({ fase: "falhou", ...(fim.error ? { mensagem: fim.error } : {}) });
+          yield* terminar(fimLoginCodex(fim));
         }),
       );
       const inicio = yield* cliente
@@ -560,6 +589,13 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
         .pipe(Effect.mapError(Canal.falhaDe(PROVIDER, "entrar")));
       if (inicio.type !== "chatgpt") {
         return yield* new FalhaProvider({ provider: PROVIDER, operacao: "entrar", detalhe: `resposta ${inicio.type}` });
+      }
+      if (!authUrlOficialCodex(inicio.authUrl)) {
+        return yield* new FalhaProvider({
+          provider: PROVIDER,
+          operacao: "entrar",
+          detalhe: "a página de login devolvida não é a da OpenAI (auth.openai.com)",
+        });
       }
       yield* Deferred.succeed(idLogin, inicio.loginId);
       yield* emitir({ fase: "aguardando", url: inicio.authUrl });

@@ -32,11 +32,12 @@ describe("cartões pelo perfil", () => {
   });
 
   it("docente: o Início só com as que servem (e as sem público); Ver todas com o resto depois", () => {
-    assert.deepStrictEqual(nomes(tarefasDoInicio(SKILLS, perfil("docente"))), ["calendario", "geral"]);
+    // "Analisar um PPC" serve à docência (NDE).
+    assert.deepStrictEqual(nomes(tarefasDoInicio(SKILLS, perfil("docente"))), ["analisar-ppc", "calendario", "geral"]);
     assert.deepStrictEqual(nomes(tarefasDoPerfil(SKILLS, perfil("docente"))), [
+      "analisar-ppc",
       "calendario",
       "geral",
-      "analisar-ppc",
       SKILL_EXEMPLO,
     ]);
   });
@@ -49,10 +50,10 @@ describe("cartões pelo perfil", () => {
     ]);
   });
 
-  it("nenhuma serve: o Início não fica vazio", () => {
+  it('o Início nunca fica vazio: a nativa serve a toda função, e "outra" vê tudo', () => {
     const soDocente = [skill("calendario", ["docente"])];
     assert.deepStrictEqual(nomes(tarefasDoInicio(soDocente, perfil("pedagogia"))), ["analisar-ppc"]);
-    assert.deepStrictEqual(nomes(tarefasDoInicio([skill("x", ["dens"])], perfil("docente"))), ["analisar-ppc", "x"]);
+    assert.deepStrictEqual(nomes(tarefasDoInicio([skill("x", ["dens"])], perfil("outra"))), ["analisar-ppc", "x"]);
   });
 });
 

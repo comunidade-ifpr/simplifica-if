@@ -69,7 +69,7 @@ export type Preferencias = typeof Preferencias.Type;
  */
 export class AvisoNaoAceito extends Schema.TaggedError<AvisoNaoAceito>()("AvisoNaoAceito", {}) {
   override get message(): string {
-    return "Antes de usar a IA, leia o aviso de uso e clique em \"Entendi\" (Início ou Configurações › Sua IA).";
+    return 'Antes de usar a IA, leia o aviso de uso e clique em "Entendi" (Início ou Configurações › Sua IA).';
   }
 }
 

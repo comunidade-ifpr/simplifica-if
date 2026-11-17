@@ -375,7 +375,9 @@ it("Primeiro uso: aviso, conectar a IA (Claude guiado e Codex), perfil, tarefa d
   // O Início leva às boas-vindas; o aviso de uso vem antes dos passos.
   await expect.element(page.getByRole("heading", { name: "Boas-vindas ao Simplifica IF" })).toBeVisible();
   const aviso = page.getByRole("region", { name: "O que vai para a IA" });
-  await expect.element(aviso.getByText(/Não anexe nem cole documento com dado pessoal/)).toBeVisible();
+  await expect.element(aviso.getByText(/Não anexe, não cole e não deixe na pasta da tarefa/)).toBeVisible();
+  await expect.element(aviso.getByText(/os arquivos que estiverem na pasta da tarefa/)).toBeVisible();
+  await expect.element(aviso.getByText(/também fica guardado na empresa dela/)).toBeVisible();
   expect(app.roteador.state.location.pathname).toBe("/boas-vindas");
   semIngles();
   await capturar("10-boas-vindas-aviso");
@@ -452,4 +454,16 @@ it("Primeiro uso: aviso, conectar a IA (Claude guiado e Codex), perfil, tarefa d
   await expect.element(page.getByText("Nenhum perfil salvo.")).toBeVisible();
   await app.roteador.navigate({ to: "/" });
   await expect.element(page.getByRole("link", { name: /Preencha seu perfil/ })).toBeVisible();
+});
+
+it('Configurações antes do aviso aceito: sem "Entrar" até o "Entendi"', async () => {
+  const novo = await iniciarServidorTeste({ atrasoLogin: 300, primeiroUso: true });
+  await using _app = await montarApp(novo, "/configuracoes");
+  const aviso = page.getByRole("region", { name: "O que vai para a IA" });
+  const gemini = page.getByRole("region", { name: "Gemini (Antigravity)" });
+  await expect.element(gemini.getByText(/Para entrar, leia o aviso de uso acima/)).toBeVisible();
+  await expect.element(gemini.getByRole("button", { name: "Entrar" })).not.toBeInTheDocument();
+  await aviso.getByRole("button", { name: "Entendi" }).click();
+  await expect.element(gemini.getByRole("button", { name: "Entrar" })).toBeVisible();
+  await expect.element(aviso.getByRole("button", { name: "Entendi" })).not.toBeInTheDocument();
 });

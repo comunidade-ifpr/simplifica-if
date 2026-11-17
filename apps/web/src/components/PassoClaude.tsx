@@ -75,7 +75,8 @@ export function PassoClaude({
     <div className="flex flex-col gap-3 text-sm" data-passo-claude>
       <p className="text-muted-foreground">
         Para usar o Claude, o Simplifica IF precisa do <strong>Claude Code</strong>, o programa oficial da Anthropic, e
-        de uma conta Claude Pro ou Max. São dois passos, feitos uma vez só:
+        de uma conta Claude Pro, Max, Team ou Enterprise (ou uma chave de API da Anthropic). São dois passos, feitos uma
+        vez só:
       </p>
       <ol className="flex list-decimal flex-col gap-3 pl-5">
         <li className={estado.instalado ? "text-muted-foreground" : undefined}>

@@ -26,6 +26,7 @@ import { useCatalogo } from "../tarefas/catalogo.ts";
 import { comecarTarefa } from "../tarefas/comecar.tsx";
 import { type Exemplo, exemplosDoPerfil } from "../tarefas/exemplo.ts";
 import { usePreferencias } from "../tarefas/perfil.ts";
+import { EsperaPreferencias } from "../components/EsperaPreferencias.tsx";
 
 export const Route = createFileRoute("/boas-vindas")({ component: BoasVindas });
 
@@ -184,7 +185,7 @@ function PassoPerfil({ aoSeguir }: { readonly aoSeguir: () => void }) {
   return (
     <Moldura passo="perfil" titulo="Conte quem você é">
       {preferencias === undefined ? (
-        <Spinner />
+        <EsperaPreferencias telaInteira={false} />
       ) : (
         <FormPerfil
           inicial={preferencias.perfil}
@@ -339,13 +340,7 @@ function BoasVindas() {
   const [prontas, setProntas] = useState<ReadonlySet<Provider>>(new Set());
 
   if (conexao.fase === "sem-servidor") return null;
-  if (preferencias === undefined) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <Spinner />
-      </div>
-    );
-  }
+  if (preferencias === undefined) return <EsperaPreferencias />;
 
   const mudarPronta = (provider: Provider, pronta: boolean) =>
     setProntas((antes) => {
