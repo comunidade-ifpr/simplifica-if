@@ -41,6 +41,7 @@ import { Spinner } from "../components/ui/spinner.tsx";
 import { Textarea } from "../components/ui/textarea.tsx";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
+import { dolares } from "../lib/formato.ts";
 import { ponteDesktop } from "../ponte-desktop.ts";
 import { dataBrasileira, descreverCurso, ROTULO_ESTADO } from "./agrupar.ts";
 import { CopiaComentada, DetalhesPendencia } from "./componentes.tsx";
@@ -161,10 +162,7 @@ export function ListaViva({ lista: id, aoApagar }: { readonly lista: string; rea
         {uso > 0 ? (
           <p className="text-muted-foreground text-xs">
             Esta lista já usou a IA nas ações
-            {lista.uso.custoUsd > 0
-              ? ` (pago por uso, cerca de US$ ${lista.uso.custoUsd.toFixed(3).replace(".", ",")})`
-              : ""}
-            .
+            {lista.uso.custoUsd > 0 ? ` (pago por uso, cerca de ${dolares(lista.uso.custoUsd)})` : ""}.
           </p>
         ) : null}
         <CopiaComentada arquivo={r.arquivoComentado} />

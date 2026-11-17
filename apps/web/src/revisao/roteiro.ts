@@ -4,6 +4,7 @@
  * de cada ação com IA.
  */
 import type { EstimativaAcao, ListaPendencias, PendenciaViva, SituacaoPendencia } from "@simplifica-if/contratos-app";
+import { dolares } from "../lib/formato.ts";
 
 export const ROTULO_SITUACAO_PENDENCIA: Record<SituacaoPendencia, string> = {
   aberta: "Aberta",
@@ -65,6 +66,6 @@ export function avisoCobertura(lista: ListaPendencias): string | null {
 /** "Estimativa: cerca de 10 s (pago por uso, uns US$ 0,03)…" ou "Sem IA…" (sem a contagem de tokens, M1.14). */
 export function textoEstimativaAcao(e: EstimativaAcao): string {
   if (e.tokensEntrada + e.tokensSaida === 0) return "Sem IA: o app confere no código.";
-  const custo = e.custoUsd === null ? "" : ` (pago por uso, uns US$ ${e.custoUsd.toFixed(3).replace(".", ",")})`;
+  const custo = e.custoUsd === null ? "" : ` (pago por uso, uns ${dolares(e.custoUsd)})`;
   return `Estimativa: cerca de ${e.segundos} s${custo}. Soma ao uso desta revisão.`;
 }

@@ -324,7 +324,10 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
       ...(info?.subscriptionType ? { plano: info.subscriptionType } : {}),
       ...(autenticado ? {} : { mensagem: "Claude sem login: rode `claude` no Terminal e entre na conta" }),
       ...(mcpGerenciado
-        ? { aviso: "esta máquina tem MCP gerenciado pela organização (managed-mcp.json); o Claude não carrega o ifpr" }
+        ? {
+            aviso:
+              "Uma configuração da sua instituição neste computador impede o Claude de consultar a base do IFPR. Fale com a TI do campus (arquivo managed-mcp.json).",
+          }
         : {}),
     } satisfies DeteccaoProvider;
   }).pipe(

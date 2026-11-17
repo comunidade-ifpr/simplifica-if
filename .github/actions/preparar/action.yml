@@ -19,7 +19,8 @@ runs:
         COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
       run: |
         # o corepack vai fixado à parte: o Node 25 deixou de distribuí-lo
-        npm install --global corepack@0.36.0
+        # --force: a imagem do Windows já traz yarn e pnpm globais, e o corepack sobrescreve os atalhos (EEXIST)
+        npm install --global --force corepack@0.36.0
         corepack enable
         pnpm --version
 

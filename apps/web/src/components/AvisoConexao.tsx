@@ -1,10 +1,12 @@
 /**
  * O aviso no topo das telas quando a interface não fala com o servidor local: sem servidor configurado
- * (o navegador em desenvolvimento, sem `?servidor=…&token=…`) ou depois de uma queda.
+ * (o navegador em desenvolvimento, sem `?servidor=…&token=…`) ou depois de uma queda. O texto é o da
+ * pessoa (M1.14); o técnico, com o que fazer em desenvolvimento, fica em "Detalhes técnicos".
  */
 import { PlugZapIcon, ServerOffIcon } from "lucide-react";
-import { mensagemFalha } from "../conexao/ingresso.ts";
+import { detalheFalha, mensagemFalha } from "../conexao/ingresso.ts";
 import { useEstadoConexao } from "../contexto.tsx";
+import { DetalhesTecnicos } from "./AvisoErro.tsx";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert.tsx";
 
 export function AvisoConexao() {
@@ -13,13 +15,10 @@ export function AvisoConexao() {
     return (
       <Alert variant="warning">
         <ServerOffIcon />
-        <AlertTitle>O app não sabe onde está o servidor local</AlertTitle>
+        <AlertTitle>{mensagemFalha("sem-servidor")}</AlertTitle>
         <AlertDescription>
-          <p>
-            No aplicativo de desktop, o servidor inicia sozinho. No navegador, em desenvolvimento, inicie o servidor
-            (veja o <code>apps/web/README.md</code>) e abra esta página com{" "}
-            <code>?servidor=&lt;porta&gt;&amp;token=…</code>.
-          </p>
+          <p>Feche e abra o Simplifica IF de novo. Se continuar, avise a equipe do Simplifica IF.</p>
+          <DetalhesTecnicos detalhe={detalheFalha("sem-servidor")} />
         </AlertDescription>
       </Alert>
     );
@@ -30,12 +29,8 @@ export function AvisoConexao() {
         <PlugZapIcon />
         <AlertTitle>{mensagemFalha(estado.motivo)}</AlertTitle>
         <AlertDescription>
-          <p>
-            O app continua tentando. Se o problema persistir, feche e abra o Simplifica IF de novo.
-            {estado.motivo === "origem-recusada"
-              ? " Em desenvolvimento, inicie o servidor com --origem igual ao endereço desta página."
-              : ""}
-          </p>
+          <p>O app continua tentando. Se não voltar em alguns segundos, feche e abra o Simplifica IF de novo.</p>
+          <DetalhesTecnicos detalhe={detalheFalha(estado.motivo)} />
         </AlertDescription>
       </Alert>
     );

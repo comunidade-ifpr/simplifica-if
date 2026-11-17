@@ -58,10 +58,10 @@ describe("textos da seção Atualizações", () => {
     ).toBeNull();
   });
 
-  it("a confirmação de Voltar diz para qual versão, de qual e que o servidor reinicia", () => {
+  it("a confirmação de Voltar diz para qual versão, de qual e que o app reinicia", () => {
     const texto = textoConfirmarVolta(estado);
     expect(texto).toContain("volta de 20/11/2026 para 13/11/2026");
-    expect(texto).toContain("servidor local reinicia");
+    expect(texto).toContain("o Simplifica IF reinicia");
     expect(textoConfirmarVolta({ ...estado, anterior: null })).toBeNull();
   });
 });

@@ -46,7 +46,7 @@ describe("roteiro na tela", () => {
     );
     expect(
       textoEstimativaAcao({ provider: "claude", tokensEntrada: 6000, tokensSaida: 450, segundos: 6, custoUsd: 0.025 }),
-    ).toBe("Estimativa: cerca de 6 s (pago por uso, uns US$ 0,025). Soma ao uso desta revisão.");
+    ).toBe("Estimativa: cerca de 6 s (pago por uso, uns US$\u00a00,025). Soma ao uso desta revisão.");
     expect(
       textoEstimativaAcao({ provider: "claude", tokensEntrada: 0, tokensSaida: 0, segundos: 5, custoUsd: 0 }),
     ).toBe("Sem IA: o app confere no código.");

@@ -1,6 +1,6 @@
 /**
  * O estado da conexão com o servidor local, no cabeçalho: conectado, conectando, ou a próxima tentativa
- * com o motivo da queda e "Tentar agora".
+ * com o motivo da queda (em termos da pessoa, M1.14) e "Tentar agora".
  */
 import { useEffect, useState } from "react";
 import { mensagemFalha } from "../conexao/ingresso.ts";
@@ -29,7 +29,7 @@ export function textoConexao(estado: EstadoConexao, segundos: number): string {
     case "reconectando":
       return segundos > 0 ? `Sem conexão. Nova tentativa em ${segundos} s` : "Sem conexão. Tentando de novo…";
     case "sem-servidor":
-      return "Sem servidor";
+      return "Sem conexão";
   }
 }
 

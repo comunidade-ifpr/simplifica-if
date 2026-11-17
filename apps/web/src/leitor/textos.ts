@@ -4,6 +4,7 @@
  * referência formal, no feitio da ABNT NBR 6023 para legislação).
  */
 import type { LinkLido } from "@simplifica-if/contratos-app";
+import { dataCurta, dataPorExtenso } from "../lib/formato.ts";
 
 export type FichaNorma = Extract<LinkLido, { tipo: "norma" }>["resposta"]["dados"];
 export type DispositivoLido = Extract<LinkLido, { tipo: "dispositivo" }>["resposta"]["dados"]["dispositivos"][number];
@@ -11,35 +12,7 @@ export type Relacao = FichaNorma["relacoes"]["saida"][number];
 
 /* ================================================================== datas */
 
-const FORMATO_DATA = new Intl.DateTimeFormat("pt-BR", {
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-  timeZone: "UTC",
-});
-const FORMATO_EXTENSO = new Intl.DateTimeFormat("pt-BR", {
-  day: "numeric",
-  month: "long",
-  year: "numeric",
-  timeZone: "UTC",
-});
-
-const comoData = (iso: string): Date | null => {
-  const data = new Date(`${iso.slice(0, 10)}T00:00:00Z`);
-  return Number.isNaN(data.getTime()) ? null : data;
-};
-
-/** `2026-11-12` → "12/11/2026"; o que não é data fica como veio. */
-export function dataCurta(iso: string): string {
-  const data = comoData(iso);
-  return data === null ? iso : FORMATO_DATA.format(data);
-}
-
-/** `2026-11-11` → "11 de novembro de 2026". */
-export function dataPorExtenso(iso: string): string {
-  const data = comoData(iso);
-  return data === null ? iso : FORMATO_EXTENSO.format(data);
-}
+export { dataCurta, dataPorExtenso } from "../lib/formato.ts";
 
 /* ================================================================== selo de vigência */
 

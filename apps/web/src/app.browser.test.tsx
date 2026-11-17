@@ -15,6 +15,7 @@ import {
   editarArquivoDeTarefa,
   iniciarServidorTeste,
   montarApp,
+  montarAppComOrigem,
   pararServidoresTeste,
   simularInstalacaoClaude,
 } from "../test/navegador.tsx";
@@ -727,4 +728,38 @@ it("Barra de título: no desktop (Windows e Linux), o cabeçalho deixa a direita
   expect(estilo.paddingLeft).toBe("16px");
   // Sem o overlay de verdade, vale a largura reservada de 138px, mais a folga.
   expect(Number.parseFloat(estilo.paddingRight)).toBeGreaterThan(138);
+});
+
+it("Ver todas as tarefas e os avisos de conexão, sem inglês nem jargão (M1.14)", async () => {
+  {
+    await using app = await montarApp(servidor, "/tarefas");
+    await expect.element(page.getByRole("link", { name: /^Analisar um PPC/ }).first()).toBeVisible();
+    expect(app.roteador.state.location.pathname).toBe("/tarefas");
+    semIngles();
+  }
+
+  // Sem servidor configurado: o aviso diz o que fazer, e o técnico fica em "Detalhes técnicos".
+  {
+    await using _app = await montarAppComOrigem({ tipo: "ausente" });
+    await expect
+      .element(page.getByText("O Simplifica IF não achou a parte do app que roda no seu computador."))
+      .toBeVisible();
+    await expect.element(page.getByRole("status").getByText("Sem conexão")).toBeVisible();
+    await expect.element(page.getByText("Detalhes técnicos")).toBeVisible();
+    semIngles();
+  }
+
+  // Um endereço que não responde: depois da segunda tentativa, o aviso da queda.
+  {
+    await using _app = await montarAppComOrigem(
+      { tipo: "navegador", fonte: "url", credenciais: { urlServidor: "http://127.0.0.1:9", token: "x" } },
+      "/",
+      { atraso: () => 50 },
+    );
+    // "Não foi possível falar com…" (sem resposta) ou "perdeu o contato com…" (a conexão não abriu).
+    await expect.element(page.getByText(/a parte do app que roda no seu computador/).first()).toBeVisible();
+    await expect.element(page.getByText("O app continua tentando.", { exact: false })).toBeVisible();
+    await expect.element(page.getByRole("button", { name: "Tentar agora" })).toBeVisible();
+    semIngles();
+  }
 });

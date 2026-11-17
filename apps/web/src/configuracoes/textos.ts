@@ -3,12 +3,13 @@
  * dos componentes para o teste de unidade.
  */
 import type { EstadoAtualizacao, NovidadeBase } from "@simplifica-if/contratos-app";
+import { dataCurta, dataHora, diaDe } from "../lib/formato.ts";
 
 /** `2026.11.20` → `20/11/2026`; outra forma passa como veio. */
 export function versaoComoData(versao: string): string {
   const partes = /^(\d{4})\.(\d{2})\.(\d{2})(?:\.(\d+))?$/.exec(versao);
   if (partes === null) return versao;
-  return `${partes[3]}/${partes[2]}/${partes[1]}${partes[4] === undefined ? "" : ` (${partes[4]}ª do dia)`}`;
+  return `${dataCurta(`${partes[1]}-${partes[2]}-${partes[3]}`)}${partes[4] === undefined ? "" : ` (${partes[4]}ª do dia)`}`;
 }
 
 /** A frase sobre a base em uso: "Base de 20/11/2026, revisão abc1234 (baixada pela atualização)". */
@@ -43,7 +44,7 @@ export function descreverSituacao(estado: EstadoAtualizacao): string {
     default:
       return estado.ultimaConferencia === null
         ? "Ainda não procurou atualizações."
-        : `Em dia. Última procura: ${new Date(estado.ultimaConferencia).toLocaleString("pt-BR")}.`;
+        : `Em dia. Última procura: ${dataHora(estado.ultimaConferencia)}.`;
   }
 }
 
@@ -72,11 +73,11 @@ export function avisoSemConfirmacao(estado: EstadoAtualizacao, agora: number): s
   if (estado.desligada !== null || estado.manifestoGeradoEm === null) return null;
   const dias = (agora - Date.parse(estado.manifestoGeradoEm)) / (24 * 60 * 60 * 1000);
   if (!(dias > DIAS_SEM_CONFIRMACAO)) return null;
-  return `Não foi possível confirmar que a base está atualizada: o último manifesto do canal é de ${new Date(estado.manifestoGeradoEm).toLocaleDateString("pt-BR")}. Confira a conexão ou avise a equipe do Simplifica IF.`;
+  return `Não foi possível confirmar que a base está atualizada: o último manifesto do canal é de ${diaDe(estado.manifestoGeradoEm)}. Confira a conexão ou avise a equipe do Simplifica IF.`;
 }
 
 /** O texto da confirmação de "Voltar": qual versão volta, qual sai, e que o servidor reinicia. */
 export function textoConfirmarVolta(estado: EstadoAtualizacao): string | null {
   if (estado.anterior === null) return null;
-  return `A base volta de ${versaoComoData(estado.base.versao)} para ${versaoComoData(estado.anterior)}, e o servidor local reinicia (uma análise em andamento adia a troca para a próxima abertura). A versão de ${versaoComoData(estado.base.versao)} não será baixada de novo; só uma mais nova.`;
+  return `A base volta de ${versaoComoData(estado.base.versao)} para ${versaoComoData(estado.anterior)}, e o Simplifica IF reinicia (uma análise em andamento adia a troca para a próxima abertura). A versão de ${versaoComoData(estado.base.versao)} não será baixada de novo; só uma mais nova.`;
 }

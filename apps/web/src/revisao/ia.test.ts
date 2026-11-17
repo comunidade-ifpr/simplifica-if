@@ -17,7 +17,7 @@ const estimativa = {
 describe("revisão com IA na tela", () => {
   test("a estimativa em linguagem de quem usa o plano", () => {
     expect(textoEstimativa(estimativa)).toBe(
-      "20 critérios em 6 etapas. Estimativa aproximada: cerca de 3 min e algo como 5% de uma janela de 5 horas do plano Pro (referência provisória: as empresas de IA não publicam o tamanho da janela). Pago por uso, isso custaria cerca de US$ 0,33.",
+      "20 critérios em 6 etapas. Estimativa aproximada: cerca de 3 min e algo como 5% de uma janela de 5 horas do plano Pro (referência provisória: as empresas de IA não publicam o tamanho da janela). Pago por uso, isso custaria cerca de US$\u00a00,33.",
     );
   });
 
