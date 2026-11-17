@@ -48,6 +48,15 @@ export interface Alteracao {
   readonly estado?: EstadoConversa;
 }
 
+export interface NovoRelato {
+  readonly conversa: string;
+  readonly turno: number;
+  readonly via: "github" | "arquivo" | "copia";
+  readonly titulo: string;
+  readonly corpo: string;
+  readonly arquivo: string | null;
+}
+
 export class Historico extends Context.Service<
   Historico,
   {
@@ -71,6 +80,10 @@ export class Historico extends Context.Service<
     readonly registrarAnexo: (pasta: string, nome: string) => Effect.Effect<void>;
     /** Os nomes (relativos à pasta) dos arquivos anexados pelo app. */
     readonly anexos: (pasta: string) => Effect.Effect<ReadonlySet<string>>;
+    /** Registra um relato de "Isto está errado" (M1.12) e devolve o id. */
+    readonly registrarRelato: (relato: NovoRelato) => Effect.Effect<number>;
+    /** Os relatos de uma conversa, do mais antigo ao mais novo. */
+    readonly relatos: (conversa: string) => Effect.Effect<ReadonlyArray<NovoRelato & { readonly id: number }>>;
   }
 >()("@simplifica-if/server/persistencia/Historico") {}
 
@@ -255,6 +268,28 @@ const make = Effect.gen(function* () {
     return new Set(linhas.map((linha) => linha.nome)) as ReadonlySet<string>;
   }, Effect.orDie);
 
+  const registrarRelato = Effect.fn("Historico.registrarRelato")(function* (relato: NovoRelato) {
+    const data = yield* agora;
+    const linhas = yield* sql<{ readonly id: number }>`
+      INSERT INTO relatos (conversa_id, turno, via, titulo, corpo, arquivo, criado_em)
+      VALUES (${relato.conversa}, ${relato.turno}, ${relato.via}, ${relato.titulo}, ${relato.corpo}, ${relato.arquivo}, ${data})
+      RETURNING id
+    `;
+    return linhas[0]!.id;
+  }, Effect.orDie);
+
+  const relatos = Effect.fn("Historico.relatos")(function* (conversa: string) {
+    const linhas = yield* sql<{
+      readonly id: number;
+      readonly turno: number;
+      readonly via: string;
+      readonly titulo: string;
+      readonly corpo: string;
+      readonly arquivo: string | null;
+    }>`SELECT id, turno, via, titulo, corpo, arquivo FROM relatos WHERE conversa_id = ${conversa} ORDER BY id`;
+    return linhas.map((linha) => ({ ...linha, conversa, via: linha.via as NovoRelato["via"] }));
+  }, Effect.orDie);
+
   return Historico.of({
     criar,
     buscar,
@@ -268,6 +303,8 @@ const make = Effect.gen(function* () {
     avaliacoes,
     registrarAnexo,
     anexos,
+    registrarRelato,
+    relatos,
   });
 });
 

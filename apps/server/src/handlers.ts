@@ -20,6 +20,7 @@ import {
   GrupoPasta,
   GrupoPreferencias,
   GrupoProviders,
+  GrupoRelato,
   GrupoRevisaoPpc,
   GrupoSkills,
 } from "@simplifica-if/contratos-app";
@@ -29,6 +30,7 @@ import { CatalogoSkills } from "./CatalogoSkills.ts";
 import * as Conversas from "./Conversas.ts";
 import { PastasTrabalho } from "./PastasTrabalho.ts";
 import { Preferencias } from "./persistencia/Preferencias.ts";
+import { Relatos } from "./Relatos.ts";
 import { ListaViva } from "./revisao-ppc/ListaViva.ts";
 import { RevisaoIa } from "./revisao-ppc/RevisaoIa.ts";
 
@@ -110,6 +112,17 @@ const layerPasta = GrupoPasta.toLayer(
   }),
 );
 
+/** "Isto está errado" (M1.12): o rascunho do relato e o registro local; nada vai à IA nem à rede. */
+const layerRelato = GrupoRelato.toLayer(
+  Effect.gen(function* () {
+    const relatos = yield* Relatos;
+    return GrupoRelato.of({
+      "relato.preparar": ({ sessao, turno }) => registrarEMapear(relatos.preparar(sessao, turno)),
+      "relato.registrar": (entrada) => registrarEMapear(relatos.registrar(entrada)),
+    });
+  }),
+);
+
 /** O primeiro uso (M1.8): perfil, aviso de uso, boas-vindas e as IAs em uso, só neste computador. */
 const layerPreferencias = GrupoPreferencias.toLayer(
   Effect.gen(function* () {
@@ -176,12 +189,13 @@ const layerAtualizacao = GrupoAtualizacao.toLayer(
 );
 
 /**
- * Os handlers dos oito grupos; pede o `Motor`, as `Conversas`, o `CatalogoSkills`, a `AnalisePpc`, a
- * `RevisaoIa`, o `Atualizador`, as `Preferencias` e o `Leitura`.
+ * Os handlers dos nove grupos; pede o `Motor`, as `Conversas`, os `Relatos`, o `CatalogoSkills`, a
+ * `AnalisePpc`, a `RevisaoIa`, o `Atualizador`, as `Preferencias` e o `Leitura`.
  */
 export const layer = Layer.mergeAll(
   layerProviders,
   layerConversa,
+  layerRelato,
   layerSkills,
   layerPasta,
   layerRevisaoPpc,

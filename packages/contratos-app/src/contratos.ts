@@ -4,7 +4,7 @@
  * desktop importam daqui; nada aqui depende do Node, e importar o pacote não carrega o `kb`, a leitura
  * do MCP nem os drivers do motor (`test/sem-servidor.test.ts` confere o grafo de imports).
  *
- * - `GrupoApp`: a API RPC (`effect/rpc`) por WebSocket. Oito grupos: providers, conversa, skills, pasta de trabalho, revisão de PPC, atualização, preferências (o primeiro uso, `preferencias.ts`) e leitura (o
+ * - `GrupoApp`: a API RPC (`effect/rpc`) por WebSocket. Nove grupos: providers, conversa, relato de erro (`relato.ts`), skills, pasta de trabalho, revisão de PPC, atualização, preferências (o primeiro uso, `preferencias.ts`) e leitura (o
  *   `GrupoLeitura` de `@simplifica-if/mcp/grupo-leitura`, só as definições, sem duplicar; os handlers
  *   ficam em `@simplifica-if/mcp/rpc`, que este pacote não importa). Os métodos de providers e de conversa
  *   têm nome com prefixo, como os `WS_METHODS` do T3: `cliente["conversa.enviar"]({ … })`.
@@ -37,12 +37,14 @@ import { Evento, Provider } from "@simplifica-if/motor/eventos";
 import * as Schema from "effect/Schema";
 import { Rpc, RpcGroup } from "effect/rpc";
 import { AvisoNaoAceito, GrupoPreferencias } from "./preferencias.ts";
+import { GrupoRelato } from "./relato.ts";
 
 export { AprovacaoDesconhecida, Decisao, FalhaProvider, OperacaoNaoSuportada, SessaoDesconhecida, TurnoEmAndamento };
 export { Evento, Provider };
 export { GrupoLeitura };
 export type { LinkLido };
 export * from "./preferencias.ts";
+export * from "./relato.ts";
 
 /* ================================================================== partida */
 
@@ -1014,9 +1016,10 @@ export class GrupoAtualizacao extends RpcGroup.make(
 
 /* ================================================================== app */
 
-/** A API inteira do servidor local: providers, conversa, skills, pasta, revisão de PPC, atualização, leitura e preferências. */
+/** A API inteira do servidor local: providers, conversa, relato, skills, pasta, revisão de PPC, atualização, leitura e preferências. */
 export class GrupoApp extends GrupoProviders.merge(
   GrupoConversa,
+  GrupoRelato,
   GrupoPreferencias,
   GrupoSkills,
   GrupoPasta,
