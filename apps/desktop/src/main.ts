@@ -29,7 +29,17 @@ import {
   type MenuItemConstructorOptions,
   type WebContents,
 } from "electron";
-import { ESQUEMA, HOST_APP, resolverConfiguracao, type Configuracao } from "./configuracao.ts";
+import { ATUALIZACAO_FABRICA } from "@simplifica-if/motor/politica-atualizacao";
+import { autoUpdater } from "electron-updater";
+import {
+  feedDoCanal,
+  iniciarAtualizacaoApp,
+  lerAssinado,
+  motivoDesligado,
+  proxyParaServidor,
+  type ControleAtualizacaoApp,
+} from "./atualizacaoApp.ts";
+import { ESQUEMA, HOST_APP, resolverConfiguracao, VARIAVEIS, type Configuracao } from "./configuracao.ts";
 import { CANAIS, type Conexao } from "./ponteDesktop.ts";
 import { abrirLog } from "./registro.ts";
 import {
@@ -114,8 +124,27 @@ function descreverSaida(saida: Saida): string {
   return saida.sinal === null ? `código ${saida.codigo ?? "?"}` : `sinal ${saida.sinal}`;
 }
 
+/**
+ * A proxy da rede para o servidor baixar a base (M1.10): a que o Electron resolve para o feed, como o
+ * navegador do sistema. Sem feed, ou se a resolução falhar, nada muda.
+ */
+async function ambienteComProxy(): Promise<NodeJS.ProcessEnv> {
+  const feed = process.env[VARIAVEIS.feed]?.trim() || ATUALIZACAO_FABRICA.feed;
+  if (configuracao.pastaAtualizacao === undefined || feed === null) return process.env;
+  try {
+    const url = new URL("x", feedDoCanal(feed, canalGravado())).href;
+    const proxy = proxyParaServidor(await session.defaultSession.resolveProxy(url), process.env);
+    if (Object.keys(proxy).length > 0)
+      registrar(`proxy do sistema para a atualização: ${proxy.HTTPS_PROXY ?? proxy.HTTP_PROXY}`);
+    return { ...process.env, ...proxy };
+  } catch (erro) {
+    registrar(`não foi possível resolver a proxy do sistema: ${String(erro)}`);
+    return process.env;
+  }
+}
+
 /** Inicia o servidor e guarda a conexão. A janela recebe a conexão quando ele fica pronto. */
-function subirServidor(): Promise<Conexao> {
+function subirServidor(ambiente: NodeJS.ProcessEnv): Promise<Conexao> {
   const token = gerarToken();
   // Só do processo principal: a janela recebe o `token`, nunca este.
   tokenDesktop = gerarToken();
@@ -125,10 +154,12 @@ function subirServidor(): Promise<Conexao> {
     banco: configuracao.banco,
     pastaEstado: configuracao.pastaEstado,
     pastaSkills: configuracao.pastaSkills,
+    pastaAtualizacao: configuracao.pastaAtualizacao,
+    versaoApp: app.getVersion(),
     pastaTrabalhos: configuracao.pastaTrabalhos,
     origens: configuracao.origens,
     token,
-    ambiente: process.env,
+    ambiente,
     cwd: configuracao.cwd,
   });
   registrar(`iniciando o servidor: ${inicio.comando} ${inicio.argumentos.join(" ")}`);
@@ -136,8 +167,10 @@ function subirServidor(): Promise<Conexao> {
     servidor = iniciado;
     registrar(`servidor pronto (pid ${iniciado.pid}, porta ${iniciado.linha.porta})`);
     void iniciado.saida.then((saida) => {
-      if (servidor === iniciado) servidor = undefined;
-      if (!saindo) void aoCairServidor(`O servidor saiu (${descreverSaida(saida)}).`, iniciado.stderr());
+      // Um servidor trocado de propósito (`reiniciarServidor`) já não é o atual: a saída dele não é queda.
+      const eraAtual = servidor === iniciado;
+      if (eraAtual) servidor = undefined;
+      if (!saindo && eraAtual) void aoCairServidor(`O servidor saiu (${descreverSaida(saida)}).`, iniciado.stderr());
     });
     return { urlServidor: `http://127.0.0.1:${iniciado.linha.porta}`, token } satisfies Conexao;
   });
@@ -177,7 +210,7 @@ async function aoCairServidor(mensagem: string, detalhe: string): Promise<void> 
 /** Sobe o servidor e mostra a janela; na falha, o diálogo de erro. */
 async function iniciar(): Promise<void> {
   try {
-    await subirServidor();
+    await subirServidor(await ambienteComProxy());
   } catch (erro) {
     await aoCairServidor(erro instanceof Error ? erro.message : String(erro), "");
     return;
@@ -294,6 +327,83 @@ ipcMain.handle(CANAIS.conexao, async (evento) => {
   tentativasCarga = 0;
   if (conexaoAtual === undefined) throw new Error("o servidor local ainda não foi iniciado");
   return conexaoAtual;
+});
+
+/* ============================================================ atualização (M1.10) */
+
+let atualizacaoApp: ControleAtualizacaoApp | undefined;
+
+/** O canal gravado pela seção "Atualizações" (o servidor grava em `atualizacao.json` da pasta do app). */
+function canalGravado(): string {
+  try {
+    const lido = JSON.parse(
+      NodeFS.readFileSync(NodePath.join(app.getPath("userData"), "atualizacao.json"), "utf8"),
+    ) as {
+      canal?: unknown;
+    };
+    return lido.canal === "estavel" ? "estavel" : ATUALIZACAO_FABRICA.canal;
+  } catch {
+    return ATUALIZACAO_FABRICA.canal;
+  }
+}
+
+function ligarAtualizacaoApp(): void {
+  const feed = process.env[VARIAVEIS.feed]?.trim() || ATUALIZACAO_FABRICA.feed;
+  const motivo = motivoDesligado({
+    empacotado: app.isPackaged,
+    plataforma: process.platform,
+    feed,
+    modo: ATUALIZACAO_FABRICA.app,
+    assinado: app.isPackaged && lerAssinado(process.resourcesPath),
+    desligadaPorAmbiente: (process.env.SIMPLIFICA_SEM_ATUALIZACAO_APP ?? "") !== "",
+  });
+  registrar(`atualização do app: ${motivo ?? "ligada"}`);
+  atualizacaoApp = iniciarAtualizacaoApp({
+    versao: app.getVersion(),
+    motivo,
+    feed,
+    canal: canalGravado(),
+    atualizador: () => autoUpdater,
+    registrar,
+    antesDeInstalar: async () => {
+      saindo = true;
+      const atual = servidor;
+      if (atual !== undefined) registrar(`servidor encerrado para instalar (${await atual.encerrar()})`);
+      encerrado = true;
+    },
+  });
+}
+
+/** Reinicia o servidor (a troca da base acontece na abertura dele); a janela recarrega. */
+async function reiniciarServidor(): Promise<void> {
+  const atual = servidor;
+  if (atual !== undefined) {
+    servidor = undefined;
+    registrar(`servidor encerrado para reiniciar (${await atual.encerrar()})`);
+  }
+  await iniciar();
+}
+
+ipcMain.handle(CANAIS.reiniciarServidor, async (evento) => {
+  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
+  await reiniciarServidor();
+});
+
+ipcMain.handle(CANAIS.atualizacaoApp, async (evento) => {
+  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
+  if (atualizacaoApp === undefined) throw new Error("a atualização do app ainda não começou");
+  return atualizacaoApp.estado();
+});
+
+ipcMain.handle(CANAIS.procurarAtualizacaoApp, async (evento) => {
+  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
+  if (atualizacaoApp === undefined) throw new Error("a atualização do app ainda não começou");
+  return atualizacaoApp.procurar();
+});
+
+ipcMain.handle(CANAIS.instalarAtualizacaoApp, async (evento) => {
+  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
+  atualizacaoApp?.instalar();
 });
 
 ipcMain.handle(CANAIS.abrirExterno, async (evento, url: unknown) => {
@@ -565,8 +675,9 @@ if (!app.requestSingleInstanceLock()) {
     Menu.setApplicationMenu(menuAplicacao());
     registrar(
       `interface: ${configuracao.urlJanela}; base: ${configuracao.banco}; estado: ${configuracao.pastaEstado}; ` +
-        `skills: ${configuracao.pastaSkills ?? "nenhuma"}`,
+        `skills: ${configuracao.pastaSkills ?? "nenhuma"}; atualização: ${configuracao.pastaAtualizacao ?? "desligada"}`,
     );
     await iniciar();
+    ligarAtualizacaoApp();
   });
 }

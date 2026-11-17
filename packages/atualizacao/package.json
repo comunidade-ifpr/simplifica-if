@@ -1,0 +1,31 @@
+{
+  "name": "@simplifica-if/atualizacao",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Atualização da base e das skills (M1.10): manifesto do canal, minisign, pacotes zstd e o serviço que confere, baixa e troca",
+  "type": "module",
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "test": "vp test run --config ../../vite.config.ts --dir .",
+    "typecheck": "effect-tsgo tsrs --noEmit"
+  },
+  "dependencies": {
+    "@noble/hashes": "1.8.0",
+    "@simplifica-if/kb": "workspace:*",
+    "undici": "8.12.4",
+    "yaml": "2.9.1"
+  },
+  "peerDependencies": {
+    "@effect/platform-node": "catalog:",
+    "effect": "catalog:"
+  },
+  "devDependencies": {
+    "@effect/platform-node": "catalog:",
+    "@effect/vitest": "catalog:",
+    "@types/node": "catalog:",
+    "effect": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}

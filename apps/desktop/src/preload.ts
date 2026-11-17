@@ -4,7 +4,7 @@
  * pedido é ele.
  */
 import { contextBridge, ipcRenderer } from "electron";
-import { CANAIS, NOME_PONTE, type Conexao, type PonteDesktop } from "./ponteDesktop.ts";
+import { CANAIS, NOME_PONTE, type Conexao, type EstadoAtualizacaoApp, type PonteDesktop } from "./ponteDesktop.ts";
 
 const ponte: PonteDesktop = {
   conexao: () => ipcRenderer.invoke(CANAIS.conexao) as Promise<Conexao>,
@@ -18,6 +18,14 @@ const ponte: PonteDesktop = {
   },
   mostrarNaPasta: async (caminho: string) => {
     await ipcRenderer.invoke(CANAIS.mostrarNaPasta, caminho);
+  },
+  reiniciarServidor: async () => {
+    await ipcRenderer.invoke(CANAIS.reiniciarServidor);
+  },
+  atualizacaoApp: () => ipcRenderer.invoke(CANAIS.atualizacaoApp) as Promise<EstadoAtualizacaoApp>,
+  procurarAtualizacaoApp: () => ipcRenderer.invoke(CANAIS.procurarAtualizacaoApp) as Promise<EstadoAtualizacaoApp>,
+  instalarAtualizacaoApp: async () => {
+    await ipcRenderer.invoke(CANAIS.instalarAtualizacaoApp);
   },
   escolherAnexo: (extensoes?: ReadonlyArray<string>) =>
     ipcRenderer.invoke(CANAIS.escolherAnexo, extensoes === undefined ? [] : [...extensoes]) as Promise<string | null>,

@@ -18,7 +18,7 @@ import { VERSAO_ESQUEMA } from "./db/esquema.ts";
 import { formatarErro } from "./esquema/mensagens.ts";
 
 /** Canais de distribuição do build (`meta.canal`). */
-export const CANAIS = ["piloto", "estavel", "dev"] as const;
+export const CANAIS = ["piloto", "beta", "estavel", "dev"] as const;
 export type Canal = (typeof CANAIS)[number];
 
 export class BaseIncompativel extends Schema.TaggedError<BaseIncompativel>()("BaseIncompativel", {

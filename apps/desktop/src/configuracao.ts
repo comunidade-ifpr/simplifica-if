@@ -7,7 +7,8 @@
  * | | Desenvolvimento (`app.isPackaged` falso) | App empacotado |
  * |---|---|---|
  * | servidor | Node 26 (`SIMPLIFICA_NODE`, ou `node` do PATH) com `apps/server/src/bin.ts` | o executável do app, com `ELECTRON_RUN_AS_NODE=1`, sobre `<Resources>/servidor/bin.mjs` |
- * | base (`--banco`) | `SIMPLIFICA_KB` ou `tmp/kb.sqlite` do repositório | `SIMPLIFICA_KB`; senão `<pasta do app>/base/kb.sqlite`, se existir (onde a atualização da base, M1.10, vai gravar); senão `<Resources>/base/kb.sqlite`, a base empacotada |
+ * | base (`--banco`) | `SIMPLIFICA_KB` ou `tmp/kb.sqlite` do repositório | `SIMPLIFICA_KB`; senão `<Resources>/base/kb.sqlite`, a base empacotada, e o servidor escolhe entre ela e `<pasta do app>/base/kb.sqlite` (a baixada, M1.10) a mais nova |
+ * | atualização (`--pasta-atualizacao`) | só com `SIMPLIFICA_ATUALIZACAO_FEED` (para testar contra um feed local) | a pasta do app, salvo com `SIMPLIFICA_KB` (base de fora: nada a atualizar) |
  * | interface | `SIMPLIFICA_WEB_URL` (o dev server do `apps/web`); sem ela, o build em `dist/app/web` | o build do `apps/web` dentro do app, pelo protocolo `simplifica://app` |
  * | estado (`--pasta-estado`) | a pasta do app (`userData`, "Simplifica IF (dev)") | a pasta do app (`userData`, "Simplifica IF") |
  * | skills (`--pasta-skills`) | `.agents/skills` do repositório (o servidor aceita só as com bloco `simplifica:`) | `<Resources>/skills`, gerada no build só com as skills do app e os arquivos listados |
@@ -31,6 +32,8 @@ export const VARIAVEIS = {
   node: "SIMPLIFICA_NODE",
   /** O `kb.sqlite`, no lugar do padrão. */
   banco: "SIMPLIFICA_KB",
+  /** O feed da atualização no lugar do da política; no desenvolvimento, liga a atualização. */
+  feed: "SIMPLIFICA_ATUALIZACAO_FEED",
   /** A raiz das pastas de tarefa, no lugar de `Documentos/Simplifica IF`. */
   trabalhos: "SIMPLIFICA_TRABALHOS",
 } as const;
@@ -63,6 +66,8 @@ export type Interface =
 export interface Configuracao {
   readonly executor: Executor;
   readonly banco: string;
+  /** `--pasta-atualizacao`: onde a atualização da base e das skills grava; `undefined` desliga. */
+  readonly pastaAtualizacao: string | undefined;
   readonly pastaEstado: string;
   /** `--pasta-skills`; `undefined` se a pasta não existe. */
   readonly pastaSkills: string | undefined;
@@ -105,14 +110,18 @@ export function resolverConfiguracao(entrada: Entrada): Configuracao {
         bin: NodePath.join(entrada.raizRepositorio, "apps", "server", "src", "bin.ts"),
       };
 
-  const baseAtualizada = NodePath.join(entrada.pastaApp, "base", "kb.sqlite");
+  // A base baixada (`<pasta do app>/base/kb.sqlite`) quem escolhe é o servidor, na abertura, depois de
+  // atender a troca pendente (`@simplifica-if/atualizacao/local`).
+  const bancoExterno = definida(ambiente[VARIAVEIS.banco]);
   const banco =
-    definida(ambiente[VARIAVEIS.banco]) ??
+    bancoExterno ??
     (entrada.empacotado
-      ? entrada.existe(baseAtualizada)
-        ? baseAtualizada
-        : NodePath.join(entrada.pastaRecursos, "base", "kb.sqlite")
+      ? NodePath.join(entrada.pastaRecursos, "base", "kb.sqlite")
       : NodePath.join(entrada.raizRepositorio, "tmp", "kb.sqlite"));
+  const pastaAtualizacao =
+    bancoExterno === undefined && (entrada.empacotado || definida(ambiente[VARIAVEIS.feed]) !== undefined)
+      ? entrada.pastaApp
+      : undefined;
 
   const pastaSkills = entrada.empacotado
     ? NodePath.join(entrada.pastaRecursos, "skills")
@@ -128,6 +137,7 @@ export function resolverConfiguracao(entrada: Entrada): Configuracao {
   return {
     executor,
     banco,
+    pastaAtualizacao,
     pastaEstado: entrada.pastaApp,
     pastaSkills: entrada.existe(pastaSkills) ? pastaSkills : undefined,
     pastaTrabalhos: NodePath.resolve(

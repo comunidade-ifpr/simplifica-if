@@ -94,6 +94,8 @@ export const ManifestoSkill = Schema.Struct({
   publico: Schema.optionalKey(Schema.Array(Schema.Literals(PUBLICOS))),
   entradas: Schema.optionalKey(Schema.Array(Entrada)),
   etapas: Schema.optionalKey(Schema.Array(Etapa)),
+  /** Versão da skill (X.Y.Z), que vai ao manifesto do canal (M1.10); sem ela, a fábrica usa `0.1.0`. */
+  versao: Schema.optionalKey(texto),
   base_minima: Schema.optionalKey(texto),
   app_minimo: Schema.optionalKey(texto),
   duracao_estimada: Schema.optionalKey(texto),

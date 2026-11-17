@@ -5,6 +5,9 @@
  *
  *   node packages/mcp/src/cli.ts --banco tmp/kb.sqlite
  *   SIMPLIFICA_KB=~/SimplificaIF/kb.sqlite simplifica-mcp --canal beta
+ *   simplifica-mcp --pasta-atualizacao ~/SimplificaIF --feed-atualizacao <url com {canal}> --chave-atualizacao <base64>
+ *
+ * Com `--pasta-atualizacao`, a base se atualiza pelo feed do canal (`atualizacao.ts`, M1.10).
  *
  * O stdout é do protocolo MCP; as mensagens vão para o stderr. Um `~/` no início dos caminhos é
  * expandido aqui, porque nem todo cliente MCP passa os argumentos por um shell.
@@ -32,6 +35,7 @@ import * as Schema from "effect/Schema";
 import * as CliError from "effect/cli/CliError";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
+import { prepararAtualizacao } from "./atualizacao.ts";
 import { CANAIS, type Canal } from "./contratos.ts";
 import * as Leitura from "./leitura/Leitura.ts";
 import { layerStdio, mensagemDeAbertura, MENSAGEM_INCOMPATIVEL, VERSAO_PACOTE } from "./servidor.ts";
@@ -92,12 +96,47 @@ const comando = Command.make(
       Flag.withDescription(`canal da base, quando o banco não o registra: ${CANAIS.join(", ")} (padrão: dev)`),
       Flag.withDefault("dev"),
     ),
+    pastaAtualizacao: Flag.String("pasta-atualizacao").pipe(
+      Flag.withDescription("liga a atualização da base, gravando nesta pasta (ou SIMPLIFICA_ATUALIZACAO_PASTA)"),
+      Flag.withFallbackConfig(Config.String("SIMPLIFICA_ATUALIZACAO_PASTA")),
+      Flag.optional,
+    ),
+    feedAtualizacao: Flag.String("feed-atualizacao").pipe(
+      Flag.withDescription("feed da atualização, com {canal} (ou SIMPLIFICA_ATUALIZACAO_FEED)"),
+      Flag.withFallbackConfig(Config.String("SIMPLIFICA_ATUALIZACAO_FEED")),
+      Flag.optional,
+    ),
+    chaveAtualizacao: Flag.String("chave-atualizacao").pipe(
+      Flag.withDescription("chave pública minisign da fábrica, a linha base64 (ou SIMPLIFICA_ATUALIZACAO_CHAVE)"),
+      Flag.withFallbackConfig(Config.String("SIMPLIFICA_ATUALIZACAO_CHAVE")),
+      Flag.optional,
+    ),
+    canalAtualizacao: Flag.Literals("canal-atualizacao", ["beta", "estavel"]).pipe(
+      Flag.withDescription("canal da atualização (padrão: beta)"),
+      Flag.withDefault("beta"),
+    ),
   },
-  Effect.fn("simplifica-mcp")(function* ({ banco, pastaTrabalho, canal }) {
+  Effect.fn("simplifica-mcp")(function* (opcoes) {
+    const { banco, pastaTrabalho, canal } = opcoes;
     const path = yield* Path.Path;
-    if (Option.isNone(banco)) return yield* new UsoInvalido({ motivo: "sem-banco" });
+    if (Option.isNone(banco) && Option.isNone(opcoes.pastaAtualizacao)) {
+      return yield* new UsoInvalido({ motivo: "sem-banco" });
+    }
     if (!ehCanal(canal)) return yield* new UsoInvalido({ motivo: "canal", valor: canal });
-    const caminho = expandirCaminho(path, banco.value);
+    const bancoDado = Option.isSome(banco) ? expandirCaminho(path, banco.value) : undefined;
+    let caminho = bancoDado ?? "";
+    let periodica: Effect.Effect<void> = Effect.void;
+    if (Option.isSome(opcoes.pastaAtualizacao)) {
+      const atualizacao = yield* prepararAtualizacao({
+        pasta: expandirCaminho(path, opcoes.pastaAtualizacao.value),
+        banco: bancoDado,
+        feed: Option.getOrUndefined(opcoes.feedAtualizacao),
+        chave: Option.getOrUndefined(opcoes.chaveAtualizacao),
+        canal: opcoes.canalAtualizacao,
+      });
+      caminho = atualizacao.banco;
+      periodica = atualizacao.periodica;
+    }
     const pasta = yield* pastaReal(
       expandirCaminho(
         path,
@@ -105,12 +144,18 @@ const comando = Command.make(
       ),
     );
     const servicos = yield* Layer.build(
-      layerStdio({ banco: caminho, canal: canal as Canal, pastaTrabalho: pasta }).pipe(Layer.provide(NodeStdio.layer)),
+      layerStdio({
+        banco: caminho,
+        // A base da fábrica não grava canal: com a atualização, vale o canal dela.
+        canal: Option.isSome(opcoes.pastaAtualizacao) && canal === "dev" ? opcoes.canalAtualizacao : (canal as Canal),
+        pastaTrabalho: pasta,
+      }).pipe(Layer.provide(NodeStdio.layer)),
     );
     const { base } = Context.get(servicos, Leitura.Leitura);
     yield* Console.error(
       `simplifica-mcp ${VERSAO_PACOTE}: base ${base.versao} (referência ${base.data_referencia}, canal ${base.canal})`,
     );
+    yield* Effect.forkScoped(periodica);
     return yield* Effect.never;
   }, Effect.scoped),
 ).pipe(

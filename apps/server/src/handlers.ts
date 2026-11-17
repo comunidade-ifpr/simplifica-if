@@ -13,7 +13,9 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
+import { Atualizador } from "./Atualizador.ts";
 import {
+  GrupoAtualizacao,
   GrupoConversa,
   GrupoPasta,
   GrupoPreferencias,
@@ -149,9 +151,23 @@ const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
   }),
 );
 
+const layerAtualizacao = GrupoAtualizacao.toLayer(
+  Effect.gen(function* () {
+    const atualizador = yield* Atualizador;
+    return GrupoAtualizacao.of({
+      "atualizacao.estado": () => atualizador.estado,
+      "atualizacao.procurar": () => atualizador.procurar,
+      "atualizacao.trocarCanal": ({ canal }) => atualizador.trocarCanal(canal),
+      "atualizacao.aplicar": () => atualizador.aplicar,
+      "atualizacao.voltar": () => atualizador.voltar,
+      "atualizacao.novidadesVistas": () => atualizador.novidadesVistas,
+    });
+  }),
+);
+
 /**
- * Os handlers dos cinco grupos; pede o `Motor`, as `Conversas`, o `CatalogoSkills`, a `AnalisePpc`, a
- * `RevisaoIa` e o `Leitura`.
+ * Os handlers dos oito grupos; pede o `Motor`, as `Conversas`, o `CatalogoSkills`, a `AnalisePpc`, a
+ * `RevisaoIa`, o `Atualizador`, as `Preferencias` e o `Leitura`.
  */
 export const layer = Layer.mergeAll(
   layerProviders,
@@ -160,5 +176,6 @@ export const layer = Layer.mergeAll(
   layerPasta,
   layerRevisaoPpc,
   layerPreferencias,
+  layerAtualizacao,
   layerHandlersRpc,
 );

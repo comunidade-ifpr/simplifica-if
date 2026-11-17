@@ -1,7 +1,8 @@
 /**
  * Configurações do Modo Servidor (M1.9): Sua IA (o aviso de uso, instalar, entrar, o estado de cada
- * uma e "Não usar no app"), Seu perfil (editar e apagar, M1.8; e "Rever as boas-vindas"), Atualizações
- * (M1.10, outra frente: aqui fica só o lugar da seção) e, no fim, discreta, a conversa com uma pasta
+ * uma e "Não usar no app", M1.8), Seu perfil (editar e apagar, M1.8; e "Rever as boas-vindas"),
+ * Atualizações (M1.10: versões do app, da base e das skills, canal, procurar, usar a versão nova e
+ * voltar a base; `configuracoes/Atualizacoes.tsx`) e, no fim, discreta, a conversa com uma pasta
  * escolhida à mão, a tela técnica de antes do Modo Servidor.
  */
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
@@ -11,6 +12,7 @@ import { AvisoUso } from "../components/AvisoUso.tsx";
 import { FormPerfil } from "../components/FormPerfil.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
 import { CartaoProvider } from "../components/CartaoProvider.tsx";
+import { Atualizacoes } from "../configuracoes/Atualizacoes.tsx";
 import { Button, buttonVariants } from "../components/ui/button.tsx";
 import { useConversa, useEstadoConexao } from "../contexto.tsx";
 import { PROVIDERS } from "../providers.ts";
@@ -122,10 +124,7 @@ function Configuracoes() {
             </Link>
           </div>
         </Secao>
-        <Secao id="atualizacoes" titulo="Atualizações">
-          {/* M1.10: versões do app, da base e das skills; canal (estável ou beta). */}
-          <p className="max-w-prose text-muted-foreground">Em breve: as versões do app e da base, e as novidades.</p>
-        </Secao>
+        {conexao.fase === "sem-servidor" ? null : <Atualizacoes />}
         <Secao id="avancado" titulo="Avançado">
           <p className="max-w-prose text-muted-foreground text-sm">
             Para quem já sabe o que quer: uma conversa numa pasta que você escolhe, sem tarefa.

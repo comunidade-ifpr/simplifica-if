@@ -1,5 +1,5 @@
 /**
- * O contrato do app: os métodos do `GrupoApp` (os seis grupos, sem colisão de nome) e os envelopes da
+ * O contrato do app: os métodos do `GrupoApp` (os oito grupos, sem colisão de nome) e os envelopes da
  * partida do servidor.
  */
 import { assert, describe, it } from "@effect/vitest";
@@ -9,9 +9,11 @@ import * as Schema from "effect/Schema";
 import {
   EnvelopePartida,
   GrupoApp,
+  GrupoAtualizacao,
   GrupoConversa,
   GrupoLeitura,
   GrupoPasta,
+  GrupoPreferencias,
   GrupoProviders,
   GrupoRevisaoPpc,
   GrupoSkills,
@@ -20,11 +22,18 @@ import {
 const decodificarEnvelope = Schema.decodeUnknownEffect(Schema.fromJsonString(EnvelopePartida));
 
 describe("contratos do app", () => {
-  it("o GrupoApp tem os métodos dos seis grupos", () => {
+  it("o GrupoApp tem os métodos dos oito grupos", () => {
     const metodos = [...GrupoApp.requests.keys()];
-    const partes = [GrupoProviders, GrupoConversa, GrupoSkills, GrupoPasta, GrupoRevisaoPpc, GrupoLeitura].map(
-      (grupo) => [...grupo.requests.keys()],
-    );
+    const partes = [
+      GrupoProviders,
+      GrupoConversa,
+      GrupoSkills,
+      GrupoPasta,
+      GrupoRevisaoPpc,
+      GrupoAtualizacao,
+      GrupoPreferencias,
+      GrupoLeitura,
+    ].map((grupo) => [...grupo.requests.keys()]);
     assert.strictEqual(metodos.length, partes.flat().length);
     assert.includeMembers(metodos, [
       "providers.detectar",
@@ -42,6 +51,12 @@ describe("contratos do app", () => {
       "pasta.ver",
       "pasta.desfazer",
       "revisaoPpc.analisar",
+      "atualizacao.estado",
+      "preferencias.ler",
+      "preferencias.gravarPerfil",
+      "preferencias.usarIa",
+      "atualizacao.procurar",
+      "atualizacao.voltar",
       "fichaNorma",
       "sobreABase",
     ]);

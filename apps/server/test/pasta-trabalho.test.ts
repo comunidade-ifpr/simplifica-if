@@ -10,6 +10,7 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { afterAll, assert, describe, it, layer } from "@effect/vitest";
+import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Fiber from "effect/Fiber";
@@ -17,7 +18,13 @@ import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
 import * as Stream from "effect/Stream";
 import { CAMINHO_LIBERAR_ARQUIVO } from "@simplifica-if/contratos-app";
-import { comNumero, gravarSemSeguirLinks, nomeSeguro, removerSemSeguirLinks } from "../src/PastasTrabalho.ts";
+import {
+  comNumero,
+  contadorDeAndamento,
+  gravarSemSeguirLinks,
+  nomeSeguro,
+  removerSemSeguirLinks,
+} from "../src/PastasTrabalho.ts";
 import * as Servidor from "../src/servidor.ts";
 import {
   bancoFixture,
@@ -374,5 +381,22 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       assert.deepStrictEqual(vista.arquivos, []);
       assert.isTrue(Exit.isFailure(yield* Effect.exit(rpc["pasta.desfazer"]({ sessao }))));
     }).pipe(Effect.scoped),
+  );
+});
+
+describe("Desfazer em andamento (a troca da base espera, M1.10)", () => {
+  it.effect("emAndamento fica verdadeiro enquanto a operação roda e volta a falso, também na falha", () =>
+    Effect.gen(function* () {
+      const { contando, emAndamento } = yield* contadorDeAndamento;
+      const liberar = yield* Deferred.make<void>();
+      const fibra = yield* Effect.forkChild(contando(Deferred.await(liberar)));
+      yield* Effect.yieldNow;
+      assert.isTrue(yield* emAndamento);
+      yield* Deferred.succeed(liberar, undefined);
+      yield* Fiber.join(fibra);
+      assert.isFalse(yield* emAndamento);
+      yield* Effect.exit(contando(Effect.fail("falhou")));
+      assert.isFalse(yield* emAndamento);
+    }),
   );
 });

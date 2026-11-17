@@ -5,9 +5,9 @@
  * última análise de PPC). No primeiro uso (aviso não aceito ou boas-vindas por ver), leva às
  * boas-vindas.
  *
- * "Para você" (as novidades da base que afetam o perfil) é do Marco 2. No Marco 1 ele mostraria só as
- * novidades gerais da base, mas a base ainda não publica uma lista de novidades: o bloco fica oculto
- * até a atualização (M1.10) trazê-la.
+ * "Para você" (as novidades da base que afetam o perfil) é do Marco 2. No Marco 1, as novidades gerais
+ * da base aparecem no aviso "Base atualizada" (M1.10, `configuracoes/AvisoBaseAtualizada.tsx`), logo
+ * abaixo da data da base, depois que uma versão nova entra.
  *
  * A IA (instalar, entrar) fica em Configurações › Sua IA; aqui, só o aviso quando nenhuma está pronta.
  */
@@ -16,6 +16,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRightIcon, CircleCheckIcon, FileSearchIcon, SendHorizontalIcon } from "lucide-react";
 import { type FormEvent, type KeyboardEvent, useEffect, useState } from "react";
 import { AvisoErro } from "../components/AvisoErro.tsx";
+import { AvisoBaseAtualizada } from "../configuracoes/AvisoBaseAtualizada.tsx";
 import { ListaConversas } from "../components/ListaConversas.tsx";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx";
 import { Button, buttonVariants } from "../components/ui/button.tsx";
@@ -263,6 +264,7 @@ function Inicio() {
         </section>
         {conexao.fase === "sem-servidor" ? null : (
           <>
+            <AvisoBaseAtualizada />
             <AvisoSemIa />
             <CaixaPedido />
             <Tarefas />
