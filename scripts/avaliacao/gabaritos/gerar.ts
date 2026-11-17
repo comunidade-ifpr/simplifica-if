@@ -4,7 +4,7 @@
  *   node scripts/avaliacao/gabaritos/gerar.ts              # grava os arquivos
  *   node scripts/avaliacao/gabaritos/gerar.ts --verificar  # só confere (sai com 1 se divergir; --check é sinônimo)
  *
- * Rode depois de mudar dados/institucional/, normas, CNCT, PPCs convertidos ou os geradores, e
+ * Rode depois de mudar os registros de institucional/ifpr/, normas, CNCT, PPCs convertidos ou os geradores, e
  * revise o diff: ele é a mudança do gabarito.
  */
 import * as Console from "effect/Console";

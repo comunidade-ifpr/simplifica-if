@@ -5,8 +5,8 @@
  *
  * A extração é heurística e só lê o próprio documento (mais a lista de campi
  * do IFPR em `base-conhecimento/institucional/ifpr/campi/index.json`): o PPC
- * analisado pode não estar na base, então nada aqui consulta
- * `dados/institucional/`. As fontes, em ordem de preferência:
+ * analisado pode não estar na base, então nada aqui consulta os cursos
+ * cadastrados (`institucional/ifpr/cursos/`). As fontes, em ordem de preferência:
  *
  * 1. rótulo explícito, em linha ("Nome do curso: …"), em título numerado
  *    seguido do valor ("1.1.3 Denominação do Curso" / "Curso Técnico em …")

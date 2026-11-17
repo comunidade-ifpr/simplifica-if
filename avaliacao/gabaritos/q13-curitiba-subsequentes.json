@@ -1,7 +1,7 @@
 {
   "pergunta": "Q13",
   "gerado_por": "scripts/avaliacao/gabaritos/conjuntos.ts",
-  "criterio": "Cursos de dados/institucional/cursos/curitiba/ com nivel=médio, forma_oferta=subsequente e situação ativo/em_oferta.",
+  "criterio": "Cursos de institucional/ifpr/cursos/curitiba/ com nivel=médio, forma_oferta=subsequente e situação ativo/em_oferta.",
   "universo": "curso",
   "avaliar_precisao": true,
   "esperado": [

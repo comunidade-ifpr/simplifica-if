@@ -1,6 +1,6 @@
 // @effect-diagnostics nodeBuiltinImport:off -- leitura síncrona da base para a medição e o teste de regressão
 /**
- * Os PPCs técnicos da base (cursos de nível médio com PPC convertido, em `dados/institucional/cursos`),
+ * Os PPCs técnicos da base (cursos de nível médio com PPC convertido, em `base-conhecimento/institucional/ifpr/cursos`),
  * com o CNCT e a forma de oferta de cada um: a amostra em que a precisão dos verificadores D é medida
  * (`pre-conferencia.ts --base`, `PRECISAO.md`) e fixada (`test/precisao-base.test.ts`).
  *
@@ -26,13 +26,15 @@ export type PpcDaBase = {
 const lerJson = (arquivo: string): unknown => JSON.parse(NodeFS.readFileSync(arquivo, "utf8"));
 
 export function ppcsTecnicos(raiz: string = raizRepositorio()): PpcDaBase[] {
-  const dirCursos = NodePath.join(raiz, "dados/institucional/cursos");
+  const dirCursos = NodePath.join(raiz, "base-conhecimento/institucional/ifpr/cursos");
   const cnct = (slug: string) => {
     const arquivo = NodePath.join(raiz, "base-conhecimento/catalogos/cnct/cursos", `${slug}.json`);
     return NodeFS.existsSync(arquivo) ? ({ ...(lerJson(arquivo) as object), slug } as CursoCnct) : null;
   };
   const saida: PpcDaBase[] = [];
-  for (const campus of NodeFS.readdirSync(dirCursos).sort())
+  // O index.json da coleção fica ao lado das pastas de campus.
+  const campi = NodeFS.readdirSync(dirCursos).filter((nome) => NodeFS.statSync(NodePath.join(dirCursos, nome)).isDirectory());
+  for (const campus of campi.sort())
     for (const nome of NodeFS.readdirSync(NodePath.join(dirCursos, campus)).sort()) {
       if (!nome.endsWith(".json")) continue;
       const curso = lerJson(NodePath.join(dirCursos, campus, nome)) as {

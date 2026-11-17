@@ -19,7 +19,7 @@ export class RepositorioCursosLocal {
 
   private carregar() {
     const { dados, erros } = carregarDadosInstitucionais(this.raiz);
-    if (erros.length) throw new Error(`dados/institucional/ inválido:\n- ${erros.join("\n- ")}`);
+    if (erros.length) throw new Error(`institucional/ifpr/ inválido:\n- ${erros.join("\n- ")}`);
     return dados;
   }
 
@@ -48,7 +48,7 @@ export class RepositorioCursosLocal {
     const encontrar = () =>
       this.carregar().cursos.find((curso) => chaveCurso(curso.campus_id, curso.curso_slug) === coletado.curso_id);
     const curso = encontrar();
-    if (!curso) throw new Error(`Curso não encontrado em dados/institucional/: ${coletado.curso_id}`);
+    if (!curso) throw new Error(`Curso não encontrado em institucional/ifpr/cursos/: ${coletado.curso_id}`);
     if (curso.suap?.id !== coletado.suap_id || (curso.suap?.codigo ?? "") !== coletado.codigo) {
       throw new Error(`Curso alterado desde a coleta: ${coletado.suap_id}`);
     }

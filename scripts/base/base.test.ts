@@ -167,29 +167,41 @@ describe("índice de PPCs", () => {
 
   test("gera e verifica index.json e secoes/*.jsonl", () => {
     const raiz = projetoTemporario();
-    const campus = {
-      id: "campus-a",
-      nome: "Campus A",
-      cursos: [
-        {
-          curso_slug: "tecnico-x",
-          nome: "Técnico X",
-          nivel: "médio",
-          tipo_oferta: "Integrado",
-          url: "https://ifpr.edu.br/x",
-          modalidade: "Presencial",
-          ppc: {
-            url: "https://ifpr.edu.br/x.pdf",
-            markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x.md",
-            conversao: { status: "convertido" },
-            metadados: { ano_documento: { ano: 2021 }, vagas: { quantidade: "40" } },
-          },
+    const ifpr = "base-conhecimento/institucional/ifpr";
+    escrever(raiz, `${ifpr}/campi/campus-a.json`, JSON.stringify({ campus_id: "campus-a", nome: "Campus A" }));
+    escrever(
+      raiz,
+      `${ifpr}/cursos/campus-a/tecnico-x.json`,
+      JSON.stringify({
+        campus_id: "campus-a",
+        curso_slug: "tecnico-x",
+        nome: "Técnico X",
+        nivel: "médio",
+        forma_oferta: "Integrado",
+        pagina_oficial: "https://ifpr.edu.br/x",
+        modalidade: "Presencial",
+        // Vagas sem o trecho do PPC que as sustenta não vão para o índice.
+        ppc: {
+          url: "https://ifpr.edu.br/x.pdf",
+          markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x.md",
+          ano_documento: 2021,
+          vagas: "40",
         },
-        { curso_slug: "sem-ppc", nome: "Sem PPC", nivel: "Técnico", tipo_oferta: "Subsequente", url: "https://x" },
-      ],
-    };
-    escrever(raiz, "base-conhecimento/institucional/ifpr/campi/campus-a.json", JSON.stringify(campus));
-    escrever(raiz, "base-conhecimento/institucional/ifpr/campi/index.json", "{}");
+      }),
+    );
+    escrever(
+      raiz,
+      `${ifpr}/cursos/campus-a/sem-ppc.json`,
+      JSON.stringify({
+        campus_id: "campus-a",
+        curso_slug: "sem-ppc",
+        nome: "Sem PPC",
+        nivel: "Técnico",
+        forma_oferta: "Subsequente",
+        pagina_oficial: "https://x",
+      }),
+    );
+    escrever(raiz, `${ifpr}/cursos/index.json`, "{}");
     escrever(
       raiz,
       "base-conhecimento/institucional/ifpr/ppcs/campus-a/tecnico-x.md",
@@ -330,7 +342,6 @@ describe("validação da base", () => {
       "manifest.json não cobre exatamente as normas publicadas: manifest=['normas/br/leis/lei.md'] markdown=['normas/br/leis/lei.md', 'normas/ifpr/resolucoes/2020-01-01_res.md']",
       `README.md contém padrão local proibido: ${"/Us"}${"ers/"}`,
       "institucional_manifest.json não encontrado: institucional_manifest.json",
-      "índice de campi não encontrado: institucional/ifpr/campi/index.json",
       "catalogos_manifest.json não encontrado: catalogos_manifest.json",
       "manifesto CNCT não encontrado: catalogos/cnct/manifest.json",
       "índice CNCT não encontrado: catalogos/cnct/index.json",

@@ -10,7 +10,7 @@ import { validarSkillsDoApp } from "./base/skills.ts";
 
 const USO = `uso: node scripts/validar_base.ts [--check-ppc-artifacts]
 
-Valida a base pública de conhecimento, os dados institucionais de origem (dados/institucional/)
+Valida a base pública de conhecimento, os registros institucionais (institucional/ifpr/: campi, cursos, ingresso, processos SEI)
 a base de análise da skill revisar-ppc (.agents/skills/revisar-ppc/base-analise/) e o bloco
 simplifica: das skills do app (.agents/skills/*/SKILL.md).
 
@@ -35,7 +35,7 @@ async function main(): Promise<number> {
   }
   console.log(
     `Base válida: ${totalNormas} normas publicadas, metadados institucionais e catálogos conferidos; ` +
-      `${dados.total} registros em dados/institucional/; base de análise da revisar-ppc conferida; ` +
+      `${dados.total} registros institucionais; base de análise da revisar-ppc conferida; ` +
       `${skills.doApp.length} skills do app (${skills.doApp.join(", ")}).`,
   );
   return 0;

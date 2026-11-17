@@ -1,4 +1,4 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test } from "vite-plus/test";
 import { ehUrlAssinada, limparUrlsAssinadas, RE_URL_ASSINADA, semAssinatura } from "./urls.ts";
 
 const ASSINADA = "https://s3.sa-east-1.amazonaws.com/suap-prod/edu/ppc/PPC.pdf?AWSAccessKeyId=AKIAEXEMPLO&Signature=abc%3D&Expires=1780059125";

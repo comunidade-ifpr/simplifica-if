@@ -25,7 +25,12 @@ import { expansaoDoTipo, lerSinonimos, type Sinonimos } from "../busca/sinonimos
 import { radicais } from "../busca/tokens.ts";
 import { cruzarPpcSuap } from "../fatos/divergencias.ts";
 import { extrairFatosPpc, type SecaoDoPpc } from "../fatos/ppc.ts";
-import { carregarDadosInstitucionaisKb, linhaDaChave, matrizesDoResumo } from "../institucional/dados.ts";
+import {
+  carregarDadosInstitucionaisKb,
+  linhaDaChave,
+  matrizesDoResumo,
+  PASTA_INSTITUCIONAL,
+} from "../institucional/dados.ts";
 import { analisarFrontMatter } from "../normas/front-matter.ts";
 import { idDoAto } from "../normas/ids.ts";
 import {
@@ -762,7 +767,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
     }
     // o mesmo oferta_id aparece em processos diferentes: a chave é o caminho (processo/oferta)
     const chaveOferta = (arquivo: string) =>
-      arquivo.replace(/^dados\/institucional\/ofertas\//, "").replace(/\.json$/, "");
+      arquivo.slice(`${PASTA_INSTITUCIONAL}/ofertas/`.length).replace(/\.json$/, "");
     const ofertas = [...dados.ofertas].sort((a, b) => compararTexto(chaveOferta(a.arquivo), chaveOferta(b.arquivo)));
     for (const { arquivo, conteudo, dados: o } of ofertas) {
       ins.inserir("ofertas", {

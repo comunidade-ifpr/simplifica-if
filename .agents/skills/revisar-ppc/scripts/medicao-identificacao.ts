@@ -3,7 +3,7 @@
  * Medição da identificação do curso (curso, campus, forma de oferta e
  * modalidade) sobre os PPCs técnicos convertidos da base.
  *
- * O gabarito vem de `dados/institucional/cursos/<campus>/<curso>.json`
+ * O gabarito vem de `base-conhecimento/institucional/ifpr/cursos/<campus>/<curso>.json`
  * (`nome`, `campus_id`, `forma_oferta`, `modalidade` e `ppc.markdown_path`),
  * só para leitura: a extração não consulta esses dados. O nome do arquivo
  * também não entra na extração (o nome de reserva é neutro), para que o slug
@@ -73,7 +73,7 @@ export const extratorPadrao: Extrator = (texto, caminhos) =>
 /** Cursos técnicos (nível médio) com PPC convertido na base. */
 export function carregarGabarito(caminhos: CaminhosAnalise = caminhosPadrao()): Gabarito[] {
   const raiz = NodePath.dirname(caminhos.baseConhecimentoDir);
-  const cursosDir = NodePath.join(raiz, "dados", "institucional", "cursos");
+  const cursosDir = NodePath.join(raiz, "base-conhecimento", "institucional", "ifpr", "cursos");
   const gabarito: Gabarito[] = [];
   for (const campus of NodeFS.readdirSync(cursosDir).sort()) {
     const dir = NodePath.join(cursosDir, campus);

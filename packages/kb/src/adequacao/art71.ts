@@ -1,10 +1,10 @@
-// @effect-diagnostics nodeBuiltinImport:off -- leitura síncrona de dados/institucional/cursos/, usada pela CLI e pelos scripts
+// @effect-diagnostics nodeBuiltinImport:off -- leitura síncrona de base-conhecimento/institucional/ifpr/cursos/, usada pela CLI e pelos scripts
 /**
  * Adequação ao art. 71 da Res. CNE/CP nº 2/2026: cursos técnicos autorizados e em oferta têm até
  * dois anos para se adequar às novas DCN da EPT. O artigo alcança todos esses cursos, não só os que
  * citam a norma de 2021.
  *
- * A lista sai de `dados/institucional/cursos/` (nível `médio`, situação `ativo` ou `em_oferta`;
+ * A lista sai de `base-conhecimento/institucional/ifpr/cursos/` (nível `médio`, situação `ativo` ou `em_oferta`;
  * com `incluirTecnologia`, também os cursos superiores de tecnologia). O indicador de defasagem vem
  * das citações resolvidas do PPC convertido do curso (`ppc.markdown_path`): a DCN mais recente que
  * o PPC cita. Tudo derivado dos arquivos, sem relógio.
@@ -12,6 +12,7 @@
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
+import { PASTA_INSTITUCIONAL } from "../institucional/dados.ts";
 import { idDoAto } from "../normas/ids.ts";
 import { raizRepositorio, type Registro } from "../normas/registro.ts";
 import { registroPadrao } from "../normas/resolver.ts";
@@ -81,7 +82,7 @@ export interface RelatorioAdequacao {
   cursos: CursoAdequacao[];
 }
 
-/** Curso como a adequação o lê (de `dados/institucional/cursos/` ou da tabela `cursos` do `kb.sqlite`). */
+/** Curso como a adequação o lê (de `institucional/ifpr/cursos/` ou da tabela `cursos` do `kb.sqlite`). */
 export interface CursoParaAdequacao {
   campus_id: string;
   curso_slug: string;
@@ -117,10 +118,12 @@ export function fonteAdequacaoArquivos(
 }
 
 function lerCursos(raiz: string): Curso[] {
-  const dir = NodePath.join(raiz, "dados", "institucional", "cursos");
+  const dir = NodePath.join(raiz, PASTA_INSTITUCIONAL, "cursos");
   const cursos: Curso[] = [];
-  for (const campus of NodeFS.readdirSync(dir).sort(compararTexto)) {
-    const dirCampus = NodePath.join(dir, campus);
+  for (const campus of NodeFS.readdirSync(dir, { withFileTypes: true }).sort((a, b) => compararTexto(a.name, b.name))) {
+    // O index.json da coleção fica ao lado das pastas de campus.
+    if (!campus.isDirectory()) continue;
+    const dirCampus = NodePath.join(dir, campus.name);
     for (const arquivo of NodeFS.readdirSync(dirCampus).sort(compararTexto)) {
       if (!arquivo.endsWith(".json")) continue;
       cursos.push(decodificarCurso(JSON.parse(NodeFS.readFileSync(NodePath.join(dirCampus, arquivo), "utf-8"))));
@@ -183,7 +186,7 @@ export function adequacaoArt71Em(
   for (const curso of cursos) totais[curso.indicador] += 1;
   return {
     criterio:
-      "Cursos de dados/institucional/cursos/ com nível 'médio'" +
+      "Cursos de institucional/ifpr/cursos/ com nível 'médio'" +
       (opcoes.incluirTecnologia ? " ou forma de oferta 'graduação tecnológica'" : "") +
       ` e situação ${SITUACOES_EM_OFERTA.join(" ou ")}. Indicador: a DCN da EPT mais recente citada no PPC convertido ` +
       "(citações resolvidas por resolverCitacao, inclusive a DCN de 2021 com órgão trocado).",

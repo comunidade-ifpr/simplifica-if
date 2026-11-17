@@ -416,7 +416,7 @@ const medirIdentificacaoCmd = Command.make(
     yield* Console.log(texto);
   }),
 ).pipe(
-  Command.withDescription("Medir a identificação do curso nos PPCs técnicos da base contra dados/institucional/cursos"),
+  Command.withDescription("Medir a identificação do curso nos PPCs técnicos da base contra institucional/ifpr/cursos"),
 );
 
 export const revisarPpc = Command.make(NOME).pipe(

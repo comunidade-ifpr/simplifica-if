@@ -3,7 +3,7 @@
  * Fontes do `kb.sqlite` e a impressão digital delas, para a CLI decidir quando recompilar.
  *
  * Fontes = os arquivos do git de onde o banco sai (normas, stubs, PPCs e índice de seções, CNCT,
- * `dados/institucional/`, fichas, tópicos e marcos da `revisar-ppc`, léxico de sinônimos, e os
+ * registros institucionais, fichas, tópicos e marcos da `revisar-ppc`, léxico de sinônimos, e os
  * arquivos da fase 5: `relacoes.yaml`, `transicoes.yaml`, `correspondencias/`, `config/vigencia.yaml`)
  * mais o
  * código que compila (`packages/kb/src/` menos testes, CLI e consultas). Mudou qualquer um, o banco
@@ -33,7 +33,10 @@ const FONTES_DADOS: readonly { caminho: string; extensoes: readonly string[] }[]
   { caminho: "base-conhecimento/normas", extensoes: [".md", ".yaml"] },
   { caminho: "base-conhecimento/institucional/ifpr/ppcs", extensoes: [".md", ".json", ".jsonl"] },
   { caminho: "base-conhecimento/catalogos/cnct", extensoes: [".json"] },
-  { caminho: "dados/institucional", extensoes: [".json"] },
+  ...["campi", "cursos", "processos-seletivos", "editais", "ofertas"].map((colecao) => ({
+    caminho: `base-conhecimento/institucional/ifpr/${colecao}`,
+    extensoes: [".json"],
+  })),
   { caminho: ".agents/skills/revisar-ppc/base-analise/fichas", extensoes: [".json"] },
   { caminho: ".agents/skills/revisar-ppc/base-analise/topicos-fichas.json", extensoes: [] },
   { caminho: ".agents/skills/revisar-ppc/base-analise/marcos-normativos.json", extensoes: [] },

@@ -1,16 +1,22 @@
-// @effect-diagnostics nodeBuiltinImport:off -- validação síncrona de dados/institucional/ (validar_base), lê o índice do CNCT com node:fs
-/** Validação de `dados/institucional/`: schema, caminho de cada arquivo e as regras da auditoria institucional. */
+// @effect-diagnostics nodeBuiltinImport:off -- validação síncrona dos registros institucionais (validar_base), lê o índice do CNCT com node:fs
+/**
+ * Validação dos registros de `institucional/ifpr/` (campi, cursos, processos seletivos, editais e
+ * ofertas): schema, caminho de cada arquivo, as regras da auditoria institucional, o Markdown dos
+ * PPCs, os índices gerados de cada coleção e os processos SEI exportados do Notion.
+ */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { RAIZ_BASE } from "../config.ts";
 import { chaveCurso } from "../dominio/curso.ts";
 import { auditarBase } from "../dominio/auditoria.ts";
+import { verificarIndices } from "./indices.ts";
 import {
   carregarDadosInstitucionais,
   paraDominio,
   RAIZ_DADOS_INSTITUCIONAIS,
   type CursoLocal,
 } from "./institucional.ts";
+import { validarProcessosSei } from "./processos-sei.ts";
 
 /** IDs `cnct:<slug>` dos cursos de `catalogos/cnct/index.json`. */
 export function idsCnct(raizBase: string = RAIZ_BASE): Set<string> {
@@ -29,21 +35,48 @@ function cnctInexistentes(cursos: CursoLocal[], conhecidos: Set<string>): string
   );
 }
 
+/** `ppc.markdown_path` que não aponta para um arquivo da base. */
+function markdownsInexistentes(cursos: CursoLocal[], raizBase: string): string[] {
+  return cursos.flatMap((curso) => {
+    const caminho = curso.ppc?.markdown_path;
+    if (!caminho || NodeFS.existsSync(NodePath.join(raizBase, caminho))) return [];
+    return [`Curso ${chaveCurso(curso.campus_id, curso.curso_slug)}: markdown convertido inexistente: ${caminho}`];
+  });
+}
+
+export interface OpcoesValidacao {
+  /**
+   * Confere também o que liga os registros ao resto da base: o Markdown dos PPCs, os `index.json`
+   * gerados e os processos SEI (padrão: sim). Os testes com raiz temporária desligam.
+   */
+  arquivosDaBase?: boolean;
+}
+
 export function validarDadosInstitucionais(
   raiz: string = RAIZ_DADOS_INSTITUCIONAIS,
   raizBase: string = RAIZ_BASE,
+  opcoes: OpcoesValidacao = {},
 ): {
   erros: string[];
   total: number;
 } {
-  const { dados, erros } = carregarDadosInstitucionais(raiz);
-  if (erros.length) return { erros, total: 0 };
+  const carregados = carregarDadosInstitucionais(raiz);
+  if (carregados.erros.length) return { erros: carregados.erros, total: 0 };
+  const { dados } = carregados;
   // As movimentações ainda vivem no Notion; aqui valem as regras dos registros locais e de suas relações.
   const auditoria = [
     ...auditarBase({ ...paraDominio(dados), movimentacoes: [] }),
     ...cnctInexistentes(dados.cursos, idsCnct(raizBase)),
   ];
+  const daBase = opcoes.arquivosDaBase ?? true;
+  if (daBase) auditoria.push(...markdownsInexistentes(dados.cursos, raizBase));
+  const erros = auditoria.map((erro) => `institucional/ifpr: ${erro}`);
+  if (daBase) {
+    erros.push(...verificarIndices(dados, raiz));
+    const cursos = new Set(dados.cursos.map((curso) => chaveCurso(curso.campus_id, curso.curso_slug)));
+    erros.push(...validarProcessosSei(cursos).erros);
+  }
   const total =
     dados.campi.length + dados.cursos.length + dados.processos.length + dados.editais.length + dados.ofertas.length;
-  return { erros: auditoria.map((erro) => `dados/institucional: ${erro}`), total };
+  return { erros, total };
 }

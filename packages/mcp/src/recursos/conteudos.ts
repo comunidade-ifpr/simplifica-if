@@ -42,7 +42,7 @@ export const DadosPpc = Schema.Struct({
     nivel: Schema.String,
     forma: Schema.String,
     link: EsquemaLink,
-    /** Curso de `dados/institucional/` ligado ao PPC, quando há. */
+    /** Curso de `institucional/ifpr/cursos/` ligado ao PPC, quando há. */
     curso: Schema.NullOr(EsquemaLink),
     /** O arquivo do PPC convertido, da primeira à última linha das seções. */
     fonte: Fonte,
@@ -161,7 +161,7 @@ export const DadosCampus = Schema.Struct({
     id: Schema.String,
     nome: Schema.String,
     site: Schema.NullOr(Schema.String),
-    /** O arquivo do campus em `dados/institucional/`. */
+    /** O arquivo do campus em `base-conhecimento/institucional/ifpr/campi/`. */
     path: Schema.String,
     link: EsquemaLink,
   }),

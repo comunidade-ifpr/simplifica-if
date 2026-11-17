@@ -71,7 +71,7 @@ const RAIZ = NodePath.resolve(import.meta.dirname, "..");
 const PASTA_FABRICA = NodePath.join(RAIZ, "tmp", "fabrica");
 const PASTA_BASES = NodePath.join(PASTA_FABRICA, "bases");
 /** As pastas de onde a fábrica lê, extraídas do commit (`git archive`), nunca do disco. */
-export const PASTAS_DO_COMMIT = ["base-conhecimento", "dados/institucional", "packages/kb", ".agents/skills"] as const;
+export const PASTAS_DO_COMMIT = ["base-conhecimento", "packages/kb", ".agents/skills"] as const;
 
 /**
  * Extrai as fontes do commit numa pasta à parte e liga o `node_modules` do checkout (o `kb` roda dela):

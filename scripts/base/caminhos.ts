@@ -14,7 +14,6 @@ export function criarCaminhos(raizProjeto: string = RAIZ_PROJETO) {
   const ppcs = NodePath.join(institucional, "ifpr", "ppcs");
   const ppcps = NodePath.join(institucional, "ifpr", "ppcps");
   const catalogos = NodePath.join(raiz, "catalogos");
-  const processos = NodePath.join(institucional, "ifpr", "processos-seletivos");
   const schemas = NodePath.join(raiz, "schemas");
   const schema = (nome: string) => NodePath.join(schemas, `${nome}.schema.json`);
   return {
@@ -23,7 +22,6 @@ export function criarCaminhos(raizProjeto: string = RAIZ_PROJETO) {
     site: NodePath.join(raizProjeto, "site"),
     normas: NodePath.join(raiz, "normas"),
     institucional,
-    campi: NodePath.join(institucional, "ifpr", "campi"),
     ppcs,
     indicePpcs: NodePath.join(ppcs, "index.json"),
     secoesPpcs: NodePath.join(ppcs, "secoes"),
@@ -32,19 +30,12 @@ export function criarCaminhos(raizProjeto: string = RAIZ_PROJETO) {
     catalogos,
     manifestInstitucional: NodePath.join(raiz, "institucional_manifest.json"),
     manifestCatalogos: NodePath.join(raiz, "catalogos_manifest.json"),
-    indiceCampi: NodePath.join(institucional, "ifpr", "campi", "index.json"),
-    processosSeletivos: processos,
-    indiceProcessosSeletivos: NodePath.join(processos, "index.json"),
     manifestCnct: NodePath.join(catalogos, "cnct", "manifest.json"),
     indiceCnct: NodePath.join(catalogos, "cnct", "index.json"),
     cursosCnct: NodePath.join(catalogos, "cnct", "cursos"),
     schemas: {
       manifestInstitucional: schema("institucional_manifest"),
       manifestCatalogos: schema("catalogos_manifest"),
-      indiceCampi: schema("campi_index"),
-      campus: schema("campus"),
-      indiceProcessosSeletivos: schema("processos_seletivos_index"),
-      processoSeletivo: schema("processo_seletivo"),
       manifestCnct: schema("cnct_manifest"),
       indiceCnct: schema("cnct_index"),
       cursoCnct: schema("cnct_curso"),

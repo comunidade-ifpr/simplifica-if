@@ -10,12 +10,9 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { type CaminhosBase, listarDiretorio, naBase, relativo } from "./caminhos.ts";
 import {
-  ehInteiro,
   ehObjeto,
-  itensDe,
   jsonCompacto,
   jsonIndentado,
-  type ObjetoJson,
   textoDe,
 } from "@simplifica-if/kb/json";
 import { analisarPpc } from "@simplifica-if/kb/ppcs/front-matter";
@@ -30,6 +27,8 @@ import {
   TIPOS_NAO_INDEXADOS,
 } from "@simplifica-if/kb/ppcs/secoes";
 import type { IndicePpcsJson, SecaoPpcJson } from "./tipos-schemas.ts";
+import { carregarDadosInstitucionais, type CampusLocal, type CursoLocal } from "../dados/institucional.ts";
+import { interpretarVagasPpc } from "../dominio/curso.ts";
 import { compararTexto, lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
 
 export { limparTexto, limparTitulo, removerAcentos, segmentarPpc, tituloDaLinha } from "@simplifica-if/kb/ppcs/secoes";
@@ -49,38 +48,29 @@ export type ItemPpc = IndicePpcsJson["items"][number];
 /** Linha de secoes/<tipo>.jsonl, no formato de schemas/ppcs_secao.schema.json. */
 export type ItemSecao = SecaoPpcJson;
 
-function valorMetadado(ppc: ObjetoJson, chave: string, chaveInterna: string): unknown {
-  const metadados = ppc.metadados;
-  if (!ehObjeto(metadados)) return null;
-  const valor = metadados[chave];
-  if (!ehObjeto(valor)) return null;
-  return valor[chaveInterna];
-}
-
 function textoPreenchido(valor: unknown): string | null {
   return typeof valor === "string" && valor ? valor : null;
 }
 
 /**
  * Item do índice para o PPC convertido `caminhoMarkdown` de um curso, ou
- * `null` se faltar algum campo textual obrigatório no campus JSON.
+ * `null` se faltar algum campo textual obrigatório no registro do curso.
  * `markdown` é o texto do PPC, de onde sai a proveniência (front matter).
  */
 export function montarItemPpc(
-  campus: ObjetoJson,
-  curso: ObjetoJson,
-  ppc: ObjetoJson,
+  campus: CampusLocal,
+  curso: CursoLocal,
   caminhoMarkdown: string,
   markdown: string,
 ): ItemPpc | null {
-  const campusId = textoPreenchido(campus.id);
+  const campusId = textoPreenchido(campus.campus_id);
   const campusNome = textoPreenchido(campus.nome);
   const cursoSlug = textoPreenchido(curso.curso_slug);
   const cursoNome = textoPreenchido(curso.nome);
   const nivel = textoPreenchido(curso.nivel);
-  const tipoOferta = textoPreenchido(curso.tipo_oferta);
-  const cursoUrl = textoPreenchido(curso.url);
-  const fontePdf = textoPreenchido(ppc.url);
+  const tipoOferta = textoPreenchido(curso.forma_oferta);
+  const cursoUrl = textoPreenchido(curso.pagina_oficial);
+  const fontePdf = textoPreenchido(curso.ppc?.url);
   if (!campusId || !campusNome || !cursoSlug || !cursoNome || !nivel || !tipoOferta || !cursoUrl || !fontePdf) {
     return null;
   }
@@ -109,41 +99,36 @@ export function montarItemPpc(
   if (modalidade) item.modalidade = modalidade;
   const situacao = textoPreenchido(curso.situacao);
   if (situacao) item.situacao = situacao;
-  // Um booleano só aparece em campus JSON inválido; ele segue como está e o validador o acusa.
-  const ano = valorMetadado(ppc, "ano_documento", "ano");
-  if (ehInteiro(ano)) item.ano_documento = ano as number;
-  const vagas = valorMetadado(ppc, "vagas", "quantidade");
-  if (ehInteiro(vagas)) item.vagas = vagas as number;
+  const ano = curso.ppc?.ano_documento;
+  if (ano !== undefined) item.ano_documento = ano;
+  // As vagas do PPC só valem com o trecho do documento que as sustenta.
+  const vagas = curso.ppc?.trecho_vagas ? interpretarVagasPpc(curso.ppc.vagas ?? "") : null;
+  if (vagas) item.vagas = vagas.quantidade;
   return item;
 }
 
-export function arquivosCampi(caminhos: CaminhosBase): string[] {
-  return listarDiretorio(caminhos.campi, ".json").filter((caminho) => NodePath.basename(caminho) !== "index.json");
-}
-
+/** Itens do índice: os cursos de `institucional/ifpr/cursos/` com PPC convertido presente na base. */
 export function coletarItensPpc(caminhos: CaminhosBase): ItemPpc[] {
+  // Registro inválido fica de fora; o validar_base o acusa.
+  const { dados } = carregarDadosInstitucionais(NodePath.join(caminhos.institucional, "ifpr"));
+  const campi = new Map(dados.campi.map((campus) => [campus.campus_id, campus]));
   const itens: ItemPpc[] = [];
-  for (const caminhoCampus of arquivosCampi(caminhos)) {
-    const campus: unknown = JSON.parse(lerTexto(caminhoCampus));
-    if (!ehObjeto(campus)) continue;
-    for (const curso of itensDe(campus.cursos)) {
-      if (!ehObjeto(curso) || !ehObjeto(curso.ppc)) continue;
-      const ppc = curso.ppc;
-      const caminhoMarkdown = ppc.markdown_path;
-      if (
-        !ehObjeto(ppc.conversao) ||
-        ppc.conversao.status !== "convertido" ||
-        typeof caminhoMarkdown !== "string" ||
-        !NodeFS.existsSync(naBase(caminhos, caminhoMarkdown))
-      ) {
-        continue;
-      }
-      const markdown = lerTexto(naBase(caminhos, caminhoMarkdown), { ignorarErros: true });
-      const item = montarItemPpc(campus, curso, ppc, caminhoMarkdown, markdown);
-      if (item) itens.push(item);
+  for (const curso of dados.cursos) {
+    const campus = campi.get(curso.campus_id);
+    const caminhoMarkdown = curso.ppc?.markdown_path;
+    if (!campus || !curso.ppc?.url || !caminhoMarkdown || !NodeFS.existsSync(naBase(caminhos, caminhoMarkdown))) {
+      continue;
     }
+    const markdown = lerTexto(naBase(caminhos, caminhoMarkdown), { ignorarErros: true });
+    const item = montarItemPpc(campus, curso, caminhoMarkdown, markdown);
+    if (item) itens.push(item);
   }
-  return itens.sort((a, b) => compararTexto(a.campus_id, b.campus_id) || compararTexto(a.curso_nome, b.curso_nome));
+  return itens.sort(
+    (a, b) =>
+      compararTexto(a.campus_id, b.campus_id) ||
+      compararTexto(a.curso_nome, b.curso_nome) ||
+      compararTexto(a.curso_slug, b.curso_slug),
+  );
 }
 
 /** Seções indexadas de todos os PPCs, na ordem dos PPCs e, dentro de cada um, na ordem do texto. */

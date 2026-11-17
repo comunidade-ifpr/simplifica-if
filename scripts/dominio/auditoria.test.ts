@@ -1,9 +1,9 @@
 import { describe, expect, test } from "vite-plus/test";
-import { auditarBase, type BaseInstitucional } from "../dominio/auditoria.ts";
-import { caminhoMarkdownPpc, interpretarVagasPpc, type Campus, type Curso } from "../dominio/curso.ts";
-import type { OfertaIngresso } from "../dominio/ingresso.ts";
-import type { Movimentacao } from "../dominio/movimentacao.ts";
-import { dataHoraJson, montarCampi, montarProcessos } from "./base-publica.ts";
+import { auditarBase, type BaseInstitucional } from "./auditoria.ts";
+import { caminhoMarkdownPpc, interpretarVagasPpc, type Campus, type Curso } from "./curso.ts";
+import type { OfertaIngresso } from "./ingresso.ts";
+import type { Movimentacao } from "./movimentacao.ts";
+import { montarProcessosSei, processosSeiDasMovimentacoes } from "../dados/processos-sei.ts";
 
 const CAMPUS: Campus = {
   id: "pg-campus",
@@ -126,29 +126,6 @@ describe("auditarBase", () => {
     ]);
   });
 
-  test("publica status e data de curadoria próprios para ano e vagas", () => {
-    const ppc = {
-      ...curso().ppc,
-      url: "https://exemplo.ifpr.edu.br/ppc.pdf",
-      anoDocumento: 2021,
-      vagas: "40",
-      trechoVagas: "40 vagas",
-      curadoriaAno: "Revisado",
-      dataCuradoriaAno: "2026-11-13",
-      curadoriaVagas: "Precisa de revisão",
-    };
-    const [campus] = montarCampi(base({ cursos: [curso({ ppc })] }));
-    expect(campus!.cursos[0]!.ppc!.metadados).toEqual({
-      ano_documento: {
-        ano: 2021,
-        trecho_fonte: "Ano do documento registrado no Notion: 2021",
-        status_curadoria: "revisado",
-        revisado_em: "2026-11-13",
-      },
-      vagas: { quantidade: 40, trecho_fonte: "40 vagas", status_curadoria: "precisa_revisao" },
-    });
-  });
-
   test("exige turno no enum e a nota de rodapé quando a grafia tem marca", () => {
     const oferta: OfertaIngresso = {
       id: "ps/oferta",
@@ -191,61 +168,27 @@ describe("auditarBase", () => {
   });
 });
 
-describe("montagem dos JSONs públicos", () => {
-  test("omite campos vazios e publica processos SEI sem repetir", () => {
+describe("processos SEI dos cursos", () => {
+  test("um item por curso, número e tipo, sem movimentação sem número", () => {
     const movimentacoes = [
-      movimentacao({ id: "b", numeroSei: "1", tipo: "Ajuste PPC", cursoIds: ["pg-curso"] }),
-      movimentacao({ id: "a", numeroSei: "1", tipo: "Ajuste PPC", anotacoes: "nota", cursoIds: ["pg-curso"] }),
-      movimentacao({ id: "c", numeroSei: "", cursoIds: ["pg-curso"] }),
-    ];
-    const [campus] = montarCampi(base({ movimentacoes }));
-    expect(campus).toEqual({
-      id: "exemplo",
-      nome: "Campus Exemplo",
-      links: { site: CAMPUS.site, calendario_academico: CAMPUS.calendarioAcademico },
-      cursos: [
-        {
-          curso_slug: "tecnico-exemplo",
-          notion_page_id: "pg-curso",
-          nome: "Técnico em Exemplo",
-          nivel: "médio",
-          tipo_oferta: "integrado",
-          sei: { processos: [{ numero: "1", tipo: "Ajuste PPC", trecho_fonte: "nota" }] },
-        },
-      ],
-    });
-  });
-
-  test("usa a data de hoje quando o processo seletivo não foi verificado", () => {
-    const processos = montarProcessos(
-      base({
-        processos: [
-          {
-            id: "pg-ps",
-            titulo: "PS",
-            processoSeletivoId: "ps-2027",
-            nome: "PS 2027",
-            anoIngresso: 2027,
-            instituicao: "",
-            fontes: [],
-            statusCuradoria: "outro",
-            verificadoEm: "",
-            observacoes: "",
-          },
-        ],
+      movimentacao({ id: "b", numeroSei: "23411.000001/2026-01", tipo: "Ajuste PPC", cursoIds: ["exemplo/b"] }),
+      movimentacao({
+        id: "a",
+        numeroSei: "23411.000001/2026-01",
+        tipo: "Ajuste PPC",
+        anotacoes: "nota",
+        cursoIds: ["exemplo/b", "exemplo/a"],
       }),
-      "2026-11-09",
-    );
-    expect(processos[0]).toMatchObject({
-      instituicao: "IFPR",
-      curadoria: { status_ofertas: "dados_parciais", verificado_em: "2026-11-09" },
-    });
-  });
-
-  test("completa data e fuso", () => {
-    expect(dataHoraJson("2026-11-09")).toBe("2026-11-09T00:00:00-03:00");
-    expect(dataHoraJson("2026-11-09T10:30")).toBe("2026-11-09T10:30:00-03:00");
-    expect(dataHoraJson("2026-11-09T10:30:15.000-03:00")).toBe("2026-11-09T10:30:15-03:00");
+      movimentacao({ id: "c", numeroSei: "", cursoIds: ["exemplo/a"] }),
+      movimentacao({ id: "d", numeroSei: "23411.000002/2026-02", tipo: "", cursoIds: ["exemplo/a"] }),
+    ];
+    const arquivo = montarProcessosSei(processosSeiDasMovimentacoes(movimentacoes));
+    expect(arquivo.total_itens).toBe(3);
+    expect(arquivo.items).toEqual([
+      { curso_id: "exemplo/a", numero: "23411.000001/2026-01", tipo: "Ajuste PPC", trecho_fonte: "nota" },
+      { curso_id: "exemplo/a", numero: "23411.000002/2026-02", tipo: "outro" },
+      { curso_id: "exemplo/b", numero: "23411.000001/2026-01", tipo: "Ajuste PPC" },
+    ]);
   });
 });
 

@@ -334,14 +334,14 @@ perguntas:
         - id: turno-noturno
           descricao: Informa o turno noturno da oferta de Telecomunicações em Curitiba
           ancora: curso:curitiba/tecnico-em-telecomunicacoes
-          arquivo: dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-telecomunicacoes-noturno.json
+          arquivo: base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-telecomunicacoes-noturno.json
           trecho: 'Curitiba; Técnico em Telecomunicações; Turmas: 1; Turno: Noturno'
           padroes:
             - 'noturno'
         - id: turno-matutino
           descricao: Informa turnos diurnos (matutino), o mais comum nas ofertas do eixo
           ancora: curso:foz-do-iguacu/tecnico-em-desenvolvimento-de-sistemas
-          arquivo: dados/institucional/ofertas/processo-seletivo-2026/foz-do-iguacu-tecnico-em-desenvolvimento-de-sistemas-matutino.json
+          arquivo: base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/foz-do-iguacu-tecnico-em-desenvolvimento-de-sistemas-matutino.json
           trecho: 'Foz do Iguaçu; Técnico em Desenvolvimento de Sistemas; Turmas: 1; Turno: Matutino'
           padroes:
             - 'matutino'
@@ -511,7 +511,7 @@ perguntas:
       status: curado
       resposta_esperada: >-
         Todos os 112 cursos técnicos de nível médio autorizados e em oferta (situação ativo ou em oferta
-        em dados/institucional/), em até dois anos a partir da vigência da resolução (art. 71). Cursos em
+        em institucional/ifpr/cursos/), em até dois anos a partir da vigência da resolução (art. 71). Cursos em
         abertura seguem o art. 70; suspensos e de situação incerta ficam fora da contagem.
       deve_conter:
         - *art71

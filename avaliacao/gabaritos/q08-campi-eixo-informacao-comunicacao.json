@@ -1,7 +1,7 @@
 {
   "pergunta": "Q08",
   "gerado_por": "scripts/avaliacao/gabaritos/conjuntos.ts",
-  "criterio": "Campi das ofertas de dados/institucional/ofertas/processo-seletivo-2026/ cujo curso tem cnct_id de habilitação do eixo 'Informação e Comunicação' do CNCT. Detalhes: curso, turno padronizado (turno_padronizado), grafia da fonte (turno) e tipo de oferta.",
+  "criterio": "Campi das ofertas de institucional/ifpr/ofertas/processo-seletivo-2026/ cujo curso tem cnct_id de habilitação do eixo 'Informação e Comunicação' do CNCT. Detalhes: curso, turno padronizado (turno_padronizado), grafia da fonte (turno) e tipo de oferta.",
   "universo": "campus",
   "avaliar_precisao": true,
   "esperado": [
