@@ -144,7 +144,12 @@ const comando = Command.make(
       ),
     );
     const servicos = yield* Layer.build(
-      layerStdio({ banco: caminho, canal: canal as Canal, pastaTrabalho: pasta }).pipe(Layer.provide(NodeStdio.layer)),
+      layerStdio({
+        banco: caminho,
+        // A base da fábrica não grava canal: com a atualização, vale o canal dela.
+        canal: Option.isSome(opcoes.pastaAtualizacao) && canal === "dev" ? opcoes.canalAtualizacao : (canal as Canal),
+        pastaTrabalho: pasta,
+      }).pipe(Layer.provide(NodeStdio.layer)),
     );
     const { base } = Context.get(servicos, Leitura.Leitura);
     yield* Console.error(

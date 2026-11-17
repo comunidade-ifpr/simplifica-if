@@ -771,7 +771,7 @@ export const EstadoAtualizacao = Schema.Struct({
   aviso: Schema.NullOr(Schema.String),
   versaoApp: Schema.String,
   base: VersaoBaseApp,
-  /** A versão anterior guardada, para "Voltar para a versão anterior da base". */
+  /** Para onde "Voltar para a versão anterior da base" leva; `null` sem anterior ou se ela é a recusada. */
   anterior: Schema.NullOr(Schema.String),
   /** A versão baixada e conferida que entra quando o servidor reiniciar. */
   pendente: Schema.NullOr(Schema.String),
@@ -780,6 +780,8 @@ export const EstadoAtualizacao = Schema.Struct({
   skillsPendentes: Schema.NullOr(Schema.String),
   /** ISO 8601 da última conferência do manifesto que respondeu. */
   ultimaConferencia: Schema.NullOr(Schema.String),
+  /** O `gerado_em` do último manifesto conferido: mais de 14 dias, e a tela avisa que não confirmou a base. */
+  manifestoGeradoEm: Schema.NullOr(Schema.String),
   /** As novidades da base aplicada que a pessoa ainda não viu (o aviso "Base atualizada"). */
   novidades: Schema.NullOr(Schema.Struct({ versao: Schema.String, itens: Schema.Array(NovidadeBase) })),
 });

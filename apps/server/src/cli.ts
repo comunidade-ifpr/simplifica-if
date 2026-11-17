@@ -33,7 +33,7 @@ import * as Runtime from "effect/Runtime";
 import * as Schema from "effect/Schema";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
-import { prepararAbertura } from "@simplifica-if/atualizacao/local";
+import { lerEstado, prepararAbertura } from "@simplifica-if/atualizacao/local";
 import { lerChavePublica } from "@simplifica-if/atualizacao/minisign";
 import { LinhaPartida, VARIAVEL_TOKEN } from "@simplifica-if/contratos-app";
 import { POLITICA_FABRICA } from "@simplifica-if/motor/politica";
@@ -182,7 +182,12 @@ const servidor = Command.make(
           porta: opcoes.porta,
           portaMcp: opcoes.portaMcp,
           origens: [...opcoes.origens, ...partida.origens],
-          canal: opcoes.canal,
+          // A base da fábrica não grava canal (o canal é do manifesto): com a atualização ligada, o
+          // carimbo das respostas usa o canal escolhido em "Atualizações".
+          canal:
+            atualizacao === undefined || opcoes.canal !== "dev"
+              ? opcoes.canal
+              : (lerEstado(atualizacao.pasta).canal ?? atualizacao.canalPadrao),
           bancoConversas: path.join(pastaEstado, Banco.ARQUIVO_BANCO),
           ...(pastaSkills === undefined ? {} : { pastaSkills }),
           ...(atualizacao === undefined ? {} : { atualizacao }),

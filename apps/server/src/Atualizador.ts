@@ -82,13 +82,23 @@ export const make = Effect.fn("Atualizador.make")(function* (opcoes: Opcoes) {
 
   const canalAtual = () => lerEstado(opcoes.pasta).canal ?? opcoes.canalPadrao;
 
+  /**
+   * A versão para onde "Voltar" leva: a anterior baixada ou, sem ela, a empacotada. Nenhuma quando é a
+   * versão de que se acabou de voltar (a recusada): voltar de novo seria ir para a frente.
+   */
+  const versaoParaVoltar = (): string | null => {
+    if (opcoes.abertura.origem !== "baixada") return null;
+    const anterior =
+      (NodeFS.existsSync(c.anterior) ? lerInfoBanco(c.anterior)?.versao : undefined) ??
+      lerInfoBanco(opcoes.bancoEmpacotado)?.versao ??
+      null;
+    return anterior !== null && anterior === lerEstado(opcoes.pasta).recusada ? null : anterior;
+  };
+
   const estado = Effect.gen(function* () {
     const m = yield* Ref.get(memoria);
     const gravado = lerEstado(opcoes.pasta);
     const info = opcoes.abertura.info;
-    const anteriorBaixada = NodeFS.existsSync(c.anterior) ? lerInfoBanco(c.anterior)?.versao : undefined;
-    const anteriorEmpacotada =
-      opcoes.abertura.origem === "baixada" ? lerInfoBanco(opcoes.bancoEmpacotado)?.versao : undefined;
     const situacao: SituacaoAtualizacao =
       m.situacao === "parada" && (gravado.pendente !== undefined || gravado.skillsPendentes !== undefined)
         ? "pronta"
@@ -107,11 +117,12 @@ export const make = Effect.fn("Atualizador.make")(function* (opcoes: Opcoes) {
         origem:
           opcoes.desligada !== null && opcoes.abertura.origem === "empacotada" ? "externa" : opcoes.abertura.origem,
       },
-      anterior: anteriorBaixada ?? anteriorEmpacotada ?? null,
+      anterior: gravado.voltar === true ? null : versaoParaVoltar(),
       pendente: gravado.pendente?.versao ?? null,
       skills: gravado.skills ?? "empacotadas",
       skillsPendentes: gravado.skillsPendentes ?? null,
       ultimaConferencia: gravado.ultimaConferencia ?? null,
+      manifestoGeradoEm: gravado.manifestoGeradoEm ?? null,
       novidades:
         gravado.novidades !== undefined && !gravado.novidades.vista
           ? { versao: gravado.novidades.versao, itens: gravado.novidades.itens }
@@ -172,6 +183,12 @@ export const make = Effect.fn("Atualizador.make")(function* (opcoes: Opcoes) {
     }
     if (pedido === "voltar" && opcoes.abertura.origem !== "baixada") {
       return { resultado: "nada", mensagem: "A base em uso já é a que veio com o app." } satisfies ResultadoTroca;
+    }
+    if (pedido === "voltar" && versaoParaVoltar() === null) {
+      return {
+        resultado: "nada",
+        mensagem: "A versão anterior é a de que você acabou de voltar. Espere uma versão mais nova da base.",
+      } satisfies ResultadoTroca;
     }
     if (pedido === "voltar") gravarEstado(opcoes.pasta, { ...gravado, voltar: true });
     if (yield* opcoes.ocupado) {

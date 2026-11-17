@@ -79,8 +79,14 @@ describe("Atualizador (serviço)", () => {
       const voltou = yield* servico(c, false);
       expect((yield* voltou.estado).base.versao).toBe("2026.11.12");
       expect(lerEstado(c.pastaApp).recusada).toBe("2026.11.13");
+      // Voltar de novo levaria à versão recusada: o botão some, e o pedido não troca nada.
+      expect((yield* voltou.estado).anterior).toBeNull();
+      expect(yield* voltou.voltar).toMatchObject({ resultado: "nada" });
+      expect(lerEstado(c.pastaApp).voltar).toBeUndefined();
       const depois = yield* voltou.procurar;
       expect(depois.pendente).toBeNull();
+      // O gerado_em do manifesto conferido vai ao estado (o aviso de 14 dias na tela).
+      expect(depois.manifestoGeradoEm).not.toBeNull();
       yield* Effect.promise(() => c.fechar());
     }).pipe(Effect.scoped),
   );
