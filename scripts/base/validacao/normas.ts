@@ -4,6 +4,7 @@ import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
+import { RE_URL_ASSINADA } from "../../dados/urls.ts";
 import { ehArquivo, listarDiretorio, listarRecursivo, naBase } from "../caminhos.ts";
 import {
   analisarFrontMatter,
@@ -64,6 +65,11 @@ export function validarPadroesLocais(ctx: Contexto): string[] {
     }
     for (const padrao of PADROES_LOCAIS) {
       if (texto.includes(padrao)) erros.push(`${ctx.rel(caminho)} contém padrão local proibido: ${padrao}`);
+    }
+    const assinada = RE_URL_ASSINADA.exec(texto);
+    if (assinada) {
+      // Só o começo da URL: a mensagem não repete a credencial.
+      erros.push(`${ctx.rel(caminho)} contém URL pré-assinada (grave sem a query string): ${assinada[0].split("?")[0]}`);
     }
   }
   return erros;

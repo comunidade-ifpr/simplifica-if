@@ -15,6 +15,7 @@ import * as Schema from "effect/Schema";
 import { caminhoTexto, problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { RAIZ_PROJETO } from "../config.ts";
 import { ESTRITO } from "../esquema.ts";
+import { limparUrlsAssinadas } from "./urls.ts";
 import { compararTexto } from "../dominio/comum.ts";
 import { ehIdCnct } from "@simplifica-if/kb/normas/ids";
 import { chaveCurso, type Campus, type Curso } from "../dominio/curso.ts";
@@ -271,8 +272,9 @@ function semVazios<T>(valor: T): T {
   return valor;
 }
 
+/** Texto do arquivo de um registro: sem campos vazios e sem a query de URL pré-assinada (veja `urls.ts`). */
 export function textoRegistro(registro: unknown): string {
-  return `${JSON.stringify(semVazios(registro), null, 2)}\n`;
+  return `${JSON.stringify(limparUrlsAssinadas(semVazios(registro)), null, 2)}\n`;
 }
 
 export function gravarRegistro(relativo: string, registro: unknown, raiz: string = RAIZ_DADOS_INSTITUCIONAIS): void {

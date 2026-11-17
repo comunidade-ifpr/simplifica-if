@@ -312,4 +312,4 @@ Conferidas por busca em 13/11/2026. Cada entrada do registro precisa do trecho l
 - OpenAI, [Codex — Admin rollout guide](https://developers.openai.com/codex/enterprise/)
 - Google Cloud, [Vertex AI and zero data retention](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/vertex-ai-zero-data-retention)
 - Res. CD/ANPD nº 19/2024 (fontes secundárias; conferir no DOU): [Mattos Filho](https://www.mattosfilho.com.br/unico/regulamentacao-transferencia-internacional-dados/), [Lefosse](https://lefosse.com/noticias/transferencia-internacional-de-dados-prazo-para-adocao-das-clausulas-padrao-da-anpd-se-encerra-em-23-de-agosto/)
-- T3 Code, documentação local em `$T3CODE_DIR/docs/user/`: `managed-policy.md`, `secrets.md`, `html-renders.md`
+- T3 Code, documentação no checkout do T3 Code (`$T3CODE_DIR/docs/user/`): `managed-policy.md`, `secrets.md`, `html-renders.md`

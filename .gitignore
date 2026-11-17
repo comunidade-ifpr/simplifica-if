@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 .venv/
 output/
+outputs/
 tmp/
 site/
 .env.local
