@@ -44,6 +44,8 @@ it("paleta: uma citação vai direto ao dispositivo destacado na norma", async (
   const grupo = dialogo.getByRole("group", { name: "Trechos de normas" });
   await expect.element(grupo.getByRole("option").first()).toHaveAttribute("aria-selected", "true");
   await expect.element(grupo.getByText("Citação reconhecida", { exact: false })).toBeVisible();
+  // o título traz o dispositivo inteiro, não só o rótulo
+  await expect.element(grupo.getByText("Resolução CNE/CP nº 1/2021, art. 20", { exact: true })).toBeVisible();
   semIngles();
   await userEvent.keyboard("{Enter}");
   await expect.element(dialogo).not.toBeInTheDocument();
@@ -63,6 +65,18 @@ it("paleta: uma citação vai direto ao dispositivo destacado na norma", async (
   await userEvent.keyboard("{Escape}");
   await expect.element(page.getByRole("dialog", { name: "Buscar na base" })).not.toBeInTheDocument();
   await expect.element(botao).toHaveFocus();
+
+  // um texto colado mais longo que o limite é cortado: busca, sem erro técnico
+  const longo = await abrirPaleta();
+  await longo.fill("estágio supervisionado ".repeat(30));
+  expect((longo.element() as HTMLInputElement).value.length).toBeLessThanOrEqual(300);
+  const janela = page.getByRole("dialog", { name: "Buscar na base" });
+  await expect
+    .poll(() => janela.element().textContent ?? "")
+    .toMatch(/Nada encontrado|Trechos de normas|Seções de PPC/);
+  expect(janela.element().querySelector('[role="alert"]')).toBeNull();
+  semIngles();
+  await userEvent.keyboard("{Escape}");
 });
 
 it("paleta: um curso abre a ficha, com a divergência marcada, o Consepe e Perguntar à IA", async () => {
@@ -85,10 +99,12 @@ it("paleta: um curso abre a ficha, com a divergência marcada, o Consepe e Pergu
 
   const curso = page.getByRole("article", { name: "Curso" });
   await expect.element(curso.getByRole("heading", { level: 2, name: "Técnico em Enfermagem" })).toBeVisible();
-  await expect.element(curso.getByText("1 divergência PPC × SUAP")).toBeVisible();
+  await expect.element(curso.getByText("2 divergências PPC × SUAP")).toBeVisible();
   const tabela = curso.getByRole("table", { name: "Comparação entre o PPC e o SUAP" });
   await expect.element(tabela.getByText("Diverge", { exact: true })).toBeVisible();
   await expect.element(tabela.getByText("Extraído, conferir")).toBeVisible();
+  // o ano do documento, dos dados institucionais, ainda não revisado
+  await expect.element(tabela.getByText("Precisa de revisão")).toBeVisible();
   await expect.element(curso.getByRole("button", { name: "Técnico em Enfermagem" })).toBeVisible(); // o CNCT
   await expect.element(curso.getByText("Processo Seletivo 2026: Matutino, 30 vagas")).toBeVisible();
   await expect.element(curso.getByRole("link", { name: "Consepe, reunião de 20/03/2026" })).toBeVisible();
@@ -112,6 +128,8 @@ it("paleta: um curso abre a ficha, com a divergência marcada, o Consepe e Pergu
   await page.getByRole("button", { name: "Voltar" }).click();
 
   // "Perguntar à IA sobre isto": o Início com o pedido escrito e o foco, sem enviar
+  const conversas = () => app.contexto.api.chamar((cliente) => cliente["conversa.listar"]({}));
+  const antes = await conversas();
   await page.getByRole("button", { name: "Perguntar à IA sobre isto" }).click();
   const caixa = page.getByRole("textbox", { name: "O que você precisa hoje?" });
   await expect.element(caixa).toHaveFocus();
@@ -121,6 +139,8 @@ it("paleta: um curso abre a ficha, com a divergência marcada, o Consepe e Pergu
       "Sobre o curso Técnico em Enfermagem, Campus Curitiba (ifpr://curso/curitiba/tecnico-em-enfermagem):\n",
     );
   expect(app.roteador.state.location.pathname).toBe("/");
+  // nenhuma conversa foi criada: nada saiu para a IA
+  expect(await conversas()).toEqual(antes);
   semIngles();
 });
 
@@ -144,6 +164,14 @@ it("coleções: filtros de cursos, normas, CNCT e Consepe; campus e ficha de an�
   semIngles();
   await page.getByRole("button", { name: "Limpar os filtros" }).click();
   await expect.element(page.getByText("2 cursos", { exact: true })).toBeVisible();
+
+  // PPCs: a coleção e o filtro de campus
+  await page.getByRole("navigation", { name: "Coleções" }).getByRole("link", { name: "PPCs" }).click();
+  await expect.element(page.getByRole("heading", { name: "Projetos Pedagógicos de Curso" })).toBeVisible();
+  await expect.element(page.getByText("1 PPC", { exact: true })).toBeVisible();
+  await page.getByRole("group", { name: "Filtros" }).getByLabelText("Campus").selectOptions("curitiba");
+  await expect.element(page.getByRole("link", { name: "Técnico em Enfermagem" })).toBeVisible();
+  semIngles();
 
   // Normas: a situação de vigência
   await page.getByRole("navigation", { name: "Coleções" }).getByRole("link", { name: "Normas" }).click();
@@ -187,4 +215,19 @@ it("coleções: filtros de cursos, normas, CNCT e Consepe; campus e ficha de an�
   await expect.element(ficha.getByText(/^A organização curricular deixa clara a progressão formativa/)).toBeVisible();
   await expect.element(ficha.getByText("Obrigatória")).toBeVisible();
   semIngles();
+});
+
+it("Perguntar à IA com o primeiro uso por fazer: o pedido atravessa as boas-vindas e volta ao Início", async () => {
+  const novo = await iniciarServidorTeste({ primeiroUso: true });
+  const pedido = "Sobre o Campus Curitiba (ifpr://campus/curitiba):\n";
+  await using app = await montarApp(novo, `/?pedido=${encodeURIComponent(JSON.stringify(pedido))}`);
+  await expect.element(page.getByRole("heading", { name: "Boas-vindas ao Simplifica IF" })).toBeVisible();
+  expect(app.roteador.state.location.search).toMatchObject({ pedido });
+  await page.getByRole("button", { name: "Entendi" }).click();
+  await page.getByRole("button", { name: /^Pular/ }).click();
+  await page.getByRole("button", { name: "Pular", exact: true }).click();
+  await page.getByRole("button", { name: "Pular e ir para o Início" }).click();
+  const caixa = page.getByRole("textbox", { name: "O que você precisa hoje?" });
+  await expect.element(caixa).toHaveValue(pedido);
+  expect(app.roteador.state.location.pathname).toBe("/");
 });

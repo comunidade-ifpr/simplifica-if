@@ -135,6 +135,28 @@ export function inserirExplorar(caminho: string): void {
       linha: 122,
       alternativas_json: "[]",
     });
+    // o ano do documento vem dos dados institucionais, ainda sem revisão da curadoria
+    inserir("ppc_fatos", {
+      ppc_id: `ppc:${CURSO_ENFERMAGEM}`,
+      fato: "ano_documento",
+      valor: "2023",
+      valor_num: 2023,
+      unidade: null,
+      status_curadoria: "Precisa de revisão",
+      regra: "dados-institucionais",
+      trecho_fonte: "ano_documento: 2023",
+      path: "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-enfermagem.json",
+      linha: 30,
+      alternativas_json: "[]",
+    });
+    inserir("ppc_suap", {
+      ppc_id: `ppc:${CURSO_ENFERMAGEM}`,
+      aspecto: "ano",
+      resultado: "ppc-mais-recente-que-matrizes",
+      valor_ppc: "2023",
+      valor_suap: "2019",
+      explicacao: "o PPC é de 2023; a matriz mais recente do SUAP é de 2019",
+    });
     inserir("ppc_suap", {
       ppc_id: `ppc:${CURSO_ENFERMAGEM}`,
       aspecto: "carga_horaria",
@@ -180,7 +202,7 @@ export function inserirExplorar(caminho: string): void {
     });
     inserir("conselhos_itens", {
       reuniao_id: REUNIAO_CONSEPE,
-      ordem: 0,
+      ordem: 7, // a ordem oficial da pauta, não a posição no arquivo
       item_id: "consepe:item:2026:parecer:07",
       titulo:
         "Parecer Consepe 07/2026 - Favorável ao ajuste curricular do Curso Técnico em Enfermagem, do Campus Curitiba.",

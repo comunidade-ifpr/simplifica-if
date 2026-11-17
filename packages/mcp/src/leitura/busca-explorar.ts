@@ -8,6 +8,7 @@
  * Funções puras, sem banco: `leitura/explorar.ts` monta os itens a partir do `kb.sqlite`.
  */
 import { PALAVRAS_VAZIAS, semDiacriticos } from "@simplifica-if/kb/busca/tokens";
+import { partesDispositivo, textoDispositivos } from "@simplifica-if/kb/normas/texto-dispositivos";
 import type { ResultadoBusca, TipoResultado } from "../explorar.ts";
 
 const RE_PALAVRA = /[\p{L}\p{N}]+/gu;
@@ -162,3 +163,17 @@ export const ORDEM_GRUPOS: ReadonlyArray<TipoResultado> = [
   "dispositivo",
   "secao",
 ];
+
+/**
+ * O título de um dispositivo na paleta: a norma e o caminho inteiro do dispositivo, como nas fichas
+ * ("Resolução CNE/CP nº 2/2026, art. 28, XVIII"; "…, Anexo 1, art. 21, § 1º"), e não só o rótulo
+ * ("XVIII"). Um ID fora do formato fica com o rótulo.
+ */
+export function tituloDoDispositivo(tituloNorma: string, id: string, rotulo: string): string {
+  const fragmento = id.split("#")[1];
+  const caminho =
+    fragmento !== undefined && partesDispositivo(`#${fragmento}`) !== null
+      ? textoDispositivos([`#${fragmento}`])
+      : rotulo;
+  return `${tituloNorma}, ${caminho}`;
+}

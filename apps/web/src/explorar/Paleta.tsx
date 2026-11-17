@@ -29,6 +29,8 @@ import { NOMES_TIPO } from "./colecoes.ts";
 
 /** Resultados por grupo. */
 const LIMITE = 6;
+/** O tamanho máximo da consulta (o do `EntradaBusca` do servidor); o texto colado mais longo é cortado. */
+export const MAXIMO_CONSULTA = 300;
 /** A espera entre a tecla e a busca, para não buscar a cada letra de quem digita rápido. */
 const ESPERA_MS = 70;
 
@@ -104,7 +106,7 @@ function Paleta({ consultaInicial, aoFechar }: { readonly consultaInicial: strin
     };
   }, []);
 
-  const texto = consulta.trim();
+  const texto = consulta.slice(0, MAXIMO_CONSULTA).trim();
   useEffect(() => {
     if (texto === "") return;
     let vale = true;
@@ -200,7 +202,8 @@ function Paleta({ consultaInicial, aoFechar }: { readonly consultaInicial: strin
             aria-describedby={`${idLista}-dica`}
             placeholder="Curso, campus, norma ou uma citação como “Res. CNE/CP 1/2021, art. 20”"
             value={consulta}
-            onChange={(evento) => setConsulta(evento.currentTarget.value)}
+            maxLength={MAXIMO_CONSULTA}
+            onChange={(evento) => setConsulta(evento.currentTarget.value.slice(0, MAXIMO_CONSULTA))}
             onKeyDown={aoTeclar}
             className="h-12 min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground/80 sm:text-sm"
           />

@@ -93,6 +93,16 @@ export function nomeFato(fato: string): string {
   return FATOS[fato] ?? primeiraMaiuscula(fato.replaceAll("_", " "));
 }
 
+/**
+ * A ressalva de um fato do PPC pelo status da curadoria: nenhuma para o revisado; "Extraído, conferir"
+ * para o que saiu do texto por regra (`extraido`); "Precisa de revisão" para qualquer outro (`Precisa de
+ * revisão`, `Pendente`…), como o ano do documento vindo dos dados institucionais ainda não conferido.
+ */
+export function ressalvaDoFato(status: string): string | null {
+  if (normalizar(status) === "revisado") return null;
+  return status === "extraido" ? "Extraído, conferir" : "Precisa de revisão";
+}
+
 /** O valor de um fato do PPC, com a unidade ("1600 h", "sim"). */
 export function valorFato(fato: { readonly valor: string; readonly unidade: string | null }): string {
   return fato.unidade === null ? fato.valor : `${fato.valor} ${fato.unidade}`;
@@ -256,6 +266,11 @@ export function cursosPorCnct(cursos: ReadonlyArray<CursoDoIndice>): ReadonlyMap
  */
 export function pedidoSobre(nome: string, links: ReadonlyArray<string>): string {
   return `Sobre ${nome}${links.length ? ` (${links.join(", ")})` : ""}:\n`;
+}
+
+/** A contagem com o nome no singular ou no plural ("1 item de pauta", "3 itens de pauta"). */
+export function quantos(n: number, singular: string, plural: string): string {
+  return `${n} ${n === 1 ? singular : plural}`;
 }
 
 /** "2026-03-20" → "20/03/2026". */

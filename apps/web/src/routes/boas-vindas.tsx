@@ -28,7 +28,19 @@ import { type Exemplo, exemplosDoPerfil } from "../tarefas/exemplo.ts";
 import { usePreferencias } from "../tarefas/perfil.ts";
 import { EsperaPreferencias } from "../components/EsperaPreferencias.tsx";
 
-export const Route = createFileRoute("/boas-vindas")({ component: BoasVindas });
+/**
+ * A busca da rota: o pedido que veio pronto do Explorar ("Perguntar à IA sobre isto") e foi desviado
+ * para cá porque o primeiro uso estava por fazer; "Pular e ir para o Início" o devolve à caixa do Início.
+ */
+export interface BuscaBoasVindas {
+  readonly pedido?: string;
+}
+
+export const Route = createFileRoute("/boas-vindas")({
+  component: BoasVindas,
+  validateSearch: (busca: Record<string, unknown>): BuscaBoasVindas =>
+    typeof busca.pedido === "string" && busca.pedido !== "" ? { pedido: busca.pedido } : {},
+});
 
 type Passo = "aviso" | "ia" | "perfil" | "exemplo";
 
@@ -278,6 +290,7 @@ function PassoExemplo({
   const api = useApi();
   const [, conversa] = useConversa();
   const navegar = useNavigate();
+  const { pedido } = Route.useSearch();
   const catalogo = useCatalogo();
   const { preferencias } = usePreferencias();
   const exemplos = exemplosDoPerfil(preferencias?.perfil, catalogo.fase === "pronto" ? catalogo.skills : []);
@@ -322,7 +335,7 @@ function PassoExemplo({
         className="self-start"
         onClick={async () => {
           await aoTerminar();
-          await navegar({ to: "/" });
+          await navegar({ to: "/", search: pedido === undefined ? {} : { pedido } });
         }}
       >
         Pular e ir para o Início

@@ -40,6 +40,7 @@ import {
   type ItemBuscavel,
   ORDEM_GRUPOS,
   termosDaConsulta,
+  tituloDoDispositivo,
   trechoEmVolta,
 } from "./busca-explorar.ts";
 
@@ -387,7 +388,7 @@ function itensDaBusca(indice: Indice): ReadonlyMap<TipoResultado, ReadonlyArray<
           {
             tipo: "consepe",
             titulo: r.titulo,
-            detalhe: `${r.itens.length} itens de pauta`,
+            detalhe: r.itens.length === 1 ? "1 item de pauta" : `${r.itens.length} itens de pauta`,
             link: null,
             reuniao: r.id,
           },
@@ -486,7 +487,7 @@ export const makeExplorar = Effect.fn("Leitura.makeExplorar")(function* (base: B
         const alvo = r.origem === "citacao-resolvida" ? citacao : trechos;
         alvo.push({
           tipo: "dispositivo",
-          titulo: `${r.norma.titulo}, ${d.rotulo}`,
+          titulo: tituloDoDispositivo(r.norma.titulo, d.id, d.rotulo),
           detalhe: [
             r.origem === "citacao-resolvida" ? "Citação reconhecida" : null,
             detalhe,

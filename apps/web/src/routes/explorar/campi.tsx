@@ -1,5 +1,6 @@
 /** Os campi do IFPR, com quantos cursos cada um tem na base. Cada um abre a ficha do campus. */
 import { createFileRoute } from "@tanstack/react-router";
+import { quantos } from "../../explorar/colecoes.ts";
 import { ComIndice, LinhaItem, ListaItens } from "../../explorar/componentes.tsx";
 
 export const Route = createFileRoute("/explorar/campi")({ component: Campi });
@@ -17,7 +18,7 @@ function Campi() {
               Campi
             </h2>
             <p role="status" className="text-muted-foreground text-sm">
-              {campi.length} campi
+              {quantos(campi.length, "campus", "campi")}
             </p>
             <ListaItens vazia={campi.length === 0}>
               {campi.map((c) => {
@@ -28,7 +29,7 @@ function Campi() {
                     link={c.link}
                     titulo={`Campus ${c.nome}`}
                     detalhe={[
-                      n === 1 ? "1 curso na base" : `${n} cursos na base`,
+                      quantos(n, "curso na base", "cursos na base"),
                       c.horarios_url ? "horários de aula publicados" : null,
                     ]
                       .filter(Boolean)

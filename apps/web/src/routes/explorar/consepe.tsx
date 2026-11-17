@@ -4,7 +4,7 @@
  */
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Badge } from "../../components/ui/badge.tsx";
-import { dataBr, opcoes } from "../../explorar/colecoes.ts";
+import { dataBr, opcoes, quantos } from "../../explorar/colecoes.ts";
 import { buscaDeTextos, CampoFiltro, ComIndice, Filtros } from "../../explorar/componentes.tsx";
 
 const CAMPOS = ["demanda", "campus"] as const;
@@ -46,7 +46,8 @@ function Consepe() {
                       {r.titulo}
                     </Link>
                     <p className="text-muted-foreground text-xs">
-                      {dataBr(r.data)} · {r.itens.length} itens de pauta · {r.documentos.length} documentos
+                      {dataBr(r.data)} · {quantos(r.itens.length, "item de pauta", "itens de pauta")} ·{" "}
+                      {quantos(r.documentos.length, "documento", "documentos")}
                     </p>
                   </li>
                 ))}

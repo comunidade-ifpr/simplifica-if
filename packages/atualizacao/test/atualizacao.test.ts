@@ -8,7 +8,7 @@ import * as NodeHttp from "node:http";
 import * as NodePath from "node:path";
 import { afterEach, describe, expect, it } from "@effect/vitest";
 import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
-import { conferirEsquema, type SkillDaFabrica } from "../src/fabrica.ts";
+import { APP_MINIMO_PADRAO, conferirEsquema, type SkillDaFabrica } from "../src/fabrica.ts";
 import {
   ARQUIVO_TRAVA,
   caminhos,
@@ -18,6 +18,7 @@ import {
   prepararAbertura,
   tomarTrava,
 } from "../src/local.ts";
+import { compararVersoes } from "../src/manifesto.ts";
 import { validarBancoEmWorker } from "../src/pesado.ts";
 import { baixarComFetch } from "../src/remoto.ts";
 import { gerarChaves } from "../src/minisign.ts";
@@ -322,6 +323,24 @@ describe("esquema da base na abertura e na fábrica", () => {
     // a mesma base, no esquema certo, vence a empacotada mais velha
     const certa = prepararAbertura({ pasta, bancoEmpacotado: empacotada, versaoEsquema: ANTIGO });
     expect(certa.origem).toBe("baixada");
+  });
+
+  it("o app atual (apps/desktop) passa na regra da fábrica para a primeira base do esquema que ele lê", () => {
+    const pacote = JSON.parse(
+      NodeFS.readFileSync(NodePath.resolve(import.meta.dirname, "../../../apps/desktop/package.json"), "utf8"),
+    ) as { version: string };
+    // 0.2.0 é o primeiro app que lê o esquema 5 (o Explorar, M1.15): a primeira base do esquema 5 sai
+    // com --app-minimo 0.2.0, e o padrão da fábrica continua a primeira versão, 0.1.0
+    expect(VERSAO_ESQUEMA).toBe(5);
+    expect(pacote.version).toBe("0.2.0");
+    expect(APP_MINIMO_PADRAO).toBe("0.1.0");
+    expect(compararVersoes(pacote.version, APP_MINIMO_PADRAO)).toBeGreaterThan(0);
+    const pasta = pastaTemporaria();
+    const anterior = criarBanco(NodePath.join(pasta, "antiga.sqlite"), "2026.11.10", { esquema: ANTIGO });
+    const nova = lerInfoBanco(criarBanco(NodePath.join(pasta, "nova.sqlite"), "2026.11.20"))!;
+    expect(nova.versaoEsquema).toBe(VERSAO_ESQUEMA);
+    expect(() => conferirEsquema(nova, [anterior], APP_MINIMO_PADRAO)).toThrow("informe --app-minimo");
+    expect(() => conferirEsquema(nova, [anterior], pacote.version)).not.toThrow();
   });
 
   it("fábrica: base que sobe o esquema só sai com --app-minimo", () => {

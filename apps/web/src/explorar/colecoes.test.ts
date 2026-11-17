@@ -12,6 +12,8 @@ import {
   nomeVigencia,
   opcoes,
   pedidoSobre,
+  quantos,
+  ressalvaDoFato,
 } from "./colecoes.ts";
 import { nomeDaPagina } from "./nomes.ts";
 
@@ -54,6 +56,15 @@ describe("nomes", () => {
     expect(nomeResultado("confere").alerta).toBe(false);
     expect(nomeResultado("outro-caso").nome).toBe("Outro caso");
     expect(dataBr("2026-03-20")).toBe("20/03/2026");
+  });
+
+  it("a ressalva de cada fato do PPC que não foi revisado; a contagem no singular e no plural", () => {
+    expect(ressalvaDoFato("Revisado")).toBeNull();
+    expect(ressalvaDoFato("extraido")).toBe("Extraído, conferir");
+    expect(ressalvaDoFato("Precisa de revisão")).toBe("Precisa de revisão");
+    expect(ressalvaDoFato("Pendente")).toBe("Precisa de revisão");
+    expect(quantos(1, "item de pauta", "itens de pauta")).toBe("1 item de pauta");
+    expect(quantos(3, "item de pauta", "itens de pauta")).toBe("3 itens de pauta");
   });
 
   it("o pedido para a IA leva o nome e o link, sem enviar nada", () => {

@@ -20,6 +20,7 @@ import {
   expressaoFts,
   item,
   termosDaConsulta,
+  tituloDoDispositivo,
   trechoEmVolta,
 } from "../src/leitura/busca-explorar.ts";
 import { layerHandlersRpc, layerLeitura } from "../src/rpc.ts";
@@ -79,6 +80,23 @@ describe("busca na memória", () => {
     expect(trechoEmVolta("curto", ["x"])).toBe("curto");
   });
 
+  it("o título do dispositivo traz o caminho inteiro: artigo, inciso, parágrafo e artigo de anexo", () => {
+    expect(tituloDoDispositivo("Resolução CNE/CP nº 2/2026", "br/cne-cp/res/2026/2#art28-xviii", "XVIII")).toBe(
+      "Resolução CNE/CP nº 2/2026, art. 28, XVIII",
+    );
+    expect(
+      tituloDoDispositivo("Resolução CNE/CP nº 2/2026", "br/cne-cp/res/2026/2#art71-parunico", "Parágrafo único"),
+    ).toBe("Resolução CNE/CP nº 2/2026, art. 71, parágrafo único");
+    expect(
+      tituloDoDispositivo("Resolução CONSUP/IFPR nº 271/2026", "ifpr/consup/res/2026/271#anexo1-art21-par1", "§ 1º"),
+    ).toBe("Resolução CONSUP/IFPR nº 271/2026, Anexo 1, art. 21, § 1º");
+    expect(tituloDoDispositivo("Lei nº 9.394/1996", "br/lei/1996/9394#art36", "Art. 36")).toBe(
+      "Lei nº 9.394/1996, art. 36",
+    );
+    // fora do formato: fica o rótulo
+    expect(tituloDoDispositivo("Norma", "x/y#preambulo", "Preâmbulo")).toBe("Norma, Preâmbulo");
+  });
+
   it("a expressão do FTS: todos os termos, o último como prefixo", () => {
     expect(expressaoFts(["acompanhamento", "egres"], ["titulo", "texto"])).toBe(
       '{titulo texto} : ("acompanhamento" "egres"*)',
@@ -108,7 +126,7 @@ describe("explorarIndice e explorarBuscar (fixture)", () => {
       expect(dados.fichas).toEqual([expect.objectContaining({ id: "CT-CURR-12", link: "ifpr://ficha/CT-CURR-12" })]);
       const [reuniao] = dados.reunioes;
       expect(reuniao).toMatchObject({ id: REUNIAO_CONSEPE, conselho: "Consepe", data: "2026-03-20" });
-      expect(reuniao!.itens[0]).toMatchObject({ curso: CURSO_ENFERMAGEM, resultado: "Favorável" });
+      expect(reuniao!.itens[0]).toMatchObject({ curso: CURSO_ENFERMAGEM, resultado: "Favorável", ordem: 7 });
       expect(reuniao!.documentos[0]).toMatchObject({ tipo: "parecer", numero: "07/2026" });
     }),
   );
@@ -120,6 +138,7 @@ describe("explorarIndice e explorarBuscar (fixture)", () => {
       );
       expect(tipos(dados)[0]).toBe("dispositivo");
       expect(grupo(dados, "dispositivo")[0]).toMatchObject({
+        titulo: "Resolução CNE/CP nº 1/2021, art. 20",
         link: "ifpr://norma/br/cne-cp/res/2021/1#art20",
         detalhe: expect.stringContaining("Citação reconhecida"),
       });
@@ -137,6 +156,11 @@ describe("explorarIndice e explorarBuscar (fixture)", () => {
       });
       expect(grupo(curso.dados, "ppc")[0]?.link).toBe(`ifpr://ppc/${CURSO_ENFERMAGEM}`);
       expect(grupo(curso.dados, "consepe")[0]).toMatchObject({ reuniao: REUNIAO_CONSEPE, link: null });
+      const reuniao = yield* comCliente(banco, (c) => c.explorarBuscar({ consulta: "reunião consepe", limite: 6 }));
+      expect(grupo(reuniao.dados, "consepe")[0]).toMatchObject({
+        reuniao: REUNIAO_CONSEPE,
+        detalhe: "1 item de pauta",
+      });
 
       const secao = yield* comCliente(banco, (c) =>
         c.explorarBuscar({ consulta: "acompanhamento de egres", limite: 6 }),
@@ -187,8 +211,13 @@ describe.skipIf(REAL === null)("Explorar na base real (tmp/kb.sqlite)", () => {
         expect(indice.dados.cursos.length).toBeGreaterThan(100);
         expect(indice.dados.reunioes.length).toBeGreaterThan(0);
         expect(indice.dados.campi.some((campus) => campus.horarios_url !== null)).toBe(true);
+        // a ordem dos itens é a oficial da pauta (a reunião de 28/05/2026 começa no item 12)
+        const maio = indice.dados.reunioes.find((r) => r.data === "2026-05-28");
+        expect(maio?.itens.map((i) => i.ordem).slice(0, 2)).toEqual([12, 13]);
 
         const citacao = yield* c.explorarBuscar({ consulta: "Res. CNE/CP 1/2021, art. 20", limite: 6 });
+        const inciso = yield* c.explorarBuscar({ consulta: "Res. CNE/CP 2/2026, art. 28, XVIII", limite: 6 });
+        expect(inciso.dados.grupos[0]?.resultados[0]?.titulo).toMatch(/, art\. 28, XVIII$/);
         expect(citacao.dados.grupos[0]?.resultados[0]?.link).toBe("ifpr://norma/br/cne-cp/res/2021/1#art20");
         const curso = yield* c.explorarBuscar({ consulta: "enfermagem curitiba", limite: 6 });
         expect(grupo(curso.dados, "curso")[0]?.link).toBe("ifpr://curso/curitiba/tecnico-em-enfermagem");

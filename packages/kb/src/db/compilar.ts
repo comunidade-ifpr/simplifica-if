@@ -715,10 +715,11 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
           linha: linhaDoValor(conteudo, "documento_id", d.documento_id),
         });
       });
-      r.itens_pauta.forEach((i, ordem) => {
+      // a ordem é a oficial da pauta (`ordem` do item), não a posição no arquivo
+      for (const i of r.itens_pauta) {
         ins.inserir("conselhos_itens", {
           reuniao_id: r.reuniao_id,
-          ordem,
+          ordem: i.ordem,
           item_id: i.item_id,
           titulo: i.titulo,
           resumo: i.resumo,
@@ -734,7 +735,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
           path: arquivo,
           linha: linhaDoValor(conteudo, "item_id", i.item_id),
         });
-      });
+      }
     }
     const cnct = decodificarCnctIndice(lerJson(NodePath.join(base, "catalogos", "cnct", "index.json")));
     for (const item of [...cnct.items].sort((a, b) => compararTexto(a.id, b.id))) {

@@ -226,8 +226,11 @@ function Inicio() {
   const navegar = useNavigate();
   const pendente = primeiroUsoPendente(preferencias);
   useEffect(() => {
-    if (pendente === true) void navegar({ to: "/boas-vindas", replace: true });
-  }, [pendente, navegar]);
+    // o pedido do Explorar vai junto e volta ao Início no fim das boas-vindas
+    if (pendente === true) {
+      void navegar({ to: "/boas-vindas", search: pedido === undefined ? {} : { pedido }, replace: true });
+    }
+  }, [pendente, navegar, pedido]);
   // Enquanto as preferências carregam (ou antes de desviar para as boas-vindas), nada pisca na tela.
   if (conexao.fase !== "sem-servidor" && pendente !== false) return <EsperaPreferencias />;
   return (

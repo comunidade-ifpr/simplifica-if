@@ -10,8 +10,9 @@
  * - **cnct:** `lerCnct` (o curso no catálogo e os cursos do IFPR que o ofertam);
  * - **ficha:** `lerFicha` (pergunta, rubrica, evidências e referências).
  *
- * As divergências PPC × SUAP saem do texto do PPC por regra, sem revisão humana: a tela as marca como
- * "Extraído, conferir", com o trecho de origem.
+ * Os valores do PPC nas divergências PPC × SUAP nem sempre foram revisados: a tela marca a divergência
+ * "Extraído, conferir" quando o valor saiu do texto por regra e "Precisa de revisão" quando a curadoria
+ * ainda não o conferiu (outro status que não "Revisado"), com o trecho de origem.
  */
 import {
   type CursoDoIndice,
@@ -34,6 +35,7 @@ import {
   nomeTurno,
   nomeVigencia,
   primeiraMaiuscula,
+  ressalvaDoFato,
   valorFato,
 } from "../explorar/colecoes.ts";
 import { useIndiceExplorar } from "../explorar/indice.ts";
@@ -49,8 +51,6 @@ const FATOS_DO_ASPECTO: Readonly<Record<string, ReadonlyArray<string>>> = {
   carga_horaria: ["carga_horaria_total_h"],
   estagio: ["estagio_obrigatorio", "estagio_carga_h"],
 };
-
-const ROTULO_EXTRAIDO = "Extraído, conferir";
 
 /** Os itens de pauta do Consepe que atendem a `filtro`, com a reunião, mais recentes primeiro. */
 function itensDoConsepe(
@@ -110,9 +110,16 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
   return (
     <ComCarga carga={ficha} titulo="Não foi possível ler este curso">
       {({ dados: d }) => {
-        const extraidos = new Set(
-          (d.fatos?.fatos ?? []).filter((f) => f.status_curadoria === "extraido").map((f) => f.fato),
+        // a ressalva de cada fato do PPC que não foi revisado ("Extraído, conferir", "Precisa de revisão")
+        const ressalvas = new Map(
+          (d.fatos?.fatos ?? []).flatMap((f) => {
+            const ressalva = ressalvaDoFato(f.status_curadoria);
+            return ressalva === null ? [] : [[f.fato, ressalva] as const];
+          }),
         );
+        const ressalvasDoAspecto = (aspecto: string) => [
+          ...new Set((FATOS_DO_ASPECTO[aspecto] ?? []).flatMap((f) => (ressalvas.has(f) ? [ressalvas.get(f)!] : []))),
+        ];
         const divergencias = (d.fatos?.cruzamento ?? []).filter((c) => nomeResultado(c.resultado).alerta);
         const consepe = indice.fase === "lido" ? itensDoConsepe(indice.valor.reunioes, (i) => i.curso === id) : [];
         return (
@@ -184,11 +191,12 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
                   </p>
                   {d.fatos && d.fatos.cruzamento.length > 0 ? (
                     <>
-                      {extraidos.size > 0 ? (
+                      {ressalvas.size > 0 ? (
                         <Alert variant="info">
                           <AlertDescription>
-                            Os valores do PPC foram tirados do texto por regra, sem revisão humana. Confira o trecho no
-                            PPC antes de afirmar uma divergência.
+                            Há valores do PPC sem revisão da curadoria: os marcados “Extraído, conferir” foram tirados
+                            do texto por regra, e os marcados “Precisa de revisão” ainda não foram conferidos. Confira o
+                            trecho no PPC antes de afirmar uma divergência.
                           </AlertDescription>
                         </Alert>
                       ) : null}
@@ -214,7 +222,7 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
                           <tbody>
                             {d.fatos.cruzamento.map((c) => {
                               const resultado = nomeResultado(c.resultado);
-                              const extraido = (FATOS_DO_ASPECTO[c.aspecto] ?? []).some((f) => extraidos.has(f));
+                              const doAspecto = resultado.alerta ? ressalvasDoAspecto(c.aspecto) : [];
                               return (
                                 <tr key={c.aspecto} className="border-border border-t align-top">
                                   <th scope="row" className="py-1.5 pr-2 font-medium">
@@ -225,9 +233,11 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
                                   <td className="space-y-1 py-1.5">
                                     <span className="flex flex-wrap gap-1">
                                       <Badge variant={resultado.alerta ? "warning" : "outline"}>{resultado.nome}</Badge>
-                                      {resultado.alerta && extraido ? (
-                                        <Badge variant="info">{ROTULO_EXTRAIDO}</Badge>
-                                      ) : null}
+                                      {doAspecto.map((ressalva) => (
+                                        <Badge key={ressalva} variant="info">
+                                          {ressalva}
+                                        </Badge>
+                                      ))}
                                     </span>
                                     <span className="block text-muted-foreground text-xs">{c.explicacao}</span>
                                   </td>
@@ -249,9 +259,7 @@ export function FichaCurso({ id, aoAbrirLink }: { readonly id: string; readonly 
                           <li key={f.fato}>
                             <p>
                               <strong>{nomeFato(f.fato)}:</strong> {valorFato(f)}{" "}
-                              {f.status_curadoria === "extraido" ? (
-                                <Badge variant="info">{ROTULO_EXTRAIDO}</Badge>
-                              ) : null}
+                              {ressalvas.has(f.fato) ? <Badge variant="info">{ressalvas.get(f.fato)}</Badge> : null}
                             </p>
                             <p className="text-muted-foreground text-xs" data-conteudo>
                               “{f.trecho_fonte}” (linha {f.fonte.linha_inicio} do PPC)

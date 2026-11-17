@@ -3,7 +3,7 @@
  *
  *   node apps/server/src/bin.ts --banco tmp/kb.sqlite [--porta 0] [--porta-mcp 0] [--pasta-estado <dir>]
  *        [--origem app://simplifica]… [--canal dev|beta|estavel] [--pasta-skills <dir>] [--pasta-trabalhos <dir>]
- *        [--pasta-atualizacao <dir>] [--feed-atualizacao <url>] [--chave-atualizacao <base64>] [--versao-app 0.1.0]
+ *        [--pasta-atualizacao <dir>] [--feed-atualizacao <url>] [--chave-atualizacao <base64>] [--versao-app 0.2.0]
  *
  * Com `--pasta-atualizacao` (M1.10), antes de abrir a base, o servidor atende a troca pendente na pasta
  * (`prepararAbertura`) e abre a base mais nova entre a baixada e a do `--banco` (a empacotada); depois,
@@ -47,7 +47,7 @@ import * as Banco from "./persistencia/Banco.ts";
 import * as Servidor from "./servidor.ts";
 import { awaitLauncherLoss } from "./t3/launcherWatch.ts";
 
-const VERSAO = "0.1.0";
+const VERSAO = "0.2.0";
 
 const codificarLinha = Schema.encodeEffect(Schema.fromJsonString(LinhaPartida));
 
