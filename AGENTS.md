@@ -2,7 +2,7 @@
 
 Este repositório contém uma base de conhecimento local do IFPR com normas, catálogos, PPCs, metadados institucionais e painéis derivados. A fonte documental publicada fica em `base-conhecimento/`; a saída publicável é gerada em `site/`.
 
-Os dados institucionais de gestão (Campi, Cursos com metadados de PPC e SUAP, Processos Seletivos, Editais e Ofertas) têm como fonte de verdade os arquivos de `dados/institucional/`, versionados no git. Os JSONs institucionais em `base-conhecimento/` são artefatos publicáveis gerados a partir deles; não os edite à mão. O Notion guarda só a base de fluxo `Movimentações de Cursos`, que também deve sair dele no futuro.
+Os dados institucionais de gestão (Campi, Cursos com metadados de PPC e SUAP, Processos Seletivos, Editais e Ofertas) têm como fonte de verdade os registros de `base-conhecimento/institucional/ifpr/` (`campi/`, `cursos/`, `processos-seletivos/`, `editais/`, `ofertas/`), um JSON por registro, versionados no git e publicados como estão. Só o `index.json` de cada coleção (por `gerar_base.ts`) e `processos-sei/index.json` (exportado do Notion) são gerados; não os edite à mão. As reuniões do Consepe, com pareceres e itens de pauta e sem dados de pessoa, estão em `institucional/ifpr/conselhos/`. O Notion guarda só a base de fluxo `Movimentações de Cursos`, que também deve sair dele no futuro.
 
 Também contém skills operacionais em `.agents/skills/`. O caminho `.claude/skills` é um symlink para esse diretório, para que o Claude Code descubra as mesmas skills; edite sempre em `.agents/skills/`. Ao fazer alterações em qualquer skill, leia primeiro o `README.md` da própria skill, quando existir. Use esse arquivo para entender propósito, fluxo de uso, comandos de manutenção e convenções locais antes de editar scripts, fichas, prompts, testes ou documentação. Se a alteração envolver base gerada ou índice consolidado, procure no `README.md` da skill o comando de regeneração ou validação correspondente e execute-o antes de concluir.
 
@@ -12,7 +12,7 @@ Para consultas, respostas a perguntas ou uso desta base como fonte por LLM, use 
 
 Para uso por MCP (o servidor `simplifica-mcp`, sem o checkout), veja [`packages/mcp/instrucoes.md`](packages/mcp/instrucoes.md).
 
-Comece pela CLI `kb` (requer `pnpm install` na raiz). Ela consulta `tmp/kb.sqlite`, um banco derivado dos arquivos do checkout (normas, PPCs com o texto integral das seções, `dados/institucional/`, CNCT, fichas da `revisar-ppc`), e o recompila sozinha quando ele falta ou está mais velho que as fontes (cerca de 8 s; `pnpm kb:compilar` força). O banco nunca é fonte de verdade nem lugar de edição: toda resposta traz o texto literal e o arquivo e a linha de onde ele veio, e é esse arquivo que se cita.
+Comece pela CLI `kb` (requer `pnpm install` na raiz). Ela consulta `tmp/kb.sqlite`, um banco derivado dos arquivos do checkout (normas, PPCs com o texto integral das seções, registros institucionais, CNCT, fichas da `revisar-ppc`), e o recompila sozinha quando ele falta ou está mais velho que as fontes (cerca de 8 s; `pnpm kb:compilar` força). O banco nunca é fonte de verdade nem lugar de edição: toda resposta traz o texto literal e o arquivo e a linha de onde ele veio, e é esse arquivo que se cita.
 
 ```bash
 pnpm kb buscar-norma "Resolução CNE/CP nº 2/2026, art. 28" --json   # citação ou ID → o dispositivo (caput, texto, linhas); termos → busca nos metadados e nos dispositivos
@@ -73,7 +73,7 @@ Para solicitações sobre `Movimentações de Cursos`, a única base que continu
 
 - [Operação do Notion por agentes](base-conhecimento/docs/notion-operacao-agentes.md)
 
-Pareceres de Curso e as bases do Consepe foram arquivados em `dados/arquivo-notion/`, somente para consulta.
+As bases do Consepe estão em `base-conhecimento/institucional/ifpr/conselhos/`; Pareceres de Curso, Servidores e Conselheiros ficaram só no arquivo do Notion.
 
 Para perguntas, conferências ou curadoria que dependam de dados do Sistema Eletrônico de Informações (SEI), use o pacote `packages/sei-cli` deste repositório como ferramenta operacional e leia primeiro:
 
@@ -82,10 +82,11 @@ Para perguntas, conferências ou curadoria que dependam de dados do Sistema Elet
 
 Para `Movimentações de Cursos` e para a exportação pública, use a API do Notion com `NOTION_TOKEN` do projeto. Não presuma que o Notion MCP local do usuário acessa esta base, pois ele pode estar conectado ao Notion pessoal do usuário. Se `NOTION_TOKEN` não estiver disponível, peça ao usuário o token da integração Notion organizacional e grave em `.env.local`.
 
-Depois de alterar `dados/institucional/` ou `Movimentações de Cursos`, rode:
+Depois de alterar os registros de `base-conhecimento/institucional/ifpr/` ou `Movimentações de Cursos`, rode:
 
 ```bash
-node scripts/exportar_base_publica.ts
+node scripts/exportar_base_publica.ts   # só se Movimentações de Cursos mudou (Notion → processos-sei/index.json)
+node scripts/gerar_base.ts
 node scripts/gerar_indice_ppcs.ts
 node scripts/validar_base.ts
 node scripts/gerar_site.ts
@@ -105,6 +106,8 @@ Depois de alterar um JSON Schema em `base-conhecimento/schemas/`, regenere os ti
 node scripts/gerar_tipos_schemas.ts
 pnpm typecheck
 ```
+
+A base é pública: não grave nela CPF, RG, contato pessoal (celular, e-mail particular) nem URL pré-assinada (`AWSAccessKeyId`, `Signature`, `X-Amz-*`). O `validar_base.ts` recusa CPF, RG rotulado e URL assinada; o conversor de PPCs (`scripts/converter_ppcs_markdown.py`) já grava `[CPF omitido]` e `[RG omitido]`.
 
 Ao incluir uma norma em `base-conhecimento/normas/`, preencha o `id` conforme [Padrão de front matter](base-conhecimento/docs/padrao-front-matter-legislacao.md) e retire de `normas/stubs.yaml` o stub correspondente, se houver.
 
@@ -127,7 +130,7 @@ pnpm typecheck
 pnpm test
 ```
 
-As ferramentas são as do T3 Code, configuradas em `vite.config.ts`: `pnpm fmt` aplica o `vp fmt` (oxfmt, largura 120), `pnpm lint` o `vp lint` (oxlint), `pnpm test` o `vp test` (vitest) na raiz e em cada pacote, e `pnpm typecheck` o `effect-tsgo`. A formatação deixa de fora Markdown, JSON, YAML e Python, e as pastas de dados (`base-conhecimento/`, `dados/`, `avaliacao/`, `site/`, `tmp/`, `outputs/`, `.repos/` e as pastas de dados das skills): são textos normativos, saídas de geradores ou insumos, e não devem ser reformatados. Use sempre `pnpm fmt`, nunca o oxfmt ou o prettier direto sobre a raiz. O código de referência do Effect fica em `.repos/effect`, fora do git, trazido na versão do catalog por `pnpm sync:repos`.
+As ferramentas são as do T3 Code, configuradas em `vite.config.ts`: `pnpm fmt` aplica o `vp fmt` (oxfmt, largura 120), `pnpm lint` o `vp lint` (oxlint), `pnpm test` o `vp test` (vitest) na raiz e em cada pacote, e `pnpm typecheck` o `effect-tsgo`. A formatação deixa de fora Markdown, JSON, YAML e Python, e as pastas de dados (`base-conhecimento/`, `avaliacao/`, `site/`, `tmp/`, `outputs/`, `.repos/` e as pastas de dados das skills): são textos normativos, saídas de geradores ou insumos, e não devem ser reformatados. Use sempre `pnpm fmt`, nunca o oxfmt ou o prettier direto sobre a raiz. O código de referência do Effect fica em `.repos/effect`, fora do git, trazido na versão do catalog por `pnpm sync:repos`.
 
 As skills com bloco `simplifica:` no front matter do `SKILL.md` (hoje `verificar-fundamentacao-normativa`) também vão para o app desktop, que não tem o repositório: só as ferramentas MCP `ifpr` e os arquivos listados em `simplifica.arquivos`. Ao editá-las, mantenha as ferramentas `ifpr` como caminho principal e a CLI e os scripts como alternativa "dentro do repositório", e acrescente a `simplifica.arquivos` todo arquivo novo que o texto cite; `node scripts/validar_base.ts` confere o bloco (Effect Schema em `@simplifica-if/mcp/skills`) e os arquivos.
 

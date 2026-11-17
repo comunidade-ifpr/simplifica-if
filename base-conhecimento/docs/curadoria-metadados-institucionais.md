@@ -4,49 +4,51 @@ Este documento reúne as regras práticas para manter os metadados institucionai
 
 ## Fonte de verdade
 
-Campi, cursos (com metadados de PPC e SUAP e horários dos campi), processos seletivos, editais e ofertas de ingresso têm como fonte os arquivos em `dados/institucional/`, versionados no git. Cada registro é um arquivo JSON cujo caminho é a chave canônica:
+Campi, cursos (com metadados de PPC e SUAP e horários dos campi), processos seletivos, editais e ofertas de ingresso têm como fonte os registros em `base-conhecimento/institucional/ifpr/`, versionados no git e publicados como estão. Cada registro é um arquivo JSON cujo caminho é a chave canônica:
 
-| Entidade | Arquivo | Chave |
+| Entidade | Arquivo (em `institucional/ifpr/`) | Chave |
 |---|---|---|
-| Campus | `dados/institucional/campi/<campus_id>.json` | `campus_id` |
-| Curso | `dados/institucional/cursos/<campus_id>/<curso_slug>.json` | `campus_id/curso_slug` |
-| Processo seletivo | `dados/institucional/processos-seletivos/<processo_seletivo_id>.json` | `processo_seletivo_id` |
-| Edital | `dados/institucional/editais/<edital_id>.json` | `edital_id` |
-| Oferta | `dados/institucional/ofertas/<processo_seletivo_id>/<oferta_id>.json` | `processo_seletivo_id/oferta_id` |
+| Campus | `campi/<campus_id>.json` | `campus_id` |
+| Curso | `cursos/<campus_id>/<curso_slug>.json` | `campus_id/curso_slug` |
+| Processo seletivo | `processos-seletivos/<processo_seletivo_id>.json` | `processo_seletivo_id` |
+| Edital | `editais/<edital_id>.json` | `edital_id` |
+| Oferta | `ofertas/<processo_seletivo_id>/<oferta_id>.json` | `processo_seletivo_id/oferta_id` |
 
-Relações usam essas chaves, nunca IDs de página do Notion: `cursos[].campus_id`, `editais[].processos`, `ofertas[].campi`, `ofertas[].cursos` (`campus_id/curso_slug`) e `ofertas[].editais`. O campo `notion_page_id` é só referência histórica da migração e continua publicado enquanto o schema público o exigir. Os formatos estão em `scripts/dados/institucional.ts` (Effect Schema).
+Relações usam essas chaves, nunca IDs de página do Notion: `cursos[].campus_id`, `editais[].processos`, `ofertas[].campi`, `ofertas[].cursos` (`campus_id/curso_slug`) e `ofertas[].editais`. O campo `notion_page_id` é só referência histórica da migração. Os formatos estão em `scripts/dados/institucional.ts` (Effect Schema, estrito: campo a mais é erro).
 
-`Movimentações de Cursos` é a única base institucional que continua no Notion; veja [Operação do Notion por agentes](notion-operacao-agentes.md). Pareceres de Curso e as bases do Consepe foram arquivados em `dados/arquivo-notion/`, somente para consulta.
+O que continua gerado, e por quê:
 
-Os JSONs em `base-conhecimento/institucional/ifpr/campi/` e `base-conhecimento/institucional/ifpr/processos-seletivos/` são artefatos públicos gerados. Não os edite: altere o registro em `dados/institucional/` e publique.
+- `index.json` de cada coleção (`campi/`, `cursos/`, `processos-seletivos/`, `editais/`, `ofertas/`, `conselhos/`): lista os registros com os campos de filtro e o `path`, para quem lê a base publicada sem poder listar diretórios. Gerado por `gerar_base.ts` (`scripts/dados/indices.ts`), sem data, e conferido pelo `validar_base.ts`. Não edite.
+- `processos-sei/index.json`: os processos SEI de cada curso (`curso_id`, `numero`, `tipo`, `trecho_fonte`), exportados da base `Movimentações de Cursos` do Notion por `exportar_base_publica.ts` (precisa de `NOTION_TOKEN`). Não edite: a curadoria das movimentações acontece no Notion; veja [Operação do Notion por agentes](notion-operacao-agentes.md).
+
+`Movimentações de Cursos` é a única base institucional que continua no Notion. As bases do Consepe estão em `institucional/ifpr/conselhos/` (veja [Conselhos](#conselhos)); Pareceres de Curso, Servidores e Conselheiros ficaram só no arquivo do Notion e não fazem parte do repositório.
 
 ## Como alterar e publicar
 
-1. Edite ou crie o registro em `dados/institucional/`. Campo vazio é campo ausente: não grave `""` nem `null`.
+1. Edite ou crie o registro em `base-conhecimento/institucional/ifpr/`. Campo vazio é campo ausente: não grave `""` nem `null`. URL pré-assinada (com `AWSAccessKeyId`, `Signature`, `X-Amz-*`, como as do S3 do SUAP) não entra: grave o endereço sem a query string.
 2. Registre a evidência no próprio registro quando houver campo para isso (`trecho_vagas`, `trecho_fonte`, `ppc.observacoes`) e atualize as datas de coleta ou curadoria.
-3. Valide e publique:
+3. Regenere os índices, valide e publique:
 
 ```bash
-node scripts/validar_base.ts
-node scripts/exportar_base_publica.ts
+node scripts/gerar_base.ts
 node scripts/gerar_indice_ppcs.ts
 node scripts/validar_base.ts
 node scripts/gerar_site.ts
 ```
 
-`validar_base.ts` confere schema, caminho de cada arquivo e as regras da auditoria institucional (chaves únicas, relações existentes, caminho esperado do PPC, URLs HTTPS). `exportar_base_publica.ts` lê `dados/institucional/` e, do Notion, só as movimentações; por isso precisa de `NOTION_TOKEN`.
+`validar_base.ts` confere schema, caminho de cada arquivo e as regras da auditoria institucional (chaves únicas, relações existentes, caminho esperado do PPC e o Markdown existente, URLs HTTPS), os índices gerados e os processos SEI. Para atualizar os processos SEI depois de mudar movimentações no Notion, rode antes `node scripts/exportar_base_publica.ts`.
 
 Ao criar um curso novo, use `curso_slug` em minúsculas com hífens, único no campus, e não preencha `notion_page_id`.
 
 ## Organização da base
 
-Use `docs/` apenas para documentação de apoio à manutenção e curadoria. Conteúdos destinados à consulta pública devem ficar na coleção temática correspondente, como `normas/`, `catalogos/`, `institucional/ifpr/referencias/`, `institucional/ifpr/campi/` ou `institucional/ifpr/processos-seletivos/`.
+Use `docs/` apenas para documentação de apoio à manutenção e curadoria. Conteúdos destinados à consulta pública devem ficar na coleção temática correspondente, como `normas/`, `catalogos/`, `institucional/ifpr/referencias/` ou as coleções de registros institucionais (`institucional/ifpr/campi/`, `cursos/`, `processos-seletivos/`, `editais/`, `ofertas/`, `conselhos/`).
 
 Para referências institucionais transversais do IFPR que não sejam cadastro de campus, PPC ou processo seletivo, use `institucional/ifpr/referencias/` e atualize o índice da coleção quando necessário.
 
 ## Cursos
 
-Cada arquivo em `dados/institucional/cursos/` representa uma oferta de curso em um campus.
+Cada arquivo em `institucional/ifpr/cursos/` representa uma oferta de curso em um campus.
 
 Ao pesquisar cursos em páginas dos campi:
 
@@ -54,7 +56,7 @@ Ao pesquisar cursos em páginas dos campi:
 2. Quando existir, use a origem `https://ifpr.edu.br/<campus_id>/`.
 3. Em sites WordPress do IFPR, use a REST API para localizar páginas: `https://ifpr.edu.br/<campus_id>/wp-json/wp/v2/pages?per_page=100`.
 4. Use a página oficial do curso para preencher `nome`, `nivel`, `forma_oferta`, `modalidade`, `situacao` e `pagina_oficial`.
-5. Em curso técnico (nível `médio`), registre a habilitação do CNCT em `cnct_id`, no formato `cnct:<id>` com o `id` de `catalogos/cnct/index.json` (por exemplo, `cnct:tecnico-em-enfermagem`). O casamento é pela denominação: "Administração – PROEJA" e "Técnico em Administração" são `cnct:tecnico-em-administracao`. Se o curso não tem habilitação no CNCT, como uma oferta experimental, não invente: grave `cnct_ausencia` com o motivo e a evidência (por exemplo, a seção do PPC que declara a oferta experimental). Os dois campos são excludentes e são publicados em `cursos[]` do JSON do campus. A auditoria acusa curso técnico ativo ou em oferta sem nenhum dos dois, e `validar_base.ts` acusa `cnct_id` que não existe no catálogo.
+5. Em curso técnico (nível `médio`), registre a habilitação do CNCT em `cnct_id`, no formato `cnct:<id>` com o `id` de `catalogos/cnct/index.json` (por exemplo, `cnct:tecnico-em-enfermagem`). O casamento é pela denominação: "Administração – PROEJA" e "Técnico em Administração" são `cnct:tecnico-em-administracao`. Se o curso não tem habilitação no CNCT, como uma oferta experimental, não invente: grave `cnct_ausencia` com o motivo e a evidência (por exemplo, a seção do PPC que declara a oferta experimental). Os dois campos são excludentes. A auditoria acusa curso técnico ativo ou em oferta sem nenhum dos dois, e `validar_base.ts` acusa `cnct_id` que não existe no catálogo.
 6. Não cadastre páginas auxiliares, notícias, páginas históricas ou ofertas temporárias como cursos ativos sem evidência clara de vigência atual.
 7. Para FIC e programas institucionais, preserve a distinção entre curso regular, oferta temporária e programa.
 
@@ -62,7 +64,7 @@ Ao pesquisar cursos em páginas dos campi:
 
 Os metadados administrativos do SUAP ficam no objeto `suap` do curso: `id`, `codigo`, `vagas`, `coletado_em`, `atualizado_em` e `matrizes`.
 
-No JSON público, esses dados aparecem em `cursos[].suap`. `cursos[].suap.vagas` representa vagas cadastradas no sistema acadêmico. Não confunda com:
+No registro do curso, esses dados ficam em `suap`. `suap.vagas` representa vagas cadastradas no sistema acadêmico. Não confunda com:
 
 - `cursos[].ppc.metadados.vagas`, que vem do PPC;
 - `processos-seletivos[].ofertas[].vagas`, que vem de edital de ingresso.
@@ -124,13 +126,13 @@ Ano e vagas têm curadoria própria:
 | `ppc.ano_documento` | `ppc.curadoria_ano` | `ppc.data_curadoria_ano` |
 | `ppc.vagas`, `ppc.trecho_vagas`, `ppc.periodicidade_vagas` | `ppc.curadoria_vagas` | `ppc.data_curadoria_vagas` |
 
-Os status aceitos são `Revisado`, `Precisa de revisão`, `Pendente` e `Inconsistente`. Ao conferir só um dos campos, mude só o status e a data dele e registre a evidência em `ppc.observacoes`. A auditoria recusa status desconhecido e data sem status. No JSON público, cada um vira o `status_curadoria` e o `revisado_em` do próprio campo, em `ppc.metadados.ano_documento` e `ppc.metadados.vagas`.
+Os status aceitos são `Revisado`, `Precisa de revisão`, `Pendente` e `Inconsistente`. Ao conferir só um dos campos, mude só o status e a data dele e registre a evidência em `ppc.observacoes`. A auditoria recusa status desconhecido e data sem status.
 
-Até 13/11/2026 havia um par único, `ppc.curadoria` e `ppc.data_curadoria`, para os dois campos. Na migração, os dois campos herdaram o status e a data do par (um "Revisado" valia para ambos), sem perda de informação. O JSON público já publicava o status por campo, copiado do par; o formato não mudou, só os valores passam a poder divergir.
+Até 13/11/2026 havia um par único, `ppc.curadoria` e `ppc.data_curadoria`, para os dois campos. Na migração, os dois campos herdaram o status e a data do par (um "Revisado" valia para ambos), sem perda de informação.
 
 O ano do documento é o da capa ou folha de rosto. Quando a capa traz também um ano posterior de aprovação, ajuste ou atualização ("Atualização 17 de Janeiro de 2025", "AJUSTE PARECER CONSEPE Nº 06/2024"), a convenção ainda não foi decidida: não altere o ano registrado, descreva a divergência em `ppc.observacoes` e deixe a decisão para revisão humana.
 
-Para converter PDFs em Markdown, use `scripts/converter_ppcs_markdown.py`. Depois de converter ou alterar PPCs, regenere os índices:
+Para converter PDFs em Markdown, use `scripts/converter_ppcs_markdown.py`: ele lê `ppc.url` e `ppc.markdown_path` dos registros de cursos e grava o Markdown sem números de CPF e RG (`[CPF omitido]`, `[RG omitido]`; regra em `packages/kb/src/ppcs/dados-pessoais.ts`, que o `validar_base.ts` também aplica a toda a base). Contato pessoal (celular, e-mail particular) em declarações e termos anexos sai à mão, como `[telefone omitido]`; contatos institucionais e de parceiros ficam. Depois de converter ou alterar PPCs, regenere os índices:
 
 ```bash
 node scripts/gerar_indice_ppcs.ts
@@ -151,7 +153,7 @@ Todo PPC em `institucional/ifpr/ppcs/<campus_id>/<curso_slug>.md` começa com fr
 | `proveniencia` | `registrada` (gravada pelo conversor) ou `reconstruida` (preenchida depois) |
 | `conversao_commit`, `pos_processamento_commits`, `nota_proveniencia` | só na reconstruída: commit da conversão, commits de limpeza posteriores e o motivo do que ficou `desconhecido` |
 
-O conversor grava a proveniência `registrada` em toda conversão nova. Os 202 PPCs convertidos antes de 13/11/2026 têm proveniência `reconstruida` pelo histórico do git: `convertido_em` é a data do commit em que o texto entrou na base, e `fonte_url` é o `ppc.url` do campus JSON nesse commit. O hash e a versão do conversor ficaram `desconhecido`, porque o PDF da época não foi guardado e o PDF baixado hoje não prova ser o mesmo; não os preencha à mão. Ao reconverter um PPC, a proveniência passa a `registrada`.
+O conversor grava a proveniência `registrada` em toda conversão nova. Os 202 PPCs convertidos antes de 13/11/2026 têm proveniência `reconstruida` pelo histórico do git: `convertido_em` é a data do commit em que o texto entrou na base, e `fonte_url` é o `ppc.url` do curso nesse commit. O hash e a versão do conversor ficaram `desconhecido`, porque o PDF da época não foi guardado e o PDF baixado hoje não prova ser o mesmo; não os preencha à mão. Ao reconverter um PPC, a proveniência passa a `registrada`.
 
 `validar_base.ts` acusa PPC sem front matter, `id` fora do caminho e `fonte_url` diferente do `ppc.url` vigente: se o curso trocou de PPC, reconverta (ou, se só a URL mudou de endereço, confira o documento e reconverta mesmo assim, para registrar o hash).
 
@@ -161,7 +163,7 @@ Quem lê o Markdown por código deve ignorar o front matter: `corpoPpc` e `masca
 
 `Movimentações de Cursos` continua no Notion e registra processos administrativos do histórico do curso, como abertura, ajuste, atualização, suspensão, reversão de suspensão ou extinção. As regras de preenchimento e a sincronização com o SEI estão em [Operação do Notion por agentes](notion-operacao-agentes.md) e [Sincronização SEI → Notion](sincronizacao-sei-notion.md).
 
-Quando uma movimentação mudar a situação do curso, atualize `situacao` no arquivo do curso em `dados/institucional/` e publique.
+Quando uma movimentação mudar a situação do curso, atualize `situacao` no arquivo do curso em `institucional/ifpr/cursos/` e publique.
 
 ## Processos seletivos
 
@@ -185,7 +187,7 @@ Regras:
 
    `padronizarTurno` (`scripts/dominio/ingresso.ts`) propõe o enum a partir da grafia. A auditoria recusa `turno_padronizado` fora do enum, `turno` sem `turno_padronizado`, `turno` que não aparece literalmente em `trecho_fonte` e marca de rodapé sem `turno_nota`. Quando a fonte for uma página que omite o texto das notas, busque-o no Anexo I do edital correspondente e cite o número do edital na nota.
 
-   No JSON público (`processos-seletivos[].ofertas[]`), os três campos saem com os mesmos nomes. `turno` é texto livre desde a primeira publicação e continua com a grafia da fonte; `turno_padronizado` foi acrescentado em 13/11/2026 para quem precisa filtrar. Entre a migração para `dados/institucional/` e essa data, o JSON público trouxe por engano o enum em `turno` e a grafia em `turno_original`; `turno_original` deixou de ser publicado.
+   `turno` é texto livre desde a primeira publicação e continua com a grafia da fonte; `turno_padronizado` foi acrescentado em 13/11/2026 para quem precisa filtrar.
 
 ## Índices globais de PPCs
 
@@ -196,8 +198,16 @@ A coleção `institucional/ifpr/ppcs/` contém PPCs convertidos e índices deriv
 
 **Texto integral fora do git.** O git guarda só preview e linhas: o texto integral das seções duplicaria o dos PPCs (cerca de 64 MB) e incharia o histórico e o `site/` a cada regeneração. Quem precisar dele lê as linhas do próprio Markdown, com `lerTextoSecao` (`packages/kb/src/ppcs/citacoes.ts`) ou `textoDaSecao` (`packages/kb/src/ppcs/secoes.ts`). O texto integral indexado vai para o `kb.sqlite` da fase 6, derivado e fora do git.
 
-Esses arquivos são gerados automaticamente por `scripts/gerar_indice_ppcs.ts` (lógica em `packages/kb/src/ppcs/secoes.ts`). Não os edite manualmente; ajuste o registro em `dados/institucional/` ou o Markdown convertido e rode novamente os comandos de publicação.
+Esses arquivos são gerados automaticamente por `scripts/gerar_indice_ppcs.ts` (lógica em `packages/kb/src/ppcs/secoes.ts`). Não os edite manualmente; ajuste o registro do curso em `institucional/ifpr/cursos/` ou o Markdown convertido e rode novamente os comandos de publicação.
 
 **Taxonomia por nível.** Cursos de nível médio usam a taxonomia `tecnico`, em que cada tipo aponta os incisos do art. 28 da Res. CNE/CP nº 2/2026 que cobre (`identificacao` I, `formato_oferta` II, `justificativa` e `objetivos` III, `requisitos_acesso` IV, `acessibilidade_inclusao` V, `perfil_egresso` VI, `itinerario_formativo` VII, `carga_horaria` VIII, `organizacao_curricular` e `matriz_curricular` IX, `aproveitamento_estudos` X, `avaliacao` XI, `infraestrutura` XII, `mundo_trabalho` XIII, `corpo_docente` XIV, `certificados_diplomas` XV, `prazo_integralizacao` XVI, `estagio_praticas` XVII, `acompanhamento_egresso` XVIII e § 4º), mais tipos do modelo do IFPR sem inciso próprio. Graduação, pós-graduação e FIC usam a taxonomia `geral`, sem os tipos próprios do art. 28 e com `contexto_institucional` e `atividades_complementares`. A lista completa, com rótulos e incisos, fica em `secoes.taxonomias` do índice.
 
 **Como o tipo é decidido.** Cabeçalhos de página ("Campus Curitiba do IFPR", "PROENS") não abrem seção, e rótulos internos ("EMENTA:", "Bibliografia básica", "1º ano") ficam no texto da seção. No ementário, cada "Componente curricular: …" abre uma seção. O tipo vem das regras sobre o título (`origem_tipo: titulo`); sem regra, herda do título numerado ancestral (`numeracao`) ou da seção anterior (`contexto`). O que vem antes do primeiro título numerado é `pretextual`, e tudo depois do primeiro anexo é `anexos`. A folha de rosto repetida no meio do PPC ("APROVAÇÃO DO PROJETO PEDAGÓGICO DE CURSO ( X )") também é `pretextual`; "Objetivos do componente curricular" é do ementário (`ementas`), não `objetivos`; e programas e bolsas de pesquisa, extensão, inclusão social e assistência estudantil são `atendimento_estudante`, não `acessibilidade_inclusao`. `pretextual` e `outros` (não classificado) não ganham arquivo. Seções com menos de 40 caracteres de texto ficam fora do índice.
+
+## Conselhos
+
+`institucional/ifpr/conselhos/<conselho_id>/` guarda o registro do conselho (`conselho.json`) e um arquivo por reunião (`reunioes/<AAAA-MM-DD>.json`), com os documentos publicados (`documentos[]`: pareceres e pautas, com número, data, resumo e URL oficial) e os itens de pauta deliberados (`itens_pauta[]`: tipo de demanda, resultado, processo SEI, `documento_id` do documento de origem na mesma reunião). Hoje há só o Consepe, migrado do Notion em 17/11/2026; os IDs são os externos que a base já usava (`consepe:reuniao:<data>`, `consepe:parecer:<ano>:<número>`, `consepe:item:<ano>:parecer:<número>`).
+
+Não há entidade de pessoa: relator(a), conselheiros e servidores não entram. Um nome só aparece quando faz parte do texto do ato oficial. Os itens apontam para o campus e o curso pelas chaves canônicas (`campus_id`, `curso_id`) quando o curso está cadastrado; `campus_texto` e `curso_texto` guardam a redação do ato. Curso que o ato não identifica sem ambiguidade, ou que não está cadastrado (abertura ainda não registrada, por exemplo), fica só com o texto.
+
+O formato está em `scripts/dados/conselhos.ts`; o `validar_base.ts` confere o schema, o nome dos arquivos, as relações (documento na mesma reunião, campus e curso existentes e coerentes) e o `index.json` gerado.

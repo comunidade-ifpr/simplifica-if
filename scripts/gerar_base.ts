@@ -3,7 +3,8 @@
 /**
  * Gera os campos derivados do front matter das normas (relações de relacoes.yaml e status de
  * vigência na data_referencia de config/vigencia.yaml), manifest.json, a tabela do README e o
- * index.json de cada coleção institucional (campi, cursos, processos seletivos, editais, ofertas).
+ * index.json de cada coleção institucional (campi, cursos, processos seletivos, editais, ofertas,
+ * conselhos).
  */
 import * as NodeFS from "node:fs";
 import { normasComCamposGerados } from "@simplifica-if/kb/normas/gerado";
@@ -11,6 +12,7 @@ import { criarCaminhos } from "./base/caminhos.ts";
 import { montarManifest } from "./base/front-matter.ts";
 import { lerArgumentos } from "./cli.ts";
 import { gravarBase, normasExistem, verificarBase } from "./base/readme.ts";
+import { carregarConselhos, gravarIndiceConselhos, verificarIndiceConselhos } from "./dados/conselhos.ts";
 import { gravarIndices, verificarIndices } from "./dados/indices.ts";
 import { carregarDadosInstitucionais } from "./dados/institucional.ts";
 
@@ -35,8 +37,9 @@ function main(): number {
 
   const normas = normasComCamposGerados(caminhos.raizProjeto);
   const institucional = carregarDadosInstitucionais();
-  if (institucional.erros.length) {
-    for (const erro of institucional.erros) console.error(`ERRO: ${erro}`);
+  const conselhos = carregarConselhos();
+  if (institucional.erros.length || conselhos.erros.length) {
+    for (const erro of [...institucional.erros, ...conselhos.erros]) console.error(`ERRO: ${erro}`);
     return 1;
   }
   if (args.values.check) {
@@ -46,6 +49,7 @@ function main(): number {
     const manifest = montarManifest(caminhos);
     erros.push(...verificarBase(caminhos, manifest));
     erros.push(...verificarIndices(institucional.dados));
+    erros.push(...verificarIndiceConselhos(conselhos.dados));
     if (erros.length) {
       for (const erro of erros) console.error(`ERRO: ${erro}`);
       return 1;
@@ -59,6 +63,7 @@ function main(): number {
   const manifest = montarManifest(caminhos);
   gravarBase(caminhos, manifest);
   const indices = gravarIndices(institucional.dados);
+  if (gravarIndiceConselhos(conselhos.dados)) indices.push("conselhos/index.json");
   console.log(
     `Base gerada: ${manifest.length} normas publicadas` +
       (indices.length ? `; índices institucionais regravados: ${indices.join(", ")}.` : "."),

@@ -2,13 +2,15 @@
 /**
  * Validação dos registros de `institucional/ifpr/` (campi, cursos, processos seletivos, editais e
  * ofertas): schema, caminho de cada arquivo, as regras da auditoria institucional, o Markdown dos
- * PPCs, os índices gerados de cada coleção e os processos SEI exportados do Notion.
+ * PPCs, os índices gerados de cada coleção, os processos SEI exportados do Notion e as reuniões dos
+ * conselhos (`conselhos.ts`).
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { RAIZ_BASE } from "../config.ts";
 import { chaveCurso } from "../dominio/curso.ts";
 import { auditarBase } from "../dominio/auditoria.ts";
+import { auditarConselhos, carregarConselhos, verificarIndiceConselhos } from "./conselhos.ts";
 import { verificarIndices } from "./indices.ts";
 import {
   carregarDadosInstitucionais,
@@ -71,12 +73,23 @@ export function validarDadosInstitucionais(
   const daBase = opcoes.arquivosDaBase ?? true;
   if (daBase) auditoria.push(...markdownsInexistentes(dados.cursos, raizBase));
   const erros = auditoria.map((erro) => `institucional/ifpr: ${erro}`);
+  let reunioes = 0;
   if (daBase) {
     erros.push(...verificarIndices(dados, raiz));
     const cursos = new Set(dados.cursos.map((curso) => chaveCurso(curso.campus_id, curso.curso_slug)));
     erros.push(...validarProcessosSei(cursos).erros);
+    const conselhos = carregarConselhos(raiz);
+    erros.push(...conselhos.erros);
+    erros.push(...auditarConselhos(conselhos.dados, new Set(dados.campi.map((campus) => campus.campus_id)), cursos));
+    erros.push(...verificarIndiceConselhos(conselhos.dados, raiz));
+    reunioes = conselhos.dados.reunioes.length;
   }
   const total =
-    dados.campi.length + dados.cursos.length + dados.processos.length + dados.editais.length + dados.ofertas.length;
+    dados.campi.length +
+    dados.cursos.length +
+    dados.processos.length +
+    dados.editais.length +
+    dados.ofertas.length +
+    reunioes;
   return { erros, total };
 }

@@ -1,0 +1,420 @@
+{
+  "reuniao_id": "consepe:reuniao:2026-05-28",
+  "conselho_id": "consepe",
+  "titulo": "Reunião Ordinária CONSEPE - 28/05/2026",
+  "data": "2026-05-28",
+  "tipo": "ordinária",
+  "situacao": "realizada",
+  "fonte": "https://ifpr.edu.br/institucional/orgaos-colegiados/conselho-de-ensino-pesquisa-e-extensao/pautas/pautas-consepe-2026/",
+  "documentos": [
+    {
+      "documento_id": "consepe:documento:pauta:2026-05-28",
+      "tipo": "pauta",
+      "titulo": "Pauta - Reunião Ordinária CONSEPE - 28/05/2026",
+      "ano": 2026,
+      "data": "2026-05-28",
+      "resumo": "Pauta oficial da reunião do Consepe publicada no site do IFPR.",
+      "url": "https://ifpr.edu.br/wp-content/uploads/2026/05/Paula-CONSEPE-28.05.pdf",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:12",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 12/2026",
+      "numero": "12/2026",
+      "ano": 2026,
+      "data": "2026-05-28",
+      "resumo": "Favorável à solicitação de Suspensão de oferta do curso superior de Licenciatura em Física, do Campus Ivaiporã.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4399273&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:13",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 13/2026",
+      "numero": "13/2026",
+      "ano": 2026,
+      "data": "2026-05-28",
+      "resumo": "Favorável à solicitação de Suspensão de oferta do curso superior de Licenciatura em Física, do Campus Ivaiporã.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4399331&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:14",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 14/2026",
+      "numero": "14/2026",
+      "ano": 2026,
+      "data": "2026-05-28",
+      "resumo": "Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso (PPC) do curso Técnico em Edificações Integrado ao Ensino Médio, do Campus Foz do Iguaçu.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4399347&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:15",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 15/2026",
+      "numero": "15/2026",
+      "ano": 2026,
+      "data": "2026-05-28",
+      "resumo": "Favorável à Minuta de Resolução (SEI 4190405) que propõe estabelecer a Política Institucional de Formação de Profissionais do Magistério da Educação Básica no IFPR e aprova o Regulamento para o Projeto Pedagógico de Curso de Licenciatura no IFPR em substituição à Resolução nº 19 de 24 de março de 2017",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4399359&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:16",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 16/2026",
+      "numero": "16/2026",
+      "ano": 2026,
+      "data": "2026-05-28",
+      "resumo": "Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso (PPC) do curso Técnico em Informática Integrado ao Ensino Médio, do Campus Assis Chateaubriand.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4399366&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:17",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 17/2026",
+      "numero": "17/2026",
+      "ano": 2026,
+      "data": "2026-05-28",
+      "resumo": "Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso do curso Técnico em Informática Integrado ao Ensino Médio, do Campus Goioerê.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4399475&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:18",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 18/2026",
+      "numero": "18/2026",
+      "ano": 2026,
+      "data": "2026-05-28",
+      "resumo": "Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso do curso Técnico em Agropecuária Integrado ao Ensino Médio, do Campus Assis Chateaubriand.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4399381&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:19",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 19/2026",
+      "numero": "19/2026",
+      "ano": 2026,
+      "data": "2026-05-28",
+      "resumo": "Favorável ao Projeto Pedagógico do Curso Técnico em Química Integrado ao Ensino Médio, do Campus Irati.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4399390&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:20",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 20/2026",
+      "numero": "20/2026",
+      "ano": 2026,
+      "data": "2026-05-28",
+      "resumo": "Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso (PPC) do curso Superior de Graduação em Química, do Campus Palmas.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4399397&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:21",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 21/2026",
+      "numero": "21/2026",
+      "ano": 2026,
+      "data": "2026-05-28",
+      "resumo": "Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso do curso Superior de Licenciatura em Letras Português/Inglês, do Campus Palmas.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4399417&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:22",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 22/2026",
+      "numero": "22/2026",
+      "ano": 2026,
+      "data": "2026-05-28",
+      "resumo": "Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso do curso Técnico em Aquicultura Integrado ao Ensino Médio, do Campus Foz do Iguaçu.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4399427&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:23",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 23/2026",
+      "numero": "23/2026",
+      "ano": 2026,
+      "data": "2026-05-28",
+      "resumo": "Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso do curso Técnico em Desenvolvimento de Sistemas Integrado ao Ensino Médio, do Campus Foz do Iguaçu.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4399432&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:24",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 24/2026",
+      "numero": "24/2026",
+      "ano": 2026,
+      "data": "2026-05-28",
+      "resumo": "Favorável ao pedido de suspensão da oferta do curso superior de Tecnologia em Processos Escolares, do Campus Curitiba.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4399649&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    }
+  ],
+  "itens_pauta": [
+    {
+      "item_id": "consepe:item:2026:parecer:12",
+      "ordem": 12,
+      "titulo": "Parecer Consepe 12/2026 - Favorável à solicitação de Suspensão de oferta do curso superior de Licenciatura em Física, do Campus Ivaiporã.",
+      "resumo": "Favorável à solicitação de Suspensão de oferta do curso superior de Licenciatura em Física, do Campus Ivaiporã.",
+      "tipo_demanda": "Suspensão de curso",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:12",
+      "processo_sei": "23413.000167/2014-28",
+      "campus_texto": "Ivaiporã",
+      "campus_id": "ivaipora",
+      "curso_texto": "superior de Licenciatura em Física",
+      "curso_id": "ivaipora/licenciatura-em-fisica",
+      "palavras_chave": [
+        "Suspensão de curso",
+        "Ivaiporã"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:13",
+      "ordem": 13,
+      "titulo": "Parecer Consepe 13/2026 - Favorável à solicitação de Suspensão de oferta do curso superior de Licenciatura em Física, do Campus Ivaiporã.",
+      "resumo": "Favorável à solicitação de Suspensão de oferta do curso superior de Licenciatura em Física, do Campus Ivaiporã.",
+      "tipo_demanda": "Suspensão de curso",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:13",
+      "processo_sei": "23411.009669/2025-97",
+      "campus_texto": "Ivaiporã",
+      "campus_id": "ivaipora",
+      "curso_texto": "superior de Licenciatura em Física",
+      "curso_id": "ivaipora/licenciatura-em-fisica",
+      "palavras_chave": [
+        "Suspensão de curso",
+        "Ivaiporã"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:14",
+      "ordem": 14,
+      "titulo": "Parecer Consepe 14/2026 - Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso (PPC) do curso Técnico em Edificações Integrado ao Ensino ",
+      "resumo": "Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso (PPC) do curso Técnico em Edificações Integrado ao Ensino Médio, do Campus Foz do Iguaçu.",
+      "tipo_demanda": "Ajuste curricular",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:14",
+      "processo_sei": "23411.009868/2025-03",
+      "campus_texto": "Foz do Iguaçu",
+      "campus_id": "foz-do-iguacu",
+      "curso_texto": "(PPC) do curso Técnico em Edificações Integrado ao Ensino Médio",
+      "curso_id": "foz-do-iguacu/tecnico-em-edificacoes-3",
+      "palavras_chave": [
+        "Ajuste curricular",
+        "Foz do Iguaçu"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:15",
+      "ordem": 15,
+      "titulo": "Parecer Consepe 15/2026 - Favorável à Minuta de Resolução (SEI 4190405) que propõe estabelecer a Política Institucional de Formação de Profissiona",
+      "resumo": "Favorável à Minuta de Resolução (SEI 4190405) que propõe estabelecer a Política Institucional de Formação de Profissionais do Magistério da Educação Básica no IFPR e aprova o Regulamento para o Projeto Pedagógico de Curso de Licenciatura no IFPR em substituição à Resolução nº 19 de 24 de março de 2017",
+      "tipo_demanda": "PPC",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:15",
+      "processo_sei": "23411.012182/2024-19",
+      "curso_texto": "de Licenciatura no IFPR em substituição à Resolução nº 19 de 24 de março de 2017",
+      "palavras_chave": [
+        "PPC"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:16",
+      "ordem": 16,
+      "titulo": "Parecer Consepe 16/2026 - Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso (PPC) do curso Técnico em Informática Integrado ao Ensino ",
+      "resumo": "Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso (PPC) do curso Técnico em Informática Integrado ao Ensino Médio, do Campus Assis Chateaubriand.",
+      "tipo_demanda": "Ajuste curricular",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:16",
+      "processo_sei": "23411.017271/2025-24",
+      "campus_texto": "Assis Chateaubriand",
+      "campus_id": "assis-chateaubriand",
+      "curso_texto": "(PPC) do curso Técnico em Informática Integrado ao Ensino Médio",
+      "palavras_chave": [
+        "Ajuste curricular",
+        "Assis Chateaubriand"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:17",
+      "ordem": 17,
+      "titulo": "Parecer Consepe 17/2026 - Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso do curso Técnico em Informática Integrado ao Ensino Médio,",
+      "resumo": "Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso do curso Técnico em Informática Integrado ao Ensino Médio, do Campus Goioerê.",
+      "tipo_demanda": "Ajuste curricular",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:17",
+      "processo_sei": "23411.017825/2025-93",
+      "campus_texto": "Goioerê",
+      "campus_id": "goioere",
+      "curso_texto": "do curso Técnico em Informática Integrado ao Ensino Médio",
+      "curso_id": "goioere/tecnico-em-informatica",
+      "palavras_chave": [
+        "Ajuste curricular",
+        "Goioerê"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:18",
+      "ordem": 18,
+      "titulo": "Parecer Consepe 18/2026 - Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso do curso Técnico em Agropecuária Integrado ao Ensino Médio",
+      "resumo": "Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso do curso Técnico em Agropecuária Integrado ao Ensino Médio, do Campus Assis Chateaubriand.",
+      "tipo_demanda": "Ajuste curricular",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:18",
+      "processo_sei": "23411.006241/2025-92",
+      "campus_texto": "Assis Chateaubriand",
+      "campus_id": "assis-chateaubriand",
+      "curso_texto": "do curso Técnico em Agropecuária Integrado ao Ensino Médio",
+      "curso_id": "assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio",
+      "palavras_chave": [
+        "Ajuste curricular",
+        "Assis Chateaubriand"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:19",
+      "ordem": 19,
+      "titulo": "Parecer Consepe 19/2026 - Favorável ao Projeto Pedagógico do Curso Técnico em Química Integrado ao Ensino Médio, do Campus Irati.",
+      "resumo": "Favorável ao Projeto Pedagógico do Curso Técnico em Química Integrado ao Ensino Médio, do Campus Irati.",
+      "tipo_demanda": "PPC",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:19",
+      "processo_sei": "23411.021133/2025-40",
+      "campus_texto": "Irati",
+      "campus_id": "irati",
+      "curso_texto": "Técnico em Química Integrado ao Ensino Médio",
+      "curso_id": "irati/tecnico-em-quimica-integrado-ao-ensino-medio",
+      "palavras_chave": [
+        "PPC",
+        "Irati"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:20",
+      "ordem": 20,
+      "titulo": "Parecer Consepe 20/2026 - Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso (PPC) do curso Superior de Graduação em Química, do Campus",
+      "resumo": "Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso (PPC) do curso Superior de Graduação em Química, do Campus Palmas.",
+      "tipo_demanda": "Ajuste curricular",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:20",
+      "campus_texto": "Palmas",
+      "campus_id": "palmas",
+      "curso_texto": "(PPC) do curso Superior de Graduação em Química",
+      "curso_id": "palmas/licenciatura-em-quimica",
+      "palavras_chave": [
+        "Ajuste curricular",
+        "Palmas"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:21",
+      "ordem": 21,
+      "titulo": "Parecer Consepe 21/2026 - Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso do curso Superior de Licenciatura em Letras Português/Ingl",
+      "resumo": "Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso do curso Superior de Licenciatura em Letras Português/Inglês, do Campus Palmas.",
+      "tipo_demanda": "Ajuste curricular",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:21",
+      "processo_sei": "23411.000397/2026-41",
+      "campus_texto": "Palmas",
+      "campus_id": "palmas",
+      "curso_texto": "do curso Superior de Licenciatura em Letras Português/Inglês",
+      "palavras_chave": [
+        "Ajuste curricular",
+        "Palmas"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:22",
+      "ordem": 22,
+      "titulo": "Parecer Consepe 22/2026 - Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso do curso Técnico em Aquicultura Integrado ao Ensino Médio,",
+      "resumo": "Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso do curso Técnico em Aquicultura Integrado ao Ensino Médio, do Campus Foz do Iguaçu.",
+      "tipo_demanda": "Ajuste curricular",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:22",
+      "processo_sei": "23411.009668/2025-42",
+      "campus_texto": "Foz do Iguaçu",
+      "campus_id": "foz-do-iguacu",
+      "curso_texto": "do curso Técnico em Aquicultura Integrado ao Ensino Médio",
+      "curso_id": "foz-do-iguacu/tecnico-em-aquicultura",
+      "palavras_chave": [
+        "Ajuste curricular",
+        "Foz do Iguaçu"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:23",
+      "ordem": 23,
+      "titulo": "Parecer Consepe 23/2026 - Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso do curso Técnico em Desenvolvimento de Sistemas Integrado ",
+      "resumo": "Favorável à Proposta de Ajuste do Projeto Pedagógico de Curso do curso Técnico em Desenvolvimento de Sistemas Integrado ao Ensino Médio, do Campus Foz do Iguaçu.",
+      "tipo_demanda": "Ajuste curricular",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:23",
+      "processo_sei": "23411.009670/2025-11",
+      "campus_texto": "Foz do Iguaçu",
+      "campus_id": "foz-do-iguacu",
+      "curso_texto": "do curso Técnico em Desenvolvimento de Sistemas Integrado ao Ensino Médio",
+      "curso_id": "foz-do-iguacu/tecnico-em-desenvolvimento-de-sistemas",
+      "palavras_chave": [
+        "Ajuste curricular",
+        "Foz do Iguaçu"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:24",
+      "ordem": 24,
+      "titulo": "Parecer Consepe 24/2026 - Favorável ao pedido de suspensão da oferta do curso superior de Tecnologia em Processos Escolares, do Campus Curitiba.",
+      "resumo": "Favorável ao pedido de suspensão da oferta do curso superior de Tecnologia em Processos Escolares, do Campus Curitiba.",
+      "tipo_demanda": "Suspensão de curso",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:24",
+      "processo_sei": "23411.001787/2022-12",
+      "campus_texto": "Curitiba",
+      "campus_id": "curitiba",
+      "curso_texto": "superior de Tecnologia em Processos Escolares",
+      "curso_id": "curitiba/tecnologia-em-processos-escolares",
+      "palavras_chave": [
+        "Suspensão de curso",
+        "Curitiba"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    }
+  ]
+}

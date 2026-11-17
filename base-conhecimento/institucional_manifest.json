@@ -47,6 +47,13 @@
       "total_itens": 124
     },
     {
+      "id": "conselhos-ifpr",
+      "title": "Conselhos superiores do IFPR",
+      "tipo_item": "reuniao_conselho",
+      "path": "institucional/ifpr/conselhos/index.json",
+      "total_itens": 2
+    },
+    {
       "id": "referencias-ifpr",
       "title": "Referências institucionais do IFPR",
       "tipo_item": "referencia_institucional",

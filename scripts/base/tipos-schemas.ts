@@ -124,7 +124,7 @@ export interface ManifestInstitucionalJson {
       | "edital_ingresso"
       | "oferta_ingresso"
       | "processo_sei_curso"
-      | "conselho"
+      | "reuniao_conselho"
       | "referencia_institucional"
       | "ppc"
       | "ppcp";

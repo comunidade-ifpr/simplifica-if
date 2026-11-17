@@ -18,6 +18,7 @@ export const COLECOES_INSTITUCIONAIS: ReadonlyArray<[id: string, path: string]> 
   ["editais-ingresso-ifpr", "institucional/ifpr/editais/index.json"],
   ["ofertas-ingresso-ifpr", "institucional/ifpr/ofertas/index.json"],
   ["processos-sei-cursos-ifpr", "institucional/ifpr/processos-sei/index.json"],
+  ["conselhos-ifpr", "institucional/ifpr/conselhos/index.json"],
   ["referencias-ifpr", "institucional/ifpr/referencias/index.json"],
   ["ppcs-ifpr", "institucional/ifpr/ppcs/index.json"],
   ["ppcps-rede-certifica-ifpr", "institucional/ifpr/ppcps/index.json"],

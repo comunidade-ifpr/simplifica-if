@@ -6,8 +6,7 @@ A base em `base-conhecimento/` é a fonte de verdade para normas, legislação, 
 
 ## Estrutura
 
-- `base-conhecimento/`: fonte publicável da base, com caminhos internos preservados como `normas/`, `institucional/`, `catalogos/`, `manifest.json`, `llms.txt` e `README.md`.
-- `dados/`: fonte de verdade dos dados institucionais de gestão (campi, cursos, processos seletivos, editais e ofertas), um JSON por registro, e o arquivo das bases antigas do Notion. Os JSONs institucionais de `base-conhecimento/` são gerados a partir daqui.
+- `base-conhecimento/`: fonte publicável da base, com caminhos internos preservados como `normas/`, `institucional/`, `catalogos/`, `manifest.json`, `llms.txt` e `README.md`. Os dados institucionais de gestão (campi, cursos, processos seletivos, editais, ofertas e as reuniões do Consepe) ficam em `base-conhecimento/institucional/ifpr/`, um JSON por registro.
 - `site/`: saída gerada para publicação estática, ignorada pelo Git e reconstruída a partir de `base-conhecimento/`.
 - `.agents/skills/`: skills operacionais para agentes IA, uma pasta versionada por skill e sem symlinks internos.
 - `scripts/`: geração, validação e exportação da base e integração com Notion (só `Movimentações de Cursos`), SEI e SUAP, em TypeScript (Node e pnpm); a conversão de PPCs para Markdown continua em Python.
@@ -80,4 +79,4 @@ Para detalhes de desenvolvimento das skills, veja `base-conhecimento/docs/desenv
 ## Licença
 
 - **Código** (aplicativo, pacotes, scripts e skills): licença MIT, em [`LICENSE`](LICENSE). Partes copiadas do T3 Code mantêm o aviso MIT de origem nos arquivos `NOTICE` e `LICENSE-T3` de cada pasta.
-- **Conteúdo curatorial** (`base-conhecimento/` e `dados/`): CC BY 4.0, em [`LICENSE-DADOS`](LICENSE-DADOS). Textos normativos oficiais podem estar sujeitos ao regime próprio de documentos públicos; mantenha atribuição e consulte as fontes oficiais.
+- **Conteúdo curatorial** (`base-conhecimento/`): CC BY 4.0, em [`LICENSE-DADOS`](LICENSE-DADOS). Textos normativos oficiais podem estar sujeitos ao regime próprio de documentos públicos; mantenha atribuição e consulte as fontes oficiais.
