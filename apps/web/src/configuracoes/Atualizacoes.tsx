@@ -43,6 +43,8 @@ export function Atualizacoes() {
   const [aviso, setAviso] = useState<string | null>(null);
   const [erro, setErro] = useState<MensagemErro | null>(null);
   const [confirmandoVolta, setConfirmandoVolta] = useState(false);
+  // A hora da abertura da seção, para o aviso de 14 dias (o render não lê o relógio).
+  const [agora] = useState(() => Date.now());
 
   useEffect(() => {
     let ativo = true;
@@ -117,9 +119,9 @@ export function Atualizacoes() {
                 <AlertDescription>{estado.aviso}</AlertDescription>
               </Alert>
             ) : null}
-            {avisoSemConfirmacao(estado, Date.now()) !== null ? (
+            {avisoSemConfirmacao(estado, agora) !== null ? (
               <Alert variant="warning">
-                <AlertDescription>{avisoSemConfirmacao(estado, Date.now())}</AlertDescription>
+                <AlertDescription>{avisoSemConfirmacao(estado, agora)}</AlertDescription>
               </Alert>
             ) : null}
             <fieldset className="flex flex-wrap items-center gap-2" disabled={ocupado !== null}>
