@@ -13,7 +13,7 @@ import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
-import { Perfil, Preferencias as PreferenciasApp, type Provider } from "@simplifica-if/contratos-app";
+import { AvisoNaoAceito, Perfil, Preferencias as PreferenciasApp, type Provider } from "@simplifica-if/contratos-app";
 
 const CHAVES = {
   perfil: "perfil",
@@ -36,6 +36,8 @@ export class Preferencias extends Context.Service<
     /** Marca as boas-vindas como feitas (concluídas ou puladas); a primeira data fica. */
     readonly concluirBoasVindas: Effect.Effect<PreferenciasApp>;
     readonly usarIa: (provider: Provider, usar: boolean) => Effect.Effect<PreferenciasApp>;
+    /** Falha com `AvisoNaoAceito` enquanto a pessoa não aceitou o aviso de uso (nada vai à IA antes). */
+    readonly exigirAviso: Effect.Effect<void, AvisoNaoAceito>;
   }
 >()("@simplifica-if/server/persistencia/Preferencias") {}
 
@@ -89,6 +91,18 @@ const make = Effect.gen(function* () {
     return yield* ler;
   }, Effect.orDie);
 
+  /**
+   * Apagar o perfil apaga de fato: `secure_delete` zera o conteúdo das páginas liberadas, e o
+   * checkpoint leva ao arquivo do banco a versão sem o perfil e esvazia o `-wal`, onde a versão antiga
+   * da página ficaria até o próximo checkpoint.
+   */
+  const apagarPerfil = Effect.gen(function* () {
+    yield* sql`PRAGMA secure_delete = ON`;
+    yield* sql`DELETE FROM preferencias WHERE chave = ${CHAVES.perfil}`;
+    yield* sql`PRAGMA wal_checkpoint(TRUNCATE)`;
+    return yield* ler;
+  }).pipe(Effect.orDie, Effect.withSpan("Preferencias.apagarPerfil"));
+
   const usarIa = Effect.fn("Preferencias.usarIa")(function* (provider: Provider, usar: boolean) {
     const atuais = (yield* ler).iasDesligadas.filter((outro) => outro !== provider);
     yield* gravar(CHAVES.iasDesligadas, IasJson, usar ? atuais : [...atuais, provider]);
@@ -98,10 +112,15 @@ const make = Effect.gen(function* () {
   return Preferencias.of({
     ler,
     gravarPerfil,
-    apagarPerfil: sql`DELETE FROM preferencias WHERE chave = ${CHAVES.perfil}`.pipe(Effect.andThen(ler), Effect.orDie),
+    apagarPerfil,
     aceitarAviso: dataUmaVez(CHAVES.aviso).pipe(Effect.andThen(ler), Effect.orDie),
     concluirBoasVindas: dataUmaVez(CHAVES.boasVindas).pipe(Effect.andThen(ler), Effect.orDie),
     usarIa,
+    exigirAviso: ler.pipe(
+      Effect.flatMap((atuais) =>
+        atuais.avisoAceitoEm === undefined ? Effect.fail(new AvisoNaoAceito()) : Effect.void,
+      ),
+    ),
   });
 });
 

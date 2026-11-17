@@ -64,7 +64,7 @@ function bancoComCnct(): string {
 const banco = bancoComCnct();
 const pasta = diretorioTemporario("simplifica-revisao-");
 
-const camada = Servidor.layer({ banco, token: Redacted.make(TOKEN) }).pipe(
+const camada = Servidor.layer({ primeiroUsoFeito: true, banco, token: Redacted.make(TOKEN) }).pipe(
   Layer.provide(layerDriversFalsos(novoRegistro())),
   Layer.provide(NodeServices.layer),
 );
@@ -239,6 +239,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("uma análise por vez",
 /** O servidor com o segredo do desktop: só os arquivos liberados pelo processo principal. */
 const TOKEN_DESKTOP = "segredo-do-processo-principal-0123456789";
 const camadaDesktop = Servidor.layer({
+  primeiroUsoFeito: true,
   banco,
   token: Redacted.make(TOKEN),
   tokenDesktop: Redacted.make(TOKEN_DESKTOP),

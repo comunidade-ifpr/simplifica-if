@@ -63,6 +63,18 @@ export const Preferencias = Schema.Struct({
 });
 export type Preferencias = typeof Preferencias.Type;
 
+/**
+ * A pessoa ainda não aceitou o aviso de uso (`preferencias.aceitarAviso`): o servidor não manda nada à
+ * IA antes disso (conversa, revisão com IA, ações com IA da lista de pendências).
+ */
+export class AvisoNaoAceito extends Schema.TaggedError<AvisoNaoAceito>()("AvisoNaoAceito", {}) {
+  override get message(): string {
+    return "Antes de usar a IA, leia o aviso de uso e clique em \"Entendi\" (Início ou Configurações › Sua IA).";
+  }
+}
+
+export const ehAvisoNaoAceito = Schema.is(AvisoNaoAceito);
+
 const Vazio = Schema.Struct({});
 
 export class GrupoPreferencias extends RpcGroup.make(

@@ -77,6 +77,7 @@ it.live("atualização pelo RPC: confere, baixa, adia com o servidor ocupado e t
 
     const abrir = () =>
       Servidor.layer({
+        primeiroUsoFeito: true,
         banco: empacotada,
         token: Redacted.make(TOKEN),
         atualizacao: {

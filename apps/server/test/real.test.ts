@@ -115,6 +115,8 @@ describe.skipIf(!REAL)("servidor com provider real", () => {
           NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "simplifica-servidor-real-")),
         );
         yield* Effect.addFinalizer(() => Effect.sync(() => NodeFS.rmSync(pasta, { recursive: true, force: true })));
+        // Como a pessoa no primeiro uso: sem o aviso aceito, o servidor não manda nada à IA (M1.8).
+        yield* c["preferencias.aceitarAviso"]({});
         const { sessao } = yield* c["conversa.iniciar"]({ provider: PROVIDER, pastaTrabalho: pasta });
         const turno = (rotulo: string, texto: string) =>
           Effect.gen(function* () {

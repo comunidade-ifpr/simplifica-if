@@ -36,7 +36,7 @@ import {
 import { Evento, Provider } from "@simplifica-if/motor/eventos";
 import * as Schema from "effect/Schema";
 import { Rpc, RpcGroup } from "effect/rpc";
-import { GrupoPreferencias } from "./preferencias.ts";
+import { AvisoNaoAceito, GrupoPreferencias } from "./preferencias.ts";
 
 export { AprovacaoDesconhecida, Decisao, FalhaProvider, OperacaoNaoSuportada, SessaoDesconhecida, TurnoEmAndamento };
 export { Evento, Provider };
@@ -310,7 +310,7 @@ export class GrupoConversa extends RpcGroup.make(
   Rpc.make("conversa.iniciar", {
     payload: EntradaIniciar,
     success: SessaoIniciada,
-    error: Schema.Union([FalhaProvider, PastaTrabalhoInvalida, TarefaDesconhecida]),
+    error: Schema.Union([FalhaProvider, PastaTrabalhoInvalida, TarefaDesconhecida, AvisoNaoAceito]),
   }),
   /**
    * Envia a mensagem; o stream traz os eventos do turno e termina depois de `FimTurno`. Sem sessão
@@ -320,7 +320,7 @@ export class GrupoConversa extends RpcGroup.make(
   Rpc.make("conversa.enviar", {
     payload: Schema.Struct({ sessao: Schema.String, texto: Schema.String }),
     success: Evento,
-    error: Schema.Union([FalhaProvider, TurnoEmAndamento, SessaoDesconhecida]),
+    error: Schema.Union([FalhaProvider, TurnoEmAndamento, SessaoDesconhecida, AvisoNaoAceito]),
     stream: true,
   }),
   /** Responde a um `PedidoAprovacao` do turno em andamento. */
@@ -356,7 +356,7 @@ export class GrupoConversa extends RpcGroup.make(
   Rpc.make("conversa.retomar", {
     payload: EntradaSessao,
     success: ResumoConversa,
-    error: Schema.Union([FalhaProvider, SessaoDesconhecida]),
+    error: Schema.Union([FalhaProvider, SessaoDesconhecida, AvisoNaoAceito]),
   }),
   /** 👍/👎 na resposta do turno (`null` retira a avaliação); gravado no servidor. */
   Rpc.make("conversa.avaliar", {
@@ -701,10 +701,10 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
       forma: Schema.optionalKey(Schema.String),
     }),
     success: EstadoRevisaoIa,
-    error: FalhaRevisaoPpc,
+    error: Schema.Union([FalhaRevisaoPpc, AvisoNaoAceito]),
   }),
   /** Começa ou retoma a revisão preparada (ou pausada); só os blocos pendentes vão ao provider. */
-  Rpc.make("revisaoPpc.iniciarIa", { payload: EntradaRevisaoIa, success: EstadoRevisaoIa, error: FalhaRevisaoPpc }),
+  Rpc.make("revisaoPpc.iniciarIa", { payload: EntradaRevisaoIa, success: EstadoRevisaoIa, error: Schema.Union([FalhaRevisaoPpc, AvisoNaoAceito]) }),
   /** Pausa: os blocos em andamento param e voltam a pendentes; os prontos ficam gravados. */
   Rpc.make("revisaoPpc.pausarIa", { payload: EntradaRevisaoIa, success: EstadoRevisaoIa, error: FalhaRevisaoPpc }),
   /** O estado agora e a cada mudança (bloco pronto, pausa, fim); termina quando a revisão termina. */
@@ -765,13 +765,13 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
       provider: Schema.optionalKey(Provider),
     }),
     success: ListaPendencias,
-    error: FalhaRevisaoPpc,
+    error: Schema.Union([FalhaRevisaoPpc, AvisoNaoAceito]),
   }),
   /** "Sugerir texto": a redação proposta, com os fatos conferidos; nunca aplicada ao documento. */
   Rpc.make("revisaoPpc.sugerir", {
     payload: Schema.Struct({ lista: Schema.String, chave: Schema.String, provider: Schema.optionalKey(Provider) }),
     success: ListaPendencias,
-    error: FalhaRevisaoPpc,
+    error: Schema.Union([FalhaRevisaoPpc, AvisoNaoAceito]),
   }),
   /**
    * "Já resolvi" com o arquivo atualizado: reconfere só a ficha da pendência no `.docx` novo (o código e,
@@ -785,7 +785,7 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
       provider: Schema.optionalKey(Provider),
     }),
     success: ListaPendencias,
-    error: FalhaRevisaoPpc,
+    error: Schema.Union([FalhaRevisaoPpc, AvisoNaoAceito]),
   }),
   /** Gera de novo a cópia comentada do original, com a situação de cada pendência no comentário e no aviso. */
   Rpc.make("revisaoPpc.gerarCopia", { payload: EntradaLista, success: ListaPendencias, error: FalhaRevisaoPpc }),

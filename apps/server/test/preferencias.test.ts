@@ -1,9 +1,10 @@
-// @effect-diagnostics nodeBuiltinImport:off -- teste: o caminho do banco numa pasta temporária
+// @effect-diagnostics nodeBuiltinImport:off -- teste: o banco numa pasta temporária, lido byte a byte
 /**
  * O primeiro uso (M1.8) no servidor: o perfil, o aviso de uso, as boas-vindas e as IAs em uso, pelo
  * RPC (`preferencias.*`), e o que fica gravado no `conversas.sqlite` quando o servidor fecha e abre de
  * novo.
  */
+import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { afterAll, assert, describe, it, layer } from "@effect/vitest";
@@ -11,6 +12,7 @@ import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
+import * as Stream from "effect/Stream";
 import * as SqlClient from "effect/sql/SqlClient";
 import type { Perfil } from "@simplifica-if/contratos-app";
 import * as Banco from "../src/persistencia/Banco.ts";
@@ -42,6 +44,24 @@ const camada = Servidor.layer({ banco: bancoFixture(), token: Redacted.make(TOKE
 const AUTORIZACAO = { authorization: `Bearer ${TOKEN}` };
 
 layer(camada, { excludeTestServices: true })("preferências pelo RPC", (it) => {
+  it.effect("sem o aviso aceito, nada vai à IA: conversa e revisão com IA recusam com a frase do aviso", () =>
+    Effect.gen(function* () {
+      const { urlRpc } = yield* Servidor.ServidorApp;
+      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+      const iniciar = yield* Effect.flip(rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: "/" }));
+      assert.strictEqual(iniciar._tag, "AvisoNaoAceito");
+      assert.match(iniciar.message, /leia o aviso de uso/);
+      const enviar = yield* Effect.flip(Stream.runDrain(rpc["conversa.enviar"]({ sessao: "x", texto: "oi" })));
+      assert.strictEqual(enviar._tag, "AvisoNaoAceito");
+      const retomar = yield* Effect.flip(rpc["conversa.retomar"]({ sessao: "x" }));
+      assert.strictEqual(retomar._tag, "AvisoNaoAceito");
+      const ia = yield* Effect.flip(rpc["revisaoPpc.iniciarIa"]({ revisao: "x" }));
+      assert.strictEqual(ia._tag, "AvisoNaoAceito");
+      const sugerir = yield* Effect.flip(rpc["revisaoPpc.sugerir"]({ lista: "x", chave: "y", provider: "claude" }));
+      assert.strictEqual(sugerir._tag, "AvisoNaoAceito");
+    }),
+  );
+
   it.effect("primeiro uso: nada gravado, depois perfil, aviso, boas-vindas e IAs", () =>
     Effect.gen(function* () {
       const { urlRpc } = yield* Servidor.ServidorApp;
@@ -121,6 +141,31 @@ describe("preferências no arquivo", () => {
       }).pipe(Effect.provide(abrir));
       assert.isUndefined(estragado.perfil);
       assert.strictEqual(estragado.avisoAceitoEm, lidas.avisoAceitoEm);
+    }),
+  );
+
+  it.effect("apagar o perfil não deixa o texto dele no arquivo do banco nem no -wal", () =>
+    Effect.gen(function* () {
+      const outro = NodePath.join(diretorioTemporario("simplifica-preferencias-apagar-"), "conversas.sqlite");
+      const camadaOutro = Preferencias.layer.pipe(
+        Layer.provideMerge(Banco.layerArquivo(outro)),
+        Layer.provide(NodeServices.layer),
+      );
+      const marca = "Curso-Marca-Que-Deve-Sumir-7f3a";
+      const bytes = () =>
+        [outro, `${outro}-wal`]
+          .filter((arquivo) => NodeFS.existsSync(arquivo))
+          .map((arquivo) => NodeFS.readFileSync(arquivo).toString("latin1"))
+          .join("");
+      yield* Effect.gen(function* () {
+        const preferencias = yield* Preferencias.Preferencias;
+        yield* preferencias.gravarPerfil({ ...PERFIL, cursos: [{ id: "curitiba/marca", nome: marca }] });
+        yield* preferencias.aceitarAviso;
+        assert.include(bytes(), marca);
+        yield* preferencias.apagarPerfil;
+        assert.notInclude(bytes(), marca);
+      }).pipe(Effect.provide(camadaOutro));
+      assert.notInclude(bytes(), marca);
     }),
   );
 
