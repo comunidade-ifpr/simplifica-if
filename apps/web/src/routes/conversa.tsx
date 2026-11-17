@@ -3,8 +3,9 @@
  * `ifpr://` das respostas são chips que abrem o painel de leitura ao lado.
  *
  * Modo Servidor (M1.9): a conversa de uma tarefa mostra as etapas da skill (✓ ◐ ○), as chamadas de
- * ferramenta ficam recolhidas em "Detalhes técnicos", cada resposta tem 👍/👎 e "Isto está errado", e o
- * painel "Pasta da tarefa" mostra os arquivos e o "Desfazer". Sem conversa aberta, a tela é a conversa
+ * ferramenta ficam recolhidas em "Detalhes técnicos", cada resposta tem 👍/👎 e "Isto está errado" (o
+ * relato para a curadoria, M1.12, logo abaixo da resposta), e o painel "Pasta da tarefa" mostra os
+ * arquivos e o "Desfazer". Sem conversa aberta, a tela é a conversa
  * com uma pasta escolhida à mão (a tela técnica de antes, que as Configurações abrem em "Avançado").
  *
  * As conversas ficam gravadas no servidor: a barra lateral as lista, e a conversa aberta fica na URL
@@ -20,6 +21,7 @@ import { AvisoErro } from "../components/AvisoErro.tsx";
 import { IndicadorEtapas } from "../components/IndicadorEtapas.tsx";
 import { ItemConversa } from "../components/ItemConversa.tsx";
 import { PainelPasta } from "../components/PainelPasta.tsx";
+import { RelatoErro } from "../components/RelatoErro.tsx";
 import { etapasVistas } from "../conversa/etapas.ts";
 import { type Item, rotuloFerramenta } from "../conversa/estado.ts";
 import { useCatalogo } from "../tarefas/catalogo.ts";
@@ -286,6 +288,9 @@ function Conversa({
   const etapas =
     skill === undefined || skill.etapas.length === 0 ? undefined : etapasVistas(skill.etapas, estado.itens, emTurno);
   const deTarefa = estado.tarefa !== undefined;
+  // O relato aberto é da conversa em que foi aberto: trocar de conversa o fecha.
+  const [relato, setRelato] = useState<{ readonly sessao?: string; readonly turno: number }>();
+  const turnoRelato = relato !== undefined && relato.sessao === estado.sessao ? relato.turno : undefined;
 
   return (
     <div className="flex h-full min-w-0 flex-1 flex-col">
@@ -331,12 +336,32 @@ function Conversa({
             ) : bloco.tipo === "ferramentas" ? (
               <DetalhesTecnicos key={bloco.chave} itens={bloco.itens} aoAbrirLink={aoAbrirLink} />
             ) : (
-              <Avaliacao
-                key={bloco.chave}
-                turno={bloco.turno}
-                nota={estado.avaliacoes[bloco.turno]}
-                aoAvaliar={(turno, nota) => void conversa.avaliar(turno, nota)}
-              />
+              <div key={bloco.chave} className="flex flex-col gap-2">
+                <Avaliacao
+                  turno={bloco.turno}
+                  nota={estado.avaliacoes[bloco.turno]}
+                  aoAvaliar={(turno, nota) => void conversa.avaliar(turno, nota)}
+                  relatoAberto={turnoRelato === bloco.turno}
+                  aoApontarErro={(turno) =>
+                    setRelato(
+                      turnoRelato === turno
+                        ? undefined
+                        : { ...(estado.sessao === undefined ? {} : { sessao: estado.sessao }), turno },
+                    )
+                  }
+                />
+                {turnoRelato === bloco.turno && estado.sessao !== undefined ? (
+                  <RelatoErro
+                    sessao={estado.sessao}
+                    turno={bloco.turno}
+                    // O relato enviado marca o 👎 da resposta.
+                    aoRegistrado={() => {
+                      if (estado.avaliacoes[bloco.turno] !== "nao_util") void conversa.avaliar(bloco.turno, "nao_util");
+                    }}
+                    aoFechar={() => setRelato(undefined)}
+                  />
+                ) : null}
+              </div>
             ),
           )}
           {estado.fase === "respondendo" && ultimo?.tipo === "pessoa" ? (

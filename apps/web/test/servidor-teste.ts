@@ -4,7 +4,7 @@
  * fixture do MCP: a interface conversa com ele por RPC sem chamar provider real e sem `tmp/kb.sqlite`.
  *
  *   node apps/web/test/servidor-teste.ts [--porta 0] [--origem http://localhost:5190]… [--atraso-login 2000]
- *     [--primeiro-uso] [--claude-ausente]
+ *     [--primeiro-uso] [--claude-ausente] [--curadoria dono/repo]
  *
  * Pronto o servidor, imprime uma linha JSON com `porta`, `urlServidor`, `token` (o de
  * `SIMPLIFICA_SERVIDOR_TOKEN` ou um aleatório), `pasta`, uma pasta de trabalho temporária, e `ppc`, um
@@ -40,6 +40,8 @@ const { values: opcoes } = NodeUtil.parseArgs({
     "primeiro-uso": { type: "boolean", default: false },
     // O Claude Code ausente até o arquivo `sinalClaude` existir (o passo guiado das boas-vindas).
     "claude-ausente": { type: "boolean", default: false },
+    // O repositório da curadoria (M1.12, "Isto está errado"); sem a opção, `null`, como na política de fábrica.
+    curadoria: { type: "string" },
   },
 });
 
@@ -86,6 +88,15 @@ NodeFS.writeFileSync(ppc, ppcSintetico());
 /** Um documento para anexar às tarefas (Modo Servidor). */
 const parecer = NodePath.join(pasta, "parecer.md");
 NodeFS.writeFileSync(parecer, "# Parecer\n\nO estágio é obrigatório, conforme a Res. CNE/CP nº 1/2021.\n");
+/**
+ * Um documento com dado pessoal fictício (M1.13): um CPF de teste com DV válido e um celular, para o
+ * aviso ao anexar.
+ */
+const listaComCpf = NodePath.join(pasta, "lista.md");
+NodeFS.writeFileSync(
+  listaComCpf,
+  "# Lista de presença\n\nFulana de Teste, CPF 529.982.247-25, celular (41) 99876-5432.\nContato: secretaria@ifpr.edu.br\n",
+);
 /** Com `--claude-ausente`, o Claude Code "aparece" quando este arquivo existe. */
 const sinalClaude = NodePath.join(pasta, "claude-instalado");
 /** A raiz das pastas de tarefa (no app, Documentos/Simplifica IF). */
@@ -100,6 +111,7 @@ const camada = Servidor.layer({
   pastaSkills: NodePath.resolve(import.meta.dirname, "../../../.agents/skills"),
   pastaTrabalhos,
   primeiroUsoFeito: !opcoes["primeiro-uso"],
+  relatos: { curadoria: { repositorio: opcoes.curadoria ?? null, rotulos: ["relato-do-app"] } },
 }).pipe(
   Layer.provide(
     Demonstracao.layer({
@@ -121,6 +133,7 @@ const programa = Effect.gen(function* () {
       pasta,
       ppc,
       parecer,
+      listaComCpf,
       pastaTrabalhos,
       sinalClaude,
     }),

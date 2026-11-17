@@ -282,12 +282,20 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
   // As chamadas da ferramenta `etapa` ficam só nos detalhes técnicos, recolhidos.
   expect((mensagens.element() as HTMLElement).innerText).not.toMatch(/Etapa da tarefa/);
 
-  // Avaliação: 👍 gravado; "Isto está errado" avisa que vem em breve.
+  // Avaliação: 👍 gravado; "Isto está errado" abre o relato. Sem o repositório da curadoria na política
+  // (como na fábrica, até ele abrir), só salvar ou copiar; fechar não muda a avaliação.
   const util = mensagens.getByRole("button", { name: "Resposta útil" });
   await util.click();
   await expect.element(util).toHaveAttribute("aria-pressed", "true");
   await mensagens.getByRole("button", { name: "Isto está errado" }).click();
-  await expect.element(mensagens.getByText(/Em breve você vai poder apontar o trecho errado/)).toBeVisible();
+  const relato = mensagens.getByRole("region", { name: "Relatar um erro nesta resposta" });
+  await expect.element(relato.getByText(/envio direto para a equipe da base ainda não está disponível/)).toBeVisible();
+  await expect.element(relato.getByRole("button", { name: "Abrir no GitHub" })).not.toBeInTheDocument();
+  await expect.element(relato.getByRole("button", { name: "Salvar o relato na pasta" })).toBeVisible();
+  semIngles();
+  await relato.getByRole("button", { name: "Fechar" }).click();
+  await expect.element(relato).not.toBeInTheDocument();
+  await expect.element(util).toHaveAttribute("aria-pressed", "true");
   semIngles();
   await capturar("03-conversa-etapas");
 
@@ -350,6 +358,98 @@ it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tare
     .first()
     .click();
   await expect.element(page.getByRole("button", { name: "Resposta útil" })).toHaveAttribute("aria-pressed", "true");
+});
+
+it("Aviso ao anexar (M1.13) e “Isto está errado” (M1.12): do anexo com CPF ao relato revisado", async () => {
+  const curadoria = await iniciarServidorTeste({ atrasoLogin: 100, curadoria: "exemplo/simplifica-if" });
+  const abrirExterno = vi.fn(async (_url: string) => {});
+  window.simplifica = {
+    conexao: async () => ({ urlServidor: curadoria.urlServidor, token: curadoria.token }),
+    escolherAnexo: async () => curadoria.listaComCpf,
+    abrirExterno,
+  } satisfies PonteDesktop;
+  const copiado = vi.fn(async (_texto: string) => {});
+  Object.defineProperty(navigator, "clipboard", { value: { writeText: copiado }, configurable: true });
+  try {
+    await page.viewport(1280, 900);
+    await using _app = await montarApp(curadoria);
+
+    // O anexo com CPF e celular: o aviso diz quantos e onde, mascarado, e o envio espera a decisão.
+    await page.getByRole("textbox", { name: "O que você precisa hoje?" }).fill("Confira a lista de presença.");
+    const anexar = page.getByRole("button", { name: "Anexar arquivo…" });
+    await anexar.click();
+    const aviso = page.getByRole("alert", { name: "Aviso sobre lista.md" });
+    await expect.element(aviso.getByText("lista.md parece ter dado pessoal: 1 CPF e 1 celular.")).toBeVisible();
+    await expect
+      .element(aviso.getByText("Fulana de Teste, CPF 529.***.***-**, celular (41) *****-**32."))
+      .toBeVisible();
+    await expect.element(aviso.getByText("CPF, linha 3:")).toBeVisible();
+    expect(document.body.innerText).not.toMatch(/982\.247|99876/);
+    const enviar = page.getByRole("button", { name: "Enviar" });
+    await expect.element(enviar).toBeDisabled();
+    await expect.element(page.getByText("Antes de enviar, decida sobre o aviso do anexo.")).toBeVisible();
+    semIngles();
+    await capturar("06-aviso-anexo");
+    // "Retirar o anexo" tira o arquivo; anexado de novo, o aviso volta, e "Enviar mesmo assim" libera.
+    await aviso.getByRole("button", { name: "Retirar o anexo" }).click();
+    await expect.element(page.getByRole("list", { name: "Arquivos anexados" })).not.toBeInTheDocument();
+    await expect.element(enviar).toBeEnabled();
+    await anexar.click();
+    await aviso.getByRole("button", { name: "Enviar mesmo assim" }).click();
+    await expect.element(page.getByText("lista.md: você decidiu enviar mesmo com 1 CPF e 1 celular.")).toBeVisible();
+    await enviar.click();
+
+    // A resposta chega; "Isto está errado" abre o relato com a pergunta, a resposta e as versões.
+    const mensagens = page.getByRole("log", { name: "Mensagens" });
+    await expect.element(mensagens.getByRole("button", { name: "Res. CNE/CP nº 1/2021" })).toBeVisible();
+    await mensagens.getByRole("button", { name: "Isto está errado" }).click();
+    const relato = mensagens.getByRole("region", { name: "Relatar um erro nesta resposta" });
+    const previa = relato.getByRole("region", { name: "Prévia do relato" });
+    const textoDaPrevia = () => previa.element().querySelector("pre")?.textContent ?? "";
+    await expect.element(previa.getByText(/> Confira a lista de presença\./)).toBeVisible();
+    await expect.element(previa.getByText(/- IA: Claude \(Claude Code\) \(versão 2\.1\.30\)/)).toBeVisible();
+    expect(textoDaPrevia()).not.toMatch(/Fulana|529/);
+
+    // A descrição com um CPF: o mesmo detector avisa; apagado, o aviso some.
+    const descricao = relato.getByLabelText("O que está errado?");
+    await descricao.fill("A norma citada não trata de lista de presença. CPF 529.982.247-25");
+    await expect.element(relato.getByRole("alert", { name: "Dado pessoal no relato" })).toBeVisible();
+    await descricao.fill("A norma citada não trata de lista de presença.");
+    await expect.element(relato.getByRole("alert", { name: "Dado pessoal no relato" })).not.toBeInTheDocument();
+
+    // Retirar o primeiro trecho da resposta e as versões: some da prévia.
+    await relato.getByRole("checkbox", { name: "Incluir o trecho 1 de a resposta da ia" }).click();
+    await relato.getByRole("checkbox", { name: "Incluir as versões do app, da base, da tarefa e da IA" }).click();
+    await expect.element(previa.getByText(/_\[trecho retirado por quem enviou\]_/)).toBeVisible();
+    expect(textoDaPrevia()).not.toMatch(/Vou consultar a base|## Versões/);
+    semIngles();
+    await capturar("07-relato");
+
+    // "Abrir no GitHub": a página issues/new do repositório da política, com o relato da prévia.
+    await relato.getByRole("button", { name: "Abrir no GitHub" }).click();
+    await expect.element(relato.getByText(/Abrimos a página do GitHub no navegador/)).toBeVisible();
+    expect(abrirExterno).toHaveBeenCalledTimes(1);
+    const url = new URL(abrirExterno.mock.calls[0]![0]);
+    expect(`${url.origin}${url.pathname}`).toBe("https://github.com/exemplo/simplifica-if/issues/new");
+    expect(url.searchParams.get("title")).toBe("Isto está errado: A norma citada não trata de lista de presença.");
+    expect(url.searchParams.get("labels")).toBe("relato-do-app");
+    expect(`# ${url.searchParams.get("title")}\n\n${url.searchParams.get("body")}`).toBe(textoDaPrevia());
+    // O relato enviado marca o 👎.
+    await expect
+      .element(mensagens.getByRole("button", { name: "Resposta não ajudou" }))
+      .toHaveAttribute("aria-pressed", "true");
+
+    // Salvar na pasta da tarefa e copiar.
+    await relato.getByRole("button", { name: "Salvar o relato na pasta" }).click();
+    await expect
+      .element(relato.getByText(/^Relato salvo na pasta da tarefa: Relato de erro - .*\.md\.$/))
+      .toBeVisible();
+    await relato.getByRole("button", { name: "Copiar o relato" }).click();
+    await expect.element(relato.getByText(/^Relato copiado\./)).toBeVisible();
+    expect(copiado).toHaveBeenCalledWith(textoDaPrevia());
+  } finally {
+    delete (navigator as { clipboard?: unknown }).clipboard;
+  }
 });
 
 it("Modo Servidor: a caixa do Início abre uma conversa numa pasta nova", async () => {

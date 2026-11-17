@@ -27,7 +27,8 @@ import { useApi, useConversa, useEstadoConexao } from "../contexto.tsx";
 import { PROVIDERS } from "../providers.ts";
 import { CartaoTarefa } from "../tarefas/CartaoTarefa.tsx";
 import { nomeTarefa, tarefasDoInicio, useCatalogo } from "../tarefas/catalogo.ts";
-import { Anexos, comecarTarefa, EscolhaIa, nomeArquivo } from "../tarefas/comecar.tsx";
+import { Anexos, comecarTarefa, EscolhaIa, esperaDosAnexos, nomeArquivo } from "../tarefas/comecar.tsx";
+import { useConferenciaAnexos } from "../tarefas/conferencia.ts";
 import { linhaDoPerfil, primeiroUsoPendente, usePerfil, usePreferencias } from "../tarefas/perfil.ts";
 import { dataDaBase, tituloDoPedido } from "../tarefas/textos.ts";
 import { EsperaPreferencias } from "../components/EsperaPreferencias.tsx";
@@ -108,9 +109,11 @@ function CaixaPedido() {
   const [provider, setProvider] = useState<Provider>(estado.provider);
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<MensagemErro>();
+  const conferencia = useConferenciaAnexos();
+  const espera = esperaDosAnexos(conferencia, anexos);
 
   const enviar = async () => {
-    if (texto.trim() === "" || enviando) return;
+    if (texto.trim() === "" || enviando || espera !== undefined) return;
     setEnviando(true);
     setErro(undefined);
     try {
@@ -153,10 +156,15 @@ function CaixaPedido() {
         className="border-0 shadow-none focus-visible:ring-0"
       />
       <div className="flex flex-wrap items-center gap-2">
-        <Anexos anexos={anexos} aoMudar={setAnexos} />
+        <Anexos anexos={anexos} aoMudar={setAnexos} conferencia={conferencia} />
         <div className="ml-auto flex items-center gap-2">
+          {espera === undefined ? null : (
+            <span className="text-muted-foreground text-xs" role="status">
+              {espera}
+            </span>
+          )}
           <EscolhaIa valor={provider} aoMudar={setProvider} />
-          <Button type="submit" disabled={texto.trim() === "" || enviando}>
+          <Button type="submit" disabled={texto.trim() === "" || enviando || espera !== undefined}>
             {enviando ? <Spinner /> : <SendHorizontalIcon />}
             {enviando ? "Abrindo…" : "Enviar"}
           </Button>
