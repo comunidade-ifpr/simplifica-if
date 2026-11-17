@@ -4,19 +4,17 @@
  * destacado no texto da norma, "Copiar citação", a navegação entre normas pelas relações com voltar e
  * avançar, e o PPC aberto na seção, sem o HTML cru do arquivo.
  */
-import { afterAll, beforeAll, expect, it, vi } from "vite-plus/test";
+import { beforeAll, expect, it, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 import type { ServidorTeste } from "../../vite.config.ts";
-import { iniciarServidorTeste, montarApp, pararServidoresTeste } from "../../test/navegador.tsx";
+import { iniciarServidorTeste, montarApp } from "../../test/navegador.tsx";
 
 let servidor: ServidorTeste;
 
+// Sem `pararServidoresTeste` no fim: ele derruba todos os servidores de teste, inclusive o do
+// `app.browser.test.tsx`, que pode estar rodando ao mesmo tempo. O `vite.config.ts` os encerra na saída.
 beforeAll(async () => {
   servidor = await iniciarServidorTeste();
-});
-
-afterAll(async () => {
-  await pararServidoresTeste();
 });
 
 declare global {
