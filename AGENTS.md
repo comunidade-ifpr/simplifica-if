@@ -69,6 +69,8 @@ Para consultar ou alterar campi, cursos, metadados de PPC e SUAP, horários dos 
 
 - [Curadoria de metadados institucionais](base-conhecimento/docs/curadoria-metadados-institucionais.md)
 
+Um PPC novo (ou a versão nova do PPC de um curso) entra na base pelo DOCX da coordenação: `node scripts/importar_ppc_docx.ts <campus_id>/<curso_slug> <arquivo.docx> --fonte-url <url> [--substituir]`, seguido do pipeline da base; PDF não é convertido (passo a passo em "Entrada de PPC novo na base" na doc de curadoria).
+
 Para solicitações sobre `Movimentações de Cursos`, a única base que continua no Notion (cada movimentação aponta para o curso pela chave `campus_id/curso_slug` em `Curso ID`), leia primeiro:
 
 - [Operação do Notion por agentes](base-conhecimento/docs/notion-operacao-agentes.md)

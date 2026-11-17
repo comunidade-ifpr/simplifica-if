@@ -52,7 +52,13 @@ function comparavel(campo: string, valor: unknown): unknown {
 }
 
 /** Nenhum arquivo de texto da base pode conter caminhos locais. */
-const ROTULOS_PESSOAIS = { cpf: "CPF", rg: "RG", telefone: "celular", matricula: "matrícula", siape: "SIAPE" } as const;
+export const ROTULOS_PESSOAIS = {
+  cpf: "CPF",
+  rg: "RG",
+  telefone: "celular",
+  matricula: "matrícula",
+  siape: "SIAPE",
+} as const;
 
 /**
  * Dados pessoais (política do AGENTS.md: CPF, RG, celular, matrícula de estudante, SIAPE), link de
