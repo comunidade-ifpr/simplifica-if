@@ -51,13 +51,20 @@ it("do chip ao dispositivo destacado, copiar citação, navegar entre normas e a
   await expect.element(painel.getByText("Res. CNE/CP 2/2026, art. 28, XVIII", { exact: true })).toBeVisible();
   const norma = painel.getByRole("article", { name: "Norma" });
   await expect.element(norma.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 2/2026" })).toBeVisible();
-  await expect.element(norma.getByLabelText("Situação").getByText("Em vigor")).toBeVisible();
+  await expect.element(norma.getByRole("group", { name: "Situação" }).getByText("Em vigor")).toBeVisible();
+  // o foco foi para o painel, que um chip da conversa abriu
+  expect(document.activeElement).toBe(painel.element());
+  // a data do ato e a publicação registrada, cada uma com o seu nome
+  await expect.element(norma.getByText("Ato de 11/11/2026")).toBeVisible();
+  await expect.element(norma.getByText("Publicação no DOU: 12/11/2026")).toBeVisible();
   await expect.element(norma.getByText(/Trecho citado: art\. 28, XVIII, destacado no texto/)).toBeVisible();
   const texto = norma.getByRole("document", { name: "Texto da norma" });
   await expect.element(texto).toBeVisible();
   await expect.poll(() => document.getElementById("art28-xviii")?.querySelector("mark.trecho-citado")).toBeTruthy();
   const inciso = document.getElementById("art28-xviii")!;
-  expect(inciso.textContent).toMatch(/^XVIII – /);
+  // o destaque começa com o anúncio oculto, para o leitor de tela
+  expect(inciso.textContent).toMatch(/^Trecho citado: XVIII – /);
+  expect(inciso.querySelector(".sr-only")?.textContent).toBe("Trecho citado: ");
   // só o inciso: o caput e os outros incisos ficam sem destaque
   expect(texto.element().querySelectorAll("mark.trecho-citado")).toHaveLength(1);
   await expect.poll(() => visivelNoPainel(inciso)).toBe(true);
@@ -82,6 +89,7 @@ it("do chip ao dispositivo destacado, copiar citação, navegar entre normas e a
   await expect.element(anterior.getByRole("heading", { level: 2, name: "Resolução CNE/CP nº 1/2021" })).toBeVisible();
   await expect.element(anterior.getByLabelText("Situação").getByText("Revogada")).toBeVisible();
   await expect.element(anterior.getByLabelText("Situação").getByText("Vigência a confirmar")).toBeVisible();
+  await expect.element(anterior.getByText("Publicação no DOU: a confirmar")).toBeVisible();
   await expect.element(painel.getByRole("button", { name: "Avançar para o próximo link" })).toBeDisabled();
 
   await painel.getByRole("button", { name: "Voltar ao link anterior" }).click();

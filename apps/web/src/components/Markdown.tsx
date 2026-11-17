@@ -20,15 +20,34 @@ export function transformarUrl(url: string): string {
   return ehLinkIfpr(url) ? url : defaultUrlTransform(url);
 }
 
-function abrirFora(evento: MouseEvent<HTMLAnchorElement>, url: string) {
+/** Só `http` e `https` saem do app (o desktop recusa o resto). */
+export const ehLinkWeb = (url: string): boolean => /^https?:\/\//i.test(url);
+
+/** Abre no navegador do sistema; uma recusa (do desktop ou do navegador) não vira promessa rejeitada solta. */
+export function abrirFora(url: string): void {
+  abrirExterno(url).catch(() => undefined);
+}
+
+/** Um link `#âncora` do próprio documento: rola até o elemento, se ele existe. */
+function irParaAncora(evento: MouseEvent<HTMLAnchorElement>, href: string) {
   evento.preventDefault();
-  void abrirExterno(url);
+  let id = href.slice(1);
+  try {
+    id = decodeURIComponent(id);
+  } catch {
+    // âncora malformada: procura como veio
+  }
+  const alvo = document.getElementById(id) ?? document.getElementById(`user-content-${id}`);
+  alvo?.scrollIntoView({ block: "start", behavior: "smooth" });
 }
 
 /** Quem abre os links `ifpr://` do texto (o painel de leitura). */
 export const AbrirLink = createContext<(link: string) => void>(() => {});
 
-/** O `a` do Markdown: chip para `ifpr://`, navegador do sistema para o resto. Também o do leitor (`leitor/Documento.tsx`). */
+/**
+ * O `a` do Markdown: chip para `ifpr://`; `http(s)` no navegador do sistema; `#âncora` rola no próprio
+ * texto; o resto (`mailto:`, caminho relativo) fica como texto. Também o do leitor (`leitor/Documento.tsx`).
+ */
 export function LinkMarkdown({ href, children }: ComponentProps<"a">) {
   const aoAbrirLink = use(AbrirLink);
   if (href !== undefined && ehLinkIfpr(href)) {
@@ -54,9 +73,26 @@ export function LinkMarkdown({ href, children }: ComponentProps<"a">) {
       </button>
     );
   }
-  if (href === undefined || href.length === 0) return <span>{children}</span>;
+  if (href !== undefined && href.startsWith("#") && href.length > 1) {
+    return (
+      <a href={href} onClick={(evento) => irParaAncora(evento, href)}>
+        {children}
+      </a>
+    );
+  }
+  // `mailto:`, caminho relativo e o resto não abrem no app nem no navegador (o desktop só abre http e
+  // https): ficam como texto.
+  if (href === undefined || !ehLinkWeb(href)) return <span>{children}</span>;
   return (
-    <a href={href} rel="noopener noreferrer" target="_blank" onClick={(evento) => abrirFora(evento, href)}>
+    <a
+      href={href}
+      rel="noopener noreferrer"
+      target="_blank"
+      onClick={(evento) => {
+        evento.preventDefault();
+        abrirFora(href);
+      }}
+    >
       {children}
     </a>
   );

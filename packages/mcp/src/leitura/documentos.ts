@@ -12,7 +12,7 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
 import { type Aviso, type Base, EntradaInvalida, FalhaNaBase } from "../contratos.ts";
-import type { Ancora, EntradaDocumento } from "../documento.ts";
+import type { Ancora, DatasDoAto, EntradaDocumento } from "../documento.ts";
 import { responder } from "../envelope.ts";
 import { lerLink, linkNorma, linkPpc } from "../links.ts";
 import { chavePpc } from "./comum.ts";
@@ -23,8 +23,25 @@ const linhaNorma = Sql.primeira(
     titulo: Schema.String,
     situacao: Schema.String,
     path: Schema.NullOr(Schema.String),
+    front_matter_json: Schema.NullOr(Schema.String),
   }),
 );
+
+/** As datas do ato no front matter publicado (texto como está, ou `null` se o campo falta). */
+function datasDoAto(frontMatter: string | null): DatasDoAto {
+  let meta: Record<string, unknown> = {};
+  try {
+    const lido: unknown = frontMatter === null ? {} : JSON.parse(frontMatter);
+    if (typeof lido === "object" && lido !== null) meta = lido as Record<string, unknown>;
+  } catch {
+    // front matter ilegível: as datas ficam sem registro
+  }
+  const campo = (nome: string) => {
+    const valor = meta[nome];
+    return typeof valor === "string" && valor.trim() !== "" ? valor : null;
+  };
+  return { assinada_em: campo("assinada_em"), publicada_em: campo("publicada_em"), vigente_de: campo("vigente_de") };
+}
 const linhaPpc = Sql.primeira(
   Schema.Struct({
     id: Schema.String,
@@ -62,7 +79,9 @@ export const makeDocumentos = Effect.fn("Leitura.makeDocumentos")(function* (bas
   });
 
   const documentoDaNorma = Effect.fnUntraced(function* (id: string, pedido: string | null) {
-    const norma = yield* linhaNorma("SELECT id, titulo, situacao, path FROM normas WHERE id = ?", [id]);
+    const norma = yield* linhaNorma("SELECT id, titulo, situacao, path, front_matter_json FROM normas WHERE id = ?", [
+      id,
+    ]);
     if (!norma) {
       return yield* new EntradaInvalida({
         mensagem: `norma não encontrada na base: "${id}". Confira o ID com buscar_norma`,
@@ -95,6 +114,7 @@ export const makeDocumentos = Effect.fn("Leitura.makeDocumentos")(function* (bas
       markdown: yield* textoDoArquivo(norma.path),
       ancoras,
       pedido,
+      datas: datasDoAto(norma.front_matter_json),
     };
   });
 
@@ -124,6 +144,7 @@ export const makeDocumentos = Effect.fn("Leitura.makeDocumentos")(function* (bas
       markdown: yield* textoDoArquivo(ppc.path),
       ancoras,
       pedido,
+      datas: null,
     };
   });
 

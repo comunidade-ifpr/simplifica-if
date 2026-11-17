@@ -52,37 +52,50 @@ export interface Selo {
   readonly detalhe: string;
 }
 
-const STATUS: Readonly<Record<string, Omit<Selo, "detalhe"> & { readonly detalhe: (data: string) => string }>> = {
-  vigente: { rotulo: "Em vigor", variante: "success", detalhe: (d) => `Em vigor em ${d}.` },
+const STATUS: Readonly<
+  Record<string, { readonly rotulo: string; readonly variante: VarianteSelo; readonly estado: string }>
+> = {
+  vigente: { rotulo: "Em vigor", variante: "success", estado: "em vigor" },
   alterada: {
     rotulo: "Em vigor, com alterações",
     variante: "info",
-    detalhe: (d) => `Em vigor em ${d}, com partes alteradas por outras normas.`,
+    estado: "em vigor, com partes alteradas por outras normas",
   },
-  "parcialmente revogada": {
-    rotulo: "Revogada em parte",
-    variante: "warning",
-    detalhe: (d) => `Em ${d}, parte do texto já foi revogada por outra norma.`,
-  },
-  revogada: {
-    rotulo: "Revogada",
-    variante: "error",
-    detalhe: (d) =>
-      `Revogada em ${d}. Norma revogada ainda pode valer em situações de transição: veja as regras abaixo.`,
-  },
-  "ainda-nao-vigente": {
-    rotulo: "Ainda não está em vigor",
-    variante: "warning",
-    detalhe: (d) => `Em ${d}, esta norma ainda não estava em vigor.`,
-  },
+  "parcialmente revogada": { rotulo: "Revogada em parte", variante: "warning", estado: "revogada em parte" },
+  revogada: { rotulo: "Revogada", variante: "error", estado: "revogada" },
+  "ainda-nao-vigente": { rotulo: "Ainda não está em vigor", variante: "warning", estado: "ainda não está em vigor" },
 };
+
+/** Uma data que pode faltar: "12/11/2026", ou "a confirmar, não antes de 11/11/2026". */
+export function dataOuAConfirmar(data: string | null, minimo: string | null): string {
+  if (data !== null) return dataCurta(data);
+  return `a confirmar${minimo !== null ? `, não antes de ${dataCurta(minimo)}` : ""}`;
+}
+
+/** Quando o estado da norma passou a valer: o efeito do evento que o decide, ou o início da vigência. */
+function quandoDoEstado(ficha: FichaNorma): string | null {
+  const { status, eventos, inicio } = ficha.vigencia;
+  const tipo =
+    status === "revogada" || status === "parcialmente revogada" ? "revoga" : status === "alterada" ? "altera" : null;
+  if (tipo !== null) {
+    const evento = eventos.filter((e) => e.tipo === tipo && e.ocorreu !== "não").at(-1);
+    if (evento === undefined) return null;
+    const nome = tipo === "revoga" ? "Revogação" : "Alteração";
+    return `${nome} com efeito em ${dataOuAConfirmar(evento.efeito_de, evento.efeito_minimo)}.`;
+  }
+  if (status === "vigente" || status === "ainda-nao-vigente") {
+    return `Início da vigência: ${dataOuAConfirmar(inicio.data, inicio.minimo)}.`;
+  }
+  return null;
+}
 
 /**
  * Os selos da norma na data de referência da base: o estado (em vigor, revogada…) e, quando a data que
- * o decide ainda não está registrada, "Vigência a confirmar", com o motivo.
+ * o decide ainda não está registrada, "Vigência a confirmar", com o motivo. O detalhe diz que o estado é
+ * o da data da base, e a data do evento à parte (a da base não é a da revogação).
  */
 export function selosDaNorma(ficha: FichaNorma): ReadonlyArray<Selo> {
-  const data = dataCurta(ficha.vigencia.data);
+  const dataBase = dataCurta(ficha.vigencia.data);
   const selos: Selo[] = [];
   if (ficha.norma.situacao !== "base") {
     selos.push({
@@ -93,7 +106,16 @@ export function selosDaNorma(ficha: FichaNorma): ReadonlyArray<Selo> {
   }
   const conhecido = STATUS[ficha.vigencia.status];
   if (conhecido !== undefined) {
-    selos.push({ rotulo: conhecido.rotulo, variante: conhecido.variante, detalhe: conhecido.detalhe(data) });
+    const quando = quandoDoEstado(ficha);
+    const transicao =
+      ficha.vigencia.status === "revogada"
+        ? " Norma revogada ainda pode valer em situações de transição: veja as regras abaixo."
+        : "";
+    selos.push({
+      rotulo: conhecido.rotulo,
+      variante: conhecido.variante,
+      detalhe: `Na data da base (${dataBase}): ${conhecido.estado}.${quando === null ? "" : ` ${quando}`}${transicao}`,
+    });
   }
   const aConfirmar = !ficha.vigencia.certo || ficha.norma.vigencia_a_confirmar || conhecido === undefined;
   if (aConfirmar) {
@@ -105,6 +127,28 @@ export function selosDaNorma(ficha: FichaNorma): ReadonlyArray<Selo> {
     });
   }
   return selos;
+}
+
+/* ================================================================== datas do ato */
+
+/**
+ * As datas do ato para o cabeçalho: "Ato de 11/11/2026" (a assinatura, ou a data registrada da norma) e
+ * a publicação só quando a norma a registra, como está ("Publicação no DOU: a confirmar"). A data
+ * registrada da norma (`data_publicacao`) é a do ato em boa parte da base, e não a da publicação.
+ */
+export function datasDoCabecalho(
+  norma: Pick<FichaNorma["norma"], "id" | "data_publicacao">,
+  datas: { readonly assinada_em: string | null; readonly publicada_em: string | null } | null,
+): ReadonlyArray<string> {
+  const partes: string[] = [];
+  const ato = datas?.assinada_em ?? norma.data_publicacao;
+  if (ato !== null) partes.push(`Ato de ${dataCurta(ato)}`);
+  if (datas !== null && datas.publicada_em !== null) {
+    const onde = norma.id.startsWith("br/") ? "Publicação no DOU" : "Publicação oficial";
+    const quando = /^\d{4}-\d{2}-\d{2}/.test(datas.publicada_em) ? dataCurta(datas.publicada_em) : datas.publicada_em;
+    partes.push(`${onde}: ${quando}`);
+  }
+  return partes;
 }
 
 /* ================================================================== relações */
@@ -164,14 +208,19 @@ export function referenciaDaNorma(norma: FichaNorma["norma"]): string {
 
 const TETO_TRECHO = 2_000;
 
-function trechoLimitado(texto: string): string {
+/** O trecho até `TETO_TRECHO` caracteres, cortado no último espaço antes do limite (sem partir palavra). */
+export function trechoLimitado(texto: string): string {
   const limpo = texto.trim();
-  return limpo.length <= TETO_TRECHO ? limpo : `${limpo.slice(0, TETO_TRECHO).trimEnd()} […]`;
+  if (limpo.length <= TETO_TRECHO) return limpo;
+  const corte = limpo.slice(0, TETO_TRECHO + 1);
+  const espaco = corte.search(/\s\S*$/);
+  return `${(espaco > 0 ? corte.slice(0, espaco) : corte.slice(0, TETO_TRECHO)).trimEnd()} […]`;
 }
 
 /**
- * A citação de um dispositivo: o texto literal entre aspas, com o caput herdado e "[…]" entre ele e o
- * dispositivo, os incisos e parágrafos subordinados, o nome curto entre parênteses e a referência.
+ * A citação de um dispositivo: o texto literal entre aspas, com o caput herdado e "[…]" em cada salto
+ * (do caput do artigo ao parágrafo, do parágrafo ao inciso: o que fica entre eles foi omitido), os
+ * incisos e parágrafos subordinados, o nome curto entre parênteses e a referência.
  */
 export function citacaoDoDispositivo(opcoes: {
   readonly dispositivo: DispositivoLido;
@@ -180,7 +229,7 @@ export function citacaoDoDispositivo(opcoes: {
 }): string {
   const { dispositivo, norma, nomeCurto } = opcoes;
   const linhas = [
-    ...dispositivo.caput.map((c, i) => (i === dispositivo.caput.length - 1 ? `${c} […]` : c)),
+    ...dispositivo.caput.map((c) => `${c} […]`),
     dispositivo.texto,
     ...dispositivo.subordinados.map((s) => s.texto),
   ];

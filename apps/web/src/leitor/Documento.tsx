@@ -21,6 +21,7 @@ import remarkGfm from "remark-gfm";
 import { AbrirLink, LinkMarkdown, transformarUrl } from "../components/Markdown.tsx";
 import { type Bloco, blocoDaLinha, dividirEmBlocos, ordemDeMontagem } from "./blocos.ts";
 import { ancorasPorLinha, linhasDoTrecho, rehypeDispositivos } from "./rehypeDispositivos.ts";
+import { remarkMarcadores, remarkQuebras } from "./remarkLeitor.ts";
 
 /** Imagem do PPC: não se carrega (o endereço vem de entrada não confiável e não está na base). */
 function ImagemOmitida({ alt }: ComponentProps<"img">) {
@@ -33,7 +34,7 @@ function ImagemOmitida({ alt }: ComponentProps<"img">) {
 }
 
 const COMPONENTES: Components = { a: LinkMarkdown, img: ImagemOmitida };
-const PLUGINS_REMARK = [remarkGfm];
+const PLUGINS_REMARK = [remarkGfm, remarkMarcadores, remarkQuebras];
 
 type Trecho = { readonly inicio: number; readonly fim: number };
 
@@ -49,9 +50,9 @@ const BlocoMarkdown = memo(
   }) {
     const plugins = useMemo(
       (): Options["rehypePlugins"] => [
-        [rehypeDispositivos, { ancoras, destaque, deslocamento: bloco.linhaInicial - 1 }],
+        [rehypeDispositivos, { ancoras, destaque, deslocamento: bloco.linhaInicial - 1, linhaFinal: bloco.linhaFinal }],
       ],
-      [ancoras, destaque, bloco.linhaInicial],
+      [ancoras, destaque, bloco.linhaInicial, bloco.linhaFinal],
     );
     return (
       <div

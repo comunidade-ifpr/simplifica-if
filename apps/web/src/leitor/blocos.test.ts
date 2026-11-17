@@ -32,6 +32,34 @@ describe("dividirEmBlocos", () => {
   });
 });
 
+describe("corte sem cabeçalho (documento longo sem títulos)", () => {
+  const paragrafos = (n: number) =>
+    Array.from({ length: n }, (_, i) => `Parágrafo ${i + 1} ${"x".repeat(40)}`).join("\n\n");
+
+  it("passado 4× o tamanho, corta em linha em branco antes de um parágrafo", () => {
+    const md = paragrafos(80);
+    const blocos = dividirEmBlocos(md, 100);
+    expect(blocos.length).toBeGreaterThan(5);
+    expect(blocos.map((b) => b.texto).join("\n")).toBe(md);
+    for (const b of blocos.slice(0, -1)) expect(b.texto.length).toBeLessThan(100 * 5);
+    // cada bloco começa no parágrafo da linha dita
+    for (const b of blocos) expect(md.split("\n")[b.linhaInicial - 1]).toMatch(/^Parágrafo \d+/);
+  });
+
+  it("não corta antes de item de lista, linha recuada, tabela nem dentro de região marcada", () => {
+    const lista = Array.from({ length: 60 }, (_, i) => `- item ${i} ${"y".repeat(30)}\n\n    continuação ${i}`).join(
+      "\n\n",
+    );
+    expect(dividirEmBlocos(lista, 50)).toHaveLength(1);
+    const tabela = Array.from({ length: 60 }, (_, i) => `| ${i} | ${"z".repeat(30)} |`).join("\n\n");
+    expect(dividirEmBlocos(tabela, 50)).toHaveLength(1);
+    const regiao = ["<!-- redacao-nao-vigente -->", "", paragrafos(30), "", "<!-- /redacao-nao-vigente -->"].join("\n");
+    expect(dividirEmBlocos(regiao, 50)).toHaveLength(1);
+    // depois do fechamento, o corte volta a valer
+    expect(dividirEmBlocos(`${regiao}\n\n${paragrafos(30)}`, 50).length).toBeGreaterThan(1);
+  });
+});
+
 describe("blocoDaLinha e ordemDeMontagem", () => {
   it("acha o bloco da linha e monta a partir dele, alternando os vizinhos", () => {
     const blocos = dividirEmBlocos(["# A", "a", "# B", "b", "# C", "c"].join("\n"), 1);

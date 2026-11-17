@@ -13,12 +13,11 @@ import type { LinkLido } from "@simplifica-if/contratos-app";
 import { CheckIcon, ClipboardCopyIcon, ExternalLinkIcon, LocateFixedIcon } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { useApi } from "../contexto.tsx";
-import { Markdown } from "../components/Markdown.tsx";
+import { abrirFora, Markdown } from "../components/Markdown.tsx";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx";
 import { Badge } from "../components/ui/badge.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
-import { abrirExterno } from "../ponte-desktop.ts";
 import { dispositivoPorExtenso, nomeCurtoLink } from "../tarefas/textos.ts";
 import { type Carga, useCarga } from "./carga.ts";
 import { Documento } from "./Documento.tsx";
@@ -27,6 +26,7 @@ import {
   citacaoDoDispositivo,
   citacaoDoPpc,
   dataCurta,
+  datasDoCabecalho,
   nomeDaRelacao,
   type Relacao,
   selosDaNorma,
@@ -60,7 +60,7 @@ const TIPOS: Readonly<Record<LinkLido["tipo"], string>> = {
 
 function Carregando({ texto = "Lendo na base…" }: { readonly texto?: string }) {
   return (
-    <p className="flex items-center gap-2 text-muted-foreground text-sm">
+    <p role="status" className="flex items-center gap-2 text-muted-foreground text-sm">
       <Spinner size="sm" /> {texto}
     </p>
   );
@@ -240,7 +240,7 @@ function LeitorNorma({
   return (
     <ComCarga carga={ficha} titulo="Não foi possível ler esta norma">
       {({ dados }) => {
-        const { norma, vigencia, relacoes, sucessoras, transicoes } = dados;
+        const { norma, relacoes, sucessoras, transicoes } = dados;
         const selos = selosDaNorma(dados);
         const lido = dispositivo.fase === "lido" ? dispositivo.valor.dados.dispositivos[0] : undefined;
         const citacao =
@@ -259,7 +259,7 @@ function LeitorNorma({
               <p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">Norma</p>
               <h2 className="font-semibold text-lg leading-snug">{norma.titulo}</h2>
               {norma.ementa ? <p className="text-muted-foreground text-sm">{norma.ementa}</p> : null}
-              <div className="flex flex-wrap gap-1.5" aria-label="Situação">
+              <div role="group" className="flex flex-wrap gap-1.5" aria-label="Situação">
                 {selos.map((selo) => (
                   <Badge key={selo.rotulo} variant={selo.variante} size="lg" title={selo.detalhe}>
                     {selo.rotulo}
@@ -272,8 +272,9 @@ function LeitorNorma({
                 ))}
               </ul>
               <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
-                {norma.data_publicacao ? <span>Publicada em {dataCurta(norma.data_publicacao)}</span> : null}
-                {vigencia.inicio.data ? <span>Vigente desde {dataCurta(vigencia.inicio.data)}</span> : null}
+                {datasDoCabecalho(norma, documento.fase === "lido" ? documento.valor.dados.datas : null).map((d) => (
+                  <span key={d}>{d}</span>
+                ))}
                 {norma.fonte_oficial ? (
                   <a
                     href={norma.fonte_oficial}
@@ -282,7 +283,7 @@ function LeitorNorma({
                     className="nao-imprimir inline-flex items-center gap-1 font-semibold text-primary underline underline-offset-2"
                     onClick={(evento) => {
                       evento.preventDefault();
-                      void abrirExterno(norma.fonte_oficial!);
+                      abrirFora(norma.fonte_oficial!);
                     }}
                   >
                     Ver na fonte oficial <ExternalLinkIcon aria-hidden className="size-3.5" />

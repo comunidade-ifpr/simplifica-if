@@ -8,7 +8,7 @@
  * norma só rola até ele, sem montar o texto de novo.
  */
 import { ArrowLeftIcon, ArrowRightIcon, PrinterIcon, XIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { type Historico, linkAtual, podeAvancar, podeVoltar } from "../leitor/historico.ts";
 import { ContextoMemoria, MemoriaLeitor } from "../leitor/carga.ts";
 import { ConteudoLink } from "../leitor/Leitor.tsx";
@@ -30,12 +30,22 @@ export function PainelLeitura({
 }) {
   const [memoria] = useState(() => new MemoriaLeitor());
   const link = linkAtual(historico);
+  // O foco vem para o painel quando ele abre ou quando um link de fora dele (um chip da conversa) troca o
+  // que se lê; a navegação de dentro (voltar, uma relação) deixa o foco onde está.
+  const painel = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const elemento = painel.current;
+    if (link === undefined || elemento === null || elemento.contains(document.activeElement)) return;
+    elemento.focus({ preventScroll: true });
+  }, [link]);
   if (link === undefined) return null;
   const documento = link.split("#")[0]!;
   return (
     <aside
+      ref={painel}
+      tabIndex={-1}
       aria-label="Painel de leitura"
-      className="painel-leitura flex h-full w-full flex-col border-border border-l bg-card text-card-foreground"
+      className="painel-leitura flex h-full outline-none w-full flex-col border-border border-l bg-card text-card-foreground"
     >
       <header className="nao-imprimir flex items-center gap-1 border-border border-b px-3 py-2">
         <Button

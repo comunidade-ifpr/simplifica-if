@@ -67,14 +67,19 @@ export function useCarga<T>(
   const memoria = use(ContextoMemoria);
   const entrada = chave === null ? null : memoria.obter(chave, carregar);
   const [, atualizar] = useReducer((n: number) => n + 1, 0);
+  // A fase vista nesta renderização: se a leitura terminar entre a renderização e o efeito, o efeito
+  // ainda encadeia o `then` (que roda logo, com a promessa já resolvida) e a tela sai de "Lendo na base…".
+  const carregandoNoRender = entrada !== null && entrada.estado.fase === "carregando";
   useEffect(() => {
-    if (entrada === null || entrada.estado.fase !== "carregando") return;
+    if (entrada === null || !carregandoNoRender) return;
     let vivo = true;
-    void entrada.promessa.then(() => vivo && atualizar());
+    void entrada.promessa.then(() => {
+      if (vivo) atualizar();
+    });
     return () => {
       vivo = false;
     };
-  }, [entrada]);
+  }, [entrada, carregandoNoRender]);
   const tentarDeNovo = () => {
     if (chave === null) return;
     memoria.esquecer(chave);

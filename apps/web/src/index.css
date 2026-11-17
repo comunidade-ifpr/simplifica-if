@@ -328,6 +328,28 @@
   overflow-anchor: none;
 }
 
+/* Redação anterior, não vigente, e texto fora do ato publicado (`leitor/remarkLeitor.ts`): esmaecidos, com o rótulo. */
+.regiao-marcada {
+  border-left: 3px dashed var(--border);
+  color: var(--muted-foreground);
+  opacity: 0.8;
+  padding-left: 0.75em;
+
+  & > * + * {
+    margin-top: 0.5em;
+  }
+  & .rotulo-regiao {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  & s,
+  & del {
+    text-decoration: line-through;
+  }
+}
+
 /* O trecho citado, destacado. */
 mark.trecho-citado {
   background: color-mix(in srgb, #ffd54f 55%, transparent);

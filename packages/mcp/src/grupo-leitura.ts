@@ -19,7 +19,7 @@ import * as Schema from "effect/Schema";
 import { ErroDeLeitura } from "./contratos.ts";
 import { EntradaDocumento, SaidaDocumento } from "./documento.ts";
 
-export type { Ancora, DadosDocumento } from "./documento.ts";
+export type { Ancora, DadosDocumento, DatasDoAto } from "./documento.ts";
 import { buscarNorma } from "./ferramentas/buscar-norma.ts";
 import { buscarSecoes } from "./ferramentas/buscar-secoes.ts";
 import { fichaCurso } from "./ferramentas/ficha-curso.ts";
