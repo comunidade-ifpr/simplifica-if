@@ -1,5 +1,6 @@
 {
   "name": "@simplifica-if/effect-codex-app-server",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "exports": {

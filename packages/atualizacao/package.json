@@ -1,5 +1,6 @@
 {
   "name": "@simplifica-if/atualizacao",
+  "license": "MIT",
   "version": "0.1.0",
   "private": true,
   "description": "Atualização da base e das skills (M1.10): manifesto do canal, minisign, pacotes zstd e o serviço que confere, baixa e troca",

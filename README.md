@@ -79,4 +79,5 @@ Para detalhes de desenvolvimento das skills, veja `base-conhecimento/docs/desenv
 
 ## Licença
 
-Conteúdo curatorial publicado sob CC BY 4.0. Textos normativos oficiais podem estar sujeitos ao regime próprio de documentos públicos; mantenha atribuição e consulte as fontes oficiais.
+- **Código** (aplicativo, pacotes, scripts e skills): licença MIT, em [`LICENSE`](LICENSE). Partes copiadas do T3 Code mantêm o aviso MIT de origem nos arquivos `NOTICE` e `LICENSE-T3` de cada pasta.
+- **Conteúdo curatorial** (`base-conhecimento/` e `dados/`): CC BY 4.0, em [`LICENSE-DADOS`](LICENSE-DADOS). Textos normativos oficiais podem estar sujeitos ao regime próprio de documentos públicos; mantenha atribuição e consulte as fontes oficiais.

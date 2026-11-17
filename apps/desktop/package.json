@@ -1,5 +1,6 @@
 {
   "name": "@simplifica-if/desktop",
+  "license": "MIT",
   "version": "0.1.0",
   "private": true,
   "description": "Simplifica IF: o app desktop (Electron) que inicia o servidor local e mostra a interface",

@@ -1,5 +1,6 @@
 {
   "name": "@simplifica-if/effect-acp",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "exports": {

@@ -141,7 +141,7 @@ function escreverManifesto(): void {
     version: pacote.version,
     description: pacote.description,
     author: "Instituto Federal do Paraná",
-    license: "UNLICENSED",
+    license: "MIT",
     private: true,
     main: "main.cjs",
   };

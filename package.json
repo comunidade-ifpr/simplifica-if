@@ -1,5 +1,6 @@
 {
   "name": "simplifica-if",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "scripts": {
