@@ -467,3 +467,95 @@ it('Configurações antes do aviso aceito: sem "Entrar" até o "Entendi"', async
   await expect.element(gemini.getByRole("button", { name: "Entrar" })).toBeVisible();
   await expect.element(aviso.getByRole("button", { name: "Entendi" })).not.toBeInTheDocument();
 });
+
+it("Caixa de pedido: o cartão flutuante no Início e na conversa, Enter, Shift+Enter e o botão redondo", async () => {
+  const escolherAnexo = vi.fn(async (_extensoes?: ReadonlyArray<string>) => servidor.parecer);
+  window.simplifica = {
+    conexao: async () => ({ urlServidor: servidor.urlServidor, token: servidor.token }),
+    escolherAnexo,
+  } satisfies PonteDesktop;
+  await page.viewport(1100, 760);
+  await using _app = await montarApp(servidor);
+  // Troca o tema e espera as transições de cor terminarem, para a captura não sair no meio delas.
+  const escuro = async (ligado: boolean) => {
+    document.documentElement.classList.toggle("dark", ligado);
+    await Promise.all(document.getAnimations().map((animacao) => animacao.finished.catch(() => undefined)));
+  };
+  const nosDoisTemas = async (nome: string) => {
+    await escuro(false);
+    await capturar(`${nome}-claro`);
+    await escuro(true);
+    await capturar(`${nome}-escuro`);
+    await escuro(false);
+  };
+
+  // Início: o campo, o clipe com o lembrete, a IA e o botão de enviar apagado com o campo vazio.
+  const caixa = page.getByRole("textbox", { name: "O que você precisa hoje?" });
+  await expect.element(caixa).toHaveAttribute("placeholder", "O que você precisa hoje?");
+  await expect.element(caixa).toHaveAccessibleDescription(/Enter envia; Shift\+Enter quebra a linha/);
+  const formulario = page.getByRole("form", { name: "O que você precisa hoje?" });
+  const enviar = formulario.getByRole("button", { name: "Enviar" });
+  await expect.element(enviar).toBeDisabled();
+  await expect.element(formulario.getByRole("button", { name: /Anexar arquivo/ })).toBeVisible();
+  await expect.element(formulario.getByText(/Não anexe/)).toBeVisible();
+  await expect.element(formulario.getByLabelText("IA")).toBeVisible();
+  // Shift+Enter quebra a linha, sem enviar; o botão acende.
+  await caixa.click();
+  await userEvent.keyboard("Quais normas tratam{Shift>}{Enter}{/Shift}do estágio?");
+  await expect.element(caixa).toHaveValue("Quais normas tratam\ndo estágio?");
+  await expect.element(enviar).toBeEnabled();
+  await formulario.getByRole("button", { name: /Anexar arquivo/ }).click();
+  await expect.element(formulario.getByRole("list", { name: "Arquivos anexados" })).toBeVisible();
+  semIngles();
+  await nosDoisTemas("caixa-inicio");
+
+  // Enter envia e abre a conversa; a caixa da conversa é o mesmo cartão, com "Mensagem".
+  await caixa.click();
+  await userEvent.keyboard("{Enter}");
+  const mensagens = page.getByRole("log", { name: "Mensagens" });
+  await expect.element(mensagens.getByText(/Quais normas tratam/)).toBeVisible();
+  const mensagem = page.getByRole("textbox", { name: "Mensagem" });
+  await expect.element(mensagem).toHaveAttribute("placeholder", "O que você precisa?");
+  const enviarNaConversa = page.getByRole("button", { name: "Enviar" });
+  await expect.element(enviarNaConversa).toBeVisible();
+  await expect.element(enviarNaConversa).toBeDisabled();
+  for (const pergunta of ["E a carga horária mínima?", "E o estágio no integrado?"]) {
+    await expect.element(page.getByRole("button", { name: "Interromper" })).not.toBeInTheDocument();
+    await mensagem.fill(pergunta);
+    await userEvent.keyboard("{Enter}");
+    await expect.element(mensagens.getByText(pergunta)).toBeVisible();
+  }
+  await expect.element(page.getByRole("button", { name: "Interromper" })).not.toBeInTheDocument();
+  await expect.element(mensagem).toHaveValue("");
+
+  // A conversa rola por baixo do cartão: rolada até o fim, a última mensagem fica acima dele.
+  const cartao = document.querySelector<HTMLElement>("[data-caixa-pedido]")!;
+  const ultima = mensagens.element().lastElementChild!;
+  const rolagem = cartao.closest<HTMLElement>(".overflow-y-auto")!;
+  expect(rolagem.scrollHeight).toBeGreaterThan(rolagem.clientHeight);
+  rolagem.scrollTop = rolagem.scrollHeight;
+  await vi.waitFor(() =>
+    expect(ultima.getBoundingClientRect().bottom).toBeLessThanOrEqual(cartao.getBoundingClientRect().top),
+  );
+  // Flutuante: com margem dos lados e de baixo dentro da coluna.
+  const area = rolagem.getBoundingClientRect();
+  const caixaConversa = cartao.getBoundingClientRect();
+  expect(area.bottom - caixaConversa.bottom).toBeGreaterThanOrEqual(12);
+  expect(caixaConversa.left - area.left).toBeGreaterThanOrEqual(12);
+  semIngles();
+  await nosDoisTemas("caixa-conversa");
+
+  // Na largura mínima da janela (800 × 560), o cartão cabe sem rolagem lateral.
+  await page.viewport(800, 560);
+  await vi.waitFor(() => expect(cartao.getBoundingClientRect().right).toBeLessThanOrEqual(window.innerWidth));
+  expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(window.innerWidth);
+  await nosDoisTemas("caixa-conversa-estreita");
+
+  // Durante a resposta, o botão vira "Interromper".
+  await mensagem.fill("Uma resposta demorada");
+  await userEvent.keyboard("{Enter}");
+  await expect.element(page.getByText(/Esta resposta vai demorar/)).toBeVisible();
+  await page.getByRole("button", { name: "Interromper" }).click();
+  await expect.element(page.getByText("Resposta interrompida.")).toBeVisible();
+  await expect.element(page.getByRole("button", { name: "Enviar" })).toBeVisible();
+});
