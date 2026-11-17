@@ -58,7 +58,7 @@ node scripts/gerar_tipos_schemas.ts --check
 pnpm exec vp test run .agents/skills/revisar-ppc
 ```
 
-Os JSON Schemas de `base-conhecimento/schemas/` são a fonte do formato dos JSONs institucionais e de catálogos. O validador os aplica com o ajv, e os tipos TypeScript usados pelo exportador e pelo validador ficam em `scripts/base/tipos-schemas.ts`, gerado a partir deles. Depois de alterar um schema, rode `node scripts/gerar_tipos_schemas.ts` e `pnpm typecheck`.
+Os JSON Schemas de `base-conhecimento/schemas/` são a fonte do formato dos manifestos e índices (institucional, catálogos, CNCT, PPCs); o validador os aplica, e os tipos TypeScript do validador ficam em `scripts/base/tipos-schemas.ts`, gerado a partir deles (depois de alterar um desses schemas, rode `node scripts/gerar_tipos_schemas.ts` e `pnpm typecheck`). Os registros institucionais (campus, curso, processo seletivo, edital, oferta, conselho, reunião e processos SEI) têm o formato no Effect Schema de `scripts/dados/`; os JSON Schemas públicos deles, em `base-conhecimento/schemas/registros/`, são gerados daí pelo `node scripts/gerar_base.ts` e conferidos pelo `gerar_base.ts --check` e pelo `validar_base.ts`.
 
 ## SEI e sincronização com o Notion
 

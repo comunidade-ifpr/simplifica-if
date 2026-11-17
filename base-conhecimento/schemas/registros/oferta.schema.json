@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://simplifica-if.github.io/base-conhecimento/schemas/registros/oferta.schema.json",
+  "title": "Oferta de ingresso do IFPR",
+  "description": "Formato de institucional/ifpr/ofertas/<processo_seletivo_id>/<oferta_id>.json. Gerado do Effect Schema de scripts/dados/ por scripts/gerar_base.ts; não edite à mão. As regras entre registros (chaves e relações) ficam na validação da base.",
+  "type": "object",
+  "properties": {
+    "oferta_id": {
+      "type": "string"
+    },
+    "processos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "curso_nome": {
+      "type": "string"
+    },
+    "tipo_oferta": {
+      "type": "string"
+    },
+    "vagas": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    "url_fonte": {
+      "type": "string"
+    },
+    "pagina_fonte": {
+      "type": "integer",
+      "minimum": -9007199254740991,
+      "maximum": 9007199254740991
+    },
+    "trecho_fonte": {
+      "type": "string"
+    },
+    "forma_oferta": {
+      "type": "string"
+    },
+    "status_curadoria": {
+      "type": "string"
+    },
+    "revisado_em": {
+      "type": "string"
+    },
+    "modalidade": {
+      "type": "string"
+    },
+    "turno": {
+      "type": "string"
+    },
+    "turno_padronizado": {
+      "type": "string",
+      "enum": [
+        "matutino",
+        "vespertino",
+        "noturno",
+        "integral",
+        "diurno",
+        "matutino-com-contraturno",
+        "vespertino-com-contraturno"
+      ]
+    },
+    "turno_nota": {
+      "type": "string"
+    },
+    "campi": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "cursos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "editais": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "campus_id_original": {
+      "type": "string"
+    },
+    "curso_slug_original": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "oferta_id",
+    "processos",
+    "curso_nome",
+    "tipo_oferta",
+    "url_fonte"
+  ],
+  "additionalProperties": false
+}

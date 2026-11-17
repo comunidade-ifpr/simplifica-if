@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://simplifica-if.github.io/base-conhecimento/schemas/registros/curso.schema.json",
+  "title": "Curso do IFPR",
+  "description": "Formato de institucional/ifpr/cursos/<campus_id>/<curso_slug>.json. Gerado do Effect Schema de scripts/dados/ por scripts/gerar_base.ts; não edite à mão. As regras entre registros (chaves e relações) ficam na validação da base.",
+  "type": "object",
+  "properties": {
+    "campus_id": {
+      "type": "string"
+    },
+    "curso_slug": {
+      "type": "string"
+    },
+    "nome": {
+      "type": "string"
+    },
+    "nivel": {
+      "type": "string"
+    },
+    "forma_oferta": {
+      "type": "string"
+    },
+    "modalidade": {
+      "type": "string"
+    },
+    "situacao": {
+      "type": "string"
+    },
+    "pagina_oficial": {
+      "type": "string"
+    },
+    "cnct_id": {
+      "type": "string",
+      "pattern": "^cnct:(?!catalogo$)[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "cnct_ausencia": {
+      "type": "string"
+    },
+    "suap": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "codigo": {
+          "type": "string"
+        },
+        "vagas": {
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "coletado_em": {
+          "type": "string"
+        },
+        "atualizado_em": {
+          "type": "string"
+        },
+        "matrizes": {
+          "type": "object",
+          "properties": {
+            "resumo": {
+              "type": "string"
+            },
+            "urls": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "carga_horaria_comum_h": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            },
+            "situacao": {
+              "type": "string"
+            },
+            "coletado_em": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "ppc": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "markdown_path": {
+          "type": "string"
+        },
+        "ano_documento": {
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        "vagas": {
+          "type": "string"
+        },
+        "trecho_vagas": {
+          "type": "string"
+        },
+        "periodicidade_vagas": {
+          "type": "string"
+        },
+        "curadoria_ano": {
+          "type": "string"
+        },
+        "data_curadoria_ano": {
+          "type": "string"
+        },
+        "curadoria_vagas": {
+          "type": "string"
+        },
+        "data_curadoria_vagas": {
+          "type": "string"
+        },
+        "observacoes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "campus_id",
+    "curso_slug",
+    "nome"
+  ],
+  "additionalProperties": false
+}

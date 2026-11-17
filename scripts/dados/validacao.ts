@@ -19,6 +19,7 @@ import {
   type CursoLocal,
 } from "./institucional.ts";
 import { validarProcessosSei } from "./processos-sei.ts";
+import { verificarSchemasRegistros } from "./schemas-publicos.ts";
 
 /** IDs `cnct:<slug>` dos cursos de `catalogos/cnct/index.json`. */
 export function idsCnct(raizBase: string = RAIZ_BASE): Set<string> {
@@ -82,6 +83,7 @@ export function validarDadosInstitucionais(
     erros.push(...conselhos.erros);
     erros.push(...auditarConselhos(conselhos.dados, new Set(dados.campi.map((campus) => campus.campus_id)), cursos));
     erros.push(...verificarIndiceConselhos(conselhos.dados, raiz));
+    erros.push(...verificarSchemasRegistros());
     reunioes = conselhos.dados.reunioes.length;
   }
   const total =

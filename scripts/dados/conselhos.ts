@@ -23,10 +23,16 @@ const PREFIXO = `institucional/ifpr/${PASTA_CONSELHOS}`;
 
 const texto = Schema.optional(Schema.String);
 const data = Schema.String.check(
-  Schema.makeFilter((valor: string) => /^\d{4}-\d{2}-\d{2}$/.test(valor), { message: "deve ser AAAA-MM-DD" }),
+  Schema.makeFilter((valor: string) => /^\d{4}-\d{2}-\d{2}$/.test(valor), {
+    message: "deve ser AAAA-MM-DD",
+    toJsonSchema: () => ({ pattern: String.raw`^\d{4}-\d{2}-\d{2}$` }),
+  }),
 );
 const https = Schema.String.check(
-  Schema.makeFilter((valor: string) => valor.startsWith("https://"), { message: "deve ser URL https://" }),
+  Schema.makeFilter((valor: string) => valor.startsWith("https://"), {
+    message: "deve ser URL https://",
+    toJsonSchema: () => ({ pattern: "^https://" }),
+  }),
 );
 
 export const esquemaConselho = Schema.Struct({

@@ -56,6 +56,7 @@ const cnctId = Schema.optional(
   Schema.String.check(
     Schema.makeFilter((valor: string) => ehIdCnct(valor) && valor !== "cnct:catalogo", {
       message: "deve ser cnct:<slug do curso no CNCT>",
+      toJsonSchema: () => ({ pattern: "^cnct:(?!catalogo$)[a-z0-9]+(?:-[a-z0-9]+)*$" }),
     }),
   ),
 );
