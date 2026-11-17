@@ -15,7 +15,7 @@
 import * as NodeCrypto from "node:crypto";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { lerInfoBanco } from "./local.ts";
+import { type InfoBanco, lerInfoBanco } from "./local.ts";
 import {
   arquivoManifesto,
   type Canal,
@@ -39,6 +39,9 @@ export interface SkillDaFabrica {
   readonly arquivos: ReadonlyArray<ArquivoSkill>;
 }
 
+/** O `app_minimo` de quando a fábrica não recebe `--app-minimo`. */
+export const APP_MINIMO_PADRAO = "0.1.0";
+
 export interface OpcoesCanal {
   readonly saida: string;
   readonly canal: Canal;
@@ -48,6 +51,10 @@ export interface OpcoesCanal {
   /** Bancos de versões anteriores: um patch de cada. */
   readonly anteriores?: ReadonlyArray<string>;
   readonly skills?: ReadonlyArray<SkillDaFabrica>;
+  /**
+   * A primeira versão do app que pode usar esta base. Obrigatória (diferente de `APP_MINIMO_PADRAO`)
+   * quando a base sobe o esquema em relação a uma das `anteriores`: o app antigo recusaria a base nova.
+   */
   readonly appMinimo: string;
   readonly novidades?: ReadonlyArray<Novidade>;
   readonly chave: ChaveSecreta;
@@ -66,6 +73,7 @@ export function gerarCanal(opcoes: OpcoesCanal): CanalGerado {
   const info = lerInfoBanco(opcoes.banco);
   if (info === null) throw new Error(`não foi possível ler o meta de ${opcoes.banco}`);
   const versao = info.versao;
+  conferirEsquema(info, opcoes.anteriores ?? [], opcoes.appMinimo);
   NodeFS.mkdirSync(opcoes.saida, { recursive: true });
   const arquivos: string[] = [];
   const gravar = (nome: string, dados: Uint8Array | string) => {
@@ -125,6 +133,23 @@ export function gerarCanal(opcoes: OpcoesCanal): CanalGerado {
   const assinado = assinarManifesto(manifesto, opcoes.chave, opcoes.agora ?? new Date());
   for (const [nome, conteudo] of assinado) gravar(nome, conteudo);
   return { manifesto, arquivos };
+}
+
+/**
+ * A base que muda de esquema só sai com `appMinimo` informado: o app de esquema antigo baixaria a base
+ * e a recusaria na conferência (e, sem isso, quem não atualiza o app ficaria sem base nova sem aviso).
+ * Com o `app_minimo` no manifesto, o app antigo mostra "atualize o app" (`remoto.ts`).
+ */
+export function conferirEsquema(nova: InfoBanco, anteriores: ReadonlyArray<string>, appMinimo: string): void {
+  if (appMinimo !== APP_MINIMO_PADRAO) return;
+  for (const caminho of anteriores) {
+    const anterior = lerInfoBanco(caminho);
+    if (anterior !== null && anterior.versaoEsquema !== nova.versaoEsquema) {
+      throw new Error(
+        `a base ${nova.versao} é do esquema ${nova.versaoEsquema ?? "?"}, e a ${anterior.versao} era do ${anterior.versaoEsquema ?? "?"}: informe --app-minimo com a primeira versão do app que lê o esquema ${nova.versaoEsquema ?? "?"} (o app antigo recusaria a base)`,
+      );
+    }
+  }
 }
 
 /** O manifesto e a assinatura, prontos para gravar: `[[nome, texto], [nome.minisig, assinatura]]`. */
