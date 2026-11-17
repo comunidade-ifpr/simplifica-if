@@ -7,20 +7,22 @@
  *   com dispositivo, `lerDispositivos` (o texto com o caput, para "Copiar citação");
  * - **ppc** (com ou sem `#secao`): `lerPpc` (curso, campus e o índice das seções), `lerDocumento` e,
  *   com seção, `lerSecao` (para a citação);
- * - **curso, cnct, campus, ficha**: o texto do `lerLink`, o mesmo do `resources/read` do MCP.
+ * - **curso, cnct, campus, ficha**: as telas próprias de `Fichas.tsx` (do Explorar); o texto do `lerLink`
+ *   (o mesmo do `resources/read` do MCP) fica para um link de outro tipo.
  */
 import type { LinkLido } from "@simplifica-if/contratos-app";
 import { CheckIcon, ClipboardCopyIcon, ExternalLinkIcon, LocateFixedIcon } from "lucide-react";
-import { type ReactNode, useState } from "react";
+import { useState } from "react";
 import { useApi } from "../contexto.tsx";
 import { abrirFora, Markdown } from "../components/Markdown.tsx";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx";
 import { Badge } from "../components/ui/badge.tsx";
 import { Button } from "../components/ui/button.tsx";
-import { Spinner } from "../components/ui/spinner.tsx";
 import { dispositivoPorExtenso, nomeCurtoLink } from "../tarefas/textos.ts";
-import { type Carga, useCarga } from "./carga.ts";
+import { useCarga } from "./carga.ts";
 import { Documento } from "./Documento.tsx";
+import { FichaCampus, FichaCnct, FichaCurso, FichaRevisao } from "./Fichas.tsx";
+import { BotaoLink, ComCarga, Secao } from "./pecas.tsx";
 import {
   citacaoDaNorma,
   citacaoDoDispositivo,
@@ -58,58 +60,6 @@ const TIPOS: Readonly<Record<LinkLido["tipo"], string>> = {
 
 /* ================================================================== peças */
 
-function Carregando({ texto = "Lendo na base…" }: { readonly texto?: string }) {
-  return (
-    <p role="status" className="flex items-center gap-2 text-muted-foreground text-sm">
-      <Spinner size="sm" /> {texto}
-    </p>
-  );
-}
-
-function Falha({
-  titulo,
-  erro,
-  aoTentar,
-}: {
-  readonly titulo: string;
-  readonly erro: string;
-  readonly aoTentar: () => void;
-}) {
-  return (
-    <Alert variant="error">
-      <AlertTitle>{titulo}</AlertTitle>
-      <AlertDescription>
-        <p>{erro}</p>
-        <Button className="mt-2" size="sm" variant="outline" onClick={aoTentar}>
-          Tentar de novo
-        </Button>
-      </AlertDescription>
-    </Alert>
-  );
-}
-
-/** Mostra a carga: o conteúdo quando lida, a espera e o erro com "Tentar de novo". */
-function ComCarga<T>({
-  carga,
-  titulo,
-  children,
-}: {
-  readonly carga: Carga<T> & { readonly tentarDeNovo: () => void };
-  readonly titulo: string;
-  readonly children: (valor: T) => ReactNode;
-}) {
-  switch (carga.fase) {
-    case "parada":
-      return null;
-    case "carregando":
-      return <Carregando />;
-    case "falhou":
-      return <Falha titulo={titulo} erro={carga.erro} aoTentar={carga.tentarDeNovo} />;
-    case "lido":
-      return children(carga.valor);
-  }
-}
-
 /** "Copiar citação": o texto pronto, ou `null` enquanto ele não chega. */
 function BotaoCopiar({ texto }: { readonly texto: string | null }) {
   const [estado, setEstado] = useState<"parado" | "copiada" | "falhou">("parado");
@@ -138,23 +88,6 @@ function BotaoCopiar({ texto }: { readonly texto: string | null }) {
   );
 }
 
-/** Um link `ifpr://` como botão que abre no leitor (relações, sucessoras, seções). */
-function BotaoLink({
-  link,
-  aoAbrirLink,
-  children,
-}: {
-  readonly link: string;
-  readonly aoAbrirLink: (link: string) => void;
-  readonly children?: ReactNode;
-}) {
-  return (
-    <button type="button" className="link-ifpr" data-link={link} onClick={() => aoAbrirLink(link)}>
-      <span>{children ?? nomeCurtoLink(link)}</span>
-    </button>
-  );
-}
-
 /** A faixa do trecho citado: o que está destacado e "Ir ao trecho". */
 function FaixaTrecho({ rotulo, alvo }: { readonly rotulo: string; readonly alvo: string }) {
   return (
@@ -170,15 +103,6 @@ function FaixaTrecho({ rotulo, alvo }: { readonly rotulo: string; readonly alvo:
         <LocateFixedIcon /> Ir ao trecho
       </Button>
     </div>
-  );
-}
-
-function Secao({ titulo, children }: { readonly titulo: string; readonly children: ReactNode }) {
-  return (
-    <section aria-label={titulo} className="space-y-1.5">
-      <h3 className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">{titulo}</h3>
-      {children}
-    </section>
   );
 }
 
@@ -488,5 +412,9 @@ export function ConteudoLink({
   if (partes?.tipo === "ppc") {
     return <LeitorPpc chave={partes.caminho} fragmento={partes.fragmento} aoAbrirLink={aoAbrirLink} />;
   }
+  if (partes?.tipo === "curso") return <FichaCurso id={partes.caminho} aoAbrirLink={aoAbrirLink} />;
+  if (partes?.tipo === "campus") return <FichaCampus id={partes.caminho} aoAbrirLink={aoAbrirLink} />;
+  if (partes?.tipo === "cnct") return <FichaCnct slug={partes.caminho} aoAbrirLink={aoAbrirLink} />;
+  if (partes?.tipo === "ficha") return <FichaRevisao id={partes.caminho} aoAbrirLink={aoAbrirLink} />;
   return <LeitorLink link={link} aoAbrirLink={aoAbrirLink} />;
 }

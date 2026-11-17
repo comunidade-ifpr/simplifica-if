@@ -28,7 +28,61 @@ const resto = [Schema.Record(Schema.String, Schema.Unknown)] as const;
 const solto = <Campos extends Schema.Struct.Fields>(campos: Campos) =>
   Schema.StructWithRest(Schema.Struct(campos), resto);
 
-export const esquemaCampus = solto({ campus_id: Schema.String, nome: Schema.String, site: texto });
+export const esquemaCampus = solto({
+  campus_id: Schema.String,
+  nome: Schema.String,
+  site: texto,
+  calendario_academico: texto,
+  horarios_url: texto,
+  horarios_coletado_em: texto,
+});
+
+export const esquemaConselho = solto({
+  conselho_id: Schema.String,
+  nome: Schema.String,
+  sigla: Schema.String,
+  situacao: texto,
+  pagina_oficial: texto,
+});
+
+export const esquemaReuniao = solto({
+  reuniao_id: Schema.String,
+  conselho_id: Schema.String,
+  titulo: Schema.String,
+  data: Schema.String,
+  tipo: texto,
+  situacao: texto,
+  fonte: texto,
+  documentos: Schema.Array(
+    solto({
+      documento_id: Schema.String,
+      tipo: Schema.String,
+      titulo: Schema.String,
+      numero: texto,
+      ano: inteiro,
+      data: texto,
+      resumo: texto,
+      url: texto,
+    }),
+  ),
+  itens_pauta: Schema.Array(
+    solto({
+      item_id: Schema.String,
+      ordem: Schema.Int,
+      titulo: Schema.String,
+      resumo: texto,
+      tipo_demanda: texto,
+      resultado: texto,
+      documento_id: texto,
+      processo_sei: texto,
+      campus_texto: texto,
+      campus_id: texto,
+      curso_texto: texto,
+      curso_id: texto,
+      palavras_chave: Schema.optionalKey(Schema.Array(Schema.String)),
+    }),
+  ),
+});
 
 export const esquemaCurso = solto({
   campus_id: Schema.String,
@@ -116,6 +170,10 @@ export interface DadosInstitucionaisKb {
   processos: Registro<typeof esquemaProcesso.Type>[];
   editais: Registro<typeof esquemaEdital.Type>[];
   ofertas: Registro<typeof esquemaOferta.Type>[];
+  /** `conselhos/<conselho>/conselho.json`. */
+  conselhos: Registro<typeof esquemaConselho.Type>[];
+  /** `conselhos/<conselho>/reunioes/*.json`. */
+  reunioes: Registro<typeof esquemaReuniao.Type>[];
 }
 
 const decodificarCampus = Schema.decodeUnknownResult(esquemaCampus);
@@ -123,6 +181,8 @@ const decodificarCurso = Schema.decodeUnknownResult(esquemaCurso);
 const decodificarProcesso = Schema.decodeUnknownResult(esquemaProcesso);
 const decodificarEdital = Schema.decodeUnknownResult(esquemaEdital);
 const decodificarOferta = Schema.decodeUnknownResult(esquemaOferta);
+const decodificarConselho = Schema.decodeUnknownResult(esquemaConselho);
+const decodificarReuniao = Schema.decodeUnknownResult(esquemaReuniao);
 
 function arquivosJson(dir: string): string[] {
   if (!NodeFS.existsSync(dir)) return [];
@@ -139,14 +199,17 @@ function colecao<T>(
   raiz: string,
   subdir: string,
   decodificar: (valor: unknown) => Result.Result<T, Schema.SchemaError>,
+  filtro: (arquivo: string) => boolean = () => true,
 ): Registro<T>[] {
-  return arquivosJson(NodePath.join(raiz, PASTA_INSTITUCIONAL, subdir)).map((arquivo) => {
-    const conteudo = NodeFS.readFileSync(arquivo, "utf-8");
-    const relativo = NodePath.relative(raiz, arquivo).split(NodePath.sep).join("/");
-    const resultado = decodificar(JSON.parse(conteudo));
-    if (Result.isFailure(resultado)) throw new Error(`${relativo}: ${formatarErro(resultado.failure)}`);
-    return { arquivo: relativo, conteudo, dados: resultado.success };
-  });
+  return arquivosJson(NodePath.join(raiz, PASTA_INSTITUCIONAL, subdir))
+    .filter(filtro)
+    .map((arquivo) => {
+      const conteudo = NodeFS.readFileSync(arquivo, "utf-8");
+      const relativo = NodePath.relative(raiz, arquivo).split(NodePath.sep).join("/");
+      const resultado = decodificar(JSON.parse(conteudo));
+      if (Result.isFailure(resultado)) throw new Error(`${relativo}: ${formatarErro(resultado.failure)}`);
+      return { arquivo: relativo, conteudo, dados: resultado.success };
+    });
 }
 
 export function carregarDadosInstitucionaisKb(raiz: string): DadosInstitucionaisKb {
@@ -156,12 +219,28 @@ export function carregarDadosInstitucionaisKb(raiz: string): DadosInstitucionais
     processos: colecao(raiz, "processos-seletivos", decodificarProcesso),
     editais: colecao(raiz, "editais", decodificarEdital),
     ofertas: colecao(raiz, "ofertas", decodificarOferta),
+    conselhos: colecao(raiz, "conselhos", decodificarConselho, (a) => NodePath.basename(a) === "conselho.json"),
+    reunioes: colecao(
+      raiz,
+      "conselhos",
+      decodificarReuniao,
+      (a) => a.split(NodePath.sep).slice(-2, -1)[0] === "reunioes",
+    ),
   };
 }
 
 /** Linha (desde 1) da primeira ocorrência da chave JSON `"chave":` no texto do arquivo, ou 1. */
 export function linhaDaChave(conteudo: string, chave: string): number {
   const indice = conteudo.indexOf(`"${chave}":`);
+  if (indice < 0) return 1;
+  let linha = 1;
+  for (let i = 0; i < indice; i += 1) if (conteudo.charCodeAt(i) === 10) linha += 1;
+  return linha;
+}
+
+/** Linha (desde 1) de `"chave": "valor"` no texto do arquivo (o registro dentro de uma lista), ou 1. */
+export function linhaDoValor(conteudo: string, chave: string, valor: string): number {
+  const indice = conteudo.indexOf(`"${chave}": ${JSON.stringify(valor)}`);
   if (indice < 0) return 1;
   let linha = 1;
   for (let i = 0; i < indice; i += 1) if (conteudo.charCodeAt(i) === 10) linha += 1;

@@ -28,6 +28,7 @@ import { extrairFatosPpc, type SecaoDoPpc } from "../fatos/ppc.ts";
 import {
   carregarDadosInstitucionaisKb,
   linhaDaChave,
+  linhaDoValor,
   matrizesDoResumo,
   PASTA_INSTITUCIONAL,
 } from "../institucional/dados.ts";
@@ -671,7 +672,68 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         campus_id: c.campus_id,
         nome: c.nome,
         site: c.site,
+        calendario_academico: c.calendario_academico,
+        horarios_url: c.horarios_url,
+        horarios_coletado_em: c.horarios_coletado_em,
         path: arquivo,
+      });
+    }
+    for (const { arquivo, dados: c } of dados.conselhos) {
+      ins.inserir("conselhos", {
+        id: c.conselho_id,
+        sigla: c.sigla,
+        nome: c.nome,
+        situacao: c.situacao,
+        pagina_oficial: c.pagina_oficial,
+        path: arquivo,
+      });
+    }
+    for (const { arquivo, conteudo, dados: r } of dados.reunioes) {
+      ins.inserir("conselhos_reunioes", {
+        id: r.reuniao_id,
+        conselho_id: r.conselho_id,
+        data: r.data,
+        titulo: r.titulo,
+        tipo: r.tipo,
+        situacao: r.situacao,
+        fonte: r.fonte,
+        path: arquivo,
+      });
+      r.documentos.forEach((d, ordem) => {
+        ins.inserir("conselhos_documentos", {
+          reuniao_id: r.reuniao_id,
+          ordem,
+          documento_id: d.documento_id,
+          tipo: d.tipo,
+          titulo: d.titulo,
+          numero: d.numero,
+          ano: d.ano,
+          data: d.data,
+          resumo: d.resumo,
+          url: d.url,
+          path: arquivo,
+          linha: linhaDoValor(conteudo, "documento_id", d.documento_id),
+        });
+      });
+      r.itens_pauta.forEach((i, ordem) => {
+        ins.inserir("conselhos_itens", {
+          reuniao_id: r.reuniao_id,
+          ordem,
+          item_id: i.item_id,
+          titulo: i.titulo,
+          resumo: i.resumo,
+          tipo_demanda: i.tipo_demanda,
+          resultado: i.resultado,
+          documento_id: i.documento_id,
+          processo_sei: i.processo_sei,
+          campus_texto: i.campus_texto,
+          campus_id: i.campus_id,
+          curso_texto: i.curso_texto,
+          curso_id: i.curso_id,
+          palavras_chave_json: json(i.palavras_chave ?? []),
+          path: arquivo,
+          linha: linhaDoValor(conteudo, "item_id", i.item_id),
+        });
       });
     }
     const cnct = decodificarCnctIndice(lerJson(NodePath.join(base, "catalogos", "cnct", "index.json")));

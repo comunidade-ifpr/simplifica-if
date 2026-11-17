@@ -9,7 +9,7 @@
  * enviar redondo, só com a seta, apagado com o campo vazio.
  */
 import { ArrowUpIcon, SquareIcon } from "lucide-react";
-import { type FormEvent, type KeyboardEvent, type ReactNode, useId } from "react";
+import { type FormEvent, type KeyboardEvent, type ReactNode, useEffect, useId, useRef } from "react";
 import { cn } from "../lib/utils.ts";
 import { Spinner } from "./ui/spinner.tsx";
 
@@ -31,6 +31,7 @@ export function CaixaPedido({
   direita,
   abaixo,
   linhas = 1,
+  focar = false,
   className,
 }: {
   /** O nome acessível do campo. */
@@ -54,10 +55,20 @@ export function CaixaPedido({
   readonly abaixo?: ReactNode;
   /** Altura mínima do campo, em linhas. */
   readonly linhas?: number;
+  /** Ao montar, o foco vai ao campo, com o cursor no fim do texto (o pedido que veio pronto do Explorar). */
+  readonly focar?: boolean;
   readonly className?: string;
 }) {
   const idDica = useId();
+  const campo = useRef<HTMLTextAreaElement>(null);
   const vazio = valor.trim() === "";
+  // quando `focar` liga (na montagem, com o pedido pronto): o texto digitado depois não move o cursor
+  useEffect(() => {
+    const elemento = campo.current;
+    if (!focar || elemento === null) return;
+    elemento.focus();
+    elemento.setSelectionRange(elemento.value.length, elemento.value.length);
+  }, [focar]);
   const enviar = () => {
     if (vazio || enviando || interromper !== undefined) return;
     aoEnviar();
@@ -85,6 +96,7 @@ export function CaixaPedido({
       )}
     >
       <textarea
+        ref={campo}
         aria-label={rotulo}
         aria-describedby={idDica}
         placeholder={placeholder}

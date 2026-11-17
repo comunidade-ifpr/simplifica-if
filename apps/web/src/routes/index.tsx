@@ -10,6 +10,9 @@
  * abaixo da data da base, depois que uma versão nova entra.
  *
  * A IA (instalar, entrar) fica em Configurações › Sua IA; aqui, só o aviso quando nenhuma está pronta.
+ *
+ * "Perguntar à IA sobre isto", nas páginas do Explorar, chega aqui com o pedido escrito (`?pedido=`): a
+ * caixa já vem com ele e com o foco, e nada é enviado sozinho.
  */
 import type { ListaPendencias, Provider } from "@simplifica-if/contratos-app";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
@@ -32,7 +35,16 @@ import { linhaDoPerfil, primeiroUsoPendente, usePerfil, usePreferencias } from "
 import { dataDaBase, tituloDoPedido } from "../tarefas/textos.ts";
 import { EsperaPreferencias } from "../components/EsperaPreferencias.tsx";
 
-export const Route = createFileRoute("/")({ component: Inicio });
+/** A busca da rota: o pedido que veio pronto ("Perguntar à IA sobre isto", do Explorar). */
+export interface BuscaInicio {
+  readonly pedido?: string;
+}
+
+export const Route = createFileRoute("/")({
+  component: Inicio,
+  validateSearch: (busca: Record<string, unknown>): BuscaInicio =>
+    typeof busca.pedido === "string" && busca.pedido !== "" ? { pedido: busca.pedido } : {},
+});
 
 /** Quantos cartões o Início mostra antes de "Ver todas". */
 const CARTOES_NO_INICIO = 4;
@@ -99,11 +111,11 @@ function AvisoSemIa() {
   );
 }
 
-function PedidoDoInicio() {
+function PedidoDoInicio({ pedido }: { readonly pedido: string | undefined }) {
   const api = useApi();
   const [estado, conversa] = useConversa();
   const navegar = useNavigate();
-  const [texto, setTexto] = useState("");
+  const [texto, setTexto] = useState(pedido ?? "");
   const [anexos, setAnexos] = useState<ReadonlyArray<string>>([]);
   const [provider, setProvider] = useState<Provider>(estado.provider);
   const [enviando, setEnviando] = useState(false);
@@ -133,6 +145,7 @@ function PedidoDoInicio() {
       rotuloFormulario="O que você precisa hoje?"
       placeholder="O que você precisa hoje?"
       linhas={2}
+      focar={pedido !== undefined}
       valor={texto}
       aoMudar={setTexto}
       aoEnviar={() => void enviar()}
@@ -206,6 +219,7 @@ function UltimaAnalise() {
 }
 
 function Inicio() {
+  const { pedido } = Route.useSearch();
   const conexao = useEstadoConexao();
   const { preferencias } = usePreferencias();
   const perfil = linhaDoPerfil(preferencias?.perfil);
@@ -238,7 +252,7 @@ function Inicio() {
           <>
             <AvisoBaseAtualizada />
             <AvisoSemIa />
-            <PedidoDoInicio />
+            <PedidoDoInicio key={pedido ?? ""} pedido={pedido} />
             <Tarefas />
             <section aria-labelledby="titulo-recentes" className="flex max-w-xl flex-col gap-2">
               <h2 id="titulo-recentes" className="font-semibold text-lg">
