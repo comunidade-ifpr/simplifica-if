@@ -24,7 +24,7 @@ O app confere só o manifesto (`beta.json` + `beta.json.minisig`); os pacotes s�
 - o `blake2b512` **não** existe no BoringSSL, e o minisign assina o BLAKE2b-512 do arquivo (`ED`, o padrão desde o 0.10). O `@noble/hashes` 1.8.0 (MIT, JS puro, auditado, já no lockfile pelo electron-builder) dá o BLAKE2b;
 - o formato do minisign é pequeno (três campos em base64), e uma dependência de verificação inteira traria outra implementação de Ed25519 sem ganho.
 
-O formato é o do minisign 0.11: a chave pública e a assinatura da fábrica servem no `minisign -V`, e uma chave criada com `minisign -G` serve na fábrica. Os testes conferem assinatura adulterada, outra chave, comentário confiável trocado e a assinatura legada.
+O formato é o do minisign. Conferido em 16/11/2026 contra o minisign 0.12 oficial (imagem Docker `jedisct1/minisign`): o app aceita uma assinatura dele (vetor versionado em `test/vetores/`, só a chave pública e a assinatura), o `minisign -V` aceita uma assinatura da fábrica, o `minisign -S` assina com uma chave cifrada gerada pela fábrica, e a fábrica lê uma chave cifrada do `minisign -G`. Só a assinatura com pré-hash (`ED`) é aceita; a legada (`Ed`) é recusada. A senha entra como os bytes UTF-8 digitados, sem normalização, como no minisign. Os testes conferem assinatura adulterada, outra chave, comentário confiável trocado e a legada recusada.
 
 O app também recusa: manifesto de outro canal, versão igual ou mais velha que a em uso (um manifesto antigo e bem assinado servido de novo não faz voltar), `app_minimo` maior que o app (avisa e não baixa), tamanho ou `sha256` diferentes, banco que não abre, não passa no `quick_check` ou tem outro esquema ou outra versão.
 
@@ -35,7 +35,10 @@ O app também recusa: manifesto de outro canal, versão igual ou mais velha que 
 3. **Troca:** na próxima abertura, ou em "Usar a versão nova agora", que reinicia o servidor pelo desktop. Enquanto uma análise de PPC, uma revisão com IA ou uma conversa respondendo roda, o servidor responde `adiada` e a troca fica para a próxima abertura.
 4. **Aviso "Base atualizada"** com as novidades da versão, até a pessoa fechar.
 5. **Voltar** troca a base atual pela anterior (ou pela empacotada) na abertura e marca a versão que saiu como recusada: ela não se baixa de novo, só uma mais nova.
-6. **Skills:** as do manifesto mais novas que as disponíveis, com `app_minimo` e `base_minima` atendidos. O `CatalogoSkills` lê a pasta empacotada e a baixada e fica, de cada skill, com a de `simplifica.versao` maior.
+6. **Skills:** as do manifesto mais novas que as disponíveis, com `app_minimo` e `base_minima` atendidos. A pasta nova (`skills/<versao>/`) leva também as skills baixadas antes que o manifesto ainda lista: ela substitui a atual inteira. O `CatalogoSkills` lê a pasta empacotada e a baixada e fica, de cada skill, com a de `simplifica.versao` maior.
+7. **Sem travar o servidor:** o zstd e o sha256 rodam no threadpool (`node:zlib` assíncrono e `crypto.subtle`), e o `quick_check` do banco baixado num `Worker` (`src/pesado.ts`).
+8. **Proxy:** o download usa o `fetch` do `undici` 8.12.4 (o mesmo que o servidor já leva) com o `EnvHttpProxyAgent`, que segue `HTTP_PROXY`, `HTTPS_PROXY` e `NO_PROXY`. No app, o desktop passa ao servidor a proxy que o Electron resolve para o feed (`session.resolveProxy`: a configuração do sistema, o PAC e o WPAD), sem sobrescrever as variáveis que já existem. O `fetch` global do Node não serve: ele só usa a proxy com `NODE_USE_ENV_PROXY` desde a partida, e no Node 24 do Electron o `http.setGlobalProxyFromEnv` não valeu para o `fetch` no teste.
+9. **Uma pasta, um processo:** o app e o `simplifica-mcp` usam pastas de atualização próprias (a do app é a `userData`; a do `simplifica-mcp`, a de `--pasta-atualizacao`). Como rede de proteção, cada download e cada troca tomam `atualizacao.trava` (criada com `wx`, com o pid; a trava de um processo morto se retoma), e quem não a consegue adia. Temporários de uma falha são apagados na hora, e as sobras de uma queda, na abertura seguinte.
 
 Fora do app, o `simplifica-mcp` faz o mesmo só com a base (`--pasta-atualizacao`, `packages/mcp/README.md`).
 
@@ -47,11 +50,15 @@ export SIMPLIFICA_MINISIGN_CHAVE=~/.simplifica-fabrica/simplifica-fabrica.key
 pnpm fabrica propor-novidades --de tmp/fabrica/bases/2026.11.13.sqlite --para tmp/kb.sqlite   # revisar e colar em novidades.yaml
 pnpm fabrica canal --canal beta --versao 2026.11.20 --repositorio dono/repo
 pnpm fabrica publicar --canal beta --versao 2026.11.20 --repositorio dono/repo              # mostra os comandos gh
+pnpm fabrica promover --de beta --para estavel --versao 2026.11.20                          # dias depois, sem erro confirmado
+pnpm fabrica publicar --canal estavel --versao 2026.11.20 --repositorio dono/repo [--executar]
 pnpm fabrica publicar --canal beta --versao 2026.11.20 --repositorio dono/repo --executar   # publica
 pnpm fabrica publicar-app --canal beta --versao 0.2.0 --repositorio dono/repo [--executar]  # depois do dist do desktop
 ```
 
-`canal` compila o `kb.sqlite` com `--versao`, `--commit` e `--canal`, recusa fonte fora de `FONTES_PUBLICAVEIS`, faz o pacote inteiro (zstd 19), um patch de cada uma das três versões anteriores guardadas em `tmp/fabrica/bases/` (e das dadas em `--anterior`), um pacote por skill do app e o manifesto assinado, com as novidades da versão (o `novidades.yaml` precisa ser só de acréscimos desde a última versão publicada). Promover para o estável é rodar `canal` e `publicar` de novo com `--canal estavel` e a mesma versão.
+`canal` (só o beta) compila o `kb.sqlite` **do commit**, não do disco: extrai as fontes por `git archive HEAD` numa pasta à parte (0,3 s; arquivo não rastreado, ignorado ou modificado fica de fora) e roda o `kb` dela, com `--versao` e `--commit` e **sem canal no `meta`** (o canal é do manifesto; a mesma base vale para os dois canais). Recusa fonte fora de `FONTES_PUBLICAVEIS`, faz o pacote inteiro (zstd 19), um patch de cada uma das três versões anteriores guardadas em `tmp/fabrica/bases/` (e das dadas em `--anterior`), um pacote por skill do app (também do commit) e o manifesto assinado, com as novidades da versão (o `novidades.yaml` do commit precisa ser só de acréscimos desde a última versão publicada).
+
+`promover` passa uma versão do beta ao estável sem recompilar: confere o manifesto do beta, troca o canal e o `gerado_em`, assina de novo e grava só `estavel.json` e a assinatura. Os pacotes são os mesmos, no mesmo release `base-<versao>`, com os mesmos sha256; por isso o canal precisa ter sido gerado com `--repositorio` (pacotes com `url`). O `publicar` de uma promoção só troca o manifesto no release do canal.
 
 Medido em 16/11/2026 com a base real (132 MB): pacote de 33 MB em cerca de 27 s; patch entre duas versões próximas de 10 a 14 KB; aplicar o patch no Node do Electron, 76 ms.
 
@@ -75,5 +82,5 @@ Um release fixo por canal, e não `latest/download/`: o `latest` é um só para 
 4. **App.** Gere os instaladores com a política preenchida (`pnpm --filter @simplifica-if/desktop dist`). A base e as skills passam a se atualizar sozinhas.
 5. **Assinatura de código (decisão em aberto 1).** A atualização do app fica desligada enquanto o app não for assinado (`app: "se-assinado"`). Para ligar:
    - macOS: certificado Developer ID Application, `mac.identity` no `empacotar.ts`, `hardenedRuntime: true`, notarização (`notarize` do electron-builder com `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`, `APPLE_TEAM_ID`). Sem isso, o Squirrel.Mac recusa instalar a versão nova; com isso, o `assinatura.json` do empacotamento passa a `true` (`CSC_LINK`);
-   - Windows: certificado (ou Azure Trusted Signing, como o T3) e `win.signtoolOptions`/`azureSignOptions`; o NSIS atualiza sem assinatura, mas o SmartScreen avisa a cada versão;
+   - Windows: certificado (ou Azure Trusted Signing, como o T3) e `win.signtoolOptions`/`azureSignOptions`. **Antes de ligar o updater no Windows, é obrigatório o `publisherName`** (em `win.signtoolOptions.publisherName` ou `azureSignOptions.publisherName`, como o T3): é com ele que o `electron-updater` confere a assinatura do instalador novo; sem ele, aceitaria um instalador de qualquer assinante. O NSIS atualiza sem assinatura, mas o SmartScreen avisa a cada versão;
    - depois, `pnpm fabrica publicar-app` a cada versão do app.
