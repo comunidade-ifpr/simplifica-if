@@ -10,7 +10,8 @@ import { IndicadorConexao } from "../components/IndicadorConexao.tsx";
 import { SeletorTema } from "../components/SeletorTema.tsx";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx";
 import { Button } from "../components/ui/button.tsx";
-import { mensagemDeErro } from "../conexao/erros.ts";
+import { DetalhesTecnicos } from "../components/AvisoErro.tsx";
+import { explicarErro } from "../conexao/erros.ts";
 
 export const Route = createRootRoute({
   component: Moldura,
@@ -43,7 +44,8 @@ function ErroDaTela({ error, reset }: ErrorComponentProps) {
         <Alert variant="error">
           <AlertTitle>Algo deu errado nesta tela</AlertTitle>
           <AlertDescription>
-            <p>{mensagemDeErro(error)}</p>
+            <p>{explicarErro(error).texto}</p>
+            <DetalhesTecnicos detalhe={explicarErro(error).detalhe} />
             <div>
               <Button size="sm" variant="outline" onClick={reset}>
                 Tentar de novo

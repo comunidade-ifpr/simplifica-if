@@ -160,9 +160,11 @@ export function ListaViva({ lista: id, aoApagar }: { readonly lista: string; rea
         </p>
         {uso > 0 ? (
           <p className="text-muted-foreground text-xs">
-            Uso das ações com IA nesta lista: {Math.round((lista.uso.entrada + lista.uso.saida) / 100) / 10} mil tokens
-            novos e {Math.round(lista.uso.cacheLeitura / 100) / 10} mil lidos do cache
-            {lista.uso.custoUsd > 0 ? ` (na API, US$ ${lista.uso.custoUsd.toFixed(3).replace(".", ",")})` : ""}.
+            Esta lista já usou a IA nas ações
+            {lista.uso.custoUsd > 0
+              ? ` (pago por uso, cerca de US$ ${lista.uso.custoUsd.toFixed(3).replace(".", ",")})`
+              : ""}
+            .
           </p>
         ) : null}
         <CopiaComentada arquivo={r.arquivoComentado} />

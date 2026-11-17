@@ -7,7 +7,7 @@
 import { beforeAll, expect, it, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 import type { ServidorTeste } from "../../vite.config.ts";
-import { iniciarServidorTeste, montarApp } from "../../test/navegador.tsx";
+import { achadosDaTela, iniciarServidorTeste, montarApp } from "../../test/navegador.tsx";
 
 let servidor: ServidorTeste;
 
@@ -37,7 +37,7 @@ it("do chip ao dispositivo destacado, copiar citação, navegar entre normas e a
   await using _app = await montarApp(servidor, "/conversa");
 
   await page.getByRole("radio", { name: "Claude" }).click();
-  await page.getByLabelText("Pasta de trabalho").fill(servidor.pasta);
+  await page.getByLabelText("Pasta da tarefa").fill(servidor.pasta);
   await page.getByRole("button", { name: "Começar conversa" }).click();
   const mensagem = page.getByRole("textbox", { name: "Mensagem" });
   await mensagem.fill("Abra no leitor o que a DCN pede sobre egressos");
@@ -81,6 +81,8 @@ it("do chip ao dispositivo destacado, copiar citação, navegar entre normas e a
   expect(copiado).toContain("BRASIL. Resolução CNE/CP nº 2/2026, de 11 de novembro de 2026.");
   expect(copiado).toContain("Disponível em: https://www.in.gov.br/dcnept-2026.");
   escrever.mockRestore();
+  // Nada em inglês nem jargão no leitor (M1.14).
+  expect(achadosDaTela()).toEqual([]);
 
   // Pelas relações, a norma revogada: outro selo; voltar e avançar.
   const relacoes = norma.getByRole("region", { name: "Relações com outras normas" });
@@ -113,4 +115,5 @@ it("do chip ao dispositivo destacado, copiar citação, navegar entre normas e a
   await ppc.getByRole("button", { name: "estagio-2" }).click();
   await expect.poll(() => document.getElementById("estagio-2")?.querySelector("mark.trecho-citado")).toBeTruthy();
   expect(document.getElementById("avaliacao-1")?.querySelector("mark.trecho-citado")).toBeNull();
+  expect(achadosDaTela()).toEqual([]);
 });

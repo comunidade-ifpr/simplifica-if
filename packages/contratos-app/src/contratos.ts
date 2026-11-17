@@ -175,7 +175,7 @@ export class PastaTrabalhoInvalida extends Schema.TaggedError<PastaTrabalhoInval
   pasta: Schema.String,
 }) {
   override get message(): string {
-    return `a pasta de trabalho precisa ser o caminho absoluto de uma pasta que existe: ${this.pasta}`;
+    return `a pasta da tarefa precisa ser o caminho completo de uma pasta que existe: ${this.pasta}`;
   }
 }
 

@@ -166,7 +166,7 @@ export function Documento({
 
   return (
     <AbrirLink value={aoAbrirLink}>
-      <div ref={conteiner} role="document" aria-label={rotulo} className="markdown documento-leitor">
+      <div ref={conteiner} role="document" aria-label={rotulo} className="markdown documento-leitor" data-conteudo>
         {blocos.map((bloco, i) =>
           visiveis.has(i) ? (
             <BlocoMarkdown

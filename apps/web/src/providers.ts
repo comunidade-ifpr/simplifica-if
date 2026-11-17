@@ -82,3 +82,67 @@ export function tamanhoBaixado(estado: EstadoInstalacao): string {
   const mb = (bytes: number) => formatoMb.format(bytes / 1_048_576);
   return estado.total === undefined ? `${mb(estado.baixados)} MB` : `${mb(estado.baixados)} de ${mb(estado.total)} MB`;
 }
+
+/**
+ * As mensagens de progresso da instalação e do login que vêm do código copiado do T3 (em
+ * `packages/motor/src/t3`, que mantém o inglês de origem para a sincronização), em português.
+ */
+const MENSAGENS_MOTOR: Readonly<Record<string, string>> = {
+  "Downloading Codex.": "Baixando o Codex.",
+  "Extracting Codex.": "Extraindo o Codex.",
+  "Checking Codex.": "Conferindo o Codex.",
+  "Checking Antigravity access and models.": "Conferindo o acesso ao Antigravity.",
+  "Starting Google sign-in.": "Abrindo o login do Google.",
+  "Checking credentials.": "Conferindo a conta.",
+  "Waiting for Google to finish sign-in.": "Esperando o Google concluir o login.",
+  "Open the Google sign-in link. If you are remote, paste the redirect URL here.": "Abra a página de login do Google.",
+  "Signed in with Google.": "Login no Google concluído.",
+  "Connected to Antigravity.": "Conectado ao Antigravity.",
+  "Signed out of Google.": "Você saiu da conta do Google.",
+  "Google sign-in was cancelled.": "O login no Google foi cancelado.",
+  "Google sign-in was cancelled by sign-out.": "O login no Google foi cancelado.",
+  "Sign-in is in progress in another client.": "Há um login em andamento em outra janela. Espere ele terminar.",
+};
+
+/** As falhas de instalação e de login do código copiado do T3, por tipo. */
+const FALHAS_MOTOR: ReadonlyArray<readonly [RegExp, string]> = [
+  [/eligible .*subscription/i, "Esta conta do Google não tem o plano que o Antigravity exige. Entre com outra conta."],
+  [/not approved/i, "O login no Google não foi aprovado. Comece o login de novo."],
+  [/expired/i, "O login demorou demais e expirou. Comece o login de novo."],
+  [
+    /network|could not reach|has not reached|interrupted|internet/i,
+    "Não foi possível falar com o serviço pela internet. Confira a conexão (na rede do campus, um proxy ou firewall pode bloquear) e tente de novo.",
+  ],
+  [/timed out|has not started after|did not respond/i, "O programa demorou demais para responder. Tente de novo."],
+  [/withdrawn/i, "Esta versão foi retirada pelo fabricante. Procure atualizações e tente de novo."],
+  [
+    /disk space|directory access/i,
+    "Não foi possível gravar a instalação. Confira o espaço livre no disco e tente de novo.",
+  ],
+  [
+    /incomplete|invalid|does not match|wrong version|unsafe|SHA-256|size/i,
+    "A instalação ficou incompleta. Instale de novo.",
+  ],
+  [/rejected|could not authenticate|credentials/i, "A conta não foi aceita. Comece o login de novo."],
+  [/in progress|already/i, "Já há uma operação em andamento. Espere ela terminar e tente de novo."],
+];
+
+/** Um texto em inglês, pelas palavras mais comuns (o resto já nasce em português no app). */
+const EM_INGLES =
+  /\b(the|is|was|could|not|this|your|with|account|requires|failed|please|try|check|sign-?in|sign-?out|download|install(ed|ation)?)\b/i;
+
+/**
+ * A `mensagem` de um estado de instalação, de login ou de detecção, como a pessoa a lê (M1.14): a de
+ * progresso pela tabela; a de falha em inglês pelo tipo, com o original em `detalhe`; a que já está em
+ * português, como veio.
+ */
+export function explicarMensagemMotor(mensagem: string): { readonly texto: string; readonly detalhe?: string } {
+  const conhecida = MENSAGENS_MOTOR[mensagem.trim()];
+  if (conhecida !== undefined) return { texto: conhecida };
+  if (!EM_INGLES.test(mensagem)) return { texto: mensagem };
+  const falha = FALHAS_MOTOR.find(([padrao]) => padrao.test(mensagem))?.[1];
+  return {
+    texto: falha ?? "Algo deu errado. Tente de novo; se continuar, veja os detalhes técnicos.",
+    detalhe: mensagem,
+  };
+}

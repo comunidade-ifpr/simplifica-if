@@ -4,16 +4,16 @@
  */
 import type { EstadoRevisaoIa, EstimativaRevisaoIa, ResultadoRevisaoPpc } from "@simplifica-if/contratos-app";
 
-const milhares = (n: number) => (n >= 1000 ? `${Math.round(n / 1000).toLocaleString("pt-BR")} mil` : String(n));
-
 /**
  * "Estimativa aproximada: cerca de 14% de uma janela de 5 horas do plano Pro (referência provisória)…".
- * Os tokens por critério são medidos; a janela, não (os providers não publicam o tamanho dela).
+ * Os tokens por critério são medidos; a janela, não (os providers não publicam o tamanho dela). A
+ * contagem de tokens fica fora do texto (M1.14: a tela não fala em tokens); o tempo e a fração da
+ * janela dizem o mesmo em termos da pessoa.
  */
 export function textoEstimativa(e: EstimativaRevisaoIa): string {
   const custo =
-    e.custoUsd === null ? "" : ` Na API, isso custaria cerca de US$ ${e.custoUsd.toFixed(2).replace(".", ",")}.`;
-  return `${e.fichas} critérios em ${e.blocos} etapas. Estimativa aproximada: uns ${milhares(e.tokensEntrada + e.tokensSaida)} tokens, cerca de ${e.minutos} min e algo como ${e.percentualJanela}% de ${e.nomeJanela} (referência provisória: os providers não publicam o tamanho da janela).${custo}`;
+    e.custoUsd === null ? "" : ` Pago por uso, isso custaria cerca de US$ ${e.custoUsd.toFixed(2).replace(".", ",")}.`;
+  return `${e.fichas} critérios em ${e.blocos} etapas. Estimativa aproximada: cerca de ${e.minutos} min e algo como ${e.percentualJanela}% de ${e.nomeJanela} (referência provisória: as empresas de IA não publicam o tamanho da janela).${custo}`;
 }
 
 export interface TemaAndamento {

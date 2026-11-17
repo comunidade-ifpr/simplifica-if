@@ -8,7 +8,7 @@ import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import { afterAll, describe, expect, test } from "vite-plus/test";
 import { EXTERNOS_SERVIDOR } from "../scripts/construir.ts";
-import { configuracaoBuilder } from "../scripts/empacotar.ts";
+import { configuracaoBuilder, deixarSoPortugues } from "../scripts/empacotar.ts";
 import { copiarSkills } from "../scripts/skills.ts";
 
 const RAIZ = NodePath.resolve(import.meta.dirname, "../../..");
@@ -44,6 +44,28 @@ describe("configuração do electron-builder", () => {
     expect(config.publish).toEqual([{ provider: "generic", url: expect.stringMatching(/\/$/) }]);
     expect(config.extraResources).toContainEqual({ from: "dist/recursos/assinatura.json", to: "assinatura.json" });
     expect(configuracaoBuilder({ dir: true }).mac).toMatchObject({ target: ["dir"] });
+  });
+
+  test("em português: o pacote do macOS e o instalador do Windows (M1.14)", () => {
+    const config = configuracaoBuilder({ dir: false });
+    expect(config.electronLanguages).toEqual(["pt-BR", "en-US"]);
+    expect(config.mac?.extendInfo).toMatchObject({ CFBundleDevelopmentRegion: "pt-BR" });
+    expect(config.nsis).toMatchObject({
+      language: "1046",
+      installerLanguages: ["pt_BR"],
+      multiLanguageInstaller: false,
+    });
+  });
+
+  test("o pacote do macOS declara só o pt-BR; as pastas com arquivo ficam", () => {
+    const recursos = temporario();
+    for (const nome of ["en.lproj", "en_GB.lproj", "pt_BR.lproj", "de.lproj", "com-arquivo.lproj"]) {
+      NodeFS.mkdirSync(NodePath.join(recursos, nome));
+    }
+    NodeFS.writeFileSync(NodePath.join(recursos, "com-arquivo.lproj", "InfoPlist.strings"), "");
+    NodeFS.writeFileSync(NodePath.join(recursos, "electron.icns"), "");
+    expect([...deixarSoPortugues(recursos)].sort()).toEqual(["de.lproj", "en.lproj", "en_GB.lproj"]);
+    expect(NodeFS.readdirSync(recursos).sort()).toEqual(["com-arquivo.lproj", "electron.icns", "pt_BR.lproj"]);
   });
 
   test("o servidor, a base e as skills vão fora do asar", () => {

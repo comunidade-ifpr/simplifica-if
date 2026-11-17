@@ -190,9 +190,9 @@ function Andamento({
         <>
           <p className="text-sm">{textoEstimativa(estado.estimativa)}</p>
           <p className="text-muted-foreground text-xs">
-            Estimativa aproximada. Os tokens por critério vêm de medições reais; a fração da janela é uma referência
-            provisória, porque os providers não publicam o tamanho da janela do plano. O uso de verdade aparece ao longo
-            da revisão. Você pode pausar a qualquer momento, e o que já foi revisado fica guardado.
+            Estimativa aproximada. O uso por critério vem de medições reais; a fração da janela é uma referência
+            provisória, porque as empresas de IA não publicam o tamanho da janela do plano. O uso de verdade aparece ao
+            longo da revisão. Você pode pausar a qualquer momento, e o que já foi revisado fica guardado.
           </p>
           <div className="flex flex-wrap gap-2">
             <Button disabled={ocupada} onClick={aoIniciar}>

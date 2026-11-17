@@ -69,7 +69,7 @@ O `dist` acrescenta a base (`dist/recursos/base/kb.sqlite`, de `SIMPLIFICA_KB` o
 2. Lê a `LinhaPartida` do stdout (prazo de 60 s) e abre a janela. O stderr do servidor (os logs) passa ao stderr do app e ao arquivo de log, junto com o que o processo principal registra (`src/registro.ts`): `simplifica-if.log` em `~/Library/Logs/Simplifica IF` no macOS e em `<pasta do app>\logs` no Windows (no desenvolvimento, em `<pasta do app>/logs`); passando de 5 MB, o arquivo vira `simplifica-if.log.1` e outro começa.
 3. A interface pede a conexão pelo preload: `window.simplifica.conexao()` devolve `{ urlServidor: "http://127.0.0.1:<porta>", token }`. O processo principal só responde ao quadro principal da janela do app, na origem da interface.
 4. Ao sair (fechar a janela, Cmd+Q, SIGINT ou SIGTERM), fecha o stdin do servidor e espera 5 s; se ele não sair, SIGTERM e, 2 s depois, SIGKILL. Se o app morrer, o servidor sai sozinho: o stdin fecha e o processo pai muda (`launcherWatch.ts`).
-5. Se o servidor cair, ou não subir, um diálogo mostra o motivo (o fim do stderr) e oferece **Reiniciar** (novo token, nova porta, a janela recarrega) ou **Sair**.
+5. Se o servidor cair, ou não subir, um diálogo diz em português que o app parou por um problema interno, com o motivo (o fim do stderr) sob "Detalhes técnicos", e oferece **Reiniciar** (novo token, nova porta, a janela recarrega) ou **Sair**.
 
 ## A base no app empacotado (decisão)
 
@@ -130,6 +130,8 @@ No desenvolvimento, a janela carrega o dev server sem CSP: o Vite precisa de scr
 ## Estrutura
 
 - `src/main.ts`: o processo principal (servidor, janela, IPC, protocolo, menu em pt-BR, ciclo de vida).
+
+**Só português (M1.14).** O menu (Sobre, Ocultar, Sair, Editar com Desfazer, Copiar e Colar, Ver, Janela), os títulos e botões dos diálogos de abrir arquivo e de confirmação e o painel Sobre (`setAboutPanelOptions`) estão em pt-BR. O Chromium sobe com `--lang=pt-BR` (`navigator.language`, o `Intl` padrão e os textos do próprio Chromium), seja qual for a língua do sistema. O que é do macOS (Cancelar e Abrir nos diálogos, os itens que o sistema acrescenta ao menu Editar, "Versão" no painel Sobre) segue as localizações que o pacote declara: o empacotamento põe `CFBundleDevelopmentRegion` em `pt-BR` e tira de `Contents/Resources` as pastas `*.lproj` vazias das outras línguas (`deixarSoPortugues`, no `afterPack`), ficando só o `pt_BR.lproj`; os `locale.pak` do Chromium, no framework, continuam pt-BR e en-US (`electronLanguages`), porque o en-US é a reserva do Chromium. O instalador NSIS do Windows sai em português (`language: "1046"`, sem escolha de língua). No Windows, os diálogos de arquivo são do sistema e seguem a língua dele.
 - `src/servidor.ts`: o token, a montagem do comando, a linha de partida e o encerramento; sem Electron.
 - `src/configuracao.ts`: de onde vêm o servidor, a base, a interface, a pasta de estado e a de skills; sem Electron.
 - `src/seguranca.ts`: CSP, navegação, links externos e arquivos do protocolo; sem Electron.

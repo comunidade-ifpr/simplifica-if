@@ -52,7 +52,7 @@ export class ControleConversa {
     const { provider, pastaTrabalho } = this.estado;
     const pasta = pastaTrabalho.trim();
     if (pasta.length === 0) {
-      this.despachar({ tipo: "naoIniciou", erro: { texto: "Escolha a pasta de trabalho da conversa." } });
+      this.despachar({ tipo: "naoIniciou", erro: { texto: "Escolha a pasta da tarefa." } });
       return;
     }
     this.despachar({ tipo: "iniciando" });

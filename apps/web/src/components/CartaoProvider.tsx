@@ -14,6 +14,7 @@ import { useApi } from "../contexto.tsx";
 import { abrirExterno } from "../ponte-desktop.ts";
 import {
   DESCRICOES,
+  explicarMensagemMotor,
   instalacaoTerminou,
   loginTerminou,
   type Orientacao,
@@ -23,7 +24,7 @@ import {
   textoFaseInstalacao,
   textoFaseLogin,
 } from "../providers.ts";
-import { AvisoErro } from "./AvisoErro.tsx";
+import { AvisoErro, DetalhesTecnicos } from "./AvisoErro.tsx";
 import { PassoClaude } from "./PassoClaude.tsx";
 import { Alert, AlertDescription } from "./ui/alert.tsx";
 import { Badge } from "./ui/badge.tsx";
@@ -71,8 +72,11 @@ function BarraProgresso({ estado }: { readonly estado: EstadoInstalacao }) {
         {textoFaseInstalacao(estado.fase)}
         {estado.fase === "baixando" ? ` · ${tamanhoBaixado(estado)}` : ""}
         {estado.versao === undefined ? "" : ` · versão ${estado.versao}`}
-        {estado.mensagem === undefined ? "" : ` · ${estado.mensagem}`}
+        {estado.mensagem === undefined ? "" : ` · ${explicarMensagemMotor(estado.mensagem).texto}`}
       </p>
+      {estado.mensagem === undefined ? null : (
+        <DetalhesTecnicos detalhe={explicarMensagemMotor(estado.mensagem).detalhe} />
+      )}
     </div>
   );
 }
@@ -98,13 +102,16 @@ function PassoLogin({ estado }: { readonly estado: EstadoLogin }) {
           Abrir a página de login <ExternalLinkIcon className="size-3.5" />
         </a>
       ) : null}
-      {estado.mensagem === undefined ? null : <p className="text-muted-foreground text-xs">{estado.mensagem}</p>}
-      {estado.detalhe === undefined ? null : (
-        <details className="text-muted-foreground text-xs">
-          <summary className="cursor-pointer">Detalhes técnicos</summary>
-          <p className="mt-1 font-mono">{estado.detalhe}</p>
-        </details>
+      {estado.mensagem === undefined ? null : (
+        <p className="text-muted-foreground text-xs">{explicarMensagemMotor(estado.mensagem).texto}</p>
       )}
+      <DetalhesTecnicos
+        detalhe={
+          [estado.mensagem === undefined ? undefined : explicarMensagemMotor(estado.mensagem).detalhe, estado.detalhe]
+            .filter((parte) => parte !== undefined)
+            .join("\n") || undefined
+        }
+      />
     </div>
   );
 }
@@ -282,7 +289,7 @@ export function CartaoProvider({
 
       {/* A mensagem do motor é técnica; quando falta algo, os botões e o passo guiado explicam. */}
       {estado?.mensagem === undefined || !estado.instalado || !estado.autenticado ? null : (
-        <p className="text-muted-foreground text-sm">{estado.mensagem}</p>
+        <p className="text-muted-foreground text-sm">{explicarMensagemMotor(estado.mensagem).texto}</p>
       )}
       {estado?.aviso === undefined ? null : (
         <Alert variant="warning">

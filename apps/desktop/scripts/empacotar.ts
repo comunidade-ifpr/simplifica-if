@@ -47,7 +47,9 @@ export function configuracaoBuilder(opcoes: { readonly dir: boolean }): Configur
     productName: NOME_PRODUTO,
     artifactName: "Simplifica-IF-${version}-${arch}.${ext}",
     electronVersion: versaoElectron(),
-    // Como o T3 (`DESKTOP_ELECTRON_LANGUAGES`), só as línguas usadas.
+    // Como o T3 (`DESKTOP_ELECTRON_LANGUAGES`), só as línguas usadas: o pt-BR e o en-US, que o Chromium
+    // exige como reserva. O app só fala português (M1.14): `main.ts` põe o Chromium em pt-BR, e o
+    // `afterPack` deixa o pacote do macOS declarar só o pt-BR.
     electronLanguages: ["pt-BR", "en-US"],
     directories: { app: "dist/app", output: "dist/pacotes", buildResources: "recursos" },
     files: ["**/*", "!**/*.map"],
@@ -64,6 +66,16 @@ export function configuracaoBuilder(opcoes: { readonly dir: boolean }): Configur
       { from: `dist/recursos/${ARQUIVO_ASSINATURA}`, to: ARQUIVO_ASSINATURA },
     ],
     afterPack: async (contexto) => {
+      if (contexto.electronPlatformName === "darwin") {
+        deixarSoPortugues(
+          NodePath.join(
+            contexto.appOutDir,
+            `${contexto.packager.appInfo.productFilename}.app`,
+            "Contents",
+            "Resources",
+          ),
+        );
+      }
       const recursos =
         contexto.electronPlatformName === "darwin"
           ? NodePath.join(
@@ -91,6 +103,9 @@ export function configuracaoBuilder(opcoes: { readonly dir: boolean }): Configur
       // Sem assinatura nem notarização por enquanto (pendência).
       identity: null,
       hardenedRuntime: false,
+      // A língua do pacote (M1.14): com ela e só o `pt_BR.lproj`, o macOS mostra em português o que é
+      // dele (Cancelar e Abrir nos diálogos, Ditado e Emoji no menu Editar, "Versão" no painel Sobre).
+      extendInfo: { CFBundleDevelopmentRegion: "pt-BR" },
     },
     dmg: {
       title: "${productName} ${version}",
@@ -111,8 +126,32 @@ export function configuracaoBuilder(opcoes: { readonly dir: boolean }): Configur
       shortcutName: NOME_PRODUTO,
       uninstallDisplayName: NOME_PRODUTO,
       artifactName: "Simplifica-IF-${version}-${arch}-instalador.${ext}",
+      // O instalador e o desinstalador em português (M1.14), sem a escolha de língua.
+      language: "1046",
+      installerLanguages: ["pt_BR"],
+      multiLanguageInstaller: false,
     },
   };
+}
+
+/**
+ * Tira do pacote do macOS as pastas `*.lproj` vazias que só declaram línguas (as do Electron, em
+ * `Contents/Resources`), menos a do pt-BR. Os `locale.pak` do Chromium ficam no framework, que o
+ * `electronLanguages` já filtra; aqui é só a declaração que o macOS lê para escolher a língua dos
+ * textos do sistema. Pasta com arquivo dentro fica.
+ */
+export function deixarSoPortugues(recursos: string): ReadonlyArray<string> {
+  const retiradas: Array<string> = [];
+  for (const nome of NodeFS.readdirSync(recursos)) {
+    if (!nome.endsWith(".lproj") || nome === "pt_BR.lproj") continue;
+    const pasta = NodePath.join(recursos, nome);
+    if (NodeFS.readdirSync(pasta).length > 0) continue;
+    NodeFS.rmdirSync(pasta);
+    retiradas.push(nome);
+  }
+  if (!NodeFS.existsSync(NodePath.join(recursos, "pt_BR.lproj")))
+    NodeFS.mkdirSync(NodePath.join(recursos, "pt_BR.lproj"));
+  return retiradas;
 }
 
 /** O marcador de assinatura: `false` enquanto `mac.identity` for `null` e não houver certificado do Windows. */
