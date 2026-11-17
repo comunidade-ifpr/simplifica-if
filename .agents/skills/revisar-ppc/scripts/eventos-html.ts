@@ -21,13 +21,13 @@
  */
 import { DecodingMode, EntityDecoder, htmlDecodeTree } from "entities/decode";
 import { Tokenizer } from "htmlparser2";
-import { caractereNumericoPy } from "@simplifica-if/kb/python/html";
+import { caractereDeReferenciaNumerica } from "@simplifica-if/kb/primitivas/html";
 
-export type AtributoPy = readonly [nome: string, valor: string | null];
+export type AtributoHtml = readonly [nome: string, valor: string | null];
 
-export type ManipuladorHtmlPy = {
-  inicio(tag: string, atributos: AtributoPy[]): void;
-  inicioFim(tag: string, atributos: AtributoPy[]): void;
+export type ManipuladorHtml = {
+  inicio(tag: string, atributos: AtributoHtml[]): void;
+  inicioFim(tag: string, atributos: AtributoHtml[]): void;
   fim(tag: string): void;
   texto(dados: string): void;
   entidade(nome: string): void;
@@ -56,11 +56,11 @@ function referenciaNomeada(referencia: string): string | null {
 }
 
 /** `_unescape_attrvalue` de `html/parser.py`: resolve referências em valores de atributo. */
-export function unescapeAtributoPy(valor: string): string {
+export function desescaparAtributo(valor: string): string {
   return valor.replace(RE_REFERENCIA_ATRIBUTO, (referencia: string, corpo: string) => {
     if (corpo.startsWith("#")) {
       const hexadecimal = corpo[1] === "x" || corpo[1] === "X";
-      const caractere = caractereNumericoPy(corpo.slice(hexadecimal ? 2 : 1), hexadecimal);
+      const caractere = caractereDeReferenciaNumerica(corpo.slice(hexadecimal ? 2 : 1), hexadecimal);
       return referencia.endsWith("=") ? `${caractere}=` : caractere;
     }
     if (referencia.endsWith("=")) return referencia;
@@ -83,7 +83,7 @@ function casar(re: RegExp, html: string, posicao: number): RegExpExecArray | nul
  * `convert_charrefs=False`. As referências são casadas sobre o documento
  * inteiro, porque o Python olha o caractere seguinte ao fim do texto.
  */
-function repartirTexto(html: string, inicio: number, fim: number, m: ManipuladorHtmlPy): void {
+function repartirTexto(html: string, inicio: number, fim: number, m: ManipuladorHtml): void {
   let i = inicio;
   while (i < fim) {
     let j = i;
@@ -133,7 +133,7 @@ function repartirTexto(html: string, inicio: number, fim: number, m: Manipulador
 const SEM_REFERENCIAS = new Set(["script", "style", "xmp", "iframe", "noembed", "noframes", "plaintext"]);
 
 /** `HTMLParser(convert_charrefs=False).feed(html); close()`, entregando os eventos a `m`. */
-export function percorrerHtmlPy(html: string, m: ManipuladorHtmlPy): void {
+export function percorrerHtml(html: string, m: ManipuladorHtml): void {
   let textoInicio = -1;
   let textoFim = -1;
   let tagAtual = "";
@@ -176,7 +176,7 @@ export function percorrerHtmlPy(html: string, m: ManipuladorHtmlPy): void {
       },
       onattribend(aspas) {
         // QuoteType.NoValue (0): atributo sem `=`, valor `None` no Python.
-        const valor = aspas === 0 ? null : valorAtributo ? unescapeAtributoPy(valorAtributo) : valorAtributo;
+        const valor = aspas === 0 ? null : valorAtributo ? desescaparAtributo(valorAtributo) : valorAtributo;
         atributos.push([nomeAtributo, valor]);
       },
       onopentagend() {

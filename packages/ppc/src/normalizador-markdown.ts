@@ -5,10 +5,10 @@
  * tabelas pipe) antes da análise.
  *
  * As expressões regulares são as do Python, traduzidas por
- * `@simplifica-if/kb/python/re` (classes Unicode como no Python).
+ * `@simplifica-if/kb/primitivas/re` (classes Unicode como no Python).
  */
-import { fullmatch, match, search, sub } from "@simplifica-if/kb/python/re";
-import { casefold } from "@simplifica-if/kb/python/texto";
+import { fullmatch, match, search, sub } from "@simplifica-if/kb/primitivas/regex";
+import { casefold } from "@simplifica-if/kb/primitivas/texto";
 import { aparar, apararCaracteres, apararFim, contarCaracteres, RE_TEM_ESPACO } from "@simplifica-if/kb/texto";
 
 const r = String.raw;

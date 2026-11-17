@@ -24,13 +24,13 @@
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { escape, search, sub } from "@simplifica-if/kb/python/re";
-import { casefold, colapsarEspacos, semMarcas } from "@simplifica-if/kb/python/texto";
-import { ehObjetoPy, itensPy, type ObjetoPy, strPy, verdadeiro } from "@simplifica-if/kb/python/valores";
+import { escape, search, sub } from "@simplifica-if/kb/primitivas/regex";
+import { casefold, colapsarEspacos, semMarcas } from "@simplifica-if/kb/primitivas/texto";
+import { ehDicionario, itensNaOrdem, type Dicionario, textoDoValor, verdadeiro } from "@simplifica-if/kb/primitivas/valores";
 import { chavesDoMapaYaml } from "@simplifica-if/kb/ppcs/front-matter";
 import { aparar, apararFimEnquanto, dividirLinhas } from "@simplifica-if/kb/texto";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
-import { lerJsonPy } from "./rodada.ts";
+import { lerJsonDaRodada } from "./rodada.ts";
 
 const IDENTIFICACAO_PLACEHOLDERS = new Set([
   "curso não identificado",
@@ -63,7 +63,7 @@ export type IdentificacaoComFontes = Identificacao & { fontes: FontesIdentificac
 
 /** `valor_identificacao_preenchido`. */
 export function valorIdentificacaoPreenchido(valor: unknown): boolean {
-  const texto = aparar(verdadeiro(valor) ? strPy(valor) : "");
+  const texto = aparar(verdadeiro(valor) ? textoDoValor(valor) : "");
   return Boolean(texto) && !IDENTIFICACAO_PLACEHOLDERS.has(casefold(texto));
 }
 
@@ -82,12 +82,12 @@ function campiIfprConhecidos(baseConhecimentoDir: string): Array<[string, string
   let campi: Array<[string, string]> = [];
   if (NodeFS.existsSync(indice)) {
     try {
-      const payload = lerJsonPy(indice);
-      const itens = ehObjetoPy(payload) ? payload.items : null;
+      const payload = lerJsonDaRodada(indice);
+      const itens = ehDicionario(payload) ? payload.items : null;
       if (Array.isArray(itens)) {
         for (const item of itens) {
-          if (!ehObjetoPy(item)) continue;
-          const nome = aparar(verdadeiro(item.nome) ? strPy(item.nome) : "");
+          if (!ehDicionario(item)) continue;
+          const nome = aparar(verdadeiro(item.nome) ? textoDoValor(item.nome) : "");
           if (nome) campi.push([nome, normalizarBusca(nome)]);
         }
       }
@@ -149,7 +149,7 @@ function pareceRuidoDeCampus(texto: string): boolean {
 }
 
 function limparValorIdentificacao(valor: unknown): string {
-  let texto = aparar(verdadeiro(valor) ? strPy(valor) : "");
+  let texto = aparar(verdadeiro(valor) ? textoDoValor(valor) : "");
   texto = sub(
     "^(?:denomina[çc][ãa]o|nome\\s+do\\s+curso|curso|campus|unidade|forma\\s+de\\s+oferta|modalidade(?:\\s+de\\s+ensino)?|eixo\\s+tecnol[óo]gico)\\s*:\\s*",
     "",
@@ -547,10 +547,10 @@ function eixosCnct(baseConhecimentoDir: string): Array<[string, string]> {
   if (eixosCache?.indice === indice) return eixosCache.eixos;
   const nomes = new Set<string>();
   try {
-    const payload = NodeFS.existsSync(indice) ? lerJsonPy(indice) : null;
-    const itens = ehObjetoPy(payload) && Array.isArray(payload.items) ? payload.items : [];
+    const payload = NodeFS.existsSync(indice) ? lerJsonDaRodada(indice) : null;
+    const itens = ehDicionario(payload) && Array.isArray(payload.items) ? payload.items : [];
     for (const item of itens) {
-      if (ehObjetoPy(item) && typeof item.eixo_tecnologico === "string") nomes.add(item.eixo_tecnologico);
+      if (ehDicionario(item) && typeof item.eixo_tecnologico === "string") nomes.add(item.eixo_tecnologico);
     }
   } catch {
     nomes.clear();
@@ -733,7 +733,7 @@ export function inferirIdentificacaoDoMarkdown(
 // ---------------------------------------------------------------- conversão DOCX
 
 function valorPorChavesOuPrefixos(
-  dados: ObjetoPy,
+  dados: Dicionario,
   chaves: readonly string[],
   prefixos: readonly string[],
   aceitar: (valor: string) => string,
@@ -742,7 +742,7 @@ function valorPorChavesOuPrefixos(
     const valor = aceitar(limparValorIdentificacao(dados[chave]));
     if (valor) return valor;
   }
-  for (const [chave, bruto] of itensPy(dados)) {
+  for (const [chave, bruto] of itensNaOrdem(dados)) {
     if (!prefixos.some((prefixo) => chave.startsWith(prefixo))) continue;
     const valor = aceitar(limparValorIdentificacao(bruto));
     if (valor) return valor;
@@ -760,9 +760,9 @@ export function extrairIdentificacaoDaConversao(
   nomeReserva = "",
   caminhos: CaminhosAnalise = caminhosPadrao(),
 ): Identificacao {
-  let dados: unknown = ehObjetoPy(payload) ? payload.dados_extraidos : {};
-  if (!ehObjetoPy(dados)) dados = payload;
-  if (!ehObjetoPy(dados)) throw new TypeError("dados da conversão precisam ser objeto JSON");
+  let dados: unknown = ehDicionario(payload) ? payload.dados_extraidos : {};
+  if (!ehDicionario(dados)) dados = payload;
+  if (!ehDicionario(dados)) throw new TypeError("dados da conversão precisam ser objeto JSON");
   const d = dados;
   const curso =
     valorPorChavesOuPrefixos(

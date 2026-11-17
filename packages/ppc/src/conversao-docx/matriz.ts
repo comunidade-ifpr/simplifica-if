@@ -8,9 +8,9 @@
  *
  * Fora deles, um extrator genérico e conservador aceita tabelas simples de componente × carga.
  */
-import { fullmatch, match, search, sub } from "@simplifica-if/kb/python/re";
-import { semMarcas } from "@simplifica-if/kb/python/texto";
-import { digitosAscii } from "@simplifica-if/kb/python/valores";
+import { fullmatch, match, search, sub } from "@simplifica-if/kb/primitivas/regex";
+import { semMarcas } from "@simplifica-if/kb/primitivas/texto";
+import { digitosAscii } from "@simplifica-if/kb/primitivas/valores";
 import { aparar, dividirLinhas } from "@simplifica-if/kb/texto";
 import { type TabelaNormalizada, todasAsLinhas } from "./tabelas.ts";
 

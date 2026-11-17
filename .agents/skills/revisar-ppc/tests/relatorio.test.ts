@@ -10,10 +10,10 @@ import { afterEach, describe, expect, test } from "vite-plus/test";
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
-import { casefold } from "@simplifica-if/kb/python/texto";
-import type { ObjetoPy } from "@simplifica-if/kb/python/valores";
+import { casefold } from "@simplifica-if/kb/primitivas/texto";
+import type { Dicionario } from "@simplifica-if/kb/primitivas/valores";
 import { caminhosPadrao } from "../scripts/caminhos.ts";
-import { unescapeAtributoPy } from "../scripts/html-py.ts";
+import { desescaparAtributo } from "../scripts/eventos-html.ts";
 import { prepararDocumento } from "../scripts/preparar-documento.ts";
 import { dominioSurgePadrao, prepararSiteSurge, publicarSiteSurge } from "../scripts/publicar-surge.ts";
 import {
@@ -30,7 +30,7 @@ import {
   situacao,
   validarResultadosRodada,
 } from "../scripts/resultados.ts";
-import { caminhosRodada, escreverJsonPy, lerJsonPy } from "../scripts/rodada.ts";
+import { caminhosRodada, escreverJsonDaRodada, lerJsonDaRodada } from "../scripts/rodada.ts";
 import {
   agruparFichasPorTopico,
   carregarFichasOrdenadas,
@@ -73,7 +73,7 @@ function criarRodada(markdown = MARKDOWN_BASE): string {
   return prepararDocumento(arquivo, { saidaBase: NodePath.join(dir, "output"), relogio: RELOGIO }).rodadaDir;
 }
 
-function resultado(fichaId: string, estado = "ATENDE", evidencias = 3): ObjetoPy {
+function resultado(fichaId: string, estado = "ATENDE", evidencias = 3): Dicionario {
   return {
     ficha_id: fichaId,
     estado,
@@ -86,8 +86,8 @@ function resultado(fichaId: string, estado = "ATENDE", evidencias = 3): ObjetoPy
 }
 
 type Payload = {
-  metadata: ObjetoPy;
-  grupos: Array<{ grupo_id: string; resultados: ObjetoPy[] }>;
+  metadata: Dicionario;
+  grupos: Array<{ grupo_id: string; resultados: Dicionario[] }>;
   [k: string]: unknown;
 };
 
@@ -99,7 +99,7 @@ function payloadResultadosCompletos(): Payload {
   return { metadata: { origem: "teste" }, grupos };
 }
 
-function resultadoDa(payload: Payload, fichaId: string): ObjetoPy {
+function resultadoDa(payload: Payload, fichaId: string): Dicionario {
   for (const grupo of payload.grupos) {
     const achado = grupo.resultados.find((item) => item.ficha_id === fichaId);
     if (achado) return achado;
@@ -113,7 +113,7 @@ function primeiraValidacaoCruzada(): string {
 
 /** Grava os resultados, gera o relatório e devolve o HTML. */
 function gerar(rodada: string, payload: unknown): string {
-  escreverJsonPy(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
+  escreverJsonDaRodada(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
   gerarRelatorioHtml(rodada, "resultados-subagents.json");
   return NodeFS.readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8");
 }
@@ -227,7 +227,7 @@ describe("paridade com o Python", () => {
   });
 
   test("_unescape_attrvalue do HTMLParser", () => {
-    for (const [valor, esperado] of CASOS_ATRIBUTOS) expect(unescapeAtributoPy(valor)).toBe(esperado);
+    for (const [valor, esperado] of CASOS_ATRIBUTOS) expect(desescaparAtributo(valor)).toBe(esperado);
   });
 });
 
@@ -355,7 +355,7 @@ describe("situação da revisão", () => {
     expect(situacao([item("BLOQ", "ATENDE"), item("REC", "NAO_ATENDE")])).toBe("APTO_PARA_SUBMISSAO");
     expect(Object.keys(SITUACOES_REVISAO)).toEqual(
       [
-        ...((lerJsonPy(NodePath.join(caminhos.appDir, "config", "politica_revisao.json")) as ObjetoPy)
+        ...((lerJsonDaRodada(NodePath.join(caminhos.appDir, "config", "politica_revisao.json")) as Dicionario)
           .situacoes as string[]),
       ].reverse(),
     );
@@ -365,7 +365,7 @@ describe("situação da revisão", () => {
 describe("situação da revisão com alertas transversais", () => {
   const item = (criticidade: string, estado: string, revisao = false) =>
     ({ criticidade, estado, revisao_humana_obrigatoria: revisao }) as unknown as ResultadoNormalizado;
-  const alerta = (criticidade: string, revisao = false): ObjetoPy => ({
+  const alerta = (criticidade: string, revisao = false): Dicionario => ({
     criticidade,
     revisao_humana_obrigatoria: revisao,
   });
@@ -395,7 +395,7 @@ describe("situação da revisão com alertas transversais", () => {
         revisao_humana_obrigatoria: false,
       },
     ];
-    escreverJsonPy(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
+    escreverJsonDaRodada(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
     expect(validarResultadosRodada(rodada, "resultados-subagents.json").situacao).toBe("REVISAO_SUBSTANCIAL");
     const relatorio = gerarRelatorioHtml(rodada, "resultados-subagents.json");
     expect(relatorio.situacao).toBe("REVISAO_SUBSTANCIAL");
@@ -409,7 +409,7 @@ describe("gerar-relatorio-html", () => {
   test("aceita resultados válidos", () => {
     const rodada = criarRodada();
     const rodadaPaths = caminhosRodada(rodada);
-    escreverJsonPy(NodePath.join(rodadaPaths.suporteDir, "resultados-subagents.json"), payloadResultadosCompletos());
+    escreverJsonDaRodada(NodePath.join(rodadaPaths.suporteDir, "resultados-subagents.json"), payloadResultadosCompletos());
     const payload = gerarRelatorioHtml(rodada, "resultados-subagents.json");
     expect(payload.relatorio_html).toBe(rodadaPaths.relatorioHtml);
     expect(payload.total_fichas).toBe(TOTAL_FICHAS);
@@ -602,7 +602,7 @@ describe("gerar-relatorio-html", () => {
         revisao_humana_obrigatoria: true,
       },
     ];
-    escreverJsonPy(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
+    escreverJsonDaRodada(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
     const relatorio = gerarRelatorioHtml(rodada, "resultados-subagents.json");
     expect(relatorio.total_alertas_transversais).toBe(1);
     const html = NodeFS.readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8");
@@ -660,7 +660,7 @@ describe("gerar-relatorio-html", () => {
     item.estado = "NAO_ATENDE";
     item.revisao_humana_obrigatoria = true;
     item.feedback_autores = texto;
-    escreverJsonPy(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
+    escreverJsonDaRodada(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
     const relatorio = gerarRelatorioHtml(rodada, "resultados-subagents.json");
     expect(relatorio.total_fichas).toBe(TOTAL_FICHAS);
     const html = NodeFS.readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8");
@@ -708,7 +708,7 @@ describe("publicação no Surge", () => {
   test("a CLI publica por padrão e grava surge-publicacao.json", () => {
     const rodada = criarRodada();
     const rodadaPaths = caminhosRodada(rodada);
-    escreverJsonPy(NodePath.join(rodadaPaths.suporteDir, "resultados-subagents.json"), payloadResultadosCompletos());
+    escreverJsonDaRodada(NodePath.join(rodadaPaths.suporteDir, "resultados-subagents.json"), payloadResultadosCompletos());
     const falso = surgeFalso(diretorioTemporario(), "echo 'Success - Published'");
     const processo = NodeChildProcess.spawnSync(
       process.execPath,
@@ -729,7 +729,7 @@ describe("publicação no Surge", () => {
     expect(casefold(NodeFS.readFileSync(NodePath.join(site, "index.html"), "utf-8"))).toContain("<script");
     expect(NodeFS.existsSync(NodePath.join(site, "assets", "revisar-ppc.css"))).toBe(true);
     expect(NodeFS.existsSync(NodePath.join(site, "assets", "revisar-ppc.js"))).toBe(true);
-    const publicacao = lerJsonPy(NodePath.join(rodadaPaths.suporteDir, "surge-publicacao.json")) as ObjetoPy;
+    const publicacao = lerJsonDaRodada(NodePath.join(rodadaPaths.suporteDir, "surge-publicacao.json")) as Dicionario;
     expect(publicacao.domain).toBe("relatorio-ppc.surge.sh");
     expect(publicacao.site_dir).toBe(site);
     expect(publicacao.relatorio_html_original).toBe(rodadaPaths.relatorioHtml);
@@ -737,7 +737,7 @@ describe("publicação no Surge", () => {
 
   test("--sem-surge devolve a URL local codificada como Path.as_uri", () => {
     const rodada = criarRodada();
-    escreverJsonPy(
+    escreverJsonDaRodada(
       NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"),
       payloadResultadosCompletos(),
     );

@@ -5,7 +5,7 @@
  * (o caso comum nos PPCs) não é renderizado: a conversão antiga tentava, com MS Word e poppler, e
  * o app não pode depender deles. Em vez da figura, o `PPC.md` recebe um aviso para a revisão.
  */
-import { escape, search } from "@simplifica-if/kb/python/re";
+import { escape, search } from "@simplifica-if/kb/primitivas/regex";
 import { aparar } from "@simplifica-if/kb/texto";
 import type { Figura } from "./elementos.ts";
 import type { PacoteOoxml } from "@simplifica-if/docx/pacote";

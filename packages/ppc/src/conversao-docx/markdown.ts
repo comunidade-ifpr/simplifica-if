@@ -2,7 +2,7 @@
  * Escrita do Markdown bruto: elementos e seções do PPC em texto, antes da normalização
  * (`../normalizador-markdown.ts`).
  */
-import { match } from "@simplifica-if/kb/python/re";
+import { match } from "@simplifica-if/kb/primitivas/regex";
 import { aparar, apararFim, apararInicio, ESPACOS } from "@simplifica-if/kb/texto";
 import { type Elemento, type Paragrafo, type Tabela, textoDosTrechos, type Trecho } from "./elementos.ts";
 import { type Secao, tituloCompleto } from "./secoes.ts";

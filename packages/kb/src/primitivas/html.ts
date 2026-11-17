@@ -68,7 +68,7 @@ function codigoDescartado(codigo: number): boolean {
  * `html.unescape`: `\r` e Windows-1252 para alguns códigos, `�` para
  * surrogates e valores acima de `0x10FFFF`, vazio para não caracteres.
  */
-export function caractereNumericoPy(digitos: string, hexadecimal: boolean): string {
+export function caractereDeReferenciaNumerica(digitos: string, hexadecimal: boolean): string {
   const valor = BigInt(hexadecimal ? `0x${digitos}` : digitos);
   if (valor > 0x10ffffn) return "�";
   const codigo = Number(valor);

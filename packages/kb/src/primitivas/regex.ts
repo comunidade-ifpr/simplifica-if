@@ -83,11 +83,11 @@ export function traduzirPadrao(fonte: string, dotAll = false): string {
   return saida;
 }
 
-export type FlagsPy = { ignoreCase?: boolean; dotAll?: boolean };
+export type OpcoesRegex = { ignoreCase?: boolean; dotAll?: boolean };
 
 const cache = new Map<string, RegExp>();
 
-function compilar(fonte: string, modo: "search" | "match" | "fullmatch", flags: FlagsPy, global = false): RegExp {
+function compilar(fonte: string, modo: "search" | "match" | "fullmatch", flags: OpcoesRegex, global = false): RegExp {
   const chave = `${modo}\u0000${flags.ignoreCase ? "i" : ""}${flags.dotAll ? "s" : ""}${global ? "g" : ""}\u0000${fonte}`;
   let re = cache.get(chave);
   if (!re) {
@@ -101,22 +101,22 @@ function compilar(fonte: string, modo: "search" | "match" | "fullmatch", flags: 
 }
 
 /** `re.search(padrao, texto)`. */
-export function search(padrao: string, texto: string, flags: FlagsPy = {}): RegExpExecArray | null {
+export function search(padrao: string, texto: string, flags: OpcoesRegex = {}): RegExpExecArray | null {
   return compilar(padrao, "search", flags).exec(texto);
 }
 
 /** `re.match(padrao, texto)`: ancorado no início. */
-export function match(padrao: string, texto: string, flags: FlagsPy = {}): RegExpExecArray | null {
+export function match(padrao: string, texto: string, flags: OpcoesRegex = {}): RegExpExecArray | null {
   return compilar(padrao, "match", flags).exec(texto);
 }
 
 /** `re.fullmatch(padrao, texto)`. */
-export function fullmatch(padrao: string, texto: string, flags: FlagsPy = {}): RegExpExecArray | null {
+export function fullmatch(padrao: string, texto: string, flags: OpcoesRegex = {}): RegExpExecArray | null {
   return compilar(padrao, "fullmatch", flags).exec(texto);
 }
 
 /** `re.finditer(padrao, texto)`. */
-export function finditer(padrao: string, texto: string, flags: FlagsPy = {}): RegExpExecArray[] {
+export function finditer(padrao: string, texto: string, flags: OpcoesRegex = {}): RegExpExecArray[] {
   return [...texto.matchAll(compilar(padrao, "search", flags, true))];
 }
 
@@ -128,7 +128,7 @@ export function sub(
   padrao: string,
   substituto: string | ((m: RegExpExecArray) => string),
   texto: string,
-  flags: FlagsPy = {},
+  flags: OpcoesRegex = {},
 ): string {
   const re = compilar(padrao, "search", flags, true);
   const funcao =
@@ -149,7 +149,7 @@ export function sub(
  * que eles capturam no resultado; isso não está implementado, e o padrão é recusado para não dar
  * um resultado diferente em silêncio.
  */
-export function split(padrao: string, texto: string, flags: FlagsPy = {}): string[] {
+export function split(padrao: string, texto: string, flags: OpcoesRegex = {}): string[] {
   const re = compilar(padrao, "search", flags, true);
   // Casar com o texto vazio revela quantos grupos o padrão tem.
   if (new RegExp(`${re.source}|`, re.flags.replace("g", "")).exec("")!.length > 1) {

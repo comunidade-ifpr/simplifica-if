@@ -10,7 +10,7 @@
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
-import type { ObjetoPy } from "@simplifica-if/kb/python/valores";
+import type { Dicionario } from "@simplifica-if/kb/primitivas/valores";
 import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
 import { afterEach, describe, expect, test } from "vite-plus/test";
 import { converterDocx, converterPpc } from "../src/conversao-docx/conversao.ts";
@@ -37,7 +37,7 @@ import { ErroDocx } from "@simplifica-if/docx/pacote";
 import { analisarXml, descendentes } from "@simplifica-if/docx/xml";
 import { detectarSecoes, dicasDeIdentificacao, listarSecoes } from "../src/conversao-docx/secoes.ts";
 import { normalizarTabela, tabelaEmMarkdown, type TabelaNormalizada } from "../src/conversao-docx/tabelas.ts";
-import { carregarJsonPy as lerJsonPy } from "@simplifica-if/kb/python/json";
+import { carregarJsonTipado as lerJsonDaRodada } from "@simplifica-if/kb/primitivas/json-tipado";
 import { celula, hyperlink, linha, montarDocx, par, run, tabela, titulo } from "@simplifica-if/docx/testes/sintetico";
 import { docxDaFixture, FIXTURES } from "../src/testes/documentos.ts";
 
@@ -651,7 +651,7 @@ describe("tabelas e ementário", () => {
   test("quadro com colunas vazias (Google Docs) e período ausente", () => {
     const { ementario } = converter("ppc-minimo");
     expect(
-      (ementario!.componentes as ObjetoPy[]).map((item) => [item.nome, item.periodo_letivo, item.carga_horaria_aula]),
+      (ementario!.componentes as Dicionario[]).map((item) => [item.nome, item.periodo_letivo, item.carga_horaria_aula]),
     ).toEqual([
       ["Língua Portuguesa", "1º Ano", 120],
       ["Banco de Dados", "2º Ano", 160],
@@ -1086,8 +1086,8 @@ describe("representação gráfica", () => {
     return {
       arquivos,
       dados: JSON.parse(arquivos[`${nome}_dados.json`]!) as {
-        representacao_grafica: ObjetoPy;
-        arquivos_relacionados: ObjetoPy;
+        representacao_grafica: Dicionario;
+        arquivos_relacionados: Dicionario;
       },
       markdown: arquivos[`${nome}.md`]!,
     };
@@ -1208,7 +1208,7 @@ describe("artefatos e rodada", () => {
       ementario: "saida/PPC v2_ementario.json",
     });
     for (const caminho of Object.values(artefatos)) expect(NodeFS.existsSync(caminho!)).toBe(true);
-    const dados = lerJsonPy(artefatos.dados) as ObjetoPy;
+    const dados = lerJsonDaRodada(artefatos.dados) as Dicionario;
     expect(dados.arquivo_origem).toBe("PPC_dados v2.docx");
     expect(dados.data_conversao).toBe("2026-11-16T12:00:00");
   });

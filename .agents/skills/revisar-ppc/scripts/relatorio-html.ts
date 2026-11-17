@@ -6,7 +6,7 @@
  * O HTML sai idêntico ao do Python, byte a byte:
  * - escape de `html.escape` (`&#x27;` para apóstrofo);
  * - Markdown do PPC em blocos com as regex do Python (`\s`, `\d` e `.`
- *   Unicode, por `@simplifica-if/kb/python/re`) e `splitlines` Unicode;
+ *   Unicode, por `@simplifica-if/kb/primitivas/re`) e `splitlines` Unicode;
  * - indentação pelo `_HTMLPrettyPrinter`, que recebe os eventos do
  *   `HTMLParser` do Python (`html-py.ts`) e quebra o texto com o
  *   `textwrap.wrap` portado. Ele herda do Python uma peculiaridade: fora de
@@ -17,21 +17,21 @@
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { escapeHtml } from "@simplifica-if/kb/python/html";
-import { match, sub } from "@simplifica-if/kb/python/re";
-import { wrap } from "@simplifica-if/kb/python/textwrap";
-import { casefold, colapsarEspacos, semMarcas } from "@simplifica-if/kb/python/texto";
+import { escapeHtml } from "@simplifica-if/kb/primitivas/html";
+import { match, sub } from "@simplifica-if/kb/primitivas/regex";
+import { wrap } from "@simplifica-if/kb/primitivas/quebra-de-linhas";
+import { casefold, colapsarEspacos, semMarcas } from "@simplifica-if/kb/primitivas/texto";
 import {
-  ehObjetoPy,
-  formatoFixoPy,
-  numeroPy,
+  ehDicionario,
+  formatoFixo,
+  valorNumerico,
   obter,
-  type ObjetoPy,
+  type Dicionario,
   ou,
-  strPy,
-  textoOuVazioPy,
+  textoDoValor,
+  textoOuVazioDoValor,
   verdadeiro,
-} from "@simplifica-if/kb/python/valores";
+} from "@simplifica-if/kb/primitivas/valores";
 import {
   aparar,
   apararCaracteres,
@@ -41,7 +41,7 @@ import {
   dividirLinhas,
 } from "@simplifica-if/kb/texto";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
-import { type AtributoPy, percorrerHtmlPy } from "./html-py.ts";
+import { type AtributoHtml, percorrerHtml } from "./eventos-html.ts";
 import {
   catalogoFichas,
   catalogoValidacoes,
@@ -52,7 +52,7 @@ import {
   validarAlertasTransversais,
   validarResultadosSubagents,
 } from "./resultados.ts";
-import { caminhosRodada, escreverTextoPy, lerJsonPy, lerTexto } from "./rodada.ts";
+import { caminhosRodada, escreverTextoDaRodada, lerJsonDaRodada, lerTexto } from "./rodada.ts";
 
 type Objeto = Record<string, unknown>;
 
@@ -65,7 +65,7 @@ const STATUS_NORMATIVOS_ACIONAVEIS = new Set([
 ]);
 
 const escape = (texto: string) => escapeHtml(texto);
-const texto = (valor: unknown) => textoOuVazioPy(valor);
+const texto = (valor: unknown) => textoOuVazioDoValor(valor);
 const comprimento = (valor: string) => contarCaracteres(valor);
 
 // ---------------------------------------------------------------- impressão do HTML
@@ -95,7 +95,7 @@ class ImpressoraHtml {
   private profundidadeInline = 0;
   private profundidadePreservada = 0;
 
-  private atributos(atributos: AtributoPy[]): string {
+  private atributos(atributos: AtributoHtml[]): string {
     if (!atributos.length) return "";
     const partes = atributos.map(([nome, valor]) => (valor === null ? nome : `${nome}="${escapeHtml(valor)}"`));
     return ` ${partes.join(" ")}`;
@@ -107,7 +107,7 @@ class ImpressoraHtml {
     this.partes.push("  ".repeat(this.nivel));
   }
 
-  private inicio(tag: string, atributos: AtributoPy[]): void {
+  private inicio(tag: string, atributos: AtributoHtml[]): void {
     if (!INLINE.has(tag)) this.novaLinha();
     this.partes.push(`<${tag}${this.atributos(atributos)}>`);
     if (PRESERVADAS.has(tag)) this.profundidadePreservada += 1;
@@ -142,7 +142,7 @@ class ImpressoraHtml {
   }
 
   formatar(html: string): string {
-    percorrerHtmlPy(html, {
+    percorrerHtml(html, {
       declaracao: (dados) => this.partes.push(`<!${dados}>\n`),
       inicio: (tag, atributos) => this.inicio(tag, atributos),
       inicioFim: (tag, atributos) => {
@@ -356,7 +356,7 @@ function blocosDaSecao(titulo: BlocoPpc, blocos: BlocoPpc[]): BlocoPpc[] {
 /** `_resolver_anchor_evidencia`: o bloco do PPC e o trecho a destacar para uma evidência. */
 export function resolverAncoraEvidencia(evidencia: Objeto, blocos: BlocoPpc[]): [string, string] {
   const porId = new Set(blocos.map((bloco) => bloco.id));
-  const ancora = ehObjetoPy(evidencia.anchor) ? evidencia.anchor : {};
+  const ancora = ehDicionario(evidencia.anchor) ? evidencia.anchor : {};
   const blockId = aparar(texto(obter(ancora, "block_id")));
   const quote = aparar(texto(obter(ancora, "quote")));
   const trecho = texto(evidencia.trecho);
@@ -461,7 +461,7 @@ function prepararAnotacoes(resultados: ResultadoNormalizado[], blocos: BlocoPpc[
   return { anotacoes, porBloco, soltas };
 }
 
-function prepararAlertasTransversais(alertas: ObjetoPy[], blocos: BlocoPpc[]) {
+function prepararAlertasTransversais(alertas: Dicionario[], blocos: BlocoPpc[]) {
   const porBloco = new Map<string, Anotacao[]>();
   const preparados = alertas.map((alerta, posicaoAlerta) => {
     const ocorrencias = (alerta.evidencias as Objeto[]).map((evidencia, posicaoEvidencia) => {
@@ -516,7 +516,7 @@ function renderizarEvidencias(evidencias: Objeto[]): string {
   const itens = evidencias.map((evidencia) => {
     const detalhes: string[] = [];
     if (verdadeiro(evidencia.secao)) {
-      detalhes.push(`<span><strong>Seção:</strong> ${escape(strPy(evidencia.secao))}</span>`);
+      detalhes.push(`<span><strong>Seção:</strong> ${escape(textoDoValor(evidencia.secao))}</span>`);
     }
     const detalhesHtml = detalhes.length ? `<div class="evidence-meta">${detalhes.join(" · ")}</div>` : "";
     return `<li><p>${escape(texto(evidencia.trecho))}</p>${detalhesHtml}${renderizarLinkEvidencia(evidencia)}</li>`;
@@ -564,7 +564,7 @@ function renderizarFundamentacaoNormativa(achados: Array<Record<string, string>>
 
 function rotuloOcorrencia(ocorrencia: Objeto, indice: number): string {
   for (const chave of ["secao", "localizador", "papel"]) {
-    if (verdadeiro(ocorrencia[chave])) return strPy(ocorrencia[chave]);
+    if (verdadeiro(ocorrencia[chave])) return textoDoValor(ocorrencia[chave]);
   }
   return `Ponto ${indice}`;
 }
@@ -724,7 +724,7 @@ function renderizarAnotacao(item: Objeto, compacta = true): string {
     `<span class="badge estado-${escape(cssSlug(item.estado as string))}">${escape(item.estado as string)}</span>` +
     "</header>" +
     `${quoteHtml}<p>${escape(item.justificativa as string)}</p>${lacunas}${evidencia}${feedback}${fundamentacao}` +
-    `<p class="annotation-meta"><strong>Confiança:</strong> ${formatoFixoPy(numeroPy(item.confianca), 2)} · ` +
+    `<p class="annotation-meta"><strong>Confiança:</strong> ${formatoFixo(valorNumerico(item.confianca), 2)} · ` +
     `<strong>Grupo:</strong> ${escape(item.grupo_id as string)} · ` +
     `<strong>Revisão humana:</strong> ${revisao ? "Sim" : "Não"}</p>` +
     "</article>"
@@ -760,9 +760,9 @@ const AVISO_REVISAO =
 
 /** `_render_html`: o HTML do relatório antes da indentação. */
 export function renderizarHtml(
-  metadata: ObjetoPy,
+  metadata: Dicionario,
   resultados: ResultadoNormalizado[],
-  alertas: ObjetoPy[],
+  alertas: Dicionario[],
   ppcMarkdown: string,
 ): string {
   const blocos = gerarBlocosPpc(ppcMarkdown);
@@ -795,7 +795,7 @@ export function renderizarHtml(
     `A revisão conferiu ${resultados.length} fichas. ` +
     `Foram identificados ${naoAtende} itens não atendidos, ${inconclusivos} inconclusivos ` +
     `e ${revisaoHumana} itens com revisão humana obrigatória.`;
-  const meta = (chave: string, padrao: string) => escape(strPy(ou(obter(metadata, chave), padrao)));
+  const meta = (chave: string, padrao: string) => escape(textoDoValor(ou(obter(metadata, chave), padrao)));
 
   return `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -930,19 +930,19 @@ export function gerarRelatorioHtml(
   caminhos: CaminhosAnalise = caminhosPadrao(),
 ): RelatorioGerado {
   const rodadaPaths = caminhosRodada(rodada);
-  const metadata = lerJsonPy(rodadaPaths.metadata);
+  const metadata = lerJsonDaRodada(rodadaPaths.metadata);
   const caminhoResultados = resolverResultadosPath(rodadaPaths.rodadaDir, resultados);
-  const payload = lerJsonPy(caminhoResultados);
-  if (!ehObjetoPy(payload)) throw new Error("AttributeError: o JSON de resultados precisa ser objeto");
+  const payload = lerJsonDaRodada(caminhoResultados);
+  if (!ehDicionario(payload)) throw new Error("AttributeError: o JSON de resultados precisa ser objeto");
   const fichasPorId = catalogoFichas(caminhos.fichasDir);
   const validacoesPorId = catalogoValidacoes(caminhos.validacoesCruzadasDir);
   const normalizados = validarResultadosSubagents(payload, fichasPorId);
   const alertas = validarAlertasTransversais(payload, fichasPorId, validacoesPorId);
   const ppcMarkdown = lerTexto(rodadaPaths.ppc);
-  if (!ehObjetoPy(metadata)) throw new Error("AttributeError: metadata.json precisa ser objeto");
+  if (!ehDicionario(metadata)) throw new Error("AttributeError: metadata.json precisa ser objeto");
   const html = formatarHtml(renderizarHtml(metadata, normalizados, alertas, ppcMarkdown));
   const situacaoGeral = situacao(normalizados, alertas);
-  escreverTextoPy(rodadaPaths.relatorioHtml, html);
+  escreverTextoDaRodada(rodadaPaths.relatorioHtml, html);
   const assets = copiarAssets(rodadaPaths.rodadaDir, caminhos);
   return {
     relatorio_html: rodadaPaths.relatorioHtml,

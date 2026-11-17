@@ -48,7 +48,7 @@ const FONTES_DADOS: readonly { caminho: string; extensoes: readonly string[] }[]
 const CODIGO = "packages/kb/src";
 const CODIGO_FORA = [
   /\.test\.ts$/,
-  /^packages\/kb\/src\/(cli|python\/|avaliacao\/)/,
+  /^packages\/kb\/src\/(cli|primitivas\/|avaliacao\/)/,
   /^packages\/kb\/src\/db\/(consultas|consultas-normas|comandos|pacote-contexto|sql|conexao|nodeSqliteClient)\.ts$/,
   // serviços Effect, layers e CLI: consultam o banco, não o compilam
   /^packages\/kb\/src\/([A-Z][A-Za-z]*|layers)\.ts$/,

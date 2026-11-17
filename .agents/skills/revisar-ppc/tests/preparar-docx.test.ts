@@ -6,11 +6,11 @@
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
-import type { ObjetoPy } from "@simplifica-if/kb/python/valores";
+import type { Dicionario } from "@simplifica-if/kb/primitivas/valores";
 import { docxDaFixture } from "@simplifica-if/ppc/testes/documentos";
 import { afterEach, describe, expect, test } from "vite-plus/test";
 import { prepararDocumento } from "../scripts/preparar-documento.ts";
-import { lerJsonPy } from "../scripts/rodada.ts";
+import { lerJsonDaRodada } from "../scripts/rodada.ts";
 
 const temporarios: string[] = [];
 afterEach(() => {
@@ -33,7 +33,7 @@ describe("preparar-documento com .docx", () => {
       relogio: () => new Date(2026, 10, 13),
     });
     expect(NodePath.basename(rodadaDir)).toBe("2026-11-13t00-00-00-ppc-tecnico-em-testes");
-    const dadosDaRodada = lerJsonPy(metadata) as ObjetoPy;
+    const dadosDaRodada = lerJsonDaRodada(metadata) as Dicionario;
     expect(dadosDaRodada).toMatchObject({
       curso: "Técnico em Testes",
       campus: "Foz do Iguaçu",
@@ -51,7 +51,7 @@ describe("preparar-documento com .docx", () => {
       "ementario",
     ]);
     for (const caminho of Object.values(conversao)) expect(NodeFS.existsSync(caminho)).toBe(true);
-    expect((lerJsonPy(conversao.dados!) as ObjetoPy).data_conversao).toBe("2026-11-13T00:00:00");
+    expect((lerJsonDaRodada(conversao.dados!) as Dicionario).data_conversao).toBe("2026-11-13T00:00:00");
     expect(NodeFS.existsSync(NodePath.join(conversao.output_dir!, "imagens", "representacao_grafica.png"))).toBe(true);
     // O PPC.md da rodada é o Markdown normalizado da conversão, com a matriz canônica.
     const texto = NodeFS.readFileSync(ppc, "utf-8");

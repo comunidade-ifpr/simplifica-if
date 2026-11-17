@@ -17,8 +17,8 @@
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { dumpsPy } from "@simplifica-if/kb/python/json";
-import { ORDEM_CHAVES, type ObjetoPy } from "@simplifica-if/kb/python/valores";
+import { serializarJsonTipado } from "@simplifica-if/kb/primitivas/json-tipado";
+import { ORDEM_CHAVES, type Dicionario } from "@simplifica-if/kb/primitivas/valores";
 import { normalizarMarkdown } from "../normalizador-markdown.ts";
 import { type Elemento, elementosDoDocumento, type Tabela } from "./elementos.ts";
 import { type ComponenteDoEmentario, extrairComponenteDoEmentario } from "./ementario.ts";
@@ -58,11 +58,11 @@ export type Conversao = {
   markdown: string;
   markdownBruto: string;
   /** Conteúdo do `_dados.json`, sem os nomes dos arquivos relacionados. */
-  dados: ObjetoPy;
-  matriz: ObjetoPy | null;
-  ementario: ObjetoPy | null;
+  dados: Dicionario;
+  matriz: Dicionario | null;
+  ementario: Dicionario | null;
   /** Resumos da matriz e do ementário que vão para o `_dados.json`. */
-  resumos: { matriz: ObjetoPy | null; ementario: ObjetoPy | null };
+  resumos: { matriz: Dicionario | null; ementario: Dicionario | null };
   representacaoGrafica: RepresentacaoGrafica | null;
 };
 
@@ -82,8 +82,8 @@ export type ArtefatosDocx = {
  * Objeto JSON com as chaves na ordem do mapa. As chaves vêm do documento (nomes de campo das
  * tabelas, cabeçalhos da matriz) e podem ser numéricas, que o JavaScript reordenaria.
  */
-function objetoOrdenado(mapa: Map<string, unknown>): ObjetoPy {
-  const objeto: ObjetoPy = {};
+function objetoOrdenado(mapa: Map<string, unknown>): Dicionario {
+  const objeto: Dicionario = {};
   for (const [chave, valor] of mapa) {
     Object.defineProperty(objeto, chave, { value: valor, enumerable: true, writable: true, configurable: true });
   }
@@ -91,7 +91,7 @@ function objetoOrdenado(mapa: Map<string, unknown>): ObjetoPy {
   return objeto;
 }
 
-function matrizEmJson(matriz: Matriz): ObjetoPy {
+function matrizEmJson(matriz: Matriz): Dicionario {
   if (matriz.tipo === "matriz_curricular_ppc") return { ...matriz };
   return {
     ...matriz,
@@ -110,7 +110,7 @@ function dataHoraLocal(data: Date): string {
   );
 }
 
-function metadadosDoDocumento(propriedades: PropriedadesOoxml): ObjetoPy {
+function metadadosDoDocumento(propriedades: PropriedadesOoxml): Dicionario {
   const campos: Array<[string, string | null]> = [
     ["title", propriedades.titulo],
     ["author", propriedades.autor],
@@ -167,7 +167,7 @@ function extrairDados(
   return { identificacao, matriz, ementario };
 }
 
-function ementarioEmJson(componentes: ComponenteDoEmentario[]): ObjetoPy | null {
+function ementarioEmJson(componentes: ComponenteDoEmentario[]): Dicionario | null {
   if (!componentes.length) return null;
   const porAno = new Map<string, string[]>();
   for (const componente of componentes) {
@@ -195,7 +195,7 @@ function ementarioEmJson(componentes: ComponenteDoEmentario[]): ObjetoPy | null 
  * em hora-relógio dos componentes (sem as linhas de atividades complementares e estágio); os
  * totais que o PPC declara estão em `totais`.
  */
-function resumoDaMatriz(matriz: Matriz): ObjetoPy {
+function resumoDaMatriz(matriz: Matriz): Dicionario {
   if (matriz.tipo !== "matriz_curricular_ppc") return {};
   const componentes = matriz.anos.flatMap((ano) => ano.componentes);
   const somar = (campo: "ch_hora_aula" | "ch_hora_relogio_cnct") =>
@@ -209,8 +209,8 @@ function resumoDaMatriz(matriz: Matriz): ObjetoPy {
   };
 }
 
-function resumoDoEmentario(ementario: ObjetoPy): ObjetoPy {
-  const estatisticas = ementario.estatisticas as ObjetoPy;
+function resumoDoEmentario(ementario: Dicionario): Dicionario {
+  const estatisticas = ementario.estatisticas as Dicionario;
   return {
     total_componentes: ementario.total_componentes,
     total_referencias_basicas: estatisticas.total_referencias_basicas,
@@ -274,7 +274,7 @@ export function converterPpc(bytes: Uint8Array, nomeDoArquivo: string, opcoes: O
 
   const matriz = extraidos.matriz ? matrizEmJson(extraidos.matriz) : null;
   const ementario = ementarioEmJson(extraidos.ementario);
-  const dados: ObjetoPy = {
+  const dados: Dicionario = {
     arquivo_origem: nomeDoArquivo,
     data_conversao: dataHoraLocal(opcoes.agora),
     metadata_documento: metadadosDoDocumento(documento.propriedades),
@@ -300,17 +300,17 @@ function radical(arquivo: string): string {
 }
 
 function gravarJson(caminho: string, valor: unknown): void {
-  NodeFS.writeFileSync(caminho, dumpsPy(valor, { indent: 2 }), "utf-8");
+  NodeFS.writeFileSync(caminho, serializarJsonTipado(valor, { indent: 2 }), "utf-8");
 }
 
 /** Monta o `_dados.json`: os dados da conversão, os arquivos relacionados e os resumos. */
 function dadosPrincipais(
   conversao: Conversao,
   nomes: Record<"markdown" | "bruto" | "matriz" | "ementario", string>,
-): ObjetoPy {
+): Dicionario {
   const grafica = conversao.representacaoGrafica;
   const imagem = grafica?.metodo === "bitmap" ? grafica.arquivo!.caminho : null;
-  const principais: ObjetoPy = {
+  const principais: Dicionario = {
     ...conversao.dados,
     arquivos_relacionados: {
       markdown_normalizado: nomes.markdown,

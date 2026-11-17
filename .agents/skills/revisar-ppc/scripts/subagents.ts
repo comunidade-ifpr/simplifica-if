@@ -32,23 +32,23 @@ import {
 import type { TopicoFichas } from "@simplifica-if/kb/ppcs/topicos";
 import { lerSinonimos } from "@simplifica-if/kb/busca/sinonimos";
 import { palavrasDeCampi, textoDaSecao } from "@simplifica-if/kb/ppcs/secoes";
-import { copiarProfundoPy, dumpsPy } from "@simplifica-if/kb/python/json";
-import { casefold, somenteDigitos } from "@simplifica-if/kb/python/texto";
+import { copiarValorJson, serializarJsonTipado } from "@simplifica-if/kb/primitivas/json-tipado";
+import { casefold, somenteDigitos } from "@simplifica-if/kb/primitivas/texto";
 import {
-  ehIntPy,
-  ehFloatPy,
-  ehObjetoPy,
+  ehInteiroOuLogico,
+  ehFlutuante,
+  ehDicionario,
   inteiroDeTexto,
-  iterarPy,
-  numeroPy,
+  itensIteraveis,
+  valorNumerico,
   obrigatorio,
   obter,
-  type ObjetoPy,
+  type Dicionario,
   ou,
-  strPy,
-  textoOuVazioPy,
+  textoDoValor,
+  textoOuVazioDoValor,
   verdadeiro,
-} from "@simplifica-if/kb/python/valores";
+} from "@simplifica-if/kb/primitivas/valores";
 import type { UniversoReferencias } from "@simplifica-if/kb/normas/referencia-estruturada";
 import { aparar, compararTexto } from "@simplifica-if/kb/texto";
 import { listarArquivos } from "./arquivos.ts";
@@ -59,10 +59,10 @@ import { carregarMarcos } from "./validacao-base.ts";
 import {
   caminhosRodada,
   carregarFichas,
-  escreverJsonPy,
-  escreverTextoPy,
+  escreverJsonDaRodada,
+  escreverTextoDaRodada,
   existe,
-  lerJsonPy,
+  lerJsonDaRodada,
   lerTexto,
   ordenarPorId,
   resolverCaminho,
@@ -118,35 +118,35 @@ const CAMPOS_TEXTO_FICHA = ["titulo", "pergunta", "rubrica", "boa_evidencia", "m
 export type OpcoesSkill = { caminhos?: CaminhosAnalise; fichasDir?: string; validacoesDir?: string };
 
 /** Fichas ordenadas por `id` (code point). */
-export function carregarFichasOrdenadas(fichasDir?: string): ObjetoPy[] {
+export function carregarFichasOrdenadas(fichasDir?: string): Dicionario[] {
   return ordenarPorId(carregarFichas(fichasDir ?? caminhosPadrao().fichasDir));
 }
 
 /** Validações cruzadas ordenadas por `id`, cada uma com o caminho do arquivo em `arquivo`. */
-export function carregarValidacoesCruzadasOrdenadas(validacoesDir?: string): ObjetoPy[] {
+export function carregarValidacoesCruzadasOrdenadas(validacoesDir?: string): Dicionario[] {
   const diretorio = validacoesDir ?? caminhosPadrao().validacoesCruzadasDir;
-  const validacoes: ObjetoPy[] = [];
+  const validacoes: Dicionario[] = [];
   for (const arquivo of listarArquivos(diretorio, ".json")) {
-    const payload = lerJsonPy(arquivo);
-    if (ehObjetoPy(payload)) validacoes.push({ ...payload, arquivo });
+    const payload = lerJsonDaRodada(arquivo);
+    if (ehDicionario(payload)) validacoes.push({ ...payload, arquivo });
   }
   return ordenarPorId(validacoes);
 }
 
-export type Grupo = ObjetoPy & { grupo_id: string; fichas: ObjetoPy[] };
+export type Grupo = Dicionario & { grupo_id: string; fichas: Dicionario[] };
 
 /** Tópicos de `topicos-fichas.json`, na ordem da taxonomia. */
 export function carregarTopicosFichas(caminho = caminhosPadrao().topicosFichasPath): TopicoFichas[] {
-  const payload = lerJsonPy(caminho);
-  const topicos = ehObjetoPy(payload) ? obter(payload, "topicos") : [];
-  return (Array.isArray(topicos) ? topicos : []).filter(ehObjetoPy).map((topico) => ({
+  const payload = lerJsonDaRodada(caminho);
+  const topicos = ehDicionario(payload) ? obter(payload, "topicos") : [];
+  return (Array.isArray(topicos) ? topicos : []).filter(ehDicionario).map((topico) => ({
     ...topico,
-    id: strPy(obter(topico, "id")),
-    fichas: iterarPy(obter(topico, "fichas", [])).map(strPy),
+    id: textoDoValor(obter(topico, "id")),
+    fichas: itensIteraveis(obter(topico, "fichas", [])).map(textoDoValor),
   })) as TopicoFichas[];
 }
 
-function comoFichaPacote(ficha: ObjetoPy): FichaPacote {
+function comoFichaPacote(ficha: Dicionario): FichaPacote {
   return ficha as FichaPacote;
 }
 
@@ -156,7 +156,7 @@ function comoFichaPacote(ficha: ObjetoPy): FichaPacote {
  * (`topicoPrincipal`); tópicos com mais de `tamanhoGrupo` fichas viram partes equilibradas.
  */
 export function agruparFichasPorTopico(
-  fichas: ObjetoPy[],
+  fichas: Dicionario[],
   topicos: readonly TopicoFichas[],
   tamanhoGrupo = TAMANHO_GRUPO_PADRAO,
 ): Grupo[] {
@@ -168,19 +168,19 @@ export function agruparFichasPorTopico(
     partes: grupo.partes,
     escopo_ppc: grupo.escopo,
     total_fichas: grupo.fichas.length,
-    fichas: grupo.fichas as ObjetoPy[],
+    fichas: grupo.fichas as Dicionario[],
   }));
 }
 
-function textoDaFicha(ficha: ObjetoPy): string {
-  const texto = CAMPOS_TEXTO_FICHA.map((campo) => strPy(obter(ficha, campo, ""))).join(" ");
-  return `${texto} ${iterarPy(obter(ficha, "consultas", []))
-    .map(strPy)
+function textoDaFicha(ficha: Dicionario): string {
+  const texto = CAMPOS_TEXTO_FICHA.map((campo) => textoDoValor(obter(ficha, campo, ""))).join(" ");
+  return `${texto} ${itensIteraveis(obter(ficha, "consultas", []))
+    .map(textoDoValor)
     .join(" ")}`;
 }
 
 /** A ficha depende do contexto do CNCT (menciona "cnct"). */
-export function fichaRequerContextoCnct(ficha: ObjetoPy): boolean {
+export function fichaRequerContextoCnct(ficha: Dicionario): boolean {
   const texto = casefold(textoDaFicha(ficha));
   return texto.includes("cnct") || texto.includes("contexto_estrutural.cnct");
 }
@@ -204,7 +204,7 @@ const TERMOS_NORMATIVOS = [
 ];
 
 /** A ficha tem referências normativas ou fala de norma, lei, resolução etc. */
-export function fichaRequerFundamentacaoNormativa(ficha: ObjetoPy): boolean {
+export function fichaRequerFundamentacaoNormativa(ficha: Dicionario): boolean {
   const referencias = obter(ficha, "referencias_normativas");
   if (Array.isArray(referencias) && referencias.length > 0) return true;
   const texto = casefold(textoDaFicha(ficha));
@@ -215,7 +215,7 @@ export function fichaRequerFundamentacaoNormativa(ficha: ObjetoPy): boolean {
  * Ficha como vai para os sub-agentes: `referencias_normativas` em texto legível, uma citação por
  * norma, com o papel, o ID e o arquivo na base (`path`, relativo a `base-conhecimento/`).
  */
-export function fichaParaSubagente(ficha: ObjetoPy, universo: UniversoReferencias): ObjetoPy {
+export function fichaParaSubagente(ficha: Dicionario, universo: UniversoReferencias): Dicionario {
   if (!Object.hasOwn(ficha, "referencias_normativas")) return ficha;
   const referencias = referenciasLegiveisDaFicha(ficha, universo).map(({ texto, papel, ref, path: caminho }) =>
     caminho === undefined ? { texto, papel, ref } : { texto, papel, ref, path: caminho },
@@ -238,7 +238,7 @@ export function carregarMarcosNormativos(
 }
 
 /** Contexto do protocolo `verificar-fundamentacao-normativa` para os sub-agentes. */
-export function contextoFundamentacaoNormativa(caminhos: CaminhosAnalise = caminhosPadrao()): ObjetoPy {
+export function contextoFundamentacaoNormativa(caminhos: CaminhosAnalise = caminhosPadrao()): Dicionario {
   const base = caminhos.baseConhecimentoDir;
   const skill = NodePath.join(NodePath.dirname(caminhos.appDir), "verificar-fundamentacao-normativa");
   const seExiste = (caminho: string) => (existe(caminho) ? caminho : null);
@@ -265,7 +265,7 @@ export function contextoFundamentacaoNormativa(caminhos: CaminhosAnalise = camin
 }
 
 /** Grava `validacoes-cruzadas-contexto.json` na rodada. */
-export function contextoValidacoesCruzadas(rodada: string, opcoes: OpcoesSkill = {}): ObjetoPy {
+export function contextoValidacoesCruzadas(rodada: string, opcoes: OpcoesSkill = {}): Dicionario {
   const skill = opcoes.caminhos ?? caminhosPadrao();
   const caminhos = caminhosRodada(rodada);
   const diretorio = opcoes.validacoesDir ?? skill.validacoesCruzadasDir;
@@ -279,28 +279,28 @@ export function contextoValidacoesCruzadas(rodada: string, opcoes: OpcoesSkill =
       "quando houver problema transversal, registrar alerta com validacao_id.",
     validacoes,
   };
-  escreverJsonPy(caminhos.validacoesCruzadasContexto, contexto);
+  escreverJsonDaRodada(caminhos.validacoesCruzadasContexto, contexto);
   return contexto;
 }
 
-function preparacaoDocx(preparacao: string): ObjetoPy {
+function preparacaoDocx(preparacao: string): Dicionario {
   if (!existe(preparacao)) return {};
-  const payload = lerJsonPy(preparacao);
-  return ehObjetoPy(payload) ? payload : {};
+  const payload = lerJsonDaRodada(preparacao);
+  return ehDicionario(payload) ? payload : {};
 }
 
 function resolverCaminhoArtefato(valor: unknown): string | null {
   if (!verdadeiro(valor)) return null;
-  const caminho = strPy(valor);
+  const caminho = textoDoValor(valor);
   return existe(caminho) ? resolverCaminho(caminho) : null;
 }
 
 /** `_valor_inteiro`: inteiro de número inteiro, float inteiro ou dos dígitos de um texto. */
 function valorInteiro(valor: unknown): number | null {
   if (typeof valor === "boolean") return null;
-  if (ehIntPy(valor)) return numeroPy(valor);
-  if (ehFloatPy(valor)) {
-    const numero = numeroPy(valor);
+  if (ehInteiroOuLogico(valor)) return valorNumerico(valor);
+  if (ehFlutuante(valor)) {
+    const numero = valorNumerico(valor);
     return Number.isInteger(numero) ? numero : null;
   }
   if (typeof valor === "string") {
@@ -313,21 +313,21 @@ function valorInteiro(valor: unknown): number | null {
   return null;
 }
 
-function cargaHorariaEfetiva(componente: ObjetoPy): number | null {
+function cargaHorariaEfetiva(componente: Dicionario): number | null {
   const numericos = ["ch_hora_relogio_cnct", "ch_hora_relogio", "ch_hora_aula", "carga_horaria"]
     .map((campo) => valorInteiro(obter(componente, campo)))
     .filter((valor): valor is number => valor !== null);
   return numericos.length ? Math.max(...numericos) : null;
 }
 
-function linhaModeloMatriz(componentes: ObjetoPy[], termos: string[]): ObjetoPy {
+function linhaModeloMatriz(componentes: Dicionario[], termos: string[]): Dicionario {
   const encontrados: Array<{
     nome: string;
     carga_horaria_efetiva: number | null;
     linha_modelo_sem_obrigatoriedade: boolean;
   }> = [];
   for (const componente of componentes) {
-    const nome = textoOuVazioPy(
+    const nome = textoOuVazioDoValor(
       ou(obter(componente, "nome"), obter(componente, "componente"), obter(componente, "titulo")),
     );
     const normalizado = casefold(nome);
@@ -346,7 +346,7 @@ function linhaModeloMatriz(componentes: ObjetoPy[], termos: string[]): ObjetoPy 
   };
 }
 
-function resumoMatriz(matriz: ObjetoPy): ObjetoPy {
+function resumoMatriz(matriz: Dicionario): Dicionario {
   const componentes = componentesMatriz(matriz);
   const series = Array.isArray(obter(matriz, "series")) ? obter(matriz, "series") : obter(matriz, "anos");
   return {
@@ -366,7 +366,7 @@ function resumoMatriz(matriz: ObjetoPy): ObjetoPy {
   };
 }
 
-function resumoEmentario(ementario: ObjetoPy): ObjetoPy {
+function resumoEmentario(ementario: Dicionario): Dicionario {
   let componentes = obter(ementario, "componentes");
   if (!Array.isArray(componentes)) {
     const ementas = obter(ementario, "ementas");
@@ -375,15 +375,15 @@ function resumoEmentario(ementario: ObjetoPy): ObjetoPy {
   const lista = componentes as unknown[];
   const nomes: string[] = [];
   for (const componente of lista.slice(0, 30)) {
-    if (!ehObjetoPy(componente)) continue;
+    if (!ehDicionario(componente)) continue;
     const nome = ou(obter(componente, "nome"), obter(componente, "componente"), obter(componente, "titulo"));
-    if (verdadeiro(nome)) nomes.push(strPy(nome));
+    if (verdadeiro(nome)) nomes.push(textoDoValor(nome));
   }
   return { componentes_total: lista.length, amostra_componentes: nomes };
 }
 
 /** Grava `contexto-estrutural-subagents.json` com o resumo dos artefatos da conversão DOCX. */
-export function gerarContextoEstruturalSubagents(rodada: string): ObjetoPy {
+export function gerarContextoEstruturalSubagents(rodada: string): Dicionario {
   const caminhos = caminhosRodada(rodada);
   const preparacao = preparacaoDocx(caminhos.preparacaoDocx);
   const dados = lerJsonSeExistir(obter(preparacao, "dados"));
@@ -400,7 +400,7 @@ export function gerarContextoEstruturalSubagents(rodada: string): ObjetoPy {
     matriz_curricular: resumoMatriz(matriz),
     ementario: resumoEmentario(ementario),
   };
-  escreverJsonPy(caminhos.contextoEstruturalSubagents, contexto);
+  escreverJsonDaRodada(caminhos.contextoEstruturalSubagents, contexto);
   return contexto;
 }
 
@@ -411,12 +411,12 @@ function anexosVisuais(rodada: string): AnexoVisual[] {
   const preparacao = preparacaoDocx(caminhos.preparacaoDocx);
   const dados = lerJsonSeExistir(obter(preparacao, "dados"));
   const representacao = obter(dados, "representacao_grafica");
-  if (!ehObjetoPy(representacao) || !verdadeiro(obter(representacao, "extraida"))) return [];
+  if (!ehDicionario(representacao) || !verdadeiro(obter(representacao, "extraida"))) return [];
   const caminho = obter(representacao, "caminho");
   if (!verdadeiro(caminho)) return [];
-  let imagem = strPy(caminho);
+  let imagem = textoDoValor(caminho);
   if (!NodePath.isAbsolute(imagem)) {
-    const base = NodePath.dirname(resolverCaminho(textoOuVazioPy(obter(preparacao, "dados")) || "."));
+    const base = NodePath.dirname(resolverCaminho(textoOuVazioDoValor(obter(preparacao, "dados")) || "."));
     imagem = NodePath.join(base, imagem);
   }
   if (!existe(imagem)) return [];
@@ -431,12 +431,12 @@ function anexosVisuais(rodada: string): AnexoVisual[] {
 }
 
 type Contextos = {
-  cnct: ObjetoPy;
-  estrutura: ObjetoPy;
+  cnct: Dicionario;
+  estrutura: Dicionario;
   anexos: AnexoVisual[];
-  fundamentacao: ObjetoPy;
+  fundamentacao: Dicionario;
   /** Marcos com as normas por extenso, por ID. */
-  marcosLegiveis: Map<string, ObjetoPy>;
+  marcosLegiveis: Map<string, Dicionario>;
 };
 
 /** Taxonomia de seções usada no `PPC.md` da rodada: a skill analisa cursos técnicos. */
@@ -454,7 +454,7 @@ export type ContextoKbRodada = {
   /** Linhas e total de caracteres do `PPC.md`. */
   markdown: string;
   pacote(
-    fichas: ObjetoPy[],
+    fichas: Dicionario[],
     escopo: "secoes" | "completo",
     citacoesPpc: boolean,
   ): Effect.Effect<PacoteAvulso, Sql.FalhaNaConsulta>;
@@ -494,14 +494,14 @@ export const abrirContextoKbRodada = Effect.fn("subagents.abrirContextoKbRodada"
 });
 
 /** Tópicos temáticos das fichas, sem repetição, em ordem. */
-function topicosDasFichas(fichas: ObjetoPy[]): string[] {
-  return [...new Set(fichas.flatMap((ficha) => iterarPy(obter(ficha, "topicos_tematicos", [])).map(strPy)))].sort(
+function topicosDasFichas(fichas: Dicionario[]): string[] {
+  return [...new Set(fichas.flatMap((ficha) => itensIteraveis(obter(ficha, "topicos_tematicos", [])).map(textoDoValor)))].sort(
     compararTexto,
   );
 }
 
 /** `contextos.ppc`: o escopo do PPC no grupo e as seções selecionadas (sem o texto, que vai no pacote). */
-function contextoPpcDoGrupo(pacote: PacoteAvulso, fichas: ObjetoPy[], kb: ContextoKbRodada, ppc: string): ObjetoPy {
+function contextoPpcDoGrupo(pacote: PacoteAvulso, fichas: Dicionario[], kb: ContextoKbRodada, ppc: string): Dicionario {
   const secoes = pacote.secoes.map((secao) => ({
     id: secao.id.slice(secao.id.indexOf("#") + 1),
     tipo: secao.tipo,
@@ -528,7 +528,7 @@ function contextoPpcDoGrupo(pacote: PacoteAvulso, fichas: ObjetoPy[], kb: Contex
  * (por extenso, com as citações do PPC às normas de cada um), o texto dos dispositivos citados pelas
  * fichas (com caput) e as regras de transição aplicáveis.
  */
-function fundamentacaoDoGrupo(contextos: Contextos, pacote: PacoteAvulso): ObjetoPy {
+function fundamentacaoDoGrupo(contextos: Contextos, pacote: PacoteAvulso): Dicionario {
   const { marcos_normativos: _todos, observacao: _observacao, ...base } = contextos.fundamentacao;
   // Todos os marcos (são poucos e as fichas remetem a eles); as citações do PPC vêm do pacote do kb.
   const citacoes = new Map(pacote.marcos.map((marco) => [marco.marco, marco.citacoes_no_ppc]));
@@ -564,7 +564,7 @@ const adicionarContextosGrupo = Effect.fn("subagents.adicionarContextosGrupo")(f
   const escopo = obter(grupo, "escopo_ppc") === "completo" ? "completo" : "secoes";
   // As fichas de referencias_normativas conferem a base normativa citada em qualquer ponto do PPC.
   const pacote = yield* kb.pacote(grupo.fichas, escopo, topicosDasFichas(grupo.fichas).includes(TOPICO_CITACOES_PPC));
-  const saida: ObjetoPy = { ppc: contextoPpcDoGrupo(pacote, grupo.fichas, kb, ppc) };
+  const saida: Dicionario = { ppc: contextoPpcDoGrupo(pacote, grupo.fichas, kb, ppc) };
   const requerCnct = grupo.fichas.some(fichaRequerContextoCnct);
   grupo.requer_contexto_cnct = requerCnct;
   if (requerCnct) saida.cnct = contextos.cnct;
@@ -590,15 +590,15 @@ function contextosDaRodada(rodada: string, skill: CaminhosAnalise): Contextos {
     fundamentacao: contextoFundamentacaoNormativa(skill),
     marcosLegiveis: new Map(
       carregarMarcosNormativos(skill.marcosNormativosPath, universo)
-        .filter(ehObjetoPy)
-        .map((marco) => [strPy(obter(marco, "id")), marco]),
+        .filter(ehDicionario)
+        .map((marco) => [textoDoValor(obter(marco, "id")), marco]),
     ),
   };
 }
 
 /** Ficha da forma como vai para o sub-agente (referências legíveis), a partir da ficha da base. */
-function fichasParaSubagente(fichas: ObjetoPy[], universo: UniversoReferencias): ObjetoPy[] {
-  return fichas.map((ficha) => fichaParaSubagente(copiarProfundoPy(ficha), universo));
+function fichasParaSubagente(fichas: Dicionario[], universo: UniversoReferencias): Dicionario[] {
+  return fichas.map((ficha) => fichaParaSubagente(copiarValorJson(ficha), universo));
 }
 
 function promptTemplate(skill: CaminhosAnalise): string {
@@ -623,7 +623,7 @@ export const montarGruposSubagents = Effect.fn("subagents.montarGruposSubagents"
   const skill = opcoes.caminhos ?? caminhosPadrao();
   const caminhos = caminhosRodada(rodada);
   if (!existe(caminhos.ppc)) return yield* new RodadaSemPpc({ caminho: caminhos.ppc });
-  const metadata = existe(caminhos.metadata) ? (lerJsonPy(caminhos.metadata) as ObjetoPy) : {};
+  const metadata = existe(caminhos.metadata) ? (lerJsonDaRodada(caminhos.metadata) as Dicionario) : {};
   const universo = universoOuVazio(skill);
   const fichas = carregarFichasOrdenadas(opcoes.fichasDir ?? skill.fichasDir);
   const topicos = carregarTopicosFichas(skill.topicosFichasPath);
@@ -635,7 +635,7 @@ export const montarGruposSubagents = Effect.fn("subagents.montarGruposSubagents"
     yield* adicionarContextosGrupo(grupo, contextos, kb, caminhos.ppc);
     grupo.fichas = fichasParaSubagente(grupo.fichas, universo);
   }
-  const payload: ObjetoPy = {
+  const payload: Dicionario = {
     rodada_dir: caminhos.rodadaDir,
     ppc_markdown: caminhos.ppc,
     grupos_subagents_path: caminhos.gruposSubagents,
@@ -655,7 +655,7 @@ export const montarGruposSubagents = Effect.fn("subagents.montarGruposSubagents"
     agrupamento: { criterio: "topico", tamanho_maximo: tamanhoGrupo, regra: REGRA_AGRUPAMENTO },
     grupos,
   };
-  escreverJsonPy(caminhos.gruposSubagents, payload);
+  escreverJsonDaRodada(caminhos.gruposSubagents, payload);
   return payload;
 }, Effect.scoped);
 
@@ -668,7 +668,7 @@ export const montarGrupoAvulso = Effect.fn("subagents.montarGrupoAvulso")(functi
   if (!fichaIds.length) return yield* new GrupoAvulsoInvalido({ desconhecidas: [] });
   const skill = opcoes.caminhos ?? caminhosPadrao();
   const caminhos = caminhosRodada(rodada);
-  const fichasPorId = new Map<unknown, ObjetoPy>();
+  const fichasPorId = new Map<unknown, Dicionario>();
   for (const ficha of carregarFichasOrdenadas(opcoes.fichasDir ?? skill.fichasDir)) {
     fichasPorId.set(obrigatorio(ficha, "id"), ficha);
   }
@@ -694,7 +694,7 @@ export const montarGrupoAvulso = Effect.fn("subagents.montarGrupoAvulso")(functi
   const kb = yield* abrirContextoKbRodada(rodada, skill);
   yield* adicionarContextosGrupo(grupo, contextos, kb, caminhos.ppc);
   grupo.fichas = fichasParaSubagente(selecionadas, universo);
-  const payload: ObjetoPy = {
+  const payload: Dicionario = {
     rodada_dir: caminhos.rodadaDir,
     ppc_markdown: caminhos.ppc,
     prompt_template: promptTemplate(skill),
@@ -702,9 +702,9 @@ export const montarGrupoAvulso = Effect.fn("subagents.montarGrupoAvulso")(functi
   };
   NodeFS.mkdirSync(caminhos.gruposAvulsosDir, { recursive: true });
   const destino = NodePath.join(caminhos.gruposAvulsosDir, `${grupo.grupo_id}.json`);
-  escreverJsonPy(destino, payload);
+  escreverJsonDaRodada(destino, payload);
   const prompt = NodePath.join(caminhos.gruposAvulsosDir, `${grupo.grupo_id}.md`);
-  escreverTextoPy(prompt, pacotePromptGrupo(lerTexto(caminhos.ppc), lerTexto(promptTemplate(skill)), grupo));
+  escreverTextoDaRodada(prompt, pacotePromptGrupo(lerTexto(caminhos.ppc), lerTexto(promptTemplate(skill)), grupo));
   payload.grupo_avulso_path = destino;
   payload.prompt_subagent_path = prompt;
   return payload;
@@ -713,14 +713,14 @@ export const montarGrupoAvulso = Effect.fn("subagents.montarGrupoAvulso")(functi
 /** Seções do `PPC.md` listadas em `contextos.ppc.secoes`, cada uma com a linha do título e a origem. */
 function secoesDoPpcEmMarkdown(ppc: string, secoes: unknown[]): string {
   return secoes
-    .filter(ehObjetoPy)
+    .filter(ehDicionario)
     .map((secao) => {
-      const inicio = numeroPy(obter(secao, "linha_inicio"));
-      const fim = numeroPy(obter(secao, "linha_fim"));
-      const motivo = iterarPy(obter(secao, "motivo", []))
-        .map(strPy)
+      const inicio = valorNumerico(obter(secao, "linha_inicio"));
+      const fim = valorNumerico(obter(secao, "linha_fim"));
+      const motivo = itensIteraveis(obter(secao, "motivo", []))
+        .map(textoDoValor)
         .join("; ");
-      const cabecalho = `<!-- seção ${strPy(obter(secao, "id"))} · linhas ${inicio}-${fim} · ${motivo} -->`;
+      const cabecalho = `<!-- seção ${textoDoValor(obter(secao, "id"))} · linhas ${inicio}-${fim} · ${motivo} -->`;
       return `${cabecalho}\n${textoDaSecao(ppc, inicio, fim, { incluirTitulo: true })}`;
     })
     .join("\n\n");
@@ -728,21 +728,21 @@ function secoesDoPpcEmMarkdown(ppc: string, secoes: unknown[]): string {
 
 /** Bloco do PPC no pacote: o `PPC.md` inteiro (escopo `completo`) ou só as seções do grupo. */
 function blocoPpc(ppc: string, grupo: unknown): string {
-  const contextos = ehObjetoPy(grupo) ? obter(grupo, "contextos", {}) : {};
-  const contexto = ehObjetoPy(contextos) ? obter(contextos, "ppc") : undefined;
-  if (!ehObjetoPy(contexto) || obter(contexto, "escopo") !== "secoes") {
+  const contextos = ehDicionario(grupo) ? obter(grupo, "contextos", {}) : {};
+  const contexto = ehDicionario(contextos) ? obter(contextos, "ppc") : undefined;
+  if (!ehDicionario(contexto) || obter(contexto, "escopo") !== "secoes") {
     return ["## PPC.md", `\`\`\`markdown\n${aparar(ppc)}\n\`\`\``].join("\n\n");
   }
-  const secoes = iterarPy(obter(contexto, "secoes", []));
-  const topicos = iterarPy(obter(contexto, "topicos", []))
-    .map(strPy)
+  const secoes = itensIteraveis(obter(contexto, "secoes", []));
+  const topicos = itensIteraveis(obter(contexto, "topicos", []))
+    .map(textoDoValor)
     .join(", ");
   return [
     "## PPC.md: seções do grupo",
-    `Este pacote traz ${secoes.length} seções do \`PPC.md\` (${strPy(obter(contexto, "caracteres_secoes"))} de ` +
-      `${strPy(obter(contexto, "caracteres_ppc"))} caracteres), escolhidas pelos tópicos das fichas (${topicos}) e ` +
+    `Este pacote traz ${secoes.length} seções do \`PPC.md\` (${textoDoValor(obter(contexto, "caracteres_secoes"))} de ` +
+      `${textoDoValor(obter(contexto, "caracteres_ppc"))} caracteres), escolhidas pelos tópicos das fichas (${topicos}) e ` +
       "pelas consultas das fichas. " +
-      `O arquivo completo está em \`${strPy(obter(contexto, "ppc_markdown"))}\`: ` +
+      `O arquivo completo está em \`${textoDoValor(obter(contexto, "ppc_markdown"))}\`: ` +
       "leia-o antes de concluir que uma informação falta no PPC.",
     `\`\`\`markdown\n${secoesDoPpcEmMarkdown(ppc, secoes)}\n\`\`\``,
   ].join("\n\n");
@@ -753,24 +753,24 @@ function blocoPpc(ppc: string, grupo: unknown): string {
  * (cada seção com o ID, as linhas e o motivo no comentário de abertura).
  */
 function grupoParaPacote(grupo: unknown): unknown {
-  if (!ehObjetoPy(grupo)) return grupo;
+  if (!ehDicionario(grupo)) return grupo;
   const contextos = obter(grupo, "contextos");
-  const contextoPpc = ehObjetoPy(contextos) ? obter(contextos, "ppc") : undefined;
-  if (!ehObjetoPy(contextoPpc) || obter(contextoPpc, "escopo") !== "secoes") return grupo;
+  const contextoPpc = ehDicionario(contextos) ? obter(contextos, "ppc") : undefined;
+  if (!ehDicionario(contextoPpc) || obter(contextoPpc, "escopo") !== "secoes") return grupo;
   const { secoes: _secoes, ...resumo } = contextoPpc;
-  return { ...grupo, contextos: { ...(contextos as ObjetoPy), ppc: resumo } };
+  return { ...grupo, contextos: { ...(contextos as Dicionario), ppc: resumo } };
 }
 
 function pacotePromptGrupo(ppc: string, template: string, grupo: unknown): string {
-  const grupoId = ehObjetoPy(grupo) ? strPy(obter(grupo, "grupo_id")) : "None";
-  const topico = ehObjetoPy(grupo) ? obter(grupo, "topico_titulo") : undefined;
+  const grupoId = ehDicionario(grupo) ? textoDoValor(obter(grupo, "grupo_id")) : "None";
+  const topico = ehDicionario(grupo) ? obter(grupo, "topico_titulo") : undefined;
   return `${[
-    `# Pacote de análise ${grupoId}${verdadeiro(topico) ? ` (${strPy(topico)})` : ""}`,
+    `# Pacote de análise ${grupoId}${verdadeiro(topico) ? ` (${textoDoValor(topico)})` : ""}`,
     "## Prompt de trabalho",
     aparar(template),
     blocoPpc(ppc, grupo),
     "## Grupo e contextos",
-    `\`\`\`json\n${dumpsPy(grupoParaPacote(grupo), { indent: 2 })}\n\`\`\``,
+    `\`\`\`json\n${serializarJsonTipado(grupoParaPacote(grupo), { indent: 2 })}\n\`\`\``,
     "Retorne somente JSON válido no contrato do prompt de trabalho.",
   ].join("\n\n")}\n`;
 }
@@ -783,23 +783,23 @@ export const prepararPromptsSubagents = Effect.fn("subagents.prepararPromptsSuba
   const skill = opcoes.caminhos ?? caminhosPadrao();
   const caminhos = caminhosRodada(rodada);
   const payload = existe(caminhos.gruposSubagents)
-    ? (lerJsonPy(caminhos.gruposSubagents) as ObjetoPy)
+    ? (lerJsonDaRodada(caminhos.gruposSubagents) as Dicionario)
     : yield* montarGruposSubagents(rodada, TAMANHO_GRUPO_PADRAO, opcoes);
   const grupos = obter(payload, "grupos");
   if (!Array.isArray(grupos)) return yield* new GruposSubagentsInvalidos({ caminho: caminhos.gruposSubagents });
   const ppc = lerTexto(caminhos.ppc);
-  const templatePath = strPy(
+  const templatePath = textoDoValor(
     ou(obter(payload, "prompt_template"), NodePath.join(skill.promptsDir, "subagent-lote-fichas.md")),
   );
   const template = lerTexto(templatePath);
   NodeFS.mkdirSync(caminhos.promptsSubagentsDir, { recursive: true });
-  const arquivos: ObjetoPy[] = [];
+  const arquivos: Dicionario[] = [];
   for (const grupo of grupos) {
-    if (!ehObjetoPy(grupo)) throw new Error("AttributeError: grupo não é objeto JSON");
-    const grupoId = strPy(ou(obter(grupo, "grupo_id"), "grupo"));
+    if (!ehDicionario(grupo)) throw new Error("AttributeError: grupo não é objeto JSON");
+    const grupoId = textoDoValor(ou(obter(grupo, "grupo_id"), "grupo"));
     const destino = NodePath.join(caminhos.promptsSubagentsDir, `${grupoId}.md`);
     const texto = pacotePromptGrupo(ppc, template, grupo);
-    escreverTextoPy(destino, texto);
+    escreverTextoDaRodada(destino, texto);
     arquivos.push({
       grupo_id: grupoId,
       topico: obter(grupo, "topico", null),
@@ -808,14 +808,14 @@ export const prepararPromptsSubagents = Effect.fn("subagents.prepararPromptsSuba
       caracteres: texto.length,
     });
   }
-  const manifest: ObjetoPy = {
+  const manifest: Dicionario = {
     rodada_dir: caminhos.rodadaDir,
     ppc_markdown: caminhos.ppc,
     prompt_template: templatePath,
     total_pacotes: arquivos.length,
-    caracteres_total: arquivos.reduce((total, arquivo) => total + numeroPy(arquivo.caracteres), 0),
+    caracteres_total: arquivos.reduce((total, arquivo) => total + valorNumerico(arquivo.caracteres), 0),
     arquivos,
   };
-  escreverJsonPy(caminhos.promptsSubagentsManifest, manifest);
+  escreverJsonDaRodada(caminhos.promptsSubagentsManifest, manifest);
   return manifest;
 });

@@ -3,11 +3,11 @@
  * próprio Python (difflib, repr, round, json.dumps, str.casefold).
  */
 import { describe, expect, test } from "vite-plus/test";
-import { SequenceMatcher } from "./difflib.ts";
-import { copiarProfundoPy, dumpsPy, jsonIndentadoPy, loadsPy } from "./json.ts";
-import { escape, finditer, fullmatch, match, search, split, sub } from "./re.ts";
+import { SequenceMatcher } from "./sequencias.ts";
+import { copiarValorJson, serializarJsonTipado, jsonTipadoIndentado, analisarJsonTipado } from "./json-tipado.ts";
+import { escape, finditer, fullmatch, match, search, split, sub } from "./regex.ts";
 import { casefold, colapsarEspacos, semMarcas, somenteDigitos } from "./texto.ts";
-import { chavesPy, FloatPy, intPy, ou, reprFloat, roundPy, strPy, verdadeiro } from "./valores.ts";
+import { chavesNaOrdem, Flutuante, inteiroDoValor, ou, reprFloat, arredondarParaPar, textoDoValor, verdadeiro } from "./valores.ts";
 
 /** Mesmo gerador congruencial usado no Python para produzir os casos. */
 function gerar(semente: number, n: number, alfabeto: string[]): [string, number] {
@@ -109,7 +109,7 @@ const FLOATS: Array<[number, string, string, string]> = [
 describe("valores", () => {
   test("repr e round de float", () => {
     for (const [valor, repr, r4, r2] of FLOATS) {
-      expect([valor, reprFloat(valor), reprFloat(roundPy(valor, 4)), reprFloat(roundPy(valor, 2))]).toEqual([
+      expect([valor, reprFloat(valor), reprFloat(arredondarParaPar(valor, 4)), reprFloat(arredondarParaPar(valor, 2))]).toEqual([
         valor,
         repr,
         r4,
@@ -119,13 +119,13 @@ describe("valores", () => {
   });
 
   test("str de lista como o Python", () => {
-    expect(strPy(["a'b", 'c"d', null, true, new FloatPy(1), { k: 2 }])).toBe(
+    expect(textoDoValor(["a'b", 'c"d', null, true, new Flutuante(1), { k: 2 }])).toBe(
       `["a'b", 'c"d', None, True, 1.0, {'k': 2}]`,
     );
   });
 
   test("verdade, or e int", () => {
-    expect([verdadeiro(new FloatPy(0)), verdadeiro({}), verdadeiro([0]), verdadeiro("0")]).toEqual([
+    expect([verdadeiro(new Flutuante(0)), verdadeiro({}), verdadeiro([0]), verdadeiro("0")]).toEqual([
       false,
       false,
       true,
@@ -133,18 +133,18 @@ describe("valores", () => {
     ]);
     expect(ou("", null, 0, "x")).toBe("x");
     expect(ou("", 0)).toBe(0);
-    expect([intPy(" 12 "), intPy("١٢"), intPy(new FloatPy(2.7)), intPy(true)]).toEqual([12, 12, 2, 1]);
-    expect(() => intPy("1²")).toThrow();
-    expect(() => intPy(null)).toThrow();
+    expect([inteiroDoValor(" 12 "), inteiroDoValor("١٢"), inteiroDoValor(new Flutuante(2.7)), inteiroDoValor(true)]).toEqual([12, 12, 2, 1]);
+    expect(() => inteiroDoValor("1²")).toThrow();
+    expect(() => inteiroDoValor(null)).toThrow();
   });
 });
 
 describe("json", () => {
   test("dumps com indentação como o Python", () => {
-    const valor = loadsPy(
+    const valor = analisarJsonTipado(
       '{"a": [1, 2.0, {"b": null, "c": true}], "d": {}, "e": [], "z": "aç\\n\\"\\\\\\u0001", "2": 1}',
     );
-    expect(dumpsPy(valor, { indent: 2 })).toBe(
+    expect(serializarJsonTipado(valor, { indent: 2 })).toBe(
       [
         "{",
         '  "a": [',
@@ -162,31 +162,31 @@ describe("json", () => {
         "}",
       ].join("\n"),
     );
-    expect(jsonIndentadoPy([])).toBe("[]\n");
+    expect(jsonTipadoIndentado([])).toBe("[]\n");
   });
 
   test("dumps compacto, sort_keys e separadores padrão", () => {
-    expect(dumpsPy(loadsPy('{"b": 1, "a": ["é", 1.5e16]}'), { ordenarChaves: true, separadores: [",", ":"] })).toBe(
+    expect(serializarJsonTipado(analisarJsonTipado('{"b": 1, "a": ["é", 1.5e16]}'), { ordenarChaves: true, separadores: [",", ":"] })).toBe(
       '{"a":["é",1.5e+16],"b":1}',
     );
-    expect(dumpsPy({ b: 1, a: [1, 2] })).toBe('{"b": 1, "a": [1, 2]}');
+    expect(serializarJsonTipado({ b: 1, a: [1, 2] })).toBe('{"b": 1, "a": [1, 2]}');
   });
 
   test("loads preserva ordem de chaves numéricas, floats, inteiros grandes e NaN", () => {
-    const valor = loadsPy('{"z": 1, "10": 2, "2": 3, "big": 123456789012345678901, "n": NaN, "z": 4}') as Record<
+    const valor = analisarJsonTipado('{"z": 1, "10": 2, "2": 3, "big": 123456789012345678901, "n": NaN, "z": 4}') as Record<
       string,
       unknown
     >;
-    expect(chavesPy(valor)).toEqual(["z", "10", "2", "big", "n"]);
+    expect(chavesNaOrdem(valor)).toEqual(["z", "10", "2", "big", "n"]);
     expect(valor.z).toBe(4);
-    expect(dumpsPy(valor)).toBe('{"z": 4, "10": 2, "2": 3, "big": 123456789012345678901, "n": NaN}');
-    expect(dumpsPy(copiarProfundoPy(valor))).toBe(dumpsPy(valor));
-    expect(dumpsPy({ ...valor, novo: 1 })).toBe(
+    expect(serializarJsonTipado(valor)).toBe('{"z": 4, "10": 2, "2": 3, "big": 123456789012345678901, "n": NaN}');
+    expect(serializarJsonTipado(copiarValorJson(valor))).toBe(serializarJsonTipado(valor));
+    expect(serializarJsonTipado({ ...valor, novo: 1 })).toBe(
       '{"z": 4, "10": 2, "2": 3, "big": 123456789012345678901, "n": NaN, "novo": 1}',
     );
-    expect(() => loadsPy('{"a": "\u0001"}')).toThrow();
-    expect(() => loadsPy("[1,]")).toThrow();
-    expect((loadsPy('{"__proto__": 1}') as Record<string, unknown>).__proto__).toBe(1);
+    expect(() => analisarJsonTipado('{"a": "\u0001"}')).toThrow();
+    expect(() => analisarJsonTipado("[1,]")).toThrow();
+    expect((analisarJsonTipado('{"__proto__": 1}') as Record<string, unknown>).__proto__).toBe(1);
   });
 });
 

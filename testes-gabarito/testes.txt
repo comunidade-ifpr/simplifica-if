@@ -22,8 +22,8 @@ packages/kb/src/normas/texto-dispositivos.test.ts	13	0
 packages/kb/src/ppcs/front-matter.test.ts	4	0
 packages/kb/src/ppcs/secoes-base.test.ts	2	0
 packages/kb/src/ppcs/secoes.test.ts	11	0
-packages/kb/src/python/paridade-t2.test.ts	8	0
-packages/kb/src/python/python.test.ts	12	0
+packages/kb/src/primitivas/formatacao.test.ts	8	0
+packages/kb/src/primitivas/primitivas.test.ts	12	0
 packages/kb/src/texto.test.ts	11	0
 packages/mcp/test/banco-real.test.ts	6	6
 packages/mcp/test/banco.test.ts	8	0

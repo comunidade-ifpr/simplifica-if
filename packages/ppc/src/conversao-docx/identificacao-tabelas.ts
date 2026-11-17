@@ -6,8 +6,8 @@
  * A identificação que vai para o `metadata.json` da rodada é a de `../identificacao.ts`, sobre o
  * `PPC.md`; estes dados só preenchem o que ela não achar.
  */
-import { search, sub } from "@simplifica-if/kb/python/re";
-import { semMarcas } from "@simplifica-if/kb/python/texto";
+import { search, sub } from "@simplifica-if/kb/primitivas/regex";
+import { semMarcas } from "@simplifica-if/kb/primitivas/texto";
 import { aparar } from "@simplifica-if/kb/texto";
 import { type TabelaNormalizada, todasAsLinhas } from "./tabelas.ts";
 

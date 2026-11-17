@@ -511,7 +511,7 @@ function lerPropriedades(raiz: Element | null): PropriedadesOoxml {
 // ---------------------------------------------------------------- documento
 
 /** Lê o pacote já aberto; exposto para quem também precisa dos binários (a figura). */
-export function lerPacote(pacote: PacoteOoxml, opcoes: OpcoesLeitura = {}): DocumentoOoxml {
+export function lerPacote(pacote: PacoteOoxml): DocumentoOoxml {
   const principal = pacote.partePorTipo("", RELACAO_DOCUMENTO);
   const raiz = principal ? pacote.xml(principal) : null;
   const corpo = raiz ? filho(raiz, "w:body") : null;
@@ -534,5 +534,5 @@ export function lerPacote(pacote: PacoteOoxml, opcoes: OpcoesLeitura = {}): Docu
 
 /** Lê os bytes de um `.docx`. */
 export function lerDocx(bytes: Uint8Array, opcoes: OpcoesLeitura = {}): DocumentoOoxml {
-  return lerPacote(new PacoteOoxml(bytes, opcoes.limites), opcoes);
+  return lerPacote(new PacoteOoxml(bytes, opcoes.limites));
 }

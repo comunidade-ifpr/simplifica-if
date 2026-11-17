@@ -2,7 +2,7 @@
  * Seções do PPC: a hierarquia formada pelos títulos e os dados de identificação que as seções de
  * apresentação trazem ("Campus: …", "Carga horária total: …").
  */
-import { match, search } from "@simplifica-if/kb/python/re";
+import { match, search } from "@simplifica-if/kb/primitivas/regex";
 import { aparar } from "@simplifica-if/kb/texto";
 import { type Elemento, type Tabela, textoDosTrechos, type Titulo } from "./elementos.ts";
 

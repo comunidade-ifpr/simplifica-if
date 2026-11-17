@@ -6,11 +6,11 @@
  */
 import { describe, expect, test } from "vite-plus/test";
 import { escapeHtml } from "./html.ts";
-import { dividirComandoShell } from "./shlex.ts";
+import { dividirComandoShell } from "./shell.ts";
 import { expandirTabs } from "./texto.ts";
-import { wrap } from "./textwrap.ts";
+import { wrap } from "./quebra-de-linhas.ts";
 import { caminhoComoUri, quote } from "./url.ts";
-import { formatoFixoPy } from "./valores.ts";
+import { formatoFixo } from "./valores.ts";
 
 const CASOS_WRAP: Array<[string, number, boolean, string[]]> = [
   ["", 5, false, []],
@@ -389,6 +389,6 @@ describe("urllib e pathlib", () => {
 
 describe("format(x, '.2f')", () => {
   test("empate para o par sobre o valor binário e -0.00", () => {
-    for (const [valor, esperado] of CASOS_FIXOS) expect(formatoFixoPy(valor, 2)).toBe(esperado);
+    for (const [valor, esperado] of CASOS_FIXOS) expect(formatoFixo(valor, 2)).toBe(esperado);
   });
 });

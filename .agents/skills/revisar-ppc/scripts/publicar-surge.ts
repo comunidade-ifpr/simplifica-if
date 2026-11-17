@@ -9,9 +9,9 @@
 import * as NodeChildProcess from "node:child_process";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { search } from "@simplifica-if/kb/python/re";
-import { dividirComandoShell } from "@simplifica-if/kb/python/shlex";
-import { asciiNfkd, casefold } from "@simplifica-if/kb/python/texto";
+import { search } from "@simplifica-if/kb/primitivas/regex";
+import { dividirComandoShell } from "@simplifica-if/kb/primitivas/shell";
+import { asciiNfkd, casefold } from "@simplifica-if/kb/primitivas/texto";
 import { aparar, apararCaracteres } from "@simplifica-if/kb/texto";
 import { resolverCaminho } from "./rodada.ts";
 

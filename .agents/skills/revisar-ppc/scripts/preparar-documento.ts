@@ -9,7 +9,7 @@
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { corpoPpc } from "@simplifica-if/kb/ppcs/front-matter";
-import { type ObjetoPy, verdadeiro } from "@simplifica-if/kb/python/valores";
+import { type Dicionario, verdadeiro } from "@simplifica-if/kb/primitivas/valores";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import {
   type ArtefatosDocx,
@@ -33,9 +33,9 @@ import {
   caminhoRelativoSeguro,
   type CaminhosRodada,
   caminhosRodada,
-  escreverJsonPy,
-  escreverTextoPy,
-  lerJsonPy,
+  escreverJsonDaRodada,
+  escreverTextoDaRodada,
+  lerJsonDaRodada,
   lerTexto,
   type Relogio,
   relogioDoAmbiente,
@@ -83,7 +83,7 @@ function criarRodada(saidaBase: string, nomeBase: string, relogio: Relogio): str
  */
 function prepararMarkdown(arquivo: string, caminhos: CaminhosRodada, skill: CaminhosAnalise): IdentificacaoComFontes {
   const texto = corpoPpc(lerTexto(arquivo));
-  escreverTextoPy(caminhos.ppc, normalizarMarkdown(texto).markdownNormalizado);
+  escreverTextoDaRodada(caminhos.ppc, normalizarMarkdown(texto).markdownNormalizado);
   return extrairIdentificacao(texto, radical(arquivo), skill);
 }
 
@@ -115,15 +115,15 @@ function prepararDocx(
 ): { identificacao: IdentificacaoComFontes; conversao: ArtefatosDocx } {
   const artefatos = gravarArtefatos(convertido, arquivo, caminhos.artefatosConversaoDir);
   const normalizado = normalizarMarkdown(lerTexto(artefatos.markdown)).markdownNormalizado;
-  escreverTextoPy(artefatos.markdown, normalizado);
-  escreverTextoPy(caminhos.ppc, normalizado);
+  escreverTextoDaRodada(artefatos.markdown, normalizado);
+  escreverTextoDaRodada(caminhos.ppc, normalizado);
   copiarArquivo(artefatos.markdown_bruto, caminhos.ppcBruto);
   // O PPC.md da conversão traz as tabelas de identificação em Markdown, então a extração do
   // Markdown vem primeiro; os dados da conversão (validados pelos mesmos critérios) só preenchem
   // o que faltar, e o nome do arquivo fica por último.
   const { fontes, ...doMarkdown } = extrairIdentificacao(lerTexto(caminhos.ppc), "", skill);
   let identificacao = doMarkdown as Identificacao;
-  const daConversao = extrairIdentificacaoDaConversao(lerJsonPy(artefatos.dados), "", skill);
+  const daConversao = extrairIdentificacaoDaConversao(lerJsonDaRodada(artefatos.dados), "", skill);
   for (const [chave, valor] of Object.entries(daConversao) as Array<[keyof Identificacao, string]>) {
     if (valorIdentificacaoPreenchido(identificacao[chave]) || !valorIdentificacaoPreenchido(valor)) continue;
     identificacao[chave] = valor;
@@ -134,7 +134,7 @@ function prepararDocx(
     identificacao = { ...identificacao, curso: radical(arquivo) };
     fontes.curso = "nome_arquivo";
   }
-  escreverJsonPy(caminhos.preparacaoDocx, artefatos);
+  escreverJsonDaRodada(caminhos.preparacaoDocx, artefatos);
   return { identificacao: { ...identificacao, fontes }, conversao: artefatos };
 }
 
@@ -143,7 +143,7 @@ export type ResultadoPreparacao = {
   metadata: string;
   manifesto: string;
   ppc: string;
-  resumo: ObjetoPy;
+  resumo: Dicionario;
 };
 
 /** `preparar_documento`: cria a rodada, o `PPC.md`, `metadata.json` e `manifesto-rodada.json`. */
@@ -173,7 +173,7 @@ export function prepararDocumento(arquivoEntrada: string, opcoes: OpcoesPreparac
   if (convertido) ({ identificacao, conversao } = prepararDocx(arquivo, caminhos, skill, convertido));
   else identificacao = prepararMarkdown(arquivo, caminhos, skill);
 
-  const metadata: ObjetoPy = {
+  const metadata: Dicionario = {
     curso: identificacao.curso,
     campus: identificacao.campus,
     modalidade: identificacao.modalidade,
@@ -189,7 +189,7 @@ export function prepararDocumento(arquivoEntrada: string, opcoes: OpcoesPreparac
   metadata.identificacao_fontes = { ...identificacao.fontes };
   if (conversao) metadata.artefatos_conversao_docx = conversao;
 
-  escreverJsonPy(caminhos.metadata, metadata);
+  escreverJsonDaRodada(caminhos.metadata, metadata);
   const manifesto = atualizarManifestoBase(rodada, { caminhos: skill, relogio });
   return {
     rodadaDir: rodada,

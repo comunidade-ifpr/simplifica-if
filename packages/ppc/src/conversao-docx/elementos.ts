@@ -5,7 +5,7 @@
  * decide o que isso significa num PPC, que costuma ser digitado sem os estilos de título do Word:
  * um parágrafo numerado e todo em negrito é título, mesmo no estilo Normal.
  */
-import { match } from "@simplifica-if/kb/python/re";
+import { match } from "@simplifica-if/kb/primitivas/regex";
 import { aparar, contarCaracteres } from "@simplifica-if/kb/texto";
 import {
   type DocumentoOoxml,
