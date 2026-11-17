@@ -11,7 +11,8 @@
  * Formatos (os do minisign 0.11, compatíveis com `minisign -V` e `minisign -S`):
  *
  * - chave pública: `"Ed"` + id (8 bytes) + chave (32), em base64, depois de uma linha de comentário;
- * - assinatura: `"ED"` (pré-hash BLAKE2b-512, o padrão) ou `"Ed"` (legado, o arquivo inteiro) + id +
+ * - assinatura: `"ED"` (pré-hash BLAKE2b-512, o padrão do minisign desde o 0.10; a legada, `"Ed"`, é
+ *   recusada: a fábrica só assina com pré-hash) + id +
  *   assinatura (64); a linha `trusted comment:` e a assinatura global, sobre assinatura + comentário;
  * - chave secreta: `"Ed"` + KDF (`"Sc"`, scrypt, ou dois zeros, sem senha) + `"B2"` + sal (32) +
  *   opslimit e memlimit (8 bytes LE cada) + id + chave (64) + soma BLAKE2b-256 (32), cifrados com o
@@ -97,7 +98,10 @@ export function lerAssinatura(texto: string): Assinatura {
   }
   const bytes = linhaDeDados(uteis[1]!, "assinatura");
   const alg = latin(bytes.subarray(0, 2));
-  if (bytes.length !== 74 || (alg !== ALG_ED && alg !== ALG_PREHASH)) {
+  if (bytes.length === 74 && alg === ALG_ED) {
+    throw new ErroMinisign("assinatura legada (sem pré-hash) recusada; assine com o minisign 0.10 ou mais novo");
+  }
+  if (bytes.length !== 74 || alg !== ALG_PREHASH) {
     throw new ErroMinisign("assinatura: algoritmo desconhecido");
   }
   const global = linhaDeDados(uteis[3]!, "assinatura global");
@@ -123,7 +127,7 @@ export function verificar(dados: Uint8Array, assinaturaTexto: string, chave: Cha
     throw new ErroMinisign(`assinatura de outra chave (${idHex(assinatura.id)}; esperava ${idHex(chave.id)})`);
   }
   const publica = objetoPublico(chave.chave);
-  const mensagem = assinatura.prehash ? blake2b(dados, { dkLen: 64 }) : dados;
+  const mensagem = blake2b(dados, { dkLen: 64 });
   if (!NodeCrypto.verify(null, mensagem, publica, assinatura.assinatura)) {
     throw new ErroMinisign("assinatura inválida");
   }
@@ -172,9 +176,10 @@ export function parametrosScrypt(opslimit: number, memlimit: number): { N: numbe
   return { N: 2 ** n, r, p: Math.max(1, Math.floor(maxrp / r)) };
 }
 
+/** A senha entra como bytes UTF-8, como digitada: o minisign não normaliza (um "é" composto e um decomposto são senhas diferentes). */
 const fluxoScrypt = (senha: string, sal: Uint8Array, opslimit: number, memlimit: number) => {
   const { N, r, p } = parametrosScrypt(opslimit, memlimit);
-  return NodeCrypto.scryptSync(senha.normalize("NFC"), sal, 104, {
+  return NodeCrypto.scryptSync(senha, sal, 104, {
     N,
     r,
     p,
