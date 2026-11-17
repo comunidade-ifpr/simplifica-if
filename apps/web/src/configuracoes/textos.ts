@@ -59,3 +59,23 @@ const ROTULOS_NOVIDADE: Record<string, string> = {
 };
 
 export const rotuloNovidade = (novidade: NovidadeBase) => ROTULOS_NOVIDADE[novidade.tipo] ?? "Novidade";
+
+/** Prazo sem um manifesto novo a partir do qual a tela avisa que não confirmou a base. */
+export const DIAS_SEM_CONFIRMACAO = 14;
+
+/**
+ * O aviso quando o manifesto conferido por último foi gerado há mais de 14 dias: a fábrica publica
+ * a cada poucos dias, e um manifesto velho pode ser rede parada ou um feed que não muda mais.
+ */
+export function avisoSemConfirmacao(estado: EstadoAtualizacao, agora: number): string | null {
+  if (estado.desligada !== null || estado.manifestoGeradoEm === null) return null;
+  const dias = (agora - Date.parse(estado.manifestoGeradoEm)) / (24 * 60 * 60 * 1000);
+  if (!(dias > DIAS_SEM_CONFIRMACAO)) return null;
+  return `Não foi possível confirmar que a base está atualizada: o último manifesto do canal é de ${new Date(estado.manifestoGeradoEm).toLocaleDateString("pt-BR")}. Confira a conexão ou avise a equipe do Simplifica IF.`;
+}
+
+/** O texto da confirmação de "Voltar": qual versão volta, qual sai, e que o servidor reinicia. */
+export function textoConfirmarVolta(estado: EstadoAtualizacao): string | null {
+  if (estado.anterior === null) return null;
+  return `A base volta de ${versaoComoData(estado.base.versao)} para ${versaoComoData(estado.anterior)}, e o servidor local reinicia (uma análise em andamento adia a troca para a próxima abertura). A versão de ${versaoComoData(estado.base.versao)} não será baixada de novo; só uma mais nova.`;
+}

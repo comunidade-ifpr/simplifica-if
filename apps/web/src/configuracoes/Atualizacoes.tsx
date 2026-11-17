@@ -19,7 +19,13 @@ import { Spinner } from "../components/ui/spinner.tsx";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
 import { type EstadoAtualizacaoApp, ponteDesktop } from "../ponte-desktop.ts";
-import { descreverBase, descreverSituacao, versaoComoData } from "./textos.ts";
+import {
+  avisoSemConfirmacao,
+  descreverBase,
+  descreverSituacao,
+  textoConfirmarVolta,
+  versaoComoData,
+} from "./textos.ts";
 
 /** Reinicia o servidor pelo desktop; no navegador (desenvolvimento), pede para reiniciar à mão. */
 async function reiniciar(resultado: ResultadoTroca): Promise<string> {
@@ -36,6 +42,7 @@ export function Atualizacoes() {
   const [ocupado, setOcupado] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
   const [erro, setErro] = useState<MensagemErro | null>(null);
+  const [confirmandoVolta, setConfirmandoVolta] = useState(false);
 
   useEffect(() => {
     let ativo = true;
@@ -70,9 +77,10 @@ export function Atualizacoes() {
       setAviso(await reiniciar(await api.chamar((cliente) => cliente["atualizacao.aplicar"]({})))),
     );
   const voltar = () =>
-    agir("voltar", async () =>
-      setAviso(await reiniciar(await api.chamar((cliente) => cliente["atualizacao.voltar"]({})))),
-    );
+    agir("voltar", async () => {
+      setConfirmandoVolta(false);
+      setAviso(await reiniciar(await api.chamar((cliente) => cliente["atualizacao.voltar"]({}))));
+    });
 
   return (
     <section aria-labelledby="titulo-atualizacoes" className="flex flex-col gap-5">
@@ -109,6 +117,11 @@ export function Atualizacoes() {
                 <AlertDescription>{estado.aviso}</AlertDescription>
               </Alert>
             ) : null}
+            {avisoSemConfirmacao(estado, Date.now()) !== null ? (
+              <Alert variant="warning">
+                <AlertDescription>{avisoSemConfirmacao(estado, Date.now())}</AlertDescription>
+              </Alert>
+            ) : null}
             <fieldset className="flex flex-wrap items-center gap-2" disabled={ocupado !== null}>
               <legend className="mb-1 text-sm">Canal</legend>
               {(["beta", "estavel"] as const).map((canal) => (
@@ -141,12 +154,38 @@ export function Atualizacoes() {
                   <DownloadIcon /> Usar a versão nova agora
                 </Button>
               ) : null}
-              {estado.anterior !== null ? (
-                <Button size="sm" variant="outline" disabled={ocupado !== null} onClick={voltar}>
+              {estado.anterior !== null && !confirmandoVolta ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={ocupado !== null}
+                  onClick={() => setConfirmandoVolta(true)}
+                >
                   <RotateCcwIcon /> Voltar para a versão anterior da base ({versaoComoData(estado.anterior)})
                 </Button>
               ) : null}
             </div>
+            {estado.anterior === null && estado.base.origem === "baixada" ? (
+              <p className="text-muted-foreground text-xs">
+                Não há versão anterior para onde voltar: ou a anterior é a de que você acabou de voltar, ou a troca já
+                foi pedida. Uma versão mais nova da base aparece aqui quando sair.
+              </p>
+            ) : null}
+            {confirmandoVolta && estado.anterior !== null ? (
+              <Alert variant="warning" role="alertdialog" aria-label="Confirmar a volta da base">
+                <AlertDescription>
+                  <p>{textoConfirmarVolta(estado)}</p>
+                  <div className="mt-2 flex gap-2">
+                    <Button size="sm" disabled={ocupado !== null} onClick={voltar}>
+                      Voltar para {versaoComoData(estado.anterior)}
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setConfirmandoVolta(false)}>
+                      Cancelar
+                    </Button>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            ) : null}
           </>
         )}
       </section>

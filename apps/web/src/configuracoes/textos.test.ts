@@ -1,6 +1,12 @@
 import type { EstadoAtualizacao } from "@simplifica-if/contratos-app";
 import { describe, expect, it } from "vite-plus/test";
-import { descreverBase, descreverSituacao, versaoComoData } from "./textos.ts";
+import {
+  avisoSemConfirmacao,
+  descreverBase,
+  descreverSituacao,
+  textoConfirmarVolta,
+  versaoComoData,
+} from "./textos.ts";
 
 const estado: EstadoAtualizacao = {
   desligada: null,
@@ -15,6 +21,7 @@ const estado: EstadoAtualizacao = {
   skills: "empacotadas",
   skillsPendentes: null,
   ultimaConferencia: null,
+  manifestoGeradoEm: null,
   novidades: null,
 };
 
@@ -37,5 +44,23 @@ describe("textos da seção Atualizações", () => {
     expect(descreverSituacao({ ...estado, situacao: "erro", erro: "manifesto recusado" })).toContain(
       "manifesto recusado",
     );
+  });
+
+  it("avisa quando o manifesto conferido tem mais de 14 dias", () => {
+    const agora = Date.parse("2026-12-01T12:00:00Z");
+    expect(avisoSemConfirmacao({ ...estado, manifestoGeradoEm: "2026-11-25T00:00:00Z" }, agora)).toBeNull();
+    expect(avisoSemConfirmacao({ ...estado, manifestoGeradoEm: "2026-11-10T00:00:00Z" }, agora)).toContain(
+      "Não foi possível confirmar que a base está atualizada",
+    );
+    expect(
+      avisoSemConfirmacao({ ...estado, manifestoGeradoEm: "2026-11-10T00:00:00Z", desligada: "x" }, agora),
+    ).toBeNull();
+  });
+
+  it("a confirmação de Voltar diz para qual versão, de qual e que o servidor reinicia", () => {
+    const texto = textoConfirmarVolta(estado);
+    expect(texto).toContain("volta de 20/11/2026 para 13/11/2026");
+    expect(texto).toContain("servidor local reinicia");
+    expect(textoConfirmarVolta({ ...estado, anterior: null })).toBeNull();
   });
 });
