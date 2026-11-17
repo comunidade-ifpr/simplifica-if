@@ -1,18 +1,16 @@
 // @effect-diagnostics nodeBuiltinImport:off -- gerador síncrono do relatório HTML a partir dos arquivos da rodada
 /**
- * Relatório HTML da rodada: o PPC anotado com os achados dos sub-agentes
- * (porte de `gerar_relatorio_html.py`, trilha T2).
+ * Relatório HTML da rodada: o PPC anotado com os achados dos sub-agentes.
  *
- * O HTML sai idêntico ao do Python, byte a byte:
- * - escape de `html.escape` (`&#x27;` para apóstrofo);
- * - Markdown do PPC em blocos com as regex do Python (`\s`, `\d` e `.`
- *   Unicode, por `@simplifica-if/kb/primitivas/re`) e `splitlines` Unicode;
- * - indentação pelo `_HTMLPrettyPrinter`, que recebe os eventos do
- *   `HTMLParser` do Python (`html-py.ts`) e quebra o texto com o
- *   `textwrap.wrap` portado. Ele herda do Python uma peculiaridade: fora de
- *   tags inline, o texto em volta de uma referência (`a &amp; b`) é aparado
- *   pedaço a pedaço e sai sem os espaços (`a&amp;b`);
- * - confiança com `:.2f` do Python (empate para o par);
+ * O HTML é determinístico, byte a byte (os testes o comparam com gabaritos):
+ * - escape de `escapeHtml` (`&#x27;` para apóstrofo);
+ * - Markdown do PPC em blocos com as regex de `@simplifica-if/kb/primitivas/regex`
+ *   (`\s`, `\d` e `.` Unicode) e quebra de linhas Unicode;
+ * - indentação pela `ImpressoraHtml`, que recebe os eventos de
+ *   `eventos-html.ts` e quebra o texto com `wrap`. Fora de tags inline, o texto
+ *   em volta de uma referência (`a &amp; b`) é aparado pedaço a pedaço e sai
+ *   sem os espaços (`a&amp;b`);
+ * - confiança com duas casas (`formatoFixo`, empate para o par);
  * - posições e larguras contadas em code points.
  */
 import * as NodeFS from "node:fs";
@@ -88,7 +86,7 @@ const VAZIAS = new Set([
 ]);
 const PRESERVADAS = new Set(["script", "style", "textarea", "pre"]);
 
-/** `_HTMLPrettyPrinter`: indenta o HTML em blocos e quebra o texto em 110 colunas. */
+/** Indenta o HTML em blocos e quebra o texto em 110 colunas. */
 class ImpressoraHtml {
   private readonly partes: string[] = [];
   private nivel = 0;
@@ -198,7 +196,7 @@ export function quebrarLinhasLongasFonte(html: string, largura = 180): string {
   return formatadas.join("\n");
 }
 
-/** HTML indentado como o `_HTMLPrettyPrinter().pretty(html)` do Python. */
+/** HTML indentado, uma tag de bloco por linha e o texto quebrado em linhas. */
 export function formatarHtml(html: string): string {
   return new ImpressoraHtml().formatar(html);
 }

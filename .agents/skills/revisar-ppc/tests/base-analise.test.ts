@@ -279,12 +279,11 @@ describe("entrypoint revisar_ppc.ts", () => {
     expect(executar("gerar-mapa", "--check")).toMatchObject({ codigo: 0, saida: `OK: ${caminhos.mapaFichasPath}\n` });
   });
 
-  test("gerar-relatorio-html roda em TypeScript, com as opções do Python", () => {
+  test("gerar-relatorio-html: opções da linha de comando", () => {
     const ajuda = executar("gerar-relatorio-html", "--help");
     expect(ajuda.codigo).toBe(0);
     for (const opcao of ["--rodada-dir", "--resultados", "--sem-surge", "--surge-domain"])
       expect(ajuda.saida).toContain(opcao);
-    expect(ajuda.saida).not.toContain("revisar_ppc.py");
   });
 
   test("subcomandos exigem as opções obrigatórias", () => {

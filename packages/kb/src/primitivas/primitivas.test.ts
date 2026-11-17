@@ -1,15 +1,25 @@
 /**
- * Paridade com o Python 3.14. Os valores esperados foram gerados com o
- * próprio Python (difflib, repr, round, json.dumps, str.casefold).
+ * Primitivas de texto e de JSON tipado: similaridade de sequências,
+ * representação e arredondamento de fracionários, serialização, case folding e
+ * expressões regulares. Os valores esperados são gabaritos fixos.
  */
 import { describe, expect, test } from "vite-plus/test";
 import { SequenceMatcher } from "./sequencias.ts";
 import { copiarValorJson, serializarJsonTipado, jsonTipadoIndentado, analisarJsonTipado } from "./json-tipado.ts";
 import { escape, finditer, fullmatch, match, search, split, sub } from "./regex.ts";
 import { casefold, colapsarEspacos, semMarcas, somenteDigitos } from "./texto.ts";
-import { chavesNaOrdem, Flutuante, inteiroDoValor, ou, reprFloat, arredondarParaPar, textoDoValor, verdadeiro } from "./valores.ts";
+import {
+  chavesNaOrdem,
+  Flutuante,
+  inteiroDoValor,
+  ou,
+  reprFloat,
+  arredondarParaPar,
+  textoDoValor,
+  verdadeiro,
+} from "./valores.ts";
 
-/** Mesmo gerador congruencial usado no Python para produzir os casos. */
+/** Gerador congruencial dos casos (o mesmo que produziu os gabaritos). */
 function gerar(semente: number, n: number, alfabeto: string[]): [string, number] {
   let x = BigInt(semente);
   let saida = "";
@@ -24,7 +34,7 @@ const GRANDE = [...Array.from({ length: 150 }, (_, k) => String.fromCodePoint(0x
 const ALFABETOS = ["ab", "abc ", "abcde fghij", "tecnico em informatica", GRANDE].map((a) => Array.from(a));
 
 // [semente, len(a), len(b), alfabeto, ratio(a, b), ratio(a, a mutada)]
-const CASOS_DIFFLIB: Array<[number, number, number, number, number, number]> = [
+const CASOS_SEQUENCIAS: Array<[number, number, number, number, number, number]> = [
   [1, 10, 7, 0, 0.5882352941176471, 0.7272727272727273],
   [2, 10, 7, 1, 0.47058823529411764, 0.7272727272727273],
   [4, 10, 7, 3, 0.35294117647058826, 0.7272727272727273],
@@ -55,9 +65,9 @@ const CASOS_DIFFLIB: Array<[number, number, number, number, number, number]> = [
   [60, 400, 399, 4, 0.04505632040050062, 0.7331189710610932],
 ];
 
-describe("difflib.SequenceMatcher", () => {
-  test("ratio igual ao do Python, com autojunk", () => {
-    for (const [semente, la, lb, indice, esperado, esperadoMutada] of CASOS_DIFFLIB) {
+describe("SequenceMatcher", () => {
+  test("ratio dos casos de gabarito, com autojunk", () => {
+    for (const [semente, la, lb, indice, esperado, esperadoMutada] of CASOS_SEQUENCIAS) {
       const alfabeto = ALFABETOS[indice]!;
       const [a, x] = gerar(semente, la, alfabeto);
       const [b] = gerar(x, lb, alfabeto);
@@ -109,16 +119,16 @@ const FLOATS: Array<[number, string, string, string]> = [
 describe("valores", () => {
   test("repr e round de float", () => {
     for (const [valor, repr, r4, r2] of FLOATS) {
-      expect([valor, reprFloat(valor), reprFloat(arredondarParaPar(valor, 4)), reprFloat(arredondarParaPar(valor, 2))]).toEqual([
+      expect([
         valor,
-        repr,
-        r4,
-        r2,
-      ]);
+        reprFloat(valor),
+        reprFloat(arredondarParaPar(valor, 4)),
+        reprFloat(arredondarParaPar(valor, 2)),
+      ]).toEqual([valor, repr, r4, r2]);
     }
   });
 
-  test("str de lista como o Python", () => {
+  test("texto de lista", () => {
     expect(textoDoValor(["a'b", 'c"d', null, true, new Flutuante(1), { k: 2 }])).toBe(
       `["a'b", 'c"d', None, True, 1.0, {'k': 2}]`,
     );
@@ -133,14 +143,19 @@ describe("valores", () => {
     ]);
     expect(ou("", null, 0, "x")).toBe("x");
     expect(ou("", 0)).toBe(0);
-    expect([inteiroDoValor(" 12 "), inteiroDoValor("١٢"), inteiroDoValor(new Flutuante(2.7)), inteiroDoValor(true)]).toEqual([12, 12, 2, 1]);
+    expect([
+      inteiroDoValor(" 12 "),
+      inteiroDoValor("١٢"),
+      inteiroDoValor(new Flutuante(2.7)),
+      inteiroDoValor(true),
+    ]).toEqual([12, 12, 2, 1]);
     expect(() => inteiroDoValor("1²")).toThrow();
     expect(() => inteiroDoValor(null)).toThrow();
   });
 });
 
 describe("json", () => {
-  test("dumps com indentação como o Python", () => {
+  test("serialização com indentação", () => {
     const valor = analisarJsonTipado(
       '{"a": [1, 2.0, {"b": null, "c": true}], "d": {}, "e": [], "z": "aç\\n\\"\\\\\\u0001", "2": 1}',
     );
@@ -165,18 +180,20 @@ describe("json", () => {
     expect(jsonTipadoIndentado([])).toBe("[]\n");
   });
 
-  test("dumps compacto, sort_keys e separadores padrão", () => {
-    expect(serializarJsonTipado(analisarJsonTipado('{"b": 1, "a": ["é", 1.5e16]}'), { ordenarChaves: true, separadores: [",", ":"] })).toBe(
-      '{"a":["é",1.5e+16],"b":1}',
-    );
+  test("serialização compacta, chaves ordenadas e separadores padrão", () => {
+    expect(
+      serializarJsonTipado(analisarJsonTipado('{"b": 1, "a": ["é", 1.5e16]}'), {
+        ordenarChaves: true,
+        separadores: [",", ":"],
+      }),
+    ).toBe('{"a":["é",1.5e+16],"b":1}');
     expect(serializarJsonTipado({ b: 1, a: [1, 2] })).toBe('{"b": 1, "a": [1, 2]}');
   });
 
-  test("loads preserva ordem de chaves numéricas, floats, inteiros grandes e NaN", () => {
-    const valor = analisarJsonTipado('{"z": 1, "10": 2, "2": 3, "big": 123456789012345678901, "n": NaN, "z": 4}') as Record<
-      string,
-      unknown
-    >;
+  test("análise preserva ordem de chaves numéricas, floats, inteiros grandes e NaN", () => {
+    const valor = analisarJsonTipado(
+      '{"z": 1, "10": 2, "2": 3, "big": 123456789012345678901, "n": NaN, "z": 4}',
+    ) as Record<string, unknown>;
     expect(chavesNaOrdem(valor)).toEqual(["z", "10", "2", "big", "n"]);
     expect(valor.z).toBe(4);
     expect(serializarJsonTipado(valor)).toBe('{"z": 4, "10": 2, "2": 3, "big": 123456789012345678901, "n": NaN}');
@@ -191,7 +208,7 @@ describe("json", () => {
 });
 
 describe("texto", () => {
-  test("casefold como o Python", () => {
+  test("casefold", () => {
     const casos: Array<[string, string]> = [
       ["Straße", "strasse"],
       ["ﬁm", "fim"],
@@ -212,8 +229,8 @@ describe("texto", () => {
   });
 });
 
-describe("re", () => {
-  test("classes Unicode como no Python", () => {
+describe("regex", () => {
+  test("classes Unicode", () => {
     expect(search("\\d+", "x ٣4")?.[0]).toBe("٣4");
     expect(search("^a\\s+b$", "a\x1cb\n")).not.toBeNull();
     expect(search("^a.b$", "a\rb")).not.toBeNull();

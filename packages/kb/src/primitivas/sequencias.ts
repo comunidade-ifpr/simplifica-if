@@ -1,10 +1,10 @@
 /**
- * Porte de `difflib.SequenceMatcher` do Python (CPython 3.14), sem `isjunk`,
- * com a heurística `autojunk` ligada como no padrão: em sequências `b` com
- * 200 elementos ou mais, os elementos que aparecem em mais de 1% + 1 das
- * posições deixam de iniciar casamentos.
+ * Similaridade de duas sequências pelos blocos casados mais longos
+ * (Ratcliff e Obershelp), sem função de lixo e com a heurística `autojunk`
+ * ligada por padrão: em sequências `b` com 200 elementos ou mais, os elementos
+ * que aparecem em mais de 1% + 1 das posições deixam de iniciar casamentos.
  *
- * Textos são comparados por code point, como `str` no Python.
+ * Textos são comparados por code point.
  */
 
 export type Bloco = readonly [a: number, b: number, tamanho: number];
@@ -33,7 +33,7 @@ export class SequenceMatcher<T = string> {
     }
   }
 
-  /** `find_longest_match(alo, ahi, blo, bhi)`. */
+  /** O bloco casado mais longo entre `a[alo:ahi]` e `b[blo:bhi]`. */
   encontrarMaiorCasamento(alo: number, ahi: number, blo: number, bhi: number): Bloco {
     const { a, b, b2j } = this;
     let melhorI = alo;
@@ -55,7 +55,7 @@ export class SequenceMatcher<T = string> {
       }
       j2len = novo;
     }
-    // Sem `isjunk`, o conjunto de lixo é vazio: só a extensão por elementos
+    // Sem função de lixo, o conjunto de lixo é vazio: só a extensão por elementos
     // não-lixo se aplica (inclui os populares retirados de b2j).
     while (melhorI > alo && melhorJ > blo && a[melhorI - 1] === b[melhorJ - 1]) {
       melhorI -= 1;
@@ -72,7 +72,7 @@ export class SequenceMatcher<T = string> {
     return [melhorI, melhorJ, melhorTamanho];
   }
 
-  /** `get_matching_blocks()`, com o bloco sentinela final `(len(a), len(b), 0)`. */
+  /** Os blocos casados, em ordem, com o bloco sentinela final `(a.length, b.length, 0)`. */
   blocosCasados(): Bloco[] {
     if (this.blocos) return this.blocos;
     const la = this.a.length;
@@ -105,7 +105,7 @@ export class SequenceMatcher<T = string> {
     return naoAdjacentes;
   }
 
-  /** `ratio()`: `2 * M / T`, com M elementos casados e T o total das duas sequências. */
+  /** Razão de similaridade: `2 * M / T`, com M elementos casados e T o total das duas sequências. */
   ratio(): number {
     const casados = this.blocosCasados().reduce((soma, [, , k]) => soma + k, 0);
     const total = this.a.length + this.b.length;

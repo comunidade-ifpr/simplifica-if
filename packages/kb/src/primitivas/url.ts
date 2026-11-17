@@ -1,15 +1,15 @@
 /**
- * `urllib.parse.quote` e `Path.as_uri()` do Python.
+ * Codificação de URL e de caminho como URI `file://`.
  *
  * O `pathToFileURL` do Node não codifica `!$&'()*+,;=:@` e outros caracteres
- * que o Python codifica: aqui só letras e dígitos ASCII, `_.-~` e os
+ * que os links do relatório codificam: aqui só letras e dígitos ASCII, `_.-~` e os
  * caracteres de `seguros` ficam como estão; o resto vira `%XX` (UTF-8, hexa
  * maiúsculo).
  */
 
 const SEMPRE_SEGUROS = /^[A-Za-z0-9_.\-~]$/;
 
-/** `urllib.parse.quote(texto, safe=seguros)`. */
+/** Codifica o texto para URL; ficam as letras e dígitos ASCII, `_.-~` e os caracteres de `seguros`. */
 export function quote(texto: string, seguros = "/"): string {
   const conjunto = new Set(seguros);
   let saida = "";
@@ -25,10 +25,10 @@ export function quote(texto: string, seguros = "/"): string {
   return saida;
 }
 
-/** `PosixPath(caminho).as_uri()` (Python 3.14) para um caminho absoluto. */
+/** URI `file://` de um caminho absoluto POSIX. */
 export function caminhoComoUri(caminho: string): string {
   if (!caminho.startsWith("/")) throw new Error("ValueError: relative paths can't be expressed as file URIs");
-  // `PurePosixPath`: exatamente duas barras iniciais formam a raiz (uma ou três ou mais viram uma só),
+  // Exatamente duas barras iniciais formam a raiz (uma ou três ou mais viram uma só),
   // e barras repetidas e componentes `.` somem.
   const raiz = caminho.startsWith("//") && !caminho.startsWith("///") ? "//" : "/";
   const partes = caminho.split("/").filter((parte) => parte !== "" && parte !== ".");

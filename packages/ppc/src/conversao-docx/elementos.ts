@@ -184,8 +184,7 @@ function elementoDoParagrafo(paragrafo: ParagrafoOoxml): Titulo | Paragrafo | nu
   if (nivel !== undefined) {
     const texto = aparar(textoDoParagrafo(paragrafo));
     if (!texto) return null;
-    if (!ehTextoDeCorpo(paragrafo, texto))
-      return { tipo: "titulo", texto, nivel, estilo: paragrafo.estilo };
+    if (!ehTextoDeCorpo(paragrafo, texto)) return { tipo: "titulo", texto, nivel, estilo: paragrafo.estilo };
   }
   const titulo = tituloPorFormatacao(paragrafo);
   if (titulo) return titulo;

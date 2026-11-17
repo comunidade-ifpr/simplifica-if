@@ -1,39 +1,35 @@
 /**
- * `textwrap.wrap` do Python 3.14 com `break_on_hyphens=False`.
- *
- * Reproduz `TextWrapper` com as opções padrão (`expand_tabs`, tabulação 8,
- * `replace_whitespace`, `drop_whitespace`, sem recuos nem `max_lines`):
- * - os tabs viram espaços até a próxima coluna múltipla de 8 (`expandtabs`);
- * - só os espaços ASCII do `textwrap` (`\t\n\v\f\r `) separam palavras, e
+ * Quebra de um texto em linhas de até `largura` caracteres, sem quebrar em hífens:
+ * - os tabs viram espaços até a próxima coluna múltipla de 8 (`expandirTabs`);
+ * - só os espaços ASCII (`\t\n\v\f\r `) separam palavras, e
  *   viram espaço simples;
  * - larguras contam code points;
  * - um pedaço só com espaços Unicode (por exemplo `\xa0`) é palavra para a
- *   divisão, mas é descartado como espaço no começo ou no fim de linha, como no
- *   Python (`chunk.strip() == ""`).
+ *   divisão, mas é descartado como espaço no começo ou no fim de linha;
+ * - sem recuos nem limite de linhas.
  *
- * A quebra em hífens (`break_on_hyphens=True`, o padrão do Python) não está
- * portada.
+ * A quebra em hífens não está implementada.
  */
 import { aparar, contarCaracteres, prefixo } from "../texto.ts";
 import { expandirTabs } from "./texto.ts";
 
 export type OpcoesWrap = {
-  /** `break_long_words` (padrão `true`): parte palavras maiores que a largura. */
+  /** Parte palavras maiores que a largura (padrão `true`). */
   quebrarPalavrasLongas?: boolean;
 };
 
-const ESPACOS_TEXTWRAP = /[\t\n\v\f\r ]/g;
+const ESPACOS_ASCII = /[\t\n\v\f\r ]/g;
 const SEPARADOR = /([\t\n\v\f\r ]+)/;
 
-/** `TextWrapper._split_chunks` com `break_on_hyphens=False`. */
+/** Pedaços do texto: palavras e sequências de espaços. */
 function pedacos(texto: string): string[] {
-  const espacado = expandirTabs(texto, 8).replace(ESPACOS_TEXTWRAP, " ");
+  const espacado = expandirTabs(texto, 8).replace(ESPACOS_ASCII, " ");
   return espacado.split(SEPARADOR).filter((pedaco) => pedaco !== "");
 }
 
 const soEspaco = (pedaco: string) => aparar(pedaco) === "";
 
-/** `textwrap.wrap(texto, width=largura, break_on_hyphens=False, ...)`. */
+/** Linhas do texto, de até `largura` caracteres. */
 export function wrap(texto: string, largura: number, opcoes: OpcoesWrap = {}): string[] {
   if (largura <= 0) throw new RangeError(`invalid width ${largura} (must be > 0)`);
   const quebrarLongas = opcoes.quebrarPalavrasLongas ?? true;
@@ -51,7 +47,7 @@ export function wrap(texto: string, largura: number, opcoes: OpcoesWrap = {}): s
       } else break;
     }
     if (pilha.length && contarCaracteres(pilha.at(-1)!) > largura) {
-      // `_handle_long_word`
+      // palavra maior que a linha
       const restante = largura < 1 ? 1 : largura - tamanho;
       if (quebrarLongas && restante > 0) {
         const pedaco = pilha.at(-1)!;

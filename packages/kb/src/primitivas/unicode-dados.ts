@@ -1,9 +1,9 @@
 /**
- * Dados Unicode do Python 3.14 (Unicode 16.0.0), gerados com `str.casefold`, `str.lower`,
- * `str.isdigit` e `str.isdecimal`. Não editar à mão.
+ * Tabelas do Unicode 16.0.0: o case folding completo onde ele difere da minúscula, e os dígitos que
+ * não são decimais. Não editar à mão.
  */
 
-/** Code points cujo `casefold()` difere do `lower()`, com o resultado do `casefold()`. */
+/** Code points cujo case folding difere da minúscula, com o resultado do case folding. */
 export const CASEFOLD_ESPECIAL: ReadonlyArray<readonly [number, string]> = [
   [0xb5, "\u{3bc}"],
   [0xdf, "\u{73}\u{73}"],
@@ -304,6 +304,6 @@ export const CASEFOLD_ESPECIAL: ReadonlyArray<readonly [number, string]> = [
   [0xfb17, "\u{574}\u{56d}"],
 ];
 
-/** Classe de regex (flag `u`, para usar dentro de `[...]`) dos dígitos que não são decimais (`isdigit` e não `isdecimal`). */
+/** Classe de regex (flag `u`, para usar dentro de `[...]`) dos dígitos que não são decimais (sobrescritos, circulados). */
 export const DIGITOS_NAO_DECIMAIS =
   "\u{b2}-\u{b3}\u{b9}\u{1369}-\u{1371}\u{19da}\u{2070}\u{2074}-\u{2079}\u{2080}-\u{2089}\u{2460}-\u{2468}\u{2474}-\u{247c}\u{2488}-\u{2490}\u{24ea}\u{24f5}-\u{24fd}\u{24ff}\u{2776}-\u{277e}\u{2780}-\u{2788}\u{278a}-\u{2792}\u{10a40}-\u{10a43}\u{10e60}-\u{10e68}\u{11052}-\u{1105a}\u{1f100}-\u{1f10a}";

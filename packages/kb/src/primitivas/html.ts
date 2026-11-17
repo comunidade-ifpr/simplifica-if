@@ -1,19 +1,18 @@
 /**
- * `html.escape` do Python e as regras de `html.unescape` para referências
- * numéricas.
+ * Escape de HTML e as regras de decodificação das referências numéricas.
  *
- * O `escape` do Python troca `'` por `&#x27;` (e não por `&#39;` nem `&apos;`),
- * diferente das funções de escape de bibliotecas JavaScript.
+ * O escape troca `'` por `&#x27;` (e não por `&#39;` nem `&apos;`), diferente
+ * das funções de escape de bibliotecas JavaScript; o relatório depende disso.
  */
 
-/** `html.escape(texto, quote=aspas)`. */
+/** Escapa `&`, `<`, `>` e, com `aspas`, `"` e `'`. */
 export function escapeHtml(texto: string, aspas = true): string {
   let saida = texto.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
   if (aspas) saida = saida.replaceAll('"', "&quot;").replaceAll("'", "&#x27;");
   return saida;
 }
 
-/** `_invalid_charrefs` de `html/__init__.py`: referências numéricas trocadas por outro caractere. */
+/** Referências numéricas trocadas por outro caractere (`\r` e Windows-1252), como na especificação do HTML. */
 const REFERENCIAS_INVALIDAS = new Map<number, string>([
   [0x00, "�"],
   [0x0d, "\r"],
@@ -65,7 +64,7 @@ function codigoDescartado(codigo: number): boolean {
 
 /**
  * Caractere de uma referência numérica (`&#39;`, `&#x27`), pelas regras de
- * `html.unescape`: `\r` e Windows-1252 para alguns códigos, `�` para
+ * decodificação do HTML: `\r` e Windows-1252 para alguns códigos, `�` para
  * surrogates e valores acima de `0x10FFFF`, vazio para não caracteres.
  */
 export function caractereDeReferenciaNumerica(digitos: string, hexadecimal: boolean): string {

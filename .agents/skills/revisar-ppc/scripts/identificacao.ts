@@ -26,7 +26,13 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { escape, search, sub } from "@simplifica-if/kb/primitivas/regex";
 import { casefold, colapsarEspacos, semMarcas } from "@simplifica-if/kb/primitivas/texto";
-import { ehDicionario, itensNaOrdem, type Dicionario, textoDoValor, verdadeiro } from "@simplifica-if/kb/primitivas/valores";
+import {
+  ehDicionario,
+  itensNaOrdem,
+  type Dicionario,
+  textoDoValor,
+  verdadeiro,
+} from "@simplifica-if/kb/primitivas/valores";
 import { chavesDoMapaYaml } from "@simplifica-if/kb/ppcs/front-matter";
 import { aparar, apararFimEnquanto, dividirLinhas } from "@simplifica-if/kb/texto";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";

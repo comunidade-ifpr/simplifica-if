@@ -2,8 +2,7 @@
 /**
  * Orquestração da revisar-ppc em TypeScript: preparação da rodada,
  * normalização do Markdown, identificação, CNCT, grupos de sub-agentes,
- * prompts, grupo avulso, mescla e validação de resultados (casos portados de
- * `test_flow.py`).
+ * prompts, grupo avulso, mescla e validação de resultados.
  */
 import * as NodeChildProcess from "node:child_process";
 import * as NodeServices from "@effect/platform-node/NodeServices";
@@ -140,7 +139,7 @@ function cli(...argumentos: string[]) {
 }
 
 describe("relógio", () => {
-  test("formatos de data do Python com relógio injetado", () => {
+  test("formatos de data com relógio injetado", () => {
     const relogio = () => new Date(2026, 10, 13, 9, 5, 7);
     expect(timestampSlug(relogio)).toBe("2026-11-13t09-05-07");
     expect(agoraIso(relogio)).toMatch(/^2026-11-13T09:05:07[+-]\d{2}:\d{2}$/);
@@ -160,7 +159,7 @@ describe("REVISAR_PPC_AGORA", () => {
     return { codigo: processo.status, stdout: processo.stdout, stderr: processo.stderr };
   }
 
-  test("data sem hora é meia-noite local, como no Python (`datetime.fromisoformat`)", () => {
+  test("data sem hora é meia-noite local", () => {
     for (const [fuso, deslocamento] of [
       ["America/Sao_Paulo", "-03:00"],
       ["Asia/Tokyo", "+09:00"],
@@ -520,7 +519,9 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("fichas e grupos", (it) => {
   it.effect("as fichas dos grupos levam as referências normativas em texto legível", () =>
     Effect.gen(function* () {
       const rodada = criarRodada();
-      const payload = (yield* montarGruposSubagents(rodada)) as Dicionario & { grupos: Array<{ fichas: Dicionario[] }> };
+      const payload = (yield* montarGruposSubagents(rodada)) as Dicionario & {
+        grupos: Array<{ fichas: Dicionario[] }>;
+      };
       const fichas = new Map(payload.grupos.flatMap((grupo) => grupo.fichas).map((ficha) => [ficha.id, ficha]));
       expect(fichas.get("CT-CURR-02")!.referencias_normativas).toEqual([
         {
@@ -592,7 +593,7 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("fichas e grupos", (it) => {
       expect(comFundamentacao.length).toBeGreaterThan(0);
       expect((payload.fundamentacao_normativa as Dicionario).protocolo).toBe("verificar-fundamentacao-normativa");
       expect(comFundamentacao.every((g) => "fundamentacao_normativa" in (g.contextos as Dicionario))).toBe(true);
-      // O score do CNCT é float do Python: escrito como 1.0.
+      // O score do CNCT é fracionário: escrito como 1.0.
       expect(NodeFS.readFileSync(c.cnctContexto, "utf-8")).toContain('"score": 1.0');
     }),
   );
@@ -1261,7 +1262,7 @@ describe("conteúdo das fichas, validações e prompts", () => {
     const scripts = NodePath.join(caminhos.appDir, "scripts");
     const conteudo = NodeFS.readdirSync(scripts, { recursive: true })
       .map(String)
-      .filter((nome) => nome.endsWith(".ts") || nome.endsWith(".py"))
+      .filter((nome) => nome.endsWith(".ts"))
       .map((nome) => NodeFS.readFileSync(NodePath.join(scripts, nome), "utf-8"))
       .join("\n");
     for (const proibido of [

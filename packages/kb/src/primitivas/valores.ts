@@ -1,12 +1,13 @@
 /**
- * Valores com a semântica do Python, para portes que precisam reproduzir
- * byte a byte a saída dos scripts originais.
+ * Valores JSON tipados, para os arquivos que precisam sair sempre iguais, byte a
+ * byte (os da rodada da revisar-ppc, os artefatos da conversão).
  *
- * O JSON do Python distingue `1` (int) de `1.0` (float); o JavaScript não. Por
- * isso os floats lidos por `carregarJsonTipado` (e os criados pelos portes onde o
- * Python produziria float) são `Flutuante`, que `serializarJsonTipado` escreve como o
- * `repr(float)` do Python. `valueOf` permite comparar e ordenar como número.
- * Inteiros fora da faixa segura do JavaScript são lidos como `bigint`.
+ * O JSON tipado distingue `1` (inteiro) de `1.0` (fracionário); o número do
+ * JavaScript não. Por isso os fracionários lidos por `carregarJsonTipado` (e os
+ * criados pelo código quando o valor é fracionário) são `Flutuante`, que
+ * `serializarJsonTipado` escreve com `reprFloat`. `valueOf` permite comparar e
+ * ordenar como número. Inteiros fora da faixa segura do JavaScript são lidos como
+ * `bigint`.
  */
 import { representar } from "../json.ts";
 import { aparar } from "../texto.ts";
@@ -33,24 +34,24 @@ export function ehDicionario(valor: unknown): valor is Dicionario {
   return typeof valor === "object" && valor !== null && !Array.isArray(valor) && !(valor instanceof Flutuante);
 }
 
-/** `isinstance(valor, int)` (booleanos contam como inteiros). */
+/** Inteiro (booleanos contam como inteiros). */
 export function ehInteiroOuLogico(valor: unknown): valor is number | bigint | boolean {
   return (
     typeof valor === "boolean" || typeof valor === "bigint" || (typeof valor === "number" && Number.isInteger(valor))
   );
 }
 
-/** `isinstance(valor, float)`. Números não inteiros criados em JS também contam como float. */
+/** Fracionário: `Flutuante` ou número não inteiro criado em JS. */
 export function ehFlutuante(valor: unknown): boolean {
   return valor instanceof Flutuante || (typeof valor === "number" && !Number.isInteger(valor));
 }
 
-/** `isinstance(valor, (int, float))`. */
+/** Inteiro ou fracionário. */
 export function ehNumerico(valor: unknown): boolean {
   return ehInteiroOuLogico(valor) || ehFlutuante(valor);
 }
 
-/** Valor numérico de um int/float Python (booleano vira 0/1). */
+/** Valor numérico de um inteiro ou fracionário (booleano vira 0/1). */
 export function valorNumerico(valor: unknown): number {
   if (valor instanceof Flutuante) return valor.valor;
   if (typeof valor === "boolean") return valor ? 1 : 0;
@@ -59,7 +60,7 @@ export function valorNumerico(valor: unknown): number {
   throw new TypeError(`não é número: ${representacaoDoValor(valor)}`);
 }
 
-/** Chaves de um objeto na ordem em que o Python as teria (ordem de inserção). */
+/** Chaves de um objeto na ordem de inserção (a do documento, mesmo com chaves numéricas). */
 export function chavesNaOrdem(objeto: Dicionario): string[] {
   const chaves = Object.keys(objeto);
   const ordem = objeto[ORDEM_CHAVES];
@@ -70,12 +71,12 @@ export function chavesNaOrdem(objeto: Dicionario): string[] {
   return [...ordenadas, ...chaves.filter((chave) => !vistas.has(chave))];
 }
 
-/** Pares `(chave, valor)` na ordem do Python (`dict.items()`). */
+/** Pares `(chave, valor)` na ordem de inserção. */
 export function itensNaOrdem(objeto: Dicionario): Array<[string, unknown]> {
   return chavesNaOrdem(objeto).map((chave) => [chave, objeto[chave]]);
 }
 
-/** Verdade do Python: `None`, `False`, `0`, `0.0`, `""`, `[]` e `{}` são falsos. */
+/** Verdade de um valor: `null`, `false`, `0`, `0.0`, `""`, `[]` e `{}` são falsos. */
 export function verdadeiro(valor: unknown): boolean {
   if (valor === null || valor === undefined || valor === false || valor === "") return false;
   if (typeof valor === "number") return valor !== 0;
@@ -86,13 +87,13 @@ export function verdadeiro(valor: unknown): boolean {
   return true;
 }
 
-/** `a or b or ...`: o primeiro valor verdadeiro, ou o último. */
+/** O primeiro valor verdadeiro, ou o último. */
 export function ou(...valores: unknown[]): unknown {
   for (const valor of valores) if (verdadeiro(valor)) return valor;
   return valores.at(-1);
 }
 
-/** `repr(float)` do Python: dígitos mais curtos, notação fixa para expoentes de -4 a 15 e `.0` em inteiros. */
+/** Fracionário em texto: dígitos mais curtos, notação fixa para expoentes de -4 a 15 e `.0` em inteiros. */
 export function reprFloat(valor: number): string {
   if (Number.isNaN(valor)) return "nan";
   if (valor === Infinity) return "inf";
@@ -126,7 +127,7 @@ function decomporDouble(valor: number): { mantissa: bigint; expoente: number } {
   return { mantissa: negativo ? -mantissa : mantissa, expoente };
 }
 
-/** `round(valor, casas)` do Python para float: arredonda o valor binário exato, com empate para o par. */
+/** Arredonda o valor binário exato a `casas` decimais, com empate para o par. */
 export function arredondarParaPar(valor: number, casas: number): number {
   if (!Number.isFinite(valor) || valor === 0) return valor;
   const { mantissa, expoente } = decomporDouble(valor);
@@ -149,9 +150,9 @@ export function arredondarParaPar(valor: number, casas: number): number {
 }
 
 /**
- * `f"{valor:.{casas}f}"` do Python: arredonda o valor binário exato com empate
- * para o par (o `toFixed` do JavaScript desempata para cima: `0.125` dá
- * `0.13`, e o Python, `0.12`) e mantém o sinal de `-0.0`.
+ * Número com `casas` decimais fixas: arredonda o valor binário exato com empate
+ * para o par (o `toFixed` do JavaScript desempata para cima: `0.125` dá `0.13`;
+ * aqui, `0.12`) e mantém o sinal de `-0.0`.
  */
 export function formatoFixo(valor: number, casas: number): string {
   if (Number.isNaN(valor)) return "nan";
@@ -162,7 +163,7 @@ export function formatoFixo(valor: number, casas: number): string {
   return negativo ? `-${texto}` : texto;
 }
 
-/** `repr()` do Python para valores JSON. */
+/** Representação de um valor JSON: texto entre aspas simples, `None`, `True`, `False`, listas e objetos com `, ` e `: `. */
 export function representacaoDoValor(valor: unknown): string {
   if (valor === null || valor === undefined) return "None";
   if (typeof valor === "boolean") return valor ? "True" : "False";
@@ -179,12 +180,12 @@ export function representacaoDoValor(valor: unknown): string {
   return String(valor);
 }
 
-/** `str()` do Python para valores JSON: texto como está, demais valores em `repr`. */
+/** Texto de um valor JSON: texto como está, demais valores em `representacaoDoValor`. */
 export function textoDoValor(valor: unknown): string {
   return typeof valor === "string" ? valor : representacaoDoValor(valor);
 }
 
-/** Itens percorridos por `for item in valor` (lista, caracteres de texto, chaves de objeto); outros tipos lançam `TypeError`. */
+/** Itens percorridos num laço (lista, caracteres de texto, chaves de objeto); outros tipos lançam `TypeError`. */
 export function itensIteraveis(valor: unknown): unknown[] {
   if (Array.isArray(valor)) return [...valor];
   if (typeof valor === "string") return Array.from(valor);
@@ -192,7 +193,7 @@ export function itensIteraveis(valor: unknown): unknown[] {
   throw new TypeError(`'${tipoDoValor(valor)}' object is not iterable`);
 }
 
-/** Nome do tipo Python de um valor JSON. */
+/** Nome do tipo de um valor JSON (`str`, `int`, `float`, `bool`, `list`, `dict`, `NoneType`), usado nas mensagens de erro. */
 export function tipoDoValor(valor: unknown): string {
   if (valor === null || valor === undefined) return "NoneType";
   if (typeof valor === "boolean") return "bool";
@@ -203,7 +204,7 @@ export function tipoDoValor(valor: unknown): string {
   return "dict";
 }
 
-/** `int(valor)` do Python para valores JSON (texto com dígitos decimais, número truncado, booleano 0/1). */
+/** Inteiro de um valor JSON (texto com dígitos decimais, número truncado, booleano 0/1). */
 export function inteiroDoValor(valor: unknown): number {
   if (typeof valor === "boolean") return valor ? 1 : 0;
   if (typeof valor === "bigint") return Number(valor);
@@ -217,7 +218,9 @@ export function inteiroDoValor(valor: unknown): number {
     if (convertido === null) throw new SyntaxError(`invalid literal for int() with base 10: ${representar(valor)}`);
     return convertido;
   }
-  throw new TypeError(`int() argument must be a string, a bytes-like object or a real number, not '${tipoDoValor(valor)}'`);
+  throw new TypeError(
+    `int() argument must be a string, a bytes-like object or a real number, not '${tipoDoValor(valor)}'`,
+  );
 }
 
 const RE_INTEIRO = /^[+-]?\p{Nd}+(?:_\p{Nd}+)*$/u;
@@ -236,31 +239,31 @@ export function digitosAscii(texto: string): string {
   });
 }
 
-/** `int(texto)` em base 10, ou `null` quando o Python lançaria `ValueError`. */
+/** Inteiro de um texto em base 10, ou `null` quando o texto não é um inteiro. */
 export function inteiroDeTexto(texto: string): number | null {
   const limpo = aparar(texto);
   if (!RE_INTEIRO.test(limpo)) return null;
   return Number(digitosAscii(limpo.replaceAll("_", "")));
 }
 
-/** `dicionario.get(chave, padrao)` (só chaves próprias, nunca do protótipo). */
+/** Valor da chave, ou `padrao` (só chaves próprias, nunca do protótipo). */
 export function obter(objeto: Dicionario, chave: string, padrao: unknown = null): unknown {
   return Object.hasOwn(objeto, chave) ? objeto[chave] : padrao;
 }
 
-/** `dicionario[chave]`, que lança `KeyError` quando a chave falta. */
+/** Valor da chave; lança `KeyError` quando a chave falta. */
 export function obrigatorio(objeto: Dicionario, chave: string): unknown {
   if (!Object.hasOwn(objeto, chave)) throw new Error(`KeyError: ${representar(chave)}`);
   return objeto[chave];
 }
 
-/** `dicionario.setdefault(chave, valor)`. */
+/** Valor da chave; quando ela falta, grava `valor` e o devolve. */
 export function padraoSeAusente(objeto: Dicionario, chave: string, valor: unknown): unknown {
   if (!Object.hasOwn(objeto, chave)) objeto[chave] = valor;
   return objeto[chave];
 }
 
-/** `str(valor or "")`. */
+/** Texto do valor, ou `""` quando ele é falso. */
 export function textoOuVazioDoValor(valor: unknown): string {
   return verdadeiro(valor) ? textoDoValor(valor) : "";
 }

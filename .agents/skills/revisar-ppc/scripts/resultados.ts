@@ -1,8 +1,6 @@
 // @effect-diagnostics nodeBuiltinImport:off extendsNativeError:off -- validação e mescla síncronas dos resultados da rodada; o erro de contrato é lançado com a mensagem montada no ponto da falha
 /**
- * Validação do JSON de resultados dos sub-agentes (porte de
- * `validar_resultados_subagents`, `validar_alertas_transversais` e
- * `validar_resultados_rodada` do antigo `gerar_relatorio_html.py`), usada por
+ * Validação do JSON de resultados dos sub-agentes, usada por
  * `validar-resultados` e por `gerar-relatorio-html` (`relatorio-html.ts`), e
  * mescla das reavaliações avulsas (`mesclar-resultados-avulsos`).
  */
@@ -230,7 +228,9 @@ function validarBlocos(
       const feedbackAutores = texto(obter(item, "feedback_autores"));
       const feedbackConfig = obter(ficha, "feedback_autores");
       if (ehDicionario(feedbackConfig)) {
-        const estadosComFeedback = new Set(itensIteraveis(obter(feedbackConfig, "obrigatorio_quando_estado", [])).map(textoDoValor));
+        const estadosComFeedback = new Set(
+          itensIteraveis(obter(feedbackConfig, "obrigatorio_quando_estado", [])).map(textoDoValor),
+        );
         if (estadosComFeedback.has(estado) && !feedbackAutores) {
           throw new ErroResultadosSubagents(
             `\`feedback_autores\` ausente para ${fichaId}; obrigatório quando estado=${estado}.`,
@@ -476,7 +476,9 @@ export function mesclarResultadosAvulsos(
   if (!resultadosNovos.length) throw new ErroResultadosSubagents("O resultado avulso não traz resultados.");
 
   const gruposBase = blocosResultados(base);
-  const idsAvulsos = new Set(resultadosNovos.map((item) => textoDoValor(obter(exigirObjeto(item, "resultado"), "ficha_id"))));
+  const idsAvulsos = new Set(
+    resultadosNovos.map((item) => textoDoValor(obter(exigirObjeto(item, "resultado"), "ficha_id"))),
+  );
   const idsOrdenados = [...idsAvulsos].sort(compararTexto);
   const gruposMesclados: Dicionario[] = [];
   for (const grupo of gruposBase) {
@@ -488,7 +490,9 @@ export function mesclarResultadosAvulsos(
     if ((copia.resultados as unknown[]).length) gruposMesclados.push(copia);
   }
   gruposMesclados.push({
-    grupo_id: textoDoValor(ou(obter(avulso, "grupo_id"), `reavaliacao-${sha256JsonPayload(idsOrdenados).slice(0, 12)}`)),
+    grupo_id: textoDoValor(
+      ou(obter(avulso, "grupo_id"), `reavaliacao-${sha256JsonPayload(idsOrdenados).slice(0, 12)}`),
+    ),
     tipo: "reavaliacao",
     resultados: resultadosNovos,
   });
@@ -500,7 +504,7 @@ export function mesclarResultadosAvulsos(
   }
   const metadata = padraoSeAusente(payload, "metadata", {});
   if (!ehDicionario(metadata)) {
-    // Mesma falha do Python ao atribuir em `payload["metadata"][...]`.
+    // `metadata` que não é objeto não recebe a lista das reavaliações: falha com erro de tipo.
     throw new TypeError(
       Array.isArray(metadata)
         ? "list indices must be integers or slices, not str"

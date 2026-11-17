@@ -1,17 +1,18 @@
 /**
- * Expressões regulares com a semântica do módulo `re` do Python para `str`.
+ * Expressões regulares com classes Unicode, para as regras de texto dos PPCs.
  *
- * `traduzirPadrao` converte um padrão Python para JavaScript (flag `u`):
- * - `\s`, `\d`, `\w`, `\b` e seus negados passam a ser Unicode como no
- *   Python (no JavaScript, `\d`, `\w` e `\b` são só ASCII e `\s` difere);
+ * `traduzirPadrao` converte a fonte de um padrão para JavaScript (flag `u`):
+ * - `\s`, `\d`, `\w`, `\b` e seus negados passam a ser Unicode (no
+ *   JavaScript, `\d`, `\w` e `\b` são só ASCII e `\s` tem outro conjunto);
  * - `.` não casa só `\n` (no JavaScript, também deixa de casar `\r`, `\u2028`, `\u2029`);
  * - `$` casa no fim ou antes de um `\n` final;
  * - `]` logo depois de `[` ou `[^` é literal.
  *
- * Com `dotAll` (`re.DOTALL`), `.` casa qualquer caractere.
+ * Com `dotAll`, `.` casa qualquer caractere.
  *
- * As funções `search`, `match`, `fullmatch`, `sub`, `split`, `finditer` e
- * `escape` seguem as do Python.
+ * `search` acha a primeira ocorrência, `match` só no início, `fullmatch` só o
+ * texto inteiro; `finditer`, `sub` e `split` percorrem todas; `escape` escapa um
+ * texto para entrar num padrão.
  */
 import { ESPACOS } from "../texto.ts";
 
@@ -20,7 +21,7 @@ const LIMITE = `(?:(?<=[${PALAVRA}])(?![${PALAVRA}])|(?<![${PALAVRA}])(?=[${PALA
 const NAO_LIMITE = `(?:(?<=[${PALAVRA}])(?=[${PALAVRA}])|(?<![${PALAVRA}])(?![${PALAVRA}]))`;
 const SINTAXE_JS = new Set("^$\\.*+?()[]{}|/");
 
-/** Traduz a fonte de um padrão Python para a de um padrão JavaScript com flag `u`. */
+/** Traduz a fonte de um padrão para a de um padrão JavaScript com flag `u`. */
 export function traduzirPadrao(fonte: string, dotAll = false): string {
   let saida = "";
   let emClasse = false;
@@ -73,8 +74,7 @@ export function traduzirPadrao(fonte: string, dotAll = false): string {
       }
       continue;
     }
-    if (c === "(" && fonte.startsWith("(?P", i))
-      throw new SyntaxError(`grupo nomeado do Python não suportado: ${fonte}`);
+    if (c === "(" && fonte.startsWith("(?P", i)) throw new SyntaxError(`grupo nomeado (?P<…>) não suportado: ${fonte}`);
     if (c === ".") saida += dotAll ? "[\\s\\S]" : "[^\\n]";
     else if (c === "$") saida += "(?:$|(?=\\n$))";
     else saida += c;
@@ -100,29 +100,29 @@ function compilar(fonte: string, modo: "search" | "match" | "fullmatch", flags: 
   return re;
 }
 
-/** `re.search(padrao, texto)`. */
+/** Primeira ocorrência do padrão no texto. */
 export function search(padrao: string, texto: string, flags: OpcoesRegex = {}): RegExpExecArray | null {
   return compilar(padrao, "search", flags).exec(texto);
 }
 
-/** `re.match(padrao, texto)`: ancorado no início. */
+/** Ocorrência ancorada no início do texto. */
 export function match(padrao: string, texto: string, flags: OpcoesRegex = {}): RegExpExecArray | null {
   return compilar(padrao, "match", flags).exec(texto);
 }
 
-/** `re.fullmatch(padrao, texto)`. */
+/** Ocorrência que cobre o texto inteiro. */
 export function fullmatch(padrao: string, texto: string, flags: OpcoesRegex = {}): RegExpExecArray | null {
   return compilar(padrao, "fullmatch", flags).exec(texto);
 }
 
-/** `re.finditer(padrao, texto)`. */
+/** Todas as ocorrências, sem sobreposição. */
 export function finditer(padrao: string, texto: string, flags: OpcoesRegex = {}): RegExpExecArray[] {
   return [...texto.matchAll(compilar(padrao, "search", flags, true))];
 }
 
 /**
- * `re.sub(padrao, substituto, texto)`. O substituto é uma função ou um texto
- * com referências `\1`…`\9` (como no Python; `$` não tem significado especial).
+ * Troca cada ocorrência pelo substituto: uma função ou um texto com
+ * referências `\1`…`\9` (`$` não tem significado especial).
  */
 export function sub(
   padrao: string,
@@ -145,9 +145,9 @@ export function sub(
 }
 
 /**
- * `re.split(padrao, texto)` para padrões sem grupos de captura. Com grupos, o Python intercala o
- * que eles capturam no resultado; isso não está implementado, e o padrão é recusado para não dar
- * um resultado diferente em silêncio.
+ * Divide o texto nas ocorrências do padrão, que não pode ter grupos de captura: intercalar o que
+ * eles capturam não está implementado, e o padrão é recusado para não dar um resultado diferente
+ * do esperado em silêncio.
  */
 export function split(padrao: string, texto: string, flags: OpcoesRegex = {}): string[] {
   const re = compilar(padrao, "search", flags, true);
@@ -165,7 +165,7 @@ export function split(padrao: string, texto: string, flags: OpcoesRegex = {}): s
   return partes;
 }
 
-/** `re.escape(texto)` em forma de fonte de padrão Python (escapa o que não é letra, dígito ou `_`). */
+/** O texto como fonte de padrão literal (escapa o que não é letra, dígito ou `_`). */
 export function escape(texto: string): string {
   return Array.from(texto)
     .map((c) => (/[\p{L}\p{N}_]/u.test(c) ? c : `\\${c}`))

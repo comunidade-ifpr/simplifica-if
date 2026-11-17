@@ -1,5 +1,5 @@
 /**
- * `shlex.split(texto)` do Python (modo POSIX, sem comentários).
+ * Divide uma linha de comando em argumentos, pelas regras de aspas do shell POSIX (sem comentários).
  *
  * - separa em espaço, tab, `\r` e `\n`;
  * - aspas simples preservam tudo; aspas duplas aceitam `\"` e `\\`;
@@ -9,7 +9,7 @@
 
 const ESPACOS = new Set([" ", "\t", "\r", "\n"]);
 
-/** `shlex.split(texto)`. Lança `Error("ValueError: ...")` como o Python em aspas ou escape sem fim. */
+/** Argumentos da linha de comando. Lança `Error("ValueError: ...")` em aspas ou escape sem fim. */
 export function dividirComandoShell(texto: string): string[] {
   const tokens: string[] = [];
   let atual = "";

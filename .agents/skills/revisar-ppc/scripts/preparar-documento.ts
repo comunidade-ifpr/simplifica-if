@@ -1,9 +1,9 @@
 // @effect-diagnostics nodeBuiltinImport:off -- preparação síncrona da rodada, sobre arquivos locais
 /**
- * Cria a rodada de análise e o `PPC.md` canônico (porte de `preparar_documento.py`).
+ * Cria a rodada de análise e o `PPC.md` canônico.
  *
  * Entrada `.md`: o Markdown é normalizado. Entrada `.docx`: a conversão em artefatos é a de
- * `@simplifica-if/ppc` (leitor OOXML próprio, sem Python nem Word), feita em memória antes de a rodada existir; a normalização do Markdown, a
+ * `@simplifica-if/ppc` (leitor OOXML próprio, sem Word), feita em memória antes de a rodada existir; a normalização do Markdown, a
  * identificação e os arquivos da rodada são feitos aqui.
  */
 import * as NodeFS from "node:fs";

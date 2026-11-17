@@ -99,7 +99,7 @@ export const camadaKb = (opcoes: { readonly raiz?: string } = {}) =>
     }),
   ).pipe(Layer.provide(Compilador.layer));
 
-/** Imprime o JSON como `print(json.dumps(payload, ensure_ascii=False, indent=2))`. */
+/** Imprime o JSON tipado, indentado com 2 espaços. */
 const imprimirJson = (payload: unknown) => Console.log(serializarJsonTipado(payload, { indent: 2 }));
 
 /** Executa um subcomando síncrono; o erro que ele lançar é relatado no stderr, com código 1. */

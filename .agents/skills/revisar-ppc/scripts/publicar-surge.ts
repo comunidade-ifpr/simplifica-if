@@ -1,9 +1,9 @@
 // @effect-diagnostics nodeBuiltinImport:off extendsNativeError:off -- publicação síncrona pela CLI do Surge; o erro é lançado com a saída da CLI montada no ponto da falha
 /**
- * Publicação do relatório no Surge (porte de `publicar_surge.py`).
+ * Publicação do relatório no Surge.
  *
  * Só chama a CLI `surge` (por padrão `npx --yes surge`; `REVISAR_PPC_SURGE_CMD`
- * troca o comando, dividido como `shlex.split`) com a pasta do site e o
+ * troca o comando, dividido como no shell, por `dividirComandoShell`) com a pasta do site e o
  * domínio, e confere a saída. `REVISAR_PPC_SURGE_DOMAIN` fixa o domínio padrão.
  */
 import * as NodeChildProcess from "node:child_process";

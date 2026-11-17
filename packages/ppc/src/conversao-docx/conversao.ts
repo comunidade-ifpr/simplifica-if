@@ -101,7 +101,7 @@ function matrizEmJson(matriz: Matriz): Dicionario {
 
 const dois = (numero: number) => String(numero).padStart(2, "0");
 
-/** Data e hora locais sem fuso, com microssegundos quando há fração (o `datetime.now().isoformat()` de antes). */
+/** Data e hora locais sem fuso, com microssegundos quando há fração. */
 function dataHoraLocal(data: Date): string {
   const fracao = data.getMilliseconds() ? `.${String(data.getMilliseconds()).padStart(3, "0")}000` : "";
   return (
@@ -131,11 +131,7 @@ type DadosExtraidos = {
   ementario: ComponenteDoEmentario[];
 };
 
-function extrairDados(
-  elementos: Elemento[],
-  secoes: Secao[],
-  normalizar: NormalizarTabela,
-): DadosExtraidos {
+function extrairDados(elementos: Elemento[], secoes: Secao[], normalizar: NormalizarTabela): DadosExtraidos {
   const identificacao = dicasDeIdentificacao(secoes);
   const ementario: ComponenteDoEmentario[] = [];
   let matriz: Matriz | null = null;

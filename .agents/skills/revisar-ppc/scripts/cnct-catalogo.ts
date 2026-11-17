@@ -1,11 +1,10 @@
 // @effect-diagnostics nodeBuiltinImport:off -- comparação síncrona do PPC da rodada com o CNCT, sobre arquivos locais
 /**
- * Comparação do curso do PPC com o Catálogo Nacional de Cursos Técnicos
- * (porte de `cnct_catalogo.py`): busca por denominação, resumo do estágio no
- * CNCT e comparação de denominação, eixo, carga horária mínima e estágio.
+ * Comparação do curso do PPC com o Catálogo Nacional de Cursos Técnicos:
+ * busca por denominação, resumo do estágio no CNCT e comparação de denominação, eixo, carga horária mínima e estágio.
  *
- * O score é um float do Python (`round(score, 4)`), escrito como `1.0` no
- * JSON: por isso é `Flutuante`.
+ * O score é fracionário, arredondado a 4 casas e escrito como `1.0` no JSON:
+ * por isso é `Flutuante`.
  */
 import * as NodePath from "node:path";
 import { SequenceMatcher } from "@simplifica-if/kb/primitivas/sequencias";
@@ -221,11 +220,13 @@ export function buscarCursosCnct(
     const score = scoreDenominacao(consultaNormalizada, textoDoValor(curso.denominacao_normalizada));
     if (score >= 0.55) candidatos.push(resumirCurso(curso, score, completo));
   }
-  candidatos.sort((a, b) => valorNumerico(b.score) - valorNumerico(a.score) || compararValores(a.denominacao, b.denominacao));
+  candidatos.sort(
+    (a, b) => valorNumerico(b.score) - valorNumerico(a.score) || compararValores(a.denominacao, b.denominacao),
+  );
   return candidatos.slice(0, limite);
 }
 
-/** Comparação `<` do Python para textos (por code point) e números. */
+/** Ordem de textos (por code point) e de números. */
 function compararValores(a: unknown, b: unknown): number {
   if (typeof a === "string" && typeof b === "string") return compararTexto(a, b);
   return valorNumerico(a) - valorNumerico(b);

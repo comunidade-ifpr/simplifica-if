@@ -25,7 +25,7 @@ export function ehInteiro(valor: unknown): valor is number | boolean {
 }
 
 /**
- * Itens percorridos por um laço sobre o valor, como nos scripts originais:
+ * Itens percorridos por um laço sobre o valor:
  * lista dá os itens, texto dá os caracteres (code points), objeto dá as
  * chaves e ausência (nulo ou não preenchido) dá lista vazia. Número e booleano
  * verdadeiros não são percorríveis e lançam `TypeError`.

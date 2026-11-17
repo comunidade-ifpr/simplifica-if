@@ -753,7 +753,9 @@ describe("gabaritos da conversão", () => {
       (arquivo) => NodeFS.statSync(NodePath.join(GABARITOS, nome, arquivo)).isFile(),
     );
     for (const arquivo of esperados) {
-      expect(gerados[arquivo]?.equals(NodeFS.readFileSync(NodePath.join(GABARITOS, nome, arquivo))), arquivo).toBe(true);
+      expect(gerados[arquivo]?.equals(NodeFS.readFileSync(NodePath.join(GABARITOS, nome, arquivo))), arquivo).toBe(
+        true,
+      );
     }
     expect(Object.keys(gerados).sort()).toEqual(esperados.sort());
   });
@@ -930,12 +932,7 @@ describe("regras da conversão", () => {
     const nomes = (
       converter("tabelas-em-controle").matriz!.anos as Array<{ componentes: Array<{ nome: string }> }>
     )[0]!.componentes.map((item) => item.nome);
-    expect(nomes).toEqual([
-      "Matemática",
-      "Linha em controle",
-      "Célula em controle",
-      "Parágrafo em controle",
-    ]);
+    expect(nomes).toEqual(["Matemática", "Linha em controle", "Célula em controle", "Parágrafo em controle"]);
     const { markdown, representacaoGrafica } = converter("tabelas-em-controle");
     expect(markdown).toContain("| Período: 1º ano<br>caixa de texto | ao lado |");
     // A figura apagada na revisão não é a representação gráfica; sobra o desenho com formas.

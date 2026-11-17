@@ -1,11 +1,10 @@
 /**
- * Normalização determinística do Markdown de PPCs (porte de
- * `conversao_docx/markdown_normalizer.py`): limpa ruídos recorrentes da
+ * Normalização determinística do Markdown de PPCs: limpa ruídos recorrentes da
  * conversão (paginação, sumário, headings quebrados, parágrafos partidos,
  * tabelas pipe) antes da análise.
  *
- * As expressões regulares são as do Python, traduzidas por
- * `@simplifica-if/kb/primitivas/re` (classes Unicode como no Python).
+ * As expressões regulares passam por `@simplifica-if/kb/primitivas/regex`
+ * (classes Unicode).
  */
 import { fullmatch, match, search, sub } from "@simplifica-if/kb/primitivas/regex";
 import { casefold } from "@simplifica-if/kb/primitivas/texto";

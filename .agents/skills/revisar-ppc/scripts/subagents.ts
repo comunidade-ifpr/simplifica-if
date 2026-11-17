@@ -495,9 +495,9 @@ export const abrirContextoKbRodada = Effect.fn("subagents.abrirContextoKbRodada"
 
 /** Tópicos temáticos das fichas, sem repetição, em ordem. */
 function topicosDasFichas(fichas: Dicionario[]): string[] {
-  return [...new Set(fichas.flatMap((ficha) => itensIteraveis(obter(ficha, "topicos_tematicos", [])).map(textoDoValor)))].sort(
-    compararTexto,
-  );
+  return [
+    ...new Set(fichas.flatMap((ficha) => itensIteraveis(obter(ficha, "topicos_tematicos", [])).map(textoDoValor))),
+  ].sort(compararTexto);
 }
 
 /** `contextos.ppc`: o escopo do PPC no grupo e as seções selecionadas (sem o texto, que vai no pacote). */

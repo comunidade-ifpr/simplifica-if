@@ -1,18 +1,18 @@
 /**
- * Métodos de `str` do Python sem equivalente direto em JavaScript.
+ * Operações de texto Unicode sem equivalente direto em JavaScript.
  *
- * - `casefold()` não é `toLowerCase()`: `ß` vira `ss`, `ﬁ` vira `fi`, os
+ * - `casefold` não é `toLowerCase()`: `ß` vira `ss`, `ﬁ` vira `fi`, os
  *   minúsculos cherokee viram maiúsculos etc. (tabela em `unicode-dados.ts`).
- * - `split()` sem argumento separa em qualquer espaço Unicode do Python
- *   (o conjunto `ESPACOS` de `../texto.ts`), sem partes vazias.
- * - `isdigit()` inclui dígitos não decimais (sobrescritos, circulados).
+ * - `dividirEspacos` separa em qualquer espaço Unicode (o conjunto `ESPACOS`
+ *   de `../texto.ts`), sem partes vazias.
+ * - `ehDigito` inclui dígitos não decimais (sobrescritos, circulados).
  */
 import { aparar, ESPACOS } from "../texto.ts";
 import { CASEFOLD_ESPECIAL, DIGITOS_NAO_DECIMAIS } from "./unicode-dados.ts";
 
 const CASEFOLD = new Map<number, string>(CASEFOLD_ESPECIAL);
 
-/** `str.casefold()`. */
+/** Case folding completo, para comparar textos sem caixa. */
 export function casefold(texto: string): string {
   let saida = "";
   for (const caractere of texto) {
@@ -24,37 +24,37 @@ export function casefold(texto: string): string {
 
 const RE_ESPACOS = new RegExp(`[${ESPACOS}]+`, "u");
 
-/** `str.split()` sem argumento. */
+/** Partes separadas por espaços Unicode, sem partes vazias. */
 export function dividirEspacos(texto: string): string[] {
   const aparado = aparar(texto);
   return aparado ? aparado.split(RE_ESPACOS) : [];
 }
 
-/** `" ".join(texto.split())`: colapsa espaços e apara as pontas. */
+/** Colapsa espaços e apara as pontas. */
 export function colapsarEspacos(texto: string): string {
   return dividirEspacos(texto).join(" ");
 }
 
 const RE_MARCA_NAO_ESPACADORA = /\p{Mn}/gu;
 
-/** `"".join(c for c in unicodedata.normalize("NFD", texto) if unicodedata.category(c) != "Mn")`. */
+/** Tira as marcas combinantes (categoria `Mn`) depois da decomposição NFD: acentos e cedilhas. */
 export function semMarcas(texto: string): string {
   return texto.normalize("NFD").replace(RE_MARCA_NAO_ESPACADORA, "");
 }
 
-/** `unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode("ascii")`. */
+/** Decomposição NFKD sem o que não é ASCII. */
 export function asciiNfkd(texto: string): string {
   return texto.normalize("NFKD").replace(/[^\x00-\x7f]/g, "");
 }
 
 const RE_DIGITO = new RegExp(`^[\\p{Nd}${DIGITOS_NAO_DECIMAIS}]$`, "u");
 
-/** `caractere.isdigit()` para um code point. */
+/** Dígito de um code point, decimal ou não (sobrescritos, circulados). */
 export function ehDigito(caractere: string): boolean {
   return RE_DIGITO.test(caractere);
 }
 
-/** `str.expandtabs(tamanho)`: cada tab vai até a próxima coluna múltipla de `tamanho`; `\n` e `\r` zeram a coluna. */
+/** Expande tabs: cada tab vai até a próxima coluna múltipla de `tamanho`; `\n` e `\r` zeram a coluna. */
 export function expandirTabs(texto: string, tamanho = 8): string {
   if (!texto.includes("\t")) return texto;
   let saida = "";
@@ -74,7 +74,7 @@ export function expandirTabs(texto: string, tamanho = 8): string {
   return saida;
 }
 
-/** `"".join(c for c in texto if c.isdigit())`. */
+/** Só os dígitos do texto (como `ehDigito`). */
 export function somenteDigitos(texto: string): string {
   return Array.from(texto)
     .filter((caractere) => ehDigito(caractere))

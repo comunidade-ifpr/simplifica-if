@@ -1,8 +1,8 @@
 /**
- * Paridade com o Python 3.14 do que o relatório da revisar-ppc usa (trilha
- * T2): `textwrap.wrap` (`break_on_hyphens=False`), `html.escape`,
- * `str.expandtabs`, `shlex.split`, `urllib.parse.quote`, `Path.as_uri()` e
- * `f"{x:.2f}"`. Os valores esperados foram gerados com o próprio Python.
+ * Primitivas de formatação que o relatório da revisar-ppc usa: quebra de
+ * linhas, escape de HTML, expansão de tabs, divisão de linha de comando,
+ * codificação de URL, URI de caminho e número com casas fixas. Os valores
+ * esperados são gabaritos fixos.
  */
 import { describe, expect, test } from "vite-plus/test";
 import { escapeHtml } from "./html.ts";
@@ -285,7 +285,7 @@ const CASOS_EXPAND: Array<[string, number, string]> = [
   ["12345678\tx", 0, "12345678x"],
   ["12345678\tx", 1, "12345678 x"],
 ];
-const CASOS_SHLEX: Array<[string, string[] | null, string | null]> = [
+const CASOS_SHELL: Array<[string, string[] | null, string | null]> = [
   ["npx --yes surge", ["npx", "--yes", "surge"], null],
   ["'a b' c", ["a b", "c"], null],
   ['a"b c"d', ["ab cd"], null],
@@ -337,8 +337,8 @@ const CASOS_FIXOS: Array<[number, string]> = [
   [123.456, "123.46"],
 ];
 
-describe("textwrap.wrap", () => {
-  test("igual ao Python com break_on_hyphens=False", () => {
+describe("wrap", () => {
+  test("casos de gabarito, sem quebra em hífens", () => {
     for (const [texto, largura, longas, esperado] of CASOS_WRAP) {
       expect([texto, largura, longas, wrap(texto, largura, { quebrarPalavrasLongas: longas })]).toEqual([
         texto,
@@ -353,7 +353,7 @@ describe("textwrap.wrap", () => {
   });
 });
 
-describe("html.escape", () => {
+describe("escapeHtml", () => {
   test("com e sem aspas, apóstrofo como &#x27;", () => {
     for (const [texto, comAspas, semAspas] of CASOS_ESCAPE) {
       expect(escapeHtml(texto)).toBe(comAspas);
@@ -362,32 +362,32 @@ describe("html.escape", () => {
   });
 });
 
-describe("str.expandtabs", () => {
+describe("expandirTabs", () => {
   test("colunas, \\n e \\r", () => {
     for (const [texto, tamanho, esperado] of CASOS_EXPAND) expect(expandirTabs(texto, tamanho)).toBe(esperado);
   });
 });
 
-describe("shlex.split", () => {
+describe("dividirComandoShell", () => {
   test("aspas, escapes e erros", () => {
-    for (const [texto, esperado, erro] of CASOS_SHLEX) {
+    for (const [texto, esperado, erro] of CASOS_SHELL) {
       if (erro) expect(() => dividirComandoShell(texto)).toThrow(erro);
       else expect(dividirComandoShell(texto)).toEqual(esperado!);
     }
   });
 });
 
-describe("urllib e pathlib", () => {
+describe("url", () => {
   test("quote", () => {
     for (const [texto, seguros, esperado] of CASOS_QUOTES) expect(quote(texto, seguros)).toBe(esperado);
   });
-  test("Path.as_uri", () => {
+  test("caminhoComoUri", () => {
     for (const [caminho, esperado] of CASOS_URIS) expect(caminhoComoUri(caminho)).toBe(esperado);
     expect(() => caminhoComoUri("relativo/x")).toThrow("relative");
   });
 });
 
-describe("format(x, '.2f')", () => {
+describe("formatoFixo", () => {
   test("empate para o par sobre o valor binário e -0.00", () => {
     for (const [valor, esperado] of CASOS_FIXOS) expect(formatoFixo(valor, 2)).toBe(esperado);
   });

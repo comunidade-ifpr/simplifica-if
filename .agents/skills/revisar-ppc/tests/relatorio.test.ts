@@ -1,9 +1,8 @@
 // @effect-diagnostics nodeBuiltinImport:off globalDate:off -- os testes montam rodadas em diretórios temporários e chamam a CLI por processo, com relógio fixo injetado
 /**
- * Relatório HTML e publicação no Surge da revisar-ppc (casos portados de
- * `test_flow.py`, trilha T2), mais a paridade com o Python 3.14 do
- * `_HTMLPrettyPrinter`, dos blocos do PPC e da leitura de atributos do
- * `HTMLParser` (valores esperados gerados com o próprio Python).
+ * Relatório HTML e publicação no Surge da revisar-ppc, mais os gabaritos da
+ * indentação do HTML (`formatarHtml`), dos blocos do PPC e da leitura de
+ * atributos (`desescaparAtributo`).
  */
 import * as NodeChildProcess from "node:child_process";
 import { afterEach, describe, expect, test } from "vite-plus/test";
@@ -215,8 +214,8 @@ const CASOS_ATRIBUTOS: Array<[string, string]> = [
   ["&#99999999999999999999;", "�"],
 ];
 
-describe("paridade com o Python", () => {
-  test("_HTMLPrettyPrinter: texto em volta de referências, tags cruzadas, inline e preservadas", () => {
+describe("gabaritos do HTML", () => {
+  test("formatarHtml: texto em volta de referências, tags cruzadas, inline e preservadas", () => {
     for (const [html, esperado] of CASOS_PRETTY) expect(formatarHtml(html)).toBe(esperado);
   });
 
@@ -226,7 +225,7 @@ describe("paridade com o Python", () => {
     }
   });
 
-  test("_unescape_attrvalue do HTMLParser", () => {
+  test("desescaparAtributo", () => {
     for (const [valor, esperado] of CASOS_ATRIBUTOS) expect(desescaparAtributo(valor)).toBe(esperado);
   });
 });
@@ -409,7 +408,10 @@ describe("gerar-relatorio-html", () => {
   test("aceita resultados válidos", () => {
     const rodada = criarRodada();
     const rodadaPaths = caminhosRodada(rodada);
-    escreverJsonDaRodada(NodePath.join(rodadaPaths.suporteDir, "resultados-subagents.json"), payloadResultadosCompletos());
+    escreverJsonDaRodada(
+      NodePath.join(rodadaPaths.suporteDir, "resultados-subagents.json"),
+      payloadResultadosCompletos(),
+    );
     const payload = gerarRelatorioHtml(rodada, "resultados-subagents.json");
     expect(payload.relatorio_html).toBe(rodadaPaths.relatorioHtml);
     expect(payload.total_fichas).toBe(TOTAL_FICHAS);
@@ -708,7 +710,10 @@ describe("publicação no Surge", () => {
   test("a CLI publica por padrão e grava surge-publicacao.json", () => {
     const rodada = criarRodada();
     const rodadaPaths = caminhosRodada(rodada);
-    escreverJsonDaRodada(NodePath.join(rodadaPaths.suporteDir, "resultados-subagents.json"), payloadResultadosCompletos());
+    escreverJsonDaRodada(
+      NodePath.join(rodadaPaths.suporteDir, "resultados-subagents.json"),
+      payloadResultadosCompletos(),
+    );
     const falso = surgeFalso(diretorioTemporario(), "echo 'Success - Published'");
     const processo = NodeChildProcess.spawnSync(
       process.execPath,
@@ -735,7 +740,7 @@ describe("publicação no Surge", () => {
     expect(publicacao.relatorio_html_original).toBe(rodadaPaths.relatorioHtml);
   });
 
-  test("--sem-surge devolve a URL local codificada como Path.as_uri", () => {
+  test("--sem-surge devolve a URL local codificada (caminhoComoUri)", () => {
     const rodada = criarRodada();
     escreverJsonDaRodada(
       NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"),

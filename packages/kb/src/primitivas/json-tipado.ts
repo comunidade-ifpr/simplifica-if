@@ -1,12 +1,12 @@
-// @effect-diagnostics nodeBuiltinImport:off -- leitura síncrona de JSON com a semântica do pipeline Python antigo, usada pelos scripts e skills
+// @effect-diagnostics nodeBuiltinImport:off -- leitura síncrona de JSON tipado, usada pelos scripts e skills
 /**
- * Leitura e escrita de JSON como o módulo `json` do Python.
+ * Leitura e escrita de JSON tipado (inteiro e fracionário distintos), sempre com a mesma saída.
  *
  * - `carregarJsonTipado` lê floats como `Flutuante` (para que `1.0` continue `1.0`),
  *   inteiros grandes como `bigint`, aceita `NaN`/`Infinity` e guarda a ordem
  *   original das chaves quando há chaves numéricas, que o JavaScript reordena.
- * - `serializarJsonTipado` reproduz `json.dumps(..., ensure_ascii=False)` com `indent`,
- *   `separators` e `sort_keys` (ordenação por code point).
+ * - `serializarJsonTipado` escreve sem escapar o que não é ASCII, com indentação,
+ *   separadores e ordenação das chaves (por code point) opcionais.
  */
 import * as NodeFS from "node:fs";
 import { compararTexto, lerTexto } from "../texto.ts";
@@ -26,7 +26,7 @@ function definir(objeto: Dicionario, chave: string, valor: unknown): void {
   else objeto[chave] = valor;
 }
 
-/** `json.loads` do Python (modo estrito: sem caracteres de controle crus em textos). */
+/** Analisa um texto JSON (modo estrito: sem caracteres de controle crus em textos). */
 export function analisarJsonTipado(texto: string): unknown {
   let pos = 0;
   const erro = (mensagem: string): never => {
@@ -183,12 +183,12 @@ export function analisarJsonTipado(texto: string): unknown {
   return valor;
 }
 
-/** `json.loads(path.read_text(encoding="utf-8"))`. */
+/** Lê um arquivo JSON em UTF-8. */
 export function carregarJsonTipado(caminho: string): unknown {
   return analisarJsonTipado(lerTexto(caminho));
 }
 
-/** Lê o JSON sem normalizar quebras de linha (equivale a `json.loads(path.read_bytes())`). */
+/** Lê o JSON sem normalizar quebras de linha. */
 export function carregarJsonTipadoDeBytes(caminho: string): unknown {
   return analisarJsonTipado(new TextDecoder("utf-8", { fatal: true }).decode(NodeFS.readFileSync(caminho)));
 }
@@ -203,7 +203,7 @@ const ESCAPES: Record<string, string> = {
   "\f": "\\f",
 };
 
-/** Texto JSON com `ensure_ascii=False`: escapa só aspas, barra invertida e controles. */
+/** Literal de texto JSON: escapa só aspas, barra invertida e controles. */
 export function literalDeTextoJson(texto: string): string {
   return `"${texto.replace(/[\x00-\x1f"\\]/g, (c) => ESCAPES[c] ?? `\\u${c.charCodeAt(0).toString(16).padStart(4, "0")}`)}"`;
 }
@@ -219,17 +219,17 @@ function numeroJson(valor: number | Flutuante | bigint): string {
   return BigInt(numero).toString();
 }
 
-export type OpcoesDumps = {
+export type OpcoesSerializacao = {
   /** Indentação (`indent`); ausente gera uma linha só. */
   indent?: number;
-  /** `separators`; o padrão é o do Python: `(", ", ": ")` sem indentação e `(",", ": ")` com. */
+  /** Separadores de itens e de chave; o padrão é `(", ", ": ")` sem indentação e `(",", ": ")` com. */
   separadores?: readonly [string, string];
-  /** `sort_keys`, por code point. */
+  /** Ordena as chaves, por code point. */
   ordenarChaves?: boolean;
 };
 
-/** `json.dumps(valor, ensure_ascii=False, ...)`. */
-export function serializarJsonTipado(valor: unknown, opcoes: OpcoesDumps = {}): string {
+/** Serializa um valor JSON tipado. */
+export function serializarJsonTipado(valor: unknown, opcoes: OpcoesSerializacao = {}): string {
   const { indent, ordenarChaves = false } = opcoes;
   const [sepItem, sepChave] = opcoes.separadores ?? (indent === undefined ? [", ", ": "] : [",", ": "]);
   const escrever = (item: unknown, nivel: number): string => {
@@ -248,7 +248,9 @@ export function serializarJsonTipado(valor: unknown, opcoes: OpcoesDumps = {}): 
       let chaves = chavesNaOrdem(item);
       if (!chaves.length) return "{}";
       if (ordenarChaves) chaves = [...chaves].sort(compararTexto);
-      const partes = chaves.map((chave) => `${literalDeTextoJson(chave)}${sepChave}${escrever(item[chave], nivel + 1)}`);
+      const partes = chaves.map(
+        (chave) => `${literalDeTextoJson(chave)}${sepChave}${escrever(item[chave], nivel + 1)}`,
+      );
       return `{${quebra}${partes.join(sepItem + quebra)}${fecho}}`;
     }
     throw new TypeError(`Object of type ${typeof item} is not JSON serializable`);
@@ -256,12 +258,12 @@ export function serializarJsonTipado(valor: unknown, opcoes: OpcoesDumps = {}): 
   return escrever(valor, 0);
 }
 
-/** `json.dumps(valor, ensure_ascii=False, indent=2) + "\n"`, como o `write_json` dos scripts. */
+/** JSON indentado com 2 espaços e `\n` final, o formato dos arquivos gravados. */
 export function jsonTipadoIndentado(valor: unknown): string {
   return `${serializarJsonTipado(valor, { indent: 2 })}\n`;
 }
 
-/** `copy.deepcopy` para valores JSON (preserva `Flutuante` e a ordem original das chaves). */
+/** Cópia profunda de um valor JSON (preserva `Flutuante` e a ordem original das chaves). */
 export function copiarValorJson<T>(valor: T): T {
   if (Array.isArray(valor)) return valor.map(copiarValorJson) as T;
   if (ehDicionario(valor)) {

@@ -1,23 +1,23 @@
 /**
- * Eventos do `html.parser.HTMLParser(convert_charrefs=False)` do Python 3.14,
- * produzidos pelo `Tokenizer` do `htmlparser2`.
+ * Eventos de um HTML tokenizado, sem árvore e sem decodificar referências no
+ * texto, produzidos pelo `Tokenizer` do `htmlparser2`; a indentação do
+ * relatório (`formatarHtml`) é feita sobre eles.
  *
  * O `Parser` do `htmlparser2` fecha tags implicitamente e descarta fechamentos
- * sem par (`<em>a<strong>b</em>c</strong>`), e o `HTMLParser` do Python não:
- * ele só tokeniza. Por isso aqui se usa o `Tokenizer`, sem decodificar
- * entidades, e o texto é repartido como o Python faz com
- * `convert_charrefs=False`:
+ * sem par (`<em>a<strong>b</em>c</strong>`); aqui se quer só tokenizar. Por
+ * isso se usa o `Tokenizer`, sem decodificar entidades, e o texto é repartido
+ * assim:
  * - `&nome;` vira `entidade(nome)` e `&#x27;` vira `referencia("x27")`, e o
  *   texto em volta chega em pedaços separados (`"a "`, `amp`, `" b"`);
  * - `&` ou `<` soltos chegam como pedaços próprios de texto;
  * - dentro de `<title>` e `<textarea>` as referências também são separadas, e
  *   em `<script>` e `<style>` o conteúdo chega cru;
  * - os nomes de tag e de atributo vêm em minúsculas, e os valores dos
- *   atributos com as referências resolvidas como em `_unescape_attrvalue`.
+ *   atributos com as referências resolvidas (`desescaparAtributo`).
  *
- * A equivalência vale para HTML bem formado (o que o relatório gera); casos
- * patológicos de tokenização (atributos com `/`, tags incompletas no fim,
- * comentários malformados) não foram portados.
+ * Vale para HTML bem formado (o que o relatório gera); casos patológicos de
+ * tokenização (atributos com `/`, tags incompletas no fim, comentários
+ * malformados) não são tratados.
  */
 import { DecodingMode, EntityDecoder, htmlDecodeTree } from "entities/decode";
 import { Tokenizer } from "htmlparser2";
@@ -34,9 +34,9 @@ export type ManipuladorHtml = {
   referencia(nome: string): void;
   comentario(dados: string): void;
   declaracao(dados: string): void;
-  /** `handle_pi` (`<?...>`); o Python ignora por padrão. */
+  /** Instrução de processamento (`<?...>`); opcional. */
   instrucao?(dados: string): void;
-  /** `unknown_decl` (`<![CDATA[...]]>`); o Python ignora por padrão. */
+  /** Declaração desconhecida (`<![CDATA[...]]>`); opcional. */
   declaracaoDesconhecida?(dados: string): void;
 };
 
@@ -55,7 +55,7 @@ function referenciaNomeada(referencia: string): string | null {
   return consumido === referencia.length ? saida : null;
 }
 
-/** `_unescape_attrvalue` de `html/parser.py`: resolve referências em valores de atributo. */
+/** Resolve referências em valores de atributo. */
 export function desescaparAtributo(valor: string): string {
   return valor.replace(RE_REFERENCIA_ATRIBUTO, (referencia: string, corpo: string) => {
     if (corpo.startsWith("#")) {
@@ -79,9 +79,9 @@ function casar(re: RegExp, html: string, posicao: number): RegExpExecArray | nul
 }
 
 /**
- * Reparte o texto `html[inicio:fim]` como o laço `goahead` do Python com
- * `convert_charrefs=False`. As referências são casadas sobre o documento
- * inteiro, porque o Python olha o caractere seguinte ao fim do texto.
+ * Reparte o texto `html[inicio:fim]` em pedaços de texto, entidades e
+ * referências. As referências são casadas sobre o documento inteiro, porque o
+ * caractere seguinte ao fim do texto decide se a referência termina ali.
  */
 function repartirTexto(html: string, inicio: number, fim: number, m: ManipuladorHtml): void {
   let i = inicio;
@@ -132,7 +132,7 @@ function repartirTexto(html: string, inicio: number, fim: number, m: Manipulador
 
 const SEM_REFERENCIAS = new Set(["script", "style", "xmp", "iframe", "noembed", "noframes", "plaintext"]);
 
-/** `HTMLParser(convert_charrefs=False).feed(html); close()`, entregando os eventos a `m`. */
+/** Tokeniza o HTML inteiro, entregando os eventos a `m`. */
 export function percorrerHtml(html: string, m: ManipuladorHtml): void {
   let textoInicio = -1;
   let textoFim = -1;
@@ -175,7 +175,7 @@ export function percorrerHtml(html: string, m: ManipuladorHtml): void {
         valorAtributo += html.slice(inicio, fim);
       },
       onattribend(aspas) {
-        // QuoteType.NoValue (0): atributo sem `=`, valor `None` no Python.
+        // QuoteType.NoValue (0): atributo sem `=`, valor `null`.
         const valor = aspas === 0 ? null : valorAtributo ? desescaparAtributo(valorAtributo) : valorAtributo;
         atributos.push([nomeAtributo, valor]);
       },
