@@ -1,6 +1,6 @@
 /**
  * Início do Modo Servidor (M1.9): a data da base, a linha do perfil ("Função · Campus", M1.8), a caixa
- * "O que você precisa hoje?" (com anexo e a escolha da IA), os cartões de tarefa que servem ao perfil
+ * "O que você precisa hoje?" (`CaixaPedido`, com anexo e a escolha da IA), os cartões de tarefa que servem ao perfil
  * (as skills do catálogo e a tarefa nativa "Analisar um PPC"), "Ver todas" e os recentes (conversas e a
  * última análise de PPC). No primeiro uso (aviso não aceito ou boas-vindas por ver), leva às
  * boas-vindas.
@@ -13,15 +13,15 @@
  */
 import type { ListaPendencias, Provider } from "@simplifica-if/contratos-app";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRightIcon, CircleCheckIcon, FileSearchIcon, SendHorizontalIcon } from "lucide-react";
-import { type FormEvent, type KeyboardEvent, useEffect, useState } from "react";
+import { ArrowRightIcon, CircleCheckIcon, FileSearchIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { AvisoErro } from "../components/AvisoErro.tsx";
+import { CaixaPedido } from "../components/CaixaPedido.tsx";
 import { AvisoBaseAtualizada } from "../configuracoes/AvisoBaseAtualizada.tsx";
 import { ListaConversas } from "../components/ListaConversas.tsx";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx";
-import { Button, buttonVariants } from "../components/ui/button.tsx";
+import { buttonVariants } from "../components/ui/button.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
-import { Textarea } from "../components/ui/textarea.tsx";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi, useConversa, useEstadoConexao } from "../contexto.tsx";
 import { PROVIDERS } from "../providers.ts";
@@ -99,7 +99,7 @@ function AvisoSemIa() {
   );
 }
 
-function CaixaPedido() {
+function PedidoDoInicio() {
   const api = useApi();
   const [estado, conversa] = useConversa();
   const navegar = useNavigate();
@@ -127,43 +127,20 @@ function CaixaPedido() {
       setEnviando(false);
     }
   };
-  const aoEnviar = (evento: FormEvent) => {
-    evento.preventDefault();
-    void enviar();
-  };
-  const aoTeclar = (evento: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (evento.key === "Enter" && !evento.shiftKey && !evento.nativeEvent.isComposing) {
-      evento.preventDefault();
-      void enviar();
-    }
-  };
   return (
-    <form
-      onSubmit={aoEnviar}
-      aria-label="O que você precisa hoje?"
-      className="flex flex-col gap-2 rounded-xl border border-input bg-card p-3 shadow-xs focus-within:ring-2 focus-within:ring-ring"
-    >
-      <Textarea
-        aria-label="O que você precisa hoje?"
-        placeholder="O que você precisa hoje? Ex.: quais normas tratam do estágio no técnico integrado?"
-        rows={3}
-        value={texto}
-        onChange={(evento) => setTexto(evento.currentTarget.value)}
-        onKeyDown={aoTeclar}
-        className="border-0 shadow-none focus-visible:ring-0"
-      />
-      <div className="flex flex-wrap items-center gap-2">
-        <Anexos anexos={anexos} aoMudar={setAnexos} />
-        <div className="ml-auto flex items-center gap-2">
-          <EscolhaIa valor={provider} aoMudar={setProvider} />
-          <Button type="submit" disabled={texto.trim() === "" || enviando}>
-            {enviando ? <Spinner /> : <SendHorizontalIcon />}
-            {enviando ? "Abrindo…" : "Enviar"}
-          </Button>
-        </div>
-      </div>
-      {erro === undefined ? null : <AvisoErro erro={erro} />}
-    </form>
+    <CaixaPedido
+      rotulo="O que você precisa hoje?"
+      rotuloFormulario="O que você precisa hoje?"
+      placeholder="O que você precisa hoje?"
+      linhas={2}
+      valor={texto}
+      aoMudar={setTexto}
+      aoEnviar={() => void enviar()}
+      enviando={enviando}
+      esquerda={<Anexos anexos={anexos} aoMudar={setAnexos} />}
+      direita={<EscolhaIa compacta valor={provider} aoMudar={setProvider} />}
+      abaixo={erro === undefined ? undefined : <AvisoErro erro={erro} />}
+    />
   );
 }
 
@@ -261,7 +238,7 @@ function Inicio() {
           <>
             <AvisoBaseAtualizada />
             <AvisoSemIa />
-            <CaixaPedido />
+            <PedidoDoInicio />
             <Tarefas />
             <section aria-labelledby="titulo-recentes" className="flex max-w-xl flex-col gap-2">
               <h2 id="titulo-recentes" className="font-semibold text-lg">
