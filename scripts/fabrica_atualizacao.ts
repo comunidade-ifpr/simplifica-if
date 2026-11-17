@@ -5,11 +5,14 @@
  *
  *   pnpm fabrica gerar-chave --saida ~/.simplifica-fabrica          # uma vez: o par minisign (fora do repositório)
  *   pnpm fabrica canal --canal beta --versao 2026.11.20 [--repositorio dono/repo] [--anterior <kb.sqlite>]…
+ *   pnpm fabrica promover --de beta --para estavel --versao 2026.11.20     # só o manifesto, os mesmos pacotes
  *   pnpm fabrica publicar --canal beta --versao 2026.11.20 --repositorio dono/repo [--executar]
  *   pnpm fabrica publicar-app --canal beta --versao 0.2.0 --repositorio dono/repo [--executar]
  *   pnpm fabrica propor-novidades --de <kb anterior> --para <kb nova> [--versao 2026.11.20]
  *
- * `canal` compila o `kb.sqlite` publicável com `--versao`, `--commit` e `--canal` (o build é
+ * `canal` (só o beta) compila o `kb.sqlite` publicável do commit (`git archive HEAD` numa pasta à parte,
+ * nunca o disco: arquivo não rastreado, ignorado ou modificado fica de fora) com `--versao` e `--commit`,
+ * sem canal (o canal é do manifesto, não do banco; promover não muda a base) (o build é
  * determinístico: o mesmo commit refaz o mesmo banco), recusa fonte não classificada, empacota a base
  * (zstd 19), os patches das versões anteriores guardadas em `tmp/fabrica/bases/` (ou das dadas em
  * `--anterior`), as skills do app e as novidades da versão, e assina o manifesto. Saída em
@@ -32,7 +35,7 @@ import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Effect from "effect/Effect";
 import { arquivosFonte } from "@simplifica-if/kb/db/fontes";
 import { lerPastaSkills } from "@simplifica-if/mcp/skills";
-import { gerarCanal, type SkillDaFabrica } from "@simplifica-if/atualizacao/fabrica";
+import { gerarCanal, promoverManifesto, type SkillDaFabrica } from "@simplifica-if/atualizacao/fabrica";
 import {
   reescreverLatestYml,
   TAG_APP,
@@ -67,7 +70,30 @@ import {
 const RAIZ = NodePath.resolve(import.meta.dirname, "..");
 const PASTA_FABRICA = NodePath.join(RAIZ, "tmp", "fabrica");
 const PASTA_BASES = NodePath.join(PASTA_FABRICA, "bases");
-const NOVIDADES = NodePath.join(RAIZ, "base-conhecimento", "novidades.yaml");
+/** As pastas de onde a fábrica lê, extraídas do commit (`git archive`), nunca do disco. */
+export const PASTAS_DO_COMMIT = ["base-conhecimento", "dados/institucional", "packages/kb", ".agents/skills"] as const;
+
+/**
+ * Extrai as fontes do commit numa pasta à parte e liga o `node_modules` do checkout (o `kb` roda dela):
+ * a base sai do que está no commit, como o build reproduzível promete.
+ */
+export function arvoreDoCommit(commit: string, destino: string, raiz: string = RAIZ): string {
+  NodeFS.rmSync(destino, { recursive: true, force: true });
+  NodeFS.mkdirSync(destino, { recursive: true });
+  const arquivo = NodeChildProcess.spawnSync("git", ["archive", "--format=tar", commit, "--", ...PASTAS_DO_COMMIT], {
+    cwd: raiz,
+    maxBuffer: 1024 * 1024 * 1024,
+  });
+  if (arquivo.status !== 0) throw new Error(`git archive falhou: ${arquivo.stderr.toString()}`);
+  const extracao = NodeChildProcess.spawnSync("tar", ["-x", "-C", destino], { input: arquivo.stdout });
+  if (extracao.status !== 0) throw new Error(`tar falhou: ${extracao.stderr.toString()}`);
+  for (const pasta of ["node_modules", "packages/kb/node_modules"]) {
+    const origem = NodePath.join(raiz, ...pasta.split("/"));
+    const alvo = NodePath.join(destino, ...pasta.split("/"));
+    if (NodeFS.existsSync(origem) && NodeFS.existsSync(NodePath.dirname(alvo))) NodeFS.symlinkSync(origem, alvo, "dir");
+  }
+  return destino;
+}
 
 const falhar = (mensagem: string): never => {
   console.error(`fábrica: ${mensagem}`);
@@ -82,7 +108,8 @@ const dentroDoRepositorio = (caminho: string) => {
 const expandir = (caminho: string) =>
   caminho.startsWith("~/") ? NodePath.join(NodeOS.homedir(), caminho.slice(2)) : caminho;
 
-const git = (...args: string[]) => NodeChildProcess.execFileSync("git", args, { cwd: RAIZ, encoding: "utf8" }).trim();
+const git = (...args: string[]) =>
+  NodeChildProcess.execFileSync("git", args, { cwd: RAIZ, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
 
 function lerChave() {
   const caminho = process.env["SIMPLIFICA_MINISIGN_CHAVE"];
@@ -109,9 +136,9 @@ function gerarChave(saida: string) {
   console.log(publica.split("\n")[1]);
 }
 
-async function skillsDoApp(): Promise<ReadonlyArray<SkillDaFabrica>> {
+async function skillsDoApp(arvore: string): Promise<ReadonlyArray<SkillDaFabrica>> {
   const pasta = await Effect.runPromise(
-    lerPastaSkills(NodePath.join(RAIZ, ".agents", "skills")).pipe(Effect.provide(NodeServices.layer)),
+    lerPastaSkills(NodePath.join(arvore, ".agents", "skills")).pipe(Effect.provide(NodeServices.layer)),
   );
   if (pasta.invalidas.length > 0)
     falhar(`skills do app inválidas:\n${pasta.invalidas.map((e) => `  ${e.message}`).join("\n")}`);
@@ -128,8 +155,8 @@ async function skillsDoApp(): Promise<ReadonlyArray<SkillDaFabrica>> {
 }
 
 /** As novidades conferidas: o arquivo só ganhou entradas desde a última versão publicada. */
-function novidades(versao: string) {
-  const atual = lerNovidades(NodeFS.readFileSync(NOVIDADES, "utf8"));
+function novidades(arvore: string, versao: string) {
+  const atual = lerNovidades(NodeFS.readFileSync(NodePath.join(arvore, "base-conhecimento", "novidades.yaml"), "utf8"));
   const publicadas = NodeFS.existsSync(PASTA_BASES)
     ? NodeFS.readdirSync(PASTA_BASES)
         .filter((nome) => nome.endsWith(".json"))
@@ -158,27 +185,29 @@ async function canal(opcoes: {
   appMinimo: string;
 }) {
   if (!/^\d{4}\.\d{2}\.\d{2}(\.\d+)?$/.test(opcoes.versao)) falhar("--versao no formato AAAA.MM.DD");
-  if (
-    git("status", "--porcelain", "--", "base-conhecimento", "dados/institucional", "packages/kb", ".agents/skills") !==
-    ""
-  ) {
-    console.warn("aviso: há mudanças não commitadas nas fontes; o commit gravado não refaz este banco");
+  if (opcoes.canal !== "beta") {
+    falhar("uma versão nova entra pelo beta; para o estável, use: pnpm fabrica promover --de beta --para estavel");
   }
-  const naoClassificadas = fontesNaoClassificadas(arquivosFonte(RAIZ));
+  const commit = git("rev-parse", "--short", "HEAD");
+  if (git("status", "--porcelain", "--", ...PASTAS_DO_COMMIT) !== "") {
+    console.warn(`aviso: há mudanças fora do commit nas fontes; a base sai do commit ${commit}, sem elas`);
+  }
+  const arvore = arvoreDoCommit(commit, NodePath.join(PASTA_FABRICA, "arvore"));
+  const naoClassificadas = fontesNaoClassificadas(arquivosFonte(arvore));
   if (naoClassificadas.length > 0) {
     falhar(`fontes não classificadas como publicáveis entrariam no pacote:\n  ${naoClassificadas.join("\n  ")}`);
   }
   const chave = lerChave();
-  const commit = git("rev-parse", "--short", "HEAD");
   const saida = NodePath.join(PASTA_FABRICA, `${opcoes.canal}-${opcoes.versao}`);
   NodeFS.rmSync(saida, { recursive: true, force: true });
   NodeFS.mkdirSync(PASTA_BASES, { recursive: true });
   const banco = NodePath.join(PASTA_BASES, `${opcoes.versao}.sqlite`);
-  console.log(`compilando a base ${opcoes.versao} (commit ${commit})…`);
+  console.log(`compilando a base ${opcoes.versao} do commit ${commit}…`);
+  // O kb da árvore do commit, com a raiz nela; sem `--canal`: o canal é do manifesto, não do banco.
   NodeChildProcess.execFileSync(
     process.execPath,
     [
-      NodePath.join(RAIZ, "packages", "kb", "src", "cli.ts"),
+      NodePath.join(arvore, "packages", "kb", "src", "cli.ts"),
       "compilar",
       "--destino",
       banco,
@@ -186,10 +215,8 @@ async function canal(opcoes: {
       opcoes.versao,
       "--commit",
       commit,
-      "--canal",
-      opcoes.canal,
     ],
-    { cwd: RAIZ, stdio: "inherit" },
+    { cwd: arvore, stdio: "inherit", env: { ...process.env, KB_SQLITE: banco } },
   );
   // As três versões anteriores guardadas, além das dadas.
   const guardadas = NodeFS.readdirSync(PASTA_BASES)
@@ -209,9 +236,9 @@ async function canal(opcoes: {
     commit,
     banco,
     anteriores,
-    skills: await skillsDoApp(),
+    skills: await skillsDoApp(arvore),
     appMinimo: opcoes.appMinimo,
-    novidades: novidades(opcoes.versao),
+    novidades: novidades(arvore, opcoes.versao),
     chave,
     ...(opcoes.repositorio === undefined ? {} : { urlPacotes: urlPacoteBase(opcoes.versao) }),
   });
@@ -224,6 +251,33 @@ async function canal(opcoes: {
     console.log(`  ${arquivo}  ${(bytes / 1024 / 1024).toFixed(2)} MB`);
   }
   console.log(`saída: ${saida}`);
+  NodeFS.rmSync(arvore, { recursive: true, force: true });
+}
+
+/**
+ * Promove uma versão do beta ao estável: os mesmos pacotes já publicados (o release `base-<versao>`),
+ * só o manifesto do estável, conferido e assinado de novo. Nada se recompila.
+ */
+function promover(opcoes: { de: Canal; para: Canal; versao: string }) {
+  const origem = NodePath.join(PASTA_FABRICA, `${opcoes.de}-${opcoes.versao}`);
+  const nome = arquivoManifesto(opcoes.de);
+  if (!NodeFS.existsSync(NodePath.join(origem, nome))) falhar(`sem o manifesto ${nome} em ${origem}`);
+  const { manifesto, arquivos } = promoverManifesto({
+    texto: NodeFS.readFileSync(NodePath.join(origem, nome), "utf8"),
+    assinatura: NodeFS.readFileSync(NodePath.join(origem, `${nome}${SUFIXO_ASSINATURA}`), "utf8"),
+    de: opcoes.de,
+    para: opcoes.para,
+    chave: lerChave(),
+    agora: new Date(),
+  });
+  const saida = NodePath.join(PASTA_FABRICA, `${opcoes.para}-${opcoes.versao}`);
+  NodeFS.rmSync(saida, { recursive: true, force: true });
+  NodeFS.mkdirSync(saida, { recursive: true });
+  for (const [arquivo, conteudo] of arquivos) NodeFS.writeFileSync(NodePath.join(saida, arquivo), conteudo);
+  console.log(`manifesto ${arquivoManifesto(manifesto.canal)} da versão ${manifesto.versao} em ${saida}`);
+  console.log(
+    `publique com: pnpm fabrica publicar --canal ${opcoes.para} --versao ${opcoes.versao} --repositorio dono/repo`,
+  );
 }
 
 function publicar(opcoes: { canal: Canal; versao: string; repositorio: string; executar: boolean }) {
@@ -236,59 +290,61 @@ function publicar(opcoes: { canal: Canal; versao: string; repositorio: string; e
     .filter((nome) => nome !== manifesto && nome !== `${manifesto}${SUFIXO_ASSINATURA}`)
     .map((nome) => NodePath.join(saida, nome));
   const repo = ["--repo", opcoes.repositorio];
-  const comandos: string[][] = [
-    // O release da versão: imutável, nunca "latest" (o latest fica para o app, se um dia usar).
-    [
-      "gh",
-      "release",
-      "create",
-      TAG_BASE(opcoes.versao),
-      ...pacotes,
-      ...repo,
-      "--title",
-      `Base ${opcoes.versao}`,
-      "--notes",
-      `Base de conhecimento ${opcoes.versao} (canal ${opcoes.canal}).`,
-      "--latest=false",
-    ],
-    // O release fixo do canal: criado uma vez; o manifesto é trocado a cada publicação.
-    [
-      "gh",
-      "release",
-      "create",
-      TAG_CANAL(opcoes.canal),
-      ...repo,
-      "--prerelease",
-      "--latest=false",
-      "--title",
-      `Canal ${opcoes.canal}`,
-      "--notes",
-      "Manifesto do canal. Não apague: o app procura aqui.",
-    ],
-    [
-      "gh",
-      "release",
-      "upload",
-      TAG_CANAL(opcoes.canal),
-      NodePath.join(saida, manifesto),
-      NodePath.join(saida, `${manifesto}${SUFIXO_ASSINATURA}`),
-      "--clobber",
-      ...repo,
-    ],
+  // O release da versão: imutável, nunca "latest". Uma promoção (só o manifesto) não o cria de novo.
+  const releaseVersao: string[][] =
+    pacotes.length === 0
+      ? []
+      : [
+          [
+            "gh",
+            "release",
+            "create",
+            TAG_BASE(opcoes.versao),
+            ...pacotes,
+            ...repo,
+            "--title",
+            `Base ${opcoes.versao}`,
+            "--notes",
+            `Base de conhecimento ${opcoes.versao}.`,
+            "--latest=false",
+          ],
+        ];
+  // O release fixo do canal: criado uma vez; o manifesto é trocado a cada publicação.
+  const criarCanal = [
+    "gh",
+    "release",
+    "create",
+    TAG_CANAL(opcoes.canal),
+    ...repo,
+    "--prerelease",
+    "--latest=false",
+    "--title",
+    `Canal ${opcoes.canal}`,
+    "--notes",
+    "Manifesto do canal. Não apague: o app procura aqui.",
   ];
-  for (const [indice, comando] of comandos.entries()) {
+  const enviarManifesto = [
+    "gh",
+    "release",
+    "upload",
+    TAG_CANAL(opcoes.canal),
+    NodePath.join(saida, manifesto),
+    NodePath.join(saida, `${manifesto}${SUFIXO_ASSINATURA}`),
+    "--clobber",
+    ...repo,
+  ];
+  for (const comando of [...releaseVersao, criarCanal, enviarManifesto]) {
     console.log(`$ ${comando.map((parte) => (/\s/.test(parte) ? JSON.stringify(parte) : parte)).join(" ")}`);
     if (!opcoes.executar) continue;
     try {
       NodeChildProcess.execFileSync(comando[0]!, comando.slice(1), { stdio: "inherit" });
     } catch (erro) {
       // O release do canal já existe a partir da segunda publicação.
-      if (indice !== 1) throw erro;
+      if (comando !== criarCanal) throw erro;
       console.log("  (o release do canal já existe)");
     }
   }
   if (!opcoes.executar) console.log("\n(só mostrei os comandos; rode de novo com --executar para publicar)");
-  // Promover para o estável é publicar a mesma versão no canal estavel: pnpm fabrica canal --canal estavel …
 }
 
 /**
@@ -381,6 +437,15 @@ async function principal() {
         repositorio: values.repositorio ?? falhar("--repositorio dono/repo"),
         executar: values.executar,
       });
+    case "promover":
+      if (![values.de ?? "beta", values.para ?? "estavel"].every((c) => (CANAIS as readonly string[]).includes(c))) {
+        return falhar(`--de e --para: ${CANAIS.join(" ou ")}`);
+      }
+      return promover({
+        de: (values.de ?? "beta") as Canal,
+        para: (values.para ?? "estavel") as Canal,
+        versao: values.versao ?? falhar("--versao AAAA.MM.DD"),
+      });
     case "publicar-app":
       return publicarApp({
         canal: canalDado,
@@ -397,7 +462,7 @@ async function principal() {
       return console.log(proposta(versao, new Date().toISOString().slice(0, 10), itens));
     }
     default:
-      return falhar("comandos: gerar-chave, canal, publicar, publicar-app, propor-novidades");
+      return falhar("comandos: gerar-chave, canal, promover, publicar, publicar-app, propor-novidades");
   }
 }
 

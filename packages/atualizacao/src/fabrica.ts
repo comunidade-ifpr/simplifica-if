@@ -20,11 +20,12 @@ import {
   arquivoManifesto,
   type Canal,
   codificarManifesto,
+  decodificarManifesto,
   type Manifesto,
   type Novidade,
   SUFIXO_ASSINATURA,
 } from "./manifesto.ts";
-import { assinar, type ChaveSecreta } from "./minisign.ts";
+import { assinar, type ChaveSecreta, verificar } from "./minisign.ts";
 import { type ArquivoSkill, empacotarSkill } from "./pacote-skill.ts";
 import { comprimir, criarPatch } from "./zstd.ts";
 
@@ -121,10 +122,48 @@ export function gerarCanal(opcoes: OpcoesCanal): CanalGerado {
     app_minimo: opcoes.appMinimo,
     ...(opcoes.novidades === undefined ? {} : { novidades: opcoes.novidades }),
   };
-  const texto = codificarManifesto(manifesto);
-  const nomeManifesto = arquivoManifesto(opcoes.canal);
-  gravar(nomeManifesto, texto);
-  const comentario = `timestamp:${Math.floor((opcoes.agora ?? new Date()).getTime() / 1000)}\tfile:${nomeManifesto}\tversao:${versao}`;
-  gravar(`${nomeManifesto}${SUFIXO_ASSINATURA}`, assinar(Buffer.from(texto, "utf8"), opcoes.chave, comentario));
+  const assinado = assinarManifesto(manifesto, opcoes.chave, opcoes.agora ?? new Date());
+  for (const [nome, conteudo] of assinado) gravar(nome, conteudo);
   return { manifesto, arquivos };
+}
+
+/** O manifesto e a assinatura, prontos para gravar: `[[nome, texto], [nome.minisig, assinatura]]`. */
+export function assinarManifesto(
+  manifesto: Manifesto,
+  chave: ChaveSecreta,
+  agora: Date,
+): ReadonlyArray<readonly [string, string]> {
+  const texto = codificarManifesto(manifesto);
+  const nome = arquivoManifesto(manifesto.canal);
+  const comentario = `timestamp:${Math.floor(agora.getTime() / 1000)}\tfile:${nome}\tversao:${manifesto.versao}`;
+  return [
+    [nome, texto],
+    [`${nome}${SUFIXO_ASSINATURA}`, assinar(Buffer.from(texto, "utf8"), chave, comentario)],
+  ];
+}
+
+/**
+ * Promove uma versão de um canal a outro (beta → estável) sem refazer nada: os mesmos pacotes, os
+ * mesmos sha256, só o canal e a data do manifesto mudam, e ele é assinado de novo. O manifesto de
+ * origem é conferido antes (assinatura e canal). Os pacotes precisam ter `url` (o release imutável da
+ * versão): o manifesto novo vai para o release de outro canal.
+ */
+export function promoverManifesto(opcoes: {
+  readonly texto: string;
+  readonly assinatura: string;
+  readonly de: Canal;
+  readonly para: Canal;
+  readonly chave: ChaveSecreta;
+  readonly agora: Date;
+}): { readonly manifesto: Manifesto; readonly arquivos: ReadonlyArray<readonly [string, string]> } {
+  verificar(Buffer.from(opcoes.texto, "utf8"), opcoes.assinatura, opcoes.chave);
+  const origem = decodificarManifesto(opcoes.texto);
+  if (origem.canal !== opcoes.de) throw new Error(`o manifesto é do canal ${origem.canal}, não do ${opcoes.de}`);
+  if (opcoes.de === opcoes.para) throw new Error("promover pede dois canais diferentes");
+  const semUrl = [origem.base, ...origem.base.patches, ...origem.skills].filter((item) => item.url === undefined);
+  if (semUrl.length > 0) {
+    throw new Error("os pacotes do manifesto não têm url (gere o canal com --repositorio para promover)");
+  }
+  const manifesto: Manifesto = { ...origem, canal: opcoes.para, gerado_em: opcoes.agora.toISOString() };
+  return { manifesto, arquivos: assinarManifesto(manifesto, opcoes.chave, opcoes.agora) };
 }
