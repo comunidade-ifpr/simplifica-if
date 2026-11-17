@@ -165,6 +165,41 @@
   }
 }
 
+/*
+ * A barra de título do desktop (`barra-titulo.ts`): o cabeçalho arrasta a janela, e o duplo clique nele
+ * maximiza (Windows, Linux) ou faz o zoom (macOS), como na barra do sistema.
+ * T3: apps/web/src/index.css (.drag-region) — o Electron 44 herda o `app-region`: os filhos voltam a
+ * `initial` (sem retângulo próprio; `none` valeria como `no-drag` e quebraria o arrasto), e os
+ * controles ficam `no-drag` para receber o clique.
+ */
+.drag-region {
+  -webkit-app-region: drag;
+}
+
+@layer base {
+  .drag-region > * {
+    -webkit-app-region: initial;
+  }
+}
+
+.drag-region button,
+.drag-region input,
+.drag-region textarea,
+.drag-region select,
+.drag-region a {
+  -webkit-app-region: no-drag;
+}
+
+/* O lugar dos botões do sistema: os semáforos à esquerda no macOS (fora da tela cheia, em que somem)… */
+.barra-titulo[data-botoes="semaforos"]:not([data-tela-cheia]) {
+  padding-left: 78px;
+}
+
+/* …e o overlay à direita no Windows e no Linux, pela área livre que o Electron informa. */
+.barra-titulo[data-botoes="overlay"] {
+  padding-right: calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, calc(100vw - 138px)) + 0.75rem);
+}
+
 /* O texto em Markdown das respostas e do painel de leitura. */
 .markdown {
   line-height: 1.6;

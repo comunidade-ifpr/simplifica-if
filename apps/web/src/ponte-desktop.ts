@@ -43,6 +43,17 @@ export interface PonteDesktop {
   procurarAtualizacaoApp?(): Promise<EstadoAtualizacaoApp>;
   /** "Reiniciar para atualizar". */
   instalarAtualizacaoApp?(): Promise<void>;
+  /** A janela sem a barra de título do sistema: o cabeçalho vira a barra (`barra-titulo.ts`). */
+  janela?: JanelaDesktop;
+}
+
+/** O que a interface sabe da janela do desktop para desenhar a barra de título. */
+export interface JanelaDesktop {
+  /** `process.platform`: no `darwin`, os semáforos à esquerda; nos outros, os botões do sistema à direita. */
+  readonly plataforma: string;
+  telaCheia(): Promise<boolean>;
+  /** Avisa ao entrar ou sair da tela cheia; devolve a função que para de avisar. */
+  aoMudarTelaCheia(ouvinte: (telaCheia: boolean) => void): () => void;
 }
 
 /** O estado da atualização do app, como o desktop o informa (`apps/desktop/src/ponteDesktop.ts`). */
