@@ -10,8 +10,14 @@
  * nome de arquivo ou versão, porque esses não se traduzem.
  *
  * Também falha com o jargão técnico que não deve aparecer para quem não é técnico, mesmo em português
- * (`JARGAO`): "sessão", "thread", "token", "provider"… ("turno" fica de fora: é também o turno do curso,
- * que a base mostra).
+ * (`JARGAO`): "sessão", "thread", "token", "provider", "credencial"… ("turno" fica de fora: é também o
+ * turno do curso, que a base mostra), e com o de mais de uma palavra (`JARGAO_FRASES`: "servidor local").
+ *
+ * A lista é a das palavras mais comuns de interface em inglês (Settings, Cancel, Retry, Loading,
+ * Error, Failed, Unknown, Sign in, Log in, Open, Close, Save, Delete, Search, Submit, Next, Back, Done,
+ * Undo, Copy, Paste, Help, Warning…), sem as que existem também em português ("login", "link", "item",
+ * "status", "time", "note", "set", "total", "menu", "zoom", "beta" e "local" ficam de fora). Não é um
+ * identificador de língua: palavra inglesa fora da lista passa.
  */
 
 /**
@@ -55,6 +61,9 @@ export const EXCECOES: ReadonlySet<string> = new Set([
   "macOS",
   "Windows",
   "Linux",
+  // Teclas com o nome impresso no teclado brasileiro (ABNT): "Enter envia; Shift+Enter quebra a linha"
+  "Enter",
+  "Shift",
   // O nome do app e da instituição
   "Simplifica",
   "IF",
@@ -88,6 +97,14 @@ export const PALAVRAS_INGLES: ReadonlySet<string> = new Set(
   details detail more info about version versions latest change changes changed review reviewing approve
   first last step steps off yet still keep left right bottom skill skills commit commits branch merge
   pull push repository
+  enable enabled disable disabled confirm confirmation learn export import output input browse choose
+  pick list empty full free ready wait waiting finish finished begin later now soon processing process
+  session sessions connection connections disconnect disconnected reconnect retrying successfully
+  unsuccessful available permission permissions access welcome hello profile privacy terms policy
+  support contact description title name date size type typing language english caution hint tip notes
+  draft archive archived restore trash duplicate external navigate forward fullscreen screen keyboard
+  shortcut shortcuts tab tabs pane label button click tap press enter return exit get got everything
+  items all sure
 `
     .split(/\s+/)
     .filter((palavra) => palavra.length > 0),
@@ -115,7 +132,16 @@ export const JARGAO: ReadonlySet<string> = new Set([
   "issues",
   "stdio",
   "websocket",
+  "credencial",
+  "credenciais",
 ]);
+
+/**
+ * Jargão de mais de uma palavra, procurado no texto inteiro: "servidor" sozinho é o servidor público,
+ * que o app atende; "servidor local" é o processo ao lado da janela, que a pessoa não precisa conhecer
+ * (a tela diz "a parte do app que roda no seu computador").
+ */
+export const JARGAO_FRASES: ReadonlyArray<RegExp> = [/\bservidor(es)? loca(l|is)\b/i, /\bapp-server\b/i];
 
 /**
  * Pedaços que não se traduzem: link, caminho, e-mail, nome de arquivo (`PPC.docx`), versão (`2.1.30`),
@@ -134,6 +160,10 @@ export interface Achado {
 /** As palavras em inglês e de jargão de um texto da tela. */
 export function palavrasSuspeitas(texto: string): ReadonlyArray<Achado> {
   const achados: Array<Achado> = [];
+  for (const frase of JARGAO_FRASES) {
+    const achada = frase.exec(texto);
+    if (achada !== null) achados.push({ palavra: achada[0], motivo: "jargão", texto });
+  }
   for (const pedaco of texto.split(/\s+/)) {
     const limpo = pedaco.replace(/^[("'“‘«[{]+|[)"'”’»\]}.,;:!?…]+$/g, "");
     if (limpo.length === 0 || PEDACO_LITERAL.test(limpo)) continue;

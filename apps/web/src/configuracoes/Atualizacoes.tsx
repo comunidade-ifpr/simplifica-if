@@ -27,11 +27,11 @@ import {
   versaoComoData,
 } from "./textos.ts";
 
-/** Reinicia o servidor pelo desktop; no navegador (desenvolvimento), pede para reiniciar à mão. */
+/** Reinicia o servidor pelo desktop; no navegador (desenvolvimento), pede para reabrir o app. */
 async function reiniciar(resultado: ResultadoTroca): Promise<string> {
   if (resultado.resultado !== "reiniciar") return resultado.mensagem;
   const ponte = ponteDesktop();
-  if (ponte?.reiniciarServidor === undefined) return "Reinicie o servidor local para trocar a base.";
+  if (ponte?.reiniciarServidor === undefined) return "Feche e abra o Simplifica IF de novo para trocar a base.";
   await ponte.reiniciarServidor();
   return resultado.mensagem;
 }

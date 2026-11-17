@@ -141,7 +141,9 @@ export const montarBase = Effect.gen(function* () {
 
 /* ============================================================ Worker */
 
-const megabytes = (bytes: number) => `${(bytes / 1024 / 1024).toFixed(1).replace(".", ",")} MB`;
+/** O tamanho na mensagem para a pessoa, pelo `Intl` em pt-BR (M1.14): "12,3 MB". */
+const FORMATO_MB = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const megabytes = (bytes: number) => `${FORMATO_MB.format(bytes / 1024 / 1024)} MB`;
 
 type Revisao = Extract<RespostaTrabalhador, { ok: true }>["revisao"];
 

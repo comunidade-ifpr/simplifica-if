@@ -12,16 +12,15 @@ import { useApi } from "../contexto.tsx";
 import { ponteDesktop } from "../ponte-desktop.ts";
 import { nomeArquivo } from "../tarefas/comecar.tsx";
 import { AvisoErro } from "./AvisoErro.tsx";
+import { dataHora, inteiro, megabytes } from "../lib/formato.ts";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert.tsx";
 import { Button } from "./ui/button.tsx";
 import { Spinner } from "./ui/spinner.tsx";
 
-const FORMATO_HORA = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" });
-
 function tamanho(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
-  return `${(bytes / 1024 / 1024).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} MB`;
+  if (bytes < 1024 * 1024) return `${inteiro(Math.round(bytes / 1024))} KB`;
+  return megabytes(bytes);
 }
 
 /** "Documentos › Simplifica IF › Conferir base legal", sem o resto do caminho. */
@@ -51,7 +50,7 @@ function Arquivo({
         {arquivo.nome}
       </span>
       <span className="text-muted-foreground text-xs">
-        {tamanho(arquivo.tamanho)} · {FORMATO_HORA.format(new Date(arquivo.alteradoEm))}
+        {tamanho(arquivo.tamanho)} · {dataHora(arquivo.alteradoEm)}
       </span>
       {/* "Abrir" só para documento (a lista do contrato); o resto, só "Mostrar na pasta". */}
       {ponte?.abrirArquivoTarefa === undefined || !ehExtensaoDocumento(arquivo.nome) ? null : (
@@ -123,8 +122,8 @@ function ConfirmarDesfazer({
     >
       <p className="font-semibold">Desfazer o que a IA fez nesta pasta?</p>
       <p className="text-muted-foreground">
-        Volta o que a IA mudou na mensagem {copiaEm === undefined ? "" : `de ${FORMATO_HORA.format(new Date(copiaEm))}`}
-        . A conversa não muda.
+        Volta o que a IA mudou na mensagem {copiaEm === undefined ? "" : `de ${dataHora(copiaEm)}`}. A conversa não
+        muda.
       </p>
       <ul className="my-2 list-disc pl-5">
         {lista(criados) === "" ? null : <li>Saem: {lista(criados)}</li>}

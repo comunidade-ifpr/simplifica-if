@@ -244,9 +244,11 @@ export class ControleConversa {
 
 function explicarFalhaDoTurno(erro: unknown): MensagemErro {
   if (typeof erro === "object" && erro !== null && (erro as { _tag?: unknown })._tag === "RpcClientError") {
+    const detalhe = (erro as { message?: unknown }).message;
     return {
       texto:
-        "A conexão com o servidor local caiu durante a resposta, e o restante dela se perdeu. Envie a mensagem de novo quando a conexão voltar.",
+        "O Simplifica IF perdeu o contato com a parte do app que roda no seu computador durante a resposta, e o restante dela se perdeu. Espere alguns segundos e envie a mensagem de novo.",
+      detalhe: `Conexão com o servidor local caiu (RpcClientError)${typeof detalhe === "string" && detalhe.length > 0 ? `: ${detalhe}` : ""}`,
     };
   }
   return explicarErro(erro);

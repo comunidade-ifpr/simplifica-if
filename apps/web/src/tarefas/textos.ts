@@ -4,6 +4,7 @@
  * formulário da tarefa monta.
  */
 import type { EntradaTarefa, ResumoSkill } from "@simplifica-if/contratos-app";
+import { dataCurta, inteiro } from "../lib/formato.ts";
 
 /* ================================================================== citações */
 
@@ -121,7 +122,7 @@ export function secaoPorExtenso(fragmento: string): string {
   return nome === undefined ? "uma seção" : `seção ${nome}`;
 }
 
-const milhar = (numero: string) => (/^\d{4,}$/.test(numero) ? Number(numero).toLocaleString("pt-BR") : numero);
+const milhar = (numero: string) => (/^\d{4,}$/.test(numero) ? inteiro(Number(numero)) : numero);
 
 /** Um slug (`tecnico-em-enfermagem`) legível: "Técnico em enfermagem". */
 export function slugLegivel(slug: string): string {
@@ -198,8 +199,7 @@ export function duracaoPorExtenso(duracao: string | undefined): string | undefin
 
 /** A data da base (`2026-11-12`) como a pessoa lê: "12/11/2026". */
 export function dataDaBase(iso: string): string {
-  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
-  return m ? `${m[3]}/${m[2]}/${m[1]}` : iso;
+  return dataCurta(iso);
 }
 
 /* ================================================================== pedido */

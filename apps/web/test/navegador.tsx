@@ -8,6 +8,8 @@ import { createRoot } from "react-dom/client";
 import { commands } from "vite-plus/test/browser";
 import type { OpcoesServidorTeste, ServidorTeste } from "../vite.config.ts";
 import { App } from "../src/App.tsx";
+import type { OpcoesConexao } from "../src/conexao/Conexao.ts";
+import type { OrigemConexao } from "../src/conexao/origem.ts";
 import { inicializar } from "../src/inicializar.ts";
 import { criarRoteador } from "../src/router.ts";
 import { type Achado, palavrasSuspeitas } from "./ingles.ts";
@@ -32,11 +34,18 @@ export const editarArquivoDeTarefa = (caminho: string, texto: string) => command
 
 /** Monta o app conectado ao servidor; `Symbol.asyncDispose` desmonta e fecha a conexão. */
 export async function montarApp(servidor: ServidorTeste, rota = "/") {
-  const iniciado = await inicializar({
-    tipo: "navegador",
-    fonte: "url",
-    credenciais: { urlServidor: servidor.urlServidor, token: servidor.token },
-  });
+  return montarAppComOrigem(
+    { tipo: "navegador", fonte: "url", credenciais: { urlServidor: servidor.urlServidor, token: servidor.token } },
+    rota,
+  );
+}
+
+/**
+ * Monta o app com uma origem qualquer: sem servidor (`ausente`), ou um endereço que não responde, para
+ * ver os avisos de conexão.
+ */
+export async function montarAppComOrigem(origem: OrigemConexao, rota = "/", opcoes?: OpcoesConexao) {
+  const iniciado = await inicializar(origem, opcoes);
   const roteador = criarRoteador(createMemoryHistory({ initialEntries: [rota] }));
   const elemento = document.createElement("div");
   document.body.append(elemento);
