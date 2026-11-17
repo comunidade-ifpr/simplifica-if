@@ -97,7 +97,7 @@ fichas revisar-ppc ──┘               └─ paridade (texto, json, schema)
   - `curso:curitiba/tecnico-em-enfermagem` (a chave atual de `base-conhecimento/institucional/ifpr/`);
   - `campus:curitiba`;
   - `cnct:tecnico-em-enfermagem`;
-  - `ppc:curitiba/tecnico-em-enfermagem`, sem versão: a base guarda só o PPC vigente de cada curso, e as versões anteriores se recuperam pelo histórico do git (decisão de 13/11/2026, fase 4);
+  - `ppc:curitiba/tecnico-em-enfermagem`, sem versão: a base guarda só o PPC vigente de cada curso (decisão de 13/11/2026, fase 4). As versões anteriores se recuperavam pelo histórico do git, mas a abertura do repositório reescreve o histórico (git filter-repo) e tira dele dados pessoais e URLs assinadas: para esses trechos, a versão antiga não é recuperável pelo git, e a fonte de qualquer versão anterior é o PDF oficial do PPC;
   - `ficha:CT-CURR-12`.
 
 **Só o texto vigente.** Os dispositivos guardam a redação atual. Notas como "Redação dada pela Lei X" viram metadado do dispositivo, sem modelar redações históricas.

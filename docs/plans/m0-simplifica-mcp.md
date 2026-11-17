@@ -34,7 +34,7 @@ Um servidor MCP só de leitura que entrega a base de conhecimento a qualquer IA 
 | `vigencia` | front matter, `relacoes.yaml`, `config/vigencia.yaml` | não. O banco tem `vigencias` e `transicoes`, mas não os eventos e pendências que explicam o status |
 | `relacoes` | `relacoes.yaml` | não: a tabela `relacoes` já tem os dados |
 | `impacto` | textos das skills, fichas, PPCs | parcial: fichas, tópicos e citações estão no banco; os textos das skills, não |
-| `adequacao-art71` | `dados/institucional/` e Markdown dos PPCs | não: as tabelas `cursos`, `ppcs` e `citacoes` têm os dados |
+| `adequacao-art71` | `base-conhecimento/institucional/ifpr/cursos/` e Markdown dos PPCs | não: as tabelas `cursos`, `ppcs` e `citacoes` têm os dados |
 
 **Tamanho das saídas em JSON**
 

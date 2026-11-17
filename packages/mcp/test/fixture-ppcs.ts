@@ -160,7 +160,7 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
     ppc_id: `ppc:${PPC_INFORMATICA}`,
     ppc_markdown_path: `institucional/ifpr/ppcs/${PPC_INFORMATICA}.md`,
     ppc_ano_documento: 2022,
-    path: `dados/institucional/cursos/${PPC_INFORMATICA}.json`,
+    path: `base-conhecimento/institucional/ifpr/cursos/${PPC_INFORMATICA}.json`,
   });
   // Curso técnico em oferta sem PPC convertido: indicador sem-ppc-convertido.
   inserir("cursos", {
@@ -171,7 +171,7 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
     nivel: "médio",
     forma_oferta: "subsequente",
     situacao: "ativo",
-    path: "dados/institucional/cursos/foz-do-iguacu/tecnico-em-aquicultura.json",
+    path: "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-aquicultura.json",
   });
   for (const [id, curso, turno, vagas, processo] of [
     ["o1", PPC_ENFERMAGEM, "matutino", 30, "processo-seletivo-2026"],
@@ -187,7 +187,7 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
       turno,
       url_fonte: "https://exemplo.ifpr.edu.br/edital.pdf",
       editais_json: "[]",
-      path: `dados/institucional/ofertas/${id}.json`,
+      path: `base-conhecimento/institucional/ifpr/ofertas/${id}.json`,
       linha_turno: 7,
     });
     inserir("ofertas_cursos", { oferta_id: `oferta:${id}`, curso_id: `curso:${curso}` });
@@ -352,7 +352,7 @@ function povoar(db: NodeSqlite.DatabaseSync): void {
     ch_exibida_h: 1600,
     estagio_exigido: 0,
     trecho: "538 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2024 CURITIBA — CH exibida: 1600 h; estágio exigido: Não",
-    path: `dados/institucional/cursos/${PPC_ENFERMAGEM}.json`,
+    path: `base-conhecimento/institucional/ifpr/cursos/${PPC_ENFERMAGEM}.json`,
     linha: 18,
   });
 }

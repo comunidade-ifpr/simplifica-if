@@ -3,7 +3,7 @@
  * Leitura dos registros institucionais (`base-conhecimento/institucional/ifpr/`: campi, cursos,
  * processos seletivos, editais e ofertas) pelo núcleo `packages/kb` (compilação do `kb.sqlite`).
  *
- * O contrato estrito desses arquivos é o de `scripts/institucional/ifpr.ts`, conferido por
+ * O contrato estrito desses arquivos é o de `scripts/dados/institucional.ts`, conferido por
  * `node scripts/validar_base.ts`; aqui os esquemas são frouxos (`StructWithRest`) e só exigem os
  * campos que o banco usa, para que a dependência continue num sentido só (scripts → kb).
  * Cada registro vem com o caminho do arquivo, relativo à raiz do repositório. O `index.json` de cada

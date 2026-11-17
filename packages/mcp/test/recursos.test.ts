@@ -225,7 +225,7 @@ for (const [transporte, abrir] of [
         expect(cnct).toContain(`(ifpr://curso/${PPC_ENFERMAGEM})`);
 
         const campus = conferirEnvelope(yield* ler(cliente, "ifpr://campus/foz-do-iguacu"));
-        expect(campus).toContain("fonte: `dados/institucional/campi/foz-do-iguacu.json`");
+        expect(campus).toContain("fonte: `base-conhecimento/institucional/ifpr/campi/foz-do-iguacu.json`");
         expect(campus).toContain("(ifpr://curso/foz-do-iguacu/licenciatura-em-fisica)");
 
         const ficha = conferirEnvelope(yield* ler(cliente, "ifpr://ficha/ct-teste-01"));
