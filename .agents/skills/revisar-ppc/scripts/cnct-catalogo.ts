@@ -1,35 +1,34 @@
 // @effect-diagnostics nodeBuiltinImport:off -- comparação síncrona do PPC da rodada com o CNCT, sobre arquivos locais
 /**
- * Comparação do curso do PPC com o Catálogo Nacional de Cursos Técnicos
- * (porte de `cnct_catalogo.py`): busca por denominação, resumo do estágio no
- * CNCT e comparação de denominação, eixo, carga horária mínima e estágio.
+ * Comparação do curso do PPC com o Catálogo Nacional de Cursos Técnicos:
+ * busca por denominação, resumo do estágio no CNCT e comparação de denominação, eixo, carga horária mínima e estágio.
  *
- * O score é um float do Python (`round(score, 4)`), escrito como `1.0` no
- * JSON: por isso é `FloatPy`.
+ * O score é fracionário, arredondado a 4 casas e escrito como `1.0` no JSON:
+ * por isso é `Flutuante`.
  */
 import * as NodePath from "node:path";
-import { SequenceMatcher } from "@simplifica-if/kb/python/difflib";
-import { escape, finditer, search, sub } from "@simplifica-if/kb/python/re";
-import { casefold, colapsarEspacos, semMarcas } from "@simplifica-if/kb/python/texto";
+import { SequenceMatcher } from "@simplifica-if/kb/primitivas/sequencias";
+import { escape, finditer, search, sub } from "@simplifica-if/kb/primitivas/regex";
+import { casefold, colapsarEspacos, semMarcas } from "@simplifica-if/kb/primitivas/texto";
 import {
-  ehIntPy,
-  ehObjetoPy,
-  FloatPy,
+  ehInteiroOuLogico,
+  ehDicionario,
+  Flutuante,
   inteiroDeTexto,
-  numeroPy,
+  valorNumerico,
   obrigatorio,
   obter,
-  type ObjetoPy,
+  type Dicionario,
   ou,
   padraoSeAusente,
-  roundPy,
-  strPy,
-  textoOuVazioPy as textoOuVazio,
+  arredondarParaPar,
+  textoDoValor,
+  textoOuVazioDoValor as textoOuVazio,
   verdadeiro,
-} from "@simplifica-if/kb/python/valores";
+} from "@simplifica-if/kb/primitivas/valores";
 import { aparar, compararTexto, prefixo } from "@simplifica-if/kb/texto";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
-import { caminhosRodada, escreverJsonPy, existe, lerJsonPy, sha256Arquivo } from "./rodada.ts";
+import { caminhosRodada, escreverJsonDaRodada, existe, lerJsonDaRodada, sha256Arquivo } from "./rodada.ts";
 
 const CAMPOS_COMPLETOS = [
   "eixo_tecnologico",
@@ -81,7 +80,7 @@ function janelasTermo(textoNormalizado: string, termo: string, raio = 160): stri
 }
 
 /** Resumo da exigência de estágio na descrição de carga horária mínima do CNCT. */
-export function resumirEstagioCnct(curso: ObjetoPy): ObjetoPy {
+export function resumirEstagioCnct(curso: Dicionario): Dicionario {
   const descricao = textoLimpo(obter(curso, "descricao_carga_horaria_minima"));
   const legislacao = textoLimpo(obter(curso, "legislacao_profissional"));
   const texto = normalizarTextoCnct(descricao);
@@ -127,14 +126,14 @@ export function resumirEstagioCnct(curso: ObjetoPy): ObjetoPy {
   };
 }
 
-function carregarCursoCompleto(itemIndice: ObjetoPy, caminhos: CaminhosAnalise): ObjetoPy {
-  const curso: ObjetoPy = { ...itemIndice };
+function carregarCursoCompleto(itemIndice: Dicionario, caminhos: CaminhosAnalise): Dicionario {
+  const curso: Dicionario = { ...itemIndice };
   const valorPath = textoOuVazio(obter(itemIndice, "path"));
   if (valorPath) {
     const arquivo = NodePath.isAbsolute(valorPath) ? valorPath : NodePath.join(caminhos.baseConhecimentoDir, valorPath);
     if (existe(arquivo)) {
-      const payload = lerJsonPy(arquivo);
-      if (ehObjetoPy(payload)) {
+      const payload = lerJsonDaRodada(arquivo);
+      if (ehDicionario(payload)) {
         Object.assign(curso, payload);
         curso.path = valorPath;
         curso.arquivo = arquivo;
@@ -142,7 +141,7 @@ function carregarCursoCompleto(itemIndice: ObjetoPy, caminhos: CaminhosAnalise):
     }
   }
   const horas = obter(curso, "carga_horaria_minima_horas");
-  padraoSeAusente(curso, "carga_horaria_minima", ehIntPy(horas) ? `${strPy(horas)} horas` : "");
+  padraoSeAusente(curso, "carga_horaria_minima", ehInteiroOuLogico(horas) ? `${textoDoValor(horas)} horas` : "");
   padraoSeAusente(curso, "ocupacoes_cbo", "");
   padraoSeAusente(curso, "infraestrutura_minima", "");
   padraoSeAusente(curso, "legislacao_profissional", "");
@@ -151,13 +150,13 @@ function carregarCursoCompleto(itemIndice: ObjetoPy, caminhos: CaminhosAnalise):
 }
 
 /** Cursos do índice do CNCT, completados com o arquivo de cada curso. */
-export function carregarCatalogoCnct(catalogo?: string, caminhos: CaminhosAnalise = caminhosPadrao()): ObjetoPy[] {
-  const payload = lerJsonPy(catalogo ?? caminhosCnct(caminhos).indice);
-  const itens = ehObjetoPy(payload) ? obter(payload, "items") : [];
+export function carregarCatalogoCnct(catalogo?: string, caminhos: CaminhosAnalise = caminhosPadrao()): Dicionario[] {
+  const payload = lerJsonDaRodada(catalogo ?? caminhosCnct(caminhos).indice);
+  const itens = ehDicionario(payload) ? obter(payload, "items") : [];
   if (!Array.isArray(itens)) return [];
-  const cursos: ObjetoPy[] = [];
+  const cursos: Dicionario[] = [];
   itens.forEach((item, posicao) => {
-    if (!ehObjetoPy(item)) return;
+    if (!ehDicionario(item)) return;
     if (!aparar(textoOuVazio(obter(item, "denominacao")))) return;
     const curso = carregarCursoCompleto(item, caminhos);
     padraoSeAusente(curso, "indice", posicao + 1);
@@ -185,12 +184,12 @@ function tipoCorrespondencia(score: number): string {
   return "BAIXA_CONFIANCA";
 }
 
-function resumirCurso(curso: ObjetoPy, score: number, completo: boolean): ObjetoPy {
-  const resumo: ObjetoPy = {
+function resumirCurso(curso: Dicionario, score: number, completo: boolean): Dicionario {
+  const resumo: Dicionario = {
     indice: obrigatorio(curso, "indice"),
     id: obter(curso, "id", ""),
     path: obter(curso, "path", ""),
-    score: new FloatPy(roundPy(score, 4)),
+    score: new Flutuante(arredondarParaPar(score, 4)),
     denominacao: obrigatorio(curso, "denominacao"),
     eixo_tecnologico: obrigatorio(curso, "eixo_tecnologico"),
     area_tecnologica: obrigatorio(curso, "area_tecnologica"),
@@ -212,28 +211,30 @@ function resumirCurso(curso: ObjetoPy, score: number, completo: boolean): Objeto
 export function buscarCursosCnct(
   consulta: string,
   opcoes: { catalogo?: string; limite?: number; completo?: boolean; caminhos?: CaminhosAnalise } = {},
-): ObjetoPy[] {
+): Dicionario[] {
   const { limite = 5, completo = false } = opcoes;
   const consultaNormalizada = normalizarDenominacaoCnct(consulta);
   if (!consultaNormalizada) return [];
-  const candidatos: ObjetoPy[] = [];
+  const candidatos: Dicionario[] = [];
   for (const curso of carregarCatalogoCnct(opcoes.catalogo, opcoes.caminhos)) {
-    const score = scoreDenominacao(consultaNormalizada, strPy(curso.denominacao_normalizada));
+    const score = scoreDenominacao(consultaNormalizada, textoDoValor(curso.denominacao_normalizada));
     if (score >= 0.55) candidatos.push(resumirCurso(curso, score, completo));
   }
-  candidatos.sort((a, b) => numeroPy(b.score) - numeroPy(a.score) || compararPy(a.denominacao, b.denominacao));
+  candidatos.sort(
+    (a, b) => valorNumerico(b.score) - valorNumerico(a.score) || compararValores(a.denominacao, b.denominacao),
+  );
   return candidatos.slice(0, limite);
 }
 
-/** Comparação `<` do Python para textos (por code point) e números. */
-function compararPy(a: unknown, b: unknown): number {
+/** Ordem de textos (por code point) e de números. */
+function compararValores(a: unknown, b: unknown): number {
   if (typeof a === "string" && typeof b === "string") return compararTexto(a, b);
-  return numeroPy(a) - numeroPy(b);
+  return valorNumerico(a) - valorNumerico(b);
 }
 
-function dadosExtraidos(dadosConversao: unknown): ObjetoPy {
-  const dados = ehObjetoPy(dadosConversao) ? obter(dadosConversao, "dados_extraidos", {}) : {};
-  return ehObjetoPy(dados) ? dados : {};
+function dadosExtraidos(dadosConversao: unknown): Dicionario {
+  const dados = ehDicionario(dadosConversao) ? obter(dadosConversao, "dados_extraidos", {}) : {};
+  return ehDicionario(dados) ? dados : {};
 }
 
 function primeiroValorPreenchido(...valores: unknown[]): unknown {
@@ -242,17 +243,17 @@ function primeiroValorPreenchido(...valores: unknown[]): unknown {
 }
 
 /** `_read_json_if_exists`. */
-export function lerJsonSeExistir(valorCaminho: unknown): ObjetoPy {
+export function lerJsonSeExistir(valorCaminho: unknown): Dicionario {
   if (!verdadeiro(valorCaminho)) return {};
-  const caminho = strPy(valorCaminho);
+  const caminho = textoDoValor(valorCaminho);
   if (!existe(caminho)) return {};
-  const payload = lerJsonPy(caminho);
-  return ehObjetoPy(payload) ? payload : {};
+  const payload = lerJsonDaRodada(caminho);
+  return ehDicionario(payload) ? payload : {};
 }
 
 type Horas = { valor_horas: number | null; fonte: string | null; valor_original: unknown };
 
-function cargaHorariaPpc(dados: ObjetoPy, matriz: ObjetoPy): Horas {
+function cargaHorariaPpc(dados: Dicionario, matriz: Dicionario): Horas {
   const candidatos: Array<[string, unknown]> = [
     ["dados_extraidos.carga_horaria_total", obter(dados, "carga_horaria_total")],
     ["dados_extraidos.carga_horaria_total_curso", obter(dados, "carga_horaria_total_curso")],
@@ -260,7 +261,7 @@ function cargaHorariaPpc(dados: ObjetoPy, matriz: ObjetoPy): Horas {
     ["dados_extraidos.carga_horaria_minima_cnct", obter(dados, "carga_horaria_minima_cnct")],
   ];
   const totais = obter(matriz, "totais", {});
-  if (ehObjetoPy(totais)) {
+  if (ehDicionario(totais)) {
     candidatos.push(
       ["matriz_curricular.totais.ch_total_hora_relogio", obter(totais, "ch_total_hora_relogio")],
       ["matriz_curricular.totais.ch_total_hora_aula", obter(totais, "ch_total_hora_aula")],
@@ -274,23 +275,23 @@ function cargaHorariaPpc(dados: ObjetoPy, matriz: ObjetoPy): Horas {
 }
 
 /** Componentes da matriz: `componentes[]` da raiz e de cada item de `anos[]` e `series[]`. */
-export function componentesMatriz(matriz: ObjetoPy): ObjetoPy[] {
-  const componentes: ObjetoPy[] = [];
+export function componentesMatriz(matriz: Dicionario): Dicionario[] {
+  const componentes: Dicionario[] = [];
   const raiz = obter(matriz, "componentes");
-  if (Array.isArray(raiz)) componentes.push(...raiz.filter(ehObjetoPy));
+  if (Array.isArray(raiz)) componentes.push(...raiz.filter(ehDicionario));
   for (const chave of ["anos", "series"]) {
     const grupos = obter(matriz, chave);
     if (!Array.isArray(grupos)) continue;
     for (const grupo of grupos) {
-      if (!ehObjetoPy(grupo)) continue;
+      if (!ehDicionario(grupo)) continue;
       const itens = obter(grupo, "componentes");
-      if (Array.isArray(itens)) componentes.push(...itens.filter(ehObjetoPy));
+      if (Array.isArray(itens)) componentes.push(...itens.filter(ehDicionario));
     }
   }
   return componentes;
 }
 
-function cargaHorariaComponente(componente: ObjetoPy): number | null {
+function cargaHorariaComponente(componente: Dicionario): number | null {
   const horas = [
     obter(componente, "ch_hora_relogio_cnct"),
     obter(componente, "ch_hora_relogio"),
@@ -302,8 +303,8 @@ function cargaHorariaComponente(componente: ObjetoPy): number | null {
   return horas.length ? Math.max(...horas) : null;
 }
 
-function linhasEstagioMatriz(matriz: ObjetoPy): ObjetoPy[] {
-  const linhas: ObjetoPy[] = [];
+function linhasEstagioMatriz(matriz: Dicionario): Dicionario[] {
+  const linhas: Dicionario[] = [];
   for (const componente of componentesMatriz(matriz)) {
     const nome = textoLimpo(
       ou(obter(componente, "nome"), obter(componente, "componente"), obter(componente, "titulo")),
@@ -314,7 +315,7 @@ function linhasEstagioMatriz(matriz: ObjetoPy): ObjetoPy[] {
   return linhas;
 }
 
-function estagioPpc(dados: ObjetoPy, matriz: ObjetoPy): ObjetoPy {
+function estagioPpc(dados: Dicionario, matriz: Dicionario): Dicionario {
   const candidatos: Array<[string, unknown]> = [
     ["dados_extraidos.carga_horaria_estagio", obter(dados, "carga_horaria_estagio")],
     ["dados_extraidos.estagio", obter(dados, "estagio")],
@@ -344,7 +345,7 @@ function estagioPpc(dados: ObjetoPy, matriz: ObjetoPy): ObjetoPy {
   };
 }
 
-function compararEstagioCnct(estagioCnct: ObjetoPy, estagio: ObjetoPy): ObjetoPy {
+function compararEstagioCnct(estagioCnct: Dicionario, estagio: Dicionario): Dicionario {
   const obrigatoriedade = textoOuVazio(obter(estagioCnct, "obrigatoriedade"));
   const temCarga = verdadeiro(obter(estagio, "indicio_estagio_obrigatorio_por_carga"));
   if (obrigatoriedade === "OBRIGATORIO") {
@@ -377,11 +378,11 @@ function compararEstagioCnct(estagioCnct: ObjetoPy, estagio: ObjetoPy): ObjetoPy
 
 /** `comparar_ppc_com_cnct`. */
 export function compararPpcComCnct(
-  metadata: ObjetoPy,
+  metadata: Dicionario,
   dadosConversao: unknown,
-  matriz: ObjetoPy,
+  matriz: Dicionario,
   opcoes: { catalogo?: string; caminhos?: CaminhosAnalise } = {},
-): ObjetoPy {
+): Dicionario {
   const caminhos = opcoes.caminhos ?? caminhosPadrao();
   const cnct = caminhosCnct(caminhos);
   const catalogo = opcoes.catalogo ?? cnct.indice;
@@ -414,11 +415,11 @@ export function compararPpcComCnct(
   const consulta = textoOuVazio(cursoDeclarado);
   const candidatos = buscarCursosCnct(consulta, { catalogo, caminhos });
   const completos = buscarCursosCnct(consulta, { catalogo, caminhos, limite: 5, completo: true });
-  const correspondencia = candidatos[0] && numeroPy(candidatos[0].score) >= 0.72 ? candidatos[0] : null;
-  const completa = completos[0] && numeroPy(completos[0].score) >= 0.72 ? completos[0] : null;
-  const comparacoes: ObjetoPy = {};
+  const correspondencia = candidatos[0] && valorNumerico(candidatos[0].score) >= 0.72 ? candidatos[0] : null;
+  const completa = completos[0] && valorNumerico(completos[0].score) >= 0.72 ? completos[0] : null;
+  const comparacoes: Dicionario = {};
   if (correspondencia) {
-    const tipo = tipoCorrespondencia(numeroPy(correspondencia.score));
+    const tipo = tipoCorrespondencia(valorNumerico(correspondencia.score));
     comparacoes.denominacao = {
       status: tipo === "EXATA" || tipo === "ALTA_CONFIANCA" ? "COMPATIVEL" : "INCONCLUSIVO",
       tipo_correspondencia: tipo,
@@ -437,14 +438,14 @@ export function compararPpcComCnct(
     const cargaMinima = obter(correspondencia, "carga_horaria_minima_horas");
     if (cargaMinima !== null && cargaPpc.valor_horas !== null) {
       comparacoes.carga_horaria_minima = {
-        status: cargaPpc.valor_horas >= numeroPy(cargaMinima) ? "COMPATIVEL" : "DIVERGENTE",
+        status: cargaPpc.valor_horas >= valorNumerico(cargaMinima) ? "COMPATIVEL" : "DIVERGENTE",
         valor_ppc_horas: cargaPpc.valor_horas,
         valor_cnct_minimo_horas: cargaMinima,
         fonte_ppc: cargaPpc.fonte,
       };
     }
     const estagioCnct = obter(correspondencia, "estagio");
-    if (ehObjetoPy(estagioCnct)) comparacoes.estagio_cnct = compararEstagioCnct(estagioCnct, estagio);
+    if (ehDicionario(estagioCnct)) comparacoes.estagio_cnct = compararEstagioCnct(estagioCnct, estagio);
   }
 
   return {
@@ -459,7 +460,7 @@ export function compararPpcComCnct(
     estagio_ppc: estagio,
     candidatos,
     correspondencia: completa
-      ? { ...completa, tipo_correspondencia: tipoCorrespondencia(numeroPy(completa.score)) }
+      ? { ...completa, tipo_correspondencia: tipoCorrespondencia(valorNumerico(completa.score)) }
       : null,
     comparacoes,
   };
@@ -469,13 +470,13 @@ export function compararPpcComCnct(
 export function gerarContextoCnctRodada(
   rodada: string,
   opcoes: { catalogo?: string; caminhos?: CaminhosAnalise } = {},
-): ObjetoPy {
+): Dicionario {
   const caminhos = caminhosRodada(rodada);
-  const metadata = existe(caminhos.metadata) ? (lerJsonPy(caminhos.metadata) as ObjetoPy) : {};
-  const preparacao = existe(caminhos.preparacaoDocx) ? (lerJsonPy(caminhos.preparacaoDocx) as ObjetoPy) : {};
+  const metadata = existe(caminhos.metadata) ? (lerJsonDaRodada(caminhos.metadata) as Dicionario) : {};
+  const preparacao = existe(caminhos.preparacaoDocx) ? (lerJsonDaRodada(caminhos.preparacaoDocx) as Dicionario) : {};
   const dadosConversao = lerJsonSeExistir(obter(preparacao, "dados"));
   const matriz = lerJsonSeExistir(obter(preparacao, "matriz_curricular"));
   const contexto = compararPpcComCnct(metadata, dadosConversao, matriz, opcoes);
-  escreverJsonPy(caminhos.cnctContexto, contexto);
+  escreverJsonDaRodada(caminhos.cnctContexto, contexto);
   return contexto;
 }

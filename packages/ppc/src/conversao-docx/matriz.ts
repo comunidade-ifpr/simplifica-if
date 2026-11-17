@@ -8,9 +8,9 @@
  *
  * Fora deles, um extrator genérico e conservador aceita tabelas simples de componente × carga.
  */
-import { fullmatch, match, search, sub } from "@simplifica-if/kb/python/re";
-import { semMarcas } from "@simplifica-if/kb/python/texto";
-import { digitosAscii } from "@simplifica-if/kb/python/valores";
+import { fullmatch, match, search, sub } from "@simplifica-if/kb/primitivas/regex";
+import { semMarcas } from "@simplifica-if/kb/primitivas/texto";
+import { digitosAscii } from "@simplifica-if/kb/primitivas/valores";
 import { aparar, dividirLinhas } from "@simplifica-if/kb/texto";
 import { type TabelaNormalizada, todasAsLinhas } from "./tabelas.ts";
 
@@ -475,7 +475,7 @@ export function pontuarMatriz(matriz: Matriz): number {
  * Junta as partes de uma matriz que o PPC divide em várias tabelas (uma por ano, ou quebrada entre
  * páginas). Matrizes de tipos ou formatos diferentes não se juntam: fica a de maior pontuação.
  */
-export function mesclarMatrizes(atual: Matriz | null, nova: MatrizPpc, recalcularTotais = true): Matriz {
+export function mesclarMatrizes(atual: Matriz | null, nova: MatrizPpc): Matriz {
   if (!atual) return nova;
   if (atual.tipo !== "matriz_curricular_ppc" || atual.formato !== nova.formato) {
     return pontuarMatriz(nova) > pontuarMatriz(atual) ? nova : atual;
@@ -502,11 +502,6 @@ export function mesclarMatrizes(atual: Matriz | null, nova: MatrizPpc, recalcula
   // Cada parte traz os totais completos: os que a tabela declara e, para os demais, a soma dos
   // componentes da própria parte.
   const totais: Totais = { ...atual.totais, ...nova.totais };
-  if (!recalcularTotais) {
-    // A conversão em Python parava aqui: sem linha de total do curso, ficava a soma da última
-    // parte (160 h-a de um 2º ano no lugar das 400 do curso).
-    return { ...atual, anos, linhas_modelo: linhasModelo, totais };
-  }
   // O total declarado vale (o da parte mais recente, se as duas declaram); o que nenhuma parte
   // declara é somado de novo, sobre os componentes de todas.
   const declarados = new Set([...totaisDeclarados(atual), ...totaisDeclarados(nova)]);

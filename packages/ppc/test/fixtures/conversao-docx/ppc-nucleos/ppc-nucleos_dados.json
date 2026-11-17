@@ -1,0 +1,54 @@
+{
+  "arquivo_origem": "ppc-nucleos.docx",
+  "data_conversao": "2026-11-16T12:00:00",
+  "metadata_documento": {
+    "title": "PPC fictício",
+    "author": "Autora de Teste",
+    "created": "2026-03-05T10:38:00+00:00",
+    "modified": "2026-04-22T03:06:00+00:00",
+    "last_modified_by": "Revisor de Teste"
+  },
+  "dados_extraidos": {
+    "nome_curso": "Técnico em Ensaios",
+    "campus": "Campus de Teste",
+    "vagas": "35"
+  },
+  "estrutura": {
+    "secoes_detectadas": [
+      "DOCUMENTO",
+      "Identificação do curso",
+      "Organização curricular",
+      "5.6 MATRIZ CURRICULAR",
+      "5.8 FLUXOGRAMA DO CURSO"
+    ],
+    "total_elementos": 12,
+    "total_tabelas": 2
+  },
+  "arquivos_relacionados": {
+    "markdown_normalizado": "ppc-nucleos.md",
+    "markdown_bruto": "ppc-nucleos-bruto.md",
+    "matriz_curricular": "ppc-nucleos_matriz_curricular.json"
+  },
+  "representacao_grafica": {
+    "encontrada": true,
+    "secao": "5.8 FLUXOGRAMA DO CURSO",
+    "tem_bitmap": false,
+    "tem_desenhos_vetoriais": true,
+    "extraida": false,
+    "metodo": "vetorial_nao_renderizada",
+    "caminho": null
+  },
+  "resumo_matriz_curricular": {
+    "total_anos": 2,
+    "total_componentes": 5,
+    "total_ha": 520,
+    "total_hr": 434,
+    "totais": {
+      "ch_total_hora_aula": 520,
+      "ch_total_hora_relogio": 484,
+      "ch_ftp": 167,
+      "ch_fgb": 200,
+      "ch_np": 67
+    }
+  }
+}

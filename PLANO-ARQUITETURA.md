@@ -495,13 +495,14 @@ Decididas:
 - corpus DOCX na pasta `PPCs Dentec` do OneDrive;
 - Movimentações fora do escopo;
 - política de versão de PPC: só o vigente, com o histórico no git e ID `ppc:<campus_id>/<curso_slug>` sem versão (13/11/2026, fase 4);
-- fallback "rendered" de figuras na conversão DOCX: removido, com aviso no `PPC.md` (16/11/2026, T3). Nos 12 PPCs do corpus, a figura vetorial é o fluxograma da representação gráfica, desenhado com formas do Word.
+- fallback "rendered" de figuras na conversão DOCX: removido, com aviso no `PPC.md` (16/11/2026, T3). Nos 12 PPCs do corpus, a figura vetorial é o fluxograma da representação gráfica, desenhado com formas do Word;
+- conversor de PDF de PPCs (T5): removido, sem porte nem exceção Python; o repositório não tem mais código Python (17/11/2026).
 
 Em aberto:
 
-1. **Conversor de PDF de PPCs:** porte ou exceção Python, conforme a medição de T5.
-2. **Modelo e orçamento do harness de avaliação:** modelo fixado e número de execuções por pergunta (fase 1).
-3. **Data do DOU e URL oficial da Res. CNE/CP 2/2026:** necessárias para `publicada_em` e `vigente_de`; até lá, a vigência dela e a revogação da 1/2021 saem como "a confirmar" (fase 5).
+1. **Modelo e orçamento do harness de avaliação:** modelo fixado e número de execuções por pergunta (fase 1).
+2. **Data do DOU e URL oficial da Res. CNE/CP 2/2026:** necessárias para `publicada_em` e `vigente_de`; até lá, a vigência dela e a revogação da 1/2021 saem como "a confirmar" (fase 5).
+3. **Entrada de PPC novo na base:** sem o conversor de PDF, nada converte um PPC e o grava em `ppc.markdown_path`. A conversão DOCX (`packages/ppc`, `converterPpc`) gera os arquivos da revisão prévia, não o Markdown da base: falta um script que a use, aplique `omitirDadosPessoais`, grave o front matter (`serializarFrontMatterPpc`, proveniência `registrada`) e regenere os índices. Pesa porque 201 dos 207 `ppc.url` apontam para PDF, e o `validar_base.ts` exige `fonte_url` igual ao `ppc.url`: um curso que troque de PPC fica sem como atualizar a base. Decidir entre o script DOCX → base (pedindo o DOCX à coordenação) e uma conversão de PDF em TypeScript (17/11/2026).
 
 ## Andamento
 
@@ -841,6 +842,13 @@ Em aberto:
   - no servidor (M1.11 do plano do app): rodar a conversão num `Worker` com limite de memória e de tempo, sem bloquear o laço de eventos; a conversão é síncrona e mantém a árvore do XML na memória;
   - o Strict Open XML foi testado só por troca de namespace num documento sintético;
   - listas automáticas: o número (`w:start`, letras, romanos) não é calculado, e o nível do subitem se perde no normalizador, que tira o recuo das linhas (limitações registradas no README da skill).
+
+**Fim do Python em 17/11/2026** (branch `t3/remover-conversor-python`). Por decisão do usuário, a trilha T termina sem a exceção prevista em T5:
+
+- saíram `scripts/converter_ppcs_markdown.py` e `requirements-ppc.txt`; não há, por ora, entrada de PPC novo na base (item 3 de "Em aberto"). A regra de dados pessoais fica só em `packages/kb/src/ppcs/dados-pessoais.ts`, com os casos em `dados-pessoais.casos.json`;
+- saiu o diferencial `packages/ppc/scripts/diferencial-docx.ts` e o que só ele usava: o modo de leitura `python-docx`, as regras liga/desliga de `regras.ts` e o nível de seção configurável do normalizador. Os gabaritos de `packages/ppc/test/fixtures/conversao-docx/` passaram a ser os artefatos do modo padrão dos 17 documentos sintéticos, gerados com o código anterior à remoção e reproduzidos byte a byte;
+- o kit `packages/kb/src/python/` virou `packages/kb/src/primitivas/` (`regex.ts`, `sequencias.ts`, `json-tipado.ts`, `shell.ts`, `quebra-de-linhas.ts`), `html-py.ts` virou `eventos-html.ts`, e os nomes com sufixo `Py` ganharam nomes do que fazem; os comentários descrevem o comportamento, sem a paridade com o Python;
+- `git ls-files '*.py'` não lista nada, e `git grep -niE 'python|pytest|pymupdf|\.venv'` só acha os registros históricos, o código copiado do T3 e o texto dos PPCs da base.
 
 ## Histórico de revisões
 

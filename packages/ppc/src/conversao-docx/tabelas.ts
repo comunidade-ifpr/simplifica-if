@@ -4,7 +4,7 @@
  * A primeira linha é sempre o cabeçalho; as extrações de matriz, ementário e identificação
  * trabalham sobre esta forma.
  */
-import { match, sub } from "@simplifica-if/kb/python/re";
+import { match, sub } from "@simplifica-if/kb/primitivas/regex";
 import { ErroDocx } from "@simplifica-if/docx/erro";
 import { aparar } from "@simplifica-if/kb/texto";
 import type { CelulaTabela, Tabela } from "./elementos.ts";

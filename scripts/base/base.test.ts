@@ -101,7 +101,7 @@ describe("front matter", () => {
     expect(() => analisarFrontMatter("---\nx:\n  y: 1\n---\n", "a.md")).toThrow("só texto ou listas de texto");
   });
 
-  test("ano com dígitos Unicode vira inteiro, como int() do Python", () => {
+  test("ano com dígitos Unicode vira inteiro", () => {
     expect(analisarFrontMatter("---\nano: ２０２６\nnumero: ２０２６\n---\n", "a.md").meta).toEqual({
       ano: 2026,
       numero: "２０２６",
@@ -111,7 +111,7 @@ describe("front matter", () => {
 });
 
 describe("caminhos", () => {
-  test("naBase e relativo são léxicos como o pathlib (preservam ..)", () => {
+  test("naBase e relativo são léxicos (preservam ..)", () => {
     const caminhos = criarCaminhos("/p");
     expect(naBase(caminhos, "../README.md")).toBe("/p/base-conhecimento/../README.md");
     expect(relativo(caminhos, naBase(caminhos, "../README.md"))).toBe("../README.md");
@@ -362,13 +362,11 @@ describe("validação da base", () => {
 });
 
 describe("site", () => {
-  test("copia a base sem arquivos locais e compara como filecmp.dircmp", () => {
+  test("copia a base sem arquivos locais e compara o site com o esperado", () => {
     const raiz = projetoTemporario();
     escrever(raiz, "base/a.md", "a");
     escrever(raiz, "base/docs/b.md", "b");
     escrever(raiz, "base/.DS_Store", "x");
-    escrever(raiz, "base/__pycache__/m.pyc", "x");
-    escrever(raiz, "base/docs/c.pyc", "x");
     const site = NodePath.join(raiz, "site");
     renderizarSite(NodePath.join(raiz, "base"), site);
     const esperado = NodePath.join(raiz, "esperado");

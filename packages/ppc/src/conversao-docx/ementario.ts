@@ -7,8 +7,8 @@
  * do próprio texto com padrões ABNT (fim em ano, ISBN, volume; início em SOBRENOME, Nome) e uma
  * busca aproximada de "Local: Editora, ano." que tolera erro de digitação no local.
  */
-import { finditer, match, search, split, sub } from "@simplifica-if/kb/python/re";
-import { inteiroDeTexto } from "@simplifica-if/kb/python/valores";
+import { finditer, match, search, split, sub } from "@simplifica-if/kb/primitivas/regex";
+import { inteiroDeTexto } from "@simplifica-if/kb/primitivas/valores";
 import { aparar, contarCaracteres } from "@simplifica-if/kb/texto";
 import { mascarasDoPalheiro, partialRatio, partialRatioNoTrecho, prepararAgulha } from "./similaridade.ts";
 import { colunasDaTabela, type TabelaNormalizada, todasAsLinhas } from "./tabelas.ts";

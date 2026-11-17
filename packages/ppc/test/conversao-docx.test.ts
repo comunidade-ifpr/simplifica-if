@@ -3,14 +3,14 @@
  * Conversão DOCX do PPC (`src/conversao-docx/`): a leitura, as regras de domínio e os artefatos,
  * sobre os documentos sintéticos de `src/testes/documentos.ts`.
  *
- * Os gabaritos de `fixtures/conversao-docx/` são a saída da conversão antiga, em Python, para os
- * mesmos documentos (`scripts/diferencial-docx.ts --gravar-gabaritos`): a conversão nova, no
- * modo `python-docx`, tem de reproduzi-los byte a byte.
+ * Os gabaritos de `fixtures/conversao-docx/` são os artefatos de cada documento sintético, gravados
+ * em 17/11/2026: a conversão tem de reproduzi-los byte a byte. Uma mudança deliberada na saída
+ * regrava o gabarito do documento afetado, no mesmo commit.
  */
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
-import type { ObjetoPy } from "@simplifica-if/kb/python/valores";
+import type { Dicionario } from "@simplifica-if/kb/primitivas/valores";
 import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
 import { afterEach, describe, expect, test } from "vite-plus/test";
 import { converterDocx, converterPpc } from "../src/conversao-docx/conversao.ts";
@@ -32,13 +32,12 @@ import {
   substituirMatrizNoMarkdown,
   totaisDeclarados,
 } from "../src/conversao-docx/matriz.ts";
-import { dataW3cEmUtc, type Fidelidade, lerDocx } from "@simplifica-if/docx/leitor";
+import { dataW3cEmUtc, lerDocx } from "@simplifica-if/docx/leitor";
 import { ErroDocx } from "@simplifica-if/docx/pacote";
 import { analisarXml, descendentes } from "@simplifica-if/docx/xml";
-import { REGRAS_DO_DOCUMENTO, REGRAS_DO_PYTHON, type Regras } from "../src/conversao-docx/regras.ts";
 import { detectarSecoes, dicasDeIdentificacao, listarSecoes } from "../src/conversao-docx/secoes.ts";
 import { normalizarTabela, tabelaEmMarkdown, type TabelaNormalizada } from "../src/conversao-docx/tabelas.ts";
-import { carregarJsonPy as lerJsonPy } from "@simplifica-if/kb/python/json";
+import { carregarJsonTipado as lerJsonDaRodada } from "@simplifica-if/kb/primitivas/json-tipado";
 import { celula, hyperlink, linha, montarDocx, par, run, tabela, titulo } from "@simplifica-if/docx/testes/sintetico";
 import { docxDaFixture, FIXTURES } from "../src/testes/documentos.ts";
 
@@ -56,30 +55,30 @@ function diretorioTemporario(): string {
   return dir;
 }
 
-const regrasDa = (fidelidade: Fidelidade) => (fidelidade === "python-docx" ? REGRAS_DO_PYTHON : REGRAS_DO_DOCUMENTO);
-const elementos = (nome: string, fidelidade: Fidelidade = "documento") =>
-  elementosDoDocumento(lerDocx(docxDaFixture(nome), { fidelidade }), regrasDa(fidelidade));
-const converter = (nome: string, fidelidade: Fidelidade = "documento") =>
-  converterPpc(docxDaFixture(nome), `${nome}.docx`, { agora: AGORA, fidelidade });
+const elementos = (nome: string) => elementosDoDocumento(lerDocx(docxDaFixture(nome)));
+const converter = (nome: string) => converterPpc(docxDaFixture(nome), `${nome}.docx`, { agora: AGORA });
 const tabelas = (itens: Elemento[]) => itens.filter((item): item is Tabela => item.tipo === "tabela");
 const paragrafos = (itens: Elemento[]) => itens.filter((item): item is Paragrafo => item.tipo === "paragrafo");
 const textos = (tabelaLida: Tabela) => tabelaLida.linhas.map((celulas) => celulas.map((item) => item.texto));
 
-/** Converte a fixture para um diretório e devolve o conteúdo dos arquivos gravados, por nome. */
-function arquivosConvertidos(
-  nome: string,
-  fidelidade: Fidelidade = "documento",
-  regras: Partial<Regras> = {},
-): Record<string, string> {
+/** Converte a fixture para um diretório e devolve os bytes dos arquivos gravados, por nome. */
+function bytesConvertidos(nome: string): Record<string, Buffer> {
   const dir = diretorioTemporario();
   const docx = NodePath.join(dir, `${nome}.docx`);
   NodeFS.writeFileSync(docx, docxDaFixture(nome));
-  converterDocx(docx, NodePath.join(dir, "saida"), { agora: AGORA, fidelidade, regras });
+  converterDocx(docx, NodePath.join(dir, "saida"), { agora: AGORA });
   const saida = NodePath.join(dir, "saida");
   return Object.fromEntries(
     NodeFS.readdirSync(saida, { recursive: true, encoding: "utf-8" })
       .filter((arquivo) => NodeFS.statSync(NodePath.join(saida, arquivo)).isFile())
-      .map((arquivo) => [arquivo, NodeFS.readFileSync(NodePath.join(saida, arquivo), "utf-8")]),
+      .map((arquivo) => [arquivo, NodeFS.readFileSync(NodePath.join(saida, arquivo))]),
+  );
+}
+
+/** O mesmo, com o conteúdo em texto. */
+function arquivosConvertidos(nome: string): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(bytesConvertidos(nome)).map(([arquivo, bytes]) => [arquivo, bytes.toString("utf-8")]),
   );
 }
 
@@ -165,15 +164,13 @@ describe("leitor OOXML", () => {
       ["Campus:", "Campus Embrulhado"],
       ["Turno:", "Noturno"],
     ]);
-    // Com uma célula direta com texto vale a grade repetida, e a embrulhada em `w:sdt` é da linha;
-    // o python-docx a deixava de fora.
+    // Com uma célula direta com texto vale a grade repetida, e a embrulhada em `w:sdt` é da linha.
     expect(textos(mista!)).toEqual([["direta", "embrulhada"]]);
-    expect(textos(tabelas(elementos("controles", "python-docx"))[2]!)).toEqual([["direta"]]);
     // O texto da tabela aninhada não entra na célula que a contém.
     expect(textos(aninhada!)).toEqual([["fora\ndepois", "ao lado"]]);
   });
 
-  test("alterações controladas: o modo documento lê as inserções; o modo python-docx as perde", () => {
+  test("alterações controladas: as inserções ainda não aceitas entram, o removido não", () => {
     const documento = paragrafos(elementos("rastreadas")).map(textoDosTrechos);
     expect(documento).toEqual([
       "O curso tem quatro anos de duração.",
@@ -184,28 +181,17 @@ describe("leitor OOXML", () => {
       "Link revisado: norma inserida.",
       "Texto da seção inserida.",
     ]);
-    const compativel = paragrafos(elementos("rastreadas", "python-docx")).map(textoDosTrechos);
-    expect(compativel).toEqual([
-      "O curso tem  anos de duração.",
-      "Movido: ",
-      "Marca: .",
-      "Campo:  e controle .",
-      "Link revisado: .",
-      "Texto da seção inserida.",
-    ]);
-    // O título inserido na revisão só existe no modo documento.
+    // O título inserido na revisão é uma seção.
     expect(listarSecoes(detectarSecoes(elementos("rastreadas")))).toEqual([
       "1 ALTERAÇÕES CONTROLADAS",
       "2 TÍTULO INSERIDO",
     ]);
-    expect(listarSecoes(detectarSecoes(elementos("rastreadas", "python-docx")))).toEqual(["1 ALTERAÇÕES CONTROLADAS"]);
-    // O hyperlink inserido mantém o endereço, e o texto removido (w:del) não aparece em modo nenhum.
+    // O hyperlink inserido mantém o endereço, e o texto removido (w:del) não aparece.
     expect(paragrafos(elementos("rastreadas"))[5]!.trechos[1]).toMatchObject({
       texto: "norma inserida",
       url: "https://exemplo.edu.br/norma",
     });
     expect(textos(tabelas(elementos("rastreadas"))[0]!)[1]).toEqual(["Duração: 4 anos", "sem alteração"]);
-    expect(textos(tabelas(elementos("rastreadas", "python-docx"))[0]!)[1]).toEqual(["Duração:", "sem alteração"]);
   });
 
   test("tabulação, quebras e hífen incondicional viram texto; quebra de página não", () => {
@@ -229,10 +215,6 @@ describe("leitor OOXML", () => {
     // Os dois runs do mesmo link viram um link só, com um negrito só.
     expect(converter("texto-especial").markdownBruto).toContain(
       "[externo com âncora](https://exemplo.edu.br/pagina#secao) interno relação quebrada [**em dois pedaços**](https://exemplo.edu.br/pagina)",
-    );
-    // Na conversão em Python, o negrito colado saía quebrado (`**a****b**` virava `**a**b**`).
-    expect(converter("texto-especial", "python-docx").markdownBruto).toContain(
-      "[**em dois **pedaços**](https://exemplo.edu.br/pagina)",
     );
   });
 
@@ -669,7 +651,7 @@ describe("tabelas e ementário", () => {
   test("quadro com colunas vazias (Google Docs) e período ausente", () => {
     const { ementario } = converter("ppc-minimo");
     expect(
-      (ementario!.componentes as ObjetoPy[]).map((item) => [item.nome, item.periodo_letivo, item.carga_horaria_aula]),
+      (ementario!.componentes as Dicionario[]).map((item) => [item.nome, item.periodo_letivo, item.carga_horaria_aula]),
     ).toEqual([
       ["Língua Portuguesa", "1º Ano", 120],
       ["Banco de Dados", "2º Ano", 160],
@@ -758,45 +740,30 @@ describe("identificação", () => {
 
 // ---------------------------------------------------------------- artefatos
 
-describe("gabaritos da conversão em Python", () => {
+describe("gabaritos da conversão", () => {
   const fixtures = NodeFS.readdirSync(GABARITOS);
 
-  test("há gabarito para os documentos sintéticos sem diferença aceita", () => {
-    expect(fixtures.sort()).toEqual([
-      "controles",
-      "listas-automaticas",
-      "mesclas",
-      "ppc-minimo",
-      "rastreadas",
-      "tabelas-em-controle",
-      "texto-especial",
-      "titulos-de-corpo",
-    ]);
+  test("há gabarito para cada documento sintético", () => {
+    expect(fixtures.sort()).toEqual(FIXTURES.map((fixture) => fixture.nome).sort());
   });
 
-  test.each(fixtures)("%s: o modo python-docx reproduz a saída do Python byte a byte", (nome) => {
-    const gerados = arquivosConvertidos(nome, "python-docx");
-    const esperados = NodeFS.readdirSync(NodePath.join(GABARITOS, nome));
+  test.each(fixtures)("%s: a conversão reproduz o gabarito byte a byte", (nome) => {
+    const gerados = bytesConvertidos(nome);
+    const esperados = NodeFS.readdirSync(NodePath.join(GABARITOS, nome), { recursive: true, encoding: "utf-8" }).filter(
+      (arquivo) => NodeFS.statSync(NodePath.join(GABARITOS, nome, arquivo)).isFile(),
+    );
     for (const arquivo of esperados) {
-      expect(gerados[arquivo], arquivo).toBe(NodeFS.readFileSync(NodePath.join(GABARITOS, nome, arquivo), "utf-8"));
+      expect(gerados[arquivo]?.equals(NodeFS.readFileSync(NodePath.join(GABARITOS, nome, arquivo))), arquivo).toBe(
+        true,
+      );
     }
-    expect(
-      Object.keys(gerados)
-        .filter((arquivo) => !arquivo.startsWith("imagens"))
-        .sort(),
-    ).toEqual(esperados.sort());
-  });
-
-  test("documento sem nada do que as regras mudam sai igual nos dois modos", () => {
-    // Fora a regra `secoesNoNivel2`, que muda todo documento com seções.
-    const comoNoPython = arquivosConvertidos("mesclas", "python-docx", { secoesNoNivel2: true });
-    expect(arquivosConvertidos("mesclas")).toEqual(comoNoPython);
+    expect(Object.keys(gerados).sort()).toEqual(esperados.sort());
   });
 });
 
-// ---------------------------------------------------------------- regras do modo documento
+// ---------------------------------------------------------------- regras da conversão
 
-describe("regras do modo documento", () => {
+describe("regras da conversão", () => {
   const bruto = (corpo: string, opcoes: Partial<Parameters<typeof converterPpc>[2]> = {}, extras = {}) =>
     converterPpc(montarDocx({ corpo: titulo("1 SEÇÃO") + corpo, ...extras }), "x.docx", { agora: AGORA, ...opcoes })
       .markdownBruto.split("\n")
@@ -822,13 +789,6 @@ describe("regras do modo documento", () => {
         "- zelar pelos laboratórios;",
       ].join("\n"),
     );
-    // Com a regra desligada, cada frase abre uma seção (e, sem ler as inserções, a primeira nem aparece).
-    const semARegra = converterPpc(docxDaFixture("titulos-de-corpo"), "x.docx", {
-      agora: AGORA,
-      regras: { titulosDeCorpo: false },
-    });
-    expect(listarSecoes(semARegra.secoes)).toHaveLength(9);
-    expect(listarSecoes(detectarSecoes(elementos("titulos-de-corpo", "python-docx")))).toHaveLength(8);
   });
 
   test("listas: numeração automática do Word, número digitado e alíneas", () => {
@@ -854,28 +814,6 @@ describe("regras do modo documento", () => {
       "- b) alínea digitada",
       "- **c)** alínea com a letra em negrito",
     ]);
-    // A conversão em Python não via a numeração automática e renumerava o que era digitado.
-    expect(converter("listas-automaticas", "python-docx").markdownBruto.split("\n").slice(2)).toEqual([
-      "São objetivos do curso:",
-      "formar técnicos;",
-      "integrar ensino e pesquisa:",
-      "na iniciação científica.",
-      "Etapas:",
-      "- diagnóstico;",
-      "",
-      "certificado de conclusão;",
-      "avaliação.",
-      "redefinido como marcador;",
-      "numeração desligada (numId 0).",
-      "numeração que não existe.",
-      "**Item em negrito **e normal",
-      "Parágrafo depois da lista.",
-      "1. segundo item digitado",
-      "1. terceiro",
-      "1. b) alínea digitada",
-      // O marcador de lista levava junto um asterisco do negrito.
-      "1. *c)** alínea com a letra em negrito",
-    ]);
   });
 
   test("negrito unido: runs de mesma formatação num marcador só, com os espaços fora dele", () => {
@@ -897,8 +835,7 @@ describe("regras do modo documento", () => {
     expect(bruto(par(run("riscado ", { tachado: true }) + run("e mais", { tachado: true })))).toBe(
       "~~riscado e mais~~",
     );
-    // Sem a regra, o defeito da conversão em Python.
-    expect(bruto(par(run("a", negrito) + run("b", negrito)), { regras: { negritoUnido: false } })).toBe("**a**b**");
+    expect(bruto(par(run("a", negrito) + run("b", negrito)))).toBe("**ab**");
   });
 
   test("links seguros: só http, https e mailto; parênteses e espaços escapados", () => {
@@ -924,10 +861,6 @@ describe("regras do modo documento", () => {
     // A barra invertida no fim do texto escaparia o colchete que fecha o link.
     expect(bruto(par(hyperlink("C:\\pasta\\", 'r:id="rId15"')), {}, { relacoes })).toBe(
       "[C:\\\\pasta\\\\](https://exemplo.edu.br/)",
-    );
-    // A conversão em Python punha o endereço cru no Markdown.
-    expect(bruto(corpo, { regras: { linksSeguros: false } }, { relacoes })).toContain(
-      "[clique](javascript:alert(1))[x](http://evil)",
     );
   });
 
@@ -957,11 +890,6 @@ describe("regras do modo documento", () => {
     expect((mesclarMatrizes(primeira, segunda) as MatrizPpc).totais).toEqual({
       ch_total_hora_aula: 400,
       ch_total_hora_relogio: 334,
-    });
-    // A conversão em Python ficava com a soma da última parte.
-    expect((mesclarMatrizes(primeira, segunda, false) as MatrizPpc).totais).toEqual({
-      ch_total_hora_aula: 160,
-      ch_total_hora_relogio: 134,
     });
 
     // O total declarado vale, venha na primeira ou na última tabela; o não declarado é recalculado.
@@ -998,27 +926,17 @@ describe("regras do modo documento", () => {
       total_ha: 440,
       total_hr: 330,
     });
-    expect(converter("ppc-minimo", "python-docx").resumos.matriz).toMatchObject({ total_ha: 0, total_hr: 0 });
   });
 
   test("matriz com linha, célula e parágrafo embrulhados em w:sdt e linha removida na revisão", () => {
-    const nomes = (fidelidade: Fidelidade) =>
-      (
-        converter("tabelas-em-controle", fidelidade).matriz!.anos as Array<{ componentes: Array<{ nome: string }> }>
-      )[0]!.componentes.map((item) => item.nome);
-    expect(nomes("documento")).toEqual([
-      "Matemática",
-      "Linha em controle",
-      "Célula em controle",
-      "Parágrafo em controle",
-    ]);
-    // O python-docx perdia os componentes embrulhados, sem aviso, e desalinhava a linha da célula embrulhada.
-    expect(nomes("python-docx")).toEqual(["Matemática", "2"]);
+    const nomes = (
+      converter("tabelas-em-controle").matriz!.anos as Array<{ componentes: Array<{ nome: string }> }>
+    )[0]!.componentes.map((item) => item.nome);
+    expect(nomes).toEqual(["Matemática", "Linha em controle", "Célula em controle", "Parágrafo em controle"]);
     const { markdown, representacaoGrafica } = converter("tabelas-em-controle");
     expect(markdown).toContain("| Período: 1º ano<br>caixa de texto | ao lado |");
     // A figura apagada na revisão não é a representação gráfica; sobra o desenho com formas.
     expect(representacaoGrafica).toMatchObject({ metodo: "vetorial_nao_renderizada", temBitmap: false });
-    expect(converter("tabelas-em-controle", "python-docx").representacaoGrafica).toMatchObject({ metodo: "bitmap" });
   });
 
   test("documento enorme converte sem estourar a pilha: 80 mil parágrafos, um deles com 100 mil runs inseridos", () => {
@@ -1165,8 +1083,8 @@ describe("representação gráfica", () => {
     return {
       arquivos,
       dados: JSON.parse(arquivos[`${nome}_dados.json`]!) as {
-        representacao_grafica: ObjetoPy;
-        arquivos_relacionados: ObjetoPy;
+        representacao_grafica: Dicionario;
+        arquivos_relacionados: Dicionario;
       },
       markdown: arquivos[`${nome}.md`]!,
     };
@@ -1287,7 +1205,7 @@ describe("artefatos e rodada", () => {
       ementario: "saida/PPC v2_ementario.json",
     });
     for (const caminho of Object.values(artefatos)) expect(NodeFS.existsSync(caminho!)).toBe(true);
-    const dados = lerJsonPy(artefatos.dados) as ObjetoPy;
+    const dados = lerJsonDaRodada(artefatos.dados) as Dicionario;
     expect(dados.arquivo_origem).toBe("PPC_dados v2.docx");
     expect(dados.data_conversao).toBe("2026-11-16T12:00:00");
   });
@@ -1324,11 +1242,7 @@ describe("artefatos e rodada", () => {
     expect(meiaNoite.dados.data_conversao).toBe("2026-11-13T00:00:00");
   });
 
-  test("todas as fixtures convertem nos dois modos", () => {
-    for (const fixture of FIXTURES) {
-      for (const fidelidade of ["documento", "python-docx"] as const) {
-        expect(() => converter(fixture.nome, fidelidade), `${fixture.nome} (${fidelidade})`).not.toThrow();
-      }
-    }
+  test("todas as fixtures convertem", () => {
+    for (const fixture of FIXTURES) expect(() => converter(fixture.nome), fixture.nome).not.toThrow();
   });
 });

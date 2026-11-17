@@ -11,7 +11,7 @@ import { afterEach, describe, expect, test } from "vite-plus/test";
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
-import type { ObjetoPy } from "@simplifica-if/kb/python/valores";
+import type { Dicionario } from "@simplifica-if/kb/primitivas/valores";
 import {
   extrairIdentificacao,
   extrairIdentificacaoDaConversao,
@@ -28,7 +28,7 @@ import {
 } from "../scripts/medicao-identificacao.ts";
 import { prepararDocumento } from "../scripts/preparar-documento.ts";
 import { montarDocx, par, tabelaDeTextos } from "@simplifica-if/docx/testes/sintetico";
-import { lerJsonPy } from "../scripts/rodada.ts";
+import { lerJsonDaRodada } from "../scripts/rodada.ts";
 
 const temporarios: string[] = [];
 afterEach(() => {
@@ -293,7 +293,7 @@ describe("preparar-documento", () => {
     const arquivo = NodePath.join(dir, "ppc-enfermagem.md");
     NodeFS.writeFileSync(arquivo, PPC_TITULOS_NUMERADOS, "utf8");
     const { metadata } = prepararDocumento(arquivo, { saidaBase: dir, relogio: () => new Date(2026, 10, 13) });
-    expect(lerJsonPy(metadata) as ObjetoPy).toMatchObject({
+    expect(lerJsonDaRodada(metadata) as Dicionario).toMatchObject({
       curso: "Técnico em Enfermagem",
       campus: "Curitiba",
       modalidade: "Subsequente",
@@ -335,7 +335,7 @@ describe("preparar-documento", () => {
       saidaBase: dir,
       relogio: () => new Date(2026, 10, 13),
     });
-    expect(lerJsonPy(metadata) as ObjetoPy).toMatchObject({
+    expect(lerJsonDaRodada(metadata) as Dicionario).toMatchObject({
       curso: "Técnico em Enfermagem",
       campus: "Curitiba",
       forma_oferta: "Subsequente",

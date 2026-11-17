@@ -1,33 +1,31 @@
 // @effect-diagnostics nodeBuiltinImport:off extendsNativeError:off -- validação e mescla síncronas dos resultados da rodada; o erro de contrato é lançado com a mensagem montada no ponto da falha
 /**
- * Validação do JSON de resultados dos sub-agentes (porte de
- * `validar_resultados_subagents`, `validar_alertas_transversais` e
- * `validar_resultados_rodada` do antigo `gerar_relatorio_html.py`), usada por
+ * Validação do JSON de resultados dos sub-agentes, usada por
  * `validar-resultados` e por `gerar-relatorio-html` (`relatorio-html.ts`), e
  * mescla das reavaliações avulsas (`mesclar-resultados-avulsos`).
  */
 import * as NodePath from "node:path";
 import { compararTexto } from "@simplifica-if/kb/texto";
 import {
-  ehNumeroPy,
-  ehObjetoPy,
-  intPy,
-  iterarPy,
-  numeroPy,
+  ehNumerico,
+  ehDicionario,
+  inteiroDoValor,
+  itensIteraveis,
+  valorNumerico,
   obrigatorio,
   obter,
-  type ObjetoPy,
+  type Dicionario,
   ou,
   padraoSeAusente,
-  strPy,
-  textoOuVazioPy,
-  tipoPy,
+  textoDoValor,
+  textoOuVazioDoValor,
+  tipoDoValor,
   verdadeiro,
-} from "@simplifica-if/kb/python/valores";
+} from "@simplifica-if/kb/primitivas/valores";
 import { aparar } from "@simplifica-if/kb/texto";
 import { listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
-import { caminhosRodada, escreverJsonPy, existe, lerJsonPy, sha256JsonPayload } from "./rodada.ts";
+import { caminhosRodada, escreverJsonDaRodada, existe, lerJsonDaRodada, sha256JsonPayload } from "./rodada.ts";
 import { carregarFichasOrdenadas, STATUS_FUNDAMENTACAO_NORMATIVA } from "./subagents.ts";
 
 export class ErroResultadosSubagents extends Error {
@@ -39,11 +37,11 @@ const STATUS_NORMATIVOS = new Set(STATUS_FUNDAMENTACAO_NORMATIVA);
 
 /** `str(valor or "").strip()`. */
 function texto(valor: unknown): string {
-  return aparar(textoOuVazioPy(valor));
+  return aparar(textoOuVazioDoValor(valor));
 }
 
 /** `str(a or b or ... or "").strip()`. */
-function primeiroTexto(objeto: ObjetoPy, ...chaves: string[]): string {
+function primeiroTexto(objeto: Dicionario, ...chaves: string[]): string {
   return texto(ou(...chaves.map((chave) => obter(objeto, chave)), ""));
 }
 
@@ -56,31 +54,31 @@ export function resolverResultadosPath(rodada: string, resultados: string): stri
 }
 
 /** Fichas por `id` (`str`), na ordem do id. */
-export function catalogoFichas(fichasDir?: string): Map<string, ObjetoPy> {
-  return new Map(carregarFichasOrdenadas(fichasDir).map((ficha) => [strPy(obrigatorio(ficha, "id")), ficha]));
+export function catalogoFichas(fichasDir?: string): Map<string, Dicionario> {
+  return new Map(carregarFichasOrdenadas(fichasDir).map((ficha) => [textoDoValor(obrigatorio(ficha, "id")), ficha]));
 }
 
 /** Validações cruzadas por `id`. */
-export function catalogoValidacoes(validacoesDir?: string): Map<string, ObjetoPy> {
+export function catalogoValidacoes(validacoesDir?: string): Map<string, Dicionario> {
   const diretorio = validacoesDir ?? caminhosPadrao().validacoesCruzadasDir;
   const validacoes = listarArquivos(diretorio, ".json")
-    .map((arquivo) => lerJsonPy(arquivo))
-    .filter(ehObjetoPy);
-  return new Map(validacoes.map((item) => [strPy(obrigatorio(item, "id")), item]));
+    .map((arquivo) => lerJsonDaRodada(arquivo))
+    .filter(ehDicionario);
+  return new Map(validacoes.map((item) => [textoDoValor(obrigatorio(item, "id")), item]));
 }
 
 /** Blocos de resultados: `grupos[]`, ou `resultados[]` como um bloco só. */
-export function blocosResultados(payload: ObjetoPy): unknown[] {
+export function blocosResultados(payload: Dicionario): unknown[] {
   const grupos = obter(payload, "grupos");
   if (Array.isArray(grupos)) return grupos;
   const resultados = obter(payload, "resultados");
   if (Array.isArray(resultados)) {
-    return [{ grupo_id: strPy(ou(obter(payload, "grupo_id"), "grupo-unico")), resultados }];
+    return [{ grupo_id: textoDoValor(ou(obter(payload, "grupo_id"), "grupo-unico")), resultados }];
   }
   throw new ErroResultadosSubagents("O JSON precisa conter `grupos[]` ou `resultados[]`.");
 }
 
-function normalizarFundamentacaoNormativa(fichaId: string, item: ObjetoPy): ObjetoPy[] {
+function normalizarFundamentacaoNormativa(fichaId: string, item: Dicionario): Dicionario[] {
   const bruto = obter(item, "fundamentacao_normativa");
   if (bruto === null) return [];
   if (!Array.isArray(bruto)) {
@@ -88,7 +86,7 @@ function normalizarFundamentacaoNormativa(fichaId: string, item: ObjetoPy): Obje
   }
   return bruto.map((achado, posicao) => {
     const indice = posicao + 1;
-    if (!ehObjetoPy(achado)) {
+    if (!ehDicionario(achado)) {
       throw new ErroResultadosSubagents(`Achado normativo ${indice} de ${fichaId} precisa ser objeto JSON.`);
     }
     const status = texto(obter(achado, "status"));
@@ -112,17 +110,17 @@ function normalizarFundamentacaoNormativa(fichaId: string, item: ObjetoPy): Obje
   });
 }
 
-function normalizarAnchor(valor: unknown): ObjetoPy {
-  if (!ehObjetoPy(valor)) return {};
+function normalizarAnchor(valor: unknown): Dicionario {
+  if (!ehDicionario(valor)) return {};
   const blockId = primeiroTexto(valor, "block_id", "id");
   const quote = primeiroTexto(valor, "quote", "trecho");
   if (!blockId && !quote) return {};
   return { block_id: blockId, quote };
 }
 
-function normalizarEvidencia(fichaId: string, valor: unknown, indice: number): ObjetoPy {
-  let normalizada: ObjetoPy;
-  if (ehObjetoPy(valor)) {
+function normalizarEvidencia(fichaId: string, valor: unknown, indice: number): Dicionario {
+  let normalizada: Dicionario;
+  if (ehDicionario(valor)) {
     normalizada = {
       trecho: primeiroTexto(valor, "trecho", "texto", "evidencia"),
       secao: primeiroTexto(valor, "secao", "seção"),
@@ -144,7 +142,7 @@ function normalizarEvidencia(fichaId: string, valor: unknown, indice: number): O
   return normalizada;
 }
 
-function normalizarEvidencias(fichaId: string, evidencias: unknown): ObjetoPy[] {
+function normalizarEvidencias(fichaId: string, evidencias: unknown): Dicionario[] {
   if (!Array.isArray(evidencias))
     throw new ErroResultadosSubagents(`\`evidencias\` precisa ser lista para ${fichaId}.`);
   return evidencias
@@ -152,9 +150,9 @@ function normalizarEvidencias(fichaId: string, evidencias: unknown): ObjetoPy[] 
     .filter((normalizada) => Object.values(normalizada).some(verdadeiro));
 }
 
-function normalizarEvidenciaTransversal(alertaId: string, valor: unknown, indice: number): ObjetoPy {
-  let normalizada: ObjetoPy;
-  if (ehObjetoPy(valor)) {
+function normalizarEvidenciaTransversal(alertaId: string, valor: unknown, indice: number): Dicionario {
+  let normalizada: Dicionario;
+  if (ehDicionario(valor)) {
     normalizada = {
       trecho: primeiroTexto(valor, "trecho", "texto", "evidencia"),
       secao: primeiroTexto(valor, "secao", "seção"),
@@ -188,7 +186,7 @@ export type ResultadoNormalizado = {
  */
 function validarBlocos(
   blocos: unknown[],
-  fichasPorId: Map<string, ObjetoPy>,
+  fichasPorId: Map<string, Dicionario>,
 ): { normalizados: ResultadoNormalizado[]; vistos: Set<string> } {
   const vistos = new Set<string>();
   const normalizados: ResultadoNormalizado[] = [];
@@ -196,14 +194,14 @@ function validarBlocos(
   const desconhecidos: string[] = [];
 
   for (const bloco of blocos) {
-    if (!ehObjetoPy(bloco)) throw new Error("AttributeError: bloco de resultados não é objeto JSON");
+    if (!ehDicionario(bloco)) throw new Error("AttributeError: bloco de resultados não é objeto JSON");
     const grupoId = texto(obter(bloco, "grupo_id"));
     const resultados = obter(bloco, "resultados");
     if (!grupoId) throw new ErroResultadosSubagents("Um bloco de resultados não contém `grupo_id`.");
     if (!Array.isArray(resultados))
       throw new ErroResultadosSubagents(`O bloco ${grupoId} não contém \`resultados[]\`.`);
     for (const item of resultados) {
-      if (!ehObjetoPy(item)) {
+      if (!ehDicionario(item)) {
         throw new ErroResultadosSubagents(`O bloco ${grupoId} contém item que não é objeto JSON.`);
       }
       const fichaId = texto(obter(item, "ficha_id"));
@@ -222,15 +220,17 @@ function validarBlocos(
       if (!ESTADOS_PERMITIDOS.has(estado))
         throw new ErroResultadosSubagents(`Estado inválido para ${fichaId}: ${estado}`);
       const confianca = obter(item, "confianca");
-      if (!ehNumeroPy(confianca) || !(numeroPy(confianca) >= 0 && numeroPy(confianca) <= 1)) {
-        throw new ErroResultadosSubagents(`Confiança inválida para ${fichaId}: ${strPy(confianca)}`);
+      if (!ehNumerico(confianca) || !(valorNumerico(confianca) >= 0 && valorNumerico(confianca) <= 1)) {
+        throw new ErroResultadosSubagents(`Confiança inválida para ${fichaId}: ${textoDoValor(confianca)}`);
       }
       const justificativa = texto(obter(item, "justificativa"));
       if (!justificativa) throw new ErroResultadosSubagents(`\`justificativa\` ausente para ${fichaId}.`);
       const feedbackAutores = texto(obter(item, "feedback_autores"));
       const feedbackConfig = obter(ficha, "feedback_autores");
-      if (ehObjetoPy(feedbackConfig)) {
-        const estadosComFeedback = new Set(iterarPy(obter(feedbackConfig, "obrigatorio_quando_estado", [])).map(strPy));
+      if (ehDicionario(feedbackConfig)) {
+        const estadosComFeedback = new Set(
+          itensIteraveis(obter(feedbackConfig, "obrigatorio_quando_estado", [])).map(textoDoValor),
+        );
         if (estadosComFeedback.has(estado) && !feedbackAutores) {
           throw new ErroResultadosSubagents(
             `\`feedback_autores\` ausente para ${fichaId}; obrigatório quando estado=${estado}.`,
@@ -238,7 +238,7 @@ function validarBlocos(
         }
       }
       const evidencias = normalizarEvidencias(fichaId, obter(item, "evidencias"));
-      const evidenciaMinima = intPy(obter(ficha, "evidencia_minima", 1));
+      const evidenciaMinima = inteiroDoValor(obter(ficha, "evidencia_minima", 1));
       if (evidencias.length < evidenciaMinima) {
         throw new ErroResultadosSubagents(
           `${fichaId} trouxe ${evidencias.length} evidências; mínimo exigido: ${evidenciaMinima}.`,
@@ -253,16 +253,16 @@ function validarBlocos(
       normalizados.push({
         grupo_id: grupoId,
         ficha_id: fichaId,
-        titulo: strPy(ou(obter(ficha, "titulo"), fichaId)),
-        dominio: textoOuVazioPy(obter(ficha, "dominio")),
-        criticidade: textoOuVazioPy(obter(ficha, "criticidade")),
-        topicos_tematicos: iterarPy(ou(obter(ficha, "topicos_tematicos"), [])),
-        tipo_escopo: textoOuVazioPy(obter(ficha, "tipo_escopo")),
+        titulo: textoDoValor(ou(obter(ficha, "titulo"), fichaId)),
+        dominio: textoOuVazioDoValor(obter(ficha, "dominio")),
+        criticidade: textoOuVazioDoValor(obter(ficha, "criticidade")),
+        topicos_tematicos: itensIteraveis(ou(obter(ficha, "topicos_tematicos"), [])),
+        tipo_escopo: textoOuVazioDoValor(obter(ficha, "tipo_escopo")),
         estado,
-        confianca: numeroPy(confianca),
+        confianca: valorNumerico(confianca),
         justificativa,
         evidencias,
-        lacunas: lacunas.map((valor) => aparar(strPy(valor))).filter(Boolean),
+        lacunas: lacunas.map((valor) => aparar(textoDoValor(valor))).filter(Boolean),
         revisao_humana_obrigatoria: revisao,
         feedback_autores: feedbackAutores,
         fundamentacao_normativa: normalizarFundamentacaoNormativa(fichaId, item),
@@ -279,8 +279,8 @@ function validarBlocos(
 
 /** `validar_resultados_subagents`: um resultado válido por ficha do catálogo, ordenados por ficha. */
 export function validarResultadosSubagents(
-  payload: ObjetoPy,
-  fichasPorId: Map<string, ObjetoPy>,
+  payload: Dicionario,
+  fichasPorId: Map<string, Dicionario>,
 ): ResultadoNormalizado[] {
   const { normalizados, vistos } = validarBlocos(blocosResultados(payload), fichasPorId);
   const faltantes = [...fichasPorId.keys()].filter((fichaId) => !vistos.has(fichaId)).sort(compararTexto);
@@ -290,27 +290,27 @@ export function validarResultadosSubagents(
 
 /** `validar_alertas_transversais`: alertas da síntese transversal ligados a validações cruzadas conhecidas. */
 export function validarAlertasTransversais(
-  payload: ObjetoPy,
-  fichasPorId: Map<string, ObjetoPy>,
-  validacoesPorId: Map<string, ObjetoPy>,
-): ObjetoPy[] {
+  payload: Dicionario,
+  fichasPorId: Map<string, Dicionario>,
+  validacoesPorId: Map<string, Dicionario>,
+): Dicionario[] {
   let bruto = obter(payload, "alertas_transversais");
   const sintese = obter(payload, "sintese_transversal");
-  if (bruto === null && ehObjetoPy(sintese)) bruto = obter(sintese, "alertas_transversais");
+  if (bruto === null && ehDicionario(sintese)) bruto = obter(sintese, "alertas_transversais");
   if (bruto === null) return [];
   if (!Array.isArray(bruto)) throw new ErroResultadosSubagents("`alertas_transversais` precisa ser uma lista.");
-  const alertas: ObjetoPy[] = [];
+  const alertas: Dicionario[] = [];
   const vistos = new Set<string>();
   bruto.forEach((item, posicao) => {
     const indice = posicao + 1;
-    if (!ehObjetoPy(item)) throw new ErroResultadosSubagents("Cada alerta transversal precisa ser objeto JSON.");
-    const alertaId = aparar(strPy(ou(obter(item, "id"), `ALERTA-${String(indice).padStart(3, "0")}`)));
+    if (!ehDicionario(item)) throw new ErroResultadosSubagents("Cada alerta transversal precisa ser objeto JSON.");
+    const alertaId = aparar(textoDoValor(ou(obter(item, "id"), `ALERTA-${String(indice).padStart(3, "0")}`)));
     if (vistos.has(alertaId)) throw new ErroResultadosSubagents(`Alerta transversal duplicado: ${alertaId}`);
     vistos.add(alertaId);
     const titulo = texto(obter(item, "titulo"));
     const validacaoId = texto(obter(item, "validacao_id"));
     const descricao = texto(obter(item, "descricao"));
-    const criticidade = aparar(strPy(ou(obter(item, "criticidade"), "OBRIG")));
+    const criticidade = aparar(textoDoValor(ou(obter(item, "criticidade"), "OBRIG")));
     const fichasRelacionadas = ou(obter(item, "fichas_relacionadas"), []);
     const evidencias = ou(obter(item, "evidencias"), []);
     const revisao = obter(item, "revisao_humana_obrigatoria");
@@ -328,10 +328,10 @@ export function validarAlertasTransversais(
     if (!Array.isArray(fichasRelacionadas)) {
       throw new ErroResultadosSubagents(`\`fichas_relacionadas\` precisa ser lista para ${alertaId}.`);
     }
-    const desconhecidas = fichasRelacionadas.filter((fichaId) => !fichasPorId.has(strPy(fichaId)));
+    const desconhecidas = fichasRelacionadas.filter((fichaId) => !fichasPorId.has(textoDoValor(fichaId)));
     if (desconhecidas.length) {
       throw new ErroResultadosSubagents(
-        `Alerta ${alertaId} referencia fichas desconhecidas: ${desconhecidas.map(strPy).join(", ")}`,
+        `Alerta ${alertaId} referencia fichas desconhecidas: ${desconhecidas.map(textoDoValor).join(", ")}`,
       );
     }
     if (!Array.isArray(evidencias))
@@ -343,11 +343,11 @@ export function validarAlertasTransversais(
     alertas.push({
       id: alertaId,
       validacao_id: validacaoId,
-      validacao_titulo: strPy(ou(obter(validacao, "titulo"), validacaoId)),
+      validacao_titulo: textoDoValor(ou(obter(validacao, "titulo"), validacaoId)),
       titulo,
       criticidade,
       descricao,
-      fichas_relacionadas: fichasRelacionadas.map(strPy),
+      fichas_relacionadas: fichasRelacionadas.map(textoDoValor),
       evidencias: evidenciasNormalizadas,
       revisao_humana_obrigatoria: revisao,
     });
@@ -374,7 +374,7 @@ export type SituacaoRevisao = keyof typeof SITUACOES_REVISAO;
  * criticidade (`BLOQ` → revisão substancial, `OBRIG` → ajustes necessários; `REC`, como a ficha
  * `REC` não atendida, não muda a situação) e, com revisão humana obrigatória, gera ressalva.
  */
-export function situacao(resultados: ResultadoNormalizado[], alertas: ObjetoPy[] = []): SituacaoRevisao {
+export function situacao(resultados: ResultadoNormalizado[], alertas: Dicionario[] = []): SituacaoRevisao {
   const alertaCom = (criticidade: string) => alertas.some((alerta) => obter(alerta, "criticidade") === criticidade);
   if (resultados.some((item) => item.criticidade === "BLOQ" && item.estado === "NAO_ATENDE") || alertaCom("BLOQ")) {
     return "REVISAO_SUBSTANCIAL";
@@ -391,10 +391,10 @@ export function situacao(resultados: ResultadoNormalizado[], alertas: ObjetoPy[]
   return "APTO_PARA_SUBMISSAO";
 }
 
-function contagem(valores: string[]): ObjetoPy {
+function contagem(valores: string[]): Dicionario {
   const total = new Map<string, number>();
   for (const valor of valores) total.set(valor, (total.get(valor) ?? 0) + 1);
-  const saida: ObjetoPy = {};
+  const saida: Dicionario = {};
   for (const chave of [...total.keys()].sort(compararTexto)) saida[chave] = total.get(chave)!;
   return saida;
 }
@@ -404,11 +404,11 @@ export function validarResultadosRodada(
   rodada: string,
   resultados: string,
   caminhos: CaminhosAnalise = caminhosPadrao(),
-): ObjetoPy {
+): Dicionario {
   const rodadaDir = caminhosRodada(rodada).rodadaDir;
   const caminhoResultados = resolverResultadosPath(rodadaDir, resultados);
-  const payload = lerJsonPy(caminhoResultados);
-  if (!ehObjetoPy(payload)) throw new Error("AttributeError: o JSON de resultados precisa ser objeto");
+  const payload = lerJsonDaRodada(caminhoResultados);
+  if (!ehDicionario(payload)) throw new Error("AttributeError: o JSON de resultados precisa ser objeto");
   const fichasPorId = catalogoFichas(caminhos.fichasDir);
   const validacoesPorId = catalogoValidacoes(caminhos.validacoesCruzadasDir);
   const normalizados = validarResultadosSubagents(payload, fichasPorId);
@@ -425,10 +425,10 @@ export function validarResultadosRodada(
     contagem_estado: contagem(normalizados.map((item) => item.estado)),
     contagem_criticidade: contagem(normalizados.map((item) => item.criticidade)),
     grupos: grupos.map((grupo) => {
-      const g = ehObjetoPy(grupo) ? grupo : {};
+      const g = ehDicionario(grupo) ? grupo : {};
       return {
-        grupo_id: textoOuVazioPy(obter(g, "grupo_id")),
-        total_resultados: iterarPy(ou(obter(g, "resultados"), [])).length,
+        grupo_id: textoOuVazioDoValor(obter(g, "grupo_id")),
+        total_resultados: itensIteraveis(ou(obter(g, "resultados"), [])).length,
       };
     }),
   };
@@ -439,8 +439,8 @@ function noSuporte(caminho: string, suporteDir: string): string {
   return NodePath.isAbsolute(caminho) ? caminho : NodePath.join(suporteDir, caminho);
 }
 
-function exigirObjeto(valor: unknown, descricao: string): ObjetoPy {
-  if (!ehObjetoPy(valor)) throw new Error(`AttributeError: ${descricao} não é objeto JSON`);
+function exigirObjeto(valor: unknown, descricao: string): Dicionario {
+  if (!ehDicionario(valor)) throw new Error(`AttributeError: ${descricao} não é objeto JSON`);
   return valor;
 }
 
@@ -458,56 +458,60 @@ export function mesclarResultadosAvulsos(
   resultadosAvulsos: string,
   saida?: string,
   caminhosAnalise: CaminhosAnalise = caminhosPadrao(),
-): ObjetoPy {
+): Dicionario {
   const caminhos = caminhosRodada(rodada);
   const basePath = noSuporte(resultadosBase, caminhos.suporteDir);
   const avulsoPath = noSuporte(resultadosAvulsos, caminhos.suporteDir);
   const saidaResolvida = noSuporte(saida || resultadosBase, caminhos.suporteDir);
-  const base = exigirObjeto(lerJsonPy(basePath), "resultados base");
-  const avulso = exigirObjeto(lerJsonPy(avulsoPath), "resultado avulso");
+  const base = exigirObjeto(lerJsonDaRodada(basePath), "resultados base");
+  const avulso = exigirObjeto(lerJsonDaRodada(avulsoPath), "resultado avulso");
   if (!Array.isArray(obter(avulso, "grupos")) && !Array.isArray(obter(avulso, "resultados"))) {
     throw new Error("O resultado avulso precisa conter `grupos[]` ou `resultados[]`.");
   }
   const blocosAvulso = blocosResultados(avulso);
   validarBlocos(blocosAvulso, catalogoFichas(caminhosAnalise.fichasDir));
   const resultadosNovos = blocosAvulso.flatMap((bloco) =>
-    iterarPy(obter(exigirObjeto(bloco, "grupo avulso"), "resultados")),
+    itensIteraveis(obter(exigirObjeto(bloco, "grupo avulso"), "resultados")),
   );
   if (!resultadosNovos.length) throw new ErroResultadosSubagents("O resultado avulso não traz resultados.");
 
   const gruposBase = blocosResultados(base);
-  const idsAvulsos = new Set(resultadosNovos.map((item) => strPy(obter(exigirObjeto(item, "resultado"), "ficha_id"))));
+  const idsAvulsos = new Set(
+    resultadosNovos.map((item) => textoDoValor(obter(exigirObjeto(item, "resultado"), "ficha_id"))),
+  );
   const idsOrdenados = [...idsAvulsos].sort(compararTexto);
-  const gruposMesclados: ObjetoPy[] = [];
+  const gruposMesclados: Dicionario[] = [];
   for (const grupo of gruposBase) {
     const original = exigirObjeto(grupo, "grupo base");
-    const copia: ObjetoPy = { ...original };
-    copia.resultados = iterarPy(obter(original, "resultados", [])).filter(
-      (item) => !idsAvulsos.has(strPy(obter(exigirObjeto(item, "resultado"), "ficha_id"))),
+    const copia: Dicionario = { ...original };
+    copia.resultados = itensIteraveis(obter(original, "resultados", [])).filter(
+      (item) => !idsAvulsos.has(textoDoValor(obter(exigirObjeto(item, "resultado"), "ficha_id"))),
     );
     if ((copia.resultados as unknown[]).length) gruposMesclados.push(copia);
   }
   gruposMesclados.push({
-    grupo_id: strPy(ou(obter(avulso, "grupo_id"), `reavaliacao-${sha256JsonPayload(idsOrdenados).slice(0, 12)}`)),
+    grupo_id: textoDoValor(
+      ou(obter(avulso, "grupo_id"), `reavaliacao-${sha256JsonPayload(idsOrdenados).slice(0, 12)}`),
+    ),
     tipo: "reavaliacao",
     resultados: resultadosNovos,
   });
-  const payload: ObjetoPy = { ...base, grupos: gruposMesclados };
+  const payload: Dicionario = { ...base, grupos: gruposMesclados };
   if (!Array.isArray(obter(base, "grupos"))) {
     // A base vinha como `{"grupo_id", "resultados"}`: esses campos viraram o primeiro grupo.
     delete payload.resultados;
     delete payload.grupo_id;
   }
   const metadata = padraoSeAusente(payload, "metadata", {});
-  if (!ehObjetoPy(metadata)) {
-    // Mesma falha do Python ao atribuir em `payload["metadata"][...]`.
+  if (!ehDicionario(metadata)) {
+    // `metadata` que não é objeto não recebe a lista das reavaliações: falha com erro de tipo.
     throw new TypeError(
       Array.isArray(metadata)
         ? "list indices must be integers or slices, not str"
-        : `'${tipoPy(metadata)}' object does not support item assignment`,
+        : `'${tipoDoValor(metadata)}' object does not support item assignment`,
     );
   }
   metadata.reavaliacoes_mescladas = idsOrdenados;
-  escreverJsonPy(saidaResolvida, payload);
+  escreverJsonDaRodada(saidaResolvida, payload);
   return { resultados_path: saidaResolvida, fichas_substituidas: idsOrdenados, total_grupos: gruposMesclados.length };
 }

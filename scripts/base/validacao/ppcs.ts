@@ -232,7 +232,7 @@ function validarProvenienciaItem(
   }
   if (typeof item.fonte_pdf === "string" && proveniencia.fonte_url !== item.fonte_pdf) {
     erros.push(
-      `${valorPath}: fonte_url do front matter difere do ppc.url vigente (${item.fonte_pdf}); reconverta o PPC ou corrija ppc.url`,
+      `${valorPath}: fonte_url do front matter difere do ppc.url vigente (${item.fonte_pdf}); o PPC mudou e precisa ser reconvertido (sem ferramenta de entrada por ora; ver PLANO-ARQUITETURA.md) ou ppc.url está errado`,
     );
   }
   const resumo = {

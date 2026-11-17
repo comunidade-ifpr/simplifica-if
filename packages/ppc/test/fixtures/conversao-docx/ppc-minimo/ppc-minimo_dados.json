@@ -55,8 +55,8 @@
   "resumo_matriz_curricular": {
     "total_anos": 2,
     "total_componentes": 3,
-    "total_ha": 0,
-    "total_hr": 0,
+    "total_ha": 440,
+    "total_hr": 330,
     "totais": {
       "ch_total_hora_aula": 680,
       "ch_total_hora_relogio": 530

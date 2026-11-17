@@ -47,7 +47,7 @@ const MARCADORES_TITULO_NEGRITO = [
   "projeto pedagogico",
 ];
 
-/** Remove acentos (NFKD sem marcas combinantes), como `unicodedata` no Python. */
+/** Remove acentos (NFKD sem marcas combinantes). */
 export function removerAcentos(texto: string): string {
   return texto.normalize("NFKD").replace(/\p{Mn}/gu, "");
 }

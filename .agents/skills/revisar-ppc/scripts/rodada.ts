@@ -1,19 +1,22 @@
 // @effect-diagnostics nodeBuiltinImport:off globalDate:off -- arquivos da rodada lidos e gravados de forma síncrona; o relógio da rodada é REVISAR_PPC_AGORA ou o do sistema
 /**
- * Rodada de análise: caminhos, relógio, hashes e leitura e escrita de JSON
- * (porte de `common.py`). A identificação do curso fica em `identificacao.ts`.
+ * Rodada de análise: caminhos, relógio, hashes e leitura e escrita de JSON.
+ * A identificação do curso fica em `identificacao.ts`.
  *
- * Os arquivos da rodada precisam sair idênticos aos do Python: JSON pelo
- * `json` do Python (`@simplifica-if/kb/python/json`), datas no fuso local com
- * deslocamento (`2026-11-13T10:00:00-03:00`) e caminhos resolvidos como
- * `Path.resolve()`.
+ * Os arquivos da rodada saem sempre iguais: JSON tipado
+ * (`@simplifica-if/kb/primitivas/json-tipado`), datas no fuso local com
+ * deslocamento (`2026-11-13T10:00:00-03:00`) e caminhos absolutos resolvidos.
  */
 import * as NodeCrypto from "node:crypto";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { TAMANHO_MAXIMO_GRUPO } from "@simplifica-if/kb/db/pacote-contexto";
-import { carregarJsonPy, dumpsPy, jsonIndentadoPy } from "@simplifica-if/kb/python/json";
-import { type ObjetoPy, strPy } from "@simplifica-if/kb/python/valores";
+import {
+  carregarJsonTipado,
+  serializarJsonTipado,
+  jsonTipadoIndentado,
+} from "@simplifica-if/kb/primitivas/json-tipado";
+import { type Dicionario, textoDoValor } from "@simplifica-if/kb/primitivas/valores";
 import { compararTexto } from "@simplifica-if/kb/texto";
 import { listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
@@ -34,9 +37,8 @@ const RE_AGORA = /^(\d{4})-(\d{2})-(\d{2})(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,6})?
 
 /**
  * Relógio da linha de comando: a variável `REVISAR_PPC_AGORA` (data ISO 8601, veja `RE_AGORA`)
- * fixa o instante, para testes e diferenciais; sem ela, a hora do sistema. Como no Python
- * (`datetime.fromisoformat(...).astimezone()`), data sem hora é meia-noite local e data-hora sem
- * fuso é hora local; o resto é recusado.
+ * fixa o instante, para testes; sem ela, a hora do sistema. Data sem hora é meia-noite local e
+ * data-hora sem fuso é hora local; o resto é recusado.
  */
 export function relogioDoAmbiente(): Date {
   const fixo = process.env.REVISAR_PPC_AGORA;
@@ -56,7 +58,7 @@ export function relogioDoAmbiente(): Date {
 
 const dois = (n: number) => String(n).padStart(2, "0");
 
-/** `datetime.now().astimezone().isoformat(timespec="seconds")`: hora local com deslocamento. */
+/** Hora local com deslocamento, até os segundos (`2026-11-13T10:00:00-03:00`). */
 export function agoraIso(relogio: Relogio = relogioDoAmbiente): string {
   const data = relogio();
   const deslocamento = -data.getTimezoneOffset();
@@ -69,7 +71,7 @@ export function agoraIso(relogio: Relogio = relogioDoAmbiente): string {
   );
 }
 
-/** `datetime.now().astimezone().strftime("%Y-%m-%dt%H-%M-%S")`. */
+/** Hora local para nome de pasta (`2026-11-13t10-00-00`). */
 export function timestampSlug(relogio: Relogio = relogioDoAmbiente): string {
   const data = relogio();
   return (
@@ -102,19 +104,19 @@ export function ehDiretorio(caminho: string): boolean {
   return NodeFS.existsSync(caminho) && NodeFS.statSync(caminho).isDirectory();
 }
 
-/** `read_json`: JSON do Python (floats preservados). */
-export function lerJsonPy(caminho: string): unknown {
-  return carregarJsonPy(caminho);
+/** Lê um JSON da rodada (fracionários preservados). */
+export function lerJsonDaRodada(caminho: string): unknown {
+  return carregarJsonTipado(caminho);
 }
 
-/** `write_json`: JSON indentado do Python, com `\n` final. */
-export function escreverJsonPy(caminho: string, valor: unknown): void {
+/** Grava um JSON da rodada, indentado e com `\n` final. */
+export function escreverJsonDaRodada(caminho: string, valor: unknown): void {
   NodeFS.mkdirSync(NodePath.dirname(caminho), { recursive: true });
-  NodeFS.writeFileSync(caminho, jsonIndentadoPy(valor), "utf-8");
+  NodeFS.writeFileSync(caminho, jsonTipadoIndentado(valor), "utf-8");
 }
 
-/** `write_text`. */
-export function escreverTextoPy(caminho: string, texto: string): void {
+/** Grava um texto da rodada em UTF-8, criando a pasta. */
+export function escreverTextoDaRodada(caminho: string, texto: string): void {
   NodeFS.mkdirSync(NodePath.dirname(caminho), { recursive: true });
   NodeFS.writeFileSync(caminho, texto, "utf-8");
 }
@@ -128,7 +130,7 @@ export function sha256Texto(texto: string): string {
 
 /** `sha256_json_payload`: hash do JSON compacto com chaves ordenadas por code point. */
 export function sha256JsonPayload(valor: unknown): string {
-  return sha256Texto(dumpsPy(valor, { ordenarChaves: true, separadores: [",", ":"] }));
+  return sha256Texto(serializarJsonTipado(valor, { ordenarChaves: true, separadores: [",", ":"] }));
 }
 
 export function sha256Arquivo(caminho: string): string {
@@ -150,13 +152,13 @@ export function sha256CatalogoJson(diretorio: string): string {
 }
 
 /** `load_fichas`: fichas na ordem dos nomes de arquivo. */
-export function carregarFichas(fichasDir: string): ObjetoPy[] {
-  return listarArquivos(fichasDir, ".json").map((arquivo) => lerJsonPy(arquivo) as ObjetoPy);
+export function carregarFichas(fichasDir: string): Dicionario[] {
+  return listarArquivos(fichasDir, ".json").map((arquivo) => lerJsonDaRodada(arquivo) as Dicionario);
 }
 
 /** `sorted(itens, key=lambda item: str(item.get("id", "")))`. */
-export function ordenarPorId<T extends ObjetoPy>(itens: T[]): T[] {
-  return [...itens].sort((a, b) => compararTexto(strPy(a.id ?? ""), strPy(b.id ?? "")));
+export function ordenarPorId<T extends Dicionario>(itens: T[]): T[] {
+  return [...itens].sort((a, b) => compararTexto(textoDoValor(a.id ?? ""), textoDoValor(b.id ?? "")));
 }
 
 /** `safe_relpath`: caminho relativo a `base` quando dentro dela; senão, absoluto. */
@@ -222,7 +224,7 @@ export function caminhosRodada(rodada: string): CaminhosRodada {
 export function atualizarManifestoBase(
   rodada: string,
   opcoes: { caminhos?: CaminhosAnalise; relogio?: Relogio } = {},
-): ObjetoPy {
+): Dicionario {
   const skill = opcoes.caminhos ?? caminhosPadrao();
   const caminhos = caminhosRodada(rodada);
   const promptSubagent = NodePath.join(skill.promptsDir, "subagent-lote-fichas.md");
@@ -238,6 +240,6 @@ export function atualizarManifestoBase(
     execucao: "subagents-na-conversa",
     criado_em: agoraIso(opcoes.relogio),
   };
-  escreverJsonPy(caminhos.manifesto, manifesto);
+  escreverJsonDaRodada(caminhos.manifesto, manifesto);
   return manifesto;
 }

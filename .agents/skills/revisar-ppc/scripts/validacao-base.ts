@@ -3,7 +3,7 @@
  * Validação da base de análise da skill: schemas, fichas, taxonomia de
  * tópicos, marcos normativos, validações cruzadas e contratos de exemplo.
  *
- * As mensagens de schema seguem as do antigo `validar_base_analise.py`. As referências normativas
+ * As referências normativas
  * das fichas e os marcos são conferidos por ID canônico (fase 2b do plano de arquitetura), contra
  * `manifest.json`, `normas/stubs.yaml` e o CNCT.
  */

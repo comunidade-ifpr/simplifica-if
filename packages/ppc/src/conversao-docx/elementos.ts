@@ -5,7 +5,7 @@
  * decide o que isso significa num PPC, que costuma ser digitado sem os estilos de título do Word:
  * um parágrafo numerado e todo em negrito é título, mesmo no estilo Normal.
  */
-import { match } from "@simplifica-if/kb/python/re";
+import { match } from "@simplifica-if/kb/primitivas/regex";
 import { aparar, contarCaracteres } from "@simplifica-if/kb/texto";
 import {
   type DocumentoOoxml,
@@ -15,7 +15,6 @@ import {
   type TabelaOoxml,
   textoDoParagrafo,
 } from "@simplifica-if/docx/modelo";
-import { REGRAS_DO_DOCUMENTO, type Regras } from "./regras.ts";
 
 const r = String.raw;
 
@@ -132,15 +131,9 @@ const MARCADORES = ["•", "-", "*", "–", "—"];
 /**
  * Item de lista pelo estilo, pela numeração automática do Word ou pelo próprio texto (`1.`, `a)`,
  * `•`, `-`).
- *
- * A numeração automática (`w:numPr`) só conta com a regra `listas`: a conversão em Python a
- * procurava no lugar errado e nunca a encontrou.
  */
-function itemDeLista(
-  paragrafo: ParagrafoOoxml,
-  regras: Regras,
-): Pick<Paragrafo, "itemDeLista" | "nivelLista" | "tipoLista"> {
-  const numeracao = regras.listas ? paragrafo.numeracao : null;
+function itemDeLista(paragrafo: ParagrafoOoxml): Pick<Paragrafo, "itemDeLista" | "nivelLista" | "tipoLista"> {
+  const numeracao = paragrafo.numeracao;
   if (numeracao) {
     return {
       itemDeLista: true,
@@ -186,33 +179,32 @@ function trechosDoParagrafo(paragrafo: ParagrafoOoxml): Trecho[] {
 }
 
 /** Título, parágrafo ou nada (parágrafo vazio). */
-function elementoDoParagrafo(paragrafo: ParagrafoOoxml, regras: Regras): Titulo | Paragrafo | null {
+function elementoDoParagrafo(paragrafo: ParagrafoOoxml): Titulo | Paragrafo | null {
   const nivel = paragrafo.estilo === null ? undefined : NIVEL_POR_ESTILO[paragrafo.estilo];
   if (nivel !== undefined) {
     const texto = aparar(textoDoParagrafo(paragrafo));
     if (!texto) return null;
-    if (!regras.titulosDeCorpo || !ehTextoDeCorpo(paragrafo, texto))
-      return { tipo: "titulo", texto, nivel, estilo: paragrafo.estilo };
+    if (!ehTextoDeCorpo(paragrafo, texto)) return { tipo: "titulo", texto, nivel, estilo: paragrafo.estilo };
   }
   const titulo = tituloPorFormatacao(paragrafo);
   if (titulo) return titulo;
   const trechos = trechosDoParagrafo(paragrafo);
   if (!aparar(trechos.map((trecho) => trecho.texto).join(""))) return null;
-  return { tipo: "paragrafo", trechos, estilo: paragrafo.estilo, ...itemDeLista(paragrafo, regras) };
+  return { tipo: "paragrafo", trechos, estilo: paragrafo.estilo, ...itemDeLista(paragrafo) };
 }
 
 // ---------------------------------------------------------------- tabelas
 
 /**
  * Grade em que a célula mesclada se repete: uma célula que ocupa três colunas aparece três vezes,
- * e a continuação de uma mescla vertical repete a célula de cima. É a leitura do `python-docx`
- * (`row.cells`), da qual a extração da matriz curricular depende: "CARGA HORÁRIA TOTAL DO CURSO"
+ * e a continuação de uma mescla vertical repete a célula de cima. A extração da
+ * matriz curricular depende dela: "CARGA HORÁRIA TOTAL DO CURSO"
  * mesclada sobre "Ano" e "Componente" chega nas duas colunas.
  *
  * Só vê as células filhas diretas da linha; as embrulhadas em `w:sdt` ficam para `gradeDireta`.
  */
 function gradeRepetida(tabela: TabelaOoxml): CelulaTabela[][] {
-  // Numa linha com células diretas, as embrulhadas em `w:sdt` também são dela (modo `documento`).
+  // Numa linha com células diretas, as embrulhadas em `w:sdt` também são dela.
   const mista = tabela.linhas.some((linha) => linha.celulas.some((celula) => celula.direta));
   const daLinha = tabela.linhas.map((linha) =>
     linha.celulas.filter((celula) => celula.direta || (mista && celula.embrulhada)),
@@ -238,8 +230,7 @@ function gradeRepetida(tabela: TabelaOoxml): CelulaTabela[][] {
           if (restante === 0) return origens[indiceLinha - 1]![indice]!;
           restante -= candidata.colunas;
         }
-        // Mescla malformada (nada começa nessa coluna na linha de cima): a célula vale por si. O
-        // `python-docx` lança `ValueError` aqui e a conversão antiga abortava.
+        // Mescla malformada (nada começa nessa coluna na linha de cima): a célula vale por si.
         return celula;
       }),
     );
@@ -284,7 +275,7 @@ function elementoDaTabela(tabela: TabelaOoxml): Tabela {
 // ---------------------------------------------------------------- documento
 
 /** Elementos do PPC na ordem do documento; a figura de um parágrafo vem antes do texto dele. */
-export function elementosDoDocumento(documento: DocumentoOoxml, regras: Regras = REGRAS_DO_DOCUMENTO): Elemento[] {
+export function elementosDoDocumento(documento: DocumentoOoxml): Elemento[] {
   const elementos: Elemento[] = [];
   for (const bloco of documento.blocos) {
     if (bloco.tipo === "tabela") {
@@ -292,7 +283,7 @@ export function elementosDoDocumento(documento: DocumentoOoxml, regras: Regras =
       continue;
     }
     if (bloco.figura) elementos.push({ tipo: "figura", figura: bloco.figura });
-    const elemento = elementoDoParagrafo(bloco, regras);
+    const elemento = elementoDoParagrafo(bloco);
     if (elemento) elementos.push(elemento);
   }
   return elementos;

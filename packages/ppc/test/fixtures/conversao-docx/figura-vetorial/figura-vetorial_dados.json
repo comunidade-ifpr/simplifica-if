@@ -1,0 +1,34 @@
+{
+  "arquivo_origem": "figura-vetorial.docx",
+  "data_conversao": "2026-11-16T12:00:00",
+  "metadata_documento": {
+    "title": "PPC fictício",
+    "author": "Autora de Teste",
+    "created": "2026-03-05T10:38:00+00:00",
+    "modified": "2026-04-22T03:06:00+00:00",
+    "last_modified_by": "Revisor de Teste"
+  },
+  "dados_extraidos": {},
+  "estrutura": {
+    "secoes_detectadas": [
+      "5 ORGANIZAÇÃO",
+      "5.11 REPRESENTAÇÃO GRÁFICA DO PROCESSO FORMATIVO",
+      "5.12 OUTRA SEÇÃO"
+    ],
+    "total_elementos": 6,
+    "total_tabelas": 0
+  },
+  "arquivos_relacionados": {
+    "markdown_normalizado": "figura-vetorial.md",
+    "markdown_bruto": "figura-vetorial-bruto.md"
+  },
+  "representacao_grafica": {
+    "encontrada": true,
+    "secao": "5.11 REPRESENTAÇÃO GRÁFICA DO PROCESSO FORMATIVO",
+    "tem_bitmap": false,
+    "tem_desenhos_vetoriais": true,
+    "extraida": false,
+    "metodo": "vetorial_nao_renderizada",
+    "caminho": null
+  }
+}

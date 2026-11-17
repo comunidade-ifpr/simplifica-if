@@ -1,6 +1,6 @@
 /**
  * Construtor de DOCX sintéticos para testes: OOXML mínimo escrito à mão e empacotado com `fflate`,
- * sem Word nem `python-docx`. Não é usado em produção; fica em `src/` para que os testes de outros
+ * sem Word. Não é usado em produção; fica em `src/` para que os testes de outros
  * pacotes (`@simplifica-if/ppc`, a skill `revisar-ppc`) o importem.
  */
 import { strToU8, zipSync } from "fflate";

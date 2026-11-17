@@ -1,4 +1,4 @@
-# 1 APRESENTAÇÃO
+## 1 APRESENTAÇÃO
 
 Este projeto apresenta o curso fictício usado nos testes da conversão.
 
@@ -18,16 +18,16 @@ Este projeto apresenta o curso fictício usado nos testes da conversão.
 |---|
 | Periodicidade: Anual |
 
-## 1.1 JUSTIFICATIVA
+### 1.1 JUSTIFICATIVA
 
-O curso atende à demanda regional, conforme o [Catálogo Nacional](https://exemplo.edu.br/cnct) e o *plano** institucional***~~ (versão antiga)~~.
-1. a) formar profissionais para a região;
-1. b) integrar ensino, pesquisa e extensão.
+O curso atende à demanda regional, conforme o [Catálogo Nacional](https://exemplo.edu.br/cnct) e o *plano* ***institucional*** ~~(versão antiga)~~.
+- a) formar profissionais para a região;
+- b) integrar ensino, pesquisa e extensão.
 
 Texto depois da lista.
-# 5 ORGANIZAÇÃO CURRICULAR
+## 5 ORGANIZAÇÃO CURRICULAR
 
-## 5.6 MATRIZ CURRICULAR
+### 5.6 MATRIZ CURRICULAR
 
 | Ano | Componente Curricular | Número de aulas semanais | CH hora-aula no período | CH hora-relógio no período |
 |---|---|---:|---:|---:|
@@ -41,7 +41,7 @@ Texto depois da lista.
 
 Nota: a matriz acima é fictícia.
 
-## 5.7 EMENTÁRIO
+### 5.7 EMENTÁRIO
 
 | COMPONENTE CURRICULAR: Língua Portuguesa |
 |---|
@@ -52,16 +52,16 @@ Nota: a matriz acima é fictícia.
 
 | COMPONENTE CURRICULAR: Banco de Dados |  |  |
 |---|---|---|
-| Período letivo: 2º AnoCarga horária total: 160 horas-aula |  |  |
+| Período letivo: 2º Ano Carga horária total: 160 horas-aula |  |  |
 | EMENTA: Modelagem de dados. |  |  |
 | BIBLIOGRAFIA BÁSICA:<br>DATE, Christopher. Introdução a sistemas de bancos de dados. Rio de Janeiro: Elsevier, 2004. |  |  |
 | BIBLIOGRAFIA COMPLEMENTAR:<br>ELMASRI, Ramez; NAVATHE, Shamkant. Sistemas de banco de dados. São Paulo: Pearson, 2011. |  |  |
 
-## 5.11 REPRESENTAÇÃO GRÁFICA DO PROCESSO FORMATIVO
+### 5.11 REPRESENTAÇÃO GRÁFICA DO PROCESSO FORMATIVO
 
 ![Representação Gráfica do Processo Formativo](imagens/representacao_grafica.png)
 
 Figura 1: itinerário formativo.
-# 6 REFERÊNCIAS
+## 6 REFERÊNCIAS
 
 BRASIL. Catálogo Nacional de Cursos Técnicos. Brasília, 2021.

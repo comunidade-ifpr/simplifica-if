@@ -3,10 +3,7 @@
  * Conversão de um PPC `.docx` nos artefatos que a skill consome: `PPC.md` normalizado, Markdown
  * bruto, `_dados.json`, matriz curricular, ementário e a figura da representação gráfica.
  *
- * Substitui a conversão em Python (`conversao_docx/`, sobre `python-docx`), removida na trilha T3
- * do `PLANO-ARQUITETURA.md`. Com `fidelidade: "python-docx"` a saída é a dela, byte a byte; o
- * padrão aplica as regras de `regras.ts`. As diferenças estão no README da skill `revisar-ppc`, e
- * `scripts/diferencial-docx.ts` compara as duas conversões.
+ * As regras de leitura e de conversão estão no README da skill `revisar-ppc`.
  *
  * Camadas, de baixo para cima:
  * - `@simplifica-if/docx`: o DOCX como modelo intermediário (pacote ZIP, XML, parágrafos, tabelas,
@@ -20,8 +17,8 @@
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { dumpsPy } from "@simplifica-if/kb/python/json";
-import { ORDEM_CHAVES, type ObjetoPy } from "@simplifica-if/kb/python/valores";
+import { serializarJsonTipado } from "@simplifica-if/kb/primitivas/json-tipado";
+import { ORDEM_CHAVES, type Dicionario } from "@simplifica-if/kb/primitivas/valores";
 import { normalizarMarkdown } from "../normalizador-markdown.ts";
 import { type Elemento, elementosDoDocumento, type Tabela } from "./elementos.ts";
 import { type ComponenteDoEmentario, extrairComponenteDoEmentario } from "./ementario.ts";
@@ -39,23 +36,15 @@ import {
   substituirMatrizNoMarkdown,
 } from "./matriz.ts";
 import { ErroDocx } from "@simplifica-if/docx/erro";
-import { type Fidelidade, lerPacote } from "@simplifica-if/docx/leitor";
+import { lerPacote } from "@simplifica-if/docx/leitor";
 import type { PropriedadesOoxml } from "@simplifica-if/docx/modelo";
 import { arquivoGrandeDemais, LIMITES_PADRAO, type LimitesDoPacote, PacoteOoxml } from "@simplifica-if/docx/pacote";
-import { REGRAS_DO_DOCUMENTO, REGRAS_DO_PYTHON, type Regras } from "./regras.ts";
 import { detectarSecoes, dicasDeIdentificacao, listarSecoes, type Secao } from "./secoes.ts";
 import { colunasDaTabela, normalizarTabela, type TabelaNormalizada } from "./tabelas.ts";
 
 export type OpcoesConversao = {
   /** Instante da conversão (`data_conversao`); quem chama passa o relógio da rodada. */
   agora: Date;
-  /**
-   * `documento` (padrão) converte com todas as regras de `regras.ts`; `python-docx` reproduz a
-   * conversão antiga, para o diferencial.
-   */
-  fidelidade?: Fidelidade;
-  /** Liga ou desliga regras uma a uma, sobre as da `fidelidade`. Só o diferencial usa. */
-  regras?: Partial<Regras>;
   /** Limites de leitura do pacote; padrão: `LIMITES_PADRAO` de `@simplifica-if/docx/pacote`. */
   limites?: Partial<LimitesDoPacote>;
   /** Orçamento de texto do documento; padrão: `LIMITES_DE_TEXTO` de `orcamento.ts`. */
@@ -69,11 +58,11 @@ export type Conversao = {
   markdown: string;
   markdownBruto: string;
   /** Conteúdo do `_dados.json`, sem os nomes dos arquivos relacionados. */
-  dados: ObjetoPy;
-  matriz: ObjetoPy | null;
-  ementario: ObjetoPy | null;
+  dados: Dicionario;
+  matriz: Dicionario | null;
+  ementario: Dicionario | null;
   /** Resumos da matriz e do ementário que vão para o `_dados.json`. */
-  resumos: { matriz: ObjetoPy | null; ementario: ObjetoPy | null };
+  resumos: { matriz: Dicionario | null; ementario: Dicionario | null };
   representacaoGrafica: RepresentacaoGrafica | null;
 };
 
@@ -93,8 +82,8 @@ export type ArtefatosDocx = {
  * Objeto JSON com as chaves na ordem do mapa. As chaves vêm do documento (nomes de campo das
  * tabelas, cabeçalhos da matriz) e podem ser numéricas, que o JavaScript reordenaria.
  */
-function objetoOrdenado(mapa: Map<string, unknown>): ObjetoPy {
-  const objeto: ObjetoPy = {};
+function objetoOrdenado(mapa: Map<string, unknown>): Dicionario {
+  const objeto: Dicionario = {};
   for (const [chave, valor] of mapa) {
     Object.defineProperty(objeto, chave, { value: valor, enumerable: true, writable: true, configurable: true });
   }
@@ -102,7 +91,7 @@ function objetoOrdenado(mapa: Map<string, unknown>): ObjetoPy {
   return objeto;
 }
 
-function matrizEmJson(matriz: Matriz): ObjetoPy {
+function matrizEmJson(matriz: Matriz): Dicionario {
   if (matriz.tipo === "matriz_curricular_ppc") return { ...matriz };
   return {
     ...matriz,
@@ -112,7 +101,7 @@ function matrizEmJson(matriz: Matriz): ObjetoPy {
 
 const dois = (numero: number) => String(numero).padStart(2, "0");
 
-/** Data e hora locais sem fuso, com microssegundos quando há fração (o `datetime.now().isoformat()` de antes). */
+/** Data e hora locais sem fuso, com microssegundos quando há fração. */
 function dataHoraLocal(data: Date): string {
   const fracao = data.getMilliseconds() ? `.${String(data.getMilliseconds()).padStart(3, "0")}000` : "";
   return (
@@ -121,7 +110,7 @@ function dataHoraLocal(data: Date): string {
   );
 }
 
-function metadadosDoDocumento(propriedades: PropriedadesOoxml): ObjetoPy {
+function metadadosDoDocumento(propriedades: PropriedadesOoxml): Dicionario {
   const campos: Array<[string, string | null]> = [
     ["title", propriedades.titulo],
     ["author", propriedades.autor],
@@ -142,12 +131,7 @@ type DadosExtraidos = {
   ementario: ComponenteDoEmentario[];
 };
 
-function extrairDados(
-  elementos: Elemento[],
-  secoes: Secao[],
-  regras: Regras,
-  normalizar: NormalizarTabela,
-): DadosExtraidos {
+function extrairDados(elementos: Elemento[], secoes: Secao[], normalizar: NormalizarTabela): DadosExtraidos {
   const identificacao = dicasDeIdentificacao(secoes);
   const ementario: ComponenteDoEmentario[] = [];
   let matriz: Matriz | null = null;
@@ -164,7 +148,7 @@ function extrairDados(
       for (const [campo, valor] of extrairDadosDeIdentificacao(tabela)) identificacao.set(campo, valor);
     }
     const matrizPpc = extrairMatrizPpc(tabela);
-    if (matrizPpc) matriz = mesclarMatrizes(matriz, matrizPpc, regras.totaisDaMatriz);
+    if (matrizPpc) matriz = mesclarMatrizes(matriz, matrizPpc);
     else if (!matriz) {
       const generica = extrairMatrizGenerica(tabela);
       if (generica) genericas.push(generica);
@@ -179,7 +163,7 @@ function extrairDados(
   return { identificacao, matriz, ementario };
 }
 
-function ementarioEmJson(componentes: ComponenteDoEmentario[]): ObjetoPy | null {
+function ementarioEmJson(componentes: ComponenteDoEmentario[]): Dicionario | null {
   if (!componentes.length) return null;
   const porAno = new Map<string, string[]>();
   for (const componente of componentes) {
@@ -205,14 +189,13 @@ function ementarioEmJson(componentes: ComponenteDoEmentario[]): ObjetoPy | null 
 /**
  * Resumo da matriz no `_dados.json`. `total_ha` e `total_hr` são a soma das cargas em hora-aula e
  * em hora-relógio dos componentes (sem as linhas de atividades complementares e estágio); os
- * totais que o PPC declara estão em `totais`. Sem a regra `totaisDaMatriz`, os dois saem zerados,
- * como na conversão em Python, que somava campos que os anos da matriz não têm.
+ * totais que o PPC declara estão em `totais`.
  */
-function resumoDaMatriz(matriz: Matriz, regras: Regras): ObjetoPy {
+function resumoDaMatriz(matriz: Matriz): Dicionario {
   if (matriz.tipo !== "matriz_curricular_ppc") return {};
   const componentes = matriz.anos.flatMap((ano) => ano.componentes);
   const somar = (campo: "ch_hora_aula" | "ch_hora_relogio_cnct") =>
-    regras.totaisDaMatriz ? componentes.reduce((soma, item) => soma + Number(item[campo] ?? 0), 0) : 0;
+    componentes.reduce((soma, item) => soma + Number(item[campo] ?? 0), 0);
   return {
     total_anos: matriz.anos.length,
     total_componentes: componentes.length,
@@ -222,8 +205,8 @@ function resumoDaMatriz(matriz: Matriz, regras: Regras): ObjetoPy {
   };
 }
 
-function resumoDoEmentario(ementario: ObjetoPy): ObjetoPy {
-  const estatisticas = ementario.estatisticas as ObjetoPy;
+function resumoDoEmentario(ementario: Dicionario): Dicionario {
+  const estatisticas = ementario.estatisticas as Dicionario;
   return {
     total_componentes: ementario.total_componentes,
     total_referencias_basicas: estatisticas.total_referencias_basicas,
@@ -244,13 +227,9 @@ function temTexto(elemento: Elemento): boolean {
  * `ErroDocx` quando o arquivo não é um DOCX legível ou passa dos limites.
  */
 export function converterPpc(bytes: Uint8Array, nomeDoArquivo: string, opcoes: OpcoesConversao): Conversao {
-  const regras: Regras = {
-    ...(opcoes.fidelidade === "python-docx" ? REGRAS_DO_PYTHON : REGRAS_DO_DOCUMENTO),
-    ...opcoes.regras,
-  };
   const pacote = new PacoteOoxml(bytes, opcoes.limites);
-  const documento = lerPacote(pacote, { fidelidade: regras.leitura });
-  const elementos = elementosDoDocumento(documento, regras);
+  const documento = lerPacote(pacote);
+  const elementos = elementosDoDocumento(documento);
   // Documento sem nenhum texto: vazio, ou digitalizado como imagem. Um `PPC.md` em branco seria
   // revisado como se fosse o PPC.
   if (!elementos.some(temTexto)) {
@@ -272,17 +251,17 @@ export function converterPpc(bytes: Uint8Array, nomeDoArquivo: string, opcoes: O
     return normalizada;
   };
   const secoes = detectarSecoes(elementos);
-  const extraidos = extrairDados(elementos, secoes, regras, normalizarTabelaUmaVez);
+  const extraidos = extrairDados(elementos, secoes, normalizarTabelaUmaVez);
   const representacaoGrafica = resolverRepresentacaoGrafica(secoes, pacote);
 
   const normalizar = (bruto: string) => {
-    const resultado = normalizarMarkdown(bruto, { nivelDaSecao: regras.secoesNoNivel2 ? 2 : 1 });
+    const resultado = normalizarMarkdown(bruto);
     const markdown = extraidos.matriz
       ? substituirMatrizNoMarkdown(resultado.markdownNormalizado, extraidos.matriz)
       : resultado.markdownNormalizado;
     return { markdownBruto: resultado.markdownBruto, markdown };
   };
-  const bruto = escreverMarkdown(elementos, secoes, regras, normalizarTabelaUmaVez);
+  const bruto = escreverMarkdown(elementos, secoes, normalizarTabelaUmaVez);
   // O Markdown gerado também sai do orçamento, antes de ser normalizado.
   new Orcamento(opcoes.limitesDeTexto).gastar(bruto.length);
   let textos = normalizar(bruto);
@@ -291,7 +270,7 @@ export function converterPpc(bytes: Uint8Array, nomeDoArquivo: string, opcoes: O
 
   const matriz = extraidos.matriz ? matrizEmJson(extraidos.matriz) : null;
   const ementario = ementarioEmJson(extraidos.ementario);
-  const dados: ObjetoPy = {
+  const dados: Dicionario = {
     arquivo_origem: nomeDoArquivo,
     data_conversao: dataHoraLocal(opcoes.agora),
     metadata_documento: metadadosDoDocumento(documento.propriedades),
@@ -303,7 +282,7 @@ export function converterPpc(bytes: Uint8Array, nomeDoArquivo: string, opcoes: O
     },
   };
   const resumos = {
-    matriz: extraidos.matriz ? resumoDaMatriz(extraidos.matriz, regras) : null,
+    matriz: extraidos.matriz ? resumoDaMatriz(extraidos.matriz) : null,
     ementario: ementario ? resumoDoEmentario(ementario) : null,
   };
   return { elementos, secoes, ...textos, dados, matriz, ementario, resumos, representacaoGrafica };
@@ -317,17 +296,17 @@ function radical(arquivo: string): string {
 }
 
 function gravarJson(caminho: string, valor: unknown): void {
-  NodeFS.writeFileSync(caminho, dumpsPy(valor, { indent: 2 }), "utf-8");
+  NodeFS.writeFileSync(caminho, serializarJsonTipado(valor, { indent: 2 }), "utf-8");
 }
 
 /** Monta o `_dados.json`: os dados da conversão, os arquivos relacionados e os resumos. */
 function dadosPrincipais(
   conversao: Conversao,
   nomes: Record<"markdown" | "bruto" | "matriz" | "ementario", string>,
-): ObjetoPy {
+): Dicionario {
   const grafica = conversao.representacaoGrafica;
   const imagem = grafica?.metodo === "bitmap" ? grafica.arquivo!.caminho : null;
-  const principais: ObjetoPy = {
+  const principais: Dicionario = {
     ...conversao.dados,
     arquivos_relacionados: {
       markdown_normalizado: nomes.markdown,
@@ -377,10 +356,9 @@ export function gravarArtefatos(conversao: Conversao, arquivoDocx: string, saida
   const destino = NodePath.resolve(saida);
   NodeFS.mkdirSync(destino, { recursive: true });
   const base = radical(arquivoDocx);
-  // Os JSONs de matriz e ementário levam o radical do `_dados.json` sem `_dados`. A conversão em
-  // Python tirava todo `_dados` do nome, não só o sufixo: `PPC_dados v2.docx` dá
-  // `PPC v2_matriz_curricular.json`. Ficou assim para os nomes não mudarem; quem consome os
-  // arquivos usa os caminhos devolvidos aqui, não o nome.
+  // Os JSONs de matriz e ementário levam o radical do `_dados.json` sem `_dados`, e sai todo
+  // `_dados` do nome, não só o sufixo: `PPC_dados v2.docx` dá `PPC v2_matriz_curricular.json`.
+  // Quem consome os arquivos usa os caminhos devolvidos aqui, não o nome.
   const baseDosDados = `${base}_dados`.replaceAll("_dados", "");
   const nomes = {
     markdown: `${base}.md`,

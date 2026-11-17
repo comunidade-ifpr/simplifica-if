@@ -1,8 +1,8 @@
 // @effect-diagnostics nodeBuiltinImport:off -- o teste lê o gabarito de escores de um arquivo
 /**
  * `partialRatio` contra o `rapidfuzz`: os escores de `fixtures/partial-ratio-rapidfuzz.json` foram
- * gerados por ele (`scripts/diferencial-docx.ts --gravar-gabaritos`) e têm de ser reproduzidos
- * bit a bit, porque o ementário compara o escore com um limiar.
+ * gerados por ele e têm de ser reproduzidos bit a bit, porque o ementário compara o escore com um
+ * limiar.
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";

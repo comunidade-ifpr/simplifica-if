@@ -5,8 +5,7 @@
  * isso o ID do PPC é `ppc:<campus_id>/<curso_slug>`, sem versão. O front matter registra de onde
  * veio o texto: URL do arquivo-fonte, hash SHA-256 dos bytes baixados, data e versão do conversor.
  *
- * - `proveniencia: registrada`: gravada pelo conversor no momento da conversão
- *   (`scripts/converter_ppcs_markdown.py`); hash e conversor são conhecidos.
+ * - `proveniencia: registrada`: gravada no momento da conversão; hash e conversor são conhecidos.
  * - `proveniencia: reconstruida`: preenchida depois, a partir do histórico do git, para PPCs
  *   convertidos antes do front matter existir. O que não é verificável fica `desconhecido`, com o
  *   motivo em `nota_proveniencia`.

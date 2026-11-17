@@ -2,9 +2,9 @@
  * Front matter das normas: YAML lido com o pacote `yaml` no schema `failsafe` (todo escalar é
  * texto) e contratos Effect Schema.
  *
- * O `failsafe` mantém `numero: 9394` como texto, como no parser antigo; só `ano` é convertido em
- * inteiro, pela coerção de `esquemaValoresFrontMatter` (inclusive com dígitos Unicode, como o
- * `int()` do Python que gerou os manifestos). Assim o `manifest.json` não muda de tipo.
+ * O `failsafe` mantém `numero: 9394` como texto; só `ano` é convertido em inteiro, pela coerção de
+ * `esquemaValoresFrontMatter` (inclusive com dígitos Unicode). Assim o `manifest.json` não muda de
+ * tipo.
  */
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
@@ -31,7 +31,7 @@ const RE_DIGITOS_UNICODE = /^\p{Nd}+$/u;
 const RE_DIGITO = /\p{Nd}/u;
 
 /**
- * `int(valor)` para dígitos decimais Unicode (ex.: `２０１２`), como no Python. Os dígitos `Nd` vêm
+ * Inteiro de um texto de dígitos decimais Unicode (ex.: `２０１２`). Os dígitos `Nd` vêm
  * em blocos contíguos de 0 a 9, então o valor de cada um é a posição dentro do seu bloco.
  */
 export function inteiroDecimal(valor: string): number {

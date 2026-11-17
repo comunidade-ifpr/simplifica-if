@@ -105,7 +105,7 @@ Aceite fontes externas, como Google Sheets ou Edupage, somente quando forem apon
 
 Quando a página oficial do curso indicar o Projeto Pedagógico de Curso, registre o PPC vigente no objeto `ppc` do curso.
 
-**Política de versão: a base guarda só o PPC vigente de cada curso.** Quando o curso ganha PPC novo (por exemplo, nas reformulações exigidas pelo art. 71 da Res. CNE/CP nº 2/2026), atualize `ppc.url`, reconverta e substitua o Markdown no mesmo caminho. A versão anterior continua recuperável pelo histórico do git (`git log --follow -- base-conhecimento/<markdown_path>` e `git show <commit>:base-conhecimento/<markdown_path>`); o `conversao_commit` do front matter aponta o commit de cada conversão reconstruída. Por isso o ID do PPC não tem versão: é `ppc:<campus_id>/<curso_slug>`. PPCs históricos relevantes para a gestão ficam documentados nas movimentações e nas evidências SEI.
+**Política de versão: a base guarda só o PPC vigente de cada curso.** Quando o curso ganha PPC novo (por exemplo, nas reformulações exigidas pelo art. 71 da Res. CNE/CP nº 2/2026), atualize `ppc.url`, reconverta e substitua o Markdown no mesmo caminho (enquanto não houver a ferramenta de entrada, abaixo, isso não é possível). A versão anterior continua recuperável pelo histórico do git (`git log --follow -- base-conhecimento/<markdown_path>` e `git show <commit>:base-conhecimento/<markdown_path>`); o `conversao_commit` do front matter aponta o commit de cada conversão reconstruída. Por isso o ID do PPC não tem versão: é `ppc:<campus_id>/<curso_slug>`. PPCs históricos relevantes para a gestão ficam documentados nas movimentações e nas evidências SEI.
 
 Regras:
 
@@ -132,7 +132,7 @@ Até 13/11/2026 havia um par único, `ppc.curadoria` e `ppc.data_curadoria`, par
 
 O ano do documento é o da capa ou folha de rosto. Quando a capa traz também um ano posterior de aprovação, ajuste ou atualização ("Atualização 17 de Janeiro de 2025", "AJUSTE PARECER CONSEPE Nº 06/2024"), a convenção ainda não foi decidida: não altere o ano registrado, descreva a divergência em `ppc.observacoes` e deixe a decisão para revisão humana.
 
-Para converter PDFs em Markdown, use `scripts/converter_ppcs_markdown.py`: ele lê `ppc.url` e `ppc.markdown_path` dos registros de cursos e grava o Markdown sem CPF, RG, celular, matrícula de estudante e SIAPE (marcadores como `[CPF omitido]`; regra em `packages/kb/src/ppcs/dados-pessoais.ts`, descrita no AGENTS.md, que o `validar_base.ts` aplica a toda a base), sem link de planilha do Google e sem parâmetros de sessão do SEI. E-mail particular sai à mão; e-mail institucional, telefone fixo e contatos de campus e de parceiros ficam. Depois de converter ou alterar PPCs, regenere os índices:
+Hoje não há ferramenta para levar um PPC novo à base: o conversor de PDF (em Python) saiu em 17/11/2026, e a conversão DOCX de `packages/docx` e `packages/ppc` produz os arquivos da revisão prévia, mas não grava o Markdown em `ppc.markdown_path` nem o front matter de proveniência. A pendência está em "Decisões em aberto" do `PLANO-ARQUITETURA.md`. Quando ela existir, o PPC entra gravado em `ppc.markdown_path` sem CPF, RG, celular, matrícula de estudante e SIAPE (marcadores como `[CPF omitido]`; regra em `packages/kb/src/ppcs/dados-pessoais.ts`, descrita no AGENTS.md, que o `validar_base.ts` aplica a toda a base), sem link de planilha do Google e sem parâmetros de sessão do SEI. E-mail particular sai à mão; e-mail institucional, telefone fixo e contatos de campus e de parceiros ficam. Depois de converter ou alterar PPCs, regenere os índices:
 
 ```bash
 node scripts/gerar_indice_ppcs.ts
@@ -149,11 +149,11 @@ Todo PPC em `institucional/ifpr/ppcs/<campus_id>/<curso_slug>.md` começa com fr
 | `fonte_url` | URL do arquivo convertido; deve ser igual ao `ppc.url` vigente |
 | `fonte_sha256` | SHA-256 dos bytes baixados, ou `desconhecido` |
 | `convertido_em` | data da conversão (AAAA-MM-DD) |
-| `conversor` | script, versões do `pymupdf4llm` e do PyMuPDF e uso de OCR, ou `desconhecido` |
-| `proveniencia` | `registrada` (gravada pelo conversor) ou `reconstruida` (preenchida depois) |
+| `conversor` | conversor e versão, ou `desconhecido` |
+| `proveniencia` | `registrada` (gravada na conversão) ou `reconstruida` (preenchida depois) |
 | `conversao_commit`, `pos_processamento_commits`, `nota_proveniencia` | só na reconstruída: commit da conversão, commits de limpeza posteriores e o motivo do que ficou `desconhecido` |
 
-O conversor grava a proveniência `registrada` em toda conversão nova. Os 202 PPCs convertidos antes de 13/11/2026 têm proveniência `reconstruida` pelo histórico do git: `convertido_em` é a data do commit em que o texto entrou na base, e `fonte_url` é o `ppc.url` do curso nesse commit. O hash e a versão do conversor ficaram `desconhecido`, porque o PDF da época não foi guardado e o PDF baixado hoje não prova ser o mesmo; não os preencha à mão. Ao reconverter um PPC, a proveniência passa a `registrada`.
+Uma conversão nova, quando houver a ferramenta de entrada, terá proveniência `registrada`. Os 202 PPCs convertidos antes de 13/11/2026 têm proveniência `reconstruida` pelo histórico do git: `convertido_em` é a data do commit em que o texto entrou na base, e `fonte_url` é o `ppc.url` do curso nesse commit. O hash e a versão do conversor ficaram `desconhecido`, porque o arquivo da época não foi guardado e o baixado hoje não prova ser o mesmo; não os preencha à mão. Ao reconverter um PPC, a proveniência passará a `registrada`.
 
 `validar_base.ts` acusa PPC sem front matter, `id` fora do caminho e `fonte_url` diferente do `ppc.url` vigente: se o curso trocou de PPC, reconverta (ou, se só a URL mudou de endereço, confira o documento e reconverta mesmo assim, para registrar o hash).
 

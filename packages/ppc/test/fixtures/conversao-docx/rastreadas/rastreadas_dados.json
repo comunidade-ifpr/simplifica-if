@@ -10,13 +10,14 @@
   },
   "dados_extraidos": {
     "campo": "Valor",
-    "duracao": "sem alteração"
+    "duracao_4_anos": "sem alteração"
   },
   "estrutura": {
     "secoes_detectadas": [
-      "1 ALTERAÇÕES CONTROLADAS"
+      "1 ALTERAÇÕES CONTROLADAS",
+      "2 TÍTULO INSERIDO"
     ],
-    "total_elementos": 8,
+    "total_elementos": 10,
     "total_tabelas": 1
   },
   "arquivos_relacionados": {

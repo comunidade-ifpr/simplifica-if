@@ -22,8 +22,8 @@ import * as NodeRuntime from "@effect/platform-node/NodeRuntime";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Compilador from "@simplifica-if/kb/Compilador";
 import * as Layers from "@simplifica-if/kb/layers";
-import { dumpsPy } from "@simplifica-if/kb/python/json";
-import { caminhoComoUri } from "@simplifica-if/kb/python/url";
+import { serializarJsonTipado } from "@simplifica-if/kb/primitivas/json-tipado";
+import { caminhoComoUri } from "@simplifica-if/kb/primitivas/url";
 import * as Cause from "effect/Cause";
 import * as Config from "effect/Config";
 import * as Console from "effect/Console";
@@ -46,7 +46,7 @@ import { prepararDocumento } from "./preparar-documento.ts";
 import { dominioSurgePadrao, prepararSiteSurge, type PublicacaoSurge, publicarSiteSurge } from "./publicar-surge.ts";
 import { gerarRelatorioHtml, type RelatorioGerado } from "./relatorio-html.ts";
 import { mesclarResultadosAvulsos, validarResultadosRodada } from "./resultados.ts";
-import { caminhosRodada, escreverJsonPy, resolverCaminho, TAMANHO_GRUPO_PADRAO } from "./rodada.ts";
+import { caminhosRodada, escreverJsonDaRodada, resolverCaminho, TAMANHO_GRUPO_PADRAO } from "./rodada.ts";
 import { montarGrupoAvulso, montarGruposSubagents, prepararPromptsSubagents } from "./subagents.ts";
 import { validarBaseAnalise } from "./validacao-base.ts";
 
@@ -99,8 +99,8 @@ export const camadaKb = (opcoes: { readonly raiz?: string } = {}) =>
     }),
   ).pipe(Layer.provide(Compilador.layer));
 
-/** Imprime o JSON como `print(json.dumps(payload, ensure_ascii=False, indent=2))`. */
-const imprimirJson = (payload: unknown) => Console.log(dumpsPy(payload, { indent: 2 }));
+/** Imprime o JSON tipado, indentado com 2 espaços. */
+const imprimirJson = (payload: unknown) => Console.log(serializarJsonTipado(payload, { indent: 2 }));
 
 /** Executa um subcomando síncrono; o erro que ele lançar é relatado no stderr, com código 1. */
 const executar = <A>(acao: () => A) => Effect.sync(acao);
@@ -193,7 +193,7 @@ const gerarRelatorio = Effect.fn("revisar_ppc.gerarRelatorio")(function* (opcoes
     const dominio = Option.getOrElse(opcoes.surgeDomain, () => "") || dominioSurgePadrao(rodada.rodadaDir);
     const publicacao = publicarSiteSurge(siteDir, dominio);
     publicacao.relatorio_html_original = resolverCaminho(relatorio.relatorio_html);
-    escreverJsonPy(path.join(rodada.suporteDir, "surge-publicacao.json"), publicacao);
+    escreverJsonDaRodada(path.join(rodada.suporteDir, "surge-publicacao.json"), publicacao);
     return payloadRelatorio(relatorio, publicacao);
   });
 });

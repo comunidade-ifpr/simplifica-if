@@ -2,7 +2,7 @@
 
 Núcleo da base de conhecimento ([plano de arquitetura](../../PLANO-ARQUITETURA.md)): regras que mais de um consumidor usa (pipeline em `scripts/`, skills em `.agents/skills/`, avaliação, servidor MCP). Os consumidores importam `@simplifica-if/kb/<módulo>`; a dependência vai num sentido só.
 
-Desde o C1 da [consolidação na stack do T3](../../docs/plans/consolidacao-stack-t3.md), o kb é um conjunto de serviços [Effect 4](https://effect.website) sobre um `SqlClient` do `node:sqlite`. As regras puras (resolvedor, vigência, impacto, adequação, stemmer, texto, `python/*`) continuam funções puras e síncronas; o Effect entra nas fontes de dados, no banco, nos erros e nas bordas (CLI). `effect` e `@effect/platform-node` são `peerDependencies`: quem consome traz a mesma versão (a do catalog).
+Desde o C1 da [consolidação na stack do T3](../../docs/plans/consolidacao-stack-t3.md), o kb é um conjunto de serviços [Effect 4](https://effect.website) sobre um `SqlClient` do `node:sqlite`. As regras puras (resolvedor, vigência, impacto, adequação, stemmer, texto, `primitivas/*`) continuam funções puras e síncronas; o Effect entra nas fontes de dados, no banco, nos erros e nas bordas (CLI). `effect` e `@effect/platform-node` são `peerDependencies`: quem consome traz a mesma versão (a do catalog).
 
 ## Serviços e layers
 
@@ -46,7 +46,8 @@ Erros tipados: `Sql.FalhaNaConsulta` (`db/sql.ts`: o banco não corresponde ao e
 
 | Módulo | Papel |
 |---|---|
-| `texto.ts`, `json.ts`, `schema.ts` | kit de paridade com o pipeline Python antigo (espaços, ordenação, JSON, `ajv`) |
+| `texto.ts`, `json.ts`, `schema.ts` | texto, JSON e JSON Schema comuns aos scripts e às skills (espaços, ordenação, JSON, `ajv`) |
+| `primitivas/*` | regex com classes Unicode, JSON tipado (inteiro e fracionário distintos), case folding, quebra de linhas, similaridade de sequências, escape de HTML e de URL e divisão de linha de comando, com saída fixa byte a byte (rodada e relatório da `revisar-ppc`, conversão do PPC) |
 | `esquema/mensagens.ts` | formatador único das mensagens de validação do Effect Schema, em português |
 | `normas/ids.ts` | IDs canônicos de norma, dispositivo e `externo:` |
 | `normas/front-matter.ts` | front matter das normas (`yaml` failsafe + Effect Schema) |

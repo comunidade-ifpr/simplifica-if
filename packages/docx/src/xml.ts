@@ -198,8 +198,8 @@ function textoDoNo(no: ChildNode): string | null {
 }
 
 /**
- * Texto de um elemento até o primeiro elemento filho (o `.text` do lxml, que o python-docx usa
- * para `w:t` e para as propriedades do documento).
+ * Texto de um elemento até o primeiro elemento filho (o de `w:t` e o das propriedades do
+ * documento).
  */
 export function textoInicial(elemento: Element): string {
   let saida = "";

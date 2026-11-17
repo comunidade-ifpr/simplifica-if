@@ -1,4 +1,4 @@
-# 1 CONTROLES
+## 1 CONTROLES
 
 Parágrafo dentro de controle.
 **Parágrafo em controle aninhado.**
@@ -13,8 +13,8 @@ Tabela do corpo com as células embrulhadas:
 | Turno: | Noturno |
 
 Tabela com uma célula direta e outra embrulhada:
-| direta |
-|---|
+| direta | embrulhada |
+|---|---|
 
 Tabela aninhada numa célula:
 | fora<br>depois | ao lado |

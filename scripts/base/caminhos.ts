@@ -51,7 +51,7 @@ export function criarCaminhos(raizProjeto: string = RAIZ_PROJETO) {
 export type CaminhosBase = ReturnType<typeof criarCaminhos>;
 
 /**
- * Normalização léxica do pathlib: remove barras repetidas e segmentos `.`,
+ * Normalização léxica: remove barras repetidas e segmentos `.`,
  * mas preserva `..` (ao contrário de `path.normalize`/`path.resolve`).
  */
 function partesLexicas(caminho: string): string[] {
@@ -59,10 +59,9 @@ function partesLexicas(caminho: string): string[] {
 }
 
 /**
- * Caminho relativo a `base-conhecimento/` (equivalente a `relative()` do Python,
- * que usa `Path.relative_to`: comparação léxica por componentes). Assim
- * `naBase("../README.md")` vira `../README.md`, como no Python; um caminho fora
- * da raiz (ex.: absoluto) lança erro, como o `ValueError` do pathlib.
+ * Caminho relativo a `base-conhecimento/`, por comparação léxica de
+ * componentes. Assim `naBase("../README.md")` vira `../README.md`; um caminho
+ * fora da raiz (ex.: absoluto) lança erro.
  */
 export function relativo(caminhos: CaminhosBase, caminho: string): string {
   const partes = partesLexicas(caminho);
@@ -74,9 +73,9 @@ export function relativo(caminhos: CaminhosBase, caminho: string): string {
 }
 
 /**
- * `ROOT / valor` do pathlib: caminho absoluto em `valor` substitui a raiz e
+ * Junta `valor` à raiz da base: caminho absoluto em `valor` substitui a raiz e
  * `..` é preservado (sem normalização), para que mensagens e `relativo()`
- * reproduzam o Python mesmo com `path` malformado nos índices.
+ * mostrem o `path` como está, mesmo malformado nos índices.
  */
 export function naBase(caminhos: CaminhosBase, valor: string): string {
   const base = NodePath.isAbsolute(valor) ? valor : `${caminhos.raiz}${NodePath.sep}${valor}`;

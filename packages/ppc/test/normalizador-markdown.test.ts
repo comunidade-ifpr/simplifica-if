@@ -3,7 +3,7 @@
  * da original, que avaliava o texto acumulado inteiro a cada linha unida (custo quadrático: 40 mil
  * parágrafos curtos sem pontuação levavam 19 s).
  */
-import { match, search } from "@simplifica-if/kb/python/re";
+import { match, search } from "@simplifica-if/kb/primitivas/regex";
 import { aparar, apararFim } from "@simplifica-if/kb/texto";
 import { describe, expect, test } from "vite-plus/test";
 import { consolidarParagrafos, ehParagrafoContinuavel, normalizarMarkdown } from "../src/normalizador-markdown.ts";
