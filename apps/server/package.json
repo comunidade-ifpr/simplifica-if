@@ -19,7 +19,6 @@
     "@effect/platform-node": "catalog:",
     "@simplifica-if/atualizacao": "workspace:*",
     "@simplifica-if/contratos-app": "workspace:*",
-    "@simplifica-if/dados-pessoais": "workspace:*",
     "@simplifica-if/docx": "workspace:*",
     "@simplifica-if/kb": "workspace:*",
     "@simplifica-if/mcp": "workspace:*",

@@ -893,28 +893,6 @@ export const PastaConversa = Schema.Struct({
 });
 export type PastaConversa = typeof PastaConversa.Type;
 
-/** Os tipos de dado pessoal que o detector do anexo procura (M1.13, `@simplifica-if/dados-pessoais`). */
-export const TipoDadoPessoal = Schema.Literals(["cpf", "rg", "telefone", "email"]);
-export type TipoDadoPessoal = typeof TipoDadoPessoal.Type;
-
-/**
- * O que o detector local achou num arquivo escolhido para anexar, antes de ele ir para a pasta da
- * tarefa (e, de lá, para a IA). Só formas mascaradas: o dado não volta inteiro à interface.
- */
-export const ConferenciaAnexo = Schema.Union([
-  Schema.Struct({
-    arquivo: Schema.String,
-    situacao: Schema.Literal("conferido"),
-    total: Schema.Number,
-    porTipo: Schema.Struct({ cpf: Schema.Number, rg: Schema.Number, telefone: Schema.Number, email: Schema.Number }),
-    /** Os primeiros achados: o tipo, o lugar (`linha 12`, `parágrafo 40`) e o trecho com os dados mascarados. */
-    exemplos: Schema.Array(Schema.Struct({ tipo: TipoDadoPessoal, onde: Schema.String, trecho: Schema.String })),
-  }),
-  /** O arquivo não foi conferido (PDF, imagem, planilha, `.docx` ilegível): a interface diz isso. */
-  Schema.Struct({ arquivo: Schema.String, situacao: Schema.Literal("nao-conferido"), motivo: Schema.String }),
-]);
-export type ConferenciaAnexo = typeof ConferenciaAnexo.Type;
-
 export class GrupoPasta extends RpcGroup.make(
   /**
    * Cria a pasta de uma tarefa em `Documentos/Simplifica IF/<titulo>` (nome seguro, sem colisão:
@@ -932,15 +910,6 @@ export class GrupoPasta extends RpcGroup.make(
   Rpc.make("pasta.anexar", {
     payload: Schema.Struct({ pasta: Schema.String, arquivo: Schema.String }),
     success: ArquivoPasta,
-    error: FalhaPasta,
-  }),
-  /**
-   * Procura CPF, RG, celular e e-mail fora do IFPR num arquivo liberado pelo desktop, antes de anexar
-   * (M1.13): no servidor local, num `Worker` com limites, sem rede e sem IA. Não bloqueia o anexo.
-   */
-  Rpc.make("pasta.conferirAnexo", {
-    payload: Schema.Struct({ arquivo: Schema.String }),
-    success: ConferenciaAnexo,
     error: FalhaPasta,
   }),
   /** Os arquivos da pasta da conversa e o que "Desfazer" faria. */

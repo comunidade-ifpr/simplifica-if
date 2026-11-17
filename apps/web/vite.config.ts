@@ -39,8 +39,6 @@ export interface ServidorTeste {
   readonly ppc: string;
   /** Um documento em Markdown, dentro de `pasta`, para anexar às tarefas. */
   readonly parecer: string;
-  /** Um documento em Markdown com dado pessoal fictício (CPF de teste e celular), para o aviso ao anexar (M1.13). */
-  readonly listaComCpf: string;
   /** A raiz das pastas de tarefa (no app, Documentos/Simplifica IF). */
   readonly pastaTrabalhos: string;
   /** Com `claudeAusente`, o arquivo que faz o Claude Code "aparecer" (`simularInstalacaoClaude`). */

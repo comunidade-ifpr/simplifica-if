@@ -50,7 +50,6 @@ describe("contratos do app", () => {
       "skills.listar",
       "pasta.criar",
       "pasta.anexar",
-      "pasta.conferirAnexo",
       "relato.preparar",
       "relato.registrar",
       "pasta.ver",

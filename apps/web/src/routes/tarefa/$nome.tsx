@@ -16,8 +16,7 @@ import { Textarea } from "../../components/ui/textarea.tsx";
 import { explicarErro, type MensagemErro } from "../../conexao/erros.ts";
 import { useApi, useConversa } from "../../contexto.tsx";
 import { useCatalogo } from "../../tarefas/catalogo.ts";
-import { Anexos, comecarTarefa, EscolhaIa, esperaDosAnexos, nomeArquivo } from "../../tarefas/comecar.tsx";
-import { type ConferenciaAnexos, useConferenciaAnexos } from "../../tarefas/conferencia.ts";
+import { Anexos, comecarTarefa, EscolhaIa, nomeArquivo } from "../../tarefas/comecar.tsx";
 import { duracaoPorExtenso, faltando, montarPedido, type Valores } from "../../tarefas/textos.ts";
 
 export const Route = createFileRoute("/tarefa/$nome")({ component: TelaTarefa });
@@ -35,14 +34,12 @@ function CampoEntrada({
   anexos,
   aoMudar,
   aoAnexar,
-  conferencia,
 }: {
   readonly entrada: EntradaTarefa;
   readonly valor: string;
   readonly anexos: ReadonlyArray<string>;
   readonly aoMudar: (valor: string) => void;
   readonly aoAnexar: (anexos: ReadonlyArray<string>) => void;
-  readonly conferencia: ConferenciaAnexos;
 }) {
   const id = useId();
   const rotulo = `${entrada.rotulo}${entrada.opcional ? " (opcional)" : ""}`;
@@ -52,7 +49,6 @@ function CampoEntrada({
         <legend className="mb-1.5 font-medium text-sm">{rotulo}</legend>
         <Anexos
           anexos={anexos}
-          conferencia={conferencia}
           aceita={entrada.aceita}
           rotulo="Escolher arquivo…"
           aoMudar={(novos) => {
@@ -99,15 +95,13 @@ function Formulario({ skill }: { readonly skill: ResumoSkill }) {
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<MensagemErro>();
 
-  const conferencia = useConferenciaAnexos();
-  const espera = esperaDosAnexos(conferencia, Object.values(anexos).flat());
   const pedido = editado ?? montarPedido(skill, valores);
   const falta = faltando(skill.entradas, valores);
   const duracao = duracaoPorExtenso(skill.duracaoEstimada);
 
   const aoEnviar = async (evento: FormEvent) => {
     evento.preventDefault();
-    if (falta.length > 0 || pedido.trim() === "" || enviando || espera !== undefined) return;
+    if (falta.length > 0 || pedido.trim() === "" || enviando) return;
     setEnviando(true);
     setErro(undefined);
     try {
@@ -153,7 +147,6 @@ function Formulario({ skill }: { readonly skill: ResumoSkill }) {
             setEditado(undefined);
           }}
           aoAnexar={(novos) => setAnexos((anteriores) => ({ ...anteriores, [entrada.id]: novos }))}
-          conferencia={conferencia}
         />
       ))}
       <div className="flex flex-col gap-1.5">
@@ -168,18 +161,9 @@ function Formulario({ skill }: { readonly skill: ResumoSkill }) {
           Falta: {falta.join(", ")}.
         </p>
       )}
-      {espera === undefined || falta.length > 0 ? null : (
-        <p className="text-muted-foreground text-sm" role="status">
-          {espera}
-        </p>
-      )}
       {erro === undefined ? null : <AvisoErro erro={erro} />}
       <div className="flex flex-wrap items-center gap-3">
-        <Button
-          type="submit"
-          size="lg"
-          disabled={falta.length > 0 || pedido.trim() === "" || enviando || espera !== undefined}
-        >
+        <Button type="submit" size="lg" disabled={falta.length > 0 || pedido.trim() === "" || enviando}>
           {enviando ? <Spinner /> : <PlayIcon />}
           {enviando ? "Abrindo…" : "Começar"}
         </Button>

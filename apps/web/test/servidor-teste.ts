@@ -88,15 +88,6 @@ NodeFS.writeFileSync(ppc, ppcSintetico());
 /** Um documento para anexar às tarefas (Modo Servidor). */
 const parecer = NodePath.join(pasta, "parecer.md");
 NodeFS.writeFileSync(parecer, "# Parecer\n\nO estágio é obrigatório, conforme a Res. CNE/CP nº 1/2021.\n");
-/**
- * Um documento com dado pessoal fictício (M1.13): um CPF de teste com DV válido e um celular, para o
- * aviso ao anexar.
- */
-const listaComCpf = NodePath.join(pasta, "lista.md");
-NodeFS.writeFileSync(
-  listaComCpf,
-  "# Lista de presença\n\nFulana de Teste, CPF 529.982.247-25, celular (41) 99876-5432.\nContato: secretaria@ifpr.edu.br\n",
-);
 /** Com `--claude-ausente`, o Claude Code "aparece" quando este arquivo existe. */
 const sinalClaude = NodePath.join(pasta, "claude-instalado");
 /** A raiz das pastas de tarefa (no app, Documentos/Simplifica IF). */
@@ -133,7 +124,6 @@ const programa = Effect.gen(function* () {
       pasta,
       ppc,
       parecer,
-      listaComCpf,
       pastaTrabalhos,
       sinalClaude,
     }),
