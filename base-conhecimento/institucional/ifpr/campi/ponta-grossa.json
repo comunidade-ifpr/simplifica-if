@@ -1,56 +1,6 @@
 {
-  "id": "ponta-grossa",
+  "campus_id": "ponta-grossa",
   "nome": "Ponta Grossa",
-  "links": {
-    "site": "https://ifpr.edu.br/ponta-grossa/",
-    "calendario_academico": "https://ifpr.edu.br/ponta-grossa/"
-  },
-  "cursos": [
-    {
-      "curso_slug": "tecnico-em-informatica-integrado-ao-ensino-medio",
-      "nome": "Técnico em Informática",
-      "nivel": "médio",
-      "tipo_oferta": "integrado",
-      "url": "https://ifpr.edu.br/ponta-grossa/",
-      "modalidade": "presencial",
-      "situacao": "ativo",
-      "cnct_id": "cnct:tecnico-em-informatica",
-      "ppc": {
-        "url": "https://ifpr.edu.br/ponta-grossa/wp-content/uploads/sites/28/2022/07/PPC-Informatica_2019-Final-REVISADO.pdf",
-        "conversao": {
-          "status": "convertido"
-        },
-        "markdown_path": "institucional/ifpr/ppcs/ponta-grossa/tecnico-em-informatica-integrado-ao-ensino-medio.md",
-        "metadados": {
-          "ano_documento": {
-            "ano": 2019,
-            "trecho_fonte": "Ano do documento registrado no Notion: 2019",
-            "status_curadoria": "revisado",
-            "revisado_em": "2026-05-20"
-          },
-          "vagas": {
-            "quantidade": 35,
-            "trecho_fonte": "Número máximo de vagas do curso: 35; Número mínimo de vagas do curso: 30",
-            "status_curadoria": "revisado",
-            "minimo": 30,
-            "maximo": 35,
-            "revisado_em": "2026-05-20"
-          }
-        }
-      },
-      "sei": {
-        "processos": [
-          {
-            "numero": "23411.018225/2025-42",
-            "tipo": "Ajuste PPC",
-            "trecho_fonte": "Revisado em 26/05/26 via sei-cli. Origem: planilha interna (link omitido) aba TAREFAS e ATIVIDADES, linha 47. Manifestação da Dentec encaminhada no dia 14/10/25 ao campus, DIEPI e DGA.Enviado ao Consepe."
-          },
-          {
-            "numero": "23411.020155/2025-92",
-            "tipo": "abertura OLD"
-          }
-        ]
-      }
-    }
-  ]
+  "site": "https://ifpr.edu.br/ponta-grossa/",
+  "calendario_academico": "https://ifpr.edu.br/ponta-grossa/"
 }

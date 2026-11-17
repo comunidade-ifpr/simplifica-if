@@ -74,8 +74,8 @@ export function carregarFontes(raiz: string = RAIZ_REPOSITORIO): Fontes {
   const base = NodePath.join(raiz, "base-conhecimento");
   const caminhoManifesto = NodePath.join(base, "manifest.json");
   const normas = validarJson(esquemaManifesto, lerJson(caminhoManifesto), caminhoManifesto, TODOS_OS_ERROS);
-  const { dados, erros } = carregarDadosInstitucionais(NodePath.join(raiz, "dados", "institucional"));
-  if (erros.length > 0) throw new Error(`dados/institucional inválido:\n${erros.join("\n")}`);
+  const { dados, erros } = carregarDadosInstitucionais(NodePath.join(base, "institucional", "ifpr"));
+  if (erros.length > 0) throw new Error(`institucional/ifpr/ inválido:\n${erros.join("\n")}`);
   const caminhoCnct = NodePath.join(base, "catalogos", "cnct", "index.json");
   const cnct = validarJson(esquemaIndiceCnct, lerJson(caminhoCnct), caminhoCnct, TODOS_OS_ERROS).items;
   const caminhoPpcs = NodePath.join(base, "institucional", "ifpr", "ppcs", "index.json");

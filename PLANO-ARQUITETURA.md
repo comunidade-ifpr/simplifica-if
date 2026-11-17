@@ -22,7 +22,7 @@ O tamanho é pequeno: cerca de 3.500 dispositivos normativos, 202 PPCs (112 téc
 
 ## Princípios
 
-1. **Os arquivos no git são a fonte de verdade.** Markdown das normas, `dados/institucional/`, fichas, CNCT e PPCs convertidos. Todo banco ou índice é derivado, reproduzível e fica fora do git.
+1. **Os arquivos no git são a fonte de verdade.** Markdown das normas, `base-conhecimento/institucional/ifpr/`, fichas, CNCT e PPCs convertidos. Todo banco ou índice é derivado, reproduzível e fica fora do git.
 2. **Uma linguagem.** Pipeline, skills, validadores e CLI em TypeScript (Node, desde o C0; antes, Bun). Quando não houver equivalente aceitável, a exceção fica isolada num script único, documentada e com teste de contrato.
 3. **Contratos explícitos.** Os dados novos e os que forem reestruturados ganham schema zod. Os JSON Schemas existentes continuam validados por `ajv` até haver motivo medido para trocá-los.
 4. **Nada inferido por LLM entra sem revisão humana.** Relações de revogação, tabela de correspondência e fatos de PPC são propostos automaticamente e confirmados por diff no git.
@@ -33,7 +33,7 @@ O tamanho é pequeno: cerca de 3.500 dispositivos normativos, 202 PPCs (112 téc
 
 O que já existe e será aproveitado:
 
-- **Dados institucionais:** ficam em `dados/institucional/`, com schemas zod (`scripts/dados/institucional.ts`) e chaves canônicas (`campus_id/curso_slug`).
+- **Dados institucionais:** ficam em `base-conhecimento/institucional/ifpr/`, com schemas zod (`scripts/dados/institucional.ts`) e chaves canônicas (`campus_id/curso_slug`).
 - **Pipeline da base:** `scripts/base/` em TypeScript, com front matter, manifestos, índice de seções de PPC, validação e site.
 - **Kit de paridade com Python,** feito no porte anterior do pipeline:
   - `scripts/base/texto.ts`: espaços como no Python, ordenação por code point, `splitlines`, UTF-8 estrito;
@@ -78,7 +78,7 @@ Fontes (git)                         Build (node)                           Cons
 ─────────────                        ───────────                            ────────
 normas/*.md ─────────┐
 relacoes.yaml ───────┤               packages/kb
-dados/institucional/ ┼──► parse ──► ├─ IDs, schemas, resolvedor   ──► kb.sqlite (FTS5) ──► CLI `kb … --json`
+institucional/ifpr/  ┼──► parse ──► ├─ IDs, schemas, resolvedor   ──► kb.sqlite (FTS5) ──► CLI `kb … --json`
 catalogos/cnct/ ─────┤     valida    ├─ dispositivos e relações               │            └► MCP (só se houver
 ppcs/*.md (+ proveniência) ──┤ compila ├─ seções, citações, fatos            │               consumidor sem shell)
 fichas revisar-ppc ──┘               └─ paridade (texto, json, schema)     ├──► JSONs públicos
@@ -94,10 +94,10 @@ fichas revisar-ppc ──┘               └─ paridade (texto, json, schema)
 - **Referência fora da base:** `externo:abnt/nbr/6023`, `externo:cft/res/2019/89`, `externo:campus/regulamento-estagio`.
 - **Norma-stub:** norma citada mas sem texto na base, com metadados, status e aliases, mas sem dispositivos. Exemplos: CNE/CEB 6/2012, CNE/CEB 3/2018, Decreto 5.154/2004.
 - **Institucional:**
-  - `curso:curitiba/tecnico-em-enfermagem` (a chave atual de `dados/institucional/`);
+  - `curso:curitiba/tecnico-em-enfermagem` (a chave atual de `base-conhecimento/institucional/ifpr/`);
   - `campus:curitiba`;
   - `cnct:tecnico-em-enfermagem`;
-  - `ppc:curitiba/tecnico-em-enfermagem`, sem versão: a base guarda só o PPC vigente de cada curso, e as versões anteriores se recuperam pelo histórico do git (decisão de 13/11/2026, fase 4);
+  - `ppc:curitiba/tecnico-em-enfermagem`, sem versão: a base guarda só o PPC vigente de cada curso (decisão de 13/11/2026, fase 4). As versões anteriores se recuperavam pelo histórico do git, mas a abertura do repositório reescreve o histórico (git filter-repo) e tira dele dados pessoais e URLs assinadas: para esses trechos, a versão antiga não é recuperável pelo git, e a fonte de qualquer versão anterior é o PDF oficial do PPC;
   - `ficha:CT-CURR-12`.
 
 **Só o texto vigente.** Os dispositivos guardam a redação atual. Notas como "Redação dada pela Lei X" viram metadado do dispositivo, sem modelar redações históricas.
@@ -229,7 +229,7 @@ Ficam fora do plano por ora:
 - **`kb citacoes <id>`:** lista os PPCs que citam uma norma, de forma reproduzível.
 - **Entrega para a gestão:**
   - o art. 71 da Res. CNE/CP 2/2026 alcança **todos** os cursos técnicos autorizados e em oferta, e não só os que citam a norma de 2021;
-  - a lista de cursos sujeitos à adequação sai de `dados/institucional/` (nível técnico e situação ativa);
+  - a lista de cursos sujeitos à adequação sai de `base-conhecimento/institucional/ifpr/` (nível técnico e situação ativa);
   - as citações viram um indicador de defasagem por curso: cita a CNE/CEB 6/2012, cita a CNE/CP 1/2021, cita a 2/2026 ou não cita DCN.
 
 **Critério de aceite**
@@ -242,7 +242,7 @@ Ficam fora do plano por ora:
 
 ### Fase 3 — Curadoria rápida
 
-Com os dados em `dados/institucional/`, cada campo novo é uma alteração de schema zod, revisada por diff.
+Com os dados em `base-conhecimento/institucional/ifpr/`, cada campo novo é uma alteração de schema zod, revisada por diff.
 
 **Entregas**
 
@@ -270,7 +270,7 @@ Esta fase vem antes do SQLite porque é barata e dá o maior ganho em busca tem�
 
 - **Proveniência no front matter de cada PPC convertido:**
   - URL de origem, hash do arquivo-fonte, data de conversão e versão do conversor;
-  - o ano do documento continua em `dados/institucional/`.
+  - o ano do documento continua em `base-conhecimento/institucional/ifpr/`.
 - **Política de versão de PPC.** As adequações exigidas pelo art. 71 vão gerar reformulações em dois anos. **Decidido em 13/11/2026:** a base guarda só o PPC vigente de cada curso; o PPC novo substitui o Markdown no mesmo caminho, e as versões anteriores se recuperam pelo git (`git log --follow`, `git show <commit>:<caminho>`). O ID fica `ppc:<campus_id>/<curso_slug>`, sem `@<versão>`.
 - **Índice de seções v2, ainda no pipeline atual:**
   - guarda as linhas de início e fim de cada seção no Markdown, além do preview de 500 caracteres. **Decidido em 13/11/2026:** o texto integral não é versionado (duplicaria cerca de 64 MB dos PPCs e incharia o histórico e o `site/` a cada regeneração); quem precisar dele lê as linhas do Markdown, e o texto integral indexado fica no `kb.sqlite` da fase 6, derivado e fora do git;
@@ -479,7 +479,7 @@ Por isso, só fazer com casos negativos e com diff dos schemas publicados.
 **Movimentações de Cursos fora do Notion.** Decisão de 13/11/2026: fica registrada só como direção futura. Quando voltar à pauta:
 
 - separar o registro da movimentação (editado por pessoas, raro) do estado SEI (derivado pela sincronização, de hora em hora);
-- levar o registro para `dados/institucional/movimentacoes/`;
+- levar o registro para `base-conhecimento/institucional/ifpr/movimentacoes/`;
 - tratar o estado SEI como cache reconstruível.
 
 A interface depende de quem edita:
@@ -634,9 +634,9 @@ Em aberto:
 **Correção da identificação do curso na `analise-ppc` concluída em 13/11/2026** (branch `worktree-agent-a58349c2b0998de53`; achado da rodada real do T1, em que o Técnico em Enfermagem de Curitiba saiu com curso `"Resolução CNE/CP nº 1/2021||||"`).
 
 - Causa: `infer_identificacao_from_markdown` (portado no T1) casava `curso\s*:\s*(.+)` em qualquer ponto do documento, e a primeira ocorrência era "Base legal específica do curso: Resolução …"; campus, forma de oferta e modalidade tinham o mesmo defeito (rótulo no meio da frase, valor até o fim da linha) e a forma caía em "INTEGRADO" em qualquer lugar do texto. No `.docx`, o Python repetia o padrão (`curso[:\s]+(.+)` nos parágrafos, `re.search("curso", campo)` nas tabelas, que pegava "Coordenador do curso") e os dados da conversão sobrescreviam o Markdown.
-- Correção: `scripts/identificacao.ts` (a identificação saiu de `rodada.ts`). Rótulo só vale no início de linha, célula ou trecho em negrito, ou no meio da linha com inicial maiúscula e dois-pontos; o valor termina no próximo rótulo; título numerado seguido do valor, tabela `| rótulo | valor |`, grade de opções com X, capa em caixa alta; validadores por campo (nome de curso sem "Resolução", "Lei", "nº", horas; campus pela lista de campi, sem "Reitoria"; forma e modalidade canônicas, pelo que o valor diz e não pelo rótulo; eixo pelo CNCT). Front matter YAML no topo é ignorado. Nada consulta `dados/institucional/`. `metadata.json` ganhou `eixo_tecnologico` também para `.md` e `identificacao_fontes`. O curso sai sem "Curso" na frente ("Técnico em Enfermagem"), e a forma de oferta sai canônica ("Subsequente", "Integrado (PROEJA)").
+- Correção: `scripts/identificacao.ts` (a identificação saiu de `rodada.ts`). Rótulo só vale no início de linha, célula ou trecho em negrito, ou no meio da linha com inicial maiúscula e dois-pontos; o valor termina no próximo rótulo; título numerado seguido do valor, tabela `| rótulo | valor |`, grade de opções com X, capa em caixa alta; validadores por campo (nome de curso sem "Resolução", "Lei", "nº", horas; campus pela lista de campi, sem "Reitoria"; forma e modalidade canônicas, pelo que o valor diz e não pelo rótulo; eixo pelo CNCT). Front matter YAML no topo é ignorado. Nada consulta `base-conhecimento/institucional/ifpr/`. `metadata.json` ganhou `eixo_tecnologico` também para `.md` e `identificacao_fontes`. O curso sai sem "Curso" na frente ("Técnico em Enfermagem"), e a forma de oferta sai canônica ("Subsequente", "Integrado (PROEJA)").
 - `.docx`: a extração roda sobre o `PPC.md` da conversão e os dados do Python só preenchem lacunas, pelos mesmos validadores. No Python, correção mínima e equivalente: rótulos de identificação ancorados no início, com dois-pontos, em `identification_extractor.py` e `section_detector.py` (a T3 porta isso).
-- Medida: `analise_ppc.ts medir-identificacao` compara com `dados/institucional/cursos` (só leitura) nos 110 PPCs técnicos da base, sem usar o nome do arquivo. Antes → depois: curso 50,9% → 99,1%; campus 30,0% → 99,1%; forma de oferta 94,5% → 100%; modalidade 32,7% → 99,1%. As heurísticas foram ajustadas sobre o mesmo conjunto, então os números são otimistas.
+- Medida: `analise_ppc.ts medir-identificacao` compara com `base-conhecimento/institucional/ifpr/cursos` (só leitura) nos 110 PPCs técnicos da base, sem usar o nome do arquivo. Antes → depois: curso 50,9% → 99,1%; campus 30,0% → 99,1%; forma de oferta 94,5% → 100%; modalidade 32,7% → 99,1%. As heurísticas foram ajustadas sobre o mesmo conjunto, então os números são otimistas.
 - Casos restantes: `campo-largo/tecnico-em-mecanica-subsequente.md` (OCR sem espaços, "TECNICOEMMECANICA"); `ponta-grossa/tecnico-em-informatica-integrado-ao-ensino-medio.md` (o arquivo é o PPC de Curitiba: endereço, página e e-mail de Curitiba, nenhuma menção a Ponta Grossa; precisa de curadoria do PPC); `arapongas/tecnico-em-melhoria-de-processos.md` (o PPC marca "( x ) Presencial" e o gabarito diz `ead`; conferir o gabarito).
 - Testes: `identificacao.test.ts` (16 casos, com a amostra fixa de 13 PPCs da base e um DOCX sintético pela cadeia inteira) e `test_identificacao_docx.py` (3 casos, que falham no Python anterior).
 
@@ -667,7 +667,7 @@ Em aberto:
 - **Pendências:**
   - Q5 e Q6 no harness, quando houver linha de base (fase 1);
   - revisão humana de uma amostra da classificação, sobretudo das heranças por contexto;
-  - o conversor ainda lê e grava `conversao` nos campus JSON gerados de `base-conhecimento/`, e não em `dados/institucional/` (trilha T5);
+  - ~~o conversor ainda lê e grava `conversao` nos campus JSON gerados~~: resolvido em 17/11/2026, o conversor lê os registros de cursos e não grava neles;
   - a identificação de curso da `analise-ppc` pode usar o `id` do front matter (hoje ele é só descartado).
 
 **Fase 5 concluída em 13/11/2026** (branch `worktree-agent-aed7a4ecca512e2d8`).

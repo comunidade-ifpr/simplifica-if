@@ -123,17 +123,26 @@ const carregarManifesto = Effect.fn("upstream_t3.carregarManifesto")(function* (
   return yield* lerManifesto(yield* fs.readFileString(path.join(RAIZ_PROJETO, "docs", "upstream-t3.md")));
 });
 
-const UPSTREAM_PADRAO = "$T3CODE_DIR";
+export class UpstreamAusente extends Schema.TaggedError<UpstreamAusente>()("UpstreamAusente", {}) {
+  override get message(): string {
+    return (
+      "informe o checkout local do T3 Code (https://github.com/pingdotgg/t3code): " +
+      "--upstream <pasta> ou a variável de ambiente T3CODE_DIR"
+    );
+  }
+}
 
-/** `--upstream`, ou `T3CODE_DIR`, ou o checkout padrão do curador. */
+/** `--upstream` ou `T3CODE_DIR`; sem nenhum dos dois, `UpstreamAusente`. */
 const resolverUpstream = Effect.fn("upstream_t3.resolverUpstream")(function* (flag: Option.Option<string>) {
   if (Option.isSome(flag)) return flag.value;
-  return yield* Config.String("T3CODE_DIR").pipe(Config.withDefault(UPSTREAM_PADRAO));
+  const ambiente = yield* Config.option(Config.String("T3CODE_DIR"));
+  if (Option.isSome(ambiente) && ambiente.value.trim() !== "") return ambiente.value;
+  return yield* new UpstreamAusente();
 });
 
 const flags = {
   upstream: Flag.String("upstream").pipe(
-    Flag.withDescription(`checkout do T3 Code (padrão: T3CODE_DIR ou ${UPSTREAM_PADRAO})`),
+    Flag.withDescription("checkout do T3 Code (padrão: a variável de ambiente T3CODE_DIR)"),
     Flag.optional,
   ),
   ref: Flag.String("ref").pipe(
@@ -210,7 +219,10 @@ if (import.meta.main) {
   executarPrincipal(
     "upstream_t3",
     Command.run(comandoUpstream, { version: "1.0.0" }).pipe(
-      Effect.catchTags({ ParteDesconhecida: (erro) => Console.error(erro.message).pipe(Effect.andThen(sairCom(2))) }),
+      Effect.catchTags({
+        ParteDesconhecida: (erro) => Console.error(erro.message).pipe(Effect.andThen(sairCom(2))),
+        UpstreamAusente: (erro) => Console.error(erro.message).pipe(Effect.andThen(sairCom(2))),
+      }),
     ),
   );
 }

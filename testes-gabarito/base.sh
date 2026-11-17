@@ -2,15 +2,14 @@
 # Gabarito da base: os geradores (`gerar_base`, `gerar_indice_ppcs`) não mudam nada no git,
 # `validar_base` passa e o `site/` gerado por `gerar_site` tem o mesmo hash.
 #
-# `exportar_base_publica` fica fora: lê as movimentações do Notion (exige NOTION_TOKEN) e grava a data
-# do dia nos índices, então a saída muda com o Notion e com o calendário. Confira-o à mão, no mesmo
-# dia, comparando o `git diff` que ele deixa com cada runtime.
+# `exportar_base_publica` fica fora: lê as movimentações do Notion (exige NOTION_TOKEN), então a saída
+# (institucional/ifpr/processos-sei/index.json) muda com o Notion. Confira-o à mão pelo `git diff`.
 #
 #   sh testes-gabarito/base.sh --comparar     # confere com testes-gabarito/base.txt
 #   sh testes-gabarito/base.sh --capturar     # regrava o hash do site (só por decisão explícita)
 #
 # Neutro de runtime: os scripts rodam com $RODAR (padrão: `node`). O gabarito do C0 foi capturado com
-# `RODAR=bun`. Exige árvore limpa em base-conhecimento/ e dados/ antes de rodar.
+# `RODAR=bun`. Exige árvore limpa em base-conhecimento/ antes de rodar.
 set -u
 
 RAIZ=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
@@ -27,8 +26,8 @@ case "$modo" in
     ;;
 esac
 
-if [ -n "$(git status --porcelain -- base-conhecimento dados)" ]; then
-  echo "base-conhecimento/ ou dados/ com mudanças antes de rodar; confira o git status" >&2
+if [ -n "$(git status --porcelain -- base-conhecimento)" ]; then
+  echo "base-conhecimento/ com mudanças antes de rodar; confira o git status" >&2
   exit 2
 fi
 
@@ -39,7 +38,7 @@ for script in gerar_base gerar_indice_ppcs; do
     falhas=$((falhas + 1))
   fi
 done
-mudancas=$(git status --porcelain -- base-conhecimento dados)
+mudancas=$(git status --porcelain -- base-conhecimento)
 if [ -n "$mudancas" ]; then
   echo "os geradores mudaram arquivos versionados:" >&2
   echo "$mudancas" >&2

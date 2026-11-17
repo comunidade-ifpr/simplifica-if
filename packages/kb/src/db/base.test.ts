@@ -695,7 +695,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       }),
     );
 
-    it.effect("adequacao-art71: igual à dos arquivos de dados/institucional e dos PPCs", () =>
+    it.effect("adequacao-art71: igual à dos arquivos de institucional/ifpr e dos PPCs", () =>
       Effect.gen(function* () {
         for (const incluirTecnologia of [undefined, true]) {
           const opcoes = incluirTecnologia === undefined ? {} : { incluirTecnologia };

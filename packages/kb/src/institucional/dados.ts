@@ -1,11 +1,13 @@
-// @effect-diagnostics nodeBuiltinImport:off -- carregador síncrono de dados/institucional/, usado pela compilação do banco
+// @effect-diagnostics nodeBuiltinImport:off -- carregador síncrono dos registros institucionais, usado pela compilação do banco
 /**
- * Leitura de `dados/institucional/` pelo núcleo `packages/kb` (compilação do `kb.sqlite`).
+ * Leitura dos registros institucionais (`base-conhecimento/institucional/ifpr/`: campi, cursos,
+ * processos seletivos, editais e ofertas) pelo núcleo `packages/kb` (compilação do `kb.sqlite`).
  *
  * O contrato estrito desses arquivos é o de `scripts/dados/institucional.ts`, conferido por
  * `node scripts/validar_base.ts`; aqui os esquemas são frouxos (`StructWithRest`) e só exigem os
  * campos que o banco usa, para que a dependência continue num sentido só (scripts → kb).
- * Cada registro vem com o caminho do arquivo, relativo à raiz do repositório.
+ * Cada registro vem com o caminho do arquivo, relativo à raiz do repositório. O `index.json` de cada
+ * coleção é gerado e não é registro.
  */
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
@@ -13,6 +15,11 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { formatarErro } from "../esquema/mensagens.ts";
 import { compararTexto } from "../texto.ts";
+
+/** Pasta dos registros institucionais, relativa à raiz do repositório. */
+export const PASTA_INSTITUCIONAL = "base-conhecimento/institucional/ifpr";
+/** O índice gerado de cada coleção, que não é registro. */
+export const ARQUIVO_INDICE = "index.json";
 
 const texto = Schema.optionalKey(Schema.String);
 const inteiro = Schema.optionalKey(Schema.Int);
@@ -123,7 +130,7 @@ function arquivosJson(dir: string): string[] {
     .flatMap((entrada) => {
       const caminho = NodePath.join(dir, entrada.name);
       if (entrada.isDirectory()) return arquivosJson(caminho);
-      return entrada.name.endsWith(".json") ? [caminho] : [];
+      return entrada.name.endsWith(".json") && entrada.name !== ARQUIVO_INDICE ? [caminho] : [];
     })
     .sort(compararTexto);
 }
@@ -133,7 +140,7 @@ function colecao<T>(
   subdir: string,
   decodificar: (valor: unknown) => Result.Result<T, Schema.SchemaError>,
 ): Registro<T>[] {
-  return arquivosJson(NodePath.join(raiz, "dados", "institucional", subdir)).map((arquivo) => {
+  return arquivosJson(NodePath.join(raiz, PASTA_INSTITUCIONAL, subdir)).map((arquivo) => {
     const conteudo = NodeFS.readFileSync(arquivo, "utf-8");
     const relativo = NodePath.relative(raiz, arquivo).split(NodePath.sep).join("/");
     const resultado = decodificar(JSON.parse(conteudo));

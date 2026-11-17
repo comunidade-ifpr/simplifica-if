@@ -58,7 +58,7 @@ export function textoFatosPpc(f: FatosPpc, opcoes: { cabecalho?: boolean } = {})
     if (f.suap.matrizes.length === 0) linhas.push("- nenhuma matriz publicada na base");
     partes.push(linhas.join("\n"));
   } else {
-    partes.push("SUAP: o PPC não está ligado a um curso de dados/institucional.");
+    partes.push("SUAP: o PPC não está ligado a um curso de institucional/ifpr/cursos/.");
   }
   if (f.cruzamento.length > 0) {
     partes.push(

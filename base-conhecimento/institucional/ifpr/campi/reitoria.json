@@ -1,9 +1,6 @@
 {
-  "id": "reitoria",
+  "campus_id": "reitoria",
   "nome": "Reitoria",
-  "links": {
-    "site": "https://reitoria.ifpr.edu.br/",
-    "calendario_academico": "https://ifpr.edu.br/curitiba/calendario-academico/"
-  },
-  "cursos": []
+  "site": "https://reitoria.ifpr.edu.br/",
+  "calendario_academico": "https://ifpr.edu.br/curitiba/calendario-academico/"
 }

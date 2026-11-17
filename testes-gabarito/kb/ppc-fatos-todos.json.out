@@ -19,7 +19,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/arapongas/especializacao-em-docencia-e-praticas-educativas.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/arapongas/especializacao-em-docencia-e-praticas-educativas.json",
           "linha": 16,
           "alternativas": []
         }
@@ -70,7 +70,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2024,",
-          "path": "dados/institucional/cursos/arapongas/programacao-com-enfase-em-analise-de-dados.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/arapongas/programacao-com-enfase-em-analise-de-dados.json",
           "linha": 16,
           "alternativas": []
         }
@@ -121,7 +121,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/arapongas/programacao-web.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/arapongas/programacao-web.json",
           "linha": 16,
           "alternativas": []
         },
@@ -184,7 +184,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2021,",
-          "path": "dados/institucional/cursos/arapongas/tecnico-em-melhoria-de-processos.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/arapongas/tecnico-em-melhoria-de-processos.json",
           "linha": 30,
           "alternativas": []
         },
@@ -223,7 +223,7 @@
             "ch_exibida_h": 1200,
             "ch_estagio_h": 0,
             "trecho": "1 — TÉCNICO EM MELHORIA DE PROCESSOS SUBSEQUENTE - 2022 ARAPONGAS — CH exibida: 1200 h; estágio exigido: Não; CH mínima de estágio (separada): 0",
-            "path": "dados/institucional/cursos/arapongas/tecnico-em-melhoria-de-processos.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/arapongas/tecnico-em-melhoria-de-processos.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -270,7 +270,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio.json",
           "linha": 30,
           "alternativas": []
         },
@@ -297,7 +297,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": null,
             "trecho": "824 — TÉCNICO EM SISTEMAS DE ENERGIA RENOVÁVEL - INTEGRADO - 2026 CAMPUS ARAPONGAS — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -344,7 +344,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/arapongas/tecnologia-em-processos-gerenciais.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/arapongas/tecnologia-em-processos-gerenciais.json",
           "linha": 16,
           "alternativas": []
         },
@@ -407,7 +407,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2021,",
-          "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-agropecuaria.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-agropecuaria.json",
           "linha": 30,
           "alternativas": []
         },
@@ -446,7 +446,7 @@
             "ch_exibida_h": 1232,
             "ch_estagio_h": null,
             "trecho": "76 — TÉCNICO EM AGROPECUÁRIA SUBSEQUENTE - 2020 ASSIS CHATEAUBRIAND — CH exibida: 1232 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-agropecuaria.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-agropecuaria.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -493,7 +493,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2017,",
-          "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio.json",
           "linha": 31,
           "alternativas": []
         },
@@ -544,7 +544,7 @@
             "ch_exibida_h": 3539,
             "ch_estagio_h": 200,
             "trecho": "34 — TÉCNICO EM AGROPECUÁRIA INTEGRADO - 2018 ASSIS CHATEAUBRIAND — CH exibida: 3539 h; estágio exigido: Sim; CH mínima de estágio (separada): 200",
-            "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": true
           },
@@ -554,7 +554,7 @@
             "ch_exibida_h": 3539,
             "ch_estagio_h": 200,
             "trecho": "731 — TÉCNICO EM AGROPECUÁRIA INTEGRADO - 2018 ASSIS CHATEAUBRIAND (Trimestre) — CH exibida: 3539 h; estágio exigido: Sim; CH mínima de estágio (separada): 200",
-            "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": true
           }
@@ -601,7 +601,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-alimentos.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-alimentos.json",
           "linha": 30,
           "alternativas": []
         },
@@ -640,7 +640,7 @@
             "ch_exibida_h": 1215,
             "ch_estagio_h": 120,
             "trecho": "379 — TÉCNICO EM ALIMENTOS SUBSEQUENTE - 2023 ASSIS CHATEAUBRIAND — CH exibida: 1215 h; estágio exigido: Sim; CH mínima de estágio (separada): 120",
-            "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-alimentos.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-alimentos.json",
             "linha": 18,
             "estagio_exigido": true
           }
@@ -687,7 +687,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2019,",
-          "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-comercio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-comercio.json",
           "linha": 31,
           "alternativas": []
         },
@@ -726,7 +726,7 @@
             "ch_exibida_h": 3109,
             "ch_estagio_h": null,
             "trecho": "61 — TÉCNICO EM COMÉRCIO INTEGRADO - 2019 ASSIS CHATEAUBRIAND — CH exibida: 3109 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-comercio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-comercio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -736,7 +736,7 @@
             "ch_exibida_h": 3109,
             "ch_estagio_h": null,
             "trecho": "732 — TÉCNICO EM COMÉRCIO INTEGRADO - 2019 ASSIS CHATEAUBRIAND (Trimestre) — CH exibida: 3109 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-comercio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-comercio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -783,7 +783,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2013,",
-          "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio.json",
           "linha": 31,
           "alternativas": []
         },
@@ -822,7 +822,7 @@
             "ch_exibida_h": 3331,
             "ch_estagio_h": null,
             "trecho": "2 — TÉCNICO EM ELETROMECÂNICA INTEGRADO - 2014 ASSIS CHATEAUBRIAND — CH exibida: 3331 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -832,7 +832,7 @@
             "ch_exibida_h": 3331,
             "ch_estagio_h": null,
             "trecho": "726 — TÉCNICO EM ELETROMECÂNICA INTEGRADO - 2014 ASSIS CHATEAUBRIAND (Trimestre) — CH exibida: 3331 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -899,7 +899,7 @@
             "ch_exibida_h": 1360,
             "ch_estagio_h": null,
             "trecho": "79 — TÉCNICO EM ELETROMECÂNICA SUBSEQUENTE - 2013 ASSIS CHATEAUBRIAND — CH exibida: 1360 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-eletromecanica-subsequente.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-eletromecanica-subsequente.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -911,7 +911,7 @@
           "resultado": "sem-ano",
           "valor_ppc": null,
           "valor_suap": "2013",
-          "explicacao": "PPC sem ano_documento em dados/institucional"
+          "explicacao": "PPC sem ano_documento em institucional/ifpr"
         },
         {
           "aspecto": "carga_horaria",
@@ -961,7 +961,7 @@
             "ch_exibida_h": 1360,
             "ch_estagio_h": null,
             "trecho": "333 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2013 ASSIS CHATEAUBRIAND — CH exibida: 1360 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-eletrotecnica-subsequente.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-eletrotecnica-subsequente.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -971,7 +971,7 @@
             "ch_exibida_h": 1334,
             "ch_estagio_h": null,
             "trecho": "82 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2020 ASSIS CHATEAUBRIAND — CH exibida: 1334 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-eletrotecnica-subsequente.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-eletrotecnica-subsequente.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -983,7 +983,7 @@
           "resultado": "sem-ano",
           "valor_ppc": null,
           "valor_suap": "2020",
-          "explicacao": "PPC sem ano_documento em dados/institucional"
+          "explicacao": "PPC sem ano_documento em institucional/ifpr"
         },
         {
           "aspecto": "carga_horaria",
@@ -1018,7 +1018,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2019,",
-          "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json",
           "linha": 32,
           "alternativas": []
         },
@@ -1057,7 +1057,7 @@
             "ch_exibida_h": 3181,
             "ch_estagio_h": null,
             "trecho": "73 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2020 ASSIS CHATEAUBRIAND — CH exibida: 3181 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -1067,7 +1067,7 @@
             "ch_exibida_h": 3181,
             "ch_estagio_h": null,
             "trecho": "734 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2020 ASSIS CHATEAUBRIAND (Trimestre) — CH exibida: 3181 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -1077,7 +1077,7 @@
             "ch_exibida_h": 3181,
             "ch_estagio_h": null,
             "trecho": "834 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2020 CR TOLEDO (Trimestre) — CH exibida: 3181 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -1124,7 +1124,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio.json",
           "linha": 30,
           "alternativas": []
         },
@@ -1151,7 +1151,7 @@
             "ch_exibida_h": 3303,
             "ch_estagio_h": null,
             "trecho": "880 — TÉCNICO EM MECATRÔNICA 2026 - ASSIS CHATEAUBRIAND (Trimestre) — CH exibida: 3303 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -1198,7 +1198,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/assis-chateaubriand/tecnologia-em-automacao-industrial.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnologia-em-automacao-industrial.json",
           "linha": 18,
           "alternativas": []
         },
@@ -1261,7 +1261,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/assis-chateaubriand/tecnologia-em-gestao-comercial.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnologia-em-gestao-comercial.json",
           "linha": 18,
           "alternativas": []
         }
@@ -1312,7 +1312,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2010,",
-          "path": "dados/institucional/cursos/astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio.json",
           "linha": 30,
           "alternativas": []
         },
@@ -1351,7 +1351,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": null,
             "trecho": "37 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2018 ASTORGA — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -1398,7 +1398,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/astorga/licenciatura-em-pedagogia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/astorga/licenciatura-em-pedagogia.json",
           "linha": 18,
           "alternativas": []
         },
@@ -1461,7 +1461,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/astorga/tecnico-em-desenvolvimento-de-sistemas.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/astorga/tecnico-em-desenvolvimento-de-sistemas.json",
           "linha": 30,
           "alternativas": []
         },
@@ -1505,7 +1505,7 @@
             "ch_exibida_h": 1200,
             "ch_estagio_h": null,
             "trecho": "38 — TÉCNICO EM DESENVOLVIMENTO DE SISTEMAS SUBSEQUENTE - 2023 ASTORGA — CH exibida: 1200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/astorga/tecnico-em-desenvolvimento-de-sistemas.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/astorga/tecnico-em-desenvolvimento-de-sistemas.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -1552,7 +1552,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/barracao/tecnico-em-administracao.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/barracao/tecnico-em-administracao.json",
           "linha": 30,
           "alternativas": []
         },
@@ -1591,7 +1591,7 @@
             "ch_exibida_h": 3450,
             "ch_estagio_h": 90,
             "trecho": "53 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2019 BARRACÃO — CH exibida: 3450 h; estágio exigido: Sim; CH mínima de estágio (separada): 90",
-            "path": "dados/institucional/cursos/barracao/tecnico-em-administracao.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/barracao/tecnico-em-administracao.json",
             "linha": 18,
             "estagio_exigido": true
           },
@@ -1601,7 +1601,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": 90,
             "trecho": "449 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2024 BARRACÃO — CH exibida: 3200 h; estágio exigido: Sim; CH mínima de estágio (separada): 90",
-            "path": "dados/institucional/cursos/barracao/tecnico-em-administracao.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/barracao/tecnico-em-administracao.json",
             "linha": 18,
             "estagio_exigido": true
           }
@@ -1648,7 +1648,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/barracao/tecnico-em-informatica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/barracao/tecnico-em-informatica.json",
           "linha": 30,
           "alternativas": []
         },
@@ -1699,7 +1699,7 @@
             "ch_exibida_h": 3210,
             "ch_estagio_h": 120,
             "trecho": "54 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2019 BARRACÃO — CH exibida: 3210 h; estágio exigido: Sim; CH mínima de estágio (separada): 120",
-            "path": "dados/institucional/cursos/barracao/tecnico-em-informatica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/barracao/tecnico-em-informatica.json",
             "linha": 18,
             "estagio_exigido": true
           },
@@ -1709,7 +1709,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": 90,
             "trecho": "450 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2024 BARRACÃO — CH exibida: 3200 h; estágio exigido: Sim; CH mínima de estágio (separada): 90",
-            "path": "dados/institucional/cursos/barracao/tecnico-em-informatica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/barracao/tecnico-em-informatica.json",
             "linha": 18,
             "estagio_exigido": true
           }
@@ -1756,7 +1756,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/barracao/tecnologia-em-comercio-exterior.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/barracao/tecnologia-em-comercio-exterior.json",
           "linha": 18,
           "alternativas": []
         },
@@ -1831,7 +1831,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/campo-largo/administracao.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/campo-largo/administracao.json",
           "linha": 30,
           "alternativas": []
         },
@@ -1870,7 +1870,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": null,
             "trecho": "33 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2023 CAMPO LARGO — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/campo-largo/administracao.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/campo-largo/administracao.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -1917,7 +1917,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2018,",
-          "path": "dados/institucional/cursos/campo-largo/administracao-proeja.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/campo-largo/administracao-proeja.json",
           "linha": 19,
           "alternativas": []
         },
@@ -1992,7 +1992,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2020,",
-          "path": "dados/institucional/cursos/campo-largo/agroecologia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/campo-largo/agroecologia.json",
           "linha": 30,
           "alternativas": []
         },
@@ -2031,7 +2031,7 @@
             "ch_exibida_h": 3520,
             "ch_estagio_h": null,
             "trecho": "24 — TÉCNICO EM AGROECOLOGIA INTEGRADO - 2021 CAMPO LARGO — CH exibida: 3520 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/campo-largo/agroecologia.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/campo-largo/agroecologia.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -2078,7 +2078,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2019,",
-          "path": "dados/institucional/cursos/campo-largo/automacao-industrial.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/campo-largo/automacao-industrial.json",
           "linha": 30,
           "alternativas": []
         },
@@ -2117,7 +2117,7 @@
             "ch_exibida_h": 3360,
             "ch_estagio_h": null,
             "trecho": "11 — TÉCNICO EM AUTOMAÇÃO INDUSTRIAL INTEGRADO - 2020 CAMPO LARGO — CH exibida: 3360 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/campo-largo/automacao-industrial.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/campo-largo/automacao-industrial.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -2164,7 +2164,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/campo-largo/bacharelado-em-engenharia-eletrica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/campo-largo/bacharelado-em-engenharia-eletrica.json",
           "linha": 18,
           "alternativas": []
         },
@@ -2256,7 +2256,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2019,",
-          "path": "dados/institucional/cursos/campo-largo/licenciatura-em-matematica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/campo-largo/licenciatura-em-matematica.json",
           "linha": 18,
           "alternativas": []
         },
@@ -2343,7 +2343,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2019,",
-          "path": "dados/institucional/cursos/campo-largo/mecanica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/campo-largo/mecanica.json",
           "linha": 30,
           "alternativas": []
         },
@@ -2382,7 +2382,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": null,
             "trecho": "18 — TÉCNICO EM MECÂNICA INTEGRADO - 2020 CAMPO LARGO — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/campo-largo/mecanica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/campo-largo/mecanica.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -2429,7 +2429,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2015,",
-          "path": "dados/institucional/cursos/campo-largo/tecnico-em-mecanica-subsequente.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/campo-largo/tecnico-em-mecanica-subsequente.json",
           "linha": 30,
           "alternativas": []
         },
@@ -2456,7 +2456,7 @@
             "ch_exibida_h": 1338,
             "ch_estagio_h": null,
             "trecho": "44 — TÉCNICO EM MECÂNICA SUBSEQUENTE - 2016 CAMPO LARGO — CH exibida: 1338 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/campo-largo/tecnico-em-mecanica-subsequente.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/campo-largo/tecnico-em-mecanica-subsequente.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -2503,7 +2503,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/campo-largo/tecnologia-em-agroecologia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/campo-largo/tecnologia-em-agroecologia.json",
           "linha": 18,
           "alternativas": []
         }
@@ -2554,7 +2554,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/campo-largo/tecnologia-em-materiais.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/campo-largo/tecnologia-em-materiais.json",
           "linha": 18,
           "alternativas": []
         },
@@ -2617,7 +2617,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2020,",
-          "path": "dados/institucional/cursos/campo-largo/tecnologia-em-processos-gerenciais.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/campo-largo/tecnologia-em-processos-gerenciais.json",
           "linha": 18,
           "alternativas": []
         },
@@ -2680,7 +2680,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/capanema/licenciatura-em-matematica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/capanema/licenciatura-em-matematica.json",
           "linha": 18,
           "alternativas": []
         },
@@ -2767,7 +2767,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2017,",
-          "path": "dados/institucional/cursos/capanema/tecnico-em-agroecologia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/capanema/tecnico-em-agroecologia.json",
           "linha": 30,
           "alternativas": []
         },
@@ -2818,7 +2818,7 @@
             "ch_exibida_h": 3210,
             "ch_estagio_h": null,
             "trecho": "67 — TÉCNICO EM AGROECOLOGIA INTEGRADO - 2022 CAPANEMA — CH exibida: 3210 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/capanema/tecnico-em-agroecologia.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/capanema/tecnico-em-agroecologia.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -2865,7 +2865,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2017,",
-          "path": "dados/institucional/cursos/capanema/tecnico-em-cooperativismo.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/capanema/tecnico-em-cooperativismo.json",
           "linha": 30,
           "alternativas": []
         },
@@ -2916,7 +2916,7 @@
             "ch_exibida_h": 3150,
             "ch_estagio_h": 120,
             "trecho": "65 — TÉCNICO EM COOPERATIVISMO INTEGRADO - 2018 CAPANEMA — CH exibida: 3150 h; estágio exigido: Sim; CH mínima de estágio (separada): 120",
-            "path": "dados/institucional/cursos/capanema/tecnico-em-cooperativismo.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/capanema/tecnico-em-cooperativismo.json",
             "linha": 18,
             "estagio_exigido": true
           }
@@ -2963,7 +2963,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2020,",
-          "path": "dados/institucional/cursos/capanema/tecnico-em-informatica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/capanema/tecnico-em-informatica.json",
           "linha": 30,
           "alternativas": []
         },
@@ -2990,7 +2990,7 @@
             "ch_exibida_h": 3210,
             "ch_estagio_h": null,
             "trecho": "118 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2021 CAPANEMA — CH exibida: 3210 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/capanema/tecnico-em-informatica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/capanema/tecnico-em-informatica.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -3000,7 +3000,7 @@
             "ch_exibida_h": 3300,
             "ch_estagio_h": null,
             "trecho": "716 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2025 CAPANEMA — CH exibida: 3300 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/capanema/tecnico-em-informatica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/capanema/tecnico-em-informatica.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -3047,7 +3047,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/capanema/tecnologia-em-sistemas-para-internet.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/capanema/tecnologia-em-sistemas-para-internet.json",
           "linha": 18,
           "alternativas": []
         },
@@ -3122,7 +3122,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/cascavel/licenciatura-em-quimica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/cascavel/licenciatura-em-quimica.json",
           "linha": 18,
           "alternativas": []
         },
@@ -3185,7 +3185,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/cascavel/tecnico-em-edificacoes.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/cascavel/tecnico-em-edificacoes.json",
           "linha": 30,
           "alternativas": []
         },
@@ -3229,7 +3229,7 @@
             "ch_exibida_h": 3239,
             "ch_estagio_h": null,
             "trecho": "6 — TÉCNICO EM EDIFICAÇÕES INTEGRADO - 2020 CASCAVEL — CH exibida: 3239 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/cascavel/tecnico-em-edificacoes.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/cascavel/tecnico-em-edificacoes.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -3239,7 +3239,7 @@
             "ch_exibida_h": 3173,
             "ch_estagio_h": null,
             "trecho": "512 — TÉCNICO EM EDIFICAÇÕES INTEGRADO - 2024 CASCAVEL — CH exibida: 3173 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/cascavel/tecnico-em-edificacoes.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/cascavel/tecnico-em-edificacoes.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -3286,7 +3286,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2017,",
-          "path": "dados/institucional/cursos/cascavel/tecnico-em-informatica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/cascavel/tecnico-em-informatica.json",
           "linha": 30,
           "alternativas": []
         },
@@ -3325,7 +3325,7 @@
             "ch_exibida_h": 3173,
             "ch_estagio_h": null,
             "trecho": "9 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2022 CASCAVEL — CH exibida: 3173 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/cascavel/tecnico-em-informatica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/cascavel/tecnico-em-informatica.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -3372,7 +3372,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2021,",
-          "path": "dados/institucional/cursos/cascavel/tecnico-em-quimica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/cascavel/tecnico-em-quimica.json",
           "linha": 30,
           "alternativas": []
         },
@@ -3411,7 +3411,7 @@
             "ch_exibida_h": 3172,
             "ch_estagio_h": null,
             "trecho": "8 — TÉCNICO EM QUÍMICA INTEGRADO - 2022 CASCAVEL — CH exibida: 3172 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/cascavel/tecnico-em-quimica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/cascavel/tecnico-em-quimica.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -3458,7 +3458,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/cascavel/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/cascavel/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json",
           "linha": 18,
           "alternativas": []
         },
@@ -3521,7 +3521,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2026,",
-          "path": "dados/institucional/cursos/cascavel/tecnologia-em-gestao-ambiental.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/cascavel/tecnologia-em-gestao-ambiental.json",
           "linha": 18,
           "alternativas": []
         }
@@ -3572,7 +3572,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2024,",
-          "path": "dados/institucional/cursos/colombo/licenciatura-em-historia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/colombo/licenciatura-em-historia.json",
           "linha": 18,
           "alternativas": []
         },
@@ -3664,7 +3664,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2024,",
-          "path": "dados/institucional/cursos/colombo/licenciatura-em-pedagogia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/colombo/licenciatura-em-pedagogia.json",
           "linha": 18,
           "alternativas": []
         }
@@ -3715,7 +3715,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2018,",
-          "path": "dados/institucional/cursos/colombo/tecnico-em-administracao-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/colombo/tecnico-em-administracao-integrado-ao-ensino-medio.json",
           "linha": 30,
           "alternativas": []
         },
@@ -3742,7 +3742,7 @@
             "ch_exibida_h": 3109,
             "ch_estagio_h": null,
             "trecho": "19 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2020 COLOMBO — CH exibida: 3109 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/colombo/tecnico-em-administracao-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/colombo/tecnico-em-administracao-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -3789,7 +3789,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2018,",
-          "path": "dados/institucional/cursos/colombo/tecnico-em-administracao-subsequente.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/colombo/tecnico-em-administracao-subsequente.json",
           "linha": 19,
           "alternativas": []
         },
@@ -3864,7 +3864,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2017,",
-          "path": "dados/institucional/cursos/colombo/tecnico-em-alimentos-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/colombo/tecnico-em-alimentos-integrado-ao-ensino-medio.json",
           "linha": 30,
           "alternativas": []
         },
@@ -3891,7 +3891,7 @@
             "ch_exibida_h": 3358,
             "ch_estagio_h": null,
             "trecho": "72 — TÉCNICO EM ALIMENTOS INTEGRADO - 2018 COLOMBO — CH exibida: 3358 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/colombo/tecnico-em-alimentos-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/colombo/tecnico-em-alimentos-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -3901,7 +3901,7 @@
             "ch_exibida_h": 3340,
             "ch_estagio_h": null,
             "trecho": "460 — TÉCNICO EM ALIMENTOS INTEGRADO - 2024 COLOMBO — CH exibida: 3340 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/colombo/tecnico-em-alimentos-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/colombo/tecnico-em-alimentos-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -3948,7 +3948,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/colombo/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/colombo/tecnico-em-informatica-integrado-ao-ensino-medio.json",
           "linha": 30,
           "alternativas": []
         },
@@ -3987,7 +3987,7 @@
             "ch_exibida_h": 3324,
             "ch_estagio_h": null,
             "trecho": "121 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2017 COLOMBO — CH exibida: 3324 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/colombo/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/colombo/tecnico-em-informatica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -3997,7 +3997,7 @@
             "ch_exibida_h": 3340,
             "ch_estagio_h": null,
             "trecho": "461 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2024 COLOMBO — CH exibida: 3340 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/colombo/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/colombo/tecnico-em-informatica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -4044,7 +4044,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/colombo/tecnologia-em-alimentos.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/colombo/tecnologia-em-alimentos.json",
           "linha": 18,
           "alternativas": []
         },
@@ -4136,7 +4136,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/colombo/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/colombo/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json",
           "linha": 18,
           "alternativas": []
         }
@@ -4187,7 +4187,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/colombo/tecnologia-em-processos-gerenciais.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/colombo/tecnologia-em-processos-gerenciais.json",
           "linha": 18,
           "alternativas": []
         },
@@ -4250,7 +4250,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/coronel-vivida/tecnico-em-administracao.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/coronel-vivida/tecnico-em-administracao.json",
           "linha": 32,
           "alternativas": []
         },
@@ -4277,7 +4277,7 @@
             "ch_exibida_h": 3008,
             "ch_estagio_h": null,
             "trecho": "329 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2015 CORONEL VIVIDA — CH exibida: 3008 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/coronel-vivida/tecnico-em-administracao.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/coronel-vivida/tecnico-em-administracao.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -4287,7 +4287,7 @@
             "ch_exibida_h": 3109,
             "ch_estagio_h": null,
             "trecho": "40 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2018 CORONEL VIVIDA — CH exibida: 3109 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/coronel-vivida/tecnico-em-administracao.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/coronel-vivida/tecnico-em-administracao.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -4297,7 +4297,7 @@
             "ch_exibida_h": 3711,
             "ch_estagio_h": null,
             "trecho": "826 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2026 CORONEL VIVIDA (Trimestre) — CH exibida: 3711 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/coronel-vivida/tecnico-em-administracao.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/coronel-vivida/tecnico-em-administracao.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -4307,7 +4307,7 @@
             "ch_exibida_h": 3109,
             "ch_estagio_h": null,
             "trecho": "865 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2018 CORONEL VIVIDA (Trimestre) — CH exibida: 3109 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/coronel-vivida/tecnico-em-administracao.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/coronel-vivida/tecnico-em-administracao.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -4354,7 +4354,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/coronel-vivida/tecnico-em-cooperativismo.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/coronel-vivida/tecnico-em-cooperativismo.json",
           "linha": 31,
           "alternativas": []
         },
@@ -4381,7 +4381,7 @@
             "ch_exibida_h": 3219,
             "ch_estagio_h": null,
             "trecho": "69 — TÉCNICO EM COOPERATIVISMO INTEGRADO - 2018 CORONEL VIVIDA — CH exibida: 3219 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/coronel-vivida/tecnico-em-cooperativismo.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/coronel-vivida/tecnico-em-cooperativismo.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -4391,7 +4391,7 @@
             "ch_exibida_h": 3712,
             "ch_estagio_h": null,
             "trecho": "827 — TÉCNICO EM COOPERATIVISMO INTEGRADO - 2026 CORONEL VIVIDA (Trimestre) — CH exibida: 3712 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/coronel-vivida/tecnico-em-cooperativismo.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/coronel-vivida/tecnico-em-cooperativismo.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -4401,7 +4401,7 @@
             "ch_exibida_h": 3219,
             "ch_estagio_h": null,
             "trecho": "866 — TÉCNICO EM COOPERATIVISMO INTEGRADO - 2018 CORONEL VIVIDA (Trimestre) — CH exibida: 3219 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/coronel-vivida/tecnico-em-cooperativismo.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/coronel-vivida/tecnico-em-cooperativismo.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -4448,7 +4448,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/coronel-vivida/tecnologia-em-gestao-financeira.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/coronel-vivida/tecnologia-em-gestao-financeira.json",
           "linha": 18,
           "alternativas": []
         }
@@ -4499,7 +4499,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/curitiba/aperfeicoamento-em-educacao-para-relacoes-etnico-raciais.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/aperfeicoamento-em-educacao-para-relacoes-etnico-raciais.json",
           "linha": 18,
           "alternativas": []
         }
@@ -4550,7 +4550,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/curitiba/bacharelado-em-ciencias-contabeis.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/bacharelado-em-ciencias-contabeis.json",
           "linha": 18,
           "alternativas": []
         }
@@ -4601,7 +4601,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/curitiba/especializacao-em-ciencias-da-natureza-ensino-de-fisica-e-astronomia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-ciencias-da-natureza-ensino-de-fisica-e-astronomia.json",
           "linha": 18,
           "alternativas": []
         }
@@ -4652,7 +4652,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/curitiba/especializacao-em-educacao-profissional.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-educacao-profissional.json",
           "linha": 18,
           "alternativas": []
         }
@@ -4703,7 +4703,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2017,",
-          "path": "dados/institucional/cursos/curitiba/especializacao-em-gestao-publica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-gestao-publica.json",
           "linha": 18,
           "alternativas": []
         }
@@ -4754,7 +4754,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2021,",
-          "path": "dados/institucional/cursos/curitiba/especializacao-em-gestao-social-de-politicas-publicas.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-gestao-social-de-politicas-publicas.json",
           "linha": 18,
           "alternativas": []
         },
@@ -4817,7 +4817,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/curitiba/licenciatura-em-educacao-do-campo.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/licenciatura-em-educacao-do-campo.json",
           "linha": 18,
           "alternativas": []
         },
@@ -4885,7 +4885,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/curitiba/licenciatura-em-pedagogia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/licenciatura-em-pedagogia.json",
           "linha": 18,
           "alternativas": []
         },
@@ -4981,7 +4981,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2014,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio.json",
           "linha": 32,
           "alternativas": []
         },
@@ -5008,7 +5008,7 @@
             "ch_exibida_h": 3288,
             "ch_estagio_h": null,
             "trecho": "301 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2014 CURITIBA — CH exibida: 3288 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -5018,7 +5018,7 @@
             "ch_exibida_h": 3288,
             "ch_estagio_h": null,
             "trecho": "841 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2014 CURITIBA (Trimestre) — CH exibida: 3288 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -5028,7 +5028,7 @@
             "ch_exibida_h": 3288,
             "ch_estagio_h": null,
             "trecho": "882 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2014 PONTA GROSSA (Trimestre) — CH exibida: 3288 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -5075,7 +5075,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2020,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-condominio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-condominio.json",
           "linha": 30,
           "alternativas": []
         },
@@ -5114,7 +5114,7 @@
             "ch_exibida_h": 800,
             "ch_estagio_h": null,
             "trecho": "3 — TÉCNICO EM CONDOMÍNIO SUBSEQUENTE - 2021 CURITIBA — CH exibida: 800 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-condominio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-condominio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -5161,7 +5161,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2015,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.json",
           "linha": 31,
           "alternativas": []
         },
@@ -5188,7 +5188,7 @@
             "ch_exibida_h": 3388,
             "ch_estagio_h": null,
             "trecho": "75 — TÉCNICO EM CONTABILIDADE INTEGRADO - 2014 CURITIBA — CH exibida: 3388 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -5198,7 +5198,7 @@
             "ch_exibida_h": 3388,
             "ch_estagio_h": null,
             "trecho": "842 — TÉCNICO EM CONTABILIDADE INTEGRADO - 2014 CURITIBA (Trimestre) — CH exibida: 3388 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -5245,7 +5245,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2014,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-edificacoes.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-edificacoes.json",
           "linha": 30,
           "alternativas": []
         }
@@ -5260,7 +5260,7 @@
             "ch_exibida_h": 1358,
             "ch_estagio_h": null,
             "trecho": "22 — TÉCNICO EM EDIFICAÇÕES SUBSEQUENTE - 2014 CURITIBA — CH exibida: 1358 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-edificacoes.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-edificacoes.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -5307,7 +5307,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2017,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-eletromecanica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eletromecanica.json",
           "linha": 30,
           "alternativas": []
         },
@@ -5346,7 +5346,7 @@
             "ch_exibida_h": 1360,
             "ch_estagio_h": null,
             "trecho": "678 — TÉCNICO EM ELETROMECÂNICA SUBSEQUENTE - 2014 CURITIBA — CH exibida: 1360 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-eletromecanica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eletromecanica.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -5356,7 +5356,7 @@
             "ch_exibida_h": 1338,
             "ch_estagio_h": null,
             "trecho": "46 — TÉCNICO EM ELETROMECÂNICA SUBSEQUENTE - 2018 CURITIBA — CH exibida: 1338 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-eletromecanica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eletromecanica.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -5403,7 +5403,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2014,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio.json",
           "linha": 31,
           "alternativas": []
         },
@@ -5430,7 +5430,7 @@
             "ch_exibida_h": 3673,
             "ch_estagio_h": null,
             "trecho": "41 — TÉCNICO EM ELETRÔNICA INTEGRADO - 2014 CURITIBA — CH exibida: 3673 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -5440,7 +5440,7 @@
             "ch_exibida_h": 3673,
             "ch_estagio_h": null,
             "trecho": "843 — TÉCNICO EM ELETRÔNICA INTEGRADO - 2014 CURITIBA (Trimestre) — CH exibida: 3673 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -5487,7 +5487,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2015,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-eletrotecnica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eletrotecnica.json",
           "linha": 31,
           "alternativas": []
         },
@@ -5526,7 +5526,7 @@
             "ch_exibida_h": 1203,
             "ch_estagio_h": null,
             "trecho": "55 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2015 CURITIBA — CH exibida: 1203 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-eletrotecnica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eletrotecnica.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -5536,7 +5536,7 @@
             "ch_exibida_h": 1203,
             "ch_estagio_h": null,
             "trecho": "706 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2015 CURITIBA PROGRAMA AUTONOMIA E RENDA PETROBRÁS — CH exibida: 1203 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-eletrotecnica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eletrotecnica.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -5583,7 +5583,7 @@
           "status_curadoria": "Pendente",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-enfermagem.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-enfermagem.json",
           "linha": 30,
           "alternativas": []
         },
@@ -5634,7 +5634,7 @@
             "ch_exibida_h": 1820,
             "ch_estagio_h": null,
             "trecho": "71 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2020 CURITIBA — CH exibida: 1820 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-enfermagem.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-enfermagem.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -5644,7 +5644,7 @@
             "ch_exibida_h": 1600,
             "ch_estagio_h": null,
             "trecho": "538 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2024 CURITIBA — CH exibida: 1600 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-enfermagem.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-enfermagem.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -5691,7 +5691,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2020,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-eventos.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eventos.json",
           "linha": 30,
           "alternativas": []
         },
@@ -5730,7 +5730,7 @@
             "ch_exibida_h": 816,
             "ch_estagio_h": null,
             "trecho": "311 — TÉCNICO EM EVENTOS SUBSEQUENTE - 2014 CURITIBA — CH exibida: 816 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-eventos.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eventos.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -5740,7 +5740,7 @@
             "ch_exibida_h": 800,
             "ch_estagio_h": null,
             "trecho": "878 — TÉCNICO EM EVENTOS SUBSEQUENTE - 2026 CURITIBA — CH exibida: 800 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-eventos.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eventos.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -5787,7 +5787,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2019,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json",
           "linha": 34,
           "alternativas": []
         },
@@ -5831,7 +5831,7 @@
             "ch_exibida_h": 3552,
             "ch_estagio_h": null,
             "trecho": "81 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2021 CURITIBA — CH exibida: 3552 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -5841,7 +5841,7 @@
             "ch_exibida_h": 3552,
             "ch_estagio_h": null,
             "trecho": "738 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2021 PONTA GROSSA — CH exibida: 3552 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -5851,7 +5851,7 @@
             "ch_exibida_h": 3552,
             "ch_estagio_h": null,
             "trecho": "432 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2022 CURITIBA — CH exibida: 3552 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -5861,7 +5861,7 @@
             "ch_exibida_h": 3347,
             "ch_estagio_h": null,
             "trecho": "891 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2026 PONTA GROSSA (Trimestre) — CH exibida: 3347 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -5871,7 +5871,7 @@
             "ch_exibida_h": 3552,
             "ch_estagio_h": null,
             "trecho": "844 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2022 CURITIBA (Trimestre) — CH exibida: 3552 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -5881,7 +5881,7 @@
             "ch_exibida_h": 3552,
             "ch_estagio_h": null,
             "trecho": "883 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2021 PONTA GROSSA (Trimestre) — CH exibida: 3552 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -5928,7 +5928,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2021,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-massoterapia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-massoterapia.json",
           "linha": 30,
           "alternativas": []
         },
@@ -5979,7 +5979,7 @@
             "ch_exibida_h": 1395,
             "ch_estagio_h": null,
             "trecho": "315 — TÉCNICO EM MASSOTERAPIA SUBSEQUENTE - 2014 CURITIBA — CH exibida: 1395 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-massoterapia.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-massoterapia.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -5989,7 +5989,7 @@
             "ch_exibida_h": 1374,
             "ch_estagio_h": null,
             "trecho": "83 — TÉCNICO EM MASSOTERAPIA SUBSEQUENTE - 2023 CURITIBA — CH exibida: 1374 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-massoterapia.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-massoterapia.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -6036,7 +6036,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-mecanica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-mecanica.json",
           "linha": 31,
           "alternativas": []
         },
@@ -6063,7 +6063,7 @@
             "ch_exibida_h": 1342,
             "ch_estagio_h": null,
             "trecho": "283 — TÉCNICO EM MECÂNICA SUBSEQUENTE - 2014 CURITIBA — CH exibida: 1342 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-mecanica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-mecanica.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -6073,7 +6073,7 @@
             "ch_exibida_h": 1204,
             "ch_estagio_h": null,
             "trecho": "707 — TÉCNICO EM MECÂNICA SUBSEQUENTE - 2024 CURITIBA PROGRAMA AUTONOMIA E RENDA PETROBRÁS — CH exibida: 1204 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-mecanica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-mecanica.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -6083,7 +6083,7 @@
             "ch_exibida_h": 1204,
             "ch_estagio_h": null,
             "trecho": "783 — TÉCNICO EM MECÂNICA SUBSEQUENTE - 2025 CURITIBA — CH exibida: 1204 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-mecanica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-mecanica.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -6130,7 +6130,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2016,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio.json",
           "linha": 31,
           "alternativas": []
         },
@@ -6157,7 +6157,7 @@
             "ch_exibida_h": 3682,
             "ch_estagio_h": null,
             "trecho": "287 — TÉCNICO EM MECÂNICA INTEGRADO - 2014 CURITIBA — CH exibida: 3682 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -6167,7 +6167,7 @@
             "ch_exibida_h": 3682,
             "ch_estagio_h": null,
             "trecho": "845 — TÉCNICO EM MECÂNICA INTEGRADO - 2014 CURITIBA (Trimestre) — CH exibida: 3682 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -6214,7 +6214,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2017,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio.json",
           "linha": 31,
           "alternativas": []
         },
@@ -6241,7 +6241,7 @@
             "ch_exibida_h": 3607,
             "ch_estagio_h": null,
             "trecho": "85 — TÉCNICO EM PETRÓLEO E GÁS INTEGRADO - 2014 CURITIBA — CH exibida: 3607 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -6251,7 +6251,7 @@
             "ch_exibida_h": 3607,
             "ch_estagio_h": null,
             "trecho": "846 — TÉCNICO EM PETRÓLEO E GÁS INTEGRADO - 2014 CURITIBA (Trimestre) — CH exibida: 3607 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -6298,7 +6298,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2018,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-processos-fotograficos.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-processos-fotograficos.json",
           "linha": 30,
           "alternativas": []
         },
@@ -6325,7 +6325,7 @@
             "ch_exibida_h": 952,
             "ch_estagio_h": null,
             "trecho": "14 — TÉCNICO EM PROCESSOS FOTOGRÁFICOS SUBSEQUENTE - 2014 CURITIBA — CH exibida: 952 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-processos-fotograficos.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-processos-fotograficos.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -6372,7 +6372,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2015,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio.json",
           "linha": 31,
           "alternativas": []
         },
@@ -6411,7 +6411,7 @@
             "ch_exibida_h": 3390,
             "ch_estagio_h": null,
             "trecho": "86 — TÉCNICO EM PROCESSOS FOTOGRÁFICOS INTEGRADO - 2014 CURITIBA — CH exibida: 3390 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -6421,7 +6421,7 @@
             "ch_exibida_h": 3390,
             "ch_estagio_h": null,
             "trecho": "847 — TÉCNICO EM PROCESSOS FOTOGRÁFICOS INTEGRADO - 2014 CURITIBA (Trimestre) — CH exibida: 3390 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -6468,7 +6468,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-producao-de-audio-e-video.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-producao-de-audio-e-video.json",
           "linha": 30,
           "alternativas": []
         },
@@ -6512,7 +6512,7 @@
             "ch_exibida_h": 918,
             "ch_estagio_h": null,
             "trecho": "588 — TÉCNICO EM PRODUÇÃO DE ÁUDIO E VÍDEO SUBSEQUENTE - 2016 CURITIBA — CH exibida: 918 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-producao-de-audio-e-video.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-producao-de-audio-e-video.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -6522,7 +6522,7 @@
             "ch_exibida_h": 1231,
             "ch_estagio_h": null,
             "trecho": "68 — TÉCNICO EM PRODUÇÃO DE ÁUDIO E VÍDEO SUBSEQUENTE - 2023 CURITIBA — CH exibida: 1231 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-producao-de-audio-e-video.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-producao-de-audio-e-video.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -6569,7 +6569,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2019,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.json",
           "linha": 32,
           "alternativas": []
         },
@@ -6608,7 +6608,7 @@
             "ch_exibida_h": 3449,
             "ch_estagio_h": null,
             "trecho": "48 — TÉCNICO EM PROGRAMAÇÃO DE JOGOS DIGITAIS INTEGRADO - 2021 CURITIBA — CH exibida: 3449 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -6618,7 +6618,7 @@
             "ch_exibida_h": 3449,
             "ch_estagio_h": null,
             "trecho": "431 — TÉCNICO EM PROGRAMAÇÃO DE JOGOS DIGITAIS INTEGRADO - 2023 CURITIBA — CH exibida: 3449 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -6628,7 +6628,7 @@
             "ch_exibida_h": 3449,
             "ch_estagio_h": null,
             "trecho": "848 — TÉCNICO EM PROGRAMAÇÃO DE JOGOS DIGITAIS INTEGRADO - 2023 CURITIBA (Trimestre) — CH exibida: 3449 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -6675,7 +6675,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2013,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-radiologia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-radiologia.json",
           "linha": 30,
           "alternativas": []
         },
@@ -6726,7 +6726,7 @@
             "ch_exibida_h": 1846,
             "ch_estagio_h": null,
             "trecho": "324 — TÉCNICO EM RADIOLOGIA SUBSEQUENTE - 2013 CURITIBA — CH exibida: 1846 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-radiologia.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-radiologia.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -6736,7 +6736,7 @@
             "ch_exibida_h": 2008,
             "ch_estagio_h": null,
             "trecho": "270 — TÉCNICO EM RADIOLOGIA SUBSEQUENTE - 2014 CURITIBA — CH exibida: 2008 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-radiologia.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-radiologia.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -6783,7 +6783,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-saude-bucal.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-saude-bucal.json",
           "linha": 30,
           "alternativas": []
         },
@@ -6810,7 +6810,7 @@
             "ch_exibida_h": 1530,
             "ch_estagio_h": null,
             "trecho": "281 — TÉCNICO EM SAÚDE BUCAL SUBSEQUENTE - 2014 CURITIBA — CH exibida: 1530 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-saude-bucal.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-saude-bucal.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -6820,7 +6820,7 @@
             "ch_exibida_h": 1236,
             "ch_estagio_h": 72,
             "trecho": "835 — TÉCNICO EM SAÚDE BUCAL SUBSEQUENTE - 2026 CURITIBA — CH exibida: 1236 h; estágio exigido: Sim; CH mínima de estágio (separada): 72",
-            "path": "dados/institucional/cursos/curitiba/tecnico-em-saude-bucal.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-saude-bucal.json",
             "linha": 18,
             "estagio_exigido": true
           }
@@ -6867,7 +6867,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-soldagem-subsequente.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-soldagem-subsequente.json",
           "linha": 19,
           "alternativas": []
         },
@@ -6930,7 +6930,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2015,",
-          "path": "dados/institucional/cursos/curitiba/tecnologia-em-gestao-publica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-gestao-publica.json",
           "linha": 18,
           "alternativas": []
         },
@@ -6993,7 +6993,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/curitiba/tecnologia-em-massoterapia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-massoterapia.json",
           "linha": 18,
           "alternativas": []
         },
@@ -7080,7 +7080,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/curitiba/tecnologia-em-processos-escolares.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-processos-escolares.json",
           "linha": 18,
           "alternativas": []
         },
@@ -7155,7 +7155,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2018,",
-          "path": "dados/institucional/cursos/curitiba/tecnologia-em-processos-gerenciais.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-processos-gerenciais.json",
           "linha": 18,
           "alternativas": []
         }
@@ -7206,7 +7206,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2024,",
-          "path": "dados/institucional/cursos/curitiba/tecnologia-em-secretariado.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-secretariado.json",
           "linha": 18,
           "alternativas": []
         },
@@ -7286,7 +7286,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/foz-do-iguacu/engenharia-de-aquicultura.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/engenharia-de-aquicultura.json",
           "linha": 18,
           "alternativas": []
         },
@@ -7361,7 +7361,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/foz-do-iguacu/especializacao-em-ensino-de-ciencias-e-matematica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/especializacao-em-ensino-de-ciencias-e-matematica.json",
           "linha": 18,
           "alternativas": []
         }
@@ -7412,7 +7412,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/foz-do-iguacu/licenciatura-em-fisica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/licenciatura-em-fisica.json",
           "linha": 18,
           "alternativas": []
         },
@@ -7504,7 +7504,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2017,",
-          "path": "dados/institucional/cursos/foz-do-iguacu/pos-graduacao-lato-sensu-em-internet-das-coisas-iot-do-ifpr.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/pos-graduacao-lato-sensu-em-internet-das-coisas-iot-do-ifpr.json",
           "linha": 18,
           "alternativas": []
         },
@@ -7572,7 +7572,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2017,",
-          "path": "dados/institucional/cursos/foz-do-iguacu/tecnico-em-aquicultura.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-aquicultura.json",
           "linha": 30,
           "alternativas": []
         },
@@ -7599,7 +7599,7 @@
             "ch_exibida_h": 3125,
             "ch_estagio_h": null,
             "trecho": "27 — TÉCNICO EM AQUICULTURA INTEGRADO - 2018 FOZ DO IGUAÇU — CH exibida: 3125 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/foz-do-iguacu/tecnico-em-aquicultura.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-aquicultura.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -7646,7 +7646,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2019,",
-          "path": "dados/institucional/cursos/foz-do-iguacu/tecnico-em-desenvolvimento-de-sistemas.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-desenvolvimento-de-sistemas.json",
           "linha": 30,
           "alternativas": []
         },
@@ -7685,7 +7685,7 @@
             "ch_exibida_h": 3392,
             "ch_estagio_h": null,
             "trecho": "52 — TÉCNICO EM DESENVOLVIMENTO DE SISTEMAS INTEGRADO - 2020 FOZ DO IGUAÇU — CH exibida: 3392 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/foz-do-iguacu/tecnico-em-desenvolvimento-de-sistemas.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-desenvolvimento-de-sistemas.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -7732,7 +7732,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2016,",
-          "path": "dados/institucional/cursos/foz-do-iguacu/tecnico-em-edificacoes-3.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-edificacoes-3.json",
           "linha": 30,
           "alternativas": []
         },
@@ -7783,7 +7783,7 @@
             "ch_exibida_h": 3342,
             "ch_estagio_h": 246,
             "trecho": "74 — TÉCNICO EM EDIFICAÇÕES INTEGRADO - 2015 FOZ DO IGUAÇU — CH exibida: 3342 h; estágio exigido: Sim; CH mínima de estágio (separada): 246",
-            "path": "dados/institucional/cursos/foz-do-iguacu/tecnico-em-edificacoes-3.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-edificacoes-3.json",
             "linha": 18,
             "estagio_exigido": true
           }
@@ -7830,7 +7830,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/foz-do-iguacu/tecnico-em-gastronomia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-gastronomia.json",
           "linha": 30,
           "alternativas": []
         },
@@ -7862,7 +7862,7 @@
             "ch_exibida_h": 800,
             "ch_estagio_h": null,
             "trecho": "70 — TÉCNICO EM GASTRONOMIA SUBSEQUENTE - 2023 FOZ DO IGUAÇU — CH exibida: 800 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/foz-do-iguacu/tecnico-em-gastronomia.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-gastronomia.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -7909,7 +7909,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2016,",
-          "path": "dados/institucional/cursos/foz-do-iguacu/tecnico-em-meio-ambiente.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-meio-ambiente.json",
           "linha": 30,
           "alternativas": []
         },
@@ -7936,7 +7936,7 @@
             "ch_exibida_h": 3307,
             "ch_estagio_h": null,
             "trecho": "77 — TÉCNICO EM MEIO AMBIENTE INTEGRADO - 2018 FOZ DO IGUAÇU — CH exibida: 3307 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/foz-do-iguacu/tecnico-em-meio-ambiente.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-meio-ambiente.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -7983,7 +7983,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/foz-do-iguacu/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json",
           "linha": 18,
           "alternativas": []
         }
@@ -8034,7 +8034,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2017,",
-          "path": "dados/institucional/cursos/foz-do-iguacu/tecnologia-em-gastronomia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnologia-em-gastronomia.json",
           "linha": 18,
           "alternativas": []
         },
@@ -8121,7 +8121,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2016,",
-          "path": "dados/institucional/cursos/goioere/tecnico-em-informatica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/goioere/tecnico-em-informatica.json",
           "linha": 30,
           "alternativas": []
         },
@@ -8160,7 +8160,7 @@
             "ch_exibida_h": 3538,
             "ch_estagio_h": null,
             "trecho": "895 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2016 GOIOERÊ (Trimestre) 2026 — CH exibida: 3538 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/goioere/tecnico-em-informatica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/goioere/tecnico-em-informatica.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -8170,7 +8170,7 @@
             "ch_exibida_h": 3120,
             "ch_estagio_h": null,
             "trecho": "944 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2027 GOIOERÊ (Trimestre) — CH exibida: 3120 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/goioere/tecnico-em-informatica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/goioere/tecnico-em-informatica.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -8217,7 +8217,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2016,",
-          "path": "dados/institucional/cursos/goioere/tecnico-em-producao-de-moda.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/goioere/tecnico-em-producao-de-moda.json",
           "linha": 30,
           "alternativas": []
         },
@@ -8256,7 +8256,7 @@
             "ch_exibida_h": 3345,
             "ch_estagio_h": null,
             "trecho": "896 — TÉCNICO EM PRODUÇÃO DE MODA INTEGRADO - 2017 GOIOERÊ (TRIMESTRE) 2026 — CH exibida: 3345 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/goioere/tecnico-em-producao-de-moda.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/goioere/tecnico-em-producao-de-moda.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -8303,7 +8303,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/irati/bacharelado-em-agronomia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/irati/bacharelado-em-agronomia.json",
           "linha": 18,
           "alternativas": []
         },
@@ -8378,7 +8378,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/irati/bacharelado-em-engenharia-de-software.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/irati/bacharelado-em-engenharia-de-software.json",
           "linha": 18,
           "alternativas": []
         },
@@ -8465,7 +8465,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/irati/licenciatura-em-quimica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/irati/licenciatura-em-quimica.json",
           "linha": 18,
           "alternativas": []
         },
@@ -8552,7 +8552,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/irati/tecnico-em-agroecologia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/irati/tecnico-em-agroecologia.json",
           "linha": 31,
           "alternativas": []
         },
@@ -8579,7 +8579,7 @@
             "ch_exibida_h": 3280,
             "ch_estagio_h": null,
             "trecho": "686 — TÉCNICO EM AGROECOLOGIA INTEGRADO - 2017 IRATI (T) (IRA001) — CH exibida: 3280 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/irati/tecnico-em-agroecologia.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/irati/tecnico-em-agroecologia.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -8589,7 +8589,7 @@
             "ch_exibida_h": 3280,
             "ch_estagio_h": null,
             "trecho": "458 — TÉCNICO EM AGROECOLOGIA INTEGRADO - 2024 IRATI — CH exibida: 3280 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/irati/tecnico-em-agroecologia.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/irati/tecnico-em-agroecologia.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -8636,7 +8636,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/irati/tecnico-em-informatica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/irati/tecnico-em-informatica.json",
           "linha": 31,
           "alternativas": []
         },
@@ -8663,7 +8663,7 @@
             "ch_exibida_h": 3212,
             "ch_estagio_h": null,
             "trecho": "59 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2017 IRATI (M) (IRA002) — CH exibida: 3212 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/irati/tecnico-em-informatica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/irati/tecnico-em-informatica.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -8673,7 +8673,7 @@
             "ch_exibida_h": 3212,
             "ch_estagio_h": null,
             "trecho": "687 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2017 IRATI (T) (IRA002) — CH exibida: 3212 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/irati/tecnico-em-informatica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/irati/tecnico-em-informatica.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -8683,7 +8683,7 @@
             "ch_exibida_h": 3278,
             "ch_estagio_h": null,
             "trecho": "457 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2024 IRATI — CH exibida: 3278 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/irati/tecnico-em-informatica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/irati/tecnico-em-informatica.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -8730,7 +8730,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2014,",
-          "path": "dados/institucional/cursos/irati/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/irati/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json",
           "linha": 18,
           "alternativas": []
         }
@@ -8781,7 +8781,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/ivaipora/bacharelado-em-sistemas-de-informacao.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/ivaipora/bacharelado-em-sistemas-de-informacao.json",
           "linha": 18,
           "alternativas": []
         },
@@ -8844,7 +8844,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/ivaipora/engenharia-agronomica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/ivaipora/engenharia-agronomica.json",
           "linha": 18,
           "alternativas": []
         }
@@ -8895,7 +8895,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/ivaipora/licenciatura-em-fisica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/ivaipora/licenciatura-em-fisica.json",
           "linha": 18,
           "alternativas": []
         },
@@ -8958,7 +8958,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2016,",
-          "path": "dados/institucional/cursos/ivaipora/tecnico-em-agroecologia-integrado.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/ivaipora/tecnico-em-agroecologia-integrado.json",
           "linha": 30,
           "alternativas": []
         },
@@ -8997,7 +8997,7 @@
             "ch_exibida_h": 3600,
             "ch_estagio_h": null,
             "trecho": "298 — TÉCNICO EM AGROECOLOGIA INTEGRADO - 2015 IVAIPORÃ — CH exibida: 3600 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/ivaipora/tecnico-em-agroecologia-integrado.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/ivaipora/tecnico-em-agroecologia-integrado.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -9044,7 +9044,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2024,",
-          "path": "dados/institucional/cursos/ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio.json",
           "linha": 30,
           "alternativas": []
         },
@@ -9071,7 +9071,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": null,
             "trecho": "714 — TÉCNICO EM AGROPECUÁRIA - 2025 IVAIPORÃ (SEMESTRAL) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -9118,7 +9118,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/ivaipora/tecnico-em-eletrotecnica-integrado.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/ivaipora/tecnico-em-eletrotecnica-integrado.json",
           "linha": 30,
           "alternativas": []
         },
@@ -9145,7 +9145,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": null,
             "trecho": "456 — TÉCNICO EM ELETROTÉCNICA INTEGRADO - 2025 IVAIPORÃ (SEMESTRAL) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/ivaipora/tecnico-em-eletrotecnica-integrado.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/ivaipora/tecnico-em-eletrotecnica-integrado.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -9192,7 +9192,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio.json",
           "linha": 30,
           "alternativas": []
         }
@@ -9207,7 +9207,7 @@
             "ch_exibida_h": 3600,
             "ch_estagio_h": null,
             "trecho": "300 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2016 IVAIPORÃ ANUAL — CH exibida: 3600 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -9254,7 +9254,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2016,",
-          "path": "dados/institucional/cursos/ivaipora/tecnologia-em-agroecologia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/ivaipora/tecnologia-em-agroecologia.json",
           "linha": 18,
           "alternativas": []
         },
@@ -9317,7 +9317,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/jacarezinho/educacao-sociedade-e-tecnologia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/educacao-sociedade-e-tecnologia.json",
           "linha": 18,
           "alternativas": []
         }
@@ -9368,7 +9368,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/jacarezinho/engenharia-de-controle-e-automacao.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/engenharia-de-controle-e-automacao.json",
           "linha": 18,
           "alternativas": []
         },
@@ -9455,7 +9455,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/jacarezinho/licenciatura-em-quimica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/licenciatura-em-quimica.json",
           "linha": 18,
           "alternativas": []
         },
@@ -9555,7 +9555,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2019,",
-          "path": "dados/institucional/cursos/jacarezinho/tecnico-em-alimentos.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-alimentos.json",
           "linha": 30,
           "alternativas": []
         },
@@ -9606,7 +9606,7 @@
             "ch_exibida_h": 4402,
             "ch_estagio_h": null,
             "trecho": "393 — TÉCNICO EM ALIMENTOS INTEGRADO - 2013 JACAREZINHO — CH exibida: 4402 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/jacarezinho/tecnico-em-alimentos.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-alimentos.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -9616,7 +9616,7 @@
             "ch_exibida_h": 3390,
             "ch_estagio_h": 0,
             "trecho": "29 — TÉCNICO EM ALIMENTOS INTEGRADO - 2020 JACAREZINHO — CH exibida: 3390 h; estágio exigido: Não; CH mínima de estágio (separada): 0",
-            "path": "dados/institucional/cursos/jacarezinho/tecnico-em-alimentos.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-alimentos.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -9663,7 +9663,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2017,",
-          "path": "dados/institucional/cursos/jacarezinho/tecnico-em-eletromecanica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-eletromecanica.json",
           "linha": 30,
           "alternativas": []
         },
@@ -9690,7 +9690,7 @@
             "ch_exibida_h": 0,
             "ch_estagio_h": null,
             "trecho": "629 — TÉCNICO EM ELETROMECÂNICA INTEGRADO - 2013 JACAREZINHO — CH exibida: 0 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/jacarezinho/tecnico-em-eletromecanica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-eletromecanica.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -9700,7 +9700,7 @@
             "ch_exibida_h": 1200,
             "ch_estagio_h": 120,
             "trecho": "517 — TÉCNICO EM ELETROMECÂNICA INTEGRADO - 2018 JACAREZINHO — CH exibida: 1200 h; estágio exigido: Sim; CH mínima de estágio (separada): 120",
-            "path": "dados/institucional/cursos/jacarezinho/tecnico-em-eletromecanica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-eletromecanica.json",
             "linha": 18,
             "estagio_exigido": true
           }
@@ -9747,7 +9747,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2017,",
-          "path": "dados/institucional/cursos/jacarezinho/tecnico-em-eletrotecnica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-eletrotecnica.json",
           "linha": 30,
           "alternativas": []
         },
@@ -9774,7 +9774,7 @@
             "ch_exibida_h": 5460,
             "ch_estagio_h": 120,
             "trecho": "35 — TÉCNICO EM ELETROTÉCNICA INTEGRADO - 2018 JACAREZINHO — CH exibida: 5460 h; estágio exigido: Sim; CH mínima de estágio (separada): 120",
-            "path": "dados/institucional/cursos/jacarezinho/tecnico-em-eletrotecnica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-eletrotecnica.json",
             "linha": 18,
             "estagio_exigido": true
           }
@@ -9821,7 +9821,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2013,",
-          "path": "dados/institucional/cursos/jacarezinho/tecnico-em-informatica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-informatica.json",
           "linha": 30,
           "alternativas": []
         },
@@ -9848,7 +9848,7 @@
             "ch_exibida_h": 3390,
             "ch_estagio_h": 120,
             "trecho": "43 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2018 JACAREZINHO — CH exibida: 3390 h; estágio exigido: Sim; CH mínima de estágio (separada): 120",
-            "path": "dados/institucional/cursos/jacarezinho/tecnico-em-informatica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-informatica.json",
             "linha": 18,
             "estagio_exigido": true
           },
@@ -9858,7 +9858,7 @@
             "ch_exibida_h": 4405,
             "ch_estagio_h": null,
             "trecho": "390 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2013 JACAREZINHO — CH exibida: 4405 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/jacarezinho/tecnico-em-informatica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-informatica.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -9905,7 +9905,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2017,",
-          "path": "dados/institucional/cursos/jacarezinho/tecnico-em-mecanica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-mecanica.json",
           "linha": 30,
           "alternativas": []
         },
@@ -9932,7 +9932,7 @@
             "ch_exibida_h": 3390,
             "ch_estagio_h": null,
             "trecho": "45 — TÉCNICO EM MECÂNICA INTEGRADO - 2018 JACAREZINHO — CH exibida: 3390 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/jacarezinho/tecnico-em-mecanica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-mecanica.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -9979,7 +9979,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2019,",
-          "path": "dados/institucional/cursos/jacarezinho/tecnico-em-teatro.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-teatro.json",
           "linha": 30,
           "alternativas": []
         },
@@ -10018,7 +10018,7 @@
             "ch_exibida_h": 1230,
             "ch_estagio_h": null,
             "trecho": "10 — TÉCNICO EM TEATRO SUBSEQUENTE - 2020 JACAREZINHO — CH exibida: 1230 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/jacarezinho/tecnico-em-teatro.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-teatro.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -10065,7 +10065,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/jacarezinho/tecnologia-em-sistemas-para-internet.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnologia-em-sistemas-para-internet.json",
           "linha": 18,
           "alternativas": []
         },
@@ -10128,7 +10128,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/jaguariaiva/especializacao-em-educacao-e-tecnologia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/jaguariaiva/especializacao-em-educacao-e-tecnologia.json",
           "linha": 18,
           "alternativas": []
         }
@@ -10179,7 +10179,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio.json",
           "linha": 30,
           "alternativas": []
         },
@@ -10206,7 +10206,7 @@
             "ch_exibida_h": 3509,
             "ch_estagio_h": null,
             "trecho": "78 — TÉCNICO EM ALIMENTOS INTEGRADO - 2019 JAGUARIAÍVA — CH exibida: 3509 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -10216,7 +10216,7 @@
             "ch_exibida_h": 3348,
             "ch_estagio_h": null,
             "trecho": "391 — TÉCNICO EM ALIMENTOS INTEGRADO - 2024 JAGUARIAÍVA (Trimestral) — CH exibida: 3348 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -10263,7 +10263,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/jaguariaiva/tecnico-em-biotecnologia-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/jaguariaiva/tecnico-em-biotecnologia-integrado-ao-ensino-medio.json",
           "linha": 30,
           "alternativas": []
         },
@@ -10290,7 +10290,7 @@
             "ch_exibida_h": 3634,
             "ch_estagio_h": null,
             "trecho": "736 — TÉCNICO EM BIOTECNOLOGIA INTEGRADO - 2019 JAGUARIAÍVA — CH exibida: 3634 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/jaguariaiva/tecnico-em-biotecnologia-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/jaguariaiva/tecnico-em-biotecnologia-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -10300,7 +10300,7 @@
             "ch_exibida_h": 3348,
             "ch_estagio_h": null,
             "trecho": "459 — TÉCNICO EM BIOTECNOLOGIA INTEGRADO - 2024 JAGUARIAÍVA (Trimestral) — CH exibida: 3348 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/jaguariaiva/tecnico-em-biotecnologia-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/jaguariaiva/tecnico-em-biotecnologia-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -10347,7 +10347,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/jaguariaiva/tecnologo-em-gestao-da-qualidade.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/jaguariaiva/tecnologo-em-gestao-da-qualidade.json",
           "linha": 18,
           "alternativas": []
         }
@@ -10398,7 +10398,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/londrina/licenciatura-em-ciencias-biologicas-2.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/londrina/licenciatura-em-ciencias-biologicas-2.json",
           "linha": 18,
           "alternativas": []
         },
@@ -10473,7 +10473,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2017,",
-          "path": "dados/institucional/cursos/londrina/tecnico-em-biotecnologia-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-biotecnologia-integrado-ao-ensino-medio.json",
           "linha": 31,
           "alternativas": []
         },
@@ -10517,7 +10517,7 @@
             "ch_exibida_h": 3600,
             "ch_estagio_h": null,
             "trecho": "124 — TÉCNICO EM BIOTECNOLOGIA INTEGRADO - 2018 LONDRINA — CH exibida: 3600 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/londrina/tecnico-em-biotecnologia-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-biotecnologia-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -10527,7 +10527,7 @@
             "ch_exibida_h": 3600,
             "ch_estagio_h": null,
             "trecho": "839 — TÉCNICO EM BIOTECNOLOGIA INTEGRADO - 2018 LONDRINA (Trimestre) — CH exibida: 3600 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/londrina/tecnico-em-biotecnologia-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-biotecnologia-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -10574,7 +10574,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/londrina/tecnico-em-enfermagem.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-enfermagem.json",
           "linha": 31,
           "alternativas": []
         },
@@ -10625,7 +10625,7 @@
             "ch_exibida_h": 1715,
             "ch_estagio_h": null,
             "trecho": "465 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2024 LONDRINA — CH exibida: 1715 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/londrina/tecnico-em-enfermagem.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-enfermagem.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -10635,7 +10635,7 @@
             "ch_exibida_h": 1715,
             "ch_estagio_h": null,
             "trecho": "740 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2025 LONDRINA — CH exibida: 1715 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/londrina/tecnico-em-enfermagem.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-enfermagem.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -10682,7 +10682,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2017,",
-          "path": "dados/institucional/cursos/londrina/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-informatica-integrado-ao-ensino-medio.json",
           "linha": 31,
           "alternativas": []
         },
@@ -10721,7 +10721,7 @@
             "ch_exibida_h": 3600,
             "ch_estagio_h": null,
             "trecho": "215 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2018 LONDRINA — CH exibida: 3600 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/londrina/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-informatica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -10731,7 +10731,7 @@
             "ch_exibida_h": 3600,
             "ch_estagio_h": null,
             "trecho": "840 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2018 LONDRINA (Trimestre) — CH exibida: 3600 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/londrina/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-informatica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -10778,7 +10778,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2016,",
-          "path": "dados/institucional/cursos/londrina/tecnico-em-massoterapia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-massoterapia.json",
           "linha": 31,
           "alternativas": []
         },
@@ -10817,7 +10817,7 @@
             "ch_exibida_h": 1380,
             "ch_estagio_h": null,
             "trecho": "209 — TÉCNICO EM MASSOTERAPIA SUBSEQUENTE - 2017 LONDRINA — CH exibida: 1380 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/londrina/tecnico-em-massoterapia.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-massoterapia.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -10827,7 +10827,7 @@
             "ch_exibida_h": 1380,
             "ch_estagio_h": null,
             "trecho": "739 — TÉCNICO EM MASSOTERAPIA SUBSEQUENTE - 2025 LONDRINA — CH exibida: 1380 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/londrina/tecnico-em-massoterapia.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-massoterapia.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -10874,7 +10874,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2013,",
-          "path": "dados/institucional/cursos/londrina/tecnico-em-protese-dentaria-2.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-protese-dentaria-2.json",
           "linha": 31,
           "alternativas": []
         },
@@ -10901,7 +10901,7 @@
             "ch_exibida_h": 1200,
             "ch_estagio_h": null,
             "trecho": "208 — TÉCNICO EM PRÓTESE DENTÁRIA SUBSEQUENTE - 2014 LONDRINA — CH exibida: 1200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/londrina/tecnico-em-protese-dentaria-2.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-protese-dentaria-2.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -10911,7 +10911,7 @@
             "ch_exibida_h": 1200,
             "ch_estagio_h": null,
             "trecho": "741 — TÉCNICO EM PRÓTESE DENTÁRIA SUBSEQUENTE - 2025 LONDRINA — CH exibida: 1200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/londrina/tecnico-em-protese-dentaria-2.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-protese-dentaria-2.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -10958,7 +10958,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2017,",
-          "path": "dados/institucional/cursos/londrina/tecnico-em-saude-bucal.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-saude-bucal.json",
           "linha": 31,
           "alternativas": []
         },
@@ -11009,7 +11009,7 @@
             "ch_exibida_h": 1270,
             "ch_estagio_h": null,
             "trecho": "204 — TÉCNICO EM SAÚDE BUCAL SUBSEQUENTE - 2018 LONDRINA — CH exibida: 1270 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/londrina/tecnico-em-saude-bucal.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-saude-bucal.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -11019,7 +11019,7 @@
             "ch_exibida_h": 1270,
             "ch_estagio_h": null,
             "trecho": "742 — TÉCNICO EM SAÚDE BUCAL SUBSEQUENTE - 2018 LONDRINA (Componentes) — CH exibida: 1270 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/londrina/tecnico-em-saude-bucal.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-saude-bucal.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -11066,7 +11066,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json",
           "linha": 18,
           "alternativas": []
         },
@@ -11141,7 +11141,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/palmas/agronomia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/palmas/agronomia.json",
           "linha": 18,
           "alternativas": []
         },
@@ -11213,7 +11213,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2011,",
-          "path": "dados/institucional/cursos/palmas/bacharelado-em-administracao.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/palmas/bacharelado-em-administracao.json",
           "linha": 18,
           "alternativas": []
         },
@@ -11285,7 +11285,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2010,",
-          "path": "dados/institucional/cursos/palmas/enfermagem.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/palmas/enfermagem.json",
           "linha": 18,
           "alternativas": []
         },
@@ -11353,7 +11353,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2010,",
-          "path": "dados/institucional/cursos/palmas/farmacia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/palmas/farmacia.json",
           "linha": 18,
           "alternativas": []
         },
@@ -11440,7 +11440,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2021,",
-          "path": "dados/institucional/cursos/palmas/licenciatura-em-educacao-fisica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/palmas/licenciatura-em-educacao-fisica.json",
           "linha": 18,
           "alternativas": []
         },
@@ -11527,7 +11527,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/palmas/licenciatura-em-quimica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/palmas/licenciatura-em-quimica.json",
           "linha": 18,
           "alternativas": []
         },
@@ -11602,7 +11602,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/palmas/pedagogia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/palmas/pedagogia.json",
           "linha": 18,
           "alternativas": []
         },
@@ -11665,7 +11665,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2008,",
-          "path": "dados/institucional/cursos/palmas/sistemas-de-informacao.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/palmas/sistemas-de-informacao.json",
           "linha": 18,
           "alternativas": []
         },
@@ -11737,7 +11737,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/palmas/tecnico-em-alimentos.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/palmas/tecnico-em-alimentos.json",
           "linha": 31,
           "alternativas": []
         },
@@ -11764,7 +11764,7 @@
             "ch_exibida_h": 3006,
             "ch_estagio_h": 67,
             "trecho": "16 — TÉCNICO EM ALIMENTOS INTEGRADO - 2023 PALMAS — CH exibida: 3006 h; estágio exigido: Sim; CH mínima de estágio (separada): 67",
-            "path": "dados/institucional/cursos/palmas/tecnico-em-alimentos.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/palmas/tecnico-em-alimentos.json",
             "linha": 18,
             "estagio_exigido": true
           },
@@ -11774,7 +11774,7 @@
             "ch_exibida_h": 3006,
             "ch_estagio_h": 67,
             "trecho": "869 — TÉCNICO EM ALIMENTOS INTEGRADO - 2023 PALMAS (Trimestral) — CH exibida: 3006 h; estágio exigido: Sim; CH mínima de estágio (separada): 67",
-            "path": "dados/institucional/cursos/palmas/tecnico-em-alimentos.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/palmas/tecnico-em-alimentos.json",
             "linha": 18,
             "estagio_exigido": true
           }
@@ -11821,7 +11821,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/palmas/tecnico-em-informatica-para-internet.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/palmas/tecnico-em-informatica-para-internet.json",
           "linha": 31,
           "alternativas": []
         },
@@ -11860,7 +11860,7 @@
             "ch_exibida_h": 3012,
             "ch_estagio_h": null,
             "trecho": "475 — TÉCNICO EM INFORMÁTICA PARA INTERNET - 2024 PALMAS — CH exibida: 3012 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/palmas/tecnico-em-informatica-para-internet.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/palmas/tecnico-em-informatica-para-internet.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -11870,7 +11870,7 @@
             "ch_exibida_h": 3012,
             "ch_estagio_h": null,
             "trecho": "870 — TÉCNICO EM INFORMÁTICA PARA INTERNET - 2024 PALMAS (Trimestral) — CH exibida: 3012 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/palmas/tecnico-em-informatica-para-internet.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/palmas/tecnico-em-informatica-para-internet.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -11917,7 +11917,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/palmas/tecnico-em-servicos-juridicos.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/palmas/tecnico-em-servicos-juridicos.json",
           "linha": 33,
           "alternativas": []
         },
@@ -11956,7 +11956,7 @@
             "ch_exibida_h": 3960,
             "ch_estagio_h": null,
             "trecho": "356 — TÉCNICO EM SERVIÇOS JURÍDICOS INTEGRADO - 2013 PALMAS — CH exibida: 3960 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/palmas/tecnico-em-servicos-juridicos.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/palmas/tecnico-em-servicos-juridicos.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -11966,7 +11966,7 @@
             "ch_exibida_h": 3180,
             "ch_estagio_h": null,
             "trecho": "355 — TÉCNICO EM SERVIÇOS JURÍDICOS INTEGRADO - 2015 PALMAS — CH exibida: 3180 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/palmas/tecnico-em-servicos-juridicos.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/palmas/tecnico-em-servicos-juridicos.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -11976,7 +11976,7 @@
             "ch_exibida_h": 3180,
             "ch_estagio_h": null,
             "trecho": "354 — TÉCNICO EM SERVIÇOS JURÍDICOS INTEGRADO - 2019 PALMAS — CH exibida: 3180 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/palmas/tecnico-em-servicos-juridicos.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/palmas/tecnico-em-servicos-juridicos.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -11986,7 +11986,7 @@
             "ch_exibida_h": 3006,
             "ch_estagio_h": null,
             "trecho": "36 — TÉCNICO EM SERVIÇOS JURÍDICOS INTEGRADO - 2023 PALMAS — CH exibida: 3006 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/palmas/tecnico-em-servicos-juridicos.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/palmas/tecnico-em-servicos-juridicos.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -11996,7 +11996,7 @@
             "ch_exibida_h": 3006,
             "ch_estagio_h": null,
             "trecho": "871 — TÉCNICO EM SERVIÇOS JURÍDICOS INTEGRADO - 2023 PALMAS (Trimestral) — CH exibida: 3006 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/palmas/tecnico-em-servicos-juridicos.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/palmas/tecnico-em-servicos-juridicos.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -12043,7 +12043,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2008,",
-          "path": "dados/institucional/cursos/paranagua/licenciatura-em-ciencias-sociais.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/paranagua/licenciatura-em-ciencias-sociais.json",
           "linha": 18,
           "alternativas": []
         }
@@ -12094,7 +12094,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2024,",
-          "path": "dados/institucional/cursos/paranagua/tecnico-em-informatica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/paranagua/tecnico-em-informatica.json",
           "linha": 30,
           "alternativas": []
         },
@@ -12133,7 +12133,7 @@
             "ch_exibida_h": 3336,
             "ch_estagio_h": null,
             "trecho": "50 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2013 PARANAGUÁ — CH exibida: 3336 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/paranagua/tecnico-em-informatica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/paranagua/tecnico-em-informatica.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -12143,7 +12143,7 @@
             "ch_exibida_h": 3337,
             "ch_estagio_h": null,
             "trecho": "737 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2025 PARANAGUÁ — CH exibida: 3337 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/paranagua/tecnico-em-informatica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/paranagua/tecnico-em-informatica.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -12190,7 +12190,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2011,",
-          "path": "dados/institucional/cursos/paranagua/tecnico-em-mecanica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/paranagua/tecnico-em-mecanica.json",
           "linha": 30,
           "alternativas": []
         },
@@ -12222,7 +12222,7 @@
             "ch_exibida_h": 3535,
             "ch_estagio_h": null,
             "trecho": "51 — TÉCNICO EM MECÂNICA INTEGRADO - 2013 PARANAGUÁ — CH exibida: 3535 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/paranagua/tecnico-em-mecanica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/paranagua/tecnico-em-mecanica.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -12232,7 +12232,7 @@
             "ch_exibida_h": 3438,
             "ch_estagio_h": 200,
             "trecho": "454 — TÉCNICO EM MECÂNICA INTEGRADO - 2025 PARANAGUÁ — CH exibida: 3438 h; estágio exigido: Sim; CH mínima de estágio (separada): 200",
-            "path": "dados/institucional/cursos/paranagua/tecnico-em-mecanica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/paranagua/tecnico-em-mecanica.json",
             "linha": 18,
             "estagio_exigido": true
           }
@@ -12279,7 +12279,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/paranagua/tecnico-em-meio-ambiente.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/paranagua/tecnico-em-meio-ambiente.json",
           "linha": 30,
           "alternativas": []
         },
@@ -12318,7 +12318,7 @@
             "ch_exibida_h": 3299,
             "ch_estagio_h": null,
             "trecho": "42 — TÉCNICO EM MEIO AMBIENTE INTEGRADO - 2014 PARANAGUÁ — CH exibida: 3299 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/paranagua/tecnico-em-meio-ambiente.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/paranagua/tecnico-em-meio-ambiente.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -12328,7 +12328,7 @@
             "ch_exibida_h": 3332,
             "ch_estagio_h": null,
             "trecho": "455 — TÉCNICO EM MEIO AMBIENTE INTEGRADO - 2025 PARANAGUÁ — CH exibida: 3332 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/paranagua/tecnico-em-meio-ambiente.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/paranagua/tecnico-em-meio-ambiente.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -12375,7 +12375,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/paranagua/tecnico-em-producao-cultural.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/paranagua/tecnico-em-producao-cultural.json",
           "linha": 30,
           "alternativas": []
         },
@@ -12414,7 +12414,7 @@
             "ch_exibida_h": 3370,
             "ch_estagio_h": null,
             "trecho": "394 — TÉCNICO EM PRODUÇÃO CULTURAL INTEGRADO - 2024 PARANAGUÁ — CH exibida: 3370 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/paranagua/tecnico-em-producao-cultural.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/paranagua/tecnico-em-producao-cultural.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -12461,7 +12461,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/paranagua/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/paranagua/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json",
           "linha": 18,
           "alternativas": []
         }
@@ -12512,7 +12512,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/paranagua/tecnologia-em-gestao-ambiental.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/paranagua/tecnologia-em-gestao-ambiental.json",
           "linha": 18,
           "alternativas": []
         },
@@ -12575,7 +12575,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2011,",
-          "path": "dados/institucional/cursos/paranagua/tecnologia-em-manutencao-industrial.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/paranagua/tecnologia-em-manutencao-industrial.json",
           "linha": 18,
           "alternativas": []
         },
@@ -12667,7 +12667,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2018,",
-          "path": "dados/institucional/cursos/paranavai/engenharia-de-software.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/paranavai/engenharia-de-software.json",
           "linha": 18,
           "alternativas": []
         }
@@ -12718,7 +12718,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/paranavai/engenharia-eletrica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/paranavai/engenharia-eletrica.json",
           "linha": 18,
           "alternativas": []
         },
@@ -12793,7 +12793,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2021,",
-          "path": "dados/institucional/cursos/paranavai/especializacao-em-gestao-da-qualidade-e-tecnologia-de-alimentos.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/paranavai/especializacao-em-gestao-da-qualidade-e-tecnologia-de-alimentos.json",
           "linha": 18,
           "alternativas": []
         },
@@ -12856,7 +12856,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2013,",
-          "path": "dados/institucional/cursos/paranavai/licenciatura-em-quimica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/paranavai/licenciatura-em-quimica.json",
           "linha": 18,
           "alternativas": []
         }
@@ -12907,7 +12907,7 @@
           "status_curadoria": "Pendente",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2016,",
-          "path": "dados/institucional/cursos/paranavai/tecnico-em-agroindustria.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/paranavai/tecnico-em-agroindustria.json",
           "linha": 31,
           "alternativas": []
         },
@@ -12946,7 +12946,7 @@
             "ch_exibida_h": 3537,
             "ch_estagio_h": null,
             "trecho": "60 — TÉCNICO EM AGROINDÚSTRIA INTEGRADO - 2017 PARANAVAÍ — CH exibida: 3537 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/paranavai/tecnico-em-agroindustria.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/paranavai/tecnico-em-agroindustria.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -12956,7 +12956,7 @@
             "ch_exibida_h": 3537,
             "ch_estagio_h": null,
             "trecho": "897 — TÉCNICO EM AGROINDÚSTRIA INTEGRADO - 2017 PARANAVAÍ (2026) — CH exibida: 3537 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/paranavai/tecnico-em-agroindustria.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/paranavai/tecnico-em-agroindustria.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -13003,7 +13003,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2020,",
-          "path": "dados/institucional/cursos/paranavai/tecnico-em-eletromecanica-subsequente.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/paranavai/tecnico-em-eletromecanica-subsequente.json",
           "linha": 30,
           "alternativas": []
         },
@@ -13054,7 +13054,7 @@
             "ch_exibida_h": 1336,
             "ch_estagio_h": 120,
             "trecho": "64 — TÉCNICO EM ELETROMECÂNICA SUBSEQUENTE - 2020 PARANAVAÍ — CH exibida: 1336 h; estágio exigido: Sim; CH mínima de estágio (separada): 120",
-            "path": "dados/institucional/cursos/paranavai/tecnico-em-eletromecanica-subsequente.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/paranavai/tecnico-em-eletromecanica-subsequente.json",
             "linha": 18,
             "estagio_exigido": true
           }
@@ -13101,7 +13101,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2015,",
-          "path": "dados/institucional/cursos/paranavai/tecnico-em-informatica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/paranavai/tecnico-em-informatica.json",
           "linha": 31,
           "alternativas": []
         },
@@ -13128,7 +13128,7 @@
             "ch_exibida_h": 3536,
             "ch_estagio_h": null,
             "trecho": "62 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2016 PARANAVAÍ — CH exibida: 3536 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/paranavai/tecnico-em-informatica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/paranavai/tecnico-em-informatica.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -13138,7 +13138,7 @@
             "ch_exibida_h": 3536,
             "ch_estagio_h": null,
             "trecho": "900 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2016 PARANAVAÍ (2026) — CH exibida: 3536 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/paranavai/tecnico-em-informatica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/paranavai/tecnico-em-informatica.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -13185,7 +13185,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2016,",
-          "path": "dados/institucional/cursos/paranavai/tecnico-em-mecatronica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/paranavai/tecnico-em-mecatronica.json",
           "linha": 31,
           "alternativas": []
         },
@@ -13212,7 +13212,7 @@
             "ch_exibida_h": 3538,
             "ch_estagio_h": null,
             "trecho": "63 — TÉCNICO EM MECATRÔNICA INTEGRADO - 2017 PARANAVAÍ — CH exibida: 3538 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/paranavai/tecnico-em-mecatronica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/paranavai/tecnico-em-mecatronica.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -13222,7 +13222,7 @@
             "ch_exibida_h": 3538,
             "ch_estagio_h": null,
             "trecho": "899 — TÉCNICO EM MECATRÔNICA INTEGRADO - 2017 PARANAVAÍ (2026) — CH exibida: 3538 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/paranavai/tecnico-em-mecatronica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/paranavai/tecnico-em-mecatronica.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -13269,7 +13269,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/pinhais/bacharelado-em-administracao.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/pinhais/bacharelado-em-administracao.json",
           "linha": 18,
           "alternativas": []
         },
@@ -13332,7 +13332,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/pinhais/bacharelado-em-ciencia-da-computacao.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/pinhais/bacharelado-em-ciencia-da-computacao.json",
           "linha": 18,
           "alternativas": []
         },
@@ -13395,7 +13395,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/pinhais/tecnico-em-administracao-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/pinhais/tecnico-em-administracao-integrado-ao-ensino-medio.json",
           "linha": 30,
           "alternativas": []
         },
@@ -13439,7 +13439,7 @@
             "ch_exibida_h": 3347,
             "ch_estagio_h": null,
             "trecho": "797 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2026 PINHAIS (Trimestre) — CH exibida: 3347 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/pinhais/tecnico-em-administracao-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/pinhais/tecnico-em-administracao-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -13449,7 +13449,7 @@
             "ch_exibida_h": 3809,
             "ch_estagio_h": null,
             "trecho": "821 — TÉCNICO EM ADMINISTRAÇÃO INTEGRADO - 2019 PINHAIS (Trimestre) — CH exibida: 3809 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/pinhais/tecnico-em-administracao-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/pinhais/tecnico-em-administracao-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -13496,7 +13496,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2018,",
-          "path": "dados/institucional/cursos/pinhais/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/pinhais/tecnico-em-informatica-integrado-ao-ensino-medio.json",
           "linha": 30,
           "alternativas": []
         },
@@ -13528,7 +13528,7 @@
             "ch_exibida_h": 3347,
             "ch_estagio_h": null,
             "trecho": "798 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2026 PINHAIS (Trimestre) — CH exibida: 3347 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/pinhais/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/pinhais/tecnico-em-informatica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -13575,7 +13575,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/pinhais/tecnologia-em-gestao-da-tecnologia-da-informacao.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/pinhais/tecnologia-em-gestao-da-tecnologia-da-informacao.json",
           "linha": 18,
           "alternativas": []
         },
@@ -13638,7 +13638,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/pitanga/licenciatura-em-pedagogia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/pitanga/licenciatura-em-pedagogia.json",
           "linha": 18,
           "alternativas": []
         }
@@ -13689,7 +13689,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/pitanga/licenciatura-em-quimica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/pitanga/licenciatura-em-quimica.json",
           "linha": 18,
           "alternativas": []
         },
@@ -13752,7 +13752,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/pitanga/tecnico-em-alimentos.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/pitanga/tecnico-em-alimentos.json",
           "linha": 30,
           "alternativas": []
         },
@@ -13791,7 +13791,7 @@
             "ch_exibida_h": 3600,
             "ch_estagio_h": null,
             "trecho": "392 — TÉCNICO EM ALIMENTOS INTEGRADO - 2024 PITANGA — CH exibida: 3600 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/pitanga/tecnico-em-alimentos.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/pitanga/tecnico-em-alimentos.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -13838,7 +13838,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2014,",
-          "path": "dados/institucional/cursos/pitanga/tecnico-em-cooperativismo.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/pitanga/tecnico-em-cooperativismo.json",
           "linha": 30,
           "alternativas": []
         },
@@ -13877,7 +13877,7 @@
             "ch_exibida_h": 3600,
             "ch_estagio_h": null,
             "trecho": "28 — TÉCNICO EM COOPERATIVISMO INTEGRADO - 2018 PITANGA — CH exibida: 3600 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/pitanga/tecnico-em-cooperativismo.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/pitanga/tecnico-em-cooperativismo.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -13924,7 +13924,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/pitanga/tecnico-em-desenvolvimento-de-sistemas.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/pitanga/tecnico-em-desenvolvimento-de-sistemas.json",
           "linha": 30,
           "alternativas": []
         },
@@ -13963,7 +13963,7 @@
             "ch_exibida_h": 3510,
             "ch_estagio_h": null,
             "trecho": "828 — TÉCNICO EM DESENVOLVIMENTO DE SISTEMAS — CH exibida: 3510 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/pitanga/tecnico-em-desenvolvimento-de-sistemas.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/pitanga/tecnico-em-desenvolvimento-de-sistemas.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -14010,7 +14010,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2018,",
-          "path": "dados/institucional/cursos/pitanga/tecnologia-em-agroindustria.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/pitanga/tecnologia-em-agroindustria.json",
           "linha": 18,
           "alternativas": []
         },
@@ -14090,7 +14090,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2019,",
-          "path": "dados/institucional/cursos/ponta-grossa/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/ponta-grossa/tecnico-em-informatica-integrado-ao-ensino-medio.json",
           "linha": 19,
           "alternativas": []
         },
@@ -14170,7 +14170,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2018,",
-          "path": "dados/institucional/cursos/quedas-do-iguacu/tecnico-em-informatica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/quedas-do-iguacu/tecnico-em-informatica.json",
           "linha": 30,
           "alternativas": []
         },
@@ -14214,7 +14214,7 @@
             "ch_exibida_h": 3301,
             "ch_estagio_h": null,
             "trecho": "80 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2019 QUEDAS DO IGUAÇU — CH exibida: 3301 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/quedas-do-iguacu/tecnico-em-informatica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/quedas-do-iguacu/tecnico-em-informatica.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -14261,7 +14261,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2019,",
-          "path": "dados/institucional/cursos/quedas-do-iguacu/tecnico-em-meio-ambiente.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/quedas-do-iguacu/tecnico-em-meio-ambiente.json",
           "linha": 30,
           "alternativas": []
         },
@@ -14305,7 +14305,7 @@
             "ch_exibida_h": 3253,
             "ch_estagio_h": null,
             "trecho": "201 — TÉCNICO EM MEIO AMBIENTE INTEGRADO - 2020 QUEDAS DO IGUAÇU — CH exibida: 3253 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/quedas-do-iguacu/tecnico-em-meio-ambiente.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/quedas-do-iguacu/tecnico-em-meio-ambiente.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -14352,7 +14352,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2019,",
-          "path": "dados/institucional/cursos/telemaco-borba/engenharia-eletrica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/engenharia-eletrica.json",
           "linha": 18,
           "alternativas": []
         }
@@ -14403,7 +14403,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/telemaco-borba/licenciatura-em-fisica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/licenciatura-em-fisica.json",
           "linha": 18,
           "alternativas": []
         },
@@ -14478,7 +14478,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio.json",
           "linha": 32,
           "alternativas": []
         },
@@ -14517,7 +14517,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": null,
             "trecho": "4 — TÉCNICO EM AUTOMAÇÃO INDUSTRIAL INTEGRADO - 2019 TELEMACO BORBA — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -14527,7 +14527,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": null,
             "trecho": "851 — TÉCNICO EM AUTOMAÇÃO INDUSTRIAL INTEGRADO - 2019 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -14537,7 +14537,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": null,
             "trecho": "881 — TÉCNICO EM AUTOMAÇÃO INDUSTRIAL INTEGRADO - 2026 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -14584,7 +14584,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json",
           "linha": 32,
           "alternativas": []
         },
@@ -14623,7 +14623,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": null,
             "trecho": "21 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2019 TELEMACO BORBA — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -14633,7 +14633,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": null,
             "trecho": "852 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2019 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -14643,7 +14643,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": null,
             "trecho": "862 — TÉCNICO EM INFORMÁTICA PARA INTERNET INTEGRADO - 2026 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -14690,7 +14690,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/telemaco-borba/tecnico-em-mecanica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-mecanica.json",
           "linha": 32,
           "alternativas": []
         },
@@ -14729,7 +14729,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": null,
             "trecho": "26 — TÉCNICO EM MECÂNICA INTEGRADO - 2019 TELEMACO BORBA — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/telemaco-borba/tecnico-em-mecanica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-mecanica.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -14739,7 +14739,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": null,
             "trecho": "863 — TÉCNICO EM MECÂNICA INTEGRADO - 2026 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/telemaco-borba/tecnico-em-mecanica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-mecanica.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -14749,7 +14749,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": null,
             "trecho": "853 — TÉCNICO EM MECÂNICA INTEGRADO - 2019 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/telemaco-borba/tecnico-em-mecanica.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-mecanica.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -14796,7 +14796,7 @@
           "status_curadoria": "Pendente",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/telemaco-borba/tecnico-em-programacao-de-jogos-digitais.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-programacao-de-jogos-digitais.json",
           "linha": 32,
           "alternativas": []
         },
@@ -14835,7 +14835,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": null,
             "trecho": "17 — TÉCNICO EM PROGRAMAÇÃO DE JOGOS DIGITAIS INTEGRADO - 2018 TELEMACO BORBA — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/telemaco-borba/tecnico-em-programacao-de-jogos-digitais.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-programacao-de-jogos-digitais.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -14845,7 +14845,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": null,
             "trecho": "854 — TÉCNICO EM PROGRAMAÇÃO DE JOGOS DIGITAIS INTEGRADO - 2018 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/telemaco-borba/tecnico-em-programacao-de-jogos-digitais.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-programacao-de-jogos-digitais.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -14855,7 +14855,7 @@
             "ch_exibida_h": 3200,
             "ch_estagio_h": null,
             "trecho": "864 — TÉCNICO EM PROGRAMAÇÃO DE JOGOS DIGITAIS INTEGRADO - 2026 TELEMACO BORBA (Trimestre) — CH exibida: 3200 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/telemaco-borba/tecnico-em-programacao-de-jogos-digitais.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-programacao-de-jogos-digitais.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -14902,7 +14902,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/telemaco-borba/tecnologia-em-manutencao-industrial.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnologia-em-manutencao-industrial.json",
           "linha": 18,
           "alternativas": []
         }
@@ -14953,7 +14953,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/umuarama/bacharelado-em-arquitetura-e-urbanismo.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/umuarama/bacharelado-em-arquitetura-e-urbanismo.json",
           "linha": 18,
           "alternativas": []
         }
@@ -15004,7 +15004,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/umuarama/licenciatura-em-ciencias-biologicas.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/umuarama/licenciatura-em-ciencias-biologicas.json",
           "linha": 18,
           "alternativas": []
         }
@@ -15055,7 +15055,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/umuarama/licenciatura-em-quimica.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/umuarama/licenciatura-em-quimica.json",
           "linha": 18,
           "alternativas": []
         },
@@ -15130,7 +15130,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2018,",
-          "path": "dados/institucional/cursos/umuarama/tecnico-em-edificacoes-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/umuarama/tecnico-em-edificacoes-integrado-ao-ensino-medio.json",
           "linha": 31,
           "alternativas": []
         },
@@ -15169,7 +15169,7 @@
             "ch_exibida_h": 3789,
             "ch_estagio_h": null,
             "trecho": "12 — TÉCNICO EM EDIFICAÇÕES INTEGRADO - 2016 UMUARAMA — CH exibida: 3789 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/umuarama/tecnico-em-edificacoes-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/umuarama/tecnico-em-edificacoes-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -15179,7 +15179,7 @@
             "ch_exibida_h": 3789,
             "ch_estagio_h": null,
             "trecho": "872 — TÉCNICO EM EDIFICAÇÕES INTEGRADO - 2016 UMUARAMA (Trimestral) — CH exibida: 3789 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/umuarama/tecnico-em-edificacoes-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/umuarama/tecnico-em-edificacoes-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -15226,7 +15226,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2014,",
-          "path": "dados/institucional/cursos/umuarama/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/umuarama/tecnico-em-informatica-integrado-ao-ensino-medio.json",
           "linha": 31,
           "alternativas": []
         },
@@ -15265,7 +15265,7 @@
             "ch_exibida_h": 3545,
             "ch_estagio_h": null,
             "trecho": "49 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2015 UMUARAMA — CH exibida: 3545 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/umuarama/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/umuarama/tecnico-em-informatica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -15275,7 +15275,7 @@
             "ch_exibida_h": 3545,
             "ch_estagio_h": null,
             "trecho": "873 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2015 UMUARAMA (Trimestral) — CH exibida: 3545 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/umuarama/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/umuarama/tecnico-em-informatica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -15322,7 +15322,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2014,",
-          "path": "dados/institucional/cursos/umuarama/tecnico-em-quimica-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/umuarama/tecnico-em-quimica-integrado-ao-ensino-medio.json",
           "linha": 31,
           "alternativas": []
         },
@@ -15361,7 +15361,7 @@
             "ch_exibida_h": 3683,
             "ch_estagio_h": null,
             "trecho": "57 — TÉCNICO EM QUÍMICA INTEGRADO - 2014 UMUARAMA — CH exibida: 3683 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/umuarama/tecnico-em-quimica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/umuarama/tecnico-em-quimica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -15371,7 +15371,7 @@
             "ch_exibida_h": 3683,
             "ch_estagio_h": null,
             "trecho": "874 — TÉCNICO EM QUÍMICA INTEGRADO - 2014 UMUARAMA (Trimestral) — CH exibida: 3683 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/umuarama/tecnico-em-quimica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/umuarama/tecnico-em-quimica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           }
@@ -15418,7 +15418,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/umuarama/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/umuarama/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json",
           "linha": 18,
           "alternativas": []
         },
@@ -15481,7 +15481,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/umuarama/tecnologia-em-gestao-do-agronegocio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/umuarama/tecnologia-em-gestao-do-agronegocio.json",
           "linha": 18,
           "alternativas": []
         }
@@ -15532,7 +15532,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/uniao-da-vitoria/bacharelado-em-agronomia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/uniao-da-vitoria/bacharelado-em-agronomia.json",
           "linha": 18,
           "alternativas": []
         },
@@ -15619,7 +15619,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2023,",
-          "path": "dados/institucional/cursos/uniao-da-vitoria/especializacao-em-educacao-ciencia-e-tecnologia.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/uniao-da-vitoria/especializacao-em-educacao-ciencia-e-tecnologia.json",
           "linha": 18,
           "alternativas": []
         }
@@ -15670,7 +15670,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2025,",
-          "path": "dados/institucional/cursos/uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio.json",
           "linha": 30,
           "alternativas": []
         },
@@ -15721,7 +15721,7 @@
             "ch_exibida_h": 3264,
             "ch_estagio_h": null,
             "trecho": "15 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2015 UNIÃO DA VITÓRIA — CH exibida: 3264 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-            "path": "dados/institucional/cursos/uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": false
           },
@@ -15731,7 +15731,7 @@
             "ch_exibida_h": 3300,
             "ch_estagio_h": 70,
             "trecho": "463 — TÉCNICO EM INFORMÁTICA INTEGRADO - 2024 UNIÃO DA VITÓRIA — CH exibida: 3300 h; estágio exigido: Sim; CH mínima de estágio (separada): 70",
-            "path": "dados/institucional/cursos/uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": true
           }
@@ -15778,7 +15778,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2016,",
-          "path": "dados/institucional/cursos/uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja.json",
           "linha": 19,
           "alternativas": []
         },
@@ -15865,7 +15865,7 @@
           "status_curadoria": "Revisado",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/uniao-da-vitoria/tecnico-em-meio-ambiente-integrado-ao-ensino-medio.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/uniao-da-vitoria/tecnico-em-meio-ambiente-integrado-ao-ensino-medio.json",
           "linha": 30,
           "alternativas": []
         },
@@ -15904,7 +15904,7 @@
             "ch_exibida_h": 3332,
             "ch_estagio_h": 120,
             "trecho": "23 — TÉCNICO EM MEIO AMBIENTE INTEGRADO - 2019 UNIÃO DA VITÓRIA — CH exibida: 3332 h; estágio exigido: Sim; CH mínima de estágio (separada): 120",
-            "path": "dados/institucional/cursos/uniao-da-vitoria/tecnico-em-meio-ambiente-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/uniao-da-vitoria/tecnico-em-meio-ambiente-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": true
           },
@@ -15914,7 +15914,7 @@
             "ch_exibida_h": 3452,
             "ch_estagio_h": 120,
             "trecho": "462 — TÉCNICO EM MEIO AMBIENTE INTEGRADO - 2024 UNIÃO DA VITÓRIA — CH exibida: 3452 h; estágio exigido: Sim; CH mínima de estágio (separada): 120",
-            "path": "dados/institucional/cursos/uniao-da-vitoria/tecnico-em-meio-ambiente-integrado-ao-ensino-medio.json",
+            "path": "base-conhecimento/institucional/ifpr/cursos/uniao-da-vitoria/tecnico-em-meio-ambiente-integrado-ao-ensino-medio.json",
             "linha": 18,
             "estagio_exigido": true
           }
@@ -15961,7 +15961,7 @@
           "status_curadoria": "Precisa de revisão",
           "regra": "dados-institucionais",
           "trecho_fonte": "\"ano_documento\": 2022,",
-          "path": "dados/institucional/cursos/uniao-da-vitoria/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/uniao-da-vitoria/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json",
           "linha": 18,
           "alternativas": []
         },

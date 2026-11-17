@@ -4,14 +4,14 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { ehDiretorio, listarDiretorio, naBase } from "../caminhos.ts";
 import { taxonomiasPublicadas, TIPOS_SECAO_INDEXADOS, VERSAO_INDICE } from "../indice-ppcs.ts";
-import { ehObjeto, type ObjetoJson, itensDe, valoresIguais } from "@simplifica-if/kb/json";
+import { ehObjeto, type ObjetoJson, valoresIguais } from "@simplifica-if/kb/json";
 import { ehErroFrontMatter } from "@simplifica-if/kb/normas/front-matter";
 import { analisarPpc, idPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import { MINIMO_CARACTERES_SECAO, TAXONOMIAS } from "@simplifica-if/kb/ppcs/secoes";
 import { validarJsonSchema } from "@simplifica-if/kb/schema";
 import type { IndicePpcpsJson, IndicePpcsJson, SecaoPpcJson } from "../tipos-schemas.ts";
 import { aparar, ESPACOS, lerTexto, linhasDeArquivo, ordenarCaminhos, ordenarTextos } from "@simplifica-if/kb/texto";
-import { campiLegiveis, type CursoCampus, type PpcCurso } from "./campi.ts";
+import { carregarDadosInstitucionais } from "../../dados/institucional.ts";
 import { type Contexto, ehRecebido, listaOrdenada, mesmosElementos, type Recebido } from "./contexto.ts";
 
 type ItemIndicePpcs = IndicePpcsJson["items"][number];
@@ -26,24 +26,15 @@ const TIPOS_POR_TAXONOMIA = new Map(
   Object.entries(TAXONOMIAS).map(([nome, taxonomia]) => [nome, new Set(taxonomia.tipos.map((d) => d.tipo))]),
 );
 
-/** PPCs convertidos declarados nos campi: `campus/curso` → caminho do Markdown existente. */
-function ppcsConvertidosDosCampi(ctx: Contexto): Map<string, string> {
+/** PPCs convertidos declarados nos cursos: `campus/curso` → caminho do Markdown existente. */
+function ppcsConvertidosDosCursos(ctx: Contexto): Map<string, string> {
   const ppcs = new Map<string, string>();
-  for (const [campusId, dados] of campiLegiveis(ctx)) {
-    for (const curso of itensDe(dados.cursos)) {
-      if (!ehRecebido<CursoCampus>(curso)) continue;
-      const cursoSlug = curso.curso_slug;
-      const ppc = curso.ppc;
-      if (typeof cursoSlug !== "string" || !ehRecebido<PpcCurso>(ppc)) continue;
-      const caminhoMarkdown = ppc.markdown_path;
-      if (
-        ehRecebido<PpcCurso["conversao"]>(ppc.conversao) &&
-        ppc.conversao.status === "convertido" &&
-        typeof caminhoMarkdown === "string" &&
-        NodeFS.existsSync(naBase(ctx.c, caminhoMarkdown))
-      ) {
-        ppcs.set(`${campusId}/${cursoSlug}`, caminhoMarkdown);
-      }
+  // Registro inválido fica de fora; a validação dos registros institucionais o acusa.
+  const { dados } = carregarDadosInstitucionais(NodePath.join(ctx.c.institucional, "ifpr"));
+  for (const curso of dados.cursos) {
+    const caminhoMarkdown = curso.ppc?.markdown_path;
+    if (curso.ppc?.url && caminhoMarkdown && NodeFS.existsSync(naBase(ctx.c, caminhoMarkdown))) {
+      ppcs.set(`${curso.campus_id}/${curso.curso_slug}`, caminhoMarkdown);
     }
   }
   return ppcs;
@@ -171,7 +162,7 @@ export function validarPpcs(ctx: Contexto, manifest: unknown): string[] {
     erros.push("institucional_manifest.json: total_itens de ppcs-ifpr diverge do index.json");
   }
 
-  const ppcsEsperados = ppcsConvertidosDosCampi(ctx);
+  const ppcsEsperados = ppcsConvertidosDosCursos(ctx);
   const idsVistos = new Set<string>();
   const itensPorId = new Map<string, Recebido<ItemIndicePpcs>>();
   for (const item of itens) {
@@ -198,7 +189,7 @@ export function validarPpcs(ctx: Contexto, manifest: unknown): string[] {
       erros.push(`${rIndice}: path inexistente em ${ppcId}: ${valorPath}`);
     const esperado = ppcsEsperados.get(ppcId);
     if (esperado !== undefined && valorPath !== esperado) {
-      erros.push(`${rIndice}: path diverge do campus JSON em ${ppcId}: ${valorPath}`);
+      erros.push(`${rIndice}: path diverge do registro do curso em ${ppcId}: ${valorPath}`);
     }
     erros.push(...validarProvenienciaItem(ctx, item, ppcId, valorPath));
   }
@@ -206,7 +197,7 @@ export function validarPpcs(ctx: Contexto, manifest: unknown): string[] {
   const idsEsperados = new Set(ppcsEsperados.keys());
   if (!mesmosElementos(idsVistos, idsEsperados)) {
     erros.push(
-      `índice de PPCs não cobre exatamente os PPCs convertidos dos campi: index=${listaOrdenada(idsVistos)} campi=${listaOrdenada(idsEsperados)}`,
+      `índice de PPCs não cobre exatamente os PPCs convertidos dos cursos: index=${listaOrdenada(idsVistos)} cursos=${listaOrdenada(idsEsperados)}`,
     );
   }
 

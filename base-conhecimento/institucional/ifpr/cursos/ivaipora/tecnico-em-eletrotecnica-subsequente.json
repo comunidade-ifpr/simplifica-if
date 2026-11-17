@@ -1,0 +1,33 @@
+{
+  "campus_id": "ivaipora",
+  "curso_slug": "tecnico-em-eletrotecnica-subsequente",
+  "nome": "Técnico em Eletrotécnica",
+  "nivel": "médio",
+  "forma_oferta": "subsequente",
+  "modalidade": "presencial",
+  "situacao": "ativo",
+  "pagina_oficial": "https://ifpr.edu.br/ivaipora/",
+  "cnct_id": "cnct:tecnico-em-eletrotecnica",
+  "suap": {
+    "id": 341,
+    "codigo": "ELES1",
+    "vagas": 40,
+    "coletado_em": "2026-05-25",
+    "atualizado_em": "2026-05-25",
+    "matrizes": {
+      "resumo": "612 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2013 IVAIPORÃ — CH exibida: 1333 h; estágio exigido: Não; CH mínima de estágio (separada): -\n614 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2014 IVAIPORÃ — CH exibida: 1333 h; estágio exigido: Não; CH mínima de estágio (separada): -\n615 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2015 IVAIPORÃ — CH exibida: 1333 h; estágio exigido: Não; CH mínima de estágio (separada): -\n856 — TÉCNICO EM ELETROTÉCNICA SUBSEQUENTE - 2026 - IVAIPORÃ — CH exibida: 1211 h; estágio exigido: Não; CH mínima de estágio (separada): -",
+      "urls": [
+        "https://suap.ifpr.edu.br/edu/matriz/612/",
+        "https://suap.ifpr.edu.br/edu/matriz/614/",
+        "https://suap.ifpr.edu.br/edu/matriz/615/",
+        "https://suap.ifpr.edu.br/edu/matriz/856/"
+      ],
+      "situacao": "Múltiplas — CH divergentes",
+      "coletado_em": "2026-11-05T16:04:00.000-03:00"
+    }
+  },
+  "ppc": {
+    "ano_documento": 2025,
+    "observacoes": "URL do PDF retirada em 17/11/2026: era um anexo do SUAP no S3, privado sem a assinatura temporária. Falta localizar o PDF público do PPC (site do campus) e preencher ppc.url."
+  }
+}

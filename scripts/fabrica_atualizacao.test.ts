@@ -22,7 +22,7 @@ describe("fábrica da atualização", () => {
     const git = (...args: string[]) =>
       NodeChildProcess.execFileSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", ...args], { cwd: repo });
     git("init", "-q");
-    for (const pasta of ["base-conhecimento", "dados/institucional", "packages/kb", ".agents/skills"]) {
+    for (const pasta of ["base-conhecimento", "packages/kb", ".agents/skills"]) {
       NodeFS.mkdirSync(NodePath.join(repo, pasta), { recursive: true });
       NodeFS.writeFileSync(NodePath.join(repo, pasta, "LEIAME"), "x\n");
     }

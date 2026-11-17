@@ -1,0 +1,353 @@
+{
+  "reuniao_id": "consepe:reuniao:2026-03-20",
+  "conselho_id": "consepe",
+  "titulo": "Reunião Ordinária CONSEPE - 20/03/2026",
+  "data": "2026-03-20",
+  "tipo": "ordinária",
+  "situacao": "realizada",
+  "fonte": "https://ifpr.edu.br/institucional/orgaos-colegiados/conselho-de-ensino-pesquisa-e-extensao/pautas/pautas-consepe-2026/",
+  "documentos": [
+    {
+      "documento_id": "consepe:documento:pauta:2026-03-20",
+      "tipo": "pauta",
+      "titulo": "Pauta - Reunião Ordinária CONSEPE - 20/03/2026",
+      "ano": 2026,
+      "data": "2026-03-20",
+      "resumo": "Pauta oficial da reunião do Consepe publicada no site do IFPR.",
+      "url": "https://ifpr.edu.br/wp-content/uploads/2026/03/1-CONSEPE-2.pdf",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:01",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 01/2026",
+      "numero": "01/2026",
+      "ano": 2026,
+      "data": "2026-03-20",
+      "resumo": "Favorável à Proposta de Abertura do Curso Técnico em Eletrotécnica, do Campus Telêmaco Borba.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4301579&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:02",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 02/2026",
+      "numero": "02/2026",
+      "ano": 2026,
+      "data": "2026-03-20",
+      "resumo": "Favorável à Proposta de Abertura do Curso Técnico em Informática para Internet, do Campus Quedas do Iguaçu.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4300683&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:03",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 03/2026",
+      "numero": "03/2026",
+      "ano": 2026,
+      "data": "2026-03-20",
+      "resumo": "Favorável à Proposta de Abertura do Curso Técnico em Instrumentação Industrial, do Campus Telêmaco Borba.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4301585&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:04",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 04/2026",
+      "numero": "04/2026",
+      "ano": 2026,
+      "data": "2026-03-20",
+      "resumo": "Favorável à Proposta de Abertura do Curso Superior de Bacharelado em Engenharia de Computação, do Campus Telêmaco Borba.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4301587&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:05",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 05/2026",
+      "numero": "05/2026",
+      "ano": 2026,
+      "data": "2026-03-20",
+      "resumo": "Favorável à Proposta de Abertura do Curso Técnico em Química Integrado ao Ensino Médio, do Campus Irati.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4301588&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:06",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 06/2026",
+      "numero": "06/2026",
+      "ano": 2026,
+      "data": "2026-03-20",
+      "resumo": "Favorável ao pedido de Suspensão por Tempo Indeterminado do Curso Técnico em Melhoria de Processos (subsequente), do Campus Arapongas.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4301631&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:07",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 07/2026",
+      "numero": "07/2026",
+      "ano": 2026,
+      "data": "2026-03-20",
+      "resumo": "Favorável ao Projeto Pedagógico do Curso Superior em Ciência da Computação, do Campus Pinhais.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4301634&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:08",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 08/2026",
+      "numero": "08/2026",
+      "ano": 2026,
+      "data": "2026-03-20",
+      "resumo": "Favorável à Proposta de Abertura do Curso Técnico em Agroindústria, do Campus Palmas.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4301637&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:09",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 09/2026",
+      "numero": "09/2026",
+      "ano": 2026,
+      "data": "2026-03-20",
+      "resumo": "Favorável ao Projeto Pedagógico do Curso Superior de Engenharia Mecânica, do Campus Paranaguá.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4301642&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:10",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 10/2026",
+      "numero": "10/2026",
+      "ano": 2026,
+      "data": "2026-03-20",
+      "resumo": "Favorável à Alteração da Resolução nº 65/2017 que instituiu o Centro de Línguas (CELIF) no âmbito do IFPR.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4301828&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    },
+    {
+      "documento_id": "consepe:parecer:2026:11",
+      "tipo": "parecer",
+      "titulo": "Parecer Consepe 11/2026",
+      "numero": "11/2026",
+      "ano": 2026,
+      "data": "2026-03-20",
+      "resumo": "Favorável à Minuta do Regulamento do Processo de Certificação Profissional da Rede Certifica no âmbito do IFPR.",
+      "url": "https://sei.ifpr.edu.br/sei/publicacoes/controlador_publicacoes.php?acao=publicacao_visualizar&id_documento=4301833&id_orgao_publicacao=0",
+      "coletado_em": "2026-07-06",
+      "extracao": "metadados"
+    }
+  ],
+  "itens_pauta": [
+    {
+      "item_id": "consepe:item:2026:parecer:01",
+      "ordem": 1,
+      "titulo": "Parecer Consepe 01/2026 - Favorável à Proposta de Abertura do Curso Técnico em Eletrotécnica, do Campus Telêmaco Borba.",
+      "resumo": "Favorável à Proposta de Abertura do Curso Técnico em Eletrotécnica, do Campus Telêmaco Borba.",
+      "tipo_demanda": "Abertura de curso",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:01",
+      "processo_sei": "23411.011614/2025-47",
+      "campus_texto": "Telêmaco Borba",
+      "campus_id": "telemaco-borba",
+      "curso_texto": "Técnico em Eletrotécnica",
+      "curso_id": "telemaco-borba/tecnico-em-eletrotecnica-integrado-ao-ensino-medio",
+      "palavras_chave": [
+        "Abertura de curso",
+        "Telêmaco Borba"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:02",
+      "ordem": 2,
+      "titulo": "Parecer Consepe 02/2026 - Favorável à Proposta de Abertura do Curso Técnico em Informática para Internet, do Campus Quedas do Iguaçu.",
+      "resumo": "Favorável à Proposta de Abertura do Curso Técnico em Informática para Internet, do Campus Quedas do Iguaçu.",
+      "tipo_demanda": "Abertura de curso",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:02",
+      "processo_sei": "23411.006317/2025-80",
+      "campus_texto": "Quedas do Iguaçu",
+      "campus_id": "quedas-do-iguacu",
+      "curso_texto": "Técnico em Informática para Internet",
+      "curso_id": "quedas-do-iguacu/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
+      "palavras_chave": [
+        "Abertura de curso",
+        "Quedas do Iguaçu"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:03",
+      "ordem": 3,
+      "titulo": "Parecer Consepe 03/2026 - Favorável à Proposta de Abertura do Curso Técnico em Instrumentação Industrial, do Campus Telêmaco Borba.",
+      "resumo": "Favorável à Proposta de Abertura do Curso Técnico em Instrumentação Industrial, do Campus Telêmaco Borba.",
+      "tipo_demanda": "Abertura de curso",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:03",
+      "processo_sei": "23411.016828/2025-18",
+      "campus_texto": "Telêmaco Borba",
+      "campus_id": "telemaco-borba",
+      "curso_texto": "Técnico em Instrumentação Industrial",
+      "curso_id": "telemaco-borba/tecnico-em-instrumentacao-industrial-subsequente",
+      "palavras_chave": [
+        "Abertura de curso",
+        "Telêmaco Borba"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:04",
+      "ordem": 4,
+      "titulo": "Parecer Consepe 04/2026 - Favorável à Proposta de Abertura do Curso Superior de Bacharelado em Engenharia de Computação, do Campus Telêmaco Borba.",
+      "resumo": "Favorável à Proposta de Abertura do Curso Superior de Bacharelado em Engenharia de Computação, do Campus Telêmaco Borba.",
+      "tipo_demanda": "Abertura de curso",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:04",
+      "processo_sei": "23411.009673/2025-55",
+      "campus_texto": "Telêmaco Borba",
+      "campus_id": "telemaco-borba",
+      "curso_texto": "Superior de Bacharelado em Engenharia de Computação",
+      "palavras_chave": [
+        "Abertura de curso",
+        "Telêmaco Borba"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:05",
+      "ordem": 5,
+      "titulo": "Parecer Consepe 05/2026 - Favorável à Proposta de Abertura do Curso Técnico em Química Integrado ao Ensino Médio, do Campus Irati.",
+      "resumo": "Favorável à Proposta de Abertura do Curso Técnico em Química Integrado ao Ensino Médio, do Campus Irati.",
+      "tipo_demanda": "Abertura de curso",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:05",
+      "processo_sei": "23411.005326/2025-53",
+      "campus_texto": "Irati",
+      "campus_id": "irati",
+      "curso_texto": "Técnico em Química Integrado ao Ensino Médio",
+      "curso_id": "irati/tecnico-em-quimica-integrado-ao-ensino-medio",
+      "palavras_chave": [
+        "Abertura de curso",
+        "Irati"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:06",
+      "ordem": 6,
+      "titulo": "Parecer Consepe 06/2026 - Favorável ao pedido de Suspensão por Tempo Indeterminado do Curso Técnico em Melhoria de Processos (subsequente), do Cam",
+      "resumo": "Favorável ao pedido de Suspensão por Tempo Indeterminado do Curso Técnico em Melhoria de Processos (subsequente), do Campus Arapongas.",
+      "tipo_demanda": "Suspensão de curso",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:06",
+      "processo_sei": "23411.011730/2025-66",
+      "campus_texto": "Arapongas",
+      "campus_id": "arapongas",
+      "curso_texto": "Técnico em Melhoria de Processos (subsequente)",
+      "curso_id": "arapongas/tecnico-em-melhoria-de-processos",
+      "palavras_chave": [
+        "Suspensão de curso",
+        "Arapongas"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:07",
+      "ordem": 7,
+      "titulo": "Parecer Consepe 07/2026 - Favorável ao Projeto Pedagógico do Curso Superior em Ciência da Computação, do Campus Pinhais.",
+      "resumo": "Favorável ao Projeto Pedagógico do Curso Superior em Ciência da Computação, do Campus Pinhais.",
+      "tipo_demanda": "PPC",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:07",
+      "processo_sei": "23411.010105/2025-05",
+      "campus_texto": "Pinhais",
+      "campus_id": "pinhais",
+      "curso_texto": "Superior em Ciência da Computação",
+      "curso_id": "pinhais/bacharelado-em-ciencia-da-computacao",
+      "palavras_chave": [
+        "PPC",
+        "Pinhais"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:08",
+      "ordem": 8,
+      "titulo": "Parecer Consepe 08/2026 - Favorável à Proposta de Abertura do Curso Técnico em Agroindústria, do Campus Palmas.",
+      "resumo": "Favorável à Proposta de Abertura do Curso Técnico em Agroindústria, do Campus Palmas.",
+      "tipo_demanda": "Abertura de curso",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:08",
+      "processo_sei": "23411.013919/2025-93",
+      "campus_texto": "Palmas",
+      "campus_id": "palmas",
+      "curso_texto": "Técnico em Agroindústria",
+      "curso_id": "palmas/tecnico-em-agroindustria",
+      "palavras_chave": [
+        "Abertura de curso",
+        "Palmas"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:09",
+      "ordem": 9,
+      "titulo": "Parecer Consepe 09/2026 - Favorável ao Projeto Pedagógico do Curso Superior de Engenharia Mecânica, do Campus Paranaguá.",
+      "resumo": "Favorável ao Projeto Pedagógico do Curso Superior de Engenharia Mecânica, do Campus Paranaguá.",
+      "tipo_demanda": "PPC",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:09",
+      "processo_sei": "23411.010182/2025-57",
+      "campus_texto": "Paranaguá",
+      "campus_id": "paranagua",
+      "curso_texto": "Superior de Engenharia Mecânica",
+      "palavras_chave": [
+        "PPC",
+        "Paranaguá"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:10",
+      "ordem": 10,
+      "titulo": "Parecer Consepe 10/2026 - Favorável à Alteração da Resolução nº 65/2017 que instituiu o Centro de Línguas (CELIF) no âmbito do IFPR.",
+      "resumo": "Favorável à Alteração da Resolução nº 65/2017 que instituiu o Centro de Línguas (CELIF) no âmbito do IFPR.",
+      "tipo_demanda": "Regulamento",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:10",
+      "processo_sei": "23411.017144/2025-25",
+      "palavras_chave": [
+        "Regulamento"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    },
+    {
+      "item_id": "consepe:item:2026:parecer:11",
+      "ordem": 11,
+      "titulo": "Parecer Consepe 11/2026 - Favorável à Minuta do Regulamento do Processo de Certificação Profissional da Rede Certifica no âmbito do IFPR.",
+      "resumo": "Favorável à Minuta do Regulamento do Processo de Certificação Profissional da Rede Certifica no âmbito do IFPR.",
+      "tipo_demanda": "Regulamento",
+      "resultado": "Favorável",
+      "documento_id": "consepe:parecer:2026:11",
+      "processo_sei": "23411.019945/2025-25",
+      "palavras_chave": [
+        "Regulamento"
+      ],
+      "trecho_pauta": "Item derivado da página oficial de Deliberações Consepe 2026; conferir pauta/ata para redação deliberativa completa."
+    }
+  ]
+}

@@ -41,11 +41,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Assis Chateaubriand; Técnico em Informática para Internet; Turmas: 1; Turno: Diurno (manhã + 2 tardes por semana)¹; Vagas: 40; Duração: 3 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/assis-chateaubriand-tecnico-em-informatica-para-internet-diurno-manha-2-tardes-por-semana-1.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/assis-chateaubriand-tecnico-em-informatica-para-internet-diurno-manha-2-tardes-por-semana-1.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json"
     },
     {
       "id": "curso:astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio",
@@ -83,11 +83,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Astorga; Técnico em Informática; Turmas: 1; Turno: Matutino; Vagas: 40; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/astorga-tecnico-em-informatica-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/astorga-tecnico-em-informatica-matutino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio.json"
     },
     {
       "id": "curso:barracao/tecnico-em-informatica",
@@ -125,11 +125,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Barracão; Técnico em Informática; Turmas: 1; Turno: Matutino; Vagas: 40; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/barracao-tecnico-em-informatica-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/barracao-tecnico-em-informatica-matutino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/barracao/tecnico-em-informatica.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/barracao/tecnico-em-informatica.json"
     },
     {
       "id": "curso:capanema/tecnico-em-informatica",
@@ -167,11 +167,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Capanema; Técnico em Informática; Turmas: 1; Turno: Matutino; Vagas: 40; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/capanema-tecnico-em-informatica-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/capanema-tecnico-em-informatica-matutino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/capanema/tecnico-em-informatica.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/capanema/tecnico-em-informatica.json"
     },
     {
       "id": "curso:cascavel/tecnico-em-informatica",
@@ -209,11 +209,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Cascavel; Técnico em Informática; Turmas: 1; Turno: Diurno (manhã+duas tardes)¹; Vagas: 40; Duração: 3 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/cascavel-tecnico-em-informatica-diurno-manha-duas-tardes-1.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/cascavel-tecnico-em-informatica-diurno-manha-duas-tardes-1.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/cascavel/tecnico-em-informatica.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/cascavel/tecnico-em-informatica.json"
     },
     {
       "id": "curso:colombo/tecnico-em-informatica-integrado-ao-ensino-medio",
@@ -251,11 +251,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Colombo; Técnico em Informática; Turmas: 1; Turno: Matutino; Vagas: 40; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/colombo-tecnico-em-informatica-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/colombo-tecnico-em-informatica-matutino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/colombo/tecnico-em-informatica-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/colombo/tecnico-em-informatica-integrado-ao-ensino-medio.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-informatica-integrado-ao-ensino-medio",
@@ -293,11 +293,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Informática; Turmas: 1; Turno: Matutino; Vagas: 30; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-informatica-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-informatica-matutino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio",
@@ -335,11 +335,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Programação de Jogos Digitais; Turmas: 1; Turno: Vespertino; Vagas: 30; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-programacao-de-jogos-digitais-vespertino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-programacao-de-jogos-digitais-vespertino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-telecomunicacoes",
@@ -373,11 +373,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Telecomunicações; Turmas: 1; Turno: Noturno; Vagas: 36; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-telecomunicacoes-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-telecomunicacoes-noturno.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-telecomunicacoes.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-telecomunicacoes.json"
     },
     {
       "id": "curso:foz-do-iguacu/tecnico-em-desenvolvimento-de-sistemas",
@@ -415,11 +415,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Foz do Iguaçu; Técnico em Desenvolvimento de Sistemas; Turmas: 1; Turno: Matutino; Vagas: 40; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/foz-do-iguacu-tecnico-em-desenvolvimento-de-sistemas-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/foz-do-iguacu-tecnico-em-desenvolvimento-de-sistemas-matutino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/foz-do-iguacu/tecnico-em-desenvolvimento-de-sistemas.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-desenvolvimento-de-sistemas.json"
     },
     {
       "id": "curso:goioere/tecnico-em-informatica",
@@ -457,11 +457,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Goioerê; Técnico em Informática; Turmas: 2; Turno: Matutino; Vagas: 80; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/goioere-tecnico-em-informatica-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/goioere-tecnico-em-informatica-matutino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/goioere/tecnico-em-informatica.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/goioere/tecnico-em-informatica.json"
     },
     {
       "id": "curso:irati/tecnico-em-informatica",
@@ -499,7 +499,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Irati; Técnico em Informática; Turmas: 1; Turno: Matutino; Vagas: 40; Duração: 3 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/irati-tecnico-em-informatica-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/irati-tecnico-em-informatica-matutino.json",
           "linha": 15
         },
         {
@@ -515,11 +515,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Irati; Técnico em Informática; Turmas: 2; Turno: Vespertino; Vagas: 80; Duração: 3 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/irati-tecnico-em-informatica-vespertino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/irati-tecnico-em-informatica-vespertino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/irati/tecnico-em-informatica.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/irati/tecnico-em-informatica.json"
     },
     {
       "id": "curso:ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio",
@@ -557,11 +557,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Ivaiporã; Técnico em Informática; Turmas: 1; Turno: Diurno (manhã e tarde)²; Vagas: 40; Duração: 3 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/ivaipora-tecnico-em-informatica-diurno-manha-e-tarde-2.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/ivaipora-tecnico-em-informatica-diurno-manha-e-tarde-2.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio.json"
     },
     {
       "id": "curso:jacarezinho/tecnico-em-informatica",
@@ -599,11 +599,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Jacarezinho; Técnico em Informática; Turmas: 1; Turno: Diurno; Vagas: 40; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/jacarezinho-tecnico-em-informatica-diurno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/jacarezinho-tecnico-em-informatica-diurno.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/jacarezinho/tecnico-em-informatica.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-informatica.json"
     },
     {
       "id": "curso:londrina/tecnico-em-informatica-integrado-ao-ensino-medio",
@@ -641,11 +641,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Londrina; Técnico em Informática; Turmas: 1; Turno: Vespertino; Vagas: 40; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/londrina-tecnico-em-informatica-vespertino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/londrina-tecnico-em-informatica-vespertino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/londrina/tecnico-em-informatica-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-informatica-integrado-ao-ensino-medio.json"
     },
     {
       "id": "curso:paranagua/tecnico-em-informatica",
@@ -683,11 +683,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Paranaguá; Técnico em Informática; Turmas: 1; Turno: Vespertino; Vagas: 40; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/paranagua-tecnico-em-informatica-vespertino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/paranagua-tecnico-em-informatica-vespertino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/paranagua/tecnico-em-informatica.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/paranagua/tecnico-em-informatica.json"
     },
     {
       "id": "curso:paranavai/tecnico-em-informatica",
@@ -725,11 +725,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Paranavaí; Técnico em Informática; Turmas: 1; Turno: Matutino; Vagas: 40; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/paranavai-tecnico-em-informatica-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/paranavai-tecnico-em-informatica-matutino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/paranavai/tecnico-em-informatica.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/paranavai/tecnico-em-informatica.json"
     },
     {
       "id": "curso:pinhais/tecnico-em-informatica-integrado-ao-ensino-medio",
@@ -767,7 +767,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Pinhais; Técnico em Informática; Turmas: 1; Turno: Matutino; Vagas: 40; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/pinhais-tecnico-em-informatica-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/pinhais-tecnico-em-informatica-matutino.json",
           "linha": 15
         },
         {
@@ -783,11 +783,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Pinhais; Técnico em Informática; Turmas: 1; Turno: Vespertino; Vagas: 40; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/pinhais-tecnico-em-informatica-vespertino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/pinhais-tecnico-em-informatica-vespertino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/pinhais/tecnico-em-informatica-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/pinhais/tecnico-em-informatica-integrado-ao-ensino-medio.json"
     },
     {
       "id": "curso:pitanga/tecnico-em-desenvolvimento-de-sistemas",
@@ -825,11 +825,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Pitanga; Técnico em Desenvolvimento de Sistemas; Turmas: 1; Turno: Matutino; Vagas: 40; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/pitanga-tecnico-em-desenvolvimento-de-sistemas-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/pitanga-tecnico-em-desenvolvimento-de-sistemas-matutino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/pitanga/tecnico-em-desenvolvimento-de-sistemas.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/pitanga/tecnico-em-desenvolvimento-de-sistemas.json"
     },
     {
       "id": "curso:quedas-do-iguacu/tecnico-em-informatica",
@@ -867,11 +867,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Quedas do Iguaçu; Técnico em Informática; Turmas: 1; Turno: Diurno (Manhã + 2 tardes por semana)¹; Vagas: 38; Duração: 3 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/quedas-do-iguacu-tecnico-em-informatica-diurno-manha-2-tardes-por-semana-1.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/quedas-do-iguacu-tecnico-em-informatica-diurno-manha-2-tardes-por-semana-1.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/quedas-do-iguacu/tecnico-em-informatica.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/quedas-do-iguacu/tecnico-em-informatica.json"
     },
     {
       "id": "curso:telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio",
@@ -909,11 +909,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Telêmaco Borba; Técnico em Informática para Internet; Turmas: 1; Turno: Matutino/Vespertino¹; Vagas: 40; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/telemaco-borba-tecnico-em-informatica-para-internet-matutino-vespertino1.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/telemaco-borba-tecnico-em-informatica-para-internet-matutino-vespertino1.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json"
     },
     {
       "id": "curso:telemaco-borba/tecnico-em-programacao-de-jogos-digitais",
@@ -951,11 +951,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Telêmaco Borba; Técnico em Programação de Jogos Digitais; Turmas: 1; Turno: Matutino/Vespertino¹; Vagas: 40; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/telemaco-borba-tecnico-em-programacao-de-jogos-digitais-matutino-vespertino1.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/telemaco-borba-tecnico-em-programacao-de-jogos-digitais-matutino-vespertino1.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/telemaco-borba/tecnico-em-programacao-de-jogos-digitais.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-programacao-de-jogos-digitais.json"
     },
     {
       "id": "curso:umuarama/tecnico-em-informatica-integrado-ao-ensino-medio",
@@ -993,11 +993,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Umuarama; Técnico em Informática; Turmas: 1; Turno: Matutino/Vespertino¹; Vagas: 40; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/umuarama-tecnico-em-informatica-matutino-vespertino1.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/umuarama-tecnico-em-informatica-matutino-vespertino1.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/umuarama/tecnico-em-informatica-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/umuarama/tecnico-em-informatica-integrado-ao-ensino-medio.json"
     },
     {
       "id": "curso:uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio",
@@ -1035,11 +1035,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "União da Vitória; Técnico em Informática; Turmas: 2; Turno: Diurno (Manhã + 2 tardes)¹; Vagas: 80; Duração: 3 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/uniao-da-vitoria-tecnico-em-informatica-diurno-manha-2-tardes-1.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/uniao-da-vitoria-tecnico-em-informatica-diurno-manha-2-tardes-1.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio.json"
     }
   ]
 }

@@ -44,7 +44,7 @@ Cada rodada grava `relatorio.json`, `resumo.md` e o stream-json bruto (`brutos/`
 
 ## Como os gabaritos são gerados
 
-`node scripts/avaliacao/gabaritos/gerar.ts` lê `dados/institucional/`, `base-conhecimento/manifest.json`, o CNCT e os PPCs convertidos, e grava em `gabaritos/` os conjuntos esperados (ordenados, sem data) e `universos.json`. Rode de novo depois de mudar essas fontes e revise o diff: ele é a mudança do gabarito. `--verificar` (ou `--check`) só confere. As citações de normas nos PPCs (Q02 e Q20) vêm do resolvedor de citações de `packages/kb`, o mesmo de `pnpm kb citacoes <id>`. O curso chega ao CNCT pelo `cnct_id` cadastrado em `dados/institucional/cursos/` (fase 3), e o turno das ofertas é o enum `turno_padronizado` (a grafia da fonte fica em `turno`).
+`node scripts/avaliacao/gabaritos/gerar.ts` lê os registros de `base-conhecimento/institucional/ifpr/`, `base-conhecimento/manifest.json`, o CNCT e os PPCs convertidos, e grava em `gabaritos/` os conjuntos esperados (ordenados, sem data) e `universos.json`. Rode de novo depois de mudar essas fontes e revise o diff: ele é a mudança do gabarito. `--verificar` (ou `--check`) só confere. As citações de normas nos PPCs (Q02 e Q20) vêm do resolvedor de citações de `packages/kb`, o mesmo de `pnpm kb citacoes <id>`. O curso chega ao CNCT pelo `cnct_id` cadastrado em `base-conhecimento/institucional/ifpr/cursos/` (fase 3), e o turno das ofertas é o enum `turno_padronizado` (a grafia da fonte fica em `turno`).
 
 O resolvedor tem conjunto anotado próprio em `resolvedor/citacoes-anotadas.yaml` (rascunho, revisão humana pendente), medido por `pnpm kb avaliar-resolvedor`.
 

@@ -52,7 +52,12 @@
           "tipo_item": {
             "enum": [
               "campus",
+              "curso",
               "processo_seletivo",
+              "edital_ingresso",
+              "oferta_ingresso",
+              "processo_sei_curso",
+              "reuniao_conselho",
               "referencia_institucional",
               "ppc",
               "ppcp"
@@ -60,7 +65,7 @@
           },
           "path": {
             "type": "string",
-            "pattern": "^institucional/ifpr/(campi|processos-seletivos|referencias|ppcs|ppcps)/index\\.json$"
+            "pattern": "^institucional/ifpr/(campi|cursos|processos-seletivos|editais|ofertas|processos-sei|conselhos|referencias|ppcs|ppcps)/index\\.json$"
           },
           "total_itens": {
             "type": "integer",

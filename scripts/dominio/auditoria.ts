@@ -118,7 +118,7 @@ function auditarMovimentacoes(movimentacoes: Movimentacao[], cursos: Set<string>
     const nome = rotulo("Movimentação de curso", movimentacao);
     if (movimentacao.cursoIds.length > 1) erros.push(`${nome}: Curso ID deve conter uma única chave`);
     for (const cursoId of movimentacao.cursoIds) {
-      if (!cursos.has(cursoId)) erros.push(`${nome}: Curso ID não existe em dados/institucional/: ${cursoId}`);
+      if (!cursos.has(cursoId)) erros.push(`${nome}: Curso ID não existe em institucional/ifpr/cursos/: ${cursoId}`);
     }
     if (movimentacao.numeroSei.trim() && !movimentacao.cursoIds.length) {
       erros.push(`${nome}: SEI Processo informado sem Curso ID`);

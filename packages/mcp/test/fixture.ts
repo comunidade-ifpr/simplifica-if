@@ -76,7 +76,7 @@ export function criarBancoFixture(opcoes: OpcoesFixture = {}, dir = diretorioTem
     ["assis-chateaubriand", "Assis Chateaubriand"],
     ["foz-do-iguacu", "Foz do Iguaçu"],
   ] as const) {
-    inserirCampus.run(`campus:${campus}`, campus, nome, `dados/institucional/campi/${campus}.json`);
+    inserirCampus.run(`campus:${campus}`, campus, nome, `base-conhecimento/institucional/ifpr/campi/${campus}.json`);
   }
 
   db.prepare(
@@ -106,7 +106,7 @@ export function criarBancoFixture(opcoes: OpcoesFixture = {}, dir = diretorioTem
     "tecnico-em-enfermagem",
     "Técnico em Enfermagem",
     "médio",
-    "dados/institucional/cursos/curitiba/tecnico-em-enfermagem.json",
+    "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-enfermagem.json",
   );
   inserirCurso.run(
     "curso:foz-do-iguacu/licenciatura-em-fisica",
@@ -114,7 +114,7 @@ export function criarBancoFixture(opcoes: OpcoesFixture = {}, dir = diretorioTem
     "licenciatura-em-fisica",
     "Licenciatura em Física",
     "superior",
-    "dados/institucional/cursos/foz-do-iguacu/licenciatura-em-fisica.json",
+    "base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/licenciatura-em-fisica.json",
   );
 
   const inserirSecao = db.prepare(

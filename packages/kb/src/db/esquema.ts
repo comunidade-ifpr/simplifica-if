@@ -146,7 +146,7 @@ CREATE TABLE editais (
   path TEXT NOT NULL
 );
 
--- id: <processo>/<oferta_id> (o caminho em dados/institucional/ofertas/), porque o oferta_id se repete entre processos.
+-- id: <processo>/<oferta_id> (o caminho em institucional/ifpr/ofertas/), porque o oferta_id se repete entre processos.
 CREATE TABLE ofertas (
   id TEXT PRIMARY KEY,
   oferta_id TEXT NOT NULL,
@@ -257,7 +257,7 @@ CREATE TABLE citacoes (
 ) WITHOUT ROWID;
 CREATE INDEX citacoes_ato ON citacoes(ato_id);
 
--- Fatos de PPC: extraídos do texto (status 'extraido') ou vindos de dados/institucional.
+-- Fatos de PPC: extraídos do texto (status 'extraido') ou vindos de institucional/ifpr.
 CREATE TABLE ppc_fatos (
   ppc_id TEXT NOT NULL REFERENCES ppcs(id),
   fato TEXT NOT NULL,

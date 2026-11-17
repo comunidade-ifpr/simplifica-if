@@ -4,21 +4,16 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { type CaminhosBase, relativo } from "../caminhos.ts";
 import { ehObjeto, type ObjetoJson, representar } from "@simplifica-if/kb/json";
-import { arquivosCampi } from "../indice-ppcs.ts";
 import { ehUrlAbsoluta, validarJsonSchema } from "@simplifica-if/kb/schema";
 import { lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";
 import type {
-  CampusJson,
   CursoCnctJson,
-  IndiceCampiJson,
   IndiceCnctJson,
   IndicePpcpsJson,
   IndicePpcsJson,
-  IndiceProcessosSeletivosJson,
   ManifestCatalogosJson,
   ManifestCnctJson,
   ManifestInstitucionalJson,
-  ProcessoSeletivoJson,
   SecaoPpcJson,
 } from "../tipos-schemas.ts";
 
@@ -29,10 +24,6 @@ export type Resultado<T> = { ok: true; valor: T } | { ok: false; erros: string[]
 export type FormatosSchemas = {
   manifestInstitucional: ManifestInstitucionalJson;
   manifestCatalogos: ManifestCatalogosJson;
-  indiceCampi: IndiceCampiJson;
-  campus: CampusJson;
-  indiceProcessosSeletivos: IndiceProcessosSeletivosJson;
-  processoSeletivo: ProcessoSeletivoJson;
   manifestCnct: ManifestCnctJson;
   indiceCnct: IndiceCnctJson;
   cursoCnct: CursoCnctJson;
@@ -145,9 +136,5 @@ export class Contexto {
     const lista = manifest[chaveLista];
     if (!Array.isArray(lista)) return undefined;
     return lista.find((item): item is ObjetoJson => ehObjeto(item) && item.id === id) ?? null;
-  }
-
-  arquivosCampi(): string[] {
-    return arquivosCampi(this.c);
   }
 }

@@ -2,7 +2,9 @@
 // @effect-diagnostics nodeBuiltinImport:off globalConsole:off -- script de execução única do pipeline da base, síncrono, com a casca de scripts/cli.ts: grava com node:fs e imprime no console
 /**
  * Gera os campos derivados do front matter das normas (relações de relacoes.yaml e status de
- * vigência na data_referencia de config/vigencia.yaml), manifest.json e a tabela do README.
+ * vigência na data_referencia de config/vigencia.yaml), manifest.json, a tabela do README e o
+ * index.json de cada coleção institucional (campi, cursos, processos seletivos, editais, ofertas,
+ * conselhos) e os JSON Schemas públicos dos registros (schemas/registros/).
  */
 import * as NodeFS from "node:fs";
 import { normasComCamposGerados } from "@simplifica-if/kb/normas/gerado";
@@ -10,11 +12,16 @@ import { criarCaminhos } from "./base/caminhos.ts";
 import { montarManifest } from "./base/front-matter.ts";
 import { lerArgumentos } from "./cli.ts";
 import { gravarBase, normasExistem, verificarBase } from "./base/readme.ts";
+import { carregarConselhos, gravarIndiceConselhos, verificarIndiceConselhos } from "./dados/conselhos.ts";
+import { gravarIndices, verificarIndices } from "./dados/indices.ts";
+import { gravarSchemasRegistros, verificarSchemasRegistros } from "./dados/schemas-publicos.ts";
+import { carregarDadosInstitucionais } from "./dados/institucional.ts";
 
 const USO = `uso: node scripts/gerar_base.ts [--check]
 
 Gera os campos derivados do front matter das normas (relações e status de vigência),
-manifest.json e a tabela do README a partir de normas/*.md, relacoes.yaml e config/vigencia.yaml.
+manifest.json e a tabela do README a partir de normas/*.md, relacoes.yaml e config/vigencia.yaml,
+e o index.json de cada coleção institucional a partir dos registros de institucional/ifpr/.
 
   --check     verifica se os arquivos gerados estão atualizados, sem gravar
   -h, --help  mostra esta ajuda`;
@@ -30,12 +37,21 @@ function main(): number {
   }
 
   const normas = normasComCamposGerados(caminhos.raizProjeto);
+  const institucional = carregarDadosInstitucionais();
+  const conselhos = carregarConselhos();
+  if (institucional.erros.length || conselhos.erros.length) {
+    for (const erro of [...institucional.erros, ...conselhos.erros]) console.error(`ERRO: ${erro}`);
+    return 1;
+  }
   if (args.values.check) {
     const erros = normas
       .filter((norma) => norma.atual !== norma.esperado)
       .map((norma) => `${norma.path}: campos gerados do front matter desatualizados (relações ou status de vigência)`);
     const manifest = montarManifest(caminhos);
     erros.push(...verificarBase(caminhos, manifest));
+    erros.push(...verificarIndices(institucional.dados));
+    erros.push(...verificarIndiceConselhos(conselhos.dados));
+    erros.push(...verificarSchemasRegistros());
     if (erros.length) {
       for (const erro of erros) console.error(`ERRO: ${erro}`);
       return 1;
@@ -48,7 +64,13 @@ function main(): number {
     if (norma.atual !== norma.esperado) NodeFS.writeFileSync(norma.arquivo, norma.esperado, "utf-8");
   const manifest = montarManifest(caminhos);
   gravarBase(caminhos, manifest);
-  console.log(`Base gerada: ${manifest.length} normas publicadas.`);
+  const indices = gravarIndices(institucional.dados);
+  if (gravarIndiceConselhos(conselhos.dados)) indices.push("conselhos/index.json");
+  indices.push(...gravarSchemasRegistros());
+  console.log(
+    `Base gerada: ${manifest.length} normas publicadas` +
+      (indices.length ? `; gerados regravados: ${indices.join(", ")}.` : "."),
+  );
   return 0;
 }
 

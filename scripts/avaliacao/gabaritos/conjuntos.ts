@@ -56,7 +56,7 @@ function q01(fontes: Fontes): GabaritoConjunto {
     pergunta: "Q01",
     gerado_por: ARQUIVO_GERADOR,
     criterio:
-      "Cursos de dados/institucional/ com forma_oferta=integrado, situação ativo/em_oferta e cnct_id=cnct:tecnico-em-informatica. Detalhes trazem o ano do PPC e a carga horária da matriz no SUAP, como referência para curadoria.",
+      "Cursos de institucional/ifpr/cursos/ com forma_oferta=integrado, situação ativo/em_oferta e cnct_id=cnct:tecnico-em-informatica. Detalhes trazem o ano do PPC e a carga horária da matriz no SUAP, como referência para curadoria.",
     universo: "curso",
     avaliar_precisao: true,
     esperado: ordenar(cursos.map((curso) => `curso:${chave(curso)}`)),
@@ -199,7 +199,7 @@ function q08(fontes: Fontes): GabaritoConjunto {
     pergunta: "Q08",
     gerado_por: ARQUIVO_GERADOR,
     criterio:
-      "Campi das ofertas de dados/institucional/ofertas/processo-seletivo-2026/ cujo curso tem cnct_id de habilitação do eixo 'Informação e Comunicação' do CNCT. Detalhes: curso, turno padronizado (turno_padronizado), grafia da fonte (turno) e tipo de oferta.",
+      "Campi das ofertas de institucional/ifpr/ofertas/processo-seletivo-2026/ cujo curso tem cnct_id de habilitação do eixo 'Informação e Comunicação' do CNCT. Detalhes: curso, turno padronizado (turno_padronizado), grafia da fonte (turno) e tipo de oferta.",
     universo: "campus",
     avaliar_precisao: true,
     esperado: ordenar(turnos.keys()),
@@ -226,7 +226,7 @@ function q12(fontes: Fontes): GabaritoConjunto {
     pergunta: "Q12",
     gerado_por: ARQUIVO_GERADOR,
     criterio:
-      "Cursos de dados/institucional/ com nivel=médio e situação ativo ou em_oferta. Ficam fora os cursos em abertura (art. 70), suspensos e com situação incerta, listados em detalhes.",
+      "Cursos de institucional/ifpr/cursos/ com nivel=médio e situação ativo ou em_oferta. Ficam fora os cursos em abertura (art. 70), suspensos e com situação incerta, listados em detalhes.",
     universo: "curso",
     avaliar_precisao: true,
     esperado: ordenar(emOferta.map((curso) => `curso:${chave(curso)}`)),
@@ -251,7 +251,7 @@ function q13(fontes: Fontes): GabaritoConjunto {
     pergunta: "Q13",
     gerado_por: ARQUIVO_GERADOR,
     criterio:
-      "Cursos de dados/institucional/cursos/curitiba/ com nivel=médio, forma_oferta=subsequente e situação ativo/em_oferta.",
+      "Cursos de institucional/ifpr/cursos/curitiba/ com nivel=médio, forma_oferta=subsequente e situação ativo/em_oferta.",
     universo: "curso",
     avaliar_precisao: true,
     esperado: ordenar(cursos.map((curso) => `curso:${chave(curso)}`)),

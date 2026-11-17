@@ -1,0 +1,54 @@
+{
+  "id": "editais-ingresso-ifpr",
+  "title": "Editais de ingresso do IFPR",
+  "descricao": "Editais dos processos seletivos, um arquivo por edital.",
+  "tipo_item": "edital_ingresso",
+  "total_itens": 5,
+  "items": [
+    {
+      "id": "edital-87-2024",
+      "titulo": "Edital nº 87/2024 - Processo Seletivo IFPR 2025 - Cursos Técnicos Integrados",
+      "ano": 2024,
+      "processos": [
+        "processo-seletivo-2025"
+      ],
+      "path": "institucional/ifpr/editais/edital-87-2024.json"
+    },
+    {
+      "id": "edital-88-2024",
+      "titulo": "Edital nº 88/2024 - Processo Seletivo IFPR 2025 - Cursos Técnicos Subsequentes ao Ensino Médio",
+      "ano": 2024,
+      "processos": [
+        "processo-seletivo-2025"
+      ],
+      "path": "institucional/ifpr/editais/edital-88-2024.json"
+    },
+    {
+      "id": "edital-integrados-2026",
+      "titulo": "Edital do Processo Seletivo IFPR 2026 - Cursos Técnicos Integrados",
+      "ano": 2025,
+      "processos": [
+        "processo-seletivo-2026"
+      ],
+      "path": "institucional/ifpr/editais/edital-integrados-2026.json"
+    },
+    {
+      "id": "edital-subsequentes-curitiba-assis-2026",
+      "titulo": "Edital do Processo Seletivo IFPR 2026 - Cursos Técnicos Subsequentes de Curitiba e Assis Chateaubriand",
+      "ano": 2025,
+      "processos": [
+        "processo-seletivo-2026"
+      ],
+      "path": "institucional/ifpr/editais/edital-subsequentes-curitiba-assis-2026.json"
+    },
+    {
+      "id": "edital-subsequentes-demais-campi-2026",
+      "titulo": "Edital do Processo Seletivo IFPR 2026 - Cursos Técnicos Subsequentes dos demais campi",
+      "ano": 2025,
+      "processos": [
+        "processo-seletivo-2026"
+      ],
+      "path": "institucional/ifpr/editais/edital-subsequentes-demais-campi-2026.json"
+    }
+  ]
+}

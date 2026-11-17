@@ -2,7 +2,7 @@
 /**
  * Identificação do curso (curso, campus, forma de oferta, modalidade e eixo)
  * em PPCs Markdown e nos dados da conversão DOCX, mais a medição contra
- * `dados/institucional/cursos` numa amostra fixa da base.
+ * `base-conhecimento/institucional/ifpr/cursos` numa amostra fixa da base.
  *
  * Os trechos são mínimos e anonimizados, reproduzindo os formatos observados
  * nos PPCs da base.
@@ -345,7 +345,7 @@ describe("preparar-documento", () => {
   });
 });
 
-describe("medição contra dados/institucional", () => {
+describe("medição contra institucional/ifpr", () => {
   test("comparação por núcleo da denominação e por categoria", () => {
     expect(nucleoCurso("Curso Técnico em Informática Integrado ao Ensino Médio")).toBe("informatica");
     expect(nucleoCurso("Administração – PROEJA")).toBe("administracao");

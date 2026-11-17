@@ -5,7 +5,7 @@ estagio: confere 67, diverge 7, sem-fato-ppc 31, sem-suap 5
 ppc:assis-chateaubriand/tecnico-em-agropecuaria — Técnico em Agropecuária (Assis Chateaubriand)
   ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2021 ou posterior (anos: 2020)
   carga_horaria: diverge — PPC 1233 h; mais próxima: matriz 76 (2020): 1232 h (diferença +1 h)
-    ano_documento = 2021 [Revisado] dados/institucional/cursos/assis-chateaubriand/tecnico-em-agropecuaria.json:30: "ano_documento": 2021,
+    ano_documento = 2021 [Revisado] base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-agropecuaria.json:30: "ano_documento": 2021,
     carga_horaria_total_h = 1233 [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-agropecuaria.md:86: **Horário de oferta do curso:** segundas às sextas-feiras das 19:00h às 22:40h. **Carga horária total:** 1480 horas-aulas e 1233 horas-relógio
 
 ppc:assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio — Técnico em Informática para Internet (Assis Chateaubriand)
@@ -38,7 +38,7 @@ ppc:curitiba/tecnico-em-administracao-integrado-ao-ensino-medio — Técnico em 
 ppc:curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio — Técnico em Contabilidade (Curitiba)
   ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2015 ou posterior (anos: 2014)
   carga_horaria: diverge — PPC 3588 h; mais próxima: matriz 75 (2014): 3388 h (diferença +200 h)
-    ano_documento = 2015 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.json:31: "ano_documento": 2015,
+    ano_documento = 2015 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.json:31: "ano_documento": 2015,
     carga_horaria_total_h = 3588 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.md:79: **Horário de oferta do curso:** 1º e 2º Ano diurno: das 7h:15m às 12h:30m (semanalmente) e 13h:15m às 18h:30m (1 a 2 vezes por semana) e 3º ano matutino: das 7h
 
 ppc:curitiba/tecnico-em-eletrotecnica — Técnico em Eletrotécnica (Curitiba)
@@ -59,19 +59,19 @@ ppc:curitiba/tecnico-em-massoterapia — Técnico em Massoterapia (Curitiba)
 
 ppc:curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio — Técnico em Mecânica (Curitiba)
   ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2016 ou posterior (anos: 2014)
-    ano_documento = 2016 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio.json:31: "ano_documento": 2016,
+    ano_documento = 2016 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio.json:31: "ano_documento": 2016,
 
 ppc:curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio — Técnico em Petróleo e Gás (Curitiba)
   ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2017 ou posterior (anos: 2014)
-    ano_documento = 2017 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio.json:31: "ano_documento": 2017,
+    ano_documento = 2017 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio.json:31: "ano_documento": 2017,
 
 ppc:curitiba/tecnico-em-processos-fotograficos — Técnico em Processos Fotográficos (Curitiba)
   ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2018 ou posterior (anos: 2014)
-    ano_documento = 2018 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-processos-fotograficos.json:30: "ano_documento": 2018,
+    ano_documento = 2018 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-processos-fotograficos.json:30: "ano_documento": 2018,
 
 ppc:curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio — Técnico em Processos Fotográficos (Curitiba)
   ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2015 ou posterior (anos: 2014)
-    ano_documento = 2015 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio.json:31: "ano_documento": 2015,
+    ano_documento = 2015 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio.json:31: "ano_documento": 2015,
 
 ppc:curitiba/tecnico-em-producao-de-audio-e-video — Técnico em Produção de Áudio e Vídeo (Curitiba)
   carga_horaria: diverge — PPC 1213 h; mais próxima: matriz 68 (2023): 1231 h (diferença -18 h)
@@ -95,7 +95,7 @@ ppc:curitiba/tecnico-em-saude-bucal — Técnico em Saúde Bucal (Curitiba)
 ppc:foz-do-iguacu/tecnico-em-edificacoes-3 — Técnico em Edificações (Foz do Iguaçu)
   ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2016 ou posterior (anos: 2015)
   carga_horaria: diverge — PPC 3579 h; mais próxima: matriz 74 (2015): 3342 h (diferença +237 h)
-    ano_documento = 2016 [Precisa de revisão] dados/institucional/cursos/foz-do-iguacu/tecnico-em-edificacoes-3.json:30: "ano_documento": 2016,
+    ano_documento = 2016 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-edificacoes-3.json:30: "ano_documento": 2016,
     carga_horaria_total_h = 3579 [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/tecnico-em-edificacoes-3.md:93: **Carga horária total do curso:** 3.579,34 hora relógio e/ou 4.295,20 hora-aula horas.
 
 ppc:goioere/tecnico-em-informatica — Técnico em Informática (Goioerê)
@@ -108,19 +108,19 @@ ppc:goioere/tecnico-em-producao-de-moda — Técnico em Produção de Moda (Goio
 
 ppc:irati/tecnico-em-agroecologia — Técnico em Agroecologia (Irati)
   ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2025 ou posterior (anos: 2017, 2024)
-    ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/irati/tecnico-em-agroecologia.json:31: "ano_documento": 2025,
+    ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/irati/tecnico-em-agroecologia.json:31: "ano_documento": 2025,
 
 ppc:irati/tecnico-em-informatica — Técnico em Informática (Irati)
   ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2025 ou posterior (anos: 2017, 2024)
-    ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/irati/tecnico-em-informatica.json:31: "ano_documento": 2025,
+    ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/irati/tecnico-em-informatica.json:31: "ano_documento": 2025,
 
 ppc:ivaipora/tecnico-em-agroecologia-integrado — Técnico em Agroecologia (Ivaiporã)
   ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2016 ou posterior (anos: 2015)
-    ano_documento = 2016 [Precisa de revisão] dados/institucional/cursos/ivaipora/tecnico-em-agroecologia-integrado.json:30: "ano_documento": 2016,
+    ano_documento = 2016 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/ivaipora/tecnico-em-agroecologia-integrado.json:30: "ano_documento": 2016,
 
 ppc:ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio — Técnico em Informática (Ivaiporã)
   ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2023 ou posterior (anos: 2016)
-    ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio.json:30: "ano_documento": 2023,
+    ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio.json:30: "ano_documento": 2023,
 
 ppc:jacarezinho/tecnico-em-alimentos — Técnico em Alimentos (Jacarezinho)
   estagio: diverge — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 29 (2020))
@@ -191,7 +191,7 @@ ppc:quedas-do-iguacu/tecnico-em-informatica — Técnico em Informática (Quedas
 
 ppc:umuarama/tecnico-em-edificacoes-integrado-ao-ensino-medio — Técnico em Edificações (Umuarama)
   ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2018 ou posterior (anos: 2016)
-    ano_documento = 2018 [Precisa de revisão] dados/institucional/cursos/umuarama/tecnico-em-edificacoes-integrado-ao-ensino-medio.json:31: "ano_documento": 2018,
+    ano_documento = 2018 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/umuarama/tecnico-em-edificacoes-integrado-ao-ensino-medio.json:31: "ano_documento": 2018,
 
 ppc:umuarama/tecnico-em-informatica-integrado-ao-ensino-medio — Técnico em Informática (Umuarama)
   carga_horaria: diverge — PPC 3533 h; mais próxima: matriz 49 (2015): 3545 h (diferença -12 h)
@@ -203,4 +203,4 @@ ppc:umuarama/tecnico-em-quimica-integrado-ao-ensino-medio — Técnico em Quími
 
 ppc:uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio — Técnico em Informática (União da Vitória)
   ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2025 ou posterior (anos: 2015, 2024)
-    ano_documento = 2025 [Revisado] dados/institucional/cursos/uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio.json:30: "ano_documento": 2025,
+    ano_documento = 2025 [Revisado] base-conhecimento/institucional/ifpr/cursos/uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio.json:30: "ano_documento": 2025,

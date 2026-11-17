@@ -1,7 +1,7 @@
 {
   "pergunta": "Q12",
   "gerado_por": "scripts/avaliacao/gabaritos/conjuntos.ts",
-  "criterio": "Cursos de dados/institucional/ com nivel=médio e situação ativo ou em_oferta. Ficam fora os cursos em abertura (art. 70), suspensos e com situação incerta, listados em detalhes.",
+  "criterio": "Cursos de institucional/ifpr/cursos/ com nivel=médio e situação ativo ou em_oferta. Ficam fora os cursos em abertura (art. 70), suspensos e com situação incerta, listados em detalhes.",
   "universo": "curso",
   "avaliar_precisao": true,
   "esperado": [

@@ -22,7 +22,7 @@
         "ano_documento": 2023
       },
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/aperfeicoamento-em-educacao-para-relacoes-etnico-raciais.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/aperfeicoamento-em-educacao-para-relacoes-etnico-raciais.json"
     },
     {
       "id": "curso:curitiba/bacharelado-em-ciencias-contabeis",
@@ -42,7 +42,7 @@
         "ano_documento": 2025
       },
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/bacharelado-em-ciencias-contabeis.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/bacharelado-em-ciencias-contabeis.json"
     },
     {
       "id": "curso:curitiba/especializacao-em-ciencias-da-natureza-ensino-de-fisica-e-astronomia",
@@ -62,7 +62,7 @@
         "ano_documento": 2025
       },
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/especializacao-em-ciencias-da-natureza-ensino-de-fisica-e-astronomia.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-ciencias-da-natureza-ensino-de-fisica-e-astronomia.json"
     },
     {
       "id": "curso:curitiba/especializacao-em-design-educacional",
@@ -78,7 +78,7 @@
       "cnct": null,
       "ppc": null,
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/especializacao-em-design-educacional.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-design-educacional.json"
     },
     {
       "id": "curso:curitiba/especializacao-em-educacao-musical-para-educacao-basica",
@@ -94,7 +94,7 @@
       "cnct": null,
       "ppc": null,
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/especializacao-em-educacao-musical-para-educacao-basica.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-educacao-musical-para-educacao-basica.json"
     },
     {
       "id": "curso:curitiba/especializacao-em-educacao-profissional",
@@ -114,7 +114,7 @@
         "ano_documento": 2023
       },
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/especializacao-em-educacao-profissional.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-educacao-profissional.json"
     },
     {
       "id": "curso:curitiba/especializacao-em-gestao-e-negocios",
@@ -130,7 +130,7 @@
       "cnct": null,
       "ppc": null,
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/especializacao-em-gestao-e-negocios.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-gestao-e-negocios.json"
     },
     {
       "id": "curso:curitiba/especializacao-em-gestao-empresarial-contabil-e-tributaria",
@@ -146,7 +146,7 @@
       "cnct": null,
       "ppc": null,
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/especializacao-em-gestao-empresarial-contabil-e-tributaria.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-gestao-empresarial-contabil-e-tributaria.json"
     },
     {
       "id": "curso:curitiba/especializacao-em-gestao-publica",
@@ -166,7 +166,7 @@
         "ano_documento": 2017
       },
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/especializacao-em-gestao-publica.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-gestao-publica.json"
     },
     {
       "id": "curso:curitiba/especializacao-em-gestao-social-de-politicas-publicas",
@@ -186,7 +186,7 @@
         "ano_documento": 2021
       },
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/especializacao-em-gestao-social-de-politicas-publicas.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-gestao-social-de-politicas-publicas.json"
     },
     {
       "id": "curso:curitiba/licenciatura-em-educacao-do-campo",
@@ -206,7 +206,7 @@
         "ano_documento": 2023
       },
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/licenciatura-em-educacao-do-campo.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/licenciatura-em-educacao-do-campo.json"
     },
     {
       "id": "curso:curitiba/licenciatura-em-pedagogia",
@@ -226,7 +226,7 @@
         "ano_documento": 2023
       },
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/licenciatura-em-pedagogia.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/licenciatura-em-pedagogia.json"
     },
     {
       "id": "curso:curitiba/mestrado-profissional-em-educacao-profissional-e-tecnologica-profept",
@@ -242,7 +242,7 @@
       "cnct": null,
       "ppc": null,
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/mestrado-profissional-em-educacao-profissional-e-tecnologica-profept.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/mestrado-profissional-em-educacao-profissional-e-tecnologica-profept.json"
     },
     {
       "id": "curso:curitiba/mestrado-profissional-em-propriedade-intelectual-e-transferencia-de-tecnologia-para-inovacao-profnit",
@@ -258,7 +258,7 @@
       "cnct": null,
       "ppc": null,
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/mestrado-profissional-em-propriedade-intelectual-e-transferencia-de-tecnologia-para-inovacao-profnit.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/mestrado-profissional-em-propriedade-intelectual-e-transferencia-de-tecnologia-para-inovacao-profnit.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-administracao-integrado-ao-ensino-medio",
@@ -296,7 +296,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Administração; Turmas: 1; Turno: Matutino; Vagas: 30; Duração: 3 anos",
           "url_fonte": "https://sei.ifpr.edu.br/sei/modulos/pesquisa/md_pesq_documento_consulta_externa.php?9LibXMqGnN7gSpLFOOgUQFziRouBJ5VnVL5b7-UrE5Q7GkUT8wPLuH95dM3k3h0svK8oDe2VkVlFJxmy7CqeLV4BJT739Qeq7eOEEZNMH3izY5Xf0T2lahNatVmY24mO",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-administracao-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-administracao-matutino.json",
           "linha": 15
         },
         {
@@ -312,11 +312,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Administração; Turmas: 1; Turno: Matutino com contraturno a tarde; Vagas: 30; Duração: 3 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-administracao-matutino-com-contraturno-a-tarde.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-administracao-matutino-com-contraturno-a-tarde.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-condominio",
@@ -354,7 +354,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Condomínio; Turmas: 1; Turno: Noturno; Vagas: 40; Duração: 1 ano",
           "url_fonte": "https://ifpr.edu.br/wp-content/uploads/2024/10/ifpr_ps2025_edital_88.pdf",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-condominio-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-condominio-noturno.json",
           "linha": 15
         },
         {
@@ -370,11 +370,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Condomínio; Turmas: 1; Turno: Noturno; Vagas: 40; Duração: 1 ano",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-condominio-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-condominio-noturno.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-condominio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-condominio.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio",
@@ -412,7 +412,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Contabilidade; Turmas: 1; Turno: Matutino; Vagas: 30; Duração: 3 anos",
           "url_fonte": "https://sei.ifpr.edu.br/sei/modulos/pesquisa/md_pesq_documento_consulta_externa.php?9LibXMqGnN7gSpLFOOgUQFziRouBJ5VnVL5b7-UrE5Q7GkUT8wPLuH95dM3k3h0svK8oDe2VkVlFJxmy7CqeLV4BJT739Qeq7eOEEZNMH3izY5Xf0T2lahNatVmY24mO",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-contabilidade-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-contabilidade-matutino.json",
           "linha": 15
         },
         {
@@ -428,11 +428,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Contabilidade; Turmas: 1; Turno: Matutino com contraturno a tarde; Vagas: 30; Duração: 3 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-contabilidade-matutino-com-contraturno-a-tarde.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-contabilidade-matutino-com-contraturno-a-tarde.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-defesa-civil-ead",
@@ -453,7 +453,7 @@
       },
       "ppc": null,
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-defesa-civil-ead.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-defesa-civil-ead.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-edificacoes",
@@ -491,7 +491,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Edificações; Turmas: 1; Turno: Noturno; Vagas: 40; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/wp-content/uploads/2024/10/ifpr_ps2025_edital_88.pdf",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-edificacoes-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-edificacoes-noturno.json",
           "linha": 15
         },
         {
@@ -507,11 +507,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Edificações; Turmas: 1; Turno: Noturno; Vagas: 40; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-edificacoes-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-edificacoes-noturno.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-edificacoes.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-edificacoes.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-eletromecanica",
@@ -549,7 +549,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Eletromecânica; Turmas: 1; Turno: Noturno; Vagas: 30; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/wp-content/uploads/2024/10/ifpr_ps2025_edital_88.pdf",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-eletromecanica-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-eletromecanica-noturno.json",
           "linha": 15
         },
         {
@@ -565,11 +565,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Eletromecânica; Turmas: 1; Turno: Noturno; Vagas: 30; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-eletromecanica-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-eletromecanica-noturno.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-eletromecanica.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eletromecanica.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio",
@@ -607,7 +607,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Eletrônica; Turmas: 1; Turno: Vespertino; Vagas: 30; Duração: 3 anos",
           "url_fonte": "https://sei.ifpr.edu.br/sei/modulos/pesquisa/md_pesq_documento_consulta_externa.php?9LibXMqGnN7gSpLFOOgUQFziRouBJ5VnVL5b7-UrE5Q7GkUT8wPLuH95dM3k3h0svK8oDe2VkVlFJxmy7CqeLV4BJT739Qeq7eOEEZNMH3izY5Xf0T2lahNatVmY24mO",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-eletronica-vespertino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-eletronica-vespertino.json",
           "linha": 15
         },
         {
@@ -623,11 +623,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Eletrônica; Turmas: 1; Turno: Vespertino com contraturno pela manhã; Vagas: 30; Duração: 3 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-eletronica-vespertino-com-contraturno-pela-manha.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-eletronica-vespertino-com-contraturno-pela-manha.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-eletrotecnica",
@@ -665,7 +665,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Eletrotécnica; Turmas: 1; Turno: Noturno; Vagas: 35; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/wp-content/uploads/2024/10/ifpr_ps2025_edital_88.pdf",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-eletrotecnica-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-eletrotecnica-noturno.json",
           "linha": 15
         },
         {
@@ -681,11 +681,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Eletrotécnica; Turmas: 1; Turno: Noturno; Vagas: 35; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-eletrotecnica-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-eletrotecnica-noturno.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-eletrotecnica.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eletrotecnica.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-enfermagem",
@@ -723,7 +723,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Enfermagem; Turmas: 1; Turno: Matutino; Vagas: 30; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/wp-content/uploads/2024/10/ifpr_ps2025_edital_88.pdf",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-enfermagem-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-enfermagem-matutino.json",
           "linha": 15
         },
         {
@@ -739,11 +739,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Enfermagem; Turmas: 1; Turno: Matutino; Vagas: 30; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-enfermagem-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-enfermagem-matutino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-enfermagem.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-enfermagem.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-eventos",
@@ -781,7 +781,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Eventos; Turmas: 1; Turno: Noturno; Vagas: 35; Duração: 1 ano",
           "url_fonte": "https://ifpr.edu.br/wp-content/uploads/2024/10/ifpr_ps2025_edital_88.pdf",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-eventos-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-eventos-noturno.json",
           "linha": 15
         },
         {
@@ -797,11 +797,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Eventos; Turmas: 1; Turno: Noturno; Vagas: 35; Duração: 1 ano",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-eventos-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-eventos-noturno.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-eventos.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eventos.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-informatica-integrado-ao-ensino-medio",
@@ -839,7 +839,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Informática; Turmas: 1; Turno: Vespertino; Vagas: 30; Duração: 4 anos",
           "url_fonte": "https://sei.ifpr.edu.br/sei/modulos/pesquisa/md_pesq_documento_consulta_externa.php?9LibXMqGnN7gSpLFOOgUQFziRouBJ5VnVL5b7-UrE5Q7GkUT8wPLuH95dM3k3h0svK8oDe2VkVlFJxmy7CqeLV4BJT739Qeq7eOEEZNMH3izY5Xf0T2lahNatVmY24mO",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-informatica-vespertino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-informatica-vespertino.json",
           "linha": 15
         },
         {
@@ -855,11 +855,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Informática; Turmas: 1; Turno: Matutino; Vagas: 30; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-informatica-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-informatica-matutino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-massoterapia",
@@ -884,7 +884,7 @@
         "ano_documento": 2021
       },
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-massoterapia.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-massoterapia.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-mecanica",
@@ -922,7 +922,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Mecânica; Turmas: 1; Turno: Noturno; Vagas: 36; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/wp-content/uploads/2024/10/ifpr_ps2025_edital_88.pdf",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-mecanica-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-mecanica-noturno.json",
           "linha": 15
         },
         {
@@ -938,11 +938,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Mecânica; Turmas: 1; Turno: Noturno; Vagas: 36; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-mecanica-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-mecanica-noturno.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-mecanica.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-mecanica.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio",
@@ -980,7 +980,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Mecânica; Turmas: 1; Turno: Vespertino; Vagas: 30; Duração: 3 anos",
           "url_fonte": "https://sei.ifpr.edu.br/sei/modulos/pesquisa/md_pesq_documento_consulta_externa.php?9LibXMqGnN7gSpLFOOgUQFziRouBJ5VnVL5b7-UrE5Q7GkUT8wPLuH95dM3k3h0svK8oDe2VkVlFJxmy7CqeLV4BJT739Qeq7eOEEZNMH3izY5Xf0T2lahNatVmY24mO",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-mecanica-vespertino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-mecanica-vespertino.json",
           "linha": 15
         },
         {
@@ -996,11 +996,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Mecânica; Turmas: 1; Turno: Vespertino com contraturno pela manhã; Vagas: 30; Duração: 3 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-mecanica-vespertino-com-contraturno-pela-manha.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-mecanica-vespertino-com-contraturno-pela-manha.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio",
@@ -1038,7 +1038,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Petróleo e Gás; Turmas: 1; Turno: Matutino; Vagas: 30; Duração: 3 anos",
           "url_fonte": "https://sei.ifpr.edu.br/sei/modulos/pesquisa/md_pesq_documento_consulta_externa.php?9LibXMqGnN7gSpLFOOgUQFziRouBJ5VnVL5b7-UrE5Q7GkUT8wPLuH95dM3k3h0svK8oDe2VkVlFJxmy7CqeLV4BJT739Qeq7eOEEZNMH3izY5Xf0T2lahNatVmY24mO",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-petroleo-e-gas-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-petroleo-e-gas-matutino.json",
           "linha": 15
         },
         {
@@ -1054,11 +1054,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Petróleo e Gás; Turmas: 1; Turno: Matutino com contraturno a tarde; Vagas: 30; Duração: 3 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-petroleo-e-gas-matutino-com-contraturno-a-tarde.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-petroleo-e-gas-matutino-com-contraturno-a-tarde.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-processos-fotograficos",
@@ -1096,7 +1096,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Processos Fotográficos; Turmas: 1; Turno: Matutino; Vagas: 30; Duração: 1,5 anos",
           "url_fonte": "https://ifpr.edu.br/wp-content/uploads/2024/10/ifpr_ps2025_edital_88.pdf",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-processos-fotograficos-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-processos-fotograficos-matutino.json",
           "linha": 15
         },
         {
@@ -1112,11 +1112,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Processos Fotográficos; Turmas: 1; Turno: Matutino; Vagas: 30; Duração: 1,5 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-processos-fotograficos-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-processos-fotograficos-matutino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-processos-fotograficos.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-processos-fotograficos.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio",
@@ -1154,7 +1154,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Processos Fotográficos; Turmas: 1; Turno: Vespertino; Vagas: 30; Duração: 3 anos",
           "url_fonte": "https://sei.ifpr.edu.br/sei/modulos/pesquisa/md_pesq_documento_consulta_externa.php?9LibXMqGnN7gSpLFOOgUQFziRouBJ5VnVL5b7-UrE5Q7GkUT8wPLuH95dM3k3h0svK8oDe2VkVlFJxmy7CqeLV4BJT739Qeq7eOEEZNMH3izY5Xf0T2lahNatVmY24mO",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-processos-fotograficos-vespertino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-processos-fotograficos-vespertino.json",
           "linha": 15
         },
         {
@@ -1170,11 +1170,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Processos Fotográficos; Turmas: 1; Turno: Vespertino com contraturno pela manhã; Vagas: 30; Duração: 3 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-processos-fotograficos-vespertino-com-contraturno-pela-manha.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-processos-fotograficos-vespertino-com-contraturno-pela-manha.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-producao-de-audio-e-video",
@@ -1212,7 +1212,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Produção de Áudio e Vídeo; Turmas: 1; Turno: Noturno; Vagas: 30; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/wp-content/uploads/2024/10/ifpr_ps2025_edital_88.pdf",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-producao-de-audio-e-video-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-producao-de-audio-e-video-noturno.json",
           "linha": 15
         },
         {
@@ -1228,11 +1228,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Produção de Áudio e Vídeo; Turmas: 1; Turno: Vespertino; Vagas: 30; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-producao-de-audio-e-video-vespertino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-producao-de-audio-e-video-vespertino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-producao-de-audio-e-video.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-producao-de-audio-e-video.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio",
@@ -1270,7 +1270,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Programação de Jogos Digitais; Turmas: 1; Turno: Matutino; Vagas: 30; Duração: 4 anos",
           "url_fonte": "https://sei.ifpr.edu.br/sei/modulos/pesquisa/md_pesq_documento_consulta_externa.php?9LibXMqGnN7gSpLFOOgUQFziRouBJ5VnVL5b7-UrE5Q7GkUT8wPLuH95dM3k3h0svK8oDe2VkVlFJxmy7CqeLV4BJT739Qeq7eOEEZNMH3izY5Xf0T2lahNatVmY24mO",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-programacao-de-jogos-digitais-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-programacao-de-jogos-digitais-matutino.json",
           "linha": 15
         },
         {
@@ -1286,11 +1286,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Programação de Jogos Digitais; Turmas: 1; Turno: Vespertino; Vagas: 30; Duração: 4 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/integrados/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-programacao-de-jogos-digitais-vespertino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-programacao-de-jogos-digitais-vespertino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-protese-dentaria",
@@ -1324,7 +1324,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Prótese Dentária; Turmas: 1; Turno: Noturno; Vagas: 25; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/wp-content/uploads/2024/10/ifpr_ps2025_edital_88.pdf",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-protese-dentaria-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-protese-dentaria-noturno.json",
           "linha": 15
         },
         {
@@ -1340,7 +1340,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Prótese Dentária; Turmas: 1; Turno: Noturno; Vagas: 25; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-protese-dentaria-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-protese-dentaria-noturno.json",
           "linha": 15
         },
         {
@@ -1356,11 +1356,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Prótese Dentária; Turmas: 1; Turno: Vespertino; Vagas: 25; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-protese-dentaria-vespertino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-protese-dentaria-vespertino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-protese-dentaria.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-protese-dentaria.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-radiologia",
@@ -1398,7 +1398,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Radiologia; Turmas: 1; Turno: Matutino; Vagas: 35; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/wp-content/uploads/2024/10/ifpr_ps2025_edital_88.pdf",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-radiologia-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-radiologia-matutino.json",
           "linha": 15
         },
         {
@@ -1414,11 +1414,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Radiologia; Turmas: 1; Turno: Matutino; Vagas: 35; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-radiologia-matutino.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-radiologia-matutino.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-radiologia.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-radiologia.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-saude-bucal",
@@ -1456,11 +1456,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Saúde Bucal; Turmas: 1; Turno: Noturno; Vagas: 25; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-saude-bucal-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-saude-bucal-noturno.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-saude-bucal.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-saude-bucal.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-soldagem-subsequente",
@@ -1485,7 +1485,7 @@
         "ano_documento": 2025
       },
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-soldagem-subsequente.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-soldagem-subsequente.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-telecomunicacoes",
@@ -1519,7 +1519,7 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "CURITIBA; Técnico em Telecomunicações; Turmas: 1; Turno: Noturno; Vagas: 36; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/wp-content/uploads/2024/10/ifpr_ps2025_edital_88.pdf",
-          "path": "dados/institucional/ofertas/processo-seletivo-2025/curitiba-tecnico-em-telecomunicacoes-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2025/curitiba-tecnico-em-telecomunicacoes-noturno.json",
           "linha": 15
         },
         {
@@ -1535,11 +1535,11 @@
           "status_curadoria": "sugerido",
           "trecho_fonte": "Curitiba; Técnico em Telecomunicações; Turmas: 1; Turno: Noturno; Vagas: 36; Duração: 2 anos",
           "url_fonte": "https://ifpr.edu.br/processo-seletivo/processo-seletivo-2026/subsequentes/curitiba-e-assis-chateaubriand/cursos/",
-          "path": "dados/institucional/ofertas/processo-seletivo-2026/curitiba-tecnico-em-telecomunicacoes-noturno.json",
+          "path": "base-conhecimento/institucional/ifpr/ofertas/processo-seletivo-2026/curitiba-tecnico-em-telecomunicacoes-noturno.json",
           "linha": 15
         }
       ],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-telecomunicacoes.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-telecomunicacoes.json"
     },
     {
       "id": "curso:curitiba/tecnico-em-transacoes-imobiliarias",
@@ -1560,7 +1560,7 @@
       },
       "ppc": null,
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/tecnico-em-transacoes-imobiliarias.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-transacoes-imobiliarias.json"
     },
     {
       "id": "curso:curitiba/tecnologia-em-gestao-publica",
@@ -1580,7 +1580,7 @@
         "ano_documento": 2015
       },
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/tecnologia-em-gestao-publica.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-gestao-publica.json"
     },
     {
       "id": "curso:curitiba/tecnologia-em-massoterapia",
@@ -1600,7 +1600,7 @@
         "ano_documento": 2022
       },
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/tecnologia-em-massoterapia.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-massoterapia.json"
     },
     {
       "id": "curso:curitiba/tecnologia-em-processos-escolares",
@@ -1620,7 +1620,7 @@
         "ano_documento": 2023
       },
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/tecnologia-em-processos-escolares.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-processos-escolares.json"
     },
     {
       "id": "curso:curitiba/tecnologia-em-processos-gerenciais",
@@ -1640,7 +1640,7 @@
         "ano_documento": 2018
       },
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/tecnologia-em-processos-gerenciais.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-processos-gerenciais.json"
     },
     {
       "id": "curso:curitiba/tecnologia-em-secretariado",
@@ -1660,7 +1660,7 @@
         "ano_documento": 2024
       },
       "ofertas": [],
-      "path": "dados/institucional/cursos/curitiba/tecnologia-em-secretariado.json"
+      "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-secretariado.json"
     }
   ]
 }

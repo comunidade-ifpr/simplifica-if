@@ -46,7 +46,7 @@ describe("estadoDoBanco", () => {
   const depois = instante("2026-02-01T00:00:00Z");
   const caminho = NodePath.join(raiz, "tmp", "kb.sqlite");
   escrever("base-conhecimento/manifest.json", "[]", antes);
-  escrever("dados/institucional/cursos/a/b.json", "{}", antes);
+  escrever("base-conhecimento/institucional/ifpr/cursos/a/b.json", "{}", antes);
   NodeFS.mkdirSync(NodePath.dirname(caminho), { recursive: true });
 
   test("ausente", () => {
@@ -61,7 +61,7 @@ describe("estadoDoBanco", () => {
   test("fonte tocada sem mudar o conteúdo: fresco pelo hash, e o mtime do banco avança", () => {
     banco(caminho, depois);
     const tocada = instante("2026-03-01T00:00:00Z");
-    escrever("dados/institucional/cursos/a/b.json", "{}", tocada);
+    escrever("base-conhecimento/institucional/ifpr/cursos/a/b.json", "{}", tocada);
     expect(estadoDoBanco(raiz, caminho)).toEqual({ estado: "fresco", motivo: "conteudo-igual" });
     // o banco avança só até o mtime das fontes lidas antes do hash: uma edição durante o hash fica
     // mais nova que ele e não passa por fresca
@@ -71,13 +71,13 @@ describe("estadoDoBanco", () => {
 
   test("conteúdo mudou", () => {
     banco(caminho, depois);
-    escrever("dados/institucional/cursos/a/b.json", '{"x": 1}', instante("2026-04-01T00:00:00Z"));
+    escrever("base-conhecimento/institucional/ifpr/cursos/a/b.json", '{"x": 1}', instante("2026-04-01T00:00:00Z"));
     expect(estadoDoBanco(raiz, caminho)).toEqual({ estado: "velho", motivo: "conteudo" });
   });
 
   test("arquivo novo muda a lista de fontes", () => {
     banco(caminho, instante("2026-05-01T00:00:00Z"));
-    escrever("dados/institucional/cursos/a/c.json", "{}", antes);
+    escrever("base-conhecimento/institucional/ifpr/cursos/a/c.json", "{}", antes);
     expect(estadoDoBanco(raiz, caminho)).toEqual({ estado: "velho", motivo: "lista-de-fontes" });
   });
 

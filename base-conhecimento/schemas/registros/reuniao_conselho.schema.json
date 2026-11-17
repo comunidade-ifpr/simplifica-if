@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://simplifica-if.github.io/base-conhecimento/schemas/registros/reuniao_conselho.schema.json",
+  "title": "Reunião de conselho superior do IFPR",
+  "description": "Formato de institucional/ifpr/conselhos/<conselho_id>/reunioes/<data>.json. Gerado do Effect Schema de scripts/dados/ por scripts/gerar_base.ts; não edite à mão. As regras entre registros (chaves e relações) ficam na validação da base.",
+  "type": "object",
+  "properties": {
+    "reuniao_id": {
+      "type": "string"
+    },
+    "conselho_id": {
+      "type": "string"
+    },
+    "titulo": {
+      "type": "string"
+    },
+    "data": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "tipo": {
+      "type": "string",
+      "enum": [
+        "ordinária",
+        "extraordinária"
+      ]
+    },
+    "situacao": {
+      "type": "string",
+      "enum": [
+        "realizada",
+        "prevista",
+        "cancelada"
+      ]
+    },
+    "fonte": {
+      "type": "string",
+      "pattern": "^https://"
+    },
+    "documentos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "documento_id": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "parecer",
+              "pauta",
+              "ata",
+              "resolução",
+              "outro"
+            ]
+          },
+          "titulo": {
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "ano": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "data": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "resumo": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "pattern": "^https://"
+          },
+          "coletado_em": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "extracao": {
+            "type": "string",
+            "enum": [
+              "metadados",
+              "texto"
+            ]
+          }
+        },
+        "required": [
+          "documento_id",
+          "tipo",
+          "titulo",
+          "ano",
+          "data",
+          "url",
+          "coletado_em",
+          "extracao"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "itens_pauta": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "item_id": {
+            "type": "string"
+          },
+          "ordem": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "titulo": {
+            "type": "string"
+          },
+          "resumo": {
+            "type": "string"
+          },
+          "tipo_demanda": {
+            "type": "string"
+          },
+          "resultado": {
+            "type": "string"
+          },
+          "documento_id": {
+            "type": "string"
+          },
+          "processo_sei": {
+            "type": "string"
+          },
+          "campus_texto": {
+            "type": "string"
+          },
+          "campus_id": {
+            "type": "string"
+          },
+          "curso_texto": {
+            "type": "string"
+          },
+          "curso_id": {
+            "type": "string"
+          },
+          "palavras_chave": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "trecho_pauta": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "item_id",
+          "ordem",
+          "titulo",
+          "resumo",
+          "tipo_demanda",
+          "resultado",
+          "documento_id",
+          "palavras_chave",
+          "trecho_pauta"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "reuniao_id",
+    "conselho_id",
+    "titulo",
+    "data",
+    "tipo",
+    "situacao",
+    "fonte",
+    "documentos",
+    "itens_pauta"
+  ],
+  "additionalProperties": false
+}

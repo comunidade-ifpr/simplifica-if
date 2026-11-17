@@ -165,7 +165,7 @@ export const cursos = Command.make(
     linhas.push(`${lista.length} cursos`);
     yield* imprimir(linhas);
   }, Effect.provide(camadaRepositorio)),
-).pipe(Command.withDescription("Cursos de dados/institucional com CNCT (eixo) e ofertas (turno), com filtros."));
+).pipe(Command.withDescription("Cursos de institucional/ifpr com CNCT (eixo) e ofertas (turno), com filtros."));
 
 export const adequacaoArt71 = Command.make(
   "adequacao-art71",

@@ -3,11 +3,10 @@ import { afterEach, describe, expect, test } from "vite-plus/test";
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
-import type { BaseInstitucional } from "../dominio/auditoria.ts";
 import type { Campus, Curso } from "../dominio/curso.ts";
 import type { EditalIngresso, OfertaIngresso, ProcessoSeletivo } from "../dominio/ingresso.ts";
 import type { Movimentacao } from "../dominio/movimentacao.ts";
-import { montarCampi, montarProcessos } from "../exportacao/base-publica.ts";
+import { auditarBase, type BaseInstitucional } from "../dominio/auditoria.ts";
 import { RepositorioCursosLocal } from "./cursos.ts";
 import { carregarDadosInstitucionais, deDominio, gravarDadosInstitucionais, paraDominio } from "./institucional.ts";
 import { validarDadosInstitucionais } from "./validacao.ts";
@@ -147,8 +146,8 @@ const baseNotion: BaseInstitucional = {
   movimentacoes: [movimentacao],
 };
 
-describe("dados/institucional", () => {
-  test("Notion → arquivos locais → domínio gera os mesmos JSONs públicos", () => {
+describe("registros institucionais", () => {
+  test("Notion → arquivos locais → domínio, com as relações resolvidas", () => {
     const raiz = raizTemporaria();
     gravarDadosInstitucionais(deDominio(baseNotion), raiz);
     const { dados, erros } = carregarDadosInstitucionais(raiz);
@@ -159,9 +158,8 @@ describe("dados/institucional", () => {
       ...paraDominio(dados),
       movimentacoes: [{ ...movimentacao, cursoIds: ["exemplo/tecnico-em-exemplo"] }],
     };
-    expect(montarCampi(baseLocal)).toEqual(montarCampi(baseNotion));
-    expect(montarProcessos(baseLocal, "2026-11-13")).toEqual(montarProcessos(baseNotion, "2026-11-13"));
-    expect(validarDadosInstitucionais(raiz).erros).toEqual([]);
+    expect(auditarBase(baseLocal)).toEqual([]);
+    expect(validarDadosInstitucionais(raiz, undefined, { arquivosDaBase: false }).erros).toEqual([]);
   });
 
   test("relações usam chaves canônicas e o arquivo fica no caminho da chave", () => {
@@ -204,9 +202,9 @@ describe("dados/institucional", () => {
 
     const { erros } = carregarDadosInstitucionais(raiz);
     expect(erros).toContain(
-      "dados/institucional/campi/outro-nome.json: arquivo deveria estar em dados/institucional/campi/outro.json",
+      "institucional/ifpr/campi/outro-nome.json: arquivo deveria estar em institucional/ifpr/campi/outro.json",
     );
-    expect(erros.some((erro) => erro.startsWith("dados/institucional/campi/quebrado.json: nome"))).toBe(true);
+    expect(erros.some((erro) => erro.startsWith("institucional/ifpr/campi/quebrado.json: nome"))).toBe(true);
   });
 
   test("cada problema de schema vira uma linha em português, com arquivo e caminho", () => {
@@ -222,11 +220,11 @@ describe("dados/institucional", () => {
     NodeFS.writeFileSync(NodePath.join(raiz, "editais", "e.json"), JSON.stringify([]));
 
     expect(carregarDadosInstitucionais(raiz).erros).toEqual([
-      "dados/institucional/campi/x.json: extra: Entrada inválida: campo não permitido",
-      "dados/institucional/campi/x.json: nome: Entrada inválida: campo obrigatório ausente",
-      "dados/institucional/cursos/a/b.json: cnct_id: deve ser cnct:<slug do curso no CNCT>",
-      "dados/institucional/cursos/a/b.json: suap.id: Entrada inválida: esperava um inteiro",
-      "dados/institucional/editais/e.json: (raiz): Entrada inválida: esperava um objeto",
+      "institucional/ifpr/campi/x.json: extra: Entrada inválida: campo não permitido",
+      "institucional/ifpr/campi/x.json: nome: Entrada inválida: campo obrigatório ausente",
+      "institucional/ifpr/cursos/a/b.json: cnct_id: deve ser cnct:<slug do curso no CNCT>",
+      "institucional/ifpr/cursos/a/b.json: suap.id: Entrada inválida: esperava um inteiro",
+      "institucional/ifpr/editais/e.json: (raiz): Entrada inválida: esperava um objeto",
     ]);
   });
 
@@ -235,8 +233,8 @@ describe("dados/institucional", () => {
     const dados = deDominio(baseNotion);
     dados.cursos[0] = { ...dados.cursos[0]!, cnct_id: "cnct:tecnico-em-nada" };
     gravarDadosInstitucionais(dados, raiz);
-    expect(validarDadosInstitucionais(raiz).erros).toEqual([
-      "dados/institucional: Curso exemplo/tecnico-em-exemplo: cnct_id não existe no CNCT: cnct:tecnico-em-nada",
+    expect(validarDadosInstitucionais(raiz, undefined, { arquivosDaBase: false }).erros).toEqual([
+      "institucional/ifpr: Curso exemplo/tecnico-em-exemplo: cnct_id não existe no CNCT: cnct:tecnico-em-nada",
     ]);
 
     NodeFS.writeFileSync(
@@ -251,7 +249,7 @@ describe("dados/institucional", () => {
     const dados = deDominio(baseNotion);
     dados.cursos[0] = { ...dados.cursos[0]!, campus_id: "fantasma", ppc: {} };
     gravarDadosInstitucionais(dados, raiz);
-    const { erros } = validarDadosInstitucionais(raiz);
+    const { erros } = validarDadosInstitucionais(raiz, undefined, { arquivosDaBase: false });
     expect(erros.some((erro) => erro.includes("página desconhecida ou sem campus_id: fantasma"))).toBe(true);
   });
 });

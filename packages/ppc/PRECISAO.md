@@ -1,6 +1,6 @@
 # Precisão dos verificadores D
 
-Medida nos **110 PPCs técnicos da base** (cursos de nível médio com PPC convertido em `dados/institucional/cursos`: 82 integrados, 28 subsequentes, 1 sem CNCT), com a base de normas, relações, transições e CNCT do dia, e a vigência na `data_referencia` de `base-conhecimento/config/vigencia.yaml` (13/11/2026). Primeira medição em 16/11/2026; refeita no mesmo dia depois da revisão independente (transição da Res. CNE/CP nº 2/2026, cadeia de sucessoras, ficha responsável pelo marco, CNCT grudado, comentários agrupados).
+Medida nos **110 PPCs técnicos da base** (cursos de nível médio com PPC convertido em `base-conhecimento/institucional/ifpr/cursos`: 82 integrados, 28 subsequentes, 1 sem CNCT), com a base de normas, relações, transições e CNCT do dia, e a vigência na `data_referencia` de `base-conhecimento/config/vigencia.yaml` (13/11/2026). Primeira medição em 16/11/2026; refeita no mesmo dia depois da revisão independente (transição da Res. CNE/CP nº 2/2026, cadeia de sucessoras, ficha responsável pelo marco, CNCT grudado, comentários agrupados).
 
 ```bash
 node packages/ppc/scripts/pre-conferencia.ts --base            # a tabela abaixo (cerca de 30 ms por PPC)
@@ -10,7 +10,7 @@ node packages/ppc/scripts/pre-conferencia.ts --base --amostra CT-SUP-12 --estado
 node packages/ppc/scripts/pre-conferencia.ts --base --amostra CT-CURR-16 --evidencias --n 8   # os "atende"
 ```
 
-**Os números exatos não estão no `pnpm test`**: dependem de `dados/` e `base-conhecimento/`, e um PPC, uma norma ou uma relação nova (ou registrar a publicação da Res. CNE/CP nº 2/2026 no DOU) os muda legitimamente. Quem mexer nos verificadores roda `--check`; se mudou, confere uma amostra dos apontamentos novos e grava os dois juntos (`--gravar` e esta tabela). O `pnpm test` (`test/precisao-base.test.ts`) confere só invariantes, que valem com qualquer base: todo trecho é literal da linha, toda fonte resolve (norma no registro, curso no CNCT) e nenhum `nao_atende` vem de norma com vigência a confirmar nem de citação de confiança menor.
+**Os números exatos não estão no `pnpm test`**: dependem de `base-conhecimento/`, e um PPC, uma norma ou uma relação nova (ou registrar a publicação da Res. CNE/CP nº 2/2026 no DOU) os muda legitimamente. Quem mexer nos verificadores roda `--check`; se mudou, confere uma amostra dos apontamentos novos e grava os dois juntos (`--gravar` e esta tabela). O `pnpm test` (`test/precisao-base.test.ts`) confere só invariantes, que valem com qualquer base: todo trecho é literal da linha, toda fonte resolve (norma no registro, curso no CNCT) e nenhum `nao_atende` vem de norma com vigência a confirmar nem de citação de confiança menor.
 
 ## Regras de vigência (depois da revisão)
 

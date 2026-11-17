@@ -1,0 +1,35 @@
+{
+  "id": "conselhos-ifpr",
+  "title": "Conselhos superiores do IFPR",
+  "descricao": "Reuniões dos conselhos superiores (hoje o Consepe), com os documentos publicados e os itens de pauta deliberados. O registro de cada conselho fica em conselhos/<conselho_id>/conselho.json.",
+  "tipo_item": "reuniao_conselho",
+  "conselhos": [
+    {
+      "id": "consepe",
+      "sigla": "Consepe",
+      "nome": "Conselho de Ensino, Pesquisa e Extensão",
+      "path": "institucional/ifpr/conselhos/consepe/conselho.json"
+    }
+  ],
+  "total_itens": 2,
+  "items": [
+    {
+      "id": "consepe:reuniao:2026-03-20",
+      "conselho_id": "consepe",
+      "data": "2026-03-20",
+      "titulo": "Reunião Ordinária CONSEPE - 20/03/2026",
+      "documentos": 12,
+      "itens_pauta": 11,
+      "path": "institucional/ifpr/conselhos/consepe/reunioes/2026-03-20.json"
+    },
+    {
+      "id": "consepe:reuniao:2026-05-28",
+      "conselho_id": "consepe",
+      "data": "2026-05-28",
+      "titulo": "Reunião Ordinária CONSEPE - 28/05/2026",
+      "documentos": 14,
+      "itens_pauta": 13,
+      "path": "institucional/ifpr/conselhos/consepe/reunioes/2026-05-28.json"
+    }
+  ]
+}

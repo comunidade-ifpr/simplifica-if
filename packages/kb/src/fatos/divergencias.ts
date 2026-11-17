@@ -1,5 +1,5 @@
 /**
- * Cruzamento dos fatos do PPC com o SUAP (`dados/institucional/cursos/*.json`, `suap.matrizes`).
+ * Cruzamento dos fatos do PPC com o SUAP (`base-conhecimento/institucional/ifpr/cursos/*.json`, `suap.matrizes`).
  *
  * Aspectos e resultados:
  * - `carga_horaria`: a carga total do PPC contra a CH exibida das matrizes do SUAP.
@@ -9,7 +9,7 @@
  * - `estagio`: o estágio obrigatório do PPC (sim/não e carga) contra a matriz mais recente do SUAP
  *   (maior ano, depois maior ID). `confere`, `diverge` (sim × não), `diverge-carga`, `sem-fato-ppc`,
  *   `sem-suap`. Carga do estágio em hora-aula confere também convertida (aula de 50 ou 45 minutos).
- * - `ano`: o ano do PPC (`dados/institucional`) contra o ano da matriz mais recente. `confere` (há
+ * - `ano`: o ano do PPC (`base-conhecimento/institucional/ifpr/`) contra o ano da matriz mais recente. `confere` (há
  *   matriz do ano do PPC ou posterior), `ppc-mais-recente-que-matrizes` (o SUAP não tem matriz do
  *   PPC vigente), `sem-ano`, `sem-suap`.
  *
@@ -217,7 +217,7 @@ export function cruzarPpcSuap(e: EntradaCruzamento): LinhaCruzamento[] {
       resultado: "sem-ano",
       valor_ppc: null,
       valor_suap: String(Math.max(...anos)),
-      explicacao: "PPC sem ano_documento em dados/institucional",
+      explicacao: "PPC sem ano_documento em institucional/ifpr",
     });
   } else if (Math.max(...anos) < e.anoPpc) {
     saida.push({

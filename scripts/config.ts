@@ -13,7 +13,7 @@ const CAMPOS_BASE = ["id", "data_source_id", "title"] as const;
 
 /**
  * Bases que continuam no Notion. Campi, cursos, processos seletivos, editais e ofertas têm como
- * fonte os arquivos de `dados/institucional/`; as bases antigas foram arquivadas (veja
+ * fonte os registros de `base-conhecimento/institucional/ifpr/`; as bases antigas foram arquivadas (veja
  * `bases_arquivadas` em `config/notion.json`).
  */
 export const BASES_NOTION = ["movimentacoes_cursos"] as const;

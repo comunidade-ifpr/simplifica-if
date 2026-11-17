@@ -1,12 +1,14 @@
-// @effect-diagnostics nodeBuiltinImport:off -- leitura e gravação síncronas de dados/institucional/, usadas pelo pipeline da base, pela exportação e pela coleta do SUAP
+// @effect-diagnostics nodeBuiltinImport:off -- leitura e gravação síncronas dos registros institucionais, usadas pelo pipeline da base, pela exportação e pela coleta do SUAP
 /**
- * Fonte de verdade local dos dados institucionais: campi, cursos, processos seletivos, editais e
- * ofertas de ingresso. Cada registro é um arquivo JSON em `dados/institucional/`, versionado no git.
- * As relações usam chaves canônicas (`campus_id`, `campus_id/curso_slug`, `processo_seletivo_id`,
- * `edital_id`), nunca IDs de página do Notion; `notion_page_id` fica só como referência histórica.
+ * Fonte de verdade dos dados institucionais: campi, cursos, processos seletivos, editais e ofertas
+ * de ingresso. Cada registro é um arquivo JSON em `base-conhecimento/institucional/ifpr/<coleção>/`,
+ * versionado no git e publicado como está. As relações usam chaves canônicas (`campus_id`,
+ * `campus_id/curso_slug`, `processo_seletivo_id`, `edital_id`), nunca IDs de página do Notion;
+ * `notion_page_id` fica só como referência histórica. O `index.json` de cada coleção é gerado
+ * (`indices.ts`) e não é registro.
  *
  * Este módulo lê, valida e grava esses arquivos e os converte nas entidades do domínio que a
- * exportação pública e a auditoria já usam.
+ * auditoria usa.
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
@@ -15,6 +17,7 @@ import * as Schema from "effect/Schema";
 import { caminhoTexto, problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { RAIZ_PROJETO } from "../config.ts";
 import { ESTRITO } from "../esquema.ts";
+import { limparUrlsAssinadas } from "./urls.ts";
 import { compararTexto } from "../dominio/comum.ts";
 import { ehIdCnct } from "@simplifica-if/kb/normas/ids";
 import { chaveCurso, type Campus, type Curso } from "../dominio/curso.ts";
@@ -26,7 +29,11 @@ import {
   type ProcessoSeletivo,
 } from "../dominio/ingresso.ts";
 
-export const RAIZ_DADOS_INSTITUCIONAIS = NodePath.join(RAIZ_PROJETO, "dados", "institucional");
+export const RAIZ_DADOS_INSTITUCIONAIS = NodePath.join(RAIZ_PROJETO, "base-conhecimento", "institucional", "ifpr");
+/** Prefixo dos caminhos nas mensagens: relativo a `base-conhecimento/`, como os `path` dos manifestos. */
+const PREFIXO = "institucional/ifpr";
+/** O índice gerado de cada coleção, que não é registro. */
+export const ARQUIVO_INDICE = "index.json";
 
 // Todos os objetos são estritos (chave a mais é erro): os registros decodificam com `ESTRITO`.
 const texto = Schema.optional(Schema.String);
@@ -49,6 +56,7 @@ const cnctId = Schema.optional(
   Schema.String.check(
     Schema.makeFilter((valor: string) => ehIdCnct(valor) && valor !== "cnct:catalogo", {
       message: "deve ser cnct:<slug do curso no CNCT>",
+      toJsonSchema: () => ({ pattern: "^cnct:(?!catalogo$)[a-z0-9]+(?:-[a-z0-9]+)*$" }),
     }),
   ),
 );
@@ -175,7 +183,7 @@ export interface DadosInstitucionais {
   ofertas: OfertaLocal[];
 }
 
-/** Caminho relativo de cada registro em `dados/institucional/`; o nome do arquivo é a chave canônica. */
+/** Caminho de cada registro, relativo a `institucional/ifpr/`; o nome do arquivo é a chave canônica. */
 export const caminhosRegistro = {
   campus: (c: CampusLocal) => NodePath.join("campi", `${c.campus_id}.json`),
   curso: (c: CursoLocal) => NodePath.join("cursos", c.campus_id, `${c.curso_slug}.json`),
@@ -192,7 +200,7 @@ function arquivosJson(dir: string): string[] {
     .flatMap((entrada) => {
       const caminho = NodePath.join(dir, entrada.name);
       if (entrada.isDirectory()) return arquivosJson(caminho);
-      return entrada.name.endsWith(".json") ? [caminho] : [];
+      return entrada.name.endsWith(".json") && entrada.name !== ARQUIVO_INDICE ? [caminho] : [];
     })
     .sort(compararTexto);
 }
@@ -211,21 +219,19 @@ function lerColecao<T>(
     try {
       bruto = JSON.parse(NodeFS.readFileSync(arquivo, "utf-8"));
     } catch (erro) {
-      erros.push(`dados/institucional/${relativo}: JSON inválido: ${(erro as Error).message}`);
+      erros.push(`${PREFIXO}/${relativo}: JSON inválido: ${(erro as Error).message}`);
       continue;
     }
     const resultado = decodificarRegistro(bruto);
     if (Result.isFailure(resultado)) {
       for (const problema of problemas(resultado.failure.issue)) {
-        erros.push(
-          `dados/institucional/${relativo}: ${caminhoTexto(problema.caminho) || "(raiz)"}: ${problema.mensagem}`,
-        );
+        erros.push(`${PREFIXO}/${relativo}: ${caminhoTexto(problema.caminho) || "(raiz)"}: ${problema.mensagem}`);
       }
       continue;
     }
     const esperado = caminhoEsperado(resultado.success);
     if (esperado !== relativo) {
-      erros.push(`dados/institucional/${relativo}: arquivo deveria estar em dados/institucional/${esperado}`);
+      erros.push(`${PREFIXO}/${relativo}: arquivo deveria estar em ${PREFIXO}/${esperado}`);
     }
     itens.push(resultado.success);
   }
@@ -238,7 +244,7 @@ export function carregarDadosInstitucionais(raiz: string = RAIZ_DADOS_INSTITUCIO
   erros: string[];
 } {
   const erros: string[] = [];
-  if (!NodeFS.existsSync(raiz)) return { dados: vazio(), erros: [`dados/institucional/ não encontrado em ${raiz}`] };
+  if (!NodeFS.existsSync(raiz)) return { dados: vazio(), erros: [`${PREFIXO}/ não encontrado em ${raiz}`] };
   const dados: DadosInstitucionais = {
     campi: lerColecao(raiz, "campi", decodificar.campus, caminhosRegistro.campus, erros),
     cursos: lerColecao(raiz, "cursos", decodificar.curso, caminhosRegistro.curso, erros),
@@ -271,8 +277,9 @@ function semVazios<T>(valor: T): T {
   return valor;
 }
 
+/** Texto do arquivo de um registro: sem campos vazios e sem a query de URL pré-assinada (veja `urls.ts`). */
 export function textoRegistro(registro: unknown): string {
-  return `${JSON.stringify(semVazios(registro), null, 2)}\n`;
+  return `${JSON.stringify(limparUrlsAssinadas(semVazios(registro)), null, 2)}\n`;
 }
 
 export function gravarRegistro(relativo: string, registro: unknown, raiz: string = RAIZ_DADOS_INSTITUCIONAIS): void {
