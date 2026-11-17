@@ -60,7 +60,10 @@ const make = Effect.gen(function* () {
   const ler = Effect.gen(function* () {
     const linhas = yield* sql<{ chave: string; valor: string }>`SELECT chave, valor FROM preferencias`;
     const valores = new Map(linhas.map((linha) => [linha.chave, linha.valor]));
-    const decodificar = <S extends Schema.Codec<unknown, string>>(schema: S, chave: string): Option.Option<S["Type"]> => {
+    const decodificar = <S extends Schema.Codec<unknown, string>>(
+      schema: S,
+      chave: string,
+    ): Option.Option<S["Type"]> => {
       const valor = valores.get(chave);
       return valor === undefined ? Option.none() : Schema.decodeOption(schema)(valor);
     };

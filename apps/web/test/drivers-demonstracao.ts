@@ -50,7 +50,6 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
     antigravity: { instalado: true, autenticado: false },
   };
 
-
   const detectar = (provider: Motor.Provider) =>
     Effect.sync((): Motor.DeteccaoProvider => {
       if (provider === "claude" && opcoes.claudePresente !== undefined) {
@@ -58,12 +57,12 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
         estado.claude = { instalado: presente, autenticado: presente };
       }
       return {
-      provider,
-      instalado: estado[provider].instalado,
-      autenticado: estado[provider].autenticado,
-      ...(estado[provider].instalado ? { versao: provider === "claude" ? "2.1.30" : "1.5.9" } : {}),
-      ...(estado[provider].autenticado && provider === "claude" ? { plano: "max", metodo: "claude.ai" } : {}),
-      ...(estado[provider].instalado ? {} : { mensagem: "O app instala a própria cópia." }),
+        provider,
+        instalado: estado[provider].instalado,
+        autenticado: estado[provider].autenticado,
+        ...(estado[provider].instalado ? { versao: provider === "claude" ? "2.1.30" : "1.5.9" } : {}),
+        ...(estado[provider].autenticado && provider === "claude" ? { plano: "max", metodo: "claude.ai" } : {}),
+        ...(estado[provider].instalado ? {} : { mensagem: "O app instala a própria cópia." }),
       };
     });
 

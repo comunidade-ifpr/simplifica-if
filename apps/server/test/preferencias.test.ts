@@ -1,3 +1,4 @@
+// @effect-diagnostics nodeBuiltinImport:off -- teste: o caminho do banco numa pasta temporária
 /**
  * O primeiro uso (M1.8) no servidor: o perfil, o aviso de uso, as boas-vindas e as IAs em uso, pelo
  * RPC (`preferencias.*`), e o que fica gravado no `conversas.sqlite` quando o servidor fecha e abre de
@@ -93,7 +94,10 @@ layer(camada, { excludeTestServices: true })("preferências pelo RPC", (it) => {
 
 describe("preferências no arquivo", () => {
   const arquivo = NodePath.join(diretorioTemporario("simplifica-preferencias-"), "conversas.sqlite");
-  const abrir = Preferencias.layer.pipe(Layer.provideMerge(Banco.layerArquivo(arquivo)), Layer.provide(NodeServices.layer));
+  const abrir = Preferencias.layer.pipe(
+    Layer.provideMerge(Banco.layerArquivo(arquivo)),
+    Layer.provide(NodeServices.layer),
+  );
 
   it.effect("o perfil e o aviso sobrevivem ao servidor fechar; valor estragado conta como ausente", () =>
     Effect.gen(function* () {

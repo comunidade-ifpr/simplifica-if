@@ -7,7 +7,7 @@
  */
 import type { EstadoInstalacao, EstadoLogin, EstadoProvider, Provider } from "@simplifica-if/contratos-app";
 import { CheckCircle2Icon, CircleAlertIcon, CircleDashedIcon, ExternalLinkIcon, RefreshCwIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import type { Api } from "../conexao/api.ts";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
@@ -141,26 +141,26 @@ export function CartaoProvider({
   const [login, setLogin] = useState<EstadoLogin | undefined>();
   const [erro, setErro] = useState<MensagemErro | undefined>();
 
+  /** A detecção concluída: a tela, a última conhecida (o passo do Claude) e o aviso ao pai. */
+  const aplicar = (resultado: Deteccao) => {
+    setDeteccao(resultado);
+    if (resultado.fase !== "detectado") return;
+    setUltimo(resultado.estado);
+    aoMudarEstado?.(resultado.estado);
+  };
+  const aplicarNoEfeito = useEffectEvent(aplicar);
+
   useEffect(() => {
     let vivo = true;
-    detectar(api, provider).then((resultado) => vivo && setDeteccao(resultado));
+    detectar(api, provider).then((resultado) => vivo && aplicarNoEfeito(resultado));
     return () => {
       vivo = false;
     };
   }, [api, provider]);
 
-  // Só a detecção nova conta: o callback, que o pai pode recriar a cada render, fica numa ref.
-  const avisar = useRef(aoMudarEstado);
-  avisar.current = aoMudarEstado;
-  useEffect(() => {
-    if (deteccao.fase !== "detectado") return;
-    setUltimo(deteccao.estado);
-    avisar.current?.(deteccao.estado);
-  }, [deteccao]);
-
   const detectarDeNovo = () => {
     setDeteccao({ fase: "detectando" });
-    detectar(api, provider).then(setDeteccao);
+    detectar(api, provider).then(aplicar);
   };
 
   const instalar = () => {

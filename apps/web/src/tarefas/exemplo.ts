@@ -41,7 +41,10 @@ export type Exemplo =
 const CUIDAM_DE_PPC: ReadonlyArray<FuncaoPerfil> = ["coordenacao-curso", "pedagogia", "direcao-ensino", "proens-dens"];
 
 /** As sugestões, a mais útil primeiro. A conversa só entra se a skill estiver no catálogo. */
-export function exemplosDoPerfil(perfil: Perfil | undefined, skills: ReadonlyArray<ResumoSkill>): ReadonlyArray<Exemplo> {
+export function exemplosDoPerfil(
+  perfil: Perfil | undefined,
+  skills: ReadonlyArray<ResumoSkill>,
+): ReadonlyArray<Exemplo> {
   const conversa: ReadonlyArray<Exemplo> = skills.some((skill) => skill.nome === SKILL_EXEMPLO)
     ? [
         {

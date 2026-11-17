@@ -110,8 +110,8 @@ function Configuracoes() {
             </div>
           )}
           <p className="max-w-prose text-muted-foreground text-sm">
-            "Não usar no app" só tira a IA da escolha das conversas: a conta continua conectada no computador. Para
-            sair da conta de vez, use o próprio programa da IA.
+            "Não usar no app" só tira a IA da escolha das conversas: a conta continua conectada no computador. Para sair
+            da conta de vez, use o próprio programa da IA.
           </p>
         </Secao>
         <Secao id="perfil" titulo="Seu perfil">

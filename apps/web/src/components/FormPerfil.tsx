@@ -63,7 +63,12 @@ export function FormPerfil({
   const [campi, setCampi] = useState<ReadonlyArray<ItemPerfil>>();
   const [campus, setCampus] = useState(inicial?.campus?.id ?? "");
   const [funcao, setFuncao] = useState<FuncaoPerfil | undefined>(inicial?.funcao);
-  const [cursos, setCursos] = useState<ReadonlyArray<CursoDaBase>>();
+  // Os cursos com o campus a que pertencem: ao trocar de campus, os do anterior deixam de valer.
+  const [cursosCarregados, setCursosCarregados] = useState<{
+    readonly campus: string;
+    readonly lista: ReadonlyArray<CursoDaBase>;
+  }>();
+  const cursos = cursosCarregados?.campus === campus ? cursosCarregados.lista : undefined;
   const [escolhidos, setEscolhidos] = useState<ReadonlyArray<string>>(inicial?.cursos.map((curso) => curso.id) ?? []);
   const [gravando, setGravando] = useState(false);
   const [erro, setErro] = useState<MensagemErro>();
@@ -83,11 +88,10 @@ export function FormPerfil({
   }, [api, conectado]);
 
   useEffect(() => {
-    setCursos(undefined);
     if (!conectado || campus === "") return;
     let vale = true;
     cursosDoCampus(api, campus).then(
-      (lista) => vale && setCursos(lista),
+      (lista) => vale && setCursosCarregados({ campus, lista }),
       (falha: unknown) => vale && setErro(explicarErro(falha)),
     );
     return () => {
@@ -209,8 +213,8 @@ export function FormPerfil({
       )}
 
       <p className="max-w-prose text-muted-foreground text-sm">
-        O perfil fica <strong>só neste computador</strong> e não vai para a IA. Serve para o Início mostrar primeiro
-        as tarefas da sua função.
+        O perfil fica <strong>só neste computador</strong> e não vai para a IA. Serve para o Início mostrar primeiro as
+        tarefas da sua função.
       </p>
       {erro === undefined ? null : <AvisoErro erro={erro} />}
       <div className="flex flex-wrap items-center gap-2">

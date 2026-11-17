@@ -21,8 +21,8 @@ export function AvisoUso({ titulo = "O que vai para a IA" }: { readonly titulo?:
       </h2>
       <ul className="flex list-disc flex-col gap-2 pl-5">
         <li>
-          O Simplifica IF conversa com a IA da <strong>sua conta pessoal</strong> (Claude, ChatGPT ou Gemini). Não é
-          um serviço contratado pelo IFPR: o que você envia segue os termos da empresa da IA.
+          O Simplifica IF conversa com a IA da <strong>sua conta pessoal</strong> (Claude, ChatGPT ou Gemini). Não é um
+          serviço contratado pelo IFPR: o que você envia segue os termos da empresa da IA.
         </li>
         <li>
           O app entrega à IA a <strong>base pública do IFPR</strong> (normas, catálogos, PPCs publicados) e{" "}

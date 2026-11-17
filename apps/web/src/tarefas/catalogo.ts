@@ -54,8 +54,7 @@ export const publicoTarefa = (tarefa: Tarefa): ReadonlyArray<string> =>
  * ou função "outra"); `true` também para a tarefa que não diz a quem serve.
  */
 export function servePerfil(tarefa: Tarefa, perfil: Perfil | undefined): boolean | undefined {
-  const publicos: ReadonlyArray<string> =
-    perfil?.funcao === undefined ? [] : DESCRICOES_FUNCAO[perfil.funcao].publicos;
+  const publicos: ReadonlyArray<string> = perfil?.funcao === undefined ? [] : DESCRICOES_FUNCAO[perfil.funcao].publicos;
   if (publicos.length === 0) return undefined;
   const publico = publicoTarefa(tarefa);
   return publico.length === 0 || publico.some((p) => publicos.includes(p));

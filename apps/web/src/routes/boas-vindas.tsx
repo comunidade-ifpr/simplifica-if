@@ -173,9 +173,7 @@ function PassoIa({
         <Button variant={pronta ? "ghost" : "outline"} onClick={aoSeguir}>
           {pronta ? "Pular" : "Pular, conecto depois"}
         </Button>
-        {pronta ? (
-          <p className="text-success text-sm">Pronto: {DESCRICOES[escolhida].nome} conectado.</p>
-        ) : null}
+        {pronta ? <p className="text-success text-sm">Pronto: {DESCRICOES[escolhida].nome} conectado.</p> : null}
       </div>
     </Moldura>
   );
@@ -241,7 +239,9 @@ function CartaoExemplo({
         <span className="font-medium">Estimativa:</span> {exemplo.custo}
       </p>
       {precisaIa && semIa ? (
-        <p className="text-muted-foreground text-sm">Conecte uma IA no passo 1 (ou em Configurações) para fazer este.</p>
+        <p className="text-muted-foreground text-sm">
+          Conecte uma IA no passo 1 (ou em Configurações) para fazer este.
+        </p>
       ) : (
         <Button
           className="self-start"
@@ -267,7 +267,13 @@ function CartaoExemplo({
   );
 }
 
-function PassoExemplo({ provider, aoTerminar }: { readonly provider: Provider | undefined; readonly aoTerminar: () => Promise<unknown> }) {
+function PassoExemplo({
+  provider,
+  aoTerminar,
+}: {
+  readonly provider: Provider | undefined;
+  readonly aoTerminar: () => Promise<unknown>;
+}) {
   const api = useApi();
   const [, conversa] = useConversa();
   const navegar = useNavigate();
@@ -378,10 +384,7 @@ function BoasVindas() {
       return <PassoPerfil aoSeguir={() => setPasso("exemplo")} />;
     case "exemplo":
       return (
-        <PassoExemplo
-          provider={prontas.has(escolhida) ? escolhida : [...prontas][0]}
-          aoTerminar={concluirBoasVindas}
-        />
+        <PassoExemplo provider={prontas.has(escolhida) ? escolhida : [...prontas][0]} aoTerminar={concluirBoasVindas} />
       );
   }
 }
