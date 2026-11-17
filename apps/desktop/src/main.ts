@@ -31,7 +31,14 @@ import {
 } from "electron";
 import { ATUALIZACAO_FABRICA } from "@simplifica-if/motor/politica-atualizacao";
 import { autoUpdater } from "electron-updater";
-import { iniciarAtualizacaoApp, lerAssinado, motivoDesligado, type ControleAtualizacaoApp } from "./atualizacaoApp.ts";
+import {
+  feedDoCanal,
+  iniciarAtualizacaoApp,
+  lerAssinado,
+  motivoDesligado,
+  proxyParaServidor,
+  type ControleAtualizacaoApp,
+} from "./atualizacaoApp.ts";
 import { ESQUEMA, HOST_APP, resolverConfiguracao, VARIAVEIS, type Configuracao } from "./configuracao.ts";
 import { CANAIS, type Conexao } from "./ponteDesktop.ts";
 import { abrirLog } from "./registro.ts";
@@ -113,8 +120,27 @@ function descreverSaida(saida: Saida): string {
   return saida.sinal === null ? `código ${saida.codigo ?? "?"}` : `sinal ${saida.sinal}`;
 }
 
+/**
+ * A proxy da rede para o servidor baixar a base (M1.10): a que o Electron resolve para o feed, como o
+ * navegador do sistema. Sem feed, ou se a resolução falhar, nada muda.
+ */
+async function ambienteComProxy(): Promise<NodeJS.ProcessEnv> {
+  const feed = process.env[VARIAVEIS.feed]?.trim() || ATUALIZACAO_FABRICA.feed;
+  if (configuracao.pastaAtualizacao === undefined || feed === null) return process.env;
+  try {
+    const url = new URL("x", feedDoCanal(feed, canalGravado())).href;
+    const proxy = proxyParaServidor(await session.defaultSession.resolveProxy(url), process.env);
+    if (Object.keys(proxy).length > 0)
+      registrar(`proxy do sistema para a atualização: ${proxy.HTTPS_PROXY ?? proxy.HTTP_PROXY}`);
+    return { ...process.env, ...proxy };
+  } catch (erro) {
+    registrar(`não foi possível resolver a proxy do sistema: ${String(erro)}`);
+    return process.env;
+  }
+}
+
 /** Inicia o servidor e guarda a conexão. A janela recebe a conexão quando ele fica pronto. */
-function subirServidor(): Promise<Conexao> {
+function subirServidor(ambiente: NodeJS.ProcessEnv): Promise<Conexao> {
   const token = gerarToken();
   // Só do processo principal: a janela recebe o `token`, nunca este.
   tokenDesktop = gerarToken();
@@ -128,7 +154,7 @@ function subirServidor(): Promise<Conexao> {
     versaoApp: app.getVersion(),
     origens: configuracao.origens,
     token,
-    ambiente: process.env,
+    ambiente,
     cwd: configuracao.cwd,
   });
   registrar(`iniciando o servidor: ${inicio.comando} ${inicio.argumentos.join(" ")}`);
@@ -179,7 +205,7 @@ async function aoCairServidor(mensagem: string, detalhe: string): Promise<void> 
 /** Sobe o servidor e mostra a janela; na falha, o diálogo de erro. */
 async function iniciar(): Promise<void> {
   try {
-    await subirServidor();
+    await subirServidor(await ambienteComProxy());
   } catch (erro) {
     await aoCairServidor(erro instanceof Error ? erro.message : String(erro), "");
     return;
