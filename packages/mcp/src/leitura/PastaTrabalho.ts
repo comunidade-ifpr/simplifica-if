@@ -5,7 +5,8 @@
  *
  * A conferência tem duas etapas. Antes de tocar no disco, o caminho pedido (relativo ou absoluto) é
  * resolvido contra a pasta e recusado se sair dela, o que pega o `..` e o caminho absoluto de fora,
- * sem revelar se o arquivo de fora existe. Depois de conferir que o arquivo existe, o caminho real
+ * sem revelar se o arquivo de fora existe (a exceção é o nome curto 8.3 do Windows, que só o disco
+ * traduz para o longo; a recusa continua igual). Depois de conferir que o arquivo existe, o caminho real
  * (`realPath`, que segue os links simbólicos) é conferido de novo: um symlink dentro da pasta que
  * aponta para fora é recusado.
  *
@@ -77,7 +78,18 @@ export const make = Effect.fn("PastaTrabalho.make")(function* (opcoes: { readonl
     // 1. o caminho pedido, sem tocar no disco: `..` e caminho absoluto de fora param aqui. O absoluto
     // vale tanto com o caminho real da pasta quanto com o informado (no macOS, /var é link para /private/var)
     const pedido = path.resolve(pasta, arquivo);
-    const relativo = [pasta, informada].map((base) => path.relative(base, pedido)).find((r) => dentro(path, r));
+    let relativo = [pasta, informada].map((base) => path.relative(base, pedido)).find((r) => dentro(path, r));
+    // No Windows, o mesmo caminho tem dois nomes: o curto 8.3 (`C:\Users\RUNNER~1\…`, o que o TEMP costuma
+    // trazer) e o longo (`C:\Users\runneradmin\…`, o do diretório atual e do caminho real). O texto não
+    // basta para comparar os dois; só então se resolve o caminho real, e a recusa continua a mesma
+    // mensagem, exista ou não o arquivo
+    if (relativo === undefined && path.sep === "\\" && pedido.includes("~")) {
+      const real = yield* fs.realPath(pedido).pipe(Effect.option);
+      if (real._tag === "Some") {
+        const r = path.relative(pasta, real.value);
+        if (dentro(path, r)) relativo = r;
+      }
+    }
     if (relativo === undefined) {
       return yield* recusar(
         `"${arquivo}" fica fora da pasta de trabalho (${pasta}). O servidor só lê arquivos dentro dela; copie o arquivo para lá ou inicie o servidor com --pasta-trabalho`,
