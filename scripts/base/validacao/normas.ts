@@ -4,8 +4,8 @@ import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { contarDocumentosPessoais } from "@simplifica-if/kb/ppcs/dados-pessoais";
-import { RE_URL_ASSINADA } from "../../dados/urls.ts";
+import { contarDadosPessoais, MARCADORES } from "@simplifica-if/kb/ppcs/dados-pessoais";
+import { RE_PLANILHA_GOOGLE, RE_URL_ASSINADA, RE_URL_SESSAO_SEI } from "../../dados/urls.ts";
 import { ehArquivo, listarDiretorio, listarRecursivo, naBase } from "../caminhos.ts";
 import {
   analisarFrontMatter,
@@ -52,6 +52,39 @@ function comparavel(campo: string, valor: unknown): unknown {
 }
 
 /** Nenhum arquivo de texto da base pode conter caminhos locais. */
+const ROTULOS_PESSOAIS = { cpf: "CPF", rg: "RG", telefone: "celular", matricula: "matrícula", siape: "SIAPE" } as const;
+
+/**
+ * Dados pessoais (política do AGENTS.md: CPF, RG, celular, matrícula de estudante, SIAPE), link de
+ * planilha do Google fora do `horarios_url` de um campus e URL de sessão do SEI (`infra_hash`). As
+ * mensagens trazem só contagens, nunca o valor.
+ */
+export function dadosPessoaisEUrlsInternas(relativo: string, texto: string): string[] {
+  const erros: string[] = [];
+  const contagem = contarDadosPessoais(texto);
+  const achados = (Object.keys(ROTULOS_PESSOAIS) as Array<keyof typeof ROTULOS_PESSOAIS>)
+    .filter((categoria) => contagem[categoria])
+    .map((categoria) => `${contagem[categoria]} ${ROTULOS_PESSOAIS[categoria]}`);
+  if (achados.length) {
+    erros.push(
+      `${relativo} contém dados pessoais (${achados.join(", ")}); troque por ${Object.values(MARCADORES).join("/")} ` +
+        "(omitirDadosPessoais de @simplifica-if/kb/ppcs/dados-pessoais)",
+    );
+  }
+  const horarioDeCampus = /^institucional\/ifpr\/campi\/[^/]+\.json$/.test(relativo);
+  const planilhas = texto
+    .split("\n")
+    .filter((linha) => !(horarioDeCampus && linha.includes('"horarios_url"')))
+    .reduce((total, linha) => total + (linha.match(RE_PLANILHA_GOOGLE)?.length ?? 0), 0);
+  if (planilhas) {
+    erros.push(`${relativo} contém ${planilhas} link(s) de planilha do Google; tire o link (semPlanilhasGoogle)`);
+  }
+  if (RE_URL_SESSAO_SEI.test(texto)) {
+    erros.push(`${relativo} contém URL de sessão do SEI (infra_hash); tire os parâmetros infra_* (semSessaoSei)`);
+  }
+  return erros;
+}
+
 export function validarPadroesLocais(ctx: Contexto): string[] {
   const erros: string[] = [];
   for (const caminho of listarRecursivo(ctx.c.raiz)) {
@@ -74,14 +107,7 @@ export function validarPadroesLocais(ctx: Contexto): string[] {
         `${ctx.rel(caminho)} contém URL pré-assinada (grave sem a query string): ${assinada[0].split("?")[0]}`,
       );
     }
-    const pessoais = contarDocumentosPessoais(texto);
-    if (pessoais.cpf || pessoais.rg) {
-      // Só as contagens: a mensagem não repete o número.
-      erros.push(
-        `${ctx.rel(caminho)} contém ${pessoais.cpf} CPF e ${pessoais.rg} RG; troque por [CPF omitido]/[RG omitido] ` +
-          "(omitirDocumentosPessoais de @simplifica-if/kb/ppcs/dados-pessoais)",
-      );
-    }
+    erros.push(...dadosPessoaisEUrlsInternas(ctx.rel(caminho), texto));
   }
   return erros;
 }

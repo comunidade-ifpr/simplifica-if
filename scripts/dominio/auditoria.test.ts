@@ -169,6 +169,19 @@ describe("auditarBase", () => {
 });
 
 describe("processos SEI dos cursos", () => {
+  test("a anotação publicada sai sem celular, link de planilha e sessão do SEI", () => {
+    const anotacoes =
+      "Origem: https://docs.google.com/spreadsheets/d/abc/edit?gid=1 aba X; contato (41) 99999-1234; " +
+      "https://sei.ifpr.edu.br/sei/controlador.php?acao=x&id_procedimento=1&infra_hash=0123abcd0123";
+    const [item] = processosSeiDasMovimentacoes([
+      movimentacao({ numeroSei: "23411.000001/2026-01", anotacoes, cursoIds: ["exemplo/a"] }),
+    ]);
+    expect(item!.trecho_fonte).toBe(
+      "Origem: planilha interna (link omitido) aba X; contato [telefone omitido]; " +
+        "https://sei.ifpr.edu.br/sei/controlador.php?acao=x&id_procedimento=1",
+    );
+  });
+
   test("um item por curso, número e tipo, sem movimentação sem número", () => {
     const movimentacoes = [
       movimentacao({ id: "b", numeroSei: "23411.000001/2026-01", tipo: "Ajuste PPC", cursoIds: ["exemplo/b"] }),

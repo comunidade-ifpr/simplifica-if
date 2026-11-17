@@ -27,7 +27,7 @@
     }
   },
   "ppc": {
-    "url": "https://s3.sa-east-1.amazonaws.com/suap-prod/edu/ppc/PPC_Ivaipor%C3%A3_Eletrotecnica_Subsequente_V4_0_2026-2e70c17d312a4cc8bcf3fd097b142c17.pdf",
-    "ano_documento": 2025
+    "ano_documento": 2025,
+    "observacoes": "URL do PDF retirada em 17/11/2026: era um anexo do SUAP no S3, privado sem a assinatura temporária. Falta localizar o PDF público do PPC (site do campus) e preencher ppc.url."
   }
 }

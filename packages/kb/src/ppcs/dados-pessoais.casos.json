@@ -1,0 +1,202 @@
+[
+  {
+    "descricao": "CPF rotulado em negrito",
+    "entrada": "**CPF:** 529.982.247-25",
+    "saida": "**CPF:** [CPF omitido]"
+  },
+  {
+    "descricao": "CPF em célula, separado por |",
+    "entrada": "| Nome | CPF | 52998224725 |",
+    "saida": "| Nome | CPF | [CPF omitido] |"
+  },
+  {
+    "descricao": "CPF separado por <br>",
+    "entrada": "CPF<br>529.982.247-25",
+    "saida": "CPF<br>[CPF omitido]"
+  },
+  {
+    "descricao": "CPF com espaços",
+    "entrada": "CPF nº 111 444 777 35 resolvem",
+    "saida": "CPF nº [CPF omitido] resolvem"
+  },
+  {
+    "descricao": "CPF formatado sem rótulo, dígito válido",
+    "entrada": "inscrito sob 529.982.247-25.",
+    "saida": "inscrito sob [CPF omitido]."
+  },
+  {
+    "descricao": "CPF formatado com dígito inválido fica",
+    "entrada": "inscrito sob 529.982.247-26.",
+    "saida": "inscrito sob 529.982.247-26."
+  },
+  {
+    "descricao": "RG rotulado",
+    "entrada": "**RG:** 1.234.567-8 – SESP/PR",
+    "saida": "**RG:** [RG omitido] – SESP/PR"
+  },
+  {
+    "descricao": "R.G sem ponto final",
+    "entrada": "R.G 12345678-9 SSP/PR",
+    "saida": "R.G [RG omitido] SSP/PR"
+  },
+  {
+    "descricao": "RG e CPF na mesma frase",
+    "entrada": "portador do RG n° 12.345.678 SSP-SP e CPF n° 529.982.247-25,",
+    "saida": "portador do RG n° [RG omitido] SSP-SP e CPF n° [CPF omitido],"
+  },
+  {
+    "descricao": "Identidade com dois-pontos",
+    "entrada": "Identidade: 12.345.678-9",
+    "saida": "Identidade: [RG omitido]"
+  },
+  {
+    "descricao": "doc. de identidade",
+    "entrada": "doc. de identidade nº 1234567,",
+    "saida": "doc. de identidade nº [RG omitido],"
+  },
+  {
+    "descricao": "cédula de identidade",
+    "entrada": "cédula de Identidade nº 1234567 e CPF 111 444 777-35",
+    "saida": "cédula de Identidade nº [RG omitido] e CPF [CPF omitido]"
+  },
+  {
+    "descricao": "carteira de identidade",
+    "entrada": "Carteira de Identidade 12345678-9 SSP/PR",
+    "saida": "Carteira de Identidade [RG omitido] SSP/PR"
+  },
+  {
+    "descricao": "RG com UF",
+    "entrada": "RG nº MG-12.345.678 emitido",
+    "saida": "RG nº [RG omitido] emitido"
+  },
+  {
+    "descricao": "RG com grupos separados por espaço",
+    "entrada": "RG 12 345 678-9 SSP",
+    "saida": "RG [RG omitido] SSP"
+  },
+  {
+    "descricao": "RG/CPF sem sobrar dígito",
+    "entrada": "RG/CPF: 12.345.678-9 / 529.982.247-25.",
+    "saida": "RG/CPF: [RG omitido] / [CPF omitido]."
+  },
+  {
+    "descricao": "celular com DDD entre parênteses",
+    "entrada": "Telefone: (41) 99999-1234",
+    "saida": "Telefone: [telefone omitido]"
+  },
+  {
+    "descricao": "celular com DDD e espaços",
+    "entrada": "Telefone: 46 9 9123 4567",
+    "saida": "Telefone: [telefone omitido]"
+  },
+  {
+    "descricao": "celular com DDD de três dígitos, sem separador",
+    "entrada": "**Telefone:** (046) 991234567",
+    "saida": "**Telefone:** [telefone omitido]"
+  },
+  {
+    "descricao": "celular com DDD e hífen",
+    "entrada": "contato 41-991234567",
+    "saida": "contato [telefone omitido]"
+  },
+  {
+    "descricao": "celular com +55",
+    "entrada": "WhatsApp +55 41 99876-5432",
+    "saida": "WhatsApp [telefone omitido]"
+  },
+  {
+    "descricao": "celular sem DDD, com hífen",
+    "entrada": "ou 99876-5432",
+    "saida": "ou [telefone omitido]"
+  },
+  {
+    "descricao": "telefone fixo fica",
+    "entrada": "Fone/Fax: (44) 3482-1234",
+    "saida": "Fone/Fax: (44) 3482-1234"
+  },
+  {
+    "descricao": "matrícula de estudante ao lado do nome",
+    "entrada": "|Ana Souza|20231234567|Discente|",
+    "saida": "|Ana Souza|[matrícula omitida]|Discente|"
+  },
+  {
+    "descricao": "SIAPE rotulado",
+    "entrada": "Prof. Fulano, SIAPE: 1234567, Coordenador",
+    "saida": "Prof. Fulano, SIAPE: [SIAPE omitido], Coordenador"
+  },
+  {
+    "descricao": "Siape minúsculo",
+    "entrada": "Siape nº 1234567 / TAE",
+    "saida": "Siape nº [SIAPE omitido] / TAE"
+  },
+  {
+    "descricao": "coluna SIAPE de tabela; fora da tabela fica",
+    "entrada": "| Nome | SIAPE | Regime |\n|---|---|---|\n| Ana Souza | 1234567 | DE |\n| Rui Lima | 7654321 | 40h |\n\nfim 1234567",
+    "saida": "| Nome | SIAPE | Regime |\n|---|---|---|\n| Ana Souza | [SIAPE omitido] | DE |\n| Rui Lima | [SIAPE omitido] | 40h |\n\nfim 1234567"
+  },
+  {
+    "descricao": "SIAPE em branco fica",
+    "entrada": "SIAPE __________ na condição de",
+    "saida": "SIAPE __________ na condição de"
+  },
+  {
+    "descricao": "Lattes quebrado por <br> (não é matrícula)",
+    "entrada": "http://lattes.cnpq.br/12345<br>20231234567",
+    "saida": "http://lattes.cnpq.br/12345<br>20231234567"
+  },
+  {
+    "descricao": "Lattes quebrado (não é celular)",
+    "entrada": "http://lattes.cnpq.br/1234567<br>912345678",
+    "saida": "http://lattes.cnpq.br/1234567<br>912345678"
+  },
+  {
+    "descricao": "ISBN",
+    "entrada": "ISBN 9788521617259 85.",
+    "saida": "ISBN 9788521617259 85."
+  },
+  {
+    "descricao": "ISBN com hífens",
+    "entrada": "ISBN 978-85-216-1725-9",
+    "saida": "ISBN 978-85-216-1725-9"
+  },
+  {
+    "descricao": "iniciais de autor seguidas de ano",
+    "entrada": "JORDÃO, R.G. 2010. Título.",
+    "saida": "JORDÃO, R.G. 2010. Título."
+  },
+  {
+    "descricao": "iniciais de autor seguidas de número",
+    "entrada": "SILVA, A.; COSTA, R.G. 12345 exemplares",
+    "saida": "SILVA, A.; COSTA, R.G. 12345 exemplares"
+  },
+  {
+    "descricao": "RG seguido de ano",
+    "entrada": "Ofício RG 2021",
+    "saida": "Ofício RG 2021"
+  },
+  {
+    "descricao": "rg dentro de órgão",
+    "entrada": "órgãos 12345 e Órgão 2020",
+    "saida": "órgãos 12345 e Órgão 2020"
+  },
+  {
+    "descricao": "identidade sem rótulo",
+    "entrada": "identidade institucional (PDI-IFPR, 2019-2023, p. 125)",
+    "saida": "identidade institucional (PDI-IFPR, 2019-2023, p. 125)"
+  },
+  {
+    "descricao": "CNPJ",
+    "entrada": "CNPJ/MF sob o nº 12.345.678/0001-95",
+    "saida": "CNPJ/MF sob o nº 12.345.678/0001-95"
+  },
+  {
+    "descricao": "processo SEI",
+    "entrada": "processo 23411.912345/2025-66",
+    "saida": "processo 23411.912345/2025-66"
+  },
+  {
+    "descricao": "campos em branco",
+    "entrada": "portador do RG nº e CPF nº ;",
+    "saida": "portador do RG nº e CPF nº ;"
+  }
+]

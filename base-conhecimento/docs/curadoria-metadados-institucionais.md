@@ -25,7 +25,7 @@ O que continua gerado, e por quê:
 
 ## Como alterar e publicar
 
-1. Edite ou crie o registro em `base-conhecimento/institucional/ifpr/`. Campo vazio é campo ausente: não grave `""` nem `null`. URL pré-assinada (com `AWSAccessKeyId`, `Signature`, `X-Amz-*`, como as do S3 do SUAP) não entra: grave o endereço sem a query string.
+1. Edite ou crie o registro em `base-conhecimento/institucional/ifpr/`. Campo vazio é campo ausente: não grave `""` nem `null`. URL pré-assinada (com `AWSAccessKeyId`, `Signature`, `X-Amz-*`, como as do S3 do SUAP) não entra: grave o endereço sem a query string, ou, se o arquivo for privado sem a assinatura (anexo do SUAP), deixe `ppc.url` vazio com nota em `ppc.observacoes` até achar o PDF público.
 2. Registre a evidência no próprio registro quando houver campo para isso (`trecho_vagas`, `trecho_fonte`, `ppc.observacoes`) e atualize as datas de coleta ou curadoria.
 3. Regenere os índices, valide e publique:
 
@@ -132,7 +132,7 @@ Até 13/11/2026 havia um par único, `ppc.curadoria` e `ppc.data_curadoria`, par
 
 O ano do documento é o da capa ou folha de rosto. Quando a capa traz também um ano posterior de aprovação, ajuste ou atualização ("Atualização 17 de Janeiro de 2025", "AJUSTE PARECER CONSEPE Nº 06/2024"), a convenção ainda não foi decidida: não altere o ano registrado, descreva a divergência em `ppc.observacoes` e deixe a decisão para revisão humana.
 
-Para converter PDFs em Markdown, use `scripts/converter_ppcs_markdown.py`: ele lê `ppc.url` e `ppc.markdown_path` dos registros de cursos e grava o Markdown sem números de CPF e RG (`[CPF omitido]`, `[RG omitido]`; regra em `packages/kb/src/ppcs/dados-pessoais.ts`, que o `validar_base.ts` também aplica a toda a base). Contato pessoal (celular, e-mail particular) em declarações e termos anexos sai à mão, como `[telefone omitido]`; contatos institucionais e de parceiros ficam. Depois de converter ou alterar PPCs, regenere os índices:
+Para converter PDFs em Markdown, use `scripts/converter_ppcs_markdown.py`: ele lê `ppc.url` e `ppc.markdown_path` dos registros de cursos e grava o Markdown sem CPF, RG, celular, matrícula de estudante e SIAPE (marcadores como `[CPF omitido]`; regra em `packages/kb/src/ppcs/dados-pessoais.ts`, descrita no AGENTS.md, que o `validar_base.ts` aplica a toda a base), sem link de planilha do Google e sem parâmetros de sessão do SEI. E-mail particular sai à mão; e-mail institucional, telefone fixo e contatos de campus e de parceiros ficam. Depois de converter ou alterar PPCs, regenere os índices:
 
 ```bash
 node scripts/gerar_indice_ppcs.ts

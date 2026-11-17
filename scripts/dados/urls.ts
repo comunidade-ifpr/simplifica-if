@@ -34,3 +34,34 @@ export function limparUrlsAssinadas<T>(valor: T): T {
   }
   return valor;
 }
+
+/**
+ * Planilha do Google (`docs.google.com/spreadsheets/...`): na base só como `horarios_url` de um campus
+ * (grade pública apontada pelo site oficial). Em qualquer outro lugar é planilha interna de
+ * acompanhamento: o texto fica e o link sai (`semPlanilhasGoogle`).
+ */
+export const RE_PLANILHA_GOOGLE = /https?:\/\/docs\.google\.com\/spreadsheets\/[^\s"'<>)\]]*/gi;
+export const TEXTO_PLANILHA = "planilha interna (link omitido)";
+
+export function semPlanilhasGoogle(texto: string): string {
+  return texto.replace(RE_PLANILHA_GOOGLE, TEXTO_PLANILHA);
+}
+
+/**
+ * URL de sessão do SEI: `infra_hash` (com `infra_sistema` e `infra_unidade_atual`) só vale na sessão de
+ * quem copiou o link. Os parâmetros saem e o resto da URL fica; o `hash_download` da autenticação
+ * pública de documentos não é de sessão e fica.
+ */
+export const RE_URL_SESSAO_SEI = /infra_hash\s?=\s?[0-9a-f]{8}/i;
+/** O hash fora de uma URL contínua (a conversão do PDF parte a URL e o próprio hash com espaços). */
+const RE_HASH_SOLTO = /[?&]?\s?infra_hash\s?=\s?[0-9a-f]{8,}(?: [0-9a-f]{4,})?/gi;
+const RE_PARAMETRO_SESSAO = /[?&]infra_(?:hash|sistema|unidade_atual)=[\w%-]*/gi;
+
+export function semSessaoSei(texto: string): string {
+  return texto
+    .replace(/https?:\/\/[^\s"'<>)\]|]*infra_hash=[\w%-]*/gi, (url) => {
+      const limpa = url.replace(RE_PARAMETRO_SESSAO, "");
+      return limpa.includes("?") ? limpa : limpa.replace("&", "?");
+    })
+    .replace(RE_HASH_SOLTO, "");
+}

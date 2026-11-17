@@ -25,8 +25,8 @@
     }
   },
   "ppc": {
-    "url": "https://s3.sa-east-1.amazonaws.com/suap-prod/edu/ppp/PROJETO_PEDAGOGICO_PROTESE_DENTARIA_2014_-_02.12.14-c3f1fa76af0b439a9f70c5eb2653340b.pdf",
     "ano_documento": 2013,
-    "vagas": "10-25"
+    "vagas": "10-25",
+    "observacoes": "URL do PDF retirada em 17/11/2026: era um anexo do SUAP no S3, privado sem a assinatura temporária. Falta localizar o PDF público do PPC (site do campus) e preencher ppc.url."
   }
 }
