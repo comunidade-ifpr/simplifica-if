@@ -11,11 +11,15 @@
  * Cada operação tem a entrada e a resposta da ferramenta MCP de mesmo nome (um contrato só para as
  * duas). `lerLink` lê qualquer link `ifpr://` pela mesma resolução do `resources/read` e devolve um
  * `LinkLido`; `lerPpc`, `lerCnct`, `lerCampus` e `lerFicha` são os conteúdos que só existem como
- * recurso.
+ * recurso. `lerDocumento` traz o Markdown inteiro de uma norma ou de um PPC, com as âncoras, para o
+ * leitor do app gerar o HTML (M1.6); não tem ferramenta MCP.
  */
 import { Rpc, RpcGroup } from "effect/rpc";
 import * as Schema from "effect/Schema";
 import { ErroDeLeitura } from "./contratos.ts";
+import { EntradaDocumento, SaidaDocumento } from "./documento.ts";
+
+export type { Ancora, DadosDocumento } from "./documento.ts";
 import { buscarNorma } from "./ferramentas/buscar-norma.ts";
 import { buscarSecoes } from "./ferramentas/buscar-secoes.ts";
 import { fichaCurso } from "./ferramentas/ficha-curso.ts";
@@ -74,4 +78,5 @@ export class GrupoLeitura extends RpcGroup.make(
   Rpc.make("lerCnct", { payload: Conteudos.EntradaCnct, success: Conteudos.SaidaCnct, error: ErroDeLeitura }),
   Rpc.make("lerCampus", { payload: Conteudos.EntradaCampus, success: Conteudos.SaidaCampus, error: ErroDeLeitura }),
   Rpc.make("lerFicha", { payload: Conteudos.EntradaFicha, success: Conteudos.SaidaFicha, error: ErroDeLeitura }),
+  Rpc.make("lerDocumento", { payload: EntradaDocumento, success: SaidaDocumento, error: ErroDeLeitura }),
 ) {}

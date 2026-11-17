@@ -8,6 +8,7 @@
 import * as NodeSqlite from "node:sqlite";
 import { emTransacao } from "@simplifica-if/kb/db/transacao";
 import { radicais } from "@simplifica-if/kb/busca/tokens";
+import { markdownSintetico } from "./fixture.ts";
 
 export const DCN_2021 = "br/cne-cp/res/2021/1";
 export const DCN_2026 = "br/cne-cp/res/2026/2";
@@ -328,6 +329,7 @@ export function inserirNormas(caminho: string): void {
     const lista = dispositivos();
     const porId = new Map(lista.map((d) => [`${d.norma}${d.dispositivo}`, d]));
     const ordens = new Map<string, number>();
+    const linhasDoDocumento = new Map<string, Map<number, string>>();
     for (const d of lista) {
       const ordem = ordens.get(d.norma) ?? 0;
       ordens.set(d.norma, ordem + 1);
@@ -358,6 +360,19 @@ export function inserirNormas(caminho: string): void {
         linha,
       );
       insFtsDisp.run(lastInsertRowid, textoComCaput, radicais(textoComCaput).join(" "));
+      // o Markdown do leitor: o artigo como cabeçalho, os outros como parágrafo, na linha do dispositivo
+      const linhas = linhasDoDocumento.get(d.norma) ?? new Map<number, string>();
+      linhas.set(linha, d.tipo === "artigo" ? `#### ${d.texto}` : d.texto);
+      linhasDoDocumento.set(d.norma, linhas);
+    }
+    const insDocumento = db.prepare("INSERT INTO documentos (path, texto) VALUES (?, ?)");
+    for (const n of NORMAS) {
+      if (n.situacao !== "base" || !n.path) continue;
+      const linhas = linhasDoDocumento.get(n.id) ?? new Map<number, string>();
+      linhas.set(5, `# ${n.titulo}`);
+      linhas.set(7, n.ementa);
+      linhas.set(9, `Fonte oficial: [Diário Oficial](${n.fonte ?? "https://www.in.gov.br"}).`);
+      insDocumento.run(n.path, markdownSintetico(n.id, linhas));
     }
 
     const insRelacao = db.prepare(
