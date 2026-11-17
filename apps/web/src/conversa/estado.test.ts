@@ -110,7 +110,9 @@ describe("reduzir: ferramentas, aprovações e avisos", () => {
     assert.deepStrictEqual(estado.itens.at(-1), {
       tipo: "aviso",
       chave: "i2",
-      texto: "Limite de uso.",
+      texto:
+        "Sua conta do ChatGPT (Codex) chegou ao limite de uso. Espere o limite renovar ou escolha outra IA para esta conversa.",
+      detalhe: "limite de uso",
       gravidade: "erro",
     });
     assert.deepStrictEqual(estado.uso, { entrada: 10, saida: 2, custoUsd: 0.01 });
@@ -124,7 +126,7 @@ describe("reduzir: ferramentas, aprovações e avisos", () => {
     const estado = aplicar(respondendo(), evento({ _tag: "Erro", mensagem: "Not logged in · Please run /login" }));
     assert.deepInclude(estado.itens.at(-1), {
       tipo: "aviso",
-      texto: "O ChatGPT (Codex) está sem login. Entre na conta pela tela Início e tente de novo.",
+      texto: "O ChatGPT (Codex) está sem login. Entre na conta em Configurações › Sua IA e tente de novo.",
       detalhe: "Not logged in · Please run /login",
     });
   });

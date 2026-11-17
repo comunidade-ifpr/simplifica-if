@@ -72,6 +72,15 @@ for (const stream of [process.stdout, process.stderr]) {
 
 // A pasta do app: separada no desenvolvimento, para não misturar o login dos providers e o estado.
 app.setName(NOME);
+// O app só fala português (M1.14): o Chromium em pt-BR (`navigator.language`, o `Intl` padrão, os textos
+// próprios do Chromium e do Electron), seja qual for a língua do sistema. Os textos do macOS (Cancelar
+// nos diálogos, os itens que o sistema põe no menu Editar, o painel Sobre) seguem as localizações do
+// pacote, que o empacotamento deixa só em pt-BR (`scripts/empacotar.ts`).
+app.commandLine.appendSwitch("lang", "pt-BR");
+app.setAboutPanelOptions({
+  applicationName: NOME,
+  copyright: "Instituto Federal do Paraná",
+});
 app.setPath("userData", NodePath.join(app.getPath("appData"), DESENVOLVIMENTO ? `${NOME} (dev)` : NOME));
 
 /** O log do app e do servidor (`registro.ts`), além do stderr. */
@@ -193,8 +202,12 @@ async function aoCairServidor(mensagem: string, detalhe: string): Promise<void> 
   const opcoes = {
     type: "error" as const,
     title: NOME,
-    message: "O servidor local do Simplifica IF parou.",
-    detail: [mensagem, detalhe.trim().slice(-1_500)].filter(Boolean).join("\n\n"),
+    message: "O Simplifica IF parou de funcionar por um problema interno.",
+    // A frase para a pessoa primeiro; o texto técnico (em inglês, às vezes) depois, para quem for ajudar.
+    detail: [
+      "Clique em Reiniciar para continuar. Se o problema se repetir, feche o app e abra de novo.",
+      `Detalhes técnicos:\n${[mensagem, detalhe.trim().slice(-1_500)].filter(Boolean).join("\n\n")}`,
+    ].join("\n\n"),
     buttons: ["Reiniciar", "Sair"],
     defaultId: 0,
     cancelId: 1,

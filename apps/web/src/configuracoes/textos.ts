@@ -11,14 +11,14 @@ export function versaoComoData(versao: string): string {
   return `${partes[3]}/${partes[2]}/${partes[1]}${partes[4] === undefined ? "" : ` (${partes[4]}ª do dia)`}`;
 }
 
-/** A frase sobre a base em uso: "Base de 20/11/2026, commit abc1234, baixada pela atualização". */
+/** A frase sobre a base em uso: "Base de 20/11/2026, revisão abc1234 (baixada pela atualização)". */
 export function descreverBase(estado: EstadoAtualizacao): string {
   const origem = {
     empacotada: "a que veio com o app",
     baixada: "baixada pela atualização",
     externa: "indicada por SIMPLIFICA_KB",
   }[estado.base.origem];
-  const commit = estado.base.commit === null ? "" : `, commit ${estado.base.commit}`;
+  const commit = estado.base.commit === null ? "" : `, revisão ${estado.base.commit}`;
   return `Base de ${versaoComoData(estado.base.versao)}${commit} (${origem}).`;
 }
 
@@ -31,13 +31,14 @@ export function descreverSituacao(estado: EstadoAtualizacao): string {
     case "baixando":
       return "Baixando a atualização…";
     case "erro":
-      return `A última procura falhou: ${estado.erro ?? "erro desconhecido"}. A base em uso continua a mesma.`;
+      // O motivo vem do download e da conferência (às vezes do `fetch`, em inglês): fica em "Detalhes técnicos".
+      return "A última procura falhou. A base em uso continua a mesma, e o app tenta de novo mais tarde.";
     case "pronta": {
       const partes = [
         estado.pendente === null ? null : `a base de ${versaoComoData(estado.pendente)}`,
-        estado.skillsPendentes === null ? null : "skills novas",
+        estado.skillsPendentes === null ? null : "tarefas novas",
       ].filter((parte) => parte !== null);
-      return `Pronta para usar: ${partes.join(" e ")}. Entra quando o app reiniciar o servidor.`;
+      return `Pronta para usar: ${partes.join(" e ")}. Entra em uso quando o app reiniciar.`;
     }
     default:
       return estado.ultimaConferencia === null

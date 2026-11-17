@@ -9,7 +9,7 @@ import { Alert, AlertDescription } from "./ui/alert.tsx";
 export function DetalhesTecnicos({ detalhe }: { readonly detalhe: string | undefined }) {
   if (detalhe === undefined || detalhe.length === 0) return null;
   return (
-    <details className="mt-1 text-xs">
+    <details className="mt-1 text-xs" data-texto-tecnico>
       <summary className="cursor-pointer select-none font-medium">Detalhes técnicos</summary>
       <pre className="mt-1 whitespace-pre-wrap break-words font-mono">{detalhe}</pre>
     </details>

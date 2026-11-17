@@ -111,7 +111,7 @@ export function Markdown({
 }) {
   return (
     <AbrirLink value={aoAbrirLink}>
-      <div className="markdown">
+      <div className="markdown" data-conteudo>
         <ReactMarkdown remarkPlugins={PLUGINS} urlTransform={transformarUrl} components={COMPONENTES}>
           {texto}
         </ReactMarkdown>

@@ -5,7 +5,7 @@
  * versões e o destino da política). Aqui a pessoa escreve o que está errado, retira os trechos que não
  * quer mandar (trechos, fontes, versões) e vê o relato exatamente como vai sair (`montarRelato`, com
  * `@menções` e `#referências` entre crases). O app não confere dado pessoal: perto de "Abrir no GitHub",
- * um texto fixo diz que a issue fica pública e o que não pôr nela. Depois:
+ * um texto fixo diz que o relato fica público e o que não pôr nele. Depois:
  *
  * - **Abrir no GitHub:** com o repositório da curadoria na política, abre `issues/new` já preenchida no
  *   navegador do sistema; a pessoa revisa e envia com a própria conta (o app não guarda token). O
@@ -73,7 +73,9 @@ function Trechos({
             aria-label={`Incluir o trecho ${indice + 1} de ${titulo.toLowerCase()}`}
             onChange={() => aoAlternar(indice)}
           />
-          <span className="line-clamp-4 whitespace-pre-wrap">{trecho}</span>
+          <span data-conteudo className="line-clamp-4 whitespace-pre-wrap">
+            {trecho}
+          </span>
         </label>
       ))}
     </fieldset>
@@ -253,13 +255,13 @@ function Formulario({
         <h4 className="font-medium text-sm">Assim vai o relato</h4>
         {rascunho.repositorio === null || rascunho.rotulos.length === 0 ? null : (
           <p className="text-muted-foreground text-xs">
-            Na issue, com {rascunho.rotulos.length === 1 ? "o rótulo" : "os rótulos"}{" "}
+            No GitHub, com {rascunho.rotulos.length === 1 ? "o rótulo" : "os rótulos"}{" "}
             {rascunho.rotulos.map((rotulo) => (
               <code key={rotulo} className="rounded bg-muted px-1">
                 {rotulo}
               </code>
             ))}
-            . Menções (@) e números de issue (#) vão entre crases, para não avisar ninguém no GitHub.
+            . Menções (@) e números de relato (#) vão entre crases, para não avisar ninguém no GitHub.
           </p>
         )}
         <pre className="max-h-72 overflow-auto whitespace-pre-wrap rounded-md border border-border bg-muted p-3 text-xs">
@@ -272,12 +274,12 @@ function Formulario({
           a equipe.
         </p>
       ) : (
-        <Alert variant="warning" aria-label="A issue fica pública">
+        <Alert variant="warning" aria-label="O relato fica público">
           <TriangleAlertIcon />
           <AlertTitle>No GitHub, o relato fica público.</AlertTitle>
           <AlertDescription>
             <p>
-              Qualquer pessoa na internet pode ler a issue, e os buscadores a indexam. Não ponha nome de estudante nem
+              Qualquer pessoa na internet pode ler o relato, e os buscadores o indexam. Não ponha nome de estudante nem
               de servidor, nem conteúdo de documento de acesso restrito: retire esses trechos acima antes de abrir.
             </p>
             <p>

@@ -18,7 +18,7 @@ function Aprovacao({ item }: { readonly item: Extract<Item, { tipo: "aprovacao" 
     enviando: "Enviando a resposta…",
     permitida: "Permitido.",
     negada: "Negado.",
-    expirada: "Sem resposta: o turno terminou.",
+    expirada: "Sem efeito: a resposta terminou antes da sua escolha.",
   } as const;
   return (
     <Alert variant="warning" data-aprovacao={item.id}>
@@ -53,7 +53,10 @@ export function ItemConversa({
   switch (item.tipo) {
     case "pessoa":
       return (
-        <div className="ml-auto max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-br-sm bg-message px-4 py-2.5 text-message-foreground">
+        <div
+          data-conteudo
+          className="ml-auto max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-br-sm bg-message px-4 py-2.5 text-message-foreground"
+        >
           {item.texto}
         </div>
       );
@@ -79,7 +82,9 @@ export function ItemConversa({
           <div className="min-w-0">
             <p className="font-medium">{rotuloFerramenta(item.nome)}</p>
             {item.resumo === undefined || item.resumo.length === 0 ? null : (
-              <p className="line-clamp-2 text-muted-foreground text-xs">{item.resumo}</p>
+              <p data-conteudo className="line-clamp-2 text-muted-foreground text-xs">
+                {item.resumo}
+              </p>
             )}
           </div>
         </div>

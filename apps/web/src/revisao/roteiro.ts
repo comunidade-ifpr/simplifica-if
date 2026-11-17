@@ -62,12 +62,9 @@ export function avisoCobertura(lista: ListaPendencias): string | null {
   return `Você passou por ${vistas} de ${lista.paradas.length} paradas. Ainda não viu: ${comPendencias.join("; ")}. Parar aqui não quer dizer que o resto está em ordem.`;
 }
 
-const milhares = (n: number) =>
-  n >= 1000 ? `${(n / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mil` : String(n);
-
-/** "Cerca de 6,2 mil tokens e 10 s (na API, uns US$ 0,03)." ou "Sem IA." */
+/** "Estimativa: cerca de 10 s (pago por uso, uns US$ 0,03)…" ou "Sem IA…" (sem a contagem de tokens, M1.14). */
 export function textoEstimativaAcao(e: EstimativaAcao): string {
   if (e.tokensEntrada + e.tokensSaida === 0) return "Sem IA: o app confere no código.";
-  const custo = e.custoUsd === null ? "" : ` (na API, uns US$ ${e.custoUsd.toFixed(3).replace(".", ",")})`;
-  return `Estimativa: cerca de ${milhares(e.tokensEntrada + e.tokensSaida)} tokens e ${e.segundos} s${custo}. Soma ao uso desta revisão.`;
+  const custo = e.custoUsd === null ? "" : ` (pago por uso, uns US$ ${e.custoUsd.toFixed(3).replace(".", ",")})`;
+  return `Estimativa: cerca de ${e.segundos} s${custo}. Soma ao uso desta revisão.`;
 }

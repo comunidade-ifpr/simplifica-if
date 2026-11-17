@@ -90,7 +90,9 @@ export function ListaConversas({
             >
               <span className="flex items-center gap-1.5 font-medium">
                 <MessageSquareTextIcon className="size-3.5 shrink-0 text-muted-foreground" />
-                <span className="truncate">{conversa.titulo || "Conversa sem mensagens"}</span>
+                <span className="truncate" data-conteudo={conversa.titulo ? "" : undefined}>
+                  {conversa.titulo || "Conversa sem mensagens"}
+                </span>
               </span>
               <span className="flex flex-wrap items-center gap-x-2 text-muted-foreground text-xs">
                 <span>{DESCRICOES[conversa.provider].nome}</span>

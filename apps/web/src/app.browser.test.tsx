@@ -11,6 +11,7 @@ import { afterAll, afterEach, beforeAll, expect, it, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 import type { ServidorTeste } from "../vite.config.ts";
 import {
+  achadosDaTela,
   editarArquivoDeTarefa,
   iniciarServidorTeste,
   montarApp,
@@ -44,14 +45,12 @@ afterEach(() => {
   delete window.simplifica;
 });
 
-/** Textos em inglês dos componentes copiados do T3 e do roteador que não podem aparecer na tela. */
-const TEXTOS_EM_INGLES = /\b(Loading|Close|Cancel|Submit|Not Found|Something went wrong|Back)\b/;
-
+/**
+ * Nenhum texto em inglês nem jargão técnico na tela (M1.14): o visível, o só para leitor de tela e os
+ * atributos acessíveis (`achadosDaTela`, com a lista de palavras e as exceções em `test/ingles.ts`).
+ */
 function semIngles() {
-  const rotulos = [...document.querySelectorAll("[aria-label],[title],[placeholder]")].flatMap((elemento) =>
-    ["aria-label", "title", "placeholder"].map((atributo) => elemento.getAttribute(atributo) ?? ""),
-  );
-  expect([document.body.innerText, ...rotulos].join("\n")).not.toMatch(TEXTOS_EM_INGLES);
+  expect(achadosDaTela()).toEqual([]);
 }
 
 it("Configurações › Sua IA: o aviso de uso, os três providers, instalar, entrar e não usar no app", async () => {
@@ -98,7 +97,7 @@ it("Conversa: aprovação, link ifpr:// no painel, interromper e nova conversa",
   await using _app = await montarApp(servidor, "/conversa");
 
   await page.getByRole("radio", { name: "Claude" }).click();
-  await page.getByLabelText("Pasta de trabalho").fill(servidor.pasta);
+  await page.getByLabelText("Pasta da tarefa").fill(servidor.pasta);
   await page.getByRole("button", { name: "Começar conversa" }).click();
   const mensagem = page.getByRole("textbox", { name: "Mensagem" });
   await expect.element(mensagem).toBeVisible();
@@ -136,9 +135,19 @@ it("Conversa: aprovação, link ifpr:// no painel, interromper e nova conversa",
   await expect.element(page.getByText("Resposta interrompida.")).toBeVisible();
   await expect.element(page.getByRole("button", { name: "Enviar" })).toBeVisible();
 
+  // O erro do provider (M1.14): a frase pelo tipo, com o que fazer; o original em inglês só nos detalhes.
+  await mensagem.fill("Chegou ao limite de uso?");
+  await page.getByRole("button", { name: "Enviar" }).click();
+  await expect.element(page.getByText(/^Sua conta do Claude chegou ao limite de uso\./)).toBeVisible();
+  expect(document.body.innerText).not.toMatch(/usage limit/);
+  semIngles();
+  await page.getByText("Detalhes técnicos", { exact: true }).last().click();
+  await expect.element(page.getByText(/You've hit your usage limit/)).toBeVisible();
+  semIngles();
+
   await page.getByRole("button", { name: "Nova conversa" }).click();
   await expect.element(page.getByRole("button", { name: "Começar conversa" })).toBeVisible();
-  await expect.element(page.getByLabelText("Pasta de trabalho")).toHaveValue(servidor.pasta);
+  await expect.element(page.getByLabelText("Pasta da tarefa")).toHaveValue(servidor.pasta);
 
   // A conversa ficou gravada: a lista lateral (só em tela larga) a reabre, com o histórico.
   await page.viewport(1280, 800);
@@ -174,6 +183,7 @@ it("Analisar um PPC: do Início à lista de pendências por tema e à cópia com
   // O roteiro: uma parada por vez, com o aviso do que ainda não foi visto.
   await expect.element(page.getByRole("heading", { name: /^Parada 1 de \d+ · / })).toBeVisible();
   await expect.element(page.getByText(/Ainda não viu:/)).toBeVisible();
+  semIngles();
 
   // Tudo de uma vez: os temas na ordem do parecer, com estados em linguagem comum.
   await page.getByRole("button", { name: "Ver tudo de uma vez" }).click();
@@ -184,6 +194,7 @@ it("Analisar um PPC: do Início à lista de pendências por tema e à cópia com
   await expect.element(aee.getByText("“Atendimento Educacional Especializado”", { exact: false })).toBeVisible();
   await expect.element(aee.getByText("Comentado no trecho, na cópia do documento.")).toBeVisible();
   expect(document.body.innerText).not.toMatch(/nao_atende|a_conferir|ifpr:\/\//);
+  semIngles();
 
   await page.getByRole("button", { name: "Abrir o documento comentado" }).click();
   await page.getByRole("button", { name: "Mostrar na pasta" }).click();
@@ -217,6 +228,7 @@ it("Analisar um PPC: arquivo que não existe, com a mensagem do servidor em port
   await using _app = await montarApp(servidor, "/revisao-ppc");
   await page.getByRole("button", { name: "Escolher o PPC (.docx)…" }).click();
   await expect.element(page.getByText("O arquivo não foi encontrado ou não pode ser lido.")).toBeVisible();
+  semIngles();
 });
 
 it("Modo Servidor: do cartão à conversa com etapas, avaliação, pasta da tarefa e Desfazer", async () => {
@@ -400,7 +412,7 @@ it("“Isto está errado” (M1.12): do 👎 ao relato revisado, publicado no Gi
     await expect.element(previa.getByText(/- IA: Claude \(Claude Code\) \(versão 2\.1\.30\)/)).toBeVisible();
     await expect.element(previa.getByText("relato-do-app", { exact: true })).toBeVisible();
     // Perto do botão, o texto fixo: a issue é pública.
-    const publica = relato.getByRole("alert", { name: "A issue fica pública" });
+    const publica = relato.getByRole("alert", { name: "O relato fica público" });
     await expect.element(publica.getByText("No GitHub, o relato fica público.")).toBeVisible();
     await expect.element(publica.getByText(/Não ponha nome de estudante nem de\s+servidor/)).toBeVisible();
     // Nenhum aviso de dado pessoal: o app não confere (o aviso de uso basta).

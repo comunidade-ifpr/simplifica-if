@@ -11,7 +11,7 @@
 import type { CanalAtualizacao, EstadoAtualizacao, ResultadoTroca } from "@simplifica-if/contratos-app";
 import { DownloadIcon, RefreshCwIcon, RotateCcwIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { AvisoErro } from "../components/AvisoErro.tsx";
+import { AvisoErro, DetalhesTecnicos } from "../components/AvisoErro.tsx";
 import { Alert, AlertDescription } from "../components/ui/alert.tsx";
 import { Badge } from "../components/ui/badge.tsx";
 import { Button } from "../components/ui/button.tsx";
@@ -98,7 +98,7 @@ export function Atualizacoes() {
 
       <section aria-labelledby="titulo-base" className="flex flex-col gap-3 rounded-lg border p-4">
         <h3 id="titulo-base" className="font-semibold">
-          Base de conhecimento e skills
+          Base de conhecimento e tarefas
         </h3>
         {estado === null ? (
           <p role="status" className="flex items-center gap-2 text-muted-foreground text-sm">
@@ -108,12 +108,13 @@ export function Atualizacoes() {
           <>
             <p className="text-sm">{descreverBase(estado)}</p>
             <p className="text-sm">
-              Skills:{" "}
+              Tarefas:{" "}
               {estado.skills === "empacotadas" ? "as que vieram com o app" : `de ${versaoComoData(estado.skills)}`}.
             </p>
             <p role="status" className="text-muted-foreground text-sm">
               {descreverSituacao(estado)}
             </p>
+            {estado.situacao === "erro" ? <DetalhesTecnicos detalhe={estado.erro ?? undefined} /> : null}
             {estado.aviso !== null ? (
               <Alert variant="warning">
                 <AlertDescription>{estado.aviso}</AlertDescription>
