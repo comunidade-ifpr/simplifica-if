@@ -15,7 +15,7 @@
  *   `rowid` do FTS é o da tabela de origem.
  */
 
-export const VERSAO_ESQUEMA = 3;
+export const VERSAO_ESQUEMA = 4;
 
 const TOKENIZADOR = `tokenize="unicode61 remove_diacritics 2"`;
 
@@ -201,6 +201,14 @@ CREATE TABLE ppcs (
   -- contexto compara o pacote com o PPC inteiro sem abrir o Markdown
   caracteres INTEGER NOT NULL,
   proveniencia_json TEXT NOT NULL
+);
+
+-- Markdown integral das normas da base e dos PPCs, como está no arquivo (front matter incluído, quebras
+-- de linha LF), para o leitor do app (M1.6), que gera o HTML na hora. path: o mesmo de normas.path e ppcs.path.
+CREATE TABLE documentos (
+  rowid INTEGER PRIMARY KEY,
+  path TEXT NOT NULL UNIQUE,
+  texto TEXT NOT NULL
 );
 
 -- Seções do índice v2, com o texto integral recortado pelas linhas (lerTextoSecao).

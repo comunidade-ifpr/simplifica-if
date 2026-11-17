@@ -34,6 +34,8 @@ import type * as PacoteContextoF from "../ferramentas/pacote-contexto.ts";
 import type * as ResolverCitacoes from "../ferramentas/resolver-citacoes.ts";
 import type * as SobreABase from "../ferramentas/sobre-a-base.ts";
 import { linkCampus } from "../links.ts";
+import type * as Documento from "../documento.ts";
+import { makeDocumentos } from "./documentos.ts";
 import { makeNormas } from "./normas.ts";
 import { makePacote } from "./pacote.ts";
 import { makePpcs } from "./ppcs.ts";
@@ -82,6 +84,8 @@ export class Leitura extends Context.Service<
     readonly lerCnct: Metodo<typeof Conteudos.EntradaCnct, typeof Conteudos.DadosCnct>;
     readonly lerCampus: Metodo<typeof Conteudos.EntradaCampus, typeof Conteudos.DadosCampus>;
     readonly lerFicha: Metodo<typeof Conteudos.EntradaFicha, typeof Conteudos.DadosFicha>;
+    /** O Markdown inteiro de uma norma ou de um PPC, com as âncoras, para o leitor do app (M1.6). */
+    readonly lerDocumento: Metodo<typeof Documento.EntradaDocumento, typeof Documento.DadosDocumento>;
   }
 >()("@simplifica-if/mcp/leitura/Leitura") {}
 
@@ -146,13 +150,14 @@ const make = Effect.fn("Leitura.make")(function* (opcoes: { readonly canal: Cana
   const ppcs = yield* makePpcs(base);
   const pacote = yield* makePacote(base);
   const recursos = yield* makeRecursos(base, campiPorId);
+  const documentos = yield* makeDocumentos(base);
 
   const sobreABase = responder(base, { contagens: meta.contagens, tipos_de_secao: tiposDeSecao, niveis, campi });
   const etapa = responder(base, { registrado: false });
 
   return Leitura.of({
     base,
-    ...comFalhaNaBase({ ...normas, ...ppcs, ...pacote, ...recursos }),
+    ...comFalhaNaBase({ ...normas, ...ppcs, ...pacote, ...recursos, ...documentos }),
     // respostas fixas, montadas uma vez: o banco não muda com o servidor no ar
     sobreABase: Effect.fn("Leitura.sobreABase")(() => Effect.succeed(sobreABase)),
     etapa: Effect.fn("Leitura.etapa")(() => Effect.succeed(etapa)),

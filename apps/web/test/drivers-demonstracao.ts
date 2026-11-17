@@ -5,7 +5,9 @@
  *
  * - **Claude:** instalado e com login. Responde com uma ferramenta do MCP `ifpr`, texto parcial e final
  *   com um link `ifpr://` (que existe no banco de fixture). Se a mensagem fala em "escrev", pede
- *   aprovação antes; se fala em "demor", fica respondendo até ser interrompido.
+ *   aprovação antes; se fala em "demor", fica respondendo até ser interrompido; se fala em "leitor",
+ *   a resposta cita um dispositivo (`LINK_DISPOSITIVO`) e uma seção de PPC (`LINK_SECAO_PPC`), para o
+ *   leitor `ifpr://` (M1.6).
  * - **Codex:** não instalado. "Instalar" baixa em etapas (`EstadoInstalacao`); depois, sem login, e
  *   "Entrar" conclui sozinho.
  * - **Antigravity:** instalado, sem login. "Entrar" fica em `aguardando` com a URL do Google por
@@ -38,6 +40,12 @@ export interface OpcoesDemonstracao {
    */
   readonly claudePresente?: () => boolean;
 }
+
+/** Um inciso da DCN da EPT de 2026 e uma seção do PPC de Enfermagem, do banco de fixture. */
+export const LINK_DISPOSITIVO = "ifpr://norma/br/cne-cp/res/2026/2#art28-xviii";
+export const LINK_SECAO_PPC = "ifpr://ppc/curitiba/tecnico-em-enfermagem#avaliacao-1";
+
+const respostaLeitor = `O PPC precisa prever o acompanhamento de egressos ([Res. CNE/CP nº 2/2026, art. 28, XVIII](${LINK_DISPOSITIVO})). Veja como o [PPC de Enfermagem](${LINK_SECAO_PPC}) trata a avaliação.`;
 
 const respostaFinal = `A Resolução CNE/CP nº 1/2021 define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica. Veja a [Res. CNE/CP nº 1/2021](${LINK_DEMONSTRACAO}).`;
 
@@ -149,11 +157,12 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
             yield* canal.emitir({ _tag: "TextoParcial", texto: "Esta resposta vai demorar" });
             return yield* Effect.never;
           }
-          for (const pedaco of respostaFinal.match(/.{1,40}/g) ?? []) {
+          const final = /leitor/i.test(texto) ? respostaLeitor : respostaFinal;
+          for (const pedaco of final.match(/.{1,40}/g) ?? []) {
             yield* canal.emitir({ _tag: "TextoParcial", texto: pedaco });
             yield* Effect.sleep(passo);
           }
-          yield* canal.emitir({ _tag: "TextoFinal", texto: respostaFinal });
+          yield* canal.emitir({ _tag: "TextoFinal", texto: final });
           yield* canal.emitir({ _tag: "UsoTokens", entrada: 1234, saida: 56 });
           yield* canal.emitir({ _tag: "FimTurno", motivo: provider === "codex" ? "completed" : "end_turn" });
         });

@@ -244,3 +244,91 @@ describe("GrupoLeitura: links ifpr://", () => {
     }),
   );
 });
+
+describe("GrupoLeitura: lerDocumento (o leitor do app, M1.6)", () => {
+  it.effect("norma com dispositivo: o Markdown com as linhas do arquivo, as âncoras e o alvo", () =>
+    Effect.gen(function* () {
+      const banco = bancoNormas();
+      const { dados, avisos } = yield* viaRpc(banco, (c) =>
+        c.lerDocumento({ link: `ifpr://norma/${DCN_2026}#art28-xviii` }),
+      );
+      expect(dados).toMatchObject({
+        tipo: "norma",
+        id: DCN_2026,
+        titulo: "Resolução CNE/CP nº 2/2026",
+        link: `ifpr://norma/${DCN_2026}`,
+        alvo: "art28-xviii",
+        datas: { assinada_em: "2026-11-11", publicada_em: "2026-11-12", vigente_de: "2026-11-12" },
+      });
+      expect(avisos).toEqual([]);
+      // o front matter fica em branco: a linha de cada âncora é a linha do texto
+      expect(dados.markdown.startsWith("\n\n\n")).toBe(true);
+      const linhas = dados.markdown.split("\n");
+      const art28 = dados.ancoras.find((a) => a.id === "art28")!;
+      expect(art28).toMatchObject({ tipo: "artigo", pai: null, rotulo: "Art. 28." });
+      expect(linhas[art28.linha_inicio - 1]).toMatch(/^#### Art\. 28\./);
+      const inciso = dados.ancoras.find((a) => a.id === "art28-xviii")!;
+      expect(inciso).toMatchObject({ tipo: "inciso", pai: "art28", rotulo: "XVIII" });
+      expect(linhas[inciso.linha_inicio - 1]).toMatch(/^XVIII – /);
+      // na ordem do documento
+      const inicios = dados.ancoras.map((a) => a.linha_inicio);
+      expect(inicios).toEqual([...inicios].sort((a, b) => a - b));
+    }),
+  );
+
+  it.effect("PPC com seção: o arquivo inteiro, inclusive o que fica fora das seções do índice", () =>
+    Effect.gen(function* () {
+      const banco = bancoNormas();
+      const { dados } = yield* viaRpc(banco, (c) =>
+        c.lerDocumento({ link: "ifpr://ppc/curitiba/tecnico-em-enfermagem#avaliacao-1" }),
+      );
+      expect(dados).toMatchObject({
+        tipo: "ppc",
+        id: "curitiba/tecnico-em-enfermagem",
+        titulo: "Técnico em Enfermagem (Curitiba)",
+        alvo: "avaliacao-1",
+        datas: null,
+      });
+      expect(dados.ancoras.map((a) => a.id)).toEqual(["avaliacao-1", "estagio-1", "estagio-2"]);
+      expect(dados.markdown).toContain("# Projeto Pedagógico do Curso Técnico em Enfermagem");
+      expect(dados.markdown.split("\n")[120 - 1]).toBe("## avaliacao-1");
+    }),
+  );
+
+  it.effect("fragmento que não existe: o documento abre no começo, com aviso", () =>
+    Effect.gen(function* () {
+      const banco = bancoNormas();
+      const { dados, avisos } = yield* viaRpc(banco, (c) =>
+        c.lerDocumento({ link: `ifpr://norma/${DCN_2021}#art999` }),
+      );
+      expect(dados.alvo).toBeNull();
+      // a publicação ainda não registrada vem como está
+      expect(dados.datas).toEqual({
+        assinada_em: "2021-01-05",
+        publicada_em: "a confirmar",
+        vigente_de: "a confirmar",
+      });
+      expect(avisos).toEqual([
+        expect.objectContaining({ tipo: "nao-encontrado", ref: `ifpr://norma/${DCN_2021}#art999` }),
+      ]);
+    }),
+  );
+
+  it.effect("stub, curso e link malformado: EntradaInvalida em português", () =>
+    Effect.gen(function* () {
+      const banco = bancoNormas();
+      const casos: ReadonlyArray<readonly [string, RegExp]> = [
+        ["ifpr://norma/br/cne-ceb/res/2012/6", /não tem o texto na base, só a referência/],
+        ["ifpr://norma/br/lei/2099/1", /^norma não encontrada na base/],
+        ["ifpr://curso/curitiba/tecnico-em-enfermagem", /^o leitor abre como documento só links de norma e de PPC/],
+        ["ifpr://ppc/curitiba/tecnico-em-astronautica", /^PPC não encontrado na base/],
+        ["texto qualquer", /^o leitor abre como documento só links de norma e de PPC/],
+      ];
+      for (const [link, mensagem] of casos) {
+        const falha = yield* Effect.flip(viaRpc(banco, (c) => c.lerDocumento({ link })));
+        expect(ehEntradaInvalida(falha), link).toBe(true);
+        expect(falha.message, link).toMatch(mensagem);
+      }
+    }),
+  );
+});

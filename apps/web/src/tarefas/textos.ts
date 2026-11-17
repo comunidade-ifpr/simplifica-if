@@ -31,21 +31,94 @@ const TIPOS_NORMA: Readonly<Record<string, string>> = {
 
 const ROMANO = /^[ivxlcdm]+$/i;
 
+/** Número de artigo ou parágrafo: ordinal até o 9 ("5º"), cardinal a partir do 10 ("10"). */
+const ordinal = (numero: string) => (Number(numero) <= 9 ? `${numero}º` : numero);
+
 /** O dispositivo (`art28-xviii`, `art28-par1-iv`, `art71-parunico`, `anexo1-art5`) por extenso. */
 export function dispositivoPorExtenso(fragmento: string): string {
   const partes = fragmento.split("-").map((parte) => {
     let m = /^art(\d+)([a-z]?)$/i.exec(parte);
-    if (m) return `art. ${m[1]}${m[2] ? `-${m[2].toUpperCase()}` : ""}`;
+    if (m) return `art. ${ordinal(m[1]!)}${m[2] ? `-${m[2].toUpperCase()}` : ""}`;
     if (/^parunico$/i.test(parte)) return "parágrafo único";
     m = /^par(\d+)$/i.exec(parte);
-    if (m) return `§ ${m[1]}º`;
+    if (m) return `§ ${ordinal(m[1]!)}`;
     m = /^anexo(\d+)$/i.exec(parte);
-    if (m) return `Anexo ${m[1]}`;
+    if (m) return `Anexo ${romano(Number(m[1]))}`;
+    m = /^item(\d+)$/i.exec(parte);
+    if (m) return `item ${m[1]}`;
     if (ROMANO.test(parte)) return parte.toUpperCase();
     if (/^[a-z]$/.test(parte)) return `alínea ${parte}`;
+    if (/^al$/i.test(parte)) return "";
     return parte;
   });
-  return partes.join(", ");
+  return partes.filter((p) => p !== "").join(", ");
+}
+
+function romano(n: number): string {
+  if (!Number.isInteger(n) || n <= 0 || n >= 400) return String(n);
+  const tabela: ReadonlyArray<readonly [number, string]> = [
+    [100, "C"],
+    [90, "XC"],
+    [50, "L"],
+    [40, "XL"],
+    [10, "X"],
+    [9, "IX"],
+    [5, "V"],
+    [4, "IV"],
+    [1, "I"],
+  ];
+  let resto = n;
+  let saida = "";
+  for (const [valor, letra] of tabela) {
+    while (resto >= valor) {
+      saida += letra;
+      resto -= valor;
+    }
+  }
+  return saida;
+}
+
+/** O tipo da seção de PPC (o prefixo do ID, `avaliacao-1`) em linguagem comum. */
+const SECOES_PPC: Readonly<Record<string, string>> = {
+  acessibilidade_inclusao: "de acessibilidade e inclusão",
+  acompanhamento_egresso: "de acompanhamento de egressos",
+  anexos: "dos anexos",
+  aproveitamento_estudos: "de aproveitamento de estudos",
+  atendimento_estudante: "de atendimento ao estudante",
+  atividades_complementares: "de atividades complementares",
+  avaliacao: "de avaliação",
+  avaliacao_curso: "de avaliação do curso",
+  carga_horaria: "de carga horária",
+  certificados_diplomas: "de certificados e diplomas",
+  concepcao_pedagogica: "de concepção pedagógica",
+  contexto_institucional: "de contexto institucional",
+  corpo_docente: "do corpo docente",
+  ementas: "das ementas",
+  ensino_pesquisa_extensao: "de ensino, pesquisa e extensão",
+  estagio_praticas: "de estágio e práticas",
+  formato_oferta: "do formato da oferta",
+  gestao_curso: "de gestão do curso",
+  identificacao: "de identificação",
+  infraestrutura: "de infraestrutura",
+  itinerario_formativo: "do itinerário formativo",
+  justificativa: "da justificativa",
+  legislacao: "de legislação",
+  matriz_curricular: "da matriz curricular",
+  mundo_trabalho: "do mundo do trabalho",
+  objetivos: "dos objetivos",
+  organizacao_curricular: "da organização curricular",
+  perfil_egresso: "do perfil do egresso",
+  prazo_integralizacao: "do prazo de integralização",
+  referencias: "das referências",
+  requisitos_acesso: "dos requisitos de acesso",
+  trabalho_conclusao: "do trabalho de conclusão",
+};
+
+/** A seção de um link de PPC (`avaliacao-1`) por extenso: "seção de avaliação"; tipo desconhecido, "uma seção". */
+export function secaoPorExtenso(fragmento: string): string {
+  const tipo = fragmento.replace(/-\d+$/, "");
+  const nome = SECOES_PPC[tipo];
+  return nome === undefined ? "uma seção" : `seção ${nome}`;
 }
 
 const milhar = (numero: string) => (/^\d{4,}$/.test(numero) ? Number(numero).toLocaleString("pt-BR") : numero);
@@ -88,7 +161,7 @@ export function nomeCurtoLink(link: string): string {
     case "ppc": {
       const [campus, curso] = partes;
       const nome = `${tipo.toLowerCase() === "ppc" ? "PPC · " : ""}${slugLegivel(curso ?? "")} (${slugLegivel(campus ?? "")})`;
-      return fragmento ? `${nome}, seção` : nome;
+      return fragmento ? `${nome}, ${secaoPorExtenso(fragmento)}` : nome;
     }
     case "cnct":
       return `CNCT · ${slugLegivel(partes[0] ?? "")}`;

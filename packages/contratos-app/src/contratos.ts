@@ -19,7 +19,7 @@
  * usa uma vez, em até `VALIDADE_INGRESSO_MS`. O token, que vale enquanto o servidor viver, nunca vai
  * na URL.
  */
-import { GrupoLeitura, type LinkLido } from "@simplifica-if/mcp/grupo-leitura";
+import { type Ancora, type DadosDocumento, GrupoLeitura, type LinkLido } from "@simplifica-if/mcp/grupo-leitura";
 import type {
   EstadoInstalacao as EstadoInstalacaoMotor,
   EstadoLogin as EstadoLoginMotor,
@@ -42,7 +42,7 @@ import { GrupoRelato } from "./relato.ts";
 export { AprovacaoDesconhecida, Decisao, FalhaProvider, OperacaoNaoSuportada, SessaoDesconhecida, TurnoEmAndamento };
 export { Evento, Provider };
 export { GrupoLeitura };
-export type { LinkLido };
+export type { Ancora, DadosDocumento, LinkLido };
 export * from "./preferencias.ts";
 export * from "./relato.ts";
 

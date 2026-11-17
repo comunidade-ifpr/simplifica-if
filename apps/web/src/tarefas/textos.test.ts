@@ -21,11 +21,21 @@ describe("nome curto das citações", () => {
   it("dispositivos por extenso", () => {
     expect(dispositivoPorExtenso("art28-par1-iv")).toBe("art. 28, § 1º, IV");
     expect(dispositivoPorExtenso("art71-parunico")).toBe("art. 71, parágrafo único");
-    expect(dispositivoPorExtenso("anexo1-art5")).toBe("Anexo 1, art. 5");
+    expect(dispositivoPorExtenso("anexo1-art5")).toBe("Anexo I, art. 5º");
+    expect(dispositivoPorExtenso("art9-par2")).toBe("art. 9º, § 2º");
+    expect(dispositivoPorExtenso("art10-par10")).toBe("art. 10, § 10");
+    expect(dispositivoPorExtenso("anexo4-item3")).toBe("Anexo IV, item 3");
+    expect(dispositivoPorExtenso("art4-i-al-a")).toBe("art. 4º, I, alínea a");
   });
   it("cursos, PPC, CNCT, campus, ficha e link desconhecido", () => {
     expect(nomeCurtoLink("ifpr://ppc/curitiba/tecnico-em-enfermagem#avaliacao-1")).toBe(
-      "PPC · Técnico em enfermagem (Curitiba), seção",
+      "PPC · Técnico em enfermagem (Curitiba), seção de avaliação",
+    );
+    expect(nomeCurtoLink("ifpr://ppc/curitiba/tecnico-em-enfermagem#estagio_praticas-2")).toBe(
+      "PPC · Técnico em enfermagem (Curitiba), seção de estágio e práticas",
+    );
+    expect(nomeCurtoLink("ifpr://ppc/curitiba/tecnico-em-enfermagem#xyz-1")).toBe(
+      "PPC · Técnico em enfermagem (Curitiba), uma seção",
     );
     expect(nomeCurtoLink("ifpr://cnct/tecnico-em-enfermagem")).toBe("CNCT · Técnico em enfermagem");
     expect(nomeCurtoLink("ifpr://campus/curitiba")).toBe("Campus Curitiba");

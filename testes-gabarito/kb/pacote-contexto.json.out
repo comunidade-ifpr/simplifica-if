@@ -68,6 +68,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: progressão explicitada."
+      },
       "ancoras_semanticas": [
         "Progressão formativa explicitada na organização curricular",
         "Matriz curricular, integralização e componentes",
@@ -580,7 +584,7 @@
     ]
   },
   "tamanho": {
-    "caracteres": 57952,
+    "caracteres": 58071,
     "secoes": 6,
     "caracteres_secoes": 21239,
     "caracteres_ppc_inteiro": 255014

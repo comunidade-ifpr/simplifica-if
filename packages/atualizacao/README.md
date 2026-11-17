@@ -30,7 +30,7 @@ O app também recusa: manifesto de outro canal, versão igual ou mais velha que 
 
 ## Fluxo no app
 
-1. **Abertura do servidor** (`--pasta-atualizacao`, que o desktop passa no app instalado): `prepararAbertura` atende o pedido de voltar ou põe a base pendente no lugar (a atual vira `kb.anterior.sqlite`), por `rename` na mesma pasta, e escolhe a mais nova entre a baixada e a empacotada. Só depois o servidor abre a base.
+1. **Abertura do servidor** (`--pasta-atualizacao`, que o desktop passa no app instalado): `prepararAbertura` atende o pedido de voltar ou põe a base pendente no lugar (a atual vira `kb.anterior.sqlite`), por `rename` na mesma pasta, e escolhe a mais nova entre a baixada e a empacotada. Só concorre a baixada do esquema que o app lê (`VERSAO_ESQUEMA` do `kb`): uma base baixada pelo app antigo, de outro esquema, ou a anterior de outro esquema depois de "Voltar", fica de lado, e o servidor abre a empacotada (o evento vai para o log). Só depois o servidor abre a base.
 2. **Conferência** na abertura e a cada 24 h, no canal gravado (padrão da política: `beta`). Baixa o patch quando o manifesto tem um da versão em uso; senão, o pacote inteiro. Deixa `base/pendente.sqlite` e as skills em `skills/<versao>/`.
 3. **Troca:** na próxima abertura, ou em "Usar a versão nova agora", que reinicia o servidor pelo desktop. Enquanto uma análise de PPC, uma revisão com IA ou uma conversa respondendo roda, o servidor responde `adiada` e a troca fica para a próxima abertura.
 4. **Aviso "Base atualizada"** com as novidades da versão, até a pessoa fechar.
@@ -43,6 +43,8 @@ O app também recusa: manifesto de outro canal, versão igual ou mais velha que 
 Fora do app, o `simplifica-mcp` faz o mesmo só com a base (`--pasta-atualizacao`, `packages/mcp/README.md`).
 
 ## A fábrica
+
+**Esquema novo exige `--app-minimo`.** Quando o `kb` sobe `VERSAO_ESQUEMA`, o app antigo não lê a base nova: ela só pode sair com `--app-minimo <primeira versão do app que lê o esquema novo>`, para o app antigo avisar "atualize o app" em vez de baixar uma base que vai recusar. A fábrica confere: se a base nova tem outro esquema que uma das anteriores (as dadas e as guardadas) e o `--app-minimo` ficou no padrão (`0.1.0`), ela recusa com o motivo (`conferirEsquema`, em `src/fabrica.ts`). Sem nenhuma anterior guardada, não há com o que comparar: a regra fica com quem publica.
 
 ```bash
 pnpm fabrica gerar-chave --saida ~/.simplifica-fabrica    # uma vez; com SIMPLIFICA_MINISIGN_SENHA, cifrada
