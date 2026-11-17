@@ -34,7 +34,10 @@ import { CANAIS, type Conexao } from "./ponteDesktop.ts";
 import { abrirLog } from "./registro.ts";
 import {
   CAMINHO_LIBERAR_ARQUIVO,
+  anexoEscolhido,
+  arquivoDeTarefaPermitido,
   copiaComentadaPermitida,
+  extensoesAnexo,
   docxEscolhido,
   hashesScriptsInline,
   isSameOriginRendererNavigation,
@@ -92,6 +95,7 @@ const configuracao: Configuracao = resolverConfiguracao({
   pastaRecursos: process.resourcesPath,
   pastaAplicacao: app.getAppPath(),
   pastaApp: app.getPath("userData"),
+  pastaDocumentos: app.getPath("documents"),
   executavel: process.execPath,
   ambiente: process.env,
   existe: (caminho) => NodeFS.existsSync(caminho),
@@ -121,6 +125,7 @@ function subirServidor(): Promise<Conexao> {
     banco: configuracao.banco,
     pastaEstado: configuracao.pastaEstado,
     pastaSkills: configuracao.pastaSkills,
+    pastaTrabalhos: configuracao.pastaTrabalhos,
     origens: configuracao.origens,
     token,
     ambiente: process.env,
@@ -360,6 +365,45 @@ ipcMain.handle(CANAIS.abrirDocumento, async (evento, caminho: unknown) => {
 ipcMain.handle(CANAIS.mostrarNaPasta, async (evento, caminho: unknown) => {
   if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
   shell.showItemInFolder(copiaComentada(caminho));
+});
+
+/* ============================================================ pasta das tarefas (M1.9) */
+
+ipcMain.handle(CANAIS.escolherAnexo, async (evento, pedidas: unknown) => {
+  if (!remetenteConfiavel(evento) || janela === undefined) throw new Error("pedido recusado");
+  const aceitas = extensoesAnexo(pedidas);
+  const escolha = await dialog.showOpenDialog(janela, {
+    title: "Anexar arquivo",
+    buttonLabel: "Anexar",
+    properties: ["openFile"],
+    filters: [{ name: "Documentos", extensions: aceitas.map((extensao) => extensao.slice(1)) }],
+  });
+  const arquivo = escolha.canceled ? undefined : anexoEscolhido(escolha.filePaths[0], aceitas);
+  if (arquivo === undefined) return null;
+  await liberarNoServidor(arquivo);
+  return arquivo;
+});
+
+/** Um arquivo de pasta de tarefa: a regra de `arquivoDeTarefaPermitido` e o caminho real dentro da raiz. */
+function arquivoDeTarefa(caminho: unknown, abrir: boolean): string {
+  const permitido = arquivoDeTarefaPermitido(caminho, configuracao.pastaTrabalhos, abrir);
+  if (permitido === undefined) throw new Error("só arquivos das pastas de tarefa abrem por aqui");
+  const info = NodeFS.lstatSync(permitido, { throwIfNoEntry: false });
+  if (info === undefined || !info.isFile()) throw new Error("o arquivo não foi encontrado");
+  const raizReal = NodeFS.realpathSync(configuracao.pastaTrabalhos);
+  if (!NodeFS.realpathSync(permitido).startsWith(raizReal + NodePath.sep)) throw new Error("arquivo fora da pasta");
+  return permitido;
+}
+
+ipcMain.handle(CANAIS.abrirArquivoTarefa, async (evento, caminho: unknown) => {
+  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
+  const erro = await shell.openPath(arquivoDeTarefa(caminho, true));
+  if (erro !== "") throw new Error(`não foi possível abrir o arquivo: ${erro}`);
+});
+
+ipcMain.handle(CANAIS.mostrarArquivoTarefa, async (evento, caminho: unknown) => {
+  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
+  shell.showItemInFolder(arquivoDeTarefa(caminho, false));
 });
 
 /* ============================================================ protocolo */

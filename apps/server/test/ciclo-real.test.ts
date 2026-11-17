@@ -46,6 +46,7 @@ import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
 import * as Drivers from "@simplifica-if/motor/drivers";
 import * as CatalogoSkills from "../src/CatalogoSkills.ts";
+import * as PastasTrabalho from "../src/PastasTrabalho.ts";
 import * as Conversas from "../src/Conversas.ts";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Historico from "../src/persistencia/Historico.ts";
@@ -116,6 +117,7 @@ const camada = (arquivo: string, aberturas: Array<Abertura>) =>
     Layer.provideMerge(Motor.layer),
     Layer.provideMerge(Historico.layer),
     Layer.provide(CatalogoSkills.layerVazio),
+    Layer.provide(PastasTrabalho.layerSemPastas),
     Layer.provide(Banco.layerArquivo(arquivo)),
     Layer.provide(McpHttp.layer({ banco: KB })),
     Layer.provide(driversRegistrados(aberturas)),

@@ -4,7 +4,7 @@
  * desktop importam daqui; nada aqui depende do Node, e importar o pacote não carrega o `kb`, a leitura
  * do MCP nem os drivers do motor (`test/sem-servidor.test.ts` confere o grafo de imports).
  *
- * - `GrupoApp`: a API RPC (`effect/rpc`) por WebSocket. Cinco grupos: providers, conversa, skills, revisão de PPC e leitura (o
+ * - `GrupoApp`: a API RPC (`effect/rpc`) por WebSocket. Seis grupos: providers, conversa, skills, pasta de trabalho, revisão de PPC e leitura (o
  *   `GrupoLeitura` de `@simplifica-if/mcp/grupo-leitura`, só as definições, sem duplicar; os handlers
  *   ficam em `@simplifica-if/mcp/rpc`, que este pacote não importa). Os métodos de providers e de conversa
  *   têm nome com prefixo, como os `WS_METHODS` do T3: `cliente["conversa.enviar"]({ … })`.
@@ -205,8 +205,22 @@ export const EntradaIniciar = Schema.Struct({
   pastaTrabalho: Schema.String,
   modelo: Schema.optionalKey(Schema.String),
   buscaWeb: Schema.optionalKey(Schema.Boolean),
+  /**
+   * A tarefa da conversa (M1.9): o nome da skill do catálogo, ou `conversa` para a caixa livre do
+   * Início. Fica gravada para a interface mostrar as etapas da skill ao reabrir.
+   */
+  tarefa: Schema.optionalKey(Schema.String),
 });
 export type EntradaIniciar = typeof EntradaIniciar.Type;
+
+/** A `tarefa` de `conversa.iniciar` não é skill do catálogo nem `conversa`. */
+export class TarefaDesconhecida extends Schema.TaggedError<TarefaDesconhecida>()("TarefaDesconhecida", {
+  tarefa: Schema.String,
+}) {
+  override get message(): string {
+    return "Esta tarefa não existe mais no app.";
+  }
+}
 
 export const SessaoIniciada = Schema.Struct({
   /** O id da conversa, que dura além da sessão do provider (é o que os outros métodos recebem em `sessao`). */
@@ -237,6 +251,8 @@ export const ResumoConversa = Schema.Struct({
   /** Datas em ISO 8601 (UTC). */
   criadaEm: Schema.String,
   atualizadaEm: Schema.String,
+  /** A tarefa (`EntradaIniciar.tarefa`), quando a conversa nasceu de uma. */
+  tarefa: Schema.optionalKey(Schema.String),
 });
 export type ResumoConversa = typeof ResumoConversa.Type;
 
@@ -266,9 +282,18 @@ export const ItemConversa = Schema.Union([ItemMensagem, ItemEvento, ItemDecisao]
 export type ItemConversa = typeof ItemConversa.Type;
 
 /** Uma conversa com o histórico inteiro. */
+/** A avaliação de uma resposta (👍/👎), por turno. */
+export const NotaResposta = Schema.Literals(["util", "nao_util"]);
+export type NotaResposta = typeof NotaResposta.Type;
+
+export const AvaliacaoResposta = Schema.Struct({ turno: Schema.Number, nota: NotaResposta });
+export type AvaliacaoResposta = typeof AvaliacaoResposta.Type;
+
 export const ConversaGravada = Schema.Struct({
   conversa: ResumoConversa,
   itens: Schema.Array(ItemConversa),
+  /** As avaliações gravadas das respostas, por turno. */
+  avaliacoes: Schema.Array(AvaliacaoResposta),
 });
 export type ConversaGravada = typeof ConversaGravada.Type;
 
@@ -283,7 +308,7 @@ export class GrupoConversa extends RpcGroup.make(
   Rpc.make("conversa.iniciar", {
     payload: EntradaIniciar,
     success: SessaoIniciada,
-    error: Schema.Union([FalhaProvider, PastaTrabalhoInvalida]),
+    error: Schema.Union([FalhaProvider, PastaTrabalhoInvalida, TarefaDesconhecida]),
   }),
   /**
    * Envia a mensagem; o stream traz os eventos do turno e termina depois de `FimTurno`. Sem sessão
@@ -331,6 +356,11 @@ export class GrupoConversa extends RpcGroup.make(
     success: ResumoConversa,
     error: Schema.Union([FalhaProvider, SessaoDesconhecida]),
   }),
+  /** 👍/👎 na resposta do turno (`null` retira a avaliação); gravado no servidor. */
+  Rpc.make("conversa.avaliar", {
+    payload: Schema.Struct({ sessao: Schema.String, turno: Schema.Number, nota: Schema.NullOr(NotaResposta) }),
+    error: SessaoDesconhecida,
+  }),
 ) {}
 
 /* ================================================================== skills */
@@ -339,11 +369,39 @@ export class GrupoConversa extends RpcGroup.make(
  * Uma skill do app no catálogo do servidor: o que os futuros cartões da tela inicial mostram. Vem do
  * `name` e do bloco `simplifica:` do `SKILL.md` (`@simplifica-if/mcp/skills`).
  */
+/** Uma entrada do formulário da tarefa (`entradas` do manifesto). */
+export const EntradaTarefa = Schema.Struct({
+  id: Schema.String,
+  tipo: Schema.Literals(["arquivo", "curso", "texto", "norma"]),
+  rotulo: Schema.String,
+  /** As extensões aceitas num `arquivo` (`.docx`, `.md`). */
+  aceita: Schema.optionalKey(Schema.Array(Schema.String)),
+  opcional: Schema.optionalKey(Schema.Boolean),
+});
+export type EntradaTarefa = typeof EntradaTarefa.Type;
+
+/** Uma etapa do indicador (`etapas` do manifesto); a skill a marca com a ferramenta `etapa`. */
+export const EtapaTarefa = Schema.Struct({
+  id: Schema.String,
+  rotulo: Schema.String,
+  /** A etapa informa `progresso` (feito de total). */
+  progresso: Schema.optionalKey(Schema.Boolean),
+});
+export type EtapaTarefa = typeof EtapaTarefa.Type;
+
 export const ResumoSkill = Schema.Struct({
   nome: Schema.String,
   titulo: Schema.String,
   resumo: Schema.String,
   area: Schema.String,
+  /** Os perfis a quem a tarefa serve (`publico`); vazio quando o manifesto não diz. */
+  publico: Schema.Array(Schema.String),
+  /** O formulário da tarefa; vazio quando o manifesto não declara. */
+  entradas: Schema.Array(EntradaTarefa),
+  /** O indicador de etapas; vazio quando o manifesto não declara. */
+  etapas: Schema.Array(EtapaTarefa),
+  /** Como o manifesto escreve (`20min`, `1h`). */
+  duracaoEstimada: Schema.optionalKey(Schema.String),
 });
 export type ResumoSkill = typeof ResumoSkill.Type;
 
@@ -731,7 +789,147 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
   Rpc.make("revisaoPpc.gerarCopia", { payload: EntradaLista, success: ListaPendencias, error: FalhaRevisaoPpc }),
 ) {}
 
+/* ================================================================== pasta de trabalho */
+
+/**
+ * Uma recusa da pasta de trabalho (criar, anexar, ver, desfazer), com a frase para a pessoa em
+ * `motivo`.
+ */
+export class FalhaPasta extends Schema.TaggedError<FalhaPasta>()("FalhaPasta", { motivo: Schema.String }) {
+  override get message(): string {
+    return this.motivo;
+  }
+}
+export const ehFalhaPasta = Schema.is(FalhaPasta);
+
+/**
+ * As extensões de documento que a pasta da tarefa aceita no "Anexar" e que "Abrir" abre no programa
+ * padrão: Word e ODF atuais, PDF, texto, planilhas, apresentações, JSON e imagens. Nada que o sistema
+ * execute, nem os formatos antigos com macro (`.doc`, `.xls`). O desktop tem uma cópia (o teste confere).
+ */
+export const EXTENSOES_DOCUMENTO = [
+  ".docx",
+  ".odt",
+  ".rtf",
+  ".pdf",
+  ".md",
+  ".txt",
+  ".csv",
+  ".xlsx",
+  ".ods",
+  ".pptx",
+  ".odp",
+  ".json",
+  ".png",
+  ".jpg",
+  ".jpeg",
+] as const;
+
+/** O arquivo tem extensão de documento (`EXTENSOES_DOCUMENTO`)? */
+export const ehExtensaoDocumento = (nome: string): boolean => {
+  const ponto = nome.lastIndexOf(".");
+  return ponto > 0 && (EXTENSOES_DOCUMENTO as ReadonlyArray<string>).includes(nome.slice(ponto).toLowerCase());
+};
+
+/** Um arquivo da pasta de trabalho da conversa. */
+export const ArquivoPasta = Schema.Struct({
+  /** O caminho relativo à pasta, com `/`. */
+  nome: Schema.String,
+  /** O caminho absoluto (para "Abrir" e "Mostrar na pasta" no desktop). */
+  caminho: Schema.String,
+  tamanho: Schema.Number,
+  /** ISO 8601. */
+  alteradoEm: Schema.String,
+  /** `anexado`: entrou pelo app ("Anexar"); `pasta`: criado ou alterado na pasta (pela IA ou pela pessoa). */
+  origem: Schema.Literals(["anexado", "pasta"]),
+});
+export type ArquivoPasta = typeof ArquivoPasta.Type;
+
+/**
+ * O que "Desfazer o que a IA fez nesta pasta" faria agora: só o que mudou **dentro** do turno mais
+ * recente que mudou a pasta (o retrato de antes e o de depois do turno), não as mudanças feitas fora da
+ * conversa depois dele.
+ */
+export const PrevisaoDesfazer = Schema.Struct({
+  /** Há uma cópia diferente do estado atual para restaurar. */
+  disponivel: Schema.Boolean,
+  /** O turno cuja cópia (o estado de antes dele) seria restaurada. */
+  turno: Schema.optionalKey(Schema.Number),
+  /** Quando a cópia foi feita (ISO 8601). */
+  copiaEm: Schema.optionalKey(Schema.String),
+  /** Arquivos que sairiam (criados depois da cópia). */
+  criados: Schema.Array(Schema.String),
+  /** Arquivos que voltariam ao conteúdo da cópia. */
+  alterados: Schema.Array(Schema.String),
+  /** Arquivos que voltariam (apagados depois da cópia). */
+  apagados: Schema.Array(Schema.String),
+  /**
+   * Dos arquivos acima, os que também mudaram fora da conversa depois do turno (a pessoa os editou no
+   * Word, por exemplo). Sem `incluirForaDaConversa`, o Desfazer os deixa como estão.
+   */
+  foraDaConversa: Schema.Array(Schema.String),
+  /** Por que não há cópia de algum turno (pasta grande demais), em linguagem simples. */
+  aviso: Schema.optionalKey(Schema.String),
+});
+export type PrevisaoDesfazer = typeof PrevisaoDesfazer.Type;
+
+/** A pasta de trabalho de uma conversa. */
+export const PastaConversa = Schema.Struct({
+  pasta: Schema.String,
+  /** A pasta foi criada pelo app em `Documentos/Simplifica IF` (só essas têm arquivos listados e "Desfazer"). */
+  gerida: Schema.Boolean,
+  arquivos: Schema.Array(ArquivoPasta),
+  desfazer: PrevisaoDesfazer,
+});
+export type PastaConversa = typeof PastaConversa.Type;
+
+export class GrupoPasta extends RpcGroup.make(
+  /**
+   * Cria a pasta de uma tarefa em `Documentos/Simplifica IF/<titulo>` (nome seguro, sem colisão:
+   * ` (2)`, ` (3)`…) e devolve o caminho, para anexar e depois `conversa.iniciar`.
+   */
+  Rpc.make("pasta.criar", {
+    payload: Schema.Struct({ titulo: Schema.String }),
+    success: Schema.Struct({ pasta: Schema.String }),
+    error: FalhaPasta,
+  }),
+  /**
+   * Copia para a pasta (criada por `pasta.criar`) um arquivo escolhido no diálogo do desktop, que o
+   * processo principal liberou (`CAMINHO_LIBERAR_ARQUIVO`); nome repetido ganha ` (2)`.
+   */
+  Rpc.make("pasta.anexar", {
+    payload: Schema.Struct({ pasta: Schema.String, arquivo: Schema.String }),
+    success: ArquivoPasta,
+    error: FalhaPasta,
+  }),
+  /** Os arquivos da pasta da conversa e o que "Desfazer" faria. */
+  Rpc.make("pasta.ver", {
+    payload: EntradaSessao,
+    success: PastaConversa,
+    error: Schema.Union([FalhaPasta, SessaoDesconhecida]),
+  }),
+  /**
+   * Restaura a cópia da pasta do turno mais recente que a IA mudou (a de antes do turno) e devolve a
+   * pasta depois. Recusa com turno em andamento.
+   */
+  Rpc.make("pasta.desfazer", {
+    payload: Schema.Struct({
+      sessao: Schema.String,
+      /** Desfazer também os arquivos de `foraDaConversa` (perde a mudança feita fora da conversa). */
+      incluirForaDaConversa: Schema.optionalKey(Schema.Boolean),
+    }),
+    success: PastaConversa,
+    error: Schema.Union([FalhaPasta, SessaoDesconhecida, TurnoEmAndamento]),
+  }),
+) {}
+
 /* ================================================================== app */
 
 /** A API inteira do servidor local: providers, conversa, skills, revisão de PPC e leitura. */
-export class GrupoApp extends GrupoProviders.merge(GrupoConversa, GrupoSkills, GrupoRevisaoPpc, GrupoLeitura) {}
+export class GrupoApp extends GrupoProviders.merge(
+  GrupoConversa,
+  GrupoSkills,
+  GrupoPasta,
+  GrupoRevisaoPpc,
+  GrupoLeitura,
+) {}

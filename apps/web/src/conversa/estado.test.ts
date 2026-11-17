@@ -1,6 +1,14 @@
 import { assert, describe, it } from "@effect/vitest";
 import type { Evento } from "@simplifica-if/contratos-app";
-import { type Acao, type EstadoConversa, estadoInicial, foiInterrompido, reduzir, rotuloFerramenta } from "./estado.ts";
+import {
+  type Acao,
+  type EstadoConversa,
+  estadoInicial,
+  foiInterrompido,
+  reduzir,
+  rotuloAprovacao,
+  rotuloFerramenta,
+} from "./estado.ts";
 
 const aplicar = (estado: EstadoConversa, ...acoes: ReadonlyArray<Acao>) => acoes.reduce(reduzir, estado);
 const evento = (e: Evento): Acao => ({ tipo: "evento", evento: e });
@@ -157,7 +165,17 @@ describe("rotuloFerramenta", () => {
   it("usa o título das ferramentas do ifpr e deixa as outras legíveis", () => {
     assert.strictEqual(rotuloFerramenta("ifpr.buscar_norma"), "Buscar norma");
     assert.strictEqual(rotuloFerramenta("mcp__ifpr__ficha_curso"), "Ficha do curso");
-    assert.strictEqual(rotuloFerramenta("escrever_arquivo"), "Escrever arquivo");
-    assert.strictEqual(rotuloFerramenta("Bash"), "Bash");
+    assert.strictEqual(rotuloFerramenta("escrever_arquivo"), "Gravar arquivo");
+    assert.strictEqual(rotuloFerramenta("Write"), "Gravar arquivo");
+    assert.strictEqual(rotuloFerramenta("Bash"), "Rodar comando");
+    // Nativas desconhecidas pelo padrão do nome; pedido de permissão nunca com o nome técnico.
+    assert.strictEqual(rotuloFerramenta("str_replace_based_edit_tool"), "Alterar arquivo");
+    assert.strictEqual(rotuloFerramenta("comando"), "Rodar comando");
+    assert.strictEqual(rotuloFerramenta("editar_arquivos"), "Alterar arquivos");
+    assert.strictEqual(rotuloAprovacao("Write"), "Gravar arquivo");
+    assert.strictEqual(rotuloAprovacao("execute"), "Rodar comando");
+    assert.strictEqual(rotuloAprovacao("xyz_q"), "uma ação no computador");
+    assert.strictEqual(rotuloAprovacao("mcp__ifpr__buscar_norma"), "Buscar norma");
+    assert.strictEqual(rotuloFerramenta("Ferramenta"), "Ferramenta");
   });
 });

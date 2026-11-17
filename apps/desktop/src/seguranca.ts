@@ -186,3 +186,66 @@ export function copiaComentadaPermitida(caminho: unknown, escolhidos: ReadonlySe
   }
   return undefined;
 }
+
+/**
+ * As extensões que "Anexar arquivo…" aceita e que "Abrir" abre no programa padrão (M1.9): documentos,
+ * planilhas, texto e imagens. Nada que o sistema execute (`.app`, `.exe`, `.command`, `.sh`, `.bat`,
+ * `.html`…) nem os formatos antigos com macro (`.doc`, `.xls`): a IA escreve na pasta, e "Abrir" não
+ * pode virar "rodar". Cópia de `EXTENSOES_DOCUMENTO` do `@simplifica-if/contratos-app` (o teste confere).
+ */
+export const EXTENSOES_DOCUMENTO = [
+  ".docx",
+  ".odt",
+  ".rtf",
+  ".pdf",
+  ".md",
+  ".txt",
+  ".csv",
+  ".xlsx",
+  ".ods",
+  ".pptx",
+  ".odp",
+  ".json",
+  ".png",
+  ".jpg",
+  ".jpeg",
+] as const;
+
+const ehDocumento = (caminho: string) =>
+  (EXTENSOES_DOCUMENTO as ReadonlyArray<string>).includes(NodePath.extname(caminho).toLowerCase());
+
+/** As extensões pedidas pela interface para o diálogo, só as de `EXTENSOES_DOCUMENTO` (todas, sem pedido). */
+export function extensoesAnexo(pedidas: unknown): ReadonlyArray<string> {
+  if (!Array.isArray(pedidas) || pedidas.length === 0) return EXTENSOES_DOCUMENTO;
+  const validas = pedidas.filter(
+    (extensao): extensao is string =>
+      typeof extensao === "string" && (EXTENSOES_DOCUMENTO as ReadonlyArray<string>).includes(extensao.toLowerCase()),
+  );
+  return validas.length === 0 ? EXTENSOES_DOCUMENTO : validas.map((extensao) => extensao.toLowerCase());
+}
+
+/** Um arquivo escolhido no diálogo de anexo, se a extensão é uma das aceitas; `undefined` para outro. */
+export function anexoEscolhido(caminho: unknown, aceitas: ReadonlyArray<string>): string | undefined {
+  if (typeof caminho !== "string" || !NodePath.isAbsolute(caminho)) return undefined;
+  return aceitas.includes(NodePath.extname(caminho).toLowerCase()) ? NodePath.normalize(caminho) : undefined;
+}
+
+/**
+ * Um arquivo de uma pasta de tarefa (`<raiz>/<tarefa>/…`, a raiz sendo `Documentos/Simplifica IF`),
+ * pelo caminho que a interface mandou: absoluto, normalizado, pelo menos dois níveis abaixo da raiz, sem
+ * parte oculta (`.simplifica/`). Com `abrir`, só as extensões de `EXTENSOES_DOCUMENTO`. Quem chama
+ * confere ainda o caminho real (sem link que saia da raiz) e que é arquivo comum.
+ */
+export function arquivoDeTarefaPermitido(caminho: unknown, raiz: string, abrir: boolean): string | undefined {
+  if (typeof caminho !== "string" || !NodePath.isAbsolute(caminho)) return undefined;
+  if (NodePath.normalize(caminho) !== caminho) return undefined;
+  // `:` só na unidade do Windows (`C:\`); fora dela, é fluxo alternativo do NTFS (`arquivo.md:oculto`).
+  const semUnidade = /^[A-Za-z]:[\\/]/.test(caminho) ? caminho.slice(2) : caminho;
+  if (semUnidade.includes(":")) return undefined;
+  const relativo = NodePath.relative(raiz, caminho);
+  if (relativo === "" || relativo.startsWith("..") || NodePath.isAbsolute(relativo)) return undefined;
+  const partes = relativo.split(NodePath.sep);
+  if (partes.length < 2 || partes.some((parte) => parte === "" || parte.startsWith("."))) return undefined;
+  if (abrir && !ehDocumento(caminho)) return undefined;
+  return caminho;
+}

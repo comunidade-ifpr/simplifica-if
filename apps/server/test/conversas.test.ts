@@ -26,6 +26,7 @@ import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
 import type { SkillDoApp } from "@simplifica-if/mcp/skills";
 import * as CatalogoSkills from "../src/CatalogoSkills.ts";
+import * as PastasTrabalho from "../src/PastasTrabalho.ts";
 import * as Conversas from "../src/Conversas.ts";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Historico from "../src/persistencia/Historico.ts";
@@ -68,6 +69,7 @@ const camada = (arquivo: string, registro: Registro) =>
   Conversas.layer({ prazoInterrupcao: PRAZO }).pipe(
     Layer.provideMerge(Motor.layer),
     Layer.provideMerge(CatalogoSkills.layerFixo([SKILL])),
+    Layer.provide(PastasTrabalho.layerSemPastas),
     Layer.provideMerge(Historico.layer),
     Layer.provideMerge(Banco.layerArquivo(arquivo)),
     Layer.provide(McpHttp.layer({ banco: kb })),
@@ -150,7 +152,7 @@ describe("conversas gravadas", () => {
     }),
   );
 
-  it.effect("migrações: o banco novo fica na versão 4, e reabrir não roda de novo", () =>
+  it.effect("migrações: o banco novo fica na versão 5, e reabrir não roda de novo", () =>
     Effect.gen(function* () {
       const arquivo = novoBanco();
       for (let vez = 0; vez < 2; vez++) {
@@ -165,6 +167,8 @@ describe("conversas gravadas", () => {
               tabelas.map((tabela) => tabela.name),
               [
                 "acoes_ia",
+                "anexos_pasta",
+                "avaliacoes",
                 "blocos_ia",
                 "conversas",
                 "effect_sql_migrations",
@@ -186,6 +190,7 @@ describe("conversas gravadas", () => {
                 [2, "RevisoesIa"],
                 [3, "TentativasIa"],
                 [4, "ListasPendencias"],
+                [5, "ModoServidor"],
               ],
             );
             // A layer já migrou: rodar de novo não executa nada.

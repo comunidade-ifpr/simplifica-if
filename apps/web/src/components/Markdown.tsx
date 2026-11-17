@@ -8,6 +8,7 @@ import { type ComponentProps, createContext, type MouseEvent, use } from "react"
 import ReactMarkdown, { type Components, defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { abrirExterno } from "../ponte-desktop.ts";
+import { nomeCurtoLink } from "../tarefas/textos.ts";
 import { remarkLinksIfpr } from "./linksIfpr.ts";
 
 export const ESQUEMA_IFPR = "ifpr://";
@@ -30,16 +31,25 @@ const AbrirLink = createContext<(link: string) => void>(() => {});
 function LinkMarkdown({ href, children }: ComponentProps<"a">) {
   const aoAbrirLink = use(AbrirLink);
   if (href !== undefined && ehLinkIfpr(href)) {
+    // O chip da citação: o texto do link, ou o nome curto quando a IA deixou o link solto.
+    const texto =
+      typeof children === "string"
+        ? children
+        : Array.isArray(children) && children.length === 1
+          ? children[0]
+          : undefined;
+    const solto = texto === href || (typeof texto === "string" && ehLinkIfpr(texto));
+    const nome = solto ? nomeCurtoLink(href) : undefined;
     return (
       <button
         type="button"
         className="link-ifpr"
         data-link={href}
-        title={`Abrir ${href} no painel de leitura`}
+        title={`Abrir a fonte: ${nome ?? (typeof texto === "string" ? texto : nomeCurtoLink(href))}`}
         onClick={() => aoAbrirLink(href)}
       >
         <BookOpenIcon aria-hidden className="size-3.5 shrink-0" />
-        <span>{children}</span>
+        <span>{nome ?? children}</span>
       </button>
     );
   }

@@ -12,6 +12,7 @@
  * O lint e a formatação são os da raiz (`vite.config.ts` do repositório).
  */
 import * as NodeChildProcess from "node:child_process";
+import * as NodeFS from "node:fs";
 import * as NodeReadline from "node:readline";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
@@ -35,6 +36,10 @@ export interface ServidorTeste {
   readonly pasta: string;
   /** Um PPC sintético em DOCX, dentro de `pasta`. */
   readonly ppc: string;
+  /** Um documento em Markdown, dentro de `pasta`, para anexar às tarefas. */
+  readonly parecer: string;
+  /** A raiz das pastas de tarefa (no app, Documentos/Simplifica IF). */
+  readonly pastaTrabalhos: string;
 }
 
 /** Os servidores de teste abertos pelos testes de navegador, por origem do pedido. */
@@ -106,6 +111,12 @@ const navegador = {
         iniciarServidorTeste: async ({ page }, atrasoLogin: number) =>
           iniciarServidorTeste(new URL(page.url()).origin, atrasoLogin),
         pararServidoresTeste: async () => pararServidores(),
+        /** Simula a pessoa editando no Word um arquivo de uma pasta de tarefa (só dentro de "Simplifica IF/"). */
+        editarArquivoDeTarefa: async (_contexto, caminho: string, texto: string) => {
+          if (!/[\\/]Simplifica IF[\\/][^\\/]+[\\/]/.test(caminho) || caminho.includes(".."))
+            throw new Error(`fora das pastas de tarefa: ${caminho}`);
+          NodeFS.writeFileSync(caminho, texto);
+        },
       },
     },
   },

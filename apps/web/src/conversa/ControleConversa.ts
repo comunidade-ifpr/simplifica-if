@@ -9,7 +9,7 @@
  * volta a acompanhá-lo (`conversa.acompanhar`). A sessão do provider é do servidor: liberada ociosa e
  * reaberta por retomada na próxima mensagem, sem nada a fazer aqui.
  */
-import type { Decisao, ItemConversa, Provider } from "@simplifica-if/contratos-app";
+import type { Decisao, ItemConversa, NotaResposta, Provider } from "@simplifica-if/contratos-app";
 import type { Acompanhamento, Api } from "../conexao/api.ts";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { type Acao, type EstadoConversa, estadoInicial, type FaseConversa, reduzir } from "./estado.ts";
@@ -68,6 +68,56 @@ export class ControleConversa {
       this.despachar({ tipo: "iniciada", sessao });
     } catch (erro) {
       this.despachar({ tipo: "naoIniciou", erro: explicarErro(erro) });
+    }
+  }
+
+  /**
+   * Começa a conversa de uma tarefa (M1.9): a pasta já criada pelo servidor (`pasta.criar`), com os
+   * anexos, e o pedido montado pelo formulário ou escrito na caixa do Início, enviado em seguida.
+   * Devolve o id da conversa; a falha vira `erroInicio` e a promessa rejeita.
+   */
+  async comecarTarefa(tarefa: {
+    readonly provider: Provider;
+    readonly pasta: string;
+    readonly tarefa: string;
+    readonly pedido: string;
+  }): Promise<string> {
+    this.turno?.cancelar();
+    this.turno = undefined;
+    this.despachar({ tipo: "nova" });
+    this.despachar({ tipo: "escolher", provider: tarefa.provider, pastaTrabalho: tarefa.pasta });
+    this.despachar({ tipo: "iniciando" });
+    try {
+      const { sessao } = await this.api.chamar((cliente) =>
+        cliente["conversa.iniciar"]({ provider: tarefa.provider, pastaTrabalho: tarefa.pasta, tarefa: tarefa.tarefa }),
+      );
+      if (this.fase() !== "iniciando") {
+        void this.encerrarNoServidor(sessao);
+        throw new Error("A conversa foi trocada antes de abrir.");
+      }
+      this.despachar({ tipo: "iniciada", sessao, tarefa: tarefa.tarefa });
+      this.enviar(tarefa.pedido);
+      return sessao;
+    } catch (erro) {
+      const mensagem = explicarErro(erro);
+      if (this.fase() === "iniciando") this.despachar({ tipo: "naoIniciou", erro: mensagem });
+      throw erro;
+    }
+  }
+
+  /** 👍/👎 na resposta do turno; `null` retira. Muda na tela já e volta atrás se o servidor recusar. */
+  async avaliar(turno: number, nota: NotaResposta | null): Promise<void> {
+    const sessao = this.estado.sessao;
+    if (sessao === undefined) return;
+    const anterior = this.estado.avaliacoes[turno] ?? null;
+    this.despachar({ tipo: "avaliada", turno, nota });
+    try {
+      await this.api.chamar((cliente) => cliente["conversa.avaliar"]({ sessao, turno, nota }));
+    } catch (erro) {
+      if (this.estado.sessao === sessao) {
+        this.despachar({ tipo: "avaliada", turno, nota: anterior });
+        this.despachar({ tipo: "aviso", erro: explicarErro(erro) });
+      }
     }
   }
 

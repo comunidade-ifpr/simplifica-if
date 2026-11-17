@@ -9,10 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TarefasRouteImport } from './routes/tarefas'
 import { Route as RevisaoPpcRouteImport } from './routes/revisao-ppc'
 import { Route as ConversaRouteImport } from './routes/conversa'
+import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TarefaNomeRouteImport } from './routes/tarefa/$nome'
 
+const TarefasRoute = TarefasRouteImport.update({
+  id: '/tarefas',
+  path: '/tarefas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RevisaoPpcRoute = RevisaoPpcRouteImport.update({
   id: '/revisao-ppc',
   path: '/revisao-ppc',
@@ -23,44 +31,92 @@ const ConversaRoute = ConversaRouteImport.update({
   path: '/conversa',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
+  id: '/configuracoes',
+  path: '/configuracoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TarefaNomeRoute = TarefaNomeRouteImport.update({
+  id: '/tarefa/$nome',
+  path: '/tarefa/$nome',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/configuracoes': typeof ConfiguracoesRoute
   '/conversa': typeof ConversaRoute
   '/revisao-ppc': typeof RevisaoPpcRoute
+  '/tarefas': typeof TarefasRoute
+  '/tarefa/$nome': typeof TarefaNomeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/configuracoes': typeof ConfiguracoesRoute
   '/conversa': typeof ConversaRoute
   '/revisao-ppc': typeof RevisaoPpcRoute
+  '/tarefas': typeof TarefasRoute
+  '/tarefa/$nome': typeof TarefaNomeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/configuracoes': typeof ConfiguracoesRoute
   '/conversa': typeof ConversaRoute
   '/revisao-ppc': typeof RevisaoPpcRoute
+  '/tarefas': typeof TarefasRoute
+  '/tarefa/$nome': typeof TarefaNomeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/conversa' | '/revisao-ppc'
+  fullPaths:
+    | '/'
+    | '/configuracoes'
+    | '/conversa'
+    | '/revisao-ppc'
+    | '/tarefas'
+    | '/tarefa/$nome'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/conversa' | '/revisao-ppc'
-  id: '__root__' | '/' | '/conversa' | '/revisao-ppc'
+  to:
+    | '/'
+    | '/configuracoes'
+    | '/conversa'
+    | '/revisao-ppc'
+    | '/tarefas'
+    | '/tarefa/$nome'
+  id:
+    | '__root__'
+    | '/'
+    | '/configuracoes'
+    | '/conversa'
+    | '/revisao-ppc'
+    | '/tarefas'
+    | '/tarefa/$nome'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ConfiguracoesRoute: typeof ConfiguracoesRoute
   ConversaRoute: typeof ConversaRoute
   RevisaoPpcRoute: typeof RevisaoPpcRoute
+  TarefasRoute: typeof TarefasRoute
+  TarefaNomeRoute: typeof TarefaNomeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tarefas': {
+      id: '/tarefas'
+      path: '/tarefas'
+      fullPath: '/tarefas'
+      preLoaderRoute: typeof TarefasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/revisao-ppc': {
       id: '/revisao-ppc'
       path: '/revisao-ppc'
@@ -75,6 +131,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConversaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/configuracoes': {
+      id: '/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/configuracoes'
+      preLoaderRoute: typeof ConfiguracoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -82,13 +145,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tarefa/$nome': {
+      id: '/tarefa/$nome'
+      path: '/tarefa/$nome'
+      fullPath: '/tarefa/$nome'
+      preLoaderRoute: typeof TarefaNomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ConfiguracoesRoute: ConfiguracoesRoute,
   ConversaRoute: ConversaRoute,
   RevisaoPpcRoute: RevisaoPpcRoute,
+  TarefasRoute: TarefasRoute,
+  TarefaNomeRoute: TarefaNomeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

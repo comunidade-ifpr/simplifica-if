@@ -8,10 +8,15 @@ import { ORIGEM_APP, resolverConfiguracao, URL_APP, type Entrada } from "../src/
 import * as NodeCrypto from "node:crypto";
 import {
   CAMINHO_LIBERAR_ARQUIVO as LIBERAR_CONTRATO,
+  EXTENSOES_DOCUMENTO as EXTENSOES_CONTRATO,
   SUFIXO_REVISAO_PREVIA as SUFIXO_CONTRATO,
 } from "@simplifica-if/contratos-app";
 import {
+  anexoEscolhido,
+  arquivoDeTarefaPermitido,
   copiaComentadaPermitida,
+  EXTENSOES_DOCUMENTO,
+  extensoesAnexo,
   docxEscolhido,
   hashesScriptsInline,
   isSameOriginRendererNavigation,
@@ -29,6 +34,7 @@ const dev: Entrada = {
   pastaRecursos: "/electron/Resources",
   pastaAplicacao: "/repo/apps/desktop/dist/app",
   pastaApp: "/dados/Simplifica IF (dev)",
+  pastaDocumentos: "/Users/x/Documents",
   executavel: "/electron/Electron",
   ambiente: { SIMPLIFICA_NODE: "/node26/bin/node", SIMPLIFICA_WEB_URL: "http://localhost:5190" },
   existe: () => false,
@@ -40,6 +46,7 @@ const empacotado: Entrada = {
   pastaRecursos: "/Applications/Simplifica IF.app/Contents/Resources",
   pastaAplicacao: "/Applications/Simplifica IF.app/Contents/Resources/app.asar",
   pastaApp: "/Users/x/Library/Application Support/Simplifica IF",
+  pastaDocumentos: "/Users/x/Documents",
   executavel: "/Applications/Simplifica IF.app/Contents/MacOS/Simplifica IF",
   ambiente: { HOME: "/Users/x", SIMPLIFICA_WEB_URL: "http://localhost:5190" },
   existe: () => false,
@@ -56,6 +63,8 @@ describe("resolverConfiguracao", () => {
     expect(config.cwd).toBe("/repo");
     // Sem a pasta, nada de --pasta-skills.
     expect(config.pastaSkills).toBeUndefined();
+    // As pastas de tarefa em Documentos/Simplifica IF.
+    expect(config.pastaTrabalhos).toBe("/Users/x/Documents/Simplifica IF");
   });
 
   test("skills: .agents/skills do repositório no desenvolvimento, <Resources>/skills no app empacotado", () => {
@@ -215,5 +224,48 @@ describe("revisão prévia: o que a interface pode abrir", () => {
       42,
     ])
       expect(copiaComentadaPermitida(recusado, escolhidos), String(recusado)).toBeUndefined();
+  });
+});
+
+describe("pasta das tarefas (M1.9): o que a interface pode anexar, abrir e mostrar", () => {
+  const raiz = "/Users/x/Documents/Simplifica IF";
+
+  test("a lista de extensões é a do contrato, sem os formatos com macro", () => {
+    expect([...EXTENSOES_DOCUMENTO]).toEqual([...EXTENSOES_CONTRATO]);
+    expect(EXTENSOES_DOCUMENTO).not.toContain(".doc");
+    expect(EXTENSOES_DOCUMENTO).not.toContain(".xls");
+  });
+
+  test("anexo: só as extensões de documento pedidas; sem pedido, todas as de documento", () => {
+    expect(extensoesAnexo([".md", ".TXT", ".exe", 3])).toEqual([".md", ".txt"]);
+    expect(extensoesAnexo(undefined)).toContain(".docx");
+    expect(extensoesAnexo([".sh"])).not.toContain(".sh");
+    expect(anexoEscolhido("/a/b/Parecer.MD", [".md"])).toBe("/a/b/Parecer.MD");
+    expect(anexoEscolhido("/a/b/script.command", [".md"])).toBeUndefined();
+    expect(anexoEscolhido("relativo.md", [".md"])).toBeUndefined();
+  });
+
+  test("abrir e mostrar: só dentro de uma pasta de tarefa, sem parte oculta; abrir só documentos", () => {
+    expect(arquivoDeTarefaPermitido(`${raiz}/Conferir base legal/resultado.md`, raiz, true)).toBeDefined();
+    expect(arquivoDeTarefaPermitido(`${raiz}/Tarefa/sub/planilha.xlsx`, raiz, true)).toBeDefined();
+    // Mostrar na pasta aceita qualquer arquivo comum; abrir, não.
+    expect(arquivoDeTarefaPermitido(`${raiz}/Tarefa/rodar.command`, raiz, false)).toBeDefined();
+    for (const recusado of [
+      `${raiz}/Tarefa/rodar.command`,
+      `${raiz}/Tarefa/pagina.html`,
+      `${raiz}/Tarefa/antigo.doc`,
+      `${raiz}/Tarefa/planilha.xls`,
+      `${raiz}/Tarefa/a.md:oculto`,
+      `${raiz}/Tarefa/a.md:oculto.md`,
+      `${raiz}/solto.md`,
+      `${raiz}/Tarefa/.simplifica/skills/x/SKILL.md`,
+      `${raiz}/Tarefa/../../segredo.md`,
+      "/Users/x/Documents/outro.md",
+      "/Users/x/Documents/Simplifica IF Falsa/Tarefa/a.md",
+      "Tarefa/a.md",
+      42,
+    ]) {
+      expect(arquivoDeTarefaPermitido(recusado, raiz, true), String(recusado)).toBeUndefined();
+    }
   });
 });

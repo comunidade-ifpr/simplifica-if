@@ -2,7 +2,7 @@
  * A CLI do servidor local (`effect/cli`), carregada pelo `bin.ts` fora do caminho rápido da ponte MCP.
  *
  *   node apps/server/src/bin.ts --banco tmp/kb.sqlite [--porta 0] [--porta-mcp 0] [--pasta-estado <dir>]
- *        [--origem app://simplifica]… [--canal dev|beta|estavel] [--pasta-skills <dir>]
+ *        [--origem app://simplifica]… [--canal dev|beta|estavel] [--pasta-skills <dir>] [--pasta-trabalhos <dir>]
  *
  * O token chega por `SIMPLIFICA_SERVIDOR_TOKEN` ou pelo envelope no stdin (`partida.ts`). Pronto o
  * servidor, a única linha do stdout é a `LinhaPartida` em JSON; os logs vão para o stderr.
@@ -66,6 +66,12 @@ const pastaSkillsPadrao = Effect.gen(function* () {
   return (yield* fs.exists(pasta).pipe(Effect.orElseSucceed(() => false))) ? pasta : undefined;
 });
 
+/** A raiz das pastas de tarefa: `Documentos/Simplifica IF` (o desktop passa a do sistema). */
+const pastaTrabalhosPadrao = Effect.gen(function* () {
+  const path = yield* Path.Path;
+  return path.join(yield* HostProcess.HomeDirectory, "Documents", "Simplifica IF");
+});
+
 const servidor = Command.make(
   "simplifica-servidor",
   {
@@ -100,6 +106,13 @@ const servidor = Command.make(
       Flag.withFallbackConfig(Config.String("SIMPLIFICA_SKILLS")),
       Flag.optional,
     ),
+    pastaTrabalhos: Flag.String("pasta-trabalhos").pipe(
+      Flag.withDescription(
+        "raiz das pastas de tarefa; padrão: Documents/Simplifica IF na pasta pessoal (ou SIMPLIFICA_TRABALHOS)",
+      ),
+      Flag.withFallbackConfig(Config.String("SIMPLIFICA_TRABALHOS")),
+      Flag.optional,
+    ),
   },
   (opcoes) =>
     Effect.gen(function* () {
@@ -120,6 +133,9 @@ const servidor = Command.make(
       const pastaSkillsDada = Option.getOrUndefined(opcoes.pastaSkills);
       const pastaSkills =
         pastaSkillsDada === undefined ? yield* pastaSkillsPadrao : path.resolve(yield* expandHomePath(pastaSkillsDada));
+      const pastaTrabalhos = path.resolve(
+        yield* expandHomePath(Option.getOrUndefined(opcoes.pastaTrabalhos) ?? (yield* pastaTrabalhosPadrao)),
+      );
       const drivers = Drivers.layerNode({
         ambiente,
         pastaEstado,
@@ -137,6 +153,7 @@ const servidor = Command.make(
           origens: [...opcoes.origens, ...partida.origens],
           canal: opcoes.canal,
           bancoConversas: path.join(pastaEstado, Banco.ARQUIVO_BANCO),
+          pastaTrabalhos,
           ...(pastaSkills === undefined ? {} : { pastaSkills }),
         }).pipe(Layer.provide(drivers)),
       );
