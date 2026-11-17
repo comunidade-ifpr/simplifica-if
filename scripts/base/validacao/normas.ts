@@ -70,7 +70,9 @@ export function validarPadroesLocais(ctx: Contexto): string[] {
     const assinada = RE_URL_ASSINADA.exec(texto);
     if (assinada) {
       // Só o começo da URL: a mensagem não repete a credencial.
-      erros.push(`${ctx.rel(caminho)} contém URL pré-assinada (grave sem a query string): ${assinada[0].split("?")[0]}`);
+      erros.push(
+        `${ctx.rel(caminho)} contém URL pré-assinada (grave sem a query string): ${assinada[0].split("?")[0]}`,
+      );
     }
     const pessoais = contarDocumentosPessoais(texto);
     if (pessoais.cpf || pessoais.rg) {

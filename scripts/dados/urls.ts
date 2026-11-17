@@ -5,7 +5,8 @@
  */
 
 /** Parâmetros de query que marcam uma URL assinada. */
-const PARAMETROS = "(?:AWSAccessKeyId|Signature|X-Amz-(?:Algorithm|Credential|Signature|Security-Token)|GoogleAccessId)";
+const PARAMETROS =
+  "(?:AWSAccessKeyId|Signature|X-Amz-(?:Algorithm|Credential|Signature|Security-Token)|GoogleAccessId)";
 const PARAMETRO_ASSINATURA = new RegExp(`[?&]${PARAMETROS}=`, "i");
 
 /** Uma URL `http(s)` com assinatura na query string, em qualquer ponto do texto. */

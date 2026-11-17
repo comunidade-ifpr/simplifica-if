@@ -1,47 +1,47 @@
 ppc:arapongas/especializacao-em-docencia-e-praticas-educativas — Especialização em Docência e Práticas Educativas (Arapongas)
-  ano_documento = 2023 [Revisado] dados/institucional/cursos/arapongas/especializacao-em-docencia-e-praticas-educativas.json:16
+  ano_documento = 2023 [Revisado] base-conhecimento/institucional/ifpr/cursos/arapongas/especializacao-em-docencia-e-praticas-educativas.json:16
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:arapongas/programacao-com-enfase-em-analise-de-dados — Programação com ênfase em Análise de Dados (Arapongas)
-  ano_documento = 2024 [Revisado] dados/institucional/cursos/arapongas/programacao-com-enfase-em-analise-de-dados.json:16
+  ano_documento = 2024 [Revisado] base-conhecimento/institucional/ifpr/cursos/arapongas/programacao-com-enfase-em-analise-de-dados.json:16
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:arapongas/programacao-web — Programação Web (Arapongas)
-  ano_documento = 2025 [Revisado] dados/institucional/cursos/arapongas/programacao-web.json:16
+  ano_documento = 2025 [Revisado] base-conhecimento/institucional/ifpr/cursos/arapongas/programacao-web.json:16
   carga_horaria_total_h = 222 [extraido] base-conhecimento/institucional/ifpr/ppcs/arapongas/programacao-web.md:525
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:arapongas/tecnico-em-melhoria-de-processos — Técnico em Melhoria de Processos (Arapongas)
-  ano_documento = 2021 [Precisa de revisão] dados/institucional/cursos/arapongas/tecnico-em-melhoria-de-processos.json:30
+  ano_documento = 2021 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/arapongas/tecnico-em-melhoria-de-processos.json:30
   carga_horaria_total_h = 1200 [extraido] base-conhecimento/institucional/ifpr/ppcs/arapongas/tecnico-em-melhoria-de-processos.md:112
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/arapongas/tecnico-em-melhoria-de-processos.md:114
   SUAP ano: confere — anos das matrizes: 2022
   SUAP carga_horaria: confere — igual a matriz 1 (2022): 1200 h
   SUAP estagio: confere — matriz mais recente: 1 (2022)
 ppc:arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio — Técnico em Sistemas de Energia Renovável (Arapongas)
-  ano_documento = 2025 [Revisado] dados/institucional/cursos/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio.json:30
+  ano_documento = 2025 [Revisado] base-conhecimento/institucional/ifpr/cursos/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio.json:30
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/arapongas/tecnico-em-sistemas-de-energia-renovavel-integrado-ao-ensino-medio.md:2347
   SUAP ano: confere — anos das matrizes: 2026
   SUAP carga_horaria: sem-fato-ppc — carga horária total não extraída do PPC
   SUAP estagio: confere — matriz mais recente: 824 (2026)
 ppc:arapongas/tecnologia-em-processos-gerenciais — Tecnologia em Processos Gerenciais (Arapongas)
-  ano_documento = 2025 [Revisado] dados/institucional/cursos/arapongas/tecnologia-em-processos-gerenciais.json:16
+  ano_documento = 2025 [Revisado] base-conhecimento/institucional/ifpr/cursos/arapongas/tecnologia-em-processos-gerenciais.json:16
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/arapongas/tecnologia-em-processos-gerenciais.md:2170
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:assis-chateaubriand/tecnico-em-agropecuaria — Técnico em Agropecuária (Assis Chateaubriand)
-  ano_documento = 2021 [Revisado] dados/institucional/cursos/assis-chateaubriand/tecnico-em-agropecuaria.json:30
+  ano_documento = 2021 [Revisado] base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-agropecuaria.json:30
   carga_horaria_total_h = 1233 [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-agropecuaria.md:86
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-agropecuaria.md:88
   SUAP ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2021 ou posterior (anos: 2020)
   SUAP carga_horaria: diverge — PPC 1233 h; mais próxima: matriz 76 (2020): 1232 h (diferença +1 h)
   SUAP estagio: confere — matriz mais recente: 76 (2020)
 ppc:assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio — Técnico em Agropecuária (Assis Chateaubriand)
-  ano_documento = 2017 [Revisado] dados/institucional/cursos/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio.json:31
+  ano_documento = 2017 [Revisado] base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio.json:31
   carga_horaria_total_h = 3539 [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio.md:109
   estagio_carga_h = 200 [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio.md:111
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio.md:111
@@ -49,21 +49,21 @@ ppc:assis-chateaubriand/tecnico-em-agropecuaria-integrado-ao-ensino-medio — T�
   SUAP carga_horaria: confere — igual a matriz 34 (2018): 3539 h; matriz 731 (2018): 3539 h
   SUAP estagio: confere — matriz mais recente: 731 (2018)
 ppc:assis-chateaubriand/tecnico-em-alimentos — Técnico em Alimentos (Assis Chateaubriand)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/assis-chateaubriand/tecnico-em-alimentos.json:30
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-alimentos.json:30
   estagio_carga_h = 120 [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-alimentos.md:1234
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-alimentos.md:1234
   SUAP ano: confere — anos das matrizes: 2023
   SUAP carga_horaria: sem-fato-ppc — carga horária total não extraída do PPC
   SUAP estagio: confere — matriz mais recente: 379 (2023)
 ppc:assis-chateaubriand/tecnico-em-comercio — Técnico em Comércio (Assis Chateaubriand)
-  ano_documento = 2019 [Precisa de revisão] dados/institucional/cursos/assis-chateaubriand/tecnico-em-comercio.json:31
+  ano_documento = 2019 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-comercio.json:31
   carga_horaria_total_h = 3109 [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-comercio.md:97
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-comercio.md:99
   SUAP ano: confere — anos das matrizes: 2019
   SUAP carga_horaria: confere — igual a matriz 61 (2019): 3109 h; matriz 732 (2019): 3109 h
   SUAP estagio: confere — matriz mais recente: 732 (2019)
 ppc:assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio — Técnico em Eletromecânica (Assis Chateaubriand)
-  ano_documento = 2013 [Precisa de revisão] dados/institucional/cursos/assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio.json:31
+  ano_documento = 2013 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio.json:31
   carga_horaria_total_h = 3331 [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio.md:90
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio.md:90
   SUAP ano: confere — anos das matrizes: 2014
@@ -71,67 +71,67 @@ ppc:assis-chateaubriand/tecnico-em-eletromecanica-integrado-ao-ensino-medio — 
   SUAP estagio: confere — matriz mais recente: 726 (2014)
 ppc:assis-chateaubriand/tecnico-em-eletromecanica-subsequente — Técnico em Eletromecânica (Assis Chateaubriand)
   carga_horaria_total_h = 1360 [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-eletromecanica-subsequente.md:49
-  SUAP ano: sem-ano — PPC sem ano_documento em dados/institucional
+  SUAP ano: sem-ano — PPC sem ano_documento em institucional/ifpr
   SUAP carga_horaria: confere — igual a matriz 79 (2013): 1360 h
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 79 (2013)
 ppc:assis-chateaubriand/tecnico-em-eletrotecnica-subsequente — Técnico em Eletrotécnica (Assis Chateaubriand)
   carga_horaria_total_h = 1360 [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-eletrotecnica-subsequente.md:55
-  SUAP ano: sem-ano — PPC sem ano_documento em dados/institucional
+  SUAP ano: sem-ano — PPC sem ano_documento em institucional/ifpr
   SUAP carga_horaria: confere-com-uma-matriz — igual a matriz 333 (2013): 1360 h; o SUAP tem matrizes com CH diferentes (matriz 333 (2013): 1360 h; matriz 82 (2020): 1334 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 82 (2020)
 ppc:assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio — Técnico em Informática para Internet (Assis Chateaubriand)
-  ano_documento = 2019 [Revisado] dados/institucional/cursos/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json:32
+  ano_documento = 2019 [Revisado] base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json:32
   carga_horaria_total_h = 3147 [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.md:86
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.md:86
   SUAP ano: confere — anos das matrizes: 2020
   SUAP carga_horaria: diverge — PPC 3147 h; mais próxima: matriz 73 (2020): 3181 h (diferença -34 h)
   SUAP estagio: confere — matriz mais recente: 834 (2020)
 ppc:assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio — Técnico em Mecatrônica (Assis Chateaubriand)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio.json:30
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio.json:30
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnico-em-mecatronica-integrado-ao-ensino-medio.md:108
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-fato-ppc — carga horária total não extraída do PPC
   SUAP estagio: confere — matriz mais recente: 880
 ppc:assis-chateaubriand/tecnologia-em-automacao-industrial — Tecnologia em Automação Industrial (Assis Chateaubriand)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/assis-chateaubriand/tecnologia-em-automacao-industrial.json:18
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnologia-em-automacao-industrial.json:18
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/assis-chateaubriand/tecnologia-em-automacao-industrial.md:2785
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:assis-chateaubriand/tecnologia-em-gestao-comercial — Tecnologia em Gestão Comercial (Assis Chateaubriand)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/assis-chateaubriand/tecnologia-em-gestao-comercial.json:18
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/assis-chateaubriand/tecnologia-em-gestao-comercial.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio — Técnico em Informática (Astorga)
-  ano_documento = 2010 [Precisa de revisão] dados/institucional/cursos/astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio.json:30
+  ano_documento = 2010 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio.json:30
   carga_horaria_total_h = 3200 [extraido] base-conhecimento/institucional/ifpr/ppcs/astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio.md:38
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/astorga/curso-tecnico-de-informatica-integrado-ao-ensino-medio.md:38
   SUAP ano: confere — anos das matrizes: 2018
   SUAP carga_horaria: confere — igual a matriz 37 (2018): 3200 h
   SUAP estagio: confere — matriz mais recente: 37 (2018)
 ppc:astorga/licenciatura-em-pedagogia — Licenciatura em Pedagogia (Astorga)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/astorga/licenciatura-em-pedagogia.json:18
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/astorga/licenciatura-em-pedagogia.json:18
   carga_horaria_total_h = 3290 [extraido] base-conhecimento/institucional/ifpr/ppcs/astorga/licenciatura-em-pedagogia.md:351
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:astorga/tecnico-em-desenvolvimento-de-sistemas — Técnico em Desenvolvimento de Sistemas (Astorga)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/astorga/tecnico-em-desenvolvimento-de-sistemas.json:30
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/astorga/tecnico-em-desenvolvimento-de-sistemas.json:30
   carga_horaria_total_h = 1200 [extraido] base-conhecimento/institucional/ifpr/ppcs/astorga/tecnico-em-desenvolvimento-de-sistemas.md:97
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/astorga/tecnico-em-desenvolvimento-de-sistemas.md:97
   SUAP ano: confere — anos das matrizes: 2023
   SUAP carga_horaria: confere — igual a matriz 38 (2023): 1200 h
   SUAP estagio: confere — matriz mais recente: 38 (2023)
 ppc:barracao/tecnico-em-administracao — Técnico em Administração (Barracão)
-  ano_documento = 2023 [Revisado] dados/institucional/cursos/barracao/tecnico-em-administracao.json:30
+  ano_documento = 2023 [Revisado] base-conhecimento/institucional/ifpr/cursos/barracao/tecnico-em-administracao.json:30
   estagio_carga_h = 90 [extraido] base-conhecimento/institucional/ifpr/ppcs/barracao/tecnico-em-administracao.md:2116
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/barracao/tecnico-em-administracao.md:2116
   SUAP ano: confere — anos das matrizes: 2019, 2024
   SUAP carga_horaria: sem-fato-ppc — carga horária total não extraída do PPC
   SUAP estagio: confere — matriz mais recente: 449 (2024)
 ppc:barracao/tecnico-em-informatica — Técnico em Informática (Barracão)
-  ano_documento = 2023 [Revisado] dados/institucional/cursos/barracao/tecnico-em-informatica.json:30
+  ano_documento = 2023 [Revisado] base-conhecimento/institucional/ifpr/cursos/barracao/tecnico-em-informatica.json:30
   carga_horaria_total_h = 3300 [extraido] base-conhecimento/institucional/ifpr/ppcs/barracao/tecnico-em-informatica.md:104
   estagio_carga_h = 90 [extraido] base-conhecimento/institucional/ifpr/ppcs/barracao/tecnico-em-informatica.md:106
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/barracao/tecnico-em-informatica.md:106
@@ -139,42 +139,42 @@ ppc:barracao/tecnico-em-informatica — Técnico em Informática (Barracão)
   SUAP carga_horaria: explicada-pelo-estagio — difere de matriz 54 (2019): 3210 h exatamente pela carga do estágio obrigatório (90 h)
   SUAP estagio: confere — matriz mais recente: 450 (2024)
 ppc:barracao/tecnologia-em-comercio-exterior — Tecnologia em Comércio Exterior (Barracão)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/barracao/tecnologia-em-comercio-exterior.json:18
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/barracao/tecnologia-em-comercio-exterior.json:18
   carga_horaria_total_h = 1914 [extraido] base-conhecimento/institucional/ifpr/ppcs/barracao/tecnologia-em-comercio-exterior.md:103
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/barracao/tecnologia-em-comercio-exterior.md:1284
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:campo-largo/administracao — Administração (Campo Largo)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/campo-largo/administracao.json:30
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/campo-largo/administracao.json:30
   carga_horaria_total_h = 3200 [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/administracao.md:93
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/administracao.md:93
   SUAP ano: confere — anos das matrizes: 2023
   SUAP carga_horaria: confere — igual a matriz 33 (2023): 3200 h
   SUAP estagio: confere — matriz mais recente: 33 (2023)
 ppc:campo-largo/administracao-proeja — Administração – PROEJA (Campo Largo)
-  ano_documento = 2018 [Precisa de revisão] dados/institucional/cursos/campo-largo/administracao-proeja.json:19
+  ano_documento = 2018 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/campo-largo/administracao-proeja.json:19
   carga_horaria_total_h = 2400 [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/administracao-proeja.md:70
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/administracao-proeja.md:70
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:campo-largo/agroecologia — Agroecologia (Campo Largo)
-  ano_documento = 2020 [Precisa de revisão] dados/institucional/cursos/campo-largo/agroecologia.json:30
+  ano_documento = 2020 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/campo-largo/agroecologia.json:30
   carga_horaria_total_h = 3520 [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/agroecologia.md:100
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/agroecologia.md:102
   SUAP ano: confere — anos das matrizes: 2021
   SUAP carga_horaria: confere — igual a matriz 24 (2021): 3520 h
   SUAP estagio: confere — matriz mais recente: 24 (2021)
 ppc:campo-largo/automacao-industrial — Automação Industrial (Campo Largo)
-  ano_documento = 2019 [Precisa de revisão] dados/institucional/cursos/campo-largo/automacao-industrial.json:30
+  ano_documento = 2019 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/campo-largo/automacao-industrial.json:30
   carga_horaria_total_h = 3360 [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/automacao-industrial.md:103
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/automacao-industrial.md:105
   SUAP ano: confere — anos das matrizes: 2020
   SUAP carga_horaria: confere — igual a matriz 11 (2020): 3360 h
   SUAP estagio: confere — matriz mais recente: 11 (2020)
 ppc:campo-largo/bacharelado-em-engenharia-eletrica — Bacharelado em Engenharia Elétrica (Campo Largo)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/campo-largo/bacharelado-em-engenharia-eletrica.json:18
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/campo-largo/bacharelado-em-engenharia-eletrica.json:18
   carga_horaria_total_h = 368 [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/bacharelado-em-engenharia-eletrica.md:931
   estagio_carga_h = 160 [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/bacharelado-em-engenharia-eletrica.md:2012
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/bacharelado-em-engenharia-eletrica.md:2012
@@ -182,7 +182,7 @@ ppc:campo-largo/bacharelado-em-engenharia-eletrica — Bacharelado em Engenharia
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:campo-largo/licenciatura-em-matematica — Licenciatura em Matemática (Campo Largo)
-  ano_documento = 2019 [Precisa de revisão] dados/institucional/cursos/campo-largo/licenciatura-em-matematica.json:18
+  ano_documento = 2019 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/campo-largo/licenciatura-em-matematica.json:18
   carga_horaria_total_h = 3280 [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/licenciatura-em-matematica.md:729
   estagio_carga_h = 400 [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/licenciatura-em-matematica.md:1915
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/licenciatura-em-matematica.md:1915
@@ -190,37 +190,37 @@ ppc:campo-largo/licenciatura-em-matematica — Licenciatura em Matemática (Camp
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:campo-largo/mecanica — Mecânica (Campo Largo)
-  ano_documento = 2019 [Precisa de revisão] dados/institucional/cursos/campo-largo/mecanica.json:30
+  ano_documento = 2019 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/campo-largo/mecanica.json:30
   carga_horaria_total_h = 3200 [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/mecanica.md:82
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/mecanica.md:82
   SUAP ano: confere — anos das matrizes: 2020
   SUAP carga_horaria: confere — igual a matriz 18 (2020): 3200 h
   SUAP estagio: confere — matriz mais recente: 18 (2020)
 ppc:campo-largo/tecnico-em-mecanica-subsequente — Técnico em Mecânica (Campo Largo)
-  ano_documento = 2015 [Precisa de revisão] dados/institucional/cursos/campo-largo/tecnico-em-mecanica-subsequente.json:30
+  ano_documento = 2015 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/campo-largo/tecnico-em-mecanica-subsequente.json:30
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/tecnico-em-mecanica-subsequente.md:136
   SUAP ano: confere — anos das matrizes: 2016
   SUAP carga_horaria: sem-fato-ppc — carga horária total não extraída do PPC
   SUAP estagio: confere — matriz mais recente: 44 (2016)
 ppc:campo-largo/tecnologia-em-agroecologia — Curso Superior de Tecnologia em Agroecologia (Campo Largo)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/campo-largo/tecnologia-em-agroecologia.json:18
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/campo-largo/tecnologia-em-agroecologia.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:campo-largo/tecnologia-em-materiais — Curso Superior de Tecnologia em Materiais (Campo Largo)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/campo-largo/tecnologia-em-materiais.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/campo-largo/tecnologia-em-materiais.json:18
   carga_horaria_total_h = 2400 [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/tecnologia-em-materiais.md:717
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:campo-largo/tecnologia-em-processos-gerenciais — Curso Superior de Tecnologia em Processos Gerenciais (Campo Largo)
-  ano_documento = 2020 [Precisa de revisão] dados/institucional/cursos/campo-largo/tecnologia-em-processos-gerenciais.json:18
+  ano_documento = 2020 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/campo-largo/tecnologia-em-processos-gerenciais.json:18
   carga_horaria_total_h = 1760 [extraido] base-conhecimento/institucional/ifpr/ppcs/campo-largo/tecnologia-em-processos-gerenciais.md:696
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:capanema/licenciatura-em-matematica — Licenciatura em Matemática (Capanema)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/capanema/licenciatura-em-matematica.json:18
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/capanema/licenciatura-em-matematica.json:18
   carga_horaria_total_h = 400 [extraido] base-conhecimento/institucional/ifpr/ppcs/capanema/licenciatura-em-matematica.md:2173
   estagio_carga_h = 400 [extraido] base-conhecimento/institucional/ifpr/ppcs/capanema/licenciatura-em-matematica.md:2219
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/capanema/licenciatura-em-matematica.md:2219
@@ -228,7 +228,7 @@ ppc:capanema/licenciatura-em-matematica — Licenciatura em Matemática (Capanem
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:capanema/tecnico-em-agroecologia — Técnico em Agroecologia (Capanema)
-  ano_documento = 2017 [Precisa de revisão] dados/institucional/cursos/capanema/tecnico-em-agroecologia.json:30
+  ano_documento = 2017 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/capanema/tecnico-em-agroecologia.json:30
   carga_horaria_total_h = 3610 [extraido] base-conhecimento/institucional/ifpr/ppcs/capanema/tecnico-em-agroecologia.md:90
   estagio_carga_h = 120 [extraido] base-conhecimento/institucional/ifpr/ppcs/capanema/tecnico-em-agroecologia.md:100
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/capanema/tecnico-em-agroecologia.md:100
@@ -236,7 +236,7 @@ ppc:capanema/tecnico-em-agroecologia — Técnico em Agroecologia (Capanema)
   SUAP carga_horaria: diverge — PPC 3610 h; mais próxima: matriz 67 (2022): 3210 h (diferença +400 h)
   SUAP estagio: diverge — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 67 (2022))
 ppc:capanema/tecnico-em-cooperativismo — Técnico em Cooperativismo (Capanema)
-  ano_documento = 2017 [Precisa de revisão] dados/institucional/cursos/capanema/tecnico-em-cooperativismo.json:30
+  ano_documento = 2017 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/capanema/tecnico-em-cooperativismo.json:30
   carga_horaria_total_h = 3150 [extraido] base-conhecimento/institucional/ifpr/ppcs/capanema/tecnico-em-cooperativismo.md:100
   estagio_carga_h = 120 [extraido] base-conhecimento/institucional/ifpr/ppcs/capanema/tecnico-em-cooperativismo.md:102
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/capanema/tecnico-em-cooperativismo.md:102
@@ -244,58 +244,58 @@ ppc:capanema/tecnico-em-cooperativismo — Técnico em Cooperativismo (Capanema)
   SUAP carga_horaria: confere — igual a matriz 65 (2018): 3150 h
   SUAP estagio: confere — matriz mais recente: 65 (2018)
 ppc:capanema/tecnico-em-informatica — Técnico em Informática (Capanema)
-  ano_documento = 2020 [Precisa de revisão] dados/institucional/cursos/capanema/tecnico-em-informatica.json:30
+  ano_documento = 2020 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/capanema/tecnico-em-informatica.json:30
   carga_horaria_total_h = 3210 [extraido] base-conhecimento/institucional/ifpr/ppcs/capanema/tecnico-em-informatica.md:72
   SUAP ano: confere — anos das matrizes: 2021, 2025
   SUAP carga_horaria: confere-com-uma-matriz — igual a matriz 118 (2021): 3210 h; o SUAP tem matrizes com CH diferentes (matriz 118 (2021): 3210 h; matriz 716 (2025): 3300 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 716 (2025)
 ppc:capanema/tecnologia-em-sistemas-para-internet — Tecnologia em Sistemas para Internet (Capanema)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/capanema/tecnologia-em-sistemas-para-internet.json:18
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/capanema/tecnologia-em-sistemas-para-internet.json:18
   carga_horaria_total_h = 2000 [extraido] base-conhecimento/institucional/ifpr/ppcs/capanema/tecnologia-em-sistemas-para-internet.md:103
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/capanema/tecnologia-em-sistemas-para-internet.md:2623
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:cascavel/licenciatura-em-quimica — Licenciatura em Química (Cascavel)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/cascavel/licenciatura-em-quimica.json:18
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/cascavel/licenciatura-em-quimica.json:18
   carga_horaria_total_h = 3305 [extraido] base-conhecimento/institucional/ifpr/ppcs/cascavel/licenciatura-em-quimica.md:118
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:cascavel/tecnico-em-edificacoes — Técnico em Edificações (Cascavel)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/cascavel/tecnico-em-edificacoes.json:30
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/cascavel/tecnico-em-edificacoes.json:30
   carga_horaria_total_h = 3209 [extraido] base-conhecimento/institucional/ifpr/ppcs/cascavel/tecnico-em-edificacoes.md:130
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/cascavel/tecnico-em-edificacoes.md:1556
   SUAP ano: confere — anos das matrizes: 2020, 2024
   SUAP carga_horaria: diverge — PPC 3209 h; mais próxima: matriz 6 (2020): 3239 h (diferença -30 h)
   SUAP estagio: confere — matriz mais recente: 512 (2024)
 ppc:cascavel/tecnico-em-informatica — Técnico em Informática (Cascavel)
-  ano_documento = 2017 [Precisa de revisão] dados/institucional/cursos/cascavel/tecnico-em-informatica.json:30
+  ano_documento = 2017 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/cascavel/tecnico-em-informatica.json:30
   carga_horaria_total_h = 3332 [extraido] base-conhecimento/institucional/ifpr/ppcs/cascavel/tecnico-em-informatica.md:93
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/cascavel/tecnico-em-informatica.md:93
   SUAP ano: confere — anos das matrizes: 2022
   SUAP carga_horaria: diverge — PPC 3332 h; mais próxima: matriz 9 (2022): 3173 h (diferença +159 h)
   SUAP estagio: confere — matriz mais recente: 9 (2022)
 ppc:cascavel/tecnico-em-quimica — Técnico em Química (Cascavel)
-  ano_documento = 2021 [Precisa de revisão] dados/institucional/cursos/cascavel/tecnico-em-quimica.json:30
+  ano_documento = 2021 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/cascavel/tecnico-em-quimica.json:30
   carga_horaria_total_h = 3172 [extraido] base-conhecimento/institucional/ifpr/ppcs/cascavel/tecnico-em-quimica.md:104
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/cascavel/tecnico-em-quimica.md:106
   SUAP ano: confere — anos das matrizes: 2022
   SUAP carga_horaria: confere — igual a matriz 8 (2022): 3172 h
   SUAP estagio: confere — matriz mais recente: 8 (2022)
 ppc:cascavel/tecnologia-em-analise-e-desenvolvimento-de-sistemas — Tecnologia em Análise e Desenvolvimento de Sistemas (Cascavel)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/cascavel/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json:18
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/cascavel/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json:18
   carga_horaria_total_h = 2119 [extraido] base-conhecimento/institucional/ifpr/ppcs/cascavel/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md:118
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:cascavel/tecnologia-em-gestao-ambiental — Tecnologia em Gestão Ambiental (Cascavel)
-  ano_documento = 2026 [Precisa de revisão] dados/institucional/cursos/cascavel/tecnologia-em-gestao-ambiental.json:18
+  ano_documento = 2026 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/cascavel/tecnologia-em-gestao-ambiental.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:colombo/licenciatura-em-historia — Licenciatura em História (Colombo)
-  ano_documento = 2024 [Revisado] dados/institucional/cursos/colombo/licenciatura-em-historia.json:18
+  ano_documento = 2024 [Revisado] base-conhecimento/institucional/ifpr/cursos/colombo/licenciatura-em-historia.json:18
   carga_horaria_total_h = 3960 [extraido] base-conhecimento/institucional/ifpr/ppcs/colombo/licenciatura-em-historia.md:1455
   estagio_carga_h = 400 [extraido] base-conhecimento/institucional/ifpr/ppcs/colombo/licenciatura-em-historia.md:2770
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/colombo/licenciatura-em-historia.md:2770
@@ -303,38 +303,38 @@ ppc:colombo/licenciatura-em-historia — Licenciatura em História (Colombo)
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:colombo/licenciatura-em-pedagogia — Licenciatura em Pedagogia (Colombo)
-  ano_documento = 2024 [Revisado] dados/institucional/cursos/colombo/licenciatura-em-pedagogia.json:18
+  ano_documento = 2024 [Revisado] base-conhecimento/institucional/ifpr/cursos/colombo/licenciatura-em-pedagogia.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:colombo/tecnico-em-administracao-integrado-ao-ensino-medio — Técnico em Administração (Colombo)
-  ano_documento = 2018 [Revisado] dados/institucional/cursos/colombo/tecnico-em-administracao-integrado-ao-ensino-medio.json:30
+  ano_documento = 2018 [Revisado] base-conhecimento/institucional/ifpr/cursos/colombo/tecnico-em-administracao-integrado-ao-ensino-medio.json:30
   carga_horaria_total_h = 3109 [extraido] base-conhecimento/institucional/ifpr/ppcs/colombo/tecnico-em-administracao-integrado-ao-ensino-medio.md:73
   SUAP ano: confere — anos das matrizes: 2020
   SUAP carga_horaria: confere — igual a matriz 19 (2020): 3109 h
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 19 (2020)
 ppc:colombo/tecnico-em-administracao-subsequente — Técnico em Administração (Colombo)
-  ano_documento = 2018 [Revisado] dados/institucional/cursos/colombo/tecnico-em-administracao-subsequente.json:19
+  ano_documento = 2018 [Revisado] base-conhecimento/institucional/ifpr/cursos/colombo/tecnico-em-administracao-subsequente.json:19
   carga_horaria_total_h = 1280 [extraido] base-conhecimento/institucional/ifpr/ppcs/colombo/tecnico-em-administracao-subsequente.md:139
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/colombo/tecnico-em-administracao-subsequente.md:141
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:colombo/tecnico-em-alimentos-integrado-ao-ensino-medio — Técnico em Alimentos (Colombo)
-  ano_documento = 2017 [Revisado] dados/institucional/cursos/colombo/tecnico-em-alimentos-integrado-ao-ensino-medio.json:30
+  ano_documento = 2017 [Revisado] base-conhecimento/institucional/ifpr/cursos/colombo/tecnico-em-alimentos-integrado-ao-ensino-medio.json:30
   carga_horaria_total_h = 3358 [extraido] base-conhecimento/institucional/ifpr/ppcs/colombo/tecnico-em-alimentos-integrado-ao-ensino-medio.md:144
   SUAP ano: confere — anos das matrizes: 2018, 2024
   SUAP carga_horaria: confere-com-uma-matriz — igual a matriz 72 (2018): 3358 h; o SUAP tem matrizes com CH diferentes (matriz 72 (2018): 3358 h; matriz 460 (2024): 3340 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 460 (2024)
 ppc:colombo/tecnico-em-informatica-integrado-ao-ensino-medio — Técnico em Informática (Colombo)
-  ano_documento = 2023 [Revisado] dados/institucional/cursos/colombo/tecnico-em-informatica-integrado-ao-ensino-medio.json:30
+  ano_documento = 2023 [Revisado] base-conhecimento/institucional/ifpr/cursos/colombo/tecnico-em-informatica-integrado-ao-ensino-medio.json:30
   carga_horaria_total_h = 3334 [extraido] base-conhecimento/institucional/ifpr/ppcs/colombo/tecnico-em-informatica-integrado-ao-ensino-medio.md:593
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/colombo/tecnico-em-informatica-integrado-ao-ensino-medio.md:109
   SUAP ano: confere — anos das matrizes: 2017, 2024
   SUAP carga_horaria: diverge — PPC 3334 h; mais próxima: matriz 461 (2024): 3340 h (diferença -6 h)
   SUAP estagio: confere — matriz mais recente: 461 (2024)
 ppc:colombo/tecnologia-em-alimentos — Tecnologia em Alimentos (Colombo)
-  ano_documento = 2022 [Revisado] dados/institucional/cursos/colombo/tecnologia-em-alimentos.json:18
+  ano_documento = 2022 [Revisado] base-conhecimento/institucional/ifpr/cursos/colombo/tecnologia-em-alimentos.json:18
   carga_horaria_total_h = 1997 [extraido] base-conhecimento/institucional/ifpr/ppcs/colombo/tecnologia-em-alimentos.md:1068
   estagio_carga_h = 200 [extraido] base-conhecimento/institucional/ifpr/ppcs/colombo/tecnologia-em-alimentos.md:316
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/colombo/tecnologia-em-alimentos.md:316
@@ -342,72 +342,72 @@ ppc:colombo/tecnologia-em-alimentos — Tecnologia em Alimentos (Colombo)
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:colombo/tecnologia-em-analise-e-desenvolvimento-de-sistemas — Tecnologia em Análise e Desenvolvimento de Sistemas (Colombo)
-  ano_documento = 2022 [Revisado] dados/institucional/cursos/colombo/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json:18
+  ano_documento = 2022 [Revisado] base-conhecimento/institucional/ifpr/cursos/colombo/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:colombo/tecnologia-em-processos-gerenciais — Tecnologia em Processos Gerenciais (Colombo)
-  ano_documento = 2022 [Revisado] dados/institucional/cursos/colombo/tecnologia-em-processos-gerenciais.json:18
+  ano_documento = 2022 [Revisado] base-conhecimento/institucional/ifpr/cursos/colombo/tecnologia-em-processos-gerenciais.json:18
   carga_horaria_total_h = 1600 [extraido] base-conhecimento/institucional/ifpr/ppcs/colombo/tecnologia-em-processos-gerenciais.md:1336
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:coronel-vivida/tecnico-em-administracao — Técnico em Administração (Coronel Vivida)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/coronel-vivida/tecnico-em-administracao.json:32
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/coronel-vivida/tecnico-em-administracao.json:32
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/coronel-vivida/tecnico-em-administracao.md:1169
   SUAP ano: confere — anos das matrizes: 2015, 2018, 2026
   SUAP carga_horaria: sem-fato-ppc — carga horária total não extraída do PPC
   SUAP estagio: confere — matriz mais recente: 826 (2026)
 ppc:coronel-vivida/tecnico-em-cooperativismo — Técnico em Cooperativismo (Coronel Vivida)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/coronel-vivida/tecnico-em-cooperativismo.json:31
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/coronel-vivida/tecnico-em-cooperativismo.json:31
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/coronel-vivida/tecnico-em-cooperativismo.md:1356
   SUAP ano: confere — anos das matrizes: 2018, 2026
   SUAP carga_horaria: sem-fato-ppc — carga horária total não extraída do PPC
   SUAP estagio: confere — matriz mais recente: 827 (2026)
 ppc:coronel-vivida/tecnologia-em-gestao-financeira — Tecnologia em Gestão Financeira (Coronel Vivida)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/coronel-vivida/tecnologia-em-gestao-financeira.json:18
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/coronel-vivida/tecnologia-em-gestao-financeira.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:curitiba/aperfeicoamento-em-educacao-para-relacoes-etnico-raciais — Aperfeiçoamento em Educação para Relações Étnico-raciais (Curitiba)
-  ano_documento = 2023 [Revisado] dados/institucional/cursos/curitiba/aperfeicoamento-em-educacao-para-relacoes-etnico-raciais.json:18
+  ano_documento = 2023 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/aperfeicoamento-em-educacao-para-relacoes-etnico-raciais.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:curitiba/bacharelado-em-ciencias-contabeis — Bacharelado em Ciências Contábeis (Curitiba)
-  ano_documento = 2025 [Revisado] dados/institucional/cursos/curitiba/bacharelado-em-ciencias-contabeis.json:18
+  ano_documento = 2025 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/bacharelado-em-ciencias-contabeis.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:curitiba/especializacao-em-ciencias-da-natureza-ensino-de-fisica-e-astronomia — Especialização em Ciências da Natureza: Ensino de Física e Astronomia (Curitiba)
-  ano_documento = 2025 [Revisado] dados/institucional/cursos/curitiba/especializacao-em-ciencias-da-natureza-ensino-de-fisica-e-astronomia.json:18
+  ano_documento = 2025 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-ciencias-da-natureza-ensino-de-fisica-e-astronomia.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:curitiba/especializacao-em-educacao-profissional — Especialização em Educação Profissional (Curitiba)
-  ano_documento = 2023 [Revisado] dados/institucional/cursos/curitiba/especializacao-em-educacao-profissional.json:18
+  ano_documento = 2023 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-educacao-profissional.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:curitiba/especializacao-em-gestao-publica — Especialização em Gestão Pública (Curitiba)
-  ano_documento = 2017 [Revisado] dados/institucional/cursos/curitiba/especializacao-em-gestao-publica.json:18
+  ano_documento = 2017 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-gestao-publica.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:curitiba/especializacao-em-gestao-social-de-politicas-publicas — Especialização em Gestão Social de Políticas Públicas (Curitiba)
-  ano_documento = 2021 [Revisado] dados/institucional/cursos/curitiba/especializacao-em-gestao-social-de-politicas-publicas.json:18
+  ano_documento = 2021 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/especializacao-em-gestao-social-de-politicas-publicas.json:18
   carga_horaria_total_h = 360 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/especializacao-em-gestao-social-de-politicas-publicas.md:414
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:curitiba/licenciatura-em-educacao-do-campo — Licenciatura em Educação do Campo (Curitiba)
-  ano_documento = 2023 [Revisado] dados/institucional/cursos/curitiba/licenciatura-em-educacao-do-campo.json:18
+  ano_documento = 2023 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/licenciatura-em-educacao-do-campo.json:18
   carga_horaria_total_h = 3400 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/licenciatura-em-educacao-do-campo.md:230
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:curitiba/licenciatura-em-pedagogia — Licenciatura em Pedagogia (Curitiba)
-  ano_documento = 2023 [Revisado] dados/institucional/cursos/curitiba/licenciatura-em-pedagogia.json:18
+  ano_documento = 2023 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/licenciatura-em-pedagogia.json:18
   carga_horaria_total_h = 3200 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/licenciatura-em-pedagogia.md:862
   estagio_carga_h = 400 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/licenciatura-em-pedagogia.md:3110
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/licenciatura-em-pedagogia.md:3110
@@ -415,51 +415,51 @@ ppc:curitiba/licenciatura-em-pedagogia — Licenciatura em Pedagogia (Curitiba)
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:curitiba/tecnico-em-administracao-integrado-ao-ensino-medio — Técnico em Administração (Curitiba)
-  ano_documento = 2014 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio.json:32
+  ano_documento = 2014 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio.json:32
   carga_horaria_total_h = 3254 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-administracao-integrado-ao-ensino-medio.md:83
   SUAP ano: confere — anos das matrizes: 2014
   SUAP carga_horaria: diverge — PPC 3254 h (hora-aula: o PPC não dá a carga em hora-relógio); mais próxima: matriz 301 (2014): 3288 h (diferença -34 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 882 (2014)
 ppc:curitiba/tecnico-em-condominio — Técnico em Condomínio (Curitiba)
-  ano_documento = 2020 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-condominio.json:30
+  ano_documento = 2020 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-condominio.json:30
   carga_horaria_total_h = 800 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-condominio.md:115
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-condominio.md:115
   SUAP ano: confere — anos das matrizes: 2021
   SUAP carga_horaria: confere — igual a matriz 3 (2021): 800 h
   SUAP estagio: confere — matriz mais recente: 3 (2021)
 ppc:curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio — Técnico em Contabilidade (Curitiba)
-  ano_documento = 2015 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.json:31
+  ano_documento = 2015 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.json:31
   carga_horaria_total_h = 3588 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-contabilidade-integrado-ao-ensino-medio.md:79
   SUAP ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2015 ou posterior (anos: 2014)
   SUAP carga_horaria: diverge — PPC 3588 h; mais próxima: matriz 75 (2014): 3388 h (diferença +200 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 842 (2014)
 ppc:curitiba/tecnico-em-edificacoes — Técnico em Edificações (Curitiba)
-  ano_documento = 2014 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-edificacoes.json:30
+  ano_documento = 2014 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-edificacoes.json:30
   SUAP ano: confere — anos das matrizes: 2014
   SUAP carga_horaria: sem-fato-ppc — carga horária total não extraída do PPC
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 22 (2014)
 ppc:curitiba/tecnico-em-eletromecanica — Técnico em Eletromecânica (Curitiba)
-  ano_documento = 2017 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-eletromecanica.json:30
+  ano_documento = 2017 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eletromecanica.json:30
   carga_horaria_total_h = 1338 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-eletromecanica.md:113
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-eletromecanica.md:115
   SUAP ano: confere — anos das matrizes: 2014, 2018
   SUAP carga_horaria: confere-com-uma-matriz — igual a matriz 46 (2018): 1338 h; o SUAP tem matrizes com CH diferentes (matriz 678 (2014): 1360 h; matriz 46 (2018): 1338 h)
   SUAP estagio: confere — matriz mais recente: 46 (2018)
 ppc:curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio — Técnico em Eletrônica (Curitiba)
-  ano_documento = 2014 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio.json:31
+  ano_documento = 2014 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio.json:31
   carga_horaria_total_h = 3673 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-eletronica-integrado-ao-ensino-medio.md:111
   SUAP ano: confere — anos das matrizes: 2014
   SUAP carga_horaria: confere — igual a matriz 41 (2014): 3673 h; matriz 843 (2014): 3673 h
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 843 (2014)
 ppc:curitiba/tecnico-em-eletrotecnica — Técnico em Eletrotécnica (Curitiba)
-  ano_documento = 2015 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-eletrotecnica.json:31
+  ano_documento = 2015 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eletrotecnica.json:31
   carga_horaria_total_h = 1200 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-eletrotecnica.md:113
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-eletrotecnica.md:115
   SUAP ano: confere — anos das matrizes: 2015
   SUAP carga_horaria: diverge — PPC 1200 h; mais próxima: matriz 55 (2015): 1203 h (diferença -3 h)
   SUAP estagio: confere — matriz mais recente: 706 (2015)
 ppc:curitiba/tecnico-em-enfermagem — Técnico em Enfermagem (Curitiba)
-  ano_documento = 2023 [Pendente] dados/institucional/cursos/curitiba/tecnico-em-enfermagem.json:30
+  ano_documento = 2023 [Pendente] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-enfermagem.json:30
   carga_horaria_total_h = 1600 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:122
   estagio_carga_h = 400 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:126
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:126
@@ -467,21 +467,21 @@ ppc:curitiba/tecnico-em-enfermagem — Técnico em Enfermagem (Curitiba)
   SUAP carga_horaria: confere-com-uma-matriz — igual a matriz 538 (2024): 1600 h; o SUAP tem matrizes com CH diferentes (matriz 71 (2020): 1820 h; matriz 538 (2024): 1600 h)
   SUAP estagio: diverge — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 538 (2024))
 ppc:curitiba/tecnico-em-eventos — Técnico em Eventos (Curitiba)
-  ano_documento = 2020 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-eventos.json:30
+  ano_documento = 2020 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-eventos.json:30
   carga_horaria_total_h = 800 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-eventos.md:115
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-eventos.md:115
   SUAP ano: confere — anos das matrizes: 2014, 2026
   SUAP carga_horaria: confere-com-uma-matriz — igual a matriz 878 (2026): 800 h; o SUAP tem matrizes com CH diferentes (matriz 311 (2014): 816 h; matriz 878 (2026): 800 h)
   SUAP estagio: confere — matriz mais recente: 878 (2026)
 ppc:curitiba/tecnico-em-informatica-integrado-ao-ensino-medio — Técnico em Informática (Curitiba)
-  ano_documento = 2019 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json:34
+  ano_documento = 2019 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.json:34
   carga_horaria_total_h = 3552 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.md:166
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-informatica-integrado-ao-ensino-medio.md:168
   SUAP ano: confere — anos das matrizes: 2021, 2022, 2026
   SUAP carga_horaria: confere-com-uma-matriz — igual a matriz 81 (2021): 3552 h; matriz 738 (2021): 3552 h; matriz 432 (2022): 3552 h; matriz 844 (2022): 3552 h; matriz 883 (2021): 3552 h; o SUAP tem matrizes com CH diferentes (matriz 81 (2021): 3552 h; matriz 738 (2021): 3552 h; matriz 432 (2022): 3552 h; matriz 891 (2026): 3347 h; matriz 844 (2022): 3552 h; matriz 883 (2021): 3552 h)
   SUAP estagio: confere — matriz mais recente: 891 (2026)
 ppc:curitiba/tecnico-em-massoterapia — Técnico em Massoterapia (Curitiba)
-  ano_documento = 2021 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-massoterapia.json:30
+  ano_documento = 2021 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-massoterapia.json:30
   carga_horaria_total_h = 1371 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-massoterapia.md:115
   estagio_carga_h = 134 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-massoterapia.md:117
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-massoterapia.md:117
@@ -489,52 +489,52 @@ ppc:curitiba/tecnico-em-massoterapia — Técnico em Massoterapia (Curitiba)
   SUAP carga_horaria: diverge — PPC 1371 h; mais próxima: matriz 83 (2023): 1374 h (diferença -3 h)
   SUAP estagio: diverge — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 83 (2023))
 ppc:curitiba/tecnico-em-mecanica — Técnico em Mecânica (Curitiba)
-  ano_documento = 2025 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-mecanica.json:31
+  ano_documento = 2025 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-mecanica.json:31
   carga_horaria_total_h = 1204 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-mecanica.md:116
   SUAP ano: confere — anos das matrizes: 2014, 2024, 2025
   SUAP carga_horaria: confere-com-uma-matriz — igual a matriz 707 (2024): 1204 h; matriz 783 (2025): 1204 h; o SUAP tem matrizes com CH diferentes (matriz 283 (2014): 1342 h; matriz 707 (2024): 1204 h; matriz 783 (2025): 1204 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 783 (2025)
 ppc:curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio — Técnico em Mecânica (Curitiba)
-  ano_documento = 2016 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio.json:31
+  ano_documento = 2016 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio.json:31
   carga_horaria_total_h = 3682 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-mecanica-integrado-ao-ensino-medio.md:193
   SUAP ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2016 ou posterior (anos: 2014)
   SUAP carga_horaria: confere — igual a matriz 287 (2014): 3682 h; matriz 845 (2014): 3682 h
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 845 (2014)
 ppc:curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio — Técnico em Petróleo e Gás (Curitiba)
-  ano_documento = 2017 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio.json:31
+  ano_documento = 2017 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio.json:31
   carga_horaria_total_h = 3607 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-petroleo-e-gas-integrado-ao-ensino-medio.md:111
   SUAP ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2017 ou posterior (anos: 2014)
   SUAP carga_horaria: confere — igual a matriz 85 (2014): 3607 h; matriz 846 (2014): 3607 h
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 846 (2014)
 ppc:curitiba/tecnico-em-processos-fotograficos — Técnico em Processos Fotográficos (Curitiba)
-  ano_documento = 2018 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-processos-fotograficos.json:30
+  ano_documento = 2018 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-processos-fotograficos.json:30
   carga_horaria_total_h = 952 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-processos-fotograficos.md:97
   SUAP ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2018 ou posterior (anos: 2014)
   SUAP carga_horaria: confere — igual a matriz 14 (2014): 952 h
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 14 (2014)
 ppc:curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio — Técnico em Processos Fotográficos (Curitiba)
-  ano_documento = 2015 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio.json:31
+  ano_documento = 2015 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio.json:31
   carga_horaria_total_h = 3390 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio.md:109
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-processos-fotograficos-integrado-ao-ensino-medio.md:111
   SUAP ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2015 ou posterior (anos: 2014)
   SUAP carga_horaria: confere — igual a matriz 86 (2014): 3390 h; matriz 847 (2014): 3390 h
   SUAP estagio: confere — matriz mais recente: 847 (2014)
 ppc:curitiba/tecnico-em-producao-de-audio-e-video — Técnico em Produção de Áudio e Vídeo (Curitiba)
-  ano_documento = 2022 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-producao-de-audio-e-video.json:30
+  ano_documento = 2022 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-producao-de-audio-e-video.json:30
   carga_horaria_total_h = 1213 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-producao-de-audio-e-video.md:97
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-producao-de-audio-e-video.md:99
   SUAP ano: confere — anos das matrizes: 2016, 2023
   SUAP carga_horaria: diverge — PPC 1213 h; mais próxima: matriz 68 (2023): 1231 h (diferença -18 h)
   SUAP estagio: confere — matriz mais recente: 68 (2023)
 ppc:curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio — Técnico em Programação de Jogos Digitais (Curitiba)
-  ano_documento = 2019 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.json:32
+  ano_documento = 2019 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.json:32
   carga_horaria_total_h = 3444 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.md:203
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-programacao-de-jogos-digitais-integrado-ao-ensino-medio.md:205
   SUAP ano: confere — anos das matrizes: 2021, 2023
   SUAP carga_horaria: diverge — PPC 3444 h; mais próxima: matriz 48 (2021): 3449 h (diferença -5 h)
   SUAP estagio: confere — matriz mais recente: 848 (2023)
 ppc:curitiba/tecnico-em-radiologia — Técnico em Radiologia (Curitiba)
-  ano_documento = 2013 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-radiologia.json:30
+  ano_documento = 2013 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-radiologia.json:30
   carga_horaria_total_h = 2064 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-radiologia.md:100
   estagio_carga_h = 600 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-radiologia.md:100
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-radiologia.md:100
@@ -542,25 +542,25 @@ ppc:curitiba/tecnico-em-radiologia — Técnico em Radiologia (Curitiba)
   SUAP carga_horaria: diverge — PPC 2064 h; mais próxima: matriz 270 (2014): 2008 h (diferença +56 h)
   SUAP estagio: diverge — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 270 (2014))
 ppc:curitiba/tecnico-em-saude-bucal — Técnico em Saúde Bucal (Curitiba)
-  ano_documento = 2025 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-saude-bucal.json:30
+  ano_documento = 2025 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-saude-bucal.json:30
   carga_horaria_total_h = 1235 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-saude-bucal.md:140
   SUAP ano: confere — anos das matrizes: 2014, 2026
   SUAP carga_horaria: diverge — PPC 1235 h; mais próxima: matriz 835 (2026): 1236 h (diferença -1 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 835 (2026)
 ppc:curitiba/tecnico-em-soldagem-subsequente — Técnico em Soldagem (Curitiba)
-  ano_documento = 2025 [Revisado] dados/institucional/cursos/curitiba/tecnico-em-soldagem-subsequente.json:19
+  ano_documento = 2025 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-soldagem-subsequente.json:19
   carga_horaria_total_h = 1201 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-soldagem-subsequente.md:93
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:curitiba/tecnologia-em-gestao-publica — Tecnologia em Gestão Pública (Curitiba)
-  ano_documento = 2015 [Revisado] dados/institucional/cursos/curitiba/tecnologia-em-gestao-publica.json:18
+  ano_documento = 2015 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-gestao-publica.json:18
   carga_horaria_total_h = 1670 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnologia-em-gestao-publica.md:304
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:curitiba/tecnologia-em-massoterapia — Tecnologia em Massoterapia (Curitiba)
-  ano_documento = 2022 [Revisado] dados/institucional/cursos/curitiba/tecnologia-em-massoterapia.json:18
+  ano_documento = 2022 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-massoterapia.json:18
   carga_horaria_total_h = 2440 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnologia-em-massoterapia.md:843
   estagio_carga_h = 400 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnologia-em-massoterapia.md:116
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnologia-em-massoterapia.md:116
@@ -568,38 +568,38 @@ ppc:curitiba/tecnologia-em-massoterapia — Tecnologia em Massoterapia (Curitiba
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:curitiba/tecnologia-em-processos-escolares — Tecnologia em Processos Escolares (Curitiba)
-  ano_documento = 2023 [Revisado] dados/institucional/cursos/curitiba/tecnologia-em-processos-escolares.json:18
+  ano_documento = 2023 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-processos-escolares.json:18
   carga_horaria_total_h = 2400 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnologia-em-processos-escolares.md:202
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnologia-em-processos-escolares.md:202
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:curitiba/tecnologia-em-processos-gerenciais — Tecnologia em Processos Gerenciais (Curitiba)
-  ano_documento = 2018 [Revisado] dados/institucional/cursos/curitiba/tecnologia-em-processos-gerenciais.json:18
+  ano_documento = 2018 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-processos-gerenciais.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:curitiba/tecnologia-em-secretariado — Tecnologia em Secretariado (Curitiba)
-  ano_documento = 2024 [Revisado] dados/institucional/cursos/curitiba/tecnologia-em-secretariado.json:18
+  ano_documento = 2024 [Revisado] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnologia-em-secretariado.json:18
   carga_horaria_total_h = 1600 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnologia-em-secretariado.md:392
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnologia-em-secretariado.md:2951
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:foz-do-iguacu/engenharia-de-aquicultura — Engenharia de Aquicultura (Foz do Iguaçu)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/foz-do-iguacu/engenharia-de-aquicultura.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/engenharia-de-aquicultura.json:18
   estagio_carga_h = 160 [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/engenharia-de-aquicultura.md:2355
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/engenharia-de-aquicultura.md:2355
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:foz-do-iguacu/especializacao-em-ensino-de-ciencias-e-matematica — Especializacao em Ensino de Ciencias e Matematica (Foz do Iguaçu)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/foz-do-iguacu/especializacao-em-ensino-de-ciencias-e-matematica.json:18
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/especializacao-em-ensino-de-ciencias-e-matematica.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:foz-do-iguacu/licenciatura-em-fisica — Licenciatura em Fisica (Foz do Iguaçu)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/foz-do-iguacu/licenciatura-em-fisica.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/licenciatura-em-fisica.json:18
   carga_horaria_total_h = 3321 [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/licenciatura-em-fisica.md:83
   estagio_carga_h = 400 [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/licenciatura-em-fisica.md:2634
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/licenciatura-em-fisica.md:2634
@@ -607,26 +607,26 @@ ppc:foz-do-iguacu/licenciatura-em-fisica — Licenciatura em Fisica (Foz do Igua
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:foz-do-iguacu/pos-graduacao-lato-sensu-em-internet-das-coisas-iot-do-ifpr — Pos Graduacao Lato Sensu em Internet das Coisas Iot do Ifpr (Foz do Iguaçu)
-  ano_documento = 2017 [Precisa de revisão] dados/institucional/cursos/foz-do-iguacu/pos-graduacao-lato-sensu-em-internet-das-coisas-iot-do-ifpr.json:18
+  ano_documento = 2017 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/pos-graduacao-lato-sensu-em-internet-das-coisas-iot-do-ifpr.json:18
   carga_horaria_total_h = 375 [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/pos-graduacao-lato-sensu-em-internet-das-coisas-iot-do-ifpr.md:125
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:foz-do-iguacu/tecnico-em-aquicultura — Técnico em Aquicultura (Foz do Iguaçu)
-  ano_documento = 2017 [Precisa de revisão] dados/institucional/cursos/foz-do-iguacu/tecnico-em-aquicultura.json:30
+  ano_documento = 2017 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-aquicultura.json:30
   carga_horaria_total_h = 3125 [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/tecnico-em-aquicultura.md:106
   SUAP ano: confere — anos das matrizes: 2018
   SUAP carga_horaria: confere — igual a matriz 27 (2018): 3125 h
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 27 (2018)
 ppc:foz-do-iguacu/tecnico-em-desenvolvimento-de-sistemas — Técnico em Desenvolvimento de Sistemas (Foz do Iguaçu)
-  ano_documento = 2019 [Precisa de revisão] dados/institucional/cursos/foz-do-iguacu/tecnico-em-desenvolvimento-de-sistemas.json:30
+  ano_documento = 2019 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-desenvolvimento-de-sistemas.json:30
   carga_horaria_total_h = 3392 [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/tecnico-em-desenvolvimento-de-sistemas.md:116
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/tecnico-em-desenvolvimento-de-sistemas.md:122
   SUAP ano: confere — anos das matrizes: 2020
   SUAP carga_horaria: confere — igual a matriz 52 (2020): 3392 h
   SUAP estagio: confere — matriz mais recente: 52 (2020)
 ppc:foz-do-iguacu/tecnico-em-edificacoes-3 — Técnico em Edificações (Foz do Iguaçu)
-  ano_documento = 2016 [Precisa de revisão] dados/institucional/cursos/foz-do-iguacu/tecnico-em-edificacoes-3.json:30
+  ano_documento = 2016 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-edificacoes-3.json:30
   carga_horaria_total_h = 3579 [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/tecnico-em-edificacoes-3.md:93
   estagio_carga_h = 246 [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/tecnico-em-edificacoes-3.md:91
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/tecnico-em-edificacoes-3.md:91
@@ -634,24 +634,24 @@ ppc:foz-do-iguacu/tecnico-em-edificacoes-3 — Técnico em Edificações (Foz do
   SUAP carga_horaria: diverge — PPC 3579 h; mais próxima: matriz 74 (2015): 3342 h (diferença +237 h)
   SUAP estagio: confere — matriz mais recente: 74 (2015)
 ppc:foz-do-iguacu/tecnico-em-gastronomia — Técnico em Gastronomia (Foz do Iguaçu)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/foz-do-iguacu/tecnico-em-gastronomia.json:30
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-gastronomia.json:30
   carga_horaria_total_h = 800 [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/tecnico-em-gastronomia.md:94
   SUAP ano: confere — anos das matrizes: 2023
   SUAP carga_horaria: confere — igual a matriz 70 (2023): 800 h
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 70 (2023)
 ppc:foz-do-iguacu/tecnico-em-meio-ambiente — Técnico em Meio Ambiente (Foz do Iguaçu)
-  ano_documento = 2016 [Precisa de revisão] dados/institucional/cursos/foz-do-iguacu/tecnico-em-meio-ambiente.json:30
+  ano_documento = 2016 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnico-em-meio-ambiente.json:30
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/tecnico-em-meio-ambiente.md:100
   SUAP ano: confere — anos das matrizes: 2018
   SUAP carga_horaria: sem-fato-ppc — carga horária total não extraída do PPC
   SUAP estagio: confere — matriz mais recente: 77 (2018)
 ppc:foz-do-iguacu/tecnologia-em-analise-e-desenvolvimento-de-sistemas — Tecnologia em Análise e Desenvolvimento de Sistemas (Foz do Iguaçu)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/foz-do-iguacu/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:foz-do-iguacu/tecnologia-em-gastronomia — Tecnologia em Gastronomia (Foz do Iguaçu)
-  ano_documento = 2017 [Precisa de revisão] dados/institucional/cursos/foz-do-iguacu/tecnologia-em-gastronomia.json:18
+  ano_documento = 2017 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/foz-do-iguacu/tecnologia-em-gastronomia.json:18
   carga_horaria_total_h = 1916 [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/tecnologia-em-gastronomia.md:137
   estagio_carga_h = 200 [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/tecnologia-em-gastronomia.md:1661
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/foz-do-iguacu/tecnologia-em-gastronomia.md:1661
@@ -659,28 +659,28 @@ ppc:foz-do-iguacu/tecnologia-em-gastronomia — Tecnologia em Gastronomia (Foz d
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:goioere/tecnico-em-informatica — Técnico em Informática (Goioerê)
-  ano_documento = 2016 [Precisa de revisão] dados/institucional/cursos/goioere/tecnico-em-informatica.json:30
+  ano_documento = 2016 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/goioere/tecnico-em-informatica.json:30
   carga_horaria_total_h = 3533 [extraido] base-conhecimento/institucional/ifpr/ppcs/goioere/tecnico-em-informatica.md:87
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/goioere/tecnico-em-informatica.md:89
   SUAP ano: confere — anos das matrizes: 2016, 2027
   SUAP carga_horaria: diverge — PPC 3533 h; mais próxima: matriz 895 (2016): 3538 h (diferença -5 h)
   SUAP estagio: confere — matriz mais recente: 944 (2027)
 ppc:goioere/tecnico-em-producao-de-moda — Técnico em Produção de Moda (Goioerê)
-  ano_documento = 2016 [Precisa de revisão] dados/institucional/cursos/goioere/tecnico-em-producao-de-moda.json:30
+  ano_documento = 2016 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/goioere/tecnico-em-producao-de-moda.json:30
   carga_horaria_total_h = 3334 [extraido] base-conhecimento/institucional/ifpr/ppcs/goioere/tecnico-em-producao-de-moda.md:96
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/goioere/tecnico-em-producao-de-moda.md:98
   SUAP ano: confere — anos das matrizes: 2017
   SUAP carga_horaria: diverge — PPC 3334 h; mais próxima: matriz 896 (2017): 3345 h (diferença -11 h)
   SUAP estagio: confere — matriz mais recente: 896 (2017)
 ppc:irati/bacharelado-em-agronomia — Bacharelado em Agronomia (Irati)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/irati/bacharelado-em-agronomia.json:18
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/irati/bacharelado-em-agronomia.json:18
   estagio_carga_h = 150 [extraido] base-conhecimento/institucional/ifpr/ppcs/irati/bacharelado-em-agronomia.md:107
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/irati/bacharelado-em-agronomia.md:107
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:irati/bacharelado-em-engenharia-de-software — Bacharelado em Engenharia de Software (Irati)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/irati/bacharelado-em-engenharia-de-software.json:18
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/irati/bacharelado-em-engenharia-de-software.json:18
   carga_horaria_total_h = 3200 [extraido] base-conhecimento/institucional/ifpr/ppcs/irati/bacharelado-em-engenharia-de-software.md:97
   estagio_carga_h = 240 [extraido] base-conhecimento/institucional/ifpr/ppcs/irati/bacharelado-em-engenharia-de-software.md:97
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/irati/bacharelado-em-engenharia-de-software.md:97
@@ -688,7 +688,7 @@ ppc:irati/bacharelado-em-engenharia-de-software — Bacharelado em Engenharia de
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:irati/licenciatura-em-quimica — Licenciatura em Química (Irati)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/irati/licenciatura-em-quimica.json:18
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/irati/licenciatura-em-quimica.json:18
   carga_horaria_total_h = 3400 [extraido] base-conhecimento/institucional/ifpr/ppcs/irati/licenciatura-em-quimica.md:633
   estagio_carga_h = 400 [extraido] base-conhecimento/institucional/ifpr/ppcs/irati/licenciatura-em-quimica.md:1669
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/irati/licenciatura-em-quimica.md:1669
@@ -696,76 +696,76 @@ ppc:irati/licenciatura-em-quimica — Licenciatura em Química (Irati)
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:irati/tecnico-em-agroecologia — Técnico em Agroecologia (Irati)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/irati/tecnico-em-agroecologia.json:31
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/irati/tecnico-em-agroecologia.json:31
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/irati/tecnico-em-agroecologia.md:191
   SUAP ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2025 ou posterior (anos: 2017, 2024)
   SUAP carga_horaria: sem-fato-ppc — carga horária total não extraída do PPC
   SUAP estagio: confere — matriz mais recente: 458 (2024)
 ppc:irati/tecnico-em-informatica — Técnico em Informática (Irati)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/irati/tecnico-em-informatica.json:31
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/irati/tecnico-em-informatica.json:31
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/irati/tecnico-em-informatica.md:1371
   SUAP ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2025 ou posterior (anos: 2017, 2024)
   SUAP carga_horaria: sem-fato-ppc — carga horária total não extraída do PPC
   SUAP estagio: confere — matriz mais recente: 457 (2024)
 ppc:irati/tecnologia-em-analise-e-desenvolvimento-de-sistemas — Tecnologia em Análise e Desenvolvimento de Sistemas (Irati)
-  ano_documento = 2014 [Precisa de revisão] dados/institucional/cursos/irati/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json:18
+  ano_documento = 2014 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/irati/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:ivaipora/bacharelado-em-sistemas-de-informacao — Bacharelado em Sistemas de Informação (Ivaiporã)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/ivaipora/bacharelado-em-sistemas-de-informacao.json:18
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/ivaipora/bacharelado-em-sistemas-de-informacao.json:18
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/ivaipora/bacharelado-em-sistemas-de-informacao.md:2021
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:ivaipora/engenharia-agronomica — Engenharia Agronômica (Ivaiporã)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/ivaipora/engenharia-agronomica.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/ivaipora/engenharia-agronomica.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:ivaipora/licenciatura-em-fisica — Licenciatura em Física (Ivaiporã)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/ivaipora/licenciatura-em-fisica.json:18
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/ivaipora/licenciatura-em-fisica.json:18
   carga_horaria_total_h = 3200 [extraido] base-conhecimento/institucional/ifpr/ppcs/ivaipora/licenciatura-em-fisica.md:61
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:ivaipora/tecnico-em-agroecologia-integrado — Técnico em Agroecologia (Ivaiporã)
-  ano_documento = 2016 [Precisa de revisão] dados/institucional/cursos/ivaipora/tecnico-em-agroecologia-integrado.json:30
+  ano_documento = 2016 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/ivaipora/tecnico-em-agroecologia-integrado.json:30
   carga_horaria_total_h = 3600 [extraido] base-conhecimento/institucional/ifpr/ppcs/ivaipora/tecnico-em-agroecologia-integrado.md:111
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/ivaipora/tecnico-em-agroecologia-integrado.md:113
   SUAP ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2016 ou posterior (anos: 2015)
   SUAP carga_horaria: confere — igual a matriz 298 (2015): 3600 h
   SUAP estagio: confere — matriz mais recente: 298 (2015)
 ppc:ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio — Técnico em Agropecuária (Ivaiporã)
-  ano_documento = 2024 [Precisa de revisão] dados/institucional/cursos/ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio.json:30
+  ano_documento = 2024 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio.json:30
   carga_horaria_total_h = 3200 [extraido] base-conhecimento/institucional/ifpr/ppcs/ivaipora/tecnico-em-agropecuaria-integrado-ao-ensino-medio.md:128
   SUAP ano: confere — anos das matrizes: 2025
   SUAP carga_horaria: confere — igual a matriz 714 (2025): 3200 h
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 714 (2025)
 ppc:ivaipora/tecnico-em-eletrotecnica-integrado — Técnico em Eletrotécnica (Ivaiporã)
-  ano_documento = 2023 [Revisado] dados/institucional/cursos/ivaipora/tecnico-em-eletrotecnica-integrado.json:30
+  ano_documento = 2023 [Revisado] base-conhecimento/institucional/ifpr/cursos/ivaipora/tecnico-em-eletrotecnica-integrado.json:30
   carga_horaria_total_h = 3200 [extraido] base-conhecimento/institucional/ifpr/ppcs/ivaipora/tecnico-em-eletrotecnica-integrado.md:273
   SUAP ano: confere — anos das matrizes: 2025
   SUAP carga_horaria: confere — igual a matriz 456 (2025): 3200 h
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 456 (2025)
 ppc:ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio — Técnico em Informática (Ivaiporã)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio.json:30
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/ivaipora/tecnico-em-informatica-integrado-ao-ensino-medio.json:30
   SUAP ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2023 ou posterior (anos: 2016)
   SUAP carga_horaria: sem-fato-ppc — carga horária total não extraída do PPC
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 300 (2016)
 ppc:ivaipora/tecnologia-em-agroecologia — Tecnologia em Agroecologia (Ivaiporã)
-  ano_documento = 2016 [Precisa de revisão] dados/institucional/cursos/ivaipora/tecnologia-em-agroecologia.json:18
+  ano_documento = 2016 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/ivaipora/tecnologia-em-agroecologia.json:18
   carga_horaria_total_h = 2485 [extraido] base-conhecimento/institucional/ifpr/ppcs/ivaipora/tecnologia-em-agroecologia.md:61
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:jacarezinho/educacao-sociedade-e-tecnologia — Educação, Sociedade e Tecnologia (Jacarezinho)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/jacarezinho/educacao-sociedade-e-tecnologia.json:18
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/jacarezinho/educacao-sociedade-e-tecnologia.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:jacarezinho/engenharia-de-controle-e-automacao — Engenharia de Controle e Automação (Jacarezinho)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/jacarezinho/engenharia-de-controle-e-automacao.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/jacarezinho/engenharia-de-controle-e-automacao.json:18
   carga_horaria_total_h = 4042 [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/engenharia-de-controle-e-automacao.md:101
   estagio_carga_h = 160 [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/engenharia-de-controle-e-automacao.md:2513
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/engenharia-de-controle-e-automacao.md:2513
@@ -773,7 +773,7 @@ ppc:jacarezinho/engenharia-de-controle-e-automacao — Engenharia de Controle e 
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:jacarezinho/licenciatura-em-quimica — Licenciatura em Química (Jacarezinho)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/jacarezinho/licenciatura-em-quimica.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/jacarezinho/licenciatura-em-quimica.json:18
   carga_horaria_total_h = 3217 [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/licenciatura-em-quimica.md:839
   estagio_carga_h = 400 [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/licenciatura-em-quimica.md:2904
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/licenciatura-em-quimica.md:2904
@@ -781,7 +781,7 @@ ppc:jacarezinho/licenciatura-em-quimica — Licenciatura em Química (Jacarezinh
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:jacarezinho/tecnico-em-alimentos — Técnico em Alimentos (Jacarezinho)
-  ano_documento = 2019 [Precisa de revisão] dados/institucional/cursos/jacarezinho/tecnico-em-alimentos.json:30
+  ano_documento = 2019 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-alimentos.json:30
   carga_horaria_total_h = 3390 [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-alimentos.md:90
   estagio_carga_h = 120 [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-alimentos.md:92
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-alimentos.md:92
@@ -789,80 +789,80 @@ ppc:jacarezinho/tecnico-em-alimentos — Técnico em Alimentos (Jacarezinho)
   SUAP carga_horaria: confere-com-uma-matriz — igual a matriz 29 (2020): 3390 h; o SUAP tem matrizes com CH diferentes (matriz 393 (2013): 4402 h; matriz 29 (2020): 3390 h)
   SUAP estagio: diverge — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 29 (2020))
 ppc:jacarezinho/tecnico-em-eletromecanica — Técnico em Eletromecânica (Jacarezinho)
-  ano_documento = 2017 [Precisa de revisão] dados/institucional/cursos/jacarezinho/tecnico-em-eletromecanica.json:30
+  ano_documento = 2017 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-eletromecanica.json:30
   carga_horaria_total_h = 3390 [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-eletromecanica.md:93
   SUAP ano: confere — anos das matrizes: 2013, 2018
   SUAP carga_horaria: diverge — PPC 3390 h; mais próxima: matriz 517 (2018): 1200 h (diferença +2190 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 517 (2018)
 ppc:jacarezinho/tecnico-em-eletrotecnica — Técnico em Eletrotécnica (Jacarezinho)
-  ano_documento = 2017 [Precisa de revisão] dados/institucional/cursos/jacarezinho/tecnico-em-eletrotecnica.json:30
+  ano_documento = 2017 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-eletrotecnica.json:30
   carga_horaria_total_h = 3390 [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-eletrotecnica.md:101
   SUAP ano: confere — anos das matrizes: 2018
   SUAP carga_horaria: diverge — PPC 3390 h; mais próxima: matriz 35 (2018): 5460 h (diferença -2070 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 35 (2018)
 ppc:jacarezinho/tecnico-em-informatica — Técnico em Informática (Jacarezinho)
-  ano_documento = 2013 [Precisa de revisão] dados/institucional/cursos/jacarezinho/tecnico-em-informatica.json:30
+  ano_documento = 2013 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-informatica.json:30
   carga_horaria_total_h = 3390 [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-informatica.md:103
   SUAP ano: confere — anos das matrizes: 2013, 2018
   SUAP carga_horaria: confere-com-uma-matriz — igual a matriz 43 (2018): 3390 h; o SUAP tem matrizes com CH diferentes (matriz 43 (2018): 3390 h; matriz 390 (2013): 4405 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 43 (2018)
 ppc:jacarezinho/tecnico-em-mecanica — Técnico em Mecânica (Jacarezinho)
-  ano_documento = 2017 [Precisa de revisão] dados/institucional/cursos/jacarezinho/tecnico-em-mecanica.json:30
+  ano_documento = 2017 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-mecanica.json:30
   carga_horaria_total_h = 3390 [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-mecanica.md:101
   SUAP ano: confere — anos das matrizes: 2018
   SUAP carga_horaria: confere — igual a matriz 45 (2018): 3390 h
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 45 (2018)
 ppc:jacarezinho/tecnico-em-teatro — Técnico em Teatro (Jacarezinho)
-  ano_documento = 2019 [Precisa de revisão] dados/institucional/cursos/jacarezinho/tecnico-em-teatro.json:30
+  ano_documento = 2019 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnico-em-teatro.json:30
   carga_horaria_total_h = 1230 [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-teatro.md:93
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnico-em-teatro.md:95
   SUAP ano: confere — anos das matrizes: 2020
   SUAP carga_horaria: confere — igual a matriz 10 (2020): 1230 h
   SUAP estagio: confere — matriz mais recente: 10 (2020)
 ppc:jacarezinho/tecnologia-em-sistemas-para-internet — Tecnologia em Sistemas para Internet (Jacarezinho)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/jacarezinho/tecnologia-em-sistemas-para-internet.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/jacarezinho/tecnologia-em-sistemas-para-internet.json:18
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/jacarezinho/tecnologia-em-sistemas-para-internet.md:1993
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:jaguariaiva/especializacao-em-educacao-e-tecnologia — Especialização em Educação e Tecnologia (Jaguariaíva)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/jaguariaiva/especializacao-em-educacao-e-tecnologia.json:18
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/jaguariaiva/especializacao-em-educacao-e-tecnologia.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio — Técnico em Alimentos (Jaguariaíva)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio.json:30
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio.json:30
   carga_horaria_total_h = 3500 [extraido] base-conhecimento/institucional/ifpr/ppcs/jaguariaiva/tecnico-em-alimentos-integrado-ao-ensino-medio.md:358
   SUAP ano: confere — anos das matrizes: 2019, 2024
   SUAP carga_horaria: diverge — PPC 3500 h; mais próxima: matriz 78 (2019): 3509 h (diferença -9 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 391 (2024)
 ppc:jaguariaiva/tecnico-em-biotecnologia-integrado-ao-ensino-medio — Técnico em Biotecnologia (Jaguariaíva)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/jaguariaiva/tecnico-em-biotecnologia-integrado-ao-ensino-medio.json:30
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/jaguariaiva/tecnico-em-biotecnologia-integrado-ao-ensino-medio.json:30
   carga_horaria_total_h = 3600 [extraido] base-conhecimento/institucional/ifpr/ppcs/jaguariaiva/tecnico-em-biotecnologia-integrado-ao-ensino-medio.md:360
   SUAP ano: confere — anos das matrizes: 2019, 2024
   SUAP carga_horaria: diverge — PPC 3600 h; mais próxima: matriz 736 (2019): 3634 h (diferença -34 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 459 (2024)
 ppc:jaguariaiva/tecnologo-em-gestao-da-qualidade — Tecnologo em Gestao da Qualidade (Jaguariaíva)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/jaguariaiva/tecnologo-em-gestao-da-qualidade.json:18
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/jaguariaiva/tecnologo-em-gestao-da-qualidade.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:londrina/licenciatura-em-ciencias-biologicas-2 — Licenciatura em Ciencias Biologicas 2 (Londrina)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/londrina/licenciatura-em-ciencias-biologicas-2.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/londrina/licenciatura-em-ciencias-biologicas-2.json:18
   estagio_carga_h = 400 [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/licenciatura-em-ciencias-biologicas-2.md:4532
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/licenciatura-em-ciencias-biologicas-2.md:4532
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:londrina/tecnico-em-biotecnologia-integrado-ao-ensino-medio — Técnico em Biotecnologia (Londrina)
-  ano_documento = 2017 [Precisa de revisão] dados/institucional/cursos/londrina/tecnico-em-biotecnologia-integrado-ao-ensino-medio.json:31
+  ano_documento = 2017 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-biotecnologia-integrado-ao-ensino-medio.json:31
   carga_horaria_total_h = 3600 [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-biotecnologia-integrado-ao-ensino-medio.md:85
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-biotecnologia-integrado-ao-ensino-medio.md:87
   SUAP ano: confere — anos das matrizes: 2018
   SUAP carga_horaria: confere — igual a matriz 124 (2018): 3600 h; matriz 839 (2018): 3600 h
   SUAP estagio: confere — matriz mais recente: 839 (2018)
 ppc:londrina/tecnico-em-enfermagem — Técnico em Enfermagem (Londrina)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/londrina/tecnico-em-enfermagem.json:31
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-enfermagem.json:31
   carga_horaria_total_h = 1715 [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-enfermagem.md:111
   estagio_carga_h = 515 [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-enfermagem.md:115
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-enfermagem.md:115
@@ -870,27 +870,27 @@ ppc:londrina/tecnico-em-enfermagem — Técnico em Enfermagem (Londrina)
   SUAP carga_horaria: confere — igual a matriz 465 (2024): 1715 h; matriz 740 (2025): 1715 h
   SUAP estagio: diverge — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 740 (2025))
 ppc:londrina/tecnico-em-informatica-integrado-ao-ensino-medio — Técnico em Informática (Londrina)
-  ano_documento = 2017 [Precisa de revisão] dados/institucional/cursos/londrina/tecnico-em-informatica-integrado-ao-ensino-medio.json:31
+  ano_documento = 2017 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-informatica-integrado-ao-ensino-medio.json:31
   carga_horaria_total_h = 3600 [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-informatica-integrado-ao-ensino-medio.md:79
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-informatica-integrado-ao-ensino-medio.md:79
   SUAP ano: confere — anos das matrizes: 2018
   SUAP carga_horaria: confere — igual a matriz 215 (2018): 3600 h; matriz 840 (2018): 3600 h
   SUAP estagio: confere — matriz mais recente: 840 (2018)
 ppc:londrina/tecnico-em-massoterapia — Técnico em Massoterapia (Londrina)
-  ano_documento = 2016 [Precisa de revisão] dados/institucional/cursos/londrina/tecnico-em-massoterapia.json:31
+  ano_documento = 2016 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-massoterapia.json:31
   carga_horaria_total_h = 1380 [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-massoterapia.md:121
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-massoterapia.md:123
   SUAP ano: confere — anos das matrizes: 2017, 2025
   SUAP carga_horaria: confere — igual a matriz 209 (2017): 1380 h; matriz 739 (2025): 1380 h
   SUAP estagio: confere — matriz mais recente: 739 (2025)
 ppc:londrina/tecnico-em-protese-dentaria-2 — Técnico em Prótese Dentária (Londrina)
-  ano_documento = 2013 [Precisa de revisão] dados/institucional/cursos/londrina/tecnico-em-protese-dentaria-2.json:31
+  ano_documento = 2013 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-protese-dentaria-2.json:31
   carga_horaria_total_h = 1280 [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-protese-dentaria-2.md:180
   SUAP ano: confere — anos das matrizes: 2014, 2025
   SUAP carga_horaria: diverge — PPC 1280 h; mais próxima: matriz 208 (2014): 1200 h (diferença +80 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 741 (2025)
 ppc:londrina/tecnico-em-saude-bucal — Técnico em Saúde Bucal (Londrina)
-  ano_documento = 2017 [Precisa de revisão] dados/institucional/cursos/londrina/tecnico-em-saude-bucal.json:31
+  ano_documento = 2017 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/londrina/tecnico-em-saude-bucal.json:31
   carga_horaria_total_h = 1270 [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-saude-bucal.md:110
   estagio_carga_h = 70 [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-saude-bucal.md:112
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnico-em-saude-bucal.md:112
@@ -898,32 +898,32 @@ ppc:londrina/tecnico-em-saude-bucal — Técnico em Saúde Bucal (Londrina)
   SUAP carga_horaria: confere — igual a matriz 204 (2018): 1270 h; matriz 742 (2018): 1270 h
   SUAP estagio: diverge — PPC prevê estágio obrigatório; SUAP não exige (matriz mais recente: 742 (2018))
 ppc:londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas — Tecnologia em Analise e Desenvolvimento de Sistemas (Londrina)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json:18
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json:18
   carga_horaria_total_h = 2280 [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md:106
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/londrina/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md:108
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:palmas/agronomia — Agronomia (Palmas)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/palmas/agronomia.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/palmas/agronomia.json:18
   carga_horaria_total_h = 4905 [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/agronomia.md:190
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:palmas/bacharelado-em-administracao — Bacharelado em Administração (Palmas)
-  ano_documento = 2011 [Precisa de revisão] dados/institucional/cursos/palmas/bacharelado-em-administracao.json:18
+  ano_documento = 2011 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/palmas/bacharelado-em-administracao.json:18
   carga_horaria_total_h = 3720 [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/bacharelado-em-administracao.md:149
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:palmas/enfermagem — Enfermagem (Palmas)
-  ano_documento = 2010 [Precisa de revisão] dados/institucional/cursos/palmas/enfermagem.json:18
+  ano_documento = 2010 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/palmas/enfermagem.json:18
   carga_horaria_total_h = 4487 [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/enfermagem.md:1730
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:palmas/farmacia — Farmácia (Palmas)
-  ano_documento = 2010 [Precisa de revisão] dados/institucional/cursos/palmas/farmacia.json:18
+  ano_documento = 2010 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/palmas/farmacia.json:18
   carga_horaria_total_h = 4556 [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/farmacia.md:1671
   estagio_carga_h = 910 [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/farmacia.md:4653
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/farmacia.md:4653
@@ -931,7 +931,7 @@ ppc:palmas/farmacia — Farmácia (Palmas)
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:palmas/licenciatura-em-educacao-fisica — Licenciatura em Educação Física (Palmas)
-  ano_documento = 2021 [Precisa de revisão] dados/institucional/cursos/palmas/licenciatura-em-educacao-fisica.json:18
+  ano_documento = 2021 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/palmas/licenciatura-em-educacao-fisica.json:18
   carga_horaria_total_h = 3224 [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/licenciatura-em-educacao-fisica.md:975
   estagio_carga_h = 640 [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/licenciatura-em-educacao-fisica.md:3486
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/licenciatura-em-educacao-fisica.md:3486
@@ -939,89 +939,89 @@ ppc:palmas/licenciatura-em-educacao-fisica — Licenciatura em Educação Físic
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:palmas/licenciatura-em-quimica — Licenciatura em Química (Palmas)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/palmas/licenciatura-em-quimica.json:18
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/palmas/licenciatura-em-quimica.json:18
   estagio_carga_h = 160 [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/licenciatura-em-quimica.md:3781
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/licenciatura-em-quimica.md:3781
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:palmas/pedagogia — Pedagogia (Palmas)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/palmas/pedagogia.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/palmas/pedagogia.json:18
   carga_horaria_total_h = 3477 [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/pedagogia.md:94
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:palmas/sistemas-de-informacao — Sistemas de Informação (Palmas)
-  ano_documento = 2008 [Precisa de revisão] dados/institucional/cursos/palmas/sistemas-de-informacao.json:18
+  ano_documento = 2008 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/palmas/sistemas-de-informacao.json:18
   carga_horaria_total_h = 3000 [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/sistemas-de-informacao.md:1639
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:palmas/tecnico-em-alimentos — Técnico em Alimentos (Palmas)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/palmas/tecnico-em-alimentos.json:31
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/palmas/tecnico-em-alimentos.json:31
   carga_horaria_total_h = 3073 [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/tecnico-em-alimentos.md:900
   SUAP ano: confere — anos das matrizes: 2023
   SUAP carga_horaria: diverge — PPC 3073 h; mais próxima: matriz 16 (2023): 3006 h (diferença +67 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 869 (2023)
 ppc:palmas/tecnico-em-informatica-para-internet — Técnico em Informática para Internet (Palmas)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/palmas/tecnico-em-informatica-para-internet.json:31
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/palmas/tecnico-em-informatica-para-internet.json:31
   carga_horaria_total_h = 3012 [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/tecnico-em-informatica-para-internet.md:972
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/tecnico-em-informatica-para-internet.md:1194
   SUAP ano: confere — anos das matrizes: 2024
   SUAP carga_horaria: confere — igual a matriz 475 (2024): 3012 h; matriz 870 (2024): 3012 h
   SUAP estagio: confere — matriz mais recente: 870 (2024)
 ppc:palmas/tecnico-em-servicos-juridicos — Técnico em Serviços Jurídicos (Palmas)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/palmas/tecnico-em-servicos-juridicos.json:33
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/palmas/tecnico-em-servicos-juridicos.json:33
   carga_horaria_total_h = 3004 [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/tecnico-em-servicos-juridicos.md:911
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/palmas/tecnico-em-servicos-juridicos.md:112
   SUAP ano: confere — anos das matrizes: 2013, 2015, 2019, 2023
   SUAP carga_horaria: diverge — PPC 3004 h; mais próxima: matriz 36 (2023): 3006 h (diferença -2 h)
   SUAP estagio: confere — matriz mais recente: 871 (2023)
 ppc:paranagua/licenciatura-em-ciencias-sociais — Licenciatura em Ciências Sociais (Paranaguá)
-  ano_documento = 2008 [Precisa de revisão] dados/institucional/cursos/paranagua/licenciatura-em-ciencias-sociais.json:18
+  ano_documento = 2008 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/paranagua/licenciatura-em-ciencias-sociais.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:paranagua/tecnico-em-informatica — Técnico em Informática (Paranaguá)
-  ano_documento = 2024 [Precisa de revisão] dados/institucional/cursos/paranagua/tecnico-em-informatica.json:30
+  ano_documento = 2024 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/paranagua/tecnico-em-informatica.json:30
   carga_horaria_total_h = 3337 [extraido] base-conhecimento/institucional/ifpr/ppcs/paranagua/tecnico-em-informatica.md:541
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/paranagua/tecnico-em-informatica.md:136
   SUAP ano: confere — anos das matrizes: 2013, 2025
   SUAP carga_horaria: confere-com-uma-matriz — igual a matriz 737 (2025): 3337 h; o SUAP tem matrizes com CH diferentes (matriz 50 (2013): 3336 h; matriz 737 (2025): 3337 h)
   SUAP estagio: confere — matriz mais recente: 737 (2025)
 ppc:paranagua/tecnico-em-mecanica — Técnico em Mecânica (Paranaguá)
-  ano_documento = 2011 [Precisa de revisão] dados/institucional/cursos/paranagua/tecnico-em-mecanica.json:30
+  ano_documento = 2011 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/paranagua/tecnico-em-mecanica.json:30
   carga_horaria_total_h = 3401 [extraido] base-conhecimento/institucional/ifpr/ppcs/paranagua/tecnico-em-mecanica.md:88
   SUAP ano: confere — anos das matrizes: 2013, 2025
   SUAP carga_horaria: diverge — PPC 3401 h; mais próxima: matriz 454 (2025): 3438 h (diferença -37 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 454 (2025)
 ppc:paranagua/tecnico-em-meio-ambiente — Técnico em Meio Ambiente (Paranaguá)
-  ano_documento = 2023 [Revisado] dados/institucional/cursos/paranagua/tecnico-em-meio-ambiente.json:30
+  ano_documento = 2023 [Revisado] base-conhecimento/institucional/ifpr/cursos/paranagua/tecnico-em-meio-ambiente.json:30
   carga_horaria_total_h = 3332 [extraido] base-conhecimento/institucional/ifpr/ppcs/paranagua/tecnico-em-meio-ambiente.md:745
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/paranagua/tecnico-em-meio-ambiente.md:144
   SUAP ano: confere — anos das matrizes: 2014, 2025
   SUAP carga_horaria: confere-com-uma-matriz — igual a matriz 455 (2025): 3332 h; o SUAP tem matrizes com CH diferentes (matriz 42 (2014): 3299 h; matriz 455 (2025): 3332 h)
   SUAP estagio: confere — matriz mais recente: 455 (2025)
 ppc:paranagua/tecnico-em-producao-cultural — Técnico em Produção Cultural (Paranaguá)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/paranagua/tecnico-em-producao-cultural.json:30
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/paranagua/tecnico-em-producao-cultural.json:30
   carga_horaria_total_h = 3370 [extraido] base-conhecimento/institucional/ifpr/ppcs/paranagua/tecnico-em-producao-cultural.md:634
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/paranagua/tecnico-em-producao-cultural.md:116
   SUAP ano: confere — anos das matrizes: 2024
   SUAP carga_horaria: confere — igual a matriz 394 (2024): 3370 h
   SUAP estagio: confere — matriz mais recente: 394 (2024)
 ppc:paranagua/tecnologia-em-analise-e-desenvolvimento-de-sistemas — Tecnologia em Análise e Desenvolvimento de Sistemas (Paranaguá)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/paranagua/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json:18
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/paranagua/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:paranagua/tecnologia-em-gestao-ambiental — Tecnologia em Gestão Ambiental (Paranaguá)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/paranagua/tecnologia-em-gestao-ambiental.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/paranagua/tecnologia-em-gestao-ambiental.json:18
   carga_horaria_total_h = 1700 [extraido] base-conhecimento/institucional/ifpr/ppcs/paranagua/tecnologia-em-gestao-ambiental.md:734
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:paranagua/tecnologia-em-manutencao-industrial — Tecnologia em Manutenção Industrial (Paranaguá)
-  ano_documento = 2011 [Precisa de revisão] dados/institucional/cursos/paranagua/tecnologia-em-manutencao-industrial.json:18
+  ano_documento = 2011 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/paranagua/tecnologia-em-manutencao-industrial.json:18
   carga_horaria_total_h = 3369 [extraido] base-conhecimento/institucional/ifpr/ppcs/paranagua/tecnologia-em-manutencao-industrial.md:48
   estagio_carga_h = 160 [extraido] base-conhecimento/institucional/ifpr/ppcs/paranagua/tecnologia-em-manutencao-industrial.md:734
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/paranagua/tecnologia-em-manutencao-industrial.md:734
@@ -1029,37 +1029,37 @@ ppc:paranagua/tecnologia-em-manutencao-industrial — Tecnologia em Manutenção
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:paranavai/engenharia-de-software — Engenharia de Software (bacharelado) (Paranavaí)
-  ano_documento = 2018 [Precisa de revisão] dados/institucional/cursos/paranavai/engenharia-de-software.json:18
+  ano_documento = 2018 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/paranavai/engenharia-de-software.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:paranavai/engenharia-eletrica — Engenharia Elétrica (bacharelado) (Paranavaí)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/paranavai/engenharia-eletrica.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/paranavai/engenharia-eletrica.json:18
   estagio_carga_h = 200 [extraido] base-conhecimento/institucional/ifpr/ppcs/paranavai/engenharia-eletrica.md:2123
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/paranavai/engenharia-eletrica.md:2123
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:paranavai/especializacao-em-gestao-da-qualidade-e-tecnologia-de-alimentos — Especialização em Gestão da Qualidade e Tecnologia de Alimentos (Paranavaí)
-  ano_documento = 2021 [Precisa de revisão] dados/institucional/cursos/paranavai/especializacao-em-gestao-da-qualidade-e-tecnologia-de-alimentos.json:18
+  ano_documento = 2021 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/paranavai/especializacao-em-gestao-da-qualidade-e-tecnologia-de-alimentos.json:18
   carga_horaria_total_h = 480 [extraido] base-conhecimento/institucional/ifpr/ppcs/paranavai/especializacao-em-gestao-da-qualidade-e-tecnologia-de-alimentos.md:113
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:paranavai/licenciatura-em-quimica — Licenciatura em Química (Paranavaí)
-  ano_documento = 2013 [Precisa de revisão] dados/institucional/cursos/paranavai/licenciatura-em-quimica.json:18
+  ano_documento = 2013 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/paranavai/licenciatura-em-quimica.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:paranavai/tecnico-em-agroindustria — Técnico em Agroindústria (Paranavaí)
-  ano_documento = 2016 [Pendente] dados/institucional/cursos/paranavai/tecnico-em-agroindustria.json:31
+  ano_documento = 2016 [Pendente] base-conhecimento/institucional/ifpr/cursos/paranavai/tecnico-em-agroindustria.json:31
   carga_horaria_total_h = 3537 [extraido] base-conhecimento/institucional/ifpr/ppcs/paranavai/tecnico-em-agroindustria.md:107
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/paranavai/tecnico-em-agroindustria.md:109
   SUAP ano: confere — anos das matrizes: 2017
   SUAP carga_horaria: confere — igual a matriz 60 (2017): 3537 h; matriz 897 (2017): 3537 h
   SUAP estagio: confere — matriz mais recente: 897 (2017)
 ppc:paranavai/tecnico-em-eletromecanica-subsequente — Técnico em Eletromecânica (Paranavaí)
-  ano_documento = 2020 [Precisa de revisão] dados/institucional/cursos/paranavai/tecnico-em-eletromecanica-subsequente.json:30
+  ano_documento = 2020 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/paranavai/tecnico-em-eletromecanica-subsequente.json:30
   carga_horaria_total_h = 1456 [extraido] base-conhecimento/institucional/ifpr/ppcs/paranavai/tecnico-em-eletromecanica-subsequente.md:52
   estagio_carga_h = 120 [extraido] base-conhecimento/institucional/ifpr/ppcs/paranavai/tecnico-em-eletromecanica-subsequente.md:52
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/paranavai/tecnico-em-eletromecanica-subsequente.md:52
@@ -1067,204 +1067,204 @@ ppc:paranavai/tecnico-em-eletromecanica-subsequente — Técnico em Eletromecân
   SUAP carga_horaria: explicada-pelo-estagio — difere de matriz 64 (2020): 1336 h exatamente pela carga do estágio obrigatório (120 h)
   SUAP estagio: confere — matriz mais recente: 64 (2020)
 ppc:paranavai/tecnico-em-informatica — Técnico em Informática (Paranavaí)
-  ano_documento = 2015 [Revisado] dados/institucional/cursos/paranavai/tecnico-em-informatica.json:31
+  ano_documento = 2015 [Revisado] base-conhecimento/institucional/ifpr/cursos/paranavai/tecnico-em-informatica.json:31
   carga_horaria_total_h = 3532 [extraido] base-conhecimento/institucional/ifpr/ppcs/paranavai/tecnico-em-informatica.md:76
   SUAP ano: confere — anos das matrizes: 2016
   SUAP carga_horaria: diverge — PPC 3532 h; mais próxima: matriz 62 (2016): 3536 h (diferença -4 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 900 (2016)
 ppc:paranavai/tecnico-em-mecatronica — Técnico em Mecatrônica (Paranavaí)
-  ano_documento = 2016 [Precisa de revisão] dados/institucional/cursos/paranavai/tecnico-em-mecatronica.json:31
+  ano_documento = 2016 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/paranavai/tecnico-em-mecatronica.json:31
   carga_horaria_total_h = 3532 [extraido] base-conhecimento/institucional/ifpr/ppcs/paranavai/tecnico-em-mecatronica.md:102
   SUAP ano: confere — anos das matrizes: 2017
   SUAP carga_horaria: diverge — PPC 3532 h; mais próxima: matriz 63 (2017): 3538 h (diferença -6 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 899 (2017)
 ppc:pinhais/bacharelado-em-administracao — Bacharelado em Administração (Pinhais)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/pinhais/bacharelado-em-administracao.json:18
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/pinhais/bacharelado-em-administracao.json:18
   carga_horaria_total_h = 3300 [extraido] base-conhecimento/institucional/ifpr/ppcs/pinhais/bacharelado-em-administracao.md:1023
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:pinhais/bacharelado-em-ciencia-da-computacao — Bacharelado em Ciência da Computação (Pinhais)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/pinhais/bacharelado-em-ciencia-da-computacao.json:18
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/pinhais/bacharelado-em-ciencia-da-computacao.json:18
   carga_horaria_total_h = 200 [extraido] base-conhecimento/institucional/ifpr/ppcs/pinhais/bacharelado-em-ciencia-da-computacao.md:1758
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:pinhais/tecnico-em-administracao-integrado-ao-ensino-medio — Técnico em Administração (Pinhais)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/pinhais/tecnico-em-administracao-integrado-ao-ensino-medio.json:30
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/pinhais/tecnico-em-administracao-integrado-ao-ensino-medio.json:30
   carga_horaria_total_h = 3742 [extraido] base-conhecimento/institucional/ifpr/ppcs/pinhais/tecnico-em-administracao-integrado-ao-ensino-medio.md:268
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/pinhais/tecnico-em-administracao-integrado-ao-ensino-medio.md:1161
   SUAP ano: confere — anos das matrizes: 2019, 2026
   SUAP carga_horaria: diverge — PPC 3742 h; mais próxima: matriz 821 (2019): 3809 h (diferença -67 h)
   SUAP estagio: confere — matriz mais recente: 797 (2026)
 ppc:pinhais/tecnico-em-informatica-integrado-ao-ensino-medio — Técnico em Informática (Pinhais)
-  ano_documento = 2018 [Precisa de revisão] dados/institucional/cursos/pinhais/tecnico-em-informatica-integrado-ao-ensino-medio.json:30
+  ano_documento = 2018 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/pinhais/tecnico-em-informatica-integrado-ao-ensino-medio.json:30
   carga_horaria_total_h = 3742 [extraido] base-conhecimento/institucional/ifpr/ppcs/pinhais/tecnico-em-informatica-integrado-ao-ensino-medio.md:129
   SUAP ano: confere — anos das matrizes: 2026
   SUAP carga_horaria: diverge — PPC 3742 h; mais próxima: matriz 798 (2026): 3347 h (diferença +395 h)
   SUAP estagio: sem-fato-ppc — estágio obrigatório não extraído do PPC; matriz mais recente: 798 (2026)
 ppc:pinhais/tecnologia-em-gestao-da-tecnologia-da-informacao — Tecnologia em Gestão da Tecnologia da Informação (Pinhais)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/pinhais/tecnologia-em-gestao-da-tecnologia-da-informacao.json:18
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/pinhais/tecnologia-em-gestao-da-tecnologia-da-informacao.json:18
   carga_horaria_total_h = 2240 [extraido] base-conhecimento/institucional/ifpr/ppcs/pinhais/tecnologia-em-gestao-da-tecnologia-da-informacao.md:96
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:pitanga/licenciatura-em-pedagogia — Licenciatura em Pedagogia (Pitanga)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/pitanga/licenciatura-em-pedagogia.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/pitanga/licenciatura-em-pedagogia.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:pitanga/licenciatura-em-quimica — Licenciatura em Química (Pitanga)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/pitanga/licenciatura-em-quimica.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/pitanga/licenciatura-em-quimica.json:18
   carga_horaria_total_h = 400 [extraido] base-conhecimento/institucional/ifpr/ppcs/pitanga/licenciatura-em-quimica.md:2612
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:pitanga/tecnico-em-alimentos — Técnico em Alimentos (Pitanga)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/pitanga/tecnico-em-alimentos.json:30
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/pitanga/tecnico-em-alimentos.json:30
   carga_horaria_total_h = 3600 [extraido] base-conhecimento/institucional/ifpr/ppcs/pitanga/tecnico-em-alimentos.md:590
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/pitanga/tecnico-em-alimentos.md:1389
   SUAP ano: confere — anos das matrizes: 2024
   SUAP carga_horaria: confere — igual a matriz 392 (2024): 3600 h
   SUAP estagio: confere — matriz mais recente: 392 (2024)
 ppc:pitanga/tecnico-em-cooperativismo — Técnico em Cooperativismo (Pitanga)
-  ano_documento = 2014 [Precisa de revisão] dados/institucional/cursos/pitanga/tecnico-em-cooperativismo.json:30
+  ano_documento = 2014 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/pitanga/tecnico-em-cooperativismo.json:30
   carga_horaria_total_h = 3600 [extraido] base-conhecimento/institucional/ifpr/ppcs/pitanga/tecnico-em-cooperativismo.md:118
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/pitanga/tecnico-em-cooperativismo.md:120
   SUAP ano: confere — anos das matrizes: 2018
   SUAP carga_horaria: confere — igual a matriz 28 (2018): 3600 h
   SUAP estagio: confere — matriz mais recente: 28 (2018)
 ppc:pitanga/tecnico-em-desenvolvimento-de-sistemas — Técnico em Desenvolvimento de Sistemas (Pitanga)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/pitanga/tecnico-em-desenvolvimento-de-sistemas.json:30
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/pitanga/tecnico-em-desenvolvimento-de-sistemas.json:30
   carga_horaria_total_h = 3510 [extraido] base-conhecimento/institucional/ifpr/ppcs/pitanga/tecnico-em-desenvolvimento-de-sistemas.md:551
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/pitanga/tecnico-em-desenvolvimento-de-sistemas.md:2258
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: confere — igual a matriz 828: 3510 h
   SUAP estagio: confere — matriz mais recente: 828
 ppc:pitanga/tecnologia-em-agroindustria — Tecnologia em Agroindústria (Pitanga)
-  ano_documento = 2018 [Precisa de revisão] dados/institucional/cursos/pitanga/tecnologia-em-agroindustria.json:18
+  ano_documento = 2018 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/pitanga/tecnologia-em-agroindustria.json:18
   estagio_carga_h = 130 [extraido] base-conhecimento/institucional/ifpr/ppcs/pitanga/tecnologia-em-agroindustria.md:242
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/pitanga/tecnologia-em-agroindustria.md:242
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:ponta-grossa/tecnico-em-informatica-integrado-ao-ensino-medio — Técnico em Informática (Ponta Grossa)
-  ano_documento = 2019 [Revisado] dados/institucional/cursos/ponta-grossa/tecnico-em-informatica-integrado-ao-ensino-medio.json:19
+  ano_documento = 2019 [Revisado] base-conhecimento/institucional/ifpr/cursos/ponta-grossa/tecnico-em-informatica-integrado-ao-ensino-medio.json:19
   carga_horaria_total_h = 3552 [extraido] base-conhecimento/institucional/ifpr/ppcs/ponta-grossa/tecnico-em-informatica-integrado-ao-ensino-medio.md:136
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/ponta-grossa/tecnico-em-informatica-integrado-ao-ensino-medio.md:138
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:quedas-do-iguacu/tecnico-em-informatica — Técnico em Informática (Quedas do Iguaçu)
-  ano_documento = 2018 [Precisa de revisão] dados/institucional/cursos/quedas-do-iguacu/tecnico-em-informatica.json:30
+  ano_documento = 2018 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/quedas-do-iguacu/tecnico-em-informatica.json:30
   carga_horaria_total_h = 3349 [extraido] base-conhecimento/institucional/ifpr/ppcs/quedas-do-iguacu/tecnico-em-informatica.md:121
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/quedas-do-iguacu/tecnico-em-informatica.md:123
   SUAP ano: confere — anos das matrizes: 2019
   SUAP carga_horaria: diverge — PPC 3349 h; mais próxima: matriz 80 (2019): 3301 h (diferença +48 h)
   SUAP estagio: confere — matriz mais recente: 80 (2019)
 ppc:quedas-do-iguacu/tecnico-em-meio-ambiente — Técnico em Meio Ambiente (Quedas do Iguaçu)
-  ano_documento = 2019 [Precisa de revisão] dados/institucional/cursos/quedas-do-iguacu/tecnico-em-meio-ambiente.json:30
+  ano_documento = 2019 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/quedas-do-iguacu/tecnico-em-meio-ambiente.json:30
   carga_horaria_total_h = 3253 [extraido] base-conhecimento/institucional/ifpr/ppcs/quedas-do-iguacu/tecnico-em-meio-ambiente.md:133
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/quedas-do-iguacu/tecnico-em-meio-ambiente.md:133
   SUAP ano: confere — anos das matrizes: 2020
   SUAP carga_horaria: confere — igual a matriz 201 (2020): 3253 h
   SUAP estagio: confere — matriz mais recente: 201 (2020)
 ppc:telemaco-borba/engenharia-eletrica — Engenharia Elétrica (Telêmaco Borba)
-  ano_documento = 2019 [Precisa de revisão] dados/institucional/cursos/telemaco-borba/engenharia-eletrica.json:18
+  ano_documento = 2019 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/telemaco-borba/engenharia-eletrica.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:telemaco-borba/licenciatura-em-fisica — Licenciatura em Física (Telêmaco Borba)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/telemaco-borba/licenciatura-em-fisica.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/telemaco-borba/licenciatura-em-fisica.json:18
   estagio_carga_h = 400 [extraido] base-conhecimento/institucional/ifpr/ppcs/telemaco-borba/licenciatura-em-fisica.md:1681
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/telemaco-borba/licenciatura-em-fisica.md:1681
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio — Técnico em Automação Industrial (Telêmaco Borba)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio.json:32
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio.json:32
   carga_horaria_total_h = 3200 [extraido] base-conhecimento/institucional/ifpr/ppcs/telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio.md:467
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/telemaco-borba/tecnico-em-automacao-industrial-integrado-ao-ensino-medio.md:114
   SUAP ano: confere — anos das matrizes: 2019, 2026
   SUAP carga_horaria: confere — igual a matriz 4 (2019): 3200 h; matriz 851 (2019): 3200 h; matriz 881 (2026): 3200 h
   SUAP estagio: confere — matriz mais recente: 881 (2026)
 ppc:telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio — Técnico em Informática para Internet (Telêmaco Borba)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json:32
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.json:32
   carga_horaria_total_h = 3200 [extraido] base-conhecimento/institucional/ifpr/ppcs/telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.md:427
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/telemaco-borba/tecnico-em-informatica-para-internet-integrado-ao-ensino-medio.md:108
   SUAP ano: confere — anos das matrizes: 2019, 2026
   SUAP carga_horaria: confere — igual a matriz 21 (2019): 3200 h; matriz 852 (2019): 3200 h; matriz 862 (2026): 3200 h
   SUAP estagio: confere — matriz mais recente: 862 (2026)
 ppc:telemaco-borba/tecnico-em-mecanica — Técnico em Mecânica (Telêmaco Borba)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/telemaco-borba/tecnico-em-mecanica.json:32
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-mecanica.json:32
   carga_horaria_total_h = 3200 [extraido] base-conhecimento/institucional/ifpr/ppcs/telemaco-borba/tecnico-em-mecanica.md:373
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/telemaco-borba/tecnico-em-mecanica.md:108
   SUAP ano: confere — anos das matrizes: 2019, 2026
   SUAP carga_horaria: confere — igual a matriz 26 (2019): 3200 h; matriz 863 (2026): 3200 h; matriz 853 (2019): 3200 h
   SUAP estagio: confere — matriz mais recente: 863 (2026)
 ppc:telemaco-borba/tecnico-em-programacao-de-jogos-digitais — Técnico em Programação de Jogos Digitais (Telêmaco Borba)
-  ano_documento = 2025 [Pendente] dados/institucional/cursos/telemaco-borba/tecnico-em-programacao-de-jogos-digitais.json:32
+  ano_documento = 2025 [Pendente] base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnico-em-programacao-de-jogos-digitais.json:32
   carga_horaria_total_h = 3200 [extraido] base-conhecimento/institucional/ifpr/ppcs/telemaco-borba/tecnico-em-programacao-de-jogos-digitais.md:395
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/telemaco-borba/tecnico-em-programacao-de-jogos-digitais.md:103
   SUAP ano: confere — anos das matrizes: 2018, 2026
   SUAP carga_horaria: confere — igual a matriz 17 (2018): 3200 h; matriz 854 (2018): 3200 h; matriz 864 (2026): 3200 h
   SUAP estagio: confere — matriz mais recente: 864 (2026)
 ppc:telemaco-borba/tecnologia-em-manutencao-industrial — Tecnologia em Manutenção Industrial (Telêmaco Borba)
-  ano_documento = 2025 [Precisa de revisão] dados/institucional/cursos/telemaco-borba/tecnologia-em-manutencao-industrial.json:18
+  ano_documento = 2025 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/telemaco-borba/tecnologia-em-manutencao-industrial.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:umuarama/bacharelado-em-arquitetura-e-urbanismo — Bacharelado em Arquitetura e Urbanismo (Umuarama)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/umuarama/bacharelado-em-arquitetura-e-urbanismo.json:18
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/umuarama/bacharelado-em-arquitetura-e-urbanismo.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:umuarama/licenciatura-em-ciencias-biologicas — Licenciatura em Ciências Biológicas (Umuarama)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/umuarama/licenciatura-em-ciencias-biologicas.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/umuarama/licenciatura-em-ciencias-biologicas.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:umuarama/licenciatura-em-quimica — Licenciatura em Química (Umuarama)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/umuarama/licenciatura-em-quimica.json:18
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/umuarama/licenciatura-em-quimica.json:18
   estagio_carga_h = 200 [extraido] base-conhecimento/institucional/ifpr/ppcs/umuarama/licenciatura-em-quimica.md:557
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/umuarama/licenciatura-em-quimica.md:557
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:umuarama/tecnico-em-edificacoes-integrado-ao-ensino-medio — Técnico em Edificações (Umuarama)
-  ano_documento = 2018 [Precisa de revisão] dados/institucional/cursos/umuarama/tecnico-em-edificacoes-integrado-ao-ensino-medio.json:31
+  ano_documento = 2018 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/umuarama/tecnico-em-edificacoes-integrado-ao-ensino-medio.json:31
   carga_horaria_total_h = 3789 [extraido] base-conhecimento/institucional/ifpr/ppcs/umuarama/tecnico-em-edificacoes-integrado-ao-ensino-medio.md:79
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/umuarama/tecnico-em-edificacoes-integrado-ao-ensino-medio.md:81
   SUAP ano: ppc-mais-recente-que-matrizes — nenhuma matriz do SUAP é de 2018 ou posterior (anos: 2016)
   SUAP carga_horaria: confere — igual a matriz 12 (2016): 3789 h; matriz 872 (2016): 3789 h
   SUAP estagio: confere — matriz mais recente: 872 (2016)
 ppc:umuarama/tecnico-em-informatica-integrado-ao-ensino-medio — Técnico em Informática (Umuarama)
-  ano_documento = 2014 [Precisa de revisão] dados/institucional/cursos/umuarama/tecnico-em-informatica-integrado-ao-ensino-medio.json:31
+  ano_documento = 2014 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/umuarama/tecnico-em-informatica-integrado-ao-ensino-medio.json:31
   carga_horaria_total_h = 3533 [extraido] base-conhecimento/institucional/ifpr/ppcs/umuarama/tecnico-em-informatica-integrado-ao-ensino-medio.md:79
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/umuarama/tecnico-em-informatica-integrado-ao-ensino-medio.md:81
   SUAP ano: confere — anos das matrizes: 2015
   SUAP carga_horaria: diverge — PPC 3533 h; mais próxima: matriz 49 (2015): 3545 h (diferença -12 h)
   SUAP estagio: confere — matriz mais recente: 873 (2015)
 ppc:umuarama/tecnico-em-quimica-integrado-ao-ensino-medio — Técnico em Química (Umuarama)
-  ano_documento = 2014 [Precisa de revisão] dados/institucional/cursos/umuarama/tecnico-em-quimica-integrado-ao-ensino-medio.json:31
+  ano_documento = 2014 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/umuarama/tecnico-em-quimica-integrado-ao-ensino-medio.json:31
   carga_horaria_total_h = 3645 [extraido] base-conhecimento/institucional/ifpr/ppcs/umuarama/tecnico-em-quimica-integrado-ao-ensino-medio.md:87
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/umuarama/tecnico-em-quimica-integrado-ao-ensino-medio.md:89
   SUAP ano: confere — anos das matrizes: 2014
   SUAP carga_horaria: diverge — PPC 3645 h; mais próxima: matriz 57 (2014): 3683 h (diferença -38 h)
   SUAP estagio: confere — matriz mais recente: 874 (2014)
 ppc:umuarama/tecnologia-em-analise-e-desenvolvimento-de-sistemas — Tecnologia em Análise e Desenvolvimento de Sistemas (Umuarama)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/umuarama/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/umuarama/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json:18
   estagio_obrigatorio = nao [extraido] base-conhecimento/institucional/ifpr/ppcs/umuarama/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md:1061
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:umuarama/tecnologia-em-gestao-do-agronegocio — Tecnologia em Gestão do Agronegócio (Umuarama)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/umuarama/tecnologia-em-gestao-do-agronegocio.json:18
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/umuarama/tecnologia-em-gestao-do-agronegocio.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:uniao-da-vitoria/bacharelado-em-agronomia — Bacharelado em Agronomia (União da Vitória)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/uniao-da-vitoria/bacharelado-em-agronomia.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/uniao-da-vitoria/bacharelado-em-agronomia.json:18
   carga_horaria_total_h = 4206 [extraido] base-conhecimento/institucional/ifpr/ppcs/uniao-da-vitoria/bacharelado-em-agronomia.md:111
   estagio_carga_h = 366 [extraido] base-conhecimento/institucional/ifpr/ppcs/uniao-da-vitoria/bacharelado-em-agronomia.md:107
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/uniao-da-vitoria/bacharelado-em-agronomia.md:107
@@ -1272,12 +1272,12 @@ ppc:uniao-da-vitoria/bacharelado-em-agronomia — Bacharelado em Agronomia (Uni�
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:uniao-da-vitoria/especializacao-em-educacao-ciencia-e-tecnologia — Especialização em Educação, Ciência e Tecnologia (União da Vitória)
-  ano_documento = 2023 [Precisa de revisão] dados/institucional/cursos/uniao-da-vitoria/especializacao-em-educacao-ciencia-e-tecnologia.json:18
+  ano_documento = 2023 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/uniao-da-vitoria/especializacao-em-educacao-ciencia-e-tecnologia.json:18
   SUAP ano: sem-suap — sem matriz do SUAP com ano
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio — Técnico em Informática (União da Vitória)
-  ano_documento = 2025 [Revisado] dados/institucional/cursos/uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio.json:30
+  ano_documento = 2025 [Revisado] base-conhecimento/institucional/ifpr/cursos/uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio.json:30
   carga_horaria_total_h = 3300 [extraido] base-conhecimento/institucional/ifpr/ppcs/uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio.md:104
   estagio_carga_h = 70 [extraido] base-conhecimento/institucional/ifpr/ppcs/uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio.md:1109
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio.md:1109
@@ -1285,7 +1285,7 @@ ppc:uniao-da-vitoria/tecnico-em-informatica-integrado-ao-ensino-medio — Técni
   SUAP carga_horaria: confere-com-uma-matriz — igual a matriz 463 (2024): 3300 h; o SUAP tem matrizes com CH diferentes (matriz 15 (2015): 3264 h; matriz 463 (2024): 3300 h)
   SUAP estagio: confere — matriz mais recente: 463 (2024)
 ppc:uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja — Técnico em Manutenção e Suporte em Informática PROEJA (União da Vitória)
-  ano_documento = 2016 [Precisa de revisão] dados/institucional/cursos/uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja.json:19
+  ano_documento = 2016 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja.json:19
   carga_horaria_total_h = 2400 [extraido] base-conhecimento/institucional/ifpr/ppcs/uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja.md:77
   estagio_carga_h = 100 [extraido] base-conhecimento/institucional/ifpr/ppcs/uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja.md:79
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja.md:79
@@ -1293,14 +1293,14 @@ ppc:uniao-da-vitoria/tecnico-em-manutencao-e-suporte-em-informatica-proeja — T
   SUAP carga_horaria: sem-suap — curso sem matriz no SUAP
   SUAP estagio: sem-suap — curso sem matriz no SUAP
 ppc:uniao-da-vitoria/tecnico-em-meio-ambiente-integrado-ao-ensino-medio — Técnico em Meio Ambiente (União da Vitória)
-  ano_documento = 2022 [Revisado] dados/institucional/cursos/uniao-da-vitoria/tecnico-em-meio-ambiente-integrado-ao-ensino-medio.json:30
+  ano_documento = 2022 [Revisado] base-conhecimento/institucional/ifpr/cursos/uniao-da-vitoria/tecnico-em-meio-ambiente-integrado-ao-ensino-medio.json:30
   estagio_carga_h = 120 [extraido] base-conhecimento/institucional/ifpr/ppcs/uniao-da-vitoria/tecnico-em-meio-ambiente-integrado-ao-ensino-medio.md:154
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/uniao-da-vitoria/tecnico-em-meio-ambiente-integrado-ao-ensino-medio.md:154
   SUAP ano: confere — anos das matrizes: 2019, 2024
   SUAP carga_horaria: sem-fato-ppc — carga horária total não extraída do PPC
   SUAP estagio: confere — matriz mais recente: 462 (2024)
 ppc:uniao-da-vitoria/tecnologia-em-analise-e-desenvolvimento-de-sistemas — Tecnologia em Analise e Desenvolvimento de Sistemas (União da Vitória)
-  ano_documento = 2022 [Precisa de revisão] dados/institucional/cursos/uniao-da-vitoria/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json:18
+  ano_documento = 2022 [Precisa de revisão] base-conhecimento/institucional/ifpr/cursos/uniao-da-vitoria/tecnologia-em-analise-e-desenvolvimento-de-sistemas.json:18
   estagio_carga_h = 120 [extraido] base-conhecimento/institucional/ifpr/ppcs/uniao-da-vitoria/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md:2170
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/uniao-da-vitoria/tecnologia-em-analise-e-desenvolvimento-de-sistemas.md:2170
   SUAP ano: sem-suap — sem matriz do SUAP com ano

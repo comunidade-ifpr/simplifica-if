@@ -224,9 +224,7 @@ function lerColecao<T>(
     const resultado = decodificarRegistro(bruto);
     if (Result.isFailure(resultado)) {
       for (const problema of problemas(resultado.failure.issue)) {
-        erros.push(
-          `${PREFIXO}/${relativo}: ${caminhoTexto(problema.caminho) || "(raiz)"}: ${problema.mensagem}`,
-        );
+        erros.push(`${PREFIXO}/${relativo}: ${caminhoTexto(problema.caminho) || "(raiz)"}: ${problema.mensagem}`);
       }
       continue;
     }

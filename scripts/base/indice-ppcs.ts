@@ -9,12 +9,7 @@
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { type CaminhosBase, listarDiretorio, naBase, relativo } from "./caminhos.ts";
-import {
-  ehObjeto,
-  jsonCompacto,
-  jsonIndentado,
-  textoDe,
-} from "@simplifica-if/kb/json";
+import { ehObjeto, jsonCompacto, jsonIndentado, textoDe } from "@simplifica-if/kb/json";
 import { analisarPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import {
   LIMITE_PREVIEW_SECAO,

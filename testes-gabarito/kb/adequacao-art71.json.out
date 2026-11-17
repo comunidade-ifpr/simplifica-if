@@ -1,5 +1,5 @@
 {
-  "criterio": "Cursos de dados/institucional/cursos/ com nível 'médio' e situação ativo ou em_oferta. Indicador: a DCN da EPT mais recente citada no PPC convertido (citações resolvidas por resolverCitacao, inclusive a DCN de 2021 com órgão trocado).",
+  "criterio": "Cursos de institucional/ifpr/cursos/ com nível 'médio' e situação ativo ou em_oferta. Indicador: a DCN da EPT mais recente citada no PPC convertido (citações resolvidas por resolverCitacao, inclusive a DCN de 2021 com órgão trocado).",
   "total": 112,
   "totais": {
     "cita-cne-cp-2-2026": 0,

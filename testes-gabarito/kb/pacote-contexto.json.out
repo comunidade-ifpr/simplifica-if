@@ -68,6 +68,10 @@
           "papel": "fundamento"
         }
       ],
+      "execucao": {
+        "modo": "J",
+        "justificativa": "Julgamento da IA: progressão explicitada."
+      },
       "ancoras_semanticas": [
         "Progressão formativa explicitada na organização curricular",
         "Matriz curricular, integralização e componentes",
@@ -488,7 +492,7 @@
         "status_curadoria": "Pendente",
         "regra": "dados-institucionais",
         "trecho_fonte": "\"ano_documento\": 2023,",
-        "path": "dados/institucional/cursos/curitiba/tecnico-em-enfermagem.json",
+        "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-enfermagem.json",
         "linha": 30,
         "alternativas": []
       },
@@ -539,7 +543,7 @@
           "ch_exibida_h": 1820,
           "ch_estagio_h": null,
           "trecho": "71 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2020 CURITIBA — CH exibida: 1820 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-enfermagem.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-enfermagem.json",
           "linha": 18,
           "estagio_exigido": false
         },
@@ -549,7 +553,7 @@
           "ch_exibida_h": 1600,
           "ch_estagio_h": null,
           "trecho": "538 — TÉCNICO EM ENFERMAGEM SUBSEQUENTE - 2024 CURITIBA — CH exibida: 1600 h; estágio exigido: Não; CH mínima de estágio (separada): -",
-          "path": "dados/institucional/cursos/curitiba/tecnico-em-enfermagem.json",
+          "path": "base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-enfermagem.json",
           "linha": 18,
           "estagio_exigido": false
         }
@@ -580,7 +584,7 @@
     ]
   },
   "tamanho": {
-    "caracteres": 57952,
+    "caracteres": 58122,
     "secoes": 6,
     "caracteres_secoes": 21239,
     "caracteres_ppc_inteiro": 255014

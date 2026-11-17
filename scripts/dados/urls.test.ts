@@ -1,14 +1,15 @@
 import { describe, expect, test } from "vite-plus/test";
 import { ehUrlAssinada, limparUrlsAssinadas, RE_URL_ASSINADA, semAssinatura } from "./urls.ts";
 
-const ASSINADA = "https://s3.sa-east-1.amazonaws.com/suap-prod/edu/ppc/PPC.pdf?AWSAccessKeyId=AKIAEXEMPLO&Signature=abc%3D&Expires=1780059125";
+const ASSINADA =
+  "https://s3.sa-east-1.amazonaws.com/suap-prod/edu/ppc/PPC.pdf?AWSAccessKeyId=AKIAEXEMPLO&Signature=abc%3D&Expires=1780059125";
 
 describe("URLs pré-assinadas", () => {
   test("reconhece a assinatura do S3 (v2 e v4) e deixa as demais URLs", () => {
     expect(ehUrlAssinada(ASSINADA)).toBe(true);
-    expect(ehUrlAssinada("https://bucket.s3.amazonaws.com/a.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=f")).toBe(
-      true,
-    );
+    expect(
+      ehUrlAssinada("https://bucket.s3.amazonaws.com/a.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Signature=f"),
+    ).toBe(true);
     expect(ehUrlAssinada("https://ifpr.edu.br/x.pdf?page=2")).toBe(false);
     expect(ehUrlAssinada("texto com Signature=1")).toBe(false);
   });

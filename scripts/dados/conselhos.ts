@@ -229,5 +229,7 @@ export function verificarIndiceConselhos(dados: Conselhos, raiz: string = RAIZ_D
   const destino = ARQUIVO_INDICE_CONSELHOS(raiz);
   const atual = NodeFS.existsSync(destino) ? NodeFS.readFileSync(destino, "utf-8") : null;
   if (atual === textoRegistro(montarIndiceConselhos(dados))) return [];
-  return [`${PREFIXO}/${ARQUIVO_INDICE} ${atual === null ? "ausente" : "desatualizado"}; rode node scripts/gerar_base.ts`];
+  return [
+    `${PREFIXO}/${ARQUIVO_INDICE} ${atual === null ? "ausente" : "desatualizado"}; rode node scripts/gerar_base.ts`,
+  ];
 }

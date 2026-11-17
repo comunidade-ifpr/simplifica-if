@@ -31,7 +31,8 @@ function validarColecao(ctx: Contexto, manifest: unknown, id: string, path: stri
   const colecao = ctx.colecao(manifest, "colecoes", id);
   if (colecao === undefined) return [];
   if (colecao === null) return [`institucional_manifest.json: coleção ${id} ausente`];
-  if (!valoresIguais(colecao.path, path)) return [`institucional_manifest.json: path da coleção ${id} deve ser ${path}`];
+  if (!valoresIguais(colecao.path, path))
+    return [`institucional_manifest.json: path da coleção ${id} deve ser ${path}`];
   const carregado = ctx.carregarJson(naBase(ctx.c, path), `índice da coleção ${id}`);
   if (!carregado.ok) return carregado.erros;
   if (!TOTAL_DO_INDICE.has(id)) return [];
@@ -48,7 +49,8 @@ export function validarInstitucional(ctx: Contexto): string[] {
   const carregado = ctx.carregarJson(ctx.c.manifestInstitucional, "institucional_manifest.json");
   if (!carregado.ok) return carregado.erros;
   const manifest = carregado.valor;
-  if (!ehRecebido<ManifestInstitucionalJson>(manifest)) return ["institucional_manifest.json deve conter um objeto JSON"];
+  if (!ehRecebido<ManifestInstitucionalJson>(manifest))
+    return ["institucional_manifest.json deve conter um objeto JSON"];
   const { erros } = ctx.conferirSchema(manifest, "manifestInstitucional", "institucional_manifest.json");
   if (!Array.isArray(manifest.colecoes) || !manifest.colecoes.length) {
     erros.push("institucional_manifest.json: colecoes deve ser lista não vazia");

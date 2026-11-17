@@ -1,5 +1,5 @@
 ppc:curitiba/tecnico-em-enfermagem — Técnico em Enfermagem (Curitiba)
-  ano_documento = 2023 [Pendente] dados/institucional/cursos/curitiba/tecnico-em-enfermagem.json:30
+  ano_documento = 2023 [Pendente] base-conhecimento/institucional/ifpr/cursos/curitiba/tecnico-em-enfermagem.json:30
   carga_horaria_total_h = 1600 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:122
   estagio_carga_h = 400 [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:126
   estagio_obrigatorio = sim [extraido] base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:126

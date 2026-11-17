@@ -71,9 +71,7 @@ describe("novidades", () => {
 
   it("todas as fontes do kb.sqlite estão classificadas como publicáveis; uma nova falha", () => {
     expect(fontesNaoClassificadas(arquivosFonte(RAIZ))).toEqual([]);
-    expect(fontesNaoClassificadas(["tmp/rascunho.json"])).toEqual([
-      "tmp/rascunho.json",
-    ]);
+    expect(fontesNaoClassificadas(["tmp/rascunho.json"])).toEqual(["tmp/rascunho.json"]);
   });
 });
 

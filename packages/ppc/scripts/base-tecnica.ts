@@ -33,7 +33,9 @@ export function ppcsTecnicos(raiz: string = raizRepositorio()): PpcDaBase[] {
   };
   const saida: PpcDaBase[] = [];
   // O index.json da coleção fica ao lado das pastas de campus.
-  const campi = NodeFS.readdirSync(dirCursos).filter((nome) => NodeFS.statSync(NodePath.join(dirCursos, nome)).isDirectory());
+  const campi = NodeFS.readdirSync(dirCursos).filter((nome) =>
+    NodeFS.statSync(NodePath.join(dirCursos, nome)).isDirectory(),
+  );
   for (const campus of campi.sort())
     for (const nome of NodeFS.readdirSync(NodePath.join(dirCursos, campus)).sort()) {
       if (!nome.endsWith(".json")) continue;

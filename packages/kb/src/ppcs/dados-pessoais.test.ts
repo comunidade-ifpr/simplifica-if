@@ -13,8 +13,14 @@ const CASOS: Array<[entrada: string, saida: string]> = [
     "portador da cédula de Identidade nº 1234567 e CPF 111 444 777-35, no uso",
     "portador da cédula de Identidade nº [RG omitido] e CPF [CPF omitido], no uso",
   ],
-  ["portador do RG n° 12.345.678 SSP-SP e CPF n° 529.982.247-25,", "portador do RG n° [RG omitido] SSP-SP e CPF n° [CPF omitido],"],
-  ["Carteira de Identidade 12345678-9 SSP/PR, CPF 529.982.247-25,", "Carteira de Identidade [RG omitido] SSP/PR, CPF [CPF omitido],"],
+  [
+    "portador do RG n° 12.345.678 SSP-SP e CPF n° 529.982.247-25,",
+    "portador do RG n° [RG omitido] SSP-SP e CPF n° [CPF omitido],",
+  ],
+  [
+    "Carteira de Identidade 12345678-9 SSP/PR, CPF 529.982.247-25,",
+    "Carteira de Identidade [RG omitido] SSP/PR, CPF [CPF omitido],",
+  ],
   ["CPF nº 111 444 777 35 resolvem", "CPF nº [CPF omitido] resolvem"],
   // Sem rótulo, só o número formatado com dígito válido.
   ["inscrito sob 529.982.247-25.", "inscrito sob [CPF omitido]."],
