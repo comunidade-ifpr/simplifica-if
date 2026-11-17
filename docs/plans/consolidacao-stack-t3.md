@@ -219,7 +219,7 @@ O gabarito é regerado só por decisão explícita. Exemplo: uma correção de r
 | `instrucoes.md` vira um módulo gerado, `packages/mcp/src/instrucoes.gerado.ts` (`export const INSTRUCOES = "…"`), por `pnpm mcp:instrucoes`, com `--check` nos testes | plugin de texto: um por ferramenta (Node, vitest, tsdown, bundler do fork); `node:sea` `getAsset`: não funciona quando o fork empacota o pacote |
 | Executável por `vp pack` com `exe` (tsdown), como o `build:exe` do T3, num script `packages/mcp/scripts/construir-executavel.ts` | `postject` à mão: o T3 já resolveu assinatura, alvos e chunk único com o tsdown |
 | `node:sqlite` (`DatabaseSync`) direto, sem Effect ainda | `better-sqlite3`: módulo nativo, que o SEA não carrega sem `node_modules` ao lado |
-| `.repos/effect` fora do git (`.gitignore`), trazido por `pnpm sync:repos` na tag `effect@4.1.3`, com sparse checkout de `packages/effect/src`, `LLMS.md`, `MIGRATION.md` e `ai-docs/` | versionar como o T3: dezenas de MB no histórico de um repositório de base de conhecimento |
+| `.repos/effect` versionado como no T3 (revisto em 17/11/2026): o repositório do Effect inteiro na tag `effect@<catalog>`, sem `.git`, por `pnpm sync:repos`; CI com sparse checkout sem `.repos/` | fora do git com recorte (`packages/effect/src`, `LLMS.md`, `MIGRATION.md`, `ai-docs/`), como até 17/11/2026: cada checkout novo precisava de rede e do `sync:repos` para os agentes terem a referência |
 | Comando curto de agentes: `pnpm kb …` | `node packages/kb/src/cli.ts …`: longo demais para os documentos |
 
 **Equivalências**

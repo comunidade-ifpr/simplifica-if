@@ -1,0 +1,2 @@
+# Código de referência do Effect (pnpm sync:repos): não conta como código do projeto no GitHub.
+.repos/** linguist-vendored

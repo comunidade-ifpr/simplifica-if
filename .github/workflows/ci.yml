@@ -8,6 +8,7 @@
 #   artefato.
 #
 # Nenhum segredo e nenhum acesso a Notion, SEI ou SUAP: os testes que precisam deles se pulam sozinhos.
+# Os checkouts pulam .repos/ (código de referência do Effect, versionado), como no T3 Code.
 name: CI
 
 on:
@@ -29,6 +30,11 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            /*
+            !/.repos/
+          sparse-checkout-cone-mode: false
 
       - uses: ./.github/actions/preparar
 
@@ -115,6 +121,11 @@ jobs:
         run: git config --global core.autocrlf false
 
       - uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            /*
+            !/.repos/
+          sparse-checkout-cone-mode: false
 
       - uses: ./.github/actions/preparar
 
