@@ -79,7 +79,9 @@ describe("catálogo de skills", () => {
           arquivos: [{ caminho: "ref.md", conteudo: "referência" }],
         },
       ]);
-      assert.deepStrictEqual(catalogo.resumos, [{ nome: "boa", titulo: "Título", resumo: "Resumo.", area: "ensino" }]);
+      assert.deepStrictEqual(catalogo.resumos, [
+        { nome: "boa", titulo: "Título", resumo: "Resumo.", area: "ensino", publico: [], entradas: [], etapas: [] },
+      ]);
 
       const erros = logs.filter((linha) => linha.startsWith("Error"));
       assert.strictEqual(erros.length, 3);

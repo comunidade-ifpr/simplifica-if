@@ -23,6 +23,8 @@
  * provider morre) e fecha o servidor MCP.
  */
 import * as NodeHttp from "node:http";
+import * as NodeFSP from "node:fs/promises";
+import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeHttpServer from "@effect/platform-node/NodeHttpServer";
@@ -39,7 +41,7 @@ import { RpcSerialization, RpcServer } from "effect/rpc";
 import { CAMINHO_INGRESSO, CAMINHO_LIBERAR_ARQUIVO, CAMINHO_RPC, GrupoApp } from "@simplifica-if/contratos-app";
 import type { Canal } from "@simplifica-if/mcp/contratos";
 import * as McpHttp from "@simplifica-if/mcp/http";
-import { layerLeitura } from "@simplifica-if/mcp/rpc";
+import { layerLeitura, Leitura } from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
 import * as Atualizador from "./Atualizador.ts";
 import type { Abertura } from "@simplifica-if/atualizacao/local";
@@ -48,6 +50,7 @@ import * as Autenticacao from "./Autenticacao.ts";
 import * as CatalogoSkills from "./CatalogoSkills.ts";
 import * as Conversas from "./Conversas.ts";
 import * as Handlers from "./handlers.ts";
+import * as PastasTrabalho from "./PastasTrabalho.ts";
 import * as Banco from "./persistencia/Banco.ts";
 import * as Historico from "./persistencia/Historico.ts";
 import * as AnalisePpc from "./revisao-ppc/AnalisePpc.ts";
@@ -95,6 +98,18 @@ export interface Opcoes {
    */
   readonly tokenDesktop?: Redacted.Redacted<string>;
   /**
+   * A raiz das pastas de tarefa (M1.9): `Documentos/Simplifica IF`. Sem ela (testes), uma pasta
+   * temporária que some com o servidor.
+   */
+  readonly pastaTrabalhos?: string;
+  /**
+   * Onde ficam as cópias da pasta antes de cada turno (o "Desfazer"): `copias/` ao lado do banco das
+   * conversas; sem banco, uma pasta temporária.
+   */
+  readonly pastaCopias?: string;
+  /** Limites das cópias e dos anexos (`PastasTrabalho.LIMITES`); os testes os apertam. */
+  readonly limitesPasta?: Partial<PastasTrabalho.Limites>;
+  /**
    * Atualização da base e das skills (M1.10), montada pela CLI depois de `prepararAbertura`. Sem ela,
    * o serviço responde como desligado (`atualizacao.estado`), com o motivo.
    */
@@ -122,8 +137,12 @@ const layerAtualizador = (opcoes: Opcoes) =>
       const ia = yield* RevisaoIa.RevisaoIa;
       const conversas = yield* Conversas.Conversas;
       const catalogo = yield* CatalogoSkills.CatalogoSkills;
+      const pastas = yield* PastasTrabalho.PastasTrabalho;
+      // A troca reinicia o servidor: espera análise, revisão com IA, conversa respondendo (as de
+      // tarefa do M1.9 incluídas: são conversas com `tarefa`) e o Desfazer ou a cópia da pasta.
       const ocupado = Effect.gen(function* () {
         if (yield* analise.ocupada) return true;
+        if (yield* pastas.emAndamento) return true;
         if ((yield* ia.listar).some((revisao) => revisao.situacao === "em_andamento")) return true;
         return (yield* conversas.listar).some((conversa) => conversa.estado === "respondendo");
       });
@@ -142,6 +161,29 @@ const layerAtualizador = (opcoes: Opcoes) =>
         }),
         versoesSkills: catalogo.versoes,
         ocupado,
+      });
+    }),
+  );
+
+/** As pastas de tarefa e das cópias: as dadas, ou temporárias (removidas com o servidor). */
+const layerPastas = (opcoes: Opcoes) =>
+  Layer.unwrap(
+    Effect.gen(function* () {
+      const temporaria = (prefixo: string) =>
+        Effect.acquireRelease(
+          Effect.promise(() => NodeFSP.mkdtemp(NodePath.join(NodeOS.tmpdir(), prefixo))),
+          (pasta) => Effect.promise(() => NodeFSP.rm(pasta, { recursive: true, force: true })),
+        );
+      const raiz = opcoes.pastaTrabalhos ?? (yield* temporaria("simplifica-trabalhos-"));
+      const copias =
+        opcoes.pastaCopias ??
+        (opcoes.bancoConversas === undefined
+          ? yield* temporaria("simplifica-copias-")
+          : NodePath.join(NodePath.dirname(opcoes.bancoConversas), "copias"));
+      return PastasTrabalho.layer({
+        raiz,
+        copias,
+        ...(opcoes.limitesPasta === undefined ? {} : { limites: opcoes.limitesPasta }),
       });
     }),
   );
@@ -232,13 +274,27 @@ export const layer = (opcoes: Opcoes) => {
   const porta = opcoes.porta ?? 0;
   const canal = opcoes.canal ?? "dev";
   // Um `Leitura` só (uma conexão ao `kb.sqlite`) para o MCP HTTP e para o RPC de leitura.
-  const leitura = layerLeitura({ banco: opcoes.banco, canal });
+  // No app, a ferramenta `etapa` é registrada: a interface a lê nos eventos da conversa (M1.9).
+  const leitura = Layer.effect(
+    Leitura,
+    Effect.gen(function* () {
+      const servico = yield* Leitura;
+      return Leitura.of({
+        ...servico,
+        etapa: Effect.fn("Leitura.etapa")(function* (entrada: Parameters<typeof servico.etapa>[0]) {
+          const resposta = yield* servico.etapa(entrada);
+          return { ...resposta, dados: { registrado: true } };
+        }),
+      });
+    }),
+  ).pipe(Layer.provideMerge(layerLeitura({ banco: opcoes.banco, canal })));
   const mcp = McpHttp.layerSobreLeitura(opcoes.portaMcp ? { porta: opcoes.portaMcp } : {});
   const banco = opcoes.bancoConversas === undefined ? Banco.layerMemoria : Banco.layerArquivo(opcoes.bancoConversas);
   const nucleo = Conversas.layer({
     ...(opcoes.ociosidade === undefined ? {} : { ociosidade: opcoes.ociosidade }),
     ...(opcoes.prazoInterrupcao === undefined ? {} : { prazoInterrupcao: opcoes.prazoInterrupcao }),
   }).pipe(
+    Layer.provideMerge(layerPastas(opcoes)),
     Layer.provideMerge(ListaViva.layer(opcoes.listaViva)),
     Layer.provideMerge(RevisaoIa.layer(opcoes.revisaoIa)),
     Layer.provideMerge(Revisoes.layer.pipe(Layer.provide(banco))),

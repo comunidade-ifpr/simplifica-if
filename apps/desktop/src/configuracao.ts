@@ -34,7 +34,12 @@ export const VARIAVEIS = {
   banco: "SIMPLIFICA_KB",
   /** O feed da atualização no lugar do da política; no desenvolvimento, liga a atualização. */
   feed: "SIMPLIFICA_ATUALIZACAO_FEED",
+  /** A raiz das pastas de tarefa, no lugar de `Documentos/Simplifica IF`. */
+  trabalhos: "SIMPLIFICA_TRABALHOS",
 } as const;
+
+/** O nome da pasta das tarefas dentro de Documentos. */
+export const PASTA_TAREFAS = "Simplifica IF";
 
 export interface Entrada {
   readonly empacotado: boolean;
@@ -46,6 +51,8 @@ export interface Entrada {
   readonly pastaAplicacao: string;
   /** `app.getPath("userData")`. */
   readonly pastaApp: string;
+  /** `app.getPath("documents")`: a pasta Documentos da pessoa. */
+  readonly pastaDocumentos: string;
   /** `process.execPath`: o executável do Electron. */
   readonly executavel: string;
   readonly ambiente: Readonly<Record<string, string | undefined>>;
@@ -64,6 +71,8 @@ export interface Configuracao {
   readonly pastaEstado: string;
   /** `--pasta-skills`; `undefined` se a pasta não existe. */
   readonly pastaSkills: string | undefined;
+  /** `--pasta-trabalhos`: `Documentos/Simplifica IF`, onde cada tarefa ganha a sua pasta (M1.9). */
+  readonly pastaTrabalhos: string;
   readonly interface: Interface;
   /** A URL que a janela abre. */
   readonly urlJanela: string;
@@ -131,6 +140,9 @@ export function resolverConfiguracao(entrada: Entrada): Configuracao {
     pastaAtualizacao,
     pastaEstado: entrada.pastaApp,
     pastaSkills: entrada.existe(pastaSkills) ? pastaSkills : undefined,
+    pastaTrabalhos: NodePath.resolve(
+      definida(ambiente[VARIAVEIS.trabalhos]) ?? NodePath.join(entrada.pastaDocumentos, PASTA_TAREFAS),
+    ),
     interface: interfaceApp,
     urlJanela,
     origens: [new URL(urlJanela).protocol === `${ESQUEMA}:` ? ORIGEM_APP : new URL(urlJanela).origin],

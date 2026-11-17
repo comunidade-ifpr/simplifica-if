@@ -17,11 +17,14 @@ declare module "vite-plus/test/browser" {
     /** Sobe o `test/servidor-teste.ts` aceitando a origem da página; definido no `vite.config.ts`. */
     iniciarServidorTeste: (atrasoLogin: number) => Promise<ServidorTeste>;
     pararServidoresTeste: () => Promise<void>;
+    /** Grava `texto` num arquivo de uma pasta de tarefa, como a pessoa editando fora da conversa. */
+    editarArquivoDeTarefa: (caminho: string, texto: string) => Promise<void>;
   }
 }
 
 export const iniciarServidorTeste = (atrasoLogin = 1500) => commands.iniciarServidorTeste(atrasoLogin);
 export const pararServidoresTeste = () => commands.pararServidoresTeste();
+export const editarArquivoDeTarefa = (caminho: string, texto: string) => commands.editarArquivoDeTarefa(caminho, texto);
 
 /** Monta o app conectado ao servidor; `Symbol.asyncDispose` desmonta e fecha a conexão. */
 export async function montarApp(servidor: ServidorTeste, rota = "/") {

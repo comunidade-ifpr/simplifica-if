@@ -94,12 +94,17 @@ interface PonteDesktop {
   escolherDocx?(): Promise<string | null>;                     // diálogo de arquivo, só .docx; null se cancelar
   abrirDocumento?(caminho: string): Promise<void>;             // abre no Word a cópia comentada (só ela)
   mostrarNaPasta?(caminho: string): Promise<void>;             // mostra a cópia comentada no Finder/Explorador
+  escolherAnexo?(extensoes?: string[]): Promise<string | null>; // diálogo de anexo, só documentos; libera no servidor
+  abrirArquivoTarefa?(caminho: string): Promise<void>;         // abre um documento de Documentos/Simplifica IF/<tarefa>/
+  mostrarArquivoTarefa?(caminho: string): Promise<void>;       // mostra um arquivo da pasta da tarefa
   reiniciarServidor?(): Promise<void>;                          // reinicia o servidor (troca da base, M1.10)
   atualizacaoApp?(): Promise<EstadoAtualizacaoApp>;             // estado do electron-updater
   procurarAtualizacaoApp?(): Promise<EstadoAtualizacaoApp>;
   instalarAtualizacaoApp?(): Promise<void>;                     // "Reiniciar para atualizar"
 }
 ```
+
+**Pasta das tarefas (M1.9).** O processo principal passa ao servidor `--pasta-trabalhos` com `Documentos/Simplifica IF` (`app.getPath("documents")`; `SIMPLIFICA_TRABALHOS` troca no desenvolvimento). `escolherAnexo` abre o diálogo só com extensões de documento (`EXTENSOES_DOCUMENTO`: Word, ODF, PDF, Markdown, texto, planilhas, apresentações, JSON, imagens), confere a extensão de novo e libera o arquivo no servidor, que o copia para a pasta da tarefa. `abrirArquivoTarefa` e `mostrarArquivoTarefa` só aceitam um arquivo pelo menos dois níveis abaixo da raiz (`<raiz>/<tarefa>/…`), com caminho normalizado, sem parte oculta (`.simplifica/`), arquivo comum e com o caminho real dentro da raiz (`arquivoDeTarefaPermitido` de `src/seguranca.ts`); "Abrir" ainda exige extensão de documento, porque a IA escreve na pasta e "Abrir" não pode virar "rodar" (`.command`, `.exe`, `.html` ficam só com "Mostrar na pasta").
 
 **Revisão prévia de PPC (M1.11).** `escolherDocx` abre o diálogo com o filtro `.docx` e confere a extensão de novo (o filtro pode ser contornado com "Todos os arquivos"); o processo principal guarda os arquivos escolhidos nesta execução. Depois do diálogo, o processo principal libera o arquivo no servidor (`POST /revisao-ppc/liberar` com o `tokenDesktop`, um segundo segredo gerado a cada partida e passado só no envelope), e o servidor só analisa arquivos liberados. `abrirDocumento` (`shell.openPath`) e `mostrarNaPasta` (`shell.showItemInFolder`) só aceitam a cópia comentada de um deles: mesma pasta, `<nome> - revisão prévia (Simplifica IF).docx` ou com ` (2)` a ` (99)`, caminho normalizado e arquivo comum (não link, não pasta), por `copiaComentadaPermitida` de `src/seguranca.ts`. Assim a interface não abre outro arquivo do computador por esse caminho.
 

@@ -1,6 +1,6 @@
 /**
- * "Configurações › Atualizações" (M1.10), como componente isolado: a tela de Configurações do Modo
- * Servidor (M1.9) o monta na seção dela; até lá, a rota provisória `/atualizacoes` o mostra.
+ * "Configurações › Atualizações" (M1.10): a seção `#atualizacoes` da tela de Configurações do Modo
+ * Servidor (M1.9, `routes/configuracoes.tsx`).
  *
  * - **Base e skills** (servidor, `atualizacao.*`): versões em uso, canal (beta ou estável), "Procurar
  *   agora", "Usar agora" (reinicia o servidor local, que troca a base na abertura; recusado enquanto
@@ -85,7 +85,7 @@ export function Atualizacoes() {
     });
 
   return (
-    <section aria-labelledby="titulo-atualizacoes" className="flex flex-col gap-5">
+    <section id="atualizacoes" aria-labelledby="titulo-atualizacoes" className="flex flex-col gap-5">
       <h2 id="titulo-atualizacoes" className="font-semibold text-xl">
         Atualizações
       </h2>

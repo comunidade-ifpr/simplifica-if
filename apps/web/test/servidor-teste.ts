@@ -78,11 +78,20 @@ inserirNormas(banco);
 const ppc = NodePath.join(pasta, "PPC de teste.docx");
 NodeFS.writeFileSync(ppc, ppcSintetico());
 
+/** Um documento para anexar às tarefas (Modo Servidor). */
+const parecer = NodePath.join(pasta, "parecer.md");
+NodeFS.writeFileSync(parecer, "# Parecer\n\nO estágio é obrigatório, conforme a Res. CNE/CP nº 1/2021.\n");
+/** A raiz das pastas de tarefa (no app, Documentos/Simplifica IF). */
+const pastaTrabalhos = NodePath.join(diretorioTemporario("simplifica-web-tarefas-"), "Simplifica IF");
+
 const camada = Servidor.layer({
   banco,
   token: Redacted.make(token),
   porta: Number(opcoes.porta),
   origens: opcoes.origem,
+  // As skills do app do checkout (os cartões de tarefa e as etapas).
+  pastaSkills: NodePath.resolve(import.meta.dirname, "../../../.agents/skills"),
+  pastaTrabalhos,
 }).pipe(
   Layer.provide(Demonstracao.layer({ atrasoLogin: Duration.millis(Number(opcoes["atraso-login"])) })),
   Layer.provide(NodeServices.layer),
@@ -92,7 +101,15 @@ const programa = Effect.gen(function* () {
   yield* Effect.addFinalizer(() => Effect.sync(limparTemporarios));
   const app = yield* Servidor.ServidorApp;
   yield* Console.log(
-    JSON.stringify({ porta: app.porta, urlServidor: `http://127.0.0.1:${app.porta}`, token, pasta, ppc }),
+    JSON.stringify({
+      porta: app.porta,
+      urlServidor: `http://127.0.0.1:${app.porta}`,
+      token,
+      pasta,
+      ppc,
+      parecer,
+      pastaTrabalhos,
+    }),
   );
   return yield* Effect.never;
 }).pipe(Effect.scoped, Effect.provide(camada), Effect.provideService(Logger.LogToStderr, true));

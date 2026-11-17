@@ -16,9 +16,11 @@ import type {
   EstadoConversa as EstadoGravado,
   Evento,
   ItemConversa,
+  NotaResposta,
   Provider,
 } from "@simplifica-if/contratos-app";
 import { explicarErroDoTurno, type MensagemErro } from "../conexao/erros.ts";
+import { ehFerramentaEtapa, type MarcaEtapa, marcaDaEntrada } from "./etapas.ts";
 
 /**
  * Um item da conversa. `chave` é da interface e única na conversa (a chave do React); `id`, nas
@@ -34,6 +36,8 @@ export type Item =
       readonly nome: string;
       readonly situacao: "andamento" | "concluida" | "falhou";
       readonly resumo?: string;
+      /** A marca da ferramenta `etapa` (o indicador de etapas da tarefa). */
+      readonly etapa?: MarcaEtapa;
     }
   | {
       readonly tipo: "aprovacao";
@@ -89,6 +93,10 @@ export interface EstadoConversa {
   readonly uso?: UsoTokens;
   /** Contador das chaves dos itens. */
   readonly proximoId: number;
+  /** A tarefa da conversa (o nome da skill, ou `conversa`), quando ela nasceu de uma. */
+  readonly tarefa?: string;
+  /** As avaliações (👍/👎) das respostas, por turno. */
+  readonly avaliacoes: Readonly<Record<number, NotaResposta>>;
 }
 
 export const estadoInicial = (provider: Provider = "claude", pastaTrabalho = ""): EstadoConversa => ({
@@ -98,12 +106,15 @@ export const estadoInicial = (provider: Provider = "claude", pastaTrabalho = "")
   ordem: 0,
   itens: [],
   proximoId: 1,
+  avaliacoes: {},
 });
 
 export type Acao =
   | { readonly tipo: "escolher"; readonly provider?: Provider; readonly pastaTrabalho?: string }
   | { readonly tipo: "iniciando" }
-  | { readonly tipo: "iniciada"; readonly sessao: string }
+  | { readonly tipo: "iniciada"; readonly sessao: string; readonly tarefa?: string }
+  /** 👍/👎 na resposta do turno (`null` retira). */
+  | { readonly tipo: "avaliada"; readonly turno: number; readonly nota: NotaResposta | null }
   | { readonly tipo: "naoIniciou"; readonly erro: MensagemErro }
   | { readonly tipo: "enviada"; readonly texto: string }
   | { readonly tipo: "evento"; readonly evento: Evento }
@@ -188,16 +199,21 @@ export function aplicarEvento(estado: EstadoConversa, evento: Evento): EstadoCon
       const item = estado.itens[aberta] as Extract<Item, { tipo: "resposta" }>;
       return trocar(estado, aberta, { ...item, texto: evento.texto, final: true });
     }
-    case "FerramentaIniciada":
+    case "FerramentaIniciada": {
+      const etapa = ehFerramentaEtapa(evento.nome) ? marcaDaEntrada(evento.entrada) : undefined;
       return comItem(estado, (chave) => ({
         tipo: "ferramenta",
         chave,
         id: evento.id,
         nome: evento.nome,
         situacao: "andamento",
+        ...(etapa === undefined ? {} : { etapa }),
       }));
+    }
     case "FerramentaConcluida": {
       const indice = estado.itens.findLastIndex((item) => item.tipo === "ferramenta" && item.id === evento.id);
+      const anterior = estado.itens[indice];
+      const etapa = anterior?.tipo === "ferramenta" ? anterior.etapa : undefined;
       const concluida = (chave: string): Item => ({
         tipo: "ferramenta",
         chave,
@@ -205,6 +221,7 @@ export function aplicarEvento(estado: EstadoConversa, evento: Evento): EstadoCon
         nome: evento.nome,
         situacao: evento.falhou ? "falhou" : "concluida",
         resumo: evento.resumo,
+        ...(etapa === undefined ? {} : { etapa }),
       });
       return indice < 0 ? comItem(estado, concluida) : trocar(estado, indice, concluida(estado.itens[indice]!.chave));
     }
@@ -268,6 +285,8 @@ export function estadoDaConversa(gravada: ConversaGravada): EstadoConversa {
     sessao: conversa.id,
     titulo: conversa.titulo,
     estadoServidor: conversa.estado,
+    ...(conversa.tarefa === undefined ? {} : { tarefa: conversa.tarefa }),
+    avaliacoes: Object.fromEntries(gravada.avaliacoes.map((avaliacao) => [avaliacao.turno, avaliacao.nota])),
   };
   const montado = gravada.itens.reduce(aplicarItem, inicial);
   if (conversa.estado === "respondendo") return { ...montado, fase: "respondendo" };
@@ -298,7 +317,16 @@ export function reduzir(estado: EstadoConversa, acao: Acao): EstadoConversa {
       return { ...resto, fase: "iniciando" };
     }
     case "iniciada":
-      return { ...estado, fase: "pronta", sessao: acao.sessao };
+      return {
+        ...estado,
+        fase: "pronta",
+        sessao: acao.sessao,
+        ...(acao.tarefa === undefined ? {} : { tarefa: acao.tarefa }),
+      };
+    case "avaliada": {
+      const { [acao.turno]: _anterior, ...outras } = estado.avaliacoes;
+      return { ...estado, avaliacoes: acao.nota === null ? outras : { ...outras, [acao.turno]: acao.nota } };
+    }
     case "abrindo":
       return { ...estadoInicial(estado.provider, estado.pastaTrabalho), fase: "carregando", sessao: acao.sessao };
     case "carregada":
@@ -360,16 +388,69 @@ const ROTULOS_FERRAMENTA: Readonly<Record<string, string>> = {
   pacote_contexto: "Contexto da análise de PPC",
   resolver_citacoes: "Identificar citações",
   sobre_a_base: "Sobre a base",
+  // As nativas dos providers que mais aparecem (Claude, Codex, Antigravity).
+  Write: "Gravar arquivo",
+  Edit: "Alterar arquivo",
+  MultiEdit: "Alterar arquivo",
+  NotebookEdit: "Alterar arquivo",
+  Read: "Ler arquivo",
+  Glob: "Procurar arquivos",
+  Grep: "Procurar nos arquivos",
+  Bash: "Rodar comando",
+  apply_patch: "Alterar arquivo",
+  write_file: "Gravar arquivo",
+  read_file: "Ler arquivo",
+  run_command: "Rodar comando",
+  shell: "Rodar comando",
+  // Os nomes do Codex e os `kind` do ACP (Antigravity).
+  comando: "Rodar comando",
+  editar_arquivos: "Alterar arquivos",
+  edit: "Alterar arquivo",
+  delete: "Apagar arquivo",
+  move: "Mover arquivo",
+  execute: "Rodar comando",
+  read: "Ler arquivo",
+  search: "Procurar nos arquivos",
+  fetch: "Consultar a internet",
+  WebFetch: "Consultar a internet",
+  WebSearch: "Consultar a internet",
 };
 
+/** Pelo jeito do nome, quando a ferramenta não está na lista (as nativas mudam de nome entre versões). */
+const ROTULOS_POR_PADRAO: ReadonlyArray<readonly [RegExp, string]> = [
+  [/write|create.?file|save|gravar|escrev/i, "Gravar arquivo"],
+  [/edit|patch|replace|alter|change/i, "Alterar arquivo"],
+  [/delete|remove|unlink|apagar/i, "Apagar arquivo"],
+  [/bash|shell|command|exec|terminal|run/i, "Rodar comando"],
+  [/web|fetch|browse|http|url/i, "Consultar a internet"],
+  [/read|view|open|cat|ler/i, "Ler arquivo"],
+  [/grep|glob|search|find|list/i, "Procurar nos arquivos"],
+];
+
 /**
- * O nome de uma ferramenta para a pessoa: as do MCP `ifpr` (`ifpr.buscar_norma`, `mcp__ifpr__…`) pelo
- * rótulo; as outras, sem o servidor e com espaços no lugar de `_`.
+ * O nome de uma ferramenta para a pessoa: as do MCP `ifpr` (`ifpr.buscar_norma`, `mcp__ifpr__…`) e as
+ * nativas mais comuns pelo rótulo; as nativas desconhecidas pelo padrão do nome ("Gravar arquivo",
+ * "Rodar comando"); o resto, sem o servidor e com espaços no lugar de `_`.
  */
+
+/**
+ * O nome de uma ação no pedido de permissão: o rótulo, ou "uma ação no computador" quando o nome não
+ * diz nada à pessoa (nunca o nome técnico).
+ */
+export function rotuloAprovacao(nome: string): string {
+  const semServidor = nome.replace(/^mcp__[^_]+__/, "").replace(/^[\w-]+\./, "");
+  if (ROTULOS_FERRAMENTA[semServidor] !== undefined) return ROTULOS_FERRAMENTA[semServidor]!;
+  return ROTULOS_POR_PADRAO.find(([regra]) => regra.test(semServidor))?.[1] ?? "uma ação no computador";
+}
+
 export function rotuloFerramenta(nome: string): string {
   const semServidor = nome.replace(/^mcp__[^_]+__/, "").replace(/^[\w-]+\./, "");
   const conhecido = ROTULOS_FERRAMENTA[semServidor];
   if (conhecido !== undefined) return conhecido;
+  // As do `ifpr` sem rótulo e as de outros servidores ficam legíveis; as nativas, pelo padrão do nome.
+  const nativa = !/^mcp__|^[\w-]+\./.test(nome);
+  const padrao = nativa ? ROTULOS_POR_PADRAO.find(([regra]) => regra.test(semServidor))?.[1] : undefined;
+  if (padrao !== undefined) return padrao;
   const legivel = semServidor.replace(/[_-]+/g, " ").trim();
   return legivel.length === 0 ? nome : `${legivel[0]!.toUpperCase()}${legivel.slice(1)}`;
 }

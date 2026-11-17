@@ -12,6 +12,7 @@ import {
   GrupoAtualizacao,
   GrupoConversa,
   GrupoLeitura,
+  GrupoPasta,
   GrupoProviders,
   GrupoRevisaoPpc,
   GrupoSkills,
@@ -22,9 +23,15 @@ const decodificarEnvelope = Schema.decodeUnknownEffect(Schema.fromJsonString(Env
 describe("contratos do app", () => {
   it("o GrupoApp tem os métodos dos seis grupos", () => {
     const metodos = [...GrupoApp.requests.keys()];
-    const partes = [GrupoProviders, GrupoConversa, GrupoSkills, GrupoRevisaoPpc, GrupoAtualizacao, GrupoLeitura].map(
-      (grupo) => [...grupo.requests.keys()],
-    );
+    const partes = [
+      GrupoProviders,
+      GrupoConversa,
+      GrupoSkills,
+      GrupoPasta,
+      GrupoRevisaoPpc,
+      GrupoAtualizacao,
+      GrupoLeitura,
+    ].map((grupo) => [...grupo.requests.keys()]);
     assert.strictEqual(metodos.length, partes.flat().length);
     assert.includeMembers(metodos, [
       "providers.detectar",
@@ -35,7 +42,12 @@ describe("contratos do app", () => {
       "conversa.responderAprovacao",
       "conversa.interromper",
       "conversa.encerrar",
+      "conversa.avaliar",
       "skills.listar",
+      "pasta.criar",
+      "pasta.anexar",
+      "pasta.ver",
+      "pasta.desfazer",
       "revisaoPpc.analisar",
       "atualizacao.estado",
       "atualizacao.procurar",

@@ -1,9 +1,11 @@
 /**
  * O aviso "Base atualizada" (M1.10): depois que o servidor abre com uma base nova, a lista de novidades
  * da versão (de `base-conhecimento/novidades.yaml`, levada pelo manifesto). Some quando a pessoa
- * fecha; o servidor guarda que ela viu. Componente isolado, montado na moldura das telas.
+ * fecha; o servidor guarda que ela viu. Fica no Início, logo abaixo da data da base, e leva a
+ * Configurações › Atualizações.
  */
 import type { EstadoAtualizacao } from "@simplifica-if/contratos-app";
+import { Link } from "@tanstack/react-router";
 import { XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert.tsx";
@@ -50,6 +52,9 @@ export function AvisoBaseAtualizada() {
             ))}
           </ul>
         )}
+        <Link to="/configuracoes" hash="atualizacoes" className="text-sm underline underline-offset-2">
+          Versões e canal em Configurações › Atualizações
+        </Link>
       </AlertDescription>
     </Alert>
   );

@@ -12,10 +12,12 @@ import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
 import {
+  type AvaliacaoResposta,
   Decisao,
   type EstadoConversa,
   Evento,
   type ItemConversa,
+  type NotaResposta,
   type Provider,
   type ResumoConversa,
 } from "@simplifica-if/contratos-app";
@@ -37,6 +39,7 @@ export interface NovaConversa {
   readonly buscaWeb?: boolean;
   readonly idNativo?: string;
   readonly estado: EstadoConversa;
+  readonly tarefa?: string;
 }
 
 export interface Alteracao {
@@ -61,6 +64,13 @@ export class Historico extends Context.Service<
     readonly apagar: (id: string) => Effect.Effect<void>;
     /** As conversas que o banco dá como abertas (`pronta`, `respondendo`), de uma execução anterior. */
     readonly abertas: Effect.Effect<ReadonlyArray<RegistroConversa>>;
+    /** Grava (ou, com `null`, retira) a avaliação da resposta do turno. */
+    readonly avaliar: (conversa: string, turno: number, nota: NotaResposta | null) => Effect.Effect<void>;
+    readonly avaliacoes: (conversa: string) => Effect.Effect<ReadonlyArray<AvaliacaoResposta>>;
+    /** Registra um arquivo que entrou na pasta pelo "Anexar" do app. */
+    readonly registrarAnexo: (pasta: string, nome: string) => Effect.Effect<void>;
+    /** Os nomes (relativos à pasta) dos arquivos anexados pelo app. */
+    readonly anexos: (pasta: string) => Effect.Effect<ReadonlySet<string>>;
   }
 >()("@simplifica-if/server/persistencia/Historico") {}
 
@@ -77,6 +87,7 @@ interface LinhaConversa {
   readonly atualizada_em: string;
   readonly turnos: number | null;
   readonly ultima_ordem: number | null;
+  readonly tarefa: string | null;
 }
 
 interface LinhaEvento {
@@ -109,6 +120,7 @@ const paraRegistro = (linha: LinhaConversa): RegistroConversa => ({
   criadaEm: linha.criada_em,
   atualizadaEm: linha.atualizada_em,
   ultimaOrdem: linha.ultima_ordem ?? 0,
+  ...(linha.tarefa === null ? {} : { tarefa: linha.tarefa }),
 });
 
 const agora = Effect.map(DateTime.now, DateTime.formatIso);
@@ -128,10 +140,10 @@ const make = Effect.gen(function* () {
   const criar = Effect.fn("Historico.criar")(function* (conversa: NovaConversa) {
     const data = yield* agora;
     yield* sql`
-      INSERT INTO conversas (id, provider, pasta_trabalho, modelo, busca_web, id_nativo, estado, criada_em, atualizada_em)
+      INSERT INTO conversas (id, provider, pasta_trabalho, modelo, busca_web, id_nativo, estado, tarefa, criada_em, atualizada_em)
       VALUES (${conversa.id}, ${conversa.provider}, ${conversa.pastaTrabalho}, ${conversa.modelo ?? null},
         ${conversa.buscaWeb === undefined ? null : conversa.buscaWeb ? 1 : 0}, ${conversa.idNativo ?? null},
-        ${conversa.estado}, ${data}, ${data})
+        ${conversa.estado}, ${conversa.tarefa ?? null}, ${data}, ${data})
     `;
   }, Effect.orDie);
 
@@ -207,7 +219,56 @@ const make = Effect.gen(function* () {
     yield* sql`DELETE FROM conversas WHERE id = ${id}`;
   }, Effect.orDie);
 
-  return Historico.of({ criar, buscar, listar, alterar, gravar, itens, abertas, apagar });
+  const avaliar = Effect.fn("Historico.avaliar")(function* (
+    conversa: string,
+    turno: number,
+    nota: NotaResposta | null,
+  ) {
+    if (nota === null) {
+      yield* sql`DELETE FROM avaliacoes WHERE conversa_id = ${conversa} AND turno = ${turno}`;
+      return;
+    }
+    const data = yield* agora;
+    yield* sql`
+      INSERT INTO avaliacoes (conversa_id, turno, nota, avaliada_em) VALUES (${conversa}, ${turno}, ${nota}, ${data})
+      ON CONFLICT (conversa_id, turno) DO UPDATE SET nota = excluded.nota, avaliada_em = excluded.avaliada_em
+    `;
+  }, Effect.orDie);
+
+  const avaliacoes = Effect.fn("Historico.avaliacoes")(function* (conversa: string) {
+    const linhas = yield* sql<{ readonly turno: number; readonly nota: string }>`
+      SELECT turno, nota FROM avaliacoes WHERE conversa_id = ${conversa} ORDER BY turno
+    `;
+    return linhas.map((linha): AvaliacaoResposta => ({ turno: linha.turno, nota: linha.nota as NotaResposta }));
+  }, Effect.orDie);
+
+  const registrarAnexo = Effect.fn("Historico.registrarAnexo")(function* (pasta: string, nome: string) {
+    const data = yield* agora;
+    yield* sql`
+      INSERT INTO anexos_pasta (pasta, nome, anexado_em) VALUES (${pasta}, ${nome}, ${data})
+      ON CONFLICT (pasta, nome) DO UPDATE SET anexado_em = excluded.anexado_em
+    `;
+  }, Effect.orDie);
+
+  const anexos = Effect.fn("Historico.anexos")(function* (pasta: string) {
+    const linhas = yield* sql<{ readonly nome: string }>`SELECT nome FROM anexos_pasta WHERE pasta = ${pasta}`;
+    return new Set(linhas.map((linha) => linha.nome)) as ReadonlySet<string>;
+  }, Effect.orDie);
+
+  return Historico.of({
+    criar,
+    buscar,
+    listar,
+    alterar,
+    gravar,
+    itens,
+    abertas,
+    apagar,
+    avaliar,
+    avaliacoes,
+    registrarAnexo,
+    anexos,
+  });
 });
 
 /** Pede o `SqlClient` do banco das conversas (`Banco.layerArquivo` ou `Banco.layerMemoria`). */

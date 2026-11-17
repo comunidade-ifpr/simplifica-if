@@ -2,7 +2,7 @@
  * A CLI do servidor local (`effect/cli`), carregada pelo `bin.ts` fora do caminho rápido da ponte MCP.
  *
  *   node apps/server/src/bin.ts --banco tmp/kb.sqlite [--porta 0] [--porta-mcp 0] [--pasta-estado <dir>]
- *        [--origem app://simplifica]… [--canal dev|beta|estavel] [--pasta-skills <dir>]
+ *        [--origem app://simplifica]… [--canal dev|beta|estavel] [--pasta-skills <dir>] [--pasta-trabalhos <dir>]
  *        [--pasta-atualizacao <dir>] [--feed-atualizacao <url>] [--chave-atualizacao <base64>] [--versao-app 0.1.0]
  *
  * Com `--pasta-atualizacao` (M1.10), antes de abrir a base, o servidor atende a troca pendente na pasta
@@ -74,6 +74,12 @@ const pastaSkillsPadrao = Effect.gen(function* () {
   return (yield* fs.exists(pasta).pipe(Effect.orElseSucceed(() => false))) ? pasta : undefined;
 });
 
+/** A raiz das pastas de tarefa: `Documentos/Simplifica IF` (o desktop passa a do sistema). */
+const pastaTrabalhosPadrao = Effect.gen(function* () {
+  const path = yield* Path.Path;
+  return path.join(yield* HostProcess.HomeDirectory, "Documents", "Simplifica IF");
+});
+
 const servidor = Command.make(
   "simplifica-servidor",
   {
@@ -106,6 +112,13 @@ const servidor = Command.make(
         "pasta das skills do app (as com bloco simplifica: no SKILL.md); padrão no desenvolvimento: .agents/skills do checkout (ou SIMPLIFICA_SKILLS)",
       ),
       Flag.withFallbackConfig(Config.String("SIMPLIFICA_SKILLS")),
+      Flag.optional,
+    ),
+    pastaTrabalhos: Flag.String("pasta-trabalhos").pipe(
+      Flag.withDescription(
+        "raiz das pastas de tarefa; padrão: Documents/Simplifica IF na pasta pessoal (ou SIMPLIFICA_TRABALHOS)",
+      ),
+      Flag.withFallbackConfig(Config.String("SIMPLIFICA_TRABALHOS")),
       Flag.optional,
     ),
     pastaAtualizacao: Flag.String("pasta-atualizacao").pipe(
@@ -167,6 +180,9 @@ const servidor = Command.make(
       const pastaSkillsDada = Option.getOrUndefined(opcoes.pastaSkills);
       const pastaSkills =
         pastaSkillsDada === undefined ? yield* pastaSkillsPadrao : path.resolve(yield* expandHomePath(pastaSkillsDada));
+      const pastaTrabalhos = path.resolve(
+        yield* expandHomePath(Option.getOrUndefined(opcoes.pastaTrabalhos) ?? (yield* pastaTrabalhosPadrao)),
+      );
       const drivers = Drivers.layerNode({
         ambiente,
         pastaEstado,
@@ -189,6 +205,7 @@ const servidor = Command.make(
               ? opcoes.canal
               : (lerEstado(atualizacao.pasta).canal ?? atualizacao.canalPadrao),
           bancoConversas: path.join(pastaEstado, Banco.ARQUIVO_BANCO),
+          pastaTrabalhos,
           ...(pastaSkills === undefined ? {} : { pastaSkills }),
           ...(atualizacao === undefined ? {} : { atualizacao }),
         }).pipe(Layer.provide(drivers)),

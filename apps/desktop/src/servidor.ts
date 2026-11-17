@@ -97,6 +97,8 @@ export interface OpcoesInicio {
   readonly pastaAtualizacao?: string | undefined;
   /** `--versao-app`: a versão do app, para o `app_minimo` do manifesto. */
   readonly versaoApp?: string | undefined;
+  /** `--pasta-trabalhos`: a raiz das pastas de tarefa (`Documentos/Simplifica IF`). */
+  readonly pastaTrabalhos?: string | undefined;
   /** Origens da janela aceitas no WebSocket e no `POST /ingresso`. */
   readonly origens: ReadonlyArray<string>;
   readonly token: string;
@@ -142,6 +144,7 @@ export function montarInicio(opcoes: OpcoesInicio): Inicio {
       ...(opcoes.pastaSkills === undefined ? [] : ["--pasta-skills", opcoes.pastaSkills]),
       ...(opcoes.pastaAtualizacao === undefined ? [] : ["--pasta-atualizacao", opcoes.pastaAtualizacao]),
       ...(opcoes.versaoApp === undefined ? [] : ["--versao-app", opcoes.versaoApp]),
+      ...(opcoes.pastaTrabalhos === undefined ? [] : ["--pasta-trabalhos", opcoes.pastaTrabalhos]),
     ],
     ambiente,
     cwd: opcoes.cwd,

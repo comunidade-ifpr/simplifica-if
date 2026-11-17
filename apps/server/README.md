@@ -24,6 +24,7 @@ SIMPLIFICA_SERVIDOR_TOKEN=$(openssl rand -base64 32) \
 | `--pasta-estado <dir>` | `SIMPLIFICA_ESTADO`; no macOS, `~/Library/Application Support/simplifica-if` | CLIs gerenciadas e perfil do Antigravity; fora de repositórios |
 | `--origem <origem>` | nenhuma | origem de navegador aceita no WebSocket (repetível) |
 | `--canal dev\|beta\|estavel` | `dev` | canal da base quando o banco não registra um |
+| `--pasta-trabalhos <dir>` | `SIMPLIFICA_TRABALHOS`; `~/Documents/Simplifica IF` (o desktop passa a pasta Documentos do sistema) | a raiz das pastas de tarefa (ver [Pasta de trabalho e Desfazer](#pasta-de-trabalho-e-desfazer-m19)) |
 | `--pasta-skills <dir>` | `SIMPLIFICA_SKILLS`; rodando do código-fonte, `.agents/skills` do checkout; no bundle, nenhuma | as skills do app (ver [Skills do app](#skills-do-app)) |
 
 - **Token:** pela variável `SIMPLIFICA_SERVIDOR_TOKEN` ou, como o desktop vai fazer, pela primeira linha do stdin, um `EnvelopePartida` em JSON: `{"token": "<32+ caracteres>", "origens": ["app://…"]}`. Nunca pela linha de comando. O servidor tira a variável do ambiente antes de abrir os providers.
@@ -38,7 +39,7 @@ SIMPLIFICA_SERVIDOR_TOKEN=$(openssl rand -base64 32) \
 | providers | `providers.detectar({ provider })` | `EstadoProvider`, com `podeInstalar` e `podeEntrar` (o driver tem `instalar`, `entrar`) |
 | | `providers.instalar({ provider })` | stream de `EstadoInstalacao` |
 | | `providers.entrar({ provider })` | stream de `EstadoLogin` |
-| conversa | `conversa.iniciar({ provider, pastaTrabalho, modelo?, buscaWeb? })` | `{ sessao }`; já com o MCP `ifpr` ligado |
+| conversa | `conversa.iniciar({ provider, pastaTrabalho, modelo?, buscaWeb?, tarefa? })` | `{ sessao }`; já com o MCP `ifpr` ligado. `tarefa`: a skill da tarefa (ou `conversa`); no primeiro turno, o servidor diz à IA qual skill seguir |
 | | `conversa.enviar({ sessao, texto })` | stream de `Evento` até `FimTurno` |
 | | `conversa.responderAprovacao({ sessao, aprovacao, decisao })` | — |
 | | `conversa.interromper({ sessao })`, `conversa.encerrar({ sessao })` | — |
@@ -46,7 +47,11 @@ SIMPLIFICA_SERVIDOR_TOKEN=$(openssl rand -base64 32) \
 | | `conversa.carregar({ sessao })` | `ConversaGravada`: o resumo e o histórico (`ItemConversa`: mensagens, eventos e decisões, com `ordem`) |
 | | `conversa.acompanhar({ sessao, depois })` | stream dos itens depois de `depois` e, se há turno em andamento, dos que chegam até o `FimTurno` |
 | | `conversa.retomar({ sessao })` | `ResumoConversa`; reabre a sessão do provider sem mandar mensagem |
-| skills | `skills.listar({})` | `ResumoSkill[]` (`nome`, `titulo`, `resumo`, `area`), em ordem alfabética do nome; para os futuros cartões da tela inicial |
+| | `conversa.avaliar({ sessao, turno, nota })` | 👍/👎 (`util`, `nao_util`; `null` retira) da resposta do turno; `conversa.carregar` devolve as `avaliacoes` |
+| skills | `skills.listar({})` | `ResumoSkill[]` (`nome`, `titulo`, `resumo`, `area`, `publico`, `entradas`, `etapas`, `duracaoEstimada`), em ordem alfabética do nome; os cartões e o formulário da tarefa |
+| pasta | `pasta.criar({ titulo })` | `{ pasta }`: `Documentos/Simplifica IF/<título>`, nome seguro, sem colisão |
+| | `pasta.anexar({ pasta, arquivo })` | `ArquivoPasta`: a cópia, na pasta da tarefa, de um arquivo liberado pelo desktop |
+| | `pasta.ver({ sessao })`, `pasta.desfazer({ sessao })` | `PastaConversa`: os arquivos (`anexado` ou `pasta`) e a previsão do Desfazer; `desfazer` restaura e devolve a pasta depois (recusa com turno em andamento) |
 | revisão de PPC | `revisaoPpc.analisar({ arquivo, cnct?, forma? })` | `ResultadoRevisaoPpc`: o caminho da cópia comentada, o curso considerado, as pendências (com tema, estado, o que fazer, trecho, fontes legíveis e onde ficou o comentário) e os critérios conferidos; erro `FalhaRevisaoPpc` com a frase para a pessoa |
 | revisão com IA | `revisaoPpc.prepararIa({ arquivo, provider, modo, modelo?, cnct?, forma? })` | `EstadoRevisaoIa` `preparada`: os blocos e a estimativa (tokens, minutos, % da janela, US$ equivalentes no Claude); nada vai ao provider |
 | | `revisaoPpc.iniciarIa({ revisao })`, `revisaoPpc.pausarIa({ revisao })` | começa ou retoma (só os blocos pendentes); pausa (os prontos ficam gravados) |
@@ -86,6 +91,20 @@ O `CatalogoSkills` (`src/CatalogoSkills.ts`) lê a `--pasta-skills` uma vez, na 
 - Uma skill editada só vale depois de reiniciar o servidor. No app, as skills chegam pela atualização (M1.10): o catálogo lê também a pasta baixada (`<pasta do app>/skills/<versao>/`) e fica, de cada skill, com a de `simplifica.versao` maior; no empate, a empacotada.
 
 Hoje é uma: `verificar-fundamentacao-normativa`.
+
+## Pasta de trabalho e Desfazer (M1.9)
+
+`src/PastasTrabalho.ts`. Cada tarefa ganha uma pasta em `<--pasta-trabalhos>/<título>` (`nomeSeguro`: sem `<>:"/\|?*` nem controle, sem ponto ou espaço nas pontas, até 60 caracteres, nome reservado do Windows vira "Tarefa"; colisão vira ` (2)`, ` (3)`…). A pasta é *gerida* quando o caminho real é filho direto da raiz real; só as geridas têm lista, anexos e cópias. A conversa com uma pasta escolhida à mão (a tela técnica) segue sem elas.
+
+- **Anexar:** o desktop libera o arquivo escolhido no diálogo (`CAMINHO_LIBERAR_ARQUIVO`, a mesma liberação da revisão prévia); o servidor só copia arquivo liberado, comum (não link), de até 50 MB, sem sobrescrever. Os anexos ficam registrados (`anexos_pasta`, migração 5) para a interface separar "Você trouxe" do que a conversa criou.
+- **Cópia antes de cada turno:** `Conversas` chama `guardarCopia` antes de mandar a mensagem ao provider (a política de fábrica deixa a IA escrever na pasta com aprovação). A cópia vai para `<pasta de estado>/copias/<conversa>/<turno>/`, fora da pasta de trabalho, com um `manifesto.json` (tamanho e SHA-256 de cada arquivo) gravado por último. Ficam fora os nomes que começam com `.` (o `.simplifica/` das skills) e os links simbólicos.
+- **Escolha: cópia simples, não git oculto.** A pasta de uma tarefa é pequena (o documento, o relatório); o git não vem instalado nos computadores institucionais com Windows, e levá-lo no app custaria dezenas de MB; restaurar é copiar de volta, sem repositório escondido dentro da pasta da pessoa. O preço é o espaço (uma cópia inteira por turno), contido pelos limites.
+- **Limites** (`LIMITES`): pasta de até 50 MB e 500 arquivos (acima disso, o turno fica sem cópia, e o "Desfazer" avisa e não volta a uma cópia mais antiga, que desfaria também o que veio depois); as 10 cópias mais recentes por conversa.
+- **Retrato do fim do turno:** ao fechar cada turno, `fim.json` ao lado da cópia guarda a pasta depois do turno. É o que separa o que a IA fez do que a pessoa mudou depois (no Word, por exemplo).
+- **Desfazer:** pega o turno mais recente que mudou a pasta (cópia de antes × retrato do fim) e volta só os arquivos desse turno. Os que mudaram de novo fora da conversa vão em `foraDaConversa`: a confirmação avisa, e eles só são desfeitos com `incluirForaDaConversa`. As pastas que o turno criou e ficaram vazias saem; as cópias daquele turno em diante também (o próximo Desfazer volta mais um turno). Com turno em andamento, `TurnoEmAndamento`.
+- **Sem seguir links:** a varredura vê os links (no retrato, como `link`) e nunca os copia. Ao restaurar, cada componente do caminho é conferido com `lstat`; um link no lugar de pasta ou arquivo é removido e trocado, nunca seguido. O arquivo é gravado num temporário novo na mesma pasta (`O_EXCL`, `O_NOFOLLOW`) e trocado por `rename`, com o caminho real conferido antes (`gravarSemSeguirLinks`, `removerSemSeguirLinks`).
+- **Tarefa:** `conversa.iniciar` só aceita uma skill do catálogo ou `conversa` (`TarefaDesconhecida`); o nome entra na instrução do primeiro turno.
+- **Anexar:** só `EXTENSOES_DOCUMENTO` (do contrato), também quando o servidor não exige a liberação.
 
 ## Atualização da base e das skills (M1.10)
 
@@ -194,7 +213,7 @@ Números da execução real no plano do app (M1.11, etapa 5b).
 ## Testes
 
 ```bash
-pnpm --filter @simplifica-if/server test        # servidor em portas efêmeras com drivers falsos; o bin.ts como processo; a revisão prévia com o Worker de verdade (revisao-ppc.test.ts: cópia, recusas, bomba ZIP, estouro de memória e de tempo, laço de eventos livre); a revisão com IA com um driver de teste (revisao-ia.test.ts: sessões sem ferramentas, JSON inválido, trecho inventado, norma fora do contexto, injeção, limite de taxa no meio e retomada); a lista viva com o mesmo driver (lista-viva.test.ts: a situação que passa da pré-conferência para a revisão com IA, paradas, contestação com evidência, autoridade, trecho inventado e injeção no motivo e no PPC, sugestão com fato inventado, reanálise pelo arquivo novo, cópia com a situação, uso somado à revisão, lista que sobrevive a reabrir o banco)
+pnpm --filter @simplifica-if/server test        # pasta-trabalho.test.ts: pasta da tarefa (nome seguro, colisão), anexo só liberado, cópia por turno, Desfazer duas vezes, recusa no meio do turno, limite de tamanho e de cópias, 👍/👎 e a skill indicada no primeiro turno; servidor em portas efêmeras com drivers falsos; o bin.ts como processo; a revisão prévia com o Worker de verdade (revisao-ppc.test.ts: cópia, recusas, bomba ZIP, estouro de memória e de tempo, laço de eventos livre); a revisão com IA com um driver de teste (revisao-ia.test.ts: sessões sem ferramentas, JSON inválido, trecho inventado, norma fora do contexto, injeção, limite de taxa no meio e retomada); a lista viva com o mesmo driver (lista-viva.test.ts: a situação que passa da pré-conferência para a revisão com IA, paradas, contestação com evidência, autoridade, trecho inventado e injeção no motivo e no PPC, sugestão com fato inventado, reanálise pelo arquivo novo, cópia com a situação, uso somado à revisão, lista que sobrevive a reabrir o banco)
 SIMPLIFICA_POC_REAL=1 SIMPLIFICA_PROVIDER=claude pnpm --filter @simplifica-if/server test real   # provider real, pelo RPC
 SIMPLIFICA_POC_REAL=1 SIMPLIFICA_PROVIDER=claude pnpm --filter @simplifica-if/server test ciclo-real   # ciclo de vida da conversa
 SIMPLIFICA_POC_REAL=1 SIMPLIFICA_PROVIDER=codex pnpm --filter @simplifica-if/server test skills-real   # uma skill do app numa conversa real
