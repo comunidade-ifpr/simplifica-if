@@ -4,6 +4,7 @@ import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
+import { contarDocumentosPessoais } from "@simplifica-if/kb/ppcs/dados-pessoais";
 import { RE_URL_ASSINADA } from "../../dados/urls.ts";
 import { ehArquivo, listarDiretorio, listarRecursivo, naBase } from "../caminhos.ts";
 import {
@@ -70,6 +71,14 @@ export function validarPadroesLocais(ctx: Contexto): string[] {
     if (assinada) {
       // Só o começo da URL: a mensagem não repete a credencial.
       erros.push(`${ctx.rel(caminho)} contém URL pré-assinada (grave sem a query string): ${assinada[0].split("?")[0]}`);
+    }
+    const pessoais = contarDocumentosPessoais(texto);
+    if (pessoais.cpf || pessoais.rg) {
+      // Só as contagens: a mensagem não repete o número.
+      erros.push(
+        `${ctx.rel(caminho)} contém ${pessoais.cpf} CPF e ${pessoais.rg} RG; troque por [CPF omitido]/[RG omitido] ` +
+          "(omitirDocumentosPessoais de @simplifica-if/kb/ppcs/dados-pessoais)",
+      );
     }
   }
   return erros;

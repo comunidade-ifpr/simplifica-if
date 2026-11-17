@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Converte PPCs referenciados nos JSONs de campus para Markdown.
+"""Converte para Markdown os PPCs referenciados nos registros de cursos.
+
+Lê `base-conhecimento/institucional/ifpr/cursos/<campus_id>/<curso_slug>.json` (`ppc.url` e
+`ppc.markdown_path`) e grava o Markdown em `base-conhecimento/<ppc.markdown_path>`. O registro do curso
+não é alterado: um PPC conta como convertido quando o Markdown existe, e as falhas só aparecem na saída.
+Números de CPF e RG saem como `[CPF omitido]` e `[RG omitido]` (`omitir_documentos_pessoais`, a mesma
+regra de `packages/kb/src/ppcs/dados-pessoais.ts`).
 
 Cada Markdown sai com o front matter de proveniência (`proveniencia: registrada`): URL de origem,
 SHA-256 dos bytes baixados, data da conversão e versão do conversor. O contrato do front matter é
@@ -131,18 +137,45 @@ def front_matter_proveniencia(markdown_path: str, url: str, sha256: str, convers
     return "---\n" + "".join(f"{campo}: {escalar_yaml(valor)}\n" for campo, valor in campos) + "---\n"
 
 
-def set_conversion_error(ppc: dict[str, object], message: str) -> None:
-    ppc["conversao"] = {
-        "status": "erro",
-        "mensagem_erro": message,
-    }
+def iter_curso_paths(campus_filter: str | None) -> list[Path]:
+    cursos_root = INSTITUCIONAL_ROOT / "ifpr" / "cursos"
+    pastas = [cursos_root / campus_filter] if campus_filter else sorted(p for p in cursos_root.iterdir() if p.is_dir())
+    return [path for pasta in pastas if pasta.is_dir() for path in sorted(pasta.glob("*.json"))]
 
 
-def iter_campus_paths(campus_filter: str | None) -> list[Path]:
-    campi_root = INSTITUCIONAL_ROOT / "ifpr" / "campi"
-    if campus_filter:
-        return [campi_root / f"{campus_filter}.json"]
-    return sorted(path for path in campi_root.glob("*.json") if path.name != "index.json")
+# Mesma regra de packages/kb/src/ppcs/dados-pessoais.ts; dados-pessoais.test.ts confere as duas.
+_INICIO = r"(?<![^\W_])"  # não precedido de letra ou dígito
+_FIM = r"(?![^\W\d_])"  # não seguido de letra
+_SEPARADOR = r"(?:[\s*_:]|n\.?\s?[º°o]\.?|n[º°]|número)*"
+_NUMERO_CPF = r"\d{3}[.\s]?\d{3}[.\s]?\d{3}\s?[-–.]?\s?\d{2}(?!\d)"
+_NUMERO_RG = r"\d(?:[\d.]{2,12}\d|\d{2,12})(?:\s?[-–]\s?[\dXx])?(?!\d)"
+_RE_CPF_ROTULADO = re.compile(rf"({_INICIO}CPF{_FIM}{_SEPARADOR})({_NUMERO_CPF})", re.IGNORECASE)
+_RE_RG_ROTULADO = re.compile(
+    rf"({_INICIO}(?:RG|R\.G\.|Registro\s+Geral|(?:c[ée]dula|carteira)\s+de\s+identidade){_FIM}{_SEPARADOR})({_NUMERO_RG})",
+    re.IGNORECASE,
+)
+_RE_CPF_FORMATADO = re.compile(r"(?<![\d.])(\d{3})\.(\d{3})\.(\d{3})-(\d{2})(?!\d)")
+
+
+def cpf_valido(digitos: str) -> bool:
+    if not re.fullmatch(r"\d{11}", digitos) or len(set(digitos)) == 1:
+        return False
+    numeros = [int(c) for c in digitos]
+    for tamanho in (9, 10):
+        soma = sum(numeros[i] * (tamanho + 1 - i) for i in range(tamanho))
+        if (soma * 10) % 11 % 10 != numeros[tamanho]:
+            return False
+    return True
+
+
+def omitir_documentos_pessoais(texto: str) -> str:
+    """Troca números de CPF e RG de declarações e termos anexos por marcadores neutros."""
+    texto = _RE_CPF_ROTULADO.sub(lambda m: m.group(1) + "[CPF omitido]", texto)
+    texto = _RE_RG_ROTULADO.sub(lambda m: m.group(1) + "[RG omitido]", texto)
+    return _RE_CPF_FORMATADO.sub(
+        lambda m: "[CPF omitido]" if cpf_valido("".join(m.groups())) else m.group(0),
+        texto,
+    )
 
 
 def sanitize_markdown(markdown: str) -> str:
@@ -200,120 +233,72 @@ def post_process_markdown(markdown: str) -> str:
     markdown = re.sub(r"^\|{7,}\n", "", markdown, flags=re.MULTILINE)
     markdown = re.sub(r"[ \t]+$", "", markdown, flags=re.MULTILINE)
     markdown = re.sub(r"\n{3,}", "\n\n", markdown)
-    return markdown
+    return omitir_documentos_pessoais(markdown)
 
 
-def should_convert(curso: dict[str, object], curso_filter: str | None, force: bool, retry_errors: bool) -> bool:
-    if curso_filter and curso.get("curso_slug") != curso_filter:
-        return False
+def should_convert(curso: dict[str, object], force: bool) -> bool:
     ppc = curso.get("ppc")
-    if not isinstance(ppc, dict):
+    if not isinstance(ppc, dict) or not isinstance(ppc.get("url"), str):
         return False
-    conversao = ppc.get("conversao")
-    if force:
-        return True
-    if not isinstance(conversao, dict):
-        return True
-    status = conversao.get("status")
-    return status == "pendente" or (retry_errors and status == "erro")
+    markdown_path = markdown_path_do_curso(curso)
+    return force or not (ROOT / markdown_path).exists()
 
 
-def convert_ppcs(
-    campus_path: Path,
-    curso_filter: str | None,
-    force: bool,
-    retry_errors: bool,
-    force_ocr: bool,
-    dry_run: bool,
-) -> int:
-    data = json.loads(campus_path.read_text(encoding="utf-8"))
-    campus_id = data.get("id")
-    if not isinstance(campus_id, str):
+def markdown_path_do_curso(curso: dict[str, object]) -> str:
+    ppc = curso.get("ppc")
+    caminho = ppc.get("markdown_path") if isinstance(ppc, dict) else None
+    if isinstance(caminho, str) and caminho:
+        return caminho
+    return f"institucional/ifpr/ppcs/{curso.get('campus_id')}/{curso.get('curso_slug')}.md"
+
+
+def convert_ppc(curso_path: Path, force: bool, force_ocr: bool, dry_run: bool) -> int:
+    curso = json.loads(curso_path.read_text(encoding="utf-8"))
+    if not isinstance(curso, dict) or not should_convert(curso, force):
         return 0
+    chave = f"{curso.get('campus_id')}/{curso.get('curso_slug')}"
+    url = curso["ppc"]["url"]
+    markdown_path = markdown_path_do_curso(curso)
+    target = ROOT / markdown_path
+    print(f"{chave}: {url} -> {markdown_path}", flush=True)
+    if dry_run:
+        return 1
 
-    changed = False
-    converted = 0
-    for curso in data.get("cursos", []):
-        if not isinstance(curso, dict) or not should_convert(curso, curso_filter, force, retry_errors):
-            continue
-        ppc = curso["ppc"]
-        if not isinstance(ppc, dict):
-            continue
-        url = ppc.get("url")
-        markdown_path = ppc.get("markdown_path")
-        if not isinstance(url, str) or not isinstance(markdown_path, str):
-            continue
-
-        target = ROOT / markdown_path
-        print(f"{campus_id}/{curso.get('id')}: {url} -> {markdown_path}", flush=True)
-        if dry_run:
-            converted += 1
-            continue
-
-        target.parent.mkdir(parents=True, exist_ok=True)
-        try:
-            with tempfile.TemporaryDirectory() as tmp:
-                source_path, sha256 = download_source(url, Path(tmp))
-                convertido, conversor = convert_file(source_path, force_ocr=force_ocr)
-                markdown = sanitize_markdown(convertido)
-        except Exception as exc:
-            if target.exists():
-                target.unlink()
-            message = f"Falha na conversão: {exc.__class__.__name__}: {exc}"
-            set_conversion_error(ppc, message)
-            campus_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-            print(f"{campus_id}/{curso.get('id')}: erro - {message}", flush=True)
-            converted += 1
-            changed = True
-            continue
-        if not markdown.strip():
-            if target.exists():
-                target.unlink()
-            set_conversion_error(
-                ppc,
-                "Conversão sem texto extraído; provável PDF digitalizado ou baseado em imagens que exige OCR.",
-            )
-            campus_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-            print(f"{campus_id}/{curso.get('id')}: sem texto extraído", flush=True)
-            converted += 1
-            changed = True
-            continue
-        data = datetime.date.today().isoformat()
-        target.write_text(front_matter_proveniencia(markdown_path, url, sha256, conversor, data) + markdown, encoding="utf-8")
-        ppc["conversao"] = {
-            "status": "convertido",
-        }
-        campus_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-        print(f"{campus_id}/{curso.get('id')}: convertido", flush=True)
-        changed = True
-        converted += 1
-
-    if changed:
-        campus_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    return converted
+    target.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        with tempfile.TemporaryDirectory() as tmp:
+            source_path, sha256 = download_source(url, Path(tmp))
+            convertido, conversor = convert_file(source_path, force_ocr=force_ocr)
+            markdown = sanitize_markdown(convertido)
+    except Exception as exc:
+        print(f"{chave}: erro - Falha na conversão: {exc.__class__.__name__}: {exc}", flush=True)
+        return 1
+    if not markdown.strip():
+        print(f"{chave}: sem texto extraído; provável PDF digitalizado que exige OCR (--force-ocr)", flush=True)
+        return 1
+    hoje = datetime.date.today().isoformat()
+    target.write_text(front_matter_proveniencia(markdown_path, url, sha256, conversor, hoje) + markdown, encoding="utf-8")
+    if not isinstance(curso["ppc"].get("markdown_path"), str):
+        print(f"{chave}: convertido; acrescente ppc.markdown_path = {markdown_path} ao registro do curso", flush=True)
+    else:
+        print(f"{chave}: convertido", flush=True)
+    return 1
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--campus", help="Filtra por id do campus, ex.: colombo")
-    parser.add_argument("--curso", help="Filtra por id do curso")
-    parser.add_argument("--force", action="store_true", help="Reconverte PPCs já marcados como convertidos")
-    parser.add_argument("--retry-errors", action="store_true", help="Reprocessa PPCs marcados com status de erro")
+    parser.add_argument("--curso", help="Filtra por slug do curso")
+    parser.add_argument("--force", action="store_true", help="Reconverte PPCs que já têm Markdown na base")
     parser.add_argument("--force-ocr", action="store_true", help="Força OCR em todas as páginas")
     parser.add_argument("--dry-run", action="store_true", help="Mostra o que seria convertido sem escrever arquivos")
     args = parser.parse_args()
 
     total = 0
-    for campus_path in iter_campus_paths(args.campus):
-        if campus_path.exists():
-            total += convert_ppcs(
-                campus_path,
-                args.curso,
-                args.force,
-                args.retry_errors,
-                args.force_ocr,
-                args.dry_run,
-            )
+    for curso_path in iter_curso_paths(args.campus):
+        if args.curso and curso_path.stem != args.curso:
+            continue
+        total += convert_ppc(curso_path, args.force, args.force_ocr, args.dry_run)
     print(f"PPCs processados: {total}")
     return 0
 
