@@ -1,0 +1,24 @@
+{
+  "name": "@simplifica-if/dados-pessoais",
+  "license": "MIT",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./detector": "./src/detector.ts",
+    "./arquivo": "./src/arquivo.ts"
+  },
+  "scripts": {
+    "medir": "node scripts/medir-ppcs.ts",
+    "test": "vp test run --config ../../vite.config.ts --dir .",
+    "typecheck": "effect-tsgo tsrs --noEmit"
+  },
+  "dependencies": {
+    "@simplifica-if/docx": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "effect": "catalog:",
+    "vite-plus": "catalog:"
+  }
+}
