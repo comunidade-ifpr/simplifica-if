@@ -1,6 +1,6 @@
 # Código copiado do T3 Code
 
-O [T3 Code](https://github.com/pingdotgg/t3code) é MIT (Copyright (c) 2026 T3 Tools Inc.). Tudo o que este repositório copia dele fica registrado aqui, com a origem, o commit e as adaptações. Cada parte guarda a atribuição: um `NOTICE` no pacote, um cabeçalho no arquivo ou o arquivo `LICENSE-T3` ao lado.
+O app Simplifica IF (`apps/desktop`, `apps/server`, `apps/web` e o motor) usa a stack do [T3 Code](https://github.com/pingdotgg/t3code) e copia partes dele. O T3 Code é MIT (Copyright (c) 2026 T3 Tools Inc.). Tudo o que este repositório copia dele fica registrado aqui, com a origem, o commit e as adaptações. Cada parte guarda a atribuição: um `NOTICE` no pacote, um cabeçalho no arquivo ou o arquivo `LICENSE-T3` ao lado.
 
 Para ver o que mudou no upstream desde o commit registrado de cada parte:
 

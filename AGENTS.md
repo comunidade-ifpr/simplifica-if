@@ -1,10 +1,53 @@
 # Instruções para agentes
 
-Este repositório contém uma base de conhecimento local do IFPR com normas, catálogos, PPCs, metadados institucionais e painéis derivados. A fonte documental publicada fica em `base-conhecimento/`; a saída publicável é gerada em `site/`.
+Este é o repositório do **Simplifica IF**, um app desktop para os servidores do IFPR: ele dá à IA da assinatura de cada pessoa (Claude, ChatGPT ou Gemini) a base de conhecimento do Instituto e tarefas prontas sobre ela. O repositório contém o app e a base que o alimenta (normas, PPCs, cursos, CNCT, metadados institucionais), além das skills e dos scripts que agentes usam aqui para curar a base e operar sistemas que o app ainda não alcança. Os planos estão em [`docs/plans/README.md`](docs/plans/README.md): o do app em [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md), o da base em [`PLANO-ARQUITETURA.md`](PLANO-ARQUITETURA.md).
+
+## Mapa
+
+- `apps/desktop`: processo principal do Electron; inicia o servidor local e abre a interface (`pnpm app:dev` em desenvolvimento).
+- `apps/server`: servidor local (Effect): motor de conversa, MCP `ifpr` por HTTP local, RPC de leitura da base, revisão de PPC, pastas de trabalho, relatos de erro, atualização da base e das skills.
+- `apps/web`: interface em React (Início, tarefas, conversa, leitor `ifpr://`, Explorar, Revisar um PPC, boas-vindas, Configurações).
+- `packages/kb`: núcleo da base (resolvedor de citações, vigência, banco `kb.sqlite`, CLI `kb`).
+- `packages/mcp`: o `simplifica-mcp`, 16 ferramentas só de leitura sobre o `kb.sqlite`; roda dentro do app e como executável à parte.
+- `packages/motor`: motor de conversa com um driver por IA (Agent SDK do Claude, `codex app-server`, `agy acp`).
+- `packages/ppc` e `packages/docx`: conversão de PPC em `.docx`, pré-conferência, revisão com IA e comentários no Word.
+- `packages/contratos-app`: contratos RPC entre a interface e o servidor.
+- `packages/atualizacao`: manifesto do canal, assinatura minisign e pacotes da base e das skills.
+- `packages/effect-acp` e `packages/effect-codex-app-server`: copiados do T3 Code ([`docs/upstream-t3.md`](docs/upstream-t3.md)).
+- `packages/sei-cli`: CLI do SEI, usada só no repositório (abaixo).
+- `base-conhecimento/`: fonte publicada da base; `site/` é a saída gerada dela.
+- `scripts/`: pipeline da base, integração com Notion, SEI e SUAP, fábrica da atualização, avaliação.
+- `.agents/skills/`: skills dos agentes (`.claude/skills` é symlink para cá).
+
+## O que o app entrega hoje
+
+- **Conversa** com a IA do servidor, com as ferramentas `ifpr` do `simplifica-mcp`, aprovação de ações, indicador de etapas, pasta da tarefa em `Documentos/Simplifica IF/` e "Desfazer".
+- **Tarefas** no Início: a nativa "Revisar um PPC" e as skills com bloco `simplifica:` no `SKILL.md` (hoje só a `verificar-fundamentacao-normativa`).
+- **Revisar um PPC** (`.docx`): pré-conferência em código, relatório com IA opcional, roteiro por pendência e cópia do documento com comentários do Word. Reaproveita as fichas da skill `revisar-ppc`, mas é conduzida pelo servidor, não pela skill.
+- **Leitor `ifpr://` e Explorar:** normas com vigência, PPCs, cursos (com as divergências PPC × SUAP já publicadas na base), campi, CNCT, Consepe e fichas, sem IA e sem rede.
+- Primeiro uso com perfil, "Isto está errado" (relato de erro) e atualização da base e das skills (pronta, sem feed de produção ligado).
+
+O app só lê dado público: a base e o que a pessoa anexa. Ele não acessa SUAP, SEI nem Notion.
+
+## Ferramentas do repositório fora do app
+
+Estas ferramentas rodam só no repositório, por agentes ou por quem cura a base. **A integração ao app está nos planos e ainda não existe** (decisão 6 e "Fora do escopo até o Marco 2" em [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md); roadmap em [`PLANO-ARQUITETURA.md`](PLANO-ARQUITETURA.md#ferramentas-do-repositório-fora-do-app)):
+
+- `packages/sei-cli` (SEI) e a skill `revisar-processo-ppc`, que depende dele;
+- a skill `suap-ifpr` (SUAP), com `scripts/suap_consultar.ts`, `scripts/suap_tutoriais.ts` e a coleta de matrizes `scripts/suap_coletar_matrizes.ts`;
+- a sincronização SEI → Notion (`pnpm sei:sync`, agendada por `scripts/agendar_sincronizacao_sei.ts`), `scripts/notion_atualizar_cursos_movimentacoes.ts` e `scripts/exportar_base_publica.ts`;
+- a skill `revisar-ppc` com sub-agentes e relatório HTML (no app, a revisão é a tarefa nativa acima);
+- a skill `ifpr-design`, usada para desenhar a interface e materiais, não como tarefa do app.
+
+## Base de conhecimento
+
+A base reúne normas, catálogos, PPCs, metadados institucionais e painéis derivados. A fonte publicada fica em `base-conhecimento/`; `site/` é gerado dela, e o `kb.sqlite` que o app e o `simplifica-mcp` leem é compilado dos mesmos arquivos (`pnpm kb:compilar`).
 
 Os dados institucionais de gestão (Campi, Cursos com metadados de PPC e SUAP, Processos Seletivos, Editais e Ofertas) têm como fonte de verdade os registros de `base-conhecimento/institucional/ifpr/` (`campi/`, `cursos/`, `processos-seletivos/`, `editais/`, `ofertas/`), um JSON por registro, versionados no git e publicados como estão. Só o `index.json` de cada coleção (por `gerar_base.ts`) e `processos-sei/index.json` (exportado do Notion) são gerados; não os edite à mão. As reuniões do Consepe, com pareceres e itens de pauta e sem dados de pessoa, estão em `institucional/ifpr/conselhos/`. O Notion guarda só a base de fluxo `Movimentações de Cursos`, que também deve sair dele no futuro.
 
-Também contém skills operacionais em `.agents/skills/`. O caminho `.claude/skills` é um symlink para esse diretório, para que o Claude Code descubra as mesmas skills; edite sempre em `.agents/skills/`. Ao fazer alterações em qualquer skill, leia primeiro o `README.md` da própria skill, quando existir. Use esse arquivo para entender propósito, fluxo de uso, comandos de manutenção e convenções locais antes de editar scripts, fichas, prompts, testes ou documentação. Se a alteração envolver base gerada ou índice consolidado, procure no `README.md` da skill o comando de regeneração ou validação correspondente e execute-o antes de concluir.
+## Skills
+
+As skills ficam em `.agents/skills/`; `.claude/skills` é um symlink para esse diretório, para que o Claude Code descubra as mesmas skills. Edite sempre em `.agents/skills/`. Antes de alterar uma skill, leia o `README.md` dela, quando existir: propósito, fluxo de uso, comandos de manutenção e convenções locais. Se a alteração envolver base gerada ou índice consolidado, rode o comando de regeneração ou validação indicado nesse README antes de concluir. Só as skills com bloco `simplifica:` vão para o app (veja o fim deste arquivo); as demais rodam só no repositório.
 
 ## Consulta local da base
 
@@ -44,7 +87,7 @@ Procedimento recomendado:
 6. Para PPCs, use `pnpm kb buscar-secoes` (ou `base-conhecimento/institucional/ifpr/ppcs/index.json` e os índices de seções em `base-conhecimento/institucional/ifpr/ppcs/secoes/`) e depois abra o Markdown do PPC nas linhas indicadas antes de redigir resposta substantiva.
 7. Use busca online apenas quando o dado necessário não existir na base local, quando a pergunta exigir atualização externa ou quando for preciso confirmar informação em fonte oficial. Ao usar fonte externa, deixe isso explícito.
 
-Cada norma tem um ID canônico derivado do ato (`id` no front matter e no `manifest.json`), como `br/cne-cp/res/2026/2`, `br/lei/1996/9394` ou `ifpr/consup/res/2024/190`. Normas citadas sem texto na base (stubs) e referências `externo:` ficam em `base-conhecimento/normas/stubs.yaml`. Para identificar uma citação ou achar quem cita uma norma, use a CLI `kb` (requer `pnpm install` na raiz):
+Cada norma tem um ID canônico derivado do ato (`id` no front matter e no `manifest.json`), como `br/cne-cp/res/2026/2`, `br/lei/1996/9394` ou `ifpr/consup/res/2024/190`. Normas citadas sem texto na base (stubs) e referências `externo:` ficam em `base-conhecimento/normas/stubs.yaml`. Para identificar uma citação ou achar quem cita uma norma, use a CLI `kb`:
 
 ```bash
 pnpm kb resolver "Resolução CNE/CP nº 1/2021, art. 20"   # ID canônico, dispositivo, regra e confiança
@@ -75,7 +118,7 @@ Para solicitações sobre `Movimentações de Cursos`, a única base que continu
 
 As bases do Consepe estão em `base-conhecimento/institucional/ifpr/conselhos/`; Pareceres de Curso, Servidores e Conselheiros ficaram só no arquivo do Notion.
 
-Para perguntas, conferências ou curadoria que dependam de dados do Sistema Eletrônico de Informações (SEI), use o pacote `packages/sei-cli` deste repositório como ferramenta operacional e leia primeiro:
+Para perguntas, conferências ou curadoria que dependam de dados do Sistema Eletrônico de Informações (SEI), use o pacote `packages/sei-cli` deste repositório (fora do app, como dito acima) e leia primeiro:
 
 - [Uso do sei-cli por agentes](base-conhecimento/docs/sei-cli-operacao-agentes.md)
 - [Sincronização SEI → Notion](base-conhecimento/docs/sincronizacao-sei-notion.md)
@@ -135,7 +178,7 @@ node scripts/gerar_site.ts
 
 Não edite à mão `status_vigencia`, `revoga`, `revogada_por`, `altera`, `alterada_por`, `regulamenta`, `regulamentada_por`, `fundamenta_se_em`, `fundamenta` nem `vigencia_*` no front matter das normas: eles são gerados. Relação nova entra em `relacoes.yaml`, com a evidência literal do texto; `pnpm kb relacoes --propor` lista o que o regex encontrou e ainda não foi confirmado. Ao mudar a marcação de uma norma, preserve as palavras (`pnpm --filter @simplifica-if/kb test src/normas` confere) e siga as convenções de corpo de `base-conhecimento/docs/padrao-front-matter-legislacao.md`.
 
-Os scripts que falam com Notion, SEI e SUAP, assim como o pipeline da base (`gerar_base.ts`, `gerar_indice_ppcs.ts`, `validar_base.ts`, `gerar_site.ts`, com lógica em `scripts/base/`), são TypeScript e rodam direto no Node, sem etapa de build: a versão fica em `.node-version` e `engines` (26.12.1), e o pnpm do `packageManager` (12.14.0, pelo corepack) instala as dependências com `pnpm install` na raiz. Regras compartilhadas entre `scripts/` e as skills (texto, JSON, JSON Schema, referências normativas) ficam no workspace `packages/kb` (`@simplifica-if/kb`); `packages/kb` não importa de `scripts/`. Depois de alterar código TypeScript em `scripts/`, `packages/kb` ou nas skills, rode:
+Todo o código é TypeScript: o app (`apps/`), os pacotes (`packages/`), os scripts que falam com Notion, SEI e SUAP e o pipeline da base (`gerar_base.ts`, `gerar_indice_ppcs.ts`, `validar_base.ts`, `gerar_site.ts`, com lógica em `scripts/base/`). Os scripts rodam direto no Node, sem etapa de build: a versão fica em `.node-version` e `engines` (26.12.1), e o pnpm do `packageManager` (12.14.0, pelo corepack) instala as dependências com `pnpm install` na raiz. Regras compartilhadas entre `scripts/`, as skills e o app (texto, JSON, JSON Schema, referências normativas) ficam no workspace `packages/kb` (`@simplifica-if/kb`); `packages/kb` não importa de `scripts/`. Depois de alterar código TypeScript em qualquer parte, rode:
 
 ```bash
 pnpm fmt

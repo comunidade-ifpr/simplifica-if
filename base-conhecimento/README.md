@@ -4,6 +4,8 @@
 
 A base é uma curadoria pública de consulta sobre normas, legislação, resoluções, portarias, metadados institucionais, PPCs, catálogos e outros documentos de referência usados em análises relacionadas ao IFPR.
 
+A base também alimenta o Simplifica IF, app desktop que a entrega, com tarefas prontas, à IA de cada servidor. O app e a base ficam no mesmo repositório.
+
 Você pode usar esta base de duas formas:
 
 1. **Consultar manualmente:** veja a lista em [Normas publicadas](#normas-publicadas), clique no documento desejado e leia o conteúdo.

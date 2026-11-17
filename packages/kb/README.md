@@ -1,6 +1,6 @@
 # @simplifica-if/kb
 
-Núcleo da base de conhecimento ([plano de arquitetura](../../PLANO-ARQUITETURA.md)): regras que mais de um consumidor usa (pipeline em `scripts/`, skills em `.agents/skills/`, avaliação, servidor MCP). Os consumidores importam `@simplifica-if/kb/<módulo>`; a dependência vai num sentido só.
+Núcleo da base de conhecimento ([plano de arquitetura](../../PLANO-ARQUITETURA.md)): regras que mais de um consumidor usa (servidor do app em `apps/server`, servidor MCP, pipeline em `scripts/`, skills em `.agents/skills/`, avaliação). Os consumidores importam `@simplifica-if/kb/<módulo>`; a dependência vai num sentido só.
 
 Desde o C1 da [consolidação na stack do T3](../../docs/plans/consolidacao-stack-t3.md), o kb é um conjunto de serviços [Effect 4](https://effect.website) sobre um `SqlClient` do `node:sqlite`. As regras puras (resolvedor, vigência, impacto, adequação, stemmer, texto, `primitivas/*`) continuam funções puras e síncronas; o Effect entra nas fontes de dados, no banco, nos erros e nas bordas (CLI). `effect` e `@effect/platform-node` são `peerDependencies`: quem consome traz a mesma versão (a do catalog).
 
@@ -175,7 +175,7 @@ Ao mudar o resolvedor, rode também `pnpm avaliacao:gabaritos` e revise o diff d
 
 ## Sem o repositório
 
-O servidor MCP, o executável e o fork rodam só com o `kb.sqlite`, sem o checkout, por `layerSomenteLeitura({ caminho })`: os mesmos serviços da CLI, com as fontes normativas remontadas das tabelas (`FontesNormativas.layerBanco`). As regras não mudam; muda a fonte. O registro sai da tabela `normas`; as datas, do `front_matter_json`; as citações, de `citacoes` e `normas_citacoes`; o léxico e os tópicos, das tabelas próprias; o tamanho do PPC, de `ppcs.caracteres`.
+O servidor MCP, o executável e o servidor do app rodam só com o `kb.sqlite`, sem o checkout, por `layerSomenteLeitura({ caminho })`: os mesmos serviços da CLI, com as fontes normativas remontadas das tabelas (`FontesNormativas.layerBanco`). As regras não mudam; muda a fonte. O registro sai da tabela `normas`; as datas, do `front_matter_json`; as citações, de `citacoes` e `normas_citacoes`; o léxico e os tópicos, das tabelas próprias; o tamanho do PPC, de `ppcs.caracteres`.
 
 A garantia é de tipo: `layerSomenteLeitura` não exige `FileSystem` nem `Path`, então nada no caminho dela lê arquivo (dentro de um binário `pnpm mcp:executavel`, a leitura relativa ao código falharia). `db/base.test.ts` roda os serviços sobre uma cópia do banco num diretório vazio e confere que dão a mesma saída que sobre as fontes dos arquivos.
 

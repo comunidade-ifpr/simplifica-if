@@ -8,6 +8,8 @@ Desde a etapa C0 da [consolidação na stack do T3](docs/plans/consolidacao-stac
 
 **Escopo:** a `revisar-ppc` (antes `analise-ppc`; veja a renomeação em [Andamento](#andamento)) e a base de conhecimento. `Movimentações de Cursos` (Notion) está fora do escopo por ora.
 
+**O repositório hoje (17/11/2026).** O produto central é o app desktop Simplifica IF (`apps/`), com plano próprio em [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md). A base de conhecimento, o `packages/kb` e o `simplifica-mcp`, de que este plano trata, são o núcleo que o alimenta: o app lê o `kb.sqlite` compilado da base. Ferramentas que continuam só no repositório, fora do app, estão em [Ferramentas do repositório fora do app](#ferramentas-do-repositório-fora-do-app).
+
 ## Tese
 
 O problema da base não é busca, é identidade e relações. Faltam:
@@ -421,6 +423,20 @@ Corre em paralelo às fases 1 a 7. Cada passo troca uma implementação por baix
 - `pnpm exec vp test run .agents/skills` roda pelo menos os 89 casos equivalentes.
 - Há um relatório de diferencial por módulo, com os documentos do corpus e os diffs (zero ou aceitos).
 - Numa rodada real com relógio fixo, os JSONs da rodada e o HTML saem idênticos aos da versão Python.
+
+### Ferramentas do repositório fora do app
+
+Item de roadmap (17/11/2026). Estas ferramentas são usadas por agentes e por quem cura a base, no repositório, e ainda não estão integradas ao app:
+
+| Ferramenta | Sistema | Uso hoje | No app |
+|---|---|---|---|
+| `packages/sei-cli` | SEI | extração e leitura de processos (`pnpm sei`) | não |
+| skill `revisar-processo-ppc` | SEI, pelo `sei-cli` | revisão do fluxo de processos SEI de PPC | não |
+| skill `suap-ifpr` e `scripts/suap_*.ts` | SUAP | consulta, tutoriais e coleta de matrizes para a curadoria | não; o app mostra os dados do SUAP já publicados na base |
+| sincronização SEI → Notion (`pnpm sei:sync`, `agendar_sincronizacao_sei.ts`) e scripts do Notion | SEI e Notion | `Movimentações de Cursos` e `processos-sei/index.json` | não |
+| skill `revisar-ppc` (sub-agentes, relatório HTML) | — | revisão de PPC por agente no repositório | em parte: o app tem a tarefa nativa "Revisar um PPC", que reaproveita as fichas e `packages/ppc` |
+
+A integração das ferramentas de SEI e SUAP depende de o app voltar a acessar sistemas com login, o que o plano do app adia para depois do Marco 2 (decisão 6 e "Fora do escopo até o Marco 2" em [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md)); o desenho de credenciais e sensibilidade está em [`docs/plans/app-seguranca-dados.md`](docs/plans/app-seguranca-dados.md), suspenso. A sincronização SEI → Notion segue a mesma condição e a direção de tirar `Movimentações de Cursos` do Notion ([Fora do escopo](#fora-do-escopo)). Até lá, essas ferramentas ficam no repositório, e o `AGENTS.md` as lista.
 
 ---
 
@@ -849,6 +865,8 @@ Em aberto:
 - saiu o diferencial `packages/ppc/scripts/diferencial-docx.ts` e o que só ele usava: o modo de leitura `python-docx`, as regras liga/desliga de `regras.ts` e o nível de seção configurável do normalizador. Os gabaritos de `packages/ppc/test/fixtures/conversao-docx/` passaram a ser os artefatos do modo padrão dos 17 documentos sintéticos, gerados com o código anterior à remoção e reproduzidos byte a byte;
 - o kit `packages/kb/src/python/` virou `packages/kb/src/primitivas/` (`regex.ts`, `sequencias.ts`, `json-tipado.ts`, `shell.ts`, `quebra-de-linhas.ts`), `html-py.ts` virou `eventos-html.ts`, e os nomes com sufixo `Py` ganharam nomes do que fazem; os comentários descrevem o comportamento, sem a paridade com o Python;
 - `git ls-files '*.py'` não lista nada, e `git grep -niE 'python|pytest|pymupdf|\.venv'` só acha os registros históricos, o código copiado do T3 e o texto dos PPCs da base.
+
+**Documentação realinhada ao app em 17/11/2026** (branch `t3/realinhar-documentacao-app`). O `AGENTS.md`, o `README.md` e os READMEs dos apps, dos pacotes e das skills passam a descrever o repositório como o do app Simplifica IF e da base que o alimenta, com um mapa de `apps/` e `packages/` e o que o app entrega hoje, conferido no código (rotas de `apps/web`, as 16 ferramentas de `packages/mcp`, o motor e as skills com bloco `simplifica:`). Entrou neste plano a visão geral do repositório e o item de roadmap [Ferramentas do repositório fora do app](#ferramentas-do-repositório-fora-do-app): `sei-cli`, `revisar-processo-ppc`, `suap-ifpr`, a sincronização SEI → Notion e a `revisar-ppc` por sub-agentes ainda não estão no app.
 
 ## Histórico de revisões
 
