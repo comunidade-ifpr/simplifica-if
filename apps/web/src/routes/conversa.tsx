@@ -13,9 +13,10 @@
  */
 import type { Provider } from "@simplifica-if/contratos-app";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { FolderIcon, FolderOpenIcon, PlusIcon, SendHorizontalIcon, SquareIcon, WrenchIcon } from "lucide-react";
-import { type FormEvent, type KeyboardEvent, type ReactNode, useEffect, useRef, useState } from "react";
+import { FolderIcon, FolderOpenIcon, PlusIcon, WrenchIcon } from "lucide-react";
+import { type FormEvent, type ReactNode, useEffect, useRef, useState } from "react";
 import { Avaliacao } from "../components/Avaliacao.tsx";
+import { CaixaPedido } from "../components/CaixaPedido.tsx";
 import { AvisoErro } from "../components/AvisoErro.tsx";
 import { IndicadorEtapas } from "../components/IndicadorEtapas.tsx";
 import { ItemConversa } from "../components/ItemConversa.tsx";
@@ -28,7 +29,6 @@ import { PainelLeitura } from "../components/PainelLeitura.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { Input } from "../components/ui/input.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
-import { Textarea } from "../components/ui/textarea.tsx";
 import { useConversa } from "../contexto.tsx";
 import { cn } from "../lib/utils.ts";
 import { ponteDesktop } from "../ponte-desktop.ts";
@@ -142,49 +142,25 @@ function Compositor() {
   const [estado, conversa] = useConversa();
   const [texto, setTexto] = useState("");
   const ocupada = estado.fase === "respondendo" || estado.fase === "interrompendo";
-  const enviar = () => {
-    if (texto.trim().length === 0 || ocupada) return;
-    conversa.enviar(texto);
-    setTexto("");
-  };
-  const aoTeclar = (evento: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (evento.key === "Enter" && !evento.shiftKey && !evento.nativeEvent.isComposing) {
-      evento.preventDefault();
-      enviar();
-    }
-  };
   return (
-    <form
-      className="flex items-end gap-2 border-border border-t bg-background p-3"
-      onSubmit={(evento) => {
-        evento.preventDefault();
-        enviar();
+    <CaixaPedido
+      rotulo="Mensagem"
+      valor={texto}
+      aoMudar={setTexto}
+      aoEnviar={() => {
+        conversa.enviar(texto);
+        setTexto("");
       }}
-    >
-      <Textarea
-        aria-label="Mensagem"
-        placeholder="O que você precisa? (Enter envia; Shift+Enter quebra a linha)"
-        rows={2}
-        value={texto}
-        onChange={(evento) => setTexto(evento.currentTarget.value)}
-        onKeyDown={aoTeclar}
-      />
-      {ocupada ? (
-        <Button
-          variant="destructive-outline"
-          size="lg"
-          disabled={estado.fase === "interrompendo"}
-          onClick={() => void conversa.interromper()}
-        >
-          {estado.fase === "interrompendo" ? <Spinner /> : <SquareIcon />}
-          Interromper
-        </Button>
-      ) : (
-        <Button type="submit" size="lg" disabled={texto.trim().length === 0}>
-          <SendHorizontalIcon /> Enviar
-        </Button>
-      )}
-    </form>
+      interromper={
+        ocupada
+          ? {
+              aoInterromper: () => void conversa.interromper(),
+              interrompendo: estado.fase === "interrompendo",
+            }
+          : undefined
+      }
+      className="pointer-events-auto"
+    />
   );
 }
 
@@ -312,8 +288,14 @@ function Conversa({
           </Button>
         </div>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="mx-auto flex max-w-3xl flex-col gap-4 px-4 py-6" role="log" aria-label="Mensagens">
+      {/* A caixa de pedido flutua sobre o fim da conversa: fica presa ao pé da rolagem (sticky), e a conversa
+          passa por baixo dela; rolada até o fim, a última mensagem fica acima da caixa. */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+        <div
+          className="mx-auto flex w-full max-w-3xl shrink-0 grow flex-col gap-4 px-4 pt-6 pb-4"
+          role="log"
+          aria-label="Mensagens"
+        >
           {etapas === undefined || skill === undefined ? null : (
             <IndicadorEtapas titulo={skill.titulo} etapas={etapas} />
           )}
@@ -344,10 +326,12 @@ function Conversa({
               <Spinner size="sm" /> Pensando…
             </p>
           ) : null}
-          <RolarParaOFim sinal={`${estado.itens.length}:${tamanhoUltimo}`} />
         </div>
+        <div className="pointer-events-none sticky bottom-0 z-10 mx-auto w-full max-w-3xl shrink-0 bg-linear-to-t from-30% from-background to-transparent px-4 pt-3 pb-4">
+          <Compositor />
+        </div>
+        <RolarParaOFim sinal={`${estado.itens.length}:${tamanhoUltimo}`} />
       </div>
-      <Compositor />
     </div>
   );
 }

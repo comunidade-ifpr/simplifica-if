@@ -4,7 +4,7 @@
  * conversa com a tarefa e o pedido enviado. E os dois controles do começo: a escolha da IA e os anexos.
  */
 import type { Provider } from "@simplifica-if/contratos-app";
-import { PaperclipIcon, XIcon } from "lucide-react";
+import { ChevronDownIcon, PaperclipIcon, XIcon } from "lucide-react";
 import { useId } from "react";
 import { Button } from "../components/ui/button.tsx";
 import type { Api } from "../conexao/api.ts";
@@ -41,17 +41,46 @@ const NOMES_IA: Readonly<Record<Provider, string>> = {
   antigravity: "Gemini (mais lento)",
 };
 
+/**
+ * A escolha da IA. `compacta` (na caixa de pedido): só o nome e um chevron, discretos; o `<select>`
+ * nativo continua por baixo (teclado, leitor de tela), sem a aparência nativa, e o rótulo "IA" só para o
+ * leitor de tela.
+ */
 export function EscolhaIa({
   valor,
   aoMudar,
+  compacta = false,
 }: {
   readonly valor: Provider;
   readonly aoMudar: (provider: Provider) => void;
+  readonly compacta?: boolean;
 }) {
   const id = useId();
   // As IAs que a pessoa deixou de usar no app (Configurações › Sua IA) saem da lista, menos a escolhida.
   const desligadas = usePreferencias().preferencias?.iasDesligadas ?? [];
   const opcoes = PROVIDERS.filter((provider) => provider === valor || !desligadas.includes(provider));
+  if (compacta)
+    return (
+      <span className="relative inline-flex items-center text-sm">
+        <label htmlFor={id} className="sr-only">
+          IA
+        </label>
+        <select
+          id={id}
+          value={valor}
+          onChange={(evento) => aoMudar(evento.currentTarget.value as Provider)}
+          className="field-sizing-content h-8 cursor-pointer appearance-none rounded-full bg-transparent py-0 pr-7 pl-2.5 font-medium text-muted-foreground text-sm outline-none transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+          title={`IA: ${DESCRICOES[valor].nome}`}
+        >
+          {opcoes.map((provider) => (
+            <option key={provider} value={provider}>
+              {NOMES_IA[provider]}
+            </option>
+          ))}
+        </select>
+        <ChevronDownIcon aria-hidden className="pointer-events-none absolute right-2 size-3.5 text-muted-foreground" />
+      </span>
+    );
   return (
     <span className="flex items-center gap-1.5 text-sm">
       <label htmlFor={id} className="text-muted-foreground">
