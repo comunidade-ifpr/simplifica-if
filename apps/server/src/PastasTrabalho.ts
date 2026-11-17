@@ -7,7 +7,11 @@
  *   colide: ` (2)`, ` (3)`… A pasta é *gerida* quando o caminho real dela é filho direto da raiz real;
  *   só as geridas têm arquivos listados, anexos e cópias.
  * - **Anexar:** o servidor copia para a pasta o arquivo que o processo principal do desktop liberou
- *   depois do diálogo (a mesma liberação da revisão prévia); o nome repetido ganha ` (2)`.
+ *   depois do diálogo (a mesma liberação da revisão prévia); o nome repetido ganha ` (2)`. Antes, a
+ *   interface pede `conferirAnexo` (M1.13): o detector de dados pessoais lê o arquivo escolhido num
+ *   `Worker` (`dados-pessoais/conferir.ts`) e devolve só contagens e trechos mascarados.
+ * - **Relato (M1.12):** `gravarRelato` grava o `.md` de "Isto está errado" numa pasta gerida, sem
+ *   sobrescrever.
  * - **Cópias (Desfazer):** antes de cada turno, uma cópia simples da pasta vai para
  *   `<copias>/<conversa>/<turno>/`, fora da pasta de trabalho (a IA não a vê nem a altera), com um
  *   `manifesto.json` (tamanho e SHA-256 de cada arquivo). Escolha: **cópia simples, não git oculto**.
@@ -32,13 +36,17 @@ import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Ref from "effect/Ref";
+import * as Semaphore from "effect/Semaphore";
+import { EXTENSOES_CONFERIDAS, motivoNaoConferido } from "@simplifica-if/dados-pessoais/arquivo";
 import {
   type ArquivoPasta,
+  type ConferenciaAnexo,
   ehExtensaoDocumento,
   FalhaPasta,
   type PastaConversa,
   type PrevisaoDesfazer,
 } from "@simplifica-if/contratos-app";
+import { conferirNoTrabalhador, type LimitesConferencia } from "./dados-pessoais/conferir.ts";
 import { Historico } from "./persistencia/Historico.ts";
 import { AnalisePpc } from "./revisao-ppc/AnalisePpc.ts";
 
@@ -66,6 +74,8 @@ export interface OpcoesPastas {
   /** Onde ficam as cópias dos turnos (na pasta de estado do app). */
   readonly copias: string;
   readonly limites?: Partial<Limites>;
+  /** Os limites do Worker do aviso ao anexar (os testes os apertam). */
+  readonly limitesConferencia?: LimitesConferencia;
 }
 
 export class PastasTrabalho extends Context.Service<
@@ -75,6 +85,13 @@ export class PastasTrabalho extends Context.Service<
     /** Cria a pasta da tarefa e devolve o caminho real. */
     readonly criar: (titulo: string) => Effect.Effect<string, FalhaPasta>;
     readonly anexar: (pasta: string, arquivo: string) => Effect.Effect<ArquivoPasta, FalhaPasta>;
+    /** O detector de dados pessoais sobre um arquivo liberado, antes de anexá-lo (M1.13). */
+    readonly conferirAnexo: (arquivo: string) => Effect.Effect<ConferenciaAnexo, FalhaPasta>;
+    /**
+     * Grava `nome` (um `.md`) numa pasta gerida, sem sobrescrever (` (2)`…), e devolve o caminho; recusa
+     * pasta que não é de tarefa do app.
+     */
+    readonly gravarRelato: (pasta: string, nome: string, conteudo: string) => Effect.Effect<string, FalhaPasta>;
     /** Os arquivos da pasta da conversa e a previsão do Desfazer. */
     readonly ver: (conversa: string, pasta: string) => Effect.Effect<PastaConversa, FalhaPasta>;
     /** A cópia de antes do turno; nunca falha (o erro vai para o log, e o turno segue sem cópia). */
@@ -490,6 +507,53 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     } satisfies ArquivoPasta;
   });
 
+  // Uma conferência por vez: cada Worker pode usar até 512 MB de heap.
+  const vezConferencia = yield* Semaphore.make(1);
+
+  /** As mesmas conferências do `anexar` (liberado, documento, arquivo comum, tamanho). */
+  const conferirAnexo = Effect.fn("PastasTrabalho.conferirAnexo")(function* (arquivo: string) {
+    if (!NodePath.isAbsolute(arquivo) || !(yield* analise.liberado(arquivo)))
+      return yield* falha('Escolha o arquivo pelo botão "Anexar arquivo…" do app.');
+    const nome = NodePath.basename(arquivo);
+    if (!ehExtensaoDocumento(nome))
+      return yield* falha("Anexe um documento (Word, PDF, texto, planilha, apresentação ou imagem).");
+    const info = yield* tentar(() => NodeFSP.lstat(arquivo), "O arquivo não foi encontrado ou não pode ser lido.");
+    if (!info.isFile()) return yield* falha("Escolha um arquivo (não uma pasta nem um atalho).");
+    if (info.size > limites.anexoBytes)
+      return yield* falha(`O arquivo passa de ${Math.round(limites.anexoBytes / 1024 / 1024)} MB.`);
+    if (!EXTENSOES_CONFERIDAS.includes(NodePath.extname(nome).toLowerCase()))
+      return { arquivo, situacao: "nao-conferido", motivo: motivoNaoConferido(nome) } satisfies ConferenciaAnexo;
+    const bytes = yield* tentar(() => NodeFSP.readFile(arquivo), "O arquivo não pode ser lido.");
+    // Cópia própria: o buffer é transferido ao Worker, e um `Buffer` do Node pode ser fatia de um pool.
+    const resultado = yield* conferirNoTrabalhador(
+      { nome, bytes: new Uint8Array(bytes) },
+      opcoes.limitesConferencia,
+    ).pipe(vezConferencia.withPermits(1));
+    return { arquivo, ...resultado } satisfies ConferenciaAnexo;
+  });
+
+  const gravarRelato = Effect.fn("PastasTrabalho.gravarRelato")(function* (
+    pasta: string,
+    nome: string,
+    conteudo: string,
+  ) {
+    const real = yield* Effect.promise(() => gerida(pasta));
+    if (real === undefined)
+      return yield* falha('Esta conversa não tem uma pasta de tarefa do app. Use "Copiar o relato".');
+    return yield* tentar(async () => {
+      for (let n = 1; n < 1000; n++) {
+        const destino = NodePath.join(real, comNumero(nome, n));
+        try {
+          await NodeFSP.writeFile(destino, conteudo, { flag: "wx" });
+          return destino;
+        } catch (erro) {
+          if ((erro as NodeJS.ErrnoException).code !== "EEXIST") throw erro;
+        }
+      }
+      throw new Error("nomes esgotados");
+    }, "Não foi possível gravar o relato na pasta da tarefa.");
+  });
+
   /**
    * O turno a desfazer: o mais recente cuja pasta mudou **dentro** dele (o retrato de antes × o do fim
    * do turno). Sem o retrato do fim (o app caiu no meio do turno), vale o de antes do turno seguinte ou,
@@ -623,6 +687,8 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     raiz,
     criar,
     anexar,
+    conferirAnexo,
+    gravarRelato,
     ver,
     guardarCopia: Effect.fn("PastasTrabalho.contandoCopia")(function* (conversa: string, turno: number, pasta: string) {
       return yield* contando(guardarCopia(conversa, turno, pasta));
@@ -657,6 +723,8 @@ export const layerSemPastas = Layer.sync(PastasTrabalho, () => {
     raiz: "",
     criar: recusa,
     anexar: recusa,
+    conferirAnexo: recusa,
+    gravarRelato: recusa,
     ver: Effect.fn("PastasTrabalho.ver")(function* (_conversa: string, pasta: string) {
       return yield* Effect.succeed({
         pasta,

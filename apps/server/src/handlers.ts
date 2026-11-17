@@ -20,6 +20,7 @@ import {
   GrupoPasta,
   GrupoPreferencias,
   GrupoProviders,
+  GrupoRelato,
   GrupoRevisaoPpc,
   GrupoSkills,
 } from "@simplifica-if/contratos-app";
@@ -29,6 +30,7 @@ import { CatalogoSkills } from "./CatalogoSkills.ts";
 import * as Conversas from "./Conversas.ts";
 import { PastasTrabalho } from "./PastasTrabalho.ts";
 import { Preferencias } from "./persistencia/Preferencias.ts";
+import { Relatos } from "./Relatos.ts";
 import { ListaViva } from "./revisao-ppc/ListaViva.ts";
 import { RevisaoIa } from "./revisao-ppc/RevisaoIa.ts";
 
@@ -103,9 +105,21 @@ const layerPasta = GrupoPasta.toLayer(
     return GrupoPasta.of({
       "pasta.criar": ({ titulo }) => registrarEMapear(pastas.criar(titulo)).pipe(Effect.map((pasta) => ({ pasta }))),
       "pasta.anexar": ({ pasta, arquivo }) => registrarEMapear(pastas.anexar(pasta, arquivo)),
+      "pasta.conferirAnexo": ({ arquivo }) => registrarEMapear(pastas.conferirAnexo(arquivo)),
       "pasta.ver": ({ sessao }) => conversas.pasta(sessao),
       "pasta.desfazer": ({ sessao, incluirForaDaConversa }) =>
         registrarEMapear(conversas.desfazer(sessao, incluirForaDaConversa === true)),
+    });
+  }),
+);
+
+/** "Isto está errado" (M1.12): o rascunho do relato e o registro local; nada vai à IA nem à rede. */
+const layerRelato = GrupoRelato.toLayer(
+  Effect.gen(function* () {
+    const relatos = yield* Relatos;
+    return GrupoRelato.of({
+      "relato.preparar": ({ sessao, turno }) => registrarEMapear(relatos.preparar(sessao, turno)),
+      "relato.registrar": (entrada) => registrarEMapear(relatos.registrar(entrada)),
     });
   }),
 );
@@ -176,12 +190,13 @@ const layerAtualizacao = GrupoAtualizacao.toLayer(
 );
 
 /**
- * Os handlers dos oito grupos; pede o `Motor`, as `Conversas`, o `CatalogoSkills`, a `AnalisePpc`, a
- * `RevisaoIa`, o `Atualizador`, as `Preferencias` e o `Leitura`.
+ * Os handlers dos nove grupos; pede o `Motor`, as `Conversas`, os `Relatos`, o `CatalogoSkills`, a
+ * `AnalisePpc`, a `RevisaoIa`, o `Atualizador`, as `Preferencias` e o `Leitura`.
  */
 export const layer = Layer.mergeAll(
   layerProviders,
   layerConversa,
+  layerRelato,
   layerSkills,
   layerPasta,
   layerRevisaoPpc,

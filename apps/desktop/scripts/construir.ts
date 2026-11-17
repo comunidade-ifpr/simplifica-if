@@ -7,8 +7,9 @@
  * - `dist/app/web/`: o build do `apps/web` (`pnpm --filter @simplifica-if/web build`) ou, sem ele, a
  *   página provisória de `src/provisoria/`;
  * - `dist/app/package.json`: o manifesto mínimo do app (sem dependências: tudo vai nos bundles);
- * - `dist/recursos/servidor/`: o servidor local (`apps/server/src/bin.ts`) em ESM e o Worker da revisão
- *   prévia (`trabalhador-ppc.mjs`, de `apps/server/src/revisao-ppc/trabalhador.ts`), com as dependências
+ * - `dist/recursos/servidor/`: o servidor local (`apps/server/src/bin.ts`) em ESM e os Workers da revisão
+ *   prévia (`trabalhador-ppc.mjs`, de `apps/server/src/revisao-ppc/trabalhador.ts`) e do aviso ao anexar
+ *   (`trabalhador-dados.mjs`, de `apps/server/src/dados-pessoais/trabalhador.ts`), com as dependências
  *   dentro, menos:
  *   - os opcionais nativos do `ws` (`bufferutil`, `utf-8-validate`), que ficam de fora e não se
  *     instalam; o `ws` os carrega num `try` e segue sem eles;
@@ -92,6 +93,13 @@ async function construirServidor(): Promise<void> {
   await empacotar({
     ...comum,
     entry: { "trabalhador-ppc": NodePath.join(RAIZ, "apps", "server", "src", "revisao-ppc", "trabalhador.ts") },
+    clean: false,
+    outputOptions: { codeSplitting: false },
+  });
+  // O Worker do aviso ao anexar (M1.13; `dados-pessoais/conferir.ts` o procura em `./trabalhador-dados.mjs`).
+  await empacotar({
+    ...comum,
+    entry: { "trabalhador-dados": NodePath.join(RAIZ, "apps", "server", "src", "dados-pessoais", "trabalhador.ts") },
     clean: false,
     outputOptions: { codeSplitting: false },
   });
