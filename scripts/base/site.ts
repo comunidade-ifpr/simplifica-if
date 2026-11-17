@@ -4,12 +4,12 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { compararTexto } from "@simplifica-if/kb/texto";
 
-const NOMES_IGNORADOS = new Set([".DS_Store", "__pycache__", ".pytest_cache"]);
-/** Nomes ignorados por `filecmp.dircmp` na comparação (DEFAULT_IGNORES do Python). */
-const NOMES_IGNORADOS_COMPARACAO = new Set(["RCS", "CVS", "tags", ".git", ".hg", ".bzr", "_darcs", "__pycache__"]);
+const NOMES_IGNORADOS = new Set([".DS_Store"]);
+/** Nomes ignorados na comparação: pastas e arquivos de controle de versão. */
+const NOMES_IGNORADOS_COMPARACAO = new Set(["RCS", "CVS", "tags", ".git", ".hg", ".bzr", "_darcs"]);
 
 export function ignorarNaCopia(nome: string): boolean {
-  return NOMES_IGNORADOS.has(nome) || nome.endsWith(".pyc");
+  return NOMES_IGNORADOS.has(nome);
 }
 
 function caminhoReal(caminho: string): string {
@@ -20,7 +20,7 @@ function caminhoReal(caminho: string): string {
   }
 }
 
-/** Copia a árvore seguindo links simbólicos e preservando datas de modificação (como `shutil.copytree`). */
+/** Copia a árvore seguindo links simbólicos e preservando datas de modificação. */
 function copiarArvore(origem: string, destino: string): void {
   NodeFS.mkdirSync(destino, { recursive: true });
   for (const nome of NodeFS.readdirSync(origem)) {
@@ -70,10 +70,9 @@ function conteudoIgual(a: string, b: string): boolean {
 }
 
 /**
- * Compara o site esperado com o atual, com as mesmas mensagens de `filecmp.dircmp`
- * usadas pelo script Python. Diferente do Python, compara sempre o conteúdo
- * (não confia em tamanho + mtime) e acusa entrada que é diretório num lado e
- * arquivo no outro.
+ * Compara o site esperado com o atual: entradas ausentes, extras e com conteúdo
+ * divergente. Compara sempre o conteúdo (não confia em tamanho + mtime) e acusa
+ * entrada que é diretório num lado e arquivo no outro.
  */
 export function compararDiretorios(esperado: string, atual: string): string[] {
   const erros: string[] = [];

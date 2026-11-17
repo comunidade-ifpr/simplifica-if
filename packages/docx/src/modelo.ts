@@ -58,8 +58,7 @@ export type ParagrafoOoxml = {
   itens: ItemParagrafo[];
   /**
    * Numeração automática aplicada direto no parágrafo (`w:numPr`): o nível e o formato do
-   * marcador (`bullet`, `decimal`, `lowerLetter`, `upperRoman`…). `null` sem numeração e no modo
-   * `python-docx`, que não a lê.
+   * marcador (`bullet`, `decimal`, `lowerLetter`, `upperRoman`…). `null` sem numeração.
    */
   numeracao: { nivel: number; formato: string } | null;
   /** Primeira figura do parágrafo; só é lida em parágrafos do corpo fora de `w:sdt`. */
@@ -71,7 +70,7 @@ export type CelulaOoxml = {
   direta: boolean;
   /**
    * Célula da própria linha, mas embrulhada em `w:sdt` ou `w:customXml` (não é de tabela
-   * aninhada). Só o modo `documento` a distingue; no `python-docx` é sempre `false`.
+   * aninhada).
    */
   embrulhada: boolean;
   /** Colunas da grade ocupadas (`w:gridSpan`), de 1 a 63 (o máximo do Word). */
@@ -81,9 +80,8 @@ export type CelulaOoxml = {
   /** Texto dos parágrafos filhos diretos, um por linha (com tabulações e quebras). */
   texto: string;
   /**
-   * Texto de todos os parágrafos descendentes não vazios, um por linha. No modo `documento`, cada
-   * parágrafo é lido como os do corpo; no `python-docx`, é a junção crua dos `w:t` (sem tabulações,
-   * com o texto movido e as duas versões de `mc:AlternateContent`).
+   * Texto de todos os parágrafos descendentes não vazios, um por linha, cada um lido
+   * como os do corpo.
    */
   textoProfundo: string;
 };

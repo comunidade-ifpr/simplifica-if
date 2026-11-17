@@ -63,12 +63,4 @@ describe("ponta a ponta: DOCX → PPC.md → seções do kb → pré-conferênci
     expect(triagem.filter((a) => a.regra === "secoes-do-modelo")).toEqual([]);
     expect(fichas).toHaveLength(12);
   });
-
-  test("no modo `python-docx` (conversão antiga), as seções de primeiro nível ficam em `#`", () => {
-    const antiga = converterPpc(montarDocx({ corpo }), "ppc.docx", {
-      agora: AGORA,
-      fidelidade: "python-docx",
-    });
-    expect(antiga.markdown).toMatch(/^# 1 JUSTIFICATIVA$/m);
-  });
 });

@@ -9,7 +9,7 @@
     "last_modified_by": "Revisor de Teste"
   },
   "dados_extraidos": {
-    "periodo1º_ano_texto_movido_daquibrcaixa_de_textocaixa_de_textobrcaixa_de_textobrcaixa_de_texto": "ao lado"
+    "periodo_1º_anobrcaixa_de_texto": "ao lado"
   },
   "estrutura": {
     "secoes_detectadas": [
@@ -17,32 +17,31 @@
       "5.7 TEXTO PROFUNDO",
       "5.11 REPRESENTAÇÃO GRÁFICA DO PROCESSO FORMATIVO"
     ],
-    "total_elementos": 8,
+    "total_elementos": 7,
     "total_tabelas": 2
   },
   "arquivos_relacionados": {
     "markdown_normalizado": "tabelas-em-controle.md",
     "markdown_bruto": "tabelas-em-controle-bruto.md",
-    "matriz_curricular": "tabelas-em-controle_matriz_curricular.json",
-    "representacao_grafica": "imagens/representacao_grafica.png"
+    "matriz_curricular": "tabelas-em-controle_matriz_curricular.json"
   },
   "representacao_grafica": {
     "encontrada": true,
     "secao": "5.11 REPRESENTAÇÃO GRÁFICA DO PROCESSO FORMATIVO",
-    "tem_bitmap": true,
+    "tem_bitmap": false,
     "tem_desenhos_vetoriais": true,
-    "extraida": true,
-    "metodo": "bitmap",
-    "caminho": "imagens/representacao_grafica.png"
+    "extraida": false,
+    "metodo": "vetorial_nao_renderizada",
+    "caminho": null
   },
   "resumo_matriz_curricular": {
     "total_anos": 1,
-    "total_componentes": 2,
-    "total_ha": 0,
-    "total_hr": 0,
+    "total_componentes": 4,
+    "total_ha": 320,
+    "total_hr": 268,
     "totais": {
-      "ch_total_hora_aula": 147,
-      "ch_total_hora_relogio": 67
+      "ch_total_hora_aula": 320,
+      "ch_total_hora_relogio": 268
     }
   }
 }

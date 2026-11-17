@@ -362,13 +362,11 @@ describe("validação da base", () => {
 });
 
 describe("site", () => {
-  test("copia a base sem arquivos locais e compara como filecmp.dircmp", () => {
+  test("copia a base sem arquivos locais e compara o site com o esperado", () => {
     const raiz = projetoTemporario();
     escrever(raiz, "base/a.md", "a");
     escrever(raiz, "base/docs/b.md", "b");
     escrever(raiz, "base/.DS_Store", "x");
-    escrever(raiz, "base/__pycache__/m.pyc", "x");
-    escrever(raiz, "base/docs/c.pyc", "x");
     const site = NodePath.join(raiz, "site");
     renderizarSite(NodePath.join(raiz, "base"), site);
     const esperado = NodePath.join(raiz, "esperado");

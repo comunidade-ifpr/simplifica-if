@@ -56,26 +56,22 @@ function celulasSimples(texto: string, semVazias = true): string[] {
   return semVazias ? celulas.filter(Boolean) : celulas;
 }
 
-export type OpcoesNormalizacao = {
-  /**
-   * Nível do título de uma seção de primeiro nível numerada ("1 JUSTIFICATIVA"); a subseção "1.1" fica
-   * um abaixo. O padrão é 2 (`##`), a convenção dos PPCs da base e do `kb`: `#` fica para o título do
-   * documento, e a segmentação de seções do `kb` só toma `##` em diante. A conversão em Python usava 1
-   * (`REGRAS_DO_PYTHON`, só para o diferencial).
-   */
-  nivelDaSecao?: 1 | 2;
-};
+/**
+ * Nível do título de uma seção de primeiro nível numerada ("1 JUSTIFICATIVA"); a subseção "1.1" fica
+ * um abaixo. É 2 (`##`), a convenção dos PPCs da base e do `kb`: `#` fica para o título do documento, e
+ * a segmentação de seções do `kb` só toma `##` em diante.
+ */
+const NIVEL_DA_SECAO = 2;
 
 /** Normaliza o Markdown (`MarkdownNormalizer().normalize`). */
-export function normalizarMarkdown(markdown: string, opcoes: OpcoesNormalizacao = {}): ResultadoNormalizacao {
-  const nivelDaSecao = opcoes.nivelDaSecao ?? 2;
+export function normalizarMarkdown(markdown: string): ResultadoNormalizacao {
   const bruto = markdown.replaceAll("\r\n", "\n").replaceAll("\r", "\n").replaceAll(" ", " ").replaceAll("\t", "    ");
   let linhas = bruto.split("\n");
   linhas = corrigirHeadingQuebrado(linhas);
   linhas = linhas.map(limparLinha);
   linhas = removerRuidos(linhas);
   linhas = removerSumario(linhas);
-  linhas = normalizarHeadings(linhas, nivelDaSecao);
+  linhas = normalizarHeadings(linhas, NIVEL_DA_SECAO);
   linhas = removerBlocosDuplicados(linhas);
   linhas = consolidarParagrafos(linhas);
   linhas = normalizarTabelasPipe(linhas);

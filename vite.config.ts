@@ -40,13 +40,12 @@ export default defineConfig({
   fmt: {
     printWidth: 120,
     // Markdown, JSON e YAML da base são textos normativos ou saídas de geradores, e não se
-    // reformatam. O Python fica com as ferramentas do Python.
+    // reformatam.
     ignorePatterns: [
       "**/*.md",
       "**/*.json",
       "**/*.yaml",
       "**/*.yml",
-      "**/*.py",
       "base-conhecimento/**",
       "avaliacao/**",
       "site/**",

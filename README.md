@@ -9,7 +9,7 @@ A base em `base-conhecimento/` é a fonte de verdade para normas, legislação, 
 - `base-conhecimento/`: fonte publicável da base, com caminhos internos preservados como `normas/`, `institucional/`, `catalogos/`, `manifest.json`, `llms.txt` e `README.md`. Os dados institucionais de gestão (campi, cursos, processos seletivos, editais, ofertas e as reuniões do Consepe) ficam em `base-conhecimento/institucional/ifpr/`, um JSON por registro.
 - `site/`: saída gerada para publicação estática, ignorada pelo Git e reconstruída a partir de `base-conhecimento/`.
 - `.agents/skills/`: skills operacionais para agentes IA, uma pasta versionada por skill e sem symlinks internos.
-- `scripts/`: geração, validação e exportação da base e integração com Notion (só `Movimentações de Cursos`), SEI e SUAP, em TypeScript (Node e pnpm); a conversão de PPCs para Markdown continua em Python.
+- `scripts/`: geração, validação e exportação da base e integração com Notion (só `Movimentações de Cursos`), SEI e SUAP, em TypeScript (Node e pnpm). PPCs entram na base em DOCX, convertidos para Markdown por `packages/docx` e `packages/ppc`.
 - `base-conhecimento/docs/`: documentação de apoio à curadoria da base e ao desenvolvimento das skills.
 - `packages/sei-cli/`: CLI que extrai e inspeciona processos do SEI com Playwright, mantido como workspace pnpm (veja o `README.md` do pacote).
 

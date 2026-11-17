@@ -1,16 +1,24 @@
 /**
  * Leitura de um DOCX no modelo intermediário (`modelo.ts`).
  *
- * A conversão foi escrita sobre o `python-docx` 1.2.0 e depende de detalhes de como ele lê o
- * arquivo. Os que este leitor reproduz, porque mudam a saída:
- * - o texto de um parágrafo é o dos `w:r` e `w:hyperlink` filhos diretos; num run, `w:tab` e
+ * Convenções da leitura que mudam a saída:
+ * - o texto de um parágrafo é o dos `w:r` e `w:hyperlink` filhos (e dos que estão dentro de
+ *   envoltórios, veja abaixo); num run, `w:tab` e
  *   `w:ptab` viram `\t`, `w:br` (de linha) e `w:cr` viram `\n` e `w:noBreakHyphen` vira `-`;
  * - o estilo do parágrafo é o de `w:pStyle` quando ele existe e é de parágrafo, senão o estilo de
  *   parágrafo padrão do documento; o nome é o de exibição (`heading 1` no XML é `Heading 1`);
  * - a formatação do run é só a direta (`w:rPr`), sem herança do estilo;
- * - o texto de uma célula é o dos parágrafos filhos diretos, um por linha.
+ * - o texto de uma célula é o dos parágrafos filhos, um por linha.
  *
- * O que ele lê diferente, de propósito, está em `Fidelidade`.
+ * O leitor lê o texto que o Word mostra:
+ * - Entram os runs embrulhados em `w:ins` e `w:moveTo` (inserções de alterações controladas ainda
+ *   não aceitas), `w:smartTag`, `w:sdt` em linha, `w:fldSimple` e `w:customXml`. O removido
+ *   (`w:del`, `w:moveFrom`) fica de fora: o texto, a figura e a linha de tabela.
+ * - Entram as linhas, as células e os parágrafos de tabela embrulhados em `w:sdt`.
+ * - O texto profundo da célula é lido como os parágrafos do corpo, sem a versão de
+ *   compatibilidade (`mc:Fallback`) das caixas de texto.
+ * - A numeração automática do parágrafo (`w:numPr`) é lida.
+ * - Uma imagem legada (`v:imagedata` em `w:pict` ou `w:object`) é imagem, não forma.
  */
 import { aparar } from "@simplifica-if/kb/texto";
 import { Element as ElementoDom, type Element } from "domhandler";
@@ -39,27 +47,7 @@ import {
 } from "./pacote.ts";
 import { atributo, descendente, descendentes, filho, filhos, filhosElementos, textoInicial } from "./xml.ts";
 
-/**
- * Como tratar o que o `python-docx` não enxerga:
- *
- * - `documento` (padrão): lê o texto que o Word mostra.
- *   - Entram os runs embrulhados em `w:ins` e `w:moveTo` (inserções de alterações controladas ainda
- *     não aceitas), `w:smartTag`, `w:sdt` em linha, `w:fldSimple` e `w:customXml`. O removido
- *     (`w:del`, `w:moveFrom`) fica de fora: o texto, a figura e a linha de tabela.
- *   - Entram as linhas, as células e os parágrafos de tabela embrulhados em `w:sdt`.
- *   - O texto profundo da célula é lido como os parágrafos do corpo, sem a versão de
- *     compatibilidade (`mc:Fallback`) das caixas de texto.
- *   - A numeração automática do parágrafo (`w:numPr`) é lida.
- *   - Uma imagem legada (`v:imagedata` em `w:pict` ou `w:object`) é imagem, não forma.
- * - `python-docx`: reproduz o `python-docx`, que só lê os runs filhos diretos do parágrafo e do
- *   hyperlink, as linhas e células filhas diretas, e trata todo `w:pict` como forma. Existe para o
- *   diferencial contra a conversão antiga (`packages/ppc/scripts/diferencial-docx.ts`): uma minuta
- *   com alterações controladas perde, nesse modo, todo o texto inserido.
- */
-export type Fidelidade = "documento" | "python-docx";
-
 export type OpcoesLeitura = {
-  fidelidade?: Fidelidade;
   /** Limites de leitura; padrão: `LIMITES_PADRAO` de `limites.ts`. */
   limites?: Partial<LimitesDoPacote>;
 };
@@ -67,7 +55,7 @@ export type OpcoesLeitura = {
 /** Elementos que só embrulham conteúdo em linha; o conteúdo de `w:sdt` fica em `w:sdtContent`. */
 const ENVOLTORIOS = new Set(["w:ins", "w:moveTo", "w:smartTag", "w:sdt", "w:sdtContent", "w:fldSimple", "w:customXml"]);
 
-/** Nomes de estilo que o Word guarda em minúsculas e exibe com maiúscula (os do `python-docx`). */
+/** Nomes de estilo que o Word guarda em minúsculas e exibe com maiúscula. */
 const NOMES_DE_EXIBICAO = new Map<string, string>([
   ["caption", "Caption"],
   ["footer", "Footer"],
@@ -84,7 +72,7 @@ const EMU_POR_UNIDADE: Record<string, number> = {
   pi: 152400,
 };
 
-/** Arredonda para o inteiro mais próximo, com o meio indo para o par (como o `round` do Python). */
+/** Arredonda para o inteiro mais próximo, com o meio indo para o par. */
 function arredondar(valor: number): number {
   const piso = Math.floor(valor);
   const resto = valor - piso;
@@ -137,7 +125,6 @@ function ligaDesliga(elemento: Element | null): boolean | null {
 }
 
 type Contexto = {
-  fidelidade: Fidelidade;
   relacoes: Map<string, Relacao>;
   /** Nome de exibição dos estilos de parágrafo, por id. */
   estilos: Map<string, string | null>;
@@ -206,7 +193,7 @@ function lerNumeracoes(raiz: Element | null): Map<string, Map<number, string>> {
 }
 
 function lerNumeracao(propriedades: Element | null, contexto: Contexto): ParagrafoOoxml["numeracao"] {
-  const numeracao = contexto.fidelidade === "documento" && propriedades ? filho(propriedades, "w:numPr") : null;
+  const numeracao = propriedades ? filho(propriedades, "w:numPr") : null;
   if (!numeracao) return null;
   const id = filho(numeracao, "w:numId");
   const nivel = filho(numeracao, "w:ilvl");
@@ -264,12 +251,11 @@ function lerRun(run: Element): RunOoxml {
   };
 }
 
-/** Filhos de conteúdo em linha: os diretos e, no modo `documento`, os de dentro dos envoltórios. */
-function conteudoEmLinha(elemento: Element, fidelidade: Fidelidade): Element[] {
-  if (fidelidade === "python-docx") return filhosElementos(elemento);
+/** Filhos de conteúdo em linha: os diretos e os de dentro dos envoltórios. */
+function conteudoEmLinha(elemento: Element): Element[] {
   const saida: Element[] = [];
   for (const item of filhosElementos(elemento)) {
-    if (ENVOLTORIOS.has(item.name)) for (const interno of conteudoEmLinha(item, fidelidade)) saida.push(interno);
+    if (ENVOLTORIOS.has(item.name)) for (const interno of conteudoEmLinha(item)) saida.push(interno);
     else saida.push(item);
   }
   return saida;
@@ -287,10 +273,10 @@ function urlDoHyperlink(hyperlink: Element, contexto: Contexto): string | null {
 
 function lerItens(paragrafo: Element, contexto: Contexto): ItemParagrafo[] {
   const itens: ItemParagrafo[] = [];
-  for (const item of conteudoEmLinha(paragrafo, contexto.fidelidade)) {
+  for (const item of conteudoEmLinha(paragrafo)) {
     if (item.name === "w:r") itens.push({ tipo: "run", ...lerRun(item) });
     else if (item.name === "w:hyperlink") {
-      const runs = conteudoEmLinha(item, contexto.fidelidade).filter((no) => no.name === "w:r");
+      const runs = conteudoEmLinha(item).filter((no) => no.name === "w:r");
       itens.push({ tipo: "hyperlink", url: urlDoHyperlink(item, contexto), runs: runs.map(lerRun) });
     }
   }
@@ -328,11 +314,8 @@ function imagemVml(recipiente: Element, contexto: Contexto): FiguraOoxml | null 
 }
 
 function lerFigura(paragrafo: Element, contexto: Contexto): FiguraOoxml | null {
-  // No modo `documento`, a figura apagada com o controle de alterações ligado não conta.
-  const achar = (nome: string) =>
-    contexto.fidelidade === "documento"
-      ? (descendentesFora(paragrafo, nome, REMOVIDOS)[0] ?? null)
-      : descendente(paragrafo, nome);
+  // A figura apagada com o controle de alterações ligado não conta.
+  const achar = (nome: string) => descendentesFora(paragrafo, nome, REMOVIDOS)[0] ?? null;
   const desenho = achar("w:drawing");
   if (desenho) {
     const blip = descendente(desenho, "a:blip");
@@ -358,11 +341,10 @@ function lerFigura(paragrafo: Element, contexto: Contexto): FiguraOoxml | null {
   }
   const legado = achar("w:pict");
   if (legado) {
-    const imagem = contexto.fidelidade === "documento" ? imagemVml(legado, contexto) : null;
-    return imagem ?? { tipo: "forma", origem: "vml" };
+    return imagemVml(legado, contexto) ?? { tipo: "forma", origem: "vml" };
   }
   // Objeto embutido (OLE): a prévia é uma imagem legada, em geral EMF ou WMF.
-  const objeto = contexto.fidelidade === "documento" ? achar("w:object") : null;
+  const objeto = achar("w:object");
   return objeto ? imagemVml(objeto, contexto) : null;
 }
 
@@ -386,22 +368,14 @@ function lerParagrafo(paragrafo: Element, contexto: Contexto, emControle: boolea
 
 // ---------------------------------------------------------------- tabelas
 
-/** O que não entra no texto profundo no modo `documento`: o removido e a versão de compatibilidade. */
+/** O que não entra no texto profundo: o removido e a versão de compatibilidade. */
 const FORA_DO_TEXTO = new Set([...REMOVIDOS, "mc:Fallback"]);
 
 /** Parágrafos não vazios de toda a célula (com os de tabelas aninhadas e caixas de texto). */
 function textoProfundo(celula: Element, contexto: Contexto): string {
-  const documento = contexto.fidelidade === "documento";
-  const paragrafos = documento ? descendentesFora(celula, "w:p", FORA_DO_TEXTO) : descendentes(celula, "w:p");
   const textos: string[] = [];
-  for (const paragrafo of paragrafos) {
-    const texto = aparar(
-      documento
-        ? textoDosItens(paragrafo, contexto)
-        : descendentes(paragrafo, "w:t")
-            .map((item) => textoInicial(item))
-            .join(""),
-    );
+  for (const paragrafo of descendentesFora(celula, "w:p", FORA_DO_TEXTO)) {
+    const texto = aparar(textoDosItens(paragrafo, contexto));
     if (texto) textos.push(texto);
   }
   return textos.join("\n");
@@ -419,15 +393,14 @@ function ehEmbrulhada(celula: Element, linha: Element): boolean {
 }
 
 function lerCelula(celula: Element, linha: Element, contexto: Contexto): CelulaOoxml {
-  const documento = contexto.fidelidade === "documento";
   const propriedades = filho(celula, "w:tcPr");
   const vertical = propriedades ? filho(propriedades, "w:vMerge") : null;
   const horizontal = propriedades ? filho(propriedades, "w:gridSpan") : null;
-  // No modo `documento` entram também os parágrafos embrulhados em `w:sdt` dentro da célula.
-  const paragrafos = documento ? filhosComEnvoltorios(celula, "w:p") : filhos(celula, "w:p");
+  // Entram também os parágrafos embrulhados em `w:sdt` dentro da célula.
+  const paragrafos = filhosComEnvoltorios(celula, "w:p");
   return {
     direta: celula.parent === linha,
-    embrulhada: documento && ehEmbrulhada(celula, linha),
+    embrulhada: ehEmbrulhada(celula, linha),
     colunas: horizontal ? colunasValidas(atributo(horizontal, "w:val"), 1, 1) : 1,
     // `w:vMerge` sem valor é continuação.
     mesclaVertical: !vertical ? null : atributo(vertical, "w:val") === "restart" ? "inicio" : "continuacao",
@@ -443,12 +416,9 @@ function linhaRemovida(linha: Element): boolean {
 }
 
 function lerTabela(tabela: Element, contexto: Contexto, emControle: boolean): TabelaOoxml {
-  // No modo `documento` entram as linhas embrulhadas em `w:sdt` (que o `python-docx` não vê e que,
-  // numa matriz, são componentes que somem) e saem as removidas na revisão.
-  const elementos =
-    contexto.fidelidade === "documento"
-      ? filhosComEnvoltorios(tabela, "w:tr").filter((linha) => !linhaRemovida(linha))
-      : filhos(tabela, "w:tr");
+  // Entram as linhas embrulhadas em `w:sdt` (numa matriz, são componentes) e saem as removidas na
+  // revisão.
+  const elementos = filhosComEnvoltorios(tabela, "w:tr").filter((linha) => !linhaRemovida(linha));
   let grade = 0;
   const linhas = elementos.map((linha): LinhaOoxml => {
     const propriedades = filho(linha, "w:trPr");
@@ -552,7 +522,6 @@ export function lerPacote(pacote: PacoteOoxml, opcoes: OpcoesLeitura = {}): Docu
   const parteEstilos = pacote.partePorTipo(principal, RELACAO_ESTILOS);
   const partePropriedades = pacote.partePorTipo("", RELACAO_PROPRIEDADES);
   const contexto: Contexto = {
-    fidelidade: opcoes.fidelidade ?? "documento",
     relacoes: pacote.relacoes(principal),
     limites: pacote.limites,
     ...lerEstilos(parteEstilos ? pacote.xml(parteEstilos) : null),

@@ -1,0 +1,91 @@
+{
+  "tipo": "matriz_curricular_ppc",
+  "formato": "nucleos_ftp_fgb_np",
+  "minutos_hora_aula": 50,
+  "semanas_ano_letivo": 40,
+  "anos": [
+    {
+      "ano": "1º Ano",
+      "componentes": [
+        {
+          "nome": "Matemática",
+          "aulas_semanais": 4,
+          "ch_hora_aula": 160,
+          "ch_hora_relogio_cnct": 133,
+          "ch_ftp": null,
+          "ch_fgb": 160,
+          "ch_np": null
+        },
+        {
+          "nome": "Eletricidade",
+          "aulas_semanais": 2,
+          "ch_hora_aula": 80,
+          "ch_hora_relogio_cnct": 67,
+          "ch_ftp": 80,
+          "ch_fgb": null,
+          "ch_np": null
+        }
+      ],
+      "subtotais": {
+        "ch_ftp": 80,
+        "ch_fgb": 160,
+        "ch_np": 0,
+        "ch_total_hora_aula": 240,
+        "ch_ftp_hora_relogio": 67,
+        "ch_fgb_hora_relogio": 133,
+        "ch_np_hora_relogio": 0,
+        "ch_total_hora_relogio": 200
+      }
+    },
+    {
+      "ano": "2º Ano",
+      "componentes": [
+        {
+          "nome": "Projeto Integrador",
+          "aulas_semanais": 2,
+          "ch_hora_aula": 80,
+          "ch_hora_relogio_cnct": 67,
+          "ch_ftp": null,
+          "ch_fgb": null,
+          "ch_np": 80
+        },
+        {
+          "nome": "Física",
+          "aulas_semanais": 2,
+          "ch_hora_aula": 80,
+          "ch_hora_relogio_cnct": 67,
+          "ch_ftp": null,
+          "ch_fgb": 80,
+          "ch_np": null
+        },
+        {
+          "nome": "Automação",
+          "aulas_semanais": 3,
+          "ch_hora_aula": 120,
+          "ch_hora_relogio_cnct": 100,
+          "ch_ftp": 120,
+          "ch_fgb": null,
+          "ch_np": null
+        }
+      ],
+      "subtotais": {}
+    }
+  ],
+  "linhas_modelo": [
+    {
+      "nome": "Atividades Complementares",
+      "ch_ftp": null,
+      "ch_fgb": null,
+      "ch_np": null,
+      "ch_hora_aula": 60,
+      "ch_hora_relogio": 50
+    }
+  ],
+  "totais": {
+    "ch_total_hora_aula": 520,
+    "ch_total_hora_relogio": 484,
+    "ch_ftp": 167,
+    "ch_fgb": 200,
+    "ch_np": 67
+  }
+}

@@ -36,7 +36,7 @@ function linhasDoErro(prefixo: string, erro: Schema.SchemaError): string[] {
   return problemas(erro.issue).map((p) => `${prefixo}: ${caminhoTexto(p.caminho)}: ${p.mensagem}`);
 }
 
-const DIRETORIOS_IGNORADOS_PADROES_LOCAIS = new Set([".git", ".venv", "skills"]);
+const DIRETORIOS_IGNORADOS_PADROES_LOCAIS = new Set([".git", "skills"]);
 const RE_DATA_NO_INICIO = /^\p{Nd}{4}-\p{Nd}{2}-\p{Nd}{2}_/u;
 const RE_ALIAS_COM_ANO = /[_-]\p{Nd}{4}[^\n]*\.md(?=\n?$)/u;
 

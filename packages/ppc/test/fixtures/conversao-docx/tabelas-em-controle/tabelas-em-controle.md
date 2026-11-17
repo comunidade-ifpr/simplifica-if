@@ -1,18 +1,20 @@
-## 5.6 MATRIZ CURRICULAR
+### 5.6 MATRIZ CURRICULAR
 
 | Ano | Componente Curricular | Número de aulas semanais | CH hora-aula no período | CH hora-relógio no período |
 |---|---|---:|---:|---:|
 | 1º Ano | Matemática | 2 | 80 | 67 |
-| 1º Ano | 2 | 80 | 67 |  |
-| CARGA HORÁRIA TOTAL DO CURSO | CARGA HORÁRIA TOTAL DO CURSO |  | 147 | 67 |
+| 1º Ano | Linha em controle | 2 | 80 | 67 |
+| 1º Ano | Célula em controle | 2 | 80 | 67 |
+| 1º Ano | Parágrafo em controle | 2 | 80 | 67 |
+| CARGA HORÁRIA TOTAL DO CURSO | CARGA HORÁRIA TOTAL DO CURSO |  | 320 | 268 |
 
-## 5.7 TEXTO PROFUNDO
+### 5.7 TEXTO PROFUNDO
 
-| Período:1º ano texto movido daqui<br>caixa de textocaixa de texto<br>caixa de texto<br>caixa de texto | ao lado |
+| Período: 1º ano<br>caixa de texto | ao lado |
 |---|---|
 
-## 5.11 REPRESENTAÇÃO GRÁFICA DO PROCESSO FORMATIVO
+### 5.11 REPRESENTAÇÃO GRÁFICA DO PROCESSO FORMATIVO
 
-![Representação Gráfica do Processo Formativo](imagens/representacao_grafica.png)
+**Aviso da conversão:** a figura desta seção foi desenhada com formas do Word (desenho vetorial) e não foi convertida em imagem. Consulte a representação gráfica no documento original.
 
 A figura antiga foi apagada na revisão.

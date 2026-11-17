@@ -1,6 +1,6 @@
 /**
- * Documentos sintéticos de PPC para os testes da conversão e para o diferencial contra a conversão
- * antiga (`scripts/diferencial-docx.ts`). São fictícios: nenhum trecho de PPC real.
+ * Documentos sintéticos de PPC para os testes da conversão. São fictícios: nenhum trecho de PPC
+ * real.
  */
 import {
   EMF_MINIMO,
@@ -571,28 +571,23 @@ const figura = (conteudo: string, extras: Partial<PartesDocx> = {}): PartesDocx 
 export type Fixture = {
   nome: string;
   partes: () => PartesDocx;
-  /**
-   * `false` quando o documento exercita uma diferença deliberada em relação à conversão em Python
-   * (ou algo em que ela aborta): fica fora do diferencial e é coberto só pelos testes.
-   */
-  oraculo: boolean;
 };
 
 export const FIXTURES: Fixture[] = [
-  { nome: "ppc-minimo", partes: ppcMinimo, oraculo: true },
-  { nome: "ppc-nucleos", partes: ppcNucleos, oraculo: true },
-  { nome: "mesclas", partes: mesclas, oraculo: true },
-  { nome: "controles", partes: controles, oraculo: true },
-  { nome: "rastreadas", partes: rastreadas, oraculo: true },
-  { nome: "texto-especial", partes: textoEspecial, oraculo: true },
-  { nome: "sem-secoes", partes: semSecoes, oraculo: true },
-  { nome: "titulos-de-corpo", partes: titulosDeCorpo, oraculo: true },
-  { nome: "listas-automaticas", partes: listasAutomaticas, oraculo: true },
-  { nome: "tabelas-em-controle", partes: tabelasEmControle, oraculo: true },
-  { nome: "figura-vetorial", partes: () => figura(par(formas())), oraculo: true },
-  { nome: "figura-legada", partes: () => figura(par(desenhoLegado())), oraculo: true },
-  { nome: "figura-ausente", partes: () => figura(par("Só texto.")), oraculo: true },
-  // A conversão em Python grava o EMF com o nome `representacao_grafica.png` e o anuncia como imagem.
+  { nome: "ppc-minimo", partes: ppcMinimo },
+  { nome: "ppc-nucleos", partes: ppcNucleos },
+  { nome: "mesclas", partes: mesclas },
+  { nome: "controles", partes: controles },
+  { nome: "rastreadas", partes: rastreadas },
+  { nome: "texto-especial", partes: textoEspecial },
+  { nome: "sem-secoes", partes: semSecoes },
+  { nome: "titulos-de-corpo", partes: titulosDeCorpo },
+  { nome: "listas-automaticas", partes: listasAutomaticas },
+  { nome: "tabelas-em-controle", partes: tabelasEmControle },
+  { nome: "figura-vetorial", partes: () => figura(par(formas())) },
+  { nome: "figura-legada", partes: () => figura(par(desenhoLegado())) },
+  { nome: "figura-ausente", partes: () => figura(par("Só texto.")) },
+  // EMF embutido: copiado como está, sem contar como imagem extraída.
   {
     nome: "figura-emf",
     partes: () =>
@@ -600,7 +595,6 @@ export const FIXTURES: Fixture[] = [
         relacoes: [{ id: "rId10", tipo: "image", alvo: "media/image1.emf" }],
         midia: { "image1.emf": EMF_MINIMO },
       }),
-    oraculo: false,
   },
   {
     nome: "figura-legada-emf",
@@ -609,9 +603,8 @@ export const FIXTURES: Fixture[] = [
         relacoes: [{ id: "rId10", tipo: "image", alvo: "media/image1.emf" }],
         midia: { "image1.emf": EMF_MINIMO },
       }),
-    oraculo: true,
   },
-  // Idem, com o JPEG gravado como `.png`.
+  // JPEG: a imagem sai com a extensão dela.
   {
     nome: "figura-jpeg",
     partes: () =>
@@ -619,9 +612,8 @@ export const FIXTURES: Fixture[] = [
         relacoes: [{ id: "rId10", tipo: "image", alvo: "media/image1.jpeg" }],
         midia: { "image1.jpeg": PNG_MINIMO },
       }),
-    oraculo: false,
   },
-  // O `python-docx` lança `ValueError` nesta mescla (a continuação não tem célula acima na mesma coluna).
+  // Mescla malformada: a continuação não tem célula acima na mesma coluna.
   {
     nome: "mescla-malformada",
     partes: () => ({
@@ -633,7 +625,6 @@ export const FIXTURES: Fixture[] = [
           linha([celula("topo", { vertical: "continua" }), celula("x"), celula("y")]),
         ]),
     }),
-    oraculo: false,
   },
 ];
 

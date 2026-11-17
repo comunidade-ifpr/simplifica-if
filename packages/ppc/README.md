@@ -9,11 +9,10 @@ const conversao = converterPpc(bytes, "PPC.docx", { agora: new Date() }); // em 
 const artefatos = gravarArtefatos(conversao, "PPC.docx", pastaDeSaida);
 ```
 
-A leitura do DOCX é do pacote [`@simplifica-if/docx`](../docx/README.md). A arquitetura, as regras do modo `documento` (`src/conversao-docx/regras.ts`), as diferenças em relação à conversão antiga em Python e o diferencial (`scripts/diferencial-docx.ts`) estão no [README da skill](../../.agents/skills/revisar-ppc/README.md#conversão-docx).
+A leitura do DOCX é do pacote [`@simplifica-if/docx`](../docx/README.md). A arquitetura e as regras da conversão estão no [README da skill](../../.agents/skills/revisar-ppc/README.md#conversão-docx).
 
 ```bash
 pnpm --filter @simplifica-if/ppc test
-node packages/ppc/scripts/diferencial-docx.ts   # precisa de git, uv e diff
 ```
 
 ## Pré-conferência sem IA (fichas D)

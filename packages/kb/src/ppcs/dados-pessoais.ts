@@ -24,8 +24,7 @@
  * Fica: nome de pessoa em ato oficial ou quadro docente, e-mail institucional, telefone fixo,
  * endereço e contato de campus e de parceiros.
  *
- * A mesma regra está em `scripts/converter_ppcs_markdown.py` (`omitir_dados_pessoais`), por onde os
- * PPCs entram na base; `dados-pessoais.casos.json` é o conjunto de casos que o teste aplica às duas.
+ * `dados-pessoais.casos.json` é o conjunto de casos que o teste aplica.
  * O `validar_base` recusa o que esta regra acharia (`contarDadosPessoais`).
  */
 

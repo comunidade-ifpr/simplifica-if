@@ -284,9 +284,8 @@ describe("limites contra arquivos montados para esgotar recursos", () => {
   });
 });
 
-describe("leituras do modo documento", () => {
-  const ler = (corpo: string, fidelidade: "documento" | "python-docx" = "documento", extras = {}) =>
-    lerDocx(montarDocx({ corpo, ...extras }), { fidelidade });
+describe("leitura do texto que o Word mostra", () => {
+  const ler = (corpo: string, extras = {}) => lerDocx(montarDocx({ corpo, ...extras }));
   const celulas = (bloco: TabelaOoxml) => bloco.linhas.map((item) => item.celulas.map((lida) => lida.texto));
 
   test("linha de tabela embrulhada em w:sdt é lida; a removida na revisão sai", () => {
@@ -298,8 +297,6 @@ describe("leituras do modo documento", () => {
       linha([celula("última")]),
     ]);
     expect(celulas(tabelas(ler(corpo).blocos)[0]!)).toEqual([["Cab"], ["em controle"], ["última"]]);
-    // O python-docx não vê a linha embrulhada e mantém a removida.
-    expect(celulas(tabelas(ler(corpo, "python-docx").blocos)[0]!)).toEqual([["Cab"], ["apagada"], ["última"]]);
   });
 
   test("célula e parágrafo embrulhados em w:sdt dentro da linha", () => {
@@ -311,12 +308,6 @@ describe("leituras do modo documento", () => {
       ["direta", true, false],
       ["embrulhada", false, true],
       ["parágrafo em controle", true, false],
-    ]);
-    const [compativel] = tabelas(ler(corpo, "python-docx").blocos);
-    expect(compativel!.linhas[0]!.celulas.map((item) => [item.texto, item.direta, item.embrulhada])).toEqual([
-      ["direta", true, false],
-      ["embrulhada", false, false],
-      ["", true, false],
     ]);
     // Célula de tabela aninhada não é da linha.
     const [aninhada] = tabelas(
@@ -344,9 +335,6 @@ describe("leituras do modo documento", () => {
       ]),
     ]);
     expect(tabelas(ler(corpo).blocos)[0]!.linhas[0]!.celulas[0]!.textoProfundo).toBe("A\tB inserido\ncaixa");
-    expect(tabelas(ler(corpo, "python-docx").blocos)[0]!.linhas[0]!.celulas[0]!.textoProfundo).toBe(
-      "AB movido inserido\ncaixacaixa\ncaixa\ncaixa",
-    );
   });
 
   test("figura apagada com o controle de alterações não é a figura do parágrafo", () => {
@@ -355,13 +343,10 @@ describe("leituras do modo documento", () => {
       relacoes: [{ id: "rId10", tipo: "image" as const, alvo: "media/image1.png" }],
       midia: { "image1.png": PNG_MINIMO },
     };
-    expect(paragrafos(ler(par(apagada + run("texto")), "documento", extras).blocos)[0]!.figura).toBeNull();
-    expect(paragrafos(ler(par(apagada + formas()), "documento", extras).blocos)[0]!.figura).toEqual({
+    expect(paragrafos(ler(par(apagada + run("texto")), extras).blocos)[0]!.figura).toBeNull();
+    expect(paragrafos(ler(par(apagada + formas()), extras).blocos)[0]!.figura).toEqual({
       tipo: "forma",
       origem: "drawing",
-    });
-    expect(paragrafos(ler(par(apagada + run("texto")), "python-docx", extras).blocos)[0]!.figura).toMatchObject({
-      tipo: "imagem",
     });
   });
 
@@ -375,7 +360,7 @@ describe("leituras do modo documento", () => {
       par("inexistente", { numeracao: { id: 99 } }),
       par("sem numeração"),
     ].join("");
-    const lidos = paragrafos(ler(corpo, "documento", { numeracao: NUMERACAO_PADRAO }).blocos);
+    const lidos = paragrafos(ler(corpo, { numeracao: NUMERACAO_PADRAO }).blocos);
     expect(lidos.map((item) => item.numeracao)).toEqual([
       { nivel: 0, formato: "bullet" },
       { nivel: 1, formato: "lowerLetter" },
@@ -385,11 +370,9 @@ describe("leituras do modo documento", () => {
       null,
       null,
     ]);
-    const compativeis = paragrafos(ler(corpo, "python-docx", { numeracao: NUMERACAO_PADRAO }).blocos);
-    expect(compativeis.every((item) => item.numeracao === null)).toBe(true);
   });
 
-  test("recuo com meio twip ou com unidade arredonda para o par, como no python-docx", () => {
+  test("recuo com meio twip ou com unidade arredonda para o par", () => {
     const recuo = (valor: string) =>
       paragrafos(lerCorpo(`<w:p><w:pPr><w:ind w:left="${valor}"/></w:pPr><w:r><w:t>x</w:t></w:r></w:p>`).blocos)[0]!
         .recuoEsquerdoEmu;

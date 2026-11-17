@@ -2,10 +2,9 @@
  * Escrita do Markdown bruto: elementos e seções do PPC em texto, antes da normalização
  * (`../normalizador-markdown.ts`).
  */
-import { match, sub } from "@simplifica-if/kb/python/re";
+import { match } from "@simplifica-if/kb/python/re";
 import { aparar, apararFim, apararInicio, ESPACOS } from "@simplifica-if/kb/texto";
 import { type Elemento, type Paragrafo, type Tabela, textoDosTrechos, type Trecho } from "./elementos.ts";
-import { REGRAS_DO_DOCUMENTO, type Regras } from "./regras.ts";
 import { type Secao, tituloCompleto } from "./secoes.ts";
 import { normalizarTabela, type TabelaNormalizada, tabelaEmMarkdown } from "./tabelas.ts";
 
@@ -20,11 +19,10 @@ function marcar(texto: string, trecho: Trecho): string {
 }
 
 /**
- * Formata um trecho. Com `negritoUnido`, os espaços das pontas ficam fora dos marcadores (em
- * Markdown, `**texto **` não fecha o negrito) e o trecho só de espaços sai sem marcador.
+ * Formata um trecho. Os espaços das pontas ficam fora dos marcadores (em Markdown, `**texto **`
+ * não fecha o negrito) e o trecho só de espaços sai sem marcador.
  */
-function formatarTrecho(trecho: Trecho, regras: Regras): string {
-  if (!regras.negritoUnido) return marcar(trecho.texto, trecho);
+function formatarTrecho(trecho: Trecho): string {
   const inicio = trecho.texto.length - apararInicio(trecho.texto).length;
   const fim = apararFim(trecho.texto).length;
   if (fim <= inicio) return trecho.texto;
@@ -61,31 +59,26 @@ function enderecoSeguro(url: string): string | null {
 }
 
 /** Trechos formatados; os trechos seguidos de um mesmo hyperlink viram um link só. */
-function formatarTrechos(trechos: Trecho[], regras: Regras): string {
+function formatarTrechos(trechos: Trecho[]): string {
   const partes: string[] = [];
   let acumulado: string[] = [];
   let urlCorrente: string | null = null;
   const fecharLink = () => {
     if (!acumulado.length) return;
     const texto = acumulado.join("");
-    const url = urlCorrente && regras.linksSeguros ? enderecoSeguro(urlCorrente) : urlCorrente;
-    partes.push(
-      url ? `[${regras.linksSeguros ? texto.replaceAll("\\", "\\\\").replaceAll("]", "\\]") : texto}](${url})` : texto,
-    );
+    const url = urlCorrente ? enderecoSeguro(urlCorrente) : null;
+    partes.push(url ? `[${texto.replaceAll("\\", "\\\\").replaceAll("]", "\\]")}](${url})` : texto);
     acumulado = [];
   };
-  for (const trecho of regras.negritoUnido ? unirTrechos(trechos) : trechos) {
+  for (const trecho of unirTrechos(trechos)) {
     if (trecho.url !== urlCorrente) {
       fecharLink();
       urlCorrente = trecho.url;
     }
-    acumulado.push(formatarTrecho(trecho, regras));
+    acumulado.push(formatarTrecho(trecho));
   }
   fecharLink();
-  if (regras.negritoUnido) return partes.join("");
-  // A conversão em Python tentava unir aqui os runs em negrito colados, e `**a****b**` saía
-  // `**a**b**`.
-  return sub(r`\*{4,}`, "**", partes.join(""));
+  return partes.join("");
 }
 
 /**
@@ -96,18 +89,16 @@ function formatarTrechos(trechos: Trecho[], regras: Regras): string {
 export type NormalizarTabela = (tabela: Tabela) => TabelaNormalizada;
 
 class Escritor {
-  readonly #regras: Regras;
   readonly #normalizar: NormalizarTabela;
   #emLista = false;
 
-  constructor(regras: Regras, normalizar: NormalizarTabela) {
-    this.#regras = regras;
+  constructor(normalizar: NormalizarTabela) {
     this.#normalizar = normalizar;
   }
 
-  /** Marcador do título: o nível do documento, um abaixo com `secoesNoNivel2` (`#` é o título do documento). */
+  /** Marcador do título: um nível abaixo do do documento (`#` é o título do documento). */
   #cerquilhas(nivel: number): string {
-    return "#".repeat(Math.min(nivel + (this.#regras.secoesNoNivel2 ? 1 : 0), 6));
+    return "#".repeat(Math.min(nivel + 1, 6));
   }
 
   #sairDaLista(): string {
@@ -117,27 +108,22 @@ class Escritor {
   }
 
   #paragrafo(paragrafo: Paragrafo): string {
-    const texto = formatarTrechos(paragrafo.trechos, this.#regras);
+    const texto = formatarTrechos(paragrafo.trechos);
     if (!paragrafo.itemDeLista) return this.#sairDaLista() + texto;
     this.#emLista = true;
     const recuo = "  ".repeat(paragrafo.nivelLista);
     const digitado = aparar(textoDosTrechos(paragrafo));
-    if (this.#regras.listas && paragrafo.tipoLista !== "numerada") {
+    if (paragrafo.tipoLista !== "numerada") {
       // O marcador digitado ("•", "-") sai. A conferência é no texto sem formatação: no texto
       // formatado, o `*` inicial pode ser o do negrito.
       const marcador = match(r`^[•\-\*–—]\s*`, digitado)?.[0];
       return `${recuo}- ${marcador && texto.startsWith(marcador) ? texto.slice(marcador.length) : texto}`;
     }
-    if (this.#regras.listas) {
-      // O número digitado já é um item de lista do Markdown, e fica: "2. texto" continua "2.".
-      if (match(r`^[\d]+[.)]\s`, digitado)) return recuo + texto;
-      // A alínea mantém a letra, que o texto cita ("nos termos da alínea b").
-      if (match(r`^[a-z][.)]\s`, digitado, { ignoreCase: true })) return `${recuo}- ${texto}`;
-      return `${recuo}1. ${texto}`;
-    }
-    // O marcador digitado no texto ("1.", "•", "-") sai: o Markdown põe o dele.
-    const semMarcador = sub(r`^[•\-\*–—]\s*`, "", sub(r`^[\d]+[.)]\s*`, "", texto));
-    return `${recuo}${paragrafo.tipoLista === "numerada" ? "1." : "-"} ${semMarcador}`;
+    // O número digitado já é um item de lista do Markdown, e fica: "2. texto" continua "2.".
+    if (match(r`^[\d]+[.)]\s`, digitado)) return recuo + texto;
+    // A alínea mantém a letra, que o texto cita ("nos termos da alínea b").
+    if (match(r`^[a-z][.)]\s`, digitado, { ignoreCase: true })) return `${recuo}- ${texto}`;
+    return `${recuo}1. ${texto}`;
   }
 
   elemento(elemento: Elemento): string {
@@ -180,10 +166,9 @@ class Escritor {
 export function escreverMarkdown(
   elementos: Elemento[],
   secoes: Secao[],
-  regras: Regras = REGRAS_DO_DOCUMENTO,
   normalizar: NormalizarTabela = normalizarTabela,
 ): string {
-  const escritor = new Escritor(regras, normalizar);
+  const escritor = new Escritor(normalizar);
   if (!secoes.length) return escritor.elementos(elementos);
   return secoes.map((secao) => escritor.secao(secao)).join("\n");
 }

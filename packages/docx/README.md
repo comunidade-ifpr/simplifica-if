@@ -1,6 +1,6 @@
 # @simplifica-if/docx
 
-Leitor de arquivos `.docx` (OOXML) em TypeScript, sem Word, Python ou binário nativo: `fflate` para o ZIP e `htmlparser2` para o XML. Não sabe o que é um PPC; a conversão do PPC fica em [`@simplifica-if/ppc`](../ppc/README.md).
+Leitor de arquivos `.docx` (OOXML) em TypeScript, sem Word nem binário nativo: `fflate` para o ZIP e `htmlparser2` para o XML. Não sabe o que é um PPC; a conversão do PPC fica em [`@simplifica-if/ppc`](../ppc/README.md).
 
 ```ts
 import { lerDocx } from "@simplifica-if/docx/leitor";
@@ -12,7 +12,7 @@ const documento = lerDocx(bytes); // blocos (parágrafos e tabelas) e propriedad
 |---|---|
 | `pacote.ts` | O ZIP do DOCX: diretório central, partes descompactadas sob demanda e sob limites (`LIMITES_PADRAO`), relações. |
 | `xml.ts` | XML em árvore, com nomes canônicos pela URI do namespace; recusa XML malformado e aninhamento de mais de 256 níveis. |
-| `leitor.ts`, `modelo.ts` | Modelo intermediário do documento e os dois modos de leitura (`Fidelidade`). |
+| `leitor.ts`, `modelo.ts` | Modelo intermediário do documento e a leitura do texto que o Word mostra. |
 | `erro.ts` | `ErroDocx`: todo arquivo recusado sai com ele, com mensagem em português. |
 | `testes/sintetico.ts` | Construtor de DOCX sintéticos para testes (não é usado em produção): tabelas com `w:tblGrid` e parágrafo final, caixa de texto como o Word grava (`caixaDeTexto`), relações de hiperlink (`linkExterno`). `montarDocx` confere cada pacote com o validador abaixo e lança se o Word o recusaria (`validar: false` para o documento quebrado de propósito). |
 | `testes/validar-ooxml.ts` | Validador estrutural para testes (`problemasOoxml`): as regras que, violadas, fazem o Word recusar o arquivo e que os leitores tolerantes deixam passar (referência a relação inexistente, corpo ou célula que termina em tabela, grade da tabela, namespaces e `mc:Ignorable`, tipos de conteúdo, ids de comentário e de desenho). Roda em todo sintético e em toda saída de `comentarDocx` e `revisarDocx` nos testes. |
