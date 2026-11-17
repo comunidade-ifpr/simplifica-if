@@ -105,6 +105,13 @@ describe("manifesto da skill", () => {
     }),
   );
 
+  it.effect("publico fora do vocabulário do perfil", () =>
+    Effect.gen(function* () {
+      const detalhe = yield* erroDe(skillMd("x", `${BLOCO_VALIDO}\n  publico: [coordenacao, docente]`));
+      assert.include(detalhe, "simplifica.publico.0");
+    }),
+  );
+
   it.effect("campos obrigatórios faltando e área fora do padrão", () =>
     Effect.gen(function* () {
       const detalhe = yield* erroDe(skillMd("x", "  titulo: Teste\n  area: Ensino"));

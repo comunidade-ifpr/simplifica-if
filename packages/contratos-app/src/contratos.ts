@@ -36,11 +36,13 @@ import {
 import { Evento, Provider } from "@simplifica-if/motor/eventos";
 import * as Schema from "effect/Schema";
 import { Rpc, RpcGroup } from "effect/rpc";
+import { GrupoPreferencias } from "./preferencias.ts";
 
 export { AprovacaoDesconhecida, Decisao, FalhaProvider, OperacaoNaoSuportada, SessaoDesconhecida, TurnoEmAndamento };
 export { Evento, Provider };
 export { GrupoLeitura };
 export type { LinkLido };
+export * from "./preferencias.ts";
 
 /* ================================================================== partida */
 
@@ -925,9 +927,10 @@ export class GrupoPasta extends RpcGroup.make(
 
 /* ================================================================== app */
 
-/** A API inteira do servidor local: providers, conversa, skills, revisão de PPC e leitura. */
+/** A API inteira do servidor local: providers, conversa, skills, revisão de PPC, leitura e preferências. */
 export class GrupoApp extends GrupoProviders.merge(
   GrupoConversa,
+  GrupoPreferencias,
   GrupoSkills,
   GrupoPasta,
   GrupoRevisaoPpc,

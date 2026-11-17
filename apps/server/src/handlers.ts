@@ -13,12 +13,20 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
-import { GrupoConversa, GrupoPasta, GrupoProviders, GrupoRevisaoPpc, GrupoSkills } from "@simplifica-if/contratos-app";
+import {
+  GrupoConversa,
+  GrupoPasta,
+  GrupoPreferencias,
+  GrupoProviders,
+  GrupoRevisaoPpc,
+  GrupoSkills,
+} from "@simplifica-if/contratos-app";
 import { layerHandlersRpc } from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
 import { CatalogoSkills } from "./CatalogoSkills.ts";
 import * as Conversas from "./Conversas.ts";
 import { PastasTrabalho } from "./PastasTrabalho.ts";
+import { Preferencias } from "./persistencia/Preferencias.ts";
 import { ListaViva } from "./revisao-ppc/ListaViva.ts";
 import { RevisaoIa } from "./revisao-ppc/RevisaoIa.ts";
 
@@ -94,6 +102,21 @@ const layerPasta = GrupoPasta.toLayer(
   }),
 );
 
+/** O primeiro uso (M1.8): perfil, aviso de uso, boas-vindas e as IAs em uso, só neste computador. */
+const layerPreferencias = GrupoPreferencias.toLayer(
+  Effect.gen(function* () {
+    const preferencias = yield* Preferencias;
+    return GrupoPreferencias.of({
+      "preferencias.ler": () => preferencias.ler,
+      "preferencias.gravarPerfil": ({ perfil }) => preferencias.gravarPerfil(perfil),
+      "preferencias.apagarPerfil": () => preferencias.apagarPerfil,
+      "preferencias.aceitarAviso": () => preferencias.aceitarAviso,
+      "preferencias.concluirBoasVindas": () => preferencias.concluirBoasVindas,
+      "preferencias.usarIa": ({ provider, usar }) => preferencias.usarIa(provider, usar),
+    });
+  }),
+);
+
 const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
   Effect.gen(function* () {
     const ia = yield* RevisaoIa;
@@ -136,5 +159,6 @@ export const layer = Layer.mergeAll(
   layerSkills,
   layerPasta,
   layerRevisaoPpc,
+  layerPreferencias,
   layerHandlersRpc,
 );

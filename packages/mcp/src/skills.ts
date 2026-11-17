@@ -20,6 +20,7 @@ import * as Schema from "effect/Schema";
 import { formatarErro } from "@simplifica-if/kb/esquema/mensagens";
 import { parse } from "yaml";
 import { FERRAMENTAS } from "./ferramentas/toolkit.ts";
+import { PUBLICOS } from "./publicos.ts";
 
 /** Os nomes das ferramentas do `simplifica-mcp`, na ordem do Toolkit. */
 export const NOMES_FERRAMENTAS = FERRAMENTAS.map((ferramenta) => ferramenta.nome);
@@ -89,7 +90,8 @@ export const ManifestoSkill = Schema.Struct({
   area: slug,
   ferramentas: Schema.Array(nomeFerramenta),
   arquivos: Schema.Array(caminhoArquivo),
-  publico: Schema.optionalKey(Schema.Array(slug)),
+  /** A quem a tarefa serve, no vocabulário de `PUBLICOS` (o mesmo da função do perfil no app). */
+  publico: Schema.optionalKey(Schema.Array(Schema.Literals(PUBLICOS))),
   entradas: Schema.optionalKey(Schema.Array(Entrada)),
   etapas: Schema.optionalKey(Schema.Array(Etapa)),
   base_minima: Schema.optionalKey(texto),
