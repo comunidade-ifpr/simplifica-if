@@ -17,7 +17,7 @@ import * as NodeChildProcess from "node:child_process";
 import * as NodeCrypto from "node:crypto";
 import * as NodePath from "node:path";
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import { describe, expect, expectTypeOf, layer } from "@effect/vitest";
+import { describe, expect, expectTypeOf, layer, vi } from "@effect/vitest";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
@@ -223,6 +223,11 @@ const servicos = Effect.all({
 });
 
 /* ------------------------------------------------------------------ testes */
+
+// O layer sem nome monta os bancos num `beforeEach` preso ao sinal do teste: quem limita a montagem (três
+// compilações da base, cerca de um minuto num runner lento) é o tempo do teste, não o `timeout` do layer.
+// Com os 60 s do padrão, a montagem interrompida recomeçava a cada teste e a suíte passava de 30 min na CI.
+vi.setConfig({ testTimeout: 300_000 });
 
 layer(layerTeste, { timeout: "300 seconds" })((it) => {
   describe("kb.sqlite da base", () => {
