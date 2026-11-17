@@ -235,6 +235,14 @@ function Inicio() {
   useEffect(() => {
     if (pendente === true) void navegar({ to: "/boas-vindas", replace: true });
   }, [pendente, navegar]);
+  // Enquanto as preferências carregam (ou antes de desviar para as boas-vindas), nada pisca na tela.
+  if (conexao.fase !== "sem-servidor" && pendente !== false) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
   return (
     <div className="h-full overflow-y-auto">
       <div className="mx-auto flex max-w-4xl flex-col gap-6 p-6">

@@ -33,10 +33,10 @@ export interface OpcoesDemonstracao {
   /** O intervalo entre os passos da instalação e do texto (padrão: 60 ms). */
   readonly passo?: Duration.Input;
   /**
-   * O Claude Code começa ausente e "aparece" (instalado e com login) depois de tantas detecções: simula
-   * a pessoa instalando pelo instalador oficial enquanto o app espera o "Já fiz, conferir" (M1.8).
+   * O Claude Code está instalado e com login só quando isto diz que sim: simula a pessoa instalando pelo
+   * instalador oficial enquanto o app espera o "Já fiz, conferir" (M1.8). Sem a opção, sempre está.
    */
-  readonly claudeAusenteAte?: number;
+  readonly claudePresente?: () => boolean;
 }
 
 const respostaFinal = `A Resolução CNE/CP nº 1/2021 define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica. Veja a [Res. CNE/CP nº 1/2021](${LINK_DEMONSTRACAO}).`;
@@ -50,14 +50,12 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
     antigravity: { instalado: true, autenticado: false },
   };
 
-  let deteccoesClaude = 0;
-  if (opcoes.claudeAusenteAte !== undefined) estado.claude = { instalado: false, autenticado: false };
 
   const detectar = (provider: Motor.Provider) =>
     Effect.sync((): Motor.DeteccaoProvider => {
-      if (provider === "claude" && opcoes.claudeAusenteAte !== undefined) {
-        deteccoesClaude += 1;
-        if (deteccoesClaude > opcoes.claudeAusenteAte) estado.claude = { instalado: true, autenticado: true };
+      if (provider === "claude" && opcoes.claudePresente !== undefined) {
+        const presente = opcoes.claudePresente();
+        estado.claude = { instalado: presente, autenticado: presente };
       }
       return {
       provider,

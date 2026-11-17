@@ -19,11 +19,14 @@ declare module "vite-plus/test/browser" {
     pararServidoresTeste: () => Promise<void>;
     /** Grava `texto` num arquivo de uma pasta de tarefa, como a pessoa editando fora da conversa. */
     editarArquivoDeTarefa: (caminho: string, texto: string) => Promise<void>;
+    /** Faz o Claude Code do servidor de teste "aparecer" (instalado e com login). */
+    simularInstalacaoClaude: (sinal: string) => Promise<void>;
   }
 }
 
 export const iniciarServidorTeste = (opcoes: OpcoesServidorTeste = {}) => commands.iniciarServidorTeste(opcoes);
 export const pararServidoresTeste = () => commands.pararServidoresTeste();
+export const simularInstalacaoClaude = (sinal: string) => commands.simularInstalacaoClaude(sinal);
 export const editarArquivoDeTarefa = (caminho: string, texto: string) => commands.editarArquivoDeTarefa(caminho, texto);
 
 /** Monta o app conectado ao servidor; `Symbol.asyncDispose` desmonta e fecha a conexão. */

@@ -13,6 +13,7 @@
  */
 import * as NodeChildProcess from "node:child_process";
 import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
 import * as NodeReadline from "node:readline";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
@@ -40,6 +41,8 @@ export interface ServidorTeste {
   readonly parecer: string;
   /** A raiz das pastas de tarefa (no app, Documentos/Simplifica IF). */
   readonly pastaTrabalhos: string;
+  /** Com `claudeAusente`, o arquivo que faz o Claude Code "aparecer" (`simularInstalacaoClaude`). */
+  readonly sinalClaude: string;
 }
 
 /** Os servidores de teste abertos pelos testes de navegador, por origem do pedido. */
@@ -51,8 +54,8 @@ export interface OpcoesServidorTeste {
   readonly atrasoLogin?: number;
   /** O primeiro uso (boas-vindas, aviso) por fazer; sem a opção, já feito. */
   readonly primeiroUso?: boolean;
-  /** O Claude Code ausente até a n-ésima detecção. */
-  readonly claudeAusenteAte?: number;
+  /** O Claude Code ausente até o teste simular a instalação (`simularInstalacaoClaude`). */
+  readonly claudeAusente?: boolean;
 }
 
 /** Sobe o `apps/server` de teste aceitando `origem` e devolve a linha de partida dele. */
@@ -66,7 +69,7 @@ function iniciarServidorTeste(origem: string, opcoes: OpcoesServidorTeste) {
       "--atraso-login",
       String(opcoes.atrasoLogin ?? 1500),
       ...(opcoes.primeiroUso === true ? ["--primeiro-uso"] : []),
-      ...(opcoes.claudeAusenteAte === undefined ? [] : ["--claude-ausente-ate", String(opcoes.claudeAusenteAte)]),
+      ...(opcoes.claudeAusente === true ? ["--claude-ausente"] : []),
     ],
     { stdio: ["pipe", "pipe", "inherit"] },
   );
@@ -129,6 +132,11 @@ const navegador = {
         iniciarServidorTeste: async ({ page }, opcoes: OpcoesServidorTeste) =>
           iniciarServidorTeste(new URL(page.url()).origin, opcoes),
         pararServidoresTeste: async () => pararServidores(),
+        /** A pessoa instalou o Claude Code e entrou na conta (o sinal do servidor de teste). */
+        simularInstalacaoClaude: async (_contexto, sinal: string) => {
+          if (!sinal.endsWith(`${NodePath.sep}claude-instalado`)) throw new Error(`não é o sinal do Claude: ${sinal}`);
+          NodeFS.writeFileSync(sinal, "");
+        },
         /** Simula a pessoa editando no Word um arquivo de uma pasta de tarefa (só dentro de "Simplifica IF/"). */
         editarArquivoDeTarefa: async (_contexto, caminho: string, texto: string) => {
           if (!/[\\/]Simplifica IF[\\/][^\\/]+[\\/]/.test(caminho) || caminho.includes(".."))

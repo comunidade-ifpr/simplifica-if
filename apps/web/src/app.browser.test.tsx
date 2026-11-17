@@ -10,7 +10,13 @@
 import { afterAll, afterEach, beforeAll, expect, it, vi } from "vite-plus/test";
 import { page, userEvent } from "vite-plus/test/browser";
 import type { ServidorTeste } from "../vite.config.ts";
-import { editarArquivoDeTarefa, iniciarServidorTeste, montarApp, pararServidoresTeste } from "../test/navegador.tsx";
+import {
+  editarArquivoDeTarefa,
+  iniciarServidorTeste,
+  montarApp,
+  pararServidoresTeste,
+  simularInstalacaoClaude,
+} from "../test/navegador.tsx";
 import type { PonteDesktop } from "./ponte-desktop.ts";
 
 let servidor: ServidorTeste;
@@ -47,10 +53,11 @@ function semIngles() {
   expect([document.body.innerText, ...rotulos].join("\n")).not.toMatch(TEXTOS_EM_INGLES);
 }
 
-it("Configurações › Sua IA: detecta os três providers, instala e entra", async () => {
+it("Configurações › Sua IA: o aviso de uso, os três providers, instalar, entrar e não usar no app", async () => {
   await using _app = await montarApp(servidor, "/configuracoes");
 
   await expect.element(page.getByRole("status").getByText("Conectado")).toBeVisible();
+  await expect.element(page.getByRole("region", { name: "O que vai para a IA" })).toBeVisible();
   const claude = page.getByRole("region", { name: "Claude" });
   await expect.element(claude.getByText("Conectado")).toBeVisible();
   await expect.element(claude.getByText("max")).toBeVisible();
@@ -63,9 +70,15 @@ it("Configurações › Sua IA: detecta os três providers, instala e entra", as
   await expect.element(codex.getByRole("progressbar")).toBeInTheDocument();
   await expect.element(codex.getByText("Instalação concluída")).toBeVisible();
   await expect.element(codex.getByText("Instalado", { exact: true })).toBeVisible();
-  // O app não faz o login do Codex: em vez de "Entrar", a orientação com o comando.
-  await expect.element(codex.getByText("codex login", { exact: true })).toBeVisible();
-  await expect.element(codex.getByRole("button", { name: "Entrar" })).not.toBeInTheDocument();
+  // O app faz o login do Codex (M1.8): "Entrar" mostra a página de login da OpenAI e conclui.
+  await codex.getByRole("button", { name: "Entrar" }).click();
+  const linkCodex = codex.getByRole("link", { name: "Abrir a página de login" });
+  await expect.element(linkCodex).toHaveAttribute("href", expect.stringMatching(/^https:\/\/auth\.openai\.com\//));
+  await expect.element(codex.getByText("Conectado")).toBeVisible();
+  // Em Configurações, cada IA pode sair da escolha das conversas sem sair da conta.
+  await codex.getByRole("button", { name: "Não usar no app" }).click();
+  await expect.element(codex.getByText("Fora da escolha das conversas.", { exact: false })).toBeVisible();
+  await codex.getByRole("button", { name: "Voltar a usar no app" }).click();
 
   // Antigravity: "Entrar" mostra o link da página de login do Google enquanto espera, e conclui.
   const gemini = page.getByRole("region", { name: "Gemini (Antigravity)" });
@@ -351,4 +364,92 @@ it("Modo Servidor: a caixa do Início abre uma conversa numa pasta nova", async 
   await page.getByRole("button", { name: "Pasta da tarefa" }).click();
   await expect.element(page.getByText("Documentos › Simplifica IF › Quais normas tratam do estágio")).toBeVisible();
   await expect.element(page.getByText("A pasta está vazia.")).toBeVisible();
+});
+
+it("Primeiro uso: aviso, conectar a IA (Claude guiado e Codex), perfil, tarefa de exemplo e Configurações", async () => {
+  // Um servidor só deste teste: o primeiro uso por fazer e o Claude Code ausente até a pessoa
+  // "instalar" (`simularInstalacaoClaude`), enquanto o app espera o "Já fiz, conferir".
+  const novo = await iniciarServidorTeste({ atrasoLogin: 300, primeiroUso: true, claudeAusente: true });
+  await using app = await montarApp(novo, "/");
+
+  // O Início leva às boas-vindas; o aviso de uso vem antes dos passos.
+  await expect.element(page.getByRole("heading", { name: "Boas-vindas ao Simplifica IF" })).toBeVisible();
+  const aviso = page.getByRole("region", { name: "O que vai para a IA" });
+  await expect.element(aviso.getByText(/Não anexe nem cole documento com dado pessoal/)).toBeVisible();
+  expect(app.roteador.state.location.pathname).toBe("/boas-vindas");
+  semIngles();
+  await capturar("10-boas-vindas-aviso");
+  await page.getByRole("button", { name: "Entendi" }).click();
+
+  // Passo 1, Claude: o passo guiado, sem baixar nada pelo app.
+  await expect.element(page.getByRole("heading", { name: "Conecte a sua IA" })).toBeVisible();
+  const claude = page.getByRole("region", { name: "Claude" });
+  await expect.element(claude.getByRole("button", { name: "Abrir a página de instalação" })).toBeVisible();
+  expect(claude.getByLabelText("Comando de instalação").element().textContent).toMatch(/^curl .*claude\.ai\/install/);
+  expect(claude.getByLabelText("Comando de login").element().textContent).toBe("claude");
+  // "Já fiz, conferir" antes de instalar: diz o que falta.
+  await claude.getByRole("button", { name: "Já fiz, conferir" }).click();
+  await expect.element(claude.getByText(/Ainda não encontramos o Claude Code/)).toBeVisible();
+  await capturar("11-boas-vindas-claude");
+  // A pessoa instala e entra; o app confere e segue.
+  await simularInstalacaoClaude(novo.sinalClaude);
+  await claude.getByRole("button", { name: "Já fiz, conferir" }).click();
+  await expect.element(page.getByText("Pronto: Claude conectado.")).toBeVisible();
+  await expect.element(claude.getByText("Conectado")).toBeVisible();
+
+  // Passo 1, ChatGPT: o app instala e faz o login.
+  await page.getByRole("radio", { name: /ChatGPT \(Codex\)/ }).click();
+  const codex = page.getByRole("region", { name: "ChatGPT (Codex)" });
+  await codex.getByRole("button", { name: "Instalar" }).click();
+  await codex.getByRole("button", { name: "Entrar" }).click();
+  await expect.element(page.getByText("Pronto: ChatGPT (Codex) conectado.")).toBeVisible();
+  semIngles();
+  await capturar("12-boas-vindas-ia");
+  await page.getByRole("button", { name: "Continuar" }).click();
+
+  // Passo 2: o perfil, com os campi e os cursos da base.
+  await expect.element(page.getByRole("heading", { name: "Conte quem você é" })).toBeVisible();
+  await expect.element(page.getByText(/fica só neste computador/)).toBeVisible();
+  await userEvent.selectOptions(page.getByLabelText("Campus").element() as HTMLSelectElement, "curitiba");
+  await page.getByRole("radio", { name: "Coordenação de Curso" }).click();
+  await page.getByRole("checkbox", { name: /Técnico em Enfermagem/ }).click();
+  semIngles();
+  await capturar("13-boas-vindas-perfil");
+  await page.getByRole("button", { name: "Salvar e continuar" }).click();
+
+  // Passo 3: para a coordenação, analisar o PPC do curso vem primeiro; a conversa de exemplo, depois.
+  await expect.element(page.getByRole("heading", { name: "Experimente uma tarefa" })).toBeVisible();
+  const ppc = page.getByRole("region", { name: "Analisar o PPC de Técnico em Enfermagem" });
+  await expect.element(ppc.getByText("Sugerida")).toBeVisible();
+  await expect.element(ppc.getByText(/não gasta a sua cota/)).toBeVisible();
+  const conferir = page.getByRole("region", { name: "Conferir a fundamentação normativa de um trecho" });
+  await expect.element(conferir.getByText(/Usa pouco da sua cota/)).toBeVisible();
+  semIngles();
+  await capturar("14-boas-vindas-exemplo");
+  await conferir.getByRole("button", { name: "Fazer agora" }).click();
+  const mensagens = page.getByRole("log", { name: "Mensagens" });
+  await expect.element(mensagens.getByText(/Confira a fundamentação normativa deste trecho de PPC/)).toBeVisible();
+
+  // O Início: a linha do perfil, sem voltar às boas-vindas, e o lembrete ao lado do anexo.
+  await app.roteador.navigate({ to: "/" });
+  await expect.element(page.getByText("Coordenação de Curso · Campus Curitiba")).toBeVisible();
+  await expect.element(page.getByText("Não anexe documento com dado pessoal ou de acesso restrito.")).toBeVisible();
+  const tarefas = page.getByRole("region", { name: "Tarefas" });
+  await expect.element(tarefas.getByRole("link", { name: /Analisar um PPC/ })).toBeVisible();
+  await expect.element(tarefas.getByRole("link", { name: /Conferir a fundamentação normativa/ })).toBeVisible();
+  await capturar("15-inicio-com-perfil");
+
+  // Configurações › Seu perfil: o salvo, editar e apagar; "Rever as boas-vindas".
+  await app.roteador.navigate({ to: "/configuracoes" });
+  await expect.element(page.getByText("Salvo: Coordenação de Curso · Campus Curitiba.")).toBeVisible();
+  await page.getByRole("radio", { name: "Pedagogia" }).click();
+  await page.getByRole("button", { name: "Salvar o perfil" }).click();
+  await expect.element(page.getByText("Salvo: Pedagogia · Campus Curitiba.")).toBeVisible();
+  await expect.element(page.getByRole("link", { name: "Rever as boas-vindas" })).toBeVisible();
+  semIngles();
+  await capturar("16-configuracoes");
+  await page.getByRole("button", { name: "Apagar o perfil" }).click();
+  await expect.element(page.getByText("Nenhum perfil salvo.")).toBeVisible();
+  await app.roteador.navigate({ to: "/" });
+  await expect.element(page.getByRole("link", { name: /Preencha seu perfil/ })).toBeVisible();
 });

@@ -48,6 +48,10 @@ SIMPLIFICA_SERVIDOR_TOKEN=$(openssl rand -base64 32) \
 | | `conversa.acompanhar({ sessao, depois })` | stream dos itens depois de `depois` e, se há turno em andamento, dos que chegam até o `FimTurno` |
 | | `conversa.retomar({ sessao })` | `ResumoConversa`; reabre a sessão do provider sem mandar mensagem |
 | | `conversa.avaliar({ sessao, turno, nota })` | 👍/👎 (`util`, `nao_util`; `null` retira) da resposta do turno; `conversa.carregar` devolve as `avaliacoes` |
+| preferências (M1.8) | `preferencias.ler({})` | `Preferencias`: `perfil?` (campus, função, cursos), `avisoAceitoEm?`, `boasVindasEm?`, `iasDesligadas`. Ficam só neste computador, na tabela `preferencias` do `conversas.sqlite` (migração 6, `persistencia/Preferencias.ts`); valor que não decodifica conta como ausente |
+| | `preferencias.gravarPerfil({ perfil })`, `preferencias.apagarPerfil({})` | `Preferencias`; o schema recusa função fora de `FUNCOES` e mais de 30 cursos |
+| | `preferencias.aceitarAviso({})`, `preferencias.concluirBoasVindas({})` | `Preferencias`; a primeira data fica |
+| | `preferencias.usarIa({ provider, usar })` | `Preferencias`; tira a IA da escolha das conversas (ou a devolve), sem sair da conta |
 | skills | `skills.listar({})` | `ResumoSkill[]` (`nome`, `titulo`, `resumo`, `area`, `publico`, `entradas`, `etapas`, `duracaoEstimada`), em ordem alfabética do nome; os cartões e o formulário da tarefa |
 | pasta | `pasta.criar({ titulo })` | `{ pasta }`: `Documentos/Simplifica IF/<título>`, nome seguro, sem colisão |
 | | `pasta.anexar({ pasta, arquivo })` | `ArquivoPasta`: a cópia, na pasta da tarefa, de um arquivo liberado pelo desktop |
