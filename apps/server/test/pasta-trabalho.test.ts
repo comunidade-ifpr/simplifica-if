@@ -47,6 +47,7 @@ const fora = diretorioTemporario("simplifica-fora-");
 const registro = novoRegistro();
 
 const camada = Servidor.layer({
+  primeiroUsoFeito: true,
   banco: bancoFixture(),
   token: Redacted.make(TOKEN),
   tokenDesktop: Redacted.make(TOKEN_DESKTOP),

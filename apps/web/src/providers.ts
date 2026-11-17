@@ -14,53 +14,29 @@ export interface DescricaoProvider {
 }
 
 export const DESCRICOES: Readonly<Record<Provider, DescricaoProvider>> = {
-  claude: { nome: "Claude", conta: "Conta da Anthropic (Claude Pro ou Max)" },
+  claude: { nome: "Claude", conta: "Conta Claude Pro, Max, Team ou Enterprise (ou chave de API)" },
   codex: { nome: "ChatGPT (Codex)", conta: "Conta da OpenAI (ChatGPT Plus ou Pro)" },
   antigravity: { nome: "Gemini (Antigravity)", conta: "Conta do Google" },
 };
 
 /**
  * O que a pessoa faz por conta própria quando o app não oferece a operação para o provider: um texto
- * e, quando há, o comando do Terminal. Provisório: o passo guiado é do M1.8.
+ * e, quando há, o comando do Terminal. Hoje só serve de reserva: o Claude tem o passo guiado, e o app
+ * instala e faz o login do Codex e do Antigravity.
  */
 export interface Orientacao {
   readonly texto: string;
   readonly comando?: string;
 }
 
-const ORIENTACOES: Readonly<Record<Provider, Partial<Record<"instalar" | "entrar", Orientacao>>>> = {
-  claude: {
-    instalar: {
-      texto:
-        "O app ainda não instala o Claude Code. Instale-o pelo instalador oficial da Anthropic, entre na conta com o comando abaixo no Terminal e depois detecte de novo.",
-      comando: "claude",
-    },
-    entrar: {
-      texto:
-        "O app ainda não faz o login do Claude. Entre na conta com o comando abaixo no Terminal e depois detecte de novo.",
-      comando: "claude",
-    },
-  },
-  codex: {
-    entrar: {
-      texto:
-        "O app ainda não faz o login do ChatGPT. Entre na conta com o comando abaixo no Terminal e depois detecte de novo.",
-      comando: "codex login",
-    },
-  },
-  antigravity: {},
-};
-
 /** A orientação para quando o app não oferece `operacao` para o provider. */
 export function orientacao(provider: Provider, operacao: "instalar" | "entrar"): Orientacao {
-  return (
-    ORIENTACOES[provider][operacao] ?? {
-      texto:
-        operacao === "instalar"
-          ? `O app ainda não instala o ${DESCRICOES[provider].nome}. Instale-o por conta própria e depois detecte de novo.`
-          : `O app ainda não faz o login do ${DESCRICOES[provider].nome}. Entre na conta por conta própria e depois detecte de novo.`,
-    }
-  );
+  return {
+    texto:
+      operacao === "instalar"
+        ? `O app ainda não instala o ${DESCRICOES[provider].nome}. Instale-o por conta própria e depois detecte de novo.`
+        : `O app ainda não faz o login do ${DESCRICOES[provider].nome}. Entre na conta por conta própria e depois detecte de novo.`,
+  };
 }
 
 const FASES_INSTALACAO: Readonly<Record<EstadoInstalacao["fase"], string>> = {

@@ -9,7 +9,8 @@
     "./grupo-leitura": "./src/grupo-leitura.ts",
     "./contratos": "./src/contratos.ts",
     "./http": "./src/http.ts",
-    "./skills": "./src/skills.ts"
+    "./skills": "./src/skills.ts",
+    "./publicos": "./src/publicos.ts"
   },
   "bin": {
     "simplifica-mcp": "./src/cli.ts"

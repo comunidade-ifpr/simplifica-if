@@ -154,6 +154,7 @@ const driver = (provider: Motor.Provider): Motor.Driver => ({
 
 const pasta = diretorioTemporario("simplifica-revisao-ia-");
 const camada = Servidor.layer({
+  primeiroUsoFeito: true,
   banco: bancoComFichas(),
   token: Redacted.make(TOKEN),
   revisaoIa: { paralelismo: 1 },

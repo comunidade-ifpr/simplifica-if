@@ -18,6 +18,7 @@ import {
   GrupoAtualizacao,
   GrupoConversa,
   GrupoPasta,
+  GrupoPreferencias,
   GrupoProviders,
   GrupoRevisaoPpc,
   GrupoSkills,
@@ -27,6 +28,7 @@ import * as Motor from "@simplifica-if/motor";
 import { CatalogoSkills } from "./CatalogoSkills.ts";
 import * as Conversas from "./Conversas.ts";
 import { PastasTrabalho } from "./PastasTrabalho.ts";
+import { Preferencias } from "./persistencia/Preferencias.ts";
 import { ListaViva } from "./revisao-ppc/ListaViva.ts";
 import { RevisaoIa } from "./revisao-ppc/RevisaoIa.ts";
 
@@ -64,10 +66,16 @@ const layerProviders = GrupoProviders.toLayer(
 const layerConversa = GrupoConversa.toLayer(
   Effect.gen(function* () {
     const conversas = yield* Conversas.Conversas;
+    // Nada vai à IA antes do aviso de uso aceito (M1.8): iniciar, enviar e retomar recusam.
+    const { exigirAviso } = yield* Preferencias;
     return GrupoConversa.of({
       "conversa.iniciar": (entrada) =>
-        registrarEMapear(conversas.iniciar(entrada)).pipe(Effect.map((sessao) => ({ sessao }))),
-      "conversa.enviar": ({ sessao, texto }) => registrarEMapearStream(conversas.enviar(sessao, texto)),
+        exigirAviso.pipe(
+          Effect.andThen(registrarEMapear(conversas.iniciar(entrada))),
+          Effect.map((sessao) => ({ sessao })),
+        ),
+      "conversa.enviar": ({ sessao, texto }) =>
+        Stream.unwrap(Effect.as(exigirAviso, registrarEMapearStream(conversas.enviar(sessao, texto)))),
       "conversa.responderAprovacao": ({ sessao, aprovacao, decisao }) =>
         conversas.responderAprovacao(sessao, aprovacao, decisao),
       "conversa.interromper": ({ sessao }) => registrarEMapear(conversas.interromper(sessao)),
@@ -75,7 +83,7 @@ const layerConversa = GrupoConversa.toLayer(
       "conversa.listar": () => conversas.listar,
       "conversa.carregar": ({ sessao }) => conversas.carregar(sessao),
       "conversa.acompanhar": ({ sessao, depois }) => conversas.acompanhar(sessao, depois),
-      "conversa.retomar": ({ sessao }) => registrarEMapear(conversas.retomar(sessao)),
+      "conversa.retomar": ({ sessao }) => exigirAviso.pipe(Effect.andThen(registrarEMapear(conversas.retomar(sessao)))),
       "conversa.avaliar": ({ sessao, turno, nota }) => conversas.avaliar(sessao, turno, nota),
     });
   }),
@@ -102,16 +110,34 @@ const layerPasta = GrupoPasta.toLayer(
   }),
 );
 
+/** O primeiro uso (M1.8): perfil, aviso de uso, boas-vindas e as IAs em uso, só neste computador. */
+const layerPreferencias = GrupoPreferencias.toLayer(
+  Effect.gen(function* () {
+    const preferencias = yield* Preferencias;
+    return GrupoPreferencias.of({
+      "preferencias.ler": () => preferencias.ler,
+      "preferencias.gravarPerfil": ({ perfil }) => preferencias.gravarPerfil(perfil),
+      "preferencias.apagarPerfil": () => preferencias.apagarPerfil,
+      "preferencias.aceitarAviso": () => preferencias.aceitarAviso,
+      "preferencias.concluirBoasVindas": () => preferencias.concluirBoasVindas,
+      "preferencias.usarIa": ({ provider, usar }) => preferencias.usarIa(provider, usar),
+    });
+  }),
+);
+
 const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
   Effect.gen(function* () {
     const ia = yield* RevisaoIa;
+    // O que manda o PPC à IA espera o aviso de uso aceito (M1.8); a pré-conferência, não.
+    const { exigirAviso } = yield* Preferencias;
+    const comAviso = <A, E, R>(efeito: Effect.Effect<A, E, R>) => exigirAviso.pipe(Effect.andThen(efeito));
     const viva = yield* ListaViva;
     const registrar = <A, E, R>(efeito: Effect.Effect<A, E, R>) =>
       efeito.pipe(Effect.tapError((erro) => Effect.logWarning("revisão de PPC falhou", erro)));
     return GrupoRevisaoPpc.of({
       "revisaoPpc.analisar": (entrada) => viva.analisar(entrada).pipe(registrar),
-      "revisaoPpc.prepararIa": (entrada) => ia.preparar(entrada).pipe(registrar),
-      "revisaoPpc.iniciarIa": ({ revisao }) => ia.iniciar(revisao).pipe(registrar),
+      "revisaoPpc.prepararIa": (entrada) => comAviso(ia.preparar(entrada).pipe(registrar)),
+      "revisaoPpc.iniciarIa": ({ revisao }) => comAviso(ia.iniciar(revisao).pipe(registrar)),
       "revisaoPpc.pausarIa": ({ revisao }) => ia.pausar(revisao).pipe(registrar),
       "revisaoPpc.acompanharIa": ({ revisao }) => ia.acompanhar(revisao),
       "revisaoPpc.listarIa": () => ia.listar,
@@ -125,10 +151,11 @@ const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
       "revisaoPpc.estimarAcao": ({ lista, chave, acao, provider }) =>
         viva.estimar(lista, chave, acao, provider).pipe(registrar),
       "revisaoPpc.contestar": ({ lista, chave, motivo, provider }) =>
-        viva.contestar(lista, chave, motivo, provider).pipe(registrar),
-      "revisaoPpc.sugerir": ({ lista, chave, provider }) => viva.sugerir(lista, chave, provider).pipe(registrar),
+        comAviso(viva.contestar(lista, chave, motivo, provider).pipe(registrar)),
+      "revisaoPpc.sugerir": ({ lista, chave, provider }) =>
+        comAviso(viva.sugerir(lista, chave, provider).pipe(registrar)),
       "revisaoPpc.reanalisar": ({ lista, chave, arquivo, provider }) =>
-        viva.reanalisar(lista, chave, arquivo, provider).pipe(registrar),
+        comAviso(viva.reanalisar(lista, chave, arquivo, provider).pipe(registrar)),
       "revisaoPpc.gerarCopia": ({ lista }) => viva.gerarCopia(lista).pipe(registrar),
     });
   }),
@@ -149,8 +176,8 @@ const layerAtualizacao = GrupoAtualizacao.toLayer(
 );
 
 /**
- * Os handlers dos seis grupos (mais o `Atualizador`); pede o `Motor`, as `Conversas`, o `CatalogoSkills`, a `AnalisePpc`, a
- * `RevisaoIa` e o `Leitura`.
+ * Os handlers dos oito grupos; pede o `Motor`, as `Conversas`, o `CatalogoSkills`, a `AnalisePpc`, a
+ * `RevisaoIa`, o `Atualizador`, as `Preferencias` e o `Leitura`.
  */
 export const layer = Layer.mergeAll(
   layerProviders,
@@ -158,6 +185,7 @@ export const layer = Layer.mergeAll(
   layerSkills,
   layerPasta,
   layerRevisaoPpc,
+  layerPreferencias,
   layerAtualizacao,
   layerHandlersRpc,
 );

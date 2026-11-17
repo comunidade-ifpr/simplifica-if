@@ -4,7 +4,7 @@
  * desktop importam daqui; nada aqui depende do Node, e importar o pacote não carrega o `kb`, a leitura
  * do MCP nem os drivers do motor (`test/sem-servidor.test.ts` confere o grafo de imports).
  *
- * - `GrupoApp`: a API RPC (`effect/rpc`) por WebSocket. Seis grupos: providers, conversa, skills, pasta de trabalho, revisão de PPC e leitura (o
+ * - `GrupoApp`: a API RPC (`effect/rpc`) por WebSocket. Oito grupos: providers, conversa, skills, pasta de trabalho, revisão de PPC, atualização, preferências (o primeiro uso, `preferencias.ts`) e leitura (o
  *   `GrupoLeitura` de `@simplifica-if/mcp/grupo-leitura`, só as definições, sem duplicar; os handlers
  *   ficam em `@simplifica-if/mcp/rpc`, que este pacote não importa). Os métodos de providers e de conversa
  *   têm nome com prefixo, como os `WS_METHODS` do T3: `cliente["conversa.enviar"]({ … })`.
@@ -36,11 +36,13 @@ import {
 import { Evento, Provider } from "@simplifica-if/motor/eventos";
 import * as Schema from "effect/Schema";
 import { Rpc, RpcGroup } from "effect/rpc";
+import { AvisoNaoAceito, GrupoPreferencias } from "./preferencias.ts";
 
 export { AprovacaoDesconhecida, Decisao, FalhaProvider, OperacaoNaoSuportada, SessaoDesconhecida, TurnoEmAndamento };
 export { Evento, Provider };
 export { GrupoLeitura };
 export type { LinkLido };
+export * from "./preferencias.ts";
 
 /* ================================================================== partida */
 
@@ -150,6 +152,8 @@ export const EstadoLogin = Schema.Struct({
   fase: Schema.Literals(["parado", "iniciando", "aguardando", "verificando", "concluido", "falhou", "cancelado"]),
   url: Schema.optionalKey(Schema.String),
   mensagem: Schema.optionalKey(Schema.String),
+  /** O texto técnico da CLI; a interface o mostra em "Detalhes técnicos". */
+  detalhe: Schema.optionalKey(Schema.String),
 });
 export type EstadoLogin = typeof EstadoLogin.Type;
 
@@ -308,7 +312,7 @@ export class GrupoConversa extends RpcGroup.make(
   Rpc.make("conversa.iniciar", {
     payload: EntradaIniciar,
     success: SessaoIniciada,
-    error: Schema.Union([FalhaProvider, PastaTrabalhoInvalida, TarefaDesconhecida]),
+    error: Schema.Union([FalhaProvider, PastaTrabalhoInvalida, TarefaDesconhecida, AvisoNaoAceito]),
   }),
   /**
    * Envia a mensagem; o stream traz os eventos do turno e termina depois de `FimTurno`. Sem sessão
@@ -318,7 +322,7 @@ export class GrupoConversa extends RpcGroup.make(
   Rpc.make("conversa.enviar", {
     payload: Schema.Struct({ sessao: Schema.String, texto: Schema.String }),
     success: Evento,
-    error: Schema.Union([FalhaProvider, TurnoEmAndamento, SessaoDesconhecida]),
+    error: Schema.Union([FalhaProvider, TurnoEmAndamento, SessaoDesconhecida, AvisoNaoAceito]),
     stream: true,
   }),
   /** Responde a um `PedidoAprovacao` do turno em andamento. */
@@ -354,7 +358,7 @@ export class GrupoConversa extends RpcGroup.make(
   Rpc.make("conversa.retomar", {
     payload: EntradaSessao,
     success: ResumoConversa,
-    error: Schema.Union([FalhaProvider, SessaoDesconhecida]),
+    error: Schema.Union([FalhaProvider, SessaoDesconhecida, AvisoNaoAceito]),
   }),
   /** 👍/👎 na resposta do turno (`null` retira a avaliação); gravado no servidor. */
   Rpc.make("conversa.avaliar", {
@@ -699,10 +703,14 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
       forma: Schema.optionalKey(Schema.String),
     }),
     success: EstadoRevisaoIa,
-    error: FalhaRevisaoPpc,
+    error: Schema.Union([FalhaRevisaoPpc, AvisoNaoAceito]),
   }),
   /** Começa ou retoma a revisão preparada (ou pausada); só os blocos pendentes vão ao provider. */
-  Rpc.make("revisaoPpc.iniciarIa", { payload: EntradaRevisaoIa, success: EstadoRevisaoIa, error: FalhaRevisaoPpc }),
+  Rpc.make("revisaoPpc.iniciarIa", {
+    payload: EntradaRevisaoIa,
+    success: EstadoRevisaoIa,
+    error: Schema.Union([FalhaRevisaoPpc, AvisoNaoAceito]),
+  }),
   /** Pausa: os blocos em andamento param e voltam a pendentes; os prontos ficam gravados. */
   Rpc.make("revisaoPpc.pausarIa", { payload: EntradaRevisaoIa, success: EstadoRevisaoIa, error: FalhaRevisaoPpc }),
   /** O estado agora e a cada mudança (bloco pronto, pausa, fim); termina quando a revisão termina. */
@@ -763,13 +771,13 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
       provider: Schema.optionalKey(Provider),
     }),
     success: ListaPendencias,
-    error: FalhaRevisaoPpc,
+    error: Schema.Union([FalhaRevisaoPpc, AvisoNaoAceito]),
   }),
   /** "Sugerir texto": a redação proposta, com os fatos conferidos; nunca aplicada ao documento. */
   Rpc.make("revisaoPpc.sugerir", {
     payload: Schema.Struct({ lista: Schema.String, chave: Schema.String, provider: Schema.optionalKey(Provider) }),
     success: ListaPendencias,
-    error: FalhaRevisaoPpc,
+    error: Schema.Union([FalhaRevisaoPpc, AvisoNaoAceito]),
   }),
   /**
    * "Já resolvi" com o arquivo atualizado: reconfere só a ficha da pendência no `.docx` novo (o código e,
@@ -783,7 +791,7 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
       provider: Schema.optionalKey(Provider),
     }),
     success: ListaPendencias,
-    error: FalhaRevisaoPpc,
+    error: Schema.Union([FalhaRevisaoPpc, AvisoNaoAceito]),
   }),
   /** Gera de novo a cópia comentada do original, com a situação de cada pendência no comentário e no aviso. */
   Rpc.make("revisaoPpc.gerarCopia", { payload: EntradaLista, success: ListaPendencias, error: FalhaRevisaoPpc }),
@@ -1006,9 +1014,10 @@ export class GrupoAtualizacao extends RpcGroup.make(
 
 /* ================================================================== app */
 
-/** A API inteira do servidor local: providers, conversa, skills, pasta, revisão de PPC, atualização e leitura. */
+/** A API inteira do servidor local: providers, conversa, skills, pasta, revisão de PPC, atualização, leitura e preferências. */
 export class GrupoApp extends GrupoProviders.merge(
   GrupoConversa,
+  GrupoPreferencias,
   GrupoSkills,
   GrupoPasta,
   GrupoRevisaoPpc,

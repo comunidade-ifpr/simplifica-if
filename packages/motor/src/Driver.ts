@@ -175,7 +175,10 @@ export interface EstadoLogin {
   readonly provider: Provider;
   readonly fase: "parado" | "iniciando" | "aguardando" | "verificando" | "concluido" | "falhou" | "cancelado";
   readonly url?: string;
+  /** A frase para a pessoa. */
   readonly mensagem?: string;
+  /** O texto técnico da CLI, que a interface mostra recolhido. */
+  readonly detalhe?: string;
 }
 
 export interface Driver {

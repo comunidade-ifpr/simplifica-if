@@ -152,7 +152,7 @@ describe("conversas gravadas", () => {
     }),
   );
 
-  it.effect("migrações: o banco novo fica na versão 5, e reabrir não roda de novo", () =>
+  it.effect("migrações: o banco novo fica na versão 6, e reabrir não roda de novo", () =>
     Effect.gen(function* () {
       const arquivo = novoBanco();
       for (let vez = 0; vez < 2; vez++) {
@@ -176,6 +176,7 @@ describe("conversas gravadas", () => {
                 "eventos_pendencia",
                 "listas_pendencias",
                 "pendencias_vivas",
+                "preferencias",
                 "revisoes_ia",
                 "tentativas_ia",
               ],
@@ -191,6 +192,7 @@ describe("conversas gravadas", () => {
                 [3, "TentativasIa"],
                 [4, "ListasPendencias"],
                 [5, "ModoServidor"],
+                [6, "Preferencias"],
               ],
             );
             // A layer já migrou: rodar de novo não executa nada.

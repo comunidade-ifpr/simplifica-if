@@ -11,6 +11,8 @@ import type { Api } from "../conexao/api.ts";
 import type { ControleConversa } from "../conversa/ControleConversa.ts";
 import { ponteDesktop } from "../ponte-desktop.ts";
 import { DESCRICOES, PROVIDERS } from "../providers.ts";
+import { LEMBRETE_ANEXO } from "../components/AvisoUso.tsx";
+import { usePreferencias } from "./perfil.ts";
 
 export async function comecarTarefa(
   api: Api,
@@ -47,6 +49,9 @@ export function EscolhaIa({
   readonly aoMudar: (provider: Provider) => void;
 }) {
   const id = useId();
+  // As IAs que a pessoa deixou de usar no app (Configurações › Sua IA) saem da lista, menos a escolhida.
+  const desligadas = usePreferencias().preferencias?.iasDesligadas ?? [];
+  const opcoes = PROVIDERS.filter((provider) => provider === valor || !desligadas.includes(provider));
   return (
     <span className="flex items-center gap-1.5 text-sm">
       <label htmlFor={id} className="text-muted-foreground">
@@ -59,7 +64,7 @@ export function EscolhaIa({
         className="h-8 rounded-md border border-input bg-background px-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         title={DESCRICOES[valor].nome}
       >
-        {PROVIDERS.map((provider) => (
+        {opcoes.map((provider) => (
           <option key={provider} value={provider}>
             {NOMES_IA[provider]}
           </option>
@@ -102,6 +107,9 @@ export function Anexos({
           <PaperclipIcon /> {rotulo}
         </Button>
       )}
+      <span className="text-muted-foreground text-xs" data-lembrete-anexo>
+        {LEMBRETE_ANEXO}
+      </span>
       {anexos.length === 0 ? null : (
         <ul className="flex flex-wrap gap-1.5" aria-label="Arquivos anexados">
           {anexos.map((arquivo) => (

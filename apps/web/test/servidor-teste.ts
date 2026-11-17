@@ -4,6 +4,7 @@
  * fixture do MCP: a interface conversa com ele por RPC sem chamar provider real e sem `tmp/kb.sqlite`.
  *
  *   node apps/web/test/servidor-teste.ts [--porta 0] [--origem http://localhost:5190]… [--atraso-login 2000]
+ *     [--primeiro-uso] [--claude-ausente]
  *
  * Pronto o servidor, imprime uma linha JSON com `porta`, `urlServidor`, `token` (o de
  * `SIMPLIFICA_SERVIDOR_TOKEN` ou um aleatório), `pasta`, uma pasta de trabalho temporária, e `ppc`, um
@@ -35,6 +36,10 @@ const { values: opcoes } = NodeUtil.parseArgs({
     porta: { type: "string", default: "0" },
     origem: { type: "string", multiple: true, default: [] },
     "atraso-login": { type: "string", default: "2000" },
+    // O primeiro uso (M1.8) por fazer: o Início leva às boas-vindas. Sem a opção, já está feito.
+    "primeiro-uso": { type: "boolean", default: false },
+    // O Claude Code ausente até o arquivo `sinalClaude` existir (o passo guiado das boas-vindas).
+    "claude-ausente": { type: "boolean", default: false },
   },
 });
 
@@ -81,6 +86,8 @@ NodeFS.writeFileSync(ppc, ppcSintetico());
 /** Um documento para anexar às tarefas (Modo Servidor). */
 const parecer = NodePath.join(pasta, "parecer.md");
 NodeFS.writeFileSync(parecer, "# Parecer\n\nO estágio é obrigatório, conforme a Res. CNE/CP nº 1/2021.\n");
+/** Com `--claude-ausente`, o Claude Code "aparece" quando este arquivo existe. */
+const sinalClaude = NodePath.join(pasta, "claude-instalado");
 /** A raiz das pastas de tarefa (no app, Documentos/Simplifica IF). */
 const pastaTrabalhos = NodePath.join(diretorioTemporario("simplifica-web-tarefas-"), "Simplifica IF");
 
@@ -92,8 +99,14 @@ const camada = Servidor.layer({
   // As skills do app do checkout (os cartões de tarefa e as etapas).
   pastaSkills: NodePath.resolve(import.meta.dirname, "../../../.agents/skills"),
   pastaTrabalhos,
+  primeiroUsoFeito: !opcoes["primeiro-uso"],
 }).pipe(
-  Layer.provide(Demonstracao.layer({ atrasoLogin: Duration.millis(Number(opcoes["atraso-login"])) })),
+  Layer.provide(
+    Demonstracao.layer({
+      atrasoLogin: Duration.millis(Number(opcoes["atraso-login"])),
+      ...(opcoes["claude-ausente"] ? { claudePresente: () => NodeFS.existsSync(sinalClaude) } : {}),
+    }),
+  ),
   Layer.provide(NodeServices.layer),
 );
 
@@ -109,6 +122,7 @@ const programa = Effect.gen(function* () {
       ppc,
       parecer,
       pastaTrabalhos,
+      sinalClaude,
     }),
   );
   return yield* Effect.never;

@@ -34,6 +34,7 @@ import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as FileSystem from "effect/FileSystem";
 import * as Option from "effect/Option";
+import * as Path from "effect/Path";
 import * as Queue from "effect/Queue";
 import * as Stream from "effect/Stream";
 import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
@@ -225,17 +226,68 @@ async function* nuncaEntrega(sinal: AbortSignal): AsyncGenerator<SDKUserMessage>
   await new Promise<void>((resolver) => sinal.addEventListener("abort", () => resolver(), { once: true }));
 }
 
+/**
+ * A versão na primeira linha do `claude --version`, se ela tem a forma do Claude Code
+ * (`2.1.30 (Claude Code)`); senão, `undefined`.
+ */
+export function versaoClaudeValida(linha: string): string | undefined {
+  return /^(\d+\.\d+\.\d+\S*) \(Claude Code\)\s*$/.exec(linha.trim())?.[1];
+}
+
 export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly ambiente: Ambiente }) {
-  const local = yield* localizar("claude", opcoes.ambiente);
-  // No Windows o SDK não passa pelo shell: o `claude.cmd` do npm vira o `claude.exe` do pacote (T3).
-  const executavel = Option.isSome(local)
-    ? yield* resolveClaudeSdkExecutablePath(local.value, limparAmbiente(opcoes.ambiente))
-    : undefined;
+  /**
+   * O `claude` do PATH ou, sem ele, o da pasta do instalador oficial (`~/.local/bin`): a pessoa que
+   * acabou de instalar (o passo guiado das boas-vindas, M1.8) tem o PATH novo só nos terminais novos, e
+   * o servidor leu o PATH ao abrir. No Windows o SDK não passa pelo shell: o `claude.cmd` do npm vira o
+   * `claude.exe` do pacote (T3).
+   */
+  const path = yield* Path.Path;
+  const sistemaArquivos = yield* FileSystem.FileSystem;
+  /** Os candidatos, em ordem: o do PATH e os da pasta do instalador oficial. */
+  const candidatos = Effect.gen(function* () {
+    const casa = opcoes.ambiente.HOME ?? opcoes.ambiente.USERPROFILE;
+    const achados: Array<string> = [];
+    for (const nome of [
+      "claude",
+      ...(casa === undefined
+        ? []
+        : [path.join(casa, ".local", "bin", "claude"), path.join(casa, ".local", "bin", "claude.exe")]),
+    ]) {
+      const local = yield* localizar(nome, opcoes.ambiente);
+      if (Option.isSome(local) && !achados.includes(local.value)) achados.push(local.value);
+    }
+    return achados;
+  });
+  /**
+   * O primeiro candidato que responde ao `--version` como o Claude Code (`versaoClaudeValida`): um
+   * arquivo `claude` qualquer no PATH não conta como instalado.
+   */
+  const localizarExecutavel = Effect.gen(function* () {
+    for (const candidato of yield* candidatos) {
+      const resolvido = yield* resolveClaudeSdkExecutablePath(candidato, limparAmbiente(opcoes.ambiente));
+      const linha = yield* primeiraLinha(resolvido, ["--version"], opcoes.ambiente);
+      if (Option.isSome(linha) && versaoClaudeValida(linha.value) !== undefined) return resolvido;
+    }
+    return undefined;
+  });
+  const servicosLocalizar = yield* Effect.context<Effect.Services<typeof localizarExecutavel>>();
+  let executavel = yield* localizarExecutavel;
+  /**
+   * O executável achado e conferido. Enquanto não acha, ou se o guardado deixou de existir (a pessoa
+   * desinstalou ou trocou de instalação), procura de novo a cada pedido, sem reiniciar o app.
+   */
+  const executavelAtual = Effect.gen(function* () {
+    if (executavel !== undefined && (yield* sistemaArquivos.exists(executavel).pipe(Effect.orElseSucceed(() => false))))
+      return executavel;
+    executavel = yield* localizarExecutavel.pipe(Effect.provideContext(servicosLocalizar));
+    return executavel;
+  });
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
   const fs = yield* FileSystem.FileSystem;
   const aleatorio = yield* SecureRandom.SecureRandom;
 
   const detectar: Driver["detectar"] = Effect.gen(function* () {
+    const executavel = yield* executavelAtual;
     if (executavel === undefined) {
       return {
         provider: PROVIDER,
@@ -270,7 +322,7 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
       ...(versao ? { versao } : {}),
       ...(info?.tokenSource ? { metodo: info.tokenSource } : info?.apiKeySource ? { metodo: "apiKey" } : {}),
       ...(info?.subscriptionType ? { plano: info.subscriptionType } : {}),
-      ...(autenticado ? {} : { mensagem: "Claude sem login: rode `claude auth login`" }),
+      ...(autenticado ? {} : { mensagem: "Claude sem login: rode `claude` no Terminal e entre na conta" }),
       ...(mcpGerenciado
         ? { aviso: "esta máquina tem MCP gerenciado pela organização (managed-mcp.json); o Claude não carrega o ifpr" }
         : {}),
@@ -281,6 +333,7 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
   );
 
   const iniciar = Effect.fn("DriverClaude.iniciar")(function* (config: ConfigSessao, politica: Politica) {
+    const executavel = yield* executavelAtual;
     if (executavel === undefined) {
       return yield* new FalhaProvider({ provider: PROVIDER, operacao: "iniciar", detalhe: "CLI `claude` ausente" });
     }

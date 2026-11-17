@@ -13,6 +13,7 @@ import { Route as TarefasRouteImport } from './routes/tarefas'
 import { Route as RevisaoPpcRouteImport } from './routes/revisao-ppc'
 import { Route as ConversaRouteImport } from './routes/conversa'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
+import { Route as BoasVindasRouteImport } from './routes/boas-vindas'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TarefaNomeRouteImport } from './routes/tarefa/$nome'
 
@@ -36,6 +37,11 @@ const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
   path: '/configuracoes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BoasVindasRoute = BoasVindasRouteImport.update({
+  id: '/boas-vindas',
+  path: '/boas-vindas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -49,6 +55,7 @@ const TarefaNomeRoute = TarefaNomeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/boas-vindas': typeof BoasVindasRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/conversa': typeof ConversaRoute
   '/revisao-ppc': typeof RevisaoPpcRoute
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/boas-vindas': typeof BoasVindasRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/conversa': typeof ConversaRoute
   '/revisao-ppc': typeof RevisaoPpcRoute
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/boas-vindas': typeof BoasVindasRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/conversa': typeof ConversaRoute
   '/revisao-ppc': typeof RevisaoPpcRoute
@@ -76,6 +85,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/boas-vindas'
     | '/configuracoes'
     | '/conversa'
     | '/revisao-ppc'
@@ -84,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/boas-vindas'
     | '/configuracoes'
     | '/conversa'
     | '/revisao-ppc'
@@ -92,6 +103,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/boas-vindas'
     | '/configuracoes'
     | '/conversa'
     | '/revisao-ppc'
@@ -101,6 +113,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BoasVindasRoute: typeof BoasVindasRoute
   ConfiguracoesRoute: typeof ConfiguracoesRoute
   ConversaRoute: typeof ConversaRoute
   RevisaoPpcRoute: typeof RevisaoPpcRoute
@@ -138,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfiguracoesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/boas-vindas': {
+      id: '/boas-vindas'
+      path: '/boas-vindas'
+      fullPath: '/boas-vindas'
+      preLoaderRoute: typeof BoasVindasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -157,6 +177,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BoasVindasRoute: BoasVindasRoute,
   ConfiguracoesRoute: ConfiguracoesRoute,
   ConversaRoute: ConversaRoute,
   RevisaoPpcRoute: RevisaoPpcRoute,

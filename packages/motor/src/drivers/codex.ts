@@ -23,11 +23,20 @@ import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
+import * as Queue from "effect/Queue";
 import type * as Schema from "effect/Schema";
+import * as Stream from "effect/Stream";
 import * as ChildProcess from "effect/process/ChildProcess";
 import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 import * as Canal from "../Canal.ts";
-import { type ConfigSessao, type Driver, type DeteccaoProvider, FalhaProvider, Gravador } from "../Driver.ts";
+import {
+  type ConfigSessao,
+  type Driver,
+  type DeteccaoProvider,
+  type EstadoLogin,
+  FalhaProvider,
+  Gravador,
+} from "../Driver.ts";
 import { type Evento, resumir, textoDeBlocos } from "../eventos.ts";
 import {
   ambienteSemTelemetria,
@@ -292,6 +301,37 @@ export function classificarComandoCodex(p: {
   };
 }
 
+/**
+ * Os hosts da página de login que o `codex app-server` devolve na `authUrl` (`codex-cli` 0.169.0, em
+ * 16/11/2026: `https://auth.openai.com/oauth/authorize?…`). Outra URL não vai ao navegador.
+ */
+const HOSTS_LOGIN_CODEX = new Set(["auth.openai.com"]);
+
+/** A `authUrl` é a página oficial de login da OpenAI, em HTTPS? */
+export function authUrlOficialCodex(url: string): boolean {
+  try {
+    const lida = new URL(url);
+    return (
+      lida.protocol === "https:" && HOSTS_LOGIN_CODEX.has(lida.hostname) && lida.username === "" && lida.port === ""
+    );
+  } catch {
+    return false;
+  }
+}
+
+/** O fim do login (`account/login/completed`) como a interface o mostra: a frase e, à parte, o detalhe. */
+export function fimLoginCodex(fim: {
+  readonly success: boolean;
+  readonly error?: string | null | undefined;
+}): Omit<EstadoLogin, "provider"> {
+  if (fim.success) return { fase: "concluido" };
+  return {
+    fase: "falhou",
+    mensagem: "O login não foi concluído. Tente de novo; se continuar, feche o navegador e entre outra vez.",
+    ...(fim.error ? { detalhe: fim.error } : {}),
+  };
+}
+
 export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
   readonly ambiente: Ambiente;
   /**
@@ -356,7 +396,7 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
           ...(versao ? { versao } : {}),
           ...(typeof info.type === "string" ? { metodo: info.type } : {}),
           ...(typeof info.planType === "string" ? { plano: info.planType } : {}),
-          ...(autenticado ? {} : { mensagem: "Codex sem login: rode `codex login`" }),
+          ...(autenticado ? {} : { mensagem: "Codex sem login: use entrar" }),
         } satisfies DeteccaoProvider;
       }),
     ).pipe(Effect.timeout("30 seconds"), Effect.option);
@@ -519,5 +559,50 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
     } satisfies Effect.Success<ReturnType<Driver["iniciar"]>>;
   });
 
-  return { detectar, iniciar, instalar: acompanharInstalacao(PROVIDER, opcoes.instalacao) } satisfies Driver;
+  /**
+   * O login da conta do ChatGPT pelo próprio app-server (`account/login/start` com `type: "chatgpt"`),
+   * como o app do Codex: ele abre um servidor de retorno local e devolve a `authUrl`, que a interface
+   * abre no navegador; o fim chega em `account/login/completed`. O login fica no `~/.codex` do usuário,
+   * o mesmo do Codex do terminal. Fechar o stream (a pessoa saiu da tela) fecha o app-server e cancela
+   * o login. Sem resposta em 10 minutos, o login falha por tempo.
+   */
+  const entrar: Driver["entrar"] = Stream.callback<EstadoLogin, FalhaProvider>((fila) =>
+    Effect.gen(function* () {
+      const emitir = (estado: Omit<EstadoLogin, "provider">) => Queue.offer(fila, { provider: PROVIDER, ...estado });
+      const terminar = (estado: Omit<EstadoLogin, "provider">) =>
+        emitir(estado).pipe(Effect.andThen(Queue.end(fila)), Effect.asVoid);
+      yield* emitir({ fase: "iniciando" });
+      const resolvido = yield* opcoes.instalacao
+        .resolve()
+        .pipe(Effect.mapError(Canal.falhaDe(PROVIDER, "entrar: Codex não instalado")));
+      const { cliente } = yield* abrir(resolvido.executablePath, ".");
+      const idLogin = yield* Deferred.make<string>();
+      yield* cliente.handleServerNotification("account/login/completed", (fim) =>
+        Effect.gen(function* () {
+          const esperado = yield* Deferred.await(idLogin);
+          if (typeof fim.loginId === "string" && fim.loginId !== esperado) return;
+          yield* terminar(fimLoginCodex(fim));
+        }),
+      );
+      const inicio = yield* cliente
+        .request("account/login/start", { type: "chatgpt" })
+        .pipe(Effect.mapError(Canal.falhaDe(PROVIDER, "entrar")));
+      if (inicio.type !== "chatgpt") {
+        return yield* new FalhaProvider({ provider: PROVIDER, operacao: "entrar", detalhe: `resposta ${inicio.type}` });
+      }
+      if (!authUrlOficialCodex(inicio.authUrl)) {
+        return yield* new FalhaProvider({
+          provider: PROVIDER,
+          operacao: "entrar",
+          detalhe: "a página de login devolvida não é a da OpenAI (auth.openai.com)",
+        });
+      }
+      yield* Deferred.succeed(idLogin, inicio.loginId);
+      yield* emitir({ fase: "aguardando", url: inicio.authUrl });
+      yield* Effect.sleep("10 minutes");
+      yield* terminar({ fase: "falhou", mensagem: "O login não terminou em 10 minutos. Tente de novo." });
+    }),
+  );
+
+  return { detectar, iniciar, instalar: acompanharInstalacao(PROVIDER, opcoes.instalacao), entrar } satisfies Driver;
 });

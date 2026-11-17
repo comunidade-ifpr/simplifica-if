@@ -29,6 +29,7 @@ function bancoFixture(): string {
 /** O servidor local com os drivers de demonstração (passos curtos). */
 export const layerServidor = (opcoes: { readonly porta?: number } = {}) =>
   Servidor.layer({
+    primeiroUsoFeito: true,
     banco: bancoFixture(),
     token: Redacted.make(TOKEN),
     ...(opcoes.porta === undefined ? {} : { porta: opcoes.porta }),

@@ -41,6 +41,7 @@ const registro: Registro = novoRegistro();
 const pasta = diretorioTemporario("simplifica-servidor-");
 
 const camada = Servidor.layer({
+  primeiroUsoFeito: true,
   banco: bancoFixture(),
   token: Redacted.make(TOKEN),
   origens: [ORIGEM],

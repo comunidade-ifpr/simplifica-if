@@ -3,10 +3,13 @@
  * do app, que não são skill do catálogo. Hoje a nativa é "Analisar um PPC", que leva ao fluxo da
  * revisão prévia (`/revisao-ppc`: pré-conferência, roteiro e relatório com IA), sem duplicá-lo.
  *
- * O filtro pelo perfil (`publico` × função da pessoa) entra com o perfil do primeiro uso (M1.8): sem
- * perfil, todas as tarefas aparecem.
+ * O perfil do primeiro uso (M1.8) ordena e filtra: a função da pessoa vira os públicos do manifesto
+ * (`DESCRICOES_FUNCAO`), e servem a ela as tarefas cujo `publico` inclui um deles ou que não dizem a
+ * quem servem. O Início mostra só as que servem (todas, se nenhuma servir); "Todas as tarefas" mostra
+ * o catálogo inteiro, com as que servem primeiro em cada área. Sem perfil, ou com a função "outra",
+ * nada se filtra.
  */
-import type { ResumoSkill } from "@simplifica-if/contratos-app";
+import { DESCRICOES_FUNCAO, type Publico, type ResumoSkill } from "@simplifica-if/contratos-app";
 import { useEffect, useState } from "react";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi, useEstadoConexao } from "../contexto.tsx";
@@ -21,6 +24,7 @@ export type Tarefa =
       readonly titulo: string;
       readonly resumo: string;
       readonly area: string;
+      readonly publico: ReadonlyArray<Publico>;
       readonly rota: "/revisao-ppc";
     };
 
@@ -32,6 +36,8 @@ export const TAREFAS_NATIVAS: ReadonlyArray<Extract<Tarefa, { tipo: "nativa" }>>
     resumo:
       "Confere o PPC (.docx) com as normas, o CNCT e a matriz da base, e devolve uma cópia do documento com comentários.",
     area: "ensino",
+    // Docentes entram: participam da elaboração do PPC no NDE.
+    publico: ["coordenacao-curso", "pedagogia", "docente", "direcao-ensino", "proens", "dens"],
     rota: "/revisao-ppc",
   },
 ];
@@ -41,12 +47,37 @@ export const nomeTarefa = (tarefa: Tarefa): string => (tarefa.tipo === "skill" ?
 export const areaTarefa = (tarefa: Tarefa): string => (tarefa.tipo === "skill" ? tarefa.skill.area : tarefa.area);
 export const resumoTarefa = (tarefa: Tarefa): string => (tarefa.tipo === "skill" ? tarefa.skill.resumo : tarefa.resumo);
 
-/** As tarefas para o perfil: as nativas primeiro, depois as skills; sem perfil, todas. */
+export const publicoTarefa = (tarefa: Tarefa): ReadonlyArray<string> =>
+  tarefa.tipo === "skill" ? tarefa.skill.publico : tarefa.publico;
+
+/**
+ * A tarefa serve à função do perfil? `undefined` quando não há o que comparar (sem perfil, sem função
+ * ou função "outra"); `true` também para a tarefa que não diz a quem serve.
+ */
+export function servePerfil(tarefa: Tarefa, perfil: Perfil | undefined): boolean | undefined {
+  const publicos: ReadonlyArray<string> = perfil?.funcao === undefined ? [] : DESCRICOES_FUNCAO[perfil.funcao].publicos;
+  if (publicos.length === 0) return undefined;
+  const publico = publicoTarefa(tarefa);
+  return publico.length === 0 || publico.some((p) => publicos.includes(p));
+}
+
+/** O catálogo inteiro (as nativas primeiro, depois as skills), com as que servem ao perfil antes. */
 export function tarefasDoPerfil(skills: ReadonlyArray<ResumoSkill>, perfil: Perfil | undefined): ReadonlyArray<Tarefa> {
-  const funcao = perfil?.funcao;
-  const servem = (skill: ResumoSkill) =>
-    funcao === undefined || skill.publico.length === 0 || skill.publico.includes(funcao);
-  return [...TAREFAS_NATIVAS, ...skills.filter(servem).map((skill): Tarefa => ({ tipo: "skill", skill }))];
+  const todas: ReadonlyArray<Tarefa> = [
+    ...TAREFAS_NATIVAS,
+    ...skills.map((skill): Tarefa => ({ tipo: "skill", skill })),
+  ];
+  return [
+    ...todas.filter((tarefa) => servePerfil(tarefa, perfil) !== false),
+    ...todas.filter((tarefa) => servePerfil(tarefa, perfil) === false),
+  ];
+}
+
+/** As tarefas do Início: só as que servem ao perfil; todas, se nenhuma servir ou não houver perfil. */
+export function tarefasDoInicio(skills: ReadonlyArray<ResumoSkill>, perfil: Perfil | undefined): ReadonlyArray<Tarefa> {
+  const todas = tarefasDoPerfil(skills, perfil);
+  const servem = todas.filter((tarefa) => servePerfil(tarefa, perfil) !== false);
+  return servem.length === 0 ? todas : servem;
 }
 
 export type Catalogo =

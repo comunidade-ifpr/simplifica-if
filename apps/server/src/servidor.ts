@@ -53,6 +53,7 @@ import * as Handlers from "./handlers.ts";
 import * as PastasTrabalho from "./PastasTrabalho.ts";
 import * as Banco from "./persistencia/Banco.ts";
 import * as Historico from "./persistencia/Historico.ts";
+import * as Preferencias from "./persistencia/Preferencias.ts";
 import * as AnalisePpc from "./revisao-ppc/AnalisePpc.ts";
 import * as ListaViva from "./revisao-ppc/ListaViva.ts";
 import * as RevisaoIa from "./revisao-ppc/RevisaoIa.ts";
@@ -109,6 +110,8 @@ export interface Opcoes {
   readonly pastaCopias?: string;
   /** Limites das cópias e dos anexos (`PastasTrabalho.LIMITES`); os testes os apertam. */
   readonly limitesPasta?: Partial<PastasTrabalho.Limites>;
+  /** Aviso de uso aceito e boas-vindas feitas ao abrir (M1.8): os testes que não passam por elas. */
+  readonly primeiroUsoFeito?: boolean;
   /**
    * Atualização da base e das skills (M1.10), montada pela CLI depois de `prepararAbertura`. Sem ela,
    * o serviço responde como desligado (`atualizacao.estado`), com o motivo.
@@ -302,6 +305,11 @@ export const layer = (opcoes: Opcoes) => {
     Layer.provideMerge(AnalisePpc.layer({ ...opcoes.revisaoPpc, exigirLiberacao: opcoes.tokenDesktop !== undefined })),
     Layer.provideMerge(Motor.layer),
     Layer.provideMerge(Historico.layer.pipe(Layer.provide(banco))),
+    Layer.provideMerge(
+      (opcoes.primeiroUsoFeito === true ? Preferencias.layerPrimeiroUsoFeito : Preferencias.layer).pipe(
+        Layer.provide(banco),
+      ),
+    ),
     Layer.provideMerge(
       opcoes.pastaSkills === undefined
         ? CatalogoSkills.layerVazio
