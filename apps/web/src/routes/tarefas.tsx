@@ -1,8 +1,11 @@
-/** "Ver todas": o catálogo das tarefas por área (as nativas do app e as skills do servidor). */
+/**
+ * "Ver todas": o catálogo inteiro por área (as nativas do app e as skills do servidor), com as que servem
+ * à função do perfil primeiro e marcadas (M1.8).
+ */
 import { createFileRoute } from "@tanstack/react-router";
 import { AvisoErro } from "../components/AvisoErro.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
-import { areaTarefa, nomeTarefa, type Tarefa, tarefasDoPerfil, useCatalogo } from "../tarefas/catalogo.ts";
+import { areaTarefa, nomeTarefa, publicoTarefa, servePerfil, type Tarefa, tarefasDoPerfil, useCatalogo } from "../tarefas/catalogo.ts";
 import { usePerfil } from "../tarefas/perfil.ts";
 import { nomeArea } from "../tarefas/textos.ts";
 import { CartaoTarefa } from "../tarefas/CartaoTarefa.tsx";
@@ -33,7 +36,7 @@ function TodasAsTarefas() {
             <ul className="grid gap-3 sm:grid-cols-2">
               {daArea.map((tarefa) => (
                 <li key={nomeTarefa(tarefa)}>
-                  <CartaoTarefa tarefa={tarefa} />
+                  <CartaoTarefa tarefa={tarefa} paraVoce={servePerfil(tarefa, perfil) === true && publicoTarefa(tarefa).length > 0} />
                 </li>
               ))}
             </ul>

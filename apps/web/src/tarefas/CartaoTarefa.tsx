@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { FileSearchIcon, SparklesIcon } from "lucide-react";
 import { nomeTarefa, resumoTarefa, type Tarefa, tituloTarefa } from "./catalogo.ts";
 
-export function CartaoTarefa({ tarefa }: { readonly tarefa: Tarefa }) {
+export function CartaoTarefa({ tarefa, paraVoce = false }: { readonly tarefa: Tarefa; readonly paraVoce?: boolean }) {
   const classe =
     "group flex h-full flex-col gap-1.5 rounded-xl border border-border bg-card p-4 text-left shadow-xs transition-colors hover:border-primary/60 hover:bg-primary/4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
   const conteudo = (
@@ -15,6 +15,11 @@ export function CartaoTarefa({ tarefa }: { readonly tarefa: Tarefa }) {
           <SparklesIcon aria-hidden className="size-4 text-primary" />
         )}
         {tituloTarefa(tarefa)}
+        {paraVoce ? (
+          <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 font-medium text-primary text-xs">
+            Para a sua função
+          </span>
+        ) : null}
       </span>
       <span className="line-clamp-3 text-muted-foreground text-sm">{resumoTarefa(tarefa)}</span>
     </>

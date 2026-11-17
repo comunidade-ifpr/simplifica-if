@@ -1,11 +1,13 @@
 /**
- * Um provider na tela de Início: detecção (instalado, login, versão, plano), "Instalar" com a barra de
- * progresso e "Entrar" com o link da página de login. Os botões só aparecem quando o app oferece a
- * operação para o provider (`podeInstalar`, `podeEntrar`); senão, a orientação para fazer à mão.
+ * Um provider em Configurações › Sua IA e nas boas-vindas: detecção (instalado, login, versão, plano),
+ * "Instalar" com a barra de progresso e "Entrar" com o link da página de login (Codex e Antigravity).
+ * Os botões só aparecem quando o app oferece a operação para o provider (`podeInstalar`,
+ * `podeEntrar`); o Claude tem o passo guiado (`PassoClaude`), e os demais casos, a orientação para
+ * fazer à mão. Em Configurações, "Não usar no app" tira a IA da escolha das conversas sem sair da conta.
  */
 import type { EstadoInstalacao, EstadoLogin, EstadoProvider, Provider } from "@simplifica-if/contratos-app";
 import { CheckCircle2Icon, CircleAlertIcon, CircleDashedIcon, ExternalLinkIcon, RefreshCwIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Api } from "../conexao/api.ts";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
@@ -22,6 +24,7 @@ import {
   textoFaseLogin,
 } from "../providers.ts";
 import { AvisoErro } from "./AvisoErro.tsx";
+import { PassoClaude } from "./PassoClaude.tsx";
 import { Alert, AlertDescription } from "./ui/alert.tsx";
 import { Badge } from "./ui/badge.tsx";
 import { Button } from "./ui/button.tsx";
@@ -111,10 +114,29 @@ function PassoManual({ orientacao }: { readonly orientacao: Orientacao }) {
   );
 }
 
-export function CartaoProvider({ provider }: { readonly provider: Provider }) {
+/** "Usar no app": a IA aparece na escolha das conversas. */
+export interface UsoNoApp {
+  readonly usada: boolean;
+  readonly aoMudar: (usar: boolean) => void;
+}
+
+export function CartaoProvider({
+  provider,
+  aoMudarEstado,
+  uso,
+}: {
+  readonly provider: Provider;
+  /** Cada detecção concluída (as boas-vindas seguem quando a IA fica pronta). */
+  readonly aoMudarEstado?: (estado: EstadoProvider) => void;
+  /** Em Configurações: o "Não usar no app" / "Voltar a usar". */
+  readonly uso?: UsoNoApp;
+}) {
   const api = useApi();
   const descricao = DESCRICOES[provider];
   const [deteccao, setDeteccao] = useState<Deteccao>({ fase: "detectando" });
+  const [conferiu, setConferiu] = useState(false);
+  /** A última detecção concluída: o passo do Claude fica na tela enquanto confere de novo. */
+  const [ultimo, setUltimo] = useState<EstadoProvider>();
   const [instalacao, setInstalacao] = useState<EstadoInstalacao | undefined>();
   const [login, setLogin] = useState<EstadoLogin | undefined>();
   const [erro, setErro] = useState<MensagemErro | undefined>();
@@ -126,6 +148,15 @@ export function CartaoProvider({ provider }: { readonly provider: Provider }) {
       vivo = false;
     };
   }, [api, provider]);
+
+  // Só a detecção nova conta: o callback, que o pai pode recriar a cada render, fica numa ref.
+  const avisar = useRef(aoMudarEstado);
+  avisar.current = aoMudarEstado;
+  useEffect(() => {
+    if (deteccao.fase !== "detectado") return;
+    setUltimo(deteccao.estado);
+    avisar.current?.(deteccao.estado);
+  }, [deteccao]);
 
   const detectarDeNovo = () => {
     setDeteccao({ fase: "detectando" });
@@ -240,7 +271,10 @@ export function CartaoProvider({ provider }: { readonly provider: Provider }) {
         </dl>
       )}
 
-      {estado?.mensagem === undefined ? null : <p className="text-muted-foreground text-sm">{estado.mensagem}</p>}
+      {/* A mensagem do motor é técnica; quando falta algo, os botões e o passo guiado explicam. */}
+      {estado?.mensagem === undefined || !estado.instalado || !estado.autenticado ? null : (
+        <p className="text-muted-foreground text-sm">{estado.mensagem}</p>
+      )}
       {estado?.aviso === undefined ? null : (
         <Alert variant="warning">
           <AlertDescription>{estado.aviso}</AlertDescription>
@@ -251,6 +285,17 @@ export function CartaoProvider({ provider }: { readonly provider: Provider }) {
       {login === undefined ? null : <PassoLogin estado={login} />}
       {erro === undefined ? null : <AvisoErro erro={erro} />}
 
+      {provider === "claude" && ultimo !== undefined && (!ultimo.instalado || !ultimo.autenticado) ? (
+        <PassoClaude
+          estado={ultimo}
+          conferindo={deteccao.fase === "detectando"}
+          conferiu={conferiu}
+          aoConferir={() => {
+            setConferiu(true);
+            detectarDeNovo();
+          }}
+        />
+      ) : null}
       {estado === undefined ? null : (
         <footer className="mt-auto flex flex-col gap-2">
           {(!estado.instalado || instalando) && estado.podeInstalar ? (
@@ -259,7 +304,7 @@ export function CartaoProvider({ provider }: { readonly provider: Provider }) {
               Instalar
             </Button>
           ) : null}
-          {!estado.instalado && !estado.podeInstalar ? (
+          {!estado.instalado && !estado.podeInstalar && provider !== "claude" ? (
             <PassoManual orientacao={orientacao(provider, "instalar")} />
           ) : null}
           {estado.instalado && !estado.autenticado && estado.podeEntrar ? (
@@ -268,10 +313,20 @@ export function CartaoProvider({ provider }: { readonly provider: Provider }) {
               Entrar
             </Button>
           ) : null}
-          {estado.instalado && !estado.autenticado && !estado.podeEntrar ? (
+          {estado.instalado && !estado.autenticado && !estado.podeEntrar && provider !== "claude" ? (
             <PassoManual orientacao={orientacao(provider, "entrar")} />
           ) : null}
         </footer>
+      )}
+      {uso === undefined || estado === undefined ? null : (
+        <div className="flex flex-col gap-1.5 border-border border-t pt-3 text-sm">
+          {uso.usada ? null : (
+            <p className="text-muted-foreground">Fora da escolha das conversas. Sua conta continua conectada.</p>
+          )}
+          <Button className="self-start" size="sm" variant="ghost" onClick={() => uso.aoMudar(!uso.usada)}>
+            {uso.usada ? "Não usar no app" : "Voltar a usar no app"}
+          </Button>
+        </div>
       )}
     </section>
   );

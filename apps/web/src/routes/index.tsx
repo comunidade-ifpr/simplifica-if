@@ -1,7 +1,9 @@
 /**
- * Início do Modo Servidor (M1.9): a data da base, o perfil (quando houver, M1.8), a caixa "O que você
- * precisa hoje?" (com anexo e a escolha da IA), os cartões de tarefa (as skills do catálogo e a tarefa
- * nativa "Analisar um PPC"), "Ver todas" e os recentes (conversas e a última análise de PPC).
+ * Início do Modo Servidor (M1.9): a data da base, a linha do perfil ("Função · Campus", M1.8), a caixa
+ * "O que você precisa hoje?" (com anexo e a escolha da IA), os cartões de tarefa que servem ao perfil
+ * (as skills do catálogo e a tarefa nativa "Analisar um PPC"), "Ver todas" e os recentes (conversas e a
+ * última análise de PPC). No primeiro uso (aviso não aceito ou boas-vindas por ver), leva às
+ * boas-vindas.
  *
  * "Para você" (as novidades da base que afetam o perfil) é do Marco 2. No Marco 1 ele mostraria só as
  * novidades gerais da base, mas a base ainda não publica uma lista de novidades: o bloco fica oculto
@@ -23,9 +25,9 @@ import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi, useConversa, useEstadoConexao } from "../contexto.tsx";
 import { PROVIDERS } from "../providers.ts";
 import { CartaoTarefa } from "../tarefas/CartaoTarefa.tsx";
-import { nomeTarefa, tarefasDoPerfil, useCatalogo } from "../tarefas/catalogo.ts";
+import { nomeTarefa, tarefasDoInicio, useCatalogo } from "../tarefas/catalogo.ts";
 import { Anexos, comecarTarefa, EscolhaIa, nomeArquivo } from "../tarefas/comecar.tsx";
-import { linhaDoPerfil, usePerfil } from "../tarefas/perfil.ts";
+import { linhaDoPerfil, primeiroUsoPendente, usePerfil, usePreferencias } from "../tarefas/perfil.ts";
 import { dataDaBase, tituloDoPedido } from "../tarefas/textos.ts";
 
 export const Route = createFileRoute("/")({ component: Inicio });
@@ -167,7 +169,7 @@ function Tarefas() {
   const catalogo = useCatalogo();
   const perfil = usePerfil();
   if (catalogo.fase === "falhou") return <AvisoErro erro={catalogo.erro} />;
-  const tarefas = tarefasDoPerfil(catalogo.fase === "pronto" ? catalogo.skills : [], perfil);
+  const tarefas = tarefasDoInicio(catalogo.fase === "pronto" ? catalogo.skills : [], perfil);
   return (
     <section aria-labelledby="titulo-tarefas" className="flex flex-col gap-3">
       <div className="flex items-baseline justify-between gap-2">
@@ -226,14 +228,28 @@ function UltimaAnalise() {
 
 function Inicio() {
   const conexao = useEstadoConexao();
-  const perfil = linhaDoPerfil(usePerfil());
+  const { preferencias } = usePreferencias();
+  const perfil = linhaDoPerfil(preferencias?.perfil);
+  const navegar = useNavigate();
+  const pendente = primeiroUsoPendente(preferencias);
+  useEffect(() => {
+    if (pendente === true) void navegar({ to: "/boas-vindas", replace: true });
+  }, [pendente, navegar]);
   return (
     <div className="h-full overflow-y-auto">
       <div className="mx-auto flex max-w-4xl flex-col gap-6 p-6">
         <section className="flex flex-wrap items-end justify-between gap-2">
           <div>
             <h1 className="font-bold text-2xl tracking-tight">Olá!</h1>
-            {perfil === undefined ? null : <p className="text-muted-foreground">{perfil}</p>}
+            {perfil !== undefined ? (
+              <p className="text-muted-foreground" data-linha-perfil>
+                {perfil}
+              </p>
+            ) : preferencias === undefined ? null : (
+              <Link to="/configuracoes" hash="perfil" className="text-primary text-sm hover:underline">
+                Preencha seu perfil para ver primeiro as tarefas da sua função
+              </Link>
+            )}
           </div>
           {conexao.fase === "sem-servidor" ? null : <DataDaBase />}
         </section>
