@@ -25,7 +25,7 @@ async function capturar(nome: string) {
 }
 
 beforeAll(async () => {
-  servidor = await iniciarServidorTeste(1500);
+  servidor = await iniciarServidorTeste({ atrasoLogin: 1500 });
 });
 
 afterAll(async () => {

@@ -4,6 +4,7 @@
  * fixture do MCP: a interface conversa com ele por RPC sem chamar provider real e sem `tmp/kb.sqlite`.
  *
  *   node apps/web/test/servidor-teste.ts [--porta 0] [--origem http://localhost:5190]… [--atraso-login 2000]
+ *     [--primeiro-uso] [--claude-ausente-ate 3]
  *
  * Pronto o servidor, imprime uma linha JSON com `porta`, `urlServidor`, `token` (o de
  * `SIMPLIFICA_SERVIDOR_TOKEN` ou um aleatório), `pasta`, uma pasta de trabalho temporária, e `ppc`, um
@@ -35,6 +36,10 @@ const { values: opcoes } = NodeUtil.parseArgs({
     porta: { type: "string", default: "0" },
     origem: { type: "string", multiple: true, default: [] },
     "atraso-login": { type: "string", default: "2000" },
+    // O primeiro uso (M1.8) por fazer: o Início leva às boas-vindas. Sem a opção, já está feito.
+    "primeiro-uso": { type: "boolean", default: false },
+    // O Claude Code ausente até a n-ésima detecção (o passo guiado das boas-vindas).
+    "claude-ausente-ate": { type: "string" },
   },
 });
 
@@ -92,8 +97,14 @@ const camada = Servidor.layer({
   // As skills do app do checkout (os cartões de tarefa e as etapas).
   pastaSkills: NodePath.resolve(import.meta.dirname, "../../../.agents/skills"),
   pastaTrabalhos,
+  primeiroUsoFeito: !opcoes["primeiro-uso"],
 }).pipe(
-  Layer.provide(Demonstracao.layer({ atrasoLogin: Duration.millis(Number(opcoes["atraso-login"])) })),
+  Layer.provide(
+    Demonstracao.layer({
+      atrasoLogin: Duration.millis(Number(opcoes["atraso-login"])),
+      ...(opcoes["claude-ausente-ate"] === undefined ? {} : { claudeAusenteAte: Number(opcoes["claude-ausente-ate"]) }),
+    }),
+  ),
   Layer.provide(NodeServices.layer),
 );
 

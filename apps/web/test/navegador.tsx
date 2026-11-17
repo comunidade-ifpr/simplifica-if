@@ -6,7 +6,7 @@ import { createMemoryHistory } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { commands } from "vite-plus/test/browser";
-import type { ServidorTeste } from "../vite.config.ts";
+import type { OpcoesServidorTeste, ServidorTeste } from "../vite.config.ts";
 import { App } from "../src/App.tsx";
 import { inicializar } from "../src/inicializar.ts";
 import { criarRoteador } from "../src/router.ts";
@@ -15,14 +15,14 @@ import "../src/index.css";
 declare module "vite-plus/test/browser" {
   interface BrowserCommands {
     /** Sobe o `test/servidor-teste.ts` aceitando a origem da página; definido no `vite.config.ts`. */
-    iniciarServidorTeste: (atrasoLogin: number) => Promise<ServidorTeste>;
+    iniciarServidorTeste: (opcoes: OpcoesServidorTeste) => Promise<ServidorTeste>;
     pararServidoresTeste: () => Promise<void>;
     /** Grava `texto` num arquivo de uma pasta de tarefa, como a pessoa editando fora da conversa. */
     editarArquivoDeTarefa: (caminho: string, texto: string) => Promise<void>;
   }
 }
 
-export const iniciarServidorTeste = (atrasoLogin = 1500) => commands.iniciarServidorTeste(atrasoLogin);
+export const iniciarServidorTeste = (opcoes: OpcoesServidorTeste = {}) => commands.iniciarServidorTeste(opcoes);
 export const pararServidoresTeste = () => commands.pararServidoresTeste();
 export const editarArquivoDeTarefa = (caminho: string, texto: string) => commands.editarArquivoDeTarefa(caminho, texto);
 

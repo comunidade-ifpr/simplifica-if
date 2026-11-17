@@ -45,11 +45,29 @@ export interface ServidorTeste {
 /** Os servidores de teste abertos pelos testes de navegador, por origem do pedido. */
 const servidores = new Set<NodeChildProcess.ChildProcess>();
 
+/** Como o servidor de teste começa (`test/servidor-teste.ts`). */
+export interface OpcoesServidorTeste {
+  /** Quanto o login simulado fica em `aguardando`, em ms. */
+  readonly atrasoLogin?: number;
+  /** O primeiro uso (boas-vindas, aviso) por fazer; sem a opção, já feito. */
+  readonly primeiroUso?: boolean;
+  /** O Claude Code ausente até a n-ésima detecção. */
+  readonly claudeAusenteAte?: number;
+}
+
 /** Sobe o `apps/server` de teste aceitando `origem` e devolve a linha de partida dele. */
-function iniciarServidorTeste(origem: string, atrasoLogin: number) {
+function iniciarServidorTeste(origem: string, opcoes: OpcoesServidorTeste) {
   const processo = NodeChildProcess.spawn(
     process.execPath,
-    [SERVIDOR_TESTE, "--origem", origem, "--atraso-login", String(atrasoLogin)],
+    [
+      SERVIDOR_TESTE,
+      "--origem",
+      origem,
+      "--atraso-login",
+      String(opcoes.atrasoLogin ?? 1500),
+      ...(opcoes.primeiroUso === true ? ["--primeiro-uso"] : []),
+      ...(opcoes.claudeAusenteAte === undefined ? [] : ["--claude-ausente-ate", String(opcoes.claudeAusenteAte)]),
+    ],
     { stdio: ["pipe", "pipe", "inherit"] },
   );
   servidores.add(processo);
@@ -108,8 +126,8 @@ const navegador = {
       instances: [{ browser: "chromium" }],
       screenshotFailures: false,
       commands: {
-        iniciarServidorTeste: async ({ page }, atrasoLogin: number) =>
-          iniciarServidorTeste(new URL(page.url()).origin, atrasoLogin),
+        iniciarServidorTeste: async ({ page }, opcoes: OpcoesServidorTeste) =>
+          iniciarServidorTeste(new URL(page.url()).origin, opcoes),
         pararServidoresTeste: async () => pararServidores(),
         /** Simula a pessoa editando no Word um arquivo de uma pasta de tarefa (só dentro de "Simplifica IF/"). */
         editarArquivoDeTarefa: async (_contexto, caminho: string, texto: string) => {

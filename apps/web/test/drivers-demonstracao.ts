@@ -24,6 +24,7 @@ import * as Canal from "@simplifica-if/motor/Canal";
 /** O link da resposta: a DCN da EPT de 2021, que o banco de fixture do MCP traz. */
 export const LINK_DEMONSTRACAO = "ifpr://norma/br/cne-cp/res/2021/1";
 export const URL_LOGIN_GOOGLE = "https://accounts.google.com/o/oauth2/v2/auth?demonstracao=simplifica-if";
+export const URL_LOGIN_OPENAI = "https://auth.openai.com/oauth/authorize?demonstracao=simplifica-if";
 const TOTAL_DOWNLOAD = 48 * 1_048_576;
 
 export interface OpcoesDemonstracao {
@@ -31,6 +32,11 @@ export interface OpcoesDemonstracao {
   readonly atrasoLogin?: Duration.Input;
   /** O intervalo entre os passos da instalação e do texto (padrão: 60 ms). */
   readonly passo?: Duration.Input;
+  /**
+   * O Claude Code começa ausente e "aparece" (instalado e com login) depois de tantas detecções: simula
+   * a pessoa instalando pelo instalador oficial enquanto o app espera o "Já fiz, conferir" (M1.8).
+   */
+  readonly claudeAusenteAte?: number;
 }
 
 const respostaFinal = `A Resolução CNE/CP nº 1/2021 define as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica. Veja a [Res. CNE/CP nº 1/2021](${LINK_DEMONSTRACAO}).`;
@@ -44,15 +50,24 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
     antigravity: { instalado: true, autenticado: false },
   };
 
+  let deteccoesClaude = 0;
+  if (opcoes.claudeAusenteAte !== undefined) estado.claude = { instalado: false, autenticado: false };
+
   const detectar = (provider: Motor.Provider) =>
-    Effect.sync((): Motor.DeteccaoProvider => ({
+    Effect.sync((): Motor.DeteccaoProvider => {
+      if (provider === "claude" && opcoes.claudeAusenteAte !== undefined) {
+        deteccoesClaude += 1;
+        if (deteccoesClaude > opcoes.claudeAusenteAte) estado.claude = { instalado: true, autenticado: true };
+      }
+      return {
       provider,
       instalado: estado[provider].instalado,
       autenticado: estado[provider].autenticado,
       ...(estado[provider].instalado ? { versao: provider === "claude" ? "2.1.30" : "1.5.9" } : {}),
       ...(estado[provider].autenticado && provider === "claude" ? { plano: "max", metodo: "claude.ai" } : {}),
       ...(estado[provider].instalado ? {} : { mensagem: "O app instala a própria cópia." }),
-    }));
+      };
+    });
 
   const iniciar = (provider: Motor.Provider) => (config: Motor.ConfigSessao) =>
     Effect.gen(function* () {
@@ -200,11 +215,11 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
   const entrar = (provider: Motor.Provider): Stream.Stream<Motor.EstadoLogin> =>
     Stream.fromIterable<Motor.EstadoLogin>([
       { provider, fase: "iniciando" },
-      { provider, fase: "aguardando", url: URL_LOGIN_GOOGLE },
+      { provider, fase: "aguardando", url: provider === "codex" ? URL_LOGIN_OPENAI : URL_LOGIN_GOOGLE },
     ]).pipe(
       Stream.concat(
         Stream.fromEffect(
-          Effect.sleep(provider === "antigravity" ? atrasoLogin : passo).pipe(
+          Effect.sleep(atrasoLogin).pipe(
             Effect.andThen(
               Effect.sync((): Motor.EstadoLogin => {
                 estado[provider].autenticado = true;
@@ -219,9 +234,8 @@ export const layer = (opcoes: OpcoesDemonstracao = {}) => {
   const driver = (provider: Motor.Provider): Motor.Driver => ({
     detectar: detectar(provider),
     iniciar: iniciar(provider),
-    // Como os drivers reais: o app instala o Codex e o Antigravity, e só faz o login do Antigravity.
-    ...(provider === "claude" ? {} : { instalar: instalar(provider) }),
-    ...(provider === "antigravity" ? { entrar: entrar(provider) } : {}),
+    // Como os drivers reais: o app instala e faz o login do Codex e do Antigravity; o Claude é à mão.
+    ...(provider === "claude" ? {} : { instalar: instalar(provider), entrar: entrar(provider) }),
   });
 
   return Layer.succeed(
