@@ -16,7 +16,8 @@ import { criarCaminhos } from "./base/caminhos.ts";
 import { aplicarGerados, mensagensDivergencias } from "./base/gerados.ts";
 import { validarBase } from "./base/validacao.ts";
 import { validarDadosInstitucionais } from "./dados/validacao.ts";
-import { executarPrincipal, sairCom } from "./principal.ts";
+import { sairCom } from "@simplifica-if/kb/principal";
+import { executarPrincipal } from "./principal.ts";
 
 /** As skills do app válidas e os erros das inválidas, em `<raiz>/.agents/skills`. */
 const validarSkillsDoApp = Effect.fn("validar_base.skills")(function* (raizProjeto: string) {

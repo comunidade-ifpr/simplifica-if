@@ -12,17 +12,15 @@
  * O stdout é do protocolo MCP; as mensagens vão para o stderr. Um `~/` no início dos caminhos é
  * expandido aqui, porque nem todo cliente MCP passa os argumentos por um shell.
  *
- * Erros: como na CLI `kb`, o relatório padrão do `runMain` fica desligado (ele escreveria no stdout,
- * que é do protocolo). Um erro tipado vira `simplifica-mcp: <mensagem>` no stderr, com código 1; os
+ * Erros: pelo ponto de entrada comum (`@simplifica-if/kb/principal`), longe do stdout, que é do
+ * protocolo. Um erro tipado vira `simplifica-mcp: <mensagem>` no stderr, com código 1; os
  * erros de abertura do banco usam as mensagens do simplifica-mcp (`mensagemDeAbertura`).
  */
 import * as NodeOS from "node:os";
-import * as NodeRuntime from "@effect/platform-node/NodeRuntime";
-import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as NodeStdio from "@effect/platform-node/NodeStdio";
 import * as BaseKb from "@simplifica-if/kb/BaseKb";
 import * as Sql from "@simplifica-if/kb/db/sql";
-import * as Cause from "effect/Cause";
+import { executarPrincipal, mensagemDoErro } from "@simplifica-if/kb/principal";
 import * as Config from "effect/Config";
 import * as Console from "effect/Console";
 import * as Context from "effect/Context";
@@ -32,7 +30,6 @@ import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Path from "effect/Path";
 import * as Schema from "effect/Schema";
-import * as CliError from "effect/cli/CliError";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
 import { prepararAtualizacao } from "./atualizacao.ts";
@@ -57,7 +54,6 @@ export class UsoInvalido extends Schema.TaggedError<UsoInvalido>()("UsoInvalido"
   }
 }
 
-const ehUsoInvalido = Schema.is(UsoInvalido);
 const ehCanal = Schema.is(Schema.Literals(CANAIS));
 
 function expandirCaminho(path: Path.Path, caminho: string): string {
@@ -164,25 +160,13 @@ const comando = Command.make(
   ),
 );
 
-/** Escreve no stderr o que a falha tem a dizer; o código de saída fica com o `runMain`. */
-const relatarFalha = (causa: Cause.Cause<unknown>): Effect.Effect<void> => {
-  if (Cause.hasInterruptsOnly(causa)) return Effect.void;
-  const erro = Cause.findErrorOption(causa);
-  if (Option.isNone(erro)) return Console.error(Cause.pretty(causa));
-  const valor = erro.value;
-  if (CliError.isCliError(valor)) return Effect.void;
-  if (BaseKb.ehBaseAusente(valor) || BaseKb.ehBaseIncompativel(valor)) {
-    return Console.error(`simplifica-mcp: ${mensagemDeAbertura(valor)}`);
+/** A linha do stderr de um erro tipado; os de abertura do banco usam as mensagens do simplifica-mcp. */
+const mensagemDe = (erro: unknown): string => {
+  if (BaseKb.ehBaseAusente(erro) || BaseKb.ehBaseIncompativel(erro)) {
+    return `simplifica-mcp: ${mensagemDeAbertura(erro)}`;
   }
-  if (Sql.ehFalhaNaConsulta(valor))
-    return Console.error(`simplifica-mcp: ${MENSAGEM_INCOMPATIVEL} (o arquivo não é um kb.sqlite)`);
-  if (ehUsoInvalido(valor)) return Console.error(`simplifica-mcp: ${valor.message}`);
-  return Console.error(`simplifica-mcp: ${valor instanceof Error ? valor.message : String(valor)}`);
+  if (Sql.ehFalhaNaConsulta(erro)) return `simplifica-mcp: ${MENSAGEM_INCOMPATIVEL} (o arquivo não é um kb.sqlite)`;
+  return `simplifica-mcp: ${mensagemDoErro(erro)}`;
 };
 
-const programa = Command.run(comando, { version: VERSAO_PACOTE }).pipe(
-  Effect.tapCause(relatarFalha),
-  Effect.provide(NodeServices.layer),
-);
-
-NodeRuntime.runMain(programa, { disableErrorReporting: true });
+executarPrincipal("simplifica-mcp", Command.run(comando, { version: VERSAO_PACOTE }), { mensagemDe });

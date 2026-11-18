@@ -8,7 +8,8 @@ import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
 import { criarCaminhos } from "./base/caminhos.ts";
 import { compararDiretorios, renderizarSite } from "./base/site.ts";
-import { executarPrincipal, sairCom } from "./principal.ts";
+import { sairCom } from "@simplifica-if/kb/principal";
+import { executarPrincipal } from "./principal.ts";
 
 /** Diferenças entre site/ e o que a base gera, renderizada numa pasta temporária. */
 const verificarSite = Effect.fn("gerar_site.verificar")(function* (raizBase: string, site: string) {

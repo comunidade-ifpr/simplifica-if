@@ -26,10 +26,10 @@ import * as Normas from "../Normas.ts";
 import { avaliarResolvedor, lerAnotacoes } from "../avaliacao/resolvedor.ts";
 import { carregarRegistro } from "../normas/registro.ts";
 import { proporRelacoes } from "../normas/relacoes.ts";
+import { EncerrarComCodigo } from "../principal.ts";
 import {
   camadaRepositorio,
   Checkout,
-  EncerrarComCodigo,
   EntradaInvalida,
   exigirIdNorma,
   FalhaNaCuradoria,
