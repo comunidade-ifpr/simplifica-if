@@ -1,5 +1,73 @@
 [
   {
+    "id": "br/decreto-lei/1969/1044",
+    "title": "Decreto-Lei nº 1.044/1969",
+    "tipo_documento": "Decreto-Lei",
+    "numero": "1044",
+    "ano": 1969,
+    "data_publicacao": "1969-10-21",
+    "assinada_em": "1969-10-21",
+    "publicada_em": "1969-10-22",
+    "vigente_de": "1969-10-22",
+    "orgao": "Presidência da República",
+    "jurisdicao": "BR",
+    "ementa": "Dispõe sobre tratamento excepcional para os alunos portadores das afecções que indica.",
+    "status_vigencia": "vigente",
+    "keywords": [
+      "regime domiciliar",
+      "exercícios domiciliares",
+      "atividades domiciliares",
+      "tratamento excepcional",
+      "compensação de ausência",
+      "frequência",
+      "saúde do estudante",
+      "laudo médico"
+    ],
+    "aliases": [
+      "Decreto-Lei nº 1.044/1969",
+      "Decreto-Lei nº 1.044, de 21 de outubro de 1969",
+      "Decreto-Lei 1.044/1969",
+      "Decreto-Lei 1044/69",
+      "DL 1.044/1969",
+      "DL 1044/69"
+    ],
+    "fonte": "https://www.planalto.gov.br/ccivil_03/decreto-lei/del1044.htm",
+    "path": "normas/br/decretos-lei/DECRETO-LEI_BR_1044-1969_regime-domiciliar.md"
+  },
+  {
+    "id": "br/lei/1975/6202",
+    "title": "Lei nº 6.202/1975",
+    "tipo_documento": "Lei",
+    "numero": "6202",
+    "ano": 1975,
+    "data_publicacao": "1975-04-17",
+    "assinada_em": "1975-04-17",
+    "publicada_em": "1975-04-17",
+    "vigente_de": "1975-04-17",
+    "orgao": "Presidência da República",
+    "jurisdicao": "BR",
+    "ementa": "Atribui à estudante em estado de gestação o regime de exercícios domiciliares instituído pelo Decreto-lei nº 1.044, de 1969, e dá outras providências.",
+    "status_vigencia": "vigente",
+    "keywords": [
+      "gestante",
+      "estudante gestante",
+      "gravidez",
+      "licença-maternidade estudantil",
+      "regime domiciliar",
+      "exercícios domiciliares",
+      "atestado médico",
+      "exames finais"
+    ],
+    "aliases": [
+      "Lei nº 6.202/1975",
+      "Lei nº 6.202, de 17 de abril de 1975",
+      "Lei 6.202/1975",
+      "Lei 6202/75"
+    ],
+    "fonte": "https://www.planalto.gov.br/ccivil_03/leis/1970-1979/l6202.htm",
+    "path": "normas/br/leis/LEI_BR_6202-1975_estudante-gestante.md"
+  },
+  {
     "id": "br/lei/1996/9394",
     "title": "Lei nº 9.394/1996",
     "tipo_documento": "Lei",

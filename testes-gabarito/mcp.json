@@ -6721,12 +6721,12 @@
         "content": [
           {
             "type": "text",
-            "text": "Atenção: a vigência de Resolução CNE/CP nº 2/2026 está a confirmar; veja ficha_norma antes de concluir (`br/cne-cp/res/2026/2`)\n\n**[Resolução CNE/CP nº 2/2026, § 1º](ifpr://norma/br/cne-cp/res/2026/2#art37-par1)** — `br/cne-cp/res/2026/2#art37-par1`; vigente (a confirmar) (busca-textual, pontuação -15.446)\n> Art. 37. O estágio profissional supervisionado é ato educativo de responsabilidade e orientação da instituição de ensino, desenvolvido no ambiente de trabalho, supervisionado pela parte concedente, que visa à preparação para a vida cidadã e para o trabalho.\n> § 1º O estágio profissional supervisionado pode ser obrigatório ou não obrigatório.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md:592-592`\n\n**[Resolução CNE/CP nº 2/2026, § 3º](ifpr://norma/br/cne-cp/res/2026/2#art37-par3)** — `br/cne-cp/res/2026/2#art37-par3`; vigente (a confirmar) (busca-textual, pontuação -13.555)\n> Art. 37. O estágio profissional supervisionado é ato educativo de responsabilidade e orientação da instituição de ensino, desenvolvido no ambiente de trabalho, supervisionado pela parte concedente, que visa à preparação para a vida cidadã e para o trabalho.\n> § 3º A carga horária do estágio, obrigatório ou não obrigatório, deve ser acrescida à carga horária mínima do curso estabelecida no CNCT ou no CNCST.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md:596-596`\n\n**[Resolução CNE/CP nº 2/2026, § 2º](ifpr://norma/br/cne-cp/res/2026/2#art37-par2)** — `br/cne-cp/res/2026/2#art37-par2`; vigente (a confirmar) (busca-textual, pontuação -12.803)\n> Art. 37. O estágio profissional supervisionado é ato educativo de responsabilidade e orientação da instituição de ensino, desenvolvido no ambiente de trabalho, supervisionado pela parte concedente, que visa à preparação para a vida cidadã e para o trabalho.\n> § 2º O estágio profissional supervisionado será obrigatório quando assim determinado por lei, exigido pela natureza da ocupação ou definido pela instituição educacional em razão do perfil profissional de conclusão do curso.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md:594-594`\n\nBase de 13/11/2026 (versão dev)."
+            "text": "Atenção: a vigência de Resolução CNE/CP nº 2/2026 está a confirmar; veja ficha_norma antes de concluir (`br/cne-cp/res/2026/2`)\n\n**[Resolução CNE/CP nº 2/2026, § 1º](ifpr://norma/br/cne-cp/res/2026/2#art37-par1)** — `br/cne-cp/res/2026/2#art37-par1`; vigente (a confirmar) (busca-textual, pontuação -15.456)\n> Art. 37. O estágio profissional supervisionado é ato educativo de responsabilidade e orientação da instituição de ensino, desenvolvido no ambiente de trabalho, supervisionado pela parte concedente, que visa à preparação para a vida cidadã e para o trabalho.\n> § 1º O estágio profissional supervisionado pode ser obrigatório ou não obrigatório.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md:592-592`\n\n**[Resolução CNE/CP nº 2/2026, § 3º](ifpr://norma/br/cne-cp/res/2026/2#art37-par3)** — `br/cne-cp/res/2026/2#art37-par3`; vigente (a confirmar) (busca-textual, pontuação -13.564)\n> Art. 37. O estágio profissional supervisionado é ato educativo de responsabilidade e orientação da instituição de ensino, desenvolvido no ambiente de trabalho, supervisionado pela parte concedente, que visa à preparação para a vida cidadã e para o trabalho.\n> § 3º A carga horária do estágio, obrigatório ou não obrigatório, deve ser acrescida à carga horária mínima do curso estabelecida no CNCT ou no CNCST.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md:596-596`\n\n**[Resolução CNE/CP nº 2/2026, § 2º](ifpr://norma/br/cne-cp/res/2026/2#art37-par2)** — `br/cne-cp/res/2026/2#art37-par2`; vigente (a confirmar) (busca-textual, pontuação -12.81)\n> Art. 37. O estágio profissional supervisionado é ato educativo de responsabilidade e orientação da instituição de ensino, desenvolvido no ambiente de trabalho, supervisionado pela parte concedente, que visa à preparação para a vida cidadã e para o trabalho.\n> § 2º O estágio profissional supervisionado será obrigatório quando assim determinado por lei, exigido pela natureza da ocupação ou definido pela instituição educacional em razão do perfil profissional de conclusão do curso.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md:594-594`\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6d55a8b7",
+            "versao": "dev-72b3364b",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -6745,7 +6745,7 @@
                   "link": "ifpr://norma/br/cne-cp/res/2026/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -15.446,
+                "pontuacao": -15.456,
                 "dispositivo": {
                   "id": "br/cne-cp/res/2026/2#art37-par1",
                   "rotulo": "§ 1º",
@@ -6777,7 +6777,7 @@
                   "link": "ifpr://norma/br/cne-cp/res/2026/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -13.555,
+                "pontuacao": -13.564,
                 "dispositivo": {
                   "id": "br/cne-cp/res/2026/2#art37-par3",
                   "rotulo": "§ 3º",
@@ -6809,7 +6809,7 @@
                   "link": "ifpr://norma/br/cne-cp/res/2026/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -12.803,
+                "pontuacao": -12.81,
                 "dispositivo": {
                   "id": "br/cne-cp/res/2026/2#art37-par2",
                   "rotulo": "§ 2º",
@@ -6851,12 +6851,12 @@
         "content": [
           {
             "type": "text",
-            "text": "Atenção: a vigência de Resolução CNE/CP nº 2/2026 está a confirmar; veja ficha_norma antes de concluir (`br/cne-cp/res/2026/2`)\n\n**[Resolução CNE/CEB nº 2/2024](ifpr://norma/br/cne-ceb/res/2024/2)** — `br/cne-ceb/res/2024/2`; vigente (metadados da norma; busca-textual, pontuação -6.516)\n> Resolução CNE/CEB nº 2/2024\n> DCNEM 2024\n> DCNEM\n> ensino médio\n> diretrizes curriculares\n> itinerários formativos\n> CNE\n> Institui as Diretrizes Curriculares Nacionais para o Ensino Médio.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:1-1`\n\n**[Lei nº 14.945/2024](ifpr://norma/br/lei/2024/14945)** — `br/lei/2024/14945`; vigente (metadados da norma; busca-textual, pontuação -3.685)\n> Lei nº 14.945/2024\n> Lei 14.945/2024\n> Novo Ensino Médio 2024\n> ensino médio\n> formação geral básica\n> itinerários formativos\n> EPT\n> LDB\n> Altera a Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), a fim de definir diretrizes para o ensino médio, e as Leis nºs 14.818, de 16 de janeiro de 2024, 12.711, de 29 de agosto de 2012, 11.096, de 13 de janeiro de 2005, e 14.640, de 31 de julho de 2023.\nfonte: `base-conhecimento/normas/br/leis/LEI_BR_14945-2024_ensino-medio.md:1-1`\n\n**[Resolução CNE/CP nº 2/2026](ifpr://norma/br/cne-cp/res/2026/2)** — `br/cne-cp/res/2026/2`; vigente (a confirmar) (metadados da norma; busca-textual, pontuação -3.515)\n> Resolução CNE/CP nº 2/2026\n> Resolução CNE/CP nº 2, de 11 de novembro de 2026\n> DCN EPT 2026\n> DCNEPT 2026\n> Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica\n> Novas DCN da EPT\n> DCNEPT\n> educação profissional\n> EPT\n> EPTNM\n> diretrizes curriculares\n> cursos técnicos\n> cursos superiores de tecnologia\n> itinerário formativo profissional\n> carga horária\n> prática profissional supervisionada\n> estágio supervisionado\n> educação a distância\n> semipresencial\n> acompanhamento de egressos\n> certificação profissional\n> cursos experimentais\n> formação docente\n> inteligência artificial\n> CNCT\n> CNE\n> Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md:1-1`\n\n**[Resolução CNE/CEB nº 2/2024, § 4º](ifpr://norma/br/cne-ceb/res/2024/2#art21-par4)** — `br/cne-ceb/res/2024/2#art21-par4`; vigente (busca-textual, pontuação -8.43)\n> Art. 21. Na organização dos Itinerários Formativos de Aprofundamento, os sistemas de ensino poderão optar por ofertas curriculares de acordo com a seguinte tipologia:\n> § 4º Os Itinerários Formativos devem seguir os padrões mínimos de qualidade previstos nos Parâmetros Nacionais para a Oferta dos Itinerários Formativos que serão elaborados pelo Ministério da Educação.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:333-333`\n\n**[Resolução CNE/CEB nº 2/2024, § 1º](ifpr://norma/br/cne-ceb/res/2024/2#art20-par1)** — `br/cne-ceb/res/2024/2#art20-par1`; vigente (busca-textual, pontuação -7.787)\n> Art. 20. Caberá ao Ministério da Educação a proposição dos Parâmetros Nacionais para a Oferta dos Itinerários Formativos com a definição:\n> § 1º O CNE editará Parâmetros Nacionais para a Oferta dos Itinerários Formativos de Aprofundamento até o dia 31 de março de 2025.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:316-316`\n\n**[Resolução CNE/CEB nº 2/2024, XVIII](ifpr://norma/br/cne-ceb/res/2024/2#art5-xviii)** — `br/cne-ceb/res/2024/2#art5-xviii`; vigente (busca-textual, pontuação -7.646)\n> Art. 5º Considera-se, para fins desta Resolução:\n> XVIII – Itinerários Formativos de Aprofundamento:\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:119-119`\n\n**[Resolução CNE/CEB nº 2/2024, § 2º](ifpr://norma/br/cne-ceb/res/2024/2#art20-par2)** — `br/cne-ceb/res/2024/2#art20-par2`; vigente (busca-textual, pontuação -7.598)\n> Art. 20. Caberá ao Ministério da Educação a proposição dos Parâmetros Nacionais para a Oferta dos Itinerários Formativos com a definição:\n> § 2º Os Sistemas de Ensino deverão utilizar as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica em vigência para a organização do Itinerário de Formação Técnica e Profissional. Subseção I Dos Itinerários Formativos de Aprofundamento por Área de Conhecimento\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:318-318`\n\n**[Resolução CNE/CEB nº 2/2024, § 5º](ifpr://norma/br/cne-ceb/res/2024/2#art21-par5)** — `br/cne-ceb/res/2024/2#art21-par5`; vigente (busca-textual, pontuação -7.596)\n> Art. 21. Na organização dos Itinerários Formativos de Aprofundamento, os sistemas de ensino poderão optar por ofertas curriculares de acordo com a seguinte tipologia:\n> § 5º O Ministério da Educação operacionalizará assistência técnica e financeira aos sistemas de ensino, mediante adesão voluntária, para a disponibilização de material didático específico para os Itinerários Formativos de Aprofundamento, inclusive material didático no âmbito do Programa Nacional do Livro Didático – PNLD. Subseção II Do Itinerário Formativo de Educação Técnica e Profissional\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:335-335`\n\nBase de 13/11/2026 (versão dev)."
+            "text": "Atenção: a vigência de Resolução CNE/CP nº 2/2026 está a confirmar; veja ficha_norma antes de concluir (`br/cne-cp/res/2026/2`)\n\n**[Resolução CNE/CEB nº 2/2024](ifpr://norma/br/cne-ceb/res/2024/2)** — `br/cne-ceb/res/2024/2`; vigente (metadados da norma; busca-textual, pontuação -6.62)\n> Resolução CNE/CEB nº 2/2024\n> DCNEM 2024\n> DCNEM\n> ensino médio\n> diretrizes curriculares\n> itinerários formativos\n> CNE\n> Institui as Diretrizes Curriculares Nacionais para o Ensino Médio.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:1-1`\n\n**[Lei nº 14.945/2024](ifpr://norma/br/lei/2024/14945)** — `br/lei/2024/14945`; vigente (metadados da norma; busca-textual, pontuação -3.766)\n> Lei nº 14.945/2024\n> Lei 14.945/2024\n> Novo Ensino Médio 2024\n> ensino médio\n> formação geral básica\n> itinerários formativos\n> EPT\n> LDB\n> Altera a Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), a fim de definir diretrizes para o ensino médio, e as Leis nºs 14.818, de 16 de janeiro de 2024, 12.711, de 29 de agosto de 2012, 11.096, de 13 de janeiro de 2005, e 14.640, de 31 de julho de 2023.\nfonte: `base-conhecimento/normas/br/leis/LEI_BR_14945-2024_ensino-medio.md:1-1`\n\n**[Resolução CNE/CP nº 2/2026](ifpr://norma/br/cne-cp/res/2026/2)** — `br/cne-cp/res/2026/2`; vigente (a confirmar) (metadados da norma; busca-textual, pontuação -3.594)\n> Resolução CNE/CP nº 2/2026\n> Resolução CNE/CP nº 2, de 11 de novembro de 2026\n> DCN EPT 2026\n> DCNEPT 2026\n> Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica\n> Novas DCN da EPT\n> DCNEPT\n> educação profissional\n> EPT\n> EPTNM\n> diretrizes curriculares\n> cursos técnicos\n> cursos superiores de tecnologia\n> itinerário formativo profissional\n> carga horária\n> prática profissional supervisionada\n> estágio supervisionado\n> educação a distância\n> semipresencial\n> acompanhamento de egressos\n> certificação profissional\n> cursos experimentais\n> formação docente\n> inteligência artificial\n> CNCT\n> CNE\n> Define as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md:1-1`\n\n**[Resolução CNE/CEB nº 2/2024, § 4º](ifpr://norma/br/cne-ceb/res/2024/2#art21-par4)** — `br/cne-ceb/res/2024/2#art21-par4`; vigente (busca-textual, pontuação -8.438)\n> Art. 21. Na organização dos Itinerários Formativos de Aprofundamento, os sistemas de ensino poderão optar por ofertas curriculares de acordo com a seguinte tipologia:\n> § 4º Os Itinerários Formativos devem seguir os padrões mínimos de qualidade previstos nos Parâmetros Nacionais para a Oferta dos Itinerários Formativos que serão elaborados pelo Ministério da Educação.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:333-333`\n\n**[Resolução CNE/CEB nº 2/2024, § 1º](ifpr://norma/br/cne-ceb/res/2024/2#art20-par1)** — `br/cne-ceb/res/2024/2#art20-par1`; vigente (busca-textual, pontuação -7.795)\n> Art. 20. Caberá ao Ministério da Educação a proposição dos Parâmetros Nacionais para a Oferta dos Itinerários Formativos com a definição:\n> § 1º O CNE editará Parâmetros Nacionais para a Oferta dos Itinerários Formativos de Aprofundamento até o dia 31 de março de 2025.\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:316-316`\n\n**[Resolução CNE/CEB nº 2/2024, XVIII](ifpr://norma/br/cne-ceb/res/2024/2#art5-xviii)** — `br/cne-ceb/res/2024/2#art5-xviii`; vigente (busca-textual, pontuação -7.653)\n> Art. 5º Considera-se, para fins desta Resolução:\n> XVIII – Itinerários Formativos de Aprofundamento:\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:119-119`\n\n**[Resolução CNE/CEB nº 2/2024, § 2º](ifpr://norma/br/cne-ceb/res/2024/2#art20-par2)** — `br/cne-ceb/res/2024/2#art20-par2`; vigente (busca-textual, pontuação -7.604)\n> Art. 20. Caberá ao Ministério da Educação a proposição dos Parâmetros Nacionais para a Oferta dos Itinerários Formativos com a definição:\n> § 2º Os Sistemas de Ensino deverão utilizar as Diretrizes Curriculares Nacionais Gerais para a Educação Profissional e Tecnológica em vigência para a organização do Itinerário de Formação Técnica e Profissional. Subseção I Dos Itinerários Formativos de Aprofundamento por Área de Conhecimento\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:318-318`\n\n**[Resolução CNE/CEB nº 2/2024, § 5º](ifpr://norma/br/cne-ceb/res/2024/2#art21-par5)** — `br/cne-ceb/res/2024/2#art21-par5`; vigente (busca-textual, pontuação -7.602)\n> Art. 21. Na organização dos Itinerários Formativos de Aprofundamento, os sistemas de ensino poderão optar por ofertas curriculares de acordo com a seguinte tipologia:\n> § 5º O Ministério da Educação operacionalizará assistência técnica e financeira aos sistemas de ensino, mediante adesão voluntária, para a disponibilização de material didático específico para os Itinerários Formativos de Aprofundamento, inclusive material didático no âmbito do Programa Nacional do Livro Didático – PNLD. Subseção II Do Itinerário Formativo de Educação Técnica e Profissional\nfonte: `base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md:335-335`\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6d55a8b7",
+            "versao": "dev-72b3364b",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -6875,7 +6875,7 @@
                   "link": "ifpr://norma/br/cne-ceb/res/2024/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -6.516,
+                "pontuacao": -6.62,
                 "metadados": {
                   "texto": "Resolução CNE/CEB nº 2/2024\nDCNEM 2024\nDCNEM\nensino médio\ndiretrizes curriculares\nitinerários formativos\nCNE\nInstitui as Diretrizes Curriculares Nacionais para o Ensino Médio.",
                   "fonte": {
@@ -6897,7 +6897,7 @@
                   "link": "ifpr://norma/br/lei/2024/14945"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -3.685,
+                "pontuacao": -3.766,
                 "metadados": {
                   "texto": "Lei nº 14.945/2024\nLei 14.945/2024\nNovo Ensino Médio 2024\nensino médio\nformação geral básica\nitinerários formativos\nEPT\nLDB\nAltera a Lei nº 9.394, de 20 de dezembro de 1996 (Lei de Diretrizes e Bases da Educação Nacional), a fim de definir diretrizes para o ensino médio, e as Leis nºs 14.818, de 16 de janeiro de 2024, 12.711, de 29 de agosto de 2012, 11.096, de 13 de janeiro de 2005, e 14.640, de 31 de julho de 2023.",
                   "fonte": {
@@ -6919,7 +6919,7 @@
                   "link": "ifpr://norma/br/cne-cp/res/2026/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -3.515,
+                "pontuacao": -3.594,
                 "metadados": {
                   "texto": "Resolução CNE/CP nº 2/2026\nResolução CNE/CP nº 2, de 11 de novembro de 2026\nDCN EPT 2026\nDCNEPT 2026\nDiretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica\nNovas DCN da EPT\nDCNEPT\neducação profissional\nEPT\nEPTNM\ndiretrizes curriculares\ncursos técnicos\ncursos superiores de tecnologia\nitinerário formativo profissional\ncarga horária\nprática profissional supervisionada\nestágio supervisionado\neducação a distância\nsemipresencial\nacompanhamento de egressos\ncertificação profissional\ncursos experimentais\nformação docente\ninteligência artificial\nCNCT\nCNE\nDefine as Diretrizes Curriculares Nacionais para a Educação Profissional e Tecnológica.",
                   "fonte": {
@@ -6941,7 +6941,7 @@
                   "link": "ifpr://norma/br/cne-ceb/res/2024/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -8.43,
+                "pontuacao": -8.438,
                 "dispositivo": {
                   "id": "br/cne-ceb/res/2024/2#art21-par4",
                   "rotulo": "§ 4º",
@@ -6973,7 +6973,7 @@
                   "link": "ifpr://norma/br/cne-ceb/res/2024/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -7.787,
+                "pontuacao": -7.795,
                 "dispositivo": {
                   "id": "br/cne-ceb/res/2024/2#art20-par1",
                   "rotulo": "§ 1º",
@@ -7005,7 +7005,7 @@
                   "link": "ifpr://norma/br/cne-ceb/res/2024/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -7.646,
+                "pontuacao": -7.653,
                 "dispositivo": {
                   "id": "br/cne-ceb/res/2024/2#art5-xviii",
                   "rotulo": "XVIII",
@@ -7037,7 +7037,7 @@
                   "link": "ifpr://norma/br/cne-ceb/res/2024/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -7.598,
+                "pontuacao": -7.604,
                 "dispositivo": {
                   "id": "br/cne-ceb/res/2024/2#art20-par2",
                   "rotulo": "§ 2º",
@@ -7069,7 +7069,7 @@
                   "link": "ifpr://norma/br/cne-ceb/res/2024/2"
                 },
                 "origem": "busca-textual",
-                "pontuacao": -7.596,
+                "pontuacao": -7.602,
                 "dispositivo": {
                   "id": "br/cne-ceb/res/2024/2#art21-par5",
                   "rotulo": "§ 5º",
@@ -15119,12 +15119,12 @@
         "content": [
           {
             "type": "text",
-            "text": "Base de conhecimento do IFPR, versão `dev-6d55a8b7` (canal dev), com vigência calculada em 13/11/2026.\n\nConteúdo: 113 normas (base, stubs e externas), 4912 dispositivos de normas, 59 relações entre normas, 8 regras de transição, 202 PPCs, 20059 seções de PPC, 28987 citações normativas em PPCs, 225 cursos, 206 ofertas de ingresso, 218 cursos do CNCT, 28 campi, 80 fichas da revisar-ppc.\n\nNíveis: formação inicial e continuada, médio, pós-graduação, superior.\n\nTipos de seção de PPC (filtro `tipo`): `acessibilidade_inclusao`, `acompanhamento_egresso`, `anexos`, `aproveitamento_estudos`, `atendimento_estudante`, `atividades_complementares`, `avaliacao`, `avaliacao_curso`, `carga_horaria`, `certificados_diplomas`, `concepcao_pedagogica`, `contexto_institucional`, `corpo_docente`, `ementas`, `ensino_pesquisa_extensao`, `estagio_praticas`, `formato_oferta`, `gestao_curso`, `identificacao`, `infraestrutura`, `itinerario_formativo`, `justificativa`, `legislacao`, `matriz_curricular`, `mundo_trabalho`, `objetivos`, `organizacao_curricular`, `perfil_egresso`, `prazo_integralizacao`, `referencias`, `requisitos_acesso`, `trabalho_conclusao`.\n\nCampi (o ID entre crases é o valor do filtro `campus`): [Arapongas](ifpr://campus/arapongas) `arapongas`, [Assis Chateaubriand](ifpr://campus/assis-chateaubriand) `assis-chateaubriand`, [Astorga](ifpr://campus/astorga) `astorga`, [Barracão](ifpr://campus/barracao) `barracao`, [Campo Largo](ifpr://campus/campo-largo) `campo-largo`, [Capanema](ifpr://campus/capanema) `capanema`, [Cascavel](ifpr://campus/cascavel) `cascavel`, [Colombo](ifpr://campus/colombo) `colombo`, [Coronel Vivida](ifpr://campus/coronel-vivida) `coronel-vivida`, [Curitiba](ifpr://campus/curitiba) `curitiba`, [Foz do Iguaçu](ifpr://campus/foz-do-iguacu) `foz-do-iguacu`, [Goioerê](ifpr://campus/goioere) `goioere`, [Irati](ifpr://campus/irati) `irati`, [Ivaiporã](ifpr://campus/ivaipora) `ivaipora`, [Jacarezinho](ifpr://campus/jacarezinho) `jacarezinho`, [Jaguariaíva](ifpr://campus/jaguariaiva) `jaguariaiva`, [Londrina](ifpr://campus/londrina) `londrina`, [Palmas](ifpr://campus/palmas) `palmas`, [Paranaguá](ifpr://campus/paranagua) `paranagua`, [Paranavaí](ifpr://campus/paranavai) `paranavai`, [Pinhais](ifpr://campus/pinhais) `pinhais`, [Pitanga](ifpr://campus/pitanga) `pitanga`, [Ponta Grossa](ifpr://campus/ponta-grossa) `ponta-grossa`, [Quedas do Iguaçu](ifpr://campus/quedas-do-iguacu) `quedas-do-iguacu`, [Reitoria](ifpr://campus/reitoria) `reitoria`, [Telêmaco Borba](ifpr://campus/telemaco-borba) `telemaco-borba`, [Umuarama](ifpr://campus/umuarama) `umuarama`, [União da Vitória](ifpr://campus/uniao-da-vitoria) `uniao-da-vitoria`.\n\nBase de 13/11/2026 (versão dev)."
+            "text": "Base de conhecimento do IFPR, versão `dev-72b3364b` (canal dev), com vigência calculada em 13/11/2026.\n\nConteúdo: 115 normas (base, stubs e externas), 4925 dispositivos de normas, 59 relações entre normas, 8 regras de transição, 202 PPCs, 20059 seções de PPC, 28990 citações normativas em PPCs, 225 cursos, 206 ofertas de ingresso, 218 cursos do CNCT, 28 campi, 80 fichas da revisar-ppc.\n\nNíveis: formação inicial e continuada, médio, pós-graduação, superior.\n\nTipos de seção de PPC (filtro `tipo`): `acessibilidade_inclusao`, `acompanhamento_egresso`, `anexos`, `aproveitamento_estudos`, `atendimento_estudante`, `atividades_complementares`, `avaliacao`, `avaliacao_curso`, `carga_horaria`, `certificados_diplomas`, `concepcao_pedagogica`, `contexto_institucional`, `corpo_docente`, `ementas`, `ensino_pesquisa_extensao`, `estagio_praticas`, `formato_oferta`, `gestao_curso`, `identificacao`, `infraestrutura`, `itinerario_formativo`, `justificativa`, `legislacao`, `matriz_curricular`, `mundo_trabalho`, `objetivos`, `organizacao_curricular`, `perfil_egresso`, `prazo_integralizacao`, `referencias`, `requisitos_acesso`, `trabalho_conclusao`.\n\nCampi (o ID entre crases é o valor do filtro `campus`): [Arapongas](ifpr://campus/arapongas) `arapongas`, [Assis Chateaubriand](ifpr://campus/assis-chateaubriand) `assis-chateaubriand`, [Astorga](ifpr://campus/astorga) `astorga`, [Barracão](ifpr://campus/barracao) `barracao`, [Campo Largo](ifpr://campus/campo-largo) `campo-largo`, [Capanema](ifpr://campus/capanema) `capanema`, [Cascavel](ifpr://campus/cascavel) `cascavel`, [Colombo](ifpr://campus/colombo) `colombo`, [Coronel Vivida](ifpr://campus/coronel-vivida) `coronel-vivida`, [Curitiba](ifpr://campus/curitiba) `curitiba`, [Foz do Iguaçu](ifpr://campus/foz-do-iguacu) `foz-do-iguacu`, [Goioerê](ifpr://campus/goioere) `goioere`, [Irati](ifpr://campus/irati) `irati`, [Ivaiporã](ifpr://campus/ivaipora) `ivaipora`, [Jacarezinho](ifpr://campus/jacarezinho) `jacarezinho`, [Jaguariaíva](ifpr://campus/jaguariaiva) `jaguariaiva`, [Londrina](ifpr://campus/londrina) `londrina`, [Palmas](ifpr://campus/palmas) `palmas`, [Paranaguá](ifpr://campus/paranagua) `paranagua`, [Paranavaí](ifpr://campus/paranavai) `paranavai`, [Pinhais](ifpr://campus/pinhais) `pinhais`, [Pitanga](ifpr://campus/pitanga) `pitanga`, [Ponta Grossa](ifpr://campus/ponta-grossa) `ponta-grossa`, [Quedas do Iguaçu](ifpr://campus/quedas-do-iguacu) `quedas-do-iguacu`, [Reitoria](ifpr://campus/reitoria) `reitoria`, [Telêmaco Borba](ifpr://campus/telemaco-borba) `telemaco-borba`, [Umuarama](ifpr://campus/umuarama) `umuarama`, [União da Vitória](ifpr://campus/uniao-da-vitoria) `uniao-da-vitoria`.\n\nBase de 13/11/2026 (versão dev)."
           }
         ],
         "structuredContent": {
           "base": {
-            "versao": "dev-6d55a8b7",
+            "versao": "dev-72b3364b",
             "commit": null,
             "data_referencia": "2026-11-13",
             "canal": "dev"
@@ -15132,7 +15132,7 @@
           "dados": {
             "contagens": {
               "campi": 28,
-              "citacoes": 28987,
+              "citacoes": 28990,
               "cnct": 218,
               "conselhos": 1,
               "conselhos_documentos": 26,
@@ -15141,16 +15141,16 @@
               "correspondencias": 168,
               "correspondencias_tabelas": 1,
               "cursos": 225,
-              "dispositivos": 4912,
-              "documentos": 238,
+              "dispositivos": 4925,
+              "documentos": 240,
               "editais": 5,
               "fichas": 80,
               "fichas_referencias": 206,
               "fichas_topicos": 111,
               "marcos": 4,
-              "normas": 113,
-              "normas_citacoes": 720,
-              "normas_metadados": 113,
+              "normas": 115,
+              "normas_citacoes": 722,
+              "normas_metadados": 115,
               "ofertas": 206,
               "ofertas_cursos": 190,
               "ofertas_processos": 206,
@@ -15166,7 +15166,7 @@
               "topicos": 17,
               "topicos_secoes": 17,
               "transicoes": 8,
-              "vigencias": 240
+              "vigencias": 244
             },
             "tipos_de_secao": [
               "acessibilidade_inclusao",

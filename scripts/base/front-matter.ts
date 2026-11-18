@@ -54,6 +54,7 @@ export const CAMPOS_MANIFEST = [
 /** Diretório esperado por `jurisdicao|tipo_documento`. */
 export const DIRETORIOS_POR_TIPO: Record<string, string> = {
   "BR|Lei": "normas/br/leis",
+  "BR|Decreto-Lei": "normas/br/decretos-lei",
   "BR|Portaria": "normas/br/portarias",
   "BR|Resolução": "normas/br/resolucoes",
   "BR|Compilação": "normas/br/compilacoes",

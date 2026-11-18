@@ -2511,6 +2511,22 @@
       ]
     },
     {
+      "id": "br/decreto-lei/1969/1044",
+      "rotulo": "Decreto-Lei nº 1.044/1969",
+      "path": "base-conhecimento/normas/br/decretos-lei/DECRETO-LEI_BR_1044-1969_regime-domiciliar.md",
+      "padroes": [
+        "decreto\\W{0,3}lei\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?1\\.?044(?!\\d)"
+      ]
+    },
+    {
+      "id": "br/lei/1975/6202",
+      "rotulo": "Lei nº 6.202/1975",
+      "path": "base-conhecimento/normas/br/leis/LEI_BR_6202-1975_estudante-gestante.md",
+      "padroes": [
+        "lei(?:\\s+federal)?\\W{0,3}(?:(?:numero|n\\.?\\s?o?)\\.?\\s*)?6\\.?202(?!\\d)"
+      ]
+    },
+    {
       "id": "br/lei/1996/9394",
       "rotulo": "Lei nº 9.394/1996",
       "path": "base-conhecimento/normas/br/leis/LEI_BR_9394-1996_ldb.md",

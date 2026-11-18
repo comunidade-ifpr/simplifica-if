@@ -14,9 +14,7 @@ import * as NodePath from "node:path";
 import { listarNormas } from "./estrutura.ts";
 import { palavrasMarkdown, primeiraDivergencia } from "./markdown.ts";
 import { raizRepositorio } from "../caminhos.ts";
-
-/** Último commit antes do saneamento da fase 5 (merge da fase 4 em `main`). */
-export const REF_ANTES_SANEAMENTO = "fcfc006";
+import { INCLUIDAS_DEPOIS, REF_ANTES_SANEAMENTO } from "./referencia-saneamento.ts";
 
 /**
  * Normas cujo texto foi substituído de propósito depois do saneamento (não é mudança de marcação).
@@ -47,9 +45,15 @@ const refDisponivel =
   }).status === 0;
 
 describe.skipIf(!refDisponivel)(`saneamento: palavras iguais às de ${REF_ANTES_SANEAMENTO}`, () => {
-  const normas = listarNormas(raiz);
-  test("as 36 normas existiam antes do saneamento", () => {
+  const todas = listarNormas(raiz);
+  const normas = todas.filter((norma) => !INCLUIDAS_DEPOIS.has(norma.path));
+  test("as 36 normas existiam antes do saneamento; as incluídas depois existem hoje e não existiam", () => {
     expect(normas.length).toBe(36);
+    const caminhos = new Set(todas.map((norma) => norma.path));
+    for (const path of INCLUIDAS_DEPOIS.keys()) {
+      expect(caminhos.has(path), path).toBe(true);
+      expect(versaoAnterior(NodePath.posix.join("base-conhecimento", path)), path).toBeNull();
+    }
   });
   test.each(normas.filter((norma) => !TEXTO_SUBSTITUIDO.has(norma.path)))("$path", (norma) => {
     const relativo = NodePath.posix.join("base-conhecimento", norma.path);

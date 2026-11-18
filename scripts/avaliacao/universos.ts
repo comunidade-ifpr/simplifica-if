@@ -4,8 +4,9 @@
  * itens do universo encontrados na resposta.
  *
  * Os IDs seguem o formato do plano (fase 2): `campus:<id>`, `curso:<campus_id>/<curso_slug>` e,
- * para normas, um ID provisório derivado do ato (`br/cne-cp/res/2021/1`).
+ * para normas, o ID canônico do ato (`br/cne-cp/res/2021/1`).
  */
+import { idDoAto, idEsperadoDaNorma } from "@simplifica-if/kb/normas/ids";
 import { compararTexto, compilarPadrao, escaparRegex, linhasNormalizadas, normalizarTexto } from "./normalizar.ts";
 import type { ItemCampus, ItemCurso, ItemNorma, NomeUniverso, Universos } from "./esquema.ts";
 
@@ -87,14 +88,6 @@ export interface EntradaManifesto {
   path: string;
 }
 
-const SIGLA_TIPO: Readonly<Record<string, string>> = {
-  Resolução: "res",
-  Lei: "lei",
-  Compilação: "lei",
-  Portaria: "portaria",
-  "Nota Técnica": "nt",
-};
-
 /** Aliases sem número que não identificam um único ato (ou que aparecem em textos de outras normas). */
 const ALIASES_AMBIGUOS = new Set(
   [
@@ -104,24 +97,23 @@ const ALIASES_AMBIGUOS = new Set(
   ].map(normalizarTexto),
 );
 
+/** Órgão do ato para escolher o padrão de citação; atos da Presidência dão o tipo (`lei`, `decreto-lei`). */
 function segmentoOrgao(entrada: EntradaManifesto): string {
   if (entrada.tipo_documento === "Lei" || entrada.tipo_documento === "Compilação") return "lei";
+  if (entrada.tipo_documento === "Decreto-Lei") return "decreto-lei";
   return normalizarTexto(entrada.orgao.split("/")[0] === "CNE" ? entrada.orgao : (entrada.orgao.split("/")[0] ?? ""))
     .replace(/[^a-z0-9]+/gu, "-")
     .replace(/^-|-$/gu, "");
 }
 
 /**
- * ID provisório no formato da fase 2: `br/lei/1996/9394`, `br/cne-cp/res/2026/2`,
- * `ifpr/consup/res/2024/190`, `ifpr/proens/portaria/2024/121`. A compilação de trechos usa o ID do ato.
+ * ID canônico do ato, pela regra de `@simplifica-if/kb` (`br/lei/1996/9394`, `br/cne-cp/res/2026/2`,
+ * `br/decreto-lei/1969/1044`). A compilação de trechos usa o ID do ato.
  */
 export function idNorma(entrada: EntradaManifesto): string {
-  const jurisdicao = entrada.jurisdicao.toLowerCase();
-  const orgao = segmentoOrgao(entrada);
-  const numero = String(entrada.numero);
-  if (orgao === "lei") return `${jurisdicao}/lei/${entrada.ano}/${numero}`;
-  const tipo = SIGLA_TIPO[entrada.tipo_documento] ?? normalizarTexto(entrada.tipo_documento).replace(/\s+/gu, "-");
-  return `${jurisdicao}/${orgao}/${tipo}/${entrada.ano}/${numero}`;
+  const id = idEsperadoDaNorma(entrada);
+  if (id === null) throw new Error(`${entrada.path}: tipo ou órgão sem regra de ID canônico`);
+  return idDoAto(id);
 }
 
 const N = String.raw`(?:(?:numero|n\.?\s?o?)\.?\s*)?`;
@@ -141,6 +133,9 @@ export function padroesNorma(entrada: EntradaManifesto): string[] {
   switch (segmentoOrgao(entrada)) {
     case "lei":
       padroes.push(String.raw`lei(?:\s+federal)?\W{0,3}${N}${numero}(?!\d)`);
+      break;
+    case "decreto-lei":
+      padroes.push(String.raw`decreto\W{0,3}lei\W{0,3}${N}${numero}(?!\d)`);
       break;
     case "cne-cp":
     case "cne-ceb": {

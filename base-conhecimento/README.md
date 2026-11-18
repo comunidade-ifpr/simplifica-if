@@ -75,6 +75,8 @@ A proposta é preenchível e não autoriza oferta. Cada perfil profissional exig
 
 | Documento | Tipo | Ano | Assunto |
 |-----------|------|-----|---------|
+| [Decreto-Lei nº 1.044/1969](normas/br/decretos-lei/DECRETO-LEI_BR_1044-1969_regime-domiciliar.md) | Decreto-Lei | 1969 | Dispõe sobre tratamento excepcional para os alunos portadores das afecções que indica. |
+| [Lei nº 6.202/1975](normas/br/leis/LEI_BR_6202-1975_estudante-gestante.md) | Lei | 1975 | Atribui à estudante em estado de gestação o regime de exercícios domiciliares instituído pelo Decreto-lei nº 1.044, de 1969, e dá outras providências. |
 | [Lei nº 9.394/1996](normas/br/leis/LEI_BR_9394-1996_ldb.md) | Lei | 1996 | Estabelece as diretrizes e bases da educação nacional. |
 | [Lei nº 9.394/1996 - trechos relevantes](normas/br/compilacoes/LEI_BR_9394-1996_ldb-trechos-relevantes.md) | Compilação | 1996 | Compilação de dispositivos da Lei de Diretrizes e Bases da Educação Nacional relevantes para PPCs. |
 | [Lei nº 10.639/2003](normas/br/leis/LEI_BR_10639-2003_ensino-historia-cultura-afro-brasileira.md) | Lei | 2003 | Altera a LDB para incluir a obrigatoriedade da temática História e Cultura Afro-Brasileira. |

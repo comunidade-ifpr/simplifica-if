@@ -20,7 +20,7 @@
         "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CEB_2-2024_dcnem.md",
         "linha": 1
       },
-      "pontuacao": -6.516,
+      "pontuacao": -6.62,
       "origem": "busca-textual"
     },
     {
@@ -40,7 +40,7 @@
         "path": "base-conhecimento/normas/br/leis/LEI_BR_14945-2024_ensino-medio.md",
         "linha": 1
       },
-      "pontuacao": -3.685,
+      "pontuacao": -3.766,
       "origem": "busca-textual"
     },
     {
@@ -60,7 +60,7 @@
         "path": "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_2-2026_dcnept.md",
         "linha": 1
       },
-      "pontuacao": -3.515,
+      "pontuacao": -3.594,
       "origem": "busca-textual"
     },
     {
@@ -92,7 +92,7 @@
       },
       "pedido": null,
       "metadados": null,
-      "pontuacao": -8.43,
+      "pontuacao": -8.438,
       "origem": "busca-textual"
     },
     {
@@ -124,7 +124,7 @@
       },
       "pedido": null,
       "metadados": null,
-      "pontuacao": -7.787,
+      "pontuacao": -7.795,
       "origem": "busca-textual"
     }
   ]

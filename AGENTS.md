@@ -176,7 +176,10 @@ Depois de alterar normas, `relacoes.yaml`, `transicoes.yaml`, `correspondencias/
 node scripts/gerar_base.ts      # campos gerados do front matter (relações, status de vigência) e manifest.json
 node scripts/validar_base.ts
 node scripts/gerar_site.ts
+node scripts/avaliacao/gabaritos/gerar.ts   # universos e conjuntos esperados da avaliação (avaliacao/gabaritos/)
 ```
+
+Depois, confira os gabaritos de `testes-gabarito/` (`kb.sh`, `banco.sh`, `base.sh` e o do MCP) e recalcule a contagem de casos de `testes.txt` pelo roteiro JUnit do [README do gabarito](testes-gabarito/README.md): uma norma nova muda escores de busca, contagens do banco, o hash do `site/` e o número de casos de `estrutura.test.ts`, que tem um caso por norma. Norma nova também entra em `INCLUIDAS_DEPOIS` (`packages/kb/src/normas/referencia-saneamento.ts`), porque os testes de saneamento e de status manual comparam as normas com o commit anterior ao saneamento, e na contagem de `estrutura.test.ts`.
 
 Não edite à mão `status_vigencia`, `revoga`, `revogada_por`, `altera`, `alterada_por`, `regulamenta`, `regulamentada_por`, `fundamenta_se_em`, `fundamenta` nem `vigencia_*` no front matter das normas: eles são gerados. Relação nova entra em `relacoes.yaml`, com a evidência literal do texto; `pnpm kb relacoes --propor` lista o que o regex encontrou e ainda não foi confirmado. Ao mudar a marcação de uma norma, preserve as palavras (`pnpm --filter @simplifica-if/kb test src/normas` confere) e siga as convenções de corpo de `base-conhecimento/docs/padrao-front-matter-legislacao.md`.
 

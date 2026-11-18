@@ -21,6 +21,7 @@ import { analisarFrontMatter } from "./front-matter.ts";
 import { normasComCamposGerados, reescreverFrontMatter } from "./gerado.ts";
 import { idDoAto } from "./ids.ts";
 import { raizRepositorio } from "../caminhos.ts";
+import { INCLUIDAS_DEPOIS, REF_ANTES_SANEAMENTO } from "./referencia-saneamento.ts";
 import { carregarRegistro } from "./registro.ts";
 import { carregarRelacoes, proporRelacoes, validarRelacoes } from "./relacoes.ts";
 import {
@@ -34,8 +35,6 @@ import {
 
 const raiz = raizRepositorio();
 const vigencia = carregarFonteVigencia(raiz);
-/** Último commit antes da fase 5 (mesmo de `saneamento.test.ts`). */
-const REF_ANTES_SANEAMENTO = "fcfc006";
 const refDisponivel =
   NodeChildProcess.spawnSync("git", ["cat-file", "-e", `${REF_ANTES_SANEAMENTO}^{commit}`], {
     cwd: raiz,
@@ -90,7 +89,7 @@ describe("vigência", () => {
   });
 
   test.skipIf(!refDisponivel)(
-    "status calculado = manual (fcfc006) nas 36 normas, salvo divergências justificadas",
+    "status calculado = manual (fcfc006) nas 36 normas de então, salvo divergências justificadas",
     () => {
       // Status manuais anteriores que o cálculo muda, com a relação que justifica a mudança.
       const justificadas: Record<string, [string, string]> = {
@@ -104,6 +103,7 @@ describe("vigência", () => {
       };
       const divergentes: Record<string, [string, string]> = {};
       for (const norma of listarNormas(raiz)) {
+        if (INCLUIDAS_DEPOIS.has(norma.path)) continue;
         const antigo = NodeChildProcess.spawnSync(
           "git",
           ["show", `${REF_ANTES_SANEAMENTO}:base-conhecimento/${norma.path}`],
@@ -162,7 +162,7 @@ describe("vigência", () => {
 });
 
 describe("front matter gerado", () => {
-  test("as 36 normas estão com os campos gerados em dia (gerar_base.ts)", () => {
+  test("as normas estão com os campos gerados em dia (gerar_base.ts)", () => {
     expect(
       normasComCamposGerados(raiz)
         .filter((n) => n.atual !== n.esperado)
