@@ -107,6 +107,92 @@ const resolverUpstream = Effect.fn("upstream_t3.resolverUpstream")(function* (fl
   return yield* new UpstreamAusente();
 });
 
+export class UpstreamInexistente extends Schema.TaggedError<UpstreamInexistente>()("UpstreamInexistente", {
+  caminho: Schema.String,
+  cause: Schema.Defect(),
+}) {
+  override get message(): string {
+    return `o git não rodou em ${this.caminho}: a pasta do checkout do upstream existe?`;
+  }
+}
+
+export class RefNaoEncontrada extends Schema.TaggedError<RefNaoEncontrada>()("RefNaoEncontrada", {
+  upstream: Schema.String,
+  ref: Schema.String,
+  cause: Schema.Defect(),
+}) {
+  override get message(): string {
+    return `ref ${this.ref} não encontrada no checkout do upstream ${this.upstream}`;
+  }
+}
+
+export class ParteSemHistorico extends Schema.TaggedError<ParteSemHistorico>()("ParteSemHistorico", {
+  parte: Schema.String,
+  commit: Schema.String,
+  ref: Schema.String,
+  cause: Schema.Defect(),
+}) {
+  override get message(): string {
+    return (
+      `parte ${this.parte}: o git não comparou ${this.commit.slice(0, 10)} com ${this.ref} ` +
+      "(commit ausente no checkout?); rode git fetch no checkout do upstream"
+    );
+  }
+}
+
+/** Sem `codigo`, o git nem rodou na pasta: `UpstreamInexistente`; com ele, o erro do caso. */
+const traduzirGit =
+  <E>(caminho: string, comCodigo: (erro: Git.GitFalhou) => E) =>
+  <A, R>(efeito: Effect.Effect<A, Git.GitFalhou, R>): Effect.Effect<A, E | UpstreamInexistente, R> =>
+    efeito.pipe(
+      Effect.catchTags({
+        GitFalhou: (erro) =>
+          Effect.fail(erro.codigo === undefined ? new UpstreamInexistente({ caminho, cause: erro }) : comCodigo(erro)),
+      }),
+    );
+
+/** O commit (abreviado) a que `ref` aponta no upstream. */
+export const resolverRef = Effect.fn("upstream_t3.resolverRef")(function* (upstream: string, ref: string) {
+  const saida = yield* Git.executar(["rev-parse", "--short=10", ref], { cwd: upstream }).pipe(
+    traduzirGit(upstream, (cause) => new RefNaoEncontrada({ upstream, ref, cause })),
+  );
+  return saida.trim();
+});
+
+const semHistorico = (upstream: string, parte: Parte, ref: string) =>
+  traduzirGit(upstream, (cause) => new ParteSemHistorico({ parte: parte.nome, commit: parte.commit, ref, cause }));
+
+/** Quantos commits e quais arquivos da origem da parte mudaram entre o commit registrado e `ref`. */
+export const mudancasDaParte = Effect.fn("upstream_t3.mudancasDaParte")(function* (
+  upstream: string,
+  parte: Parte,
+  ref: string,
+) {
+  const commits = Number(
+    (yield* Git.executar(["rev-list", "--count", `${parte.commit}..${ref}`, "--", ...parte.origem], {
+      cwd: upstream,
+    }).pipe(semHistorico(upstream, parte, ref))).trim(),
+  );
+  const arquivos = (yield* Git.executar(["diff", "--name-only", parte.commit, ref, "--", ...parte.origem], {
+    cwd: upstream,
+  }).pipe(semHistorico(upstream, parte, ref)))
+    .split("\n")
+    .filter((linha) => linha !== "");
+  return { commits, arquivos };
+});
+
+/** O diff (ou o `--stat`) da origem da parte, do commit registrado até `ref`. */
+export const diffDaParte = Effect.fn("upstream_t3.diffDaParte")(function* (
+  upstream: string,
+  parte: Parte,
+  ref: string,
+  stat: boolean,
+) {
+  return yield* Git.executar(["diff", ...(stat ? ["--stat"] : []), parte.commit, ref, "--", ...parte.origem], {
+    cwd: upstream,
+  }).pipe(semHistorico(upstream, parte, ref));
+});
+
 const flags = {
   upstream: Flag.String("upstream").pipe(
     Flag.withDescription("checkout do T3 Code (padrão: a variável de ambiente T3CODE_DIR)"),
@@ -122,19 +208,11 @@ const status = Command.make("status", flags, ({ upstream: flagUpstream, ref }) =
   Effect.gen(function* () {
     const upstream = yield* resolverUpstream(flagUpstream);
     const partes = yield* carregarManifesto();
-    const alvo = (yield* Git.executar(["rev-parse", "--short=10", ref], { cwd: upstream })).trim();
+    const alvo = yield* resolverRef(upstream, ref);
     yield* Console.log(`upstream ${upstream} em ${ref} (${alvo})\n`);
     let comMudanca = 0;
     for (const parte of partes) {
-      const intervalo = `${parte.commit}..${ref}`;
-      const commits = Number(
-        (yield* Git.executar(["rev-list", "--count", intervalo, "--", ...parte.origem], { cwd: upstream })).trim(),
-      );
-      const arquivos = (yield* Git.executar(["diff", "--name-only", parte.commit, ref, "--", ...parte.origem], {
-        cwd: upstream,
-      }))
-        .split("\n")
-        .filter((linha) => linha !== "");
+      const { commits, arquivos } = yield* mudancasDaParte(upstream, parte, ref);
       const marca = arquivos.length === 0 ? "igual" : `${arquivos.length} arquivo(s), ${commits} commit(s)`;
       yield* Console.log(`${parte.nome.padEnd(26)} ${parte.commit.slice(0, 10)} ${parte.data}  ${marca}`);
       if (arquivos.length > 0) comMudanca++;
@@ -166,10 +244,7 @@ const diff = Command.make(
         escolhidas.push(parte);
       }
       for (const parte of escolhidas.length === 0 ? partes : escolhidas) {
-        const saida = yield* Git.executar(
-          ["diff", ...(stat ? ["--stat"] : []), parte.commit, ref, "--", ...parte.origem],
-          { cwd: upstream },
-        );
+        const saida = yield* diffDaParte(upstream, parte, ref, stat);
         if (saida.trim() === "") continue;
         yield* Console.log(`### ${parte.nome} (${parte.commit.slice(0, 10)}..${ref}) → ${parte.aqui.join(" ")}\n`);
         yield* Console.log(saida);

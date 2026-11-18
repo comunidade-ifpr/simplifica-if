@@ -22,6 +22,7 @@
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import { lerSkill, lerSkillMd } from "@simplifica-if/mcp/skills";
+import { YAMLParseError } from "yaml";
 import * as Motor from "@simplifica-if/motor";
 import * as Drivers from "@simplifica-if/motor/drivers";
 import * as HostProcess from "@simplifica-if/motor/t3/HostProcess";
@@ -68,8 +69,8 @@ type Provider = (typeof PROVIDERS)[number];
 /** Prazo de uma sessão (documento ou juiz). */
 const PRAZO = Duration.minutes(15);
 
-/** O caso (`caso.yaml`) não pôde ser lido; o erro de leitura fica em `cause`. */
-class CasoIlegivel extends Schema.TaggedError<CasoIlegivel>()("CasoIlegivel", {
+/** O caso (`caso.yaml`) não pôde ser lido do disco; o erro de leitura fica em `cause`. */
+export class CasoIlegivel extends Schema.TaggedError<CasoIlegivel>()("CasoIlegivel", {
   caso: Schema.String,
   /** Código do erro do sistema (`ENOENT`, `EACCES`), quando houver. */
   codigo: Schema.optional(Schema.String),
@@ -78,15 +79,47 @@ class CasoIlegivel extends Schema.TaggedError<CasoIlegivel>()("CasoIlegivel", {
   override get message(): string {
     return `não foi possível ler o caso ${this.caso}${this.codigo === undefined ? "" : ` (${this.codigo})`}`;
   }
+}
 
-  static de(caso: string, cause: unknown): CasoIlegivel {
-    const codigo =
-      typeof cause === "object" && cause !== null && "code" in cause && typeof cause.code === "string"
-        ? cause.code
-        : undefined;
-    return new CasoIlegivel({ caso, cause, ...(codigo === undefined ? {} : { codigo }) });
+/** O `caso.yaml` tem sintaxe YAML errada; o `YAMLParseError` fica em `cause`. */
+export class CasoMalformado extends Schema.TaggedError<CasoMalformado>()("CasoMalformado", {
+  caso: Schema.String,
+  linha: Schema.optional(Schema.Int),
+  coluna: Schema.optional(Schema.Int),
+  cause: Schema.Defect(),
+}) {
+  override get message(): string {
+    const posicao =
+      this.linha === undefined
+        ? ""
+        : `, linha ${this.linha}${this.coluna === undefined ? "" : `, coluna ${this.coluna}`}`;
+    return `YAML inválido no caso ${this.caso} (caso.yaml${posicao})`;
   }
 }
+
+const erroDeLeitura = (caso: string, cause: unknown): CasoIlegivel | CasoMalformado => {
+  if (cause instanceof YAMLParseError) {
+    const inicio = cause.linePos?.[0];
+    return new CasoMalformado({
+      caso,
+      cause,
+      ...(inicio === undefined ? {} : { linha: inicio.line, coluna: inicio.col }),
+    });
+  }
+  const codigo =
+    typeof cause === "object" && cause !== null && "code" in cause && typeof cause.code === "string"
+      ? cause.code
+      : undefined;
+  return new CasoIlegivel({ caso, cause, ...(codigo === undefined ? {} : { codigo }) });
+};
+
+/** Lê e valida o `caso.yaml` da pasta `caso`; o caso fora do contrato passa como `ArquivoAvaliacaoInvalido`. */
+export const lerCaso = Effect.fn("avaliar-skill.lerCaso")(function* (caso: string) {
+  return yield* Effect.try({
+    try: () => carregarCaso(caso),
+    catch: (erro) => (ehArquivoAvaliacaoInvalido(erro) ? erro : erroDeLeitura(caso, erro)),
+  });
+});
 
 /** A skill (na árvore de trabalho, ou no commit `rev`) não tem bloco `simplifica:`. */
 class SkillSemBloco extends Schema.TaggedError<SkillSemBloco>()("SkillSemBloco", {
@@ -435,10 +468,7 @@ const avaliarSkill = Command.make(
     pontuar: textoOpcional("pontuar", "repontua (parte automática) um relatorio.json salvo, sem chamar modelo"),
   },
   Effect.fn("avaliar-skill")(function* (o) {
-    const carregado = yield* Effect.try({
-      try: () => carregarCaso(o.caso),
-      catch: (erro) => (ehArquivoAvaliacaoInvalido(erro) ? erro : CasoIlegivel.de(o.caso, erro)),
-    });
+    const carregado = yield* lerCaso(o.caso);
     if (Option.isSome(o.pontuar)) return yield* modoPontuar(carregado, o.pontuar.value);
     const desconhecidos = o.documento.filter((id) => !carregado.caso.documentos.some((d) => d.id === id));
     if (desconhecidos.length > 0) return yield* new DocumentosInexistentes({ ids: desconhecidos });
