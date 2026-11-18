@@ -4,21 +4,14 @@
 
 As skills em `.agents/skills/` são procedimentos operacionais para agentes IA. Elas devem transformar uma tarefa recorrente em fluxo reprodutível, com prompts, scripts, testes e artefatos de apoio.
 
-A Base de Conhecimento local em `base-conhecimento/` continua sendo a fonte de verdade para normas, metadados institucionais, PPCs de referência e catálogos. Antes de duplicar conteúdo normativo dentro de uma skill, verifique se o dado já existe em:
-
-- `base-conhecimento/manifest.json`
-- `base-conhecimento/institucional_manifest.json`
-- `base-conhecimento/catalogos_manifest.json`
-- `base-conhecimento/normas/`
-- `base-conhecimento/institucional/`
-- `base-conhecimento/catalogos/`
+A Base de Conhecimento local em `base-conhecimento/` continua sendo a fonte de verdade para normas, metadados institucionais, PPCs de referência e catálogos. Antes de duplicar conteúdo normativo dentro de uma skill, verifique pela CLI `kb` (no repositório) ou pelas ferramentas `ifpr` do `simplifica-mcp` (no app) se o dado já está na base: normas em `base-conhecimento/normas/`, registros institucionais e PPCs em `base-conhecimento/institucional/`, CNCT em `base-conhecimento/catalogos/`.
 
 ## Integração Com a Base
 
 Ao criar ou revisar uma skill:
 
-1. Defina quais manifestos e coleções da base a skill deve consultar.
-2. Prefira referências por `path` e metadados estruturados em vez de texto copiado.
+1. Defina quais comandos `kb` ou ferramentas `ifpr` a skill usa para consultar a base.
+2. Prefira referências por ID canônico e `path` em vez de texto copiado.
 3. Quando a skill precisar funcionar instalada em outro projeto sem a base completa, documente quais dados foram empacotados e qual é a origem.
 4. Inclua testes ou validações que indiquem quando uma base gerada, índice ou cópia empacotada ficou desatualizada.
 

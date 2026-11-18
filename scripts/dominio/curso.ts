@@ -1,4 +1,3 @@
-const URL_BASE_PUBLICA = "https://simplifica-if.github.io/base-conhecimento/";
 const PREFIXO_PPCS = "institucional/ifpr/ppcs/";
 
 export interface Campus {
@@ -65,11 +64,6 @@ export interface Curso {
   campusIds: string[];
   suap: SuapCurso;
   ppc: PpcCurso;
-}
-
-export function caminhoMarkdownPpc(link: string): string {
-  const caminho = link.startsWith(URL_BASE_PUBLICA) ? link.slice(URL_BASE_PUBLICA.length) : link;
-  return caminho.startsWith(PREFIXO_PPCS) && caminho.endsWith(".md") ? caminho : "";
 }
 
 export function chaveCurso(campusId: string, cursoSlug: string): string {

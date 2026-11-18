@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vite-plus/test";
 import { auditarBase, type BaseInstitucional } from "./auditoria.ts";
-import { caminhoMarkdownPpc, interpretarVagasPpc, type Campus, type Curso } from "./curso.ts";
+import { interpretarVagasPpc, type Campus, type Curso } from "./curso.ts";
 import type { OfertaIngresso } from "./ingresso.ts";
 import type { Movimentacao } from "./movimentacao.ts";
 import { montarProcessosSei, processosSeiDasMovimentacoes } from "../dados/processos-sei.ts";
@@ -210,12 +210,5 @@ describe("domínio de curso", () => {
     expect(interpretarVagasPpc("40")).toEqual({ quantidade: 40 });
     expect(interpretarVagasPpc("40 – 30")).toEqual({ quantidade: 40, minimo: 30, maximo: 40 });
     expect(interpretarVagasPpc("quarenta")).toBeNull();
-  });
-
-  test("aceita link do Markdown pela URL pública", () => {
-    expect(caminhoMarkdownPpc("https://simplifica-if.github.io/base-conhecimento/institucional/ifpr/ppcs/a/b.md")).toBe(
-      "institucional/ifpr/ppcs/a/b.md",
-    );
-    expect(caminhoMarkdownPpc("https://outro.site/a.md")).toBe("");
   });
 });

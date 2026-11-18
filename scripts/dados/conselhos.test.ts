@@ -1,12 +1,11 @@
 import { describe, expect, test } from "vite-plus/test";
-import { auditarConselhos, carregarConselhos, montarIndiceConselhos, type Conselhos } from "./conselhos.ts";
+import { auditarConselhos, carregarConselhos, type Conselhos } from "./conselhos.ts";
 
 describe("conselhos", () => {
   test("os registros do Consepe na base são válidos e não têm campos de pessoa", () => {
     const { dados, erros } = carregarConselhos();
     expect(erros).toEqual([]);
     expect(dados.conselhos.map((c) => c.dados.conselho_id)).toEqual(["consepe"]);
-    expect(montarIndiceConselhos(dados).total_itens).toBe(dados.reunioes.length);
     const texto = JSON.stringify(dados);
     expect(texto).not.toMatch(/relator|conselheir|notion:/i);
   });

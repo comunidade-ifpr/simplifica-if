@@ -18,7 +18,7 @@ Relações usam essas chaves, nunca IDs de página do Notion: `cursos[].campus_i
 
 O que continua gerado, e por quê:
 
-- `index.json` de cada coleção (`campi/`, `cursos/`, `processos-seletivos/`, `editais/`, `ofertas/`, `conselhos/`): lista os registros com os campos de filtro e o `path`, para quem lê a base publicada sem poder listar diretórios. Gerado por `gerar_base.ts` (`scripts/dados/indices.ts`), sem data, e conferido pelo `validar_base.ts`. Não edite.
+- `campi/index.json`: lista os campi com o nome e o `path`, para a identificação do PPC na `revisar-ppc`. Gerado por `gerar_base.ts` (`scripts/dados/indices.ts`), sem data, e conferido pelo `validar_base.ts`. Não edite. As demais coleções não têm índice: o kb lê os registros direto.
 - `processos-sei/index.json`: os processos SEI de cada curso (`curso_id`, `numero`, `tipo`, `trecho_fonte`), exportados da base `Movimentações de Cursos` do Notion por `exportar_base_publica.ts` (precisa de `NOTION_TOKEN`). Não edite: a curadoria das movimentações acontece no Notion; veja [Operação do Notion por agentes](notion-operacao-agentes.md).
 
 `Movimentações de Cursos` é a única base institucional que continua no Notion. As bases do Consepe estão em `institucional/ifpr/conselhos/` (veja [Conselhos](#conselhos)); Pareceres de Curso, Servidores e Conselheiros ficaram só no arquivo do Notion e não fazem parte do repositório.
@@ -35,7 +35,7 @@ node scripts/gerar_indice_ppcs.ts
 node scripts/validar_base.ts
 ```
 
-`validar_base.ts` confere schema, caminho de cada arquivo e as regras da auditoria institucional (chaves únicas, relações existentes, caminho esperado do PPC e o Markdown existente, URLs HTTPS), os índices gerados e os processos SEI. Para atualizar os processos SEI depois de mudar movimentações no Notion, rode antes `node scripts/exportar_base_publica.ts`.
+`validar_base.ts` confere schema, caminho de cada arquivo e as regras da auditoria institucional (chaves únicas, relações existentes, caminho esperado do PPC e o Markdown existente, URLs HTTPS), o índice dos campi e os processos SEI. Para atualizar os processos SEI depois de mudar movimentações no Notion, rode antes `node scripts/exportar_base_publica.ts`.
 
 Ao criar um curso novo, use `curso_slug` em minúsculas com hífens, único no campus, e não preencha `notion_page_id`.
 
@@ -233,4 +233,4 @@ Esses arquivos são gerados automaticamente por `scripts/gerar_indice_ppcs.ts` (
 
 Não há entidade de pessoa: relator(a), conselheiros e servidores não entram. Um nome só aparece quando faz parte do texto do ato oficial. Os itens apontam para o campus e o curso pelas chaves canônicas (`campus_id`, `curso_id`) quando o curso está cadastrado; `campus_texto` e `curso_texto` guardam a redação do ato. Curso que o ato não identifica sem ambiguidade, ou que não está cadastrado (abertura ainda não registrada, por exemplo), fica só com o texto.
 
-O formato está em `scripts/dados/conselhos.ts`; o `validar_base.ts` confere o schema, o nome dos arquivos, as relações (documento na mesma reunião, campus e curso existentes e coerentes) e o `index.json` gerado.
+O formato está em `scripts/dados/conselhos.ts`; o `validar_base.ts` confere o schema, o nome dos arquivos, e as relações (documento na mesma reunião, campus e curso existentes e coerentes).

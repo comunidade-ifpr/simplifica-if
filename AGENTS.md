@@ -41,9 +41,9 @@ Estas ferramentas rodam só no repositório, por agentes ou por quem cura a base
 
 ## Base de conhecimento
 
-A base reúne normas, catálogos, PPCs, metadados institucionais e painéis derivados. A fonte publicada fica em `base-conhecimento/`, e o `kb.sqlite` que o app e o `simplifica-mcp` leem é compilado dos mesmos arquivos (`pnpm kb:compilar`).
+A base reúne normas, catálogos, PPCs, e metadados institucionais. A fonte publicada fica em `base-conhecimento/`, e o `kb.sqlite` que o app e o `simplifica-mcp` leem é compilado dos mesmos arquivos (`pnpm kb:compilar`).
 
-Os dados institucionais de gestão (Campi, Cursos com metadados de PPC e SUAP, Processos Seletivos, Editais e Ofertas) têm como fonte de verdade os registros de `base-conhecimento/institucional/ifpr/` (`campi/`, `cursos/`, `processos-seletivos/`, `editais/`, `ofertas/`), um JSON por registro, versionados no git e publicados como estão. Só o `index.json` de cada coleção (por `gerar_base.ts`) e `processos-sei/index.json` (exportado do Notion) são gerados; não os edite à mão. As reuniões do Consepe, com pareceres e itens de pauta e sem dados de pessoa, estão em `institucional/ifpr/conselhos/`. O Notion guarda só a base de fluxo `Movimentações de Cursos`, que também deve sair dele no futuro.
+Os dados institucionais de gestão (Campi, Cursos com metadados de PPC e SUAP, Processos Seletivos, Editais e Ofertas) têm como fonte de verdade os registros de `base-conhecimento/institucional/ifpr/` (`campi/`, `cursos/`, `processos-seletivos/`, `editais/`, `ofertas/`), um JSON por registro, versionados no git; o kb os lê direto. Só `campi/index.json` (por `gerar_base.ts`, lido pela `revisar-ppc`) e `processos-sei/index.json` (exportado do Notion) são gerados; não os edite à mão. As reuniões do Consepe, com pareceres e itens de pauta e sem dados de pessoa, estão em `institucional/ifpr/conselhos/`. O Notion guarda só a base de fluxo `Movimentações de Cursos`, que também deve sair dele no futuro.
 
 ## Skills
 
@@ -51,11 +51,9 @@ As skills ficam em `.agents/skills/`; `.claude/skills` é um symlink para esse d
 
 ## Consulta local da base
 
-Para consultas, respostas a perguntas ou uso desta base como fonte por LLM, use primeiro os arquivos locais deste checkout. Não substitua arquivos locais por URLs públicas quando o conteúdo estiver disponível no repositório.
+A base é consultada pela CLI `kb`, dentro do checkout, ou pelo MCP (o servidor `simplifica-mcp`, sem o checkout; veja [`packages/mcp/instrucoes.md`](packages/mcp/instrucoes.md)), e depois pelo Markdown da norma ou do PPC que a resposta aponta. Não navegue a base por manifestos e índices, e não troque os arquivos locais por URLs públicas.
 
-Para uso por MCP (o servidor `simplifica-mcp`, sem o checkout), veja [`packages/mcp/instrucoes.md`](packages/mcp/instrucoes.md).
-
-Comece pela CLI `kb` (requer `pnpm install` na raiz). Ela consulta `tmp/kb.sqlite`, um banco derivado dos arquivos do checkout (normas, PPCs com o texto integral das seções, registros institucionais, CNCT, fichas da `revisar-ppc`), e o recompila sozinha quando ele falta ou está mais velho que as fontes (cerca de 8 s; `pnpm kb:compilar` força). O banco nunca é fonte de verdade nem lugar de edição: toda resposta traz o texto literal e o arquivo e a linha de onde ele veio, e é esse arquivo que se cita.
+Use a CLI `kb` (requer `pnpm install` na raiz). Ela consulta `tmp/kb.sqlite`, um banco derivado dos arquivos do checkout (normas, PPCs com o texto integral das seções, registros institucionais, CNCT, fichas da `revisar-ppc`), e o recompila sozinha quando ele falta ou está mais velho que as fontes (cerca de 8 s; `pnpm kb:compilar` força). O banco nunca é fonte de verdade nem lugar de edição: toda resposta traz o texto literal e o arquivo e a linha de onde ele veio, e é esse arquivo que se cita.
 
 ```bash
 pnpm kb buscar-norma "Resolução CNE/CP nº 2/2026, art. 28" --json   # citação ou ID → o dispositivo (caput, texto, linhas); termos → busca nos metadados e nos dispositivos
@@ -66,26 +64,14 @@ pnpm kb ppc-fatos --divergencias --nivel médio                        # PPCs co
 pnpm kb pacote-contexto CT-CURR-12 curitiba/tecnico-em-enfermagem --json   # contexto de uma ficha da revisar-ppc: CNCT, dispositivos citados, marcos e regras de transição, seções
 ```
 
-Os fatos de PPC têm status `extraido` (regra sobre o texto convertido, sem revisão humana): confira o `trecho_fonte` antes de afirmar uma divergência. A busca de seções usa radicais e um léxico de sinônimos (`packages/kb/dados/sinonimos.yaml`); se ela não achar o que se espera, procure nos arquivos.
-
-Os arquivos continuam a alternativa quando a CLI não cobre a pergunta. Use os manifestos locais como ponto de entrada:
-
-- `base-conhecimento/manifest.json`: normas, legislação, resoluções, portarias, notas técnicas e referências gerais.
-- `base-conhecimento/institucional_manifest.json`: coleções institucionais do IFPR.
-- `base-conhecimento/catalogos_manifest.json`: catálogos publicados, incluindo o CNCT.
-- `base-conhecimento/institucional/ifpr/ppcs/index.json`: índice dos PPCs convertidos.
-
-Os campos `path` dos manifestos são relativos a `base-conhecimento/`. Ao abrir um arquivo indicado por manifesto, prefixe o caminho com `base-conhecimento/`.
+Os fatos de PPC têm status `extraido` (regra sobre o texto convertido, sem revisão humana): confira o `trecho_fonte` antes de afirmar uma divergência. A busca de seções usa radicais e um léxico de sinônimos (`packages/kb/dados/sinonimos.yaml`); se ela não achar o que se espera, procure com `rg` nos Markdown dos PPCs.
 
 Procedimento recomendado:
 
-1. Tente primeiro o comando `kb` correspondente (acima). Sem ele, consulte o manifesto local adequado e filtre por `title`, `aliases`, `keywords`, `ementa`, `orgao`, `ano`, `status_vigencia`, campus, curso, nível ou tipo de oferta.
-2. Abra os arquivos locais indicados no campo `path`, dentro de `base-conhecimento/`.
-3. Para normas, legislação e resoluções, use os Markdown em `base-conhecimento/normas/` como fonte principal e cite o título, a fonte oficial registrada no front matter e o artigo, seção ou item usado.
-4. Para metadados institucionais publicados, use os JSONs em `base-conhecimento/institucional/ifpr/`. Para estado operacional atual de bases geridas no Notion, consulte o Notion conforme a seção de curadoria e operação.
-5. Para CNCT, use `base-conhecimento/catalogos/cnct/manifest.json`, `base-conhecimento/catalogos/cnct/index.json` e, quando necessário, os arquivos em `base-conhecimento/catalogos/cnct/cursos/`.
-6. Para PPCs, use `pnpm kb buscar-secoes` (ou `base-conhecimento/institucional/ifpr/ppcs/index.json` e os índices de seções em `base-conhecimento/institucional/ifpr/ppcs/secoes/`) e depois abra o Markdown do PPC nas linhas indicadas antes de redigir resposta substantiva.
-7. Use busca online apenas quando o dado necessário não existir na base local, quando a pergunta exigir atualização externa ou quando for preciso confirmar informação em fonte oficial. Ao usar fonte externa, deixe isso explícito.
+1. Ache a fonte pelo comando `kb` correspondente (acima e abaixo).
+2. Abra o arquivo e as linhas que a resposta aponta (os `path` são relativos à raiz do repositório ou, quando a resposta diz, a `base-conhecimento/`) antes de redigir resposta substantiva.
+3. Para normas, cite o título, a fonte oficial registrada no front matter e o artigo, seção ou item usado. Para PPCs, cite o arquivo e as linhas. Para metadados institucionais, cite o registro JSON de `base-conhecimento/institucional/ifpr/`; para estado operacional de bases geridas no Notion, consulte o Notion conforme a seção de curadoria e operação.
+4. Use busca online apenas quando o dado necessário não existir na base local, quando a pergunta exigir atualização externa ou quando for preciso confirmar informação em fonte oficial. Ao usar fonte externa, deixe isso explícito.
 
 Cada norma tem um ID canônico derivado do ato (`id` no front matter e no `manifest.json`), como `br/cne-cp/res/2026/2`, `br/lei/1996/9394` ou `ifpr/consup/res/2024/190`. Normas citadas sem texto na base (stubs) e referências `externo:` ficam em `base-conhecimento/normas/stubs.yaml`. Para identificar uma citação ou achar quem cita uma norma, use a CLI `kb`:
 
