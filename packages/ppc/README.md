@@ -18,6 +18,8 @@ A leitura do DOCX é do pacote [`@simplifica-if/docx`](../docx/README.md). A arq
 pnpm --filter @simplifica-if/ppc test
 ```
 
+Os testes da pré-conferência e da revisão prévia leem a base do `tmp/kb.sqlite` do checkout, como o app lê a dele: o banco é recompilado quando falta ou está velho (`KB_RECOMPILAR=nunca|sempre` muda isso, como na CLI `kb`), uma vez só, no `globalSetup` do `vite.config.ts` do pacote (`test/banco-fresco.ts`), antes dos arquivos de teste, que rodam em paralelo; o CI roda `pnpm kb compilar` antes dos testes.
+
 ## Pré-conferência sem IA (fichas D)
 
 A revisão de PPC no app (M1.11) começa por uma pré-conferência em código: as 12 fichas canônicas da `revisar-ppc` com `execucao.modo: "D"` são decididas por verificadores em `src/verificadores/`, com a base (CNCT, registro de normas e relações de revogação, fatos e seções do `kb`), sem IA e sem rede, em cerca de 30 ms por PPC.
@@ -26,9 +28,10 @@ A revisão de PPC no app (M1.11) começa por uma pré-conferência em código: a
 import { preConferir, achadosParaComentarios } from "@simplifica-if/ppc/pre-conferencia";
 import { VERIFICADOR_POR_FICHA } from "@simplifica-if/ppc/verificadores/registro";
 
-const { fichas, triagem } = preConferir(markdown, { cnct, forma: "integrado", registro, relacoes, vigencia });
-// vigencia (obrigatória): no app, vigenciaDeDados(...) de verificadores/vigencia.ts, sobre o kb.sqlite;
-// nos testes e scripts, carregarVigencia(raiz) de scripts/base-tecnica.ts, sobre os arquivos do checkout
+const { fichas, triagem } = preConferir(markdown, { cnct, forma: "integrado", ...verificacaoDaBase(base) });
+// registro, relações e vigência (obrigatórios) saem da base da revisão (`verificacaoDaBase` de revisao-previa.ts),
+// que é uma só: `montarBaseRevisao` (src/base-revisao.ts), pelos serviços do kb sobre o kb.sqlite. O servidor a monta
+// do banco que serve; os testes e scripts, do tmp/kb.sqlite do checkout (`carregarBaseRevisao` de scripts/base-tecnica.ts)
 // fichas: um ResultadoFicha por ficha D (estado atende | nao_atende | a_conferir | nao_se_aplica,
 // apontamentos com trechos literais, linha e seção, fontes ifpr://); triagem: texto dirigido à IA e seções ausentes
 const itens = achadosParaComentarios({ fichas, triagem }); // um item por trecho, com `fichas`; trechos como no DOCX

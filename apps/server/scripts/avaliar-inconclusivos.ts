@@ -40,6 +40,7 @@ import {
   type CriterioInconclusivo,
 } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { MODELO_PADRAO } from "@simplifica-if/ppc/revisao-ia/tipos";
+import { montarBaseRevisao } from "@simplifica-if/ppc/base-revisao";
 import { lerPpc, type PpcDaBase, ppcsTecnicos } from "../../../packages/ppc/scripts/base-tecnica.ts";
 import { julgarBloco, type ResultadoBloco, type TentativaIa } from "../src/revisao-ppc/julgamento.ts";
 import { preparar } from "../src/revisao-ppc/preparo.ts";
@@ -106,7 +107,8 @@ const selecionar = Effect.gen(function* () {
   const totalPares = Number(opcao("--pares") ?? 36);
   const porPpc = Number(opcao("--por-ppc") ?? 6);
   const maxPorFicha = Number(opcao("--por-ficha") ?? 3);
-  const ppcs = ppcsTecnicos()
+  const { cncts } = yield* montarBaseRevisao;
+  const ppcs = ppcsTecnicos(RAIZ, cncts)
     .filter((p) => !EXCLUIDOS.has(p.id))
     .sort((a, b) => hash(a.id) - hash(b.id));
   const candidatos = new Map<string, Par[]>();
@@ -199,7 +201,8 @@ const rodar = Effect.gen(function* () {
           })
       : [],
   );
-  const ppcs = new Map(ppcsTecnicos().map((p) => [p.id, p]));
+  const { cncts } = yield* montarBaseRevisao;
+  const ppcs = new Map(ppcsTecnicos(RAIZ, cncts).map((p) => [p.id, p]));
   const porPpc = Map.groupBy(pares, (p) => p.ppc);
   const modelo = MODELO_PADRAO.claude ?? null;
   const inicio = Date.now();

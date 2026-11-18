@@ -1,7 +1,7 @@
 // @effect-diagnostics nodeBuiltinImport:off -- adapta ao SqlClient um `DatabaseSync` do `node:sqlite` já aberto.
 /**
  * `SqlClient` sobre um `DatabaseSync` já aberto e já preenchido: o banco em memória de um PPC fora
- * da base (`bancoDoPpcAvulso`, gravado pelo mesmo código da compilação) e os bancos de fixture dos
+ * da base (`abrirPpcAvulso`, gravado pelo mesmo código da compilação) e os bancos de fixture dos
  * testes. As consultas do kb rodam sobre ele como sobre o `kb.sqlite`, trocando só o `SqlClient`
  * do ambiente.
  *

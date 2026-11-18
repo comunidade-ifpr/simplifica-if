@@ -5,15 +5,14 @@
  * exige caso para cada verificador).
  */
 import { raizRepositorio } from "@simplifica-if/kb/caminhos";
-import { carregarRegistro } from "@simplifica-if/kb/normas/registro";
-import { carregarRelacoes } from "@simplifica-if/kb/normas/relacoes";
 import { describe, expect, test } from "vite-plus/test";
 import { achadosParaComentarios, preConferir } from "../src/pre-conferencia.ts";
 import type { BaseVerificacao, CursoCnct, EstadoVerificacao } from "../src/verificadores/comum.ts";
 import { escolaridadeExigida } from "../src/verificadores/curriculo.ts";
 import { FICHAS_D, VERIFICADOR_POR_FICHA, VERIFICADORES } from "../src/verificadores/registro.ts";
 import type { ConsultaVigencia } from "../src/verificadores/vigencia.ts";
-import { carregarVigencia } from "../scripts/base-tecnica.ts";
+import { verificacaoDaBase } from "../src/revisao-previa.ts";
+import { carregarBaseRevisao } from "../scripts/base-tecnica.ts";
 
 const CNCT: CursoCnct = {
   slug: "tecnico-em-agropecuaria",
@@ -27,13 +26,11 @@ const CNCT: CursoCnct = {
     "Para ingresso no curso técnico integrado ao ensino médio, o estudante deverá ter concluído o ensino fundamental.",
 };
 
-const registro = carregarRegistro(raizRepositorio());
-const relacoes = carregarRelacoes(raizRepositorio());
+const { registro, relacoes, vigencia: daBase } = verificacaoDaBase(await carregarBaseRevisao(raizRepositorio()));
 /**
  * Vigência da base, com a situação de hoje fixada: a 2/2026 e a revogação da 1/2021 por ela "a
  * confirmar" (sem a publicação no DOU). Assim o teste não quebra quando a data for registrada.
  */
-const daBase = carregarVigencia();
 const A_CONFIRMAR = new Set(["br/cne-cp/res/2026/2", "br/cne-cp/res/2021/1", "br/cne-ceb/res/2014/1"]);
 const vigencia: ConsultaVigencia = (id) => (A_CONFIRMAR.has(id) ? { ...daBase(id), certo: false } : daBase(id));
 const base = (forma: string, cnct: CursoCnct | null = CNCT): BaseVerificacao => ({

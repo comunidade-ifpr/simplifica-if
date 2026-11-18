@@ -84,6 +84,7 @@ const LinhaFicha = Schema.Struct({
   front_matter_json: Schema.NullOr(Schema.fromJsonString(Schema.Record(Schema.String, Schema.Unknown))),
 });
 const primeiraFicha = Sql.primeira(LinhaFicha);
+const linhasFontes = Sql.todas(Schema.Struct({ id: Schema.String, fonte: Schema.String }));
 
 const ato = (id: string) => idDoAto(id.split("#")[0]!);
 
@@ -127,6 +128,8 @@ export class Normas extends Context.Service<
     ) => Effect.Effect<ReadonlyArray<TabelaCorrespondencia>, Sql.FalhaNaConsulta>;
     /** A `data_referencia` da base. */
     readonly dataReferencia: Effect.Effect<string>;
+    /** O endereço oficial (`fonte` http) de cada norma, stub ou referência externa que o registra, por ID. */
+    readonly enderecosOficiais: Effect.Effect<Record<string, string>, Sql.FalhaNaConsulta>;
   }
 >()("@simplifica-if/kb/Normas") {}
 
@@ -209,6 +212,12 @@ const make = Effect.gen(function* () {
       Effect.sync(() => correspondenciaEm(id, fonteCorrespondencia)),
     ),
     dataReferencia: Effect.succeed(fontes.dataReferencia),
+    enderecosOficiais: Effect.gen(function* () {
+      const urls: Record<string, string> = {};
+      for (const linha of yield* linhasFontes("SELECT id, fonte FROM normas WHERE fonte LIKE 'http%'"))
+        urls[linha.id] = linha.fonte;
+      return urls;
+    }).pipe(Effect.withSpan("Normas.enderecosOficiais"), prover),
   });
 });
 

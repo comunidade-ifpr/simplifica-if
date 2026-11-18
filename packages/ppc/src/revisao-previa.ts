@@ -23,7 +23,7 @@ import type { DatasNorma, Transicao } from "@simplifica-if/kb/normas/vigencia";
 import { converterPpc } from "./conversao-docx/conversao.ts";
 import { achadosParaComentarios, type PreConferencia, preConferir } from "./pre-conferencia.ts";
 import { TEMAS, ordemDoTema } from "./temas.ts";
-import { chave, type CursoCnct, type Fonte, linkCnct, linkNorma } from "./verificadores/comum.ts";
+import { type BaseVerificacao, chave, type CursoCnct, type Fonte, linkCnct, linkNorma } from "./verificadores/comum.ts";
 import { comoNoDocumento } from "./verificadores/curriculo.ts";
 import { rotuloDispositivo } from "./verificadores/dispositivos.ts";
 import { vigenciaDeDados } from "./verificadores/vigencia.ts";
@@ -49,6 +49,18 @@ export type BaseRevisaoPrevia = {
   /** `data_referencia` da base (AAAA-MM-DD): a data em que a vigência é calculada. */
   dataBase: string;
 };
+
+/**
+ * A parte da base dos verificadores que não depende do PPC, derivada da base da revisão prévia: o
+ * registro, as relações e a vigência na data (padrão: a `dataBase`). É a mesma no app, nos scripts e
+ * nos testes, porque a base é uma só (`base-revisao.ts`).
+ */
+export function verificacaoDaBase(
+  base: BaseRevisaoPrevia,
+  data: string = base.dataBase,
+): Pick<BaseVerificacao, "registro" | "relacoes" | "vigencia"> {
+  return { registro: new Registro(base.normas), relacoes: base.relacoes, vigencia: vigenciaDeDados(base, data) };
+}
 
 /**
  * O resultado de uma ficha S ou J avaliada pela IA e já conferido em código (`revisao-ia/`). `FALHOU`:
@@ -674,7 +686,9 @@ export function revisarDocx(
   opcoes: OpcoesRevisaoPrevia,
 ): RevisaoPrevia {
   const conversao = converterPpc(bytes, nomeDoArquivo, { agora: opcoes.agora });
-  const registro = new Registro(base.normas);
+  // Sempre da base recebida: sem ela, os verificadores leriam a vigência do checkout, que o app não tem.
+  const comum = verificacaoDaBase(base);
+  const registro = comum.registro;
   const escolhido = opcoes.cnct ? (base.cncts.find((c) => c.slug === opcoes.cnct) ?? null) : undefined;
   const cnct = escolhido !== undefined ? escolhido : identificarCnct(conversao.markdown, base.cncts);
   const forma = opcoes.forma ?? identificarForma(conversao.markdown);
@@ -686,10 +700,7 @@ export function revisarDocx(
   const resultado = preConferir(conversao.markdown, {
     cnct,
     forma: forma ?? "",
-    registro,
-    relacoes: base.relacoes,
-    // Sempre da base recebida: sem ela, os verificadores leriam a vigência do checkout, que o app não tem.
-    vigencia: vigenciaDeDados(base, base.dataBase),
+    ...comum,
   });
   const itens = [
     ...itensDaPreConferencia(resultado, registro, base),

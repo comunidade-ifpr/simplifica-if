@@ -29,7 +29,6 @@ import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Semaphore from "effect/Semaphore";
-import type * as SqlClient from "effect/sql/SqlClient";
 import {
   type AvisoNaoAceito,
   type EstimativaAcao,
@@ -41,6 +40,7 @@ import {
   type SituacaoPendencia,
 } from "@simplifica-if/contratos-app";
 import type * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
+import type * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import * as Motor from "@simplifica-if/motor";
 import {
   conferirContestacao,
@@ -240,7 +240,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   const revisoes = yield* Revisoes.Revisoes;
   const revisor = yield* RevisorPpc.RevisorPpc;
   const { exigirAviso } = yield* Preferencias.Preferencias;
-  const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | SqlClient.SqlClient>();
+  const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | PacoteContexto.PacoteContexto>();
   const contextoMotor = yield* Effect.context<Motor.Motor | FileSystem.FileSystem>();
   const contextoListas = yield* Effect.context<Listas.Listas>();
   // Uma ação com IA por vez: um clique duplo não paga duas vezes.
@@ -809,6 +809,6 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
 
 /**
  * Pede as `Listas`, as `Revisoes`, o `RevisorPpc`, as `Preferencias`, o `Motor`, o `FileSystem`, as
- * `FontesNormativas` e o `SqlClient` do `kb.sqlite`.
+ * `FontesNormativas` e o `PacoteContexto` do `kb.sqlite`.
  */
 export const layer = (opcoes: OpcoesListaViva = {}) => Layer.effect(ListaViva, make(opcoes));

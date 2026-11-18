@@ -2,11 +2,11 @@
  * O preparo da revisão com IA (M1.11, etapa 4), em código e sem IA: do PPC convertido ao plano com o
  * texto de cada pedido.
  *
- * O contexto vem do `kb.sqlite` do servidor, como na pré-conferência: as fichas (`fichasDoBanco`) e,
- * por bloco, o pacote de contexto de um PPC fora da base (`pacoteContextoAvulso` sobre o banco em
- * memória de `bancoDoPpcAvulso`): as seções do PPC dos tópicos das fichas, as normas e os dispositivos
- * citados pelas fichas, os marcos e as regras de transição, o curso do CNCT. As linhas que a triagem
- * apontou como texto dirigido a IA saem do Markdown antes de segmentar.
+ * O contexto vem do `kb.sqlite` do servidor, como na pré-conferência, pelo `PacoteContexto` do kb: as
+ * fichas e, por bloco, o pacote de contexto do PPC aberto como PPC fora da base (`abrirAvulso`): as
+ * seções do PPC dos tópicos das fichas, as normas e os dispositivos citados pelas fichas, os marcos e
+ * as regras de transição, o curso do CNCT. As linhas que a triagem apontou como texto dirigido a IA
+ * saem do Markdown antes de segmentar.
  *
  * - S: o recorte de cada ficha (`recorteDaFicha`) sai das seções dos tópicos dela mais a melhor seção
  *   por consulta;
@@ -15,15 +15,7 @@
  */
 import * as Effect from "effect/Effect";
 import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
-import { bancoDoPpcAvulso } from "@simplifica-if/kb/db/compilar";
-import {
-  fichasDoBanco,
-  nomesDeCampiDoBanco,
-  pacoteContextoAvulso,
-  type PacoteAvulso,
-} from "@simplifica-if/kb/db/pacote-contexto";
-import { extrairFatosPpc } from "@simplifica-if/kb/fatos/ppc";
-import { palavrasDeCampi, segmentarPpc } from "@simplifica-if/kb/ppcs/secoes";
+import * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import { comumDoBloco, estruturaDoPpc } from "@simplifica-if/ppc/revisao-ia/estrutura";
 import {
   type ContextoNormativo,
@@ -93,7 +85,11 @@ function cnctEmTexto(cnct: unknown): string | null {
   return linhas.join("\n");
 }
 
-function contextoDoPacote(pacote: PacoteAvulso, dataBase: string, curso: string | null): ContextoNormativo {
+function contextoDoPacote(
+  pacote: PacoteContexto.PacoteAvulso,
+  dataBase: string,
+  curso: string | null,
+): ContextoNormativo {
   return {
     dataBase,
     curso: curso ?? undefined,
@@ -117,7 +113,7 @@ function contextoDoPacote(pacote: PacoteAvulso, dataBase: string, curso: string 
   };
 }
 
-const secoesTexto = (pacote: PacoteAvulso, soTopicos: boolean): SecaoTexto[] =>
+const secoesTexto = (pacote: PacoteContexto.PacoteAvulso, soTopicos: boolean): SecaoTexto[] =>
   pacote.secoes
     .filter((s) => !soTopicos || s.motivo.some((m) => m.startsWith("topico:")))
     .map((s) => ({
@@ -128,6 +124,22 @@ const secoesTexto = (pacote: PacoteAvulso, soTopicos: boolean): SecaoTexto[] =>
       tipo: s.tipo,
       doTopico: s.motivo.some((m) => m.startsWith("topico:")),
     }));
+
+/** A estrutura do PPC para os pedidos: o quadro de identificação com os fatos do `kb`, a matriz em TSV, o índice do ementário e o começo das referências. */
+function estruturaDe(markdown: string, avulso: PacoteContexto.PpcAvulso) {
+  const { secoes, fatos } = avulso.estrutura();
+  return estruturaDoPpc(
+    markdown,
+    secoes.map((x) => ({
+      titulo: x.titulo,
+      linhaInicio: x.linhaInicio,
+      linhaFim: x.linhaFim,
+      texto: x.texto,
+      tipo: x.tipo,
+    })),
+    fatos.map((f) => ({ fato: f.fato, valor: f.valor })),
+  );
+}
 
 /** Teto do recorte de cada transversal (as seções dos tópicos dela, guiadas pela estrutura). */
 const LIMITE_RECORTE_T = 6000;
@@ -146,44 +158,21 @@ export interface EntradaPreparo {
   readonly soFichas?: readonly string[];
 }
 
-/** O plano da revisão: fichas, blocos e pedidos. Pede o `kb.sqlite` (`SqlClient`) e as `FontesNormativas`. */
+/** O plano da revisão: fichas, blocos e pedidos. Pede o `PacoteContexto` e as `FontesNormativas` do `kb.sqlite`. */
 export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: EntradaPreparo) {
   const fontes = yield* FontesNormativas.FontesNormativas;
-  const fichasJson = yield* fichasDoBanco();
+  const kb = yield* PacoteContexto.PacoteContexto;
+  const fichasJson = yield* kb.fichas();
   const criterio = entrada.criterio ?? CRITERIO_PADRAO;
   const todasFichas = fichasJson.map((f) => fichaIa(f as Record<string, unknown>));
   const fichas = entrada.soFichas ? todasFichas.filter((f) => entrada.soFichas!.includes(f.id)) : todasFichas;
   const porId = new Map(fichas.map((f) => [f.id, f]));
   const jsonPorId = new Map(fichasJson.map((f) => [f.id, f]));
   const limpo = retirarTextoParaIa(entrada.markdown, entrada.linhasTextoParaIa);
-  const campi = palavrasDeCampi(yield* nomesDeCampiDoBanco());
-  // A estrutura do PPC, uma vez: o quadro de identificação com os fatos do `kb`, a matriz em TSV, o
-  // índice do ementário e o começo das referências.
-  const todas = segmentarPpc(limpo, "tecnico", campi);
-  const fatos = extrairFatosPpc(
-    limpo,
-    todas.map((x) => ({ tipo: x.tipo, linha_inicio: x.linhaInicio, linha_fim: x.linhaFim })),
-  );
-  const estrutura = estruturaDoPpc(
-    limpo,
-    todas.map((x) => ({
-      titulo: x.titulo,
-      linhaInicio: x.linhaInicio,
-      linhaFim: x.linhaFim,
-      texto: x.texto,
-      tipo: x.tipo,
-    })),
-    fatos.map((f) => ({ fato: f.fato, valor: f.valor })),
-  );
-  const db = yield* Effect.acquireRelease(
-    Effect.sync(() =>
-      bancoDoPpcAvulso(limpo, { registro: fontes.registro, palavrasCampi: campi, sinonimos: fontes.sinonimos }),
-    ),
-    (banco) => Effect.sync(() => banco.close()),
-  );
+  const avulso = yield* kb.abrirAvulso(limpo);
+  const estrutura = estruturaDe(limpo, avulso);
   const pacote = (ids: readonly string[], buscasPorFicha: number) =>
-    pacoteContextoAvulso(
-      db,
+    avulso.pacote(
       ids.map((id) => jsonPorId.get(id)!),
       { cnctId: entrada.cnct, buscasPorFicha },
     );
@@ -278,34 +267,14 @@ export interface EntradaContextoFicha {
  */
 export const contextoDaFicha = Effect.fn("RevisaoIa.contextoDaFicha")(function* (entrada: EntradaContextoFicha) {
   const fontes = yield* FontesNormativas.FontesNormativas;
-  const json = (yield* fichasDoBanco()).find((f) => f.id === entrada.ficha);
+  const kb = yield* PacoteContexto.PacoteContexto;
+  const json = (yield* kb.fichas()).find((f) => f.id === entrada.ficha);
   if (!json) return null;
   const ficha = fichaIa(json as Record<string, unknown>);
   const limpo = retirarTextoParaIa(entrada.markdown, entrada.linhasTextoParaIa);
-  const campi = palavrasDeCampi(yield* nomesDeCampiDoBanco());
-  const todas = segmentarPpc(limpo, "tecnico", campi);
-  const fatos = extrairFatosPpc(
-    limpo,
-    todas.map((x) => ({ tipo: x.tipo, linha_inicio: x.linhaInicio, linha_fim: x.linhaFim })),
-  );
-  const estrutura = estruturaDoPpc(
-    limpo,
-    todas.map((x) => ({
-      titulo: x.titulo,
-      linhaInicio: x.linhaInicio,
-      linhaFim: x.linhaFim,
-      texto: x.texto,
-      tipo: x.tipo,
-    })),
-    fatos.map((f) => ({ fato: f.fato, valor: f.valor })),
-  );
-  const db = yield* Effect.acquireRelease(
-    Effect.sync(() =>
-      bancoDoPpcAvulso(limpo, { registro: fontes.registro, palavrasCampi: campi, sinonimos: fontes.sinonimos }),
-    ),
-    (banco) => Effect.sync(() => banco.close()),
-  );
-  const pacote = yield* pacoteContextoAvulso(db, [json], { cnctId: entrada.cnct, buscasPorFicha: 1 });
+  const avulso = yield* kb.abrirAvulso(limpo);
+  const estrutura = estruturaDe(limpo, avulso);
+  const pacote = yield* avulso.pacote([json], { cnctId: entrada.cnct, buscasPorFicha: 1 });
   const contexto = contextoDoPacote(pacote, fontes.dataReferencia, entrada.curso);
   const comum = comumDoBloco([ficha], estrutura);
   const r = recorteDaFicha(ficha, secoesTexto(pacote, false), comum);

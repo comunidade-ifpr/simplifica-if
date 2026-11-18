@@ -5,32 +5,41 @@
  * agrupamento estão em `db/pacote-contexto.ts`.
  *
  * PPC fora da base: `doMarkdown` recebe o texto do Markdown (quem chama o lê) e o segmenta num banco
- * em memória, pelo mesmo código da compilação; `avulso` monta o pacote sobre um banco desses já
- * aberto (a `revisar-ppc` reaproveita o mesmo banco em todos os grupos da rodada).
+ * em memória, pelo mesmo código da compilação; `abrirAvulso` abre um banco desses no escopo de quem
+ * chama e devolve o `PpcAvulso`, que monta o pacote de cada conjunto de fichas sobre ele (a
+ * `revisar-ppc` reaproveita o mesmo banco em todos os grupos da rodada, e a revisão com IA do app em
+ * todos os blocos).
  */
-import type * as NodeSqlite from "node:sqlite";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import type * as Scope from "effect/Scope";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as FontesNormativas from "./FontesNormativas.ts";
 import {
+  abrirPpcAvulso,
   type FichaPacote,
   fichasDoBanco,
   nomesDeCampiDoBanco,
+  type OpcoesAbrirAvulso,
   type OpcoesPacote,
-  type OpcoesPacoteAvulso,
-  type PacoteAvulso,
   type PacoteContexto as Pacote,
   pacoteContexto,
   type PacoteDoMarkdown,
-  pacoteContextoAvulso,
   pacoteDoMarkdown,
+  type PpcAvulso,
 } from "./db/pacote-contexto.ts";
 import type * as Sql from "./db/sql.ts";
 import { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida } from "./pacote-contexto-erros.ts";
 
 export { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida };
+export type {
+  EstruturaAvulsa,
+  OpcoesAbrirAvulso,
+  OpcoesPacoteAvulso,
+  PacoteAvulso,
+  PpcAvulso,
+} from "./db/pacote-contexto.ts";
 
 export class PacoteContexto extends Context.Service<
   PacoteContexto,
@@ -48,12 +57,14 @@ export class PacoteContexto extends Context.Service<
       markdown: string,
       opcoes?: OpcoesPacote,
     ) => Effect.Effect<PacoteDoMarkdown, Sql.FalhaNaConsulta | GrupoInexistente | TarefaNaoReconhecida>;
-    /** Pacote de um conjunto de fichas sobre o banco em memória de um PPC fora da base (`bancoDoPpcAvulso`). */
-    readonly avulso: (
-      dbPpc: NodeSqlite.DatabaseSync,
-      fichas: readonly FichaPacote[],
-      opcoes?: OpcoesPacoteAvulso,
-    ) => Effect.Effect<PacoteAvulso, Sql.FalhaNaConsulta>;
+    /**
+     * Um PPC fora da base, dado o texto do Markdown, segmentado num banco em memória que fecha com o
+     * escopo de quem chama: o pacote de cada conjunto de fichas e a estrutura do PPC saem dele.
+     */
+    readonly abrirAvulso: (
+      markdown: string,
+      opcoes?: OpcoesAbrirAvulso,
+    ) => Effect.Effect<PpcAvulso, Sql.FalhaNaConsulta, Scope.Scope>;
     /** Fichas da `revisar-ppc` gravadas no banco (todas ou as de `ids`), por ID. */
     readonly fichas: (ids?: readonly string[]) => Effect.Effect<FichaPacote[], Sql.FalhaNaConsulta>;
     /** Nomes dos campi dos PPCs da base (para a segmentação de um PPC avulso). */
@@ -64,7 +75,7 @@ export class PacoteContexto extends Context.Service<
 const make = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
   const fontes = yield* FontesNormativas.FontesNormativas;
-  const prover = <A, E>(efeito: Effect.Effect<A, E, SqlClient.SqlClient | FontesNormativas.FontesNormativas>) =>
+  const prover = <A, E, R>(efeito: Effect.Effect<A, E, R>) =>
     efeito.pipe(
       Effect.provideService(SqlClient.SqlClient, sql),
       Effect.provideService(FontesNormativas.FontesNormativas, fontes),
@@ -82,12 +93,8 @@ const make = Effect.gen(function* () {
     ) {
       return yield* pacoteDoMarkdown(tarefa, arquivo, { ...opcoes, markdown });
     }, prover),
-    avulso: Effect.fn("PacoteContexto.avulso")(function* (
-      dbPpc: NodeSqlite.DatabaseSync,
-      fichas: readonly FichaPacote[],
-      opcoes: OpcoesPacoteAvulso = {},
-    ) {
-      return yield* pacoteContextoAvulso(dbPpc, fichas, opcoes);
+    abrirAvulso: Effect.fn("PacoteContexto.abrirAvulso")(function* (markdown: string, opcoes: OpcoesAbrirAvulso = {}) {
+      return yield* abrirPpcAvulso(markdown, opcoes);
     }, prover),
     fichas: Effect.fn("PacoteContexto.fichas")(function* (ids?: readonly string[]) {
       return yield* fichasDoBanco(ids);

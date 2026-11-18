@@ -1,16 +1,16 @@
 // @effect-diagnostics globalDate:off -- o teste ponta a ponta fixa o relógio da conversão com uma data dada
 /** Pré-conferência sem IA (M1.11): ponta a ponta de um DOCX sintético. Os verificadores têm casos em `verificadores.test.ts`. */
 import { raizRepositorio } from "@simplifica-if/kb/caminhos";
-import { carregarRegistro } from "@simplifica-if/kb/normas/registro";
-import { carregarRelacoes } from "@simplifica-if/kb/normas/relacoes";
 import { describe, expect, test } from "vite-plus/test";
 import { montarDocx, par, titulo } from "@simplifica-if/docx/testes/sintetico";
 import { segmentarPpc } from "@simplifica-if/kb/ppcs/secoes";
 import { converterPpc } from "../src/conversao-docx/conversao.ts";
 import { preConferir, type CursoCnct } from "../src/pre-conferencia.ts";
-import { carregarVigencia } from "../scripts/base-tecnica.ts";
+import { verificacaoDaBase } from "../src/revisao-previa.ts";
+import { carregarBaseRevisao } from "../scripts/base-tecnica.ts";
 
 const AGORA = new Date(2026, 10, 16, 12, 0, 0);
+const comum = verificacaoDaBase(await carregarBaseRevisao(raizRepositorio()));
 
 const CNCT: CursoCnct = {
   slug: "tecnico-em-agropecuaria",
@@ -59,9 +59,7 @@ describe("ponta a ponta: DOCX → PPC.md → seções do kb → pré-conferênci
     const { triagem, fichas } = preConferir(conversao.markdown, {
       cnct: CNCT,
       forma: "subsequente",
-      registro: carregarRegistro(raizRepositorio()),
-      relacoes: carregarRelacoes(raizRepositorio()),
-      vigencia: carregarVigencia(),
+      ...comum,
     });
     expect(triagem.filter((a) => a.regra === "secoes-do-modelo")).toEqual([]);
     expect(fichas).toHaveLength(12);

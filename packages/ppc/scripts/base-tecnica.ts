@@ -1,25 +1,26 @@
-// @effect-diagnostics nodeBuiltinImport:off -- leitura síncrona da base para a medição e o teste de regressão
+// @effect-diagnostics nodeBuiltinImport:off -- leitura síncrona da amostra de PPCs para a medição e o teste de regressão
 /**
- * Os PPCs técnicos da base (cursos de nível médio com PPC convertido, em `base-conhecimento/institucional/ifpr/cursos`),
- * com o CNCT e a forma de oferta de cada um: a amostra em que a precisão dos verificadores D é medida
- * (`pre-conferencia.ts --base`, `PRECISAO.md`) e fixada (`test/precisao-base.test.ts`).
+ * A base dos scripts e dos testes deste pacote:
  *
- * Lê só arquivos versionados (não usa o `tmp/kb.sqlite`), para o teste rodar num checkout limpo.
+ * - `carregarBaseRevisao(raiz)`: a base da revisão prévia, pela montagem única (`src/base-revisao.ts`)
+ *   sobre o `tmp/kb.sqlite` do checkout em `raiz`, como o app a monta. O banco é exigido: a CLI `kb` o
+ *   recompila quando falta ou está velho (`KB_SQLITE` e `KB_RECOMPILAR` valem aqui também), e o CI
+ *   roda `pnpm kb compilar` antes dos testes. É a borda que leva o Effect aos scripts e aos testes
+ *   síncronos, carregada uma vez por processo.
+ * - `ppcsTecnicos(raiz, cncts)`: os PPCs técnicos da base (cursos de nível médio com PPC convertido,
+ *   em `base-conhecimento/institucional/ifpr/cursos`), com o CNCT (da base) e a forma de oferta de
+ *   cada um: a amostra em que a precisão dos verificadores D é medida (`pre-conferencia.ts --base`,
+ *   `PRECISAO.md`) e fixada (`test/precisao-base.test.ts`).
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { raizRepositorio } from "@simplifica-if/kb/caminhos";
-import { carregarRegistro } from "@simplifica-if/kb/normas/registro";
-import { carregarRelacoes } from "@simplifica-if/kb/normas/relacoes";
-import {
-  carregarDatas,
-  carregarFonteVigencia,
-  carregarTransicoes,
-  dataReferencia,
-} from "@simplifica-if/kb/normas/vigencia";
+import * as NodeServices from "@effect/platform-node/NodeServices";
+import * as Effect from "effect/Effect";
+import * as Layer from "effect/Layer";
+import * as Layers from "@simplifica-if/kb/layers";
+import { montarBaseRevisao } from "../src/base-revisao.ts";
 import type { BaseRevisaoPrevia } from "../src/revisao-previa.ts";
-import type { BaseVerificacao, CursoCnct } from "../src/verificadores/comum.ts";
-import { type ConsultaVigencia, consultarVigencia } from "../src/verificadores/vigencia.ts";
+import type { CursoCnct } from "../src/verificadores/comum.ts";
 
 export type PpcDaBase = {
   id: string;
@@ -32,12 +33,18 @@ export type PpcDaBase = {
 
 const lerJson = (arquivo: string): unknown => JSON.parse(NodeFS.readFileSync(arquivo, "utf8"));
 
-export function ppcsTecnicos(raiz: string = raizRepositorio()): PpcDaBase[] {
+/** A base da revisão prévia do `kb.sqlite` do checkout em `raiz` (a mesma montagem do app). */
+export function carregarBaseRevisao(raiz: string): Promise<BaseRevisaoPrevia> {
+  return Effect.runPromise(
+    montarBaseRevisao.pipe(
+      Effect.provide(Layers.layerBancoDoCheckout({ raiz }).pipe(Layer.provide(NodeServices.layer))),
+    ),
+  );
+}
+
+export function ppcsTecnicos(raiz: string, cncts: readonly CursoCnct[]): PpcDaBase[] {
   const dirCursos = NodePath.join(raiz, "base-conhecimento/institucional/ifpr/cursos");
-  const cnct = (slug: string) => {
-    const arquivo = NodePath.join(raiz, "base-conhecimento/catalogos/cnct/cursos", `${slug}.json`);
-    return NodeFS.existsSync(arquivo) ? ({ ...(lerJson(arquivo) as object), slug } as CursoCnct) : null;
-  };
+  const porSlug = new Map(cncts.map((c) => [c.slug, c]));
   const saida: PpcDaBase[] = [];
   // O index.json da coleção fica ao lado das pastas de campus.
   const campi = NodeFS.readdirSync(dirCursos).filter((nome) =>
@@ -60,7 +67,7 @@ export function ppcsTecnicos(raiz: string = raizRepositorio()): PpcDaBase[] {
         id: markdown.replace(/^institucional\/ifpr\/ppcs\//, "").replace(/\.md$/, ""),
         caminho,
         forma: curso.forma_oferta ?? "",
-        cnct: curso.cnct_id ? cnct(curso.cnct_id.replace(/^cnct:/, "")) : null,
+        cnct: curso.cnct_id ? (porSlug.get(curso.cnct_id.replace(/^cnct:/, "")) ?? null) : null,
         ano: curso.ppc?.ano_documento ?? null,
       });
     }
@@ -68,60 +75,4 @@ export function ppcsTecnicos(raiz: string = raizRepositorio()): PpcDaBase[] {
   return [...new Map(saida.map((p) => [p.id, p])).values()].sort((a, b) => a.id.localeCompare(b.id));
 }
 
-/**
- * A vigência lida dos arquivos do checkout, memorizada, na data (padrão: a `data_referencia` de
- * `config/vigencia.yaml`). O app não tem o checkout: monta a vigência do `kb.sqlite` (`vigenciaDeDados`).
- */
-export function carregarVigencia(
-  raiz: string = raizRepositorio(),
-  data: string = dataReferencia(raiz),
-): ConsultaVigencia {
-  return consultarVigencia(carregarFonteVigencia(raiz), data);
-}
-
-/** A parte da base que não depende do PPC (registro, relações e vigência), carregada uma vez. */
-export function baseComum(raiz: string = raizRepositorio()): Omit<BaseVerificacao, "cnct" | "forma"> {
-  return { registro: carregarRegistro(raiz), relacoes: carregarRelacoes(raiz), vigencia: carregarVigencia(raiz) };
-}
-
 export const lerPpc = (ppc: PpcDaBase) => NodeFS.readFileSync(ppc.caminho, "utf8");
-
-/**
- * A base da revisão prévia lida dos arquivos do checkout (testes e amostras). No app, o servidor a
- * monta do `kb.sqlite` (`montarBase`, em `apps/server/src/revisao-ppc/RevisorPpc.ts`).
- */
-export function baseRevisaoDeArquivos(raiz: string = raizRepositorio()): BaseRevisaoPrevia {
-  const { registro, relacoes } = baseComum(raiz);
-  const dirCnct = NodePath.join(raiz, "base-conhecimento/catalogos/cnct/cursos");
-  const cncts = NodeFS.readdirSync(dirCnct)
-    .filter((nome) => nome.endsWith(".json"))
-    .map((nome) => ({ ...(lerJson(NodePath.join(dirCnct, nome)) as object), slug: nome.slice(0, -5) }) as CursoCnct);
-  const dirFichas = NodePath.join(raiz, ".agents/skills/revisar-ppc/base-analise/fichas");
-  const fichas: Record<string, string> = {};
-  for (const nome of NodeFS.readdirSync(dirFichas).filter((n) => n.endsWith(".json"))) {
-    const ficha = lerJson(NodePath.join(dirFichas, nome)) as { id: string; titulo: string };
-    fichas[ficha.id] = ficha.titulo;
-  }
-  const topicos = (
-    lerJson(NodePath.join(raiz, ".agents/skills/revisar-ppc/base-analise/topicos-fichas.json")) as {
-      topicos: { id: string; fichas?: string[] }[];
-    }
-  ).topicos.map((t) => ({ id: t.id, fichas: t.fichas ?? [] }));
-  const urls: Record<string, string> = {};
-  for (const entrada of lerJson(NodePath.join(raiz, "base-conhecimento/manifest.json")) as {
-    id: string;
-    fonte?: string;
-  }[])
-    if (entrada.fonte?.startsWith("http")) urls[entrada.id] = entrada.fonte;
-  return {
-    normas: registro.entradas,
-    relacoes,
-    datas: carregarDatas(raiz, registro),
-    transicoes: carregarTransicoes(raiz),
-    cncts,
-    urls,
-    fichas,
-    topicos,
-    dataBase: dataReferencia(raiz),
-  };
-}
