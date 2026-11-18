@@ -21,7 +21,7 @@ ferramentas/oxlint-plugin/rules/require-suppression-reason.test.ts	13	0
 packages/kb/src/avaliacao/resolvedor.test.ts	3	0
 packages/kb/src/busca/stemmer.test.ts	52	0
 packages/kb/src/busca/tokens.test.ts	19	0
-packages/kb/src/db/base.test.ts	33	0
+packages/kb/src/db/base.test.ts	34	0
 packages/kb/src/db/fontes.test.ts	8	0
 packages/kb/src/db/grupos-topico.test.ts	4	0
 packages/kb/src/db/unidades.test.ts	4	0
@@ -40,6 +40,7 @@ packages/kb/src/ppcs/secoes-base.test.ts	2	0
 packages/kb/src/ppcs/secoes.test.ts	11	0
 packages/kb/src/primitivas/formatacao.test.ts	8	0
 packages/kb/src/primitivas/primitivas.test.ts	14	0
+packages/kb/src/principal.test.ts	5	0
 packages/kb/src/texto.test.ts	12	0
 packages/mcp/test/abertura.test.ts	8	0
 packages/mcp/test/atualizacao.test.ts	1	0
@@ -114,4 +115,4 @@ scripts/suap/consultas.test.ts	20	0
 scripts/suap/matrizes.test.ts	21	0
 scripts/suap/tutoriais.test.ts	24	0
 scripts/upstream_t3.test.ts	3	0
-TOTAL	1565	35
+TOTAL	1571	35
