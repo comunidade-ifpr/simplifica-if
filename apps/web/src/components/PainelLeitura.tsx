@@ -79,7 +79,8 @@ export function PainelLeitura({
         </Button>
       </header>
       <ContextoMemoria value={memoria}>
-        <div key={documento} className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
+        {/* `relative`: o `sr-only` do trecho citado (posição absoluta) fica dentro da rolagem do painel. */}
+        <div key={documento} className="relative min-h-0 flex-1 overflow-y-auto px-4 py-3">
           <ConteudoLink link={link} aoAbrirLink={aoAbrirLink} />
         </div>
       </ContextoMemoria>

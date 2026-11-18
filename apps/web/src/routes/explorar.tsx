@@ -55,7 +55,8 @@ function Explorar() {
           </nav>
         </div>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto" data-rolagem-explorar>
+      {/* `relative`: o que tem posição absoluta (o `sr-only` do trecho citado) rola com a página. */}
+      <div className="relative min-h-0 flex-1 overflow-y-auto" data-rolagem-explorar>
         <div className="mx-auto max-w-5xl px-6 py-5">
           <Outlet />
         </div>
