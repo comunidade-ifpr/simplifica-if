@@ -269,7 +269,14 @@ export const make = Effect.gen(function* () {
     const absoluto = path.resolve(caminho);
     let existente = absoluto;
     const resto: string[] = [];
-    while (!(yield* existe(existente))) {
+    // Como o `existsSync` de antes: qualquer falha do `stat` (inclusive uma pasta sem permissão no
+    // caminho) conta como ausente, e a resolução sobe até a parte que se consegue ler.
+    while (
+      !(yield* fs.stat(existente).pipe(
+        Effect.as(true),
+        Effect.orElseSucceed(() => false),
+      ))
+    ) {
       const pai = path.dirname(existente);
       if (pai === existente) return absoluto;
       resto.unshift(path.basename(existente));

@@ -1,5 +1,10 @@
 // @effect-diagnostics nodeBuiltinImport:off globalDate:off -- leitura e escrita síncronas dos arquivos da base de análise; o relógio padrão só entra quando quem chama não passa a data
-/** Leitura e escrita dos arquivos da base de análise. */
+/**
+ * Leitura e escrita síncronas dos arquivos da base de análise. Servem só à validação e à geração
+ * síncronas da base (`validacao-base.ts`, `indice-base.ts`, `mapa-fichas.ts` e `esquemas.ts`), que o
+ * `scripts/validar_base.ts` chama fora de Effect. A rodada (preparação, grupos, prompts, resultados
+ * e relatório) lê e grava pelo serviço `Rodada` (`rodada.ts`); não use estas funções lá.
+ */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { lerTexto, ordenarTextos } from "@simplifica-if/kb/texto";

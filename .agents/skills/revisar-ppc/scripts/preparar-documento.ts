@@ -9,7 +9,7 @@
 import * as Effect from "effect/Effect";
 import * as Path from "effect/Path";
 import * as Schema from "effect/Schema";
-import { ErroDocx } from "@simplifica-if/docx/erro";
+import { ErroDocx, mensagemErroDocx, MotivoErroDocx } from "@simplifica-if/docx/erro";
 import { corpoPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import { type Dicionario, verdadeiro } from "@simplifica-if/kb/primitivas/valores";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
@@ -45,18 +45,22 @@ export class EntradaDaRodadaInvalida extends Schema.TaggedError<EntradaDaRodadaI
 }
 
 /**
- * O `.docx` não pôde ser convertido: não é DOCX, está protegido, corrompido ou passa dos limites. A
- * mensagem é a do `ErroDocx` da conversão, escrita em português para quem enviou o arquivo, sem
- * texto do documento; enquanto o `ErroDocx` não tem um motivo estruturado (unidade D7 da revisão de
- * arquitetura), ela vem dele em `motivo`.
+ * O `.docx` não pôde ser convertido: não é DOCX, está protegido, corrompido ou passa dos limites. O
+ * `motivo` e os `dados` são os do `ErroDocx` da leitura; a frase para quem enviou o arquivo é a de
+ * `mensagemErroDocx`, sem texto do documento.
  */
 export class DocxInvalido extends Schema.TaggedError<DocxInvalido>()("DocxInvalido", {
   arquivo: Schema.String,
-  motivo: Schema.String,
+  motivo: MotivoErroDocx,
+  parte: Schema.optionalKey(Schema.String),
+  limite: Schema.optionalKey(Schema.Number),
+  limiteTotal: Schema.optionalKey(Schema.Number),
+  tamanho: Schema.optionalKey(Schema.Number),
+  bloco: Schema.optionalKey(Schema.String),
   cause: Schema.Defect(),
 }) {
   override get message(): string {
-    return this.motivo;
+    return mensagemErroDocx(this);
   }
 }
 
@@ -150,7 +154,7 @@ const passoDocx = <A>(arquivo: string, passo: () => A): Effect.Effect<A, DocxInv
     try {
       return Effect.succeed(passo());
     } catch (cause) {
-      if (cause instanceof ErroDocx) return Effect.fail(new DocxInvalido({ arquivo, motivo: cause.message, cause }));
+      if (cause instanceof ErroDocx) return Effect.fail(new DocxInvalido({ arquivo, ...cause.dados, cause }));
       throw cause;
     }
   });

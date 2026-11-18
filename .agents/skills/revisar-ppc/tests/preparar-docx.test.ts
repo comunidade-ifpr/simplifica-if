@@ -72,22 +72,23 @@ layer(CAMADA_RODADA)("preparar-documento com .docx", (it) => {
     Effect.gen(function* () {
       const dir = diretorioTemporario();
       const rodadas = NodePath.join(dir, "rodadas");
-      const casos: Array<[string, Uint8Array, RegExp]> = [
-        ["texto.docx", new TextEncoder().encode("isto não é um DOCX"), /não é um DOCX/],
+      const casos: Array<[string, Uint8Array, RegExp, string]> = [
+        ["texto.docx", new TextEncoder().encode("isto não é um DOCX"), /não é um DOCX/, "nao-e-zip"],
         [
           "antigo.docx",
           Uint8Array.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1, 0, 0, 0, 0]),
           /Word 97-2003 \(\.doc\) ou um DOCX protegido por senha/,
+          "doc-ou-protegido",
         ],
-        ["truncado.docx", docxDaFixture("ppc-minimo").slice(0, 300), /corrompido ou incompleto/],
+        ["truncado.docx", docxDaFixture("ppc-minimo").slice(0, 300), /corrompido ou incompleto/, "zip-corrompido"],
       ];
-      for (const [nome, bytes, mensagem] of casos) {
+      for (const [nome, bytes, mensagem, motivo] of casos) {
         const arquivo = NodePath.join(dir, nome);
         NodeFS.writeFileSync(arquivo, bytes);
         const erro = yield* Effect.flip(
           prepararDocumento(arquivo, { referencias: REFERENCIAS, saidaBase: rodadas, relogio: RELOGIO }),
         );
-        expect(erro._tag).toBe("DocxInvalido");
+        expect(erro).toMatchObject({ _tag: "DocxInvalido", motivo });
         expect(erro.message).toMatch(mensagem);
       }
       expect(NodeFS.existsSync(rodadas)).toBe(false);
@@ -108,6 +109,7 @@ layer(CAMADA_RODADA)("preparar-documento com .docx", (it) => {
           relogio: RELOGIO,
         }),
       );
+      expect(erro).toMatchObject({ _tag: "DocxInvalido", motivo: "arquivo-grande-demais", tamanho: 21 * 1024 * 1024 });
       expect(erro.message).toMatch(
         /tem 21 MB, e o limite é de 20 MB\. Um PPC raramente passa disso.*Arquivo › Compactar imagens/,
       );

@@ -6,6 +6,8 @@
  * `Effect.try`. O `motivo` é o que se decide e se transporta (o Worker da revisão manda os `dados`,
  * não a frase); a mensagem para a pessoa é montada do motivo e dos atributos, em `mensagemErroDocx`.
  */
+import * as Schema from "effect/Schema";
+
 const MOTIVOS = [
   // pacote (ZIP)
   "arquivo-grande-demais",
@@ -42,6 +44,9 @@ const MOTIVOS = [
   "mescladas-demais",
   "celulas-demais",
 ] as const;
+
+/** Os motivos como esquema, para quem guarda o motivo num erro tipado (`Schema.TaggedError`). */
+export const MotivoErroDocx = Schema.Literals(MOTIVOS);
 export type MotivoErroDocx = (typeof MOTIVOS)[number];
 
 /** Os dados do erro, sem a classe: o que atravessa o Worker. */

@@ -1159,6 +1159,29 @@ layer(CAMADA_RODADA)("validar-resultados", (it) => {
     }),
   );
 
+  // O root lê a pasta mesmo sem permissão: o caso só existe para outro usuário.
+  it.effect.skipIf(process.getuid?.() === 0)(
+    "rodada numa pasta sem permissão: a mensagem do JSON ilegível, não a falha da plataforma",
+    () =>
+      Effect.gen(function* () {
+        const rodada = yield* criarRodada();
+        escreverJson(caminhosRodada(rodada).resultadosSubagents, yield* payloadResultadosCompletos());
+        const pasta = NodePath.dirname(rodada);
+        NodeFS.chmodSync(pasta, 0o000);
+        const erro = yield* Effect.flip(validarResultadosRodada(rodada, "resultados-subagents.json")).pipe(
+          Effect.ensuring(Effect.sync(() => NodeFS.chmodSync(pasta, 0o755))),
+        );
+        expect(erro).toBeInstanceOf(ErroResultadosSubagents);
+        expect(erro).toMatchObject({
+          categoria: "arquivo-ilegivel",
+          arquivo: caminhosRodada(rodada).resultadosSubagents,
+        });
+        expect(erro.message).toBe(
+          `O JSON de resultados não pôde ser lido: ${caminhosRodada(rodada).resultadosSubagents}.`,
+        );
+      }),
+  );
+
   it.effect("a CLI recusa JSON inválido com a mensagem do erro, não com defeito", () =>
     Effect.gen(function* () {
       const rodada = yield* criarRodada();
