@@ -394,6 +394,35 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           expect(completo.normas).toEqual(base.normas);
         }),
     );
+
+    it.effect("a estrutura segmenta o texto que o banco recebeu: com `titulosNivel1` e CRLF, as seções do pacote", () =>
+      Effect.gen(function* () {
+        const { pacote: servico } = yield* servicos;
+        const original = yield* lerTexto("base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md");
+        // o primeiro nível em `#`, como o normalizador da revisar-ppc o põe, e as quebras de linha do Word
+        const md = original.replace(/^## /gm, "# ").replace(/\n/g, "\r\n");
+        const base = yield* servico.montar("estagio", PPC);
+        const fichas = yield* servico.fichas(base.fichas_ids);
+        const avulso = yield* servico.abrirAvulso(md, { titulosNivel1: true, todasAsSecoes: true });
+        const pacote = yield* avulso.pacote(fichas);
+        const { secoes } = avulso.estrutura();
+        const chave = (s: { tipo: string; titulo: string; inicio: number; fim: number }) =>
+          `${s.tipo}|${s.titulo}|${s.inicio}|${s.fim}`;
+        const daEstrutura = new Set(
+          secoes.map((s) => chave({ tipo: s.tipo, titulo: s.titulo, inicio: s.linhaInicio, fim: s.linhaFim })),
+        );
+        expect(pacote.secoes.length).toBeGreaterThan(0);
+        for (const s of pacote.secoes)
+          expect(daEstrutura, s.id).toContain(
+            chave({ tipo: s.tipo, titulo: s.titulo, inicio: s.linha_inicio, fim: s.linha_fim }),
+          );
+        // e são as seções do Markdown como na base, com `##`
+        const comoNaBase = yield* servico.abrirAvulso(original);
+        expect(secoes.map((s) => [s.tipo, s.linhaInicio, s.linhaFim])).toEqual(
+          comoNaBase.estrutura().secoes.map((s) => [s.tipo, s.linhaInicio, s.linhaFim]),
+        );
+      }),
+    );
   });
 
   describe("fase 5: o banco dá o mesmo resultado que a API de arquivos", () => {

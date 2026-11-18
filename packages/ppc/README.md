@@ -18,7 +18,7 @@ A leitura do DOCX é do pacote [`@simplifica-if/docx`](../docx/README.md). A arq
 pnpm --filter @simplifica-if/ppc test
 ```
 
-Os testes da pré-conferência e da revisão prévia leem a base do `tmp/kb.sqlite` do checkout, como o app lê a dele: o banco é recompilado quando falta ou está velho (`KB_RECOMPILAR=nunca|sempre` muda isso, como na CLI `kb`), e o CI roda `pnpm kb compilar` antes dos testes.
+Os testes da pré-conferência e da revisão prévia leem a base do `tmp/kb.sqlite` do checkout, como o app lê a dele: o banco é recompilado quando falta ou está velho (`KB_RECOMPILAR=nunca|sempre` muda isso, como na CLI `kb`), uma vez só, no `globalSetup` do `vite.config.ts` do pacote (`test/banco-fresco.ts`), antes dos arquivos de teste, que rodam em paralelo; o CI roda `pnpm kb compilar` antes dos testes.
 
 ## Pré-conferência sem IA (fichas D)
 

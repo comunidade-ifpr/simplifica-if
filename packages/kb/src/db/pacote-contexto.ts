@@ -754,7 +754,8 @@ export interface PpcAvulso {
     opcoes?: OpcoesPacoteAvulso,
   ) => Effect.Effect<PacoteAvulso, Sql.FalhaNaConsulta>;
   /**
-   * As seções do Markdown como veio, sem o recorte do índice, na taxonomia do banco e com os
+   * As seções do Markdown sem o recorte do índice (todas, como com `todasAsSecoes`), segmentado
+   * como o banco o segmentou (quebras de linha, `titulosNivel1`), na taxonomia do banco e com os
    * cabeçalhos de página dos campi, e os fatos do PPC (carga horária, estágio) sobre elas.
    */
   readonly estrutura: () => EstruturaAvulsa;
@@ -785,9 +786,11 @@ export const abrirPpcAvulso = Effect.fn("pacoteContexto.abrirPpcAvulso")(functio
     pacote: (fichas, opcoesPacote = {}) =>
       pacoteContextoAvulso(doPpc, ppcId, fichas, opcoesPacote).pipe(Effect.provide(ambiente)),
     estrutura: () => {
-      const secoes = segmentarPpc(markdown, taxonomia, palavrasCampi);
+      // o texto que o banco recebeu (quebras de linha, `titulosNivel1`); todas as seções, com ou sem `todasAsSecoes`
+      const texto = PpcAvulsoDb.textoDoPpcAvulso(markdown, doBanco);
+      const secoes = segmentarPpc(texto.paraSegmentar, taxonomia, palavrasCampi);
       const fatos = extrairFatosPpc(
-        markdown,
+        texto.markdown,
         secoes.map((x) => ({ tipo: x.tipo, linha_inicio: x.linhaInicio, linha_fim: x.linhaFim })),
       );
       return { secoes, fatos };

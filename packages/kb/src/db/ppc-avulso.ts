@@ -6,7 +6,7 @@
  * gravadas por `gravarSecoesECitacoes`. As consultas de seções (`secoesDoPpc`, `buscarSecoes`) e de
  * citações rodam nele sem mudança, trocando só o `SqlClient` do ambiente.
  *
- * Só `abrirPpcAvulso` sai daqui: o banco se abre e se fecha com o escopo de quem pede, e quem pede
+ * Só `abrirPpcAvulso` e a preparação do texto (`textoDoPpcAvulso`) saem daqui: o banco se abre e se fecha com o escopo de quem pede, e quem pede
  * recebe o `SqlClient`, não o `DatabaseSync`. Quem monta o pacote é o `PacoteContexto`.
  */
 import * as NodeSqlite from "node:sqlite";
@@ -50,9 +50,22 @@ export interface OpcoesPpcAvulso {
   titulosNivel1?: boolean;
 }
 
-function bancoDoPpcAvulso(markdownOriginal: string, opcoes: OpcoesPpcAvulso): NodeSqlite.DatabaseSync {
+/**
+ * O texto de um PPC fora da base como o banco o recebe: `markdown`, com as quebras de linha em `\n`
+ * (o que se grava e onde se acham as citações), e `paraSegmentar`, o mesmo com `# Título` como
+ * `## Título` quando `titulosNivel1` (o que se segmenta). As linhas são as mesmas nos dois. A
+ * `estrutura()` do `PpcAvulso` segmenta o mesmo texto, para dar as linhas do banco.
+ */
+export function textoDoPpcAvulso(
+  markdownOriginal: string,
+  opcoes: Pick<OpcoesPpcAvulso, "titulosNivel1">,
+): { readonly markdown: string; readonly paraSegmentar: string } {
   const markdown = markdownOriginal.replace(/\r\n?/g, "\n");
-  const paraSegmentar = opcoes.titulosNivel1 ? markdown.replace(/^#(?=[ \t])/gm, "##") : markdown;
+  return { markdown, paraSegmentar: opcoes.titulosNivel1 ? markdown.replace(/^#(?=[ \t])/gm, "##") : markdown };
+}
+
+function bancoDoPpcAvulso(markdownOriginal: string, opcoes: OpcoesPpcAvulso): NodeSqlite.DatabaseSync {
+  const { markdown, paraSegmentar } = textoDoPpcAvulso(markdownOriginal, opcoes);
   const ppcId = opcoes.ppcId ?? "ppc:avulso";
   const caminhoMd = opcoes.path ?? "PPC.md";
   const taxonomia = opcoes.taxonomia ?? "tecnico";
