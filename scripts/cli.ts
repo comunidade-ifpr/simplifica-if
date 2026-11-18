@@ -8,7 +8,7 @@ export interface Saida {
   escreverErro(texto: string): void;
 }
 
-export const SAIDA_PADRAO: Saida = {
+const SAIDA_PADRAO: Saida = {
   escrever: (texto) => console.log(texto),
   escreverErro: (texto) => console.error(texto),
 };
@@ -20,7 +20,7 @@ type Opcoes = NonNullable<NodeUtil.ParseArgsConfig["options"]>;
 const AJUDA = { help: { type: "boolean", short: "h" } } as const;
 
 /** `parseArgs` estrito com `--help/-h`; erros de sintaxe (opção desconhecida, valor ausente) viram `ErroUso`. */
-export function lerLinhaComando<O extends Opcoes>(argv: string[], opcoes: O, { posicionais = false } = {}) {
+function lerLinhaComando<O extends Opcoes>(argv: string[], opcoes: O, { posicionais = false } = {}) {
   try {
     return NodeUtil.parseArgs({
       args: argv,
