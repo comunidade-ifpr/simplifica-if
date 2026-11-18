@@ -78,10 +78,12 @@ export interface TopicoTaxonomia {
 
 /**
  * O que o impacto da norma em análise lê, já carregado: a vigência, as relações e a correspondência
- * (as da base inteira) e, só daquela norma, os dispositivos, os segmentos de outras normas que a
- * citam e os PPCs que a citam.
+ * (as da base inteira) e, só da norma `id`, os dispositivos, os segmentos de outras normas que a
+ * citam e os PPCs que a citam. O `id` vai junto porque esses recortes só valem para ele.
  */
 export interface FonteImpacto {
+  /** A norma (ato, ou ato e dispositivo) para a qual a fonte foi carregada. */
+  readonly id: string;
   /** Registro, datas, relações e transições (`statusEm`, `transicoesAplicaveis`). */
   readonly vigencia: FonteVigencia;
   readonly dataReferencia: string;
@@ -162,12 +164,12 @@ function categoria(arquivo: string): ArquivoAfetado["categoria"] {
   return "conteudo-skill";
 }
 
-/** Impacto da mudança na norma `id` (ato; o dispositivo, se houver, restringe as citações). */
+/** Impacto da mudança na norma `fonte.id` (ato; o dispositivo, se houver, restringe as citações). */
 export function impactoEm(
-  id: string,
   fonte: FonteImpacto,
   opcoes: { data?: string; incluirPpcs?: boolean } = {},
 ): ResultadoImpacto {
+  const id = fonte.id;
   const registro = fonte.vigencia.registro;
   const [norma, sufixo] = id.split("#") as [string, string | undefined];
   const ato = idDoAto(norma);

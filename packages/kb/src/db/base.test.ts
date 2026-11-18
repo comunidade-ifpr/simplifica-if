@@ -435,6 +435,36 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         const [herdado] = yield* normas.correspondencia(`${dcn2021}#art5-par1`);
         expect(herdado!.herdado_de).toBe("#art5");
         const tabelas = carregarCorrespondencias(raiz);
+        // herança: todo dispositivo sem item próprio, com um ancestral na tabela, herda o item do ancestral
+        // mais próximo
+        const origens = new Set(
+          tabelas.filter((t) => t.origem === dcn2021).flatMap((t) => t.itens.map((i) => i.origem)),
+        );
+        const indice = indiceDispositivos(raiz);
+        let herdados = 0;
+        for (const [id, disp] of indice) {
+          if (!id.startsWith(`${dcn2021}#`)) continue;
+          const sufixo = id.slice(dcn2021.length);
+          if (origens.has(sufixo)) continue;
+          let ancestral: string | null = null;
+          for (
+            let pai = disp.pai;
+            pai !== null;
+            pai = indice.get(`${dcn2021}${pai.slice(pai.indexOf("#"))}`)?.pai ?? null
+          ) {
+            const sufixoPai = pai.slice(pai.indexOf("#"));
+            if (origens.has(sufixoPai)) {
+              ancestral = sufixoPai;
+              break;
+            }
+          }
+          if (ancestral === null) continue;
+          const resultado = yield* normas.correspondencia(id);
+          expect(resultado.length, id).toBeGreaterThan(0);
+          for (const r of resultado) expect([r.herdado_de, r.item.origem], id).toEqual([ancestral, ancestral]);
+          herdados++;
+        }
+        expect(herdados).toBeGreaterThan(50);
         expect(yield* tabelasCorrespondencia()).toEqual(tabelas);
         for (const origem of new Set(tabelas.map((t) => t.origem))) {
           expect(yield* normas.tabelasDeCorrespondencia(origem)).toEqual(tabelas.filter((t) => t.origem === origem));
@@ -718,7 +748,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       }),
     );
 
-    it.effect("adequacao-art71: todo curso alcançado tem um indicador", () =>
+    it.effect("adequacao-art71: todo curso alcançado tem um indicador, e as citações chegam aos PPCs", () =>
       Effect.gen(function* () {
         for (const incluirTecnologia of [undefined, true]) {
           const opcoes = incluirTecnologia === undefined ? {} : { incluirTecnologia };
@@ -726,6 +756,14 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           const soma = INDICADORES.reduce((total, indicador) => total + relatorio.totais[indicador], 0);
           expect(soma).toBe(relatorio.total);
           expect(relatorio.cursos.every((c) => c.situacao === "ativo" || c.situacao === "em_oferta")).toBe(true);
+          // se as citações não casassem com o `markdown_path` dos cursos, todo curso ficaria sem PPC
+          expect(relatorio.totais["sem-ppc-convertido"]).toBeLessThan(relatorio.total);
+          const enfermagem = relatorio.cursos.find((c) => c.curso === "curso:curitiba/tecnico-em-enfermagem");
+          expect(enfermagem).toMatchObject({
+            ppc: "institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md",
+            indicador: "cita-cne-cp-1-2021",
+          });
+          expect(enfermagem!.dcn_citadas.map((d) => d.id)).toContain("br/cne-cp/res/2021/1");
         }
       }),
     );

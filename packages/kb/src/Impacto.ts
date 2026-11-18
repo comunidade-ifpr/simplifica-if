@@ -81,6 +81,7 @@ const make = Effect.gen(function* () {
       );
 
       const fonte: FonteImpacto = {
+        id,
         vigencia: fontes,
         dataReferencia: fontes.dataReferencia,
         correspondencia: fonteCorrespondencia,
@@ -91,7 +92,7 @@ const make = Effect.gen(function* () {
         segmentosCitantes: segmentos,
         ppcsQueCitam: ppcs,
       };
-      return impactoEm(id, fonte, {
+      return impactoEm(fonte, {
         ...(opcoes.data !== undefined ? { data: opcoes.data } : {}),
         ...(opcoes.incluirPpcs !== undefined ? { incluirPpcs: opcoes.incluirPpcs } : {}),
       });
