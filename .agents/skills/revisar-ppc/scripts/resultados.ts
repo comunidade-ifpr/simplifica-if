@@ -12,10 +12,11 @@
  */
 import * as NodePath from "node:path";
 import * as Effect from "effect/Effect";
+import * as Predicate from "effect/Predicate";
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
 import { problemas } from "@simplifica-if/kb/esquema/mensagens";
-import { serializarJsonTipado } from "@simplifica-if/kb/primitivas/json-tipado";
+import { ErroJsonTipado, serializarJsonTipado } from "@simplifica-if/kb/primitivas/json-tipado";
 import type { Dicionario } from "@simplifica-if/kb/primitivas/valores";
 import { aparar, compararTexto } from "@simplifica-if/kb/texto";
 import { listarArquivos } from "./arquivos.ts";
@@ -36,6 +37,9 @@ import { carregarFichasOrdenadas } from "./subagents.ts";
 // ---------------------------------------------------------------- erro
 
 const CATEGORIAS = [
+  "arquivo-ausente",
+  "arquivo-ilegivel",
+  "json-invalido",
   "fora-do-contrato",
   "sem-resultados",
   "fichas-duplicadas",
@@ -64,6 +68,8 @@ export class ErroResultadosSubagents extends Schema.TaggedError<ErroResultadosSu
   categoria: Schema.Literals(CATEGORIAS),
   /** Qual JSON, como sujeito da frase ("O resultado avulso"). */
   origem: Schema.String,
+  /** Arquivo lido, nas falhas de leitura. */
+  arquivo: Schema.optional(Schema.String),
   ficha: Schema.optional(Schema.String),
   alerta: Schema.optional(Schema.String),
   validacao: Schema.optional(Schema.String),
@@ -74,10 +80,23 @@ export class ErroResultadosSubagents extends Schema.TaggedError<ErroResultadosSu
   encontradas: Schema.optional(Schema.Number),
   minimo: Schema.optional(Schema.Number),
   problemas: Schema.optional(Schema.Array(Schema.String)),
+  cause: Schema.optional(Schema.Defect()),
 }) {
   override get message(): string {
     const ids = (this.ids ?? []).join(", ");
     switch (this.categoria) {
+      case "arquivo-ausente":
+        return (
+          `${this.origem} não foi encontrado: ${this.arquivo}. ` +
+          "Confira o caminho ou peça ao sub-agente que grave o JSON nesse arquivo."
+        );
+      case "arquivo-ilegivel":
+        return `${this.origem} não pôde ser lido: ${this.arquivo}.`;
+      case "json-invalido":
+        return (
+          `${this.origem} não é um JSON válido: ${this.arquivo}. ` +
+          "Peça ao sub-agente que devolva só o JSON, sem texto antes ou depois nem bloco de código."
+        );
       case "fora-do-contrato":
         return `${this.origem} está fora do contrato:\n${(this.problemas ?? []).join("\n")}`;
       case "sem-resultados":
@@ -134,6 +153,28 @@ const ORIGEM = {
   base: "O JSON base",
   avulso: "O resultado avulso",
 } as const;
+
+/**
+ * Lê um JSON de resultados. Arquivo ausente ou JSON inválido (o sub-agente que escreve texto em
+ * volta do JSON) é `ErroResultadosSubagents`, não defeito.
+ */
+function lerJsonDeResultados(arquivo: string, origem: string) {
+  return Effect.try({
+    try: () => lerJsonDaRodada(arquivo),
+    catch: (cause) =>
+      new ErroResultadosSubagents({
+        categoria:
+          cause instanceof ErroJsonTipado
+            ? "json-invalido"
+            : Predicate.hasProperty(cause, "code") && cause.code === "ENOENT"
+              ? "arquivo-ausente"
+              : "arquivo-ilegivel",
+        origem,
+        arquivo,
+        cause,
+      }),
+  });
+}
 
 // ---------------------------------------------------------------- contrato
 
@@ -579,7 +620,9 @@ export const lerResultadosDaRodada = Effect.fn("resultados.lerResultadosDaRodada
   caminhos: CaminhosAnalise = caminhosPadrao(),
 ) {
   const caminho = resolverResultadosPath(caminhosRodada(rodada).rodadaDir, resultados);
-  const payload = yield* Effect.fromResult(decodificarResultados(lerJsonDaRodada(caminho), ORIGEM.rodada));
+  const payload = yield* Effect.fromResult(
+    decodificarResultados(yield* lerJsonDeResultados(caminho, ORIGEM.rodada), ORIGEM.rodada),
+  );
   const fichasPorId = catalogoFichas(caminhos.fichasDir);
   const validacoesPorId = catalogoValidacoes(caminhos.validacoesCruzadasDir);
   const blocos = yield* Effect.fromResult(blocosResultados(payload, ORIGEM.rodada));
@@ -649,8 +692,14 @@ export const mesclarResultadosAvulsos = Effect.fn("resultados.mesclarResultadosA
 ) {
   const caminhos = caminhosRodada(rodada);
   const saidaResolvida = noSuporte(saida || resultadosBase, caminhos.suporteDir);
-  const baseBruta = lerJsonDaRodada(noSuporte(resultadosBase, caminhos.suporteDir)) as Dicionario;
-  const avulsoBruto = lerJsonDaRodada(noSuporte(resultadosAvulsos, caminhos.suporteDir)) as Dicionario;
+  const baseBruta = (yield* lerJsonDeResultados(
+    noSuporte(resultadosBase, caminhos.suporteDir),
+    ORIGEM.base,
+  )) as Dicionario;
+  const avulsoBruto = (yield* lerJsonDeResultados(
+    noSuporte(resultadosAvulsos, caminhos.suporteDir),
+    ORIGEM.avulso,
+  )) as Dicionario;
   const base = yield* Effect.fromResult(decodificarResultados(baseBruta, ORIGEM.base));
   const avulso = yield* Effect.fromResult(decodificarResultados(avulsoBruto, ORIGEM.avulso));
   yield* Effect.fromResult(blocosResultados(base, ORIGEM.base));

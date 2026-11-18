@@ -967,6 +967,32 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupo avulso e mescla", (it) => {
     }),
   );
 
+  it.effect("avulso com texto em volta do JSON ou ausente é erro tipado, sem tocar a base", () =>
+    Effect.gen(function* () {
+      const rodada = criarRodada();
+      const c = caminhosRodada(rodada);
+      escreverJsonDaRodada(c.resultadosSubagents, payloadResultadosCompletos());
+      const antes = NodeFS.readFileSync(c.resultadosSubagents, "utf-8");
+      const avulso = NodePath.join(c.suporteDir, "avulso.json");
+      NodeFS.writeFileSync(avulso, 'Aqui está o resultado:\n```json\n{"resultados": []}\n```\n');
+      const invalido = yield* Effect.flip(mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json"));
+      expect(invalido).toMatchObject({ _tag: "ErroResultadosSubagents", categoria: "json-invalido", arquivo: avulso });
+      expect(invalido.message).toBe(
+        `O resultado avulso não é um JSON válido: ${avulso}. ` +
+          "Peça ao sub-agente que devolva só o JSON, sem texto antes ou depois nem bloco de código.",
+      );
+      const ausente = yield* Effect.flip(mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "nao-ha.json"));
+      expect(ausente).toMatchObject({
+        categoria: "arquivo-ausente",
+        arquivo: NodePath.join(c.suporteDir, "nao-ha.json"),
+      });
+      expect(ausente.message).toContain("O resultado avulso não foi encontrado:");
+      expect(NodeFS.readFileSync(c.resultadosSubagents, "utf-8")).toBe(antes);
+      const baseAusente = yield* Effect.flip(mesclarResultadosAvulsos(rodada, "nao-ha.json", "avulso.json"));
+      expect(baseAusente).toMatchObject({ categoria: "arquivo-ausente", origem: "O JSON base" });
+    }),
+  );
+
   it.effect("rejeita ficha desconhecida no grupo avulso e avulso sem resultados", () =>
     Effect.gen(function* () {
       const rodada = criarRodada();
@@ -1084,6 +1110,28 @@ describe("validar-resultados", () => {
       expect(resumo.situacao).toBe("AJUSTES_NECESSARIOS");
     }),
   );
+
+  it.effect("JSON da rodada com texto em volta ou ausente é erro tipado", () =>
+    Effect.gen(function* () {
+      const rodada = criarRodada();
+      const c = caminhosRodada(rodada);
+      NodeFS.writeFileSync(c.resultadosSubagents, `Segue o JSON:\n${JSON.stringify(payloadResultadosCompletos())}`);
+      const invalido = yield* Effect.flip(validarResultadosRodada(rodada, "resultados-subagents.json"));
+      expect(invalido).toMatchObject({ categoria: "json-invalido", arquivo: c.resultadosSubagents });
+      expect(invalido.message).toContain("O JSON de resultados não é um JSON válido:");
+      expect(invalido.message).toContain("Peça ao sub-agente que devolva só o JSON");
+      const ausente = yield* Effect.flip(validarResultadosRodada(rodada, "nao-ha.json"));
+      expect(ausente).toMatchObject({ categoria: "arquivo-ausente" });
+    }),
+  );
+
+  test("a CLI recusa JSON inválido com a mensagem do erro, não com defeito", () => {
+    const rodada = criarRodada();
+    NodeFS.writeFileSync(caminhosRodada(rodada).resultadosSubagents, "Pronto! Segue o resultado.");
+    const erro = cli("validar-resultados", "--rodada-dir", rodada);
+    expect(erro.codigo).toBe(1);
+    expect(erro.stderr).toContain("ErroResultadosSubagents: O JSON de resultados não é um JSON válido:");
+  });
 
   test("a CLI imprime o resumo e falha com mensagem em stderr", () => {
     const rodada = criarRodada();
