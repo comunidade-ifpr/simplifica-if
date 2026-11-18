@@ -54,6 +54,9 @@ const LinhaCnct = Schema.Struct({
 });
 export type CursoCnct = typeof LinhaCnct.Type;
 const primeiroCnct = Sql.primeira(LinhaCnct);
+const linhasCnct = Sql.todas(LinhaCnct);
+const COLUNAS_CNCT = `id, slug, denominacao, eixo_tecnologico, area_tecnologica, carga_horaria_minima_h, path,
+                dados_json AS dados`;
 
 export class Cursos extends Context.Service<
   Cursos,
@@ -64,6 +67,8 @@ export class Cursos extends Context.Service<
      * como está (`dados`, com as chaves na ordem do arquivo); `null` se o catálogo não o tem.
      */
     readonly cnct: (id: string) => Effect.Effect<CursoCnct | null, Sql.FalhaNaConsulta>;
+    /** Todos os cursos do CNCT, como `cnct` os devolve, em ordem de slug. */
+    readonly catalogoCnct: Effect.Effect<ReadonlyArray<CursoCnct>, Sql.FalhaNaConsulta>;
     readonly adequacaoArt71: (opcoes?: {
       readonly incluirTecnologia?: boolean;
     }) => Effect.Effect<RelatorioAdequacao, Sql.FalhaNaConsulta>;
@@ -132,18 +137,20 @@ const make = Effect.gen(function* () {
 
   const cnct = Effect.fn("Cursos.cnct")(
     function* (id: string) {
-      const linha = yield* primeiroCnct(
-        `SELECT id, slug, denominacao, eixo_tecnologico, area_tecnologica, carga_horaria_minima_h, path,
-                dados_json AS dados
-           FROM cnct WHERE id = ?`,
-        [id.startsWith("cnct:") ? id : `cnct:${id}`],
-      );
+      const linha = yield* primeiroCnct(`SELECT ${COLUNAS_CNCT} FROM cnct WHERE id = ?`, [
+        id.startsWith("cnct:") ? id : `cnct:${id}`,
+      ]);
       return linha ?? null;
     },
     Effect.provideService(SqlClient.SqlClient, sql),
   );
 
-  return Cursos.of({ listar, adequacaoArt71, cnct });
+  const catalogoCnct = linhasCnct(`SELECT ${COLUNAS_CNCT} FROM cnct ORDER BY slug`).pipe(
+    Effect.withSpan("Cursos.catalogoCnct"),
+    Effect.provideService(SqlClient.SqlClient, sql),
+  );
+
+  return Cursos.of({ listar, adequacaoArt71, cnct, catalogoCnct });
 });
 
 export const layer = Layer.effect(Cursos, make);

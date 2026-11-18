@@ -4,9 +4,10 @@
  * `revisaoPpc.revisar`.
  *
  * 1. Confere o pedido: caminho absoluto de um `.docx` que existe, até 20 MB (recusado antes de ler).
- * 2. Monta a base uma vez, do `kb.sqlite` que o servidor já serve (`FontesNormativas` e as tabelas
- *    `cnct`, `normas`, `fichas` e `meta`, inclusive as datas e as transições da vigência): nada vem de arquivos do repositório, e o app empacotado,
- *    sem o checkout, faz a mesma revisão.
+ * 2. Monta a base uma vez, do `kb.sqlite` que o servidor já serve, pelos serviços do kb
+ *    (`FontesNormativas`, com as datas e as transições da vigência, o CNCT de `Cursos`, os endereços
+ *    oficiais de `Normas` e as fichas de `PacoteContexto`): nada vem de arquivos do repositório, e o
+ *    app empacotado, sem o checkout, faz a mesma revisão.
  * 3. Roda `revisarDocx` num `Worker` (`trabalhador.ts`), com `resourceLimits` (512 MB de heap) e
  *    tempo máximo (30 s, depois `terminate()`): a conversão é síncrona e mantém o XML na memória, e o
  *    laço de eventos do servidor não pode parar. Estouro de memória, de tempo, `ErroDocx` e defeito
@@ -27,12 +28,12 @@ import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
-import * as Schema from "effect/Schema";
 import * as Semaphore from "effect/Semaphore";
-import type * as SqlClient from "effect/sql/SqlClient";
 import { FalhaRevisaoPpc, type ResultadoRevisaoPpc, SUFIXO_REVISAO_PREVIA } from "@simplifica-if/contratos-app";
+import * as Cursos from "@simplifica-if/kb/Cursos";
 import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
-import * as Sql from "@simplifica-if/kb/db/sql";
+import * as Normas from "@simplifica-if/kb/Normas";
+import * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import * as NodeCrypto from "node:crypto";
 import type { BaseRevisaoPrevia, EntradaIa, MarcaPendencia, RevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
 import type { CursoCnct } from "@simplifica-if/ppc/verificadores/comum";
@@ -105,21 +106,17 @@ export const URL_TRABALHADOR = import.meta.url.endsWith(".ts")
 
 /* ============================================================ base */
 
-const linhasCnct = Sql.todas(Schema.Struct({ slug: Schema.String, dados_json: Schema.String }));
-const linhasFontes = Sql.todas(Schema.Struct({ id: Schema.String, fonte: Schema.String }));
-const linhasFichas = Sql.todas(Schema.Struct({ id: Schema.String, titulo: Schema.String }));
-
 /** A base da revisão prévia, do `kb.sqlite` (só dados planos: vai ao Worker pelo `postMessage`). */
 export const montarBase = Effect.gen(function* () {
   const fontes = yield* FontesNormativas.FontesNormativas;
-  const cncts = (yield* linhasCnct("SELECT slug, dados_json FROM cnct ORDER BY slug")).map(
-    (linha): CursoCnct => ({ ...(JSON.parse(linha.dados_json) as object), slug: linha.slug }) as CursoCnct,
+  const cursos = yield* Cursos.Cursos;
+  const normas = yield* Normas.Normas;
+  const pacotes = yield* PacoteContexto.PacoteContexto;
+  const cncts = (yield* cursos.catalogoCnct).map(
+    (curso): CursoCnct => ({ ...curso.dados, slug: curso.slug }) as CursoCnct,
   );
-  const urls: Record<string, string> = {};
-  for (const linha of yield* linhasFontes("SELECT id, fonte FROM normas WHERE fonte LIKE 'http%'"))
-    urls[linha.id] = linha.fonte;
   const fichas: Record<string, string> = {};
-  for (const linha of yield* linhasFichas("SELECT id, titulo FROM fichas ORDER BY id")) fichas[linha.id] = linha.titulo;
+  for (const ficha of yield* pacotes.fichas()) fichas[ficha.id] = String(ficha.titulo);
   return {
     // Cópias planas: o `postMessage` não clona protótipos nem readonly profundos.
     normas: fontes.registro.entradas.map((entrada) => ({ ...entrada, aliases: [...entrada.aliases] })),
@@ -128,7 +125,7 @@ export const montarBase = Effect.gen(function* () {
     datas: new Map(fontes.datas),
     transicoes: fontes.transicoes.map((transicao) => structuredClone(transicao)),
     cncts,
-    urls,
+    urls: yield* normas.enderecosOficiais,
     fichas,
     topicos: fontes.topicosFichas.map((topico) => ({ id: topico.id, fichas: [...(topico.fichas ?? [])] })),
     dataBase: fontes.dataReferencia,
@@ -243,7 +240,9 @@ export interface OpcoesRevisao {
 export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisao = {}) {
   const limites = { ...LIMITES, ...opcoes.limites };
   const url = opcoes.trabalhador ?? URL_TRABALHADOR;
-  const contexto = yield* Effect.context<FontesNormativas.FontesNormativas | SqlClient.SqlClient>();
+  const contexto = yield* Effect.context<
+    FontesNormativas.FontesNormativas | Cursos.Cursos | Normas.Normas | PacoteContexto.PacoteContexto
+  >();
   const fs = yield* FileSystem.FileSystem;
   // A base é montada na primeira revisão e reaproveitada (o banco é só de leitura).
   const base = yield* Effect.cached(
@@ -340,7 +339,7 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
 });
 
 /**
- * O serviço sobre o `FontesNormativas` e o `SqlClient` do `kb.sqlite` (os do `Leitura` do servidor),
- * os `ArquivosLiberados` e o `FileSystem`.
+ * O serviço sobre os serviços do kb (`FontesNormativas`, `Cursos`, `Normas` e `PacoteContexto` do
+ * `kb.sqlite`, os do `Leitura` do servidor), os `ArquivosLiberados` e o `FileSystem`.
  */
 export const layer = (opcoes: OpcoesRevisao = {}) => Layer.effect(RevisorPpc, make(opcoes));
