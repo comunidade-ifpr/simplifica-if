@@ -27,10 +27,10 @@
  * ambiente: o `kb.sqlite` ou, para as partes que leem um PPC fora da base, o banco em memória de
  * `ppc-avulso.ts` (`abrirPpcAvulso`).
  */
-import type * as Context from "effect/Context";
+import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
-import type * as SqlClient from "effect/sql/SqlClient";
+import * as SqlClient from "effect/sql/SqlClient";
 import type { Sinonimos } from "../busca/sinonimos.ts";
 import * as FontesNormativas from "../FontesNormativas.ts";
 import { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida } from "../pacote-contexto-erros.ts";
@@ -793,7 +793,11 @@ export const abrirPpcAvulso = Effect.fn("pacoteContexto.abrirPpcAvulso")(functio
   markdown: string,
   opcoes: OpcoesAbrirAvulso = {},
 ) {
-  const ambiente = yield* Effect.context<SqlClient.SqlClient | FontesNormativas.FontesNormativas>();
+  // só o banco e as fontes: o escopo e o span de quem abriu não passam por cima dos de quem pede o pacote
+  const ambiente = Context.pick(
+    SqlClient.SqlClient,
+    FontesNormativas.FontesNormativas,
+  )(yield* Effect.context<SqlClient.SqlClient | FontesNormativas.FontesNormativas>());
   const fontes = yield* FontesNormativas.FontesNormativas;
   const { lexico, ...doBanco } = opcoes;
   const ppcId = doBanco.ppcId ?? "ppc:avulso";

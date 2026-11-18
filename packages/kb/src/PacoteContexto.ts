@@ -14,8 +14,8 @@ import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import type * as Scope from "effect/Scope";
-import type * as SqlClient from "effect/sql/SqlClient";
-import type * as FontesNormativas from "./FontesNormativas.ts";
+import * as SqlClient from "effect/sql/SqlClient";
+import * as FontesNormativas from "./FontesNormativas.ts";
 import {
   abrirPpcAvulso,
   type FichaPacote,
@@ -78,7 +78,7 @@ export class PacoteContexto extends Context.Service<
 >()("@simplifica-if/kb/PacoteContexto") {}
 
 const make = Effect.gen(function* () {
-  const prover = yield* Sql.ambienteDoServico<SqlClient.SqlClient | FontesNormativas.FontesNormativas>();
+  const prover = yield* Sql.ambienteDoServico(SqlClient.SqlClient, FontesNormativas.FontesNormativas);
 
   return PacoteContexto.of({
     montar: Effect.fn("PacoteContexto.montar")(function* (tarefa: string, ppc: string, opcoes: OpcoesPacote = {}) {

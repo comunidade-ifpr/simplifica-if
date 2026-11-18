@@ -11,7 +11,7 @@ import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
-import type * as SqlClient from "effect/sql/SqlClient";
+import * as SqlClient from "effect/sql/SqlClient";
 import * as FontesNormativas from "./FontesNormativas.ts";
 import * as Citacoes from "./db/citacoes.ts";
 import { carregarFonteCorrespondencia } from "./db/consultas-normas.ts";
@@ -52,7 +52,7 @@ export class Impacto extends Context.Service<
 >()("@simplifica-if/kb/Impacto") {}
 
 const make = Effect.gen(function* () {
-  const prover = yield* Sql.ambienteDoServico<SqlClient.SqlClient>();
+  const prover = yield* Sql.ambienteDoServico(SqlClient.SqlClient);
   const fontes = yield* FontesNormativas.FontesNormativas;
   // as tabelas de correspondência e os dispositivos que elas citam não mudam com o banco aberto:
   // carregados uma vez, na construção da layer

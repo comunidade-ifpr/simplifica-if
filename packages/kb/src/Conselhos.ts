@@ -7,7 +7,7 @@ import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
-import type * as SqlClient from "effect/sql/SqlClient";
+import * as SqlClient from "effect/sql/SqlClient";
 import * as Sql from "./db/sql.ts";
 
 const TextoNulo = Schema.NullOr(Schema.String);
@@ -73,7 +73,7 @@ export class Conselhos extends Context.Service<
 >()("@simplifica-if/kb/Conselhos") {}
 
 const make = Effect.gen(function* () {
-  const prover = yield* Sql.ambienteDoServico<SqlClient.SqlClient>();
+  const prover = yield* Sql.ambienteDoServico(SqlClient.SqlClient);
 
   const reunioes = Effect.gen(function* () {
     const documentos = yield* linhasDocumentos(

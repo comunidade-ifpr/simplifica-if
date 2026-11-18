@@ -11,7 +11,7 @@ import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
-import type * as SqlClient from "effect/sql/SqlClient";
+import * as SqlClient from "effect/sql/SqlClient";
 import * as FontesNormativas from "./FontesNormativas.ts";
 import {
   buscarNormaDetalhada,
@@ -157,7 +157,7 @@ const make = Effect.gen(function* () {
   // as tabelas de correspondência e os dispositivos que elas citam não mudam com o banco aberto:
   // carregados uma vez, na construção da layer
   const fonteCorrespondencia = yield* carregarFonteCorrespondencia;
-  const prover = yield* Sql.ambienteDoServico<SqlClient.SqlClient | FontesNormativas.FontesNormativas>();
+  const prover = yield* Sql.ambienteDoServico(SqlClient.SqlClient, FontesNormativas.FontesNormativas);
 
   const ficha = Effect.fn("Normas.ficha")(function* (id: string) {
     const consultar = (chave: string) =>

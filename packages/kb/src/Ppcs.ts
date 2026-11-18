@@ -8,7 +8,7 @@
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
-import type * as SqlClient from "effect/sql/SqlClient";
+import * as SqlClient from "effect/sql/SqlClient";
 import * as FontesNormativas from "./FontesNormativas.ts";
 import * as Citacoes from "./db/citacoes.ts";
 import {
@@ -95,7 +95,7 @@ export class Ppcs extends Context.Service<
 
 const make = Effect.gen(function* () {
   const fontes = yield* FontesNormativas.FontesNormativas;
-  const prover = yield* Sql.ambienteDoServico<SqlClient.SqlClient | FontesNormativas.FontesNormativas>();
+  const prover = yield* Sql.ambienteDoServico(SqlClient.SqlClient, FontesNormativas.FontesNormativas);
 
   return Ppcs.of({
     buscarSecoes: Effect.fn("Ppcs.buscarSecoes")(function* (
