@@ -878,6 +878,8 @@ Em aberto:
 
 **Documentação realinhada ao app em 17/11/2026** (branch `t3/realinhar-documentacao-app`). O `AGENTS.md`, o `README.md` e os READMEs dos apps, dos pacotes e das skills passam a descrever o repositório como o do app Simplifica IF e da base que o alimenta, com um mapa de `apps/` e `packages/` e o que o app entrega hoje, conferido no código (rotas de `apps/web`, as 16 ferramentas de `packages/mcp`, o motor e as skills com bloco `simplifica:`). Entrou neste plano a visão geral do repositório e o item de roadmap [Ferramentas do repositório fora do app](#ferramentas-do-repositório-fora-do-app): `sei-cli`, `revisar-processo-ppc`, `suap-ifpr`, a sincronização SEI → Notion e a `revisar-ppc` por sub-agentes ainda não estão no app.
 
+**Gerador do `site/` removido em 18/11/2026** (branch `t3/remover-gerador-site-legado`). O `scripts/gerar_site.ts` (com `scripts/base/site.ts`), herdado do `gerar_site.py` da época em que a base era publicada como site estático, só copiava `base-conhecimento/` para `site/`, que nada consumia; o repositório público já publica `base-conhecimento/`. Saíram o gerador, o caso de teste, o `base:site` do `package.json`, o hash do `site/` no gabarito da base (`testes-gabarito/base.txt`; o `base.sh` confere só os geradores sem diferença no git e o `validar_base`) e as menções na documentação.
+
 ## Histórico de revisões
 
 **v2, 13/11/2026.** Incorpora duas revisões independentes.

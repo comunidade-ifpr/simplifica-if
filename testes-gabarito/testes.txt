@@ -85,7 +85,7 @@ scripts/avaliacao/ppcs-ouro.test.ts	5	0
 scripts/avaliacao/skills.test.ts	8	0
 scripts/avaliacao/stream.test.ts	5	0
 scripts/avaliar_skill.test.ts	2	0
-scripts/base/base.test.ts	14	0
+scripts/base/base.test.ts	13	0
 scripts/base/gerados.test.ts	3	0
 scripts/base/importar-ppc.test.ts	18	0
 scripts/base/validacao/privacidade.test.ts	2	0
@@ -116,4 +116,4 @@ scripts/suap/consultas.test.ts	20	0
 scripts/suap/matrizes.test.ts	21	0
 scripts/suap/tutoriais.test.ts	24	0
 scripts/upstream_t3.test.ts	3	0
-TOTAL	1577	35
+TOTAL	1576	35

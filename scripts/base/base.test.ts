@@ -20,7 +20,6 @@ import {
 import { serializarFrontMatterPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import { arquivosManifest, substituirTabela } from "./readme.ts";
 import { validarJsonSchema } from "@simplifica-if/kb/schema";
-import { compararDiretorios, renderizarSite } from "./site.ts";
 import { validarBase } from "./validacao.ts";
 
 const temporarios: string[] = [];
@@ -381,33 +380,5 @@ describe("validação da base", () => {
     expect(errosManifest).toContain("manifest.json: item com jurisdição/tipo sem diretório configurado: ('XX', 'Lei')");
     expect(errosManifest).toContain("normas/br/leis/lei.md: manifest.json diverge do front matter no campo title");
     expect(errosManifest).not.toContain("normas/br/leis/lei.md: manifest.json diverge do front matter no campo ano");
-  });
-});
-
-describe("site", () => {
-  test("copia a base sem arquivos locais e compara o site com o esperado", () => {
-    const raiz = projetoTemporario();
-    escrever(raiz, "base/a.md", "a");
-    escrever(raiz, "base/docs/b.md", "b");
-    escrever(raiz, "base/.DS_Store", "x");
-    const site = NodePath.join(raiz, "site");
-    renderizarSite(NodePath.join(raiz, "base"), site);
-    const esperado = NodePath.join(raiz, "esperado");
-    renderizarSite(NodePath.join(raiz, "base"), esperado);
-    expect(compararDiretorios(esperado, site)).toEqual([]);
-
-    NodeFS.writeFileSync(NodePath.join(site, "docs", "b.md"), "B");
-    escrever(site, "extra.txt", "x");
-    escrever(site, ".DS_Store", "x");
-    NodeFS.rmSync(NodePath.join(site, "a.md"));
-    expect(compararDiretorios(esperado, site)).toEqual([
-      "ausente em site/: a.md",
-      "extra em site/: .DS_Store",
-      "extra em site/: extra.txt",
-      "docs/conteúdo divergente: b.md",
-    ]);
-    expect(() => renderizarSite(NodePath.join(raiz, "base"), NodePath.join(raiz, "base"))).toThrow(
-      "não pode ser o mesmo",
-    );
   });
 });

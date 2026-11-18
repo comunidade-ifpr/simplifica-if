@@ -19,7 +19,6 @@ export function criarCaminhos(raizProjeto: string = RAIZ_PROJETO) {
   return {
     raizProjeto,
     raiz,
-    site: NodePath.join(raizProjeto, "site"),
     normas: NodePath.join(raiz, "normas"),
     institucional,
     ppcs,

@@ -36,7 +36,6 @@ Depois de alterar a base:
 
 ```bash
 node scripts/validar_base.ts
-node scripts/gerar_site.ts --check
 ```
 
 Depois de alterar `revisar-ppc`:

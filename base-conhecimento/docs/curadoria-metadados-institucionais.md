@@ -27,13 +27,12 @@ O que continua gerado, e por quê:
 
 1. Edite ou crie o registro em `base-conhecimento/institucional/ifpr/`. Campo vazio é campo ausente: não grave `""` nem `null`. URL pré-assinada (com `AWSAccessKeyId`, `Signature`, `X-Amz-*`, como as do S3 do SUAP) não entra: grave o endereço sem a query string, ou, se o arquivo for privado sem a assinatura (anexo do SUAP), deixe `ppc.url` vazio com nota em `ppc.observacoes` até achar o PDF público.
 2. Registre a evidência no próprio registro quando houver campo para isso (`trecho_vagas`, `trecho_fonte`, `ppc.observacoes`) e atualize as datas de coleta ou curadoria.
-3. Regenere os índices, valide e publique:
+3. Regenere os índices e valide:
 
 ```bash
 node scripts/gerar_base.ts
 node scripts/gerar_indice_ppcs.ts
 node scripts/validar_base.ts
-node scripts/gerar_site.ts
 ```
 
 `validar_base.ts` confere schema, caminho de cada arquivo e as regras da auditoria institucional (chaves únicas, relações existentes, caminho esperado do PPC e o Markdown existente, URLs HTTPS), os índices gerados e os processos SEI. Para atualizar os processos SEI depois de mudar movimentações no Notion, rode antes `node scripts/exportar_base_publica.ts`.
@@ -157,7 +156,6 @@ node scripts/importar_ppc_docx.ts <campus_id>/<curso_slug> <arquivo.docx> --font
 node scripts/gerar_base.ts
 node scripts/gerar_indice_ppcs.ts
 node scripts/validar_base.ts
-node scripts/gerar_site.ts
 ```
 
 O script não roda esses comandos: o passo 5 vem antes deles, e o pipeline é o mesmo de qualquer outra mudança nos registros. A lógica está em `scripts/base/importar-ppc.ts`, com testes em `importar-ppc.test.ts`.
@@ -172,7 +170,7 @@ Todo PPC em `institucional/ifpr/ppcs/<campus_id>/<curso_slug>.md` começa com fr
 | `fonte_url` | endereço publicado do PPC; deve ser igual ao `ppc.url` vigente |
 | `fonte_sha256` | SHA-256 dos bytes de `fonte_url`, ou `desconhecido` (sempre, na importação do DOCX: o script não baixa a URL) |
 | `convertido_em` | data da conversão (AAAA-MM-DD) |
-| `conversor` | conversor e versão (`simplifica-if/packages/ppc@<commit>`, com `-modificado` se o checkout tinha alteração não comitada em arquivo rastreado fora de `base-conhecimento/`, `site/`, `tmp/` e `outputs/`), ou `desconhecido` |
+| `conversor` | conversor e versão (`simplifica-if/packages/ppc@<commit>`, com `-modificado` se o checkout tinha alteração não comitada em arquivo rastreado fora de `base-conhecimento/`, `tmp/` e `outputs/`), ou `desconhecido` |
 | `arquivo_convertido`, `arquivo_convertido_sha256` | só quando o arquivo convertido não é o de `fonte_url`: o tipo (`docx`) e o SHA-256 dos bytes; o índice `ppcs/index.json` os publica como `arquivo_convertido: { tipo, sha256 }` |
 | `proveniencia` | `registrada` (gravada na conversão) ou `reconstruida` (preenchida depois) |
 | `conversao_commit`, `pos_processamento_commits` | só na reconstruída: commit da conversão e commits de limpeza posteriores |
@@ -221,7 +219,7 @@ A coleção `institucional/ifpr/ppcs/` contém PPCs convertidos e índices deriv
 - `institucional/ifpr/ppcs/index.json` (schema `ppcs_index`, versão 2): um item por PPC, com `taxonomia` e o resumo da proveniência;
 - `institucional/ifpr/ppcs/secoes/<tipo>.jsonl` (schema `ppcs_secao`): uma linha por seção, com `preview` (500 primeiros caracteres do texto limpo), `linha_inicio` e `linha_fim` no arquivo `.md` (contadas desde 1, com o front matter), `heading`, `numeracao` e `origem_tipo`.
 
-**Texto integral fora do git.** O git guarda só preview e linhas: o texto integral das seções duplicaria o dos PPCs (cerca de 64 MB) e incharia o histórico e o `site/` a cada regeneração. Quem precisar dele lê as linhas do próprio Markdown, com `lerTextoSecao` (`packages/kb/src/ppcs/citacoes.ts`) ou `textoDaSecao` (`packages/kb/src/ppcs/secoes.ts`). O texto integral indexado vai para o `kb.sqlite` da fase 6, derivado e fora do git.
+**Texto integral fora do git.** O git guarda só preview e linhas: o texto integral das seções duplicaria o dos PPCs (cerca de 64 MB) e incharia o histórico a cada regeneração. Quem precisar dele lê as linhas do próprio Markdown, com `lerTextoSecao` (`packages/kb/src/ppcs/citacoes.ts`) ou `textoDaSecao` (`packages/kb/src/ppcs/secoes.ts`). O texto integral indexado vai para o `kb.sqlite` da fase 6, derivado e fora do git.
 
 Esses arquivos são gerados automaticamente por `scripts/gerar_indice_ppcs.ts` (lógica em `packages/kb/src/ppcs/secoes.ts`). Não os edite manualmente; ajuste o registro do curso em `institucional/ifpr/cursos/` ou o Markdown convertido e rode novamente os comandos de publicação.
 

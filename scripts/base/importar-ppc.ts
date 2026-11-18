@@ -8,7 +8,7 @@
  * O `fonte_sha256` fica `desconhecido`: ele é o hash dos bytes de `fonte_url` (em geral o PDF
  * publicado), que a importação não baixa. O hash do DOCX convertido vai em `arquivo_convertido_sha256`.
  *
- * Não regenera índices nem o site: quem chama roda o pipeline da base depois de conferir o texto.
+ * Não regenera os índices: quem chama roda o pipeline da base depois de conferir o texto.
  */
 import * as NodeCrypto from "node:crypto";
 import * as NodeFS from "node:fs";

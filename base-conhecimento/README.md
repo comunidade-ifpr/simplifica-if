@@ -122,7 +122,6 @@ A partir da raiz do projeto unificado:
 node scripts/gerar_base.ts
 node scripts/gerar_indice_ppcs.ts
 node scripts/validar_base.ts
-node scripts/gerar_site.ts
 ```
 
 ## Documentos institucionais de referência
@@ -137,7 +136,7 @@ node scripts/gerar_site.ts
 
 ## Estrutura
 
-Esta é a raiz lógica da base. No projeto unificado ela fica em `base-conhecimento/`; a saída publicável em `site/` preserva estes mesmos caminhos na raiz.
+Esta é a raiz lógica da base. No projeto unificado ela fica em `base-conhecimento/`.
 
 - `normas/`: leis, resoluções, portarias, notas técnicas e compilações, organizadas por jurisdição e tipo documental.
 - `institucional/`: metadados e referências institucionais, como o cadastro de campi do IFPR e notas de referência em `institucional/ifpr/referencias/`.

@@ -94,7 +94,7 @@ jobs:
       # onde o 3.54 escreve `unistr(…)`, e o 3.54 do sqlite.org escreve `0` onde o da Apple escreve `0.0`).
       # O banco compilado no Linux é igual ao do macOS: conferido com o sqlite3 do macOS em 14/11/2026.
 
-      - name: Gabarito da base (geradores, validação e site)
+      - name: Gabarito da base (geradores e validação)
         run: sh testes-gabarito/base.sh --comparar
 
       - name: Gabarito do MCP pelo protocolo
