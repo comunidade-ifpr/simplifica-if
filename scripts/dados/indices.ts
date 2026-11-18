@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off -- grava e confere os índices das coleções institucionais com node:fs síncrono (gerar_base, validar_base)
+// @effect-diagnostics nodeBuiltinImport:off -- caminhos dos registros com node:path, em funções puras chamadas pelo pipeline da base
 /**
  * Índices das coleções institucionais (`institucional/ifpr/<coleção>/index.json`). Os registros são
  * a fonte; o índice só os lista, com os campos de filtro mais usados e o `path` de cada arquivo
@@ -6,10 +6,12 @@
  * diretórios. Não tem data: muda só quando os registros mudam. Gerado por `gerar_base.ts` e
  * conferido por `validar_base.ts`.
  */
-import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
+import type { ArquivoGerado, PastaGerada } from "../base/gerados.ts";
 import { compararTexto } from "../dominio/comum.ts";
 import { chaveCurso } from "../dominio/curso.ts";
+import { indiceConselhosGerado, type Conselhos } from "./conselhos.ts";
+import { schemasRegistrosGerados } from "./schemas-publicos.ts";
 import {
   ARQUIVO_INDICE,
   caminhosRegistro,
@@ -134,32 +136,25 @@ export function montarIndices(dados: DadosInstitucionais): Record<PastaColecao, 
   };
 }
 
-const caminhoIndice = (raiz: string, pasta: PastaColecao) => NodePath.join(raiz, pasta, ARQUIVO_INDICE);
-
-/** Grava os índices que mudaram; devolve os caminhos gravados (relativos a `institucional/ifpr/`). */
-export function gravarIndices(dados: DadosInstitucionais, raiz: string = RAIZ_DADOS_INSTITUCIONAIS): string[] {
-  const gravados: string[] = [];
-  for (const [pasta, conteudo] of Object.entries(montarIndices(dados)) as Array<[PastaColecao, IndiceInstitucional]>) {
-    const destino = caminhoIndice(raiz, pasta);
-    const texto = textoRegistro(conteudo);
-    if (NodeFS.existsSync(destino) && NodeFS.readFileSync(destino, "utf-8") === texto) continue;
-    NodeFS.mkdirSync(NodePath.dirname(destino), { recursive: true });
-    NodeFS.writeFileSync(destino, texto, "utf-8");
-    gravados.push(NodePath.join(pasta, ARQUIVO_INDICE));
-  }
-  return gravados;
+/** O `index.json` de cada coleção, como `gerar_base` o grava e `validar_base` o confere. */
+export function indicesGerados(dados: DadosInstitucionais, raiz: string = RAIZ_DADOS_INSTITUCIONAIS): ArquivoGerado[] {
+  return (Object.entries(montarIndices(dados)) as Array<[PastaColecao, IndiceInstitucional]>).map(
+    ([pasta, conteudo]) => ({ caminho: NodePath.join(raiz, pasta, ARQUIVO_INDICE), texto: textoRegistro(conteudo) }),
+  );
 }
 
-/** Índices ausentes ou diferentes do que os registros geram. */
-export function verificarIndices(dados: DadosInstitucionais, raiz: string = RAIZ_DADOS_INSTITUCIONAIS): string[] {
-  return (Object.entries(montarIndices(dados)) as Array<[PastaColecao, IndiceInstitucional]>).flatMap(
-    ([pasta, conteudo]) => {
-      const destino = caminhoIndice(raiz, pasta);
-      const atual = NodeFS.existsSync(destino) ? NodeFS.readFileSync(destino, "utf-8") : null;
-      if (atual === textoRegistro(conteudo)) return [];
-      return [
-        `institucional/ifpr/${pasta}/${ARQUIVO_INDICE} ${atual === null ? "ausente" : "desatualizado"}; rode node scripts/gerar_base.ts`,
-      ];
-    },
-  );
+/**
+ * Tudo o que `gerar_base` gera a partir dos registros institucionais: o `index.json` de cada coleção,
+ * o dos conselhos e os JSON Schemas públicos (`schemas/registros/`, pasta inteira gerada).
+ */
+export function geradosInstitucionais(
+  dados: DadosInstitucionais,
+  conselhos: Conselhos,
+  raiz: string = RAIZ_DADOS_INSTITUCIONAIS,
+): { arquivos: ArquivoGerado[]; extrasEm: PastaGerada[] } {
+  const schemas = schemasRegistrosGerados();
+  return {
+    arquivos: [...indicesGerados(dados, raiz), indiceConselhosGerado(conselhos, raiz), ...schemas.arquivos],
+    extrasEm: [schemas.pasta],
+  };
 }

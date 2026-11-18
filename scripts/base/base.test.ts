@@ -1,21 +1,24 @@
-// @effect-diagnostics nodeBuiltinImport:off -- monta raízes temporárias com node:fs síncrono para o pipeline síncrono sob teste
+// @effect-diagnostics nodeBuiltinImport:off -- monta raízes temporárias com node:fs síncrono para os carregadores e montadores síncronos sob teste
+import * as NodeServices from "@effect/platform-node/NodeServices";
+import { it } from "@effect/vitest";
+import * as Effect from "effect/Effect";
 import { afterAll, describe, expect, test } from "vite-plus/test";
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import { criarCaminhos, naBase, relativo } from "./caminhos.ts";
 import { analisarFrontMatter, ErroFrontMatter, itemManifest, manifestJson, montarManifest } from "./front-matter.ts";
+import { aplicarGerados, type ArquivoGerado, mensagensDivergencias, type PastaGerada } from "./gerados.ts";
 import {
+  arquivosIndices,
   dataIndiceAtual,
   gerarIndices,
-  gravarIndices,
   limparTitulo,
   removerAcentos,
   tituloDaLinha,
-  verificarIndices,
 } from "./indice-ppcs.ts";
 import { serializarFrontMatterPpc } from "@simplifica-if/kb/ppcs/front-matter";
-import { gravarBase, substituirTabela, verificarBase } from "./readme.ts";
+import { arquivosManifest, substituirTabela } from "./readme.ts";
 import { validarJsonSchema } from "@simplifica-if/kb/schema";
 import { compararDiretorios, renderizarSite } from "./site.ts";
 import { validarBase } from "./validacao.ts";
@@ -36,6 +39,16 @@ function escrever(raiz: string, relativo: string, conteudo: string) {
   NodeFS.mkdirSync(NodePath.dirname(caminho), { recursive: true });
   NodeFS.writeFileSync(caminho, conteudo);
 }
+
+/** Mensagens do `--check` sobre os arquivos gerados, relativas a `base-conhecimento/`. */
+const conferir = (
+  raiz: string,
+  arquivos: ReadonlyArray<ArquivoGerado>,
+  pastas: { extrasEm?: ReadonlyArray<PastaGerada>; obsoletos?: ReadonlyArray<string> } = {},
+) =>
+  aplicarGerados(arquivos, { modo: "verificar", raiz, ...pastas }).pipe(
+    Effect.map((divergencias) => mensagensDivergencias(divergencias, "x")),
+  );
 
 const NORMA = `---
 id: br/lei/2020/1
@@ -123,33 +136,36 @@ describe("caminhos", () => {
 });
 
 describe("manifest e README", () => {
-  test("gera manifest ordenado e tabela do README; --check detecta divergência", () => {
-    const raiz = projetoTemporario();
-    escrever(raiz, "base-conhecimento/normas/br/leis/lei-b.md", NORMA);
-    escrever(
-      raiz,
-      "base-conhecimento/normas/br/leis/lei-a.md",
-      NORMA.replace("Lei nº 1/2020", "Lei nº 0/2019").replace('"2020-01-02"', '"2019-05-05"'),
-    );
-    escrever(raiz, "base-conhecimento/README.md", README);
-    escrever(raiz, "base-conhecimento/manifest.json", "[]\n");
-    const caminhos = criarCaminhos(raiz);
-    const manifest = montarManifest(caminhos);
-    expect(manifest.map((item) => item.path)).toEqual(["normas/br/leis/lei-a.md", "normas/br/leis/lei-b.md"]);
-    expect(Object.keys(manifest[0]!).at(-1)).toBe("path");
-    expect(verificarBase(caminhos, manifest)).toEqual([
-      "manifest.json está desatualizado",
-      "README.md está desatualizado",
-    ]);
+  it.effect("gera manifest ordenado e tabela do README; --check detecta divergência", () =>
+    Effect.gen(function* () {
+      const raiz = projetoTemporario();
+      escrever(raiz, "base-conhecimento/normas/br/leis/lei-b.md", NORMA);
+      escrever(
+        raiz,
+        "base-conhecimento/normas/br/leis/lei-a.md",
+        NORMA.replace("Lei nº 1/2020", "Lei nº 0/2019").replace('"2020-01-02"', '"2019-05-05"'),
+      );
+      escrever(raiz, "base-conhecimento/README.md", README);
+      escrever(raiz, "base-conhecimento/manifest.json", "[]\n");
+      const caminhos = criarCaminhos(raiz);
+      const manifest = montarManifest(caminhos);
+      expect(manifest.map((item) => item.path)).toEqual(["normas/br/leis/lei-a.md", "normas/br/leis/lei-b.md"]);
+      expect(Object.keys(manifest[0]!).at(-1)).toBe("path");
+      const arquivos = arquivosManifest(caminhos, manifest);
+      expect(yield* conferir(caminhos.raiz, arquivos)).toEqual([
+        "manifest.json está desatualizado; rode x",
+        "README.md está desatualizado; rode x",
+      ]);
 
-    gravarBase(caminhos, manifest);
-    expect(verificarBase(caminhos, manifest)).toEqual([]);
-    expect(NodeFS.readFileSync(caminhos.manifest, "utf-8")).toBe(manifestJson(manifest));
-    expect(NodeFS.readFileSync(caminhos.readme, "utf-8")).toContain(
-      "| [Lei nº 0/2019](normas/br/leis/lei-a.md) | Lei | 2020 | Ementa de teste. |\n| [Lei nº 1/2020](normas/br/leis/lei-b.md) | Lei | 2020 | Ementa de teste. |\n\n## Manutenção",
-    );
-    expect(() => substituirTabela("sem tabela", manifest)).toThrow();
-  });
+      yield* aplicarGerados(arquivos, { modo: "gravar", raiz: caminhos.raiz });
+      expect(yield* conferir(caminhos.raiz, arquivos)).toEqual([]);
+      expect(NodeFS.readFileSync(caminhos.manifest, "utf-8")).toBe(manifestJson(manifest));
+      expect(NodeFS.readFileSync(caminhos.readme, "utf-8")).toContain(
+        "| [Lei nº 0/2019](normas/br/leis/lei-a.md) | Lei | 2020 | Ementa de teste. |\n| [Lei nº 1/2020](normas/br/leis/lei-b.md) | Lei | 2020 | Ementa de teste. |\n\n## Manutenção",
+      );
+      expect(() => substituirTabela("sem tabela", manifest)).toThrow();
+    }).pipe(Effect.provide(NodeServices.layer)),
+  );
 });
 
 describe("índice de PPCs", () => {
@@ -165,96 +181,103 @@ describe("índice de PPCs", () => {
     expect(removerAcentos("Concepção ﬁ")).toBe("Concepcao fi");
   });
 
-  test("gera e verifica index.json e secoes/*.jsonl", () => {
-    const raiz = projetoTemporario();
-    const ifpr = "base-conhecimento/institucional/ifpr";
-    escrever(raiz, `${ifpr}/campi/campus-a.json`, JSON.stringify({ campus_id: "campus-a", nome: "Campus A" }));
-    escrever(
-      raiz,
-      `${ifpr}/cursos/campus-a/tecnico-x.json`,
-      JSON.stringify({
-        campus_id: "campus-a",
-        curso_slug: "tecnico-x",
-        nome: "Técnico X",
-        nivel: "médio",
-        forma_oferta: "Integrado",
-        pagina_oficial: "https://ifpr.edu.br/x",
+  it.effect("gera e verifica index.json e secoes/*.jsonl", () =>
+    Effect.gen(function* () {
+      const raiz = projetoTemporario();
+      const ifpr = "base-conhecimento/institucional/ifpr";
+      escrever(raiz, `${ifpr}/campi/campus-a.json`, JSON.stringify({ campus_id: "campus-a", nome: "Campus A" }));
+      escrever(
+        raiz,
+        `${ifpr}/cursos/campus-a/tecnico-x.json`,
+        JSON.stringify({
+          campus_id: "campus-a",
+          curso_slug: "tecnico-x",
+          nome: "Técnico X",
+          nivel: "médio",
+          forma_oferta: "Integrado",
+          pagina_oficial: "https://ifpr.edu.br/x",
+          modalidade: "Presencial",
+          // Vagas sem o trecho do PPC que as sustenta não vão para o índice.
+          ppc: {
+            url: "https://ifpr.edu.br/x.pdf",
+            markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x.md",
+            ano_documento: 2021,
+            vagas: "40",
+          },
+        }),
+      );
+      escrever(
+        raiz,
+        `${ifpr}/cursos/campus-a/sem-ppc.json`,
+        JSON.stringify({
+          campus_id: "campus-a",
+          curso_slug: "sem-ppc",
+          nome: "Sem PPC",
+          nivel: "Técnico",
+          forma_oferta: "Subsequente",
+          pagina_oficial: "https://x",
+        }),
+      );
+      escrever(raiz, `${ifpr}/cursos/index.json`, "{}");
+      escrever(
+        raiz,
+        "base-conhecimento/institucional/ifpr/ppcs/campus-a/tecnico-x.md",
+        serializarFrontMatterPpc({
+          id: "ppc:campus-a/tecnico-x",
+          fonte_url: "https://ifpr.edu.br/x.pdf",
+          fonte_sha256: "a".repeat(64),
+          convertido_em: "2026-11-13",
+          conversor: "teste",
+          proveniencia: "registrada",
+        }) + `## 1 Objetivos\n${"objetivo ".repeat(80)}\n## 2 Ementário\n${"ementa ".repeat(10)}\n`,
+      );
+      const caminhos = criarCaminhos(raiz);
+      const indices = gerarIndices(caminhos, "2026-01-01");
+      expect(indices.itensPpc).toHaveLength(1);
+      expect(indices.itensPpc[0]).toMatchObject({
+        id: "campus-a/tecnico-x",
         modalidade: "Presencial",
-        // Vagas sem o trecho do PPC que as sustenta não vão para o índice.
-        ppc: {
-          url: "https://ifpr.edu.br/x.pdf",
-          markdown_path: "institucional/ifpr/ppcs/campus-a/tecnico-x.md",
-          ano_documento: 2021,
-          vagas: "40",
-        },
-      }),
-    );
-    escrever(
-      raiz,
-      `${ifpr}/cursos/campus-a/sem-ppc.json`,
-      JSON.stringify({
-        campus_id: "campus-a",
-        curso_slug: "sem-ppc",
-        nome: "Sem PPC",
-        nivel: "Técnico",
-        forma_oferta: "Subsequente",
-        pagina_oficial: "https://x",
-      }),
-    );
-    escrever(raiz, `${ifpr}/cursos/index.json`, "{}");
-    escrever(
-      raiz,
-      "base-conhecimento/institucional/ifpr/ppcs/campus-a/tecnico-x.md",
-      serializarFrontMatterPpc({
-        id: "ppc:campus-a/tecnico-x",
-        fonte_url: "https://ifpr.edu.br/x.pdf",
-        fonte_sha256: "a".repeat(64),
-        convertido_em: "2026-11-13",
-        conversor: "teste",
-        proveniencia: "registrada",
-      }) + `## 1 Objetivos\n${"objetivo ".repeat(80)}\n## 2 Ementário\n${"ementa ".repeat(10)}\n`,
-    );
-    const caminhos = criarCaminhos(raiz);
-    const indices = gerarIndices(caminhos, "2026-01-01");
-    expect(indices.itensPpc).toHaveLength(1);
-    expect(indices.itensPpc[0]).toMatchObject({
-      id: "campus-a/tecnico-x",
-      modalidade: "Presencial",
-      ano_documento: 2021,
-      taxonomia: "tecnico",
-      proveniencia: { situacao: "registrada", convertido_em: "2026-11-13", conversor: "teste" },
-    });
-    expect(indices.itensPpc[0]).not.toHaveProperty("vagas");
-    expect(indices.itensSecao.map((item) => item.id)).toEqual([
-      "campus-a/tecnico-x#objetivos-1",
-      "campus-a/tecnico-x#ementas-1",
-    ]);
-    expect(indices.itensSecao[0]).toMatchObject({
-      heading: "1 Objetivos",
-      numeracao: "1",
-      linha_inicio: 9,
-      linha_fim: 10,
-      preview: "objetivo ".repeat(80).slice(0, 500),
-      origem_tipo: "titulo",
-    });
-    expect(verificarIndices(caminhos, indices)).toContain("institucional/ifpr/ppcs/index.json está desatualizado");
+        ano_documento: 2021,
+        taxonomia: "tecnico",
+        proveniencia: { situacao: "registrada", convertido_em: "2026-11-13", conversor: "teste" },
+      });
+      expect(indices.itensPpc[0]).not.toHaveProperty("vagas");
+      expect(indices.itensSecao.map((item) => item.id)).toEqual([
+        "campus-a/tecnico-x#objetivos-1",
+        "campus-a/tecnico-x#ementas-1",
+      ]);
+      expect(indices.itensSecao[0]).toMatchObject({
+        heading: "1 Objetivos",
+        numeracao: "1",
+        linha_inicio: 9,
+        linha_fim: 10,
+        preview: "objetivo ".repeat(80).slice(0, 500),
+        origem_tipo: "titulo",
+      });
+      const { arquivos, ...pastas } = arquivosIndices(caminhos, indices);
+      expect(yield* conferir(caminhos.raiz, arquivos, pastas)).toContain(
+        "institucional/ifpr/ppcs/index.json ausente; rode x",
+      );
 
-    escrever(raiz, "base-conhecimento/institucional/ifpr/ppcs/secoes/antigo.jsonl", "");
-    gravarIndices(caminhos, indices);
-    expect(verificarIndices(caminhos, indices)).toEqual([]);
-    expect(dataIndiceAtual(caminhos, "2030-01-01")).toBe("2026-01-01");
-    expect(
-      NodeFS.readFileSync(NodePath.join(caminhos.secoesPpcs, "ementas.jsonl"), "utf-8").startsWith(
-        '{"id":"campus-a/tecnico-x#ementas-1",',
-      ),
-    ).toBe(true);
-    expect(NodeFS.readFileSync(NodePath.join(caminhos.secoesPpcs, "avaliacao.jsonl"), "utf-8")).toBe("");
+      escrever(raiz, "base-conhecimento/institucional/ifpr/ppcs/secoes/antigo.jsonl", "");
+      escrever(raiz, "base-conhecimento/institucional/ifpr/ppcs/secoes.jsonl", "");
+      yield* aplicarGerados(arquivos, { modo: "gravar", raiz: caminhos.raiz, ...pastas });
+      expect(yield* conferir(caminhos.raiz, arquivos, pastas)).toEqual([]);
+      expect(NodeFS.existsSync(NodePath.join(caminhos.ppcs, "secoes.jsonl"))).toBe(false);
+      expect(dataIndiceAtual(caminhos, "2030-01-01")).toBe("2026-01-01");
+      expect(
+        NodeFS.readFileSync(NodePath.join(caminhos.secoesPpcs, "ementas.jsonl"), "utf-8").startsWith(
+          '{"id":"campus-a/tecnico-x#ementas-1",',
+        ),
+      ).toBe(true);
+      expect(NodeFS.readFileSync(NodePath.join(caminhos.secoesPpcs, "avaliacao.jsonl"), "utf-8")).toBe("");
 
-    escrever(raiz, "base-conhecimento/institucional/ifpr/ppcs/secoes/extra.jsonl", "");
-    expect(verificarIndices(caminhos, indices)).toEqual([
-      "institucional/ifpr/ppcs/secoes/extra.jsonl não é mais gerado",
-    ]);
-  });
+      escrever(raiz, "base-conhecimento/institucional/ifpr/ppcs/secoes/extra.jsonl", "");
+      expect(yield* conferir(caminhos.raiz, arquivos, pastas)).toEqual([
+        "institucional/ifpr/ppcs/secoes/extra.jsonl não é mais gerado; rode x",
+      ]);
+    }).pipe(Effect.provide(NodeServices.layer)),
+  );
 });
 
 describe("JSON Schema", () => {

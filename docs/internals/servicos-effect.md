@@ -127,7 +127,7 @@ O repositório inteiro está na stack do Effect, mas nem todo código precisa se
 - **Recursos com ciclo de vida.** O que se abre e se fecha (conexão de banco, processo filho, servidor HTTP, navegador do Playwright, arquivo temporário, lock) usa `Effect.acquireRelease` dentro de um `Scope`, ou `Layer.effect` com finalizador. Exemplo: o banco do PPC avulso em `packages/kb/src/db/pacote-contexto.ts`.
 - **Configuração e ambiente.** Variáveis de ambiente e segredos entram por `Config` (`Config.String`, `Config.Redacted`, `Config.option`), como em `scripts/suap/cliente.ts`. O segredo fica `Redacted` até o ponto de uso, o que o mantém fora de log e de erro.
 - **Concorrência e prazo.** Trabalho em paralelo usa `Effect.forEach(..., { concurrency })`, `Effect.all` ou `Stream`; prazo usa `Effect.timeout`, `Effect.timeoutOption` (como `Relatos.preparar`) ou `Schedule` para nova tentativa. Não `Promise.all`, `AbortSignal.timeout` nem `setTimeout` à mão, porque eles escapam da interrupção e do `TestClock`.
-- **CLIs e scripts.** Um script novo, ou um script que muda de verdade, tem ponto de entrada Effect: `executarPrincipal(nome, programa)` de `scripts/principal.ts` (sobre `NodeRuntime.runMain` e `NodeServices.layer`), com argumentos e flags do `effect/cli` (`Command`, `Argument`, `Flag`), como `scripts/suap_coletar_matrizes.ts` e a CLI `kb`. O `scripts/cli.ts` (`parseArgs` do Node e `ErroUso` por exceção) é a casca síncrona antiga do pipeline da base; não o use em script novo. Arquivo, processo e caminho vêm de `FileSystem`, `ChildProcess` e `Path`, e a data, de `Clock` ou `DateTime`, para que a saída não dependa do relógio quando não deve.
+- **CLIs e scripts.** Um script novo, ou um script que muda de verdade, tem ponto de entrada Effect: `executarPrincipal(nome, programa)` de `scripts/principal.ts` (sobre `NodeRuntime.runMain` e `NodeServices.layer`), com argumentos e flags do `effect/cli` (`Command`, `Argument`, `Flag`), como `scripts/suap_coletar_matrizes.ts` e a CLI `kb`. O pipeline da base (`gerar_base`, `validar_base`, `gerar_site` e os outros) segue esse modelo, e os arquivos gerados passam por `aplicarGerados` (`scripts/base/gerados.ts`), que grava ou, no `--check`, só confere. Arquivo, processo e caminho vêm de `FileSystem`, `ChildProcess` e `Path`, e a data, de `Clock` ou `DateTime`, para que a saída não dependa do relógio quando não deve.
 
 **Não use Effect para:**
 
@@ -172,8 +172,8 @@ O resto desta página é revisão: posição da lógica, forma do módulo, atrib
 Código anterior a esta página que não segue alguma regra. Não é achado num PR que não o toca; entra na revisão de arquitetura:
 
 - `FalhaProvider.detalhe` (`packages/motor/src/erros.ts`) recebe um trecho de `cause.message` em `packages/motor/src/Canal.ts`;
-- `Effect.runPromise` fora de ponto de entrada em `scripts/base/skills.ts` e `scripts/fabrica_atualizacao.ts`;
-- a casca síncrona `scripts/cli.ts` nos scripts do pipeline da base;
+- `Effect.runPromise` fora de ponto de entrada em `scripts/fabrica_atualizacao.ts`;
+- a leitura da base com `node:fs` síncrono nos `carregar*` e em `scripts/base/validacao/`, chamada de dentro dos programas Effect do pipeline da base;
 - `packages/atualizacao`, `packages/ppc` e `packages/docx` são quase todos funções comuns; parte é pura e fica assim, parte faz I/O e é candidata a serviço;
 - 14 testes registram casos num `for` (avisos de `no-test-in-loop` no `pnpm lint`).
 

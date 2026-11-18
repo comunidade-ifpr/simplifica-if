@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off -- caminhos e listagens síncronas de base-conhecimento/ para o pipeline síncrono da base (gerar_base, validar_base, gerar_site)
+// @effect-diagnostics nodeBuiltinImport:off -- caminhos e listagens síncronas de base-conhecimento/ para o lado de leitura do pipeline da base (carregadores e validações), chamado de dentro dos programas Effect
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { RAIZ_PROJETO } from "../config.ts";
