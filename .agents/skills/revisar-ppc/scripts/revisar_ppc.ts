@@ -5,8 +5,9 @@
  * Todos os subcomandos rodam em TypeScript, inclusive a conversão de `.docx`
  * em `preparar-documento` (pacote `@simplifica-if/ppc`): a skill só precisa do Node.
  *
- * `REVISAR_PPC_AGORA` (data ISO 8601) fixa o relógio, para testes e
- * diferenciais.
+ * O processo só se lê aqui, por `Config`: `REVISAR_PPC_AGORA` (data ISO 8601) fixa o relógio, para
+ * testes e diferenciais; `REVISAR_PPC_SURGE_DOMAIN` fixa o domínio padrão da publicação; e
+ * `REVISAR_PPC_SURGE_CMD` troca o comando do Surge, dividido como no shell.
  *
  * Os subcomandos que consultam o kb (`montar-grupos-subagents`, `montar-grupo-avulso` e
  * `preparar-prompts-subagents`) recebem os serviços do kb de `camadaKb`, dentro do próprio handler:
@@ -23,10 +24,12 @@ import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Compilador from "@simplifica-if/kb/Compilador";
 import * as Layers from "@simplifica-if/kb/layers";
 import { serializarJsonTipado } from "@simplifica-if/kb/primitivas/json-tipado";
+import { dividirComandoShell } from "@simplifica-if/kb/primitivas/shell";
 import { caminhoComoUri } from "@simplifica-if/kb/primitivas/url";
 import * as Cause from "effect/Cause";
 import * as Config from "effect/Config";
 import * as Console from "effect/Console";
+import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
@@ -44,9 +47,17 @@ import { escreverMapa, mapaAtualizado } from "./mapa-fichas.ts";
 import { AMOSTRA_MEDICAO, formatarMedicao, medirIdentificacao } from "./medicao-identificacao.ts";
 import { prepararDocumento } from "./preparar-documento.ts";
 import { dominioSurgePadrao, prepararSiteSurge, type PublicacaoSurge, publicarSiteSurge } from "./publicar-surge.ts";
+import { lerReferenciasIdentificacao } from "./referencias-identificacao.ts";
 import { gerarRelatorioHtml, type RelatorioGerado } from "./relatorio-html.ts";
 import { mesclarResultadosAvulsos, validarResultadosRodada } from "./resultados.ts";
-import { caminhosRodada, escreverJsonDaRodada, resolverCaminho, TAMANHO_GRUPO_PADRAO } from "./rodada.ts";
+import {
+  caminhosRodada,
+  escreverJsonDaRodada,
+  interpretarAgora,
+  type Relogio,
+  resolverCaminho,
+  TAMANHO_GRUPO_PADRAO,
+} from "./rodada.ts";
 import { montarGrupoAvulso, montarGruposSubagents, prepararPromptsSubagents } from "./subagents.ts";
 import { validarBaseAnalise } from "./validacao-base.ts";
 
@@ -70,6 +81,32 @@ export class EncerrarComCodigo extends Schema.TaggedError<EncerrarComCodigo>()("
 }
 
 export const ehEncerrarComCodigo = Schema.is(EncerrarComCodigo);
+
+/** `REVISAR_PPC_AGORA` fora dos formatos aceitos (veja `interpretarAgora`). */
+export class AgoraInvalida extends Schema.TaggedError<AgoraInvalida>()("AgoraInvalida", {
+  valor: Schema.String,
+}) {
+  override get message(): string {
+    return `REVISAR_PPC_AGORA inválida: ${this.valor}`;
+  }
+}
+
+/** Variável de ambiente de texto; vazia conta como ausente. */
+const textoDoAmbiente = (nome: string) =>
+  Config.option(Config.String(nome)).pipe(Effect.map(Option.filter((valor) => valor !== "")));
+
+/** Relógio da rodada: o instante de `REVISAR_PPC_AGORA` ou o de agora, o mesmo em todo o comando. */
+const relogioDoComando = Effect.fn("revisar_ppc.relogio")(function* () {
+  const fixo = yield* textoDoAmbiente("REVISAR_PPC_AGORA");
+  let data: Date;
+  if (Option.isSome(fixo)) {
+    const interpretada = interpretarAgora(fixo.value);
+    if (!interpretada) return yield* new AgoraInvalida({ valor: fixo.value });
+    data = interpretada;
+  } else data = DateTime.toDateUtc(yield* DateTime.now);
+  const relogio: Relogio = () => data;
+  return relogio;
+});
 
 /** Encerra com `codigo` quando ele não é zero; com zero, termina normalmente. */
 const sairCom = (codigo: number): Effect.Effect<void, EncerrarComCodigo> =>
@@ -188,10 +225,18 @@ const gerarRelatorio = Effect.fn("revisar_ppc.gerarRelatorio")(function* (opcoes
   const relatorio = yield* executar(() => gerarRelatorioHtml(opcoes.rodadaDir, opcoes.resultados));
   if (opcoes.semSurge) return payloadRelatorio(relatorio);
   const rodada = caminhosRodada(opcoes.rodadaDir);
+  const dominioConfigurado = yield* textoDoAmbiente("REVISAR_PPC_SURGE_DOMAIN");
+  const comando = Option.map(yield* textoDoAmbiente("REVISAR_PPC_SURGE_CMD"), dividirComandoShell);
   return yield* executar(() => {
     const siteDir = prepararSiteSurge(relatorio.relatorio_html, path.join(rodada.suporteDir, "surge-site"));
-    const dominio = Option.getOrElse(opcoes.surgeDomain, () => "") || dominioSurgePadrao(rodada.rodadaDir);
-    const publicacao = publicarSiteSurge(siteDir, dominio);
+    const dominio = Option.getOrElse(
+      Option.orElse(
+        Option.filter(opcoes.surgeDomain, (valor) => valor !== ""),
+        () => dominioConfigurado,
+      ),
+      () => dominioSurgePadrao(rodada.rodadaDir),
+    );
+    const publicacao = publicarSiteSurge(siteDir, dominio, Option.getOrUndefined(comando));
     publicacao.relatorio_html_original = resolverCaminho(relatorio.relatorio_html);
     escreverJsonDaRodada(path.join(rodada.suporteDir, "surge-publicacao.json"), publicacao);
     return payloadRelatorio(relatorio, publicacao);
@@ -222,8 +267,13 @@ const prepararDocumentoCmd = Command.make(
     saidaBase: flagTexto("saida-base", "Diretório base opcional para a rodada"),
   },
   Effect.fn("revisar_ppc.prepararDocumento")(function* ({ arquivo, saidaBase }) {
+    const relogio = yield* relogioDoComando();
     const resultado = yield* executar(() =>
-      prepararDocumento(arquivo, Option.isSome(saidaBase) ? { saidaBase: saidaBase.value } : {}),
+      prepararDocumento(arquivo, {
+        referencias: lerReferenciasIdentificacao(caminhosPadrao()),
+        relogio,
+        ...(Option.isSome(saidaBase) ? { saidaBase: saidaBase.value } : {}),
+      }),
     );
     yield* imprimirJson(resultado.resumo);
   }),
@@ -409,7 +459,8 @@ const medirIdentificacaoCmd = Command.make(
   },
   Effect.fn("revisar_ppc.medirIdentificacao")(function* ({ amostra, erros, json }) {
     const texto = yield* executar(() => {
-      const medicao = medirIdentificacao(amostra ? { amostra: AMOSTRA_MEDICAO } : {});
+      const referencias = lerReferenciasIdentificacao(caminhosPadrao());
+      const medicao = medirIdentificacao(amostra ? { referencias, amostra: AMOSTRA_MEDICAO } : { referencias });
       // `formatarMedicao` termina com quebra de linha; o `Console.log` põe a sua.
       return json ? JSON.stringify(medicao, null, 2) : formatarMedicao(medicao, { erros }).replace(/\n$/, "");
     });

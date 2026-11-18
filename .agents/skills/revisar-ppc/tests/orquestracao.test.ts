@@ -20,11 +20,19 @@ import { compararPpcComCnct } from "../scripts/cnct-catalogo.ts";
 import { extrairIdentificacaoDaConversao, inferirIdentificacaoDoMarkdown } from "../scripts/identificacao.ts";
 import { normalizarMarkdown } from "@simplifica-if/ppc/normalizador-markdown";
 import { mesclarIdentificacaoPreferindoPreenchidos, prepararDocumento } from "../scripts/preparar-documento.ts";
+import { lerReferenciasIdentificacao } from "../scripts/referencias-identificacao.ts";
 import { referenciasLegiveisDaFicha, universoOuVazio } from "../scripts/referencias-fichas.ts";
 import { ErroResultadosSubagents, mesclarResultadosAvulsos, validarResultadosRodada } from "../scripts/resultados.ts";
 import * as NodeSqlite from "node:sqlite";
 import { camadaKb } from "../scripts/revisar_ppc.ts";
-import { agoraIso, caminhosRodada, escreverJsonDaRodada, lerJsonDaRodada, timestampSlug } from "../scripts/rodada.ts";
+import {
+  agoraIso,
+  caminhosRodada,
+  escreverJsonDaRodada,
+  interpretarAgora,
+  lerJsonDaRodada,
+  timestampSlug,
+} from "../scripts/rodada.ts";
 import {
   agruparFichasPorTopico,
   carregarFichasOrdenadas,
@@ -43,6 +51,7 @@ const RAIZ = NodePath.resolve(caminhos.appDir, "../../..");
 const ENTRYPOINT = NodePath.join(caminhos.appDir, "scripts", "revisar_ppc.ts");
 const FIXTURES = NodePath.join(caminhos.appDir, "tests", "fixtures");
 const RELOGIO = () => new Date("2026-11-13T12:34:56Z");
+const REFERENCIAS = lerReferenciasIdentificacao(caminhosPadrao());
 const TOTAL_FICHAS = NodeFS.readdirSync(caminhos.fichasDir).filter((nome) => nome.endsWith(".json")).length;
 
 const MARKDOWN_BASE = `# Curso Técnico em Informática
@@ -79,7 +88,11 @@ function criarRodada(markdown = MARKDOWN_BASE): string {
   const dir = diretorioTemporario();
   const arquivo = NodePath.join(dir, "PPC.md");
   NodeFS.writeFileSync(arquivo, markdown, "utf-8");
-  return prepararDocumento(arquivo, { saidaBase: NodePath.join(dir, "output"), relogio: RELOGIO }).rodadaDir;
+  return prepararDocumento(arquivo, {
+    referencias: REFERENCIAS,
+    saidaBase: NodePath.join(dir, "output"),
+    relogio: RELOGIO,
+  }).rodadaDir;
 }
 
 function resultado(fichaId: string, estado = "ATENDE", evidencias = 3): Dicionario {
@@ -147,13 +160,14 @@ describe("relógio", () => {
 });
 
 describe("REVISAR_PPC_AGORA", () => {
-  /** Relógio do ambiente lido num processo novo, com fuso e `REVISAR_PPC_AGORA` fixos. */
+  /** `interpretarAgora` num processo novo, com o fuso fixo. */
   function relogioEm(fuso: string, agora: string) {
     const codigo =
-      `import { agoraIso, timestampSlug } from ${JSON.stringify(NodePath.join(caminhos.appDir, "scripts", "rodada.ts"))};` +
-      "console.log(JSON.stringify([timestampSlug(), agoraIso()]));";
+      `import { agoraIso, interpretarAgora, timestampSlug } from ${JSON.stringify(NodePath.join(caminhos.appDir, "scripts", "rodada.ts"))};` +
+      "const data = interpretarAgora(process.env.AGORA);" +
+      "console.log(JSON.stringify([timestampSlug(() => data), agoraIso(() => data)]));";
     const processo = NodeChildProcess.spawnSync(process.execPath, ["--input-type=module", "-e", codigo], {
-      env: { ...process.env, TZ: fuso, REVISAR_PPC_AGORA: agora },
+      env: { ...process.env, TZ: fuso, AGORA: agora },
       encoding: "utf-8",
     });
     return { codigo: processo.status, stdout: processo.stdout, stderr: processo.stderr };
@@ -177,11 +191,18 @@ describe("REVISAR_PPC_AGORA", () => {
   });
 
   test("valor inválido é recusado", () => {
-    for (const valor of ["13/11/2026", "2026-02-30", "Nov 13 2026"]) {
-      const { codigo, stderr } = relogioEm("America/Sao_Paulo", valor);
-      expect(codigo).not.toBe(0);
-      expect(stderr).toContain(`REVISAR_PPC_AGORA inválida: ${valor}`);
-    }
+    for (const valor of ["13/11/2026", "2026-02-30", "Nov 13 2026"]) expect(interpretarAgora(valor)).toBeUndefined();
+    const dir = diretorioTemporario();
+    const arquivo = NodePath.join(dir, "ppc.md");
+    NodeFS.writeFileSync(arquivo, "# PPC\n", "utf-8");
+    const processo = NodeChildProcess.spawnSync(
+      process.execPath,
+      [ENTRYPOINT, "preparar-documento", arquivo, "--saida-base", dir],
+      { cwd: RAIZ, env: { ...process.env, REVISAR_PPC_AGORA: "2026-02-30" }, encoding: "utf-8" },
+    );
+    expect(processo.status).not.toBe(0);
+    expect(processo.stderr).toContain("REVISAR_PPC_AGORA inválida: 2026-02-30");
+    expect(NodeFS.readdirSync(dir)).toEqual(["ppc.md"]);
   });
 });
 
@@ -262,7 +283,11 @@ O curso apresenta objetivos.
       "curitiba",
       "tecnico-em-eventos.md",
     );
-    const rodada = prepararDocumento(arquivo, { saidaBase: diretorioTemporario(), relogio: RELOGIO }).rodadaDir;
+    const rodada = prepararDocumento(arquivo, {
+      referencias: REFERENCIAS,
+      saidaBase: diretorioTemporario(),
+      relogio: RELOGIO,
+    }).rodadaDir;
     const ppc = NodeFS.readFileSync(caminhosRodada(rodada).ppc, "utf-8");
     expect(ppc).not.toContain("fonte_url");
     expect(ppc).not.toContain("ppc:curitiba/tecnico-em-eventos");
@@ -271,12 +296,16 @@ O curso apresenta objetivos.
   test("rejeita extensão desconhecida e arquivo ausente", () => {
     const dir = diretorioTemporario();
     NodeFS.writeFileSync(NodePath.join(dir, "ppc.txt"), "x");
-    expect(() => prepararDocumento(NodePath.join(dir, "ppc.txt"), { saidaBase: dir })).toThrow(
-      "A entrada deve ser um arquivo .md ou .docx.",
-    );
-    expect(() => prepararDocumento(NodePath.join(dir, "nao-existe.md"), { saidaBase: dir })).toThrow(
-      "Arquivo não encontrado",
-    );
+    expect(() =>
+      prepararDocumento(NodePath.join(dir, "ppc.txt"), { referencias: REFERENCIAS, saidaBase: dir, relogio: RELOGIO }),
+    ).toThrow("A entrada deve ser um arquivo .md ou .docx.");
+    expect(() =>
+      prepararDocumento(NodePath.join(dir, "nao-existe.md"), {
+        referencias: REFERENCIAS,
+        saidaBase: dir,
+        relogio: RELOGIO,
+      }),
+    ).toThrow("Arquivo não encontrado");
   });
 });
 
@@ -417,19 +446,23 @@ Quedas do Iguaçu
 
 ## SUMÁRIO
 `,
+      REFERENCIAS,
       "PPC Técnico em Informática",
     );
     expect(identificacao.campus).toBe("Quedas do Iguaçu");
   });
 
   test("ignora chaves de inventário na extração do campus", () => {
-    const identificacao = extrairIdentificacaoDaConversao({
-      dados_extraidos: {
-        nome_curso: "Curso Técnico em Informática para Internet",
-        unidade_de_fluxo_de_ar: "5",
-        capela_de_fluxo_laminar: "1",
+    const identificacao = extrairIdentificacaoDaConversao(
+      {
+        dados_extraidos: {
+          nome_curso: "Curso Técnico em Informática para Internet",
+          unidade_de_fluxo_de_ar: "5",
+          capela_de_fluxo_laminar: "1",
+        },
       },
-    });
+      REFERENCIAS,
+    );
     expect(identificacao.campus).toBe("Campus não identificado");
   });
 
@@ -656,7 +689,11 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("fichas e grupos", (it) => {
       expect(NodeFS.readFileSync(fixtureNorma, "utf-8")).toContain("dispensa a consulta ao Catálogo Nacional");
       expect(NodeFS.readFileSync(fixtureEstagio, "utf-8")).toContain("estágio é não obrigatório");
       const dir = diretorioTemporario();
-      const { rodadaDir } = prepararDocumento(fixtureEstagio, { saidaBase: dir, relogio: RELOGIO });
+      const { rodadaDir } = prepararDocumento(fixtureEstagio, {
+        referencias: REFERENCIAS,
+        saidaBase: dir,
+        relogio: RELOGIO,
+      });
       const grupos = (yield* montarGruposSubagents(rodadaDir)) as Dicionario & { grupos: Dicionario[] };
       expect(((grupos.cnct_contexto as Dicionario).correspondencia as Dicionario).denominacao).toBe(
         "Técnico em Informática",

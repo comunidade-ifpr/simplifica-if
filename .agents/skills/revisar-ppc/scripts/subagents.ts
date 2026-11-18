@@ -295,7 +295,7 @@ function resolverCaminhoArtefato(valor: unknown): string | null {
   return existe(caminho) ? resolverCaminho(caminho) : null;
 }
 
-/** `_valor_inteiro`: inteiro de número inteiro, float inteiro ou dos dígitos de um texto. */
+/** Inteiro de número inteiro, float inteiro ou dos dígitos de um texto. */
 function valorInteiro(valor: unknown): number | null {
   if (typeof valor === "boolean") return null;
   if (ehInteiroOuLogico(valor)) return valorNumerico(valor);
@@ -614,7 +614,7 @@ export const REGRA_AGRUPAMENTO =
   "O grupo recebe as seções do PPC.md de todos os tópicos das suas fichas (packages/kb/dados/topicos-secoes.yaml) " +
   "e as que a busca pelas consultas das fichas achar.";
 
-/** `montar_grupos_subagents`: grupos por tópico com contextos, gravados em `grupos-subagents.json`. */
+/** Grupos por tópico com contextos, gravados em `grupos-subagents.json`. */
 export const montarGruposSubagents = Effect.fn("subagents.montarGruposSubagents")(function* (
   rodada: string,
   tamanhoGrupo: number = TAMANHO_GRUPO_PADRAO,
@@ -659,7 +659,7 @@ export const montarGruposSubagents = Effect.fn("subagents.montarGruposSubagents"
   return payload;
 }, Effect.scoped);
 
-/** `montar_grupo_avulso`: grupo só com as fichas pedidas, gravado em `grupos-avulsos/`, com o pacote de prompt. */
+/** Grupo só com as fichas pedidas, gravado em `grupos-avulsos/`, com o pacote de prompt. */
 export const montarGrupoAvulso = Effect.fn("subagents.montarGrupoAvulso")(function* (
   rodada: string,
   fichaIds: readonly string[],
@@ -775,7 +775,7 @@ function pacotePromptGrupo(ppc: string, template: string, grupo: unknown): strin
   ].join("\n\n")}\n`;
 }
 
-/** `preparar_prompts_subagents`: um pacote Markdown autocontido por grupo, mais `manifest.json`. */
+/** Um pacote Markdown autocontido por grupo, mais `manifest.json`. */
 export const prepararPromptsSubagents = Effect.fn("subagents.prepararPromptsSubagents")(function* (
   rodada: string,
   opcoes: OpcoesSkill = {},

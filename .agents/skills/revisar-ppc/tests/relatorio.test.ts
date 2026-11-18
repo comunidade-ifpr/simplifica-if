@@ -14,6 +14,7 @@ import type { Dicionario } from "@simplifica-if/kb/primitivas/valores";
 import { caminhosPadrao } from "../scripts/caminhos.ts";
 import { desescaparAtributo } from "../scripts/eventos-html.ts";
 import { prepararDocumento } from "../scripts/preparar-documento.ts";
+import { lerReferenciasIdentificacao } from "../scripts/referencias-identificacao.ts";
 import { dominioSurgePadrao, prepararSiteSurge, publicarSiteSurge } from "../scripts/publicar-surge.ts";
 import {
   formatarHtml,
@@ -41,6 +42,7 @@ const caminhos = caminhosPadrao();
 const RAIZ = NodePath.resolve(caminhos.appDir, "../../..");
 const ENTRYPOINT = NodePath.join(caminhos.appDir, "scripts", "revisar_ppc.ts");
 const RELOGIO = () => new Date("2026-11-13T12:34:56Z");
+const REFERENCIAS = lerReferenciasIdentificacao(caminhosPadrao());
 const TOTAL_FICHAS = NodeFS.readdirSync(caminhos.fichasDir).filter((nome) => nome.endsWith(".json")).length;
 
 const MARKDOWN_BASE = `# Curso Técnico em Informática
@@ -69,7 +71,11 @@ function criarRodada(markdown = MARKDOWN_BASE): string {
   const dir = diretorioTemporario();
   const arquivo = NodePath.join(dir, "PPC.md");
   NodeFS.writeFileSync(arquivo, markdown, "utf-8");
-  return prepararDocumento(arquivo, { saidaBase: NodePath.join(dir, "output"), relogio: RELOGIO }).rodadaDir;
+  return prepararDocumento(arquivo, {
+    referencias: REFERENCIAS,
+    saidaBase: NodePath.join(dir, "output"),
+    relogio: RELOGIO,
+  }).rodadaDir;
 }
 
 function resultado(fichaId: string, estado = "ATENDE", evidencias = 3): Dicionario {

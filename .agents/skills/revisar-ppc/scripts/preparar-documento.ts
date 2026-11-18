@@ -24,6 +24,7 @@ import {
   type FontesIdentificacao,
   type Identificacao,
   type IdentificacaoComFontes,
+  type ReferenciasIdentificacao,
   valorIdentificacaoPreenchido,
 } from "./identificacao.ts";
 import { normalizarMarkdown } from "@simplifica-if/ppc/normalizador-markdown";
@@ -38,14 +39,15 @@ import {
   lerJsonDaRodada,
   lerTexto,
   type Relogio,
-  relogioDoAmbiente,
   resolverCaminho,
   timestampSlug,
 } from "./rodada.ts";
 
 export type OpcoesPreparacao = {
+  /** Campi e eixos reconhecidos na identificação do curso (`lerReferenciasIdentificacao`). */
+  referencias: ReferenciasIdentificacao;
   saidaBase?: string;
-  relogio?: Relogio;
+  relogio: Relogio;
   caminhos?: CaminhosAnalise;
 };
 
@@ -59,14 +61,14 @@ export type ArtefatosDocx = {
   ementario: string | null;
 };
 
-/** `Path.stem`: nome sem a última extensão. */
+/** Nome do arquivo sem a última extensão. */
 function radical(arquivo: string): string {
   const nome = NodePath.basename(arquivo);
   const ponto = nome.lastIndexOf(".");
   return ponto > 0 && ponto < nome.length - 1 ? nome.slice(0, ponto) : nome;
 }
 
-/** `Path.suffix`. */
+/** Última extensão do nome do arquivo, com o ponto; vazia quando não há. */
 function extensao(arquivo: string): string {
   const nome = NodePath.basename(arquivo);
   const ponto = nome.lastIndexOf(".");
@@ -89,10 +91,14 @@ function criarRodada(saidaBase: string, nomeBase: string, relogio: Relogio): str
  * Normaliza o Markdown e grava o `PPC.md` canônico. O front matter de proveniência dos PPCs da base
  * (`---` … `---` no início) fica fora: não é texto do PPC.
  */
-function prepararMarkdown(arquivo: string, caminhos: CaminhosRodada, skill: CaminhosAnalise): IdentificacaoComFontes {
+function prepararMarkdown(
+  arquivo: string,
+  caminhos: CaminhosRodada,
+  referencias: ReferenciasIdentificacao,
+): IdentificacaoComFontes {
   const texto = corpoPpc(lerTexto(arquivo));
   escreverTextoDaRodada(caminhos.ppc, normalizarMarkdown(texto).markdownNormalizado);
-  return extrairIdentificacao(texto, radical(arquivo), skill);
+  return extrairIdentificacao(texto, referencias, radical(arquivo));
 }
 
 /** Valores preenchidos de `preferencial` sobrescrevem os de `base`. */
@@ -107,7 +113,7 @@ export function mesclarIdentificacaoPreferindoPreenchidos(
   return mesclada;
 }
 
-/** `shutil.copy2`: copia conteúdo, permissões e datas. */
+/** Copia conteúdo e datas de modificação e de acesso. */
 function copiarArquivo(origem: string, destino: string): void {
   NodeFS.mkdirSync(NodePath.dirname(destino), { recursive: true });
   NodeFS.copyFileSync(origem, destino);
@@ -144,7 +150,7 @@ function gravarArtefatos(conversao: Conversao, arquivoDocx: string, saida: strin
 function prepararDocx(
   arquivo: string,
   caminhos: CaminhosRodada,
-  skill: CaminhosAnalise,
+  referencias: ReferenciasIdentificacao,
   convertido: Conversao,
 ): { identificacao: IdentificacaoComFontes; conversao: ArtefatosDocx } {
   const artefatos = gravarArtefatos(convertido, arquivo, caminhos.artefatosConversaoDir);
@@ -155,9 +161,9 @@ function prepararDocx(
   // O PPC.md da conversão traz as tabelas de identificação em Markdown, então a extração do
   // Markdown vem primeiro; os dados da conversão (validados pelos mesmos critérios) só preenchem
   // o que faltar, e o nome do arquivo fica por último.
-  const { fontes, ...doMarkdown } = extrairIdentificacao(lerTexto(caminhos.ppc), "", skill);
+  const { fontes, ...doMarkdown } = extrairIdentificacao(lerTexto(caminhos.ppc), referencias);
   let identificacao = doMarkdown as Identificacao;
-  const daConversao = extrairIdentificacaoDaConversao(lerJsonDaRodada(artefatos.dados), "", skill);
+  const daConversao = extrairIdentificacaoDaConversao(lerJsonDaRodada(artefatos.dados), referencias);
   for (const [chave, valor] of Object.entries(daConversao) as Array<[keyof Identificacao, string]>) {
     if (valorIdentificacaoPreenchido(identificacao[chave]) || !valorIdentificacaoPreenchido(valor)) continue;
     identificacao[chave] = valor;
@@ -180,10 +186,10 @@ export type ResultadoPreparacao = {
   resumo: Dicionario;
 };
 
-/** `preparar_documento`: cria a rodada, o `PPC.md`, `metadata.json` e `manifesto-rodada.json`. */
-export function prepararDocumento(arquivoEntrada: string, opcoes: OpcoesPreparacao = {}): ResultadoPreparacao {
+/** Cria a rodada, o `PPC.md`, `metadata.json` e `manifesto-rodada.json`. */
+export function prepararDocumento(arquivoEntrada: string, opcoes: OpcoesPreparacao): ResultadoPreparacao {
   const skill = opcoes.caminhos ?? caminhosPadrao();
-  const relogio = opcoes.relogio ?? relogioDoAmbiente;
+  const relogio = opcoes.relogio;
   const arquivo = resolverCaminho(arquivoEntrada);
   if (!NodeFS.existsSync(arquivo)) throw new Error(`Arquivo não encontrado: ${arquivo}`);
   const tipo = extensao(arquivo).toLowerCase();
@@ -204,8 +210,8 @@ export function prepararDocumento(arquivoEntrada: string, opcoes: OpcoesPreparac
 
   let identificacao: IdentificacaoComFontes;
   let conversao: ArtefatosDocx | undefined;
-  if (convertido) ({ identificacao, conversao } = prepararDocx(arquivo, caminhos, skill, convertido));
-  else identificacao = prepararMarkdown(arquivo, caminhos, skill);
+  if (convertido) ({ identificacao, conversao } = prepararDocx(arquivo, caminhos, opcoes.referencias, convertido));
+  else identificacao = prepararMarkdown(arquivo, caminhos, opcoes.referencias);
 
   const metadata: Dicionario = {
     curso: identificacao.curso,

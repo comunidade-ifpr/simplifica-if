@@ -25,7 +25,7 @@ import {
 import { aparar } from "@simplifica-if/kb/texto";
 import { listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
-import { caminhosRodada, escreverJsonDaRodada, existe, lerJsonDaRodada, sha256JsonPayload } from "./rodada.ts";
+import { caminhosRodada, escreverJsonDaRodada, lerJsonDaRodada, sha256JsonPayload } from "./rodada.ts";
 import { carregarFichasOrdenadas, STATUS_FUNDAMENTACAO_NORMATIVA } from "./subagents.ts";
 
 export class ErroResultadosSubagents extends Error {
@@ -35,22 +35,19 @@ export class ErroResultadosSubagents extends Error {
 const ESTADOS_PERMITIDOS = new Set(["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"]);
 const STATUS_NORMATIVOS = new Set(STATUS_FUNDAMENTACAO_NORMATIVA);
 
-/** `str(valor or "").strip()`. */
+/** Texto aparado do valor; vazio para valor falso. */
 function texto(valor: unknown): string {
   return aparar(textoOuVazioDoValor(valor));
 }
 
-/** `str(a or b or ... or "").strip()`. */
+/** Texto aparado da primeira chave com valor verdadeiro. */
 function primeiroTexto(objeto: Dicionario, ...chaves: string[]): string {
   return texto(ou(...chaves.map((chave) => obter(objeto, chave)), ""));
 }
 
-/** `resultados_path` absoluto, em `arquivos-suporte/` quando existe lá, ou na raiz da rodada. */
+/** Caminho do JSON de resultados: o absoluto como está; o relativo, em `arquivos-suporte/`. */
 export function resolverResultadosPath(rodada: string, resultados: string): string {
-  if (NodePath.isAbsolute(resultados)) return resultados;
-  const caminhos = caminhosRodada(rodada);
-  const noSuporte = NodePath.join(caminhos.suporteDir, resultados);
-  return existe(noSuporte) ? noSuporte : NodePath.join(rodada, resultados);
+  return noSuporte(resultados, caminhosRodada(rodada).suporteDir);
 }
 
 /** Fichas por `id` (`str`), na ordem do id. */
@@ -277,7 +274,7 @@ function validarBlocos(
   return { normalizados, vistos };
 }
 
-/** `validar_resultados_subagents`: um resultado válido por ficha do catálogo, ordenados por ficha. */
+/** Um resultado válido por ficha do catálogo, ordenados por ficha. */
 export function validarResultadosSubagents(
   payload: Dicionario,
   fichasPorId: Map<string, Dicionario>,
@@ -288,7 +285,7 @@ export function validarResultadosSubagents(
   return normalizados.sort((a, b) => compararTexto(a.ficha_id, b.ficha_id));
 }
 
-/** `validar_alertas_transversais`: alertas da síntese transversal ligados a validações cruzadas conhecidas. */
+/** Alertas da síntese transversal ligados a validações cruzadas conhecidas. */
 export function validarAlertasTransversais(
   payload: Dicionario,
   fichasPorId: Map<string, Dicionario>,
@@ -399,7 +396,7 @@ function contagem(valores: string[]): Dicionario {
   return saida;
 }
 
-/** `validar_resultados_rodada`: valida o JSON de resultados e devolve o resumo, sem gerar HTML. */
+/** Valida o JSON de resultados e devolve o resumo, sem gerar HTML. */
 export function validarResultadosRodada(
   rodada: string,
   resultados: string,
@@ -445,7 +442,7 @@ function exigirObjeto(valor: unknown, descricao: string): Dicionario {
 }
 
 /**
- * `mesclar_resultados_avulsos`: substitui no JSON base os resultados das fichas reavaliadas.
+ * Substitui no JSON base os resultados das fichas reavaliadas.
  *
  * O avulso é validado contra o contrato das fichas antes de qualquer escrita; se for inválido, a
  * mescla é recusada e a base fica intacta. A base é normalizada para `grupos[]` antes da mescla

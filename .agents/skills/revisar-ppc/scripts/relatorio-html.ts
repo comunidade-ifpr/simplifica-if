@@ -160,7 +160,7 @@ class ImpressoraHtml {
   }
 }
 
-/** `_quebrar_linhas_longas_fonte`: reparte em `largura` colunas as linhas do HTML que passam dela. */
+/** Reparte em `largura` colunas as linhas do HTML que passam dela. */
 export function quebrarLinhasLongasFonte(html: string, largura = 180): string {
   const formatadas: string[] = [];
   for (const linha of dividirLinhas(html)) {
@@ -205,7 +205,7 @@ export function formatarHtml(html: string): string {
 
 export type BlocoPpc = { id: string; kind: string; text: string; html: string; level: number };
 
-/** `_normalizar_texto`: sem acentos, minúsculas, só `a-z0-9` separados por um espaço. */
+/** Texto sem acentos, minúsculas, só `a-z0-9` separados por um espaço. */
 function normalizarTexto(valor: string): string {
   return colapsarEspacos(casefold(semMarcas(valor)).replace(/[^a-z0-9]+/gu, " "));
 }
@@ -215,7 +215,7 @@ const classeEstado = (valor: string) => (valor === "TRANSVERSAL" ? "transversal"
 
 const MARCADOR_BR = "\u0000BR\u0000";
 
-/** `_inline_markdown`: escape, `<br>` preservado, `**negrito**` e `*itálico*`. */
+/** Markdown em linha: escape, `<br>` preservado, `**negrito**` e `*itálico*`. */
 function markdownInline(valor: string): string {
   const comMarcador = sub("<br\\s*/?>", MARCADOR_BR, valor, { ignoreCase: true });
   let html = escape(comMarcador).replaceAll(MARCADOR_BR, "<br>");
@@ -276,7 +276,7 @@ function tipoLinha(linha: string): [string, number] {
   return ["paragraph", 0];
 }
 
-/** `gerar_blocos_ppc`: o Markdown do PPC em blocos com IDs estáveis (`ppc-b00001`). */
+/** O Markdown do PPC em blocos com IDs estáveis (`ppc-b00001`). */
 export function gerarBlocosPpc(markdown: string): BlocoPpc[] {
   const linhas = markdown.replaceAll("\r\n", "\n").replaceAll("\r", "\n").split("\n");
   const blocos: BlocoPpc[] = [];
@@ -351,7 +351,7 @@ function blocosDaSecao(titulo: BlocoPpc, blocos: BlocoPpc[]): BlocoPpc[] {
   return relacionados;
 }
 
-/** `_resolver_anchor_evidencia`: o bloco do PPC e o trecho a destacar para uma evidência. */
+/** O bloco do PPC e o trecho a destacar para uma evidência. */
 export function resolverAncoraEvidencia(evidencia: Objeto, blocos: BlocoPpc[]): [string, string] {
   const porId = new Set(blocos.map((bloco) => bloco.id));
   const ancora = ehDicionario(evidencia.anchor) ? evidencia.anchor : {};
@@ -390,7 +390,7 @@ function itemAcionavel(item: Objeto): boolean {
   );
 }
 
-/** Posição em code points de `trecho` em `texto` (`str.find`), ou -1. */
+/** Posição em code points de `trecho` em `texto`, ou -1. */
 function encontrar(textoBase: string, trecho: string): number {
   const posicao = textoBase.indexOf(trecho);
   return posicao < 0 ? -1 : comprimento(textoBase.slice(0, posicao));
@@ -756,7 +756,7 @@ function contagemOrdenada(valores: string[]): Array<[string, number]> {
 const AVISO_REVISAO =
   "Revisão prévia, antes da submissão à PROENS: não substitui a análise oficial da PROENS nem emite parecer.";
 
-/** `_render_html`: o HTML do relatório antes da indentação. */
+/** O HTML do relatório antes da indentação. */
 export function renderizarHtml(
   metadata: Dicionario,
   resultados: ResultadoNormalizado[],
@@ -901,7 +901,7 @@ export function renderizarHtml(
 
 const ASSETS = ["revisar-ppc.css", "revisar-ppc.js"];
 
-/** `_copiar_assets`: copia o CSS e o JS do relatório para `<destino>/assets`. */
+/** Copia o CSS e o JS do relatório para `<destino>/assets`. */
 function copiarAssets(destinoDir: string, caminhos: CaminhosAnalise): string[] {
   const destino = NodePath.join(destinoDir, "assets");
   NodeFS.mkdirSync(destino, { recursive: true });
@@ -921,7 +921,7 @@ export type RelatorioGerado = {
   situacao_rotulo: string;
 };
 
-/** `gerar_relatorio_html`: valida os resultados, grava `relatorio-revisao.html` e copia os assets. */
+/** Valida os resultados, grava `relatorio-revisao.html` e copia os assets. */
 export function gerarRelatorioHtml(
   rodada: string,
   resultados: string,

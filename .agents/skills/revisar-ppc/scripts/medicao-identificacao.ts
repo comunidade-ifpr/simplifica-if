@@ -12,7 +12,12 @@
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
-import { type Identificacao, inferirIdentificacaoDoMarkdown, normalizarBusca } from "./identificacao.ts";
+import {
+  type Identificacao,
+  inferirIdentificacaoDoMarkdown,
+  normalizarBusca,
+  type ReferenciasIdentificacao,
+} from "./identificacao.ts";
 
 /** Nome de reserva neutro: a medição não deve acertar pelo nome do arquivo. */
 export const NOME_RESERVA_MEDICAO = "PPC";
@@ -65,10 +70,10 @@ export type Medicao = {
   casos: CasoMedido[];
 };
 
-export type Extrator = (texto: string, caminhos: CaminhosAnalise) => Identificacao;
+export type Extrator = (texto: string, referencias: ReferenciasIdentificacao) => Identificacao;
 
-export const extratorPadrao: Extrator = (texto, caminhos) =>
-  inferirIdentificacaoDoMarkdown(texto, NOME_RESERVA_MEDICAO, caminhos);
+export const extratorPadrao: Extrator = (texto, referencias) =>
+  inferirIdentificacaoDoMarkdown(texto, referencias, NOME_RESERVA_MEDICAO);
 
 /** Cursos técnicos (nível médio) com PPC convertido na base. */
 export function carregarGabarito(caminhos: CaminhosAnalise = caminhosPadrao()): Gabarito[] {
@@ -186,9 +191,12 @@ export function compararComGabarito(
 }
 
 /** Roda o extrator sobre os PPCs do gabarito (ou só sobre os caminhos de `amostra`). */
-export function medirIdentificacao(
-  opcoes: { caminhos?: CaminhosAnalise; amostra?: readonly string[]; extrator?: Extrator } = {},
-): Medicao {
+export function medirIdentificacao(opcoes: {
+  referencias: ReferenciasIdentificacao;
+  caminhos?: CaminhosAnalise;
+  amostra?: readonly string[];
+  extrator?: Extrator;
+}): Medicao {
   const caminhos = opcoes.caminhos ?? caminhosPadrao();
   const extrator = opcoes.extrator ?? extratorPadrao;
   const campus = campiPorNome(caminhos);
@@ -199,7 +207,11 @@ export function medirIdentificacao(
   }
   const casos = gabarito.map((item): CasoMedido => {
     const texto = NodeFS.readFileSync(NodePath.join(caminhos.baseConhecimentoDir, item.caminho), "utf8");
-    return { caminho: item.caminho, gabarito: item, ...compararComGabarito(extrator(texto, caminhos), item, campus) };
+    return {
+      caminho: item.caminho,
+      gabarito: item,
+      ...compararComGabarito(extrator(texto, opcoes.referencias), item, campus),
+    };
   });
   const campos = {} as Medicao["campos"];
   for (const campo of CAMPOS_MEDIDOS) {

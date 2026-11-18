@@ -9,13 +9,18 @@ import * as NodePath from "node:path";
 import type { Dicionario } from "@simplifica-if/kb/primitivas/valores";
 import { docxDaFixture } from "@simplifica-if/ppc/testes/documentos";
 import { afterEach, describe, expect, test } from "vite-plus/test";
+import { caminhosPadrao } from "../scripts/caminhos.ts";
 import { prepararDocumento } from "../scripts/preparar-documento.ts";
+import { lerReferenciasIdentificacao } from "../scripts/referencias-identificacao.ts";
 import { lerJsonDaRodada } from "../scripts/rodada.ts";
 
 const temporarios: string[] = [];
 afterEach(() => {
   for (const dir of temporarios.splice(0)) NodeFS.rmSync(dir, { recursive: true, force: true });
 });
+
+const REFERENCIAS = lerReferenciasIdentificacao(caminhosPadrao());
+const RELOGIO = () => new Date(2026, 10, 13);
 
 function diretorioTemporario(): string {
   const dir = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "revisar-ppc-preparar-docx-"));
@@ -29,8 +34,9 @@ describe("preparar-documento com .docx", () => {
     const docx = NodePath.join(dir, "PPC Tecnico em Testes.docx");
     NodeFS.writeFileSync(docx, docxDaFixture("ppc-minimo"));
     const { rodadaDir, metadata, ppc } = prepararDocumento(docx, {
+      referencias: REFERENCIAS,
       saidaBase: NodePath.join(dir, "rodadas"),
-      relogio: () => new Date(2026, 10, 13),
+      relogio: RELOGIO,
     });
     expect(NodePath.basename(rodadaDir)).toBe("2026-11-13t00-00-00-ppc-tecnico-em-testes");
     const dadosDaRodada = lerJsonDaRodada(metadata) as Dicionario;
@@ -74,9 +80,9 @@ describe("preparar-documento com .docx", () => {
     for (const [nome, bytes, mensagem] of casos) {
       const arquivo = NodePath.join(dir, nome);
       NodeFS.writeFileSync(arquivo, bytes);
-      expect(() => prepararDocumento(arquivo, { saidaBase: rodadas, relogio: () => new Date(2026, 10, 13) })).toThrow(
-        mensagem,
-      );
+      expect(() =>
+        prepararDocumento(arquivo, { referencias: REFERENCIAS, saidaBase: rodadas, relogio: RELOGIO }),
+      ).toThrow(mensagem);
     }
     expect(NodeFS.existsSync(rodadas)).toBe(false);
   });
@@ -87,9 +93,13 @@ describe("preparar-documento com .docx", () => {
     // Arquivo esparso: tem o tamanho, sem ocupar o disco.
     NodeFS.closeSync(NodeFS.openSync(arquivo, "w"));
     NodeFS.truncateSync(arquivo, 21 * 1024 * 1024);
-    expect(() => prepararDocumento(arquivo, { saidaBase: NodePath.join(dir, "rodadas") })).toThrow(
-      /tem 21 MB, e o limite é de 20 MB\. Um PPC raramente passa disso.*Arquivo › Compactar imagens/,
-    );
+    expect(() =>
+      prepararDocumento(arquivo, {
+        referencias: REFERENCIAS,
+        saidaBase: NodePath.join(dir, "rodadas"),
+        relogio: RELOGIO,
+      }),
+    ).toThrow(/tem 21 MB, e o limite é de 20 MB\. Um PPC raramente passa disso.*Arquivo › Compactar imagens/);
     expect(NodeFS.existsSync(NodePath.join(dir, "rodadas"))).toBe(false);
   });
 });

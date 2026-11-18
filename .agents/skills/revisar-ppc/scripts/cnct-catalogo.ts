@@ -242,7 +242,7 @@ function primeiroValorPreenchido(...valores: unknown[]): unknown {
   return null;
 }
 
-/** `_read_json_if_exists`. */
+/** JSON do caminho dado, quando ele existe e é objeto; senão, objeto vazio. */
 export function lerJsonSeExistir(valorCaminho: unknown): Dicionario {
   if (!verdadeiro(valorCaminho)) return {};
   const caminho = textoDoValor(valorCaminho);
@@ -376,7 +376,7 @@ function compararEstagioCnct(estagioCnct: Dicionario, estagio: Dicionario): Dici
   };
 }
 
-/** `comparar_ppc_com_cnct`. */
+/** Compara o curso do PPC (denominação, eixo, carga horária e estágio) com o curso correspondente do CNCT. */
 export function compararPpcComCnct(
   metadata: Dicionario,
   dadosConversao: unknown,
@@ -466,7 +466,7 @@ export function compararPpcComCnct(
   };
 }
 
-/** `gerar_contexto_cnct_rodada`: grava `cnct-contexto.json` na rodada. */
+/** Grava `cnct-contexto.json` na rodada. */
 export function gerarContextoCnctRodada(
   rodada: string,
   opcoes: { catalogo?: string; caminhos?: CaminhosAnalise } = {},

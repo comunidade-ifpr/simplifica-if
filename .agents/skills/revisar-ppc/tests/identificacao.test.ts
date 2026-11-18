@@ -26,9 +26,15 @@ import {
   medirIdentificacao,
   nucleoCurso,
 } from "../scripts/medicao-identificacao.ts";
+import { caminhosPadrao } from "../scripts/caminhos.ts";
 import { prepararDocumento } from "../scripts/preparar-documento.ts";
+import { lerReferenciasIdentificacao } from "../scripts/referencias-identificacao.ts";
 import { montarDocx, par, tabelaDeTextos } from "@simplifica-if/docx/testes/sintetico";
 import { lerJsonDaRodada } from "../scripts/rodada.ts";
+
+const REFERENCIAS = lerReferenciasIdentificacao(caminhosPadrao());
+const extrair = (texto: string, nomeReserva?: string) => extrairIdentificacao(texto, REFERENCIAS, nomeReserva);
+const RELOGIO = () => new Date(2026, 10, 13);
 
 const temporarios: string[] = [];
 afterEach(() => {
@@ -83,7 +89,7 @@ Subsequente ao Ensino Médio
 
 describe("extração da identificação no Markdown", () => {
   test("rótulo no meio da frase não vira nome do curso (regressão do T1)", () => {
-    const identificacao = extrairIdentificacao(PPC_TITULOS_NUMERADOS, "PPC");
+    const identificacao = extrair(PPC_TITULOS_NUMERADOS, "PPC");
     expect(identificacao).toMatchObject({
       curso: "Técnico em Enfermagem",
       campus: "Curitiba",
@@ -96,16 +102,13 @@ describe("extração da identificação no Markdown", () => {
   });
 
   test("só a linha da base legal não identifica o curso", () => {
-    const identificacao = extrairIdentificacao(
-      "||Base legal específica do curso: Resolução CNE/CP nº 1/2021||||\n",
-      "meu-ppc",
-    );
+    const identificacao = extrair("||Base legal específica do curso: Resolução CNE/CP nº 1/2021||||\n", "meu-ppc");
     expect(identificacao.curso).toBe("meu-ppc");
     expect(identificacao.fontes.curso).toBe("nome_arquivo");
   });
 
   test("vários rótulos em negrito na mesma linha", () => {
-    const identificacao = extrairIdentificacao(
+    const identificacao = extrair(
       `## **CAMPUS EXEMPLO**
 
 **NÚMERO DO PROCESSO:** 23411.000000/2018-00 **NOME DO CURSO:** Curso Técnico em Comércio **EIXO TECNOLÓGICO** : Gestão e Negócios **COORDENAÇÃO DO CURSO** Coordenador: Fulano
@@ -127,7 +130,7 @@ describe("extração da identificação no Markdown", () => {
   });
 
   test("tabela de identificação com rótulo e valor em células", () => {
-    const identificacao = extrairIdentificacao(
+    const identificacao = extrair(
       `|Campo|Valor|
 |---|---|
 |Denominação do curso|TÉCNICO EM AUTOMAÇÃO INDUSTRIAL|
@@ -148,7 +151,7 @@ describe("extração da identificação no Markdown", () => {
   });
 
   test("grade de opções: opções sem marca são ambíguas, e o X marca a opção anterior", () => {
-    const identificacao = extrairIdentificacao(
+    const identificacao = extrair(
       `**NOME DO CURSO: TÉCNICO EM ELETROTÉCNICA**
 
 **LOCAL DE REALIZAÇÃO/CAMPUS: ASSIS CHATEAUBRIAND**
@@ -167,7 +170,7 @@ describe("extração da identificação no Markdown", () => {
   });
 
   test("capa em caixa alta quando não há rótulo; campus pela palavra campus, ignorando a Pró-Reitoria", () => {
-    const identificacao = extrairIdentificacao(
+    const identificacao = extrair(
       `# PROJETO PEDAGÓGICO DE CURSO CURSO TÉCNICO EM MECATRÔNICA FORMA DE OFERTA: Integrado
 
 **CAMPUS AVANÇADO ARAPONGAS 2025**
@@ -185,7 +188,7 @@ Pró-Reitoria de Ensino; o curso é ofertado de forma presencial.
   });
 
   test("PROEJA na denominação ou na modalidade vai para a forma de oferta", () => {
-    const identificacao = extrairIdentificacao(
+    const identificacao = extrair(
       `**NOME DO CURSO:** Curso Técnico em Manutenção e Suporte em Informática
 
 **Modalidade:** presencial/Educação de Jovens e Adultos/PROEJA
@@ -205,19 +208,19 @@ campus: Reitoria
 ---
 ${PPC_TITULOS_NUMERADOS}`;
     expect(removerFrontMatter(texto)).toBe(PPC_TITULOS_NUMERADOS);
-    expect(extrairIdentificacao(texto)).toMatchObject({ curso: "Técnico em Enfermagem", campus: "Curitiba" });
+    expect(extrair(texto)).toMatchObject({ curso: "Técnico em Enfermagem", campus: "Curitiba" });
   });
 
   test("régua horizontal no topo não é front matter", () => {
     const minuta = `---\n\n${PPC_TITULOS_NUMERADOS}\n---\n\nResto do texto.\n`;
     expect(removerFrontMatter(minuta)).toBe(minuta);
-    expect(extrairIdentificacao(minuta)).toMatchObject({ curso: "Técnico em Enfermagem", campus: "Curitiba" });
+    expect(extrair(minuta)).toMatchObject({ curso: "Técnico em Enfermagem", campus: "Curitiba" });
     const naoYaml = "---\nTexto livre, sem chave e valor\n---\nCorpo\n";
     expect(removerFrontMatter(naoYaml)).toBe(naoYaml);
   });
 
   test("sem nada identificável, os marcadores de ausência", () => {
-    const identificacao = extrairIdentificacao("Texto qualquer sobre o curso: sem identificação.\n");
+    const identificacao = extrair("Texto qualquer sobre o curso: sem identificação.\n");
     expect(identificacao).toMatchObject({
       curso: "Curso não identificado",
       campus: "Campus não identificado",
@@ -265,17 +268,20 @@ describe("validadores", () => {
 
 describe("dados da conversão DOCX", () => {
   test("valores que não parecem identificação são descartados", () => {
-    const identificacao = extrairIdentificacaoDaConversao({
-      dados_extraidos: {
-        nome_curso: "Resolução CNE/CP nº 1/2021",
-        curso_tecnico_em_x: "Coordenador: Fulano",
-        denominacao_do_curso: "Curso Técnico em Química",
-        campus: "Instituto Federal do Paraná – Campus Umuarama. Endereço: Rua X, 100",
-        modalidade: "Integrado",
-        forma_oferta: "Presencial",
-        eixo_tecnologico: "Eixo de Produção Industrial",
+    const identificacao = extrairIdentificacaoDaConversao(
+      {
+        dados_extraidos: {
+          nome_curso: "Resolução CNE/CP nº 1/2021",
+          curso_tecnico_em_x: "Coordenador: Fulano",
+          denominacao_do_curso: "Curso Técnico em Química",
+          campus: "Instituto Federal do Paraná – Campus Umuarama. Endereço: Rua X, 100",
+          modalidade: "Integrado",
+          forma_oferta: "Presencial",
+          eixo_tecnologico: "Eixo de Produção Industrial",
+        },
       },
-    });
+      REFERENCIAS,
+    );
     expect(identificacao).toEqual({
       curso: "Técnico em Química",
       campus: "Umuarama",
@@ -292,7 +298,7 @@ describe("preparar-documento", () => {
     const dir = diretorioTemporario();
     const arquivo = NodePath.join(dir, "ppc-enfermagem.md");
     NodeFS.writeFileSync(arquivo, PPC_TITULOS_NUMERADOS, "utf8");
-    const { metadata } = prepararDocumento(arquivo, { saidaBase: dir, relogio: () => new Date(2026, 10, 13) });
+    const { metadata } = prepararDocumento(arquivo, { referencias: REFERENCIAS, saidaBase: dir, relogio: RELOGIO });
     expect(lerJsonDaRodada(metadata) as Dicionario).toMatchObject({
       curso: "Técnico em Enfermagem",
       campus: "Curitiba",
@@ -331,10 +337,7 @@ describe("preparar-documento", () => {
         ].join(""),
       }),
     );
-    const { metadata } = prepararDocumento(arquivo, {
-      saidaBase: dir,
-      relogio: () => new Date(2026, 10, 13),
-    });
+    const { metadata } = prepararDocumento(arquivo, { referencias: REFERENCIAS, saidaBase: dir, relogio: RELOGIO });
     expect(lerJsonDaRodada(metadata) as Dicionario).toMatchObject({
       curso: "Técnico em Enfermagem",
       campus: "Curitiba",
@@ -354,7 +357,7 @@ describe("medição contra institucional/ifpr", () => {
   });
 
   test("a amostra fixa da base sai toda certa", () => {
-    const medicao = medirIdentificacao({ amostra: AMOSTRA_MEDICAO });
+    const medicao = medirIdentificacao({ referencias: REFERENCIAS, amostra: AMOSTRA_MEDICAO });
     expect(medicao.total).toBe(AMOSTRA_MEDICAO.length);
     const falhas = medicao.casos.flatMap((caso) =>
       Object.entries(caso.resultado)

@@ -2,15 +2,13 @@
 /**
  * Publicação do relatório no Surge.
  *
- * Só chama a CLI `surge` (por padrão `npx --yes surge`; `REVISAR_PPC_SURGE_CMD`
- * troca o comando, dividido como no shell, por `dividirComandoShell`) com a pasta do site e o
- * domínio, e confere a saída. `REVISAR_PPC_SURGE_DOMAIN` fixa o domínio padrão.
+ * Só chama a CLI `surge` (por padrão `npx --yes surge`; o ponto de entrada troca o comando pelo de
+ * `REVISAR_PPC_SURGE_CMD`) com a pasta do site e o domínio, e confere a saída.
  */
 import * as NodeChildProcess from "node:child_process";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { search } from "@simplifica-if/kb/primitivas/regex";
-import { dividirComandoShell } from "@simplifica-if/kb/primitivas/shell";
 import { asciiNfkd, casefold } from "@simplifica-if/kb/primitivas/texto";
 import { aparar, apararCaracteres } from "@simplifica-if/kb/texto";
 import { resolverCaminho } from "./rodada.ts";
@@ -30,10 +28,8 @@ function slug(valor: string, limite = 48): string {
   return resultado || "relatorio";
 }
 
-/** Domínio padrão: `REVISAR_PPC_SURGE_DOMAIN` ou `revisar-ppc-<slug da rodada>.surge.sh`. */
+/** Domínio padrão: `revisar-ppc-<slug da rodada>.surge.sh`. */
 export function dominioSurgePadrao(rodadaDir: string): string {
-  const configurado = process.env.REVISAR_PPC_SURGE_DOMAIN;
-  if (configurado) return configurado;
   return `revisar-ppc-${slug(NodePath.basename(rodadaDir))}.surge.sh`;
 }
 
@@ -48,12 +44,7 @@ export function prepararSiteSurge(relatorioHtml: string, destinoDir: string): st
   return destinoDir;
 }
 
-function comandoBase(comando?: string[]): string[] {
-  if (comando?.length) return comando;
-  const configurado = process.env.REVISAR_PPC_SURGE_CMD;
-  if (configurado) return dividirComandoShell(configurado);
-  return ["npx", "--yes", "surge"];
-}
+const COMANDO_SURGE = ["npx", "--yes", "surge"];
 
 function normalizarUrl(dominio: string): string {
   let valor = aparar(dominio);
@@ -61,7 +52,7 @@ function normalizarUrl(dominio: string): string {
   return /^https?:\/\//i.test(valor) ? valor : `https://${valor}`;
 }
 
-/** Saída de processo como `text=True` do `subprocess`: UTF-8 com quebras de linha universais. */
+/** Saída do processo em UTF-8 estrito, com quebras de linha universais. */
 function textoDoProcesso(bytes: Uint8Array): string {
   return new TextDecoder("utf-8", { fatal: true }).decode(bytes).replace(/\r\n?/g, "\n");
 }
@@ -76,10 +67,17 @@ export type PublicacaoSurge = {
   relatorio_html_original?: string;
 };
 
-/** Publica `siteDir` no Surge em `dominio`; lança `ErroPublicacaoSurge` se a CLI falhar ou não confirmar. */
-export function publicarSiteSurge(siteDir: string, dominio: string, comando?: string[]): PublicacaoSurge {
+/**
+ * Publica `siteDir` no Surge em `dominio`, com `comando` (padrão `npx --yes surge`); lança
+ * `ErroPublicacaoSurge` se a CLI falhar ou não confirmar.
+ */
+export function publicarSiteSurge(
+  siteDir: string,
+  dominio: string,
+  comando: readonly string[] = COMANDO_SURGE,
+): PublicacaoSurge {
   const site = resolverCaminho(siteDir);
-  const [executavel, ...argumentos] = comandoBase(comando);
+  const [executavel, ...argumentos] = comando.length ? comando : COMANDO_SURGE;
   const processo = NodeChildProcess.spawnSync(executavel!, [...argumentos, site, dominio], {
     input: "",
     stdio: "pipe",
