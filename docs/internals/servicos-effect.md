@@ -138,6 +138,14 @@ O repositório inteiro está na stack do Effect, mas nem todo código precisa se
 
 Uma conversão troca o código inteiro do caminho: o serviço novo, os chamadores e os testes no mesmo PR, sem manter as duas versões.
 
+Armadilhas que as conversões deste repositório já encontraram:
+
+- **`throw` vira defeito.** O `Effect.tryPromise` de um código `async` pegava qualquer `throw`; dentro de `Effect.gen`, um `throw` síncrono (`new URL`, `JSON.parse`, `toISOString`, função pura que recusa) vira defeito, que `Effect.catch` e `Effect.result` não pegam. Cada chamada que pode lançar ganha um `Effect.try` com erro tipado, ou uma conferência antes.
+- **"Nunca falha" precisa de `catchCause`.** Um finalizador ou um passo que só registra no log trata a causa inteira (falha e defeito) e deixa a interrupção passar; dois finalizadores independentes são dois `Effect.ensuring`, para o segundo rodar se o primeiro morrer.
+- **Diagnóstico sem `cause` na mensagem.** Quem traduz a falha põe na mensagem o que é seguro e útil: o código do sistema (`EACCES`, `ENOSPC`), o recurso relativo (arquivo dentro da base, ref, host), a categoria. A saída bruta (stderr, `cause.message`) fica em `cause` ou num log ao lado.
+- **`Schema.Struct` descarta chave desconhecida em silêncio.** Onde perder dado importa (resposta de IA, registro), decodifique com `onExcessProperty: "error"`. E texto gerado por IA escreve `null` em campo opcional: aceite-o como ausente (`Schema.NullOr` normalizado), em vez de recusar a resposta inteira.
+- **Garantia do sistema operacional não vira checagem prévia.** `rmdir` (falha se a pasta não está vazia), `unlink` e `open` com `O_EXCL|O_NOFOLLOW` protegem contra corrida; trocá-los por "conferir e depois `remove`" abre uma janela. Onde o `FileSystem` do Effect não oferece a primitiva, ela fica num adaptador Node pequeno, com o motivo ao lado.
+
 ## Testes
 
 - **`@effect/vitest`.** Teste de código Effect usa `it.effect` ou `layer(...)((it) => ...)`, não `Effect.runPromise` dentro de `it` (regra `no-manual-effect-runtime-in-tests`).
