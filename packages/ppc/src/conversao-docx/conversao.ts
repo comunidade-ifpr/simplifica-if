@@ -1,4 +1,3 @@
-// @effect-diagnostics nodeBuiltinImport:off -- conversão síncrona de um arquivo local em artefatos da rodada
 /**
  * Conversão de um PPC `.docx` nos artefatos que a skill consome: `PPC.md` normalizado, Markdown
  * bruto, `_dados.json`, matriz curricular, ementário e a figura da representação gráfica.
@@ -10,13 +9,12 @@
  *   figuras), com os limites contra arquivo hostil;
  * - `elementos.ts`, `secoes.ts`, `tabelas.ts`: os elementos e as seções do PPC;
  * - `matriz.ts`, `ementario.ts`, `identificacao-tabelas.ts`, `figura.ts`: os dados extraídos;
- * - `markdown.ts` e este módulo: o Markdown e os arquivos.
+ * - `markdown.ts` e este módulo: o Markdown e os artefatos.
  *
- * `converterPpc` é síncrona e trabalha em memória; quem a chama num servidor deve rodá-la fora do
- * laço de eventos, com limite de memória e de tempo.
+ * Tudo aqui é puro e trabalha em memória: quem chama lê o DOCX (depois de `conferirArquivoDocx`) e
+ * grava os artefatos (`artefatosDaConversao`). `converterPpc` é síncrona; quem a chama num servidor
+ * deve rodá-la fora do laço de eventos, com limite de memória e de tempo.
  */
-import * as NodeFS from "node:fs";
-import * as NodePath from "node:path";
 import { serializarJsonTipado } from "@simplifica-if/kb/primitivas/json-tipado";
 import { ORDEM_CHAVES, type Dicionario } from "@simplifica-if/kb/primitivas/valores";
 import { normalizarMarkdown } from "../normalizador-markdown.ts";
@@ -66,9 +64,11 @@ export type Conversao = {
   representacaoGrafica: RepresentacaoGrafica | null;
 };
 
-/** Caminhos dos artefatos gravados; `null` para o que o PPC não tem. */
-export type ArtefatosDocx = {
-  output_dir: string;
+/** Um arquivo da conversão: o caminho relativo à pasta de saída e o conteúdo (texto em UTF-8). */
+export type ArtefatoConversao = { caminho: string; conteudo: string | Uint8Array };
+
+/** Os nomes dos artefatos principais, relativos à pasta de saída; `null` para o que o PPC não tem. */
+export type NomesArtefatos = {
   markdown: string;
   markdown_bruto: string;
   dados: string;
@@ -288,31 +288,26 @@ export function converterPpc(bytes: Uint8Array, nomeDoArquivo: string, opcoes: O
   return { elementos, secoes, ...textos, dados, matriz, ementario, resumos, representacaoGrafica };
 }
 
-/** `Path.stem`: nome sem a última extensão. */
+/** O nome do arquivo sem a pasta e sem a última extensão. */
 function radical(arquivo: string): string {
-  const nome = NodePath.basename(arquivo);
+  const nome = arquivo.slice(arquivo.lastIndexOf("/") + 1);
   const ponto = nome.lastIndexOf(".");
   return ponto > 0 && ponto < nome.length - 1 ? nome.slice(0, ponto) : nome;
 }
 
-function gravarJson(caminho: string, valor: unknown): void {
-  NodeFS.writeFileSync(caminho, serializarJsonTipado(valor, { indent: 2 }), "utf-8");
-}
+const json = (valor: unknown) => serializarJsonTipado(valor, { indent: 2 });
 
 /** Monta o `_dados.json`: os dados da conversão, os arquivos relacionados e os resumos. */
-function dadosPrincipais(
-  conversao: Conversao,
-  nomes: Record<"markdown" | "bruto" | "matriz" | "ementario", string>,
-): Dicionario {
+function dadosPrincipais(conversao: Conversao, nomes: NomesArtefatos): Dicionario {
   const grafica = conversao.representacaoGrafica;
   const imagem = grafica?.metodo === "bitmap" ? grafica.arquivo!.caminho : null;
   const principais: Dicionario = {
     ...conversao.dados,
     arquivos_relacionados: {
       markdown_normalizado: nomes.markdown,
-      markdown_bruto: nomes.bruto,
-      ...(conversao.matriz ? { matriz_curricular: nomes.matriz } : {}),
-      ...(conversao.ementario ? { ementario: nomes.ementario } : {}),
+      markdown_bruto: nomes.markdown_bruto,
+      ...(nomes.matriz_curricular ? { matriz_curricular: nomes.matriz_curricular } : {}),
+      ...(nomes.ementario ? { ementario: nomes.ementario } : {}),
       ...(imagem ? { representacao_grafica: imagem } : {}),
     },
   };
@@ -335,63 +330,43 @@ function dadosPrincipais(
 }
 
 /**
- * Lê um `.docx` do disco para a conversão. O tamanho é conferido antes da leitura: um arquivo de
- * gigabytes não chega à memória.
+ * Confere um `.docx` antes de lê-lo: a extensão e o tamanho, que o chamador tira do disco sem ler o
+ * arquivo (um arquivo de gigabytes não chega à memória).
  */
-export function lerArquivoDocx(arquivoDocx: string, limite = LIMITES_PADRAO.bytesDoArquivo): Uint8Array {
-  const arquivo = NodePath.resolve(arquivoDocx);
-  if (!NodeFS.existsSync(arquivo)) throw new Error(`Arquivo não encontrado: ${arquivo}`);
-  if (NodePath.extname(arquivo).toLowerCase() !== ".docx") throw new Error(`O arquivo deve ser .docx: ${arquivo}`);
-  const tamanho = NodeFS.statSync(arquivo).size;
+export function conferirArquivoDocx(arquivo: string, tamanho: number, limite = LIMITES_PADRAO.bytesDoArquivo): void {
+  if (!/[^/]\.docx$/i.test(arquivo)) throw new Error(`O arquivo deve ser .docx: ${arquivo}`);
   if (tamanho > limite) throw arquivoGrandeDemais(tamanho, limite);
-  return NodeFS.readFileSync(arquivo);
 }
 
 /**
- * Grava em `saida` os artefatos de uma conversão, com o nome do DOCX como base: `<nome>.md`,
- * `<nome>-bruto.md`, `<nome>_dados.json`, `<nome>_matriz_curricular.json`,
- * `<nome>_ementario.json` e `imagens/representacao_grafica.<ext>`.
+ * Os artefatos de uma conversão, com o nome do DOCX como base: `<nome>.md`, `<nome>-bruto.md`,
+ * `<nome>_dados.json`, `<nome>_matriz_curricular.json`, `<nome>_ementario.json` e
+ * `imagens/representacao_grafica.<ext>`. Quem chama grava os `arquivos` na pasta de saída.
  */
-export function gravarArtefatos(conversao: Conversao, arquivoDocx: string, saida: string): ArtefatosDocx {
-  const destino = NodePath.resolve(saida);
-  NodeFS.mkdirSync(destino, { recursive: true });
-  const base = radical(arquivoDocx);
+export function artefatosDaConversao(
+  conversao: Conversao,
+  nomeDocx: string,
+): { arquivos: ArtefatoConversao[]; nomes: NomesArtefatos } {
+  const base = radical(nomeDocx);
   // Os JSONs de matriz e ementário levam o radical do `_dados.json` sem `_dados`, e sai todo
   // `_dados` do nome, não só o sufixo: `PPC_dados v2.docx` dá `PPC v2_matriz_curricular.json`.
-  // Quem consome os arquivos usa os caminhos devolvidos aqui, não o nome.
+  // Quem consome os arquivos usa os nomes devolvidos aqui, não o nome.
   const baseDosDados = `${base}_dados`.replaceAll("_dados", "");
-  const nomes = {
+  const nomes: NomesArtefatos = {
     markdown: `${base}.md`,
-    bruto: `${base}-bruto.md`,
-    matriz: `${baseDosDados}_matriz_curricular.json`,
-    ementario: `${baseDosDados}_ementario.json`,
+    markdown_bruto: `${base}-bruto.md`,
+    dados: `${base}_dados.json`,
+    matriz_curricular: conversao.matriz ? `${baseDosDados}_matriz_curricular.json` : null,
+    ementario: conversao.ementario ? `${baseDosDados}_ementario.json` : null,
   };
-  const caminho = (nome: string) => NodePath.join(destino, nome);
-
   const figura = conversao.representacaoGrafica?.arquivo;
-  if (figura) {
-    NodeFS.mkdirSync(NodePath.dirname(caminho(figura.caminho)), { recursive: true });
-    NodeFS.writeFileSync(caminho(figura.caminho), figura.bytes);
-  }
-  NodeFS.writeFileSync(caminho(nomes.markdown), conversao.markdown, "utf-8");
-  NodeFS.writeFileSync(caminho(nomes.bruto), conversao.markdownBruto, "utf-8");
-  gravarJson(caminho(`${base}_dados.json`), dadosPrincipais(conversao, nomes));
-  if (conversao.matriz) gravarJson(caminho(nomes.matriz), conversao.matriz);
-  if (conversao.ementario) gravarJson(caminho(nomes.ementario), conversao.ementario);
-
-  return {
-    output_dir: destino,
-    markdown: caminho(nomes.markdown),
-    markdown_bruto: caminho(nomes.bruto),
-    dados: caminho(`${base}_dados.json`),
-    matriz_curricular: conversao.matriz ? caminho(nomes.matriz) : null,
-    ementario: conversao.ementario ? caminho(nomes.ementario) : null,
-  };
-}
-
-/** Converte `arquivoDocx` e grava os artefatos em `saida`. Nada é gravado se a conversão falha. */
-export function converterDocx(arquivoDocx: string, saida: string, opcoes: OpcoesConversao): ArtefatosDocx {
-  const bytes = lerArquivoDocx(arquivoDocx, opcoes.limites?.bytesDoArquivo);
-  const conversao = converterPpc(bytes, NodePath.basename(arquivoDocx), opcoes);
-  return gravarArtefatos(conversao, arquivoDocx, saida);
+  const arquivos: ArtefatoConversao[] = [
+    ...(figura ? [{ caminho: figura.caminho, conteudo: figura.bytes }] : []),
+    { caminho: nomes.markdown, conteudo: conversao.markdown },
+    { caminho: nomes.markdown_bruto, conteudo: conversao.markdownBruto },
+    { caminho: nomes.dados, conteudo: json(dadosPrincipais(conversao, nomes)) },
+    ...(nomes.matriz_curricular ? [{ caminho: nomes.matriz_curricular, conteudo: json(conversao.matriz) }] : []),
+    ...(nomes.ementario ? [{ caminho: nomes.ementario, conteudo: json(conversao.ementario) }] : []),
+  ];
+  return { arquivos, nomes };
 }

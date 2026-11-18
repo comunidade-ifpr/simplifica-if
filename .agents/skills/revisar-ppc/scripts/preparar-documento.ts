@@ -3,8 +3,9 @@
  * Cria a rodada de análise e o `PPC.md` canônico.
  *
  * Entrada `.md`: o Markdown é normalizado. Entrada `.docx`: a conversão em artefatos é a de
- * `@simplifica-if/ppc` (leitor OOXML próprio, sem Word), feita em memória antes de a rodada existir; a normalização do Markdown, a
- * identificação e os arquivos da rodada são feitos aqui.
+ * `@simplifica-if/ppc` (leitor OOXML próprio, sem Word), feita em memória antes de a rodada existir; a
+ * leitura do DOCX, a gravação dos artefatos, a normalização do Markdown, a identificação e os
+ * arquivos da rodada são feitos aqui.
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
@@ -12,11 +13,10 @@ import { corpoPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import { type Dicionario, verdadeiro } from "@simplifica-if/kb/primitivas/valores";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import {
-  type ArtefatosDocx,
+  artefatosDaConversao,
+  conferirArquivoDocx,
   type Conversao,
   converterPpc,
-  gravarArtefatos,
-  lerArquivoDocx,
 } from "@simplifica-if/ppc/conversao-docx/conversao";
 import {
   extrairIdentificacao,
@@ -49,7 +49,15 @@ export type OpcoesPreparacao = {
   caminhos?: CaminhosAnalise;
 };
 
-export type { ArtefatosDocx };
+/** Caminhos dos artefatos da conversão gravados na rodada; `null` para o que o PPC não tem. */
+export type ArtefatosDocx = {
+  output_dir: string;
+  markdown: string;
+  markdown_bruto: string;
+  dados: string;
+  matriz_curricular: string | null;
+  ementario: string | null;
+};
 
 /** `Path.stem`: nome sem a última extensão. */
 function radical(arquivo: string): string {
@@ -105,6 +113,32 @@ function copiarArquivo(origem: string, destino: string): void {
   NodeFS.copyFileSync(origem, destino);
   const info = NodeFS.statSync(origem);
   NodeFS.utimesSync(destino, info.atime, info.mtime);
+}
+
+/** Lê o `.docx`, com a extensão e o tamanho conferidos antes da leitura. */
+function lerArquivoDocx(arquivo: string): Uint8Array {
+  conferirArquivoDocx(arquivo, NodeFS.statSync(arquivo).size);
+  return NodeFS.readFileSync(arquivo);
+}
+
+/** Grava em `saida` os artefatos da conversão, com o nome do DOCX como base. */
+function gravarArtefatos(conversao: Conversao, arquivoDocx: string, saida: string): ArtefatosDocx {
+  const destino = NodePath.resolve(saida);
+  const { arquivos, nomes } = artefatosDaConversao(conversao, NodePath.basename(arquivoDocx));
+  for (const { caminho, conteudo } of arquivos) {
+    const alvo = NodePath.join(destino, caminho);
+    NodeFS.mkdirSync(NodePath.dirname(alvo), { recursive: true });
+    NodeFS.writeFileSync(alvo, conteudo);
+  }
+  const em = (nome: string) => NodePath.join(destino, nome);
+  return {
+    output_dir: destino,
+    markdown: em(nomes.markdown),
+    markdown_bruto: em(nomes.markdown_bruto),
+    dados: em(nomes.dados),
+    matriz_curricular: nomes.matriz_curricular && em(nomes.matriz_curricular),
+    ementario: nomes.ementario && em(nomes.ementario),
+  };
 }
 
 function prepararDocx(

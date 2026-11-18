@@ -3,11 +3,14 @@
 Conversão de um PPC em Word (`.docx`) nos artefatos que a skill `revisar-ppc` consome (`PPC.md` normalizado, Markdown bruto, `_dados.json`, matriz curricular, ementário e a figura da representação gráfica) e o normalizador de Markdown de PPCs. É um pacote do workspace para que a skill e o servidor do app importem o mesmo código.
 
 ```ts
-import { converterPpc, gravarArtefatos } from "@simplifica-if/ppc/conversao-docx/conversao";
+import { artefatosDaConversao, conferirArquivoDocx, converterPpc } from "@simplifica-if/ppc/conversao-docx/conversao";
 
+conferirArquivoDocx(caminho, tamanho); // extensão e tamanho, antes de quem chama ler os bytes
 const conversao = converterPpc(bytes, "PPC.docx", { agora: new Date() }); // em memória; lança ErroDocx
-const artefatos = gravarArtefatos(conversao, "PPC.docx", pastaDeSaida);
+const { arquivos, nomes } = artefatosDaConversao(conversao, "PPC.docx"); // { caminho, conteudo }[]: quem chama grava
 ```
+
+O pacote não lê nem grava arquivo: a skill grava os artefatos na rodada (`preparar-documento.ts`), e o servidor e `scripts/base/importar-ppc.ts` leem o DOCX.
 
 A leitura do DOCX é do pacote [`@simplifica-if/docx`](../docx/README.md). A arquitetura e as regras da conversão estão no [README da skill](../../.agents/skills/revisar-ppc/README.md#conversão-docx).
 
