@@ -20,27 +20,37 @@ import {
 } from "./db/consultas-fatos.ts";
 import {
   buscarSecoes,
+  buscarSecoesPorPrefixo,
+  type DocumentoPpc,
+  documentoDoPpc,
   type EntradaIndiceSecoes,
   type FiltrosSecoes,
   indiceSecoesDoPpc,
   lerSecao,
+  listarPpcs,
   type OpcoesBuscaSecoes,
+  type PpcListado,
   type ResultadoSecao,
   type SecaoDoPpc,
   type SecaoLida,
+  type SecaoPorPrefixo,
   secoesDoPpc,
+  tiposDeSecao,
 } from "./db/consultas-secoes.ts";
 import * as Sql from "./db/sql.ts";
 import { type NormaCitadaNoPpc, type PpcCitante, type RelatorioCitacoes, relatorioCitacoes } from "./ppcs/citacoes.ts";
 
 export type { DivergenciasPpcSuap, FatosDoPpc, FiltrosFatos } from "./db/consultas-fatos.ts";
 export type {
+  DocumentoPpc,
   EntradaIndiceSecoes,
   FiltrosSecoes,
   OpcoesBuscaSecoes,
+  PpcListado,
   ResultadoSecao,
   SecaoDoPpc,
   SecaoLida,
+  SecaoPorPrefixo,
 } from "./db/consultas-secoes.ts";
 export type { ModoBusca } from "./busca/fts.ts";
 
@@ -52,9 +62,20 @@ export class Ppcs extends Context.Service<
       filtros?: FiltrosSecoes,
       opcoes?: OpcoesBuscaSecoes,
     ) => Effect.Effect<ResultadoSecao[], Sql.FalhaNaConsulta>;
+    /** Seções com todos os termos, o último como prefixo (a busca da paleta do Explorar, sem léxico). */
+    readonly buscarSecoesPorPrefixo: (
+      termos: ReadonlyArray<string>,
+      limite: number,
+    ) => Effect.Effect<ReadonlyArray<SecaoPorPrefixo>, Sql.FalhaNaConsulta>;
     readonly secoesDoPpc: (ppc: string, tipos: readonly string[]) => Effect.Effect<SecaoDoPpc[], Sql.FalhaNaConsulta>;
     readonly indiceSecoesDoPpc: (ppc: string) => Effect.Effect<EntradaIndiceSecoes[], Sql.FalhaNaConsulta>;
     readonly lerSecao: (id: string) => Effect.Effect<SecaoLida | null, Sql.FalhaNaConsulta>;
+    /** Os tipos de seção que aparecem nos PPCs da base, em ordem. */
+    readonly tiposDeSecao: Effect.Effect<string[], Sql.FalhaNaConsulta>;
+    /** Todos os PPCs convertidos, por chave. */
+    readonly listar: Effect.Effect<ReadonlyArray<PpcListado>, Sql.FalhaNaConsulta>;
+    /** O PPC (`campus/curso`) como documento, para o leitor: seções e Markdown; `null` se não está na base. */
+    readonly documento: (chave: string) => Effect.Effect<DocumentoPpc | null, Sql.FalhaNaConsulta>;
     /** PPCs que citam a norma `id` (aceita `#dispositivo`), com cada ocorrência. */
     readonly citacoesDaNorma: (
       id: string,
@@ -83,6 +104,17 @@ const make = Effect.gen(function* () {
       opcoes: OpcoesBuscaSecoes = {},
     ) {
       return yield* buscarSecoes(consulta, filtros, opcoes);
+    }, prover),
+    buscarSecoesPorPrefixo: Effect.fn("Ppcs.buscarSecoesPorPrefixo")(function* (
+      termos: ReadonlyArray<string>,
+      limite: number,
+    ) {
+      return yield* buscarSecoesPorPrefixo(termos, limite);
+    }, prover),
+    tiposDeSecao: tiposDeSecao().pipe(prover),
+    listar: listarPpcs().pipe(prover),
+    documento: Effect.fn("Ppcs.documento")(function* (chave: string) {
+      return yield* documentoDoPpc(chave);
     }, prover),
     secoesDoPpc: Effect.fn("Ppcs.secoesDoPpc")(function* (ppc: string, tipos: readonly string[]) {
       return yield* secoesDoPpc(ppc, tipos);

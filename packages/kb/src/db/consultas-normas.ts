@@ -24,6 +24,7 @@ import { descendentesEm, type Dispositivo, TIPOS_DISPOSITIVO, TIPOS_NOTA } from 
 import { idDoAto } from "../normas/ids.ts";
 import { resolverCitacao } from "../normas/resolver.ts";
 import { type DatasTransicao, type Situacao, STATUS_VIGENCIA, situacaoNaData } from "../normas/vigencia.ts";
+import { markdownDoArquivo } from "./consultas-documentos.ts";
 import * as Sql from "./sql.ts";
 
 const Texto = Schema.String;
@@ -637,4 +638,144 @@ export const buscarNormaDetalhada = Effect.fn("consultasNormas.buscarNormaDetalh
     for (const etapa of ordem) yield* etapa(expressaoMeta);
   }
   return resposta();
+});
+
+/* ======================================================== catálogo e documento */
+
+const LinhaNormaListada = Schema.Struct({
+  id: Texto,
+  situacao: Schema.Literals(["base", "stub", "externo"]),
+  titulo: Texto,
+  tipo_documento: TextoNulo,
+  numero: TextoNulo,
+  ano: Schema.NullOr(Inteiro),
+  orgao: TextoNulo,
+  status_vigencia: TextoNulo,
+  ementa: TextoNulo,
+  aliases_json: Schema.fromJsonString(ListaTextos),
+  keywords_json: Schema.fromJsonString(ListaTextos),
+  a_confirmar: Inteiro,
+});
+const linhasNormasListadas = Sql.todas(LinhaNormaListada);
+
+/** Uma norma da base, stub ou referência externa, com os apelidos e as palavras-chave publicados. */
+export interface NormaListada {
+  readonly id: string;
+  readonly situacao: "base" | "stub" | "externo";
+  readonly titulo: string;
+  readonly tipo_documento: string | null;
+  readonly numero: string | null;
+  readonly ano: number | null;
+  readonly orgao: string | null;
+  readonly status_vigencia: string | null;
+  readonly ementa: string | null;
+  readonly aliases: ReadonlyArray<string>;
+  readonly palavras_chave: ReadonlyArray<string>;
+  /** O status publicado está "a confirmar" ou o front matter registra `vigencia_a_confirmar`. */
+  readonly vigencia_a_confirmar: boolean;
+}
+
+/** Todas as normas da tabela `normas`, por ID. */
+export const listarNormas = Effect.fn("consultasNormas.listarNormas")(function* () {
+  const linhas = yield* linhasNormasListadas(
+    `SELECT id, situacao, titulo, tipo_documento, numero, ano, orgao, status_vigencia, ementa, aliases_json, keywords_json,
+            (COALESCE(status_vigencia = 'a confirmar', 0) OR COALESCE(json_type(front_matter_json, '$.vigencia_a_confirmar') = 'text', 0)) AS a_confirmar
+       FROM normas ORDER BY id`,
+  );
+  return linhas.map(({ aliases_json, keywords_json, a_confirmar, ...n }): NormaListada => ({
+    ...n,
+    aliases: aliases_json,
+    palavras_chave: keywords_json,
+    vigencia_a_confirmar: a_confirmar === 1,
+  }));
+});
+
+/** As datas do ato no front matter publicado (texto como está, ou `null` se o campo falta). */
+export interface DatasDoAto {
+  readonly assinada_em: string | null;
+  readonly publicada_em: string | null;
+  readonly vigente_de: string | null;
+}
+
+function datasDoAto(frontMatter: string | null): DatasDoAto {
+  let meta: Record<string, unknown> = {};
+  try {
+    const lido: unknown = frontMatter === null ? {} : JSON.parse(frontMatter);
+    if (typeof lido === "object" && lido !== null) meta = lido as Record<string, unknown>;
+  } catch {
+    // front matter ilegível: as datas ficam sem registro
+  }
+  const campo = (nome: string) => {
+    const valor = meta[nome];
+    return typeof valor === "string" && valor.trim() !== "" ? valor : null;
+  };
+  return { assinada_em: campo("assinada_em"), publicada_em: campo("publicada_em"), vigente_de: campo("vigente_de") };
+}
+
+const primeiraNormaDoDocumento = Sql.primeira(
+  Schema.Struct({ id: Texto, titulo: Texto, situacao: Texto, path: TextoNulo, front_matter_json: TextoNulo }),
+);
+const linhasAncoras = Sql.todas(
+  Schema.Struct({
+    dispositivo: Texto,
+    tipo: Texto,
+    rotulo: Texto,
+    pai: TextoNulo,
+    linha_inicio: Inteiro,
+    linha_fim: Inteiro,
+    revogado: Inteiro,
+  }),
+);
+
+/** Um dispositivo do arquivo da norma, como âncora do leitor (sem o texto). */
+export interface DispositivoDoDocumento {
+  /** Com `#` (`#art28-xviii`). */
+  readonly dispositivo: string;
+  readonly tipo: string;
+  readonly rotulo: string;
+  /** ID do pai (`br/…/2#art28`), ou `null` no topo. */
+  readonly pai: string | null;
+  readonly linha_inicio: number;
+  readonly linha_fim: number;
+  readonly revogado: boolean;
+}
+
+/**
+ * Uma norma como documento: os metadados, as datas do ato e, só se ela tem o texto na base
+ * (`situacao` `base` com `path`), os dispositivos do arquivo em ordem e o Markdown sem o front matter
+ * (`null` se a tabela `documentos` não tem o arquivo).
+ */
+export interface DocumentoNorma {
+  readonly id: string;
+  readonly titulo: string;
+  readonly situacao: string;
+  readonly path: string | null;
+  readonly datas: DatasDoAto;
+  readonly dispositivos: ReadonlyArray<DispositivoDoDocumento>;
+  readonly markdown: string | null;
+}
+
+/** A norma pelo ID do arquivo, como documento; `null` se a tabela `normas` não a tem. */
+export const documentoDaNorma = Effect.fn("consultasNormas.documentoDaNorma")(function* (id: string) {
+  const norma = yield* primeiraNormaDoDocumento(
+    "SELECT id, titulo, situacao, path, front_matter_json FROM normas WHERE id = ?",
+    [id],
+  );
+  if (!norma) return null;
+  const { front_matter_json, ...resto } = norma;
+  const comTexto = norma.situacao === "base" && norma.path !== null;
+  const dispositivos = comTexto
+    ? (yield* linhasAncoras(
+        `SELECT dispositivo, tipo, rotulo, pai, linha_inicio, linha_fim, revogado
+         FROM dispositivos WHERE norma_id = ? ORDER BY ordem`,
+        [id],
+      )).map((d): DispositivoDoDocumento => ({ ...d, revogado: d.revogado === 1 }))
+    : [];
+  const documento: DocumentoNorma = {
+    ...resto,
+    datas: datasDoAto(front_matter_json),
+    dispositivos,
+    markdown: comTexto && norma.path !== null ? yield* markdownDoArquivo(norma.path) : null,
+  };
+  return documento;
 });

@@ -19,6 +19,10 @@ import {
   descendentes,
   type DispositivoDoBanco,
   dispositivoOuAncestral,
+  documentoDaNorma,
+  type DocumentoNorma,
+  listarNormas,
+  type NormaListada,
   type NormaResumo,
   obterDispositivo,
   obterNorma,
@@ -39,7 +43,11 @@ import { type ResolucaoComEntrada, resolucaoComEntrada } from "./normas/resolver
 import { type ResultadoVigencia, type SituacaoTransicao, statusEm, transicoesAplicaveis } from "./normas/vigencia.ts";
 
 export type {
+  DatasDoAto,
   DispositivoDoBanco,
+  DispositivoDoDocumento,
+  DocumentoNorma,
+  NormaListada,
   NormaResumo,
   OpcoesBuscaNorma,
   ResultadoBuscaNorma,
@@ -130,6 +138,13 @@ export class Normas extends Context.Service<
     readonly tabelasDeCorrespondencia: (
       ato: string,
     ) => Effect.Effect<ReadonlyArray<TabelaCorrespondencia>, Sql.FalhaNaConsulta>;
+    /** Todas as normas, stubs e referências externas, por ID, com os apelidos e as palavras-chave. */
+    readonly listar: Effect.Effect<ReadonlyArray<NormaListada>, Sql.FalhaNaConsulta>;
+    /**
+     * A norma (pelo ID do arquivo) como documento, para o leitor: metadados, datas do ato e, se ela tem
+     * o texto na base, os dispositivos e o Markdown; `null` se não registrada.
+     */
+    readonly documento: (id: string) => Effect.Effect<DocumentoNorma | null, Sql.FalhaNaConsulta>;
     /** A `data_referencia` da base. */
     readonly dataReferencia: Effect.Effect<string>;
     /** O endereço oficial (`fonte` http) de cada norma, stub ou referência externa que o registra, por ID. */
@@ -210,6 +225,10 @@ const make = Effect.gen(function* () {
     correspondencia: Effect.fn("Normas.correspondencia")((id: string) =>
       Effect.sync(() => correspondenciaEm(id, fonteCorrespondencia)),
     ),
+    listar: listarNormas().pipe(prover),
+    documento: Effect.fn("Normas.documento")(function* (id: string) {
+      return yield* documentoDaNorma(id);
+    }, prover),
     dataReferencia: Effect.succeed(fontes.dataReferencia),
     enderecosOficiais: Effect.gen(function* () {
       const urls: Record<string, string> = {};

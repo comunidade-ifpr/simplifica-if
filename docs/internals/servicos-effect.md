@@ -12,7 +12,7 @@ Para a biblioteca, leia [`.repos/effect/LLMS.md`](../../.repos/effect/LLMS.md) e
 
 Uma capacidade é um método de um serviço do domínio. Estenda o serviço que já é dono do domínio; crie um novo só quando nenhum for. Os domínios de hoje:
 
-- `packages/kb/src`: `Normas`, `Ppcs`, `Cursos`, `Impacto`, `PacoteContexto`, `FontesNormativas`, `BaseKb`, `Compilador`;
+- `packages/kb/src`: `Normas`, `Ppcs`, `Cursos`, `Conselhos`, `Impacto`, `PacoteContexto`, `FontesNormativas`, `BaseKb`, `Compilador`;
 - `packages/mcp/src/leitura`: `Leitura` (a leitura que as ferramentas MCP e o RPC compartilham) e `PastaTrabalho`;
 - `packages/motor/src`: `Motor`;
 - `apps/server/src`: `Conversas`, `PastasTrabalho`, `ArquivosLiberados`, `Relatos`, `CatalogoSkills`, `Atualizador`, `Autenticacao`, `persistencia/` e `revisao-ppc/`.

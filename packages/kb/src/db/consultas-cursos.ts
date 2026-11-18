@@ -1,6 +1,7 @@
 /**
- * Consulta do serviço `Cursos` aos cursos do `kb.sqlite`, com o CNCT, o campus, o PPC e as ofertas de
- * cada um (`kb cursos`, ferramenta `listar_cursos`).
+ * Consultas do serviço `Cursos` ao `kb.sqlite`: os cursos com o CNCT, o campus, o PPC e as ofertas de
+ * cada um (`kb cursos`, ferramenta `listar_cursos`), os campi, os processos seletivos, os níveis e a
+ * página oficial de cada curso.
  */
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
@@ -172,4 +173,61 @@ export const listarCursos = Effect.fn("consultasCursos.listarCursos")(function* 
     });
   }
   return saida;
+});
+
+/* ============================================== campi, processos, níveis e páginas */
+
+const LinhaCampus = Schema.Struct({
+  campus_id: Texto,
+  nome: Texto,
+  site: TextoNulo,
+  calendario_academico: TextoNulo,
+  horarios_url: TextoNulo,
+  horarios_coletado_em: TextoNulo,
+  path: Texto,
+});
+const linhasCampi = Sql.todas(LinhaCampus);
+
+/** Um campus da tabela `campi`, com o site, o calendário e a grade de horários publicados. */
+export type CampusDaBase = typeof LinhaCampus.Type;
+
+/** Todos os campi, por ID. */
+export const listarCampi = Effect.fn("consultasCursos.listarCampi")(function* () {
+  const campi: ReadonlyArray<CampusDaBase> = yield* linhasCampi(
+    "SELECT campus_id, nome, site, calendario_academico, horarios_url, horarios_coletado_em, path FROM campi ORDER BY campus_id",
+  );
+  return campi;
+});
+
+const LinhaProcesso = Schema.Struct({ id: Texto, nome: Texto, ano_ingresso: InteiroNulo });
+const linhasProcessos = Sql.todas(LinhaProcesso);
+
+/** Um processo seletivo da tabela `processos`. */
+export type ProcessoSeletivo = typeof LinhaProcesso.Type;
+
+/** Todos os processos seletivos, por ID. */
+export const listarProcessos = Effect.fn("consultasCursos.listarProcessos")(function* () {
+  const processos: ReadonlyArray<ProcessoSeletivo> = yield* linhasProcessos(
+    "SELECT id, nome, ano_ingresso FROM processos ORDER BY id",
+  );
+  return processos;
+});
+
+const linhasNiveis = Sql.todas(Schema.Struct({ nivel: Texto }));
+
+/** Os níveis dos PPCs e dos cursos, sem repetição, em ordem de code point (colação BINARY). */
+export const niveis = Effect.fn("consultasCursos.niveis")(function* () {
+  return (yield* linhasNiveis(
+    "SELECT nivel FROM ppcs UNION SELECT nivel FROM cursos WHERE nivel IS NOT NULL ORDER BY nivel",
+  )).map((n) => n.nivel);
+});
+
+const linhasPaginas = Sql.todas(Schema.Struct({ id: Texto, pagina_oficial: TextoNulo }));
+
+/** A página oficial de cada curso (`curso:campus/curso` → URL ou `null`). */
+export const paginasOficiais = Effect.fn("consultasCursos.paginasOficiais")(function* () {
+  const paginas: ReadonlyMap<string, string | null> = new Map(
+    (yield* linhasPaginas("SELECT id, pagina_oficial FROM cursos")).map((c) => [c.id, c.pagina_oficial]),
+  );
+  return paginas;
 });

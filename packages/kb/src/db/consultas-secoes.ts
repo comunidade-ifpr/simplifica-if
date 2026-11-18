@@ -1,15 +1,23 @@
 /**
- * Consultas do serviço `Ppcs` às seções dos PPCs no `kb.sqlite`: a busca (FTS5, radicais e léxico de
- * sinônimos), as seções de um PPC por tipo, o índice delas e a leitura de uma seção com as vizinhas.
+ * Consultas do serviço `Ppcs` aos PPCs e às seções deles no `kb.sqlite`: a busca (FTS5, radicais e
+ * léxico de sinônimos, ou por prefixo, a da paleta do Explorar), as seções de um PPC por tipo, o índice
+ * delas, a leitura de uma seção com as vizinhas, a lista dos PPCs e o PPC como documento.
  * Pedem o `SqlClient` do ambiente: o `kb.sqlite` ou, no PPC avulso do `PacoteContexto`, o banco em
  * memória dele.
  */
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
-import { conceitosDaConsulta, expressaoFts, type ModoBusca, trechoOuInicio } from "../busca/fts.ts";
+import {
+  conceitosDaConsulta,
+  expressaoFts,
+  expressaoFtsPrefixo,
+  type ModoBusca,
+  trechoOuInicio,
+} from "../busca/fts.ts";
 import type { Sinonimos } from "../busca/sinonimos.ts";
 import * as FontesNormativas from "../FontesNormativas.ts";
 import { idCnct, idPpc } from "./chaves.ts";
+import { markdownDoArquivo } from "./consultas-documentos.ts";
 import * as Sql from "./sql.ts";
 
 const Texto = Schema.String;
@@ -303,4 +311,102 @@ export const lerSecao = Effect.fn("consultasSecoes.lerSecao")(function* (id: str
     proxima: i >= 0 && i < ids.length - 1 ? ids[i + 1]! : null,
   };
   return secao;
+});
+
+/* ============================================================ PPCs e documento */
+
+const LinhaPpcListado = Schema.Struct({
+  chave: Texto,
+  curso_nome: Texto,
+  campus_id: Texto,
+  campus_nome: Texto,
+  nivel: Texto,
+  tipo_oferta: Texto,
+  ano_documento: Schema.NullOr(Inteiro),
+  curso_id: TextoNulo,
+});
+const linhasPpcsListados = Sql.todas(LinhaPpcListado);
+
+/** Um PPC convertido da base (`chave` é `campus/curso`; `curso_id`, o curso a que ele pertence). */
+export type PpcListado = typeof LinhaPpcListado.Type;
+
+/** Todos os PPCs da base, por chave. */
+export const listarPpcs = Effect.fn("consultasSecoes.listarPpcs")(function* () {
+  const linhas: ReadonlyArray<PpcListado> = yield* linhasPpcsListados(
+    "SELECT chave, curso_nome, campus_id, campus_nome, nivel, tipo_oferta, ano_documento, curso_id FROM ppcs ORDER BY chave",
+  );
+  return linhas;
+});
+
+const linhasTipos = Sql.todas(Schema.Struct({ tipo: Texto }));
+
+/** Os tipos de seção que aparecem nos PPCs da base, em ordem de code point (colação BINARY). */
+export const tiposDeSecao = Effect.fn("consultasSecoes.tiposDeSecao")(function* () {
+  return (yield* linhasTipos("SELECT DISTINCT tipo FROM secoes ORDER BY tipo")).map((t) => t.tipo);
+});
+
+const primeiroPpcDoDocumento = Sql.primeira(
+  Schema.Struct({ id: Texto, chave: Texto, curso_nome: Texto, campus_nome: Texto, path: Texto }),
+);
+
+/**
+ * Um PPC como documento: a identificação, as seções em ordem (o índice, sem o texto) e o Markdown sem
+ * o front matter (`null` se a tabela `documentos` não tem o arquivo).
+ */
+export interface DocumentoPpc {
+  readonly id: string;
+  readonly chave: string;
+  readonly curso_nome: string;
+  readonly campus_nome: string;
+  readonly path: string;
+  readonly secoes: ReadonlyArray<EntradaIndiceSecoes>;
+  readonly markdown: string | null;
+}
+
+/** O PPC pela chave (`campus/curso`), como documento; `null` se ele não está na base. */
+export const documentoDoPpc = Effect.fn("consultasSecoes.documentoDoPpc")(function* (chave: string) {
+  const ppc = yield* primeiroPpcDoDocumento(
+    "SELECT id, chave, curso_nome, campus_nome, path FROM ppcs WHERE chave = ?",
+    [chave],
+  );
+  if (!ppc) return null;
+  const secoes = yield* indiceSecoesDoPpc(ppc.chave);
+  const documento: DocumentoPpc = { ...ppc, secoes, markdown: yield* markdownDoArquivo(ppc.path) };
+  return documento;
+});
+
+const LinhaSecaoPorPrefixo = Schema.Struct({
+  id: Texto,
+  titulo: Texto,
+  texto: Texto,
+  curso_nome: Texto,
+  campus_nome: Texto,
+});
+const linhasSecoesPorPrefixo = Sql.todas(LinhaSecaoPorPrefixo);
+
+/** Uma seção achada pela busca por prefixo, com o texto integral e o PPC. */
+export type SecaoPorPrefixo = typeof LinhaSecaoPorPrefixo.Type;
+
+/**
+ * Seções cujo título ou texto tem todos os termos, o último como prefixo (`expressaoFtsPrefixo`),
+ * por BM25 com peso maior para o título; sem termo, nenhuma.
+ */
+export const buscarSecoesPorPrefixo = Effect.fn("consultasSecoes.buscarSecoesPorPrefixo")(function* (
+  termos: ReadonlyArray<string>,
+  limite: number,
+) {
+  const expressao = expressaoFtsPrefixo(termos, ["titulo", "texto"]);
+  const nenhuma: ReadonlyArray<SecaoPorPrefixo> = [];
+  if (expressao === null) return nenhuma;
+  const secoes: ReadonlyArray<SecaoPorPrefixo> = yield* linhasSecoesPorPrefixo(
+    // ranqueia só no FTS e junta depois: juntar antes leria o texto de milhares de seções (210 ms
+    // na primeira busca de "curso" na base real, contra 5 ms assim)
+    `SELECT s.id, s.titulo, s.texto, p.curso_nome, p.campus_nome
+       FROM (SELECT rowid, bm25(secoes_fts, 4.0, 1.0, 0.0, 0.0, 0.0) AS pontos FROM secoes_fts
+              WHERE secoes_fts MATCH ? ORDER BY pontos, rowid LIMIT ?) f
+       JOIN secoes s ON s.rowid = f.rowid JOIN ppcs p ON p.id = s.ppc_id
+      ORDER BY f.pontos, f.rowid`,
+    [expressao, limite],
+  );
+  return secoes;
 });

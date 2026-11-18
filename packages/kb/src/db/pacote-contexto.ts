@@ -224,6 +224,26 @@ export const fichasDoBanco = Effect.fn("pacoteContexto.fichasDoBanco")(function*
   return linhas.map((f) => f.dados_json as FichaPacote);
 });
 
+const LinhaFichaResumida = Schema.Struct({
+  id: Schema.String,
+  titulo: Schema.String,
+  dominio: TextoNulo,
+  criticidade: TextoNulo,
+  path: Schema.String,
+});
+const linhasFichasResumidas = Sql.todas(LinhaFichaResumida);
+
+/** Uma ficha pelas colunas da tabela `fichas`, sem o JSON: título, domínio, criticidade e arquivo. */
+export type FichaResumida = typeof LinhaFichaResumida.Type;
+
+/** Todas as fichas, resumidas, em ordem de ID. */
+export const fichasResumidas = Effect.fn("pacoteContexto.fichasResumidas")(function* () {
+  const fichas: ReadonlyArray<FichaResumida> = yield* linhasFichasResumidas(
+    "SELECT id, titulo, dominio, criticidade, path FROM fichas ORDER BY id",
+  );
+  return fichas;
+});
+
 /**
  * IDs das fichas de uma tarefa. `grupo-NNN` é o n-ésimo grupo por tópico da `revisar-ppc`
  * (`agruparPorTopico` com `topicos`, o tamanho máximo padrão e todas as fichas do banco); sem

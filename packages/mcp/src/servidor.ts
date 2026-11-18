@@ -51,11 +51,19 @@ export const layerRegistro = Layer.mergeAll(
   layerRecursos,
 );
 
-/** O `Leitura` sobre o `kb.sqlite` em `banco`, só leitura, sem o repositório. */
-export const layerLeitura = (opcoes: { readonly banco: string; readonly canal: Canal }) =>
-  Leitura.layer({ canal: opcoes.canal }).pipe(
-    Layer.provideMerge(Layers.layerSomenteLeitura({ caminho: opcoes.banco })),
-  );
+/**
+ * O `Leitura` sobre o `kb.sqlite` em `banco`, só leitura, sem o repositório. Com `etapaRegistrada`
+ * (o app), a ferramenta `etapa` responde que registrou a etapa.
+ */
+export const layerLeitura = (opcoes: {
+  readonly banco: string;
+  readonly canal: Canal;
+  readonly etapaRegistrada?: boolean;
+}) =>
+  Leitura.layer({
+    canal: opcoes.canal,
+    ...(opcoes.etapaRegistrada === undefined ? {} : { etapaRegistrada: opcoes.etapaRegistrada }),
+  }).pipe(Layer.provideMerge(Layers.layerSomenteLeitura({ caminho: opcoes.banco })));
 
 /**
  * O `Leitura` com a pasta de trabalho de onde o `pacote_contexto` lê um `.md` (`arquivo`). Pede

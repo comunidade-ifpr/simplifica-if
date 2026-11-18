@@ -20,6 +20,8 @@ import {
   abrirPpcAvulso,
   type FichaPacote,
   fichasDoBanco,
+  type FichaResumida,
+  fichasResumidas,
   nomesDeCampiDoBanco,
   type OpcoesAbrirAvulso,
   type OpcoesPacote,
@@ -35,6 +37,7 @@ import { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida } from "./paco
 export { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida };
 export type {
   EstruturaAvulsa,
+  FichaResumida,
   OpcoesAbrirAvulso,
   OpcoesPacoteAvulso,
   PacoteAvulso,
@@ -67,6 +70,8 @@ export class PacoteContexto extends Context.Service<
     ) => Effect.Effect<PpcAvulso, Sql.FalhaNaConsulta, Scope.Scope>;
     /** Fichas da `revisar-ppc` gravadas no banco (todas ou as de `ids`), por ID. */
     readonly fichas: (ids?: readonly string[]) => Effect.Effect<FichaPacote[], Sql.FalhaNaConsulta>;
+    /** Todas as fichas pelas colunas da tabela (título, domínio, criticidade e arquivo), por ID. */
+    readonly fichasResumidas: Effect.Effect<ReadonlyArray<FichaResumida>, Sql.FalhaNaConsulta>;
     /** Nomes dos campi dos PPCs da base (para a segmentação de um PPC avulso). */
     readonly nomesDeCampi: Effect.Effect<string[], Sql.FalhaNaConsulta>;
   }
@@ -93,6 +98,7 @@ const make = Effect.gen(function* () {
     fichas: Effect.fn("PacoteContexto.fichas")(function* (ids?: readonly string[]) {
       return yield* fichasDoBanco(ids);
     }, prover),
+    fichasResumidas: fichasResumidas().pipe(prover),
     nomesDeCampi: prover(nomesDeCampiDoBanco()),
   });
 });

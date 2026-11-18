@@ -18,10 +18,20 @@ import {
 } from "./adequacao/art71.ts";
 import { CAMINHOS } from "./caminhos.ts";
 import { idCnct } from "./db/chaves.ts";
-import { type FiltrosCursos, listarCursos, type ResultadoCurso } from "./db/consultas-cursos.ts";
+import {
+  type CampusDaBase,
+  type FiltrosCursos,
+  listarCampi,
+  listarCursos,
+  listarProcessos,
+  niveis,
+  paginasOficiais,
+  type ProcessoSeletivo,
+  type ResultadoCurso,
+} from "./db/consultas-cursos.ts";
 import * as Sql from "./db/sql.ts";
 
-export type { FiltrosCursos, ResultadoCurso } from "./db/consultas-cursos.ts";
+export type { CampusDaBase, FiltrosCursos, ProcessoSeletivo, ResultadoCurso } from "./db/consultas-cursos.ts";
 
 const LinhaCurso = Schema.Struct({
   campus_id: Schema.String,
@@ -72,6 +82,14 @@ export class Cursos extends Context.Service<
     readonly cnct: (id: string) => Effect.Effect<CursoCnct | null, Sql.FalhaNaConsulta>;
     /** Todos os cursos do CNCT, como `cnct` os devolve, em ordem de slug. */
     readonly catalogoCnct: Effect.Effect<ReadonlyArray<CursoCnct>, Sql.FalhaNaConsulta>;
+    /** Todos os campi, por ID. */
+    readonly campi: Effect.Effect<ReadonlyArray<CampusDaBase>, Sql.FalhaNaConsulta>;
+    /** Todos os processos seletivos, por ID. */
+    readonly processos: Effect.Effect<ReadonlyArray<ProcessoSeletivo>, Sql.FalhaNaConsulta>;
+    /** Os níveis dos PPCs e dos cursos, sem repetição, em ordem. */
+    readonly niveis: Effect.Effect<string[], Sql.FalhaNaConsulta>;
+    /** A página oficial de cada curso, pelo ID (`curso:campus/curso`). */
+    readonly paginasOficiais: Effect.Effect<ReadonlyMap<string, string | null>, Sql.FalhaNaConsulta>;
     readonly adequacaoArt71: (opcoes?: {
       readonly incluirTecnologia?: boolean;
     }) => Effect.Effect<RelatorioAdequacao, Sql.FalhaNaConsulta>;
@@ -144,7 +162,16 @@ const make = Effect.gen(function* () {
     prover,
   );
 
-  return Cursos.of({ listar, adequacaoArt71, cnct, catalogoCnct });
+  return Cursos.of({
+    listar,
+    adequacaoArt71,
+    cnct,
+    catalogoCnct,
+    campi: listarCampi().pipe(prover),
+    processos: listarProcessos().pipe(prover),
+    niveis: niveis().pipe(prover),
+    paginasOficiais: paginasOficiais().pipe(prover),
+  });
 });
 
 export const layer = Layer.effect(Cursos, make);

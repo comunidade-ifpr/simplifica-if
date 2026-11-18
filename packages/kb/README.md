@@ -10,11 +10,12 @@ Desde o C1 da [consolidação na stack do T3](../../docs/plans/consolidacao-stac
 |---|---|---|
 | `BaseKb.ts` | `meta` (versão do esquema, `data_referencia`, impressão digital, contagens, `versao`/`commit`/`canal`); falha a layer com `BaseIncompativel`. `layerSqlite({ caminho })`: o `SqlClient` só leitura (`BaseAusente`) | `SqlClient` |
 | `FontesNormativas.ts` | `registro`, `datas`, `relacoes`, `transicoes` (com eles, o próprio serviço é a `FonteVigencia` das regras), `dataReferencia`, `sinonimos`, `topicosSecoes`, `topicosFichas`, `conteudoDasSkills({ raiz? })`. Duas layers: `layerBanco` (tabelas do `kb.sqlite`; só `SqlClient`) e `layerArquivos({ raiz })` (`FileSystem`, `Path`) | — |
-| `Normas.ts` | `resolver`, `buscar`, `obter`, `ficha`, `dispositivo`, `dispositivoOuAncestral`, `descendentes`, `trecho`, `vigencia`, `relacoes`, `sucessoras`, `correspondencia`, `tabelasDeCorrespondencia`, `dataReferencia`, `enderecosOficiais` | `SqlClient`, `FontesNormativas` |
-| `Ppcs.ts` | `buscarSecoes`, `secoesDoPpc`, `indiceSecoesDoPpc`, `lerSecao`, `citacoesDaNorma`, `relatorioCitacoes`, `normasCitadas`, `fatos`, `divergencias` | `SqlClient`, `FontesNormativas` |
-| `Cursos.ts` | `listar`, `cnct`, `catalogoCnct`, `adequacaoArt71` | `SqlClient` |
+| `Normas.ts` | `resolver`, `buscar`, `obter`, `ficha`, `dispositivo`, `dispositivoOuAncestral`, `descendentes`, `trecho`, `vigencia`, `relacoes`, `sucessoras`, `correspondencia`, `tabelasDeCorrespondencia`, `listar`, `documento` (a norma para o leitor: dispositivos e Markdown), `dataReferencia`, `enderecosOficiais` | `SqlClient`, `FontesNormativas` |
+| `Ppcs.ts` | `buscarSecoes`, `buscarSecoesPorPrefixo` (a paleta do Explorar), `secoesDoPpc`, `indiceSecoesDoPpc`, `lerSecao`, `citacoesDaNorma`, `relatorioCitacoes`, `normasCitadas`, `fatos`, `divergencias`, `tiposDeSecao`, `listar`, `documento` (o PPC para o leitor: seções e Markdown) | `SqlClient`, `FontesNormativas` |
+| `Cursos.ts` | `listar`, `cnct`, `catalogoCnct`, `adequacaoArt71`, `campi`, `processos`, `niveis`, `paginasOficiais` | `SqlClient` |
+| `Conselhos.ts` | `reunioes` (as do Consepe, com documentos e itens de pauta) | `SqlClient` |
 | `Impacto.ts` | `daNorma(id, { data, incluirPpcs, raizConteudo })` | `SqlClient`, `FontesNormativas` |
-| `PacoteContexto.ts` | `montar` (PPC da base), `doMarkdown` (texto de um PPC fora da base), `abrirAvulso` (um PPC fora da base num banco em memória do escopo, com o `pacote` de cada conjunto de fichas e a `estrutura`), `fichas`, `nomesDeCampi` | `SqlClient`, `FontesNormativas` |
+| `PacoteContexto.ts` | `montar` (PPC da base), `doMarkdown` (texto de um PPC fora da base), `abrirAvulso` (um PPC fora da base num banco em memória do escopo, com o `pacote` de cada conjunto de fichas e a `estrutura`), `fichas`, `fichasResumidas`, `nomesDeCampi` | `SqlClient`, `FontesNormativas` |
 | `Compilador.ts` | `compilar`, `estado`, `garantirFresco` (política `KB_RECOMPILAR`) | `FileSystem`, `Path` |
 
 Layers prontas (`src/layers.ts`):

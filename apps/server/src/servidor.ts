@@ -285,19 +285,7 @@ export const layer = (opcoes: Opcoes) => {
   const canal = opcoes.canal ?? "dev";
   // Um `Leitura` só (uma conexão ao `kb.sqlite`) para o MCP HTTP e para o RPC de leitura.
   // No app, a ferramenta `etapa` é registrada: a interface a lê nos eventos da conversa (M1.9).
-  const leitura = Layer.effect(
-    McpRpc.Leitura,
-    Effect.gen(function* () {
-      const servico = yield* McpRpc.Leitura;
-      return McpRpc.Leitura.of({
-        ...servico,
-        etapa: Effect.fn("Leitura.etapa")(function* (entrada: Parameters<typeof servico.etapa>[0]) {
-          const resposta = yield* servico.etapa(entrada);
-          return { ...resposta, dados: { registrado: true } };
-        }),
-      });
-    }),
-  ).pipe(Layer.provideMerge(McpRpc.layerLeitura({ banco: opcoes.banco, canal })));
+  const leitura = McpRpc.layerLeitura({ banco: opcoes.banco, canal, etapaRegistrada: true });
   const mcp = McpHttp.layerSobreLeitura(opcoes.portaMcp ? { porta: opcoes.portaMcp } : {});
   const banco = opcoes.bancoConversas === undefined ? Banco.layerMemoria : Banco.layerArquivo(opcoes.bancoConversas);
   const nucleo = Conversas.layer({
