@@ -22,7 +22,8 @@ import { comentarDocx } from "@simplifica-if/docx/comentarios";
 import { problemasOoxml } from "@simplifica-if/docx/testes/validar-ooxml";
 import { revisarDocx } from "../src/revisao-previa.ts";
 import { ppcSintetico } from "../src/testes/revisao-previa.ts";
-import { baseRevisaoDeArquivos } from "./base-tecnica.ts";
+import { raizRepositorio } from "@simplifica-if/kb/caminhos";
+import { carregarBaseRevisao } from "./base-tecnica.ts";
 
 const { values } = NodeUtil.parseArgs({ options: { saida: { type: "string" } } });
 if (!values.saida) {
@@ -31,7 +32,7 @@ if (!values.saida) {
 }
 const saida = NodePath.resolve(values.saida);
 NodeFS.mkdirSync(saida, { recursive: true });
-const base = baseRevisaoDeArquivos();
+const base = await carregarBaseRevisao(raizRepositorio());
 const agora = new Date();
 
 const casos: Array<[string, Uint8Array]> = [

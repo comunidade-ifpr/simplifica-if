@@ -41,8 +41,8 @@ export type BaseVerificacao = {
   /** Relações de `base-conhecimento/relacoes.yaml` (`carregarRelacoes`), para achar a norma sucessora. */
   relacoes: readonly Relacao[];
   /**
-   * Vigência na data de referência: status, se é certo e as transições. O app a monta do `kb.sqlite`
-   * (`vigenciaDeDados`); os testes e scripts, dos arquivos do checkout (`scripts/base-tecnica.ts`).
+   * Vigência na data de referência: status, se é certo e as transições, da base da revisão
+   * (`verificacaoDaBase`, sobre o `kb.sqlite`) no app, nos testes e nos scripts.
    */
   vigencia: ConsultaVigencia;
   /**

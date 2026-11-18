@@ -1,11 +1,13 @@
 // @effect-diagnostics nodeBuiltinImport:off globalDate:off -- teste: compila um kb.sqlite temporário, roda um processo filho e fixa o relógio da rodada
 /**
- * A base da revisão prévia vinda do `kb.sqlite` (o que o app empacotado tem) é a mesma lida dos
- * arquivos do checkout, e a revisão prévia roda sem o repositório:
+ * A base da revisão prévia vinda do `kb.sqlite` (o que o app empacotado tem) traz o que os arquivos do
+ * checkout trazem, e a revisão prévia roda sem o repositório:
  *
- * - compila a base real num diretório temporário (`Compilador`), monta a base do banco
- *   (`montarBase`) e a compara, campo a campo, com `baseRevisaoDeArquivos`; a revisão prévia dos PPCs
- *   sintéticos dá o mesmo resultado com as duas;
+ * - compila a base real num diretório temporário (`Compilador`) e monta a base pela montagem única
+ *   (`montarBaseRevisao`) duas vezes: com as fontes normativas remontadas do banco, como no app, e
+ *   com as lidas dos arquivos (`FontesNormativas.layerArquivos`). As duas são iguais, campo a campo, e
+ *   a revisão prévia dos PPCs sintéticos dá o mesmo resultado com elas; o CNCT, os títulos das fichas
+ *   e os endereços oficiais do banco são os dos arquivos;
  * - num processo filho (`sem-repositorio.ts`), com a leitura das pastas de dados do checkout
  *   bloqueada, a revisão prévia sobre o banco dá o mesmo resultado, sem tentar ler nada delas; e a
  *   leitura do registro do checkout (o controle) esbarra no bloqueio.
@@ -19,17 +21,18 @@ import { describe, expect, layer } from "@effect/vitest";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as BaseKb from "@simplifica-if/kb/BaseKb";
 import * as Compilador from "@simplifica-if/kb/Compilador";
+import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Layers from "@simplifica-if/kb/layers";
+import { montarBaseRevisao } from "@simplifica-if/ppc/base-revisao";
 import { revisarDocx, type BaseRevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
 import { ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
-import { baseRevisaoDeArquivos } from "../../../packages/ppc/scripts/base-tecnica.ts";
-import { montarBase } from "../src/revisao-ppc/RevisorPpc.ts";
 
 const raiz = NodePath.resolve(import.meta.dirname, "../../..");
 const AGORA = new Date("2026-11-16T12:00:00Z");
 
-/** A base real compilada num diretório temporário, e as duas bases da revisão prévia. */
+/** A base real compilada num diretório temporário, e a base da revisão prévia com as fontes de cada lado. */
 class Bases extends Context.Service<
   Bases,
   {
@@ -50,10 +53,24 @@ const layerBases = Layer.effect(
     const banco = NodePath.join(pasta, "kb.sqlite");
     const compilador = yield* Compilador.Compilador;
     yield* compilador.compilar({ raiz, destino: banco });
-    const doBanco = yield* montarBase.pipe(Effect.provide(Layers.layerSomenteLeitura({ caminho: banco })));
-    return Bases.of({ pasta, banco, doBanco, dosArquivos: baseRevisaoDeArquivos(raiz) });
+    const doBanco = yield* montarBaseRevisao.pipe(Effect.provide(Layers.layerSomenteLeitura({ caminho: banco })));
+    const dosArquivos = yield* montarBaseRevisao.pipe(
+      Effect.provide(
+        Layers.layerConsultas.pipe(
+          Layer.provideMerge(FontesNormativas.layerArquivos({ raiz })),
+          Layer.provideMerge(BaseKb.layerSqlite({ caminho: banco })),
+        ),
+      ),
+    );
+    return Bases.of({ pasta, banco, doBanco, dosArquivos });
   }),
-).pipe(Layer.provide(Compilador.layer.pipe(Layer.provide(NodeServices.layer))));
+).pipe(Layer.provide(Compilador.layer), Layer.provide(NodeServices.layer));
+
+const lerJson = (arquivo: string): unknown => JSON.parse(NodeFS.readFileSync(arquivo, "utf8"));
+const jsonsDe = (pasta: string) =>
+  NodeFS.readdirSync(NodePath.join(raiz, pasta))
+    .filter((nome) => nome.endsWith(".json"))
+    .map((nome) => ({ nome, json: lerJson(NodePath.join(raiz, pasta, nome)) }));
 
 /** As normas por id, sem as chaves ausentes (o banco e os arquivos as omitem de modos diferentes). */
 const porId = <T extends { id: string }>(lista: readonly T[]) =>
@@ -65,24 +82,44 @@ const porId = <T extends { id: string }>(lista: readonly T[]) =>
 
 layer(layerBases, { timeout: "300 seconds", excludeTestServices: true })("base da revisão prévia", (it) => {
   describe("kb.sqlite × arquivos", () => {
-    it.effect("mesmos registros, relações, datas, transições, CNCT, fichas, tópicos, endereços e data", () =>
-      Effect.gen(function* () {
-        const { doBanco, dosArquivos } = yield* Bases;
-        expect(porId(doBanco.normas)).toEqual(porId(dosArquivos.normas));
-        expect(doBanco.relacoes).toEqual(dosArquivos.relacoes);
-        expect(new Map(doBanco.datas)).toEqual(new Map(dosArquivos.datas));
-        expect(doBanco.transicoes).toEqual(dosArquivos.transicoes);
-        expect(Object.fromEntries(doBanco.cncts.map((c) => [c.slug, c]))).toEqual(
-          Object.fromEntries(dosArquivos.cncts.map((c) => [c.slug, c])),
-        );
-        expect(doBanco.fichas).toEqual(dosArquivos.fichas);
-        expect(doBanco.topicos).toEqual(dosArquivos.topicos);
-        // O banco tem também os endereços dos stubs; os da base publicada são os mesmos.
-        for (const [id, url] of Object.entries(dosArquivos.urls)) expect(doBanco.urls[id], id).toBe(url);
-        expect(doBanco.dataBase).toBe(dosArquivos.dataBase);
-        expect(doBanco.normas.length).toBeGreaterThan(100);
-        expect(doBanco.transicoes.length).toBeGreaterThan(0);
-      }),
+    it.effect(
+      "mesmos registros, relações, datas, transições, tópicos e data; CNCT, fichas e endereços dos arquivos",
+      () =>
+        Effect.gen(function* () {
+          const { doBanco, dosArquivos } = yield* Bases;
+          expect(porId(doBanco.normas)).toEqual(porId(dosArquivos.normas));
+          expect(doBanco.relacoes).toEqual(dosArquivos.relacoes);
+          expect(new Map(doBanco.datas)).toEqual(new Map(dosArquivos.datas));
+          expect(doBanco.transicoes).toEqual(dosArquivos.transicoes);
+          expect(doBanco.topicos).toEqual(dosArquivos.topicos);
+          expect(doBanco.dataBase).toBe(dosArquivos.dataBase);
+          // O CNCT, as fichas e os endereços vêm do banco nas duas: conferidos contra os arquivos.
+          expect(Object.fromEntries(doBanco.cncts.map((c) => [c.slug, c]))).toEqual(
+            Object.fromEntries(
+              jsonsDe("base-conhecimento/catalogos/cnct/cursos").map(({ nome, json }) => [
+                nome.slice(0, -5),
+                { ...(json as object), slug: nome.slice(0, -5) },
+              ]),
+            ),
+          );
+          expect(doBanco.fichas).toEqual(
+            Object.fromEntries(
+              jsonsDe(".agents/skills/revisar-ppc/base-analise/fichas").map(({ json }) => {
+                const ficha = json as { id: string; titulo: string };
+                return [ficha.id, ficha.titulo];
+              }),
+            ),
+          );
+          // O banco tem também os endereços dos stubs; os da base publicada são os mesmos.
+          const manifesto = lerJson(NodePath.join(raiz, "base-conhecimento/manifest.json")) as {
+            id: string;
+            fonte?: string;
+          }[];
+          for (const { id, fonte } of manifesto)
+            if (fonte?.startsWith("http")) expect(doBanco.urls[id], id).toBe(fonte);
+          expect(doBanco.normas.length).toBeGreaterThan(100);
+          expect(doBanco.transicoes.length).toBeGreaterThan(0);
+        }),
     );
 
     it.effect("a revisão prévia dá o mesmo resultado com as duas bases", () =>

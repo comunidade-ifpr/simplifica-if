@@ -73,11 +73,12 @@ jobs:
             node apps/web/node_modules/playwright/cli.js install-deps chromium
           fi
 
-      - name: Testes
-        run: pnpm test
-
+      # Antes dos testes: os do `packages/ppc` leem a base da revisão do `tmp/kb.sqlite`, como o app.
       - name: Compila o kb.sqlite
         run: pnpm kb compilar
+
+      - name: Testes
+        run: pnpm test
 
       - name: Smoke do MCP (suítes transversais na base real)
         run: pnpm mcp:smoke

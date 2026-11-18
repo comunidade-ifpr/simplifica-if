@@ -4,11 +4,14 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { raizRepositorio } from "@simplifica-if/kb/caminhos";
 import { describe, expect, test } from "vite-plus/test";
-import { carregarRegistro } from "@simplifica-if/kb/normas/registro";
-import { carregarRelacoes } from "@simplifica-if/kb/normas/relacoes";
 import { preConferir } from "../src/pre-conferencia.ts";
+import { verificacaoDaBase } from "../src/revisao-previa.ts";
 import { MARCOS, revogacaoRecente } from "../src/verificadores/vigencia.ts";
-import { carregarVigencia } from "../scripts/base-tecnica.ts";
+import { carregarBaseRevisao } from "../scripts/base-tecnica.ts";
+
+const base = await carregarBaseRevisao(raizRepositorio());
+/** A vigência da base na data (padrão: a `data_referencia`). */
+const vigenciaEm = (data?: string) => verificacaoDaBase(base, data).vigencia;
 
 describe("marcos e vigência", () => {
   test("MARCOS é a cópia de linha e ficha responsável de marcos-normativos.json", () => {
@@ -23,16 +26,16 @@ describe("marcos e vigência", () => {
 
   test("data a confirmar: incerta perto da data, presumida passados 180 dias", () => {
     // A 54/2011 foi revogada pela 190/2024 (assinada em 30/04/2024, publicação não registrada).
-    expect(carregarVigencia(raizRepositorio(), "2024-06-01")("ifpr/consup/res/2011/54").certo).toBe(false);
-    expect(carregarVigencia(raizRepositorio(), "2026-11-13")("ifpr/consup/res/2011/54")).toMatchObject({
+    expect(vigenciaEm("2024-06-01")("ifpr/consup/res/2011/54").certo).toBe(false);
+    expect(vigenciaEm("2026-11-13")("ifpr/consup/res/2011/54")).toMatchObject({
       status: "revogada",
       certo: true,
     });
-    expect(carregarVigencia()("br/cne-ceb/res/2018/3").transicoes.map((t) => t.id)).toEqual(["dcnem-2024-art42"]);
+    expect(vigenciaEm()("br/cne-ceb/res/2018/3").transicoes.map((t) => t.id)).toEqual(["dcnem-2024-art42"]);
   });
 
   test("revogação recente sem transição: data da revogação e a regra dos 12 meses", () => {
-    const vigencia = carregarVigencia(raizRepositorio(), "2026-11-13");
+    const vigencia = vigenciaEm("2026-11-13");
     expect(vigencia.data).toBe("2026-11-13");
     expect(vigencia("ifpr/consup/res/2012/39")).toMatchObject({ status: "revogada", revogadaEm: "2026-02-04" });
     // Sem a data do PPC: recente (menos de 12 meses) basta; antiga, não.
@@ -47,15 +50,9 @@ describe("marcos e vigência", () => {
 
   test("a CONSUP nº 39/2012 (revogada em 04/02/2026) num PPC de 2024 sai a conferir, com a data", () => {
     const markdown = "# PPC\n\n## 9 REFERÊNCIAS\n\nIFPR. Resolução CONSUP/IFPR nº 39, de 29 de novembro de 2012.\n";
-    const base = {
-      cnct: null,
-      forma: "subsequente",
-      registro: carregarRegistro(raizRepositorio()),
-      relacoes: carregarRelacoes(raizRepositorio()),
-    };
-    const vigencia = carregarVigencia(raizRepositorio(), "2026-11-13");
+    const comum = verificacaoDaBase(base, "2026-11-13");
     const apontamentos = (dataPpc: string | null) =>
-      preConferir(markdown, { ...base, vigencia, dataPpc })
+      preConferir(markdown, { cnct: null, forma: "subsequente", ...comum, dataPpc })
         .fichas.find((f) => f.ficha === "CT-SUP-12")!
         .apontamentos.filter((a) => a.mensagem.includes("39/2012"));
     expect(apontamentos("2024")[0]).toMatchObject({ estado: "a_conferir" });

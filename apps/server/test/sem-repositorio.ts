@@ -40,11 +40,13 @@ NodeModule.syncBuiltinESMExports();
 
 const Effect = await import("effect/Effect");
 const Layers = await import("@simplifica-if/kb/layers");
-const { montarBase } = await import("../src/revisao-ppc/RevisorPpc.ts");
+const { montarBaseRevisao } = await import("@simplifica-if/ppc/base-revisao");
 const { revisarDocx } = await import("@simplifica-if/ppc/revisao-previa");
 const { carregarRegistro } = await import("@simplifica-if/kb/normas/registro");
 
-const base = await Effect.runPromise(montarBase.pipe(Effect.provide(Layers.layerSomenteLeitura({ caminho: banco }))));
+const base = await Effect.runPromise(
+  montarBaseRevisao.pipe(Effect.provide(Layers.layerSomenteLeitura({ caminho: banco }))),
+);
 const revisao = revisarDocx(new Uint8Array(NodeFS.readFileSync(docx)), "ppc.docx", base, {
   agora: new Date("2026-11-16T12:00:00Z"),
 });

@@ -9,7 +9,8 @@ import * as NodePath from "node:path";
 import { problemasOoxml } from "@simplifica-if/docx/testes/validar-ooxml";
 import { strFromU8, unzipSync } from "fflate";
 import { describe, expect, test } from "vite-plus/test";
-import { baseRevisaoDeArquivos } from "../scripts/base-tecnica.ts";
+import { raizRepositorio } from "@simplifica-if/kb/caminhos";
+import { carregarBaseRevisao } from "../scripts/base-tecnica.ts";
 import {
   alvoDosTrechos,
   conferirResposta,
@@ -492,8 +493,9 @@ describe("estado da lista para o resultado da IA", () => {
   });
 });
 
+const base = await carregarBaseRevisao(raizRepositorio());
+
 describe("os resultados da IA no DOCX comentado", () => {
-  const base = baseRevisaoDeArquivos();
   const revisao = revisarDocx(ppcSintetico(), "ppc.docx", base, {
     agora: new Date("2026-11-16T12:00:00Z"),
     ia: {

@@ -9,7 +9,8 @@ import { lerDocx } from "@simplifica-if/docx/leitor";
 import { textoDoParagrafo } from "@simplifica-if/docx/modelo";
 import { strFromU8, unzipSync } from "fflate";
 import { describe, expect, test } from "vite-plus/test";
-import { baseRevisaoDeArquivos } from "../scripts/base-tecnica.ts";
+import { raizRepositorio } from "@simplifica-if/kb/caminhos";
+import { carregarBaseRevisao } from "../scripts/base-tecnica.ts";
 import {
   identificarForma,
   revisarDocx as revisarSemConferir,
@@ -26,7 +27,7 @@ const revisarDocx: typeof revisarSemConferir = (...argumentos) => {
 };
 
 const AGORA = new Date("2026-11-16T12:00:00Z");
-const base = baseRevisaoDeArquivos();
+const base = await carregarBaseRevisao(raizRepositorio());
 
 const partes = (docx: Uint8Array) => {
   const arquivos = unzipSync(docx);

@@ -10,9 +10,9 @@ Desde o C1 da [consolidação na stack do T3](../../docs/plans/consolidacao-stac
 |---|---|---|
 | `BaseKb.ts` | `meta` (versão do esquema, `data_referencia`, impressão digital, contagens, `versao`/`commit`/`canal`); falha a layer com `BaseIncompativel`. `layerSqlite({ caminho })`: o `SqlClient` só leitura (`BaseAusente`) | `SqlClient` |
 | `FontesNormativas.ts` | `registro`, `datas`, `relacoes`, `transicoes` (com eles, o próprio serviço é a `FonteVigencia` das regras), `dataReferencia`, `sinonimos`, `topicosSecoes`, `topicosFichas`, `conteudoDasSkills({ raiz? })`. Duas layers: `layerBanco` (tabelas do `kb.sqlite`; só `SqlClient`) e `layerArquivos({ raiz })` (`FileSystem`, `Path`) | — |
-| `Normas.ts` | `resolver`, `buscar`, `obter`, `ficha`, `dispositivo`, `dispositivoOuAncestral`, `descendentes`, `trecho`, `vigencia`, `relacoes`, `sucessoras`, `correspondencia`, `tabelasDeCorrespondencia`, `dataReferencia` | `SqlClient`, `FontesNormativas` |
+| `Normas.ts` | `resolver`, `buscar`, `obter`, `ficha`, `dispositivo`, `dispositivoOuAncestral`, `descendentes`, `trecho`, `vigencia`, `relacoes`, `sucessoras`, `correspondencia`, `tabelasDeCorrespondencia`, `dataReferencia`, `enderecosOficiais` | `SqlClient`, `FontesNormativas` |
 | `Ppcs.ts` | `buscarSecoes`, `secoesDoPpc`, `indiceSecoesDoPpc`, `lerSecao`, `citacoesDaNorma`, `relatorioCitacoes`, `normasCitadas`, `fatos`, `divergencias` | `SqlClient`, `FontesNormativas` |
-| `Cursos.ts` | `listar`, `cnct`, `adequacaoArt71` | `SqlClient` |
+| `Cursos.ts` | `listar`, `cnct`, `catalogoCnct`, `adequacaoArt71` | `SqlClient` |
 | `Impacto.ts` | `daNorma(id, { data, incluirPpcs, raizConteudo })` | `SqlClient`, `FontesNormativas` |
 | `PacoteContexto.ts` | `montar` (PPC da base), `doMarkdown` (texto de um PPC fora da base), `abrirAvulso` (um PPC fora da base num banco em memória do escopo, com o `pacote` de cada conjunto de fichas e a `estrutura`), `fichas`, `nomesDeCampi` | `SqlClient`, `FontesNormativas` |
 | `Compilador.ts` | `compilar`, `estado`, `garantirFresco` (política `KB_RECOMPILAR`) | `FileSystem`, `Path` |
@@ -21,6 +21,7 @@ Layers prontas (`src/layers.ts`):
 
 - `layerSomenteLeitura({ caminho })`: o `kb.sqlite` em `caminho`, só leitura, com todos os serviços de consulta e as fontes remontadas das tabelas. **Não exige `FileSystem`**: o tipo garante que nada no caminho lê o repositório. É a do servidor MCP, do executável e do servidor do app (`apps/server`).
 - `layerRepositorio({ raiz })`: o checkout. Recompila o `tmp/kb.sqlite` se preciso (`KB_SQLITE` muda o caminho; `KB_RECOMPILAR=nunca|sempre`) e lê as fontes normativas dos arquivos. É a da CLI.
+- `layerBancoDoCheckout({ raiz })`: o mesmo banco do checkout, recompilado do mesmo jeito, com as fontes remontadas das tabelas, como em `layerSomenteLeitura`. É a dos scripts e testes do `packages/ppc`, que montam a base da revisão prévia como o app.
 - `layerConsultas`: os serviços de consulta sobre o `SqlClient` e as `FontesNormativas` do ambiente (para montar outra combinação, como uma fixture: `db/conexao.ts` dá um `SqlClient` sobre um `DatabaseSync` já aberto).
 
 Como consumir:

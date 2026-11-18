@@ -17,6 +17,7 @@ import { segmentarPpc } from "@simplifica-if/kb/ppcs/secoes";
 import { layerLeitura } from "@simplifica-if/mcp/rpc";
 import { avaliarRecorte, GABARITO, nomesDoPpc } from "@simplifica-if/ppc/revisao-ia/gabarito";
 import { conteudoDoPpcParaFicha } from "@simplifica-if/ppc/revisao-ia/pedido";
+import { montarBaseRevisao } from "@simplifica-if/ppc/base-revisao";
 import { lerPpc, ppcsTecnicos } from "../../../packages/ppc/scripts/base-tecnica.ts";
 import { preparar } from "../src/revisao-ppc/preparo.ts";
 
@@ -43,7 +44,8 @@ const programa = Effect.gen(function* () {
   const porFicha = new Map<string, Contagem>();
   const enfermagem: Record<string, { noPpc: boolean | null; noRecorte: boolean }> = {};
   const caracteresPorTipo: Record<string, { soma: number; n: number }> = {};
-  const ppcs = ppcsTecnicos().slice(0, limite);
+  const { cncts } = yield* montarBaseRevisao;
+  const ppcs = ppcsTecnicos(RAIZ, cncts).slice(0, limite);
   for (const ppc of ppcs) {
     const markdown = lerPpc(ppc);
     const plano = yield* preparar({

@@ -20,8 +20,8 @@ import { comentarDocx } from "@simplifica-if/docx/comentarios";
 import { raizRepositorio } from "@simplifica-if/kb/caminhos";
 import { converterPpc } from "../src/conversao-docx/conversao.ts";
 import { achadosParaComentarios, preConferir } from "../src/pre-conferencia.ts";
-import type { CursoCnct } from "../src/verificadores/comum.ts";
-import { baseComum, lerPpc, ppcsTecnicos } from "./base-tecnica.ts";
+import { verificacaoDaBase } from "../src/revisao-previa.ts";
+import { carregarBaseRevisao, lerPpc, ppcsTecnicos } from "./base-tecnica.ts";
 import { contarPorFicha } from "./precisao.ts";
 
 const { values } = NodeUtil.parseArgs({
@@ -41,10 +41,11 @@ const { values } = NodeUtil.parseArgs({
   },
 });
 const raiz = raizRepositorio();
-const comum = baseComum(raiz);
+const base = await carregarBaseRevisao(raiz);
+const comum = verificacaoDaBase(base);
 
 if (values.base) {
-  const ppcs = ppcsTecnicos(raiz);
+  const ppcs = ppcsTecnicos(raiz, base.cncts);
   const inicio = performance.now();
   const resultados = ppcs.map((ppc) => ({
     ppc,
@@ -132,15 +133,8 @@ if (values.base) {
 } else if (values.docx && values.cnct && values.saida) {
   const bytes = new Uint8Array(NodeFS.readFileSync(values.docx));
   const conversao = converterPpc(bytes, values.docx, { agora: new Date() });
-  const cnct = {
-    ...(JSON.parse(
-      NodeFS.readFileSync(
-        NodePath.join(raiz, "base-conhecimento/catalogos/cnct/cursos", `${values.cnct}.json`),
-        "utf8",
-      ),
-    ) as object),
-    slug: values.cnct,
-  } as CursoCnct;
+  const cnct = base.cncts.find((c) => c.slug === values.cnct);
+  if (!cnct) throw new Error(`curso do CNCT fora da base: ${values.cnct}`);
   const resultado = preConferir(conversao.markdown, { ...comum, cnct, forma: values.forma });
   const itens = achadosParaComentarios(resultado);
   const texto = (i: (typeof itens)[number]) =>
