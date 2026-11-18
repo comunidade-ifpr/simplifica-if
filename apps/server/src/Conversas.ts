@@ -145,6 +145,8 @@ interface TurnoAberto {
   falhou: boolean;
   /** O retrato da pasta no fim do turno (`PastasTrabalho.fecharTurno`) já foi feito. */
   retratado: boolean;
+  /** O turno saiu da conversa (`concluirTurno`): o estado em repouso e o `FimTurno` estão gravados. */
+  fechado: boolean;
   readonly fim: Deferred.Deferred<void>;
 }
 
@@ -257,42 +259,45 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
     if (opcoes.publicar) yield* PubSub.publish(viva.aoVivo, pronto);
   });
 
-  /** Um evento do turno: o parcial se acumula e se publica; o resto se grava e se publica. */
+  /**
+   * Um evento do `turno` (o aberto, ou nenhum): o parcial se acumula e se publica; o resto se grava e
+   * se publica. Chame com a `travaItens`.
+   */
+  const gravarEvento = Effect.fnUntraced(function* (viva: Viva, turno: TurnoAberto | undefined, evento: Motor.Evento) {
+    const numero = turno?.numero ?? viva.registro.turnos;
+    if (evento._tag === "TextoParcial") {
+      if (turno !== undefined) turno.acumulado += evento.texto;
+      yield* PubSub.publish(viva.aoVivo, {
+        _tag: "EventoTurno",
+        turno: numero,
+        ordem: viva.registro.ultimaOrdem,
+        evento,
+      });
+      return;
+    }
+    if (turno !== undefined) {
+      if (evento._tag === "TextoFinal") turno.acumulado = "";
+      // O texto parcial que não ganhou `TextoFinal` (Claude interrompido, por exemplo) fica no banco.
+      if (evento._tag === "FimTurno" && turno.acumulado.trim() !== "") {
+        const texto = turno.acumulado;
+        turno.acumulado = "";
+        yield* registrar(
+          viva,
+          (ordem) => ({ _tag: "EventoTurno", turno: numero, ordem, evento: { _tag: "TextoFinal", texto } }),
+          { publicar: false },
+        );
+      }
+      if (evento._tag === "FimTurno") turno.terminou = true;
+    }
+    yield* registrar(viva, (ordem) => ({ _tag: "EventoTurno", turno: numero, ordem, evento }), {
+      publicar: true,
+    });
+  });
+
+  /** Um evento do turno aberto (ou de fora de turno), com a `travaItens`. */
   const registrarEvento = (viva: Viva, evento: Motor.Evento) =>
     viva.travaItens
-      .withPermits(1)(
-        Effect.gen(function* () {
-          const turno = viva.turno;
-          const numero = turno?.numero ?? viva.registro.turnos;
-          if (evento._tag === "TextoParcial") {
-            if (turno !== undefined) turno.acumulado += evento.texto;
-            yield* PubSub.publish(viva.aoVivo, {
-              _tag: "EventoTurno",
-              turno: numero,
-              ordem: viva.registro.ultimaOrdem,
-              evento,
-            });
-            return;
-          }
-          if (turno !== undefined) {
-            if (evento._tag === "TextoFinal") turno.acumulado = "";
-            // O texto parcial que não ganhou `TextoFinal` (Claude interrompido, por exemplo) fica no banco.
-            if (evento._tag === "FimTurno" && turno.acumulado.trim() !== "") {
-              const texto = turno.acumulado;
-              turno.acumulado = "";
-              yield* registrar(
-                viva,
-                (ordem) => ({ _tag: "EventoTurno", turno: numero, ordem, evento: { _tag: "TextoFinal", texto } }),
-                { publicar: false },
-              );
-            }
-            if (evento._tag === "FimTurno") turno.terminou = true;
-          }
-          yield* registrar(viva, (ordem) => ({ _tag: "EventoTurno", turno: numero, ordem, evento }), {
-            publicar: true,
-          });
-        }),
-      )
+      .withPermits(1)(Effect.suspend(() => gravarEvento(viva, viva.turno, evento)))
       .pipe(Effect.uninterruptible);
 
   /* ------------------------------------------------------------ sessão */
@@ -456,12 +461,27 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
 
   /* ------------------------------------------------------------ turno */
 
-  /** Fecha o turno: o `FimTurno` que faltar, o estado e o prazo de ociosidade. */
-  const fecharTurno = Effect.fn("Conversas.fecharTurno")(function* (viva: Viva, turno: TurnoAberto) {
-    if (!turno.terminou) yield* registrarEvento(viva, { _tag: "FimTurno", motivo: "interrompido" });
-    viva.ultimoTurnoFalhou = turno.falhou;
-    viva.turno = undefined;
-    yield* alterar(viva, { estado: estadoEmRepouso(viva) });
+  /**
+   * Fecha o turno com o `FimTurno` dado, nesta ordem: o turno sai da conversa e o estado em repouso é
+   * gravado, e só então o `FimTurno` é publicado e o `fim` concluído. Quem recebe o `FimTurno` (a
+   * interface) já encontra a conversa aceitando outra mensagem, mesmo que o stream do provider ainda
+   * não tenha acabado. A `travaItens` segura a mensagem nova até o `FimTurno` ficar gravado.
+   */
+  const concluirTurno = Effect.fn("Conversas.concluirTurno")(function* (
+    viva: Viva,
+    turno: TurnoAberto,
+    fimTurno: Motor.Evento,
+  ) {
+    if (turno.fechado) return;
+    yield* viva.travaItens.withPermits(1)(
+      Effect.gen(function* () {
+        turno.fechado = true;
+        viva.ultimoTurnoFalhou = turno.falhou;
+        if (viva.turno === turno) viva.turno = undefined;
+        yield* alterar(viva, { estado: estadoEmRepouso(viva) });
+        yield* gravarEvento(viva, turno, fimTurno);
+      }),
+    );
     yield* Deferred.succeed(turno.fim, undefined);
     yield* agendarOciosidade(viva);
   }, Effect.uninterruptible);
@@ -482,12 +502,19 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
   const bombear = (viva: Viva, turno: TurnoAberto, sessao: SessaoAberta, texto: string) =>
     motor.enviarMensagem(sessao.id, texto).pipe(
       Stream.runForEach((evento) =>
-        (evento._tag === "FimTurno" ? retratarPasta(viva, turno) : Effect.void).pipe(
-          Effect.andThen(registrarEvento(viva, evento)),
-        ),
+        Effect.suspend(() => {
+          // Depois do `FimTurno`, o turno já está fechado e a conversa pode ter outro: nada mais é dele.
+          if (turno.fechado) return Effect.void;
+          if (evento._tag !== "FimTurno") return registrarEvento(viva, evento);
+          return retratarPasta(viva, turno).pipe(Effect.andThen(concluirTurno(viva, turno, evento)));
+        }),
       ),
       Effect.catch((erro) =>
         Effect.gen(function* () {
+          if (turno.fechado) {
+            yield* Effect.logWarning(`conversa ${viva.id}: o provider falhou depois do fim do turno`, erro);
+            return;
+          }
           // A falha do provider (inclusive a queda do processo) vira `Erro` e `FimTurno`: a conversa
           // continua, e a próxima mensagem reabre a sessão se for preciso.
           yield* Effect.logWarning(`conversa ${viva.id}: o turno falhou`, erro);
@@ -498,11 +525,15 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
           if (Option.isSome(caiu)) yield* derrubar(viva, sessao);
           yield* registrarEvento(viva, { _tag: "Erro", mensagem: erro.message });
           yield* retratarPasta(viva, turno);
-          yield* registrarEvento(viva, { _tag: "FimTurno", motivo: "falha" });
+          yield* concluirTurno(viva, turno, { _tag: "FimTurno", motivo: "falha" });
         }),
       ),
-      // Interrompido antes do `FimTurno`: o retrato que faltar, antes de fechar o turno.
-      Effect.ensuring(retratarPasta(viva, turno).pipe(Effect.andThen(fecharTurno(viva, turno)))),
+      // Interrompido antes do `FimTurno`: o retrato que faltar e o turno fechado como interrompido.
+      Effect.ensuring(
+        retratarPasta(viva, turno).pipe(
+          Effect.andThen(concluirTurno(viva, turno, { _tag: "FimTurno", motivo: "interrompido" })),
+        ),
+      ),
     );
 
   /** Começa o turno e devolve a inscrição nos itens dele (no escopo de quem chama). */
@@ -522,6 +553,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
           acumulado: "",
           terminou: false,
           retratado: false,
+          fechado: false,
           falhou: false,
           fim: yield* Deferred.make<void>(),
         };

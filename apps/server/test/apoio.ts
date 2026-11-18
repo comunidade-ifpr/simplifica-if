@@ -12,6 +12,7 @@ import * as Deferred from "effect/Deferred";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Socket from "effect/socket/Socket";
+import * as Stream from "effect/Stream";
 import { RpcClient, RpcSerialization } from "effect/rpc";
 import { GrupoApp } from "@simplifica-if/contratos-app";
 import * as Motor from "@simplifica-if/motor";
@@ -46,6 +47,8 @@ export interface Registro {
   recusarRetomada?: boolean;
   /** O provider ignora o pedido de interrupção (o turno só acaba quando a sessão fecha). */
   ignorarInterrupcao?: boolean;
+  /** Segura o fim do stream do turno, depois do `FimTurno`, até o `Deferred` se concluir. */
+  segurarFim?: Deferred.Deferred<void> | undefined;
 }
 
 export const novoRegistro = (): Registro => ({ configs: [], textos: [], encerradas: 0 });
@@ -153,7 +156,13 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
       return {
         idNativo,
         queda: Deferred.await(queda),
-        enviar: (texto) => canal.turno(Effect.asVoid(Effect.forkIn(responder(texto), escopo))),
+        enviar: (texto) => {
+          const eventos = canal.turno(Effect.asVoid(Effect.forkIn(responder(texto), escopo)));
+          const segurar = registro.segurarFim;
+          return segurar === undefined
+            ? eventos
+            : Stream.concat(eventos, Stream.drain(Stream.fromEffect(Deferred.await(segurar))));
+        },
         responder: canal.responder,
         interromper:
           registro.ignorarInterrupcao === true
