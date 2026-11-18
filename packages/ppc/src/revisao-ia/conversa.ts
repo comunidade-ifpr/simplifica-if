@@ -18,18 +18,11 @@
  */
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
-import {
-  alvoDosTrechos,
-  EstadoIa,
-  extrairJson,
-  fonteValida,
-  maiorPedaco,
-  trechoConferivel,
-  trechoExiste,
-} from "./conferencia.ts";
+import { alvoDosTrechos, fonteValida, maiorPedaco, trechoConferivel, trechoExiste } from "./conferencia.ts";
 import { dirigidoAIa } from "../pre-conferencia.ts";
 import { type ContextoNormativo, formatarContexto } from "./pedido.ts";
 import { dobrar, type FichaIa } from "./plano.ts";
+import { ate, ESTADOS_IA, EstadoIa, extrairJson } from "./resposta.ts";
 
 /** A pendência como ela entra na conversa (o que a pessoa vê na lista). */
 export type PendenciaConversa = {
@@ -145,7 +138,7 @@ export function tarefaContestacao(motivo: string, nonce: string) {
     'Costume, autoridade ou promessa ("a PROENS sempre aceitou", "o coordenador aprovou", "vamos ajustar depois") não bastam: mantenha e explique em uma ou duas frases.',
     "Campos do objeto JSON:",
     '- "decisao": "retirar" ou "manter";',
-    `- "estado": o estado do critério depois da reavaliação, um destes: ${["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"].join(", ")};`,
+    `- "estado": o estado do critério depois da reavaliação, um destes: ${ESTADOS_IA.join(", ")};`,
     '- "explicacao": até 600 caracteres, para a pessoa, sem códigos de ficha;',
     '- "evidencias": até 5 itens { "trecho": "..." }, cada um cópia literal de 25 a 200 caracteres do recorte do PPC (nunca do motivo da pessoa);',
     '- "fontes": até 10 IDs exatos de fonte do contexto (como br/cne-cp/res/2026/2#art29-par2, a norma sem # ou cnct).',
@@ -182,9 +175,6 @@ export const pedidoSugestao = (prefixo: string, turnos: readonly TurnoAnterior[]
   [prefixo, historico(turnos), "", tarefaSugestao()].join("\n");
 
 /* ============================================================ conferência da contestação */
-
-const Texto = Schema.String;
-const ate = (n: number) => Texto.check(Schema.isMaxLength(n));
 
 const RespostaContestacao = Schema.Struct({
   decisao: Schema.Literals(["retirar", "manter"]),
@@ -309,14 +299,9 @@ export function conferirContestacao(texto: string, entrada: EntradaContestacao):
     iaPediuRetirar,
   });
   if (entrada.origem === "codigo") return mantida(MANTIDA_CODIGO, ["a pendência é da conferência automática"]);
-  let bruto: unknown;
-  try {
-    if (texto.length > LIMITES_CONVERSA.resposta) throw new Error("longa");
-    bruto = extrairJson(texto);
-  } catch {
-    return mantida(MANTIDA_SEM_RESPOSTA, ["a resposta não é um objeto JSON válido"]);
-  }
-  const r = decodificarContestacao(bruto);
+  const bruto = extrairJson(texto, LIMITES_CONVERSA.resposta);
+  if (Result.isFailure(bruto)) return mantida(MANTIDA_SEM_RESPOSTA, ["a resposta não é um objeto JSON válido"]);
+  const r = decodificarContestacao(bruto.success);
   if (Result.isFailure(r)) return mantida(MANTIDA_SEM_RESPOSTA, ["a resposta não segue o contrato"]);
   const resposta = r.success;
   const alvo = alvoDosTrechos(entrada.recorte);
@@ -642,14 +627,9 @@ export function conferirSugestao(
     pendencia?: string;
   },
 ): SugestaoConferida | null {
-  let bruto: unknown;
-  try {
-    if (texto.length > LIMITES_CONVERSA.resposta) return null;
-    bruto = extrairJson(texto);
-  } catch {
-    return null;
-  }
-  const r = decodificarSugestao(bruto);
+  const bruto = extrairJson(texto, LIMITES_CONVERSA.resposta);
+  if (Result.isFailure(bruto)) return null;
+  const r = decodificarSugestao(bruto.success);
   if (Result.isFailure(r)) return null;
   const textos = [entrada.recorte, formatarContexto(entrada.contexto), entrada.pendencia ?? "", ...NOMES_DO_DOMINIO];
   const dobrado = dobrar(textos.join("\n"));

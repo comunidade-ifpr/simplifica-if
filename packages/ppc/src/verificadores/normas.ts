@@ -28,7 +28,6 @@ import {
   type Trecho,
   trecho,
   type Verificador,
-  vigenciaDe,
 } from "./comum.ts";
 import { MARCOS, marcoDa } from "./vigencia.ts";
 
@@ -58,7 +57,7 @@ const evidenciaDe = (ppc: PpcPreparado, citacao: { linha: number; trecho: string
 function ausenciaDoMarco(base: BaseVerificacao, id: string, ficha: string, mensagem: string): Apontamento {
   const marco = marcoDa(id, base.relacoes);
   const anterior = marco ? marco.linha[marco.linha.indexOf(id) - 1] : undefined;
-  if (!vigenciaDe(base)(id).certo) {
+  if (!base.vigencia(id).certo) {
     const transicao = anterior ? textoTransicao(base, anterior, { incerta: false }) : { texto: "", fontes: [] };
     return {
       estado: "a_conferir",

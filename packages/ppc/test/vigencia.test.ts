@@ -7,7 +7,8 @@ import { describe, expect, test } from "vite-plus/test";
 import { carregarRegistro } from "@simplifica-if/kb/normas/registro";
 import { carregarRelacoes } from "@simplifica-if/kb/normas/relacoes";
 import { preConferir } from "../src/pre-conferencia.ts";
-import { carregarVigencia, MARCOS, revogacaoRecente, vigenciaPadrao } from "../src/verificadores/vigencia.ts";
+import { MARCOS, revogacaoRecente } from "../src/verificadores/vigencia.ts";
+import { carregarVigencia } from "../scripts/base-tecnica.ts";
 
 describe("marcos e vigência", () => {
   test("MARCOS é a cópia de linha e ficha responsável de marcos-normativos.json", () => {
@@ -27,7 +28,7 @@ describe("marcos e vigência", () => {
       status: "revogada",
       certo: true,
     });
-    expect(vigenciaPadrao()("br/cne-ceb/res/2018/3").transicoes.map((t) => t.id)).toEqual(["dcnem-2024-art42"]);
+    expect(carregarVigencia()("br/cne-ceb/res/2018/3").transicoes.map((t) => t.id)).toEqual(["dcnem-2024-art42"]);
   });
 
   test("revogação recente sem transição: data da revogação e a regra dos 12 meses", () => {

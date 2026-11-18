@@ -19,7 +19,7 @@ import { ErroDocx } from "@simplifica-if/docx/erro";
 import { caminhoTexto, problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { aplicarOmissao, type Contagem } from "@simplifica-if/kb/ppcs/dados-pessoais";
 import { DESCONHECIDO, idPpc, serializarFrontMatterPpc } from "@simplifica-if/kb/ppcs/front-matter";
-import { converterPpc, lerArquivoDocx } from "@simplifica-if/ppc/conversao-docx/conversao";
+import { conferirArquivoDocx, converterPpc } from "@simplifica-if/ppc/conversao-docx/conversao";
 import type { RepresentacaoGrafica } from "@simplifica-if/ppc/conversao-docx/figura";
 import { esquemaCursoLocal, esquemaPpcCurso, textoRegistro, type CursoLocal } from "../dados/institucional.ts";
 import {
@@ -258,9 +258,12 @@ export function importarPpcDocx(opcoes: OpcoesImportacao): ResultadoImportacao {
     );
   }
 
+  const arquivoDocx = NodePath.resolve(opcoes.arquivoDocx);
+  if (!NodeFS.existsSync(arquivoDocx)) throw new ErroImportacao(`Arquivo não encontrado: ${arquivoDocx}`);
   let bytes: Uint8Array;
   try {
-    bytes = lerArquivoDocx(opcoes.arquivoDocx);
+    conferirArquivoDocx(arquivoDocx, NodeFS.statSync(arquivoDocx).size);
+    bytes = NodeFS.readFileSync(arquivoDocx);
   } catch (erro) {
     throw new ErroImportacao((erro as Error).message);
   }

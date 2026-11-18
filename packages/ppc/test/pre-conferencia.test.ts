@@ -7,6 +7,7 @@ import { montarDocx, par, titulo } from "@simplifica-if/docx/testes/sintetico";
 import { segmentarPpc } from "@simplifica-if/kb/ppcs/secoes";
 import { converterPpc } from "../src/conversao-docx/conversao.ts";
 import { preConferir, type CursoCnct } from "../src/pre-conferencia.ts";
+import { carregarVigencia } from "../scripts/base-tecnica.ts";
 
 const AGORA = new Date(2026, 10, 16, 12, 0, 0);
 
@@ -59,6 +60,7 @@ describe("ponta a ponta: DOCX → PPC.md → seções do kb → pré-conferênci
       forma: "subsequente",
       registro: carregarRegistro(),
       relacoes: carregarRelacoes(),
+      vigencia: carregarVigencia(),
     });
     expect(triagem.filter((a) => a.regra === "secoes-do-modelo")).toEqual([]);
     expect(fichas).toHaveLength(12);

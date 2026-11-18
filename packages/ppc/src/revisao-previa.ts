@@ -22,7 +22,8 @@ import type { Relacao } from "@simplifica-if/kb/normas/relacoes";
 import type { DatasNorma, Transicao } from "@simplifica-if/kb/normas/vigencia";
 import { converterPpc } from "./conversao-docx/conversao.ts";
 import { achadosParaComentarios, type PreConferencia, preConferir } from "./pre-conferencia.ts";
-import { chave, type CursoCnct, type Fonte } from "./verificadores/comum.ts";
+import { TEMAS, ordemDoTema } from "./temas.ts";
+import { chave, type CursoCnct, type Fonte, linkCnct, linkNorma } from "./verificadores/comum.ts";
 import { comoNoDocumento } from "./verificadores/curriculo.ts";
 import { rotuloDispositivo } from "./verificadores/dispositivos.ts";
 import { vigenciaDeDados } from "./verificadores/vigencia.ts";
@@ -224,34 +225,9 @@ export type RevisaoPrevia = {
   linhasTextoParaIa: number[];
 };
 
-export const AUTOR_COMENTARIOS = "Simplifica IF (revisão prévia)";
+/** O autor dos comentários no Word. */
+const AUTORIA = { autor: "Simplifica IF (revisão prévia)", iniciais: "SIF" } as const;
 const URL_CNCT = "https://portal.mec.gov.br/catalogos-nacionais-de-cursos-tecnicos";
-
-/**
- * Temas na ordem do parecer da PROENS (as paradas da proposta B), com os tópicos da taxonomia de
- * cada um. A pendência vai para o tema do primeiro tópico da ficha que aparece aqui.
- */
-export const TEMAS: readonly { titulo: string; topicos: readonly string[] }[] = [
-  { titulo: "Antes de começar", topicos: [] },
-  { titulo: "Identificação e oferta", topicos: ["identificacao_oferta"] },
-  { titulo: "Matriz e estrutura curricular", topicos: ["matriz_curricular"] },
-  { titulo: "Perfil do egresso e CNCT", topicos: ["perfil_egresso_mundo_trabalho"] },
-  { titulo: "Ementário e referências", topicos: ["ementario_bibliografias"] },
-  { titulo: "Fundamentos legais e normativos", topicos: ["referencias_normativas"] },
-  {
-    titulo: "Acesso, permanência, AEE e inclusão",
-    topicos: ["assistencia_estudantil_permanencia", "aee_acessibilidade_inclusao"],
-  },
-  { titulo: "Estágio, aproveitamento e TFC", topicos: ["estagio", "aproveitamento_certificacao_tfc"] },
-  {
-    titulo: "Justificativa, objetivos, concepção e metodologias",
-    topicos: ["justificativa_objetivos", "concepcao_metodologias"],
-  },
-  { titulo: "Avaliação da aprendizagem e do curso", topicos: ["avaliacao_aprendizagem", "avaliacao_ppc_egressos"] },
-  { titulo: "Corpo docente, gestão e infraestrutura", topicos: ["corpo_docente_gestao", "infraestrutura"] },
-  { titulo: "Temas transversais", topicos: ["temas_transversais_cidadania"] },
-  { titulo: "Coerência do conjunto", topicos: ["sintese_transversal_revisao"] },
-];
 
 /** O que fazer, por ficha D (e pela triagem): uma frase para quem edita o PPC. */
 const O_QUE_FAZER: Record<string, string> = {
@@ -383,18 +359,14 @@ export function agruparFontes(links: readonly Fonte[], registro: Registro, base:
 
 /* ============================================================ pendências e comentários */
 
-function temaDaFicha(ficha: string, base: BaseRevisaoPrevia): number {
-  const topicos = base.topicos.filter((t) => t.fichas.includes(ficha)).map((t) => t.id);
-  const indice = TEMAS.findIndex((tema) => tema.topicos.some((t) => topicos.includes(t)));
-  // Ficha sem tópico conhecido (base sem a taxonomia): fica em "Coerência do conjunto", no fim.
-  return indice >= 0 ? indice : TEMAS.length - 1;
-}
+const temaDaFicha = (ficha: string, base: BaseRevisaoPrevia): number =>
+  ordemDoTema(base.topicos.filter((t) => t.fichas.includes(ficha)).map((t) => t.id));
 
 type ItemInterno = Omit<PendenciaRevisao, "noDocumento"> & { trechos: string[] };
 
 /** A fonte de um resultado da IA como link `ifpr://` (a base dá o rótulo legível). */
 const linkDaFonte = (fonte: string, cnct: string | null): Fonte | null =>
-  fonte.startsWith("cnct") ? (cnct ? `ifpr://cnct/${cnct}` : null) : `ifpr://norma/${fonte}`;
+  fonte.startsWith("cnct") ? (cnct ? linkCnct(cnct) : null) : linkNorma(fonte);
 
 /**
  * O estado da lista para um resultado da IA, ou nulo quando não há pendência.
@@ -733,7 +705,7 @@ export function revisarDocx(
 
   // Duas passadas: as pendências com trecho, e depois o aviso no título, com as ausências e o que
   // não foi localizado.
-  const comentar = { data: opcoes.agora.toISOString(), autor: AUTOR_COMENTARIOS };
+  const comentar = { data: opcoes.agora.toISOString(), ...AUTORIA };
   const marcas = itens.map((item) => opcoes.situacoes?.[chavePendencia(item)]);
   // Só a pendência confirmada pela reanálise sai do documento; a contestada com evidência conferida
   // fica "a conferir", com o trecho e o motivo; as outras levam a situação.

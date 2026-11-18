@@ -115,6 +115,8 @@ describe("problemasOoxml", () => {
   test("comentários: marca sem comentário, referência repetida e intervalo invertido", () => {
     const comentado = comentarDocx(BASE, [{ trechos: ["Texto"], texto: "nota" }], {
       data: "2026-11-16T12:00:00Z",
+      autor: "Equipe de revisão",
+      iniciais: "ER",
     }).docx;
     expect(problemasOoxml(comentado)).toEqual([]);
     const marcas =
@@ -143,7 +145,7 @@ describe("problemasOoxml", () => {
         { trechos: ["40"], texto: "conferir" },
         { trechos: ["ausente"], texto: "seção", noInicioSeAusente: true },
       ],
-      { data: "2026-11-16T12:00:00Z" },
+      { data: "2026-11-16T12:00:00Z", autor: "Equipe de revisão", iniciais: "ER" },
     );
     expect(ancoradas).toHaveLength(2);
     expect(problemasOoxml(comentado)).toEqual([]);

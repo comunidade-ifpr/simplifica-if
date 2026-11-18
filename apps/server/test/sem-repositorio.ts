@@ -7,8 +7,8 @@
  *
  * Antes de carregar qualquer módulo do `kb` ou do `ppc`, a leitura das pastas de dados do repositório
  * (`base-conhecimento/`, `dados/`, `.agents/`, `tmp/`, `packages/kb/dados/`) passa a falhar. A base vem
- * só do `kb.sqlite` (fora do repositório). Imprime as pendências e o controle: a pré-conferência sem
- * `vigencia`, que cai na do checkout e tem de esbarrar no bloqueio.
+ * só do `kb.sqlite` (fora do repositório). Imprime as pendências e o controle: a leitura do registro
+ * de normas do checkout, que tem de esbarrar no bloqueio.
  */
 import * as NodeFS from "node:fs";
 import * as NodeModule from "node:module";
@@ -42,8 +42,7 @@ const Effect = await import("effect/Effect");
 const Layers = await import("@simplifica-if/kb/layers");
 const { montarBase } = await import("../src/revisao-ppc/RevisorPpc.ts");
 const { revisarDocx } = await import("@simplifica-if/ppc/revisao-previa");
-const { preConferir } = await import("@simplifica-if/ppc/pre-conferencia");
-const { Registro } = await import("@simplifica-if/kb/normas/registro");
+const { carregarRegistro } = await import("@simplifica-if/kb/normas/registro");
 
 const base = await Effect.runPromise(montarBase.pipe(Effect.provide(Layers.layerSomenteLeitura({ caminho: banco }))));
 const revisao = revisarDocx(new Uint8Array(NodeFS.readFileSync(docx)), "ppc.docx", base, {
@@ -51,17 +50,13 @@ const revisao = revisarDocx(new Uint8Array(NodeFS.readFileSync(docx)), "ppc.docx
 });
 const leiturasDaRevisao = leituras.length;
 
-// Controle: sem `vigencia`, os verificadores carregam a do checkout, e o bloqueio tem de impedir.
+// Controle: a leitura do registro do checkout prova que o bloqueio pega o que a revisão não leu.
 let controle = "leu o checkout";
 try {
-  preConferir("## 9 REFERÊNCIAS\n\nResolução CNE/CP nº 1/2021.\n", {
-    cnct: null,
-    forma: "subsequente",
-    registro: new Registro(base.normas),
-    relacoes: base.relacoes,
-  });
+  carregarRegistro();
 } catch {
-  controle = "bloqueado";
+  // Só conta como bloqueado se foi o bloqueio que recusou (registrou a leitura), não outra falha.
+  if (leituras.length > leiturasDaRevisao) controle = "bloqueado";
 }
 
 console.log(

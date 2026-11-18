@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off globalDate:off -- os testes gravam DOCX sintéticos em diretórios temporários e fixam o relógio com datas dadas
+// @effect-diagnostics nodeBuiltinImport:off globalDate:off -- os testes leem os gabaritos do disco e fixam o relógio com datas dadas
 /**
  * Conversão DOCX do PPC (`src/conversao-docx/`): a leitura, as regras de domínio e os artefatos,
  * sobre os documentos sintéticos de `src/testes/documentos.ts`.
@@ -8,12 +8,11 @@
  * regrava o gabarito do documento afetado, no mesmo commit.
  */
 import * as NodeFS from "node:fs";
-import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import type { Dicionario } from "@simplifica-if/kb/primitivas/valores";
 import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
-import { afterEach, describe, expect, test } from "vite-plus/test";
-import { converterDocx, converterPpc } from "../src/conversao-docx/conversao.ts";
+import { describe, expect, test } from "vite-plus/test";
+import { artefatosDaConversao, conferirArquivoDocx, converterPpc } from "../src/conversao-docx/conversao.ts";
 import {
   type Elemento,
   elementosDoDocumento,
@@ -37,23 +36,11 @@ import { ErroDocx } from "@simplifica-if/docx/pacote";
 import { analisarXml, descendentes } from "@simplifica-if/docx/xml";
 import { detectarSecoes, dicasDeIdentificacao, listarSecoes } from "../src/conversao-docx/secoes.ts";
 import { normalizarTabela, tabelaEmMarkdown, type TabelaNormalizada } from "../src/conversao-docx/tabelas.ts";
-import { carregarJsonTipado as lerJsonDaRodada } from "@simplifica-if/kb/primitivas/json-tipado";
 import { celula, hyperlink, linha, montarDocx, par, run, tabela, titulo } from "@simplifica-if/docx/testes/sintetico";
 import { docxDaFixture, FIXTURES } from "../src/testes/documentos.ts";
 
 const AGORA = new Date(2026, 10, 16, 12, 0, 0);
 const GABARITOS = NodePath.join(import.meta.dirname, "fixtures", "conversao-docx");
-
-const temporarios: string[] = [];
-afterEach(() => {
-  for (const dir of temporarios.splice(0)) NodeFS.rmSync(dir, { recursive: true, force: true });
-});
-
-function diretorioTemporario(): string {
-  const dir = NodeFS.mkdtempSync(NodePath.join(NodeOS.tmpdir(), "revisar-ppc-conversao-docx-"));
-  temporarios.push(dir);
-  return dir;
-}
 
 const elementos = (nome: string) => elementosDoDocumento(lerDocx(docxDaFixture(nome)));
 const converter = (nome: string) => converterPpc(docxDaFixture(nome), `${nome}.docx`, { agora: AGORA });
@@ -61,18 +48,10 @@ const tabelas = (itens: Elemento[]) => itens.filter((item): item is Tabela => it
 const paragrafos = (itens: Elemento[]) => itens.filter((item): item is Paragrafo => item.tipo === "paragrafo");
 const textos = (tabelaLida: Tabela) => tabelaLida.linhas.map((celulas) => celulas.map((item) => item.texto));
 
-/** Converte a fixture para um diretório e devolve os bytes dos arquivos gravados, por nome. */
+/** Os artefatos da conversão da fixture, com os bytes que quem grava escreveria, por caminho. */
 function bytesConvertidos(nome: string): Record<string, Buffer> {
-  const dir = diretorioTemporario();
-  const docx = NodePath.join(dir, `${nome}.docx`);
-  NodeFS.writeFileSync(docx, docxDaFixture(nome));
-  converterDocx(docx, NodePath.join(dir, "saida"), { agora: AGORA });
-  const saida = NodePath.join(dir, "saida");
-  return Object.fromEntries(
-    NodeFS.readdirSync(saida, { recursive: true, encoding: "utf-8" })
-      .filter((arquivo) => NodeFS.statSync(NodePath.join(saida, arquivo)).isFile())
-      .map((arquivo) => [arquivo, NodeFS.readFileSync(NodePath.join(saida, arquivo))]),
-  );
+  const { arquivos } = artefatosDaConversao(converter(nome), `${nome}.docx`);
+  return Object.fromEntries(arquivos.map(({ caminho, conteudo }) => [caminho, Buffer.from(conteudo)]));
 }
 
 /** O mesmo, com o conteúdo em texto. */
@@ -1188,49 +1167,33 @@ describe("representação gráfica", () => {
 
 describe("artefatos e rodada", () => {
   test("nomes dos arquivos seguem o nome do DOCX, e `_dados` sai do radical dos JSONs relacionados", () => {
-    const dir = diretorioTemporario();
-    const docx = NodePath.join(dir, "PPC_dados v2.docx");
-    NodeFS.writeFileSync(docx, docxDaFixture("ppc-minimo"));
-    const artefatos = converterDocx(docx, NodePath.join(dir, "saida"), { agora: AGORA });
-    expect(
-      Object.fromEntries(
-        Object.entries(artefatos).map(([chave, valor]) => [chave, valor && NodePath.relative(dir, valor)]),
-      ),
-    ).toEqual({
-      output_dir: "saida",
-      markdown: "saida/PPC_dados v2.md",
-      markdown_bruto: "saida/PPC_dados v2-bruto.md",
-      dados: "saida/PPC_dados v2_dados.json",
-      matriz_curricular: "saida/PPC v2_matriz_curricular.json",
-      ementario: "saida/PPC v2_ementario.json",
+    const conversao = converterPpc(docxDaFixture("ppc-minimo"), "PPC_dados v2.docx", { agora: AGORA });
+    const { arquivos, nomes } = artefatosDaConversao(conversao, "PPC_dados v2.docx");
+    expect(nomes).toEqual({
+      markdown: "PPC_dados v2.md",
+      markdown_bruto: "PPC_dados v2-bruto.md",
+      dados: "PPC_dados v2_dados.json",
+      matriz_curricular: "PPC v2_matriz_curricular.json",
+      ementario: "PPC v2_ementario.json",
     });
-    for (const caminho of Object.values(artefatos)) expect(NodeFS.existsSync(caminho!)).toBe(true);
-    const dados = lerJsonDaRodada(artefatos.dados) as Dicionario;
+    expect(arquivos.map((a) => a.caminho)).toEqual(["imagens/representacao_grafica.png", ...Object.values(nomes)]);
+    const dados = JSON.parse(arquivos.find((a) => a.caminho === nomes.dados)!.conteudo as string) as Dicionario;
     expect(dados.arquivo_origem).toBe("PPC_dados v2.docx");
     expect(dados.data_conversao).toBe("2026-11-16T12:00:00");
   });
 
   test("documento sem matriz nem ementário não gera esses arquivos", () => {
-    const dir = diretorioTemporario();
-    const docx = NodePath.join(dir, "mesclas.docx");
-    NodeFS.writeFileSync(docx, docxDaFixture("mesclas"));
-    const artefatos = converterDocx(docx, NodePath.join(dir, "saida"), { agora: AGORA });
-    expect(artefatos.matriz_curricular).toBeNull();
-    expect(artefatos.ementario).toBeNull();
-    expect(NodeFS.readdirSync(NodePath.join(dir, "saida")).sort()).toEqual([
-      "mesclas-bruto.md",
-      "mesclas.md",
-      "mesclas_dados.json",
-    ]);
+    const { arquivos, nomes } = artefatosDaConversao(converter("mesclas"), "mesclas.docx");
+    expect(nomes.matriz_curricular).toBeNull();
+    expect(nomes.ementario).toBeNull();
+    expect(arquivos.map((a) => a.caminho).sort()).toEqual(["mesclas-bruto.md", "mesclas.md", "mesclas_dados.json"]);
   });
 
-  test("entrada que não existe ou não é .docx é recusada", () => {
-    const dir = diretorioTemporario();
-    expect(() => converterDocx(NodePath.join(dir, "ausente.docx"), dir, { agora: AGORA })).toThrow(
-      /Arquivo não encontrado/,
-    );
-    NodeFS.writeFileSync(NodePath.join(dir, "ppc.txt"), "texto");
-    expect(() => converterDocx(NodePath.join(dir, "ppc.txt"), dir, { agora: AGORA })).toThrow(/deve ser \.docx/);
+  test("entrada que não é .docx, ou grande demais, é recusada antes da leitura", () => {
+    expect(() => conferirArquivoDocx("/pasta/ppc.txt", 5)).toThrow(/deve ser \.docx/);
+    expect(() => conferirArquivoDocx("/pasta/.docx", 5)).toThrow(/deve ser \.docx/);
+    expect(() => conferirArquivoDocx("/pasta/PPC.DOCX", 5)).not.toThrow();
+    expect(() => conferirArquivoDocx("/pasta/ppc.docx", 11, 10)).toThrow(ErroDocx);
   });
 
   test("data_conversao é a hora local do relógio, com microssegundos quando há fração", () => {

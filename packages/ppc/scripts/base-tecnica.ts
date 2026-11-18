@@ -13,6 +13,7 @@ import { carregarRelacoes } from "@simplifica-if/kb/normas/relacoes";
 import { carregarDatas, carregarTransicoes, dataReferencia } from "@simplifica-if/kb/normas/vigencia";
 import type { BaseRevisaoPrevia } from "../src/revisao-previa.ts";
 import type { BaseVerificacao, CursoCnct } from "../src/verificadores/comum.ts";
+import { type ConsultaVigencia, consultarVigencia } from "../src/verificadores/vigencia.ts";
 
 export type PpcDaBase = {
   id: string;
@@ -61,16 +62,39 @@ export function ppcsTecnicos(raiz: string = raizRepositorio()): PpcDaBase[] {
   return [...new Map(saida.map((p) => [p.id, p])).values()].sort((a, b) => a.id.localeCompare(b.id));
 }
 
-/** A parte da base que não depende do PPC (registro e relações), carregada uma vez. */
+/**
+ * A vigência lida dos arquivos do checkout, memorizada, na data (padrão: a `data_referencia` de
+ * `config/vigencia.yaml`). O app não tem o checkout: monta a vigência do `kb.sqlite` (`vigenciaDeDados`).
+ */
+export function carregarVigencia(
+  raiz: string = raizRepositorio(),
+  data: string = dataReferencia(raiz),
+): ConsultaVigencia {
+  const uma = <T>(carregar: () => T) => {
+    let valor: T | undefined;
+    return () => (valor ??= carregar());
+  };
+  return consultarVigencia(
+    {
+      registro: uma(() => carregarRegistro(raiz)),
+      datas: uma(() => carregarDatas(raiz)),
+      relacoes: uma(() => carregarRelacoes(raiz)),
+      transicoes: uma(() => carregarTransicoes(raiz)),
+    },
+    data,
+  );
+}
+
+/** A parte da base que não depende do PPC (registro, relações e vigência), carregada uma vez. */
 export function baseComum(raiz: string = raizRepositorio()): Omit<BaseVerificacao, "cnct" | "forma"> {
-  return { registro: carregarRegistro(raiz), relacoes: carregarRelacoes(raiz) };
+  return { registro: carregarRegistro(raiz), relacoes: carregarRelacoes(raiz), vigencia: carregarVigencia(raiz) };
 }
 
 export const lerPpc = (ppc: PpcDaBase) => NodeFS.readFileSync(ppc.caminho, "utf8");
 
 /**
  * A base da revisão prévia lida dos arquivos do checkout (testes e amostras). No app, o servidor a
- * monta do `kb.sqlite` (`apps/server/src/revisao-ppc/BaseRevisao.ts`).
+ * monta do `kb.sqlite` (`montarBase`, em `apps/server/src/revisao-ppc/RevisorPpc.ts`).
  */
 export function baseRevisaoDeArquivos(raiz: string = raizRepositorio()): BaseRevisaoPrevia {
   const { registro, relacoes } = baseComum(raiz);
