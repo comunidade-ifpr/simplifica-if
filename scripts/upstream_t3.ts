@@ -16,13 +16,11 @@ import * as FileSystem from "effect/FileSystem";
 import * as Option from "effect/Option";
 import * as Path from "effect/Path";
 import * as Schema from "effect/Schema";
-import * as Stream from "effect/Stream";
 import * as Argument from "effect/cli/Argument";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
-import * as ChildProcess from "effect/process/ChildProcess";
-import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 import { RAIZ_PROJETO } from "./config.ts";
+import * as Git from "./git.ts";
 import { executarPrincipal, sairCom } from "./principal.ts";
 
 export class ManifestoInvalido extends Schema.TaggedError<ManifestoInvalido>()("ManifestoInvalido", {
@@ -30,16 +28,6 @@ export class ManifestoInvalido extends Schema.TaggedError<ManifestoInvalido>()("
 }) {
   override get message(): string {
     return `docs/upstream-t3.md: ${this.motivo}`;
-  }
-}
-
-export class GitFalhou extends Schema.TaggedError<GitFalhou>()("GitFalhou", {
-  subcomando: Schema.String,
-  codigo: Schema.Int,
-  stderr: Schema.String,
-}) {
-  override get message(): string {
-    return `git ${this.subcomando} falhou no upstream (código ${this.codigo}): ${this.stderr}`;
   }
 }
 
@@ -96,27 +84,6 @@ export function lerManifesto(texto: string): Effect.Effect<ReadonlyArray<Parte>,
   return Effect.succeed(partes);
 }
 
-const git = Effect.fn("upstream_t3.git")(function* (checkout: string, args: ReadonlyArray<string>) {
-  const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
-  return yield* Effect.scoped(
-    Effect.gen(function* () {
-      const processo = yield* spawner.spawn(ChildProcess.make("git", ["-C", checkout, ...args], { stdin: "ignore" }));
-      const [saida, erro, codigo] = yield* Effect.all(
-        [
-          Stream.mkString(Stream.decodeText(processo.stdout)),
-          Stream.mkString(Stream.decodeText(processo.stderr)),
-          processo.exitCode,
-        ],
-        { concurrency: "unbounded" },
-      );
-      if (codigo !== 0) {
-        return yield* new GitFalhou({ subcomando: args[0] ?? "", codigo, stderr: erro.trim().slice(0, 500) });
-      }
-      return saida;
-    }),
-  );
-});
-
 const carregarManifesto = Effect.fn("upstream_t3.carregarManifesto")(function* () {
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
@@ -155,13 +122,17 @@ const status = Command.make("status", flags, ({ upstream: flagUpstream, ref }) =
   Effect.gen(function* () {
     const upstream = yield* resolverUpstream(flagUpstream);
     const partes = yield* carregarManifesto();
-    const alvo = (yield* git(upstream, ["rev-parse", "--short=10", ref])).trim();
+    const alvo = (yield* Git.executar(["rev-parse", "--short=10", ref], { cwd: upstream })).trim();
     yield* Console.log(`upstream ${upstream} em ${ref} (${alvo})\n`);
     let comMudanca = 0;
     for (const parte of partes) {
       const intervalo = `${parte.commit}..${ref}`;
-      const commits = Number((yield* git(upstream, ["rev-list", "--count", intervalo, "--", ...parte.origem])).trim());
-      const arquivos = (yield* git(upstream, ["diff", "--name-only", parte.commit, ref, "--", ...parte.origem]))
+      const commits = Number(
+        (yield* Git.executar(["rev-list", "--count", intervalo, "--", ...parte.origem], { cwd: upstream })).trim(),
+      );
+      const arquivos = (yield* Git.executar(["diff", "--name-only", parte.commit, ref, "--", ...parte.origem], {
+        cwd: upstream,
+      }))
         .split("\n")
         .filter((linha) => linha !== "");
       const marca = arquivos.length === 0 ? "igual" : `${arquivos.length} arquivo(s), ${commits} commit(s)`;
@@ -195,14 +166,10 @@ const diff = Command.make(
         escolhidas.push(parte);
       }
       for (const parte of escolhidas.length === 0 ? partes : escolhidas) {
-        const saida = yield* git(upstream, [
-          "diff",
-          ...(stat ? ["--stat"] : []),
-          parte.commit,
-          ref,
-          "--",
-          ...parte.origem,
-        ]);
+        const saida = yield* Git.executar(
+          ["diff", ...(stat ? ["--stat"] : []), parte.commit, ref, "--", ...parte.origem],
+          { cwd: upstream },
+        );
         if (saida.trim() === "") continue;
         yield* Console.log(`### ${parte.nome} (${parte.commit.slice(0, 10)}..${ref}) → ${parte.aqui.join(" ")}\n`);
         yield* Console.log(saida);

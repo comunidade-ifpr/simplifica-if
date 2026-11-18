@@ -40,8 +40,6 @@ import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
-import * as ChildProcess from "effect/process/ChildProcess";
-import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 import { DIR_AVALIACAO, RAIZ_REPOSITORIO } from "./avaliacao/carregar.ts";
 import { serializarJson } from "./avaliacao/normalizar.ts";
 import {
@@ -60,6 +58,7 @@ import {
   type Execucao,
   type RelatorioSkill,
 } from "./avaliacao/skills.ts";
+import * as Git from "./git.ts";
 import { executarPrincipal } from "./principal.ts";
 
 const CASO_PADRAO = "avaliacao/skills/verificar-fundamentacao-normativa";
@@ -79,26 +78,9 @@ export class FalhaAvaliacaoSkill extends Schema.TaggedError<FalhaAvaliacaoSkill>
 
 const falha = (detalhe: string) => new FalhaAvaliacaoSkill({ detalhe });
 
-/* ------------------------------------------------------------------- git */
-
-const git = Effect.fn("avaliarSkill.git")(function* (...argumentos: string[]) {
-  const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
-  return yield* Effect.scoped(
-    Effect.gen(function* () {
-      const processo = yield* spawner.spawn(
-        ChildProcess.make("git", argumentos, { cwd: RAIZ_REPOSITORIO, stdin: "ignore", stderr: "ignore" }),
-      );
-      const saida = yield* Stream.mkString(Stream.decodeText(processo.stdout));
-      const codigo = yield* processo.exitCode;
-      if (codigo !== 0) return yield* falha(`git ${argumentos.join(" ")} saiu com ${codigo}`);
-      return saida;
-    }),
-  ).pipe(Effect.catchTags({ PlatformError: (erro) => Effect.fail(falha(`git: ${erro.message}`)) }));
-});
-
-const commitAtual = git("rev-parse", "--short", "HEAD").pipe(
+const commitAtual = Git.executar(["rev-parse", "--short", "HEAD"], { cwd: RAIZ_REPOSITORIO }).pipe(
   Effect.flatMap((rev) =>
-    git("status", "--porcelain").pipe(
+    Git.executar(["status", "--porcelain"], { cwd: RAIZ_REPOSITORIO }).pipe(
       Effect.map((status) => `${rev.trim()}${status.trim() === "" ? "" : " (com alterações locais)"}`),
     ),
   ),
@@ -117,12 +99,18 @@ const skillDaCondicao = Effect.fn("avaliarSkill.skillDaCondicao")(function* (cas
     return { nome: lida.nome, descricao: lida.descricao, instrucoes: lida.instrucoes, arquivos: lida.arquivos };
   }
   const base = `${caso.rev_skill_antiga}:.agents/skills/${caso.skill}`;
-  const lida = yield* lerSkillMd(yield* git("show", `${base}/SKILL.md`), caso.skill);
+  const lida = yield* lerSkillMd(
+    yield* Git.executar(["show", `${base}/SKILL.md`], { cwd: RAIZ_REPOSITORIO }),
+    caso.skill,
+  );
   if (!lida.manifesto)
     return yield* falha(`a skill ${caso.skill} em ${caso.rev_skill_antiga} não tem bloco simplifica:`);
   const arquivos = [];
   for (const caminho of lida.manifesto.arquivos) {
-    arquivos.push({ caminho, conteudo: yield* git("show", `${base}/${caminho}`) });
+    arquivos.push({
+      caminho,
+      conteudo: yield* Git.executar(["show", `${base}/${caminho}`], { cwd: RAIZ_REPOSITORIO }),
+    });
   }
   return { nome: lida.nome, descricao: lida.descricao, instrucoes: lida.corpo, arquivos } satisfies Motor.Skill;
 });
