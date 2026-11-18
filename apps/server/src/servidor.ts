@@ -23,14 +23,13 @@
  * provider morre) e fecha o servidor MCP.
  */
 import * as NodeHttp from "node:http";
-import * as NodeFSP from "node:fs/promises";
-import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeHttpServer from "@effect/platform-node/NodeHttpServer";
 import * as Context from "effect/Context";
 import type * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import type * as Redacted from "effect/Redacted";
@@ -41,7 +40,7 @@ import { RpcSerialization, RpcServer } from "effect/rpc";
 import { CAMINHO_INGRESSO, CAMINHO_LIBERAR_ARQUIVO, CAMINHO_RPC, GrupoApp } from "@simplifica-if/contratos-app";
 import type { Canal } from "@simplifica-if/mcp/contratos";
 import * as McpHttp from "@simplifica-if/mcp/http";
-import { layerLeitura, Leitura } from "@simplifica-if/mcp/rpc";
+import * as McpRpc from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
 import * as Atualizador from "./Atualizador.ts";
 import type { Abertura } from "@simplifica-if/atualizacao/local";
@@ -175,11 +174,9 @@ const layerAtualizador = (opcoes: Opcoes) =>
 const layerPastas = (opcoes: Opcoes) =>
   Layer.unwrap(
     Effect.gen(function* () {
-      const temporaria = (prefixo: string) =>
-        Effect.acquireRelease(
-          Effect.promise(() => NodeFSP.mkdtemp(NodePath.join(NodeOS.tmpdir(), prefixo))),
-          (pasta) => Effect.promise(() => NodeFSP.rm(pasta, { recursive: true, force: true })),
-        );
+      const fs = yield* FileSystem.FileSystem;
+      // Sem a pasta temporária o servidor não sobe: a falha é defeito.
+      const temporaria = (prefixo: string) => fs.makeTempDirectoryScoped({ prefix: prefixo }).pipe(Effect.orDie);
       const raiz = opcoes.pastaTrabalhos ?? (yield* temporaria("simplifica-trabalhos-"));
       const copias =
         opcoes.pastaCopias ??
@@ -282,10 +279,10 @@ export const layer = (opcoes: Opcoes) => {
   // Um `Leitura` só (uma conexão ao `kb.sqlite`) para o MCP HTTP e para o RPC de leitura.
   // No app, a ferramenta `etapa` é registrada: a interface a lê nos eventos da conversa (M1.9).
   const leitura = Layer.effect(
-    Leitura,
+    McpRpc.Leitura,
     Effect.gen(function* () {
-      const servico = yield* Leitura;
-      return Leitura.of({
+      const servico = yield* McpRpc.Leitura;
+      return McpRpc.Leitura.of({
         ...servico,
         etapa: Effect.fn("Leitura.etapa")(function* (entrada: Parameters<typeof servico.etapa>[0]) {
           const resposta = yield* servico.etapa(entrada);
@@ -293,7 +290,7 @@ export const layer = (opcoes: Opcoes) => {
         }),
       });
     }),
-  ).pipe(Layer.provideMerge(layerLeitura({ banco: opcoes.banco, canal })));
+  ).pipe(Layer.provideMerge(McpRpc.layerLeitura({ banco: opcoes.banco, canal })));
   const mcp = McpHttp.layerSobreLeitura(opcoes.portaMcp ? { porta: opcoes.portaMcp } : {});
   const banco = opcoes.bancoConversas === undefined ? Banco.layerMemoria : Banco.layerArquivo(opcoes.bancoConversas);
   const nucleo = Conversas.layer({

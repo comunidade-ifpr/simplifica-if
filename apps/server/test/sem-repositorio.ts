@@ -55,7 +55,8 @@ let controle = "leu o checkout";
 try {
   carregarRegistro();
 } catch {
-  controle = "bloqueado";
+  // Só conta como bloqueado se foi o bloqueio que recusou (registrou a leitura), não outra falha.
+  if (leituras.length > leiturasDaRevisao) controle = "bloqueado";
 }
 
 console.log(

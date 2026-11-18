@@ -49,10 +49,7 @@ import {
 import { acompanharInstalacao } from "../estados.ts";
 import { type Ambiente, limparAmbiente } from "../processo.ts";
 import type * as CodexInstallation from "../t3/CodexInstallation.ts";
-
-type Registro = Record<string, unknown>;
-const registro = (valor: unknown): Registro => (typeof valor === "object" && valor !== null ? (valor as Registro) : {});
-const texto = (valor: unknown): string => (typeof valor === "string" ? valor : "");
+import { type Registro, registro, texto } from "./json.ts";
 
 /** Nome e entrada de uma ferramenta do Codex, a partir do item `ThreadItem`. */
 export function ferramentaDoItem(item: Registro): { readonly nome: string; readonly entrada: unknown } | undefined {

@@ -40,11 +40,6 @@ import {
   type ReuniaoDoIndice,
   type TipoResultado,
 } from "@simplifica-if/mcp/grupo-leitura";
-import type {
-  EstadoInstalacao as EstadoInstalacaoMotor,
-  EstadoLogin as EstadoLoginMotor,
-  EstadoProvider as EstadoProviderMotor,
-} from "@simplifica-if/motor";
 import {
   AprovacaoDesconhecida,
   Decisao,
@@ -53,6 +48,7 @@ import {
   SessaoDesconhecida,
   TurnoEmAndamento,
 } from "@simplifica-if/motor/erros";
+import { EstadoInstalacao, EstadoLogin, EstadoProvider } from "@simplifica-if/motor/estados-provider";
 import { Evento, Provider } from "@simplifica-if/motor/eventos";
 import * as Schema from "effect/Schema";
 import { Rpc, RpcGroup } from "effect/rpc";
@@ -60,6 +56,7 @@ import { AvisoNaoAceito, GrupoPreferencias } from "./preferencias.ts";
 import { GrupoRelato } from "./relato.ts";
 
 export { AprovacaoDesconhecida, Decisao, FalhaProvider, OperacaoNaoSuportada, SessaoDesconhecida, TurnoEmAndamento };
+export { EstadoInstalacao, EstadoLogin, EstadoProvider };
 export { Evento, Provider };
 export { GrupoLeitura, ROTULOS_INDICADOR };
 export type { Ancora, DadosDocumento, LinkLido };
@@ -146,63 +143,6 @@ export const LinhaPartida = Schema.Struct({
   mcp: Schema.String,
 });
 export type LinhaPartida = typeof LinhaPartida.Type;
-
-/* ================================================================== estados */
-
-/**
- * Resultado da detecção: instalado, versão, login e o que o app oferece para o provider (instalar,
- * entrar). Nunca traz e-mail nem credencial.
- */
-export const EstadoProvider = Schema.Struct({
-  provider: Provider,
-  instalado: Schema.Boolean,
-  origem: Schema.optionalKey(Schema.Literals(["gerenciada", "local"])),
-  versao: Schema.optionalKey(Schema.String),
-  autenticado: Schema.Boolean,
-  metodo: Schema.optionalKey(Schema.String),
-  plano: Schema.optionalKey(Schema.String),
-  mensagem: Schema.optionalKey(Schema.String),
-  aviso: Schema.optionalKey(Schema.String),
-  /** O app instala (ou atualiza) a CLI gerenciada do provider (`providers.instalar`). */
-  podeInstalar: Schema.Boolean,
-  /** O app faz o login do provider (`providers.entrar`). */
-  podeEntrar: Schema.Boolean,
-});
-export type EstadoProvider = typeof EstadoProvider.Type;
-
-/** Progresso da instalação gerenciada de uma CLI. */
-export const EstadoInstalacao = Schema.Struct({
-  provider: Provider,
-  fase: Schema.Literals(["parada", "baixando", "extraindo", "verificando", "concluida", "falhou", "cancelada"]),
-  baixados: Schema.Number,
-  total: Schema.optionalKey(Schema.Number),
-  versao: Schema.optionalKey(Schema.String),
-  versaoInstalada: Schema.optionalKey(Schema.String),
-  executavel: Schema.optionalKey(Schema.String),
-  origem: Schema.optionalKey(Schema.Literals(["gerenciada", "local"])),
-  mensagem: Schema.optionalKey(Schema.String),
-});
-export type EstadoInstalacao = typeof EstadoInstalacao.Type;
-
-/** Progresso do login dentro do app. Em `aguardando`, `url` é a página que o app abre no navegador. */
-export const EstadoLogin = Schema.Struct({
-  provider: Provider,
-  fase: Schema.Literals(["parado", "iniciando", "aguardando", "verificando", "concluido", "falhou", "cancelado"]),
-  url: Schema.optionalKey(Schema.String),
-  mensagem: Schema.optionalKey(Schema.String),
-  /** O texto técnico da CLI; a interface o mostra em "Detalhes técnicos". */
-  detalhe: Schema.optionalKey(Schema.String),
-});
-export type EstadoLogin = typeof EstadoLogin.Type;
-
-type Igual<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
-type Confere<T extends true> = T;
-/** Os estados daqui e as interfaces do motor são o mesmo tipo: mudar um sem o outro quebra o typecheck. */
-export type ConfereEstadosDoMotor = [
-  Confere<Igual<EstadoProvider, EstadoProviderMotor>>,
-  Confere<Igual<EstadoInstalacao, EstadoInstalacaoMotor>>,
-  Confere<Igual<EstadoLogin, EstadoLoginMotor>>,
-];
 
 /* ================================================================== erros */
 

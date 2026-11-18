@@ -43,8 +43,8 @@ import {
   type PastaConversa,
   type PrevisaoDesfazer,
 } from "@simplifica-if/contratos-app";
-import { Historico } from "./persistencia/Historico.ts";
-import { RevisorPpc } from "./revisao-ppc/RevisorPpc.ts";
+import * as Historico from "./persistencia/Historico.ts";
+import * as RevisorPpc from "./revisao-ppc/RevisorPpc.ts";
 
 export interface Limites {
   /** O tamanho máximo da pasta para guardar a cópia de um turno. */
@@ -424,8 +424,8 @@ export const contadorDeAndamento = Effect.gen(function* () {
 
 export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPastas) {
   const limites = { ...LIMITES, ...opcoes.limites };
-  const historico = yield* Historico;
-  const revisor = yield* RevisorPpc;
+  const historico = yield* Historico.Historico;
+  const revisor = yield* RevisorPpc.RevisorPpc;
   const raiz = NodePath.resolve(opcoes.raiz);
 
   const falha = (motivo: string) => new FalhaPasta({ motivo });
@@ -448,8 +448,8 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     return NodePath.join(opcoes.copias, conversa);
   };
 
-  const criar = (titulo: string) =>
-    tentar(async () => {
+  const criar = Effect.fn("PastasTrabalho.criar")(function* (titulo: string) {
+    return yield* tentar(async () => {
       await NodeFSP.mkdir(raiz, { recursive: true });
       const nome = nomeSeguro(titulo);
       // A pasta dos relatos não é de tarefa: o título igual a ela começa em " (2)".
@@ -463,9 +463,8 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
         }
       }
       throw new Error("nomes esgotados");
-    }, "Não foi possível criar a pasta da tarefa em Documentos/Simplifica IF.").pipe(
-      Effect.withSpan("PastasTrabalho.criar"),
-    );
+    }, "Não foi possível criar a pasta da tarefa em Documentos/Simplifica IF.");
+  });
 
   const anexar = Effect.fn("PastasTrabalho.anexar")(function* (pasta: string, arquivo: string) {
     const real = yield* Effect.promise(() => gerida(pasta));
@@ -684,28 +683,19 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
  * pasta de trabalho do app).
  */
 export const layerSemPastas = Layer.sync(PastasTrabalho, () => {
-  const recusa = Effect.fn("PastasTrabalho.recusa")(function* () {
-    return yield* new FalhaPasta({ motivo: "Sem pastas de tarefa neste servidor." });
-  });
+  const recusa = Effect.fn("PastasTrabalho.recusa")(() =>
+    Effect.fail(new FalhaPasta({ motivo: "Sem pastas de tarefa neste servidor." })),
+  );
   return PastasTrabalho.of({
     raiz: "",
     criar: recusa,
     anexar: recusa,
     gravarRelato: recusa,
-    ver: Effect.fn("PastasTrabalho.ver")(function* (_conversa: string, pasta: string) {
-      return yield* Effect.succeed({
-        pasta,
-        gerida: false,
-        arquivos: [],
-        desfazer: SEM_DESFAZER,
-      } satisfies PastaConversa);
-    }),
-    guardarCopia: Effect.fn("PastasTrabalho.guardarCopia")(function* () {
-      yield* Effect.void;
-    }),
-    fecharTurno: Effect.fn("PastasTrabalho.fecharTurno")(function* () {
-      yield* Effect.void;
-    }),
+    ver: Effect.fn("PastasTrabalho.ver")((_conversa: string, pasta: string) =>
+      Effect.succeed({ pasta, gerida: false, arquivos: [], desfazer: SEM_DESFAZER } satisfies PastaConversa),
+    ),
+    guardarCopia: Effect.fn("PastasTrabalho.guardarCopia")(() => Effect.void),
+    fecharTurno: Effect.fn("PastasTrabalho.fecharTurno")(() => Effect.void),
     desfazer: recusa,
     emAndamento: Effect.succeed(false),
   });

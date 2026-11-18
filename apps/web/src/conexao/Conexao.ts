@@ -91,7 +91,7 @@ const credenciaisDe = (origem: Exclude<OrigemConexao, { tipo: "ausente" }>) =>
  * Uma conexão: compra o ingresso, abre o socket e devolve o cliente e o efeito que termina quando o
  * socket cair. Vive no escopo de quem chama; fechá-lo fecha o socket.
  */
-const abrir = Effect.fnUntraced(function* (credenciais: CredenciaisServidor) {
+const abrir = Effect.fn("Conexao.abrir")(function* (credenciais: CredenciaisServidor) {
   const { ingresso } = yield* comprarIngresso(credenciais);
   const abriu = yield* Deferred.make<void>();
   const caiu = yield* Deferred.make<void>();

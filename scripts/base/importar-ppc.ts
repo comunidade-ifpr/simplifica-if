@@ -260,12 +260,13 @@ export function importarPpcDocx(opcoes: OpcoesImportacao): ResultadoImportacao {
 
   const arquivoDocx = NodePath.resolve(opcoes.arquivoDocx);
   if (!NodeFS.existsSync(arquivoDocx)) throw new ErroImportacao(`Arquivo não encontrado: ${arquivoDocx}`);
+  let bytes: Uint8Array;
   try {
     conferirArquivoDocx(arquivoDocx, NodeFS.statSync(arquivoDocx).size);
+    bytes = NodeFS.readFileSync(arquivoDocx);
   } catch (erro) {
     throw new ErroImportacao((erro as Error).message);
   }
-  const bytes: Uint8Array = NodeFS.readFileSync(arquivoDocx);
   const convertido = markdownDaBase(bytes, NodePath.basename(opcoes.arquivoDocx), opcoes.agora);
   const hoje = dataLocalIso(opcoes.agora);
   const frontMatter = serializarFrontMatterPpc({

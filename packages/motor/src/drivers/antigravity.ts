@@ -52,10 +52,7 @@ import {
 import { antigravitySessionMeta } from "../t3/AntigravityAcpSupport.ts";
 import type * as AntigravityInstallation from "../t3/AntigravityInstallation.ts";
 import { ProviderInstanceId, ProviderSetupError } from "../t3/contracts-antigravity.ts";
-
-type Registro = Record<string, unknown>;
-const registro = (valor: unknown): Registro => (typeof valor === "object" && valor !== null ? (valor as Registro) : {});
-const texto = (valor: unknown): string => (typeof valor === "string" ? valor : "");
+import { type Registro, registro, texto } from "./json.ts";
 
 /** Entrada do normalizador: o que o cliente ACP entrega, na ordem. */
 export type EntradaAcp =

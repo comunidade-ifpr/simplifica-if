@@ -334,7 +334,7 @@ function dadosPrincipais(conversao: Conversao, nomes: NomesArtefatos): Dicionari
  * arquivo (um arquivo de gigabytes não chega à memória).
  */
 export function conferirArquivoDocx(arquivo: string, tamanho: number, limite = LIMITES_PADRAO.bytesDoArquivo): void {
-  if (!/[^/]\.docx$/i.test(arquivo)) throw new Error(`O arquivo deve ser .docx: ${arquivo}`);
+  if (!/[^/\\]\.docx$/i.test(arquivo)) throw new Error(`O arquivo deve ser .docx: ${arquivo}`);
   if (tamanho > limite) throw arquivoGrandeDemais(tamanho, limite);
 }
 
