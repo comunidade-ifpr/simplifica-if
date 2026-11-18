@@ -4,7 +4,11 @@
 import * as NodeChildProcess from "node:child_process";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
+import * as NodeServices from "@effect/platform-node/NodeServices";
+import * as Console from "effect/Console";
+import * as Effect from "effect/Effect";
 import { compile, type JSONSchema } from "json-schema-to-typescript";
+import { aplicarGerados, mensagensDivergencias } from "./base/gerados.ts";
 import { listarDiretorio } from "./base/caminhos.ts";
 import { lerArgumentos } from "./cli.ts";
 import { RAIZ_BASE, RAIZ_PROJETO } from "./config.ts";
@@ -75,22 +79,31 @@ export async function gerarTipos(): Promise<string> {
   return formatar(partes.join("\n"));
 }
 
+const programa = Effect.fn("gerar_tipos_schemas")(function* (check: boolean) {
+  const tipos = yield* Effect.promise(gerarTipos);
+  const rel = NodePath.relative(RAIZ_PROJETO, DESTINO_TIPOS);
+  const divergencias = yield* aplicarGerados([{ caminho: DESTINO_TIPOS, texto: tipos }], {
+    modo: check ? "verificar" : "gravar",
+    raiz: RAIZ_PROJETO,
+  });
+  if (check) {
+    if (divergencias.length) {
+      for (const erro of mensagensDivergencias(divergencias, "node scripts/gerar_tipos_schemas.ts")) {
+        yield* Console.error(`ERRO: ${erro}`);
+      }
+      return 1;
+    }
+    yield* Console.log(`Tipos dos schemas atualizados: ${rel}`);
+    return 0;
+  }
+  yield* Console.log(`Tipos dos schemas gerados: ${rel}`);
+  return 0;
+});
+
 async function main(): Promise<number> {
   const args = lerArgumentos(process.argv.slice(2), { check: { type: "boolean" } }, { uso: USO });
   if ("codigo" in args) return args.codigo;
-  const tipos = await gerarTipos();
-  const rel = NodePath.relative(RAIZ_PROJETO, DESTINO_TIPOS);
-  if (args.values.check) {
-    if (!NodeFS.existsSync(DESTINO_TIPOS) || NodeFS.readFileSync(DESTINO_TIPOS, "utf-8") !== tipos) {
-      console.error(`ERRO: ${rel} está desatualizado; rode node scripts/gerar_tipos_schemas.ts`);
-      return 1;
-    }
-    console.log(`Tipos dos schemas atualizados: ${rel}`);
-    return 0;
-  }
-  NodeFS.writeFileSync(DESTINO_TIPOS, tipos, "utf-8");
-  console.log(`Tipos dos schemas gerados: ${rel}`);
-  return 0;
+  return Effect.runPromise(programa(args.values.check ?? false).pipe(Effect.provide(NodeServices.layer)));
 }
 
 if (import.meta.main) process.exitCode = await main();

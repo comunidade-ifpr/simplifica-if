@@ -1,7 +1,6 @@
-// @effect-diagnostics nodeBuiltinImport:off -- grava manifest.json e o README com node:fs síncrono, num script de execução única (gerar_base)
 /** Tabela de normas do README da base, gerada a partir do manifest. */
-import * as NodeFS from "node:fs";
 import type { CaminhosBase } from "./caminhos.ts";
+import type { ArquivoGerado } from "./gerados.ts";
 import { type ItemManifest, manifestJson } from "./front-matter.ts";
 import { textoDe } from "@simplifica-if/kb/json";
 import { lerTexto } from "@simplifica-if/kb/texto";
@@ -32,19 +31,10 @@ export function textoReadme(caminhos: CaminhosBase, manifest: ItemManifest[]): s
   return substituirTabela(lerTexto(caminhos.readme), manifest);
 }
 
-/** Erros de `gerar_base --check`: arquivos gerados que divergem do esperado. */
-export function verificarBase(caminhos: CaminhosBase, manifest: ItemManifest[]): string[] {
-  const erros: string[] = [];
-  if (lerTexto(caminhos.manifest) !== manifestJson(manifest)) erros.push("manifest.json está desatualizado");
-  if (lerTexto(caminhos.readme) !== textoReadme(caminhos, manifest)) erros.push("README.md está desatualizado");
-  return erros;
-}
-
-export function gravarBase(caminhos: CaminhosBase, manifest: ItemManifest[]): void {
-  NodeFS.writeFileSync(caminhos.manifest, manifestJson(manifest), "utf-8");
-  NodeFS.writeFileSync(caminhos.readme, textoReadme(caminhos, manifest), "utf-8");
-}
-
-export function normasExistem(caminhos: CaminhosBase): boolean {
-  return NodeFS.existsSync(caminhos.normas);
+/** `manifest.json` e o README com a tabela de normas, como `gerar_base` os grava. */
+export function arquivosManifest(caminhos: CaminhosBase, manifest: ItemManifest[]): ArquivoGerado[] {
+  return [
+    { caminho: caminhos.manifest, texto: manifestJson(manifest) },
+    { caminho: caminhos.readme, texto: textoReadme(caminhos, manifest) },
+  ];
 }

@@ -2,16 +2,18 @@
 /**
  * Validação dos registros de `institucional/ifpr/` (campi, cursos, processos seletivos, editais e
  * ofertas): schema, caminho de cada arquivo, as regras da auditoria institucional, o Markdown dos
- * PPCs, os índices gerados de cada coleção, os processos SEI exportados do Notion e as reuniões dos
- * conselhos (`conselhos.ts`).
+ * PPCs, os processos SEI exportados do Notion e as reuniões dos conselhos (`conselhos.ts`). Os
+ * índices e schemas gerados dos registros voltam em `gerados`, para o chamador conferir com
+ * `aplicarGerados`.
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { RAIZ_BASE } from "../config.ts";
 import { chaveCurso } from "../dominio/curso.ts";
 import { auditarBase } from "../dominio/auditoria.ts";
-import { auditarConselhos, carregarConselhos, verificarIndiceConselhos } from "./conselhos.ts";
-import { verificarIndices } from "./indices.ts";
+import type { ArquivoGerado, PastaGerada } from "../base/gerados.ts";
+import { auditarConselhos, carregarConselhos } from "./conselhos.ts";
+import { geradosInstitucionais } from "./indices.ts";
 import {
   carregarDadosInstitucionais,
   paraDominio,
@@ -19,7 +21,6 @@ import {
   type CursoLocal,
 } from "./institucional.ts";
 import { validarProcessosSei } from "./processos-sei.ts";
-import { verificarSchemasRegistros } from "./schemas-publicos.ts";
 
 /** IDs `cnct:<slug>` dos cursos de `catalogos/cnct/index.json`. */
 export function idsCnct(raizBase: string = RAIZ_BASE): Set<string> {
@@ -62,6 +63,8 @@ export function validarDadosInstitucionais(
 ): {
   erros: string[];
   total: number;
+  /** O que `gerar_base` gera dos registros, quando `arquivosDaBase`. */
+  gerados?: { arquivos: ArquivoGerado[]; extrasEm: PastaGerada[] };
 } {
   const carregados = carregarDadosInstitucionais(raiz);
   if (carregados.erros.length) return { erros: carregados.erros, total: 0 };
@@ -75,15 +78,14 @@ export function validarDadosInstitucionais(
   if (daBase) auditoria.push(...markdownsInexistentes(dados.cursos, raizBase));
   const erros = auditoria.map((erro) => `institucional/ifpr: ${erro}`);
   let reunioes = 0;
+  let gerados: { arquivos: ArquivoGerado[]; extrasEm: PastaGerada[] } | undefined;
   if (daBase) {
-    erros.push(...verificarIndices(dados, raiz));
     const cursos = new Set(dados.cursos.map((curso) => chaveCurso(curso.campus_id, curso.curso_slug)));
     erros.push(...validarProcessosSei(cursos).erros);
     const conselhos = carregarConselhos(raiz);
     erros.push(...conselhos.erros);
     erros.push(...auditarConselhos(conselhos.dados, new Set(dados.campi.map((campus) => campus.campus_id)), cursos));
-    erros.push(...verificarIndiceConselhos(conselhos.dados, raiz));
-    erros.push(...verificarSchemasRegistros());
+    gerados = geradosInstitucionais(dados, conselhos.dados, raiz);
     reunioes = conselhos.dados.reunioes.length;
   }
   const total =
@@ -93,5 +95,5 @@ export function validarDadosInstitucionais(
     dados.editais.length +
     dados.ofertas.length +
     reunioes;
-  return { erros, total };
+  return { erros, total, ...(gerados ? { gerados } : {}) };
 }

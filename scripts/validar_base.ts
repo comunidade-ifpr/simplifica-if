@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 // @effect-diagnostics globalConsole:off -- script de execução única do pipeline da base, síncrono, com a casca de scripts/cli.ts: imprime no console
 /** Valida a base pública de conhecimento. */
+import * as NodeServices from "@effect/platform-node/NodeServices";
+import * as Effect from "effect/Effect";
 import { criarCaminhos } from "./base/caminhos.ts";
+import { aplicarGerados, mensagensDivergencias } from "./base/gerados.ts";
 import { validarBase } from "./base/validacao.ts";
 import { validarBaseAnalise } from "../.agents/skills/revisar-ppc/scripts/validacao-base.ts";
 import { lerArgumentos } from "./cli.ts";
@@ -21,11 +24,21 @@ async function main(): Promise<number> {
   const args = lerArgumentos(process.argv.slice(2), { "check-ppc-artifacts": { type: "boolean" } }, { uso: USO });
   if ("codigo" in args) return args.codigo;
 
-  const { erros, totalNormas } = validarBase(criarCaminhos(), {
+  const caminhos = criarCaminhos();
+  const { erros, totalNormas } = validarBase(caminhos, {
     artefatosPpc: args.values["check-ppc-artifacts"] ?? false,
   });
   const dados = validarDadosInstitucionais();
   erros.push(...dados.erros);
+  if (dados.gerados) {
+    const { arquivos, extrasEm } = dados.gerados;
+    const divergencias = await Effect.runPromise(
+      aplicarGerados(arquivos, { modo: "verificar", raiz: caminhos.raiz, extrasEm }).pipe(
+        Effect.provide(NodeServices.layer),
+      ),
+    );
+    erros.push(...mensagensDivergencias(divergencias, "node scripts/gerar_base.ts"));
+  }
   erros.push(...validarBaseAnalise().map((erro) => `revisar-ppc: ${erro}`));
   const skills = await validarSkillsDoApp();
   erros.push(...skills.erros);

@@ -16,6 +16,7 @@ import * as Schema from "effect/Schema";
 import { caminhoTexto, problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { ESTRITO } from "../esquema.ts";
 import { compararTexto } from "../dominio/comum.ts";
+import type { ArquivoGerado } from "../base/gerados.ts";
 import { ARQUIVO_INDICE, RAIZ_DADOS_INSTITUCIONAIS, textoRegistro } from "./institucional.ts";
 
 export const PASTA_CONSELHOS = "conselhos";
@@ -221,21 +222,10 @@ export function montarIndiceConselhos(dados: Conselhos) {
   };
 }
 
-const ARQUIVO_INDICE_CONSELHOS = (raiz: string) => NodePath.join(raiz, PASTA_CONSELHOS, ARQUIVO_INDICE);
-
-export function gravarIndiceConselhos(dados: Conselhos, raiz: string = RAIZ_DADOS_INSTITUCIONAIS): boolean {
-  const destino = ARQUIVO_INDICE_CONSELHOS(raiz);
-  const texto = textoRegistro(montarIndiceConselhos(dados));
-  if (NodeFS.existsSync(destino) && NodeFS.readFileSync(destino, "utf-8") === texto) return false;
-  NodeFS.writeFileSync(destino, texto, "utf-8");
-  return true;
-}
-
-export function verificarIndiceConselhos(dados: Conselhos, raiz: string = RAIZ_DADOS_INSTITUCIONAIS): string[] {
-  const destino = ARQUIVO_INDICE_CONSELHOS(raiz);
-  const atual = NodeFS.existsSync(destino) ? NodeFS.readFileSync(destino, "utf-8") : null;
-  if (atual === textoRegistro(montarIndiceConselhos(dados))) return [];
-  return [
-    `${PREFIXO}/${ARQUIVO_INDICE} ${atual === null ? "ausente" : "desatualizado"}; rode node scripts/gerar_base.ts`,
-  ];
+/** `conselhos/index.json`, como `gerar_base` o grava e `validar_base` o confere. */
+export function indiceConselhosGerado(dados: Conselhos, raiz: string = RAIZ_DADOS_INSTITUCIONAIS): ArquivoGerado {
+  return {
+    caminho: NodePath.join(raiz, PASTA_CONSELHOS, ARQUIVO_INDICE),
+    texto: textoRegistro(montarIndiceConselhos(dados)),
+  };
 }

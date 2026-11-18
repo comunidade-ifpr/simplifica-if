@@ -1,14 +1,14 @@
-// @effect-diagnostics nodeBuiltinImport:off -- grava e confere os JSON Schemas públicos dos registros com node:fs síncrono (gerar_base, validar_base)
+// @effect-diagnostics nodeBuiltinImport:off -- caminho da pasta dos schemas com node:path, numa função pura chamada pelo pipeline da base
 /**
  * JSON Schemas públicos dos registros institucionais (`base-conhecimento/schemas/registros/`), gerados
  * do Effect Schema que valida os arquivos (`institucional.ts`, `conselhos.ts`, `processos-sei.ts`). São
  * o contrato para quem lê a base publicada; a fonte é o Effect Schema. Gerados por `gerar_base.ts` e
  * conferidos por `gerar_base.ts --check` e pelo `validar_base.ts`.
  */
-import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import * as Schema from "effect/Schema";
 import { RAIZ_BASE } from "../config.ts";
+import type { ArquivoGerado, PastaGerada } from "../base/gerados.ts";
 import { esquemaConselho, esquemaReuniao } from "./conselhos.ts";
 import {
   esquemaCampusLocal,
@@ -101,29 +101,17 @@ function semNulo(valor: unknown): unknown {
 }
 
 const texto = (valor: unknown) => `${JSON.stringify(valor, null, 2)}\n`;
-const caminho = (pasta: string, nome: NomeRegistro) => NodePath.join(pasta, `${nome}.schema.json`);
 
-export function gravarSchemasRegistros(pasta: string = PASTA_SCHEMAS_REGISTROS): string[] {
-  NodeFS.mkdirSync(pasta, { recursive: true });
-  return NOMES_REGISTROS.flatMap((nome) => {
-    const destino = caminho(pasta, nome);
-    const esperado = texto(jsonSchemaRegistro(nome));
-    if (NodeFS.existsSync(destino) && NodeFS.readFileSync(destino, "utf-8") === esperado) return [];
-    NodeFS.writeFileSync(destino, esperado, "utf-8");
-    return [`schemas/registros/${nome}.schema.json`];
-  });
-}
-
-export function verificarSchemasRegistros(pasta: string = PASTA_SCHEMAS_REGISTROS): string[] {
-  const esperados = new Set(NOMES_REGISTROS.map((nome) => `${nome}.schema.json`));
-  const extras = NodeFS.existsSync(pasta)
-    ? NodeFS.readdirSync(pasta).filter((nome) => nome.endsWith(".schema.json") && !esperados.has(nome))
-    : [];
-  return [
-    ...NOMES_REGISTROS.filter((nome) => {
-      const destino = caminho(pasta, nome);
-      return !NodeFS.existsSync(destino) || NodeFS.readFileSync(destino, "utf-8") !== texto(jsonSchemaRegistro(nome));
-    }).map((nome) => `schemas/registros/${nome}.schema.json desatualizado; rode node scripts/gerar_base.ts`),
-    ...extras.map((nome) => `schemas/registros/${nome} não é mais gerado`),
-  ];
+/** Os `<registro>.schema.json` e a pasta, inteira gerada: schema de registro que saiu sobra nela. */
+export function schemasRegistrosGerados(pasta: string = PASTA_SCHEMAS_REGISTROS): {
+  arquivos: ArquivoGerado[];
+  pasta: PastaGerada;
+} {
+  return {
+    arquivos: NOMES_REGISTROS.map((nome) => ({
+      caminho: NodePath.join(pasta, `${nome}.schema.json`),
+      texto: texto(jsonSchemaRegistro(nome)),
+    })),
+    pasta: { pasta, sufixo: ".schema.json" },
+  };
 }

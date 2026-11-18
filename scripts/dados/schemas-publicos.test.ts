@@ -1,15 +1,14 @@
 // @effect-diagnostics nodeBuiltinImport:off -- teste: lê os registros da base com node:fs
+import * as NodeServices from "@effect/platform-node/NodeServices";
+import { it } from "@effect/vitest";
+import * as Effect from "effect/Effect";
 import { describe, expect, test } from "vite-plus/test";
+import { aplicarGerados } from "../base/gerados.ts";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { validarJsonSchema } from "@simplifica-if/kb/schema";
 import { RAIZ_BASE } from "../config.ts";
-import {
-  jsonSchemaRegistro,
-  NOMES_REGISTROS,
-  verificarSchemasRegistros,
-  type NomeRegistro,
-} from "./schemas-publicos.ts";
+import { jsonSchemaRegistro, NOMES_REGISTROS, schemasRegistrosGerados, type NomeRegistro } from "./schemas-publicos.ts";
 
 const ifpr = NodePath.join(RAIZ_BASE, "institucional", "ifpr");
 function arquivos(dir: string): string[] {
@@ -31,9 +30,12 @@ const REGISTROS: Record<NomeRegistro, string[]> = {
 };
 
 describe("JSON Schemas públicos dos registros", () => {
-  test("os arquivos de schemas/registros/ estão em dia com o Effect Schema", () => {
-    expect(verificarSchemasRegistros()).toEqual([]);
-  });
+  it.effect("os arquivos de schemas/registros/ estão em dia com o Effect Schema", () =>
+    Effect.gen(function* () {
+      const { arquivos, pasta } = schemasRegistrosGerados();
+      expect(yield* aplicarGerados(arquivos, { modo: "verificar", raiz: RAIZ_BASE, extrasEm: [pasta] })).toEqual([]);
+    }).pipe(Effect.provide(NodeServices.layer)),
+  );
 
   test.each(NOMES_REGISTROS)("todo registro de %s da base segue o schema gerado", (nome) => {
     const schema = jsonSchemaRegistro(nome);

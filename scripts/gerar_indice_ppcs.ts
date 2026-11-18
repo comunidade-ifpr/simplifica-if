@@ -1,8 +1,12 @@
 #!/usr/bin/env node
-// @effect-diagnostics globalConsole:off -- script de execução única do pipeline da base, síncrono, com a casca de scripts/cli.ts: imprime no console
+// @effect-diagnostics globalConsole:off -- script de execução única do pipeline da base, com a casca de scripts/cli.ts: imprime no console e roda o programa Effect na borda
 /** Gera índices globais dos PPCs convertidos para Markdown. */
+import * as NodeServices from "@effect/platform-node/NodeServices";
+import * as Console from "effect/Console";
+import * as Effect from "effect/Effect";
 import { criarCaminhos } from "./base/caminhos.ts";
-import { dataIndiceAtual, gerarIndices, gravarIndices, verificarIndices } from "./base/indice-ppcs.ts";
+import { aplicarGerados, mensagensDivergencias } from "./base/gerados.ts";
+import { arquivosIndices, dataIndiceAtual, gerarIndices } from "./base/indice-ppcs.ts";
 import { lerArgumentos } from "./cli.ts";
 import { dataLocalIso } from "./datas.ts";
 
@@ -13,31 +17,42 @@ Gera índices globais dos PPCs convertidos para Markdown.
   --check     verifica se os índices de PPCs estão atualizados, sem gravar
   -h, --help  mostra esta ajuda`;
 
-function main(): number {
-  const args = lerArgumentos(process.argv.slice(2), { check: { type: "boolean" } }, { uso: USO });
-  if ("codigo" in args) return args.codigo;
-
+const programa = Effect.fn("gerar_indice_ppcs")(function* (check: boolean) {
   const caminhos = criarCaminhos();
   const hoje = dataLocalIso();
+  const conferir = (indices: ReturnType<typeof gerarIndices>) => {
+    const { arquivos, ...pastas } = arquivosIndices(caminhos, indices);
+    return aplicarGerados(arquivos, { modo: "verificar", raiz: caminhos.raiz, ...pastas });
+  };
   // A data só avança quando o conteúdo muda: regenerar sem mudança não deixa diferença no git.
-  const anterior = dataIndiceAtual(caminhos, hoje);
-  let indices = gerarIndices(caminhos, anterior);
-  if (!args.values.check && verificarIndices(caminhos, indices).length) indices = gerarIndices(caminhos, hoje);
-  const resumo = `${indices.itensPpc.length} PPCs, ${indices.itensSecao.length} seções.`;
+  let indices = gerarIndices(caminhos, dataIndiceAtual(caminhos, hoje));
+  const divergencias = yield* conferir(indices);
+  const resumo = () => `${indices.itensPpc.length} PPCs, ${indices.itensSecao.length} seções.`;
 
-  if (args.values.check) {
-    const erros = verificarIndices(caminhos, indices);
-    if (erros.length) {
-      for (const erro of erros) console.error(`ERRO: ${erro}`);
+  if (check) {
+    if (divergencias.length) {
+      for (const erro of mensagensDivergencias(divergencias, "node scripts/gerar_indice_ppcs.ts")) {
+        yield* Console.error(`ERRO: ${erro}`);
+      }
       return 1;
     }
-    console.log(`Índices de PPCs atualizados: ${resumo}`);
+    yield* Console.log(`Índices de PPCs atualizados: ${resumo()}`);
     return 0;
   }
 
-  gravarIndices(caminhos, indices);
-  console.log(`Índices de PPCs gerados: ${resumo}`);
+  if (divergencias.length) {
+    indices = gerarIndices(caminhos, hoje);
+    const { arquivos, ...pastas } = arquivosIndices(caminhos, indices);
+    yield* aplicarGerados(arquivos, { modo: "gravar", raiz: caminhos.raiz, ...pastas });
+  }
+  yield* Console.log(`Índices de PPCs gerados: ${resumo()}`);
   return 0;
+});
+
+async function main(): Promise<number> {
+  const args = lerArgumentos(process.argv.slice(2), { check: { type: "boolean" } }, { uso: USO });
+  if ("codigo" in args) return args.codigo;
+  return Effect.runPromise(programa(args.values.check ?? false).pipe(Effect.provide(NodeServices.layer)));
 }
 
-process.exitCode = main();
+process.exitCode = await main();

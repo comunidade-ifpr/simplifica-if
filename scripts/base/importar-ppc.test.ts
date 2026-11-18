@@ -11,6 +11,9 @@ import { montarDocx, par, titulo } from "@simplifica-if/docx/testes/sintetico";
 import { contarDadosPessoais, totalDadosPessoais } from "@simplifica-if/kb/ppcs/dados-pessoais";
 import { analisarPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import { docxDaFixture } from "@simplifica-if/ppc/testes/documentos";
+import * as NodeServices from "@effect/platform-node/NodeServices";
+import { it } from "@effect/vitest";
+import * as Effect from "effect/Effect";
 import { afterAll, describe, expect, test } from "vite-plus/test";
 import { criarCaminhos } from "./caminhos.ts";
 import {
@@ -22,7 +25,8 @@ import {
   STATUS_REABERTO,
 } from "./importar-ppc.ts";
 import { RAIZ_PROJETO } from "../config.ts";
-import { gerarIndices, gravarIndices } from "./indice-ppcs.ts";
+import { aplicarGerados } from "./gerados.ts";
+import { arquivosIndices, gerarIndices } from "./indice-ppcs.ts";
 import { Contexto } from "./validacao/contexto.ts";
 import { dadosPessoaisEUrlsInternas } from "./validacao/normas.ts";
 import { validarPpcs } from "./validacao/ppcs.ts";
@@ -315,23 +319,26 @@ describe("importarPpcDocx", () => {
     expect(linhas[matriz.linha_inicio - 1]).toBe("### 5.6 MATRIZ CURRICULAR");
   });
 
-  test("a validação de PPCs da base aceita o PPC importado, sem exceção", () => {
-    const raiz = baseTemporaria();
-    NodeFS.cpSync(
-      NodePath.join(RAIZ_PROJETO, "base-conhecimento", "schemas"),
-      NodePath.join(raiz, "base-conhecimento", "schemas"),
-      {
-        recursive: true,
-      },
-    );
-    const docx = escrever(raiz, "entrada/ppc.docx", docxDaFixture("ppc-nucleos"));
-    importarPpcDocx(opcoes(raiz, docx));
-    const caminhos = criarCaminhos(raiz);
-    gravarIndices(caminhos, gerarIndices(caminhos, "2026-11-17"));
-    expect(validarPpcs(new Contexto(caminhos), {})).toEqual([]);
-    const relativo = "institucional/ifpr/ppcs/campus-a/tecnico-x.md";
-    expect(dadosPessoaisEUrlsInternas(relativo, NodeFS.readFileSync(caminhoPpc(raiz), "utf-8"))).toEqual([]);
-  });
+  it.effect("a validação de PPCs da base aceita o PPC importado, sem exceção", () =>
+    Effect.gen(function* () {
+      const raiz = baseTemporaria();
+      NodeFS.cpSync(
+        NodePath.join(RAIZ_PROJETO, "base-conhecimento", "schemas"),
+        NodePath.join(raiz, "base-conhecimento", "schemas"),
+        {
+          recursive: true,
+        },
+      );
+      const docx = escrever(raiz, "entrada/ppc.docx", docxDaFixture("ppc-nucleos"));
+      importarPpcDocx(opcoes(raiz, docx));
+      const caminhos = criarCaminhos(raiz);
+      const { arquivos, ...pastas } = arquivosIndices(caminhos, gerarIndices(caminhos, "2026-11-17"));
+      yield* aplicarGerados(arquivos, { modo: "gravar", raiz: caminhos.raiz, ...pastas });
+      expect(validarPpcs(new Contexto(caminhos), {})).toEqual([]);
+      const relativo = "institucional/ifpr/ppcs/campus-a/tecnico-x.md";
+      expect(dadosPessoaisEUrlsInternas(relativo, NodeFS.readFileSync(caminhoPpc(raiz), "utf-8"))).toEqual([]);
+    }).pipe(Effect.provide(NodeServices.layer)),
+  );
 
   describe("recusas", () => {
     const recusa = (fn: () => unknown, mensagem: RegExp) => {

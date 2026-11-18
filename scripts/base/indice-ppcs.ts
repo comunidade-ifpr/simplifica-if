@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off -- gera e grava os índices de PPCs com node:fs síncrono, num script de execução única (gerar_indice_ppcs)
+// @effect-diagnostics nodeBuiltinImport:off -- lê os PPCs e o índice atual com node:fs síncrono (gerar_indice_ppcs); a gravação fica com aplicarGerados
 /**
  * Índices globais dos PPCs convertidos para Markdown (index.json e secoes/*.jsonl), versão 2.
  *
@@ -8,7 +8,8 @@
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { type CaminhosBase, listarDiretorio, naBase, relativo } from "./caminhos.ts";
+import type { ArquivoGerado } from "./gerados.ts";
+import { type CaminhosBase, naBase, relativo } from "./caminhos.ts";
 import { ehObjeto, jsonCompacto, jsonIndentado, textoDe } from "@simplifica-if/kb/json";
 import { analisarPpc, type ProvenienciaPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import {
@@ -252,32 +253,18 @@ export function gerarIndices(caminhos: CaminhosBase, atualizadoEm: string): Indi
   return { itensPpc, itensSecao, indice: jsonIndentado(montarIndice(caminhos, itensPpc, atualizadoEm)), secoes };
 }
 
-export function verificarIndices(caminhos: CaminhosBase, indices: IndicesPpcs): string[] {
-  const erros: string[] = [];
-  const atual = (caminho: string) => (NodeFS.existsSync(caminho) ? lerTexto(caminho) : null);
-  if (atual(caminhos.indicePpcs) !== indices.indice) {
-    erros.push(`${relativo(caminhos, caminhos.indicePpcs)} está desatualizado`);
-  }
-  for (const [tipo, esperado] of indices.secoes) {
-    const caminho = caminhoSecao(caminhos, tipo);
-    if (atual(caminho) !== esperado) erros.push(`${relativo(caminhos, caminho)} está desatualizado`);
-  }
-  if (NodeFS.existsSync(caminhos.secoesPpcs)) {
-    const esperados = new Set([...indices.secoes.keys()].map((tipo) => `${tipo}.jsonl`));
-    const extras = listarDiretorio(caminhos.secoesPpcs, ".jsonl")
-      .map((caminho) => NodePath.basename(caminho))
-      .filter((nome) => !esperados.has(nome));
-    for (const nome of ordenarTextos(new Set(extras))) {
-      erros.push(`${relativo(caminhos, NodePath.join(caminhos.secoesPpcs, nome))} não é mais gerado`);
-    }
-  }
-  return erros;
-}
-
-export function gravarIndices(caminhos: CaminhosBase, indices: IndicesPpcs): void {
-  NodeFS.writeFileSync(caminhos.indicePpcs, indices.indice, "utf-8");
-  NodeFS.rmSync(NodePath.join(NodePath.dirname(caminhos.secoesPpcs), "secoes.jsonl"), { force: true });
-  NodeFS.mkdirSync(caminhos.secoesPpcs, { recursive: true });
-  for (const caminho of listarDiretorio(caminhos.secoesPpcs, ".jsonl")) NodeFS.rmSync(caminho);
-  for (const [tipo, texto] of indices.secoes) NodeFS.writeFileSync(caminhoSecao(caminhos, tipo), texto, "utf-8");
+/**
+ * O `index.json` e um `secoes/<tipo>.jsonl` por tipo, como `gerar_indice_ppcs` os grava. A pasta
+ * `secoes/` é toda gerada, e o `secoes.jsonl` único da versão 1 não deve mais existir.
+ */
+export function arquivosIndices(caminhos: CaminhosBase, indices: IndicesPpcs) {
+  const arquivos: ArquivoGerado[] = [
+    { caminho: caminhos.indicePpcs, texto: indices.indice },
+    ...[...indices.secoes].map(([tipo, texto]) => ({ caminho: caminhoSecao(caminhos, tipo), texto })),
+  ];
+  return {
+    arquivos,
+    extrasEm: [{ pasta: caminhos.secoesPpcs, sufixo: ".jsonl" }],
+    obsoletos: [NodePath.join(NodePath.dirname(caminhos.secoesPpcs), "secoes.jsonl")],
+  };
 }
