@@ -38,6 +38,7 @@
     "@simplifica-if/docx": "workspace:*",
     "@simplifica-if/kb": "workspace:*",
     "@simplifica-if/ppc": "workspace:*",
+    "@simplifica-if/sei-cli": "workspace:*",
     "@simplifica-if/mcp": "workspace:*",
     "@simplifica-if/motor": "workspace:*",
     "ajv": "8.20.0",
@@ -47,7 +48,6 @@
     "effect": "catalog:",
     "entities": "8.1.0",
     "htmlparser2": "12.0.0",
-    "sei-cli": "workspace:*",
     "yaml": "2.9.1"
   },
   "devDependencies": {

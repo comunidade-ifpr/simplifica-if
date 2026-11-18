@@ -237,6 +237,9 @@ importers:
       '@simplifica-if/ppc':
         specifier: workspace:*
         version: link:packages/ppc
+      '@simplifica-if/sei-cli':
+        specifier: workspace:*
+        version: link:packages/sei-cli
       ajv:
         specifier: 8.20.0
         version: 8.20.0
@@ -258,9 +261,6 @@ importers:
       htmlparser2:
         specifier: 12.0.0
         version: 12.0.0
-      sei-cli:
-        specifier: workspace:*
-        version: link:packages/sei-cli
       yaml:
         specifier: 2.9.1
         version: 2.9.1

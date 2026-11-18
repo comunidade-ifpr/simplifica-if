@@ -14,7 +14,7 @@ Este é o repositório do **Simplifica IF**, um app desktop para os servidores d
 - `packages/contratos-app`: contratos RPC entre a interface e o servidor.
 - `packages/atualizacao`: manifesto do canal, assinatura minisign e pacotes da base e das skills.
 - `packages/effect-acp` e `packages/effect-codex-app-server`: copiados do T3 Code ([`docs/upstream-t3.md`](docs/upstream-t3.md)).
-- `packages/sei-cli`: CLI do SEI, usada só no repositório (abaixo).
+- `packages/sei-cli` (`@simplifica-if/sei-cli`): CLI do SEI, usada só no repositório (abaixo); `scripts/` importa dele o contrato de saída (`@simplifica-if/sei-cli/esquemas`, `/tipos`, `/dominio/fluxo`).
 - `base-conhecimento/`: fonte publicada da base; `site/` é a saída gerada dela.
 - `scripts/`: pipeline da base, integração com Notion, SEI e SUAP, fábrica da atualização, avaliação.
 - `.agents/skills/`: skills dos agentes (`.claude/skills` é symlink para cá).
