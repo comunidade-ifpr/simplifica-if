@@ -131,7 +131,7 @@ it("links: âncora interna rola, mailto e relativo viram texto, e o link web rec
 
   await page.getByRole("link", { name: "Site" }).click();
   await expect.poll(() => abertos).toEqual(["https://ifpr.edu.br"]);
-  // dois quadros: a tarefa do clique acabou, e uma rejeição sem tratamento já teria disparado o evento
+  // oxlint-disable-next-line simplifica-if/no-frame-waits-in-browser-tests -- prova a ausência de um evento: dois quadros depois do clique, uma rejeição sem tratamento já teria disparado o `unhandledrejection`
   await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   window.removeEventListener("unhandledrejection", aoRejeitar);
   expect(rejeicoes).toEqual([]);

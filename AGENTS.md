@@ -204,3 +204,15 @@ pnpm exec vp test run .agents/skills/revisar-ppc
 ```
 
 Sem `--check`, `gerar-schemas`, `gerar-mapa` e `gerar-indice` regeneram os JSON Schemas de ficha e marcos (gerados do Effect Schema de `scripts/esquemas.ts`), `mapa-fichas.md` e `indice.json` da base de análise. O `revisar_ppc.ts` é o ponto de entrada único da skill, e todos os subcomandos rodam em TypeScript, inclusive a conversão de entrada `.docx`: a skill só precisa do Node. A conversão fica em dois pacotes do workspace, `packages/docx` (leitor OOXML genérico, com os limites contra arquivo hostil) e `packages/ppc` (conversão do PPC e normalizador de Markdown), que o servidor do app também importa. Depois de alterá-los, rode os testes dos dois (`pnpm --filter @simplifica-if/docx --filter @simplifica-if/ppc test`); os gabaritos em `packages/ppc/test/fixtures/conversao-docx/` travam a saída byte a byte.
+
+## Código com Effect
+
+O backend, os pacotes e os scripts usam Effect 4. Antes de escrever ou revisar código Effect, leia [Serviços Effect](docs/internals/servicos-effect.md) e, para a biblioteca, [`.repos/effect/LLMS.md`](.repos/effect/LLMS.md). O essencial:
+
+- Uma capacidade é um método de serviço do domínio (`Context.Service` com a interface inline, `make`, `layer`). Handlers RPC, ferramentas MCP, a CLI `kb` e os scripts são casca fina: decodificam, chamam um método e traduzem os erros.
+- Use Effect para I/O, erros esperados, recursos com ciclo de vida, `Config`, concorrência e prazo, e nos pontos de entrada (`NodeRuntime.runMain`, `effect/cli`). Funções puras de texto, regex e transformação de dados continuam funções comuns, chamadas de dentro dos serviços.
+- Funções reutilizáveis usam `Effect.fn("Servico.operacao")`. Imports por namespace (`import * as Effect from "effect/Effect"`). Tipos inferidos; nada de `any`.
+- Erros são `Schema.TaggedError` com atributos estruturados, mensagem em português que não sai de `cause`, e `cause` no erro que embrulha outro. Capture com `Effect.catchTags`.
+- `runPromise` e `ManagedRuntime` só nas bordas, nunca dentro de serviço.
+- Testes com `@effect/vitest` (`it.effect`, `TestClock`), sem `sleep`, polling, relógio de parede nem `retry`.
+- Identificadores, mensagens e comentários em português; comentário só para o que o código não mostra, curto. Supressão de lint ou de diagnóstico diz por quê.
