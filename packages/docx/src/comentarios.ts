@@ -29,8 +29,9 @@ export type Anotacao = {
 };
 
 export type OpcoesComentarios = {
-  autor?: string;
-  iniciais?: string;
+  /** Quem assina os comentários no Word: o leitor genérico não conhece o nome do app. */
+  autor: string;
+  iniciais: string;
   /** Data dos comentários (ISO 8601): quem chama passa o relógio da rodada, como na conversão. */
   data: string;
 };
@@ -220,7 +221,7 @@ function aplicar(xml: string, edicoes: Edicao[]): string {
   return saida;
 }
 
-function xmlDoComentario(id: number, anotacao: Anotacao, opcoes: Required<OpcoesComentarios>): string {
+function xmlDoComentario(id: number, anotacao: Anotacao, opcoes: OpcoesComentarios): string {
   const paragrafos = semControle(anotacao.texto)
     .split(/\n\s*\n/)
     .map((paragrafo, indice) => {
@@ -249,11 +250,7 @@ export function comentarDocx(
   anotacoes: readonly Anotacao[],
   opcoes: OpcoesComentarios,
 ): ResultadoComentarios {
-  const completas: Required<OpcoesComentarios> = {
-    autor: opcoes.autor ?? "Simplifica IF (revisão prévia)",
-    iniciais: opcoes.iniciais ?? "SIF",
-    data: opcoes.data.replace(/\.\d+Z$/, "Z"),
-  };
+  const completas: OpcoesComentarios = { ...opcoes, data: opcoes.data.replace(/\.\d+Z$/, "Z") };
   const pacote = new PacoteOoxml(bytes);
   let parteDocumento: string | null = null;
   for (const relacao of pacote.relacoes("").values())

@@ -11,14 +11,15 @@
  * - **T** (transversais, `tipo_escopo: transversal`): uma sessão no fim, sobre os **resumos** que os
  *   temas J devolvem e os resultados já conferidos, nunca sobre o PPC inteiro.
  *
- * Os temas seguem a ordem do parecer da PROENS (`TEMAS` de `revisao-previa.ts`). O modo **rápido** leva
+ * Os temas seguem a ordem do parecer da PROENS (`TEMAS` de `temas.ts`). O modo **rápido** leva
  * as fichas que bloqueiam a submissão (`BLOQ`) e as dos temas que mais fazem a PROENS devolver PPC
  * (`TEMAS_RAPIDO`); o **completo**, todas as S e J.
  *
  * Tudo aqui é função pura sobre dados planos: o servidor busca as fichas, as seções e o contexto
  * normativo no `kb.sqlite` e grava o plano, para que a revisão retome sem refazê-lo.
  */
-import { TEMAS } from "../revisao-previa.ts";
+import { TEMAS, ordemDoTema } from "../temas.ts";
+import { ESTADOS_IA } from "./resposta.ts";
 
 /** O que a revisão com IA usa de uma ficha da `revisar-ppc` (o JSON canônico, campos lidos). */
 export type FichaIa = {
@@ -56,9 +57,7 @@ export function fichaIa(json: Record<string, unknown>): FichaIa {
     boa_evidencia: texto(json["boa_evidencia"]) || undefined,
     ma_evidencia: texto(json["ma_evidencia"]) || undefined,
     escalonar_quando: texto(json["escalonar_quando"]) || undefined,
-    estados_permitidos: lista(json["estados_permitidos"]).length
-      ? lista(json["estados_permitidos"])
-      : ["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"],
+    estados_permitidos: lista(json["estados_permitidos"]).length ? lista(json["estados_permitidos"]) : [...ESTADOS_IA],
     termos: [...new Set([...lista(json["consultas"]), ...lista(json["ancoras_semanticas"])])],
   };
 }
@@ -83,12 +82,6 @@ export const TEMAS_RAPIDO: readonly string[] = [
 ];
 
 export const TAMANHO_LOTE_S = 6;
-
-/** O tema (índice em `TEMAS`) de uma ficha: o do primeiro tópico dela que algum tema cobre. */
-export function ordemDoTema(topicos: readonly string[]): number {
-  const indice = TEMAS.findIndex((tema) => tema.topicos.some((t) => topicos.includes(t)));
-  return indice >= 0 ? indice : TEMAS.length - 1;
-}
 
 /** As fichas que a IA avalia no modo: nunca as D; no rápido, as `BLOQ` e as dos `TEMAS_RAPIDO`. */
 export function fichasDoModo(fichas: readonly FichaIa[], modo: ModoRevisaoIa): FichaIa[] {

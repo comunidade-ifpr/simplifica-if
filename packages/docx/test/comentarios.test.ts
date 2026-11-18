@@ -21,7 +21,7 @@ const comentarDocx: typeof comentarSemConferir = (...argumentos) => {
 };
 import { analisarXml } from "../src/xml.ts";
 
-const DATA = "2026-11-16T12:00:00Z";
+const OPCOES = { data: "2026-11-16T12:00:00Z", autor: "Equipe de revisão", iniciais: "ER" };
 
 function textos(blocos: BlocoOoxml[]): string[] {
   return blocos.flatMap((bloco) =>
@@ -93,7 +93,7 @@ describe("comentarDocx", () => {
         { trechos: ["Atendimento Educacional Especializado"], texto: "AEE não pode ser componente da matriz." },
         { trechos: ["Consulte o Catálogo Nacional para"], texto: "Atravessa o hiperlink." },
       ],
-      { data: DATA },
+      OPCOES,
     );
     expect(naoAncoradas).toEqual([]);
     expect(ancoradas).toHaveLength(6);
@@ -104,7 +104,7 @@ describe("comentarDocx", () => {
     expect(marcado(documento, "2")).toBe("com “devolutivas”");
     expect(marcado(documento, "3")).toBe("Fundamenta-se na Resolução");
     expect(marcado(documento, "4")).toBe("Atendimento Educacional Especializado");
-    expect(comentarios).toContain('w:author="Simplifica IF (revisão prévia)"');
+    expect(comentarios).toContain('w:author="Equipe de revisão"');
     // O negrito do run dividido vale para as duas metades.
     expect(documento).toMatch(/<w:rPr><w:b\/><\/w:rPr><w:t xml:space="preserve">Resolução<\/w:t>/);
     expect(textos(lerDocx(docx).blocos)).toEqual(antes);
@@ -117,7 +117,7 @@ describe("comentarDocx", () => {
         { trechos: ["texto que não está no PPC"], texto: "x" },
         { trechos: ["acompanhamento de egressos"], texto: "Falta a seção de egressos.", noInicioSeAusente: true },
       ],
-      { data: DATA },
+      OPCOES,
     );
     expect(naoAncoradas).toEqual([{ indice: 0, motivo: "trecho não encontrado num só parágrafo do arquivo" }]);
     expect(ancoradas).toEqual([
@@ -134,11 +134,9 @@ describe("comentarDocx", () => {
         { trechos: ["frequência mínima"], texto: "a" },
         { trechos: ["recuperação é paralela"], texto: "b" },
       ],
-      { data: DATA },
+      OPCOES,
     );
-    const segundo = comentarDocx(primeiro.docx, [{ trechos: ["Diretrizes Curriculares"], texto: "c" }], {
-      data: DATA,
-    });
+    const segundo = comentarDocx(primeiro.docx, [{ trechos: ["Diretrizes Curriculares"], texto: "c" }], OPCOES);
     const { documento, ids } = conferir(segundo.docx);
     expect(ids).toEqual(["0", "1", "2"]);
     expect(marcado(documento, "0")).toBe("frequência mínima");
@@ -153,7 +151,7 @@ describe("comentarDocx", () => {
     const { docx } = comentarDocx(
       PPC,
       [{ trechos: ["Diretrizes"], texto: 'Veja <w:p> & "isto"\u0007\n\nSegundo parágrafo\nlinha 2' }],
-      { data: DATA },
+      OPCOES,
     );
     const { comentarios } = conferir(docx);
     expect(comentarios).toContain("Veja &lt;w:p&gt; &amp; &quot;isto&quot;</w:t>");
@@ -190,7 +188,7 @@ describe("comentarDocx", () => {
         { trechos: ["segue a Resolução CNE/CP"], texto: "do texto comum até a inserção" },
         { trechos: ["Resolução CNE/CEB nº 6/2012"], texto: "texto apagado" },
       ],
-      { data: DATA },
+      OPCOES,
     );
     expect(ancoradas.map((a) => a.indice)).toEqual([0, 1]);
     expect(naoAncoradas).toEqual([{ indice: 2, motivo: "trecho não encontrado num só parágrafo do arquivo" }]);
@@ -210,7 +208,7 @@ describe("comentarDocx", () => {
         { trechos: ["Resolução CNE/CP nº 2/2026"], texto: "negrito + link" },
         { trechos: ["Lei nº 9.394 - LDB"], texto: "normalização" },
       ],
-      { data: DATA },
+      OPCOES,
     );
     expect(naoAncoradas).toEqual([]);
     const { documento } = conferir(docx);
@@ -226,7 +224,7 @@ describe("comentarDocx", () => {
         { trechos: ["Diretrizes Curriculares Nacionais. A frequência mínima"], texto: "dois parágrafos" },
         { trechos: ["Resolução CNE/CEB nº 06/2012"], texto: "número escrito de outro jeito" },
       ],
-      { data: DATA },
+      OPCOES,
     );
     expect(ancoradas).toEqual([]);
     expect(naoAncoradas.map((n) => n.indice)).toEqual([0, 1]);
@@ -264,7 +262,7 @@ describe("comentarDocx", () => {
       ),
     );
     const comOutro = zipSync(partes);
-    const { docx } = comentarDocx(comOutro, [{ trechos: ["Diretrizes Curriculares"], texto: "nosso" }], { data: DATA });
+    const { docx } = comentarDocx(comOutro, [{ trechos: ["Diretrizes Curriculares"], texto: "nosso" }], OPCOES);
     const resultado = conferir(docx);
     expect(resultado.ids).toEqual(["7", "8"]);
     expect(resultado.comentarios).toContain('w:author="Maria Coordenadora"');

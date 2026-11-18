@@ -58,8 +58,8 @@ import {
   type MarcaPendencia,
   NOME_DA_FORMA,
   type ResultadoFichaIa,
-  TEMAS,
 } from "@simplifica-if/ppc/revisao-previa";
+import { TEMAS } from "@simplifica-if/ppc/temas";
 import { Listas, type RegistroLista } from "../persistencia/Listas.ts";
 import { Revisoes } from "../persistencia/Revisoes.ts";
 import { RevisorPpc, type EntradaRevisao, type RevisaoDoArquivo, resultadoParaInterface } from "./RevisorPpc.ts";

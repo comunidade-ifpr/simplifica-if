@@ -149,7 +149,7 @@ if (values.base) {
   const comentado = comentarDocx(
     bytes,
     itens.map((i) => ({ trechos: i.trechos, texto: texto(i), noInicioSeAusente: true })),
-    { data: new Date().toISOString() },
+    { data: new Date().toISOString(), autor: "Simplifica IF (revisão prévia)", iniciais: "SIF" },
   );
   NodeFS.writeFileSync(values.saida, comentado.docx);
   console.log(

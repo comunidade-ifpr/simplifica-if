@@ -26,9 +26,7 @@ import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
 import { CRITERIO_PADRAO, type CriterioInconclusivo, TIPOS_ACHADO } from "./pedido.ts";
 import { dobrar, type Bloco, type FichaIa } from "./plano.ts";
-
-export const EstadoIa = Schema.Literals(["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"]);
-export type EstadoIa = typeof EstadoIa.Type;
+import { ate, EstadoIa, extrairJson, Texto } from "./resposta.ts";
 
 /** Os tetos da resposta: o texto livre não é conferido contra o PPC, então ele fica curto. */
 export const LIMITES_RESPOSTA = {
@@ -44,8 +42,6 @@ export const LIMITES_RESPOSTA = {
 } as const;
 
 const L = LIMITES_RESPOSTA;
-const Texto = Schema.String;
-const ate = (n: number) => Texto.check(Schema.isMaxLength(n));
 
 /** Um resultado de ficha, no contrato da `revisar-ppc` reduzido ao que o app usa. */
 export const ResultadoIa = Schema.Struct({
@@ -75,15 +71,6 @@ const Casca = Schema.Struct({
 
 const decodificarCasca = Schema.decodeUnknownResult(Casca);
 const decodificarResultado = Schema.decodeUnknownResult(ResultadoIa);
-
-/** O objeto JSON da resposta: do primeiro `{` ao último `}` (com ou sem cerca de código). */
-export function extrairJson(texto: string): unknown {
-  if (texto.length > L.resposta) throw new Error("resposta longa demais");
-  const inicio = texto.indexOf("{");
-  const fim = texto.lastIndexOf("}");
-  if (inicio < 0 || fim <= inicio) throw new Error("a resposta não tem objeto JSON");
-  return JSON.parse(texto.slice(inicio, fim + 1));
-}
 
 /** Normalização para a comparação literal: a de `dobrar`, mais aspas tipográficas. */
 const normalizar = (s: string) => dobrar(s.replace(/[“”]/g, '"').replace(/[‘’]/g, "'"));
@@ -176,15 +163,12 @@ export function conferirResposta(
   const criterio = entrada.criterio ?? CRITERIO_PADRAO;
   const validos = new Map<string, ResultadoIa>();
   const problemas = new Map<string, string[]>();
-  let bruto: unknown;
-  try {
-    bruto = extrairJson(texto);
-  } catch {
-    // Mensagem fixa: a do `JSON.parse` repete um pedaço da resposta.
+  const bruto = extrairJson(texto, L.resposta);
+  if (Result.isFailure(bruto)) {
     adicionar(problemas, "*", "a resposta não é um objeto JSON válido (ou passa do tamanho máximo)");
     return { validos, problemas, resumo: null };
   }
-  const casca = decodificarCasca(bruto);
+  const casca = decodificarCasca(bruto.success);
   if (Result.isFailure(casca)) {
     adicionar(problemas, "*", "a resposta não segue o contrato (`resultados` em lista; `resumo` até 800 caracteres)");
     return { validos, problemas, resumo: null };
