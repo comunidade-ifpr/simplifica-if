@@ -8,6 +8,7 @@
  */
 import * as NodeCrypto from "node:crypto";
 import * as NodePath from "node:path";
+import { EXTENSOES_DOCUMENTO, SUFIXO_REVISAO_PREVIA } from "@simplifica-if/contratos-app/ponte";
 
 /**
  * A CSP da interface empacotada. Mais estreita que a do T3 (que aceita qualquer `http:`/`ws:`, por
@@ -154,12 +155,6 @@ export function resolverArquivo(input: {
   return { tipo: "arquivo", caminho: NodePath.join(root, "index.html") };
 }
 
-/** `CAMINHO_LIBERAR_ARQUIVO` do `@simplifica-if/contratos-app` (o teste confere que são iguais). */
-export const CAMINHO_LIBERAR_ARQUIVO = "/revisao-ppc/liberar";
-
-/** `SUFIXO_REVISAO_PREVIA` do `@simplifica-if/contratos-app` (o teste confere que são iguais). */
-export const SUFIXO_REVISAO_PREVIA = " - revisão prévia (Simplifica IF)";
-
 /** Um `.docx` escolhido no diálogo do sistema (`escolherDocx`); `undefined` para outro arquivo. */
 export function docxEscolhido(caminho: unknown): string | undefined {
   if (typeof caminho !== "string" || !NodePath.isAbsolute(caminho)) return undefined;
@@ -186,30 +181,6 @@ export function copiaComentadaPermitida(caminho: unknown, escolhidos: ReadonlySe
   }
   return undefined;
 }
-
-/**
- * As extensões que "Anexar arquivo…" aceita e que "Abrir" abre no programa padrão (M1.9): documentos,
- * planilhas, texto e imagens. Nada que o sistema execute (`.app`, `.exe`, `.command`, `.sh`, `.bat`,
- * `.html`…) nem os formatos antigos com macro (`.doc`, `.xls`): a IA escreve na pasta, e "Abrir" não
- * pode virar "rodar". Cópia de `EXTENSOES_DOCUMENTO` do `@simplifica-if/contratos-app` (o teste confere).
- */
-export const EXTENSOES_DOCUMENTO = [
-  ".docx",
-  ".odt",
-  ".rtf",
-  ".pdf",
-  ".md",
-  ".txt",
-  ".csv",
-  ".xlsx",
-  ".ods",
-  ".pptx",
-  ".odp",
-  ".json",
-  ".png",
-  ".jpg",
-  ".jpeg",
-] as const;
 
 const ehDocumento = (caminho: string) =>
   (EXTENSOES_DOCUMENTO as ReadonlyArray<string>).includes(NodePath.extname(caminho).toLowerCase());

@@ -1,0 +1,202 @@
+// @effect-diagnostics nodeBuiltinImport:off globalFetch:off -- processo principal do Electron, sem runtime Effect (ver README)
+/**
+ * O IPC entre o preload (`window.simplifica`) e o processo principal. Cada canal passa por `tratar`,
+ * que só atende o quadro principal da janela do app, na origem da interface: é dele que sai o token, e
+ * só ele abre diálogos e arquivos. O resto do pedido (o caminho, a URL, as extensões) chega como
+ * `unknown` e é conferido pelas regras de `seguranca.ts`.
+ */
+import * as NodeFS from "node:fs";
+import * as NodePath from "node:path";
+import { CAMINHO_LIBERAR_ARQUIVO, CANAIS, type CredenciaisServidor } from "@simplifica-if/contratos-app/ponte";
+import { dialog, ipcMain, shell, type BrowserWindow, type IpcMainInvokeEvent } from "electron";
+import type { ControleAtualizacaoApp } from "./atualizacaoApp.ts";
+import {
+  anexoEscolhido,
+  arquivoDeTarefaPermitido,
+  copiaComentadaPermitida,
+  docxEscolhido,
+  extensoesAnexo,
+  isSameOriginRendererNavigation,
+  urlExternaSegura,
+} from "./seguranca.ts";
+
+/** O que o IPC lê do processo principal, que guarda o estado (a janela, o servidor, a atualização). */
+export interface ContextoIpc {
+  /** A origem da interface (`Configuracao.urlJanela`). */
+  readonly urlJanela: string;
+  /** A raiz das pastas de tarefa (`Documentos/Simplifica IF`). */
+  readonly pastaTrabalhos: string;
+  janela(): BrowserWindow | undefined;
+  /** A conexão com o servidor desta execução; a janela a pediu, então a interface carregou. */
+  conexao(): Promise<CredenciaisServidor>;
+  /** A conexão atual, sem efeito colateral (para liberar arquivos no servidor). */
+  conexaoAtual(): Promise<CredenciaisServidor> | undefined;
+  /** O segredo do processo principal com o servidor desta execução (`EnvelopePartida.tokenDesktop`). */
+  tokenDesktop(): string | undefined;
+  reiniciarServidor(): Promise<void>;
+  atualizacaoApp(): ControleAtualizacaoApp | undefined;
+}
+
+/** Registra os canais do IPC. Chamado uma vez, na partida do processo principal. */
+export function registrarIpc(contexto: ContextoIpc): void {
+  /** Só a janela do app, no quadro principal e na origem da interface, recebe o token. */
+  const remetenteConfiavel = (evento: IpcMainInvokeEvent): boolean => {
+    const janela = contexto.janela();
+    const quadro = evento.senderFrame;
+    return (
+      janela !== undefined &&
+      !janela.isDestroyed() &&
+      evento.sender === janela.webContents &&
+      quadro !== null &&
+      quadro === evento.sender.mainFrame &&
+      isSameOriginRendererNavigation({ applicationUrl: contexto.urlJanela, navigationUrl: quadro.url })
+    );
+  };
+
+  /** Atende o canal só para a janela do app; para outro remetente, recusa sem chamar `atender`. */
+  const tratar = (canal: string, atender: (...argumentos: Array<unknown>) => unknown) => {
+    ipcMain.handle(canal, async (evento, ...argumentos: Array<unknown>) => {
+      if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
+      return atender(...argumentos);
+    });
+  };
+
+  /** A janela que é dona dos diálogos; o remetente já foi conferido, então ela existe. */
+  const exigirJanela = (): BrowserWindow => {
+    const janela = contexto.janela();
+    if (janela === undefined) throw new Error("pedido recusado");
+    return janela;
+  };
+
+  /* ---------------------------------------------------------- janela e servidor */
+
+  tratar(CANAIS.telaCheia, () => contexto.janela()?.isFullScreen() ?? false);
+
+  tratar(CANAIS.conexao, () => contexto.conexao());
+
+  tratar(CANAIS.reiniciarServidor, async () => {
+    await contexto.reiniciarServidor();
+  });
+
+  /* ---------------------------------------------------------- atualização do app (M1.10) */
+
+  const exigirAtualizacao = (): ControleAtualizacaoApp => {
+    const atualizacao = contexto.atualizacaoApp();
+    if (atualizacao === undefined) throw new Error("a atualização do app ainda não começou");
+    return atualizacao;
+  };
+
+  tratar(CANAIS.atualizacaoApp, () => exigirAtualizacao().estado());
+
+  tratar(CANAIS.procurarAtualizacaoApp, () => exigirAtualizacao().procurar());
+
+  tratar(CANAIS.instalarAtualizacaoApp, () => {
+    contexto.atualizacaoApp()?.instalar();
+  });
+
+  /* ---------------------------------------------------------- navegador e pastas */
+
+  tratar(CANAIS.abrirExterno, async (url) => {
+    const segura = urlExternaSegura(url);
+    if (segura === undefined) throw new Error("só links http e https abrem no navegador");
+    await shell.openExternal(segura);
+  });
+
+  tratar(CANAIS.escolherPasta, async () => {
+    const escolha = await dialog.showOpenDialog(exigirJanela(), {
+      title: "Escolher pasta",
+      buttonLabel: "Escolher",
+      properties: ["openDirectory", "createDirectory"],
+    });
+    return escolha.canceled ? null : (escolha.filePaths[0] ?? null);
+  });
+
+  /* ---------------------------------------------------------- revisão prévia de PPC (M1.11) */
+
+  /** Os `.docx` escolhidos no diálogo nesta execução: só as cópias comentadas deles abrem pelo app. */
+  const docxEscolhidos = new Set<string>();
+
+  /** Libera no servidor o arquivo escolhido: sem isso, a revisão prévia o recusa. */
+  const liberarNoServidor = async (arquivo: string): Promise<void> => {
+    const conexao = contexto.conexaoAtual();
+    const tokenDesktop = contexto.tokenDesktop();
+    if (conexao === undefined || tokenDesktop === undefined) throw new Error("o servidor local não está pronto");
+    const { urlServidor } = await conexao;
+    const resposta = await fetch(`${urlServidor}${CAMINHO_LIBERAR_ARQUIVO}`, {
+      method: "POST",
+      headers: { authorization: `Bearer ${tokenDesktop}`, "content-type": "application/json" },
+      body: JSON.stringify({ arquivo }),
+    });
+    if (resposta.status !== 204) throw new Error(`o servidor não liberou o arquivo (${resposta.status})`);
+  };
+
+  tratar(CANAIS.escolherDocx, async () => {
+    const escolha = await dialog.showOpenDialog(exigirJanela(), {
+      title: "Escolher o PPC (.docx)",
+      buttonLabel: "Revisar",
+      properties: ["openFile"],
+      filters: [{ name: "Documento do Word", extensions: ["docx"] }],
+    });
+    // O filtro do diálogo pode ser contornado em alguns sistemas ("Todos os arquivos"): confere de novo.
+    const arquivo = escolha.canceled ? undefined : docxEscolhido(escolha.filePaths[0]);
+    if (arquivo === undefined) return null;
+    docxEscolhidos.add(arquivo);
+    await liberarNoServidor(arquivo);
+    return arquivo;
+  });
+
+  /** A cópia comentada pedida, se é de um `.docx` escolhido e é arquivo comum (não link nem pasta). */
+  const copiaComentada = (caminho: unknown): string => {
+    const permitido = copiaComentadaPermitida(caminho, docxEscolhidos);
+    if (permitido === undefined) throw new Error("só a cópia comentada pelo Simplifica IF abre por aqui");
+    const info = NodeFS.lstatSync(permitido, { throwIfNoEntry: false });
+    if (info === undefined || !info.isFile()) throw new Error("a cópia comentada não foi encontrada");
+    return permitido;
+  };
+
+  tratar(CANAIS.abrirDocumento, async (caminho) => {
+    const erro = await shell.openPath(copiaComentada(caminho));
+    if (erro !== "") throw new Error(`não foi possível abrir o documento: ${erro}`);
+  });
+
+  tratar(CANAIS.mostrarNaPasta, (caminho) => {
+    shell.showItemInFolder(copiaComentada(caminho));
+  });
+
+  /* ---------------------------------------------------------- pasta das tarefas (M1.9) */
+
+  tratar(CANAIS.escolherAnexo, async (pedidas) => {
+    const janela = exigirJanela();
+    const aceitas = extensoesAnexo(pedidas);
+    const escolha = await dialog.showOpenDialog(janela, {
+      title: "Anexar arquivo",
+      buttonLabel: "Anexar",
+      properties: ["openFile"],
+      filters: [{ name: "Documentos", extensions: aceitas.map((extensao) => extensao.slice(1)) }],
+    });
+    const arquivo = escolha.canceled ? undefined : anexoEscolhido(escolha.filePaths[0], aceitas);
+    if (arquivo === undefined) return null;
+    await liberarNoServidor(arquivo);
+    return arquivo;
+  });
+
+  /** Um arquivo de pasta de tarefa: a regra de `arquivoDeTarefaPermitido` e o caminho real dentro da raiz. */
+  const arquivoDeTarefa = (caminho: unknown, abrir: boolean): string => {
+    const permitido = arquivoDeTarefaPermitido(caminho, contexto.pastaTrabalhos, abrir);
+    if (permitido === undefined) throw new Error("só arquivos das pastas de tarefa abrem por aqui");
+    const info = NodeFS.lstatSync(permitido, { throwIfNoEntry: false });
+    if (info === undefined || !info.isFile()) throw new Error("o arquivo não foi encontrado");
+    const raizReal = NodeFS.realpathSync(contexto.pastaTrabalhos);
+    if (!NodeFS.realpathSync(permitido).startsWith(raizReal + NodePath.sep)) throw new Error("arquivo fora da pasta");
+    return permitido;
+  };
+
+  tratar(CANAIS.abrirArquivoTarefa, async (caminho) => {
+    const erro = await shell.openPath(arquivoDeTarefa(caminho, true));
+    if (erro !== "") throw new Error(`não foi possível abrir o arquivo: ${erro}`);
+  });
+
+  tratar(CANAIS.mostrarArquivoTarefa, (caminho) => {
+    shell.showItemInFolder(arquivoDeTarefa(caminho, false));
+  });
+}

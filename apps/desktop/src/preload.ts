@@ -4,10 +4,16 @@
  * pedido é ele.
  */
 import { contextBridge, ipcRenderer } from "electron";
-import { CANAIS, NOME_PONTE, type Conexao, type EstadoAtualizacaoApp, type PonteDesktop } from "./ponteDesktop.ts";
+import {
+  CANAIS,
+  type CredenciaisServidor,
+  type EstadoAtualizacaoApp,
+  NOME_PONTE,
+  type PonteDesktop,
+} from "@simplifica-if/contratos-app/ponte";
 
 const ponte: PonteDesktop = {
-  conexao: () => ipcRenderer.invoke(CANAIS.conexao) as Promise<Conexao>,
+  conexao: () => ipcRenderer.invoke(CANAIS.conexao) as Promise<CredenciaisServidor>,
   abrirExterno: async (url: string) => {
     await ipcRenderer.invoke(CANAIS.abrirExterno, url);
   },

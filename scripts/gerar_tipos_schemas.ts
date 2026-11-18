@@ -16,7 +16,8 @@ import { compararTexto } from "@simplifica-if/kb/texto";
 import { compile, type JSONSchema } from "json-schema-to-typescript";
 import { aplicarGerados, mensagensDivergencias } from "./base/gerados.ts";
 import { RAIZ_BASE, RAIZ_PROJETO } from "./config.ts";
-import { executarPrincipal, sairCom } from "./principal.ts";
+import { sairCom } from "@simplifica-if/kb/principal";
+import { executarPrincipal } from "./principal.ts";
 
 export const DESTINO_TIPOS = NodePath.join(RAIZ_PROJETO, "scripts", "base", "tipos-schemas.ts");
 const RAIZ_SCHEMAS = NodePath.join(RAIZ_BASE, "schemas");

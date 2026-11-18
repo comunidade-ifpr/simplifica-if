@@ -108,7 +108,7 @@ interface PonteDesktop {
 
 **Revisão prévia de PPC (M1.11).** `escolherDocx` abre o diálogo com o filtro `.docx` e confere a extensão de novo (o filtro pode ser contornado com "Todos os arquivos"); o processo principal guarda os arquivos escolhidos nesta execução. Depois do diálogo, o processo principal libera o arquivo no servidor (`POST /revisao-ppc/liberar` com o `tokenDesktop`, um segundo segredo gerado a cada partida e passado só no envelope), e o servidor só revisa arquivos liberados. `abrirDocumento` (`shell.openPath`) e `mostrarNaPasta` (`shell.showItemInFolder`) só aceitam a cópia comentada de um deles: mesma pasta, `<nome> - revisão prévia (Simplifica IF).docx` ou com ` (2)` a ` (99)`, caminho normalizado e arquivo comum (não link, não pasta), por `copiaComentadaPermitida` de `src/seguranca.ts`. Assim a interface não abre outro arquivo do computador por esse caminho.
 
-O contrato está em `src/ponteDesktop.ts`; a interface tem a cópia dela em `apps/web/src/ponte-desktop.ts`. O token nunca vai para log.
+O contrato (`PonteDesktop`, os canais do IPC, os caminhos do servidor, a variável do token, `EXTENSOES_DOCUMENTO` e a `LinhaPartida`) está em `@simplifica-if/contratos-app/ponte`, um módulo sem nenhum import: o processo principal, o preload e a interface o importam, e o `main.cjs` continua sem o Effect. O token nunca vai para log.
 
 ## Segurança da janela
 
@@ -129,14 +129,14 @@ No desenvolvimento, a janela carrega o dev server sem CSP: o Vite precisa de scr
 
 ## Estrutura
 
-- `src/main.ts`: o processo principal (servidor, janela, IPC, protocolo, menu em pt-BR, ciclo de vida).
+- `src/main.ts`: o processo principal (servidor, janela, atualização, ciclo de vida); `src/ipc.ts`: os canais do IPC, cada um atrás de `tratar`, que só atende a janela do app; `src/protocolo.ts`: o protocolo `simplifica://app/`; `src/menu.ts`: o menu em pt-BR.
 
 **Só português (M1.14).** O menu (Sobre, Ocultar, Sair, Editar com Desfazer, Copiar e Colar, Ver, Janela), os títulos e botões dos diálogos de abrir arquivo e de confirmação e o painel Sobre (`setAboutPanelOptions`) estão em pt-BR. O Chromium sobe com `--lang=pt-BR` (`navigator.language`, o `Intl` padrão e os textos do próprio Chromium), seja qual for a língua do sistema. O que é do macOS (Cancelar e Abrir nos diálogos, os itens que o sistema acrescenta ao menu Editar, "Versão" no painel Sobre) segue as localizações que o pacote declara: o empacotamento põe `CFBundleDevelopmentRegion` em `pt-BR` e tira de `Contents/Resources` as pastas `*.lproj` vazias das outras línguas (`deixarSoPortugues`, no `afterPack`), ficando só o `pt_BR.lproj`; os `locale.pak` do Chromium, no framework, continuam pt-BR e en-US (`electronLanguages`), porque o en-US é a reserva do Chromium. O instalador NSIS do Windows sai em português (`language: "1046"`, sem escolha de língua). No Windows, os diálogos de arquivo são do sistema e seguem a língua dele: o app põe em português o título, o botão de confirmar e o nome do filtro (`title`, `buttonLabel`, `filters`), e o resto ("Cancelar", "Nome do arquivo", o painel de navegação) vem do Windows. O Electron não tem opção para mudar isso (o `--lang` vale só para o Chromium, e não há `app.setLocale`): é um limite aceito.
 - `src/servidor.ts`: o token, a montagem do comando, a linha de partida e o encerramento; sem Electron.
 - `src/configuracao.ts`: de onde vêm o servidor, a base, a interface, a pasta de estado e a de skills; sem Electron.
 - `src/seguranca.ts`: CSP, navegação, links externos e arquivos do protocolo; sem Electron.
 - `src/registro.ts`: o arquivo de log, com o giro em 5 MB; sem Electron.
-- `src/preload.ts`, `src/ponteDesktop.ts`: a ponte e o contrato.
+- `src/preload.ts`: a ponte (o contrato está em `@simplifica-if/contratos-app/ponte`).
 - `scripts/construir.ts`, `scripts/empacotar.ts`, `scripts/skills.ts` (as skills do app no pacote), `scripts/dev.ts`, `scripts/gerar-icone.ts`.
 - `scripts/t3/`: cópia do T3 (`ensure-electron-runtime.mjs`), com `NOTICE`.
 

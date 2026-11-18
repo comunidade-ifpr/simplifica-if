@@ -15,9 +15,7 @@
 import * as NodeChildProcess from "node:child_process";
 import * as NodeCrypto from "node:crypto";
 import type * as NodeStream from "node:stream";
-
-/** A variável com o token (`VARIAVEL_TOKEN` do `@simplifica-if/contratos-app`); o app não a usa. */
-export const VARIAVEL_TOKEN = "SIMPLIFICA_SERVIDOR_TOKEN";
+import { type LinhaPartida, VARIAVEL_TOKEN } from "@simplifica-if/contratos-app/ponte";
 
 /** Bytes aleatórios do token; em base64url, 43 caracteres (o servidor pede 32 ou mais). */
 export const BYTES_TOKEN = 32;
@@ -37,15 +35,6 @@ const LIMITE_STDERR = 4_000;
 /** Um token novo para o RPC do servidor: 32 bytes aleatórios em base64url. */
 export function gerarToken(): string {
   return NodeCrypto.randomBytes(BYTES_TOKEN).toString("base64url");
-}
-
-/** A linha que o servidor imprime quando está pronto (`LinhaPartida` do `@simplifica-if/contratos-app`). */
-export interface LinhaPartida {
-  readonly servidor: "simplifica-if";
-  readonly pid: number;
-  readonly porta: number;
-  readonly rpc: string;
-  readonly mcp: string;
 }
 
 export class FalhaServidor extends Error {

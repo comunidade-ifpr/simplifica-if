@@ -21,7 +21,8 @@ import {
 import { auditarBase, type BaseInstitucional } from "./dominio/auditoria.ts";
 import * as Notion from "./notion/cliente.ts";
 import { carregarMovimentacoes } from "./notion/movimentacoes.ts";
-import { executarPrincipal, sairCom } from "./principal.ts";
+import { sairCom } from "@simplifica-if/kb/principal";
+import { executarPrincipal } from "./principal.ts";
 
 export const comando = Command.make(
   "exportar_base_publica",

@@ -29,7 +29,7 @@ import { FetchHttpClient } from "effect/http";
 import { RpcClient, RpcSerialization } from "effect/rpc";
 import * as Socket from "effect/socket/Socket";
 import { GrupoApp } from "@simplifica-if/contratos-app";
-import type { CredenciaisServidor } from "../ponte-desktop.ts";
+import type { CredenciaisServidor } from "@simplifica-if/contratos-app/ponte";
 import { comprarIngresso, FalhaConexao, type MotivoFalha, urlRpc } from "./ingresso.ts";
 import type { OrigemConexao } from "./origem.ts";
 

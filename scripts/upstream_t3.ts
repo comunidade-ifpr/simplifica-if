@@ -21,7 +21,8 @@ import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
 import { RAIZ_PROJETO } from "./config.ts";
 import * as Git from "./git.ts";
-import { executarPrincipal, sairCom } from "./principal.ts";
+import { sairCom } from "@simplifica-if/kb/principal";
+import { executarPrincipal } from "./principal.ts";
 
 export class ManifestoInvalido extends Schema.TaggedError<ManifestoInvalido>()("ManifestoInvalido", {
   motivo: Schema.String,

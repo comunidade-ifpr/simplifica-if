@@ -10,7 +10,7 @@
  *
  * Sem nada disso, a interface mostra como iniciar o servidor (`sem-servidor`).
  */
-import type { CredenciaisServidor, PonteDesktop } from "../ponte-desktop.ts";
+import type { CredenciaisServidor, PonteDesktop } from "@simplifica-if/contratos-app/ponte";
 
 export type OrigemConexao =
   | { readonly tipo: "desktop"; readonly ponte: PonteDesktop }

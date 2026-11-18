@@ -18,7 +18,8 @@ import { arquivosManifest } from "./base/readme.ts";
 import { carregarConselhos } from "./dados/conselhos.ts";
 import { geradosInstitucionais } from "./dados/indices.ts";
 import { carregarDadosInstitucionais } from "./dados/institucional.ts";
-import { executarPrincipal, sairCom } from "./principal.ts";
+import { sairCom } from "@simplifica-if/kb/principal";
+import { executarPrincipal } from "./principal.ts";
 
 export const comando = Command.make(
   "gerar_base",

@@ -5,7 +5,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/contratos.ts"
+    ".": "./src/contratos.ts",
+    "./ponte": "./src/ponte.ts"
   },
   "scripts": {
     "test": "vp test run --config ../../vite.config.ts --dir .",

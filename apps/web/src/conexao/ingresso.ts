@@ -8,7 +8,7 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/http";
 import { CAMINHO_INGRESSO, CAMINHO_RPC, Ingresso, PARAMETRO_INGRESSO } from "@simplifica-if/contratos-app";
-import type { CredenciaisServidor } from "../ponte-desktop.ts";
+import type { CredenciaisServidor } from "@simplifica-if/contratos-app/ponte";
 
 /** Por que a conexão com o servidor local não abriu ou caiu. */
 export const MotivoFalha = Schema.Literals([

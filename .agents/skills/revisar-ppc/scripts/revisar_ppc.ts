@@ -13,16 +13,15 @@
  * `preparar-prompts-subagents`) recebem os serviços do kb de `camadaKb`, dentro do próprio handler:
  * o `kb.sqlite` é recompilado antes, se estiver velho, e `--help` e os erros de uso não o abrem.
  *
- * Erros, como na CLI `kb`: o relatório padrão do `runMain` escreve no stdout e fica desligado.
+ * Erros, pelo ponto de entrada comum (`@simplifica-if/kb/principal`), como na CLI `kb`:
  * `EncerrarComCodigo` (o subcomando já imprimiu o resultado, como a lista de erros de
  * `validar-base`) só dá o código de saída; erros de uso (`CliError`) já saem com a ajuda pelo
- * `Command.run`; qualquer outro erro, tipado ou não, vira `<nome>: <mensagem>` no stderr. Todos
- * terminam com código 1 (ou o de `EncerrarComCodigo`).
+ * `Command.run`; qualquer outro erro, tipado ou defeito, vira `<nome do erro>: <mensagem>` no stderr,
+ * como a CLI sempre escreveu. Todos terminam com código 1 (ou o de `EncerrarComCodigo`).
  */
-import * as NodeRuntime from "@effect/platform-node/NodeRuntime";
-import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Compilador from "@simplifica-if/kb/Compilador";
 import * as Layers from "@simplifica-if/kb/layers";
+import { executarPrincipal, sairCom } from "@simplifica-if/kb/principal";
 import { serializarJsonTipado } from "@simplifica-if/kb/primitivas/json-tipado";
 import { dividirComandoShell } from "@simplifica-if/kb/primitivas/shell";
 import { caminhoComoUri } from "@simplifica-if/kb/primitivas/url";
@@ -34,10 +33,8 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Path from "effect/Path";
-import * as Runtime from "effect/Runtime";
 import * as Schema from "effect/Schema";
 import * as Argument from "effect/cli/Argument";
-import * as CliError from "effect/cli/CliError";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
 import { caminhosPadrao } from "./caminhos.ts";
@@ -64,24 +61,6 @@ import { validarBaseAnalise } from "./validacao-base.ts";
 const NOME = "revisar_ppc.ts";
 const COMANDO = "node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts";
 
-/**
- * O subcomando já imprimiu o resultado e só falta o código de saída. O `runMain` o lê pelo
- * marcador `Runtime.errorExitCode`.
- */
-export class EncerrarComCodigo extends Schema.TaggedError<EncerrarComCodigo>()("EncerrarComCodigo", {
-  codigo: Schema.Int,
-}) {
-  override get message(): string {
-    return `encerrado com o código ${this.codigo}`;
-  }
-
-  override get [Runtime.errorExitCode](): number {
-    return this.codigo;
-  }
-}
-
-export const ehEncerrarComCodigo = Schema.is(EncerrarComCodigo);
-
 /** `REVISAR_PPC_AGORA` fora dos formatos aceitos (veja `interpretarAgora`). */
 export class AgoraInvalida extends Schema.TaggedError<AgoraInvalida>()("AgoraInvalida", {
   valor: Schema.String,
@@ -107,10 +86,6 @@ const relogioDoComando = Effect.fn("revisar_ppc.relogio")(function* () {
   const relogio: Relogio = () => data;
   return relogio;
 });
-
-/** Encerra com `codigo` quando ele não é zero; com zero, termina normalmente. */
-const sairCom = (codigo: number): Effect.Effect<void, EncerrarComCodigo> =>
-  codigo === 0 ? Effect.void : Effect.fail(new EncerrarComCodigo({ codigo }));
 
 /**
  * Os serviços do kb sobre o `kb.sqlite` do checkout em `raiz` (padrão: o pai de
@@ -501,23 +476,9 @@ export const revisarPpc = Command.make(NOME).pipe(
 const textoDoErro = (erro: unknown): string =>
   erro instanceof Error ? `${erro.name}: ${erro.message}` : `${NOME}: ${String(erro)}`;
 
-/** Escreve no stderr o que a falha tem a dizer; o código de saída fica com o `runMain`. */
-const relatarFalha = (causa: Cause.Cause<unknown>): Effect.Effect<void> => {
-  if (Cause.hasInterruptsOnly(causa)) return Effect.void;
-  const erro = Cause.findErrorOption(causa);
-  if (Option.isSome(erro)) {
-    if (ehEncerrarComCodigo(erro.value) || CliError.isCliError(erro.value)) return Effect.void;
-    return Console.error(textoDoErro(erro.value));
-  }
-  return Console.error(textoDoErro(Cause.squash(causa)));
-};
-
 if (import.meta.main) {
-  NodeRuntime.runMain(
-    Command.run(revisarPpc, { version: "0.1.0" }).pipe(
-      Effect.tapCause(relatarFalha),
-      Effect.provide(NodeServices.layer),
-    ),
-    { disableErrorReporting: true },
-  );
+  executarPrincipal(NOME, Command.run(revisarPpc, { version: "0.1.0" }), {
+    mensagemDe: textoDoErro,
+    mensagemDoDefeito: (causa) => textoDoErro(Cause.squash(causa)),
+  });
 }

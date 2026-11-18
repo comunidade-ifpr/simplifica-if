@@ -9,7 +9,6 @@ import * as Console from "effect/Console";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
-import * as Runtime from "effect/Runtime";
 import * as Schema from "effect/Schema";
 import * as Flag from "effect/cli/Flag";
 import * as Layers from "../layers.ts";
@@ -28,25 +27,6 @@ export class EntradaInvalida extends Schema.TaggedError<EntradaInvalida>()("Entr
 }
 
 export const ehEntradaInvalida = Schema.is(EntradaInvalida);
-
-/**
- * O comando já imprimiu o que tinha a dizer (por exemplo, "dispositivo não encontrado") e só falta
- * o código de saída. O ponto de entrada não escreve nada para ele; o `runMain` lê o código pelo
- * marcador `Runtime.errorExitCode`.
- */
-export class EncerrarComCodigo extends Schema.TaggedError<EncerrarComCodigo>()("EncerrarComCodigo", {
-  codigo: Schema.Int,
-}) {
-  override get message(): string {
-    return `encerrado com o código ${this.codigo}`;
-  }
-
-  override get [Runtime.errorExitCode](): number {
-    return this.codigo;
-  }
-}
-
-export const ehEncerrarComCodigo = Schema.is(EncerrarComCodigo);
 
 /** Falha num comando de curadoria que lê os arquivos direto (`avaliar-resolvedor`, `relacoes --propor`). */
 export class FalhaNaCuradoria extends Schema.TaggedError<FalhaNaCuradoria>()("FalhaNaCuradoria", {
