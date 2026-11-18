@@ -7,6 +7,11 @@ import * as NodeFS from "node:fs";
 import * as NodeHttp from "node:http";
 import * as NodePath from "node:path";
 import { afterEach, describe, expect, it } from "@effect/vitest";
+import * as Effect from "effect/Effect";
+import * as Fiber from "effect/Fiber";
+import * as Layer from "effect/Layer";
+import * as TestClock from "effect/testing/TestClock";
+import * as HttpClient from "effect/http/HttpClient";
 import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
 import { APP_MINIMO_PADRAO, conferirEsquema, type SkillDaFabrica } from "../src/fabrica.ts";
 import {
@@ -20,7 +25,7 @@ import {
 } from "../src/local.ts";
 import { compararVersoes } from "../src/manifesto.ts";
 import { validarBancoEmWorker } from "../src/pesado.ts";
-import { baixarComFetch } from "../src/remoto.ts";
+import { baixar, layerHttp, PRAZO_DOWNLOAD } from "../src/remoto.ts";
 import { gerarChaves } from "../src/minisign.ts";
 import { criarBanco, limparTemporarios, pastaTemporaria } from "../src/testes/apoio.ts";
 import { type Cenario, cenario } from "../src/testes/cenario.ts";
@@ -253,11 +258,13 @@ describe("revisão: skills, trava, proxy, temporários e Worker", () => {
       c.publicar({ versao: "2026.11.13" });
       const url = `${c.servidor.url}beta/beta.json`;
       const porta = (proxy.address() as { port: number }).port;
-      const dados = await baixarComFetch(5000, { httpProxy: `http://127.0.0.1:${porta}` })(url, 1024 * 1024);
+      const baixarPor = (proxy: Parameters<typeof layerHttp>[0]) =>
+        Effect.runPromise(baixar(url, 1024 * 1024).pipe(Effect.provide(layerHttp(proxy))));
+      const dados = await baixarPor({ httpProxy: `http://127.0.0.1:${porta}` });
       expect(Buffer.from(dados).toString("utf8")).toContain('"canal": "beta"');
       expect(vistos).toEqual([url]);
       // NO_PROXY tira o endereço da proxy.
-      await baixarComFetch(5000, { httpProxy: `http://127.0.0.1:${porta}`, noProxy: "127.0.0.1" })(url, 1024 * 1024);
+      await baixarPor({ httpProxy: `http://127.0.0.1:${porta}`, noProxy: "127.0.0.1" });
       expect(vistos).toHaveLength(1);
     } finally {
       proxy.closeAllConnections();
@@ -283,12 +290,30 @@ describe("revisão: skills, trava, proxy, temporários e Worker", () => {
 
   it("Worker: confere o banco fora do event loop, com as mesmas recusas", async () => {
     const pasta = pastaTemporaria();
+    const validar = (caminho: string, versao: string) => Effect.runPromise(validarBancoEmWorker(caminho, { versao }));
     const bom = criarBanco(NodePath.join(pasta, "bom.sqlite"), "2026.11.20");
-    await expect(validarBancoEmWorker(bom, { versao: "2026.11.20" })).resolves.toMatchObject({ versao: "2026.11.20" });
-    await expect(validarBancoEmWorker(bom, { versao: "2026.11.21" })).rejects.toThrow("diz ser a versão 2026.11.20");
+    await expect(validar(bom, "2026.11.20")).resolves.toMatchObject({ versao: "2026.11.20" });
+    await expect(validar(bom, "2026.11.21")).rejects.toThrow("diz ser a versão 2026.11.20");
     const ruim = criarBanco(NodePath.join(pasta, "ruim.sqlite"), "2026.11.20", { esquema: 999 });
-    await expect(validarBancoEmWorker(ruim, { versao: "2026.11.20" })).rejects.toThrow("outro esquema");
+    await expect(validar(ruim, "2026.11.20")).rejects.toThrow("outro esquema");
   });
+
+  it.effect("prazo: um servidor que não responde falha com FalhaDownload no prazo, pelo relógio do Effect", () =>
+    Effect.gen(function* () {
+      const mudo = Layer.succeed(HttpClient.HttpClient)(HttpClient.make(() => Effect.never));
+      const download = yield* baixar("https://exemplo.invalid/beta/beta.json?token=segredo", 1024).pipe(
+        Effect.provide(mudo),
+        Effect.flip,
+        Effect.forkChild,
+      );
+      yield* TestClock.adjust(PRAZO_DOWNLOAD);
+      const erro = yield* Fiber.join(download);
+      expect(erro).toMatchObject({ _tag: "FalhaDownload", categoria: "prazo", host: "exemplo.invalid" });
+      // A URL (com a consulta) fica só em `cause`, nunca na mensagem.
+      expect(erro.message).not.toContain("token");
+      expect(erro.message).not.toContain("beta.json");
+    }),
+  );
 });
 
 describe("esquema da base na abertura e na fábrica", () => {

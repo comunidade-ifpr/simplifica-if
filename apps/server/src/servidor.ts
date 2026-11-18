@@ -45,6 +45,7 @@ import * as Motor from "@simplifica-if/motor";
 import * as Atualizador from "./Atualizador.ts";
 import type { Abertura } from "@simplifica-if/atualizacao/local";
 import type { ChavePublica } from "@simplifica-if/atualizacao/minisign";
+import { layerHttp } from "@simplifica-if/atualizacao/remoto";
 import * as Autenticacao from "./Autenticacao.ts";
 import * as CatalogoSkills from "./CatalogoSkills.ts";
 import * as Conversas from "./Conversas.ts";
@@ -133,7 +134,10 @@ export interface OpcoesAtualizacao {
   readonly automatico?: boolean;
 }
 
-/** O serviço de atualização sobre as revisões e conversas em curso (a troca espera) e as skills do catálogo. */
+/**
+ * O serviço de atualização sobre as revisões e conversas em curso (a troca espera) e as skills do catálogo,
+ * com o download pela proxy do ambiente (a que o desktop resolve e passa ao servidor).
+ */
 const layerAtualizador = (opcoes: Opcoes) =>
   Layer.effect(
     Atualizador.Atualizador,
@@ -168,7 +172,7 @@ const layerAtualizador = (opcoes: Opcoes) =>
         ocupado,
       });
     }),
-  );
+  ).pipe(Layer.provide(layerHttp()));
 
 /** As pastas de tarefa e das cópias: as dadas, ou temporárias (removidas com o servidor). */
 const layerPastas = (opcoes: Opcoes) =>

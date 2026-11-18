@@ -17,11 +17,13 @@ import * as NodePath from "node:path";
 import { type Abertura, prepararAbertura } from "@simplifica-if/atualizacao/local";
 import type { Canal } from "@simplifica-if/atualizacao/manifesto";
 import { lerChavePublica } from "@simplifica-if/atualizacao/minisign";
-import { atualizarUmaVez, baixarComFetch } from "@simplifica-if/atualizacao/remoto";
+import { atualizarUmaVez, layerHttp } from "@simplifica-if/atualizacao/remoto";
 import * as Console from "effect/Console";
 import * as DateTime from "effect/DateTime";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
+import type * as FileSystem from "effect/FileSystem";
+import type * as Path from "effect/Path";
 import * as Schedule from "effect/Schedule";
 import { VERSAO_PACOTE } from "./servidor.ts";
 
@@ -47,24 +49,26 @@ const conferir = Effect.fn("simplifica-mcp.conferirAtualizacao")(
     const feed = opcoes.feed;
     const textoChave = opcoes.chave;
     const agora = DateTime.formatIso(yield* DateTime.now);
-    const resultado = yield* Effect.tryPromise({
-      try: () =>
-        atualizarUmaVez({
-          feed,
-          canal: opcoes.canal,
-          chave: lerChavePublica(textoChave),
-          agora,
-          contexto: {
-            pasta: opcoes.pasta,
-            versaoApp: VERSAO_PACOTE,
-            baseEmUso: { caminho: abertura.banco, info: abertura.info },
-            versoesSkills: {},
-            baixar: baixarComFetch(),
-            comSkills: false,
-          },
-        }),
-      catch: (erro) => (erro instanceof Error ? erro.message : String(erro)),
+    const chave = yield* Effect.try({
+      try: () => lerChavePublica(textoChave),
+      catch: (erro) => `a chave pública da atualização é inválida (${(erro as Error).message})`,
     });
+    const resultado = yield* atualizarUmaVez({
+      feed,
+      canal: opcoes.canal,
+      chave,
+      agora,
+      contexto: {
+        pasta: opcoes.pasta,
+        versaoApp: VERSAO_PACOTE,
+        baseEmUso: { caminho: abertura.banco, info: abertura.info },
+        versoesSkills: {},
+        comSkills: false,
+      },
+    }).pipe(
+      Effect.provide(layerHttp()),
+      Effect.mapError((erro) => erro.message),
+    );
     if (resultado.tipo === "baixada") {
       yield* avisar(`base ${resultado.versao} baixada (${resultado.via})${quando}`);
     } else if (resultado.tipo === "app-desatualizado") {
@@ -89,7 +93,9 @@ export const prepararAtualizacao = Effect.fn("simplifica-mcp.prepararAtualizacao
     yield* conferir(opcoes, abertura, "");
     abertura = prepararAbertura({ pasta: opcoes.pasta, bancoEmpacotado: empacotada });
   }
-  const umaVez = conferir(opcoes, abertura);
+  // A conferência roda em segundo plano, fora deste Effect: leva consigo o disco de quem a preparou.
+  const servicos = yield* Effect.context<FileSystem.FileSystem | Path.Path>();
+  const umaVez = conferir(opcoes, abertura).pipe(Effect.provideContext(servicos));
   const periodica = umaVez.pipe(Effect.repeat(Schedule.spaced(Duration.hours(24))), Effect.asVoid);
   return { banco: abertura.banco, umaVez, periodica };
 });

@@ -5,14 +5,20 @@
  * `publicar`, que gera um canal pela fábrica.
  */
 import * as NodePath from "node:path";
+import * as NodeServices from "@effect/platform-node/NodeServices";
+import * as Effect from "effect/Effect";
+import * as Layer from "effect/Layer";
 import { gerarCanal, type SkillDaFabrica } from "../fabrica.ts";
 import { prepararAbertura } from "../local.ts";
 import type { Canal } from "../manifesto.ts";
 import { type ChaveSecreta, gerarChaves } from "../minisign.ts";
-import { baixarAtualizacao, baixarComFetch, conferirManifesto, urlManifesto } from "../remoto.ts";
+import { baixarAtualizacao, conferirManifesto, layerHttp, type Resultado, urlManifesto } from "../remoto.ts";
 import { criarBanco, pastaTemporaria, servirPasta, type ServidorTeste } from "./apoio.ts";
 
 export const VERSAO_APP = "0.1.0";
+
+/** O download de verdade (contra o servidor local) e o disco. */
+export const LAYER_TESTE = Layer.mergeAll(layerHttp(), NodeServices.layer);
 
 export interface Cenario {
   readonly raiz: string;
@@ -33,10 +39,7 @@ export interface Cenario {
     readonly pastaCanal?: Canal;
   }): { readonly banco: string };
   /** Confere o manifesto e baixa, como o serviço faz. */
-  atualizar(
-    canal?: Canal,
-    versoesSkills?: Readonly<Record<string, string>>,
-  ): Promise<Awaited<ReturnType<typeof baixarAtualizacao>>>;
+  atualizar(canal?: Canal, versoesSkills?: Readonly<Record<string, string>>): Promise<Resultado>;
   fechar(): Promise<void>;
 }
 
@@ -49,7 +52,6 @@ export async function cenario(): Promise<Cenario> {
   const chave = gerarChaves();
   const servidor = await servirPasta(servido);
   const feed = `${servidor.url}{canal}/`;
-  const baixar = baixarComFetch(5000);
   return {
     raiz,
     pastaApp,
@@ -78,17 +80,19 @@ export async function cenario(): Promise<Cenario> {
       });
       return { banco };
     },
-    atualizar: async (canal = "beta", versoesSkills = {}) => {
+    atualizar: (canal = "beta", versoesSkills = {}) => {
       const abertura = prepararAbertura({ pasta: pastaApp, bancoEmpacotado: empacotada });
       const url = urlManifesto(feed, canal);
-      const manifesto = await conferirManifesto({ urlManifesto: url, canal, chave, baixar });
-      return baixarAtualizacao(manifesto, url, {
-        pasta: pastaApp,
-        versaoApp: VERSAO_APP,
-        baseEmUso: { caminho: abertura.banco, info: abertura.info },
-        versoesSkills,
-        baixar,
-      });
+      return Effect.gen(function* () {
+        const manifesto = yield* conferirManifesto({ urlManifesto: url, canal, chave, prazo: "5 seconds" });
+        return yield* baixarAtualizacao(manifesto, url, {
+          pasta: pastaApp,
+          versaoApp: VERSAO_APP,
+          baseEmUso: { caminho: abertura.banco, info: abertura.info },
+          versoesSkills,
+          prazo: "5 seconds",
+        });
+      }).pipe(Effect.provide(LAYER_TESTE), Effect.runPromise);
     },
     fechar: () => servidor.fechar(),
   };

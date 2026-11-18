@@ -164,7 +164,8 @@ export function lerInfoBanco(caminho: string): InfoBanco | null {
 
 /**
  * Confere um banco baixado antes de ele virar pendente: abre, `quick_check`, versão do esquema igual à
- * deste app, versão e data de referência iguais às do manifesto. Lança com o motivo em português.
+ * deste app, versão e data de referência iguais às do manifesto. Lança com o motivo em português (o
+ * erro do SQLite, quando há, vai em `cause`).
  *
  * Só usa os parâmetros e globais: o `Worker` (`validarBancoEmWorker`) roda o texto desta função.
  */
@@ -178,7 +179,7 @@ export function validarBancoNucleo(
   try {
     db = new sqlite.DatabaseSync(caminho, { readOnly: true });
   } catch (erro) {
-    throw new Error(`a base baixada não abre: ${String(erro)}`, { cause: erro });
+    throw new Error("a base baixada não abre", { cause: erro });
   }
   try {
     const checagem = db.prepare("PRAGMA quick_check").all();
@@ -211,7 +212,7 @@ export function validarBancoNucleo(
     };
   } catch (erro) {
     if (erro instanceof Error && erro.message.startsWith("a base baixada")) throw erro;
-    throw new Error(`a base baixada não pôde ser lida: ${String(erro)}`, { cause: erro });
+    throw new Error("a base baixada não pôde ser lida", { cause: erro });
   } finally {
     db.close();
   }

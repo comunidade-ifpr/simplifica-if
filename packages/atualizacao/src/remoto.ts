@@ -1,4 +1,3 @@
-// @effect-diagnostics nodeBuiltinImport:off globalFetch:off extendsNativeError:off -- download e gravação na pasta do app; funções em Promise que o serviço Effect (Atualizador.ts) chama por Effect.tryPromise; o fetch do Node basta para GET com prazo
 /**
  * O lado remoto: conferir o manifesto do canal e baixar a base e as skills.
  *
@@ -18,8 +17,25 @@
  * Sem a API do GitHub: só GET em URLs diretas (`releases/download/...`), que não contam no limite de
  * 60 consultas por hora por IP.
  */
-import * as NodeFS from "node:fs";
-import * as NodePath from "node:path";
+import * as Duration from "effect/Duration";
+import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
+import * as Layer from "effect/Layer";
+import * as Path from "effect/Path";
+import type * as PlatformError from "effect/PlatformError";
+import * as Stream from "effect/Stream";
+import * as HttpClient from "effect/http/HttpClient";
+import * as NodeHttpClient from "@effect/platform-node/NodeHttpClient";
+import { EnvHttpProxyAgent } from "undici";
+import {
+  FalhaDownload,
+  FalhaPastaAtualizacao,
+  hostDe,
+  ManifestoRecusado,
+  OutroProcessoAtualizando,
+  PacoteInvalido,
+} from "./erros.ts";
+import { caminhos, escreverAtomico, gravarEstado, type InfoBanco, lerEstado, tomarTrava } from "./local.ts";
 import {
   arquivoManifesto,
   type Canal,
@@ -30,20 +46,15 @@ import {
   urlDoArquivo,
 } from "./manifesto.ts";
 import { type ChavePublica, verificar } from "./minisign.ts";
-import { EnvHttpProxyAgent, fetch as fetchUndici } from "undici";
-import { caminhos, escreverAtomico, gravarEstado, type InfoBanco, lerEstado, tomarTrava } from "./local.ts";
 import { desempacotarSkill } from "./pacote-skill.ts";
-import { aplicarPatchAsync, descomprimirAsync, sha256Async, validarBancoEmWorker } from "./pesado.ts";
+import { aplicarPatch, descomprimir, sha256, validarBancoEmWorker } from "./pesado.ts";
 
 /** Limite de um manifesto (1 MB) e da base descomprimida (2 GB). */
 const LIMITE_MANIFESTO = 1024 * 1024;
 const LIMITE_BANCO = 2 * 1024 * 1024 * 1024;
 
-export class ErroAtualizacao extends Error {
-  override readonly name = "ErroAtualizacao";
-}
-
-export type Baixar = (url: string, limite: number) => Promise<Uint8Array>;
+/** Prazo de cada download (o manifesto, a base inteira, um patch, uma skill). */
+export const PRAZO_DOWNLOAD = Duration.minutes(10);
 
 /**
  * A proxy da rede (institucional): `HTTP_PROXY`, `HTTPS_PROXY` e `NO_PROXY` do ambiente, ou estes, quando
@@ -57,78 +68,108 @@ export interface OpcoesProxy {
 }
 
 /**
- * GET com prazo, limite de tamanho e proxy, pelo `fetch` do `undici` (a mesma versão que o servidor já
- * leva) com o `EnvHttpProxyAgent`: o `fetch` global do Node não usa a proxy do ambiente sem
- * `NODE_USE_ENV_PROXY`, que precisa estar no ambiente desde a partida do processo.
+ * O `HttpClient` do download: o do `undici` (a mesma versão que o servidor já leva) com o
+ * `EnvHttpProxyAgent` como dispatcher, fechado com a layer. O `fetch` global do Node não usa a proxy do
+ * ambiente sem `NODE_USE_ENV_PROXY`, que precisa estar no ambiente desde a partida do processo.
  */
-export const baixarComFetch =
-  (prazoMs = 10 * 60 * 1000, proxy: OpcoesProxy = {}): Baixar =>
-  async (url, limite) => {
-    const agente = new EnvHttpProxyAgent(proxy);
-    let resposta: Awaited<ReturnType<typeof fetchUndici>>;
-    try {
-      resposta = await fetchUndici(url, {
-        signal: AbortSignal.timeout(prazoMs),
-        redirect: "follow",
-        dispatcher: agente,
-      });
-    } catch (erro) {
-      throw new ErroAtualizacao(`sem conexão com o servidor de atualização (${String(erro)})`, { cause: erro });
+export const layerHttp = (proxy: OpcoesProxy = {}): Layer.Layer<HttpClient.HttpClient> =>
+  NodeHttpClient.layerUndiciNoDispatcher.pipe(
+    Layer.provide(
+      Layer.effect(
+        NodeHttpClient.Dispatcher,
+        Effect.acquireRelease(
+          Effect.sync(() => new EnvHttpProxyAgent(proxy)),
+          (agente) => Effect.promise(() => agente.close()),
+        ),
+      ),
+    ),
+  );
+
+/** GET com prazo, limite de tamanho e redirecionamentos (os links do GitHub vão para o CDN). */
+export const baixar = Effect.fn("Atualizacao.baixar")(function* (
+  url: string,
+  limite: number,
+  prazo: Duration.Input = PRAZO_DOWNLOAD,
+) {
+  const host = hostDe(url);
+  const cliente = HttpClient.followRedirects(yield* HttpClient.HttpClient);
+  const corpo = Effect.gen(function* () {
+    const resposta = yield* cliente
+      .get(url)
+      .pipe(Effect.mapError((cause) => new FalhaDownload({ host, categoria: "sem-conexao", cause })));
+    if (resposta.status < 200 || resposta.status >= 300) {
+      return yield* new FalhaDownload({ host, categoria: "status", status: resposta.status });
     }
-    if (!resposta.ok) throw new ErroAtualizacao(`o servidor de atualização respondeu ${resposta.status} para ${url}`);
-    const declarado = Number(resposta.headers.get("content-length") ?? "0");
-    if (declarado > limite) throw new ErroAtualizacao(`arquivo maior que o esperado: ${url}`);
+    const declarado = Number(resposta.headers["content-length"] ?? "0");
+    if (declarado > limite) return yield* new FalhaDownload({ host, categoria: "grande-demais" });
     const partes: Uint8Array[] = [];
     let total = 0;
-    try {
-      for await (const parte of resposta.body ?? []) {
+    yield* resposta.stream.pipe(
+      Stream.mapError((cause) => new FalhaDownload({ host, categoria: "caiu-no-meio", cause })),
+      Stream.runForEach((parte) => {
         total += parte.byteLength;
-        if (total > limite) throw new ErroAtualizacao(`arquivo maior que o esperado: ${url}`);
+        if (total > limite) return Effect.fail(new FalhaDownload({ host, categoria: "grande-demais" }));
         partes.push(parte);
-      }
-    } catch (erro) {
-      if (erro instanceof ErroAtualizacao) throw erro;
-      throw new ErroAtualizacao(`o download caiu no meio (${url})`, { cause: erro });
-    } finally {
-      void agente.close();
-    }
+        return Effect.void;
+      }),
+    );
     return Buffer.concat(partes);
-  };
+  });
+  return yield* corpo.pipe(
+    Effect.timeout(prazo),
+    Effect.catchTags({
+      TimeoutError: (cause) => Effect.fail(new FalhaDownload({ host, categoria: "prazo", cause })),
+    }),
+  );
+});
 
-async function conferirHash(dados: Uint8Array, esperado: { sha256: string; bytes?: number }, oQue: string) {
+/** Traduz a falha de arquivo da pasta de atualização, com a operação. */
+const naPasta =
+  (operacao: string) =>
+  <A, R>(efeito: Effect.Effect<A, PlatformError.PlatformError, R>) =>
+    Effect.mapError(efeito, (cause) => new FalhaPastaAtualizacao({ operacao, cause }));
+
+/** As funções síncronas de `local.ts`, com a falha traduzida. */
+const local = <A>(operacao: string, f: () => A) =>
+  Effect.try({ try: f, catch: (cause) => new FalhaPastaAtualizacao({ operacao, cause }) });
+
+const conferirHash = Effect.fn("Atualizacao.conferirHash")(function* (
+  dados: Uint8Array,
+  esperado: { sha256: string; bytes?: number },
+  pacote: string,
+) {
   if (esperado.bytes !== undefined && dados.byteLength !== esperado.bytes) {
-    throw new ErroAtualizacao(`${oQue}: tamanho diferente do manifesto`);
+    return yield* new PacoteInvalido({ pacote, motivo: "tamanho diferente do manifesto" });
   }
-  if ((await sha256Async(dados)) !== esperado.sha256) {
-    throw new ErroAtualizacao(`${oQue}: sha256 diferente do manifesto`);
+  if ((yield* sha256(dados)) !== esperado.sha256) {
+    return yield* new PacoteInvalido({ pacote, motivo: "sha256 diferente do manifesto" });
   }
-}
+});
 
 /** Baixa e confere o manifesto do canal (assinatura e canal). */
-export async function conferirManifesto(opcoes: {
+export const conferirManifesto = Effect.fn("Atualizacao.conferirManifesto")(function* (opcoes: {
   readonly urlManifesto: string;
   readonly canal: Canal;
   readonly chave: ChavePublica;
-  readonly baixar: Baixar;
-}): Promise<Manifesto> {
-  const dados = await opcoes.baixar(opcoes.urlManifesto, LIMITE_MANIFESTO);
-  const assinatura = await opcoes.baixar(`${opcoes.urlManifesto}${SUFIXO_ASSINATURA}`, 64 * 1024);
-  try {
-    verificar(dados, Buffer.from(assinatura).toString("utf8"), opcoes.chave);
-  } catch (erro) {
-    throw new ErroAtualizacao(`manifesto recusado: ${(erro as Error).message}`, { cause: erro });
-  }
-  let manifesto: Manifesto;
-  try {
-    manifesto = decodificarManifesto(Buffer.from(dados).toString("utf8"));
-  } catch (erro) {
-    throw new ErroAtualizacao("manifesto assinado, mas fora do formato", { cause: erro });
-  }
+  readonly prazo?: Duration.Input;
+}) {
+  const dados = yield* baixar(opcoes.urlManifesto, LIMITE_MANIFESTO, opcoes.prazo);
+  const assinatura = yield* baixar(`${opcoes.urlManifesto}${SUFIXO_ASSINATURA}`, 64 * 1024, opcoes.prazo);
+  yield* Effect.try({
+    try: () => verificar(dados, Buffer.from(assinatura).toString("utf8"), opcoes.chave),
+    catch: (cause) => new ManifestoRecusado({ motivo: (cause as Error).message, cause }),
+  });
+  const manifesto = yield* Effect.try({
+    try: () => decodificarManifesto(Buffer.from(dados).toString("utf8")),
+    catch: (cause) => new ManifestoRecusado({ motivo: "assinado, mas fora do formato", cause }),
+  });
   if (manifesto.canal !== opcoes.canal) {
-    throw new ErroAtualizacao(`manifesto do canal ${manifesto.canal}, e o pedido foi ${opcoes.canal}`);
+    return yield* new ManifestoRecusado({
+      motivo: `é do canal ${manifesto.canal}, e o pedido foi ${opcoes.canal}`,
+    });
   }
   return manifesto;
-}
+});
 
 /** A URL do manifesto de um canal, a partir do feed da política (com `{canal}`) ou de uma pasta. */
 export function urlManifesto(feed: string, canal: Canal): string {
@@ -143,9 +184,10 @@ export interface Contexto {
   readonly baseEmUso: { readonly caminho: string; readonly info: InfoBanco | null };
   /** As versões das skills já disponíveis (empacotadas ou baixadas), por nome. */
   readonly versoesSkills: Readonly<Record<string, string>>;
-  readonly baixar: Baixar;
   /** Baixar também as skills (padrão: sim; o `simplifica-mcp` fora do app só quer a base). */
   readonly comSkills?: boolean;
+  /** Prazo de cada download (padrão: `PRAZO_DOWNLOAD`). */
+  readonly prazo?: Duration.Input;
 }
 
 export type Resultado =
@@ -161,16 +203,22 @@ export type Resultado =
 /**
  * Com o manifesto conferido: decide, baixa e deixa pendentes a base e as skills mais novas.
  */
-export async function baixarAtualizacao(
+export const baixarAtualizacao = Effect.fn("Atualizacao.baixarAtualizacao")(function* (
   manifesto: Manifesto,
   urlDoManifesto: string,
   ctx: Contexto,
-): Promise<Resultado> {
+): Effect.fn.Return<
+  Resultado,
+  FalhaDownload | PacoteInvalido | FalhaPastaAtualizacao,
+  HttpClient.HttpClient | FileSystem.FileSystem | Path.Path
+> {
   if (compararVersoes(manifesto.app_minimo, ctx.versaoApp) > 0) {
     return { tipo: "app-desatualizado", appMinimo: manifesto.app_minimo, versao: manifesto.versao };
   }
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
   const c = caminhos(ctx.pasta);
-  const estado = lerEstado(ctx.pasta);
+  const estado = yield* local("ler o estado", () => lerEstado(ctx.pasta));
   const versaoEmUso = ctx.baseEmUso.info?.versao;
   const jaTem = (versao: string) =>
     (versaoEmUso !== undefined && compararVersoes(versao, versaoEmUso) <= 0) ||
@@ -180,7 +228,7 @@ export async function baixarAtualizacao(
   let via: "patch" | "inteiro" | "nenhum" = "nenhum";
   let versaoBase = versaoEmUso ?? manifesto.versao;
   if (!jaTem(manifesto.versao)) {
-    via = await baixarBase(manifesto, urlDoManifesto, ctx);
+    via = yield* baixarBase(manifesto, urlDoManifesto, ctx);
     versaoBase = manifesto.versao;
   }
 
@@ -192,133 +240,144 @@ export async function baixarAtualizacao(
       compararVersoes(skill.versao, ctx.versoesSkills[skill.nome] ?? "0.0.0") > 0,
   );
   let skills = 0;
-  const jaPendentes = lerEstado(ctx.pasta).skillsPendentes ?? lerEstado(ctx.pasta).skills;
+  const lido = yield* local("ler o estado", () => lerEstado(ctx.pasta));
+  const jaPendentes = lido.skillsPendentes ?? lido.skills;
   if (novas.length > 0 && jaPendentes !== manifesto.versao) {
-    const destino = NodePath.join(c.skills, manifesto.versao);
+    const destino = path.join(c.skills, manifesto.versao);
     const temporario = `${destino}.baixando`;
-    NodeFS.rmSync(temporario, { recursive: true, force: true });
-    try {
+    const remover = (alvo: string) => fs.remove(alvo, { recursive: true, force: true });
+    const montar = Effect.gen(function* () {
+      yield* remover(temporario).pipe(naPasta("limpar as skills"));
       // As skills baixadas antes que o manifesto ainda lista e que não chegam agora continuam: a pasta
       // nova substitui a atual inteira na próxima abertura.
-      const atual = jaPendentes === undefined ? undefined : NodePath.join(c.skills, jaPendentes);
+      const atual = jaPendentes === undefined ? undefined : path.join(c.skills, jaPendentes);
       const continuam = manifesto.skills
         .map((skill) => skill.nome)
         .filter((nome) => !novas.some((nova) => nova.nome === nome));
       for (const nome of continuam) {
-        if (atual === undefined || !NodeFS.existsSync(NodePath.join(atual, nome))) continue;
-        NodeFS.cpSync(NodePath.join(atual, nome), NodePath.join(temporario, nome), { recursive: true });
+        if (atual === undefined) continue;
+        const origem = path.join(atual, nome);
+        if (!(yield* fs.exists(origem).pipe(naPasta("copiar as skills")))) continue;
+        yield* fs.copy(origem, path.join(temporario, nome)).pipe(naPasta("copiar as skills"));
       }
       for (const skill of novas) {
-        const dados = await ctx.baixar(urlDoArquivo(skill, urlDoManifesto), 50 * 1024 * 1024);
-        await conferirHash(dados, skill, `skill ${skill.nome}`);
-        const pacote = desempacotarSkill(dados);
-        if (pacote.nome !== skill.nome || pacote.versao !== skill.versao) {
-          throw new ErroAtualizacao(`skill ${skill.nome}: o pacote não é o do manifesto`);
+        const pacote = `skill ${skill.nome}`;
+        const dados = yield* baixar(urlDoArquivo(skill, urlDoManifesto), 50 * 1024 * 1024, ctx.prazo);
+        yield* conferirHash(dados, skill, pacote);
+        const desempacotada = yield* Effect.try({
+          try: () => desempacotarSkill(dados),
+          catch: (cause) => new PacoteInvalido({ pacote, motivo: "o pacote não se lê", cause }),
+        });
+        if (desempacotada.nome !== skill.nome || desempacotada.versao !== skill.versao) {
+          return yield* new PacoteInvalido({ pacote, motivo: "o pacote não é o do manifesto" });
         }
-        for (const arquivo of pacote.arquivos) {
-          const alvo = NodePath.join(temporario, pacote.nome, ...arquivo.caminho.split("/"));
-          NodeFS.mkdirSync(NodePath.dirname(alvo), { recursive: true });
-          NodeFS.writeFileSync(alvo, arquivo.conteudo);
+        for (const arquivo of desempacotada.arquivos) {
+          const alvo = path.join(temporario, desempacotada.nome, ...arquivo.caminho.split("/"));
+          yield* fs.makeDirectory(path.dirname(alvo), { recursive: true }).pipe(naPasta("gravar as skills"));
+          yield* fs.writeFile(alvo, arquivo.conteudo).pipe(naPasta("gravar as skills"));
         }
       }
-      NodeFS.rmSync(destino, { recursive: true, force: true });
-      NodeFS.renameSync(temporario, destino);
-    } catch (erro) {
-      NodeFS.rmSync(temporario, { recursive: true, force: true });
-      throw erro;
-    }
-    const atual = lerEstado(ctx.pasta);
-    gravarEstado(ctx.pasta, { ...atual, skillsPendentes: manifesto.versao });
+      yield* remover(destino).pipe(naPasta("trocar as skills"));
+      yield* fs.rename(temporario, destino).pipe(naPasta("trocar as skills"));
+    });
+    yield* montar.pipe(Effect.onError(() => remover(temporario).pipe(Effect.ignore)));
+    const atual = yield* local("ler o estado", () => lerEstado(ctx.pasta));
+    yield* local("gravar o estado", () => gravarEstado(ctx.pasta, { ...atual, skillsPendentes: manifesto.versao }));
     skills = novas.length;
   }
   if (via === "nenhum" && skills === 0) return { tipo: "em-dia" };
   return { tipo: "baixada", versao: manifesto.versao, via, skills };
-}
+});
 
-async function baixarBase(manifesto: Manifesto, urlDoManifesto: string, ctx: Contexto): Promise<"patch" | "inteiro"> {
+const baixarBase = Effect.fn("Atualizacao.baixarBase")(function* (
+  manifesto: Manifesto,
+  urlDoManifesto: string,
+  ctx: Contexto,
+) {
+  const fs = yield* FileSystem.FileSystem;
   const c = caminhos(ctx.pasta);
   const base = manifesto.base;
   const patch = ctx.baseEmUso.info === null ? undefined : base.patches.find((p) => p.de === ctx.baseEmUso.info?.versao);
-  let banco: Uint8Array | undefined;
-  let via: "patch" | "inteiro" = "inteiro";
-  try {
-    if (patch !== undefined) {
-      const dados = await ctx.baixar(urlDoArquivo(patch, urlDoManifesto), patch.bytes ?? 256 * 1024 * 1024);
-      await conferirHash(dados, patch, "patch da base");
-      try {
-        const aplicado = await aplicarPatchAsync(
-          await NodeFS.promises.readFile(ctx.baseEmUso.caminho),
-          dados,
-          LIMITE_BANCO,
-        );
-        if ((await sha256Async(aplicado)) === base.sha256_banco) {
-          banco = aplicado;
-          via = "patch";
-        }
-      } catch {
-        // patch que não aplica (base local diferente): cai no pacote inteiro
-      }
+
+  /** O banco pelo patch, se ele aplica e dá o `sha256_banco`; senão, `undefined` (cai no pacote inteiro). */
+  const pelPatch = Effect.fn("Atualizacao.baixarPatch")(function* (p: NonNullable<typeof patch>) {
+    const dados = yield* baixar(urlDoArquivo(p, urlDoManifesto), p.bytes ?? 256 * 1024 * 1024, ctx.prazo);
+    yield* conferirHash(dados, p, "patch da base");
+    // patch que não aplica (base local diferente): cai no pacote inteiro
+    const aplicado = yield* fs.readFile(ctx.baseEmUso.caminho).pipe(
+      Effect.flatMap((anterior) => aplicarPatch(anterior, dados, LIMITE_BANCO)),
+      Effect.option,
+    );
+    if (aplicado._tag === "None") return undefined;
+    return (yield* sha256(aplicado.value)) === base.sha256_banco ? aplicado.value : undefined;
+  });
+
+  const pacoteInteiro = Effect.gen(function* () {
+    const pacote = "pacote da base";
+    const dados = yield* baixar(urlDoArquivo(base, urlDoManifesto), base.bytes, ctx.prazo);
+    yield* conferirHash(dados, base, pacote);
+    const banco = yield* descomprimir(pacote, dados, LIMITE_BANCO);
+    if ((yield* sha256(banco)) !== base.sha256_banco) {
+      return yield* new PacoteInvalido({
+        pacote,
+        motivo: "o banco descomprimido não tem o sha256 do manifesto",
+      });
     }
-    if (banco === undefined) {
-      const dados = await ctx.baixar(urlDoArquivo(base, urlDoManifesto), base.bytes);
-      await conferirHash(dados, base, "pacote da base");
-      try {
-        banco = await descomprimirAsync(dados, LIMITE_BANCO);
-      } catch (erro) {
-        throw new ErroAtualizacao("pacote da base não descomprime", { cause: erro });
-      }
-      if ((await sha256Async(banco)) !== base.sha256_banco) {
-        throw new ErroAtualizacao("pacote da base: o banco descomprimido não tem o sha256 do manifesto");
-      }
-    }
-    escreverAtomico(c.baixando, banco);
-    await validarBancoEmWorker(c.baixando, {
+    return banco;
+  });
+
+  const trazer = Effect.gen(function* () {
+    const pelo = patch === undefined ? undefined : yield* pelPatch(patch);
+    const banco = pelo ?? (yield* pacoteInteiro);
+    yield* local("gravar a base baixada", () => escreverAtomico(c.baixando, banco));
+    yield* validarBancoEmWorker(c.baixando, {
       versao: manifesto.versao,
       ...(base.data_referencia === undefined ? {} : { dataReferencia: base.data_referencia }),
     });
-    NodeFS.renameSync(c.baixando, c.pendente);
-  } catch (erro) {
-    NodeFS.rmSync(c.baixando, { force: true });
-    if (erro instanceof ErroAtualizacao) throw erro;
-    throw new ErroAtualizacao((erro as Error).message, { cause: erro });
-  }
-  const estado = lerEstado(ctx.pasta);
-  gravarEstado(ctx.pasta, {
-    ...estado,
-    pendente: { versao: manifesto.versao, sha256: base.sha256_banco, novidades: manifesto.novidades ?? [] },
+    yield* fs.rename(c.baixando, c.pendente).pipe(naPasta("guardar a base baixada"));
+    return pelo === undefined ? ("inteiro" as const) : ("patch" as const);
   });
+  const via = yield* trazer.pipe(Effect.onError(() => fs.remove(c.baixando, { force: true }).pipe(Effect.ignore)));
+  const estado = yield* local("ler o estado", () => lerEstado(ctx.pasta));
+  yield* local("gravar o estado", () =>
+    gravarEstado(ctx.pasta, {
+      ...estado,
+      pendente: { versao: manifesto.versao, sha256: base.sha256_banco, novidades: manifesto.novidades ?? [] },
+    }),
+  );
   return via;
-}
+});
 
 /**
  * Confere o manifesto e baixa o que for novo, uma vez, gravando a hora da conferência. O `Atualizador`
  * do servidor e o `simplifica-mcp` fora do app usam o mesmo caminho.
  */
-export async function atualizarUmaVez(opcoes: {
+export const atualizarUmaVez = Effect.fn("Atualizacao.atualizarUmaVez")(function* (opcoes: {
   readonly feed: string;
   readonly canal: Canal;
   readonly chave: ChavePublica;
   readonly agora: string;
   readonly contexto: Contexto;
-}): Promise<Resultado> {
+}) {
   const pasta = opcoes.contexto.pasta;
-  const soltar = tomarTrava(pasta);
-  if (soltar === null) throw new ErroAtualizacao("outro processo está atualizando esta pasta; tente mais tarde");
-  try {
+  const soltar = yield* local("tomar a trava", () => tomarTrava(pasta));
+  if (soltar === null) return yield* new OutroProcessoAtualizando();
+  return yield* Effect.gen(function* () {
     const url = urlManifesto(opcoes.feed, opcoes.canal);
-    const manifesto = await conferirManifesto({
+    const manifesto = yield* conferirManifesto({
       urlManifesto: url,
       canal: opcoes.canal,
       chave: opcoes.chave,
-      baixar: opcoes.contexto.baixar,
+      ...(opcoes.contexto.prazo === undefined ? {} : { prazo: opcoes.contexto.prazo }),
     });
-    gravarEstado(pasta, {
-      ...lerEstado(pasta),
-      ultimaConferencia: opcoes.agora,
-      ...(manifesto.gerado_em === undefined ? {} : { manifestoGeradoEm: manifesto.gerado_em }),
-    });
-    return await baixarAtualizacao(manifesto, url, opcoes.contexto);
-  } finally {
-    soltar();
-  }
-}
+    const estado = yield* local("ler o estado", () => lerEstado(pasta));
+    yield* local("gravar o estado", () =>
+      gravarEstado(pasta, {
+        ...estado,
+        ultimaConferencia: opcoes.agora,
+        ...(manifesto.gerado_em === undefined ? {} : { manifestoGeradoEm: manifesto.gerado_em }),
+      }),
+    );
+    return yield* baixarAtualizacao(manifesto, url, opcoes.contexto);
+  }).pipe(Effect.ensuring(Effect.sync(soltar)));
+});

@@ -8,9 +8,8 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { afterEach, describe, expect, it } from "@effect/vitest";
 import { lerEstado, prepararAbertura } from "@simplifica-if/atualizacao/local";
-import { baixarComFetch } from "@simplifica-if/atualizacao/remoto";
 import { limparTemporarios } from "@simplifica-if/atualizacao/testes/apoio";
-import { type Cenario, cenario, VERSAO_APP } from "@simplifica-if/atualizacao/testes/cenario";
+import { type Cenario, cenario, LAYER_TESTE, VERSAO_APP } from "@simplifica-if/atualizacao/testes/cenario";
 import * as Effect from "effect/Effect";
 import * as Atualizador from "../src/Atualizador.ts";
 
@@ -29,7 +28,7 @@ describe("Atualizador (serviço)", () => {
       abertura: prepararAbertura({ pasta: c.pastaApp, bancoEmpacotado: c.empacotada }),
       versoesSkills: {},
       ocupado: Effect.succeed(ocupado),
-      baixar: baixarComFetch(5000),
+      prazo: "5 seconds",
       automatico: false,
     });
 
@@ -43,7 +42,7 @@ describe("Atualizador (serviço)", () => {
       expect(yield* atualizador.aplicar).toMatchObject({ resultado: "adiada" });
       expect(prepararAbertura({ pasta: c.pastaApp, bancoEmpacotado: c.empacotada }).info?.versao).toBe("2026.11.13");
       yield* Effect.promise(() => c.fechar());
-    }).pipe(Effect.scoped),
+    }).pipe(Effect.scoped, Effect.provide(LAYER_TESTE)),
   );
 
   it.effect("sem revisão rodando: aplicar pede reinício; o aviso de novidades some depois de visto", () =>
@@ -60,7 +59,7 @@ describe("Atualizador (serviço)", () => {
       expect(estado.novidades?.itens[0]?.titulo).toBe("Norma da versão 2026.11.13");
       expect((yield* depois.novidadesVistas).novidades).toBeNull();
       yield* Effect.promise(() => c.fechar());
-    }).pipe(Effect.scoped),
+    }).pipe(Effect.scoped, Effect.provide(LAYER_TESTE)),
   );
 
   it.effect("voltar: troca pela anterior na abertura e não baixa de novo a versão recusada", () =>
@@ -88,7 +87,7 @@ describe("Atualizador (serviço)", () => {
       // O gerado_em do manifesto conferido vai ao estado (o aviso de 14 dias na tela).
       expect(depois.manifestoGeradoEm).not.toBeNull();
       yield* Effect.promise(() => c.fechar());
-    }).pipe(Effect.scoped),
+    }).pipe(Effect.scoped, Effect.provide(LAYER_TESTE)),
   );
 
   it.effect("canal trocado: confere o manifesto do outro canal e recusa um manifesto de canal errado", () =>
@@ -116,7 +115,7 @@ describe("Atualizador (serviço)", () => {
       expect(recusado.situacao).toBe("erro");
       expect(recusado.erro).toContain("canal beta");
       yield* Effect.promise(() => c.fechar());
-    }).pipe(Effect.scoped),
+    }).pipe(Effect.scoped, Effect.provide(LAYER_TESTE)),
   );
 
   it.effect("sem feed ou chave na política: desligada, e procurar não sai para a rede", () =>
@@ -139,6 +138,6 @@ describe("Atualizador (serviço)", () => {
       expect(estado.desligada).toContain("hospedagem");
       expect(c.servidor.pedidos).toEqual([]);
       yield* Effect.promise(() => c.fechar());
-    }).pipe(Effect.scoped),
+    }).pipe(Effect.scoped, Effect.provide(LAYER_TESTE)),
   );
 });
