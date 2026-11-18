@@ -3,13 +3,14 @@
  * português; os do transporte (`RpcClientError`), os do motor (`TurnoEmAndamento`…) e os defeitos
  * ganham uma frase própria.
  *
- * O `detalhe` de uma `FalhaProvider` e a mensagem do evento `Erro` de um turno vêm da CLI do provider
- * (Claude, Codex, Antigravity), quase sempre em inglês. Eles viram uma frase em português pelo tipo da
- * falha (`tipoFalha`: sem login, cota, rede ou proxy, CLI ausente, versão antiga, recusa pelas regras
- * de uso, tempo esgotado, serviço fora do ar…), com o que a pessoa pode fazer; o texto original fica
- * em `detalhe`, que a interface mostra recolhido em "Detalhes técnicos". A tradução fica no cliente
- * porque o histórico gravado guarda o texto original, e uma frase melhor vale também para conversas
- * antigas. */
+ * Uma `FalhaProvider` e o evento `Erro` de um turno trazem o `tipo` que o classificador do motor deu
+ * (`@simplifica-if/motor/falhas`: sem login, cota, rede ou proxy, CLI ausente, versão antiga, recusa
+ * pelas regras de uso, tempo esgotado, serviço fora do ar…). Aqui o tipo vira uma frase em português,
+ * com o que a pessoa pode fazer; o texto técnico (o `tecnico` da falha, a `mensagem` do `Erro`), curto
+ * e saneado no servidor, fica em `detalhe`, que a interface mostra recolhido em "Detalhes técnicos".
+ */
+import { TipoFalha } from "@simplifica-if/contratos-app";
+import * as Schema from "effect/Schema";
 import { DESCRICOES } from "../providers.ts";
 
 /** Uma frase para a pessoa e, quando há, o texto técnico original. */
@@ -30,91 +31,6 @@ function nomeProvider(provider: string): string {
   return provider in DESCRICOES ? DESCRICOES[provider as keyof typeof DESCRICOES].nome : provider;
 }
 
-/**
- * Os tipos de falha de provider que a interface explica (M1.14): sem login, cota ou limite de uso,
- * rede ou proxy, CLI ausente, versão antiga, recusa pelas regras de uso, tempo esgotado, serviço fora
- * do ar, a base que não ficou disponível, modelo fora da conta, queda do processo e o limite de passos
- * do app. O resto é "desconhecido" (`undefined`).
- */
-export type TipoFalha =
-  | "semLogin"
-  | "cota"
-  | "rede"
-  | "cliAusente"
-  | "versao"
-  | "politica"
-  | "tempo"
-  | "indisponivel"
-  | "mcp"
-  | "modelo"
-  | "queda"
-  | "limiteApp";
-
-/**
- * Os padrões de cada tipo, na ordem em que se conferem. Os textos vêm das CLIs e dos SDKs (em
- * `node_modules`): o `SDKAssistantMessageError` e os `subtype` de erro do `result` do Claude Agent
- * SDK, as mensagens do app-server do Codex (o `codexErrorInfo` não chega ao motor, só a mensagem) e
- * as do agy por ACP. A ordem importa:
- *
- * - a queda e o limite de passos do app primeiro, porque trazem palavras dos outros tipos;
- * - a recusa pelas regras de uso antes da cota ("usage policy" não é "usage limit");
- * - o MCP e o modelo antes do login e da CLI ausente ("MCP server not found" e "model not found" não
- *   são CLI ausente);
- * - a CLI ausente antes da versão antiga ("não instalado (ou versão sem suporte)" é instalar);
- * - o tempo esgotado antes da rede ("connect ETIMEDOUT" é tempo).
- */
-const PADROES: ReadonlyArray<readonly [TipoFalha, RegExp]> = [
-  // O processo do provider morreu (o servidor reabre a sessão pela retomada na próxima mensagem).
-  // As frases dos protocolos copiados do T3 (`effect-acp`, `effect-codex-app-server`) também: o fim do
-  // stdin/stdout ou do protocolo e a escrita que falhou são o processo que caiu.
-  [
-    "queda",
-    /terminated by signal|process (exited|terminated)|processo d[oa] .* encerrou|app-server encerrou|input stream ended|protocol terminated|failed to send .*protocol message|transport operation.* failed/i,
-  ],
-  // O Claude Agent SDK encerra o turno com `error_max_turns` ou `error_max_budget_usd`.
-  ["limiteApp", /error_max_(turns|budget_usd|structured_output_retries)|max(imum)? turns/i],
-  [
-    "politica",
-    /usage polic|content polic|violat\w* (our |the )?(usage |content )?polic|flagged|invalid_prompt|cyber_policy|\bsafety\b|blocked (by|due to) (policy|safety)|recitation/i,
-  ],
-  [
-    "cota",
-    /usage limit|rate[ _-]?limit|\b429\b|too many requests|quota|billing|credit balance|insufficient[ _]?(credits|funds|quota)|out of credits|limite de uso|resource[ _]exhausted|hit your (usage )?limit/i,
-  ],
-  ["mcp", /\bmcp\b|mcpCapabilities|ponte stdio/i],
-  [
-    "modelo",
-    /model_not_found|\bmodel(o)?\b[^\n]*\b(not supported|unsupported|not available|not found|does not exist|no access|n[ãa]o (é )?suportado|indispon[ií]vel)|(unsupported|unknown|invalid) model|access to (the )?model/i,
-  ],
-  [
-    "semLogin",
-    /authentication_failed|not (logged|signed) in|\/login\b|log ?in required|please (log|sign) ?in|unauthori[sz]ed|\b401\b|invalid api key|authentication (failed|required|error)|not authenticated|sem login|credentials?|token (has )?expired|oauth/i,
-  ],
-  [
-    "cliAusente",
-    /ENOENT|command not found|no such file|executable not found|failed to spawn|ausente|n[ãa]o (está )?instalad|n[ãa]o encontrad|not installed/i,
-  ],
-  [
-    "versao",
-    /vers[ãa]o (antiga|sem suporte|m[ií]nima)|unsupported (cli |client )?version|version .*(too old|not supported|unsupported)|too old|(please |must )?(update|upgrade) (to|your|the)|requires? (a )?(newer|version)|n[ãa]o anuncia/i,
-  ],
-  ["tempo", /timed? ?out|timeout|ETIMEDOUT|deadline exceeded|tempo esgotado|esgotou o tempo/i],
-  [
-    "rede",
-    /ECONNREFUSED|ECONNRESET|ENOTFOUND|EAI_AGAIN|ENETUNREACH|EHOSTUNREACH|getaddrinfo|socket hang up|fetch failed|network|proxy|certificate|\bCERT_|SELF_SIGNED|connection (error|refused|reset|failed|closed)|stream disconnected|error sending request|could not (connect|resolve)|unable to connect|offline|sem conex[ãa]o/i,
-  ],
-  [
-    "indisponivel",
-    /overloaded|server_error|internal server error|service unavailable|bad gateway|\b(500|502|503|504|529)\b|unavailable/i,
-  ],
-];
-
-/** O tipo de uma falha de provider, pela operação e pelos padrões do detalhe; `undefined` se não conhece. */
-export function tipoFalha(operacao: string, detalhe: string): TipoFalha | undefined {
-  if (/^(login|entrar)$/i.test(operacao)) return "semLogin";
-  return PADROES.find(([, padrao]) => padrao.test(detalhe))?.[0];
-}
-
 const OPERACOES: ReadonlyArray<readonly [RegExp, string]> = [
   [/^instalar$/i, "instalar"],
   [/^(entrar|login)$/i, "entrar na conta"],
@@ -131,7 +47,7 @@ function textoOperacao(operacao: string): string {
 /** Onde a pessoa instala a IA e entra na conta. */
 const SUA_IA = "Configurações › Sua IA";
 
-function frase(tipo: TipoFalha | undefined, nome: string, operacao: string): string {
+function frase(tipo: TipoFalha, nome: string, operacao: string): string {
   switch (tipo) {
     case "semLogin":
       return `O ${nome} está sem login. Entre na conta em ${SUA_IA} e tente de novo.`;
@@ -157,31 +73,40 @@ function frase(tipo: TipoFalha | undefined, nome: string, operacao: string): str
       return `O ${nome} parou de funcionar no meio da resposta. Envie a mensagem de novo: a conversa continua de onde parou.`;
     case "limiteApp":
       return `A resposta passou do limite de passos que o app permite. Divida o pedido em partes menores e envie de novo.`;
-    case undefined:
+    case "desconhecido":
       return `O ${nome} não conseguiu ${textoOperacao(operacao)}. Tente de novo; se o erro continuar, veja os detalhes técnicos.`;
   }
 }
 
-/** Uma `FalhaProvider` (ou os campos dela) em português, com o texto original em `detalhe`. */
+/** Uma `FalhaProvider` (ou os campos dela) em português, com o texto técnico em `detalhe`. */
 export function explicarFalhaProvider(falha: {
   readonly provider: string;
   readonly operacao: string;
-  readonly detalhe: string;
+  readonly tipo: TipoFalha;
+  readonly tecnico?: string | undefined;
 }): MensagemErro {
+  const tecnico = falha.tecnico === undefined ? "" : `: ${falha.tecnico}`;
   return {
-    texto: frase(tipoFalha(falha.operacao, falha.detalhe), nomeProvider(falha.provider), falha.operacao),
-    detalhe: `${falha.provider}: falha em ${falha.operacao}: ${falha.detalhe}`,
+    texto: frase(falha.tipo, nomeProvider(falha.provider), falha.operacao),
+    detalhe: `${falha.provider}: falha em ${falha.operacao}${tecnico}`,
   };
 }
 
 /**
- * A mensagem do evento `Erro` de um turno, por tipo. A mensagem vem sempre da CLI do provider ou do
- * motor (técnica, muitas vezes em inglês): sem padrão conhecido, a frase genérica, e o original fica
- * em "Detalhes técnicos".
+ * O evento `Erro` de um turno, pelo tipo. A mensagem é técnica, muitas vezes em inglês: sem tipo
+ * conhecido, a frase genérica, e a mensagem fica em "Detalhes técnicos".
  */
-export function explicarErroDoTurno(provider: string, mensagem: string): MensagemErro {
-  return { texto: frase(tipoFalha("", mensagem), nomeProvider(provider), "responder"), detalhe: mensagem };
+export function explicarErroDoTurno(
+  provider: string,
+  erro: { readonly tipo: TipoFalha; readonly mensagem: string },
+): MensagemErro {
+  return { texto: frase(erro.tipo, nomeProvider(provider), "responder"), detalhe: erro.mensagem };
 }
+
+const ehTipoFalha = Schema.is(TipoFalha);
+
+/** O tipo que chegou do servidor; um valor fora da lista vira `desconhecido`. */
+const tipoConhecido = (tipo: unknown): TipoFalha => (ehTipoFalha(tipo) ? tipo : "desconhecido");
 
 /** Os erros do motor que chegam à interface sem `FalhaProvider`, com a frase para a pessoa. */
 const ERROS_DO_MOTOR: Readonly<Record<string, string>> = {
@@ -205,7 +130,8 @@ export function explicarErro(erro: unknown): MensagemErro {
       readonly message?: unknown;
       readonly provider?: unknown;
       readonly operacao?: unknown;
-      readonly detalhe?: unknown;
+      readonly tipo?: unknown;
+      readonly tecnico?: unknown;
     };
     if (registro._tag === "RpcClientError")
       return {
@@ -215,13 +141,13 @@ export function explicarErro(erro: unknown): MensagemErro {
     if (
       registro._tag === "FalhaProvider" &&
       typeof registro.provider === "string" &&
-      typeof registro.operacao === "string" &&
-      typeof registro.detalhe === "string"
+      typeof registro.operacao === "string"
     ) {
       return explicarFalhaProvider({
         provider: registro.provider,
         operacao: registro.operacao,
-        detalhe: registro.detalhe,
+        tipo: tipoConhecido(registro.tipo),
+        ...(typeof registro.tecnico === "string" ? { tecnico: registro.tecnico } : {}),
       });
     }
     if (typeof registro._tag === "string" && registro._tag in ERROS_DO_MOTOR) {

@@ -42,7 +42,7 @@ import * as SecureRandom from "effect/crypto/SecureRandom";
 import * as Schema from "effect/Schema";
 import * as Canal from "../Canal.ts";
 import { type ConfigSessao, type Driver, type DeteccaoProvider, FalhaProvider, Gravador } from "../Driver.ts";
-import { type Evento, resumir, textoDeBlocos } from "../eventos.ts";
+import { erroDoTurno, type Evento, resumir, textoDeBlocos } from "../eventos.ts";
 import {
   ambienteSemTelemetria,
   buscaWebLigada,
@@ -133,9 +133,9 @@ export function criarNormalizadorClaude(
           },
         ];
         if (mensagem.subtype !== "success") {
-          eventos.push({ _tag: "Erro", mensagem: `turno terminou com ${mensagem.subtype}` });
+          eventos.push(erroDoTurno(`turno terminou com ${mensagem.subtype}`));
         } else if (mensagem.is_error) {
-          eventos.push({ _tag: "Erro", mensagem: resumir(mensagem.result) });
+          eventos.push(erroDoTurno(mensagem.result));
         }
         eventos.push({ _tag: "FimTurno", motivo: mensagem.stop_reason ?? mensagem.subtype });
         return eventos;
@@ -338,7 +338,7 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
   const iniciar = Effect.fn("DriverClaude.iniciar")(function* (config: ConfigSessao, politica: Politica) {
     const executavel = yield* executavelAtual;
     if (executavel === undefined) {
-      return yield* new FalhaProvider({ provider: PROVIDER, operacao: "iniciar", detalhe: "CLI `claude` ausente" });
+      return yield* new FalhaProvider({ provider: PROVIDER, operacao: "iniciar", tipo: "cliAusente" });
     }
     const canal = yield* Canal.comPolitica(politica, config.pastaTrabalho);
     const gravar = yield* Gravador;
@@ -444,7 +444,7 @@ export const make = Effect.fn("DriverClaude.make")(function* (opcoes: { readonly
           ? erro
           : erro !== undefined
             ? Canal.falhaDe(PROVIDER, "sessão")(erro)
-            : new FalhaProvider({ provider: PROVIDER, operacao: "sessão", detalhe: "o processo do Claude encerrou" });
+            : new FalhaProvider({ provider: PROVIDER, operacao: "sessão", tipo: "queda" });
         return Deferred.succeed(queda, falha).pipe(Effect.andThen(canal.morrer(falha)), Effect.uninterruptible);
       }),
       Effect.forkScoped,

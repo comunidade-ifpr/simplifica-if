@@ -10,6 +10,7 @@ import * as Queue from "effect/Queue";
 import * as Stream from "effect/Stream";
 import { AprovacaoDesconhecida, type Decisao, FalhaProvider, type SessaoDriver, TurnoEmAndamento } from "./Driver.ts";
 import type { Evento } from "./eventos.ts";
+import { classificarFalha, textoDaCausa } from "./falhas.ts";
 import { type Avaliacao, type ClassePedido, type Politica, avaliar } from "./politica.ts";
 
 type Fila = Queue.Queue<Evento, FalhaProvider | Cause.Done>;
@@ -135,13 +136,11 @@ export const make: Effect.Effect<Canal> = criar(undefined);
 export const comPolitica = (politica: Politica, pasta: string): Effect.Effect<Canal> =>
   criar((classe) => avaliar(politica, classe, pasta));
 
-/** Erro de provider a partir de uma causa qualquer, sem copiar o texto cru para atributos. */
+/**
+ * Erro de provider a partir de uma causa qualquer: o tipo sai do classificador sobre o texto da causa,
+ * que fica só em `cause`, sem ir para atributo.
+ */
 export const falhaDe =
   (provider: string, operacao: string) =>
   (cause: unknown): FalhaProvider =>
-    new FalhaProvider({
-      provider,
-      operacao,
-      detalhe: cause instanceof Error ? cause.message.slice(0, 300) : "erro desconhecido",
-      cause,
-    });
+    new FalhaProvider({ provider, operacao, tipo: classificarFalha(operacao, textoDaCausa(cause)), cause });

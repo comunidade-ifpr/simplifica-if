@@ -25,6 +25,7 @@ import * as Drivers from "@simplifica-if/motor/drivers";
 import { fixPath } from "@simplifica-if/motor/t3/os-jank";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Listas from "../src/persistencia/Listas.ts";
+import * as Preferencias from "../src/persistencia/Preferencias.ts";
 import * as Revisoes from "../src/persistencia/Revisoes.ts";
 import * as ArquivosLiberados from "../src/ArquivosLiberados.ts";
 import * as RevisorPpc from "../src/revisao-ppc/RevisorPpc.ts";
@@ -242,8 +243,10 @@ const registrarTexto = (acao: string, chave: string, texto: string) =>
   Effect.sync(() =>
     NodeFS.appendFileSync(NodePath.join(saida, "textos.jsonl"), `${JSON.stringify({ acao, chave, texto })}\n`),
   );
+// Quem roda o script de medição já aceitou o aviso de uso: as preferências saem com ele aceito.
 const nucleo = ListaViva.layer({ registrarTexto }).pipe(
   Layer.provideMerge(Listas.layer.pipe(Layer.provide(banco))),
+  Layer.provideMerge(Preferencias.layerPrimeiroUsoFeito.pipe(Layer.provide(banco))),
   Layer.provideMerge(Revisoes.layer.pipe(Layer.provide(banco))),
   Layer.provideMerge(RevisorPpc.layer()),
   Layer.provideMerge(ArquivosLiberados.layer({ exigirLiberacao: false })),

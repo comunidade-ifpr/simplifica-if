@@ -26,6 +26,7 @@
  * que a descrição da ferramenta indica.
  */
 import * as Effect from "effect/Effect";
+import { type ErroDeLeitura, ehFalhaNaBase, FalhaNaBase } from "./contratos.ts";
 import { GrupoLeitura } from "./grupo-leitura.ts";
 import * as Leitura from "./leitura/Leitura.ts";
 import { lerRecurso } from "./recursos/recursos.ts";
@@ -33,27 +34,41 @@ import { lerRecurso } from "./recursos/recursos.ts";
 export { layerLeitura } from "./servidor.ts";
 export { Leitura } from "./leitura/Leitura.ts";
 
+/**
+ * A tradução de erro do transporte, como a do servidor do app (`paraInterface`): registra no log o
+ * erro inteiro, com o `cause`, e manda à interface o `FalhaNaBase` sem ele.
+ */
+const traduzir =
+  <P, A, R>(metodo: string, ler: (payload: P) => Effect.Effect<A, ErroDeLeitura, R>) =>
+  (payload: P) =>
+    ler(payload).pipe(
+      Effect.tapError((erro) => Effect.logWarning(`RPC ${metodo} falhou`, erro)),
+      Effect.mapError((erro) => (ehFalhaNaBase(erro) ? new FalhaNaBase({ operacao: erro.operacao }) : erro)),
+    );
+
 /** Os handlers do grupo: cada operação é um método de `Leitura`; `lerLink`, a leitura do `resources/read`. */
 export const layerHandlersRpc = GrupoLeitura.toLayer(
   Effect.gen(function* () {
     const leitura = yield* Leitura.Leitura;
     return GrupoLeitura.of({
-      fichaNorma: leitura.fichaNorma,
-      lerDispositivos: leitura.lerDispositivos,
-      buscarNorma: leitura.buscarNorma,
-      fichaCurso: leitura.fichaCurso,
-      lerSecao: leitura.lerSecao,
-      buscarSecoes: leitura.buscarSecoes,
-      listarCursos: leitura.listarCursos,
-      sobreABase: leitura.sobreABase,
-      lerLink: ({ link }) => lerRecurso(link).pipe(Effect.provideService(Leitura.Leitura, leitura)),
-      lerPpc: leitura.lerPpc,
-      lerCnct: leitura.lerCnct,
-      lerCampus: leitura.lerCampus,
-      lerFicha: leitura.lerFicha,
-      lerDocumento: leitura.lerDocumento,
-      explorarIndice: leitura.explorarIndice,
-      explorarBuscar: leitura.explorarBuscar,
+      fichaNorma: traduzir("fichaNorma", leitura.fichaNorma),
+      lerDispositivos: traduzir("lerDispositivos", leitura.lerDispositivos),
+      buscarNorma: traduzir("buscarNorma", leitura.buscarNorma),
+      fichaCurso: traduzir("fichaCurso", leitura.fichaCurso),
+      lerSecao: traduzir("lerSecao", leitura.lerSecao),
+      buscarSecoes: traduzir("buscarSecoes", leitura.buscarSecoes),
+      listarCursos: traduzir("listarCursos", leitura.listarCursos),
+      sobreABase: traduzir("sobreABase", leitura.sobreABase),
+      lerLink: traduzir("lerLink", ({ link }: { readonly link: string }) =>
+        lerRecurso(link).pipe(Effect.provideService(Leitura.Leitura, leitura)),
+      ),
+      lerPpc: traduzir("lerPpc", leitura.lerPpc),
+      lerCnct: traduzir("lerCnct", leitura.lerCnct),
+      lerCampus: traduzir("lerCampus", leitura.lerCampus),
+      lerFicha: traduzir("lerFicha", leitura.lerFicha),
+      lerDocumento: traduzir("lerDocumento", leitura.lerDocumento),
+      explorarIndice: traduzir("explorarIndice", leitura.explorarIndice),
+      explorarBuscar: traduzir("explorarBuscar", leitura.explorarBuscar),
     });
   }),
 );

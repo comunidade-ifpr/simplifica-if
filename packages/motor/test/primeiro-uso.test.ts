@@ -29,6 +29,9 @@ describe("login do Codex", () => {
     assert.match(falha.mensagem ?? "", /^O login não foi concluído/);
     assert.strictEqual(falha.detalhe, "Login server error: Login was not completed");
     assert.isUndefined(fimLoginCodex({ success: false, error: null }).detalhe);
+    // O detalhe é o texto técnico: uma linha, saneado.
+    const sujo = fimLoginCodex({ success: false, error: "falhou para fulano@gmail.com\nem /Users/maria/.codex" });
+    assert.strictEqual(sujo.detalhe, "falhou para <e-mail> em ~/.codex");
   });
 });
 

@@ -221,7 +221,7 @@ describe("Motor", () => {
 
         const turno = yield* Stream.runCollect(motor.enviarMensagem(sessao, "olá")).pipe(Effect.forkChild);
         yield* Effect.yieldNow;
-        const falha = new Motor.FalhaProvider({ provider: "claude", operacao: "sessão", detalhe: "caiu" });
+        const falha = new Motor.FalhaProvider({ provider: "claude", operacao: "sessão", tipo: "queda" });
         yield* canal.morrer(falha);
         yield* Deferred.succeed(queda, falha);
         const saida = yield* Fiber.await(turno);

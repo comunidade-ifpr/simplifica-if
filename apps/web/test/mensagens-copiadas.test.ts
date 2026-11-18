@@ -1,5 +1,7 @@
 import { assert, describe, it } from "@effect/vitest";
-import { explicarErroDoTurno, tipoFalha } from "../src/conexao/erros.ts";
+import { erroDoTurno } from "@simplifica-if/motor/eventos";
+import { classificarFalha, classificarFalhaEstado } from "@simplifica-if/motor/falhas";
+import { explicarErroDoTurno } from "../src/conexao/erros.ts";
 import { explicarMensagemMotor, FALHA_GENERICA_MOTOR } from "../src/providers.ts";
 import { palavrasSuspeitas } from "./ingles.ts";
 import { comExemplo, DESTINOS, frasesCopiadas, frasesDoArquivo } from "./mensagens-copiadas.ts";
@@ -43,7 +45,8 @@ describe("frases do código copiado do T3 (M1.14)", () => {
     const problemas: Array<string> = [];
     for (const [frase, destino] of Object.entries(DESTINOS)) {
       if (destino !== "motor") continue;
-      const { texto } = explicarMensagemMotor(comExemplo(frase));
+      const mensagem = comExemplo(frase);
+      const { texto } = explicarMensagemMotor({ mensagem, tipoFalha: classificarFalhaEstado(mensagem) });
       if (texto === FALHA_GENERICA_MOTOR) problemas.push(`genérica: ${frase}`);
       else if (palavrasSuspeitas(texto).length > 0) problemas.push(`inglês ou jargão em "${texto}": ${frase}`);
     }
@@ -54,10 +57,10 @@ describe("frases do código copiado do T3 (M1.14)", () => {
     const problemas: Array<string> = [];
     for (const [frase, destino] of Object.entries(DESTINOS)) {
       if (destino === "motor" || typeof destino === "object") continue;
-      const tipo = tipoFalha("", comExemplo(frase));
-      const esperado = destino === "generica" ? undefined : destino;
-      if (tipo !== esperado) problemas.push(`${frase}: ${tipo ?? "genérica"} (esperado ${esperado ?? "genérica"})`);
-      const { texto, detalhe } = explicarErroDoTurno("codex", comExemplo(frase));
+      const tipo = classificarFalha("", comExemplo(frase));
+      const esperado = destino === "generica" ? "desconhecido" : destino;
+      if (tipo !== esperado) problemas.push(`${frase}: ${tipo} (esperado ${esperado})`);
+      const { texto, detalhe } = explicarErroDoTurno("codex", erroDoTurno(comExemplo(frase)));
       if (palavrasSuspeitas(texto).length > 0) problemas.push(`inglês ou jargão em "${texto}"`);
       if (detalhe !== comExemplo(frase)) problemas.push(`sem o original nos detalhes: ${frase}`);
     }

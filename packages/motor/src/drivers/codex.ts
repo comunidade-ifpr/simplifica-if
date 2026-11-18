@@ -37,7 +37,8 @@ import {
   FalhaProvider,
   Gravador,
 } from "../Driver.ts";
-import { type Evento, resumir, textoDeBlocos } from "../eventos.ts";
+import { erroDoTurno, type Evento, resumir, textoDeBlocos } from "../eventos.ts";
+import { classificarFalha, textoTecnico } from "../falhas.ts";
 import {
   ambienteSemTelemetria,
   buscaWebLigada,
@@ -129,10 +130,10 @@ export function criarNormalizadorCodex(): (metodo: string, parametros: unknown) 
         ultimoTotal = registro(registro(p.tokenUsage).total);
         return [];
       case "error":
-        return [{ _tag: "Erro", mensagem: resumir(texto(registro(p.error).message) || p) }];
+        return [erroDoTurno(texto(registro(p.error).message) || resumir(p))];
       case "mcpServer/startupStatus/updated":
         return p.status === "failed"
-          ? [{ _tag: "Erro", mensagem: resumir(`servidor MCP ${texto(p.name)} não iniciou: ${texto(p.error)}`) }]
+          ? [erroDoTurno(`servidor MCP ${texto(p.name)} não iniciou: ${texto(p.error)}`)]
           : [];
       case "turn/completed": {
         const turno = registro(p.turn);
@@ -151,7 +152,7 @@ export function criarNormalizadorCodex(): (metodo: string, parametros: unknown) 
           });
           totalAnterior = total;
         }
-        if (turno.error) eventos.push({ _tag: "Erro", mensagem: resumir(texto(registro(turno.error).message)) });
+        if (turno.error) eventos.push(erroDoTurno(texto(registro(turno.error).message)));
         eventos.push({ _tag: "FimTurno", motivo: texto(turno.status) || "completed" });
         return eventos;
       }
@@ -272,18 +273,12 @@ export const SEM_FERRAMENTAS_CODEX: Readonly<Record<string, Schema.Json>> = {
 
 /** Classifica o pedido de comando: o `cwd` e os caminhos citados; com rede, é `web`. */
 /**
- * A falha da queda do `codex app-server`, em português, como a do `agy`: a mensagem do transporte
- * (em inglês, "Codex App Server transport operation 'read-process-exit-status' failed.") chegaria ao
- * `Erro` que a interface mostra. O erro original fica em `cause`.
+ * A falha da queda do `codex app-server`, como a do `agy`: sempre `queda`, qualquer que seja a
+ * mensagem do transporte ("Codex App Server transport operation 'read-process-exit-status' failed.").
+ * O erro original, com o código de saída, fica em `cause`.
  */
 export function falhaQuedaCodex(erro: CodexAppServerError): FalhaProvider {
-  const codigo = erro._tag === "CodexAppServerProcessExitedError" ? erro.code : undefined;
-  return new FalhaProvider({
-    provider: PROVIDER,
-    operacao: "sessão",
-    detalhe: codigo === undefined ? "o processo do codex encerrou" : `o processo do codex encerrou (código ${codigo})`,
-    cause: erro,
-  });
+  return new FalhaProvider({ provider: PROVIDER, operacao: "sessão", tipo: "queda", cause: erro });
 }
 
 export function classificarComandoCodex(p: {
@@ -325,7 +320,7 @@ export function fimLoginCodex(fim: {
   return {
     fase: "falhou",
     mensagem: "O login não foi concluído. Tente de novo; se continuar, feche o navegador e entre outra vez.",
-    ...(fim.error ? { detalhe: fim.error } : {}),
+    ...(fim.error ? { detalhe: textoTecnico(fim.error) } : {}),
   };
 }
 
@@ -408,13 +403,17 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
 
   const iniciar = Effect.fn("DriverCodex.iniciar")(function* (config: ConfigSessao, politica: Politica) {
     // Reserva até o fim da sessão: a instalação não remove o binário de uma sessão em andamento.
-    const executavel = yield* opcoes.instalacao
-      .acquire()
-      .pipe(
-        Effect.mapError(
-          (erro) => new FalhaProvider({ provider: PROVIDER, operacao: "iniciar", detalhe: erro.detail, cause: erro }),
-        ),
-      );
+    const executavel = yield* opcoes.instalacao.acquire().pipe(
+      Effect.mapError(
+        (erro) =>
+          new FalhaProvider({
+            provider: PROVIDER,
+            operacao: "iniciar",
+            tipo: classificarFalha("iniciar", erro.detail),
+            cause: erro,
+          }),
+      ),
+    );
     const canal = yield* Canal.comPolitica(politica, config.pastaTrabalho);
     const gravar = yield* Gravador;
     const { cliente } = yield* abrir(executavel.executablePath, config.pastaTrabalho);
@@ -585,14 +584,11 @@ export const make = Effect.fn("DriverCodex.make")(function* (opcoes: {
         .request("account/login/start", { type: "chatgpt" })
         .pipe(Effect.mapError(Canal.falhaDe(PROVIDER, "entrar")));
       if (inicio.type !== "chatgpt") {
-        return yield* new FalhaProvider({ provider: PROVIDER, operacao: "entrar", detalhe: `resposta ${inicio.type}` });
+        return yield* new FalhaProvider({ provider: PROVIDER, operacao: "entrar", tipo: "semLogin" });
       }
       if (!authUrlOficialCodex(inicio.authUrl)) {
-        return yield* new FalhaProvider({
-          provider: PROVIDER,
-          operacao: "entrar",
-          detalhe: "a página de login devolvida não é a da OpenAI (auth.openai.com)",
-        });
+        // A página de login devolvida não é a da OpenAI (auth.openai.com).
+        return yield* new FalhaProvider({ provider: PROVIDER, operacao: "entrar", tipo: "semLogin" });
       }
       yield* Deferred.succeed(idLogin, inicio.loginId);
       yield* emitir({ fase: "aguardando", url: inicio.authUrl });

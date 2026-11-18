@@ -51,6 +51,7 @@ import {
 import { CANAIS_DISTRIBUICAO } from "@simplifica-if/kb/canal";
 import { EstadoInstalacao, EstadoLogin, EstadoProvider } from "@simplifica-if/motor/estados-provider";
 import { Evento, Provider } from "@simplifica-if/motor/eventos";
+import { TipoFalha, TipoFalhaEstado } from "@simplifica-if/motor/falhas";
 import * as Schema from "effect/Schema";
 import { Rpc, RpcGroup } from "effect/rpc";
 import { AvisoNaoAceito, GrupoPreferencias } from "./preferencias.ts";
@@ -58,6 +59,7 @@ import { GrupoRelato } from "./relato.ts";
 
 export { AprovacaoDesconhecida, Decisao, FalhaProvider, OperacaoNaoSuportada, SessaoDesconhecida, TurnoEmAndamento };
 export { EstadoInstalacao, EstadoLogin, EstadoProvider };
+export { TipoFalha, TipoFalhaEstado };
 export { Evento, Provider };
 export { GrupoLeitura, ROTULOS_INDICADOR };
 export type { Ancora, DadosDocumento, LinkLido };

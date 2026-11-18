@@ -67,8 +67,11 @@ function bancoComFichas(): string {
 
 /* ============================================================ driver de teste */
 
-/** `ferramenta`: o provider anuncia uma ferramenta antes do texto (o que a sessão de julgamento não pode ter). */
-type Resposta = { texto: string; ferramenta?: string } | { erro: string };
+/**
+ * `ferramenta`: o provider anuncia uma ferramenta antes do texto (o que a sessão de julgamento não pode
+ * ter). `erro` vira o evento `Erro` do turno; `falha`, o `FalhaProvider` do envio, com ela em `cause`.
+ */
+type Resposta = { texto: string; ferramenta?: string } | { erro: string } | { falha: Error };
 
 interface Roteiro {
   /** A resposta ao `turno` (1 ou 2) da sessão cujo primeiro pedido foi `pedido`. */
@@ -136,8 +139,9 @@ const driver = (provider: Motor.Provider): Motor.Driver => ({
           yield* canal.emitir({ _tag: "UsoTokens", entrada: 10, saida: 5, cacheEscrita: 100 });
           if ("ferramenta" in r && r.ferramenta)
             yield* canal.emitir({ _tag: "FerramentaIniciada", id: "f1", nome: r.ferramenta, entrada: {} });
+          if ("falha" in r) return;
           if ("erro" in r) {
-            yield* canal.emitir({ _tag: "Erro", mensagem: r.erro });
+            yield* canal.emitir(Motor.erroDoTurno(r.erro));
             return yield* canal.emitir({ _tag: "FimTurno", motivo: "falha" });
           }
           yield* canal.emitir({ _tag: "TextoFinal", texto: r.texto });
@@ -145,7 +149,14 @@ const driver = (provider: Motor.Provider): Motor.Driver => ({
         });
       return {
         idNativo: "nativo",
-        enviar: (texto) => canal.turno(Effect.asVoid(Effect.forkIn(responder(texto), escopo))),
+        enviar: (texto) => {
+          const r = roteiro.responder(primeiro ?? texto, turnos + 1);
+          return "falha" in r
+            ? Stream.fail(
+                new Motor.FalhaProvider({ provider, operacao: "turn/start", tipo: "desconhecido", cause: r.falha }),
+              )
+            : canal.turno(Effect.asVoid(Effect.forkIn(responder(texto), escopo)));
+        },
         responder: canal.responder,
         interromper: canal.emitir({ _tag: "FimTurno", motivo: "interrupted" }),
       } satisfies Motor.SessaoDriver;
@@ -348,6 +359,35 @@ layer(camada, { excludeTestServices: true })("revisão com IA", (it) => {
       assert.strictEqual(retomada.resultado!.conferidosIa, 5);
       const lista = yield* rpc["revisaoPpc.listarIa"]({});
       assert.isTrue(lista.some((e) => e.id === preparada.id && e.situacao === "concluida"));
+    }),
+  );
+
+  it.effect("serviço fora do ar no meio: pausa dizendo para retomar em minutos, não o limite do plano", () =>
+    Effect.gen(function* () {
+      reiniciar();
+      roteiro.responder = (p) =>
+        blocoDo(p) === "j-02" ? { erro: "API Error: 503 Service Unavailable" } : { texto: respostaValida(p) };
+      const { final } = yield* rodar(gravar("PPC D2.docx", ppcSintetico()));
+      assert.strictEqual(final.situacao, "pausada");
+      assert.isTrue(final.limite);
+      assert.include(final.motivo ?? "", "sobrecarregado ou fora do ar");
+      assert.include(final.motivo ?? "", "retome em alguns minutos");
+      assert.notInclude(final.motivo ?? "", "limite de uso do seu plano");
+    }),
+  );
+
+  it.effect("falha desconhecida do envio: a pausa traz o diagnóstico da causa, saneado", () =>
+    Effect.gen(function* () {
+      reiniciar();
+      roteiro.responder = (p) =>
+        blocoDo(p) === "j-02"
+          ? { falha: new Error("proxy http://joao:s3nh4@10.0.0.1:3128 respondeu algo estranho") }
+          : { texto: respostaValida(p) };
+      const { final } = yield* rodar(gravar("PPC D3.docx", ppcSintetico()));
+      assert.strictEqual(final.situacao, "pausada");
+      assert.isFalse(final.limite);
+      assert.include(final.motivo ?? "", "proxy http://<credencial>@10.0.0.1:3128 respondeu algo estranho");
+      assert.notInclude(final.motivo ?? "", "s3nh4");
     }),
   );
 

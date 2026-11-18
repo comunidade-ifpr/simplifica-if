@@ -15,6 +15,8 @@
  * 3. **Concluir**: o Worker roda a pré-conferência de novo com os resultados conferidos da IA, e a
  *    cópia comentada sai com as pendências do código e da IA juntas; o arquivo tem de ser o mesmo da
  *    preparação (sha256).
+ *
+ * Preparar e executar esperam o aviso de uso aceito (M1.8): sem ele, recusam com `AvisoNaoAceito`.
  */
 import * as NodeCrypto from "node:crypto";
 import * as Context from "effect/Context";
@@ -28,6 +30,7 @@ import * as PubSub from "effect/PubSub";
 import type * as SqlClient from "effect/sql/SqlClient";
 import * as Stream from "effect/Stream";
 import {
+  type AvisoNaoAceito,
   type BlocoRevisaoIa,
   type EstadoRevisaoIa,
   FalhaRevisaoPpc,
@@ -41,6 +44,7 @@ import { CRITERIO_PADRAO, type CriterioInconclusivo, pedidoT } from "@simplifica
 import { teveTextoParaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import { MODELO_PADRAO } from "@simplifica-if/ppc/revisao-ia/tipos";
 import { NOME_DA_FORMA, type ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
+import * as Preferencias from "../persistencia/Preferencias.ts";
 import * as Revisoes from "../persistencia/Revisoes.ts";
 import type * as Listas from "../persistencia/Listas.ts";
 import * as RevisorPpc from "./RevisorPpc.ts";
@@ -64,8 +68,8 @@ export interface EntradaPreparoIa {
 export class RevisaoIa extends Context.Service<
   RevisaoIa,
   {
-    readonly preparar: (entrada: EntradaPreparoIa) => Effect.Effect<EstadoRevisaoIa, FalhaRevisaoPpc>;
-    readonly iniciar: (id: string) => Effect.Effect<EstadoRevisaoIa, FalhaRevisaoPpc>;
+    readonly preparar: (entrada: EntradaPreparoIa) => Effect.Effect<EstadoRevisaoIa, FalhaRevisaoPpc | AvisoNaoAceito>;
+    readonly iniciar: (id: string) => Effect.Effect<EstadoRevisaoIa, FalhaRevisaoPpc | AvisoNaoAceito>;
     readonly pausar: (id: string) => Effect.Effect<EstadoRevisaoIa, FalhaRevisaoPpc>;
     readonly acompanhar: (id: string) => Stream.Stream<EstadoRevisaoIa, FalhaRevisaoPpc>;
     readonly listar: Effect.Effect<ReadonlyArray<EstadoRevisaoIa>>;
@@ -96,6 +100,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   const criterio = opcoes.criterio ?? CRITERIO_PADRAO;
   const revisoes = yield* Revisoes.Revisoes;
   const revisor = yield* RevisorPpc.RevisorPpc;
+  const { exigirAviso } = yield* Preferencias.Preferencias;
   const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | SqlClient.SqlClient>();
   const contextoMotor = yield* Effect.context<Motor.Motor | FileSystem.FileSystem>();
   const contextoListas = yield* Effect.context<Listas.Listas>();
@@ -170,6 +175,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   /* ------------------------------------------------------------ preparar */
 
   const prepararRevisao = Effect.fn("RevisaoIa.preparar")(function* (entrada: EntradaPreparoIa) {
+    yield* exigirAviso;
     const revisado = yield* revisor.revisarArquivo({
       arquivo: entrada.arquivo,
       gravar: false,
@@ -331,6 +337,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     );
 
   const iniciar = Effect.fn("RevisaoIa.iniciar")(function* (id: string) {
+    yield* exigirAviso;
     const registro = yield* buscar(id);
     if (registro.situacao === "concluida") return yield* estado(registro);
     if (yield* FiberMap.has(execucoes, id)) return yield* estado(registro);
@@ -389,5 +396,8 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   });
 });
 
-/** Pede o `Motor`, o `FileSystem`, o `RevisorPpc`, as `Revisoes`, as `FontesNormativas` e o `SqlClient` do `kb.sqlite`. */
+/**
+ * Pede o `Motor`, o `FileSystem`, o `RevisorPpc`, as `Revisoes`, as `Preferencias`, as `FontesNormativas`
+ * e o `SqlClient` do `kb.sqlite`.
+ */
 export const layer = (opcoes: OpcoesRevisaoIa = {}) => Layer.effect(RevisaoIa, make(opcoes));

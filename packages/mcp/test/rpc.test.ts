@@ -12,12 +12,13 @@
  * FTS) e o de PPCs (`fixture-ppcs.ts`, com normas sem dispositivos, PPCs, cursos e o FTS das seções).
  * Cada operação roda sobre o banco em que tem dados.
  */
-import { afterEach, describe, expect, it } from "@effect/vitest";
+import { afterEach, assert, describe, expect, it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as Logger from "effect/Logger";
 import type * as Schema from "effect/Schema";
 import { RpcTest } from "effect/rpc";
-import { ehEntradaInvalida, type ErroDeLeitura } from "../src/contratos.ts";
+import { ehEntradaInvalida, ehFalhaNaBase, type ErroDeLeitura, FalhaNaBase } from "../src/contratos.ts";
 import { buscarNorma } from "../src/ferramentas/buscar-norma.ts";
 import { buscarSecoes } from "../src/ferramentas/buscar-secoes.ts";
 import { fichaCurso } from "../src/ferramentas/ficha-curso.ts";
@@ -329,6 +330,44 @@ describe("GrupoLeitura: lerDocumento (o leitor do app, M1.6)", () => {
         expect(ehEntradaInvalida(falha), link).toBe(true);
         expect(falha.message, link).toMatch(mensagem);
       }
+    }),
+  );
+});
+
+describe("GrupoLeitura: a falha da base", () => {
+  it.effect("chega à interface sem o cause e fica no log com ele", () =>
+    Effect.gen(function* () {
+      const causa = new Error("SQLITE_CORRUPT em /Users/maria/kb.sqlite");
+      const logs: Array<ReadonlyArray<unknown>> = [];
+      const registrar = Logger.make<unknown, void>(({ message }) => {
+        logs.push(Array.isArray(message) ? message : [message]);
+      });
+      // O `Leitura` do banco de fixture com o `sobreABase` quebrado.
+      const leituraQuebrada = Layer.effect(
+        Leitura,
+        Effect.gen(function* () {
+          const leitura = yield* Leitura;
+          return Leitura.of({
+            ...leitura,
+            sobreABase: () => Effect.fail(new FalhaNaBase({ operacao: "consulta ao kb.sqlite", cause: causa })),
+          });
+        }),
+      ).pipe(Layer.provide(layerLeitura({ banco: bancoNormas(), canal: "dev" })));
+      const erro = yield* Effect.gen(function* () {
+        const cliente = yield* clienteDoGrupo();
+        return yield* cliente.sobreABase({});
+      }).pipe(
+        Effect.flip,
+        Effect.scoped,
+        Effect.provide(
+          Layer.mergeAll(layerHandlersRpc.pipe(Layer.provideMerge(leituraQuebrada)), Logger.layer([registrar])),
+        ),
+      );
+      assert(ehFalhaNaBase(erro));
+      expect(erro.operacao).toBe("consulta ao kb.sqlite");
+      expect(erro.cause).toBeUndefined();
+      const registrado = logs.find((linha) => linha[0] === "RPC sobreABase falhou");
+      expect(registrado?.[1]).toMatchObject({ _tag: "FalhaNaBase", cause: causa });
     }),
   );
 });
