@@ -11,7 +11,12 @@ import * as NodePath from "node:path";
 import { raizRepositorio } from "@simplifica-if/kb/caminhos";
 import { carregarRegistro } from "@simplifica-if/kb/normas/registro";
 import { carregarRelacoes } from "@simplifica-if/kb/normas/relacoes";
-import { carregarDatas, carregarTransicoes, dataReferencia } from "@simplifica-if/kb/normas/vigencia";
+import {
+  carregarDatas,
+  carregarFonteVigencia,
+  carregarTransicoes,
+  dataReferencia,
+} from "@simplifica-if/kb/normas/vigencia";
 import type { BaseRevisaoPrevia } from "../src/revisao-previa.ts";
 import type { BaseVerificacao, CursoCnct } from "../src/verificadores/comum.ts";
 import { type ConsultaVigencia, consultarVigencia } from "../src/verificadores/vigencia.ts";
@@ -71,19 +76,7 @@ export function carregarVigencia(
   raiz: string = raizRepositorio(),
   data: string = dataReferencia(raiz),
 ): ConsultaVigencia {
-  const uma = <T>(carregar: () => T) => {
-    let valor: T | undefined;
-    return () => (valor ??= carregar());
-  };
-  return consultarVigencia(
-    {
-      registro: uma(() => carregarRegistro(raiz)),
-      datas: uma(() => carregarDatas(raiz)),
-      relacoes: uma(() => carregarRelacoes(raiz)),
-      transicoes: uma(() => carregarTransicoes(raiz)),
-    },
-    data,
-  );
+  return consultarVigencia(carregarFonteVigencia(raiz), data);
 }
 
 /** A parte da base que não depende do PPC (registro, relações e vigência), carregada uma vez. */

@@ -33,7 +33,8 @@ import { idDoAto } from "../normas/ids.ts";
 import { caminhoStubs, carregarRegistro, lerRegistroStubs, type Registro } from "../normas/registro.ts";
 import { segmentosCitantes } from "../normas/citacoes-normas.ts";
 import { extrairCitacoes } from "../normas/resolver.ts";
-import { dataReferencia, derivarLinha } from "../normas/vigencia.ts";
+import { carregarDatas, dataReferencia, derivarLinha } from "../normas/vigencia.ts";
+import { carregarRelacoes } from "../normas/relacoes.ts";
 import { mascararFrontMatter } from "../ppcs/front-matter.ts";
 import { lerTextoSecao } from "../ppcs/citacoes.ts";
 import { type NomeTaxonomia, secoesComChave, secoesIndexadas } from "../ppcs/secoes.ts";
@@ -1054,7 +1055,10 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       const marcos = decodificarMarcos(lerJson(arquivoMarcos));
       const referencia = dataReferencia(raiz);
       for (const m of [...marcos.marcos].sort((a, b) => compararTexto(a.id, b.id))) {
-        const derivado = derivarLinha(m.linha, referencia, raiz);
+        const derivado = derivarLinha(m.linha, referencia, {
+          datas: carregarDatas(raiz),
+          relacoes: carregarRelacoes(raiz),
+        });
         ins.inserir("marcos", {
           id: m.id,
           tema: m.tema,

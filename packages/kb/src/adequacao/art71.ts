@@ -1,21 +1,14 @@
-// @effect-diagnostics nodeBuiltinImport:off -- leitura síncrona de base-conhecimento/institucional/ifpr/cursos/, usada pela CLI e pelos scripts
 /**
  * Adequação ao art. 71 da Res. CNE/CP nº 2/2026: cursos técnicos autorizados e em oferta têm até
  * dois anos para se adequar às novas DCN da EPT. O artigo alcança todos esses cursos, não só os que
  * citam a norma de 2021.
  *
- * A lista sai de `base-conhecimento/institucional/ifpr/cursos/` (nível `médio`, situação `ativo` ou `em_oferta`;
- * com `incluirTecnologia`, também os cursos superiores de tecnologia). O indicador de defasagem vem
- * das citações resolvidas do PPC convertido do curso (`ppc.markdown_path`): a DCN mais recente que
- * o PPC cita. Tudo derivado dos arquivos, sem relógio.
+ * A lista sai dos cursos do `kb.sqlite` (nível `médio`, situação `ativo` ou `em_oferta`; com
+ * `incluirTecnologia`, também os cursos superiores de tecnologia). O indicador de defasagem vem das
+ * citações resolvidas do PPC convertido do curso (`ppc.markdown_path`): a DCN mais recente que o
+ * PPC cita. Sem relógio.
  */
-import * as Schema from "effect/Schema";
-import * as NodeFS from "node:fs";
-import * as NodePath from "node:path";
-import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { idDoAto } from "../normas/ids.ts";
-import type { Registro } from "../normas/registro.ts";
-import { citacoesDoArquivo } from "../ppcs/citacoes.ts";
 import { compararTexto } from "../texto.ts";
 
 /** DCN da educação profissional técnica, da mais recente à mais antiga, com o indicador de cada uma. */
@@ -38,30 +31,6 @@ export const ROTULOS_INDICADOR: Readonly<Record<Indicador, string>> = {
 /** Situações que contam como "autorizado e em oferta" (as mesmas dos gabaritos da avaliação). */
 export const SITUACOES_EM_OFERTA = ["ativo", "em_oferta"] as const;
 
-const resto = [Schema.Record(Schema.String, Schema.Unknown)] as const;
-const esquemaCurso = Schema.StructWithRest(
-  Schema.Struct({
-    campus_id: Schema.String,
-    curso_slug: Schema.String,
-    nome: Schema.String,
-    nivel: Schema.optionalKey(Schema.String),
-    forma_oferta: Schema.optionalKey(Schema.String),
-    situacao: Schema.optionalKey(Schema.String),
-    ppc: Schema.optionalKey(
-      Schema.StructWithRest(
-        Schema.Struct({
-          markdown_path: Schema.optionalKey(Schema.String),
-          ano_documento: Schema.optionalKey(Schema.Int),
-        }),
-        resto,
-      ),
-    ),
-  }),
-  resto,
-);
-type Curso = typeof esquemaCurso.Type;
-const decodificarCurso = Schema.decodeUnknownSync(esquemaCurso);
-
 export interface CursoAdequacao {
   curso: string;
   nome: string;
@@ -81,7 +50,7 @@ export interface RelatorioAdequacao {
   cursos: CursoAdequacao[];
 }
 
-/** Curso como a adequação o lê (de `institucional/ifpr/cursos/` ou da tabela `cursos` do `kb.sqlite`). */
+/** Curso como a adequação o lê (da tabela `cursos` do `kb.sqlite`). */
 export interface CursoParaAdequacao {
   campus_id: string;
   curso_slug: string;
@@ -93,62 +62,29 @@ export interface CursoParaAdequacao {
 }
 
 /**
- * O que a adequação lê: os cursos e as citações resolvidas do PPC convertido de cada um. Duas
- * implementações: os arquivos (`fonteAdequacaoArquivos`) e o `kb.sqlite` (carregada pelo serviço
- * `Cursos`); a regra (`adequacaoArt71Em`) é uma só.
+ * O que a adequação lê, já carregado do `kb.sqlite` pelo serviço `Cursos`: os cursos e as citações
+ * resolvidas do PPC convertido de cada um.
  */
 export interface FonteAdequacao {
-  cursos(): CursoParaAdequacao[];
-  /** Citações do PPC (`markdown_path`, relativo a `base-conhecimento/`), ou `null` se ele não está na base. */
-  citacoesDoPpc(markdown: string): { id: string | null; linha: number; regra: string }[] | null;
+  readonly cursos: ReadonlyArray<CursoParaAdequacao>;
+  /**
+   * Citações de cada PPC da base, pelo `markdown_path` (relativo a `base-conhecimento/`). Um PPC fora
+   * do mapa não está na base.
+   */
+  readonly citacoesPorPpc: ReadonlyMap<string, ReadonlyArray<{ id: string | null; linha: number; regra: string }>>;
 }
 
-export function fonteAdequacaoArquivos(raiz: string, registro: Registro): FonteAdequacao {
-  return {
-    cursos: () => lerCursos(raiz),
-    citacoesDoPpc: (markdown) =>
-      NodeFS.existsSync(NodePath.join(noCheckout(raiz, CAMINHOS.base), markdown))
-        ? citacoesDoArquivo(markdown, registro, raiz)
-        : null,
-  };
-}
-
-function lerCursos(raiz: string): Curso[] {
-  const dir = noCheckout(raiz, `${CAMINHOS.institucional}/cursos`);
-  const cursos: Curso[] = [];
-  for (const campus of NodeFS.readdirSync(dir, { withFileTypes: true }).sort((a, b) => compararTexto(a.name, b.name))) {
-    // O index.json da coleção fica ao lado das pastas de campus.
-    if (!campus.isDirectory()) continue;
-    const dirCampus = NodePath.join(dir, campus.name);
-    for (const arquivo of NodeFS.readdirSync(dirCampus).sort(compararTexto)) {
-      if (!arquivo.endsWith(".json")) continue;
-      cursos.push(decodificarCurso(JSON.parse(NodeFS.readFileSync(NodePath.join(dirCampus, arquivo), "utf-8"))));
-    }
-  }
-  return cursos;
-}
-
-export function adequacaoArt71(opcoes: {
-  raiz: string;
-  registro: Registro;
-  incluirTecnologia?: boolean;
-}): RelatorioAdequacao {
-  return adequacaoArt71Em(fonteAdequacaoArquivos(opcoes.raiz, opcoes.registro), opcoes);
-}
-
-/** Adequação ao art. 71 sobre uma fonte de dados (arquivos ou `kb.sqlite`). */
+/** Adequação ao art. 71 sobre os dados carregados. */
 export function adequacaoArt71Em(
   fonte: FonteAdequacao,
   opcoes: { incluirTecnologia?: boolean } = {},
 ): RelatorioAdequacao {
   const situacoes = new Set<string>(SITUACOES_EM_OFERTA);
-  const alcancados = fonte
-    .cursos()
-    .filter(
-      (curso) =>
-        situacoes.has(curso.situacao ?? "") &&
-        (curso.nivel === "médio" || (opcoes.incluirTecnologia && curso.forma_oferta === "graduação tecnológica")),
-    );
+  const alcancados = fonte.cursos.filter(
+    (curso) =>
+      situacoes.has(curso.situacao ?? "") &&
+      (curso.nivel === "médio" || (opcoes.incluirTecnologia && curso.forma_oferta === "graduação tecnológica")),
+  );
 
   const cursos: CursoAdequacao[] = alcancados.map((curso) => {
     const markdown = curso.ppc?.markdown_path ?? null;
@@ -160,7 +96,7 @@ export function adequacaoArt71Em(
       ppc: markdown,
       ppc_ano: curso.ppc?.ano_documento ?? null,
     };
-    const citacoes = markdown ? fonte.citacoesDoPpc(markdown) : null;
+    const citacoes = markdown ? (fonte.citacoesPorPpc.get(markdown) ?? null) : null;
     if (!citacoes) {
       return { ...base, ppc: null, indicador: "sem-ppc-convertido" as const, dcn_citadas: [] };
     }

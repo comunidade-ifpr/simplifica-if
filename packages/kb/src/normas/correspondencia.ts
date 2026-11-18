@@ -98,53 +98,36 @@ export interface ResultadoCorrespondencia {
 }
 
 /**
- * O que a correspondência precisa ler: as tabelas e os dispositivos (pai e texto, pelo índice
- * deduplicado do ato). Duas implementações: os arquivos (`fonteCorrespondenciaArquivos`) e o
- * `kb.sqlite` (`db/consultas-normas.ts`); a regra (`correspondenciaEm`) é uma só.
+ * O que a correspondência lê, já carregado do `kb.sqlite` (`db/consultas-normas.ts`): as tabelas e,
+ * dos atos de origem e de destino, os dispositivos canônicos (pai e texto) e os artigos.
  */
 export interface FonteCorrespondencia {
-  /** Tabelas cuja origem é o ato. */
-  tabelas(ato: string): TabelaCorrespondencia[];
+  /** Tabelas de correspondência por ato de origem. */
+  readonly tabelas: ReadonlyMap<string, ReadonlyArray<TabelaCorrespondencia>>;
   /** Dispositivo pelo ID do ato (`br/cne-cp/res/2021/1#art20-iii`): pai (ID completo) e texto. */
-  dispositivo(id: string): { pai: string | null; texto: string } | undefined;
-  /** Sufixos dos artigos do ato, em ordem (`#art1`, `#art2`...). */
-  artigos(ato: string): string[];
-}
-
-export function fonteCorrespondenciaArquivos(raiz: string): FonteCorrespondencia {
-  return {
-    tabelas: (ato) => carregarCorrespondencias(raiz).filter((t) => t.origem === ato),
-    dispositivo: (id) => indiceDispositivos(raiz).get(id),
-    artigos: (ato) =>
-      dispositivosDoAto(ato, raiz)
-        .filter((d) => d.tipo === "artigo")
-        .map((d) => d.dispositivo),
-  };
+  readonly dispositivos: ReadonlyMap<string, { readonly pai: string | null; readonly texto: string }>;
+  /** Sufixos dos artigos de cada ato de origem, em ordem (`#art1`, `#art2`...). */
+  readonly artigos: ReadonlyMap<string, ReadonlyArray<string>>;
 }
 
 /** Ancestrais de um ID de dispositivo, do mais próximo ao artigo (`#art20-par1-iii` → `#art20-par1`, `#art20`). */
 function ancestrais(dispositivoId: string, fonte: FonteCorrespondencia, ato: string): string[] {
   const saida: string[] = [];
-  let atual = fonte.dispositivo(`${ato}${dispositivoId}`)?.pai ?? null;
+  let atual = fonte.dispositivos.get(`${ato}${dispositivoId}`)?.pai ?? null;
   while (atual) {
     saida.push(atual.slice(atual.indexOf("#")));
-    atual = fonte.dispositivo(`${ato}${atual.slice(atual.indexOf("#"))}`)?.pai ?? null;
+    atual = fonte.dispositivos.get(`${ato}${atual.slice(atual.indexOf("#"))}`)?.pai ?? null;
   }
   return saida;
 }
 
 /** Correspondência de um dispositivo (ou ato) de origem, pelas tabelas da base. */
-export function correspondencia(id: string, raiz: string): ResultadoCorrespondencia[] {
-  return correspondenciaEm(id, fonteCorrespondenciaArquivos(raiz));
-}
-
-/** Correspondência de um dispositivo (ou ato) de origem, sobre uma fonte de dados. */
 export function correspondenciaEm(id: string, fonte: FonteCorrespondencia): ResultadoCorrespondencia[] {
   const [norma, sufixo] = id.split("#") as [string, string | undefined];
   const ato = idDoAto(norma);
   const saida: ResultadoCorrespondencia[] = [];
-  const tabelas = fonte.tabelas(ato);
-  const alvos = tabelas.length === 0 ? [] : sufixo ? [`#${sufixo}`] : fonte.artigos(ato);
+  const tabelas = fonte.tabelas.get(ato) ?? [];
+  const alvos = tabelas.length === 0 ? [] : sufixo ? [`#${sufixo}`] : (fonte.artigos.get(ato) ?? []);
   for (const tabela of tabelas) {
     const porOrigem = new Map(tabela.itens.map((item) => [item.origem, item]));
     for (const alvo of alvos) {
@@ -169,10 +152,10 @@ export function correspondenciaEm(id: string, fonte: FonteCorrespondencia): Resu
         item,
         herdado_de: herdado,
         detalhes,
-        texto_origem: fonte.dispositivo(`${ato}${alvo}`)?.texto ?? null,
+        texto_origem: fonte.dispositivos.get(`${ato}${alvo}`)?.texto ?? null,
         textos_destino: item.destino.map((d) => ({
           id: `${tabela.destino}${d}`,
-          texto: fonte.dispositivo(`${tabela.destino}${d}`)?.texto ?? null,
+          texto: fonte.dispositivos.get(`${tabela.destino}${d}`)?.texto ?? null,
         })),
       });
     }
@@ -184,11 +167,6 @@ export function correspondenciaEm(id: string, fonte: FonteCorrespondencia): Resu
  * Dispositivos de destino que correspondem ao ato `origem` (qualquer dispositivo) ou, com `#`, ao
  * dispositivo e aos subordinados dele (para `kb impacto`).
  */
-export function destinosDeOrigem(origem: string, raiz: string): Set<string> {
-  return destinosDeOrigemEm(origem, fonteCorrespondenciaArquivos(raiz));
-}
-
-/** `destinosDeOrigem` sobre uma fonte de dados (arquivos ou `kb.sqlite`). */
 export function destinosDeOrigemEm(origem: string, fonte: FonteCorrespondencia): Set<string> {
   const saida = new Set<string>();
   if (origem.includes("#")) {
@@ -198,7 +176,7 @@ export function destinosDeOrigemEm(origem: string, fonte: FonteCorrespondencia):
     }
     return saida;
   }
-  for (const tabela of fonte.tabelas(idDoAto(origem))) {
+  for (const tabela of fonte.tabelas.get(idDoAto(origem)) ?? []) {
     for (const item of tabela.itens) for (const d of item.destino) saida.add(`${tabela.destino}${d}`);
   }
   return saida;

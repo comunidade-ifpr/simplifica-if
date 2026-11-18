@@ -38,17 +38,18 @@ import * as Layers from "../layers.ts";
 import * as Normas from "../Normas.ts";
 import * as PacoteContexto from "../PacoteContexto.ts";
 import * as Ppcs from "../Ppcs.ts";
-import { adequacaoArt71 } from "../adequacao/art71.ts";
+import { INDICADORES } from "../adequacao/art71.ts";
 import { avaliarBusca } from "../avaliacao/busca-secoes.ts";
 import { lerSinonimos } from "../busca/sinonimos.ts";
-import { carregarCorrespondencias, correspondencia } from "../normas/correspondencia.ts";
-import { carregarDispositivos, descendentes, dispositivosDoAto, indiceDispositivos } from "../normas/estrutura.ts";
+import { carregarCorrespondencias } from "../normas/correspondencia.ts";
+import { carregarDispositivos, descendentes, indiceDispositivos } from "../normas/estrutura.ts";
 import { obterDispositivo as obterDispositivoArquivos } from "../normas/estrutura.ts";
 import { atosComVigencia } from "../normas/fontes-db.ts";
 import { raizRepositorio } from "../caminhos.ts";
 import { caminhoStubs, carregarRegistro, lerRegistroStubs } from "../normas/registro.ts";
 import { carregarRelacoes, sucessorasDe } from "../normas/relacoes.ts";
 import {
+  carregarFonteVigencia,
   carregarTransicoes,
   dataReferencia,
   derivarLinha,
@@ -74,6 +75,7 @@ import { VERSAO_ESQUEMA } from "./esquema.ts";
 import * as Sql from "./sql.ts";
 
 const raiz = raizRepositorio();
+const vigenciaArquivos = carregarFonteVigencia(raiz);
 /** Registro e léxico do checkout, para o banco do PPC avulso. */
 const doCheckout = () => ({ registro: carregarRegistro(raiz), sinonimos: lerSinonimos(raiz) });
 /** Instante do relógio de teste durante as compilações: vira o mtime de cada banco. */
@@ -421,11 +423,17 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       }),
     );
 
-    it.effect("correspondência de cada dispositivo da 1/2021 e do ato inteiro", () =>
+    it.effect("correspondência 1/2021 → 2/2026: artigos cobertos, Q07 e Q23 da avaliação", () =>
       Effect.gen(function* () {
         const { normas } = yield* servicos;
-        const ids = ["br/cne-cp/res/2021/1", ...dispositivosDoAto("br/cne-cp/res/2021/1", raiz).map((d) => d.id)];
-        for (const id of ids) expect(yield* normas.correspondencia(id)).toEqual(correspondencia(id, raiz));
+        const dcn2021 = "br/cne-cp/res/2021/1";
+        expect((yield* normas.correspondencia(dcn2021)).length).toBe(65);
+        const [art20] = yield* normas.correspondencia(`${dcn2021}#art20`);
+        expect(art20!.item).toMatchObject({ tipo: "parcial", destino: ["#art22"] });
+        const [art26par1] = yield* normas.correspondencia(`${dcn2021}#art26-par1`);
+        expect(art26par1!.item.destino).toEqual(["#art29-par2", "#art29-par3"]);
+        const [herdado] = yield* normas.correspondencia(`${dcn2021}#art5-par1`);
+        expect(herdado!.herdado_de).toBe("#art5");
         const tabelas = carregarCorrespondencias(raiz);
         expect(yield* tabelasCorrespondencia()).toEqual(tabelas);
         for (const origem of new Set(tabelas.map((t) => t.origem))) {
@@ -443,7 +451,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         };
         for (const m of marcos) {
           const linha = (yield* primeiroMarco("SELECT vigente, normas_json FROM marcos WHERE id = ?", [m.id]))!;
-          const derivado = derivarLinha(m.linha, dataReferencia(raiz), raiz);
+          const derivado = derivarLinha(m.linha, dataReferencia(raiz), vigenciaArquivos);
           expect(linha.vigente).toBe(derivado.vigente);
           expect(JSON.parse(linha.normas_json)).toMatchObject(derivado);
         }
@@ -459,15 +467,15 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           const datas = new Set(["1990-01-01", "2026-11-01", "2026-11-12", dataReferencia(raiz), "2030-01-01"]);
           // as datas dos intervalos gravados e, independentemente deles, as que statusEm compara
           const intervalos = yield* linhasVigencias("SELECT de FROM vigencias WHERE alvo = ?", [ato]);
-          const inicio = inicioVigencia(ato, raiz);
-          const efeitos = relacoes.filter((r) => r.alvo === ato).map((r) => efeitoDaRelacao(r, raiz));
+          const inicio = inicioVigencia(ato, vigenciaArquivos);
+          const efeitos = relacoes.filter((r) => r.alvo === ato).map((r) => efeitoDaRelacao(r, vigenciaArquivos));
           const comparadas = [inicio, ...efeitos].flatMap((e) => [e.data, e.minimo]);
           for (const de of [...intervalos.map((i) => i.de), ...comparadas]) {
             if (!de) continue;
             datas.add(de).add(vesperaDe(de));
           }
           for (const data of datas) {
-            const arquivo = statusEm(ato, data, raiz);
+            const arquivo = statusEm(ato, data, vigenciaArquivos);
             const banco = yield* vigenciaNaData(ato, data);
             expect({ ato, data, status: banco?.status, certo: banco?.certo }).toEqual({
               ato,
@@ -486,7 +494,12 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         for (const ato of atos) {
           for (const data of ["2021-01-01", "2026-11-01", dataReferencia(raiz), "2028-11-14", "2035-01-01"]) {
             const banco = (yield* transicoesDosAtos([ato], data)).map((t) => [t.id, t.inicio_em, t.fim_em, t.situacao]);
-            const arquivo = transicoesAplicaveis(ato, data, raiz).map((t) => [t.id, t.inicio_em, t.fim_em, t.situacao]);
+            const arquivo = transicoesAplicaveis(ato, data, vigenciaArquivos).map((t) => [
+              t.id,
+              t.inicio_em,
+              t.fim_em,
+              t.situacao,
+            ]);
             expect(banco).toEqual(arquivo);
           }
         }
@@ -705,12 +718,14 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       }),
     );
 
-    it.effect("adequacao-art71: igual à dos arquivos de institucional/ifpr e dos PPCs", () =>
+    it.effect("adequacao-art71: todo curso alcançado tem um indicador", () =>
       Effect.gen(function* () {
         for (const incluirTecnologia of [undefined, true]) {
           const opcoes = incluirTecnologia === undefined ? {} : { incluirTecnologia };
-          const banco = yield* paridade(Effect.flatMap(servicos, (s) => s.cursos.adequacaoArt71(opcoes)));
-          mesmoJson(banco, adequacaoArt71({ raiz, registro: carregarRegistro(raiz), ...opcoes }));
+          const relatorio = yield* paridade(Effect.flatMap(servicos, (s) => s.cursos.adequacaoArt71(opcoes)));
+          const soma = INDICADORES.reduce((total, indicador) => total + relatorio.totais[indicador], 0);
+          expect(soma).toBe(relatorio.total);
+          expect(relatorio.cursos.every((c) => c.situacao === "ativo" || c.situacao === "em_oferta")).toBe(true);
         }
       }),
     );

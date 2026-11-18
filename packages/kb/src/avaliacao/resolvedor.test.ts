@@ -1,5 +1,4 @@
 import { describe, expect, test } from "vite-plus/test";
-import { adequacaoArt71, INDICADORES } from "../adequacao/art71.ts";
 import { raizRepositorio } from "../caminhos.ts";
 import { carregarRegistro } from "../normas/registro.ts";
 import { ppcsQueCitam } from "../ppcs/citacoes.ts";
@@ -35,12 +34,5 @@ describe("consultas sobre os PPCs", () => {
     expect(JSON.stringify(ppcsQueCitam("br/cne-cp/res/2021/1", { raiz, registro }))).toBe(JSON.stringify(primeira));
     const trocados = primeira.filter((ppc) => ppc.ocorrencias.some((o) => o.regra.startsWith("dcnept-2021-orgao-")));
     expect(trocados.length).toBeGreaterThanOrEqual(17);
-  });
-
-  test("adequação ao art. 71: todo curso alcançado tem um indicador", () => {
-    const relatorio = adequacaoArt71({ raiz, registro });
-    const soma = INDICADORES.reduce((total, indicador) => total + relatorio.totais[indicador], 0);
-    expect(soma).toBe(relatorio.total);
-    expect(relatorio.cursos.every((curso) => curso.situacao === "ativo" || curso.situacao === "em_oferta")).toBe(true);
   });
 });

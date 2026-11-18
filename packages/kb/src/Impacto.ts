@@ -61,7 +61,6 @@ const make = Effect.gen(function* () {
   const daNorma = Effect.fn("Impacto.daNorma")(
     function* (id: string, opcoes: OpcoesImpacto = {}) {
       const ato = idDoAto(id.split("#")[0]!);
-      const correspondencia = fonteCorrespondencia;
       const dispositivos = yield* linhasDispositivos(
         "SELECT dispositivo, texto FROM dispositivos WHERE ato_id = ? AND canonico = 1 ORDER BY norma_id <> ato_id, norma_id, ordem",
         [ato],
@@ -81,31 +80,16 @@ const make = Effect.gen(function* () {
         opcoes.raizConteudo === undefined ? {} : { raiz: opcoes.raizConteudo },
       );
 
-      const pedido = (oQue: string, recebido: string, esperado: string) => {
-        if (recebido !== esperado)
-          throw new Error(`impacto: ${oQue} pedido para ${recebido}, carregado para ${esperado}`);
-      };
       const fonte: FonteImpacto = {
-        registro: fontes.registro,
-        vigencia: fontes.vigencia,
-        dataReferencia: () => fontes.dataReferencia,
-        relacoes: () => fontes.relacoes,
-        correspondencia,
-        dispositivosDoAto: (a) => {
-          pedido("dispositivosDoAto", a, ato);
-          return dispositivos.map((d) => ({ dispositivo: d.dispositivo, texto: d.texto }));
-        },
+        vigencia: fontes,
+        dataReferencia: fontes.dataReferencia,
+        correspondencia: fonteCorrespondencia,
+        dispositivos,
         // a taxonomia validada tem os campos que o impacto lê (`id`, `termos_busca`, `fichas`) e outros
-        topicos: () => conteudo.topicos as unknown as TopicoTaxonomia[],
-        arquivosConteudo: () => conteudo.arquivos,
-        segmentosCitantes: (excetoAto) => {
-          pedido("segmentosCitantes", excetoAto, ato);
-          return segmentos;
-        },
-        ppcsQueCitam: (pedidoId) => {
-          pedido("ppcsQueCitam", pedidoId, id);
-          return ppcs;
-        },
+        topicos: conteudo.topicos as unknown as TopicoTaxonomia[],
+        arquivosConteudo: conteudo.arquivos,
+        segmentosCitantes: segmentos,
+        ppcsQueCitam: ppcs,
       };
       return impactoEm(id, fonte, {
         ...(opcoes.data !== undefined ? { data: opcoes.data } : {}),

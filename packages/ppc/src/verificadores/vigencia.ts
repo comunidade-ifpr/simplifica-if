@@ -68,20 +68,18 @@ export type DadosVigencia = {
 
 /** A consulta sobre dados já carregados, sem ler arquivo nenhum (o app empacotado não tem o checkout). */
 export function vigenciaDeDados(dados: DadosVigencia, data: string): ConsultaVigencia {
-  const registro = new Registro(dados.normas);
-  const datas = new Map(dados.datas);
   return consultarVigencia(
     {
-      registro: () => registro,
-      datas: () => datas,
-      relacoes: () => dados.relacoes,
-      transicoes: () => dados.transicoes,
+      registro: new Registro(dados.normas),
+      datas: dados.datas,
+      relacoes: dados.relacoes,
+      transicoes: dados.transicoes,
     },
     data,
   );
 }
 
-/** A consulta memorizada sobre uma fonte da vigência (arquivos ou dados). */
+/** A consulta memorizada sobre os dados da vigência (dos arquivos do checkout ou do `kb.sqlite`). */
 export function consultarVigencia(fonte: FonteVigencia, data: string): ConsultaVigencia {
   const cache = new Map<string, VigenciaNorma>();
   const limite = diasAntes(data, DIAS_PRESUNCAO);

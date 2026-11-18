@@ -33,7 +33,6 @@ import {
   dataReferenciaDoYaml,
   type DatasNorma,
   esquemaTransicao,
-  type FonteVigencia,
   montarDatas,
   type Transicao,
   transicoesDoYaml,
@@ -73,14 +72,13 @@ export class FalhaNasFontes extends Schema.TaggedError<FalhaNasFontes>()("FalhaN
 export class FontesNormativas extends Context.Service<
   FontesNormativas,
   {
+    // registro, datas, relações e transições: o serviço é a `FonteVigencia` das regras (`statusEm`…)
     readonly registro: Registro;
     readonly datas: ReadonlyMap<string, DatasNorma>;
     readonly relacoes: ReadonlyArray<Relacao>;
     readonly transicoes: ReadonlyArray<Transicao>;
     /** `data_referencia` de `base-conhecimento/config/vigencia.yaml` (no banco, a gravada em `meta`). */
     readonly dataReferencia: string;
-    /** A vigência (`statusEm`, `transicoesAplicaveis`, `derivarLinha`…) sobre os valores acima. */
-    readonly vigencia: FonteVigencia;
     readonly sinonimos: Sinonimos;
     readonly topicosSecoes: TopicosSecoes;
     readonly topicosFichas: ReadonlyArray<TopicoFichas>;
@@ -94,16 +92,6 @@ export class FontesNormativas extends Context.Service<
     }) => Effect.Effect<ConteudoDasSkills, FalhaNasFontes | Sql.FalhaNaConsulta>;
   }
 >()("@simplifica-if/kb/FontesNormativas") {}
-
-/** Monta a `FonteVigencia` das regras puras sobre valores já carregados. */
-function fonteVigencia(
-  registro: Registro,
-  datas: Map<string, DatasNorma>,
-  relacoes: readonly Relacao[],
-  transicoes: readonly Transicao[],
-): FonteVigencia {
-  return { registro: () => registro, datas: () => datas, relacoes: () => relacoes, transicoes: () => transicoes };
-}
 
 /* ===================================================================== banco */
 
@@ -288,7 +276,6 @@ const makeBanco = Effect.gen(function* () {
     relacoes,
     transicoes,
     dataReferencia: referencia.valor,
-    vigencia: fonteVigencia(registro, datas, relacoes, transicoes),
     sinonimos,
     topicosSecoes,
     topicosFichas,
@@ -419,7 +406,6 @@ const makeArquivos = Effect.fn("FontesNormativas.layerArquivos")(function* (raiz
     relacoes,
     transicoes,
     dataReferencia,
-    vigencia: fonteVigencia(registro, datas, relacoes, transicoes),
     sinonimos,
     topicosSecoes,
     topicosFichas,

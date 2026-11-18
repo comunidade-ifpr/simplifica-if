@@ -252,19 +252,11 @@ const LinhaDispositivoCorrespondencia = Schema.Struct({ dispositivo: Texto, pai:
 const linhasDispositivoCorrespondencia = Sql.todas(LinhaDispositivoCorrespondencia);
 const linhasArtigo = Sql.todas(Schema.Struct({ dispositivo: Texto }));
 
-/** Defeito: a regra pediu à fonte carregada um ato que não está em nenhuma tabela de correspondência. */
-function foraDoCarregado(o: string, ato: string): never {
-  throw new Error(
-    `carregarFonteCorrespondencia: ${o} de ${ato}, que não é origem nem destino de tabela de correspondência`,
-  );
-}
-
 /**
  * Fonte da correspondência (`correspondenciaEm`, `destinosDeOrigemEm`) sobre o banco, carregada de
  * uma vez: todas as tabelas de correspondência, os artigos canônicos dos atos de origem (na ordem
  * de antes: o texto integral primeiro, depois as variantes, por ordem no arquivo) e o pai e o texto
- * dos dispositivos canônicos dos atos de origem e de destino. A regra só pergunta por esses atos
- * (`tabelas(ato)` de outro ato é vazia, como antes); dispositivo ou artigos de outro ato é defeito.
+ * dos dispositivos canônicos dos atos de origem e de destino. A regra só pergunta por esses atos.
  */
 export const carregarFonteCorrespondencia: Effect.Effect<
   FonteCorrespondencia,
@@ -277,16 +269,17 @@ export const carregarFonteCorrespondencia: Effect.Effect<
   const porOrigem = new Map<string, TabelaCorrespondencia[]>();
   for (const t of tabelas) porOrigem.set(t.origem, [...(porOrigem.get(t.origem) ?? []), t]);
 
-  const dispositivos = new Map<string, Map<string, { pai: string | null; texto: string }>>();
+  const dispositivos = new Map<string, { pai: string | null; texto: string }>();
   for (const ato of atos) {
-    const doAto = new Map<string, { pai: string | null; texto: string }>();
     const linhas = yield* linhasDispositivoCorrespondencia(
       "SELECT dispositivo, pai, texto FROM dispositivos WHERE ato_id = ? AND canonico = 1 ORDER BY rowid",
       [ato],
     );
     // o primeiro por rowid, como o `.get()` da consulta por dispositivo
-    for (const l of linhas) if (!doAto.has(l.dispositivo)) doAto.set(l.dispositivo, { pai: l.pai, texto: l.texto });
-    dispositivos.set(ato, doAto);
+    for (const l of linhas) {
+      const id = `${ato}${l.dispositivo}`;
+      if (!dispositivos.has(id)) dispositivos.set(id, { pai: l.pai, texto: l.texto });
+    }
   }
 
   const artigos = new Map<string, string[]>();
@@ -301,18 +294,7 @@ export const carregarFonteCorrespondencia: Effect.Effect<
     );
   }
 
-  const fonte: FonteCorrespondencia = {
-    tabelas: (ato) => porOrigem.get(ato) ?? [],
-    dispositivo: (id) => {
-      const [norma, sufixo] = id.split("#") as [string, string | undefined];
-      if (!sufixo) return undefined;
-      if (idDoAto(norma) !== norma) return foraDoCarregado("dispositivo de variante", id);
-      const doAto = dispositivos.get(norma);
-      if (!doAto) return foraDoCarregado("dispositivo", norma);
-      return doAto.get(`#${sufixo}`);
-    },
-    artigos: (ato) => artigos.get(ato) ?? foraDoCarregado("artigos", ato),
-  };
+  const fonte: FonteCorrespondencia = { tabelas: porOrigem, dispositivos, artigos };
   return fonte;
 }).pipe(Effect.withSpan("consultasNormas.carregarFonteCorrespondencia"));
 

@@ -15,7 +15,7 @@ import * as Layer from "effect/Layer";
 import * as Path from "effect/Path";
 import * as Impacto from "../Impacto.ts";
 import * as Layers from "../layers.ts";
-import { correspondencia, validarCorrespondencias } from "./correspondencia.ts";
+import { validarCorrespondencias } from "./correspondencia.ts";
 import { dispositivosDoAto, listarNormas } from "./estrutura.ts";
 import { analisarFrontMatter } from "./front-matter.ts";
 import { normasComCamposGerados, reescreverFrontMatter } from "./gerado.ts";
@@ -23,9 +23,17 @@ import { idDoAto } from "./ids.ts";
 import { raizRepositorio } from "../caminhos.ts";
 import { carregarRegistro } from "./registro.ts";
 import { carregarRelacoes, proporRelacoes, validarRelacoes } from "./relacoes.ts";
-import { dataReferencia, derivarLinha, inicioVigencia, statusEm, transicoesAplicaveis } from "./vigencia.ts";
+import {
+  carregarFonteVigencia,
+  dataReferencia,
+  derivarLinha,
+  inicioVigencia,
+  statusEm,
+  transicoesAplicaveis,
+} from "./vigencia.ts";
 
 const raiz = raizRepositorio();
+const vigencia = carregarFonteVigencia(raiz);
 /** Último commit antes da fase 5 (mesmo de `saneamento.test.ts`). */
 const REF_ANTES_SANEAMENTO = "fcfc006";
 const refDisponivel =
@@ -66,19 +74,19 @@ describe("vigência", () => {
   });
 
   test("Res. CNE/CP 1/2021 antes e depois da assinatura da 2/2026 (publicação a confirmar)", () => {
-    expect(statusEm(DCN_2021, "2020-12-31", raiz).status).toBe("ainda-nao-vigente");
-    const antes = statusEm(DCN_2021, "2026-11-01", raiz);
+    expect(statusEm(DCN_2021, "2020-12-31", vigencia).status).toBe("ainda-nao-vigente");
+    const antes = statusEm(DCN_2021, "2026-11-01", vigencia);
     expect(antes.status).toBe("vigente");
     expect(antes.eventos[0]!.ocorreu).toBe(false);
-    const depois = statusEm(DCN_2021, "2026-11-12", raiz);
+    const depois = statusEm(DCN_2021, "2026-11-12", vigencia);
     expect(depois.status).toBe("revogada");
     expect(depois.certo).toBe(false);
     expect(depois.eventos[0]!.ocorreu).toBe("a confirmar");
   });
 
   test("datas certas: Lei 13.146 entra em vigor 180 dias depois da publicação", () => {
-    expect(statusEm("br/lei/2015/13146", "2015-12-31", raiz).status).toBe("ainda-nao-vigente");
-    expect(statusEm("br/lei/2015/13146", "2016-01-03", raiz)).toMatchObject({ status: "vigente", certo: true });
+    expect(statusEm("br/lei/2015/13146", "2015-12-31", vigencia).status).toBe("ainda-nao-vigente");
+    expect(statusEm("br/lei/2015/13146", "2016-01-03", vigencia)).toMatchObject({ status: "vigente", certo: true });
   });
 
   test.skipIf(!refDisponivel)(
@@ -107,7 +115,7 @@ describe("vigência", () => {
         ).stdout;
         const manual = String(analisarFrontMatter(antigo, norma.path).meta.status_vigencia);
         if (norma.id.includes("~")) continue; // compilação: status manual (texto reproduzido)
-        const calculado = statusEm(norma.id, dataReferencia(raiz), raiz).status;
+        const calculado = statusEm(norma.id, dataReferencia(raiz), vigencia).status;
         if (calculado !== manual) divergentes[norma.id] = [manual, calculado];
       }
       expect(divergentes).toEqual(justificadas);
@@ -115,10 +123,10 @@ describe("vigência", () => {
   );
 
   test("stub com status registrado: o status só vale a partir do efeito da relação que o fundamenta", () => {
-    expect(statusEm("br/cne-ceb/res/2012/6", "2015-01-01", raiz).status).toBe("vigente");
-    expect(statusEm("br/cne-cp/res/2002/3", "2015-01-01", raiz).status).toBe("vigente");
-    expect(statusEm("br/cne-ceb/res/2014/1", "2015-01-01", raiz).status).toBe("vigente");
-    expect(statusEm("br/lei/1971/5692", "1990-01-01", raiz).status).toBe("vigente");
+    expect(statusEm("br/cne-ceb/res/2012/6", "2015-01-01", vigencia).status).toBe("vigente");
+    expect(statusEm("br/cne-cp/res/2002/3", "2015-01-01", vigencia).status).toBe("vigente");
+    expect(statusEm("br/cne-ceb/res/2014/1", "2015-01-01", vigencia).status).toBe("vigente");
+    expect(statusEm("br/lei/1971/5692", "1990-01-01", vigencia).status).toBe("vigente");
     const registro = carregarRegistro(raiz);
     const datados = registro.entradas.filter(
       (e) => e.situacao === "stub" && e.status_vigencia && !["a confirmar", "vigente"].includes(e.status_vigencia),
@@ -126,30 +134,30 @@ describe("vigência", () => {
     expect(datados.length).toBeGreaterThan(20);
     const errados: string[] = [];
     for (const stub of datados) {
-      const efeito = inicioVigencia(idDoAto(stub.status_fonte!.split("#")[0]!), raiz);
+      const efeito = inicioVigencia(idDoAto(stub.status_fonte!.split("#")[0]!), vigencia);
       const limite = efeito.data ?? efeito.minimo!;
       const vespera = vesperaDe(limite);
-      const antes = statusEm(stub.id, vespera, raiz).status;
+      const antes = statusEm(stub.id, vespera, vigencia).status;
       if (!["vigente", "alterada", "ainda-nao-vigente"].includes(antes)) errados.push(`${stub.id} ${vespera} ${antes}`);
-      const depois = statusEm(stub.id, "2027-01-01", raiz).status;
+      const depois = statusEm(stub.id, "2027-01-01", vigencia).status;
       if (depois !== stub.status_vigencia) errados.push(`${stub.id} 2027-01-01 ${depois}`);
     }
     expect(errados).toEqual([]);
   });
 
   test("regras de transição da 2/2026 alcançam a 1/2021", () => {
-    const ids = transicoesAplicaveis(DCN_2021, "2026-11-13", raiz).map((t) => t.id);
+    const ids = transicoesAplicaveis(DCN_2021, "2026-11-13", vigencia).map((t) => t.id);
     expect(ids).toEqual(expect.arrayContaining(["dcnept-2026-art71", "dcnept-2026-art71-parunico"]));
-    const art72 = transicoesAplicaveis(DCN_2026, "2031-01-01", raiz).find((t) => t.id === "dcnept-2026-art72")!;
+    const art72 = transicoesAplicaveis(DCN_2026, "2031-01-01", vigencia).find((t) => t.id === "dcnept-2026-art72")!;
     expect(art72.situacao).toBe("encerrada");
   });
 
   test("linha normativa deriva vigente, substituídas e dispositivos revogados", () => {
-    const linha = derivarLinha(["br/cne-ceb/res/2012/6", DCN_2021, DCN_2026], "2026-11-13", raiz);
+    const linha = derivarLinha(["br/cne-ceb/res/2012/6", DCN_2021, DCN_2026], "2026-11-13", vigencia);
     expect(linha.vigente).toBe(DCN_2026);
     expect(linha.substitui).toContain(DCN_2021);
     expect(linha.dispositivos_revogados).toEqual(["br/cne-ceb/res/2025/3#art6-iii"]);
-    expect(derivarLinha(["br/cne-ceb/res/2012/6", DCN_2021], "2026-11-01", raiz).vigente).toBe(DCN_2021);
+    expect(derivarLinha(["br/cne-ceb/res/2012/6", DCN_2021], "2026-11-01", vigencia).vigente).toBe(DCN_2021);
   });
 });
 
@@ -181,16 +189,6 @@ describe("correspondência 1/2021 → 2/2026", () => {
     expect(validarCorrespondencias(raiz)).toEqual([]);
     const artigos = dispositivosDoAto(DCN_2021, raiz).filter((d) => d.tipo === "artigo");
     expect(artigos.length).toBe(65);
-    expect(correspondencia(DCN_2021, raiz).length).toBe(65);
-  });
-
-  test("Q07 e Q23 da avaliação", () => {
-    const [art20] = correspondencia(`${DCN_2021}#art20`, raiz);
-    expect(art20!.item).toMatchObject({ tipo: "parcial", destino: ["#art22"] });
-    const [art26par1] = correspondencia(`${DCN_2021}#art26-par1`, raiz);
-    expect(art26par1!.item.destino).toEqual(["#art29-par2", "#art29-par3"]);
-    const [herdado] = correspondencia(`${DCN_2021}#art5-par1`, raiz);
-    expect(herdado!.herdado_de).toBe("#art5");
   });
 });
 

@@ -29,7 +29,7 @@ import { carregarEstruturas, indiceDispositivos } from "./estrutura.ts";
 import { idDoAto } from "./ids.ts";
 import { carregarRegistro } from "./registro.ts";
 import { carregarRelacoes } from "./relacoes.ts";
-import { carregarTransicoes, datasTransicao, efeitoDaRelacao, intervalosVigencia } from "./vigencia.ts";
+import { carregarDatas, carregarTransicoes, datasTransicao, efeitoDaRelacao, intervalosVigencia } from "./vigencia.ts";
 
 /** Linha da tabela `dispositivos` de cada dispositivo das normas da base. */
 export function* linhasDispositivos(raiz: string): Generator<LinhaDispositivo> {
@@ -64,8 +64,9 @@ export function* linhasDispositivos(raiz: string): Generator<LinhaDispositivo> {
 export function* linhasRelacoes(raiz: string): Generator<LinhaRelacao> {
   const caminho = CAMINHOS.relacoes;
   let ordem = 0;
+  const datas = carregarDatas(raiz);
   for (const r of carregarRelacoes(raiz)) {
-    const efeito = efeitoDaRelacao(r, raiz);
+    const efeito = efeitoDaRelacao(r, { datas });
     yield {
       ordem: ordem++,
       tipo: r.tipo,
@@ -97,14 +98,16 @@ export function atosComVigencia(raiz: string): string[] {
 }
 
 export function* linhasVigencias(raiz: string): Generator<LinhaVigencia> {
+  const fonte = { registro: carregarRegistro(raiz), datas: carregarDatas(raiz), relacoes: carregarRelacoes(raiz) };
   for (const ato of atosComVigencia(raiz)) {
     let ordem = 0;
-    for (const intervalo of intervalosVigencia(ato, raiz)) yield { alvo: ato, ordem: ordem++, ...intervalo };
+    for (const intervalo of intervalosVigencia(ato, fonte)) yield { alvo: ato, ordem: ordem++, ...intervalo };
   }
 }
 
 export function* linhasTransicoes(raiz: string): Generator<LinhaTransicao> {
   const caminho = CAMINHOS.transicoes;
+  const datas = carregarDatas(raiz);
   for (const t of carregarTransicoes(raiz)) {
     yield {
       id: t.id,
@@ -116,7 +119,7 @@ export function* linhasTransicoes(raiz: string): Generator<LinhaTransicao> {
       regra: t.regra,
       inicio: t.inicio,
       fim: t.fim,
-      ...datasTransicao(t, raiz),
+      ...datasTransicao(t, { datas }),
       evidencia: t.evidencia,
       path: caminho,
     };

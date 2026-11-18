@@ -18,7 +18,7 @@ ferramentas/oxlint-plugin/rules/no-wall-clock-in-tests.test.ts	8	0
 ferramentas/oxlint-plugin/rules/prefer-catch-tags.test.ts	6	0
 ferramentas/oxlint-plugin/rules/prefer-effect-fn.test.ts	23	0
 ferramentas/oxlint-plugin/rules/require-suppression-reason.test.ts	13	0
-packages/kb/src/avaliacao/resolvedor.test.ts	4	0
+packages/kb/src/avaliacao/resolvedor.test.ts	3	0
 packages/kb/src/busca/stemmer.test.ts	52	0
 packages/kb/src/busca/tokens.test.ts	19	0
 packages/kb/src/db/base.test.ts	33	0
@@ -28,7 +28,7 @@ packages/kb/src/db/unidades.test.ts	4	0
 packages/kb/src/fatos/fatos.test.ts	20	0
 packages/kb/src/normas/dispositivos.test.ts	17	0
 packages/kb/src/normas/estrutura.test.ts	47	0
-packages/kb/src/normas/fase5.test.ts	16	0
+packages/kb/src/normas/fase5.test.ts	15	0
 packages/kb/src/normas/nao-vigente.test.ts	2	0
 packages/kb/src/normas/referencia-estruturada.test.ts	31	0
 packages/kb/src/normas/resolver.test.ts	59	0
@@ -113,4 +113,4 @@ scripts/suap/consultas.test.ts	20	0
 scripts/suap/matrizes.test.ts	21	0
 scripts/suap/tutoriais.test.ts	24	0
 scripts/upstream_t3.test.ts	3	0
-TOTAL	1555	35
+TOTAL	1553	35
