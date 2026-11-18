@@ -75,23 +75,31 @@ it.live("atualização pelo RPC: confere, baixa, adia com o servidor ocupado e t
     });
     const { url } = yield* servirPasta(NodePath.join(raiz, "servido"));
 
+    // Cada abertura atende a troca pendente antes de abrir, como a CLI.
     const abrir = () =>
-      Servidor.layer({
-        primeiroUsoFeito: true,
-        banco: empacotada,
-        token: Redacted.make(TOKEN),
-        atualizacao: {
-          desligada: null,
-          feed: `${url}{canal}/`,
-          chave: lerChavePublica(escreverChavePublica(chave)),
-          canalPadrao: "beta",
-          pasta: pastaApp,
-          bancoEmpacotado: empacotada,
-          versaoApp: "0.1.0",
-          abertura: prepararAbertura({ pasta: pastaApp, bancoEmpacotado: empacotada }),
-          automatico: false,
-        },
-      }).pipe(Layer.provide(layerDriversFalsos(novoRegistro())), Layer.provide(NodeServices.layer));
+      Layer.unwrap(
+        prepararAbertura({ pasta: pastaApp, bancoEmpacotado: empacotada }).pipe(
+          Effect.provide(NodeServices.layer),
+          Effect.map((abertura) =>
+            Servidor.layer({
+              primeiroUsoFeito: true,
+              banco: empacotada,
+              token: Redacted.make(TOKEN),
+              atualizacao: {
+                desligada: null,
+                feed: `${url}{canal}/`,
+                chave: lerChavePublica(escreverChavePublica(chave)),
+                canalPadrao: "beta",
+                pasta: pastaApp,
+                bancoEmpacotado: empacotada,
+                versaoApp: "0.1.0",
+                abertura,
+                automatico: false,
+              },
+            }).pipe(Layer.provide(layerDriversFalsos(novoRegistro())), Layer.provide(NodeServices.layer)),
+          ),
+        ),
+      );
 
     yield* Effect.gen(function* () {
       const { urlRpc } = yield* Servidor.ServidorApp;

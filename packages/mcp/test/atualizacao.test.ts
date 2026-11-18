@@ -7,6 +7,7 @@ import * as NodeFS from "node:fs";
 import * as NodeHttp from "node:http";
 import * as NodePath from "node:path";
 import * as NodeSqlite from "node:sqlite";
+import * as NodeServices from "@effect/platform-node/NodeServices";
 import { afterEach, describe, expect, it } from "@effect/vitest";
 import { gerarCanal } from "@simplifica-if/atualizacao/fabrica";
 import { lerInfoBanco } from "@simplifica-if/atualizacao/local";
@@ -66,6 +67,6 @@ describe("simplifica-mcp com --pasta-atualizacao", () => {
       yield* primeira.umaVez;
       const segunda = yield* prepararAtualizacao(opcoes);
       expect(lerInfoBanco(segunda.banco)?.versao).toBe("2026.11.21");
-    }).pipe(Effect.scoped),
+    }).pipe(Effect.scoped, Effect.provide(NodeServices.layer)),
   );
 });
