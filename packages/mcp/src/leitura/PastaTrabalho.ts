@@ -23,7 +23,7 @@ import * as Schema from "effect/Schema";
 import { EntradaInvalida } from "../contratos.ts";
 
 /** Maior `.md` aceito: o maior PPC da base tem cerca de 1 MB. */
-export const TAMANHO_MAXIMO = 8 * 1024 * 1024;
+const TAMANHO_MAXIMO = 8 * 1024 * 1024;
 
 /** A pasta de trabalho não existe ou não é uma pasta. */
 export class PastaTrabalhoInvalida extends Schema.TaggedError<PastaTrabalhoInvalida>()("PastaTrabalhoInvalida", {

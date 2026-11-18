@@ -134,8 +134,7 @@ const make = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
   const fontes = yield* FontesNormativas.FontesNormativas;
   // as tabelas de correspondência e os dispositivos que elas citam não mudam com o banco aberto:
-  // carregados uma vez, na construção da layer (um Effect.cached tornaria a primeira chamada
-  // assíncrona, e a ponte do C1 roda os métodos com Effect.runSync)
+  // carregados uma vez, na construção da layer
   const fonteCorrespondencia = yield* carregarFonteCorrespondencia;
   const prover = <A, E>(efeito: Effect.Effect<A, E, SqlClient.SqlClient | FontesNormativas.FontesNormativas>) =>
     efeito.pipe(

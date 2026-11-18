@@ -182,7 +182,7 @@ export const SaidaIndice = Resposta(DadosIndice);
 
 /* ================================================================== busca */
 
-export const TIPOS_RESULTADO = [
+const TIPOS_RESULTADO = [
   "dispositivo",
   "norma",
   "curso",

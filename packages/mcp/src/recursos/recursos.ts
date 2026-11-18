@@ -92,7 +92,7 @@ export const MODELOS: ReadonlyArray<ModeloDeRecurso> = [
 ];
 
 /** As normas centrais em `resources/list`, quando estão na base. */
-export const NORMAS_DE_ENTRADA = ["br/cne-cp/res/2026/2", "br/cne-cp/res/2021/1", "br/lei/1996/9394"] as const;
+const NORMAS_DE_ENTRADA = ["br/cne-cp/res/2026/2", "br/cne-cp/res/2021/1", "br/lei/1996/9394"] as const;
 
 /* ================================================================== leitura */
 

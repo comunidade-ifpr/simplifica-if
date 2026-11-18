@@ -513,7 +513,7 @@ function tipoDe(texto: string): string | null {
 
 /* ------------------------------------------------------------------ extração */
 
-export interface OpcoesExtracao {
+interface OpcoesExtracao {
   /** Reconhece nomes próprios sem número (LDB, Lei do Estágio). Padrão: sim. */
   aliases?: boolean;
 }

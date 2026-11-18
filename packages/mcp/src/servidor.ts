@@ -13,7 +13,7 @@ import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
 import * as Layers from "@simplifica-if/kb/layers";
 import * as Layer from "effect/Layer";
 import { McpProtocol, McpServer } from "effect/ai";
-import type { Canal } from "./contratos.ts";
+import type { Canal } from "@simplifica-if/kb/canal";
 import { registrarFerramentas } from "./ferramentas/registrar.ts";
 import { layerHandlers } from "./ferramentas/toolkit.ts";
 // Gerado de `instrucoes.md` (pnpm mcp:instrucoes): o texto vai embutido no bundle e no executável.
@@ -81,14 +81,10 @@ export const layerStdio = (opcoes: { readonly banco: string; readonly canal: Can
  * A mensagem dos erros de abertura do banco para quem instala o servidor: o kb fala "desta versão do
  * kb", e quem usa o simplifica-mcp precisa saber que é o servidor que está desatualizado.
  */
-export function mensagemDeAbertura(
-  erro: BaseKb.BaseIncompativel | BaseKb.BaseAusente | Leitura.CanalDesconhecido,
-): string {
+export function mensagemDeAbertura(erro: BaseKb.BaseIncompativel | BaseKb.BaseAusente): string {
   switch (erro._tag) {
     case "BaseAusente":
       return `kb.sqlite não encontrado ou ilegível: ${erro.caminho}`;
-    case "CanalDesconhecido":
-      return `${MENSAGEM_INCOMPATIVEL} (tabela meta: ${erro.message})`;
     case "BaseIncompativel":
       if (erro.motivo === "esquema") {
         return `${MENSAGEM_INCOMPATIVEL} (esquema da base: ${erro.encontrado ?? "ausente"}; esperado: ${VERSAO_ESQUEMA})`;

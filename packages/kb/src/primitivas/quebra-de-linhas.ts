@@ -13,7 +13,7 @@
 import { aparar, contarCaracteres, prefixo } from "../texto.ts";
 import { expandirTabs } from "./texto.ts";
 
-export type OpcoesWrap = {
+type OpcoesWrap = {
   /** Parte palavras maiores que a largura (padrão `true`). */
   quebrarPalavrasLongas?: boolean;
 };

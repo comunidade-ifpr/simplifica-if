@@ -38,7 +38,7 @@ import { HttpRouter, HttpServer, HttpServerRequest, HttpServerResponse } from "e
 import * as NetAddress from "effect/net/NetAddress";
 import { RpcSerialization, RpcServer } from "effect/rpc";
 import { CAMINHO_INGRESSO, CAMINHO_LIBERAR_ARQUIVO, CAMINHO_RPC, GrupoApp } from "@simplifica-if/contratos-app";
-import type { Canal } from "@simplifica-if/mcp/contratos";
+import type { Canal } from "@simplifica-if/kb/canal";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as McpRpc from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";

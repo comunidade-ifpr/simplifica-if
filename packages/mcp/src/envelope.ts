@@ -8,7 +8,8 @@ import * as NodeCrypto from "node:crypto";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import type { MetaBase } from "@simplifica-if/kb/BaseKb";
-import { type Aviso, type Base, type Canal, EntradaInvalida, type Pagina, type Resposta } from "./contratos.ts";
+import type { Canal } from "@simplifica-if/kb/canal";
+import { type Aviso, type Base, EntradaInvalida, type Pagina, type Resposta } from "./contratos.ts";
 
 /**
  * A `base` do envelope. `versao`, `commit` e `canal` vêm da tabela `meta` quando o banco os tem
@@ -25,9 +26,7 @@ export function montarBase(meta: MetaEnvelope, canal: Canal): Base {
 }
 
 /** O que o envelope usa da `meta` do banco (`BaseKb`), com o canal entre os do simplifica-mcp. */
-export interface MetaEnvelope extends Pick<MetaBase, "versao" | "commit" | "data_referencia" | "fontes_sha256"> {
-  readonly canal: Canal | null;
-}
+export type MetaEnvelope = Pick<MetaBase, "versao" | "commit" | "data_referencia" | "fontes_sha256" | "canal">;
 
 export function responder<T>(
   base: Base,
@@ -90,7 +89,7 @@ export const lerCursor = Effect.fn("envelope.lerCursor")(function* (cursor: stri
   return estado.d;
 });
 
-export const CURSOR_ALEM_DO_FIM = "cursor além do fim da lista: repita a chamada sem cursor";
+const CURSOR_ALEM_DO_FIM = "cursor além do fim da lista: repita a chamada sem cursor";
 
 /** Recorta uma lista já ordenada em páginas de `limite` itens. */
 export const paginar = Effect.fn("envelope.paginar")(function* <T>(

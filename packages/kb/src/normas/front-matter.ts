@@ -53,14 +53,6 @@ export function anoDoTexto(valor: string): string | number {
   return RE_DIGITOS_UNICODE.test(valor) ? inteiroDecimal(valor) : valor;
 }
 
-/** `ano` só de dígitos vira inteiro; qualquer outro texto fica como está, para o validador acusar. */
-export const esquemaAno = Schema.String.pipe(
-  Schema.decodeTo(
-    Schema.Union([Schema.String, Schema.Number]),
-    SchemaTransformation.transform({ decode: anoDoTexto, encode: String }),
-  ),
-);
-
 const ehFrontMatter = (valor: unknown): valor is FrontMatter => typeof valor === "object" && valor !== null;
 
 /** Estrutura aceita no front matter: campos de texto ou listas de texto, sem mapas aninhados. */

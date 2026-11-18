@@ -24,7 +24,7 @@ const recusa = (caminho: string) =>
     Effect.scoped,
     Effect.flip,
     Effect.map((erro) =>
-      BaseKb.ehBaseAusente(erro) || BaseKb.ehBaseIncompativel(erro) || Leitura.ehCanalDesconhecido(erro)
+      BaseKb.ehBaseAusente(erro) || BaseKb.ehBaseIncompativel(erro)
         ? mensagemDeAbertura(erro)
         : `${MENSAGEM_INCOMPATIVEL} (${erro._tag})`,
     ),
@@ -88,8 +88,6 @@ describe("abertura do banco", () => {
       expect(yield* recusa(criarBancoFixture({ meta: { data_referencia: null } }))).toContain(MENSAGEM_INCOMPATIVEL);
       expect(yield* recusa(criarBancoFixture({ meta: { contagens_json: "{" } }))).toContain("contagens_json");
       expect(yield* recusa(criarBancoFixture({ meta: { canal: "nightly" } }))).toContain(MENSAGEM_INCOMPATIVEL);
-      // canal que o kb conhece e o simplifica-mcp não
-      expect(yield* recusa(criarBancoFixture({ meta: { canal: "piloto" } }))).toContain(MENSAGEM_INCOMPATIVEL);
     }),
   );
 

@@ -25,7 +25,7 @@ import * as Effect from "effect/Effect";
 import * as Schedule from "effect/Schedule";
 import { VERSAO_PACOTE } from "./servidor.ts";
 
-export interface OpcoesAtualizacaoMcp {
+interface OpcoesAtualizacaoMcp {
   readonly pasta: string;
   /** O `--banco` (a base instalada), se houver. */
   readonly banco: string | undefined;

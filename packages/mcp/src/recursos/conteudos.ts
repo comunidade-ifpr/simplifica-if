@@ -30,7 +30,7 @@ function listaDeCursos(cursos: readonly Curso[], orcamento: number): string {
 
 /* ================================================================== PPC */
 
-export const TETO_RECURSO_PPC = 12_000;
+const TETO_RECURSO_PPC = 12_000;
 
 export const EntradaPpc = Schema.Struct({ ppc: Schema.String });
 
@@ -91,7 +91,7 @@ export function textoPpc(resposta: Resposta<typeof DadosPpc.Type>): string {
 
 /* ================================================================== CNCT */
 
-export const TETO_RECURSO_CNCT = 12_000;
+const TETO_RECURSO_CNCT = 12_000;
 
 export const EntradaCnct = Schema.Struct({ cnct: Schema.String });
 
@@ -152,7 +152,7 @@ export function textoCnct(resposta: Resposta<typeof DadosCnct.Type>): string {
 
 /* ================================================================== campus */
 
-export const TETO_RECURSO_CAMPUS = 8_000;
+const TETO_RECURSO_CAMPUS = 8_000;
 
 export const EntradaCampus = Schema.Struct({ campus: Schema.String });
 
@@ -193,7 +193,7 @@ export function textoCampus(resposta: Resposta<typeof DadosCampus.Type>): string
 
 /* ================================================================== ficha da revisar-ppc */
 
-export const TETO_RECURSO_FICHA = 8_000;
+const TETO_RECURSO_FICHA = 8_000;
 
 export const EntradaFicha = Schema.Struct({ ficha: Schema.String });
 

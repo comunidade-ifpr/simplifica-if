@@ -76,8 +76,6 @@ export class ConsultasRotuladasIlegiveis extends Schema.TaggedError<ConsultasRot
   }
 }
 
-export const ehConsultasRotuladasIlegiveis = Schema.is(ConsultasRotuladasIlegiveis);
-
 /**
  * Recall@k de cada consulta rotulada nos três modos, pelo `Ppcs.buscarSecoes`. O modo `completo` usa
  * o léxico de `FontesNormativas` (ou `opcoes.lexico`); os outros, um léxico vazio.

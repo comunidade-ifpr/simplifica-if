@@ -161,7 +161,7 @@ export function ordenarCaminhos(caminhos: Iterable<string>): string[] {
   });
 }
 
-// @effect-diagnostics-next-line extendsNativeError:off -- erro do carregador síncrono `lerTexto`, capturado por instanceof nos scripts (o C3 o troca)
+// @effect-diagnostics-next-line extendsNativeError:off -- erro do carregador síncrono `lerTexto`, capturado por instanceof nos scripts
 export class ErroDecodificacao extends Error {}
 
 /**

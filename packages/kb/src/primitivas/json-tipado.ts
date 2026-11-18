@@ -8,7 +8,6 @@
  * - `serializarJsonTipado` escreve sem escapar o que não é ASCII, com indentação,
  *   separadores e ordenação das chaves (por code point) opcionais.
  */
-import * as NodeFS from "node:fs";
 import { compararTexto, lerTexto } from "../texto.ts";
 import { chavesNaOrdem, ehDicionario, Flutuante, ORDEM_CHAVES, type Dicionario, reprFloat } from "./valores.ts";
 
@@ -188,11 +187,6 @@ export function carregarJsonTipado(caminho: string): unknown {
   return analisarJsonTipado(lerTexto(caminho));
 }
 
-/** Lê o JSON sem normalizar quebras de linha. */
-export function carregarJsonTipadoDeBytes(caminho: string): unknown {
-  return analisarJsonTipado(new TextDecoder("utf-8", { fatal: true }).decode(NodeFS.readFileSync(caminho)));
-}
-
 const ESCAPES: Record<string, string> = {
   '"': '\\"',
   "\\": "\\\\",
@@ -219,7 +213,7 @@ function numeroJson(valor: number | Flutuante | bigint): string {
   return BigInt(numero).toString();
 }
 
-export type OpcoesSerializacao = {
+type OpcoesSerializacao = {
   /** Indentação (`indent`); ausente gera uma linha só. */
   indent?: number;
   /** Separadores de itens e de chave; o padrão é `(", ", ": ")` sem indentação e `(",", ": ")` com. */

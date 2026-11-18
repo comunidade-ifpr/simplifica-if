@@ -23,7 +23,7 @@ import { ehIdAto, ehIdCnct, ehIdExterno, RE_ID_DISPOSITIVO, RE_REFERENCIA } from
 import { carregarRegistro, raizRepositorio, type Registro, type Situacao } from "./registro.ts";
 import { textoDispositivos } from "./texto-dispositivos.ts";
 
-export const PAPEIS_REFERENCIA = ["fundamento", "complementar"] as const;
+const PAPEIS_REFERENCIA = ["fundamento", "complementar"] as const;
 export type PapelReferencia = (typeof PAPEIS_REFERENCIA)[number];
 
 /** Referência normativa estruturada (decodificada sem chaves extras: `onExcessProperty: "error"`). */

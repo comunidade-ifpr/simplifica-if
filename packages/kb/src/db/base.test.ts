@@ -97,7 +97,7 @@ const layerCompilados = Layer.effect(
     yield* TestClock.setTime(INSTANTE);
     yield* compilador.compilar({ raiz, destino: a });
     yield* compilador.compilar({ raiz, destino: b });
-    yield* compilador.compilar({ raiz, destino: c, versao: "2026.11.13", commit: "0123abcd", canal: "piloto" });
+    yield* compilador.compilar({ raiz, destino: c, versao: "2026.11.13", commit: "0123abcd", canal: "beta" });
     return { a, b, c };
   }),
 );
@@ -830,8 +830,8 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           Layer.fresh(BaseKb.layer.pipe(Layer.provide(BaseKb.layerSqlite({ caminho: c })))),
         );
         const { versao, commit, canal, linhas, ...resto } = comVersao.meta;
-        expect([versao, commit, canal]).toEqual(["2026.11.13", "0123abcd", "piloto"]);
-        expect([linhas["versao"], linhas["commit"], linhas["canal"]]).toEqual(["2026.11.13", "0123abcd", "piloto"]);
+        expect([versao, commit, canal]).toEqual(["2026.11.13", "0123abcd", "beta"]);
+        expect([linhas["versao"], linhas["commit"], linhas["canal"]]).toEqual(["2026.11.13", "0123abcd", "beta"]);
         const { versao: _v, commit: _c, canal: _k, linhas: linhasSem, ...restoSem } = meta;
         expect(resto).toEqual(restoSem);
         const { versao: _lv, commit: _lc, canal: _lk, ...outrasLinhas } = linhas;

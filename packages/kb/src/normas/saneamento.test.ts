@@ -51,14 +51,11 @@ describe.skipIf(!refDisponivel)(`saneamento: palavras iguais às de ${REF_ANTES_
   test("as 36 normas existiam antes do saneamento", () => {
     expect(normas.length).toBe(36);
   });
-  for (const norma of normas) {
-    if (TEXTO_SUBSTITUIDO.has(norma.path)) continue;
-    test(norma.path, () => {
-      const relativo = NodePath.posix.join("base-conhecimento", norma.path);
-      const antes = versaoAnterior(relativo);
-      expect(antes).not.toBeNull();
-      const depois = NodeFS.readFileSync(NodePath.join(raiz, relativo), "utf-8");
-      expect(primeiraDivergencia(palavrasMarkdown(antes!), palavrasMarkdown(depois))).toBeNull();
-    });
-  }
+  test.each(normas.filter((norma) => !TEXTO_SUBSTITUIDO.has(norma.path)))("$path", (norma) => {
+    const relativo = NodePath.posix.join("base-conhecimento", norma.path);
+    const antes = versaoAnterior(relativo);
+    expect(antes).not.toBeNull();
+    const depois = NodeFS.readFileSync(NodePath.join(raiz, relativo), "utf-8");
+    expect(primeiraDivergencia(palavrasMarkdown(antes!), palavrasMarkdown(depois))).toBeNull();
+  });
 });

@@ -32,7 +32,7 @@ const LinhaSegmento = Schema.Struct({
 });
 const linhasSegmentos = Sql.todas(LinhaSegmento);
 
-export interface OpcoesImpacto {
+interface OpcoesImpacto {
   /** Data da vigência (padrão: `data_referencia`). */
   readonly data?: string;
   /** `false` não consulta os PPCs (mais rápido). */
@@ -55,8 +55,7 @@ const make = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
   const fontes = yield* FontesNormativas.FontesNormativas;
   // as tabelas de correspondência e os dispositivos que elas citam não mudam com o banco aberto:
-  // carregados uma vez, na construção da layer (um Effect.cached tornaria a primeira chamada
-  // assíncrona, e a ponte do C1 roda os métodos com Effect.runSync)
+  // carregados uma vez, na construção da layer
   const fonteCorrespondencia = yield* carregarFonteCorrespondencia;
 
   const daNorma = Effect.fn("Impacto.daNorma")(

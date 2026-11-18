@@ -57,8 +57,6 @@ export class BaseDesatualizada extends Schema.TaggedError<BaseDesatualizada>()("
   }
 }
 
-export const ehBaseDesatualizada = Schema.is(BaseDesatualizada);
-
 export class Compilador extends Context.Service<
   Compilador,
   {

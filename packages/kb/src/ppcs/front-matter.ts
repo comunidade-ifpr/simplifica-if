@@ -32,12 +32,12 @@ export { ErroFrontMatter };
 
 export const DESCONHECIDO = "desconhecido";
 const RE_SLUG = "[a-z0-9]+(?:-[a-z0-9]+)*";
-export const RE_ID_PPC = new RegExp(`^ppc:${RE_SLUG}/${RE_SLUG}$`);
+const RE_ID_PPC = new RegExp(`^ppc:${RE_SLUG}/${RE_SLUG}$`);
 const RE_SHA256 = /^[0-9a-f]{64}$/;
 const RE_COMMIT = /^[0-9a-f]{40}$/;
 
 /** Ordem dos campos no arquivo (e na serialização). */
-export const CAMPOS_PROVENIENCIA = [
+const CAMPOS_PROVENIENCIA = [
   "id",
   "fonte_url",
   "fonte_sha256",

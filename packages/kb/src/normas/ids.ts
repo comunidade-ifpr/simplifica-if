@@ -29,11 +29,10 @@ export function semAcento(texto: string): string {
 /** Tipos de ato da Presidência, sem segmento de órgão no ID. */
 export const TIPOS_SEM_ORGAO = ["lei", "lc", "decreto", "decreto-lei", "mp", "ec"] as const;
 /** Tipos de ato emitidos por órgão (conselho, ministério, pró-reitoria). */
-export const TIPOS_COM_ORGAO = ["res", "portaria", "nt", "parecer", "in", "deliberacao"] as const;
+const TIPOS_COM_ORGAO = ["res", "portaria", "nt", "parecer", "in", "deliberacao"] as const;
 export const VARIANTES = ["compilacao"] as const;
 
 export type TipoAto = (typeof TIPOS_SEM_ORGAO)[number] | (typeof TIPOS_COM_ORGAO)[number];
-export type Variante = (typeof VARIANTES)[number];
 
 const SLUG = String.raw`[a-z0-9]+(?:-[a-z0-9]+)*`;
 const RE_ID_NORMA = new RegExp(

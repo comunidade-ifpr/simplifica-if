@@ -11,12 +11,14 @@
  */
 import * as BaseKb from "@simplifica-if/kb/BaseKb";
 import * as Sql from "@simplifica-if/kb/db/sql";
+import type * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
-import { type Base, CANAIS, type Canal, type ErroDeLeitura, FalhaNaBase, type Resposta } from "../contratos.ts";
-import { type MetaEnvelope, montarBase, responder } from "../envelope.ts";
+import type { Canal } from "@simplifica-if/kb/canal";
+import { type Base, type ErroDeLeitura, FalhaNaBase, type Resposta } from "../contratos.ts";
+import { montarBase, responder } from "../envelope.ts";
 import type * as AdequacaoArt71 from "../ferramentas/adequacao-art71.ts";
 import type * as BuscarNorma from "../ferramentas/buscar-norma.ts";
 import type * as BuscarSecoes from "../ferramentas/buscar-secoes.ts";
@@ -48,17 +50,6 @@ import type * as Conteudos from "../recursos/conteudos.ts";
 type Metodo<E extends { readonly Type: unknown }, D extends { readonly Type: unknown }> = (
   entrada: E["Type"],
 ) => Effect.Effect<Resposta<D["Type"]>, ErroDeLeitura>;
-
-/** O canal registrado no banco não é um dos do simplifica-mcp. */
-export class CanalDesconhecido extends Schema.TaggedError<CanalDesconhecido>()("CanalDesconhecido", {
-  canal: Schema.String,
-}) {
-  override get message(): string {
-    return `canal da base desconhecido: ${this.canal} (esperado: ${CANAIS.join(", ")})`;
-  }
-}
-
-export const ehCanalDesconhecido = Schema.is(CanalDesconhecido);
 
 export class Leitura extends Context.Service<
   Leitura,
@@ -105,40 +96,27 @@ const linhasCampus = Sql.todas(
 );
 const linhasTipo = Sql.todas(Schema.Struct({ tipo: Schema.String }));
 
-const ehCanal = Schema.is(Schema.Literals(CANAIS));
+/** O que um método de leitura pode falhar antes da tradução: as falhas de leitura e as do kb. */
+type FalhaDoMetodo = ErroDeLeitura | Sql.FalhaNaConsulta | FontesNormativas.FalhaNasFontes;
 
-/** As falhas do banco viram `FalhaNaBase`; a entrada inválida passa como está. */
-function naBase<A, E extends { readonly _tag: string }>(
-  efeito: Effect.Effect<A, E>,
-): Effect.Effect<A, Exclude<E, { readonly _tag: "FalhaNaConsulta" | "FalhaNasFontes" }> | FalhaNaBase> {
-  return Effect.mapError(efeito, (erro) =>
-    erro._tag === "FalhaNaConsulta" || erro._tag === "FalhaNasFontes"
-      ? new FalhaNaBase({
-          operacao: erro._tag === "FalhaNaConsulta" ? "consulta ao kb.sqlite" : "fontes normativas",
-          cause: erro,
-        })
-      : (erro as Exclude<E, { readonly _tag: "FalhaNaConsulta" | "FalhaNasFontes" }>),
+/** As falhas do kb viram `FalhaNaBase`; os erros de leitura passam como estão. */
+const naBase = <A>(efeito: Effect.Effect<A, FalhaDoMetodo>): Effect.Effect<A, ErroDeLeitura> =>
+  efeito.pipe(
+    Effect.catchTags({
+      FalhaNaConsulta: (cause) => Effect.fail(new FalhaNaBase({ operacao: "consulta ao kb.sqlite", cause })),
+      FalhaNasFontes: (cause) => Effect.fail(new FalhaNaBase({ operacao: "fontes normativas", cause })),
+    }),
   );
-}
 
-const comFalhaNaBase = <
-  F extends Record<string, (entrada: never) => Effect.Effect<unknown, { readonly _tag: string }>>,
->(
-  metodos: F,
-) =>
-  Object.fromEntries(
-    Object.entries(metodos).map(([nome, metodo]) => [nome, (entrada: never) => naBase(metodo(entrada))]),
-  ) as unknown as {
-    readonly [K in keyof F]: (
-      entrada: Parameters<F[K]>[0],
-    ) => Effect.Effect<Effect.Success<ReturnType<F[K]>>, ErroDeLeitura>;
-  };
+/** Um método de leitura com as falhas do banco traduzidas por `naBase`. */
+const comFalhaNaBase =
+  <E, A>(metodo: (entrada: E) => Effect.Effect<A, FalhaDoMetodo>) =>
+  (entrada: E) =>
+    naBase(metodo(entrada));
 
 const make = Effect.fn("Leitura.make")(function* (opcoes: { readonly canal: Canal }) {
   const { meta } = yield* BaseKb.BaseKb;
-  if (meta.canal !== null && !ehCanal(meta.canal)) return yield* new CanalDesconhecido({ canal: meta.canal });
-  const metaEnvelope: MetaEnvelope = { ...meta, canal: meta.canal };
-  const base = montarBase(metaEnvelope, opcoes.canal);
+  const base = montarBase(meta, opcoes.canal);
 
   // `sobre_a_base`: o conteúdo do banco não muda com o servidor no ar
   const niveis = (yield* linhasNivel(
@@ -163,7 +141,27 @@ const make = Effect.fn("Leitura.make")(function* (opcoes: { readonly canal: Cana
 
   return Leitura.of({
     base,
-    ...comFalhaNaBase({ ...normas, ...ppcs, ...pacote, ...recursos, ...documentos, ...explorar }),
+    buscarNorma: comFalhaNaBase(normas.buscarNorma),
+    lerDispositivos: comFalhaNaBase(normas.lerDispositivos),
+    fichaNorma: comFalhaNaBase(normas.fichaNorma),
+    correspondencia: comFalhaNaBase(normas.correspondencia),
+    resolverCitacoes: comFalhaNaBase(normas.resolverCitacoes),
+    citacoesDaNorma: comFalhaNaBase(ppcs.citacoesDaNorma),
+    impactoDaNorma: comFalhaNaBase(ppcs.impactoDaNorma),
+    adequacaoArt71: comFalhaNaBase(ppcs.adequacaoArt71),
+    buscarSecoes: comFalhaNaBase(ppcs.buscarSecoes),
+    lerSecao: comFalhaNaBase(ppcs.lerSecao),
+    listarCursos: comFalhaNaBase(ppcs.listarCursos),
+    fichaCurso: comFalhaNaBase(ppcs.fichaCurso),
+    fatosPpc: comFalhaNaBase(ppcs.fatosPpc),
+    pacoteContexto: comFalhaNaBase(pacote.pacoteContexto),
+    lerPpc: comFalhaNaBase(recursos.lerPpc),
+    lerCnct: comFalhaNaBase(recursos.lerCnct),
+    lerCampus: comFalhaNaBase(recursos.lerCampus),
+    lerFicha: comFalhaNaBase(recursos.lerFicha),
+    lerDocumento: comFalhaNaBase(documentos.lerDocumento),
+    explorarIndice: comFalhaNaBase(explorar.explorarIndice),
+    explorarBuscar: comFalhaNaBase(explorar.explorarBuscar),
     // respostas fixas, montadas uma vez: o banco não muda com o servidor no ar
     sobreABase: Effect.fn("Leitura.sobreABase")(() => Effect.succeed(sobreABase)),
     etapa: Effect.fn("Leitura.etapa")(() => Effect.succeed(etapa)),

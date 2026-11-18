@@ -32,6 +32,7 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import type { Sinonimos } from "../busca/sinonimos.ts";
 import * as FontesNormativas from "../FontesNormativas.ts";
+import { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida } from "../PacoteContexto.ts";
 import { idDoAto } from "../normas/ids.ts";
 import { palavrasDeCampi } from "../ppcs/secoes.ts";
 import type { TopicoFichas, TopicosSecoes } from "../ppcs/topicos.ts";
@@ -51,41 +52,6 @@ import * as Sql from "./sql.ts";
 export const TAMANHO_MAXIMO_GRUPO = 20;
 /** Grupo das fichas de escopo transversal, que recebem o PPC inteiro. */
 export const TOPICO_TRANSVERSAL = "transversal";
-
-/* ------------------------------------------------------------ erros */
-
-export class PpcNaoEncontrado extends Schema.TaggedError<PpcNaoEncontrado>()("PpcNaoEncontrado", {
-  ppc: Schema.String,
-}) {
-  override get message(): string {
-    return `PPC não encontrado: ${this.ppc}`;
-  }
-}
-
-export const ehPpcNaoEncontrado = Schema.is(PpcNaoEncontrado);
-
-export class GrupoInexistente extends Schema.TaggedError<GrupoInexistente>()("GrupoInexistente", {
-  grupo: Schema.String,
-  /** Quantos grupos a rodada tem. */
-  total: Schema.Number,
-}) {
-  override get message(): string {
-    return `grupo inexistente: ${this.grupo} (há ${this.total})`;
-  }
-}
-
-export const ehGrupoInexistente = Schema.is(GrupoInexistente);
-
-export class TarefaNaoReconhecida extends Schema.TaggedError<TarefaNaoReconhecida>()("TarefaNaoReconhecida", {
-  /** Fichas pedidas que não estão no banco. */
-  fichas: Schema.Array(Schema.String),
-}) {
-  override get message(): string {
-    return `tarefa não reconhecida (ficha, tópico, grupo-NNN ou todas): ${this.fichas.join(", ")}`;
-  }
-}
-
-export const ehTarefaNaoReconhecida = Schema.is(TarefaNaoReconhecida);
 
 /* ------------------------------------------------------------ fichas e grupos */
 
@@ -570,7 +536,7 @@ export function consultasDeTexto(ficha: FichaPacote): string[] {
 }
 
 /** Opções da seleção de seções do PPC. */
-export interface OpcoesSecoes {
+interface OpcoesSecoes {
   /** Léxico da busca (padrão: o de `FontesNormativas`, que `buscarSecoes` lê). */
   lexico?: Sinonimos;
   /** Mapa tópico → tipos de seção (padrão: o de `FontesNormativas`). */
