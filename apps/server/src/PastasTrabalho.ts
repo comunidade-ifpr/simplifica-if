@@ -699,30 +699,36 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     const copias = yield* pastaCopias(conversa);
     const copia = path.join(copias, String(manifesto.turno), "arquivos");
     const antes = manifesto.arquivos ?? {};
-    const pular = new Set(incluirForaDaConversa ? [] : previsao.foraDaConversa);
-    for (const nome of previsao.criados) if (!pular.has(nome)) yield* removerSemSeguirLinks(real, nome);
-    // As pastas que o turno criou e ficaram vazias saem também (as mais fundas primeiro).
-    const pastasAntes = new Set(manifesto.pastas ?? []);
-    const criadasNoTurno = fim.pastas
-      .filter((nome) => !pastasAntes.has(nome))
-      .sort((a, b) => b.split("/").length - a.split("/").length);
-    for (const nome of criadasNoTurno) {
-      const partes = yield* partesSeguras(nome);
-      const caminho = yield* pastaSemLinks(real, partes, false).pipe(Effect.orElseSucceed(() => undefined));
-      if (caminho !== undefined && (yield* fs.readDirectory(caminho)).length === 0)
-        yield* PastasNode.removerPastaVazia(caminho);
-    }
-    for (const nome of [...previsao.alterados, ...previsao.apagados].filter((nome) => !pular.has(nome))) {
-      // Um link de antes do turno não se restaura (a cópia não o tem); o que está no lugar sai.
-      if (antes[nome] === LINK) yield* removerSemSeguirLinks(real, nome);
-      else yield* gravarSemSeguirLinks(real, nome, yield* fs.readFile(yield* dentro(copia, nome)));
-    }
-    // As cópias deste turno em diante já não valem: o próximo Desfazer volta mais um turno.
-    for (const nome of yield* fs.readDirectory(copias)) {
-      if (/^\d+$/.test(nome) && Number(nome) >= manifesto.turno) {
-        yield* fs.remove(path.join(copias, nome), { recursive: true, force: true });
-      }
-    }
+    // Daqui em diante, sem interrupção: o Desfazer pela metade deixaria a pasta entre dois turnos e as
+    // cópias apagadas ou não conforme o ponto do corte.
+    yield* Effect.uninterruptible(
+      Effect.gen(function* () {
+        const pular = new Set(incluirForaDaConversa ? [] : previsao.foraDaConversa);
+        for (const nome of previsao.criados) if (!pular.has(nome)) yield* removerSemSeguirLinks(real, nome);
+        // As pastas que o turno criou e ficaram vazias saem também (as mais fundas primeiro).
+        const pastasAntes = new Set(manifesto.pastas ?? []);
+        const criadasNoTurno = fim.pastas
+          .filter((nome) => !pastasAntes.has(nome))
+          .sort((a, b) => b.split("/").length - a.split("/").length);
+        for (const nome of criadasNoTurno) {
+          const partes = yield* partesSeguras(nome);
+          const caminho = yield* pastaSemLinks(real, partes, false).pipe(Effect.orElseSucceed(() => undefined));
+          if (caminho !== undefined && (yield* fs.readDirectory(caminho)).length === 0)
+            yield* PastasNode.removerPastaVazia(caminho);
+        }
+        for (const nome of [...previsao.alterados, ...previsao.apagados].filter((nome) => !pular.has(nome))) {
+          // Um link de antes do turno não se restaura (a cópia não o tem); o que está no lugar sai.
+          if (antes[nome] === LINK) yield* removerSemSeguirLinks(real, nome);
+          else yield* gravarSemSeguirLinks(real, nome, yield* fs.readFile(yield* dentro(copia, nome)));
+        }
+        // As cópias deste turno em diante já não valem: o próximo Desfazer volta mais um turno.
+        for (const nome of yield* fs.readDirectory(copias)) {
+          if (/^\d+$/.test(nome) && Number(nome) >= manifesto.turno) {
+            yield* fs.remove(path.join(copias, nome), { recursive: true, force: true });
+          }
+        }
+      }),
+    );
   });
 
   const desfazer = Effect.fn("PastasTrabalho.desfazer")(function* (
