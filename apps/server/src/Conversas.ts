@@ -31,6 +31,9 @@
  *
  * A política de aprovação (M1.7) fica no motor: aqui só chegam os pedidos que ela manda perguntar.
  *
+ * **Aviso de uso (M1.8):** nada vai à IA antes do aviso aceito. `iniciar`, `enviar` e `retomar`, que
+ * abrem a sessão do provider ou mandam a mensagem, recusam com `AvisoNaoAceito` antes de tudo.
+ *
  * **Skills do app (M1.11):** toda sessão aberta (nova, retomada ou recomeçada com o histórico) leva as
  * skills do `CatalogoSkills` em `ConfigSessao.skills`. O motor grava os arquivos em
  * `<pasta>/.simplifica/skills/` e lista as skills nas instruções da sessão; regravar a cada abertura
@@ -52,6 +55,7 @@ import * as Semaphore from "effect/Semaphore";
 import * as Stream from "effect/Stream";
 import * as SecureRandom from "effect/crypto/SecureRandom";
 import {
+  type AvisoNaoAceito,
   type ConversaGravada,
   type EntradaIniciar,
   type EstadoConversa,
@@ -68,6 +72,7 @@ import * as Motor from "@simplifica-if/motor";
 import * as CatalogoSkills from "./CatalogoSkills.ts";
 import * as PastasTrabalho from "./PastasTrabalho.ts";
 import * as Historico from "./persistencia/Historico.ts";
+import * as Preferencias from "./persistencia/Preferencias.ts";
 
 /** O nome do servidor MCP na sessão do provider: as ferramentas chegam como `ifpr.<ferramenta>`. */
 export const NOME_MCP = "ifpr";
@@ -89,11 +94,14 @@ export class Conversas extends Context.Service<
   {
     readonly iniciar: (
       entrada: EntradaIniciar,
-    ) => Effect.Effect<string, Motor.FalhaProvider | PastaTrabalhoInvalida | TarefaDesconhecida>;
+    ) => Effect.Effect<string, Motor.FalhaProvider | PastaTrabalhoInvalida | TarefaDesconhecida | AvisoNaoAceito>;
     readonly enviar: (
       sessao: string,
       texto: string,
-    ) => Stream.Stream<Motor.Evento, Motor.FalhaProvider | Motor.TurnoEmAndamento | Motor.SessaoDesconhecida>;
+    ) => Stream.Stream<
+      Motor.Evento,
+      Motor.FalhaProvider | Motor.TurnoEmAndamento | Motor.SessaoDesconhecida | AvisoNaoAceito
+    >;
     readonly responderAprovacao: (
       sessao: string,
       aprovacao: string,
@@ -105,7 +113,9 @@ export class Conversas extends Context.Service<
     readonly listar: Effect.Effect<ReadonlyArray<ResumoConversa>>;
     readonly carregar: (sessao: string) => Effect.Effect<ConversaGravada, Motor.SessaoDesconhecida>;
     readonly acompanhar: (sessao: string, depois: number) => Stream.Stream<ItemConversa, Motor.SessaoDesconhecida>;
-    readonly retomar: (sessao: string) => Effect.Effect<ResumoConversa, Motor.FalhaProvider | Motor.SessaoDesconhecida>;
+    readonly retomar: (
+      sessao: string,
+    ) => Effect.Effect<ResumoConversa, Motor.FalhaProvider | Motor.SessaoDesconhecida | AvisoNaoAceito>;
     /** 👍/👎 na resposta do turno; `null` retira. */
     readonly avaliar: (
       sessao: string,
@@ -214,6 +224,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
   const historico = yield* Historico.Historico;
   const catalogo = yield* CatalogoSkills.CatalogoSkills;
   const pastas = yield* PastasTrabalho.PastasTrabalho;
+  const { exigirAviso } = yield* Preferencias.Preferencias;
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
   const aleatorio = yield* SecureRandom.SecureRandom;
@@ -635,6 +646,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
   );
 
   const iniciar = Effect.fn("Conversas.iniciar")(function* (entrada: EntradaIniciar) {
+    yield* exigirAviso;
     // O nome da tarefa entra numa instrução do app à IA: só uma skill do catálogo ou `conversa`.
     const tarefa = entrada.tarefa;
     if (tarefa !== undefined && tarefa !== TAREFA_CONVERSA && !catalogo.skills.some((skill) => skill.nome === tarefa))
@@ -676,6 +688,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
   const enviar = (id: string, texto: string) =>
     Stream.unwrap(
       Effect.gen(function* () {
+        yield* exigirAviso;
         const viva = yield* obter(id);
         const { inscricao, turno } = yield* comecarTurno(viva, texto);
         return Stream.fromSubscription(inscricao).pipe(
@@ -779,6 +792,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
     );
 
   const retomar = Effect.fn("Conversas.retomar")(function* (id: string) {
+    yield* exigirAviso;
     const viva = yield* obter(id);
     yield* viva.trava.withPermits(1)(
       Effect.gen(function* () {
@@ -830,8 +844,8 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
 });
 
 /**
- * Pede o `Motor`, o `ServidorMcpHttp`, o `Historico`, o `CatalogoSkills`, o `FileSystem`, o `Path` e o
- * `SecureRandom`.
+ * Pede o `Motor`, o `ServidorMcpHttp`, o `Historico`, as `Preferencias`, o `CatalogoSkills`, o
+ * `FileSystem`, o `Path` e o `SecureRandom`.
  * `ociosidade`: depois de quanto tempo sem turno a sessão se libera (`OCIOSIDADE`);
  * `prazoInterrupcao`: quanto se espera pelo fim do turno interrompido (`PRAZO_INTERRUPCAO`).
  */

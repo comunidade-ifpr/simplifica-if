@@ -31,6 +31,7 @@ import * as PastasTrabalho from "../src/PastasTrabalho.ts";
 import * as Conversas from "../src/Conversas.ts";
 import * as Banco from "../src/persistencia/Banco.ts";
 import * as Historico from "../src/persistencia/Historico.ts";
+import * as Preferencias from "../src/persistencia/Preferencias.ts";
 import {
   bancoFixture,
   diretorioTemporario,
@@ -82,12 +83,14 @@ const camada = (
   arquivo: string,
   registro: Registro,
   pastas: Layer.Layer<PastasTrabalho.PastasTrabalho> = PastasTrabalho.layerSemPastas,
+  preferencias: typeof Preferencias.layer = Preferencias.layerPrimeiroUsoFeito,
 ) =>
   Conversas.layer({ prazoInterrupcao: PRAZO }).pipe(
     Layer.provideMerge(Motor.layer),
     Layer.provideMerge(CatalogoSkills.layerFixo([SKILL])),
     Layer.provide(pastas),
     Layer.provideMerge(Historico.layer),
+    Layer.provideMerge(preferencias),
     Layer.provideMerge(Banco.layerArquivo(arquivo)),
     Layer.provide(McpHttp.layer({ banco: kb })),
     Layer.provide(layerDriversFalsos(registro)),
@@ -98,12 +101,18 @@ const camada = (
  * Abre o servidor de conversas (como o app que abre) num escopo próprio; `fechar` o encerra como o
  * app que fecha.
  */
-const abrir = (arquivo: string, registro: Registro, pastas?: Layer.Layer<PastasTrabalho.PastasTrabalho>) =>
+const abrir = (
+  arquivo: string,
+  registro: Registro,
+  pastas?: Layer.Layer<PastasTrabalho.PastasTrabalho>,
+  preferencias?: typeof Preferencias.layer,
+) =>
   Effect.gen(function* () {
     const escopo = yield* Scope.make();
-    const contexto = yield* Layer.buildWithScope(camada(arquivo, registro, pastas), escopo);
+    const contexto = yield* Layer.buildWithScope(camada(arquivo, registro, pastas, preferencias), escopo);
     return {
       conversas: Context.get(contexto, Conversas.Conversas),
+      preferencias: Context.get(contexto, Preferencias.Preferencias),
       historico: Context.get(contexto, Historico.Historico),
       sql: Context.get(contexto, SqlClient.SqlClient),
       fechar: Scope.close(escopo, Exit.void),
@@ -127,6 +136,26 @@ const resumo = (conversas: Conversas.Conversas["Service"], id: string) =>
   Effect.map(conversas.listar, (lista) => lista.find((conversa) => conversa.id === id));
 
 describe("conversas gravadas", () => {
+  it.effect("sem o aviso de uso aceito, iniciar, enviar e retomar recusam antes de abrir a sessão", () =>
+    Effect.gen(function* () {
+      const registro = novoRegistro();
+      const { conversas, preferencias, fechar } = yield* abrir(novoBanco(), registro, undefined, Preferencias.layer);
+      const iniciar = yield* Effect.flip(conversas.iniciar({ provider: "claude", pastaTrabalho: pasta }));
+      assert.strictEqual(iniciar._tag, "AvisoNaoAceito");
+      const enviar = yield* Effect.flip(Stream.runDrain(conversas.enviar("qualquer", "oi")));
+      assert.strictEqual(enviar._tag, "AvisoNaoAceito");
+      const retomar = yield* Effect.flip(conversas.retomar("qualquer"));
+      assert.strictEqual(retomar._tag, "AvisoNaoAceito");
+      assert.deepStrictEqual(registro.configs, []);
+      assert.deepStrictEqual(yield* conversas.listar, []);
+
+      yield* preferencias.aceitarAviso;
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      assert.strictEqual(tags(yield* Stream.runCollect(conversas.enviar(id, "olá"))).at(-1), "FimTurno");
+      yield* fechar;
+    }),
+  );
+
   it.effect("grava a conversa e os eventos, sem o texto parcial; lista e carrega", () =>
     Effect.gen(function* () {
       const registro = novoRegistro();

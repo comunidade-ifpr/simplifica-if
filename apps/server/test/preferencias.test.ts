@@ -59,6 +59,18 @@ layer(camada, { excludeTestServices: true })("preferências pelo RPC", (it) => {
       assert.strictEqual(ia._tag, "AvisoNaoAceito");
       const sugerir = yield* Effect.flip(rpc["revisaoPpc.sugerir"]({ lista: "x", chave: "y", provider: "claude" }));
       assert.strictEqual(sugerir._tag, "AvisoNaoAceito");
+      const preparar = yield* Effect.flip(
+        rpc["revisaoPpc.prepararIa"]({ arquivo: "/x.docx", provider: "claude", modo: "completo" }),
+      );
+      assert.strictEqual(preparar._tag, "AvisoNaoAceito");
+      const contestar = yield* Effect.flip(
+        rpc["revisaoPpc.contestar"]({ lista: "x", chave: "y", motivo: "z", provider: "claude" }),
+      );
+      assert.strictEqual(contestar._tag, "AvisoNaoAceito");
+      const deNovo = yield* Effect.flip(
+        rpc["revisaoPpc.revisarDeNovo"]({ lista: "x", chave: "y", arquivo: "/x.docx", provider: "claude" }),
+      );
+      assert.strictEqual(deNovo._tag, "AvisoNaoAceito");
     }),
   );
 
