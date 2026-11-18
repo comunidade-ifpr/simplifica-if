@@ -67,8 +67,7 @@ import {
 import { palavrasDeCampi } from "../ppcs/secoes.ts";
 import { lerTopicosFichas, lerTopicosSecoes } from "../ppcs/topicos.ts";
 import { CITACOES, consultasDoExecutavel, NORMAS, PPC, todasAsConsultas } from "../testes/consultas.ts";
-import { bancoDoPpcAvulso } from "./compilar.ts";
-import * as Conexao from "./conexao.ts";
+import * as PpcAvulso from "./ppc-avulso.ts";
 import { tabelasCorrespondencia, transicoesDosAtos, vigenciaNaData } from "./consultas-normas.ts";
 import type { FiltrosSecoes } from "./consultas.ts";
 import { VERSAO_ESQUEMA } from "./esquema.ts";
@@ -211,13 +210,6 @@ const citacoesDe = (ppcId: string) =>
     [ppcId],
   );
 
-/** O banco em memória de um PPC fora da base, fechado no fim do escopo. */
-const ppcAvulso = (markdown: string, opcoes: Parameters<typeof bancoDoPpcAvulso>[1]) =>
-  Effect.acquireRelease(
-    Effect.sync(() => bancoDoPpcAvulso(markdown, opcoes)),
-    (db) => Effect.sync(() => db.close()),
-  );
-
 const servicos = Effect.all({
   normas: Normas.Normas,
   ppcs: Ppcs.Ppcs,
@@ -345,7 +337,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
     );
   });
 
-  describe("PPC fora da base (bancoDoPpcAvulso)", () => {
+  describe("PPC fora da base (abrirPpcAvulso)", () => {
     const AMOSTRA = [
       "curitiba/tecnico-em-enfermagem",
       "jacarezinho/tecnico-em-eletromecanica",
@@ -363,8 +355,12 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           const md = yield* lerTexto(`base-conhecimento/institucional/ifpr/ppcs/${chave}.md`);
           yield* Effect.scoped(
             Effect.gen(function* () {
-              const avulso = yield* ppcAvulso(md, { ppcId: "ppc:avulso", palavrasCampi: palavras, ...doCheckout() });
-              const noAvulso = Effect.provide(Conexao.layerDeConexao(avulso));
+              const avulso = yield* PpcAvulso.abrirPpcAvulso(md, {
+                ppcId: "ppc:avulso",
+                palavrasCampi: palavras,
+                ...doCheckout(),
+              });
+              const noAvulso = Effect.provide(avulso);
               expect(yield* noAvulso(secoesDe("ppc:avulso"))).toEqual(yield* secoesDe(`ppc:${chave}`));
               expect(yield* noAvulso(citacoesDe("ppc:avulso"))).toEqual(yield* citacoesDe(`ppc:${chave}`));
             }),
@@ -379,13 +375,10 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         Effect.gen(function* () {
           const { pacote: servico } = yield* servicos;
           const md = yield* lerTexto("base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md");
-          const avulso = yield* ppcAvulso(md, {
-            palavrasCampi: palavrasDeCampi(yield* servico.nomesDeCampi),
-            ...doCheckout(),
-          });
+          const avulso = yield* servico.abrirAvulso(md);
           const base = yield* servico.montar("estagio", PPC);
           const fichas = yield* servico.fichas(base.fichas_ids);
-          const pacote = yield* servico.avulso(avulso, fichas);
+          const pacote = yield* avulso.pacote(fichas);
           expect(pacote.fichas_ids).toEqual(base.fichas_ids);
           expect(pacote.normas).toEqual(base.normas);
           expect(pacote.marcos).toEqual(base.marcos);
@@ -396,7 +389,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
               .map((s) => s.id.slice(s.id.indexOf("#")));
           expect(doTopico(pacote.secoes)).toEqual(doTopico(base.secoes));
           expect(pacote.secoes.every((s) => s.texto.length > 0)).toBe(true);
-          const completo = yield* servico.avulso(avulso, fichas, { escopo: "completo" });
+          const completo = yield* avulso.pacote(fichas, { escopo: "completo" });
           expect(completo.secoes).toEqual([]);
           expect(completo.normas).toEqual(base.normas);
         }),

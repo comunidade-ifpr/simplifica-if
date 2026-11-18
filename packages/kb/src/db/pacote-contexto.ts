@@ -5,7 +5,7 @@
  * Tarefa: uma ficha (`CT-CURR-12`), várias separadas por vírgula, um tópico de
  * `topicos-fichas.json` (`estagio`), um grupo da rodada (`grupo-001`: o n-ésimo grupo por tópico de
  * `agruparPorTopico`, o mesmo da skill) ou `todas`. O PPC é um da base (`campus/curso`) ou, por
- * `pacoteContextoAvulso`, um Markdown fora dela, segmentado em memória (`bancoDoPpcAvulso`).
+ * `abrirPpcAvulso`, um Markdown fora dela, segmentado num banco em memória (`ppc-avulso.ts`).
  *
  * O pacote traz:
  * - o PPC (ID, arquivo, curso, forma, ano) e o curso do CNCT inteiro;
@@ -25,20 +25,20 @@
  * O léxico, os tópicos e a data de referência vêm de `FontesNormativas` (do banco ou dos arquivos,
  * conforme a layer); o tamanho do PPC, de `ppcs.caracteres`. As consultas pedem o `SqlClient` do
  * ambiente: o `kb.sqlite` ou, para as partes que leem um PPC fora da base, o banco em memória de
- * `bancoDoPpcAvulso` (`Conexao.layerDeConexao`).
+ * `ppc-avulso.ts` (`abrirPpcAvulso`).
  */
-import type * as NodeSqlite from "node:sqlite";
+import type * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
+import type * as SqlClient from "effect/sql/SqlClient";
 import type { Sinonimos } from "../busca/sinonimos.ts";
 import * as FontesNormativas from "../FontesNormativas.ts";
 import { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida } from "../pacote-contexto-erros.ts";
 import { idDoAto } from "../normas/ids.ts";
-import { palavrasDeCampi } from "../ppcs/secoes.ts";
+import { extrairFatosPpc, type FatoPpc } from "../fatos/ppc.ts";
+import { palavrasDeCampi, type SecaoPpc, segmentarPpc } from "../ppcs/secoes.ts";
 import type { TopicoFichas, TopicosSecoes } from "../ppcs/topicos.ts";
 import { compararTexto } from "../texto.ts";
-import { bancoDoPpcAvulso } from "./compilar.ts";
-import * as Conexao from "./conexao.ts";
 import { buscarSecoes, fatosDosPpcs, obterNorma, secoesDoPpc } from "./consultas.ts";
 import {
   type TransicaoNoBanco,
@@ -46,6 +46,7 @@ import {
   transicoesDosAtos,
   trechoDoDispositivo,
 } from "./consultas-normas.ts";
+import * as PpcAvulsoDb from "./ppc-avulso.ts";
 import * as Sql from "./sql.ts";
 
 /** Tamanho máximo de um grupo de sub-agente da `revisar-ppc` (fichas por grupo). */
@@ -549,7 +550,7 @@ interface OpcoesSecoes {
  * Seções do PPC para as fichas: as dos tipos mapeados para os tópicos das fichas
  * (`dados/topicos-secoes.yaml`), mais, por consulta de cada ficha, a melhor seção com todos os
  * termos (AND); em ordem do documento. O `SqlClient` do ambiente é o `kb.sqlite` (PPC da base) ou
- * o banco em memória de `bancoDoPpcAvulso` (PPC fora da base): as consultas são as mesmas.
+ * o banco em memória de `abrirPpcAvulso` (PPC fora da base): as consultas são as mesmas.
  */
 export const secoesDoPacote = Effect.fn("pacoteContexto.secoesDoPacote")(function* (
   ppcId: string,
@@ -691,9 +692,8 @@ export interface PacoteAvulso {
   citacoes_ppc?: CitacaoPpc[];
 }
 
-/** Opções de `pacoteContextoAvulso`. */
+/** Opções do pacote de um PPC fora da base (`PpcAvulso.pacote`). */
 export type OpcoesPacoteAvulso = {
-  ppcId?: string;
   cnctId?: string | null;
   escopo?: "secoes" | "completo";
   /** Inclui `citacoes_ppc`: as fichas que conferem a base normativa citada no PPC inteiro. */
@@ -703,20 +703,18 @@ export type OpcoesPacoteAvulso = {
 /**
  * Pacote de contexto de um conjunto de fichas para um PPC que pode não estar na base: as normas,
  * os marcos, as transições e o CNCT vêm do `SqlClient` do ambiente (o `kb.sqlite`); as seções e as
- * citações do PPC, do banco em memória de `bancoDoPpcAvulso` (`dbPpc`, que fica aberto: quem o
- * criou o fecha), com as mesmas consultas do pacote de um PPC da base. Usado pela `revisar-ppc`
- * para montar o contexto de cada grupo de sub-agente.
+ * citações do PPC, do banco em memória (`doPpc`), com as mesmas consultas do pacote de um PPC da base.
  */
-export const pacoteContextoAvulso = Effect.fn("pacoteContexto.pacoteContextoAvulso")(function* (
-  dbPpc: NodeSqlite.DatabaseSync,
+const pacoteContextoAvulso = Effect.fn("pacoteContexto.pacoteContextoAvulso")(function* (
+  doPpc: Context.Context<SqlClient.SqlClient>,
+  ppcId: string,
   fichas: readonly FichaPacote[],
-  opcoes: OpcoesPacoteAvulso = {},
+  opcoes: OpcoesPacoteAvulso,
 ) {
-  const ppcId = opcoes.ppcId ?? "ppc:avulso";
   const escopo = opcoes.escopo ?? "secoes";
-  const doPpc = Effect.provide(Conexao.layerDeConexao(dbPpc));
+  const noPpc = Effect.provide(doPpc);
   const refs = referenciasDasFichas(fichas);
-  const citacoesPpc = yield* citacoesDoPpc(ppcId).pipe(doPpc);
+  const citacoesPpc = yield* citacoesDoPpc(ppcId).pipe(noPpc);
   const pacote: PacoteAvulso = {
     fichas_ids: [...fichas].map((f) => f.id).sort(compararTexto),
     cnct: yield* cnctDoBanco(opcoes.cnctId ?? null),
@@ -724,10 +722,78 @@ export const pacoteContextoAvulso = Effect.fn("pacoteContexto.pacoteContextoAvul
     marcos: yield* marcosDoPacote(refs, citacoesPpc),
     ...(yield* transicoesDoPacote(refs, citacoesPpc)),
     escopo,
-    secoes: escopo === "completo" ? [] : yield* secoesDoPacote(ppcId, fichas, opcoes).pipe(doPpc),
+    secoes: escopo === "completo" ? [] : yield* secoesDoPacote(ppcId, fichas, opcoes).pipe(noPpc),
     ...(opcoes.citacoesPpc ? { citacoes_ppc: [...citacoesPpc] } : {}),
   };
   return pacote;
+});
+
+/**
+ * Opções de `abrirPpcAvulso`. O registro de normas, os nomes dos campi e, sem `lexico`, o léxico vêm
+ * da base.
+ */
+export type OpcoesAbrirAvulso = Pick<
+  PpcAvulsoDb.OpcoesPpcAvulso,
+  "ppcId" | "path" | "taxonomia" | "todasAsSecoes" | "titulosNivel1"
+> & {
+  /** Léxico da busca nas seções (padrão: o de `FontesNormativas`). */
+  lexico?: Sinonimos;
+};
+
+/** A estrutura de um PPC fora da base: todas as seções (`segmentarPpc`) e os fatos sobre elas. */
+export interface EstruturaAvulsa {
+  secoes: SecaoPpc[];
+  fatos: FatoPpc[];
+}
+
+/** Um PPC fora da base, segmentado num banco em memória que vive até o fim do escopo de quem o abriu. */
+export interface PpcAvulso {
+  /** Pacote de um conjunto de fichas sobre este PPC; o CNCT, as normas e os marcos vêm da base. */
+  readonly pacote: (
+    fichas: readonly FichaPacote[],
+    opcoes?: OpcoesPacoteAvulso,
+  ) => Effect.Effect<PacoteAvulso, Sql.FalhaNaConsulta>;
+  /**
+   * As seções do Markdown como veio, sem o recorte do índice, na taxonomia do banco e com os
+   * cabeçalhos de página dos campi, e os fatos do PPC (carga horária, estágio) sobre elas.
+   */
+  readonly estrutura: () => EstruturaAvulsa;
+}
+
+/**
+ * Abre um PPC fora da base (o `PPC.md` de uma rodada, o PPC que a pessoa revisa no app): o banco em
+ * memória com as seções e as citações, gravado pelo mesmo código da compilação e fechado no fim do
+ * escopo. O pacote de cada conjunto de fichas sai do handle, sobre o mesmo banco.
+ */
+export const abrirPpcAvulso = Effect.fn("pacoteContexto.abrirPpcAvulso")(function* (
+  markdown: string,
+  opcoes: OpcoesAbrirAvulso = {},
+) {
+  const ambiente = yield* Effect.context<SqlClient.SqlClient | FontesNormativas.FontesNormativas>();
+  const fontes = yield* FontesNormativas.FontesNormativas;
+  const { lexico, ...doBanco } = opcoes;
+  const ppcId = doBanco.ppcId ?? "ppc:avulso";
+  const taxonomia = doBanco.taxonomia ?? "tecnico";
+  const palavrasCampi = palavrasDeCampi(yield* nomesDeCampiDoBanco());
+  const doPpc = yield* PpcAvulsoDb.abrirPpcAvulso(markdown, {
+    ...doBanco,
+    palavrasCampi,
+    registro: fontes.registro,
+    sinonimos: lexico ?? fontes.sinonimos,
+  });
+  const avulso: PpcAvulso = {
+    pacote: (fichas, opcoesPacote = {}) =>
+      pacoteContextoAvulso(doPpc, ppcId, fichas, opcoesPacote).pipe(Effect.provide(ambiente)),
+    estrutura: () => {
+      const secoes = segmentarPpc(markdown, taxonomia, palavrasCampi);
+      const fatos = extrairFatosPpc(
+        markdown,
+        secoes.map((x) => ({ tipo: x.tipo, linha_inicio: x.linhaInicio, linha_fim: x.linhaFim })),
+      );
+      return { secoes, fatos };
+    },
+  };
+  return avulso;
 });
 
 /** Nomes dos campi dos PPCs do banco, para reconhecer cabeçalhos de página (`palavrasDeCampi`). */
@@ -747,7 +813,7 @@ export type PacoteDoMarkdown = PacoteAvulso & {
  * `kb pacote-contexto <tarefa> <arquivo.md>`: o pacote de uma tarefa para um PPC fora da base. As
  * fichas e o agrupamento vêm do banco (`grupo-NNN` traz o escopo do grupo); o PPC (`markdown`, o
  * texto já lido de `arquivo`, que fica só como `path`) é segmentado e indexado num banco em memória
- * (`bancoDoPpcAvulso`), fechado no fim.
+ * (`abrirPpcAvulso`), fechado no fim.
  */
 export const pacoteDoMarkdown = Effect.fn("pacoteContexto.pacoteDoMarkdown")(function* (
   tarefa: string,
@@ -763,19 +829,8 @@ export const pacoteDoMarkdown = Effect.fn("pacoteContexto.pacoteDoMarkdown")(fun
     ? agruparPorTopico(yield* fichasDoBanco(), topicos)[Number(tarefa.slice(6)) - 1]
     : undefined;
   const markdown = opcoes.markdown;
-  const palavrasCampi = palavrasDeCampi(yield* nomesDeCampiDoBanco());
-  const dbPpc = yield* Effect.acquireRelease(
-    Effect.sync(() =>
-      bancoDoPpcAvulso(markdown, {
-        path: arquivo,
-        registro: fontes.registro,
-        palavrasCampi,
-        sinonimos: secoes.lexico,
-      }),
-    ),
-    (db) => Effect.sync(() => db.close()),
-  );
-  const pacote = yield* pacoteContextoAvulso(dbPpc, fichas, {
+  const avulso = yield* abrirPpcAvulso(markdown, { path: arquivo, lexico: secoes.lexico });
+  const pacote = yield* avulso.pacote(fichas, {
     escopo: grupo?.escopo ?? "secoes",
     lexico: secoes.lexico,
     topicosSecoes: secoes.topicosSecoes,

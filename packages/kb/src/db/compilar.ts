@@ -5,7 +5,7 @@
  *   pnpm kb:compilar [--destino tmp/kb.sqlite] [--versao 2026.11.13] [--commit <sha>] [--canal beta]
  *
  * O serviço `Compilador` orquestra (temporário, renomeação, mtime); aqui ficam as partes síncronas:
- * `prepararCompilacao` (fontes e impressão digital), `preencherBanco` e `bancoDoPpcAvulso`.
+ * `prepararCompilacao` (fontes e impressão digital) e `preencherBanco`.
  *
  * O banco é derivado e fica fora do git (`tmp/`). Determinismo: as mesmas fontes geram o mesmo
  * arquivo, byte a byte. Para isso:
@@ -37,7 +37,6 @@ import { carregarDatas, dataReferencia, derivarLinha } from "../normas/vigencia.
 import { carregarRelacoes } from "../normas/relacoes.ts";
 import { mascararFrontMatter } from "../ppcs/front-matter.ts";
 import { lerTextoSecao } from "../ppcs/citacoes.ts";
-import { type NomeTaxonomia, secoesComChave, secoesIndexadas } from "../ppcs/secoes.ts";
 import { compararTexto } from "../texto.ts";
 import { DDL, VERSAO_ESQUEMA } from "./esquema.ts";
 import { arquivosFonte, hashConteudo, hashLista } from "./fontes.ts";
@@ -300,7 +299,7 @@ export interface SecaoParaGravar {
 /**
  * Grava as seções de um PPC (com o FTS: tokens, radicais e expansão do léxico pelo tipo) e as
  * citações normativas do texto, cada uma com a seção e o papel. É o mesmo caminho da compilação do
- * banco e do banco em memória de um PPC fora da base (`bancoDoPpcAvulso`).
+ * banco e do banco em memória de um PPC fora da base (`ppc-avulso.ts`).
  */
 export function gravarSecoesECitacoes(
   ins: Inseridor,
@@ -381,100 +380,6 @@ export function gravarSecoesECitacoes(
       path: p.caminhoMd,
     });
   });
-}
-
-/** Opções do banco em memória de um PPC fora da base. */
-interface OpcoesPpcAvulso {
-  /** ID do PPC no banco em memória (padrão `ppc:avulso`). */
-  ppcId?: string;
-  /** Caminho gravado em `path` (o `PPC.md` da rodada, por exemplo). */
-  path?: string;
-  taxonomia?: NomeTaxonomia;
-  /** Palavras dos nomes de campi, para os cabeçalhos de página (`palavrasDeCampi`). */
-  palavrasCampi?: ReadonlySet<string>;
-  curso_nome?: string;
-  campus_nome?: string;
-  nivel?: string;
-  tipo_oferta?: string;
-  sinonimos: Sinonimos;
-  registro: Registro;
-  /**
-   * Grava também as seções que o índice publicado deixa de fora (`pretextual`, `outros` e as de
-   * texto curto, com chave `<tipo>-x<n>`): numa minuta, a capa e os campos curtos da identificação
-   * ("Forma de oferta: Subsequente") importam. Padrão: só as do índice, como no `kb.sqlite`.
-   */
-  todasAsSecoes?: boolean;
-  /**
-   * Reconhece `# Título` como título de seção. No índice publicado só `##` a `######` contam (nos
-   * PPCs convertidos de PDF, `#` aparece em linhas da capa); o normalizador e o conversor DOCX da
-   * `revisar-ppc` põem o primeiro nível numerado em `#`. A segmentação roda como se fosse `##`, com
-   * as mesmas linhas.
-   */
-  titulosNivel1?: boolean;
-}
-
-/**
- * Banco em memória, com o esquema do `kb.sqlite`, só com um PPC que pode não estar na base (o
- * `PPC.md` de uma rodada da `revisar-ppc`): uma linha em `ppcs`, as seções pela mesma segmentação e
- * taxonomia do índice (`secoesIndexadas`) e as citações pelo mesmo resolvedor, gravadas por
- * `gravarSecoesECitacoes`. As consultas de seções (`secoesDoPpc`, `buscarSecoes`) e de citações
- * rodam nele sem mudança.
- */
-export function bancoDoPpcAvulso(markdownOriginal: string, opcoes: OpcoesPpcAvulso): NodeSqlite.DatabaseSync {
-  const markdown = markdownOriginal.replace(/\r\n?/g, "\n");
-  const paraSegmentar = opcoes.titulosNivel1 ? markdown.replace(/^#(?=[ \t])/gm, "##") : markdown;
-  const ppcId = opcoes.ppcId ?? "ppc:avulso";
-  const caminhoMd = opcoes.path ?? "PPC.md";
-  const taxonomia = opcoes.taxonomia ?? "tecnico";
-  const db = new NodeSqlite.DatabaseSync(":memory:");
-  db.exec(DDL);
-  const ins = new Inseridor(db);
-  emTransacao(db, () => {
-    ins.inserir("ppcs", {
-      id: ppcId,
-      chave: ppcId.replace(/^ppc:/, ""),
-      campus_id: "",
-      campus_nome: opcoes.campus_nome ?? "",
-      curso_slug: "",
-      curso_nome: opcoes.curso_nome ?? "",
-      curso_id: null,
-      nivel: opcoes.nivel ?? "médio",
-      taxonomia,
-      tipo_oferta: opcoes.tipo_oferta ?? "",
-      ano_documento: null,
-      curso_url: null,
-      fonte_pdf: null,
-      path: caminhoMd,
-      linhas: markdown.split("\n").length,
-      caracteres: markdownOriginal.length,
-      proveniencia_json: json(null),
-    });
-    gravarSecoesECitacoes(ins, {
-      ppcId,
-      caminhoMd,
-      markdown,
-      secoes: (opcoes.todasAsSecoes
-        ? secoesComChave(paraSegmentar, taxonomia, opcoes.palavrasCampi)
-        : secoesIndexadas(paraSegmentar, taxonomia, opcoes.palavrasCampi)
-      ).map((secao) => ({
-        id: `${ppcId}#${secao.chave}`,
-        tipo: secao.tipo,
-        origem_tipo: secao.origem,
-        titulo: secao.titulo,
-        numeracao: secao.numeracao,
-        linha_inicio: secao.linhaInicio,
-        linha_fim: secao.linhaFim,
-        texto: secao.texto,
-      })),
-      registro: opcoes.registro,
-      lexico: opcoes.sinonimos,
-      expansoes: new Map(),
-      insFts: db.prepare(
-        "INSERT INTO secoes_fts (rowid, titulo, texto, titulo_radicais, radicais, expansao) VALUES (?, ?, ?, ?, ?, ?)",
-      ),
-    });
-  });
-  return db;
 }
 
 function linhaNoYaml(conteudo: string, id: string): number {

@@ -27,7 +27,6 @@ import * as FileSystem from "effect/FileSystem";
 import * as FiberMap from "effect/FiberMap";
 import * as Layer from "effect/Layer";
 import * as PubSub from "effect/PubSub";
-import type * as SqlClient from "effect/sql/SqlClient";
 import * as Stream from "effect/Stream";
 import {
   type AvisoNaoAceito,
@@ -38,6 +37,7 @@ import {
   type Provider,
 } from "@simplifica-if/contratos-app";
 import type * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
+import type * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import * as Motor from "@simplifica-if/motor";
 import { estimar } from "@simplifica-if/ppc/revisao-ia/estimativa";
 import { CRITERIO_PADRAO, type CriterioInconclusivo, pedidoT } from "@simplifica-if/ppc/revisao-ia/pedido";
@@ -101,7 +101,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   const revisoes = yield* Revisoes.Revisoes;
   const revisor = yield* RevisorPpc.RevisorPpc;
   const { exigirAviso } = yield* Preferencias.Preferencias;
-  const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | SqlClient.SqlClient>();
+  const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | PacoteContexto.PacoteContexto>();
   const contextoMotor = yield* Effect.context<Motor.Motor | FileSystem.FileSystem>();
   const contextoListas = yield* Effect.context<Listas.Listas>();
   const execucoes = yield* FiberMap.make<string>();
@@ -398,6 +398,6 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
 
 /**
  * Pede o `Motor`, o `FileSystem`, o `RevisorPpc`, as `Revisoes`, as `Preferencias`, as `FontesNormativas`
- * e o `SqlClient` do `kb.sqlite`.
+ * e o `PacoteContexto` do `kb.sqlite`.
  */
 export const layer = (opcoes: OpcoesRevisaoIa = {}) => Layer.effect(RevisaoIa, make(opcoes));

@@ -6,9 +6,9 @@
  * Os grupos são por tópico (`topicos_tematicos` das fichas, `agruparPorTopico` do kb): cada ficha
  * entra uma vez, no grupo do seu tópico principal, e o grupo recebe só as seções do `PPC.md` dos
  * tópicos das suas fichas, mais o texto das normas que elas citam, os marcos e as regras de
- * transição, montados pelo `pacote-contexto` do kb (`pacoteContextoAvulso`). O `PPC.md` da rodada
- * é segmentado com a mesma segmentação e taxonomia do índice de seções (`bancoDoPpcAvulso`), porque
- * o PPC analisado pode não estar na base. As fichas transversais vão num grupo com o PPC inteiro.
+ * transição, montados pelo `pacote-contexto` do kb (`PacoteContexto.abrirAvulso`). O `PPC.md` da
+ * rodada é segmentado com a mesma segmentação e taxonomia do índice de seções, num banco em memória,
+ * porque o PPC analisado pode não estar na base. As fichas transversais vão num grupo com o PPC inteiro.
  *
  * As funções que consultam o kb (`montarGruposSubagents`, `montarGrupoAvulso`,
  * `prepararPromptsSubagents`) são Effects que exigem o serviço `PacoteContexto` do kb, provido uma
@@ -21,7 +21,6 @@ import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import type * as Sql from "@simplifica-if/kb/db/sql";
-import { bancoDoPpcAvulso } from "@simplifica-if/kb/db/compilar";
 import {
   agruparPorTopico,
   type FichaPacote,
@@ -30,9 +29,7 @@ import {
   topicoPrincipal,
 } from "@simplifica-if/kb/db/pacote-contexto";
 import type { TopicoFichas } from "@simplifica-if/kb/ppcs/topicos";
-import { lerSinonimos } from "@simplifica-if/kb/busca/sinonimos";
-import { carregarRegistro } from "@simplifica-if/kb/normas/registro";
-import { palavrasDeCampi, textoDaSecao } from "@simplifica-if/kb/ppcs/secoes";
+import { textoDaSecao } from "@simplifica-if/kb/ppcs/secoes";
 import { copiarValorJson, serializarJsonTipado } from "@simplifica-if/kb/primitivas/json-tipado";
 import { casefold, somenteDigitos } from "@simplifica-if/kb/primitivas/texto";
 import {
@@ -453,35 +450,20 @@ export type ContextoKbRodada = {
   ): Effect.Effect<PacoteAvulso, Sql.FalhaNaConsulta>;
 };
 
-export const abrirContextoKbRodada = Effect.fn("subagents.abrirContextoKbRodada")(function* (
-  rodada: string,
-  skill: CaminhosAnalise = caminhosPadrao(),
-) {
+export const abrirContextoKbRodada = Effect.fn("subagents.abrirContextoKbRodada")(function* (rodada: string) {
   const pacotes = yield* PacoteContexto.PacoteContexto;
   const caminhos = caminhosRodada(rodada);
-  const raiz = NodePath.dirname(skill.baseConhecimentoDir);
   const markdown = lerTexto(caminhos.ppc);
-  const lexico = lerSinonimos(raiz);
-  const palavrasCampi = palavrasDeCampi(yield* pacotes.nomesDeCampi);
-  const dbPpc = yield* Effect.acquireRelease(
-    Effect.sync(() =>
-      bancoDoPpcAvulso(markdown, {
-        ppcId: PPC_ID_RODADA,
-        path: caminhos.ppc,
-        taxonomia: TAXONOMIA_RODADA,
-        palavrasCampi,
-        registro: carregarRegistro(raiz),
-        sinonimos: lexico,
-        todasAsSecoes: true,
-        titulosNivel1: true,
-      }),
-    ),
-    (db) => Effect.sync(() => db.close()),
-  );
+  const avulso = yield* pacotes.abrirAvulso(markdown, {
+    ppcId: PPC_ID_RODADA,
+    path: caminhos.ppc,
+    taxonomia: TAXONOMIA_RODADA,
+    todasAsSecoes: true,
+    titulosNivel1: true,
+  });
   const contexto: ContextoKbRodada = {
     markdown,
-    pacote: (fichas, escopo, citacoesPpc) =>
-      pacotes.avulso(dbPpc, fichas.map(comoFichaPacote), { ppcId: PPC_ID_RODADA, escopo, citacoesPpc, lexico }),
+    pacote: (fichas, escopo, citacoesPpc) => avulso.pacote(fichas.map(comoFichaPacote), { escopo, citacoesPpc }),
   };
   return contexto;
 });
@@ -623,7 +605,7 @@ export const montarGruposSubagents = Effect.fn("subagents.montarGruposSubagents"
   const grupos = agruparFichasPorTopico(fichas, topicos, tamanhoGrupo);
   const contextos = contextosDaRodada(rodada, skill);
   const validacoes = contextoValidacoesCruzadas(rodada, opcoes);
-  const kb = yield* abrirContextoKbRodada(rodada, skill);
+  const kb = yield* abrirContextoKbRodada(rodada);
   for (const grupo of grupos) {
     yield* adicionarContextosGrupo(grupo, contextos, kb, caminhos.ppc);
     grupo.fichas = fichasParaSubagente(grupo.fichas, universo);
@@ -684,7 +666,7 @@ export const montarGrupoAvulso = Effect.fn("subagents.montarGrupoAvulso")(functi
     fichas: selecionadas,
   };
   const contextos = contextosDaRodada(rodada, skill);
-  const kb = yield* abrirContextoKbRodada(rodada, skill);
+  const kb = yield* abrirContextoKbRodada(rodada);
   yield* adicionarContextosGrupo(grupo, contextos, kb, caminhos.ppc);
   grupo.fichas = fichasParaSubagente(selecionadas, universo);
   const payload: Dicionario = {
