@@ -88,7 +88,7 @@ AURÉLIO DE LYRA TAVARES
 MÁRCIO DE SOUZA E MELLO
 Tarso Dutra
 
-**Este texto não substitui o publicado no D.O.U. de 22.10.1969 e retificado no D.O.U. 11.11.1969.**
+**Este texto não substitui o publicado no D.O.U. de 22.10.1969 e retificado no D.O.U. 11.11.1969**
 
 ---
 

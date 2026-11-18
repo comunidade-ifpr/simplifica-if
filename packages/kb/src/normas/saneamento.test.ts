@@ -14,9 +14,7 @@ import * as NodePath from "node:path";
 import { listarNormas } from "./estrutura.ts";
 import { palavrasMarkdown, primeiraDivergencia } from "./markdown.ts";
 import { raizRepositorio } from "../caminhos.ts";
-
-/** Último commit antes do saneamento da fase 5 (merge da fase 4 em `main`). */
-export const REF_ANTES_SANEAMENTO = "fcfc006";
+import { INCLUIDAS_DEPOIS, REF_ANTES_SANEAMENTO } from "./referencia-saneamento.ts";
 
 /**
  * Normas cujo texto foi substituído de propósito depois do saneamento (não é mudança de marcação).
@@ -26,14 +24,6 @@ const TEXTO_SUBSTITUIDO = new Map<string, string>([
   [
     "normas/br/leis/LEI_BR_14945-2024_ensino-medio.md",
     "paráfrase trocada pela transcrição do texto oficial (Planalto) em 13/11/2026",
-  ],
-]);
-
-/** Normas incluídas na base depois do saneamento: não têm versão anterior a comparar. */
-const INCLUIDAS_DEPOIS = new Map<string, string>([
-  [
-    "normas/br/decretos-lei/DECRETO-LEI_BR_1044-1969_regime-domiciliar.md",
-    "incluída em 18/11/2026 do texto oficial (Planalto)",
   ],
 ]);
 
@@ -55,11 +45,14 @@ const refDisponivel =
   }).status === 0;
 
 describe.skipIf(!refDisponivel)(`saneamento: palavras iguais às de ${REF_ANTES_SANEAMENTO}`, () => {
-  const normas = listarNormas(raiz).filter((norma) => !INCLUIDAS_DEPOIS.has(norma.path));
-  test("as 36 normas existiam antes do saneamento; as incluídas depois, não", () => {
+  const todas = listarNormas(raiz);
+  const normas = todas.filter((norma) => !INCLUIDAS_DEPOIS.has(norma.path));
+  test("as 36 normas existiam antes do saneamento; as incluídas depois existem hoje e não existiam", () => {
     expect(normas.length).toBe(36);
+    const caminhos = new Set(todas.map((norma) => norma.path));
     for (const path of INCLUIDAS_DEPOIS.keys()) {
-      expect(versaoAnterior(NodePath.posix.join("base-conhecimento", path))).toBeNull();
+      expect(caminhos.has(path), path).toBe(true);
+      expect(versaoAnterior(NodePath.posix.join("base-conhecimento", path)), path).toBeNull();
     }
   });
   test.each(normas.filter((norma) => !TEXTO_SUBSTITUIDO.has(norma.path)))("$path", (norma) => {

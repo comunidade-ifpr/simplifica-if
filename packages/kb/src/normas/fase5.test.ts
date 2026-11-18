@@ -21,6 +21,7 @@ import { analisarFrontMatter } from "./front-matter.ts";
 import { normasComCamposGerados, reescreverFrontMatter } from "./gerado.ts";
 import { idDoAto } from "./ids.ts";
 import { raizRepositorio } from "../caminhos.ts";
+import { INCLUIDAS_DEPOIS, REF_ANTES_SANEAMENTO } from "./referencia-saneamento.ts";
 import { carregarRegistro } from "./registro.ts";
 import { carregarRelacoes, proporRelacoes, validarRelacoes } from "./relacoes.ts";
 import {
@@ -34,15 +35,11 @@ import {
 
 const raiz = raizRepositorio();
 const vigencia = carregarFonteVigencia(raiz);
-/** Último commit antes da fase 5 (mesmo de `saneamento.test.ts`). */
-const REF_ANTES_SANEAMENTO = "fcfc006";
 const refDisponivel =
   NodeChildProcess.spawnSync("git", ["cat-file", "-e", `${REF_ANTES_SANEAMENTO}^{commit}`], {
     cwd: raiz,
     stdio: "ignore",
   }).status === 0;
-/** Normas incluídas depois de `REF_ANTES_SANEAMENTO`: não têm status manual a comparar. */
-const INCLUIDAS_DEPOIS = new Set(["br/decreto-lei/1969/1044"]);
 const DCN_2021 = "br/cne-cp/res/2021/1";
 const DCN_2026 = "br/cne-cp/res/2026/2";
 
@@ -106,7 +103,7 @@ describe("vigência", () => {
       };
       const divergentes: Record<string, [string, string]> = {};
       for (const norma of listarNormas(raiz)) {
-        if (INCLUIDAS_DEPOIS.has(norma.id)) continue;
+        if (INCLUIDAS_DEPOIS.has(norma.path)) continue;
         const antigo = NodeChildProcess.spawnSync(
           "git",
           ["show", `${REF_ANTES_SANEAMENTO}:base-conhecimento/${norma.path}`],
