@@ -1,4 +1,3 @@
-// @effect-diagnostics nodeBuiltinImport:off -- cópia e restauração de árvores de arquivos com fs/promises
 /**
  * A pasta de trabalho das tarefas (M1.9, Modo Servidor) e o "Desfazer o que a IA fez nesta pasta".
  *
@@ -27,15 +26,17 @@
  *   Depois, as cópias desse turno em diante saem, e o próximo Desfazer volta mais um turno. Arquivos e pastas que
  *   começam com `.` (o `.simplifica/` das skills) e links simbólicos ficam de fora de tudo.
  */
-import * as NodeCrypto from "node:crypto";
-import * as NodeFS from "node:fs";
-import * as NodeFSP from "node:fs/promises";
-import * as NodePath from "node:path";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
+import * as Option from "effect/Option";
+import * as Path from "effect/Path";
+import type * as PlatformError from "effect/PlatformError";
 import * as Ref from "effect/Ref";
+import * as Schema from "effect/Schema";
+import * as Stream from "effect/Stream";
 import {
   type ArquivoPasta,
   ehExtensaoDocumento,
@@ -43,8 +44,10 @@ import {
   type PastaConversa,
   type PrevisaoDesfazer,
 } from "@simplifica-if/contratos-app";
-import * as Historico from "./persistencia/Historico.ts";
 import * as ArquivosLiberados from "./ArquivosLiberados.ts";
+import { comNumero, criarSemColisao } from "./nome-livre.ts";
+import * as PastasNode from "./pastas-node.ts";
+import * as Historico from "./persistencia/Historico.ts";
 
 export interface Limites {
   /** O tamanho máximo da pasta para guardar a cópia de um turno. */
@@ -73,6 +76,30 @@ export interface OpcoesPastas {
   /** Onde ficam as cópias dos turnos (na pasta de estado do app). */
   readonly copias: string;
   readonly limites?: Partial<Limites>;
+}
+
+/**
+ * Um caminho que as pastas recusam: vindo do manifesto com `..` ou `\`, fora da pasta depois de
+ * resolvido, com um arquivo no lugar de uma pasta, ou um id de conversa inesperado.
+ */
+export class CaminhoRecusado extends Schema.TaggedError<CaminhoRecusado>()("CaminhoRecusado", {
+  caminho: Schema.String,
+  regra: Schema.Literals(["invalido", "fora-da-pasta", "arquivo-no-lugar-da-pasta", "nao-e-pasta", "id-de-conversa"]),
+}) {
+  override get message(): string {
+    switch (this.regra) {
+      case "invalido":
+        return `caminho inválido no manifesto: ${this.caminho}`;
+      case "fora-da-pasta":
+        return `fora da pasta: ${this.caminho}`;
+      case "arquivo-no-lugar-da-pasta":
+        return `um arquivo ocupa o lugar da pasta: ${this.caminho}`;
+      case "nao-e-pasta":
+        return `não é uma pasta: ${this.caminho}`;
+      case "id-de-conversa":
+        return `id de conversa inesperado: ${this.caminho}`;
+    }
+  }
 }
 
 export class PastasTrabalho extends Context.Service<
@@ -122,18 +149,11 @@ export function nomeSeguro(titulo: string): string {
   return nome;
 }
 
-/** `nome (n).ext`, para o n-ésimo nome repetido (n ≥ 2). */
-export function comNumero(nome: string, n: number): string {
-  if (n < 2) return nome;
-  const ext = NodePath.extname(nome);
-  const base = ext === "" || ext === nome ? nome : nome.slice(0, -ext.length);
-  return `${base} (${n})${ext === nome ? "" : ext}`;
-}
-
 interface Entrada {
   readonly nome: string;
   readonly tamanho: number;
-  readonly alteradoEm: Date;
+  /** ISO 8601. */
+  readonly alteradoEm: string;
 }
 
 interface Varredura {
@@ -145,80 +165,105 @@ interface Varredura {
   readonly pastas: ReadonlyArray<string>;
 }
 
+/** A data de modificação em ISO 8601 (o Node sempre a informa; a época, se faltar). */
+const alteradoEm = (info: FileSystem.File.Info): string =>
+  Option.match(info.mtime, { onNone: () => "1970-01-01T00:00:00.000Z", onSome: (data) => data.toISOString() });
+
 /** A pasta sem os nomes que começam com `.`, sem seguir links. */
-async function varrer(pasta: string, maximo: number): Promise<Varredura> {
+const varrer = Effect.fn("PastasTrabalho.varrer")(function* (pasta: string, maximo: number) {
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
   const arquivos: Array<Entrada> = [];
   const links: Array<string> = [];
   const pastas: Array<string> = [];
-  const visitar = async (relativo: string): Promise<void> => {
-    const entradas = await NodeFSP.readdir(NodePath.join(pasta, relativo), { withFileTypes: true });
-    entradas.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+  // Uma chamada por subpasta, dentro do span de `varrer`.
+  const visitar: (relativo: string) => Effect.Effect<void, PlatformError.PlatformError> = Effect.fnUntraced(function* (
+    relativo: string,
+  ) {
+    const entradas = [...(yield* fs.readDirectoryEntries(path.join(pasta, relativo)))].sort((a, b) =>
+      a.name.localeCompare(b.name, "pt-BR"),
+    );
     for (const entrada of entradas) {
       if (arquivos.length > maximo) return;
       if (entrada.name.startsWith(".")) continue;
       const rel = relativo === "" ? entrada.name : `${relativo}/${entrada.name}`;
-      if (entrada.isSymbolicLink()) links.push(rel);
-      else if (entrada.isDirectory()) {
+      if (entrada.type === "SymbolicLink") links.push(rel);
+      else if (entrada.type === "Directory") {
         pastas.push(rel);
-        await visitar(rel);
-      } else if (entrada.isFile()) {
-        const info = await NodeFSP.lstat(NodePath.join(pasta, rel));
-        arquivos.push({ nome: rel, tamanho: info.size, alteradoEm: info.mtime });
+        yield* visitar(rel);
+      } else if (entrada.type === "File") {
+        const info = yield* fs.lstat(path.join(pasta, rel));
+        arquivos.push({ nome: rel, tamanho: Number(info.size), alteradoEm: alteradoEm(info) });
       }
     }
-  };
-  await visitar("");
-  return { arquivos, links, pastas };
-}
+  });
+  yield* visitar("");
+  return { arquivos, links, pastas } satisfies Varredura;
+});
 
-/** Os arquivos comuns da pasta, até `maximo + 1`. */
-const listarArvore = async (pasta: string, maximo: number) => (await varrer(pasta, maximo)).arquivos;
-
-async function sha256(arquivo: string): Promise<string> {
-  const hash = NodeCrypto.createHash("sha256");
-  for await (const pedaco of NodeFS.createReadStream(arquivo)) hash.update(pedaco as Buffer);
-  return hash.digest("hex");
-}
+const sha256 = Effect.fn("PastasTrabalho.sha256")(function* (arquivo: string) {
+  const fs = yield* FileSystem.FileSystem;
+  const hash = PastasNode.novoSha256();
+  yield* fs.stream(arquivo).pipe(Stream.runForEach((pedaco) => Effect.sync(() => hash.atualizar(pedaco))));
+  return hash.hex();
+});
 
 /** Arquivo → `tamanho:sha256`; link simbólico → `link`. */
-type Retrato = Record<string, string>;
+const Retrato = Schema.Record(Schema.String, Schema.String);
+type Retrato = typeof Retrato.Type;
 
 /** O valor de um link no retrato: o Desfazer o remove, nunca o segue nem o restaura. */
 const LINK = "link";
 
-interface Manifesto {
-  readonly turno: number;
-  readonly criadaEm: string;
+/** A pasta no fim do turno (`fim.json`): o que separa o que a IA fez do que mudou depois, fora da conversa. */
+const RetratoFim = Schema.Struct({ arquivos: Retrato, pastas: Schema.Array(Schema.String) });
+type RetratoFim = typeof RetratoFim.Type;
+
+/** O `manifesto.json` da cópia de antes do turno. */
+const ManifestoGravado = Schema.Struct({
+  turno: Schema.Number,
+  criadaEm: Schema.String,
   /** Ausente quando a pasta passou dos limites e o turno ficou sem cópia. */
-  readonly arquivos?: Retrato;
+  arquivos: Schema.optional(Retrato),
   /** As subpastas de antes do turno. */
-  readonly pastas?: ReadonlyArray<string>;
-  readonly aviso?: string;
-  /** O retrato do fim do turno (`fim.json`); ausente se o turno não fechou (o app caiu no meio). */
+  pastas: Schema.optional(Schema.Array(Schema.String)),
+  aviso: Schema.optional(Schema.String),
+});
+
+interface Manifesto extends Schema.Schema.Type<typeof ManifestoGravado> {
+  /** O retrato do fim do turno; ausente se o turno não fechou (o app caiu no meio). */
   readonly fim?: RetratoFim;
 }
 
-/** A pasta no fim do turno: o que separa o que a IA fez do que mudou depois, fora da conversa. */
-interface RetratoFim {
-  readonly arquivos: Retrato;
-  readonly pastas: ReadonlyArray<string>;
-}
+const ManifestoJson = Schema.fromJsonString(ManifestoGravado);
+const RetratoFimJson = Schema.fromJsonString(RetratoFim);
+const lerManifesto = Schema.decodeUnknownEffect(ManifestoJson);
+const lerRetratoFim = Schema.decodeUnknownEffect(RetratoFimJson);
+const codificarManifesto = Schema.encodeEffect(ManifestoJson);
+const codificarRetratoFim = Schema.encodeEffect(RetratoFimJson);
 
-async function retratar(pasta: string, varredura: Pick<Varredura, "arquivos" | "links">): Promise<Retrato> {
-  const retrato: Retrato = {};
+const retratar = Effect.fn("PastasTrabalho.retratar")(function* (
+  pasta: string,
+  varredura: Pick<Varredura, "arquivos" | "links">,
+) {
+  const path = yield* Path.Path;
+  const retrato: Record<string, string> = {};
   for (const arquivo of varredura.arquivos) {
-    retrato[arquivo.nome] = `${arquivo.tamanho}:${await sha256(NodePath.join(pasta, arquivo.nome))}`;
+    retrato[arquivo.nome] = `${arquivo.tamanho}:${yield* sha256(path.join(pasta, arquivo.nome))}`;
   }
   for (const link of varredura.links) retrato[link] = LINK;
-  return retrato;
-}
+  return retrato satisfies Retrato;
+});
 
 /** Um caminho relativo vindo do manifesto, resolvido sem sair de `pasta`. */
-function dentro(pasta: string, relativo: string): string {
-  const alvo = NodePath.resolve(pasta, relativo);
-  if (!alvo.startsWith(pasta + NodePath.sep)) throw new Error(`caminho fora da pasta: ${relativo}`);
+// Por arquivo, dentro do span da operação.
+const dentro = Effect.fnUntraced(function* (pasta: string, relativo: string) {
+  const path = yield* Path.Path;
+  const alvo = path.resolve(pasta, relativo);
+  if (!alvo.startsWith(pasta + path.sep))
+    return yield* new CaminhoRecusado({ caminho: relativo, regra: "fora-da-pasta" });
   return alvo;
-}
+});
 
 /* ------------------------------------------------------------------ escrita sem seguir links */
 
@@ -226,121 +271,129 @@ function dentro(pasta: string, relativo: string): string {
 const PREFIXO_TEMPORARIO = ".simplifica-desfazer-";
 
 /** As partes de um caminho relativo do manifesto; recusa vazio, `.`, `..`, `\\` e NUL. */
-function partesSeguras(relativo: string): Array<string> {
+const partesSeguras = (relativo: string): Effect.Effect<Array<string>, CaminhoRecusado> => {
   const partes = relativo.split("/");
-  if (partes.some((parte) => parte === "" || parte === "." || parte === ".." || /[\\\0]/.test(parte)))
-    throw new Error(`caminho inválido no manifesto: ${relativo}`);
-  return partes;
-}
+  return partes.some((parte) => parte === "" || parte === "." || parte === ".." || /[\\\0]/.test(parte))
+    ? Effect.fail(new CaminhoRecusado({ caminho: relativo, regra: "invalido" }))
+    : Effect.succeed(partes);
+};
 
 /** O caminho real de `alvo` está em `real` (ou é `real`)? */
-async function realDentro(real: string, alvo: string): Promise<void> {
-  const caminho = await NodeFSP.realpath(alvo);
-  if (caminho !== real && !caminho.startsWith(real + NodePath.sep)) throw new Error(`fora da pasta: ${alvo}`);
-}
+// Por arquivo, dentro do span da operação.
+const realDentro = Effect.fnUntraced(function* (real: string, alvo: string) {
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
+  const caminho = yield* fs.realPath(alvo);
+  if (caminho !== real && !caminho.startsWith(real + path.sep))
+    return yield* new CaminhoRecusado({ caminho: alvo, regra: "fora-da-pasta" });
+});
 
 /**
  * A pasta `partes` dentro de `real`, percorrida componente a componente com `lstat`, sem seguir link:
  * um link no caminho é removido (nunca existiu numa cópia, que só tem arquivos e pastas comuns); com
- * `criar`, a pasta que falta é criada (e anotada em `criadas`) e o link é trocado por uma pasta comum.
- * Sem `criar`, devolve `undefined` quando a pasta não existe (ou era um link). Um arquivo comum no lugar
- * de uma pasta é recusado.
+ * `criar`, a pasta que falta é criada e o link é trocado por uma pasta comum. Sem `criar`, devolve
+ * `undefined` quando a pasta não existe (ou era um link). Um arquivo comum no lugar de uma pasta é
+ * recusado.
  */
-async function pastaSemLinks(
-  real: string,
-  partes: ReadonlyArray<string>,
-  criar: boolean,
-  criadas?: Array<string>,
-): Promise<string | undefined> {
+// Por arquivo, dentro do span da operação.
+const pastaSemLinks = Effect.fnUntraced(function* (real: string, partes: ReadonlyArray<string>, criar: boolean) {
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
   let atual = real;
   for (const parte of partes) {
-    const proximo = NodePath.join(atual, parte);
-    const info = await NodeFSP.lstat(proximo).catch(() => undefined);
-    if (info?.isSymbolicLink()) await NodeFSP.unlink(proximo);
-    if (info === undefined || info.isSymbolicLink()) {
+    const proximo = path.join(atual, parte);
+    const tipo = Option.map(yield* Effect.option(fs.lstat(proximo)), (info) => info.type);
+    if (Option.contains(tipo, "SymbolicLink")) yield* fs.remove(proximo);
+    if (Option.isNone(tipo) || tipo.value === "SymbolicLink") {
       if (!criar) return undefined;
-      await NodeFSP.mkdir(proximo);
-      criadas?.push(NodePath.relative(real, proximo).split(NodePath.sep).join("/"));
-    } else if (!info.isDirectory()) {
-      throw new Error(`um arquivo ocupa o lugar da pasta: ${NodePath.relative(real, proximo)}`);
+      yield* fs.makeDirectory(proximo);
+    } else if (tipo.value !== "Directory") {
+      return yield* new CaminhoRecusado({ caminho: path.relative(real, proximo), regra: "arquivo-no-lugar-da-pasta" });
     }
     atual = proximo;
   }
-  await realDentro(real, atual);
+  yield* realDentro(real, atual);
   return atual;
-}
-
-/** `O_NOFOLLOW` não existe no Windows. */
-const ABRIR_TEMPORARIO =
-  NodeFS.constants.O_WRONLY | NodeFS.constants.O_CREAT | NodeFS.constants.O_EXCL | (NodeFS.constants.O_NOFOLLOW ?? 0);
+});
 
 /**
  * Grava `conteudo` em `real/relativo` sem seguir link: as pastas do caminho conferidas por
- * `pastaSemLinks`, um temporário novo na mesma pasta (`O_EXCL`, `O_NOFOLLOW`) e o `rename` sobre o
- * alvo, que troca o próprio link (ou arquivo) de uma vez. O caminho real da pasta é conferido antes do
- * `rename`.
+ * `pastaSemLinks`, um temporário novo na mesma pasta (`PastasNode.gravarTemporario`, com `O_EXCL` e
+ * `O_NOFOLLOW`) e o `rename` sobre o alvo, que troca o próprio link (ou arquivo) de uma vez. O caminho
+ * real da pasta é conferido antes do `rename`; se ele falhar, o temporário sai.
  */
-export async function gravarSemSeguirLinks(
+export const gravarSemSeguirLinks = Effect.fn("PastasTrabalho.gravarSemSeguirLinks")(function* (
   real: string,
   relativo: string,
   conteudo: Uint8Array,
-  criadas?: Array<string>,
-): Promise<void> {
-  const partes = partesSeguras(relativo);
+) {
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
+  const partes = yield* partesSeguras(relativo);
   const nome = partes.pop()!;
-  const pasta = (await pastaSemLinks(real, partes, true, criadas))!;
-  const temporario = NodePath.join(pasta, `${PREFIXO_TEMPORARIO}${NodeCrypto.randomUUID()}`);
-  const arquivo = await NodeFSP.open(temporario, ABRIR_TEMPORARIO, 0o644);
-  try {
-    await arquivo.writeFile(conteudo);
-  } finally {
-    await arquivo.close();
-  }
-  try {
-    await realDentro(real, pasta);
-    await NodeFSP.rename(temporario, NodePath.join(pasta, nome));
-  } catch (erro) {
-    await NodeFSP.rm(temporario, { force: true });
-    throw erro;
-  }
-}
+  const pasta = (yield* pastaSemLinks(real, partes, true))!;
+  const temporario = yield* PastasNode.gravarTemporario(pasta, PREFIXO_TEMPORARIO, conteudo);
+  yield* realDentro(real, pasta).pipe(
+    Effect.andThen(fs.rename(temporario, path.join(pasta, nome))),
+    Effect.onError(() => Effect.ignore(fs.remove(temporario, { force: true }))),
+  );
+});
 
 /** Remove `real/relativo` se for arquivo ou link (o link em si, nunca o alvo); pastas no caminho, sem seguir links. */
-export async function removerSemSeguirLinks(real: string, relativo: string): Promise<void> {
-  const partes = partesSeguras(relativo);
+export const removerSemSeguirLinks = Effect.fn("PastasTrabalho.removerSemSeguirLinks")(function* (
+  real: string,
+  relativo: string,
+) {
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
+  const partes = yield* partesSeguras(relativo);
   const nome = partes.pop()!;
-  const pasta = await pastaSemLinks(real, partes, false);
+  const pasta = yield* pastaSemLinks(real, partes, false);
   if (pasta === undefined) return;
-  const alvo = NodePath.join(pasta, nome);
-  const info = await NodeFSP.lstat(alvo).catch(() => undefined);
-  if (info !== undefined && (info.isFile() || info.isSymbolicLink())) await NodeFSP.unlink(alvo);
-}
+  const alvo = path.join(pasta, nome);
+  const tipo = Option.map(yield* Effect.option(fs.lstat(alvo)), (info) => info.type);
+  if (Option.contains(tipo, "File") || Option.contains(tipo, "SymbolicLink")) yield* fs.remove(alvo);
+});
 
-async function lerManifestos(pastaCopias: string): Promise<Array<Manifesto>> {
-  let nomes: Array<string>;
-  try {
-    nomes = await NodeFSP.readdir(pastaCopias);
-  } catch {
-    return [];
-  }
+/**
+ * Copia `origem` para `destino` sem sobrescrever: o destino é aberto com `wx` antes de ler a origem
+ * (`AlreadyExists` se o nome está ocupado, sem tocá-lo), e a escrita vai pelo descritor aberto, sem
+ * seguir um link plantado depois. A cópia pela metade sai.
+ */
+const copiarSemSobrescrever = Effect.fn("PastasTrabalho.copiarSemSobrescrever")(function* (
+  origem: string,
+  destino: string,
+) {
+  const fs = yield* FileSystem.FileSystem;
+  let criado = false;
+  yield* Effect.scoped(
+    Effect.gen(function* () {
+      const saida = yield* fs.open(destino, { flag: "wx" });
+      criado = true;
+      yield* fs.stream(origem).pipe(Stream.runForEach((pedaco) => saida.writeAll(pedaco)));
+    }),
+  ).pipe(Effect.onError(() => (criado ? Effect.ignore(fs.remove(destino, { force: true })) : Effect.void)));
+});
+
+const lerManifestos = Effect.fn("PastasTrabalho.lerManifestos")(function* (pastaCopias: string) {
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
+  const nomes = yield* fs.readDirectory(pastaCopias).pipe(Effect.orElseSucceed((): Array<string> => []));
   const manifestos: Array<Manifesto> = [];
   for (const nome of nomes) {
     if (!/^\d+$/.test(nome)) continue;
-    try {
-      const manifesto = JSON.parse(
-        await NodeFSP.readFile(NodePath.join(pastaCopias, nome, "manifesto.json"), "utf8"),
-      ) as Manifesto;
-      const fim = await NodeFSP.readFile(NodePath.join(pastaCopias, nome, "fim.json"), "utf8").then(
-        (texto) => JSON.parse(texto) as RetratoFim,
-        () => undefined,
-      );
-      manifestos.push(fim === undefined ? manifesto : { ...manifesto, fim });
-    } catch {
-      // Cópia pela metade (o app fechou no meio): não conta.
-    }
+    const manifesto = yield* Effect.option(
+      fs.readFileString(path.join(pastaCopias, nome, "manifesto.json")).pipe(Effect.flatMap(lerManifesto)),
+    );
+    // Cópia pela metade (o app fechou no meio): não conta.
+    if (Option.isNone(manifesto)) continue;
+    const fim = yield* Effect.option(
+      fs.readFileString(path.join(pastaCopias, nome, "fim.json")).pipe(Effect.flatMap(lerRetratoFim)),
+    );
+    manifestos.push(Option.isNone(fim) ? manifesto.value : { ...manifesto.value, fim: fim.value });
   }
   return manifestos.sort((a, b) => b.turno - a.turno);
-}
+});
 
 function diferenca(antes: Retrato, agora: Retrato) {
   const criados = Object.keys(agora).filter((nome) => antes[nome] === undefined);
@@ -350,11 +403,19 @@ function diferenca(antes: Retrato, agora: Retrato) {
 }
 
 /** Copia a pasta para `<copias>/<turno>/` e mantém só as `limites.copias` mais recentes. */
-async function copiarTurno(real: string, copias: string, turno: number, criadaEm: string, limites: Limites) {
-  const destino = NodePath.join(copias, String(turno));
-  await NodeFSP.rm(destino, { recursive: true, force: true });
-  await NodeFSP.mkdir(destino, { recursive: true });
-  const varredura = await varrer(real, limites.arquivos);
+const copiarTurno = Effect.fn("PastasTrabalho.copiarTurno")(function* (
+  real: string,
+  copias: string,
+  turno: number,
+  criadaEm: string,
+  limites: Limites,
+) {
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
+  const destino = path.join(copias, String(turno));
+  yield* fs.remove(destino, { recursive: true, force: true });
+  yield* fs.makeDirectory(destino, { recursive: true });
+  const varredura = yield* varrer(real, limites.arquivos);
   const arquivos = varredura.arquivos;
   const total = arquivos.reduce((soma, arquivo) => soma + arquivo.tamanho, 0);
   let manifesto: Manifesto;
@@ -366,36 +427,42 @@ async function copiarTurno(real: string, copias: string, turno: number, criadaEm
     };
   } else {
     for (const arquivo of arquivos) {
-      const alvo = dentro(NodePath.join(destino, "arquivos"), arquivo.nome);
-      await NodeFSP.mkdir(NodePath.dirname(alvo), { recursive: true });
-      await NodeFSP.copyFile(NodePath.join(real, arquivo.nome), alvo);
+      const alvo = yield* dentro(path.join(destino, "arquivos"), arquivo.nome);
+      yield* fs.makeDirectory(path.dirname(alvo), { recursive: true });
+      yield* fs.copyFile(path.join(real, arquivo.nome), alvo);
     }
-    manifesto = { turno, criadaEm, arquivos: await retratar(real, varredura), pastas: varredura.pastas };
+    manifesto = { turno, criadaEm, arquivos: yield* retratar(real, varredura), pastas: varredura.pastas };
   }
   // O manifesto por último: sem ele, a cópia pela metade não conta.
-  await NodeFSP.writeFile(NodePath.join(destino, "manifesto.json"), JSON.stringify(manifesto));
-  const turnos = (await NodeFSP.readdir(copias))
+  yield* fs.writeFileString(path.join(destino, "manifesto.json"), yield* codificarManifesto(manifesto));
+  const turnos = (yield* fs.readDirectory(copias))
     .filter((nome) => /^\d+$/.test(nome))
     .map(Number)
     .sort((a, b) => b - a);
   for (const antigo of turnos.slice(limites.copias)) {
-    await NodeFSP.rm(NodePath.join(copias, String(antigo)), { recursive: true, force: true });
+    yield* fs.remove(path.join(copias, String(antigo)), { recursive: true, force: true });
   }
-}
+});
 
 /** Grava o retrato do fim do turno ao lado da cópia de antes dele (se houver cópia completa). */
-async function retratarFim(real: string, copias: string, turno: number, limites: Limites) {
-  const destino = NodePath.join(copias, String(turno));
-  const manifesto = await NodeFSP.readFile(NodePath.join(destino, "manifesto.json"), "utf8").then(
-    (texto) => JSON.parse(texto) as Manifesto,
-    () => undefined,
+const retratarFim = Effect.fn("PastasTrabalho.retratarFim")(function* (
+  real: string,
+  copias: string,
+  turno: number,
+  limites: Limites,
+) {
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
+  const destino = path.join(copias, String(turno));
+  const manifesto = yield* Effect.option(
+    fs.readFileString(path.join(destino, "manifesto.json")).pipe(Effect.flatMap(lerManifesto)),
   );
-  if (manifesto?.arquivos === undefined) return;
-  const varredura = await varrer(real, limites.arquivos);
+  if (Option.isNone(manifesto) || manifesto.value.arquivos === undefined) return;
+  const varredura = yield* varrer(real, limites.arquivos);
   if (varredura.arquivos.length > limites.arquivos) return;
-  const fim: RetratoFim = { arquivos: await retratar(real, varredura), pastas: varredura.pastas };
-  await NodeFSP.writeFile(NodePath.join(destino, "fim.json"), JSON.stringify(fim));
-}
+  const fim: RetratoFim = { arquivos: yield* retratar(real, varredura), pastas: varredura.pastas };
+  yield* fs.writeFileString(path.join(destino, "fim.json"), yield* codificarRetratoFim(fim));
+});
 
 const SEM_DESFAZER: PrevisaoDesfazer = {
   disponivel: false,
@@ -422,105 +489,95 @@ export const contadorDeAndamento = Effect.gen(function* () {
   return { contando, emAndamento: Ref.get(rodando).pipe(Effect.map((n) => n > 0)) };
 });
 
+/** A falha de arquivo vira a frase para a pessoa, com a falha em `cause`. */
+const comMotivo = (motivo: string) => Effect.mapError((cause: unknown) => new FalhaPasta({ motivo, cause }));
+
 export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPastas) {
   const limites = { ...LIMITES, ...opcoes.limites };
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
   const historico = yield* Historico.Historico;
   const liberacao = yield* ArquivosLiberados.ArquivosLiberados;
-  const raiz = NodePath.resolve(opcoes.raiz);
+  // O `FileSystem` e o `Path` das funções de arquivo deste módulo.
+  const comArquivos = Effect.provideContext(yield* Effect.context<FileSystem.FileSystem | Path.Path>());
+  const raiz = path.resolve(opcoes.raiz);
 
   const falha = (motivo: string) => new FalhaPasta({ motivo });
-  const tentar = <A>(fazer: () => Promise<A>, motivo: string) =>
-    Effect.tryPromise({ try: fazer, catch: () => falha(motivo) });
 
   /** O caminho real da pasta, se ela é gerida (filho direto da raiz); senão, `undefined`. */
-  const gerida = async (pasta: string): Promise<string | undefined> => {
-    if (!NodePath.isAbsolute(pasta)) return undefined;
-    try {
-      const [real, raizReal] = await Promise.all([NodeFSP.realpath(pasta), NodeFSP.realpath(raiz)]);
-      return NodePath.dirname(real) === raizReal && (await NodeFSP.lstat(real)).isDirectory() ? real : undefined;
-    } catch {
-      return undefined;
-    }
-  };
-
-  const pastaCopias = (conversa: string) => {
-    if (!/^[A-Za-z0-9-]+$/.test(conversa)) throw new Error(`id de conversa inesperado: ${conversa}`);
-    return NodePath.join(opcoes.copias, conversa);
-  };
-
-  const criar = Effect.fn("PastasTrabalho.criar")(function* (titulo: string) {
-    return yield* tentar(async () => {
-      await NodeFSP.mkdir(raiz, { recursive: true });
-      const nome = nomeSeguro(titulo);
-      // A pasta dos relatos não é de tarefa: o título igual a ela começa em " (2)".
-      for (let n = nome.toLowerCase() === PASTA_RELATOS.toLowerCase() ? 2 : 1; n < 1000; n++) {
-        const pasta = NodePath.join(raiz, n === 1 ? nome : `${nome} (${n})`);
-        try {
-          await NodeFSP.mkdir(pasta);
-          return await NodeFSP.realpath(pasta);
-        } catch (erro) {
-          if ((erro as NodeJS.ErrnoException).code !== "EEXIST") throw erro;
-        }
-      }
-      throw new Error("nomes esgotados");
-    }, "Não foi possível criar a pasta da tarefa em Documentos/Simplifica IF.");
+  const gerida = Effect.fn("PastasTrabalho.gerida")(function* (pasta: string) {
+    if (!path.isAbsolute(pasta)) return undefined;
+    return yield* Effect.all([fs.realPath(pasta), fs.realPath(raiz)], { concurrency: 2 }).pipe(
+      Effect.flatMap(([real, raizReal]) =>
+        path.dirname(real) === raizReal
+          ? fs.lstat(real).pipe(Effect.map((info) => (info.type === "Directory" ? real : undefined)))
+          : Effect.undefined,
+      ),
+      // A pasta que não existe ou não se lê não é gerida: fica sem lista, anexos e cópias.
+      Effect.orElseSucceed(() => undefined),
+    );
   });
 
+  const pastaCopias = (conversa: string): Effect.Effect<string, CaminhoRecusado> =>
+    /^[A-Za-z0-9-]+$/.test(conversa)
+      ? Effect.succeed(path.join(opcoes.copias, conversa))
+      : Effect.fail(new CaminhoRecusado({ caminho: conversa, regra: "id-de-conversa" }));
+
+  const criar = Effect.fn("PastasTrabalho.criar")(function* (titulo: string) {
+    yield* fs.makeDirectory(raiz, { recursive: true });
+    const nome = nomeSeguro(titulo);
+    return yield* criarSemColisao(
+      {
+        pasta: raiz,
+        nomes: (n) => (n === 1 ? nome : `${nome} (${n})`),
+        // A pasta dos relatos não é de tarefa: o título igual a ela começa em " (2)".
+        de: nome.toLowerCase() === PASTA_RELATOS.toLowerCase() ? 2 : 1,
+        ate: 999,
+      },
+      (candidato) =>
+        fs.makeDirectory(path.join(raiz, candidato)).pipe(Effect.andThen(fs.realPath(path.join(raiz, candidato)))),
+    );
+  }, comMotivo("Não foi possível criar a pasta da tarefa em Documentos/Simplifica IF."));
+
   const anexar = Effect.fn("PastasTrabalho.anexar")(function* (pasta: string, arquivo: string) {
-    const real = yield* Effect.promise(() => gerida(pasta));
+    const real = yield* gerida(pasta);
     if (real === undefined) return yield* falha("Só é possível anexar na pasta de uma tarefa do app.");
-    if (!NodePath.isAbsolute(arquivo) || !(yield* liberacao.liberado(arquivo)))
+    if (!path.isAbsolute(arquivo) || !(yield* liberacao.liberado(arquivo)))
       return yield* falha('Escolha o arquivo pelo botão "Anexar arquivo…" do app.');
     // A mesma lista do diálogo do desktop, também quando o servidor não exige a liberação (web, dev).
-    if (!ehExtensaoDocumento(NodePath.basename(arquivo)))
+    if (!ehExtensaoDocumento(path.basename(arquivo)))
       return yield* falha("Anexe um documento (Word, PDF, texto, planilha, apresentação ou imagem).");
-    const info = yield* tentar(() => NodeFSP.lstat(arquivo), "O arquivo não foi encontrado ou não pode ser lido.");
-    if (!info.isFile()) return yield* falha("Escolha um arquivo (não uma pasta nem um atalho).");
-    if (info.size > limites.anexoBytes)
+    const info = yield* fs.lstat(arquivo).pipe(comMotivo("O arquivo não foi encontrado ou não pode ser lido."));
+    if (info.type !== "File") return yield* falha("Escolha um arquivo (não uma pasta nem um atalho).");
+    if (Number(info.size) > limites.anexoBytes)
       return yield* falha(`O arquivo passa de ${Math.round(limites.anexoBytes / 1024 / 1024)} MB.`);
-    const nome = yield* tentar(async () => {
-      const original = NodePath.basename(arquivo);
-      for (let n = 1; n < 1000; n++) {
-        const candidato = comNumero(original, n);
-        try {
-          await NodeFSP.copyFile(arquivo, NodePath.join(real, candidato), NodeFS.constants.COPYFILE_EXCL);
-          return candidato;
-        } catch (erro) {
-          if ((erro as NodeJS.ErrnoException).code !== "EEXIST") throw erro;
-        }
-      }
-      throw new Error("nomes esgotados");
-    }, "Não foi possível copiar o arquivo para a pasta da tarefa.");
+    const original = path.basename(arquivo);
+    const nome = yield* criarSemColisao({ pasta: real, nomes: (n) => comNumero(original, n), ate: 999 }, (candidato) =>
+      copiarSemSobrescrever(arquivo, path.join(real, candidato)).pipe(Effect.as(candidato), comArquivos),
+    ).pipe(comMotivo("Não foi possível copiar o arquivo para a pasta da tarefa."));
     yield* historico.registrarAnexo(real, nome);
-    const copiado = yield* tentar(() => NodeFSP.stat(NodePath.join(real, nome)), "O arquivo copiado sumiu.");
+    const copiado = yield* fs.stat(path.join(real, nome)).pipe(comMotivo("O arquivo copiado sumiu."));
     return {
       nome,
-      caminho: NodePath.join(real, nome),
-      tamanho: copiado.size,
-      alteradoEm: copiado.mtime.toISOString(),
+      caminho: path.join(real, nome),
+      tamanho: Number(copiado.size),
+      alteradoEm: alteradoEm(copiado),
       origem: "anexado",
     } satisfies ArquivoPasta;
   });
 
   const gravarRelato = Effect.fn("PastasTrabalho.gravarRelato")(function* (nome: string, conteudo: string) {
-    return yield* tentar(async () => {
-      const pasta = NodePath.join(raiz, PASTA_RELATOS);
-      await NodeFSP.mkdir(pasta, { recursive: true });
-      // Um link no lugar da pasta levaria o relato para fora de Documentos/Simplifica IF.
-      if (!(await NodeFSP.lstat(pasta)).isDirectory()) throw new Error("a pasta dos relatos não é uma pasta");
-      const seguro = `${nomeSeguro(NodePath.basename(nome, ".md"))}.md`;
-      for (let n = 1; n < 1000; n++) {
-        const destino = NodePath.join(pasta, comNumero(seguro, n));
-        try {
-          await NodeFSP.writeFile(destino, conteudo, { flag: "wx" });
-          return destino;
-        } catch (erro) {
-          if ((erro as NodeJS.ErrnoException).code !== "EEXIST") throw erro;
-        }
-      }
-      throw new Error("nomes esgotados");
-    }, "Não foi possível gravar o relato em Documentos/Simplifica IF/Relatos de erro.");
-  });
+    const pasta = path.join(raiz, PASTA_RELATOS);
+    yield* fs.makeDirectory(pasta, { recursive: true });
+    // Um link no lugar da pasta levaria o relato para fora de Documentos/Simplifica IF.
+    if ((yield* fs.lstat(pasta)).type !== "Directory")
+      return yield* new CaminhoRecusado({ caminho: pasta, regra: "nao-e-pasta" });
+    const seguro = `${nomeSeguro(path.basename(nome, ".md"))}.md`;
+    return yield* criarSemColisao({ pasta, nomes: (n) => comNumero(seguro, n), ate: 999 }, (candidato) => {
+      const destino = path.join(pasta, candidato);
+      return fs.writeFileString(destino, conteudo, { flag: "wx" }).pipe(Effect.as(destino));
+    });
+  }, comMotivo("Não foi possível gravar o relato em Documentos/Simplifica IF/Relatos de erro."));
 
   /**
    * O turno a desfazer: o mais recente cuja pasta mudou **dentro** dele (o retrato de antes × o do fim
@@ -528,14 +585,21 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
    * no último, a pasta agora. Os arquivos mudados no turno que mudaram de novo depois (fora da conversa)
    * vão em `foraDaConversa`.
    */
-  const prever = async (conversa: string, real: string) => {
-    const manifestos = await lerManifestos(pastaCopias(conversa));
+  const prever = Effect.fn("PastasTrabalho.prever")(function* (
+    conversa: string,
+    real: string,
+  ): Effect.fn.Return<
+    { readonly previsao: PrevisaoDesfazer; readonly manifesto?: Manifesto; readonly fim?: RetratoFim },
+    PlatformError.PlatformError | CaminhoRecusado,
+    FileSystem.FileSystem | Path.Path
+  > {
+    const manifestos = yield* lerManifestos(yield* pastaCopias(conversa));
     const aviso = manifestos[0]?.aviso;
     // Sem a cópia do turno mais recente, voltar a uma mais antiga desfaria também o que veio depois dela.
     if (aviso !== undefined) return { previsao: { ...SEM_DESFAZER, aviso } };
-    const varredura = await varrer(real, limites.arquivos);
+    const varredura = yield* varrer(real, limites.arquivos);
     if (varredura.arquivos.length > limites.arquivos) return { previsao: SEM_DESFAZER };
-    const agora: RetratoFim = { arquivos: await retratar(real, varredura), pastas: varredura.pastas };
+    const agora: RetratoFim = { arquivos: yield* retratar(real, varredura), pastas: varredura.pastas };
     for (const [indice, manifesto] of manifestos.entries()) {
       if (manifesto.arquivos === undefined) break;
       const seguinte = manifestos[indice - 1];
@@ -555,26 +619,27 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
       return { previsao, manifesto, fim };
     }
     return { previsao: SEM_DESFAZER };
-  };
+  });
 
-  const listar = async (real: string, anexos: ReadonlySet<string>) =>
-    (await listarArvore(real, limites.arquivos)).slice(0, limites.arquivos).map((entrada): ArquivoPasta => ({
+  const listar = Effect.fn("PastasTrabalho.listar")(function* (real: string, anexos: ReadonlySet<string>) {
+    const varredura = yield* varrer(real, limites.arquivos);
+    return varredura.arquivos.slice(0, limites.arquivos).map((entrada): ArquivoPasta => ({
       nome: entrada.nome,
-      caminho: NodePath.join(real, entrada.nome),
+      caminho: path.join(real, entrada.nome),
       tamanho: entrada.tamanho,
-      alteradoEm: entrada.alteradoEm.toISOString(),
+      alteradoEm: entrada.alteradoEm,
       origem: anexos.has(entrada.nome) ? "anexado" : "pasta",
     }));
+  });
 
   const ver = Effect.fn("PastasTrabalho.ver")(function* (conversa: string, pasta: string) {
-    const real = yield* Effect.promise(() => gerida(pasta));
+    const real = yield* gerida(pasta);
     if (real === undefined)
       return { pasta, gerida: false, arquivos: [], desfazer: SEM_DESFAZER } satisfies PastaConversa;
     const anexos = yield* historico.anexos(real);
-    const [arquivos, { previsao }] = yield* tentar(
-      () => Promise.all([listar(real, anexos), prever(conversa, real)]),
-      "Não foi possível ler a pasta da tarefa.",
-    );
+    const [arquivos, { previsao }] = yield* Effect.all([listar(real, anexos), prever(conversa, real)], {
+      concurrency: 2,
+    }).pipe(comArquivos, comMotivo("Não foi possível ler a pasta da tarefa."));
     return { pasta: real, gerida: true, arquivos, desfazer: previsao } satisfies PastaConversa;
   });
 
@@ -584,13 +649,11 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     pasta: string,
   ) {
     const criadaEm = DateTime.formatIso(yield* DateTime.now);
-    yield* Effect.tryPromise({
-      try: async () => {
-        const real = await gerida(pasta);
-        if (real !== undefined) await copiarTurno(real, pastaCopias(conversa), turno, criadaEm, limites);
-      },
-      catch: (erro) => new FalhaPasta({ motivo: String(erro) }),
+    yield* Effect.gen(function* () {
+      const real = yield* gerida(pasta);
+      if (real !== undefined) yield* copiarTurno(real, yield* pastaCopias(conversa), turno, criadaEm, limites);
     }).pipe(
+      comArquivos,
       Effect.catch((erro) => Effect.logWarning(`conversa ${conversa}: sem cópia da pasta no turno ${turno}`, erro)),
     );
   });
@@ -600,15 +663,50 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     turno: number,
     pasta: string,
   ) {
-    yield* Effect.tryPromise({
-      try: async () => {
-        const real = await gerida(pasta);
-        if (real !== undefined) await retratarFim(real, pastaCopias(conversa), turno, limites);
-      },
-      catch: (erro) => new FalhaPasta({ motivo: String(erro) }),
+    yield* Effect.gen(function* () {
+      const real = yield* gerida(pasta);
+      if (real !== undefined) yield* retratarFim(real, yield* pastaCopias(conversa), turno, limites);
     }).pipe(
+      comArquivos,
       Effect.catch((erro) => Effect.logWarning(`conversa ${conversa}: sem retrato do fim do turno ${turno}`, erro)),
     );
+  });
+
+  /** Volta a pasta ao que era antes do turno que `prever` aponta, e apaga as cópias dele em diante. */
+  const restaurar = Effect.fn("PastasTrabalho.restaurar")(function* (
+    conversa: string,
+    real: string,
+    incluirForaDaConversa: boolean,
+  ) {
+    const { previsao, manifesto, fim } = yield* prever(conversa, real);
+    if (!previsao.disponivel || manifesto === undefined || fim === undefined) return;
+    const copias = yield* pastaCopias(conversa);
+    const copia = path.join(copias, String(manifesto.turno), "arquivos");
+    const antes = manifesto.arquivos ?? {};
+    const pular = new Set(incluirForaDaConversa ? [] : previsao.foraDaConversa);
+    for (const nome of previsao.criados) if (!pular.has(nome)) yield* removerSemSeguirLinks(real, nome);
+    // As pastas que o turno criou e ficaram vazias saem também (as mais fundas primeiro).
+    const pastasAntes = new Set(manifesto.pastas ?? []);
+    const criadasNoTurno = fim.pastas
+      .filter((nome) => !pastasAntes.has(nome))
+      .sort((a, b) => b.split("/").length - a.split("/").length);
+    for (const nome of criadasNoTurno) {
+      const partes = yield* partesSeguras(nome);
+      const caminho = yield* pastaSemLinks(real, partes, false).pipe(Effect.orElseSucceed(() => undefined));
+      if (caminho !== undefined && (yield* fs.readDirectory(caminho)).length === 0)
+        yield* PastasNode.removerPastaVazia(caminho);
+    }
+    for (const nome of [...previsao.alterados, ...previsao.apagados].filter((nome) => !pular.has(nome))) {
+      // Um link de antes do turno não se restaura (a cópia não o tem); o que está no lugar sai.
+      if (antes[nome] === LINK) yield* removerSemSeguirLinks(real, nome);
+      else yield* gravarSemSeguirLinks(real, nome, yield* fs.readFile(yield* dentro(copia, nome)));
+    }
+    // As cópias deste turno em diante já não valem: o próximo Desfazer volta mais um turno.
+    for (const nome of yield* fs.readDirectory(copias)) {
+      if (/^\d+$/.test(nome) && Number(nome) >= manifesto.turno) {
+        yield* fs.remove(path.join(copias, nome), { recursive: true, force: true });
+      }
+    }
   });
 
   const desfazer = Effect.fn("PastasTrabalho.desfazer")(function* (
@@ -616,36 +714,12 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
     pasta: string,
     incluirForaDaConversa: boolean,
   ) {
-    const real = yield* Effect.promise(() => gerida(pasta));
+    const real = yield* gerida(pasta);
     if (real === undefined) return yield* falha("Esta conversa não tem uma pasta de tarefa do app.");
-    yield* tentar(async () => {
-      const { previsao, manifesto, fim } = await prever(conversa, real);
-      if (!previsao.disponivel || manifesto === undefined || fim === undefined) return;
-      const copia = NodePath.join(pastaCopias(conversa), String(manifesto.turno), "arquivos");
-      const antes = manifesto.arquivos ?? {};
-      const pular = new Set(incluirForaDaConversa ? [] : previsao.foraDaConversa);
-      for (const nome of previsao.criados) if (!pular.has(nome)) await removerSemSeguirLinks(real, nome);
-      // As pastas que o turno criou e ficaram vazias saem também (as mais fundas primeiro).
-      const pastasAntes = new Set(manifesto.pastas ?? []);
-      const criadasNoTurno = fim.pastas
-        .filter((nome) => !pastasAntes.has(nome))
-        .sort((a, b) => b.split("/").length - a.split("/").length);
-      for (const nome of criadasNoTurno) {
-        const caminho = await pastaSemLinks(real, partesSeguras(nome), false).catch(() => undefined);
-        if (caminho !== undefined && (await NodeFSP.readdir(caminho)).length === 0) await NodeFSP.rmdir(caminho);
-      }
-      for (const nome of [...previsao.alterados, ...previsao.apagados].filter((nome) => !pular.has(nome))) {
-        // Um link de antes do turno não se restaura (a cópia não o tem); o que está no lugar sai.
-        if (antes[nome] === LINK) await removerSemSeguirLinks(real, nome);
-        else await gravarSemSeguirLinks(real, nome, await NodeFSP.readFile(dentro(copia, nome)));
-      }
-      // As cópias deste turno em diante já não valem: o próximo Desfazer volta mais um turno.
-      for (const nome of await NodeFSP.readdir(pastaCopias(conversa))) {
-        if (/^\d+$/.test(nome) && Number(nome) >= manifesto.turno) {
-          await NodeFSP.rm(NodePath.join(pastaCopias(conversa), nome), { recursive: true, force: true });
-        }
-      }
-    }, "Não foi possível restaurar a pasta. Confira se algum arquivo está aberto em outro programa.");
+    yield* restaurar(conversa, real, incluirForaDaConversa).pipe(
+      comArquivos,
+      comMotivo("Não foi possível restaurar a pasta. Confira se algum arquivo está aberto em outro programa."),
+    );
     return yield* ver(conversa, real);
   });
 
@@ -701,5 +775,5 @@ export const layerSemPastas = Layer.sync(PastasTrabalho, () => {
   });
 });
 
-/** Pede o `Historico` e os `ArquivosLiberados` (a liberação dos arquivos escolhidos no desktop). */
+/** Pede o `Historico`, os `ArquivosLiberados` (a liberação dos arquivos escolhidos no desktop), o `FileSystem` e o `Path`. */
 export const layer = (opcoes: OpcoesPastas) => Layer.effect(PastasTrabalho, make(opcoes));

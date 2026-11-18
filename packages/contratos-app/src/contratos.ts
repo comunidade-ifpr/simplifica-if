@@ -780,9 +780,13 @@ export class GrupoRevisaoPpc extends RpcGroup.make(
 
 /**
  * Uma recusa da pasta de trabalho (criar, anexar, ver, desfazer), com a frase para a pessoa em
- * `motivo`.
+ * `motivo`. A falha de arquivo embaixo dela fica em `cause`, que o servidor registra e não manda à
+ * interface (pode ter caminho e pilha).
  */
-export class FalhaPasta extends Schema.TaggedError<FalhaPasta>()("FalhaPasta", { motivo: Schema.String }) {
+export class FalhaPasta extends Schema.TaggedError<FalhaPasta>()("FalhaPasta", {
+  motivo: Schema.String,
+  cause: Schema.optional(Schema.Defect()),
+}) {
   override get message(): string {
     return this.motivo;
   }

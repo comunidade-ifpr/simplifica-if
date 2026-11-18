@@ -18,13 +18,8 @@ import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
 import * as Stream from "effect/Stream";
 import { CAMINHO_LIBERAR_ARQUIVO } from "@simplifica-if/contratos-app";
-import {
-  comNumero,
-  contadorDeAndamento,
-  gravarSemSeguirLinks,
-  nomeSeguro,
-  removerSemSeguirLinks,
-} from "../src/PastasTrabalho.ts";
+import { comNumero } from "../src/nome-livre.ts";
+import { contadorDeAndamento, gravarSemSeguirLinks, nomeSeguro, removerSemSeguirLinks } from "../src/PastasTrabalho.ts";
 import * as Servidor from "../src/servidor.ts";
 import {
   bancoFixture,
@@ -77,37 +72,38 @@ describe("nomes", () => {
   });
 });
 
-describe("escrita sem seguir links", () => {
-  it("troca o link do arquivo e o da pasta pelo arquivo, sem tocar no alvo de fora", async () => {
-    const real = NodeFS.realpathSync(diretorioTemporario("simplifica-real-"));
-    const alvoFora = NodeFS.realpathSync(diretorioTemporario("simplifica-alvo-"));
-    NodeFS.writeFileSync(NodePath.join(alvoFora, "alvo.txt"), "DE FORA\n");
-    NodeFS.symlinkSync(NodePath.join(alvoFora, "alvo.txt"), NodePath.join(real, "x.txt"));
-    NodeFS.symlinkSync(alvoFora, NodePath.join(real, "sub"));
-    await gravarSemSeguirLinks(real, "x.txt", Buffer.from("restaurado\n"));
-    await gravarSemSeguirLinks(real, "sub/a.txt", Buffer.from("A\n"));
-    assert.strictEqual(NodeFS.readFileSync(NodePath.join(alvoFora, "alvo.txt"), "utf8"), "DE FORA\n");
-    assert.isFalse(NodeFS.existsSync(NodePath.join(alvoFora, "a.txt")));
-    assert.isTrue(NodeFS.lstatSync(NodePath.join(real, "x.txt")).isFile());
-    assert.strictEqual(NodeFS.readFileSync(NodePath.join(real, "x.txt"), "utf8"), "restaurado\n");
-    assert.isTrue(NodeFS.lstatSync(NodePath.join(real, "sub")).isDirectory());
-    assert.strictEqual(NodeFS.readFileSync(NodePath.join(real, "sub", "a.txt"), "utf8"), "A\n");
-    // Nenhum temporário fica para trás.
-    assert.deepStrictEqual(
-      NodeFS.readdirSync(real).filter((nome) => nome.startsWith(".")),
-      [],
-    );
-    // Remover um arquivo atrás de uma pasta-link remove só o link, nunca o arquivo de fora.
-    NodeFS.rmSync(NodePath.join(real, "sub"), { recursive: true });
-    NodeFS.symlinkSync(alvoFora, NodePath.join(real, "sub"));
-    await removerSemSeguirLinks(real, "sub/alvo.txt");
-    assert.isTrue(NodeFS.existsSync(NodePath.join(alvoFora, "alvo.txt")));
-    assert.isFalse(NodeFS.existsSync(NodePath.join(real, "sub")));
-    // Caminho do manifesto com `..` é recusado.
-    let recusou = false;
-    await gravarSemSeguirLinks(real, "../fora.txt", Buffer.from("x")).catch(() => (recusou = true));
-    assert.isTrue(recusou);
-  });
+layer(NodeServices.layer, { excludeTestServices: true })("escrita sem seguir links", (it) => {
+  it.effect("troca o link do arquivo e o da pasta pelo arquivo, sem tocar no alvo de fora", () =>
+    Effect.gen(function* () {
+      const real = NodeFS.realpathSync(diretorioTemporario("simplifica-real-"));
+      const alvoFora = NodeFS.realpathSync(diretorioTemporario("simplifica-alvo-"));
+      NodeFS.writeFileSync(NodePath.join(alvoFora, "alvo.txt"), "DE FORA\n");
+      NodeFS.symlinkSync(NodePath.join(alvoFora, "alvo.txt"), NodePath.join(real, "x.txt"));
+      NodeFS.symlinkSync(alvoFora, NodePath.join(real, "sub"));
+      yield* gravarSemSeguirLinks(real, "x.txt", Buffer.from("restaurado\n"));
+      yield* gravarSemSeguirLinks(real, "sub/a.txt", Buffer.from("A\n"));
+      assert.strictEqual(NodeFS.readFileSync(NodePath.join(alvoFora, "alvo.txt"), "utf8"), "DE FORA\n");
+      assert.isFalse(NodeFS.existsSync(NodePath.join(alvoFora, "a.txt")));
+      assert.isTrue(NodeFS.lstatSync(NodePath.join(real, "x.txt")).isFile());
+      assert.strictEqual(NodeFS.readFileSync(NodePath.join(real, "x.txt"), "utf8"), "restaurado\n");
+      assert.isTrue(NodeFS.lstatSync(NodePath.join(real, "sub")).isDirectory());
+      assert.strictEqual(NodeFS.readFileSync(NodePath.join(real, "sub", "a.txt"), "utf8"), "A\n");
+      // Nenhum temporário fica para trás.
+      assert.deepStrictEqual(
+        NodeFS.readdirSync(real).filter((nome) => nome.startsWith(".")),
+        [],
+      );
+      // Remover um arquivo atrás de uma pasta-link remove só o link, nunca o arquivo de fora.
+      NodeFS.rmSync(NodePath.join(real, "sub"), { recursive: true });
+      NodeFS.symlinkSync(alvoFora, NodePath.join(real, "sub"));
+      yield* removerSemSeguirLinks(real, "sub/alvo.txt");
+      assert.isTrue(NodeFS.existsSync(NodePath.join(alvoFora, "alvo.txt")));
+      assert.isFalse(NodeFS.existsSync(NodePath.join(real, "sub")));
+      // Caminho do manifesto com `..` é recusado.
+      const recusou = Exit.isFailure(yield* Effect.exit(gravarSemSeguirLinks(real, "../fora.txt", Buffer.from("x"))));
+      assert.isTrue(recusou);
+    }),
+  );
 });
 
 layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {

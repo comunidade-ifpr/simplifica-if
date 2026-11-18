@@ -6,7 +6,7 @@
  * A conversa não pertence à conexão: os métodos de conversa recebem só o id dela (`sessao`), e uma
  * interface que recarrega volta à mesma conversa por `conversa.carregar` e `conversa.acompanhar`.
  *
- * O `FalhaProvider` chega à interface sem o `cause`, que pode trazer a pilha e caminhos do computador;
+ * O `FalhaProvider` e a `FalhaPasta` chegam à interface sem o `cause`, que pode trazer a pilha e caminhos do computador;
  * o erro inteiro vai para o log do servidor (stderr).
  */
 import * as Effect from "effect/Effect";
@@ -15,6 +15,8 @@ import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
 import * as Atualizador from "./Atualizador.ts";
 import {
+  ehFalhaPasta,
+  FalhaPasta,
   GrupoAtualizacao,
   GrupoConversa,
   GrupoPasta,
@@ -36,11 +38,13 @@ import * as RevisaoIa from "./revisao-ppc/RevisaoIa.ts";
 
 const ehFalhaProvider = Schema.is(Motor.FalhaProvider);
 
-/** O erro como vai à interface: o `FalhaProvider` sem o `cause`. */
+/** O erro como vai à interface: o `FalhaProvider` e a `FalhaPasta` sem o `cause`. */
 const paraInterface = <E>(erro: E): E =>
   ehFalhaProvider(erro)
     ? (new Motor.FalhaProvider({ provider: erro.provider, operacao: erro.operacao, detalhe: erro.detalhe }) as E)
-    : erro;
+    : ehFalhaPasta(erro)
+      ? (new FalhaPasta({ motivo: erro.motivo }) as E)
+      : erro;
 
 const registrarEMapear = <A, E, R>(efeito: Effect.Effect<A, E, R>) =>
   efeito.pipe(
@@ -105,7 +109,7 @@ const layerPasta = GrupoPasta.toLayer(
     return GrupoPasta.of({
       "pasta.criar": ({ titulo }) => registrarEMapear(pastas.criar(titulo)).pipe(Effect.map((pasta) => ({ pasta }))),
       "pasta.anexar": ({ pasta, arquivo }) => registrarEMapear(pastas.anexar(pasta, arquivo)),
-      "pasta.ver": ({ sessao }) => conversas.pasta(sessao),
+      "pasta.ver": ({ sessao }) => registrarEMapear(conversas.pasta(sessao)),
       "pasta.desfazer": ({ sessao, incluirForaDaConversa }) =>
         registrarEMapear(conversas.desfazer(sessao, incluirForaDaConversa === true)),
     });

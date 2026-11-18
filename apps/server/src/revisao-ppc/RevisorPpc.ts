@@ -24,6 +24,7 @@ import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
@@ -36,6 +37,7 @@ import * as NodeCrypto from "node:crypto";
 import type { BaseRevisaoPrevia, EntradaIa, MarcaPendencia, RevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
 import type { CursoCnct } from "@simplifica-if/ppc/verificadores/comum";
 import * as ArquivosLiberados from "../ArquivosLiberados.ts";
+import { comNumero, criarSemColisao } from "../nome-livre.ts";
 import type { PedidoTrabalhador, RespostaTrabalhador } from "./trabalhador.ts";
 
 /** Os limites da revisão; os testes os apertam para provocar o estouro. */
@@ -215,20 +217,15 @@ function rodarNoTrabalhador(
 /* ============================================================ arquivo */
 
 /** Grava ao lado do original sem sobrescrever: `<nome> - revisão prévia (Simplifica IF).docx`, depois ` (2)`… */
-async function gravarCopia(original: string, bytes: Uint8Array): Promise<string> {
+const gravarCopia = Effect.fn("RevisorPpc.gravarCopia")(function* (original: string, bytes: Uint8Array) {
+  const fs = yield* FileSystem.FileSystem;
   const pasta = NodePath.dirname(original);
-  const nome = NodePath.basename(original, NodePath.extname(original));
-  for (let n = 1; n <= 99; n += 1) {
-    const destino = NodePath.join(pasta, `${nome}${SUFIXO_REVISAO_PREVIA}${n === 1 ? "" : ` (${n})`}.docx`);
-    try {
-      await NodeFSP.writeFile(destino, bytes, { flag: "wx" });
-      return destino;
-    } catch (erro) {
-      if ((erro as { code?: string }).code !== "EEXIST") throw erro;
-    }
-  }
-  throw new Error("cópias demais com o mesmo nome");
-}
+  const copia = `${NodePath.basename(original, NodePath.extname(original))}${SUFIXO_REVISAO_PREVIA}.docx`;
+  return yield* criarSemColisao({ pasta, nomes: (n) => comNumero(copia, n), ate: 99 }, (nome) => {
+    const destino = NodePath.join(pasta, nome);
+    return fs.writeFile(destino, bytes, { flag: "wx" }).pipe(Effect.as(destino));
+  });
+});
 
 /* ============================================================ serviço */
 
@@ -247,6 +244,7 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
   const limites = { ...LIMITES, ...opcoes.limites };
   const url = opcoes.trabalhador ?? URL_TRABALHADOR;
   const contexto = yield* Effect.context<FontesNormativas.FontesNormativas | SqlClient.SqlClient>();
+  const fs = yield* FileSystem.FileSystem;
   // A base é montada na primeira revisão e reaproveitada (o banco é só de leitura).
   const base = yield* Effect.cached(
     montarBase.pipe(
@@ -306,11 +304,12 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
       falha,
     );
     const arquivoComentado = entrada.gravar
-      ? yield* Effect.tryPromise({
-          try: () => gravarCopia(arquivo, revisao.docx),
-          catch: () =>
+      ? yield* gravarCopia(arquivo, revisao.docx).pipe(
+          Effect.provideService(FileSystem.FileSystem, fs),
+          Effect.mapError(() =>
             falha("Não foi possível gravar a cópia comentada na pasta do arquivo. Confira se a pasta aceita gravação."),
-        })
+          ),
+        )
       : null;
     const { docx: _, ...semDocx } = revisao;
     return { revisao: semDocx, sha256, arquivoComentado } satisfies RevisaoDoArquivo;
@@ -341,7 +340,7 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
 });
 
 /**
- * O serviço sobre o `FontesNormativas` e o `SqlClient` do `kb.sqlite` (os do `Leitura` do servidor) e
- * os `ArquivosLiberados`.
+ * O serviço sobre o `FontesNormativas` e o `SqlClient` do `kb.sqlite` (os do `Leitura` do servidor),
+ * os `ArquivosLiberados` e o `FileSystem`.
  */
 export const layer = (opcoes: OpcoesRevisao = {}) => Layer.effect(RevisorPpc, make(opcoes));
