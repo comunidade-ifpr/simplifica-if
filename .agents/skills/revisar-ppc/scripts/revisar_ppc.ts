@@ -222,7 +222,7 @@ const gerarRelatorio = Effect.fn("revisar_ppc.gerarRelatorio")(function* (opcoes
   readonly surgeDomain: Option.Option<string>;
 }) {
   const path = yield* Path.Path;
-  const relatorio = yield* executar(() => gerarRelatorioHtml(opcoes.rodadaDir, opcoes.resultados));
+  const relatorio = yield* gerarRelatorioHtml(opcoes.rodadaDir, opcoes.resultados);
   if (opcoes.semSurge) return payloadRelatorio(relatorio);
   const rodada = caminhosRodada(opcoes.rodadaDir);
   const dominioConfigurado = yield* textoDoAmbiente("REVISAR_PPC_SURGE_DOMAIN");
@@ -348,8 +348,11 @@ const mesclarResultadosCmd = Command.make(
     resultadosAvulsos,
     saida,
   }) {
-    const mesclado = yield* executar(() =>
-      mesclarResultadosAvulsos(rodadaDir, resultadosBase, resultadosAvulsos, Option.getOrUndefined(saida)),
+    const mesclado = yield* mesclarResultadosAvulsos(
+      rodadaDir,
+      resultadosBase,
+      resultadosAvulsos,
+      Option.getOrUndefined(saida),
     );
     yield* imprimirJson(mesclado);
   }),
@@ -359,7 +362,7 @@ const validarResultadosCmd = Command.make(
   "validar-resultados",
   { rodadaDir: flagRodadaDir, resultados: flagResultados },
   Effect.fn("revisar_ppc.validarResultados")(function* ({ rodadaDir, resultados }) {
-    yield* imprimirJson(yield* executar(() => validarResultadosRodada(rodadaDir, resultados)));
+    yield* imprimirJson(yield* validarResultadosRodada(rodadaDir, resultados));
   }),
 ).pipe(Command.withDescription("Validar cobertura e contrato do JSON de resultados sem gerar HTML"));
 

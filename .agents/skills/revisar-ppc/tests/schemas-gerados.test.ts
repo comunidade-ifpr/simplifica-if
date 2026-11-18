@@ -235,6 +235,7 @@ describe("contratos da base de análise", () => {
         decodificarContrato("validacao-cruzada.schema.json", { ...validacao, secoes_relacionadas: ["capa"] }),
       ),
     ).toEqual(["$.secoes_relacionadas[0]"]);
+    // Sem `id`, `criticidade`, `fichas_relacionadas` e `evidencias`, o alerta usa os padrões.
     expect(
       caminhosDosProblemas(
         decodificarContrato("alertas-transversais.schema.json", { alertas_transversais: [{ id: "A" }] }),
@@ -242,10 +243,7 @@ describe("contratos da base de análise", () => {
     ).toEqual([
       "$.alertas_transversais[0].validacao_id",
       "$.alertas_transversais[0].titulo",
-      "$.alertas_transversais[0].criticidade",
       "$.alertas_transversais[0].descricao",
-      "$.alertas_transversais[0].fichas_relacionadas",
-      "$.alertas_transversais[0].evidencias",
       "$.alertas_transversais[0].revisao_humana_obrigatoria",
     ]);
   });

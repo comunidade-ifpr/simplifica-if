@@ -99,7 +99,7 @@ export class GruposSubagentsInvalidos extends Schema.TaggedError<GruposSubagents
   { caminho: Schema.String },
 ) {
   override get message(): string {
-    return "grupos-subagents.json não contém `grupos[]`.";
+    return "grupos-subagents.json precisa conter `grupos[]`, uma lista de objetos.";
   }
 }
 export const ehGruposSubagentsInvalidos = Schema.is(GruposSubagentsInvalidos);
@@ -778,7 +778,9 @@ export const prepararPromptsSubagents = Effect.fn("subagents.prepararPromptsSuba
     ? (lerJsonDaRodada(caminhos.gruposSubagents) as Dicionario)
     : yield* montarGruposSubagents(rodada, TAMANHO_GRUPO_PADRAO, opcoes);
   const grupos = obter(payload, "grupos");
-  if (!Array.isArray(grupos)) return yield* new GruposSubagentsInvalidos({ caminho: caminhos.gruposSubagents });
+  if (!Array.isArray(grupos) || !grupos.every(ehDicionario)) {
+    return yield* new GruposSubagentsInvalidos({ caminho: caminhos.gruposSubagents });
+  }
   const ppc = lerTexto(caminhos.ppc);
   const templatePath = textoDoValor(
     ou(obter(payload, "prompt_template"), NodePath.join(skill.promptsDir, "subagent-lote-fichas.md")),
@@ -787,7 +789,6 @@ export const prepararPromptsSubagents = Effect.fn("subagents.prepararPromptsSuba
   NodeFS.mkdirSync(caminhos.promptsSubagentsDir, { recursive: true });
   const arquivos: Dicionario[] = [];
   for (const grupo of grupos) {
-    if (!ehDicionario(grupo)) throw new Error("AttributeError: grupo não é objeto JSON");
     const grupoId = textoDoValor(ou(obter(grupo, "grupo_id"), "grupo"));
     const destino = NodePath.join(caminhos.promptsSubagentsDir, `${grupoId}.md`);
     const texto = pacotePromptGrupo(ppc, template, grupo);

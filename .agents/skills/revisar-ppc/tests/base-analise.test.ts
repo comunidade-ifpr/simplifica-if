@@ -111,12 +111,12 @@ describe("validador em casos inválidos", () => {
     editarJson(arquivo, (contrato) => {
       const resultado = (contrato.resultados as ObjetoJson[])[0]!;
       resultado.confianca = 1.5;
-      resultado.evidencias = [3, { secao: "x" }, "ok"];
+      resultado.evidencias = [3, { secao: 1 }, "ok"];
     });
     expect(validarBaseAnalise(c)).toEqual([
       `${arquivo}: $.resultados[0].confianca: esperava um valor menor ou igual a 1`,
       `${arquivo}: $.resultados[0].evidencias[0]: esperava um texto ou um objeto`,
-      `${arquivo}: $.resultados[0].evidencias[1].trecho: campo obrigatório ausente`,
+      `${arquivo}: $.resultados[0].evidencias[1].secao: esperava um texto`,
     ]);
   });
 

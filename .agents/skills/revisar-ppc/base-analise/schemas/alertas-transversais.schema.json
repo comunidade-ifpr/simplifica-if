@@ -74,9 +74,6 @@
                       "additionalProperties": true
                     }
                   },
-                  "required": [
-                    "trecho"
-                  ],
                   "additionalProperties": true
                 }
               ]
@@ -87,13 +84,9 @@
           }
         },
         "required": [
-          "id",
           "validacao_id",
           "titulo",
-          "criticidade",
           "descricao",
-          "fichas_relacionadas",
-          "evidencias",
           "revisao_humana_obrigatoria"
         ],
         "additionalProperties": true

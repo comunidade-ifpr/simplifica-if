@@ -15,6 +15,7 @@
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
+import * as Effect from "effect/Effect";
 import { escapeHtml } from "@simplifica-if/kb/primitivas/html";
 import { match, sub } from "@simplifica-if/kb/primitivas/regex";
 import { wrap } from "@simplifica-if/kb/primitivas/quebra-de-linhas";
@@ -41,16 +42,13 @@ import {
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { type AtributoHtml, percorrerHtml } from "./eventos-html.ts";
 import {
-  catalogoFichas,
-  catalogoValidacoes,
+  type AlertaNormalizado,
+  lerResultadosDaRodada,
   type ResultadoNormalizado,
-  resolverResultadosPath,
   SITUACOES_REVISAO,
   situacao,
-  validarAlertasTransversais,
-  validarResultadosSubagents,
 } from "./resultados.ts";
-import { caminhosRodada, escreverTextoDaRodada, lerJsonDaRodada, lerTexto } from "./rodada.ts";
+import { caminhosRodada, escreverTextoDaRodada, JsonDaRodadaInvalido, lerJsonDaRodada, lerTexto } from "./rodada.ts";
 
 type Objeto = Record<string, unknown>;
 
@@ -459,10 +457,10 @@ function prepararAnotacoes(resultados: ResultadoNormalizado[], blocos: BlocoPpc[
   return { anotacoes, porBloco, soltas };
 }
 
-function prepararAlertasTransversais(alertas: Dicionario[], blocos: BlocoPpc[]) {
+function prepararAlertasTransversais(alertas: ReadonlyArray<AlertaNormalizado>, blocos: BlocoPpc[]) {
   const porBloco = new Map<string, Anotacao[]>();
   const preparados = alertas.map((alerta, posicaoAlerta) => {
-    const ocorrencias = (alerta.evidencias as Objeto[]).map((evidencia, posicaoEvidencia) => {
+    const ocorrencias = alerta.evidencias.map((evidencia: Objeto, posicaoEvidencia) => {
       const [anchorId, quote] = resolverAncoraEvidencia(evidencia, blocos);
       const ocorrencia = {
         ...evidencia,
@@ -474,7 +472,7 @@ function prepararAlertasTransversais(alertas: Dicionario[], blocos: BlocoPpc[]) 
         const lista = porBloco.get(anchorId) ?? [];
         lista.push({
           ...alerta,
-          annotation_id: alerta.id as string,
+          annotation_id: alerta.id,
           ficha_id: alerta.id,
           estado: "TRANSVERSAL",
           occurrence_id: ocorrencia.occurrence_id,
@@ -760,7 +758,7 @@ const AVISO_REVISAO =
 export function renderizarHtml(
   metadata: Dicionario,
   resultados: ResultadoNormalizado[],
-  alertas: Dicionario[],
+  alertas: ReadonlyArray<AlertaNormalizado>,
   ppcMarkdown: string,
 ): string {
   const blocos = gerarBlocosPpc(ppcMarkdown);
@@ -922,27 +920,24 @@ export type RelatorioGerado = {
 };
 
 /** Valida os resultados, grava `relatorio-revisao.html` e copia os assets. */
-export function gerarRelatorioHtml(
+export const gerarRelatorioHtml = Effect.fn("relatorio_html.gerarRelatorioHtml")(function* (
   rodada: string,
   resultados: string,
   caminhos: CaminhosAnalise = caminhosPadrao(),
-): RelatorioGerado {
+) {
   const rodadaPaths = caminhosRodada(rodada);
   const metadata = lerJsonDaRodada(rodadaPaths.metadata);
-  const caminhoResultados = resolverResultadosPath(rodadaPaths.rodadaDir, resultados);
-  const payload = lerJsonDaRodada(caminhoResultados);
-  if (!ehDicionario(payload)) throw new Error("AttributeError: o JSON de resultados precisa ser objeto");
-  const fichasPorId = catalogoFichas(caminhos.fichasDir);
-  const validacoesPorId = catalogoValidacoes(caminhos.validacoesCruzadasDir);
-  const normalizados = validarResultadosSubagents(payload, fichasPorId);
-  const alertas = validarAlertasTransversais(payload, fichasPorId, validacoesPorId);
+  if (!ehDicionario(metadata)) {
+    return yield* new JsonDaRodadaInvalido({ arquivo: rodadaPaths.metadata, esperado: "um objeto JSON" });
+  }
+  const { normalizados, alertas } = yield* lerResultadosDaRodada(rodadaPaths.rodadaDir, resultados, caminhos);
   const ppcMarkdown = lerTexto(rodadaPaths.ppc);
-  if (!ehDicionario(metadata)) throw new Error("AttributeError: metadata.json precisa ser objeto");
   const html = formatarHtml(renderizarHtml(metadata, normalizados, alertas, ppcMarkdown));
   const situacaoGeral = situacao(normalizados, alertas);
   escreverTextoDaRodada(rodadaPaths.relatorioHtml, html);
+
   const assets = copiarAssets(rodadaPaths.rodadaDir, caminhos);
-  return {
+  const gerado: RelatorioGerado = {
     relatorio_html: rodadaPaths.relatorioHtml,
     assets,
     total_fichas: normalizados.length,
@@ -950,4 +945,5 @@ export function gerarRelatorioHtml(
     situacao: situacaoGeral,
     situacao_rotulo: SITUACOES_REVISAO[situacaoGeral],
   };
-}
+  return gerado;
+});

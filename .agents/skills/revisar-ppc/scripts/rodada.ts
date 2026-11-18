@@ -10,6 +10,7 @@
 import * as NodeCrypto from "node:crypto";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
+import * as Schema from "effect/Schema";
 import { TAMANHO_MAXIMO_GRUPO } from "@simplifica-if/kb/db/pacote-contexto";
 import {
   carregarJsonTipado,
@@ -20,6 +21,16 @@ import { type Dicionario, textoDoValor } from "@simplifica-if/kb/primitivas/valo
 import { compararTexto } from "@simplifica-if/kb/texto";
 import { listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
+
+/** Um arquivo da rodada com outra forma que a esperada. */
+export class JsonDaRodadaInvalido extends Schema.TaggedError<JsonDaRodadaInvalido>()("JsonDaRodadaInvalido", {
+  arquivo: Schema.String,
+  esperado: Schema.String,
+}) {
+  override get message(): string {
+    return `${this.arquivo} precisa ser ${this.esperado}.`;
+  }
+}
 
 /** Tamanho máximo de um grupo de sub-agente (fichas); tópicos maiores viram partes. */
 export const TAMANHO_GRUPO_PADRAO = TAMANHO_MAXIMO_GRUPO;

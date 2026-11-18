@@ -74,9 +74,6 @@
                       "additionalProperties": true
                     }
                   },
-                  "required": [
-                    "trecho"
-                  ],
                   "additionalProperties": true
                 }
               ]

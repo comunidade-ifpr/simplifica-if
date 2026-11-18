@@ -187,11 +187,14 @@ const ancoraEvidencia = Schema.Struct({
   quote: Schema.optionalKey(Schema.String),
 });
 
-/** Evidência de um resultado de ficha: texto solto ou objeto com o trecho. */
+/**
+ * Evidência de um resultado de ficha: texto solto ou objeto. O objeto precisa de algo para conferir
+ * (trecho, seção, localizador, artefato, âncora ou outra fonte), o que `resultados.ts` confere.
+ */
 export const esquemaEvidenciaResultado = Schema.Union([
   Schema.String,
   Schema.Struct({
-    trecho: Schema.String,
+    trecho: Schema.optionalKey(Schema.String),
     secao: Schema.optionalKey(Schema.String),
     localizador: Schema.optionalKey(Schema.String),
     fonte: Schema.optionalKey(Schema.String),
@@ -243,11 +246,11 @@ export const esquemaResultadoLote = Schema.Struct({
   resultados: Schema.Array(esquemaResultadoFicha),
 });
 
-/** Evidência de um alerta transversal: texto solto ou objeto com o trecho. */
+/** Evidência de um alerta transversal: texto solto ou objeto com ao menos um campo preenchido. */
 const evidenciaAlerta = Schema.Union([
   Schema.String,
   Schema.Struct({
-    trecho: Schema.String,
+    trecho: Schema.optionalKey(Schema.String),
     secao: Schema.optionalKey(Schema.String),
     localizador: Schema.optionalKey(Schema.String),
     papel: Schema.optionalKey(Schema.String),
@@ -256,14 +259,15 @@ const evidenciaAlerta = Schema.Union([
   }),
 ]);
 
+/** Alerta da síntese transversal; sem `id`, ele é `ALERTA-<posição>`, e sem `criticidade`, `OBRIG`. */
 export const esquemaAlertaTransversal = Schema.Struct({
-  id: Schema.String,
+  id: Schema.optionalKey(Schema.String),
   validacao_id: Schema.String,
   titulo: Schema.String,
-  criticidade: Schema.Literals(CRITICIDADES),
+  criticidade: Schema.optionalKey(Schema.Literals(CRITICIDADES)),
   descricao: Schema.String,
-  fichas_relacionadas: textos,
-  evidencias: Schema.Array(evidenciaAlerta),
+  fichas_relacionadas: Schema.optionalKey(textos),
+  evidencias: Schema.optionalKey(Schema.Array(evidenciaAlerta)),
   revisao_humana_obrigatoria: Schema.Boolean,
 });
 

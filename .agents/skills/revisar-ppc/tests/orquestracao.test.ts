@@ -6,7 +6,7 @@
  */
 import * as NodeChildProcess from "node:child_process";
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import { afterEach, describe, expect, layer, test } from "@effect/vitest";
+import { afterEach, describe, expect, it, layer, test } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as NodeFS from "node:fs";
@@ -899,7 +899,7 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupo avulso e mescla", (it) => {
         grupo_id: grupo.grupo.grupo_id,
         resultados: [{ ...resultado("CT-IDENT-01", "INCONCLUSIVO"), confianca: new Flutuante(1) }],
       });
-      const mesclado = mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "resultado-avulso.json");
+      const mesclado = yield* mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "resultado-avulso.json");
       expect(mesclado.fichas_substituidas).toEqual(["CT-IDENT-01"]);
       const payload = lerJsonDaRodada(c.resultadosSubagents) as Payload;
       const resultados = payload.grupos.flatMap((g) => g.resultados).filter((item) => item.ficha_id === "CT-IDENT-01");
@@ -907,34 +907,40 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupo avulso e mescla", (it) => {
       expect(resultados[0]!.estado).toBe("INCONCLUSIVO");
       // A mescla preserva o float 1.0 do JSON.
       expect(NodeFS.readFileSync(c.resultadosSubagents, "utf-8")).toContain('"confianca": 1.0');
-      expect(validarResultadosRodada(rodada, "resultados-subagents.json").valido).toBe(true);
+      expect((yield* validarResultadosRodada(rodada, "resultados-subagents.json")).valido).toBe(true);
     }),
   );
 
-  test("mescla com base no formato `resultados[]` sem perder os resultados originais", () => {
-    const rodada = criarRodada();
-    const c = caminhosRodada(rodada);
-    const resultadosBase = payloadResultadosCompletos().grupos.flatMap((grupo) => grupo.resultados);
-    escreverJsonDaRodada(c.resultadosSubagents, {
-      metadata: { origem: "teste" },
-      grupo_id: "grupo-unico",
-      resultados: resultadosBase,
-    });
-    expect(validarResultadosRodada(rodada, "resultados-subagents.json").total_fichas).toBe(TOTAL_FICHAS);
-    escreverJsonDaRodada(NodePath.join(c.suporteDir, "avulso.json"), {
-      resultados: [resultado("CT-IDENT-01", "INCONCLUSIVO")],
-    });
-    mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json");
-    const resumo = validarResultadosRodada(rodada, "resultados-subagents.json");
-    expect(resumo.total_fichas).toBe(TOTAL_FICHAS);
-    const payload = lerJsonDaRodada(c.resultadosSubagents) as Payload;
-    expect(payload.resultados).toBeUndefined();
-    const reavaliado = payload.grupos.flatMap((g) => g.resultados).filter((item) => item.ficha_id === "CT-IDENT-01");
-    expect(reavaliado.map((item) => item.estado)).toEqual(["INCONCLUSIVO"]);
-  });
+  it.effect("mescla com base no formato `resultados[]` sem perder os resultados originais", () =>
+    Effect.gen(function* () {
+      const rodada = criarRodada();
+      const c = caminhosRodada(rodada);
+      const resultadosBase = payloadResultadosCompletos().grupos.flatMap((grupo) => grupo.resultados);
+      escreverJsonDaRodada(c.resultadosSubagents, {
+        metadata: { origem: "teste" },
+        grupo_id: "grupo-unico",
+        resultados: resultadosBase,
+      });
+      expect((yield* validarResultadosRodada(rodada, "resultados-subagents.json")).total_fichas).toBe(TOTAL_FICHAS);
+      escreverJsonDaRodada(NodePath.join(c.suporteDir, "avulso.json"), {
+        resultados: [resultado("CT-IDENT-01", "INCONCLUSIVO")],
+      });
+      yield* mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json");
+      const resumo = yield* validarResultadosRodada(rodada, "resultados-subagents.json");
+      expect(resumo.total_fichas).toBe(TOTAL_FICHAS);
+      const payload = lerJsonDaRodada(c.resultadosSubagents) as Payload;
+      expect(payload.resultados).toBeUndefined();
+      const reavaliado = payload.grupos.flatMap((g) => g.resultados).filter((item) => item.ficha_id === "CT-IDENT-01");
+      expect(reavaliado.map((item) => item.estado)).toEqual(["INCONCLUSIVO"]);
+    }),
+  );
 
   const avulsosInvalidos: Array<[string, Dicionario, string]> = [
-    ["estado inválido", { resultados: [resultado("CT-IDENT-01", "TALVEZ")] }, "Estado inválido para CT-IDENT-01"],
+    [
+      "estado inválido",
+      { resultados: [resultado("CT-IDENT-01", "TALVEZ")] },
+      "$.resultados[0].estado: esperava um destes valores",
+    ],
     ["ficha desconhecida", { resultados: [resultado("CT-NAO-EXISTE")] }, "Fichas desconhecidas: CT-NAO-EXISTE"],
     [
       "ficha repetida",
@@ -947,20 +953,19 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupo avulso e mescla", (it) => {
       "CT-IDENT-01 trouxe 0 evidências",
     ],
   ];
-  for (const [nome, avulso, mensagem] of avulsosInvalidos) {
-    test(`recusa avulso com ${nome} sem tocar a base`, () => {
+  it.effect.each(avulsosInvalidos)("recusa avulso com %s sem tocar a base", ([, avulso, mensagem]) =>
+    Effect.gen(function* () {
       const rodada = criarRodada();
       const c = caminhosRodada(rodada);
       escreverJsonDaRodada(c.resultadosSubagents, payloadResultadosCompletos());
       const antes = NodeFS.readFileSync(c.resultadosSubagents, "utf-8");
       escreverJsonDaRodada(NodePath.join(c.suporteDir, "avulso.json"), avulso);
-      expect(() => mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json")).toThrow(
-        ErroResultadosSubagents,
-      );
-      expect(() => mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json")).toThrow(mensagem);
+      const erro = yield* Effect.flip(mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json"));
+      expect(erro).toBeInstanceOf(ErroResultadosSubagents);
+      expect(erro.message).toContain(mensagem);
       expect(NodeFS.readFileSync(c.resultadosSubagents, "utf-8")).toBe(antes);
-    });
-  }
+    }),
+  );
 
   it.effect("rejeita ficha desconhecida no grupo avulso e avulso sem resultados", () =>
     Effect.gen(function* () {
@@ -970,15 +975,16 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupo avulso e mescla", (it) => {
       const c = caminhosRodada(rodada);
       escreverJsonDaRodada(c.resultadosSubagents, payloadResultadosCompletos());
       escreverJsonDaRodada(NodePath.join(c.suporteDir, "avulso.json"), { nada: [] });
-      expect(() => mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json")).toThrow(
-        "O resultado avulso precisa conter `grupos[]` ou `resultados[]`.",
+      const semResultados = yield* Effect.flip(
+        mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json"),
       );
+      expect(semResultados.message).toBe("O resultado avulso precisa conter `grupos[]` ou `resultados[]`.");
     }),
   );
 });
 
 describe("validar-resultados", () => {
-  function validar(editar: (payload: Payload) => void = () => {}): Dicionario {
+  function validar(editar: (payload: Payload) => void = () => {}) {
     const rodada = criarRodada();
     const payload = payloadResultadosCompletos();
     editar(payload);
@@ -989,30 +995,32 @@ describe("validar-resultados", () => {
     return validarResultadosRodada(rodada, "resultados-subagents.json");
   }
 
-  test("devolve o resumo sem gerar HTML", () => {
-    const rodada = criarRodada();
-    const c = caminhosRodada(rodada);
-    escreverJsonDaRodada(c.resultadosSubagents, payloadResultadosCompletos());
-    const resumo = validarResultadosRodada(rodada, "resultados-subagents.json");
-    expect(resumo.valido).toBe(true);
-    expect(resumo.total_fichas).toBe(TOTAL_FICHAS);
-    expect(resumo.total_fichas_esperadas).toBe(TOTAL_FICHAS);
-    expect(resumo.total_alertas_transversais).toBe(0);
-    expect(resumo.contagem_estado).toEqual({ ATENDE: TOTAL_FICHAS });
-    expect(resumo.situacao).toBe("APTO_PARA_SUBMISSAO");
-    expect(NodeFS.existsSync(c.relatorioHtml)).toBe(false);
-  });
+  it.effect("devolve o resumo sem gerar HTML", () =>
+    Effect.gen(function* () {
+      const rodada = criarRodada();
+      const c = caminhosRodada(rodada);
+      escreverJsonDaRodada(c.resultadosSubagents, payloadResultadosCompletos());
+      const resumo = yield* validarResultadosRodada(rodada, "resultados-subagents.json");
+      expect(resumo.valido).toBe(true);
+      expect(resumo.total_fichas).toBe(TOTAL_FICHAS);
+      expect(resumo.total_fichas_esperadas).toBe(TOTAL_FICHAS);
+      expect(resumo.total_alertas_transversais).toBe(0);
+      expect(resumo.contagem_estado).toEqual({ ATENDE: TOTAL_FICHAS });
+      expect(resumo.situacao).toBe("APTO_PARA_SUBMISSAO");
+      expect(NodeFS.existsSync(c.relatorioHtml)).toBe(false);
+    }),
+  );
 
   const casos: Array<[string, (p: Payload) => void, string]> = [
     ["ficha duplicada", (p) => (p.grupos[1]!.resultados[0] = { ...p.grupos[0]!.resultados[0]! }), "duplicadas"],
     ["ficha desconhecida", (p) => (p.grupos[0]!.resultados[0]!.ficha_id = "CT-NAO-EXISTE"), "desconhecidas"],
     ["ficha faltante", (p) => p.grupos[0]!.resultados.pop(), "sem resultado"],
     ["evidências abaixo do mínimo", (p) => (p.grupos[0]!.resultados[0]!.evidencias = []), "mínimo exigido"],
-    ["estado inválido", (p) => (p.grupos[0]!.resultados[0]!.estado = "OK"), "Estado inválido"],
+    ["estado inválido", (p) => (p.grupos[0]!.resultados[0]!.estado = "OK"), "$.grupos[0].resultados[0].estado"],
     [
       "confiança fora da faixa",
       (p) => (p.grupos[0]!.resultados[0]!.confianca = new Flutuante(1.5)),
-      "Confiança inválida",
+      "$.grupos[0].resultados[0].confianca: esperava um valor menor ou igual a 1",
     ],
     [
       "alerta sem validacao_id",
@@ -1046,33 +1054,36 @@ describe("validar-resultados", () => {
       "feedback_autores",
     ],
   ];
-  for (const [nome, editar, mensagem] of casos) {
-    test(`rejeita ${nome}`, () => {
-      expect(() => validar(editar)).toThrow(ErroResultadosSubagents);
-      expect(() => validar(editar)).toThrow(mensagem);
-    });
-  }
+  it.effect.each(casos)("rejeita %s", ([, editar, mensagem]) =>
+    Effect.gen(function* () {
+      const erro = yield* Effect.flip(validar(editar));
+      expect(erro).toBeInstanceOf(ErroResultadosSubagents);
+      expect(erro.message).toContain(mensagem);
+    }),
+  );
 
-  test("aceita alertas transversais válidos e calcula a situação", () => {
-    const validacao = String(carregarValidacoesCruzadasOrdenadas()[0]!.id);
-    const resumo = validar((p) => {
-      p.grupos[0]!.resultados[0]!.estado = "INCONCLUSIVO";
-      p.alertas_transversais = [
-        {
-          id: "ALERTA-001",
-          validacao_id: validacao,
-          titulo: "Inconsistência transversal",
-          descricao: "Perfil e matriz precisam de revisão conjunta.",
-          fichas_relacionadas: ["CT-IDENT-01"],
-          evidencias: ["Evidência transversal"],
-          revisao_humana_obrigatoria: true,
-        },
-      ];
-    });
-    expect(resumo.total_alertas_transversais).toBe(1);
-    // Sem `criticidade`, o alerta é `OBRIG` e pesa como uma ficha OBRIG não atendida.
-    expect(resumo.situacao).toBe("AJUSTES_NECESSARIOS");
-  });
+  it.effect("aceita alertas transversais válidos e calcula a situação", () =>
+    Effect.gen(function* () {
+      const validacao = String(carregarValidacoesCruzadasOrdenadas()[0]!.id);
+      const resumo = yield* validar((p) => {
+        p.grupos[0]!.resultados[0]!.estado = "INCONCLUSIVO";
+        p.alertas_transversais = [
+          {
+            id: "ALERTA-001",
+            validacao_id: validacao,
+            titulo: "Inconsistência transversal",
+            descricao: "Perfil e matriz precisam de revisão conjunta.",
+            fichas_relacionadas: ["CT-IDENT-01"],
+            evidencias: ["Evidência transversal"],
+            revisao_humana_obrigatoria: true,
+          },
+        ];
+      });
+      expect(resumo.total_alertas_transversais).toBe(1);
+      // Sem `criticidade`, o alerta é `OBRIG` e pesa como uma ficha OBRIG não atendida.
+      expect(resumo.situacao).toBe("AJUSTES_NECESSARIOS");
+    }),
+  );
 
   test("a CLI imprime o resumo e falha com mensagem em stderr", () => {
     const rodada = criarRodada();
