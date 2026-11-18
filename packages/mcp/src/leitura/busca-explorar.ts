@@ -137,20 +137,6 @@ export function trechoEmVolta(texto: string, termos: ReadonlyArray<string>, larg
   return `${inicio > 0 ? "…" : ""}${compacto.slice(inicio, fim)}${fim < compacto.length ? "…" : ""}`;
 }
 
-/**
- * A expressão do FTS5 para os termos nas colunas dadas: todos os termos (E implícito), o último como
- * prefixo quando tem três letras ou mais (a paleta busca enquanto se digita).
- */
-export function expressaoFts(termos: ReadonlyArray<string>, colunas: ReadonlyArray<string>): string | null {
-  const validos = termos.filter((t) => t.length > 0);
-  if (validos.length === 0) return null;
-  const partes = validos.map((t, i) => {
-    const citado = `"${t.replaceAll('"', '""')}"`;
-    return i === validos.length - 1 && t.length >= 3 ? `${citado}*` : citado;
-  });
-  return `{${colunas.join(" ")}} : (${partes.join(" ")})`;
-}
-
 /** A ordem dos grupos na paleta; a citação resolvida (tipo `dispositivo`) sobe para o topo. */
 export const ORDEM_GRUPOS: ReadonlyArray<TipoResultado> = [
   "curso",

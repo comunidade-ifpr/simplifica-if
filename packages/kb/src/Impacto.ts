@@ -52,53 +52,50 @@ export class Impacto extends Context.Service<
 >()("@simplifica-if/kb/Impacto") {}
 
 const make = Effect.gen(function* () {
-  const sql = yield* SqlClient.SqlClient;
+  const prover = yield* Sql.ambienteDoServico(SqlClient.SqlClient);
   const fontes = yield* FontesNormativas.FontesNormativas;
   // as tabelas de correspondência e os dispositivos que elas citam não mudam com o banco aberto:
   // carregados uma vez, na construção da layer
   const fonteCorrespondencia = yield* carregarFonteCorrespondencia;
 
-  const daNorma = Effect.fn("Impacto.daNorma")(
-    function* (id: string, opcoes: OpcoesImpacto = {}) {
-      const ato = idDoAto(id.split("#")[0]!);
-      const dispositivos = yield* linhasDispositivos(
-        "SELECT dispositivo, texto FROM dispositivos WHERE ato_id = ? AND canonico = 1 ORDER BY norma_id <> ato_id, norma_id, ordem",
-        [ato],
-      );
-      // uma citação por segmento: o impacto só pergunta se o segmento cita a norma
-      const segmentos = (yield* linhasSegmentos(
-        "SELECT norma_id, ato_id, segmento, citado_id, dispositivos_json, trecho FROM normas_citacoes WHERE ato_id <> ? ORDER BY rowid",
-        [ato],
-      )).map((c) => ({
-        norma: c.norma_id,
-        ato: c.ato_id,
-        segmento: c.segmento,
-        citacoes: [{ id: c.citado_id, dispositivos: [...c.dispositivos_json], trecho: c.trecho }],
-      }));
-      const ppcs = opcoes.incluirPpcs === false ? [] : yield* Citacoes.ppcsQueCitam(id);
-      const conteudo = yield* fontes.conteudoDasSkills(
-        opcoes.raizConteudo === undefined ? {} : { raiz: opcoes.raizConteudo },
-      );
+  const daNorma = Effect.fn("Impacto.daNorma")(function* (id: string, opcoes: OpcoesImpacto = {}) {
+    const ato = idDoAto(id.split("#")[0]!);
+    const dispositivos = yield* linhasDispositivos(
+      "SELECT dispositivo, texto FROM dispositivos WHERE ato_id = ? AND canonico = 1 ORDER BY norma_id <> ato_id, norma_id, ordem",
+      [ato],
+    );
+    // uma citação por segmento: o impacto só pergunta se o segmento cita a norma
+    const segmentos = (yield* linhasSegmentos(
+      "SELECT norma_id, ato_id, segmento, citado_id, dispositivos_json, trecho FROM normas_citacoes WHERE ato_id <> ? ORDER BY rowid",
+      [ato],
+    )).map((c) => ({
+      norma: c.norma_id,
+      ato: c.ato_id,
+      segmento: c.segmento,
+      citacoes: [{ id: c.citado_id, dispositivos: [...c.dispositivos_json], trecho: c.trecho }],
+    }));
+    const ppcs = opcoes.incluirPpcs === false ? [] : yield* Citacoes.ppcsQueCitam(id);
+    const conteudo = yield* fontes.conteudoDasSkills(
+      opcoes.raizConteudo === undefined ? {} : { raiz: opcoes.raizConteudo },
+    );
 
-      const fonte: FonteImpacto = {
-        id,
-        vigencia: fontes,
-        dataReferencia: fontes.dataReferencia,
-        correspondencia: fonteCorrespondencia,
-        dispositivos,
-        // a taxonomia validada tem os campos que o impacto lê (`id`, `termos_busca`, `fichas`) e outros
-        topicos: conteudo.topicos as unknown as TopicoTaxonomia[],
-        arquivosConteudo: conteudo.arquivos,
-        segmentosCitantes: segmentos,
-        ppcsQueCitam: ppcs,
-      };
-      return impactoEm(fonte, {
-        ...(opcoes.data !== undefined ? { data: opcoes.data } : {}),
-        ...(opcoes.incluirPpcs !== undefined ? { incluirPpcs: opcoes.incluirPpcs } : {}),
-      });
-    },
-    Effect.provideService(SqlClient.SqlClient, sql),
-  );
+    const fonte: FonteImpacto = {
+      id,
+      vigencia: fontes,
+      dataReferencia: fontes.dataReferencia,
+      correspondencia: fonteCorrespondencia,
+      dispositivos,
+      // a taxonomia validada tem os campos que o impacto lê (`id`, `termos_busca`, `fichas`) e outros
+      topicos: conteudo.topicos as unknown as TopicoTaxonomia[],
+      arquivosConteudo: conteudo.arquivos,
+      segmentosCitantes: segmentos,
+      ppcsQueCitam: ppcs,
+    };
+    return impactoEm(fonte, {
+      ...(opcoes.data !== undefined ? { data: opcoes.data } : {}),
+      ...(opcoes.incluirPpcs !== undefined ? { incluirPpcs: opcoes.incluirPpcs } : {}),
+    });
+  }, prover);
 
   return Impacto.of({ daNorma });
 });

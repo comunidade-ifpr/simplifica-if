@@ -1,8 +1,9 @@
 /**
  * `Ppcs`: os PPCs convertidos no banco — busca de seções (FTS5, radicais e léxico de sinônimos),
  * leitura de seções, citações normativas (quem cita uma norma, o que um PPC cita) e os fatos
- * extraídos com o cruzamento com o SUAP. Consultas em `db/consultas.ts` e `db/citacoes.ts`; o léxico
- * e o registro vêm de `FontesNormativas`.
+ * extraídos com o cruzamento com o SUAP. As consultas, privadas a este serviço, ficam em
+ * `db/consultas-secoes.ts`, `db/consultas-fatos.ts` e `db/citacoes.ts`; o léxico e o registro vêm de
+ * `FontesNormativas`.
  */
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
@@ -11,31 +12,47 @@ import * as SqlClient from "effect/sql/SqlClient";
 import * as FontesNormativas from "./FontesNormativas.ts";
 import * as Citacoes from "./db/citacoes.ts";
 import {
-  buscarSecoes,
+  type DivergenciasPpcSuap,
   divergenciasPpcSuap,
+  type FatosDoPpc,
   fatosDosPpcs,
   type FiltrosFatos,
+} from "./db/consultas-fatos.ts";
+import {
+  buscarSecoes,
+  buscarSecoesPorPrefixo,
+  type DocumentoPpc,
+  documentoDoPpc,
+  type EntradaIndiceSecoes,
   type FiltrosSecoes,
   indiceSecoesDoPpc,
   lerSecao,
-  type ModoBusca,
+  listarPpcs,
+  type OpcoesBuscaSecoes,
+  type PpcListado,
+  type ResultadoSecao,
+  type SecaoDoPpc,
+  type SecaoLida,
+  type SecaoPorPrefixo,
   secoesDoPpc,
-} from "./db/consultas.ts";
-import type * as Sql from "./db/sql.ts";
-import type { Sinonimos } from "./busca/sinonimos.ts";
+  tiposDeSecao,
+} from "./db/consultas-secoes.ts";
+import * as Sql from "./db/sql.ts";
 import { type NormaCitadaNoPpc, type PpcCitante, type RelatorioCitacoes, relatorioCitacoes } from "./ppcs/citacoes.ts";
 
-type Sucesso<F extends (...args: never[]) => Effect.Effect<unknown, unknown, unknown>> = Effect.Success<ReturnType<F>>;
-
-export interface OpcoesBuscaSecoes {
-  readonly limite?: number;
-  readonly modo?: ModoBusca;
-  /** Léxico de sinônimos (padrão: o de `FontesNormativas`); a avaliação passa um vazio. */
-  readonly lexico?: Sinonimos;
-  /** Inclui o texto integral de cada seção. */
-  readonly integral?: boolean;
-  readonly somenteTodos?: boolean;
-}
+export type { DivergenciasPpcSuap, FatosDoPpc, FiltrosFatos } from "./db/consultas-fatos.ts";
+export type {
+  DocumentoPpc,
+  EntradaIndiceSecoes,
+  FiltrosSecoes,
+  OpcoesBuscaSecoes,
+  PpcListado,
+  ResultadoSecao,
+  SecaoDoPpc,
+  SecaoLida,
+  SecaoPorPrefixo,
+} from "./db/consultas-secoes.ts";
+export type { ModoBusca } from "./busca/fts.ts";
 
 export class Ppcs extends Context.Service<
   Ppcs,
@@ -44,13 +61,21 @@ export class Ppcs extends Context.Service<
       consulta: string,
       filtros?: FiltrosSecoes,
       opcoes?: OpcoesBuscaSecoes,
-    ) => Effect.Effect<Sucesso<typeof buscarSecoes>, Sql.FalhaNaConsulta>;
-    readonly secoesDoPpc: (
-      ppc: string,
-      tipos: readonly string[],
-    ) => Effect.Effect<Sucesso<typeof secoesDoPpc>, Sql.FalhaNaConsulta>;
-    readonly indiceSecoesDoPpc: (ppc: string) => Effect.Effect<Sucesso<typeof indiceSecoesDoPpc>, Sql.FalhaNaConsulta>;
-    readonly lerSecao: (id: string) => Effect.Effect<Sucesso<typeof lerSecao>, Sql.FalhaNaConsulta>;
+    ) => Effect.Effect<ResultadoSecao[], Sql.FalhaNaConsulta>;
+    /** Seções com todos os termos, o último como prefixo (a busca da paleta do Explorar, sem léxico). */
+    readonly buscarSecoesPorPrefixo: (
+      termos: ReadonlyArray<string>,
+      limite: number,
+    ) => Effect.Effect<ReadonlyArray<SecaoPorPrefixo>, Sql.FalhaNaConsulta>;
+    readonly secoesDoPpc: (ppc: string, tipos: readonly string[]) => Effect.Effect<SecaoDoPpc[], Sql.FalhaNaConsulta>;
+    readonly indiceSecoesDoPpc: (ppc: string) => Effect.Effect<EntradaIndiceSecoes[], Sql.FalhaNaConsulta>;
+    readonly lerSecao: (id: string) => Effect.Effect<SecaoLida | null, Sql.FalhaNaConsulta>;
+    /** Os tipos de seção que aparecem nos PPCs da base, em ordem. */
+    readonly tiposDeSecao: Effect.Effect<string[], Sql.FalhaNaConsulta>;
+    /** Todos os PPCs convertidos, por chave. */
+    readonly listar: Effect.Effect<ReadonlyArray<PpcListado>, Sql.FalhaNaConsulta>;
+    /** O PPC (`campus/curso`) como documento, para o leitor: seções e Markdown; `null` se não está na base. */
+    readonly documento: (chave: string) => Effect.Effect<DocumentoPpc | null, Sql.FalhaNaConsulta>;
     /** PPCs que citam a norma `id` (aceita `#dispositivo`), com cada ocorrência. */
     readonly citacoesDaNorma: (
       id: string,
@@ -63,21 +88,14 @@ export class Ppcs extends Context.Service<
     ) => Effect.Effect<RelatorioCitacoes, Sql.FalhaNaConsulta>;
     /** Normas citadas por um PPC; `null` se o PPC não está na base. */
     readonly normasCitadas: (ppc: string) => Effect.Effect<NormaCitadaNoPpc[] | null, Sql.FalhaNaConsulta>;
-    readonly fatos: (filtros?: FiltrosFatos) => Effect.Effect<Sucesso<typeof fatosDosPpcs>, Sql.FalhaNaConsulta>;
-    readonly divergencias: (
-      filtros?: FiltrosFatos,
-    ) => Effect.Effect<Sucesso<typeof divergenciasPpcSuap>, Sql.FalhaNaConsulta>;
+    readonly fatos: (filtros?: FiltrosFatos) => Effect.Effect<FatosDoPpc[], Sql.FalhaNaConsulta>;
+    readonly divergencias: (filtros?: FiltrosFatos) => Effect.Effect<DivergenciasPpcSuap, Sql.FalhaNaConsulta>;
   }
 >()("@simplifica-if/kb/Ppcs") {}
 
 const make = Effect.gen(function* () {
-  const sql = yield* SqlClient.SqlClient;
   const fontes = yield* FontesNormativas.FontesNormativas;
-  const prover = <A, E>(efeito: Effect.Effect<A, E, SqlClient.SqlClient | FontesNormativas.FontesNormativas>) =>
-    efeito.pipe(
-      Effect.provideService(SqlClient.SqlClient, sql),
-      Effect.provideService(FontesNormativas.FontesNormativas, fontes),
-    );
+  const prover = yield* Sql.ambienteDoServico(SqlClient.SqlClient, FontesNormativas.FontesNormativas);
 
   return Ppcs.of({
     buscarSecoes: Effect.fn("Ppcs.buscarSecoes")(function* (
@@ -86,6 +104,17 @@ const make = Effect.gen(function* () {
       opcoes: OpcoesBuscaSecoes = {},
     ) {
       return yield* buscarSecoes(consulta, filtros, opcoes);
+    }, prover),
+    buscarSecoesPorPrefixo: Effect.fn("Ppcs.buscarSecoesPorPrefixo")(function* (
+      termos: ReadonlyArray<string>,
+      limite: number,
+    ) {
+      return yield* buscarSecoesPorPrefixo(termos, limite);
+    }, prover),
+    tiposDeSecao: tiposDeSecao().pipe(prover),
+    listar: listarPpcs().pipe(prover),
+    documento: Effect.fn("Ppcs.documento")(function* (chave: string) {
+      return yield* documentoDoPpc(chave);
     }, prover),
     secoesDoPpc: Effect.fn("Ppcs.secoesDoPpc")(function* (ppc: string, tipos: readonly string[]) {
       return yield* secoesDoPpc(ppc, tipos);

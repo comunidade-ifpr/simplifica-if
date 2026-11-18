@@ -10,12 +10,13 @@
  * (`FalhaNaConsulta`, `FalhaNasFontes`) chegam aos métodos como `FalhaNaBase`.
  */
 import * as BaseKb from "@simplifica-if/kb/BaseKb";
-import * as Sql from "@simplifica-if/kb/db/sql";
+import * as Cursos from "@simplifica-if/kb/Cursos";
+import type * as Sql from "@simplifica-if/kb/db/sql";
 import type * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
+import * as Ppcs from "@simplifica-if/kb/Ppcs";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
-import * as Schema from "effect/Schema";
 import type { Canal } from "@simplifica-if/kb/canal";
 import { type Base, type ErroDeLeitura, FalhaNaBase, type Resposta } from "../contratos.ts";
 import { montarBase, responder } from "../envelope.ts";
@@ -43,7 +44,7 @@ import { makeExplorar } from "./explorar.ts";
 import { makeNormas } from "./normas.ts";
 import { makePacote } from "./pacote.ts";
 import { makePpcs } from "./ppcs.ts";
-import { type CampusDaBase, makeRecursos } from "./recursos.ts";
+import { type CampusRecurso, makeRecursos } from "./recursos.ts";
 import type * as Conteudos from "../recursos/conteudos.ts";
 
 /** Uma leitura: a entrada decodificada de uma ferramenta e a resposta com os dados dela. */
@@ -85,17 +86,6 @@ export class Leitura extends Context.Service<
   }
 >()("@simplifica-if/mcp/leitura/Leitura") {}
 
-const linhasNivel = Sql.todas(Schema.Struct({ nivel: Schema.String }));
-const linhasCampus = Sql.todas(
-  Schema.Struct({
-    campus_id: Schema.String,
-    nome: Schema.String,
-    site: Schema.NullOr(Schema.String),
-    path: Schema.String,
-  }),
-);
-const linhasTipo = Sql.todas(Schema.Struct({ tipo: Schema.String }));
-
 /** O que um método de leitura pode falhar antes da tradução: as falhas de leitura e as do kb. */
 type FalhaDoMetodo = ErroDeLeitura | Sql.FalhaNaConsulta | FontesNormativas.FalhaNasFontes;
 
@@ -114,20 +104,31 @@ const comFalhaNaBase =
   (entrada: E) =>
     naBase(metodo(entrada));
 
-const make = Effect.fn("Leitura.make")(function* (opcoes: { readonly canal: Canal }) {
+/** Opções do `Leitura`. */
+export interface Opcoes {
+  /** O canal da linha de comando, que entra no envelope quando o banco não registra um. */
+  readonly canal: Canal;
+  /**
+   * A ferramenta `etapa` registra a etapa (`registrado: true`): no app, a interface a lê nos eventos
+   * da conversa. Fora dele (padrão), ela só responde que não registrou.
+   */
+  readonly etapaRegistrada?: boolean;
+}
+
+const make = Effect.fn("Leitura.make")(function* (opcoes: Opcoes) {
   const { meta } = yield* BaseKb.BaseKb;
+  const cursosKb = yield* Cursos.Cursos;
+  const ppcsKb = yield* Ppcs.Ppcs;
   const base = montarBase(meta, opcoes.canal);
 
   // `sobre_a_base`: o conteúdo do banco não muda com o servidor no ar
-  const niveis = (yield* linhasNivel(
-    "SELECT nivel FROM ppcs UNION SELECT nivel FROM cursos WHERE nivel IS NOT NULL ORDER BY nivel",
-  )).map((n) => n.nivel);
-  const linhasDosCampi = yield* linhasCampus("SELECT campus_id, nome, site, path FROM campi ORDER BY campus_id");
-  const campi = linhasDosCampi.map((c) => ({ id: c.campus_id, nome: c.nome, link: linkCampus(c.campus_id) }));
-  const campiPorId = new Map<string, CampusDaBase>(
-    linhasDosCampi.map((c) => [c.campus_id, { id: c.campus_id, nome: c.nome, site: c.site, path: c.path }]),
+  const niveis = yield* cursosKb.niveis;
+  const campiDaBase = yield* cursosKb.campi;
+  const campi = campiDaBase.map((c) => ({ id: c.campus_id, nome: c.nome, link: linkCampus(c.campus_id) }));
+  const campiPorId = new Map<string, CampusRecurso>(
+    campiDaBase.map((c) => [c.campus_id, { id: c.campus_id, nome: c.nome, site: c.site, path: c.path }]),
   );
-  const tiposDeSecao = (yield* linhasTipo("SELECT DISTINCT tipo FROM secoes ORDER BY tipo")).map((t) => t.tipo);
+  const tiposDeSecao = yield* ppcsKb.tiposDeSecao;
 
   const normas = yield* makeNormas(base);
   const ppcs = yield* makePpcs(base);
@@ -137,7 +138,7 @@ const make = Effect.fn("Leitura.make")(function* (opcoes: { readonly canal: Cana
   const explorar = yield* makeExplorar(base);
 
   const sobreABase = responder(base, { contagens: meta.contagens, tipos_de_secao: tiposDeSecao, niveis, campi });
-  const etapa = responder(base, { registrado: false });
+  const etapa = responder(base, { registrado: opcoes.etapaRegistrada ?? false });
 
   return Leitura.of({
     base,
@@ -169,4 +170,4 @@ const make = Effect.fn("Leitura.make")(function* (opcoes: { readonly canal: Cana
 });
 
 /** `Leitura` sobre os serviços de consulta do kb do ambiente. */
-export const layer = (opcoes: { readonly canal: Canal }) => Layer.effect(Leitura, make(opcoes));
+export const layer = (opcoes: Opcoes) => Layer.effect(Leitura, make(opcoes));

@@ -16,7 +16,8 @@ import { etapa } from "../src/ferramentas/etapa.ts";
 import { ROTULOS_INDICADOR } from "../src/ferramentas/ficha-curso.ts";
 import { sobreABase } from "../src/ferramentas/sobre-a-base.ts";
 import { FERRAMENTAS } from "../src/ferramentas/toolkit.ts";
-import { INSTRUCOES, NOME_SERVIDOR, VERSAO_PACOTE } from "../src/servidor.ts";
+import * as Leitura from "../src/leitura/Leitura.ts";
+import { INSTRUCOES, layerLeitura, NOME_SERVIDOR, VERSAO_PACOTE } from "../src/servidor.ts";
 import { camadaFerramentas, conectarEmMemoria, mensagemDeErro, responder, saidaValida } from "./apoio.ts";
 import { CONTAGENS, criarBancoFixture, limparTemporarios } from "./fixture.ts";
 
@@ -207,6 +208,15 @@ describe("etapa", () => {
         }
       }),
     ),
+  );
+
+  it.effect("no app (etapaRegistrada), registra a etapa", () =>
+    Effect.gen(function* () {
+      const leitura = yield* Leitura.Leitura;
+      const resposta = yield* leitura.etapa({ id: "fase-1" });
+      expect(resposta.dados).toEqual({ registrado: true });
+      expect(saidaValida(etapa, resposta)).toBe(true);
+    }).pipe(Effect.provide(layerLeitura({ banco: criarBancoFixture(), canal: "dev", etapaRegistrada: true }))),
   );
 
   it.effect("entrada inválida: erro legível com o campo", () =>

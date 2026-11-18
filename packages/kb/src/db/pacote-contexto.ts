@@ -27,10 +27,10 @@
  * ambiente: o `kb.sqlite` ou, para as partes que leem um PPC fora da base, o banco em memória de
  * `ppc-avulso.ts` (`abrirPpcAvulso`).
  */
-import type * as Context from "effect/Context";
+import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
-import type * as SqlClient from "effect/sql/SqlClient";
+import * as SqlClient from "effect/sql/SqlClient";
 import type { Sinonimos } from "../busca/sinonimos.ts";
 import * as FontesNormativas from "../FontesNormativas.ts";
 import { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida } from "../pacote-contexto-erros.ts";
@@ -39,8 +39,11 @@ import { extrairFatosPpc, type FatoPpc } from "../fatos/ppc.ts";
 import { palavrasDeCampi, type SecaoPpc, segmentarPpc } from "../ppcs/secoes.ts";
 import type { TopicoFichas, TopicosSecoes } from "../ppcs/topicos.ts";
 import { compararTexto } from "../texto.ts";
-import { buscarSecoes, fatosDosPpcs, obterNorma, secoesDoPpc } from "./consultas.ts";
+import { idCnct, idPpc } from "./chaves.ts";
+import { fatosDosPpcs } from "./consultas-fatos.ts";
+import { buscarSecoes, secoesDoPpc } from "./consultas-secoes.ts";
 import {
+  obterNorma,
   type TransicaoNoBanco,
   type TrechoDispositivo,
   transicoesDosAtos,
@@ -219,6 +222,26 @@ export const fichasDoBanco = Effect.fn("pacoteContexto.fichasDoBanco")(function*
   const filtro = ids ? ` WHERE id IN (${ids.map(() => "?").join(", ")})` : "";
   const linhas = yield* linhasFichas(`SELECT id, path, dados_json FROM fichas${filtro} ORDER BY id`, ids ?? []);
   return linhas.map((f) => f.dados_json as FichaPacote);
+});
+
+const LinhaFichaResumida = Schema.Struct({
+  id: Schema.String,
+  titulo: Schema.String,
+  dominio: TextoNulo,
+  criticidade: TextoNulo,
+  path: Schema.String,
+});
+const linhasFichasResumidas = Sql.todas(LinhaFichaResumida);
+
+/** Uma ficha pelas colunas da tabela `fichas`, sem o JSON: título, domínio, criticidade e arquivo. */
+export type FichaResumida = typeof LinhaFichaResumida.Type;
+
+/** Todas as fichas, resumidas, em ordem de ID. */
+export const fichasResumidas = Effect.fn("pacoteContexto.fichasResumidas")(function* () {
+  const fichas: ReadonlyArray<FichaResumida> = yield* linhasFichasResumidas(
+    "SELECT id, titulo, dominio, criticidade, path FROM fichas ORDER BY id",
+  );
+  return fichas;
 });
 
 /**
@@ -604,7 +627,7 @@ export const secoesDoPacote = Effect.fn("pacoteContexto.secoesDoPacote")(functio
 /** O curso do CNCT (`cnct`) com ID e arquivo, ou `null`. */
 const cnctDoBanco = Effect.fn("pacoteContexto.cnctDoBanco")(function* (cnctId: string | null) {
   if (!cnctId) return null;
-  const id = cnctId.startsWith("cnct:") ? cnctId : `cnct:${cnctId}`;
+  const id = idCnct(cnctId);
   const linha = yield* primeiroCnct("SELECT dados_json, path FROM cnct WHERE id = ?", [id]);
   return linha ? { id, path: linha.path, ...(linha.dados_json as Record<string, unknown>) } : null;
 });
@@ -637,7 +660,7 @@ export const pacoteContexto = Effect.fn("pacoteContexto.pacoteContexto")(functio
   ppcArg: string,
   opcoes: OpcoesPacote = {},
 ) {
-  const ppcId = ppcArg.startsWith("ppc:") ? ppcArg : `ppc:${ppcArg}`;
+  const ppcId = idPpc(ppcArg);
   const ppc = yield* primeiroPpc(
     `SELECT p.id, p.curso_nome, p.campus_nome, p.nivel, p.tipo_oferta, p.path, p.curso_id, p.ano_documento, c.cnct_id
        FROM ppcs p LEFT JOIN cursos c ON c.id = p.curso_id WHERE p.id = ?`,
@@ -770,7 +793,11 @@ export const abrirPpcAvulso = Effect.fn("pacoteContexto.abrirPpcAvulso")(functio
   markdown: string,
   opcoes: OpcoesAbrirAvulso = {},
 ) {
-  const ambiente = yield* Effect.context<SqlClient.SqlClient | FontesNormativas.FontesNormativas>();
+  // só o banco e as fontes: o escopo e o span de quem abriu não passam por cima dos de quem pede o pacote
+  const ambiente = Context.pick(
+    SqlClient.SqlClient,
+    FontesNormativas.FontesNormativas,
+  )(yield* Effect.context<SqlClient.SqlClient | FontesNormativas.FontesNormativas>());
   const fontes = yield* FontesNormativas.FontesNormativas;
   const { lexico, ...doBanco } = opcoes;
   const ppcId = doBanco.ppcId ?? "ppc:avulso";

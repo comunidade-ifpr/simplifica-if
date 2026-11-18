@@ -20,6 +20,7 @@ import * as Path from "effect/Path";
 import type * as SqlClient from "effect/sql/SqlClient";
 import * as BaseKb from "./BaseKb.ts";
 import * as Compilador from "./Compilador.ts";
+import * as Conselhos from "./Conselhos.ts";
 import * as Cursos from "./Cursos.ts";
 import * as FontesNormativas from "./FontesNormativas.ts";
 import * as Impacto from "./Impacto.ts";
@@ -34,6 +35,7 @@ export type ServicosConsulta =
   | Normas.Normas
   | Ppcs.Ppcs
   | Cursos.Cursos
+  | Conselhos.Conselhos
   | Impacto.Impacto
   | PacoteContexto.PacoteContexto
   | FontesNormativas.FontesNormativas
@@ -45,6 +47,7 @@ export const layerConsultas = Layer.mergeAll(
   Normas.layer,
   Ppcs.layer,
   Cursos.layer,
+  Conselhos.layer,
   Impacto.layer,
   PacoteContexto.layer,
   BaseKb.layer,

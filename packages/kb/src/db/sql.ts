@@ -10,6 +10,7 @@
  * schema é `FalhaNaConsulta`: o banco está corrompido ou não é deste esquema. O rótulo do erro é o
  * começo do SQL (código do kb, nunca dado de usuário).
  */
+import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
@@ -56,3 +57,16 @@ export function primeira<S extends Schema.Decoder<unknown>>(Linha: S) {
   ): Effect.Effect<S["Type"] | undefined, FalhaNaConsulta, SqlClient.SqlClient | S["DecodingServices"]> =>
     Effect.map(consultar(texto, parametros), (linhas) => linhas[0]);
 }
+
+/**
+ * Os serviços de que as consultas de um serviço precisam (o `SqlClient` e, se elas pedem, as
+ * `FontesNormativas`), capturados na construção da layer, e o combinador que os dá a cada método: as
+ * consultas pedem o banco do ambiente (o PPC avulso do `PacoteContexto` as roda sobre outro), e os
+ * métodos não pedem nada. Só os serviços nomeados: o resto do contexto da construção (o `Scope` da
+ * layer, o span pai) não passa por cima do de quem chama, e um recurso aberto num método fecha com o
+ * escopo de quem o chamou.
+ */
+export const ambienteDoServico = <const S extends ReadonlyArray<Context.Key<unknown, unknown>>>(...servicos: S) =>
+  Effect.map(Effect.context<Context.Service.Identifier<S[number]>>(), (contexto) =>
+    Effect.provideContext(Context.pick(...servicos)(contexto)),
+  );

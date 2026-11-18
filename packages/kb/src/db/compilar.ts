@@ -37,6 +37,7 @@ import { carregarDatas, dataReferencia, derivarLinha } from "../normas/vigencia.
 import { carregarRelacoes } from "../normas/relacoes.ts";
 import { mascararFrontMatter } from "../ppcs/front-matter.ts";
 import { lerTextoSecao } from "../ppcs/citacoes.ts";
+import { decodificarIndicePpcs, itensPorId } from "../ppcs/indice.ts";
 import { compararTexto } from "../texto.ts";
 import { DDL, VERSAO_ESQUEMA } from "./esquema.ts";
 import { arquivosFonte, hashConteudo, hashLista } from "./fontes.ts";
@@ -110,27 +111,6 @@ const esquemaManifest = Schema.Array(
     path: Schema.String,
   }),
 );
-
-const esquemaIndicePpcs = solto({
-  items: Schema.Array(
-    solto({
-      id: Schema.String,
-      campus_id: Schema.String,
-      campus_nome: Schema.String,
-      curso_slug: Schema.String,
-      curso_nome: Schema.String,
-      nivel: Schema.String,
-      taxonomia: texto,
-      tipo_oferta: Schema.String,
-      curso_url: texto,
-      fonte_pdf: texto,
-      path: Schema.String,
-      proveniencia: Schema.optionalKey(Schema.Unknown),
-      ano_documento: Schema.optionalKey(Schema.Int),
-    }),
-  ),
-  secoes: solto({ paths: Schema.Record(Schema.String, Schema.String) }),
-});
 
 const esquemaSecaoJsonl = solto({
   id: Schema.String,
@@ -214,7 +194,6 @@ const esquemaMarcos = solto({
 // Decodificadores compilados uma vez. Os das linhas da fase 5 recusam chaves extras: as linhas vão
 // inteiras para o INSERT, e uma chave a mais viraria uma coluna inexistente.
 const decodificarManifest = Schema.decodeUnknownSync(esquemaManifest);
-const decodificarIndicePpcs = Schema.decodeUnknownSync(esquemaIndicePpcs);
 const decodificarSecaoJsonl = Schema.decodeUnknownSync(esquemaSecaoJsonl);
 const decodificarCnctIndice = Schema.decodeUnknownSync(esquemaCnctIndice);
 const decodificarFicha = Schema.decodeUnknownSync(esquemaFicha);
@@ -644,7 +623,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
     }
 
     const indice = decodificarIndicePpcs(lerJson(noCheckout(raiz, CAMINHOS.indicePpcs)));
-    const itensPpc = [...indice.items].sort((a, b) => compararTexto(a.id, b.id));
+    const itensPpc = itensPorId(indice);
     const ppcPorPath = new Map(itensPpc.map((item) => [item.path, item]));
     const cursoPorPpcPath = new Map<string, string>();
 

@@ -10,11 +10,12 @@ Desde o C1 da [consolidação na stack do T3](../../docs/plans/consolidacao-stac
 |---|---|---|
 | `BaseKb.ts` | `meta` (versão do esquema, `data_referencia`, impressão digital, contagens, `versao`/`commit`/`canal`); falha a layer com `BaseIncompativel`. `layerSqlite({ caminho })`: o `SqlClient` só leitura (`BaseAusente`) | `SqlClient` |
 | `FontesNormativas.ts` | `registro`, `datas`, `relacoes`, `transicoes` (com eles, o próprio serviço é a `FonteVigencia` das regras), `dataReferencia`, `sinonimos`, `topicosSecoes`, `topicosFichas`, `conteudoDasSkills({ raiz? })`. Duas layers: `layerBanco` (tabelas do `kb.sqlite`; só `SqlClient`) e `layerArquivos({ raiz })` (`FileSystem`, `Path`) | — |
-| `Normas.ts` | `resolver`, `buscar`, `obter`, `ficha`, `dispositivo`, `dispositivoOuAncestral`, `descendentes`, `trecho`, `vigencia`, `relacoes`, `sucessoras`, `correspondencia`, `tabelasDeCorrespondencia`, `dataReferencia`, `enderecosOficiais` | `SqlClient`, `FontesNormativas` |
-| `Ppcs.ts` | `buscarSecoes`, `secoesDoPpc`, `indiceSecoesDoPpc`, `lerSecao`, `citacoesDaNorma`, `relatorioCitacoes`, `normasCitadas`, `fatos`, `divergencias` | `SqlClient`, `FontesNormativas` |
-| `Cursos.ts` | `listar`, `cnct`, `catalogoCnct`, `adequacaoArt71` | `SqlClient` |
+| `Normas.ts` | `resolver`, `buscar`, `obter`, `ficha`, `dispositivo`, `dispositivoOuAncestral`, `descendentes`, `trecho`, `vigencia`, `relacoes`, `sucessoras`, `correspondencia`, `tabelasDeCorrespondencia`, `listar`, `documento` (a norma para o leitor: dispositivos e Markdown), `dataReferencia`, `enderecosOficiais` | `SqlClient`, `FontesNormativas` |
+| `Ppcs.ts` | `buscarSecoes`, `buscarSecoesPorPrefixo` (a paleta do Explorar), `secoesDoPpc`, `indiceSecoesDoPpc`, `lerSecao`, `citacoesDaNorma`, `relatorioCitacoes`, `normasCitadas`, `fatos`, `divergencias`, `tiposDeSecao`, `listar`, `documento` (o PPC para o leitor: seções e Markdown) | `SqlClient`, `FontesNormativas` |
+| `Cursos.ts` | `listar`, `cnct`, `catalogoCnct`, `adequacaoArt71`, `campi`, `processos`, `niveis`, `paginasOficiais` | `SqlClient` |
+| `Conselhos.ts` | `reunioes` (as do Consepe, com documentos e itens de pauta) | `SqlClient` |
 | `Impacto.ts` | `daNorma(id, { data, incluirPpcs, raizConteudo })` | `SqlClient`, `FontesNormativas` |
-| `PacoteContexto.ts` | `montar` (PPC da base), `doMarkdown` (texto de um PPC fora da base), `abrirAvulso` (um PPC fora da base num banco em memória do escopo, com o `pacote` de cada conjunto de fichas e a `estrutura`), `fichas`, `nomesDeCampi` | `SqlClient`, `FontesNormativas` |
+| `PacoteContexto.ts` | `montar` (PPC da base), `doMarkdown` (texto de um PPC fora da base), `abrirAvulso` (um PPC fora da base num banco em memória do escopo, com o `pacote` de cada conjunto de fichas e a `estrutura`), `fichas`, `fichasResumidas`, `nomesDeCampi` | `SqlClient`, `FontesNormativas` |
 | `Compilador.ts` | `compilar`, `estado`, `garantirFresco` (política `KB_RECOMPILAR`) | `FileSystem`, `Path` |
 
 Layers prontas (`src/layers.ts`):
@@ -73,6 +74,7 @@ Erros tipados: `Sql.FalhaNaConsulta` (`db/sql.ts`: o banco não corresponde ao e
 | `avaliacao/resolvedor.ts` | precisão e recall do resolvedor em `avaliacao/resolvedor/citacoes-anotadas.yaml` |
 | `avaliacao/busca-secoes.ts` | recall@10 da busca de seções em `avaliacao/busca-secoes/consultas.yaml`, com e sem stemmer e sinônimos |
 | `busca/stemmer.ts`, `busca/tokens.ts` | stemmer Snowball de português (porte próprio, conferido contra `snowball-stemmers`, e a variante `radicalSemAcento`, com os sufixos sem acentos) e termos da busca, iguais na indexação e na consulta e iguais com ou sem acento |
+| `busca/fts.ts` | expressões do FTS5, puras: os conceitos de uma consulta, a expressão por conceitos (seções e normas) e a por prefixo (paleta do Explorar), e as linhas que casam |
 | `busca/sinonimos.ts` | léxico de `dados/sinonimos.yaml`: termos por tipo de seção (expansão do documento) e grupos de equivalentes (expansão da consulta) |
 | `institucional/dados.ts` | leitura frouxa de `base-conhecimento/institucional/ifpr/` e das matrizes do SUAP (`suap.matrizes.resumo`) |
 | `fatos/ppc.ts`, `fatos/divergencias.ts` | fatos extraídos dos PPCs (carga total, estágio obrigatório e carga), com trecho e status `extraido`, e o cruzamento com o SUAP |
@@ -80,8 +82,9 @@ Erros tipados: `Sql.FalhaNaConsulta` (`db/sql.ts`: o banco não corresponde ao e
 | `db/ppc-avulso.ts` | `abrirPpcAvulso`: o banco em memória, no mesmo esquema, com um PPC que pode não estar na base, aberto e fechado com o escopo; devolve o `SqlClient` dele |
 | `db/fontes.ts` | fontes do banco, impressão digital e estado do banco diante delas (`estadoDoBanco`) |
 | `db/fontes-normativas.ts` | interface de carga da fase 5 (`LinhasNormativas`: dispositivos, relações, vigências, transições, correspondências), com o schema de cada linha, e os arquivos que ela lê |
-| `db/sql.ts`, `db/nodeSqliteClient.ts`, `db/conexao.ts` | consultas pelo `SqlClient` com as linhas decodificadas por Effect Schema (`Sql.todas`, `Sql.primeira`); o cliente do `node:sqlite` copiado do T3 (MIT); um `SqlClient` sobre um `DatabaseSync` já aberto |
-| `db/consultas.ts`, `db/consultas-normas.ts`, `db/citacoes.ts`, `db/pacote-contexto.ts` | as consultas dos serviços, Effects sobre o `SqlClient` (as da fase 5 em `consultas-normas.ts`) |
+| `db/sql.ts`, `db/nodeSqliteClient.ts`, `db/conexao.ts` | consultas pelo `SqlClient` com as linhas decodificadas por Effect Schema (`Sql.todas`, `Sql.primeira`) e o ambiente que cada serviço captura na construção e dá aos métodos (`Sql.ambienteDoServico`); o cliente do `node:sqlite` copiado do T3 (MIT); um `SqlClient` sobre um `DatabaseSync` já aberto |
+| `db/consultas-normas.ts`, `db/consultas-secoes.ts`, `db/consultas-fatos.ts`, `db/consultas-cursos.ts`, `db/citacoes.ts`, `db/pacote-contexto.ts` | as consultas de cada serviço (`Normas`; `Ppcs`, seções, fatos e citações; `Cursos`; `PacoteContexto`), Effects sobre o `SqlClient` do ambiente, privadas ao serviço dono: quem está fora do `kb` chama o serviço e importa dele os tipos; `db/chaves.ts` completa os prefixos `ppc:` e `cnct:` |
+| `ppcs/indice.ts` | o decodificador único de `ppcs/index.json`, da compilação e das citações dos arquivos |
 | `cli.ts`, `cli/*.ts` | a CLI `kb`, em `effect/cli`: comandos de normas (`cli/normas.ts`), de PPCs e cursos (`cli/ppcs.ts`) e `compilar` (`cli/compilar.ts`), sobre `layerRepositorio` |
 | `normas/citacoes-normas.ts` | citações resolvidas no texto das normas da base (dispositivos e preâmbulo), para o `impacto` e a tabela `normas_citacoes` |
 
@@ -174,7 +177,7 @@ Ao mudar o resolvedor, rode também `pnpm avaliacao:gabaritos` e revise o diff d
 
 **PPC fora da base.** `PacoteContexto.abrirAvulso(markdown, opcoes)` cria, no escopo de quem chama, um banco em memória com o esquema do `kb.sqlite` (`db/ppc-avulso.ts`, com o registro, o léxico e os nomes dos campi da base) e grava o PPC por `gravarSecoesECitacoes`, o mesmo caminho da compilação: seções de `secoesIndexadas` (ou, com `todasAsSecoes`, de `secoesComChave`, que mantém a capa, `outros` e as seções curtas) e citações do resolvedor. Com `titulosNivel1`, `# Título` conta como título (o normalizador da `revisar-ppc` põe o primeiro nível numerado em `#`; no índice publicado só `##` a `######` contam). Para um PPC da base, o banco em memória dá as mesmas seções e citações do `kb.sqlite` (`db/base.test.ts`). O `PpcAvulso` devolvido tem `pacote(fichas, opcoes)`, o pacote de um conjunto de fichas: normas, marcos e transições do `kb.sqlite` (o `SqlClient` do ambiente); seções e citações do banco em memória (por `db/conexao.ts`); `citacoesPpc` acrescenta todas as citações normativas do PPC. Tem também `estrutura()`, todas as seções do Markdown (`segmentarPpc`, sobre o texto que o banco recebeu: quebras de linha e `titulosNivel1`, por `textoDoPpcAvulso`) e os fatos sobre elas, que a revisão com IA do app usa. Quem chama nunca vê o `DatabaseSync`, e o banco fecha com o escopo. A CLI aceita um `.md` no lugar de `<campus/curso>`.
 
-**Busca de seções.** Ao mudar `dados/sinonimos.yaml`, `busca/` ou as consultas de `db/consultas.ts`, rode `pnpm kb avaliar-busca` e compare o recall@10 dos três modos com o anterior; o conjunto de `avaliacao/busca-secoes/` é rascunho, rotulado pelos títulos das seções.
+**Busca de seções.** Ao mudar `dados/sinonimos.yaml`, `busca/` ou as consultas de `db/consultas-secoes.ts`, rode `pnpm kb avaliar-busca` e compare o recall@10 dos três modos com o anterior; o conjunto de `avaliacao/busca-secoes/` é rascunho, rotulado pelos títulos das seções.
 
 ## Sem o repositório
 

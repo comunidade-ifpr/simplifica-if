@@ -14,6 +14,7 @@ import {
   type PpcCitante,
 } from "../ppcs/citacoes.ts";
 import { compararTexto } from "../texto.ts";
+import { idPpc } from "./chaves.ts";
 import * as Sql from "./sql.ts";
 
 const ato = (id: string) => idDoAto(id.split("#")[0]!);
@@ -89,7 +90,7 @@ const linhasCitacoesDoPpc = Sql.todas(
  * base. Cada contagem é a que `ppcsQueCitam` dá ao PPC para aquele ato.
  */
 export const normasCitadasDoPpc = Effect.fn("citacoes.normasCitadasDoPpc")(function* (ppc: string) {
-  const id = ppc.startsWith("ppc:") ? ppc : `ppc:${ppc}`;
+  const id = idPpc(ppc);
   if (!(yield* existePpc("SELECT id FROM ppcs WHERE id = ?", [id]))) return null;
   const citacoes = yield* linhasCitacoesDoPpc(
     "SELECT ato_id AS id, linha, regra FROM citacoes WHERE ppc_id = ? ORDER BY ordem",

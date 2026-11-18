@@ -17,7 +17,6 @@ import { GrupoLeitura } from "../src/grupo-leitura.ts";
 import {
   buscarNaMemoria,
   campo,
-  expressaoFts,
   item,
   termosDaConsulta,
   tituloDoDispositivo,
@@ -95,14 +94,6 @@ describe("busca na memória", () => {
     );
     // fora do formato: fica o rótulo
     expect(tituloDoDispositivo("Norma", "x/y#preambulo", "Preâmbulo")).toBe("Norma, Preâmbulo");
-  });
-
-  it("a expressão do FTS: todos os termos, o último como prefixo", () => {
-    expect(expressaoFts(["acompanhamento", "egres"], ["titulo", "texto"])).toBe(
-      '{titulo texto} : ("acompanhamento" "egres"*)',
-    );
-    expect(expressaoFts(["de"], ["texto"])).toBe('{texto} : ("de")');
-    expect(expressaoFts([], ["texto"])).toBeNull();
   });
 });
 

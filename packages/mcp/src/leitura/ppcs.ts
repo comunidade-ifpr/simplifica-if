@@ -3,20 +3,19 @@
  * `adequacao_art71`, `buscar_secoes`, `ler_secao`, `listar_cursos`, `ficha_curso` e `fatos_ppc`,
  * sobre os serviços `Ppcs`, `Cursos`, `Impacto` e `FontesNormativas` do kb.
  *
- * O SQL próprio (os tipos de seção válidos e o título das fichas) é lido uma vez, na construção:
- * o banco é só de leitura.
+ * Os tipos de seção válidos e o título das fichas são lidos uma vez, na construção: o banco é só de
+ * leitura.
  */
 import { INDICADORES } from "@simplifica-if/kb/adequacao/art71";
 import * as Cursos from "@simplifica-if/kb/Cursos";
-import type { ResultadoCurso } from "@simplifica-if/kb/db/consultas";
-import * as Sql from "@simplifica-if/kb/db/sql";
+import type { ResultadoCurso } from "@simplifica-if/kb/Cursos";
 import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Impacto from "@simplifica-if/kb/Impacto";
 import * as Normas from "@simplifica-if/kb/Normas";
+import * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import type { PpcCitante } from "@simplifica-if/kb/ppcs/citacoes";
 import * as Ppcs from "@simplifica-if/kb/Ppcs";
 import * as Effect from "effect/Effect";
-import * as Schema from "effect/Schema";
 import { type Aviso, type Base, EntradaInvalida, type Fonte, type Pagina, type TransicaoResumo } from "../contratos.ts";
 import { paginarNoTeto, responder } from "../envelope.ts";
 import * as AdequacaoArt71 from "../ferramentas/adequacao-art71.ts";
@@ -43,9 +42,6 @@ import {
   relacaoSaida,
   transicaoResumo,
 } from "./comum.ts";
-
-const linhasTipo = Sql.todas(Schema.Struct({ tipo: Schema.String }));
-const linhasFicha = Sql.todas(Schema.Struct({ id: Schema.String, titulo: Schema.String, path: Schema.String }));
 
 function ocorrenciasDoPpc(ato: string, p: PpcCitante): CitacoesDaNorma.Ocorrencia[] {
   return p.ocorrencias.map((o) => ({
@@ -101,9 +97,9 @@ export const makePpcs = Effect.fn("Leitura.makePpcs")(function* (base: Base) {
   const cursos = yield* Cursos.Cursos;
   const impacto = yield* Impacto.Impacto;
   const fontes = yield* FontesNormativas.FontesNormativas;
-  // ORDER BY com a colação BINARY do SQLite ordena por code point, como compararTexto do kb
-  const tiposDeSecao = (yield* linhasTipo("SELECT DISTINCT tipo FROM secoes ORDER BY tipo")).map((t) => t.tipo);
-  const fichasPorPath = new Map((yield* linhasFicha("SELECT id, titulo, path FROM fichas")).map((f) => [f.path, f]));
+  const pacote = yield* PacoteContexto.PacoteContexto;
+  const tiposDeSecao = yield* ppcs.tiposDeSecao;
+  const fichasPorPath = new Map((yield* pacote.fichasResumidas).map((f) => [f.path, f]));
 
   const citacoesDaNorma = Effect.fn("Leitura.citacoesDaNorma")(function* (e: typeof CitacoesDaNorma.Entrada.Type) {
     const norma = yield* normaPedida(normas, e.id);

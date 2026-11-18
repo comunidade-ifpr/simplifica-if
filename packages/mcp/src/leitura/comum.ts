@@ -3,8 +3,8 @@
  * (`NormaResumo`, `Relacao`, `DispositivoTexto`, transição, fatos de PPC), os avisos repetidos e a
  * leitura dos IDs de PPC e de curso escritos pela IA. Nenhuma regra normativa: só formato.
  */
-import type { FatosDoPpc } from "@simplifica-if/kb/db/consultas";
-import type { TrechoDispositivo } from "@simplifica-if/kb/db/consultas-normas";
+import type { FatosDoPpc } from "@simplifica-if/kb/Ppcs";
+import type { TrechoDispositivo } from "@simplifica-if/kb/Normas";
 import type * as Sql from "@simplifica-if/kb/db/sql";
 import * as Normas from "@simplifica-if/kb/Normas";
 import type { Relacao as RelacaoKb } from "@simplifica-if/kb/normas/relacoes";

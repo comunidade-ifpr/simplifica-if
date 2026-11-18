@@ -69,7 +69,7 @@ import { lerTopicosFichas, lerTopicosSecoes } from "../ppcs/topicos.ts";
 import { CITACOES, consultasDoExecutavel, NORMAS, PPC, todasAsConsultas } from "../testes/consultas.ts";
 import * as PpcAvulso from "./ppc-avulso.ts";
 import { tabelasCorrespondencia, transicoesDosAtos, vigenciaNaData } from "./consultas-normas.ts";
-import type { FiltrosSecoes } from "./consultas.ts";
+import type { FiltrosSecoes } from "./consultas-secoes.ts";
 import { VERSAO_ESQUEMA } from "./esquema.ts";
 import * as Sql from "./sql.ts";
 
@@ -393,6 +393,17 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           expect(completo.secoes).toEqual([]);
           expect(completo.normas).toEqual(base.normas);
         }),
+    );
+
+    it.effect("o banco em memória do PPC avulso fecha com o escopo de quem o abriu, não com a layer", () =>
+      Effect.gen(function* () {
+        const { pacote: servico } = yield* servicos;
+        const md = yield* lerTexto("base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md");
+        const fichas = yield* servico.fichas(["CT-CURR-12"]);
+        const avulso = yield* Effect.scoped(servico.abrirAvulso(md));
+        const erro = yield* Effect.flip(avulso.pacote(fichas));
+        expect(Sql.ehFalhaNaConsulta(erro)).toBe(true);
+      }),
     );
 
     it.effect("a estrutura segmenta o texto que o banco recebeu: com `titulosNivel1` e CRLF, as seções do pacote", () =>

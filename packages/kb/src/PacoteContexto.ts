@@ -20,6 +20,8 @@ import {
   abrirPpcAvulso,
   type FichaPacote,
   fichasDoBanco,
+  type FichaResumida,
+  fichasResumidas,
   nomesDeCampiDoBanco,
   type OpcoesAbrirAvulso,
   type OpcoesPacote,
@@ -29,12 +31,13 @@ import {
   pacoteDoMarkdown,
   type PpcAvulso,
 } from "./db/pacote-contexto.ts";
-import type * as Sql from "./db/sql.ts";
+import * as Sql from "./db/sql.ts";
 import { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida } from "./pacote-contexto-erros.ts";
 
 export { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida };
 export type {
   EstruturaAvulsa,
+  FichaResumida,
   OpcoesAbrirAvulso,
   OpcoesPacoteAvulso,
   PacoteAvulso,
@@ -67,19 +70,15 @@ export class PacoteContexto extends Context.Service<
     ) => Effect.Effect<PpcAvulso, Sql.FalhaNaConsulta, Scope.Scope>;
     /** Fichas da `revisar-ppc` gravadas no banco (todas ou as de `ids`), por ID. */
     readonly fichas: (ids?: readonly string[]) => Effect.Effect<FichaPacote[], Sql.FalhaNaConsulta>;
+    /** Todas as fichas pelas colunas da tabela (título, domínio, criticidade e arquivo), por ID. */
+    readonly fichasResumidas: Effect.Effect<ReadonlyArray<FichaResumida>, Sql.FalhaNaConsulta>;
     /** Nomes dos campi dos PPCs da base (para a segmentação de um PPC avulso). */
     readonly nomesDeCampi: Effect.Effect<string[], Sql.FalhaNaConsulta>;
   }
 >()("@simplifica-if/kb/PacoteContexto") {}
 
 const make = Effect.gen(function* () {
-  const sql = yield* SqlClient.SqlClient;
-  const fontes = yield* FontesNormativas.FontesNormativas;
-  const prover = <A, E, R>(efeito: Effect.Effect<A, E, R>) =>
-    efeito.pipe(
-      Effect.provideService(SqlClient.SqlClient, sql),
-      Effect.provideService(FontesNormativas.FontesNormativas, fontes),
-    );
+  const prover = yield* Sql.ambienteDoServico(SqlClient.SqlClient, FontesNormativas.FontesNormativas);
 
   return PacoteContexto.of({
     montar: Effect.fn("PacoteContexto.montar")(function* (tarefa: string, ppc: string, opcoes: OpcoesPacote = {}) {
@@ -99,6 +98,7 @@ const make = Effect.gen(function* () {
     fichas: Effect.fn("PacoteContexto.fichas")(function* (ids?: readonly string[]) {
       return yield* fichasDoBanco(ids);
     }, prover),
+    fichasResumidas: fichasResumidas().pipe(prover),
     nomesDeCampi: prover(nomesDeCampiDoBanco()),
   });
 });

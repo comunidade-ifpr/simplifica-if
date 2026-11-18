@@ -21,7 +21,7 @@ import { AVISO_FATO_EXTRAIDO, chavePpc, paraFatosPpc } from "./comum.ts";
 import { paraCurso } from "./ppcs.ts";
 
 /** Um campus da tabela `campi`, lido uma vez na construção do `Leitura`. */
-export interface CampusDaBase {
+export interface CampusRecurso {
   readonly id: string;
   readonly nome: string;
   readonly site: string | null;
@@ -44,7 +44,7 @@ function fonteDoCampo(objeto: Readonly<Record<string, unknown>>, path: string, c
 
 export const makeRecursos = Effect.fn("Leitura.makeRecursos")(function* (
   base: Base,
-  campi: ReadonlyMap<string, CampusDaBase>,
+  campi: ReadonlyMap<string, CampusRecurso>,
 ) {
   const ppcs = yield* Ppcs.Ppcs;
   const cursos = yield* Cursos.Cursos;
