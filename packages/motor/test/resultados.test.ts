@@ -62,6 +62,7 @@ const sessaoCom = (roteiros: ReadonlyArray<ReadonlyArray<Passo>>, comResultados 
         Layer.provide(
           Layer.succeed(Motor.Drivers, Motor.Drivers.of({ claude: driver, codex: driver, antigravity: driver })),
         ),
+        Layer.provide(NodeServices.layer),
       ),
     );
     const motor = yield* Effect.service(Motor.Motor).pipe(Effect.provide(contexto));

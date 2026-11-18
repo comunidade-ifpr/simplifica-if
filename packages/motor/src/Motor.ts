@@ -14,7 +14,6 @@ import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
-import * as Option from "effect/Option";
 import * as Path from "effect/Path";
 import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
@@ -90,9 +89,9 @@ interface SessaoAberta {
 
 const make = Effect.fn("Motor.make")(function* (politica: Politica) {
   const drivers = yield* Driver.Drivers;
-  // Só as sessões com skills gravam arquivos: sem `FileSystem` na layer, elas falham com mensagem clara.
-  const fs = yield* Effect.serviceOption(FileSystem.FileSystem);
-  const path = yield* Effect.serviceOption(Path.Path);
+  // As sessões com skills gravam os arquivos delas na pasta de trabalho.
+  const arquivos = yield* Effect.context<FileSystem.FileSystem | Path.Path>();
+  const path = yield* Path.Path;
   const sessoes = new Map<string, SessaoAberta>();
   let sequencia = 0;
 
@@ -123,20 +122,9 @@ const make = Effect.fn("Motor.make")(function* (politica: Politica) {
     }
     let pastaSkills = "";
     if (pedida.skills !== undefined && pedida.skills.length > 0) {
-      if (Option.isNone(fs) || Option.isNone(path)) {
-        return yield* new FalhaProvider({
-          provider: pedida.provider,
-          operacao: "skills",
-          detalhe: "o motor não tem acesso ao sistema de arquivos para gravar as skills",
-        });
-      }
-      pastaSkills = yield* Skills.gravarSkills(pedida).pipe(
-        Effect.provideService(FileSystem.FileSystem, fs.value),
-        Effect.provideService(Path.Path, path.value),
-      );
+      pastaSkills = yield* Skills.gravarSkills(pedida).pipe(Effect.provideContext(arquivos));
     }
-    const separador = Option.isSome(path) ? path.value.sep : "/";
-    const instrucoes = Skills.instrucoesSessao(pedida, pastaSkills, separador);
+    const instrucoes = Skills.instrucoesSessao(pedida, pastaSkills, path.sep);
     const config: ConfigSessao = {
       ...pedida,
       buscaWeb: buscaWebLigada(politica, pedida.buscaWeb),
@@ -209,7 +197,10 @@ const make = Effect.fn("Motor.make")(function* (politica: Politica) {
   });
 });
 
-/** O motor sobre os drivers do ambiente (`Drivers.layerNode` ou drivers de teste), com a política de fábrica. */
+/**
+ * O motor sobre os drivers do ambiente (`Drivers.layerNode` ou drivers de teste), com a política de
+ * fábrica. Pede também o `FileSystem` e o `Path` (as skills gravadas na pasta de trabalho).
+ */
 export const layer = Layer.effect(Motor, make(POLITICA_FABRICA));
 
 /** O motor com outra política (testes; no futuro, a da máquina, que só restringe a de fábrica). */

@@ -62,6 +62,7 @@ const camada = (registro: Registro) => {
     Layer.provide(
       Layer.succeed(Motor.Drivers, Motor.Drivers.of({ claude: driver, codex: driver, antigravity: driver })),
     ),
+    Layer.provide(NodeServices.layer),
   );
 };
 
@@ -182,7 +183,11 @@ describe("Motor", () => {
         { podeInstalar: true, podeEntrar: false },
         { podeInstalar: true, podeEntrar: true },
       ]);
-    }).pipe(Effect.provide(Motor.layer.pipe(Layer.provide(Layer.succeed(Motor.Drivers, drivers)))));
+    }).pipe(
+      Effect.provide(
+        Motor.layer.pipe(Layer.provide(Layer.succeed(Motor.Drivers, drivers)), Layer.provide(NodeServices.layer)),
+      ),
+    );
   });
 
   it.effect("queda: o turno corrente falha, os próximos são recusados, e o motor informa o id nativo e a queda", () =>
@@ -204,6 +209,7 @@ describe("Motor", () => {
         Layer.provide(
           Layer.succeed(Motor.Drivers, Motor.Drivers.of({ claude: driver, codex: driver, antigravity: driver })),
         ),
+        Layer.provide(NodeServices.layer),
       );
       yield* Effect.gen(function* () {
         const motor = yield* Motor.Motor;
@@ -274,6 +280,7 @@ const camadaComPolitica = (
     Layer.provide(
       Layer.succeed(Motor.Drivers, Motor.Drivers.of({ claude: driver, codex: driver, antigravity: driver })),
     ),
+    Layer.provide(NodeServices.layer),
   );
 };
 
