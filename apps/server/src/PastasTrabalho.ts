@@ -325,7 +325,7 @@ const pastaSemLinks = Effect.fnUntraced(function* (real: string, partes: Readonl
   for (const parte of partes) {
     const proximo = path.join(atual, parte);
     const tipo = Option.map(yield* Effect.option(fs.lstat(proximo)), (info) => info.type);
-    if (Option.contains(tipo, "SymbolicLink")) yield* fs.remove(proximo);
+    if (Option.contains(tipo, "SymbolicLink")) yield* PastasNode.removerArquivo(proximo);
     if (Option.isNone(tipo) || tipo.value === "SymbolicLink") {
       if (!criar) return undefined;
       yield* fs.makeDirectory(proximo);
@@ -374,7 +374,7 @@ export const removerSemSeguirLinks = Effect.fn("PastasTrabalho.removerSemSeguirL
   if (pasta === undefined) return;
   const alvo = path.join(pasta, nome);
   const tipo = Option.map(yield* Effect.option(fs.lstat(alvo)), (info) => info.type);
-  if (Option.contains(tipo, "File") || Option.contains(tipo, "SymbolicLink")) yield* fs.remove(alvo);
+  if (Option.contains(tipo, "File") || Option.contains(tipo, "SymbolicLink")) yield* PastasNode.removerArquivo(alvo);
 });
 
 /**

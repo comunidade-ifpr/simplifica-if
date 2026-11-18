@@ -1,15 +1,17 @@
-// @effect-diagnostics nodeBuiltinImport:off -- O_NOFOLLOW, rmdir e o SHA-256 incremental, que o FileSystem e o Digest do Effect não expõem
+// @effect-diagnostics nodeBuiltinImport:off -- O_NOFOLLOW no Windows, unlink, rmdir e o SHA-256 incremental, que o FileSystem e o Digest do Effect não oferecem como as pastas precisam
 /**
- * As três operações de arquivo das `PastasTrabalho` que a plataforma do Effect não oferece, com o
- * Node direto. O resto das pastas usa o `FileSystem`.
+ * As operações de arquivo das `PastasTrabalho` que a plataforma do Effect não oferece como as pastas
+ * precisam, com o Node direto. O resto das pastas usa o `FileSystem`.
  *
  * - **Temporário sem seguir link.** O Desfazer grava num temporário novo (`O_CREAT | O_EXCL |
  *   O_NOFOLLOW`) e o troca pelo alvo com `rename`: um link plantado no lugar do temporário não leva a
- *   escrita para fora da pasta. O `FileSystem` do Effect só aceita o `OpenFlag` em texto (`"wx"`), sem
- *   `O_NOFOLLOW`. `O_NOFOLLOW` não existe no Windows.
- * - **Pasta vazia.** O `remove` do `FileSystem` é o `rm` do Node, que numa pasta exige `recursive` e
- *   então apaga o que tiver entrado nela depois da conferência; o `rmdir` recusa a pasta que não está
- *   vazia.
+ *   escrita para fora da pasta. O `open` do `FileSystem` aceita `noFollow`, mas no Windows (sem
+ *   `O_NOFOLLOW`) falha com `BadArgument`; aqui o `O_NOFOLLOW` entra só onde existe, e no Windows a
+ *   proteção fica com o `O_EXCL` e o `rename`.
+ * - **Arquivo ou link, sem seguir link.** O `remove` do `FileSystem` é o `rm` do Node, que numa pasta
+ *   com `recursive` apaga o que tiver dentro; o `unlink` só remove o arquivo ou o próprio link e recusa
+ *   a pasta que tiver entrado no lugar depois da conferência.
+ * - **Pasta vazia.** Pelo mesmo motivo, o `rmdir` recusa a pasta que não está vazia.
  * - **SHA-256 por partes.** O `Digest` do Effect só recebe os bytes inteiros; o retrato da pasta lê
  *   cada arquivo por `FileSystem.stream` e atualiza o hash a cada pedaço.
  */
@@ -22,14 +24,19 @@ import * as Schema from "effect/Schema";
 
 /** A operação do Node falhou. */
 export class EscritaNaoFeita extends Schema.TaggedError<EscritaNaoFeita>()("EscritaNaoFeita", {
-  operacao: Schema.Literals(["temporario", "pasta-vazia"]),
+  operacao: Schema.Literals(["temporario", "arquivo", "pasta-vazia"]),
   caminho: Schema.String,
   cause: Schema.Defect(),
 }) {
   override get message(): string {
-    return this.operacao === "temporario"
-      ? `não foi possível gravar o temporário em ${this.caminho}`
-      : `não foi possível remover a pasta vazia ${this.caminho}`;
+    switch (this.operacao) {
+      case "temporario":
+        return `não foi possível gravar o temporário em ${this.caminho}`;
+      case "arquivo":
+        return `não foi possível remover o arquivo ${this.caminho}`;
+      case "pasta-vazia":
+        return `não foi possível remover a pasta vazia ${this.caminho}`;
+    }
   }
 }
 
@@ -55,6 +62,14 @@ export const gravarTemporario = Effect.fn("pastasNode.gravarTemporario")(functio
     catch: (cause) => new EscritaNaoFeita({ operacao: "temporario", caminho: pasta, cause }),
   });
   return temporario;
+});
+
+/** Remove o arquivo ou o próprio link (nunca o alvo); uma pasta no lugar faz falhar. */
+export const removerArquivo = Effect.fn("pastasNode.removerArquivo")(function* (caminho: string) {
+  yield* Effect.tryPromise({
+    try: () => NodeFSP.unlink(caminho),
+    catch: (cause) => new EscritaNaoFeita({ operacao: "arquivo", caminho, cause }),
+  });
 });
 
 /** Remove a pasta se ela estiver vazia; com algo dentro, falha. */
