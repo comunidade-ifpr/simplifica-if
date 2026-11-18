@@ -17,12 +17,12 @@
  * Sem a API do GitHub: só GET em URLs diretas (`releases/download/...`), que não contam no limite de
  * 60 consultas por hora por IP.
  */
+import * as DateTime from "effect/DateTime";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Path from "effect/Path";
-import type * as PlatformError from "effect/PlatformError";
 import * as Stream from "effect/Stream";
 import * as HttpClient from "effect/http/HttpClient";
 import * as NodeHttpClient from "@effect/platform-node/NodeHttpClient";
@@ -35,7 +35,7 @@ import {
   OutroProcessoAtualizando,
   PacoteInvalido,
 } from "./erros.ts";
-import { caminhos, escreverAtomico, gravarEstado, type InfoBanco, lerEstado, tomarTrava } from "./local.ts";
+import { type Abertura, caminhos, escreverAtomico, gravarEstado, lerEstado, naPasta, trava } from "./local.ts";
 import {
   arquivoManifesto,
   type Canal,
@@ -45,7 +45,7 @@ import {
   SUFIXO_ASSINATURA,
   urlDoArquivo,
 } from "./manifesto.ts";
-import { type ChavePublica, verificar } from "./minisign.ts";
+import { type ChavePublica, lerChavePublica, verificar } from "./minisign.ts";
 import { desempacotarSkill } from "./pacote-skill.ts";
 import { aplicarPatch, descomprimir, sha256, validarBancoEmWorker } from "./pesado.ts";
 
@@ -123,16 +123,6 @@ export const baixar = Effect.fn("Atualizacao.baixar")(function* (
   );
 });
 
-/** Traduz a falha de arquivo da pasta de atualização, com a operação. */
-const naPasta =
-  (operacao: string) =>
-  <A, R>(efeito: Effect.Effect<A, PlatformError.PlatformError, R>) =>
-    Effect.mapError(efeito, (cause) => new FalhaPastaAtualizacao({ operacao, cause }));
-
-/** As funções síncronas de `local.ts`, com a falha traduzida. */
-const local = <A>(operacao: string, f: () => A) =>
-  Effect.try({ try: f, catch: (cause) => new FalhaPastaAtualizacao({ operacao, cause }) });
-
 const conferirHash = Effect.fn("Atualizacao.conferirHash")(function* (
   dados: Uint8Array,
   esperado: { sha256: string; bytes?: number },
@@ -177,13 +167,48 @@ export function urlManifesto(feed: string, canal: Canal): string {
   return new URL(arquivoManifesto(canal), comCanal.endsWith("/") ? comCanal : `${comCanal}/`).href;
 }
 
+/**
+ * A política da atualização: o feed e a chave pública (o texto da linha base64), da política de fábrica
+ * ou dos argumentos. Desligada, com o motivo, quando falta um deles ou a chave não se lê. O servidor do
+ * app e o `simplifica-mcp` leem a política por aqui.
+ */
+export function opcoesDaPolitica(entrada: {
+  readonly feed: string | null;
+  readonly chave: string | null;
+}):
+  | { readonly desligada: null; readonly feed: string; readonly chave: ChavePublica }
+  | { readonly desligada: string; readonly feed: string | null; readonly chave: ChavePublica | null } {
+  let chave: ChavePublica | null = null;
+  let problemaChave: string | null = null;
+  try {
+    chave = entrada.chave === null ? null : lerChavePublica(entrada.chave);
+  } catch (erro) {
+    problemaChave = `a chave pública da atualização é inválida (${(erro as Error).message})`;
+  }
+  if (entrada.feed === null) {
+    return {
+      desligada: "o endereço das atualizações ainda não está no app (hospedagem a configurar)",
+      feed: null,
+      chave,
+    };
+  }
+  if (chave === null) {
+    return {
+      desligada: problemaChave ?? "a chave pública da fábrica ainda não está no app",
+      feed: entrada.feed,
+      chave,
+    };
+  }
+  return { desligada: null, feed: entrada.feed, chave };
+}
+
 export interface Contexto {
   readonly pasta: string;
   readonly versaoApp: string;
-  /** A base em uso (o arquivo e a versão). */
-  readonly baseEmUso: { readonly caminho: string; readonly info: InfoBanco | null };
-  /** As versões das skills já disponíveis (empacotadas ou baixadas), por nome. */
-  readonly versoesSkills: Readonly<Record<string, string>>;
+  /** O que `prepararAbertura` decidiu: a base em uso (o arquivo e a versão). */
+  readonly abertura: Pick<Abertura, "banco" | "info">;
+  /** As versões das skills já disponíveis (empacotadas ou baixadas), por nome (padrão: nenhuma). */
+  readonly versoesSkills?: Readonly<Record<string, string>>;
   /** Baixar também as skills (padrão: sim; o `simplifica-mcp` fora do app só quer a base). */
   readonly comSkills?: boolean;
   /** Prazo de cada download (padrão: `PRAZO_DOWNLOAD`). */
@@ -218,8 +243,8 @@ export const baixarAtualizacao = Effect.fn("Atualizacao.baixarAtualizacao")(func
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
   const c = caminhos(ctx.pasta);
-  const estado = yield* local("ler o estado", () => lerEstado(ctx.pasta));
-  const versaoEmUso = ctx.baseEmUso.info?.versao;
+  const estado = yield* lerEstado(ctx.pasta);
+  const versaoEmUso = ctx.abertura.info?.versao;
   const jaTem = (versao: string) =>
     (versaoEmUso !== undefined && compararVersoes(versao, versaoEmUso) <= 0) ||
     (estado.pendente !== undefined && compararVersoes(versao, estado.pendente.versao) <= 0) ||
@@ -237,10 +262,10 @@ export const baixarAtualizacao = Effect.fn("Atualizacao.baixarAtualizacao")(func
     (skill) =>
       compararVersoes(skill.app_minimo, ctx.versaoApp) <= 0 &&
       compararVersoes(skill.base_minima, versaoBase) <= 0 &&
-      compararVersoes(skill.versao, ctx.versoesSkills[skill.nome] ?? "0.0.0") > 0,
+      compararVersoes(skill.versao, ctx.versoesSkills?.[skill.nome] ?? "0.0.0") > 0,
   );
   let skills = 0;
-  const lido = yield* local("ler o estado", () => lerEstado(ctx.pasta));
+  const lido = yield* lerEstado(ctx.pasta);
   const jaPendentes = lido.skillsPendentes ?? lido.skills;
   if (novas.length > 0 && jaPendentes !== manifesto.versao) {
     const destino = path.join(c.skills, manifesto.versao);
@@ -281,8 +306,7 @@ export const baixarAtualizacao = Effect.fn("Atualizacao.baixarAtualizacao")(func
       yield* fs.rename(temporario, destino).pipe(naPasta("trocar as skills"));
     });
     yield* montar.pipe(Effect.onError(() => remover(temporario).pipe(Effect.ignore)));
-    const atual = yield* local("ler o estado", () => lerEstado(ctx.pasta));
-    yield* local("gravar o estado", () => gravarEstado(ctx.pasta, { ...atual, skillsPendentes: manifesto.versao }));
+    yield* gravarEstado(ctx.pasta, { ...(yield* lerEstado(ctx.pasta)), skillsPendentes: manifesto.versao });
     skills = novas.length;
   }
   if (via === "nenhum" && skills === 0) return { tipo: "em-dia" };
@@ -297,14 +321,15 @@ const baixarBase = Effect.fn("Atualizacao.baixarBase")(function* (
   const fs = yield* FileSystem.FileSystem;
   const c = caminhos(ctx.pasta);
   const base = manifesto.base;
-  const patch = ctx.baseEmUso.info === null ? undefined : base.patches.find((p) => p.de === ctx.baseEmUso.info?.versao);
+  const emUso = ctx.abertura.info;
+  const patch = emUso === null ? undefined : base.patches.find((p) => p.de === emUso.versao);
 
   /** O banco pelo patch, se ele aplica e dá o `sha256_banco`; senão, `undefined` (cai no pacote inteiro). */
   const pelPatch = Effect.fn("Atualizacao.baixarPatch")(function* (p: NonNullable<typeof patch>) {
     const dados = yield* baixar(urlDoArquivo(p, urlDoManifesto), p.bytes ?? 256 * 1024 * 1024, ctx.prazo);
     yield* conferirHash(dados, p, "patch da base");
     // patch que não aplica (base local diferente): cai no pacote inteiro
-    const aplicado = yield* fs.readFile(ctx.baseEmUso.caminho).pipe(
+    const aplicado = yield* fs.readFile(ctx.abertura.banco).pipe(
       Effect.flatMap((anterior) => aplicarPatch(anterior, dados, LIMITE_BANCO)),
       Effect.option,
     );
@@ -329,7 +354,7 @@ const baixarBase = Effect.fn("Atualizacao.baixarBase")(function* (
   const trazer = Effect.gen(function* () {
     const pelo = patch === undefined ? undefined : yield* pelPatch(patch);
     const banco = pelo ?? (yield* pacoteInteiro);
-    yield* local("gravar a base baixada", () => escreverAtomico(c.baixando, banco));
+    yield* escreverAtomico(c.baixando, banco);
     yield* validarBancoEmWorker(c.baixando, {
       versao: manifesto.versao,
       ...(base.data_referencia === undefined ? {} : { dataReferencia: base.data_referencia }),
@@ -338,46 +363,32 @@ const baixarBase = Effect.fn("Atualizacao.baixarBase")(function* (
     return pelo === undefined ? ("inteiro" as const) : ("patch" as const);
   });
   const via = yield* trazer.pipe(Effect.onError(() => fs.remove(c.baixando, { force: true }).pipe(Effect.ignore)));
-  const estado = yield* local("ler o estado", () => lerEstado(ctx.pasta));
-  yield* local("gravar o estado", () =>
-    gravarEstado(ctx.pasta, {
-      ...estado,
-      pendente: { versao: manifesto.versao, sha256: base.sha256_banco, novidades: manifesto.novidades ?? [] },
-    }),
-  );
+  yield* gravarEstado(ctx.pasta, {
+    ...(yield* lerEstado(ctx.pasta)),
+    pendente: { versao: manifesto.versao, sha256: base.sha256_banco, novidades: manifesto.novidades ?? [] },
+  });
   return via;
 });
 
 /**
- * Confere o manifesto e baixa o que for novo, uma vez, gravando a hora da conferência. O `Atualizador`
- * do servidor e o `simplifica-mcp` fora do app usam o mesmo caminho.
+ * Confere o manifesto e baixa o que for novo, uma vez, com a trava da pasta e gravando a hora da
+ * conferência. O `Atualizador` do servidor e o `simplifica-mcp` fora do app usam o mesmo caminho.
  */
-export const atualizarUmaVez = Effect.fn("Atualizacao.atualizarUmaVez")(function* (opcoes: {
-  readonly feed: string;
-  readonly canal: Canal;
-  readonly chave: ChavePublica;
-  readonly agora: string;
-  readonly contexto: Contexto;
-}) {
-  const pasta = opcoes.contexto.pasta;
-  const soltar = yield* local("tomar a trava", () => tomarTrava(pasta));
-  if (soltar === null) return yield* new OutroProcessoAtualizando();
-  return yield* Effect.gen(function* () {
-    const url = urlManifesto(opcoes.feed, opcoes.canal);
-    const manifesto = yield* conferirManifesto({
-      urlManifesto: url,
-      canal: opcoes.canal,
-      chave: opcoes.chave,
-      ...(opcoes.contexto.prazo === undefined ? {} : { prazo: opcoes.contexto.prazo }),
-    });
-    const estado = yield* local("ler o estado", () => lerEstado(pasta));
-    yield* local("gravar o estado", () =>
-      gravarEstado(pasta, {
-        ...estado,
-        ultimaConferencia: opcoes.agora,
-        ...(manifesto.gerado_em === undefined ? {} : { manifestoGeradoEm: manifesto.gerado_em }),
-      }),
-    );
-    return yield* baixarAtualizacao(manifesto, url, opcoes.contexto);
-  }).pipe(Effect.ensuring(Effect.sync(soltar)));
-});
+export const atualizarUmaVez = Effect.fn("Atualizacao.atualizarUmaVez")(function* (
+  opcoes: Contexto & { readonly feed: string; readonly canal: Canal; readonly chave: ChavePublica },
+) {
+  if (!(yield* trava(opcoes.pasta))) return yield* new OutroProcessoAtualizando();
+  const url = urlManifesto(opcoes.feed, opcoes.canal);
+  const manifesto = yield* conferirManifesto({
+    urlManifesto: url,
+    canal: opcoes.canal,
+    chave: opcoes.chave,
+    ...(opcoes.prazo === undefined ? {} : { prazo: opcoes.prazo }),
+  });
+  yield* gravarEstado(opcoes.pasta, {
+    ...(yield* lerEstado(opcoes.pasta)),
+    ultimaConferencia: DateTime.formatIso(yield* DateTime.now),
+    ...(manifesto.gerado_em === undefined ? {} : { manifestoGeradoEm: manifesto.gerado_em }),
+  });
+  return yield* baixarAtualizacao(manifesto, url, opcoes);
+}, Effect.scoped);

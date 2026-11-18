@@ -7,8 +7,8 @@
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { afterEach, describe, expect, it } from "@effect/vitest";
-import { lerEstado, prepararAbertura } from "@simplifica-if/atualizacao/local";
-import { limparTemporarios } from "@simplifica-if/atualizacao/testes/apoio";
+import { prepararAbertura } from "@simplifica-if/atualizacao/local";
+import { estadoNoDisco, limparTemporarios } from "@simplifica-if/atualizacao/testes/apoio";
 import { type Cenario, cenario, LAYER_TESTE, VERSAO_APP } from "@simplifica-if/atualizacao/testes/cenario";
 import * as Effect from "effect/Effect";
 import * as Atualizador from "../src/Atualizador.ts";
@@ -16,8 +16,9 @@ import * as Atualizador from "../src/Atualizador.ts";
 afterEach(limparTemporarios);
 
 describe("Atualizador (serviço)", () => {
-  const servico = (c: Cenario, ocupado: boolean) =>
-    Atualizador.make({
+  const abertura = (c: Cenario) => prepararAbertura({ pasta: c.pastaApp, bancoEmpacotado: c.empacotada });
+  const servico = Effect.fn(function* (c: Cenario, ocupado: boolean) {
+    return yield* Atualizador.make({
       desligada: null,
       feed: c.feed,
       chave: c.chave,
@@ -25,12 +26,13 @@ describe("Atualizador (serviço)", () => {
       pasta: c.pastaApp,
       bancoEmpacotado: c.empacotada,
       versaoApp: VERSAO_APP,
-      abertura: prepararAbertura({ pasta: c.pastaApp, bancoEmpacotado: c.empacotada }),
+      abertura: yield* abertura(c),
       versoesSkills: {},
       ocupado: Effect.succeed(ocupado),
       prazo: "5 seconds",
       automatico: false,
     });
+  });
 
   it.effect("troca durante revisão: adiada, e entra na próxima abertura", () =>
     Effect.gen(function* () {
@@ -40,7 +42,7 @@ describe("Atualizador (serviço)", () => {
       const estado = yield* atualizador.procurar;
       expect(estado).toMatchObject({ situacao: "pronta", pendente: "2026.11.13", erro: null });
       expect(yield* atualizador.aplicar).toMatchObject({ resultado: "adiada" });
-      expect(prepararAbertura({ pasta: c.pastaApp, bancoEmpacotado: c.empacotada }).info?.versao).toBe("2026.11.13");
+      expect((yield* abertura(c)).info?.versao).toBe("2026.11.13");
       yield* Effect.promise(() => c.fechar());
     }).pipe(Effect.scoped, Effect.provide(LAYER_TESTE)),
   );
@@ -77,11 +79,11 @@ describe("Atualizador (serviço)", () => {
       expect(yield* v13.voltar).toMatchObject({ resultado: "reiniciar" });
       const voltou = yield* servico(c, false);
       expect((yield* voltou.estado).base.versao).toBe("2026.11.12");
-      expect(lerEstado(c.pastaApp).recusada).toBe("2026.11.13");
+      expect(estadoNoDisco(c.pastaApp).recusada).toBe("2026.11.13");
       // Voltar de novo levaria à versão recusada: o botão some, e o pedido não troca nada.
       expect((yield* voltou.estado).anterior).toBeNull();
       expect(yield* voltou.voltar).toMatchObject({ resultado: "nada" });
-      expect(lerEstado(c.pastaApp).voltar).toBeUndefined();
+      expect(estadoNoDisco(c.pastaApp).voltar).toBeUndefined();
       const depois = yield* voltou.procurar;
       expect(depois.pendente).toBeNull();
       // O gerado_em do manifesto conferido vai ao estado (o aviso de 14 dias na tela).
@@ -129,7 +131,7 @@ describe("Atualizador (serviço)", () => {
         pasta: c.pastaApp,
         bancoEmpacotado: c.empacotada,
         versaoApp: VERSAO_APP,
-        abertura: prepararAbertura({ pasta: c.pastaApp, bancoEmpacotado: c.empacotada }),
+        abertura: yield* abertura(c),
         versoesSkills: {},
         ocupado: Effect.succeed(false),
         automatico: false,

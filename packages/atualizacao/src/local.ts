@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off -- arquivos da pasta do app e leitura do meta com node:sqlite, síncronos, antes de qualquer layer
+// @effect-diagnostics nodeBuiltinImport:off -- o meta do banco por node:sqlite (síncrono, sem serviço do Effect), o sha256 por node:crypto e caminhos puros por node:path
 /**
  * O lado local da atualização: a pasta do app, o estado gravado e a troca na abertura.
  *
@@ -16,12 +16,21 @@
  * qualquer layer abrir o `kb.sqlite`: no Windows, renomear um arquivo aberto falha, e no macOS o
  * servidor continuaria lendo o arquivo antigo. Cada passo é um `rename` na mesma pasta (atômico), e o
  * arquivo pendente é conferido de novo (sha256) antes de entrar.
+ *
+ * Os arquivos da pasta passam pelo `FileSystem`; só o `meta` do banco (`lerInfoBanco`) e a conferência
+ * do banco baixado (`validarBancoNucleo`, que roda num `Worker`) usam o `node:sqlite` direto.
  */
 import * as NodeCrypto from "node:crypto";
-import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import * as NodeSqlite from "node:sqlite";
 import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
+import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
+import * as Path from "effect/Path";
+import type * as PlatformError from "effect/PlatformError";
+import type * as Scope from "effect/Scope";
+import * as Stream from "effect/Stream";
+import { FalhaPastaAtualizacao } from "./erros.ts";
 import { type Canal, compararVersoes, type Novidade, versaoDeData } from "./manifesto.ts";
 
 export const ARQUIVO_ESTADO = "atualizacao.json";
@@ -55,28 +64,67 @@ export const caminhos = (pasta: string) => ({
   skills: NodePath.join(pasta, "skills"),
 });
 
-export function lerEstado(pasta: string): EstadoGravado {
+/** O texto do `atualizacao.json`; `{}` se ele não for um objeto JSON. */
+export function decodificarEstado(texto: string): EstadoGravado {
   try {
-    const lido: unknown = JSON.parse(NodeFS.readFileSync(caminhos(pasta).estado, "utf8"));
+    const lido: unknown = JSON.parse(texto);
     return typeof lido === "object" && lido !== null ? (lido as EstadoGravado) : {};
   } catch {
     return {};
   }
 }
 
-/** Grava o estado por arquivo temporário e `rename`. */
-export function gravarEstado(pasta: string, estado: EstadoGravado): void {
-  const destino = caminhos(pasta).estado;
-  NodeFS.mkdirSync(pasta, { recursive: true });
+/** Traduz a falha de arquivo da pasta de atualização, com a operação. */
+export const naPasta =
+  (operacao: string) =>
+  <A, R>(efeito: Effect.Effect<A, PlatformError.PlatformError, R>) =>
+    Effect.mapError(efeito, (cause) => new FalhaPastaAtualizacao({ operacao, cause }));
+
+/** O estado gravado; `{}` se o arquivo falta ou não se lê. */
+export const lerEstado = Effect.fn("Atualizacao.lerEstado")(function* (pasta: string) {
+  const fs = yield* FileSystem.FileSystem;
+  return yield* fs.readFileString(caminhos(pasta).estado).pipe(
+    Effect.map(decodificarEstado),
+    Effect.orElseSucceed((): EstadoGravado => ({})),
+  );
+});
+
+/** Escreve por temporário e `rename` na mesma pasta: o destino nunca fica pela metade. */
+const escreverPorTemporario = Effect.fn("Atualizacao.escreverPorTemporario")(function* (
+  destino: string,
+  escrever: (temporario: string) => Effect.Effect<void, PlatformError.PlatformError, FileSystem.FileSystem>,
+) {
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
+  yield* fs.makeDirectory(path.dirname(destino), { recursive: true });
   const temporario = `${destino}.${process.pid}.tmp`;
-  try {
-    NodeFS.writeFileSync(temporario, `${JSON.stringify(estado, null, 2)}\n`);
-    NodeFS.renameSync(temporario, destino);
-  } catch (erro) {
-    NodeFS.rmSync(temporario, { force: true });
-    throw erro;
-  }
-}
+  yield* escrever(temporario).pipe(
+    Effect.andThen(fs.rename(temporario, destino)),
+    Effect.onError(() => fs.remove(temporario, { force: true }).pipe(Effect.ignore)),
+  );
+});
+
+/** Grava o estado por arquivo temporário e `rename`. */
+export const gravarEstado = Effect.fn("Atualizacao.gravarEstado")(function* (pasta: string, estado: EstadoGravado) {
+  const fs = yield* FileSystem.FileSystem;
+  yield* escreverPorTemporario(caminhos(pasta).estado, (temporario) =>
+    fs.writeFileString(temporario, `${JSON.stringify(estado, null, 2)}\n`),
+  ).pipe(naPasta("gravar o estado"));
+});
+
+/** Escreve um arquivo por temporário + fsync + rename (o destino nunca fica pela metade). */
+export const escreverAtomico = Effect.fn("Atualizacao.escreverAtomico")(function* (destino: string, dados: Uint8Array) {
+  const fs = yield* FileSystem.FileSystem;
+  yield* escreverPorTemporario(destino, (temporario) =>
+    Effect.scoped(
+      Effect.gen(function* () {
+        const arquivo = yield* fs.open(temporario, { flag: "w" });
+        yield* arquivo.writeAll(dados);
+        yield* arquivo.sync;
+      }),
+    ),
+  ).pipe(naPasta("gravar a base baixada"));
+});
 
 /* ------------------------------------------------------------------ trava */
 
@@ -93,35 +141,46 @@ const vivo = (pid: number) => {
   }
 };
 
+const tomarTrava = Effect.fn("Atualizacao.tomarTrava")(function* (arquivo: string) {
+  const fs = yield* FileSystem.FileSystem;
+  for (let tentativa = 0; tentativa < 2; tentativa += 1) {
+    const criada = yield* fs.writeFileString(arquivo, String(process.pid), { flag: "wx" }).pipe(
+      Effect.as(true),
+      Effect.catchIf(
+        (erro) => erro.reason._tag === "AlreadyExists",
+        () => Effect.succeed(false),
+      ),
+    );
+    if (criada) return true;
+    // sumiu entre o open e a leitura: tenta de novo
+    const dono = yield* fs.readFileString(arquivo).pipe(
+      Effect.map((texto) => Number.parseInt(texto, 10)),
+      Effect.orElseSucceed(() => Number.NaN),
+    );
+    if (vivo(dono)) return false;
+    yield* fs.remove(arquivo, { force: true });
+  }
+  return false;
+});
+
 /**
- * Toma a trava da pasta (`atualizacao.trava`, criada com `wx` e o pid dentro), para dois processos não
- * mexerem na mesma pasta ao mesmo tempo. Uma trava de processo que já morreu (ou deste mesmo pid,
- * sobra de uma execução anterior) é velha e se retoma. Devolve a função que solta, ou `null` se outro
+ * A trava da pasta (`atualizacao.trava`, criada com `wx` e o pid dentro), para dois processos não
+ * mexerem na mesma pasta ao mesmo tempo, solta quando o escopo fecha. Uma trava de processo que já
+ * morreu (ou deste mesmo pid, sobra de uma execução anterior) é velha e se retoma. Dá `false` se outro
  * processo vivo a tem. O app e o `simplifica-mcp` usam pastas próprias; a trava é a rede de proteção.
  */
-export function tomarTrava(pasta: string): (() => void) | null {
-  NodeFS.mkdirSync(pasta, { recursive: true });
-  const arquivo = NodePath.join(pasta, ARQUIVO_TRAVA);
-  for (let tentativa = 0; tentativa < 2; tentativa += 1) {
-    try {
-      const descritor = NodeFS.openSync(arquivo, "wx");
-      NodeFS.writeSync(descritor, String(process.pid));
-      NodeFS.closeSync(descritor);
-      return () => NodeFS.rmSync(arquivo, { force: true });
-    } catch (erro) {
-      if ((erro as NodeJS.ErrnoException).code !== "EEXIST") throw erro;
-      let dono = Number.NaN;
-      try {
-        dono = Number.parseInt(NodeFS.readFileSync(arquivo, "utf8"), 10);
-      } catch {
-        // sumiu entre o open e a leitura: tenta de novo
-      }
-      if (vivo(dono)) return null;
-      NodeFS.rmSync(arquivo, { force: true });
-    }
-  }
-  return null;
-}
+export const trava = (
+  pasta: string,
+): Effect.Effect<boolean, FalhaPastaAtualizacao, FileSystem.FileSystem | Path.Path | Scope.Scope> =>
+  Effect.gen(function* () {
+    const fs = yield* FileSystem.FileSystem;
+    const path = yield* Path.Path;
+    const arquivo = path.join(pasta, ARQUIVO_TRAVA);
+    return yield* Effect.acquireRelease(
+      fs.makeDirectory(pasta, { recursive: true }).pipe(Effect.andThen(tomarTrava(arquivo)), naPasta("tomar a trava")),
+      (tomada) => (tomada ? fs.remove(arquivo, { force: true }).pipe(Effect.ignore) : Effect.void),
+    );
+  });
 
 /* ------------------------------------------------------------------ o banco */
 
@@ -138,9 +197,8 @@ function esquemaDoMeta(meta: ReadonlyMap<string, string>): number | null {
   return Number.isInteger(valor) ? valor : null;
 }
 
-/** A versão de um `kb.sqlite` pelo `meta` (`versao`, ou a data de referência); `null` se não abrir. */
+/** A versão de um `kb.sqlite` pelo `meta` (`versao`, ou a data de referência); `null` se não existir ou não abrir. */
 export function lerInfoBanco(caminho: string): InfoBanco | null {
-  if (!NodeFS.existsSync(caminho)) return null;
   try {
     const db = new NodeSqlite.DatabaseSync(caminho, { readOnly: true });
     try {
@@ -218,63 +276,34 @@ export function validarBancoNucleo(
   }
 }
 
-export const validarBanco = (caminho: string, esperado: { versao: string; dataReferencia?: string }): InfoBanco =>
-  validarBancoNucleo(NodeSqlite, VERSAO_ESQUEMA, caminho, esperado);
-
-export function sha256Arquivo(caminho: string): string {
+export const sha256Arquivo = Effect.fn("Atualizacao.sha256Arquivo")(function* (caminho: string) {
+  const fs = yield* FileSystem.FileSystem;
   const hash = NodeCrypto.createHash("sha256");
-  const descritor = NodeFS.openSync(caminho, "r");
-  try {
-    const bloco = Buffer.alloc(4 * 1024 * 1024);
-    for (;;) {
-      const lidos = NodeFS.readSync(descritor, bloco, 0, bloco.length, null);
-      if (lidos === 0) break;
-      hash.update(bloco.subarray(0, lidos));
-    }
-  } finally {
-    NodeFS.closeSync(descritor);
-  }
+  yield* fs
+    .stream(caminho, { chunkSize: 4 * 1024 * 1024 })
+    .pipe(Stream.runForEach((bloco) => Effect.sync(() => hash.update(bloco))));
   return hash.digest("hex");
-}
-
-const remover = (caminho: string) => NodeFS.rmSync(caminho, { force: true, recursive: true });
-
-/** Escreve um arquivo por temporário + fsync + rename (o destino nunca fica pela metade). */
-export function escreverAtomico(destino: string, dados: Uint8Array): void {
-  NodeFS.mkdirSync(NodePath.dirname(destino), { recursive: true });
-  const temporario = `${destino}.${process.pid}.tmp`;
-  try {
-    const descritor = NodeFS.openSync(temporario, "w");
-    try {
-      NodeFS.writeSync(descritor, dados);
-      NodeFS.fsyncSync(descritor);
-    } finally {
-      NodeFS.closeSync(descritor);
-    }
-    NodeFS.renameSync(temporario, destino);
-  } catch (erro) {
-    NodeFS.rmSync(temporario, { force: true });
-    throw erro;
-  }
-}
+});
 
 /** Sobras de uma execução que caiu: `*.tmp` da pasta e de `base/`, `baixando.sqlite` e `skills/*.baixando`. */
-export function limparSobras(pasta: string): ReadonlyArray<string> {
+export const limparSobras = Effect.fn("Atualizacao.limparSobras")(function* (pasta: string) {
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
   const c = caminhos(pasta);
   const sobras: string[] = [];
-  const varrer = (dir: string, teste: (nome: string) => boolean) => {
-    if (!NodeFS.existsSync(dir)) return;
-    for (const nome of NodeFS.readdirSync(dir)) {
+  const varrer = Effect.fn(function* (dir: string, teste: (nome: string) => boolean) {
+    if (!(yield* fs.exists(dir))) return;
+    for (const nome of yield* fs.readDirectory(dir)) {
       if (!teste(nome)) continue;
-      NodeFS.rmSync(NodePath.join(dir, nome), { recursive: true, force: true });
-      sobras.push(NodePath.relative(pasta, NodePath.join(dir, nome)));
+      yield* fs.remove(path.join(dir, nome), { recursive: true, force: true });
+      sobras.push(path.relative(pasta, path.join(dir, nome)));
     }
-  };
-  varrer(pasta, (nome) => nome.endsWith(".tmp"));
-  varrer(c.base, (nome) => nome.endsWith(".tmp") || nome === "baixando.sqlite");
-  varrer(c.skills, (nome) => nome.endsWith(".baixando"));
+  });
+  yield* varrer(pasta, (nome) => nome.endsWith(".tmp"));
+  yield* varrer(c.base, (nome) => nome.endsWith(".tmp") || nome === "baixando.sqlite");
+  yield* varrer(c.skills, (nome) => nome.endsWith(".baixando"));
   return sobras;
-}
+});
 
 /* ------------------------------------------------------------------ abertura */
 
@@ -299,73 +328,81 @@ export interface Abertura {
  * mas de outro esquema, que o servidor recusaria inteira; o mesmo depois de "voltar" para uma anterior
  * de outro esquema. Nesses casos abre a empacotada.
  */
-export function prepararAbertura(opcoes: {
+export const prepararAbertura = Effect.fn("Atualizacao.prepararAbertura")(function* (opcoes: {
   readonly pasta: string;
   readonly bancoEmpacotado: string;
   readonly versaoEsquema?: number;
-}): Abertura {
+}) {
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
   const esquema = opcoes.versaoEsquema ?? VERSAO_ESQUEMA;
   const c = caminhos(opcoes.pasta);
-  const estado = lerEstado(opcoes.pasta);
+  const estado = yield* lerEstado(opcoes.pasta);
   const eventos: string[] = [];
-  NodeFS.mkdirSync(c.base, { recursive: true });
-  // A troca só com a trava: outro processo baixando na mesma pasta não vê os arquivos mudando de nome.
-  const soltar = tomarTrava(opcoes.pasta);
-  if (soltar === null) {
-    eventos.push("outro processo usa esta pasta de atualização; a troca fica para a próxima abertura");
-  } else {
-    try {
-      for (const sobra of limparSobras(opcoes.pasta)) eventos.push(`sobra apagada: ${sobra}`);
+  const existe = (caminho: string) => fs.exists(caminho);
+  const remover = (caminho: string) => fs.remove(caminho, { force: true, recursive: true });
+  yield* fs.makeDirectory(c.base, { recursive: true }).pipe(naPasta("criar a pasta da base"));
 
-      if (estado.voltar === true) {
-        const saindo = lerInfoBanco(c.atual);
-        if (NodeFS.existsSync(c.anterior)) {
-          remover(c.recusada);
-          if (NodeFS.existsSync(c.atual)) NodeFS.renameSync(c.atual, c.recusada);
-          NodeFS.renameSync(c.anterior, c.atual);
-          if (NodeFS.existsSync(c.recusada)) NodeFS.renameSync(c.recusada, c.anterior);
-        } else if (NodeFS.existsSync(c.atual)) {
-          // Sem anterior baixada: volta para a empacotada, guardando a que sai.
-          NodeFS.renameSync(c.atual, c.anterior);
-        }
-        if (saindo !== null) estado.recusada = saindo.versao;
-        delete estado.voltar;
-        delete estado.novidades;
-        if (estado.pendente !== undefined) {
-          remover(c.pendente);
-          delete estado.pendente;
-        }
-        eventos.push(`voltou da base ${saindo?.versao ?? "?"} para a anterior`);
-      } else if (estado.pendente !== undefined) {
-        const pendente = estado.pendente;
-        if (NodeFS.existsSync(c.pendente) && sha256Arquivo(c.pendente) === pendente.sha256) {
-          if (NodeFS.existsSync(c.atual)) NodeFS.renameSync(c.atual, c.anterior);
-          NodeFS.renameSync(c.pendente, c.atual);
-          estado.novidades = { versao: pendente.versao, itens: pendente.novidades, vista: false };
-          eventos.push(`base ${pendente.versao} aplicada`);
-        } else {
-          remover(c.pendente);
-          eventos.push(`base pendente ${pendente.versao} descartada (arquivo ausente ou alterado)`);
-        }
+  const trocar = Effect.gen(function* () {
+    for (const sobra of yield* limparSobras(opcoes.pasta)) eventos.push(`sobra apagada: ${sobra}`);
+
+    if (estado.voltar === true) {
+      const saindo = lerInfoBanco(c.atual);
+      if (yield* existe(c.anterior)) {
+        yield* remover(c.recusada);
+        if (yield* existe(c.atual)) yield* fs.rename(c.atual, c.recusada);
+        yield* fs.rename(c.anterior, c.atual);
+        if (yield* existe(c.recusada)) yield* fs.rename(c.recusada, c.anterior);
+      } else if (yield* existe(c.atual)) {
+        // Sem anterior baixada: volta para a empacotada, guardando a que sai.
+        yield* fs.rename(c.atual, c.anterior);
+      }
+      if (saindo !== null) estado.recusada = saindo.versao;
+      delete estado.voltar;
+      delete estado.novidades;
+      if (estado.pendente !== undefined) {
+        yield* remover(c.pendente);
         delete estado.pendente;
       }
+      eventos.push(`voltou da base ${saindo?.versao ?? "?"} para a anterior`);
+    } else if (estado.pendente !== undefined) {
+      const pendente = estado.pendente;
+      if ((yield* existe(c.pendente)) && (yield* sha256Arquivo(c.pendente)) === pendente.sha256) {
+        if (yield* existe(c.atual)) yield* fs.rename(c.atual, c.anterior);
+        yield* fs.rename(c.pendente, c.atual);
+        estado.novidades = { versao: pendente.versao, itens: pendente.novidades, vista: false };
+        eventos.push(`base ${pendente.versao} aplicada`);
+      } else {
+        yield* remover(c.pendente);
+        eventos.push(`base pendente ${pendente.versao} descartada (arquivo ausente ou alterado)`);
+      }
+      delete estado.pendente;
+    }
 
-      if (estado.skillsPendentes !== undefined) {
-        const anterior = estado.skills;
-        estado.skills = estado.skillsPendentes;
-        delete estado.skillsPendentes;
-        eventos.push(`skills ${estado.skills} aplicadas`);
-        if (NodeFS.existsSync(c.skills)) {
-          for (const pasta of NodeFS.readdirSync(c.skills)) {
-            if (pasta !== estado.skills && pasta !== anterior) remover(NodePath.join(c.skills, pasta));
-          }
+    if (estado.skillsPendentes !== undefined) {
+      const anterior = estado.skills;
+      estado.skills = estado.skillsPendentes;
+      delete estado.skillsPendentes;
+      eventos.push(`skills ${estado.skills} aplicadas`);
+      if (yield* existe(c.skills)) {
+        for (const pasta of yield* fs.readDirectory(c.skills)) {
+          if (pasta !== estado.skills && pasta !== anterior) yield* remover(path.join(c.skills, pasta));
         }
       }
-      gravarEstado(opcoes.pasta, estado);
-    } finally {
-      soltar();
     }
-  }
+  }).pipe(naPasta("trocar a base"));
+
+  // A troca só com a trava: outro processo baixando na mesma pasta não vê os arquivos mudando de nome.
+  yield* Effect.scoped(
+    Effect.gen(function* () {
+      if (!(yield* trava(opcoes.pasta))) {
+        eventos.push("outro processo usa esta pasta de atualização; a troca fica para a próxima abertura");
+        return;
+      }
+      yield* trocar;
+      yield* gravarEstado(opcoes.pasta, estado);
+    }),
+  );
 
   const lida = lerInfoBanco(c.atual);
   const baixada = lida !== null && lida.versaoEsquema === esquema ? lida : null;
@@ -377,12 +414,14 @@ export function prepararAbertura(opcoes: {
   const empacotada = lerInfoBanco(opcoes.bancoEmpacotado);
   const usarBaixada =
     baixada !== null && (empacotada === null || compararVersoes(baixada.versao, empacotada.versao) >= 0);
-  const pastaSkills = estado.skills === undefined ? undefined : NodePath.join(c.skills, estado.skills);
-  return {
+  const pastaSkills = estado.skills === undefined ? undefined : path.join(c.skills, estado.skills);
+  const abertura: Abertura = {
     banco: usarBaixada ? c.atual : opcoes.bancoEmpacotado,
     origem: usarBaixada ? "baixada" : "empacotada",
     info: usarBaixada ? baixada : empacotada,
-    pastasSkills: pastaSkills !== undefined && NodeFS.existsSync(pastaSkills) ? [pastaSkills] : [],
+    pastasSkills:
+      pastaSkills !== undefined && (yield* existe(pastaSkills).pipe(naPasta("ler as skills"))) ? [pastaSkills] : [],
     eventos,
   };
-}
+  return abertura;
+});

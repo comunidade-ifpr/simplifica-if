@@ -81,14 +81,14 @@ export async function cenario(): Promise<Cenario> {
       return { banco };
     },
     atualizar: (canal = "beta", versoesSkills = {}) => {
-      const abertura = prepararAbertura({ pasta: pastaApp, bancoEmpacotado: empacotada });
       const url = urlManifesto(feed, canal);
       return Effect.gen(function* () {
+        const abertura = yield* prepararAbertura({ pasta: pastaApp, bancoEmpacotado: empacotada });
         const manifesto = yield* conferirManifesto({ urlManifesto: url, canal, chave, prazo: "5 seconds" });
         return yield* baixarAtualizacao(manifesto, url, {
           pasta: pastaApp,
           versaoApp: VERSAO_APP,
-          baseEmUso: { caminho: abertura.banco, info: abertura.info },
+          abertura,
           versoesSkills,
           prazo: "5 seconds",
         });

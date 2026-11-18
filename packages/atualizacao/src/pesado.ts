@@ -62,7 +62,7 @@ try {
 const BANCO_BAIXADO = "banco baixado";
 
 /**
- * `validarBanco` num Worker: a mesma conferência, sem travar o event loop. O Worker termina se a
+ * `validarBancoNucleo` num Worker: a conferência do banco baixado, sem travar o event loop. O Worker termina se a
  * conferência for interrompida.
  */
 export const validarBancoEmWorker = (

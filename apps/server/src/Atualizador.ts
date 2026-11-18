@@ -1,4 +1,3 @@
-// @effect-diagnostics nodeBuiltinImport:off -- confere a existência da base anterior na pasta do app
 /**
  * O serviço de atualização da base e das skills no servidor (M1.10).
  *
@@ -10,9 +9,7 @@
  * - **Desligado** quando a política não tem feed ou chave pública (a hospedagem e a chave de produção
  *   ainda não estão no app) ou quando a base vem de fora (`SIMPLIFICA_KB`): o estado diz o motivo.
  */
-import * as NodeFS from "node:fs";
 import * as Context from "effect/Context";
-import * as DateTime from "effect/DateTime";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
@@ -29,7 +26,7 @@ import type {
   SituacaoAtualizacao,
 } from "@simplifica-if/contratos-app";
 import type { Abertura } from "@simplifica-if/atualizacao/local";
-import { caminhos, gravarEstado, lerEstado, lerInfoBanco } from "@simplifica-if/atualizacao/local";
+import { caminhos, type EstadoGravado, gravarEstado, lerEstado, lerInfoBanco } from "@simplifica-if/atualizacao/local";
 import type { ChavePublica } from "@simplifica-if/atualizacao/minisign";
 import { atualizarUmaVez } from "@simplifica-if/atualizacao/remoto";
 
@@ -83,24 +80,25 @@ export const make = Effect.fn("Atualizador.make")(function* (opcoes: Opcoes) {
   const servicos = yield* Effect.context<HttpClient.HttpClient | FileSystem.FileSystem | Path.Path>();
   const c = caminhos(opcoes.pasta);
 
-  const canalAtual = () => lerEstado(opcoes.pasta).canal ?? opcoes.canalPadrao;
+  const lerGravado = lerEstado(opcoes.pasta).pipe(Effect.provideContext(servicos));
+  // Uma falha ao gravar o `atualizacao.json` é defeito: a pasta do app é do próprio app.
+  const gravar = (novo: EstadoGravado) =>
+    gravarEstado(opcoes.pasta, novo).pipe(Effect.provideContext(servicos), Effect.orDie);
+  const canalAtual = Effect.map(lerGravado, (gravado) => gravado.canal ?? opcoes.canalPadrao);
 
   /**
    * A versão para onde "Voltar" leva: a anterior baixada ou, sem ela, a empacotada. Nenhuma quando é a
    * versão de que se acabou de voltar (a recusada): voltar de novo seria ir para a frente.
    */
-  const versaoParaVoltar = (): string | null => {
+  const versaoParaVoltar = Effect.gen(function* () {
     if (opcoes.abertura.origem !== "baixada") return null;
-    const anterior =
-      (NodeFS.existsSync(c.anterior) ? lerInfoBanco(c.anterior)?.versao : undefined) ??
-      lerInfoBanco(opcoes.bancoEmpacotado)?.versao ??
-      null;
-    return anterior !== null && anterior === lerEstado(opcoes.pasta).recusada ? null : anterior;
-  };
+    const anterior = lerInfoBanco(c.anterior)?.versao ?? lerInfoBanco(opcoes.bancoEmpacotado)?.versao ?? null;
+    return anterior !== null && anterior === (yield* lerGravado).recusada ? null : anterior;
+  });
 
   const estado = Effect.gen(function* () {
     const m = yield* Ref.get(memoria);
-    const gravado = lerEstado(opcoes.pasta);
+    const gravado = yield* lerGravado;
     const info = opcoes.abertura.info;
     const situacao: SituacaoAtualizacao =
       m.situacao === "parada" && (gravado.pendente !== undefined || gravado.skillsPendentes !== undefined)
@@ -108,7 +106,7 @@ export const make = Effect.fn("Atualizador.make")(function* (opcoes: Opcoes) {
         : m.situacao;
     return {
       desligada: opcoes.desligada,
-      canal: canalAtual(),
+      canal: yield* canalAtual,
       situacao,
       erro: m.erro,
       aviso: m.aviso,
@@ -120,7 +118,7 @@ export const make = Effect.fn("Atualizador.make")(function* (opcoes: Opcoes) {
         origem:
           opcoes.desligada !== null && opcoes.abertura.origem === "empacotada" ? "externa" : opcoes.abertura.origem,
       },
-      anterior: gravado.voltar === true ? null : versaoParaVoltar(),
+      anterior: gravado.voltar === true ? null : yield* versaoParaVoltar,
       pendente: gravado.pendente?.versao ?? null,
       skills: gravado.skills ?? "empacotadas",
       skillsPendentes: gravado.skillsPendentes ?? null,
@@ -135,23 +133,19 @@ export const make = Effect.fn("Atualizador.make")(function* (opcoes: Opcoes) {
 
   const conferir = Effect.gen(function* () {
     if (opcoes.desligada !== null || opcoes.feed === null || opcoes.chave === null) return;
-    const canal = canalAtual();
+    const canal = yield* canalAtual;
     const feed = opcoes.feed;
     const chave = opcoes.chave;
     yield* Ref.set(memoria, { situacao: "conferindo", erro: null, aviso: null });
-    const agora = DateTime.formatIso(yield* DateTime.now);
     const resultado = yield* atualizarUmaVez({
       feed,
       canal,
       chave,
-      agora,
-      contexto: {
-        pasta: opcoes.pasta,
-        versaoApp: opcoes.versaoApp,
-        baseEmUso: { caminho: opcoes.abertura.banco, info: opcoes.abertura.info },
-        versoesSkills: opcoes.versoesSkills,
-        ...(opcoes.prazo === undefined ? {} : { prazo: opcoes.prazo }),
-      },
+      pasta: opcoes.pasta,
+      versaoApp: opcoes.versaoApp,
+      abertura: opcoes.abertura,
+      versoesSkills: opcoes.versoesSkills,
+      ...(opcoes.prazo === undefined ? {} : { prazo: opcoes.prazo }),
     }).pipe(Effect.provideContext(servicos), Effect.result);
     if (resultado._tag === "Failure") {
       // A mensagem vem dos atributos do erro (o host, nunca a URL do feed): vai ao log e à interface.
@@ -178,20 +172,20 @@ export const make = Effect.fn("Atualizador.make")(function* (opcoes: Opcoes) {
   const procurar = uma.withPermits(1)(conferir).pipe(Effect.andThen(estado));
 
   const trocar = Effect.fn("Atualizador.trocar")(function* (pedido: "aplicar" | "voltar") {
-    const gravado = lerEstado(opcoes.pasta);
+    const gravado = yield* lerGravado;
     if (pedido === "aplicar" && gravado.pendente === undefined && gravado.skillsPendentes === undefined) {
       return { resultado: "nada", mensagem: "Não há atualização baixada esperando." } satisfies ResultadoTroca;
     }
     if (pedido === "voltar" && opcoes.abertura.origem !== "baixada") {
       return { resultado: "nada", mensagem: "A base em uso já é a que veio com o app." } satisfies ResultadoTroca;
     }
-    if (pedido === "voltar" && versaoParaVoltar() === null) {
+    if (pedido === "voltar" && (yield* versaoParaVoltar) === null) {
       return {
         resultado: "nada",
         mensagem: "A versão anterior é a de que você acabou de voltar. Espere uma versão mais nova da base.",
       } satisfies ResultadoTroca;
     }
-    if (pedido === "voltar") gravarEstado(opcoes.pasta, { ...gravado, voltar: true });
+    if (pedido === "voltar") yield* gravar({ ...gravado, voltar: true });
     if (yield* opcoes.ocupado) {
       return {
         resultado: "adiada",
@@ -214,18 +208,19 @@ export const make = Effect.fn("Atualizador.make")(function* (opcoes: Opcoes) {
     estado,
     procurar,
     trocarCanal: Effect.fn("Atualizador.trocarCanal")(function* (canal: CanalAtualizacao) {
-      gravarEstado(opcoes.pasta, { ...lerEstado(opcoes.pasta), canal });
+      yield* gravar({ ...(yield* lerGravado), canal });
       yield* Ref.set(memoria, { situacao: "parada", erro: null, aviso: null });
       return yield* estado;
     }),
     aplicar: trocar("aplicar"),
     voltar: trocar("voltar"),
-    novidadesVistas: Effect.sync(() => {
-      const gravado = lerEstado(opcoes.pasta);
+    novidadesVistas: Effect.gen(function* () {
+      const gravado = yield* lerGravado;
       if (gravado.novidades !== undefined) {
-        gravarEstado(opcoes.pasta, { ...gravado, novidades: { ...gravado.novidades, vista: true } });
+        yield* gravar({ ...gravado, novidades: { ...gravado.novidades, vista: true } });
       }
-    }).pipe(Effect.andThen(estado)),
+      return yield* estado;
+    }),
   });
 });
 
