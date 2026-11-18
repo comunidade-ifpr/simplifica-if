@@ -62,6 +62,8 @@ pnpm fabrica publicar --canal beta --versao 2026.11.20 --repositorio dono/repo -
 pnpm fabrica publicar-app --canal beta --versao 0.2.0 --repositorio dono/repo [--executar]  # depois do dist do desktop
 ```
 
+`SIMPLIFICA_MINISIGN_CHAVE` e `SIMPLIFICA_MINISIGN_SENHA` vêm do ambiente ou, na falta, do `.env.local` da raiz, pelo `Config` dos scripts (`scripts/configuracao.ts`); a senha fica redigida até a leitura da chave. Cada subcomando aceita só as próprias opções (`pnpm fabrica <subcomando> --help`), e os comandos `gh` saem de funções puras testadas em `scripts/fabrica_atualizacao.test.ts`.
+
 `canal` (só o beta) compila o `kb.sqlite` **do commit**, não do disco: extrai as fontes por `git archive HEAD` numa pasta à parte (0,3 s; arquivo não rastreado, ignorado ou modificado fica de fora) e roda o `kb` dela, com `--versao` e `--commit` e **sem canal no `meta`** (o canal é do manifesto; a mesma base vale para os dois canais). Recusa fonte fora de `FONTES_PUBLICAVEIS`, faz o pacote inteiro (zstd 19), um patch de cada uma das três versões anteriores guardadas em `tmp/fabrica/bases/` (e das dadas em `--anterior`), um pacote por skill do app (também do commit) e o manifesto assinado, com as novidades da versão (o `novidades.yaml` do commit precisa ser só de acréscimos desde a última versão publicada).
 
 `promover` passa uma versão do beta ao estável sem recompilar: confere o manifesto do beta, troca o canal e o `gerado_em`, assina de novo e grava só `estavel.json` e a assinatura. Os pacotes são os mesmos, no mesmo release `base-<versao>`, com os mesmos sha256; por isso o canal precisa ter sido gerado com `--repositorio` (pacotes com `url`). O `publicar` de uma promoção só troca o manifesto no release do canal.

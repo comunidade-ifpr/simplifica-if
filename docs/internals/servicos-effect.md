@@ -125,7 +125,7 @@ O repositório inteiro está na stack do Effect, mas nem todo código precisa se
 - **I/O.** Arquivo, processo, rede e banco passam pelos serviços da plataforma: `FileSystem` e `Path` (`effect/FileSystem`, `effect/Path`), `ChildProcess` e `ChildProcessSpawner` (`effect/process`), `HttpClient` (`effect/http`), `SqlClient` (`effect/sql`, sobre o `nodeSqliteClient` de `packages/kb/src/db/`). As implementações do Node vêm de `@effect/platform-node` (`NodeServices.layer` junta `FileSystem`, `Path`, `ChildProcessSpawner`, `Stdio` e `Terminal`; `NodeHttpClient` para HTTP). Nada de `node:fs`, `node:child_process` ou `fetch` direto em código novo de serviço; os testes trocam a layer, não o módulo.
 - **Erros esperados.** Uma falha que o chamador trata (arquivo ausente, entrada inválida, resposta HTTP de erro, credencial que falta) vira `Schema.TaggedError` no canal de erro, não `throw`, `try/catch` ou Promise rejeitada. `throw` sobra para defeito: o que não deveria acontecer.
 - **Recursos com ciclo de vida.** O que se abre e se fecha (conexão de banco, processo filho, servidor HTTP, navegador do Playwright, arquivo temporário, lock) usa `Effect.acquireRelease` dentro de um `Scope`, ou `Layer.effect` com finalizador. Exemplo: o banco do PPC avulso em `packages/kb/src/db/pacote-contexto.ts`.
-- **Configuração e ambiente.** Variáveis de ambiente e segredos entram por `Config` (`Config.String`, `Config.Redacted`, `Config.option`), como em `scripts/suap/cliente.ts`. O segredo fica `Redacted` até o ponto de uso, o que o mantém fora de log e de erro.
+- **Configuração e ambiente.** Variáveis de ambiente e segredos entram por `Config` (`Config.String`, `Config.Redacted`, `Config.option`), como em `scripts/suap/cliente.ts`. O segredo fica `Redacted` até o ponto de uso, o que o mantém fora de log e de erro. Nos scripts, o `ConfigProvider` é um só, o de `scripts/configuracao.ts`, que `executarPrincipal` instala: o ambiente e, na falta, o `.env.local` da raiz, sem gravar no `process.env`. O `sei-cli` faz o mesmo no ponto de entrada, com o `.env.local` do diretório atual.
 - **Concorrência e prazo.** Trabalho em paralelo usa `Effect.forEach(..., { concurrency })`, `Effect.all` ou `Stream`; prazo usa `Effect.timeout`, `Effect.timeoutOption` (como `Relatos.preparar`) ou `Schedule` para nova tentativa. Não `Promise.all`, `AbortSignal.timeout` nem `setTimeout` à mão, porque eles escapam da interrupção e do `TestClock`.
 - **CLIs e scripts.** Um script novo, ou um script que muda de verdade, tem ponto de entrada Effect: `executarPrincipal(nome, programa)` de `scripts/principal.ts` (sobre `NodeRuntime.runMain` e `NodeServices.layer`), com argumentos e flags do `effect/cli` (`Command`, `Argument`, `Flag`), como `scripts/suap_coletar_matrizes.ts` e a CLI `kb`. O pipeline da base (`gerar_base`, `validar_base`, `gerar_site` e os outros) segue esse modelo, e os arquivos gerados passam por `aplicarGerados` (`scripts/base/gerados.ts`), que grava ou, no `--check`, só confere. Arquivo, processo e caminho vêm de `FileSystem`, `ChildProcess` e `Path`, e a data, de `Clock` ou `DateTime`, para que a saída não dependa do relógio quando não deve.
 
@@ -144,6 +144,8 @@ Armadilhas que as conversões deste repositório já encontraram:
 - **"Nunca falha" precisa de `catchCause`.** Um finalizador ou um passo que só registra no log trata a causa inteira (falha e defeito) e deixa a interrupção passar; dois finalizadores independentes são dois `Effect.ensuring`, para o segundo rodar se o primeiro morrer.
 - **Diagnóstico sem `cause` na mensagem.** Quem traduz a falha põe na mensagem o que é seguro e útil: o código do sistema (`EACCES`, `ENOSPC`), o recurso relativo (arquivo dentro da base, ref, host), a categoria. A saída bruta (stderr, `cause.message`) fica em `cause` ou num log ao lado.
 - **`Schema.Struct` descarta chave desconhecida em silêncio.** Onde perder dado importa (resposta de IA, registro), decodifique com `onExcessProperty: "error"`. E texto gerado por IA escreve `null` em campo opcional: aceite-o como ausente (`Schema.NullOr` normalizado), em vez de recusar a resposta inteira.
+- **`FileSystem.exists` só devolve `false` para `NotFound`.** `ENOTDIR` (um `.DS_Store` onde se esperava uma pasta), `EISDIR` e `ELOOP` viram `PlatformError`; o `try/catch` antigo que filtrava códigos errno precisa virar um `stat` com o tipo conferido, ou a leitura das entradas com tipo.
+- **Biblioteca síncrona que lança.** Um `unzipSync`, um parser ou um decodificador de terceiros dentro de `Effect.fn` vira defeito; o `catch` amplo da versão antiga às vezes era uma degradação de propósito (o snapshot do SEI seguia sem o ZIP), e precisa voltar como `Effect.try` com erro tipado e o mesmo tratamento.
 - **Garantia do sistema operacional não vira checagem prévia.** `rmdir` (falha se a pasta não está vazia), `unlink` e `open` com `O_EXCL|O_NOFOLLOW` protegem contra corrida; trocá-los por "conferir e depois `remove`" abre uma janela. Onde o `FileSystem` do Effect não oferece a primitiva, ela fica num adaptador Node pequeno, com o motivo ao lado.
 
 ## Testes
@@ -179,10 +181,9 @@ O resto desta página é revisão: posição da lógica, forma do módulo, atrib
 
 Código anterior a esta página que não segue alguma regra. Não é achado num PR que não o toca; entra na revisão de arquitetura:
 
-- `Effect.runPromise` fora de ponto de entrada em `scripts/fabrica_atualizacao.ts`;
 - a leitura da base com `node:fs` síncrono nos `carregar*` e em `scripts/base/validacao/`, chamada de dentro dos programas Effect do pipeline da base;
-- `packages/atualizacao`, `packages/ppc` e `packages/docx` são quase todos funções comuns; parte é pura e fica assim, parte faz I/O e é candidata a serviço;
-- 14 testes registram casos num `for` (avisos de `no-test-in-loop` no `pnpm lint`).
+- o adaptador do Playwright do `sei-cli` (`packages/sei-cli/src/infra/sei/`) fica em Promise, de propósito, mas os laços de prazo com `Date.now()` (`arvore.ts`, `login.ts`) e a espera com `setTimeout` (`pagina.ts`) escapam do `Clock` e da interrupção;
+- testes que ainda registram casos num `for` (os avisos de `no-test-in-loop` no `pnpm lint`).
 
 ## Antes de concluir
 

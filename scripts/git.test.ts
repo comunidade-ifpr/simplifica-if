@@ -23,6 +23,8 @@ describe("git", () => {
 
         yield* Git.executar(["init", "--quiet"], { cwd: pasta });
         assert.strictEqual(yield* Git.executar(["rev-parse", "--is-inside-work-tree"], { cwd: pasta }), "true\n");
+        const bytes = yield* Git.executarBytes(["rev-parse", "--is-inside-work-tree"], { cwd: pasta });
+        assert.deepStrictEqual(bytes, new TextEncoder().encode("true\n"));
       }),
     ).pipe(Effect.provide(NodeServices.layer)),
   );
