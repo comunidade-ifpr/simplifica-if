@@ -8,13 +8,14 @@ import * as NodeChildProcess from "node:child_process";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { afterEach, describe, expect, it, layer, test } from "@effect/vitest";
 import * as Effect from "effect/Effect";
+import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import { casefold } from "@simplifica-if/kb/primitivas/texto";
 import type { Dicionario } from "@simplifica-if/kb/primitivas/valores";
 import { caminhosPadrao } from "../scripts/caminhos.ts";
-import type { Criticidade } from "../scripts/esquemas.ts";
+import { type Criticidade, esquemaAlertaTransversal, esquemaResultadoFicha } from "../scripts/esquemas.ts";
 import { desescaparAtributo } from "../scripts/eventos-html.ts";
 import { prepararDocumento } from "../scripts/preparar-documento.ts";
 import { lerReferenciasIdentificacao } from "../scripts/referencias-identificacao.ts";
@@ -704,6 +705,69 @@ describe("gerar-relatorio-html", () => {
       expect(html).toContain("Feedback sugerido aos autores");
       expect(html).toContain(texto);
       expect(html).toContain("Feedback aos autores");
+    }),
+  );
+});
+
+/** Resultado e alerta sintéticos com `null` em todos os campos opcionais. */
+const CAMPOS_NULOS = JSON.parse(
+  NodeFS.readFileSync(NodePath.join(import.meta.dirname, "fixtures", "resultados-campos-nulos.json"), "utf-8"),
+) as { resultados: Dicionario[]; alertas_transversais: Dicionario[] };
+
+/** Cópia sem as chaves com `null`, em qualquer nível. */
+function semNulos(valor: unknown): unknown {
+  if (Array.isArray(valor)) return valor.map(semNulos);
+  if (valor && typeof valor === "object") {
+    return Object.fromEntries(
+      Object.entries(valor)
+        .filter(([, item]) => item !== null)
+        .map(([chave, item]) => [chave, semNulos(item)]),
+    );
+  }
+  return valor;
+}
+
+/** Os resultados completos com o resultado e o alerta da fixture no lugar. */
+function payloadComCamposNulos(): Payload {
+  const payload = payloadResultadosCompletos();
+  const [nulo] = CAMPOS_NULOS.resultados;
+  for (const grupo of payload.grupos) {
+    grupo.resultados = grupo.resultados.map((item) => (item.ficha_id === nulo!.ficha_id ? nulo! : item));
+  }
+  payload.alertas_transversais = CAMPOS_NULOS.alertas_transversais;
+  return payload;
+}
+
+describe("campos opcionais com null", () => {
+  test("a decodificação tira as chaves com null", () => {
+    const resultado = Schema.decodeUnknownSync(esquemaResultadoFicha)(CAMPOS_NULOS.resultados[0]);
+    expect(resultado).not.toHaveProperty("fundamentacao_normativa");
+    expect(resultado).not.toHaveProperty("feedback_autores");
+    expect(resultado.evidencias).toEqual([
+      { trecho: "Curso: Curso Técnico em Informática", localizador: "Capa" },
+      {
+        trecho: "O curso apresenta objetivos",
+        secao: "1. Apresentação",
+        fonte: "PPC.md",
+        anchor: { block_id: "ppc-b00004" },
+      },
+    ]);
+    const alerta = Schema.decodeUnknownSync(esquemaAlertaTransversal)(CAMPOS_NULOS.alertas_transversais[0]);
+    expect(Object.keys(alerta).sort()).toEqual(["descricao", "revisao_humana_obrigatoria", "titulo", "validacao_id"]);
+  });
+
+  test("null em campo obrigatório continua recusado", () => {
+    const resultado = { ...CAMPOS_NULOS.resultados[0], justificativa: null };
+    expect(() => Schema.decodeUnknownSync(esquemaResultadoFicha)(resultado)).toThrow();
+  });
+
+  it.effect("gerar-relatorio-html aceita null e gera o mesmo HTML que sem as chaves", () =>
+    Effect.gen(function* () {
+      const comNulos = yield* gerar(criarRodada(), payloadComCamposNulos());
+      const semAsChaves = yield* gerar(criarRodada(), semNulos(payloadComCamposNulos()));
+      expect(comNulos).toBe(semAsChaves);
+      expect(comNulos).toContain('id="ALERTA-001"');
+      expect(comNulos).toContain("Resultado sintético com null nos campos opcionais.");
     }),
   );
 });

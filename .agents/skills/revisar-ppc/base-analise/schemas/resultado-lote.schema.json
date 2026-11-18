@@ -47,31 +47,87 @@
                   "type": "object",
                   "properties": {
                     "trecho": {
-                      "type": "string"
-                    },
-                    "secao": {
-                      "type": "string"
-                    },
-                    "localizador": {
-                      "type": "string"
-                    },
-                    "fonte": {
-                      "type": "string"
-                    },
-                    "artefato": {
-                      "type": "string"
-                    },
-                    "anchor": {
-                      "type": "object",
-                      "properties": {
-                        "block_id": {
+                      "anyOf": [
+                        {
                           "type": "string"
                         },
-                        "quote": {
-                          "type": "string"
+                        {
+                          "type": "null"
                         }
-                      },
-                      "additionalProperties": true
+                      ]
+                    },
+                    "secao": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "localizador": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "fonte": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "artefato": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "anchor": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "block_id": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "quote": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          },
+                          "additionalProperties": true
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
                     }
                   },
                   "additionalProperties": true
@@ -89,52 +145,115 @@
             "type": "boolean"
           },
           "fundamentacao_normativa": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "enum": [
-                    "CONFIRMADA",
-                    "CONFIRMADA_COM_RESSALVA",
-                    "IMPRECISA",
-                    "SEM_SUPORTE_NA_FONTE",
-                    "CONTRADITORIA",
-                    "FONTE_AUSENTE_OU_NAO_CONSULTADA",
-                    "NAO_NORMATIVA"
-                  ]
-                },
-                "trecho_ppc": {
-                  "type": "string"
-                },
-                "norma": {
-                  "type": "string"
-                },
-                "fonte": {
-                  "type": "string"
-                },
-                "dispositivo": {
-                  "type": "string"
-                },
-                "evidencia": {
-                  "type": "string"
-                },
-                "analise": {
-                  "type": "string"
-                },
-                "recomendacao": {
-                  "type": "string"
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "CONFIRMADA",
+                        "CONFIRMADA_COM_RESSALVA",
+                        "IMPRECISA",
+                        "SEM_SUPORTE_NA_FONTE",
+                        "CONTRADITORIA",
+                        "FONTE_AUSENTE_OU_NAO_CONSULTADA",
+                        "NAO_NORMATIVA"
+                      ]
+                    },
+                    "trecho_ppc": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "norma": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "fonte": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "dispositivo": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "evidencia": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "analise": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "recomendacao": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ],
+                  "additionalProperties": true
                 }
               },
-              "required": [
-                "status"
-              ],
-              "additionalProperties": true
-            }
+              {
+                "type": "null"
+              }
+            ]
           },
           "feedback_autores": {
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [

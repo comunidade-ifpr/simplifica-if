@@ -11,7 +11,14 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "validacao_id": {
             "type": "string"
@@ -20,64 +27,141 @@
             "type": "string"
           },
           "criticidade": {
-            "type": "string",
-            "enum": [
-              "BLOQ",
-              "OBRIG",
-              "REC"
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "BLOQ",
+                  "OBRIG",
+                  "REC"
+                ]
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "descricao": {
             "type": "string"
           },
           "fichas_relacionadas": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "evidencias": {
-            "type": "array",
-            "items": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "trecho": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "anyOf": [
+                    {
                       "type": "string"
                     },
-                    "secao": {
-                      "type": "string"
-                    },
-                    "localizador": {
-                      "type": "string"
-                    },
-                    "papel": {
-                      "type": "string"
-                    },
-                    "fonte": {
-                      "type": "string"
-                    },
-                    "anchor": {
+                    {
                       "type": "object",
                       "properties": {
-                        "block_id": {
-                          "type": "string"
+                        "trecho": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         },
-                        "quote": {
-                          "type": "string"
+                        "secao": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "localizador": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "papel": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "fonte": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "anchor": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "block_id": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "quote": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                }
+                              },
+                              "additionalProperties": true
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
                         }
                       },
                       "additionalProperties": true
                     }
-                  },
-                  "additionalProperties": true
+                  ]
                 }
-              ]
-            }
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "revisao_humana_obrigatoria": {
             "type": "boolean"

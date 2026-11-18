@@ -17,8 +17,11 @@
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
+import * as Option from "effect/Option";
+import * as Predicate from "effect/Predicate";
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
+import * as SchemaTransformation from "effect/SchemaTransformation";
 import * as Struct from "effect/Struct";
 import { problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { jsonIndentado, type ObjetoJson } from "@simplifica-if/kb/json";
@@ -181,10 +184,27 @@ export const esquemaValidacaoCruzada = Schema.Struct({
   estados_permitidos: Schema.Array(Schema.Literals(ESTADOS)),
 });
 
+/**
+ * Campo opcional dos sub-agentes em que `null` vale como ausente (`"artefato": null` é comum nas
+ * rodadas): a decodificação tira a chave, e o resto do código nunca vê `null`. No JSON Schema, o
+ * campo aceita o tipo ou `null`.
+ */
+function opcional<S extends Schema.Top>(esquema: S) {
+  return Schema.optionalKey(Schema.NullOr(esquema)).pipe(
+    Schema.decodeTo(
+      Schema.optionalKey(Schema.toType(esquema)),
+      SchemaTransformation.transformOptional<S["Type"], S["Type"] | null>({
+        decode: Option.filter(Predicate.isNotNull),
+        encode: (valor) => valor,
+      }),
+    ),
+  );
+}
+
 /** Âncora de uma evidência no relatório: o bloco do PPC e o trecho a destacar. */
 const ancoraEvidencia = Schema.Struct({
-  block_id: Schema.optionalKey(Schema.String),
-  quote: Schema.optionalKey(Schema.String),
+  block_id: opcional(Schema.String),
+  quote: opcional(Schema.String),
 });
 
 /**
@@ -194,12 +214,12 @@ const ancoraEvidencia = Schema.Struct({
 export const esquemaEvidenciaResultado = Schema.Union([
   Schema.String,
   Schema.Struct({
-    trecho: Schema.optionalKey(Schema.String),
-    secao: Schema.optionalKey(Schema.String),
-    localizador: Schema.optionalKey(Schema.String),
-    fonte: Schema.optionalKey(Schema.String),
-    artefato: Schema.optionalKey(Schema.String),
-    anchor: Schema.optionalKey(ancoraEvidencia),
+    trecho: opcional(Schema.String),
+    secao: opcional(Schema.String),
+    localizador: opcional(Schema.String),
+    fonte: opcional(Schema.String),
+    artefato: opcional(Schema.String),
+    anchor: opcional(ancoraEvidencia),
   }),
 ]);
 
@@ -216,13 +236,13 @@ export const STATUS_FUNDAMENTACAO_NORMATIVA = [
 
 export const esquemaFundamentacaoNormativa = Schema.Struct({
   status: Schema.Literals(STATUS_FUNDAMENTACAO_NORMATIVA),
-  trecho_ppc: Schema.optionalKey(Schema.String),
-  norma: Schema.optionalKey(Schema.String),
-  fonte: Schema.optionalKey(Schema.String),
-  dispositivo: Schema.optionalKey(Schema.String),
-  evidencia: Schema.optionalKey(Schema.String),
-  analise: Schema.optionalKey(Schema.String),
-  recomendacao: Schema.optionalKey(Schema.String),
+  trecho_ppc: opcional(Schema.String),
+  norma: opcional(Schema.String),
+  fonte: opcional(Schema.String),
+  dispositivo: opcional(Schema.String),
+  evidencia: opcional(Schema.String),
+  analise: opcional(Schema.String),
+  recomendacao: opcional(Schema.String),
 });
 
 /** Confiança do sub-agente no estado, de 0 a 1. */
@@ -236,8 +256,8 @@ export const esquemaResultadoFicha = Schema.Struct({
   evidencias: Schema.Array(esquemaEvidenciaResultado),
   lacunas: textos,
   revisao_humana_obrigatoria: Schema.Boolean,
-  fundamentacao_normativa: Schema.optionalKey(Schema.Array(esquemaFundamentacaoNormativa)),
-  feedback_autores: Schema.optionalKey(Schema.String),
+  fundamentacao_normativa: opcional(Schema.Array(esquemaFundamentacaoNormativa)),
+  feedback_autores: opcional(Schema.String),
 });
 
 export const esquemaResultadoLote = Schema.Struct({
@@ -250,24 +270,24 @@ export const esquemaResultadoLote = Schema.Struct({
 const evidenciaAlerta = Schema.Union([
   Schema.String,
   Schema.Struct({
-    trecho: Schema.optionalKey(Schema.String),
-    secao: Schema.optionalKey(Schema.String),
-    localizador: Schema.optionalKey(Schema.String),
-    papel: Schema.optionalKey(Schema.String),
-    fonte: Schema.optionalKey(Schema.String),
-    anchor: Schema.optionalKey(ancoraEvidencia),
+    trecho: opcional(Schema.String),
+    secao: opcional(Schema.String),
+    localizador: opcional(Schema.String),
+    papel: opcional(Schema.String),
+    fonte: opcional(Schema.String),
+    anchor: opcional(ancoraEvidencia),
   }),
 ]);
 
 /** Alerta da síntese transversal; sem `id`, ele é `ALERTA-<posição>`, e sem `criticidade`, `OBRIG`. */
 export const esquemaAlertaTransversal = Schema.Struct({
-  id: Schema.optionalKey(Schema.String),
+  id: opcional(Schema.String),
   validacao_id: Schema.String,
   titulo: Schema.String,
-  criticidade: Schema.optionalKey(Schema.Literals(CRITICIDADES)),
+  criticidade: opcional(Schema.Literals(CRITICIDADES)),
   descricao: Schema.String,
-  fichas_relacionadas: Schema.optionalKey(textos),
-  evidencias: Schema.optionalKey(Schema.Array(evidenciaAlerta)),
+  fichas_relacionadas: opcional(textos),
+  evidencias: opcional(Schema.Array(evidenciaAlerta)),
   revisao_humana_obrigatoria: Schema.Boolean,
 });
 

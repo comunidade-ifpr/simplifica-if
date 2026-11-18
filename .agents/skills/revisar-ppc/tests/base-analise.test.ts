@@ -116,7 +116,7 @@ describe("validador em casos inválidos", () => {
     expect(validarBaseAnalise(c)).toEqual([
       `${arquivo}: $.resultados[0].confianca: esperava um valor menor ou igual a 1`,
       `${arquivo}: $.resultados[0].evidencias[0]: esperava um texto ou um objeto`,
-      `${arquivo}: $.resultados[0].evidencias[1].secao: esperava um texto`,
+      `${arquivo}: $.resultados[0].evidencias[1].secao: esperava um texto ou nulo`,
     ]);
   });
 
