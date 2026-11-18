@@ -108,7 +108,7 @@ interface PonteDesktop {
 
 **Revisão prévia de PPC (M1.11).** `escolherDocx` abre o diálogo com o filtro `.docx` e confere a extensão de novo (o filtro pode ser contornado com "Todos os arquivos"); o processo principal guarda os arquivos escolhidos nesta execução. Depois do diálogo, o processo principal libera o arquivo no servidor (`POST /revisao-ppc/liberar` com o `tokenDesktop`, um segundo segredo gerado a cada partida e passado só no envelope), e o servidor só revisa arquivos liberados. `abrirDocumento` (`shell.openPath`) e `mostrarNaPasta` (`shell.showItemInFolder`) só aceitam a cópia comentada de um deles: mesma pasta, `<nome> - revisão prévia (Simplifica IF).docx` ou com ` (2)` a ` (99)`, caminho normalizado e arquivo comum (não link, não pasta), por `copiaComentadaPermitida` de `src/seguranca.ts`. Assim a interface não abre outro arquivo do computador por esse caminho.
 
-O contrato está em `src/ponteDesktop.ts`; a interface tem a cópia dela em `apps/web/src/ponte-desktop.ts`. O token nunca vai para log.
+O contrato (`PonteDesktop`, os canais do IPC, os caminhos do servidor, a variável do token, `EXTENSOES_DOCUMENTO` e a `LinhaPartida`) está em `@simplifica-if/contratos-app/ponte`, um módulo sem nenhum import: o processo principal, o preload e a interface o importam, e o `main.cjs` continua sem o Effect. O token nunca vai para log.
 
 ## Segurança da janela
 
@@ -136,7 +136,7 @@ No desenvolvimento, a janela carrega o dev server sem CSP: o Vite precisa de scr
 - `src/configuracao.ts`: de onde vêm o servidor, a base, a interface, a pasta de estado e a de skills; sem Electron.
 - `src/seguranca.ts`: CSP, navegação, links externos e arquivos do protocolo; sem Electron.
 - `src/registro.ts`: o arquivo de log, com o giro em 5 MB; sem Electron.
-- `src/preload.ts`, `src/ponteDesktop.ts`: a ponte e o contrato.
+- `src/preload.ts`: a ponte (o contrato está em `@simplifica-if/contratos-app/ponte`).
 - `scripts/construir.ts`, `scripts/empacotar.ts`, `scripts/skills.ts` (as skills do app no pacote), `scripts/dev.ts`, `scripts/gerar-icone.ts`.
 - `scripts/t3/`: cópia do T3 (`ensure-electron-runtime.mjs`), com `NOTICE`.
 

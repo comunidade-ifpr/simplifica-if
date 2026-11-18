@@ -20,35 +20,6 @@ export class FalhaPasta extends Schema.TaggedError<FalhaPasta>()("FalhaPasta", {
 }
 export const ehFalhaPasta = Schema.is(FalhaPasta);
 
-/**
- * As extensões de documento que a pasta da tarefa aceita no "Anexar" e que "Abrir" abre no programa
- * padrão: Word e ODF atuais, PDF, texto, planilhas, apresentações, JSON e imagens. Nada que o sistema
- * execute, nem os formatos antigos com macro (`.doc`, `.xls`). O desktop tem uma cópia (o teste confere).
- */
-export const EXTENSOES_DOCUMENTO = [
-  ".docx",
-  ".odt",
-  ".rtf",
-  ".pdf",
-  ".md",
-  ".txt",
-  ".csv",
-  ".xlsx",
-  ".ods",
-  ".pptx",
-  ".odp",
-  ".json",
-  ".png",
-  ".jpg",
-  ".jpeg",
-] as const;
-
-/** O arquivo tem extensão de documento (`EXTENSOES_DOCUMENTO`)? */
-export const ehExtensaoDocumento = (nome: string): boolean => {
-  const ponto = nome.lastIndexOf(".");
-  return ponto > 0 && (EXTENSOES_DOCUMENTO as ReadonlyArray<string>).includes(nome.slice(ponto).toLowerCase());
-};
-
 /** Um arquivo da pasta de trabalho da conversa. */
 export const ArquivoPasta = Schema.Struct({
   /** O caminho relativo à pasta, com `/`. */

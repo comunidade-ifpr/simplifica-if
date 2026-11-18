@@ -17,7 +17,7 @@
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import type { EstadoAtualizacaoApp } from "./ponteDesktop.ts";
+import type { EstadoAtualizacaoApp } from "@simplifica-if/contratos-app/ponte";
 
 /** O arquivo que o empacotamento grava em `Resources`: `{ "assinado": boolean }`. */
 export const ARQUIVO_ASSINATURA = "assinatura.json";

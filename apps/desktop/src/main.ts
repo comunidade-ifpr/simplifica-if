@@ -42,10 +42,9 @@ import {
 } from "./atualizacaoApp.ts";
 import { ESQUEMA, HOST_APP, resolverConfiguracao, VARIAVEIS, type Configuracao } from "./configuracao.ts";
 import { corFundoJanela, opcoesBarraTitulo } from "./janela.ts";
-import { CANAIS, type Conexao } from "./ponteDesktop.ts";
+import { CAMINHO_LIBERAR_ARQUIVO, CANAIS, type CredenciaisServidor } from "@simplifica-if/contratos-app/ponte";
 import { abrirLog } from "./registro.ts";
 import {
-  CAMINHO_LIBERAR_ARQUIVO,
   anexoEscolhido,
   arquivoDeTarefaPermitido,
   copiaComentadaPermitida,
@@ -125,7 +124,7 @@ const configuracao: Configuracao = resolverConfiguracao({
 /* ============================================================ servidor */
 
 let servidor: ServidorEmExecucao | undefined;
-let conexaoAtual: Promise<Conexao> | undefined;
+let conexaoAtual: Promise<CredenciaisServidor> | undefined;
 let janela: BrowserWindow | undefined;
 /** O app está saindo: a queda do servidor não é erro. */
 let saindo = false;
@@ -155,7 +154,7 @@ async function ambienteComProxy(): Promise<NodeJS.ProcessEnv> {
 }
 
 /** Inicia o servidor e guarda a conexão. A janela recebe a conexão quando ele fica pronto. */
-function subirServidor(ambiente: NodeJS.ProcessEnv): Promise<Conexao> {
+function subirServidor(ambiente: NodeJS.ProcessEnv): Promise<CredenciaisServidor> {
   const token = gerarToken();
   // Só do processo principal: a janela recebe o `token`, nunca este.
   tokenDesktop = gerarToken();
@@ -183,7 +182,7 @@ function subirServidor(ambiente: NodeJS.ProcessEnv): Promise<Conexao> {
       if (eraAtual) servidor = undefined;
       if (!saindo && eraAtual) void aoCairServidor(`O servidor saiu (${descreverSaida(saida)}).`, iniciado.stderr());
     });
-    return { urlServidor: `http://127.0.0.1:${iniciado.linha.porta}`, token } satisfies Conexao;
+    return { urlServidor: `http://127.0.0.1:${iniciado.linha.porta}`, token } satisfies CredenciaisServidor;
   });
   // A falha se trata em quem espera; aqui só não fica sem tratamento.
   conexao.catch(() => undefined);

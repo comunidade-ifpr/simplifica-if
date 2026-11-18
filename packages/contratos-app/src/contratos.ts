@@ -10,6 +10,9 @@
  *   têm nome com prefixo, como os `WS_METHODS` do T3: `cliente["conversa.enviar"]({ … })`.
  * - A partida do servidor e a autenticação do WebSocket (`EnvelopePartida`, `LinhaPartida`, ingresso):
  *   `partida.ts`.
+ * - O que o desktop, o preload e a interface combinam sem Effect (caminhos HTTP, variável do token,
+ *   extensões de documento, `PonteDesktop`, canais do IPC): `ponte.ts`, exportado à parte como
+ *   `@simplifica-if/contratos-app/ponte`, sem nenhum import. Daqui saem só as constantes.
  *
  * Cada grupo fica no seu arquivo (`providers.ts`, `conversa.ts`, `relato.ts`, `skills.ts`, `pasta.ts`,
  * `revisao-ppc.ts`, `atualizacao.ts`, `preferencias.ts`); este só os reúne no `GrupoApp`.
@@ -78,6 +81,16 @@ export type {
   TipoResultado,
 };
 
+export {
+  CAMINHO_INGRESSO,
+  CAMINHO_LIBERAR_ARQUIVO,
+  CAMINHO_RPC,
+  EXTENSOES_DOCUMENTO,
+  ehExtensaoDocumento,
+  SUFIXO_REVISAO_PREVIA,
+  TAMANHO_MINIMO_TOKEN,
+  VARIAVEL_TOKEN,
+} from "./ponte.ts";
 export * from "./atualizacao.ts";
 export * from "./conversa.ts";
 export * from "./partida.ts";

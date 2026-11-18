@@ -6,7 +6,8 @@
  */
 import * as NodeStream from "node:stream";
 import * as Schema from "effect/Schema";
-import { EnvelopePartida, LinhaPartida, TAMANHO_MINIMO_TOKEN, VARIAVEL_TOKEN } from "@simplifica-if/contratos-app";
+import { EnvelopePartida, LinhaPartida } from "@simplifica-if/contratos-app";
+import { TAMANHO_MINIMO_TOKEN, VARIAVEL_TOKEN } from "@simplifica-if/contratos-app/ponte";
 import { describe, expect, test } from "vite-plus/test";
 import {
   decodificarLinhaPartida,
@@ -15,7 +16,6 @@ import {
   iniciarServidor,
   lerPrimeiraLinha,
   montarInicio,
-  VARIAVEL_TOKEN as VARIAVEL_TOKEN_DESKTOP,
   type Inicio,
 } from "../src/servidor.ts";
 
@@ -34,10 +34,6 @@ describe("token", () => {
     expect(Buffer.from(token, "base64url")).toHaveLength(32);
     expect(token.length).toBeGreaterThanOrEqual(TAMANHO_MINIMO_TOKEN);
     expect(new Set(Array.from({ length: 20 }, gerarToken)).size).toBe(20);
-  });
-
-  test("a variável do token é a do contrato", () => {
-    expect(VARIAVEL_TOKEN_DESKTOP).toBe(VARIAVEL_TOKEN);
   });
 });
 

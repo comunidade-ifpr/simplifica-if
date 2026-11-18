@@ -13,12 +13,7 @@
  * na URL.
  */
 import * as Schema from "effect/Schema";
-
-/** O caminho do WebSocket do RPC. */
-export const CAMINHO_RPC = "/rpc";
-
-/** O caminho que troca o token (`Authorization: Bearer`) por um ingresso do WebSocket (`POST`). */
-export const CAMINHO_INGRESSO = "/ingresso";
+import { TAMANHO_MINIMO_TOKEN, type LinhaPartida as FormaLinhaPartida } from "./ponte.ts";
 
 /** O parâmetro da URL do WebSocket com o ingresso, para o cliente que não manda cabeçalho (navegador). */
 export const PARAMETRO_INGRESSO = "ingresso";
@@ -33,12 +28,6 @@ export const Ingresso = Schema.Struct({
   expiraEm: Schema.Number,
 });
 export type Ingresso = typeof Ingresso.Type;
-
-/** A variável de ambiente com o token, a alternativa ao `EnvelopePartida` no stdin. */
-export const VARIAVEL_TOKEN = "SIMPLIFICA_SERVIDOR_TOKEN";
-
-/** Menor token aceito: 32 caracteres (o desktop gera 32 bytes aleatórios, em base64url). */
-export const TAMANHO_MINIMO_TOKEN = 32;
 
 export const TokenServidor = Schema.String.check(Schema.isMinLength(TAMANHO_MINIMO_TOKEN));
 
@@ -62,10 +51,10 @@ export const EnvelopePartida = Schema.Struct({
 });
 export type EnvelopePartida = typeof EnvelopePartida.Type;
 
-/** `POST` com `Authorization: Bearer <tokenDesktop>` e `{ "arquivo": "<caminho absoluto>" }`: libera o arquivo. */
-export const CAMINHO_LIBERAR_ARQUIVO = "/revisao-ppc/liberar";
-
-/** A linha JSON que o servidor imprime no stdout quando está pronto; é a única coisa no stdout. */
+/**
+ * A linha JSON que o servidor imprime no stdout quando está pronto; é a única coisa no stdout. A forma
+ * é a de `ponte.ts`, que o desktop decodifica sem Effect.
+ */
 export const LinhaPartida = Schema.Struct({
   servidor: Schema.Literal("simplifica-if"),
   pid: Schema.Number,
@@ -74,5 +63,5 @@ export const LinhaPartida = Schema.Struct({
   rpc: Schema.String,
   /** `http://127.0.0.1:<porta MCP>/mcp`, o servidor MCP `ifpr` das sessões. */
   mcp: Schema.String,
-});
+}) satisfies Schema.Codec<FormaLinhaPartida>;
 export type LinhaPartida = typeof LinhaPartida.Type;
