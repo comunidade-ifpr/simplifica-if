@@ -20,7 +20,7 @@ describe("upstream_t3", () => {
         assert.include(nomes, "effect-codex-app-server");
         assert.include(nomes, "nodeSqliteClient");
         const plugin = partes.find((parte) => parte.nome === "plugin de lint");
-        assert.strictEqual(plugin?.origem.length, 11);
+        assert.strictEqual(plugin?.origem.length, 15);
         for (const parte of partes) {
           assert.match(parte.commit, /^[0-9a-f]{40}$/);
           assert.match(parte.data, /^\d{4}-\d{2}-\d{2}$/);

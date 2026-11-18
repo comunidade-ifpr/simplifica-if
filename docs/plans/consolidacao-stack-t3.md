@@ -117,7 +117,7 @@ O agente que atualizar uma versão roda `pnpm sync:repos` (C0) para trazer `.rep
 
 ## Convenções Effect neste repositório
 
-Resumo adaptado de `docs/internals/effect-services.md` do T3 (`$T3CODE_DIR/docs/internals/effect-services.md`, no checkout local do T3 Code). Leia o original antes do C1. Para a biblioteca, leia `.repos/effect/LLMS.md` e, para dúvidas de API, o código em `.repos/effect/packages/effect/src/`.
+As regras em vigor estão em [`docs/internals/servicos-effect.md`](../internals/servicos-effect.md); este resumo registra o que valia durante a migração. Resumo adaptado de `docs/internals/effect-services.md` do T3 (`$T3CODE_DIR/docs/internals/effect-services.md`, no checkout local do T3 Code). Leia o original antes do C1. Para a biblioteca, leia `.repos/effect/LLMS.md` e, para dúvidas de API, o código em `.repos/effect/packages/effect/src/`.
 
 **Onde mora cada coisa**
 

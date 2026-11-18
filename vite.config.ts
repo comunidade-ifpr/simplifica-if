@@ -179,9 +179,14 @@ export default defineConfig({
           "simplifica-if/namespace-node-imports": "error",
           "simplifica-if/no-global-process-runtime": "error",
           "simplifica-if/no-inline-schema-compile": "error",
-          // Estas três só agem em arquivos de teste (a própria regra confere o nome do arquivo).
+          // Estas só agem em arquivos de teste (a própria regra confere o nome do arquivo).
+          "simplifica-if/no-dom-test-environment": "error",
+          "simplifica-if/no-frame-waits-in-browser-tests": "error",
           "simplifica-if/no-manual-effect-runtime-in-tests": "error",
+          "simplifica-if/no-polling-loop-in-tests": "error",
           "simplifica-if/no-real-time-wait-in-tests": "error",
+          // Aviso: 14 testes antigos registram casos num `for` (docs/internals/servicos-effect.md, "Testes").
+          "simplifica-if/no-test-in-loop": "warn",
           "simplifica-if/no-wall-clock-in-tests": "error",
           "simplifica-if/prefer-catch-tags": "error",
           "simplifica-if/prefer-effect-fn": "error",
