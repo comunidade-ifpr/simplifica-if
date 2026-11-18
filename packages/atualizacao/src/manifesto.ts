@@ -8,10 +8,10 @@
  * fábrica escreve `url: "../base-2026.11.13/base-2026.11.13.sqlite.zst"`. Num servidor de teste,
  * tudo pode ficar na mesma pasta, sem `url`.
  */
+import { CANAIS_DISTRIBUICAO } from "@simplifica-if/kb/canal";
 import * as Schema from "effect/Schema";
 
-export const CANAIS = ["beta", "estavel"] as const;
-export const Canal = Schema.Literals(CANAIS);
+export const Canal = Schema.Literals(CANAIS_DISTRIBUICAO);
 export type Canal = typeof Canal.Type;
 
 /** Versão da base e das datas mínimas: `AAAA.MM.DD`, com um sufixo `.N` opcional para mais de uma no dia. */

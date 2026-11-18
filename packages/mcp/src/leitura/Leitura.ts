@@ -15,8 +15,9 @@ import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
-import { type Base, CANAIS, type Canal, type ErroDeLeitura, FalhaNaBase, type Resposta } from "../contratos.ts";
-import { type MetaEnvelope, montarBase, responder } from "../envelope.ts";
+import type { Canal } from "@simplifica-if/kb/canal";
+import { type Base, type ErroDeLeitura, FalhaNaBase, type Resposta } from "../contratos.ts";
+import { montarBase, responder } from "../envelope.ts";
 import type * as AdequacaoArt71 from "../ferramentas/adequacao-art71.ts";
 import type * as BuscarNorma from "../ferramentas/buscar-norma.ts";
 import type * as BuscarSecoes from "../ferramentas/buscar-secoes.ts";
@@ -48,17 +49,6 @@ import type * as Conteudos from "../recursos/conteudos.ts";
 type Metodo<E extends { readonly Type: unknown }, D extends { readonly Type: unknown }> = (
   entrada: E["Type"],
 ) => Effect.Effect<Resposta<D["Type"]>, ErroDeLeitura>;
-
-/** O canal registrado no banco não é um dos do simplifica-mcp. */
-export class CanalDesconhecido extends Schema.TaggedError<CanalDesconhecido>()("CanalDesconhecido", {
-  canal: Schema.String,
-}) {
-  override get message(): string {
-    return `canal da base desconhecido: ${this.canal} (esperado: ${CANAIS.join(", ")})`;
-  }
-}
-
-export const ehCanalDesconhecido = Schema.is(CanalDesconhecido);
 
 export class Leitura extends Context.Service<
   Leitura,
@@ -105,8 +95,6 @@ const linhasCampus = Sql.todas(
 );
 const linhasTipo = Sql.todas(Schema.Struct({ tipo: Schema.String }));
 
-const ehCanal = Schema.is(Schema.Literals(CANAIS));
-
 /** As falhas do banco viram `FalhaNaBase`; a entrada inválida passa como está. */
 function naBase<A, E extends { readonly _tag: string }>(
   efeito: Effect.Effect<A, E>,
@@ -136,9 +124,7 @@ const comFalhaNaBase = <
 
 const make = Effect.fn("Leitura.make")(function* (opcoes: { readonly canal: Canal }) {
   const { meta } = yield* BaseKb.BaseKb;
-  if (meta.canal !== null && !ehCanal(meta.canal)) return yield* new CanalDesconhecido({ canal: meta.canal });
-  const metaEnvelope: MetaEnvelope = { ...meta, canal: meta.canal };
-  const base = montarBase(metaEnvelope, opcoes.canal);
+  const base = montarBase(meta, opcoes.canal);
 
   // `sobre_a_base`: o conteúdo do banco não muda com o servidor no ar
   const niveis = (yield* linhasNivel(

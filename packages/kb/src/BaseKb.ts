@@ -14,12 +14,9 @@ import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
 import * as NodeSqliteClient from "./db/nodeSqliteClient.ts";
 import * as Sql from "./db/sql.ts";
+import { CANAIS, type Canal } from "./canal.ts";
 import { VERSAO_ESQUEMA } from "./db/esquema.ts";
 import { formatarErro } from "./esquema/mensagens.ts";
-
-/** Canais de distribuição do build (`meta.canal`). */
-export const CANAIS = ["piloto", "beta", "estavel", "dev"] as const;
-export type Canal = (typeof CANAIS)[number];
 
 export class BaseIncompativel extends Schema.TaggedError<BaseIncompativel>()("BaseIncompativel", {
   /** `esquema`: `versao_esquema` diferente; `meta`: tabela `meta` ausente ou fora do formato. */

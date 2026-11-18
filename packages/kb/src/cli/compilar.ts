@@ -1,7 +1,7 @@
 /**
  * `kb compilar`: compila o `kb.sqlite` a partir dos arquivos do checkout (`pnpm kb:compilar`).
  *
- *   pnpm kb:compilar [--destino tmp/kb.sqlite] [--versao 2026.11.13] [--commit <sha>] [--canal piloto]
+ *   pnpm kb:compilar [--destino tmp/kb.sqlite] [--versao 2026.11.13] [--commit <sha>] [--canal beta]
  *
  * Sem `--destino`, grava em `KB_SQLITE` ou em `<raiz>/tmp/kb.sqlite`. Compila sempre, sem conferir
  * se o banco já está fresco: usa só o `Compilador`, não a layer do repositório.
@@ -13,7 +13,9 @@ import * as FileSystem from "effect/FileSystem";
 import * as Option from "effect/Option";
 import * as Path from "effect/Path";
 import * as Command from "effect/cli/Command";
+import * as Flag from "effect/cli/Flag";
 import * as Digest from "effect/crypto/Digest";
+import { CANAIS } from "../canal.ts";
 import * as Compilador from "../Compilador.ts";
 import { flagTexto, imprimir, raiz } from "./comum.ts";
 
@@ -23,9 +25,9 @@ export const compilar = Command.make(
     destino: flagTexto("destino", "arquivo do banco (padrão: KB_SQLITE ou tmp/kb.sqlite)"),
     versao: flagTexto("versao", "versão do build gravada em meta, como 2026.11.13"),
     commit: flagTexto("commit", "SHA das fontes gravado em meta"),
-    canal: flagTexto(
-      "canal",
-      "canal de distribuição gravado em meta (beta, estavel, dev; piloto, o nome antigo do beta)",
+    canal: Flag.Literals("canal", CANAIS).pipe(
+      Flag.withDescription(`canal gravado em meta: ${CANAIS.join(", ")}`),
+      Flag.optional,
     ),
   },
   Effect.fn("kb.compilar")(

@@ -5,14 +5,12 @@
  * schemas das ferramentas MCP (`./toolkit`) e do grupo RPC (`./rpc`); o fork os importa daqui
  * (`@simplifica-if/mcp/contratos`).
  */
+import { CANAIS } from "@simplifica-if/kb/canal";
 import * as Schema from "effect/Schema";
 
 export type { Link } from "./links.ts";
 
 /* ================================================================== envelope */
-
-export const CANAIS = ["dev", "beta", "estavel"] as const;
-export type Canal = (typeof CANAIS)[number];
 
 const TIPOS_AVISO = [
   "vigencia-a-confirmar",

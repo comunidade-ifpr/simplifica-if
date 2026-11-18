@@ -33,6 +33,7 @@ import * as NodePath from "node:path";
 import * as NodeUtil from "node:util";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Effect from "effect/Effect";
+import { CANAIS_DISTRIBUICAO } from "@simplifica-if/kb/canal";
 import { arquivosFonte } from "@simplifica-if/kb/db/fontes";
 import { lerPastaSkills } from "@simplifica-if/mcp/skills";
 import {
@@ -51,13 +52,7 @@ import {
 } from "@simplifica-if/atualizacao/hospedagem";
 import { fontesNaoClassificadas } from "@simplifica-if/atualizacao/fontes";
 import { lerInfoBanco } from "@simplifica-if/atualizacao/local";
-import {
-  arquivoManifesto,
-  type Canal,
-  CANAIS,
-  compararVersoes,
-  SUFIXO_ASSINATURA,
-} from "@simplifica-if/atualizacao/manifesto";
+import { arquivoManifesto, type Canal, compararVersoes, SUFIXO_ASSINATURA } from "@simplifica-if/atualizacao/manifesto";
 import {
   escreverChavePublica,
   escreverChaveSecreta,
@@ -423,7 +418,7 @@ async function principal() {
     },
   });
   const canalDado = values.canal as Canal;
-  if (!CANAIS.includes(canalDado)) falhar(`--canal ${CANAIS.join(" ou ")}`);
+  if (!CANAIS_DISTRIBUICAO.includes(canalDado)) falhar(`--canal ${CANAIS_DISTRIBUICAO.join(" ou ")}`);
   switch (comando) {
     case "gerar-chave":
       return gerarChave(values.saida ?? falhar("--saida <pasta fora do repositório>"));
@@ -443,8 +438,12 @@ async function principal() {
         executar: values.executar,
       });
     case "promover":
-      if (![values.de ?? "beta", values.para ?? "estavel"].every((c) => (CANAIS as readonly string[]).includes(c))) {
-        return falhar(`--de e --para: ${CANAIS.join(" ou ")}`);
+      if (
+        ![values.de ?? "beta", values.para ?? "estavel"].every((c) =>
+          (CANAIS_DISTRIBUICAO as readonly string[]).includes(c),
+        )
+      ) {
+        return falhar(`--de e --para: ${CANAIS_DISTRIBUICAO.join(" ou ")}`);
       }
       return promover({
         de: (values.de ?? "beta") as Canal,

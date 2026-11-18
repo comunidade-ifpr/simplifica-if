@@ -36,7 +36,7 @@ import * as CliError from "effect/cli/CliError";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
 import { prepararAtualizacao } from "./atualizacao.ts";
-import { CANAIS, type Canal } from "./contratos.ts";
+import { CANAIS, CANAIS_DISTRIBUICAO, type Canal } from "@simplifica-if/kb/canal";
 import * as Leitura from "./leitura/Leitura.ts";
 import { layerStdio, mensagemDeAbertura, MENSAGEM_INCOMPATIVEL, VERSAO_PACOTE } from "./servidor.ts";
 
@@ -111,7 +111,7 @@ const comando = Command.make(
       Flag.withFallbackConfig(Config.String("SIMPLIFICA_ATUALIZACAO_CHAVE")),
       Flag.optional,
     ),
-    canalAtualizacao: Flag.Literals("canal-atualizacao", ["beta", "estavel"]).pipe(
+    canalAtualizacao: Flag.Literals("canal-atualizacao", CANAIS_DISTRIBUICAO).pipe(
       Flag.withDescription("canal da atualização (padrão: beta)"),
       Flag.withDefault("beta"),
     ),
@@ -171,7 +171,7 @@ const relatarFalha = (causa: Cause.Cause<unknown>): Effect.Effect<void> => {
   if (Option.isNone(erro)) return Console.error(Cause.pretty(causa));
   const valor = erro.value;
   if (CliError.isCliError(valor)) return Effect.void;
-  if (BaseKb.ehBaseAusente(valor) || BaseKb.ehBaseIncompativel(valor) || Leitura.ehCanalDesconhecido(valor)) {
+  if (BaseKb.ehBaseAusente(valor) || BaseKb.ehBaseIncompativel(valor)) {
     return Console.error(`simplifica-mcp: ${mensagemDeAbertura(valor)}`);
   }
   if (Sql.ehFalhaNaConsulta(valor))

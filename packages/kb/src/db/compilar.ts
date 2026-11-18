@@ -2,7 +2,7 @@
 /**
  * Compila o `kb.sqlite` a partir dos arquivos do checkout (fase 6 do plano).
  *
- *   pnpm kb:compilar [--destino tmp/kb.sqlite] [--versao 2026.11.13] [--commit <sha>] [--canal piloto]
+ *   pnpm kb:compilar [--destino tmp/kb.sqlite] [--versao 2026.11.13] [--commit <sha>] [--canal beta]
  *
  * O serviço `Compilador` orquestra (temporário, renomeação, mtime); aqui ficam as partes síncronas:
  * `prepararCompilacao` (fontes e impressão digital), `preencherBanco` e `bancoDoPpcAvulso`.
@@ -23,6 +23,7 @@ import * as NodePath from "node:path";
 import * as NodeSqlite from "node:sqlite";
 import { expansaoDoTipo, lerSinonimos, type Sinonimos } from "../busca/sinonimos.ts";
 import { radicais } from "../busca/tokens.ts";
+import type { Canal } from "../canal.ts";
 import { cruzarPpcSuap } from "../fatos/divergencias.ts";
 import { extrairFatosPpc, type SecaoDoPpc } from "../fatos/ppc.ts";
 import {
@@ -76,11 +77,11 @@ export interface OpcoesCompilacao {
   topicosSecoes?: TopicosSecoes;
   /**
    * Identificação do build, gravada em `meta` só quando informada (sem ela, o banco depende só das
-   * fontes): `versao` (como `2026.11.13`), `commit` (o SHA das fontes) e `canal` (`piloto`...).
+   * fontes): `versao` (como `2026.11.13`), `commit` (o SHA das fontes) e `canal` (`dev`, `beta` ou `estavel`).
    */
   versao?: string;
   commit?: string;
-  canal?: string;
+  canal?: Canal;
 }
 
 export interface ResumoCompilacao {
@@ -566,7 +567,7 @@ export interface ContextoPreenchimento {
   /** Identificação da distribuição gravada em `meta` (só quando informada). */
   versao?: string | undefined;
   commit?: string | undefined;
-  canal?: string | undefined;
+  canal?: Canal | undefined;
 }
 
 /** Esquema, carga de todas as tabelas, `optimize` do FTS5 e `VACUUM`; devolve as contagens por tabela. */
