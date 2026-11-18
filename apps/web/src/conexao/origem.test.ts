@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest";
-import type { PonteDesktop } from "../ponte-desktop.ts";
+import type { PonteDesktop } from "@simplifica-if/contratos-app/ponte";
 import { normalizarUrlServidor, resolverOrigem } from "./origem.ts";
 
 const sem = { ponte: undefined, busca: "", sessao: null, ambiente: {} } as const;

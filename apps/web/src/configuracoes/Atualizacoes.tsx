@@ -18,7 +18,8 @@ import { Button } from "../components/ui/button.tsx";
 import { Spinner } from "../components/ui/spinner.tsx";
 import { explicarErro, type MensagemErro } from "../conexao/erros.ts";
 import { useApi } from "../contexto.tsx";
-import { type EstadoAtualizacaoApp, ponteDesktop } from "../ponte-desktop.ts";
+import type { EstadoAtualizacaoApp } from "@simplifica-if/contratos-app/ponte";
+import { ponteDesktop } from "../ponte-desktop.ts";
 import {
   avisoSemConfirmacao,
   descreverBase,

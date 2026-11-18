@@ -6,16 +6,11 @@
 import { describe, expect, test } from "vite-plus/test";
 import { ORIGEM_APP, resolverConfiguracao, URL_APP, type Entrada } from "../src/configuracao.ts";
 import * as NodeCrypto from "node:crypto";
-import {
-  CAMINHO_LIBERAR_ARQUIVO as LIBERAR_CONTRATO,
-  EXTENSOES_DOCUMENTO as EXTENSOES_CONTRATO,
-  SUFIXO_REVISAO_PREVIA as SUFIXO_CONTRATO,
-} from "@simplifica-if/contratos-app";
+import { EXTENSOES_DOCUMENTO } from "@simplifica-if/contratos-app/ponte";
 import {
   anexoEscolhido,
   arquivoDeTarefaPermitido,
   copiaComentadaPermitida,
-  EXTENSOES_DOCUMENTO,
   extensoesAnexo,
   docxEscolhido,
   hashesScriptsInline,
@@ -23,8 +18,6 @@ import {
   politicaConteudo,
   resolverArquivo,
   tipoConteudo,
-  CAMINHO_LIBERAR_ARQUIVO,
-  SUFIXO_REVISAO_PREVIA,
   urlExternaSegura,
 } from "../src/seguranca.ts";
 
@@ -200,11 +193,6 @@ describe("segurança da janela", () => {
 describe("revisão prévia: o que a interface pode abrir", () => {
   const escolhidos = new Set(["/Users/ana/PPCs/PPC Agro.docx"]);
 
-  test("o sufixo é o do contrato", () => {
-    expect(SUFIXO_REVISAO_PREVIA).toBe(SUFIXO_CONTRATO);
-    expect(CAMINHO_LIBERAR_ARQUIVO).toBe(LIBERAR_CONTRATO);
-  });
-
   test("só .docx com caminho absoluto sai do diálogo", () => {
     expect(docxEscolhido("/Users/ana/PPCs/PPC Agro.DOCX")).toBe("/Users/ana/PPCs/PPC Agro.DOCX");
     expect(docxEscolhido("/Users/ana/PPCs/PPC Agro.pdf")).toBeUndefined();
@@ -240,8 +228,7 @@ describe("revisão prévia: o que a interface pode abrir", () => {
 describe("pasta das tarefas (M1.9): o que a interface pode anexar, abrir e mostrar", () => {
   const raiz = "/Users/x/Documents/Simplifica IF";
 
-  test("a lista de extensões é a do contrato, sem os formatos com macro", () => {
-    expect([...EXTENSOES_DOCUMENTO]).toEqual([...EXTENSOES_CONTRATO]);
+  test("a lista de extensões não tem os formatos com macro", () => {
     expect(EXTENSOES_DOCUMENTO).not.toContain(".doc");
     expect(EXTENSOES_DOCUMENTO).not.toContain(".xls");
   });

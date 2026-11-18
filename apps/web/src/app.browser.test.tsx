@@ -20,7 +20,7 @@ import {
   simularInstalacaoClaude,
 } from "../test/navegador.tsx";
 import { ALTURA_BARRA_TITULO } from "./barra-titulo.ts";
-import type { PonteDesktop } from "./ponte-desktop.ts";
+import type { PonteDesktop } from "@simplifica-if/contratos-app/ponte";
 
 let servidor: ServidorTeste;
 

@@ -14,11 +14,13 @@ import { assert, describe, it } from "@effect/vitest";
 
 const AJUDANTE = NodePath.resolve(import.meta.dirname, "modulos-carregados.mjs");
 const CONTRATOS = NodeURL.pathToFileURL(NodePath.resolve(import.meta.dirname, "../src/contratos.ts")).href;
+/** `@simplifica-if/contratos-app/ponte`, que o processo principal do desktop (sem Effect) importa. */
+const PONTE = NodeURL.pathToFileURL(NodePath.resolve(import.meta.dirname, "../src/ponte.ts")).href;
 
 /**
  * A única exceção do kb: `@simplifica-if/kb/canal`, a lista de canais que o schema `Base.canal` do
  * `mcp/contratos.ts` usa. É um módulo folha, só com constantes e sem import, como os schemas de
- * `motor/src/erros.ts`, `eventos.ts` e `estados-provider.ts` que este teste já aceita do motor. O segundo teste confere que
+ * `motor/src/erros.ts`, `eventos.ts` e `estados-provider.ts` que este teste já aceita do motor. O último teste confere que
  * ele continua sem import, para a exceção não crescer.
  */
 const CANAL_KB = NodePath.resolve(import.meta.dirname, "../../kb/src/canal.ts");
@@ -44,6 +46,11 @@ describe("contratos do app sem código de servidor", () => {
       .filter((url) => !PERMITIDOS.includes(url))
       .flatMap((url) => PROIBIDOS.filter(([padrao]) => padrao.test(url)).map(([, motivo]) => `${motivo}: ${url}`));
     assert.deepStrictEqual(achados, []);
+  });
+
+  it("o módulo ponte não carrega nada além dele: o bundle do desktop não arrasta o Effect", () => {
+    const saida = NodeChildProcess.execFileSync(process.execPath, [AJUDANTE, PONTE], { encoding: "utf8" });
+    assert.deepStrictEqual(JSON.parse(saida), [PONTE]);
   });
 
   it("a exceção do kb, canal.ts, é um módulo folha: não importa nada", () => {

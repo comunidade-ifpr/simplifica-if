@@ -75,7 +75,7 @@ Em vez dos parâmetros na URL, o `vp dev` também lê `VITE_SIMPLIFICA_SERVIDOR`
 
 ## Conexão
 
-1. **De onde vêm as credenciais** (`src/conexao/origem.ts`): no desktop, de `window.simplifica.conexao()` (o `preload`; contrato em `src/ponte-desktop.ts`), chamada a cada conexão; no navegador, de `?servidor=…&token=…` ou das variáveis `VITE_`.
+1. **De onde vêm as credenciais** (`src/conexao/origem.ts`): no desktop, de `window.simplifica.conexao()` (o `preload`; contrato em `@simplifica-if/contratos-app/ponte`, e `src/ponte-desktop.ts` o lê de `window`), chamada a cada conexão; no navegador, de `?servidor=…&token=…` ou das variáveis `VITE_`.
 2. **Ingresso** (`src/conexao/ingresso.ts`): `POST /ingresso` com o token no `Authorization` e depois `ws://127.0.0.1:<porta>/rpc?ingresso=…`. O ingresso vale uma conexão só; o token nunca vai numa URL.
 3. **Reconexão** (`src/conexao/Conexao.ts`): o protocolo do `effect/rpc` não reabre o socket; quando ele cai (ou o ping passa de 15 s), o laço pede as credenciais de novo, compra outro ingresso e abre outro socket, com espera de 0,5 s a 10 s. As chamadas feitas sem conexão esperam a próxima; as que estavam em andamento falham, e a conversa no servidor fica órfã por 2 minutos à espera de ser adotada.
 4. **Interface** (`src/conexao/api.ts`, `src/contexto.tsx`): `api.chamar`, `api.acompanhar` (streams) e o estado da conexão para o React. A conversa vive fora do React (`src/conversa/ControleConversa.ts`, com o redutor puro `src/conversa/estado.ts`) e sobrevive à troca de tela.

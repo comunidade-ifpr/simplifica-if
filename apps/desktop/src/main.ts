@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off globalTimers:off globalDate:off globalFetch:off -- processo principal do Electron, sem runtime Effect (ver README)
+// @effect-diagnostics nodeBuiltinImport:off globalTimers:off globalDate:off -- processo principal do Electron, sem runtime Effect (ver README)
 /**
  * O processo principal do Simplifica IF (Electron). Desenho do `apps/desktop` do T3 Code, reduzido ao
  * que o app faz:
@@ -13,23 +13,13 @@
  *
  * O token nunca vai para log, linha de comando nem ambiente: só no stdin do servidor e na resposta do
  * IPC à janela do app.
+ *
+ * Este arquivo guarda o estado (o servidor, a janela, a atualização) e o ciclo de vida; os canais do
+ * IPC ficam em `ipc.ts`, o protocolo `simplifica://` em `protocolo.ts` e o menu em `menu.ts`.
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import {
-  app,
-  BrowserWindow,
-  dialog,
-  ipcMain,
-  Menu,
-  nativeTheme,
-  protocol,
-  session,
-  shell,
-  type IpcMainInvokeEvent,
-  type MenuItemConstructorOptions,
-  type WebContents,
-} from "electron";
+import { app, BrowserWindow, dialog, Menu, nativeTheme, session, shell, type WebContents } from "electron";
 import { ATUALIZACAO_FABRICA } from "@simplifica-if/motor/politica-atualizacao";
 import { autoUpdater } from "electron-updater";
 import {
@@ -40,24 +30,14 @@ import {
   proxyParaServidor,
   type ControleAtualizacaoApp,
 } from "./atualizacaoApp.ts";
-import { ESQUEMA, HOST_APP, resolverConfiguracao, VARIAVEIS, type Configuracao } from "./configuracao.ts";
+import { resolverConfiguracao, VARIAVEIS, type Configuracao } from "./configuracao.ts";
+import { registrarIpc } from "./ipc.ts";
 import { corFundoJanela, opcoesBarraTitulo } from "./janela.ts";
-import { CANAIS, type Conexao } from "./ponteDesktop.ts";
+import { CANAIS, type CredenciaisServidor } from "@simplifica-if/contratos-app/ponte";
+import { menuAplicacao } from "./menu.ts";
+import { registrarPrivilegiosEsquema, registrarProtocolo } from "./protocolo.ts";
 import { abrirLog } from "./registro.ts";
-import {
-  CAMINHO_LIBERAR_ARQUIVO,
-  anexoEscolhido,
-  arquivoDeTarefaPermitido,
-  copiaComentadaPermitida,
-  extensoesAnexo,
-  docxEscolhido,
-  hashesScriptsInline,
-  isSameOriginRendererNavigation,
-  politicaConteudo,
-  resolverArquivo,
-  tipoConteudo,
-  urlExternaSegura,
-} from "./seguranca.ts";
+import { isSameOriginRendererNavigation, urlExternaSegura } from "./seguranca.ts";
 import { gerarToken, iniciarServidor, montarInicio, type Saida, type ServidorEmExecucao } from "./servidor.ts";
 
 const NOME = "Simplifica IF";
@@ -94,20 +74,7 @@ const paraStderrELog = (texto: string) => {
 
 const registrar = (mensagem: string) => paraStderrELog(`${new Date().toISOString()} [desktop] ${mensagem}\n`);
 
-// T3: apps/desktop/src/electron/ElectronProtocol.ts (registerDesktopSchemePrivilegesSync) — antes do `ready`.
-protocol.registerSchemesAsPrivileged([
-  {
-    scheme: ESQUEMA,
-    privileges: {
-      standard: true,
-      secure: true,
-      supportFetchAPI: true,
-      corsEnabled: true,
-      stream: true,
-      codeCache: true,
-    },
-  },
-]);
+registrarPrivilegiosEsquema();
 
 const configuracao: Configuracao = resolverConfiguracao({
   empacotado: app.isPackaged,
@@ -125,7 +92,9 @@ const configuracao: Configuracao = resolverConfiguracao({
 /* ============================================================ servidor */
 
 let servidor: ServidorEmExecucao | undefined;
-let conexaoAtual: Promise<Conexao> | undefined;
+let conexaoAtual: Promise<CredenciaisServidor> | undefined;
+/** O segredo do processo principal com o servidor desta execução (`EnvelopePartida.tokenDesktop`). */
+let tokenDesktop: string | undefined;
 let janela: BrowserWindow | undefined;
 /** O app está saindo: a queda do servidor não é erro. */
 let saindo = false;
@@ -155,7 +124,7 @@ async function ambienteComProxy(): Promise<NodeJS.ProcessEnv> {
 }
 
 /** Inicia o servidor e guarda a conexão. A janela recebe a conexão quando ele fica pronto. */
-function subirServidor(ambiente: NodeJS.ProcessEnv): Promise<Conexao> {
+function subirServidor(ambiente: NodeJS.ProcessEnv): Promise<CredenciaisServidor> {
   const token = gerarToken();
   // Só do processo principal: a janela recebe o `token`, nunca este.
   tokenDesktop = gerarToken();
@@ -183,7 +152,7 @@ function subirServidor(ambiente: NodeJS.ProcessEnv): Promise<Conexao> {
       if (eraAtual) servidor = undefined;
       if (!saindo && eraAtual) void aoCairServidor(`O servidor saiu (${descreverSaida(saida)}).`, iniciado.stderr());
     });
-    return { urlServidor: `http://127.0.0.1:${iniciado.linha.porta}`, token } satisfies Conexao;
+    return { urlServidor: `http://127.0.0.1:${iniciado.linha.porta}`, token } satisfies CredenciaisServidor;
   });
   // A falha se trata em quem espera; aqui só não fica sem tratamento.
   conexao.catch(() => undefined);
@@ -239,19 +208,6 @@ async function iniciar(): Promise<void> {
 }
 
 /* ============================================================ janela */
-
-/** Só a janela do app, no quadro principal e na origem da interface, recebe o token. */
-function remetenteConfiavel(evento: IpcMainInvokeEvent): boolean {
-  const quadro = evento.senderFrame;
-  return (
-    janela !== undefined &&
-    !janela.isDestroyed() &&
-    evento.sender === janela.webContents &&
-    quadro !== null &&
-    quadro === evento.sender.mainFrame &&
-    isSameOriginRendererNavigation({ applicationUrl: configuracao.urlJanela, navigationUrl: quadro.url })
-  );
-}
 
 function abrirNoNavegador(url: string): void {
   const segura = urlExternaSegura(url);
@@ -352,20 +308,6 @@ function sincronizarAparencia(): void {
   if (titleBarOverlay !== undefined) janela.setTitleBarOverlay(titleBarOverlay);
 }
 
-/* ============================================================ IPC */
-
-ipcMain.handle(CANAIS.telaCheia, (evento) => {
-  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
-  return janela?.isFullScreen() ?? false;
-});
-
-ipcMain.handle(CANAIS.conexao, async (evento) => {
-  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
-  tentativasCarga = 0;
-  if (conexaoAtual === undefined) throw new Error("o servidor local ainda não foi iniciado");
-  return conexaoAtual;
-});
-
 /* ============================================================ atualização (M1.10) */
 
 let atualizacaoApp: ControleAtualizacaoApp | undefined;
@@ -421,244 +363,22 @@ async function reiniciarServidor(): Promise<void> {
   await iniciar();
 }
 
-ipcMain.handle(CANAIS.reiniciarServidor, async (evento) => {
-  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
-  await reiniciarServidor();
+/* ============================================================ IPC (`ipc.ts`) */
+
+registrarIpc({
+  urlJanela: configuracao.urlJanela,
+  pastaTrabalhos: configuracao.pastaTrabalhos,
+  janela: () => janela,
+  conexao: () => {
+    tentativasCarga = 0;
+    if (conexaoAtual === undefined) throw new Error("o servidor local ainda não foi iniciado");
+    return conexaoAtual;
+  },
+  conexaoAtual: () => conexaoAtual,
+  tokenDesktop: () => tokenDesktop,
+  reiniciarServidor,
+  atualizacaoApp: () => atualizacaoApp,
 });
-
-ipcMain.handle(CANAIS.atualizacaoApp, async (evento) => {
-  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
-  if (atualizacaoApp === undefined) throw new Error("a atualização do app ainda não começou");
-  return atualizacaoApp.estado();
-});
-
-ipcMain.handle(CANAIS.procurarAtualizacaoApp, async (evento) => {
-  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
-  if (atualizacaoApp === undefined) throw new Error("a atualização do app ainda não começou");
-  return atualizacaoApp.procurar();
-});
-
-ipcMain.handle(CANAIS.instalarAtualizacaoApp, async (evento) => {
-  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
-  atualizacaoApp?.instalar();
-});
-
-ipcMain.handle(CANAIS.abrirExterno, async (evento, url: unknown) => {
-  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
-  const segura = urlExternaSegura(url);
-  if (segura === undefined) throw new Error("só links http e https abrem no navegador");
-  await shell.openExternal(segura);
-});
-
-ipcMain.handle(CANAIS.escolherPasta, async (evento) => {
-  if (!remetenteConfiavel(evento) || janela === undefined) throw new Error("pedido recusado");
-  const escolha = await dialog.showOpenDialog(janela, {
-    title: "Escolher pasta",
-    buttonLabel: "Escolher",
-    properties: ["openDirectory", "createDirectory"],
-  });
-  return escolha.canceled ? null : (escolha.filePaths[0] ?? null);
-});
-
-/** Os `.docx` escolhidos no diálogo nesta execução: só as cópias comentadas deles abrem pelo app. */
-const docxEscolhidos = new Set<string>();
-
-/** O segredo do processo principal com o servidor desta execução (`EnvelopePartida.tokenDesktop`). */
-let tokenDesktop: string | undefined;
-
-/** Libera no servidor o arquivo escolhido: sem isso, a revisão prévia o recusa. */
-async function liberarNoServidor(arquivo: string): Promise<void> {
-  if (conexaoAtual === undefined || tokenDesktop === undefined) throw new Error("o servidor local não está pronto");
-  const { urlServidor } = await conexaoAtual;
-  const resposta = await fetch(`${urlServidor}${CAMINHO_LIBERAR_ARQUIVO}`, {
-    method: "POST",
-    headers: { authorization: `Bearer ${tokenDesktop}`, "content-type": "application/json" },
-    body: JSON.stringify({ arquivo }),
-  });
-  if (resposta.status !== 204) throw new Error(`o servidor não liberou o arquivo (${resposta.status})`);
-}
-
-ipcMain.handle(CANAIS.escolherDocx, async (evento) => {
-  if (!remetenteConfiavel(evento) || janela === undefined) throw new Error("pedido recusado");
-  const escolha = await dialog.showOpenDialog(janela, {
-    title: "Escolher o PPC (.docx)",
-    buttonLabel: "Revisar",
-    properties: ["openFile"],
-    filters: [{ name: "Documento do Word", extensions: ["docx"] }],
-  });
-  // O filtro do diálogo pode ser contornado em alguns sistemas ("Todos os arquivos"): confere de novo.
-  const arquivo = escolha.canceled ? undefined : docxEscolhido(escolha.filePaths[0]);
-  if (arquivo === undefined) return null;
-  docxEscolhidos.add(arquivo);
-  await liberarNoServidor(arquivo);
-  return arquivo;
-});
-
-/** A cópia comentada pedida, se é de um `.docx` escolhido e é arquivo comum (não link nem pasta). */
-function copiaComentada(caminho: unknown): string {
-  const permitido = copiaComentadaPermitida(caminho, docxEscolhidos);
-  if (permitido === undefined) throw new Error("só a cópia comentada pelo Simplifica IF abre por aqui");
-  const info = NodeFS.lstatSync(permitido, { throwIfNoEntry: false });
-  if (info === undefined || !info.isFile()) throw new Error("a cópia comentada não foi encontrada");
-  return permitido;
-}
-
-ipcMain.handle(CANAIS.abrirDocumento, async (evento, caminho: unknown) => {
-  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
-  const erro = await shell.openPath(copiaComentada(caminho));
-  if (erro !== "") throw new Error(`não foi possível abrir o documento: ${erro}`);
-});
-
-ipcMain.handle(CANAIS.mostrarNaPasta, async (evento, caminho: unknown) => {
-  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
-  shell.showItemInFolder(copiaComentada(caminho));
-});
-
-/* ============================================================ pasta das tarefas (M1.9) */
-
-ipcMain.handle(CANAIS.escolherAnexo, async (evento, pedidas: unknown) => {
-  if (!remetenteConfiavel(evento) || janela === undefined) throw new Error("pedido recusado");
-  const aceitas = extensoesAnexo(pedidas);
-  const escolha = await dialog.showOpenDialog(janela, {
-    title: "Anexar arquivo",
-    buttonLabel: "Anexar",
-    properties: ["openFile"],
-    filters: [{ name: "Documentos", extensions: aceitas.map((extensao) => extensao.slice(1)) }],
-  });
-  const arquivo = escolha.canceled ? undefined : anexoEscolhido(escolha.filePaths[0], aceitas);
-  if (arquivo === undefined) return null;
-  await liberarNoServidor(arquivo);
-  return arquivo;
-});
-
-/** Um arquivo de pasta de tarefa: a regra de `arquivoDeTarefaPermitido` e o caminho real dentro da raiz. */
-function arquivoDeTarefa(caminho: unknown, abrir: boolean): string {
-  const permitido = arquivoDeTarefaPermitido(caminho, configuracao.pastaTrabalhos, abrir);
-  if (permitido === undefined) throw new Error("só arquivos das pastas de tarefa abrem por aqui");
-  const info = NodeFS.lstatSync(permitido, { throwIfNoEntry: false });
-  if (info === undefined || !info.isFile()) throw new Error("o arquivo não foi encontrado");
-  const raizReal = NodeFS.realpathSync(configuracao.pastaTrabalhos);
-  if (!NodeFS.realpathSync(permitido).startsWith(raizReal + NodePath.sep)) throw new Error("arquivo fora da pasta");
-  return permitido;
-}
-
-ipcMain.handle(CANAIS.abrirArquivoTarefa, async (evento, caminho: unknown) => {
-  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
-  const erro = await shell.openPath(arquivoDeTarefa(caminho, true));
-  if (erro !== "") throw new Error(`não foi possível abrir o arquivo: ${erro}`);
-});
-
-ipcMain.handle(CANAIS.mostrarArquivoTarefa, async (evento, caminho: unknown) => {
-  if (!remetenteConfiavel(evento)) throw new Error("pedido recusado");
-  shell.showItemInFolder(arquivoDeTarefa(caminho, false));
-});
-
-/* ============================================================ protocolo */
-
-/** Serve o build da interface em `simplifica://app/`, com a CSP. */
-function registrarProtocolo(pasta: string): void {
-  // O build não muda enquanto o app roda: os hashes dos scripts inline do index.html, uma vez.
-  let hashes: Array<string> = [];
-  try {
-    hashes = hashesScriptsInline(NodeFS.readFileSync(NodePath.join(pasta, "index.html"), "utf-8"));
-  } catch {
-    registrar(`sem o index.html da interface em ${pasta}`);
-  }
-  protocol.handle(ESQUEMA, async (pedido) => {
-    const arquivo = resolverArquivo({
-      url: pedido.url,
-      method: pedido.method,
-      accept: pedido.headers.get("accept"),
-      host: HOST_APP,
-      assetDirectory: pasta,
-      isFile: (caminho) => {
-        try {
-          return NodeFS.statSync(caminho).isFile();
-        } catch {
-          return false;
-        }
-      },
-    });
-    if (arquivo.tipo === "erro") return new Response(null, { status: arquivo.status });
-    let conteudo: Buffer;
-    try {
-      conteudo = await NodeFS.promises.readFile(arquivo.caminho);
-    } catch {
-      return new Response(null, { status: 404 });
-    }
-    return new Response(pedido.method === "HEAD" ? null : new Uint8Array(conteudo), {
-      headers: {
-        "content-type": tipoConteudo(arquivo.caminho),
-        "content-security-policy": politicaConteudo(portaAtual(), hashes),
-        "x-content-type-options": "nosniff",
-      },
-    });
-  });
-}
-
-/* ============================================================ menu */
-
-function menuAplicacao(): Menu {
-  const mac = process.platform === "darwin";
-  const modelo: Array<MenuItemConstructorOptions> = [
-    ...(mac
-      ? [
-          {
-            label: NOME,
-            submenu: [
-              { role: "about", label: `Sobre o ${NOME}` },
-              { type: "separator" },
-              { role: "hide", label: `Ocultar o ${NOME}` },
-              { role: "hideOthers", label: "Ocultar os outros" },
-              { role: "unhide", label: "Mostrar tudo" },
-              { type: "separator" },
-              { role: "quit", label: `Sair do ${NOME}` },
-            ],
-          } satisfies MenuItemConstructorOptions,
-        ]
-      : []),
-    {
-      label: "Arquivo",
-      submenu: [mac ? { role: "close", label: "Fechar janela" } : { role: "quit", label: "Sair" }],
-    },
-    {
-      label: "Editar",
-      submenu: [
-        { role: "undo", label: "Desfazer" },
-        { role: "redo", label: "Refazer" },
-        { type: "separator" },
-        { role: "cut", label: "Recortar" },
-        { role: "copy", label: "Copiar" },
-        { role: "paste", label: "Colar" },
-        { role: "selectAll", label: "Selecionar tudo" },
-      ],
-    },
-    {
-      label: "Ver",
-      submenu: [
-        { role: "reload", label: "Recarregar" },
-        ...(DESENVOLVIMENTO
-          ? [{ role: "toggleDevTools", label: "Ferramentas do desenvolvedor" } satisfies MenuItemConstructorOptions]
-          : []),
-        { type: "separator" },
-        { role: "resetZoom", label: "Tamanho real" },
-        { role: "zoomIn", label: "Aumentar" },
-        { role: "zoomOut", label: "Diminuir" },
-        { type: "separator" },
-        { role: "togglefullscreen", label: "Tela cheia" },
-      ],
-    },
-    {
-      label: "Janela",
-      role: "window",
-      submenu: [
-        { role: "minimize", label: "Minimizar" },
-        { role: "zoom", label: "Zoom" },
-      ],
-    },
-  ];
-  return Menu.buildFromTemplate(modelo);
-}
 
 /* ============================================================ ciclo de vida */
 
@@ -708,8 +428,9 @@ if (!app.requestSingleInstanceLock()) {
       responder(permitidas.has(permissao)),
     );
     session.defaultSession.setPermissionCheckHandler((_conteudo, permissao) => permitidas.has(permissao));
-    if (configuracao.interface.tipo === "pasta") registrarProtocolo(configuracao.interface.pasta);
-    Menu.setApplicationMenu(menuAplicacao());
+    if (configuracao.interface.tipo === "pasta")
+      registrarProtocolo(configuracao.interface.pasta, { portaAtual, registrar });
+    Menu.setApplicationMenu(menuAplicacao({ nome: NOME, desenvolvimento: DESENVOLVIMENTO }));
     nativeTheme.on("updated", sincronizarAparencia);
     registrar(
       `interface: ${configuracao.urlJanela}; base: ${configuracao.banco}; estado: ${configuracao.pastaEstado}; ` +
