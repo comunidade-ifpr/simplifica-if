@@ -50,7 +50,7 @@ node scripts/validar_base.ts
 Esta é a raiz lógica da base. No projeto unificado ela fica em `base-conhecimento/`.
 
 - `normas/`: leis, resoluções, portarias, notas técnicas e compilações, organizadas por jurisdição e tipo documental.
-- `institucional/ifpr/`: registros institucionais, um JSON por registro (`campi/`, `cursos/`, `processos-seletivos/`, `editais/`, `ofertas/`, `conselhos/`), os processos SEI exportados do Notion (`processos-sei/`) e notas de referência (`referencias/`).
+- `institucional/ifpr/`: registros institucionais, um JSON por registro (`campi/`, `cursos/`, `processos-seletivos/`, `editais/`, `ofertas/`, `conselhos/`), e notas de referência (`referencias/`).
 - `institucional/ifpr/ppcs/`: PPCs convertidos para Markdown e índices globais de PPCs e seções.
 - `institucional/ifpr/ppcps/`: pesquisa comparada e proposta de PPCP para a Rede Certifica.
 - `catalogos/`: catálogos estruturados, como o CNCT.

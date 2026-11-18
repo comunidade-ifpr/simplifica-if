@@ -117,17 +117,7 @@ export interface ManifestInstitucionalJson {
   colecoes: {
     id: string;
     title: string;
-    tipo_item:
-      | "campus"
-      | "curso"
-      | "processo_seletivo"
-      | "edital_ingresso"
-      | "oferta_ingresso"
-      | "processo_sei_curso"
-      | "reuniao_conselho"
-      | "referencia_institucional"
-      | "ppc"
-      | "ppcp";
+    tipo_item: "campus" | "referencia_institucional" | "ppc" | "ppcp";
     path: string;
     total_itens: number;
   }[];

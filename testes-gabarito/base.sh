@@ -2,9 +2,6 @@
 # Gabarito da base: os geradores (`gerar_base`, `gerar_indice_ppcs`) não mudam nada no git e
 # `validar_base` passa. Não há arquivo de gabarito: o esperado é o próprio git.
 #
-# `exportar_base_publica` fica fora: lê as movimentações do Notion (exige NOTION_TOKEN), então a saída
-# (institucional/ifpr/processos-sei/index.json) muda com o Notion. Confira-o à mão pelo `git diff`.
-#
 #   sh testes-gabarito/base.sh --comparar
 #
 # Neutro de runtime: os scripts rodam com $RODAR (padrão: `node`). Exige árvore limpa em

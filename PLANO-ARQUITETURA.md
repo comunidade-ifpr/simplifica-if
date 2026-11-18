@@ -882,6 +882,8 @@ Em aberto:
 
 **Fim do leitor do repositório público em 18/11/2026** (mesmo branch). A base passa a ser lida só pelo app, pelo `simplifica-mcp` e pela CLI `kb`. Saem os artefatos que nenhum deles, script ou skill lê: o `index.json` de cursos, processos seletivos, editais, ofertas e conselhos (fica o de campi, que a `revisar-ppc` lê), os JSON Schemas públicos de `schemas/registros/`, a tabela de normas do `base-conhecimento/README.md`, `llms.txt`, `.nojekyll`, `index.html` e `paineis/`. O `processos-sei/index.json` e o `exportar_base_publica.ts` ficam até se confirmar se algo os consome; no repositório, só o `validar_base` os lê.
 
+**Processos SEI fora da base em 18/11/2026** (mesmo branch). Saem o `institucional/ifpr/processos-sei/index.json`, que só o `validar_base` lia, e o `scripts/exportar_base_publica.ts`, que o gerava a partir de `Movimentações de Cursos` no Notion, com o código que só ele usava (`scripts/dados/processos-sei.ts`, `carregarMovimentacoes` e a auditoria das movimentações). As movimentações ficam só no Notion; o `sei:sync` (SEI → Notion) continua e não dependia do índice.
+
 ## Histórico de revisões
 
 **v2, 13/11/2026.** Incorpora duas revisões independentes.

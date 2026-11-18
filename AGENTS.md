@@ -35,7 +35,7 @@ Estas ferramentas rodam só no repositório, por agentes ou por quem cura a base
 
 - `packages/sei-cli` (SEI) e a skill `revisar-processo-ppc`, que depende dele;
 - a skill `suap-ifpr` (SUAP), com `scripts/suap_consultar.ts`, `scripts/suap_tutoriais.ts` e a coleta de matrizes `scripts/suap_coletar_matrizes.ts`;
-- a sincronização SEI → Notion (`pnpm sei:sync`, agendada por `scripts/agendar_sincronizacao_sei.ts`), `scripts/notion_atualizar_cursos_movimentacoes.ts` e `scripts/exportar_base_publica.ts`;
+- a sincronização SEI → Notion (`pnpm sei:sync`, agendada por `scripts/agendar_sincronizacao_sei.ts`), e `scripts/notion_atualizar_cursos_movimentacoes.ts`;
 - a skill `revisar-ppc` com sub-agentes e relatório HTML (no app, a revisão é a tarefa nativa acima);
 - a skill `ifpr-design`, usada para desenhar a interface e materiais, não como tarefa do app.
 
@@ -43,7 +43,7 @@ Estas ferramentas rodam só no repositório, por agentes ou por quem cura a base
 
 A base reúne normas, catálogos, PPCs, e metadados institucionais. A fonte publicada fica em `base-conhecimento/`, e o `kb.sqlite` que o app e o `simplifica-mcp` leem é compilado dos mesmos arquivos (`pnpm kb:compilar`).
 
-Os dados institucionais de gestão (Campi, Cursos com metadados de PPC e SUAP, Processos Seletivos, Editais e Ofertas) têm como fonte de verdade os registros de `base-conhecimento/institucional/ifpr/` (`campi/`, `cursos/`, `processos-seletivos/`, `editais/`, `ofertas/`), um JSON por registro, versionados no git; o kb os lê direto. Só `campi/index.json` (por `gerar_base.ts`, lido pela `revisar-ppc`) e `processos-sei/index.json` (exportado do Notion) são gerados; não os edite à mão. As reuniões do Consepe, com pareceres e itens de pauta e sem dados de pessoa, estão em `institucional/ifpr/conselhos/`. O Notion guarda só a base de fluxo `Movimentações de Cursos`, que também deve sair dele no futuro.
+Os dados institucionais de gestão (Campi, Cursos com metadados de PPC e SUAP, Processos Seletivos, Editais e Ofertas) têm como fonte de verdade os registros de `base-conhecimento/institucional/ifpr/` (`campi/`, `cursos/`, `processos-seletivos/`, `editais/`, `ofertas/`), um JSON por registro, versionados no git; o kb os lê direto. Só `campi/index.json` é gerado (por `gerar_base.ts`, lido pela `revisar-ppc`); não o edite à mão. As reuniões do Consepe, com pareceres e itens de pauta e sem dados de pessoa, estão em `institucional/ifpr/conselhos/`. O Notion guarda só a base de fluxo `Movimentações de Cursos`, que também deve sair dele no futuro.
 
 ## Skills
 
@@ -111,12 +111,11 @@ Para perguntas, conferências ou curadoria que dependam de dados do Sistema Elet
 - [Uso do sei-cli por agentes](base-conhecimento/docs/sei-cli-operacao-agentes.md)
 - [Sincronização SEI → Notion](base-conhecimento/docs/sincronizacao-sei-notion.md)
 
-Para `Movimentações de Cursos` e para a exportação pública, use a API do Notion com `NOTION_TOKEN` do projeto. Não presuma que o Notion MCP local do usuário acessa esta base, pois ele pode estar conectado ao Notion pessoal do usuário. Se `NOTION_TOKEN` não estiver disponível, peça ao usuário o token da integração Notion organizacional e grave em `.env.local`.
+Para `Movimentações de Cursos`, use a API do Notion com `NOTION_TOKEN` do projeto. Não presuma que o Notion MCP local do usuário acessa esta base, pois ele pode estar conectado ao Notion pessoal do usuário. Se `NOTION_TOKEN` não estiver disponível, peça ao usuário o token da integração Notion organizacional e grave em `.env.local`.
 
-Depois de alterar os registros de `base-conhecimento/institucional/ifpr/` ou `Movimentações de Cursos`, rode:
+Depois de alterar os registros de `base-conhecimento/institucional/ifpr/`, rode (as movimentações do Notion não entram na base):
 
 ```bash
-node scripts/exportar_base_publica.ts   # só se Movimentações de Cursos mudou (Notion → processos-sei/index.json)
 node scripts/gerar_base.ts
 node scripts/gerar_indice_ppcs.ts
 node scripts/validar_base.ts
@@ -139,7 +138,7 @@ pnpm typecheck
 
 ### Dados pessoais e URLs internas na base
 
-A base é pública. A regra fica em `packages/kb/src/ppcs/dados-pessoais.ts`, com os casos de teste em `dados-pessoais.casos.json`; o `validar_base.ts` aplica a regra a todo arquivo de `base-conhecimento/` e recusa o que ela acharia, com só as contagens na mensagem. A exportação dos processos SEI aplica a mesma limpeza às anotações do Notion.
+A base é pública. A regra fica em `packages/kb/src/ppcs/dados-pessoais.ts`, com os casos de teste em `dados-pessoais.casos.json`; o `validar_base.ts` aplica a regra a todo arquivo de `base-conhecimento/` e recusa o que ela acharia, com só as contagens na mensagem. A importação de PPC (`importar_ppc_docx.ts`) aplica a mesma limpeza ao texto convertido.
 
 São omitidos, com o rótulo e o resto da frase mantidos:
 

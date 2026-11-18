@@ -8,12 +8,10 @@ import {
   type OfertaIngresso,
   type ProcessoSeletivo,
 } from "./ingresso.ts";
-import type { Movimentacao } from "./movimentacao.ts";
 
 export interface BaseInstitucional {
   campi: Campus[];
   cursos: Curso[];
-  movimentacoes: Movimentacao[];
   processos: ProcessoSeletivo[];
   editais: EditalIngresso[];
   ofertas: OfertaIngresso[];
@@ -107,21 +105,6 @@ function auditarCursos(cursos: Curso[], campusIdPorPagina: Map<string, string>):
       if (curso.ppc.markdownPath !== esperado) {
         erros.push(`${nome}: PPC Markdown Link esperado ${esperado}, encontrado ${curso.ppc.markdownPath}`);
       }
-    }
-  }
-  return erros;
-}
-
-function auditarMovimentacoes(movimentacoes: Movimentacao[], cursos: Set<string>): string[] {
-  const erros: string[] = [];
-  for (const movimentacao of movimentacoes) {
-    const nome = rotulo("Movimentação de curso", movimentacao);
-    if (movimentacao.cursoIds.length > 1) erros.push(`${nome}: Curso ID deve conter uma única chave`);
-    for (const cursoId of movimentacao.cursoIds) {
-      if (!cursos.has(cursoId)) erros.push(`${nome}: Curso ID não existe em institucional/ifpr/cursos/: ${cursoId}`);
-    }
-    if (movimentacao.numeroSei.trim() && !movimentacao.cursoIds.length) {
-      erros.push(`${nome}: SEI Processo informado sem Curso ID`);
     }
   }
   return erros;
@@ -239,14 +222,13 @@ function auditarOfertas(base: BaseInstitucional, processoIdPorPagina: Map<string
   return erros;
 }
 
-/** Problemas que impedem uma exportação confiável; a exportação só segue com a lista vazia. */
+/** Problemas dos registros institucionais e de suas relações, conferidos pelo `validar_base`. */
 export function auditarBase(base: BaseInstitucional): string[] {
   const campusIdPorPagina = new Map(base.campi.map((item) => [item.id, item.campusId]));
   const processoIdPorPagina = new Map(base.processos.map((item) => [item.id, item.processoSeletivoId]));
   return [
     ...auditarCampi(base.campi),
     ...auditarCursos(base.cursos, campusIdPorPagina),
-    ...auditarMovimentacoes(base.movimentacoes, new Set(base.cursos.map((item) => item.id))),
     ...auditarProcessos(base.processos),
     ...auditarEditais(base.editais, processoIdPorPagina),
     ...auditarOfertas(base, processoIdPorPagina),

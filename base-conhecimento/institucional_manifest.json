@@ -12,13 +12,6 @@
       "total_itens": 28
     },
     {
-      "id": "processos-sei-cursos-ifpr",
-      "title": "Processos SEI dos cursos do IFPR",
-      "tipo_item": "processo_sei_curso",
-      "path": "institucional/ifpr/processos-sei/index.json",
-      "total_itens": 124
-    },
-    {
       "id": "referencias-ifpr",
       "title": "Referências institucionais do IFPR",
       "tipo_item": "referencia_institucional",

@@ -19,8 +19,8 @@ describe("validar_base: dados pessoais e URLs internas", () => {
 
   test("recusa planilha do Google fora do horarios_url de campus e URL de sessão do SEI", () => {
     const planilha = "https://docs.google.com/spreadsheets/d/abc/edit";
-    expect(dadosPessoaisEUrlsInternas("institucional/ifpr/processos-sei/index.json", `Origem: ${planilha}`)).toEqual([
-      "institucional/ifpr/processos-sei/index.json contém 1 link(s) de planilha do Google; tire o link (semPlanilhasGoogle)",
+    expect(dadosPessoaisEUrlsInternas("institucional/ifpr/cursos/exemplo/a.json", `Origem: ${planilha}`)).toEqual([
+      "institucional/ifpr/cursos/exemplo/a.json contém 1 link(s) de planilha do Google; tire o link (semPlanilhasGoogle)",
     ]);
     expect(
       dadosPessoaisEUrlsInternas("institucional/ifpr/campi/colombo.json", `  "horarios_url": "${planilha}",`),

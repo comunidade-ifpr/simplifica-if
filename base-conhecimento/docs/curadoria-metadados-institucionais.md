@@ -19,9 +19,8 @@ Relações usam essas chaves, nunca IDs de página do Notion: `cursos[].campus_i
 O que continua gerado, e por quê:
 
 - `campi/index.json`: lista os campi com o nome e o `path`, para a identificação do PPC na `revisar-ppc`. Gerado por `gerar_base.ts` (`scripts/dados/indices.ts`), sem data, e conferido pelo `validar_base.ts`. Não edite. As demais coleções não têm índice: o kb lê os registros direto.
-- `processos-sei/index.json`: os processos SEI de cada curso (`curso_id`, `numero`, `tipo`, `trecho_fonte`), exportados da base `Movimentações de Cursos` do Notion por `exportar_base_publica.ts` (precisa de `NOTION_TOKEN`). Não edite: a curadoria das movimentações acontece no Notion; veja [Operação do Notion por agentes](notion-operacao-agentes.md).
 
-`Movimentações de Cursos` é a única base institucional que continua no Notion. As bases do Consepe estão em `institucional/ifpr/conselhos/` (veja [Conselhos](#conselhos)); Pareceres de Curso, Servidores e Conselheiros ficaram só no arquivo do Notion e não fazem parte do repositório.
+`Movimentações de Cursos` é a única base institucional que continua no Notion, e não é exportada para a base (veja [Operação do Notion por agentes](notion-operacao-agentes.md)). As bases do Consepe estão em `institucional/ifpr/conselhos/` (veja [Conselhos](#conselhos)); Pareceres de Curso, Servidores e Conselheiros ficaram só no arquivo do Notion e não fazem parte do repositório.
 
 ## Como alterar e publicar
 
@@ -35,7 +34,7 @@ node scripts/gerar_indice_ppcs.ts
 node scripts/validar_base.ts
 ```
 
-`validar_base.ts` confere schema, caminho de cada arquivo e as regras da auditoria institucional (chaves únicas, relações existentes, caminho esperado do PPC e o Markdown existente, URLs HTTPS), o índice dos campi e os processos SEI. Para atualizar os processos SEI depois de mudar movimentações no Notion, rode antes `node scripts/exportar_base_publica.ts`.
+`validar_base.ts` confere schema, caminho de cada arquivo e as regras da auditoria institucional (chaves únicas, relações existentes, caminho esperado do PPC e o Markdown existente, URLs HTTPS), e o índice dos campi.
 
 Ao criar um curso novo, use `curso_slug` em minúsculas com hífens, único no campus, e não preencha `notion_page_id`.
 

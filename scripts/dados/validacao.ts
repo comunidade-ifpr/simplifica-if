@@ -2,7 +2,7 @@
 /**
  * Validação dos registros de `institucional/ifpr/` (campi, cursos, processos seletivos, editais e
  * ofertas): schema, caminho de cada arquivo, as regras da auditoria institucional, o Markdown dos
- * PPCs, os processos SEI exportados do Notion e as reuniões dos conselhos (`conselhos.ts`). O
+ * PPCs e as reuniões dos conselhos (`conselhos.ts`). O
  * `campi/index.json` gerado dos registros volta em `gerados`, para o chamador conferir com
  * `aplicarGerados`.
  */
@@ -20,7 +20,6 @@ import {
   RAIZ_DADOS_INSTITUCIONAIS,
   type CursoLocal,
 } from "./institucional.ts";
-import { validarProcessosSei } from "./processos-sei.ts";
 
 /** IDs `cnct:<slug>` dos cursos de `catalogos/cnct/index.json`. */
 export function idsCnct(raizBase: string = RAIZ_BASE): Set<string> {
@@ -51,7 +50,7 @@ function markdownsInexistentes(cursos: CursoLocal[], raizBase: string): string[]
 export interface OpcoesValidacao {
   /**
    * Confere também o que liga os registros ao resto da base: o Markdown dos PPCs, o `campi/index.json`
-   * gerado e os processos SEI (padrão: sim). Os testes com raiz temporária desligam.
+   * gerado e os conselhos (padrão: sim). Os testes com raiz temporária desligam.
    */
   arquivosDaBase?: boolean;
 }
@@ -69,11 +68,7 @@ export function validarDadosInstitucionais(
   const carregados = carregarDadosInstitucionais(raiz);
   if (carregados.erros.length) return { erros: carregados.erros, total: 0 };
   const { dados } = carregados;
-  // As movimentações ainda vivem no Notion; aqui valem as regras dos registros locais e de suas relações.
-  const auditoria = [
-    ...auditarBase({ ...paraDominio(dados), movimentacoes: [] }),
-    ...cnctInexistentes(dados.cursos, idsCnct(raizBase)),
-  ];
+  const auditoria = [...auditarBase(paraDominio(dados)), ...cnctInexistentes(dados.cursos, idsCnct(raizBase))];
   const daBase = opcoes.arquivosDaBase ?? true;
   if (daBase) auditoria.push(...markdownsInexistentes(dados.cursos, raizBase));
   const erros = auditoria.map((erro) => `institucional/ifpr: ${erro}`);
@@ -81,7 +76,6 @@ export function validarDadosInstitucionais(
   let gerados: ArquivoGerado[] | undefined;
   if (daBase) {
     const cursos = new Set(dados.cursos.map((curso) => chaveCurso(curso.campus_id, curso.curso_slug)));
-    erros.push(...validarProcessosSei(cursos).erros);
     const conselhos = carregarConselhos(raiz);
     erros.push(...conselhos.erros);
     erros.push(...auditarConselhos(conselhos.dados, new Set(dados.campi.map((campus) => campus.campus_id)), cursos));

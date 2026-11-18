@@ -94,7 +94,7 @@ scripts/configuracao.test.ts	2	0
 scripts/dados/conselhos.test.ts	2	0
 scripts/dados/institucional.test.ts	9	0
 scripts/dados/urls.test.ts	8	0
-scripts/dominio/auditoria.test.ts	10	0
+scripts/dominio/auditoria.test.ts	7	0
 scripts/dominio/aviso-dentec.test.ts	8	0
 scripts/dominio/ingresso.test.ts	2	0
 scripts/dominio/movimentacao.test.ts	18	0
@@ -115,4 +115,4 @@ scripts/suap/consultas.test.ts	20	0
 scripts/suap/matrizes.test.ts	21	0
 scripts/suap/tutoriais.test.ts	24	0
 scripts/upstream_t3.test.ts	3	0
-TOTAL	1565	35
+TOTAL	1562	35
