@@ -143,6 +143,8 @@ interface TurnoAberto {
   terminou: boolean;
   /** O turno terminou com falha do provider (já gravou o `Erro`). */
   falhou: boolean;
+  /** O retrato da pasta no fim do turno (`PastasTrabalho.fecharTurno`) já foi feito. */
+  retratado: boolean;
   readonly fim: Deferred.Deferred<void>;
 }
 
@@ -464,10 +466,26 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
     yield* agendarOciosidade(viva);
   }, Effect.uninterruptible);
 
+  /**
+   * O retrato da pasta no fim do turno (o Desfazer separa o que a IA fez do que mudou depois), uma vez
+   * por turno. Vem antes do `FimTurno`: a interface dá o turno por acabado quando o recebe, e o retrato
+   * (que lê cada arquivo da pasta) não pode deixar a conversa `respondendo` depois disso.
+   */
+  // Sem span próprio: o `PastasTrabalho.fecharTurno` já tem o dele.
+  const retratarPasta = Effect.fnUntraced(function* (viva: Viva, turno: TurnoAberto) {
+    if (turno.retratado) return;
+    yield* pastas.fecharTurno(viva.id, turno.numero, viva.registro.pastaTrabalho);
+    turno.retratado = true;
+  });
+
   /** Os eventos do turno, do motor para o banco e para quem acompanha. Roda no escopo da layer. */
   const bombear = (viva: Viva, turno: TurnoAberto, sessao: SessaoAberta, texto: string) =>
     motor.enviarMensagem(sessao.id, texto).pipe(
-      Stream.runForEach((evento) => registrarEvento(viva, evento)),
+      Stream.runForEach((evento) =>
+        (evento._tag === "FimTurno" ? retratarPasta(viva, turno) : Effect.void).pipe(
+          Effect.andThen(registrarEvento(viva, evento)),
+        ),
+      ),
       Effect.catch((erro) =>
         Effect.gen(function* () {
           // A falha do provider (inclusive a queda do processo) vira `Erro` e `FimTurno`: a conversa
@@ -479,17 +497,12 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
           const caiu = yield* sessao.queda.pipe(Effect.timeoutOption(Duration.seconds(1)));
           if (Option.isSome(caiu)) yield* derrubar(viva, sessao);
           yield* registrarEvento(viva, { _tag: "Erro", mensagem: erro.message });
+          yield* retratarPasta(viva, turno);
           yield* registrarEvento(viva, { _tag: "FimTurno", motivo: "falha" });
         }),
       ),
-      // O retrato do fim do turno (o Desfazer separa o que a IA fez do que mudou depois), antes de fechá-lo.
-      Effect.ensuring(
-        Effect.suspend(() =>
-          pastas
-            .fecharTurno(viva.id, turno.numero, viva.registro.pastaTrabalho)
-            .pipe(Effect.andThen(fecharTurno(viva, turno))),
-        ),
-      ),
+      // Interrompido antes do `FimTurno`: o retrato que faltar, antes de fechar o turno.
+      Effect.ensuring(retratarPasta(viva, turno).pipe(Effect.andThen(fecharTurno(viva, turno)))),
     );
 
   /** Começa o turno e devolve a inscrição nos itens dele (no escopo de quem chama). */
@@ -508,6 +521,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
           fibra: undefined,
           acumulado: "",
           terminou: false,
+          retratado: false,
           falhou: false,
           fim: yield* Deferred.make<void>(),
         };

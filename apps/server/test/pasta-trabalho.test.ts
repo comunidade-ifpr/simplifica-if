@@ -347,6 +347,24 @@ layer(camada, { excludeTestServices: true })("pasta de trabalho", (it) => {
       }).pipe(Effect.scoped),
   );
 
+  it.effect("o fim do turno chega à interface com o retrato da pasta feito: a conversa já não está respondendo", () =>
+    Effect.gen(function* () {
+      const { urlRpc } = yield* Servidor.ServidorApp;
+      const rpc = yield* cliente(urlRpc, AUTORIZACAO);
+      const { pasta } = yield* rpc["pasta.criar"]({ titulo: "Retrato demorado" });
+      // Muitos arquivos pequenos, dentro dos limites da cópia: o retrato do fim do turno lê cada um.
+      for (let i = 0; i < 400; i++) NodeFS.writeFileSync(NodePath.join(pasta, `arquivo-${i}.md`), `${i}\n`);
+      const { sessao } = yield* rpc["conversa.iniciar"]({ provider: "claude", pastaTrabalho: pasta });
+      // Como a interface: o turno acabou quando chega o `FimTurno`, sem esperar o stream fechar.
+      yield* rpc["conversa.enviar"]({ sessao, texto: "oi" }).pipe(
+        Stream.takeUntil((evento) => evento._tag === "FimTurno"),
+        Stream.runDrain,
+      );
+      const gravada = yield* rpc["conversa.carregar"]({ sessao });
+      assert.strictEqual(gravada.conversa.estado, "pronta");
+    }).pipe(Effect.scoped),
+  );
+
   it.effect("iniciar recusa tarefa fora do catálogo (o nome entra numa instrução à IA)", () =>
     Effect.gen(function* () {
       const { urlRpc } = yield* Servidor.ServidorApp;
