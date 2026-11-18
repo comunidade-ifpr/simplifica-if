@@ -11,7 +11,7 @@ import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeHttpClient from "@effect/platform-node/NodeHttpClient";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
-import { Drivers } from "../Driver.ts";
+import * as Driver from "../Driver.ts";
 import type { Ambiente } from "../processo.ts";
 import { makeAntigravityInstallation } from "../t3/AntigravityInstallation.ts";
 import { makeCodexInstallation } from "../t3/CodexInstallation.ts";
@@ -28,11 +28,11 @@ export const layerNode = (opcoes: {
   readonly ponteMcp?: Antigravity.PonteMcp;
 }) =>
   Layer.effect(
-    Drivers,
+    Driver.Drivers,
     Effect.gen(function* () {
       const instalacaoCodex = yield* makeCodexInstallation({ baseDir: opcoes.pastaEstado });
       const instalacaoAntigravity = yield* makeAntigravityInstallation({ baseDir: opcoes.pastaEstado });
-      return Drivers.of({
+      return Driver.Drivers.of({
         claude: yield* Claude.make(opcoes),
         codex: yield* Codex.make({ ambiente: opcoes.ambiente, instalacao: instalacaoCodex }),
         antigravity: yield* Antigravity.make({

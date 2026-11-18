@@ -58,7 +58,7 @@ interface Fonte {
  * O completador da sessão `config`: assina, no `Scope` da sessão, os `resultados` dos servidores
  * HTTP que os têm. Sem nenhum, devolve os eventos como estão.
  */
-export const completador = Effect.fnUntraced(function* (config: ConfigSessao) {
+export const completador = Effect.fn("Resultados.completador")(function* (config: ConfigSessao) {
   const fontes: Array<Fonte> = [];
   for (const servidor of config.servidoresMcp) {
     if (servidor.tipo !== "http" || servidor.resultados === undefined) continue;
