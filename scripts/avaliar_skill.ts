@@ -22,6 +22,7 @@
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import { lerSkill, lerSkillMd } from "@simplifica-if/mcp/skills";
+import { YAMLParseError } from "yaml";
 import * as Motor from "@simplifica-if/motor";
 import * as Drivers from "@simplifica-if/motor/drivers";
 import * as HostProcess from "@simplifica-if/motor/t3/HostProcess";
@@ -40,9 +41,7 @@ import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
-import * as ChildProcess from "effect/process/ChildProcess";
-import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
-import { DIR_AVALIACAO, RAIZ_REPOSITORIO } from "./avaliacao/carregar.ts";
+import { DIR_AVALIACAO, ehArquivoAvaliacaoInvalido, RAIZ_REPOSITORIO } from "./avaliacao/carregar.ts";
 import { serializarJson } from "./avaliacao/normalizar.ts";
 import {
   CONDICOES,
@@ -60,6 +59,7 @@ import {
   type Execucao,
   type RelatorioSkill,
 } from "./avaliacao/skills.ts";
+import * as Git from "./git.ts";
 import { executarPrincipal } from "./principal.ts";
 
 const CASO_PADRAO = "avaliacao/skills/verificar-fundamentacao-normativa";
@@ -69,36 +69,85 @@ type Provider = (typeof PROVIDERS)[number];
 /** Prazo de uma sessão (documento ou juiz). */
 const PRAZO = Duration.minutes(15);
 
-export class FalhaAvaliacaoSkill extends Schema.TaggedError<FalhaAvaliacaoSkill>()("FalhaAvaliacaoSkill", {
-  detalhe: Schema.String,
+/** O caso (`caso.yaml`) não pôde ser lido do disco; o erro de leitura fica em `cause`. */
+export class CasoIlegivel extends Schema.TaggedError<CasoIlegivel>()("CasoIlegivel", {
+  caso: Schema.String,
+  /** Código do erro do sistema (`ENOENT`, `EACCES`), quando houver. */
+  codigo: Schema.optional(Schema.String),
+  cause: Schema.Defect(),
 }) {
   override get message(): string {
-    return this.detalhe;
+    return `não foi possível ler o caso ${this.caso}${this.codigo === undefined ? "" : ` (${this.codigo})`}`;
   }
 }
 
-const falha = (detalhe: string) => new FalhaAvaliacaoSkill({ detalhe });
+/** O `caso.yaml` tem sintaxe YAML errada; o `YAMLParseError` fica em `cause`. */
+export class CasoMalformado extends Schema.TaggedError<CasoMalformado>()("CasoMalformado", {
+  caso: Schema.String,
+  linha: Schema.optional(Schema.Int),
+  coluna: Schema.optional(Schema.Int),
+  cause: Schema.Defect(),
+}) {
+  override get message(): string {
+    const posicao =
+      this.linha === undefined
+        ? ""
+        : `, linha ${this.linha}${this.coluna === undefined ? "" : `, coluna ${this.coluna}`}`;
+    return `YAML inválido no caso ${this.caso} (caso.yaml${posicao})`;
+  }
+}
 
-/* ------------------------------------------------------------------- git */
+const erroDeLeitura = (caso: string, cause: unknown): CasoIlegivel | CasoMalformado => {
+  if (cause instanceof YAMLParseError) {
+    const inicio = cause.linePos?.[0];
+    return new CasoMalformado({
+      caso,
+      cause,
+      ...(inicio === undefined ? {} : { linha: inicio.line, coluna: inicio.col }),
+    });
+  }
+  const codigo =
+    typeof cause === "object" && cause !== null && "code" in cause && typeof cause.code === "string"
+      ? cause.code
+      : undefined;
+  return new CasoIlegivel({ caso, cause, ...(codigo === undefined ? {} : { codigo }) });
+};
 
-const git = Effect.fn("avaliarSkill.git")(function* (...argumentos: string[]) {
-  const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
-  return yield* Effect.scoped(
-    Effect.gen(function* () {
-      const processo = yield* spawner.spawn(
-        ChildProcess.make("git", argumentos, { cwd: RAIZ_REPOSITORIO, stdin: "ignore", stderr: "ignore" }),
-      );
-      const saida = yield* Stream.mkString(Stream.decodeText(processo.stdout));
-      const codigo = yield* processo.exitCode;
-      if (codigo !== 0) return yield* falha(`git ${argumentos.join(" ")} saiu com ${codigo}`);
-      return saida;
-    }),
-  ).pipe(Effect.catchTags({ PlatformError: (erro) => Effect.fail(falha(`git: ${erro.message}`)) }));
+/** Lê e valida o `caso.yaml` da pasta `caso`; o caso fora do contrato passa como `ArquivoAvaliacaoInvalido`. */
+export const lerCaso = Effect.fn("avaliar-skill.lerCaso")(function* (caso: string) {
+  return yield* Effect.try({
+    try: () => carregarCaso(caso),
+    catch: (erro) => (ehArquivoAvaliacaoInvalido(erro) ? erro : erroDeLeitura(caso, erro)),
+  });
 });
 
-const commitAtual = git("rev-parse", "--short", "HEAD").pipe(
+/** A skill (na árvore de trabalho, ou no commit `rev`) não tem bloco `simplifica:`. */
+class SkillSemBloco extends Schema.TaggedError<SkillSemBloco>()("SkillSemBloco", {
+  skill: Schema.String,
+  rev: Schema.optional(Schema.String),
+}) {
+  override get message(): string {
+    return `a skill ${this.skill}${this.rev === undefined ? "" : ` em ${this.rev}`} não tem bloco simplifica:`;
+  }
+}
+
+class DocumentosInexistentes extends Schema.TaggedError<DocumentosInexistentes>()("DocumentosInexistentes", {
+  ids: Schema.Array(Schema.String),
+}) {
+  override get message(): string {
+    return `documentos inexistentes: ${this.ids.join(", ")}`;
+  }
+}
+
+class BaseAusente extends Schema.TaggedError<BaseAusente>()("BaseAusente", {}) {
+  override get message(): string {
+    return "falta tmp/kb.sqlite: rode pnpm kb:compilar";
+  }
+}
+
+const commitAtual = Git.executar(["rev-parse", "--short", "HEAD"], { cwd: RAIZ_REPOSITORIO }).pipe(
   Effect.flatMap((rev) =>
-    git("status", "--porcelain").pipe(
+    Git.executar(["status", "--porcelain"], { cwd: RAIZ_REPOSITORIO }).pipe(
       Effect.map((status) => `${rev.trim()}${status.trim() === "" ? "" : " (com alterações locais)"}`),
     ),
   ),
@@ -113,16 +162,21 @@ const skillDaCondicao = Effect.fn("avaliarSkill.skillDaCondicao")(function* (cas
   if (condicao === "sem-skill") return undefined;
   if (condicao === "skill") {
     const lida = yield* lerSkill(path.join(RAIZ_REPOSITORIO, ".agents", "skills", caso.skill));
-    if (!lida) return yield* falha(`a skill ${caso.skill} não tem bloco simplifica:`);
+    if (!lida) return yield* new SkillSemBloco({ skill: caso.skill });
     return { nome: lida.nome, descricao: lida.descricao, instrucoes: lida.instrucoes, arquivos: lida.arquivos };
   }
   const base = `${caso.rev_skill_antiga}:.agents/skills/${caso.skill}`;
-  const lida = yield* lerSkillMd(yield* git("show", `${base}/SKILL.md`), caso.skill);
-  if (!lida.manifesto)
-    return yield* falha(`a skill ${caso.skill} em ${caso.rev_skill_antiga} não tem bloco simplifica:`);
+  const lida = yield* lerSkillMd(
+    yield* Git.executar(["show", `${base}/SKILL.md`], { cwd: RAIZ_REPOSITORIO }),
+    caso.skill,
+  );
+  if (!lida.manifesto) return yield* new SkillSemBloco({ skill: caso.skill, rev: caso.rev_skill_antiga });
   const arquivos = [];
   for (const caminho of lida.manifesto.arquivos) {
-    arquivos.push({ caminho, conteudo: yield* git("show", `${base}/${caminho}`) });
+    arquivos.push({
+      caminho,
+      conteudo: yield* Git.executar(["show", `${base}/${caminho}`], { cwd: RAIZ_REPOSITORIO }),
+    });
   }
   return { nome: lida.nome, descricao: lida.descricao, instrucoes: lida.corpo, arquivos } satisfies Motor.Skill;
 });
@@ -414,13 +468,10 @@ const avaliarSkill = Command.make(
     pontuar: textoOpcional("pontuar", "repontua (parte automática) um relatorio.json salvo, sem chamar modelo"),
   },
   Effect.fn("avaliar-skill")(function* (o) {
-    const carregado = yield* Effect.try({
-      try: () => carregarCaso(o.caso),
-      catch: (erro) => falha(erro instanceof Error ? erro.message : String(erro)),
-    });
+    const carregado = yield* lerCaso(o.caso);
     if (Option.isSome(o.pontuar)) return yield* modoPontuar(carregado, o.pontuar.value);
     const desconhecidos = o.documento.filter((id) => !carregado.caso.documentos.some((d) => d.id === id));
-    if (desconhecidos.length > 0) return yield* falha(`documentos inexistentes: ${desconhecidos.join(", ")}`);
+    if (desconhecidos.length > 0) return yield* new DocumentosInexistentes({ ids: desconhecidos });
     const opcoes: Opcoes = {
       provider: o.provider,
       modelo: Option.getOrUndefined(o.modelo),
@@ -434,8 +485,7 @@ const avaliarSkill = Command.make(
     };
     if (o.dryRun) return yield* modoDryRun(carregado, opcoes);
     const fs = yield* FileSystem.FileSystem;
-    if (!(yield* fs.exists(`${RAIZ_REPOSITORIO}/tmp/kb.sqlite`)))
-      return yield* falha("falta tmp/kb.sqlite: rode pnpm kb:compilar");
+    if (!(yield* fs.exists(`${RAIZ_REPOSITORIO}/tmp/kb.sqlite`))) return yield* new BaseAusente();
     // um `node` aberto fora do shell de login pode não ter ~/.local/bin no PATH (onde fica o `claude`)
     yield* fixPath();
     yield* modoExecutar(carregado, opcoes).pipe(Effect.provide(camadaMotor(yield* pastaEstado)));

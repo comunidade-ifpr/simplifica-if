@@ -18,12 +18,9 @@ import * as FileSystem from "effect/FileSystem";
 import * as Option from "effect/Option";
 import * as Path from "effect/Path";
 import * as Schema from "effect/Schema";
-import * as Stream from "effect/Stream";
 import * as Terminal from "effect/Terminal";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
-import * as ChildProcess from "effect/process/ChildProcess";
-import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 import {
   arquivoInvalido,
   carregarConfig,
@@ -41,6 +38,7 @@ import { serializarJson } from "./avaliacao/normalizar.ts";
 import { pontuarResposta } from "./avaliacao/pontuacao.ts";
 import { esquemaRelatorioSalvo, resumoMarkdown, type RegistroExecucao, type Relatorio } from "./avaliacao/relatorio.ts";
 import { ESTRITO } from "./esquema.ts";
+import * as Git from "./git.ts";
 import { executarPrincipal } from "./principal.ts";
 
 /* ------------------------------------------------------------------ erros */
@@ -120,30 +118,12 @@ function pontuar(contexto: Contexto, pergunta: Pergunta, resposta: string) {
   });
 }
 
-/** Código de saída e stdout de um `git` no repositório; `null` se o git não rodar. */
-const git = Effect.fn("avaliar.git")(function* (...argumentos: string[]) {
-  const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
-  return yield* Effect.scoped(
-    Effect.gen(function* () {
-      const processo = yield* spawner.spawn(
-        ChildProcess.make("git", argumentos, { cwd: RAIZ_REPOSITORIO, stdin: "ignore", stderr: "ignore" }),
-      );
-      const saida = yield* Stream.mkString(Stream.decodeText(processo.stdout));
-      const codigo = yield* processo.exitCode;
-      return { codigo, saida };
-    }),
-  ).pipe(
-    Effect.asSome,
-    Effect.catchTags({ PlatformError: () => Effect.succeed(Option.none<{ codigo: number; saida: string }>()) }),
-  );
-});
-
 const commitAtual = Effect.fn("avaliar.commitAtual")(function* () {
-  const rev = yield* git("rev-parse", "--short", "HEAD");
-  if (Option.isNone(rev) || rev.value.codigo !== 0) return null;
-  const status = yield* git("status", "--porcelain");
-  const sujo = Option.isSome(status) && status.value.saida.trim() !== "";
-  return `${rev.value.saida.trim()}${sujo ? " (com alterações locais)" : ""}`;
+  const rev = yield* Git.tentar(["rev-parse", "--short", "HEAD"], { cwd: RAIZ_REPOSITORIO });
+  if (Option.isNone(rev)) return null;
+  const status = yield* Git.tentar(["status", "--porcelain"], { cwd: RAIZ_REPOSITORIO });
+  const sujo = Option.isSome(status) && status.value.trim() !== "";
+  return `${rev.value.trim()}${sujo ? " (com alterações locais)" : ""}`;
 });
 
 /** ISO 8601 em UTC com milissegundos, como o `Date.prototype.toISOString`. */
