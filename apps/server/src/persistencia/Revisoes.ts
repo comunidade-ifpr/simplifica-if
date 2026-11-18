@@ -3,6 +3,12 @@
  * conferido de cada bloco. Os JSONs são do próprio servidor (`revisao-ppc/RevisaoIa.ts`), gravados e
  * lidos pelos schemas do contrato; uma falha do banco ou um JSON fora de forma é defeito, como no
  * `Historico`.
+ *
+ * Duas colunas ficam de fora da decodificação por schema: o plano (`revisoes_ia.plano`) e o resultado
+ * do bloco (`blocos_ia.resultado`). Os tipos delas (`PlanoRevisaoIa` em `preparo.ts`, `ResultadoBloco`
+ * em `julgamento.ts`) são tipos TypeScript, não `Schema`, e reescrevê-los como schema (com as fichas,
+ * os blocos e o contexto normativo) não se paga: aqui só se confere que são JSON, e a `RevisaoIa`, que
+ * os gravou, lê com os tipos dela.
  */
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
