@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off -- lê e grava os arquivos da rodada de forma síncrona; o Effect entra nas consultas ao kb (PacoteContexto) e no escopo do banco do PPC
+// @effect-diagnostics nodeBuiltinImport:off -- `node:path` só nas funções puras de caminho (`promptTemplate`); os arquivos passam pelo serviço `Rodada`
 /**
  * Grupos de fichas, contextos e pacotes de prompt para os sub-agentes e grupo
  * avulso de reavaliação (a mescla da reavaliação fica em `resultados.ts`).
@@ -12,12 +12,14 @@
  *
  * As funções que consultam o kb (`montarGruposSubagents`, `montarGrupoAvulso`,
  * `prepararPromptsSubagents`) são Effects que exigem o serviço `PacoteContexto` do kb, provido uma
- * vez no ponto de entrada (`camadaKb` em `revisar_ppc.ts`, sobre o `kb.sqlite` fresco). O resto é
- * leitura e escrita síncrona de arquivos da rodada.
+ * vez no ponto de entrada (`camadaKb` em `revisar_ppc.ts`, sobre o `kb.sqlite` fresco). Os arquivos
+ * da rodada e da base de análise passam pelo serviço `Rodada`. Ficam síncronos, por serem da
+ * validação da base que `scripts/validar_base.ts` chama, os marcos (`carregarMarcos`) e o universo
+ * de referências (`universoOuVazio`).
  */
-import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import * as Effect from "effect/Effect";
+import * as Path from "effect/Path";
 import * as Schema from "effect/Schema";
 import * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import type * as Sql from "@simplifica-if/kb/db/sql";
@@ -49,25 +51,13 @@ import {
 } from "@simplifica-if/kb/primitivas/valores";
 import type { UniversoReferencias } from "@simplifica-if/kb/normas/referencia-estruturada";
 import { aparar, compararTexto } from "@simplifica-if/kb/texto";
-import { listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { componentesMatriz, gerarContextoCnctRodada, lerJsonSeExistir } from "./cnct-catalogo.ts";
 import { STATUS_FUNDAMENTACAO_NORMATIVA } from "./esquemas.ts";
 import { marcoLegivel, referenciasLegiveisDaFicha, universoOuVazio } from "./referencias-fichas.ts";
 import { carregarMarcos } from "./validacao-base.ts";
-import {
-  caminhosRodada,
-  carregarFichas,
-  escreverJsonDaRodada,
-  escreverTextoDaRodada,
-  existe,
-  lerJsonDaRodada,
-  lerTexto,
-  ordenarPorId,
-  resolverCaminho,
-  sha256JsonPayload,
-  TAMANHO_GRUPO_PADRAO,
-} from "./rodada.ts";
+import * as Rodada from "./rodada.ts";
+import { ordenarPorId, sha256JsonPayload, TAMANHO_GRUPO_PADRAO } from "./rodada.ts";
 
 /** A rodada não tem o `PPC.md` canônico (rode `preparar-documento` antes). */
 export class RodadaSemPpc extends Schema.TaggedError<RodadaSemPpc>()("RodadaSemPpc", {
@@ -108,33 +98,38 @@ const CAMPOS_TEXTO_FICHA = ["titulo", "pergunta", "rubrica", "boa_evidencia", "m
 export type OpcoesSkill = { caminhos?: CaminhosAnalise; fichasDir?: string; validacoesDir?: string };
 
 /** Fichas ordenadas por `id` (code point). */
-export function carregarFichasOrdenadas(fichasDir?: string): Dicionario[] {
-  return ordenarPorId(carregarFichas(fichasDir ?? caminhosPadrao().fichasDir));
-}
+export const carregarFichasOrdenadas = Effect.fn("subagents.carregarFichasOrdenadas")(function* (fichasDir?: string) {
+  return ordenarPorId(yield* Rodada.carregarFichas(fichasDir ?? caminhosPadrao().fichasDir));
+});
 
 /** Validações cruzadas ordenadas por `id`, cada uma com o caminho do arquivo em `arquivo`. */
-export function carregarValidacoesCruzadasOrdenadas(validacoesDir?: string): Dicionario[] {
-  const diretorio = validacoesDir ?? caminhosPadrao().validacoesCruzadasDir;
-  const validacoes: Dicionario[] = [];
-  for (const arquivo of listarArquivos(diretorio, ".json")) {
-    const payload = lerJsonDaRodada(arquivo);
-    if (ehDicionario(payload)) validacoes.push({ ...payload, arquivo });
-  }
-  return ordenarPorId(validacoes);
-}
+export const carregarValidacoesCruzadasOrdenadas = Effect.fn("subagents.carregarValidacoesCruzadasOrdenadas")(
+  function* (validacoesDir?: string) {
+    const rodada = yield* Rodada.Rodada;
+    const diretorio = validacoesDir ?? caminhosPadrao().validacoesCruzadasDir;
+    const validacoes: Dicionario[] = [];
+    for (const arquivo of yield* rodada.listarArquivos(diretorio, ".json")) {
+      const payload = yield* rodada.lerJson(arquivo);
+      if (ehDicionario(payload)) validacoes.push({ ...payload, arquivo });
+    }
+    return ordenarPorId(validacoes);
+  },
+);
 
 export type Grupo = Dicionario & { grupo_id: string; fichas: Dicionario[] };
 
 /** Tópicos de `topicos-fichas.json`, na ordem da taxonomia. */
-export function carregarTopicosFichas(caminho = caminhosPadrao().topicosFichasPath): TopicoFichas[] {
-  const payload = lerJsonDaRodada(caminho);
+export const carregarTopicosFichas = Effect.fn("subagents.carregarTopicosFichas")(function* (
+  caminho: string = caminhosPadrao().topicosFichasPath,
+) {
+  const payload = yield* (yield* Rodada.Rodada).lerJson(caminho);
   const topicos = ehDicionario(payload) ? obter(payload, "topicos") : [];
   return (Array.isArray(topicos) ? topicos : []).filter(ehDicionario).map((topico) => ({
     ...topico,
     id: textoDoValor(obter(topico, "id")),
     fichas: itensIteraveis(obter(topico, "fichas", [])).map(textoDoValor),
   })) as TopicoFichas[];
-}
+});
 
 function comoFichaPacote(ficha: Dicionario): FichaPacote {
   return ficha as FichaPacote;
@@ -218,72 +213,85 @@ export function fichaParaSubagente(ficha: Dicionario, universo: UniversoReferenc
  * dispositivos revogados derivados de `base-conhecimento/relacoes.yaml`), ou lista vazia. Com
  * `universo`, as normas vêm por extenso ("Resolução CNE/CP nº 2/2026") em vez do ID.
  */
-export function carregarMarcosNormativos(
-  caminho = caminhosPadrao().marcosNormativosPath,
+export const carregarMarcosNormativos = Effect.fn("subagents.carregarMarcosNormativos")(function* (
+  caminho: string = caminhosPadrao().marcosNormativosPath,
   universo?: UniversoReferencias,
-): unknown[] {
-  if (!existe(caminho)) return [];
+) {
+  if (!(yield* (yield* Rodada.Rodada).existe(caminho))) return [];
   const marcos = carregarMarcos(caminho);
   return universo === undefined ? marcos : marcos.map((marco) => marcoLegivel(marco, universo));
-}
+});
 
 /** Contexto do protocolo `verificar-fundamentacao-normativa` para os sub-agentes. */
-export function contextoFundamentacaoNormativa(caminhos: CaminhosAnalise = caminhosPadrao()): Dicionario {
+export const contextoFundamentacaoNormativa = Effect.fn("subagents.contextoFundamentacaoNormativa")(function* (
+  caminhos: CaminhosAnalise = caminhosPadrao(),
+) {
+  const rodada = yield* Rodada.Rodada;
+  const path = yield* Path.Path;
   const base = caminhos.baseConhecimentoDir;
-  const skill = NodePath.join(NodePath.dirname(caminhos.appDir), "verificar-fundamentacao-normativa");
-  const seExiste = (caminho: string) => (existe(caminho) ? caminho : null);
-  return {
+  const skill = path.join(path.dirname(caminhos.appDir), "verificar-fundamentacao-normativa");
+  const seExiste = (caminho: string) => Effect.map(rodada.existe(caminho), (existe) => (existe ? caminho : null));
+  const contexto: Dicionario = {
     protocolo: "verificar-fundamentacao-normativa",
-    skill_path: seExiste(skill),
-    skill_instrucoes: seExiste(NodePath.join(skill, "SKILL.md")),
-    skill_relatorio: seExiste(NodePath.join(skill, "references", "relatorio.md")),
-    base_path: seExiste(base),
+    skill_path: yield* seExiste(skill),
+    skill_instrucoes: yield* seExiste(path.join(skill, "SKILL.md")),
+    skill_relatorio: yield* seExiste(path.join(skill, "references", "relatorio.md")),
+    base_path: yield* seExiste(base),
     manifestos: {
-      normas: seExiste(NodePath.join(base, "manifest.json")),
-      institucional: seExiste(NodePath.join(base, "institucional_manifest.json")),
-      catalogos: seExiste(NodePath.join(base, "catalogos_manifest.json")),
-      cnct: seExiste(NodePath.join(base, "catalogos", "cnct", "manifest.json")),
+      normas: yield* seExiste(path.join(base, "manifest.json")),
+      institucional: yield* seExiste(path.join(base, "institucional_manifest.json")),
+      catalogos: yield* seExiste(path.join(base, "catalogos_manifest.json")),
+      cnct: yield* seExiste(path.join(base, "catalogos", "cnct", "manifest.json")),
     },
     status_permitidos: [...STATUS_FUNDAMENTACAO_NORMATIVA],
-    marcos_normativos: carregarMarcosNormativos(caminhos.marcosNormativosPath, universoOuVazio(caminhos)),
+    marcos_normativos: yield* carregarMarcosNormativos(caminhos.marcosNormativosPath, universoOuVazio(caminhos)),
     observacao:
       "Use este contexto quando o PPC citar norma ou fizer afirmação com força normativa. " +
       "Os campos path dentro dos manifestos são relativos a base-conhecimento/. " +
       "Em marcos_normativos estão a norma vigente de cada tema, as normas substituídas e as regras de " +
       "transição; consulte-os antes de julgar a vigência de uma citação do PPC.",
   };
-}
+  return contexto;
+});
 
 /** Grava `validacoes-cruzadas-contexto.json` na rodada. */
-export function contextoValidacoesCruzadas(rodada: string, opcoes: OpcoesSkill = {}): Dicionario {
+export const contextoValidacoesCruzadas = Effect.fn("subagents.contextoValidacoesCruzadas")(function* (
+  rodadaDir: string,
+  opcoes: OpcoesSkill = {},
+) {
+  const rodada = yield* Rodada.Rodada;
+  const path = yield* Path.Path;
   const skill = opcoes.caminhos ?? caminhosPadrao();
-  const caminhos = caminhosRodada(rodada);
+  const caminhos = yield* rodada.caminhos(rodadaDir);
   const diretorio = opcoes.validacoesDir ?? skill.validacoesCruzadasDir;
-  const validacoes = carregarValidacoesCruzadasOrdenadas(diretorio);
-  const contexto = {
+  const validacoes = yield* carregarValidacoesCruzadasOrdenadas(diretorio);
+  const contexto: Dicionario = {
     total: validacoes.length,
-    fonte: resolverCaminho(diretorio),
-    prompt: NodePath.join(skill.promptsDir, "sintese-transversal.md"),
+    fonte: yield* rodada.resolverCaminho(diretorio),
+    prompt: path.join(skill.promptsDir, "sintese-transversal.md"),
     uso:
       "Executar depois da coleta das fichas. Avaliar cada validação cruzada aplicável e, " +
       "quando houver problema transversal, registrar alerta com validacao_id.",
     validacoes,
   };
-  escreverJsonDaRodada(caminhos.validacoesCruzadasContexto, contexto);
+  yield* rodada.escreverJson(caminhos.validacoesCruzadasContexto, contexto);
   return contexto;
-}
+});
 
-function preparacaoDocx(preparacao: string): Dicionario {
-  if (!existe(preparacao)) return {};
-  const payload = lerJsonDaRodada(preparacao);
-  return ehDicionario(payload) ? payload : {};
-}
+const preparacaoDocx = Effect.fn("subagents.preparacaoDocx")(function* (preparacao: string) {
+  const rodada = yield* Rodada.Rodada;
+  const vazia: Dicionario = {};
+  if (!(yield* rodada.existe(preparacao))) return vazia;
+  const payload = yield* rodada.lerJson(preparacao);
+  return ehDicionario(payload) ? payload : vazia;
+});
 
-function resolverCaminhoArtefato(valor: unknown): string | null {
+const resolverCaminhoArtefato = Effect.fn("subagents.resolverCaminhoArtefato")(function* (valor: unknown) {
   if (!verdadeiro(valor)) return null;
+  const rodada = yield* Rodada.Rodada;
   const caminho = textoDoValor(valor);
-  return existe(caminho) ? resolverCaminho(caminho) : null;
-}
+  return (yield* rodada.existe(caminho)) ? yield* rodada.resolverCaminho(caminho) : null;
+});
 
 /** Inteiro de número inteiro, float inteiro ou dos dígitos de um texto. */
 function valorInteiro(valor: unknown): number | null {
@@ -373,52 +381,59 @@ function resumoEmentario(ementario: Dicionario): Dicionario {
 }
 
 /** Grava `contexto-estrutural-subagents.json` com o resumo dos artefatos da conversão DOCX. */
-export function gerarContextoEstruturalSubagents(rodada: string): Dicionario {
-  const caminhos = caminhosRodada(rodada);
-  const preparacao = preparacaoDocx(caminhos.preparacaoDocx);
-  const dados = lerJsonSeExistir(obter(preparacao, "dados"));
-  const matriz = lerJsonSeExistir(obter(preparacao, "matriz_curricular"));
-  const ementario = lerJsonSeExistir(obter(preparacao, "ementario"));
-  const contexto = {
+export const gerarContextoEstruturalSubagents = Effect.fn("subagents.gerarContextoEstruturalSubagents")(function* (
+  rodadaDir: string,
+) {
+  const rodada = yield* Rodada.Rodada;
+  const caminhos = yield* rodada.caminhos(rodadaDir);
+  const preparacao = yield* preparacaoDocx(caminhos.preparacaoDocx);
+  const dados = yield* lerJsonSeExistir(obter(preparacao, "dados"));
+  const matriz = yield* lerJsonSeExistir(obter(preparacao, "matriz_curricular"));
+  const ementario = yield* lerJsonSeExistir(obter(preparacao, "ementario"));
+  const contexto: Dicionario = {
     artefatos: {
-      dados: resolverCaminhoArtefato(obter(preparacao, "dados")),
-      matriz_curricular: resolverCaminhoArtefato(obter(preparacao, "matriz_curricular")),
-      ementario: resolverCaminhoArtefato(obter(preparacao, "ementario")),
-      markdown_bruto: resolverCaminhoArtefato(obter(preparacao, "markdown_bruto")),
+      dados: yield* resolverCaminhoArtefato(obter(preparacao, "dados")),
+      matriz_curricular: yield* resolverCaminhoArtefato(obter(preparacao, "matriz_curricular")),
+      ementario: yield* resolverCaminhoArtefato(obter(preparacao, "ementario")),
+      markdown_bruto: yield* resolverCaminhoArtefato(obter(preparacao, "markdown_bruto")),
     },
     identificacao_extraida: obter(dados, "dados_extraidos", dados),
     matriz_curricular: resumoMatriz(matriz),
     ementario: resumoEmentario(ementario),
   };
-  escreverJsonDaRodada(caminhos.contextoEstruturalSubagents, contexto);
+  yield* rodada.escreverJson(caminhos.contextoEstruturalSubagents, contexto);
   return contexto;
-}
+});
 
 type AnexoVisual = { ficha_id: string; tipo: string; descricao: string; arquivo: string };
 
-function anexosVisuais(rodada: string): AnexoVisual[] {
-  const caminhos = caminhosRodada(rodada);
-  const preparacao = preparacaoDocx(caminhos.preparacaoDocx);
-  const dados = lerJsonSeExistir(obter(preparacao, "dados"));
+const anexosVisuais = Effect.fn("subagents.anexosVisuais")(function* (rodadaDir: string) {
+  const rodada = yield* Rodada.Rodada;
+  const path = yield* Path.Path;
+  const nenhum: AnexoVisual[] = [];
+  const caminhos = yield* rodada.caminhos(rodadaDir);
+  const preparacao = yield* preparacaoDocx(caminhos.preparacaoDocx);
+  const dados = yield* lerJsonSeExistir(obter(preparacao, "dados"));
   const representacao = obter(dados, "representacao_grafica");
-  if (!ehDicionario(representacao) || !verdadeiro(obter(representacao, "extraida"))) return [];
+  if (!ehDicionario(representacao) || !verdadeiro(obter(representacao, "extraida"))) return nenhum;
   const caminho = obter(representacao, "caminho");
-  if (!verdadeiro(caminho)) return [];
+  if (!verdadeiro(caminho)) return nenhum;
   let imagem = textoDoValor(caminho);
-  if (!NodePath.isAbsolute(imagem)) {
-    const base = NodePath.dirname(resolverCaminho(textoOuVazioDoValor(obter(preparacao, "dados")) || "."));
-    imagem = NodePath.join(base, imagem);
+  if (!path.isAbsolute(imagem)) {
+    const base = path.dirname(yield* rodada.resolverCaminho(textoOuVazioDoValor(obter(preparacao, "dados")) || "."));
+    imagem = path.join(base, imagem);
   }
-  if (!existe(imagem)) return [];
-  return [
+  if (!(yield* rodada.existe(imagem))) return nenhum;
+  const anexos: AnexoVisual[] = [
     {
       ficha_id: FICHA_REPRESENTACAO_GRAFICA,
       tipo: "imagem",
       descricao: "Representação gráfica do processo formativo extraída do PPC.",
-      arquivo: resolverCaminho(imagem),
+      arquivo: yield* rodada.resolverCaminho(imagem),
     },
   ];
-}
+  return anexos;
+});
 
 type Contextos = {
   cnct: Dicionario;
@@ -450,10 +465,11 @@ export type ContextoKbRodada = {
   ): Effect.Effect<PacoteAvulso, Sql.FalhaNaConsulta>;
 };
 
-export const abrirContextoKbRodada = Effect.fn("subagents.abrirContextoKbRodada")(function* (rodada: string) {
+export const abrirContextoKbRodada = Effect.fn("subagents.abrirContextoKbRodada")(function* (rodadaDir: string) {
   const pacotes = yield* PacoteContexto.PacoteContexto;
-  const caminhos = caminhosRodada(rodada);
-  const markdown = lerTexto(caminhos.ppc);
+  const rodada = yield* Rodada.Rodada;
+  const caminhos = yield* rodada.caminhos(rodadaDir);
+  const markdown = yield* rodada.lerTexto(caminhos.ppc);
   const avulso = yield* pacotes.abrirAvulso(markdown, {
     ppcId: PPC_ID_RODADA,
     path: caminhos.ppc,
@@ -556,20 +572,21 @@ const adicionarContextosGrupo = Effect.fn("subagents.adicionarContextosGrupo")(f
   grupo.contextos = saida;
 });
 
-function contextosDaRodada(rodada: string, skill: CaminhosAnalise): Contextos {
+const contextosDaRodada = Effect.fn("subagents.contextosDaRodada")(function* (rodada: string, skill: CaminhosAnalise) {
   const universo = universoOuVazio(skill);
-  return {
-    cnct: gerarContextoCnctRodada(rodada, { caminhos: skill }),
-    estrutura: gerarContextoEstruturalSubagents(rodada),
-    anexos: anexosVisuais(rodada),
-    fundamentacao: contextoFundamentacaoNormativa(skill),
+  const contextos: Contextos = {
+    cnct: yield* gerarContextoCnctRodada(rodada, { caminhos: skill }),
+    estrutura: yield* gerarContextoEstruturalSubagents(rodada),
+    anexos: yield* anexosVisuais(rodada),
+    fundamentacao: yield* contextoFundamentacaoNormativa(skill),
     marcosLegiveis: new Map(
-      carregarMarcosNormativos(skill.marcosNormativosPath, universo)
+      (yield* carregarMarcosNormativos(skill.marcosNormativosPath, universo))
         .filter(ehDicionario)
         .map((marco) => [textoDoValor(obter(marco, "id")), marco]),
     ),
   };
-}
+  return contextos;
+});
 
 /** Ficha da forma como vai para o sub-agente (referências legíveis), a partir da ficha da base. */
 function fichasParaSubagente(fichas: Dicionario[], universo: UniversoReferencias): Dicionario[] {
@@ -591,21 +608,24 @@ export const REGRA_AGRUPAMENTO =
 
 /** Grupos por tópico com contextos, gravados em `grupos-subagents.json`. */
 export const montarGruposSubagents = Effect.fn("subagents.montarGruposSubagents")(function* (
-  rodada: string,
+  rodadaDir: string,
   tamanhoGrupo: number = TAMANHO_GRUPO_PADRAO,
   opcoes: OpcoesSkill = {},
 ) {
+  const rodada = yield* Rodada.Rodada;
   const skill = opcoes.caminhos ?? caminhosPadrao();
-  const caminhos = caminhosRodada(rodada);
-  if (!existe(caminhos.ppc)) return yield* new RodadaSemPpc({ caminho: caminhos.ppc });
-  const metadata = existe(caminhos.metadata) ? (lerJsonDaRodada(caminhos.metadata) as Dicionario) : {};
+  const caminhos = yield* rodada.caminhos(rodadaDir);
+  if (!(yield* rodada.existe(caminhos.ppc))) return yield* new RodadaSemPpc({ caminho: caminhos.ppc });
+  const metadata = (yield* rodada.existe(caminhos.metadata))
+    ? ((yield* rodada.lerJson(caminhos.metadata)) as Dicionario)
+    : {};
   const universo = universoOuVazio(skill);
-  const fichas = carregarFichasOrdenadas(opcoes.fichasDir ?? skill.fichasDir);
-  const topicos = carregarTopicosFichas(skill.topicosFichasPath);
+  const fichas = yield* carregarFichasOrdenadas(opcoes.fichasDir ?? skill.fichasDir);
+  const topicos = yield* carregarTopicosFichas(skill.topicosFichasPath);
   const grupos = agruparFichasPorTopico(fichas, topicos, tamanhoGrupo);
-  const contextos = contextosDaRodada(rodada, skill);
-  const validacoes = contextoValidacoesCruzadas(rodada, opcoes);
-  const kb = yield* abrirContextoKbRodada(rodada);
+  const contextos = yield* contextosDaRodada(rodadaDir, skill);
+  const validacoes = yield* contextoValidacoesCruzadas(rodadaDir, opcoes);
+  const kb = yield* abrirContextoKbRodada(rodadaDir);
   for (const grupo of grupos) {
     yield* adicionarContextosGrupo(grupo, contextos, kb, caminhos.ppc);
     grupo.fichas = fichasParaSubagente(grupo.fichas, universo);
@@ -630,28 +650,30 @@ export const montarGruposSubagents = Effect.fn("subagents.montarGruposSubagents"
     agrupamento: { criterio: "topico", tamanho_maximo: tamanhoGrupo, regra: REGRA_AGRUPAMENTO },
     grupos,
   };
-  escreverJsonDaRodada(caminhos.gruposSubagents, payload);
+  yield* rodada.escreverJson(caminhos.gruposSubagents, payload);
   return payload;
 }, Effect.scoped);
 
 /** Grupo só com as fichas pedidas, gravado em `grupos-avulsos/`, com o pacote de prompt. */
 export const montarGrupoAvulso = Effect.fn("subagents.montarGrupoAvulso")(function* (
-  rodada: string,
+  rodadaDir: string,
   fichaIds: readonly string[],
   opcoes: OpcoesSkill = {},
 ) {
   if (!fichaIds.length) return yield* new GrupoAvulsoInvalido({ desconhecidas: [] });
+  const rodada = yield* Rodada.Rodada;
+  const path = yield* Path.Path;
   const skill = opcoes.caminhos ?? caminhosPadrao();
-  const caminhos = caminhosRodada(rodada);
+  const caminhos = yield* rodada.caminhos(rodadaDir);
   const fichasPorId = new Map<unknown, Dicionario>();
-  for (const ficha of carregarFichasOrdenadas(opcoes.fichasDir ?? skill.fichasDir)) {
+  for (const ficha of yield* carregarFichasOrdenadas(opcoes.fichasDir ?? skill.fichasDir)) {
     fichasPorId.set(obrigatorio(ficha, "id"), ficha);
   }
   const faltantes = fichaIds.filter((fichaId) => !fichasPorId.has(fichaId));
   if (faltantes.length) return yield* new GrupoAvulsoInvalido({ desconhecidas: faltantes });
   const universo = universoOuVazio(skill);
   const selecionadas = fichaIds.map((fichaId) => fichasPorId.get(fichaId)!);
-  const topicos = carregarTopicosFichas(skill.topicosFichasPath);
+  const topicos = yield* carregarTopicosFichas(skill.topicosFichasPath);
   const transversal = selecionadas.some(
     (ficha) => topicoPrincipal(comoFichaPacote(ficha), topicos) === TOPICO_TRANSVERSAL,
   );
@@ -665,8 +687,8 @@ export const montarGrupoAvulso = Effect.fn("subagents.montarGrupoAvulso")(functi
     total_fichas: selecionadas.length,
     fichas: selecionadas,
   };
-  const contextos = contextosDaRodada(rodada, skill);
-  const kb = yield* abrirContextoKbRodada(rodada);
+  const contextos = yield* contextosDaRodada(rodadaDir, skill);
+  const kb = yield* abrirContextoKbRodada(rodadaDir);
   yield* adicionarContextosGrupo(grupo, contextos, kb, caminhos.ppc);
   grupo.fichas = fichasParaSubagente(selecionadas, universo);
   const payload: Dicionario = {
@@ -675,11 +697,12 @@ export const montarGrupoAvulso = Effect.fn("subagents.montarGrupoAvulso")(functi
     prompt_template: promptTemplate(skill),
     grupo,
   };
-  NodeFS.mkdirSync(caminhos.gruposAvulsosDir, { recursive: true });
-  const destino = NodePath.join(caminhos.gruposAvulsosDir, `${grupo.grupo_id}.json`);
-  escreverJsonDaRodada(destino, payload);
-  const prompt = NodePath.join(caminhos.gruposAvulsosDir, `${grupo.grupo_id}.md`);
-  escreverTextoDaRodada(prompt, pacotePromptGrupo(lerTexto(caminhos.ppc), lerTexto(promptTemplate(skill)), grupo));
+  const destino = path.join(caminhos.gruposAvulsosDir, `${grupo.grupo_id}.json`);
+  yield* rodada.escreverJson(destino, payload);
+  const prompt = path.join(caminhos.gruposAvulsosDir, `${grupo.grupo_id}.md`);
+  const ppc = yield* rodada.lerTexto(caminhos.ppc);
+  const template = yield* rodada.lerTexto(promptTemplate(skill));
+  yield* rodada.escreverTexto(prompt, pacotePromptGrupo(ppc, template, grupo));
   payload.grupo_avulso_path = destino;
   payload.prompt_subagent_path = prompt;
   return payload;
@@ -752,30 +775,32 @@ function pacotePromptGrupo(ppc: string, template: string, grupo: unknown): strin
 
 /** Um pacote Markdown autocontido por grupo, mais `manifest.json`. */
 export const prepararPromptsSubagents = Effect.fn("subagents.prepararPromptsSubagents")(function* (
-  rodada: string,
+  rodadaDir: string,
   opcoes: OpcoesSkill = {},
 ) {
+  const rodada = yield* Rodada.Rodada;
+  const path = yield* Path.Path;
   const skill = opcoes.caminhos ?? caminhosPadrao();
-  const caminhos = caminhosRodada(rodada);
-  const payload = existe(caminhos.gruposSubagents)
-    ? (lerJsonDaRodada(caminhos.gruposSubagents) as Dicionario)
-    : yield* montarGruposSubagents(rodada, TAMANHO_GRUPO_PADRAO, opcoes);
+  const caminhos = yield* rodada.caminhos(rodadaDir);
+  const payload = (yield* rodada.existe(caminhos.gruposSubagents))
+    ? ((yield* rodada.lerJson(caminhos.gruposSubagents)) as Dicionario)
+    : yield* montarGruposSubagents(rodadaDir, TAMANHO_GRUPO_PADRAO, opcoes);
   const grupos = obter(payload, "grupos");
   if (!Array.isArray(grupos) || !grupos.every(ehDicionario)) {
     return yield* new GruposSubagentsInvalidos({ caminho: caminhos.gruposSubagents });
   }
-  const ppc = lerTexto(caminhos.ppc);
+  const ppc = yield* rodada.lerTexto(caminhos.ppc);
   const templatePath = textoDoValor(
-    ou(obter(payload, "prompt_template"), NodePath.join(skill.promptsDir, "subagent-lote-fichas.md")),
+    ou(obter(payload, "prompt_template"), path.join(skill.promptsDir, "subagent-lote-fichas.md")),
   );
-  const template = lerTexto(templatePath);
-  NodeFS.mkdirSync(caminhos.promptsSubagentsDir, { recursive: true });
+  const template = yield* rodada.lerTexto(templatePath);
+  yield* rodada.criarDiretorio(caminhos.promptsSubagentsDir);
   const arquivos: Dicionario[] = [];
   for (const grupo of grupos) {
     const grupoId = textoDoValor(ou(obter(grupo, "grupo_id"), "grupo"));
-    const destino = NodePath.join(caminhos.promptsSubagentsDir, `${grupoId}.md`);
+    const destino = path.join(caminhos.promptsSubagentsDir, `${grupoId}.md`);
     const texto = pacotePromptGrupo(ppc, template, grupo);
-    escreverTextoDaRodada(destino, texto);
+    yield* rodada.escreverTexto(destino, texto);
     arquivos.push({
       grupo_id: grupoId,
       topico: obter(grupo, "topico", null),
@@ -792,6 +817,6 @@ export const prepararPromptsSubagents = Effect.fn("subagents.prepararPromptsSuba
     caracteres_total: arquivos.reduce((total, arquivo) => total + valorNumerico(arquivo.caracteres), 0),
     arquivos,
   };
-  escreverJsonDaRodada(caminhos.promptsSubagentsManifest, manifest);
+  yield* rodada.escreverJson(caminhos.promptsSubagentsManifest, manifest);
   return manifest;
 });

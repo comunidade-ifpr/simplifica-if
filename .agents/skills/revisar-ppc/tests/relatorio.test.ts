@@ -1,12 +1,11 @@
-// @effect-diagnostics nodeBuiltinImport:off globalDate:off -- os testes montam rodadas em diretórios temporários e chamam a CLI por processo, com relógio fixo injetado
+// @effect-diagnostics nodeBuiltinImport:off globalDate:off globalJsonInEffect:off -- os testes montam rodadas em diretórios temporários e chamam a CLI por processo, com relógio fixo injetado; o JSON lido é a saída da CLI
 /**
  * Relatório HTML e publicação no Surge da revisar-ppc, mais os gabaritos da
  * indentação do HTML (`formatarHtml`), dos blocos do PPC e da leitura de
  * atributos (`desescaparAtributo`).
  */
 import * as NodeChildProcess from "node:child_process";
-import * as NodeServices from "@effect/platform-node/NodeServices";
-import { afterEach, describe, expect, it, layer, test } from "@effect/vitest";
+import { afterEach, describe, expect, layer, test } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
@@ -19,7 +18,6 @@ import { caminhosPadrao } from "../scripts/caminhos.ts";
 import { type Criticidade, esquemaAlertaTransversal, esquemaResultadoFicha } from "../scripts/esquemas.ts";
 import { desescaparAtributo } from "../scripts/eventos-html.ts";
 import { prepararDocumento } from "../scripts/preparar-documento.ts";
-import { lerReferenciasIdentificacao } from "../scripts/referencias-identificacao.ts";
 import { dominioSurgePadrao, prepararSiteSurge, publicarSiteSurge } from "../scripts/publicar-surge.ts";
 import {
   formatarHtml,
@@ -36,19 +34,20 @@ import {
   situacao,
   validarResultadosRodada,
 } from "../scripts/resultados.ts";
-import { caminhosRodada, escreverJsonDaRodada, lerJsonDaRodada } from "../scripts/rodada.ts";
+import { caminhosRodada } from "../scripts/rodada.ts";
 import {
   agruparFichasPorTopico,
   carregarFichasOrdenadas,
   carregarTopicosFichas,
   carregarValidacoesCruzadasOrdenadas,
 } from "../scripts/subagents.ts";
+import { CAMADA_RODADA, escreverJson, lerJson, referenciasDaBase } from "./apoio.ts";
 
 const caminhos = caminhosPadrao();
 const RAIZ = NodePath.resolve(caminhos.appDir, "../../..");
 const ENTRYPOINT = NodePath.join(caminhos.appDir, "scripts", "revisar_ppc.ts");
 const RELOGIO = () => new Date("2026-11-13T12:34:56Z");
-const REFERENCIAS = lerReferenciasIdentificacao(caminhosPadrao());
+const REFERENCIAS = referenciasDaBase();
 const TOTAL_FICHAS = NodeFS.readdirSync(caminhos.fichasDir).filter((nome) => nome.endsWith(".json")).length;
 
 const MARKDOWN_BASE = `# Curso Técnico em Informática
@@ -73,16 +72,17 @@ function diretorioTemporario(): string {
   return dir;
 }
 
-function criarRodada(markdown = MARKDOWN_BASE): string {
+const criarRodada = Effect.fn("teste.criarRodada")(function* (markdown: string = MARKDOWN_BASE) {
   const dir = diretorioTemporario();
   const arquivo = NodePath.join(dir, "PPC.md");
   NodeFS.writeFileSync(arquivo, markdown, "utf-8");
-  return prepararDocumento(arquivo, {
+  const preparada = yield* prepararDocumento(arquivo, {
     referencias: REFERENCIAS,
     saidaBase: NodePath.join(dir, "output"),
     relogio: RELOGIO,
-  }).rodadaDir;
-}
+  });
+  return preparada.rodadaDir;
+});
 
 function resultado(fichaId: string, estado = "ATENDE", evidencias = 3): Dicionario {
   return {
@@ -102,13 +102,15 @@ type Payload = {
   [k: string]: unknown;
 };
 
-function payloadResultadosCompletos(): Payload {
-  const grupos = agruparFichasPorTopico(carregarFichasOrdenadas(), carregarTopicosFichas(), 20).map((grupo) => ({
+const payloadResultadosCompletos = Effect.fn("teste.payloadResultadosCompletos")(function* () {
+  const fichas = yield* carregarFichasOrdenadas();
+  const grupos = agruparFichasPorTopico(fichas, yield* carregarTopicosFichas(), 20).map((grupo) => ({
     grupo_id: grupo.grupo_id,
     resultados: grupo.fichas.map((ficha) => resultado(String(ficha.id), "ATENDE", Number(ficha.evidencia_minima ?? 3))),
   }));
-  return { metadata: { origem: "teste" }, grupos };
-}
+  const payload: Payload = { metadata: { origem: "teste" }, grupos };
+  return payload;
+});
 
 function resultadoDa(payload: Payload, fichaId: string): Dicionario {
   for (const grupo of payload.grupos) {
@@ -118,13 +120,13 @@ function resultadoDa(payload: Payload, fichaId: string): Dicionario {
   throw new Error(`Ficha não encontrada no payload de teste: ${fichaId}`);
 }
 
-function primeiraValidacaoCruzada(): string {
-  return String(carregarValidacoesCruzadasOrdenadas()[0]!.id);
-}
+const primeiraValidacaoCruzada = Effect.fn("teste.primeiraValidacaoCruzada")(function* () {
+  return String((yield* carregarValidacoesCruzadasOrdenadas())[0]!.id);
+});
 
 /** Grava os resultados, gera o relatório e devolve o HTML. */
 const gerar = Effect.fn("teste.gerar")(function* (rodada: string, payload: unknown) {
-  escreverJsonDaRodada(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
+  escreverJson(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
   yield* gerarRelatorioHtml(rodada, "resultados-subagents.json");
   return NodeFS.readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8");
 });
@@ -366,14 +368,14 @@ describe("situação da revisão", () => {
     expect(situacao([item("BLOQ", "ATENDE"), item("REC", "NAO_ATENDE")])).toBe("APTO_PARA_SUBMISSAO");
     expect(Object.keys(SITUACOES_REVISAO)).toEqual(
       [
-        ...((lerJsonDaRodada(NodePath.join(caminhos.appDir, "config", "politica_revisao.json")) as Dicionario)
+        ...((lerJson(NodePath.join(caminhos.appDir, "config", "politica_revisao.json")) as Dicionario)
           .situacoes as string[]),
       ].reverse(),
     );
   });
 });
 
-describe("situação da revisão com alertas transversais", () => {
+layer(CAMADA_RODADA)("situação da revisão com alertas transversais", (it) => {
   const item = (criticidade: string, estado: string, revisao = false) =>
     ({ criticidade, estado, revisao_humana_obrigatoria: revisao }) as unknown as ResultadoNormalizado;
   const alerta = (criticidade: Criticidade, revisao = false) => ({
@@ -393,12 +395,12 @@ describe("situação da revisão com alertas transversais", () => {
 
   it.effect("gerar-relatorio-html e validar-resultados contam alerta BLOQ com todas as fichas ATENDE", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
-      const payload = payloadResultadosCompletos();
+      const rodada = yield* criarRodada();
+      const payload = yield* payloadResultadosCompletos();
       payload.alertas_transversais = [
         {
           id: "ALERTA-001",
-          validacao_id: primeiraValidacaoCruzada(),
+          validacao_id: yield* primeiraValidacaoCruzada(),
           titulo: "Inconsistência bloqueante",
           criticidade: "BLOQ",
           descricao: "Carga horária da matriz diverge da identificação.",
@@ -407,7 +409,7 @@ describe("situação da revisão com alertas transversais", () => {
           revisao_humana_obrigatoria: false,
         },
       ];
-      escreverJsonDaRodada(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
+      escreverJson(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
       expect((yield* validarResultadosRodada(rodada, "resultados-subagents.json")).situacao).toBe(
         "REVISAO_SUBSTANCIAL",
       );
@@ -420,14 +422,14 @@ describe("situação da revisão com alertas transversais", () => {
   );
 });
 
-describe("gerar-relatorio-html", () => {
+layer(CAMADA_RODADA)("gerar-relatorio-html", (it) => {
   it.effect("aceita resultados válidos", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
+      const rodada = yield* criarRodada();
       const rodadaPaths = caminhosRodada(rodada);
-      escreverJsonDaRodada(
+      escreverJson(
         NodePath.join(rodadaPaths.suporteDir, "resultados-subagents.json"),
-        payloadResultadosCompletos(),
+        yield* payloadResultadosCompletos(),
       );
       const payload = yield* gerarRelatorioHtml(rodada, "resultados-subagents.json");
       expect(payload.relatorio_html).toBe(rodadaPaths.relatorioHtml);
@@ -454,8 +456,8 @@ describe("gerar-relatorio-html", () => {
 
   it.effect("ordena a margem pela posição no PPC", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
-      const payload = payloadResultadosCompletos();
+      const rodada = yield* criarRodada();
+      const payload = yield* payloadResultadosCompletos();
       const ancorar = (fichaId: string, blockId: string, quote: string, secao: string) => {
         const item = resultadoDa(payload, fichaId);
         const total = Math.max(3, (item.evidencias as unknown[]).length);
@@ -481,8 +483,8 @@ describe("gerar-relatorio-html", () => {
 
   it.effect("renderiza fundamentação normativa", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
-      const payload = payloadResultadosCompletos();
+      const rodada = yield* criarRodada();
+      const payload = yield* payloadResultadosCompletos();
       payload.grupos[0]!.resultados[0]!.fundamentacao_normativa = [
         {
           status: "CONFIRMADA_COM_RESSALVA",
@@ -505,8 +507,8 @@ describe("gerar-relatorio-html", () => {
 
   it.effect("renderiza evidência estruturada só com trecho e seção", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
-      const payload = payloadResultadosCompletos();
+      const rodada = yield* criarRodada();
+      const payload = yield* payloadResultadosCompletos();
       payload.grupos[0]!.resultados[0]!.evidencias = [
         {
           trecho: "O PPC identifica o curso como Técnico em Informática.",
@@ -534,8 +536,8 @@ describe("gerar-relatorio-html", () => {
 
   it.effect("usa assets externos e anota o PPC", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
-      const payload = payloadResultadosCompletos();
+      const rodada = yield* criarRodada();
+      const payload = yield* payloadResultadosCompletos();
       const primeiro = resultadoDa(payload, "CT-CURR-01");
       primeiro.estado = "NAO_ATENDE";
       primeiro.revisao_humana_obrigatoria = true;
@@ -613,8 +615,8 @@ describe("gerar-relatorio-html", () => {
   ];
   it.effect.each(negativos)("rejeita %s", ([, mutar, mensagem]) =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
-      const payload = payloadResultadosCompletos();
+      const rodada = yield* criarRodada();
+      const payload = yield* payloadResultadosCompletos();
       mutar(payload);
       const erro = yield* Effect.flip(gerar(rodada, payload));
       expect(erro).toBeInstanceOf(ErroResultadosSubagents);
@@ -624,12 +626,12 @@ describe("gerar-relatorio-html", () => {
 
   it.effect("renderiza alertas transversais", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
-      const payload = payloadResultadosCompletos();
+      const rodada = yield* criarRodada();
+      const payload = yield* payloadResultadosCompletos();
       payload.alertas_transversais = [
         {
           id: "ALERTA-001",
-          validacao_id: primeiraValidacaoCruzada(),
+          validacao_id: yield* primeiraValidacaoCruzada(),
           titulo: "Inconsistência transversal",
           criticidade: "OBRIG",
           descricao: "Perfil e matriz precisam de revisão conjunta.",
@@ -638,7 +640,7 @@ describe("gerar-relatorio-html", () => {
           revisao_humana_obrigatoria: true,
         },
       ];
-      escreverJsonDaRodada(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
+      escreverJson(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
       const relatorio = yield* gerarRelatorioHtml(rodada, "resultados-subagents.json");
       expect(relatorio.total_alertas_transversais).toBe(1);
       const html = NodeFS.readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8");
@@ -651,8 +653,8 @@ describe("gerar-relatorio-html", () => {
 
   it.effect("renderiza alerta transversal com várias âncoras", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
-      const payload = payloadResultadosCompletos();
+      const rodada = yield* criarRodada();
+      const payload = yield* payloadResultadosCompletos();
       const ponto = (secao: string, trecho: string, blockId: string) => ({
         secao,
         trecho,
@@ -663,7 +665,7 @@ describe("gerar-relatorio-html", () => {
       payload.alertas_transversais = [
         {
           id: "ALERTA-001",
-          validacao_id: primeiraValidacaoCruzada(),
+          validacao_id: yield* primeiraValidacaoCruzada(),
           titulo: "Divergência entre identificação e apresentação",
           criticidade: "OBRIG",
           descricao: "Dois pontos do PPC precisam ser lidos em conjunto.",
@@ -693,14 +695,14 @@ describe("gerar-relatorio-html", () => {
 
   it.effect("renderiza feedback aos autores", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
-      const payload = payloadResultadosCompletos();
+      const rodada = yield* criarRodada();
+      const payload = yield* payloadResultadosCompletos();
       const texto = "Recomenda-se explicitar a articulação entre concepção, perfil e matriz.";
       const item = resultadoDa(payload, "CT-TRANS-08");
       item.estado = "NAO_ATENDE";
       item.revisao_humana_obrigatoria = true;
       item.feedback_autores = texto;
-      escreverJsonDaRodada(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
+      escreverJson(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
       const relatorio = yield* gerarRelatorioHtml(rodada, "resultados-subagents.json");
       expect(relatorio.total_fichas).toBe(TOTAL_FICHAS);
       const html = NodeFS.readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8");
@@ -730,17 +732,17 @@ function semNulos(valor: unknown): unknown {
 }
 
 /** Os resultados completos com o resultado e o alerta da fixture no lugar. */
-function payloadComCamposNulos(): Payload {
-  const payload = payloadResultadosCompletos();
+const payloadComCamposNulos = Effect.fn("teste.payloadComCamposNulos")(function* () {
+  const payload = yield* payloadResultadosCompletos();
   const [nulo] = CAMPOS_NULOS.resultados;
   for (const grupo of payload.grupos) {
     grupo.resultados = grupo.resultados.map((item) => (item.ficha_id === nulo!.ficha_id ? nulo! : item));
   }
   payload.alertas_transversais = CAMPOS_NULOS.alertas_transversais;
   return payload;
-}
+});
 
-describe("campos opcionais com null", () => {
+layer(CAMADA_RODADA)("campos opcionais com null", (it) => {
   test("a decodificação tira as chaves com null", () => {
     const resultado = Schema.decodeUnknownSync(esquemaResultadoFicha)(CAMPOS_NULOS.resultados[0]);
     expect(resultado).not.toHaveProperty("fundamentacao_normativa");
@@ -765,8 +767,8 @@ describe("campos opcionais com null", () => {
 
   it.effect("gerar-relatorio-html aceita null e gera o mesmo HTML que sem as chaves", () =>
     Effect.gen(function* () {
-      const comNulos = yield* gerar(criarRodada(), payloadComCamposNulos());
-      const semAsChaves = yield* gerar(criarRodada(), semNulos(payloadComCamposNulos()));
+      const comNulos = yield* gerar(yield* criarRodada(), yield* payloadComCamposNulos());
+      const semAsChaves = yield* gerar(yield* criarRodada(), semNulos(yield* payloadComCamposNulos()));
       expect(comNulos).toBe(semAsChaves);
       expect(comNulos).toContain('id="ALERTA-001"');
       expect(comNulos).toContain("Resultado sintético com null nos campos opcionais.");
@@ -806,7 +808,7 @@ describe("chaves a mais nos resultados", () => {
   });
 });
 
-layer(NodeServices.layer)("publicação no Surge", (it) => {
+layer(CAMADA_RODADA)("publicação no Surge", (it) => {
   it.effect("chama a CLI com a pasta e o domínio", () =>
     Effect.gen(function* () {
       const dir = diretorioTemporario();
@@ -912,54 +914,64 @@ layer(NodeServices.layer)("publicação no Surge", (it) => {
     );
   });
 
-  test("a CLI publica por padrão e grava surge-publicacao.json", () => {
-    const rodada = criarRodada();
-    const rodadaPaths = caminhosRodada(rodada);
-    escreverJsonDaRodada(
-      NodePath.join(rodadaPaths.suporteDir, "resultados-subagents.json"),
-      payloadResultadosCompletos(),
-    );
-    const falso = surgeFalso(diretorioTemporario(), "echo 'Success - Published'");
-    const processo = NodeChildProcess.spawnSync(
-      process.execPath,
-      [ENTRYPOINT, "gerar-relatorio-html", "--rodada-dir", rodada, "--surge-domain", "relatorio-ppc.surge.sh"],
-      { cwd: RAIZ, env: { ...process.env, REVISAR_PPC_SURGE_CMD: falso } },
-    );
-    expect(processo.status).toBe(0);
-    const saida = JSON.parse(processo.stdout.toString());
-    expect(saida.publicacao_servico).toBe("surge");
-    expect(saida.surge_url).toBe("https://relatorio-ppc.surge.sh");
-    expect(saida.situacao).toBe("APTO_PARA_SUBMISSAO");
-    expect(saida.mensagem).toBe(
-      "Relatório de revisão do PPC pronto (Apto para submissão): https://relatorio-ppc.surge.sh. " +
-        "Revisão prévia à submissão; não substitui a análise oficial da PROENS.",
-    );
-    expect(NodeFS.existsSync(rodadaPaths.relatorioHtml)).toBe(true);
-    const site = NodePath.join(rodadaPaths.suporteDir, "surge-site");
-    expect(casefold(NodeFS.readFileSync(NodePath.join(site, "index.html"), "utf-8"))).toContain("<script");
-    expect(NodeFS.existsSync(NodePath.join(site, "assets", "revisar-ppc.css"))).toBe(true);
-    expect(NodeFS.existsSync(NodePath.join(site, "assets", "revisar-ppc.js"))).toBe(true);
-    const publicacao = lerJsonDaRodada(NodePath.join(rodadaPaths.suporteDir, "surge-publicacao.json")) as Dicionario;
-    expect(publicacao.domain).toBe("relatorio-ppc.surge.sh");
-    expect(publicacao.site_dir).toBe(site);
-    expect(publicacao.relatorio_html_original).toBe(rodadaPaths.relatorioHtml);
-  });
+  it.effect("a CLI publica por padrão e grava surge-publicacao.json", () =>
+    Effect.gen(function* () {
+      const rodada = yield* criarRodada();
+      const rodadaPaths = caminhosRodada(rodada);
+      escreverJson(
+        NodePath.join(rodadaPaths.suporteDir, "resultados-subagents.json"),
+        yield* payloadResultadosCompletos(),
+      );
+      const falso = surgeFalso(diretorioTemporario(), "echo 'Success - Published'");
+      const processo = NodeChildProcess.spawnSync(
+        process.execPath,
+        [ENTRYPOINT, "gerar-relatorio-html", "--rodada-dir", rodada, "--surge-domain", "relatorio-ppc.surge.sh"],
+        { cwd: RAIZ, env: { ...process.env, REVISAR_PPC_SURGE_CMD: falso } },
+      );
+      expect(processo.status).toBe(0);
+      const saida = JSON.parse(processo.stdout.toString());
+      expect(saida.publicacao_servico).toBe("surge");
+      expect(saida.surge_url).toBe("https://relatorio-ppc.surge.sh");
+      expect(saida.situacao).toBe("APTO_PARA_SUBMISSAO");
+      expect(saida.mensagem).toBe(
+        "Relatório de revisão do PPC pronto (Apto para submissão): https://relatorio-ppc.surge.sh. " +
+          "Revisão prévia à submissão; não substitui a análise oficial da PROENS.",
+      );
+      expect(NodeFS.existsSync(rodadaPaths.relatorioHtml)).toBe(true);
+      const site = NodePath.join(rodadaPaths.suporteDir, "surge-site");
+      expect(casefold(NodeFS.readFileSync(NodePath.join(site, "index.html"), "utf-8"))).toContain("<script");
+      expect(NodeFS.existsSync(NodePath.join(site, "assets", "revisar-ppc.css"))).toBe(true);
+      expect(NodeFS.existsSync(NodePath.join(site, "assets", "revisar-ppc.js"))).toBe(true);
+      const publicacao = lerJson(NodePath.join(rodadaPaths.suporteDir, "surge-publicacao.json")) as Dicionario;
+      expect(publicacao.domain).toBe("relatorio-ppc.surge.sh");
+      expect(publicacao.site_dir).toBe(site);
+      expect(publicacao.relatorio_html_original).toBe(rodadaPaths.relatorioHtml);
+    }),
+  );
 
-  test("--sem-surge devolve a URL local codificada (caminhoComoUri)", () => {
-    const rodada = criarRodada();
-    escreverJsonDaRodada(
-      NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"),
-      payloadResultadosCompletos(),
-    );
-    const processo = NodeChildProcess.spawnSync(
-      process.execPath,
-      [ENTRYPOINT, "gerar-relatorio-html", "--rodada-dir", rodada, "--sem-surge"],
-      { cwd: RAIZ },
-    );
-    expect(processo.status).toBe(0);
-    const saida = JSON.parse(processo.stdout.toString());
-    expect(Object.keys(saida)).toEqual(["relatorio_html", "relatorio_url", "situacao", "situacao_rotulo", "mensagem"]);
-    expect(saida.situacao_rotulo).toBe("Apto para submissão");
-    expect(saida.relatorio_url).toBe(`file://${caminhosRodada(rodada).relatorioHtml}`);
-  });
+  it.effect("--sem-surge devolve a URL local codificada (caminhoComoUri)", () =>
+    Effect.gen(function* () {
+      const rodada = yield* criarRodada();
+      escreverJson(
+        NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"),
+        yield* payloadResultadosCompletos(),
+      );
+      const processo = NodeChildProcess.spawnSync(
+        process.execPath,
+        [ENTRYPOINT, "gerar-relatorio-html", "--rodada-dir", rodada, "--sem-surge"],
+        { cwd: RAIZ },
+      );
+      expect(processo.status).toBe(0);
+      const saida = JSON.parse(processo.stdout.toString());
+      expect(Object.keys(saida)).toEqual([
+        "relatorio_html",
+        "relatorio_url",
+        "situacao",
+        "situacao_rotulo",
+        "mensagem",
+      ]);
+      expect(saida.situacao_rotulo).toBe("Apto para submissão");
+      expect(saida.relatorio_url).toBe(`file://${caminhosRodada(rodada).relatorioHtml}`);
+    }),
+  );
 });

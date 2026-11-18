@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off -- leitura e escrita síncronas dos arquivos da rodada, dentro dos Effects
+// @effect-diagnostics nodeBuiltinImport:off -- `node:path` só em `noSuporte`, que monta o caminho de forma pura; os arquivos passam pelo serviço `Rodada`
 /**
  * Leitura do JSON de resultados dos sub-agentes, usada por `validar-resultados` e por
  * `gerar-relatorio-html` (`relatorio-html.ts`), e mescla das reavaliações avulsas
@@ -12,14 +12,12 @@
  */
 import * as NodePath from "node:path";
 import * as Effect from "effect/Effect";
-import * as Predicate from "effect/Predicate";
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
 import { problemas } from "@simplifica-if/kb/esquema/mensagens";
-import { ErroJsonTipado, serializarJsonTipado } from "@simplifica-if/kb/primitivas/json-tipado";
+import { serializarJsonTipado } from "@simplifica-if/kb/primitivas/json-tipado";
 import type { Dicionario } from "@simplifica-if/kb/primitivas/valores";
 import { aparar, compararTexto } from "@simplifica-if/kb/texto";
-import { listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import {
   aberto,
@@ -31,8 +29,8 @@ import {
   type Estado,
   type Ficha,
 } from "./esquemas.ts";
-import { caminhosRodada, escreverJsonDaRodada, lerJsonDaRodada, sha256JsonPayload } from "./rodada.ts";
-import { carregarFichasOrdenadas } from "./subagents.ts";
+import * as Rodada from "./rodada.ts";
+import { sha256JsonPayload } from "./rodada.ts";
 
 // ---------------------------------------------------------------- erro
 
@@ -158,23 +156,19 @@ const ORIGEM = {
  * Lê um JSON de resultados. Arquivo ausente ou JSON inválido (o sub-agente que escreve texto em
  * volta do JSON) é `ErroResultadosSubagents`, não defeito.
  */
-function lerJsonDeResultados(arquivo: string, origem: string) {
-  return Effect.try({
-    try: () => lerJsonDaRodada(arquivo),
-    catch: (cause) =>
-      new ErroResultadosSubagents({
-        categoria:
-          cause instanceof ErroJsonTipado
-            ? "json-invalido"
-            : Predicate.hasProperty(cause, "code") && cause.code === "ENOENT"
-              ? "arquivo-ausente"
-              : "arquivo-ilegivel",
-        origem,
-        arquivo,
-        cause,
-      }),
-  });
-}
+const lerJsonDeResultados = Effect.fn("resultados.lerJsonDeResultados")(function* (arquivo: string, origem: string) {
+  const rodada = yield* Rodada.Rodada;
+  const erro = (categoria: "arquivo-ausente" | "arquivo-ilegivel" | "json-invalido", cause: unknown) =>
+    Effect.fail(new ErroResultadosSubagents({ categoria, origem, arquivo, cause }));
+  return yield* rodada.lerJson(arquivo).pipe(
+    Effect.catchTags({
+      ArquivoDaRodadaAusente: (cause) => erro("arquivo-ausente", cause),
+      JsonDaRodadaInvalido: (cause) => erro("json-invalido", cause),
+      TextoDaRodadaInvalido: (cause) => erro("arquivo-ilegivel", cause),
+      PlatformError: (cause) => erro("arquivo-ilegivel", cause),
+    }),
+  );
+});
 
 // ---------------------------------------------------------------- contrato
 
@@ -247,28 +241,52 @@ export function blocosResultados(
 
 // ---------------------------------------------------------------- catálogos
 
+const decodificarFicha = Schema.decodeUnknownEffect(esquemaFicha);
+const decodificarValidacao = Schema.decodeUnknownEffect(esquemaValidacaoCruzada);
+
 /** Fichas por `id`, na ordem do id, decodificadas pelo contrato da ficha. */
-export function catalogoFichas(fichasDir?: string): Map<string, Ficha> {
-  const decodificar = Schema.decodeUnknownSync(esquemaFicha);
-  return new Map(
-    carregarFichasOrdenadas(fichasDir).map((bruta) => {
-      const ficha = decodificar(jsonSimples(bruta));
-      return [ficha.id, ficha];
-    }),
-  );
-}
+export const catalogoFichas = Effect.fn("resultados.catalogoFichas")(function* (
+  fichasDir: string = caminhosPadrao().fichasDir,
+) {
+  const rodada = yield* Rodada.Rodada;
+  const fichas: Ficha[] = [];
+  for (const arquivo of yield* rodada.listarArquivos(fichasDir, ".json")) {
+    const bruta = yield* rodada.lerJson(arquivo);
+    fichas.push(
+      yield* decodificarFicha(jsonSimples(bruta)).pipe(
+        Effect.mapError(
+          (cause) =>
+            new Rodada.JsonDaRodadaInvalido({ arquivo, esperado: "uma ficha no contrato de esquemas.ts", cause }),
+        ),
+      ),
+    );
+  }
+  const porId = new Map<string, Ficha>();
+  for (const ficha of [...fichas].sort((a, b) => compararTexto(a.id, b.id))) porId.set(ficha.id, ficha);
+  return porId;
+});
 
 /** Títulos das validações cruzadas por `id`. */
-export function catalogoValidacoes(validacoesDir?: string): Map<string, { readonly titulo: string }> {
-  const diretorio = validacoesDir ?? caminhosPadrao().validacoesCruzadasDir;
-  const decodificar = Schema.decodeUnknownSync(esquemaValidacaoCruzada);
-  return new Map(
-    listarArquivos(diretorio, ".json").map((arquivo) => {
-      const validacao = decodificar(jsonSimples(lerJsonDaRodada(arquivo)));
-      return [validacao.id, { titulo: validacao.titulo }];
-    }),
-  );
-}
+export const catalogoValidacoes = Effect.fn("resultados.catalogoValidacoes")(function* (
+  validacoesDir: string = caminhosPadrao().validacoesCruzadasDir,
+) {
+  const rodada = yield* Rodada.Rodada;
+  const porId = new Map<string, { readonly titulo: string }>();
+  for (const arquivo of yield* rodada.listarArquivos(validacoesDir, ".json")) {
+    const validacao = yield* decodificarValidacao(jsonSimples(yield* rodada.lerJson(arquivo))).pipe(
+      Effect.mapError(
+        (cause) =>
+          new Rodada.JsonDaRodadaInvalido({
+            arquivo,
+            esperado: "uma validação cruzada no contrato de esquemas.ts",
+            cause,
+          }),
+      ),
+    );
+    porId.set(validacao.id, { titulo: validacao.titulo });
+  }
+  return porId;
+});
 
 // ---------------------------------------------------------------- normalização
 
@@ -599,11 +617,6 @@ function noSuporte(caminho: string, suporteDir: string): string {
   return NodePath.isAbsolute(caminho) ? caminho : NodePath.join(suporteDir, caminho);
 }
 
-/** Caminho do JSON de resultados: o absoluto como está; o relativo, em `arquivos-suporte/`. */
-export function resolverResultadosPath(rodada: string, resultados: string): string {
-  return noSuporte(resultados, caminhosRodada(rodada).suporteDir);
-}
-
 /** Resultados da rodada lidos, decodificados e conferidos contra as fichas e as validações. */
 export type ResultadosDaRodada = {
   caminho: string;
@@ -619,12 +632,12 @@ export const lerResultadosDaRodada = Effect.fn("resultados.lerResultadosDaRodada
   resultados: string,
   caminhos: CaminhosAnalise = caminhosPadrao(),
 ) {
-  const caminho = resolverResultadosPath(caminhosRodada(rodada).rodadaDir, resultados);
+  const caminho = noSuporte(resultados, (yield* (yield* Rodada.Rodada).caminhos(rodada)).suporteDir);
   const payload = yield* Effect.fromResult(
     decodificarResultados(yield* lerJsonDeResultados(caminho, ORIGEM.rodada), ORIGEM.rodada),
   );
-  const fichasPorId = catalogoFichas(caminhos.fichasDir);
-  const validacoesPorId = catalogoValidacoes(caminhos.validacoesCruzadasDir);
+  const fichasPorId = yield* catalogoFichas(caminhos.fichasDir);
+  const validacoesPorId = yield* catalogoValidacoes(caminhos.validacoesCruzadasDir);
   const blocos = yield* Effect.fromResult(blocosResultados(payload, ORIGEM.rodada));
   const normalizados = yield* Effect.fromResult(validarResultadosSubagents(blocos, fichasPorId, ORIGEM.rodada));
   const alertasNormalizados = yield* Effect.fromResult(
@@ -690,7 +703,8 @@ export const mesclarResultadosAvulsos = Effect.fn("resultados.mesclarResultadosA
   saida?: string,
   caminhosAnalise: CaminhosAnalise = caminhosPadrao(),
 ) {
-  const caminhos = caminhosRodada(rodada);
+  const rodadaSvc = yield* Rodada.Rodada;
+  const caminhos = yield* rodadaSvc.caminhos(rodada);
   const saidaResolvida = noSuporte(saida || resultadosBase, caminhos.suporteDir);
   const baseBruta = (yield* lerJsonDeResultados(
     noSuporte(resultadosBase, caminhos.suporteDir),
@@ -704,7 +718,9 @@ export const mesclarResultadosAvulsos = Effect.fn("resultados.mesclarResultadosA
   const avulso = yield* Effect.fromResult(decodificarResultados(avulsoBruto, ORIGEM.avulso));
   yield* Effect.fromResult(blocosResultados(base, ORIGEM.base));
   const blocosAvulso = yield* Effect.fromResult(blocosResultados(avulso, ORIGEM.avulso));
-  yield* Effect.fromResult(normalizarBlocos(blocosAvulso, catalogoFichas(caminhosAnalise.fichasDir), ORIGEM.avulso));
+  yield* Effect.fromResult(
+    normalizarBlocos(blocosAvulso, yield* catalogoFichas(caminhosAnalise.fichasDir), ORIGEM.avulso),
+  );
   const resultadosNovos = gruposBrutos(avulsoBruto).flatMap(resultadosBrutos);
   if (!resultadosNovos.length) {
     return yield* new ErroResultadosSubagents({ categoria: "avulso-sem-resultados", origem: ORIGEM.avulso });
@@ -728,7 +744,7 @@ export const mesclarResultadosAvulsos = Effect.fn("resultados.mesclarResultadosA
     ? { ...baseBruta, grupos: gruposMesclados }
     : { ...semBlocoUnico, grupos: gruposMesclados };
   payload.metadata = { ...(payload.metadata as Dicionario | undefined), reavaliacoes_mescladas: idsOrdenados };
-  escreverJsonDaRodada(saidaResolvida, payload);
+  yield* rodadaSvc.escreverJson(saidaResolvida, payload);
   const mescla: Dicionario = {
     resultados_path: saidaResolvida,
     fichas_substituidas: idsOrdenados,
