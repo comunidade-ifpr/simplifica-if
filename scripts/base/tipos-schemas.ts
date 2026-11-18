@@ -333,7 +333,17 @@ export interface IndicePpcsJson {
     proveniencia: {
       situacao: "registrada" | "reconstruida";
       fonte_url: string;
+      /**
+       * SHA-256 dos bytes de fonte_url, ou desconhecido.
+       */
       fonte_sha256: string;
+      /**
+       * Arquivo que de fato foi convertido, quando não é o de fonte_url (o DOCX enviado pela coordenação do curso), com o SHA-256 dos bytes.
+       */
+      arquivo_convertido?: {
+        tipo: "docx";
+        sha256: string;
+      };
       convertido_em: string;
       conversor: string;
     };

@@ -3,15 +3,24 @@
  *
  * A base guarda só o PPC vigente de cada curso; versões anteriores ficam no histórico do git. Por
  * isso o ID do PPC é `ppc:<campus_id>/<curso_slug>`, sem versão. O front matter registra de onde
- * veio o texto: URL do arquivo-fonte, hash SHA-256 dos bytes baixados, data e versão do conversor.
+ * veio o texto: o endereço publicado (`fonte_url`), o hash SHA-256 dos bytes desse endereço
+ * (`fonte_sha256`), o arquivo que de fato foi convertido (`arquivo_convertido` e
+ * `arquivo_convertido_sha256`), a data e a versão do conversor.
  *
- * - `proveniencia: registrada`: gravada no momento da conversão; hash e conversor são conhecidos.
+ * `fonte_sha256` só vale para os bytes de `fonte_url`: quem baixa a URL e calcula o hash deve achar o
+ * mesmo valor. Quando o texto vem de outro arquivo (o DOCX que a coordenação envia, com `fonte_url`
+ * apontando para o PDF publicado), `fonte_sha256` fica `desconhecido` e o hash do arquivo convertido
+ * vai em `arquivo_convertido_sha256`.
+ *
+ * - `proveniencia: registrada`: gravada no momento da conversão; o conversor e o hash do que foi
+ *   convertido (`fonte_sha256` ou `arquivo_convertido_sha256`) são conhecidos.
  * - `proveniencia: reconstruida`: preenchida depois, a partir do histórico do git, para PPCs
  *   convertidos antes do front matter existir. O que não é verificável fica `desconhecido`, com o
  *   motivo em `nota_proveniencia`.
  *
  * O YAML é lido pelo mesmo parser das normas (`yaml` em schema `failsafe`): todo valor é texto ou
- * lista de texto.
+ * lista de texto, sem mapa aninhado; por isso o arquivo convertido são dois campos. O índice
+ * `ppcs/index.json` os publica juntos, como `arquivo_convertido: { tipo, sha256 }`.
  */
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
@@ -34,6 +43,8 @@ export const CAMPOS_PROVENIENCIA = [
   "fonte_sha256",
   "convertido_em",
   "conversor",
+  "arquivo_convertido",
+  "arquivo_convertido_sha256",
   "proveniencia",
   "conversao_commit",
   "pos_processamento_commits",
@@ -53,6 +64,12 @@ export const esquemaProvenienciaPpc = Schema.Struct({
   ]),
   convertido_em: padrao(/^\d{4}-\d{2}-\d{2}$/, "convertido_em deve ser AAAA-MM-DD"),
   conversor: textoNaoVazio,
+  /** Tipo do arquivo convertido quando ele não é o de `fonte_url` (o DOCX da coordenação do curso). */
+  arquivo_convertido: Schema.optionalKey(Schema.Literal("docx")),
+  /** SHA-256 dos bytes desse arquivo. */
+  arquivo_convertido_sha256: Schema.optionalKey(
+    padrao(RE_SHA256, "arquivo_convertido_sha256 deve ter 64 hexadecimais"),
+  ),
   proveniencia: Schema.Literals(["registrada", "reconstruida"]),
   /** Commit em que o texto convertido entrou no git (só na proveniência reconstruída). */
   conversao_commit: Schema.optionalKey(padrao(RE_COMMIT, "conversao_commit deve ter 40 hexadecimais")),
@@ -64,9 +81,18 @@ export const esquemaProvenienciaPpc = Schema.Struct({
 }).check(
   Schema.makeFilter((meta) => {
     const achados: Schema.FilterIssue[] = [];
+    if ((meta.arquivo_convertido === undefined) !== (meta.arquivo_convertido_sha256 === undefined)) {
+      achados.push({
+        path: ["arquivo_convertido"],
+        issue: "arquivo_convertido e arquivo_convertido_sha256 vêm juntos",
+      });
+    }
     if (meta.proveniencia === "registrada") {
-      if (meta.fonte_sha256 === DESCONHECIDO) {
-        achados.push({ path: ["fonte_sha256"], issue: "proveniência registrada exige o hash" });
+      if (meta.fonte_sha256 === DESCONHECIDO && !meta.arquivo_convertido_sha256) {
+        achados.push({
+          path: ["fonte_sha256"],
+          issue: "proveniência registrada exige o hash (fonte_sha256 ou arquivo_convertido_sha256)",
+        });
       }
       if (meta.conversor === DESCONHECIDO) {
         achados.push({ path: ["conversor"], issue: "proveniência registrada exige o conversor" });

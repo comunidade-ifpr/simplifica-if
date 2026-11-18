@@ -42,9 +42,24 @@ export function limparUrlsAssinadas<T>(valor: T): T {
  */
 export const RE_PLANILHA_GOOGLE = /https?:\/\/docs\.google\.com\/spreadsheets\/[^\s"'<>)\]]*/gi;
 export const TEXTO_PLANILHA = "planilha interna (link omitido)";
+/**
+ * Link Markdown para a planilha (`[texto](url)`, `[texto](<url>)`, `[texto](url "título")`): sai inteiro,
+ * para não sobrar `[texto](planilha interna (link omitido))`, que é link quebrado.
+ */
+const RE_LINK_PLANILHA =
+  /\[([^\]\n]*)\]\(\s*<?https?:\/\/docs\.google\.com\/spreadsheets\/[^\s<>)]*>?(?:\s+"[^"\n]*")?\s*\)/gi;
+const RE_SO_PLANILHA = /^https?:\/\/docs\.google\.com\/spreadsheets\/\S*$/i;
+
+/** O texto do link fica, com a nota no lugar do endereço; sem texto (ou com a própria URL), só a nota. */
+function semLinkDePlanilha(rotulo: string): string {
+  const texto = rotulo.trim();
+  return !texto || RE_SO_PLANILHA.test(texto) ? TEXTO_PLANILHA : `${texto} (planilha interna, link omitido)`;
+}
 
 export function semPlanilhasGoogle(texto: string): string {
-  return texto.replace(RE_PLANILHA_GOOGLE, TEXTO_PLANILHA);
+  return texto
+    .replace(RE_LINK_PLANILHA, (_link, rotulo: string) => semLinkDePlanilha(rotulo))
+    .replace(RE_PLANILHA_GOOGLE, TEXTO_PLANILHA);
 }
 
 /**
@@ -64,4 +79,34 @@ export function semSessaoSei(texto: string): string {
       return limpa.includes("?") ? limpa : limpa.replace("&", "?");
     })
     .replace(RE_HASH_SOLTO, "");
+}
+
+/** URL `http(s)` contínua num texto (para achar as pré-assinadas). */
+const RE_URL = /https?:\/\/[^\s"'<>)\]]+/gi;
+
+export type ContagemUrls = { planilhas: number; sessoesSei: number; assinadas: number };
+
+/**
+ * URLs internas de um texto que vai para a base pública: tira os parâmetros de sessão do SEI
+ * (`semSessaoSei`), os links de planilha do Google (`semPlanilhasGoogle`) e a query das URLs
+ * pré-assinadas (`semAssinatura`). A contagem diz quantas de cada havia, nunca o valor.
+ */
+export function limparUrlsInternas(texto: string): { texto: string; contagem: ContagemUrls } {
+  const contagem: ContagemUrls = { planilhas: 0, sessoesSei: 0, assinadas: 0 };
+  contagem.sessoesSei = texto.match(new RegExp(RE_URL_SESSAO_SEI.source, "gi"))?.length ?? 0;
+  const limpo = semSessaoSei(texto)
+    .replace(RE_LINK_PLANILHA, (_link, rotulo: string) => {
+      contagem.planilhas += 1;
+      return semLinkDePlanilha(rotulo);
+    })
+    .replace(RE_PLANILHA_GOOGLE, () => {
+      contagem.planilhas += 1;
+      return TEXTO_PLANILHA;
+    })
+    .replace(RE_URL, (url) => {
+      if (!ehUrlAssinada(url)) return url;
+      contagem.assinadas += 1;
+      return semAssinatura(url);
+    });
+  return { texto: limpo, contagem };
 }

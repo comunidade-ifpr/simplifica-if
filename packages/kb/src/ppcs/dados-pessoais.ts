@@ -36,6 +36,14 @@ export const MARCADORES = {
   siape: "[SIAPE omitido]",
 } as const;
 export type Categoria = keyof typeof MARCADORES;
+/** Nome de cada categoria nas mensagens que trazem só contagens (`validar_base`, importação de PPC). */
+export const ROTULOS_PESSOAIS: Record<Categoria, string> = {
+  cpf: "CPF",
+  rg: "RG",
+  telefone: "celular",
+  matricula: "matrícula",
+  siape: "SIAPE",
+};
 export type Contagem = Record<Categoria, number>;
 
 /** Fronteira de palavra que conhece letras acentuadas (`\b` acharia "rg" em "órgão"). */

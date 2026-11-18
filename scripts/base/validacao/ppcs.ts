@@ -3,7 +3,7 @@
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { ehDiretorio, listarDiretorio, naBase } from "../caminhos.ts";
-import { taxonomiasPublicadas, TIPOS_SECAO_INDEXADOS, VERSAO_INDICE } from "../indice-ppcs.ts";
+import { resumoProveniencia, taxonomiasPublicadas, TIPOS_SECAO_INDEXADOS, VERSAO_INDICE } from "../indice-ppcs.ts";
 import { ehObjeto, type ObjetoJson, valoresIguais } from "@simplifica-if/kb/json";
 import { ehErroFrontMatter } from "@simplifica-if/kb/normas/front-matter";
 import { analisarPpc, idPpc } from "@simplifica-if/kb/ppcs/front-matter";
@@ -232,17 +232,10 @@ function validarProvenienciaItem(
   }
   if (typeof item.fonte_pdf === "string" && proveniencia.fonte_url !== item.fonte_pdf) {
     erros.push(
-      `${valorPath}: fonte_url do front matter difere do ppc.url vigente (${item.fonte_pdf}); o PPC mudou e precisa ser reconvertido (sem ferramenta de entrada por ora; ver PLANO-ARQUITETURA.md) ou ppc.url está errado`,
+      `${valorPath}: fonte_url do front matter difere do ppc.url vigente (${item.fonte_pdf}); o PPC mudou e precisa ser reimportado (node scripts/importar_ppc_docx.ts) ou ppc.url está errado`,
     );
   }
-  const resumo = {
-    situacao: proveniencia.proveniencia,
-    fonte_url: proveniencia.fonte_url,
-    fonte_sha256: proveniencia.fonte_sha256,
-    convertido_em: proveniencia.convertido_em,
-    conversor: proveniencia.conversor,
-  };
-  if (!valoresIguais(item.proveniencia, resumo)) {
+  if (!valoresIguais(item.proveniencia, resumoProveniencia(proveniencia))) {
     erros.push(`índice de PPCs: proveniencia de ${ppcId} diverge do front matter`);
   }
   return erros;

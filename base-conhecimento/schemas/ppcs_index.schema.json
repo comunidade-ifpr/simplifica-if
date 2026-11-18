@@ -488,7 +488,28 @@
               },
               "fonte_sha256": {
                 "type": "string",
+                "description": "SHA-256 dos bytes de fonte_url, ou desconhecido.",
                 "pattern": "^(?:[0-9a-f]{64}|desconhecido)$"
+              },
+              "arquivo_convertido": {
+                "type": "object",
+                "description": "Arquivo que de fato foi convertido, quando não é o de fonte_url (o DOCX enviado pela coordenação do curso), com o SHA-256 dos bytes.",
+                "required": [
+                  "tipo",
+                  "sha256"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "tipo": {
+                    "enum": [
+                      "docx"
+                    ]
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  }
+                }
               },
               "convertido_em": {
                 "type": "string",

@@ -496,13 +496,13 @@ Decididas:
 - Movimentações fora do escopo;
 - política de versão de PPC: só o vigente, com o histórico no git e ID `ppc:<campus_id>/<curso_slug>` sem versão (13/11/2026, fase 4);
 - fallback "rendered" de figuras na conversão DOCX: removido, com aviso no `PPC.md` (16/11/2026, T3). Nos 12 PPCs do corpus, a figura vetorial é o fluxograma da representação gráfica, desenhado com formas do Word;
-- conversor de PDF de PPCs (T5): removido, sem porte nem exceção Python; o repositório não tem mais código Python (17/11/2026).
+- conversor de PDF de PPCs (T5): removido, sem porte nem exceção Python; o repositório não tem mais código Python (17/11/2026);
+- entrada de PPC novo na base (era o item 3 de "Em aberto"): script DOCX → base, pedindo o DOCX à coordenação do curso; PDF continua sem conversão, e não há conversão de PDF em TypeScript (17/11/2026). O `scripts/importar_ppc_docx.ts` converte com `converterPpc`, omite dados pessoais e URLs internas, grava o front matter de proveniência `registrada` e atualiza `ppc.url` e `ppc.markdown_path`; veja [Andamento](#andamento).
 
 Em aberto:
 
 1. **Modelo e orçamento do harness de avaliação:** modelo fixado e número de execuções por pergunta (fase 1).
 2. **Data do DOU e URL oficial da Res. CNE/CP 2/2026:** necessárias para `publicada_em` e `vigente_de`; até lá, a vigência dela e a revogação da 1/2021 saem como "a confirmar" (fase 5).
-3. **Entrada de PPC novo na base:** sem o conversor de PDF, nada converte um PPC e o grava em `ppc.markdown_path`. A conversão DOCX (`packages/ppc`, `converterPpc`) gera os arquivos da revisão prévia, não o Markdown da base: falta um script que a use, aplique `omitirDadosPessoais`, grave o front matter (`serializarFrontMatterPpc`, proveniência `registrada`) e regenere os índices. Pesa porque 201 dos 207 `ppc.url` apontam para PDF, e o `validar_base.ts` exige `fonte_url` igual ao `ppc.url`: um curso que troque de PPC fica sem como atualizar a base. Decidir entre o script DOCX → base (pedindo o DOCX à coordenação) e uma conversão de PDF em TypeScript (17/11/2026).
 
 ## Andamento
 
@@ -849,6 +849,16 @@ Em aberto:
 - saiu o diferencial `packages/ppc/scripts/diferencial-docx.ts` e o que só ele usava: o modo de leitura `python-docx`, as regras liga/desliga de `regras.ts` e o nível de seção configurável do normalizador. Os gabaritos de `packages/ppc/test/fixtures/conversao-docx/` passaram a ser os artefatos do modo padrão dos 17 documentos sintéticos, gerados com o código anterior à remoção e reproduzidos byte a byte;
 - o kit `packages/kb/src/python/` virou `packages/kb/src/primitivas/` (`regex.ts`, `sequencias.ts`, `json-tipado.ts`, `shell.ts`, `quebra-de-linhas.ts`), `html-py.ts` virou `eventos-html.ts`, e os nomes com sufixo `Py` ganharam nomes do que fazem; os comentários descrevem o comportamento, sem a paridade com o Python;
 - `git ls-files '*.py'` não lista nada, e `git grep -niE 'python|pytest|pymupdf|\.venv'` só acha os registros históricos, o código copiado do T3 e o texto dos PPCs da base.
+
+**Entrada de PPC novo na base em 17/11/2026** (branch `t3/importar-ppc-docx`). Fecha o item 3 de "Em aberto" a favor do DOCX:
+
+- `node scripts/importar_ppc_docx.ts <campus_id>/<curso_slug> <arquivo.docx> --fonte-url <url> [--substituir]`, com a lógica em `scripts/base/importar-ppc.ts` e 16 testes sobre os DOCX sintéticos de `packages/ppc` numa base temporária;
+- `fonte_url` e `ppc.url` recebem o mesmo `--fonte-url`, e o `validar_base.ts` passa sem exceção nova. O `fonte_sha256` continua sendo o hash dos bytes de `fonte_url` e fica `desconhecido` (o script não baixa a URL); o hash do DOCX vai no campo novo `arquivo_convertido_sha256`, com `arquivo_convertido: docx`, que o índice publica como `arquivo_convertido: { tipo, sha256 }`. O `conversor` é `simplifica-if/packages/ppc@<commit>`, com `-modificado` se o checkout tem alteração não comitada em arquivo rastreado fora de `base-conhecimento/`, `site/`, `tmp/` e `outputs/` (a saída depende também de `packages/kb`, `scripts/base/importar-ppc.ts`, `scripts/dados/urls.ts` e do próprio script);
+- o Markdown e o registro são calculados antes de qualquer escrita e gravados por temporário + `renameSync`; se o segundo falha, o primeiro volta ao anterior. `ppc` entra antes de `notion_page_id` e `markdown_path` logo depois de `url`, sem mexer na ordem dos registros já completos; `ppc.observacoes` fica e a saída a aponta como "a reconferir";
+- `limparUrlsInternas` (`scripts/dados/urls.ts`) é a limpeza de URLs internas do importador e da exportação dos processos SEI; um link Markdown para planilha vira `texto (planilha interna, link omitido)`;
+- a figura da representação gráfica vira aviso, porque a base não publica `imagens/`; ano e vagas já registrados voltam a "Precisa de revisão";
+- o script não regenera índices nem o site: imprime os quatro comandos do pipeline, que vêm depois da leitura do Markdown (e-mail particular sai à mão);
+- o passo a passo está em "Entrada de PPC novo na base", na doc de curadoria.
 
 ## Histórico de revisões
 
