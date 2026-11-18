@@ -1,21 +1,48 @@
-// @effect-diagnostics nodeBuiltinImport:off extendsNativeError:off -- publicação síncrona pela CLI do Surge; o erro é lançado com a saída da CLI montada no ponto da falha
 /**
  * Publicação do relatório no Surge.
  *
  * Só chama a CLI `surge` (por padrão `npx --yes surge`; o ponto de entrada troca o comando pelo de
- * `REVISAR_PPC_SURGE_CMD`) com a pasta do site e o domínio, e confere a saída.
+ * `REVISAR_PPC_SURGE_CMD`) com a pasta do site e o domínio, e confere a saída. O processo sobe pelo
+ * `ChildProcessSpawner` e a pasta é montada pelo `FileSystem`.
  */
-import * as NodeChildProcess from "node:child_process";
-import * as NodeFS from "node:fs";
-import * as NodePath from "node:path";
+import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
+import * as Path from "effect/Path";
+import * as Schema from "effect/Schema";
+import * as Stream from "effect/Stream";
+import * as ChildProcess from "effect/process/ChildProcess";
+import * as ChildProcessSpawner from "effect/process/ChildProcessSpawner";
 import { search } from "@simplifica-if/kb/primitivas/regex";
 import { asciiNfkd, casefold } from "@simplifica-if/kb/primitivas/texto";
 import { aparar, apararCaracteres } from "@simplifica-if/kb/texto";
-import { resolverCaminho } from "./rodada.ts";
 
-export class ErroPublicacaoSurge extends Error {
-  override name = "ErroPublicacaoSurge";
+/**
+ * A CLI do Surge não publicou. A saída dela (que pode trazer e-mail e token da conta) fica só em
+ * `cause`; a mensagem diz o que houve e o código de saída.
+ */
+export class ErroPublicacaoSurge extends Schema.TaggedError<ErroPublicacaoSurge>()("ErroPublicacaoSurge", {
+  categoria: Schema.Literals(["nao-iniciou", "falhou", "pediu-login", "sem-confirmacao"]),
+  codigo: Schema.optional(Schema.Number),
+  cause: Schema.Defect(),
+}) {
+  override get message(): string {
+    switch (this.categoria) {
+      case "nao-iniciou":
+        return "Falha ao publicar relatório no Surge: o comando da CLI não pôde ser executado.";
+      case "falhou":
+        return `Falha ao publicar relatório no Surge: a CLI terminou com o código ${this.codigo}.`;
+      case "pediu-login":
+        return (
+          "Falha ao publicar relatório no Surge: a CLI solicitou autenticação interativa. " +
+          "Execute `npx surge login` ou configure credenciais de automação do Surge no ambiente."
+        );
+      case "sem-confirmacao":
+        return "Surge não retornou confirmação de publicação reconhecível.";
+    }
+  }
 }
+
+export const ehErroPublicacaoSurge = Schema.is(ErroPublicacaoSurge);
 
 function slug(valor: string, limite = 48): string {
   const ascii = asciiNfkd(valor).toLowerCase();
@@ -28,33 +55,37 @@ function slug(valor: string, limite = 48): string {
   return resultado || "relatorio";
 }
 
-/** Domínio padrão: `revisar-ppc-<slug da rodada>.surge.sh`. */
+/** Domínio padrão: `revisar-ppc-<slug do nome da pasta da rodada>.surge.sh`. */
 export function dominioSurgePadrao(rodadaDir: string): string {
-  return `revisar-ppc-${slug(NodePath.basename(rodadaDir))}.surge.sh`;
+  const nome =
+    rodadaDir
+      .replace(/[\\/]+$/, "")
+      .split(/[\\/]/)
+      .at(-1) ?? "";
+  return `revisar-ppc-${slug(nome)}.surge.sh`;
 }
 
 /** Monta a pasta publicada: `index.html` (cópia do relatório) e `assets/`, recriada do zero. */
-export function prepararSiteSurge(relatorioHtml: string, destinoDir: string): string {
-  if (NodeFS.existsSync(destinoDir)) NodeFS.rmSync(destinoDir, { recursive: true });
-  NodeFS.mkdirSync(destinoDir, { recursive: true });
-  NodeFS.copyFileSync(relatorioHtml, NodePath.join(destinoDir, "index.html"));
-  const assetsOrigem = NodePath.join(NodePath.dirname(relatorioHtml), "assets");
-  if (NodeFS.existsSync(assetsOrigem))
-    NodeFS.cpSync(assetsOrigem, NodePath.join(destinoDir, "assets"), { recursive: true });
+export const prepararSiteSurge = Effect.fn("publicar_surge.prepararSiteSurge")(function* (
+  relatorioHtml: string,
+  destinoDir: string,
+) {
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
+  yield* fs.remove(destinoDir, { recursive: true, force: true });
+  yield* fs.makeDirectory(destinoDir, { recursive: true });
+  yield* fs.copyFile(relatorioHtml, path.join(destinoDir, "index.html"));
+  const assetsOrigem = path.join(path.dirname(relatorioHtml), "assets");
+  if (yield* fs.exists(assetsOrigem)) yield* fs.copy(assetsOrigem, path.join(destinoDir, "assets"));
   return destinoDir;
-}
+});
 
-const COMANDO_SURGE = ["npx", "--yes", "surge"];
+const COMANDO_SURGE = ["npx", "--yes", "surge"] as const;
 
 function normalizarUrl(dominio: string): string {
   let valor = aparar(dominio);
   while (valor.endsWith("/")) valor = valor.slice(0, -1);
   return /^https?:\/\//i.test(valor) ? valor : `https://${valor}`;
-}
-
-/** Saída do processo em UTF-8 estrito, com quebras de linha universais. */
-function textoDoProcesso(bytes: Uint8Array): string {
-  return new TextDecoder("utf-8", { fatal: true }).decode(bytes).replace(/\r\n?/g, "\n");
 }
 
 export type PublicacaoSurge = {
@@ -67,39 +98,50 @@ export type PublicacaoSurge = {
   relatorio_html_original?: string;
 };
 
+/** Saída do processo em texto, com quebras de linha universais e sem os brancos das pontas. */
+const textoDoProcesso = <E>(fluxo: Stream.Stream<Uint8Array, E>) =>
+  fluxo.pipe(
+    Stream.decodeText,
+    Stream.mkString,
+    Effect.map((texto) => aparar(texto.replace(/\r\n?/g, "\n"))),
+  );
+
 /**
- * Publica `siteDir` no Surge em `dominio`, com `comando` (padrão `npx --yes surge`); lança
- * `ErroPublicacaoSurge` se a CLI falhar ou não confirmar.
+ * Publica `siteDir` no Surge em `dominio`, com `comando` (padrão `npx --yes surge`); falha com
+ * `ErroPublicacaoSurge` se a CLI não rodar, falhar, pedir login ou não confirmar.
  */
-export function publicarSiteSurge(
+export const publicarSiteSurge = Effect.fn("publicar_surge.publicarSiteSurge")(function* (
   siteDir: string,
   dominio: string,
-  comando: readonly string[] = COMANDO_SURGE,
-): PublicacaoSurge {
-  const site = resolverCaminho(siteDir);
+  comando: ReadonlyArray<string> = COMANDO_SURGE,
+) {
+  const fs = yield* FileSystem.FileSystem;
+  const path = yield* Path.Path;
+  const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
+  const site = yield* fs.realPath(path.resolve(siteDir));
   const [executavel, ...argumentos] = comando.length ? comando : COMANDO_SURGE;
-  const processo = NodeChildProcess.spawnSync(executavel!, [...argumentos, site, dominio], {
-    input: "",
-    stdio: "pipe",
-    maxBuffer: 64 * 1024 * 1024,
-  });
-  if (processo.error) throw processo.error;
-  const stdout = aparar(textoDoProcesso(processo.stdout));
-  const stderr = aparar(textoDoProcesso(processo.stderr));
-  const saida = [stdout, stderr].filter(Boolean).join("\n");
-  const detalhes = saida ? `\n${saida}` : "";
+  const { codigo, stdout, stderr } = yield* Effect.scoped(
+    Effect.gen(function* () {
+      const processo = yield* spawner.spawn(
+        ChildProcess.make(executavel!, [...argumentos, site, dominio], { stdin: "ignore" }),
+      );
+      const [saiu, saida, erros] = yield* Effect.all(
+        [processo.exitCode, textoDoProcesso(processo.stdout), textoDoProcesso(processo.stderr)],
+        { concurrency: 3 },
+      );
+      return { codigo: Number(saiu), stdout: saida, stderr: erros };
+    }),
+  ).pipe(Effect.mapError((cause) => new ErroPublicacaoSurge({ categoria: "nao-iniciou", cause })));
 
-  if (processo.status !== 0) throw new ErroPublicacaoSurge(`Falha ao publicar relatório no Surge.${detalhes}`);
+  const saida = [stdout, stderr].filter(Boolean).join("\n");
+  const falha = (categoria: "falhou" | "pediu-login" | "sem-confirmacao") =>
+    new ErroPublicacaoSurge({ categoria, codigo, cause: { stdout, stderr } });
+  if (codigo !== 0) return yield* falha("falhou");
   if (search("\\bLogin or create surge account\\b|\\bemail:\\s*$", saida, { ignoreCase: true })) {
-    throw new ErroPublicacaoSurge(
-      "Falha ao publicar relatório no Surge: a CLI solicitou autenticação interativa. " +
-        "Execute `npx surge login` ou configure credenciais de automação do Surge no ambiente.",
-    );
+    return yield* falha("pediu-login");
   }
-  if (!casefold(saida).includes("success")) {
-    throw new ErroPublicacaoSurge(`Surge não retornou confirmação de publicação reconhecível.${detalhes}`);
-  }
-  return {
+  if (!casefold(saida).includes("success")) return yield* falha("sem-confirmacao");
+  const publicacao: PublicacaoSurge = {
     servico: "surge",
     site_dir: site,
     domain: dominio,
@@ -107,4 +149,5 @@ export function publicarSiteSurge(
     stdout,
     stderr,
   };
-}
+  return publicacao;
+});

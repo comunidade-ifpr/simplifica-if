@@ -227,20 +227,18 @@ const gerarRelatorio = Effect.fn("revisar_ppc.gerarRelatorio")(function* (opcoes
   const rodada = caminhosRodada(opcoes.rodadaDir);
   const dominioConfigurado = yield* textoDoAmbiente("REVISAR_PPC_SURGE_DOMAIN");
   const comando = Option.map(yield* textoDoAmbiente("REVISAR_PPC_SURGE_CMD"), dividirComandoShell);
-  return yield* executar(() => {
-    const siteDir = prepararSiteSurge(relatorio.relatorio_html, path.join(rodada.suporteDir, "surge-site"));
-    const dominio = Option.getOrElse(
-      Option.orElse(
-        Option.filter(opcoes.surgeDomain, (valor) => valor !== ""),
-        () => dominioConfigurado,
-      ),
-      () => dominioSurgePadrao(rodada.rodadaDir),
-    );
-    const publicacao = publicarSiteSurge(siteDir, dominio, Option.getOrUndefined(comando));
-    publicacao.relatorio_html_original = resolverCaminho(relatorio.relatorio_html);
-    escreverJsonDaRodada(path.join(rodada.suporteDir, "surge-publicacao.json"), publicacao);
-    return payloadRelatorio(relatorio, publicacao);
-  });
+  const siteDir = yield* prepararSiteSurge(relatorio.relatorio_html, path.join(rodada.suporteDir, "surge-site"));
+  const dominio = Option.getOrElse(
+    Option.orElse(
+      Option.filter(opcoes.surgeDomain, (valor) => valor !== ""),
+      () => dominioConfigurado,
+    ),
+    () => dominioSurgePadrao(rodada.rodadaDir),
+  );
+  const publicacao = yield* publicarSiteSurge(siteDir, dominio, Option.getOrUndefined(comando));
+  publicacao.relatorio_html_original = resolverCaminho(relatorio.relatorio_html);
+  escreverJsonDaRodada(path.join(rodada.suporteDir, "surge-publicacao.json"), publicacao);
+  return payloadRelatorio(relatorio, publicacao);
 });
 
 // --- flags comuns ---

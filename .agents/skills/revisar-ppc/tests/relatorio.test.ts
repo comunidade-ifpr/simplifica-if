@@ -5,7 +5,8 @@
  * atributos (`desescaparAtributo`).
  */
 import * as NodeChildProcess from "node:child_process";
-import { afterEach, describe, expect, it, test } from "@effect/vitest";
+import * as NodeServices from "@effect/platform-node/NodeServices";
+import { afterEach, describe, expect, it, layer, test } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
@@ -707,34 +708,59 @@ describe("gerar-relatorio-html", () => {
   );
 });
 
-describe("publicação no Surge", () => {
-  test("chama a CLI com a pasta e o domínio", () => {
-    const dir = diretorioTemporario();
-    const relatorio = NodePath.join(dir, "relatorio.html");
-    NodeFS.writeFileSync(relatorio, "<!doctype html><html><body><script>ok()</script></body></html>");
-    const site = prepararSiteSurge(relatorio, NodePath.join(dir, "surge-site"));
-    const argumentos = NodePath.join(dir, "args.txt");
-    const falso = surgeFalso(
-      dir,
-      `printf '%s\\n' "$@" > "${argumentos}"\necho 'Success - Published to revisar-ppc-teste.surge.sh'`,
-    );
-    const payload = publicarSiteSurge(site, "revisar-ppc-teste.surge.sh", [falso]);
-    expect(payload.public_url).toBe("https://revisar-ppc-teste.surge.sh");
-    expect(payload.domain).toBe("revisar-ppc-teste.surge.sh");
-    expect(NodeFS.readFileSync(NodePath.join(site, "index.html"), "utf-8")).toContain("<script>ok()</script>");
-    expect(NodeFS.readFileSync(argumentos, "utf-8")).toBe(`${site}\nrevisar-ppc-teste.surge.sh\n`);
-  });
+layer(NodeServices.layer)("publicação no Surge", (it) => {
+  it.effect("chama a CLI com a pasta e o domínio", () =>
+    Effect.gen(function* () {
+      const dir = diretorioTemporario();
+      const relatorio = NodePath.join(dir, "relatorio.html");
+      NodeFS.writeFileSync(relatorio, "<!doctype html><html><body><script>ok()</script></body></html>");
+      NodeFS.mkdirSync(NodePath.join(dir, "assets"));
+      NodeFS.writeFileSync(NodePath.join(dir, "assets", "revisar-ppc.css"), "body {}");
+      const site = yield* prepararSiteSurge(relatorio, NodePath.join(dir, "surge-site"));
+      const argumentos = NodePath.join(dir, "args.txt");
+      const falso = surgeFalso(
+        dir,
+        `printf '%s\\n' "$@" > "${argumentos}"\necho 'Success - Published to revisar-ppc-teste.surge.sh'`,
+      );
+      const payload = yield* publicarSiteSurge(site, "revisar-ppc-teste.surge.sh", [falso]);
+      expect(payload.public_url).toBe("https://revisar-ppc-teste.surge.sh");
+      expect(payload.domain).toBe("revisar-ppc-teste.surge.sh");
+      expect(payload.stdout).toBe("Success - Published to revisar-ppc-teste.surge.sh");
+      expect(NodeFS.readFileSync(NodePath.join(site, "index.html"), "utf-8")).toContain("<script>ok()</script>");
+      expect(NodeFS.readFileSync(NodePath.join(site, "assets", "revisar-ppc.css"), "utf-8")).toBe("body {}");
+      const siteReal = NodeFS.realpathSync(site);
+      expect(NodeFS.readFileSync(argumentos, "utf-8")).toBe(`${siteReal}\nrevisar-ppc-teste.surge.sh\n`);
+    }),
+  );
 
-  test("recusa saída sem confirmação, pedido de login e código de erro", () => {
-    const dir = diretorioTemporario();
-    const site = NodePath.join(dir, "site");
-    const mudo = surgeFalso(dir, "echo 'Publicando...'");
-    expect(() => publicarSiteSurge(site, "x.surge.sh", [mudo])).toThrow("confirmação de publicação reconhecível");
-    const login = surgeFalso(dir, "echo 'Login or create surge account'; echo 'email:'");
-    expect(() => publicarSiteSurge(site, "x.surge.sh", [login])).toThrow("autenticação interativa");
-    const falha = surgeFalso(dir, "echo 'erro' >&2; exit 2");
-    expect(() => publicarSiteSurge(site, "x.surge.sh", [falha])).toThrow("Falha ao publicar relatório no Surge.\nerro");
-  });
+  it.effect.each([
+    ["sem confirmação", "echo 'Publicando...'", "sem-confirmacao", "confirmação de publicação reconhecível"],
+    [
+      "pedido de login",
+      "echo 'Login or create surge account'; echo 'email:'",
+      "pediu-login",
+      "autenticação interativa",
+    ],
+    ["código de erro", "echo 'segredo' >&2; exit 2", "falhou", "a CLI terminou com o código 2"],
+  ] as const)("recusa saída com %s, sem a saída na mensagem", ([, corpo, categoria, mensagem]) =>
+    Effect.gen(function* () {
+      const dir = diretorioTemporario();
+      const site = NodePath.join(dir, "site");
+      NodeFS.mkdirSync(site);
+      const erro = yield* Effect.flip(publicarSiteSurge(site, "x.surge.sh", [surgeFalso(dir, corpo)]));
+      expect(erro).toMatchObject({ _tag: "ErroPublicacaoSurge", categoria });
+      expect(erro.message).toContain(mensagem);
+      expect(erro.message).not.toContain("segredo");
+    }),
+  );
+
+  it.effect("comando que não existe é recusado como não iniciado", () =>
+    Effect.gen(function* () {
+      const dir = diretorioTemporario();
+      const erro = yield* Effect.flip(publicarSiteSurge(dir, "x.surge.sh", [NodePath.join(dir, "nao-existe")]));
+      expect(erro).toMatchObject({ _tag: "ErroPublicacaoSurge", categoria: "nao-iniciou" });
+    }),
+  );
 
   test("domínio padrão usa o nome da rodada", () => {
     expect(dominioSurgePadrao("/tmp/2026-06-29t10-00-00-ppc-tecnico-em-informatica---quedas")).toBe(
