@@ -1,10 +1,9 @@
-// @effect-diagnostics nodeBuiltinImport:off -- o id e o nonce da lista (`node:crypto`)
 /**
  * `ListaViva`: a lista de pendências que a pessoa mantém (M1.11, etapa 5b), no servidor, e as ações
  * dentro de cada pendência.
  *
  * - **A lista** nasce de cada revisão (a pré-conferência, `revisar`) e de cada revisão com IA concluída
- *   (`criarLista`, chamada pela `RevisaoIa`). Fica no `conversas.sqlite` (`Listas`), com o texto do PPC
+ *   (`criarLista`, de `criar-lista.ts`, chamada também pela `RevisaoIa`). Fica no `conversas.sqlite` (`Listas`), com o texto do PPC
  *   que as ações usam; sobrevive a fechar o app e à cota. A situação marcada passa para a lista nova do
  *   mesmo arquivo com o mesmo conteúdo (chave da pendência igual).
  * - **O roteiro**: as paradas são os temas com pendência ou critério conferido, na ordem do parecer da
@@ -19,12 +18,13 @@
  * - O uso de cada ação com IA fica em `acoes_ia` e soma ao uso da revisão com IA de onde a lista veio.
  *   Uma ação com IA por vez; a estimativa vem antes (`estimar`).
  * - As ações que mandam o PPC à IA (`contestar`, `sugerir`, `revisarDeNovo`) esperam o aviso de uso
- *   aceito (M1.8): sem ele, recusam com `AvisoNaoAceito`.
+ *   aceito (M1.8): sem ele, recusam com `AvisoNaoAceito`. As três abrem pelo mesmo preparo (`abrirAcao`,
+ *   `prepararAcaoIa`) e terminam pelo mesmo registro (`concluirAcao`).
  */
-import * as NodeCrypto from "node:crypto";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Duration from "effect/Duration";
+import * as SecureRandom from "effect/crypto/SecureRandom";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
@@ -68,6 +68,7 @@ import * as Listas from "../persistencia/Listas.ts";
 import * as Preferencias from "../persistencia/Preferencias.ts";
 import * as Revisoes from "../persistencia/Revisoes.ts";
 import * as RevisorPpc from "./RevisorPpc.ts";
+import { criarLista, novoNonce } from "./criar-lista.ts";
 import { julgarBloco, PausaRevisao, turnoSemFerramentas } from "./julgamento.ts";
 import { contextoDaFicha, type PlanoRevisaoIa } from "./preparo.ts";
 
@@ -116,52 +117,6 @@ export class ListaViva extends Context.Service<
     readonly gerarCopia: (id: string) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc>;
   }
 >()("@simplifica-if/server/revisao-ppc/ListaViva") {}
-
-/* ============================================================ criar */
-
-export interface DadosNovaLista {
-  readonly id?: string;
-  readonly arquivo: string;
-  readonly revisado: RevisorPpc.RevisaoDoArquivo;
-  readonly revisao: string | null;
-  readonly provider: Provider | null;
-  readonly modelo: string | null;
-}
-
-/** Grava a lista viva de um resultado e devolve o resultado com o `lista`. Pede as `Listas`. */
-export const criarLista = Effect.fn("ListaViva.criarLista")(function* (d: DadosNovaLista) {
-  const listas = yield* Listas.Listas;
-  const id = d.id ?? `lista-${NodeCrypto.randomUUID()}`;
-  const resultado: ResultadoRevisaoPpc = { ...RevisorPpc.resultadoParaInterface(d.arquivo, d.revisado), lista: id };
-  const vistas = new Set<string>();
-  const pendencias = resultado.pendencias.flatMap((p) => {
-    const chave = chavePendencia(p);
-    if (vistas.has(chave)) return [];
-    vistas.add(chave);
-    return [{ chave, pendencia: p }];
-  });
-  yield* listas.criar(
-    {
-      id,
-      arquivo: d.arquivo,
-      sha256: d.revisado.sha256,
-      revisao: d.revisao,
-      provider: d.provider,
-      modelo: d.modelo,
-      cnct: resultado.curso.cnct?.slug ?? null,
-      forma: resultado.curso.forma,
-      markdown: d.revisado.revisao.markdown,
-      linhasTextoParaIa: d.revisado.revisao.linhasTextoParaIa,
-      nonce: NodeCrypto.randomBytes(8).toString("hex"),
-      resultado,
-    },
-    pendencias,
-  );
-  return resultado;
-});
-
-/** Um nonce novo por ação com IA: as marcas de uma ação não valem na seguinte. */
-const novoNonce = () => NodeCrypto.randomBytes(8).toString("hex");
 
 /** Títulos de seção (normalizados) de um Markdown convertido. */
 const titulos = (markdown: string) =>
@@ -242,7 +197,8 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   const { exigirAviso } = yield* Preferencias.Preferencias;
   const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | PacoteContexto.PacoteContexto>();
   const contextoMotor = yield* Effect.context<Motor.Motor | FileSystem.FileSystem>();
-  const contextoListas = yield* Effect.context<Listas.Listas>();
+  const contextoListas = yield* Effect.context<Listas.Listas | SecureRandom.SecureRandom>();
+  const aleatorio = yield* SecureRandom.SecureRandom;
   // Uma ação com IA por vez: um clique duplo não paga duas vezes.
   const vez = yield* Semaphore.make(1);
 
@@ -333,6 +289,53 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       ),
     );
 
+  /** O começo de toda ação com IA: o aviso de uso aceito, a lista e a pendência. */
+  const abrirAcao = Effect.fn("ListaViva.abrirAcao")(function* (id: string, chave: string) {
+    yield* exigirAviso;
+    const registro = yield* buscar(id);
+    const p = yield* pendenciaDe(registro, chave);
+    return { registro, p };
+  });
+
+  /**
+   * O preparo de uma ação com IA sobre a pendência: o provider e o modelo, o contexto da ficha (do texto
+   * revisado ou, na nova revisão, do arquivo novo) e um nonce novo.
+   */
+  const prepararAcaoIa = Effect.fn("ListaViva.prepararAcaoIa")(function* (
+    registro: Listas.RegistroLista,
+    p: Listas.RegistroPendencia,
+    pedido: Provider | undefined,
+    texto?: { readonly markdown: string; readonly linhasTextoParaIa: readonly number[] },
+  ) {
+    const { provider, modelo } = provedor(registro, pedido);
+    const ctx = yield* contextoPara(registro, p.pendencia.ficha, texto?.markdown, texto?.linhasTextoParaIa);
+    const nonce = yield* novoNonce(aleatorio);
+    return { provider, modelo, ctx, nonce };
+  });
+
+  /** O preparo da conversa (contestar, sugerir): mais os turnos anteriores da pendência e o prefixo. */
+  const prepararConversa = Effect.fn("ListaViva.prepararConversa")(function* (
+    registro: Listas.RegistroLista,
+    p: Listas.RegistroPendencia,
+    pedido: Provider | undefined,
+  ) {
+    const preparo = yield* prepararAcaoIa(registro, p, pedido);
+    const eventos = (yield* listas.eventos(registro.id)).filter((e) => e.chave === p.chave);
+    const prefixo = prefixoConversa({ ...preparo.ctx, pendencia: p.pendencia, nonce: preparo.nonce });
+    return { ...preparo, anteriores: turnosAnteriores(eventos), prefixo };
+  });
+
+  /** O fim de toda ação: a mudança da pendência e o evento no histórico, e a lista atualizada. */
+  const concluirAcao = Effect.fn("ListaViva.concluirAcao")(function* (
+    id: string,
+    chave: string,
+    mudanca: Parameters<Listas.Listas["Service"]["mudar"]>[2],
+    evento: Listas.Evento,
+  ) {
+    yield* listas.mudar(id, chave, mudanca, evento);
+    return yield* lista(id);
+  });
+
   /** Uma ação com IA por vez; a pausa do provider (limite, cota, queda) vira a frase para a pessoa. */
   const comIa = <A, R>(arquivo: string, efeito: Effect.Effect<A, FalhaRevisaoPpc | PausaRevisao | AvisoNaoAceito, R>) =>
     efeito.pipe(
@@ -365,13 +368,12 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   ) {
     const registro = yield* buscar(id);
     yield* pendenciaDe(registro, chave);
-    yield* listas.mudar(
+    return yield* concluirAcao(
       id,
       chave,
       { situacao, resolvidaPor: "pessoa" },
       { acao: "marcar", situacao, texto: ROTULO_ACAO[situacao] },
     );
-    return yield* lista(id);
   });
 
   const verParada = Effect.fn("ListaViva.verParada")(function* (id: string, ordem: number) {
@@ -454,9 +456,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
 
   const contestar = Effect.fn("ListaViva.contestar")(
     function* (id: string, chave: string, motivo: string, pedido?: Provider) {
-      yield* exigirAviso;
-      const registro = yield* buscar(id);
-      const p = yield* pendenciaDe(registro, chave);
+      const { registro, p } = yield* abrirAcao(id, chave);
       if (!p.pendencia.ficha || p.pendencia.ficha === "TRIAGEM")
         return yield* falha(
           registro.arquivo,
@@ -472,20 +472,14 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         );
       // A pendência do código não sai por contestação: a discordância fica registrada (para a
       // curadoria das regras) e a saída é "Já resolvi" com o arquivo corrigido. Sem IA, sem custo.
-      if (p.pendencia.origem === "codigo") {
-        yield* listas.mudar(
+      if (p.pendencia.origem === "codigo")
+        return yield* concluirAcao(
           id,
           chave,
           { situacao: "contestada_mantida" },
           { acao: "contestar", situacao: "contestada_mantida", texto: `Mantida: ${MANTIDA_CODIGO}`, motivo: limpo },
         );
-        return yield* lista(id);
-      }
-      const { provider, modelo } = provedor(registro, pedido);
-      const ctx = yield* contextoPara(registro, p.pendencia.ficha);
-      const eventos = (yield* listas.eventos(id)).filter((e) => e.chave === chave);
-      const nonce = novoNonce();
-      const prefixo = prefixoConversa({ ...ctx, pendencia: p.pendencia, nonce });
+      const { provider, modelo, ctx, nonce, anteriores, prefixo } = yield* prepararConversa(registro, p, pedido);
       const turno = yield* conversar({
         registro,
         chave,
@@ -493,7 +487,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         provider,
         modelo,
         nonce,
-        pedido: pedidoContestacao(prefixo, limpo, turnosAnteriores(eventos), nonce),
+        pedido: pedidoContestacao(prefixo, limpo, anteriores, nonce),
       });
       const decisao = turno.ferramentas.length
         ? {
@@ -515,13 +509,12 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         decisao.estado === "contestada_aceita"
           ? `Contestada com evidência conferida (fica para conferir): ${ponto(decisao.explicacao)} Trecho conferido: “${decisao.trechos[0]}”.`
           : `Mantida: ${ponto(decisao.explicacao)}${decisao.iaPediuRetirar && decisao.problemas.length ? ` O app não retirou porque ${decisao.problemas.join("; ")}.` : ""}`;
-      yield* listas.mudar(
+      return yield* concluirAcao(
         id,
         chave,
         { situacao: decisao.estado },
         { acao: "contestar", situacao: decisao.estado, texto, motivo: limpo, uso: turno.uso },
       );
-      return yield* lista(id);
     },
     (e) => comIa("", e),
   );
@@ -530,16 +523,10 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
 
   const sugerir = Effect.fn("ListaViva.sugerir")(
     function* (id: string, chave: string, pedido?: Provider) {
-      yield* exigirAviso;
-      const registro = yield* buscar(id);
-      const p = yield* pendenciaDe(registro, chave);
+      const { registro, p } = yield* abrirAcao(id, chave);
       if (p.pendencia.ficha === "TRIAGEM")
         return yield* falha(registro.arquivo, "Este apontamento é da triagem: o trecho sai do PPC, sem redação nova.");
-      const { provider, modelo } = provedor(registro, pedido);
-      const ctx = yield* contextoPara(registro, p.pendencia.ficha);
-      const eventos = (yield* listas.eventos(id)).filter((e) => e.chave === chave);
-      const nonce = novoNonce();
-      const prefixo = prefixoConversa({ ...ctx, pendencia: p.pendencia, nonce });
+      const { provider, modelo, ctx, nonce, anteriores, prefixo } = yield* prepararConversa(registro, p, pedido);
       const turno = yield* conversar({
         registro,
         chave,
@@ -547,7 +534,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         provider,
         modelo,
         nonce,
-        pedido: pedidoSugestao(prefixo, turnosAnteriores(eventos)),
+        pedido: pedidoSugestao(prefixo, anteriores),
       });
       const sugestao = turno.ferramentas.length
         ? null
@@ -575,7 +562,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
         );
       }
       const n = sugestao.naoConferidos.length;
-      yield* listas.mudar(
+      return yield* concluirAcao(
         id,
         chave,
         { situacao: p.situacao, resolvidaPor: p.resolvidaPor, sugestao },
@@ -586,7 +573,6 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
           uso: turno.uso,
         },
       );
-      return yield* lista(id);
     },
     (e) => comIa("", e),
   );
@@ -595,9 +581,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
 
   const revisarDeNovo = Effect.fn("ListaViva.revisarDeNovo")(
     function* (id: string, chave: string, arquivo: string, pedido?: Provider) {
-      yield* exigirAviso;
-      const registro = yield* buscar(id);
-      const p = yield* pendenciaDe(registro, chave);
+      const { registro, p } = yield* abrirAcao(id, chave);
       const novo = yield* revisor.revisarArquivo({
         arquivo,
         gravar: false,
@@ -646,9 +630,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
           ? `Conferida na nova revisão de ${nome}: o critério não aponta mais nada.`
           : `A nova revisão de ${nome} ainda aponta: ${ponto(ainda[0]!.mensagem.split("\n")[0]!)}`;
       } else {
-        const { provider, modelo } = provedor(registro, pedido);
-        const ctx = yield* contextoPara(registro, ficha, novo.revisao.markdown, novo.revisao.linhasTextoParaIa);
-        const nonceRevisarDeNovo = novoNonce();
+        const { provider, modelo, ctx, nonce } = yield* prepararAcaoIa(registro, p, pedido, novo.revisao);
         const bloco = {
           id: `revisar-de-novo-${ficha.toLowerCase()}`,
           tipo: "S" as const,
@@ -661,13 +643,13 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
           [ctx.ficha],
           new Map([[ficha, ctx.proprio]]),
           ctx.contexto,
-          nonceRevisarDeNovo,
+          nonce,
           ctx.comum,
         );
         const julgado = yield* julgarBloco({
           provider,
           modelo,
-          nonce: nonceRevisarDeNovo,
+          nonce,
           bloco,
           fichas: [ctx.ficha],
           pedido: pedidoTexto,
@@ -686,13 +668,12 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
             : `A nova revisão de ${nome} ainda aponta: ${ponto(r.justificativa)}`;
       }
       const situacao: SituacaoPendencia = resolvida ? "resolvida" : "aberta";
-      yield* listas.mudar(
+      return yield* concluirAcao(
         id,
         chave,
         { situacao, resolvidaPor: "revisarDeNovo" },
         { acao: "revisarDeNovo", situacao, texto, uso },
       );
-      return yield* lista(id);
     },
     (e, _id, _chave, arquivo) => comIa(arquivo, e),
   );
