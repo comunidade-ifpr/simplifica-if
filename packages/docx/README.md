@@ -12,8 +12,8 @@ const documento = lerDocx(bytes); // blocos (parágrafos e tabelas) e propriedad
 |---|---|
 | `pacote.ts` | O ZIP do DOCX: diretório central, partes descompactadas sob demanda e sob limites (`LIMITES_PADRAO`), relações. |
 | `xml.ts` | XML em árvore, com nomes canônicos pela URI do namespace; recusa XML malformado e aninhamento de mais de 256 níveis. |
-| `leitor.ts`, `modelo.ts` | Modelo intermediário do documento e a leitura do texto que o Word mostra. |
-| `erro.ts` | `ErroDocx`: todo arquivo recusado sai com ele, com mensagem em português. |
+| `leitor.ts`, `modelo.ts` | Modelo intermediário do documento e a leitura do texto que o Word mostra; `textosDeCaixas`, o texto das caixas de texto e formas, onde o comentário do Word não ancora. |
+| `erro.ts` | `ErroDocx`: todo arquivo recusado sai com ele, com um `motivo` tipado e os atributos (`dados`: parte, limite, tamanho); a mensagem em português é montada deles (`mensagemErroDocx`), e o Worker da revisão transporta os `dados`, não a frase. |
 | `testes/sintetico.ts` | Construtor de DOCX sintéticos para testes (não é usado em produção): tabelas com `w:tblGrid` e parágrafo final, caixa de texto como o Word grava (`caixaDeTexto`), relações de hiperlink (`linkExterno`). `montarDocx` confere cada pacote com o validador abaixo e lança se o Word o recusaria (`validar: false` para o documento quebrado de propósito). |
 | `testes/validar-ooxml.ts` | Validador estrutural para testes (`problemasOoxml`): as regras que, violadas, fazem o Word recusar o arquivo e que os leitores tolerantes deixam passar (referência a relação inexistente, corpo ou célula que termina em tabela, grade da tabela, namespaces e `mc:Ignorable`, tipos de conteúdo, ids de comentário e de desenho). Roda em todo sintético e em toda saída de `comentarDocx` e `revisarDocx` nos testes. |
 

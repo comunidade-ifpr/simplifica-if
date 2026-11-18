@@ -13,8 +13,7 @@
   },
   "dependencies": {
     "@simplifica-if/docx": "workspace:*",
-    "@simplifica-if/kb": "workspace:*",
-    "fflate": "0.8.3"
+    "@simplifica-if/kb": "workspace:*"
   },
   "peerDependencies": {
     "effect": "catalog:"
@@ -24,6 +23,7 @@
     "@effect/vitest": "catalog:",
     "@types/node": "catalog:",
     "effect": "catalog:",
+    "fflate": "0.8.3",
     "vite-plus": "catalog:"
   }
 }

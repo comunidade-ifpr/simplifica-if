@@ -76,7 +76,7 @@ function expandirMesclas(linhas: CelulaTabela[][], colunas: number, gastar?: (ca
   let caracteres = 0;
   for (const linha of grade) for (const celula of linha) caracteres += celula.texto.length;
   if (caracteres > TEXTO_MAXIMO) {
-    throw new ErroDocx("O arquivo DOCX não pôde ser lido: há uma tabela com texto demais nas células mescladas.");
+    throw new ErroDocx({ motivo: "mescladas-demais" });
   }
   gastar?.(caracteres);
   return grade.map((linha) => linha.map((celula) => celula.texto));
@@ -95,7 +95,7 @@ export function normalizarTabela(tabela: Tabela, gastar?: (caracteres: number) =
   // Todas as linhas são completadas até a mais larga: uma linha desproporcional num arquivo
   // montado para isso multiplicaria a tabela inteira.
   if (colunas * tabela.linhas.length > CELULAS_MAXIMAS) {
-    throw new ErroDocx(`O arquivo DOCX não pôde ser lido: há uma tabela com mais de ${CELULAS_MAXIMAS} células.`);
+    throw new ErroDocx({ motivo: "celulas-demais", limite: CELULAS_MAXIMAS });
   }
   const [cabecalho = [], ...linhas] = expandirMesclas(tabela.linhas, colunas, gastar);
   return { cabecalho, linhas };
