@@ -1,20 +1,22 @@
 /**
  * A lista viva de pendências no banco das conversas (migração 4, M1.11 etapa 5b): a lista, cada
  * pendência com a situação e a sugestão, o histórico e o uso das ações com IA. Os JSONs são do próprio
- * servidor; uma falha do banco é defeito, como nas `Revisoes`.
+ * servidor, gravados e lidos pelos schemas do contrato; uma falha do banco ou um JSON fora de forma é
+ * defeito, como nas `Revisoes`.
  */
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
-import type {
-  AcaoPendencia,
-  EventoPendencia,
+import {
+  type AcaoPendencia,
+  type EventoPendencia,
   PendenciaRevisao,
-  Provider,
+  type Provider,
   ResultadoRevisaoPpc,
-  SituacaoPendencia,
+  type SituacaoPendencia,
   SugestaoTexto,
   UsoRevisaoIa,
 } from "@simplifica-if/contratos-app";
@@ -112,29 +114,70 @@ export class Listas extends Context.Service<
   }
 >()("@simplifica-if/server/persistencia/Listas") {}
 
-interface Linha {
-  readonly id: string;
-  readonly arquivo: string;
-  readonly sha256: string;
-  readonly revisao_id: string | null;
-  readonly provider: string | null;
-  readonly modelo: string | null;
-  readonly cnct: string | null;
-  readonly forma: string | null;
-  readonly markdown: string;
-  readonly linhas_texto_ia: string;
-  readonly nonce: string;
-  readonly resultado: string;
-  readonly paradas_vistas: string;
-  readonly parada_atual: number;
-  readonly criada_em: string;
-  readonly atualizada_em: string;
-}
+const NumerosJson = Schema.fromJsonString(Schema.Array(Schema.Number));
+const ResultadoJson = Schema.fromJsonString(ResultadoRevisaoPpc);
+const PendenciaJson = Schema.fromJsonString(PendenciaRevisao);
+const SugestaoJson = Schema.fromJsonString(SugestaoTexto);
+const UsoJson = Schema.fromJsonString(UsoRevisaoIa);
+const FerramentasJson = Schema.fromJsonString(Schema.Array(Schema.String));
+
+/** Uma linha de `listas_pendencias`, com as colunas JSON decodificadas. */
+const Linha = Schema.Struct({
+  id: Schema.String,
+  arquivo: Schema.String,
+  sha256: Schema.String,
+  revisao_id: Schema.NullOr(Schema.String),
+  provider: Schema.NullOr(Schema.String),
+  modelo: Schema.NullOr(Schema.String),
+  cnct: Schema.NullOr(Schema.String),
+  forma: Schema.NullOr(Schema.String),
+  markdown: Schema.String,
+  linhas_texto_ia: NumerosJson,
+  nonce: Schema.String,
+  resultado: ResultadoJson,
+  paradas_vistas: NumerosJson,
+  parada_atual: Schema.Number,
+  criada_em: Schema.String,
+  atualizada_em: Schema.String,
+});
+const LinhaPendencia = Schema.Struct({
+  chave: Schema.String,
+  ordem: Schema.Number,
+  pendencia: PendenciaJson,
+  situacao: Schema.String,
+  resolvida_por: Schema.NullOr(Schema.String),
+  sugestao: Schema.NullOr(SugestaoJson),
+});
+const LinhaEvento = Schema.Struct({
+  chave: Schema.String,
+  em: Schema.String,
+  acao: Schema.String,
+  situacao: Schema.String,
+  texto: Schema.String,
+  motivo: Schema.NullOr(Schema.String),
+  uso: Schema.NullOr(UsoJson),
+});
+const LinhaContestacao = Schema.Struct({
+  arquivo: Schema.String,
+  em: Schema.String,
+  motivo: Schema.NullOr(Schema.String),
+  texto: Schema.String,
+  pendencia: PendenciaJson,
+});
+const lerLinhas = Schema.decodeUnknownEffect(Schema.Array(Linha));
+const lerPendencias = Schema.decodeUnknownEffect(Schema.Array(LinhaPendencia));
+const lerEventos = Schema.decodeUnknownEffect(Schema.Array(LinhaEvento));
+const lerContestacoes = Schema.decodeUnknownEffect(Schema.Array(LinhaContestacao));
+const lerParadas = Schema.decodeUnknownEffect(Schema.Array(Schema.Struct({ paradas_vistas: NumerosJson })));
+const lerUsos = Schema.decodeUnknownEffect(Schema.Array(Schema.Struct({ uso: UsoJson })));
+const codificarNumeros = Schema.encodeEffect(NumerosJson);
+const codificarResultado = Schema.encodeEffect(ResultadoJson);
+const codificarPendencia = Schema.encodeEffect(PendenciaJson);
+const codificarSugestao = Schema.encodeEffect(SugestaoJson);
+const codificarUso = Schema.encodeEffect(UsoJson);
+const codificarFerramentas = Schema.encodeEffect(FerramentasJson);
 
 const agora = Effect.map(DateTime.now, DateTime.formatIso);
-const json = (valor: unknown): string => JSON.stringify(valor);
-/** JSON dos próprios dados do servidor, lido fora do código Effect (como nas `Revisoes`). */
-const ler = <T>(texto: string): T => JSON.parse(texto) as T;
 
 const make = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
@@ -156,14 +199,14 @@ const make = Effect.gen(function* () {
           INSERT INTO listas_pendencias (id, arquivo, sha256, revisao_id, provider, modelo, cnct, forma, markdown,
             linhas_texto_ia, nonce, resultado, paradas_vistas, parada_atual, criada_em, atualizada_em)
           VALUES (${l.id}, ${l.arquivo}, ${l.sha256}, ${l.revisao}, ${l.provider}, ${l.modelo}, ${l.cnct}, ${l.forma},
-            ${l.markdown}, ${json(l.linhasTextoParaIa)}, ${l.nonce}, ${json(l.resultado)},
+            ${l.markdown}, ${yield* codificarNumeros(l.linhasTextoParaIa)}, ${l.nonce}, ${yield* codificarResultado(l.resultado)},
             ${anterior?.paradas_vistas ?? "[]"}, ${anterior?.parada_atual ?? 0}, ${data}, ${data})
         `;
         let ordem = 0;
         for (const p of pendencias) {
           yield* sql`
             INSERT OR IGNORE INTO pendencias_vivas (lista_id, chave, ordem, pendencia, situacao, resolvida_por, sugestao)
-            VALUES (${l.id}, ${p.chave}, ${ordem++}, ${json(p.pendencia)}, 'aberta', NULL, NULL)
+            VALUES (${l.id}, ${p.chave}, ${ordem++}, ${yield* codificarPendencia(p.pendencia)}, 'aberta', NULL, NULL)
           `;
         }
         if (anterior) {
@@ -192,7 +235,7 @@ const make = Effect.gen(function* () {
   }, Effect.orDie);
 
   const buscar = Effect.fn("Listas.buscar")(function* (id: string) {
-    const l = (yield* sql<Linha>`SELECT * FROM listas_pendencias WHERE id = ${id}`)[0];
+    const l = (yield* lerLinhas(yield* sql`SELECT * FROM listas_pendencias WHERE id = ${id}`))[0];
     if (!l) return null;
     return {
       id: l.id,
@@ -204,10 +247,10 @@ const make = Effect.gen(function* () {
       cnct: l.cnct,
       forma: l.forma,
       markdown: l.markdown,
-      linhasTextoParaIa: ler<number[]>(l.linhas_texto_ia),
+      linhasTextoParaIa: l.linhas_texto_ia,
       nonce: l.nonce,
-      resultado: ler<ResultadoRevisaoPpc>(l.resultado),
-      paradasVistas: ler<number[]>(l.paradas_vistas),
+      resultado: l.resultado,
+      paradasVistas: l.paradas_vistas,
       paradaAtual: l.parada_atual,
       criadaEm: l.criada_em,
       atualizadaEm: l.atualizada_em,
@@ -220,34 +263,23 @@ const make = Effect.gen(function* () {
   );
 
   const pendencias = Effect.fn("Listas.pendencias")(function* (id: string) {
-    const linhas = yield* sql<{
-      chave: string;
-      ordem: number;
-      pendencia: string;
-      situacao: string;
-      resolvida_por: string | null;
-      sugestao: string | null;
-    }>`SELECT chave, ordem, pendencia, situacao, resolvida_por, sugestao FROM pendencias_vivas WHERE lista_id = ${id} ORDER BY ordem`;
+    const linhas = yield* lerPendencias(
+      yield* sql`SELECT chave, ordem, pendencia, situacao, resolvida_por, sugestao FROM pendencias_vivas WHERE lista_id = ${id} ORDER BY ordem`,
+    );
     return linhas.map((l): RegistroPendencia => ({
       chave: l.chave,
       ordem: l.ordem,
-      pendencia: ler<PendenciaRevisao>(l.pendencia),
+      pendencia: l.pendencia,
       situacao: l.situacao as SituacaoPendencia,
       resolvidaPor: l.resolvida_por as RegistroPendencia["resolvidaPor"],
-      sugestao: l.sugestao === null ? null : ler<SugestaoTexto>(l.sugestao),
+      sugestao: l.sugestao,
     }));
   }, Effect.orDie);
 
   const eventos = Effect.fn("Listas.eventos")(function* (id: string) {
-    const linhas = yield* sql<{
-      chave: string;
-      em: string;
-      acao: string;
-      situacao: string;
-      texto: string;
-      motivo: string | null;
-      uso: string | null;
-    }>`SELECT chave, em, acao, situacao, texto, motivo, uso FROM eventos_pendencia WHERE lista_id = ${id} ORDER BY em, rowid`;
+    const linhas = yield* lerEventos(
+      yield* sql`SELECT chave, em, acao, situacao, texto, motivo, uso FROM eventos_pendencia WHERE lista_id = ${id} ORDER BY em, rowid`,
+    );
     return linhas.map((l) => ({
       chave: l.chave,
       em: l.em,
@@ -255,7 +287,7 @@ const make = Effect.gen(function* () {
       situacao: l.situacao as SituacaoPendencia,
       texto: l.texto,
       motivo: l.motivo,
-      uso: l.uso === null ? null : ler<UsoRevisaoIa>(l.uso),
+      uso: l.uso,
     }));
   }, Effect.orDie);
 
@@ -266,19 +298,21 @@ const make = Effect.gen(function* () {
     e: Evento,
   ) {
     const data = yield* agora;
+    const sugestao = m.sugestao === undefined ? null : yield* codificarSugestao(m.sugestao);
+    const usoEvento = e.uso ? yield* codificarUso(e.uso) : null;
     yield* sql.withTransaction(
       Effect.gen(function* () {
         yield* sql`
           UPDATE pendencias_vivas SET
             situacao = ${m.situacao},
             resolvida_por = ${m.situacao === "resolvida" ? (m.resolvidaPor ?? "pessoa") : null},
-            sugestao = COALESCE(${m.sugestao === undefined ? null : json(m.sugestao)}, sugestao)
+            sugestao = COALESCE(${sugestao}, sugestao)
           WHERE lista_id = ${id} AND chave = ${chave}
         `;
         yield* sql`
           INSERT INTO eventos_pendencia (lista_id, chave, em, acao, situacao, texto, motivo, uso)
           VALUES (${id}, ${chave}, ${data}, ${e.acao}, ${e.situacao}, ${e.texto}, ${e.motivo ?? null},
-            ${e.uso ? json(e.uso) : null})
+            ${usoEvento})
         `;
         yield* tocar(id, data);
       }),
@@ -287,14 +321,12 @@ const make = Effect.gen(function* () {
 
   const verParada = Effect.fn("Listas.verParada")(function* (id: string, ordem: number) {
     const data = yield* agora;
-    const linha = (yield* sql<{
-      paradas_vistas: string;
-    }>`SELECT paradas_vistas FROM listas_pendencias WHERE id = ${id}`)[0];
+    const linha = (yield* lerParadas(yield* sql`SELECT paradas_vistas FROM listas_pendencias WHERE id = ${id}`))[0];
     if (!linha) return;
-    const vistas = new Set(ler<number[]>(linha.paradas_vistas));
+    const vistas = new Set(linha.paradas_vistas);
     vistas.add(ordem);
     yield* sql`
-      UPDATE listas_pendencias SET paradas_vistas = ${json([...vistas].sort((a, b) => a - b))}, parada_atual = ${ordem},
+      UPDATE listas_pendencias SET paradas_vistas = ${yield* codificarNumeros([...vistas].sort((a, b) => a - b))}, parada_atual = ${ordem},
         atualizada_em = ${data}
       WHERE id = ${id}
     `;
@@ -302,22 +334,23 @@ const make = Effect.gen(function* () {
 
   const trocarResultado = Effect.fn("Listas.trocarResultado")(function* (id: string, r: ResultadoRevisaoPpc) {
     const data = yield* agora;
-    yield* sql`UPDATE listas_pendencias SET resultado = ${json(r)}, atualizada_em = ${data} WHERE id = ${id}`;
+    yield* sql`UPDATE listas_pendencias SET resultado = ${yield* codificarResultado(r)}, atualizada_em = ${data} WHERE id = ${id}`;
   }, Effect.orDie);
 
   const gravarAcao = Effect.fn("Listas.gravarAcao")(function* (id: string, chave: string, a: AcaoIaGravada) {
     const data = yield* agora;
     yield* sql`
       INSERT INTO acoes_ia (lista_id, chave, acao, numero, uso, segundos, ferramentas, criada_em)
-      VALUES (${id}, ${chave}, ${a.acao}, ${a.numero}, ${json(a.uso)}, ${a.segundos}, ${json(a.ferramentas)}, ${data})
+      VALUES (${id}, ${chave}, ${a.acao}, ${a.numero}, ${yield* codificarUso(a.uso)}, ${a.segundos},
+        ${yield* codificarFerramentas(a.ferramentas)}, ${data})
     `;
   }, Effect.orDie);
 
   const uso = Effect.fn("Listas.uso")(function* (id: string) {
-    const linhas = yield* sql<{ uso: string }>`SELECT uso FROM acoes_ia WHERE lista_id = ${id}`;
+    const linhas = yield* lerUsos(yield* sql`SELECT uso FROM acoes_ia WHERE lista_id = ${id}`);
     const total = { entrada: 0, saida: 0, cacheLeitura: 0, cacheEscrita: 0, custoUsd: 0 };
     for (const l of linhas) {
-      const u = ler<UsoRevisaoIa>(l.uso);
+      const u = l.uso;
       for (const k of Object.keys(total) as (keyof UsoRevisaoIa)[]) total[k] += u[k];
     }
     return total as UsoRevisaoIa;
@@ -340,7 +373,7 @@ const make = Effect.gen(function* () {
     for (const p of novas) {
       yield* sql`
         INSERT OR IGNORE INTO pendencias_vivas (lista_id, chave, ordem, pendencia, situacao, resolvida_por, sugestao)
-        VALUES (${id}, ${p.chave}, ${ordem++}, ${json(p.pendencia)}, 'aberta', NULL, NULL)
+        VALUES (${id}, ${p.chave}, ${ordem++}, ${yield* codificarPendencia(p.pendencia)}, 'aberta', NULL, NULL)
       `;
       yield* sql`
         INSERT INTO eventos_pendencia (lista_id, chave, em, acao, situacao, texto, motivo, uso)
@@ -356,17 +389,14 @@ const make = Effect.gen(function* () {
     return linhas.length;
   }, Effect.orDie);
 
-  const contestacoes = sql<{ arquivo: string; em: string; motivo: string | null; texto: string; pendencia: string }>`
+  const contestacoes = sql`
     SELECT l.arquivo, e.em, e.motivo, e.texto, p.pendencia
     FROM eventos_pendencia e
     JOIN pendencias_vivas p ON p.lista_id = e.lista_id AND p.chave = e.chave
     JOIN listas_pendencias l ON l.id = e.lista_id
     WHERE e.acao = 'contestar'
     ORDER BY e.em
-  `.pipe(
-    Effect.map((linhas) => linhas.map((l) => ({ ...l, pendencia: ler<PendenciaRevisao>(l.pendencia) }))),
-    Effect.orDie,
-  );
+  `.pipe(Effect.flatMap(lerContestacoes), Effect.orDie);
 
   return Listas.of({
     acrescentar,
