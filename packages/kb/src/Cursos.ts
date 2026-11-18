@@ -87,7 +87,7 @@ export class Cursos extends Context.Service<
     /** Todos os processos seletivos, por ID. */
     readonly processos: Effect.Effect<ReadonlyArray<ProcessoSeletivo>, Sql.FalhaNaConsulta>;
     /** Os níveis dos PPCs e dos cursos, sem repetição, em ordem. */
-    readonly niveis: Effect.Effect<string[], Sql.FalhaNaConsulta>;
+    readonly niveis: Effect.Effect<ReadonlyArray<string>, Sql.FalhaNaConsulta>;
     /** A página oficial de cada curso, pelo ID (`curso:campus/curso`). */
     readonly paginasOficiais: Effect.Effect<ReadonlyMap<string, string | null>, Sql.FalhaNaConsulta>;
     readonly adequacaoArt71: (opcoes?: {

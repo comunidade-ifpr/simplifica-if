@@ -56,12 +56,12 @@ const linhasItens = Sql.todas(LinhaItem);
 /** Um documento de reunião (parecer, ata, pauta), na ordem da reunião. */
 export type DocumentoDeReuniao = Omit<typeof LinhaDocumento.Type, "reuniao_id">;
 /** Um item de pauta, na ordem oficial da pauta; `campus_id` e `curso_id` quando reconhecidos. */
-export type ItemDePauta = Omit<typeof LinhaItem.Type, "reuniao_id">;
+export type ItemDaReuniao = Omit<typeof LinhaItem.Type, "reuniao_id">;
 
 /** Uma reunião, com a sigla e o nome do conselho, os documentos e os itens de pauta. */
 export interface Reuniao extends Readonly<typeof LinhaReuniao.Type> {
   readonly documentos: ReadonlyArray<DocumentoDeReuniao>;
-  readonly itens: ReadonlyArray<ItemDePauta>;
+  readonly itens: ReadonlyArray<ItemDaReuniao>;
 }
 
 export class Conselhos extends Context.Service<

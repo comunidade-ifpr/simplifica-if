@@ -44,7 +44,7 @@ import { makeExplorar } from "./explorar.ts";
 import { makeNormas } from "./normas.ts";
 import { makePacote } from "./pacote.ts";
 import { makePpcs } from "./ppcs.ts";
-import { type CampusDaBase, makeRecursos } from "./recursos.ts";
+import { type CampusRecurso, makeRecursos } from "./recursos.ts";
 import type * as Conteudos from "../recursos/conteudos.ts";
 
 /** Uma leitura: a entrada decodificada de uma ferramenta e a resposta com os dados dela. */
@@ -125,7 +125,7 @@ const make = Effect.fn("Leitura.make")(function* (opcoes: Opcoes) {
   const niveis = yield* cursosKb.niveis;
   const campiDaBase = yield* cursosKb.campi;
   const campi = campiDaBase.map((c) => ({ id: c.campus_id, nome: c.nome, link: linkCampus(c.campus_id) }));
-  const campiPorId = new Map<string, CampusDaBase>(
+  const campiPorId = new Map<string, CampusRecurso>(
     campiDaBase.map((c) => [c.campus_id, { id: c.campus_id, nome: c.nome, site: c.site, path: c.path }]),
   );
   const tiposDeSecao = yield* ppcsKb.tiposDeSecao;

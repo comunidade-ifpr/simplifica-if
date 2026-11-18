@@ -217,9 +217,10 @@ const linhasNiveis = Sql.todas(Schema.Struct({ nivel: Texto }));
 
 /** Os níveis dos PPCs e dos cursos, sem repetição, em ordem de code point (colação BINARY). */
 export const niveis = Effect.fn("consultasCursos.niveis")(function* () {
-  return (yield* linhasNiveis(
+  const lista: ReadonlyArray<string> = (yield* linhasNiveis(
     "SELECT nivel FROM ppcs UNION SELECT nivel FROM cursos WHERE nivel IS NOT NULL ORDER BY nivel",
   )).map((n) => n.nivel);
+  return lista;
 });
 
 const linhasPaginas = Sql.todas(Schema.Struct({ id: Texto, pagina_oficial: TextoNulo }));
