@@ -167,6 +167,15 @@ export function urlManifesto(feed: string, canal: Canal): string {
   return new URL(arquivoManifesto(canal), comCanal.endsWith("/") ? comCanal : `${comCanal}/`).href;
 }
 
+function feedValido(feed: string): boolean {
+  try {
+    urlManifesto(feed, "beta");
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * A política da atualização: o feed e a chave pública (o texto da linha base64), da política de fábrica
  * ou dos argumentos. Desligada, com o motivo, quando falta um deles ou a chave não se lê. O servidor do
@@ -191,6 +200,10 @@ export function opcoesDaPolitica(entrada: {
       feed: null,
       chave,
     };
+  }
+  // `urlManifesto` usa `new URL`, que lança: um feed inválido desliga aqui, não vira defeito na conferência
+  if (!feedValido(entrada.feed)) {
+    return { desligada: "o endereço das atualizações é inválido", feed: entrada.feed, chave };
   }
   if (chave === null) {
     return {
