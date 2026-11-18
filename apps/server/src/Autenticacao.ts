@@ -138,8 +138,8 @@ export const make = Effect.fn("Autenticacao.make")(function* (opcoes: {
     for (const [chave, expiraEm] of ingressos) if (expiraEm <= agora) ingressos.delete(chave);
   };
 
-  /** Gasta o ingresso: vale se foi emitido, não venceu e não foi usado. */
   // `fnUntraced`: roda a cada requisição, dentro do span de `Autenticacao.conferir`.
+  /** Gasta o ingresso: vale se foi emitido, não venceu e não foi usado. */
   const gastarIngresso = Effect.fnUntraced(function* (ingresso: string) {
     const chave = Base64Url.encode(yield* hashDe(ingresso));
     const agora = yield* Clock.currentTimeMillis;

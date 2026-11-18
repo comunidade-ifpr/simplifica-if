@@ -18,11 +18,11 @@ import * as Option from "effect/Option";
 import * as Path from "effect/Path";
 import * as Scope from "effect/Scope";
 import * as Stream from "effect/Stream";
+import * as Driver from "./Driver.ts";
 import {
   type AprovacaoDesconhecida,
   type ConfigSessao,
   type Decisao,
-  Drivers,
   type EstadoInstalacao,
   type EstadoLogin,
   type EstadoProvider,
@@ -89,7 +89,7 @@ interface SessaoAberta {
 }
 
 const make = Effect.fn("Motor.make")(function* (politica: Politica) {
-  const drivers = yield* Drivers;
+  const drivers = yield* Driver.Drivers;
   // Só as sessões com skills gravam arquivos: sem `FileSystem` na layer, elas falham com mensagem clara.
   const fs = yield* Effect.serviceOption(FileSystem.FileSystem);
   const path = yield* Effect.serviceOption(Path.Path);
