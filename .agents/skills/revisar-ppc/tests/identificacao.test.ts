@@ -7,7 +7,8 @@
  * Os trechos são mínimos e anonimizados, reproduzindo os formatos observados
  * nos PPCs da base.
  */
-import { afterEach, describe, expect, test } from "vite-plus/test";
+import { afterEach, describe, expect, layer, test } from "@effect/vitest";
+import * as Effect from "effect/Effect";
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
@@ -26,13 +27,13 @@ import {
   medirIdentificacao,
   nucleoCurso,
 } from "../scripts/medicao-identificacao.ts";
-import { caminhosPadrao } from "../scripts/caminhos.ts";
+import { type CaminhosAnalise, caminhosPadrao } from "../scripts/caminhos.ts";
 import { prepararDocumento } from "../scripts/preparar-documento.ts";
 import { lerReferenciasIdentificacao } from "../scripts/referencias-identificacao.ts";
 import { montarDocx, par, tabelaDeTextos } from "@simplifica-if/docx/testes/sintetico";
-import { lerJsonDaRodada } from "../scripts/rodada.ts";
+import { CAMADA_RODADA, lerJson, referenciasDaBase } from "./apoio.ts";
 
-const REFERENCIAS = lerReferenciasIdentificacao(caminhosPadrao());
+const REFERENCIAS = referenciasDaBase();
 const extrair = (texto: string, nomeReserva?: string) => extrairIdentificacao(texto, REFERENCIAS, nomeReserva);
 const RELOGIO = () => new Date(2026, 10, 13);
 
@@ -293,59 +294,89 @@ describe("dados da conversão DOCX", () => {
   });
 });
 
-describe("preparar-documento", () => {
-  test("metadata registra a identificação e a fonte de cada campo", () => {
-    const dir = diretorioTemporario();
-    const arquivo = NodePath.join(dir, "ppc-enfermagem.md");
-    NodeFS.writeFileSync(arquivo, PPC_TITULOS_NUMERADOS, "utf8");
-    const { metadata } = prepararDocumento(arquivo, { referencias: REFERENCIAS, saidaBase: dir, relogio: RELOGIO });
-    expect(lerJsonDaRodada(metadata) as Dicionario).toMatchObject({
-      curso: "Técnico em Enfermagem",
-      campus: "Curitiba",
-      modalidade: "Subsequente",
-      forma_oferta: "Subsequente",
-      modalidade_ensino: "Presencial",
-      eixo_tecnologico: "Ambiente e Saúde",
-      identificacao_fontes: {
-        curso: "rotulo",
-        campus: "rotulo",
-        forma_oferta: "rotulo",
-        modalidade_ensino: "rotulo",
-        eixo_tecnologico: "rotulo",
-      },
-    });
-  });
+layer(CAMADA_RODADA)("preparar-documento", (it) => {
+  it.effect("as referências vêm dos índices de campi e do CNCT da base", () =>
+    Effect.gen(function* () {
+      const referencias = yield* lerReferenciasIdentificacao(caminhosPadrao());
+      expect(referencias).toEqual(REFERENCIAS);
+      expect(referencias.campi.length).toBeGreaterThan(20);
+      // Base sem o índice de campi, ou com ele fora do formato: erro tipado, não lista vazia.
+      const dir = diretorioTemporario();
+      const semBase: CaminhosAnalise = { ...caminhosPadrao(), baseConhecimentoDir: dir };
+      const ausente = yield* Effect.flip(lerReferenciasIdentificacao(semBase));
+      expect(ausente._tag).toBe("ArquivoDaRodadaAusente");
+      const campi = NodePath.join(dir, "institucional", "ifpr", "campi", "index.json");
+      NodeFS.mkdirSync(NodePath.dirname(campi), { recursive: true });
+      NodeFS.writeFileSync(campi, `{"items": [{"sigla": "CT"}]}`);
+      const foraDoFormato = yield* Effect.flip(lerReferenciasIdentificacao(semBase));
+      expect(foraDoFormato).toMatchObject({ _tag: "JsonDaRodadaInvalido", arquivo: campi });
+    }),
+  );
 
-  test("DOCX: base legal numa tabela não vira nome do curso", () => {
-    const dir = diretorioTemporario();
-    const arquivo = NodePath.join(dir, "ppc-sintetico.docx");
-    NodeFS.writeFileSync(
-      arquivo,
-      montarDocx({
-        corpo: [
-          par("PROJETO PEDAGÓGICO DE CURSO", { estilo: "Ttulo" }),
-          par("1 IDENTIFICAÇÃO", { estilo: "Ttulo1" }),
-          tabelaDeTextos([
-            ["Base legal específica do curso", "Resolução CNE/CP nº 1/2021"],
-            ["Coordenador do curso", "Fulano de Tal"],
-            ["Denominação do curso", "Curso Técnico em Enfermagem"],
-            ["Campus", "Curitiba"],
-            ["Forma de oferta", "Subsequente"],
-            ["Modalidade", "Presencial"],
-          ]),
-          par("Base legal específica do curso: Resolução CNE/CP nº 1/2021"),
-        ].join(""),
-      }),
-    );
-    const { metadata } = prepararDocumento(arquivo, { referencias: REFERENCIAS, saidaBase: dir, relogio: RELOGIO });
-    expect(lerJsonDaRodada(metadata) as Dicionario).toMatchObject({
-      curso: "Técnico em Enfermagem",
-      campus: "Curitiba",
-      forma_oferta: "Subsequente",
-      modalidade_ensino: "Presencial",
-      identificacao_fontes: { curso: "rotulo", campus: "rotulo" },
-    });
-  });
+  it.effect("metadata registra a identificação e a fonte de cada campo", () =>
+    Effect.gen(function* () {
+      const dir = diretorioTemporario();
+      const arquivo = NodePath.join(dir, "ppc-enfermagem.md");
+      NodeFS.writeFileSync(arquivo, PPC_TITULOS_NUMERADOS, "utf8");
+      const { metadata } = yield* prepararDocumento(arquivo, {
+        referencias: REFERENCIAS,
+        saidaBase: dir,
+        relogio: RELOGIO,
+      });
+      expect(lerJson(metadata) as Dicionario).toMatchObject({
+        curso: "Técnico em Enfermagem",
+        campus: "Curitiba",
+        modalidade: "Subsequente",
+        forma_oferta: "Subsequente",
+        modalidade_ensino: "Presencial",
+        eixo_tecnologico: "Ambiente e Saúde",
+        identificacao_fontes: {
+          curso: "rotulo",
+          campus: "rotulo",
+          forma_oferta: "rotulo",
+          modalidade_ensino: "rotulo",
+          eixo_tecnologico: "rotulo",
+        },
+      });
+    }),
+  );
+
+  it.effect("DOCX: base legal numa tabela não vira nome do curso", () =>
+    Effect.gen(function* () {
+      const dir = diretorioTemporario();
+      const arquivo = NodePath.join(dir, "ppc-sintetico.docx");
+      NodeFS.writeFileSync(
+        arquivo,
+        montarDocx({
+          corpo: [
+            par("PROJETO PEDAGÓGICO DE CURSO", { estilo: "Ttulo" }),
+            par("1 IDENTIFICAÇÃO", { estilo: "Ttulo1" }),
+            tabelaDeTextos([
+              ["Base legal específica do curso", "Resolução CNE/CP nº 1/2021"],
+              ["Coordenador do curso", "Fulano de Tal"],
+              ["Denominação do curso", "Curso Técnico em Enfermagem"],
+              ["Campus", "Curitiba"],
+              ["Forma de oferta", "Subsequente"],
+              ["Modalidade", "Presencial"],
+            ]),
+            par("Base legal específica do curso: Resolução CNE/CP nº 1/2021"),
+          ].join(""),
+        }),
+      );
+      const { metadata } = yield* prepararDocumento(arquivo, {
+        referencias: REFERENCIAS,
+        saidaBase: dir,
+        relogio: RELOGIO,
+      });
+      expect(lerJson(metadata) as Dicionario).toMatchObject({
+        curso: "Técnico em Enfermagem",
+        campus: "Curitiba",
+        forma_oferta: "Subsequente",
+        modalidade_ensino: "Presencial",
+        identificacao_fontes: { curso: "rotulo", campus: "rotulo" },
+      });
+    }),
+  );
 });
 
 describe("medição contra institucional/ifpr", () => {

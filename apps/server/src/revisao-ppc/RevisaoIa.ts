@@ -1,4 +1,3 @@
-// @effect-diagnostics nodeBuiltinImport:off -- o nonce da rodada (`node:crypto`)
 /**
  * `RevisaoIa`: a revisão completa de um PPC com a IA da conta da pessoa (M1.11, etapa 4), conduzida
  * pelo servidor, não pelo provider.
@@ -18,10 +17,10 @@
  *
  * Preparar e executar esperam o aviso de uso aceito (M1.8): sem ele, recusam com `AvisoNaoAceito`.
  */
-import * as NodeCrypto from "node:crypto";
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Duration from "effect/Duration";
+import * as SecureRandom from "effect/crypto/SecureRandom";
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as FiberMap from "effect/FiberMap";
@@ -39,16 +38,16 @@ import {
 import type * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import type * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import * as Motor from "@simplifica-if/motor";
-import { estimar } from "@simplifica-if/ppc/revisao-ia/estimativa";
+import { estimar } from "./estimativa.ts";
 import { CRITERIO_PADRAO, type CriterioInconclusivo, pedidoT } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { teveTextoParaIa } from "@simplifica-if/ppc/revisao-ia/plano";
-import { MODELO_PADRAO } from "@simplifica-if/ppc/revisao-ia/tipos";
+import { MODELO_PADRAO } from "./modelos.ts";
 import { NOME_DA_FORMA, type ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 import * as Preferencias from "../persistencia/Preferencias.ts";
 import * as Revisoes from "../persistencia/Revisoes.ts";
 import type * as Listas from "../persistencia/Listas.ts";
 import * as RevisorPpc from "./RevisorPpc.ts";
-import { criarLista } from "./ListaViva.ts";
+import { criarLista, novoNonce } from "./criar-lista.ts";
 import { julgarBloco, type PausaRevisao, type ResultadoBloco } from "./julgamento.ts";
 import { type PlanoRevisaoIa, preparar } from "./preparo.ts";
 
@@ -103,7 +102,8 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   const { exigirAviso } = yield* Preferencias.Preferencias;
   const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | PacoteContexto.PacoteContexto>();
   const contextoMotor = yield* Effect.context<Motor.Motor | FileSystem.FileSystem>();
-  const contextoListas = yield* Effect.context<Listas.Listas>();
+  const contextoListas = yield* Effect.context<Listas.Listas | SecureRandom.SecureRandom>();
+  const aleatorio = yield* SecureRandom.SecureRandom;
   const execucoes = yield* FiberMap.make<string>();
   const expirar = DateTime.now.pipe(
     Effect.map((agora) => DateTime.formatIso(DateTime.subtract(agora, { days: DIAS_PREPARADA }))),
@@ -183,7 +183,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
       ...(entrada.forma === undefined ? {} : { forma: entrada.forma }),
     });
     const curso = revisado.revisao.curso;
-    const nonce = NodeCrypto.randomBytes(8).toString("hex");
+    const nonce = yield* novoNonce(aleatorio);
     const plano = yield* preparar({
       markdown: revisado.revisao.markdown,
       linhasTextoParaIa: revisado.revisao.linhasTextoParaIa,
@@ -208,7 +208,7 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
     );
     // Preparar de novo o mesmo arquivo substitui a preparada anterior (nunca iniciada).
     for (const antiga of yield* revisoes.preparadasDoArquivo(entrada.arquivo)) yield* revisoes.apagar(antiga);
-    const id = `revisao-${NodeCrypto.randomUUID()}`;
+    const id = `revisao-${yield* aleatorio.uuidV4()}`;
     yield* revisoes.criar({
       id,
       arquivo: entrada.arquivo,

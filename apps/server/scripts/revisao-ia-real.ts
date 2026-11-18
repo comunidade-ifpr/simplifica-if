@@ -14,6 +14,7 @@
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
+import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeRuntime from "@effect/platform-node/NodeRuntime";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Effect from "effect/Effect";
@@ -239,6 +240,7 @@ const gravarUso = (direcao: "entrada" | "saida", mensagem: unknown) => {
 programa.pipe(
   Effect.provide(nucleo),
   Effect.provideService(Motor.Gravador, gravarUso),
+  Effect.provide(NodeCrypto.layerSecureRandom),
   Effect.provide(NodeServices.layer),
   NodeRuntime.runMain,
 );

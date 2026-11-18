@@ -116,7 +116,7 @@ function runsDoParagrafo(paragrafo: Element): RunLido[] {
 
 function paragrafosDoCorpo(raiz: Element): ParagrafoLido[] {
   const corpo = filho(raiz, "w:body");
-  if (!corpo) throw new ErroDocx("O DOCX não tem corpo de documento (w:body).");
+  if (!corpo) throw new ErroDocx({ motivo: "comentarios-sem-corpo" });
   const saida: ParagrafoLido[] = [];
   const visitar = (no: Element) => {
     for (const item of filhosElementos(no)) {
@@ -255,15 +255,13 @@ export function comentarDocx(
   let parteDocumento: string | null = null;
   for (const relacao of pacote.relacoes("").values())
     if (RELACAO_DOCUMENTO.includes(relacao.tipo) && relacao.parte) parteDocumento = relacao.parte;
-  if (!parteDocumento) throw new ErroDocx("O arquivo não tem documento principal do Word.");
+  if (!parteDocumento) throw new ErroDocx({ motivo: "comentarios-sem-documento-principal" });
   const bytesDocumento = pacote.binario(parteDocumento);
-  if (!bytesDocumento) throw new ErroDocx("O documento principal do Word não está no arquivo.");
-  if (bytesDocumento[0] === 0xff || bytesDocumento[0] === 0xfe)
-    throw new ErroDocx("Documento em UTF-16: os comentários ainda não são gravados nesse caso.");
+  if (!bytesDocumento) throw new ErroDocx({ motivo: "comentarios-documento-ausente" });
+  if (bytesDocumento[0] === 0xff || bytesDocumento[0] === 0xfe) throw new ErroDocx({ motivo: "comentarios-utf16" });
   let documento = decodificarXml(bytesDocumento);
   const raizInicial = analisarXml(documento, parteDocumento, pacote.limites);
-  if (atributo(raizInicial!, "xmlns:w") !== NS_W)
-    throw new ErroDocx("Documento sem o prefixo w: convencional: os comentários ainda não são gravados nesse caso.");
+  if (atributo(raizInicial!, "xmlns:w") !== NS_W) throw new ErroDocx({ motivo: "comentarios-prefixo-w" });
 
   // Comentários que já existem no arquivo continuam; os novos vêm depois, com ids livres.
   const relacoesDocumento = pacote.relacoes(parteDocumento);
@@ -328,7 +326,7 @@ export function comentarDocx(
   alteradas.set(parteDocumento, strToU8(documento));
   if (textoExistente) {
     const fecho = textoExistente.lastIndexOf("</w:comments>");
-    if (fecho < 0) throw new ErroDocx("A parte de comentários do arquivo está corrompida.");
+    if (fecho < 0) throw new ErroDocx({ motivo: "comentarios-corrompidos" });
     alteradas.set(
       parteComentarios,
       strToU8(textoExistente.slice(0, fecho) + novos.join("") + textoExistente.slice(fecho)),
@@ -349,14 +347,14 @@ export function comentarDocx(
       ? decodificarXml(relacoesBrutas)
       : `${DECLARACAO}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>`;
     const fechoRelacoes = textoRelacoes.lastIndexOf("</Relationships>");
-    if (fechoRelacoes < 0) throw new ErroDocx("As relações do documento estão corrompidas.");
+    if (fechoRelacoes < 0) throw new ErroDocx({ motivo: "relacoes-corrompidas" });
     alteradas.set(
       parteRelacoes,
       strToU8(textoRelacoes.slice(0, fechoRelacoes) + novaRelacao + textoRelacoes.slice(fechoRelacoes)),
     );
     const tipos = decodificarXml(pacote.binario("[Content_Types].xml") ?? new Uint8Array());
     const fechoTipos = tipos.lastIndexOf("</Types>");
-    if (fechoTipos < 0) throw new ErroDocx("O arquivo não declara os tipos de conteúdo.");
+    if (fechoTipos < 0) throw new ErroDocx({ motivo: "sem-tipos-de-conteudo" });
     alteradas.set(
       "[Content_Types].xml",
       strToU8(

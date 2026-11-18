@@ -14,6 +14,7 @@
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
+import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeRuntime from "@effect/platform-node/NodeRuntime";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import * as Effect from "effect/Effect";
@@ -30,10 +31,11 @@ import * as Revisoes from "../src/persistencia/Revisoes.ts";
 import * as ArquivosLiberados from "../src/ArquivosLiberados.ts";
 import * as RevisorPpc from "../src/revisao-ppc/RevisorPpc.ts";
 import * as ListaViva from "../src/revisao-ppc/ListaViva.ts";
+import { criarLista } from "../src/revisao-ppc/criar-lista.ts";
 import { julgarBloco } from "../src/revisao-ppc/julgamento.ts";
 import { contextoDaFicha } from "../src/revisao-ppc/preparo.ts";
 import { pedidoS } from "@simplifica-if/ppc/revisao-ia/pedido";
-import { MODELO_PADRAO } from "@simplifica-if/ppc/revisao-ia/tipos";
+import { MODELO_PADRAO } from "../src/revisao-ppc/modelos.ts";
 import type { ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 
 const RAIZ = NodePath.resolve(import.meta.dirname, "../../..");
@@ -168,7 +170,7 @@ const programa = Effect.gen(function* () {
       resultados.push(...julgado.resultado.resultados);
     }
     const final = yield* revisor.revisarArquivo({ arquivo, gravar: true, ia: { resultados, fora: [] } });
-    const r = yield* ListaViva.criarLista({
+    const r = yield* criarLista({
       arquivo,
       revisado: final,
       revisao: null,
@@ -254,4 +256,9 @@ const nucleo = ListaViva.layer({ registrarTexto }).pipe(
   Layer.provideMerge(layerLeitura({ banco: NodePath.join(RAIZ, "tmp/kb.sqlite"), canal: "dev" })),
 );
 
-programa.pipe(Effect.provide(nucleo), Effect.provide(NodeServices.layer), NodeRuntime.runMain);
+programa.pipe(
+  Effect.provide(nucleo),
+  Effect.provide(NodeCrypto.layerSecureRandom),
+  Effect.provide(NodeServices.layer),
+  NodeRuntime.runMain,
+);

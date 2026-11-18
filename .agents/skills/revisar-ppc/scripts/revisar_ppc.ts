@@ -47,14 +47,8 @@ import { dominioSurgePadrao, prepararSiteSurge, type PublicacaoSurge, publicarSi
 import { lerReferenciasIdentificacao } from "./referencias-identificacao.ts";
 import { gerarRelatorioHtml, type RelatorioGerado } from "./relatorio-html.ts";
 import { mesclarResultadosAvulsos, validarResultadosRodada } from "./resultados.ts";
-import {
-  caminhosRodada,
-  escreverJsonDaRodada,
-  interpretarAgora,
-  type Relogio,
-  resolverCaminho,
-  TAMANHO_GRUPO_PADRAO,
-} from "./rodada.ts";
+import * as Rodada from "./rodada.ts";
+import { interpretarAgora, type Relogio, TAMANHO_GRUPO_PADRAO } from "./rodada.ts";
 import { montarGrupoAvulso, montarGruposSubagents, prepararPromptsSubagents } from "./subagents.ts";
 import { validarBaseAnalise } from "./validacao-base.ts";
 
@@ -163,11 +157,11 @@ const mensagemRelatorio = (rotulo: string, url: string) =>
   `Relatório de revisão do PPC pronto (${rotulo}): ${url}. ${AVISO_REVISAO}`;
 
 /**
- * Saída de `gerar-relatorio-html`: caminho e URL do relatório, a situação da revisão e, se
- * publicado, a URL pública.
+ * Saída de `gerar-relatorio-html`: caminho e URL do relatório (já resolvido, como `gerarRelatorioHtml`
+ * o devolve), a situação da revisão e, se publicado, a URL pública.
  */
 export function payloadRelatorio(gerado: RelatorioGerado, publicacao?: PublicacaoSurge): Objeto {
-  const relatorio = resolverCaminho(gerado.relatorio_html);
+  const relatorio = gerado.relatorio_html;
   const uri = caminhoComoUri(relatorio);
   const payload: Objeto = {
     relatorio_html: relatorio,
@@ -189,7 +183,7 @@ export function payloadRelatorio(gerado: RelatorioGerado, publicacao?: Publicaca
   return payload;
 }
 
-/** Gera o relatório e, sem `--sem-surge`, publica no Surge (as etapas são síncronas). */
+/** Gera o relatório e, sem `--sem-surge`, publica no Surge. */
 const gerarRelatorio = Effect.fn("revisar_ppc.gerarRelatorio")(function* (opcoes: {
   readonly rodadaDir: string;
   readonly resultados: string;
@@ -197,9 +191,10 @@ const gerarRelatorio = Effect.fn("revisar_ppc.gerarRelatorio")(function* (opcoes
   readonly surgeDomain: Option.Option<string>;
 }) {
   const path = yield* Path.Path;
+  const arquivos = yield* Rodada.Rodada;
   const relatorio = yield* gerarRelatorioHtml(opcoes.rodadaDir, opcoes.resultados);
   if (opcoes.semSurge) return payloadRelatorio(relatorio);
-  const rodada = caminhosRodada(opcoes.rodadaDir);
+  const rodada = yield* arquivos.caminhos(opcoes.rodadaDir);
   const dominioConfigurado = yield* textoDoAmbiente("REVISAR_PPC_SURGE_DOMAIN");
   const comando = Option.map(yield* textoDoAmbiente("REVISAR_PPC_SURGE_CMD"), dividirComandoShell);
   const siteDir = yield* prepararSiteSurge(relatorio.relatorio_html, path.join(rodada.suporteDir, "surge-site"));
@@ -216,8 +211,8 @@ const gerarRelatorio = Effect.fn("revisar_ppc.gerarRelatorio")(function* (opcoes
     Option.getOrUndefined(comando),
     path.join(rodada.suporteDir, "surge-erro.log"),
   );
-  publicacao.relatorio_html_original = resolverCaminho(relatorio.relatorio_html);
-  escreverJsonDaRodada(path.join(rodada.suporteDir, "surge-publicacao.json"), publicacao);
+  publicacao.relatorio_html_original = relatorio.relatorio_html;
+  yield* arquivos.escreverJson(path.join(rodada.suporteDir, "surge-publicacao.json"), publicacao);
   return payloadRelatorio(relatorio, publicacao);
 });
 
@@ -246,13 +241,11 @@ const prepararDocumentoCmd = Command.make(
   },
   Effect.fn("revisar_ppc.prepararDocumento")(function* ({ arquivo, saidaBase }) {
     const relogio = yield* relogioDoComando();
-    const resultado = yield* executar(() =>
-      prepararDocumento(arquivo, {
-        referencias: lerReferenciasIdentificacao(caminhosPadrao()),
-        relogio,
-        ...(Option.isSome(saidaBase) ? { saidaBase: saidaBase.value } : {}),
-      }),
-    );
+    const resultado = yield* prepararDocumento(arquivo, {
+      referencias: yield* lerReferenciasIdentificacao(caminhosPadrao()),
+      relogio,
+      ...(Option.isSome(saidaBase) ? { saidaBase: saidaBase.value } : {}),
+    });
     yield* imprimirJson(resultado.resumo);
   }),
 ).pipe(Command.withDescription("Criar a rodada e o PPC.md canônico"));
@@ -439,8 +432,8 @@ const medirIdentificacaoCmd = Command.make(
     json: flagLigada("json", "imprimir a medição completa em JSON"),
   },
   Effect.fn("revisar_ppc.medirIdentificacao")(function* ({ amostra, erros, json }) {
+    const referencias = yield* lerReferenciasIdentificacao(caminhosPadrao());
     const texto = yield* executar(() => {
-      const referencias = lerReferenciasIdentificacao(caminhosPadrao());
       const medicao = medirIdentificacao(amostra ? { referencias, amostra: AMOSTRA_MEDICAO } : { referencias });
       // `formatarMedicao` termina com quebra de linha; o `Console.log` põe a sua.
       return json ? JSON.stringify(medicao, null, 2) : formatarMedicao(medicao, { erros }).replace(/\n$/, "");
@@ -477,7 +470,7 @@ const textoDoErro = (erro: unknown): string =>
   erro instanceof Error ? `${erro.name}: ${erro.message}` : `${NOME}: ${String(erro)}`;
 
 if (import.meta.main) {
-  executarPrincipal(NOME, Command.run(revisarPpc, { version: "0.1.0" }), {
+  executarPrincipal(NOME, Command.run(revisarPpc, { version: "0.1.0" }).pipe(Effect.provide(Rodada.layer)), {
     mensagemDe: textoDoErro,
     mensagemDoDefeito: (causa) => textoDoErro(Cause.squash(causa)),
   });

@@ -1,4 +1,3 @@
-// @effect-diagnostics nodeBuiltinImport:off -- gerador síncrono do relatório HTML a partir dos arquivos da rodada
 /**
  * Relatório HTML da rodada: o PPC anotado com os achados dos sub-agentes.
  *
@@ -13,9 +12,8 @@
  * - confiança com duas casas (`formatoFixo`, empate para o par);
  * - posições e larguras contadas em code points.
  */
-import * as NodeFS from "node:fs";
-import * as NodePath from "node:path";
 import * as Effect from "effect/Effect";
+import * as Path from "effect/Path";
 import { escapeHtml } from "@simplifica-if/kb/primitivas/html";
 import { match, sub } from "@simplifica-if/kb/primitivas/regex";
 import { wrap } from "@simplifica-if/kb/primitivas/quebra-de-linhas";
@@ -48,7 +46,7 @@ import {
   SITUACOES_REVISAO,
   situacao,
 } from "./resultados.ts";
-import { caminhosRodada, escreverTextoDaRodada, JsonDaRodadaInvalido, lerJsonDaRodada, lerTexto } from "./rodada.ts";
+import * as Rodada from "./rodada.ts";
 
 type Objeto = Record<string, unknown>;
 
@@ -900,15 +898,21 @@ export function renderizarHtml(
 const ASSETS = ["revisar-ppc.css", "revisar-ppc.js"];
 
 /** Copia o CSS e o JS do relatório para `<destino>/assets`. */
-function copiarAssets(destinoDir: string, caminhos: CaminhosAnalise): string[] {
-  const destino = NodePath.join(destinoDir, "assets");
-  NodeFS.mkdirSync(destino, { recursive: true });
-  return ASSETS.map((nome) => {
-    const arquivo = NodePath.join(destino, nome);
-    NodeFS.copyFileSync(NodePath.join(caminhos.appDir, "assets", nome), arquivo);
-    return arquivo;
-  });
-}
+const copiarAssets = Effect.fn("relatorio_html.copiarAssets")(function* (
+  destinoDir: string,
+  caminhos: CaminhosAnalise,
+) {
+  const rodada = yield* Rodada.Rodada;
+  const path = yield* Path.Path;
+  const destino = path.join(destinoDir, "assets");
+  const arquivos: string[] = [];
+  for (const nome of ASSETS) {
+    const arquivo = path.join(destino, nome);
+    yield* rodada.copiarArquivo(path.join(caminhos.appDir, "assets", nome), arquivo);
+    arquivos.push(arquivo);
+  }
+  return arquivos;
+});
 
 export type RelatorioGerado = {
   relatorio_html: string;
@@ -925,18 +929,19 @@ export const gerarRelatorioHtml = Effect.fn("relatorio_html.gerarRelatorioHtml")
   resultados: string,
   caminhos: CaminhosAnalise = caminhosPadrao(),
 ) {
-  const rodadaPaths = caminhosRodada(rodada);
-  const metadata = lerJsonDaRodada(rodadaPaths.metadata);
+  const arquivos = yield* Rodada.Rodada;
+  const rodadaPaths = yield* arquivos.caminhos(rodada);
+  const metadata = yield* arquivos.lerJson(rodadaPaths.metadata);
   if (!ehDicionario(metadata)) {
-    return yield* new JsonDaRodadaInvalido({ arquivo: rodadaPaths.metadata, esperado: "um objeto JSON" });
+    return yield* new Rodada.JsonDaRodadaInvalido({ arquivo: rodadaPaths.metadata, esperado: "um objeto JSON" });
   }
   const { normalizados, alertas } = yield* lerResultadosDaRodada(rodadaPaths.rodadaDir, resultados, caminhos);
-  const ppcMarkdown = lerTexto(rodadaPaths.ppc);
+  const ppcMarkdown = yield* arquivos.lerTexto(rodadaPaths.ppc);
   const html = formatarHtml(renderizarHtml(metadata, normalizados, alertas, ppcMarkdown));
   const situacaoGeral = situacao(normalizados, alertas);
-  escreverTextoDaRodada(rodadaPaths.relatorioHtml, html);
+  yield* arquivos.escreverTexto(rodadaPaths.relatorioHtml, html);
 
-  const assets = copiarAssets(rodadaPaths.rodadaDir, caminhos);
+  const assets = yield* copiarAssets(rodadaPaths.rodadaDir, caminhos);
   const gerado: RelatorioGerado = {
     relatorio_html: rodadaPaths.relatorioHtml,
     assets,

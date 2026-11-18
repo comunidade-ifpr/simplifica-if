@@ -34,6 +34,7 @@ import type * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import type * as Normas from "@simplifica-if/kb/Normas";
 import type * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import * as NodeCrypto from "node:crypto";
+import { mensagemErroDocx } from "@simplifica-if/docx/erro";
 import { montarBaseRevisao } from "@simplifica-if/ppc/base-revisao";
 import type { EntradaIa, MarcaPendencia, RevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
 import * as ArquivosLiberados from "../ArquivosLiberados.ts";
@@ -138,12 +139,11 @@ function rodarNoTrabalhador(
     };
     trabalhador.once("message", (resposta: RespostaTrabalhador) => {
       if (resposta.ok) return terminar(Effect.succeed(resposta.revisao));
-      const motivo = resposta.arquivoInvalido ? resposta.mensagem : ERRO_INTERNO;
       terminar(
-        resposta.arquivoInvalido
-          ? Effect.fail(falha(motivo))
-          : Effect.logError("revisão prévia: defeito no Worker", resposta.mensagem).pipe(
-              Effect.andThen(Effect.fail(falha(motivo))),
+        "arquivoInvalido" in resposta
+          ? Effect.fail(falha(mensagemErroDocx(resposta.arquivoInvalido)))
+          : Effect.logError("revisão prévia: defeito no Worker", resposta.defeito).pipe(
+              Effect.andThen(Effect.fail(falha(ERRO_INTERNO))),
             ),
       );
     });

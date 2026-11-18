@@ -425,14 +425,11 @@ function lerTabela(tabela: Element, contexto: Contexto, emControle: boolean): Ta
     const antes = propriedades ? filho(propriedades, "w:gridBefore") : null;
     const celulas = descendentes(linha, "w:tc");
     if (celulas.length > contexto.limites.celulasPorLinha) {
-      throw new ErroDocx(
-        `O arquivo DOCX não pôde ser lido: há uma tabela com mais de ${contexto.limites.celulasPorLinha} células numa linha.`,
-      );
+      throw new ErroDocx({ motivo: "celulas-por-linha", limite: contexto.limites.celulasPorLinha });
     }
     const lidas = celulas.map((celula) => lerCelula(celula, linha, contexto));
     for (const celula of lidas) grade += celula.colunas;
-    if (grade > contexto.limites.posicoesPorTabela)
-      throw new ErroDocx("O arquivo DOCX não pôde ser lido: há uma tabela grande demais.");
+    if (grade > contexto.limites.posicoesPorTabela) throw new ErroDocx({ motivo: "tabela-grande-demais" });
     return { colunasAntes: antes ? colunasValidas(atributo(antes, "w:val"), 0, 0) : 0, celulas: lidas };
   });
   return { tipo: "tabela", emControle, linhas };
@@ -510,26 +507,46 @@ function lerPropriedades(raiz: Element | null): PropriedadesOoxml {
 
 // ---------------------------------------------------------------- documento
 
-/** Lê o pacote já aberto; exposto para quem também precisa dos binários (a figura). */
-export function lerPacote(pacote: PacoteOoxml): DocumentoOoxml {
+/** O corpo do documento principal e o contexto da leitura (relações, estilos, numerações). */
+function abrirDocumento(pacote: PacoteOoxml): { corpo: Element; contexto: Contexto } {
   const principal = pacote.partePorTipo("", RELACAO_DOCUMENTO);
   const raiz = principal ? pacote.xml(principal) : null;
   const corpo = raiz ? filho(raiz, "w:body") : null;
   if (!principal || !corpo) {
-    throw new ErroDocx("O arquivo não é um documento do Word: o pacote não tem documento principal.");
+    throw new ErroDocx({ motivo: "sem-documento-principal" });
   }
   const parteNumeracao = pacote.partePorTipo(principal, RELACAO_NUMERACAO);
   const parteEstilos = pacote.partePorTipo(principal, RELACAO_ESTILOS);
-  const partePropriedades = pacote.partePorTipo("", RELACAO_PROPRIEDADES);
   const contexto: Contexto = {
     relacoes: pacote.relacoes(principal),
     limites: pacote.limites,
     ...lerEstilos(parteEstilos ? pacote.xml(parteEstilos) : null),
     numeracoes: lerNumeracoes(parteNumeracao ? pacote.xml(parteNumeracao) : null),
   };
+  return { corpo, contexto };
+}
+
+/** Lê o pacote já aberto; exposto para quem também precisa dos binários (a figura). */
+export function lerPacote(pacote: PacoteOoxml): DocumentoOoxml {
+  const { corpo, contexto } = abrirDocumento(pacote);
+  const partePropriedades = pacote.partePorTipo("", RELACAO_PROPRIEDADES);
   const blocos: BlocoOoxml[] = [];
   lerBlocos(corpo, contexto, false, blocos);
   return { blocos, propriedades: lerPropriedades(partePropriedades ? pacote.xml(partePropriedades) : null) };
+}
+
+/**
+ * O texto de cada caixa de texto ou forma (`w:txbxContent`) do corpo, um parágrafo por linha, lido
+ * como o texto profundo da célula: sem o removido nem a versão de compatibilidade (`mc:Fallback`).
+ * É o texto que a conversão lê e onde o comentário do Word não ancora.
+ */
+export function textosDeCaixas(pacote: PacoteOoxml): string[] {
+  const { corpo, contexto } = abrirDocumento(pacote);
+  return descendentesFora(corpo, "w:txbxContent", FORA_DO_TEXTO).map((caixa) =>
+    descendentesFora(caixa, "w:p", FORA_DO_TEXTO)
+      .map((paragrafo) => textoDosItens(paragrafo, contexto))
+      .join("\n"),
+  );
 }
 
 /** Lê os bytes de um `.docx`. */

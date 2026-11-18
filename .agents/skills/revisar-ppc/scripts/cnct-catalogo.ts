@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off -- comparação síncrona do PPC da rodada com o CNCT, sobre arquivos locais
+// @effect-diagnostics nodeBuiltinImport:off -- `caminhosCnct` monta os caminhos do catálogo com `node:path`, de forma pura; a leitura passa pelo serviço `Rodada`
 /**
  * Comparação do curso do PPC com o Catálogo Nacional de Cursos Técnicos:
  * busca por denominação, resumo do estágio no CNCT e comparação de denominação, eixo, carga horária mínima e estágio.
@@ -7,6 +7,8 @@
  * por isso é `Flutuante`.
  */
 import * as NodePath from "node:path";
+import * as Effect from "effect/Effect";
+import * as Path from "effect/Path";
 import { SequenceMatcher } from "@simplifica-if/kb/primitivas/sequencias";
 import { escape, finditer, search, sub } from "@simplifica-if/kb/primitivas/regex";
 import { casefold, colapsarEspacos, semMarcas } from "@simplifica-if/kb/primitivas/texto";
@@ -28,7 +30,7 @@ import {
 } from "@simplifica-if/kb/primitivas/valores";
 import { aparar, compararTexto, prefixo } from "@simplifica-if/kb/texto";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
-import { caminhosRodada, escreverJsonDaRodada, existe, lerJsonDaRodada, sha256Arquivo } from "./rodada.ts";
+import * as Rodada from "./rodada.ts";
 
 const CAMPOS_COMPLETOS = [
   "eixo_tecnologico",
@@ -126,13 +128,18 @@ export function resumirEstagioCnct(curso: Dicionario): Dicionario {
   };
 }
 
-function carregarCursoCompleto(itemIndice: Dicionario, caminhos: CaminhosAnalise): Dicionario {
+const carregarCursoCompleto = Effect.fn("cnct_catalogo.carregarCursoCompleto")(function* (
+  itemIndice: Dicionario,
+  caminhos: CaminhosAnalise,
+) {
+  const rodada = yield* Rodada.Rodada;
+  const path = yield* Path.Path;
   const curso: Dicionario = { ...itemIndice };
   const valorPath = textoOuVazio(obter(itemIndice, "path"));
   if (valorPath) {
-    const arquivo = NodePath.isAbsolute(valorPath) ? valorPath : NodePath.join(caminhos.baseConhecimentoDir, valorPath);
-    if (existe(arquivo)) {
-      const payload = lerJsonDaRodada(arquivo);
+    const arquivo = path.isAbsolute(valorPath) ? valorPath : path.join(caminhos.baseConhecimentoDir, valorPath);
+    if (yield* rodada.existe(arquivo)) {
+      const payload = yield* rodada.lerJson(arquivo);
       if (ehDicionario(payload)) {
         Object.assign(curso, payload);
         curso.path = valorPath;
@@ -147,23 +154,27 @@ function carregarCursoCompleto(itemIndice: Dicionario, caminhos: CaminhosAnalise
   padraoSeAusente(curso, "legislacao_profissional", "");
   padraoSeAusente(curso, "denominacao_normalizada", normalizarDenominacaoCnct(obter(curso, "denominacao")));
   return curso;
-}
+});
 
 /** Cursos do índice do CNCT, completados com o arquivo de cada curso. */
-export function carregarCatalogoCnct(catalogo?: string, caminhos: CaminhosAnalise = caminhosPadrao()): Dicionario[] {
-  const payload = lerJsonDaRodada(catalogo ?? caminhosCnct(caminhos).indice);
+export const carregarCatalogoCnct = Effect.fn("cnct_catalogo.carregarCatalogoCnct")(function* (
+  catalogo?: string,
+  caminhos: CaminhosAnalise = caminhosPadrao(),
+) {
+  const rodada = yield* Rodada.Rodada;
+  const payload = yield* rodada.lerJson(catalogo ?? caminhosCnct(caminhos).indice);
   const itens = ehDicionario(payload) ? obter(payload, "items") : [];
-  if (!Array.isArray(itens)) return [];
   const cursos: Dicionario[] = [];
-  itens.forEach((item, posicao) => {
-    if (!ehDicionario(item)) return;
-    if (!aparar(textoOuVazio(obter(item, "denominacao")))) return;
-    const curso = carregarCursoCompleto(item, caminhos);
+  if (!Array.isArray(itens)) return cursos;
+  for (const [posicao, item] of itens.entries()) {
+    if (!ehDicionario(item)) continue;
+    if (!aparar(textoOuVazio(obter(item, "denominacao")))) continue;
+    const curso = yield* carregarCursoCompleto(item, caminhos);
     padraoSeAusente(curso, "indice", posicao + 1);
     cursos.push(curso);
-  });
+  }
   return cursos;
-}
+});
 
 function scoreDenominacao(consulta: string, denominacao: string): number {
   if (!consulta || !denominacao) return 0;
@@ -207,16 +218,20 @@ function resumirCurso(curso: Dicionario, score: number, completo: boolean): Dici
   return resumo;
 }
 
-/** Cursos do CNCT com denominação parecida (score ≥ 0,55), do maior score para o menor. */
+/**
+ * Cursos do catálogo (`carregarCatalogoCnct`) com denominação parecida (score ≥ 0,55), do maior
+ * score para o menor.
+ */
 export function buscarCursosCnct(
+  cursos: readonly Dicionario[],
   consulta: string,
-  opcoes: { catalogo?: string; limite?: number; completo?: boolean; caminhos?: CaminhosAnalise } = {},
+  opcoes: { limite?: number; completo?: boolean } = {},
 ): Dicionario[] {
   const { limite = 5, completo = false } = opcoes;
   const consultaNormalizada = normalizarDenominacaoCnct(consulta);
   if (!consultaNormalizada) return [];
   const candidatos: Dicionario[] = [];
-  for (const curso of carregarCatalogoCnct(opcoes.catalogo, opcoes.caminhos)) {
+  for (const curso of cursos) {
     const score = scoreDenominacao(consultaNormalizada, textoDoValor(curso.denominacao_normalizada));
     if (score >= 0.55) candidatos.push(resumirCurso(curso, score, completo));
   }
@@ -243,13 +258,15 @@ function primeiroValorPreenchido(...valores: unknown[]): unknown {
 }
 
 /** JSON do caminho dado, quando ele existe e é objeto; senão, objeto vazio. */
-export function lerJsonSeExistir(valorCaminho: unknown): Dicionario {
-  if (!verdadeiro(valorCaminho)) return {};
+export const lerJsonSeExistir = Effect.fn("cnct_catalogo.lerJsonSeExistir")(function* (valorCaminho: unknown) {
+  const vazio: Dicionario = {};
+  if (!verdadeiro(valorCaminho)) return vazio;
+  const rodada = yield* Rodada.Rodada;
   const caminho = textoDoValor(valorCaminho);
-  if (!existe(caminho)) return {};
-  const payload = lerJsonDaRodada(caminho);
-  return ehDicionario(payload) ? payload : {};
-}
+  if (!(yield* rodada.existe(caminho))) return vazio;
+  const payload = yield* rodada.lerJson(caminho);
+  return ehDicionario(payload) ? payload : vazio;
+});
 
 type Horas = { valor_horas: number | null; fonte: string | null; valor_original: unknown };
 
@@ -377,12 +394,13 @@ function compararEstagioCnct(estagioCnct: Dicionario, estagio: Dicionario): Dici
 }
 
 /** Compara o curso do PPC (denominação, eixo, carga horária e estágio) com o curso correspondente do CNCT. */
-export function compararPpcComCnct(
+export const compararPpcComCnct = Effect.fn("cnct_catalogo.compararPpcComCnct")(function* (
   metadata: Dicionario,
   dadosConversao: unknown,
   matriz: Dicionario,
   opcoes: { catalogo?: string; caminhos?: CaminhosAnalise } = {},
-): Dicionario {
+) {
+  const rodada = yield* Rodada.Rodada;
   const caminhos = opcoes.caminhos ?? caminhosPadrao();
   const cnct = caminhosCnct(caminhos);
   const catalogo = opcoes.catalogo ?? cnct.indice;
@@ -396,8 +414,8 @@ export function compararPpcComCnct(
   const cargaPpc = cargaHorariaPpc(dados, matriz);
   const estagio = estagioPpc(dados, matriz);
 
-  if (!existe(catalogo)) {
-    return {
+  if (!(yield* rodada.existe(catalogo))) {
+    const indisponivel: Dicionario = {
       disponivel: false,
       fonte_catalogo: catalogo,
       fonte_manifesto: cnct.manifesto,
@@ -410,11 +428,13 @@ export function compararPpcComCnct(
       correspondencia: null,
       comparacoes: {},
     };
+    return indisponivel;
   }
 
   const consulta = textoOuVazio(cursoDeclarado);
-  const candidatos = buscarCursosCnct(consulta, { catalogo, caminhos });
-  const completos = buscarCursosCnct(consulta, { catalogo, caminhos, limite: 5, completo: true });
+  const cursos = normalizarDenominacaoCnct(consulta) ? yield* carregarCatalogoCnct(catalogo, caminhos) : [];
+  const candidatos = buscarCursosCnct(cursos, consulta);
+  const completos = buscarCursosCnct(cursos, consulta, { limite: 5, completo: true });
   const correspondencia = candidatos[0] && valorNumerico(candidatos[0].score) >= 0.72 ? candidatos[0] : null;
   const completa = completos[0] && valorNumerico(completos[0].score) >= 0.72 ? completos[0] : null;
   const comparacoes: Dicionario = {};
@@ -448,12 +468,12 @@ export function compararPpcComCnct(
     if (ehDicionario(estagioCnct)) comparacoes.estagio_cnct = compararEstagioCnct(estagioCnct, estagio);
   }
 
-  return {
+  const contexto: Dicionario = {
     disponivel: true,
     fonte_catalogo: catalogo,
     fonte_manifesto: cnct.manifesto,
-    catalogo_sha256: sha256Arquivo(catalogo),
-    manifesto_sha256: existe(cnct.manifesto) ? sha256Arquivo(cnct.manifesto) : "",
+    catalogo_sha256: yield* rodada.sha256Arquivo(catalogo),
+    manifesto_sha256: (yield* rodada.existe(cnct.manifesto)) ? yield* rodada.sha256Arquivo(cnct.manifesto) : "",
     curso_declarado: cursoDeclarado,
     eixo_declarado: eixoDeclarado,
     carga_horaria_ppc: cargaPpc,
@@ -464,19 +484,25 @@ export function compararPpcComCnct(
       : null,
     comparacoes,
   };
-}
+  return contexto;
+});
 
 /** Grava `cnct-contexto.json` na rodada. */
-export function gerarContextoCnctRodada(
-  rodada: string,
+export const gerarContextoCnctRodada = Effect.fn("cnct_catalogo.gerarContextoCnctRodada")(function* (
+  rodadaDir: string,
   opcoes: { catalogo?: string; caminhos?: CaminhosAnalise } = {},
-): Dicionario {
-  const caminhos = caminhosRodada(rodada);
-  const metadata = existe(caminhos.metadata) ? (lerJsonDaRodada(caminhos.metadata) as Dicionario) : {};
-  const preparacao = existe(caminhos.preparacaoDocx) ? (lerJsonDaRodada(caminhos.preparacaoDocx) as Dicionario) : {};
-  const dadosConversao = lerJsonSeExistir(obter(preparacao, "dados"));
-  const matriz = lerJsonSeExistir(obter(preparacao, "matriz_curricular"));
-  const contexto = compararPpcComCnct(metadata, dadosConversao, matriz, opcoes);
-  escreverJsonDaRodada(caminhos.cnctContexto, contexto);
+) {
+  const rodada = yield* Rodada.Rodada;
+  const caminhos = yield* rodada.caminhos(rodadaDir);
+  const lerSeExistir = (arquivo: string) =>
+    Effect.flatMap(rodada.existe(arquivo), (existe) =>
+      existe ? Effect.map(rodada.lerJson(arquivo), (valor) => valor as Dicionario) : Effect.succeed<Dicionario>({}),
+    );
+  const metadata = yield* lerSeExistir(caminhos.metadata);
+  const preparacao = yield* lerSeExistir(caminhos.preparacaoDocx);
+  const dadosConversao = yield* lerJsonSeExistir(obter(preparacao, "dados"));
+  const matriz = yield* lerJsonSeExistir(obter(preparacao, "matriz_curricular"));
+  const contexto = yield* compararPpcComCnct(metadata, dadosConversao, matriz, opcoes);
+  yield* rodada.escreverJson(caminhos.cnctContexto, contexto);
   return contexto;
-}
+});

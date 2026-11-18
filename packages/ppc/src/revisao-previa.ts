@@ -15,7 +15,8 @@
  * em lugar nenhum: fica na lista e no aviso do título.
  */
 import { comentarDocx } from "@simplifica-if/docx/comentarios";
-import { strFromU8, unzipSync } from "fflate";
+import { textosDeCaixas } from "@simplifica-if/docx/leitor";
+import { PacoteOoxml } from "@simplifica-if/docx/pacote";
 import type { EntradaRegistro } from "@simplifica-if/kb/normas/registro";
 import { Registro } from "@simplifica-if/kb/normas/registro";
 import type { Relacao } from "@simplifica-if/kb/normas/relacoes";
@@ -585,18 +586,12 @@ const normalizarTexto = (texto: string) => texto.normalize("NFC").toLowerCase().
 /**
  * Onde provavelmente está um trecho que não se achou num parágrafo do corpo: numa caixa de texto ou
  * forma (a conversão lê o texto delas; o comentário do Word não as alcança), ou, sem isso, dividido
- * entre parágrafos ou escrito de outro jeito.
+ * entre parágrafos ou escrito de outro jeito. `caixas` é o texto das caixas, já normalizado.
  */
-export function ondeNoArquivo(docx: Uint8Array, trecho: string): string {
+export function ondeNoArquivo(caixas: readonly string[], trecho: string): string {
   const alvo = normalizarTexto(trecho);
-  if (!alvo) return ONDE_DESCONHECIDO;
-  const documento = unzipSync(docx, { filter: (f) => f.name === "word/document.xml" })["word/document.xml"];
-  if (!documento) return ONDE_DESCONHECIDO;
-  for (const caixa of strFromU8(documento).matchAll(/<w:txbxContent\b[\s\S]*?<\/w:txbxContent>/g)) {
-    const texto = [...caixa[0].matchAll(/<w:t(?:\s[^>]*)?>([^<]*)<\/w:t>/g)].map((m) => m[1]).join(" ");
-    if (normalizarTexto(texto).includes(alvo))
-      return "provavelmente numa caixa de texto ou forma, onde o comentário do Word não alcança";
-  }
+  if (alvo && caixas.some((caixa) => caixa.includes(alvo)))
+    return "provavelmente numa caixa de texto ou forma, onde o comentário do Word não alcança";
   return ONDE_DESCONHECIDO;
 }
 
@@ -743,9 +738,10 @@ export function revisarDocx(
     ...item,
     noDocumento: !trechos.length ? "no-inicio" : ancoradas.has(indice) ? "no-trecho" : "so-na-lista",
   }));
-  const onde = new Map(
-    pendencias.filter((p) => p.noDocumento === "so-na-lista").map((p) => [p, ondeNoArquivo(bytes, p.trecho ?? "")]),
-  );
+  const naoLocalizadas = pendencias.filter((p) => p.noDocumento === "so-na-lista");
+  // Lido uma vez para todas as pendências não localizadas (e só se houver), pelo leitor e com os limites dele.
+  const caixas = naoLocalizadas.length ? textosDeCaixas(new PacoteOoxml(bytes)).map(normalizarTexto) : [];
+  const onde = new Map(naoLocalizadas.map((p) => [p, ondeNoArquivo(caixas, p.trecho ?? "")]));
   const aviso = textoDoAviso({
     onde,
     agora: opcoes.agora,

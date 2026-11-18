@@ -1,7 +1,7 @@
 .agents/skills/revisar-ppc/tests/base-analise.test.ts	20	0
-.agents/skills/revisar-ppc/tests/identificacao.test.ts	17	0
+.agents/skills/revisar-ppc/tests/identificacao.test.ts	18	0
 .agents/skills/revisar-ppc/tests/marcos-normativos.test.ts	11	0
-.agents/skills/revisar-ppc/tests/orquestracao.test.ts	71	0
+.agents/skills/revisar-ppc/tests/orquestracao.test.ts	72	0
 .agents/skills/revisar-ppc/tests/preparar-docx.test.ts	3	0
 .agents/skills/revisar-ppc/tests/relatorio.test.ts	41	0
 .agents/skills/revisar-ppc/tests/schemas-gerados.test.ts	60	0
@@ -22,7 +22,7 @@ packages/kb/src/avaliacao/resolvedor.test.ts	3	0
 packages/kb/src/busca/fts.test.ts	4	0
 packages/kb/src/busca/stemmer.test.ts	52	0
 packages/kb/src/busca/tokens.test.ts	19	0
-packages/kb/src/db/base.test.ts	34	0
+packages/kb/src/db/base.test.ts	35	0
 packages/kb/src/db/fontes.test.ts	8	0
 packages/kb/src/db/grupos-topico.test.ts	4	0
 packages/kb/src/db/unidades.test.ts	1	0
@@ -116,4 +116,4 @@ scripts/suap/consultas.test.ts	20	0
 scripts/suap/matrizes.test.ts	21	0
 scripts/suap/tutoriais.test.ts	24	0
 scripts/upstream_t3.test.ts	3	0
-TOTAL	1572	35
+TOTAL	1575	35
