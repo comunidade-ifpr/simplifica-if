@@ -5,11 +5,11 @@
  * resultado, com os bytes do DOCX comentado transferidos, não copiados.
  *
  * Roda com `resourceLimits` e tempo máximo impostos por quem o cria; aqui só se distingue o erro
- * esperado (`ErroDocx`: arquivo protegido, corrompido, grande demais, sem texto, com a mensagem em
- * português) do defeito.
+ * esperado (`ErroDocx`: arquivo protegido, corrompido, grande demais, sem texto), que volta como o
+ * motivo e os atributos (`DadosErroDocx`; quem criou o Worker monta a frase), do defeito.
  */
 import * as NodeWorkerThreads from "node:worker_threads";
-import { ErroDocx } from "@simplifica-if/docx/erro";
+import { type DadosErroDocx, ErroDocx } from "@simplifica-if/docx/erro";
 import {
   type BaseRevisaoPrevia,
   type EntradaIa,
@@ -34,7 +34,8 @@ export type PedidoTrabalhador = {
 
 export type RespostaTrabalhador =
   | { ok: true; revisao: RevisaoPrevia }
-  | { ok: false; arquivoInvalido: boolean; mensagem: string };
+  | { ok: false; arquivoInvalido: DadosErroDocx }
+  | { ok: false; defeito: string };
 
 const porta = NodeWorkerThreads.parentPort;
 if (porta !== null)
@@ -51,11 +52,10 @@ if (porta !== null)
       porta.postMessage({ ok: true, revisao } satisfies RespostaTrabalhador, [revisao.docx.buffer as ArrayBuffer]);
       return;
     } catch (erro) {
-      resposta = {
-        ok: false,
-        arquivoInvalido: erro instanceof ErroDocx,
-        mensagem: erro instanceof Error ? erro.message : String(erro),
-      };
+      resposta =
+        erro instanceof ErroDocx
+          ? { ok: false, arquivoInvalido: erro.dados }
+          : { ok: false, defeito: erro instanceof Error ? erro.message : String(erro) };
     }
     // oxlint-disable-next-line unicorn/require-post-message-target-origin -- porta de Worker, não janela
     porta.postMessage(resposta);

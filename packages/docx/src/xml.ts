@@ -109,12 +109,10 @@ export function analisarXml(
         profundidade += 1;
         elementos += 1;
         if (elementos > limites.elementosPorParte) {
-          throw new ErroDocx(
-            `O arquivo DOCX é grande demais para ser lido: ${parte} tem mais de ${limites.elementosPorParte / 1000} mil elementos.`,
-          );
+          throw new ErroDocx({ motivo: "elementos-demais", parte, limite: limites.elementosPorParte });
         }
         if (profundidade > limites.profundidadeDoXml) {
-          throw new ErroDocx(`O arquivo DOCX não pôde ser lido: ${parte} tem elementos aninhados demais.`);
+          throw new ErroDocx({ motivo: "aninhamento-demais", parte });
         }
         arvore.onopentag(nome, atributos);
       },
@@ -124,7 +122,7 @@ export function analisarXml(
         // o primeiro é XML bem formado, e é o único que termina em `/>`.
         const autofechada = texto[analisador.endIndex] === ">" && texto[analisador.endIndex - 1] === "/";
         if (implicito && !autofechada) {
-          throw new ErroDocx(`O arquivo DOCX está corrompido: ${parte} não é um XML bem formado.`);
+          throw new ErroDocx({ motivo: "xml-mal-formado", parte });
         }
         profundidade -= 1;
         arvore.onclosetag();
