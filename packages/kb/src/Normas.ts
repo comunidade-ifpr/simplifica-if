@@ -5,21 +5,25 @@
  *
  * As regras são as funções puras de `normas/` (resolvedor, `statusEm`, `transicoesAplicaveis`,
  * `correspondenciaEm`, `relacoesDeEm`), sobre os dados de `FontesNormativas`; os dispositivos e a
- * busca textual vêm do banco (`db/consultas-normas.ts`, `db/consultas.ts`).
+ * busca textual vêm do banco (`db/consultas-normas.ts`, privado a este serviço).
  */
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
-import * as SqlClient from "effect/sql/SqlClient";
+import type * as SqlClient from "effect/sql/SqlClient";
 import * as FontesNormativas from "./FontesNormativas.ts";
-import { buscarNormaDetalhada, type NormaResumo, obterNorma } from "./db/consultas.ts";
 import {
+  buscarNormaDetalhada,
   carregarFonteCorrespondencia,
   descendentes,
   type DispositivoDoBanco,
   dispositivoOuAncestral,
+  type NormaResumo,
   obterDispositivo,
+  obterNorma,
+  type OpcoesBuscaNorma,
+  type ResultadoBuscaNorma,
   type TrechoDispositivo,
   trechoDoDispositivo,
 } from "./db/consultas-normas.ts";
@@ -34,7 +38,14 @@ import { type Relacao, relacoesDeEm, sucessorasDe } from "./normas/relacoes.ts";
 import { type ResolucaoComEntrada, resolucaoComEntrada } from "./normas/resolver.ts";
 import { type ResultadoVigencia, type SituacaoTransicao, statusEm, transicoesAplicaveis } from "./normas/vigencia.ts";
 
-type Sucesso<F extends (...args: never[]) => Effect.Effect<unknown, unknown, unknown>> = Effect.Success<ReturnType<F>>;
+export type {
+  DispositivoDoBanco,
+  NormaResumo,
+  OpcoesBuscaNorma,
+  ResultadoBuscaNorma,
+  ResultadoNorma,
+  TrechoDispositivo,
+} from "./db/consultas-normas.ts";
 
 /** Metadados de uma norma da base, stub ou referência externa, como o manifesto e o `stubs.yaml` os publicam. */
 export interface FichaNorma {
@@ -58,13 +69,6 @@ export interface FichaNorma {
   readonly pendencia_vigencia: string | null;
   /** O status publicado está "a confirmar": há pendência registrada ou o status é `a confirmar` (stubs). */
   readonly vigencia_a_confirmar: boolean;
-}
-
-export interface OpcoesBuscaNorma {
-  readonly limite?: number;
-  readonly situacao?: string;
-  readonly vigentes?: boolean;
-  readonly em?: string;
 }
 
 const LinhaFicha = Schema.Struct({
@@ -97,7 +101,7 @@ export class Normas extends Context.Service<
     readonly buscar: (
       consulta: string,
       opcoes?: OpcoesBuscaNorma,
-    ) => Effect.Effect<Sucesso<typeof buscarNormaDetalhada>, Sql.FalhaNaConsulta>;
+    ) => Effect.Effect<ResultadoBuscaNorma, Sql.FalhaNaConsulta>;
     /** Resumo da norma pela tabela `normas` (`null` se não registrada). */
     readonly obter: (id: string) => Effect.Effect<NormaResumo | null, Sql.FalhaNaConsulta>;
     /** Metadados completos da norma (do ato, do arquivo com variante ou com `#dispositivo`); `null` se não registrada. */
@@ -134,16 +138,11 @@ export class Normas extends Context.Service<
 >()("@simplifica-if/kb/Normas") {}
 
 const make = Effect.gen(function* () {
-  const sql = yield* SqlClient.SqlClient;
   const fontes = yield* FontesNormativas.FontesNormativas;
   // as tabelas de correspondência e os dispositivos que elas citam não mudam com o banco aberto:
   // carregados uma vez, na construção da layer
   const fonteCorrespondencia = yield* carregarFonteCorrespondencia;
-  const prover = <A, E>(efeito: Effect.Effect<A, E, SqlClient.SqlClient | FontesNormativas.FontesNormativas>) =>
-    efeito.pipe(
-      Effect.provideService(SqlClient.SqlClient, sql),
-      Effect.provideService(FontesNormativas.FontesNormativas, fontes),
-    );
+  const prover = yield* Sql.ambienteDoServico<SqlClient.SqlClient | FontesNormativas.FontesNormativas>();
 
   const ficha = Effect.fn("Normas.ficha")(function* (id: string) {
     const consultar = (chave: string) =>

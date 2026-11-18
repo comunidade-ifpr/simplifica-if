@@ -1,41 +1,48 @@
 /**
  * `Ppcs`: os PPCs convertidos no banco — busca de seções (FTS5, radicais e léxico de sinônimos),
  * leitura de seções, citações normativas (quem cita uma norma, o que um PPC cita) e os fatos
- * extraídos com o cruzamento com o SUAP. Consultas em `db/consultas.ts` e `db/citacoes.ts`; o léxico
- * e o registro vêm de `FontesNormativas`.
+ * extraídos com o cruzamento com o SUAP. As consultas, privadas a este serviço, ficam em
+ * `db/consultas-secoes.ts`, `db/consultas-fatos.ts` e `db/citacoes.ts`; o léxico e o registro vêm de
+ * `FontesNormativas`.
  */
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
-import * as SqlClient from "effect/sql/SqlClient";
+import type * as SqlClient from "effect/sql/SqlClient";
 import * as FontesNormativas from "./FontesNormativas.ts";
 import * as Citacoes from "./db/citacoes.ts";
 import {
-  buscarSecoes,
+  type DivergenciasPpcSuap,
   divergenciasPpcSuap,
+  type FatosDoPpc,
   fatosDosPpcs,
   type FiltrosFatos,
+} from "./db/consultas-fatos.ts";
+import {
+  buscarSecoes,
+  type EntradaIndiceSecoes,
   type FiltrosSecoes,
   indiceSecoesDoPpc,
   lerSecao,
-  type ModoBusca,
+  type OpcoesBuscaSecoes,
+  type ResultadoSecao,
+  type SecaoDoPpc,
+  type SecaoLida,
   secoesDoPpc,
-} from "./db/consultas.ts";
-import type * as Sql from "./db/sql.ts";
-import type { Sinonimos } from "./busca/sinonimos.ts";
+} from "./db/consultas-secoes.ts";
+import * as Sql from "./db/sql.ts";
 import { type NormaCitadaNoPpc, type PpcCitante, type RelatorioCitacoes, relatorioCitacoes } from "./ppcs/citacoes.ts";
 
-type Sucesso<F extends (...args: never[]) => Effect.Effect<unknown, unknown, unknown>> = Effect.Success<ReturnType<F>>;
-
-export interface OpcoesBuscaSecoes {
-  readonly limite?: number;
-  readonly modo?: ModoBusca;
-  /** Léxico de sinônimos (padrão: o de `FontesNormativas`); a avaliação passa um vazio. */
-  readonly lexico?: Sinonimos;
-  /** Inclui o texto integral de cada seção. */
-  readonly integral?: boolean;
-  readonly somenteTodos?: boolean;
-}
+export type { DivergenciasPpcSuap, FatosDoPpc, FiltrosFatos } from "./db/consultas-fatos.ts";
+export type {
+  EntradaIndiceSecoes,
+  FiltrosSecoes,
+  OpcoesBuscaSecoes,
+  ResultadoSecao,
+  SecaoDoPpc,
+  SecaoLida,
+} from "./db/consultas-secoes.ts";
+export type { ModoBusca } from "./busca/fts.ts";
 
 export class Ppcs extends Context.Service<
   Ppcs,
@@ -44,13 +51,10 @@ export class Ppcs extends Context.Service<
       consulta: string,
       filtros?: FiltrosSecoes,
       opcoes?: OpcoesBuscaSecoes,
-    ) => Effect.Effect<Sucesso<typeof buscarSecoes>, Sql.FalhaNaConsulta>;
-    readonly secoesDoPpc: (
-      ppc: string,
-      tipos: readonly string[],
-    ) => Effect.Effect<Sucesso<typeof secoesDoPpc>, Sql.FalhaNaConsulta>;
-    readonly indiceSecoesDoPpc: (ppc: string) => Effect.Effect<Sucesso<typeof indiceSecoesDoPpc>, Sql.FalhaNaConsulta>;
-    readonly lerSecao: (id: string) => Effect.Effect<Sucesso<typeof lerSecao>, Sql.FalhaNaConsulta>;
+    ) => Effect.Effect<ResultadoSecao[], Sql.FalhaNaConsulta>;
+    readonly secoesDoPpc: (ppc: string, tipos: readonly string[]) => Effect.Effect<SecaoDoPpc[], Sql.FalhaNaConsulta>;
+    readonly indiceSecoesDoPpc: (ppc: string) => Effect.Effect<EntradaIndiceSecoes[], Sql.FalhaNaConsulta>;
+    readonly lerSecao: (id: string) => Effect.Effect<SecaoLida | null, Sql.FalhaNaConsulta>;
     /** PPCs que citam a norma `id` (aceita `#dispositivo`), com cada ocorrência. */
     readonly citacoesDaNorma: (
       id: string,
@@ -63,21 +67,14 @@ export class Ppcs extends Context.Service<
     ) => Effect.Effect<RelatorioCitacoes, Sql.FalhaNaConsulta>;
     /** Normas citadas por um PPC; `null` se o PPC não está na base. */
     readonly normasCitadas: (ppc: string) => Effect.Effect<NormaCitadaNoPpc[] | null, Sql.FalhaNaConsulta>;
-    readonly fatos: (filtros?: FiltrosFatos) => Effect.Effect<Sucesso<typeof fatosDosPpcs>, Sql.FalhaNaConsulta>;
-    readonly divergencias: (
-      filtros?: FiltrosFatos,
-    ) => Effect.Effect<Sucesso<typeof divergenciasPpcSuap>, Sql.FalhaNaConsulta>;
+    readonly fatos: (filtros?: FiltrosFatos) => Effect.Effect<FatosDoPpc[], Sql.FalhaNaConsulta>;
+    readonly divergencias: (filtros?: FiltrosFatos) => Effect.Effect<DivergenciasPpcSuap, Sql.FalhaNaConsulta>;
   }
 >()("@simplifica-if/kb/Ppcs") {}
 
 const make = Effect.gen(function* () {
-  const sql = yield* SqlClient.SqlClient;
   const fontes = yield* FontesNormativas.FontesNormativas;
-  const prover = <A, E>(efeito: Effect.Effect<A, E, SqlClient.SqlClient | FontesNormativas.FontesNormativas>) =>
-    efeito.pipe(
-      Effect.provideService(SqlClient.SqlClient, sql),
-      Effect.provideService(FontesNormativas.FontesNormativas, fontes),
-    );
+  const prover = yield* Sql.ambienteDoServico<SqlClient.SqlClient | FontesNormativas.FontesNormativas>();
 
   return Ppcs.of({
     buscarSecoes: Effect.fn("Ppcs.buscarSecoes")(function* (

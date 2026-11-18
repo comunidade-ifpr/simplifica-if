@@ -8,7 +8,7 @@ import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
-import * as SqlClient from "effect/sql/SqlClient";
+import type * as SqlClient from "effect/sql/SqlClient";
 import {
   adequacaoArt71Em,
   type CursoParaAdequacao,
@@ -17,8 +17,11 @@ import {
   type RelatorioAdequacao,
 } from "./adequacao/art71.ts";
 import { CAMINHOS } from "./caminhos.ts";
-import { type FiltrosCursos, listarCursos, type ResultadoCurso } from "./db/consultas.ts";
+import { idCnct } from "./db/chaves.ts";
+import { type FiltrosCursos, listarCursos, type ResultadoCurso } from "./db/consultas-cursos.ts";
 import * as Sql from "./db/sql.ts";
+
+export type { FiltrosCursos, ResultadoCurso } from "./db/consultas-cursos.ts";
 
 const LinhaCurso = Schema.Struct({
   campus_id: Schema.String,
@@ -115,39 +118,30 @@ const carregarFonteAdequacao = Effect.fn("Cursos.carregarFonteAdequacao")(functi
 });
 
 const make = Effect.gen(function* () {
-  const sql = yield* SqlClient.SqlClient;
+  const prover = yield* Sql.ambienteDoServico<SqlClient.SqlClient>();
 
-  const listar = Effect.fn("Cursos.listar")(
-    function* (filtros: FiltrosCursos = {}) {
-      return yield* listarCursos(filtros);
-    },
-    Effect.provideService(SqlClient.SqlClient, sql),
-  );
+  const listar = Effect.fn("Cursos.listar")(function* (filtros: FiltrosCursos = {}) {
+    return yield* listarCursos(filtros);
+  }, prover);
 
-  const adequacaoArt71 = Effect.fn("Cursos.adequacaoArt71")(
-    function* (opcoes: { readonly incluirTecnologia?: boolean } = {}) {
-      const fonte = yield* carregarFonteAdequacao();
-      return adequacaoArt71Em(
-        fonte,
-        opcoes.incluirTecnologia === undefined ? {} : { incluirTecnologia: opcoes.incluirTecnologia },
-      );
-    },
-    Effect.provideService(SqlClient.SqlClient, sql),
-  );
+  const adequacaoArt71 = Effect.fn("Cursos.adequacaoArt71")(function* (
+    opcoes: { readonly incluirTecnologia?: boolean } = {},
+  ) {
+    const fonte = yield* carregarFonteAdequacao();
+    return adequacaoArt71Em(
+      fonte,
+      opcoes.incluirTecnologia === undefined ? {} : { incluirTecnologia: opcoes.incluirTecnologia },
+    );
+  }, prover);
 
-  const cnct = Effect.fn("Cursos.cnct")(
-    function* (id: string) {
-      const linha = yield* primeiroCnct(`SELECT ${COLUNAS_CNCT} FROM cnct WHERE id = ?`, [
-        id.startsWith("cnct:") ? id : `cnct:${id}`,
-      ]);
-      return linha ?? null;
-    },
-    Effect.provideService(SqlClient.SqlClient, sql),
-  );
+  const cnct = Effect.fn("Cursos.cnct")(function* (id: string) {
+    const linha = yield* primeiroCnct(`SELECT ${COLUNAS_CNCT} FROM cnct WHERE id = ?`, [idCnct(id)]);
+    return linha ?? null;
+  }, prover);
 
   const catalogoCnct = linhasCnct(`SELECT ${COLUNAS_CNCT} FROM cnct ORDER BY slug`).pipe(
     Effect.withSpan("Cursos.catalogoCnct"),
-    Effect.provideService(SqlClient.SqlClient, sql),
+    prover,
   );
 
   return Cursos.of({ listar, adequacaoArt71, cnct, catalogoCnct });

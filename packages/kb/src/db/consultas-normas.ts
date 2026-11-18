@@ -1,23 +1,28 @@
 /**
- * Consultas às tabelas da fase 5 no `kb.sqlite` (dispositivos, vigências, transições e
- * correspondências), pelo `SqlClient`, com as linhas decodificadas por Effect Schema na borda. As
- * regras não são reescritas aqui: a deduplicação vem gravada (`canonico`), e a herança da
+ * Consultas do serviço `Normas` ao `kb.sqlite`: as normas e a busca textual nos metadados e nos
+ * dispositivos, e as tabelas da fase 5 (dispositivos, vigências, transições e correspondências), pelo
+ * `SqlClient`, com as linhas decodificadas por Effect Schema na borda. As regras não são reescritas
+ * aqui: a deduplicação vem gravada (`canonico`), e a herança da
  * correspondência, os descendentes e a situação da transição numa data usam as mesmas funções da
  * API de arquivos (`correspondenciaEm`, `descendentesEm`, `situacaoNaData`). `base.test.ts` confere
  * que banco e arquivos dão o mesmo resultado.
  *
- * Exports: `obterDispositivo`, `descendentes`, `paraTrecho`, `trechoDoDispositivo`,
+ * Exports: `obterNorma`, `buscarNormaDetalhada`, `obterDispositivo`, `descendentes`, `paraTrecho`, `trechoDoDispositivo`,
  * `dispositivoOuAncestral`, `tabelasCorrespondencia`, `carregarFonteCorrespondencia`,
  * `vigenciaNaData`, `sqlForaDeVigencia` (pura), `transicoesDosAtos`; tipos `DispositivoDoBanco`,
- * `TrechoDispositivo`, `VigenciaNoBanco`, `TransicaoNoBanco`. As relações e a `data_referencia`
- * vêm de `FontesNormativas`.
+ * `TrechoDispositivo`, `VigenciaNoBanco`, `TransicaoNoBanco`, `NormaResumo`, `ResultadoNorma`,
+ * `ResultadoBuscaNorma`. O registro do resolvedor, as relações e a `data_referencia` vêm de
+ * `FontesNormativas`.
  */
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import type * as SqlClient from "effect/sql/SqlClient";
+import { conceitosDaConsulta, expressaoFts } from "../busca/fts.ts";
+import * as FontesNormativas from "../FontesNormativas.ts";
 import type { FonteCorrespondencia, TabelaCorrespondencia } from "../normas/correspondencia.ts";
 import { descendentesEm, type Dispositivo, TIPOS_DISPOSITIVO, TIPOS_NOTA } from "../normas/estrutura.ts";
 import { idDoAto } from "../normas/ids.ts";
+import { resolverCitacao } from "../normas/resolver.ts";
 import { type DatasTransicao, type Situacao, STATUS_VIGENCIA, situacaoNaData } from "../normas/vigencia.ts";
 import * as Sql from "./sql.ts";
 
@@ -376,4 +381,260 @@ export const transicoesDosAtos = Effect.fn("consultasNormas.transicoesDosAtos")(
     [...atos, ...atos],
   );
   return linhas.map((t): TransicaoNoBanco => ({ ...t, situacao: situacaoNaData(t, data) }));
+});
+
+/* ==================================================================== normas */
+
+const LinhaNorma = Schema.Struct({
+  id: Texto,
+  situacao: Texto,
+  titulo: Texto,
+  status_vigencia: TextoNulo,
+  data_publicacao: TextoNulo,
+  ementa: TextoNulo,
+  path: TextoNulo,
+});
+const primeiraNorma = Sql.primeira(LinhaNorma);
+
+export interface NormaResumo {
+  id: string;
+  situacao: string;
+  titulo: string;
+  status_vigencia: string | null;
+  data_publicacao: string | null;
+  ementa: string | null;
+  path: string | null;
+}
+
+const SQL_NORMA =
+  "SELECT id, situacao, titulo, status_vigencia, data_publicacao, ementa, path FROM normas WHERE id = ?";
+
+/** Norma pelo ID; se o ID tem variante (`~compilacao`) e não está na base, o ato; `null` se nenhum. */
+export const obterNorma = Effect.fn("consultasNormas.obterNorma")(function* (id: string) {
+  const linha: NormaResumo | undefined = yield* primeiraNorma(SQL_NORMA, [id]);
+  if (linha) return linha;
+  const ato = idDoAto(id);
+  if (ato === id) return null;
+  // o ID do ato não tem variante: a segunda consulta é a última
+  const doAto: NormaResumo | undefined = yield* primeiraNorma(SQL_NORMA, [ato]);
+  return doAto ?? null;
+});
+
+/** A busca de normas: os achados e os avisos (ID desconhecido, citação excluída pelos filtros). */
+export interface ResultadoBuscaNorma {
+  resultados: ResultadoNorma[];
+  avisos: string[];
+}
+
+export interface ResultadoNorma {
+  norma: NormaResumo;
+  /** Dispositivo (ID canônico, caput herdado, texto literal, arquivo e linhas), quando o achado é um dispositivo. */
+  dispositivo: TrechoDispositivo | null;
+  /** Dispositivo citado que não está no texto da base, quando `dispositivo` é o ancestral mais próximo. */
+  pedido: string | null;
+  /** Metadados da norma (título, aliases, palavras-chave, ementa), quando o achado é a própria norma. */
+  metadados: { texto: string; path: string; linha: number } | null;
+  pontuacao: number | null;
+  origem: "citacao-resolvida" | "busca-textual";
+}
+
+/** Opções de `buscarNormaDetalhada`. O registro do resolvedor e a `data_referencia` vêm de `FontesNormativas`. */
+export interface OpcoesBuscaNorma {
+  readonly limite?: number;
+  readonly situacao?: string;
+  readonly vigentes?: boolean;
+  readonly em?: string;
+}
+
+const LinhaMetadados = Schema.Struct({
+  rowid: Inteiro,
+  norma_id: Texto,
+  texto: Texto,
+  path: Texto,
+  linha: Inteiro,
+});
+const primeirosMetadados = Sql.primeira(LinhaMetadados);
+const linhasMetadadosPontuados = Sql.todas(Schema.Struct({ ...LinhaMetadados.fields, pontuacao: Schema.Number }));
+const linhasDispositivosPontuados = Sql.todas(
+  Schema.Struct({ rowid: Inteiro, id: Texto, norma_id: Texto, pontuacao: Schema.Number }),
+);
+const primeiraForaDeVigencia = Sql.primeira(Schema.Struct({ fora: Inteiro }));
+
+const metadadosDaNorma = Effect.fn("consultasNormas.metadadosDaNorma")(function* (normaId: string) {
+  const m = yield* primeirosMetadados(
+    "SELECT rowid, norma_id, texto, path, linha FROM normas_metadados WHERE norma_id = ?",
+    [normaId],
+  );
+  if (!m) return null;
+  const metadados: ResultadoNorma["metadados"] = { texto: m.texto, path: m.path, linha: m.linha };
+  return metadados;
+});
+
+/** O ato está revogado ou ainda não vigente na data (intervalos de `vigencias`). */
+const atoForaDeVigencia = Effect.fn("consultasNormas.atoForaDeVigencia")(function* (normaId: string, data: string) {
+  const linha = yield* primeiraForaDeVigencia(
+    `SELECT 1 AS fora FROM normas n WHERE n.id = ? AND ${sqlForaDeVigencia("n.id")}`,
+    [normaId, data, data],
+  );
+  return linha !== undefined;
+});
+
+/**
+ * Busca de normas.
+ *
+ * - Citação ("Res. CNE/CP 2/2026, art. 28, VII") ou ID (`br/cne-cp/res/2026/2#art28-vii`): o
+ *   resolvedor da fase 2 identifica a norma e os dispositivos, e a resposta é cada dispositivo da
+ *   tabela `dispositivos` (ID canônico, caput herdado, texto com os subordinados, arquivo e linhas);
+ *   dispositivo fora do texto da base cai no ancestral mais próximo (`pedido` guarda o citado).
+ *   Norma sem dispositivo citado (ou stub sem texto): os metadados, e a busca textual continua.
+ * - Termos: FTS5 por radicais em duas fontes, sem misturar as pontuações (BM25 de tabelas
+ *   diferentes não se comparam): com todos os conceitos (AND), primeiro os metadados das normas
+ *   (a consulta nomeia a norma), depois os dispositivos (`texto_com_caput`); com algum conceito
+ *   (OR), primeiro os dispositivos, depois os metadados.
+ * - `vigentes`: tira atos revogados ou ainda não vigentes na data `em` (padrão: `data_referencia`),
+ *   pelos intervalos de `vigencias`, e dispositivos revogados.
+ * - `situacao` e `vigentes` valem também para a citação resolvida: a norma ou o dispositivo citado
+ *   que eles excluem não volta, e a resposta fica vazia com um aviso explicando por quê (a busca
+ *   textual não substitui a norma que a consulta nomeou).
+ * - ID com a forma de norma (`br/…`, `ifpr/…`) que não está na base: resposta vazia com aviso de ID
+ *   desconhecido, sem busca textual.
+ */
+export const buscarNormaDetalhada = Effect.fn("consultasNormas.buscarNormaDetalhada")(function* (
+  consulta: string,
+  opcoes: OpcoesBuscaNorma = {},
+) {
+  const fontes = yield* FontesNormativas.FontesNormativas;
+  const limite = opcoes.limite ?? 10;
+  const saida: ResultadoNorma[] = [];
+  const avisos: string[] = [];
+  const resposta = (): ResultadoBuscaNorma => ({ resultados: saida, avisos });
+  const vazia = (): ResultadoBuscaNorma => ({ resultados: [], avisos });
+  const data = opcoes.em ?? fontes.dataReferencia;
+  const ehId = /^[a-z]+(\/[\w~-]+)+(#[\w-]+)?$/.test(consulta.trim());
+  const resolucao: { id: string | null; dispositivoId?: string | undefined; dispositivos?: string[] | undefined } = ehId
+    ? {
+        id: consulta.trim().split("#")[0]!,
+        dispositivoId: consulta.includes("#") ? `#${consulta.split("#")[1]}` : undefined,
+      }
+    : resolverCitacao(consulta, fontes.registro);
+  if (resolucao.id) {
+    const norma = yield* obterNorma(resolucao.id);
+    if (!norma && ehId && /^(br|ifpr)\//.test(resolucao.id)) {
+      avisos.push(`ID desconhecido: ${resolucao.id} não está entre as normas da base`);
+      return vazia();
+    }
+    if (norma) {
+      if (opcoes.situacao && norma.situacao !== opcoes.situacao) {
+        avisos.push(
+          `${norma.id} (citada) tem situação ${norma.situacao}, fora do filtro --situacao ${opcoes.situacao}`,
+        );
+        return vazia();
+      }
+      if (opcoes.vigentes && (yield* atoForaDeVigencia(norma.id, data))) {
+        avisos.push(
+          `${norma.id} (citada) não está vigente em ${data} (${norma.status_vigencia ?? "sem status"}); ` +
+            `sem --vigentes ela volta, e \`kb vigencia ${norma.id}\` mostra as regras de transição`,
+        );
+        return vazia();
+      }
+      const pedidos = resolucao.dispositivos ?? (resolucao.dispositivoId ? [resolucao.dispositivoId] : []);
+      const vistos = new Set<string>();
+      for (const pedido of pedidos) {
+        const achado = yield* dispositivoOuAncestral(`${norma.id}${pedido}`);
+        if (!achado || vistos.has(achado.disp.id)) continue;
+        vistos.add(achado.disp.id);
+        const trecho = yield* paraTrecho(achado, { subordinados: true });
+        if (opcoes.vigentes && trecho.revogado) {
+          avisos.push(`${trecho.id} (citado) está revogado; sem --vigentes ele volta`);
+          continue;
+        }
+        saida.push({
+          norma,
+          dispositivo: trecho,
+          pedido: achado.disp.dispositivo === pedido ? null : `${idDoAto(norma.id)}${pedido}`,
+          metadados: null,
+          pontuacao: null,
+          origem: "citacao-resolvida",
+        });
+      }
+      if (saida.length) return resposta();
+      if (avisos.length) return vazia();
+      const metadados = yield* metadadosDaNorma(norma.id);
+      if (metadados) {
+        saida.push({ norma, dispositivo: null, pedido: null, metadados, pontuacao: null, origem: "citacao-resolvida" });
+      }
+    }
+  }
+
+  const conceitos = conceitosDaConsulta(consulta, "radicais");
+  const filtros = (colunaNorma: string) => {
+    const condicoes: string[] = [];
+    const parametros: Sql.Parametro[] = [];
+    if (opcoes.situacao) {
+      condicoes.push("n.situacao = ?");
+      parametros.push(opcoes.situacao);
+    }
+    if (opcoes.vigentes) {
+      condicoes.push(`NOT ${sqlForaDeVigencia(colunaNorma)}`);
+      parametros.push(data, data);
+    }
+    return { sql: condicoes.map((c) => ` AND ${c}`).join(""), parametros };
+  };
+  const vistosMeta = new Set<number>();
+  const vistosDisp = new Set<number>();
+  // por etapa da busca textual (duas por operador), não por linha
+  const metadados = Effect.fnUntraced(function* (expressao: string) {
+    const f = filtros("m.norma_id");
+    const linhasMeta = yield* linhasMetadadosPontuados(
+      `SELECT m.rowid AS rowid, m.norma_id, m.texto, m.path, m.linha, bm25(normas_fts, 4.0, 1.0, 1.0) AS pontuacao
+           FROM normas_fts JOIN normas_metadados m ON m.rowid = normas_fts.rowid JOIN normas n ON n.id = m.norma_id
+           WHERE normas_fts MATCH ?${f.sql} ORDER BY pontuacao, m.rowid LIMIT ?`,
+      [expressao, ...f.parametros, limite + vistosMeta.size],
+    );
+    for (const m of linhasMeta) {
+      if (saida.length >= limite || vistosMeta.has(m.rowid)) continue;
+      if (saida.some((r) => r.metadados && r.norma.id === m.norma_id)) continue;
+      vistosMeta.add(m.rowid);
+      saida.push({
+        norma: (yield* obterNorma(m.norma_id))!,
+        dispositivo: null,
+        pedido: null,
+        metadados: { texto: m.texto, path: m.path, linha: m.linha },
+        pontuacao: Math.round(m.pontuacao * 1000) / 1000,
+        origem: "busca-textual",
+      });
+    }
+  });
+  const dispositivos = Effect.fnUntraced(function* (expressao: string) {
+    const f = filtros("d.ato_id");
+    const achados = yield* linhasDispositivosPontuados(
+      `SELECT d.rowid AS rowid, d.id, d.norma_id, bm25(dispositivos_fts, 1.0, 1.0) AS pontuacao
+           FROM dispositivos_fts JOIN dispositivos d ON d.rowid = dispositivos_fts.rowid JOIN normas n ON n.id = d.norma_id
+           WHERE dispositivos_fts MATCH ?${f.sql}${opcoes.vigentes ? " AND d.revogado = 0" : ""}
+           ORDER BY pontuacao, d.rowid LIMIT ?`,
+      [expressao, ...f.parametros, limite + vistosDisp.size],
+    );
+    for (const a of achados) {
+      if (saida.length >= limite || vistosDisp.has(a.rowid)) continue;
+      vistosDisp.add(a.rowid);
+      const d = (yield* obterDispositivo(a.id))!;
+      saida.push({
+        norma: (yield* obterNorma(a.norma_id))!,
+        dispositivo: yield* paraTrecho(d),
+        pedido: null,
+        metadados: null,
+        pontuacao: Math.round(a.pontuacao * 1000) / 1000,
+        origem: "busca-textual",
+      });
+    }
+  });
+  for (const operador of ["AND", "OR"] as const) {
+    if (saida.length >= limite) break;
+    if (operador === "OR" && conceitos.length < 2) break;
+    const expressaoMeta = expressaoFts(conceitos, ["radicais"], operador);
+    if (!expressaoMeta) break;
+    const ordem = operador === "AND" ? [metadados, dispositivos] : [dispositivos, metadados];
+    for (const etapa of ordem) yield* etapa(expressaoMeta);
+  }
+  return resposta();
 });

@@ -13,7 +13,8 @@ import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import type { Sinonimos } from "../busca/sinonimos.ts";
 import { semDiacriticos } from "../busca/tokens.ts";
 import * as Ppcs from "../Ppcs.ts";
-import type { FiltrosSecoes, ModoBusca } from "../db/consultas.ts";
+import type { ModoBusca } from "../busca/fts.ts";
+import type { FiltrosSecoes } from "../db/consultas-secoes.ts";
 
 const esquemaConsultas = Schema.Struct({
   consultas: Schema.Array(

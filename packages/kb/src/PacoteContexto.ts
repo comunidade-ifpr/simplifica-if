@@ -14,8 +14,8 @@ import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import type * as Scope from "effect/Scope";
-import * as SqlClient from "effect/sql/SqlClient";
-import * as FontesNormativas from "./FontesNormativas.ts";
+import type * as SqlClient from "effect/sql/SqlClient";
+import type * as FontesNormativas from "./FontesNormativas.ts";
 import {
   abrirPpcAvulso,
   type FichaPacote,
@@ -29,7 +29,7 @@ import {
   pacoteDoMarkdown,
   type PpcAvulso,
 } from "./db/pacote-contexto.ts";
-import type * as Sql from "./db/sql.ts";
+import * as Sql from "./db/sql.ts";
 import { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida } from "./pacote-contexto-erros.ts";
 
 export { GrupoInexistente, PpcNaoEncontrado, TarefaNaoReconhecida };
@@ -73,13 +73,7 @@ export class PacoteContexto extends Context.Service<
 >()("@simplifica-if/kb/PacoteContexto") {}
 
 const make = Effect.gen(function* () {
-  const sql = yield* SqlClient.SqlClient;
-  const fontes = yield* FontesNormativas.FontesNormativas;
-  const prover = <A, E, R>(efeito: Effect.Effect<A, E, R>) =>
-    efeito.pipe(
-      Effect.provideService(SqlClient.SqlClient, sql),
-      Effect.provideService(FontesNormativas.FontesNormativas, fontes),
-    );
+  const prover = yield* Sql.ambienteDoServico<SqlClient.SqlClient | FontesNormativas.FontesNormativas>();
 
   return PacoteContexto.of({
     montar: Effect.fn("PacoteContexto.montar")(function* (tarefa: string, ppc: string, opcoes: OpcoesPacote = {}) {

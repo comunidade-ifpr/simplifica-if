@@ -69,7 +69,7 @@ import { lerTopicosFichas, lerTopicosSecoes } from "../ppcs/topicos.ts";
 import { CITACOES, consultasDoExecutavel, NORMAS, PPC, todasAsConsultas } from "../testes/consultas.ts";
 import * as PpcAvulso from "./ppc-avulso.ts";
 import { tabelasCorrespondencia, transicoesDosAtos, vigenciaNaData } from "./consultas-normas.ts";
-import type { FiltrosSecoes } from "./consultas.ts";
+import type { FiltrosSecoes } from "./consultas-secoes.ts";
 import { VERSAO_ESQUEMA } from "./esquema.ts";
 import * as Sql from "./sql.ts";
 

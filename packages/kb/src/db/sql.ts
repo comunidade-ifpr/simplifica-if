@@ -56,3 +56,11 @@ export function primeira<S extends Schema.Decoder<unknown>>(Linha: S) {
   ): Effect.Effect<S["Type"] | undefined, FalhaNaConsulta, SqlClient.SqlClient | S["DecodingServices"]> =>
     Effect.map(consultar(texto, parametros), (linhas) => linhas[0]);
 }
+
+/**
+ * O ambiente de um serviço de consulta (o `SqlClient` e, se as consultas pedem, as `FontesNormativas`),
+ * capturado na construção da layer, e o combinador que o dá a cada método: as consultas pedem o banco
+ * do ambiente (o PPC avulso do `PacoteContexto` as roda sobre outro), e os métodos não pedem nada.
+ */
+export const ambienteDoServico = <R>() =>
+  Effect.map(Effect.context<R>(), (contexto) => Effect.provideContext(contexto));

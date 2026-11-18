@@ -8,7 +8,7 @@
  */
 import { INDICADORES } from "@simplifica-if/kb/adequacao/art71";
 import * as Cursos from "@simplifica-if/kb/Cursos";
-import type { ResultadoCurso } from "@simplifica-if/kb/db/consultas";
+import type { ResultadoCurso } from "@simplifica-if/kb/Cursos";
 import * as Sql from "@simplifica-if/kb/db/sql";
 import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Impacto from "@simplifica-if/kb/Impacto";

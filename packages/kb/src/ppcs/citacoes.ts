@@ -4,7 +4,6 @@
  * pelo resolvedor de `normas/resolver.ts`. Tudo é derivado dos arquivos do checkout, sem relógio e
  * com ordem estável (PPC por id, citação por posição).
  */
-import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { CAMINHOS, noCheckout } from "../caminhos.ts";
@@ -13,24 +12,8 @@ import type { Registro } from "../normas/registro.ts";
 import { type Citacao, extrairCitacoes } from "../normas/resolver.ts";
 import { compararTexto } from "../texto.ts";
 import { mascararFrontMatter } from "./front-matter.ts";
+import { decodificarIndicePpcs, type ItemPpc, itensPorId } from "./indice.ts";
 import { textoDaSecao } from "./secoes.ts";
-
-const esquemaItemPpc = Schema.StructWithRest(
-  Schema.Struct({
-    id: Schema.String,
-    campus_id: Schema.String,
-    campus_nome: Schema.String,
-    curso_slug: Schema.String,
-    curso_nome: Schema.String,
-    nivel: Schema.String,
-    tipo_oferta: Schema.String,
-    path: Schema.String,
-    ano_documento: Schema.optionalKey(Schema.Int),
-  }),
-  [Schema.Record(Schema.String, Schema.Unknown)],
-);
-export type ItemPpc = typeof esquemaItemPpc.Type;
-const decodificarIndicePpcs = Schema.decodeUnknownSync(Schema.Struct({ items: Schema.Array(esquemaItemPpc) }));
 
 export function caminhoBase(raiz: string): string {
   return noCheckout(raiz, CAMINHOS.base);
@@ -57,8 +40,7 @@ export function lerTextoSecao(
 /** Itens de `ppcs/index.json`, ordenados por id. */
 export function carregarIndicePpcs(raiz: string): ItemPpc[] {
   const arquivo = noCheckout(raiz, CAMINHOS.indicePpcs);
-  const indice = decodificarIndicePpcs(JSON.parse(NodeFS.readFileSync(arquivo, "utf-8")));
-  return [...indice.items].sort((a, b) => compararTexto(a.id, b.id));
+  return itensPorId(decodificarIndicePpcs(JSON.parse(NodeFS.readFileSync(arquivo, "utf-8"))));
 }
 
 /**

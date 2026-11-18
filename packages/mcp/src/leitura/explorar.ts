@@ -8,6 +8,7 @@
  * citação ou ID ao dispositivo, termos no FTS dos dispositivos e dos metadados) e o FTS das seções dos
  * PPCs.
  */
+import { expressaoFtsPrefixo } from "@simplifica-if/kb/busca/fts";
 import * as Cursos from "@simplifica-if/kb/Cursos";
 import * as Sql from "@simplifica-if/kb/db/sql";
 import * as Normas from "@simplifica-if/kb/Normas";
@@ -35,7 +36,6 @@ import { linkCampus, linkCnct, linkCurso, linkFicha, linkNorma, linkPpc } from "
 import {
   buscarNaMemoria,
   campo,
-  expressaoFts,
   item,
   type ItemBuscavel,
   ORDEM_GRUPOS,
@@ -449,7 +449,7 @@ export const makeExplorar = Effect.fn("Leitura.makeExplorar")(function* (base: B
   });
 
   const secoes = Effect.fn("Explorar.secoes")(function* (termos: ReadonlyArray<string>, limite: number) {
-    const expressao = expressaoFts(termos, ["titulo", "texto"]);
+    const expressao = expressaoFtsPrefixo(termos, ["titulo", "texto"]);
     if (expressao === null || termos.join("").length < 3) return [];
     const linhas = yield* prover(
       linhasSecoes(
