@@ -2,7 +2,7 @@
 
 A interface do app desktop Simplifica IF (M1.1): React 19, TanStack Router com rotas por arquivo, Tailwind 4 e shadcn sobre Base UI, na stack do T3 Code. Fala com o servidor local (`apps/server`) só por `effect/rpc` sobre WebSocket, com os contratos de [`@simplifica-if/contratos-app`](../../packages/contratos-app/src/contratos.ts). Toda a interface é em português; as cores e a tipografia são as da identidade do IFPR (skill `ifpr-design`), em tema claro e escuro.
 
-A casca do Modo Servidor (M1.9) está feita: Início com tarefas, formulário da tarefa, conversa com etapas, pasta de trabalho e "Desfazer". O primeiro uso (M1.8) também: boas-vindas, aviso de uso, perfil e Sua IA. "Isto está errado" (M1.12) também. E o leitor `ifpr://` (M1.6, ver [Leitor](#leitor-ifpr-m16)).
+A casca do Modo Servidor (M1.9) está feita: Início com tarefas, formulário da tarefa, conversa com etapas, pasta de trabalho e "Desfazer". O primeiro uso (M1.8) também: boas-vindas, aviso de uso, perfil e Sua IA. "Isto está errado" (M1.12) também. E o leitor `ifpr://` (M1.6, ver [Leitor](#leitor-ifpr-m16)), "Revisar um PPC" (M1.11) e o Explorar (M1.15).
 
 ## Telas
 

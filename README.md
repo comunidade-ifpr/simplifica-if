@@ -1,10 +1,48 @@
 # Simplifica IF
 
-Projeto unificado que reúne a Base de Conhecimento do IFPR e as skills operacionais usadas por agentes IA.
+App desktop para os servidores do IFPR. O Simplifica IF dá à IA da assinatura de cada pessoa (Claude, ChatGPT ou Gemini) a base de conhecimento do Instituto e tarefas prontas sobre ela. Este repositório contém o app, a base que o alimenta e as skills e scripts que agentes usam para curar a base.
 
-A base em `base-conhecimento/` é a fonte de verdade para normas, legislação, resoluções, portarias, metadados institucionais, PPCs, catálogos e documentos de referência. As skills em `.agents/skills/` transformam tarefas recorrentes em fluxos reprodutíveis que consultam essa base localmente.
+## O app
 
-## Estrutura
+O que ele entrega hoje:
+
+- conversa com a IA da pessoa, que consulta a base pelas 16 ferramentas do servidor MCP `ifpr` (`packages/mcp`) e é instruída a citar cada fonte com um link `ifpr://`;
+- tarefas no Início: "Revisar um PPC" (`.docx`: pré-conferência em código, relatório com IA opcional e cópia com comentários do Word) e as skills com bloco `simplifica:` (hoje, `verificar-fundamentacao-normativa`);
+- leitor `ifpr://` e Explorar, para navegar por normas, PPCs, cursos, campi, CNCT, Consepe e fichas sem IA;
+- pasta de trabalho com "Desfazer", primeiro uso com perfil, relato de erro e atualização da base e das skills.
+
+O app foi desenhado para dado público: a base e os arquivos que a pessoa escolhe anexar (ele não confere os anexos, que vão para a IA da pessoa). SUAP, SEI e Notion ficam fora dele (veja [Fora do app](#fora-do-app)). Os planos estão em [`docs/plans/`](docs/plans/README.md).
+
+```bash
+pnpm install
+pnpm kb:compilar   # tmp/kb.sqlite, a base que o servidor lê
+pnpm app:dev        # o app em desenvolvimento (veja apps/desktop/README.md)
+```
+
+| Parte | O quê |
+|---|---|
+| [`apps/desktop`](apps/desktop/README.md) | Electron: inicia o servidor local e abre a interface |
+| [`apps/server`](apps/server/README.md) | servidor local: motor, MCP `ifpr`, RPC de leitura, revisão de PPC, pastas, atualização |
+| [`apps/web`](apps/web/README.md) | interface em React |
+| [`packages/kb`](packages/kb/README.md) | núcleo da base e CLI `kb` |
+| [`packages/mcp`](packages/mcp/README.md) | `simplifica-mcp`: ferramentas só de leitura sobre o `kb.sqlite`, no app e como executável à parte ([guia do piloto zero](docs/guia-piloto-zero.md)) |
+| [`packages/motor`](packages/motor/README.md) | motor de conversa com Claude, ChatGPT e Gemini |
+| [`packages/ppc`](packages/ppc/README.md), [`packages/docx`](packages/docx/README.md) | conversão, pré-conferência e revisão de PPC em `.docx` |
+| [`packages/atualizacao`](packages/atualizacao/README.md) | atualização da base e das skills |
+| `packages/contratos-app` | contratos RPC entre interface e servidor |
+| `packages/effect-acp`, `packages/effect-codex-app-server` | copiados do T3 Code ([`docs/upstream-t3.md`](docs/upstream-t3.md)) |
+
+## Fora do app
+
+Estas ferramentas rodam só no repositório, por agentes ou por quem cura a base. A integração ao app está nos planos (decisão 6 de [`docs/plans/app-simplifica-if.md`](docs/plans/app-simplifica-if.md) e [`PLANO-ARQUITETURA.md`](PLANO-ARQUITETURA.md#ferramentas-do-repositório-fora-do-app)):
+
+- `packages/sei-cli` (SEI) e a skill `revisar-processo-ppc`;
+- a skill `suap-ifpr` (SUAP) e os scripts `suap_*.ts`;
+- a sincronização SEI → Notion de `Movimentações de Cursos` (`pnpm sei:sync`);
+- a skill `revisar-ppc` com sub-agentes (no app, a revisão é a tarefa "Revisar um PPC");
+- a skill `ifpr-design`.
+
+## Base, skills e scripts
 
 - `base-conhecimento/`: fonte publicável da base, com caminhos internos preservados como `normas/`, `institucional/`, `catalogos/`, `manifest.json`, `llms.txt` e `README.md`. Os dados institucionais de gestão (campi, cursos, processos seletivos, editais, ofertas e as reuniões do Consepe) ficam em `base-conhecimento/institucional/ifpr/`, um JSON por registro.
 - `site/`: saída gerada para publicação estática, ignorada pelo Git e reconstruída a partir de `base-conhecimento/`.
@@ -37,13 +75,13 @@ As skills deste projeto ficam diretamente no diretório padrão de descoberta do
 .agents/skills/
 ```
 
-Skills disponíveis:
+Skills disponíveis (só a `verificar-fundamentacao-normativa` vai para o app; as demais rodam só no repositório):
 
-- `revisar-ppc/`: revisão prévia IA-first de Projetos Pedagógicos de Curso técnico do IFPR, antes da submissão à PROENS (não substitui a análise oficial da PROENS).
+- `revisar-ppc/`: revisão prévia IA-first de Projetos Pedagógicos de Curso técnico do IFPR, antes da submissão à PROENS (não substitui a análise oficial da PROENS). No app, a revisão é a tarefa nativa "Revisar um PPC", que reaproveita as fichas desta skill.
 - `ifpr-design/`: identidade visual do IFPR para materiais e interfaces.
 - `revisar-processo-ppc/`: revisão de processos SEI de PPC.
 - `suap-ifpr/`: consulta e navegação no SUAP do IFPR com apoio dos tutoriais oficiais, incluindo dados profissionais de docentes e técnicos administrativos, cursos e disciplinas. Os comandos são TypeScript (Node) na raiz: `scripts/suap_consultar.ts` e `scripts/suap_tutoriais.ts`, testados por `pnpm exec vp test run scripts`.
-- `verificar-fundamentacao-normativa/`: conferência de citações e alegações baseadas em leis, resoluções, portarias, CNCT e regulamentos.
+- `verificar-fundamentacao-normativa/`: conferência de citações e alegações baseadas em leis, resoluções, portarias, CNCT e regulamentos. Tem bloco `simplifica:` e é tarefa do app.
 
 Ao desenvolver uma skill, consulte primeiro os dados locais em `base-conhecimento/` por manifesto. Só empacote cópias de normas, catálogos ou metadados quando houver motivo claro de portabilidade.
 
@@ -56,6 +94,7 @@ node scripts/validar_base.ts
 node scripts/gerar_site.ts --check
 node scripts/gerar_tipos_schemas.ts --check
 pnpm exec vp test run .agents/skills/revisar-ppc
+pnpm fmt && pnpm lint && pnpm typecheck && pnpm test   # todo o código: app, pacotes, scripts e skills
 ```
 
 Os JSON Schemas de `base-conhecimento/schemas/` são a fonte do formato dos manifestos e índices (institucional, catálogos, CNCT, PPCs); o validador os aplica, e os tipos TypeScript do validador ficam em `scripts/base/tipos-schemas.ts`, gerado a partir deles (depois de alterar um desses schemas, rode `node scripts/gerar_tipos_schemas.ts` e `pnpm typecheck`). Os registros institucionais (campus, curso, processo seletivo, edital, oferta, conselho, reunião e processos SEI) têm o formato no Effect Schema de `scripts/dados/`; os JSON Schemas públicos deles, em `base-conhecimento/schemas/registros/`, são gerados daí pelo `node scripts/gerar_base.ts` e conferidos pelo `gerar_base.ts --check` e pelo `validar_base.ts`.
@@ -72,7 +111,7 @@ pnpm sei:sync --apply        # grava no Notion
 
 Credenciais, escopo, avisos de chegada na DENTEC, agendamento pelo launchd e diagnóstico estão em [`base-conhecimento/docs/sincronizacao-sei-notion.md`](base-conhecimento/docs/sincronizacao-sei-notion.md).
 
-`pnpm typecheck`, `pnpm test` e `pnpm fmt` na raiz cobrem `scripts/` e o `sei-cli`. Os scripts importam tipos e schemas do CLI como `sei-cli/<módulo>`, por exemplo `sei-cli/esquemas`.
+`pnpm typecheck`, `pnpm test` e `pnpm fmt` na raiz cobrem todo o repositório: `apps/`, `packages/` (inclusive o `sei-cli`), `scripts/` e as skills. Os scripts importam tipos e schemas do CLI como `sei-cli/<módulo>`, por exemplo `sei-cli/esquemas`.
 
 Para detalhes de desenvolvimento das skills, veja `base-conhecimento/docs/desenvolvimento-skills.md`.
 

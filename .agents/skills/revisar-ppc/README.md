@@ -4,6 +4,8 @@ Esta skill revisa Projetos Pedagógicos de Curso técnico do IFPR antes da submi
 
 A skill se chamava `analise-ppc` até 13/11/2026; o nome mudou para deixar claro que ela não é o ato oficial (veja o `PLANO-ARQUITETURA.md`, seção Andamento). Ela faz par com a `revisar-processo-ppc`, que revisa o processo SEI.
 
+A skill, com sub-agentes e o relatório HTML, roda só no repositório: não tem bloco `simplifica:` e não vai para o app. No app Simplifica IF, a revisão é a tarefa nativa "Revisar um PPC", conduzida pelo servidor, que usa as fichas desta skill e a conversão de `packages/ppc` e devolve o `.docx` com comentários (veja [Execução no app](#execução-no-app-d-s-j)).
+
 ## Formato aceito
 
 Forneça o PPC em Word ou Markdown:

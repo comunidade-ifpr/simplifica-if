@@ -4,6 +4,8 @@ Para a equipe da PROENS/DENS e as coordenações que vão testar a base de conhe
 
 Situação em 14/11/2026.
 
+Este guia serve para usar a base num app de IA que você já tem, sem o app Simplifica IF. O app desktop Simplifica IF traz o mesmo servidor e a base embutidos: quem usa o app não precisa deste guia.
+
 ## 1. Os dois arquivos
 
 Você precisa de dois arquivos, que a equipe do projeto entrega:

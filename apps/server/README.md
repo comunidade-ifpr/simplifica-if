@@ -5,7 +5,10 @@ O servidor local do app desktop (M1.1): um processo Node, sem interface, que o d
 - o **`Motor`** (`@simplifica-if/motor`) com os drivers reais (`Drivers.layerNode`), a pasta de estado do app e o `fixPath` do T3 na partida;
 - o **MCP `ifpr` por HTTP** (`@simplifica-if/mcp/http`, `layerSobreLeitura`) sobre o mesmo serviço `Leitura` do RPC de leitura, numa conexão só ao `kb.sqlite`: cada conversa recebe uma sessão com token próprio, revogado ao encerrar, e o motor recebe as chamadas que o servidor viu (`resultados`);
 - o **catálogo das skills do app** (`CatalogoSkills`), entregue a toda conversa;
-- a **API RPC** por WebSocket em `127.0.0.1`, com os contratos em [`packages/contratos-app`](../../packages/contratos-app/src/contratos.ts).
+- a **API RPC** por WebSocket em `127.0.0.1`, com os contratos em [`packages/contratos-app`](../../packages/contratos-app/src/contratos.ts);
+- a **revisão de PPC** (`src/revisao-ppc/`), as **pastas de trabalho** com "Desfazer", os **relatos de erro** e a **atualização** da base e das skills, descritos abaixo.
+
+O servidor foi desenhado para dado público (o `kb.sqlite` e os arquivos que a pessoa escolhe, que ele não confere). Não fala com SUAP, SEI nem Notion: essas ferramentas ficam no repositório, fora do app (lista no [`AGENTS.md`](../../AGENTS.md#ferramentas-do-repositório-fora-do-app)).
 
 ## Como rodar
 

@@ -1,6 +1,6 @@
 # simplifica-mcp
 
-Servidor MCP só de leitura que entrega a base de conhecimento do IFPR a qualquer IA (Claude, Codex, Gemini). Ele lê apenas o `kb.sqlite`, em modo somente leitura: não recompila o banco, não procura o repositório e não acessa a rede. Cada resposta traz o texto literal, a proveniência (`path` e linhas no repositório de origem), o link `ifpr://` e a versão da base. Os mesmos links `ifpr://` também se leem como recursos MCP (M1.5, ver [Recursos `ifpr://`](#recursos-ifpr)).
+Servidor MCP só de leitura que entrega a base de conhecimento do IFPR a qualquer IA (Claude, Codex, Gemini). É o MCP `ifpr` que o app Simplifica IF entrega a toda conversa (por HTTP local, dentro do `apps/server`) e também um executável à parte, para usar a base em apps de IA que a pessoa já tem ([guia do piloto zero](../../docs/guia-piloto-zero.md)). Ele lê apenas o `kb.sqlite`, em modo somente leitura: não recompila o banco, não procura o repositório e não acessa a rede. Cada resposta traz o texto literal, a proveniência (`path` e linhas no repositório de origem), o link `ifpr://` e a versão da base. Os mesmos links `ifpr://` também se leem como recursos MCP (M1.5, ver [Recursos `ifpr://`](#recursos-ifpr)).
 
 Especificação: `docs/plans/m0-simplifica-mcp.md` (M0.1). Prontos os passos T0 (banco autossuficiente, no `packages/kb`), T1 (servidor, CLI, banco, envelope, links e texto), T2 (normas), T3 (PPCs e cursos), T4 (`pacote_contexto`) e T6 (suítes transversais e CI): as 16 ferramentas.
 
@@ -125,7 +125,7 @@ packages/mcp/
 
 Regras de negócio ficam em `packages/kb`; aqui ficam a validação de entrada, o envelope, o orçamento e a formatação. As ferramentas MCP, os recursos `ifpr://` e o RPC chamam o mesmo serviço `Leitura`, com os mesmos schemas.
 
-## Uso pelo app (fork do T3)
+## Uso pelo app
 
 Cinco pontos de entrada, sem curinga:
 
