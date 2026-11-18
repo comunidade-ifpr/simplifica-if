@@ -33,16 +33,16 @@ import {
   type ModoRevisaoIa,
   type Provider,
 } from "@simplifica-if/contratos-app";
-import type { FontesNormativas } from "@simplifica-if/kb/FontesNormativas";
+import type * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Motor from "@simplifica-if/motor";
 import { estimar } from "@simplifica-if/ppc/revisao-ia/estimativa";
 import { CRITERIO_PADRAO, type CriterioInconclusivo, pedidoT } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { teveTextoParaIa } from "@simplifica-if/ppc/revisao-ia/plano";
 import { MODELO_PADRAO } from "@simplifica-if/ppc/revisao-ia/tipos";
 import { NOME_DA_FORMA, type ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
-import { type RegistroRevisaoIa, Revisoes } from "../persistencia/Revisoes.ts";
-import type { Listas } from "../persistencia/Listas.ts";
-import { RevisorPpc } from "./RevisorPpc.ts";
+import * as Revisoes from "../persistencia/Revisoes.ts";
+import type * as Listas from "../persistencia/Listas.ts";
+import * as RevisorPpc from "./RevisorPpc.ts";
 import { criarLista } from "./ListaViva.ts";
 import { julgarBloco, type PausaRevisao, type ResultadoBloco } from "./julgamento.ts";
 import { type PlanoRevisaoIa, preparar } from "./preparo.ts";
@@ -93,11 +93,11 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
   const paralelismo = Math.max(1, opcoes.paralelismo ?? PARALELISMO);
   const tempoTurno = opcoes.tempoTurno ?? TEMPO_TURNO;
   const criterio = opcoes.criterio ?? CRITERIO_PADRAO;
-  const revisoes = yield* Revisoes;
-  const revisor = yield* RevisorPpc;
-  const contextoKb = yield* Effect.context<FontesNormativas | SqlClient.SqlClient>();
+  const revisoes = yield* Revisoes.Revisoes;
+  const revisor = yield* RevisorPpc.RevisorPpc;
+  const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | SqlClient.SqlClient>();
   const contextoMotor = yield* Effect.context<Motor.Motor>();
-  const contextoListas = yield* Effect.context<Listas>();
+  const contextoListas = yield* Effect.context<Listas.Listas>();
   const execucoes = yield* FiberMap.make<string>();
   const expirar = DateTime.now.pipe(
     Effect.map((agora) => DateTime.formatIso(DateTime.subtract(agora, { days: DIAS_PREPARADA }))),
@@ -122,11 +122,11 @@ export const make = Effect.fn("RevisaoIa.make")(function* (opcoes: OpcoesRevisao
         Effect.flatMap((r) =>
           r === null
             ? Effect.fail(falha("", "Esta revisão não existe mais."))
-            : Effect.succeed(r as RegistroRevisaoIa<PlanoRevisaoIa | null>),
+            : Effect.succeed(r as Revisoes.RegistroRevisaoIa<PlanoRevisaoIa | null>),
         ),
       );
 
-  const estado = Effect.fn("RevisaoIa.estado")(function* (registro: RegistroRevisaoIa<PlanoRevisaoIa | null>) {
+  const estado = Effect.fn("RevisaoIa.estado")(function* (registro: Revisoes.RegistroRevisaoIa<PlanoRevisaoIa | null>) {
     const gravados = new Map((yield* revisoes.blocos(registro.id)).map((b) => [b.bloco, b]));
     const andando = emAndamento.get(registro.id) ?? new Set();
     // O uso é o de todas as tentativas, gravadas uma a uma: inclui as dos blocos que não terminaram.

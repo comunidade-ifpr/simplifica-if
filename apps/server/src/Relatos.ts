@@ -27,10 +27,10 @@ import {
 } from "@simplifica-if/contratos-app";
 import * as Motor from "@simplifica-if/motor";
 import { CURADORIA_FABRICA } from "@simplifica-if/motor/politica-curadoria";
-import { Atualizador } from "./Atualizador.ts";
-import { CatalogoSkills } from "./CatalogoSkills.ts";
-import { PastasTrabalho } from "./PastasTrabalho.ts";
-import { Historico } from "./persistencia/Historico.ts";
+import * as Atualizador from "./Atualizador.ts";
+import * as CatalogoSkills from "./CatalogoSkills.ts";
+import * as PastasTrabalho from "./PastasTrabalho.ts";
+import * as Historico from "./persistencia/Historico.ts";
 
 export interface OpcoesRelatos {
   /** O destino dos relatos; o padrão é o da política de fábrica (`null` até o repositório abrir). */
@@ -77,11 +77,11 @@ export function textoDoTurno(
 const MAXIMO_CORPO = 200_000;
 
 export const make = Effect.fn("Relatos.make")(function* (opcoes: OpcoesRelatos = {}) {
-  const historico = yield* Historico;
-  const atualizador = yield* Atualizador;
-  const catalogo = yield* CatalogoSkills;
+  const historico = yield* Historico.Historico;
+  const atualizador = yield* Atualizador.Atualizador;
+  const catalogo = yield* CatalogoSkills.CatalogoSkills;
   const motor = yield* Motor.Motor;
-  const pastas = yield* PastasTrabalho;
+  const pastas = yield* PastasTrabalho.PastasTrabalho;
   const curadoria = opcoes.curadoria ?? CURADORIA_FABRICA;
   const prazo = opcoes.prazoDeteccao ?? Duration.seconds(4);
 

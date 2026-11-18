@@ -88,7 +88,7 @@ interface SessaoAberta {
   readonly completar: Resultados.Completar;
 }
 
-const make = Effect.fnUntraced(function* (politica: Politica) {
+const make = Effect.fn("Motor.make")(function* (politica: Politica) {
   const drivers = yield* Drivers;
   // Só as sessões com skills gravam arquivos: sem `FileSystem` na layer, elas falham com mensagem clara.
   const fs = yield* Effect.serviceOption(FileSystem.FileSystem);

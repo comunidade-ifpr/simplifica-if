@@ -30,7 +30,7 @@ import * as Schema from "effect/Schema";
 import * as Semaphore from "effect/Semaphore";
 import type * as SqlClient from "effect/sql/SqlClient";
 import { FalhaRevisaoPpc, type ResultadoRevisaoPpc, SUFIXO_REVISAO_PREVIA } from "@simplifica-if/contratos-app";
-import { FontesNormativas } from "@simplifica-if/kb/FontesNormativas";
+import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Sql from "@simplifica-if/kb/db/sql";
 import * as NodeCrypto from "node:crypto";
 import type { BaseRevisaoPrevia, EntradaIa, MarcaPendencia, RevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
@@ -115,7 +115,7 @@ const linhasFichas = Sql.todas(Schema.Struct({ id: Schema.String, titulo: Schema
 
 /** A base da revisão prévia, do `kb.sqlite` (só dados planos: vai ao Worker pelo `postMessage`). */
 export const montarBase = Effect.gen(function* () {
-  const fontes = yield* FontesNormativas;
+  const fontes = yield* FontesNormativas.FontesNormativas;
   const cncts = (yield* linhasCnct("SELECT slug, dados_json FROM cnct ORDER BY slug")).map(
     (linha): CursoCnct => ({ ...(JSON.parse(linha.dados_json) as object), slug: linha.slug }) as CursoCnct,
   );
@@ -257,7 +257,7 @@ export interface OpcoesRevisao {
 export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisao = {}) {
   const limites = { ...LIMITES, ...opcoes.limites };
   const url = opcoes.trabalhador ?? URL_TRABALHADOR;
-  const contexto = yield* Effect.context<FontesNormativas | SqlClient.SqlClient>();
+  const contexto = yield* Effect.context<FontesNormativas.FontesNormativas | SqlClient.SqlClient>();
   // A base é montada na primeira revisão e reaproveitada (o banco é só de leitura).
   const base = yield* Effect.cached(
     montarBase.pipe(

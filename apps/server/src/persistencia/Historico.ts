@@ -203,6 +203,7 @@ const make = Effect.gen(function* () {
     `;
   }, Effect.orDie);
 
+  // `fnUntraced`: roda por linha lida, dentro do span da leitura.
   const paraItem = Effect.fnUntraced(function* (linha: LinhaEvento) {
     const base = { turno: linha.turno, ordem: linha.ordem };
     switch (linha.tipo) {

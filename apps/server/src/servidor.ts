@@ -41,7 +41,7 @@ import { RpcSerialization, RpcServer } from "effect/rpc";
 import { CAMINHO_INGRESSO, CAMINHO_LIBERAR_ARQUIVO, CAMINHO_RPC, GrupoApp } from "@simplifica-if/contratos-app";
 import type { Canal } from "@simplifica-if/mcp/contratos";
 import * as McpHttp from "@simplifica-if/mcp/http";
-import { layerLeitura, Leitura } from "@simplifica-if/mcp/rpc";
+import * as McpRpc from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
 import * as Atualizador from "./Atualizador.ts";
 import type { Abertura } from "@simplifica-if/atualizacao/local";
@@ -282,10 +282,10 @@ export const layer = (opcoes: Opcoes) => {
   // Um `Leitura` só (uma conexão ao `kb.sqlite`) para o MCP HTTP e para o RPC de leitura.
   // No app, a ferramenta `etapa` é registrada: a interface a lê nos eventos da conversa (M1.9).
   const leitura = Layer.effect(
-    Leitura,
+    McpRpc.Leitura,
     Effect.gen(function* () {
-      const servico = yield* Leitura;
-      return Leitura.of({
+      const servico = yield* McpRpc.Leitura;
+      return McpRpc.Leitura.of({
         ...servico,
         etapa: Effect.fn("Leitura.etapa")(function* (entrada: Parameters<typeof servico.etapa>[0]) {
           const resposta = yield* servico.etapa(entrada);
@@ -293,7 +293,7 @@ export const layer = (opcoes: Opcoes) => {
         }),
       });
     }),
-  ).pipe(Layer.provideMerge(layerLeitura({ banco: opcoes.banco, canal })));
+  ).pipe(Layer.provideMerge(McpRpc.layerLeitura({ banco: opcoes.banco, canal })));
   const mcp = McpHttp.layerSobreLeitura(opcoes.portaMcp ? { porta: opcoes.portaMcp } : {});
   const banco = opcoes.bancoConversas === undefined ? Banco.layerMemoria : Banco.layerArquivo(opcoes.bancoConversas);
   const nucleo = Conversas.layer({

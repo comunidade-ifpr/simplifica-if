@@ -82,6 +82,7 @@ const criar = (decidir: ((classe: ClassePedido) => Avaliacao) | undefined): Effe
         return fila === undefined ? Effect.void : Queue.fail(fila, erro).pipe(Effect.asVoid);
       });
 
+    // `fnUntraced`: roda a cada pedido de aprovação, dentro do span do turno.
     const pedirAprovacao: Canal["pedirAprovacao"] = Effect.fnUntraced(function* (pedido) {
       const resposta = yield* Deferred.make<Decisao>();
       pendentes.set(pedido.id, resposta);

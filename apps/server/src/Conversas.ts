@@ -65,9 +65,9 @@ import {
 } from "@simplifica-if/contratos-app";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as Motor from "@simplifica-if/motor";
-import { CatalogoSkills } from "./CatalogoSkills.ts";
-import { PastasTrabalho } from "./PastasTrabalho.ts";
-import { type Alteracao, Historico, type RegistroConversa } from "./persistencia/Historico.ts";
+import * as CatalogoSkills from "./CatalogoSkills.ts";
+import * as PastasTrabalho from "./PastasTrabalho.ts";
+import * as Historico from "./persistencia/Historico.ts";
 
 /** O nome do servidor MCP na sessão do provider: as ferramentas chegam como `ifpr.<ferramenta>`. */
 export const NOME_MCP = "ifpr";
@@ -149,7 +149,7 @@ interface TurnoAberto {
 /** Uma conversa em memória: o registro do banco e o que vive enquanto o servidor vive. */
 interface Viva {
   readonly id: string;
-  registro: RegistroConversa;
+  registro: Historico.RegistroConversa;
   sessao: SessaoAberta | undefined;
   turno: TurnoAberto | undefined;
   ociosidade: Fiber.Fiber<void> | undefined;
@@ -201,15 +201,15 @@ export function contextoDoHistorico(itens: ReadonlyArray<ItemConversa>): string 
   ].join("\n\n");
 }
 
-const make = Effect.fnUntraced(function* (opcoes: {
+const make = Effect.fn("Conversas.make")(function* (opcoes: {
   readonly ociosidade: Duration.Duration;
   readonly prazoInterrupcao: Duration.Duration;
 }) {
   const motor = yield* Motor.Motor;
   const mcp = yield* McpHttp.ServidorMcpHttp;
-  const historico = yield* Historico;
-  const catalogo = yield* CatalogoSkills;
-  const pastas = yield* PastasTrabalho;
+  const historico = yield* Historico.Historico;
+  const catalogo = yield* CatalogoSkills.CatalogoSkills;
+  const pastas = yield* PastasTrabalho.PastasTrabalho;
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
   const aleatorio = yield* SecureRandom.SecureRandom;
@@ -219,7 +219,7 @@ const make = Effect.fnUntraced(function* (opcoes: {
 
   /* ------------------------------------------------------------ registro */
 
-  const resumo = (registro: RegistroConversa): ResumoConversa => ({
+  const resumo = (registro: Historico.RegistroConversa): ResumoConversa => ({
     id: registro.id,
     provider: registro.provider,
     pastaTrabalho: registro.pastaTrabalho,
@@ -232,7 +232,8 @@ const make = Effect.fnUntraced(function* (opcoes: {
     ...(registro.tarefa === undefined ? {} : { tarefa: registro.tarefa }),
   });
 
-  const alterar = Effect.fnUntraced(function* (viva: Viva, alteracao: Alteracao) {
+  // `fnUntraced`: ajudante por mudança de estado da conversa, coberto pelo span da operação que a provoca.
+  const alterar = Effect.fnUntraced(function* (viva: Viva, alteracao: Historico.Alteracao) {
     yield* historico.alterar(viva.id, alteracao);
     const atual = yield* historico.buscar(viva.id);
     if (Option.isSome(atual)) viva.registro = atual.value;
@@ -542,7 +543,7 @@ const make = Effect.fnUntraced(function* (opcoes: {
 
   /* ------------------------------------------------------------ conversas */
 
-  const novaViva = Effect.fn("Conversas.novaViva")(function* (registro: RegistroConversa) {
+  const novaViva = Effect.fn("Conversas.novaViva")(function* (registro: Historico.RegistroConversa) {
     const viva: Viva = {
       id: registro.id,
       registro,

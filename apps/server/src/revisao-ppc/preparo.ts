@@ -14,7 +14,7 @@
  * - T: o contexto e trechos curtos das seções; o pedido se completa na hora, com os resumos dos temas.
  */
 import * as Effect from "effect/Effect";
-import { FontesNormativas } from "@simplifica-if/kb/FontesNormativas";
+import * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import { bancoDoPpcAvulso } from "@simplifica-if/kb/db/compilar";
 import {
   fichasDoBanco,
@@ -148,7 +148,7 @@ export interface EntradaPreparo {
 
 /** O plano da revisão: fichas, blocos e pedidos. Pede o `kb.sqlite` (`SqlClient`) e as `FontesNormativas`. */
 export const preparar = Effect.fn("RevisaoIa.preparar")(function* (entrada: EntradaPreparo) {
-  const fontes = yield* FontesNormativas;
+  const fontes = yield* FontesNormativas.FontesNormativas;
   const fichasJson = yield* fichasDoBanco();
   const criterio = entrada.criterio ?? CRITERIO_PADRAO;
   const todasFichas = fichasJson.map((f) => fichaIa(f as Record<string, unknown>));
@@ -277,7 +277,7 @@ export interface EntradaContextoFicha {
  * comum do bloco): vale para as fichas D, S e J. `null` se a ficha não está na base (a triagem).
  */
 export const contextoDaFicha = Effect.fn("RevisaoIa.contextoDaFicha")(function* (entrada: EntradaContextoFicha) {
-  const fontes = yield* FontesNormativas;
+  const fontes = yield* FontesNormativas.FontesNormativas;
   const json = (yield* fichasDoBanco()).find((f) => f.id === entrada.ficha);
   if (!json) return null;
   const ficha = fichaIa(json as Record<string, unknown>);

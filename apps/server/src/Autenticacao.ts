@@ -104,7 +104,7 @@ export class Autenticacao extends Context.Service<
  * `token` é o do processo pai; `origens`, as origens de navegador aceitas; `porta`, a do servidor, para
  * o `Host`. Pede o `Digest` e o `SecureRandom`.
  */
-export const make = Effect.fnUntraced(function* (opcoes: {
+export const make = Effect.fn("Autenticacao.make")(function* (opcoes: {
   readonly token: Redacted.Redacted<string>;
   readonly origens: ReadonlyArray<string>;
   readonly porta: number;
@@ -129,6 +129,7 @@ export const make = Effect.fnUntraced(function* (opcoes: {
     return { origem } as const;
   };
 
+  // `fnUntraced`: roda a cada requisição, dentro do span de `Autenticacao.conferir` ou `Autenticacao.emitirIngresso`.
   const tokenValido = Effect.fnUntraced(function* (token: string | undefined) {
     return token !== undefined && Mac.timingSafeEqual(yield* hashDe(token), esperado);
   });
@@ -138,6 +139,7 @@ export const make = Effect.fnUntraced(function* (opcoes: {
   };
 
   /** Gasta o ingresso: vale se foi emitido, não venceu e não foi usado. */
+  // `fnUntraced`: roda a cada requisição, dentro do span de `Autenticacao.conferir`.
   const gastarIngresso = Effect.fnUntraced(function* (ingresso: string) {
     const chave = Base64Url.encode(yield* hashDe(ingresso));
     const agora = yield* Clock.currentTimeMillis;

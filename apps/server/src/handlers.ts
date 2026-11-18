@@ -13,7 +13,7 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
-import { Atualizador } from "./Atualizador.ts";
+import * as Atualizador from "./Atualizador.ts";
 import {
   GrupoAtualizacao,
   GrupoConversa,
@@ -26,13 +26,13 @@ import {
 } from "@simplifica-if/contratos-app";
 import { layerHandlersRpc } from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
-import { CatalogoSkills } from "./CatalogoSkills.ts";
+import * as CatalogoSkills from "./CatalogoSkills.ts";
 import * as Conversas from "./Conversas.ts";
-import { PastasTrabalho } from "./PastasTrabalho.ts";
-import { Preferencias } from "./persistencia/Preferencias.ts";
-import { Relatos } from "./Relatos.ts";
-import { ListaViva } from "./revisao-ppc/ListaViva.ts";
-import { RevisaoIa } from "./revisao-ppc/RevisaoIa.ts";
+import * as PastasTrabalho from "./PastasTrabalho.ts";
+import * as Preferencias from "./persistencia/Preferencias.ts";
+import * as Relatos from "./Relatos.ts";
+import * as ListaViva from "./revisao-ppc/ListaViva.ts";
+import * as RevisaoIa from "./revisao-ppc/RevisaoIa.ts";
 
 const ehFalhaProvider = Schema.is(Motor.FalhaProvider);
 
@@ -69,7 +69,7 @@ const layerConversa = GrupoConversa.toLayer(
   Effect.gen(function* () {
     const conversas = yield* Conversas.Conversas;
     // Nada vai à IA antes do aviso de uso aceito (M1.8): iniciar, enviar e retomar recusam.
-    const { exigirAviso } = yield* Preferencias;
+    const { exigirAviso } = yield* Preferencias.Preferencias;
     return GrupoConversa.of({
       "conversa.iniciar": (entrada) =>
         exigirAviso.pipe(
@@ -93,14 +93,14 @@ const layerConversa = GrupoConversa.toLayer(
 
 const layerSkills = GrupoSkills.toLayer(
   Effect.gen(function* () {
-    const catalogo = yield* CatalogoSkills;
+    const catalogo = yield* CatalogoSkills.CatalogoSkills;
     return GrupoSkills.of({ "skills.listar": () => Effect.succeed(catalogo.resumos) });
   }),
 );
 
 const layerPasta = GrupoPasta.toLayer(
   Effect.gen(function* () {
-    const pastas = yield* PastasTrabalho;
+    const pastas = yield* PastasTrabalho.PastasTrabalho;
     const conversas = yield* Conversas.Conversas;
     return GrupoPasta.of({
       "pasta.criar": ({ titulo }) => registrarEMapear(pastas.criar(titulo)).pipe(Effect.map((pasta) => ({ pasta }))),
@@ -115,7 +115,7 @@ const layerPasta = GrupoPasta.toLayer(
 /** "Isto está errado" (M1.12): o rascunho do relato e o registro local; nada vai à IA nem à rede. */
 const layerRelato = GrupoRelato.toLayer(
   Effect.gen(function* () {
-    const relatos = yield* Relatos;
+    const relatos = yield* Relatos.Relatos;
     return GrupoRelato.of({
       "relato.preparar": ({ sessao, turno }) => registrarEMapear(relatos.preparar(sessao, turno)),
       "relato.registrar": (entrada) => registrarEMapear(relatos.registrar(entrada)),
@@ -126,7 +126,7 @@ const layerRelato = GrupoRelato.toLayer(
 /** O primeiro uso (M1.8): perfil, aviso de uso, boas-vindas e as IAs em uso, só neste computador. */
 const layerPreferencias = GrupoPreferencias.toLayer(
   Effect.gen(function* () {
-    const preferencias = yield* Preferencias;
+    const preferencias = yield* Preferencias.Preferencias;
     return GrupoPreferencias.of({
       "preferencias.ler": () => preferencias.ler,
       "preferencias.gravarPerfil": ({ perfil }) => preferencias.gravarPerfil(perfil),
@@ -140,11 +140,11 @@ const layerPreferencias = GrupoPreferencias.toLayer(
 
 const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
   Effect.gen(function* () {
-    const ia = yield* RevisaoIa;
+    const ia = yield* RevisaoIa.RevisaoIa;
     // O que manda o PPC à IA espera o aviso de uso aceito (M1.8); a pré-conferência, não.
-    const { exigirAviso } = yield* Preferencias;
+    const { exigirAviso } = yield* Preferencias.Preferencias;
     const comAviso = <A, E, R>(efeito: Effect.Effect<A, E, R>) => exigirAviso.pipe(Effect.andThen(efeito));
-    const viva = yield* ListaViva;
+    const viva = yield* ListaViva.ListaViva;
     const registrar = <A, E, R>(efeito: Effect.Effect<A, E, R>) =>
       efeito.pipe(Effect.tapError((erro) => Effect.logWarning("revisão de PPC falhou", erro)));
     return GrupoRevisaoPpc.of({
@@ -176,7 +176,7 @@ const layerRevisaoPpc = GrupoRevisaoPpc.toLayer(
 
 const layerAtualizacao = GrupoAtualizacao.toLayer(
   Effect.gen(function* () {
-    const atualizador = yield* Atualizador;
+    const atualizador = yield* Atualizador.Atualizador;
     return GrupoAtualizacao.of({
       "atualizacao.estado": () => atualizador.estado,
       "atualizacao.procurar": () => atualizador.procurar,

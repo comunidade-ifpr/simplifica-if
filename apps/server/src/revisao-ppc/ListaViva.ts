@@ -36,7 +36,7 @@ import {
   type ResultadoRevisaoPpc,
   type SituacaoPendencia,
 } from "@simplifica-if/contratos-app";
-import type { FontesNormativas } from "@simplifica-if/kb/FontesNormativas";
+import type * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import * as Motor from "@simplifica-if/motor";
 import {
   conferirContestacao,
@@ -60,9 +60,9 @@ import {
   type ResultadoFichaIa,
   TEMAS,
 } from "@simplifica-if/ppc/revisao-previa";
-import { Listas, type RegistroLista } from "../persistencia/Listas.ts";
-import { Revisoes } from "../persistencia/Revisoes.ts";
-import { RevisorPpc, type EntradaRevisao, type RevisaoDoArquivo, resultadoParaInterface } from "./RevisorPpc.ts";
+import * as Listas from "../persistencia/Listas.ts";
+import * as Revisoes from "../persistencia/Revisoes.ts";
+import * as RevisorPpc from "./RevisorPpc.ts";
 import { julgarBloco, PausaRevisao, turnoSemFerramentas } from "./julgamento.ts";
 import { contextoDaFicha, type PlanoRevisaoIa } from "./preparo.ts";
 
@@ -73,7 +73,7 @@ export class ListaViva extends Context.Service<
   ListaViva,
   {
     /** A pré-conferência (`RevisorPpc.revisar`) com a lista viva gravada: o resultado traz o `lista`. */
-    readonly revisar: (entrada: EntradaRevisao) => Effect.Effect<ResultadoRevisaoPpc, FalhaRevisaoPpc>;
+    readonly revisar: (entrada: RevisorPpc.EntradaRevisao) => Effect.Effect<ResultadoRevisaoPpc, FalhaRevisaoPpc>;
     readonly lista: (id: string) => Effect.Effect<ListaPendencias, FalhaRevisaoPpc>;
     readonly ultima: Effect.Effect<ListaPendencias | null>;
     readonly apagar: (id: string) => Effect.Effect<void>;
@@ -117,7 +117,7 @@ export class ListaViva extends Context.Service<
 export interface DadosNovaLista {
   readonly id?: string;
   readonly arquivo: string;
-  readonly revisado: RevisaoDoArquivo;
+  readonly revisado: RevisorPpc.RevisaoDoArquivo;
   readonly revisao: string | null;
   readonly provider: Provider | null;
   readonly modelo: string | null;
@@ -125,9 +125,9 @@ export interface DadosNovaLista {
 
 /** Grava a lista viva de um resultado e devolve o resultado com o `lista`. Pede as `Listas`. */
 export const criarLista = Effect.fn("ListaViva.criarLista")(function* (d: DadosNovaLista) {
-  const listas = yield* Listas;
+  const listas = yield* Listas.Listas;
   const id = d.id ?? `lista-${NodeCrypto.randomUUID()}`;
-  const resultado: ResultadoRevisaoPpc = { ...resultadoParaInterface(d.arquivo, d.revisado), lista: id };
+  const resultado: ResultadoRevisaoPpc = { ...RevisorPpc.resultadoParaInterface(d.arquivo, d.revisado), lista: id };
   const vistas = new Set<string>();
   const pendencias = resultado.pendencias.flatMap((p) => {
     const chave = chavePendencia(p);
@@ -231,12 +231,12 @@ export interface OpcoesListaViva {
 
 export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaViva = {}) {
   const tempoAcao = opcoes.tempoAcao ?? TEMPO_ACAO;
-  const listas = yield* Listas;
-  const revisoes = yield* Revisoes;
-  const revisor = yield* RevisorPpc;
-  const contextoKb = yield* Effect.context<FontesNormativas | SqlClient.SqlClient>();
+  const listas = yield* Listas.Listas;
+  const revisoes = yield* Revisoes.Revisoes;
+  const revisor = yield* RevisorPpc.RevisorPpc;
+  const contextoKb = yield* Effect.context<FontesNormativas.FontesNormativas | SqlClient.SqlClient>();
   const contextoMotor = yield* Effect.context<Motor.Motor>();
-  const contextoListas = yield* Effect.context<Listas>();
+  const contextoListas = yield* Effect.context<Listas.Listas>();
   // Uma ação com IA por vez: um clique duplo não paga duas vezes.
   const vez = yield* Semaphore.make(1);
 
@@ -245,12 +245,12 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   const buscar = (id: string) =>
     listas.buscar(id).pipe(
       Effect.filterOrFail(
-        (l): l is RegistroLista => l !== null,
+        (l): l is Listas.RegistroLista => l !== null,
         () => falha("", "Esta lista de pendências não existe mais. Revise o PPC de novo."),
       ),
     );
 
-  const montar = Effect.fn("ListaViva.montar")(function* (registro: RegistroLista) {
+  const montar = Effect.fn("ListaViva.montar")(function* (registro: Listas.RegistroLista) {
     const pendencias = yield* listas.pendencias(registro.id);
     const eventos = yield* listas.eventos(registro.id);
     const uso = yield* listas.uso(registro.id);
@@ -284,19 +284,19 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
 
   const lista = (id: string) => buscar(id).pipe(Effect.flatMap(montar));
 
-  const pendenciaDe = Effect.fn("ListaViva.pendencia")(function* (registro: RegistroLista, chave: string) {
+  const pendenciaDe = Effect.fn("ListaViva.pendencia")(function* (registro: Listas.RegistroLista, chave: string) {
     const p = (yield* listas.pendencias(registro.id)).find((x) => x.chave === chave);
     if (!p) return yield* falha(registro.arquivo, "Esta pendência não está mais na lista.");
     return p;
   });
 
-  const provedor = (registro: RegistroLista, pedido?: Provider) => {
+  const provedor = (registro: Listas.RegistroLista, pedido?: Provider) => {
     const provider = pedido ?? registro.provider ?? "claude";
     const modelo = provider === registro.provider ? registro.modelo : (MODELO_PADRAO[provider] ?? null);
     return { provider, modelo };
   };
 
-  const cursoEmTexto = (r: RegistroLista) => {
+  const cursoEmTexto = (r: Listas.RegistroLista) => {
     const c = r.resultado.curso;
     return c.cnct
       ? `${c.cnct.denominacao}${c.forma ? `, forma de oferta ${NOME_DA_FORMA[c.forma] ?? c.forma}` : ", forma de oferta não identificada"}`
@@ -304,7 +304,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
   };
 
   const contextoPara = (
-    registro: RegistroLista,
+    registro: Listas.RegistroLista,
     ficha: string,
     markdown = registro.markdown,
     linhas = registro.linhasTextoParaIa,
@@ -341,7 +341,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
 
   /* ------------------------------------------------------------ revisar, marcar, paradas */
 
-  const revisar = Effect.fn("ListaViva.revisar")(function* (entrada: EntradaRevisao) {
+  const revisar = Effect.fn("ListaViva.revisar")(function* (entrada: RevisorPpc.EntradaRevisao) {
     const revisado = yield* revisor.revisarCompleto(entrada);
     return yield* criarLista({
       arquivo: entrada.arquivo,
@@ -423,7 +423,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
 
   /** Uma ação na conversa da pendência: uma sessão nova, sem ferramentas, com o pedido completo. */
   const conversar = (entrada: {
-    registro: RegistroLista;
+    registro: Listas.RegistroLista;
     chave: string;
     acao: "contestar" | "sugerir";
     provider: Provider;
@@ -736,7 +736,7 @@ export const make = Effect.fn("ListaViva.make")(function* (opcoes: OpcoesListaVi
       ...(ia ? { ia } : {}),
       situacoes,
     });
-    yield* listas.trocarResultado(id, { ...resultadoParaInterface(registro.arquivo, final), lista: id });
+    yield* listas.trocarResultado(id, { ...RevisorPpc.resultadoParaInterface(registro.arquivo, final), lista: id });
     return yield* lista(id);
   });
 

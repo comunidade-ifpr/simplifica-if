@@ -171,7 +171,6 @@ O resto desta página é revisão: posição da lógica, forma do módulo, atrib
 
 Código anterior a esta página que não segue alguma regra. Não é achado num PR que não o toca; entra na revisão de arquitetura:
 
-- serviços importados por nome, não por namespace, no `apps/server` (`handlers.ts`, `Relatos.ts`);
 - `FalhaProvider.detalhe` (`packages/motor/src/erros.ts`) recebe um trecho de `cause.message` em `packages/motor/src/Canal.ts`;
 - `Effect.runPromise` fora de ponto de entrada em `scripts/base/skills.ts` e `scripts/fabrica_atualizacao.ts`;
 - a casca síncrona `scripts/cli.ts` nos scripts do pipeline da base, e `fetch` com `AbortSignal.timeout` em `packages/atualizacao/src/remoto.ts`;
