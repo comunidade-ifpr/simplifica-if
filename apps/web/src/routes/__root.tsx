@@ -93,8 +93,11 @@ function Moldura() {
 
 function MolduraComPaleta() {
   const barra = useBarraTitulo();
+  // A janela nunca rola: cada coluna rola sozinha. `relative` contém o que tem posição absoluta (o
+  // `sr-only` do trecho citado no leitor), e `overflow-clip`, ao contrário de `overflow-hidden`, não se
+  // deixa rolar por código (o `scrollIntoView` até o trecho levava a moldura junto, com o cabeçalho).
   return (
-    <div className="flex h-dvh flex-col bg-background text-foreground">
+    <div className="relative flex h-dvh flex-col overflow-clip bg-background text-foreground">
       <header
         {...propsBarraTitulo(barra)}
         className={
