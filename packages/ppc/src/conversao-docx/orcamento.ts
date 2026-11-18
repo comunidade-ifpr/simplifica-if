@@ -69,25 +69,17 @@ export class Orcamento {
   gastar(caracteres: number): void {
     this.#gasto += caracteres;
     if (this.#gasto > this.#limites.caracteresNoDocumento) {
-      throw new ErroDocx(
-        `O documento tem texto demais para ser convertido (mais de ${this.#limites.caracteresNoDocumento / 1_000_000} milhões ` +
-          "de caracteres, contadas as repetições das células mescladas das tabelas).",
-      );
+      throw new ErroDocx({ motivo: "texto-demais", limite: this.#limites.caracteresNoDocumento });
     }
   }
 
   /** Confere um parágrafo, título ou célula. */
   #conferirBloco(texto: string, oQue: string): void {
     if (texto.length > this.#limites.caracteresPorBloco) {
-      throw new ErroDocx(
-        `O documento não pôde ser convertido: há ${oQue} com mais de ${this.#limites.caracteresPorBloco / 1000} mil caracteres.`,
-      );
+      throw new ErroDocx({ motivo: "bloco-longo", bloco: oQue, limite: this.#limites.caracteresPorBloco });
     }
     if (maiorSequenciaSemTexto(texto) > this.#limites.sequenciaSemTexto) {
-      throw new ErroDocx(
-        `O documento não pôde ser convertido: há ${oQue} com mais de ${this.#limites.sequenciaSemTexto} espaços, tabulações ` +
-          "ou sinais de pontuação seguidos.",
-      );
+      throw new ErroDocx({ motivo: "sequencia-sem-texto", bloco: oQue, limite: this.#limites.sequenciaSemTexto });
     }
   }
 

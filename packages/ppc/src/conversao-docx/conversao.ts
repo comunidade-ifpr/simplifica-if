@@ -36,7 +36,7 @@ import {
 import { ErroDocx } from "@simplifica-if/docx/erro";
 import { lerPacote } from "@simplifica-if/docx/leitor";
 import type { PropriedadesOoxml } from "@simplifica-if/docx/modelo";
-import { arquivoGrandeDemais, LIMITES_PADRAO, type LimitesDoPacote, PacoteOoxml } from "@simplifica-if/docx/pacote";
+import { LIMITES_PADRAO, type LimitesDoPacote, PacoteOoxml } from "@simplifica-if/docx/pacote";
 import { detectarSecoes, dicasDeIdentificacao, listarSecoes, type Secao } from "./secoes.ts";
 import { colunasDaTabela, normalizarTabela, type TabelaNormalizada } from "./tabelas.ts";
 
@@ -233,10 +233,7 @@ export function converterPpc(bytes: Uint8Array, nomeDoArquivo: string, opcoes: O
   // Documento sem nenhum texto: vazio, ou digitalizado como imagem. Um `PPC.md` em branco seria
   // revisado como se fosse o PPC.
   if (!elementos.some(temTexto)) {
-    throw new ErroDocx(
-      "O documento não tem texto: o arquivo está vazio ou traz o PPC só como imagem (digitalizado). " +
-        "A revisão precisa do documento de texto original.",
-    );
+    throw new ErroDocx({ motivo: "sem-texto" });
   }
   const orcamento = new Orcamento(opcoes.limitesDeTexto);
   orcamento.conferirElementos(elementos);
@@ -335,7 +332,8 @@ function dadosPrincipais(conversao: Conversao, nomes: NomesArtefatos): Dicionari
  */
 export function conferirArquivoDocx(arquivo: string, tamanho: number, limite = LIMITES_PADRAO.bytesDoArquivo): void {
   if (!/[^/\\]\.docx$/i.test(arquivo)) throw new Error(`O arquivo deve ser .docx: ${arquivo}`);
-  if (tamanho > limite) throw arquivoGrandeDemais(tamanho, limite);
+  // A mesma recusa do `PacoteOoxml`, antes de ler o arquivo.
+  if (tamanho > limite) throw new ErroDocx({ motivo: "arquivo-grande-demais", tamanho, limite });
 }
 
 /**

@@ -95,7 +95,7 @@ export const ehFalhaRevisaoPpc = Schema.is(FalhaRevisaoPpc);
 export const ModoRevisaoIa = Schema.Literals(["rapido", "completo"]);
 export type ModoRevisaoIa = typeof ModoRevisaoIa.Type;
 
-/** O que a revisão deve gastar, mostrado antes de começar (método no `estimativa.ts` do `packages/ppc`). */
+/** O que a revisão deve gastar, mostrado antes de começar (método em `apps/server/src/revisao-ppc/estimativa.ts`). */
 export const EstimativaRevisaoIa = Schema.Struct({
   provider: Provider,
   blocos: Schema.Number,

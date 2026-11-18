@@ -46,16 +46,6 @@ type Entrada = {
   cabecalhoLocal: number;
 };
 
-const megabytes = (bytes: number) => `${Math.round(bytes / (1024 * 1024))} MB`;
-
-/** Erro do arquivo acima do limite; quem lê do disco confere o tamanho antes, com a mesma mensagem. */
-export function arquivoGrandeDemais(tamanho: number, limite = LIMITES_PADRAO.bytesDoArquivo): ErroDocx {
-  return new ErroDocx(
-    `O arquivo DOCX tem ${megabytes(tamanho)}, e o limite é de ${megabytes(limite)}. Um PPC raramente passa disso: ` +
-      "em geral são as imagens. No Word, use Arquivo › Compactar imagens e salve de novo.",
-  );
-}
-
 const ASSINATURA_OLE = [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1];
 const FIM_DO_DIRETORIO = 0x06054b50;
 const ENTRADA_DO_DIRETORIO = 0x02014b50;
@@ -67,15 +57,12 @@ const CABECALHO_LOCAL = 0x04034b50;
  */
 function lerDiretorio(bytes: Uint8Array, limites: LimitesDoPacote): Map<string, Entrada> {
   if (ASSINATURA_OLE.every((byte, indice) => bytes[indice] === byte)) {
-    throw new ErroDocx(
-      "O arquivo é do Word 97-2003 (.doc) ou um DOCX protegido por senha. Salve como .docx, sem senha, e tente de novo.",
-    );
+    throw new ErroDocx({ motivo: "doc-ou-protegido" });
   }
   if (bytes[0] !== 0x50 || bytes[1] !== 0x4b) {
-    throw new ErroDocx("O arquivo não é um DOCX: não tem o formato de pacote (ZIP) dos documentos do Word.");
+    throw new ErroDocx({ motivo: "nao-e-zip" });
   }
-  const corrompido = () =>
-    new ErroDocx("O arquivo DOCX está corrompido ou incompleto: o pacote (ZIP) não pôde ser lido.");
+  const corrompido = () => new ErroDocx({ motivo: "zip-corrompido" });
   const vista = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   // O registro de fim do diretório fica nos últimos 22 bytes, mais um comentário de até 64 KB.
   let fim = -1;
@@ -90,7 +77,7 @@ function lerDiretorio(bytes: Uint8Array, limites: LimitesDoPacote): Map<string, 
   let posicao = vista.getUint32(fim + 16, true);
   // ZIP64 (mais de 65 mil entradas ou de 4 GB) não é DOCX que se abra aqui.
   if (total === 0xffff || posicao === 0xffffffff || total > limites.entradas) {
-    throw new ErroDocx(`O arquivo DOCX tem partes demais (o limite é de ${limites.entradas}).`);
+    throw new ErroDocx({ motivo: "partes-demais", limite: limites.entradas });
   }
   const decodificador = new TextDecoder("utf-8");
   const entradas = new Map<string, Entrada>();
@@ -99,7 +86,7 @@ function lerDiretorio(bytes: Uint8Array, limites: LimitesDoPacote): Map<string, 
     const tamanhoDoNome = vista.getUint16(posicao + 28, true);
     const nome = decodificador.decode(bytes.subarray(posicao + 46, posicao + 46 + tamanhoDoNome));
     if (vista.getUint16(posicao + 8, true) & 1) {
-      throw new ErroDocx("O arquivo DOCX está protegido por senha. Salve sem senha e tente de novo.");
+      throw new ErroDocx({ motivo: "protegido" });
     }
     entradas.set(nome, {
       metodo: vista.getUint16(posicao + 10, true),
@@ -145,7 +132,11 @@ export class PacoteOoxml {
     this.#bytes = bytes;
     this.#limites = { ...LIMITES_PADRAO, ...limites };
     if (bytes.length > this.#limites.bytesDoArquivo)
-      throw arquivoGrandeDemais(bytes.length, this.#limites.bytesDoArquivo);
+      throw new ErroDocx({
+        motivo: "arquivo-grande-demais",
+        tamanho: bytes.length,
+        limite: this.#limites.bytesDoArquivo,
+      });
     this.#entradas = lerDiretorio(bytes, this.#limites);
   }
 
@@ -162,16 +153,12 @@ export class PacoteOoxml {
     if (!entrada) return null;
     const { bytesPorParte, bytesNoTotal, razaoDeCompressao } = this.#limites;
     const grandeDemais = () =>
-      new ErroDocx(
-        `O arquivo DOCX é grande demais para ser lido: a parte ${nome} passa de ${megabytes(bytesPorParte)}, ` +
-          `ou o documento passa de ${megabytes(bytesNoTotal)} no total.`,
-      );
-    const corrompido = () => new ErroDocx(`O arquivo DOCX está corrompido: a parte ${nome} não pôde ser lida.`);
+      new ErroDocx({ motivo: "parte-grande-demais", parte: nome, limite: bytesPorParte, limiteTotal: bytesNoTotal });
+    const corrompido = () => new ErroDocx({ motivo: "parte-corrompida", parte: nome });
     const cabe = (tamanho: number) => tamanho <= bytesPorParte && this.#bytesLidos + tamanho <= bytesNoTotal;
     const anormal = (descompactado: number, compactado: number) =>
       descompactado > 10 * 1024 * 1024 && descompactado > compactado * razaoDeCompressao;
-    const compressaoAnormal = () =>
-      new ErroDocx(`O arquivo DOCX não pôde ser lido: a parte ${nome} tem compressão anormal.`);
+    const compressaoAnormal = () => new ErroDocx({ motivo: "compressao-anormal", parte: nome });
     if (!cabe(entrada.descompactado)) throw grandeDemais();
     if (anormal(entrada.descompactado, entrada.compactado)) throw compressaoAnormal();
 

@@ -1,5 +1,4 @@
-/** Os providers do app (o mesmo `Provider` do motor, aqui sem depender dele). */
-export type Provider = "claude" | "codex" | "antigravity";
+import type { Provider } from "@simplifica-if/motor/eventos";
 
 /**
  * O modelo padrão da revisão com IA, por provider: o intermediário de cada um, que julga bem
