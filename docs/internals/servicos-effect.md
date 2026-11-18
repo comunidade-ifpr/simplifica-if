@@ -173,7 +173,6 @@ Código anterior a esta página que não segue alguma regra. Não é achado num 
 
 - `FalhaProvider.detalhe` (`packages/motor/src/erros.ts`) recebe um trecho de `cause.message` em `packages/motor/src/Canal.ts`;
 - `Effect.runPromise` fora de ponto de entrada em `scripts/fabrica_atualizacao.ts`;
-- `fetch` com `AbortSignal.timeout` em `packages/atualizacao/src/remoto.ts`;
 - a leitura da base com `node:fs` síncrono nos `carregar*` e em `scripts/base/validacao/`, chamada de dentro dos programas Effect do pipeline da base;
 - `packages/atualizacao`, `packages/ppc` e `packages/docx` são quase todos funções comuns; parte é pura e fica assim, parte faz I/O e é candidata a serviço;
 - 14 testes registram casos num `for` (avisos de `no-test-in-loop` no `pnpm lint`).

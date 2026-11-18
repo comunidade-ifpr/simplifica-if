@@ -34,7 +34,7 @@ import * as Schema from "effect/Schema";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
 import { lerEstado, prepararAbertura } from "@simplifica-if/atualizacao/local";
-import { lerChavePublica } from "@simplifica-if/atualizacao/minisign";
+import { opcoesDaPolitica } from "@simplifica-if/atualizacao/remoto";
 import { LinhaPartida, VARIAVEL_TOKEN } from "@simplifica-if/contratos-app";
 import { CANAIS } from "@simplifica-if/kb/canal";
 import { POLITICA_FABRICA } from "@simplifica-if/motor/politica";
@@ -166,7 +166,7 @@ const servidor = Command.make(
       const atualizacao =
         pastaAtualizacao === undefined
           ? undefined
-          : montarAtualizacao({
+          : yield* montarAtualizacao({
               pasta: path.resolve(yield* expandHomePath(pastaAtualizacao)),
               bancoEmpacotado: bancoDado,
               feed: Option.getOrUndefined(opcoes.feedAtualizacao),
@@ -204,7 +204,7 @@ const servidor = Command.make(
           canal:
             atualizacao === undefined || opcoes.canal !== "dev"
               ? opcoes.canal
-              : (lerEstado(atualizacao.pasta).canal ?? atualizacao.canalPadrao),
+              : ((yield* lerEstado(atualizacao.pasta)).canal ?? atualizacao.canalPadrao),
           bancoConversas: path.join(pastaEstado, Banco.ARQUIVO_BANCO),
           pastaTrabalhos,
           ...(pastaSkills === undefined ? {} : { pastaSkills }),
@@ -239,28 +239,19 @@ const servidor = Command.make(
  * As opções da atualização: a troca pendente atendida agora (antes de abrir a base), o feed e a chave da
  * política ou dos argumentos, e o motivo quando falta um deles.
  */
-function montarAtualizacao(entrada: {
+const montarAtualizacao = Effect.fn("cli.montarAtualizacao")(function* (entrada: {
   readonly pasta: string;
   readonly bancoEmpacotado: string;
   readonly feed: string | undefined;
   readonly chave: string | undefined;
   readonly versaoApp: string;
-}): Servidor.OpcoesAtualizacao {
+}) {
   const politica = POLITICA_FABRICA.atualizacao;
-  const abertura = prepararAbertura({ pasta: entrada.pasta, bancoEmpacotado: entrada.bancoEmpacotado });
-  const feed = entrada.feed ?? politica.feed;
-  const textoChave = entrada.chave ?? politica.chavePublica;
-  let chave: ReturnType<typeof lerChavePublica> | null = null;
-  let problemaChave: string | null = null;
-  try {
-    chave = textoChave === null ? null : lerChavePublica(textoChave);
-  } catch (erro) {
-    problemaChave = `a chave pública da atualização é inválida (${(erro as Error).message})`;
-  }
-  const desligada =
-    feed === null
-      ? "o endereço das atualizações ainda não está no app (hospedagem a configurar)"
-      : (problemaChave ?? (chave === null ? "a chave pública da fábrica ainda não está no app" : null));
+  const abertura = yield* prepararAbertura({ pasta: entrada.pasta, bancoEmpacotado: entrada.bancoEmpacotado });
+  const { desligada, feed, chave } = opcoesDaPolitica({
+    feed: entrada.feed ?? politica.feed,
+    chave: entrada.chave ?? politica.chavePublica,
+  });
   return {
     desligada,
     feed,
@@ -270,8 +261,8 @@ function montarAtualizacao(entrada: {
     bancoEmpacotado: entrada.bancoEmpacotado,
     versaoApp: entrada.versaoApp,
     abertura,
-  };
-}
+  } satisfies Servidor.OpcoesAtualizacao;
+});
 
 /** Sem cordão (token pelo ambiente): não há envelope a ler nem fim a esperar. */
 const semCordao: Partida.Cordao = { primeiraLinha: Effect.succeedNone, fim: Effect.never };

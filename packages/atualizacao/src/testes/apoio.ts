@@ -8,7 +8,10 @@ import * as NodeHttp from "node:http";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import * as NodeSqlite from "node:sqlite";
+import * as NodeServices from "@effect/platform-node/NodeServices";
 import { VERSAO_ESQUEMA } from "@simplifica-if/kb/db/esquema";
+import * as Effect from "effect/Effect";
+import { type Abertura, caminhos, decodificarEstado, type EstadoGravado, prepararAbertura } from "../local.ts";
 
 const temporarios: string[] = [];
 
@@ -21,6 +24,16 @@ export function pastaTemporaria(prefixo = "simplifica-atualizacao-"): string {
 export function limparTemporarios(): void {
   for (const pasta of temporarios.splice(0)) NodeFS.rmSync(pasta, { recursive: true, force: true });
 }
+
+/** O estado gravado na pasta, lido direto do disco (para as conferências dos testes). */
+export function estadoNoDisco(pasta: string): EstadoGravado {
+  const arquivo = caminhos(pasta).estado;
+  return NodeFS.existsSync(arquivo) ? decodificarEstado(NodeFS.readFileSync(arquivo, "utf8")) : {};
+}
+
+/** `prepararAbertura` com o disco do Node, para os testes fora do Effect. */
+export const abrir = (opcoes: Parameters<typeof prepararAbertura>[0]): Promise<Abertura> =>
+  Effect.runPromise(prepararAbertura(opcoes).pipe(Effect.provide(NodeServices.layer)));
 
 /** Um `kb.sqlite` mínimo: `meta` como o da base e uma tabela com texto (para o patch ter o que reaproveitar). */
 export function criarBanco(
