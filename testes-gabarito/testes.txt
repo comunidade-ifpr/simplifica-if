@@ -19,7 +19,7 @@ packages/kb/src/normas/referencia-estruturada.test.ts	31	0
 packages/kb/src/normas/resolver.test.ts	59	0
 packages/kb/src/normas/saneamento.test.ts	36	0
 packages/kb/src/normas/texto-dispositivos.test.ts	13	0
-packages/kb/src/ppcs/front-matter.test.ts	4	0
+packages/kb/src/ppcs/front-matter.test.ts	5	0
 packages/kb/src/ppcs/secoes-base.test.ts	2	0
 packages/kb/src/ppcs/secoes.test.ts	11	0
 packages/kb/src/primitivas/formatacao.test.ts	8	0
@@ -48,7 +48,7 @@ scripts/avaliacao/pontuacao.test.ts	16	0
 scripts/avaliacao/ppcs-ouro.test.ts	5	0
 scripts/avaliacao/stream.test.ts	5	0
 scripts/base/base.test.ts	14	0
-scripts/base/importar-ppc.test.ts	10	0
+scripts/base/importar-ppc.test.ts	16	0
 scripts/cli.test.ts	6	0
 scripts/config.test.ts	4	0
 scripts/dados/institucional.test.ts	8	0

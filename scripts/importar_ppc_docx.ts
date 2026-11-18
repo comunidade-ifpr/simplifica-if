@@ -2,9 +2,9 @@
 // @effect-diagnostics globalConsole:off nodeBuiltinImport:off globalDate:off -- script de execução única da curadoria, síncrono, com a casca de scripts/cli.ts: imprime no console, consulta o git e usa o relógio da importação
 /** Leva um PPC novo (ou a versão nova do PPC de um curso) do DOCX da coordenação para a base. */
 import * as NodeChildProcess from "node:child_process";
+import { ROTULOS_PESSOAIS } from "@simplifica-if/kb/ppcs/dados-pessoais";
 import { criarCaminhos } from "./base/caminhos.ts";
 import { ErroImportacao, importarPpcDocx, type ResultadoImportacao } from "./base/importar-ppc.ts";
-import { ROTULOS_PESSOAIS } from "./base/validacao/normas.ts";
 import { lerArgumentos } from "./cli.ts";
 import { RAIZ_PROJETO } from "./config.ts";
 
@@ -30,12 +30,21 @@ function git(...args: string[]): string {
 }
 
 /**
- * Conversor e versão: o pacote e o commit do checkout, com `-modificado` quando a conversão
- * (`packages/ppc`, `packages/docx`) tem alteração não comitada.
+ * Pastas de dados e de saída, que não mudam o texto convertido: alteração nelas não marca o conversor.
+ * Arquivo não rastreado também não conta: o próprio DOCX de entrada pode estar no checkout.
+ */
+const FORA_DO_CONVERSOR = ["base-conhecimento", "site", "tmp", "outputs"];
+
+/**
+ * Conversor e versão: o pacote e o commit do checkout, com `-modificado` quando há alteração não
+ * comitada em arquivo rastreado fora de `FORA_DO_CONVERSOR`. A saída depende de `packages/ppc`,
+ * `packages/docx` e `packages/kb` (front matter, dados pessoais), de `scripts/base/importar-ppc.ts`,
+ * `scripts/dados/urls.ts` e deste script; olhar o checkout inteiro não deixa nenhum de fora.
  */
 function conversorAtual(): string {
   const commit = git("rev-parse", "HEAD");
-  const sujo = git("status", "--porcelain", "--", "packages/ppc", "packages/docx") !== "";
+  const fora = FORA_DO_CONVERSOR.map((pasta) => `:(exclude)${pasta}`);
+  const sujo = git("status", "--porcelain", "--untracked-files=no", "--", ".", ...fora) !== "";
   return `simplifica-if/packages/ppc@${commit}${sujo ? "-modificado" : ""}`;
 }
 
@@ -47,7 +56,7 @@ function relatar(resultado: ResultadoImportacao): void {
   if (resultado.ppcUrlAnterior) console.log(`ppc.url trocado (antes: ${resultado.ppcUrlAnterior})`);
   const omitidos = Object.entries(resultado.omitidos)
     .filter(([, n]) => n)
-    .map(([categoria, n]) => `${n} ${ROTULOS_PESSOAIS[categoria as keyof typeof ROTULOS_PESSOAIS]}`);
+    .map(([categoria, n]) => `${n} ${ROTULOS_PESSOAIS[categoria as keyof typeof resultado.omitidos]}`);
   console.log(`Dados pessoais omitidos: ${omitidos.length ? omitidos.join(", ") : "nenhum"}`);
   const { planilhas, sessoesSei, assinadas } = resultado.urlsLimpas;
   if (planilhas + sessoesSei + assinadas) {
@@ -62,6 +71,9 @@ function relatar(resultado: ResultadoImportacao): void {
     console.log(
       `Curadoria reaberta ("Precisa de revisão"): ${resultado.curadoriaReaberta.map((c) => `ppc.${c}`).join(", ")}; confira contra o texto novo`,
     );
+  }
+  if (resultado.observacoesAReconferir) {
+    console.log("ppc.observacoes mantido, mas escrito sobre o texto anterior: a reconferir contra o texto novo");
   }
   console.log("\nAntes de comitar, confira o Markdown (e-mail particular sai à mão) e rode:");
   for (const comando of PASSOS_SEGUINTES) console.log(`  ${comando}`);

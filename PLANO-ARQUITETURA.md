@@ -852,8 +852,10 @@ Em aberto:
 
 **Entrada de PPC novo na base em 17/11/2026** (branch `t3/importar-ppc-docx`). Fecha o item 3 de "Em aberto" a favor do DOCX:
 
-- `node scripts/importar_ppc_docx.ts <campus_id>/<curso_slug> <arquivo.docx> --fonte-url <url> [--substituir]`, com a lógica em `scripts/base/importar-ppc.ts` e 10 testes sobre os DOCX sintéticos de `packages/ppc` numa base temporária;
-- `fonte_url` e `ppc.url` recebem o mesmo `--fonte-url`, e o `validar_base.ts` passa sem exceção nova. O `fonte_sha256` é o hash do DOCX, o que a `nota_proveniencia` registra, e o `conversor` é `simplifica-if/packages/ppc@<commit>` (`-modificado` com alteração não comitada em `packages/ppc` ou `packages/docx`);
+- `node scripts/importar_ppc_docx.ts <campus_id>/<curso_slug> <arquivo.docx> --fonte-url <url> [--substituir]`, com a lógica em `scripts/base/importar-ppc.ts` e 16 testes sobre os DOCX sintéticos de `packages/ppc` numa base temporária;
+- `fonte_url` e `ppc.url` recebem o mesmo `--fonte-url`, e o `validar_base.ts` passa sem exceção nova. O `fonte_sha256` continua sendo o hash dos bytes de `fonte_url` e fica `desconhecido` (o script não baixa a URL); o hash do DOCX vai no campo novo `arquivo_convertido_sha256`, com `arquivo_convertido: docx`, que o índice publica como `arquivo_convertido: { tipo, sha256 }`. O `conversor` é `simplifica-if/packages/ppc@<commit>`, com `-modificado` se o checkout tem alteração não comitada em arquivo rastreado fora de `base-conhecimento/`, `site/`, `tmp/` e `outputs/` (a saída depende também de `packages/kb`, `scripts/base/importar-ppc.ts`, `scripts/dados/urls.ts` e do próprio script);
+- o Markdown e o registro são calculados antes de qualquer escrita e gravados por temporário + `renameSync`; se o segundo falha, o primeiro volta ao anterior. `ppc` entra antes de `notion_page_id` e `markdown_path` logo depois de `url`, sem mexer na ordem dos registros já completos; `ppc.observacoes` fica e a saída a aponta como "a reconferir";
+- `limparUrlsInternas` (`scripts/dados/urls.ts`) é a limpeza de URLs internas do importador e da exportação dos processos SEI; um link Markdown para planilha vira `texto (planilha interna, link omitido)`;
 - a figura da representação gráfica vira aviso, porque a base não publica `imagens/`; ano e vagas já registrados voltam a "Precisa de revisão";
 - o script não regenera índices nem o site: imprime os quatro comandos do pipeline, que vêm depois da leitura do Markdown (e-mail particular sai à mão);
 - o passo a passo está em "Entrada de PPC novo na base", na doc de curadoria.

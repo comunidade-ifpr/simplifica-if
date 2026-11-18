@@ -4,7 +4,12 @@ import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { contarDadosPessoais, MARCADORES } from "@simplifica-if/kb/ppcs/dados-pessoais";
+import {
+  type Categoria,
+  contarDadosPessoais,
+  MARCADORES,
+  ROTULOS_PESSOAIS,
+} from "@simplifica-if/kb/ppcs/dados-pessoais";
 import { RE_PLANILHA_GOOGLE, RE_URL_ASSINADA, RE_URL_SESSAO_SEI } from "../../dados/urls.ts";
 import { ehArquivo, listarDiretorio, listarRecursivo, naBase } from "../caminhos.ts";
 import {
@@ -51,15 +56,6 @@ function comparavel(campo: string, valor: unknown): unknown {
   return valor;
 }
 
-/** Nenhum arquivo de texto da base pode conter caminhos locais. */
-export const ROTULOS_PESSOAIS = {
-  cpf: "CPF",
-  rg: "RG",
-  telefone: "celular",
-  matricula: "matrícula",
-  siape: "SIAPE",
-} as const;
-
 /**
  * Dados pessoais (política do AGENTS.md: CPF, RG, celular, matrícula de estudante, SIAPE), link de
  * planilha do Google fora do `horarios_url` de um campus e URL de sessão do SEI (`infra_hash`). As
@@ -68,7 +64,7 @@ export const ROTULOS_PESSOAIS = {
 export function dadosPessoaisEUrlsInternas(relativo: string, texto: string): string[] {
   const erros: string[] = [];
   const contagem = contarDadosPessoais(texto);
-  const achados = (Object.keys(ROTULOS_PESSOAIS) as Array<keyof typeof ROTULOS_PESSOAIS>)
+  const achados = (Object.keys(ROTULOS_PESSOAIS) as Categoria[])
     .filter((categoria) => contagem[categoria])
     .map((categoria) => `${contagem[categoria]} ${ROTULOS_PESSOAIS[categoria]}`);
   if (achados.length) {
@@ -91,6 +87,7 @@ export function dadosPessoaisEUrlsInternas(relativo: string, texto: string): str
   return erros;
 }
 
+/** Nenhum arquivo de texto da base pode conter caminhos locais, URL pré-assinada, dados pessoais nem URLs internas. */
 export function validarPadroesLocais(ctx: Contexto): string[] {
   const erros: string[] = [];
   for (const caminho of listarRecursivo(ctx.c.raiz)) {

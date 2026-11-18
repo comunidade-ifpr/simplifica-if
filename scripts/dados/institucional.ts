@@ -61,6 +61,23 @@ const cnctId = Schema.optional(
   ),
 );
 
+/** Metadados do PPC no registro do curso. */
+export const esquemaPpcCurso = Schema.Struct({
+  url: texto,
+  markdown_path: texto,
+  ano_documento: inteiro,
+  vagas: texto,
+  trecho_vagas: texto,
+  periodicidade_vagas: texto,
+  /** Status e data da curadoria de `ano_documento`. */
+  curadoria_ano: texto,
+  data_curadoria_ano: texto,
+  /** Status e data da curadoria de `vagas`, `trecho_vagas` e `periodicidade_vagas`. */
+  curadoria_vagas: texto,
+  data_curadoria_vagas: texto,
+  observacoes: texto,
+});
+
 export const esquemaCursoLocal = Schema.Struct({
   campus_id: Schema.String,
   curso_slug: Schema.String,
@@ -92,23 +109,7 @@ export const esquemaCursoLocal = Schema.Struct({
       ),
     }),
   ),
-  ppc: Schema.optional(
-    Schema.Struct({
-      url: texto,
-      markdown_path: texto,
-      ano_documento: inteiro,
-      vagas: texto,
-      trecho_vagas: texto,
-      periodicidade_vagas: texto,
-      /** Status e data da curadoria de `ano_documento`. */
-      curadoria_ano: texto,
-      data_curadoria_ano: texto,
-      /** Status e data da curadoria de `vagas`, `trecho_vagas` e `periodicidade_vagas`. */
-      curadoria_vagas: texto,
-      data_curadoria_vagas: texto,
-      observacoes: texto,
-    }),
-  ),
+  ppc: Schema.optional(esquemaPpcCurso),
   notion_page_id: texto,
 });
 export type CursoLocal = typeof esquemaCursoLocal.Type;

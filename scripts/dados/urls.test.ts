@@ -2,6 +2,7 @@ import { describe, expect, test } from "vite-plus/test";
 import {
   ehUrlAssinada,
   limparUrlsAssinadas,
+  limparUrlsInternas,
   RE_URL_ASSINADA,
   RE_URL_SESSAO_SEI,
   semAssinatura,
@@ -58,5 +59,43 @@ describe("planilhas do Google e sessão do SEI", () => {
       "&infr a_unidade_atual=3 Ato nº 1",
     );
     expect(RE_URL_SESSAO_SEI.test("não persista URLs de sessão com `infra_hash`.")).toBe(false);
+  });
+
+  test("link Markdown para planilha sai inteiro, sem deixar link quebrado", () => {
+    const planilha = "https://docs.google.com/spreadsheets/d/abc/edit#gid=0";
+    expect(semPlanilhasGoogle(`Veja [o acompanhamento](${planilha}) da turma.`)).toBe(
+      "Veja o acompanhamento (planilha interna, link omitido) da turma.",
+    );
+    expect(semPlanilhasGoogle(`[${planilha}](${planilha})`)).toBe("planilha interna (link omitido)");
+    expect(semPlanilhasGoogle(`[](<${planilha}> "título")`)).toBe("planilha interna (link omitido)");
+    expect(semPlanilhasGoogle("[site](https://ifpr.edu.br/x)")).toBe("[site](https://ifpr.edu.br/x)");
+  });
+});
+
+describe("limparUrlsInternas", () => {
+  test("tira sessão do SEI, planilhas e assinatura, e conta cada uma", () => {
+    const sei =
+      "https://sei.ifpr.edu.br/sei/controlador.php?acao=x&id_documento=1&infra_sistema=2&infra_unidade_atual=3&infra_hash=0123456789abcdef";
+    const texto = [
+      `Processo: ${sei}.`,
+      "Planilha: [controle](https://docs.google.com/spreadsheets/d/abc/edit) e https://docs.google.com/spreadsheets/d/def",
+      `Arquivo: (${ASSINADA})`,
+      "Página: https://ifpr.edu.br/x.pdf?page=2",
+    ].join("\n");
+    expect(limparUrlsInternas(texto)).toEqual({
+      texto: [
+        "Processo: https://sei.ifpr.edu.br/sei/controlador.php?acao=x&id_documento=1.",
+        "Planilha: controle (planilha interna, link omitido) e planilha interna (link omitido)",
+        "Arquivo: (https://s3.sa-east-1.amazonaws.com/suap-prod/edu/ppc/PPC.pdf)",
+        "Página: https://ifpr.edu.br/x.pdf?page=2",
+      ].join("\n"),
+      contagem: { planilhas: 2, sessoesSei: 1, assinadas: 1 },
+    });
+  });
+
+  test("é o que semPlanilhasGoogle(semSessaoSei(...)) fazia nas anotações dos processos SEI", () => {
+    const anotacao =
+      "Origem: https://docs.google.com/spreadsheets/d/abc/edit?gid=1#gid=1 aba TAREFAS; ver https://sei.ifpr.edu.br/sei/controlador.php?acao=a&infra_hash=0123abcd0123abcd";
+    expect(limparUrlsInternas(anotacao).texto).toBe(semPlanilhasGoogle(semSessaoSei(anotacao)));
   });
 });

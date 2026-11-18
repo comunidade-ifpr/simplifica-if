@@ -10,7 +10,7 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { type CaminhosBase, listarDiretorio, naBase, relativo } from "./caminhos.ts";
 import { ehObjeto, jsonCompacto, jsonIndentado, textoDe } from "@simplifica-if/kb/json";
-import { analisarPpc } from "@simplifica-if/kb/ppcs/front-matter";
+import { analisarPpc, type ProvenienciaPpc } from "@simplifica-if/kb/ppcs/front-matter";
 import {
   LIMITE_PREVIEW_SECAO,
   MINIMO_CARACTERES_SECAO,
@@ -42,6 +42,22 @@ export const TIPOS_SECAO_INDEXADOS = ordenarTextos(
 export type ItemPpc = IndicePpcsJson["items"][number];
 /** Linha de secoes/<tipo>.jsonl, no formato de schemas/ppcs_secao.schema.json. */
 export type ItemSecao = SecaoPpcJson;
+
+/** Resumo da proveniência publicado no índice (e conferido pelo `validar_base`). */
+export function resumoProveniencia(proveniencia: ProvenienciaPpc): ItemPpc["proveniencia"] {
+  return {
+    situacao: proveniencia.proveniencia,
+    fonte_url: proveniencia.fonte_url,
+    fonte_sha256: proveniencia.fonte_sha256,
+    ...(proveniencia.arquivo_convertido && proveniencia.arquivo_convertido_sha256
+      ? {
+          arquivo_convertido: { tipo: proveniencia.arquivo_convertido, sha256: proveniencia.arquivo_convertido_sha256 },
+        }
+      : {}),
+    convertido_em: proveniencia.convertido_em,
+    conversor: proveniencia.conversor,
+  };
+}
 
 function textoPreenchido(valor: unknown): string | null {
   return typeof valor === "string" && valor ? valor : null;
@@ -82,13 +98,7 @@ export function montarItemPpc(
     curso_url: cursoUrl,
     fonte_pdf: fontePdf,
     path: caminhoMarkdown,
-    proveniencia: {
-      situacao: proveniencia.proveniencia,
-      fonte_url: proveniencia.fonte_url,
-      fonte_sha256: proveniencia.fonte_sha256,
-      convertido_em: proveniencia.convertido_em,
-      conversor: proveniencia.conversor,
-    },
+    proveniencia: resumoProveniencia(proveniencia),
   };
   const modalidade = textoPreenchido(curso.modalidade);
   if (modalidade) item.modalidade = modalidade;

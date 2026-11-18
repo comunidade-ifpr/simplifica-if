@@ -36,6 +36,27 @@ describe("front matter de PPC", () => {
     expect(corpoPpc(texto)).toBe(corpo);
   });
 
+  test("arquivo convertido diferente da fonte: o hash vai em arquivo_convertido", () => {
+    const registrada: ProvenienciaPpc = {
+      id: "ppc:curitiba/tecnico-em-enfermagem",
+      fonte_url: "https://ifpr.edu.br/curitiba/wp-content/uploads/PPC_2026.pdf",
+      fonte_sha256: "desconhecido",
+      convertido_em: "2026-11-17",
+      conversor: `simplifica-if/packages/ppc@${"c".repeat(40)}`,
+      arquivo_convertido: "docx",
+      arquivo_convertido_sha256: "d".repeat(64),
+      proveniencia: "registrada",
+      nota_proveniencia: "Convertido do DOCX.",
+    };
+    const yaml = serializarFrontMatterPpc(registrada);
+    expect(yaml).toContain(
+      `arquivo_convertido: docx\narquivo_convertido_sha256: ${"d".repeat(64)}\nproveniencia: registrada\n`,
+    );
+    const texto = `${yaml}## 1 Apresentação\n`;
+    expect(analisarPpc(texto, "x.md").proveniencia).toEqual(registrada);
+    expect(linhasFrontMatter(texto)).toBe(yaml.split("\n").length - 1);
+  });
+
   test("mascara o front matter sem mudar a numeração das linhas", () => {
     const texto = `${serializarFrontMatterPpc(reconstruida)}## Título\nResolução CNE/CP nº 1/2021\n`;
     const linhas = linhasFrontMatter(texto);
@@ -80,6 +101,20 @@ describe("front matter de PPC", () => {
         "y.md",
       ),
     ).toThrow(ErroFrontMatter);
+    // Hash da fonte desconhecido: a registrada precisa do hash do arquivo convertido.
+    const docx: ProvenienciaPpc = {
+      id: reconstruida.id,
+      fonte_url: reconstruida.fonte_url,
+      fonte_sha256: "desconhecido",
+      convertido_em: "2026-11-17",
+      conversor: `simplifica-if/packages/ppc@${"c".repeat(40)}`,
+      proveniencia: "registrada",
+    };
+    expect(() => serializarFrontMatterPpc(docx)).toThrow(/arquivo_convertido_sha256/);
+    expect(() => serializarFrontMatterPpc({ ...docx, arquivo_convertido: "docx" })).toThrow(/vêm juntos/);
+    expect(() =>
+      serializarFrontMatterPpc({ ...docx, arquivo_convertido: "docx", arquivo_convertido_sha256: "xyz" }),
+    ).toThrow();
     expect(() => analisarPpc("## sem front matter", "z.md")).toThrow("z.md: arquivo sem front matter");
     expect(() => analisarPpc("---\nid: curitiba/x\n---\n", "w.md")).toThrow("w.md: front matter de PPC inválido");
   });
