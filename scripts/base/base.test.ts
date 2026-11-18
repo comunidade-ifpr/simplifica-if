@@ -18,9 +18,7 @@ import {
   tituloDaLinha,
 } from "./indice-ppcs.ts";
 import { serializarFrontMatterPpc } from "@simplifica-if/kb/ppcs/front-matter";
-import { arquivosManifest, substituirTabela } from "./readme.ts";
 import { validarJsonSchema } from "@simplifica-if/kb/schema";
-import { compararDiretorios, renderizarSite } from "./site.ts";
 import { validarBase } from "./validacao.ts";
 
 const temporarios: string[] = [];
@@ -78,12 +76,6 @@ Texto.
 
 const README = `# Base
 
-| Documento | Tipo | Ano | Assunto |
-|-----------|------|-----|---------|
-| antigo |
-
-## Manutenção
-
 Texto.
 `;
 
@@ -135,8 +127,8 @@ describe("caminhos", () => {
   });
 });
 
-describe("manifest e README", () => {
-  it.effect("gera manifest ordenado e tabela do README; --check detecta divergência", () =>
+describe("manifest", () => {
+  it.effect("gera manifest ordenado; --check detecta divergência", () =>
     Effect.gen(function* () {
       const raiz = projetoTemporario();
       escrever(raiz, "base-conhecimento/normas/br/leis/lei-b.md", NORMA);
@@ -145,25 +137,17 @@ describe("manifest e README", () => {
         "base-conhecimento/normas/br/leis/lei-a.md",
         NORMA.replace("Lei nº 1/2020", "Lei nº 0/2019").replace('"2020-01-02"', '"2019-05-05"'),
       );
-      escrever(raiz, "base-conhecimento/README.md", README);
       escrever(raiz, "base-conhecimento/manifest.json", "[]\n");
       const caminhos = criarCaminhos(raiz);
       const manifest = montarManifest(caminhos);
       expect(manifest.map((item) => item.path)).toEqual(["normas/br/leis/lei-a.md", "normas/br/leis/lei-b.md"]);
       expect(Object.keys(manifest[0]!).at(-1)).toBe("path");
-      const arquivos = arquivosManifest(caminhos, manifest);
-      expect(yield* conferir(caminhos.raiz, arquivos)).toEqual([
-        "manifest.json está desatualizado; rode x",
-        "README.md está desatualizado; rode x",
-      ]);
+      const arquivos = [{ caminho: caminhos.manifest, texto: manifestJson(manifest) }];
+      expect(yield* conferir(caminhos.raiz, arquivos)).toEqual(["manifest.json está desatualizado; rode x"]);
 
       yield* aplicarGerados(arquivos, { modo: "gravar", raiz: caminhos.raiz });
       expect(yield* conferir(caminhos.raiz, arquivos)).toEqual([]);
       expect(NodeFS.readFileSync(caminhos.manifest, "utf-8")).toBe(manifestJson(manifest));
-      expect(NodeFS.readFileSync(caminhos.readme, "utf-8")).toContain(
-        "| [Lei nº 0/2019](normas/br/leis/lei-a.md) | Lei | 2020 | Ementa de teste. |\n| [Lei nº 1/2020](normas/br/leis/lei-b.md) | Lei | 2020 | Ementa de teste. |\n\n## Manutenção",
-      );
-      expect(() => substituirTabela("sem tabela", manifest)).toThrow();
     }).pipe(Effect.provide(NodeServices.layer)),
   );
 });
@@ -381,33 +365,5 @@ describe("validação da base", () => {
     expect(errosManifest).toContain("manifest.json: item com jurisdição/tipo sem diretório configurado: ('XX', 'Lei')");
     expect(errosManifest).toContain("normas/br/leis/lei.md: manifest.json diverge do front matter no campo title");
     expect(errosManifest).not.toContain("normas/br/leis/lei.md: manifest.json diverge do front matter no campo ano");
-  });
-});
-
-describe("site", () => {
-  test("copia a base sem arquivos locais e compara o site com o esperado", () => {
-    const raiz = projetoTemporario();
-    escrever(raiz, "base/a.md", "a");
-    escrever(raiz, "base/docs/b.md", "b");
-    escrever(raiz, "base/.DS_Store", "x");
-    const site = NodePath.join(raiz, "site");
-    renderizarSite(NodePath.join(raiz, "base"), site);
-    const esperado = NodePath.join(raiz, "esperado");
-    renderizarSite(NodePath.join(raiz, "base"), esperado);
-    expect(compararDiretorios(esperado, site)).toEqual([]);
-
-    NodeFS.writeFileSync(NodePath.join(site, "docs", "b.md"), "B");
-    escrever(site, "extra.txt", "x");
-    escrever(site, ".DS_Store", "x");
-    NodeFS.rmSync(NodePath.join(site, "a.md"));
-    expect(compararDiretorios(esperado, site)).toEqual([
-      "ausente em site/: a.md",
-      "extra em site/: .DS_Store",
-      "extra em site/: extra.txt",
-      "docs/conteúdo divergente: b.md",
-    ]);
-    expect(() => renderizarSite(NodePath.join(raiz, "base"), NodePath.join(raiz, "base"))).toThrow(
-      "não pode ser o mesmo",
-    );
   });
 });

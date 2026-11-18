@@ -2,7 +2,7 @@
   "title": "Metadados institucionais do IFPR",
   "tipo": "cadastro_institucional",
   "versao": 1,
-  "atualizado_em": "2026-11-17",
+  "atualizado_em": "2026-11-18",
   "colecoes": [
     {
       "id": "campi-ifpr",
@@ -10,48 +10,6 @@
       "tipo_item": "campus",
       "path": "institucional/ifpr/campi/index.json",
       "total_itens": 28
-    },
-    {
-      "id": "cursos-ifpr",
-      "title": "Cursos do IFPR",
-      "tipo_item": "curso",
-      "path": "institucional/ifpr/cursos/index.json",
-      "total_itens": 225
-    },
-    {
-      "id": "processos-seletivos-ifpr",
-      "title": "Processos seletivos do IFPR",
-      "tipo_item": "processo_seletivo",
-      "path": "institucional/ifpr/processos-seletivos/index.json",
-      "total_itens": 2
-    },
-    {
-      "id": "editais-ingresso-ifpr",
-      "title": "Editais de ingresso do IFPR",
-      "tipo_item": "edital_ingresso",
-      "path": "institucional/ifpr/editais/index.json",
-      "total_itens": 5
-    },
-    {
-      "id": "ofertas-ingresso-ifpr",
-      "title": "Ofertas de ingresso do IFPR",
-      "tipo_item": "oferta_ingresso",
-      "path": "institucional/ifpr/ofertas/index.json",
-      "total_itens": 206
-    },
-    {
-      "id": "processos-sei-cursos-ifpr",
-      "title": "Processos SEI dos cursos do IFPR",
-      "tipo_item": "processo_sei_curso",
-      "path": "institucional/ifpr/processos-sei/index.json",
-      "total_itens": 124
-    },
-    {
-      "id": "conselhos-ifpr",
-      "title": "Conselhos superiores do IFPR",
-      "tipo_item": "reuniao_conselho",
-      "path": "institucional/ifpr/conselhos/index.json",
-      "total_itens": 2
     },
     {
       "id": "referencias-ifpr",

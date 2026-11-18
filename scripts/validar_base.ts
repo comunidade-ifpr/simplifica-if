@@ -48,8 +48,7 @@ export const comando = Command.make(
     const dados = yield* Effect.sync(() => validarDadosInstitucionais());
     erros.push(...dados.erros);
     if (dados.gerados) {
-      const { arquivos, extrasEm } = dados.gerados;
-      const divergencias = yield* aplicarGerados(arquivos, { modo: "verificar", raiz: caminhos.raiz, extrasEm });
+      const divergencias = yield* aplicarGerados(dados.gerados, { modo: "verificar", raiz: caminhos.raiz });
       erros.push(...mensagensDivergencias(divergencias, "node scripts/gerar_base.ts"));
     }
     erros.push(...(yield* Effect.sync(() => validarBaseAnalise())).map((erro) => `revisar-ppc: ${erro}`));

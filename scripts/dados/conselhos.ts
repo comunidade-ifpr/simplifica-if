@@ -16,8 +16,7 @@ import * as Schema from "effect/Schema";
 import { caminhoTexto, problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { ESTRITO } from "../esquema.ts";
 import { compararTexto } from "../dominio/comum.ts";
-import type { ArquivoGerado } from "../base/gerados.ts";
-import { ARQUIVO_INDICE, RAIZ_DADOS_INSTITUCIONAIS, textoRegistro } from "./institucional.ts";
+import { RAIZ_DADOS_INSTITUCIONAIS } from "./institucional.ts";
 
 export const PASTA_CONSELHOS = "conselhos";
 const PREFIXO = `institucional/ifpr/${PASTA_CONSELHOS}`;
@@ -189,43 +188,4 @@ export function auditarConselhos(dados: Conselhos, campi: Set<string>, cursos: S
     }
   }
   return erros;
-}
-
-/** `conselhos/index.json`: uma linha por reunião, com o caminho e as contagens. */
-export function montarIndiceConselhos(dados: Conselhos) {
-  const items = dados.reunioes
-    .map(({ arquivo, dados: reuniao }) => ({
-      id: reuniao.reuniao_id,
-      conselho_id: reuniao.conselho_id,
-      data: reuniao.data,
-      titulo: reuniao.titulo,
-      documentos: reuniao.documentos.length,
-      itens_pauta: reuniao.itens_pauta.length,
-      path: arquivo,
-    }))
-    .sort((a, b) => compararTexto(a.conselho_id, b.conselho_id) || compararTexto(a.data, b.data));
-  return {
-    id: "conselhos-ifpr",
-    title: "Conselhos superiores do IFPR",
-    descricao:
-      "Reuniões dos conselhos superiores (hoje o Consepe), com os documentos publicados e os itens de pauta deliberados. " +
-      "O registro de cada conselho fica em conselhos/<conselho_id>/conselho.json.",
-    tipo_item: "reuniao_conselho",
-    conselhos: dados.conselhos.map(({ arquivo, dados: conselho }) => ({
-      id: conselho.conselho_id,
-      sigla: conselho.sigla,
-      nome: conselho.nome,
-      path: arquivo,
-    })),
-    total_itens: items.length,
-    items,
-  };
-}
-
-/** `conselhos/index.json`, como `gerar_base` o grava e `validar_base` o confere. */
-export function indiceConselhosGerado(dados: Conselhos, raiz: string = RAIZ_DADOS_INSTITUCIONAIS): ArquivoGerado {
-  return {
-    caminho: NodePath.join(raiz, PASTA_CONSELHOS, ARQUIVO_INDICE),
-    texto: textoRegistro(montarIndiceConselhos(dados)),
-  };
 }

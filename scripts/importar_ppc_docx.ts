@@ -18,14 +18,13 @@ const PASSOS_SEGUINTES = [
   "node scripts/gerar_base.ts",
   "node scripts/gerar_indice_ppcs.ts",
   "node scripts/validar_base.ts",
-  "node scripts/gerar_site.ts",
 ];
 
 /**
  * Pastas de dados e de saída, que não mudam o texto convertido: alteração nelas não marca o conversor.
  * Arquivo não rastreado também não conta: o próprio DOCX de entrada pode estar no checkout.
  */
-const FORA_DO_CONVERSOR = ["base-conhecimento", "site", "tmp", "outputs"];
+const FORA_DO_CONVERSOR = ["base-conhecimento", "tmp", "outputs"];
 
 /** O git não achou um checkout em `raiz`: sem o commit, a versão do conversor não tem como ser registrada. */
 export class ForaDeCheckout extends Schema.TaggedError<ForaDeCheckout>()("ForaDeCheckout", {
@@ -122,7 +121,7 @@ export const comando = Command.make(
   Command.withDescription(
     "Converte o DOCX do PPC e o grava em institucional/ifpr/ppcs/<campus_id>/<curso_slug>.md, com front matter " +
       "de proveniência registrada, sem dados pessoais. Atualiza ppc.url e ppc.markdown_path do registro do curso. " +
-      "Não regenera índices nem o site.",
+      "Não regenera os índices.",
   ),
 );
 

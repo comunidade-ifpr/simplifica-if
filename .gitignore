@@ -2,7 +2,6 @@
 output/
 outputs/
 tmp/
-site/
 .env.local
 node_modules/
 dist-exe/

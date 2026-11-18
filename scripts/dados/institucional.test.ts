@@ -5,7 +5,6 @@ import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import type { Campus, Curso } from "../dominio/curso.ts";
 import type { EditalIngresso, OfertaIngresso, ProcessoSeletivo } from "../dominio/ingresso.ts";
-import type { Movimentacao } from "../dominio/movimentacao.ts";
 import { auditarBase, type BaseInstitucional } from "../dominio/auditoria.ts";
 import { RepositorioCursosLocal } from "./cursos.ts";
 import { carregarDadosInstitucionais, deDominio, gravarDadosInstitucionais, paraDominio } from "./institucional.ts";
@@ -123,27 +122,12 @@ const oferta: OfertaIngresso = {
   editalIds: ["pg-edital"],
 };
 
-const movimentacao: Movimentacao = {
-  id: "pg-mov",
-  titulo: "Ajuste",
-  situacao: null,
-  processo: "23411.000001/2026-01",
-  numeroSei: "23411.000001/2026-01",
-  tipo: "Ajuste PPC",
-  anotacoes: "nota",
-  cursoIds: ["pg-curso"],
-  ultimaMovimentacaoEm: "",
-  observacoes: "",
-  tramitacao: { unidadesPendentes: [] },
-};
-
 const baseNotion: BaseInstitucional = {
   campi: [campus],
   cursos: [curso],
   processos: [processo],
   editais: [edital],
   ofertas: [oferta],
-  movimentacoes: [movimentacao],
 };
 
 describe("registros institucionais", () => {
@@ -153,12 +137,7 @@ describe("registros institucionais", () => {
     const { dados, erros } = carregarDadosInstitucionais(raiz);
     expect(erros).toEqual([]);
 
-    // No Notion, a movimentação aponta para o curso por `Curso ID`, a chave canônica.
-    const baseLocal: BaseInstitucional = {
-      ...paraDominio(dados),
-      movimentacoes: [{ ...movimentacao, cursoIds: ["exemplo/tecnico-em-exemplo"] }],
-    };
-    expect(auditarBase(baseLocal)).toEqual([]);
+    expect(auditarBase(paraDominio(dados))).toEqual([]);
     expect(validarDadosInstitucionais(raiz, undefined, { arquivosDaBase: false }).erros).toEqual([]);
   });
 

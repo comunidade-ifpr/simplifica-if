@@ -44,8 +44,7 @@ Estas ferramentas rodam só no repositório, por agentes ou por quem cura a base
 
 ## Base, skills e scripts
 
-- `base-conhecimento/`: fonte publicável da base, com caminhos internos preservados como `normas/`, `institucional/`, `catalogos/`, `manifest.json`, `llms.txt` e `README.md`. Os dados institucionais de gestão (campi, cursos, processos seletivos, editais, ofertas e as reuniões do Consepe) ficam em `base-conhecimento/institucional/ifpr/`, um JSON por registro.
-- `site/`: saída gerada para publicação estática, ignorada pelo Git e reconstruída a partir de `base-conhecimento/`.
+- `base-conhecimento/`: fonte publicável da base, com `normas/`, `institucional/`, `catalogos/`, `manifest.json` e `README.md`. Os dados institucionais de gestão (campi, cursos, processos seletivos, editais, ofertas e as reuniões do Consepe) ficam em `base-conhecimento/institucional/ifpr/`, um JSON por registro.
 - `.agents/skills/`: skills operacionais para agentes IA, uma pasta versionada por skill e sem symlinks internos.
 - `scripts/`: geração, validação e exportação da base e integração com Notion (só `Movimentações de Cursos`), SEI e SUAP, em TypeScript (Node e pnpm). Um PPC novo, ou a versão nova do PPC de um curso, entra na base a partir do DOCX da coordenação, com `node scripts/importar_ppc_docx.ts` (passo a passo em `base-conhecimento/docs/curadoria-metadados-institucionais.md`); PDF não é convertido.
 - `base-conhecimento/docs/`: documentação de apoio à curadoria da base e ao desenvolvimento das skills.
@@ -53,19 +52,7 @@ Estas ferramentas rodam só no repositório, por agentes ou por quem cura a base
 
 ## Base de Conhecimento
 
-Use os manifestos em `base-conhecimento/` como ponto de entrada:
-
-- `base-conhecimento/manifest.json`: normas, legislação, resoluções, portarias e notas técnicas.
-- `base-conhecimento/institucional_manifest.json`: coleções institucionais do IFPR.
-- `base-conhecimento/catalogos_manifest.json`: catálogos publicados, incluindo o CNCT.
-- `base-conhecimento/institucional/ifpr/ppcs/index.json`: índice dos PPCs convertidos.
-
-Os campos `path` dos manifestos são relativos a `base-conhecimento/`. Para publicar a base preservando URLs como `normas/...` e `institucional/...`, gere `site/`:
-
-```bash
-node scripts/gerar_site.ts
-node scripts/gerar_site.ts --check
-```
+A base é lida pelo app, pelo `simplifica-mcp` e, no repositório, pela CLI `kb` (`pnpm kb`), todos sobre o `kb.sqlite` compilado de `base-conhecimento/`. Os comandos e o procedimento de consulta estão em "Consulta local da base", no [`AGENTS.md`](AGENTS.md#consulta-local-da-base); a resposta aponta o Markdown da norma ou do PPC, que é o que se abre e se cita.
 
 ## Skills
 
@@ -83,7 +70,7 @@ Skills disponíveis (só a `verificar-fundamentacao-normativa` vai para o app; a
 - `suap-ifpr/`: consulta e navegação no SUAP do IFPR com apoio dos tutoriais oficiais, incluindo dados profissionais de docentes e técnicos administrativos, cursos e disciplinas. Os comandos são TypeScript (Node) na raiz: `scripts/suap_consultar.ts` e `scripts/suap_tutoriais.ts`, testados por `pnpm exec vp test run scripts`.
 - `verificar-fundamentacao-normativa/`: conferência de citações e alegações baseadas em leis, resoluções, portarias, CNCT e regulamentos. Tem bloco `simplifica:` e é tarefa do app.
 
-Ao desenvolver uma skill, consulte primeiro os dados locais em `base-conhecimento/` por manifesto. Só empacote cópias de normas, catálogos ou metadados quando houver motivo claro de portabilidade.
+Ao desenvolver uma skill, consulte os dados da base pela CLI `kb` ou pelas ferramentas `ifpr` do MCP. Só empacote cópias de normas, catálogos ou metadados quando houver motivo claro de portabilidade.
 
 ## Manutenção
 
@@ -91,13 +78,12 @@ Ao desenvolver uma skill, consulte primeiro os dados locais em `base-conheciment
 node scripts/gerar_base.ts --check
 node scripts/gerar_indice_ppcs.ts --check
 node scripts/validar_base.ts
-node scripts/gerar_site.ts --check
 node scripts/gerar_tipos_schemas.ts --check
 pnpm exec vp test run .agents/skills/revisar-ppc
 pnpm fmt && pnpm lint && pnpm typecheck && pnpm test   # todo o código: app, pacotes, scripts e skills
 ```
 
-Os JSON Schemas de `base-conhecimento/schemas/` são a fonte do formato dos manifestos e índices (institucional, catálogos, CNCT, PPCs); o validador os aplica, e os tipos TypeScript do validador ficam em `scripts/base/tipos-schemas.ts`, gerado a partir deles (depois de alterar um desses schemas, rode `node scripts/gerar_tipos_schemas.ts` e `pnpm typecheck`). Os registros institucionais (campus, curso, processo seletivo, edital, oferta, conselho, reunião e processos SEI) têm o formato no Effect Schema de `scripts/dados/`; os JSON Schemas públicos deles, em `base-conhecimento/schemas/registros/`, são gerados daí pelo `node scripts/gerar_base.ts` e conferidos pelo `gerar_base.ts --check` e pelo `validar_base.ts`.
+Os JSON Schemas de `base-conhecimento/schemas/` são a fonte do formato dos manifestos e índices (institucional, catálogos, CNCT, PPCs); o validador os aplica, e os tipos TypeScript do validador ficam em `scripts/base/tipos-schemas.ts`, gerado a partir deles (depois de alterar um desses schemas, rode `node scripts/gerar_tipos_schemas.ts` e `pnpm typecheck`). Os registros institucionais (campus, curso, processo seletivo, edital, oferta, conselho, reunião e processos SEI) têm o formato no Effect Schema de `scripts/dados/`, que o `validar_base.ts` aplica.
 
 ## SEI e sincronização com o Notion
 

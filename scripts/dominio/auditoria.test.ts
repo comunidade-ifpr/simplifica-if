@@ -1,9 +1,7 @@
 import { describe, expect, test } from "vite-plus/test";
 import { auditarBase, type BaseInstitucional } from "./auditoria.ts";
-import { caminhoMarkdownPpc, interpretarVagasPpc, type Campus, type Curso } from "./curso.ts";
+import { interpretarVagasPpc, type Campus, type Curso } from "./curso.ts";
 import type { OfertaIngresso } from "./ingresso.ts";
-import type { Movimentacao } from "./movimentacao.ts";
-import { montarProcessosSei, processosSeiDasMovimentacoes } from "../dados/processos-sei.ts";
 
 const CAMPUS: Campus = {
   id: "pg-campus",
@@ -52,25 +50,8 @@ function curso(parcial: Partial<Curso> = {}): Curso {
   };
 }
 
-function movimentacao(parcial: Partial<Movimentacao>): Movimentacao {
-  return {
-    id: "pg-mov",
-    titulo: "Mov",
-    situacao: "Concluído",
-    processo: "",
-    numeroSei: "",
-    tipo: "",
-    anotacoes: "",
-    cursoIds: [],
-    ultimaMovimentacaoEm: "",
-    observacoes: "",
-    tramitacao: { unidadesPendentes: [] },
-    ...parcial,
-  };
-}
-
 function base(parcial: Partial<BaseInstitucional> = {}): BaseInstitucional {
-  return { campi: [CAMPUS], cursos: [curso()], movimentacoes: [], processos: [], editais: [], ofertas: [], ...parcial };
+  return { campi: [CAMPUS], cursos: [curso()], processos: [], editais: [], ofertas: [], ...parcial };
 }
 
 describe("auditarBase", () => {
@@ -161,48 +142,6 @@ describe("auditarBase", () => {
       `${nome}: turno "Integral" não aparece literalmente em trecho_fonte`,
     ]);
   });
-
-  test("exige curso em movimentação com processo SEI", () => {
-    const erros = auditarBase(base({ movimentacoes: [movimentacao({ numeroSei: "123" })] }));
-    expect(erros).toEqual(["Movimentação de curso 'Mov' (pg-mov): SEI Processo informado sem Curso ID"]);
-  });
-});
-
-describe("processos SEI dos cursos", () => {
-  test("a anotação publicada sai sem celular, link de planilha e sessão do SEI", () => {
-    const anotacoes =
-      "Origem: https://docs.google.com/spreadsheets/d/abc/edit?gid=1 aba X; contato (41) 99999-1234; " +
-      "https://sei.ifpr.edu.br/sei/controlador.php?acao=x&id_procedimento=1&infra_hash=0123abcd0123";
-    const [item] = processosSeiDasMovimentacoes([
-      movimentacao({ numeroSei: "23411.000001/2026-01", anotacoes, cursoIds: ["exemplo/a"] }),
-    ]);
-    expect(item!.trecho_fonte).toBe(
-      "Origem: planilha interna (link omitido) aba X; contato [telefone omitido]; " +
-        "https://sei.ifpr.edu.br/sei/controlador.php?acao=x&id_procedimento=1",
-    );
-  });
-
-  test("um item por curso, número e tipo, sem movimentação sem número", () => {
-    const movimentacoes = [
-      movimentacao({ id: "b", numeroSei: "23411.000001/2026-01", tipo: "Ajuste PPC", cursoIds: ["exemplo/b"] }),
-      movimentacao({
-        id: "a",
-        numeroSei: "23411.000001/2026-01",
-        tipo: "Ajuste PPC",
-        anotacoes: "nota",
-        cursoIds: ["exemplo/b", "exemplo/a"],
-      }),
-      movimentacao({ id: "c", numeroSei: "", cursoIds: ["exemplo/a"] }),
-      movimentacao({ id: "d", numeroSei: "23411.000002/2026-02", tipo: "", cursoIds: ["exemplo/a"] }),
-    ];
-    const arquivo = montarProcessosSei(processosSeiDasMovimentacoes(movimentacoes));
-    expect(arquivo.total_itens).toBe(3);
-    expect(arquivo.items).toEqual([
-      { curso_id: "exemplo/a", numero: "23411.000001/2026-01", tipo: "Ajuste PPC", trecho_fonte: "nota" },
-      { curso_id: "exemplo/a", numero: "23411.000002/2026-02", tipo: "outro" },
-      { curso_id: "exemplo/b", numero: "23411.000001/2026-01", tipo: "Ajuste PPC" },
-    ]);
-  });
 });
 
 describe("domínio de curso", () => {
@@ -210,12 +149,5 @@ describe("domínio de curso", () => {
     expect(interpretarVagasPpc("40")).toEqual({ quantidade: 40 });
     expect(interpretarVagasPpc("40 – 30")).toEqual({ quantidade: 40, minimo: 30, maximo: 40 });
     expect(interpretarVagasPpc("quarenta")).toBeNull();
-  });
-
-  test("aceita link do Markdown pela URL pública", () => {
-    expect(caminhoMarkdownPpc("https://simplifica-if.github.io/base-conhecimento/institucional/ifpr/ppcs/a/b.md")).toBe(
-      "institucional/ifpr/ppcs/a/b.md",
-    );
-    expect(caminhoMarkdownPpc("https://outro.site/a.md")).toBe("");
   });
 });

@@ -878,6 +878,12 @@ Em aberto:
 
 **Documentação realinhada ao app em 17/11/2026** (branch `t3/realinhar-documentacao-app`). O `AGENTS.md`, o `README.md` e os READMEs dos apps, dos pacotes e das skills passam a descrever o repositório como o do app Simplifica IF e da base que o alimenta, com um mapa de `apps/` e `packages/` e o que o app entrega hoje, conferido no código (rotas de `apps/web`, as 16 ferramentas de `packages/mcp`, o motor e as skills com bloco `simplifica:`). Entrou neste plano a visão geral do repositório e o item de roadmap [Ferramentas do repositório fora do app](#ferramentas-do-repositório-fora-do-app): `sei-cli`, `revisar-processo-ppc`, `suap-ifpr`, a sincronização SEI → Notion e a `revisar-ppc` por sub-agentes ainda não estão no app.
 
+**Gerador do `site/` removido em 18/11/2026** (branch `t3/remover-gerador-site-legado`). O `scripts/gerar_site.ts` (com `scripts/base/site.ts`), herdado do `gerar_site.py` da época em que a base era publicada como site estático, só copiava `base-conhecimento/` para `site/`, que nada consumia; o repositório público já publica `base-conhecimento/`. Saíram o gerador, o caso de teste, o `base:site` do `package.json`, o hash do `site/` no gabarito da base (`testes-gabarito/base.txt`; o `base.sh` confere só os geradores sem diferença no git e o `validar_base`) e as menções na documentação.
+
+**Fim do leitor do repositório público em 18/11/2026** (mesmo branch). A base passa a ser lida só pelo app, pelo `simplifica-mcp` e pela CLI `kb`. Saem os artefatos que nenhum deles, script ou skill lê: o `index.json` de cursos, processos seletivos, editais, ofertas e conselhos (fica o de campi, que a `revisar-ppc` lê), os JSON Schemas públicos de `schemas/registros/`, a tabela de normas do `base-conhecimento/README.md`, `llms.txt`, `.nojekyll`, `index.html` e `paineis/`. O `processos-sei/index.json` e o `exportar_base_publica.ts` ficam até se confirmar se algo os consome; no repositório, só o `validar_base` os lê.
+
+**Processos SEI fora da base em 18/11/2026** (mesmo branch). Saem o `institucional/ifpr/processos-sei/index.json`, que só o `validar_base` lia, e o `scripts/exportar_base_publica.ts`, que o gerava a partir de `Movimentações de Cursos` no Notion, com o código que só ele usava (`scripts/dados/processos-sei.ts`, `carregarMovimentacoes` e a auditoria das movimentações). As movimentações ficam só no Notion; o `sei:sync` (SEI → Notion) continua e não dependia do índice.
+
 ## Histórico de revisões
 
 **v2, 13/11/2026.** Incorpora duas revisões independentes.

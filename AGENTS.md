@@ -15,7 +15,7 @@ Este é o repositório do **Simplifica IF**, um app desktop para os servidores d
 - `packages/atualizacao`: manifesto do canal, assinatura minisign e pacotes da base e das skills.
 - `packages/effect-acp` e `packages/effect-codex-app-server`: copiados do T3 Code ([`docs/upstream-t3.md`](docs/upstream-t3.md)).
 - `packages/sei-cli` (`@simplifica-if/sei-cli`): CLI do SEI, usada só no repositório (abaixo); `scripts/` importa dele o contrato de saída (`@simplifica-if/sei-cli/esquemas`, `/tipos`, `/dominio/fluxo`).
-- `base-conhecimento/`: fonte publicada da base; `site/` é a saída gerada dela.
+- `base-conhecimento/`: fonte publicada da base.
 - `scripts/`: pipeline da base, integração com Notion, SEI e SUAP, fábrica da atualização, avaliação.
 - `.agents/skills/`: skills dos agentes (`.claude/skills` é symlink para cá).
 
@@ -35,15 +35,15 @@ Estas ferramentas rodam só no repositório, por agentes ou por quem cura a base
 
 - `packages/sei-cli` (SEI) e a skill `revisar-processo-ppc`, que depende dele;
 - a skill `suap-ifpr` (SUAP), com `scripts/suap_consultar.ts`, `scripts/suap_tutoriais.ts` e a coleta de matrizes `scripts/suap_coletar_matrizes.ts`;
-- a sincronização SEI → Notion (`pnpm sei:sync`, agendada por `scripts/agendar_sincronizacao_sei.ts`), `scripts/notion_atualizar_cursos_movimentacoes.ts` e `scripts/exportar_base_publica.ts`;
+- a sincronização SEI → Notion (`pnpm sei:sync`, agendada por `scripts/agendar_sincronizacao_sei.ts`), e `scripts/notion_atualizar_cursos_movimentacoes.ts`;
 - a skill `revisar-ppc` com sub-agentes e relatório HTML (no app, a revisão é a tarefa nativa acima);
 - a skill `ifpr-design`, usada para desenhar a interface e materiais, não como tarefa do app.
 
 ## Base de conhecimento
 
-A base reúne normas, catálogos, PPCs, metadados institucionais e painéis derivados. A fonte publicada fica em `base-conhecimento/`; `site/` é gerado dela, e o `kb.sqlite` que o app e o `simplifica-mcp` leem é compilado dos mesmos arquivos (`pnpm kb:compilar`).
+A base reúne normas, catálogos, PPCs, e metadados institucionais. A fonte publicada fica em `base-conhecimento/`, e o `kb.sqlite` que o app e o `simplifica-mcp` leem é compilado dos mesmos arquivos (`pnpm kb:compilar`).
 
-Os dados institucionais de gestão (Campi, Cursos com metadados de PPC e SUAP, Processos Seletivos, Editais e Ofertas) têm como fonte de verdade os registros de `base-conhecimento/institucional/ifpr/` (`campi/`, `cursos/`, `processos-seletivos/`, `editais/`, `ofertas/`), um JSON por registro, versionados no git e publicados como estão. Só o `index.json` de cada coleção (por `gerar_base.ts`) e `processos-sei/index.json` (exportado do Notion) são gerados; não os edite à mão. As reuniões do Consepe, com pareceres e itens de pauta e sem dados de pessoa, estão em `institucional/ifpr/conselhos/`. O Notion guarda só a base de fluxo `Movimentações de Cursos`, que também deve sair dele no futuro.
+Os dados institucionais de gestão (Campi, Cursos com metadados de PPC e SUAP, Processos Seletivos, Editais e Ofertas) têm como fonte de verdade os registros de `base-conhecimento/institucional/ifpr/` (`campi/`, `cursos/`, `processos-seletivos/`, `editais/`, `ofertas/`), um JSON por registro, versionados no git; o kb os lê direto. Só `campi/index.json` é gerado (por `gerar_base.ts`, lido pela `revisar-ppc`); não o edite à mão. As reuniões do Consepe, com pareceres e itens de pauta e sem dados de pessoa, estão em `institucional/ifpr/conselhos/`. O Notion guarda só a base de fluxo `Movimentações de Cursos`, que também deve sair dele no futuro.
 
 ## Skills
 
@@ -51,11 +51,9 @@ As skills ficam em `.agents/skills/`; `.claude/skills` é um symlink para esse d
 
 ## Consulta local da base
 
-Para consultas, respostas a perguntas ou uso desta base como fonte por LLM, use primeiro os arquivos locais deste checkout. Não substitua arquivos locais por URLs públicas quando o conteúdo estiver disponível no repositório.
+A base é consultada pela CLI `kb`, dentro do checkout, ou pelo MCP (o servidor `simplifica-mcp`, sem o checkout; veja [`packages/mcp/instrucoes.md`](packages/mcp/instrucoes.md)), e depois pelo Markdown da norma ou do PPC que a resposta aponta. Não navegue a base por manifestos e índices, e não troque os arquivos locais por URLs públicas.
 
-Para uso por MCP (o servidor `simplifica-mcp`, sem o checkout), veja [`packages/mcp/instrucoes.md`](packages/mcp/instrucoes.md).
-
-Comece pela CLI `kb` (requer `pnpm install` na raiz). Ela consulta `tmp/kb.sqlite`, um banco derivado dos arquivos do checkout (normas, PPCs com o texto integral das seções, registros institucionais, CNCT, fichas da `revisar-ppc`), e o recompila sozinha quando ele falta ou está mais velho que as fontes (cerca de 8 s; `pnpm kb:compilar` força). O banco nunca é fonte de verdade nem lugar de edição: toda resposta traz o texto literal e o arquivo e a linha de onde ele veio, e é esse arquivo que se cita.
+Use a CLI `kb` (requer `pnpm install` na raiz). Ela consulta `tmp/kb.sqlite`, um banco derivado dos arquivos do checkout (normas, PPCs com o texto integral das seções, registros institucionais, CNCT, fichas da `revisar-ppc`), e o recompila sozinha quando ele falta ou está mais velho que as fontes (cerca de 8 s; `pnpm kb:compilar` força). O banco nunca é fonte de verdade nem lugar de edição: toda resposta traz o texto literal e o arquivo e a linha de onde ele veio, e é esse arquivo que se cita.
 
 ```bash
 pnpm kb buscar-norma "Resolução CNE/CP nº 2/2026, art. 28" --json   # citação ou ID → o dispositivo (caput, texto, linhas); termos → busca nos metadados e nos dispositivos
@@ -66,26 +64,14 @@ pnpm kb ppc-fatos --divergencias --nivel médio                        # PPCs co
 pnpm kb pacote-contexto CT-CURR-12 curitiba/tecnico-em-enfermagem --json   # contexto de uma ficha da revisar-ppc: CNCT, dispositivos citados, marcos e regras de transição, seções
 ```
 
-Os fatos de PPC têm status `extraido` (regra sobre o texto convertido, sem revisão humana): confira o `trecho_fonte` antes de afirmar uma divergência. A busca de seções usa radicais e um léxico de sinônimos (`packages/kb/dados/sinonimos.yaml`); se ela não achar o que se espera, procure nos arquivos.
-
-Os arquivos continuam a alternativa quando a CLI não cobre a pergunta. Use os manifestos locais como ponto de entrada:
-
-- `base-conhecimento/manifest.json`: normas, legislação, resoluções, portarias, notas técnicas e referências gerais.
-- `base-conhecimento/institucional_manifest.json`: coleções institucionais do IFPR.
-- `base-conhecimento/catalogos_manifest.json`: catálogos publicados, incluindo o CNCT.
-- `base-conhecimento/institucional/ifpr/ppcs/index.json`: índice dos PPCs convertidos.
-
-Os campos `path` dos manifestos são relativos a `base-conhecimento/`. Ao abrir um arquivo indicado por manifesto, prefixe o caminho com `base-conhecimento/`.
+Os fatos de PPC têm status `extraido` (regra sobre o texto convertido, sem revisão humana): confira o `trecho_fonte` antes de afirmar uma divergência. A busca de seções usa radicais e um léxico de sinônimos (`packages/kb/dados/sinonimos.yaml`); se ela não achar o que se espera, procure com `rg` nos Markdown dos PPCs.
 
 Procedimento recomendado:
 
-1. Tente primeiro o comando `kb` correspondente (acima). Sem ele, consulte o manifesto local adequado e filtre por `title`, `aliases`, `keywords`, `ementa`, `orgao`, `ano`, `status_vigencia`, campus, curso, nível ou tipo de oferta.
-2. Abra os arquivos locais indicados no campo `path`, dentro de `base-conhecimento/`.
-3. Para normas, legislação e resoluções, use os Markdown em `base-conhecimento/normas/` como fonte principal e cite o título, a fonte oficial registrada no front matter e o artigo, seção ou item usado.
-4. Para metadados institucionais publicados, use os JSONs em `base-conhecimento/institucional/ifpr/`. Para estado operacional atual de bases geridas no Notion, consulte o Notion conforme a seção de curadoria e operação.
-5. Para CNCT, use `base-conhecimento/catalogos/cnct/manifest.json`, `base-conhecimento/catalogos/cnct/index.json` e, quando necessário, os arquivos em `base-conhecimento/catalogos/cnct/cursos/`.
-6. Para PPCs, use `pnpm kb buscar-secoes` (ou `base-conhecimento/institucional/ifpr/ppcs/index.json` e os índices de seções em `base-conhecimento/institucional/ifpr/ppcs/secoes/`) e depois abra o Markdown do PPC nas linhas indicadas antes de redigir resposta substantiva.
-7. Use busca online apenas quando o dado necessário não existir na base local, quando a pergunta exigir atualização externa ou quando for preciso confirmar informação em fonte oficial. Ao usar fonte externa, deixe isso explícito.
+1. Ache a fonte pelo comando `kb` correspondente (acima e abaixo).
+2. Abra o arquivo e as linhas que a resposta aponta (os `path` são relativos à raiz do repositório ou, quando a resposta diz, a `base-conhecimento/`) antes de redigir resposta substantiva.
+3. Para normas, cite o título, a fonte oficial registrada no front matter e o artigo, seção ou item usado. Para PPCs, cite o arquivo e as linhas. Para metadados institucionais, cite o registro JSON de `base-conhecimento/institucional/ifpr/`; para estado operacional de bases geridas no Notion, consulte o Notion conforme a seção de curadoria e operação.
+4. Use busca online apenas quando o dado necessário não existir na base local, quando a pergunta exigir atualização externa ou quando for preciso confirmar informação em fonte oficial. Ao usar fonte externa, deixe isso explícito.
 
 Cada norma tem um ID canônico derivado do ato (`id` no front matter e no `manifest.json`), como `br/cne-cp/res/2026/2`, `br/lei/1996/9394` ou `ifpr/consup/res/2024/190`. Normas citadas sem texto na base (stubs) e referências `externo:` ficam em `base-conhecimento/normas/stubs.yaml`. Para identificar uma citação ou achar quem cita uma norma, use a CLI `kb`:
 
@@ -125,16 +111,14 @@ Para perguntas, conferências ou curadoria que dependam de dados do Sistema Elet
 - [Uso do sei-cli por agentes](base-conhecimento/docs/sei-cli-operacao-agentes.md)
 - [Sincronização SEI → Notion](base-conhecimento/docs/sincronizacao-sei-notion.md)
 
-Para `Movimentações de Cursos` e para a exportação pública, use a API do Notion com `NOTION_TOKEN` do projeto. Não presuma que o Notion MCP local do usuário acessa esta base, pois ele pode estar conectado ao Notion pessoal do usuário. Se `NOTION_TOKEN` não estiver disponível, peça ao usuário o token da integração Notion organizacional e grave em `.env.local`.
+Para `Movimentações de Cursos`, use a API do Notion com `NOTION_TOKEN` do projeto. Não presuma que o Notion MCP local do usuário acessa esta base, pois ele pode estar conectado ao Notion pessoal do usuário. Se `NOTION_TOKEN` não estiver disponível, peça ao usuário o token da integração Notion organizacional e grave em `.env.local`.
 
-Depois de alterar os registros de `base-conhecimento/institucional/ifpr/` ou `Movimentações de Cursos`, rode:
+Depois de alterar os registros de `base-conhecimento/institucional/ifpr/`, rode (as movimentações do Notion não entram na base):
 
 ```bash
-node scripts/exportar_base_publica.ts   # só se Movimentações de Cursos mudou (Notion → processos-sei/index.json)
 node scripts/gerar_base.ts
 node scripts/gerar_indice_ppcs.ts
 node scripts/validar_base.ts
-node scripts/gerar_site.ts
 ```
 
 Para atualização rotineira de dados SEI em `Movimentações de Cursos`, use antes (requer `pnpm install` na raiz):
@@ -154,7 +138,7 @@ pnpm typecheck
 
 ### Dados pessoais e URLs internas na base
 
-A base é pública. A regra fica em `packages/kb/src/ppcs/dados-pessoais.ts`, com os casos de teste em `dados-pessoais.casos.json`; o `validar_base.ts` aplica a regra a todo arquivo de `base-conhecimento/` e recusa o que ela acharia, com só as contagens na mensagem. A exportação dos processos SEI aplica a mesma limpeza às anotações do Notion.
+A base é pública. A regra fica em `packages/kb/src/ppcs/dados-pessoais.ts`, com os casos de teste em `dados-pessoais.casos.json`; o `validar_base.ts` aplica a regra a todo arquivo de `base-conhecimento/` e recusa o que ela acharia, com só as contagens na mensagem. A importação de PPC (`importar_ppc_docx.ts`) aplica a mesma limpeza ao texto convertido.
 
 São omitidos, com o rótulo e o resto da frase mantidos:
 
@@ -175,15 +159,14 @@ Depois de alterar normas, `relacoes.yaml`, `transicoes.yaml`, `correspondencias/
 ```bash
 node scripts/gerar_base.ts      # campos gerados do front matter (relações, status de vigência) e manifest.json
 node scripts/validar_base.ts
-node scripts/gerar_site.ts
 node scripts/avaliacao/gabaritos/gerar.ts   # universos e conjuntos esperados da avaliação (avaliacao/gabaritos/)
 ```
 
-Depois, compile o banco (`pnpm kb:compilar`) e confira os gabaritos de `testes-gabarito/` (`sh testes-gabarito/kb.sh --comparar`, `banco.sh --comparar`, `base.sh --comparar` e `node packages/mcp/test/gabarito.ts --comparar --schemas-equivalentes`) e recalcule a contagem de casos de `testes.txt` pelo roteiro JUnit do [README do gabarito](testes-gabarito/README.md): uma norma nova muda escores de busca, contagens do banco, o hash do `site/` e o número de casos de `estrutura.test.ts`, que tem um caso por norma. Norma nova também entra em `INCLUIDAS_DEPOIS` (`packages/kb/src/normas/referencia-saneamento.ts`), porque os testes de saneamento e de status manual comparam as normas com o commit anterior ao saneamento, e na contagem de `estrutura.test.ts`.
+Depois, compile o banco (`pnpm kb:compilar`) e confira os gabaritos de `testes-gabarito/` (`sh testes-gabarito/kb.sh --comparar`, `banco.sh --comparar`, `base.sh --comparar` e `node packages/mcp/test/gabarito.ts --comparar --schemas-equivalentes`) e recalcule a contagem de casos de `testes.txt` pelo roteiro JUnit do [README do gabarito](testes-gabarito/README.md): uma norma nova muda escores de busca, contagens do banco e o número de casos de `estrutura.test.ts`, que tem um caso por norma. Norma nova também entra em `INCLUIDAS_DEPOIS` (`packages/kb/src/normas/referencia-saneamento.ts`), porque os testes de saneamento e de status manual comparam as normas com o commit anterior ao saneamento, e na contagem de `estrutura.test.ts`.
 
 Não edite à mão `status_vigencia`, `revoga`, `revogada_por`, `altera`, `alterada_por`, `regulamenta`, `regulamentada_por`, `fundamenta_se_em`, `fundamenta` nem `vigencia_*` no front matter das normas: eles são gerados. Relação nova entra em `relacoes.yaml`, com a evidência literal do texto; `pnpm kb relacoes --propor` lista o que o regex encontrou e ainda não foi confirmado. Ao mudar a marcação de uma norma, preserve as palavras (`pnpm --filter @simplifica-if/kb test src/normas` confere) e siga as convenções de corpo de `base-conhecimento/docs/padrao-front-matter-legislacao.md`.
 
-O código é TypeScript (salvo poucos `.js` e `.mjs` pontuais, como o script do relatório da `revisar-ppc` e os de build do desktop): o app (`apps/`), os pacotes (`packages/`), os scripts que falam com Notion, SEI e SUAP e o pipeline da base (`gerar_base.ts`, `gerar_indice_ppcs.ts`, `validar_base.ts`, `gerar_site.ts`, com lógica em `scripts/base/`). Os scripts rodam direto no Node, sem etapa de build: a versão fica em `.node-version` e `engines` (26.12.1), e o pnpm do `packageManager` (12.14.0, pelo corepack) instala as dependências com `pnpm install` na raiz. Regras compartilhadas entre `scripts/`, as skills e o app (texto, JSON, JSON Schema, referências normativas) ficam no workspace `packages/kb` (`@simplifica-if/kb`); `packages/kb` não importa de `scripts/`. Depois de alterar código TypeScript em qualquer parte, rode:
+O código é TypeScript (salvo poucos `.js` e `.mjs` pontuais, como o script do relatório da `revisar-ppc` e os de build do desktop): o app (`apps/`), os pacotes (`packages/`), os scripts que falam com Notion, SEI e SUAP e o pipeline da base (`gerar_base.ts`, `gerar_indice_ppcs.ts`, `validar_base.ts`, com lógica em `scripts/base/`). Os scripts rodam direto no Node, sem etapa de build: a versão fica em `.node-version` e `engines` (26.12.1), e o pnpm do `packageManager` (12.14.0, pelo corepack) instala as dependências com `pnpm install` na raiz. Regras compartilhadas entre `scripts/`, as skills e o app (texto, JSON, JSON Schema, referências normativas) ficam no workspace `packages/kb` (`@simplifica-if/kb`); `packages/kb` não importa de `scripts/`. Depois de alterar código TypeScript em qualquer parte, rode:
 
 ```bash
 pnpm fmt
@@ -192,7 +175,7 @@ pnpm typecheck
 pnpm test
 ```
 
-As ferramentas são as do T3 Code, configuradas em `vite.config.ts`: `pnpm fmt` aplica o `vp fmt` (oxfmt, largura 120), `pnpm lint` o `vp lint` (oxlint), `pnpm test` o `vp test` (vitest) na raiz e em cada pacote, e `pnpm typecheck` o `effect-tsgo`. A formatação deixa de fora Markdown, JSON e YAML, e as pastas de dados (`base-conhecimento/`, `avaliacao/`, `site/`, `tmp/`, `outputs/`, `.repos/` e as pastas de dados das skills): são textos normativos, saídas de geradores ou insumos, e não devem ser reformatados. Use sempre `pnpm fmt`, nunca o oxfmt ou o prettier direto sobre a raiz. O código de referência do Effect fica em `.repos/effect`, versionado e somente leitura: o repositório do Effect inteiro na tag do `effect` do catalog, sem o `.git` dele. Prefira os padrões dele aos inventados, mas nunca edite nem importe dessa pasta; ao subir o `effect` do catalog, rode `pnpm sync:repos`, que troca a pasta e faz o commit só dela. A CI não baixa `.repos/` (sparse checkout), e o fmt, o lint, o typecheck e os testes não a veem.
+As ferramentas são as do T3 Code, configuradas em `vite.config.ts`: `pnpm fmt` aplica o `vp fmt` (oxfmt, largura 120), `pnpm lint` o `vp lint` (oxlint), `pnpm test` o `vp test` (vitest) na raiz e em cada pacote, e `pnpm typecheck` o `effect-tsgo`. A formatação deixa de fora Markdown, JSON e YAML, e as pastas de dados (`base-conhecimento/`, `avaliacao/`, `tmp/`, `outputs/`, `.repos/` e as pastas de dados das skills): são textos normativos, saídas de geradores ou insumos, e não devem ser reformatados. Use sempre `pnpm fmt`, nunca o oxfmt ou o prettier direto sobre a raiz. O código de referência do Effect fica em `.repos/effect`, versionado e somente leitura: o repositório do Effect inteiro na tag do `effect` do catalog, sem o `.git` dele. Prefira os padrões dele aos inventados, mas nunca edite nem importe dessa pasta; ao subir o `effect` do catalog, rode `pnpm sync:repos`, que troca a pasta e faz o commit só dela. A CI não baixa `.repos/` (sparse checkout), e o fmt, o lint, o typecheck e os testes não a veem.
 
 As skills com bloco `simplifica:` no front matter do `SKILL.md` (hoje `verificar-fundamentacao-normativa`) também vão para o app desktop, que não tem o repositório: só as ferramentas MCP `ifpr` e os arquivos listados em `simplifica.arquivos`. Ao editá-las, mantenha as ferramentas `ifpr` como caminho principal e a CLI e os scripts como alternativa "dentro do repositório", e acrescente a `simplifica.arquivos` todo arquivo novo que o texto cite; `node scripts/validar_base.ts` confere o bloco (Effect Schema em `@simplifica-if/mcp/skills`) e os arquivos.
 

@@ -7,7 +7,6 @@
     "base:gerar": "node scripts/gerar_base.ts",
     "base:indice-ppcs": "node scripts/gerar_indice_ppcs.ts",
     "base:validar": "node scripts/validar_base.ts",
-    "base:site": "node scripts/gerar_site.ts",
     "base:tipos": "node scripts/gerar_tipos_schemas.ts",
     "kb": "node packages/kb/src/cli.ts",
     "kb:compilar": "node packages/kb/src/cli.ts compilar",

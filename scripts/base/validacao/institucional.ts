@@ -1,8 +1,9 @@
 /**
- * Validação do institucional_manifest.json e das coleções institucionais. Os registros de campi,
- * cursos, processos seletivos, editais e ofertas e os processos SEI são validados à parte
+ * Validação do institucional_manifest.json e das coleções com índice (campi, referências, PPCs e
+ * PPCPs). Os registros institucionais são validados à parte
  * (`scripts/dados/validacao.ts`); aqui se confere que o manifesto aponta para o índice de cada
- * coleção e que o total bate.
+ * coleção e que o total bate. Cursos, processos seletivos, editais, ofertas e conselhos não têm
+ * índice: o kb lê os registros direto.
  */
 import { ehObjeto, valoresIguais } from "@simplifica-if/kb/json";
 import type { ManifestInstitucionalJson } from "../tipos-schemas.ts";
@@ -13,12 +14,6 @@ import { validarPpcps, validarPpcs } from "./ppcs.ts";
 /** Coleções obrigatórias do manifesto e o índice de cada uma (relativo a `base-conhecimento/`). */
 export const COLECOES_INSTITUCIONAIS: ReadonlyArray<[id: string, path: string]> = [
   ["campi-ifpr", "institucional/ifpr/campi/index.json"],
-  ["cursos-ifpr", "institucional/ifpr/cursos/index.json"],
-  ["processos-seletivos-ifpr", "institucional/ifpr/processos-seletivos/index.json"],
-  ["editais-ingresso-ifpr", "institucional/ifpr/editais/index.json"],
-  ["ofertas-ingresso-ifpr", "institucional/ifpr/ofertas/index.json"],
-  ["processos-sei-cursos-ifpr", "institucional/ifpr/processos-sei/index.json"],
-  ["conselhos-ifpr", "institucional/ifpr/conselhos/index.json"],
   ["referencias-ifpr", "institucional/ifpr/referencias/index.json"],
   ["ppcs-ifpr", "institucional/ifpr/ppcs/index.json"],
   ["ppcps-rede-certifica-ifpr", "institucional/ifpr/ppcps/index.json"],

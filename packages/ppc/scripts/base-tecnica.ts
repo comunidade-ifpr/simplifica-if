@@ -46,7 +46,6 @@ export function ppcsTecnicos(raiz: string, cncts: readonly CursoCnct[]): PpcDaBa
   const dirCursos = NodePath.join(raiz, "base-conhecimento/institucional/ifpr/cursos");
   const porSlug = new Map(cncts.map((c) => [c.slug, c]));
   const saida: PpcDaBase[] = [];
-  // O index.json da coleção fica ao lado das pastas de campus.
   const campi = NodeFS.readdirSync(dirCursos).filter((nome) =>
     NodeFS.statSync(NodePath.join(dirCursos, nome)).isDirectory(),
   );
