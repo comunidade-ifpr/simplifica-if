@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// @effect-diagnostics nodeBuiltinImport:off globalConsole:off -- utilitário de execução única, com a casca de scripts/cli.ts: clona por node:child_process, troca a pasta com node:fs e imprime no console
 /**
  * Traz o código de referência do Effect para `.repos/effect`, na tag da versão de `effect` do catalog
  * (`pnpm-workspace.yaml`), como o `sync:repos` do T3 Code (`scripts/sync-reference-repos.ts`), só para o
@@ -13,86 +12,104 @@
  * Clona raso num diretório temporário ao lado do destino e depois troca a pasta inteira: nunca busca o
  * repositório do Effect para dentro deste (as tags e a fronteira rasa dele quebrariam o `git fetch`).
  */
-import * as NodeChildProcess from "node:child_process";
-import * as NodeFS from "node:fs";
-import * as NodePath from "node:path";
+import * as Console from "effect/Console";
+import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
+import * as Path from "effect/Path";
+import * as Schema from "effect/Schema";
+import * as Command from "effect/cli/Command";
+import * as Flag from "effect/cli/Flag";
 import { parse as interpretarYaml } from "yaml";
-import { lerArgumentos } from "./cli.ts";
 import { RAIZ_PROJETO } from "./config.ts";
-
-const USO = `uso: node scripts/sincronizar_repos.ts [--dry-run]
-
-Traz .repos/effect na tag effect@<versão do catalog de pnpm-workspace.yaml> e faz o commit da pasta.
-
-  --dry-run   mostra a tag e o comando, sem clonar nem fazer commit
-  -h, --help  mostra esta ajuda`;
+import * as Git from "./git.ts";
+import { executarPrincipal } from "./principal.ts";
 
 const REPOSITORIO = "https://github.com/Effect-TS/effect.git";
 const PREFIXO = ".repos/effect";
-const DESTINO = NodePath.join(RAIZ_PROJETO, PREFIXO);
+
+export class SincronizacaoFalhou extends Schema.TaggedError<SincronizacaoFalhou>()("SincronizacaoFalhou", {
+  motivo: Schema.Literals(["sem-catalog", "sem-licenca"]),
+  tag: Schema.optional(Schema.String),
+}) {
+  override get message(): string {
+    return this.motivo === "sem-catalog" ? "pnpm-workspace.yaml sem catalog.effect" : `${this.tag} sem LICENSE na raiz`;
+  }
+}
 
 /** Tag do Effect correspondente ao catalog do `pnpm-workspace.yaml`. */
-export function tagDoCatalog(textoWorkspace: string): string {
+export const tagDoCatalog = Effect.fn("sincronizar_repos.tagDoCatalog")(function* (textoWorkspace: string) {
   const workspace = interpretarYaml(textoWorkspace) as { catalog?: Record<string, unknown> } | null;
   const versao = workspace?.catalog?.effect;
-  if (typeof versao !== "string" || !versao) throw new Error("pnpm-workspace.yaml sem catalog.effect");
+  if (typeof versao !== "string" || !versao) return yield* new SincronizacaoFalhou({ motivo: "sem-catalog" });
   return `effect@${versao}`;
-}
+});
 
-function git(args: string[], cwd: string): string {
-  const resultado = NodeChildProcess.spawnSync("git", args, { cwd, encoding: "utf-8", maxBuffer: 64 * 1024 * 1024 });
-  if (resultado.status !== 0) {
-    throw new Error(`git ${args[0]} falhou (código ${resultado.status}): ${resultado.stderr.trim()}`);
-  }
-  return resultado.stdout;
-}
+export const comando = Command.make(
+  "sincronizar_repos",
+  {
+    dryRun: Flag.Boolean("dry-run").pipe(
+      Flag.withDescription("mostra a tag e o comando, sem clonar nem fazer commit"),
+      Flag.withDefault(false),
+    ),
+  },
+  Effect.fn("sincronizar_repos")(function* ({ dryRun }) {
+    const fs = yield* FileSystem.FileSystem;
+    const path = yield* Path.Path;
+    const git = (args: ReadonlyArray<string>, cwd = RAIZ_PROJETO) => Git.executar(args, { cwd });
+    const destino = path.join(RAIZ_PROJETO, PREFIXO);
+    const tag = yield* tagDoCatalog(yield* fs.readFileString(path.join(RAIZ_PROJETO, "pnpm-workspace.yaml")));
+    const clonar = ["clone", "--quiet", "--depth=1", "--no-tags", "--single-branch", `--branch=${tag}`, REPOSITORIO];
+    if (dryRun) {
+      yield* Console.log(
+        `tag: ${tag}\ngit ${clonar.join(" ")} <temporário>\ndestino: ${PREFIXO} (commit só dessa pasta)`,
+      );
+      return;
+    }
 
-function main(): number {
-  const lido = lerArgumentos(process.argv.slice(2), { "dry-run": { type: "boolean" } }, { uso: USO });
-  if ("codigo" in lido) return lido.codigo;
-  const tag = tagDoCatalog(NodeFS.readFileSync(NodePath.join(RAIZ_PROJETO, "pnpm-workspace.yaml"), "utf-8"));
-  const clonar = ["clone", "--quiet", "--depth=1", "--no-tags", "--single-branch", `--branch=${tag}`, REPOSITORIO];
-  if (lido.values["dry-run"]) {
-    console.log(`tag: ${tag}\ngit ${clonar.join(" ")} <temporário>\ndestino: ${PREFIXO} (commit só dessa pasta)`);
-    return 0;
-  }
+    // Clona ao lado do destino para a troca ser um rename: mesmo sistema de arquivos, e os symlinks
+    // relativos do Effect continuam relativos.
+    yield* fs.makeDirectory(path.dirname(destino), { recursive: true });
+    const commit = yield* Effect.scoped(
+      Effect.gen(function* () {
+        const temporario = yield* fs.makeTempDirectoryScoped({
+          directory: path.dirname(destino),
+          prefix: ".sync-effect-",
+        });
+        const checkout = path.join(temporario, "checkout");
+        yield* git([...clonar, checkout]);
+        const commit = (yield* git(["rev-parse", "HEAD"], checkout)).trim();
+        yield* fs.remove(path.join(checkout, ".git"), { recursive: true, force: true });
+        if (!(yield* fs.exists(path.join(checkout, "LICENSE")))) {
+          return yield* new SincronizacaoFalhou({ motivo: "sem-licenca", tag });
+        }
+        yield* fs.remove(destino, { recursive: true, force: true });
+        yield* fs.rename(checkout, destino);
+        return commit;
+      }),
+    );
 
-  // Clona ao lado do destino para a troca ser um rename: mesmo sistema de arquivos, e os symlinks
-  // relativos do Effect continuam relativos.
-  NodeFS.mkdirSync(NodePath.dirname(DESTINO), { recursive: true });
-  const temporario = NodeFS.mkdtempSync(NodePath.join(NodePath.dirname(DESTINO), ".sync-effect-"));
-  let commit: string;
-  try {
-    const checkout = NodePath.join(temporario, "checkout");
-    git([...clonar, checkout], RAIZ_PROJETO);
-    commit = git(["rev-parse", "HEAD"], checkout).trim();
-    NodeFS.rmSync(NodePath.join(checkout, ".git"), { recursive: true, force: true });
-    if (!NodeFS.existsSync(NodePath.join(checkout, "LICENSE"))) throw new Error(`${tag} sem LICENSE na raiz`);
-    NodeFS.rmSync(DESTINO, { recursive: true, force: true });
-    NodeFS.renameSync(checkout, DESTINO);
-  } finally {
-    NodeFS.rmSync(temporario, { recursive: true, force: true });
-  }
-
-  // --force: o clone só tem arquivos rastreados na tag, e alguns (o `scratchpad/` do Effect) caem no `.gitignore` dele.
-  git(["add", "--all", "--force", "--", PREFIXO], RAIZ_PROJETO);
-  if (git(["status", "--porcelain", "--", PREFIXO], RAIZ_PROJETO).trim() === "") {
-    console.log(`${PREFIXO} já está em ${tag}.`);
-    return 0;
-  }
-  git(
-    [
+    // --force: o clone só tem arquivos rastreados na tag, e alguns (o `scratchpad/` do Effect) caem no `.gitignore` dele.
+    yield* git(["add", "--all", "--force", "--", PREFIXO]);
+    if ((yield* git(["status", "--porcelain", "--", PREFIXO])).trim() === "") {
+      yield* Console.log(`${PREFIXO} já está em ${tag}.`);
+      return;
+    }
+    yield* git([
       "commit",
       "--quiet",
       "--message",
       `repos: ${PREFIXO} em ${tag}\n\nOrigem: ${REPOSITORIO} ${commit}`,
       "--",
       PREFIXO,
-    ],
-    RAIZ_PROJETO,
-  );
-  console.log(`commit de ${PREFIXO} em ${tag} (${commit.slice(0, 12)})`);
-  return 0;
-}
+    ]);
+    yield* Console.log(`commit de ${PREFIXO} em ${tag} (${commit.slice(0, 12)})`);
+  }),
+).pipe(
+  Command.withDescription(
+    "Traz .repos/effect na tag effect@<versão do catalog de pnpm-workspace.yaml> e faz o commit da pasta.",
+  ),
+);
 
-if (import.meta.main) process.exitCode = main();
+if (import.meta.main) {
+  executarPrincipal("sincronizar_repos", Command.run(comando, { version: "1.0.0" }));
+}

@@ -1,22 +1,17 @@
 #!/usr/bin/env node
-// @effect-diagnostics globalConsole:off nodeBuiltinImport:off globalDate:off -- script de execução única da curadoria, síncrono, com a casca de scripts/cli.ts: imprime no console, consulta o git e usa o relógio da importação
 /** Leva um PPC novo (ou a versão nova do PPC de um curso) do DOCX da coordenação para a base. */
-import * as NodeChildProcess from "node:child_process";
+import * as Console from "effect/Console";
+import * as DateTime from "effect/DateTime";
+import * as Effect from "effect/Effect";
+import * as Argument from "effect/cli/Argument";
+import * as Command from "effect/cli/Command";
+import * as Flag from "effect/cli/Flag";
 import { ROTULOS_PESSOAIS } from "@simplifica-if/kb/ppcs/dados-pessoais";
 import { criarCaminhos } from "./base/caminhos.ts";
-import { ErroImportacao, importarPpcDocx, type ResultadoImportacao } from "./base/importar-ppc.ts";
-import { lerArgumentos } from "./cli.ts";
+import { importarPpcDocx, type ResultadoImportacao } from "./base/importar-ppc.ts";
 import { RAIZ_PROJETO } from "./config.ts";
-
-const USO = `uso: node scripts/importar_ppc_docx.ts <campus_id>/<curso_slug> <arquivo.docx> --fonte-url <url> [--substituir]
-
-Converte o DOCX do PPC e o grava em institucional/ifpr/ppcs/<campus_id>/<curso_slug>.md, com
-front matter de proveniência registrada, sem dados pessoais. Atualiza ppc.url e ppc.markdown_path
-do registro do curso. Não regenera índices nem o site.
-
-  --fonte-url <url>  endereço público do PPC (https), gravado em fonte_url e em ppc.url
-  --substituir       troca o PPC já gravado do curso (a versão anterior fica no git)
-  -h, --help         mostra esta ajuda`;
+import * as Git from "./git.ts";
+import { executarPrincipal } from "./principal.ts";
 
 const PASSOS_SEGUINTES = [
   "node scripts/gerar_base.ts",
@@ -24,10 +19,6 @@ const PASSOS_SEGUINTES = [
   "node scripts/validar_base.ts",
   "node scripts/gerar_site.ts",
 ];
-
-function git(...args: string[]): string {
-  return NodeChildProcess.execFileSync("git", args, { cwd: RAIZ_PROJETO, encoding: "utf-8" }).trim();
-}
 
 /**
  * Pastas de dados e de saída, que não mudam o texto convertido: alteração nelas não marca o conversor.
@@ -41,76 +32,82 @@ const FORA_DO_CONVERSOR = ["base-conhecimento", "site", "tmp", "outputs"];
  * `packages/docx` e `packages/kb` (front matter, dados pessoais), de `scripts/base/importar-ppc.ts`,
  * `scripts/dados/urls.ts` e deste script; olhar o checkout inteiro não deixa nenhum de fora.
  */
-function conversorAtual(): string {
-  const commit = git("rev-parse", "HEAD");
+const conversorAtual = Effect.fn("importar_ppc_docx.conversorAtual")(function* () {
+  const git = (...args: string[]) => Effect.map(Git.executar(args, { cwd: RAIZ_PROJETO }), (saida) => saida.trim());
+  const commit = yield* git("rev-parse", "HEAD");
   const fora = FORA_DO_CONVERSOR.map((pasta) => `:(exclude)${pasta}`);
-  const sujo = git("status", "--porcelain", "--untracked-files=no", "--", ".", ...fora) !== "";
+  const sujo = (yield* git("status", "--porcelain", "--untracked-files=no", "--", ".", ...fora)) !== "";
   return `simplifica-if/packages/ppc@${commit}${sujo ? "-modificado" : ""}`;
-}
+});
 
-function relatar(resultado: ResultadoImportacao): void {
-  console.log(
+function relatorio(resultado: ResultadoImportacao): string[] {
+  const linhas = [
     `${resultado.substituiu ? "PPC substituído" : "PPC gravado"}: base-conhecimento/${resultado.markdownPath}`,
-  );
-  console.log(`Registro atualizado: base-conhecimento/${resultado.registroPath}`);
-  if (resultado.ppcUrlAnterior) console.log(`ppc.url trocado (antes: ${resultado.ppcUrlAnterior})`);
+    `Registro atualizado: base-conhecimento/${resultado.registroPath}`,
+  ];
+  if (resultado.ppcUrlAnterior) linhas.push(`ppc.url trocado (antes: ${resultado.ppcUrlAnterior})`);
   const omitidos = Object.entries(resultado.omitidos)
     .filter(([, n]) => n)
     .map(([categoria, n]) => `${n} ${ROTULOS_PESSOAIS[categoria as keyof typeof resultado.omitidos]}`);
-  console.log(`Dados pessoais omitidos: ${omitidos.length ? omitidos.join(", ") : "nenhum"}`);
+  linhas.push(`Dados pessoais omitidos: ${omitidos.length ? omitidos.join(", ") : "nenhum"}`);
   const { planilhas, sessoesSei, assinadas } = resultado.urlsLimpas;
   if (planilhas + sessoesSei + assinadas) {
-    console.log(
+    linhas.push(
       `URLs internas limpas: ${planilhas} planilha(s) do Google, ${sessoesSei} sessão(ões) do SEI, ${assinadas} URL(s) pré-assinada(s)`,
     );
   }
   if (resultado.representacaoGrafica) {
-    console.log(`Representação gráfica: ${resultado.representacaoGrafica} (o Markdown traz um aviso no lugar)`);
+    linhas.push(`Representação gráfica: ${resultado.representacaoGrafica} (o Markdown traz um aviso no lugar)`);
   }
   if (resultado.curadoriaReaberta.length) {
-    console.log(
+    linhas.push(
       `Curadoria reaberta ("Precisa de revisão"): ${resultado.curadoriaReaberta.map((c) => `ppc.${c}`).join(", ")}; confira contra o texto novo`,
     );
   }
   if (resultado.observacoesAReconferir) {
-    console.log("ppc.observacoes mantido, mas escrito sobre o texto anterior: a reconferir contra o texto novo");
+    linhas.push("ppc.observacoes mantido, mas escrito sobre o texto anterior: a reconferir contra o texto novo");
   }
-  console.log("\nAntes de comitar, confira o Markdown (e-mail particular sai à mão) e rode:");
-  for (const comando of PASSOS_SEGUINTES) console.log(`  ${comando}`);
+  linhas.push("\nAntes de comitar, confira o Markdown (e-mail particular sai à mão) e rode:");
+  for (const comando of PASSOS_SEGUINTES) linhas.push(`  ${comando}`);
+  return linhas;
 }
 
-function main(): number {
-  const args = lerArgumentos(
-    process.argv.slice(2),
-    { "fonte-url": { type: "string" }, substituir: { type: "boolean" } },
-    { uso: USO, posicionais: true },
-  );
-  if ("codigo" in args) return args.codigo;
-  const [curso, arquivoDocx, ...sobra] = args.positionals;
-  const fonteUrl = args.values["fonte-url"];
-  if (!curso || !arquivoDocx || sobra.length || !fonteUrl) {
-    console.error(`${USO}\nerro: informe o curso, o arquivo .docx e --fonte-url`);
-    return 2;
-  }
-  try {
-    const resultado = importarPpcDocx({
+export const comando = Command.make(
+  "importar_ppc_docx",
+  {
+    curso: Argument.String("curso").pipe(Argument.withDescription("chave do curso, <campus_id>/<curso_slug>")),
+    arquivoDocx: Argument.String("arquivo.docx").pipe(
+      Argument.withDescription("o DOCX do PPC enviado pela coordenação"),
+    ),
+    fonteUrl: Flag.String("fonte-url").pipe(
+      Flag.withMetavar("url"),
+      Flag.withDescription("endereço público do PPC (https), gravado em fonte_url e em ppc.url"),
+    ),
+    substituir: Flag.Boolean("substituir").pipe(
+      Flag.withDescription("troca o PPC já gravado do curso (a versão anterior fica no git)"),
+      Flag.withDefault(false),
+    ),
+  },
+  Effect.fn("importar_ppc_docx")(function* ({ curso, arquivoDocx, fonteUrl, substituir }) {
+    const resultado = yield* importarPpcDocx({
       caminhos: criarCaminhos(),
       curso,
       arquivoDocx,
       fonteUrl,
-      substituir: args.values.substituir ?? false,
-      agora: new Date(),
-      conversor: conversorAtual(),
+      substituir,
+      agora: DateTime.toDateUtc(yield* DateTime.now),
+      conversor: yield* conversorAtual(),
     });
-    relatar(resultado);
-    return 0;
-  } catch (erro) {
-    if (erro instanceof ErroImportacao) {
-      console.error(`erro: ${erro.message}`);
-      return 1;
-    }
-    throw erro;
-  }
-}
+    for (const linha of relatorio(resultado)) yield* Console.log(linha);
+  }),
+).pipe(
+  Command.withDescription(
+    "Converte o DOCX do PPC e o grava em institucional/ifpr/ppcs/<campus_id>/<curso_slug>.md, com front matter " +
+      "de proveniência registrada, sem dados pessoais. Atualiza ppc.url e ppc.markdown_path do registro do curso. " +
+      "Não regenera índices nem o site.",
+  ),
+);
 
-process.exitCode = main();
+if (import.meta.main) {
+  executarPrincipal("importar_ppc_docx", Command.run(comando, { version: "1.0.0" }));
+}

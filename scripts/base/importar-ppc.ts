@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off extendsNativeError:off -- importação síncrona de um DOCX local para a base, com node:fs e node:crypto, como o resto do pipeline da base; a recusa é erro síncrono que a casca do script imprime
+// @effect-diagnostics nodeBuiltinImport:off -- a conversão e a gravação atômica do DOCX local seguem síncronas, com node:fs e node:crypto, como o resto do pipeline da base; `importarPpcDocx` as leva para o canal de erro numa só fronteira
 /**
  * Entrada de um PPC na base a partir do DOCX que a coordenação do curso envia: converte com
  * `converterPpc` (`packages/ppc`), tira dados pessoais e URLs internas, grava o Markdown com o front
@@ -13,6 +13,7 @@
 import * as NodeCrypto from "node:crypto";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
+import * as Effect from "effect/Effect";
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
 import { ErroDocx } from "@simplifica-if/docx/erro";
@@ -34,10 +35,41 @@ import { dataLocalIso } from "../datas.ts";
 import { ESTRITO } from "../esquema.ts";
 import type { CaminhosBase } from "./caminhos.ts";
 
-/** Recusa da importação: a mensagem vai para o usuário como está, sem dado do documento. */
-export class ErroImportacao extends Error {
-  override readonly name = "ErroImportacao";
+export const MotivoImportacao = Schema.Literals([
+  "curso-malformado",
+  "curso-inexistente",
+  "registro-invalido",
+  "fonte-url-assinada",
+  "fonte-url-interna",
+  "fonte-url-nao-https",
+  "markdown-path-fora",
+  "ppc-existente",
+  "arquivo-inexistente",
+  "arquivo-recusado",
+  "conversao-recusada",
+  "conversao-vazia",
+  "figura-local",
+  "gravacao",
+]);
+
+/**
+ * Recusa da importação. `detalhe` vai para o usuário como está e não traz dado do documento nem a
+ * query de URL; a falha de baixo nível (JSON, disco), quando há, fica só em `cause`.
+ */
+export class ErroImportacao extends Schema.TaggedError<ErroImportacao>()("ErroImportacao", {
+  motivo: MotivoImportacao,
+  detalhe: Schema.String,
+  cause: Schema.optional(Schema.Defect()),
+}) {
+  override get message(): string {
+    return this.detalhe;
+  }
 }
+
+export const ehErroImportacao = Schema.is(ErroImportacao);
+
+const recusa = (motivo: typeof MotivoImportacao.Type, detalhe: string, cause?: unknown) =>
+  new ErroImportacao({ motivo, detalhe, ...(cause === undefined ? {} : { cause }) });
 
 export type OpcoesImportacao = {
   caminhos: CaminhosBase;
@@ -98,7 +130,8 @@ function lerCurso(
   const relativo = NodePath.join("cursos", campusId, `${cursoSlug}.json`);
   const arquivo = NodePath.join(caminhos.institucional, "ifpr", relativo);
   if (!NodeFS.existsSync(arquivo)) {
-    throw new ErroImportacao(
+    throw recusa(
+      "curso-inexistente",
       `Curso inexistente: ${campusId}/${cursoSlug} (institucional/ifpr/${relativo} não existe). ` +
         "Crie antes o registro do curso, conforme base-conhecimento/docs/curadoria-metadados-institucionais.md.",
     );
@@ -107,14 +140,14 @@ function lerCurso(
   try {
     bruto = JSON.parse(NodeFS.readFileSync(arquivo, "utf-8"));
   } catch (erro) {
-    throw new ErroImportacao(`institucional/ifpr/${relativo}: JSON inválido: ${(erro as Error).message}`);
+    throw recusa("registro-invalido", `institucional/ifpr/${relativo}: JSON inválido`, erro);
   }
   const resultado = decodificarCurso(bruto);
   if (Result.isFailure(resultado)) {
     const linhas = problemas(resultado.failure.issue).map(
       (p) => `${caminhoTexto(p.caminho) || "(raiz)"}: ${p.mensagem}`,
     );
-    throw new ErroImportacao(`institucional/ifpr/${relativo} fora do schema: ${linhas.join("; ")}`);
+    throw recusa("registro-invalido", `institucional/ifpr/${relativo} fora do schema: ${linhas.join("; ")}`);
   }
   return { registro: resultado.success, relativo, arquivo };
 }
@@ -122,14 +155,16 @@ function lerCurso(
 function conferirFonteUrl(url: string): void {
   // A assinatura vem antes do esquema: uma URL assinada em `http` também não aparece na mensagem.
   if (ehUrlAssinada(url) || RE_URL_ASSINADA.test(url)) {
-    throw new ErroImportacao(`--fonte-url é URL pré-assinada; use o endereço público: ${semQuery(url)}`);
+    throw recusa("fonte-url-assinada", `--fonte-url é URL pré-assinada; use o endereço público: ${semQuery(url)}`);
   }
   if (url.match(RE_PLANILHA_GOOGLE) || RE_URL_SESSAO_SEI.test(url)) {
-    throw new ErroImportacao(
+    throw recusa(
+      "fonte-url-interna",
       "--fonte-url é planilha do Google ou link de sessão do SEI; use o endereço público do PPC",
     );
   }
-  if (!/^https:\/\/\S+$/.test(url)) throw new ErroImportacao(`--fonte-url deve ser URL https: ${semQuery(url)}`);
+  if (!/^https:\/\/\S+$/.test(url))
+    throw recusa("fonte-url-nao-https", `--fonte-url deve ser URL https: ${semQuery(url)}`);
 }
 
 /**
@@ -140,14 +175,16 @@ function conferirFonteUrl(url: string): void {
 export function semFiguraLocal(texto: string, grafica: RepresentacaoGrafica | null): string {
   if (!grafica?.arquivo) return texto;
   if (!texto.includes(grafica.bloco)) {
-    throw new ErroImportacao(
+    throw recusa(
+      "figura-local",
       "A conversão não trouxe o bloco da representação gráfica onde o importador o procura; " +
         "nada foi gravado (corrija scripts/base/importar-ppc.ts)",
     );
   }
   const trocado = texto.replace(grafica.bloco, () => AVISO_FIGURA);
   if (trocado.includes(grafica.arquivo.caminho)) {
-    throw new ErroImportacao(
+    throw recusa(
+      "figura-local",
       `O Markdown ainda cita ${grafica.arquivo.caminho} depois do aviso; nada foi gravado (corrija scripts/base/importar-ppc.ts)`,
     );
   }
@@ -164,13 +201,14 @@ function markdownDaBase(
   try {
     conversao = converterPpc(bytes, nomeDoArquivo, { agora });
   } catch (erro) {
-    if (erro instanceof ErroDocx) throw new ErroImportacao(`Conversão recusada: ${erro.message}`);
+    // A mensagem do ErroDocx é a recusa do documento (não é ZIP, está protegido, passa dos limites).
+    if (erro instanceof ErroDocx) throw recusa("conversao-recusada", `Conversão recusada: ${erro.message}`, erro);
     throw erro;
   }
   const grafica = conversao.representacaoGrafica;
   const urls = limparUrlsInternas(semFiguraLocal(conversao.markdown, grafica));
   const { texto: corpo, contagem } = aplicarOmissao(urls.texto);
-  if (!corpo.trim()) throw new ErroImportacao("Conversão vazia: o DOCX não produziu texto para a base.");
+  if (!corpo.trim()) throw recusa("conversao-vazia", "Conversão vazia: o DOCX não produziu texto para a base.");
   return {
     corpo: corpo.endsWith("\n") ? corpo : `${corpo}\n`,
     omitidos: contagem,
@@ -236,36 +274,49 @@ export function gravarJuntos(
 }
 
 /** Converte o DOCX e grava o PPC e o registro do curso. Nada é gravado se alguma conferência falha. */
-export function importarPpcDocx(opcoes: OpcoesImportacao): ResultadoImportacao {
+export const importarPpcDocx = Effect.fn("importarPpc.importar")(function* (opcoes: OpcoesImportacao) {
+  return yield* Effect.suspend(() => {
+    try {
+      return Effect.succeed(importar(opcoes));
+    } catch (erro) {
+      return ehErroImportacao(erro) ? Effect.fail(erro) : Effect.die(erro);
+    }
+  });
+});
+
+function importar(opcoes: OpcoesImportacao): ResultadoImportacao {
   const [campusId, cursoSlug, ...resto] = opcoes.curso.split("/");
   if (!campusId || !cursoSlug || resto.length || !RE_SLUG.test(campusId) || !RE_SLUG.test(cursoSlug)) {
-    throw new ErroImportacao(`Curso deve ser <campus_id>/<curso_slug>: ${opcoes.curso}`);
+    throw recusa("curso-malformado", `Curso deve ser <campus_id>/<curso_slug>: ${opcoes.curso}`);
   }
   conferirFonteUrl(opcoes.fonteUrl);
   const { registro, relativo, arquivo: arquivoRegistro } = lerCurso(opcoes.caminhos, campusId, cursoSlug);
 
   const markdownPath = `institucional/ifpr/ppcs/${campusId}/${cursoSlug}.md`;
   if (registro.ppc?.markdown_path && registro.ppc.markdown_path !== markdownPath) {
-    throw new ErroImportacao(
+    throw recusa(
+      "markdown-path-fora",
       `ppc.markdown_path do curso é ${registro.ppc.markdown_path}, fora do caminho esperado ${markdownPath}; corrija o registro antes`,
     );
   }
   const destino = NodePath.join(opcoes.caminhos.raiz, markdownPath);
   const existe = NodeFS.existsSync(destino);
   if (existe && !opcoes.substituir) {
-    throw new ErroImportacao(
+    throw recusa(
+      "ppc-existente",
       `Já há PPC em ${markdownPath}. Para trocá-lo pela versão nova (a anterior fica no histórico do git), repita com --substituir.`,
     );
   }
 
   const arquivoDocx = NodePath.resolve(opcoes.arquivoDocx);
-  if (!NodeFS.existsSync(arquivoDocx)) throw new ErroImportacao(`Arquivo não encontrado: ${arquivoDocx}`);
+  if (!NodeFS.existsSync(arquivoDocx)) throw recusa("arquivo-inexistente", `Arquivo não encontrado: ${arquivoDocx}`);
   let bytes: Uint8Array;
   try {
     conferirArquivoDocx(arquivoDocx, NodeFS.statSync(arquivoDocx).size);
     bytes = NodeFS.readFileSync(arquivoDocx);
   } catch (erro) {
-    throw new ErroImportacao((erro as Error).message);
+    // A conferência recusa extensão e tamanho com mensagem própria, feita para quem importa.
+    throw recusa("arquivo-recusado", (erro as Error).message, erro);
   }
   const convertido = markdownDaBase(bytes, NodePath.basename(opcoes.arquivoDocx), opcoes.agora);
   const hoje = dataLocalIso(opcoes.agora);
@@ -306,9 +357,7 @@ export function importarPpcDocx(opcoes: OpcoesImportacao): ResultadoImportacao {
       { destino: arquivoRegistro, texto: textoCurso },
     ]);
   } catch (erro) {
-    throw new ErroImportacao(`Falha ao gravar o PPC e o registro; nada foi alterado: ${(erro as Error).message}`, {
-      cause: erro,
-    });
+    throw recusa("gravacao", "Falha ao gravar o PPC e o registro; nada foi alterado", erro);
   }
 
   return {

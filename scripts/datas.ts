@@ -1,12 +1,12 @@
-// @effect-diagnostics globalDate:off -- formatação de datas dadas; o relógio padrão (`new Date()`) só entra quando quem chama não passa a data
-export function dataLocalIso(data = new Date()): string {
+/** Data local `AAAA-MM-DD` de um instante; quem chama tira o instante de `DateTime.now`. */
+export function dataLocalIso(data: Date): string {
   const mes = String(data.getMonth() + 1).padStart(2, "0");
   const dia = String(data.getDate()).padStart(2, "0");
   return `${data.getFullYear()}-${mes}-${dia}`;
 }
 
 /** Instante em São Paulo, com precisão de segundos e fuso explícito. */
-export function agoraEmSaoPaulo(data = new Date()): string {
+export function agoraEmSaoPaulo(data: Date): string {
   const partes = Object.fromEntries(
     new Intl.DateTimeFormat("en-CA", {
       timeZone: "America/Sao_Paulo",

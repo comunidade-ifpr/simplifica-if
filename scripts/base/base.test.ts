@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off -- monta raízes temporárias com node:fs síncrono para o pipeline síncrono sob teste
+// @effect-diagnostics nodeBuiltinImport:off -- monta raízes temporárias com node:fs síncrono para os carregadores e montadores síncronos sob teste
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
