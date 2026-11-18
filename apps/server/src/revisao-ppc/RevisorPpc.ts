@@ -35,6 +35,7 @@ import * as Sql from "@simplifica-if/kb/db/sql";
 import * as NodeCrypto from "node:crypto";
 import type { BaseRevisaoPrevia, EntradaIa, MarcaPendencia, RevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
 import type { CursoCnct } from "@simplifica-if/ppc/verificadores/comum";
+import * as ArquivosLiberados from "../ArquivosLiberados.ts";
 import type { PedidoTrabalhador, RespostaTrabalhador } from "./trabalhador.ts";
 
 /** Os limites da revisão; os testes os apertam para provocar o estouro. */
@@ -90,13 +91,6 @@ export class RevisorPpc extends Context.Service<
      * As mesmas conferências do `revisar` (arquivo liberado, tamanho, Worker com limites).
      */
     readonly revisarArquivo: (entrada: EntradaRevisarArquivo) => Effect.Effect<RevisaoDoArquivo, FalhaRevisaoPpc>;
-    /** Libera um arquivo escolhido no diálogo do desktop (`CAMINHO_LIBERAR_ARQUIVO`). */
-    readonly liberar: (arquivo: string) => Effect.Effect<void>;
-    /**
-     * O arquivo foi liberado pelo desktop, ou o servidor não exige liberação (sem `tokenDesktop`). O
-     * "Anexar" da pasta de trabalho usa a mesma regra.
-     */
-    readonly liberado: (arquivo: string) => Effect.Effect<boolean>;
     /** Uma revisão está rodando agora? (a troca da base espera, M1.10) */
     readonly ocupada: Effect.Effect<boolean>;
   }
@@ -247,11 +241,6 @@ export const resultadoParaInterface = (arquivo: string, r: RevisaoDoArquivo): Re
 export interface OpcoesRevisao {
   readonly limites?: Partial<Limites>;
   readonly trabalhador?: URL;
-  /**
-   * Só revisa arquivos liberados por `liberar` (o desktop, com o `tokenDesktop`, os escolhidos no
-   * diálogo): um cliente do RPC não manda o servidor ler um `.docx` qualquer nem gravar ao lado dele.
-   */
-  readonly exigirLiberacao?: boolean;
 }
 
 export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisao = {}) {
@@ -266,7 +255,9 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
     ),
   );
 
-  const liberados = new Set<string>();
+  // Só revisa arquivos liberados pelo desktop: um cliente do RPC não manda o servidor ler um `.docx`
+  // qualquer nem gravar ao lado dele.
+  const liberacao = yield* ArquivosLiberados.ArquivosLiberados;
   // Uma revisão por vez: cada Worker pode usar até `memoriaMb` de heap.
   const vez = yield* Semaphore.make(1);
 
@@ -275,7 +266,7 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
     const falha = (motivo: string) => new FalhaRevisaoPpc({ arquivo, motivo });
     if (!NodePath.isAbsolute(arquivo) || NodePath.extname(arquivo).toLowerCase() !== ".docx")
       return yield* falha("Escolha um arquivo do Word (.docx).");
-    if (opcoes.exigirLiberacao && !liberados.has(NodePath.normalize(arquivo)))
+    if (!(yield* liberacao.liberado(arquivo)))
       return yield* falha('Escolha o arquivo pelo botão "Escolher o PPC (.docx)…" do app.');
     const info = yield* Effect.tryPromise({
       try: () => NodeFSP.stat(arquivo),
@@ -343,15 +334,14 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
     );
   const revisar = (entrada: EntradaRevisao) =>
     revisarCompleto(entrada).pipe(Effect.map((r) => resultadoParaInterface(entrada.arquivo, r)));
-  const liberar = (arquivo: string) => Effect.sync(() => void liberados.add(NodePath.normalize(arquivo)));
   const revisarArquivo = (entrada: EntradaRevisarArquivo) => revisarUm(entrada).pipe(vez.withPermits(1));
 
-  const liberado = (arquivo: string) =>
-    Effect.sync(() => !opcoes.exigirLiberacao || liberados.has(NodePath.normalize(arquivo)));
-
   const ocupada = vez.withPermitsIfAvailable(1)(Effect.void).pipe(Effect.map(Option.isNone));
-  return RevisorPpc.of({ revisar, revisarCompleto, liberar, liberado, revisarArquivo, ocupada });
+  return RevisorPpc.of({ revisar, revisarCompleto, revisarArquivo, ocupada });
 });
 
-/** O serviço sobre o `FontesNormativas` e o `SqlClient` do `kb.sqlite` (os do `Leitura` do servidor). */
+/**
+ * O serviço sobre o `FontesNormativas` e o `SqlClient` do `kb.sqlite` (os do `Leitura` do servidor) e
+ * os `ArquivosLiberados`.
+ */
 export const layer = (opcoes: OpcoesRevisao = {}) => Layer.effect(RevisorPpc, make(opcoes));

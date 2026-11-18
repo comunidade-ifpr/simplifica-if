@@ -15,7 +15,7 @@ Uma capacidade é um método de um serviço do domínio. Estenda o serviço que 
 - `packages/kb/src`: `Normas`, `Ppcs`, `Cursos`, `Impacto`, `PacoteContexto`, `FontesNormativas`, `BaseKb`, `Compilador`;
 - `packages/mcp/src/leitura`: `Leitura` (a leitura que as ferramentas MCP e o RPC compartilham) e `PastaTrabalho`;
 - `packages/motor/src`: `Motor`;
-- `apps/server/src`: `Conversas`, `PastasTrabalho`, `Relatos`, `CatalogoSkills`, `Atualizador`, `Autenticacao`, `persistencia/` e `revisao-ppc/`.
+- `apps/server/src`: `Conversas`, `PastasTrabalho`, `ArquivosLiberados`, `Relatos`, `CatalogoSkills`, `Atualizador`, `Autenticacao`, `persistencia/` e `revisao-ppc/`.
 
 O transporte é casca fina. Ele faz três coisas: decodifica a entrada, chama um método de serviço e traduz os erros tipados para o erro do transporte. Arquivo, processo, banco, rede, nome de pasta, despacho em várias etapas, nova tentativa e desfazer ficam no serviço. O motivo é alcance: a mesma capacidade chega pela interface (RPC), pela IA (MCP), pela CLI `kb` e pelos scripts. Lógica escrita num handler falta nos outros e só se testa com um socket.
 

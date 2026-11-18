@@ -44,7 +44,7 @@ import {
   type PrevisaoDesfazer,
 } from "@simplifica-if/contratos-app";
 import * as Historico from "./persistencia/Historico.ts";
-import * as RevisorPpc from "./revisao-ppc/RevisorPpc.ts";
+import * as ArquivosLiberados from "./ArquivosLiberados.ts";
 
 export interface Limites {
   /** O tamanho máximo da pasta para guardar a cópia de um turno. */
@@ -425,7 +425,7 @@ export const contadorDeAndamento = Effect.gen(function* () {
 export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPastas) {
   const limites = { ...LIMITES, ...opcoes.limites };
   const historico = yield* Historico.Historico;
-  const revisor = yield* RevisorPpc.RevisorPpc;
+  const liberacao = yield* ArquivosLiberados.ArquivosLiberados;
   const raiz = NodePath.resolve(opcoes.raiz);
 
   const falha = (motivo: string) => new FalhaPasta({ motivo });
@@ -469,7 +469,7 @@ export const make = Effect.fn("PastasTrabalho.make")(function* (opcoes: OpcoesPa
   const anexar = Effect.fn("PastasTrabalho.anexar")(function* (pasta: string, arquivo: string) {
     const real = yield* Effect.promise(() => gerida(pasta));
     if (real === undefined) return yield* falha("Só é possível anexar na pasta de uma tarefa do app.");
-    if (!NodePath.isAbsolute(arquivo) || !(yield* revisor.liberado(arquivo)))
+    if (!NodePath.isAbsolute(arquivo) || !(yield* liberacao.liberado(arquivo)))
       return yield* falha('Escolha o arquivo pelo botão "Anexar arquivo…" do app.');
     // A mesma lista do diálogo do desktop, também quando o servidor não exige a liberação (web, dev).
     if (!ehExtensaoDocumento(NodePath.basename(arquivo)))
@@ -701,5 +701,5 @@ export const layerSemPastas = Layer.sync(PastasTrabalho, () => {
   });
 });
 
-/** Pede o `Historico` e o `RevisorPpc` (a liberação dos arquivos escolhidos no desktop). */
+/** Pede o `Historico` e os `ArquivosLiberados` (a liberação dos arquivos escolhidos no desktop). */
 export const layer = (opcoes: OpcoesPastas) => Layer.effect(PastasTrabalho, make(opcoes));
