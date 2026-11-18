@@ -96,7 +96,7 @@ scripts/dominio/auditoria.test.ts	11	0
 scripts/dominio/aviso-dentec.test.ts	8	0
 scripts/dominio/ingresso.test.ts	2	0
 scripts/dominio/movimentacao.test.ts	18	0
-scripts/fabrica_atualizacao.test.ts	1	0
+scripts/fabrica_atualizacao.test.ts	6	0
 scripts/gerar_tipos_schemas.test.ts	1	0
 scripts/git.test.ts	2	0
 scripts/importar_ppc_docx.test.ts	1	0
@@ -113,4 +113,4 @@ scripts/suap/consultas.test.ts	20	0
 scripts/suap/matrizes.test.ts	21	0
 scripts/suap/tutoriais.test.ts	24	0
 scripts/upstream_t3.test.ts	3	0
-TOTAL	1553	35
+TOTAL	1558	35
