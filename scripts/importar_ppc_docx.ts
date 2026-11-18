@@ -6,6 +6,7 @@ import * as Effect from "effect/Effect";
 import * as Argument from "effect/cli/Argument";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
+import * as Schema from "effect/Schema";
 import { ROTULOS_PESSOAIS } from "@simplifica-if/kb/ppcs/dados-pessoais";
 import { criarCaminhos } from "./base/caminhos.ts";
 import { importarPpcDocx, type ResultadoImportacao } from "./base/importar-ppc.ts";
@@ -26,14 +27,31 @@ const PASSOS_SEGUINTES = [
  */
 const FORA_DO_CONVERSOR = ["base-conhecimento", "site", "tmp", "outputs"];
 
+/** O git não achou um checkout em `raiz`: sem o commit, a versão do conversor não tem como ser registrada. */
+export class ForaDeCheckout extends Schema.TaggedError<ForaDeCheckout>()("ForaDeCheckout", {
+  raiz: Schema.String,
+  cause: Schema.Defect(),
+}) {
+  override get message(): string {
+    return (
+      `${this.raiz} não é um checkout git do Simplifica IF: a importação registra o commit do conversor ` +
+      "e só roda num clone do repositório, com o git instalado"
+    );
+  }
+}
+
 /**
  * Conversor e versão: o pacote e o commit do checkout, com `-modificado` quando há alteração não
  * comitada em arquivo rastreado fora de `FORA_DO_CONVERSOR`. A saída depende de `packages/ppc`,
  * `packages/docx` e `packages/kb` (front matter, dados pessoais), de `scripts/base/importar-ppc.ts`,
  * `scripts/dados/urls.ts` e deste script; olhar o checkout inteiro não deixa nenhum de fora.
  */
-const conversorAtual = Effect.fn("importar_ppc_docx.conversorAtual")(function* () {
-  const git = (...args: string[]) => Effect.map(Git.executar(args, { cwd: RAIZ_PROJETO }), (saida) => saida.trim());
+export const conversorAtual = Effect.fn("importar_ppc_docx.conversorAtual")(function* (raiz: string = RAIZ_PROJETO) {
+  const git = (...args: string[]) =>
+    Git.executar(args, { cwd: raiz }).pipe(
+      Effect.map((saida) => saida.trim()),
+      Effect.catchTags({ GitFalhou: (erro) => Effect.fail(new ForaDeCheckout({ raiz, cause: erro })) }),
+    );
   const commit = yield* git("rev-parse", "HEAD");
   const fora = FORA_DO_CONVERSOR.map((pasta) => `:(exclude)${pasta}`);
   const sujo = (yield* git("status", "--porcelain", "--untracked-files=no", "--", ".", ...fora)) !== "";

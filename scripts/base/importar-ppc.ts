@@ -54,11 +54,18 @@ export const MotivoImportacao = Schema.Literals([
 
 /**
  * Recusa da importação. `detalhe` vai para o usuário como está e não traz dado do documento nem a
- * query de URL; a falha de baixo nível (JSON, disco), quando há, fica só em `cause`.
+ * query de URL. O diagnóstico da falha de baixo nível vem em atributos próprios (`arquivo`, `codigo`,
+ * `erroJson`), de onde `detalhe` é montado; `cause` guarda a falha original e não entra na mensagem.
  */
 export class ErroImportacao extends Schema.TaggedError<ErroImportacao>()("ErroImportacao", {
   motivo: MotivoImportacao,
   detalhe: Schema.String,
+  /** Relativo a `base-conhecimento/`. */
+  arquivo: Schema.optional(Schema.String),
+  /** `code` do erro do sistema (`ENOSPC`, `EACCES`), na gravação. */
+  codigo: Schema.optional(Schema.String),
+  /** Mensagem do `SyntaxError` do registro público do curso (não do DOCX). */
+  erroJson: Schema.optional(Schema.String),
   cause: Schema.optional(Schema.Defect()),
 }) {
   override get message(): string {
@@ -140,7 +147,15 @@ function lerCurso(
   try {
     bruto = JSON.parse(NodeFS.readFileSync(arquivo, "utf-8"));
   } catch (erro) {
-    throw recusa("registro-invalido", `institucional/ifpr/${relativo}: JSON inválido`, erro);
+    if (!(erro instanceof SyntaxError)) throw erro;
+    const erroJson = erro.message;
+    throw new ErroImportacao({
+      motivo: "registro-invalido",
+      detalhe: `institucional/ifpr/${relativo}: JSON inválido (${erroJson})`,
+      arquivo: `institucional/ifpr/${relativo}`,
+      erroJson,
+      cause: erro,
+    });
   }
   const resultado = decodificarCurso(bruto);
   if (Result.isFailure(resultado)) {
@@ -233,11 +248,30 @@ function comChave<T extends object>(objeto: T, chave: string, valor: unknown, or
 
 export type Gravacao = { destino: string; texto: string };
 
+/** Falha de `gravarJuntos`, com o destino em que ela ocorreu; a falha do sistema fica em `cause`. */
+export class FalhaAoGravar extends Schema.TaggedError<FalhaAoGravar>()("FalhaAoGravar", {
+  destino: Schema.String,
+  /** `code` do erro do sistema (`ENOSPC`, `EACCES`), quando há. */
+  codigo: Schema.optional(Schema.String),
+  cause: Schema.Defect(),
+}) {
+  override get message(): string {
+    return `Falha ao gravar ${this.destino}${this.codigo ? ` (${this.codigo})` : ""}`;
+  }
+}
+
+const ehFalhaAoGravar = Schema.is(FalhaAoGravar);
+
+function codigoDoSistema(erro: unknown): string | undefined {
+  const code: unknown = (erro as { code?: unknown } | null)?.code;
+  return typeof code === "string" ? code : undefined;
+}
+
 /**
  * Grava os arquivos juntos: cada texto vai primeiro para um temporário na pasta do destino e só
  * depois, com todos escritos, é renomeado sobre o destino. Se uma troca falha, as já feitas são
- * desfeitas (o arquivo anterior volta, o novo sai) e o erro sobe. `renomear` é o `renameSync`; os
- * testes o trocam para simular a falha.
+ * desfeitas (o arquivo anterior volta, o novo sai) e sobe `FalhaAoGravar` com o destino que falhou.
+ * `renomear` é o `renameSync`; os testes o trocam para simular a falha.
  */
 export function gravarJuntos(
   gravacoes: Gravacao[],
@@ -251,12 +285,15 @@ export function gravarJuntos(
     pastaCriada: undefined as string | undefined,
   }));
   const trocados: typeof itens = [];
+  let atual: (typeof itens)[number] | undefined;
   try {
     for (const item of itens) {
+      atual = item;
       item.pastaCriada = NodeFS.mkdirSync(NodePath.dirname(item.destino), { recursive: true });
       NodeFS.writeFileSync(item.temporario, item.texto, "utf-8");
     }
     for (const item of itens) {
+      atual = item;
       renomear(item.temporario, item.destino);
       trocados.push(item);
     }
@@ -269,7 +306,12 @@ export function gravarJuntos(
       NodeFS.rmSync(item.temporario, { force: true });
       if (item.pastaCriada) NodeFS.rmSync(item.pastaCriada, { recursive: true, force: true });
     }
-    throw erro;
+    const codigo = codigoDoSistema(erro);
+    throw new FalhaAoGravar({
+      destino: atual?.destino ?? "",
+      ...(codigo === undefined ? {} : { codigo }),
+      cause: erro,
+    });
   }
 }
 
@@ -357,7 +399,16 @@ function importar(opcoes: OpcoesImportacao): ResultadoImportacao {
       { destino: arquivoRegistro, texto: textoCurso },
     ]);
   } catch (erro) {
-    throw recusa("gravacao", "Falha ao gravar o PPC e o registro; nada foi alterado", erro);
+    if (!ehFalhaAoGravar(erro)) throw erro;
+    const arquivo = NodePath.relative(opcoes.caminhos.raiz, erro.destino).split(NodePath.sep).join("/");
+    const codigo = erro.codigo;
+    throw new ErroImportacao({
+      motivo: "gravacao",
+      detalhe: `Falha ao gravar o PPC e o registro (${codigo ?? "falha"} em ${arquivo}); nada foi alterado`,
+      arquivo,
+      ...(codigo === undefined ? {} : { codigo }),
+      cause: erro,
+    });
   }
 
   return {

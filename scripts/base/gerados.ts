@@ -43,7 +43,11 @@ const lerSeExiste = Effect.fn("gerados.lerSeExiste")(function* (caminho: string)
   return (yield* fs.exists(caminho)) ? yield* fs.readFileString(caminho) : undefined;
 });
 
-/** Arquivos com `sufixo` em `pasta` que a lista de gerados não tem, ordenados por nome. */
+/**
+ * Arquivos com `sufixo` em `pasta` que a lista de gerados não tem, ordenados por nome. `gerados` traz
+ * caminhos já passados por `path.resolve`, e a comparação também: um `./` ou `..` no caminho de um
+ * gerado não o faz parecer sobra e ser apagado logo depois de gravado.
+ */
 const extrasDe = Effect.fn("gerados.extrasDe")(function* (pastaGerada: PastaGerada, gerados: ReadonlySet<string>) {
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
@@ -53,7 +57,7 @@ const extrasDe = Effect.fn("gerados.extrasDe")(function* (pastaGerada: PastaGera
     .filter((nome) => nome.endsWith(pastaGerada.sufixo))
     .sort(compararTexto)
     .map((nome) => path.join(pastaGerada.pasta, nome))
-    .filter((caminho) => !gerados.has(caminho));
+    .filter((caminho) => !gerados.has(path.resolve(caminho)));
 });
 
 /**
@@ -84,9 +88,11 @@ export const aplicarGerados = Effect.fn("gerados.aplicar")(function* (
     }
   }
 
-  const gerados = new Set(arquivos.map((arquivo) => arquivo.caminho));
+  const gerados = new Set(arquivos.map((arquivo) => path.resolve(arquivo.caminho)));
   const sobras: Array<string> = [];
-  for (const caminho of opcoes.obsoletos ?? []) if (yield* fs.exists(caminho)) sobras.push(caminho);
+  for (const caminho of opcoes.obsoletos ?? []) {
+    if (!gerados.has(path.resolve(caminho)) && (yield* fs.exists(caminho))) sobras.push(caminho);
+  }
   for (const pasta of opcoes.extrasEm ?? []) sobras.push(...(yield* extrasDe(pasta, gerados)));
   for (const caminho of sobras) {
     divergencias.push({ arquivo: relativo(caminho), situacao: "extra" });

@@ -18,6 +18,7 @@ import { afterAll, describe, expect, test } from "vite-plus/test";
 import { criarCaminhos } from "./caminhos.ts";
 import {
   ErroImportacao,
+  FalhaAoGravar,
   gravarJuntos,
   importarPpcDocx,
   type OpcoesImportacao,
@@ -442,7 +443,7 @@ describe("importarPpcDocx", () => {
           ],
           falhaNoSegundo,
         ),
-      ).toThrow("disco cheio");
+      ).toThrow(expect.objectContaining({ destino: arquivo, cause: new Error("disco cheio") }));
       expect(NodeFS.readFileSync(ppc, "utf-8")).toBe("texto antigo\n");
       expect(NodeFS.readFileSync(arquivo, "utf-8")).toContain('"curso_slug": "tecnico-x"');
       // Sem temporários sobrando.
@@ -465,9 +466,54 @@ describe("importarPpcDocx", () => {
           ],
           falha,
         ),
-      ).toThrow("disco cheio");
+      ).toThrow(FalhaAoGravar);
       expect(NodeFS.existsSync(NodePath.join(nova, IFPR, "ppcs"))).toBe(false);
     });
+
+    it.effect("permissão negada na pasta do PPC: código e arquivo na mensagem, nada alterado", () =>
+      Effect.gen(function* () {
+        // Como root, a permissão não é conferida e não há falha a observar.
+        if (process.getuid?.() === 0) return;
+        const raiz = baseTemporaria();
+        const docx = escrever(raiz, "entrada/ppc.docx", docxDaFixture("ppc-minimo"));
+        const pasta = NodePath.dirname(caminhoPpc(raiz));
+        NodeFS.mkdirSync(pasta, { recursive: true });
+        const registro = NodePath.join(raiz, IFPR, "cursos/campus-a/tecnico-x.json");
+        const antes = NodeFS.readFileSync(registro, "utf-8");
+        NodeFS.chmodSync(pasta, 0o555);
+        const erro = yield* Effect.flip(importarPpcDocx(opcoes(raiz, docx))).pipe(
+          Effect.ensuring(Effect.sync(() => NodeFS.chmodSync(pasta, 0o755))),
+        );
+        expect(erro).toMatchObject({
+          motivo: "gravacao",
+          codigo: "EACCES",
+          arquivo: "institucional/ifpr/ppcs/campus-a/tecnico-x.md",
+        });
+        expect(erro.message).toBe(
+          "Falha ao gravar o PPC e o registro (EACCES em institucional/ifpr/ppcs/campus-a/tecnico-x.md); nada foi alterado",
+        );
+        expect(NodeFS.readdirSync(pasta)).toEqual([]);
+        expect(NodeFS.readFileSync(registro, "utf-8")).toBe(antes);
+      }),
+    );
+
+    it.effect("registro do curso com JSON quebrado: a mensagem traz o erro do JSON", () =>
+      Effect.gen(function* () {
+        const raiz = baseTemporaria();
+        escrever(raiz, `${IFPR}/cursos/campus-a/tecnico-x.json`, '{"campus_id": "campus-a",\n');
+        const docx = escrever(raiz, "entrada/ppc.docx", docxDaFixture("ppc-minimo"));
+        const erro = yield* recusa(
+          importarPpcDocx(opcoes(raiz, docx)),
+          /^institucional\/ifpr\/cursos\/campus-a\/tecnico-x\.json: JSON inválido \(.+\)$/,
+        );
+        expect(erro).toMatchObject({
+          motivo: "registro-invalido",
+          arquivo: "institucional/ifpr/cursos/campus-a/tecnico-x.json",
+        });
+        expect(erro.erroJson).toMatch(/JSON/);
+        expect(erro.message).toContain(erro.erroJson);
+      }),
+    );
 
     it.effect("nada é gravado quando a conversão falha", () =>
       Effect.gen(function* () {

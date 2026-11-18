@@ -36,6 +36,50 @@ export class SincronizacaoFalhou extends Schema.TaggedError<SincronizacaoFalhou>
   }
 }
 
+/**
+ * O `git clone` da tag falhou: em geral a tag não existe no repositório ou não há rede. O stderr do
+ * git fica em `cause` do `GitFalhou`, fora da mensagem.
+ */
+export class TagNaoEncontrada extends Schema.TaggedError<TagNaoEncontrada>()("TagNaoEncontrada", {
+  repositorio: Schema.String,
+  tag: Schema.String,
+  cause: Schema.Defect(),
+}) {
+  override get message(): string {
+    return (
+      `não foi possível clonar ${this.tag} de ${this.repositorio}: ` +
+      "confira se a tag existe (a versão de effect no catalog) e se há rede"
+    );
+  }
+}
+
+/** Argumentos do `git clone` raso de `tag`, sem o destino. */
+const argumentosClone = (repositorio: string, tag: string) => [
+  "clone",
+  "--quiet",
+  "--depth=1",
+  "--no-tags",
+  "--single-branch",
+  `--branch=${tag}`,
+  repositorio,
+];
+
+/** Clona `tag` de `repositorio` em `destino`; o git que roda e falha vira `TagNaoEncontrada`. */
+export const clonarTag = Effect.fn("sincronizar_repos.clonarTag")(function* (
+  repositorio: string,
+  tag: string,
+  destino: string,
+) {
+  yield* Git.executar([...argumentosClone(repositorio, tag), destino], { cwd: RAIZ_PROJETO }).pipe(
+    Effect.catchTags({
+      GitFalhou: (erro) =>
+        erro.codigo === undefined
+          ? Effect.fail(erro)
+          : Effect.fail(new TagNaoEncontrada({ repositorio, tag, cause: erro })),
+    }),
+  );
+});
+
 /** Tag do Effect correspondente ao catalog do `pnpm-workspace.yaml`. */
 export const tagDoCatalog = Effect.fn("sincronizar_repos.tagDoCatalog")(function* (textoWorkspace: string) {
   const workspace = interpretarYaml(textoWorkspace) as { catalog?: Record<string, unknown> } | null;
@@ -58,7 +102,7 @@ export const comando = Command.make(
     const git = (args: ReadonlyArray<string>, cwd = RAIZ_PROJETO) => Git.executar(args, { cwd });
     const destino = path.join(RAIZ_PROJETO, PREFIXO);
     const tag = yield* tagDoCatalog(yield* fs.readFileString(path.join(RAIZ_PROJETO, "pnpm-workspace.yaml")));
-    const clonar = ["clone", "--quiet", "--depth=1", "--no-tags", "--single-branch", `--branch=${tag}`, REPOSITORIO];
+    const clonar = argumentosClone(REPOSITORIO, tag);
     if (dryRun) {
       yield* Console.log(
         `tag: ${tag}\ngit ${clonar.join(" ")} <temporário>\ndestino: ${PREFIXO} (commit só dessa pasta)`,
@@ -76,7 +120,7 @@ export const comando = Command.make(
           prefix: ".sync-effect-",
         });
         const checkout = path.join(temporario, "checkout");
-        yield* git([...clonar, checkout]);
+        yield* clonarTag(REPOSITORIO, tag, checkout);
         const commit = (yield* git(["rev-parse", "HEAD"], checkout)).trim();
         yield* fs.remove(path.join(checkout, ".git"), { recursive: true, force: true });
         if (!(yield* fs.exists(path.join(checkout, "LICENSE")))) {

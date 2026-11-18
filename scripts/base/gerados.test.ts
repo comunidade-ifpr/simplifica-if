@@ -61,5 +61,28 @@ describe("aplicarGerados", () => {
         expect(yield* aplicarGerados(arquivos, { modo: "verificar", ...opcoes })).toEqual([]);
       }).pipe(Effect.scoped),
     );
+
+    it.effect("caminho não normalizado (`./`) não é tomado por sobra e apagado depois de gravado", () =>
+      Effect.gen(function* () {
+        const { fs, path, raiz, pasta } = yield* preparar;
+        const arquivos = [
+          { caminho: `${pasta}/./a.txt`, texto: "a\n" },
+          { caminho: `${pasta}/./novo.txt`, texto: "novo\n" },
+        ];
+        const opcoes = {
+          raiz,
+          extrasEm: [{ pasta: `${raiz}/./gerada`, sufixo: ".txt" }],
+          obsoletos: [path.join(pasta, "novo.txt")],
+        };
+        const gravadas = yield* aplicarGerados(arquivos, { modo: "gravar", ...opcoes });
+        expect(gravadas).toEqual([
+          { arquivo: "gerada/novo.txt", situacao: "ausente" },
+          { arquivo: "gerada/b.txt", situacao: "extra" },
+          { arquivo: "gerada/velho.txt", situacao: "extra" },
+        ]);
+        expect(yield* fs.readFileString(path.join(pasta, "novo.txt"))).toBe("novo\n");
+        expect(yield* aplicarGerados(arquivos, { modo: "verificar", ...opcoes })).toEqual([]);
+      }).pipe(Effect.scoped),
+    );
   });
 });
