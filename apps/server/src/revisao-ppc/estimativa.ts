@@ -8,7 +8,7 @@
  * (`janelaReferencia`), a calibrar no piloto, porque os providers não publicam o tamanho da janela em
  * tokens. A tela diz isso ("estimativa aproximada… referência provisória").
  */
-import type { Provider } from "./tipos.ts";
+import type { Provider } from "@simplifica-if/motor/eventos";
 
 export type ParametrosProvider = {
   /** Tokens de sistema e instruções por sessão (sem ferramentas). */

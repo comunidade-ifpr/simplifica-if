@@ -39,10 +39,10 @@ import {
 import type * as FontesNormativas from "@simplifica-if/kb/FontesNormativas";
 import type * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import * as Motor from "@simplifica-if/motor";
-import { estimar } from "@simplifica-if/ppc/revisao-ia/estimativa";
+import { estimar } from "./estimativa.ts";
 import { CRITERIO_PADRAO, type CriterioInconclusivo, pedidoT } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { teveTextoParaIa } from "@simplifica-if/ppc/revisao-ia/plano";
-import { MODELO_PADRAO } from "@simplifica-if/ppc/revisao-ia/tipos";
+import { MODELO_PADRAO } from "./modelos.ts";
 import { NOME_DA_FORMA, type ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 import * as Preferencias from "../persistencia/Preferencias.ts";
 import * as Revisoes from "../persistencia/Revisoes.ts";

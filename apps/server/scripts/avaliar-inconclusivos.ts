@@ -39,7 +39,7 @@ import {
   CRITERIOS_INCONCLUSIVO,
   type CriterioInconclusivo,
 } from "@simplifica-if/ppc/revisao-ia/pedido";
-import { MODELO_PADRAO } from "@simplifica-if/ppc/revisao-ia/tipos";
+import { MODELO_PADRAO } from "../src/revisao-ppc/modelos.ts";
 import { montarBaseRevisao } from "@simplifica-if/ppc/base-revisao";
 import { lerPpc, type PpcDaBase, ppcsTecnicos } from "../../../packages/ppc/scripts/base-tecnica.ts";
 import { julgarBloco, type ResultadoBloco, type TentativaIa } from "../src/revisao-ppc/julgamento.ts";

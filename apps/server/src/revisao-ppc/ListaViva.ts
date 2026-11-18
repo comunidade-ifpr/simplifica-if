@@ -52,10 +52,10 @@ import {
   prefixoConversa,
   type TurnoAnterior,
 } from "@simplifica-if/ppc/revisao-ia/conversa";
-import { estimarAcao } from "@simplifica-if/ppc/revisao-ia/estimativa";
+import { estimarAcao } from "./estimativa.ts";
 import { pedidoS } from "@simplifica-if/ppc/revisao-ia/pedido";
 import { dobrar, retirarTextoParaIa, teveTextoParaIa } from "@simplifica-if/ppc/revisao-ia/plano";
-import { MODELO_PADRAO } from "@simplifica-if/ppc/revisao-ia/tipos";
+import { MODELO_PADRAO } from "./modelos.ts";
 import {
   chavePendencia,
   estadoDaIa,

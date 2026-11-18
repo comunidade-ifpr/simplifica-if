@@ -33,7 +33,7 @@ import * as ListaViva from "../src/revisao-ppc/ListaViva.ts";
 import { julgarBloco } from "../src/revisao-ppc/julgamento.ts";
 import { contextoDaFicha } from "../src/revisao-ppc/preparo.ts";
 import { pedidoS } from "@simplifica-if/ppc/revisao-ia/pedido";
-import { MODELO_PADRAO } from "@simplifica-if/ppc/revisao-ia/tipos";
+import { MODELO_PADRAO } from "../src/revisao-ppc/modelos.ts";
 import type { ResultadoFichaIa } from "@simplifica-if/ppc/revisao-previa";
 
 const RAIZ = NodePath.resolve(import.meta.dirname, "../../..");
