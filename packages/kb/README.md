@@ -40,9 +40,7 @@ const programa = Effect.gen(function* () {
 programa.pipe(Effect.provide(Layers.layerSomenteLeitura({ caminho: "kb.sqlite" })), NodeRuntime.runMain);
 ```
 
-Erros tipados: `Sql.FalhaNaConsulta` (`db/sql.ts`: o banco não corresponde ao esquema), `BaseIncompativel`, `BaseAusente`, `FalhaNasFontes`, `FalhaNaCompilacao`, `BaseDesatualizada` e os do pacote de contexto (`PpcNaoEncontrado`, `GrupoInexistente`, `TarefaNaoReconhecida`), todos `Schema.TaggedError` com mensagem em português e predicado `eh…`. Mensagens de validação de schema: `esquema/mensagens.ts` (`formatarErro`, `problemas`), o formatador pt-BR único.
-
-**Ponte temporária.** Até o C2 e o C3, o `packages/mcp` (`servidor.ts`, `abrirKb`) e a `revisar-ppc` (`scripts/kb.ts`) montam `layerSomenteLeitura` uma vez e rodam os métodos com `Effect.runSync` (as consultas sobre o `node:sqlite` são síncronas); a `revisar-ppc` garante o banco fresco no ponto de entrada (`Compilador.garantirFresco`).
+Erros tipados: `Sql.FalhaNaConsulta` (`db/sql.ts`: o banco não corresponde ao esquema), `BaseIncompativel`, `BaseAusente`, `FalhaNasFontes`, `FalhaNaCompilacao`, `BaseDesatualizada` e os do pacote de contexto (`PpcNaoEncontrado`, `GrupoInexistente`, `TarefaNaoReconhecida`, em `PacoteContexto.ts`), todos `Schema.TaggedError` com mensagem em português; quem os traduz usa `Effect.catchTags`. Mensagens de validação de schema: `esquema/mensagens.ts` (`formatarErro`, `problemas`), o formatador pt-BR único.
 
 | Módulo | Papel |
 |---|---|

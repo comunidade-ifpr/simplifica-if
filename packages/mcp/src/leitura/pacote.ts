@@ -7,6 +7,7 @@
  * servidor HTTP (`http.ts`) a fornece por requisição, com a pasta da sessão do token. No stdio, a
  * única pasta é a da construção.
  */
+import type * as Sql from "@simplifica-if/kb/db/sql";
 import * as PacoteContexto from "@simplifica-if/kb/PacoteContexto";
 import { REGRAS_BAIXA_CONFIANCA } from "@simplifica-if/kb/ppcs/citacoes";
 import * as Effect from "effect/Effect";
@@ -45,16 +46,26 @@ export const makePacote = Effect.fn("Leitura.makePacote")(function* (base: Base)
   const pacotes = yield* PacoteContexto.PacoteContexto;
   const pasta = yield* Effect.serviceOption(PastaTrabalho.PastaTrabalho);
 
-  const doKb = <A, E extends { readonly _tag: string; readonly message: string }>(efeito: Effect.Effect<A, E>) =>
-    Effect.mapError(efeito, (erro) =>
-      erro._tag === "PpcNaoEncontrado" || erro._tag === "GrupoInexistente" || erro._tag === "TarefaNaoReconhecida"
-        ? new EntradaInvalida({
-            mensagem:
-              erro._tag === "PpcNaoEncontrado"
-                ? `${erro.message}. Use "campus/curso" (como "curitiba/tecnico-em-enfermagem"), vindo de listar_cursos ou de ficha_curso`
-                : erro.message,
-          })
-        : (erro as Exclude<E, { readonly _tag: "PpcNaoEncontrado" | "GrupoInexistente" | "TarefaNaoReconhecida" }>),
+  const doKb = <A>(
+    efeito: Effect.Effect<
+      A,
+      | Sql.FalhaNaConsulta
+      | PacoteContexto.PpcNaoEncontrado
+      | PacoteContexto.GrupoInexistente
+      | PacoteContexto.TarefaNaoReconhecida
+    >,
+  ) =>
+    efeito.pipe(
+      Effect.catchTags({
+        PpcNaoEncontrado: (erro) =>
+          Effect.fail(
+            new EntradaInvalida({
+              mensagem: `${erro.message}. Use "campus/curso" (como "curitiba/tecnico-em-enfermagem"), vindo de listar_cursos ou de ficha_curso`,
+            }),
+          ),
+        GrupoInexistente: (erro) => Effect.fail(new EntradaInvalida({ mensagem: erro.message })),
+        TarefaNaoReconhecida: (erro) => Effect.fail(new EntradaInvalida({ mensagem: erro.message })),
+      }),
     );
 
   const pacoteContexto = Effect.fn("Leitura.pacoteContexto")(function* (e: typeof PacoteContextoF.Entrada.Type) {
