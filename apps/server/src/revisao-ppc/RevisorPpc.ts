@@ -24,6 +24,7 @@ import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
+import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Option from "effect/Option";
 import * as Schema from "effect/Schema";
@@ -35,6 +36,8 @@ import * as Sql from "@simplifica-if/kb/db/sql";
 import * as NodeCrypto from "node:crypto";
 import type { BaseRevisaoPrevia, EntradaIa, MarcaPendencia, RevisaoPrevia } from "@simplifica-if/ppc/revisao-previa";
 import type { CursoCnct } from "@simplifica-if/ppc/verificadores/comum";
+import * as ArquivosLiberados from "../ArquivosLiberados.ts";
+import { comNumero, criarSemColisao } from "../nome-livre.ts";
 import type { PedidoTrabalhador, RespostaTrabalhador } from "./trabalhador.ts";
 
 /** Os limites da revisão; os testes os apertam para provocar o estouro. */
@@ -90,13 +93,6 @@ export class RevisorPpc extends Context.Service<
      * As mesmas conferências do `revisar` (arquivo liberado, tamanho, Worker com limites).
      */
     readonly revisarArquivo: (entrada: EntradaRevisarArquivo) => Effect.Effect<RevisaoDoArquivo, FalhaRevisaoPpc>;
-    /** Libera um arquivo escolhido no diálogo do desktop (`CAMINHO_LIBERAR_ARQUIVO`). */
-    readonly liberar: (arquivo: string) => Effect.Effect<void>;
-    /**
-     * O arquivo foi liberado pelo desktop, ou o servidor não exige liberação (sem `tokenDesktop`). O
-     * "Anexar" da pasta de trabalho usa a mesma regra.
-     */
-    readonly liberado: (arquivo: string) => Effect.Effect<boolean>;
     /** Uma revisão está rodando agora? (a troca da base espera, M1.10) */
     readonly ocupada: Effect.Effect<boolean>;
   }
@@ -221,20 +217,15 @@ function rodarNoTrabalhador(
 /* ============================================================ arquivo */
 
 /** Grava ao lado do original sem sobrescrever: `<nome> - revisão prévia (Simplifica IF).docx`, depois ` (2)`… */
-async function gravarCopia(original: string, bytes: Uint8Array): Promise<string> {
+const gravarCopia = Effect.fn("RevisorPpc.gravarCopia")(function* (original: string, bytes: Uint8Array) {
+  const fs = yield* FileSystem.FileSystem;
   const pasta = NodePath.dirname(original);
-  const nome = NodePath.basename(original, NodePath.extname(original));
-  for (let n = 1; n <= 99; n += 1) {
-    const destino = NodePath.join(pasta, `${nome}${SUFIXO_REVISAO_PREVIA}${n === 1 ? "" : ` (${n})`}.docx`);
-    try {
-      await NodeFSP.writeFile(destino, bytes, { flag: "wx" });
-      return destino;
-    } catch (erro) {
-      if ((erro as { code?: string }).code !== "EEXIST") throw erro;
-    }
-  }
-  throw new Error("cópias demais com o mesmo nome");
-}
+  const copia = `${NodePath.basename(original, NodePath.extname(original))}${SUFIXO_REVISAO_PREVIA}.docx`;
+  return yield* criarSemColisao({ pasta, nomes: (n) => comNumero(copia, n), ate: 99 }, (nome) => {
+    const destino = NodePath.join(pasta, nome);
+    return fs.writeFile(destino, bytes, { flag: "wx" }).pipe(Effect.as(destino));
+  });
+});
 
 /* ============================================================ serviço */
 
@@ -247,17 +238,13 @@ export const resultadoParaInterface = (arquivo: string, r: RevisaoDoArquivo): Re
 export interface OpcoesRevisao {
   readonly limites?: Partial<Limites>;
   readonly trabalhador?: URL;
-  /**
-   * Só revisa arquivos liberados por `liberar` (o desktop, com o `tokenDesktop`, os escolhidos no
-   * diálogo): um cliente do RPC não manda o servidor ler um `.docx` qualquer nem gravar ao lado dele.
-   */
-  readonly exigirLiberacao?: boolean;
 }
 
 export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisao = {}) {
   const limites = { ...LIMITES, ...opcoes.limites };
   const url = opcoes.trabalhador ?? URL_TRABALHADOR;
   const contexto = yield* Effect.context<FontesNormativas.FontesNormativas | SqlClient.SqlClient>();
+  const fs = yield* FileSystem.FileSystem;
   // A base é montada na primeira revisão e reaproveitada (o banco é só de leitura).
   const base = yield* Effect.cached(
     montarBase.pipe(
@@ -266,7 +253,9 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
     ),
   );
 
-  const liberados = new Set<string>();
+  // Só revisa arquivos liberados pelo desktop: um cliente do RPC não manda o servidor ler um `.docx`
+  // qualquer nem gravar ao lado dele.
+  const liberacao = yield* ArquivosLiberados.ArquivosLiberados;
   // Uma revisão por vez: cada Worker pode usar até `memoriaMb` de heap.
   const vez = yield* Semaphore.make(1);
 
@@ -275,7 +264,7 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
     const falha = (motivo: string) => new FalhaRevisaoPpc({ arquivo, motivo });
     if (!NodePath.isAbsolute(arquivo) || NodePath.extname(arquivo).toLowerCase() !== ".docx")
       return yield* falha("Escolha um arquivo do Word (.docx).");
-    if (opcoes.exigirLiberacao && !liberados.has(NodePath.normalize(arquivo)))
+    if (!(yield* liberacao.liberado(arquivo)))
       return yield* falha('Escolha o arquivo pelo botão "Escolher o PPC (.docx)…" do app.');
     const info = yield* Effect.tryPromise({
       try: () => NodeFSP.stat(arquivo),
@@ -315,11 +304,12 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
       falha,
     );
     const arquivoComentado = entrada.gravar
-      ? yield* Effect.tryPromise({
-          try: () => gravarCopia(arquivo, revisao.docx),
-          catch: () =>
+      ? yield* gravarCopia(arquivo, revisao.docx).pipe(
+          Effect.provideService(FileSystem.FileSystem, fs),
+          Effect.mapError(() =>
             falha("Não foi possível gravar a cópia comentada na pasta do arquivo. Confira se a pasta aceita gravação."),
-        })
+          ),
+        )
       : null;
     const { docx: _, ...semDocx } = revisao;
     return { revisao: semDocx, sha256, arquivoComentado } satisfies RevisaoDoArquivo;
@@ -343,15 +333,14 @@ export const make = Effect.fn("RevisorPpc.make")(function* (opcoes: OpcoesRevisa
     );
   const revisar = (entrada: EntradaRevisao) =>
     revisarCompleto(entrada).pipe(Effect.map((r) => resultadoParaInterface(entrada.arquivo, r)));
-  const liberar = (arquivo: string) => Effect.sync(() => void liberados.add(NodePath.normalize(arquivo)));
   const revisarArquivo = (entrada: EntradaRevisarArquivo) => revisarUm(entrada).pipe(vez.withPermits(1));
 
-  const liberado = (arquivo: string) =>
-    Effect.sync(() => !opcoes.exigirLiberacao || liberados.has(NodePath.normalize(arquivo)));
-
   const ocupada = vez.withPermitsIfAvailable(1)(Effect.void).pipe(Effect.map(Option.isNone));
-  return RevisorPpc.of({ revisar, revisarCompleto, liberar, liberado, revisarArquivo, ocupada });
+  return RevisorPpc.of({ revisar, revisarCompleto, revisarArquivo, ocupada });
 });
 
-/** O serviço sobre o `FontesNormativas` e o `SqlClient` do `kb.sqlite` (os do `Leitura` do servidor). */
+/**
+ * O serviço sobre o `FontesNormativas` e o `SqlClient` do `kb.sqlite` (os do `Leitura` do servidor),
+ * os `ArquivosLiberados` e o `FileSystem`.
+ */
 export const layer = (opcoes: OpcoesRevisao = {}) => Layer.effect(RevisorPpc, make(opcoes));

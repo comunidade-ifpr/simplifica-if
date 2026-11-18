@@ -12,6 +12,7 @@ import * as NodeCrypto from "@effect/platform-node/NodeCrypto";
 import * as NodeServices from "@effect/platform-node/NodeServices";
 import { afterAll, assert, describe, it } from "@effect/vitest";
 import * as Context from "effect/Context";
+import * as Deferred from "effect/Deferred";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
@@ -65,11 +66,27 @@ const SKILL: SkillDoApp = {
   pasta: "/nao/usada",
 };
 
-const camada = (arquivo: string, registro: Registro) =>
+/** As pastas sem pastas de tarefa, com o retrato do fim do turno que lança um defeito. */
+const layerRetratoComDefeito = Layer.effect(
+  PastasTrabalho.PastasTrabalho,
+  Effect.gen(function* () {
+    const pastas = yield* PastasTrabalho.PastasTrabalho;
+    return PastasTrabalho.PastasTrabalho.of({
+      ...pastas,
+      fecharTurno: () => Effect.die(new Error("retrato com defeito")),
+    });
+  }),
+).pipe(Layer.provide(PastasTrabalho.layerSemPastas));
+
+const camada = (
+  arquivo: string,
+  registro: Registro,
+  pastas: Layer.Layer<PastasTrabalho.PastasTrabalho> = PastasTrabalho.layerSemPastas,
+) =>
   Conversas.layer({ prazoInterrupcao: PRAZO }).pipe(
     Layer.provideMerge(Motor.layer),
     Layer.provideMerge(CatalogoSkills.layerFixo([SKILL])),
-    Layer.provide(PastasTrabalho.layerSemPastas),
+    Layer.provide(pastas),
     Layer.provideMerge(Historico.layer),
     Layer.provideMerge(Banco.layerArquivo(arquivo)),
     Layer.provide(McpHttp.layer({ banco: kb })),
@@ -81,10 +98,10 @@ const camada = (arquivo: string, registro: Registro) =>
  * Abre o servidor de conversas (como o app que abre) num escopo próprio; `fechar` o encerra como o
  * app que fecha.
  */
-const abrir = (arquivo: string, registro: Registro) =>
+const abrir = (arquivo: string, registro: Registro, pastas?: Layer.Layer<PastasTrabalho.PastasTrabalho>) =>
   Effect.gen(function* () {
     const escopo = yield* Scope.make();
-    const contexto = yield* Layer.buildWithScope(camada(arquivo, registro), escopo);
+    const contexto = yield* Layer.buildWithScope(camada(arquivo, registro, pastas), escopo);
     return {
       conversas: Context.get(contexto, Conversas.Conversas),
       historico: Context.get(contexto, Historico.Historico),
@@ -418,6 +435,48 @@ describe("ciclo de vida da sessão do provider", () => {
       yield* conversas.retomar(id);
       assert.isUndefined(registro.configs.at(-1)?.retomar);
       assert.deepStrictEqual(registro.configs.at(-1)?.skills, esperadas);
+      yield* fechar;
+    }),
+  );
+
+  it.effect(
+    "o FimTurno chega com o turno fechado: a conversa em repouso aceita outra mensagem antes de o stream acabar",
+    () =>
+      Effect.gen(function* () {
+        const registro = novoRegistro();
+        const segurar = yield* Deferred.make<void>();
+        registro.segurarFim = segurar;
+        const { conversas, fechar } = yield* abrir(novoBanco(), registro);
+        const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+        // Como a interface: o turno acabou quando chega o `FimTurno`; o stream do provider segue aberto.
+        const eventos = yield* conversas.enviar(id, "olá").pipe(
+          Stream.takeUntil((evento) => evento._tag === "FimTurno"),
+          Stream.runCollect,
+        );
+        assert.strictEqual(tags(eventos).at(-1), "FimTurno");
+        assert.strictEqual((yield* conversas.carregar(id)).conversa.estado, "pronta");
+        registro.segurarFim = undefined;
+        const outra = yield* Stream.runCollect(conversas.enviar(id, "outra"));
+        assert.deepStrictEqual([...outra].at(-1), { _tag: "FimTurno", motivo: "end_turn" });
+        yield* Deferred.succeed(segurar, undefined);
+        yield* rodar;
+        // O fim tardio do primeiro stream não toca o histórico: cada turno tem um só `FimTurno`.
+        const fins = eventosDe((yield* conversas.carregar(id)).itens).filter((evento) => evento._tag === "FimTurno");
+        assert.strictEqual(fins.length, 2);
+        yield* fechar;
+      }),
+  );
+
+  it.effect("um retrato da pasta que lança defeito não deixa o turno aberto", () =>
+    Effect.gen(function* () {
+      const registro = novoRegistro();
+      const { conversas, fechar } = yield* abrir(novoBanco(), registro, layerRetratoComDefeito);
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const eventos = yield* Stream.runCollect(conversas.enviar(id, "olá"));
+      assert.deepStrictEqual([...eventos].at(-1), { _tag: "FimTurno", motivo: "end_turn" });
+      assert.strictEqual((yield* conversas.carregar(id)).conversa.estado, "pronta");
+      const outra = yield* Stream.runCollect(conversas.enviar(id, "outra"));
+      assert.strictEqual(tags(outra).at(-1), "FimTurno");
       yield* fechar;
     }),
   );

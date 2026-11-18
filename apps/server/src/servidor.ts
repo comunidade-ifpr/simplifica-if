@@ -42,6 +42,7 @@ import type { Canal, CanalDistribuicao } from "@simplifica-if/kb/canal";
 import * as McpHttp from "@simplifica-if/mcp/http";
 import * as McpRpc from "@simplifica-if/mcp/rpc";
 import * as Motor from "@simplifica-if/motor";
+import * as ArquivosLiberados from "./ArquivosLiberados.ts";
 import * as Atualizador from "./Atualizador.ts";
 import type { Abertura } from "@simplifica-if/atualizacao/local";
 import type { ChavePublica } from "@simplifica-if/atualizacao/minisign";
@@ -219,6 +220,9 @@ export class ServidorApp extends Context.Service<
   }
 >()("@simplifica-if/server/servidor/ServidorApp") {}
 
+/** O corpo de `POST /revisao-ppc/liberar`: o caminho absoluto do arquivo escolhido no diálogo. */
+const lerCorpoLiberacao = HttpServerRequest.schemaBodyJson(Schema.Struct({ arquivo: Schema.String }));
+
 /**
  * O servidor `effect/rpc` do `GrupoApp`, atrás da autenticação, na rota GET `/rpc`, e a emissão de
  * ingressos do WebSocket em `POST /ingresso` (com o `OPTIONS` do CORS).
@@ -226,7 +230,7 @@ export class ServidorApp extends Context.Service<
 const layerRotaRpc = Layer.unwrap(
   Effect.gen(function* () {
     const autenticacao = yield* Autenticacao.Autenticacao;
-    const revisor = yield* RevisorPpc.RevisorPpc;
+    const liberacao = yield* ArquivosLiberados.ArquivosLiberados;
     const { protocol, httpEffect } = yield* RpcServer.makeProtocolWithHttpEffectWebsocket;
     // Como o T3 (`WS_RPC_SERVER_OPTIONS`): um defeito num handler não derruba as outras chamadas. A
     // conexão que cai não encerra conversa: elas não dependem da conexão (`Conversas.ts`).
@@ -245,7 +249,7 @@ const layerRotaRpc = Layer.unwrap(
         }),
       ),
       HttpRouter.add("POST", CAMINHO_INGRESSO, autenticacao.emitirIngresso),
-      // O processo principal do desktop libera o arquivo escolhido no diálogo (revisão prévia).
+      // O processo principal do desktop libera o arquivo escolhido no diálogo (revisão prévia e anexos).
       HttpRouter.add(
         "POST",
         CAMINHO_LIBERAR_ARQUIVO,
@@ -253,11 +257,10 @@ const layerRotaRpc = Layer.unwrap(
           const requisicao = yield* HttpServerRequest.HttpServerRequest;
           const recusa = yield* autenticacao.conferirDesktop(requisicao);
           if (Option.isSome(recusa)) return recusa.value;
-          const corpo = yield* Effect.option(requisicao.json);
-          const arquivo = Option.isSome(corpo) ? (corpo.value as { arquivo?: unknown } | null)?.arquivo : undefined;
-          if (typeof arquivo !== "string" || !NodePath.isAbsolute(arquivo))
+          const corpo = yield* Effect.option(lerCorpoLiberacao);
+          if (Option.isNone(corpo) || !NodePath.isAbsolute(corpo.value.arquivo))
             return HttpServerResponse.empty({ status: 400 });
-          yield* revisor.liberar(arquivo);
+          yield* liberacao.liberar(corpo.value.arquivo);
           return HttpServerResponse.empty({ status: 204 });
         }),
       ),
@@ -306,7 +309,8 @@ export const layer = (opcoes: Opcoes) => {
     Layer.provideMerge(RevisaoIa.layer(opcoes.revisaoIa)),
     Layer.provideMerge(Revisoes.layer.pipe(Layer.provide(banco))),
     Layer.provideMerge(Listas.layer.pipe(Layer.provide(banco))),
-    Layer.provideMerge(RevisorPpc.layer({ ...opcoes.revisaoPpc, exigirLiberacao: opcoes.tokenDesktop !== undefined })),
+    Layer.provideMerge(RevisorPpc.layer(opcoes.revisaoPpc)),
+    Layer.provideMerge(ArquivosLiberados.layer({ exigirLiberacao: opcoes.tokenDesktop !== undefined })),
     Layer.provideMerge(Motor.layer),
     Layer.provideMerge(Historico.layer.pipe(Layer.provide(banco))),
     Layer.provideMerge(

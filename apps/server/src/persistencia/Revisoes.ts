@@ -1,19 +1,27 @@
 /**
  * As revisões de PPC com IA no banco (`Banco.ts`, migração 2): a revisão, o plano e o resultado
- * conferido de cada bloco. Os JSONs são do próprio servidor (`revisao-ppc/RevisaoIa.ts`); uma falha do
- * banco é defeito, como no `Historico`.
+ * conferido de cada bloco. Os JSONs são do próprio servidor (`revisao-ppc/RevisaoIa.ts`), gravados e
+ * lidos pelos schemas do contrato; uma falha do banco ou um JSON fora de forma é defeito, como no
+ * `Historico`.
+ *
+ * Duas colunas ficam de fora da decodificação por schema: o plano (`revisoes_ia.plano`) e o resultado
+ * do bloco (`blocos_ia.resultado`). Os tipos delas (`PlanoRevisaoIa` em `preparo.ts`, `ResultadoBloco`
+ * em `julgamento.ts`) são tipos TypeScript, não `Schema`, e reescrevê-los como schema (com as fichas,
+ * os blocos e o contexto normativo) não se paga: aqui só se confere que são JSON, e a `RevisaoIa`, que
+ * os gravou, lê com os tipos dela.
  */
 import * as Context from "effect/Context";
 import * as DateTime from "effect/DateTime";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
-import type {
+import {
   EstimativaRevisaoIa,
-  ModoRevisaoIa,
-  Provider,
+  type ModoRevisaoIa,
+  type Provider,
   ResultadoRevisaoPpc,
-  SituacaoRevisaoIa,
+  type SituacaoRevisaoIa,
   UsoRevisaoIa,
 } from "@simplifica-if/contratos-app";
 
@@ -84,26 +92,48 @@ export class Revisoes extends Context.Service<
   }
 >()("@simplifica-if/server/persistencia/Revisoes") {}
 
-interface Linha {
-  readonly id: string;
-  readonly arquivo: string;
-  readonly sha256: string;
-  readonly provider: string;
-  readonly modelo: string | null;
-  readonly modo: string;
-  readonly cnct: string | null;
-  readonly forma: string | null;
-  readonly situacao: string;
-  readonly motivo: string | null;
-  readonly limite: number;
-  readonly plano: string | null;
-  readonly estimativa: string;
-  readonly resultado: string | null;
-  readonly criada_em: string;
-  readonly atualizada_em: string;
-}
+const EstimativaJson = Schema.fromJsonString(EstimativaRevisaoIa);
+const ResultadoJson = Schema.fromJsonString(ResultadoRevisaoPpc);
+const UsoJson = Schema.fromJsonString(UsoRevisaoIa);
+const FerramentasJson = Schema.fromJsonString(Schema.Array(Schema.String));
+/** O plano e o resultado de um bloco, que a `RevisaoIa` lê com os tipos dela. */
+const DesconhecidoJson = Schema.fromJsonString(Schema.Unknown);
 
-const paraRegistro = (linha: Linha): RegistroRevisaoIa => ({
+/** Uma linha de `revisoes_ia`, com as colunas JSON decodificadas. */
+const Linha = Schema.Struct({
+  id: Schema.String,
+  arquivo: Schema.String,
+  sha256: Schema.String,
+  provider: Schema.String,
+  modelo: Schema.NullOr(Schema.String),
+  modo: Schema.String,
+  cnct: Schema.NullOr(Schema.String),
+  forma: Schema.NullOr(Schema.String),
+  situacao: Schema.String,
+  motivo: Schema.NullOr(Schema.String),
+  limite: Schema.Number,
+  plano: Schema.NullOr(DesconhecidoJson),
+  estimativa: EstimativaJson,
+  resultado: Schema.NullOr(ResultadoJson),
+  criada_em: Schema.String,
+  atualizada_em: Schema.String,
+});
+const LinhaBloco = Schema.Struct({
+  bloco_id: Schema.String,
+  resultado: DesconhecidoJson,
+  uso: UsoJson,
+  segundos: Schema.Number,
+});
+const lerLinhas = Schema.decodeUnknownEffect(Schema.Array(Linha));
+const lerBlocos = Schema.decodeUnknownEffect(Schema.Array(LinhaBloco));
+const lerUsos = Schema.decodeUnknownEffect(Schema.Array(Schema.Struct({ uso: UsoJson })));
+const codificarDesconhecido = Schema.encodeEffect(DesconhecidoJson);
+const codificarEstimativa = Schema.encodeEffect(EstimativaJson);
+const codificarResultado = Schema.encodeEffect(ResultadoJson);
+const codificarUso = Schema.encodeEffect(UsoJson);
+const codificarFerramentas = Schema.encodeEffect(FerramentasJson);
+
+const paraRegistro = (linha: typeof Linha.Type): RegistroRevisaoIa => ({
   id: linha.id,
   arquivo: linha.arquivo,
   sha256: linha.sha256,
@@ -115,18 +145,14 @@ const paraRegistro = (linha: Linha): RegistroRevisaoIa => ({
   situacao: linha.situacao as SituacaoRevisaoIa,
   motivo: linha.motivo,
   limite: linha.limite === 1,
-  plano: linha.plano === null ? null : JSON.parse(linha.plano),
-  estimativa: JSON.parse(linha.estimativa) as EstimativaRevisaoIa,
-  resultado: linha.resultado === null ? null : (JSON.parse(linha.resultado) as ResultadoRevisaoPpc),
+  plano: linha.plano,
+  estimativa: linha.estimativa,
+  resultado: linha.resultado,
   criadaEm: linha.criada_em,
   atualizadaEm: linha.atualizada_em,
 });
 
 const agora = Effect.map(DateTime.now, DateTime.formatIso);
-
-/** JSON dos próprios dados do servidor (planos e resultados já validados), fora do código Effect. */
-const json = (valor: unknown): string => JSON.stringify(valor);
-const lerUso = (texto: string) => JSON.parse(texto) as UsoRevisaoIa;
 
 const make = Effect.gen(function* () {
   const sql = yield* SqlClient.SqlClient;
@@ -136,20 +162,21 @@ const make = Effect.gen(function* () {
     yield* sql`
       INSERT INTO revisoes_ia (id, arquivo, sha256, provider, modelo, modo, cnct, forma, situacao, plano, estimativa, criada_em, atualizada_em)
       VALUES (${r.id}, ${r.arquivo}, ${r.sha256}, ${r.provider}, ${r.modelo}, ${r.modo}, ${r.cnct}, ${r.forma},
-        ${r.situacao}, ${json(r.plano)}, ${json(r.estimativa)}, ${data}, ${data})
+        ${r.situacao}, ${yield* codificarDesconhecido(r.plano)}, ${yield* codificarEstimativa(r.estimativa)}, ${data}, ${data})
     `;
   }, Effect.orDie);
 
   const buscar = Effect.fn("Revisoes.buscar")(function* (id: string) {
-    const linhas = yield* sql<Linha>`SELECT * FROM revisoes_ia WHERE id = ${id}`;
+    const linhas = yield* lerLinhas(yield* sql`SELECT * FROM revisoes_ia WHERE id = ${id}`);
     return linhas[0] ? paraRegistro(linhas[0]) : null;
   }, Effect.orDie);
 
-  const listar = sql<Linha>`
+  const listar = sql`
     SELECT id, arquivo, sha256, provider, modelo, modo, cnct, forma, situacao, motivo, limite, NULL AS plano,
       estimativa, NULL AS resultado, criada_em, atualizada_em
     FROM revisoes_ia ORDER BY atualizada_em DESC
   `.pipe(
+    Effect.flatMap(lerLinhas),
     Effect.map((linhas) => linhas.map((l) => paraRegistro(l) as RegistroRevisaoIa<null>)),
     Effect.orDie,
   );
@@ -161,7 +188,7 @@ const make = Effect.gen(function* () {
         situacao = ${a.situacao},
         motivo = ${a.motivo ?? null},
         limite = ${a.limite === true ? 1 : 0},
-        resultado = COALESCE(${a.resultado === undefined ? null : json(a.resultado)}, resultado),
+        resultado = COALESCE(${a.resultado === undefined ? null : yield* codificarResultado(a.resultado)}, resultado),
         atualizada_em = ${data}
       WHERE id = ${id}
     `;
@@ -171,19 +198,21 @@ const make = Effect.gen(function* () {
     const data = yield* agora;
     yield* sql`
       INSERT OR REPLACE INTO blocos_ia (revisao_id, bloco_id, resultado, uso, segundos, criado_em)
-      VALUES (${revisao}, ${b.bloco}, ${json(b.resultado)}, ${json(b.uso)}, ${b.segundos}, ${data})
+      VALUES (${revisao}, ${b.bloco}, ${yield* codificarDesconhecido(b.resultado)}, ${yield* codificarUso(b.uso)}, ${b.segundos}, ${data})
     `;
     yield* sql`UPDATE revisoes_ia SET atualizada_em = ${data} WHERE id = ${revisao}`;
   }, Effect.orDie);
 
   const blocos = Effect.fn("Revisoes.blocos")(function* (revisao: string) {
-    const linhas = yield* sql<{ bloco_id: string; resultado: string; uso: string; segundos: number }>`
+    const linhas = yield* lerBlocos(
+      yield* sql`
       SELECT bloco_id, resultado, uso, segundos FROM blocos_ia WHERE revisao_id = ${revisao}
-    `;
+    `,
+    );
     return linhas.map((l): RegistroBlocoIa => ({
       bloco: l.bloco_id,
-      resultado: JSON.parse(l.resultado),
-      uso: JSON.parse(l.uso) as UsoRevisaoIa,
+      resultado: l.resultado,
+      uso: l.uso,
       segundos: l.segundos,
     }));
   }, Effect.orDie);
@@ -201,20 +230,23 @@ const make = Effect.gen(function* () {
     const data = yield* agora;
     yield* sql`
       INSERT INTO tentativas_ia (revisao_id, bloco_id, numero, uso, segundos, ferramentas, criada_em)
-      VALUES (${revisao}, ${bloco}, ${t.numero}, ${json(t.uso)}, ${t.segundos}, ${json(t.ferramentas)}, ${data})
+      VALUES (${revisao}, ${bloco}, ${t.numero}, ${yield* codificarUso(t.uso)}, ${t.segundos},
+        ${yield* codificarFerramentas(t.ferramentas)}, ${data})
     `;
   }, Effect.orDie);
 
   const usoTotal = Effect.fn("Revisoes.usoTotal")(function* (revisao: string) {
     // As tentativas do lote e as ações com IA da lista viva que veio dela (etapa 5b).
-    const linhas = yield* sql<{ uso: string }>`
+    const linhas = yield* lerUsos(
+      yield* sql`
       SELECT uso FROM tentativas_ia WHERE revisao_id = ${revisao}
       UNION ALL
       SELECT a.uso FROM acoes_ia a JOIN listas_pendencias l ON l.id = a.lista_id WHERE l.revisao_id = ${revisao}
-    `;
+    `,
+    );
     const total = { entrada: 0, saida: 0, cacheLeitura: 0, cacheEscrita: 0, custoUsd: 0 };
     for (const l of linhas) {
-      const u = lerUso(l.uso);
+      const u = l.uso;
       for (const k of Object.keys(total) as (keyof UsoRevisaoIa)[]) total[k] += u[k];
     }
     return total as UsoRevisaoIa;

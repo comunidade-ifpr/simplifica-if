@@ -20,6 +20,7 @@ import { CAMINHO_LIBERAR_ARQUIVO, ehFalhaRevisaoPpc } from "@simplifica-if/contr
 import * as Layers from "@simplifica-if/kb/layers";
 import { par } from "@simplifica-if/docx/testes/sintetico";
 import { ppcSintetico } from "@simplifica-if/ppc/testes/revisao-previa";
+import * as ArquivosLiberados from "../src/ArquivosLiberados.ts";
 import * as RevisorPpc from "../src/revisao-ppc/RevisorPpc.ts";
 import * as Servidor from "../src/servidor.ts";
 import {
@@ -166,14 +167,18 @@ layer(camada, { excludeTestServices: true })("revisaoPpc.revisar", (it) => {
   );
 });
 
+/** O banco de fixture e, como no servidor sem o segredo do desktop, todo arquivo liberado. */
+const semExigirLiberacao = Layer.mergeAll(
+  Layers.layerSomenteLeitura({ caminho: banco }),
+  ArquivosLiberados.layer({ exigirLiberacao: false }),
+);
+
 /** O serviço direto sobre o banco de fixture, com limites apertados para provocar cada estouro. */
 const revisarCom = (limites: Partial<RevisorPpc.Limites>, arquivo: string) =>
   Effect.gen(function* () {
     const revisor = yield* RevisorPpc.RevisorPpc;
     return yield* Effect.flip(revisor.revisar({ arquivo }));
-  }).pipe(
-    Effect.provide(RevisorPpc.layer({ limites }).pipe(Layer.provide(Layers.layerSomenteLeitura({ caminho: banco })))),
-  );
+  }).pipe(Effect.provide(RevisorPpc.layer({ limites }).pipe(Layer.provide(semExigirLiberacao))));
 
 layer(NodeServices.layer, { excludeTestServices: true })("limites do Worker", (it) => {
   it.effect("arquivo acima do limite: recusado antes de ler, com a orientação de compactar as imagens", () =>
@@ -196,7 +201,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("limites do Worker", (i
         const arquivo = gravar("normal.docx", ppcSintetico());
         const ok = yield* RevisorPpc.RevisorPpc.pipe(
           Effect.flatMap((revisor) => revisor.revisar({ arquivo })),
-          Effect.provide(RevisorPpc.layer().pipe(Layer.provide(Layers.layerSomenteLeitura({ caminho: banco })))),
+          Effect.provide(RevisorPpc.layer().pipe(Layer.provide(semExigirLiberacao))),
         );
         assert.isAbove(ok.pendencias.length, 0);
       }),
@@ -223,7 +228,7 @@ layer(NodeServices.layer, { excludeTestServices: true })("uma revisão por vez",
             concurrency: 2,
           },
         );
-      }).pipe(Effect.provide(RevisorPpc.layer().pipe(Layer.provide(Layers.layerSomenteLeitura({ caminho: banco })))));
+      }).pipe(Effect.provide(RevisorPpc.layer().pipe(Layer.provide(semExigirLiberacao))));
       const resultados = [primeira, segunda];
       const falhas = resultados.filter((r) => r._tag === "Failure");
       assert.strictEqual(falhas.length, 1);
@@ -267,6 +272,15 @@ layer(camadaDesktop, { excludeTestServices: true })("liberação pelo desktop", 
         (yield* liberar({ authorization: `Bearer ${TOKEN_DESKTOP}`, origin: "app://simplifica" })).status,
         403,
       );
+      // Corpo sem o caminho absoluto do arquivo: 400.
+      for (const corpo of ["{", JSON.stringify({ arquivo: 1 }), JSON.stringify({ arquivo: "relativo.docx" })]) {
+        const resposta = yield* pedirHttp(url, {
+          metodo: "POST",
+          cabecalhos: { "content-type": "application/json", authorization: `Bearer ${TOKEN_DESKTOP}` },
+          corpo,
+        });
+        assert.strictEqual(resposta.status, 400);
+      }
       assert.strictEqual((yield* liberar({ authorization: `Bearer ${TOKEN_DESKTOP}` })).status, 204);
 
       const resultado = yield* rpc["revisaoPpc.revisar"]({ arquivo });
