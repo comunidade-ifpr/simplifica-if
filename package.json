@@ -41,7 +41,6 @@
     "@simplifica-if/sei-cli": "workspace:*",
     "@simplifica-if/mcp": "workspace:*",
     "@simplifica-if/motor": "workspace:*",
-    "ajv": "8.20.0",
     "domhandler": "6.0.1",
     "domutils": "4.0.2",
     "dotenv": "18.0.10",

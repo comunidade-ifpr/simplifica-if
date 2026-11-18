@@ -2,13 +2,90 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://simplifica-if.local/revisar-ppc/alertas-transversais.schema.json",
   "title": "Alertas transversais PPC",
+  "description": "Gerado de .agents/skills/revisar-ppc/scripts/esquemas.ts (Effect Schema) por `revisar_ppc.ts gerar-schemas`; não edite à mão.",
   "type": "object",
-  "required": ["alertas_transversais"],
   "properties": {
     "alertas_transversais": {
       "type": "array",
       "items": {
         "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "validacao_id": {
+            "type": "string"
+          },
+          "titulo": {
+            "type": "string"
+          },
+          "criticidade": {
+            "type": "string",
+            "enum": [
+              "BLOQ",
+              "OBRIG",
+              "REC"
+            ]
+          },
+          "descricao": {
+            "type": "string"
+          },
+          "fichas_relacionadas": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evidencias": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "trecho": {
+                      "type": "string"
+                    },
+                    "secao": {
+                      "type": "string"
+                    },
+                    "localizador": {
+                      "type": "string"
+                    },
+                    "papel": {
+                      "type": "string"
+                    },
+                    "fonte": {
+                      "type": "string"
+                    },
+                    "anchor": {
+                      "type": "object",
+                      "properties": {
+                        "block_id": {
+                          "type": "string"
+                        },
+                        "quote": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": true
+                    }
+                  },
+                  "required": [
+                    "trecho"
+                  ],
+                  "additionalProperties": true
+                }
+              ]
+            }
+          },
+          "revisao_humana_obrigatoria": {
+            "type": "boolean"
+          }
+        },
         "required": [
           "id",
           "validacao_id",
@@ -19,42 +96,12 @@
           "evidencias",
           "revisao_humana_obrigatoria"
         ],
-        "properties": {
-          "id": { "type": "string" },
-          "validacao_id": { "type": "string" },
-          "titulo": { "type": "string" },
-          "criticidade": { "type": "string", "enum": ["BLOQ", "OBRIG", "REC"] },
-          "descricao": { "type": "string" },
-          "fichas_relacionadas": { "type": "array", "items": { "type": "string" } },
-          "evidencias": {
-            "type": "array",
-            "items": {
-              "anyOf": [
-                { "type": "string" },
-                {
-                  "type": "object",
-                  "required": ["trecho"],
-                  "properties": {
-                    "trecho": { "type": "string" },
-                    "secao": { "type": "string" },
-                    "localizador": { "type": "string" },
-                    "papel": { "type": "string" },
-                    "fonte": { "type": "string" },
-                    "anchor": {
-                      "type": "object",
-                      "properties": {
-                        "block_id": { "type": "string" },
-                        "quote": { "type": "string" }
-                      }
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "revisao_humana_obrigatoria": { "type": "boolean" }
-        }
+        "additionalProperties": true
       }
     }
-  }
+  },
+  "required": [
+    "alertas_transversais"
+  ],
+  "additionalProperties": true
 }

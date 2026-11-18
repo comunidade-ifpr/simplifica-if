@@ -26,14 +26,15 @@ import { aparar } from "@simplifica-if/kb/texto";
 import { listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { caminhosRodada, escreverJsonDaRodada, lerJsonDaRodada, sha256JsonPayload } from "./rodada.ts";
-import { carregarFichasOrdenadas, STATUS_FUNDAMENTACAO_NORMATIVA } from "./subagents.ts";
+import { STATUS_FUNDAMENTACAO_NORMATIVA } from "./esquemas.ts";
+import { carregarFichasOrdenadas } from "./subagents.ts";
 
 export class ErroResultadosSubagents extends Error {
   override name = "ErroResultadosSubagents";
 }
 
 const ESTADOS_PERMITIDOS = new Set(["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"]);
-const STATUS_NORMATIVOS = new Set(STATUS_FUNDAMENTACAO_NORMATIVA);
+const STATUS_NORMATIVOS = new Set<string>(STATUS_FUNDAMENTACAO_NORMATIVA);
 
 /** Texto aparado do valor; vazio para valor falso. */
 function texto(valor: unknown): string {

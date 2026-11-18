@@ -54,6 +54,7 @@ import { aparar, compararTexto } from "@simplifica-if/kb/texto";
 import { listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { componentesMatriz, gerarContextoCnctRodada, lerJsonSeExistir } from "./cnct-catalogo.ts";
+import { STATUS_FUNDAMENTACAO_NORMATIVA } from "./esquemas.ts";
 import { marcoLegivel, referenciasLegiveisDaFicha, universoOuVazio } from "./referencias-fichas.ts";
 import { carregarMarcos } from "./validacao-base.ts";
 import {
@@ -104,15 +105,6 @@ export class GruposSubagentsInvalidos extends Schema.TaggedError<GruposSubagents
 export const ehGruposSubagentsInvalidos = Schema.is(GruposSubagentsInvalidos);
 
 const FICHA_REPRESENTACAO_GRAFICA = "CT-CURR-10";
-export const STATUS_FUNDAMENTACAO_NORMATIVA = [
-  "CONFIRMADA",
-  "CONFIRMADA_COM_RESSALVA",
-  "IMPRECISA",
-  "SEM_SUPORTE_NA_FONTE",
-  "CONTRADITORIA",
-  "FONTE_AUSENTE_OU_NAO_CONSULTADA",
-  "NAO_NORMATIVA",
-];
 const CAMPOS_TEXTO_FICHA = ["titulo", "pergunta", "rubrica", "boa_evidencia", "ma_evidencia", "escalonar_quando"];
 
 export type OpcoesSkill = { caminhos?: CaminhosAnalise; fichasDir?: string; validacoesDir?: string };
@@ -254,7 +246,7 @@ export function contextoFundamentacaoNormativa(caminhos: CaminhosAnalise = camin
       catalogos: seExiste(NodePath.join(base, "catalogos_manifest.json")),
       cnct: seExiste(NodePath.join(base, "catalogos", "cnct", "manifest.json")),
     },
-    status_permitidos: STATUS_FUNDAMENTACAO_NORMATIVA,
+    status_permitidos: [...STATUS_FUNDAMENTACAO_NORMATIVA],
     marcos_normativos: carregarMarcosNormativos(caminhos.marcosNormativosPath, universoOuVazio(caminhos)),
     observacao:
       "Use este contexto quando o PPC citar norma ou fizer afirmação com força normativa. " +
