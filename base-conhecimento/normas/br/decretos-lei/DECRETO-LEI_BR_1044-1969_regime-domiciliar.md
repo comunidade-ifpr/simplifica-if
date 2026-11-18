@@ -32,6 +32,7 @@ aliases:
 fonte: https://www.planalto.gov.br/ccivil_03/decreto-lei/del1044.htm
 vigencia_calculada_em: "2026-11-13"
 relaciona_se_a:
+  - "Lei nº 6.202/1975"
   - "Lei nº 9.394/1996"
   - "Resolução CONSUP/IFPR nº 190/2024"
   - "Resolução CONSUP/IFPR nº 55/2011"
@@ -96,5 +97,5 @@ Tarso Dutra
 
 - Texto e grafia conforme a página do Planalto (ortografia anterior a 1971: "sôbre", "êsses", "freqüência"). Erros que já constam da fonte oficial foram mantidos como estão: "mórbitas" (mórbidas), "cartide" (provavelmente cardite), "exercício domiciliares" e "síndromes hemorrágicos". A ementa do front matter usa a ortografia atual.
 - Ato da Junta Militar que exercia a Presidência da República (Ministros da Marinha, do Exército e da Aeronáutica), com fundamento no Ato Institucional nº 16/1969. O `orgao` registrado é a Presidência da República, como nos demais atos do Planalto.
-- A página do Planalto remete a: Lei nº 6.202/1975 (estende o regime de exercícios domiciliares à estudante gestante), Lei nº 6.503/1977 e Lei nº 7.692/1988. Nenhuma delas tem texto nesta base.
+- A página do Planalto remete a: Lei nº 6.202/1975 (estende o regime de exercícios domiciliares à estudante gestante, com texto nesta base), Lei nº 6.503/1977 e Lei nº 7.692/1988 (sem texto nesta base).
 - Na base, o Decreto-Lei é citado pela LDB (art. 26, § 3º, IV: prática facultativa da educação física ao aluno "amparado pelo Decreto-Lei no 1.044"), pela Resolução CONSUP/IFPR nº 190/2024 (art. 52, III: regime de atividades domiciliares nos cursos técnicos) e pela Resolução CONSUP/IFPR nº 55/2011 (regime domiciliar de estudos na educação superior).

@@ -16,4 +16,5 @@ export const INCLUIDAS_DEPOIS: ReadonlyMap<string, string> = new Map([
     "normas/br/decretos-lei/DECRETO-LEI_BR_1044-1969_regime-domiciliar.md",
     "incluída em 18/11/2026 do texto oficial (Planalto)",
   ],
+  ["normas/br/leis/LEI_BR_6202-1975_estudante-gestante.md", "incluída em 18/11/2026 do texto oficial (Planalto)"],
 ]);
