@@ -41,7 +41,7 @@ const TOKENS_DISPOSITIVO = [
   String.raw`\s+`,
 ];
 /** Um token de dispositivo (alternância de `TOKENS_DISPOSITIVO`). */
-export const TOKEN_DISPOSITIVO = `(?:${TOKENS_DISPOSITIVO.join("|")})`;
+const TOKEN_DISPOSITIVO = `(?:${TOKENS_DISPOSITIVO.join("|")})`;
 const RE_INICIO_DISPOSITIVO = /\b(?:arts?\b|artigos?\b|incisos?\b|alineas?\b|item\b|itens\b|paragrafos?\b|caput\b)|\$/g;
 /** Um regex fixo (sticky) por token, para a varredura linear de `soTokensDesde`. */
 const RES_TOKEN = TOKENS_DISPOSITIVO.map((token) => new RegExp(token, "y"));
@@ -49,7 +49,7 @@ const RES_TOKEN = TOKENS_DISPOSITIVO.map((token) => new RegExp(token, "y"));
  * Janela examinada antes de uma citação. As cadeias reais têm poucas dezenas de caracteres
  * ("alínea a do inciso II do § 1º do art. 5º"); a janela limita o custo em textos longos.
  */
-export const JANELA_DISPOSITIVO_ANTES = 160;
+const JANELA_DISPOSITIVO_ANTES = 160;
 
 /**
  * `ok[p]`: o trecho `texto.slice(p)` é formado só por tokens de dispositivo. Programação dinâmica da

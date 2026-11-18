@@ -29,7 +29,7 @@ export const NOMES_FERRAMENTAS = FERRAMENTAS.map((ferramenta) => ferramenta.nome
  * Pastas da skill que nunca vão para o app: os scripts e os testes só rodam no repositório, e
  * `agents/` traz a configuração de outros clientes (o `openai.yaml` do Codex).
  */
-export const PASTAS_FORA_DO_APP = ["scripts", "tests", "agents"] as const;
+const PASTAS_FORA_DO_APP = ["scripts", "tests", "agents"] as const;
 
 const NOME_SKILL = /^[a-z0-9][a-z0-9-]{0,63}$/;
 const SLUG = /^[a-z0-9][a-z0-9-]*$/;

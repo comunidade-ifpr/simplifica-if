@@ -132,158 +132,156 @@ function conferirEnvelope(lido: Lido): string {
 
 const INVALIDO = -32602;
 
-for (const [transporte, abrir] of [
-  ["stdio", stdio],
-  ["HTTP", http],
-] as const) {
-  describe(`recursos ifpr:// (${transporte})`, () => {
-    it.effect("initialize anuncia resources; resources/templates/list traz um modelo por tipo, sem o curinga", () =>
-      Effect.gen(function* () {
-        const cliente = yield* abrir(bancoPpcs);
-        expect(cliente.getServerCapabilities()?.resources).toMatchObject({ listChanged: true });
-        const { resourceTemplates } = yield* Effect.promise(() => cliente.listResourceTemplates());
-        expect(resourceTemplates.map((m) => m.uriTemplate)).toEqual([
-          "ifpr://norma/{+norma}{#dispositivo}",
-          "ifpr://curso/{campus}/{curso}",
-          "ifpr://ppc/{campus}/{curso}{#secao}",
-          "ifpr://cnct/{slug}",
-          "ifpr://campus/{campus}",
-          "ifpr://ficha/{ficha}",
-        ]);
-        expect(resourceTemplates.map((m) => m.name)).toEqual(MODELOS.map((m) => m.tipo));
-        for (const m of resourceTemplates) {
-          expect(m.mimeType).toBe(MIME_RECURSO);
-          expect(m.description).toMatch(/ifpr:\/\//);
-        }
-      }),
-    );
+describe.each([
+  { transporte: "stdio", abrir: stdio },
+  { transporte: "HTTP", abrir: http },
+])("recursos ifpr:// ($transporte)", ({ abrir }) => {
+  it.effect("initialize anuncia resources; resources/templates/list traz um modelo por tipo, sem o curinga", () =>
+    Effect.gen(function* () {
+      const cliente = yield* abrir(bancoPpcs);
+      expect(cliente.getServerCapabilities()?.resources).toMatchObject({ listChanged: true });
+      const { resourceTemplates } = yield* Effect.promise(() => cliente.listResourceTemplates());
+      expect(resourceTemplates.map((m) => m.uriTemplate)).toEqual([
+        "ifpr://norma/{+norma}{#dispositivo}",
+        "ifpr://curso/{campus}/{curso}",
+        "ifpr://ppc/{campus}/{curso}{#secao}",
+        "ifpr://cnct/{slug}",
+        "ifpr://campus/{campus}",
+        "ifpr://ficha/{ficha}",
+      ]);
+      expect(resourceTemplates.map((m) => m.name)).toEqual(MODELOS.map((m) => m.tipo));
+      for (const m of resourceTemplates) {
+        expect(m.mimeType).toBe(MIME_RECURSO);
+        expect(m.description).toMatch(/ifpr:\/\//);
+      }
+    }),
+  );
 
-    it.effect("resources/list traz só os pontos de entrada: as normas centrais da base e os campi", () =>
-      Effect.gen(function* () {
-        const cliente = yield* abrir(bancoPpcs);
-        const { resources } = yield* Effect.promise(() => cliente.listResources());
-        expect(resources.map((r) => r.uri)).toEqual([
-          `ifpr://norma/${DCN_2026}`,
-          `ifpr://norma/${DCN_2021}`,
-          "ifpr://norma/br/lei/1996/9394",
-          "ifpr://campus/assis-chateaubriand",
-          "ifpr://campus/curitiba",
-          "ifpr://campus/foz-do-iguacu",
-        ]);
-        expect(resources[0]).toMatchObject({ title: "Resolução CNE/CP nº 2/2026", mimeType: MIME_RECURSO });
-        const campus = conferirEnvelope(yield* ler(cliente, "ifpr://campus/curitiba"));
-        expect(campus).toContain("[Campus Curitiba](ifpr://campus/curitiba)");
-      }),
-    );
+  it.effect("resources/list traz só os pontos de entrada: as normas centrais da base e os campi", () =>
+    Effect.gen(function* () {
+      const cliente = yield* abrir(bancoPpcs);
+      const { resources } = yield* Effect.promise(() => cliente.listResources());
+      expect(resources.map((r) => r.uri)).toEqual([
+        `ifpr://norma/${DCN_2026}`,
+        `ifpr://norma/${DCN_2021}`,
+        "ifpr://norma/br/lei/1996/9394",
+        "ifpr://campus/assis-chateaubriand",
+        "ifpr://campus/curitiba",
+        "ifpr://campus/foz-do-iguacu",
+      ]);
+      expect(resources[0]).toMatchObject({ title: "Resolução CNE/CP nº 2/2026", mimeType: MIME_RECURSO });
+      const campus = conferirEnvelope(yield* ler(cliente, "ifpr://campus/curitiba"));
+      expect(campus).toContain("[Campus Curitiba](ifpr://campus/curitiba)");
+    }),
+  );
 
-    it.effect("norma: a ficha; com #dispositivo, só o trecho, com o caput herdado", () =>
-      Effect.gen(function* () {
-        const cliente = yield* abrir(bancoNormas);
-        const norma = conferirEnvelope(yield* ler(cliente, `ifpr://norma/${DCN_2026}`));
-        expect(norma).toContain(`(ifpr://norma/${DCN_2026})`);
-        expect(norma).toContain("**Vigência em 13/11/2026:**");
+  it.effect("norma: a ficha; com #dispositivo, só o trecho, com o caput herdado", () =>
+    Effect.gen(function* () {
+      const cliente = yield* abrir(bancoNormas);
+      const norma = conferirEnvelope(yield* ler(cliente, `ifpr://norma/${DCN_2026}`));
+      expect(norma).toContain(`(ifpr://norma/${DCN_2026})`);
+      expect(norma).toContain("**Vigência em 13/11/2026:**");
 
-        const inciso = yield* ler(cliente, `ifpr://norma/${DCN_2026}#art28-vii`);
-        const texto = conferirEnvelope(inciso);
-        expect(texto).toContain(`(ifpr://norma/${DCN_2026}#art28-vii)`);
-        expect(texto).toContain("> Art. 28. O PPC de curso técnico deve conter, no mínimo:");
-        expect(texto).toContain("> VII – elemento 7 do projeto pedagógico");
-        expect(texto).toContain("nota: (Redação dada pela Resolução CNE/CP nº 3/2026)");
-        expect(texto).not.toContain("VIII – elemento 8");
-        expect(texto).not.toContain("**Vigência em");
-      }),
-    );
+      const inciso = yield* ler(cliente, `ifpr://norma/${DCN_2026}#art28-vii`);
+      const texto = conferirEnvelope(inciso);
+      expect(texto).toContain(`(ifpr://norma/${DCN_2026}#art28-vii)`);
+      expect(texto).toContain("> Art. 28. O PPC de curso técnico deve conter, no mínimo:");
+      expect(texto).toContain("> VII – elemento 7 do projeto pedagógico");
+      expect(texto).toContain("nota: (Redação dada pela Resolução CNE/CP nº 3/2026)");
+      expect(texto).not.toContain("VIII – elemento 8");
+      expect(texto).not.toContain("**Vigência em");
+    }),
+  );
 
-    it.effect("curso, PPC (índice e seção), CNCT, campus e ficha", () =>
-      Effect.gen(function* () {
-        const cliente = yield* abrir(bancoPpcs);
-        const curso = conferirEnvelope(yield* ler(cliente, `ifpr://curso/${PPC_ENFERMAGEM}`));
-        expect(curso).toContain(`## [Técnico em Enfermagem](ifpr://curso/${PPC_ENFERMAGEM})`);
-        expect(curso).toContain("CNCT: [Técnico em Enfermagem](ifpr://cnct/tecnico-em-enfermagem)");
+  it.effect("curso, PPC (índice e seção), CNCT, campus e ficha", () =>
+    Effect.gen(function* () {
+      const cliente = yield* abrir(bancoPpcs);
+      const curso = conferirEnvelope(yield* ler(cliente, `ifpr://curso/${PPC_ENFERMAGEM}`));
+      expect(curso).toContain(`## [Técnico em Enfermagem](ifpr://curso/${PPC_ENFERMAGEM})`);
+      expect(curso).toContain("CNCT: [Técnico em Enfermagem](ifpr://cnct/tecnico-em-enfermagem)");
 
-        const ppc = yield* ler(cliente, `ifpr://ppc/${PPC_ENFERMAGEM}`);
-        const indice = conferirEnvelope(ppc);
-        expect(indice).toContain(`**[PPC Técnico em Enfermagem — Curitiba](ifpr://ppc/${PPC_ENFERMAGEM})**`);
-        expect(indice).toContain(`(ifpr://ppc/${PPC_ENFERMAGEM}#avaliacao-1) [avaliacao], linhas 120-130`);
-        expect(indice).toContain(`Curso: [Técnico em Enfermagem](ifpr://curso/${PPC_ENFERMAGEM})`);
-        expect(indice).toContain(
-          "fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:1-",
-        );
-        expect(ppc._meta?.["ifpr/avisos"]).toEqual([expect.objectContaining({ tipo: "fato-extraido" })]);
+      const ppc = yield* ler(cliente, `ifpr://ppc/${PPC_ENFERMAGEM}`);
+      const indice = conferirEnvelope(ppc);
+      expect(indice).toContain(`**[PPC Técnico em Enfermagem — Curitiba](ifpr://ppc/${PPC_ENFERMAGEM})**`);
+      expect(indice).toContain(`(ifpr://ppc/${PPC_ENFERMAGEM}#avaliacao-1) [avaliacao], linhas 120-130`);
+      expect(indice).toContain(`Curso: [Técnico em Enfermagem](ifpr://curso/${PPC_ENFERMAGEM})`);
+      expect(indice).toContain(
+        "fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:1-",
+      );
+      expect(ppc._meta?.["ifpr/avisos"]).toEqual([expect.objectContaining({ tipo: "fato-extraido" })]);
 
-        const secao = conferirEnvelope(yield* ler(cliente, `ifpr://ppc/${PPC_ENFERMAGEM}#avaliacao-1`));
-        expect(secao).toContain("> Texto da seção avaliacao-1.");
-        expect(secao).toContain(
-          "fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:120-130`",
-        );
-        expect(secao).not.toContain("estagio-1.");
+      const secao = conferirEnvelope(yield* ler(cliente, `ifpr://ppc/${PPC_ENFERMAGEM}#avaliacao-1`));
+      expect(secao).toContain("> Texto da seção avaliacao-1.");
+      expect(secao).toContain(
+        "fonte: `base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md:120-130`",
+      );
+      expect(secao).not.toContain("estagio-1.");
 
-        const cnct = conferirEnvelope(yield* ler(cliente, "ifpr://cnct/tecnico-em-enfermagem"));
-        expect(cnct).toContain(
-          "**[Técnico em Enfermagem (CNCT)](ifpr://cnct/tecnico-em-enfermagem)** — eixo Ambiente e Saúde; carga horária mínima 1200 h",
-        );
-        expect(cnct).toContain(`(ifpr://curso/${PPC_ENFERMAGEM})`);
+      const cnct = conferirEnvelope(yield* ler(cliente, "ifpr://cnct/tecnico-em-enfermagem"));
+      expect(cnct).toContain(
+        "**[Técnico em Enfermagem (CNCT)](ifpr://cnct/tecnico-em-enfermagem)** — eixo Ambiente e Saúde; carga horária mínima 1200 h",
+      );
+      expect(cnct).toContain(`(ifpr://curso/${PPC_ENFERMAGEM})`);
 
-        const campus = conferirEnvelope(yield* ler(cliente, "ifpr://campus/foz-do-iguacu"));
-        expect(campus).toContain("fonte: `base-conhecimento/institucional/ifpr/campi/foz-do-iguacu.json`");
-        expect(campus).toContain("(ifpr://curso/foz-do-iguacu/licenciatura-em-fisica)");
+      const campus = conferirEnvelope(yield* ler(cliente, "ifpr://campus/foz-do-iguacu"));
+      expect(campus).toContain("fonte: `base-conhecimento/institucional/ifpr/campi/foz-do-iguacu.json`");
+      expect(campus).toContain("(ifpr://curso/foz-do-iguacu/licenciatura-em-fisica)");
 
-        const ficha = conferirEnvelope(yield* ler(cliente, "ifpr://ficha/ct-teste-01"));
-        expect(ficha).toContain(
-          "**[CT-TESTE-01: Acompanhamento de egressos](ifpr://ficha/CT-TESTE-01)** — domínio gestao; criticidade OBRIG",
-        );
-        expect(ficha).toContain(
-          "**Pergunta**\n> O PPC descreve o acompanhamento de egressos?\nfonte: `.agents/skills/revisar-ppc/base-analise/fichas/ct-teste-01.json:6-6`",
-        );
-        expect(ficha).toContain(
-          "- [br/cne-cp/res/2026/2#art28-xviii](ifpr://norma/br/cne-cp/res/2026/2#art28-xviii) (fundamento)",
-        );
-        // a ficha da fixture, sem título no arquivo: o ID no lugar dele
-        const curta = conferirEnvelope(yield* ler(cliente, "ifpr://ficha/CT-CURR-12"));
-        expect(curta).toContain("**[CT-CURR-12: CT-CURR-12](ifpr://ficha/CT-CURR-12)**");
-      }),
-    );
+      const ficha = conferirEnvelope(yield* ler(cliente, "ifpr://ficha/ct-teste-01"));
+      expect(ficha).toContain(
+        "**[CT-TESTE-01: Acompanhamento de egressos](ifpr://ficha/CT-TESTE-01)** — domínio gestao; criticidade OBRIG",
+      );
+      expect(ficha).toContain(
+        "**Pergunta**\n> O PPC descreve o acompanhamento de egressos?\nfonte: `.agents/skills/revisar-ppc/base-analise/fichas/ct-teste-01.json:6-6`",
+      );
+      expect(ficha).toContain(
+        "- [br/cne-cp/res/2026/2#art28-xviii](ifpr://norma/br/cne-cp/res/2026/2#art28-xviii) (fundamento)",
+      );
+      // a ficha da fixture, sem título no arquivo: o ID no lugar dele
+      const curta = conferirEnvelope(yield* ler(cliente, "ifpr://ficha/CT-CURR-12"));
+      expect(curta).toContain("**[CT-CURR-12: CT-CURR-12](ifpr://ficha/CT-CURR-12)**");
+    }),
+  );
 
-    it.effect("seção longa: o primeiro trecho, no teto, e como continuar com ler_secao", () =>
-      Effect.gen(function* () {
-        const cliente = yield* abrir(bancoPpcs);
-        const texto = conferirEnvelope(yield* ler(cliente, `ifpr://ppc/${SECAO_LONGA}`));
-        expect(texto.length).toBeLessThanOrEqual(20_000);
-        expect(texto).toContain("> Linha 1 do anexo com o plano de estágio.");
-        expect(texto).not.toContain("Linha 1500 do anexo");
-        expect(texto).toMatch(/Para o resto, chame `ler_secao` com `id: "[^"]+#anexos-1"` e `cursor: "[^"]+"`\./);
-      }),
-    );
+  it.effect("seção longa: o primeiro trecho, no teto, e como continuar com ler_secao", () =>
+    Effect.gen(function* () {
+      const cliente = yield* abrir(bancoPpcs);
+      const texto = conferirEnvelope(yield* ler(cliente, `ifpr://ppc/${SECAO_LONGA}`));
+      expect(texto.length).toBeLessThanOrEqual(20_000);
+      expect(texto).toContain("> Linha 1 do anexo com o plano de estágio.");
+      expect(texto).not.toContain("Linha 1500 do anexo");
+      expect(texto).toMatch(/Para o resto, chame `ler_secao` com `id: "[^"]+#anexos-1"` e `cursor: "[^"]+"`\./);
+    }),
+  );
 
-    it.effect("link inválido ou desconhecido: InvalidParams com a mensagem em português", () =>
-      Effect.gen(function* () {
-        const cliente = yield* abrir(bancoPpcs);
-        const casos: ReadonlyArray<readonly [string, RegExp]> = [
-          [
-            "ifpr://desconhecido/x",
-            /^link desconhecido: "ifpr:\/\/desconhecido\/x"\. .*norma, curso, ppc, cnct, campus, ficha/,
-          ],
-          ["https://exemplo.org/x", /link desconhecido: "https:\/\/exemplo\.org\/x"/],
-          [
-            "ifpr://curso/curitiba",
-            /link ifpr:\/\/ malformado: "ifpr:\/\/curso\/curitiba"; esperava, por exemplo, "ifpr:\/\/curso\/curitiba\/tecnico-em-enfermagem"/,
-          ],
-          ["ifpr://campus/curitiba#cursos", /o link ifpr:\/\/campus não aceita "#cursos"/],
-          ["ifpr://norma/br/lei/2099/1", /norma não encontrada na base: br\/lei\/2099\/1/],
-          [`ifpr://ppc/${PPC_ENFERMAGEM}#nao-existe`, /seção não encontrada/],
-          ["ifpr://cnct/tecnico-em-astronautica", /curso não encontrado no CNCT: "tecnico-em-astronautica"/],
-          ["ifpr://campus/marte", /campus não encontrado na base: "marte"/],
-          ["ifpr://ficha/XX-0", /ficha não encontrada na base: "XX-0"/],
-        ];
-        for (const [uri, mensagem] of casos) {
-          const erro = yield* erroAoLer(cliente, uri);
-          expect(erro.code, uri).toBe(INVALIDO);
-          expect(erro.message, uri).toMatch(mensagem);
-        }
-      }),
-    );
-  });
-}
+  it.effect("link inválido ou desconhecido: InvalidParams com a mensagem em português", () =>
+    Effect.gen(function* () {
+      const cliente = yield* abrir(bancoPpcs);
+      const casos: ReadonlyArray<readonly [string, RegExp]> = [
+        [
+          "ifpr://desconhecido/x",
+          /^link desconhecido: "ifpr:\/\/desconhecido\/x"\. .*norma, curso, ppc, cnct, campus, ficha/,
+        ],
+        ["https://exemplo.org/x", /link desconhecido: "https:\/\/exemplo\.org\/x"/],
+        [
+          "ifpr://curso/curitiba",
+          /link ifpr:\/\/ malformado: "ifpr:\/\/curso\/curitiba"; esperava, por exemplo, "ifpr:\/\/curso\/curitiba\/tecnico-em-enfermagem"/,
+        ],
+        ["ifpr://campus/curitiba#cursos", /o link ifpr:\/\/campus não aceita "#cursos"/],
+        ["ifpr://norma/br/lei/2099/1", /norma não encontrada na base: br\/lei\/2099\/1/],
+        [`ifpr://ppc/${PPC_ENFERMAGEM}#nao-existe`, /seção não encontrada/],
+        ["ifpr://cnct/tecnico-em-astronautica", /curso não encontrado no CNCT: "tecnico-em-astronautica"/],
+        ["ifpr://campus/marte", /campus não encontrado na base: "marte"/],
+        ["ifpr://ficha/XX-0", /ficha não encontrada na base: "XX-0"/],
+      ];
+      for (const [uri, mensagem] of casos) {
+        const erro = yield* erroAoLer(cliente, uri);
+        expect(erro.code, uri).toBe(INVALIDO);
+        expect(erro.message, uri).toMatch(mensagem);
+      }
+    }),
+  );
+});
 
 describe("recursos ifpr:// (stdio, banco de normas)", () => {
   it.effect("dispositivo inexistente: InvalidParams, com o link da norma", () =>

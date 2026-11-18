@@ -10,13 +10,3 @@
 export const PUBLICOS = ["coordenacao-curso", "pedagogia", "docente", "direcao-ensino", "proens", "dens"] as const;
 
 export type Publico = (typeof PUBLICOS)[number];
-
-/** Como a pessoa se apresenta, para cada público. */
-export const ROTULOS_PUBLICO: Readonly<Record<Publico, string>> = {
-  "coordenacao-curso": "Coordenação de Curso",
-  pedagogia: "Pedagogia",
-  docente: "Docente",
-  "direcao-ensino": "Direção de Ensino",
-  proens: "PROENS",
-  dens: "DENS",
-};

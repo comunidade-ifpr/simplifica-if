@@ -62,8 +62,6 @@ export class PpcNaoEncontrado extends Schema.TaggedError<PpcNaoEncontrado>()("Pp
   }
 }
 
-export const ehPpcNaoEncontrado = Schema.is(PpcNaoEncontrado);
-
 export class GrupoInexistente extends Schema.TaggedError<GrupoInexistente>()("GrupoInexistente", {
   grupo: Schema.String,
   /** Quantos grupos a rodada tem. */
@@ -74,8 +72,6 @@ export class GrupoInexistente extends Schema.TaggedError<GrupoInexistente>()("Gr
   }
 }
 
-export const ehGrupoInexistente = Schema.is(GrupoInexistente);
-
 export class TarefaNaoReconhecida extends Schema.TaggedError<TarefaNaoReconhecida>()("TarefaNaoReconhecida", {
   /** Fichas pedidas que não estão no banco. */
   fichas: Schema.Array(Schema.String),
@@ -84,8 +80,6 @@ export class TarefaNaoReconhecida extends Schema.TaggedError<TarefaNaoReconhecid
     return `tarefa não reconhecida (ficha, tópico, grupo-NNN ou todas): ${this.fichas.join(", ")}`;
   }
 }
-
-export const ehTarefaNaoReconhecida = Schema.is(TarefaNaoReconhecida);
 
 /* ------------------------------------------------------------ fichas e grupos */
 
@@ -570,7 +564,7 @@ export function consultasDeTexto(ficha: FichaPacote): string[] {
 }
 
 /** Opções da seleção de seções do PPC. */
-export interface OpcoesSecoes {
+interface OpcoesSecoes {
   /** Léxico da busca (padrão: o de `FontesNormativas`, que `buscarSecoes` lê). */
   lexico?: Sinonimos;
   /** Mapa tópico → tipos de seção (padrão: o de `FontesNormativas`). */

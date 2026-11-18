@@ -22,8 +22,7 @@ const textoQue = (predicado: (valor: string) => boolean, mensagem: string) =>
 const textoNaoVazio = Schema.String.check(Schema.isMinLength(1));
 const dispositivo = textoQue(ehIdDispositivo, "dispositivo fora do formato (#art20-iii)");
 
-export const TIPOS_CORRESPONDENCIA = ["equivalente", "parcial", "sem-equivalente"] as const;
-export type TipoCorrespondencia = (typeof TIPOS_CORRESPONDENCIA)[number];
+const TIPOS_CORRESPONDENCIA = ["equivalente", "parcial", "sem-equivalente"] as const;
 
 export const esquemaItemCorrespondencia = Schema.Struct({
   origem: dispositivo,

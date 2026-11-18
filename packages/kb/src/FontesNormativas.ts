@@ -71,8 +71,6 @@ export class FalhaNasFontes extends Schema.TaggedError<FalhaNasFontes>()("FalhaN
   }
 }
 
-export const ehFalhaNasFontes = Schema.is(FalhaNasFontes);
-
 export class FontesNormativas extends Context.Service<
   FontesNormativas,
   {
@@ -377,8 +375,7 @@ const makeArquivos = Effect.fn("FontesNormativas.layerArquivos")(function* (raiz
     const naoLe = (cause: unknown) => new FalhaNasFontes({ arquivo: ".agents/skills", cause });
     if (!(yield* fs.exists(base).pipe(Effect.mapError(naoLe)))) return [];
     const saida: string[] = [];
-    // percorre em ordem de nome, como `arquivosConteudoSkills` (recursão manual para pular diretórios)
-    // recursão por diretório, dentro da mesma operação (sem span próprio por diretório)
+    // em ordem de nome, com recursão manual para pular diretórios; sem span próprio por diretório
     const visitar: (dir: string) => Effect.Effect<void, FalhaNasFontes> = Effect.fnUntraced(function* (dir: string) {
       const nomes = [...(yield* fs.readDirectory(dir).pipe(Effect.mapError(naoLe)))].sort();
       for (const nome of nomes) {

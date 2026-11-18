@@ -20,7 +20,7 @@ import { CAMPOS_RELACAO_FRONT_MATTER, camposRelacoesFrontMatter } from "./relaco
 import { dataReferencia, statusEm } from "./vigencia.ts";
 
 /** Campos que o gerador controla (removidos e reescritos a cada geração). */
-export const CAMPOS_GERADOS = [
+const CAMPOS_GERADOS = [
   "status_vigencia",
   "vigencia_calculada_em",
   "vigencia_a_confirmar",

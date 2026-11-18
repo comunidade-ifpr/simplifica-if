@@ -26,7 +26,7 @@ import { carregarRegistro, raizRepositorio, type Registro } from "./registro.ts"
 import { extrairCitacoes } from "./resolver.ts";
 import { textoDispositivos } from "./texto-dispositivos.ts";
 
-export const TIPOS_RELACAO = ["revoga", "altera", "regulamenta", "fundamenta-se-em"] as const;
+const TIPOS_RELACAO = ["revoga", "altera", "regulamenta", "fundamenta-se-em"] as const;
 export type TipoRelacao = (typeof TIPOS_RELACAO)[number];
 
 const RE_DATA = /^\d{4}-\d{2}-\d{2}$/;
@@ -65,7 +65,6 @@ export const esquemaDescartada = Schema.Struct({
   operador: Schema.Union([dispositivo, Schema.Literal("*")]),
   motivo: textoNaoVazio,
 });
-export type Descartada = typeof esquemaDescartada.Type;
 
 export const esquemaRelacoes = Schema.Struct({
   relacoes: Schema.mutable(Schema.Array(esquemaRelacao)),

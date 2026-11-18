@@ -57,8 +57,6 @@ export class FalhaNaCuradoria extends Schema.TaggedError<FalhaNaCuradoria>()("Fa
   }
 }
 
-export const ehFalhaNaCuradoria = Schema.is(FalhaNaCuradoria);
-
 /** Raiz do checkout, onde estão as fontes e o `tmp/kb.sqlite`. */
 export const raiz = raizRepositorio();
 

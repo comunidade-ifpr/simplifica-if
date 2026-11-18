@@ -15,7 +15,7 @@ export const CONFIANCA_CONFERIR = 0.9;
 export const TETO_RESOLVER_CITACOES = 12_000;
 
 /** `nao-registrada`: o ID foi reconhecido, mas a norma não está no registro da base. */
-export const SITUACOES_CITACAO = ["base", "stub", "externo", "nao-registrada", "nao-resolvida"] as const;
+const SITUACOES_CITACAO = ["base", "stub", "externo", "nao-registrada", "nao-resolvida"] as const;
 
 export const Entrada = Schema.Struct({
   citacoes: Schema.Array(textoAparado({ minimo: 1, maximo: 500 }))

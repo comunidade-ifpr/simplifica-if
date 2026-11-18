@@ -30,10 +30,12 @@ describe.skipIf(!SMOKE)("paridade com a CLI kb na base real", () => {
 
   const casos = FERRAMENTAS.flatMap((f) => {
     const p = paridadeDe(f.nome);
-    return p && "casos" in p ? p.casos.map((c) => [`${f.nome} ${c.descricao}`, c] as const) : [];
+    return p && "casos" in p ? p.casos.map((caso) => ({ nome: `${f.nome} ${caso.descricao}`, caso })) : [];
   });
 
-  for (const [nome, caso] of casos) {
-    it.effect(nome, () => Effect.provide(caso.conferir(), camadaComPasta(BANCO_REAL, RAIZ)), 120_000);
-  }
+  it.effect.each(casos)(
+    "$nome",
+    ({ caso }) => Effect.provide(caso.conferir(), camadaComPasta(BANCO_REAL, RAIZ)),
+    120_000,
+  );
 });

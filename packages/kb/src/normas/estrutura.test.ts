@@ -142,12 +142,10 @@ describe("normas da base", () => {
     expect(estruturas.flatMap((e) => e.problemas.filter((p) => !p.startsWith("aviso:")))).toEqual([]);
   });
 
-  for (const estrutura of estruturas) {
-    test(`reconstituição: ${estrutura.path}`, () => {
-      const texto = NodeFS.readFileSync(arquivos.get(estrutura.path)!, "utf-8");
-      expect(primeiraDivergencia(palavrasMarkdown(texto), palavrasDosSegmentos(estrutura.segmentos))).toBeNull();
-    });
-  }
+  test.each(estruturas)("reconstituição: $path", (estrutura) => {
+    const texto = NodeFS.readFileSync(arquivos.get(estrutura.path)!, "utf-8");
+    expect(primeiraDivergencia(palavrasMarkdown(texto), palavrasDosSegmentos(estrutura.segmentos))).toBeNull();
+  });
 
   test("IDs únicos e no formato canônico", () => {
     const todos = carregarDispositivos(raiz);

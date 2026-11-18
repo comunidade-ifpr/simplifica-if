@@ -63,7 +63,7 @@ import { fontesNormativasArquivos } from "../normas/fontes-db.ts";
 import { lerTopicosSecoes, type TopicosSecoes } from "../ppcs/topicos.ts";
 import { emTransacao } from "./transacao.ts";
 
-export const PAGE_SIZE = 4096;
+const PAGE_SIZE = 4096;
 
 export interface OpcoesCompilacao {
   raiz?: string;
@@ -398,7 +398,7 @@ export function gravarSecoesECitacoes(
 }
 
 /** Opções do banco em memória de um PPC fora da base. */
-export interface OpcoesPpcAvulso {
+interface OpcoesPpcAvulso {
   /** ID do PPC no banco em memória (padrão `ppc:avulso`). */
   ppcId?: string;
   /** Caminho gravado em `path` (o `PPC.md` da rodada, por exemplo). */

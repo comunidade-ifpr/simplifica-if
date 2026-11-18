@@ -83,7 +83,7 @@ export function traduzirPadrao(fonte: string, dotAll = false): string {
   return saida;
 }
 
-export type OpcoesRegex = { ignoreCase?: boolean; dotAll?: boolean };
+type OpcoesRegex = { ignoreCase?: boolean; dotAll?: boolean };
 
 const cache = new Map<string, RegExp>();
 

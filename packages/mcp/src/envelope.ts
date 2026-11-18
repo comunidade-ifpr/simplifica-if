@@ -90,7 +90,7 @@ export const lerCursor = Effect.fn("envelope.lerCursor")(function* (cursor: stri
   return estado.d;
 });
 
-export const CURSOR_ALEM_DO_FIM = "cursor além do fim da lista: repita a chamada sem cursor";
+const CURSOR_ALEM_DO_FIM = "cursor além do fim da lista: repita a chamada sem cursor";
 
 /** Recorta uma lista já ordenada em páginas de `limite` itens. */
 export const paginar = Effect.fn("envelope.paginar")(function* <T>(

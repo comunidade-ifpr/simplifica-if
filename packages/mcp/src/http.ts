@@ -81,7 +81,7 @@ export const LIMITE_CORPO = 1024 * 1024;
  * Versões aceitas no `initialize`: as do stdio (`PROTOCOLOS`) menos a `2024-11-05`. A primeira é a de
  * quem pede uma versão desconhecida.
  */
-export const PROTOCOLOS_HTTP = [
+const PROTOCOLOS_HTTP = [
   McpProtocol.v2025_11_25,
   McpProtocol.v2025_06_18,
   McpProtocol.v2025_03_26,
@@ -134,8 +134,6 @@ export class ServidorMcpNaoAbriu extends Schema.TaggedError<ServidorMcpNaoAbriu>
       : `não foi possível abrir o servidor MCP em 127.0.0.1:${this.porta} (a porta pode estar em uso)`;
   }
 }
-
-export const ehServidorMcpNaoAbriu = Schema.is(ServidorMcpNaoAbriu);
 
 export class ServidorMcpHttp extends Context.Service<
   ServidorMcpHttp,
