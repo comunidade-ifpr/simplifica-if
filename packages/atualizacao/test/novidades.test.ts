@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it } from "@effect/vitest";
 import { arquivosFonte } from "@simplifica-if/kb/db/fontes";
 import { fontesNaoClassificadas } from "../src/fontes.ts";
 import { lerNovidades, novidadesDaVersao, proporNovidades, soAcrescimos } from "../src/novidades.ts";
+import { opcoesDaPolitica } from "../src/remoto.ts";
 import { limparTemporarios, pastaTemporaria } from "../src/testes/apoio.ts";
 
 afterEach(limparTemporarios);
@@ -151,5 +152,12 @@ describe("promover beta → estável", () => {
     expect(() =>
       promoverManifesto({ texto: t2, assinatura: a2, de: "beta", para: "estavel", chave, agora: new Date() }),
     ).toThrow("não têm url");
+  });
+});
+
+describe("política da atualização", () => {
+  it("feed que não é URL desliga a atualização em vez de derrubar a conferência", () => {
+    const politica = opcoesDaPolitica({ feed: "isto não é url", chave: null });
+    expect(politica.desligada).toBe("o endereço das atualizações é inválido");
   });
 });

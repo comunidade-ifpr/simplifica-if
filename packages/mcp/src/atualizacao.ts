@@ -16,12 +16,13 @@
 import * as NodePath from "node:path";
 import { type Abertura, prepararAbertura } from "@simplifica-if/atualizacao/local";
 import type { Canal } from "@simplifica-if/atualizacao/manifesto";
-import { lerChavePublica } from "@simplifica-if/atualizacao/minisign";
-import { atualizarUmaVez, baixarComFetch } from "@simplifica-if/atualizacao/remoto";
+import type { ChavePublica } from "@simplifica-if/atualizacao/minisign";
+import { atualizarUmaVez, layerHttp, opcoesDaPolitica } from "@simplifica-if/atualizacao/remoto";
 import * as Console from "effect/Console";
-import * as DateTime from "effect/DateTime";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
+import type * as FileSystem from "effect/FileSystem";
+import type * as Path from "effect/Path";
 import * as Schedule from "effect/Schedule";
 import { VERSAO_PACOTE } from "./servidor.ts";
 
@@ -40,56 +41,54 @@ const avisar = (texto: string) => Console.error(`simplifica-mcp: ${texto}`);
 const conferir = Effect.fn("simplifica-mcp.conferirAtualizacao")(
   function* (
     opcoes: OpcoesAtualizacaoMcp,
+    feed: { readonly feed: string; readonly chave: ChavePublica },
     abertura: Abertura,
     quando = "; entra na próxima vez que o servidor iniciar",
   ) {
-    if (opcoes.feed === undefined || opcoes.chave === undefined) return;
-    const feed = opcoes.feed;
-    const textoChave = opcoes.chave;
-    const agora = DateTime.formatIso(yield* DateTime.now);
-    const resultado = yield* Effect.tryPromise({
-      try: () =>
-        atualizarUmaVez({
-          feed,
-          canal: opcoes.canal,
-          chave: lerChavePublica(textoChave),
-          agora,
-          contexto: {
-            pasta: opcoes.pasta,
-            versaoApp: VERSAO_PACOTE,
-            baseEmUso: { caminho: abertura.banco, info: abertura.info },
-            versoesSkills: {},
-            baixar: baixarComFetch(),
-            comSkills: false,
-          },
-        }),
-      catch: (erro) => (erro instanceof Error ? erro.message : String(erro)),
-    });
+    const resultado = yield* atualizarUmaVez({
+      ...feed,
+      canal: opcoes.canal,
+      pasta: opcoes.pasta,
+      versaoApp: VERSAO_PACOTE,
+      abertura,
+      comSkills: false,
+    }).pipe(Effect.provide(layerHttp()));
     if (resultado.tipo === "baixada") {
       yield* avisar(`base ${resultado.versao} baixada (${resultado.via})${quando}`);
     } else if (resultado.tipo === "app-desatualizado") {
       yield* avisar(`a base ${resultado.versao} pede o simplifica-mcp ${resultado.appMinimo} ou mais novo`);
     }
   },
-  Effect.catch((erro) => avisar(`atualização: ${erro}`)),
+  Effect.catch((erro) => avisar(`atualização: ${erro.message}`)),
 );
 
 /**
  * Prepara a abertura (troca pendente; sem base, baixa antes) e devolve o `kb.sqlite` a abrir e a
- * conferência periódica, para rodar em segundo plano.
+ * conferência periódica, para rodar em segundo plano. Sem feed e chave, só a troca pendente e a escolha
+ * da base valem.
  */
 export const prepararAtualizacao = Effect.fn("simplifica-mcp.prepararAtualizacao")(function* (
   opcoes: OpcoesAtualizacaoMcp,
 ) {
   const empacotada = opcoes.banco ?? NodePath.join(opcoes.pasta, "base", "sem-base-instalada.sqlite");
-  let abertura = prepararAbertura({ pasta: opcoes.pasta, bancoEmpacotado: empacotada });
+  const abrir = prepararAbertura({ pasta: opcoes.pasta, bancoEmpacotado: empacotada });
+  let abertura = yield* abrir;
   for (const evento of abertura.eventos) yield* avisar(`atualização: ${evento}`);
-  if (abertura.info === null && opcoes.feed !== undefined && opcoes.chave !== undefined) {
+  const politica =
+    opcoes.feed === undefined || opcoes.chave === undefined
+      ? undefined
+      : opcoesDaPolitica({ feed: opcoes.feed, chave: opcoes.chave });
+  if (politica?.desligada != null) yield* avisar(`atualização desligada: ${politica.desligada}`);
+  const feed = politica?.desligada === null ? { feed: politica.feed, chave: politica.chave } : undefined;
+  if (feed === undefined) return { banco: abertura.banco, umaVez: Effect.void, periodica: Effect.void };
+  if (abertura.info === null) {
     yield* avisar("nenhuma base instalada; baixando a do canal antes de abrir…");
-    yield* conferir(opcoes, abertura, "");
-    abertura = prepararAbertura({ pasta: opcoes.pasta, bancoEmpacotado: empacotada });
+    yield* conferir(opcoes, feed, abertura, "");
+    abertura = yield* abrir;
   }
-  const umaVez = conferir(opcoes, abertura);
+  // A conferência roda em segundo plano, fora deste Effect: leva consigo o disco de quem a preparou.
+  const servicos = yield* Effect.context<FileSystem.FileSystem | Path.Path>();
+  const umaVez = conferir(opcoes, feed, abertura).pipe(Effect.provideContext(servicos));
   const periodica = umaVez.pipe(Effect.repeat(Schedule.spaced(Duration.hours(24))), Effect.asVoid);
   return { banco: abertura.banco, umaVez, periodica };
 });
