@@ -85,7 +85,7 @@ describe("mapa tópico → tipos de seção do kb", () => {
 });
 
 describe("validador em casos inválidos", () => {
-  test("schema inválido da ficha, na ordem do schema", () => {
+  test("ficha fora do contrato, com o caminho de cada campo", () => {
     const c = copiaDaBase();
     const arquivo = NodePath.join(c.fichasDir, "ct-curr-01.json");
     editarJson(arquivo, (ficha) => {
@@ -96,27 +96,27 @@ describe("validador em casos inválidos", () => {
       delete ficha.pergunta;
     });
     expect(validarBaseAnalise(c)).toEqual([
-      `${arquivo}: $: campo obrigatório ausente: pergunta`,
-      `${arquivo}: $.titulo: tipo null; esperado string`,
-      `${arquivo}: $.criticidade: valor 'XX' fora do enum`,
-      `${arquivo}: $.evidencia_minima: valor 0 menor que 1`,
-      `${arquivo}: $.estados_permitidos[1]: valor 'FOO' fora do enum`,
-      `${arquivo}: $.estados_permitidos[2]: tipo integer; esperado string`,
+      `${arquivo}: $.titulo: esperava um texto`,
+      `${arquivo}: $.criticidade: esperava um destes valores: "BLOQ", "OBRIG", "REC"`,
+      `${arquivo}: $.pergunta: campo obrigatório ausente`,
+      `${arquivo}: $.evidencia_minima: esperava um valor maior ou igual a 1`,
+      `${arquivo}: $.estados_permitidos[1]: esperava um destes valores: "ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"`,
+      `${arquivo}: $.estados_permitidos[2]: esperava um destes valores: "ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"`,
     ]);
   });
 
-  test("anyOf e maximum no contrato de exemplo", () => {
+  test("evidência fora das alternativas e confiança acima de 1 no contrato de exemplo", () => {
     const c = copiaDaBase();
     const arquivo = NodePath.join(c.contratosDir, "resposta_lote.exemplo.json");
     editarJson(arquivo, (contrato) => {
       const resultado = (contrato.resultados as ObjetoJson[])[0]!;
       resultado.confianca = 1.5;
-      resultado.evidencias = [3, { secao: "x" }, "ok"];
+      resultado.evidencias = [3, { secao: 1 }, "ok"];
     });
     expect(validarBaseAnalise(c)).toEqual([
-      `${arquivo}: $.resultados[0].confianca: valor 1.5 maior que 1`,
-      `${arquivo}: $.resultados[0].evidencias[0]: não corresponde a nenhuma alternativa de anyOf`,
-      `${arquivo}: $.resultados[0].evidencias[1]: não corresponde a nenhuma alternativa de anyOf`,
+      `${arquivo}: $.resultados[0].confianca: esperava um valor menor ou igual a 1`,
+      `${arquivo}: $.resultados[0].evidencias[0]: esperava um texto ou um objeto`,
+      `${arquivo}: $.resultados[0].evidencias[1].secao: esperava um texto ou nulo`,
     ]);
   });
 
@@ -132,7 +132,7 @@ describe("validador em casos inválidos", () => {
       ficha.execucao = { modo: "J", justificativa: "teste" };
     });
     expect(validarBaseAnalise(c)).toEqual([
-      `${semExecucao}: $: campo obrigatório ausente: execucao`,
+      `${semExecucao}: $.execucao: campo obrigatório ausente`,
       "CT-CURR-04: execucao.modo D sem verificador registrado em packages/ppc/src/verificadores/registro.ts",
       "verificador d-carga-horaria-total: registrado para CT-CURR-02, que não é ficha D",
     ]);
@@ -155,7 +155,7 @@ describe("validador em casos inválidos", () => {
     const declarados = (lerJson(arquivo) as ObjetoJson).topicos_tematicos as string[];
     const esperados = declarados.filter((topico) => topico !== "inexistente").sort();
     expect(validarBaseAnalise(c)).toEqual([
-      `${arquivo}: $: campo não permitido: secoes_preferenciais`,
+      `${arquivo}: $.secoes_preferenciais: campo não permitido`,
       "CT-CURR-03: campo legado `secoes_preferenciais` não é aceito",
       "CT-CURR-03: tópicos desconhecidos: inexistente",
       `CT-CURR-03: topicos_tematicos divergente da taxonomia (ficha=['${[...declarados].sort().join("', '")}'], ` +
@@ -199,14 +199,14 @@ describe("validador em casos inválidos", () => {
       ];
     });
     expect(validarBaseAnalise(c)).toEqual([
-      `${arquivo}: $.referencias_normativas[0]: tipo string; esperado object`,
-      `${arquivo}: $.referencias_normativas[1].ref: valor 'Resolução CNE/CP nº 2/2026' fora do formato`,
-      `${arquivo}: $.referencias_normativas[2].dispositivo: valor '#art38º' fora do formato`,
-      `${arquivo}: $.referencias_normativas[3]: campo não permitido: fonte`,
-      `${arquivo}: $.referencias_normativas[3].dispositivo: valor 'art. 38' fora do formato`,
-      `${arquivo}: $.referencias_normativas[3].papel: valor 'principal' fora do enum`,
-      `${arquivo}: $.referencias_normativas[4].ref: valor 'br/lei/1996/9394~compilacao' fora do formato`,
-      `${arquivo}: $.referencias_normativas[4].nota: valor '' menor que o tamanho mínimo 1`,
+      `${arquivo}: $.referencias_normativas[0]: esperava um objeto`,
+      `${arquivo}: $.referencias_normativas[1].ref: formato inválido`,
+      `${arquivo}: $.referencias_normativas[2].dispositivo: formato inválido`,
+      `${arquivo}: $.referencias_normativas[3].fonte: campo não permitido`,
+      `${arquivo}: $.referencias_normativas[3].dispositivo: formato inválido`,
+      `${arquivo}: $.referencias_normativas[3].papel: esperava um destes valores: "fundamento", "complementar"`,
+      `${arquivo}: $.referencias_normativas[4].ref: formato inválido`,
+      `${arquivo}: $.referencias_normativas[4].nota: não pode ser vazio`,
     ]);
   });
 

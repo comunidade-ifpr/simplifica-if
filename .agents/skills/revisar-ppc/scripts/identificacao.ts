@@ -1,12 +1,12 @@
-// @effect-diagnostics nodeBuiltinImport:off -- extração heurística síncrona da identificação do curso a partir de arquivos locais
 /**
  * Identificação do curso no PPC: denominação, campus, forma de oferta,
  * modalidade de ensino e eixo tecnológico.
  *
- * A extração é heurística e só lê o próprio documento (mais a lista de campi
- * do IFPR em `base-conhecimento/institucional/ifpr/campi/index.json`): o PPC
- * analisado pode não estar na base, então nada aqui consulta os cursos
- * cadastrados (`institucional/ifpr/cursos/`). As fontes, em ordem de preferência:
+ * A extração é heurística e pura: lê só o próprio documento, mais os campi do
+ * IFPR e os eixos do CNCT que quem chama passa em `ReferenciasIdentificacao`
+ * (lidos da base por `referencias-identificacao.ts`). O PPC analisado pode não
+ * estar na base, então nada aqui consulta os cursos cadastrados
+ * (`institucional/ifpr/cursos/`). As fontes, em ordem de preferência:
  *
  * 1. rótulo explícito, em linha ("Nome do curso: …"), em título numerado
  *    seguido do valor ("1.1.3 Denominação do Curso" / "Curso Técnico em …")
@@ -22,8 +22,6 @@
  * de curso. Cada valor passa por um validador do campo antes de ser aceito.
  * O front matter YAML (`---` … `---`) no topo é ignorado.
  */
-import * as NodeFS from "node:fs";
-import * as NodePath from "node:path";
 import { escape, search, sub } from "@simplifica-if/kb/primitivas/regex";
 import { casefold, colapsarEspacos, semMarcas } from "@simplifica-if/kb/primitivas/texto";
 import {
@@ -35,8 +33,6 @@ import {
 } from "@simplifica-if/kb/primitivas/valores";
 import { chavesDoMapaYaml } from "@simplifica-if/kb/ppcs/front-matter";
 import { aparar, apararFimEnquanto, dividirLinhas } from "@simplifica-if/kb/texto";
-import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
-import { lerJsonDaRodada } from "./rodada.ts";
 
 const IDENTIFICACAO_PLACEHOLDERS = new Set([
   "curso não identificado",
@@ -67,7 +63,7 @@ export type FontesIdentificacao = Partial<
 
 export type IdentificacaoComFontes = Identificacao & { fontes: FontesIdentificacao };
 
-/** `valor_identificacao_preenchido`. */
+/** Se o valor da identificação está preenchido: não vazio e diferente dos textos de "não identificado". */
 export function valorIdentificacaoPreenchido(valor: unknown): boolean {
   const texto = aparar(verdadeiro(valor) ? textoDoValor(valor) : "");
   return Boolean(texto) && !IDENTIFICACAO_PLACEHOLDERS.has(casefold(texto));
@@ -78,42 +74,41 @@ export function normalizarBusca(texto: string): string {
   return colapsarEspacos(sub("[^a-z0-9]+", " ", casefold(semMarcas(texto))));
 }
 
-// ---------------------------------------------------------------- campi
+// ---------------------------------------------------------------- referências
 
-let campiCache: { indice: string; campi: Array<[string, string]> } | null = null;
+/** Nome de exibição e forma de busca (`normalizarBusca`). */
+type NomeConhecido = readonly [nome: string, busca: string];
 
-function campiIfprConhecidos(baseConhecimentoDir: string): Array<[string, string]> {
-  const indice = NodePath.join(baseConhecimentoDir, "institucional", "ifpr", "campi", "index.json");
-  if (campiCache?.indice === indice) return campiCache.campi;
-  let campi: Array<[string, string]> = [];
-  if (NodeFS.existsSync(indice)) {
-    try {
-      const payload = lerJsonDaRodada(indice);
-      const itens = ehDicionario(payload) ? payload.items : null;
-      if (Array.isArray(itens)) {
-        for (const item of itens) {
-          if (!ehDicionario(item)) continue;
-          const nome = aparar(verdadeiro(item.nome) ? textoDoValor(item.nome) : "");
-          if (nome) campi.push([nome, normalizarBusca(nome)]);
-        }
-      }
-    } catch {
-      campi = [];
-    }
-  }
-  campiCache = { indice, campi };
-  return campi;
+/** Campi do IFPR e eixos tecnológicos do CNCT reconhecidos na identificação, já na forma de busca. */
+export type ReferenciasIdentificacao = {
+  /** Campi que podem aparecer em texto corrido: sem "Reitoria", que está em toda "Pró-Reitoria". */
+  readonly campi: ReadonlyArray<NomeConhecido>;
+  /** Os mesmos campi, do nome de busca mais longo ao mais curto. */
+  readonly campiDoMaisLongo: ReadonlyArray<NomeConhecido>;
+  /** Eixos do CNCT, sem repetição, do nome de busca mais longo ao mais curto. */
+  readonly eixos: ReadonlyArray<NomeConhecido>;
+};
+
+/** Prepara as referências a partir dos nomes de campi e de eixos, na ordem da base. */
+export function referenciasIdentificacao(nomes: {
+  readonly campi: Iterable<string>;
+  readonly eixos: Iterable<string>;
+}): ReferenciasIdentificacao {
+  const campi = [...nomes.campi]
+    .map((nome) => aparar(nome))
+    .filter(Boolean)
+    .map((nome): NomeConhecido => [nome, normalizarBusca(nome)])
+    .filter(([, busca]) => busca !== "reitoria");
+  const eixos = [...new Set(nomes.eixos)]
+    .map((nome): NomeConhecido => [nome, normalizarBusca(nome)])
+    .sort((a, b) => b[1].length - a[1].length);
+  return { campi, campiDoMaisLongo: [...campi].sort((a, b) => b[1].length - a[1].length), eixos };
 }
 
-/** Campi que podem aparecer em texto corrido: "Reitoria" está em toda "Pró-Reitoria". */
-function campiDeTexto(baseConhecimentoDir: string): Array<[string, string]> {
-  return campiIfprConhecidos(baseConhecimentoDir).filter(([, normalizado]) => normalizado !== "reitoria");
-}
-
-function campusCanonicoNoTexto(texto: string, baseConhecimentoDir: string): string {
+function campusCanonicoNoTexto(texto: string, referencias: ReferenciasIdentificacao): string {
   const normalizado = normalizarBusca(texto);
   if (!normalizado) return "";
-  const encontrados = campiDeTexto(baseConhecimentoDir)
+  const encontrados = referencias.campi
     .filter(([, campus]) => search(`(^|\\s)${escape(campus)}($|\\s)`, normalizado))
     .map(([nome]) => nome);
   return new Set(encontrados).size === 1 ? encontrados[0]! : "";
@@ -123,9 +118,9 @@ function campusCanonicoNoTexto(texto: string, baseConhecimentoDir: string): stri
  * Campus citado logo depois da palavra "campus" ("Campus Avançado Arapongas",
  * "IFPR – Câmpus Foz do Iguaçu"); na primeira ocorrência que casar.
  */
-function campusAposPalavraCampus(texto: string, baseConhecimentoDir: string): string {
+function campusAposPalavraCampus(texto: string, referencias: ReferenciasIdentificacao): string {
   const normalizado = normalizarBusca(texto);
-  const campi = [...campiDeTexto(baseConhecimentoDir)].sort((a, b) => b[1].length - a[1].length);
+  const campi = referencias.campiDoMaisLongo;
   for (const m of normalizado.matchAll(/\bcampus (?:avancado )?(?:d[eo] )?/g)) {
     const resto = normalizado.slice(m.index + m[0].length);
     const campus = campi.find(([, nome]) => resto === nome || resto.startsWith(`${nome} `));
@@ -169,12 +164,10 @@ function limparValorIdentificacao(valor: unknown): string {
  * Campus canônico do IFPR citado no valor; sem campus conhecido, o próprio
  * valor, se curto e sem cara de ruído (inventário, endereço).
  */
-export function normalizarCampusIdentificacao(valor: unknown, caminhos: CaminhosAnalise = caminhosPadrao()): string {
+export function normalizarCampusIdentificacao(valor: unknown, referencias: ReferenciasIdentificacao): string {
   const texto = limparValorIdentificacao(valor);
   if (!texto || IDENTIFICACAO_PLACEHOLDERS.has(casefold(texto))) return "";
-  const canonico =
-    campusAposPalavraCampus(texto, caminhos.baseConhecimentoDir) ||
-    campusCanonicoNoTexto(texto, caminhos.baseConhecimentoDir);
+  const canonico = campusAposPalavraCampus(texto, referencias) || campusCanonicoNoTexto(texto, referencias);
   if (canonico) return canonico;
   if (pareceRuidoDeCampus(texto) || /\d/.test(texto) || texto.split(/\s+/).length > 5) return "";
   return texto;
@@ -186,13 +179,10 @@ function linhasNaoVazias(texto: string): string[] {
     .filter(Boolean);
 }
 
-/** `inferir_campus_por_capa`: campus conhecido citado nas primeiras 120 linhas não vazias. */
-export function inferirCampusPorCapa(texto: string, caminhos: CaminhosAnalise = caminhosPadrao()): string {
+/** Campus conhecido citado nas primeiras 120 linhas não vazias. */
+export function inferirCampusPorCapa(texto: string, referencias: ReferenciasIdentificacao): string {
   const trecho = linhasNaoVazias(texto).slice(0, MAX_LINHAS_CAPA_PARA_CAMPUS).join("\n");
-  return (
-    campusAposPalavraCampus(trecho, caminhos.baseConhecimentoDir) ||
-    campusCanonicoNoTexto(trecho, caminhos.baseConhecimentoDir)
-  );
+  return campusAposPalavraCampus(trecho, referencias) || campusCanonicoNoTexto(trecho, referencias);
 }
 
 // ---------------------------------------------------------------- texto
@@ -545,29 +535,6 @@ export function modalidadeEnsinoCanonica(valor: string): string {
   return presencial ? "Presencial" : "A distância";
 }
 
-let eixosCache: { indice: string; eixos: Array<[string, string]> } | null = null;
-
-/** Eixos tecnológicos do CNCT (`base-conhecimento/catalogos/cnct/index.json`), do nome mais longo ao mais curto. */
-function eixosCnct(baseConhecimentoDir: string): Array<[string, string]> {
-  const indice = NodePath.join(baseConhecimentoDir, "catalogos", "cnct", "index.json");
-  if (eixosCache?.indice === indice) return eixosCache.eixos;
-  const nomes = new Set<string>();
-  try {
-    const payload = NodeFS.existsSync(indice) ? lerJsonDaRodada(indice) : null;
-    const itens = ehDicionario(payload) && Array.isArray(payload.items) ? payload.items : [];
-    for (const item of itens) {
-      if (ehDicionario(item) && typeof item.eixo_tecnologico === "string") nomes.add(item.eixo_tecnologico);
-    }
-  } catch {
-    nomes.clear();
-  }
-  const eixos = [...nomes]
-    .map((nome): [string, string] => [nome, normalizarBusca(nome)])
-    .sort((a, b) => b[1].length - a[1].length);
-  eixosCache = { indice, eixos };
-  return eixos;
-}
-
 const RUIDO_EIXO = /\b(?:nivel|modalidade|previsao|forma|curso|coordenac\w*|campus)\b/;
 
 /**
@@ -575,12 +542,12 @@ const RUIDO_EIXO = /\b(?:nivel|modalidade|previsao|forma|curso|coordenac\w*|camp
  * Negócios" → "Gestão e Negócios"); sem eixo do CNCT, o valor, se curto e
  * sem cara de outro campo do formulário.
  */
-function limparEixo(valor: string, caminhos: CaminhosAnalise = caminhosPadrao()): string {
+function limparEixo(valor: string, referencias: ReferenciasIdentificacao): string {
   const texto = limparValor(valor);
   if (!texto) return "";
   const normalizado = normalizarBusca(texto);
   // Eixo de uma palavra ("Segurança") só por igualdade: "Saúde, Ambiente e Segurança" é outro eixo.
-  const eixo = eixosCnct(caminhos.baseConhecimentoDir).find(([, nome]) =>
+  const eixo = referencias.eixos.find(([, nome]) =>
     nome.includes(" ") ? search(`(^|\\s)${escape(nome)}($|\\s)`, normalizado) : nome === normalizado,
   );
   if (eixo) return eixo[0];
@@ -629,8 +596,8 @@ function primeiro<T>(itens: Iterable<T>, transformar: (item: T) => string): stri
 /** Identificação do curso a partir do texto Markdown do PPC, com a fonte de cada campo. */
 export function extrairIdentificacao(
   texto: string,
+  referencias: ReferenciasIdentificacao,
   nomeReserva = "",
-  caminhos: CaminhosAnalise = caminhosPadrao(),
 ): IdentificacaoComFontes {
   const unidades = unidadesDoDocumento(texto, MAX_UNIDADES_IDENTIFICACAO);
   const candidatos = unidades.flatMap((unidade, i) => candidatosDaUnidade(unidade, unidades[i + 1]));
@@ -655,13 +622,13 @@ export function extrairIdentificacao(
 
   // Campus: rótulo, "Campus X" no início, campus único no início.
   const inicio = unidades.slice(0, MAX_LINHAS_CAPA_PARA_CAMPUS).map((u) => u.texto.replaceAll(MARCA, " "));
-  let campus = primeiro(doCampo("campus"), (valor) => {
-    const base = caminhos.baseConhecimentoDir;
-    return campusAposPalavraCampus(`campus ${valor}`, base) || campusCanonicoNoTexto(valor, base);
-  });
+  let campus = primeiro(
+    doCampo("campus"),
+    (valor) => campusAposPalavraCampus(`campus ${valor}`, referencias) || campusCanonicoNoTexto(valor, referencias),
+  );
   if (campus) fontes.campus = "rotulo";
   else {
-    campus = inferirCampusPorCapa(inicio.join("\n"), caminhos);
+    campus = inferirCampusPorCapa(inicio.join("\n"), referencias);
     if (campus) fontes.campus = "inicio";
   }
 
@@ -711,7 +678,7 @@ export function extrairIdentificacao(
     if (modalidadeEnsino) fontes.modalidade_ensino = "inicio";
   }
 
-  const eixo = primeiro(doCampo("eixo"), (valor) => limparEixo(valor, caminhos));
+  const eixo = primeiro(doCampo("eixo"), (valor) => limparEixo(valor, referencias));
   if (eixo) fontes.eixo_tecnologico = "rotulo";
 
   const identificacao: IdentificacaoComFontes = {
@@ -729,10 +696,10 @@ export function extrairIdentificacao(
 /** Identificação a partir do Markdown do PPC (sem as fontes). */
 export function inferirIdentificacaoDoMarkdown(
   texto: string,
+  referencias: ReferenciasIdentificacao,
   nomeReserva = "",
-  caminhos: CaminhosAnalise = caminhosPadrao(),
 ): Identificacao {
-  const { fontes: _fontes, ...identificacao } = extrairIdentificacao(texto, nomeReserva, caminhos);
+  const { fontes: _fontes, ...identificacao } = extrairIdentificacao(texto, referencias, nomeReserva);
   return identificacao;
 }
 
@@ -763,8 +730,8 @@ function valorPorChavesOuPrefixos(
  */
 export function extrairIdentificacaoDaConversao(
   payload: unknown,
+  referencias: ReferenciasIdentificacao,
   nomeReserva = "",
-  caminhos: CaminhosAnalise = caminhosPadrao(),
 ): Identificacao {
   let dados: unknown = ehDicionario(payload) ? payload.dados_extraidos : {};
   if (!ehDicionario(dados)) dados = payload;
@@ -790,7 +757,7 @@ export function extrairIdentificacaoDaConversao(
     "Curso não identificado";
   const campus =
     valorPorChavesOuPrefixos(d, ["campus", "Campus", "unidade"], [], (valor) =>
-      normalizarCampusIdentificacao(valor, caminhos),
+      normalizarCampusIdentificacao(valor, referencias),
     ) || "Campus não identificado";
   const chavesOferta = [
     "forma_oferta",
@@ -808,7 +775,7 @@ export function extrairIdentificacaoDaConversao(
     d,
     ["eixo_tecnologico", "Eixo Tecnológico", "Eixo tecnologico"],
     ["eixo_tecnologico_"],
-    (valor) => limparEixo(valor, caminhos),
+    (valor) => limparEixo(valor, referencias),
   );
   return {
     curso,

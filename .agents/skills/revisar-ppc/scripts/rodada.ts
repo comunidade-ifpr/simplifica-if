@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off globalDate:off -- arquivos da rodada lidos e gravados de forma síncrona; o relógio da rodada é REVISAR_PPC_AGORA ou o do sistema
+// @effect-diagnostics nodeBuiltinImport:off globalDate:off -- arquivos da rodada lidos e gravados de forma síncrona; `interpretarAgora` monta a data de REVISAR_PPC_AGORA
 /**
  * Rodada de análise: caminhos, relógio, hashes e leitura e escrita de JSON.
  * A identificação do curso fica em `identificacao.ts`.
@@ -10,6 +10,7 @@
 import * as NodeCrypto from "node:crypto";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
+import * as Schema from "effect/Schema";
 import { TAMANHO_MAXIMO_GRUPO } from "@simplifica-if/kb/db/pacote-contexto";
 import {
   carregarJsonTipado,
@@ -20,6 +21,16 @@ import { type Dicionario, textoDoValor } from "@simplifica-if/kb/primitivas/valo
 import { compararTexto } from "@simplifica-if/kb/texto";
 import { listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
+
+/** Um arquivo da rodada com outra forma que a esperada. */
+export class JsonDaRodadaInvalido extends Schema.TaggedError<JsonDaRodadaInvalido>()("JsonDaRodadaInvalido", {
+  arquivo: Schema.String,
+  esperado: Schema.String,
+}) {
+  override get message(): string {
+    return `${this.arquivo} precisa ser ${this.esperado}.`;
+  }
+}
 
 /** Tamanho máximo de um grupo de sub-agente (fichas); tópicos maiores viram partes. */
 export const TAMANHO_GRUPO_PADRAO = TAMANHO_MAXIMO_GRUPO;
@@ -36,30 +47,26 @@ export type Relogio = () => Date;
 const RE_AGORA = /^(\d{4})-(\d{2})-(\d{2})(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,6})?)?(?:Z|[+-]\d{2}:\d{2})?)?$/;
 
 /**
- * Relógio da linha de comando: a variável `REVISAR_PPC_AGORA` (data ISO 8601, veja `RE_AGORA`)
- * fixa o instante, para testes; sem ela, a hora do sistema. Data sem hora é meia-noite local e
- * data-hora sem fuso é hora local; o resto é recusado.
+ * Instante de `REVISAR_PPC_AGORA` (data ISO 8601, veja `RE_AGORA`), que o ponto de entrada lê para
+ * fixar o relógio em testes. Data sem hora é meia-noite local e data-hora sem fuso é hora local;
+ * o resto (inclusive dia que não existe no calendário) dá `undefined`.
  */
-export function relogioDoAmbiente(): Date {
-  const fixo = process.env.REVISAR_PPC_AGORA;
-  if (fixo) {
-    const m = RE_AGORA.exec(fixo);
-    const [ano, mes, dia] = m ? [Number(m[1]), Number(m[2]), Number(m[3])] : [0, 0, 0];
-    // Dia que existe no calendário (`new Date` aceitaria 2026-02-30 como 2 de março).
-    const calendario = new Date(Date.UTC(ano, mes - 1, dia));
-    const diaValido = m && calendario.getUTCMonth() === mes - 1 && calendario.getUTCDate() === dia;
-    // `new Date("AAAA-MM-DD")` seria meia-noite UTC; a data sem hora é meia-noite local.
-    const data = !diaValido ? null : fixo.length === 10 ? new Date(ano, mes - 1, dia) : new Date(fixo);
-    if (!data || Number.isNaN(data.getTime())) throw new Error(`REVISAR_PPC_AGORA inválida: ${fixo}`);
-    return data;
-  }
-  return new Date();
+export function interpretarAgora(texto: string): Date | undefined {
+  const m = RE_AGORA.exec(texto);
+  if (!m) return undefined;
+  const [ano, mes, dia] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  // Dia que existe no calendário (`new Date` aceitaria 2026-02-30 como 2 de março).
+  const calendario = new Date(Date.UTC(ano, mes - 1, dia));
+  if (calendario.getUTCMonth() !== mes - 1 || calendario.getUTCDate() !== dia) return undefined;
+  // `new Date("AAAA-MM-DD")` seria meia-noite UTC; a data sem hora é meia-noite local.
+  const data = texto.length === 10 ? new Date(ano, mes - 1, dia) : new Date(texto);
+  return Number.isNaN(data.getTime()) ? undefined : data;
 }
 
 const dois = (n: number) => String(n).padStart(2, "0");
 
 /** Hora local com deslocamento, até os segundos (`2026-11-13T10:00:00-03:00`). */
-export function agoraIso(relogio: Relogio = relogioDoAmbiente): string {
+export function agoraIso(relogio: Relogio): string {
   const data = relogio();
   const deslocamento = -data.getTimezoneOffset();
   const sinal = deslocamento < 0 ? "-" : "+";
@@ -72,7 +79,7 @@ export function agoraIso(relogio: Relogio = relogioDoAmbiente): string {
 }
 
 /** Hora local para nome de pasta (`2026-11-13t10-00-00`). */
-export function timestampSlug(relogio: Relogio = relogioDoAmbiente): string {
+export function timestampSlug(relogio: Relogio): string {
   const data = relogio();
   return (
     `${String(data.getFullYear()).padStart(4, "0")}-${dois(data.getMonth() + 1)}-${dois(data.getDate())}` +
@@ -82,7 +89,7 @@ export function timestampSlug(relogio: Relogio = relogioDoAmbiente): string {
 
 // ---------------------------------------------------------------- arquivos
 
-/** `Path(caminho).resolve()`: absoluto, com symlinks resolvidos na parte que existe. */
+/** Caminho absoluto, com symlinks resolvidos na parte que existe. */
 export function resolverCaminho(caminho: string): string {
   const absoluto = NodePath.resolve(caminho);
   let existente = absoluto;
@@ -121,14 +128,14 @@ export function escreverTextoDaRodada(caminho: string, texto: string): void {
   NodeFS.writeFileSync(caminho, texto, "utf-8");
 }
 
-/** `Path.read_text(encoding="utf-8")`: UTF-8 estrito com quebras de linha universais. */
+/** Texto em UTF-8 estrito, com quebras de linha universais. */
 export { lerTexto } from "@simplifica-if/kb/texto";
 
 export function sha256Texto(texto: string): string {
   return NodeCrypto.createHash("sha256").update(texto, "utf8").digest("hex");
 }
 
-/** `sha256_json_payload`: hash do JSON compacto com chaves ordenadas por code point. */
+/** Hash do JSON compacto com chaves ordenadas por code point. */
 export function sha256JsonPayload(valor: unknown): string {
   return sha256Texto(serializarJsonTipado(valor, { ordenarChaves: true, separadores: [",", ":"] }));
 }
@@ -137,7 +144,7 @@ export function sha256Arquivo(caminho: string): string {
   return NodeCrypto.createHash("sha256").update(NodeFS.readFileSync(caminho)).digest("hex");
 }
 
-/** `sha256_catalogo_json`: hash de nome e conteúdo dos `*.json` do diretório, em ordem de nome. */
+/** Hash de nome e conteúdo dos `*.json` do diretório, em ordem de nome. */
 export function sha256CatalogoJson(diretorio: string): string {
   const arquivos = listarArquivos(diretorio, ".json");
   if (!arquivos.length) return sha256Texto("[]");
@@ -151,17 +158,17 @@ export function sha256CatalogoJson(diretorio: string): string {
   return hash.digest("hex");
 }
 
-/** `load_fichas`: fichas na ordem dos nomes de arquivo. */
+/** Fichas na ordem dos nomes de arquivo. */
 export function carregarFichas(fichasDir: string): Dicionario[] {
   return listarArquivos(fichasDir, ".json").map((arquivo) => lerJsonDaRodada(arquivo) as Dicionario);
 }
 
-/** `sorted(itens, key=lambda item: str(item.get("id", "")))`. */
+/** Itens ordenados pelo texto do `id` (code point); sem `id`, o texto vazio. */
 export function ordenarPorId<T extends Dicionario>(itens: T[]): T[] {
   return [...itens].sort((a, b) => compararTexto(textoDoValor(a.id ?? ""), textoDoValor(b.id ?? "")));
 }
 
-/** `safe_relpath`: caminho relativo a `base` quando dentro dela; senão, absoluto. */
+/** Caminho relativo a `base` quando dentro dela; senão, absoluto. */
 export function caminhoRelativoSeguro(caminho: string, base: string): string {
   const alvo = resolverCaminho(caminho);
   const raiz = resolverCaminho(base);
@@ -192,13 +199,10 @@ export type CaminhosRodada = {
   relatorioHtml: string;
 };
 
-/** `round_paths`: arquivos da rodada em `arquivos-suporte/` (ou na raiz, em rodadas antigas). */
+/** Arquivos da rodada: o relatório na raiz e o resto em `arquivos-suporte/`. */
 export function caminhosRodada(rodada: string): CaminhosRodada {
   const rodadaDir = resolverCaminho(rodada);
-  const legados = ["PPC.md", "metadata.json", "manifesto-rodada.json"].map((nome) => NodePath.join(rodadaDir, nome));
-  const suporte = NodePath.join(rodadaDir, "arquivos-suporte");
-  const base =
-    !NodeFS.existsSync(suporte) && legados.some((caminho) => NodeFS.existsSync(caminho)) ? rodadaDir : suporte;
+  const base = NodePath.join(rodadaDir, "arquivos-suporte");
   return {
     rodadaDir,
     suporteDir: base,
@@ -220,10 +224,10 @@ export function caminhosRodada(rodada: string): CaminhosRodada {
   };
 }
 
-/** `update_manifesto_base`: grava `manifesto-rodada.json` com os hashes de PPC, fichas, validações e prompts. */
+/** Grava `manifesto-rodada.json` com os hashes de PPC, fichas, validações e prompts. */
 export function atualizarManifestoBase(
   rodada: string,
-  opcoes: { caminhos?: CaminhosAnalise; relogio?: Relogio } = {},
+  opcoes: { caminhos?: CaminhosAnalise; relogio: Relogio },
 ): Dicionario {
   const skill = opcoes.caminhos ?? caminhosPadrao();
   const caminhos = caminhosRodada(rodada);

@@ -1,211 +1,448 @@
-// @effect-diagnostics nodeBuiltinImport:off extendsNativeError:off -- validação e mescla síncronas dos resultados da rodada; o erro de contrato é lançado com a mensagem montada no ponto da falha
+// @effect-diagnostics nodeBuiltinImport:off -- leitura e escrita síncronas dos arquivos da rodada, dentro dos Effects
 /**
- * Validação do JSON de resultados dos sub-agentes, usada por
- * `validar-resultados` e por `gerar-relatorio-html` (`relatorio-html.ts`), e
- * mescla das reavaliações avulsas (`mesclar-resultados-avulsos`).
+ * Leitura do JSON de resultados dos sub-agentes, usada por `validar-resultados` e por
+ * `gerar-relatorio-html` (`relatorio-html.ts`), e mescla das reavaliações avulsas
+ * (`mesclar-resultados-avulsos`).
+ *
+ * O JSON é decodificado uma vez pelo `esquemaResultadosSubagents` (os contratos de
+ * `esquemas.ts`); o que o esquema não exprime (ficha conhecida e coberta uma vez, evidência com
+ * conteúdo, mínimo de evidências, `feedback_autores` exigido pela ficha, validação cruzada
+ * conhecida) é conferido depois, sobre os valores já tipados. Toda falha é um
+ * `ErroResultadosSubagents` com a categoria e os IDs envolvidos.
  */
 import * as NodePath from "node:path";
-import { compararTexto } from "@simplifica-if/kb/texto";
-import {
-  ehNumerico,
-  ehDicionario,
-  inteiroDoValor,
-  itensIteraveis,
-  valorNumerico,
-  obrigatorio,
-  obter,
-  type Dicionario,
-  ou,
-  padraoSeAusente,
-  textoDoValor,
-  textoOuVazioDoValor,
-  tipoDoValor,
-  verdadeiro,
-} from "@simplifica-if/kb/primitivas/valores";
-import { aparar } from "@simplifica-if/kb/texto";
+import * as Effect from "effect/Effect";
+import * as Predicate from "effect/Predicate";
+import * as Result from "effect/Result";
+import * as Schema from "effect/Schema";
+import { problemas } from "@simplifica-if/kb/esquema/mensagens";
+import { ErroJsonTipado, serializarJsonTipado } from "@simplifica-if/kb/primitivas/json-tipado";
+import type { Dicionario } from "@simplifica-if/kb/primitivas/valores";
+import { aparar, compararTexto } from "@simplifica-if/kb/texto";
 import { listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
-import { caminhosRodada, escreverJsonDaRodada, existe, lerJsonDaRodada, sha256JsonPayload } from "./rodada.ts";
-import { carregarFichasOrdenadas, STATUS_FUNDAMENTACAO_NORMATIVA } from "./subagents.ts";
+import {
+  aberto,
+  type Criticidade,
+  esquemaAlertaTransversal,
+  esquemaFicha,
+  esquemaResultadoFicha,
+  esquemaValidacaoCruzada,
+  type Estado,
+  type Ficha,
+} from "./esquemas.ts";
+import { caminhosRodada, escreverJsonDaRodada, lerJsonDaRodada, sha256JsonPayload } from "./rodada.ts";
+import { carregarFichasOrdenadas } from "./subagents.ts";
 
-export class ErroResultadosSubagents extends Error {
-  override name = "ErroResultadosSubagents";
-}
+// ---------------------------------------------------------------- erro
 
-const ESTADOS_PERMITIDOS = new Set(["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"]);
-const STATUS_NORMATIVOS = new Set(STATUS_FUNDAMENTACAO_NORMATIVA);
+const CATEGORIAS = [
+  "arquivo-ausente",
+  "arquivo-ilegivel",
+  "json-invalido",
+  "fora-do-contrato",
+  "sem-resultados",
+  "fichas-duplicadas",
+  "fichas-desconhecidas",
+  "fichas-sem-resultado",
+  "justificativa-ausente",
+  "feedback-ausente",
+  "evidencia-sem-conteudo",
+  "evidencias-insuficientes",
+  "achado-normativo-sem-conteudo",
+  "alerta-duplicado",
+  "alerta-sem-titulo-ou-descricao",
+  "alerta-sem-validacao",
+  "validacao-desconhecida",
+  "alerta-com-fichas-desconhecidas",
+  "evidencia-transversal-sem-conteudo",
+  "avulso-sem-resultados",
+] as const;
 
-/** `str(valor or "").strip()`. */
-function texto(valor: unknown): string {
-  return aparar(textoOuVazioDoValor(valor));
-}
-
-/** `str(a or b or ... or "").strip()`. */
-function primeiroTexto(objeto: Dicionario, ...chaves: string[]): string {
-  return texto(ou(...chaves.map((chave) => obter(objeto, chave)), ""));
-}
-
-/** `resultados_path` absoluto, em `arquivos-suporte/` quando existe lá, ou na raiz da rodada. */
-export function resolverResultadosPath(rodada: string, resultados: string): string {
-  if (NodePath.isAbsolute(resultados)) return resultados;
-  const caminhos = caminhosRodada(rodada);
-  const noSuporte = NodePath.join(caminhos.suporteDir, resultados);
-  return existe(noSuporte) ? noSuporte : NodePath.join(rodada, resultados);
-}
-
-/** Fichas por `id` (`str`), na ordem do id. */
-export function catalogoFichas(fichasDir?: string): Map<string, Dicionario> {
-  return new Map(carregarFichasOrdenadas(fichasDir).map((ficha) => [textoDoValor(obrigatorio(ficha, "id")), ficha]));
-}
-
-/** Validações cruzadas por `id`. */
-export function catalogoValidacoes(validacoesDir?: string): Map<string, Dicionario> {
-  const diretorio = validacoesDir ?? caminhosPadrao().validacoesCruzadasDir;
-  const validacoes = listarArquivos(diretorio, ".json")
-    .map((arquivo) => lerJsonDaRodada(arquivo))
-    .filter(ehDicionario);
-  return new Map(validacoes.map((item) => [textoDoValor(obrigatorio(item, "id")), item]));
-}
-
-/** Blocos de resultados: `grupos[]`, ou `resultados[]` como um bloco só. */
-export function blocosResultados(payload: Dicionario): unknown[] {
-  const grupos = obter(payload, "grupos");
-  if (Array.isArray(grupos)) return grupos;
-  const resultados = obter(payload, "resultados");
-  if (Array.isArray(resultados)) {
-    return [{ grupo_id: textoDoValor(ou(obter(payload, "grupo_id"), "grupo-unico")), resultados }];
+/**
+ * Um JSON de resultados (da rodada, a base da mescla ou o avulso) fora do contrato. Os atributos
+ * são IDs, posições, contagens e os problemas do esquema (caminho e o que se esperava), nunca o
+ * texto das evidências ou das justificativas.
+ */
+export class ErroResultadosSubagents extends Schema.TaggedError<ErroResultadosSubagents>()("ErroResultadosSubagents", {
+  categoria: Schema.Literals(CATEGORIAS),
+  /** Qual JSON, como sujeito da frase ("O resultado avulso"). */
+  origem: Schema.String,
+  /** Arquivo lido, nas falhas de leitura. */
+  arquivo: Schema.optional(Schema.String),
+  ficha: Schema.optional(Schema.String),
+  alerta: Schema.optional(Schema.String),
+  validacao: Schema.optional(Schema.String),
+  /** Posição (a partir de 1) da evidência ou do achado. */
+  posicao: Schema.optional(Schema.Number),
+  ids: Schema.optional(Schema.Array(Schema.String)),
+  estado: Schema.optional(Schema.String),
+  encontradas: Schema.optional(Schema.Number),
+  minimo: Schema.optional(Schema.Number),
+  problemas: Schema.optional(Schema.Array(Schema.String)),
+  cause: Schema.optional(Schema.Defect()),
+}) {
+  override get message(): string {
+    const ids = (this.ids ?? []).join(", ");
+    switch (this.categoria) {
+      case "arquivo-ausente":
+        return (
+          `${this.origem} não foi encontrado: ${this.arquivo}. ` +
+          "Confira o caminho ou peça ao sub-agente que grave o JSON nesse arquivo."
+        );
+      case "arquivo-ilegivel":
+        return `${this.origem} não pôde ser lido: ${this.arquivo}.`;
+      case "json-invalido":
+        return (
+          `${this.origem} não é um JSON válido: ${this.arquivo}. ` +
+          "Peça ao sub-agente que devolva só o JSON, sem texto antes ou depois nem bloco de código."
+        );
+      case "fora-do-contrato":
+        return `${this.origem} está fora do contrato:\n${(this.problemas ?? []).join("\n")}`;
+      case "sem-resultados":
+        return `${this.origem} precisa conter \`grupos[]\` ou \`resultados[]\`.`;
+      case "fichas-duplicadas":
+        return `Fichas duplicadas: ${ids}`;
+      case "fichas-desconhecidas":
+        return `Fichas desconhecidas: ${ids}`;
+      case "fichas-sem-resultado":
+        return `Fichas sem resultado: ${ids}`;
+      case "justificativa-ausente":
+        return `\`justificativa\` ausente para ${this.ficha}.`;
+      case "feedback-ausente":
+        return `\`feedback_autores\` ausente para ${this.ficha}; obrigatório quando estado=${this.estado}.`;
+      case "evidencia-sem-conteudo":
+        return `Evidência ${this.posicao} de ${this.ficha} não traz conteúdo verificável.`;
+      case "evidencias-insuficientes":
+        return `${this.ficha} trouxe ${this.encontradas} evidências; mínimo exigido: ${this.minimo}.`;
+      case "achado-normativo-sem-conteudo":
+        return `Achado normativo ${this.posicao} de ${this.ficha} não traz conteúdo verificável.`;
+      case "alerta-duplicado":
+        return `Alerta transversal duplicado: ${this.alerta}`;
+      case "alerta-sem-titulo-ou-descricao":
+        return `Alerta transversal ${this.alerta} precisa de título e descrição.`;
+      case "alerta-sem-validacao":
+        return `Alerta transversal ${this.alerta} precisa de \`validacao_id\`.`;
+      case "validacao-desconhecida":
+        return `Alerta ${this.alerta} referencia validação cruzada desconhecida: ${this.validacao}`;
+      case "alerta-com-fichas-desconhecidas":
+        return `Alerta ${this.alerta} referencia fichas desconhecidas: ${ids}`;
+      case "evidencia-transversal-sem-conteudo":
+        return `Evidência transversal ${this.posicao} de ${this.alerta} não traz conteúdo verificável.`;
+      case "avulso-sem-resultados":
+        return `${this.origem} não traz resultados.`;
+    }
   }
-  throw new ErroResultadosSubagents("O JSON precisa conter `grupos[]` ou `resultados[]`.");
 }
 
-function normalizarFundamentacaoNormativa(fichaId: string, item: Dicionario): Dicionario[] {
-  const bruto = obter(item, "fundamentacao_normativa");
-  if (bruto === null) return [];
-  if (!Array.isArray(bruto)) {
-    throw new ErroResultadosSubagents(`\`fundamentacao_normativa\` precisa ser lista para ${fichaId}.`);
-  }
-  return bruto.map((achado, posicao) => {
-    const indice = posicao + 1;
-    if (!ehDicionario(achado)) {
-      throw new ErroResultadosSubagents(`Achado normativo ${indice} de ${fichaId} precisa ser objeto JSON.`);
-    }
-    const status = texto(obter(achado, "status"));
-    if (!STATUS_NORMATIVOS.has(status)) {
-      throw new ErroResultadosSubagents(`Status de fundamentação normativa inválido para ${fichaId}: ${status}`);
-    }
-    const normalizado: Record<string, string> = {
-      status,
-      trecho_ppc: primeiroTexto(achado, "trecho_ppc", "trecho"),
-      norma: primeiroTexto(achado, "norma"),
-      fonte: primeiroTexto(achado, "fonte", "fonte_consultada"),
-      dispositivo: primeiroTexto(achado, "dispositivo"),
-      evidencia: primeiroTexto(achado, "evidencia", "evidência"),
-      analise: primeiroTexto(achado, "analise", "análise"),
-      recomendacao: primeiroTexto(achado, "recomendacao", "recomendação"),
-    };
-    if (!Object.entries(normalizado).some(([chave, valor]) => chave !== "status" && valor)) {
-      throw new ErroResultadosSubagents(`Achado normativo ${indice} de ${fichaId} não traz conteúdo verificável.`);
-    }
-    return normalizado;
+export const ehErroResultadosSubagents = Schema.is(ErroResultadosSubagents);
+
+type Atributos = Omit<ConstructorParameters<typeof ErroResultadosSubagents>[0], "categoria" | "origem">;
+
+function falha(
+  categoria: (typeof CATEGORIAS)[number],
+  origem: string,
+  atributos: Atributos = {},
+): Result.Result<never, ErroResultadosSubagents> {
+  return Result.fail(new ErroResultadosSubagents({ categoria, origem, ...atributos }));
+}
+
+/** Os três JSONs que esta leitura confere, como sujeito das mensagens. */
+const ORIGEM = {
+  rodada: "O JSON de resultados",
+  base: "O JSON base",
+  avulso: "O resultado avulso",
+} as const;
+
+/**
+ * Lê um JSON de resultados. Arquivo ausente ou JSON inválido (o sub-agente que escreve texto em
+ * volta do JSON) é `ErroResultadosSubagents`, não defeito.
+ */
+function lerJsonDeResultados(arquivo: string, origem: string) {
+  return Effect.try({
+    try: () => lerJsonDaRodada(arquivo),
+    catch: (cause) =>
+      new ErroResultadosSubagents({
+        categoria:
+          cause instanceof ErroJsonTipado
+            ? "json-invalido"
+            : Predicate.hasProperty(cause, "code") && cause.code === "ENOENT"
+              ? "arquivo-ausente"
+              : "arquivo-ilegivel",
+        origem,
+        arquivo,
+        cause,
+      }),
   });
 }
 
-function normalizarAnchor(valor: unknown): Dicionario {
-  if (!ehDicionario(valor)) return {};
-  const blockId = primeiroTexto(valor, "block_id", "id");
-  const quote = primeiroTexto(valor, "quote", "trecho");
-  if (!blockId && !quote) return {};
-  return { block_id: blockId, quote };
+// ---------------------------------------------------------------- contrato
+
+/** Bloco de resultados de um sub-agente, como está em `grupos[]`. */
+const esquemaBloco = aberto({
+  grupo_id: Schema.String,
+  resultados: Schema.Array(esquemaResultadoFicha),
+});
+
+const alertas = Schema.optionalKey(Schema.NullOr(Schema.Array(esquemaAlertaTransversal)));
+
+/**
+ * O JSON coletado dos sub-agentes: `grupos[]`, ou `resultados[]` (com `grupo_id` opcional) como um
+ * bloco só, mais os alertas da síntese transversal, no topo ou em `sintese_transversal`, e a
+ * `metadata` da mescla. Chaves a mais ficam no topo, no bloco, no resultado e no alerta; na evidência,
+ * na âncora e no achado normativo são recusadas (`aberto`, em `esquemas.ts`).
+ */
+export const esquemaResultadosSubagents = aberto({
+  grupos: Schema.optionalKey(Schema.Array(esquemaBloco)),
+  grupo_id: Schema.optionalKey(Schema.String),
+  resultados: Schema.optionalKey(Schema.Array(esquemaResultadoFicha)),
+  alertas_transversais: alertas,
+  sintese_transversal: Schema.optionalKey(aberto({ alertas_transversais: alertas })),
+  metadata: Schema.optionalKey(Schema.Record(Schema.String, Schema.Unknown)),
+});
+export type ResultadosSubagents = typeof esquemaResultadosSubagents.Type;
+type Bloco = typeof esquemaBloco.Type;
+type ResultadoFicha = typeof esquemaResultadoFicha.Type;
+type AlertaTransversal = typeof esquemaAlertaTransversal.Type;
+
+/** `$.grupos[0].resultados[1].estado`: o caminho de um problema no JSON. */
+function caminhoJson(caminho: ReadonlyArray<PropertyKey>): string {
+  return caminho.reduce<string>(
+    (texto, chave) => (typeof chave === "number" ? `${texto}[${chave}]` : `${texto}.${String(chave)}`),
+    "$",
+  );
 }
 
-function normalizarEvidencia(fichaId: string, valor: unknown, indice: number): Dicionario {
-  let normalizada: Dicionario;
-  if (ehDicionario(valor)) {
-    normalizada = {
-      trecho: primeiroTexto(valor, "trecho", "texto", "evidencia"),
-      secao: primeiroTexto(valor, "secao", "seção"),
-      localizador: primeiroTexto(valor, "localizador", "pagina", "linha"),
-      fonte: texto(ou(obter(valor, "fonte"), "PPC.md")),
-      artefato: primeiroTexto(valor, "artefato"),
-    };
-    const anchor = normalizarAnchor(obter(valor, "anchor"));
-    if (verdadeiro(anchor)) normalizada.anchor = anchor;
-  } else {
-    normalizada = { trecho: texto(valor), secao: "", localizador: "", fonte: "PPC.md", artefato: "" };
-  }
-  const temConteudo =
-    ["trecho", "secao", "localizador", "artefato", "anchor"].some((chave) => verdadeiro(obter(normalizada, chave))) ||
-    !["", "PPC.md"].includes(normalizada.fonte as string);
-  if (!temConteudo) {
-    throw new ErroResultadosSubagents(`Evidência ${indice} de ${fichaId} não traz conteúdo verificável.`);
-  }
-  return normalizada;
+/** JSON simples de um valor do JSON tipado da rodada (fracionários viram números). */
+const jsonSimples = (valor: unknown): unknown => JSON.parse(serializarJsonTipado(valor));
+
+/** Decodifica um JSON de resultados, com todos os problemas do esquema. */
+export function decodificarResultados(
+  valor: unknown,
+  origem: string,
+): Result.Result<ResultadosSubagents, ErroResultadosSubagents> {
+  const decodificado = Schema.decodeUnknownResult(esquemaResultadosSubagents)(jsonSimples(valor), {
+    errors: "all",
+    onExcessProperty: "error",
+  });
+  if (Result.isSuccess(decodificado)) return Result.succeed(decodificado.success);
+  return falha("fora-do-contrato", origem, {
+    problemas: problemas(decodificado.failure.issue).map(
+      (p) => `${caminhoJson(p.caminho)}: ${p.mensagem.replace(/^Entrada inválida: /, "")}`,
+    ),
+  });
 }
 
-function normalizarEvidencias(fichaId: string, evidencias: unknown): Dicionario[] {
-  if (!Array.isArray(evidencias))
-    throw new ErroResultadosSubagents(`\`evidencias\` precisa ser lista para ${fichaId}.`);
-  return evidencias
-    .map((valor, posicao) => normalizarEvidencia(fichaId, valor, posicao + 1))
-    .filter((normalizada) => Object.values(normalizada).some(verdadeiro));
+/** Blocos de resultados: `grupos[]`, ou `resultados[]` como um bloco só. */
+export function blocosResultados(
+  payload: ResultadosSubagents,
+  origem: string,
+): Result.Result<Bloco[], ErroResultadosSubagents> {
+  if (payload.grupos) return Result.succeed([...payload.grupos]);
+  if (payload.resultados) {
+    return Result.succeed([{ grupo_id: payload.grupo_id || "grupo-unico", resultados: payload.resultados }]);
+  }
+  return falha("sem-resultados", origem);
 }
 
-function normalizarEvidenciaTransversal(alertaId: string, valor: unknown, indice: number): Dicionario {
-  let normalizada: Dicionario;
-  if (ehDicionario(valor)) {
-    normalizada = {
-      trecho: primeiroTexto(valor, "trecho", "texto", "evidencia"),
-      secao: primeiroTexto(valor, "secao", "seção"),
-      localizador: primeiroTexto(valor, "localizador", "pagina", "linha"),
-      papel: primeiroTexto(valor, "papel"),
-      fonte: texto(ou(obter(valor, "fonte"), "PPC.md")),
-    };
-    const anchor = normalizarAnchor(obter(valor, "anchor"));
-    if (verdadeiro(anchor)) normalizada.anchor = anchor;
-  } else {
-    normalizada = { trecho: texto(valor), secao: "", localizador: "", papel: "", fonte: "PPC.md" };
-  }
-  if (!["trecho", "secao", "localizador", "papel", "anchor"].some((chave) => verdadeiro(obter(normalizada, chave)))) {
-    throw new ErroResultadosSubagents(`Evidência transversal ${indice} de ${alertaId} não traz conteúdo verificável.`);
-  }
-  return normalizada;
+// ---------------------------------------------------------------- catálogos
+
+/** Fichas por `id`, na ordem do id, decodificadas pelo contrato da ficha. */
+export function catalogoFichas(fichasDir?: string): Map<string, Ficha> {
+  const decodificar = Schema.decodeUnknownSync(esquemaFicha);
+  return new Map(
+    carregarFichasOrdenadas(fichasDir).map((bruta) => {
+      const ficha = decodificar(jsonSimples(bruta));
+      return [ficha.id, ficha];
+    }),
+  );
 }
+
+/** Títulos das validações cruzadas por `id`. */
+export function catalogoValidacoes(validacoesDir?: string): Map<string, { readonly titulo: string }> {
+  const diretorio = validacoesDir ?? caminhosPadrao().validacoesCruzadasDir;
+  const decodificar = Schema.decodeUnknownSync(esquemaValidacaoCruzada);
+  return new Map(
+    listarArquivos(diretorio, ".json").map((arquivo) => {
+      const validacao = decodificar(jsonSimples(lerJsonDaRodada(arquivo)));
+      return [validacao.id, { titulo: validacao.titulo }];
+    }),
+  );
+}
+
+// ---------------------------------------------------------------- normalização
+
+export type Ancora = { block_id: string; quote: string };
+
+export type EvidenciaNormalizada = {
+  trecho: string;
+  secao: string;
+  localizador: string;
+  fonte: string;
+  artefato: string;
+  anchor?: Ancora;
+};
+
+export type AchadoNormativo = {
+  status: string;
+  trecho_ppc: string;
+  norma: string;
+  fonte: string;
+  dispositivo: string;
+  evidencia: string;
+  analise: string;
+  recomendacao: string;
+};
 
 export type ResultadoNormalizado = {
   grupo_id: string;
   ficha_id: string;
-  estado: string;
+  titulo: string;
+  dominio: string;
   criticidade: string;
+  topicos_tematicos: string[];
+  tipo_escopo: string;
+  estado: string;
+  confianca: number;
+  justificativa: string;
+  evidencias: EvidenciaNormalizada[];
+  lacunas: string[];
   revisao_humana_obrigatoria: boolean;
-  [chave: string]: unknown;
+  feedback_autores: string;
+  fundamentacao_normativa: AchadoNormativo[];
 };
 
+export type EvidenciaTransversal = {
+  trecho: string;
+  secao: string;
+  localizador: string;
+  papel: string;
+  fonte: string;
+  anchor?: Ancora;
+};
+
+export type AlertaNormalizado = {
+  id: string;
+  validacao_id: string;
+  validacao_titulo: string;
+  titulo: string;
+  criticidade: Criticidade;
+  descricao: string;
+  fichas_relacionadas: string[];
+  evidencias: EvidenciaTransversal[];
+  revisao_humana_obrigatoria: boolean;
+};
+
+/** Âncora com bloco ou trecho; sem os dois, nenhuma. */
+function normalizarAncora(ancora: { readonly block_id?: string; readonly quote?: string } | undefined) {
+  const blockId = aparar(ancora?.block_id ?? "");
+  const quote = aparar(ancora?.quote ?? "");
+  return blockId || quote ? { anchor: { block_id: blockId, quote } } : {};
+}
+
+/** Fonte da evidência: `PPC.md` quando não informada. */
+const fonteOuPpc = (fonte: string | undefined) => aparar(fonte || "PPC.md");
+
+function normalizarEvidencia(evidencia: ResultadoFicha["evidencias"][number]): EvidenciaNormalizada {
+  if (typeof evidencia === "string") {
+    return { trecho: aparar(evidencia), secao: "", localizador: "", fonte: "PPC.md", artefato: "" };
+  }
+  return {
+    trecho: aparar(evidencia.trecho ?? ""),
+    secao: aparar(evidencia.secao ?? ""),
+    localizador: aparar(evidencia.localizador ?? ""),
+    fonte: fonteOuPpc(evidencia.fonte),
+    artefato: aparar(evidencia.artefato ?? ""),
+    ...normalizarAncora(evidencia.anchor),
+  };
+}
+
+/** Evidência com algo para conferir: um campo preenchido, uma âncora ou uma fonte que não é o PPC. */
+const temConteudo = (evidencia: EvidenciaNormalizada) =>
+  Boolean(evidencia.trecho || evidencia.secao || evidencia.localizador || evidencia.artefato) ||
+  evidencia.anchor !== undefined ||
+  !["", "PPC.md"].includes(evidencia.fonte);
+
+function normalizarAchado(achado: NonNullable<ResultadoFicha["fundamentacao_normativa"]>[number]): AchadoNormativo {
+  return {
+    status: achado.status,
+    trecho_ppc: aparar(achado.trecho_ppc ?? ""),
+    norma: aparar(achado.norma ?? ""),
+    fonte: aparar(achado.fonte ?? ""),
+    dispositivo: aparar(achado.dispositivo ?? ""),
+    evidencia: aparar(achado.evidencia ?? ""),
+    analise: aparar(achado.analise ?? ""),
+    recomendacao: aparar(achado.recomendacao ?? ""),
+  };
+}
+
+/** Resultado de uma ficha conhecida, conferido contra a ficha e normalizado. */
+function normalizarResultado(
+  grupoId: string,
+  fichaId: string,
+  item: ResultadoFicha,
+  ficha: Ficha,
+  origem: string,
+): Result.Result<ResultadoNormalizado, ErroResultadosSubagents> {
+  const justificativa = aparar(item.justificativa);
+  if (!justificativa) return falha("justificativa-ausente", origem, { ficha: fichaId });
+  const feedbackAutores = aparar(item.feedback_autores ?? "");
+  const estadosComFeedback: ReadonlyArray<Estado> = ficha.feedback_autores?.obrigatorio_quando_estado ?? [];
+  if (estadosComFeedback.includes(item.estado) && !feedbackAutores) {
+    return falha("feedback-ausente", origem, { ficha: fichaId, estado: item.estado });
+  }
+  const evidencias = item.evidencias.map(normalizarEvidencia);
+  const vazia = evidencias.findIndex((evidencia) => !temConteudo(evidencia));
+  if (vazia >= 0) return falha("evidencia-sem-conteudo", origem, { ficha: fichaId, posicao: vazia + 1 });
+  if (evidencias.length < ficha.evidencia_minima) {
+    return falha("evidencias-insuficientes", origem, {
+      ficha: fichaId,
+      encontradas: evidencias.length,
+      minimo: ficha.evidencia_minima,
+    });
+  }
+  const fundamentacao = (item.fundamentacao_normativa ?? []).map(normalizarAchado);
+  const semConteudo = fundamentacao.findIndex(
+    ({ status: _status, ...conteudo }) => !Object.values(conteudo).some(Boolean),
+  );
+  if (semConteudo >= 0) {
+    return falha("achado-normativo-sem-conteudo", origem, { ficha: fichaId, posicao: semConteudo + 1 });
+  }
+  return Result.succeed({
+    grupo_id: grupoId,
+    ficha_id: fichaId,
+    titulo: ficha.titulo || fichaId,
+    dominio: ficha.dominio,
+    criticidade: ficha.criticidade,
+    topicos_tematicos: [...ficha.topicos_tematicos],
+    tipo_escopo: ficha.tipo_escopo,
+    estado: item.estado,
+    confianca: item.confianca,
+    justificativa,
+    evidencias,
+    lacunas: item.lacunas.map((lacuna) => aparar(lacuna)).filter(Boolean),
+    revisao_humana_obrigatoria: item.revisao_humana_obrigatoria,
+    feedback_autores: feedbackAutores,
+    fundamentacao_normativa: fundamentacao,
+  });
+}
+
 /**
- * Valida e normaliza os resultados dos blocos: fichas conhecidas, sem repetição, cada resultado
+ * Confere e normaliza os resultados dos blocos: fichas conhecidas, sem repetição, cada resultado
  * com o contrato da ficha. Não exige que o catálogo inteiro esteja coberto.
  */
-function validarBlocos(
-  blocos: unknown[],
-  fichasPorId: Map<string, Dicionario>,
-): { normalizados: ResultadoNormalizado[]; vistos: Set<string> } {
+function normalizarBlocos(
+  blocos: ReadonlyArray<Bloco>,
+  fichasPorId: ReadonlyMap<string, Ficha>,
+  origem: string,
+): Result.Result<{ normalizados: ResultadoNormalizado[]; vistos: Set<string> }, ErroResultadosSubagents> {
   const vistos = new Set<string>();
   const normalizados: ResultadoNormalizado[] = [];
   const duplicados: string[] = [];
   const desconhecidos: string[] = [];
-
   for (const bloco of blocos) {
-    if (!ehDicionario(bloco)) throw new Error("AttributeError: bloco de resultados não é objeto JSON");
-    const grupoId = texto(obter(bloco, "grupo_id"));
-    const resultados = obter(bloco, "resultados");
-    if (!grupoId) throw new ErroResultadosSubagents("Um bloco de resultados não contém `grupo_id`.");
-    if (!Array.isArray(resultados))
-      throw new ErroResultadosSubagents(`O bloco ${grupoId} não contém \`resultados[]\`.`);
-    for (const item of resultados) {
-      if (!ehDicionario(item)) {
-        throw new ErroResultadosSubagents(`O bloco ${grupoId} contém item que não é objeto JSON.`);
-      }
-      const fichaId = texto(obter(item, "ficha_id"));
-      if (!fichaId) throw new ErroResultadosSubagents(`O bloco ${grupoId} contém item sem \`ficha_id\`.`);
+    for (const item of bloco.resultados) {
+      const fichaId = aparar(item.ficha_id);
       if (vistos.has(fichaId)) {
         duplicados.push(fichaId);
         continue;
@@ -216,144 +453,93 @@ function validarBlocos(
         desconhecidos.push(fichaId);
         continue;
       }
-      const estado = texto(obter(item, "estado"));
-      if (!ESTADOS_PERMITIDOS.has(estado))
-        throw new ErroResultadosSubagents(`Estado inválido para ${fichaId}: ${estado}`);
-      const confianca = obter(item, "confianca");
-      if (!ehNumerico(confianca) || !(valorNumerico(confianca) >= 0 && valorNumerico(confianca) <= 1)) {
-        throw new ErroResultadosSubagents(`Confiança inválida para ${fichaId}: ${textoDoValor(confianca)}`);
-      }
-      const justificativa = texto(obter(item, "justificativa"));
-      if (!justificativa) throw new ErroResultadosSubagents(`\`justificativa\` ausente para ${fichaId}.`);
-      const feedbackAutores = texto(obter(item, "feedback_autores"));
-      const feedbackConfig = obter(ficha, "feedback_autores");
-      if (ehDicionario(feedbackConfig)) {
-        const estadosComFeedback = new Set(
-          itensIteraveis(obter(feedbackConfig, "obrigatorio_quando_estado", [])).map(textoDoValor),
-        );
-        if (estadosComFeedback.has(estado) && !feedbackAutores) {
-          throw new ErroResultadosSubagents(
-            `\`feedback_autores\` ausente para ${fichaId}; obrigatório quando estado=${estado}.`,
-          );
-        }
-      }
-      const evidencias = normalizarEvidencias(fichaId, obter(item, "evidencias"));
-      const evidenciaMinima = inteiroDoValor(obter(ficha, "evidencia_minima", 1));
-      if (evidencias.length < evidenciaMinima) {
-        throw new ErroResultadosSubagents(
-          `${fichaId} trouxe ${evidencias.length} evidências; mínimo exigido: ${evidenciaMinima}.`,
-        );
-      }
-      const lacunas = obter(item, "lacunas");
-      const revisao = obter(item, "revisao_humana_obrigatoria");
-      if (!Array.isArray(lacunas)) throw new ErroResultadosSubagents(`\`lacunas\` precisa ser lista para ${fichaId}.`);
-      if (typeof revisao !== "boolean") {
-        throw new ErroResultadosSubagents(`\`revisao_humana_obrigatoria\` precisa ser booleano para ${fichaId}.`);
-      }
-      normalizados.push({
-        grupo_id: grupoId,
-        ficha_id: fichaId,
-        titulo: textoDoValor(ou(obter(ficha, "titulo"), fichaId)),
-        dominio: textoOuVazioDoValor(obter(ficha, "dominio")),
-        criticidade: textoOuVazioDoValor(obter(ficha, "criticidade")),
-        topicos_tematicos: itensIteraveis(ou(obter(ficha, "topicos_tematicos"), [])),
-        tipo_escopo: textoOuVazioDoValor(obter(ficha, "tipo_escopo")),
-        estado,
-        confianca: valorNumerico(confianca),
-        justificativa,
-        evidencias,
-        lacunas: lacunas.map((valor) => aparar(textoDoValor(valor))).filter(Boolean),
-        revisao_humana_obrigatoria: revisao,
-        feedback_autores: feedbackAutores,
-        fundamentacao_normativa: normalizarFundamentacaoNormativa(fichaId, item),
-      });
+      const normalizado = normalizarResultado(aparar(bloco.grupo_id), fichaId, item, ficha, origem);
+      if (Result.isFailure(normalizado)) return Result.fail(normalizado.failure);
+      normalizados.push(normalizado.success);
     }
   }
-
-  const unicosOrdenados = (itens: string[]) => [...new Set(itens)].sort(compararTexto).join(", ");
-  if (duplicados.length) throw new ErroResultadosSubagents(`Fichas duplicadas: ${unicosOrdenados(duplicados)}`);
-  if (desconhecidos.length)
-    throw new ErroResultadosSubagents(`Fichas desconhecidas: ${unicosOrdenados(desconhecidos)}`);
-  return { normalizados, vistos };
+  const unicosOrdenados = (itens: string[]) => [...new Set(itens)].sort(compararTexto);
+  if (duplicados.length) return falha("fichas-duplicadas", origem, { ids: unicosOrdenados(duplicados) });
+  if (desconhecidos.length) return falha("fichas-desconhecidas", origem, { ids: unicosOrdenados(desconhecidos) });
+  return Result.succeed({ normalizados, vistos });
 }
 
-/** `validar_resultados_subagents`: um resultado válido por ficha do catálogo, ordenados por ficha. */
+/** Um resultado válido por ficha do catálogo, ordenados por ficha. */
 export function validarResultadosSubagents(
-  payload: Dicionario,
-  fichasPorId: Map<string, Dicionario>,
-): ResultadoNormalizado[] {
-  const { normalizados, vistos } = validarBlocos(blocosResultados(payload), fichasPorId);
-  const faltantes = [...fichasPorId.keys()].filter((fichaId) => !vistos.has(fichaId)).sort(compararTexto);
-  if (faltantes.length) throw new ErroResultadosSubagents(`Fichas sem resultado: ${faltantes.join(", ")}`);
-  return normalizados.sort((a, b) => compararTexto(a.ficha_id, b.ficha_id));
+  blocos: ReadonlyArray<Bloco>,
+  fichasPorId: ReadonlyMap<string, Ficha>,
+  origem: string,
+): Result.Result<ResultadoNormalizado[], ErroResultadosSubagents> {
+  return Result.flatMap(normalizarBlocos(blocos, fichasPorId, origem), ({ normalizados, vistos }) => {
+    const faltantes = [...fichasPorId.keys()].filter((fichaId) => !vistos.has(fichaId)).sort(compararTexto);
+    if (faltantes.length) return falha("fichas-sem-resultado", origem, { ids: faltantes });
+    return Result.succeed(normalizados.sort((a, b) => compararTexto(a.ficha_id, b.ficha_id)));
+  });
 }
 
-/** `validar_alertas_transversais`: alertas da síntese transversal ligados a validações cruzadas conhecidas. */
+function normalizarEvidenciaTransversal(
+  evidencia: NonNullable<AlertaTransversal["evidencias"]>[number],
+): EvidenciaTransversal {
+  if (typeof evidencia === "string") {
+    return { trecho: aparar(evidencia), secao: "", localizador: "", papel: "", fonte: "PPC.md" };
+  }
+  return {
+    trecho: aparar(evidencia.trecho ?? ""),
+    secao: aparar(evidencia.secao ?? ""),
+    localizador: aparar(evidencia.localizador ?? ""),
+    papel: aparar(evidencia.papel ?? ""),
+    fonte: fonteOuPpc(evidencia.fonte),
+    ...normalizarAncora(evidencia.anchor),
+  };
+}
+
+/** Alertas da síntese transversal ligados a validações cruzadas conhecidas. */
 export function validarAlertasTransversais(
-  payload: Dicionario,
-  fichasPorId: Map<string, Dicionario>,
-  validacoesPorId: Map<string, Dicionario>,
-): Dicionario[] {
-  let bruto = obter(payload, "alertas_transversais");
-  const sintese = obter(payload, "sintese_transversal");
-  if (bruto === null && ehDicionario(sintese)) bruto = obter(sintese, "alertas_transversais");
-  if (bruto === null) return [];
-  if (!Array.isArray(bruto)) throw new ErroResultadosSubagents("`alertas_transversais` precisa ser uma lista.");
-  const alertas: Dicionario[] = [];
+  payload: ResultadosSubagents,
+  fichasPorId: ReadonlyMap<string, Ficha>,
+  validacoesPorId: ReadonlyMap<string, { readonly titulo: string }>,
+  origem: string,
+): Result.Result<AlertaNormalizado[], ErroResultadosSubagents> {
+  const brutos = payload.alertas_transversais ?? payload.sintese_transversal?.alertas_transversais ?? [];
+  const normalizados: AlertaNormalizado[] = [];
   const vistos = new Set<string>();
-  bruto.forEach((item, posicao) => {
-    const indice = posicao + 1;
-    if (!ehDicionario(item)) throw new ErroResultadosSubagents("Cada alerta transversal precisa ser objeto JSON.");
-    const alertaId = aparar(textoDoValor(ou(obter(item, "id"), `ALERTA-${String(indice).padStart(3, "0")}`)));
-    if (vistos.has(alertaId)) throw new ErroResultadosSubagents(`Alerta transversal duplicado: ${alertaId}`);
+  for (const [posicao, item] of brutos.entries()) {
+    const alertaId = aparar(item.id || `ALERTA-${String(posicao + 1).padStart(3, "0")}`);
+    if (vistos.has(alertaId)) return falha("alerta-duplicado", origem, { alerta: alertaId });
     vistos.add(alertaId);
-    const titulo = texto(obter(item, "titulo"));
-    const validacaoId = texto(obter(item, "validacao_id"));
-    const descricao = texto(obter(item, "descricao"));
-    const criticidade = aparar(textoDoValor(ou(obter(item, "criticidade"), "OBRIG")));
-    const fichasRelacionadas = ou(obter(item, "fichas_relacionadas"), []);
-    const evidencias = ou(obter(item, "evidencias"), []);
-    const revisao = obter(item, "revisao_humana_obrigatoria");
-    if (!titulo || !descricao) {
-      throw new ErroResultadosSubagents(`Alerta transversal ${alertaId} precisa de título e descrição.`);
-    }
-    if (!validacaoId) throw new ErroResultadosSubagents(`Alerta transversal ${alertaId} precisa de \`validacao_id\`.`);
+    const titulo = aparar(item.titulo);
+    const descricao = aparar(item.descricao);
+    const validacaoId = aparar(item.validacao_id);
+    if (!titulo || !descricao) return falha("alerta-sem-titulo-ou-descricao", origem, { alerta: alertaId });
+    if (!validacaoId) return falha("alerta-sem-validacao", origem, { alerta: alertaId });
     const validacao = validacoesPorId.get(validacaoId);
-    if (!validacao) {
-      throw new ErroResultadosSubagents(`Alerta ${alertaId} referencia validação cruzada desconhecida: ${validacaoId}`);
-    }
-    if (!["BLOQ", "OBRIG", "REC"].includes(criticidade)) {
-      throw new ErroResultadosSubagents(`Criticidade inválida para ${alertaId}: ${criticidade}`);
-    }
-    if (!Array.isArray(fichasRelacionadas)) {
-      throw new ErroResultadosSubagents(`\`fichas_relacionadas\` precisa ser lista para ${alertaId}.`);
-    }
-    const desconhecidas = fichasRelacionadas.filter((fichaId) => !fichasPorId.has(textoDoValor(fichaId)));
+    if (!validacao) return falha("validacao-desconhecida", origem, { alerta: alertaId, validacao: validacaoId });
+    const fichasRelacionadas = [...(item.fichas_relacionadas ?? [])];
+    const desconhecidas = fichasRelacionadas.filter((fichaId) => !fichasPorId.has(fichaId));
     if (desconhecidas.length) {
-      throw new ErroResultadosSubagents(
-        `Alerta ${alertaId} referencia fichas desconhecidas: ${desconhecidas.map(textoDoValor).join(", ")}`,
-      );
+      return falha("alerta-com-fichas-desconhecidas", origem, { alerta: alertaId, ids: desconhecidas });
     }
-    if (!Array.isArray(evidencias))
-      throw new ErroResultadosSubagents(`\`evidencias\` precisa ser lista para ${alertaId}.`);
-    const evidenciasNormalizadas = evidencias.map((valor, i) => normalizarEvidenciaTransversal(alertaId, valor, i + 1));
-    if (typeof revisao !== "boolean") {
-      throw new ErroResultadosSubagents(`\`revisao_humana_obrigatoria\` precisa ser booleano para ${alertaId}.`);
+    const evidencias = (item.evidencias ?? []).map(normalizarEvidenciaTransversal);
+    const vazia = evidencias.findIndex(({ fonte: _fonte, ...conteudo }) => !Object.values(conteudo).some(Boolean));
+    if (vazia >= 0) {
+      return falha("evidencia-transversal-sem-conteudo", origem, { alerta: alertaId, posicao: vazia + 1 });
     }
-    alertas.push({
+    normalizados.push({
       id: alertaId,
       validacao_id: validacaoId,
-      validacao_titulo: textoDoValor(ou(obter(validacao, "titulo"), validacaoId)),
+      validacao_titulo: validacao.titulo || validacaoId,
       titulo,
-      criticidade,
+      criticidade: item.criticidade ?? "OBRIG",
       descricao,
-      fichas_relacionadas: fichasRelacionadas.map(textoDoValor),
-      evidencias: evidenciasNormalizadas,
-      revisao_humana_obrigatoria: revisao,
+      fichas_relacionadas: fichasRelacionadas,
+      evidencias,
+      revisao_humana_obrigatoria: item.revisao_humana_obrigatoria,
     });
-  });
-  return alertas;
+  }
+  return Result.succeed(normalizados);
 }
+
+// ---------------------------------------------------------------- situação
 
 /**
  * Situações da revisão prévia, da mais grave para a mais leve, com o rótulo do relatório. São a
@@ -368,14 +554,21 @@ export const SITUACOES_REVISAO = {
 
 export type SituacaoRevisao = keyof typeof SITUACOES_REVISAO;
 
+type FichaParaSituacao = Pick<ResultadoNormalizado, "criticidade" | "estado" | "revisao_humana_obrigatoria">;
+type AlertaParaSituacao = Pick<AlertaNormalizado, "criticidade" | "revisao_humana_obrigatoria">;
+
 /**
  * Situação geral da rodada pelos estados e criticidades das fichas e pelos alertas transversais.
  * Um alerta transversal é um problema encontrado: pesa como uma ficha `NAO_ATENDE` da mesma
  * criticidade (`BLOQ` → revisão substancial, `OBRIG` → ajustes necessários; `REC`, como a ficha
  * `REC` não atendida, não muda a situação) e, com revisão humana obrigatória, gera ressalva.
  */
-export function situacao(resultados: ResultadoNormalizado[], alertas: Dicionario[] = []): SituacaoRevisao {
-  const alertaCom = (criticidade: string) => alertas.some((alerta) => obter(alerta, "criticidade") === criticidade);
+export function situacao(
+  resultados: ReadonlyArray<FichaParaSituacao>,
+  alertasTransversais: ReadonlyArray<AlertaParaSituacao> = [],
+): SituacaoRevisao {
+  const alertaCom = (criticidade: Criticidade) =>
+    alertasTransversais.some((alerta) => alerta.criticidade === criticidade);
   if (resultados.some((item) => item.criticidade === "BLOQ" && item.estado === "NAO_ATENDE") || alertaCom("BLOQ")) {
     return "REVISAO_SUBSTANCIAL";
   }
@@ -384,7 +577,7 @@ export function situacao(resultados: ResultadoNormalizado[], alertas: Dicionario
   }
   if (
     resultados.some((item) => item.estado === "INCONCLUSIVO" || item.revisao_humana_obrigatoria) ||
-    alertas.some((alerta) => obter(alerta, "revisao_humana_obrigatoria") === true)
+    alertasTransversais.some((alerta) => alerta.revisao_humana_obrigatoria)
   ) {
     return "APTO_COM_RESSALVAS";
   }
@@ -399,119 +592,147 @@ function contagem(valores: string[]): Dicionario {
   return saida;
 }
 
-/** `validar_resultados_rodada`: valida o JSON de resultados e devolve o resumo, sem gerar HTML. */
-export function validarResultadosRodada(
-  rodada: string,
-  resultados: string,
-  caminhos: CaminhosAnalise = caminhosPadrao(),
-): Dicionario {
-  const rodadaDir = caminhosRodada(rodada).rodadaDir;
-  const caminhoResultados = resolverResultadosPath(rodadaDir, resultados);
-  const payload = lerJsonDaRodada(caminhoResultados);
-  if (!ehDicionario(payload)) throw new Error("AttributeError: o JSON de resultados precisa ser objeto");
-  const fichasPorId = catalogoFichas(caminhos.fichasDir);
-  const validacoesPorId = catalogoValidacoes(caminhos.validacoesCruzadasDir);
-  const normalizados = validarResultadosSubagents(payload, fichasPorId);
-  const alertas = validarAlertasTransversais(payload, fichasPorId, validacoesPorId);
-  const grupos = blocosResultados(payload);
-  return {
-    resultados_path: caminhoResultados,
-    valido: true,
-    total_fichas: normalizados.length,
-    total_fichas_esperadas: fichasPorId.size,
-    total_grupos: grupos.length,
-    total_alertas_transversais: alertas.length,
-    situacao: situacao(normalizados, alertas),
-    contagem_estado: contagem(normalizados.map((item) => item.estado)),
-    contagem_criticidade: contagem(normalizados.map((item) => item.criticidade)),
-    grupos: grupos.map((grupo) => {
-      const g = ehDicionario(grupo) ? grupo : {};
-      return {
-        grupo_id: textoOuVazioDoValor(obter(g, "grupo_id")),
-        total_resultados: itensIteraveis(ou(obter(g, "resultados"), [])).length,
-      };
-    }),
-  };
-}
+// ---------------------------------------------------------------- arquivos da rodada
 
 /** Caminho relativo a `arquivos-suporte/` quando não absoluto. */
 function noSuporte(caminho: string, suporteDir: string): string {
   return NodePath.isAbsolute(caminho) ? caminho : NodePath.join(suporteDir, caminho);
 }
 
-function exigirObjeto(valor: unknown, descricao: string): Dicionario {
-  if (!ehDicionario(valor)) throw new Error(`AttributeError: ${descricao} não é objeto JSON`);
-  return valor;
+/** Caminho do JSON de resultados: o absoluto como está; o relativo, em `arquivos-suporte/`. */
+export function resolverResultadosPath(rodada: string, resultados: string): string {
+  return noSuporte(resultados, caminhosRodada(rodada).suporteDir);
 }
 
+/** Resultados da rodada lidos, decodificados e conferidos contra as fichas e as validações. */
+export type ResultadosDaRodada = {
+  caminho: string;
+  blocos: Bloco[];
+  normalizados: ResultadoNormalizado[];
+  alertas: AlertaNormalizado[];
+  totalFichasEsperadas: number;
+};
+
+/** Lê e confere o JSON de resultados da rodada (`resultados` relativo a `arquivos-suporte/`). */
+export const lerResultadosDaRodada = Effect.fn("resultados.lerResultadosDaRodada")(function* (
+  rodada: string,
+  resultados: string,
+  caminhos: CaminhosAnalise = caminhosPadrao(),
+) {
+  const caminho = resolverResultadosPath(caminhosRodada(rodada).rodadaDir, resultados);
+  const payload = yield* Effect.fromResult(
+    decodificarResultados(yield* lerJsonDeResultados(caminho, ORIGEM.rodada), ORIGEM.rodada),
+  );
+  const fichasPorId = catalogoFichas(caminhos.fichasDir);
+  const validacoesPorId = catalogoValidacoes(caminhos.validacoesCruzadasDir);
+  const blocos = yield* Effect.fromResult(blocosResultados(payload, ORIGEM.rodada));
+  const normalizados = yield* Effect.fromResult(validarResultadosSubagents(blocos, fichasPorId, ORIGEM.rodada));
+  const alertasNormalizados = yield* Effect.fromResult(
+    validarAlertasTransversais(payload, fichasPorId, validacoesPorId, ORIGEM.rodada),
+  );
+  const lidos: ResultadosDaRodada = {
+    caminho,
+    blocos,
+    normalizados,
+    alertas: alertasNormalizados,
+    totalFichasEsperadas: fichasPorId.size,
+  };
+  return lidos;
+});
+
+/** Valida o JSON de resultados e devolve o resumo, sem gerar HTML. */
+export const validarResultadosRodada = Effect.fn("resultados.validarResultadosRodada")(function* (
+  rodada: string,
+  resultados: string,
+  caminhos: CaminhosAnalise = caminhosPadrao(),
+) {
+  const lidos = yield* lerResultadosDaRodada(rodada, resultados, caminhos);
+  const resumo: Dicionario = {
+    resultados_path: lidos.caminho,
+    valido: true,
+    total_fichas: lidos.normalizados.length,
+    total_fichas_esperadas: lidos.totalFichasEsperadas,
+    total_grupos: lidos.blocos.length,
+    total_alertas_transversais: lidos.alertas.length,
+    situacao: situacao(lidos.normalizados, lidos.alertas),
+    contagem_estado: contagem(lidos.normalizados.map((item) => item.estado)),
+    contagem_criticidade: contagem(lidos.normalizados.map((item) => item.criticidade)),
+    grupos: lidos.blocos.map((bloco) => ({ grupo_id: bloco.grupo_id, total_resultados: bloco.resultados.length })),
+  };
+  return resumo;
+});
+
 /**
- * `mesclar_resultados_avulsos`: substitui no JSON base os resultados das fichas reavaliadas.
+ * Grupos como estão no JSON tipado (com os fracionários preservados), para regravar: `grupos[]`, ou
+ * `{grupo_id, resultados}` com o bloco único. Só se chama depois de a decodificação ter conferido
+ * a forma.
+ */
+function gruposBrutos(bruto: Dicionario): Dicionario[] {
+  if (Array.isArray(bruto.grupos)) return bruto.grupos as Dicionario[];
+  return [{ grupo_id: (bruto.grupo_id as string | undefined) || "grupo-unico", resultados: bruto.resultados }];
+}
+
+/** Resultados de um grupo do JSON tipado, na ordem do arquivo. */
+const resultadosBrutos = (grupo: Dicionario) => grupo.resultados as Dicionario[];
+
+/**
+ * Substitui no JSON base os resultados das fichas reavaliadas.
  *
  * O avulso é validado contra o contrato das fichas antes de qualquer escrita; se for inválido, a
  * mescla é recusada e a base fica intacta. A base é normalizada para `grupos[]` antes da mescla
  * (o formato `{"grupo_id", "resultados"}` vira um grupo), para que os resultados originais não se
- * percam ao lado do grupo de reavaliação.
+ * percam ao lado do grupo de reavaliação. Os valores são regravados como estavam no arquivo.
  */
-export function mesclarResultadosAvulsos(
+export const mesclarResultadosAvulsos = Effect.fn("resultados.mesclarResultadosAvulsos")(function* (
   rodada: string,
   resultadosBase: string,
   resultadosAvulsos: string,
   saida?: string,
   caminhosAnalise: CaminhosAnalise = caminhosPadrao(),
-): Dicionario {
+) {
   const caminhos = caminhosRodada(rodada);
-  const basePath = noSuporte(resultadosBase, caminhos.suporteDir);
-  const avulsoPath = noSuporte(resultadosAvulsos, caminhos.suporteDir);
   const saidaResolvida = noSuporte(saida || resultadosBase, caminhos.suporteDir);
-  const base = exigirObjeto(lerJsonDaRodada(basePath), "resultados base");
-  const avulso = exigirObjeto(lerJsonDaRodada(avulsoPath), "resultado avulso");
-  if (!Array.isArray(obter(avulso, "grupos")) && !Array.isArray(obter(avulso, "resultados"))) {
-    throw new Error("O resultado avulso precisa conter `grupos[]` ou `resultados[]`.");
+  const baseBruta = (yield* lerJsonDeResultados(
+    noSuporte(resultadosBase, caminhos.suporteDir),
+    ORIGEM.base,
+  )) as Dicionario;
+  const avulsoBruto = (yield* lerJsonDeResultados(
+    noSuporte(resultadosAvulsos, caminhos.suporteDir),
+    ORIGEM.avulso,
+  )) as Dicionario;
+  const base = yield* Effect.fromResult(decodificarResultados(baseBruta, ORIGEM.base));
+  const avulso = yield* Effect.fromResult(decodificarResultados(avulsoBruto, ORIGEM.avulso));
+  yield* Effect.fromResult(blocosResultados(base, ORIGEM.base));
+  const blocosAvulso = yield* Effect.fromResult(blocosResultados(avulso, ORIGEM.avulso));
+  yield* Effect.fromResult(normalizarBlocos(blocosAvulso, catalogoFichas(caminhosAnalise.fichasDir), ORIGEM.avulso));
+  const resultadosNovos = gruposBrutos(avulsoBruto).flatMap(resultadosBrutos);
+  if (!resultadosNovos.length) {
+    return yield* new ErroResultadosSubagents({ categoria: "avulso-sem-resultados", origem: ORIGEM.avulso });
   }
-  const blocosAvulso = blocosResultados(avulso);
-  validarBlocos(blocosAvulso, catalogoFichas(caminhosAnalise.fichasDir));
-  const resultadosNovos = blocosAvulso.flatMap((bloco) =>
-    itensIteraveis(obter(exigirObjeto(bloco, "grupo avulso"), "resultados")),
-  );
-  if (!resultadosNovos.length) throw new ErroResultadosSubagents("O resultado avulso não traz resultados.");
 
-  const gruposBase = blocosResultados(base);
-  const idsAvulsos = new Set(
-    resultadosNovos.map((item) => textoDoValor(obter(exigirObjeto(item, "resultado"), "ficha_id"))),
-  );
+  const idsAvulsos = new Set(blocosAvulso.flatMap((bloco) => bloco.resultados.map((item) => item.ficha_id)));
   const idsOrdenados = [...idsAvulsos].sort(compararTexto);
   const gruposMesclados: Dicionario[] = [];
-  for (const grupo of gruposBase) {
-    const original = exigirObjeto(grupo, "grupo base");
-    const copia: Dicionario = { ...original };
-    copia.resultados = itensIteraveis(obter(original, "resultados", [])).filter(
-      (item) => !idsAvulsos.has(textoDoValor(obter(exigirObjeto(item, "resultado"), "ficha_id"))),
-    );
-    if ((copia.resultados as unknown[]).length) gruposMesclados.push(copia);
+  for (const grupo of gruposBrutos(baseBruta)) {
+    const restantes = resultadosBrutos(grupo).filter((item) => !idsAvulsos.has(item.ficha_id as string));
+    if (restantes.length) gruposMesclados.push({ ...grupo, resultados: restantes });
   }
   gruposMesclados.push({
-    grupo_id: textoDoValor(
-      ou(obter(avulso, "grupo_id"), `reavaliacao-${sha256JsonPayload(idsOrdenados).slice(0, 12)}`),
-    ),
+    grupo_id: avulso.grupo_id || `reavaliacao-${sha256JsonPayload(idsOrdenados).slice(0, 12)}`,
     tipo: "reavaliacao",
     resultados: resultadosNovos,
   });
-  const payload: Dicionario = { ...base, grupos: gruposMesclados };
-  if (!Array.isArray(obter(base, "grupos"))) {
-    // A base vinha como `{"grupo_id", "resultados"}`: esses campos viraram o primeiro grupo.
-    delete payload.resultados;
-    delete payload.grupo_id;
-  }
-  const metadata = padraoSeAusente(payload, "metadata", {});
-  if (!ehDicionario(metadata)) {
-    // `metadata` que não é objeto não recebe a lista das reavaliações: falha com erro de tipo.
-    throw new TypeError(
-      Array.isArray(metadata)
-        ? "list indices must be integers or slices, not str"
-        : `'${tipoDoValor(metadata)}' object does not support item assignment`,
-    );
-  }
-  metadata.reavaliacoes_mescladas = idsOrdenados;
+  // A base no formato `{"grupo_id", "resultados"}` passa a ter esses campos no primeiro grupo.
+  const { resultados: _resultados, grupo_id: _grupoId, ...semBlocoUnico } = baseBruta;
+  const payload: Dicionario = Array.isArray(baseBruta.grupos)
+    ? { ...baseBruta, grupos: gruposMesclados }
+    : { ...semBlocoUnico, grupos: gruposMesclados };
+  payload.metadata = { ...(payload.metadata as Dicionario | undefined), reavaliacoes_mescladas: idsOrdenados };
   escreverJsonDaRodada(saidaResolvida, payload);
-  return { resultados_path: saidaResolvida, fichas_substituidas: idsOrdenados, total_grupos: gruposMesclados.length };
-}
+  const mescla: Dicionario = {
+    resultados_path: saidaResolvida,
+    fichas_substituidas: idsOrdenados,
+    total_grupos: gruposMesclados.length,
+  };
+  return mescla;
+});

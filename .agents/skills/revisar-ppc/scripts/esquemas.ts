@@ -1,22 +1,31 @@
 // @effect-diagnostics nodeBuiltinImport:off -- gerador síncrono de arquivos da skill, chamado pela CLI e por validar_base.ts
 /**
- * Contratos da base de análise em Effect Schema: ficha e registro de marcos normativos.
+ * Contratos da base de análise em Effect Schema: ficha, registro de marcos normativos, validação
+ * cruzada, resultado de lote dos sub-agentes e alertas transversais.
  *
- * O Effect Schema é a fonte única. `schemas/ficha.schema.json` e `schemas/marcos-normativos.schema.json`
- * são gerados daqui (`revisar_ppc.ts gerar-schemas`, `Schema.toJsonSchemaDocument`, draft 2020-12),
- * conferidos por `gerar-schemas --check` e por `validar-base`, e servem de documentação e de entrada
- * para o ajv, que dá as mensagens de erro no formato do validador (`$.campo[0]: ...`). Por isso os
- * esquemas não usam refinamentos: tudo o que eles exigem cabe no JSON Schema. As checagens que
- * dependem da base (ID existente, norma revogada, marco) ficam em `validacao-base.ts`.
+ * O Effect Schema é a fonte única: `validar-base` decodifica os arquivos com ele
+ * (`decodificarContrato`), e os arquivos de `schemas/` são gerados daqui (`revisar_ppc.ts
+ * gerar-schemas`, `Schema.toJsonSchemaDocument`, draft 2020-12), como documentação, conferidos por
+ * `gerar-schemas --check` e por `validar-base`. Os esquemas não usam refinamentos que o JSON Schema
+ * não exprime, para que o documento gerado diga tudo o que se exige. As checagens que dependem da
+ * base (ID existente, norma revogada, marco) ficam em `validacao-base.ts`.
+ *
+ * A ficha e os marcos são estritos (chave a mais é erro, `additionalProperties: false`), e a
+ * validação cruzada aceita chaves a mais. No resultado de lote e nos alertas, o topo, o resultado
+ * da ficha e o alerta aceitam chaves a mais (`aberto`), e a evidência, a âncora e o achado
+ * normativo as recusam.
  *
  * As descrições são lidas pelos sub-agentes da revisão: mudar o texto muda a revisão.
- * `tests/schemas-gerados.test.ts` confere que o veredito, as mensagens e as descrições são os do
- * schema anterior ao C3 (`tests/fixtures/schemas-anteriores/`).
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
+import * as Option from "effect/Option";
+import * as Predicate from "effect/Predicate";
+import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
+import * as SchemaTransformation from "effect/SchemaTransformation";
 import * as Struct from "effect/Struct";
+import { problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { jsonIndentado, type ObjetoJson } from "@simplifica-if/kb/json";
 import { RE_ID_ATO, RE_ID_DISPOSITIVO, RE_REFERENCIA } from "@simplifica-if/kb/normas/ids";
 import { esquemaReferenciaNormativa } from "@simplifica-if/kb/normas/referencia-estruturada";
@@ -48,7 +57,12 @@ const inteiroPositivo = Schema.Number.check(
   Schema.isGreaterThanOrEqualTo(1),
 );
 
-const ESTADOS = ["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"] as const;
+/** Estados de uma ficha ou validação cruzada. */
+export const ESTADOS = ["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"] as const;
+export type Estado = (typeof ESTADOS)[number];
+
+export const CRITICIDADES = ["BLOQ", "OBRIG", "REC"] as const;
+export type Criticidade = (typeof CRITICIDADES)[number];
 
 /** Modo de execução da ficha na revisão do app (M1.11, classificação da proposta C). */
 export const MODOS_EXECUCAO = ["D", "S", "J"] as const;
@@ -72,7 +86,7 @@ export const esquemaFicha = Schema.Struct({
   id: Schema.String,
   titulo: Schema.String,
   dominio: Schema.Literals(["identidade", "curriculo", "suporte", "transversal"]),
-  criticidade: Schema.Literals(["BLOQ", "OBRIG", "REC"]),
+  criticidade: Schema.Literals(CRITICIDADES),
   execucao,
   topicos_tematicos: textos,
   tipo_escopo: Schema.Literals(["tematico", "multitematico", "transversal", "condicional"]),
@@ -141,10 +155,184 @@ export interface Marco {
   [campo: string]: unknown;
 }
 
-/** Esquemas gerados, pelo nome do arquivo em `schemas/`. */
+/** Seções do PPC que uma validação cruzada relaciona. */
+const SECOES_VALIDACAO = [
+  "identificacao_curso",
+  "justificativa_objetivos",
+  "concepcao_metodologia",
+  "perfil_egresso",
+  "organizacao_curricular",
+  "avaliacao_aprendizagem",
+  "atendimento_estudante",
+  "corpo_docente_gestao",
+  "infraestrutura",
+  "avaliacao_ppc_egressos",
+  "referencias_normativas",
+] as const;
+
+export const esquemaValidacaoCruzada = Schema.Struct({
+  id: Schema.String,
+  titulo: Schema.String,
+  dominio: Schema.Literal("validacao_cruzada"),
+  criticidade: Schema.Literals(CRITICIDADES),
+  tipo: Schema.String,
+  secoes_relacionadas: Schema.Array(Schema.Literals(SECOES_VALIDACAO)),
+  condicionais_relacionadas: Schema.optionalKey(textos),
+  pergunta: Schema.String,
+  rubrica: Schema.String,
+  boa_evidencia: Schema.String,
+  ma_evidencia: Schema.String,
+  evidencia_minima: inteiroPositivo,
+  estados_permitidos: Schema.Array(Schema.Literals(ESTADOS)),
+});
+
+/**
+ * Campo opcional dos sub-agentes em que `null` vale como ausente (`"artefato": null` é comum nas
+ * rodadas): a decodificação tira a chave, e o resto do código nunca vê `null`. No JSON Schema, o
+ * campo aceita o tipo ou `null`.
+ */
+function opcional<S extends Schema.Top>(esquema: S) {
+  return Schema.optionalKey(Schema.NullOr(esquema)).pipe(
+    Schema.decodeTo(
+      Schema.optionalKey(Schema.toType(esquema)),
+      SchemaTransformation.transformOptional<S["Type"], S["Type"] | null>({
+        decode: Option.filter(Predicate.isNotNull),
+        encode: (valor) => valor,
+      }),
+    ),
+  );
+}
+
+/**
+ * Objeto dos sub-agentes que aceita chaves a mais. Os resultados são decodificados com
+ * `onExcessProperty: "error"`: o topo, o bloco, o resultado da ficha e o alerta ficam abertos por
+ * este resto; a evidência, a âncora e o achado normativo recusam chave a mais, para que um
+ * sinônimo (`"seção"` por `secao`) não suma sem aviso.
+ */
+export function aberto<const Campos extends Schema.Struct.Fields>(campos: Campos) {
+  return Schema.StructWithRest(Schema.Struct(campos), [Schema.Record(Schema.String, Schema.Unknown)]);
+}
+
+/** Âncora de uma evidência no relatório: o bloco do PPC e o trecho a destacar. */
+const ancoraEvidencia = Schema.Struct({
+  block_id: opcional(Schema.String),
+  quote: opcional(Schema.String),
+});
+
+/**
+ * Evidência de um resultado de ficha: texto solto ou objeto. O objeto precisa de algo para conferir
+ * (trecho, seção, localizador, artefato, âncora ou outra fonte), o que `resultados.ts` confere.
+ */
+export const esquemaEvidenciaResultado = Schema.Union([
+  Schema.String,
+  Schema.Struct({
+    trecho: opcional(Schema.String),
+    secao: opcional(Schema.String),
+    localizador: opcional(Schema.String),
+    fonte: opcional(Schema.String),
+    artefato: opcional(Schema.String),
+    anchor: opcional(ancoraEvidencia),
+  }),
+]);
+
+/** Situação de uma afirmação normativa do PPC conferida pelo sub-agente. */
+export const STATUS_FUNDAMENTACAO_NORMATIVA = [
+  "CONFIRMADA",
+  "CONFIRMADA_COM_RESSALVA",
+  "IMPRECISA",
+  "SEM_SUPORTE_NA_FONTE",
+  "CONTRADITORIA",
+  "FONTE_AUSENTE_OU_NAO_CONSULTADA",
+  "NAO_NORMATIVA",
+] as const;
+
+export const esquemaFundamentacaoNormativa = Schema.Struct({
+  status: Schema.Literals(STATUS_FUNDAMENTACAO_NORMATIVA),
+  trecho_ppc: opcional(Schema.String),
+  norma: opcional(Schema.String),
+  fonte: opcional(Schema.String),
+  dispositivo: opcional(Schema.String),
+  evidencia: opcional(Schema.String),
+  analise: opcional(Schema.String),
+  recomendacao: opcional(Schema.String),
+});
+
+/** Confiança do sub-agente no estado, de 0 a 1. */
+const confianca = Schema.Finite.check(Schema.isGreaterThanOrEqualTo(0), Schema.isLessThanOrEqualTo(1));
+
+export const esquemaResultadoFicha = aberto({
+  ficha_id: Schema.String,
+  estado: Schema.Literals(ESTADOS),
+  confianca,
+  justificativa: Schema.String,
+  evidencias: Schema.Array(esquemaEvidenciaResultado),
+  lacunas: textos,
+  revisao_humana_obrigatoria: Schema.Boolean,
+  fundamentacao_normativa: opcional(Schema.Array(esquemaFundamentacaoNormativa)),
+  feedback_autores: opcional(Schema.String),
+});
+
+export const esquemaResultadoLote = aberto({
+  grupo_id: Schema.optionalKey(Schema.String),
+  batch_id: Schema.optionalKey(Schema.String),
+  resultados: Schema.Array(esquemaResultadoFicha),
+});
+
+/** Evidência de um alerta transversal: texto solto ou objeto com ao menos um campo preenchido. */
+const evidenciaAlerta = Schema.Union([
+  Schema.String,
+  Schema.Struct({
+    trecho: opcional(Schema.String),
+    secao: opcional(Schema.String),
+    localizador: opcional(Schema.String),
+    papel: opcional(Schema.String),
+    fonte: opcional(Schema.String),
+    anchor: opcional(ancoraEvidencia),
+  }),
+]);
+
+/** Alerta da síntese transversal; sem `id`, ele é `ALERTA-<posição>`, e sem `criticidade`, `OBRIG`. */
+export const esquemaAlertaTransversal = aberto({
+  id: opcional(Schema.String),
+  validacao_id: Schema.String,
+  titulo: Schema.String,
+  criticidade: opcional(Schema.Literals(CRITICIDADES)),
+  descricao: Schema.String,
+  fichas_relacionadas: opcional(textos),
+  evidencias: opcional(Schema.Array(evidenciaAlerta)),
+  revisao_humana_obrigatoria: Schema.Boolean,
+});
+
+export const esquemaAlertasTransversais = aberto({
+  alertas_transversais: Schema.Array(esquemaAlertaTransversal),
+});
+
+/**
+ * Esquemas gerados, pelo nome do arquivo em `schemas/`; `estrito` recusa chaves a mais na
+ * decodificação e no JSON Schema, salvo nos objetos `aberto`.
+ */
 const GERADOS = {
-  "ficha.schema.json": { esquema: esquemaFicha, titulo: "Ficha de análise PPC" },
-  "marcos-normativos.schema.json": { esquema: esquemaMarcosNormativos, titulo: "Registro de marcos normativos" },
+  "alertas-transversais.schema.json": {
+    esquema: esquemaAlertasTransversais,
+    titulo: "Alertas transversais PPC",
+    estrito: true,
+  },
+  "ficha.schema.json": { esquema: esquemaFicha, titulo: "Ficha de análise PPC", estrito: true },
+  "marcos-normativos.schema.json": {
+    esquema: esquemaMarcosNormativos,
+    titulo: "Registro de marcos normativos",
+    estrito: true,
+  },
+  "resultado-lote.schema.json": {
+    esquema: esquemaResultadoLote,
+    titulo: "Resultado de lote de fichas PPC",
+    estrito: true,
+  },
+  "validacao-cruzada.schema.json": {
+    esquema: esquemaValidacaoCruzada,
+    titulo: "Validação cruzada PPC",
+    estrito: false,
+  },
 } as const;
 export type NomeSchemaGerado = keyof typeof GERADOS;
 export const SCHEMAS_GERADOS = Object.keys(GERADOS) as NomeSchemaGerado[];
@@ -152,13 +340,13 @@ export const SCHEMAS_GERADOS = Object.keys(GERADOS) as NomeSchemaGerado[];
 const DIALETO = "https://json-schema.org/draft/2020-12/schema";
 
 /**
- * JSON Schema (draft 2020-12) gerado do Effect Schema, com `$id` e título estáveis. Os objetos
- * recusam chaves a mais (`additionalProperties: false`), como na decodificação com
- * `onExcessProperty: "error"`; as definições compartilhadas, se houver, vão em `$defs`.
+ * JSON Schema (draft 2020-12) gerado do Effect Schema, com `$id` e título estáveis. Nos esquemas
+ * estritos, os objetos recusam chaves a mais (`additionalProperties: false`), como na decodificação
+ * com `onExcessProperty: "error"`; as definições compartilhadas, se houver, vão em `$defs`.
  */
 export function jsonSchemaGerado(nome: NomeSchemaGerado): ObjetoJson {
-  const { esquema, titulo } = GERADOS[nome];
-  const documento = Schema.toJsonSchemaDocument(esquema, { onExcessProperty: "error" });
+  const { esquema, titulo, estrito } = GERADOS[nome];
+  const documento = Schema.toJsonSchemaDocument(esquema, estrito ? { onExcessProperty: "error" } : {});
   const definicoes = Object.keys(documento.definitions).length ? { $defs: documento.definitions } : {};
   return {
     $schema: DIALETO,
@@ -187,4 +375,33 @@ export function schemasDesatualizados(caminhos: CaminhosAnalise = caminhosPadrao
       NodeFS.readFileSync(arquivo, "utf-8") !==
         jsonIndentado(jsonSchemaGerado(NodePath.basename(arquivo) as NomeSchemaGerado)),
   );
+}
+
+/** Problema de um arquivo fora do contrato: caminho JSON (`$.campo[0]`) e mensagem. */
+export type ProblemaDeContrato = { readonly caminho: string; readonly mensagem: string };
+
+/** `$.referencias_normativas[0].ref`: o caminho do problema no JSON. */
+function caminhoJson(caminho: ReadonlyArray<PropertyKey>): string {
+  return caminho.reduce<string>(
+    (texto, chave) => (typeof chave === "number" ? `${texto}[${chave}]` : `${texto}.${String(chave)}`),
+    "$",
+  );
+}
+
+/**
+ * Decodifica `valor` com o contrato de `nome` e devolve os problemas, todos e em português (vazio
+ * quando está no contrato).
+ */
+export function decodificarContrato(nome: NomeSchemaGerado, valor: unknown): ProblemaDeContrato[] {
+  const { esquema, estrito } = GERADOS[nome];
+  const resultado = Schema.decodeUnknownResult(esquema as Schema.Codec<unknown>)(valor, {
+    errors: "all",
+    onExcessProperty: estrito ? "error" : "ignore",
+  });
+  if (Result.isSuccess(resultado)) return [];
+  return problemas(resultado.failure.issue).map((problema) => ({
+    caminho: caminhoJson(problema.caminho),
+    // Todo problema é de entrada inválida: o prefixo do formatador do kb não diz nada aqui.
+    mensagem: problema.mensagem.replace(/^Entrada inválida: /, ""),
+  }));
 }

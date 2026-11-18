@@ -5,15 +5,21 @@
  * atributos (`desescaparAtributo`).
  */
 import * as NodeChildProcess from "node:child_process";
-import { afterEach, describe, expect, test } from "vite-plus/test";
+import * as NodeServices from "@effect/platform-node/NodeServices";
+import { afterEach, describe, expect, it, layer, test } from "@effect/vitest";
+import * as Effect from "effect/Effect";
+import * as Result from "effect/Result";
+import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
 import * as NodeOS from "node:os";
 import * as NodePath from "node:path";
 import { casefold } from "@simplifica-if/kb/primitivas/texto";
 import type { Dicionario } from "@simplifica-if/kb/primitivas/valores";
 import { caminhosPadrao } from "../scripts/caminhos.ts";
+import { type Criticidade, esquemaAlertaTransversal, esquemaResultadoFicha } from "../scripts/esquemas.ts";
 import { desescaparAtributo } from "../scripts/eventos-html.ts";
 import { prepararDocumento } from "../scripts/preparar-documento.ts";
+import { lerReferenciasIdentificacao } from "../scripts/referencias-identificacao.ts";
 import { dominioSurgePadrao, prepararSiteSurge, publicarSiteSurge } from "../scripts/publicar-surge.ts";
 import {
   formatarHtml,
@@ -23,6 +29,7 @@ import {
   resolverAncoraEvidencia,
 } from "../scripts/relatorio-html.ts";
 import {
+  decodificarResultados,
   ErroResultadosSubagents,
   type ResultadoNormalizado,
   SITUACOES_REVISAO,
@@ -41,6 +48,7 @@ const caminhos = caminhosPadrao();
 const RAIZ = NodePath.resolve(caminhos.appDir, "../../..");
 const ENTRYPOINT = NodePath.join(caminhos.appDir, "scripts", "revisar_ppc.ts");
 const RELOGIO = () => new Date("2026-11-13T12:34:56Z");
+const REFERENCIAS = lerReferenciasIdentificacao(caminhosPadrao());
 const TOTAL_FICHAS = NodeFS.readdirSync(caminhos.fichasDir).filter((nome) => nome.endsWith(".json")).length;
 
 const MARKDOWN_BASE = `# Curso Técnico em Informática
@@ -69,7 +77,11 @@ function criarRodada(markdown = MARKDOWN_BASE): string {
   const dir = diretorioTemporario();
   const arquivo = NodePath.join(dir, "PPC.md");
   NodeFS.writeFileSync(arquivo, markdown, "utf-8");
-  return prepararDocumento(arquivo, { saidaBase: NodePath.join(dir, "output"), relogio: RELOGIO }).rodadaDir;
+  return prepararDocumento(arquivo, {
+    referencias: REFERENCIAS,
+    saidaBase: NodePath.join(dir, "output"),
+    relogio: RELOGIO,
+  }).rodadaDir;
 }
 
 function resultado(fichaId: string, estado = "ATENDE", evidencias = 3): Dicionario {
@@ -111,11 +123,11 @@ function primeiraValidacaoCruzada(): string {
 }
 
 /** Grava os resultados, gera o relatório e devolve o HTML. */
-function gerar(rodada: string, payload: unknown): string {
+const gerar = Effect.fn("teste.gerar")(function* (rodada: string, payload: unknown) {
   escreverJsonDaRodada(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
-  gerarRelatorioHtml(rodada, "resultados-subagents.json");
+  yield* gerarRelatorioHtml(rodada, "resultados-subagents.json");
   return NodeFS.readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8");
-}
+});
 
 function surgeFalso(dir: string, corpo: string): string {
   const arquivo = NodePath.join(dir, "surge-falso");
@@ -364,7 +376,7 @@ describe("situação da revisão", () => {
 describe("situação da revisão com alertas transversais", () => {
   const item = (criticidade: string, estado: string, revisao = false) =>
     ({ criticidade, estado, revisao_humana_obrigatoria: revisao }) as unknown as ResultadoNormalizado;
-  const alerta = (criticidade: string, revisao = false): Dicionario => ({
+  const alerta = (criticidade: Criticidade, revisao = false) => ({
     criticidade,
     revisao_humana_obrigatoria: revisao,
   });
@@ -379,173 +391,193 @@ describe("situação da revisão com alertas transversais", () => {
     expect(situacao(fichas)).toBe("APTO_PARA_SUBMISSAO");
   });
 
-  test("gerar-relatorio-html e validar-resultados contam alerta BLOQ com todas as fichas ATENDE", () => {
-    const rodada = criarRodada();
-    const payload = payloadResultadosCompletos();
-    payload.alertas_transversais = [
-      {
-        id: "ALERTA-001",
-        validacao_id: primeiraValidacaoCruzada(),
-        titulo: "Inconsistência bloqueante",
-        criticidade: "BLOQ",
-        descricao: "Carga horária da matriz diverge da identificação.",
-        fichas_relacionadas: [],
-        evidencias: ["Evidência transversal"],
-        revisao_humana_obrigatoria: false,
-      },
-    ];
-    escreverJsonDaRodada(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
-    expect(validarResultadosRodada(rodada, "resultados-subagents.json").situacao).toBe("REVISAO_SUBSTANCIAL");
-    const relatorio = gerarRelatorioHtml(rodada, "resultados-subagents.json");
-    expect(relatorio.situacao).toBe("REVISAO_SUBSTANCIAL");
-    expect(NodeFS.readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8")).toContain(
-      SITUACOES_REVISAO.REVISAO_SUBSTANCIAL,
-    );
-  });
+  it.effect("gerar-relatorio-html e validar-resultados contam alerta BLOQ com todas as fichas ATENDE", () =>
+    Effect.gen(function* () {
+      const rodada = criarRodada();
+      const payload = payloadResultadosCompletos();
+      payload.alertas_transversais = [
+        {
+          id: "ALERTA-001",
+          validacao_id: primeiraValidacaoCruzada(),
+          titulo: "Inconsistência bloqueante",
+          criticidade: "BLOQ",
+          descricao: "Carga horária da matriz diverge da identificação.",
+          fichas_relacionadas: [],
+          evidencias: ["Evidência transversal"],
+          revisao_humana_obrigatoria: false,
+        },
+      ];
+      escreverJsonDaRodada(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
+      expect((yield* validarResultadosRodada(rodada, "resultados-subagents.json")).situacao).toBe(
+        "REVISAO_SUBSTANCIAL",
+      );
+      const relatorio = yield* gerarRelatorioHtml(rodada, "resultados-subagents.json");
+      expect(relatorio.situacao).toBe("REVISAO_SUBSTANCIAL");
+      expect(NodeFS.readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8")).toContain(
+        SITUACOES_REVISAO.REVISAO_SUBSTANCIAL,
+      );
+    }),
+  );
 });
 
 describe("gerar-relatorio-html", () => {
-  test("aceita resultados válidos", () => {
-    const rodada = criarRodada();
-    const rodadaPaths = caminhosRodada(rodada);
-    escreverJsonDaRodada(
-      NodePath.join(rodadaPaths.suporteDir, "resultados-subagents.json"),
-      payloadResultadosCompletos(),
-    );
-    const payload = gerarRelatorioHtml(rodada, "resultados-subagents.json");
-    expect(payload.relatorio_html).toBe(rodadaPaths.relatorioHtml);
-    expect(payload.total_fichas).toBe(TOTAL_FICHAS);
-    expect(payload.total_alertas_transversais).toBe(0);
-    expect(payload.situacao).toBe("APTO_PARA_SUBMISSAO");
-    expect(payload.situacao_rotulo).toBe("Apto para submissão");
-    const html = NodeFS.readFileSync(rodadaPaths.relatorioHtml, "utf-8");
-    for (const trecho of [
-      "<title>Relatório de revisão do PPC · Técnico em Informática\n",
-      "PPC anotado",
-      'class="badge estado-apto-para-submissao" title="APTO_PARA_SUBMISSAO">Apto para submissão</span>',
-      "não substitui a análise oficial da PROENS",
-      '<footer class="review-footer">',
-      "Curso Técnico em Informática",
-      "CT-IDENT-01",
-      'id="filtro-busca"',
-      'id="filtro-modo"',
-    ]) {
-      expect(html).toContain(trecho);
-    }
-  });
+  it.effect("aceita resultados válidos", () =>
+    Effect.gen(function* () {
+      const rodada = criarRodada();
+      const rodadaPaths = caminhosRodada(rodada);
+      escreverJsonDaRodada(
+        NodePath.join(rodadaPaths.suporteDir, "resultados-subagents.json"),
+        payloadResultadosCompletos(),
+      );
+      const payload = yield* gerarRelatorioHtml(rodada, "resultados-subagents.json");
+      expect(payload.relatorio_html).toBe(rodadaPaths.relatorioHtml);
+      expect(payload.total_fichas).toBe(TOTAL_FICHAS);
+      expect(payload.total_alertas_transversais).toBe(0);
+      expect(payload.situacao).toBe("APTO_PARA_SUBMISSAO");
+      expect(payload.situacao_rotulo).toBe("Apto para submissão");
+      const html = NodeFS.readFileSync(rodadaPaths.relatorioHtml, "utf-8");
+      for (const trecho of [
+        "<title>Relatório de revisão do PPC · Técnico em Informática\n",
+        "PPC anotado",
+        'class="badge estado-apto-para-submissao" title="APTO_PARA_SUBMISSAO">Apto para submissão</span>',
+        "não substitui a análise oficial da PROENS",
+        '<footer class="review-footer">',
+        "Curso Técnico em Informática",
+        "CT-IDENT-01",
+        'id="filtro-busca"',
+        'id="filtro-modo"',
+      ]) {
+        expect(html).toContain(trecho);
+      }
+    }),
+  );
 
-  test("ordena a margem pela posição no PPC", () => {
-    const rodada = criarRodada();
-    const payload = payloadResultadosCompletos();
-    const ancorar = (fichaId: string, blockId: string, quote: string, secao: string) => {
-      const item = resultadoDa(payload, fichaId);
-      const total = Math.max(3, (item.evidencias as unknown[]).length);
-      item.evidencias = Array.from({ length: total }, () => ({
-        trecho: quote,
+  it.effect("ordena a margem pela posição no PPC", () =>
+    Effect.gen(function* () {
+      const rodada = criarRodada();
+      const payload = payloadResultadosCompletos();
+      const ancorar = (fichaId: string, blockId: string, quote: string, secao: string) => {
+        const item = resultadoDa(payload, fichaId);
+        const total = Math.max(3, (item.evidencias as unknown[]).length);
+        item.evidencias = Array.from({ length: total }, () => ({
+          trecho: quote,
+          secao,
+          fonte: "PPC.md",
+          anchor: { block_id: blockId, quote },
+        }));
+      };
+      ancorar("CT-CURR-01", "ppc-b00004", "O curso apresenta objetivos", "Apresentação");
+      ancorar("CT-IDENT-01", "ppc-b00002", "Curso: Curso Técnico em Informática", "Identificação");
+      const html = yield* gerar(rodada, payload);
+      const margem = html.indexOf('<aside class="review-margin"');
+      const posIdent = html.indexOf('<p class="annotation-kicker">CT-IDENT-01', margem);
+      const posCurr = html.indexOf('<p class="annotation-kicker">CT-CURR-01', margem);
+      expect(posIdent).toBeGreaterThan(-1);
+      expect(posIdent).toBeLessThan(posCurr);
+      expect(html.slice(0, posCurr)).toContain('id="ann-001"');
+      expect(html).toContain('href="#ann-001"');
+    }),
+  );
+
+  it.effect("renderiza fundamentação normativa", () =>
+    Effect.gen(function* () {
+      const rodada = criarRodada();
+      const payload = payloadResultadosCompletos();
+      payload.grupos[0]!.resultados[0]!.fundamentacao_normativa = [
+        {
+          status: "CONFIRMADA_COM_RESSALVA",
+          trecho_ppc: "O PPC afirma atendimento à Resolução CNE/CP nº 1/2021.",
+          norma: "Resolução CNE/CP nº 1/2021",
+          fonte: "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md",
+          dispositivo: "Diretrizes gerais da EPT",
+          evidencia: "A norma trata das DCN gerais para a Educação Profissional e Tecnológica.",
+          analise: "A citação é pertinente, mas precisa indicar o alcance específico usado pelo PPC.",
+          recomendacao: "Explicitar quais diretrizes orientam a organização curricular.",
+        },
+      ];
+      const html = yield* gerar(rodada, payload);
+      expect(html).toContain("Fundamentação normativa verificada");
+      expect(html).toContain('class="normative-section normative-confirmada-com-ressalva"');
+      expect(html).toContain("CONFIRMADA_COM_RESSALVA");
+      expect(html).toContain("RESOLUCAO_CNE-CP_1-2021_dcnept.md");
+    }),
+  );
+
+  it.effect("renderiza evidência estruturada só com trecho e seção", () =>
+    Effect.gen(function* () {
+      const rodada = criarRodada();
+      const payload = payloadResultadosCompletos();
+      payload.grupos[0]!.resultados[0]!.evidencias = [
+        {
+          trecho: "O PPC identifica o curso como Técnico em Informática.",
+          secao: "1",
+          localizador: "Quadro de identificação",
+          fonte: "PPC.md",
+          artefato: "",
+        },
+        {
+          trecho: "A modalidade é integrada.",
+          secao: "1",
+          localizador: "Identificação",
+          fonte: "PPC.md",
+          artefato: "",
+        },
+      ];
+      const html = yield* gerar(rodada, payload);
+      expect(html).toContain("O PPC identifica o curso como Técnico em Informática.");
+      expect(html).toContain("Seção:</strong> 1");
+      expect(html).not.toContain("Localizador:");
+      expect(html).not.toContain("Fonte:</strong> PPC.md");
+      expect(html).not.toContain("Artefato:");
+    }),
+  );
+
+  it.effect("usa assets externos e anota o PPC", () =>
+    Effect.gen(function* () {
+      const rodada = criarRodada();
+      const payload = payloadResultadosCompletos();
+      const primeiro = resultadoDa(payload, "CT-CURR-01");
+      primeiro.estado = "NAO_ATENDE";
+      primeiro.revisao_humana_obrigatoria = true;
+      primeiro.lacunas = ["Falta detalhar a aderência da identificação."];
+      const evidencia = (trecho: string, secao: string, localizador: string, blockId: string) => ({
+        trecho,
         secao,
-        fonte: "PPC.md",
-        anchor: { block_id: blockId, quote },
-      }));
-    };
-    ancorar("CT-CURR-01", "ppc-b00004", "O curso apresenta objetivos", "Apresentação");
-    ancorar("CT-IDENT-01", "ppc-b00002", "Curso: Curso Técnico em Informática", "Identificação");
-    const html = gerar(rodada, payload);
-    const margem = html.indexOf('<aside class="review-margin"');
-    const posIdent = html.indexOf('<p class="annotation-kicker">CT-IDENT-01', margem);
-    const posCurr = html.indexOf('<p class="annotation-kicker">CT-CURR-01', margem);
-    expect(posIdent).toBeGreaterThan(-1);
-    expect(posIdent).toBeLessThan(posCurr);
-    expect(html.slice(0, posCurr)).toContain('id="ann-001"');
-    expect(html).toContain('href="#ann-001"');
-  });
-
-  test("renderiza fundamentação normativa", () => {
-    const rodada = criarRodada();
-    const payload = payloadResultadosCompletos();
-    payload.grupos[0]!.resultados[0]!.fundamentacao_normativa = [
-      {
-        status: "CONFIRMADA_COM_RESSALVA",
-        trecho_ppc: "O PPC afirma atendimento à Resolução CNE/CP nº 1/2021.",
-        norma: "Resolução CNE/CP nº 1/2021",
-        fonte: "base-conhecimento/normas/br/resolucoes/RESOLUCAO_CNE-CP_1-2021_dcnept.md",
-        dispositivo: "Diretrizes gerais da EPT",
-        evidencia: "A norma trata das DCN gerais para a Educação Profissional e Tecnológica.",
-        analise: "A citação é pertinente, mas precisa indicar o alcance específico usado pelo PPC.",
-        recomendacao: "Explicitar quais diretrizes orientam a organização curricular.",
-      },
-    ];
-    const html = gerar(rodada, payload);
-    expect(html).toContain("Fundamentação normativa verificada");
-    expect(html).toContain('class="normative-section normative-confirmada-com-ressalva"');
-    expect(html).toContain("CONFIRMADA_COM_RESSALVA");
-    expect(html).toContain("RESOLUCAO_CNE-CP_1-2021_dcnept.md");
-  });
-
-  test("renderiza evidência estruturada só com trecho e seção", () => {
-    const rodada = criarRodada();
-    const payload = payloadResultadosCompletos();
-    payload.grupos[0]!.resultados[0]!.evidencias = [
-      {
-        trecho: "O PPC identifica o curso como Técnico em Informática.",
-        secao: "1",
-        localizador: "Quadro de identificação",
+        localizador,
         fonte: "PPC.md",
         artefato: "",
-      },
-      { trecho: "A modalidade é integrada.", secao: "1", localizador: "Identificação", fonte: "PPC.md", artefato: "" },
-    ];
-    const html = gerar(rodada, payload);
-    expect(html).toContain("O PPC identifica o curso como Técnico em Informática.");
-    expect(html).toContain("Seção:</strong> 1");
-    expect(html).not.toContain("Localizador:");
-    expect(html).not.toContain("Fonte:</strong> PPC.md");
-    expect(html).not.toContain("Artefato:");
-  });
-
-  test("usa assets externos e anota o PPC", () => {
-    const rodada = criarRodada();
-    const payload = payloadResultadosCompletos();
-    const primeiro = resultadoDa(payload, "CT-CURR-01");
-    primeiro.estado = "NAO_ATENDE";
-    primeiro.revisao_humana_obrigatoria = true;
-    primeiro.lacunas = ["Falta detalhar a aderência da identificação."];
-    const evidencia = (trecho: string, secao: string, localizador: string, blockId: string) => ({
-      trecho,
-      secao,
-      localizador,
-      fonte: "PPC.md",
-      artefato: "",
-      anchor: { block_id: blockId, quote: trecho },
-    });
-    primeiro.evidencias = [
-      evidencia("Curso: Curso Técnico em Informática", "Identificação", "Cabeçalho", "ppc-b00002"),
-      evidencia("O curso apresenta objetivos", "Apresentação", "Corpo da seção", "ppc-b00004"),
-      evidencia("Campus: Assis Chateaubriand", "Identificação", "Cabeçalho", "ppc-b00002"),
-    ];
-    const html = gerar(rodada, payload);
-    expect(html).toContain('<link rel="stylesheet" href="assets/revisar-ppc.css">');
-    expect(html).toContain('<script src="assets/revisar-ppc.js" defer></script>');
-    expect(html).not.toContain("<style>");
-    expect(html).toContain("PPC anotado");
-    expect(html).not.toContain("Achados detalhados por ficha");
-    expect(html).not.toContain('id="achados-detalhados"');
-    expect(html).toContain('id="ppc-b00002"');
-    expect(html).toContain(
-      'class="evidence-link evidence-state-nao-atende" href="#ann-001" data-evidence-ref="ann-001"',
-    );
-    expect(html).toContain('<span class="evidence-ref" aria-hidden="true">CT-CURR-01</span>');
-    expect(html).toContain('title="Evidência de CT-CURR-01:');
-    expect(html).toContain("Curso: Curso Técnico em Informática");
-    for (const ancora of ['href="#ann-001"', 'href="#ppc-b00002"', 'href="#ppc-b00004"', "Ir para seção"]) {
-      expect(html).toContain(ancora);
-    }
-    expect(html).not.toContain("Ver no PPC");
-    expect(html).toContain('\n          <section id="ppc-b00002"');
-    expect(html).not.toContain("></section><section id=");
-    expect(Math.max(...html.split("\n").map((linha) => linha.length))).toBeLessThan(260);
-    expect(NodeFS.existsSync(NodePath.join(rodada, "assets", "revisar-ppc.css"))).toBe(true);
-    expect(NodeFS.existsSync(NodePath.join(rodada, "assets", "revisar-ppc.js"))).toBe(true);
-  });
+        anchor: { block_id: blockId, quote: trecho },
+      });
+      primeiro.evidencias = [
+        evidencia("Curso: Curso Técnico em Informática", "Identificação", "Cabeçalho", "ppc-b00002"),
+        evidencia("O curso apresenta objetivos", "Apresentação", "Corpo da seção", "ppc-b00004"),
+        evidencia("Campus: Assis Chateaubriand", "Identificação", "Cabeçalho", "ppc-b00002"),
+      ];
+      const html = yield* gerar(rodada, payload);
+      expect(html).toContain('<link rel="stylesheet" href="assets/revisar-ppc.css">');
+      expect(html).toContain('<script src="assets/revisar-ppc.js" defer></script>');
+      expect(html).not.toContain("<style>");
+      expect(html).toContain("PPC anotado");
+      expect(html).not.toContain("Achados detalhados por ficha");
+      expect(html).not.toContain('id="achados-detalhados"');
+      expect(html).toContain('id="ppc-b00002"');
+      expect(html).toContain(
+        'class="evidence-link evidence-state-nao-atende" href="#ann-001" data-evidence-ref="ann-001"',
+      );
+      expect(html).toContain('<span class="evidence-ref" aria-hidden="true">CT-CURR-01</span>');
+      expect(html).toContain('title="Evidência de CT-CURR-01:');
+      expect(html).toContain("Curso: Curso Técnico em Informática");
+      for (const ancora of ['href="#ann-001"', 'href="#ppc-b00002"', 'href="#ppc-b00004"', "Ir para seção"]) {
+        expect(html).toContain(ancora);
+      }
+      expect(html).not.toContain("Ver no PPC");
+      expect(html).toContain('\n          <section id="ppc-b00002"');
+      expect(html).not.toContain("></section><section id=");
+      expect(Math.max(...html.split("\n").map((linha) => linha.length))).toBeLessThan(260);
+      expect(NodeFS.existsSync(NodePath.join(rodada, "assets", "revisar-ppc.css"))).toBe(true);
+      expect(NodeFS.existsSync(NodePath.join(rodada, "assets", "revisar-ppc.js"))).toBe(true);
+    }),
+  );
 
   const negativos: Array<[string, (payload: Payload) => void, string]> = [
     ["ficha duplicada", (p) => (p.grupos[1]!.resultados[0] = { ...p.grupos[0]!.resultados[0]! }), "duplicadas"],
@@ -579,127 +611,300 @@ describe("gerar-relatorio-html", () => {
       "feedback_autores",
     ],
   ];
-  for (const [nome, mutar, mensagem] of negativos) {
-    test(`rejeita ${nome}`, () => {
+  it.effect.each(negativos)("rejeita %s", ([, mutar, mensagem]) =>
+    Effect.gen(function* () {
       const rodada = criarRodada();
       const payload = payloadResultadosCompletos();
       mutar(payload);
-      expect(() => gerar(rodada, payload)).toThrow(ErroResultadosSubagents);
-      expect(() => gerar(rodada, payload)).toThrow(mensagem);
-    });
+      const erro = yield* Effect.flip(gerar(rodada, payload));
+      expect(erro).toBeInstanceOf(ErroResultadosSubagents);
+      expect(erro.message).toContain(mensagem);
+    }),
+  );
+
+  it.effect("renderiza alertas transversais", () =>
+    Effect.gen(function* () {
+      const rodada = criarRodada();
+      const payload = payloadResultadosCompletos();
+      payload.alertas_transversais = [
+        {
+          id: "ALERTA-001",
+          validacao_id: primeiraValidacaoCruzada(),
+          titulo: "Inconsistência transversal",
+          criticidade: "OBRIG",
+          descricao: "Perfil e matriz precisam de revisão conjunta.",
+          fichas_relacionadas: ["CT-IDENT-01"],
+          evidencias: ["Evidência transversal"],
+          revisao_humana_obrigatoria: true,
+        },
+      ];
+      escreverJsonDaRodada(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
+      const relatorio = yield* gerarRelatorioHtml(rodada, "resultados-subagents.json");
+      expect(relatorio.total_alertas_transversais).toBe(1);
+      const html = NodeFS.readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8");
+      for (const trecho of ["Alertas transversais", "ALERTA-001", "Validação cruzada", "transversal-notes"]) {
+        expect(html).toContain(trecho);
+      }
+      expect(html).not.toContain('id="alertas"');
+    }),
+  );
+
+  it.effect("renderiza alerta transversal com várias âncoras", () =>
+    Effect.gen(function* () {
+      const rodada = criarRodada();
+      const payload = payloadResultadosCompletos();
+      const ponto = (secao: string, trecho: string, blockId: string) => ({
+        secao,
+        trecho,
+        papel: "ponto_de_conflito",
+        fonte: "PPC.md",
+        anchor: { block_id: blockId, quote: trecho },
+      });
+      payload.alertas_transversais = [
+        {
+          id: "ALERTA-001",
+          validacao_id: primeiraValidacaoCruzada(),
+          titulo: "Divergência entre identificação e apresentação",
+          criticidade: "OBRIG",
+          descricao: "Dois pontos do PPC precisam ser lidos em conjunto.",
+          fichas_relacionadas: ["CT-IDENT-01"],
+          evidencias: [
+            ponto("Capa", "Curso: Curso Técnico em Informática", "ppc-b00002"),
+            ponto("Apresentação", "O curso apresenta objetivos", "ppc-b00004"),
+          ],
+          revisao_humana_obrigatoria: true,
+        },
+      ];
+      const html = yield* gerar(rodada, payload);
+      for (const trecho of [
+        'id="ALERTA-001"',
+        'href="#ALERTA-001"',
+        'href="#ppc-b00002"',
+        'href="#ppc-b00004"',
+        "Pontos no PPC",
+        "ponto_de_conflito",
+        "estado-transversal",
+      ]) {
+        expect(html).toContain(trecho);
+      }
+      expect(html).not.toContain('id="alertas"');
+    }),
+  );
+
+  it.effect("renderiza feedback aos autores", () =>
+    Effect.gen(function* () {
+      const rodada = criarRodada();
+      const payload = payloadResultadosCompletos();
+      const texto = "Recomenda-se explicitar a articulação entre concepção, perfil e matriz.";
+      const item = resultadoDa(payload, "CT-TRANS-08");
+      item.estado = "NAO_ATENDE";
+      item.revisao_humana_obrigatoria = true;
+      item.feedback_autores = texto;
+      escreverJsonDaRodada(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
+      const relatorio = yield* gerarRelatorioHtml(rodada, "resultados-subagents.json");
+      expect(relatorio.total_fichas).toBe(TOTAL_FICHAS);
+      const html = NodeFS.readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8");
+      expect(html).toContain("Feedback sugerido aos autores");
+      expect(html).toContain(texto);
+      expect(html).toContain("Feedback aos autores");
+    }),
+  );
+});
+
+/** Resultado e alerta sintéticos com `null` em todos os campos opcionais. */
+const CAMPOS_NULOS = JSON.parse(
+  NodeFS.readFileSync(NodePath.join(import.meta.dirname, "fixtures", "resultados-campos-nulos.json"), "utf-8"),
+) as { resultados: Dicionario[]; alertas_transversais: Dicionario[] };
+
+/** Cópia sem as chaves com `null`, em qualquer nível. */
+function semNulos(valor: unknown): unknown {
+  if (Array.isArray(valor)) return valor.map(semNulos);
+  if (valor && typeof valor === "object") {
+    return Object.fromEntries(
+      Object.entries(valor)
+        .filter(([, item]) => item !== null)
+        .map(([chave, item]) => [chave, semNulos(item)]),
+    );
   }
+  return valor;
+}
 
-  test("renderiza alertas transversais", () => {
-    const rodada = criarRodada();
-    const payload = payloadResultadosCompletos();
-    payload.alertas_transversais = [
+/** Os resultados completos com o resultado e o alerta da fixture no lugar. */
+function payloadComCamposNulos(): Payload {
+  const payload = payloadResultadosCompletos();
+  const [nulo] = CAMPOS_NULOS.resultados;
+  for (const grupo of payload.grupos) {
+    grupo.resultados = grupo.resultados.map((item) => (item.ficha_id === nulo!.ficha_id ? nulo! : item));
+  }
+  payload.alertas_transversais = CAMPOS_NULOS.alertas_transversais;
+  return payload;
+}
+
+describe("campos opcionais com null", () => {
+  test("a decodificação tira as chaves com null", () => {
+    const resultado = Schema.decodeUnknownSync(esquemaResultadoFicha)(CAMPOS_NULOS.resultados[0]);
+    expect(resultado).not.toHaveProperty("fundamentacao_normativa");
+    expect(resultado).not.toHaveProperty("feedback_autores");
+    expect(resultado.evidencias).toEqual([
+      { trecho: "Curso: Curso Técnico em Informática", localizador: "Capa" },
       {
-        id: "ALERTA-001",
-        validacao_id: primeiraValidacaoCruzada(),
-        titulo: "Inconsistência transversal",
-        criticidade: "OBRIG",
-        descricao: "Perfil e matriz precisam de revisão conjunta.",
-        fichas_relacionadas: ["CT-IDENT-01"],
-        evidencias: ["Evidência transversal"],
-        revisao_humana_obrigatoria: true,
+        trecho: "O curso apresenta objetivos",
+        secao: "1. Apresentação",
+        fonte: "PPC.md",
+        anchor: { block_id: "ppc-b00004" },
       },
-    ];
-    escreverJsonDaRodada(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
-    const relatorio = gerarRelatorioHtml(rodada, "resultados-subagents.json");
-    expect(relatorio.total_alertas_transversais).toBe(1);
-    const html = NodeFS.readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8");
-    for (const trecho of ["Alertas transversais", "ALERTA-001", "Validação cruzada", "transversal-notes"]) {
-      expect(html).toContain(trecho);
-    }
-    expect(html).not.toContain('id="alertas"');
+    ]);
+    const alerta = Schema.decodeUnknownSync(esquemaAlertaTransversal)(CAMPOS_NULOS.alertas_transversais[0]);
+    expect(Object.keys(alerta).sort()).toEqual(["descricao", "revisao_humana_obrigatoria", "titulo", "validacao_id"]);
   });
 
-  test("renderiza alerta transversal com várias âncoras", () => {
-    const rodada = criarRodada();
-    const payload = payloadResultadosCompletos();
-    const ponto = (secao: string, trecho: string, blockId: string) => ({
-      secao,
-      trecho,
-      papel: "ponto_de_conflito",
-      fonte: "PPC.md",
-      anchor: { block_id: blockId, quote: trecho },
-    });
-    payload.alertas_transversais = [
-      {
-        id: "ALERTA-001",
-        validacao_id: primeiraValidacaoCruzada(),
-        titulo: "Divergência entre identificação e apresentação",
-        criticidade: "OBRIG",
-        descricao: "Dois pontos do PPC precisam ser lidos em conjunto.",
-        fichas_relacionadas: ["CT-IDENT-01"],
-        evidencias: [
-          ponto("Capa", "Curso: Curso Técnico em Informática", "ppc-b00002"),
-          ponto("Apresentação", "O curso apresenta objetivos", "ppc-b00004"),
-        ],
-        revisao_humana_obrigatoria: true,
-      },
-    ];
-    const html = gerar(rodada, payload);
-    for (const trecho of [
-      'id="ALERTA-001"',
-      'href="#ALERTA-001"',
-      'href="#ppc-b00002"',
-      'href="#ppc-b00004"',
-      "Pontos no PPC",
-      "ponto_de_conflito",
-      "estado-transversal",
-    ]) {
-      expect(html).toContain(trecho);
-    }
-    expect(html).not.toContain('id="alertas"');
+  test("null em campo obrigatório continua recusado", () => {
+    const resultado = { ...CAMPOS_NULOS.resultados[0], justificativa: null };
+    expect(() => Schema.decodeUnknownSync(esquemaResultadoFicha)(resultado)).toThrow();
   });
 
-  test("renderiza feedback aos autores", () => {
-    const rodada = criarRodada();
-    const payload = payloadResultadosCompletos();
-    const texto = "Recomenda-se explicitar a articulação entre concepção, perfil e matriz.";
-    const item = resultadoDa(payload, "CT-TRANS-08");
-    item.estado = "NAO_ATENDE";
-    item.revisao_humana_obrigatoria = true;
-    item.feedback_autores = texto;
-    escreverJsonDaRodada(NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"), payload);
-    const relatorio = gerarRelatorioHtml(rodada, "resultados-subagents.json");
-    expect(relatorio.total_fichas).toBe(TOTAL_FICHAS);
-    const html = NodeFS.readFileSync(caminhosRodada(rodada).relatorioHtml, "utf-8");
-    expect(html).toContain("Feedback sugerido aos autores");
-    expect(html).toContain(texto);
-    expect(html).toContain("Feedback aos autores");
+  it.effect("gerar-relatorio-html aceita null e gera o mesmo HTML que sem as chaves", () =>
+    Effect.gen(function* () {
+      const comNulos = yield* gerar(criarRodada(), payloadComCamposNulos());
+      const semAsChaves = yield* gerar(criarRodada(), semNulos(payloadComCamposNulos()));
+      expect(comNulos).toBe(semAsChaves);
+      expect(comNulos).toContain('id="ALERTA-001"');
+      expect(comNulos).toContain("Resultado sintético com null nos campos opcionais.");
+    }),
+  );
+});
+
+describe("chaves a mais nos resultados", () => {
+  /** Problemas do esquema para um resultado com estas evidências e estes campos a mais. */
+  const problemasDe = (evidencias: unknown[], extras: Dicionario = {}, topo: Dicionario = {}) => {
+    const decodificado = decodificarResultados(
+      { ...topo, grupos: [{ grupo_id: "g", resultados: [{ ...resultado("CT-IDENT-01"), evidencias, ...extras }] }] },
+      "O JSON de resultados",
+    );
+    return Result.isFailure(decodificado) ? decodificado.failure.problemas : [];
+  };
+
+  test("sinônimo de chave na evidência é recusado com o caminho do campo", () => {
+    expect(problemasDe([{ trecho: "a", seção: "1.2" }])).toEqual([
+      "$.grupos[0].resultados[0].evidencias[0].seção: campo não permitido",
+    ]);
+  });
+
+  test("chave a mais na âncora e no achado normativo é recusada", () => {
+    expect(
+      problemasDe([{ trecho: "a", anchor: { block_id: "ppc-b00001", id: "x" } }], {
+        fundamentacao_normativa: [{ status: "CONFIRMADA", norma: "Lei", análise: "x" }],
+      }),
+    ).toEqual([
+      "$.grupos[0].resultados[0].evidencias[0].anchor.id: campo não permitido",
+      "$.grupos[0].resultados[0].fundamentacao_normativa[0].análise: campo não permitido",
+    ]);
+  });
+
+  test("chave a mais no topo, no bloco e no resultado da ficha continua aceita", () => {
+    expect(problemasDe(["a"], { observacao: "livre" }, { versao: 2 })).toEqual([]);
   });
 });
 
-describe("publicação no Surge", () => {
-  test("chama a CLI com a pasta e o domínio", () => {
-    const dir = diretorioTemporario();
-    const relatorio = NodePath.join(dir, "relatorio.html");
-    NodeFS.writeFileSync(relatorio, "<!doctype html><html><body><script>ok()</script></body></html>");
-    const site = prepararSiteSurge(relatorio, NodePath.join(dir, "surge-site"));
-    const argumentos = NodePath.join(dir, "args.txt");
-    const falso = surgeFalso(
-      dir,
-      `printf '%s\\n' "$@" > "${argumentos}"\necho 'Success - Published to revisar-ppc-teste.surge.sh'`,
-    );
-    const payload = publicarSiteSurge(site, "revisar-ppc-teste.surge.sh", [falso]);
-    expect(payload.public_url).toBe("https://revisar-ppc-teste.surge.sh");
-    expect(payload.domain).toBe("revisar-ppc-teste.surge.sh");
-    expect(NodeFS.readFileSync(NodePath.join(site, "index.html"), "utf-8")).toContain("<script>ok()</script>");
-    expect(NodeFS.readFileSync(argumentos, "utf-8")).toBe(`${site}\nrevisar-ppc-teste.surge.sh\n`);
-  });
+layer(NodeServices.layer)("publicação no Surge", (it) => {
+  it.effect("chama a CLI com a pasta e o domínio", () =>
+    Effect.gen(function* () {
+      const dir = diretorioTemporario();
+      const relatorio = NodePath.join(dir, "relatorio.html");
+      NodeFS.writeFileSync(relatorio, "<!doctype html><html><body><script>ok()</script></body></html>");
+      NodeFS.mkdirSync(NodePath.join(dir, "assets"));
+      NodeFS.writeFileSync(NodePath.join(dir, "assets", "revisar-ppc.css"), "body {}");
+      const site = yield* prepararSiteSurge(relatorio, NodePath.join(dir, "surge-site"));
+      const argumentos = NodePath.join(dir, "args.txt");
+      const falso = surgeFalso(
+        dir,
+        `printf '%s\\n' "$@" > "${argumentos}"\necho 'Success - Published to revisar-ppc-teste.surge.sh'`,
+      );
+      const payload = yield* publicarSiteSurge(site, "revisar-ppc-teste.surge.sh", [falso]);
+      expect(payload.public_url).toBe("https://revisar-ppc-teste.surge.sh");
+      expect(payload.domain).toBe("revisar-ppc-teste.surge.sh");
+      expect(payload.stdout).toBe("Success - Published to revisar-ppc-teste.surge.sh");
+      expect(NodeFS.readFileSync(NodePath.join(site, "index.html"), "utf-8")).toContain("<script>ok()</script>");
+      expect(NodeFS.readFileSync(NodePath.join(site, "assets", "revisar-ppc.css"), "utf-8")).toBe("body {}");
+      const siteReal = NodeFS.realpathSync(site);
+      expect(NodeFS.readFileSync(argumentos, "utf-8")).toBe(`${siteReal}\nrevisar-ppc-teste.surge.sh\n`);
+    }),
+  );
 
-  test("recusa saída sem confirmação, pedido de login e código de erro", () => {
-    const dir = diretorioTemporario();
-    const site = NodePath.join(dir, "site");
-    const mudo = surgeFalso(dir, "echo 'Publicando...'");
-    expect(() => publicarSiteSurge(site, "x.surge.sh", [mudo])).toThrow("confirmação de publicação reconhecível");
-    const login = surgeFalso(dir, "echo 'Login or create surge account'; echo 'email:'");
-    expect(() => publicarSiteSurge(site, "x.surge.sh", [login])).toThrow("autenticação interativa");
-    const falha = surgeFalso(dir, "echo 'erro' >&2; exit 2");
-    expect(() => publicarSiteSurge(site, "x.surge.sh", [falha])).toThrow("Falha ao publicar relatório no Surge.\nerro");
-  });
+  it.effect.each([
+    ["sem código de erro", "echo 'Login or create surge account'; echo 'email:'"],
+    ["código de erro", "echo 'Login or create surge account' >&2; echo 'email:' >&2; exit 1"],
+  ] as const)("pedido de login %s é reconhecido antes do código, sem a saída nem log", ([, corpo]) =>
+    Effect.gen(function* () {
+      const dir = diretorioTemporario();
+      const site = NodePath.join(dir, "site");
+      NodeFS.mkdirSync(site);
+      const erro = yield* Effect.flip(publicarSiteSurge(site, "x.surge.sh", [surgeFalso(dir, corpo)]));
+      expect(erro).toMatchObject({ _tag: "ErroPublicacaoSurge", categoria: "pediu-login" });
+      expect(erro.message).toContain("autenticação interativa");
+      expect(erro.message).not.toContain("email:");
+      expect(NodeFS.existsSync(NodePath.join(dir, "surge-erro.log"))).toBe(false);
+    }),
+  );
+
+  it.effect("CLI que falha: últimas linhas do stderr sem e-mail na mensagem e saída completa no log", () =>
+    Effect.gen(function* () {
+      const dir = diretorioTemporario();
+      const site = NodePath.join(dir, "site");
+      NodeFS.mkdirSync(site);
+      const log = NodePath.join(dir, "suporte", "surge-erro.log");
+      NodeFS.mkdirSync(NodePath.dirname(log));
+      const corpo = [
+        "echo 'Publicando...'",
+        "echo 'linha 1 antiga' >&2",
+        "echo 'conta: pessoa.teste@exemplo.com.br' >&2",
+        "echo 'Aborted - you do not have permission' >&2",
+        "echo 'Erro 403' >&2",
+        "exit 2",
+      ].join("\n");
+      const erro = yield* Effect.flip(publicarSiteSurge(site, "x.surge.sh", [surgeFalso(dir, corpo)], log));
+      expect(erro).toMatchObject({ _tag: "ErroPublicacaoSurge", categoria: "falhou", codigo: 2, log });
+      expect(erro.message).toBe(
+        "Falha ao publicar relatório no Surge: a CLI terminou com o código 2.\n" +
+          "Últimas linhas do stderr:\n" +
+          "  conta: [e-mail omitido]\n" +
+          "  Aborted - you do not have permission\n" +
+          "  Erro 403\n" +
+          `Saída completa em ${log}.`,
+      );
+      const conteudo = NodeFS.readFileSync(log, "utf-8");
+      for (const trecho of ["código de saída: 2", "Publicando...", "linha 1 antiga", "pessoa.teste@exemplo.com.br"]) {
+        expect(conteudo).toContain(trecho);
+      }
+    }),
+  );
+
+  it.effect("CLI sem confirmação grava o log ao lado da pasta do site", () =>
+    Effect.gen(function* () {
+      const dir = diretorioTemporario();
+      const site = NodePath.join(dir, "site");
+      NodeFS.mkdirSync(site);
+      const corpo = "echo 'Publicando...'; echo 'aviso qualquer' >&2";
+      const erro = yield* Effect.flip(publicarSiteSurge(site, "x.surge.sh", [surgeFalso(dir, corpo)]));
+      const log = NodePath.join(NodeFS.realpathSync(dir), "surge-erro.log");
+      expect(erro).toMatchObject({ _tag: "ErroPublicacaoSurge", categoria: "sem-confirmacao", log });
+      expect(erro.message).toContain("confirmação de publicação reconhecível");
+      expect(erro.message).toContain("  aviso qualquer\n");
+      expect(erro.message).toContain(`Saída completa em ${log}.`);
+      expect(NodeFS.readFileSync(log, "utf-8")).toContain("Publicando...");
+    }),
+  );
+
+  it.effect("comando que não existe é recusado como não iniciado, com o código do sistema", () =>
+    Effect.gen(function* () {
+      const dir = diretorioTemporario();
+      const erro = yield* Effect.flip(publicarSiteSurge(dir, "x.surge.sh", [NodePath.join(dir, "nao-existe")]));
+      expect(erro).toMatchObject({ _tag: "ErroPublicacaoSurge", categoria: "nao-iniciou", codigoSistema: "ENOENT" });
+      expect(erro.message).toBe(
+        "Falha ao publicar relatório no Surge: o comando da CLI não pôde ser executado (ENOENT).",
+      );
+    }),
+  );
 
   test("domínio padrão usa o nome da rodada", () => {
     expect(dominioSurgePadrao("/tmp/2026-06-29t10-00-00-ppc-tecnico-em-informatica---quedas")).toBe(

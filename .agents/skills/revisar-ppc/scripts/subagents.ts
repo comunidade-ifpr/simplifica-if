@@ -54,6 +54,7 @@ import { aparar, compararTexto } from "@simplifica-if/kb/texto";
 import { listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
 import { componentesMatriz, gerarContextoCnctRodada, lerJsonSeExistir } from "./cnct-catalogo.ts";
+import { STATUS_FUNDAMENTACAO_NORMATIVA } from "./esquemas.ts";
 import { marcoLegivel, referenciasLegiveisDaFicha, universoOuVazio } from "./referencias-fichas.ts";
 import { carregarMarcos } from "./validacao-base.ts";
 import {
@@ -98,21 +99,12 @@ export class GruposSubagentsInvalidos extends Schema.TaggedError<GruposSubagents
   { caminho: Schema.String },
 ) {
   override get message(): string {
-    return "grupos-subagents.json não contém `grupos[]`.";
+    return "grupos-subagents.json precisa conter `grupos[]`, uma lista de objetos.";
   }
 }
 export const ehGruposSubagentsInvalidos = Schema.is(GruposSubagentsInvalidos);
 
 const FICHA_REPRESENTACAO_GRAFICA = "CT-CURR-10";
-export const STATUS_FUNDAMENTACAO_NORMATIVA = [
-  "CONFIRMADA",
-  "CONFIRMADA_COM_RESSALVA",
-  "IMPRECISA",
-  "SEM_SUPORTE_NA_FONTE",
-  "CONTRADITORIA",
-  "FONTE_AUSENTE_OU_NAO_CONSULTADA",
-  "NAO_NORMATIVA",
-];
 const CAMPOS_TEXTO_FICHA = ["titulo", "pergunta", "rubrica", "boa_evidencia", "ma_evidencia", "escalonar_quando"];
 
 export type OpcoesSkill = { caminhos?: CaminhosAnalise; fichasDir?: string; validacoesDir?: string };
@@ -254,7 +246,7 @@ export function contextoFundamentacaoNormativa(caminhos: CaminhosAnalise = camin
       catalogos: seExiste(NodePath.join(base, "catalogos_manifest.json")),
       cnct: seExiste(NodePath.join(base, "catalogos", "cnct", "manifest.json")),
     },
-    status_permitidos: STATUS_FUNDAMENTACAO_NORMATIVA,
+    status_permitidos: [...STATUS_FUNDAMENTACAO_NORMATIVA],
     marcos_normativos: carregarMarcosNormativos(caminhos.marcosNormativosPath, universoOuVazio(caminhos)),
     observacao:
       "Use este contexto quando o PPC citar norma ou fizer afirmação com força normativa. " +
@@ -295,7 +287,7 @@ function resolverCaminhoArtefato(valor: unknown): string | null {
   return existe(caminho) ? resolverCaminho(caminho) : null;
 }
 
-/** `_valor_inteiro`: inteiro de número inteiro, float inteiro ou dos dígitos de um texto. */
+/** Inteiro de número inteiro, float inteiro ou dos dígitos de um texto. */
 function valorInteiro(valor: unknown): number | null {
   if (typeof valor === "boolean") return null;
   if (ehInteiroOuLogico(valor)) return valorNumerico(valor);
@@ -614,7 +606,7 @@ export const REGRA_AGRUPAMENTO =
   "O grupo recebe as seções do PPC.md de todos os tópicos das suas fichas (packages/kb/dados/topicos-secoes.yaml) " +
   "e as que a busca pelas consultas das fichas achar.";
 
-/** `montar_grupos_subagents`: grupos por tópico com contextos, gravados em `grupos-subagents.json`. */
+/** Grupos por tópico com contextos, gravados em `grupos-subagents.json`. */
 export const montarGruposSubagents = Effect.fn("subagents.montarGruposSubagents")(function* (
   rodada: string,
   tamanhoGrupo: number = TAMANHO_GRUPO_PADRAO,
@@ -659,7 +651,7 @@ export const montarGruposSubagents = Effect.fn("subagents.montarGruposSubagents"
   return payload;
 }, Effect.scoped);
 
-/** `montar_grupo_avulso`: grupo só com as fichas pedidas, gravado em `grupos-avulsos/`, com o pacote de prompt. */
+/** Grupo só com as fichas pedidas, gravado em `grupos-avulsos/`, com o pacote de prompt. */
 export const montarGrupoAvulso = Effect.fn("subagents.montarGrupoAvulso")(function* (
   rodada: string,
   fichaIds: readonly string[],
@@ -775,7 +767,7 @@ function pacotePromptGrupo(ppc: string, template: string, grupo: unknown): strin
   ].join("\n\n")}\n`;
 }
 
-/** `preparar_prompts_subagents`: um pacote Markdown autocontido por grupo, mais `manifest.json`. */
+/** Um pacote Markdown autocontido por grupo, mais `manifest.json`. */
 export const prepararPromptsSubagents = Effect.fn("subagents.prepararPromptsSubagents")(function* (
   rodada: string,
   opcoes: OpcoesSkill = {},
@@ -786,7 +778,9 @@ export const prepararPromptsSubagents = Effect.fn("subagents.prepararPromptsSuba
     ? (lerJsonDaRodada(caminhos.gruposSubagents) as Dicionario)
     : yield* montarGruposSubagents(rodada, TAMANHO_GRUPO_PADRAO, opcoes);
   const grupos = obter(payload, "grupos");
-  if (!Array.isArray(grupos)) return yield* new GruposSubagentsInvalidos({ caminho: caminhos.gruposSubagents });
+  if (!Array.isArray(grupos) || !grupos.every(ehDicionario)) {
+    return yield* new GruposSubagentsInvalidos({ caminho: caminhos.gruposSubagents });
+  }
   const ppc = lerTexto(caminhos.ppc);
   const templatePath = textoDoValor(
     ou(obter(payload, "prompt_template"), NodePath.join(skill.promptsDir, "subagent-lote-fichas.md")),
@@ -795,7 +789,6 @@ export const prepararPromptsSubagents = Effect.fn("subagents.prepararPromptsSuba
   NodeFS.mkdirSync(caminhos.promptsSubagentsDir, { recursive: true });
   const arquivos: Dicionario[] = [];
   for (const grupo of grupos) {
-    if (!ehDicionario(grupo)) throw new Error("AttributeError: grupo não é objeto JSON");
     const grupoId = textoDoValor(ou(obter(grupo, "grupo_id"), "grupo"));
     const destino = NodePath.join(caminhos.promptsSubagentsDir, `${grupoId}.md`);
     const texto = pacotePromptGrupo(ppc, template, grupo);

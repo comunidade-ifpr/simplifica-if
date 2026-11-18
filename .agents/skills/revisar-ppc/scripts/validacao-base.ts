@@ -29,10 +29,9 @@ import { aparar, ordenarTextos } from "@simplifica-if/kb/texto";
 import { VERIFICADOR_POR_FICHA } from "@simplifica-if/ppc/verificadores/registro";
 import { lerJson, listarArquivos } from "./arquivos.ts";
 import { type CaminhosAnalise, caminhosPadrao } from "./caminhos.ts";
-import { jsonSchemaGerado, type MarcoArquivo, schemasDesatualizados } from "./esquemas.ts";
+import { decodificarContrato, type MarcoArquivo, type NomeSchemaGerado, schemasDesatualizados } from "./esquemas.ts";
 import { type Derivacao, derivacaoPadrao, derivarMarco } from "./marcos.ts";
 import { carregarUniverso } from "./referencias-fichas.ts";
-import { validarSchemaAnalise } from "./schema-analise.ts";
 
 export type Ficha = ObjetoJson;
 export type Marco = ObjetoJson;
@@ -62,16 +61,15 @@ function tentarLerJson(caminho: string): { valor: unknown } | { erro: string } {
   }
 }
 
-function carregarSchema(caminhos: CaminhosAnalise, nome: string): ObjetoJson {
-  const payload = lerJson(NodePath.join(caminhos.schemasDir, nome));
-  if (!ehObjeto(payload)) throw new Error(`Schema inválido: ${nome}`);
-  return payload;
+/** Os problemas de `valor` no contrato `nome`, cada um como `<origem>: $.campo: mensagem`. */
+function errosDeContrato(origem: string, nome: NomeSchemaGerado, valor: unknown): string[] {
+  return decodificarContrato(nome, valor).map(({ caminho, mensagem }) => `${origem}: ${caminho}: ${mensagem}`);
 }
 
-function validarArquivoJson(caminho: string, schema: ObjetoJson): string[] {
+function validarArquivoJson(caminho: string, nome: NomeSchemaGerado): string[] {
   const lido = tentarLerJson(caminho);
   if ("erro" in lido) return [`${caminho}: JSON inválido: ${lido.erro}`];
-  return validarSchemaAnalise(lido.valor, schema).map((erro) => `${caminho}: ${erro}`);
+  return errosDeContrato(caminho, nome, lido.valor);
 }
 
 function textoAparado(valor: unknown): string {
@@ -331,9 +329,7 @@ export function validarMarcosNormativos(
   if (!NodeFS.existsSync(caminho)) return [`${caminho}: registro de marcos normativos não encontrado`];
   const lido = tentarLerJson(caminho);
   if ("erro" in lido) return [`${caminho}: JSON inválido: ${lido.erro}`];
-  const erros = validarSchemaAnalise(lido.valor, jsonSchemaGerado("marcos-normativos.schema.json")).map(
-    (erro) => `${caminho}: ${erro}`,
-  );
+  const erros = errosDeContrato(caminho, "marcos-normativos.schema.json", lido.valor);
   if (erros.length) return erros;
 
   const ids = new Set<string>();
@@ -439,17 +435,6 @@ const ALERTA_EXEMPLO = {
 /** Valida a base de análise inteira e devolve as mensagens de erro (lista vazia quando válida). */
 export function validarBaseAnalise(caminhos: CaminhosAnalise = caminhosPadrao()): string[] {
   const erros: string[] = [];
-  const schemaFicha = jsonSchemaGerado("ficha.schema.json");
-  const schemaValidacao = carregarSchema(caminhos, "validacao-cruzada.schema.json");
-  const schemaResultado = carregarSchema(caminhos, "resultado-lote.schema.json");
-  const schemaAlertas = carregarSchema(caminhos, "alertas-transversais.schema.json");
-
-  for (const arquivo of listarArquivos(caminhos.schemasDir, ".schema.json")) {
-    const payload = lerJson(arquivo);
-    if (!ehObjeto(payload) || payload.type !== "object") {
-      erros.push(`${arquivo}: schema deve ser objeto com type=object`);
-    }
-  }
   for (const arquivo of schemasDesatualizados(caminhos)) {
     erros.push(`${arquivo}: diverge do Effect Schema de scripts/esquemas.ts; rode \`revisar_ppc.ts gerar-schemas\``);
   }
@@ -461,7 +446,7 @@ export function validarBaseAnalise(caminhos: CaminhosAnalise = caminhosPadrao())
       erros.push(`${arquivo}: JSON inválido: ${lido.erro}`);
       continue;
     }
-    erros.push(...validarSchemaAnalise(lido.valor, schemaFicha).map((erro) => `${arquivo}: ${erro}`));
+    erros.push(...errosDeContrato(arquivo, "ficha.schema.json", lido.valor));
     const payload = ehObjeto(lido.valor) ? lido.valor : {};
     const fichaId = textoOuVazio(payload.id);
     if (fichasPorId.has(fichaId)) erros.push(`${arquivo}: ficha duplicada: ${fichaId}`);
@@ -487,15 +472,18 @@ export function validarBaseAnalise(caminhos: CaminhosAnalise = caminhosPadrao())
       erros.push(`${arquivo}: JSON inválido: ${lido.erro}`);
       continue;
     }
-    erros.push(...validarSchemaAnalise(lido.valor, schemaValidacao).map((erro) => `${arquivo}: ${erro}`));
+    erros.push(...errosDeContrato(arquivo, "validacao-cruzada.schema.json", lido.valor));
     const validacaoId = textoOuVazio(ehObjeto(lido.valor) ? lido.valor.id : undefined);
     if (idsValidacoes.has(validacaoId)) erros.push(`${arquivo}: validação cruzada duplicada: ${validacaoId}`);
     idsValidacoes.add(validacaoId);
   }
 
   erros.push(
-    ...validarArquivoJson(NodePath.join(caminhos.contratosDir, "resposta_lote.exemplo.json"), schemaResultado),
+    ...validarArquivoJson(
+      NodePath.join(caminhos.contratosDir, "resposta_lote.exemplo.json"),
+      "resultado-lote.schema.json",
+    ),
   );
-  erros.push(...validarSchemaAnalise(ALERTA_EXEMPLO, schemaAlertas));
+  erros.push(...errosDeContrato("exemplo de alertas transversais", "alertas-transversais.schema.json", ALERTA_EXEMPLO));
   return erros;
 }

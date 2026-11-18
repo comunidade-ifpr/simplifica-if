@@ -106,7 +106,7 @@ No pacote de prompt, o escopo `secoes` aparece como `## PPC.md: seções do grup
 }
 ```
 
-O renderizador valida campos obrigatórios, fichas duplicadas, fichas ausentes, fichas desconhecidas e quantidade mínima de evidências por ficha antes de gerar o HTML. `evidencias` aceita strings legadas, mas o formato preferido é objeto estruturado com `trecho`, `secao`, `localizador`, `fonte`, `artefato` e `anchor`.
+O renderizador valida campos obrigatórios, fichas duplicadas, fichas ausentes, fichas desconhecidas e quantidade mínima de evidências por ficha antes de gerar o HTML. `evidencias` aceita strings legadas, mas o formato preferido é objeto estruturado com `trecho`, `secao`, `localizador`, `fonte`, `artefato` e `anchor`; outra chave na evidência (como `seção`) é recusada.
 O campo opcional `anchor` deve conter `block_id` e `quote`; quando ausente, o renderizador tenta localizar a anotação por trecho, localizador ou seção.
 Quando uma ficha declarar `feedback_autores.obrigatorio_quando_estado`, o renderizador também valida a presença de `feedback_autores` para os estados indicados.
 O campo `fundamentacao_normativa` é opcional, mas deve ser usado quando a ficha avaliar afirmação do PPC sobre lei, resolução, portaria, nota técnica, regulamento, CNCT ou outro documento normativo. Quando informado, ele aparece no relatório HTML dentro da ficha correspondente.

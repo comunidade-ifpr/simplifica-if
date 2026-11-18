@@ -2,15 +2,260 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://simplifica-if.local/revisar-ppc/resultado-lote.schema.json",
   "title": "Resultado de lote de fichas PPC",
+  "description": "Gerado de .agents/skills/revisar-ppc/scripts/esquemas.ts (Effect Schema) por `revisar_ppc.ts gerar-schemas`; não edite à mão.",
   "type": "object",
-  "required": ["resultados"],
   "properties": {
-    "grupo_id": { "type": "string" },
-    "batch_id": { "type": "string" },
+    "grupo_id": {
+      "type": "string"
+    },
+    "batch_id": {
+      "type": "string"
+    },
     "resultados": {
       "type": "array",
       "items": {
         "type": "object",
+        "properties": {
+          "ficha_id": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "ATENDE",
+              "NAO_ATENDE",
+              "INCONCLUSIVO",
+              "NAO_APLICAVEL"
+            ]
+          },
+          "confianca": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "justificativa": {
+            "type": "string"
+          },
+          "evidencias": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "trecho": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "secao": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "localizador": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "fonte": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "artefato": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "anchor": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "block_id": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "quote": {
+                              "anyOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "lacunas": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "revisao_humana_obrigatoria": {
+            "type": "boolean"
+          },
+          "fundamentacao_normativa": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "CONFIRMADA",
+                        "CONFIRMADA_COM_RESSALVA",
+                        "IMPRECISA",
+                        "SEM_SUPORTE_NA_FONTE",
+                        "CONTRADITORIA",
+                        "FONTE_AUSENTE_OU_NAO_CONSULTADA",
+                        "NAO_NORMATIVA"
+                      ]
+                    },
+                    "trecho_ppc": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "norma": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "fonte": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "dispositivo": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "evidencia": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "analise": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "recomendacao": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "feedback_autores": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
         "required": [
           "ficha_id",
           "estado",
@@ -20,70 +265,22 @@
           "lacunas",
           "revisao_humana_obrigatoria"
         ],
-        "properties": {
-          "ficha_id": { "type": "string" },
-          "estado": { "type": "string", "enum": ["ATENDE", "NAO_ATENDE", "INCONCLUSIVO", "NAO_APLICAVEL"] },
-          "confianca": { "type": "number", "minimum": 0, "maximum": 1 },
-          "justificativa": { "type": "string" },
-          "evidencias": {
-            "type": "array",
-            "items": {
-              "anyOf": [
-                { "type": "string" },
-                {
-                  "type": "object",
-                  "required": ["trecho"],
-                  "properties": {
-                    "trecho": { "type": "string" },
-                    "secao": { "type": "string" },
-                    "localizador": { "type": "string" },
-                    "fonte": { "type": "string" },
-                    "artefato": { "type": "string" },
-                    "anchor": {
-                      "type": "object",
-                      "properties": {
-                        "block_id": { "type": "string" },
-                        "quote": { "type": "string" }
-                      }
-                    }
-                  }
-                }
-              ]
-            }
-          },
-          "lacunas": { "type": "array", "items": { "type": "string" } },
-          "revisao_humana_obrigatoria": { "type": "boolean" },
-          "fundamentacao_normativa": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "required": ["status"],
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "enum": [
-                    "CONFIRMADA",
-                    "CONFIRMADA_COM_RESSALVA",
-                    "IMPRECISA",
-                    "SEM_SUPORTE_NA_FONTE",
-                    "CONTRADITORIA",
-                    "FONTE_AUSENTE_OU_NAO_CONSULTADA",
-                    "NAO_NORMATIVA"
-                  ]
-                },
-                "trecho_ppc": { "type": "string" },
-                "norma": { "type": "string" },
-                "fonte": { "type": "string" },
-                "dispositivo": { "type": "string" },
-                "evidencia": { "type": "string" },
-                "analise": { "type": "string" },
-                "recomendacao": { "type": "string" }
-              }
-            }
-          },
-          "feedback_autores": { "type": "string" }
-        }
+        "allOf": [
+          {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        ]
       }
     }
-  }
+  },
+  "required": [
+    "resultados"
+  ],
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": {}
+    }
+  ]
 }

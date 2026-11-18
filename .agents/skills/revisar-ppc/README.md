@@ -65,7 +65,7 @@ Dentro da rodada:
 - `assets/` guarda CSS e JavaScript do leitor anotado.
 - `arquivos-suporte/` guarda os arquivos usados para produzir o relatório.
 
-Ao gerar o relatório, a skill publica no Surge por padrão e retorna `publicacao_url`/`surge_url`. Use `--sem-surge` quando quiser gerar somente o arquivo local.
+Ao gerar o relatório, a skill publica no Surge por padrão e retorna `publicacao_url`/`surge_url`. Use `--sem-surge` quando quiser gerar somente o arquivo local. Se a CLI do Surge falhar ou não confirmar a publicação, a mensagem traz as últimas linhas do stderr (com os e-mails mascarados), e a saída completa fica em `arquivos-suporte/surge-erro.log`.
 
 ## Fluxo técnico
 
@@ -82,6 +82,8 @@ Depois, o agente principal spawna um sub-agente por grupo, de preferência com o
 ```bash
 node .agents/skills/revisar-ppc/scripts/revisar_ppc.ts gerar-relatorio-html --rodada-dir .agents/skills/revisar-ppc/output/<rodada> --resultados resultados-subagents.json
 ```
+
+O JSON de resultados é decodificado pelo contrato de `scripts/esquemas.ts` (o resultado de lote e os alertas transversais, os mesmos de `base-analise/schemas/`), e o que o contrato não exprime (ficha conhecida e coberta uma vez, evidência com conteúdo, mínimo de evidências, `feedback_autores` exigido pela ficha, validação cruzada conhecida) é conferido depois; a recusa diz o caminho de cada campo fora do contrato (`$.grupos[0].resultados[1].estado`) ou a ficha e o alerta envolvidos. O topo, o grupo, o resultado da ficha e o alerta aceitam chaves a mais; a evidência, a âncora e o achado normativo, não: um sinônimo como `"seção"` no lugar de `secao` é recusado com o caminho do campo (`$.grupos[0].resultados[1].evidencias[0].seção`). `null` num campo opcional vale como ausente.
 
 Para reavaliar fichas específicas, use `montar-grupo-avulso`, execute um sub-agente com o pacote retornado (`prompt_subagent_path`) e depois `mesclar-resultados-avulsos`. A mescla valida o avulso com o mesmo contrato de `validar-resultados` (fichas conhecidas, sem repetição, estado, confiança, evidências) e, se ele for inválido, recusa sem tocar a base; a base no formato `{"grupo_id", "resultados"}` é gravada em `grupos[]`, com os resultados originais.
 

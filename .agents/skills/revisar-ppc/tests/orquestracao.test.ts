@@ -6,7 +6,7 @@
  */
 import * as NodeChildProcess from "node:child_process";
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import { afterEach, describe, expect, layer, test } from "@effect/vitest";
+import { afterEach, describe, expect, it, layer, test } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as NodeFS from "node:fs";
@@ -20,11 +20,19 @@ import { compararPpcComCnct } from "../scripts/cnct-catalogo.ts";
 import { extrairIdentificacaoDaConversao, inferirIdentificacaoDoMarkdown } from "../scripts/identificacao.ts";
 import { normalizarMarkdown } from "@simplifica-if/ppc/normalizador-markdown";
 import { mesclarIdentificacaoPreferindoPreenchidos, prepararDocumento } from "../scripts/preparar-documento.ts";
+import { lerReferenciasIdentificacao } from "../scripts/referencias-identificacao.ts";
 import { referenciasLegiveisDaFicha, universoOuVazio } from "../scripts/referencias-fichas.ts";
 import { ErroResultadosSubagents, mesclarResultadosAvulsos, validarResultadosRodada } from "../scripts/resultados.ts";
 import * as NodeSqlite from "node:sqlite";
 import { camadaKb } from "../scripts/revisar_ppc.ts";
-import { agoraIso, caminhosRodada, escreverJsonDaRodada, lerJsonDaRodada, timestampSlug } from "../scripts/rodada.ts";
+import {
+  agoraIso,
+  caminhosRodada,
+  escreverJsonDaRodada,
+  interpretarAgora,
+  lerJsonDaRodada,
+  timestampSlug,
+} from "../scripts/rodada.ts";
 import {
   agruparFichasPorTopico,
   carregarFichasOrdenadas,
@@ -43,6 +51,7 @@ const RAIZ = NodePath.resolve(caminhos.appDir, "../../..");
 const ENTRYPOINT = NodePath.join(caminhos.appDir, "scripts", "revisar_ppc.ts");
 const FIXTURES = NodePath.join(caminhos.appDir, "tests", "fixtures");
 const RELOGIO = () => new Date("2026-11-13T12:34:56Z");
+const REFERENCIAS = lerReferenciasIdentificacao(caminhosPadrao());
 const TOTAL_FICHAS = NodeFS.readdirSync(caminhos.fichasDir).filter((nome) => nome.endsWith(".json")).length;
 
 const MARKDOWN_BASE = `# Curso Técnico em Informática
@@ -79,7 +88,11 @@ function criarRodada(markdown = MARKDOWN_BASE): string {
   const dir = diretorioTemporario();
   const arquivo = NodePath.join(dir, "PPC.md");
   NodeFS.writeFileSync(arquivo, markdown, "utf-8");
-  return prepararDocumento(arquivo, { saidaBase: NodePath.join(dir, "output"), relogio: RELOGIO }).rodadaDir;
+  return prepararDocumento(arquivo, {
+    referencias: REFERENCIAS,
+    saidaBase: NodePath.join(dir, "output"),
+    relogio: RELOGIO,
+  }).rodadaDir;
 }
 
 function resultado(fichaId: string, estado = "ATENDE", evidencias = 3): Dicionario {
@@ -147,13 +160,14 @@ describe("relógio", () => {
 });
 
 describe("REVISAR_PPC_AGORA", () => {
-  /** Relógio do ambiente lido num processo novo, com fuso e `REVISAR_PPC_AGORA` fixos. */
+  /** `interpretarAgora` num processo novo, com o fuso fixo. */
   function relogioEm(fuso: string, agora: string) {
     const codigo =
-      `import { agoraIso, timestampSlug } from ${JSON.stringify(NodePath.join(caminhos.appDir, "scripts", "rodada.ts"))};` +
-      "console.log(JSON.stringify([timestampSlug(), agoraIso()]));";
+      `import { agoraIso, interpretarAgora, timestampSlug } from ${JSON.stringify(NodePath.join(caminhos.appDir, "scripts", "rodada.ts"))};` +
+      "const data = interpretarAgora(process.env.AGORA);" +
+      "console.log(JSON.stringify([timestampSlug(() => data), agoraIso(() => data)]));";
     const processo = NodeChildProcess.spawnSync(process.execPath, ["--input-type=module", "-e", codigo], {
-      env: { ...process.env, TZ: fuso, REVISAR_PPC_AGORA: agora },
+      env: { ...process.env, TZ: fuso, AGORA: agora },
       encoding: "utf-8",
     });
     return { codigo: processo.status, stdout: processo.stdout, stderr: processo.stderr };
@@ -177,11 +191,18 @@ describe("REVISAR_PPC_AGORA", () => {
   });
 
   test("valor inválido é recusado", () => {
-    for (const valor of ["13/11/2026", "2026-02-30", "Nov 13 2026"]) {
-      const { codigo, stderr } = relogioEm("America/Sao_Paulo", valor);
-      expect(codigo).not.toBe(0);
-      expect(stderr).toContain(`REVISAR_PPC_AGORA inválida: ${valor}`);
-    }
+    for (const valor of ["13/11/2026", "2026-02-30", "Nov 13 2026"]) expect(interpretarAgora(valor)).toBeUndefined();
+    const dir = diretorioTemporario();
+    const arquivo = NodePath.join(dir, "ppc.md");
+    NodeFS.writeFileSync(arquivo, "# PPC\n", "utf-8");
+    const processo = NodeChildProcess.spawnSync(
+      process.execPath,
+      [ENTRYPOINT, "preparar-documento", arquivo, "--saida-base", dir],
+      { cwd: RAIZ, env: { ...process.env, REVISAR_PPC_AGORA: "2026-02-30" }, encoding: "utf-8" },
+    );
+    expect(processo.status).not.toBe(0);
+    expect(processo.stderr).toContain("REVISAR_PPC_AGORA inválida: 2026-02-30");
+    expect(NodeFS.readdirSync(dir)).toEqual(["ppc.md"]);
   });
 });
 
@@ -262,7 +283,11 @@ O curso apresenta objetivos.
       "curitiba",
       "tecnico-em-eventos.md",
     );
-    const rodada = prepararDocumento(arquivo, { saidaBase: diretorioTemporario(), relogio: RELOGIO }).rodadaDir;
+    const rodada = prepararDocumento(arquivo, {
+      referencias: REFERENCIAS,
+      saidaBase: diretorioTemporario(),
+      relogio: RELOGIO,
+    }).rodadaDir;
     const ppc = NodeFS.readFileSync(caminhosRodada(rodada).ppc, "utf-8");
     expect(ppc).not.toContain("fonte_url");
     expect(ppc).not.toContain("ppc:curitiba/tecnico-em-eventos");
@@ -271,12 +296,16 @@ O curso apresenta objetivos.
   test("rejeita extensão desconhecida e arquivo ausente", () => {
     const dir = diretorioTemporario();
     NodeFS.writeFileSync(NodePath.join(dir, "ppc.txt"), "x");
-    expect(() => prepararDocumento(NodePath.join(dir, "ppc.txt"), { saidaBase: dir })).toThrow(
-      "A entrada deve ser um arquivo .md ou .docx.",
-    );
-    expect(() => prepararDocumento(NodePath.join(dir, "nao-existe.md"), { saidaBase: dir })).toThrow(
-      "Arquivo não encontrado",
-    );
+    expect(() =>
+      prepararDocumento(NodePath.join(dir, "ppc.txt"), { referencias: REFERENCIAS, saidaBase: dir, relogio: RELOGIO }),
+    ).toThrow("A entrada deve ser um arquivo .md ou .docx.");
+    expect(() =>
+      prepararDocumento(NodePath.join(dir, "nao-existe.md"), {
+        referencias: REFERENCIAS,
+        saidaBase: dir,
+        relogio: RELOGIO,
+      }),
+    ).toThrow("Arquivo não encontrado");
   });
 });
 
@@ -417,19 +446,23 @@ Quedas do Iguaçu
 
 ## SUMÁRIO
 `,
+      REFERENCIAS,
       "PPC Técnico em Informática",
     );
     expect(identificacao.campus).toBe("Quedas do Iguaçu");
   });
 
   test("ignora chaves de inventário na extração do campus", () => {
-    const identificacao = extrairIdentificacaoDaConversao({
-      dados_extraidos: {
-        nome_curso: "Curso Técnico em Informática para Internet",
-        unidade_de_fluxo_de_ar: "5",
-        capela_de_fluxo_laminar: "1",
+    const identificacao = extrairIdentificacaoDaConversao(
+      {
+        dados_extraidos: {
+          nome_curso: "Curso Técnico em Informática para Internet",
+          unidade_de_fluxo_de_ar: "5",
+          capela_de_fluxo_laminar: "1",
+        },
       },
-    });
+      REFERENCIAS,
+    );
     expect(identificacao.campus).toBe("Campus não identificado");
   });
 
@@ -656,7 +689,11 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("fichas e grupos", (it) => {
       expect(NodeFS.readFileSync(fixtureNorma, "utf-8")).toContain("dispensa a consulta ao Catálogo Nacional");
       expect(NodeFS.readFileSync(fixtureEstagio, "utf-8")).toContain("estágio é não obrigatório");
       const dir = diretorioTemporario();
-      const { rodadaDir } = prepararDocumento(fixtureEstagio, { saidaBase: dir, relogio: RELOGIO });
+      const { rodadaDir } = prepararDocumento(fixtureEstagio, {
+        referencias: REFERENCIAS,
+        saidaBase: dir,
+        relogio: RELOGIO,
+      });
       const grupos = (yield* montarGruposSubagents(rodadaDir)) as Dicionario & { grupos: Dicionario[] };
       expect(((grupos.cnct_contexto as Dicionario).correspondencia as Dicionario).denominacao).toBe(
         "Técnico em Informática",
@@ -862,7 +899,7 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupo avulso e mescla", (it) => {
         grupo_id: grupo.grupo.grupo_id,
         resultados: [{ ...resultado("CT-IDENT-01", "INCONCLUSIVO"), confianca: new Flutuante(1) }],
       });
-      const mesclado = mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "resultado-avulso.json");
+      const mesclado = yield* mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "resultado-avulso.json");
       expect(mesclado.fichas_substituidas).toEqual(["CT-IDENT-01"]);
       const payload = lerJsonDaRodada(c.resultadosSubagents) as Payload;
       const resultados = payload.grupos.flatMap((g) => g.resultados).filter((item) => item.ficha_id === "CT-IDENT-01");
@@ -870,34 +907,40 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupo avulso e mescla", (it) => {
       expect(resultados[0]!.estado).toBe("INCONCLUSIVO");
       // A mescla preserva o float 1.0 do JSON.
       expect(NodeFS.readFileSync(c.resultadosSubagents, "utf-8")).toContain('"confianca": 1.0');
-      expect(validarResultadosRodada(rodada, "resultados-subagents.json").valido).toBe(true);
+      expect((yield* validarResultadosRodada(rodada, "resultados-subagents.json")).valido).toBe(true);
     }),
   );
 
-  test("mescla com base no formato `resultados[]` sem perder os resultados originais", () => {
-    const rodada = criarRodada();
-    const c = caminhosRodada(rodada);
-    const resultadosBase = payloadResultadosCompletos().grupos.flatMap((grupo) => grupo.resultados);
-    escreverJsonDaRodada(c.resultadosSubagents, {
-      metadata: { origem: "teste" },
-      grupo_id: "grupo-unico",
-      resultados: resultadosBase,
-    });
-    expect(validarResultadosRodada(rodada, "resultados-subagents.json").total_fichas).toBe(TOTAL_FICHAS);
-    escreverJsonDaRodada(NodePath.join(c.suporteDir, "avulso.json"), {
-      resultados: [resultado("CT-IDENT-01", "INCONCLUSIVO")],
-    });
-    mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json");
-    const resumo = validarResultadosRodada(rodada, "resultados-subagents.json");
-    expect(resumo.total_fichas).toBe(TOTAL_FICHAS);
-    const payload = lerJsonDaRodada(c.resultadosSubagents) as Payload;
-    expect(payload.resultados).toBeUndefined();
-    const reavaliado = payload.grupos.flatMap((g) => g.resultados).filter((item) => item.ficha_id === "CT-IDENT-01");
-    expect(reavaliado.map((item) => item.estado)).toEqual(["INCONCLUSIVO"]);
-  });
+  it.effect("mescla com base no formato `resultados[]` sem perder os resultados originais", () =>
+    Effect.gen(function* () {
+      const rodada = criarRodada();
+      const c = caminhosRodada(rodada);
+      const resultadosBase = payloadResultadosCompletos().grupos.flatMap((grupo) => grupo.resultados);
+      escreverJsonDaRodada(c.resultadosSubagents, {
+        metadata: { origem: "teste" },
+        grupo_id: "grupo-unico",
+        resultados: resultadosBase,
+      });
+      expect((yield* validarResultadosRodada(rodada, "resultados-subagents.json")).total_fichas).toBe(TOTAL_FICHAS);
+      escreverJsonDaRodada(NodePath.join(c.suporteDir, "avulso.json"), {
+        resultados: [resultado("CT-IDENT-01", "INCONCLUSIVO")],
+      });
+      yield* mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json");
+      const resumo = yield* validarResultadosRodada(rodada, "resultados-subagents.json");
+      expect(resumo.total_fichas).toBe(TOTAL_FICHAS);
+      const payload = lerJsonDaRodada(c.resultadosSubagents) as Payload;
+      expect(payload.resultados).toBeUndefined();
+      const reavaliado = payload.grupos.flatMap((g) => g.resultados).filter((item) => item.ficha_id === "CT-IDENT-01");
+      expect(reavaliado.map((item) => item.estado)).toEqual(["INCONCLUSIVO"]);
+    }),
+  );
 
   const avulsosInvalidos: Array<[string, Dicionario, string]> = [
-    ["estado inválido", { resultados: [resultado("CT-IDENT-01", "TALVEZ")] }, "Estado inválido para CT-IDENT-01"],
+    [
+      "estado inválido",
+      { resultados: [resultado("CT-IDENT-01", "TALVEZ")] },
+      "$.resultados[0].estado: esperava um destes valores",
+    ],
     ["ficha desconhecida", { resultados: [resultado("CT-NAO-EXISTE")] }, "Fichas desconhecidas: CT-NAO-EXISTE"],
     [
       "ficha repetida",
@@ -910,20 +953,45 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupo avulso e mescla", (it) => {
       "CT-IDENT-01 trouxe 0 evidências",
     ],
   ];
-  for (const [nome, avulso, mensagem] of avulsosInvalidos) {
-    test(`recusa avulso com ${nome} sem tocar a base`, () => {
+  it.effect.each(avulsosInvalidos)("recusa avulso com %s sem tocar a base", ([, avulso, mensagem]) =>
+    Effect.gen(function* () {
       const rodada = criarRodada();
       const c = caminhosRodada(rodada);
       escreverJsonDaRodada(c.resultadosSubagents, payloadResultadosCompletos());
       const antes = NodeFS.readFileSync(c.resultadosSubagents, "utf-8");
       escreverJsonDaRodada(NodePath.join(c.suporteDir, "avulso.json"), avulso);
-      expect(() => mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json")).toThrow(
-        ErroResultadosSubagents,
-      );
-      expect(() => mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json")).toThrow(mensagem);
+      const erro = yield* Effect.flip(mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json"));
+      expect(erro).toBeInstanceOf(ErroResultadosSubagents);
+      expect(erro.message).toContain(mensagem);
       expect(NodeFS.readFileSync(c.resultadosSubagents, "utf-8")).toBe(antes);
-    });
-  }
+    }),
+  );
+
+  it.effect("avulso com texto em volta do JSON ou ausente é erro tipado, sem tocar a base", () =>
+    Effect.gen(function* () {
+      const rodada = criarRodada();
+      const c = caminhosRodada(rodada);
+      escreverJsonDaRodada(c.resultadosSubagents, payloadResultadosCompletos());
+      const antes = NodeFS.readFileSync(c.resultadosSubagents, "utf-8");
+      const avulso = NodePath.join(c.suporteDir, "avulso.json");
+      NodeFS.writeFileSync(avulso, 'Aqui está o resultado:\n```json\n{"resultados": []}\n```\n');
+      const invalido = yield* Effect.flip(mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json"));
+      expect(invalido).toMatchObject({ _tag: "ErroResultadosSubagents", categoria: "json-invalido", arquivo: avulso });
+      expect(invalido.message).toBe(
+        `O resultado avulso não é um JSON válido: ${avulso}. ` +
+          "Peça ao sub-agente que devolva só o JSON, sem texto antes ou depois nem bloco de código.",
+      );
+      const ausente = yield* Effect.flip(mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "nao-ha.json"));
+      expect(ausente).toMatchObject({
+        categoria: "arquivo-ausente",
+        arquivo: NodePath.join(c.suporteDir, "nao-ha.json"),
+      });
+      expect(ausente.message).toContain("O resultado avulso não foi encontrado:");
+      expect(NodeFS.readFileSync(c.resultadosSubagents, "utf-8")).toBe(antes);
+      const baseAusente = yield* Effect.flip(mesclarResultadosAvulsos(rodada, "nao-ha.json", "avulso.json"));
+      expect(baseAusente).toMatchObject({ categoria: "arquivo-ausente", origem: "O JSON base" });
+    }),
+  );
 
   it.effect("rejeita ficha desconhecida no grupo avulso e avulso sem resultados", () =>
     Effect.gen(function* () {
@@ -933,15 +1001,16 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupo avulso e mescla", (it) => {
       const c = caminhosRodada(rodada);
       escreverJsonDaRodada(c.resultadosSubagents, payloadResultadosCompletos());
       escreverJsonDaRodada(NodePath.join(c.suporteDir, "avulso.json"), { nada: [] });
-      expect(() => mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json")).toThrow(
-        "O resultado avulso precisa conter `grupos[]` ou `resultados[]`.",
+      const semResultados = yield* Effect.flip(
+        mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json"),
       );
+      expect(semResultados.message).toBe("O resultado avulso precisa conter `grupos[]` ou `resultados[]`.");
     }),
   );
 });
 
 describe("validar-resultados", () => {
-  function validar(editar: (payload: Payload) => void = () => {}): Dicionario {
+  function validar(editar: (payload: Payload) => void = () => {}) {
     const rodada = criarRodada();
     const payload = payloadResultadosCompletos();
     editar(payload);
@@ -952,30 +1021,32 @@ describe("validar-resultados", () => {
     return validarResultadosRodada(rodada, "resultados-subagents.json");
   }
 
-  test("devolve o resumo sem gerar HTML", () => {
-    const rodada = criarRodada();
-    const c = caminhosRodada(rodada);
-    escreverJsonDaRodada(c.resultadosSubagents, payloadResultadosCompletos());
-    const resumo = validarResultadosRodada(rodada, "resultados-subagents.json");
-    expect(resumo.valido).toBe(true);
-    expect(resumo.total_fichas).toBe(TOTAL_FICHAS);
-    expect(resumo.total_fichas_esperadas).toBe(TOTAL_FICHAS);
-    expect(resumo.total_alertas_transversais).toBe(0);
-    expect(resumo.contagem_estado).toEqual({ ATENDE: TOTAL_FICHAS });
-    expect(resumo.situacao).toBe("APTO_PARA_SUBMISSAO");
-    expect(NodeFS.existsSync(c.relatorioHtml)).toBe(false);
-  });
+  it.effect("devolve o resumo sem gerar HTML", () =>
+    Effect.gen(function* () {
+      const rodada = criarRodada();
+      const c = caminhosRodada(rodada);
+      escreverJsonDaRodada(c.resultadosSubagents, payloadResultadosCompletos());
+      const resumo = yield* validarResultadosRodada(rodada, "resultados-subagents.json");
+      expect(resumo.valido).toBe(true);
+      expect(resumo.total_fichas).toBe(TOTAL_FICHAS);
+      expect(resumo.total_fichas_esperadas).toBe(TOTAL_FICHAS);
+      expect(resumo.total_alertas_transversais).toBe(0);
+      expect(resumo.contagem_estado).toEqual({ ATENDE: TOTAL_FICHAS });
+      expect(resumo.situacao).toBe("APTO_PARA_SUBMISSAO");
+      expect(NodeFS.existsSync(c.relatorioHtml)).toBe(false);
+    }),
+  );
 
   const casos: Array<[string, (p: Payload) => void, string]> = [
     ["ficha duplicada", (p) => (p.grupos[1]!.resultados[0] = { ...p.grupos[0]!.resultados[0]! }), "duplicadas"],
     ["ficha desconhecida", (p) => (p.grupos[0]!.resultados[0]!.ficha_id = "CT-NAO-EXISTE"), "desconhecidas"],
     ["ficha faltante", (p) => p.grupos[0]!.resultados.pop(), "sem resultado"],
     ["evidências abaixo do mínimo", (p) => (p.grupos[0]!.resultados[0]!.evidencias = []), "mínimo exigido"],
-    ["estado inválido", (p) => (p.grupos[0]!.resultados[0]!.estado = "OK"), "Estado inválido"],
+    ["estado inválido", (p) => (p.grupos[0]!.resultados[0]!.estado = "OK"), "$.grupos[0].resultados[0].estado"],
     [
       "confiança fora da faixa",
       (p) => (p.grupos[0]!.resultados[0]!.confianca = new Flutuante(1.5)),
-      "Confiança inválida",
+      "$.grupos[0].resultados[0].confianca: esperava um valor menor ou igual a 1",
     ],
     [
       "alerta sem validacao_id",
@@ -1009,32 +1080,57 @@ describe("validar-resultados", () => {
       "feedback_autores",
     ],
   ];
-  for (const [nome, editar, mensagem] of casos) {
-    test(`rejeita ${nome}`, () => {
-      expect(() => validar(editar)).toThrow(ErroResultadosSubagents);
-      expect(() => validar(editar)).toThrow(mensagem);
-    });
-  }
+  it.effect.each(casos)("rejeita %s", ([, editar, mensagem]) =>
+    Effect.gen(function* () {
+      const erro = yield* Effect.flip(validar(editar));
+      expect(erro).toBeInstanceOf(ErroResultadosSubagents);
+      expect(erro.message).toContain(mensagem);
+    }),
+  );
 
-  test("aceita alertas transversais válidos e calcula a situação", () => {
-    const validacao = String(carregarValidacoesCruzadasOrdenadas()[0]!.id);
-    const resumo = validar((p) => {
-      p.grupos[0]!.resultados[0]!.estado = "INCONCLUSIVO";
-      p.alertas_transversais = [
-        {
-          id: "ALERTA-001",
-          validacao_id: validacao,
-          titulo: "Inconsistência transversal",
-          descricao: "Perfil e matriz precisam de revisão conjunta.",
-          fichas_relacionadas: ["CT-IDENT-01"],
-          evidencias: ["Evidência transversal"],
-          revisao_humana_obrigatoria: true,
-        },
-      ];
-    });
-    expect(resumo.total_alertas_transversais).toBe(1);
-    // Sem `criticidade`, o alerta é `OBRIG` e pesa como uma ficha OBRIG não atendida.
-    expect(resumo.situacao).toBe("AJUSTES_NECESSARIOS");
+  it.effect("aceita alertas transversais válidos e calcula a situação", () =>
+    Effect.gen(function* () {
+      const validacao = String(carregarValidacoesCruzadasOrdenadas()[0]!.id);
+      const resumo = yield* validar((p) => {
+        p.grupos[0]!.resultados[0]!.estado = "INCONCLUSIVO";
+        p.alertas_transversais = [
+          {
+            id: "ALERTA-001",
+            validacao_id: validacao,
+            titulo: "Inconsistência transversal",
+            descricao: "Perfil e matriz precisam de revisão conjunta.",
+            fichas_relacionadas: ["CT-IDENT-01"],
+            evidencias: ["Evidência transversal"],
+            revisao_humana_obrigatoria: true,
+          },
+        ];
+      });
+      expect(resumo.total_alertas_transversais).toBe(1);
+      // Sem `criticidade`, o alerta é `OBRIG` e pesa como uma ficha OBRIG não atendida.
+      expect(resumo.situacao).toBe("AJUSTES_NECESSARIOS");
+    }),
+  );
+
+  it.effect("JSON da rodada com texto em volta ou ausente é erro tipado", () =>
+    Effect.gen(function* () {
+      const rodada = criarRodada();
+      const c = caminhosRodada(rodada);
+      NodeFS.writeFileSync(c.resultadosSubagents, `Segue o JSON:\n${JSON.stringify(payloadResultadosCompletos())}`);
+      const invalido = yield* Effect.flip(validarResultadosRodada(rodada, "resultados-subagents.json"));
+      expect(invalido).toMatchObject({ categoria: "json-invalido", arquivo: c.resultadosSubagents });
+      expect(invalido.message).toContain("O JSON de resultados não é um JSON válido:");
+      expect(invalido.message).toContain("Peça ao sub-agente que devolva só o JSON");
+      const ausente = yield* Effect.flip(validarResultadosRodada(rodada, "nao-ha.json"));
+      expect(ausente).toMatchObject({ categoria: "arquivo-ausente" });
+    }),
+  );
+
+  test("a CLI recusa JSON inválido com a mensagem do erro, não com defeito", () => {
+    const rodada = criarRodada();
+    NodeFS.writeFileSync(caminhosRodada(rodada).resultadosSubagents, "Pronto! Segue o resultado.");
+    const erro = cli("validar-resultados", "--rodada-dir", rodada);
+    expect(erro.codigo).toBe(1);
+    expect(erro.stderr).toContain("ErroResultadosSubagents: O JSON de resultados não é um JSON válido:");
   });
 
   test("a CLI imprime o resumo e falha com mensagem em stderr", () => {

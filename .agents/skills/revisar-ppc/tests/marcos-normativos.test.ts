@@ -250,10 +250,10 @@ describe("registro de marcos normativos", () => {
       marcoValido({ vigente: DCN_EPT_2026 }),
     );
     expect(validar(arquivo)).toEqual([
-      `${arquivo}: $.marcos[0]: campo obrigatório ausente: fichas_responsaveis`,
-      `${arquivo}: $.marcos[1].linha: tipo string; esperado array`,
-      `${arquivo}: $.marcos[2].linha[0]: valor 'Resolução CNE/CP nº 2/2026' fora do formato`,
-      `${arquivo}: $.marcos[3]: campo não permitido: vigente`,
+      `${arquivo}: $.marcos[0].fichas_responsaveis: campo obrigatório ausente`,
+      `${arquivo}: $.marcos[1].linha: esperava uma lista`,
+      `${arquivo}: $.marcos[2].linha[0]: formato inválido`,
+      `${arquivo}: $.marcos[3].vigente: campo não permitido`,
     ]);
   });
 
