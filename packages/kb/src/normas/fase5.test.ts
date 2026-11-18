@@ -41,6 +41,8 @@ const refDisponivel =
     cwd: raiz,
     stdio: "ignore",
   }).status === 0;
+/** Normas incluídas depois de `REF_ANTES_SANEAMENTO`: não têm status manual a comparar. */
+const INCLUIDAS_DEPOIS = new Set(["br/decreto-lei/1969/1044"]);
 const DCN_2021 = "br/cne-cp/res/2021/1";
 const DCN_2026 = "br/cne-cp/res/2026/2";
 
@@ -90,7 +92,7 @@ describe("vigência", () => {
   });
 
   test.skipIf(!refDisponivel)(
-    "status calculado = manual (fcfc006) nas 36 normas, salvo divergências justificadas",
+    "status calculado = manual (fcfc006) nas 36 normas de então, salvo divergências justificadas",
     () => {
       // Status manuais anteriores que o cálculo muda, com a relação que justifica a mudança.
       const justificadas: Record<string, [string, string]> = {
@@ -104,6 +106,7 @@ describe("vigência", () => {
       };
       const divergentes: Record<string, [string, string]> = {};
       for (const norma of listarNormas(raiz)) {
+        if (INCLUIDAS_DEPOIS.has(norma.id)) continue;
         const antigo = NodeChildProcess.spawnSync(
           "git",
           ["show", `${REF_ANTES_SANEAMENTO}:base-conhecimento/${norma.path}`],
@@ -162,7 +165,7 @@ describe("vigência", () => {
 });
 
 describe("front matter gerado", () => {
-  test("as 36 normas estão com os campos gerados em dia (gerar_base.ts)", () => {
+  test("as normas estão com os campos gerados em dia (gerar_base.ts)", () => {
     expect(
       normasComCamposGerados(raiz)
         .filter((n) => n.atual !== n.esperado)

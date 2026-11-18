@@ -192,7 +192,7 @@ describe("universos", () => {
     ]);
   });
 
-  test("IDs provisórios de norma seguem o formato do plano", () => {
+  test("IDs de norma são os canônicos do kb", () => {
     const base = { aliases: [], path: "x.md" };
     expect(
       idNorma({
@@ -227,6 +227,17 @@ describe("universos", () => {
         jurisdicao: "IFPR",
       }),
     ).toBe("ifpr/consup/res/2024/190");
+    expect(
+      idNorma({
+        ...base,
+        title: "",
+        tipo_documento: "Decreto-Lei",
+        numero: "1044",
+        ano: 1969,
+        orgao: "Presidência da República",
+        jurisdicao: "BR",
+      }),
+    ).toBe("br/decreto-lei/1969/1044");
   });
 
   test("normas: a 1/2021 não se confunde com a CNE/CEB 1/2021 nem com a CNE/CP 5/2021", () => {
@@ -234,5 +245,7 @@ describe("universos", () => {
     expect(encontrados("Resolução CNE/CP n. 01/2021")).toEqual(["br/cne-cp/res/2021/1"]);
     expect(encontrados("Resolução CNE/CEB nº 1/2021 e CNE/CP nº 5/2021")).toEqual([]);
     expect(encontrados("Lei nº 11.788/2008 (Lei do Estágio) e LDB")).toEqual(["br/lei/1996/9394", "br/lei/2008/11788"]);
+    expect(encontrados("Decreto-Lei nº 1.044, de 21 de outubro de 1969")).toEqual(["br/decreto-lei/1969/1044"]);
+    expect(encontrados("Decreto Lei 1044/69")).toEqual(["br/decreto-lei/1969/1044"]);
   });
 });

@@ -29,6 +29,14 @@ const TEXTO_SUBSTITUIDO = new Map<string, string>([
   ],
 ]);
 
+/** Normas incluídas na base depois do saneamento: não têm versão anterior a comparar. */
+const INCLUIDAS_DEPOIS = new Map<string, string>([
+  [
+    "normas/br/decretos-lei/DECRETO-LEI_BR_1044-1969_regime-domiciliar.md",
+    "incluída em 18/11/2026 do texto oficial (Planalto)",
+  ],
+]);
+
 const raiz = raizRepositorio();
 
 function versaoAnterior(relativo: string): string | null {
@@ -47,9 +55,12 @@ const refDisponivel =
   }).status === 0;
 
 describe.skipIf(!refDisponivel)(`saneamento: palavras iguais às de ${REF_ANTES_SANEAMENTO}`, () => {
-  const normas = listarNormas(raiz);
-  test("as 36 normas existiam antes do saneamento", () => {
+  const normas = listarNormas(raiz).filter((norma) => !INCLUIDAS_DEPOIS.has(norma.path));
+  test("as 36 normas existiam antes do saneamento; as incluídas depois, não", () => {
     expect(normas.length).toBe(36);
+    for (const path of INCLUIDAS_DEPOIS.keys()) {
+      expect(versaoAnterior(NodePath.posix.join("base-conhecimento", path))).toBeNull();
+    }
   });
   test.each(normas.filter((norma) => !TEXTO_SUBSTITUIDO.has(norma.path)))("$path", (norma) => {
     const relativo = NodePath.posix.join("base-conhecimento", norma.path);

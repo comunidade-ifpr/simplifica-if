@@ -104,9 +104,9 @@ relaciona_se_a:
 - `numero` deve conter apenas o número do ato.
 - `data_publicacao` deve usar sempre ISO `AAAA-MM-DD`.
 - `keywords` deve conter termos de domínio, não frases longas.
-- `aliases` deve conter formas pelas quais o texto costuma ser citado em PPCs e pareceres.
+- `aliases` deve conter formas pelas quais o texto costuma ser citado em PPCs e pareceres. Um alias sem número vira nome próprio da norma no resolvedor de citações (como "LDB" ou "Lei do Estágio"): toda ocorrência dele num PPC conta como citação, com regra `alias`. Termos de assunto que não identificam só esta norma ("regime domiciliar", "estágio") vão em `keywords`, que a busca também lê.
 - O corpo do arquivo continua começando com `## Resumo`.
-- Os arquivos devem ficar em `normas/<jurisdicao>/<tipo-plural>/`.
+- Os arquivos devem ficar em `normas/<jurisdicao>/<tipo-plural>/` (`normas/br/leis/`, `normas/br/decretos-lei/`...). O diretório de cada par jurisdição e tipo está em `DIRETORIOS_POR_TIPO` (`scripts/base/front-matter.ts`); o primeiro ato de um tipo novo precisa da entrada ali, ou o `validar_base.ts` recusa a norma.
 - O nome do arquivo não deve usar prefixo de data. A data oficial deve ficar em `data_publicacao`.
 - `status_vigencia` só aceita estado de vigência; a natureza do documento fica em `tipo_documento`. Uma compilação de dispositivos de outra norma usa `tipo_documento: Compilação`, fica em `normas/br/compilacoes/` e registra em `status_vigencia` a vigência do texto reproduzido (`vigente` quando traz a redação atual; `desconhecido` quando não se sabe se está atualizada). A norma de origem vai em `relaciona_se_a`.
 - Relações normativas entre normas vão em `base-conhecimento/relacoes.yaml` (ver [Relações](#relações-relacoesyaml)); o front matter das duas pontas é gerado dali. Alvo ou origem sem texto na base entra como stub (`normas/stubs.yaml`).

@@ -138,8 +138,8 @@ describe("normas da base", () => {
   const estruturas = carregarEstruturas(raiz);
   const arquivos = new Map(listarNormas(raiz).map((n) => [n.path, n.arquivo]));
 
-  test("36 normas, nenhum problema de estrutura (só avisos)", () => {
-    expect(estruturas.length).toBe(36);
+  test("37 normas, nenhum problema de estrutura (só avisos)", () => {
+    expect(estruturas.length).toBe(37);
     expect(estruturas.flatMap((e) => e.problemas.filter((p) => !p.startsWith("aviso:")))).toEqual([]);
   });
 
@@ -164,6 +164,9 @@ describe("normas da base", () => {
     expect(obterDispositivo("br/lei/1996/9394#art26-par9B", raiz)?.tipo).toBe("paragrafo");
     expect(obterDispositivo("br/lei/1996/9394#art35A", raiz)?.revogado).toBe(true);
     expect(obterDispositivo("br/cne-ceb/res/2025/3#art6-iii", raiz)).toBeDefined();
+    // Rótulo sem ponto ("Art 1º", grafia do Planalto) e alínea logo depois do caput, sem inciso.
+    expect(obterDispositivo("br/decreto-lei/1969/1044#art1", raiz)?.rotulo).toBe("Art 1º");
+    expect(obterDispositivo("br/decreto-lei/1969/1044#art1-al-c", raiz)?.tipo).toBe("alinea");
     expect(obterDispositivo("ifpr/consup/res/2017/65#anexo1-art1", raiz)?.tipo).toBe("artigo");
   });
 
