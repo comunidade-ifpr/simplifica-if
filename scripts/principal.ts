@@ -2,7 +2,8 @@
  * Ponto de entrada Effect dos scripts, como o da CLI `kb` (`packages/kb/src/cli.ts`).
  *
  * `executarPrincipal(nome, programa)` roda o programa com `NodeRuntime.runMain` e os serviços do Node
- * (`FileSystem`, `Path`, `ChildProcessSpawner`, `Terminal`). O relatório padrão do `runMain` escreve
+ * (`FileSystem`, `Path`, `ChildProcessSpawner`, `Terminal`) e o `ConfigProvider` de `configuracao.ts`
+ * (ambiente, com recaída no `.env.local` da raiz). O relatório padrão do `runMain` escreve
  * no stdout, então ele fica desligado e a falha é relatada aqui, no stderr:
  *
  * - `EncerrarComCodigo`: o programa já imprimiu o que tinha a dizer; só define o código de saída;
@@ -20,7 +21,9 @@ import * as Effect from "effect/Effect";
 import * as Option from "effect/Option";
 import * as Runtime from "effect/Runtime";
 import * as Schema from "effect/Schema";
+import * as Layer from "effect/Layer";
 import * as CliError from "effect/cli/CliError";
+import * as Configuracao from "./configuracao.ts";
 
 /**
  * O programa já imprimiu o resultado (um relatório com pendências, uma conferência que falhou) e só
@@ -58,7 +61,12 @@ const relatarFalha =
 
 /** Roda `programa` como ponto de entrada do processo (só em `if (import.meta.main)`). */
 export function executarPrincipal<E>(nome: string, programa: Effect.Effect<void, E, NodeServices.NodeServices>): void {
-  NodeRuntime.runMain(programa.pipe(Effect.tapCause(relatarFalha(nome)), Effect.provide(NodeServices.layer)), {
-    disableErrorReporting: true,
-  });
+  NodeRuntime.runMain(
+    programa.pipe(
+      // A falha ao montar a configuração (um `.env.local` ilegível) também passa pelo relatório.
+      Effect.provide(Layer.provideMerge(Configuracao.layer, NodeServices.layer)),
+      Effect.tapCause(relatarFalha(nome)),
+    ),
+    { disableErrorReporting: true },
+  );
 }
