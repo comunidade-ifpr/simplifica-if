@@ -9,7 +9,8 @@ import { type CaminhosBase, criarCaminhos } from "./base/caminhos.ts";
 import { aplicarGerados, mensagensDivergencias } from "./base/gerados.ts";
 import { arquivosIndices, dataIndiceAtual, gerarIndices, type IndicesPpcs } from "./base/indice-ppcs.ts";
 import { dataLocalIso } from "./datas.ts";
-import { executarPrincipal, sairCom } from "./principal.ts";
+import { sairCom } from "@simplifica-if/kb/principal";
+import { executarPrincipal } from "./principal.ts";
 
 const aplicar = (caminhos: CaminhosBase, indices: IndicesPpcs, modo: "gravar" | "verificar") => {
   const { arquivos, ...pastas } = arquivosIndices(caminhos, indices);

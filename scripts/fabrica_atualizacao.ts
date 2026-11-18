@@ -79,7 +79,8 @@ import {
 } from "@simplifica-if/atualizacao/novidades";
 import { RAIZ_PROJETO } from "./config.ts";
 import * as Git from "./git.ts";
-import { executarPrincipal, sairCom } from "./principal.ts";
+import { sairCom } from "@simplifica-if/kb/principal";
+import { executarPrincipal } from "./principal.ts";
 
 /** As pastas de onde a fábrica lê, extraídas do commit (`git archive`), nunca do disco. */
 const PASTAS_DO_COMMIT = ["base-conhecimento", "packages/kb", ".agents/skills"] as const;
