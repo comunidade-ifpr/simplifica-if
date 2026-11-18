@@ -235,7 +235,12 @@ const gerarRelatorio = Effect.fn("revisar_ppc.gerarRelatorio")(function* (opcoes
     ),
     () => dominioSurgePadrao(rodada.rodadaDir),
   );
-  const publicacao = yield* publicarSiteSurge(siteDir, dominio, Option.getOrUndefined(comando));
+  const publicacao = yield* publicarSiteSurge(
+    siteDir,
+    dominio,
+    Option.getOrUndefined(comando),
+    path.join(rodada.suporteDir, "surge-erro.log"),
+  );
   publicacao.relatorio_html_original = resolverCaminho(relatorio.relatorio_html);
   escreverJsonDaRodada(path.join(rodada.suporteDir, "surge-publicacao.json"), publicacao);
   return payloadRelatorio(relatorio, publicacao);

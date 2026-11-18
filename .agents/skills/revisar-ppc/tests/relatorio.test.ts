@@ -832,31 +832,77 @@ layer(NodeServices.layer)("publicação no Surge", (it) => {
   );
 
   it.effect.each([
-    ["sem confirmação", "echo 'Publicando...'", "sem-confirmacao", "confirmação de publicação reconhecível"],
-    [
-      "pedido de login",
-      "echo 'Login or create surge account'; echo 'email:'",
-      "pediu-login",
-      "autenticação interativa",
-    ],
-    ["código de erro", "echo 'segredo' >&2; exit 2", "falhou", "a CLI terminou com o código 2"],
-  ] as const)("recusa saída com %s, sem a saída na mensagem", ([, corpo, categoria, mensagem]) =>
+    ["sem código de erro", "echo 'Login or create surge account'; echo 'email:'"],
+    ["código de erro", "echo 'Login or create surge account' >&2; echo 'email:' >&2; exit 1"],
+  ] as const)("pedido de login %s é reconhecido antes do código, sem a saída nem log", ([, corpo]) =>
     Effect.gen(function* () {
       const dir = diretorioTemporario();
       const site = NodePath.join(dir, "site");
       NodeFS.mkdirSync(site);
       const erro = yield* Effect.flip(publicarSiteSurge(site, "x.surge.sh", [surgeFalso(dir, corpo)]));
-      expect(erro).toMatchObject({ _tag: "ErroPublicacaoSurge", categoria });
-      expect(erro.message).toContain(mensagem);
-      expect(erro.message).not.toContain("segredo");
+      expect(erro).toMatchObject({ _tag: "ErroPublicacaoSurge", categoria: "pediu-login" });
+      expect(erro.message).toContain("autenticação interativa");
+      expect(erro.message).not.toContain("email:");
+      expect(NodeFS.existsSync(NodePath.join(dir, "surge-erro.log"))).toBe(false);
     }),
   );
 
-  it.effect("comando que não existe é recusado como não iniciado", () =>
+  it.effect("CLI que falha: últimas linhas do stderr sem e-mail na mensagem e saída completa no log", () =>
+    Effect.gen(function* () {
+      const dir = diretorioTemporario();
+      const site = NodePath.join(dir, "site");
+      NodeFS.mkdirSync(site);
+      const log = NodePath.join(dir, "suporte", "surge-erro.log");
+      NodeFS.mkdirSync(NodePath.dirname(log));
+      const corpo = [
+        "echo 'Publicando...'",
+        "echo 'linha 1 antiga' >&2",
+        "echo 'conta: pessoa.teste@exemplo.com.br' >&2",
+        "echo 'Aborted - you do not have permission' >&2",
+        "echo 'Erro 403' >&2",
+        "exit 2",
+      ].join("\n");
+      const erro = yield* Effect.flip(publicarSiteSurge(site, "x.surge.sh", [surgeFalso(dir, corpo)], log));
+      expect(erro).toMatchObject({ _tag: "ErroPublicacaoSurge", categoria: "falhou", codigo: 2, log });
+      expect(erro.message).toBe(
+        "Falha ao publicar relatório no Surge: a CLI terminou com o código 2.\n" +
+          "Últimas linhas do stderr:\n" +
+          "  conta: [e-mail omitido]\n" +
+          "  Aborted - you do not have permission\n" +
+          "  Erro 403\n" +
+          `Saída completa em ${log}.`,
+      );
+      const conteudo = NodeFS.readFileSync(log, "utf-8");
+      for (const trecho of ["código de saída: 2", "Publicando...", "linha 1 antiga", "pessoa.teste@exemplo.com.br"]) {
+        expect(conteudo).toContain(trecho);
+      }
+    }),
+  );
+
+  it.effect("CLI sem confirmação grava o log ao lado da pasta do site", () =>
+    Effect.gen(function* () {
+      const dir = diretorioTemporario();
+      const site = NodePath.join(dir, "site");
+      NodeFS.mkdirSync(site);
+      const corpo = "echo 'Publicando...'; echo 'aviso qualquer' >&2";
+      const erro = yield* Effect.flip(publicarSiteSurge(site, "x.surge.sh", [surgeFalso(dir, corpo)]));
+      const log = NodePath.join(NodeFS.realpathSync(dir), "surge-erro.log");
+      expect(erro).toMatchObject({ _tag: "ErroPublicacaoSurge", categoria: "sem-confirmacao", log });
+      expect(erro.message).toContain("confirmação de publicação reconhecível");
+      expect(erro.message).toContain("  aviso qualquer\n");
+      expect(erro.message).toContain(`Saída completa em ${log}.`);
+      expect(NodeFS.readFileSync(log, "utf-8")).toContain("Publicando...");
+    }),
+  );
+
+  it.effect("comando que não existe é recusado como não iniciado, com o código do sistema", () =>
     Effect.gen(function* () {
       const dir = diretorioTemporario();
       const erro = yield* Effect.flip(publicarSiteSurge(dir, "x.surge.sh", [NodePath.join(dir, "nao-existe")]));
-      expect(erro).toMatchObject({ _tag: "ErroPublicacaoSurge", categoria: "nao-iniciou" });
+      expect(erro).toMatchObject({ _tag: "ErroPublicacaoSurge", categoria: "nao-iniciou", codigoSistema: "ENOENT" });
+      expect(erro.message).toBe(
+        "Falha ao publicar relatório no Surge: o comando da CLI não pôde ser executado (ENOENT).",
+      );
     }),
   );
 

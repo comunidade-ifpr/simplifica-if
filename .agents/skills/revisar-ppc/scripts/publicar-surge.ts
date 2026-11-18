@@ -8,6 +8,7 @@
 import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Path from "effect/Path";
+import * as Predicate from "effect/Predicate";
 import * as Schema from "effect/Schema";
 import * as Stream from "effect/Stream";
 import * as ChildProcess from "effect/process/ChildProcess";
@@ -17,29 +18,65 @@ import { asciiNfkd, casefold } from "@simplifica-if/kb/primitivas/texto";
 import { aparar, apararCaracteres } from "@simplifica-if/kb/texto";
 
 /**
- * A CLI do Surge não publicou. A saída dela (que pode trazer e-mail e token da conta) fica só em
- * `cause`; a mensagem diz o que houve e o código de saída.
+ * A CLI do Surge não publicou. A saída completa (que pode trazer e-mail e token da conta) fica em
+ * `cause` e, quando a CLI falha ou não confirma, no log `surge-erro.log`; a mensagem diz o que
+ * houve, o código de saída, as últimas linhas do stderr com os e-mails mascarados e o caminho do
+ * log.
  */
 export class ErroPublicacaoSurge extends Schema.TaggedError<ErroPublicacaoSurge>()("ErroPublicacaoSurge", {
   categoria: Schema.Literals(["nao-iniciou", "falhou", "pediu-login", "sem-confirmacao"]),
   codigo: Schema.optional(Schema.Number),
+  /** Código do erro do sistema quando a CLI não pôde ser executada (`ENOENT`). */
+  codigoSistema: Schema.optional(Schema.String),
+  /** Últimas linhas do stderr, com os e-mails mascarados. */
+  ultimasLinhas: Schema.optional(Schema.Array(Schema.String)),
+  /** Arquivo com a saída completa da CLI, quando foi gravado. */
+  log: Schema.optional(Schema.String),
   cause: Schema.Defect(),
 }) {
   override get message(): string {
     switch (this.categoria) {
       case "nao-iniciou":
-        return "Falha ao publicar relatório no Surge: o comando da CLI não pôde ser executado.";
+        return (
+          "Falha ao publicar relatório no Surge: o comando da CLI não pôde ser executado" +
+          (this.codigoSistema ? ` (${this.codigoSistema}).` : ".")
+        );
       case "falhou":
-        return `Falha ao publicar relatório no Surge: a CLI terminou com o código ${this.codigo}.`;
+        return `Falha ao publicar relatório no Surge: a CLI terminou com o código ${this.codigo}.` + this.detalhes();
       case "pediu-login":
         return (
           "Falha ao publicar relatório no Surge: a CLI solicitou autenticação interativa. " +
           "Execute `npx surge login` ou configure credenciais de automação do Surge no ambiente."
         );
       case "sem-confirmacao":
-        return "Surge não retornou confirmação de publicação reconhecível.";
+        return "Surge não retornou confirmação de publicação reconhecível." + this.detalhes();
     }
   }
+
+  private detalhes(): string {
+    const linhas = this.ultimasLinhas?.length
+      ? `\nÚltimas linhas do stderr:\n${this.ultimasLinhas.map((linha) => `  ${linha}`).join("\n")}`
+      : "";
+    return linhas + (this.log ? `\nSaída completa em ${this.log}.` : "");
+  }
+}
+
+/** E-mail na saída da CLI (a conta do Surge), trocado por um marcador na mensagem. */
+const RE_EMAIL = /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/g;
+
+/** Últimas `quantas` linhas não vazias de `texto`, com os e-mails mascarados. */
+export function ultimasLinhasMascaradas(texto: string, quantas = 3): string[] {
+  return texto
+    .split("\n")
+    .map((linha) => aparar(linha))
+    .filter(Boolean)
+    .slice(-quantas)
+    .map((linha) => linha.replace(RE_EMAIL, "[e-mail omitido]"));
+}
+
+/** Código do erro do sistema (`ENOENT`, `EACCES`) na causa de uma falha ao iniciar o processo. */
+function codigoDoSistema(causa: unknown): string | undefined {
+  return Predicate.hasProperty(causa, "code") && typeof causa.code === "string" ? causa.code : undefined;
 }
 
 export const ehErroPublicacaoSurge = Schema.is(ErroPublicacaoSurge);
@@ -108,12 +145,15 @@ const textoDoProcesso = <E>(fluxo: Stream.Stream<Uint8Array, E>) =>
 
 /**
  * Publica `siteDir` no Surge em `dominio`, com `comando` (padrão `npx --yes surge`); falha com
- * `ErroPublicacaoSurge` se a CLI não rodar, falhar, pedir login ou não confirmar.
+ * `ErroPublicacaoSurge` se a CLI não rodar, pedir login, falhar ou não confirmar. Nos dois últimos
+ * casos, a saída completa vai para `logErro` (padrão: `surge-erro.log` ao lado de `siteDir`, que é
+ * `arquivos-suporte/` na rodada).
  */
 export const publicarSiteSurge = Effect.fn("publicar_surge.publicarSiteSurge")(function* (
   siteDir: string,
   dominio: string,
   comando: ReadonlyArray<string> = COMANDO_SURGE,
+  logErro?: string,
 ) {
   const fs = yield* FileSystem.FileSystem;
   const path = yield* Path.Path;
@@ -131,15 +171,35 @@ export const publicarSiteSurge = Effect.fn("publicar_surge.publicarSiteSurge")(f
       );
       return { codigo: Number(saiu), stdout: saida, stderr: erros };
     }),
-  ).pipe(Effect.mapError((cause) => new ErroPublicacaoSurge({ categoria: "nao-iniciou", cause })));
+  ).pipe(
+    Effect.mapError(
+      (cause) =>
+        new ErroPublicacaoSurge({ categoria: "nao-iniciou", codigoSistema: codigoDoSistema(cause.cause), cause }),
+    ),
+  );
 
   const saida = [stdout, stderr].filter(Boolean).join("\n");
-  const falha = (categoria: "falhou" | "pediu-login" | "sem-confirmacao") =>
-    new ErroPublicacaoSurge({ categoria, codigo, cause: { stdout, stderr } });
-  if (codigo !== 0) return yield* falha("falhou");
+  // O pedido de login vem antes do código: a CLI sem login também termina com código diferente de 0.
   if (search("\\bLogin or create surge account\\b|\\bemail:\\s*$", saida, { ignoreCase: true })) {
-    return yield* falha("pediu-login");
+    return yield* new ErroPublicacaoSurge({ categoria: "pediu-login", codigo, cause: { stdout, stderr } });
   }
+  const falha = Effect.fnUntraced(function* (categoria: "falhou" | "sem-confirmacao") {
+    const arquivo = logErro ?? path.join(path.dirname(site), "surge-erro.log");
+    const conteudo = `$ ${[executavel, ...argumentos, site, dominio].join(" ")}\ncódigo de saída: ${codigo}\n\n--- stdout\n${stdout}\n\n--- stderr\n${stderr}\n`;
+    // Sem o log, o erro ainda sai, só sem o caminho.
+    const log = yield* fs.writeFileString(arquivo, conteudo).pipe(
+      Effect.as(arquivo),
+      Effect.orElseSucceed(() => undefined),
+    );
+    return yield* new ErroPublicacaoSurge({
+      categoria,
+      codigo,
+      ultimasLinhas: ultimasLinhasMascaradas(stderr),
+      log,
+      cause: { stdout, stderr },
+    });
+  });
+  if (codigo !== 0) return yield* falha("falhou");
   if (!casefold(saida).includes("success")) return yield* falha("sem-confirmacao");
   const publicacao: PublicacaoSurge = {
     servico: "surge",

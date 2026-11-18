@@ -65,7 +65,7 @@ Dentro da rodada:
 - `assets/` guarda CSS e JavaScript do leitor anotado.
 - `arquivos-suporte/` guarda os arquivos usados para produzir o relatório.
 
-Ao gerar o relatório, a skill publica no Surge por padrão e retorna `publicacao_url`/`surge_url`. Use `--sem-surge` quando quiser gerar somente o arquivo local.
+Ao gerar o relatório, a skill publica no Surge por padrão e retorna `publicacao_url`/`surge_url`. Use `--sem-surge` quando quiser gerar somente o arquivo local. Se a CLI do Surge falhar ou não confirmar a publicação, a mensagem traz as últimas linhas do stderr (com os e-mails mascarados), e a saída completa fica em `arquivos-suporte/surge-erro.log`.
 
 ## Fluxo técnico
 
