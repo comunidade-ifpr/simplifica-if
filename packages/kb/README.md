@@ -19,7 +19,7 @@ Desde o C1 da [consolidação na stack do T3](../../docs/plans/consolidacao-stac
 
 Layers prontas (`src/layers.ts`):
 
-- `layerSomenteLeitura({ caminho })`: o `kb.sqlite` em `caminho`, só leitura, com todos os serviços de consulta e as fontes remontadas das tabelas. **Não exige `FileSystem`**: o tipo garante que nada no caminho lê o repositório. É a do servidor MCP, do executável e do fork.
+- `layerSomenteLeitura({ caminho })`: o `kb.sqlite` em `caminho`, só leitura, com todos os serviços de consulta e as fontes remontadas das tabelas. **Não exige `FileSystem`**: o tipo garante que nada no caminho lê o repositório. É a do servidor MCP, do executável e do servidor do app (`apps/server`).
 - `layerRepositorio({ raiz })`: o checkout. Recompila o `tmp/kb.sqlite` se preciso (`KB_SQLITE` muda o caminho; `KB_RECOMPILAR=nunca|sempre`) e lê as fontes normativas dos arquivos. É a da CLI.
 - `layerConsultas`: os serviços de consulta sobre o `SqlClient` e as `FontesNormativas` do ambiente (para montar outra combinação, como uma fixture: `db/conexao.ts` dá um `SqlClient` sobre um `DatabaseSync` já aberto).
 

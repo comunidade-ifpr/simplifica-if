@@ -6,15 +6,16 @@ App desktop para os servidores do IFPR. O Simplifica IF dá à IA da assinatura 
 
 O que ele entrega hoje:
 
-- conversa com a IA da pessoa, que consulta a base pelas 16 ferramentas do servidor MCP `ifpr` (`packages/mcp`) e cita cada fonte com um link `ifpr://`;
+- conversa com a IA da pessoa, que consulta a base pelas 16 ferramentas do servidor MCP `ifpr` (`packages/mcp`) e é instruída a citar cada fonte com um link `ifpr://`;
 - tarefas no Início: "Revisar um PPC" (`.docx`: pré-conferência em código, relatório com IA opcional e cópia com comentários do Word) e as skills com bloco `simplifica:` (hoje, `verificar-fundamentacao-normativa`);
 - leitor `ifpr://` e Explorar, para navegar por normas, PPCs, cursos, campi, CNCT, Consepe e fichas sem IA;
 - pasta de trabalho com "Desfazer", primeiro uso com perfil, relato de erro e atualização da base e das skills.
 
-O app só usa dado público: a base e os arquivos que a pessoa anexa. SUAP, SEI e Notion ficam fora dele (veja [Fora do app](#fora-do-app)). Os planos estão em [`docs/plans/`](docs/plans/README.md).
+O app foi desenhado para dado público: a base e os arquivos que a pessoa escolhe anexar (ele não confere os anexos, que vão para a IA da pessoa). SUAP, SEI e Notion ficam fora dele (veja [Fora do app](#fora-do-app)). Os planos estão em [`docs/plans/`](docs/plans/README.md).
 
 ```bash
 pnpm install
+pnpm kb:compilar   # tmp/kb.sqlite, a base que o servidor lê
 pnpm app:dev        # o app em desenvolvimento (veja apps/desktop/README.md)
 ```
 

@@ -8,7 +8,7 @@ Este é o repositório do **Simplifica IF**, um app desktop para os servidores d
 - `apps/server`: servidor local (Effect): motor de conversa, MCP `ifpr` por HTTP local, RPC de leitura da base, revisão de PPC, pastas de trabalho, relatos de erro, atualização da base e das skills.
 - `apps/web`: interface em React (Início, tarefas, conversa, leitor `ifpr://`, Explorar, Revisar um PPC, boas-vindas, Configurações).
 - `packages/kb`: núcleo da base (resolvedor de citações, vigência, banco `kb.sqlite`, CLI `kb`).
-- `packages/mcp`: o `simplifica-mcp`, 16 ferramentas só de leitura sobre o `kb.sqlite`; roda dentro do app e como executável à parte.
+- `packages/mcp`: o `simplifica-mcp`, 16 ferramentas: 15 de consulta só de leitura ao `kb.sqlite` e a `etapa`, que informa ao app o andamento da tarefa; roda dentro do app e como executável à parte.
 - `packages/motor`: motor de conversa com um driver por IA (Agent SDK do Claude, `codex app-server`, `agy acp`).
 - `packages/ppc` e `packages/docx`: conversão de PPC em `.docx`, pré-conferência, revisão com IA e comentários no Word.
 - `packages/contratos-app`: contratos RPC entre a interface e o servidor.
@@ -21,13 +21,13 @@ Este é o repositório do **Simplifica IF**, um app desktop para os servidores d
 
 ## O que o app entrega hoje
 
-- **Conversa** com a IA do servidor, com as ferramentas `ifpr` do `simplifica-mcp`, aprovação de ações, indicador de etapas, pasta da tarefa em `Documentos/Simplifica IF/` e "Desfazer".
+- **Conversa** com a IA da pessoa, com as ferramentas `ifpr` do `simplifica-mcp`, aprovação de ações, indicador de etapas, pasta da tarefa em `Documentos/Simplifica IF/` e "Desfazer".
 - **Tarefas** no Início: a nativa "Revisar um PPC" e as skills com bloco `simplifica:` no `SKILL.md` (hoje só a `verificar-fundamentacao-normativa`).
 - **Revisar um PPC** (`.docx`): pré-conferência em código, relatório com IA opcional, roteiro por pendência e cópia do documento com comentários do Word. Reaproveita as fichas da skill `revisar-ppc`, mas é conduzida pelo servidor, não pela skill.
 - **Leitor `ifpr://` e Explorar:** normas com vigência, PPCs, cursos (com as divergências PPC × SUAP já publicadas na base), campi, CNCT, Consepe e fichas, sem IA e sem rede.
 - Primeiro uso com perfil, "Isto está errado" (relato de erro) e atualização da base e das skills (pronta, sem feed de produção ligado).
 
-O app só lê dado público: a base e o que a pessoa anexa. Ele não acessa SUAP, SEI nem Notion.
+O app foi desenhado para dado público (decisão 6 do plano do app): a base e os arquivos que a pessoa escolhe anexar, sob o aviso de uso. Ele não confere os anexos, que vão para a IA da pessoa, e não acessa SUAP, SEI nem Notion.
 
 ## Ferramentas do repositório fora do app
 
@@ -47,7 +47,7 @@ Os dados institucionais de gestão (Campi, Cursos com metadados de PPC e SUAP, P
 
 ## Skills
 
-As skills ficam em `.agents/skills/`; `.claude/skills` é um symlink para esse diretório, para que o Claude Code descubra as mesmas skills. Edite sempre em `.agents/skills/`. Antes de alterar uma skill, leia o `README.md` dela, quando existir: propósito, fluxo de uso, comandos de manutenção e convenções locais. Se a alteração envolver base gerada ou índice consolidado, rode o comando de regeneração ou validação indicado nesse README antes de concluir. Só as skills com bloco `simplifica:` vão para o app (veja o fim deste arquivo); as demais rodam só no repositório.
+As skills ficam em `.agents/skills/`; `.claude/skills` é um symlink para esse diretório, para que o Claude Code descubra as mesmas skills. Edite sempre em `.agents/skills/`. Antes de alterar uma skill, leia o `README.md` dela, quando existir: propósito, fluxo de uso, comandos de manutenção e convenções locais. Se a alteração envolver base gerada ou índice consolidado, rode o comando de regeneração ou validação indicado nesse README antes de concluir. Só as skills com bloco `simplifica:` vão para o app (veja o parágrafo sobre o bloco `simplifica:`, mais abaixo); as demais rodam só no repositório.
 
 ## Consulta local da base
 
@@ -178,7 +178,7 @@ node scripts/gerar_site.ts
 
 Não edite à mão `status_vigencia`, `revoga`, `revogada_por`, `altera`, `alterada_por`, `regulamenta`, `regulamentada_por`, `fundamenta_se_em`, `fundamenta` nem `vigencia_*` no front matter das normas: eles são gerados. Relação nova entra em `relacoes.yaml`, com a evidência literal do texto; `pnpm kb relacoes --propor` lista o que o regex encontrou e ainda não foi confirmado. Ao mudar a marcação de uma norma, preserve as palavras (`pnpm --filter @simplifica-if/kb test src/normas` confere) e siga as convenções de corpo de `base-conhecimento/docs/padrao-front-matter-legislacao.md`.
 
-Todo o código é TypeScript: o app (`apps/`), os pacotes (`packages/`), os scripts que falam com Notion, SEI e SUAP e o pipeline da base (`gerar_base.ts`, `gerar_indice_ppcs.ts`, `validar_base.ts`, `gerar_site.ts`, com lógica em `scripts/base/`). Os scripts rodam direto no Node, sem etapa de build: a versão fica em `.node-version` e `engines` (26.12.1), e o pnpm do `packageManager` (12.14.0, pelo corepack) instala as dependências com `pnpm install` na raiz. Regras compartilhadas entre `scripts/`, as skills e o app (texto, JSON, JSON Schema, referências normativas) ficam no workspace `packages/kb` (`@simplifica-if/kb`); `packages/kb` não importa de `scripts/`. Depois de alterar código TypeScript em qualquer parte, rode:
+O código é TypeScript (salvo poucos `.js` e `.mjs` pontuais, como o script do relatório da `revisar-ppc` e os de build do desktop): o app (`apps/`), os pacotes (`packages/`), os scripts que falam com Notion, SEI e SUAP e o pipeline da base (`gerar_base.ts`, `gerar_indice_ppcs.ts`, `validar_base.ts`, `gerar_site.ts`, com lógica em `scripts/base/`). Os scripts rodam direto no Node, sem etapa de build: a versão fica em `.node-version` e `engines` (26.12.1), e o pnpm do `packageManager` (12.14.0, pelo corepack) instala as dependências com `pnpm install` na raiz. Regras compartilhadas entre `scripts/`, as skills e o app (texto, JSON, JSON Schema, referências normativas) ficam no workspace `packages/kb` (`@simplifica-if/kb`); `packages/kb` não importa de `scripts/`. Depois de alterar código TypeScript em qualquer parte, rode:
 
 ```bash
 pnpm fmt
