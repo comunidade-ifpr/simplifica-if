@@ -1,5 +1,5 @@
 .agents/skills/revisar-ppc/tests/base-analise.test.ts	20	0
-.agents/skills/revisar-ppc/tests/identificacao.test.ts	17	0
+.agents/skills/revisar-ppc/tests/identificacao.test.ts	18	0
 .agents/skills/revisar-ppc/tests/marcos-normativos.test.ts	11	0
 .agents/skills/revisar-ppc/tests/orquestracao.test.ts	71	0
 .agents/skills/revisar-ppc/tests/preparar-docx.test.ts	3	0
@@ -115,4 +115,4 @@ scripts/suap/consultas.test.ts	20	0
 scripts/suap/matrizes.test.ts	21	0
 scripts/suap/tutoriais.test.ts	24	0
 scripts/upstream_t3.test.ts	3	0
-TOTAL	1571	35
+TOTAL	1572	35

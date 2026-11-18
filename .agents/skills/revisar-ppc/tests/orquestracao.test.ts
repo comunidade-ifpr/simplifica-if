@@ -6,7 +6,7 @@
  */
 import * as NodeChildProcess from "node:child_process";
 import * as NodeServices from "@effect/platform-node/NodeServices";
-import { afterEach, describe, expect, it, layer, test } from "@effect/vitest";
+import { afterEach, describe, expect, layer, test } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as NodeFS from "node:fs";
@@ -20,19 +20,11 @@ import { compararPpcComCnct } from "../scripts/cnct-catalogo.ts";
 import { extrairIdentificacaoDaConversao, inferirIdentificacaoDoMarkdown } from "../scripts/identificacao.ts";
 import { normalizarMarkdown } from "@simplifica-if/ppc/normalizador-markdown";
 import { mesclarIdentificacaoPreferindoPreenchidos, prepararDocumento } from "../scripts/preparar-documento.ts";
-import { lerReferenciasIdentificacao } from "../scripts/referencias-identificacao.ts";
 import { referenciasLegiveisDaFicha, universoOuVazio } from "../scripts/referencias-fichas.ts";
 import { ErroResultadosSubagents, mesclarResultadosAvulsos, validarResultadosRodada } from "../scripts/resultados.ts";
 import * as NodeSqlite from "node:sqlite";
 import { camadaKb } from "../scripts/revisar_ppc.ts";
-import {
-  agoraIso,
-  caminhosRodada,
-  escreverJsonDaRodada,
-  interpretarAgora,
-  lerJsonDaRodada,
-  timestampSlug,
-} from "../scripts/rodada.ts";
+import { agoraIso, caminhosRodada, interpretarAgora, timestampSlug } from "../scripts/rodada.ts";
 import {
   agruparFichasPorTopico,
   carregarFichasOrdenadas,
@@ -45,13 +37,14 @@ import {
   montarGruposSubagents,
   prepararPromptsSubagents,
 } from "../scripts/subagents.ts";
+import { CAMADA_RODADA, escreverJson, lerJson, referenciasDaBase } from "./apoio.ts";
 
 const caminhos = caminhosPadrao();
 const RAIZ = NodePath.resolve(caminhos.appDir, "../../..");
 const ENTRYPOINT = NodePath.join(caminhos.appDir, "scripts", "revisar_ppc.ts");
 const FIXTURES = NodePath.join(caminhos.appDir, "tests", "fixtures");
 const RELOGIO = () => new Date("2026-11-13T12:34:56Z");
-const REFERENCIAS = lerReferenciasIdentificacao(caminhosPadrao());
+const REFERENCIAS = referenciasDaBase();
 const TOTAL_FICHAS = NodeFS.readdirSync(caminhos.fichasDir).filter((nome) => nome.endsWith(".json")).length;
 
 const MARKDOWN_BASE = `# Curso Técnico em Informática
@@ -67,7 +60,7 @@ O curso apresenta objetivos, perfil do egresso e justificativa institucional.
 
 // Os grupos leem o kb.sqlite pelos serviços do kb, na camada do ponto de entrada da CLI (`camadaKb`),
 // que o recompila quando as fontes mudaram (cerca de 8 s); com o relógio real, para o mtime certo.
-const CAMADA_KB = camadaKb({ raiz: RAIZ }).pipe(Layer.provide(NodeServices.layer));
+const CAMADA_KB = Layer.mergeAll(camadaKb({ raiz: RAIZ }).pipe(Layer.provide(NodeServices.layer)), CAMADA_RODADA);
 const OPCOES_CAMADA_KB = { excludeTestServices: true, timeout: "180 seconds" } as const;
 const caminhoBanco = process.env.KB_SQLITE
   ? NodePath.resolve(process.env.KB_SQLITE)
@@ -84,16 +77,17 @@ function diretorioTemporario(): string {
   return dir;
 }
 
-function criarRodada(markdown = MARKDOWN_BASE): string {
+const criarRodada = Effect.fn("teste.criarRodada")(function* (markdown: string = MARKDOWN_BASE) {
   const dir = diretorioTemporario();
   const arquivo = NodePath.join(dir, "PPC.md");
   NodeFS.writeFileSync(arquivo, markdown, "utf-8");
-  return prepararDocumento(arquivo, {
+  const preparada = yield* prepararDocumento(arquivo, {
     referencias: REFERENCIAS,
     saidaBase: NodePath.join(dir, "output"),
     relogio: RELOGIO,
-  }).rodadaDir;
-}
+  });
+  return preparada.rodadaDir;
+});
 
 function resultado(fichaId: string, estado = "ATENDE", evidencias = 3): Dicionario {
   return {
@@ -113,20 +107,22 @@ type Payload = {
   [k: string]: unknown;
 };
 
-function payloadResultadosCompletos(): Payload {
-  const grupos = agruparFichasPorTopico(carregarFichasOrdenadas(), carregarTopicosFichas(), 20).map((grupo) => ({
+const payloadResultadosCompletos = Effect.fn("teste.payloadResultadosCompletos")(function* () {
+  const fichas = yield* carregarFichasOrdenadas();
+  const grupos = agruparFichasPorTopico(fichas, yield* carregarTopicosFichas(), 20).map((grupo) => ({
     grupo_id: grupo.grupo_id,
     resultados: grupo.fichas.map((ficha) => resultado(String(ficha.id), "ATENDE", Number(ficha.evidencia_minima ?? 3))),
   }));
-  return { metadata: { origem: "teste" }, grupos };
-}
+  const payload: Payload = { metadata: { origem: "teste" }, grupos };
+  return payload;
+});
 
 function textoFicha(ficha: Dicionario, campos: string[]): string {
   return campos.map((campo) => String(ficha[campo] ?? "")).join(" ");
 }
 
 function lerFicha(nome: string): Dicionario {
-  return lerJsonDaRodada(NodePath.join(caminhos.fichasDir, nome)) as Dicionario;
+  return lerJson(NodePath.join(caminhos.fichasDir, nome)) as Dicionario;
 }
 
 const universo = universoOuVazio(caminhos);
@@ -137,7 +133,7 @@ function referencias(ficha: Dicionario): string[] {
 }
 
 function topico(id: string): Dicionario {
-  const topicos = (lerJsonDaRodada(caminhos.topicosFichasPath) as { topicos: Dicionario[] }).topicos;
+  const topicos = (lerJson(caminhos.topicosFichasPath) as { topicos: Dicionario[] }).topicos;
   return topicos.find((item) => item.id === id)!;
 }
 
@@ -206,39 +202,42 @@ describe("REVISAR_PPC_AGORA", () => {
   });
 });
 
-describe("preparar-documento", () => {
-  test("cria a rodada a partir de Markdown", () => {
-    const rodada = criarRodada();
-    const c = caminhosRodada(rodada);
-    expect([c.ppc, c.metadata, c.manifesto].every((arquivo) => NodeFS.existsSync(arquivo))).toBe(true);
-    expect((lerJsonDaRodada(c.metadata) as Dicionario).curso).toBe("Técnico em Informática");
-    expect((lerJsonDaRodada(c.manifesto) as Dicionario).execucao).toBe("subagents-na-conversa");
-    expect(Object.keys(c).sort()).toEqual(
-      [
-        "rodadaDir",
-        "suporteDir",
-        "artefatosConversaoDir",
-        "ppc",
-        "ppcBruto",
-        "metadata",
-        "manifesto",
-        "preparacaoDocx",
-        "cnctContexto",
-        "contextoEstruturalSubagents",
-        "validacoesCruzadasContexto",
-        "gruposAvulsosDir",
-        "promptsSubagentsDir",
-        "promptsSubagentsManifest",
-        "resultadosSubagents",
-        "gruposSubagents",
-        "relatorioHtml",
-      ].sort(),
-    );
-    expect(NodePath.basename(rodada)).toMatch(/^2026-11-13t\d{2}-34-56-ppc$/);
-  });
+layer(CAMADA_RODADA)("preparar-documento", (it) => {
+  it.effect("cria a rodada a partir de Markdown", () =>
+    Effect.gen(function* () {
+      const rodada = yield* criarRodada();
+      const c = caminhosRodada(rodada);
+      expect([c.ppc, c.metadata, c.manifesto].every((arquivo) => NodeFS.existsSync(arquivo))).toBe(true);
+      expect((lerJson(c.metadata) as Dicionario).curso).toBe("Técnico em Informática");
+      expect((lerJson(c.manifesto) as Dicionario).execucao).toBe("subagents-na-conversa");
+      expect(Object.keys(c).sort()).toEqual(
+        [
+          "rodadaDir",
+          "suporteDir",
+          "artefatosConversaoDir",
+          "ppc",
+          "ppcBruto",
+          "metadata",
+          "manifesto",
+          "preparacaoDocx",
+          "cnctContexto",
+          "contextoEstruturalSubagents",
+          "validacoesCruzadasContexto",
+          "gruposAvulsosDir",
+          "promptsSubagentsDir",
+          "promptsSubagentsManifest",
+          "resultadosSubagents",
+          "gruposSubagents",
+          "relatorioHtml",
+        ].sort(),
+      );
+      expect(NodePath.basename(rodada)).toMatch(/^2026-11-13t\d{2}-34-56-ppc$/);
+    }),
+  );
 
-  test("remove o sumário do PPC canônico", () => {
-    const rodada = criarRodada(`# Curso Técnico em Informática
+  it.effect("remove o sumário do PPC canônico", () =>
+    Effect.gen(function* () {
+      const rodada = yield* criarRodada(`# Curso Técnico em Informática
 
 **Sumário**
 1. APRESENTAÇÃO 4
@@ -249,14 +248,16 @@ describe("preparar-documento", () => {
 
 Texto do corpo.
 `);
-    const ppc = NodeFS.readFileSync(caminhosRodada(rodada).ppc, "utf-8");
-    expect(ppc).not.toContain("5.7 EMENTÁRIO 30");
-    expect(ppc).toContain("# 1 APRESENTAÇÃO");
-    expect(ppc).toContain("Texto do corpo.");
-  });
+      const ppc = NodeFS.readFileSync(caminhosRodada(rodada).ppc, "utf-8");
+      expect(ppc).not.toContain("5.7 EMENTÁRIO 30");
+      expect(ppc).toContain("# 1 APRESENTAÇÃO");
+      expect(ppc).toContain("Texto do corpo.");
+    }),
+  );
 
-  test("minuta que abre com régua horizontal mantém o início do texto", () => {
-    const rodada = criarRodada(`---
+  it.effect("minuta que abre com régua horizontal mantém o início do texto", () =>
+    Effect.gen(function* () {
+      const rodada = yield* criarRodada(`---
 
 # Curso Técnico em Informática
 
@@ -268,45 +269,59 @@ Campus: Assis Chateaubriand
 
 O curso apresenta objetivos.
 `);
-    const ppc = NodeFS.readFileSync(caminhosRodada(rodada).ppc, "utf-8");
-    expect(ppc).toContain("Curso Técnico em Informática");
-    expect(ppc).toContain("Assis Chateaubriand");
-    expect((lerJsonDaRodada(caminhosRodada(rodada).metadata) as Dicionario).campus).toBe("Assis Chateaubriand");
-  });
+      const ppc = NodeFS.readFileSync(caminhosRodada(rodada).ppc, "utf-8");
+      expect(ppc).toContain("Curso Técnico em Informática");
+      expect(ppc).toContain("Assis Chateaubriand");
+      expect((lerJson(caminhosRodada(rodada).metadata) as Dicionario).campus).toBe("Assis Chateaubriand");
+    }),
+  );
 
-  test("tira o front matter de proveniência de um PPC da base", () => {
-    const arquivo = NodePath.join(
-      caminhos.baseConhecimentoDir,
-      "institucional",
-      "ifpr",
-      "ppcs",
-      "curitiba",
-      "tecnico-em-eventos.md",
-    );
-    const rodada = prepararDocumento(arquivo, {
-      referencias: REFERENCIAS,
-      saidaBase: diretorioTemporario(),
-      relogio: RELOGIO,
-    }).rodadaDir;
-    const ppc = NodeFS.readFileSync(caminhosRodada(rodada).ppc, "utf-8");
-    expect(ppc).not.toContain("fonte_url");
-    expect(ppc).not.toContain("ppc:curitiba/tecnico-em-eventos");
-  });
-
-  test("rejeita extensão desconhecida e arquivo ausente", () => {
-    const dir = diretorioTemporario();
-    NodeFS.writeFileSync(NodePath.join(dir, "ppc.txt"), "x");
-    expect(() =>
-      prepararDocumento(NodePath.join(dir, "ppc.txt"), { referencias: REFERENCIAS, saidaBase: dir, relogio: RELOGIO }),
-    ).toThrow("A entrada deve ser um arquivo .md ou .docx.");
-    expect(() =>
-      prepararDocumento(NodePath.join(dir, "nao-existe.md"), {
+  it.effect("tira o front matter de proveniência de um PPC da base", () =>
+    Effect.gen(function* () {
+      const arquivo = NodePath.join(
+        caminhos.baseConhecimentoDir,
+        "institucional",
+        "ifpr",
+        "ppcs",
+        "curitiba",
+        "tecnico-em-eventos.md",
+      );
+      const { rodadaDir: rodada } = yield* prepararDocumento(arquivo, {
         referencias: REFERENCIAS,
-        saidaBase: dir,
+        saidaBase: diretorioTemporario(),
         relogio: RELOGIO,
-      }),
-    ).toThrow("Arquivo não encontrado");
-  });
+      });
+      const ppc = NodeFS.readFileSync(caminhosRodada(rodada).ppc, "utf-8");
+      expect(ppc).not.toContain("fonte_url");
+      expect(ppc).not.toContain("ppc:curitiba/tecnico-em-eventos");
+    }),
+  );
+
+  it.effect("rejeita extensão desconhecida e arquivo ausente", () =>
+    Effect.gen(function* () {
+      const dir = diretorioTemporario();
+      NodeFS.writeFileSync(NodePath.join(dir, "ppc.txt"), "x");
+      const extensao = yield* Effect.flip(
+        prepararDocumento(NodePath.join(dir, "ppc.txt"), {
+          referencias: REFERENCIAS,
+          saidaBase: dir,
+          relogio: RELOGIO,
+        }),
+      );
+      expect(extensao).toMatchObject({ _tag: "EntradaDaRodadaInvalida", motivo: "extensao" });
+      expect(extensao.message).toBe("A entrada deve ser um arquivo .md ou .docx.");
+      const ausente = yield* Effect.flip(
+        prepararDocumento(NodePath.join(dir, "nao-existe.md"), {
+          referencias: REFERENCIAS,
+          saidaBase: dir,
+          relogio: RELOGIO,
+        }),
+      );
+      expect(ausente).toMatchObject({ _tag: "EntradaDaRodadaInvalida", motivo: "ausente" });
+      expect(ausente.message).toContain("Arquivo não encontrado");
+      expect(NodeFS.readdirSync(dir)).toEqual(["ppc.txt"]);
+    }),
+  );
 });
 
 describe("normalizador de Markdown", () => {
@@ -484,74 +499,86 @@ Quedas do Iguaçu
 });
 
 layer(CAMADA_KB, OPCOES_CAMADA_KB)("fichas e grupos", (it) => {
-  test("agrupa por tópico: cada ficha uma vez, na ordem da taxonomia, transversal por último", () => {
-    const fichas = carregarFichasOrdenadas();
-    const topicos = carregarTopicosFichas();
-    const grupos = agruparFichasPorTopico(fichas, topicos, 20);
-    expect(fichas.length).toBe(TOTAL_FICHAS);
-    const ids = grupos.flatMap((g) => g.fichas.map((f) => String(f.id)));
-    expect(ids.length).toBe(TOTAL_FICHAS);
-    expect(new Set(ids).size).toBe(TOTAL_FICHAS);
-    expect(grupos.map((g) => g.grupo_id)).toEqual(grupos.map((_, i) => `grupo-${String(i + 1).padStart(3, "0")}`));
-    const ordem = topicos.map((t) => t.id);
-    const posicoes = grupos.filter((g) => g.topico !== "transversal").map((g) => ordem.indexOf(String(g.topico)));
-    expect(posicoes).toEqual([...posicoes].sort((a, b) => a - b));
-    const transversal = grupos.at(-1)!;
-    expect(transversal.topico).toBe("transversal");
-    expect(transversal.escopo_ppc).toBe("completo");
-    expect(transversal.fichas.every((f) => f.tipo_escopo === "transversal")).toBe(true);
-    expect(grupos.slice(0, -1).every((g) => g.escopo_ppc === "secoes")).toBe(true);
-    // cada ficha não transversal fica num dos seus tópicos, no grupo do tópico
-    for (const grupo of grupos.slice(0, -1)) {
-      for (const ficha of grupo.fichas) expect(ficha.topicos_tematicos as string[]).toContain(String(grupo.topico));
-    }
-    expect(grupos.every((g) => g.total_fichas === g.fichas.length && g.fichas.length <= 20)).toBe(true);
-    expect(() => agruparFichasPorTopico(fichas, topicos, 0)).toThrow("O tamanho do grupo precisa ser maior que zero.");
-  });
+  it.effect("agrupa por tópico: cada ficha uma vez, na ordem da taxonomia, transversal por último", () =>
+    Effect.gen(function* () {
+      const fichas = yield* carregarFichasOrdenadas();
+      const topicos = yield* carregarTopicosFichas();
+      const grupos = agruparFichasPorTopico(fichas, topicos, 20);
+      expect(fichas.length).toBe(TOTAL_FICHAS);
+      const ids = grupos.flatMap((g) => g.fichas.map((f) => String(f.id)));
+      expect(ids.length).toBe(TOTAL_FICHAS);
+      expect(new Set(ids).size).toBe(TOTAL_FICHAS);
+      expect(grupos.map((g) => g.grupo_id)).toEqual(grupos.map((_, i) => `grupo-${String(i + 1).padStart(3, "0")}`));
+      const ordem = topicos.map((t) => t.id);
+      const posicoes = grupos.filter((g) => g.topico !== "transversal").map((g) => ordem.indexOf(String(g.topico)));
+      expect(posicoes).toEqual([...posicoes].sort((a, b) => a - b));
+      const transversal = grupos.at(-1)!;
+      expect(transversal.topico).toBe("transversal");
+      expect(transversal.escopo_ppc).toBe("completo");
+      expect(transversal.fichas.every((f) => f.tipo_escopo === "transversal")).toBe(true);
+      expect(grupos.slice(0, -1).every((g) => g.escopo_ppc === "secoes")).toBe(true);
+      // cada ficha não transversal fica num dos seus tópicos, no grupo do tópico
+      for (const grupo of grupos.slice(0, -1)) {
+        for (const ficha of grupo.fichas) expect(ficha.topicos_tematicos as string[]).toContain(String(grupo.topico));
+      }
+      expect(grupos.every((g) => g.total_fichas === g.fichas.length && g.fichas.length <= 20)).toBe(true);
+      expect(() => agruparFichasPorTopico(fichas, topicos, 0)).toThrow(
+        "O tamanho do grupo precisa ser maior que zero.",
+      );
+    }),
+  );
 
-  test("ficha multitemática vai para o tópico mais específico (menos fichas), não para o primeiro", () => {
-    const grupos = agruparFichasPorTopico(carregarFichasOrdenadas(), carregarTopicosFichas(), 20);
-    const grupoDa = (id: string) => grupos.find((g) => g.fichas.some((f) => f.id === id))!.topico;
-    expect(grupoDa("CT-CURR-25")).toBe("estagio"); // estagio (4) × perfil_egresso_mundo_trabalho (13)
-    expect(grupoDa("CT-IDENT-18")).toBe("avaliacao_ppc_egressos"); // 3 × 13
-    expect(grupoDa("CT-SUP-11")).toBe("infraestrutura"); // 6 × aee_acessibilidade_inclusao (9)
-    expect(grupoDa("CT-CURR-02")).toBe("identificacao_oferta"); // 11 × matriz_curricular (14)
-    expect(grupoDa("CT-TRANS-04")).toBe("transversal");
-  });
+  it.effect("ficha multitemática vai para o tópico mais específico (menos fichas), não para o primeiro", () =>
+    Effect.gen(function* () {
+      const grupos = agruparFichasPorTopico(yield* carregarFichasOrdenadas(), yield* carregarTopicosFichas(), 20);
+      const grupoDa = (id: string) => grupos.find((g) => g.fichas.some((f) => f.id === id))!.topico;
+      expect(grupoDa("CT-CURR-25")).toBe("estagio"); // estagio (4) × perfil_egresso_mundo_trabalho (13)
+      expect(grupoDa("CT-IDENT-18")).toBe("avaliacao_ppc_egressos"); // 3 × 13
+      expect(grupoDa("CT-SUP-11")).toBe("infraestrutura"); // 6 × aee_acessibilidade_inclusao (9)
+      expect(grupoDa("CT-CURR-02")).toBe("identificacao_oferta"); // 11 × matriz_curricular (14)
+      expect(grupoDa("CT-TRANS-04")).toBe("transversal");
+    }),
+  );
 
-  test("tópico maior que o tamanho máximo vira partes equilibradas", () => {
-    const fichas = carregarFichasOrdenadas();
-    const grupos = agruparFichasPorTopico(fichas, carregarTopicosFichas(), 5);
-    expect(grupos.every((g) => g.fichas.length <= 5)).toBe(true);
-    expect(new Set(grupos.flatMap((g) => g.fichas.map((f) => f.id))).size).toBe(TOTAL_FICHAS);
-    const partes = grupos.filter((g) => g.topico === "identificacao_oferta");
-    expect(partes.map((g) => [g.parte, g.partes])).toEqual(partes.map((_, i) => [i + 1, partes.length]));
-    const tamanhos = partes.map((g) => g.fichas.length);
-    expect(Math.max(...tamanhos) - Math.min(...tamanhos)).toBeLessThanOrEqual(1);
-  });
+  it.effect("tópico maior que o tamanho máximo vira partes equilibradas", () =>
+    Effect.gen(function* () {
+      const fichas = yield* carregarFichasOrdenadas();
+      const grupos = agruparFichasPorTopico(fichas, yield* carregarTopicosFichas(), 5);
+      expect(grupos.every((g) => g.fichas.length <= 5)).toBe(true);
+      expect(new Set(grupos.flatMap((g) => g.fichas.map((f) => f.id))).size).toBe(TOTAL_FICHAS);
+      const partes = grupos.filter((g) => g.topico === "identificacao_oferta");
+      expect(partes.map((g) => [g.parte, g.partes])).toEqual(partes.map((_, i) => [i + 1, partes.length]));
+      const tamanhos = partes.map((g) => g.fichas.length);
+      expect(Math.max(...tamanhos) - Math.min(...tamanhos)).toBeLessThanOrEqual(1);
+    }),
+  );
 
-  test("detecta fichas que dependem do CNCT e de fundamentação normativa", () => {
-    const fichas = new Map(carregarFichasOrdenadas().map((ficha) => [ficha.id, ficha]));
-    expect(fichaRequerContextoCnct(fichas.get("CT-IDENT-01")!)).toBe(true);
-    expect(fichaRequerContextoCnct(fichas.get("CT-SUP-01")!)).toBe(false);
-    expect(fichaRequerFundamentacaoNormativa(fichas.get("CT-IDENT-08")!)).toBe(true);
-    expect(fichaRequerFundamentacaoNormativa(fichas.get("CT-CURR-20")!)).toBe(true);
-    expect(fichaRequerFundamentacaoNormativa(fichas.get("CT-IDENT-02")!)).toBe(true);
-    expect(fichaRequerFundamentacaoNormativa(fichas.get("CT-IDENT-04")!)).toBe(false);
-  });
+  it.effect("detecta fichas que dependem do CNCT e de fundamentação normativa", () =>
+    Effect.gen(function* () {
+      const fichas = new Map((yield* carregarFichasOrdenadas()).map((ficha) => [ficha.id, ficha]));
+      expect(fichaRequerContextoCnct(fichas.get("CT-IDENT-01")!)).toBe(true);
+      expect(fichaRequerContextoCnct(fichas.get("CT-SUP-01")!)).toBe(false);
+      expect(fichaRequerFundamentacaoNormativa(fichas.get("CT-IDENT-08")!)).toBe(true);
+      expect(fichaRequerFundamentacaoNormativa(fichas.get("CT-CURR-20")!)).toBe(true);
+      expect(fichaRequerFundamentacaoNormativa(fichas.get("CT-IDENT-02")!)).toBe(true);
+      expect(fichaRequerFundamentacaoNormativa(fichas.get("CT-IDENT-04")!)).toBe(false);
+    }),
+  );
 
-  test("o contexto normativo inclui os marcos, com as normas por extenso", () => {
-    const marcos = contextoFundamentacaoNormativa().marcos_normativos as Dicionario[];
-    expect(marcos.map((marco) => marco.id)).toEqual(expect.arrayContaining(["dcn_ept", "dcnem", "eja"]));
-    const dcnEpt = marcos.find((marco) => marco.id === "dcn_ept")!;
-    expect(dcnEpt.vigente).toBe("Resolução CNE/CP nº 2/2026");
-    expect(dcnEpt.substitui).toContain("Resolução CNE/CP nº 1/2021");
-    expect(dcnEpt.dispositivos_revogados).toEqual(["Resolução CNE/CEB nº 3/2025, art. 6º, III"]);
-  });
+  it.effect("o contexto normativo inclui os marcos, com as normas por extenso", () =>
+    Effect.gen(function* () {
+      const marcos = (yield* contextoFundamentacaoNormativa()).marcos_normativos as Dicionario[];
+      expect(marcos.map((marco) => marco.id)).toEqual(expect.arrayContaining(["dcn_ept", "dcnem", "eja"]));
+      const dcnEpt = marcos.find((marco) => marco.id === "dcn_ept")!;
+      expect(dcnEpt.vigente).toBe("Resolução CNE/CP nº 2/2026");
+      expect(dcnEpt.substitui).toContain("Resolução CNE/CP nº 1/2021");
+      expect(dcnEpt.dispositivos_revogados).toEqual(["Resolução CNE/CEB nº 3/2025, art. 6º, III"]);
+    }),
+  );
 
   it.effect("as fichas dos grupos levam as referências normativas em texto legível", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
+      const rodada = yield* criarRodada();
       const payload = (yield* montarGruposSubagents(rodada)) as Dicionario & {
         grupos: Array<{ fichas: Dicionario[] }>;
       };
@@ -596,7 +623,7 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("fichas e grupos", (it) => {
 
   it.effect("monta os grupos e salva o payload na rodada", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
+      const rodada = yield* criarRodada();
       const c = caminhosRodada(rodada);
       const payload = (yield* montarGruposSubagents(rodada)) as Dicionario & { grupos: Dicionario[] };
       expect(NodeFS.existsSync(c.gruposSubagents)).toBe(true);
@@ -604,7 +631,7 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("fichas e grupos", (it) => {
       expect(payload.ppc_markdown).toBe(c.ppc);
       expect(payload.total_fichas).toBe(TOTAL_FICHAS);
       expect(payload.grupos.length).toBe(
-        agruparFichasPorTopico(carregarFichasOrdenadas(), carregarTopicosFichas()).length,
+        agruparFichasPorTopico(yield* carregarFichasOrdenadas(), yield* carregarTopicosFichas()).length,
       );
       expect((payload.agrupamento as Dicionario).criterio).toBe("topico");
       expect(payload.grupos.every((g) => (g.contextos as Dicionario).ppc !== undefined)).toBe(true);
@@ -616,7 +643,7 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("fichas e grupos", (it) => {
       expect(cnct.fonte_catalogo).toContain("base-conhecimento/catalogos/cnct/index.json");
       expect(String(String(payload.sintese_transversal_template)).endsWith("sintese-transversal.md")).toBe(true);
       const validacoes = payload.validacoes_cruzadas as { total: number; validacoes: Dicionario[] };
-      expect(validacoes.total).toBe(carregarValidacoesCruzadasOrdenadas().length);
+      expect(validacoes.total).toBe((yield* carregarValidacoesCruzadasOrdenadas()).length);
       expect(String(String(validacoes.validacoes[0]!.id)).startsWith("VC-")).toBe(true);
       const comCnct = payload.grupos.filter((g) => g.requer_contexto_cnct);
       expect(comCnct.length).toBeGreaterThan(0);
@@ -631,30 +658,32 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("fichas e grupos", (it) => {
     }),
   );
 
-  test("a CLI imprime um resumo por padrão", () => {
-    const rodada = criarRodada();
-    const saida = cli("montar-grupos-subagents", "--rodada-dir", rodada);
-    expect(saida.codigo).toBe(0);
-    const resumo = JSON.parse(saida.stdout);
-    expect(resumo.total_fichas).toBe(TOTAL_FICHAS);
-    expect(String(resumo.grupos_subagents).endsWith("grupos-subagents.json")).toBe(true);
-    expect(resumo).not.toHaveProperty("cnct_contexto");
-    expect(resumo.grupos[0]).not.toHaveProperty("fichas");
-    expect(saida.stdout).toContain('"score": 1.0');
-  });
+  it.effect("a CLI imprime um resumo por padrão", () =>
+    Effect.gen(function* () {
+      const rodada = yield* criarRodada();
+      const saida = cli("montar-grupos-subagents", "--rodada-dir", rodada);
+      expect(saida.codigo).toBe(0);
+      const resumo = JSON.parse(saida.stdout);
+      expect(resumo.total_fichas).toBe(TOTAL_FICHAS);
+      expect(String(resumo.grupos_subagents).endsWith("grupos-subagents.json")).toBe(true);
+      expect(resumo).not.toHaveProperty("cnct_contexto");
+      expect(resumo.grupos[0]).not.toHaveProperty("fichas");
+      expect(saida.stdout).toContain('"score": 1.0');
+    }),
+  );
 
   it.effect("anexa a representação gráfica quando disponível", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
+      const rodada = yield* criarRodada();
       const c = caminhosRodada(rodada);
       const imagem = NodePath.join(c.artefatosConversaoDir, "imagens", "representacao_grafica.png");
       NodeFS.mkdirSync(NodePath.dirname(imagem), { recursive: true });
       NodeFS.writeFileSync(imagem, "imagem");
       const dados = NodePath.join(c.artefatosConversaoDir, "dados.json");
-      escreverJsonDaRodada(dados, {
+      escreverJson(dados, {
         representacao_grafica: { extraida: true, caminho: "imagens/representacao_grafica.png" },
       });
-      escreverJsonDaRodada(c.preparacaoDocx, { dados });
+      escreverJson(c.preparacaoDocx, { dados });
       const payload = (yield* montarGruposSubagents(rodada)) as { grupos: Dicionario[] };
       const comAnexo = payload.grupos.filter((g) => g.requer_anexos_visuais);
       expect(comAnexo.length).toBeGreaterThan(0);
@@ -664,7 +693,7 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("fichas e grupos", (it) => {
 
   it.effect("gera um pacote de prompt por grupo", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
+      const rodada = yield* criarRodada();
       const payload = (yield* montarGruposSubagents(rodada, 30)) as { grupos: Dicionario[] };
       const manifest = (yield* prepararPromptsSubagents(rodada)) as { total_pacotes: number; arquivos: Dicionario[] };
       expect(manifest.total_pacotes).toBe(payload.grupos.length);
@@ -689,7 +718,7 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("fichas e grupos", (it) => {
       expect(NodeFS.readFileSync(fixtureNorma, "utf-8")).toContain("dispensa a consulta ao Catálogo Nacional");
       expect(NodeFS.readFileSync(fixtureEstagio, "utf-8")).toContain("estágio é não obrigatório");
       const dir = diretorioTemporario();
-      const { rodadaDir } = prepararDocumento(fixtureEstagio, {
+      const { rodadaDir } = yield* prepararDocumento(fixtureEstagio, {
         referencias: REFERENCIAS,
         saidaBase: dir,
         relogio: RELOGIO,
@@ -741,7 +770,7 @@ type GrupoTopico = Dicionario & {
 layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupos por tópico num PPC fora da base", (it) => {
   it.effect("cada grupo recebe as seções do PPC.md dos seus tópicos; o transversal, o PPC inteiro", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada(MARKDOWN_TOPICOS);
+      const rodada = yield* criarRodada(MARKDOWN_TOPICOS);
       const c = caminhosRodada(rodada);
       const payload = (yield* montarGruposSubagents(rodada)) as Dicionario & { grupos: GrupoTopico[] };
       const porTopico = new Map(payload.grupos.map((g) => [g.topico, g]));
@@ -792,7 +821,7 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupos por tópico num PPC fora da base", (i
 
   it.effect("toda ficha recebe as seções de todos os seus tópicos, inclusive as multitemáticas", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada(MARKDOWN_TOPICOS);
+      const rodada = yield* criarRodada(MARKDOWN_TOPICOS);
       const payload = (yield* montarGruposSubagents(rodada)) as Dicionario & { grupos: GrupoTopico[] };
       for (const grupo of payload.grupos.filter((g) => g.escopo_ppc === "secoes")) {
         const topicos = new Set(grupo.fichas.flatMap((f) => f.topicos_tematicos as string[]));
@@ -829,7 +858,7 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupos por tópico num PPC fora da base", (i
 
   it.effect("o CNCT identificado é o mesmo registro do kb.sqlite", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada(MARKDOWN_TOPICOS);
+      const rodada = yield* criarRodada(MARKDOWN_TOPICOS);
       const payload = (yield* montarGruposSubagents(rodada)) as Dicionario & { cnct_contexto: Dicionario };
       const correspondencia = payload.cnct_contexto.correspondencia as Dicionario;
       const db = new NodeSqlite.DatabaseSync(caminhoBanco, { readOnly: true });
@@ -855,21 +884,23 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupos por tópico num PPC fora da base", (i
   );
 });
 
-describe("CNCT", () => {
-  test("o contexto inclui o resumo estruturado do estágio", () => {
-    const contexto = compararPpcComCnct(
-      { curso: "Curso Técnico em Informática" },
-      { dados_extraidos: { carga_horaria_estagio: "0 horas" } },
-      {},
-    ) as Record<string, any>;
-    expect(contexto.correspondencia.denominacao).toBe("Técnico em Informática");
-    expect(contexto.fonte_catalogo).toContain("base-conhecimento/catalogos/cnct/index.json");
-    expect(contexto.correspondencia.estagio.menciona_estagio).toBe(true);
-    expect(contexto.correspondencia.estagio.obrigatoriedade).toBe("FACULTADO_A_INSTITUICAO");
-    expect(contexto.estagio_ppc.indicio_estagio_obrigatorio_por_carga).toBe(false);
-    expect(contexto.comparacoes.estagio_cnct.status).toBe("COMPATIVEL");
-    expect(contexto.correspondencia.score).toBeInstanceOf(Flutuante);
-  });
+layer(CAMADA_RODADA)("CNCT", (it) => {
+  it.effect("o contexto inclui o resumo estruturado do estágio", () =>
+    Effect.gen(function* () {
+      const contexto = (yield* compararPpcComCnct(
+        { curso: "Curso Técnico em Informática" },
+        { dados_extraidos: { carga_horaria_estagio: "0 horas" } },
+        {},
+      )) as Record<string, any>;
+      expect(contexto.correspondencia.denominacao).toBe("Técnico em Informática");
+      expect(contexto.fonte_catalogo).toContain("base-conhecimento/catalogos/cnct/index.json");
+      expect(contexto.correspondencia.estagio.menciona_estagio).toBe(true);
+      expect(contexto.correspondencia.estagio.obrigatoriedade).toBe("FACULTADO_A_INSTITUICAO");
+      expect(contexto.estagio_ppc.indicio_estagio_obrigatorio_por_carga).toBe(false);
+      expect(contexto.comparacoes.estagio_cnct.status).toBe("COMPATIVEL");
+      expect(contexto.correspondencia.score).toBeInstanceOf(Flutuante);
+    }),
+  );
 
   test("o catálogo interno foi substituído pela base unificada", () => {
     expect(NodeFS.existsSync(NodePath.join(caminhos.baseAnaliseDir, "dados", "cnct", "catalogo_cnct.csv"))).toBe(false);
@@ -882,9 +913,9 @@ describe("CNCT", () => {
 layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupo avulso e mescla", (it) => {
   it.effect("monta o grupo avulso e mescla os resultados", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
+      const rodada = yield* criarRodada();
       const c = caminhosRodada(rodada);
-      escreverJsonDaRodada(c.resultadosSubagents, payloadResultadosCompletos());
+      escreverJson(c.resultadosSubagents, yield* payloadResultadosCompletos());
       const grupo = (yield* montarGrupoAvulso(rodada, ["CT-IDENT-01"])) as {
         grupo: Dicionario;
         grupo_avulso_path: string;
@@ -895,13 +926,13 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupo avulso e mescla", (it) => {
       expect(NodeFS.readFileSync(grupo.prompt_subagent_path, "utf-8")).toContain("## PPC.md: seções do grupo");
       const transversal = (yield* montarGrupoAvulso(rodada, ["CT-TRANS-01", "CT-IDENT-01"])) as { grupo: Dicionario };
       expect(transversal.grupo.escopo_ppc).toBe("completo");
-      escreverJsonDaRodada(NodePath.join(c.suporteDir, "resultado-avulso.json"), {
+      escreverJson(NodePath.join(c.suporteDir, "resultado-avulso.json"), {
         grupo_id: grupo.grupo.grupo_id,
         resultados: [{ ...resultado("CT-IDENT-01", "INCONCLUSIVO"), confianca: new Flutuante(1) }],
       });
       const mesclado = yield* mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "resultado-avulso.json");
       expect(mesclado.fichas_substituidas).toEqual(["CT-IDENT-01"]);
-      const payload = lerJsonDaRodada(c.resultadosSubagents) as Payload;
+      const payload = lerJson(c.resultadosSubagents) as Payload;
       const resultados = payload.grupos.flatMap((g) => g.resultados).filter((item) => item.ficha_id === "CT-IDENT-01");
       expect(resultados.length).toBe(1);
       expect(resultados[0]!.estado).toBe("INCONCLUSIVO");
@@ -913,22 +944,22 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupo avulso e mescla", (it) => {
 
   it.effect("mescla com base no formato `resultados[]` sem perder os resultados originais", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
+      const rodada = yield* criarRodada();
       const c = caminhosRodada(rodada);
-      const resultadosBase = payloadResultadosCompletos().grupos.flatMap((grupo) => grupo.resultados);
-      escreverJsonDaRodada(c.resultadosSubagents, {
+      const resultadosBase = (yield* payloadResultadosCompletos()).grupos.flatMap((grupo) => grupo.resultados);
+      escreverJson(c.resultadosSubagents, {
         metadata: { origem: "teste" },
         grupo_id: "grupo-unico",
         resultados: resultadosBase,
       });
       expect((yield* validarResultadosRodada(rodada, "resultados-subagents.json")).total_fichas).toBe(TOTAL_FICHAS);
-      escreverJsonDaRodada(NodePath.join(c.suporteDir, "avulso.json"), {
+      escreverJson(NodePath.join(c.suporteDir, "avulso.json"), {
         resultados: [resultado("CT-IDENT-01", "INCONCLUSIVO")],
       });
       yield* mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json");
       const resumo = yield* validarResultadosRodada(rodada, "resultados-subagents.json");
       expect(resumo.total_fichas).toBe(TOTAL_FICHAS);
-      const payload = lerJsonDaRodada(c.resultadosSubagents) as Payload;
+      const payload = lerJson(c.resultadosSubagents) as Payload;
       expect(payload.resultados).toBeUndefined();
       const reavaliado = payload.grupos.flatMap((g) => g.resultados).filter((item) => item.ficha_id === "CT-IDENT-01");
       expect(reavaliado.map((item) => item.estado)).toEqual(["INCONCLUSIVO"]);
@@ -955,11 +986,11 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupo avulso e mescla", (it) => {
   ];
   it.effect.each(avulsosInvalidos)("recusa avulso com %s sem tocar a base", ([, avulso, mensagem]) =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
+      const rodada = yield* criarRodada();
       const c = caminhosRodada(rodada);
-      escreverJsonDaRodada(c.resultadosSubagents, payloadResultadosCompletos());
+      escreverJson(c.resultadosSubagents, yield* payloadResultadosCompletos());
       const antes = NodeFS.readFileSync(c.resultadosSubagents, "utf-8");
-      escreverJsonDaRodada(NodePath.join(c.suporteDir, "avulso.json"), avulso);
+      escreverJson(NodePath.join(c.suporteDir, "avulso.json"), avulso);
       const erro = yield* Effect.flip(mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json"));
       expect(erro).toBeInstanceOf(ErroResultadosSubagents);
       expect(erro.message).toContain(mensagem);
@@ -969,9 +1000,9 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupo avulso e mescla", (it) => {
 
   it.effect("avulso com texto em volta do JSON ou ausente é erro tipado, sem tocar a base", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
+      const rodada = yield* criarRodada();
       const c = caminhosRodada(rodada);
-      escreverJsonDaRodada(c.resultadosSubagents, payloadResultadosCompletos());
+      escreverJson(c.resultadosSubagents, yield* payloadResultadosCompletos());
       const antes = NodeFS.readFileSync(c.resultadosSubagents, "utf-8");
       const avulso = NodePath.join(c.suporteDir, "avulso.json");
       NodeFS.writeFileSync(avulso, 'Aqui está o resultado:\n```json\n{"resultados": []}\n```\n');
@@ -995,12 +1026,12 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupo avulso e mescla", (it) => {
 
   it.effect("rejeita ficha desconhecida no grupo avulso e avulso sem resultados", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
+      const rodada = yield* criarRodada();
       const desconhecida = yield* Effect.flip(montarGrupoAvulso(rodada, ["CT-NAO-EXISTE"]));
       expect(desconhecida.message).toBe("Fichas não encontradas: CT-NAO-EXISTE");
       const c = caminhosRodada(rodada);
-      escreverJsonDaRodada(c.resultadosSubagents, payloadResultadosCompletos());
-      escreverJsonDaRodada(NodePath.join(c.suporteDir, "avulso.json"), { nada: [] });
+      escreverJson(c.resultadosSubagents, yield* payloadResultadosCompletos());
+      escreverJson(NodePath.join(c.suporteDir, "avulso.json"), { nada: [] });
       const semResultados = yield* Effect.flip(
         mesclarResultadosAvulsos(rodada, "resultados-subagents.json", "avulso.json"),
       );
@@ -1009,23 +1040,23 @@ layer(CAMADA_KB, OPCOES_CAMADA_KB)("grupo avulso e mescla", (it) => {
   );
 });
 
-describe("validar-resultados", () => {
-  function validar(editar: (payload: Payload) => void = () => {}) {
-    const rodada = criarRodada();
-    const payload = payloadResultadosCompletos();
+layer(CAMADA_RODADA)("validar-resultados", (it) => {
+  const validar = Effect.fn("teste.validar")(function* (editar: (payload: Payload) => void = () => {}) {
+    const rodada = yield* criarRodada();
+    const payload = yield* payloadResultadosCompletos();
     editar(payload);
     NodeFS.writeFileSync(
       NodePath.join(caminhosRodada(rodada).suporteDir, "resultados-subagents.json"),
       serializarJsonTipado(payload, { indent: 2 }),
     );
-    return validarResultadosRodada(rodada, "resultados-subagents.json");
-  }
+    return yield* validarResultadosRodada(rodada, "resultados-subagents.json");
+  });
 
   it.effect("devolve o resumo sem gerar HTML", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
+      const rodada = yield* criarRodada();
       const c = caminhosRodada(rodada);
-      escreverJsonDaRodada(c.resultadosSubagents, payloadResultadosCompletos());
+      escreverJson(c.resultadosSubagents, yield* payloadResultadosCompletos());
       const resumo = yield* validarResultadosRodada(rodada, "resultados-subagents.json");
       expect(resumo.valido).toBe(true);
       expect(resumo.total_fichas).toBe(TOTAL_FICHAS);
@@ -1090,7 +1121,7 @@ describe("validar-resultados", () => {
 
   it.effect("aceita alertas transversais válidos e calcula a situação", () =>
     Effect.gen(function* () {
-      const validacao = String(carregarValidacoesCruzadasOrdenadas()[0]!.id);
+      const validacao = String((yield* carregarValidacoesCruzadasOrdenadas())[0]!.id);
       const resumo = yield* validar((p) => {
         p.grupos[0]!.resultados[0]!.estado = "INCONCLUSIVO";
         p.alertas_transversais = [
@@ -1113,9 +1144,12 @@ describe("validar-resultados", () => {
 
   it.effect("JSON da rodada com texto em volta ou ausente é erro tipado", () =>
     Effect.gen(function* () {
-      const rodada = criarRodada();
+      const rodada = yield* criarRodada();
       const c = caminhosRodada(rodada);
-      NodeFS.writeFileSync(c.resultadosSubagents, `Segue o JSON:\n${JSON.stringify(payloadResultadosCompletos())}`);
+      NodeFS.writeFileSync(
+        c.resultadosSubagents,
+        `Segue o JSON:\n${JSON.stringify(yield* payloadResultadosCompletos())}`,
+      );
       const invalido = yield* Effect.flip(validarResultadosRodada(rodada, "resultados-subagents.json"));
       expect(invalido).toMatchObject({ categoria: "json-invalido", arquivo: c.resultadosSubagents });
       expect(invalido.message).toContain("O JSON de resultados não é um JSON válido:");
@@ -1125,28 +1159,32 @@ describe("validar-resultados", () => {
     }),
   );
 
-  test("a CLI recusa JSON inválido com a mensagem do erro, não com defeito", () => {
-    const rodada = criarRodada();
-    NodeFS.writeFileSync(caminhosRodada(rodada).resultadosSubagents, "Pronto! Segue o resultado.");
-    const erro = cli("validar-resultados", "--rodada-dir", rodada);
-    expect(erro.codigo).toBe(1);
-    expect(erro.stderr).toContain("ErroResultadosSubagents: O JSON de resultados não é um JSON válido:");
-  });
+  it.effect("a CLI recusa JSON inválido com a mensagem do erro, não com defeito", () =>
+    Effect.gen(function* () {
+      const rodada = yield* criarRodada();
+      NodeFS.writeFileSync(caminhosRodada(rodada).resultadosSubagents, "Pronto! Segue o resultado.");
+      const erro = cli("validar-resultados", "--rodada-dir", rodada);
+      expect(erro.codigo).toBe(1);
+      expect(erro.stderr).toContain("ErroResultadosSubagents: O JSON de resultados não é um JSON válido:");
+    }),
+  );
 
-  test("a CLI imprime o resumo e falha com mensagem em stderr", () => {
-    const rodada = criarRodada();
-    const c = caminhosRodada(rodada);
-    escreverJsonDaRodada(c.resultadosSubagents, payloadResultadosCompletos());
-    const ok = cli("validar-resultados", "--rodada-dir", rodada);
-    expect(ok.codigo).toBe(0);
-    expect(JSON.parse(ok.stdout).valido).toBe(true);
-    const payload = payloadResultadosCompletos();
-    payload.grupos[0]!.resultados.pop();
-    escreverJsonDaRodada(c.resultadosSubagents, payload);
-    const erro = cli("validar-resultados", "--rodada-dir", rodada);
-    expect(erro.codigo).toBe(1);
-    expect(erro.stderr).toContain("ErroResultadosSubagents: Fichas sem resultado:");
-  });
+  it.effect("a CLI imprime o resumo e falha com mensagem em stderr", () =>
+    Effect.gen(function* () {
+      const rodada = yield* criarRodada();
+      const c = caminhosRodada(rodada);
+      escreverJson(c.resultadosSubagents, yield* payloadResultadosCompletos());
+      const ok = cli("validar-resultados", "--rodada-dir", rodada);
+      expect(ok.codigo).toBe(0);
+      expect(JSON.parse(ok.stdout).valido).toBe(true);
+      const payload = yield* payloadResultadosCompletos();
+      payload.grupos[0]!.resultados.pop();
+      escreverJson(c.resultadosSubagents, payload);
+      const erro = cli("validar-resultados", "--rodada-dir", rodada);
+      expect(erro.codigo).toBe(1);
+      expect(erro.stderr).toContain("ErroResultadosSubagents: Fichas sem resultado:");
+    }),
+  );
 });
 
 describe("conteúdo das fichas, validações e prompts", () => {
@@ -1251,7 +1289,7 @@ describe("conteúdo das fichas, validações e prompts", () => {
   });
 
   test("validação cruzada fecha a aritmética de carga horária com memória de cálculo", () => {
-    const validacao = lerJsonDaRodada(NodePath.join(caminhos.validacoesCruzadasDir, "vc-05-16.json")) as Dicionario;
+    const validacao = lerJson(NodePath.join(caminhos.validacoesCruzadasDir, "vc-05-16.json")) as Dicionario;
     const prompt = NodeFS.readFileSync(NodePath.join(caminhos.promptsDir, "sintese-transversal.md"), "utf-8");
     const texto = textoFicha(validacao, ["titulo", "pergunta", "rubrica", "boa_evidencia", "ma_evidencia"]);
     expect([validacao.id, validacao.criticidade]).toEqual(["VC-05-16", "BLOQ"]);
