@@ -8,13 +8,12 @@
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
-import * as NodePath from "node:path";
 import { parse } from "yaml";
+import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import type { Sinonimos } from "../busca/sinonimos.ts";
 import { semDiacriticos } from "../busca/tokens.ts";
 import * as Ppcs from "../Ppcs.ts";
 import type { FiltrosSecoes, ModoBusca } from "../db/consultas.ts";
-import { raizRepositorio } from "../normas/registro.ts";
 
 const esquemaConsultas = Schema.Struct({
   consultas: Schema.Array(
@@ -38,12 +37,12 @@ const esquemaConsultas = Schema.Struct({
 export type ConsultasRotuladas = typeof esquemaConsultas.Type;
 const decodificarConsultas = Schema.decodeUnknownSync(esquemaConsultas, { onExcessProperty: "error", errors: "all" });
 
-export function caminhoConsultas(raiz: string = raizRepositorio()): string {
-  return NodePath.join(raiz, "avaliacao", "busca-secoes", "consultas.yaml");
+export function caminhoConsultas(raiz: string): string {
+  return noCheckout(raiz, CAMINHOS.consultasBusca);
 }
 
-export function lerConsultas(caminho: string = caminhoConsultas()): ConsultasRotuladas {
-  return decodificarConsultas(parse(NodeFS.readFileSync(caminho, "utf-8"), { schema: "failsafe" }));
+export function lerConsultas(raiz: string): ConsultasRotuladas {
+  return decodificarConsultas(parse(NodeFS.readFileSync(caminhoConsultas(raiz), "utf-8"), { schema: "failsafe" }));
 }
 
 const normalizar = (t: string) => semDiacriticos(t).toLowerCase().replace(/\s+/g, " ").trim();
@@ -80,16 +79,20 @@ export class ConsultasRotuladasIlegiveis extends Schema.TaggedError<ConsultasRot
  * Recall@k de cada consulta rotulada nos três modos, pelo `Ppcs.buscarSecoes`. O modo `completo` usa
  * o léxico de `FontesNormativas` (ou `opcoes.lexico`); os outros, um léxico vazio.
  */
-export const avaliarBusca = Effect.fn("avaliacao.avaliarBusca")(function* (
-  opcoes: { readonly lexico?: Sinonimos; readonly k?: number; readonly conjunto?: ConsultasRotuladas } = {},
-) {
+export const avaliarBusca = Effect.fn("avaliacao.avaliarBusca")(function* (opcoes: {
+  /** Checkout de onde vem o conjunto rotulado, quando `conjunto` não é dado. */
+  readonly raiz: string;
+  readonly lexico?: Sinonimos;
+  readonly k?: number;
+  readonly conjunto?: ConsultasRotuladas;
+}) {
   const ppcs = yield* Ppcs.Ppcs;
   const k = opcoes.k ?? 10;
   const conjunto =
     opcoes.conjunto ??
     (yield* Effect.try({
-      try: () => lerConsultas(),
-      catch: (cause) => new ConsultasRotuladasIlegiveis({ caminho: caminhoConsultas(), cause }),
+      try: () => lerConsultas(opcoes.raiz),
+      catch: (cause) => new ConsultasRotuladasIlegiveis({ caminho: caminhoConsultas(opcoes.raiz), cause }),
     }));
   const somas: Record<ModoBusca, number> = { simples: 0, radicais: 0, completo: 0 };
   const detalhes: ResultadoAvaliacaoBusca["detalhes"] = [];

@@ -26,22 +26,11 @@ import { radicais } from "../busca/tokens.ts";
 import type { Canal } from "../canal.ts";
 import { cruzarPpcSuap } from "../fatos/divergencias.ts";
 import { extrairFatosPpc, type SecaoDoPpc } from "../fatos/ppc.ts";
-import {
-  carregarDadosInstitucionaisKb,
-  linhaDaChave,
-  linhaDoValor,
-  matrizesDoResumo,
-  PASTA_INSTITUCIONAL,
-} from "../institucional/dados.ts";
+import { carregarDadosInstitucionaisKb, linhaDaChave, linhaDoValor, matrizesDoResumo } from "../institucional/dados.ts";
+import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { analisarFrontMatter } from "../normas/front-matter.ts";
 import { idDoAto } from "../normas/ids.ts";
-import {
-  caminhoStubs,
-  carregarRegistro,
-  lerRegistroStubs,
-  raizRepositorio,
-  type Registro,
-} from "../normas/registro.ts";
+import { caminhoStubs, carregarRegistro, lerRegistroStubs, type Registro } from "../normas/registro.ts";
 import { segmentosCitantes } from "../normas/citacoes-normas.ts";
 import { extrairCitacoes } from "../normas/resolver.ts";
 import { dataReferencia, derivarLinha } from "../normas/vigencia.ts";
@@ -67,13 +56,11 @@ import { emTransacao } from "./transacao.ts";
 const PAGE_SIZE = 4096;
 
 export interface OpcoesCompilacao {
-  raiz?: string;
-  destino?: string;
   /** Carga da fase 5 (padrão: `fontesNormativasArquivos(raiz)`, pela API de `normas/`). */
   fontesNormativas?: LinhasNormativas;
-  /** Léxico de sinônimos (padrão: `packages/kb/dados/sinonimos.yaml`). */
+  /** Léxico de sinônimos (padrão: `packages/kb/dados/sinonimos.yaml` do checkout em `raiz`). */
   sinonimos?: Sinonimos;
-  /** Tópicos das fichas → tipos de seção (padrão: `packages/kb/dados/topicos-secoes.yaml`). */
+  /** Tópicos das fichas → tipos de seção (padrão: `packages/kb/dados/topicos-secoes.yaml` do checkout). */
   topicosSecoes?: TopicosSecoes;
   /**
    * Identificação do build, gravada em `meta` só quando informada (sem ela, o banco depende só das
@@ -90,9 +77,6 @@ export interface ResumoCompilacao {
   fontes_sha256: string;
   contagens: Record<string, number>;
 }
-
-const BASE = "base-conhecimento";
-const ANALISE = ".agents/skills/revisar-ppc/base-analise";
 
 const json = (valor: unknown): string => JSON.stringify(valor ?? null);
 
@@ -411,9 +395,8 @@ interface OpcoesPpcAvulso {
   campus_nome?: string;
   nivel?: string;
   tipo_oferta?: string;
-  raiz?: string;
-  sinonimos?: Sinonimos;
-  registro?: Registro;
+  sinonimos: Sinonimos;
+  registro: Registro;
   /**
    * Grava também as seções que o índice publicado deixa de fora (`pretextual`, `outros` e as de
    * texto curto, com chave `<tipo>-x<n>`): numa minuta, a capa e os campos curtos da identificação
@@ -436,7 +419,7 @@ interface OpcoesPpcAvulso {
  * `gravarSecoesECitacoes`. As consultas de seções (`secoesDoPpc`, `buscarSecoes`) e de citações
  * rodam nele sem mudança.
  */
-export function bancoDoPpcAvulso(markdownOriginal: string, opcoes: OpcoesPpcAvulso = {}): NodeSqlite.DatabaseSync {
+export function bancoDoPpcAvulso(markdownOriginal: string, opcoes: OpcoesPpcAvulso): NodeSqlite.DatabaseSync {
   const markdown = markdownOriginal.replace(/\r\n?/g, "\n");
   const paraSegmentar = opcoes.titulosNivel1 ? markdown.replace(/^#(?=[ \t])/gm, "##") : markdown;
   const ppcId = opcoes.ppcId ?? "ppc:avulso";
@@ -482,9 +465,8 @@ export function bancoDoPpcAvulso(markdownOriginal: string, opcoes: OpcoesPpcAvul
         linha_fim: secao.linhaFim,
         texto: secao.texto,
       })),
-      // com o registro informado (modo banco), nada procura o checkout
-      registro: opcoes.registro ?? carregarRegistro(opcoes.raiz ?? raizRepositorio()),
-      lexico: opcoes.sinonimos ?? lerSinonimos(),
+      registro: opcoes.registro,
+      lexico: opcoes.sinonimos,
       expansoes: new Map(),
       insFts: db.prepare(
         "INSERT INTO secoes_fts (rowid, titulo, texto, titulo_radicais, radicais, expansao) VALUES (?, ?, ?, ?, ?, ?)",
@@ -525,9 +507,9 @@ export function prepararCompilacao(
     leitura,
     contexto: {
       raiz,
-      base: NodePath.join(raiz, BASE),
-      lexico: opcoes.sinonimos ?? lerSinonimos(),
-      topicosSecoes: opcoes.topicosSecoes ?? lerTopicosSecoes(),
+      base: noCheckout(raiz, CAMINHOS.base),
+      lexico: opcoes.sinonimos ?? lerSinonimos(raiz),
+      topicosSecoes: opcoes.topicosSecoes ?? lerTopicosSecoes(raiz),
       fontesNormativas: opcoes.fontesNormativas ?? fontesNormativasArquivos(raiz),
       arquivos,
       fontesSha,
@@ -584,7 +566,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
   emTransacao(db, () => {
     /* ---------- normas */
     const registro = carregarRegistro(raiz);
-    const manifest = decodificarManifest(lerJson(NodePath.join(base, "manifest.json")));
+    const manifest = decodificarManifest(lerJson(noCheckout(raiz, CAMINHOS.manifest)));
     const insFtsNorma = db.prepare("INSERT INTO normas_fts (rowid, titulo, texto, radicais) VALUES (?, ?, ?, ?)");
     const blocoMetadados = (
       id: string,
@@ -598,7 +580,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       insFtsNorma.run(rowid, titulo, texto, radicais(`${titulo}\n${texto}`).join(" "));
     };
     for (const item of [...manifest].sort((a, b) => compararTexto(a.id, b.id))) {
-      const caminhoMd = `${BASE}/${item.path}`;
+      const caminhoMd = `${CAMINHOS.base}/${item.path}`;
       const md = NodeFS.readFileSync(NodePath.join(raiz, caminhoMd), "utf-8").replace(/\r\n?/g, "\n");
       const { meta } = analisarFrontMatter(md, caminhoMd);
       ins.inserir("normas", {
@@ -738,9 +720,9 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         });
       }
     }
-    const cnct = decodificarCnctIndice(lerJson(NodePath.join(base, "catalogos", "cnct", "index.json")));
+    const cnct = decodificarCnctIndice(lerJson(noCheckout(raiz, CAMINHOS.indiceCnct)));
     for (const item of [...cnct.items].sort((a, b) => compararTexto(a.id, b.id))) {
-      const caminho = item.path ? `${BASE}/${item.path}` : null;
+      const caminho = item.path ? `${CAMINHOS.base}/${item.path}` : null;
       const completo =
         caminho && NodeFS.existsSync(NodePath.join(raiz, caminho)) ? lerJson(NodePath.join(raiz, caminho)) : item;
       ins.inserir("cnct", {
@@ -755,7 +737,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       });
     }
 
-    const indice = decodificarIndicePpcs(lerJson(NodePath.join(base, "institucional", "ifpr", "ppcs", "index.json")));
+    const indice = decodificarIndicePpcs(lerJson(noCheckout(raiz, CAMINHOS.indicePpcs)));
     const itensPpc = [...indice.items].sort((a, b) => compararTexto(a.id, b.id));
     const ppcPorPath = new Map(itensPpc.map((item) => [item.path, item]));
     const cursoPorPpcPath = new Map<string, string>();
@@ -832,7 +814,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
     }
     // o mesmo oferta_id aparece em processos diferentes: a chave é o caminho (processo/oferta)
     const chaveOferta = (arquivo: string) =>
-      arquivo.slice(`${PASTA_INSTITUCIONAL}/ofertas/`.length).replace(/\.json$/, "");
+      arquivo.slice(`${CAMINHOS.institucional}/ofertas/`.length).replace(/\.json$/, "");
     const ofertas = [...dados.ofertas].sort((a, b) => compararTexto(chaveOferta(a.arquivo), chaveOferta(b.arquivo)));
     for (const { arquivo, conteudo, dados: o } of ofertas) {
       ins.inserir("ofertas", {
@@ -882,7 +864,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
     const expansoes = new Map<string, string>();
     const cache = new Map<string, string>();
     for (const item of itensPpc) {
-      const caminhoMd = `${BASE}/${item.path}`;
+      const caminhoMd = `${CAMINHOS.base}/${item.path}`;
       const bruto = NodeFS.readFileSync(NodePath.join(raiz, caminhoMd), "utf-8");
       const markdown = bruto.replace(/\r\n?/g, "\n");
       cache.clear();
@@ -989,7 +971,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
     }
 
     /* ---------- fichas, tópicos e marcos da revisar-ppc */
-    const dirFichas = NodePath.join(raiz, ANALISE, "fichas");
+    const dirFichas = noCheckout(raiz, CAMINHOS.fichas);
     const arquivosFichas = NodeFS.existsSync(dirFichas)
       ? NodeFS.readdirSync(dirFichas)
           .filter((nome) => nome.endsWith(".json"))
@@ -1011,7 +993,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         tipo_escopo: ficha.tipo_escopo,
         pergunta: ficha.pergunta,
         rubrica: ficha.rubrica,
-        path: `${ANALISE}/fichas/${nome}`,
+        path: `${CAMINHOS.fichas}/${nome}`,
         dados_json: json(ficha),
         arquivo_json: json(bruto),
       });
@@ -1027,7 +1009,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
       });
       for (const topico of ficha.topicos_tematicos ?? []) fichaTopico.add(`${ficha.id}\0${topico}`);
     }
-    const arquivoTopicos = NodePath.join(raiz, ANALISE, "topicos-fichas.json");
+    const arquivoTopicos = noCheckout(raiz, CAMINHOS.topicosFichas);
     if (NodeFS.existsSync(arquivoTopicos)) {
       const bruto = lerJson(arquivoTopicos);
       const brutos = decodificarTopicosBrutos(bruto).topicos;
@@ -1041,7 +1023,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
           tipo_escopo: t.tipo_escopo,
           descricao: t.descricao,
           termos_json: json({ aliases_titulo: t.aliases_titulo ?? [], termos_busca: t.termos_busca ?? [] }),
-          path: `${ANALISE}/topicos-fichas.json`,
+          path: CAMINHOS.topicosFichas,
           dados_json: json(t.bruto),
         });
         for (const ficha of t.fichas ?? []) fichaTopico.add(`${ficha}\0${t.id}`);
@@ -1056,7 +1038,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
         ordem,
         topico,
         tipos_json: json(tipos),
-        path: "packages/kb/dados/topicos-secoes.yaml",
+        path: CAMINHOS.topicosSecoes,
       });
     });
 
@@ -1067,7 +1049,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
     lexico.grupos.forEach((termos, ordem) => ins.inserir("sinonimos_grupos", { ordem, termos_json: json(termos) }));
     // marcos-normativos.json guarda a linha do tema; vigente, substituídas, antecessoras e
     // dispositivos revogados vêm de derivarLinha (fase 5) na data_referencia, como na revisar-ppc.
-    const arquivoMarcos = NodePath.join(raiz, ANALISE, "marcos-normativos.json");
+    const arquivoMarcos = noCheckout(raiz, CAMINHOS.marcos);
     if (NodeFS.existsSync(arquivoMarcos)) {
       const marcos = decodificarMarcos(lerJson(arquivoMarcos));
       const referencia = dataReferencia(raiz);
@@ -1081,7 +1063,7 @@ export function preencherBanco(db: NodeSqlite.DatabaseSync, c: ContextoPreenchim
           transicao: m.transicao,
           orientacao_analise: m.orientacao_analise,
           normas_json: json({ linha: m.linha, data_referencia: referencia, ...derivado }),
-          path: `${ANALISE}/marcos-normativos.json`,
+          path: CAMINHOS.marcos,
           dados_json: json(m),
         });
       }

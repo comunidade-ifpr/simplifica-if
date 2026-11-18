@@ -7,9 +7,10 @@
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
+import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { idDoAto } from "../normas/ids.ts";
-import { raizRepositorio, type Registro } from "../normas/registro.ts";
-import { type Citacao, extrairCitacoes, registroPadrao } from "../normas/resolver.ts";
+import type { Registro } from "../normas/registro.ts";
+import { type Citacao, extrairCitacoes } from "../normas/resolver.ts";
 import { compararTexto } from "../texto.ts";
 import { mascararFrontMatter } from "./front-matter.ts";
 import { textoDaSecao } from "./secoes.ts";
@@ -31,8 +32,8 @@ const esquemaItemPpc = Schema.StructWithRest(
 export type ItemPpc = typeof esquemaItemPpc.Type;
 const decodificarIndicePpcs = Schema.decodeUnknownSync(Schema.Struct({ items: Schema.Array(esquemaItemPpc) }));
 
-export function caminhoBase(raiz: string = raizRepositorio()): string {
-  return NodePath.join(raiz, "base-conhecimento");
+export function caminhoBase(raiz: string): string {
+  return noCheckout(raiz, CAMINHOS.base);
 }
 
 /**
@@ -42,7 +43,7 @@ export function caminhoBase(raiz: string = raizRepositorio()): string {
  */
 export function lerTextoSecao(
   secao: { path: string; linha_inicio: number; linha_fim: number },
-  opcoes: { incluirTitulo?: boolean; raiz?: string; cache?: Map<string, string> } = {},
+  opcoes: { raiz: string; incluirTitulo?: boolean; cache?: Map<string, string> },
 ): string {
   // `cache` (caminho → texto) evita reler o mesmo PPC a cada seção, como na compilação do kb.sqlite.
   let texto = opcoes.cache?.get(secao.path);
@@ -54,8 +55,8 @@ export function lerTextoSecao(
 }
 
 /** Itens de `ppcs/index.json`, ordenados por id. */
-export function carregarIndicePpcs(raiz: string = raizRepositorio()): ItemPpc[] {
-  const arquivo = NodePath.join(caminhoBase(raiz), "institucional", "ifpr", "ppcs", "index.json");
+export function carregarIndicePpcs(raiz: string): ItemPpc[] {
+  const arquivo = noCheckout(raiz, CAMINHOS.indicePpcs);
   const indice = decodificarIndicePpcs(JSON.parse(NodeFS.readFileSync(arquivo, "utf-8")));
   return [...indice.items].sort((a, b) => compararTexto(a.id, b.id));
 }
@@ -64,11 +65,7 @@ export function carregarIndicePpcs(raiz: string = raizRepositorio()): ItemPpc[] 
  * Citações de um PPC pelo caminho relativo a `base-conhecimento/` (como `ppc.markdown_path`). O front
  * matter de proveniência fica em branco: não gera citação, e as linhas continuam as do arquivo.
  */
-export function citacoesDoArquivo(
-  caminhoRelativo: string,
-  registro: Registro = registroPadrao(),
-  raiz: string = raizRepositorio(),
-): Citacao[] {
+export function citacoesDoArquivo(caminhoRelativo: string, registro: Registro, raiz: string): Citacao[] {
   const bruto = NodeFS.readFileSync(NodePath.join(caminhoBase(raiz), caminhoRelativo), "utf-8").replace(/\r\n?/g, "\n");
   const texto = mascararFrontMatter(bruto);
   return extrairCitacoes(texto, registro);
@@ -178,10 +175,9 @@ function ocorrencia(citacao: Citacao): Ocorrencia {
  */
 export function ppcsQueCitam(
   idConsultado: string,
-  opcoes: { registro?: Registro; raiz?: string; confiancaMinima?: number } = {},
+  opcoes: { registro: Registro; raiz: string; confiancaMinima?: number },
 ): PpcCitante[] {
-  const registro = opcoes.registro ?? registroPadrao();
-  const raiz = opcoes.raiz ?? raizRepositorio();
+  const { registro, raiz } = opcoes;
   const [idNorma, dispositivo] = idConsultado.split("#") as [string, string | undefined];
   const ato = idDoAto(idNorma);
   const minimo = opcoes.confiancaMinima ?? 0;
@@ -250,10 +246,6 @@ export function normasCitadasNoPpc(
 }
 
 /** Normas citadas pelo PPC em `caminhoRelativo` (relativo a `base-conhecimento/`), pelos arquivos. */
-export function normasCitadasDoArquivo(
-  caminhoRelativo: string,
-  registro: Registro = registroPadrao(),
-  raiz: string = raizRepositorio(),
-): NormaCitadaNoPpc[] {
+export function normasCitadasDoArquivo(caminhoRelativo: string, registro: Registro, raiz: string): NormaCitadaNoPpc[] {
   return normasCitadasNoPpc(citacoesDoArquivo(caminhoRelativo, registro, raiz));
 }

@@ -4,6 +4,7 @@
  * aqui nos dois sentidos (o `validar-base` da skill exige verificador para cada ficha D; este teste
  * exige caso para cada verificador).
  */
+import { raizRepositorio } from "@simplifica-if/kb/caminhos";
 import { carregarRegistro } from "@simplifica-if/kb/normas/registro";
 import { carregarRelacoes } from "@simplifica-if/kb/normas/relacoes";
 import { describe, expect, test } from "vite-plus/test";
@@ -26,8 +27,8 @@ const CNCT: CursoCnct = {
     "Para ingresso no curso técnico integrado ao ensino médio, o estudante deverá ter concluído o ensino fundamental.",
 };
 
-const registro = carregarRegistro();
-const relacoes = carregarRelacoes();
+const registro = carregarRegistro(raizRepositorio());
+const relacoes = carregarRelacoes(raizRepositorio());
 /**
  * Vigência da base, com a situação de hoje fixada: a 2/2026 e a revogação da 1/2021 por ela "a
  * confirmar" (sem a publicação no DOU). Assim o teste não quebra quando a data for registrada.

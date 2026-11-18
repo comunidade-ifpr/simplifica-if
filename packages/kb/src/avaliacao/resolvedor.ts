@@ -11,9 +11,10 @@ import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { parse } from "yaml";
+import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { idDoAto } from "../normas/ids.ts";
-import { raizRepositorio, type Registro } from "../normas/registro.ts";
-import { extrairCitacoes, registroPadrao } from "../normas/resolver.ts";
+import type { Registro } from "../normas/registro.ts";
+import { extrairCitacoes } from "../normas/resolver.ts";
 import { carregarIndicePpcs } from "../ppcs/citacoes.ts";
 import { mascararFrontMatter } from "../ppcs/front-matter.ts";
 import { compararTexto } from "../texto.ts";
@@ -39,12 +40,9 @@ const decodificarAnotacoes = Schema.decodeUnknownSync(esquemaCitacoesAnotadas, {
   errors: "all",
 });
 
-export function caminhoAnotacoes(raiz: string = raizRepositorio()): string {
-  return NodePath.join(raiz, "avaliacao", "resolvedor", "citacoes-anotadas.yaml");
-}
-
-export function lerAnotacoes(caminho: string = caminhoAnotacoes()): CitacoesAnotadas {
-  return decodificarAnotacoes(parse(NodeFS.readFileSync(caminho, "utf-8")));
+/** O conjunto anotado de `avaliacao/resolvedor/citacoes-anotadas.yaml` do checkout em `raiz`. */
+export function lerAnotacoes(raiz: string): CitacoesAnotadas {
+  return decodificarAnotacoes(parse(NodeFS.readFileSync(noCheckout(raiz, CAMINHOS.anotacoesResolvedor), "utf-8")));
 }
 
 export interface ErroAvaliacao {
@@ -75,11 +73,7 @@ function arredondar(valor: number): number {
   return Math.round(valor * 1000) / 1000;
 }
 
-export function avaliarResolvedor(
-  anotacoes: CitacoesAnotadas = lerAnotacoes(),
-  registro: Registro = registroPadrao(),
-  raiz: string = raizRepositorio(),
-): ResultadoAvaliacao {
+export function avaliarResolvedor(anotacoes: CitacoesAnotadas, registro: Registro, raiz: string): ResultadoAvaliacao {
   const caminhos = new Map(carregarIndicePpcs(raiz).map((ppc) => [ppc.id, ppc.path]));
   const problemas: string[] = [];
   const erros: ErroAvaliacao[] = [];
@@ -97,7 +91,9 @@ export function avaliarResolvedor(
       problemas.push(`${ppc}: PPC fora do índice`);
       continue;
     }
-    const texto = mascararFrontMatter(NodeFS.readFileSync(NodePath.join(raiz, "base-conhecimento", relativo), "utf-8"));
+    const texto = mascararFrontMatter(
+      NodeFS.readFileSync(NodePath.join(noCheckout(raiz, CAMINHOS.base), relativo), "utf-8"),
+    );
     const citacoes = extrairCitacoes(texto, registro);
     const linhasTexto = texto.split("\n");
 

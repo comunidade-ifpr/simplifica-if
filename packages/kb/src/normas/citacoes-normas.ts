@@ -5,7 +5,7 @@
  * responder pelo banco sem reprocessar os Markdown.
  */
 import { carregarEstruturas } from "./estrutura.ts";
-import { raizRepositorio, type Registro } from "./registro.ts";
+import type { Registro } from "./registro.ts";
 import { extrairCitacoes } from "./resolver.ts";
 
 /** Citação resolvida (com ID) e os dispositivos citados, como o impacto as compara. */
@@ -47,11 +47,7 @@ export function citacoesResolvidas(texto: string, registro: Registro): CitacaoRe
  * Segmentos (dispositivos e preâmbulo) das normas da base, com as citações, na ordem dos arquivos;
  * com `excetoAto`, sem os do próprio ato (o impacto não conta a norma citando a si mesma).
  */
-export function* segmentosCitantes(
-  registro: Registro,
-  raiz: string = raizRepositorio(),
-  excetoAto?: string,
-): Generator<SegmentoCitante> {
+export function* segmentosCitantes(registro: Registro, raiz: string, excetoAto?: string): Generator<SegmentoCitante> {
   for (const estrutura of carregarEstruturas(raiz)) {
     if (estrutura.ato === excetoAto) continue;
     for (const segmento of estrutura.segmentos) {

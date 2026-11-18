@@ -1,11 +1,16 @@
 import { describe, expect, test } from "vite-plus/test";
 import { adequacaoArt71, INDICADORES } from "../adequacao/art71.ts";
+import { raizRepositorio } from "../caminhos.ts";
+import { carregarRegistro } from "../normas/registro.ts";
 import { ppcsQueCitam } from "../ppcs/citacoes.ts";
 import { avaliarResolvedor, lerAnotacoes } from "./resolvedor.ts";
 
+const raiz = raizRepositorio();
+const registro = carregarRegistro(raiz);
+
 describe("avaliação do resolvedor (avaliacao/resolvedor/citacoes-anotadas.yaml)", () => {
-  const anotacoes = lerAnotacoes();
-  const resultado = avaliarResolvedor(anotacoes);
+  const anotacoes = lerAnotacoes(raiz);
+  const resultado = avaliarResolvedor(anotacoes, registro, raiz);
 
   test("conjunto anotado: 20 PPCs, ~200 citações, trechos únicos", () => {
     expect(anotacoes.ppcs.length).toBe(20);
@@ -26,14 +31,14 @@ describe("avaliação do resolvedor (avaliacao/resolvedor/citacoes-anotadas.yaml
 
 describe("consultas sobre os PPCs", () => {
   test("kb citacoes é determinístico e acha a DCN de 2021 com órgão trocado", () => {
-    const primeira = ppcsQueCitam("br/cne-cp/res/2021/1");
-    expect(JSON.stringify(ppcsQueCitam("br/cne-cp/res/2021/1"))).toBe(JSON.stringify(primeira));
+    const primeira = ppcsQueCitam("br/cne-cp/res/2021/1", { raiz, registro });
+    expect(JSON.stringify(ppcsQueCitam("br/cne-cp/res/2021/1", { raiz, registro }))).toBe(JSON.stringify(primeira));
     const trocados = primeira.filter((ppc) => ppc.ocorrencias.some((o) => o.regra.startsWith("dcnept-2021-orgao-")));
     expect(trocados.length).toBeGreaterThanOrEqual(17);
   });
 
   test("adequação ao art. 71: todo curso alcançado tem um indicador", () => {
-    const relatorio = adequacaoArt71();
+    const relatorio = adequacaoArt71({ raiz, registro });
     const soma = INDICADORES.reduce((total, indicador) => total + relatorio.totais[indicador], 0);
     expect(soma).toBe(relatorio.total);
     expect(relatorio.cursos.every((curso) => curso.situacao === "ativo" || curso.situacao === "em_oferta")).toBe(true);

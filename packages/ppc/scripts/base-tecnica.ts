@@ -8,7 +8,8 @@
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { carregarRegistro, raizRepositorio } from "@simplifica-if/kb/normas/registro";
+import { raizRepositorio } from "@simplifica-if/kb/caminhos";
+import { carregarRegistro } from "@simplifica-if/kb/normas/registro";
 import { carregarRelacoes } from "@simplifica-if/kb/normas/relacoes";
 import { carregarDatas, carregarTransicoes, dataReferencia } from "@simplifica-if/kb/normas/vigencia";
 import type { BaseRevisaoPrevia } from "../src/revisao-previa.ts";

@@ -41,7 +41,7 @@
  */
 import { analisarDispositivos, dispositivoAntes, dispositivoDepois } from "./dispositivos.ts";
 import { ehIdExterno, montarIdNorma, partesIdNorma } from "./ids.ts";
-import { carregarRegistro, datasDoAto, type Registro, type Situacao } from "./registro.ts";
+import { datasDoAto, type Registro, type Situacao } from "./registro.ts";
 import { normalizarComMapa, normalizarCitacao } from "./texto-citacao.ts";
 
 export interface Resolucao {
@@ -757,11 +757,7 @@ function achadosEstruturais(t: string, registro: Registro): Achado[] {
 }
 
 /** Extrai e resolve todas as citações de um texto, na ordem em que aparecem. */
-export function extrairCitacoes(
-  original: string,
-  registro: Registro = registroPadrao(),
-  opcoes: OpcoesExtracao = {},
-): Citacao[] {
+export function extrairCitacoes(original: string, registro: Registro, opcoes: OpcoesExtracao = {}): Citacao[] {
   const { texto, origem } = normalizarComMapa(original);
   const achados: Achado[] = [];
 
@@ -818,7 +814,7 @@ export function extrairCitacoes(
  * "CNCT"). Usa a primeira citação com ID do texto e lê os dispositivos do restante. Devolve
  * `id: null` com `regra: "nao-reconhecida"` quando nada é reconhecido.
  */
-export function resolverCitacao(texto: string, registro: Registro = registroPadrao()): Resolucao {
+export function resolverCitacao(texto: string, registro: Registro): Resolucao {
   const citacoes = extrairCitacoes(texto, registro);
   const escolhida = citacoes.find((citacao) => citacao.id !== null) ?? citacoes[0];
   const normalizado = normalizarCitacao(texto).trim();
@@ -849,12 +845,4 @@ export function resolucaoComEntrada(texto: string, registro: Registro): Resoluca
   const resultado = resolverCitacao(texto, registro);
   const entrada = resultado.id ? registro.obter(resultado.id) : undefined;
   return { texto, ...resultado, ...(entrada ? { titulo: entrada.title, path: entrada.path ?? null } : {}) };
-}
-
-let padrao: Registro | null = null;
-
-/** Registro do checkout (lido uma vez por processo). */
-export function registroPadrao(): Registro {
-  padrao ??= carregarRegistro();
-  return padrao;
 }

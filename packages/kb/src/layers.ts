@@ -24,6 +24,7 @@ import * as Normas from "./Normas.ts";
 import * as PacoteContexto from "./PacoteContexto.ts";
 import * as Ppcs from "./Ppcs.ts";
 import type * as Sql from "./db/sql.ts";
+import { CAMINHOS } from "./caminhos.ts";
 
 /** Os serviços de consulta. */
 export type ServicosConsulta =
@@ -56,7 +57,7 @@ export const layerSomenteLeitura = (opcoes: {
 const caminhoDoBanco = Effect.fn("layers.caminhoDoBanco")(function* (raiz: string) {
   const path = yield* Path.Path;
   const configurado = yield* Config.option(Config.String("KB_SQLITE"));
-  return Option.isSome(configurado) ? path.resolve(configurado.value) : path.join(raiz, "tmp", "kb.sqlite");
+  return Option.isSome(configurado) ? path.resolve(configurado.value) : path.join(raiz, ...CAMINHOS.banco.split("/"));
 });
 
 /** O `SqlClient` do banco da CLI, depois de garantir que ele corresponde às fontes. */

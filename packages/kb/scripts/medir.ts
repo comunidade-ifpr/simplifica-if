@@ -28,7 +28,7 @@ import * as Layers from "../src/layers.ts";
 import * as Normas from "../src/Normas.ts";
 import * as PacoteContexto from "../src/PacoteContexto.ts";
 import * as Ppcs from "../src/Ppcs.ts";
-import { raizRepositorio } from "../src/normas/registro.ts";
+import { raizRepositorio } from "../src/caminhos.ts";
 
 type Erro =
   | Sql.FalhaNaConsulta

@@ -1,8 +1,12 @@
 /** Dispositivos citados → IDs (`dispositivos.ts`): inciso com letra, item, faixas, conjunções e desempenho. */
 import { describe, expect, test } from "vite-plus/test";
 import { analisarDispositivos, dispositivoAntes } from "./dispositivos.ts";
+import { raizRepositorio } from "../caminhos.ts";
+import { carregarRegistro } from "./registro.ts";
 import { resolverCitacao } from "./resolver.ts";
 import { normalizarCitacao } from "./texto-citacao.ts";
+
+const registro = carregarRegistro(raizRepositorio());
 
 describe("analisarDispositivos", () => {
   test.each([
@@ -23,7 +27,7 @@ describe("analisarDispositivos", () => {
   });
 
   test("inciso com letra na citação completa", () => {
-    expect(resolverCitacao("Lei nº 9.394/1996, art. 9º, inciso IV-A").dispositivoId).toBe("#art9-ivA");
+    expect(resolverCitacao("Lei nº 9.394/1996, art. 9º, inciso IV-A", registro).dispositivoId).toBe("#art9-ivA");
   });
 });
 
@@ -37,7 +41,7 @@ describe("dispositivoAntes em tempo linear", () => {
     // o teste é de tempo de execução (regressão de backtracking quadrático): mede de propósito
     // oxlint-disable-next-line simplifica-if/no-wall-clock-in-tests -- mede o tempo da regra pura, sem Effect
     const inicio = performance.now();
-    expect(resolverCitacao(texto).id).toBe("br/lei/1996/9394");
+    expect(resolverCitacao(texto, registro).id).toBe("br/lei/1996/9394");
     const prefixo = normalizarCitacao(texto.slice(0, texto.indexOf(" da Lei") + 3));
     expect(dispositivoAntes(prefixo)).toBeNull();
     // oxlint-disable-next-line simplifica-if/no-wall-clock-in-tests -- mede o tempo da regra pura, sem Effect

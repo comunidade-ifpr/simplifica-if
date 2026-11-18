@@ -12,10 +12,9 @@
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { PASTA_INSTITUCIONAL } from "../institucional/dados.ts";
+import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { idDoAto } from "../normas/ids.ts";
-import { raizRepositorio, type Registro } from "../normas/registro.ts";
-import { registroPadrao } from "../normas/resolver.ts";
+import type { Registro } from "../normas/registro.ts";
 import { citacoesDoArquivo } from "../ppcs/citacoes.ts";
 import { compararTexto } from "../texto.ts";
 
@@ -104,21 +103,18 @@ export interface FonteAdequacao {
   citacoesDoPpc(markdown: string): { id: string | null; linha: number; regra: string }[] | null;
 }
 
-export function fonteAdequacaoArquivos(
-  raiz: string = raizRepositorio(),
-  registro: Registro = registroPadrao(),
-): FonteAdequacao {
+export function fonteAdequacaoArquivos(raiz: string, registro: Registro): FonteAdequacao {
   return {
     cursos: () => lerCursos(raiz),
     citacoesDoPpc: (markdown) =>
-      NodeFS.existsSync(NodePath.join(raiz, "base-conhecimento", markdown))
+      NodeFS.existsSync(NodePath.join(noCheckout(raiz, CAMINHOS.base), markdown))
         ? citacoesDoArquivo(markdown, registro, raiz)
         : null,
   };
 }
 
 function lerCursos(raiz: string): Curso[] {
-  const dir = NodePath.join(raiz, PASTA_INSTITUCIONAL, "cursos");
+  const dir = noCheckout(raiz, `${CAMINHOS.institucional}/cursos`);
   const cursos: Curso[] = [];
   for (const campus of NodeFS.readdirSync(dir, { withFileTypes: true }).sort((a, b) => compararTexto(a.name, b.name))) {
     // O index.json da coleção fica ao lado das pastas de campus.
@@ -132,10 +128,12 @@ function lerCursos(raiz: string): Curso[] {
   return cursos;
 }
 
-export function adequacaoArt71(
-  opcoes: { raiz?: string; registro?: Registro; incluirTecnologia?: boolean } = {},
-): RelatorioAdequacao {
-  return adequacaoArt71Em(fonteAdequacaoArquivos(opcoes.raiz ?? raizRepositorio(), opcoes.registro), opcoes);
+export function adequacaoArt71(opcoes: {
+  raiz: string;
+  registro: Registro;
+  incluirTecnologia?: boolean;
+}): RelatorioAdequacao {
+  return adequacaoArt71Em(fonteAdequacaoArquivos(opcoes.raiz, opcoes.registro), opcoes);
 }
 
 /** Adequação ao art. 71 sobre uma fonte de dados (arquivos ou `kb.sqlite`). */

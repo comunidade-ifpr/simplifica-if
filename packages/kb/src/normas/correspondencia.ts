@@ -11,10 +11,10 @@ import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { parse } from "yaml";
+import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { caminhoTexto, problemas } from "../esquema/mensagens.ts";
 import { dispositivosDoAto, indiceDispositivos } from "./estrutura.ts";
 import { ehIdAto, ehIdDispositivo, idDoAto } from "./ids.ts";
-import { raizRepositorio } from "./registro.ts";
 
 /** Texto que satisfaz `predicado`, com a mensagem dada quando não satisfaz. */
 const textoQue = (predicado: (valor: string) => boolean, mensagem: string) =>
@@ -61,12 +61,12 @@ const decodificarCorrespondencia = Schema.decodeUnknownSync(esquemaCorrespondenc
   errors: "all",
 });
 
-export function diretorioCorrespondencias(raiz: string = raizRepositorio()): string {
-  return NodePath.join(raiz, "base-conhecimento", "correspondencias");
+export function diretorioCorrespondencias(raiz: string): string {
+  return noCheckout(raiz, CAMINHOS.correspondencias);
 }
 
 /** Tabelas de correspondência da base (arquivo relativo à raiz do repositório). */
-export function carregarCorrespondencias(raiz: string = raizRepositorio()): TabelaCorrespondencia[] {
+export function carregarCorrespondencias(raiz: string): TabelaCorrespondencia[] {
   const diretorio = diretorioCorrespondencias(raiz);
   if (!NodeFS.existsSync(diretorio)) return [];
   return NodeFS.readdirSync(diretorio)
@@ -111,7 +111,7 @@ export interface FonteCorrespondencia {
   artigos(ato: string): string[];
 }
 
-export function fonteCorrespondenciaArquivos(raiz: string = raizRepositorio()): FonteCorrespondencia {
+export function fonteCorrespondenciaArquivos(raiz: string): FonteCorrespondencia {
   return {
     tabelas: (ato) => carregarCorrespondencias(raiz).filter((t) => t.origem === ato),
     dispositivo: (id) => indiceDispositivos(raiz).get(id),
@@ -134,7 +134,7 @@ function ancestrais(dispositivoId: string, fonte: FonteCorrespondencia, ato: str
 }
 
 /** Correspondência de um dispositivo (ou ato) de origem, pelas tabelas da base. */
-export function correspondencia(id: string, raiz: string = raizRepositorio()): ResultadoCorrespondencia[] {
+export function correspondencia(id: string, raiz: string): ResultadoCorrespondencia[] {
   return correspondenciaEm(id, fonteCorrespondenciaArquivos(raiz));
 }
 
@@ -184,7 +184,7 @@ export function correspondenciaEm(id: string, fonte: FonteCorrespondencia): Resu
  * Dispositivos de destino que correspondem ao ato `origem` (qualquer dispositivo) ou, com `#`, ao
  * dispositivo e aos subordinados dele (para `kb impacto`).
  */
-export function destinosDeOrigem(origem: string, raiz: string = raizRepositorio()): Set<string> {
+export function destinosDeOrigem(origem: string, raiz: string): Set<string> {
   return destinosDeOrigemEm(origem, fonteCorrespondenciaArquivos(raiz));
 }
 
@@ -205,7 +205,7 @@ export function destinosDeOrigemEm(origem: string, fonte: FonteCorrespondencia):
 }
 
 /** Validação: dispositivos existentes nos dois textos, sem origem repetida, artigos da origem cobertos. */
-export function validarCorrespondencias(raiz: string = raizRepositorio()): string[] {
+export function validarCorrespondencias(raiz: string): string[] {
   let tabelas: TabelaCorrespondencia[];
   try {
     tabelas = carregarCorrespondencias(raiz);

@@ -1,6 +1,7 @@
 /** Peças do banco sem compilar: papel da citação, expressão de busca, sinônimos. */
 import { describe, expect, test } from "vite-plus/test";
 import { lerSinonimos } from "../busca/sinonimos.ts";
+import { raizRepositorio } from "../caminhos.ts";
 import { radicais } from "../busca/tokens.ts";
 import { papelDaCitacao } from "./compilar.ts";
 import { conceitosDaConsulta, expressaoFts } from "./consultas.ts";
@@ -22,7 +23,7 @@ describe("papel da citação", () => {
 });
 
 describe("consulta", () => {
-  const lexico = lerSinonimos();
+  const lexico = lerSinonimos(raizRepositorio());
   test("modos: termos, radicais e grupos de sinônimos", () => {
     expect(conceitosDaConsulta("acompanhamento de egressos", "simples")).toEqual([
       { alternativas: [["acompanhamento"]] },

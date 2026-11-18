@@ -8,9 +8,9 @@
  * direto, para a compilação do banco e a skill.
  */
 import * as NodeFS from "node:fs";
-import * as NodePath from "node:path";
 import * as Schema from "effect/Schema";
 import { parse } from "yaml";
+import { CAMINHOS, noCheckout } from "../caminhos.ts";
 
 export const esquemaTopicosSecoes = Schema.Record(
   Schema.String,
@@ -58,21 +58,12 @@ export function topicosFichasDeObjetos(objetos: ReadonlyArray<unknown>): Readonl
   return decodificarListaTopicos(objetos);
 }
 
-/** Caminho de `topicos-secoes.yaml`, relativo à raiz do repositório. */
-export const TOPICOS_SECOES = "packages/kb/dados/topicos-secoes.yaml";
-
-// Calculado na chamada, não no import: no executável empacotado, `import.meta.dirname` não aponta
-// para o pacote, e o servidor MCP nunca lê este arquivo.
-export function lerTopicosSecoes(
-  caminho: string = NodePath.resolve(import.meta.dirname, "..", "..", "dados", "topicos-secoes.yaml"),
-): TopicosSecoes {
-  return topicosSecoesDoYaml(NodeFS.readFileSync(caminho, "utf-8"));
+/** O mapa de `packages/kb/dados/topicos-secoes.yaml` do checkout em `raiz`. */
+export function lerTopicosSecoes(raiz: string): TopicosSecoes {
+  return topicosSecoesDoYaml(NodeFS.readFileSync(noCheckout(raiz, CAMINHOS.topicosSecoes), "utf-8"));
 }
-
-/** Caminho de `topicos-fichas.json`, relativo à raiz do repositório. */
-export const TOPICOS_FICHAS = ".agents/skills/revisar-ppc/base-analise/topicos-fichas.json";
 
 /** Tópicos de `.agents/skills/revisar-ppc/base-analise/topicos-fichas.json`, na ordem do arquivo. */
 export function lerTopicosFichas(raiz: string): ReadonlyArray<TopicoFichas> {
-  return topicosFichasDoJson(NodeFS.readFileSync(NodePath.join(raiz, TOPICOS_FICHAS), "utf-8"));
+  return topicosFichasDoJson(NodeFS.readFileSync(noCheckout(raiz, CAMINHOS.topicosFichas), "utf-8"));
 }

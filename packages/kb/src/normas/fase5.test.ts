@@ -20,7 +20,8 @@ import { dispositivosDoAto, listarNormas } from "./estrutura.ts";
 import { analisarFrontMatter } from "./front-matter.ts";
 import { normasComCamposGerados, reescreverFrontMatter } from "./gerado.ts";
 import { idDoAto } from "./ids.ts";
-import { carregarRegistro, raizRepositorio } from "./registro.ts";
+import { raizRepositorio } from "../caminhos.ts";
+import { carregarRegistro } from "./registro.ts";
 import { carregarRelacoes, proporRelacoes, validarRelacoes } from "./relacoes.ts";
 import { dataReferencia, derivarLinha, inicioVigencia, statusEm, transicoesAplicaveis } from "./vigencia.ts";
 

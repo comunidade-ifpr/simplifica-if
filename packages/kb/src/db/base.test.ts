@@ -45,8 +45,8 @@ import { carregarCorrespondencias, correspondencia } from "../normas/corresponde
 import { carregarDispositivos, descendentes, dispositivosDoAto, indiceDispositivos } from "../normas/estrutura.ts";
 import { obterDispositivo as obterDispositivoArquivos } from "../normas/estrutura.ts";
 import { atosComVigencia } from "../normas/fontes-db.ts";
-import { caminhoStubs, carregarRegistro, lerRegistroStubs, raizRepositorio } from "../normas/registro.ts";
-import { registroPadrao } from "../normas/resolver.ts";
+import { raizRepositorio } from "../caminhos.ts";
+import { caminhoStubs, carregarRegistro, lerRegistroStubs } from "../normas/registro.ts";
 import { carregarRelacoes, sucessorasDe } from "../normas/relacoes.ts";
 import {
   carregarTransicoes,
@@ -74,6 +74,8 @@ import { VERSAO_ESQUEMA } from "./esquema.ts";
 import * as Sql from "./sql.ts";
 
 const raiz = raizRepositorio();
+/** Registro e léxico do checkout, para o banco do PPC avulso. */
+const doCheckout = () => ({ registro: carregarRegistro(raiz), sinonimos: lerSinonimos(raiz) });
 /** Instante do relógio de teste durante as compilações: vira o mtime de cada banco. */
 const INSTANTE = DateTime.toEpochMillis(DateTime.makeUnsafe("2026-11-13T12:00:00Z"));
 const FICHAS_DA_ANALISE = ".agents/skills/revisar-ppc/base-analise/fichas/";
@@ -252,7 +254,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
 
     it.effect("recall@10 da busca de seções ≥ 0,8 (modo completo)", () =>
       Effect.gen(function* () {
-        const resultado = yield* avaliarBusca();
+        const resultado = yield* avaliarBusca({ raiz });
         expect(resultado.consultas).toBeGreaterThanOrEqual(20);
         expect(resultado.recall.completo).toBeGreaterThanOrEqual(0.8);
       }),
@@ -359,7 +361,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           const md = yield* lerTexto(`base-conhecimento/institucional/ifpr/ppcs/${chave}.md`);
           yield* Effect.scoped(
             Effect.gen(function* () {
-              const avulso = yield* ppcAvulso(md, { ppcId: "ppc:avulso", palavrasCampi: palavras, raiz });
+              const avulso = yield* ppcAvulso(md, { ppcId: "ppc:avulso", palavrasCampi: palavras, ...doCheckout() });
               const noAvulso = Effect.provide(Conexao.layerDeConexao(avulso));
               expect(yield* noAvulso(secoesDe("ppc:avulso"))).toEqual(yield* secoesDe(`ppc:${chave}`));
               expect(yield* noAvulso(citacoesDe("ppc:avulso"))).toEqual(yield* citacoesDe(`ppc:${chave}`));
@@ -375,7 +377,10 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         Effect.gen(function* () {
           const { pacote: servico } = yield* servicos;
           const md = yield* lerTexto("base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md");
-          const avulso = yield* ppcAvulso(md, { palavrasCampi: palavrasDeCampi(yield* servico.nomesDeCampi), raiz });
+          const avulso = yield* ppcAvulso(md, {
+            palavrasCampi: palavrasDeCampi(yield* servico.nomesDeCampi),
+            ...doCheckout(),
+          });
           const base = yield* servico.montar("estagio", PPC);
           const fichas = yield* servico.fichas(base.fichas_ids);
           const pacote = yield* servico.avulso(avulso, fichas);
@@ -550,8 +555,8 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           })),
         );
         // e os carregadores síncronos dos arquivos (os da compilação) dão o mesmo
-        mesmoJson(banco.sinonimos, lerSinonimos());
-        mesmoJson(banco.topicosSecoes, lerTopicosSecoes());
+        mesmoJson(banco.sinonimos, lerSinonimos(raiz));
+        mesmoJson(banco.topicosSecoes, lerTopicosSecoes(raiz));
         mesmoJson(banco.topicosFichas, lerTopicosFichas(raiz));
         mesmoJson(banco.registro, carregarRegistro(raiz).entradas);
         const { meta } = yield* BaseKb.BaseKb;
@@ -574,13 +579,13 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
 
     it.effect("citacoes, vigencia e relacoes", () =>
       Effect.gen(function* () {
-        const registro = registroPadrao();
+        const registro = carregarRegistro(raiz);
         for (const id of NORMAS) {
           for (const confianca of [undefined, 0.9]) {
             const opcoes = confianca === undefined ? {} : { confiancaMinima: confianca };
             const banco = yield* paridade(Effect.flatMap(servicos, (s) => s.ppcs.relatorioCitacoes(id, opcoes)));
             // as citações gravadas no banco são as que o resolvedor acha nos Markdown dos PPCs
-            mesmoJson(banco, relatorioCitacoes(id, ppcsQueCitamArquivos(id, opcoes), registro));
+            mesmoJson(banco, relatorioCitacoes(id, ppcsQueCitamArquivos(id, { raiz, registro, ...opcoes }), registro));
           }
           for (const em of [undefined, "2020-01-01", "2026-11-01", "2030-01-01"]) {
             yield* paridade(Effect.flatMap(servicos, (s) => s.normas.vigencia(id, em ? { em } : {})));
@@ -705,7 +710,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         for (const incluirTecnologia of [undefined, true]) {
           const opcoes = incluirTecnologia === undefined ? {} : { incluirTecnologia };
           const banco = yield* paridade(Effect.flatMap(servicos, (s) => s.cursos.adequacaoArt71(opcoes)));
-          mesmoJson(banco, adequacaoArt71({ raiz, ...opcoes }));
+          mesmoJson(banco, adequacaoArt71({ raiz, registro: carregarRegistro(raiz), ...opcoes }));
         }
       }),
     );
@@ -737,7 +742,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         const indice = (yield* lerJson("base-conhecimento/institucional/ifpr/ppcs/index.json")) as {
           items: { id: string; path: string }[];
         };
-        const registro = registroPadrao();
+        const registro = carregarRegistro(raiz);
         const amostra = [PPC, ...indice.items.filter((_, i) => i % 25 === 0).map((item) => item.id)];
         for (const ppc of amostra) {
           const item = indice.items.find((i) => i.id === ppc)!;
