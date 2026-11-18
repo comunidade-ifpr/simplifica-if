@@ -13,7 +13,6 @@ import { type Citacao, extrairCitacoes } from "@simplifica-if/kb/normas/resolver
 import { describe, expect, test } from "vite-plus/test";
 import { preConferir } from "../src/pre-conferencia.ts";
 import { citacaoSegura } from "../src/verificadores/comum.ts";
-import { carregarVigencia } from "../src/verificadores/vigencia.ts";
 import { baseComum, lerPpc, ppcsTecnicos } from "../scripts/base-tecnica.ts";
 
 const FICHAS_DE_CITACAO = new Set(["CT-IDENT-08", "CT-SUP-09", "CT-SUP-12", "CT-SUP-24"]);
@@ -21,7 +20,7 @@ const FICHAS_DE_CITACAO = new Set(["CT-IDENT-08", "CT-SUP-09", "CT-SUP-12", "CT-
 describe("pré-conferência nos PPCs técnicos da base: invariantes", () => {
   const raiz = raizRepositorio();
   const ppcs = ppcsTecnicos(raiz);
-  const comum = { ...baseComum(raiz), vigencia: carregarVigencia(raiz) };
+  const comum = baseComum(raiz);
   const resultados = ppcs.map((ppc) => {
     const markdown = lerPpc(ppc);
     return {

@@ -17,13 +17,7 @@ import type { Relacao } from "@simplifica-if/kb/normas/relacoes";
 import { type Citacao, extrairCitacoes } from "@simplifica-if/kb/normas/resolver";
 import { removerAcentos, type SecaoPpc, segmentarPpc } from "@simplifica-if/kb/ppcs/secoes";
 import { rotuloDispositivo } from "./dispositivos.ts";
-import {
-  type ConsultaVigencia,
-  fichaResponsavel,
-  revogacaoRecente,
-  sucessorasEmCadeia,
-  vigenciaPadrao,
-} from "./vigencia.ts";
+import { type ConsultaVigencia, fichaResponsavel, revogacaoRecente, sucessorasEmCadeia } from "./vigencia.ts";
 
 export { sucessorasEmCadeia } from "./vigencia.ts";
 
@@ -47,10 +41,10 @@ export type BaseVerificacao = {
   /** Relações de `base-conhecimento/relacoes.yaml` (`carregarRelacoes`), para achar a norma sucessora. */
   relacoes: readonly Relacao[];
   /**
-   * Vigência na data de referência (`carregarVigencia`): status, se é certo e as transições. Opcional:
-   * sem ela, vale a da base do checkout, carregada na primeira chamada (`vigenciaPadrao`).
+   * Vigência na data de referência: status, se é certo e as transições. O app a monta do `kb.sqlite`
+   * (`vigenciaDeDados`); os testes e scripts, dos arquivos do checkout (`scripts/base-tecnica.ts`).
    */
-  vigencia?: ConsultaVigencia;
+  vigencia: ConsultaVigencia;
   /**
    * Data do PPC (AAAA ou AAAA-MM-DD), quando conhecida (o `ano_documento` da base). Decide se uma
    * revogação sem regra de transição é posterior ao PPC (`revogacaoRecente`); sem ela, conta a idade
@@ -58,8 +52,6 @@ export type BaseVerificacao = {
    */
   dataPpc?: string | null;
 };
-
-export const vigenciaDe = (base: BaseVerificacao): ConsultaVigencia => base.vigencia ?? vigenciaPadrao();
 
 /** O PPC convertido e segmentado, com os fatos e as citações já extraídos (uma vez por PPC). */
 export type PpcPreparado = {
@@ -192,7 +184,7 @@ export function normasRevogadasCitadas(
   base: BaseVerificacao,
 ): NormaRevogadaCitada[] {
   const citadas = new Set(todasAsCitacoes.map((c) => c.id).filter((id): id is string => id !== null));
-  const vigencia = vigenciaDe(base);
+  const vigencia = base.vigencia;
   const saida: NormaRevogadaCitada[] = [];
   for (const [id, lista] of citacoesPorAto(citacoes)) {
     if (base.registro.obter(id)?.situacao === "externo" || vigencia(id).status !== "revogada") continue;
@@ -221,7 +213,7 @@ export function textoTransicao(
   id: string,
   opcoes: { incerta?: boolean } = {},
 ): { texto: string; fontes: Fonte[] } {
-  const vigencia = vigenciaDe(base)(id);
+  const vigencia = base.vigencia(id);
   const titulo = (n: string) => base.registro.obter(n)?.title ?? n;
   const regras = vigencia.transicoes.map(
     (t) => `${t.regra} (${titulo(t.norma)}, ${rotuloDispositivo(t.dispositivo.replace(/^#/, ""))})`,
@@ -252,7 +244,7 @@ export function apontamentoRevogada(
   const citacao = segura ?? norma.citacoes[0]!;
   const titulo = (id: string) => base.registro.obter(id)?.title ?? id;
   const trechos = [trecho(ppc, citacao.linha, citacao.trecho)];
-  const vigencia = vigenciaDe(base);
+  const vigencia = base.vigencia;
   const direta = norma.sucessoras[0];
   const atual = [...norma.sucessoras].reverse().find((s) => vigencia(s).status !== "revogada") ?? direta;
   const fontes = [linkNorma(norma.id), ...(direta ? [linkNorma(direta)] : [])];

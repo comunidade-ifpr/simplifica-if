@@ -1,4 +1,4 @@
-// @effect-diagnostics nodeBuiltinImport:off globalDate:off -- aritmética de datas AAAA-MM-DD da base, sem relógio; carregamento síncrono e memorizado da vigência da base, como o resto do kb
+// @effect-diagnostics globalDate:off -- aritmética de datas AAAA-MM-DD da base, sem relógio
 /**
  * Vigência das normas na data de referência da base, para os verificadores: o status que o `kb`
  * calcula (`statusEm`), se ele é certo ou depende de data "a confirmar" (a publicação da Res. CNE/CP
@@ -9,12 +9,9 @@
  * demais fichas de base legal registram o mesmo fato como `a_conferir`. `test/vigencia.test.ts`
  * confere que esta cópia bate com o arquivo da skill.
  */
-import { carregarRegistro, type EntradaRegistro, raizRepositorio, Registro } from "@simplifica-if/kb/normas/registro";
-import { carregarRelacoes, sucessorasDe, type Relacao } from "@simplifica-if/kb/normas/relacoes";
+import { type EntradaRegistro, Registro } from "@simplifica-if/kb/normas/registro";
+import { sucessorasDe, type Relacao } from "@simplifica-if/kb/normas/relacoes";
 import {
-  carregarDatas,
-  carregarTransicoes,
-  dataReferencia,
   type DatasNorma,
   type FonteVigencia,
   type ResultadoVigencia,
@@ -59,26 +56,6 @@ function presumidaHaTempo(status: ResultadoVigencia, limite: string): boolean {
     return revogacoes.some((e) => e.ocorreu === true || (e.efeito_minimo !== null && e.efeito_minimo <= limite));
   }
   return status.inicio.certo || (status.inicio.minimo !== null && status.inicio.minimo <= limite);
-}
-
-/** Consulta memorizada da vigência na data (padrão: a `data_referencia` de `config/vigencia.yaml`). */
-export function carregarVigencia(
-  raiz: string = raizRepositorio(),
-  data: string = dataReferencia(raiz),
-): ConsultaVigencia {
-  const uma = <T>(carregar: () => T) => {
-    let valor: T | undefined;
-    return () => (valor ??= carregar());
-  };
-  return consultarVigencia(
-    {
-      registro: uma(() => carregarRegistro(raiz)),
-      datas: uma(() => carregarDatas(raiz)),
-      relacoes: uma(() => carregarRelacoes(raiz)),
-      transicoes: uma(() => carregarTransicoes(raiz)),
-    },
-    data,
-  );
 }
 
 /** Os dados da vigência, planos (atravessam o `postMessage` de um Worker): do `kb.sqlite` no app. */
@@ -157,10 +134,6 @@ export function revogacaoRecente(
   if (dataPpc) return revogadaEm > (/^\d{4}$/.test(dataPpc) ? `${dataPpc}-12-31` : dataPpc);
   return true;
 }
-
-let padrao: ConsultaVigencia | undefined;
-/** A consulta da base do checkout, carregada na primeira chamada (quando `BaseVerificacao.vigencia` não vem). */
-export const vigenciaPadrao = (): ConsultaVigencia => (padrao ??= carregarVigencia());
 
 /* ------------------------------------------------------------------ marcos */
 

@@ -8,7 +8,7 @@
  *   sintéticos dá o mesmo resultado com as duas;
  * - num processo filho (`sem-repositorio.ts`), com a leitura das pastas de dados do checkout
  *   bloqueada, a revisão prévia sobre o banco dá o mesmo resultado, sem tentar ler nada delas; e a
- *   pré-conferência sem `vigencia` (o controle) esbarra no bloqueio.
+ *   leitura do registro do checkout (o controle) esbarra no bloqueio.
  */
 import * as NodeChildProcess from "node:child_process";
 import * as NodeFS from "node:fs";

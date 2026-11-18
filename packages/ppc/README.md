@@ -24,7 +24,8 @@ import { preConferir, achadosParaComentarios } from "@simplifica-if/ppc/pre-conf
 import { VERIFICADOR_POR_FICHA } from "@simplifica-if/ppc/verificadores/registro";
 
 const { fichas, triagem } = preConferir(markdown, { cnct, forma: "integrado", registro, relacoes, vigencia });
-// vigencia (opcional): carregarVigencia(raiz) de verificadores/vigencia.ts; sem ela, a da base do checkout
+// vigencia (obrigatória): no app, vigenciaDeDados(...) de verificadores/vigencia.ts, sobre o kb.sqlite;
+// nos testes e scripts, carregarVigencia(raiz) de scripts/base-tecnica.ts, sobre os arquivos do checkout
 // fichas: um ResultadoFicha por ficha D (estado atende | nao_atende | a_conferir | nao_se_aplica,
 // apontamentos com trechos literais, linha e seção, fontes ifpr://); triagem: texto dirigido à IA e seções ausentes
 const itens = achadosParaComentarios({ fichas, triagem }); // um item por trecho, com `fichas`; trechos como no DOCX
@@ -70,7 +71,7 @@ const revisao = revisarDocx(bytes, "PPC.docx", base, { agora: new Date() }); // 
 
 - **Curso:** o CNCT é a denominação mais longa do catálogo que aparece nas 200 primeiras linhas; a forma, PROEJA se aparece, senão a mais citada entre integrado, subsequente e concomitante. A pessoa pode escolher os dois (`cnct`, `forma`). Sem curso identificado, os critérios que dependem dele saem "a conferir".
 - **Temas:** a ordem do parecer da PROENS (as paradas da proposta B, `TEMAS`), pelo tópico da ficha em `topicos-fichas.json`; a triagem vem antes, em "Antes de começar".
-- **Base:** `BaseRevisaoPrevia` traz também as datas dos atos e as transições, e `revisarDocx` sempre passa `vigencia` aos verificadores (`vigenciaDeDados`, na `dataBase`). Sem isso, eles cairiam na vigência do checkout (`vigenciaPadrao`), que o app empacotado não tem.
+- **Base:** `BaseRevisaoPrevia` traz também as datas dos atos e as transições, e `revisarDocx` monta dela a `vigencia` dos verificadores (`vigenciaDeDados`, na `dataBase`). A vigência é obrigatória em `BaseVerificacao`: `src/` não lê o checkout, que o app empacotado não tem.
 - **Itens:** um por trecho (ou por norma ausente), de `achadosParaComentarios`: `ficha` é a que define a gravidade, e as outras vão em `tambemEm` ("Também apontado em: …" no comentário, "Também em: …" na tela). Os dispositivos citados como ID nas mensagens (`art70`) saem por extenso, e a transição fica em linha própria (`legivel`).
 - **Comentários** (autor "Simplifica IF (revisão prévia)"): a frase do problema, "O que fazer" (por ficha) e a fonte com o nome da norma e o dispositivo por extenso (`rotuloDispositivo`: "art. 29, § 2º") e o endereço oficial quando a base o tem, porque `ifpr://` não abre no Word. "A conferir" sai como "Confira:" e "Se for o caso:", nunca como erro. Um comentário só no título reúne o aviso (revisão prévia, não parecer da PROENS; data da revisão e da base; quantos critérios foram conferidos), **o que falta no documento** (as ausências, que não têm trecho onde comentar) e os itens não localizados no texto.
 - **Ancoragem** (`@simplifica-if/docx/comentarios`): o trecho é procurado num só parágrafo, com espaços, maiúsculas, aspas e travessões normalizados, e a sintaxe de link do Markdown é retirada antes (`comoNoDocumento`). Trecho que não se acha (atravessa parágrafos, está numa caixa de texto, foi escrito de outro jeito) não é ancorado em lugar nenhum: fica na lista e no aviso. As marcas são sempre filhas do parágrafo: run dentro de `w:ins`, link, campo ou controle de conteúdo é marcado por inteiro, por fora do invólucro (rejeitar as alterações não deixa comentário órfão); o texto apagado (`w:del`) não ancora. Comentários de outras pessoas ficam intactos, e os novos ganham ids livres.

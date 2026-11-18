@@ -11,7 +11,8 @@ import { achadosParaComentarios, preConferir } from "../src/pre-conferencia.ts";
 import type { BaseVerificacao, CursoCnct, EstadoVerificacao } from "../src/verificadores/comum.ts";
 import { escolaridadeExigida } from "../src/verificadores/curriculo.ts";
 import { FICHAS_D, VERIFICADOR_POR_FICHA, VERIFICADORES } from "../src/verificadores/registro.ts";
-import { carregarVigencia, type ConsultaVigencia } from "../src/verificadores/vigencia.ts";
+import type { ConsultaVigencia } from "../src/verificadores/vigencia.ts";
+import { carregarVigencia } from "../scripts/base-tecnica.ts";
 
 const CNCT: CursoCnct = {
   slug: "tecnico-em-agropecuaria",
