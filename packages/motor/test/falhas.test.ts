@@ -5,6 +5,7 @@ import { falhaDe } from "../src/Canal.ts";
 import {
   classificarFalha,
   classificarFalhaEstado,
+  diagnosticoDaFalha,
   LIMITE_TECNICO,
   sanear,
   type TipoFalha,
@@ -53,6 +54,9 @@ describe("classificarFalha", () => {
     // os da pausa por cota da revisão com IA
     ["", "5-hour limit reached ∙ resets 3pm", "cota"],
     ["", "You exceeded your current plan, please check your plan and billing details.", "cota"],
+    ["", "Weekly limit reached ∙ resets Mon 9am", "cota"],
+    // "limit reached" que não é de uso não é cota
+    ["", "Context limit reached", "desconhecido"],
     // rede ou proxy
     [
       "",
@@ -138,6 +142,18 @@ describe("textoTecnico", () => {
     ['{"api_key":"xyz123"}', '{"api_key":"<segredo>"}'],
     ["token eyJhbGciOiJIUzI1NiJ9abcdefghijklmnopqrstu9 recusado", "token <segredo> recusado"],
     ["429 Too Many Requests", "429 Too Many Requests"],
+    // a credencial dos proxies, antes de o e-mail comer o resto
+    ["proxy http://joao:s3nh4@10.0.0.1:3128 recusou", "proxy http://<credencial>@10.0.0.1:3128 recusou"],
+    [
+      "HTTPS_PROXY=https://maria.silva:p%40ss@proxy.ifpr.edu.br:8080",
+      "HTTPS_PROXY=https://<credencial>@proxy.ifpr.edu.br:8080",
+    ],
+    ["socks5://user:segredo@127.0.0.1:1080 caiu", "socks5://<credencial>@127.0.0.1:1080 caiu"],
+    // a chave com prefixo, o valor entre aspas inteiro e o token OAuth curto do Google
+    ["ANTHROPIC_API_KEY=abcdefghijklmn", "ANTHROPIC_API_KEY=<segredo>"],
+    ["password: 'my pass word' recusada", "password: '<segredo>' recusada"],
+    ["OAuth recusado: ya29.a0AfH6SMBxyz", "OAuth recusado: <segredo>"],
+    ["max_tokens: 4096", "max_tokens: 4096"],
   ];
 
   it.each(casos)("%s", (texto, saneado) => {
@@ -149,6 +165,38 @@ describe("textoTecnico", () => {
     assert.isTrue(longo.startsWith("linha um linha dois x"));
     assert.strictEqual(longo.length, LIMITE_TECNICO);
     assert.isTrue(longo.endsWith("…"));
+  });
+
+  // O corte antes de sanear deixa linear o que a `CADEIA_LONGA` faria quadrático (160 mil caracteres
+  // sem espaço levavam segundos); o prazo do vitest pega a regressão.
+  it("uma cadeia de 160 mil caracteres sem espaço sai rápido", { timeout: 1000 }, () => {
+    const longo = textoTecnico(`erro ${"a1".repeat(80_000)}`);
+    assert.strictEqual(longo, "erro");
+    assert.strictEqual(textoTecnico("a1".repeat(80_000)), "<segredo>");
+  });
+
+  it("corta antes de sanear no último espaço, sem deixar pedaço de segredo", () => {
+    const texto = `${"palavra ".repeat(240)}token=${"x".repeat(200)}`;
+    const tecnico = textoTecnico(texto);
+    assert.notInclude(tecnico, "xxx");
+    assert.strictEqual(tecnico.length, LIMITE_TECNICO);
+  });
+});
+
+describe("diagnosticoDaFalha", () => {
+  it("o texto técnico da causa, saneado", () => {
+    const falha = new FalhaProvider({
+      provider: "claude",
+      operacao: "ler mensagens",
+      tipo: "rede",
+      cause: new Error("proxy http://joao:s3nh4@10.0.0.1:3128\nrecusou"),
+    });
+    assert.strictEqual(diagnosticoDaFalha(falha), "proxy http://<credencial>@10.0.0.1:3128 recusou");
+  });
+
+  it("a mensagem da falha quando a causa não tem texto", () => {
+    const falha = new FalhaProvider({ provider: "codex", operacao: "turn/start", tipo: "queda" });
+    assert.strictEqual(diagnosticoDaFalha(falha), falha.message);
   });
 });
 

@@ -38,7 +38,7 @@ import {
   Gravador,
 } from "../Driver.ts";
 import { erroDoTurno, type Evento, resumir, textoDeBlocos } from "../eventos.ts";
-import { classificarFalha } from "../falhas.ts";
+import { classificarFalha, textoTecnico } from "../falhas.ts";
 import {
   ambienteSemTelemetria,
   buscaWebLigada,
@@ -320,7 +320,7 @@ export function fimLoginCodex(fim: {
   return {
     fase: "falhou",
     mensagem: "O login não foi concluído. Tente de novo; se continuar, feche o navegador e entre outra vez.",
-    ...(fim.error ? { detalhe: fim.error } : {}),
+    ...(fim.error ? { detalhe: textoTecnico(fim.error) } : {}),
   };
 }
 

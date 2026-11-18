@@ -395,7 +395,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
         // queda, e o `Erro` fica no histórico.
         if (viva.turno !== undefined) return;
         if (!viva.ultimoTurnoFalhou)
-          yield* registrarEvento(viva, { _tag: "Erro", tipo: falha.tipo, mensagem: falha.message });
+          yield* registrarEvento(viva, { _tag: "Erro", tipo: falha.tipo, mensagem: Motor.diagnosticoDaFalha(falha) });
         yield* alterar(viva, { estado: "caiu" });
       }),
     );
@@ -535,7 +535,7 @@ const make = Effect.fn("Conversas.make")(function* (opcoes: {
           yield* registrarEvento(viva, {
             _tag: "Erro",
             tipo: erro._tag === "FalhaProvider" ? erro.tipo : "desconhecido",
-            mensagem: erro.message,
+            mensagem: Motor.diagnosticoDaFalha(erro),
           });
           yield* retratarPasta(viva, turno).pipe(
             Effect.ensuring(concluirTurno(viva, turno, { _tag: "FimTurno", motivo: "falha" })),

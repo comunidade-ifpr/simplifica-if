@@ -408,6 +408,33 @@ describe("ciclo de vida da sessão do provider", () => {
     }),
   );
 
+  it.effect("a queda com causa grava no Erro o diagnóstico saneado, dentro e fora do turno", () =>
+    Effect.gen(function* () {
+      const causa = new Error("processo do claude encerrou\nproxy http://joao:s3nh4@10.0.0.1:3128 caiu");
+      const saneado = "processo do claude encerrou proxy http://<credencial>@10.0.0.1:3128 caiu";
+      const registro = novoRegistro();
+      const { conversas, fechar } = yield* abrir(novoBanco(), registro);
+      const id = yield* conversas.iniciar({ provider: "claude", pastaTrabalho: pasta });
+      const turno = yield* Stream.runCollect(conversas.enviar(id, "uma resposta demorada")).pipe(Effect.forkChild);
+      yield* rodar;
+      yield* registro.derrubar!(causa);
+      const eventos = [...(yield* Fiber.join(turno))];
+      assert.deepStrictEqual(eventos[1], { _tag: "Erro", tipo: "queda", mensagem: saneado });
+
+      yield* Stream.runCollect(conversas.enviar(id, "olá"));
+      yield* registro.derrubar!(causa);
+      yield* rodar;
+      // Recarregada, a conversa mantém o diagnóstico dos dois `Erro`.
+      const { itens } = yield* conversas.carregar(id);
+      const erros = eventosDe(itens).filter((e) => e._tag === "Erro");
+      assert.deepStrictEqual(
+        erros.map((e) => e._tag === "Erro" && e.mensagem),
+        [saneado, saneado],
+      );
+      yield* fechar;
+    }),
+  );
+
   it.effect("ociosidade: sem turno por 30 minutos, a sessão se libera; a próxima mensagem retoma", () =>
     Effect.gen(function* () {
       const registro = novoRegistro();

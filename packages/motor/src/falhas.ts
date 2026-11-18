@@ -58,11 +58,11 @@ const PADROES: ReadonlyArray<readonly [TipoFalha, RegExp]> = [
     "politica",
     /usage polic|content polic|violat\w* (our |the )?(usage |content )?polic|flagged|invalid_prompt|cyber_policy|\bsafety\b|blocked (by|due to) (policy|safety)|recitation/i,
   ],
-  // "limit reached" e "exceeded your" vêm da pausa por cota da revisão com IA ("5-hour limit reached",
-  // "You exceeded your current quota").
+  // "limit reached" (só o de uso, de taxa ou de janela: "Context limit reached" não é cota) e "exceeded
+  // your" vêm da pausa por cota da revisão com IA ("5-hour limit reached", "You exceeded your current quota").
   [
     "cota",
-    /usage limit|rate[ _-]?limit|\b429\b|too many requests|quota|billing|credit balance|insufficient[ _]?(credits|funds|quota)|out of credits|limite de uso|resource[ _]exhausted|hit your (usage )?limit|limit reached|exceeded your/i,
+    /usage limit|rate[ _-]?limit|\b429\b|too many requests|quota|billing|credit balance|insufficient[ _]?(credits|funds|quota)|out of credits|limite de uso|resource[ _]exhausted|hit your (usage )?limit|(usage|rate|session|weekly|daily|\d+-hour) limit reached|exceeded your/i,
   ],
   ["mcp", /\bmcp\b|mcpCapabilities|ponte stdio/i],
   [
@@ -101,6 +101,15 @@ export function classificarFalha(operacao: string, texto: string): TipoFalha {
 /** O texto de uma causa qualquer: a mensagem de um `Error`; vazio para o resto. */
 export function textoDaCausa(cause: unknown): string {
   return cause instanceof Error ? cause.message : "";
+}
+
+/**
+ * O diagnóstico de uma falha para gravar ou mostrar: o texto técnico da causa (curto e saneado) ou,
+ * quando ela não tem texto, a `message` da falha, que é texto do código.
+ */
+export function diagnosticoDaFalha(falha: { readonly cause?: unknown; readonly message: string }): string {
+  const texto = textoDaCausa(falha.cause);
+  return texto === "" ? falha.message : textoTecnico(texto);
 }
 
 /**
@@ -188,11 +197,19 @@ export function classificarFalhaEstado(mensagem: string): TipoFalhaEstado | unde
 /** O tamanho máximo do texto técnico que vai à interface. */
 export const LIMITE_TECNICO = 300;
 
+/** O usuário e a senha numa URL (`http://joao:s3nh4@proxy:3128`); antes do `EMAIL`, que comeria o resto. */
+const CREDENCIAL_URL = /\b([a-z][a-z0-9+.-]*:\/\/)[^\s/@:]+:[^\s/@]+@/gi;
 const EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g;
 const CONSULTA_URL = /\b([a-z][a-z0-9+.-]*:\/\/[^\s?#"'<>()]+)\?[^\s#"'<>()]*/gi;
+/**
+ * A chave secreta e o valor dela. A chave pode vir com prefixo (`ANTHROPIC_API_KEY`, onde o `\b` não
+ * casa depois do `_`); o valor entre aspas sai inteiro, com espaço ou não, e as aspas ficam.
+ */
 const CHAVE_SECRETA =
-  /\b(token|access_token|refresh_token|secret|password|senha|api[_-]?key|authorization|cookie)(["']?\s*[:=]\s*["']?)(?:Bearer\s+)?[^\s"',;&]+/gi;
+  /\b([A-Za-z0-9_]*?(?:token|access_token|refresh_token|secret|password|senha|api[_-]?key|authorization|cookie))(["']?\s*[:=]\s*)(?:Bearer\s+)?("[^"]*"|'[^']*'|[^\s"',;&]+)/gi;
 const PORTADOR = /\b(Bearer\s+|sk-|sk-ant-)[A-Za-z0-9._~+/=-]{8,}/g;
+/** O token de acesso OAuth do Google (`ya29.`), que pode ser curto demais para a `CADEIA_LONGA`. */
+const OAUTH_GOOGLE = /\bya29\.[A-Za-z0-9._~+/=-]+/g;
 /** Sequências longas sem espaço, com letras e dígitos: chaves, tokens, JWT. */
 const CADEIA_LONGA = /\b(?=[A-Za-z0-9_\-.]*\d)(?=[A-Za-z0-9_\-.]*[A-Za-z])[A-Za-z0-9_\-.]{32,}\b/g;
 /** O nome do usuário pode ter espaço: mascara até a próxima barra (ou o fim), e sobra mascarar demais. */
@@ -206,15 +223,35 @@ const PASTA_USUARIO = /(?:\/Users\/|\/home\/|\b[A-Za-z]:[\\/](?:Users|Documents 
 export function sanear(texto: string): string {
   return texto
     .replace(CONSULTA_URL, "$1?<consulta>")
+    .replace(CREDENCIAL_URL, "$1<credencial>@")
     .replace(EMAIL, "<e-mail>")
-    .replace(CHAVE_SECRETA, "$1$2<segredo>")
+    .replace(CHAVE_SECRETA, (_casado, chave: string, separador: string, valor: string) => {
+      const aspas = valor[0] === '"' || valor[0] === "'" ? valor[0] : "";
+      return `${chave}${separador}${aspas}<segredo>${aspas}`;
+    })
     .replace(PORTADOR, "<segredo>")
+    .replace(OAUTH_GOOGLE, "<segredo>")
     .replace(CADEIA_LONGA, "<segredo>")
     .replace(PASTA_USUARIO, "~");
 }
 
-/** Um texto técnico numa linha, saneado e com até `LIMITE_TECNICO` caracteres. */
+/**
+ * O tamanho do trecho que se saneia: as expressões do `sanear` com antecipação (`CADEIA_LONGA`) são
+ * quadráticas numa cadeia longa sem espaço, e o que passa do `LIMITE_TECNICO` sai cortado de todo jeito.
+ */
+const LIMITE_SANEAR = 2000;
+
+/**
+ * Um texto técnico numa linha, saneado e com até `LIMITE_TECNICO` caracteres. Corta antes de sanear,
+ * no último espaço do trecho, para não deixar um pedaço de segredo que as expressões não reconhecem.
+ */
 export function textoTecnico(texto: string): string {
-  const linha = sanear(texto).replace(/\s+/g, " ").trim();
+  let trecho = texto;
+  if (trecho.length > LIMITE_SANEAR) {
+    trecho = trecho.slice(0, LIMITE_SANEAR);
+    const espaco = trecho.search(/\s\S*$/);
+    if (espaco > 0) trecho = trecho.slice(0, espaco);
+  }
+  const linha = sanear(trecho).replace(/\s+/g, " ").trim();
   return linha.length <= LIMITE_TECNICO ? linha : `${linha.slice(0, LIMITE_TECNICO - 1)}…`;
 }

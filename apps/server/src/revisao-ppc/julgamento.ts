@@ -73,13 +73,21 @@ export const NOME_PROVIDER: Record<Motor.Provider, string> = {
  */
 const ehLimite = (tipo: Motor.TipoFalha) => tipo === "cota" || tipo === "indisponivel";
 
-/** A pausa por uma falha do turno: o tipo decide se é limite; `descricao` é o texto técnico, já curto e saneado. */
+/**
+ * A pausa por uma falha do turno: o tipo decide se é limite e a frase (a cota é o plano; o serviço
+ * sobrecarregado, esperar uns minutos); `descricao` é o texto técnico, já curto e saneado.
+ */
 export function pausaDoErro(provider: Motor.Provider, tipo: Motor.TipoFalha, descricao: string): PausaRevisao {
   const nome = NOME_PROVIDER[provider];
-  return ehLimite(tipo)
+  if (tipo === "cota")
+    return new PausaRevisao({
+      limite: true,
+      motivo: `O ${nome} avisou que o limite de uso do seu plano foi atingido por agora. O que já foi revisado está guardado; retome quando a janela do plano renovar.`,
+    });
+  return tipo === "indisponivel"
     ? new PausaRevisao({
         limite: true,
-        motivo: `O ${nome} avisou que o limite de uso do seu plano foi atingido por agora. O que já foi revisado está guardado; retome quando a janela do plano renovar.`,
+        motivo: `O serviço do ${nome} está sobrecarregado ou fora do ar. O que já foi revisado está guardado; retome em alguns minutos.`,
       })
     : new PausaRevisao({
         limite: false,
@@ -191,7 +199,7 @@ const abrirSessaoSemFerramentas = Effect.fn("RevisaoIa.abrirSessao")(function* (
         semFerramentas: true,
         ...(entrada.modelo ? { modelo: entrada.modelo } : {}),
       })
-      .pipe(Effect.mapError((erro) => pausaDoErro(entrada.provider, erro.tipo, erro.message))),
+      .pipe(Effect.mapError((erro) => pausaDoErro(entrada.provider, erro.tipo, Motor.diagnosticoDaFalha(erro)))),
     (id) => motor.encerrar(id).pipe(Effect.ignore),
   );
 });
@@ -263,7 +271,11 @@ export const turnoSemFerramentas = Effect.fn("RevisaoIa.turno")(function* (entra
         }),
       ),
       Effect.mapError((erro) =>
-        pausaDoErro(entrada.provider, erro._tag === "FalhaProvider" ? erro.tipo : "desconhecido", erro.message),
+        pausaDoErro(
+          entrada.provider,
+          erro._tag === "FalhaProvider" ? erro.tipo : "desconhecido",
+          Motor.diagnosticoDaFalha(erro),
+        ),
       ),
       Effect.timeoutOrElse({
         duration: entrada.tempoTurno,

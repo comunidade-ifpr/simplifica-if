@@ -41,8 +41,8 @@ export interface Registro {
   encerradas: number;
   /** Chamado a cada sessão encerrada, para o teste esperar pelo encerramento sem relógio. */
   aoEncerrar?: (() => void) | undefined;
-  /** Derruba o "processo" da sessão aberta mais recente (a queda). */
-  derrubar?: (() => Effect.Effect<void>) | undefined;
+  /** Derruba o "processo" da sessão aberta mais recente (a queda), com `causa` no `cause` da falha. */
+  derrubar?: ((causa?: Error) => Effect.Effect<void>) | undefined;
   /** O provider não retoma (como o `agy` sem `session/load`). */
   recusarRetomada?: boolean;
   /** O provider ignora o pedido de interrupção (o turno só acaba quando a sessão fecha). */
@@ -80,8 +80,13 @@ export const driverFalso = (registro: Registro, provider: Motor.Provider): Motor
       const canal = yield* Canal.make;
       const escopo = yield* Effect.scope;
       const queda = yield* Deferred.make<Motor.FalhaProvider>();
-      registro.derrubar = () => {
-        const falha = new Motor.FalhaProvider({ provider, operacao: "sessão", tipo: "queda" });
+      registro.derrubar = (causa) => {
+        const falha = new Motor.FalhaProvider({
+          provider,
+          operacao: "sessão",
+          tipo: "queda",
+          ...(causa ? { cause: causa } : {}),
+        });
         return Deferred.succeed(queda, falha).pipe(Effect.andThen(canal.morrer(falha)), Effect.uninterruptible);
       };
       yield* Effect.addFinalizer(() =>
