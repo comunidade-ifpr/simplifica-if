@@ -739,7 +739,7 @@ export function revisarDocx(
     noDocumento: !trechos.length ? "no-inicio" : ancoradas.has(indice) ? "no-trecho" : "so-na-lista",
   }));
   const naoLocalizadas = pendencias.filter((p) => p.noDocumento === "so-na-lista");
-  // Lido uma vez, pelo leitor e com os limites dele, e só quando há trecho não localizado.
+  // Lido uma vez para todas as pendências não localizadas (e só se houver), pelo leitor e com os limites dele.
   const caixas = naoLocalizadas.length ? textosDeCaixas(new PacoteOoxml(bytes)).map(normalizarTexto) : [];
   const onde = new Map(naoLocalizadas.map((p) => [p, ondeNoArquivo(caixas, p.trecho ?? "")]));
   const aviso = textoDoAviso({
