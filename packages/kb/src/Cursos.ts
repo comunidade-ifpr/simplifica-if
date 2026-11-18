@@ -16,6 +16,7 @@ import {
   type FonteAdequacao,
   type RelatorioAdequacao,
 } from "./adequacao/art71.ts";
+import { CAMINHOS } from "./caminhos.ts";
 import { type FiltrosCursos, listarCursos, type ResultadoCurso } from "./db/consultas.ts";
 import * as Sql from "./db/sql.ts";
 
@@ -97,10 +98,14 @@ const carregarFonteAdequacao = Effect.fn("Cursos.carregarFonteAdequacao")(functi
   )) {
     porPpc.get(c.path)?.push({ id: c.id, linha: c.linha, regra: c.regra });
   }
-  const fonte: FonteAdequacao = {
-    cursos: () => cursos,
-    citacoesDoPpc: (markdown) => porPpc.get(`base-conhecimento/${markdown}`) ?? null,
-  };
+  // a fonte indexa pelo `markdown_path` do curso, relativo a `base-conhecimento/`
+  const prefixo = `${CAMINHOS.base}/`;
+  const citacoesPorPpc = new Map(
+    [...porPpc]
+      .filter(([path]) => path.startsWith(prefixo))
+      .map(([path, lista]) => [path.slice(prefixo.length), lista]),
+  );
+  const fonte: FonteAdequacao = { cursos, citacoesPorPpc };
   return fonte;
 });
 

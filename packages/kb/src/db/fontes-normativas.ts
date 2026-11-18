@@ -14,6 +14,7 @@
  * estão em `ARQUIVOS_FONTES_NORMATIVAS`, para que a CLI recompile o banco quando eles mudarem.
  */
 import * as Schema from "effect/Schema";
+import { CAMINHOS } from "../caminhos.ts";
 import { TIPOS_DISPOSITIVO, TIPOS_NOTA } from "../normas/estrutura.ts";
 import { STATUS_VIGENCIA } from "../normas/vigencia.ts";
 
@@ -169,9 +170,9 @@ export interface LinhasNormativas {
  * impressão digital das fontes (`fontes.ts`).
  */
 export const ARQUIVOS_FONTES_NORMATIVAS: readonly string[] = [
-  "base-conhecimento/config/vigencia.yaml",
-  "base-conhecimento/correspondencias",
-  "base-conhecimento/normas/stubs.yaml",
-  "base-conhecimento/relacoes.yaml",
-  "base-conhecimento/transicoes.yaml",
+  CAMINHOS.configVigencia,
+  CAMINHOS.correspondencias,
+  CAMINHOS.stubs,
+  CAMINHOS.relacoes,
+  CAMINHOS.transicoes,
 ];

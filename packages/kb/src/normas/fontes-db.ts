@@ -1,4 +1,3 @@
-// @effect-diagnostics nodeBuiltinImport:off -- carga síncrona das linhas da fase 5 sobre os carregadores de normas/, usada pela compilação do banco
 /**
  * `LinhasNormativas` (a carga da fase 5 no `kb.sqlite`, `db/fontes-normativas.ts`) pela API de
  * arquivos de `normas/`: nenhuma regra nova aqui, só o mapeamento para as linhas das tabelas.
@@ -14,7 +13,6 @@
  *
  * Ordem estável: arquivos por caminho, itens na ordem do arquivo, atos por ID (code point).
  */
-import * as NodePath from "node:path";
 import type {
   LinhaCorrespondencia,
   LinhaDispositivo,
@@ -24,28 +22,17 @@ import type {
   LinhasNormativas,
   LinhaVigencia,
 } from "../db/fontes-normativas.ts";
+import { CAMINHOS } from "../caminhos.ts";
 import { compararTexto } from "../texto.ts";
 import { carregarCorrespondencias } from "./correspondencia.ts";
 import { carregarEstruturas, indiceDispositivos } from "./estrutura.ts";
 import { idDoAto } from "./ids.ts";
-import { carregarRegistro, raizRepositorio } from "./registro.ts";
-import { caminhoRelacoes, carregarRelacoes } from "./relacoes.ts";
-import {
-  caminhoTransicoes,
-  carregarTransicoes,
-  datasTransicao,
-  efeitoDaRelacao,
-  intervalosVigencia,
-} from "./vigencia.ts";
-
-const BASE = "base-conhecimento";
-
-function relativo(raiz: string, absoluto: string): string {
-  return NodePath.relative(raiz, absoluto).split(NodePath.sep).join("/");
-}
+import { carregarRegistro } from "./registro.ts";
+import { carregarRelacoes } from "./relacoes.ts";
+import { carregarDatas, carregarTransicoes, datasTransicao, efeitoDaRelacao, intervalosVigencia } from "./vigencia.ts";
 
 /** Linha da tabela `dispositivos` de cada dispositivo das normas da base. */
-export function* linhasDispositivos(raiz: string = raizRepositorio()): Generator<LinhaDispositivo> {
+export function* linhasDispositivos(raiz: string): Generator<LinhaDispositivo> {
   const indice = indiceDispositivos(raiz);
   for (const estrutura of carregarEstruturas(raiz)) {
     for (const d of estrutura.dispositivos) {
@@ -66,7 +53,7 @@ export function* linhasDispositivos(raiz: string = raizRepositorio()): Generator
         revogado: d.revogado,
         vetado: d.vetado,
         canonico: indice.get(`${d.ato}${d.dispositivo}`) === d,
-        path: `${BASE}/${estrutura.path}`,
+        path: `${CAMINHOS.base}/${estrutura.path}`,
         linha_inicio: d.linha_inicio,
         linha_fim: d.linha_fim,
       };
@@ -74,11 +61,12 @@ export function* linhasDispositivos(raiz: string = raizRepositorio()): Generator
   }
 }
 
-export function* linhasRelacoes(raiz: string = raizRepositorio()): Generator<LinhaRelacao> {
-  const caminho = relativo(raiz, caminhoRelacoes(raiz));
+export function* linhasRelacoes(raiz: string): Generator<LinhaRelacao> {
+  const caminho = CAMINHOS.relacoes;
   let ordem = 0;
+  const datas = carregarDatas(raiz);
   for (const r of carregarRelacoes(raiz)) {
-    const efeito = efeitoDaRelacao(r, raiz);
+    const efeito = efeitoDaRelacao(r, { datas });
     yield {
       ordem: ordem++,
       tipo: r.tipo,
@@ -101,7 +89,7 @@ export function* linhasRelacoes(raiz: string = raizRepositorio()): Generator<Lin
 }
 
 /** Atos com vigência calculável: normas da base (sem variante) e stubs. */
-export function atosComVigencia(raiz: string = raizRepositorio()): string[] {
+export function atosComVigencia(raiz: string): string[] {
   const atos = new Set<string>();
   for (const entrada of carregarRegistro(raiz).entradas) {
     if (entrada.situacao !== "externo") atos.add(idDoAto(entrada.id));
@@ -109,15 +97,17 @@ export function atosComVigencia(raiz: string = raizRepositorio()): string[] {
   return [...atos].sort(compararTexto);
 }
 
-export function* linhasVigencias(raiz: string = raizRepositorio()): Generator<LinhaVigencia> {
+export function* linhasVigencias(raiz: string): Generator<LinhaVigencia> {
+  const fonte = { registro: carregarRegistro(raiz), datas: carregarDatas(raiz), relacoes: carregarRelacoes(raiz) };
   for (const ato of atosComVigencia(raiz)) {
     let ordem = 0;
-    for (const intervalo of intervalosVigencia(ato, raiz)) yield { alvo: ato, ordem: ordem++, ...intervalo };
+    for (const intervalo of intervalosVigencia(ato, fonte)) yield { alvo: ato, ordem: ordem++, ...intervalo };
   }
 }
 
-export function* linhasTransicoes(raiz: string = raizRepositorio()): Generator<LinhaTransicao> {
-  const caminho = relativo(raiz, caminhoTransicoes(raiz));
+export function* linhasTransicoes(raiz: string): Generator<LinhaTransicao> {
+  const caminho = CAMINHOS.transicoes;
+  const datas = carregarDatas(raiz);
   for (const t of carregarTransicoes(raiz)) {
     yield {
       id: t.id,
@@ -129,14 +119,14 @@ export function* linhasTransicoes(raiz: string = raizRepositorio()): Generator<L
       regra: t.regra,
       inicio: t.inicio,
       fim: t.fim,
-      ...datasTransicao(t, raiz),
+      ...datasTransicao(t, { datas }),
       evidencia: t.evidencia,
       path: caminho,
     };
   }
 }
 
-export function* linhasTabelasCorrespondencia(raiz: string = raizRepositorio()): Generator<LinhaTabelaCorrespondencia> {
+export function* linhasTabelasCorrespondencia(raiz: string): Generator<LinhaTabelaCorrespondencia> {
   for (const t of carregarCorrespondencias(raiz)) {
     yield {
       arquivo: t.arquivo,
@@ -150,7 +140,7 @@ export function* linhasTabelasCorrespondencia(raiz: string = raizRepositorio()):
   }
 }
 
-export function* linhasCorrespondencias(raiz: string = raizRepositorio()): Generator<LinhaCorrespondencia> {
+export function* linhasCorrespondencias(raiz: string): Generator<LinhaCorrespondencia> {
   for (const t of carregarCorrespondencias(raiz)) {
     let ordem = 0;
     for (const item of t.itens) {
@@ -167,7 +157,7 @@ export function* linhasCorrespondencias(raiz: string = raizRepositorio()): Gener
 }
 
 /** A carga da fase 5 sobre os arquivos do checkout em `raiz`. */
-export function fontesNormativasArquivos(raiz: string = raizRepositorio()): LinhasNormativas {
+export function fontesNormativasArquivos(raiz: string): LinhasNormativas {
   return {
     dispositivos: () => linhasDispositivos(raiz),
     relacoes: () => linhasRelacoes(raiz),

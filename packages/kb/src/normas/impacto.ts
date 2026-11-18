@@ -25,9 +25,8 @@ import type { CitacaoResolvida } from "./citacoes-normas.ts";
 import { citacoesResolvidas } from "./citacoes-normas.ts";
 import { correspondenciaEm, destinosDeOrigemEm, type FonteCorrespondencia } from "./correspondencia.ts";
 import { idDoAto } from "./ids.ts";
-import type { Registro } from "./registro.ts";
-import { type Relacao, sucessorasDe } from "./relacoes.ts";
-import { type RaizOuFonte, statusEm, transicoesAplicaveis } from "./vigencia.ts";
+import { sucessorasDe } from "./relacoes.ts";
+import { type FonteVigencia, statusEm, transicoesAplicaveis } from "./vigencia.ts";
 
 export type MotivoImpacto =
   | "referencia"
@@ -78,28 +77,27 @@ export interface TopicoTaxonomia {
 }
 
 /**
- * O que o impacto lê, já carregado: o serviço `Impacto` monta a fonte a partir de `FontesNormativas`
- * (arquivos do checkout ou `kb.sqlite`) e do banco. `dispositivosDoAto`, `segmentosCitantes` e
- * `ppcsQueCitam` só são pedidos para a norma em análise.
+ * O que o impacto da norma em análise lê, já carregado: a vigência, as relações e a correspondência
+ * (as da base inteira) e, só da norma `id`, os dispositivos, os segmentos de outras normas que a
+ * citam e os PPCs que a citam. O `id` vai junto porque esses recortes só valem para ele.
  */
 export interface FonteImpacto {
-  registro: Registro;
-  /** Fonte da vigência (`statusEm`, `transicoesAplicaveis`). */
-  vigencia: RaizOuFonte;
-  dataReferencia(): string;
-  relacoes(): readonly Relacao[];
-  correspondencia: FonteCorrespondencia;
+  /** A norma (ato, ou ato e dispositivo) para a qual a fonte foi carregada. */
+  readonly id: string;
+  /** Registro, datas, relações e transições (`statusEm`, `transicoesAplicaveis`). */
+  readonly vigencia: FonteVigencia;
+  readonly dataReferencia: string;
+  readonly correspondencia: FonteCorrespondencia;
   /** Dispositivos do ato (pela deduplicação de `dispositivosDoAto`), em ordem, com o texto. */
-  dispositivosDoAto(ato: string): { dispositivo: string; texto: string }[];
+  readonly dispositivos: ReadonlyArray<{ dispositivo: string; texto: string }>;
   /** Tópicos de `topicos-fichas.json`, na ordem do arquivo (vazio sem a taxonomia). */
-  topicos(): TopicoTaxonomia[];
+  readonly topicos: ReadonlyArray<TopicoTaxonomia>;
   /** Arquivos de conteúdo das skills (caminho relativo à raiz do conteúdo e texto), em ordem. */
-  arquivosConteudo(): Iterable<{ arquivo: string; texto: string }>;
-  /** Segmentos das normas da base que não são do ato `excetoAto`, com as citações resolvidas. */
-  segmentosCitantes(
-    excetoAto: string,
-  ): Iterable<{ norma: string; ato: string; segmento: string; citacoes: CitacaoResolvida[] }>;
-  ppcsQueCitam(id: string): PpcCitante[];
+  readonly arquivosConteudo: Iterable<{ arquivo: string; texto: string }>;
+  /** Segmentos das normas da base de outros atos, com as citações resolvidas. */
+  readonly segmentosCitantes: Iterable<{ norma: string; ato: string; segmento: string; citacoes: CitacaoResolvida[] }>;
+  /** PPCs que citam a norma (`id`, com o dispositivo, se houver). */
+  readonly ppcsQueCitam: ReadonlyArray<PpcCitante>;
 }
 
 /**
@@ -109,10 +107,10 @@ export interface FonteImpacto {
  */
 function topicosAtingidos(ato: string, fonte: FonteImpacto): Map<string, { fichas: string[] }> {
   const saida = new Map<string, { fichas: string[] }>();
-  const taxonomia = fonte.topicos();
+  const taxonomia = fonte.topicos;
   if (!taxonomia.length) return saida;
-  const dispositivos = fonte.dispositivosDoAto(ato);
-  const comTabela = fonte.correspondencia.tabelas(ato).length > 0;
+  const dispositivos = fonte.dispositivos;
+  const comTabela = (fonte.correspondencia.tabelas.get(ato) ?? []).length > 0;
   const materiais = comTabela
     ? dispositivos.filter((d) =>
         correspondenciaEm(`${ato}${d.dispositivo}`, fonte.correspondencia).some((c) => c.item.tipo !== "equivalente"),
@@ -166,18 +164,18 @@ function categoria(arquivo: string): ArquivoAfetado["categoria"] {
   return "conteudo-skill";
 }
 
-/** Impacto da mudança na norma `id` (ato; o dispositivo, se houver, restringe as citações). */
+/** Impacto da mudança na norma `fonte.id` (ato; o dispositivo, se houver, restringe as citações). */
 export function impactoEm(
-  id: string,
   fonte: FonteImpacto,
   opcoes: { data?: string; incluirPpcs?: boolean } = {},
 ): ResultadoImpacto {
-  const registro = fonte.registro;
+  const id = fonte.id;
+  const registro = fonte.vigencia.registro;
   const [norma, sufixo] = id.split("#") as [string, string | undefined];
   const ato = idDoAto(norma);
-  const data = opcoes.data ?? fonte.dataReferencia();
+  const data = opcoes.data ?? fonte.dataReferencia;
   const vigencia = statusEm(ato, data, fonte.vigencia);
-  const relacoes = fonte.relacoes().filter((r) => r.origem === ato || r.alvo === ato);
+  const relacoes = fonte.vigencia.relacoes.filter((r) => r.origem === ato || r.alvo === ato);
   const sucessoras = sucessorasDe(ato, relacoes);
   // dispositivos de destino que correspondem ao ato ou, com sufixo, ao dispositivo consultado e aos subordinados
   const correspondentes = destinosDeOrigemEm(sufixo ? `${ato}#${sufixo}` : ato, fonte.correspondencia);
@@ -214,7 +212,7 @@ export function impactoEm(
   }
 
   const arquivos: ArquivoAfetado[] = [];
-  for (const { arquivo, texto } of fonte.arquivosConteudo()) {
+  for (const { arquivo, texto } of fonte.arquivosConteudo) {
     const motivos = new Set<MotivoImpacto>();
     const dispositivos = new Set<string>();
     let textos = texto;
@@ -268,14 +266,14 @@ export function impactoEm(
 
   // Normas da base que citam a norma: dispositivos e preâmbulo (fundamento citado nos considerandos).
   const normasQueCitam = new Map<string, Set<string>>();
-  for (const segmento of fonte.segmentosCitantes(ato)) {
+  for (const segmento of fonte.segmentosCitantes) {
     if (segmento.ato === ato || !citaLista(segmento.citacoes).cita) continue;
     const lista = normasQueCitam.get(segmento.norma) ?? new Set<string>();
     lista.add(segmento.segmento);
     normasQueCitam.set(segmento.norma, lista);
   }
 
-  const ppcs = opcoes.incluirPpcs === false ? [] : fonte.ppcsQueCitam(id);
+  const ppcs = opcoes.incluirPpcs === false ? [] : fonte.ppcsQueCitam;
   return {
     id,
     titulo: registro.obter(ato)?.title ?? null,

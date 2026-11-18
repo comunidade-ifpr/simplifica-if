@@ -20,8 +20,8 @@ export const TETO_FICHA_CURSO = 12000;
 /**
  * Os rótulos dos indicadores de adequação ao art. 71, os mesmos do `ROTULOS_INDICADOR` do kb (o teste
  * confere). Ficam copiados aqui porque este módulo é também contrato do `GrupoLeitura`, que a
- * interface do app importa: o `adequacao/art71.ts` do kb lê arquivos e traria o `node:fs` e o
- * resolvedor de citações. O tipo vem do kb só em tempo de compilação.
+ * interface do app importa: o `adequacao/art71.ts` do kb importa o `texto.ts`, que traz o `node:fs`.
+ * O tipo vem do kb só em tempo de compilação.
  */
 export const ROTULOS_INDICADOR: Readonly<Record<Indicador, string>> = {
   "cita-cne-cp-2-2026": "cita a Res. CNE/CP nº 2/2026",

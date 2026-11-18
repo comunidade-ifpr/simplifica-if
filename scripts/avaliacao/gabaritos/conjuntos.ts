@@ -9,6 +9,7 @@ import * as NodePath from "node:path";
 import { compararTexto, normalizarTexto } from "../normalizar.ts";
 import type { GabaritoConjunto, Universos } from "../esquema.ts";
 import { idNorma, itemCampus, itemCurso, itensNorma } from "../universos.ts";
+import { carregarRegistro } from "@simplifica-if/kb/normas/registro";
 import { type PpcCitante, ppcsQueCitam } from "@simplifica-if/kb/ppcs/citacoes";
 import { cnctDoCadastro, type Fontes } from "./fontes.ts";
 
@@ -76,7 +77,9 @@ function q01(fontes: Fontes): GabaritoConjunto {
 
 /** PPCs que citam a norma, pelo resolvedor de citações (o mesmo conjunto de `pnpm kb citacoes <id>`). */
 function ppcsQueCitamNorma(fontes: Fontes, id: string, filtro: (nivel: string) => boolean = () => true) {
-  return ppcsQueCitam(id, { raiz: fontes.raiz }).filter((ppc) => filtro(ppc.nivel));
+  return ppcsQueCitam(id, { raiz: fontes.raiz, registro: carregarRegistro(fontes.raiz) }).filter((ppc) =>
+    filtro(ppc.nivel),
+  );
 }
 
 function detalhesCitacoes(ppcs: PpcCitante[]) {

@@ -1,9 +1,13 @@
 import { describe, expect, test } from "vite-plus/test";
 import { analisarDispositivos } from "./dispositivos.ts";
 import { ehIdDispositivo, ehIdExterno, ehIdNorma, idDoAto, idEsperadoDaNorma } from "./ids.ts";
-import { caminhoStubs, lerRegistroStubs } from "./registro.ts";
+import { raizRepositorio } from "../caminhos.ts";
+import { caminhoStubs, carregarRegistro, lerRegistroStubs } from "./registro.ts";
 import { extrairCitacoes, resolverCitacao } from "./resolver.ts";
 import { normalizarCitacao } from "./texto-citacao.ts";
+
+const raiz = raizRepositorio();
+const registroCheckout = carregarRegistro(raiz);
 
 describe("IDs canônicos", () => {
   test("formato de norma, variante, externo e dispositivo", () => {
@@ -60,7 +64,7 @@ describe("IDs canônicos", () => {
 
 describe("stubs.yaml", () => {
   test("segue o contrato e cobre as normas citadas sem texto", () => {
-    const registro = lerRegistroStubs(caminhoStubs());
+    const registro = lerRegistroStubs(caminhoStubs(raiz));
     const ids = new Set([...registro.normas, ...registro.externos].map((item) => item.id));
     for (const id of ["br/cne-ceb/res/2012/6", "br/cne-ceb/res/2018/3", "br/decreto/2004/5154", "br/lei/1968/5524"]) {
       expect(ids.has(id)).toBe(true);
@@ -106,36 +110,40 @@ describe("resolverCitacao", () => {
     ["ABNT NBR 6023", "externo:abnt/nbr/6023", "alias"],
     ["CNCT", "cnct:catalogo", "alias"],
   ])("%p → %p (%p)", (texto, id, regra) => {
-    const r = resolverCitacao(texto);
+    const r = resolverCitacao(texto, registroCheckout);
     expect([r.id, r.regra]).toEqual([id, regra]);
   });
 
   test("a regra de órgão trocado tem confiança reduzida e nunca é silenciosa", () => {
-    const r = resolverCitacao("Resolução CNE/CEB nº 1/2021, que define as DCN Gerais para a Educação Profissional");
+    const r = resolverCitacao(
+      "Resolução CNE/CEB nº 1/2021, que define as DCN Gerais para a Educação Profissional",
+      registroCheckout,
+    );
     expect(r.confianca).toBeLessThan(0.8);
   });
 
   test.each(["Lei Estadual nº 18.419/2015", "texto sem citação", "Resolução nº 7/2099"])("não resolve %p", (texto) => {
-    expect(resolverCitacao(texto).id).toBeNull();
+    expect(resolverCitacao(texto, registroCheckout).id).toBeNull();
   });
 
   test("dispositivos", () => {
-    expect(resolverCitacao("Resolução CNE/CP nº 2/2026, art. 28, inciso XVI").dispositivoId).toBe("#art28-xvi");
-    expect(resolverCitacao("Lei 9.394/96, art. 36-A").dispositivoId).toBe("#art36A");
-    expect(resolverCitacao("alínea a do inciso II do art. 5º da Lei nº 11.788/2008").dispositivoId).toBe(
-      "#art5-ii-al-a",
+    expect(resolverCitacao("Resolução CNE/CP nº 2/2026, art. 28, inciso XVI", registroCheckout).dispositivoId).toBe(
+      "#art28-xvi",
     );
-    expect(resolverCitacao("Resolução CNE/CP nº 2/2026, art. 24, parágrafo único").dispositivoId).toBe(
-      "#art24-parunico",
-    );
+    expect(resolverCitacao("Lei 9.394/96, art. 36-A", registroCheckout).dispositivoId).toBe("#art36A");
     expect(
-      resolverCitacao("Resolução CNE/CP nº 2/2026, arts. 28, II e § 2º, 38, § 8º, e 48 a 50").dispositivos,
+      resolverCitacao("alínea a do inciso II do art. 5º da Lei nº 11.788/2008", registroCheckout).dispositivoId,
+    ).toBe("#art5-ii-al-a");
+    expect(
+      resolverCitacao("Resolução CNE/CP nº 2/2026, art. 24, parágrafo único", registroCheckout).dispositivoId,
+    ).toBe("#art24-parunico");
+    expect(
+      resolverCitacao("Resolução CNE/CP nº 2/2026, arts. 28, II e § 2º, 38, § 8º, e 48 a 50", registroCheckout)
+        .dispositivos,
     ).toEqual(["#art28-ii", "#art28-par2", "#art38-par8", "#art48", "#art49", "#art50"]);
-    expect(resolverCitacao("Resolução CNE/CP nº 2/2026, arts. 29, §§ 2º e 3º, e 30").dispositivos).toEqual([
-      "#art29-par2",
-      "#art29-par3",
-      "#art30",
-    ]);
+    expect(
+      resolverCitacao("Resolução CNE/CP nº 2/2026, arts. 29, §§ 2º e 3º, e 30", registroCheckout).dispositivos,
+    ).toEqual(["#art29-par2", "#art29-par3", "#art30"]);
   });
 });
 
@@ -155,7 +163,7 @@ describe("extrairCitacoes", () => {
   test("enumerações, órgão antes do tipo, ato local e posições no original", () => {
     const texto =
       "Leis nos 10.639/2003 e 11.645/2008.\nBRASIL. Conselho Nacional de Educação. Câmara de Educação Básica. Parecer nº 12, aprovado em 4 de dezembro de 2013.\nPortaria nº 568, de 17 de dezembro de 2021 (IFPR/CAMPUS PALMAS).";
-    const citacoes = extrairCitacoes(texto);
+    const citacoes = extrairCitacoes(texto, registroCheckout);
     expect(citacoes.map((c) => [c.linha, c.id, c.regra])).toEqual([
       [1, "br/lei/2003/10639", "estrutural"],
       [1, "br/lei/2008/11645", "enumeracao"],
@@ -168,7 +176,7 @@ describe("extrairCitacoes", () => {
   test("completa pelo documento sem trocar de ato quando a data diverge", () => {
     const texto =
       "Resolução CONSUP/IFPR nº 54/2011.\nResolução nº 54, de 21 de dezembro de 2011.\nResolução nº 1, de 19 de agosto de 2021; Instrução Normativa Reitoria/IFPR nº 1, de 26 de julho de 2021; Instrução Normativa nº 1, de 19 de agosto de 2021.";
-    const ids = extrairCitacoes(texto).map((c) => [c.id, c.regra]);
+    const ids = extrairCitacoes(texto, registroCheckout).map((c) => [c.id, c.regra]);
     expect(ids[1]).toEqual(["ifpr/consup/res/2011/54", "data-registro"]);
     // A IN de 19/08/2021 é outro ato (Reitoria/PROENS), e não a da Reitoria de 26/07/2021.
     expect(ids.at(-1)).toEqual(["ifpr/proens/in/2021/1", "data-registro"]);
@@ -187,22 +195,24 @@ describe("revisão do motor normativo", () => {
     ["Instrução Normativa nº 01, de 19 de agosto de 2021 (Reitoria/PROENS/IFPR)", IN_BIBLIOTECAS],
     ["Instrução Normativa nº 1, de 19 de agosto de 2021", IN_BIBLIOTECAS],
   ])("as duas IN IFPR nº 1/2021 têm IDs distintos: %p", (texto, id) => {
-    expect(resolverCitacao(texto).id).toBe(id);
+    expect(resolverCitacao(texto, registroCheckout).id).toBe(id);
   });
 
   test("órgão implícito do IFPR não troca de ato quando a data diverge da do ato registrado", () => {
     // Implícito: IN do IFPR é da Reitoria, mas 3/3/2021 não é a data de nenhuma IN nº 1/2021.
-    expect(resolverCitacao("Instrução Normativa IFPR nº 1, de 3 de março de 2021").id).toBeNull();
+    expect(resolverCitacao("Instrução Normativa IFPR nº 1, de 3 de março de 2021", registroCheckout).id).toBeNull();
   });
 
   test("IN sem órgão com data de 19/08/2021 não é completada com a IN da Reitoria citada sem data", () => {
     const texto =
       "Instrução Normativa Reitoria/IFPR nº 1/2021.\n\nOs livros seguem a Instrução Normativa nº 01, de 19 de agosto de 2021, que estabelece normas para as bibliotecas.";
-    expect(extrairCitacoes(texto).map((c) => c.id)).toEqual([IN_EXTENSAO, IN_BIBLIOTECAS]);
+    expect(extrairCitacoes(texto, registroCheckout).map((c) => c.id)).toEqual([IN_EXTENSAO, IN_BIBLIOTECAS]);
   });
 
   test("órgão implícito sem homônimo tolera data com erro de digitação", () => {
-    expect(resolverCitacao("Resolução IFPR nº 64, de 23 de julho de 2022").id).toBe("ifpr/consup/res/2022/64");
+    expect(resolverCitacao("Resolução IFPR nº 64, de 23 de julho de 2022", registroCheckout).id).toBe(
+      "ifpr/consup/res/2022/64",
+    );
   });
 
   test.each([
@@ -211,12 +221,15 @@ describe("revisão do motor normativo", () => {
     ["https://www.in.gov.br/web/dou/-/portaria-n-902-de-9-de-setembro-de-2024-582112940", "br/mec/portaria/2024/902"],
     ["Resolução CNE nº 3, de 8 de abril de 2025", "br/cne-ceb/res/2025/3"],
   ])("a data citada é a do ato (assinada_em): %p", (texto, id) => {
-    expect(resolverCitacao(texto).id).toBe(id);
+    expect(resolverCitacao(texto, registroCheckout).id).toBe(id);
   });
 
   test("Lei nº 15.468, de 13 de julho de 2026, confere com o ato citado no documento", () => {
     const texto = "Lei nº 15.468/2026.\nLei nº 15.468, de 13 de julho de 2026.";
-    expect(extrairCitacoes(texto).map((c) => c.id)).toEqual(["br/lei/2026/15468", "br/lei/2026/15468"]);
+    expect(extrairCitacoes(texto, registroCheckout).map((c) => c.id)).toEqual([
+      "br/lei/2026/15468",
+      "br/lei/2026/15468",
+    ]);
   });
 
   test.each([
@@ -224,11 +237,11 @@ describe("revisão do motor normativo", () => {
     ["Resolução Proeppi/IFPR n.121/2023", "ifpr/proeppi/res/2023/121"],
     ["Resolução PROEPI/IFPR nº 94/2023", "ifpr/proeppi/res/2023/94"],
   ])("PROEPPI (e a grafia antiga PROEPI): %p", (texto, id) => {
-    expect(resolverCitacao(texto).id).toBe(id);
+    expect(resolverCitacao(texto, registroCheckout).id).toBe(id);
   });
 
   test("ano-no-documento só completa com órgão compatível", () => {
-    const ids = (texto: string) => extrairCitacoes(texto).map((c) => c.id);
+    const ids = (texto: string) => extrairCitacoes(texto, registroCheckout).map((c) => c.id);
     expect(ids("Resolução CONSUP/IFPR nº 2/2017. Ver também a Resolução CNE nº 2 sobre o tema.")).toEqual([
       "ifpr/consup/res/2017/2",
       null,

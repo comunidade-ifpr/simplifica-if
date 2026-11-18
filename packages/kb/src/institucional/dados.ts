@@ -13,11 +13,10 @@ import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
+import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { formatarErro } from "../esquema/mensagens.ts";
 import { compararTexto } from "../texto.ts";
 
-/** Pasta dos registros institucionais, relativa à raiz do repositório. */
-export const PASTA_INSTITUCIONAL = "base-conhecimento/institucional/ifpr";
 /** O índice gerado de cada coleção, que não é registro. */
 export const ARQUIVO_INDICE = "index.json";
 
@@ -201,7 +200,7 @@ function colecao<T>(
   decodificar: (valor: unknown) => Result.Result<T, Schema.SchemaError>,
   filtro: (arquivo: string) => boolean = () => true,
 ): Registro<T>[] {
-  return arquivosJson(NodePath.join(raiz, PASTA_INSTITUCIONAL, subdir))
+  return arquivosJson(noCheckout(raiz, `${CAMINHOS.institucional}/${subdir}`))
     .filter(filtro)
     .map((arquivo) => {
       const conteudo = NodeFS.readFileSync(arquivo, "utf-8");

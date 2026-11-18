@@ -8,7 +8,7 @@
  */
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { raizRepositorio } from "@simplifica-if/kb/normas/registro";
+import { raizRepositorio } from "@simplifica-if/kb/caminhos";
 import { type Citacao, extrairCitacoes } from "@simplifica-if/kb/normas/resolver";
 import { describe, expect, test } from "vite-plus/test";
 import { preConferir } from "../src/pre-conferencia.ts";

@@ -13,7 +13,7 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import { listarNormas } from "./estrutura.ts";
 import { palavrasMarkdown, primeiraDivergencia } from "./markdown.ts";
-import { raizRepositorio } from "./registro.ts";
+import { raizRepositorio } from "../caminhos.ts";
 
 /** Último commit antes do saneamento da fase 5 (merge da fase 4 em `main`). */
 export const REF_ANTES_SANEAMENTO = "fcfc006";

@@ -26,6 +26,7 @@ import { avaliarBusca } from "../avaliacao/busca-secoes.ts";
 import type { PacoteContexto as Pacote } from "../db/pacote-contexto.ts";
 import {
   camadaRepositorio,
+  Checkout,
   exigirIdNorma,
   flagJson,
   flagLigada,
@@ -313,7 +314,8 @@ export const avaliarBuscaCmd = Command.make(
   "avaliar-busca",
   { json: flagJson },
   Effect.fn("kb.avaliarBusca")(function* ({ json }) {
-    const resultado = yield* avaliarBusca();
+    const { raiz } = yield* Checkout;
+    const resultado = yield* avaliarBusca({ raiz });
     if (json) return yield* Console.log(paraJson(resultado));
     const linhas = [`${resultado.consultas} consultas, recall@${resultado.k} (meta ${resultado.meta}):`];
     for (const [m, v] of Object.entries(resultado.recall)) linhas.push(`  ${m.padEnd(9)} ${v}`);

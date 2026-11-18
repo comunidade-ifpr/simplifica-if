@@ -38,17 +38,18 @@ import * as Layers from "../layers.ts";
 import * as Normas from "../Normas.ts";
 import * as PacoteContexto from "../PacoteContexto.ts";
 import * as Ppcs from "../Ppcs.ts";
-import { adequacaoArt71 } from "../adequacao/art71.ts";
+import { INDICADORES } from "../adequacao/art71.ts";
 import { avaliarBusca } from "../avaliacao/busca-secoes.ts";
 import { lerSinonimos } from "../busca/sinonimos.ts";
-import { carregarCorrespondencias, correspondencia } from "../normas/correspondencia.ts";
-import { carregarDispositivos, descendentes, dispositivosDoAto, indiceDispositivos } from "../normas/estrutura.ts";
+import { carregarCorrespondencias } from "../normas/correspondencia.ts";
+import { carregarDispositivos, descendentes, indiceDispositivos } from "../normas/estrutura.ts";
 import { obterDispositivo as obterDispositivoArquivos } from "../normas/estrutura.ts";
 import { atosComVigencia } from "../normas/fontes-db.ts";
-import { caminhoStubs, carregarRegistro, lerRegistroStubs, raizRepositorio } from "../normas/registro.ts";
-import { registroPadrao } from "../normas/resolver.ts";
+import { raizRepositorio } from "../caminhos.ts";
+import { caminhoStubs, carregarRegistro, lerRegistroStubs } from "../normas/registro.ts";
 import { carregarRelacoes, sucessorasDe } from "../normas/relacoes.ts";
 import {
+  carregarFonteVigencia,
   carregarTransicoes,
   dataReferencia,
   derivarLinha,
@@ -74,6 +75,9 @@ import { VERSAO_ESQUEMA } from "./esquema.ts";
 import * as Sql from "./sql.ts";
 
 const raiz = raizRepositorio();
+const vigenciaArquivos = carregarFonteVigencia(raiz);
+/** Registro e léxico do checkout, para o banco do PPC avulso. */
+const doCheckout = () => ({ registro: carregarRegistro(raiz), sinonimos: lerSinonimos(raiz) });
 /** Instante do relógio de teste durante as compilações: vira o mtime de cada banco. */
 const INSTANTE = DateTime.toEpochMillis(DateTime.makeUnsafe("2026-11-13T12:00:00Z"));
 const FICHAS_DA_ANALISE = ".agents/skills/revisar-ppc/base-analise/fichas/";
@@ -252,7 +256,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
 
     it.effect("recall@10 da busca de seções ≥ 0,8 (modo completo)", () =>
       Effect.gen(function* () {
-        const resultado = yield* avaliarBusca();
+        const resultado = yield* avaliarBusca({ raiz });
         expect(resultado.consultas).toBeGreaterThanOrEqual(20);
         expect(resultado.recall.completo).toBeGreaterThanOrEqual(0.8);
       }),
@@ -359,7 +363,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           const md = yield* lerTexto(`base-conhecimento/institucional/ifpr/ppcs/${chave}.md`);
           yield* Effect.scoped(
             Effect.gen(function* () {
-              const avulso = yield* ppcAvulso(md, { ppcId: "ppc:avulso", palavrasCampi: palavras, raiz });
+              const avulso = yield* ppcAvulso(md, { ppcId: "ppc:avulso", palavrasCampi: palavras, ...doCheckout() });
               const noAvulso = Effect.provide(Conexao.layerDeConexao(avulso));
               expect(yield* noAvulso(secoesDe("ppc:avulso"))).toEqual(yield* secoesDe(`ppc:${chave}`));
               expect(yield* noAvulso(citacoesDe("ppc:avulso"))).toEqual(yield* citacoesDe(`ppc:${chave}`));
@@ -375,7 +379,10 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         Effect.gen(function* () {
           const { pacote: servico } = yield* servicos;
           const md = yield* lerTexto("base-conhecimento/institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md");
-          const avulso = yield* ppcAvulso(md, { palavrasCampi: palavrasDeCampi(yield* servico.nomesDeCampi), raiz });
+          const avulso = yield* ppcAvulso(md, {
+            palavrasCampi: palavrasDeCampi(yield* servico.nomesDeCampi),
+            ...doCheckout(),
+          });
           const base = yield* servico.montar("estagio", PPC);
           const fichas = yield* servico.fichas(base.fichas_ids);
           const pacote = yield* servico.avulso(avulso, fichas);
@@ -416,12 +423,48 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       }),
     );
 
-    it.effect("correspondência de cada dispositivo da 1/2021 e do ato inteiro", () =>
+    it.effect("correspondência 1/2021 → 2/2026: artigos cobertos, Q07 e Q23 da avaliação", () =>
       Effect.gen(function* () {
         const { normas } = yield* servicos;
-        const ids = ["br/cne-cp/res/2021/1", ...dispositivosDoAto("br/cne-cp/res/2021/1", raiz).map((d) => d.id)];
-        for (const id of ids) expect(yield* normas.correspondencia(id)).toEqual(correspondencia(id, raiz));
+        const dcn2021 = "br/cne-cp/res/2021/1";
+        expect((yield* normas.correspondencia(dcn2021)).length).toBe(65);
+        const [art20] = yield* normas.correspondencia(`${dcn2021}#art20`);
+        expect(art20!.item).toMatchObject({ tipo: "parcial", destino: ["#art22"] });
+        const [art26par1] = yield* normas.correspondencia(`${dcn2021}#art26-par1`);
+        expect(art26par1!.item.destino).toEqual(["#art29-par2", "#art29-par3"]);
+        const [herdado] = yield* normas.correspondencia(`${dcn2021}#art5-par1`);
+        expect(herdado!.herdado_de).toBe("#art5");
         const tabelas = carregarCorrespondencias(raiz);
+        // herança: todo dispositivo sem item próprio, com um ancestral na tabela, herda o item do ancestral
+        // mais próximo
+        const origens = new Set(
+          tabelas.filter((t) => t.origem === dcn2021).flatMap((t) => t.itens.map((i) => i.origem)),
+        );
+        const indice = indiceDispositivos(raiz);
+        let herdados = 0;
+        for (const [id, disp] of indice) {
+          if (!id.startsWith(`${dcn2021}#`)) continue;
+          const sufixo = id.slice(dcn2021.length);
+          if (origens.has(sufixo)) continue;
+          let ancestral: string | null = null;
+          for (
+            let pai = disp.pai;
+            pai !== null;
+            pai = indice.get(`${dcn2021}${pai.slice(pai.indexOf("#"))}`)?.pai ?? null
+          ) {
+            const sufixoPai = pai.slice(pai.indexOf("#"));
+            if (origens.has(sufixoPai)) {
+              ancestral = sufixoPai;
+              break;
+            }
+          }
+          if (ancestral === null) continue;
+          const resultado = yield* normas.correspondencia(id);
+          expect(resultado.length, id).toBeGreaterThan(0);
+          for (const r of resultado) expect([r.herdado_de, r.item.origem], id).toEqual([ancestral, ancestral]);
+          herdados++;
+        }
+        expect(herdados).toBeGreaterThan(50);
         expect(yield* tabelasCorrespondencia()).toEqual(tabelas);
         for (const origem of new Set(tabelas.map((t) => t.origem))) {
           expect(yield* normas.tabelasDeCorrespondencia(origem)).toEqual(tabelas.filter((t) => t.origem === origem));
@@ -438,7 +481,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         };
         for (const m of marcos) {
           const linha = (yield* primeiroMarco("SELECT vigente, normas_json FROM marcos WHERE id = ?", [m.id]))!;
-          const derivado = derivarLinha(m.linha, dataReferencia(raiz), raiz);
+          const derivado = derivarLinha(m.linha, dataReferencia(raiz), vigenciaArquivos);
           expect(linha.vigente).toBe(derivado.vigente);
           expect(JSON.parse(linha.normas_json)).toMatchObject(derivado);
         }
@@ -454,15 +497,15 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           const datas = new Set(["1990-01-01", "2026-11-01", "2026-11-12", dataReferencia(raiz), "2030-01-01"]);
           // as datas dos intervalos gravados e, independentemente deles, as que statusEm compara
           const intervalos = yield* linhasVigencias("SELECT de FROM vigencias WHERE alvo = ?", [ato]);
-          const inicio = inicioVigencia(ato, raiz);
-          const efeitos = relacoes.filter((r) => r.alvo === ato).map((r) => efeitoDaRelacao(r, raiz));
+          const inicio = inicioVigencia(ato, vigenciaArquivos);
+          const efeitos = relacoes.filter((r) => r.alvo === ato).map((r) => efeitoDaRelacao(r, vigenciaArquivos));
           const comparadas = [inicio, ...efeitos].flatMap((e) => [e.data, e.minimo]);
           for (const de of [...intervalos.map((i) => i.de), ...comparadas]) {
             if (!de) continue;
             datas.add(de).add(vesperaDe(de));
           }
           for (const data of datas) {
-            const arquivo = statusEm(ato, data, raiz);
+            const arquivo = statusEm(ato, data, vigenciaArquivos);
             const banco = yield* vigenciaNaData(ato, data);
             expect({ ato, data, status: banco?.status, certo: banco?.certo }).toEqual({
               ato,
@@ -481,7 +524,12 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         for (const ato of atos) {
           for (const data of ["2021-01-01", "2026-11-01", dataReferencia(raiz), "2028-11-14", "2035-01-01"]) {
             const banco = (yield* transicoesDosAtos([ato], data)).map((t) => [t.id, t.inicio_em, t.fim_em, t.situacao]);
-            const arquivo = transicoesAplicaveis(ato, data, raiz).map((t) => [t.id, t.inicio_em, t.fim_em, t.situacao]);
+            const arquivo = transicoesAplicaveis(ato, data, vigenciaArquivos).map((t) => [
+              t.id,
+              t.inicio_em,
+              t.fim_em,
+              t.situacao,
+            ]);
             expect(banco).toEqual(arquivo);
           }
         }
@@ -550,8 +598,8 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
           })),
         );
         // e os carregadores síncronos dos arquivos (os da compilação) dão o mesmo
-        mesmoJson(banco.sinonimos, lerSinonimos());
-        mesmoJson(banco.topicosSecoes, lerTopicosSecoes());
+        mesmoJson(banco.sinonimos, lerSinonimos(raiz));
+        mesmoJson(banco.topicosSecoes, lerTopicosSecoes(raiz));
         mesmoJson(banco.topicosFichas, lerTopicosFichas(raiz));
         mesmoJson(banco.registro, carregarRegistro(raiz).entradas);
         const { meta } = yield* BaseKb.BaseKb;
@@ -574,13 +622,13 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
 
     it.effect("citacoes, vigencia e relacoes", () =>
       Effect.gen(function* () {
-        const registro = registroPadrao();
+        const registro = carregarRegistro(raiz);
         for (const id of NORMAS) {
           for (const confianca of [undefined, 0.9]) {
             const opcoes = confianca === undefined ? {} : { confiancaMinima: confianca };
             const banco = yield* paridade(Effect.flatMap(servicos, (s) => s.ppcs.relatorioCitacoes(id, opcoes)));
             // as citações gravadas no banco são as que o resolvedor acha nos Markdown dos PPCs
-            mesmoJson(banco, relatorioCitacoes(id, ppcsQueCitamArquivos(id, opcoes), registro));
+            mesmoJson(banco, relatorioCitacoes(id, ppcsQueCitamArquivos(id, { raiz, registro, ...opcoes }), registro));
           }
           for (const em of [undefined, "2020-01-01", "2026-11-01", "2030-01-01"]) {
             yield* paridade(Effect.flatMap(servicos, (s) => s.normas.vigencia(id, em ? { em } : {})));
@@ -700,12 +748,22 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
       }),
     );
 
-    it.effect("adequacao-art71: igual à dos arquivos de institucional/ifpr e dos PPCs", () =>
+    it.effect("adequacao-art71: todo curso alcançado tem um indicador, e as citações chegam aos PPCs", () =>
       Effect.gen(function* () {
         for (const incluirTecnologia of [undefined, true]) {
           const opcoes = incluirTecnologia === undefined ? {} : { incluirTecnologia };
-          const banco = yield* paridade(Effect.flatMap(servicos, (s) => s.cursos.adequacaoArt71(opcoes)));
-          mesmoJson(banco, adequacaoArt71({ raiz, ...opcoes }));
+          const relatorio = yield* paridade(Effect.flatMap(servicos, (s) => s.cursos.adequacaoArt71(opcoes)));
+          const soma = INDICADORES.reduce((total, indicador) => total + relatorio.totais[indicador], 0);
+          expect(soma).toBe(relatorio.total);
+          expect(relatorio.cursos.every((c) => c.situacao === "ativo" || c.situacao === "em_oferta")).toBe(true);
+          // se as citações não casassem com o `markdown_path` dos cursos, todo curso ficaria sem PPC
+          expect(relatorio.totais["sem-ppc-convertido"]).toBeLessThan(relatorio.total);
+          const enfermagem = relatorio.cursos.find((c) => c.curso === "curso:curitiba/tecnico-em-enfermagem");
+          expect(enfermagem).toMatchObject({
+            ppc: "institucional/ifpr/ppcs/curitiba/tecnico-em-enfermagem.md",
+            indicador: "cita-cne-cp-1-2021",
+          });
+          expect(enfermagem!.dcn_citadas.map((d) => d.id)).toContain("br/cne-cp/res/2021/1");
         }
       }),
     );
@@ -737,7 +795,7 @@ layer(layerTeste, { timeout: "300 seconds" })((it) => {
         const indice = (yield* lerJson("base-conhecimento/institucional/ifpr/ppcs/index.json")) as {
           items: { id: string; path: string }[];
         };
-        const registro = registroPadrao();
+        const registro = carregarRegistro(raiz);
         const amostra = [PPC, ...indice.items.filter((_, i) => i % 25 === 0).map((item) => item.id)];
         for (const ppc of amostra) {
           const item = indice.items.find((i) => i.id === ppc)!;

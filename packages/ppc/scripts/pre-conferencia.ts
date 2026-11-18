@@ -17,7 +17,7 @@ import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import * as NodeUtil from "node:util";
 import { comentarDocx } from "@simplifica-if/docx/comentarios";
-import { raizRepositorio } from "@simplifica-if/kb/normas/registro";
+import { raizRepositorio } from "@simplifica-if/kb/caminhos";
 import { converterPpc } from "../src/conversao-docx/conversao.ts";
 import { achadosParaComentarios, preConferir } from "../src/pre-conferencia.ts";
 import type { CursoCnct } from "../src/verificadores/comum.ts";

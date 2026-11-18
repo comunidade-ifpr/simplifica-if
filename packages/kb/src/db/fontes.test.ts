@@ -12,6 +12,7 @@ import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Path from "effect/Path";
 import * as Compilador from "../Compilador.ts";
+import { CAMINHOS, noCheckout, raizRepositorio } from "../caminhos.ts";
 import { VERSAO_ESQUEMA } from "./esquema.ts";
 import { arquivosFonte, estadoDoBanco, hashConteudo, hashLista } from "./fontes.ts";
 
@@ -96,13 +97,31 @@ describe("Compilador.compilar com erro", () => {
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
       const compilador = yield* Compilador.Compilador;
-      // raiz sem a base: a carga das normas falha no meio da compilação, com o temporário já criado
+      // raiz só com o léxico e os tópicos: a carga das normas falha no meio da compilação, com o
+      // temporário já criado
       const vazia = yield* fs.makeTempDirectoryScoped({ prefix: "kb-erro-" });
+      for (const relativo of [CAMINHOS.sinonimos, CAMINHOS.topicosSecoes]) {
+        yield* fs.makeDirectory(path.dirname(noCheckout(vazia, relativo)), { recursive: true });
+        yield* fs.copyFile(noCheckout(raizRepositorio(), relativo), noCheckout(vazia, relativo));
+      }
       const destino = path.join(vazia, "tmp", "kb.sqlite");
       const erro = yield* Effect.flip(compilador.compilar({ raiz: vazia, destino }));
       expect(Compilador.ehFalhaNaCompilacao(erro)).toBe(true);
       expect(erro).toMatchObject({ _tag: "FalhaNaCompilacao", etapa: "gravacao", destino });
       expect(yield* fs.readDirectory(path.dirname(destino))).toEqual([]);
+    }).pipe(Effect.provide(Compilador.layer.pipe(Layer.provideMerge(NodeServices.layer)))),
+  );
+
+  it.effect("o léxico vem da raiz informada, não da cópia do pacote", () =>
+    Effect.gen(function* () {
+      const fs = yield* FileSystem.FileSystem;
+      const path = yield* Path.Path;
+      const compilador = yield* Compilador.Compilador;
+      const vazia = yield* fs.makeTempDirectoryScoped({ prefix: "kb-erro-" });
+      const destino = path.join(vazia, "tmp", "kb.sqlite");
+      const erro = yield* Effect.flip(compilador.compilar({ raiz: vazia, destino }));
+      expect(erro).toMatchObject({ _tag: "FalhaNaCompilacao", etapa: "fontes", destino });
+      expect(yield* fs.exists(path.dirname(destino))).toBe(false);
     }).pipe(Effect.provide(Compilador.layer.pipe(Layer.provideMerge(NodeServices.layer)))),
   );
 });

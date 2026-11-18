@@ -23,29 +23,30 @@ import * as NodeCrypto from "node:crypto";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import * as NodeSqlite from "node:sqlite";
+import { CAMINHOS } from "../caminhos.ts";
 import { compararTexto } from "../texto.ts";
 import { VERSAO_ESQUEMA } from "./esquema.ts";
 import { ARQUIVOS_FONTES_NORMATIVAS } from "./fontes-normativas.ts";
 
 /** Diretórios e arquivos de dados (relativos à raiz), com o filtro de extensão. */
 const FONTES_DADOS: readonly { caminho: string; extensoes: readonly string[] }[] = [
-  { caminho: "base-conhecimento/manifest.json", extensoes: [] },
-  { caminho: "base-conhecimento/normas", extensoes: [".md", ".yaml"] },
-  { caminho: "base-conhecimento/institucional/ifpr/ppcs", extensoes: [".md", ".json", ".jsonl"] },
-  { caminho: "base-conhecimento/catalogos/cnct", extensoes: [".json"] },
+  { caminho: CAMINHOS.manifest, extensoes: [] },
+  { caminho: CAMINHOS.normas, extensoes: [".md", ".yaml"] },
+  { caminho: CAMINHOS.ppcs, extensoes: [".md", ".json", ".jsonl"] },
+  { caminho: CAMINHOS.cnct, extensoes: [".json"] },
   ...["campi", "cursos", "processos-seletivos", "editais", "ofertas", "conselhos"].map((colecao) => ({
-    caminho: `base-conhecimento/institucional/ifpr/${colecao}`,
+    caminho: `${CAMINHOS.institucional}/${colecao}`,
     extensoes: [".json"],
   })),
-  { caminho: ".agents/skills/revisar-ppc/base-analise/fichas", extensoes: [".json"] },
-  { caminho: ".agents/skills/revisar-ppc/base-analise/topicos-fichas.json", extensoes: [] },
-  { caminho: ".agents/skills/revisar-ppc/base-analise/marcos-normativos.json", extensoes: [] },
-  { caminho: "packages/kb/dados", extensoes: [".yaml"] },
+  { caminho: CAMINHOS.fichas, extensoes: [".json"] },
+  { caminho: CAMINHOS.topicosFichas, extensoes: [] },
+  { caminho: CAMINHOS.marcos, extensoes: [] },
+  { caminho: CAMINHOS.dadosKb, extensoes: [".yaml"] },
   ...ARQUIVOS_FONTES_NORMATIVAS.map((caminho) => ({ caminho, extensoes: [] })),
 ];
 
 /** Código do núcleo que entra na compilação (o resto, como CLI e consultas, não muda o banco). */
-const CODIGO = "packages/kb/src";
+const CODIGO = CAMINHOS.codigoKb;
 const CODIGO_FORA = [
   /\.test\.ts$/,
   /^packages\/kb\/src\/(cli|primitivas\/|avaliacao\/)/,

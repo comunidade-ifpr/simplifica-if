@@ -3,7 +3,7 @@
 import { describe, expect, test } from "vite-plus/test";
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
-import { raizRepositorio } from "../normas/registro.ts";
+import { raizRepositorio } from "../caminhos.ts";
 import { lerTopicosFichas, type TopicoFichas } from "../ppcs/topicos.ts";
 import { agruparPorTopico, type FichaPacote, TOPICO_TRANSVERSAL, topicoPrincipal } from "./pacote-contexto.ts";
 

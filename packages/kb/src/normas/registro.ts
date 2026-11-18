@@ -5,8 +5,8 @@
  */
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
-import * as NodePath from "node:path";
 import { parse } from "yaml";
+import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { compararTexto } from "../texto.ts";
 import { ehIdDispositivo, ehIdExterno, ehIdNorma, idDoAto, partesIdNorma } from "./ids.ts";
 
@@ -201,13 +201,8 @@ export function datasDoAto(entrada: EntradaRegistro | undefined): string[] {
   ];
 }
 
-/** Raiz do repositório, a partir deste arquivo (`packages/kb/src/normas/`). */
-export function raizRepositorio(): string {
-  return NodePath.resolve(import.meta.dirname, "..", "..", "..", "..");
-}
-
-export function caminhoStubs(raiz: string = raizRepositorio()): string {
-  return NodePath.join(raiz, "base-conhecimento", "normas", "stubs.yaml");
+export function caminhoStubs(raiz: string): string {
+  return noCheckout(raiz, CAMINHOS.stubs);
 }
 
 /**
@@ -253,8 +248,8 @@ export function montarRegistro(manifestJson: string, stubsYaml: string | null): 
 }
 
 /** Monta o registro com `manifest.json` e `stubs.yaml` do checkout. */
-export function carregarRegistro(raiz: string = raizRepositorio()): Registro {
-  const manifest = NodeFS.readFileSync(NodePath.join(raiz, "base-conhecimento", "manifest.json"), "utf-8");
+export function carregarRegistro(raiz: string): Registro {
+  const manifest = NodeFS.readFileSync(noCheckout(raiz, CAMINHOS.manifest), "utf-8");
   const arquivoStubs = caminhoStubs(raiz);
   return montarRegistro(manifest, NodeFS.existsSync(arquivoStubs) ? NodeFS.readFileSync(arquivoStubs, "utf-8") : null);
 }

@@ -23,10 +23,12 @@ import * as Command from "effect/cli/Command";
 import * as FontesNormativas from "../FontesNormativas.ts";
 import * as Impacto from "../Impacto.ts";
 import * as Normas from "../Normas.ts";
-import { avaliarResolvedor } from "../avaliacao/resolvedor.ts";
+import { avaliarResolvedor, lerAnotacoes } from "../avaliacao/resolvedor.ts";
+import { carregarRegistro } from "../normas/registro.ts";
 import { proporRelacoes } from "../normas/relacoes.ts";
 import {
   camadaRepositorio,
+  Checkout,
   EncerrarComCodigo,
   EntradaInvalida,
   exigirIdNorma,
@@ -38,7 +40,6 @@ import {
   flagTexto,
   imprimir,
   paraJson,
-  raiz,
 } from "./comum.ts";
 
 /** Uma linha por trecho, com recuo, para a saída em texto. */
@@ -214,6 +215,7 @@ export const vigencia = Command.make(
 );
 
 const proporRelacoesNoCheckout = Effect.fn("kb.relacoes.propor")(function* (json: boolean) {
+  const { raiz } = yield* Checkout;
   const propostas = yield* Effect.try({
     try: () => proporRelacoes(raiz),
     catch: (cause) => new FalhaNaCuradoria({ comando: "relacoes --propor", cause }),
@@ -354,8 +356,9 @@ export const avaliarResolvedorCmd = Command.make(
   "avaliar-resolvedor",
   { json: flagJson },
   Effect.fn("kb.avaliarResolvedor")(function* ({ json }) {
+    const { raiz } = yield* Checkout;
     const resultado = yield* Effect.try({
-      try: () => avaliarResolvedor(),
+      try: () => avaliarResolvedor(lerAnotacoes(raiz), carregarRegistro(raiz), raiz),
       catch: (cause) => new FalhaNaCuradoria({ comando: "avaliar-resolvedor", cause }),
     });
     if (json) return yield* Console.log(paraJson(resultado));

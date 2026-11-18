@@ -188,8 +188,8 @@ const make = Effect.gen(function* () {
       Effect.sync(() => {
         const quando = opcoes.em ?? fontes.dataReferencia;
         return {
-          ...statusEm(ato(id), quando, fontes.vigencia),
-          transicoes: transicoesAplicaveis(ato(id), quando, fontes.vigencia),
+          ...statusEm(ato(id), quando, fontes),
+          transicoes: transicoesAplicaveis(ato(id), quando, fontes),
         };
       }),
     ),
@@ -203,7 +203,7 @@ const make = Effect.gen(function* () {
       return (yield* trechoDoDispositivo(id, opcoes)) ?? null;
     }, prover),
     tabelasDeCorrespondencia: Effect.fn("Normas.tabelasDeCorrespondencia")((ato: string) =>
-      Effect.sync(() => fonteCorrespondencia.tabelas(ato)),
+      Effect.sync(() => fonteCorrespondencia.tabelas.get(ato) ?? []),
     ),
     correspondencia: Effect.fn("Normas.correspondencia")((id: string) =>
       Effect.sync(() => correspondenciaEm(id, fonteCorrespondencia)),

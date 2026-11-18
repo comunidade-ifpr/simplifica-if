@@ -18,6 +18,7 @@ import {
   textoDe,
   textoOuVazio,
 } from "@simplifica-if/kb/json";
+import { CAMINHOS, noCheckout } from "@simplifica-if/kb/caminhos";
 import { lerTopicosSecoes } from "@simplifica-if/kb/ppcs/topicos";
 import { ehIdDispositivo, RE_REFERENCIA } from "@simplifica-if/kb/normas/ids";
 import {
@@ -86,17 +87,12 @@ function conjuntoOrdenado(valores: Iterable<string>): string {
  * vale) e toda entrada é um tópico. Sem o arquivo (skill fora do repositório), não confere.
  */
 export function validarTopicosSecoes(idsTopicos: ReadonlySet<string>, caminhos: CaminhosAnalise): string[] {
-  const arquivo = NodePath.join(
-    NodePath.dirname(caminhos.baseConhecimentoDir),
-    "packages",
-    "kb",
-    "dados",
-    "topicos-secoes.yaml",
-  );
+  const raiz = NodePath.dirname(caminhos.baseConhecimentoDir);
+  const arquivo = noCheckout(raiz, CAMINHOS.topicosSecoes);
   if (!NodeFS.existsSync(arquivo)) return [];
   let mapa: Readonly<Record<string, ReadonlyArray<string>>>;
   try {
-    mapa = lerTopicosSecoes(arquivo);
+    mapa = lerTopicosSecoes(raiz);
   } catch (erro) {
     return [`${arquivo}: inválido: ${erro instanceof Error ? erro.message : String(erro)}`];
   }

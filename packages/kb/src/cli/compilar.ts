@@ -15,9 +15,10 @@ import * as Path from "effect/Path";
 import * as Command from "effect/cli/Command";
 import * as Flag from "effect/cli/Flag";
 import * as Digest from "effect/crypto/Digest";
+import { CAMINHOS } from "../caminhos.ts";
 import { CANAIS } from "../canal.ts";
 import * as Compilador from "../Compilador.ts";
-import { flagTexto, imprimir, raiz } from "./comum.ts";
+import { Checkout, flagTexto, imprimir } from "./comum.ts";
 
 export const compilar = Command.make(
   "compilar",
@@ -32,6 +33,7 @@ export const compilar = Command.make(
   },
   Effect.fn("kb.compilar")(
     function* ({ destino, versao, commit, canal }) {
+      const { raiz } = yield* Checkout;
       const compilador = yield* Compilador.Compilador;
       const fs = yield* FileSystem.FileSystem;
       const path = yield* Path.Path;
@@ -41,7 +43,7 @@ export const compilar = Command.make(
         ? path.resolve(destino.value)
         : Option.isSome(configurado)
           ? path.resolve(configurado.value)
-          : path.join(raiz, "tmp", "kb.sqlite");
+          : path.join(raiz, ...CAMINHOS.banco.split("/"));
       const inicio = yield* Clock.currentTimeMillis;
       const resumo = yield* compilador.compilar({
         raiz,

@@ -16,13 +16,13 @@
 import * as Effect from "effect/Effect";
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
-import * as NodePath from "node:path";
 import { parse } from "yaml";
+import { CAMINHOS, chaveDoCheckout, noCheckout } from "../caminhos.ts";
 import { caminhoTexto, problemas } from "../esquema/mensagens.ts";
 import { carregarDispositivos, carregarEstruturas, type Dispositivo, indiceDispositivos } from "./estrutura.ts";
 import { ehIdAto, ehIdDispositivo, idDoAto } from "./ids.ts";
 import { palavrasDoTexto } from "./markdown.ts";
-import { carregarRegistro, raizRepositorio, type Registro } from "./registro.ts";
+import { carregarRegistro, type Registro } from "./registro.ts";
 import { extrairCitacoes } from "./resolver.ts";
 import { textoDispositivos } from "./texto-dispositivos.ts";
 
@@ -73,8 +73,8 @@ export const esquemaRelacoes = Schema.Struct({
 export type ArquivoRelacoes = typeof esquemaRelacoes.Type;
 const decodificarRelacoes = Schema.decodeUnknownSync(esquemaRelacoes, { onExcessProperty: "error", errors: "all" });
 
-export function caminhoRelacoes(raiz: string = raizRepositorio()): string {
-  return NodePath.join(raiz, "base-conhecimento", "relacoes.yaml");
+export function caminhoRelacoes(raiz: string): string {
+  return noCheckout(raiz, CAMINHOS.relacoes);
 }
 
 /**
@@ -90,22 +90,23 @@ export function relacoesDoYaml(texto: string): Relacao[] {
   return arquivoRelacoesDoYaml(texto).relacoes;
 }
 
+/** Por checkout (`chaveDoCheckout`); `validarRelacoes` o descarta para reler o arquivo. */
 const cache = new Map<string, ArquivoRelacoes>();
 
 /** Lê `relacoes.yaml` e aplica o contrato. */
-export function carregarArquivoRelacoes(raiz: string = raizRepositorio()): ArquivoRelacoes {
-  const emCache = cache.get(raiz);
+export function carregarArquivoRelacoes(raiz: string): ArquivoRelacoes {
+  const emCache = cache.get(chaveDoCheckout(raiz));
   if (emCache) return emCache;
   const arquivo = caminhoRelacoes(raiz);
   const dados = NodeFS.existsSync(arquivo)
     ? arquivoRelacoesDoYaml(NodeFS.readFileSync(arquivo, "utf-8"))
     : { relacoes: [], descartadas: [] };
-  cache.set(raiz, dados);
+  cache.set(chaveDoCheckout(raiz), dados);
   return dados;
 }
 
 /** Relações de `relacoes.yaml`, na ordem do arquivo. */
-export function carregarRelacoes(raiz: string = raizRepositorio()): Relacao[] {
+export function carregarRelacoes(raiz: string): Relacao[] {
   return carregarArquivoRelacoes(raiz).relacoes;
 }
 
@@ -120,7 +121,7 @@ export function sucessorasDe(ato: string, relacoes: readonly Relacao[]): string[
 }
 
 /** Relações que têm `id` (ato) como origem ou alvo. */
-export function relacoesDe(id: string, raiz: string = raizRepositorio()): { saida: Relacao[]; entrada: Relacao[] } {
+export function relacoesDe(id: string, raiz: string): { saida: Relacao[]; entrada: Relacao[] } {
   return relacoesDeEm(id, carregarRelacoes(raiz));
 }
 
@@ -149,14 +150,11 @@ function textoDaEvidencia(em: string, raiz: string, indice: Map<string, Disposit
  * Validação semântica de `relacoes.yaml`: IDs no registro, operador e alvo no texto, evidência
  * literal no texto indicado, unicidade e descartes. Devolve mensagens de erro.
  */
-export function validarRelacoes(
-  raiz: string = raizRepositorio(),
-  registro: Registro = carregarRegistro(raiz),
-): string[] {
+export function validarRelacoes(raiz: string, registro: Registro = carregarRegistro(raiz)): string[] {
   const erros: string[] = [];
   let arquivo: ArquivoRelacoes;
   try {
-    cache.delete(raiz);
+    cache.delete(chaveDoCheckout(raiz));
     arquivo = carregarArquivoRelacoes(raiz);
   } catch (erro) {
     if (Schema.isSchemaError(erro)) {
@@ -257,7 +255,7 @@ function textoAlvo(titulo: string, relacao: Relacao, lado: "alvo" | "origem"): s
  */
 export function camposRelacoesFrontMatter(
   id: string,
-  raiz: string = raizRepositorio(),
+  raiz: string,
   registro: Registro = carregarRegistro(raiz),
 ): Partial<Record<CampoRelacao, string[]>> {
   const ato = idDoAto(id);
@@ -296,10 +294,7 @@ export interface Proposta {
  * "Ficam revogados", "Revogam-se", "passa a vigorar com"... cujas citações resolvidas apontam para
  * outro ato. Fica de fora o que já está em `relacoes` (mesmo operador) ou em `descartadas`.
  */
-export function proporRelacoes(
-  raiz: string = raizRepositorio(),
-  registro: Registro = carregarRegistro(raiz),
-): Proposta[] {
+export function proporRelacoes(raiz: string, registro: Registro = carregarRegistro(raiz)): Proposta[] {
   const arquivo = carregarArquivoRelacoes(raiz);
   const registradas = new Set(arquivo.relacoes.map((r) => `${r.origem}${r.operador ?? ""}`));
   const descartadas = new Set(arquivo.descartadas.map((d) => `${d.origem}${d.operador === "*" ? "" : d.operador}`));

@@ -18,9 +18,9 @@
  */
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
-import * as NodePath from "node:path";
+import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { ehIdAto, ehIdCnct, ehIdExterno, RE_ID_DISPOSITIVO, RE_REFERENCIA } from "./ids.ts";
-import { carregarRegistro, raizRepositorio, type Registro, type Situacao } from "./registro.ts";
+import { carregarRegistro, type Registro, type Situacao } from "./registro.ts";
 import { textoDispositivos } from "./texto-dispositivos.ts";
 
 const PAPEIS_REFERENCIA = ["fundamento", "complementar"] as const;
@@ -110,8 +110,8 @@ const decodificarIndiceCnct = Schema.decodeUnknownSync(
 );
 
 /** Cursos de `catalogos/cnct/index.json` (`id` → denominação); vazio se o índice não existe. */
-export function carregarCursosCnct(raiz: string = raizRepositorio()): Map<string, string> {
-  const arquivo = NodePath.join(raiz, "base-conhecimento", "catalogos", "cnct", "index.json");
+export function carregarCursosCnct(raiz: string): Map<string, string> {
+  const arquivo = noCheckout(raiz, CAMINHOS.indiceCnct);
   const cursos = new Map<string, string>();
   if (!NodeFS.existsSync(arquivo)) return cursos;
   const indice = decodificarIndiceCnct(JSON.parse(NodeFS.readFileSync(arquivo, "utf-8")));
@@ -120,7 +120,7 @@ export function carregarCursosCnct(raiz: string = raizRepositorio()): Map<string
 }
 
 /** Universo do checkout em `raiz` (que contém `base-conhecimento/`). */
-export function carregarUniversoReferencias(raiz: string = raizRepositorio()): UniversoReferencias {
+export function carregarUniversoReferencias(raiz: string): UniversoReferencias {
   return new UniversoReferencias(carregarRegistro(raiz), carregarCursosCnct(raiz));
 }
 

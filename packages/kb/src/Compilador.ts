@@ -19,6 +19,7 @@ import * as Effect from "effect/Effect";
 import * as FileSystem from "effect/FileSystem";
 import * as Layer from "effect/Layer";
 import * as Path from "effect/Path";
+import * as Random from "effect/Random";
 import * as Schema from "effect/Schema";
 import {
   type OpcoesCompilacao,
@@ -96,7 +97,9 @@ const make = Effect.gen(function* () {
       new FalhaNaCompilacao({ etapa, destino, cause });
     const leitura = yield* Clock.currentTimeMillis;
     const preparo = yield* Effect.try({ try: () => prepararCompilacao(opcoes, leitura), catch: falha("fontes") });
-    const temporario = `${destino}.tmp-${process.pid}`;
+    // sufixo aleatório: duas compilações simultâneas do mesmo destino não dividem o temporário
+    const sufixo = (yield* Random.nextIntBetween(0, 0xffffffff)).toString(16);
+    const temporario = `${destino}.tmp-${sufixo}`;
     yield* fs.makeDirectory(path.dirname(destino), { recursive: true }).pipe(Effect.mapError(falha("gravacao")));
     yield* fs.remove(temporario, { force: true }).pipe(Effect.mapError(falha("gravacao")));
     const contagens = yield* Effect.acquireUseRelease(

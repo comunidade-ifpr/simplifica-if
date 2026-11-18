@@ -15,7 +15,8 @@ import {
 } from "./estrutura.ts";
 import { ehIdDispositivo } from "./ids.ts";
 import { palavrasMarkdown, primeiraDivergencia } from "./markdown.ts";
-import { carregarRegistro, raizRepositorio } from "./registro.ts";
+import { raizRepositorio } from "../caminhos.ts";
+import { carregarRegistro } from "./registro.ts";
 
 const raiz = raizRepositorio();
 
@@ -154,16 +155,16 @@ describe("normas da base", () => {
   });
 
   test("dispositivos conhecidos", () => {
-    expect(String(obterDispositivo("br/cne-cp/res/2026/2#art71-parunico")?.texto).startsWith("Parágrafo único.")).toBe(
-      true,
-    );
-    expect(String(obterDispositivo("br/cne-cp/res/2026/2#art28-xvi")?.caput[0]).startsWith("Art. 28")).toBe(true);
-    expect(obterDispositivo("br/cne-cp/res/2026/2#art28-par1-iv")?.tipo).toBe("inciso");
-    expect(obterDispositivo("br/lei/1996/9394#art36A")?.rotulo).toBe("Art. 36-A.");
-    expect(obterDispositivo("br/lei/1996/9394#art26-par9B")?.tipo).toBe("paragrafo");
-    expect(obterDispositivo("br/lei/1996/9394#art35A")?.revogado).toBe(true);
-    expect(obterDispositivo("br/cne-ceb/res/2025/3#art6-iii")).toBeDefined();
-    expect(obterDispositivo("ifpr/consup/res/2017/65#anexo1-art1")?.tipo).toBe("artigo");
+    expect(
+      String(obterDispositivo("br/cne-cp/res/2026/2#art71-parunico", raiz)?.texto).startsWith("Parágrafo único."),
+    ).toBe(true);
+    expect(String(obterDispositivo("br/cne-cp/res/2026/2#art28-xvi", raiz)?.caput[0]).startsWith("Art. 28")).toBe(true);
+    expect(obterDispositivo("br/cne-cp/res/2026/2#art28-par1-iv", raiz)?.tipo).toBe("inciso");
+    expect(obterDispositivo("br/lei/1996/9394#art36A", raiz)?.rotulo).toBe("Art. 36-A.");
+    expect(obterDispositivo("br/lei/1996/9394#art26-par9B", raiz)?.tipo).toBe("paragrafo");
+    expect(obterDispositivo("br/lei/1996/9394#art35A", raiz)?.revogado).toBe(true);
+    expect(obterDispositivo("br/cne-ceb/res/2025/3#art6-iii", raiz)).toBeDefined();
+    expect(obterDispositivo("ifpr/consup/res/2017/65#anexo1-art1", raiz)?.tipo).toBe("artigo");
   });
 
   test("compilação deduplica com o texto integral do ato", () => {

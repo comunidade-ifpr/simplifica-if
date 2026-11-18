@@ -25,7 +25,13 @@ import { analisarNorma, indiceDispositivos } from "@simplifica-if/kb/normas/estr
 import { normasComCamposGerados } from "@simplifica-if/kb/normas/gerado";
 import { validarCorrespondencias } from "@simplifica-if/kb/normas/correspondencia";
 import { carregarRelacoes, validarRelacoes } from "@simplifica-if/kb/normas/relacoes";
-import { caminhoConfigVigencia, carregarTransicoes, dataReferencia, statusEm } from "@simplifica-if/kb/normas/vigencia";
+import {
+  caminhoConfigVigencia,
+  carregarDatas,
+  carregarTransicoes,
+  dataReferencia,
+  statusEm,
+} from "@simplifica-if/kb/normas/vigencia";
 import { palavrasDoTexto } from "@simplifica-if/kb/normas/markdown";
 import { caminhoTexto, problemas } from "@simplifica-if/kb/esquema/mensagens";
 import { esquemaNorma } from "@simplifica-if/kb/normas/front-matter";
@@ -386,7 +392,11 @@ export function validarRelacoesEVigencia(ctx: Contexto): string[] {
       }
       continue;
     }
-    const calculado = statusEm(entrada.id, referencia, raiz);
+    const calculado = statusEm(entrada.id, referencia, {
+      registro: carregarRegistro(raiz),
+      datas: carregarDatas(raiz),
+      relacoes: carregarRelacoes(raiz),
+    });
     if (calculado.eventos.some((evento) => evento.ocorreu !== false) && registrado !== calculado.status) {
       erros.push(
         `normas/stubs.yaml: ${entrada.id}: status_vigencia ${registrado} difere do calculado em ${referencia} (${calculado.status})`,

@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vite-plus/test";
 import * as Result from "effect/Result";
 import * as Schema from "effect/Schema";
+import { raizRepositorio } from "../caminhos.ts";
 import { analisarDispositivos } from "./dispositivos.ts";
 import { ehIdAto, ehIdCnct, RE_ID_ATO_COM_DISPOSITIVO, RE_REFERENCIA, semAcento } from "./ids.ts";
 import {
@@ -14,7 +15,7 @@ import {
 import { normalizarCitacao } from "./texto-citacao.ts";
 import { partesDispositivo, textoDispositivos } from "./texto-dispositivos.ts";
 
-const universo = carregarUniversoReferencias();
+const universo = carregarUniversoReferencias(raizRepositorio());
 
 describe("ids", () => {
   test("semAcento descarta o que não vira ASCII", () => {

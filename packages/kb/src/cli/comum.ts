@@ -6,13 +6,14 @@
  * não em volta do `Command.run`: assim `--help` e os erros de uso não abrem nem recompilam o banco.
  */
 import * as Console from "effect/Console";
+import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
+import * as Layer from "effect/Layer";
 import * as Runtime from "effect/Runtime";
 import * as Schema from "effect/Schema";
 import * as Flag from "effect/cli/Flag";
 import * as Layers from "../layers.ts";
 import { ehIdExterno, ehIdNorma, idDoAto } from "../normas/ids.ts";
-import { raizRepositorio } from "../normas/registro.ts";
 
 /** Entrada que os parsers de flag não pegam (formato do ID, combinação de argumentos). */
 export class EntradaInvalida extends Schema.TaggedError<EntradaInvalida>()("EntradaInvalida", {
@@ -57,11 +58,18 @@ export class FalhaNaCuradoria extends Schema.TaggedError<FalhaNaCuradoria>()("Fa
   }
 }
 
-/** Raiz do checkout, onde estão as fontes e o `tmp/kb.sqlite`. */
-export const raiz = raizRepositorio();
+/** O checkout onde estão as fontes e o `tmp/kb.sqlite`; o ponto de entrada (`cli.ts`) informa a raiz. */
+export class Checkout extends Context.Service<Checkout, { readonly raiz: string }>()(
+  "@simplifica-if/kb/cli/comum/Checkout",
+) {}
 
 /** Banco do checkout (recompilado se velho) e fontes normativas dos arquivos. */
-export const camadaRepositorio = Layers.layerRepositorio({ raiz });
+export const camadaRepositorio = Layer.unwrap(
+  Effect.gen(function* () {
+    const { raiz } = yield* Checkout;
+    return Layers.layerRepositorio({ raiz });
+  }),
+);
 
 /** JSON com recuo de 2, como a CLI sempre imprimiu. */
 export const paraJson = (valor: unknown): string => JSON.stringify(valor, null, 2);

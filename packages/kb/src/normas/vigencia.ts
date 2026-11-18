@@ -26,12 +26,12 @@
  */
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
-import * as NodePath from "node:path";
 import { parse } from "yaml";
+import { CAMINHOS, chaveDoCheckout, noCheckout } from "../caminhos.ts";
 import { analisarFrontMatter } from "./front-matter.ts";
 import { idDoAto } from "./ids.ts";
 import { listarNormas } from "./estrutura.ts";
-import { carregarRegistro, raizRepositorio, type Registro } from "./registro.ts";
+import { carregarRegistro, type Registro } from "./registro.ts";
 import { carregarRelacoes, type Relacao, relacaoParcial } from "./relacoes.ts";
 
 export const A_CONFIRMAR = "a confirmar";
@@ -56,8 +56,8 @@ export interface DatasNorma {
 const esquemaConfig = Schema.Struct({ data_referencia: Schema.String.check(Schema.isPattern(RE_DATA)) });
 const decodificarConfig = Schema.decodeUnknownSync(esquemaConfig, { onExcessProperty: "error", errors: "all" });
 
-export function caminhoConfigVigencia(raiz: string = raizRepositorio()): string {
-  return NodePath.join(raiz, "base-conhecimento", "config", "vigencia.yaml");
+export function caminhoConfigVigencia(raiz: string): string {
+  return noCheckout(raiz, CAMINHOS.configVigencia);
 }
 
 /**
@@ -69,10 +69,11 @@ export function dataReferenciaDoYaml(texto: string): string {
 }
 
 /** `data_referencia` declarada em `base-conhecimento/config/vigencia.yaml`. */
-export function dataReferencia(raiz: string = raizRepositorio()): string {
+export function dataReferencia(raiz: string): string {
   return dataReferenciaDoYaml(NodeFS.readFileSync(caminhoConfigVigencia(raiz), "utf-8"));
 }
 
+/** Por checkout (`chaveDoCheckout`): `statusEm` sobre a raiz relê as datas a cada chamada. */
 const cacheDatas = new Map<string, Map<string, DatasNorma>>();
 
 /** Datas de uma norma da base pelo front matter (`assinada_em`, `publicada_em`, `vigente_de`). */
@@ -111,45 +112,45 @@ export function montarDatas(
 }
 
 /** Datas por ID do ato: normas da base (front matter) e stubs (`data_publicacao`). */
-export function carregarDatas(raiz: string = raizRepositorio(), registro?: Registro): Map<string, DatasNorma> {
-  const emCache = cacheDatas.get(raiz);
+export function carregarDatas(raiz: string, registro?: Registro): Map<string, DatasNorma> {
+  const emCache = cacheDatas.get(chaveDoCheckout(raiz));
   if (emCache) return emCache;
   const normas = listarNormas(raiz).map((norma) => ({
     id: norma.id,
     meta: analisarFrontMatter(NodeFS.readFileSync(norma.arquivo, "utf-8"), norma.path).meta,
   }));
   const datas = montarDatas(normas, registro ?? carregarRegistro(raiz));
-  cacheDatas.set(raiz, datas);
+  cacheDatas.set(chaveDoCheckout(raiz), datas);
   return datas;
 }
 
 /**
- * O que a vigência lê: registro, datas dos atos, relações e regras de transição. Duas
- * implementações: os arquivos do checkout (`fonteVigenciaArquivos`) e o `kb.sqlite`
- * (`FontesNormativas.vigencia`, sobre qualquer das duas layers); as regras (`statusEm`, `transicoesAplicaveis`,
- * `derivarLinha`...) são as mesmas. Toda função abaixo que recebe `raiz` aceita também uma fonte.
+ * O que a vigência lê: registro, datas dos atos, relações e regras de transição, já carregados. Vem
+ * dos arquivos do checkout (`carregarFonteVigencia`) ou do serviço `FontesNormativas`, que tem
+ * estes campos (sobre qualquer das duas layers); as regras (`statusEm`, `transicoesAplicaveis`,
+ * `derivarLinha`...) são as mesmas.
  */
 export interface FonteVigencia {
-  registro(): Registro;
-  datas(): Map<string, DatasNorma>;
-  relacoes(): readonly Relacao[];
-  transicoes(): readonly Transicao[];
+  readonly registro: Registro;
+  readonly datas: ReadonlyMap<string, DatasNorma>;
+  readonly relacoes: readonly Relacao[];
+  readonly transicoes: readonly Transicao[];
 }
 
-/** Raiz do checkout (os arquivos) ou uma fonte de dados da vigência. */
-export type RaizOuFonte = string | FonteVigencia;
+/**
+ * O que o status de vigência lê (`statusEm`, `intervalosVigencia`): sem as regras de transição. Cada
+ * regra abaixo pede só os campos que lê, para que quem carrega dos arquivos não leia o resto.
+ */
+export type FonteStatus = Pick<FonteVigencia, "registro" | "datas" | "relacoes">;
 
-export function fonteVigenciaArquivos(raiz: string = raizRepositorio()): FonteVigencia {
+/** A fonte da vigência lida dos arquivos do checkout em `raiz`. */
+export function carregarFonteVigencia(raiz: string): FonteVigencia {
   return {
-    registro: () => carregarRegistro(raiz),
-    datas: () => carregarDatas(raiz),
-    relacoes: () => carregarRelacoes(raiz),
-    transicoes: () => carregarTransicoes(raiz),
+    registro: carregarRegistro(raiz),
+    datas: carregarDatas(raiz),
+    relacoes: carregarRelacoes(raiz),
+    transicoes: carregarTransicoes(raiz),
   };
-}
-
-function fonteDe(raiz: RaizOuFonte): FonteVigencia {
-  return typeof raiz === "string" ? fonteVigenciaArquivos(raiz) : raiz;
 }
 
 /** Início de vigência: data certa, ou mínimo (assinatura) com incerteza. */
@@ -161,23 +162,23 @@ export interface Inicio {
   certo: boolean;
 }
 
-export function inicioVigencia(id: string, raiz: RaizOuFonte = raizRepositorio()): Inicio {
-  const datas = fonteDe(raiz).datas().get(idDoAto(id));
+export function inicioVigencia(id: string, fonte: Pick<FonteVigencia, "datas">): Inicio {
+  const datas = fonte.datas.get(idDoAto(id));
   if (datas && RE_DATA.test(datas.vigente_de)) return { data: datas.vigente_de, minimo: datas.vigente_de, certo: true };
   return { data: null, minimo: datas?.assinada_em ?? null, certo: false };
 }
 
 /** Data a partir da qual a relação produz efeito. */
-export function efeitoDaRelacao(relacao: Relacao, raiz: RaizOuFonte = raizRepositorio()): Inicio {
+export function efeitoDaRelacao(relacao: Relacao, fonte: Pick<FonteVigencia, "datas">): Inicio {
   if (relacao.efeito_de !== "vigencia-da-origem")
     return { data: relacao.efeito_de, minimo: relacao.efeito_de, certo: true };
-  return inicioVigencia(relacao.origem, raiz);
+  return inicioVigencia(relacao.origem, fonte);
 }
 
 /** Data de efeito do status registrado de um stub: a vigência do ato de `status_fonte`. */
-function efeitoDoStatusRegistrado(statusFonte: string | undefined, raiz: RaizOuFonte): Inicio | null {
+function efeitoDoStatusRegistrado(statusFonte: string | undefined, fonte: Pick<FonteVigencia, "datas">): Inicio | null {
   if (!statusFonte) return null;
-  const efeito = inicioVigencia(idDoAto(statusFonte.split("#")[0]!), raiz);
+  const efeito = inicioVigencia(idDoAto(statusFonte.split("#")[0]!), fonte);
   return efeito.data || efeito.minimo ? efeito : null;
 }
 
@@ -216,18 +217,16 @@ export interface ResultadoVigencia {
 const ORDEM: Record<string, number> = { vigente: 0, alterada: 1, "parcialmente revogada": 2, revogada: 3 };
 
 /** Status de vigência do ato `id` na data `data` (AAAA-MM-DD). */
-export function statusEm(id: string, data: string, raiz: RaizOuFonte = raizRepositorio()): ResultadoVigencia {
+export function statusEm(id: string, data: string, fonte: FonteStatus): ResultadoVigencia {
   if (!RE_DATA.test(data)) throw new Error(`data fora do formato AAAA-MM-DD: ${data}`);
   const ato = idDoAto(id.split("#")[0]!);
-  const fonte = fonteDe(raiz);
-  const registro = fonte.registro();
+  const registro = fonte.registro;
   const entrada = registro.obter(ato);
   const inicio = inicioVigencia(ato, fonte);
   const pendencias: string[] = [];
   const titulo = (outro: string) => registro.obter(outro)?.title ?? outro;
 
-  const eventos: EventoVigencia[] = fonte
-    .relacoes()
+  const eventos: EventoVigencia[] = fonte.relacoes
     .filter((relacao) => relacao.alvo === ato && (relacao.tipo === "revoga" || relacao.tipo === "altera"))
     .map((relacao) => {
       const efeito = efeitoDaRelacao(relacao, fonte);
@@ -324,9 +323,8 @@ export interface IntervaloVigencia {
  * de cada relação `revoga`/`altera` que o atinge): avaliar `statusEm` em cada uma dessas datas, e
  * numa anterior a todas, dá a função inteira. Intervalos vizinhos iguais são fundidos.
  */
-export function intervalosVigencia(id: string, raiz: RaizOuFonte = raizRepositorio()): IntervaloVigencia[] {
+export function intervalosVigencia(id: string, dados: FonteStatus): IntervaloVigencia[] {
   const ato = idDoAto(id.split("#")[0]!);
-  const dados = fonteDe(raiz);
   const marcos = new Map<string, string[]>();
   const marcar = (data: string | null, fonte: string) => {
     if (data) marcos.set(data, [...new Set([...(marcos.get(data) ?? []), fonte])]);
@@ -334,14 +332,14 @@ export function intervalosVigencia(id: string, raiz: RaizOuFonte = raizRepositor
   const inicio = inicioVigencia(ato, dados);
   marcar(inicio.data, "inicio");
   marcar(inicio.minimo, "inicio");
-  for (const relacao of dados.relacoes()) {
+  for (const relacao of dados.relacoes) {
     if (relacao.alvo !== ato || (relacao.tipo !== "revoga" && relacao.tipo !== "altera")) continue;
     const efeito = efeitoDaRelacao(relacao, dados);
     const fonte = `${relacao.tipo} ${relacao.origem}${relacao.operador ?? ""}`;
     marcar(efeito.data, fonte);
     marcar(efeito.minimo, fonte);
   }
-  const entrada = dados.registro().obter(ato);
+  const entrada = dados.registro.obter(ato);
   if (entrada?.situacao === "stub") {
     const efeito = efeitoDoStatusRegistrado(entrada.status_fonte, dados);
     marcar(efeito?.data ?? null, `status_fonte ${entrada.status_fonte}`);
@@ -397,8 +395,8 @@ export type Transicao = typeof esquemaTransicao.Type;
 const esquemaTransicoes = Schema.Struct({ transicoes: Schema.Array(esquemaTransicao) });
 const decodificarTransicoes = Schema.decodeUnknownSync(esquemaTransicoes, { onExcessProperty: "error", errors: "all" });
 
-export function caminhoTransicoes(raiz: string = raizRepositorio()): string {
-  return NodePath.join(raiz, "base-conhecimento", "transicoes.yaml");
+export function caminhoTransicoes(raiz: string): string {
+  return noCheckout(raiz, CAMINHOS.transicoes);
 }
 
 /**
@@ -409,7 +407,7 @@ export function transicoesDoYaml(texto: string): Transicao[] {
   return [...decodificarTransicoes(parse(texto, { schema: "failsafe", uniqueKeys: true })).transicoes];
 }
 
-export function carregarTransicoes(raiz: string = raizRepositorio()): Transicao[] {
+export function carregarTransicoes(raiz: string): Transicao[] {
   const arquivo = caminhoTransicoes(raiz);
   if (!NodeFS.existsSync(arquivo)) return [];
   return transicoesDoYaml(NodeFS.readFileSync(arquivo, "utf-8"));
@@ -442,15 +440,15 @@ export interface SituacaoTransicao extends Transicao, DatasTransicao {
 }
 
 /** Início e fim resolvidos de uma regra de transição (pelas datas da norma que a estabelece). */
-export function datasTransicao(transicao: Transicao, raiz: RaizOuFonte = raizRepositorio()): DatasTransicao {
-  const datas = fonteDe(raiz).datas().get(transicao.norma);
+export function datasTransicao(transicao: Transicao, fonte: Pick<FonteVigencia, "datas">): DatasTransicao {
+  const datas = fonte.datas.get(transicao.norma);
   let inicio: Inicio;
   if (RE_DATA.test(transicao.inicio)) inicio = { data: transicao.inicio, minimo: transicao.inicio, certo: true };
   else if (transicao.inicio === "publicacao" && datas && RE_DATA.test(datas.publicada_em)) {
     inicio = { data: datas.publicada_em, minimo: datas.publicada_em, certo: true };
   } else if (transicao.inicio === "publicacao")
     inicio = { data: null, minimo: datas?.assinada_em ?? null, certo: false };
-  else inicio = inicioVigencia(transicao.norma, raiz);
+  else inicio = inicioVigencia(transicao.norma, fonte);
   const fim =
     inicio.data === null || transicao.fim === "sem-prazo"
       ? null
@@ -480,9 +478,9 @@ export function situacaoNaData(t: DatasTransicao & { fim: string }, data: string
 export function situacaoTransicao(
   transicao: Transicao,
   data: string,
-  raiz: RaizOuFonte = raizRepositorio(),
+  fonte: Pick<FonteVigencia, "datas">,
 ): SituacaoTransicao {
-  const datas = datasTransicao(transicao, raiz);
+  const datas = datasTransicao(transicao, fonte);
   return { ...transicao, ...datas, situacao: situacaoNaData({ ...datas, fim: transicao.fim }, data) };
 }
 
@@ -490,12 +488,10 @@ export function situacaoTransicao(
 export function transicoesAplicaveis(
   id: string,
   data: string,
-  raiz: RaizOuFonte = raizRepositorio(),
+  fonte: Pick<FonteVigencia, "datas" | "transicoes">,
 ): SituacaoTransicao[] {
   const ato = idDoAto(id.split("#")[0]!);
-  const fonte = fonteDe(raiz);
-  return fonte
-    .transicoes()
+  return fonte.transicoes
     .filter((t) => t.norma === ato || t.norma_anterior === ato)
     .map((t) => situacaoTransicao(t, data, fonte));
 }
@@ -522,11 +518,10 @@ export interface LinhaDerivada {
 export function derivarLinha(
   linha: readonly string[],
   data: string,
-  raiz: RaizOuFonte = raizRepositorio(),
+  fonte: Pick<FonteVigencia, "datas" | "relacoes">,
 ): LinhaDerivada {
   if (linha.length === 0) throw new Error("linha normativa vazia");
-  const fonte = fonteDe(raiz);
-  const relacoes = fonte.relacoes().filter((r) => r.tipo === "revoga");
+  const relacoes = fonte.relacoes.filter((r) => r.tipo === "revoga");
   const emVigor = (r: Relacao) => ocorreu(efeitoDaRelacao(r, fonte), data) !== false;
   const revogadoPor = (ato: string) => relacoes.find((r) => r.alvo === ato && !relacaoParcial(r) && emVigor(r));
   let vigente = linha.at(-1)!;

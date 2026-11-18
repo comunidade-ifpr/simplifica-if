@@ -9,10 +9,10 @@ Desde o C1 da [consolidação na stack do T3](../../docs/plans/consolidacao-stac
 | Serviço (`src/`) | Métodos | Depende de |
 |---|---|---|
 | `BaseKb.ts` | `meta` (versão do esquema, `data_referencia`, impressão digital, contagens, `versao`/`commit`/`canal`); falha a layer com `BaseIncompativel`. `layerSqlite({ caminho })`: o `SqlClient` só leitura (`BaseAusente`) | `SqlClient` |
-| `FontesNormativas.ts` | `registro`, `datas`, `relacoes`, `transicoes`, `dataReferencia`, `vigencia` (a `FonteVigencia` das regras), `sinonimos`, `topicosSecoes`, `topicosFichas`, `conteudoDasSkills({ raiz? })`. Duas layers: `layerBanco` (tabelas do `kb.sqlite`; só `SqlClient`) e `layerArquivos({ raiz })` (`FileSystem`, `Path`) | — |
+| `FontesNormativas.ts` | `registro`, `datas`, `relacoes`, `transicoes` (com eles, o próprio serviço é a `FonteVigencia` das regras), `dataReferencia`, `sinonimos`, `topicosSecoes`, `topicosFichas`, `conteudoDasSkills({ raiz? })`. Duas layers: `layerBanco` (tabelas do `kb.sqlite`; só `SqlClient`) e `layerArquivos({ raiz })` (`FileSystem`, `Path`) | — |
 | `Normas.ts` | `resolver`, `buscar`, `obter`, `ficha`, `dispositivo`, `dispositivoOuAncestral`, `descendentes`, `trecho`, `vigencia`, `relacoes`, `sucessoras`, `correspondencia`, `tabelasDeCorrespondencia`, `dataReferencia` | `SqlClient`, `FontesNormativas` |
 | `Ppcs.ts` | `buscarSecoes`, `secoesDoPpc`, `indiceSecoesDoPpc`, `lerSecao`, `citacoesDaNorma`, `relatorioCitacoes`, `normasCitadas`, `fatos`, `divergencias` | `SqlClient`, `FontesNormativas` |
-| `Cursos.ts` | `listar`, `adequacaoArt71` | `SqlClient` |
+| `Cursos.ts` | `listar`, `cnct`, `adequacaoArt71` | `SqlClient` |
 | `Impacto.ts` | `daNorma(id, { data, incluirPpcs, raizConteudo })` | `SqlClient`, `FontesNormativas` |
 | `PacoteContexto.ts` | `montar` (PPC da base), `doMarkdown` (texto de um PPC fora da base), `avulso` (sobre um banco em memória de `bancoDoPpcAvulso`), `fichas`, `nomesDeCampi` | `SqlClient`, `FontesNormativas` |
 | `Compilador.ts` | `compilar`, `estado`, `garantirFresco` (política `KB_RECOMPILAR`) | `FileSystem`, `Path` |
@@ -40,10 +40,12 @@ const programa = Effect.gen(function* () {
 programa.pipe(Effect.provide(Layers.layerSomenteLeitura({ caminho: "kb.sqlite" })), NodeRuntime.runMain);
 ```
 
-Erros tipados: `Sql.FalhaNaConsulta` (`db/sql.ts`: o banco não corresponde ao esquema), `BaseIncompativel`, `BaseAusente`, `FalhaNasFontes`, `FalhaNaCompilacao`, `BaseDesatualizada` e os do pacote de contexto (`PpcNaoEncontrado`, `GrupoInexistente`, `TarefaNaoReconhecida`, em `PacoteContexto.ts`), todos `Schema.TaggedError` com mensagem em português; quem os traduz usa `Effect.catchTags`. Mensagens de validação de schema: `esquema/mensagens.ts` (`formatarErro`, `problemas`), o formatador pt-BR único.
+Erros tipados: `Sql.FalhaNaConsulta` (`db/sql.ts`: o banco não corresponde ao esquema), `BaseIncompativel`, `BaseAusente`, `FalhaNasFontes`, `FalhaNaCompilacao`, `BaseDesatualizada` e os do pacote de contexto (`PpcNaoEncontrado`, `GrupoInexistente`, `TarefaNaoReconhecida`, em `pacote-contexto-erros.ts` e reexportados por `PacoteContexto.ts`), todos `Schema.TaggedError` com mensagem em português; quem os traduz usa `Effect.catchTags`. Mensagens de validação de schema: `esquema/mensagens.ts` (`formatarErro`, `problemas`), o formatador pt-BR único.
 
 | Módulo | Papel |
 |---|---|
+| `caminhos.ts` | os caminhos, relativos à raiz do repositório, de tudo o que o kb lê (`CAMINHOS`, `noCheckout`); `raizRepositorio()`, que só os pontos de entrada e os testes chamam |
+| `canal.ts` | os canais da base (`dev`, `beta`, `estavel`), sem dependência, para os contratos do app |
 | `texto.ts`, `json.ts`, `schema.ts` | texto, JSON e JSON Schema comuns aos scripts e às skills (espaços, ordenação, JSON, `ajv`) |
 | `primitivas/*` | regex com classes Unicode, JSON tipado (inteiro e fracionário distintos), case folding, quebra de linhas, similaridade de sequências, escape de HTML e de URL e divisão de linha de comando, com saída fixa byte a byte (rodada e relatório da `revisar-ppc`, conversão do PPC) |
 | `esquema/mensagens.ts` | formatador único das mensagens de validação do Effect Schema, em português |
@@ -56,11 +58,11 @@ Erros tipados: `Sql.FalhaNaConsulta` (`db/sql.ts`: o banco não corresponde ao e
 | `normas/markdown.ts` | Markdown → mdast (`remark-parse` + `remark-gfm`) com o front matter em branco (linhas do mdast = linhas do arquivo) e `palavrasMarkdown`, a régua do saneamento e da reconstituição |
 | `normas/estrutura.ts` | parser de dispositivos: artigo, parágrafo, inciso, alínea, item, anexo e seção, com IDs canônicos, caput herdado, notas de redação, revogado/vetado, estrutura e linhas; segmentos que reconstituem o corpo; dedução da compilação pelo ato |
 | `normas/relacoes.ts` | `base-conhecimento/relacoes.yaml` (Effect Schema), validação por evidência literal, campos de relação do front matter e propostas por regex |
-| `normas/vigencia.ts` | datas das normas, status numa data (`statusEm`) e em intervalos datados (`intervalosVigencia`), `data_referencia` de `config/vigencia.yaml`, regras de transição (`transicoes.yaml`, com `datasTransicao` e `situacaoNaData`) e linhas normativas dos marcos (`derivarLinha`) |
+| `normas/vigencia.ts` | datas das normas, a `FonteVigencia` (registro, datas, relações e transições; `carregarFonteVigencia(raiz)` a lê dos arquivos), status numa data (`statusEm`) e em intervalos datados (`intervalosVigencia`), `data_referencia` de `config/vigencia.yaml`, regras de transição (`transicoes.yaml`, com `datasTransicao` e `situacaoNaData`) e linhas normativas dos marcos (`derivarLinha`) |
 | `normas/gerado.ts` | campos gerados do front matter (relações e status) e reescrita do front matter, usados por `scripts/gerar_base.ts` |
-| `normas/correspondencia.ts` | tabelas de correspondência entre normas sucessoras (`correspondencias/*.yaml`), com herança pelo ancestral (`correspondenciaEm` sobre uma fonte: arquivos ou banco) |
+| `normas/correspondencia.ts` | tabelas de correspondência entre normas sucessoras (`correspondencias/*.yaml`), com herança pelo ancestral (`correspondenciaEm` sobre a `FonteCorrespondencia` que `db/consultas-normas.ts` carrega do banco) |
 | `normas/fontes-db.ts` | `LinhasNormativas` pela API de `normas/`: as linhas das tabelas da fase 5 que a compilação grava |
-| `normas/impacto.ts` | a regra de `kb impacto` (`impactoEm`, pura): fichas, validações cruzadas, textos das skills, normas e PPCs afetados por uma norma |
+| `normas/impacto.ts` | a regra de `kb impacto` (`impactoEm`, pura, sobre uma `FonteImpacto` que traz o `id` da norma para a qual foi carregada): fichas, validações cruzadas, textos das skills, normas e PPCs afetados por uma norma |
 | `normas/referencia-estruturada.ts` | `{ ref, dispositivo?, papel, nota? }` (Effect Schema), universo de IDs citáveis (normas, stubs, `externo:`, `cnct:`) e texto legível das referências das fichas da `revisar-ppc` |
 | `ppcs/citacoes.ts` | citações dos PPCs convertidos; PPCs que citam uma norma; `lerTextoSecao` (texto integral de uma seção do índice pelas linhas) |
 | `ppcs/front-matter.ts` | front matter de proveniência dos PPCs (`ppc:<campus>/<curso>`, URL, hash, data, conversor) e leitura com o front matter em branco |
@@ -116,22 +118,23 @@ As saídas não dependem do relógio e têm ordem estável. As regras do resolve
 
 ## API para o banco compilado (fase 6)
 
-Carregadores síncronos sobre os arquivos do checkout (todos aceitam a raiz do repositório como último argumento; o padrão é o próprio checkout), usados pela compilação e pelos scripts. Nenhum lê o relógio. Os serviços não os chamam: sobre o banco, os mesmos dados vêm das tabelas (`FontesNormativas.layerBanco`).
+Carregadores síncronos sobre os arquivos do checkout, usados pela compilação e pelos scripts. Todos recebem a raiz do repositório, sem valor padrão: quem chama a obtém (`raizRepositorio()`, de `caminhos.ts`, nos pontos de entrada). As regras puras (`statusEm`, `transicoesAplicaveis`, `derivarLinha`, `correspondenciaEm`, `impactoEm`) não leem arquivo: recebem uma fonte já carregada. Nenhum lê o relógio. Os serviços não os chamam: sobre o banco, os mesmos dados vêm das tabelas (`FontesNormativas.layerBanco`).
 
 | Função | Módulo | Devolve |
 |---|---|---|
 | `listarNormas(raiz)` | `normas/estrutura` | `{ id, path, arquivo }` das 36 normas |
 | `carregarEstruturas(raiz)` | `normas/estrutura` | por norma: `dispositivos`, `segmentos` (corpo inteiro, em ordem, com tipo e linhas) e `problemas` |
 | `carregarDispositivos(raiz)` | `normas/estrutura` | `Dispositivo[]`: `id`, `dispositivo`, `norma` (arquivo), `ato`, `tipo`, `rotulo`, `pai`, `texto`, `caput[]`, `estrutura[]`, `notas[]`, `revogado`, `vetado`, `linha_inicio`, `linha_fim`, `ordem` |
-| `indiceDispositivos(raiz)` / `obterDispositivo(id)` / `dispositivosDoAto(ato)` | `normas/estrutura` | índice por `ato#dispositivo`, já deduplicado com a compilação (o texto integral prevalece) |
+| `indiceDispositivos(raiz)` / `obterDispositivo(id, raiz)` / `dispositivosDoAto(ato, raiz)` | `normas/estrutura` | índice por `ato#dispositivo`, já deduplicado com a compilação (o texto integral prevalece) |
 | `carregarRelacoes(raiz)` | `normas/relacoes` | `Relacao[]`: `tipo`, `origem`, `operador`, `alvo`, `alvo_dispositivo`, `alcance`, `efeito_de`, `evidencia`, `confirmado_em`, `proposta`, `nota` |
-| `carregarDatas(raiz)` | `normas/vigencia` | `assinada_em`, `publicada_em`, `vigente_de` por ato (normas e stubs) |
-| `statusEm(id, data, raiz)` | `normas/vigencia` | `{ status, certo, inicio, eventos[], pendencias[] }` |
+| `carregarDatas(raiz, registro?)` | `normas/vigencia` | `assinada_em`, `publicada_em`, `vigente_de` por ato (normas e stubs) |
+| `carregarFonteVigencia(raiz)` | `normas/vigencia` | a `FonteVigencia`: registro, datas, relações e transições |
+| `statusEm(id, data, fonte: FonteStatus)` | `normas/vigencia` | `{ status, certo, inicio, eventos[], pendencias[] }` |
 | `dataReferencia(raiz)` | `normas/vigencia` | a `data_referencia` declarada |
-| `carregarTransicoes(raiz)` / `transicoesAplicaveis(id, data)` | `normas/vigencia` | regras de transição e sua situação na data |
-| `derivarLinha(linha, data, raiz)` | `normas/vigencia` | vigente, substituídas, antecessoras e dispositivos revogados de um tema |
-| `carregarCorrespondencias(raiz)` / `correspondencia(id)` | `normas/correspondencia` | tabelas e o item aplicável (com herança) |
-| `impactoEm(id, fonte, opcoes)` | `normas/impacto` | arquivos, normas e PPCs afetados (o serviço `Impacto` monta a fonte) |
+| `carregarTransicoes(raiz)` / `transicoesAplicaveis(id, data, fonte)` | `normas/vigencia` | regras de transição e sua situação na data |
+| `derivarLinha(linha, data, fonte)` | `normas/vigencia` | vigente, substituídas, antecessoras e dispositivos revogados de um tema |
+| `carregarCorrespondencias(raiz)` / `correspondenciaEm(id, fonte)` | `normas/correspondencia` | as tabelas; o item aplicável (com herança), sobre a `FonteCorrespondencia` do banco (o serviço `Normas` a carrega; `normas.correspondencia(id)` é o caminho de quem consome) |
+| `impactoEm(fonte, opcoes)` | `normas/impacto` | arquivos, normas e PPCs afetados pela norma `fonte.id` (o serviço `Impacto` monta a fonte para o `id` pedido) |
 
 Na compilação, essa API entra por `normas/fontes-db.ts`; as tabelas estão descritas em "Banco compilado".
 
@@ -161,7 +164,7 @@ Ao mudar o resolvedor, rode também `pnpm avaliacao:gabaritos` e revise o diff d
 
 **Compilação e recompilação.** O serviço `Compilador` grava com o `DatabaseSync` do `node:sqlite` direto, numa transação (`preencherBanco`): o `SqlClient` custaria cerca de 1,6 µs a mais por instrução (medido no C1; cerca de 2% da compilação), e a troca fica para depois. Cada comando da CLI confere, nesta ordem: banco ausente, versão do esquema, lista de fontes (arquivo novo ou removido); se nenhuma fonte tem mtime mais novo que o banco, ele está fresco; se alguma tem, compara o SHA-256 do conteúdo das fontes com o gravado em `meta` (igual: o mtime do banco avança até o das fontes; diferente: recompila). A compilação dá ao banco o mtime do instante anterior à leitura das fontes, e não o do fim: uma fonte editada durante a compilação fica mais nova que ele e é conferida na próxima abertura. `KB_SQLITE` muda o caminho; `KB_RECOMPILAR=nunca|sempre` desliga ou força a recompilação.
 
-**Fase 5.** A carga entra por `LinhasNormativas` (`db/fontes-normativas.ts`), implementada por `fontesNormativasArquivos` (`normas/fontes-db.ts`), o padrão da compilação. Nenhuma regra é reescrita no banco: a deduplicação vai gravada (`canonico`), a vigência sai de `statusEm`, e as consultas (`db/consultas-normas.ts`) usam `correspondenciaEm`, `descendentesEm` e `situacaoNaData`, as mesmas funções da API de arquivos. Cada linha é validada pelo Effect Schema da tabela; a ordem de inserção é a dos arquivos. Arquivo novo que a carga ler entra em `ARQUIVOS_FONTES_NORMATIVAS` (hoje `relacoes.yaml`, `transicoes.yaml`, `correspondencias/`, `config/vigencia.yaml` e `normas/stubs.yaml`). Ao mudar o esquema, suba `VERSAO_ESQUEMA` (hoje 4).
+**Fase 5.** A carga entra por `LinhasNormativas` (`db/fontes-normativas.ts`), implementada por `fontesNormativasArquivos` (`normas/fontes-db.ts`), o padrão da compilação. Nenhuma regra é reescrita no banco: a deduplicação vai gravada (`canonico`), a vigência sai de `statusEm`, e as consultas (`db/consultas-normas.ts`) usam `correspondenciaEm`, `descendentesEm` e `situacaoNaData`, as mesmas regras puras da compilação. Cada linha é validada pelo Effect Schema da tabela; a ordem de inserção é a dos arquivos. Arquivo novo que a carga ler entra em `ARQUIVOS_FONTES_NORMATIVAS` (hoje `relacoes.yaml`, `transicoes.yaml`, `correspondencias/`, `config/vigencia.yaml` e `normas/stubs.yaml`). Ao mudar o esquema, suba `VERSAO_ESQUEMA` (hoje 5).
 
 **`pacote-contexto`.** Por norma citada pelas fichas, o texto de cada dispositivo citado (`referencias_normativas[].dispositivo`): caput herdado, o próprio texto e os subordinados, arquivo e linhas; um dispositivo contido noutro citado não se repete (vai em `citados`). Também os marcos ligados (com os campos derivados) e as regras de transição das normas das fichas e das citadas como fundamento pelo PPC, com a situação na `data_referencia` e o texto do dispositivo que as estabelece. As seções do PPC são as dos tipos ligados aos tópicos das fichas (`dados/topicos-secoes.yaml`) mais a melhor seção de cada `consulta` das fichas. As partes são funções próprias (`normasDoPacote`, `marcosDoPacote`, `transicoesDoPacote`, `secoesDoPacote`), usadas pelo pacote de um PPC da base (`pacoteContexto`) e pelo de um PPC fora dela (`pacoteContextoAvulso`).
 

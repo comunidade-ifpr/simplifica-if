@@ -31,6 +31,7 @@ import {
 } from "@simplifica-if/kb/db/pacote-contexto";
 import type { TopicoFichas } from "@simplifica-if/kb/ppcs/topicos";
 import { lerSinonimos } from "@simplifica-if/kb/busca/sinonimos";
+import { carregarRegistro } from "@simplifica-if/kb/normas/registro";
 import { palavrasDeCampi, textoDaSecao } from "@simplifica-if/kb/ppcs/secoes";
 import { copiarValorJson, serializarJsonTipado } from "@simplifica-if/kb/primitivas/json-tipado";
 import { casefold, somenteDigitos } from "@simplifica-if/kb/primitivas/texto";
@@ -460,7 +461,7 @@ export const abrirContextoKbRodada = Effect.fn("subagents.abrirContextoKbRodada"
   const caminhos = caminhosRodada(rodada);
   const raiz = NodePath.dirname(skill.baseConhecimentoDir);
   const markdown = lerTexto(caminhos.ppc);
-  const lexico = lerSinonimos();
+  const lexico = lerSinonimos(raiz);
   const palavrasCampi = palavrasDeCampi(yield* pacotes.nomesDeCampi);
   const dbPpc = yield* Effect.acquireRelease(
     Effect.sync(() =>
@@ -469,7 +470,7 @@ export const abrirContextoKbRodada = Effect.fn("subagents.abrirContextoKbRodada"
         path: caminhos.ppc,
         taxonomia: TAXONOMIA_RODADA,
         palavrasCampi,
-        raiz,
+        registro: carregarRegistro(raiz),
         sinonimos: lexico,
         todasAsSecoes: true,
         titulosNivel1: true,

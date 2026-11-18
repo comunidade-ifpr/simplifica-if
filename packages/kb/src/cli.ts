@@ -26,7 +26,8 @@ import * as Option from "effect/Option";
 import * as CliError from "effect/cli/CliError";
 import * as Command from "effect/cli/Command";
 import { compilar } from "./cli/compilar.ts";
-import { ehEncerrarComCodigo } from "./cli/comum.ts";
+import { raizRepositorio } from "./caminhos.ts";
+import { Checkout, ehEncerrarComCodigo } from "./cli/comum.ts";
 import {
   avaliarResolvedorCmd,
   buscarNorma,
@@ -80,6 +81,7 @@ const relatarFalha = (causa: Cause.Cause<unknown>): Effect.Effect<void> => {
 };
 
 const programa = Command.run(kb, { version: "0.1.0" }).pipe(
+  Effect.provideService(Checkout, Checkout.of({ raiz: raizRepositorio() })),
   Effect.tapCause(relatarFalha),
   Effect.provide(NodeServices.layer),
 );

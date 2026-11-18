@@ -23,6 +23,7 @@ import * as Layer from "effect/Layer";
 import * as Path from "effect/Path";
 import * as Schema from "effect/Schema";
 import * as SqlClient from "effect/sql/SqlClient";
+import { CAMINHOS } from "./caminhos.ts";
 import { type Sinonimos, sinonimosDeObjeto, sinonimosDoYaml } from "./busca/sinonimos.ts";
 import * as Sql from "./db/sql.ts";
 import { analisarFrontMatter } from "./normas/front-matter.ts";
@@ -32,14 +33,11 @@ import {
   dataReferenciaDoYaml,
   type DatasNorma,
   esquemaTransicao,
-  type FonteVigencia,
   montarDatas,
   type Transicao,
   transicoesDoYaml,
 } from "./normas/vigencia.ts";
 import {
-  TOPICOS_FICHAS,
-  TOPICOS_SECOES,
   type TopicoFichas,
   type TopicosSecoes,
   topicosFichasDeObjetos,
@@ -74,14 +72,13 @@ export class FalhaNasFontes extends Schema.TaggedError<FalhaNasFontes>()("FalhaN
 export class FontesNormativas extends Context.Service<
   FontesNormativas,
   {
+    // registro, datas, relações e transições: o serviço é a `FonteVigencia` das regras (`statusEm`…)
     readonly registro: Registro;
     readonly datas: ReadonlyMap<string, DatasNorma>;
     readonly relacoes: ReadonlyArray<Relacao>;
     readonly transicoes: ReadonlyArray<Transicao>;
     /** `data_referencia` de `base-conhecimento/config/vigencia.yaml` (no banco, a gravada em `meta`). */
     readonly dataReferencia: string;
-    /** A vigência (`statusEm`, `transicoesAplicaveis`, `derivarLinha`…) sobre os valores acima. */
-    readonly vigencia: FonteVigencia;
     readonly sinonimos: Sinonimos;
     readonly topicosSecoes: TopicosSecoes;
     readonly topicosFichas: ReadonlyArray<TopicoFichas>;
@@ -95,16 +92,6 @@ export class FontesNormativas extends Context.Service<
     }) => Effect.Effect<ConteudoDasSkills, FalhaNasFontes | Sql.FalhaNaConsulta>;
   }
 >()("@simplifica-if/kb/FontesNormativas") {}
-
-/** Monta a `FonteVigencia` das regras puras sobre valores já carregados. */
-function fonteVigencia(
-  registro: Registro,
-  datas: Map<string, DatasNorma>,
-  relacoes: readonly Relacao[],
-  transicoes: readonly Transicao[],
-): FonteVigencia {
-  return { registro: () => registro, datas: () => datas, relacoes: () => relacoes, transicoes: () => transicoes };
-}
 
 /* ===================================================================== banco */
 
@@ -289,7 +276,6 @@ const makeBanco = Effect.gen(function* () {
     relacoes,
     transicoes,
     dataReferencia: referencia.valor,
-    vigencia: fonteVigencia(registro, datas, relacoes, transicoes),
     sinonimos,
     topicosSecoes,
     topicosFichas,
@@ -333,14 +319,14 @@ const makeArquivos = Effect.fn("FontesNormativas.layerArquivos")(function* (raiz
       Effect.mapError((cause) => new FalhaNasFontes({ arquivo: relativo, cause })),
     );
 
-  const manifest = yield* ler("base-conhecimento/manifest.json");
-  const stubs = yield* lerSeExistir("base-conhecimento/normas/stubs.yaml");
-  const registro = yield* interpretar("base-conhecimento/manifest.json", () => montarRegistro(manifest, stubs));
+  const manifest = yield* ler(CAMINHOS.manifest);
+  const stubs = yield* lerSeExistir(CAMINHOS.stubs);
+  const registro = yield* interpretar(CAMINHOS.manifest, () => montarRegistro(manifest, stubs));
 
   // datas dos atos: front matter de cada norma da base, na ordem de `listarNormas`
   const normas: Array<{ id: string; meta: Readonly<Record<string, unknown>>; path: string }> = [];
-  for (const arquivo of yield* listarMd("base-conhecimento/normas")) {
-    const relativo = arquivo.slice("base-conhecimento/".length);
+  for (const arquivo of yield* listarMd(CAMINHOS.normas)) {
+    const relativo = arquivo.slice(`${CAMINHOS.base}/`.length);
     const texto = yield* ler(arquivo);
     const { meta } = yield* interpretar(arquivo, () => analisarFrontMatter(texto, relativo));
     normas.push({ id: String(meta["id"]), meta, path: relativo });
@@ -348,31 +334,29 @@ const makeArquivos = Effect.fn("FontesNormativas.layerArquivos")(function* (raiz
   normas.sort((a, b) => compararTexto(a.path, b.path));
   const datas = montarDatas(normas, registro);
 
-  const relacoes = yield* ler("base-conhecimento/relacoes.yaml").pipe(
-    Effect.flatMap((texto) => interpretar("base-conhecimento/relacoes.yaml", () => relacoesDoYaml(texto))),
+  const relacoes = yield* ler(CAMINHOS.relacoes).pipe(
+    Effect.flatMap((texto) => interpretar(CAMINHOS.relacoes, () => relacoesDoYaml(texto))),
   );
-  const textoTransicoes = yield* lerSeExistir("base-conhecimento/transicoes.yaml");
+  const textoTransicoes = yield* lerSeExistir(CAMINHOS.transicoes);
   const transicoes =
-    textoTransicoes === null
-      ? []
-      : yield* interpretar("base-conhecimento/transicoes.yaml", () => transicoesDoYaml(textoTransicoes));
-  const dataReferencia = yield* ler("base-conhecimento/config/vigencia.yaml").pipe(
-    Effect.flatMap((texto) => interpretar("base-conhecimento/config/vigencia.yaml", () => dataReferenciaDoYaml(texto))),
+    textoTransicoes === null ? [] : yield* interpretar(CAMINHOS.transicoes, () => transicoesDoYaml(textoTransicoes));
+  const dataReferencia = yield* ler(CAMINHOS.configVigencia).pipe(
+    Effect.flatMap((texto) => interpretar(CAMINHOS.configVigencia, () => dataReferenciaDoYaml(texto))),
   );
-  const sinonimos = yield* ler("packages/kb/dados/sinonimos.yaml").pipe(
-    Effect.flatMap((texto) => interpretar("packages/kb/dados/sinonimos.yaml", () => sinonimosDoYaml(texto))),
+  const sinonimos = yield* ler(CAMINHOS.sinonimos).pipe(
+    Effect.flatMap((texto) => interpretar(CAMINHOS.sinonimos, () => sinonimosDoYaml(texto))),
   );
-  const topicosSecoes = yield* ler(TOPICOS_SECOES).pipe(
-    Effect.flatMap((texto) => interpretar(TOPICOS_SECOES, () => topicosSecoesDoYaml(texto))),
+  const topicosSecoes = yield* ler(CAMINHOS.topicosSecoes).pipe(
+    Effect.flatMap((texto) => interpretar(CAMINHOS.topicosSecoes, () => topicosSecoesDoYaml(texto))),
   );
-  const topicosFichas = yield* ler(TOPICOS_FICHAS).pipe(
-    Effect.flatMap((texto) => interpretar(TOPICOS_FICHAS, () => topicosFichasDoJson(texto))),
+  const topicosFichas = yield* ler(CAMINHOS.topicosFichas).pipe(
+    Effect.flatMap((texto) => interpretar(CAMINHOS.topicosFichas, () => topicosFichasDoJson(texto))),
   );
 
   /** Arquivos de conteúdo de `.agents/skills` (Markdown, JSON e YAML, sem README nem gerados), em ordem. */
   const arquivosDasSkills = Effect.fnUntraced(function* (raizConteudo: string) {
-    const base = path.join(raizConteudo, ".agents", "skills");
-    const naoLe = (cause: unknown) => new FalhaNasFontes({ arquivo: ".agents/skills", cause });
+    const base = path.join(raizConteudo, ...CAMINHOS.skills.split("/"));
+    const naoLe = (cause: unknown) => new FalhaNasFontes({ arquivo: CAMINHOS.skills, cause });
     if (!(yield* fs.exists(base).pipe(Effect.mapError(naoLe)))) return [];
     const saida: string[] = [];
     // em ordem de nome, com recursão manual para pular diretórios; sem span próprio por diretório
@@ -402,11 +386,11 @@ const makeArquivos = Effect.fn("FontesNormativas.layerArquivos")(function* (raiz
         .readFileString(path.join(raizConteudo, relativo))
         .pipe(Effect.mapError((cause) => new FalhaNasFontes({ arquivo: relativo, cause })));
     const temTopicos = yield* fs
-      .exists(path.join(raizConteudo, TOPICOS_FICHAS))
-      .pipe(Effect.mapError((cause) => new FalhaNasFontes({ arquivo: TOPICOS_FICHAS, cause })));
+      .exists(path.join(raizConteudo, CAMINHOS.topicosFichas))
+      .pipe(Effect.mapError((cause) => new FalhaNasFontes({ arquivo: CAMINHOS.topicosFichas, cause })));
     const topicos = temTopicos
-      ? yield* lerDe(TOPICOS_FICHAS).pipe(
-          Effect.flatMap((texto) => interpretar(TOPICOS_FICHAS, () => topicosFichasDoJson(texto))),
+      ? yield* lerDe(CAMINHOS.topicosFichas).pipe(
+          Effect.flatMap((texto) => interpretar(CAMINHOS.topicosFichas, () => topicosFichasDoJson(texto))),
         )
       : [];
     const arquivos: ArquivoConteudo[] = [];
@@ -422,7 +406,6 @@ const makeArquivos = Effect.fn("FontesNormativas.layerArquivos")(function* (raiz
     relacoes,
     transicoes,
     dataReferencia,
-    vigencia: fonteVigencia(registro, datas, relacoes, transicoes),
     sinonimos,
     topicosSecoes,
     topicosFichas,

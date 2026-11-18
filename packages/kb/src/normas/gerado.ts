@@ -15,9 +15,9 @@
 import * as NodeFS from "node:fs";
 import { idDoAto } from "./ids.ts";
 import { listarNormas } from "./estrutura.ts";
-import { carregarRegistro, raizRepositorio } from "./registro.ts";
-import { CAMPOS_RELACAO_FRONT_MATTER, camposRelacoesFrontMatter } from "./relacoes.ts";
-import { dataReferencia, statusEm } from "./vigencia.ts";
+import { carregarRegistro } from "./registro.ts";
+import { CAMPOS_RELACAO_FRONT_MATTER, camposRelacoesFrontMatter, carregarRelacoes } from "./relacoes.ts";
+import { carregarDatas, dataReferencia, statusEm } from "./vigencia.ts";
 
 /** Campos que o gerador controla (removidos e reescritos a cada geração). */
 const CAMPOS_GERADOS = [
@@ -30,11 +30,12 @@ const CAMPOS_GERADOS = [
 export type ValorGerado = string | string[];
 
 /** Campos gerados da norma `id` (arquivo), na ordem em que vão para o front matter. */
-export function camposGerados(id: string, raiz: string = raizRepositorio()): Map<string, ValorGerado> {
+export function camposGerados(id: string, raiz: string): Map<string, ValorGerado> {
   const campos = new Map<string, ValorGerado>();
   if (idDoAto(id) !== id) return campos;
   const referencia = dataReferencia(raiz);
-  const resultado = statusEm(id, referencia, raiz);
+  const fonte = { registro: carregarRegistro(raiz), datas: carregarDatas(raiz), relacoes: carregarRelacoes(raiz) };
+  const resultado = statusEm(id, referencia, fonte);
   campos.set("status_vigencia", resultado.status);
   campos.set("vigencia_calculada_em", referencia);
   if (!resultado.certo) campos.set("vigencia_a_confirmar", resultado.pendencias.join("; "));
@@ -105,7 +106,7 @@ export interface NormaGerada {
 }
 
 /** Texto esperado de cada norma da base, com os campos gerados atualizados. */
-export function normasComCamposGerados(raiz: string = raizRepositorio()): NormaGerada[] {
+export function normasComCamposGerados(raiz: string): NormaGerada[] {
   return listarNormas(raiz).map((norma) => {
     const atual = NodeFS.readFileSync(norma.arquivo, "utf-8");
     return { ...norma, atual, esperado: reescreverFrontMatter(atual, camposGerados(norma.id, raiz)) };

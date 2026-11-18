@@ -9,8 +9,8 @@
  */
 import * as Schema from "effect/Schema";
 import * as NodeFS from "node:fs";
-import * as NodePath from "node:path";
 import { parse } from "yaml";
+import { CAMINHOS, noCheckout } from "../caminhos.ts";
 import { radicais } from "./tokens.ts";
 
 const termo = Schema.String.check(Schema.isMinLength(1));
@@ -26,10 +26,6 @@ export const esquemaSinonimos = Schema.Struct({
 export type Sinonimos = typeof esquemaSinonimos.Type;
 const decodificarSinonimos = Schema.decodeUnknownSync(esquemaSinonimos, { onExcessProperty: "error", errors: "all" });
 
-export function caminhoSinonimos(raizPacote: string = NodePath.resolve(import.meta.dirname, "..", "..")): string {
-  return NodePath.join(raizPacote, "dados", "sinonimos.yaml");
-}
-
 /**
  * Valida o léxico já interpretado (do YAML ou remontado das tabelas do banco). Fora do contrato,
  * lança o `Schema.SchemaError` (texto em português por `esquema/mensagens.ts`).
@@ -43,9 +39,9 @@ export function sinonimosDoYaml(texto: string): Sinonimos {
   return sinonimosDeObjeto(parse(texto, { schema: "failsafe", uniqueKeys: true }));
 }
 
-/** Lê e valida o léxico. */
-export function lerSinonimos(caminho: string = caminhoSinonimos()): Sinonimos {
-  return sinonimosDoYaml(NodeFS.readFileSync(caminho, "utf-8"));
+/** Lê e valida o léxico do checkout em `raiz`. */
+export function lerSinonimos(raiz: string): Sinonimos {
+  return sinonimosDoYaml(NodeFS.readFileSync(noCheckout(raiz, CAMINHOS.sinonimos), "utf-8"));
 }
 
 /** Texto de expansão de um tipo de seção: os termos do léxico, separados por " ; ". */

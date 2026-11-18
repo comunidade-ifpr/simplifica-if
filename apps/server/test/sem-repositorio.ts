@@ -53,7 +53,7 @@ const leiturasDaRevisao = leituras.length;
 // Controle: a leitura do registro do checkout prova que o bloqueio pega o que a revisão não leu.
 let controle = "leu o checkout";
 try {
-  carregarRegistro();
+  carregarRegistro(raiz);
 } catch {
   // Só conta como bloqueado se foi o bloqueio que recusou (registrou a leitura), não outra falha.
   if (leituras.length > leiturasDaRevisao) controle = "bloqueado";

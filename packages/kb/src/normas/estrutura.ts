@@ -35,10 +35,10 @@
 import * as NodeFS from "node:fs";
 import * as NodePath from "node:path";
 import type { Heading, List, ListItem, Nodes, Paragraph, RootContent } from "mdast";
+import { CAMINHOS, chaveDoCheckout, noCheckout } from "../caminhos.ts";
 import { analisarFrontMatter } from "./front-matter.ts";
 import { idDoAto, varianteDoId } from "./ids.ts";
 import { arvoreMarkdown, palavrasDoTexto, textoDoNo } from "./markdown.ts";
-import { raizRepositorio } from "./registro.ts";
 import { compararTexto } from "../texto.ts";
 
 export const TIPOS_DISPOSITIVO = ["artigo", "paragrafo", "inciso", "alinea", "item", "anexo", "secao"] as const;
@@ -766,9 +766,9 @@ function listarMd(diretorio: string): string[] {
 }
 
 /** Normas da base (Markdown em `base-conhecimento/normas/`), por ordem de caminho. */
-export function listarNormas(raiz: string = raizRepositorio()): ArquivoNorma[] {
-  const base = NodePath.join(raiz, "base-conhecimento");
-  return listarMd(NodePath.join(base, "normas"))
+export function listarNormas(raiz: string): ArquivoNorma[] {
+  const base = noCheckout(raiz, CAMINHOS.base);
+  return listarMd(noCheckout(raiz, CAMINHOS.normas))
     .map((arquivo) => {
       const relativo = NodePath.relative(base, arquivo).split(NodePath.sep).join("/");
       const { meta } = analisarFrontMatter(NodeFS.readFileSync(arquivo, "utf-8"), relativo);
@@ -777,16 +777,17 @@ export function listarNormas(raiz: string = raizRepositorio()): ArquivoNorma[] {
     .sort((a, b) => compararTexto(a.path, b.path));
 }
 
+/** Por checkout (`chaveDoCheckout`): o pipeline da base e a compilação leem as normas várias vezes. */
 const cacheEstruturas = new Map<string, EstruturaNorma[]>();
 
 /** Estrutura de todas as normas da base. */
-export function carregarEstruturas(raiz: string = raizRepositorio()): EstruturaNorma[] {
-  const emCache = cacheEstruturas.get(raiz);
+export function carregarEstruturas(raiz: string): EstruturaNorma[] {
+  const emCache = cacheEstruturas.get(chaveDoCheckout(raiz));
   if (emCache) return emCache;
   const estruturas = listarNormas(raiz).map((norma) =>
     analisarNorma(NodeFS.readFileSync(norma.arquivo, "utf-8"), { id: norma.id, path: norma.path }),
   );
-  cacheEstruturas.set(raiz, estruturas);
+  cacheEstruturas.set(chaveDoCheckout(raiz), estruturas);
   return estruturas;
 }
 
@@ -794,7 +795,7 @@ export function carregarEstruturas(raiz: string = raizRepositorio()): EstruturaN
  * Dispositivos de todas as normas da base, na ordem dos arquivos. A compilação da LDB
  * (`br/lei/1996/9394~compilacao`) entra com o ID do arquivo; `dispositivosDoAto` deduplica.
  */
-export function carregarDispositivos(raiz: string = raizRepositorio()): Dispositivo[] {
+export function carregarDispositivos(raiz: string): Dispositivo[] {
   return carregarEstruturas(raiz).flatMap((estrutura) => estrutura.dispositivos);
 }
 
@@ -803,7 +804,7 @@ export function carregarDispositivos(raiz: string = raizRepositorio()): Disposit
  * texto integral do ato prevalece; o dispositivo da compilação só entra quando o integral não o
  * tem (hoje não acontece: os trechos da LDB estão todos no texto integral).
  */
-export function indiceDispositivos(raiz: string = raizRepositorio()): Map<string, Dispositivo> {
+export function indiceDispositivos(raiz: string): Map<string, Dispositivo> {
   const indice = new Map<string, Dispositivo>();
   const variantes: Dispositivo[] = [];
   for (const disp of carregarDispositivos(raiz)) {
@@ -821,14 +822,14 @@ export function indiceDispositivos(raiz: string = raizRepositorio()): Map<string
 }
 
 /** Dispositivos de um ato (deduplicados pela regra de `indiceDispositivos`), em ordem. */
-export function dispositivosDoAto(ato: string, raiz: string = raizRepositorio()): Dispositivo[] {
+export function dispositivosDoAto(ato: string, raiz: string): Dispositivo[] {
   return [...indiceDispositivos(raiz).values()]
     .filter((disp) => disp.ato === ato)
     .sort((a, b) => (a.norma === b.norma ? a.ordem - b.ordem : a.norma === a.ato ? -1 : 1));
 }
 
 /** Dispositivo pelo ID (`br/cne-cp/res/2026/2#art71-parunico`); aceita o ID do arquivo com variante. */
-export function obterDispositivo(id: string, raiz: string = raizRepositorio()): Dispositivo | undefined {
+export function obterDispositivo(id: string, raiz: string): Dispositivo | undefined {
   const [norma, sufixo] = id.split("#");
   if (!sufixo) return undefined;
   const indice = indiceDispositivos(raiz);
@@ -856,7 +857,7 @@ export function descendentesEm<T extends { id: string; pai: string | null }>(tod
 }
 
 /** Descendentes de um dispositivo (filhos, netos...), em ordem. */
-export function descendentes(id: string, raiz: string = raizRepositorio()): Dispositivo[] {
+export function descendentes(id: string, raiz: string): Dispositivo[] {
   return descendentesEm(carregarDispositivos(raiz), id);
 }
 
